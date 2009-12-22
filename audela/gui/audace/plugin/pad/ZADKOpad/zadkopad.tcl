@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.41 2009-12-15 14:15:32 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.42 2009-12-22 09:31:07 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -462,6 +462,8 @@ namespace eval ::zadkopad {
 		 		.zadkopad.tel.parking configure -relief groove -state disabled
 		 		.zadkopad.petal.petalopen configure -relief groove -state disabled
 		 		.zadkopad.petal.petalclose configure -relief groove -state disabled
+		 		.zadkopad.light.petalopen configure -relief groove -state disabled
+                .zadkopad.light.petalclose configure -relief groove -state disabled
 		 		.zadkopad.foc.enter configure -relief groove -state disabled		 		
 		 		.zadkopad.frame1.frame2.f.but1 configure -relief groove -state disabled
 		 		.zadkopad.frame1.frame3.f.vide2.sendposition.but1 configure -relief groove -state disabled
@@ -490,6 +492,8 @@ namespace eval ::zadkopad {
 		 		.zadkopad.tel.parking configure -relief groove -state normal
 		 		.zadkopad.petal.petalopen configure -relief groove -state normal
 		 		.zadkopad.petal.petalclose configure -relief groove -state normal
+		 		.zadkopad.light.petalopen configure -relief groove -state normal
+                .zadkopad.light.petalclose configure -relief groove -state normal
 		 		.zadkopad.foc.enter configure -relief groove -state normal
 		 		.zadkopad.frame1.frame2.f.but1 configure -relief groove -state normal
 		 		.zadkopad.frame1.frame3.f.vide2.sendposition.but1 configure -relief groove -state normal
@@ -562,6 +566,8 @@ namespace eval ::zadkopad {
         		.zadkopad.tel.parking configure -relief groove -state disabled
         		.zadkopad.petal.petalopen configure -relief groove -state disabled
         		.zadkopad.petal.petalclose configure -relief groove -state disabled
+        		.zadkopad.light.petalopen configure -relief groove -state disabled
+                .zadkopad.light.petalclose configure -relief groove -state disabled
         		.zadkopad.foc.enter configure -relief groove -state disabled		 		
         		.zadkopad.frame1.frame2.f.but1 configure -relief groove -state disabled
         		.zadkopad.frame1.frame3.f.vide2.sendposition.but1 configure -relief groove -state disabled
@@ -586,6 +592,8 @@ namespace eval ::zadkopad {
         		.zadkopad.tel.parking configure -relief groove -state normal
         		.zadkopad.petal.petalopen configure -relief groove -state normal
         		.zadkopad.petal.petalclose configure -relief groove -state normal
+        		.zadkopad.light.petalopen configure -relief groove -state normal
+                .zadkopad.light.petalclose configure -relief groove -state normal
         		.zadkopad.foc.enter configure -relief groove -state normal
         		.zadkopad.frame1.frame2.f.but1 configure -relief groove -state normal
         		.zadkopad.frame1.frame3.f.vide2.sendposition.but1 configure -relief groove -state normal
@@ -712,6 +720,8 @@ namespace eval ::zadkopad {
 		.zadkopad.tel.parking configure -relief groove -state disabled
 		.zadkopad.petal.petalopen configure -relief groove -state disabled
 		.zadkopad.petal.petalclose configure -relief groove -state disabled
+		.zadkopad.light.petalopen configure -relief groove -state disabled
+        .zadkopad.light.petalclose configure -relief groove -state disabled
 		.zadkopad.foc.enter configure -relief groove -state disabled		 		
 		.zadkopad.frame1.frame2.f.but1 configure -relief groove -state disabled
 		.zadkopad.frame1.frame3.f.vide2.sendposition.but1 configure -relief groove -state disabled
@@ -725,6 +735,8 @@ namespace eval ::zadkopad {
 		.zadkopad.tel.parking configure -relief groove -state normal
 		.zadkopad.petal.petalopen configure -relief groove -state normal
 		.zadkopad.petal.petalclose configure -relief groove -state normal
+		.zadkopad.light.petalopen configure -relief groove -state normal
+        .zadkopad.light.petalclose configure -relief groove -state normal
 		.zadkopad.foc.enter configure -relief groove -state normal
 		.zadkopad.frame1.frame2.f.but1 configure -relief groove -state normal
 		.zadkopad.frame1.frame3.f.vide2.sendposition.but1 configure -relief groove -state normal
@@ -1004,6 +1016,7 @@ namespace eval ::zadkopad {
         set geomlx200(fontsize20) [ expr int(20*$zoom) ]
         set geomlx200(fontsize16) [ expr int(16*$zoom) ]
         set geomlx200(fontsize14) [ expr int(14*$zoom) ] 
+        set geomlx200(3pixels)   [ expr int(3*$zoom) ]  
         set geomlx200(5pixels)   [ expr int(5*$zoom) ]     
         set geomlx200(7pixels)   [ expr int(7*$zoom) ]     
         set geomlx200(10pixels)   [ expr int(10*$zoom) ]
@@ -1075,7 +1088,7 @@ namespace eval ::zadkopad {
         pack .zadkopad.display -in .zadkopad -fill x -side top -pady $geomlx200(10pixels) -padx 12
         
         #--- Create a dummy space
-        frame .zadkopad.dum1 -height $geomlx200(10pixels) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
+        frame .zadkopad.dum1 -height $geomlx200(5pixels) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
         pack .zadkopad.dum1 -in .zadkopad -side top -fill x
              
         #--- Create a frame for change mode
@@ -1136,13 +1149,30 @@ namespace eval ::zadkopad {
         
         pack  .zadkopad.petal.petalopen .zadkopad.petal.petalclose  -in .zadkopad.petal -padx [ expr int(11*$zoom) ] -side left
         
+         #--- Create a frame for the light
+        frame .zadkopad.light -height $geomlx200(haut) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
+        pack .zadkopad.light -in .zadkopad -side top -fill x -pady 10
+         
+        #--- petal control
+        label .zadkopad.light.telescope -width $geomlx200(28pixels) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "Light Control" \
+         -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
+        pack .zadkopad.light.telescope -in .zadkopad.light -side left
+         
+        button .zadkopad.light.petalopen -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text ON \
+         -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::roscommande {telescope DO LCOUPOLE 1}}
+        
+        button .zadkopad.light.petalclose -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text OFF \
+         -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::roscommande {telescope DO LCOUPOLE 0}}
+        
+        pack  .zadkopad.light.petalopen .zadkopad.light.petalclose  -in .zadkopad.light -padx [ expr int(11*$zoom) ] -side left
+        
         #--- Create a dummy space
-        frame .zadkopad.vide -height $geomlx200(5pixels) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-        pack .zadkopad.vide -in .zadkopad -side top -fill x -pady 10
+        frame .zadkopad.vide -height $geomlx200(3pixels) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
+        pack .zadkopad.vide -in .zadkopad -side top -fill x -pady 2
           
         #--- Create a frame for the focalisation value
         frame .zadkopad.foc -height $geomlx200(haut) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-        pack .zadkopad.foc -in .zadkopad -side top -fill x -pady 10
+        pack .zadkopad.foc -in .zadkopad -side top -fill x -pady 3
          
         label .zadkopad.foc.telescope -width $geomlx200(28pixels) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "Focalisation" \
          -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
@@ -1161,7 +1191,7 @@ namespace eval ::zadkopad {
         
         #--- Create a frame for Telescope Information
         frame .zadkopad.frame1 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-        pack .zadkopad.frame1 -in .zadkopad -side top -fill x -pady 10
+        pack .zadkopad.frame1 -in .zadkopad -side top -fill x -pady 3
          
         frame .zadkopad.frame1.frame2 -borderwidth 5 -relief flat -width $geomlx200(430pixels) -bg $colorlx200(backkey)   
         pack .zadkopad.frame1.frame2 -in .zadkopad.frame1 -side right -fill x -expand true -pady 10 -padx 10
@@ -1208,7 +1238,7 @@ namespace eval ::zadkopad {
         
         #--- Create a dummy space
         frame $base.f.vide -height 2 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-        pack $base.f.vide -in $base.f -side top -fill x -pady 4
+        pack $base.f.vide -in $base.f -side top -fill x -pady 3
         
         button $base.f.but1 -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text OFF \
          -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -text "Refresh" -command {::zadkopad::refreshcoord}
@@ -1284,7 +1314,7 @@ namespace eval ::zadkopad {
         
         #--- Create a dummy space
         frame $base2.f.vide2 -height 2 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-        pack $base2.f.vide2 -in $base2.f -side top -fill x -pady 4
+        pack $base2.f.vide2 -in $base2.f -side top -fill x -pady 3
          	   
         label $base2.f.vide2.sendposition -width $geomlx200(15pixels) -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
         pack $base2.f.vide2.sendposition -in $base2.f.vide2 -side top -fill x -pady 8
@@ -1303,10 +1333,10 @@ namespace eval ::zadkopad {
         #--- Create a frame for Find Coordinates
   
         frame .zadkopad.frame4 -borderwidth 0 -relief flat -width $geomlx200(430pixels) -bg $colorlx200(backpad)
-        pack .zadkopad.frame4 -in .zadkopad -side top -fill x -pady 10
+        pack .zadkopad.frame4 -in .zadkopad -side top -fill x -pady 1
         
          frame .zadkopad.frame4.frame1 -borderwidth 5 -relief flat -width $geomlx200(430pixels) -bg $colorlx200(backkey)   
-        pack .zadkopad.frame4.frame1 -in .zadkopad.frame4 -side right -fill x -expand true -pady 10 -padx 10
+        pack .zadkopad.frame4.frame1 -in .zadkopad.frame4 -side right -fill x -expand true -pady 5 -padx 10
         
         label .zadkopad.frame4.frame1.texte -font [ list {Arial} $geomlx200(fontsize20) $geomlx200(textthick) ] -text "Find Coordinates" \
          -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(backtour)
@@ -1317,7 +1347,7 @@ namespace eval ::zadkopad {
         frame $base3.f -bg $colorlx200(backpad)
         #--- Create a dummy space
         frame $base3.f.vid -height 2 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-        pack $base3.f.vid -in $base3.f -side top -fill x -pady 5
+        pack $base3.f.vid -in $base3.f -side top -fill x -pady 3
         #---
         label $base3.f.name \
            -width $geomlx200(26pixels) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "Object Name e.g.: M51" \
@@ -1362,6 +1392,8 @@ namespace eval ::zadkopad {
         .zadkopad.tel.parking configure -relief groove -state disabled
         .zadkopad.petal.petalopen configure -relief groove -state disabled
         .zadkopad.petal.petalclose configure -relief groove -state disabled
+        .zadkopad.light.petalopen configure -relief groove -state disabled
+        .zadkopad.light.petalclose configure -relief groove -state disabled
         .zadkopad.foc.enter configure -relief groove -state disabled
         .zadkopad.frame1.frame2.f.but1 configure -relief groove -state disabled
         .zadkopad.frame1.frame3.f.vide2.sendposition.but1 configure -relief groove -state disabled
