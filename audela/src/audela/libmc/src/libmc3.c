@@ -1046,6 +1046,62 @@ List_ModelSymbols
 	return TCL_OK;
 }
 
+int Cmd_mctcl_nextnight(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/****************************************************************************/
+/*
+mc_nextnight now {GPS 5 E 43 1230} ?elevset? ?elevtwilight?
+*
+* Always jdset<jdrise
+*/
+/****************************************************************************/
+{
+	double jd,longmpc, rhocosphip, rhosinphip,jdprev,jdset,jdrise,jddusk,jddawn,jdnext,elev_set=0.,elev_twilight;
+	char s[1024];
+   Tcl_DString dsptr;
+
+   if(argc<3) {
+      sprintf(s,"Usage: %s Date Home ?elev_sun_set? ?elev_sun_twilight?", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+ 	   return TCL_ERROR;
+   } else {
+      /* --- decode la date ---*/
+	  	mctcl_decode_date(interp,argv[1],&jd);
+      /* --- decode le Home ---*/
+      longmpc=0.;
+      rhocosphip=0.;
+      rhosinphip=0.;
+      mctcl_decode_topo(interp,argv[2],&longmpc,&rhocosphip,&rhosinphip);
+      /* --- decode l'angle elev_set ---*/
+		if (argc>=4) {
+			mctcl_decode_angle(interp,argv[3],&elev_set);
+		}
+		elev_twilight=elev_set;
+      /* --- decode l'angle elev_set ---*/
+		if (argc>=5) {
+			mctcl_decode_angle(interp,argv[4],&elev_twilight);
+		}
+		/* --- appel aux calculs ---*/
+		mc_nextnight1(jd,longmpc,rhocosphip,rhosinphip,elev_set,elev_twilight,&jdprev,&jdset,&jdrise,&jddusk,&jddawn,&jdnext);
+	   Tcl_DStringInit(&dsptr);
+		sprintf(s,"%s ",mc_d2s(jdprev));
+		Tcl_DStringAppend(&dsptr,s,-1);
+		sprintf(s,"%s ",mc_d2s(jdset));
+		Tcl_DStringAppend(&dsptr,s,-1);
+		sprintf(s,"%s ",mc_d2s(jddusk));
+		Tcl_DStringAppend(&dsptr,s,-1);
+		sprintf(s,"%s ",mc_d2s(jddawn));
+		Tcl_DStringAppend(&dsptr,s,-1);
+		sprintf(s,"%s ",mc_d2s(jdrise));
+		Tcl_DStringAppend(&dsptr,s,-1);
+		sprintf(s,"%s ",mc_d2s(jdnext));
+		Tcl_DStringAppend(&dsptr,s,-1);
+      Tcl_DStringResult(interp,&dsptr);
+      Tcl_DStringFree(&dsptr);
+	}	
+	return TCL_OK;
+}
+
 int Cmd_mctcl_obsconditions(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /****************************************************************************/
 /****************************************************************************/

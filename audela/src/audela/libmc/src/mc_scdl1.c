@@ -236,7 +236,7 @@ int mc_scheduler_sunmoon1(double longmpc, double rhocosphip, double rhosinphip,d
 		sunmoon[kjd].moon_az=az/(DR); // az
 		sunmoon[kjd].moon_elev=h/(DR); // elev
 		mc_refraction(h,1,283,101325,&dh);
-		sunmoon[kjd].sun_elev=(h+dh)/(DR); // elev
+		sunmoon[kjd].moon_elev=(h+dh)/(DR); // elev
 	}
 
 	free(dummy1s);
@@ -612,6 +612,7 @@ int mc_obsconditions1(double jd_now, double longmpc, double rhocosphip, double r
 	free(objectlocal);
    return 0;
 }
+
 /************************************************************************/
 /************************************************************************/
 /************************************************************************/
@@ -636,5 +637,44 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
    //mc_fitspline(n1,n2,x,y,dy,s,nn,xx,ff);
 	free(sunmoon);
 	free(objectlocal);
+   return 0;
+}
+
+/************************************************************************/
+/************************************************************************/
+/************************************************************************/
+int mc_nextnight1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,double elev_set,double elev_twilight, double *jdprev, double *jdset,double *jdrise,double *jddusk,double *jddawn,double *jdnext) {
+	double jd_prevmidsun,jd_nextmidsun,djd;
+	int njd,kjd;
+	mc_SUNMOON *sunmoon=NULL;
+
+	// --- compute dates of observing range (=the start-end of the schedule)
+	mc_scheduler_windowdates1(jd_now,longmpc,rhocosphip,rhosinphip,&jd_prevmidsun,&jd_nextmidsun);
+
+	// --- compute mc_SUNMOON vector for the observing range.
+	djd=600./86400.;
+	mc_scheduler_sunmoon1(longmpc,rhocosphip,rhosinphip,jd_prevmidsun,jd_nextmidsun,djd,&njd,&sunmoon);
+
+	*jdprev=jd_prevmidsun;
+	*jdset=jd_prevmidsun;
+	*jddusk=jd_prevmidsun;
+	*jdrise=jd_nextmidsun;
+	*jddawn=jd_nextmidsun;
+	*jdnext=jd_nextmidsun;
+	for (kjd=1;kjd<njd;kjd++) {
+		if ((sunmoon[kjd-1].sun_elev>=elev_twilight)&&(sunmoon[kjd].sun_elev<elev_twilight)) {
+			*jddusk=sunmoon[kjd-1].jd;
+		}
+		if ((sunmoon[kjd-1].sun_elev>=elev_set)&&(sunmoon[kjd].sun_elev<elev_set)) {
+			*jdset=sunmoon[kjd-1].jd;
+		}
+		if ((sunmoon[kjd-1].sun_elev<=elev_set)&&(sunmoon[kjd].sun_elev>elev_set)) {
+			*jdrise=sunmoon[kjd-1].jd;
+		}
+		if ((sunmoon[kjd-1].sun_elev<=elev_twilight)&&(sunmoon[kjd].sun_elev>elev_twilight)) {
+			*jddawn=sunmoon[kjd-1].jd;
+		}
+	}
+	free(sunmoon);
    return 0;
 }
