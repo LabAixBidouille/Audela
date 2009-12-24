@@ -4,4 +4,3 @@ include $(ROOT)/Makefile.defs
 
 include $(ROOT)/Makefile.rules
 
-include makedep

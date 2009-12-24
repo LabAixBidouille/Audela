@@ -1,5 +1,4 @@
 include Makefile.defs
-include Makefile.rules
 
 all: $(ALL)
 
@@ -24,7 +23,7 @@ $(LIBLINKS):
 	make -C liblink/$@/linux
 
 external contrib: 
-	make -C $@
+	$(MAKE) -C $@
 
 clean cleanall:
 	@$(foreach DIR, contrib audela libcam liblink libtel, make -C $(DIR) $@ ; )
