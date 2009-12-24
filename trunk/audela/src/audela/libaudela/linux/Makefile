@@ -36,9 +36,47 @@ $(OUTPUT): $(OBJ) $(OUTPUTDIR)/libdcraw.so $(OUTPUTDIR)/libdcjpeg.so
 	cp -f ../src/cpixels.h  ../../include
 	cp -f ../src/fitskw.h   ../../include
 
+all: $(OUTPUT)
 
-$(OUTPUTDIR)/libdcraw.so : 
-	make -f ../../../Makefile1 $@
+$$(OUTPUTDIR)/libdcraw.so : $(OBJ) $(A_LIBS)
+	@echo "*** Linking library $@"
+	$(LD) $(LDFLAGS) -o $@ $^
+	$(CP) $@ $(OUTPUTDIR)
 
-$(OUTPUTDIR)/libdcjpeg.so : 
-	make -f ../../../Makefile1 $@
+$(OUTPUTDIR)/libdcjpeg.so : $(OBJ) $(A_LIBS)
+	@echo "*** Linking library $@"
+	$(LD) $(LDFLAGS) -o $@ $^
+	$(CP) $@ $(OUTPUTDIR)
+	
+%.o: $(SRCDIR)/%.cpp
+	@echo "*** Compiling $<"
+	$(CXX) $(CXXFLAGS) -o $@ $<
+
+%.o: $(SRCDIR)/%.c
+	@echo "*** Compiling $<"
+	$(CC) $(CXXFLAGS) -o $@ $<
+
+%.o: %.c
+	@echo "*** Compiling $<"
+	$(CC) $(CXXFLAGS) -o $@ $<
+
+.PHONY: clean cleanall
+clean:
+	$(RM) $(OBJ) $(OUTPUT)
+cleanall: clean
+	$(RM) makedep *~ *.bak *.BAK *.swp 
+
+.PHONY: indent
+indent:
+	indent $(SRCDIR)/*.[ch] -kr -line-length1000 --ignore-newlines
+
+.PHONY: local-clean src-clean vc60-clean distclean
+vc60-clean:
+	-$(RM) -rf ../vc60/Debug ../vc60/Release 
+	-$(RM) ../vc60/*.mak ../vc60/*.ncb ../vc60/*.opt ../vc60/*.plg 
+	-$(RM) ../vc60/*~ ../vc60/*.bak 
+local-clean:
+	-$(RM) *~ *.bak makedep
+src-clean:
+	-$(RM) $(SRCDIR)/*~ $(SRCDIR)/*.bak 
+distclean: local-clean src-clean vc60-clean clean
