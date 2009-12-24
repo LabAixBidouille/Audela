@@ -933,7 +933,7 @@ int mc_sheduler_interpcoords(mc_OBJECTDESCR *objectdescr,double jd,double *pos1,
 int mc_sheduler_corccoords(mc_OBJECTDESCR *objectdescr);
 int mc_obsconditions1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,mc_HORIZON_ALTAZ *horizon_altaz,mc_HORIZON_HADEC *horizon_hadec,int nobj,mc_OBJECTDESCR *objectdescr,double djd,char *fullfilename);
 int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,mc_HORIZON_ALTAZ *horizon_altaz,mc_HORIZON_HADEC *horizon_hadecint,int nobj,mc_OBJECTDESCR *objectdescr);
-
+int mc_nextnight1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,double elev_set,double elev_twilight, double *jdprev, double *jdset,double *jdrise,double *jddusk,double *jddawn,double *jdnext);
 
 /***************************************************************************/
 /* Integration numerique pour le mouvement des n corps.                    */
