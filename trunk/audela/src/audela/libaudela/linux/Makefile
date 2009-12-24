@@ -38,12 +38,12 @@ $(OUTPUT): $(OBJ) $(OUTPUTDIR)/libdcraw.so $(OUTPUTDIR)/libdcjpeg.so
 
 all: $(OUTPUT)
 
-$$(OUTPUTDIR)/libdcraw.so : $(OBJ) $(A_LIBS)
+libdcraw.so : $(OBJ) $(A_LIBS)
 	@echo "*** Linking library $@"
 	$(LD) $(LDFLAGS) -o $@ $^
 	$(CP) $@ $(OUTPUTDIR)
 
-$(OUTPUTDIR)/libdcjpeg.so : $(OBJ) $(A_LIBS)
+libdcjpeg.so : $(OBJ) $(A_LIBS)
 	@echo "*** Linking library $@"
 	$(LD) $(LDFLAGS) -o $@ $^
 	$(CP) $@ $(OUTPUTDIR)
