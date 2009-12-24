@@ -5,7 +5,7 @@ SRC = $(SRCDIR)/libaudelatk.cpp  $(SRCDIR)/visu_tcl.cpp  $(SRCDIR)/cvisu.cpp
 
 OBJ  = $(patsubst $(SRCDIR)/%.cpp, %.o, $(filter $(SRCDIR)/%.cpp, $(SRC)))
 
-include ../../../Makefile1
+include ../../../Makefile.defs
 
 CXXFLAGS += -I$(EXTINC) -I../../include
 
@@ -15,18 +15,15 @@ CXXFLAGS += -I$(EXTINC) -I../../include
 # LB_LIBRARY_PATH au runtime.
 # L'option -rpath indique les repertoires dans lesquesl les librairies
 # dynamiques libaudela.so sera recherche en priorite au runtime.
-# L'option -rpath ne peut pas etre passee directement en parametre sur la ligne de 
-# commande de gcc. Elle doit etre enregistree dans un fichier qui est passe en 
-# parametre a gcc avec l'option -specs
 
 $(OUTPUT): $(OBJ) $(OUTPUTDIR)/libaudela.so 
-	@echo "*lib:" > libaudelatk.specs
-	@echo "    -rpath ." >> libaudelatk.specs
-	$(LD) $(LDFLAGS) -specs libaudelatk.specs -L $(OUTPUTDIR) -laudela -o $@ $(OBJ)
+	$(LD) $(LDFLAGS) -Wl,-rpath,. -L $(OUTPUTDIR) -laudela -o $@ $(OBJ)
 	$(CP) $@ $(OUTPUTDIR)
 	@$(RM) libaudelatk.specs
 
 
+$(OUTPUTDIR)/libaudela.so : 
+	make -f ../../../Makefile1 $@
 
 
 
