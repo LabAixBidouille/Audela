@@ -9,7 +9,7 @@
 #
 ########################################################################################
 
-# Mise a jour $Id: make_packages.sh,v 1.15 2009-12-26 13:57:06 bmauclaire Exp $
+# Mise a jour $Id: make_packages.sh,v 1.16 2009-12-26 14:29:17 bmauclaire Exp $
 
 
 #--- Utilisation du script :
@@ -260,7 +260,9 @@ cd $DIRECTORY/$sous_rep_libthread
 #    ln -s libthread2.6.5.1.so_debian libthread2.6.5.1.so
 if test "$ladistro" = "mandriva"
 then
-    cp -f /home/mauclaire/audela/binlibs/libthread/Thread2.6.5.1.so_mandriva libthread2.6.5.1.so
+    #- cp -f /home/mauclaire/audela/binlibs/libthread/Thread2.6.5.1.so_mandriva libthread2.6.5.1.so
+    cp -f libthread2.6.5.1.so libthread2.6.5.1.so.dflt
+    cp -f ../../../../../../../../../../binlibs/libthread/Thread2.6.5.1.so_mandriva libthread2.6.5.1.so
 fi
 cd $dirlocal
 
