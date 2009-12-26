@@ -9,7 +9,7 @@
 #
 ########################################################################################
 
-# Mise a jour $Id: make_packages.sh,v 1.14 2009-11-24 23:12:49 bmauclaire Exp $
+# Mise a jour $Id: make_packages.sh,v 1.15 2009-12-26 13:57:06 bmauclaire Exp $
 
 
 #--- Utilisation du script :
@@ -272,8 +272,8 @@ cd $INST_DIR/bin
 ./audela \$*
 " > $DIRECTORY/bin/audela.sh
 chmod +x $DIRECTORY/bin/audela.sh
-sudo chown -R root.root $DIRECTORY/*
-#sudo chmod a+w $DIRECTORY/bin/audace.txt
+#- sudo chown -R root.root $DIRECTORY/*
+## sudo chmod a+w $DIRECTORY/bin/audace.txt
 
 
 #--- Creation du fichier d'entree pour la presence d'Audela dans le menu du gestionnaire de fenetres :
@@ -290,7 +290,7 @@ Type=Application
 Categories=Astronomy;Science;Education;
 " > $BUILD_DIR/usr/share/applications/audela.desktop
 chmod a+r $BUILD_DIR/usr/share/applications/audela.desktop
-sudo chown -R root.root $BUILD_DIR/usr/share/*
+#- sudo chown -R root.root $BUILD_DIR/usr/share/*
 
 mkdir $BUILD_DIR/usr/share/menu
 echo "?package(audela):needs=\"X11\" section=\"Applications/Science\" \\
@@ -307,9 +307,11 @@ cp audela.xpm $BUILD_DIR/usr/share/pixmaps/
 
 #--- Creation du paquet :
 echo "Creation du paquet Debian..."
-sudo dpkg -b $BUILD_DIR $BUILD_DIR$lesuffixe.deb
-luser=`whoami`
-sudo chown $luser.$luser *.deb
+#-- dpkg-buildpackage -rfakeroot ou Rapide : fakeroot debian/rules binary
+#- sudo dpkg -b $BUILD_DIR $BUILD_DIR$lesuffixe.deb
+dpkg -b $BUILD_DIR $BUILD_DIR$lesuffixe.deb
+#- luser=`whoami`
+#- sudo chown $luser.$luser *.deb
 echo "Paquet DEB cree."
 
 
