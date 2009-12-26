@@ -3,7 +3,61 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.12 2009-12-19 09:53:39 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.13 2009-12-26 14:47:30 bmauclaire Exp $
+
+
+####################################################################
+# Efface la calibration d'un profil de raies :
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 2009-12-23
+# Date modification : 2009-12-23
+# Argument : nom du porofil de raies
+#
+####################################################################
+
+proc spc_delcal { args } {
+   global audace conf
+
+   if { [llength $args] == 1 } {
+      set filespc [ file rootname [ lindex $args 0 ] ]
+
+      #--- Efface les mots clef :
+      buf$audace(bufNo) load "$audace(rep_images)/$filespc"
+      set listemotsclef [ buf$audace(bufNo) getkwds ]
+      if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
+         buf$audace(bufNo) delkwd "CDELT1"
+         buf$audace(bufNo) delkwd "CRVAL1"
+         if { [ lsearch $listemotsclef "CUNIT1" ] !=-1 } {
+            buf$audace(bufNo) delkwd "CUNIT1"
+         }
+         if { [ lsearch $listemotsclef "CTYPE1" ] !=-1 } {
+            buf$audace(bufNo) delkwd "CTYPE1"
+         }
+         if { [ lsearch $listemotsclef "SPC_RMS" ] !=-1 } {
+            buf$audace(bufNo) delkwd "SPC_RMS"
+         }
+      }         
+      if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+         buf$audace(bufNo) delkwd "SPC_A"
+         buf$audace(bufNo) delkwd "SPC_B"
+         buf$audace(bufNo) delkwd "SPC_C"
+         if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
+            buf$audace(bufNo) delkwd "SPC_D"
+         }
+      }
+
+      #--- Traitement du resultat :
+      buf$audace(bufNo) bitpix float
+      buf$audace(bufNo) save "$audace(rep_images)/${filespc}_nc"
+      buf$audace(bufNo) bitpix short
+      ::console::affiche_resultat "Profil savé sous ${filespc}_nc\n"
+      return ${filespc}_nc
+   } else {
+      ::console::affiche_erreur "Usage : spc_delcal profil_de_raies_calibre\n"
+   }
+}
+#*****************************************************************#
 
 
 
