@@ -3,7 +3,7 @@
 # Description : namespace generique des cartes (~ classe abstraite)
 #    Transmet les appels aux procedures du namespace de la carte choisie avec confcat.tcl
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carte.tcl,v 1.8 2009-12-04 12:44:24 robertdelmas Exp $
+# Mise a jour $Id: carte.tcl,v 1.9 2009-12-26 18:15:40 michelpujol Exp $
 #
 
 namespace eval ::carte {
@@ -21,7 +21,7 @@ source [file join $::audace(rep_caption) carte.cap]
 #     buffer : buffer de l'image
 #  return 0 (OK) , 1(error)
 #------------------------------------------------------------
-proc ::carte::carteshowMapFromBuffer { buffer } {
+proc ::carte::showMapFromBuffer { buffer } {
    if { [ $buffer imageready ] == "0" } {
       tk_messageBox -message "$::caption(carte,error_no_image)" -title "$::caption(carte,title)" -icon error
       return
