@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.120 2009-12-21 17:42:39 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.121 2009-12-26 18:19:19 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -176,7 +176,7 @@ namespace eval ::confVisu {
       #--- j'affiche le nom de la monture
       setMount $visuNo
 
-      #--- je mets à jour couleurs et polices
+      #--- je mets Ã  jour couleurs et polices
       ::confColor::applyColor $private($visuNo,This)
 
       return $visuNo
@@ -312,54 +312,67 @@ namespace eval ::confVisu {
                   }
                }
                #--- je charge le fichier
-               buf$bufNo load $fileName
-               #--- je recupere la liste des HDU du fichier
-               set private($visuNo,fitsHduList)  [initHduList $visuNo $fileName ]
-               #--- j'affiche liste des HDU s'il y en a plusieurs
-               if { [llength $private($visuNo,fitsHduList) ] > 1 } {
-                  #--- j'affiche le meme HDU que celui du fichie precedent s'il existe
-                  if { $hduName != "PRIMARY" } {
-                     #--- je cherche un HDU avec le meme nom que celui de l'image precedente
-                     set hduIndex [lsearch -regexp $private($visuNo,fitsHduList) $hduName]
-                     if { $hduIndex != -1 } {
-                        set hduInfo [lindex $private($visuNo,fitsHduList) $hduIndex ]
-                        set hduType [lindex $hduInfo 1]
-                        set hduNo   [expr $hduIndex + 1]
-                        if { $hduType == "Image" } {
-                           #--- je charge le hdu
-                           buf$bufNo load "$fileName;$hduNo"
-                        } else {
-                           #--- si c'est une table, je charge la table dans les variables columnNames et columnValues
-                           #--- j'utilise commande "fits open" car la commande "buf$bufno load" ne focntionne pas que pour les images
-                           set hFile ""
-                           set catchResult [catch {
-                              #--- je nettoie le buffer pour gagner de la place en memoire car il n'est pas utilise dans ce cas
-                              buf$bufNo clear
-                              #--- j'ouvre le fichier en mode lecture
-                              set hFile [fits open [getFileName $visuNo] 0]
-                             $hFile move $hduNo
-                              #--- je charge le titre des colonnes
-                              set columnNames  [$hFile info column ]
-                              #--- je charge les valeurs de colonnes
-                              set columnValues [$hFile get table]
-                           } ]
-                           if { $hFile != "" } {
-                              $hFile close
-                           }
-                           if { $catchResult == 1 } {
-                              #--- je transmet l'erreur
-                              error $::errorInfo
+               set loadError [ catch { 
+                  buf$bufNo load $fileName
+               } ]
+               if { $loadError == 0 } {
+                  #--- je recupere la liste des HDU du fichier
+                  set private($visuNo,fitsHduList)  [initHduList $visuNo $fileName ]
+                  #--- j'affiche liste des HDU s'il y en a plusieurs
+                  if { [llength $private($visuNo,fitsHduList) ] > 1 } {
+                     #--- j'affiche le meme HDU que celui du fichie precedent s'il existe
+                     if { $hduName != "PRIMARY" } {
+                        #--- je cherche un HDU avec le meme nom que celui de l'image precedente
+                        set hduIndex [lsearch -regexp $private($visuNo,fitsHduList) $hduName]
+                        if { $hduIndex != -1 } {
+                           set hduInfo [lindex $private($visuNo,fitsHduList) $hduIndex ]
+                           set hduType [lindex $hduInfo 1]
+                           set hduNo   [expr $hduIndex + 1]
+                           if { $hduType == "Image" } {
+                              #--- je charge le hdu
+                              buf$bufNo load "$fileName;$hduNo"
+                           } else {
+                              #--- si c'est une table, je charge la table dans les variables columnNames et columnValues
+                              #--- j'utilise commande "fits open" car la commande "buf$bufno load" ne focntionne pas que pour les images
+                              set hFile ""
+                              set catchResult [catch {
+                                 #--- je nettoie le buffer pour gagner de la place en memoire car il n'est pas utilise dans ce cas
+                                 buf$bufNo clear
+                                 #--- j'ouvre le fichier en mode lecture
+                                 set hFile [fits open [getFileName $visuNo] 0]
+                                $hFile move $hduNo
+                                 #--- je charge le titre des colonnes
+                                 set columnNames  [$hFile info column ]
+                                 #--- je charge les valeurs de colonnes
+                                 set columnValues [$hFile get table]
+                              } ]
+                              if { $hFile != "" } {
+                                 $hFile close
+                              }
+                              if { $catchResult == 1 } {
+                                 #--- je transmet l'erreur
+                                 error $::errorInfo
+                              }
                            }
                         }
                      }
+                     #--- je charge la liste dans la combobox de la toolbar
+                     ::confVisu::showHduList $visuNo $hduNo
+                     #--- j'affiche la toolbar
+                     ::confVisu::showToolBar $visuNo 1
+                  } else {
+                     set hduType "Image"
+                     ::confVisu::showToolBar $visuNo 0
                   }
-                  #--- je charge la liste dans la combobox de la toolbar
-                  ::confVisu::showHduList $visuNo $hduNo
-                  #--- j'affiche la toolbar
-                  ::confVisu::showToolBar $visuNo 1
                } else {
-                  set hduType "Image"
-                  ::confVisu::showToolBar $visuNo 0
+                  #--- en cas d'erreur de chargement du fichier
+                  #--- je nettoie l'affichage
+                   set private($visuNo,fitsHduList) ""
+                  ::confVisu::setFileName $visuNo "?"
+                  buf$bufNo clear
+                  visu$visuNo  clear 
+                  #--- j'affiche l'erreur 
+                  console::affiche_erreur "$::errorInfo\n"
                }
                #--- j'affiche le nom du fichier
                ::confVisu::setFileName $visuNo $fileName
@@ -409,7 +422,7 @@ namespace eval ::confVisu {
             set private($visuNo,picture_h) [buf$bufNo getpixelsheight]
             set private($visuNo,currentHduNo) $hduNo
          } else {
-            #--- je mets à jour le nom du fichier meme quand l'image ne
+            #--- je mets Ã  jour le nom du fichier meme quand l'image ne
             #--- proviens pas d'un fichier, mais d'une camera
             #--- afin de permettre le rafraichissement des outils
             #--- qui sont abonnes au listener addFilenameListener
@@ -562,8 +575,10 @@ namespace eval ::confVisu {
                   set private($visuNo,picture_w) 0
                   set private($visuNo,picture_h) 0
                   visu $visuNo current
+                  #--- Je supprime les glissieres R, V et B
+                  ::colorRGB::cmdClose $visuNo                  
                }
-
+               
                #--- Suppression de la zone selectionnee avec la souris si elle est hors de l'image
                if { [ lindex [ list [ ::confVisu::getBox $visuNo ] ] 0 ] != "" } {
                   set box [ ::confVisu::getBox $visuNo ]
@@ -655,7 +670,7 @@ namespace eval ::confVisu {
                #--- je recupere le nom des unites des abcisses
                set private($visuNo,graph,xUnit) [lindex [buf$bufNo getkwd CUNIT1] 1]
                if { $private($visuNo,graph,xUnit) == "" } {
-                  #--- si l'unite n'est pas précise, je choisis "pixel" par defaut
+                  #--- si l'unite n'est pas prÃ©cise, je choisis "pixel" par defaut
                   set private($visuNo,graph,xUnit) "pixel"
                }
                #--- je donne le nom des unites des ordonnees
@@ -919,7 +934,7 @@ namespace eval ::confVisu {
       } else {
          ::console::affiche_erreur "confVisu::setZoom error : zoom $zoom not authorized\n"
       }
-      #--- je calcule les coordonnées du centre de l'image avec l'ancien zoom
+      #--- je calcule les coordonnÃ©es du centre de l'image avec l'ancien zoom
       set canvasCenterPrev [getCanvasCenter $visuNo]
       set pictureCenter [::confVisu::canvas2Picture $visuNo $canvasCenterPrev ]
 
@@ -1485,7 +1500,7 @@ namespace eval ::confVisu {
    #    visuNo: numero de la visu
    #    toolName : nom de l'outil a lancer
    #  Remarque:
-   #    si toolName="", alors l'outil courant est arrete. Aucun autre outil n'est pas demarré.
+   #    si toolName="", alors l'outil courant est arrete. Aucun autre outil n'est pas demarrÃ©.
    #------------------------------------------------------------
    proc selectTool { visuNo toolName } {
       variable private
@@ -3438,7 +3453,7 @@ proc ::confVisu::onChangeHdu { visuNo increment  } {
 #------------------------------------------------------------
 #  onSelectHdu
 #    affiche le contenu du HDU
-#    si le parametre index n'est pas fourni, le HDU selectionné dans la combobox est affiché
+#    si le parametre index n'est pas fourni, le HDU selectionnÃ© dans la combobox est affichÃ©
 #  Parameters
 #     profileNo : numero de la fenetre de profil
 #     index :     numero du HDU a afficher (1 pour le premier HDU)
@@ -3453,7 +3468,7 @@ proc ::confVisu::onSelectHdu { visuNo { hduNo "" } } {
       #--- je recupere l'index du HDU dans la combo (index commence a 0)
       set index [$private($visuNo,This).bar.toolbar.combo getvalue]
       if { $index == -1 } {
-         #--- je prend le premier HDU si aucun n'est deja selectionné
+         #--- je prend le premier HDU si aucun n'est deja selectionnÃ©
          set hduNo 1
       } else {
          set hduNo [expr $index +1]
@@ -3529,7 +3544,7 @@ proc ::confVisu::onSelectHdu { visuNo { hduNo "" } } {
 namespace eval ::colorRGB {
 
    #########################################################################
-   #--- Filtre l'image et lit les seuils dans l'en-tête FITS               #
+   #--- Filtre l'image et lit les seuils dans l'en-tÃªte FITS               #
    #########################################################################
    proc run { visuNo } {
       variable private
@@ -3708,7 +3723,7 @@ namespace eval ::colorRGB {
    proc updateVisu { visuNo } {
       variable private
 
-      #--- rafraîchit la liste des 6 seuils
+      #--- rafraÃ®chit la liste des 6 seuils
       set private(colorRGB,$visuNo,mycuts) ""
       foreach scale $private(colorRGB,child) {
          lappend private(colorRGB,$visuNo,mycuts) [ $private($visuNo,This).val_variant.$scale get ]
@@ -3820,7 +3835,7 @@ namespace eval ::colorRGB {
          if { $data != $mot_vide } {
 
             #--- si le mot contient le mot cle recherche
-            #--- procédure normale
+            #--- procÃ©dure normale
             #--- recherche le rang dans la liste
             set i [ lsearch $private(colorRGB,child) $scale ]
 
