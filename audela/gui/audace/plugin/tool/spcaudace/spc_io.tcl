@@ -10,7 +10,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_io.tcl,v 1.6 2009-12-19 09:53:39 bmauclaire Exp $
+# Mise a jour $Id: spc_io.tcl,v 1.7 2009-12-26 17:45:10 michelpujol Exp $
 
 
 # Remarque (par Benoît) : il faut mettre remplacer toutes les variables textes par des variables caption(mauclaire,...)
@@ -2537,7 +2537,7 @@ proc spc_fit2colors { args } {
         set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
         set crval1 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
         set cdelt1 [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
-        set crpix1 [lindex [buf$audace(bufNo) getkwd "CRPIX11"] 1]
+        set crpix1 [lindex [buf$audace(bufNo) getkwd "CRPIX1"] 1]
 
         #--- Calcul des paramètres du spectre :
         if { $nbargs==1 } {
