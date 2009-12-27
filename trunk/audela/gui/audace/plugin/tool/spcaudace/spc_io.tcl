@@ -10,7 +10,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_io.tcl,v 1.7 2009-12-26 17:45:10 michelpujol Exp $
+# Mise a jour $Id: spc_io.tcl,v 1.8 2009-12-27 01:28:09 bmauclaire Exp $
 
 
 # Remarque (par Benoît) : il faut mettre remplacer toutes les variables textes par des variables caption(mauclaire,...)
@@ -2546,8 +2546,8 @@ proc spc_fit2colors { args } {
             set xdeb 1
             set xfin $naxis1
         } elseif { $nbargs==3 } {
-            set xdeb [ expr round(($ldeb-$crval1)/$cdelt1) ]
-            set xfin [ expr round(($lfin-$crval1)/$cdelt1) ]
+            set xdeb [ expr round(($ldeb-$crval1)/$cdelt1+$crpix1) ]
+            set xfin [ expr round(($lfin-$crval1)/$cdelt1+$crpix1) ]
             #-- Gestion de mauvais paramètres ldeb, lfin :
             if { $xdeb<=0 || $xfin<=0 } {
                 ::console::affiche_resultat "Mauvaises longueurs d'onde données.\n"
