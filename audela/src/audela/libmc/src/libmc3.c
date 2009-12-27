@@ -974,7 +974,7 @@ List_ModelSymbols
 				mc_modpoi_addobs_ha(coord1s[k],coord2s[k],latrad,nb_coef,vecy,matx);
 				Tcl_DStringAppend(&dsptr_mat,"{",-1);
 				for (kc=0;kc<nb_coef;kc++) {
-					sprintf(s,"%s ",mc_d2s(matx[k].coef));
+					sprintf(s,"%s ",mc_d2s(matx[kc].coef));
 					Tcl_DStringAppend(&dsptr_mat,s,-1);
 				}
 				Tcl_DStringAppend(&dsptr_mat,"} ",-1);
@@ -986,7 +986,7 @@ List_ModelSymbols
 				mc_modpoi_addobs_dec(coord1s[k],coord2s[k],latrad,nb_coef,vecy,matx);
 				Tcl_DStringAppend(&dsptr_mat,"{",-1);
 				for (kc=0;kc<nb_coef;kc++) {
-					sprintf(s,"%s ",mc_d2s(matx[k].coef));
+					sprintf(s,"%s ",mc_d2s(matx[kc].coef));
 					Tcl_DStringAppend(&dsptr_mat,s,-1);
 				}
 				Tcl_DStringAppend(&dsptr_mat,"} ",-1);
