@@ -58,7 +58,7 @@ CBuffer::CBuffer() : CDevice()
    pthread_mutexattr_settype(&mutexAttr, PTHREAD_MUTEX_RECURSIVE);
    pthread_mutex_init(&mutex, &mutexAttr);
 
-   /* CrÃ©e une chaine vide, pour Ã©viter un pb potentiel sur le strlen(temporaryRawFileName) de FreeBuffer() */
+   /* Crée une chaine vide, pour éviter un pb potentiel sur le strlen(temporaryRawFileName) de FreeBuffer() */
    strcpy(temporaryRawFileName, "");
 
    // On fait de la place avant de recreer le contenu du buffer
@@ -218,8 +218,6 @@ void CBuffer::GetDataType(TDataType *dt)
    *dt = dt_Float;
 }
 
-
-
 /**
  *  lecture d'un fichier au format FIT
  *
@@ -230,36 +228,50 @@ void CBuffer::LoadFile(char *filename)
    CFitsKeywords *kwds;
    CFitsKeyword *k;
 
-   // je charge le fichier
-   CFile::loadFile(filename, TFLOAT, &pixels, &kwds);
+   try {
+      pthread_mutex_lock(&mutex);
+      FreeBuffer(DONT_KEEP_KEYWORDS);
 
-   // je verifie la presence du mot cle naxis
-   k = kwds->FindKeyword("NAXIS");
-   if(k == NULL  ) {
-      throw CError("LoadFile error : keyword NAXIS not found");
+      // je charge le fichier
+      CFile::loadFile(filename, TFLOAT, &pixels, &kwds);
+
+      // je verifie la presence du mot cle naxis
+      k = kwds->FindKeyword("NAXIS");
+      if(k == NULL  ) {
+         throw CError("LoadFile error : keyword NAXIS not found");
+      }
+
+      // je memorise les pixels
+      if (this->pix != NULL) {
+         delete this->pix;
+      }
+      this->pix = pixels;
+
+      // je memorise les mots cles
+      this->keywords = kwds;
+
+      // je sauvegarde les seuils initiaux et je convertis les seuils en float
+      k = this->keywords->FindKeyword("MIPS-HI");
+      if(k != NULL  ) {
+         initialMipsHi = k->GetFloatValue();
+      } else {
+         initialMipsHi = 0;
+      }
+
+      k = this->keywords->FindKeyword("MIPS-LO");
+      if(k) {
+         initialMipsLo = k->GetFloatValue();
+      } else {
+         initialMipsLo = 0;
+      }
+      pthread_mutex_unlock(&mutex);
+   } catch (const CError& e) {
+      // je libere le mutex
+      pthread_mutex_unlock(&mutex);
+      // je transmet l'erreur
+      throw e;
    }
 
-   pthread_mutex_lock(&mutex);
-   FreeBuffer(DONT_KEEP_KEYWORDS);
-
-   this->pix = pixels;
-   this->keywords = kwds;
-
-   // je sauvegarde les seuils initiaux et je convertis les seuils en float
-   k = this->keywords->FindKeyword("MIPS-HI");
-   if(k != NULL  ) {
-      initialMipsHi = k->GetFloatValue();
-   } else {
-      initialMipsHi = 0;
-   }
-
-   k = this->keywords->FindKeyword("MIPS-LO");
-   if(k) {
-      initialMipsLo = k->GetFloatValue();
-   } else {
-      initialMipsLo = 0;
-   }
-   pthread_mutex_unlock(&mutex);
 }
 
 /**
@@ -393,14 +405,14 @@ void CBuffer::LoadFits(char *filename)
    } catch (const CError& e) {
       pthread_mutex_unlock(&mutex);
 
-      // Liberation de la memoire allouï¿½e par libtt
+      // Liberation de la memoire allou?e par libtt
       Libtt_main(TT_PTR_FREEPTR,1,&ppix);
       Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
       // je transmet l'erreur
       throw e;
    }
 
-   // Liberation de la memoire allouee par libtt (pas nï¿½cessire de catcher les erreurs)
+   // Liberation de la memoire allouee par libtt (pas n?cessire de catcher les erreurs)
    msg = Libtt_main(TT_PTR_FREEPTR,1,&ppix);
    msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
 }
@@ -410,11 +422,11 @@ void CBuffer::LoadFits(char *filename)
  *  cree un fichier F
  *
  *   @param filename : nom du fichier
- *   @param init     : =1 initialiser le buffer la premiere fois ou bien =0 pour complï¿½ter
+ *   @param init     : =1 initialiser le buffer la premiere fois ou bien =0 pour compl?ter
  *   @param nbtot    : nombre d'images
  *   @param index    : index de l'image
- *   @param *naxis10 : valeur de naxis1 de l'image initiale (retourne si init=0, sinon a passer en parametre d'entrï¿½e)
- *   @param *naxis20 : valeur de naxis2 de l'image initiale (retourne si init=0, sinon a passer en parametre d'entrï¿½e)
+ *   @param *naxis10 : valeur de naxis1 de l'image initiale (retourne si init=0, sinon a passer en parametre d'entr?e)
+ *   @param *naxis20 : valeur de naxis2 de l'image initiale (retourne si init=0, sinon a passer en parametre d'entr?e)
  *   @param errcode  : code erreur (=0 si pas d'erreur)
  *
  */
@@ -756,8 +768,8 @@ void CBuffer::Save3d(char *filename,int naxis3,int iaxis3_beg,int iaxis3_end)
       //pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_G, (int) ppix1+naxis1*naxis2*sizeof(float));
       //pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_B, (int) ppix1+2*naxis1*naxis2*sizeof(float));
       pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_R, (void*) ppix1);
-      pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_G, (void*) (ppix1+naxis1*naxis2*sizeof(float)));
-      pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_B, (void*) (ppix1+2*naxis1*naxis2*sizeof(float)));
+      pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_G, (void*) (ppix1+naxis1*naxis2));
+      pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_B, (void*) (ppix1+2*naxis1*naxis2));
    }
 
    // Collecte de renseignements pour la suite
@@ -1852,7 +1864,7 @@ void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2,
    pix->GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (void*) imgPix);
 
          // ----------------------------------------------------
-   // je calcule la qualite qualityMin ï¿½= dbgmean + 6.0 * dbgsigma
+   // je calcule la qualite qualityMin ?= dbgmean + 6.0 * dbgsigma
    // ----------------------------------------------------
    int ttResult;
    int datatype = TFLOAT;
@@ -2039,7 +2051,7 @@ void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2,
  *  @param     y2 fenetre de detection de l'etoile
  *  @param     starDetectionMode 1=fit de gaussienne  2=barycentre
  *  @param     integratedImage   0=pas d'image integree, 1=image integree centree la fenetre, 2=image integree centree sur la consigne
- *  @param     findFiber      indicateur de detection de fibre (0=pas de dï¿½tection  1=detection activee)
+ *  @param     findFiber      indicateur de detection de fibre (0=pas de d?tection  1=detection activee)
  *  @param     maskBufNo      numero du buffer du masque
  *  @param     sumBufNo       numero du buffer de l'image integree
  *  @param     fiberBufNo     numero du buffer de l'image resultat
@@ -2146,7 +2158,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
       }
 
       // ----------------------------------------------------
-      // je calcule la qualite qualityMin ï¿½ partir de mean, dsigma
+      // je calcule la qualite qualityMin ? partir de mean, dsigma
       //  et je recupere dbgmean pour le soustraire de l'image si le bias n'est pas fourni
       // ----------------------------------------------------
       int ttResult;
@@ -2169,7 +2181,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
       }
 
       // ----------------------------------------------------
-      // je soustrais le fond de ciel estimï¿½
+      // je soustrais le fond de ciel estim?
       // ----------------------------------------------------
       for(j=0;j<height;j++) {
          imgOffset  = imgPix  + j * width;
@@ -2548,7 +2560,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                         }
 
                         if ( *fiberPtr > fiberMaxIntensity ) {
-                           // je mets ï¿½ jour la nouvelle valeur max
+                           // je mets ? jour la nouvelle valeur max
                            fiberMaxIntensity = *fiberPtr;
                         }
                      }
@@ -2597,7 +2609,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                   }
                   // je calcule le barycentre
                   if ( flux == 0 ) {
-                     // si le flux est null, je retourne la position prï¿½cedente de la fibre
+                     // si le flux est null, je retourne la position pr?cedente de la fibre
                      *fiberX = previousFiberX;
                      *fiberY = previousFiberY;
                   } else {
@@ -2625,7 +2637,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                   }
 
                   // ----------------------------------------------------
-                  // je verifie la qualite de l'image inversee ï¿½ partir de mean, dsigma
+                  // je verifie la qualite de l'image inversee ? partir de mean, dsigma
                   // je calcule dsigma, dmaxi, dmini de la fenetre (x1,y1,x2,y2)
                   //   si dsigma < 10 , je retourne l'erreur LOW_SIGNAL
                   //   si (dmaxi-dmini) < 3*sqrt(dsigma) je retoune l'erreur NO_SIGNAL
