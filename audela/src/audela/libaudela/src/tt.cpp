@@ -700,7 +700,7 @@ int CmdFitsConvert3d(ClientData clientData, Tcl_Interp *interp, int argc, char *
    int bitpix=0,bzero;
    float *ptot=NULL,*pixelPlan=NULL;
    int nelem,naxis=3;
-   CFitsKeywords *keywords;
+   CFitsKeywords *keywords = NULL;
    
    int nb_arg_min = 5;        // Nombre minimal d'arguments
    
@@ -841,7 +841,12 @@ int CmdFitsConvert3d(ClientData clientData, Tcl_Interp *interp, int argc, char *
       return TCL_ERROR;
    }
 
-   if (ptot != NULL ) { free(ptot);}
+   if (keywords != NULL) {
+      delete keywords;
+   }
+   if (ptot != NULL ) { 
+      free(ptot);
+   }
 
    Libtt_main(TT_PTR_FREEKEYS,5,&keynames0,&values0,&comments0,&units0,&datatypes0);
    Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
