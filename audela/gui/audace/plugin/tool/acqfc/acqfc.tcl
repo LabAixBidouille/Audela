@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.90 2009-12-13 16:39:31 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.91 2009-12-27 16:42:47 michelpujol Exp $
 #
 
 #==============================================================
@@ -1037,10 +1037,7 @@ proc ::acqfc::startAcquisitionUneImage { visuNo expTime binning fileName} {
    ChangeMode $visuNo $::caption(acqfc,uneimage)
 
    #--- je lance l'acquisition
-   set ::panneau(acqfc,$visuNo,acqImageEnd) "0"
    ::acqfc::Go $visuNo
-   #--- j'attends la fin de l'acquisition
-   vwait ::panneau(acqfc,$visuNo,acqImageEnd)
 
    if { $fileName != "" } {
       ::acqfc::SauveUneImage $visuNo
@@ -1072,10 +1069,8 @@ proc ::acqfc::startAcquisitionSerieImage { visuNo expTime binning fileName image
    ChangeMode $visuNo $::caption(acqfc,serie)
 
    #--- je lance les acquisitions
-   set ::panneau(acqfc,$visuNo,acqImageEnd) "0"
    ::acqfc::Go $visuNo
-   #--- j'attends la fin des acquisitions
-   vwait ::panneau(acqfc,$visuNo,acqImageEnd)
+   
 }
 
 #------------------------------------------------------------
@@ -1667,7 +1662,6 @@ proc ::acqfc::Go { visuNo } {
    #--- Je restitue l'affichage du bouton "GO"
    $panneau(acqfc,$visuNo,This).go_stop.but configure -text $caption(acqfc,GO) -state normal -command "::acqfc::Go $visuNo"
    #--- je positionne l'indateur de fin d'acquisition (pour startAcquisitionSerieImage)
-   set ::panneau(acqfc,$visuNo,acqImageEnd) "1"
 }
 #***** Fin de la procedure de lancement d'acquisition **********
 
