@@ -43,7 +43,6 @@ CFile::~CFile()
 }
 
 
-
 /**
  *  loadFile
  *  charge un fichier
@@ -59,7 +58,6 @@ CFileFormat CFile::loadFile(char * filename, int dataTypeOut, CPixels **pixels, 
 
    // je verifie le nom du fichier
    fileFormat = getFormatFromHeader(filename);
-
    switch ( fileFormat ) {
    case CFILE_FITS :
       loadFits(filename, dataTypeOut, pixels, keywords);
@@ -105,8 +103,7 @@ CFileFormat CFile::saveFile(char * filename, int dataTypeOut, CPixels *pixels, C
    return fileFormat;
 }
 */
-
-
+#include "debugmemory.h"
 void CFile::loadFits(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords)
 {
    int msg;                         // Code erreur de libtt
@@ -120,15 +117,14 @@ void CFile::loadFits(char * filename, int dataTypeOut, CPixels **pixels, CFitsKe
    int *datatypes=NULL;
    float *ppix=NULL;
    int iaxis3 = 3;
-
    try {
       // je charge le 3ieme HDU. (iaxis=3)
       //   Libtt_main retourne naxis3=3 si le 3ieme HDU existe  => c'est une image RGB
       //   Libtt_main retourne naxis3=1 si le 3ieme HDU n'existe pas => c'est une image GRAY
       msg = Libtt_main(TT_PTR_LOADIMA3D,13,filename,&dataTypeOut,&iaxis3,&ppix,&naxis1,&naxis2,&naxis3,
          &nb_keys,&keynames,&values,&comments,&units,&datatypes);
+CDebugMemory::logDifference("TT_PTR_LOADIMA3D loadFits");
       if(msg) throw CErrorLibtt(msg);
-
       switch (dataTypeOut) {
          case TBYTE :
             pixelFormat = FORMAT_BYTE;
@@ -160,16 +156,6 @@ void CFile::loadFits(char * filename, int dataTypeOut, CPixels **pixels, CFitsKe
          TYPE_PIXELS * ppixG = NULL ;
          TYPE_PIXELS * ppixB = ppix ;  // j'ai deja recupere le troisieme plan
 
-         iaxis3 = 1;
-         msg = Libtt_main(TT_PTR_LOADIMA3D,13,filename,&dataTypeOut,&iaxis3,&ppixR,&naxis1,&naxis2,&naxis3,
-   	      &nb_keys,&keynames,&values,&comments,&units,&datatypes);
-            iaxis3 = 2;
-            msg = Libtt_main(TT_PTR_LOADIMA3D,13,filename,&dataTypeOut,&iaxis3,&ppixG,&naxis1,&naxis2,&naxis3,
-   	         &nb_keys,&keynames,&values,&comments,&units,&datatypes);
-
-         // je copie les pixels dans la variable de sortie
-         *pixels = new CPixelsRgb(naxis1, naxis2, pixelFormat, ppixR, ppixG, ppixB);
-
          // je copie les mots cles dans la variable de sortie
          *keywords = new CFitsKeywords();
          (*keywords)->GetFromArray(nb_keys,&keynames,&values,&comments,&units,&datatypes);
@@ -179,6 +165,21 @@ void CFile::loadFits(char * filename, int dataTypeOut, CPixels **pixels, CFitsKe
          (*keywords)->Add("NAXIS", &naxis,TINT,"","");
          naxis3 = 3;
          (*keywords)->Add("NAXIS3",&naxis3,TINT,"","");
+
+         iaxis3 = 1;
+         msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+         msg = Libtt_main(TT_PTR_LOADIMA3D,13,filename,&dataTypeOut,&iaxis3,&ppixR,&naxis1,&naxis2,&naxis3,
+            &nb_keys,&keynames,&values,&comments,&units,&datatypes);
+         iaxis3 = 2;
+         msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+         msg = Libtt_main(TT_PTR_LOADIMA3D,13,filename,&dataTypeOut,&iaxis3,&ppixG,&naxis1,&naxis2,&naxis3,
+            &nb_keys,&keynames,&values,&comments,&units,&datatypes);
+
+         // je copie les pixels dans la variable de sortie
+         *pixels = new CPixelsRgb(naxis1, naxis2, pixelFormat, ppixR, ppixG, ppixB);
+
+         msg = Libtt_main(TT_PTR_FREEPTR,1,&ppixR);
+         msg = Libtt_main(TT_PTR_FREEPTR,1,&ppixG);
 
       } else {
          throw CError("LoadFits error: plane number is not 1 or 3.");
@@ -194,6 +195,7 @@ void CFile::loadFits(char * filename, int dataTypeOut, CPixels **pixels, CFitsKe
    // Liberation de la memoire allouee par libtt (pas n�cessire de catcher les erreurs)
    msg = Libtt_main(TT_PTR_FREEPTR,1,&ppix);
    msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+CDebugMemory::logDifference("fin loadFits");
 }
 
 void CFile::saveFits(char * filename, int dataTypeOut, CPixels *pixels, CFitsKeywords *keywords)
