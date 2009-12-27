@@ -936,7 +936,9 @@ List_ModelSymbols
 		mc_strupr(argv[2],s);
 		if (s[0]=='A') {
 			type=1;
-		}
+      } else { 
+         type=0;
+      }
       /* --- decode le Home ---*/
       longmpc=0.;
       rhocosphip=0.;
