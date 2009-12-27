@@ -103,7 +103,6 @@ CFileFormat CFile::saveFile(char * filename, int dataTypeOut, CPixels *pixels, C
    return fileFormat;
 }
 */
-#include "debugmemory.h"
 void CFile::loadFits(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords)
 {
    int msg;                         // Code erreur de libtt
@@ -123,7 +122,6 @@ void CFile::loadFits(char * filename, int dataTypeOut, CPixels **pixels, CFitsKe
       //   Libtt_main retourne naxis3=1 si le 3ieme HDU n'existe pas => c'est une image GRAY
       msg = Libtt_main(TT_PTR_LOADIMA3D,13,filename,&dataTypeOut,&iaxis3,&ppix,&naxis1,&naxis2,&naxis3,
          &nb_keys,&keynames,&values,&comments,&units,&datatypes);
-CDebugMemory::logDifference("TT_PTR_LOADIMA3D loadFits");
       if(msg) throw CErrorLibtt(msg);
       switch (dataTypeOut) {
          case TBYTE :
@@ -195,7 +193,6 @@ CDebugMemory::logDifference("TT_PTR_LOADIMA3D loadFits");
    // Liberation de la memoire allouee par libtt (pas n�cessire de catcher les erreurs)
    msg = Libtt_main(TT_PTR_FREEPTR,1,&ppix);
    msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
-CDebugMemory::logDifference("fin loadFits");
 }
 
 void CFile::saveFits(char * filename, int dataTypeOut, CPixels *pixels, CFitsKeywords *keywords)
