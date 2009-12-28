@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.121 2009-12-26 18:19:19 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.122 2009-12-28 15:35:11 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -179,6 +179,9 @@ namespace eval ::confVisu {
       #--- je mets à jour couleurs et polices
       ::confColor::applyColor $private($visuNo,This)
 
+      #--- j'initialise les glissieres RVB
+      ::colorRGB::initConf $visuNo
+
       return $visuNo
    }
 
@@ -312,7 +315,7 @@ namespace eval ::confVisu {
                   }
                }
                #--- je charge le fichier
-               set loadError [ catch { 
+               set loadError [ catch {
                   buf$bufNo load $fileName
                } ]
                if { $loadError == 0 } {
@@ -370,8 +373,8 @@ namespace eval ::confVisu {
                    set private($visuNo,fitsHduList) ""
                   ::confVisu::setFileName $visuNo "?"
                   buf$bufNo clear
-                  visu$visuNo  clear 
-                  #--- j'affiche l'erreur 
+                  visu$visuNo  clear
+                  #--- j'affiche l'erreur
                   console::affiche_erreur "$::errorInfo\n"
                }
                #--- j'affiche le nom du fichier
@@ -576,9 +579,9 @@ namespace eval ::confVisu {
                   set private($visuNo,picture_h) 0
                   visu $visuNo current
                   #--- Je supprime les glissieres R, V et B
-                  ::colorRGB::cmdClose $visuNo                  
+                  ::colorRGB::cmdClose $visuNo
                }
-               
+
                #--- Suppression de la zone selectionnee avec la souris si elle est hors de l'image
                if { [ lindex [ list [ ::confVisu::getBox $visuNo ] ] 0 ] != "" } {
                   set box [ ::confVisu::getBox $visuNo ]
