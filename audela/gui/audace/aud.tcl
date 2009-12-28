@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.112 2009-12-13 16:48:28 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.113 2009-12-28 16:19:38 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -237,10 +237,6 @@ namespace eval ::audace {
       set audace(rep_audela) "[pwd]"
 
       #--- On utilise les valeurs contenues dans le tableau conf pour l'initialisation
-      set confgene(temps,hsysteme)         [ lindex "$caption(audace,temps_heurelegale) $caption(audace,temps_universel)" "$conf(temps,hsysteme)" ]
-      set confgene(temps,fushoraire)       $conf(temps,fushoraire)
-      set confgene(temps,hhiverete)        [ lindex "$caption(confgene,temps_aucune) $caption(confgene,temps_hiver) $caption(confgene,temps_ete)" "$conf(temps,hhiverete)" ]
-      #---
       set confgene(posobs,observateur,gps) $conf(posobs,observateur,gps)
       set audace(posobs,observateur,gps)   $confgene(posobs,observateur,gps)
       set confgene(fichier,compres)        $conf(fichier,compres)
@@ -534,7 +530,6 @@ namespace eval ::audace {
       #--- Initialisation indispensable ici de certaines variables de configuration
       ::seuilWindow::initConf
       ::confFichierIma::initConf
-      ::confTemps::initConf
       ::confPosObs::initConf
       ::confTypeFenetre::initConf
 
@@ -1072,7 +1067,7 @@ namespace eval ::audace {
 
    #
    # ::audace::dispClock1
-   # Fonction qui calcule et met a jour TU et TSL
+   # Fonction qui calcule et met a jour HL, TU et TSL
    # Cette fonction se re-appelle au bout d'une seconde
    #
    proc dispClock1 { } {
@@ -1080,13 +1075,14 @@ namespace eval ::audace {
       global caption
       global confgene
 
-      #--- Systeme d'heure utilise
-      set time1 [::audace::date_sys2ut now]
-      set time1sec [lindex $time1 5]
-      set time2 [format "%02dh %02dm %02ds" [lindex $time1 3] [lindex $time1 4] [expr int($time1sec)]]
+      #--- Heure Locale
+      set time1 [ clock format [ clock seconds ] -format "%Hh %Mm %Ss" -timezone :localtime ]
+      set audace(hl,format,hmsint) $time1
+      #--- Formatage heure TU
+      set time2 [ clock format [ clock seconds ] -format "%Hh %Mm %Ss" -timezone :UTC ]
       set audace(tu,format,hmsint) $time2
       #--- Preparation affichage heure TSL
-      set tsl [mc_date2lst [::audace::date_sys2ut now] $confgene(posobs,observateur,gps)]
+      set tsl [mc_date2lst [ ::audace::date_sys2ut now ] $confgene(posobs,observateur,gps)]
       set audace(tsl) $tsl
       set tslsec [lindex $tsl 2]
       set tsl_hms [format "%02dh %02dm %02ds" [lindex $tsl 0] [lindex $tsl 1] [expr int($tslsec)]]
@@ -1095,44 +1091,19 @@ namespace eval ::audace {
       set tsl_zenith [format "%02dh%02dm%02d" [lindex $tsl 0] [lindex $tsl 1] [expr int($tslsec)]]
       set audace(tsl,format,zenith) $tsl_zenith
       #--- Formatage et affichage de la date et de l'heure TU dans l'interface Aude'ACE
-      set audace(tu_date,format,dmy) [format "%02d/%02d/%2s" [lindex $time1 2] [lindex $time1 1] [string range [lindex $time1 0] 2 3]]
-      set audace(tu,format,dmyhmsint) [format "%02d/%02d/%2s %02d:%02d:%02.0f $caption(audace,temps_universel)" [lindex $time1 2] [lindex $time1 1] [string range [lindex $time1 0] 2 3] [lindex $time1 3] [lindex $time1 4] [expr int($time1sec)]]
+      set audace(tu_date,format,dmy)  [ clock format [ clock seconds ] -format "%d/%m/%Y" -timezone :UTC ]
+      set audace(tu,format,dmyhmsint) [ clock format [ clock seconds ] -format "%d/%m/%Y %H:%M:%S $caption(audace,temps_universel)" -timezone :UTC ]
       after 1000 ::audace::dispClock1
    }
 
    proc date_sys2ut { { date now } } {
-      global caption
-      global confgene
-
-      #--- Systeme d'heure utilise
-      set fushoraire $confgene(temps,fushoraire)
-      if { $fushoraire=="-3:30" } {
-         set fushoraire "-3.5"
-      } elseif { $fushoraire=="3:30" } {
-         set fushoraire "3.5"
-      } elseif { $fushoraire=="4:30" } {
-         set fushoraire "4.5"
-      } elseif { $fushoraire=="5:30" } {
-         set fushoraire "5.5"
-      } elseif { $fushoraire=="9:30" } {
-         set fushoraire "9.5"
-      }
-      #--- Preparation affichage heure TU
-      if { $confgene(temps,hsysteme) != "$caption(audace,temps_heurelegale)" } {
-         set fushoraire "0"
-         set deltahhiverete "0"
+      if { $date == "now" } {
+         set time [ clock format [ clock seconds ] -format "%Y %m %d %H %M %S" -timezone :UTC ]
       } else {
-         if { $confgene(temps,hhiverete) != "$caption(confgene,temps_ete)" } {
-            set deltahhiverete "0"
-         } else {
-            set deltahhiverete "1"
-         }
+         set jjnow [ mc_date2jd $date ]
+         set time  [ mc_date2ymdhms $jjnow ]
       }
-      set decalage [expr ($fushoraire + $deltahhiverete)]
-      set jjnow [mc_date2jd $date]
-      set jjnowlocal [expr $jjnow - $decalage/24.]
-      set time1 [mc_date2ymdhms $jjnowlocal]
-      return $time1
+      return $time
    }
 
    #------------------------------------------------------------
@@ -1716,7 +1687,8 @@ proc stackTrace { {procedureFullName "" } } {
             set procedureFullName "::audace::$procedureName"
          }
 
-         ###console::disp "stackTrace level=$i lvl=$lvl procedureName=$procedureName procedureFullName=$procedureFullName\n"
+        ### console::disp "stackTrace level=$i lvl=$lvl procedureName=$procedureName procedureFullName=$procedureFullName\n"
+
          append stack [string repeat " " $i]$procedureFullName
          foreach value $argNo arg [info args $procedureFullName] {
             if {$value eq "" } {
