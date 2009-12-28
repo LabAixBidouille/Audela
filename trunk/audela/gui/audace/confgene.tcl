@@ -5,7 +5,7 @@
 #               pose, choix des outils, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.61 2009-11-22 12:56:24 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.62 2009-12-28 16:19:55 robertdelmas Exp $
 #
 
 #
@@ -1146,26 +1146,7 @@ namespace eval ::confTemps {
 
       set This $this
       createDialog
-      Temps_TU_TSL
       tkwait visibility $This
-   }
-
-   #
-   # confTemps::ok
-   # Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer la configuration,
-   # et fermer la fenetre de configuration du temps
-   #
-   proc ok { } {
-      appliquer
-      fermer
-   }
-
-   #
-   # confTemps::appliquer
-   # Fonction 'Appliquer' pour memoriser et appliquer la configuration
-   #
-   proc appliquer { } {
-      widgetToConf
    }
 
    #
@@ -1185,38 +1166,13 @@ namespace eval ::confTemps {
    #
    proc fermer { } {
       variable This
-      global caption conf confgene
-
-      set confgene(temps,fushoraire) $conf(temps,fushoraire)
-      set confgene(temps,hhiverete)  [ lindex "$caption(confgene,temps_aucune) $caption(confgene,temps_hiver) $caption(confgene,temps_ete)" "$conf(temps,hhiverete)" ]
-      set confgene(temps,hsysteme)   [ lindex "$caption(confgene,temps_heurelegale) $caption(confgene,temps_universel)" "$conf(temps,hsysteme)" ]
 
       destroy $This
-   }
-
-   #
-   # confTemps::initConf
-   # Initialisation des variables de temps pour le lancement d'Aud'ACE
-   #
-   proc initConf { } {
-      global conf
-
-      if { ! [ info exists conf(temps,fushoraire) ] } { set conf(temps,fushoraire) "1" }
-      if { ! [ info exists conf(temps,hhiverete) ] }  { set conf(temps,hhiverete)  "2" }
-      if { ! [ info exists conf(temps,hsysteme) ] }   { set conf(temps,hsysteme)   "0" }
    }
 
    proc createDialog { } {
       variable This
       global audace caption conf confgene
-
-      #--- initConf
-      #--- Initialisation indispensable de toutes les variables du temps dans aud.tcl (::audace::Recup_Config)
-
-      #--- confToWidget
-      set confgene(temps,fushoraire) $conf(temps,fushoraire)
-      set confgene(temps,hhiverete)  [ lindex "$caption(confgene,temps_aucune) $caption(confgene,temps_hiver) $caption(confgene,temps_ete)" "$conf(temps,hhiverete)" ]
-      set confgene(temps,hsysteme)   [ lindex "$caption(confgene,temps_heurelegale) $caption(confgene,temps_universel)" "$conf(temps,hsysteme)" ]
 
       #---
       if { [winfo exists $This] } {
@@ -1244,98 +1200,31 @@ namespace eval ::confTemps {
       pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame4 -borderwidth 0 -relief raised
-      pack $This.frame4 -in $This.frame1 -side top -fill both -expand 1
+      pack $This.frame4 -in $This.frame3 -side left -fill both -expand 1
 
       frame $This.frame5 -borderwidth 0 -relief raised
-      pack $This.frame5 -in $This.frame4 -side left -fill both -expand 1
-
-      frame $This.frame6 -borderwidth 0 -relief raised
-      pack $This.frame6 -in $This.frame4 -side left -fill both -expand 1
-
-      #--- Legendes
-      label $This.lab1 -text "$caption(confgene,temps_heure_legale1) $caption(confgene,caractere_2points)\
-         $caption(confgene,temps_heure_legale2)"
-      pack $This.lab1 -in $This.frame3 -anchor center -side left -padx 10 -pady 5
-
-      label $This.lab2 -text "$caption(confgene,temps_universel1) $caption(confgene,caractere_2points)\
-         $caption(confgene,temps_universel2)"
-      pack $This.lab2 -in $This.frame3 -anchor center -side right -padx 10 -pady 5
-
-      #--- Heure systeme = tu ou heure legale
-      label $This.lab3 -text "$caption(confgene,temps_hsysteme)"
-      pack $This.lab3 -in $This.frame5 -anchor w -side top -padx 10 -pady 5
-
-      set list_combobox [ list $caption(confgene,temps_heurelegale) $caption(confgene,temps_universel) ]
-      ComboBox $This.hsysteme \
-         -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
-         -height [ llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -modifycmd { ::confTemps::Temps_TU_TSL } \
-         -textvariable confgene(temps,hsysteme) \
-         -values $list_combobox
-      pack $This.hsysteme -in $This.frame6 -anchor w -side top -padx 10 -pady 5
-
-      #--- Fuseau horaire
-      label $This.lab4 -text "$caption(confgene,temps_fushoraire1)"
-      pack $This.lab4 -in $This.frame5 -anchor w -side top -padx 10 -pady 5
-
-      set list_combobox [ list -12 -11 -10 -9 -8 -7 -6 -5 -4 -3:30 -3 -2 -1 0 1 2 3 3:30\
-         4 4:30 5 5:30 6 7 8 9 9:30 10 11 12 ]
-      ComboBox $This.fushoraire \
-         -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
-         -height [ llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -modifycmd { ::confTemps::Temps_TU_TSL } \
-         -textvariable confgene(temps,fushoraire) \
-         -values $list_combobox
-      pack $This.fushoraire -in $This.frame6 -anchor w -side top -padx 10 -pady 5
-
-      #--- Heure d'hiver / heure d'ete
-      label $This.lab5 -text "$caption(confgene,temps_hhiverete)"
-      pack $This.lab5 -in $This.frame5 -anchor w -side top -padx 10 -pady 5
-
-      set list_combobox [ list $caption(confgene,temps_aucune) $caption(confgene,temps_hiver) \
-         $caption(confgene,temps_ete) ]
-      ComboBox $This.hhiverete \
-         -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
-         -height [ llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -modifycmd { ::confTemps::Temps_TU_TSL } \
-         -textvariable confgene(temps,hhiverete) \
-         -values $list_combobox
-      pack $This.hhiverete -in $This.frame6 -anchor w -side top -padx 10 -pady 5
+      pack $This.frame5 -in $This.frame3 -side left -fill both -expand 1
 
       #--- Temps sideral local
-      label $This.lab8 -text "$caption(confgene,temps_tsl)"
-      pack $This.lab8 -in $This.frame5 -anchor w -side bottom -padx 10 -pady 5
+      label $This.lab1 -text "$caption(confgene,temps_tsl)"
+      pack $This.lab1 -in $This.frame4 -anchor w -side bottom -padx 10 -pady 5
 
-      label $This.lab9 -borderwidth 1 -textvariable "audace(tsl,format,hmsint)" -width 12 -anchor w
-      pack $This.lab9 -in $This.frame6 -anchor w -side bottom -padx 10 -pady 5
+      label $This.lab2 -borderwidth 1 -textvariable "audace(tsl,format,hmsint)" -width 12 -anchor w
+      pack $This.lab2 -in $This.frame5 -anchor w -side bottom -padx 10 -pady 5
 
       #--- Temps universel
-      label $This.lab6 -text "$caption(confgene,temps_tu)"
+      label $This.lab3 -text "$caption(confgene,temps_tu)"
+      pack $This.lab3 -in $This.frame4 -anchor w -side bottom -padx 10 -pady 5
+
+      label $This.lab4 -borderwidth 1 -textvariable "audace(tu,format,hmsint)" -width 12 -anchor w
+      pack $This.lab4 -in $This.frame5 -anchor w -side bottom -padx 10 -pady 5
+
+      #--- Temps local
+      label $This.lab5 -text "$caption(confgene,temps_hl)"
+      pack $This.lab5 -in $This.frame4 -anchor w -side bottom -padx 10 -pady 5
+
+      label $This.lab6 -borderwidth 1 -textvariable "audace(hl,format,hmsint)" -width 12 -anchor w
       pack $This.lab6 -in $This.frame5 -anchor w -side bottom -padx 10 -pady 5
-
-      label $This.lab7 -borderwidth 1 -textvariable "audace(tu,format,hmsint)" -width 12 -anchor w
-      pack $This.lab7 -in $This.frame6 -anchor w -side bottom -padx 10 -pady 5
-
-      #--- Cree le bouton 'OK'
-      button $This.but_ok -text "$caption(confgene,ok)" -width 7 -borderwidth 2 \
-         -command { ::confTemps::ok }
-      if { $conf(ok+appliquer) == "1" } {
-         pack $This.but_ok -in $This.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
-      }
-
-      #--- Cree le bouton 'Appliquer'
-      button $This.but_appliquer -text "$caption(confgene,appliquer)" -width 8 -borderwidth 2 \
-         -command { ::confTemps::appliquer }
-      pack $This.but_appliquer -in $This.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- Cree le bouton 'Fermer'
       button $This.but_fermer -text "$caption(confgene,fermer)" -width 7 -borderwidth 2 \
@@ -1355,70 +1244,6 @@ namespace eval ::confTemps {
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
-   }
-
-   #
-   # Temps_TU_TSL
-   # Fonction qui met a jour TU, TSL cette fonction se re-appelle au bout d'une seconde
-   #
-   proc Temps_TU_TSL { } {
-      variable This
-      global caption confgene
-
-      #--- Systeme d'heure utilise
-      if { $confgene(temps,hsysteme) == "$caption(confgene,temps_heurelegale)" } {
-         if { [ winfo exists $This.lab4 ] == 0 } {
-            #--- Fuseau horaire
-            label $This.lab4 -text "$caption(confgene,temps_fushoraire1)"
-            pack $This.lab4 -in $This.frame5 -anchor w -side top -padx 10 -pady 5
-            set list_combobox [ list -12 -11 -10 -9 -8 -7 -6 -5 -4 -3:30 -3 -2 -1 0 1 2 3 3:30\
-               4 4:30 5 5:30 6 7 8 9 9:30 10 11 12 ]
-            ComboBox $This.fushoraire \
-               -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
-               -height [ llength $list_combobox ] \
-               -relief sunken    \
-               -borderwidth 1    \
-               -editable 0       \
-               -modifycmd { ::confTemps::Temps_TU_TSL } \
-               -textvariable confgene(temps,fushoraire) \
-               -values $list_combobox
-            pack $This.fushoraire -in $This.frame6 -anchor w -side top -padx 10 -pady 5
-            #--- Heure d'hiver / heure d'ete
-            label $This.lab5 -text "$caption(confgene,temps_hhiverete)"
-            pack $This.lab5 -in $This.frame5 -anchor w -side top -padx 10 -pady 5
-            set list_combobox [ list $caption(confgene,temps_aucune) $caption(confgene,temps_hiver) \
-               $caption(confgene,temps_ete) ]
-            ComboBox $This.hhiverete \
-               -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
-               -height [ llength $list_combobox ] \
-               -relief sunken    \
-               -borderwidth 1    \
-               -editable 0       \
-               -modifycmd { ::confTemps::Temps_TU_TSL } \
-               -textvariable confgene(temps,hhiverete) \
-               -values $list_combobox
-            pack $This.hhiverete -in $This.frame6 -anchor w -side top -padx 10 -pady 5
-            #--- Mise a jour dynamique des couleurs
-            ::confColor::applyColor $This
-         }
-      } else {
-         destroy $This.lab4
-         destroy $This.fushoraire
-         destroy $This.lab5
-         destroy $This.hhiverete
-      }
-   }
-
-   #
-   # confTemps::widgetToConf
-   # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
-   #
-   proc widgetToConf { } {
-      global caption conf confgene
-
-      set conf(temps,fushoraire) $confgene(temps,fushoraire)
-      set conf(temps,hhiverete)  [ lsearch "$caption(confgene,temps_aucune) $caption(confgene,temps_hiver) $caption(confgene,temps_ete)" "$confgene(temps,hhiverete)" ]
-      set conf(temps,hsysteme)   [ lsearch "$caption(confgene,temps_heurelegale) $caption(confgene,temps_universel)" "$confgene(temps,hsysteme)" ]
    }
 }
 

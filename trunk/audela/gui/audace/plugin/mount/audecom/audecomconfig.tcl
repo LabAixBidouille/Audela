@@ -2,7 +2,7 @@
 # Fichier : audecomconfig.tcl
 # Description : Configuration et pilotage de la monture AudeCom (Ex-Kauffmann)
 # Auteurs : Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: audecomconfig.tcl,v 1.4 2008-02-06 22:49:37 robertdelmas Exp $
+# Mise a jour $Id: audecomconfig.tcl,v 1.5 2009-12-28 16:20:13 robertdelmas Exp $
 #
 
 #
@@ -1353,62 +1353,48 @@ proc ::confAudecomKing::createDialog { } {
    label $This.lab_invisible_3 -text " "
    pack $This.lab_invisible_3 -in $This.frame12 -anchor w -side top -padx 5 -pady 5
 
-   #--- Heure systeme = tu ou heure legale
-   label $This.lab18 -text "$caption(audecomconfig,hsysteme)"
-   pack $This.lab18 -in $This.frame11 -anchor w -side top -padx 25 -pady 0
-
-   label $This.lab19 -borderwidth 1 -width 14 -anchor w -textvariable confgene(temps,hsysteme)
-   pack $This.lab19 -in $This.frame12 -anchor w -side top -padx 5 -pady 1
-
-   #--- Cree le label fushoraire
-   label $This.lab20 -text "$caption(audecomconfig,fushoraire2)"
-   pack $This.lab20 -in $This.frame11 -anchor w -side top -padx 25 -pady 0
-
-   label $This.lab21 -borderwidth 1 -width 14 -anchor w -textvariable confgene(temps,fushoraire)
-   pack $This.lab21 -in $This.frame12 -anchor w -side top -padx 5 -pady 1
-
-   #--- Cree le label hhiverete
-   label $This.lab22 -text "$caption(audecomconfig,hhiverete)"
-   pack $This.lab22 -in $This.frame11 -anchor w -side top -padx 25 -pady 0
-
-   label $This.lab23 -borderwidth 1 -width 14 -anchor w
-   pack $This.lab23 -in $This.frame12 -anchor w -side top -padx 5 -pady 1
-
    #--- Angle horaire
-   label $This.lab24 -text "$caption(audecomconfig,angle_horaire)"
-   pack $This.lab24 -in $This.frame11 -anchor w -side bottom -padx 25 -pady 0
+   label $This.lab18 -text "$caption(audecomconfig,angle_horaire)"
+   pack $This.lab18 -in $This.frame11 -anchor w -side bottom -padx 25 -pady 0
 
-   label $This.lab25 -borderwidth 1 -textvariable ::confAudecomKing::private(anglehoraire) -width 14 -anchor w
-   pack $This.lab25 -in $This.frame12 -anchor w -side bottom -padx 5 -pady 1
+   label $This.lab19 -borderwidth 1 -textvariable ::confAudecomKing::private(anglehoraire) -width 14 -anchor w
+   pack $This.lab19 -in $This.frame12 -anchor w -side bottom -padx 5 -pady 1
 
    #--- Temps sideral local
-   label $This.lab26 -text "$caption(audecomconfig,tsl)"
-   pack $This.lab26 -in $This.frame11 -anchor w -side bottom -padx 25 -pady 0
+   label $This.lab20 -text "$caption(audecomconfig,tsl)"
+   pack $This.lab20 -in $This.frame11 -anchor w -side bottom -padx 25 -pady 0
 
-   label $This.lab27 -borderwidth 1 -textvariable audace(tsl,format,hmsint) -width 14 -anchor w
-   pack $This.lab27 -in $This.frame12 -anchor w -side bottom -padx 5 -pady 1
+   label $This.lab21 -borderwidth 1 -textvariable audace(tsl,format,hmsint) -width 14 -anchor w
+   pack $This.lab21 -in $This.frame12 -anchor w -side bottom -padx 5 -pady 1
 
    #--- Temps universel
-   label $This.lab28 -text "$caption(audecomconfig,tu)"
-   pack $This.lab28 -in $This.frame11 -anchor w -side bottom -padx 25 -pady 0
+   label $This.lab22 -text "$caption(audecomconfig,tu)"
+   pack $This.lab22 -in $This.frame11 -anchor w -side bottom -padx 25 -pady 0
 
-   label $This.lab29 -borderwidth 1 -textvariable audace(tu,format,hmsint) -width 14 -anchor w
-   pack $This.lab29 -in $This.frame12 -anchor w -side bottom -padx 5 -pady 1
+   label $This.lab23 -borderwidth 1 -textvariable audace(tu,format,hmsint) -width 14 -anchor w
+   pack $This.lab23 -in $This.frame12 -anchor w -side bottom -padx 5 -pady 1
+
+   #--- Heure legale
+   label $This.lab24 -text "$caption(audecomconfig,hl)"
+   pack $This.lab24 -in $This.frame11 -anchor w -side bottom -padx 25 -pady 0
+
+   label $This.lab25 -borderwidth 1 -textvariable audace(hl,format,hmsint) -width 14 -anchor w
+   pack $This.lab25 -in $This.frame12 -anchor w -side bottom -padx 5 -pady 1
 
    #--- Coefficient de King
-   label $This.lab30 -text "$caption(audecomconfig,coef_king)"
-   pack $This.lab30 -in $This.frame13 -anchor w -side top -padx 5 -pady 5
+   label $This.lab26 -text "$caption(audecomconfig,coef_king)"
+   pack $This.lab26 -in $This.frame13 -anchor w -side top -padx 5 -pady 5
 
    #--- Cree un widget 'Invisible' pour simuler un espacement
    label $This.lab_invisible_4 -text " "
    pack $This.lab_invisible_4 -in $This.frame14 -anchor w -side top -padx 5 -pady 5
 
    #--- Coefficient k
-   label $This.lab31 -text "$caption(audecomconfig,coef_k)"
-   pack $This.lab31 -in $This.frame13 -anchor w -side top -padx 25 -pady 0
+   label $This.lab27 -text "$caption(audecomconfig,coef_k)"
+   pack $This.lab27 -in $This.frame13 -anchor w -side top -padx 25 -pady 0
 
-   label $This.lab32 -borderwidth 1 -textvariable ::confAudecomKing::private(coefking) -width 14 -anchor w
-   pack $This.lab32 -in $This.frame14 -anchor w -side top -padx 5 -pady 1
+   label $This.lab28 -borderwidth 1 -textvariable ::confAudecomKing::private(coefking) -width 14 -anchor w
+   pack $This.lab28 -in $This.frame14 -anchor w -side top -padx 5 -pady 1
 
    #--- Cree le bouton 'Fermer'
    button $This.but_close -text "$caption(audecomconfig,fermer)" -width 7 -borderwidth 2 \
@@ -1443,39 +1429,6 @@ proc ::confAudecomKing::Clock_et_King { } {
       $This.lab5 configure -text "$confgene(posobs,nordsud) [ expr int($confgene(posobs,lat1)) ]° [ lindex [ mc_angle2dms $confgene(posobs,lat) 90 ] 1 ]' [ format "%03.1f" [ lindex [ mc_angle2dms $confgene(posobs,lat) 90 ] 2 ] ]''"
       #--- Cree le label de l'altitude
       $This.lab7 configure -text "$confgene(posobs,altitude) $caption(audecomconfig,metre)"
-      if { $confgene(temps,hsysteme) == "$caption(audecomconfig,heure_legale)" } {
-         $This.lab19 configure -text "$caption(audecomconfig,heure_legale)"
-         if { [ winfo exists $This.lab20 ] == 0 } {
-            #--- Cree le label fushoraire
-            label $This.lab20 -text "$caption(audecomconfig,fushoraire2)"
-            pack $This.lab20 -in $This.frame11 -anchor w -side top -padx 25 -pady 0
-            label $This.lab21 -borderwidth 1 -width 6 -anchor w -textvariable confgene(temps,fushoraire)
-            pack $This.lab21 -in $This.frame12 -anchor w -side top -padx 5 -pady 0
-            #--- Cree le label hhiverete
-            label $This.lab22 -text "$caption(audecomconfig,hhiverete)"
-            pack $This.lab22 -in $This.frame11 -anchor w -side top -padx 25 -pady 0
-            label $This.lab23 -borderwidth 1 -width 8 -anchor w
-            pack $This.lab23 -in $This.frame12 -anchor w -side top -padx 5 -pady 0
-            #--- Mise a jour dynamique des couleurs
-            ::confColor::applyColor $This
-         }
-         if { [ winfo exists $This.lab23 ] } {
-            #--- Met a jour l'heure d'ete/hiver
-            if { $confgene(temps,hhiverete) == "$caption(audecomconfig,aucune)" } {
-               $This.lab23 configure -text "$caption(audecomconfig,aucune)"
-            } elseif { $confgene(temps,hhiverete) == "$caption(audecomconfig,heure_hiver)" } {
-               $This.lab23 configure -text "$caption(audecomconfig,heure_hiver)"
-            } else {
-               $This.lab23 configure -text "$caption(audecomconfig,heure_ete)"
-            }
-         }
-      } else {
-         $This.lab19 configure -text "$caption(audecomconfig,temps_universel)"
-         destroy $This.lab20
-         destroy $This.lab21
-         destroy $This.lab22
-         destroy $This.lab23
-      }
       #--- Affichage heure tu et heure tsl
       #--- Preparation et affichage ascension droite et declinaison
       #--- Lecture de la position du telescope
