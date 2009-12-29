@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.19 2009-12-19 09:49:51 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.20 2009-12-29 01:40:15 bmauclaire Exp $
 
 
 ####################################################################
@@ -91,7 +91,7 @@ proc spc_ajustpoints { args } {
       set B [ list ]
       for { set i 0 } { $i<$nmilieu0 } { incr i } {
 	 set Bi [ list ]
-	 for { set j 0 } { $j<=1 } { incr j } {
+	 for { set j 0 } { $j<=$ndeg } { incr j } {
 	    lappend Bi [ expr pow([ lindex $xx $i ],$j) ]
 	 }
 	 lappend B $Bi
