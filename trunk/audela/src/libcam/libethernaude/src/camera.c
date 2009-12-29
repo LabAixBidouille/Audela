@@ -657,7 +657,7 @@ void cam_measure_temperature(struct camprop *cam)
     int failed, paramtype;
     
     strcpy(cam->msg, "");
-    // je verifie qu'il n'y a pas d'acquisition en cours, car la lecture de la température ne peut pas se faire pendant une acquisition.
+    // je verifie qu'il n'y a pas d'acquisition en cours, car la lecture de la température ne peut être lue pendant une acquisition.
     if ( cam->acquisitionInProgress == 0 ) {
        if (cam->authorized == 1) {
           if (!cam->ethvar.InfoCCD_HasRegulationTempCaps) {
