@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.122 2009-12-28 15:35:11 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.123 2009-12-29 15:06:32 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -498,33 +498,8 @@ namespace eval ::confVisu {
 
                #--- Si le buffer contient une image on met a jour les seuils
                if { [ buf$bufNo imageready ] == "1" } {
-                  #--- Cas d'une image couleur, j'affiche les glissieres R, V et B
-                  if { [ lindex [ buf$bufNo getkwd NAXIS ] 1 ] == "3" } {
-                     #--- Je repositionne les poignees
-                     $private($visuNo,This).fra1.sca1 set 0.0
-                     $private($visuNo,This).fra1.sca2 set 0.0
-                     #--- Je desactive le reglage des seuils
-                     $private($visuNo,This).fra1.sca1 configure -state disabled \
-                        -background $audace(color,backColor) \
-                        -activebackground $audace(color,backColor)
-                     $private($visuNo,This).fra1.sca2 configure -state disabled \
-                        -background $audace(color,backColor) \
-                        -activebackground $audace(color,backColor)
-                     #--- J'affiche les glissieres R, V et B
-                     ::colorRGB::run $visuNo
-                  #--- Cas d'une image N&B
-                  } else {
-                     #--- J'active le reglage des seuils
-                     $private($visuNo,This).fra1.sca1 configure -state normal \
-                        -background $audace(color,cursor_blue) \
-                        -activebackground $audace(color,cursor_blue_actif)
-                     $private($visuNo,This).fra1.sca2 configure -state normal \
-                        -background $audace(color,cursor_blue) \
-                        -activebackground $audace(color,cursor_blue_actif)
-                     #--- Je supprime les glissieres R, V et B
-                     ::colorRGB::cmdClose $visuNo
-                  }
-                  #---
+
+                  #--- Mise à jour des seuils
                   switch -exact -- $conf(seuils,visu$visuNo,mode) {
                      disable {
                         if { $force == "-no" } {
@@ -572,6 +547,34 @@ namespace eval ::confVisu {
                         }
                         visu $visuNo $mycuts
                      }
+                  }
+
+                  #---Mise à jour des glissieres
+                  if { [ lindex [ buf$bufNo getkwd NAXIS ] 1 ] == "3" } {
+                     #--- Cas d'une image couleur, j'affiche les glissieres R, V et B
+                     #--- Je repositionne les poignees
+                     $private($visuNo,This).fra1.sca1 set 0.0
+                     $private($visuNo,This).fra1.sca2 set 0.0
+                     #--- Je desactive le reglage des seuils
+                     $private($visuNo,This).fra1.sca1 configure -state disabled \
+                        -background $audace(color,backColor) \
+                        -activebackground $audace(color,backColor)
+                     $private($visuNo,This).fra1.sca2 configure -state disabled \
+                        -background $audace(color,backColor) \
+                        -activebackground $audace(color,backColor)
+                     #--- J'affiche les glissieres R, V et B
+                     ::colorRGB::run $visuNo
+                  } else {
+                     #--- Cas d'une image N&B
+                     #--- J'active le reglage des seuils
+                     $private($visuNo,This).fra1.sca1 configure -state normal \
+                        -background $audace(color,cursor_blue) \
+                        -activebackground $audace(color,cursor_blue_actif)
+                     $private($visuNo,This).fra1.sca2 configure -state normal \
+                        -background $audace(color,cursor_blue) \
+                        -activebackground $audace(color,cursor_blue_actif)
+                     #--- Je supprime les glissieres R, V et B
+                     ::colorRGB::cmdClose $visuNo
                   }
                } else {
                   #--- nettoyage de l'affichage s'il n'y a pas d'image dans le buffer
@@ -711,6 +714,8 @@ namespace eval ::confVisu {
                $tkgraph configure  -plotbackground "white"
                #--- j'affiche le graphe
                ::confVisu::setMode $visuNo "graph"
+               #--- Je supprime les glissieres R, V et B
+               ::colorRGB::cmdClose $visuNo
 
             } elseif { $mode == "table" } {
 
@@ -743,6 +748,8 @@ namespace eval ::confVisu {
                if { $hFile != "" } {
                   $hFile close
                }
+               #--- Je supprime les glissieres R, V et B
+               ::colorRGB::cmdClose $visuNo
             }
          }
       }
@@ -3586,12 +3593,6 @@ namespace eval ::colorRGB {
          #--- lit les mots cles
          set hi [ lindex [ buf$bufNo getkwd MIPS-HI ] 1 ]
          set lo [ lindex [ buf$bufNo getkwd MIPS-LO ] 1 ]
-#--- Correction temporaire (bug acquisition image couleur NAXIS = 3, MIPS-HI et MIPS-LO non definis)
-         if { $hi == "" } {
-            set hi "65535"
-            set lo "0"
-         }
-#--- Correction temporaire (bug acquisition image couleur NAXIS = 3, MIPS-HI et MIPS-LO non definis)
          set private(colorRGB,$visuNo,mycuts) "$hi $lo $hi $lo $hi $lo"
 
       }
