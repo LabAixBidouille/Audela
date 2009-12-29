@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.34 2009-11-06 23:06:51 michelpujol Exp $
+ * $Id: libcam.c,v 1.35 2009-12-29 16:31:11 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -1254,7 +1254,7 @@ static void AcqRead(ClientData clientData )
       free(cam->timerExpiration);
       cam->timerExpiration = NULL;
    }
-   cam->doneAcquisition = 1; 
+   cam->acquisitionInProgress = 0; 
 }
 
 
@@ -1283,7 +1283,7 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
 
       if (cam->timerExpiration == NULL) {
          /* Pour avertir les gens du status de la camera. */
-         setCameraStatus(cam,interp,"exp");
+         //setCameraStatus(cam,interp,"exp");
 
          // set current interp for multithread
          cam->interpCam = interp;
@@ -1323,8 +1323,8 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
             if(cam->blockingAcquisition == 1 ) {
                // j'attend la fin de l'acquisition
                int foundEvent = 1;
-               cam->doneAcquisition = 0; 
-               while (!cam->doneAcquisition && foundEvent) {
+               cam->acquisitionInProgress = 1; 
+               while (cam->acquisitionInProgress != 0 && foundEvent) {
                   foundEvent = Tcl_DoOneEvent(TCL_ALL_EVENTS);
                   //if (Tcl_LimitExceeded(interp)) {
                   //   break;
@@ -1359,9 +1359,9 @@ static int cmdCamStop(ClientData clientData, Tcl_Interp * interp, int argc, char
    int retour = TCL_OK;
 
    cam = (struct camprop *) clientData;
-   cam->doneAcquisition = 2; 
+   cam->acquisitionInProgress = 2; 
 
-   if (cam->timerExpiration) {
+   if (cam->timerExpiration != NULL ) {
       Tcl_DeleteTimerHandler(cam->timerExpiration->TimerToken);
       if (cam->timerExpiration != NULL) {
          free(cam->timerExpiration);
@@ -2060,6 +2060,7 @@ static int cam_init_common(struct camprop *cam, int argc, char **argv)
    cam->capabilities.expTimeCommand = 1;  // existance du choix du temps de pose
    cam->capabilities.expTimeList    = 0;  // existance de la liste des temps de pose predefini
    cam->capabilities.videoMode      = 0;  // existance du mode video
+   cam->acquisitionInProgress = 0; 
    return 0;
 }
 
