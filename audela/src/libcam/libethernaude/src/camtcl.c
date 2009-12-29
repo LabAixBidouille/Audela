@@ -834,6 +834,11 @@ int cmdEthernaudeGPS(ClientData clientData, Tcl_Interp * interp, int argc, char 
    
    cam = (struct camprop *) clientData;
    
+   // je verifie qu'il n'y a pas d'acquisition en cours, car la lecture de la position GPS ne peut pas se faire pendant une acquisition.
+   if ( cam->acquisitionInProgress == 0 ) {
+      Tcl_SetResult(interp,"acquisition in progress",TCL_VOLATILE);
+      return TCL_ERROR;
+   }
    if (cam->ethvar.InfoCCD_HasGPSDatation==0) {
       Tcl_SetResult(interp,"This camera does not support GPS coordinates query.",TCL_VOLATILE);
       return TCL_ERROR;
