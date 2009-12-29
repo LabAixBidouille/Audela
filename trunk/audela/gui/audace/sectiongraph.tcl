@@ -2,7 +2,7 @@
 # Fichier : sectiongraph.tcl
 # Description : Affiche une coupe de l'image
 # Auteur : Michel PUJOL
-# Mise a jour $Id: sectiongraph.tcl,v 1.14 2009-10-26 22:34:06 michelpujol Exp $
+# Mise a jour $Id: sectiongraph.tcl,v 1.15 2009-12-29 15:08:08 michelpujol Exp $
 #
 
 namespace eval ::sectiongraph {
@@ -47,17 +47,19 @@ proc ::sectiongraph::init { visuNo } {
    set private($visuNo,itemNo) [::polydraw::createLine $visuNo [list $x1 $y $x2 $y ] ]
    #--- je cree la fenetre contenant le graphe
    ::sectiongraph::createToplevel $visuNo
+   #--- j'active le rafraichissement automatique sur deplacement de la ligne de coupe
+   ::polydraw::addMoveItemListener $visuNo $private($visuNo,itemNo) "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
 }
 
 #------------------------------------------------------------
-#  confSectionGraph
+#  configureSectionGraph
 #     rafraichit la fenetre
 #  parametres
 #     visuNo : numero de visu
 #     args   : valeurs fournies par le gestionnaire de listener
 #  return : null
 #------------------------------------------------------------
-proc ::sectiongraph::confSectionGraph { visuNo args } {
+proc ::sectiongraph::configureSectionGraph { visuNo args } {
    variable private
    global conf
 
@@ -66,11 +68,8 @@ proc ::sectiongraph::confSectionGraph { visuNo args } {
       $private($visuNo,This).frame2.butRefresh configure -state normal
       #--- J'arrete le rafraichissement automatique
       ::confVisu::removeFileNameListener $visuNo "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
-      ::polydraw::removeMoveItemListener $visuNo $private($visuNo,itemNo) "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
    } else {
       $private($visuNo,This).frame2.butRefresh configure -state disabled
-      #--- j'active le rafraichissement automatique sur deplacement de la ligne de coupe
-      ::polydraw::addMoveItemListener $visuNo $private($visuNo,itemNo) "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
       #--- je declare le rafraichissement automatique au changement d'image
       ::confVisu::addFileNameListener $visuNo "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
    }
@@ -139,7 +138,7 @@ proc ::sectiongraph::refresh { visuNo itemNo args } {
       #--- je teste la valeur d'un point pour connaitre le nombre de plan de couleur
       set nbcolor($visuNo) [lindex [buf$bufNo getpix [list 1 1 ] ] 0]
    } else {
-      #--- si l'image est vide je considere qu'il n'y a qu'un plan 
+      #--- si l'image est vide je considere qu'il n'y a qu'un plan
       set nbcolor($visuNo) 1
    }
 
@@ -265,7 +264,7 @@ proc ::sectiongraph::createToplevel { visuNo } {
 
       #--- Cree le checkbutton pour choisir le mode de rafraichissement
       checkbutton $private($visuNo,This).frame2.modeRefresh -text "$caption(sectiongraph,refreshAuto)" \
-         -variable conf(sectiongraph,modeRefresh) -command "::sectiongraph::confSectionGraph $visuNo"
+         -variable conf(sectiongraph,modeRefresh) -command "::sectiongraph::configureSectionGraph $visuNo"
       pack $private($visuNo,This).frame2.modeRefresh -anchor w -side top -padx 3 -pady 3
 
       #--- Cree le bouton pour rafraichir la coupe
@@ -279,7 +278,7 @@ proc ::sectiongraph::createToplevel { visuNo } {
    ::sectiongraph::refresh $visuNo $private($visuNo,itemNo)
 
    #--- Rafraichir la fenetre
-   ::sectiongraph::confSectionGraph $visuNo
+   ::sectiongraph::configureSectionGraph $visuNo
 
    #--- La fenetre est active
    focus $private($visuNo,This)
