@@ -27,7 +27,7 @@
  * dans le fichier camera.h
  */
 
-// $Id: camera.c,v 1.13 2009-11-06 23:06:50 michelpujol Exp $
+// $Id: camera.c,v 1.14 2009-12-29 18:10:45 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -148,7 +148,7 @@ char *canonQuality[] =
       "Middle:Normal",
       "Small:Fine"   ,
       "Small:Normal" ,
-      "CRW"  ,
+      "RAW"  ,
        "" 
 };
 
@@ -498,6 +498,11 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
                      result = libgphoto_deleteImage (cam->params->gphotoSession, cam->params->imageFolder, cam->params->imageFile);
                   }
                }
+            } else {
+               // je retourne une image de dimension nulle
+               cam->pixel_data = NULL; 
+               cam->w = 0;
+               cam->h = 0;     
             }
          }
          if ( result != LIBGPHOTO_OK ) {
@@ -505,8 +510,8 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
             strcpy(cam->msg, libgphoto_getLastErrorMessage(cam->params->gphotoSession));
          }
          // je purge le nom du fichier
-         strcpy(cam->params->imageFile, "");
-         strcpy(cam->params->imageFolder, "");      
+         //strcpy(cam->params->imageFile, "");
+         //strcpy(cam->params->imageFolder, "");      
       } else {
          // si la carte CF n'est pas utilisee
          if( cam->params->autoLoadFlag == 1 ) {
@@ -525,10 +530,7 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
             // je purge le nom du fichier
             strcpy(cam->params->imageFile, "");
             strcpy(cam->params->imageFolder, "");      
-         } else {
-            // je capture une image sans la charger
-            result = libgphoto_captureImageWithoutCF(cam->params->gphotoSession);    
-         }
+         } 
       }
       if (result != LIBGPHOTO_OK) {
          // je retourne un message d'erreur
@@ -609,6 +611,7 @@ int cam_copyImage(struct camprop *cam, char *imageData, unsigned long imageLengt
       sprintf(cam->msg, "cam_copyImage: Not enougt memory");
       result = LIBGPHOTO_ERROR;
    }
+   
    return result;
 }
 

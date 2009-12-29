@@ -15,7 +15,7 @@
  * and usb.c, keeping the common protocols/busses support in this
  * file.
  *
- * $Id: canon.c,v 1.2 2009-12-06 15:45:04 michelpujol Exp $
+ * $Id: canon.c,v 1.3 2009-12-29 18:10:45 michelpujol Exp $
  */
 
 #include "config.h"
@@ -419,7 +419,7 @@ const struct canonValueStruct canonQuality[]= {
 
 const struct canonValueStruct canonValueQuality[] =
 {
-      { 0x00020420, "CRW"        , (float)0.0  },
+      { 0x00020420, "RAW"        , (float)0.0  },
       { 0x00010320, "Large:Fine" , (float)0.0  },
       { 0x00010220, "Large:Normal" , (float)0.0  },
       { 0x01010320, "Middle:Fine" , (float)0.0  },
