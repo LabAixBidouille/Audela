@@ -9,7 +9,7 @@
 #
 ########################################################################################
 
-# Mise a jour $Id: make_packages.sh,v 1.16 2009-12-26 14:29:17 bmauclaire Exp $
+# Mise a jour $Id: make_packages.sh,v 1.17 2009-12-29 01:32:19 bmauclaire Exp $
 
 
 #--- Utilisation du script :
@@ -132,7 +132,7 @@ else
 fi
 
 
-#--- Construit ne numero de version :
+#--- Construit le numero de version :
 #DAILY=20080509
 #DAILY=`date +"%Y%m%d"`
 noteversion=`grep "audela(version)" $rep_bin/version.tcl | tr -d '"'`
@@ -260,7 +260,7 @@ cd $DIRECTORY/$sous_rep_libthread
 #    ln -s libthread2.6.5.1.so_debian libthread2.6.5.1.so
 if test "$ladistro" = "mandriva"
 then
-    #- cp -f /home/mauclaire/audela/binlibs/libthread/Thread2.6.5.1.so_mandriva libthread2.6.5.1.so
+    #- cp -f /home/mauclaire/Audela/audela-cvs/binlibs/libthread/Thread2.6.5.1.so_mandriva libthread2.6.5.1.so
     cp -f libthread2.6.5.1.so libthread2.6.5.1.so.dflt
     cp -f ../../../../../../../../../../binlibs/libthread/Thread2.6.5.1.so_mandriva libthread2.6.5.1.so
 fi
@@ -309,11 +309,11 @@ cp audela.xpm $BUILD_DIR/usr/share/pixmaps/
 
 #--- Creation du paquet :
 echo "Creation du paquet Debian..."
-#-- dpkg-buildpackage -rfakeroot ou Rapide : fakeroot debian/rules binary
 #- sudo dpkg -b $BUILD_DIR $BUILD_DIR$lesuffixe.deb
-dpkg -b $BUILD_DIR $BUILD_DIR$lesuffixe.deb
 #- luser=`whoami`
 #- sudo chown $luser.$luser *.deb
+#-- dpkg-buildpackage -b -ai386 -rfakeroot ou Rapide : fakeroot debian/rules binary
+fakeroot dpkg -b $BUILD_DIR $BUILD_DIR$lesuffixe.deb
 echo "Paquet DEB cree."
 
 
@@ -321,13 +321,18 @@ echo "Paquet DEB cree."
 if test "$ladistro" = "mandriva"
 then
     echo "Creation du paquet RPM..."
+    #-- Creation d'un repertoire rpm car des fichiers sont crees :
     mkdir rpm
     cd rpm
-    sudo alien -v --to-rpm --scripts ../$BUILD_DIR-$lesuffixe.deb
-    sudo chown $luser.$luser *.rpm
+    #-- Fabrication du paquet rpm :
+    #- sudo alien -v --to-rpm --scripts ../$BUILD_DIR$lesuffixe.deb
+    #- sudo chown $luser.$luser *.rpm
+    fakeroot alien -v --to-rpm --scripts ../$BUILD_DIR$lesuffixe.deb
+    #-- Menage :
     mv *.rpm ..
     cd ..
-    rm -rf rpm *.deb
+    rm -rf rpm
+    rm -f *.deb
     echo "Paquet RPM cree."
 fi
 
