@@ -655,50 +655,55 @@ void cam_measure_temperature(struct camprop *cam)
     char ligne[MAXLENGTH];
     char result[MAXLENGTH];
     int failed, paramtype;
-
+    
     strcpy(cam->msg, "");
-    if (cam->authorized == 1) {
-        if (!cam->ethvar.InfoCCD_HasRegulationTempCaps) {
-	    sprintf(ligne, "<LIBETHERNAUDE/cam_measure_temperature> camera does not support temperature regulation (%d) ; return bypassed.",cam->ethvar.InfoCCD_HasRegulationTempCaps); util_log(ligne, 0);
-	    // TODO: FIXME. return;
-	}
-    	failed = 0;
-	paramCCD_clearall(&ParamCCDIn, 1);
-	paramCCD_put(-1, "GetCCD_tempe", &ParamCCDIn, 1);
-	paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
-	AskForExecuteCCDCommand(&ParamCCDIn, &ParamCCDOut);
-	if (ParamCCDOut.NbreParam >= 1) {
-	    paramCCD_get(0, result, &ParamCCDOut);
-	    strcpy(cam->msg, "");
-	    if (strcmp(result, "FAILED") == 0) {
-		failed = 1;
-		paramCCD_get(1, result, &ParamCCDOut);
-		sprintf(cam->msg, "GetCCD_tempe Failed\n%s", result);
-	    }
-	}
-	if (failed == 0) {
-	    /* --- normal state --- */
-	    sprintf(keyword,"Temperature");
-	    if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-		cam->temperature = atof(value);
-	    }
-	    sprintf(ligne,"<LIBETHERNAUDE/cam_measure_temperature> keyword='%s', value='%s', cam->temperature=%f",keyword,value,cam->temperature); util_log("\n", 0);
-	} else {
-	    sprintf(ligne, "cam%d reinit -ip %s", cam->camno, cam->ip);
-	    if (cam->ipsetting == 1) {
-		sprintf(result, " -ipsetting \"%s\"", cam->ipsetting_filename);
-		strcat(ligne, result);
-	    }
-	    sprintf(result, " -shutterinvert %d", cam->shutteraudinereverse);
-	    strcat(ligne, result);
-	    sprintf(result, " -canspeed %d", cam->canspeed);
-	    strcat(ligne, result);
-	    strcpy(cam->msg, "");
-	    if (Tcl_Eval(cam->interp, ligne) != TCL_OK) {
-		sprintf(cam->msg, cam->interp->result);
-	    }
-	}
-	cam->CCDStatus = 1;
+    // je verifie qu'il n'y a pas d'acquisition en cours, car la lecture de la température ne peut pas se faire pendant une acquisition.
+    if ( cam->acquisitionInProgress == 0 ) {
+       if (cam->authorized == 1) {
+          if (!cam->ethvar.InfoCCD_HasRegulationTempCaps) {
+             sprintf(ligne, "<LIBETHERNAUDE/cam_measure_temperature> camera does not support temperature regulation (%d) ; return bypassed.",cam->ethvar.InfoCCD_HasRegulationTempCaps); util_log(ligne, 0);
+             // TODO: FIXME. return;
+          }
+          failed = 0;
+          paramCCD_clearall(&ParamCCDIn, 1);
+          paramCCD_put(-1, "GetCCD_tempe", &ParamCCDIn, 1);
+          paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
+          AskForExecuteCCDCommand(&ParamCCDIn, &ParamCCDOut);
+          if (ParamCCDOut.NbreParam >= 1) {
+             paramCCD_get(0, result, &ParamCCDOut);
+             strcpy(cam->msg, "");
+             if (strcmp(result, "FAILED") == 0) {
+                failed = 1;
+                paramCCD_get(1, result, &ParamCCDOut);
+                sprintf(cam->msg, "GetCCD_tempe Failed\n%s", result);
+             }
+          }
+          if (failed == 0) {
+             /* --- normal state --- */
+             sprintf(keyword,"Temperature");
+             if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
+                cam->temperature = atof(value);
+             }
+             sprintf(ligne,"<LIBETHERNAUDE/cam_measure_temperature> keyword='%s', value='%s', cam->temperature=%f",keyword,value,cam->temperature); util_log("\n", 0);
+          } else {
+             sprintf(ligne, "cam%d reinit -ip %s", cam->camno, cam->ip);
+             if (cam->ipsetting == 1) {
+                sprintf(result, " -ipsetting \"%s\"", cam->ipsetting_filename);
+                strcat(ligne, result);
+             }
+             sprintf(result, " -shutterinvert %d", cam->shutteraudinereverse);
+             strcat(ligne, result);
+             sprintf(result, " -canspeed %d", cam->canspeed);
+             strcat(ligne, result);
+             strcpy(cam->msg, "");
+             if (Tcl_Eval(cam->interp, ligne) != TCL_OK) {
+                sprintf(cam->msg, cam->interp->result);
+             }
+          }
+          cam->CCDStatus = 1;
+       }
+    } else {
+       strcpy(cam->msg, "acquisition in progress"); 
     }
 }
 
