@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.36 2009-03-13 23:49:24 michelpujol Exp $
+# Mise a jour $Id: dslr.tcl,v 1.37 2009-12-29 17:52:34 michelpujol Exp $
 #
 
 namespace eval ::dslr {
@@ -685,14 +685,9 @@ proc ::dslr::setLoadParameters { camItem } {
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $audace(base).telecharge_image
 
-   #---
-   if { $conf(dslr,utiliser_cf) == "0" } {
-      $audace(base).telecharge_image.rad3 configure -state disabled
-      $audace(base).telecharge_image.supprime_image configure -state disabled
-   } else {
-      $audace(base).telecharge_image.rad3 configure -state normal
-      $audace(base).telecharge_image.supprime_image configure -state normal
-   }
+
+   #--- Mise à jour des radio boutons en fonction des parametres deja choisis
+   ::dslr::utiliserCF $camItem
 
 }
 
@@ -717,13 +712,15 @@ proc ::dslr::utiliserCF { camItem } {
 
    #--- je mets a jour les widgets
    if { $conf(dslr,utiliser_cf) == "0" } {
+      $audace(base).telecharge_image.rad1 configure -state disabled
       $audace(base).telecharge_image.rad3 configure -state disabled
       $audace(base).telecharge_image.supprime_image configure -state disabled
-      if { $conf(dslr,telecharge_mode) == "3" } {
-         #--- j'annule le mode 3 car il n'est pas possible sans CF
+      if { $conf(dslr,telecharge_mode) != "2" } {
+         #--- j'annule les modes 1 et 3 car il n'est pas possible sans CF
          set conf(dslr,telecharge_mode) "2"
       }
    } else {
+      $audace(base).telecharge_image.rad1 configure -state normal
       $audace(base).telecharge_image.rad3 configure -state normal
       $audace(base).telecharge_image.supprime_image configure -state normal
    }
@@ -783,13 +780,14 @@ proc ::dslr::changerSelectionTelechargementAPN { camItem } {
 # hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
 # hasFormat :        Retourne l'existence d'un format (1 : Oui, 0 : Non)
 # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
-# hasQuality :       Retourne l'existence d'une qualité (1 : Oui, 0 : Non)
+# hasQuality :       Retourne l'existence d'une qualitï¿½ (1 : Oui, 0 : Non)
 # hasScan :          Retourne l'existence du mode scan (1 : Oui, 0 : Non)
 # hasShutter :       Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
 # hasTempSensor      Retourne l'existence du capteur de temperature (1 : Oui, 0 : Non)
 # hasSetTemp         Retourne l'existence d'une consigne de temperature (1 : Oui, 0 : Non)
 # hasVideo :         Retourne l'existence du mode video (1 : Oui, 0 : Non)
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
+# loadMode :         Retourne le mode de chargement d'une image (1: pas de chargment, 2:chargement immediat, 3: chargement differe)
 # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
 # multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
 # name :             Retourne le modele de la camera
@@ -817,6 +815,7 @@ proc ::dslr::getPluginProperty { camItem propertyName } {
       hasSetTemp       { return 0 }
       hasVideo         { return 0 }
       hasWindow        { return 0 }
+      loadMode         { return $::conf(dslr,telecharge_mode) }
       longExposure     { return 1 }
       multiCamera      { return 0 }
       name             {
