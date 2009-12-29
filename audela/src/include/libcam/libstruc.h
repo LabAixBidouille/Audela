@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libstruc.h,v 1.14 2009-11-06 23:06:51 michelpujol Exp $
+ * $Id: libstruc.h,v 1.15 2009-12-29 16:29:42 michelpujol Exp $
  */
 
 #ifndef __LIBSTRUC_H__
@@ -111,7 +111,7 @@ struct Capabilities {
    unsigned long pixel_size; \
    struct Capabilities capabilities; \
    int  blockingAcquisition; \
-   int  doneAcquisition; \
+   int  acquisitionInProgress; \
    struct camprop *next
 
 
