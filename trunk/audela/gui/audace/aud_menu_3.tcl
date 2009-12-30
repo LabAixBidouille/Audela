@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.51 2009-12-30 22:36:13 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.52 2009-12-30 23:14:44 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -2570,11 +2570,11 @@ namespace eval ::lconv2 {
                   dict set plans $racine couleur $rgbfiltr $file
                }
             } else {
-               ::console::affiche_erreur "$fichier $caption(pretraitement,err_entete) $::errorInfo\n"
+               ::console::affiche_erreur "$fichier $caption(pretraitement,err_entete) $::errorInfo\n\n"
             }
             array unset kwds
          } else {
-            ::console::affiche_erreur "$fichier $caption(pretraitement,err_analyse) $::errorInfo\n"
+            ::console::affiche_erreur "$fichier $caption(pretraitement,err_analyse) $::errorInfo\n\n"
          }
       }
 
@@ -2949,7 +2949,7 @@ namespace eval ::lconv2 {
       global help
 
       #---
-      ::audace::showHelpItem "$help(dir,pretrait)" "lconv2.htm"
+      ::audace::showHelpItem "$help(dir,pretrait)" "1015conversion_couleurs.htm"
    }
 
    #########################################################################
@@ -2989,7 +2989,7 @@ namespace eval ::lconv2 {
          #--- convertit chaque fichier
          switch [ Do_$private(lconv2,conversion) $in $out ] {
             0  { ::lconv2::Avancement ok $j }
-            1  { ::console::affiche_erreur "$private(lconv2,msg)\n"
+            1  { ::console::affiche_erreur "$private(lconv2,msg)\n\n"
                  ::lconv2::Avancement info $j
                }
          }
