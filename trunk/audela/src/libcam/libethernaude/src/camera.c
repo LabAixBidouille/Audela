@@ -718,52 +718,57 @@ void cam_cooler_off(struct camprop *cam)
 
 void cam_cooler_check(struct camprop *cam)
 {
-    char ligne[MAXLENGTH];
-    char result[MAXLENGTH];
-    int sortie, failed;
+   char ligne[MAXLENGTH];
+   char result[MAXLENGTH];
+   int sortie, failed;
+   
+   strcpy(cam->msg, "");
+   if ( cam->acquisitionInProgress == 0 ) {
+      if (cam->authorized == 1) {
+         if (!cam->ethvar.InfoCCD_HasRegulationTempCaps) {
+            sprintf(ligne, "<LIBETHERNAUDE/cam_cooler_check> camera does not support temperature regulation (%d) ; return bypassed.",cam->ethvar.InfoCCD_HasRegulationTempCaps); util_log(ligne, 0);
+            // TODO: FIXME. return;
+         }
+         failed = 0;
+         paramCCD_clearall(&ParamCCDIn, 1);
+         paramCCD_put(-1, "SetCCD_tempe", &ParamCCDIn, 1);
+         paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
+         sprintf(ligne, "Temperature=%f", (float)(cam->check_temperature));
+         paramCCD_put(-1, ligne, &ParamCCDIn, 1);
+         AskForExecuteCCDCommand_Dump(&ParamCCDIn, &ParamCCDOut);
+         if (ParamCCDOut.NbreParam >= 1) {
+            paramCCD_get(0, result, &ParamCCDOut);
+            strcpy(cam->msg, "");
+            if (strcmp(result, "FAILED") == 0) {
+               failed = 1;
+               paramCCD_get(1, result, &ParamCCDOut);
+               sprintf(cam->msg, "SetCCD_tempe Failed\n%s", result);
+            }
+         }
+         if (failed == 0) {
+            /* --- normal state --- */
+            sortie = 1;
+         } else {
+            sprintf(ligne, "cam%d reinit -ip %s", cam->camno, cam->ip);
+            if (cam->ipsetting == 1) {
+               sprintf(result, " -ipsetting \"%s\"", cam->ipsetting_filename);
+               strcat(ligne, result);
+            }
+            sprintf(result, " -shutterinvert %d", cam->shutteraudinereverse);
+            strcat(ligne, result);
+            sprintf(result, " -canspeed %d", cam->canspeed);
+            strcat(ligne, result);
+            strcpy(cam->msg, "");
+            if (Tcl_Eval(cam->interp, ligne) != TCL_OK) {
+               sprintf(cam->msg, cam->interp->result);
+            }
+         }
+         cam->CCDStatus = 1;
+      }
+   } else {
+      strcpy(cam->msg, "acquisition in progress"); 
+   }
 
-    strcpy(cam->msg, "");
-    if (cam->authorized == 1) {
-       if (!cam->ethvar.InfoCCD_HasRegulationTempCaps) {
-	  sprintf(ligne, "<LIBETHERNAUDE/cam_cooler_check> camera does not support temperature regulation (%d) ; return bypassed.",cam->ethvar.InfoCCD_HasRegulationTempCaps); util_log(ligne, 0);
-	  // TODO: FIXME. return;
-       }
-    	failed = 0;
-	paramCCD_clearall(&ParamCCDIn, 1);
-	paramCCD_put(-1, "SetCCD_tempe", &ParamCCDIn, 1);
-	paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
-	sprintf(ligne, "Temperature=%f", (float)(cam->check_temperature));
-	paramCCD_put(-1, ligne, &ParamCCDIn, 1);
-	AskForExecuteCCDCommand_Dump(&ParamCCDIn, &ParamCCDOut);
-	if (ParamCCDOut.NbreParam >= 1) {
-	    paramCCD_get(0, result, &ParamCCDOut);
-	    strcpy(cam->msg, "");
-	    if (strcmp(result, "FAILED") == 0) {
-		failed = 1;
-		paramCCD_get(1, result, &ParamCCDOut);
-		sprintf(cam->msg, "SetCCD_tempe Failed\n%s", result);
-	    }
-	}
-	if (failed == 0) {
-	    /* --- normal state --- */
-	    sortie = 1;
-	} else {
-	    sprintf(ligne, "cam%d reinit -ip %s", cam->camno, cam->ip);
-	    if (cam->ipsetting == 1) {
-		sprintf(result, " -ipsetting \"%s\"", cam->ipsetting_filename);
-		strcat(ligne, result);
-	    }
-	    sprintf(result, " -shutterinvert %d", cam->shutteraudinereverse);
-	    strcat(ligne, result);
-	    sprintf(result, " -canspeed %d", cam->canspeed);
-	    strcat(ligne, result);
-	    strcpy(cam->msg, "");
-	    if (Tcl_Eval(cam->interp, ligne) != TCL_OK) {
-		sprintf(cam->msg, cam->interp->result);
-	    }
-	}
-	cam->CCDStatus = 1;
-    }
 }
 
 void cam_set_binning(int binx, int biny, struct camprop *cam)
