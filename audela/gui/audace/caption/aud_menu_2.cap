@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_2.cap
-# Mise a jour $Id: aud_menu_2.cap,v 1.17 2009-12-22 18:25:44 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.cap,v 1.18 2009-12-30 07:29:06 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -13,6 +13,7 @@ global caption langage
 
 set caption(audace,menu,affichage)                    "View"
 set caption(audace,menu,nouvelle_visu)                "New 'visu'"
+set caption(audace,menu,efface_image)                 "# Effacer l'image"
 set caption(audace,menu,palette_grise)                "Grey Swatch"
 set caption(audace,menu,palette_inverse)              "Reversed Swatch"
 set caption(audace,menu,palette_iris)                 "Iris Swatch"
@@ -85,6 +86,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,affichage)                 "Affichage"
    set caption(audace,menu,nouvelle_visu)             "Nouvelle 'visu'"
+   set caption(audace,menu,efface_image)              "Effacer l'image"
    set caption(audace,menu,palette_grise)             "Palette grise"
    set caption(audace,menu,palette_inverse)           "Palette inversée"
    set caption(audace,menu,palette_iris)              "Palette Iris"
@@ -157,6 +159,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,affichage)                 "Vista"
    set caption(audace,menu,nouvelle_visu)             "Nuovo 'visu'"
+   set caption(audace,menu,efface_image)              "# Effacer l'image"
    set caption(audace,menu,palette_grise)             "Palette grigia"
    set caption(audace,menu,palette_inverse)           "Palette inversa"
    set caption(audace,menu,palette_iris)              "Palette Iris"
@@ -229,6 +232,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,affichage)                 "Ver"
    set caption(audace,menu,nouvelle_visu)             "Nueva 'visu'"
+   set caption(audace,menu,efface_image)              "# Effacer l'image"
    set caption(audace,menu,palette_grise)             "Paleta de grises "
    set caption(audace,menu,palette_inverse)           "Paleta invertida "
    set caption(audace,menu,palette_iris)              "Paleta de Iris "
@@ -301,6 +305,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,affichage)                 "Anzeige"
    set caption(audace,menu,nouvelle_visu)             "Neue 'visu'"
+   set caption(audace,menu,efface_image)              "# Effacer l'image"
    set caption(audace,menu,palette_grise)             "Graue Palette"
    set caption(audace,menu,palette_inverse)           "Umgekehrte Palette"
    set caption(audace,menu,palette_iris)              "Iris Palette"
@@ -373,6 +378,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,affichage)                 "Ver"
    set caption(audace,menu,nouvelle_visu)             "Novo 'visu'"
+   set caption(audace,menu,efface_image)              "# Effacer l'image"
    set caption(audace,menu,palette_grise)             "Paleta de cinzentos"
    set caption(audace,menu,palette_inverse)           "Paleta inversa"
    set caption(audace,menu,palette_iris)              "Paleta de íris"
@@ -445,6 +451,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,affichage)                 "Vis"
    set caption(audace,menu,nouvelle_visu)             "Ny 'visu'"
+   set caption(audace,menu,efface_image)              "# Effacer l'image"
    set caption(audace,menu,palette_grise)             "Grå palet"
    set caption(audace,menu,palette_inverse)           "Modsat farve"
    set caption(audace,menu,palette_iris)              "Iris palet"
@@ -517,6 +524,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,affichage)                 "View"
    set caption(audace,menu,nouvelle_visu)             "New 'visu'"
+   set caption(audace,menu,efface_image)              "# Effacer l'image"
    set caption(audace,menu,palette_grise)             "Grey Swatch"
    set caption(audace,menu,palette_inverse)           "Reversed Swatch"
    set caption(audace,menu,palette_iris)              "Iris Swatch"
@@ -589,6 +597,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,affichage)                 "View"
    set caption(audace,menu,nouvelle_visu)             "New 'visu'"
+   set caption(audace,menu,efface_image)              "# Effacer l'image"
    set caption(audace,menu,palette_grise)             "Grey Swatch"
    set caption(audace,menu,palette_inverse)           "Reversed Swatch"
    set caption(audace,menu,palette_iris)              "Iris Swatch"
