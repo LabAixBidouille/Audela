@@ -2,7 +2,7 @@
 # Fichier : audine.tcl
 # Description : Configuration de la camera Audine
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audine.tcl,v 1.25 2009-11-20 14:22:07 robertdelmas Exp $
+# Mise a jour $Id: audine.tcl,v 1.26 2009-12-30 14:26:24 robertdelmas Exp $
 #
 
 namespace eval ::audine {
@@ -557,12 +557,12 @@ proc ::audine::stop { camItem } {
 
    #--- Si la fenetre 'Alimentation AlAudine avec port I2C' est affichee, je la ferme
    if { [ winfo exists $audace(base).alimAlAudineNT ] } {
-      ::AlAudine_NT::fermer
+      ::AlAudineNT::fermer
    }
 
    #--- Si la fenetre 'Coordonnees GPS de l'observateur' est affichee, je la ferme
-   if { [ winfo exists $audace(base).eventAude_GPS ] } {
-      ::eventAude_GPS::fermer
+   if { [ winfo exists $audace(base).eventAudeGPS ] } {
+      ::eventAudeGPS::fermer
    }
 
    #--- Je ferme la liaison d'acquisition de la camera
@@ -631,7 +631,7 @@ proc ::audine::setTempCCD { } {
    global conf
 
    if { ! [ info exists conf(alaudine_nt,temp_ccd_souhaite) ] } {
-      ::AlAudine_NT::initConf
+      ::AlAudineNT::initConf
    }
    return $conf(alaudine_nt,temp_ccd_souhaite)
 }
