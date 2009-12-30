@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.91 2009-12-27 16:42:47 michelpujol Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.92 2009-12-30 14:18:20 robertdelmas Exp $
 #
 
 #==============================================================
@@ -1070,7 +1070,7 @@ proc ::acqfc::startAcquisitionSerieImage { visuNo expTime binning fileName image
 
    #--- je lance les acquisitions
    ::acqfc::Go $visuNo
-   
+
 }
 
 #------------------------------------------------------------
@@ -1624,7 +1624,7 @@ proc ::acqfc::Go { visuNo } {
                $panneau(acqfc,$visuNo,This).mode.serie_1.index.entr configure -state normal
                $panneau(acqfc,$visuNo,This).mode.serie_1.index.but configure -state normal
             }
-            5 {
+            5  {
                #--- Chargement differre de l'image precedente
                if { $loadMode == "3" } {
                   #--- Chargement de la derniere image
