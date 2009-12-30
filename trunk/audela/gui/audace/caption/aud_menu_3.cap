@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.42 2009-12-17 22:17:06 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.43 2009-12-30 22:31:13 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,6 +12,7 @@ global caption langage
 # *************** Version anglaise ****************************
 
 set caption(audace,menu,pretraite)                      "Preprocessing"
+set caption(audace,menu,raw2fits)                       "RAW ---> FITS Conversion"
 set caption(audace,menu,r+v+b2rvb)                      "R+G+B ---> RGB Conversion"
 set caption(audace,menu,rvb2r+v+b)                      "RGB ---> R+G+B Conversion"
 set caption(audace,menu,cfa2rvb)                        "CFA ---> RGB Conversion"
@@ -35,6 +36,22 @@ set caption(audace,menu,recentrer)                      "Recenter"
 set caption(audace,menu,faire_offset)                   "Shoot a bias frame"
 set caption(audace,menu,faire_dark)                     "Shoot a dark frame"
 set caption(audace,menu,faire_flat_field)               "Shoot a flat-field frame"
+
+set caption(pretraitement,all)                          "# Convertir tous les fichiers"
+set caption(pretraitement,renum)                        "# Renuméroter les images en sortie"
+set caption(pretraitement,chg)                          "# Changer le nom générique de sortie en"
+set caption(pretraitement,destroy_src)                  "# Détruire les sources"
+set caption(pretraitement,src)                          "# Fichier source"
+set caption(pretraitement,output)                       "# Fichier produit"
+set caption(pretraitement,done)                         "# Remarque"
+set caption(pretraitement,echec)                        "# Echec de conversion de"
+set caption(pretraitement,err_analyse)                  "# Erreur d'analyse :"
+set caption(pretraitement,err_entete)                   "# Erreur dans l'en-tête FITS :"
+set caption(pretraitement,nb_select)                    "# Fichiers sélectionnés"
+set caption(pretraitement,no_selection)                 "# Aucune sélection."
+set caption(pretraitement,no_file)                      "# Aucun fichier convertible dans ce répertoire."
+set caption(pretraitement,options)                      "# Options"
+set caption(pretraitement,repertoire)                   "# Répertoire sélectionné :"
 
 set caption(pretraitement,image_gene_entree_r+v+b)      "Generic name for R, G, and B input images:"
 set caption(pretraitement,image_sortie_rvb)             "Name of RGB output image:"
@@ -140,6 +157,7 @@ set caption(aud_menu_3,aide)                            "Help"
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,pretraite)                   "Prétraitement"
+   set caption(audace,menu,raw2fits)                    "Conversion RAW ---> FITS"
    set caption(audace,menu,r+v+b2rvb)                   "Conversion R+V+B ---> RVB"
    set caption(audace,menu,rvb2r+v+b)                   "Conversion RVB ---> R+V+B"
    set caption(audace,menu,cfa2rvb)                     "Conversion CFA ---> RVB"
@@ -163,6 +181,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,faire_offset)                "Faire un offset"
    set caption(audace,menu,faire_dark)                  "Faire un dark"
    set caption(audace,menu,faire_flat_field)            "Faire un flat-field"
+
+   set caption(pretraitement,all)                       "Convertir tous les fichiers"
+   set caption(pretraitement,renum)                     "Renuméroter les images en sortie"
+   set caption(pretraitement,chg)                       "Changer le nom générique de sortie en"
+   set caption(pretraitement,destroy_src)               "Détruire les sources"
+   set caption(pretraitement,src)                       "Fichier source"
+   set caption(pretraitement,output)                    "Fichier produit"
+   set caption(pretraitement,done)                      "Remarque"
+   set caption(pretraitement,echec)                     "Echec de conversion de"
+   set caption(pretraitement,err_analyse)               "Erreur d'analyse :"
+   set caption(pretraitement,err_entete)                "Erreur dans l'en-tête FITS :"
+   set caption(pretraitement,nb_select)                 "Fichiers sélectionnés"
+   set caption(pretraitement,no_selection)              "Aucune sélection."
+   set caption(pretraitement,no_file)                   "Aucun fichier convertible dans ce répertoire."
+   set caption(pretraitement,options)                   "Options"
+   set caption(pretraitement,repertoire)                "Répertoire sélectionné :"
 
    set caption(pretraitement,image_gene_entree_r+v+b)   "Nom générique des images R, V et B d'entrée :"
    set caption(pretraitement,image_sortie_rvb)          "Nom de l'image RVB de sortie :"
@@ -268,6 +302,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(audace,menu,pretraite)                   "Pretrattamento"
+   set caption(audace,menu,raw2fits)                    "Conversione RAW ---> FITS"
    set caption(audace,menu,r+v+b2rvb)                   "Conversione R+V+B ---> RVB"
    set caption(audace,menu,rvb2r+v+b)                   "Conversione RVB ---> R+V+B"
    set caption(audace,menu,cfa2rvb)                     "Conversione CFA ---> RVB"
@@ -291,6 +326,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,faire_offset)                "Fare un bias"
    set caption(audace,menu,faire_dark)                  "Fare un dark"
    set caption(audace,menu,faire_flat_field)            "Fare un flat field"
+
+   set caption(pretraitement,all)                       "# Convertir tous les fichiers"
+   set caption(pretraitement,renum)                     "# Renuméroter les images en sortie"
+   set caption(pretraitement,chg)                       "# Changer le nom générique de sortie en"
+   set caption(pretraitement,destroy_src)               "# Détruire les sources"
+   set caption(pretraitement,src)                       "# Fichier source"
+   set caption(pretraitement,output)                    "# Fichier produit"
+   set caption(pretraitement,done)                      "# Remarque"
+   set caption(pretraitement,echec)                     "# Echec de conversion de"
+   set caption(pretraitement,err_analyse)               "# Erreur d'analyse :"
+   set caption(pretraitement,err_entete)                "# Erreur dans l'en-tête FITS :"
+   set caption(pretraitement,nb_select)                 "# Fichiers sélectionnés"
+   set caption(pretraitement,no_selection)              "# Aucune sélection."
+   set caption(pretraitement,no_file)                   "# Aucun fichier convertible dans ce répertoire."
+   set caption(pretraitement,options)                   "# Options"
+   set caption(pretraitement,repertoire)                "# Répertoire sélectionné :"
 
    set caption(pretraitement,image_gene_entree_r+v+b)   "Nomi generici delle immagini R, G, B di ingresso:"
    set caption(pretraitement,image_sortie_rvb)          "Nome dell'immagine RVB di output:"
@@ -396,6 +447,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(audace,menu,pretraite)                   "Preprocesando"
+   set caption(audace,menu,raw2fits)                    "Conversion RAW ---> FITS"
    set caption(audace,menu,r+v+b2rvb)                   "Conversion R+V+A ---> RVA"
    set caption(audace,menu,rvb2r+v+b)                   "Conversion RVA ---> R+V+A"
    set caption(audace,menu,cfa2rvb)                     "Conversion CFA --> RVA"
@@ -419,6 +471,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,faire_offset)                "Haz una toma bias"
    set caption(audace,menu,faire_dark)                  "Haz una toma dark"
    set caption(audace,menu,faire_flat_field)            "Haz una toma de campo plano"
+
+   set caption(pretraitement,all)                       "# Convertir tous les fichiers"
+   set caption(pretraitement,renum)                     "# Renuméroter les images en sortie"
+   set caption(pretraitement,chg)                       "# Changer le nom générique de sortie en"
+   set caption(pretraitement,destroy_src)               "# Détruire les sources"
+   set caption(pretraitement,src)                       "# Fichier source"
+   set caption(pretraitement,output)                    "# Fichier produit"
+   set caption(pretraitement,done)                      "# Remarque"
+   set caption(pretraitement,echec)                     "# Echec de conversion de"
+   set caption(pretraitement,err_analyse)               "# Erreur d'analyse :"
+   set caption(pretraitement,err_entete)                "# Erreur dans l'en-tête FITS :"
+   set caption(pretraitement,nb_select)                 "# Fichiers sélectionnés"
+   set caption(pretraitement,no_selection)              "# Aucune sélection."
+   set caption(pretraitement,no_file)                   "# Aucun fichier convertible dans ce répertoire."
+   set caption(pretraitement,options)                   "# Options"
+   set caption(pretraitement,repertoire)                "# Répertoire sélectionné :"
 
    set caption(pretraitement,image_gene_entree_r+v+b)   "Nombre genérico de las imágenes R, V y A de entrada:"
    set caption(pretraitement,image_sortie_rvb)          "Nombre de la imagen RVA de salida:"
@@ -524,6 +592,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(audace,menu,pretraite)                   "Voraufbereitung"
+   set caption(audace,menu,raw2fits)                    "RAW ---> FITS Umstellung"
    set caption(audace,menu,r+v+b2rvb)                   "R+G+B ---> RGB Umstellung"
    set caption(audace,menu,rvb2r+v+b)                   "RGB ---> R+G+B Umstellung"
    set caption(audace,menu,cfa2rvb)                     "CFA ---> RGB Umstellung"
@@ -547,6 +616,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,faire_offset)                "Ein Neigung Bild treiben"
    set caption(audace,menu,faire_dark)                  "Ein Schwartz Bild treiben"
    set caption(audace,menu,faire_flat_field)            "Ein Flat-Field Bild treiben"
+
+   set caption(pretraitement,all)                       "# Convertir tous les fichiers"
+   set caption(pretraitement,renum)                     "# Renuméroter les images en sortie"
+   set caption(pretraitement,chg)                       "# Changer le nom générique de sortie en"
+   set caption(pretraitement,destroy_src)               "# Détruire les sources"
+   set caption(pretraitement,src)                       "# Fichier source"
+   set caption(pretraitement,output)                    "# Fichier produit"
+   set caption(pretraitement,done)                      "# Remarque"
+   set caption(pretraitement,echec)                     "# Echec de conversion de"
+   set caption(pretraitement,err_analyse)               "# Erreur d'analyse :"
+   set caption(pretraitement,err_entete)                "# Erreur dans l'en-tête FITS :"
+   set caption(pretraitement,nb_select)                 "# Fichiers sélectionnés"
+   set caption(pretraitement,no_selection)              "# Aucune sélection."
+   set caption(pretraitement,no_file)                   "# Aucun fichier convertible dans ce répertoire."
+   set caption(pretraitement,options)                   "# Options"
+   set caption(pretraitement,repertoire)                "# Répertoire sélectionné :"
 
    set caption(pretraitement,image_gene_entree_r+v+b)   "Generischen Namen für R, G, und B Input Bilder:"
    set caption(pretraitement,image_sortie_rvb)          "Output RGB Bild Namen:"
@@ -652,6 +737,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(audace,menu,pretraite)                   "Pré-tratamento"
+   set caption(audace,menu,raw2fits)                    "Conversão RAW ---> FITS"
    set caption(audace,menu,r+v+b2rvb)                   "Conversão R+G+B ---> RGB"
    set caption(audace,menu,rvb2r+v+b)                   "Conversão RGB ---> R+G+B"
    set caption(audace,menu,cfa2rvb)                     "Conversão CFA ---> RGB"
@@ -675,6 +761,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,faire_offset)                "Executar um offset"
    set caption(audace,menu,faire_dark)                  "Executar dark"
    set caption(audace,menu,faire_flat_field)            "Executar flat-field"
+
+   set caption(pretraitement,all)                       "# Convertir tous les fichiers"
+   set caption(pretraitement,renum)                     "# Renuméroter les images en sortie"
+   set caption(pretraitement,chg)                       "# Changer le nom générique de sortie en"
+   set caption(pretraitement,destroy_src)               "# Détruire les sources"
+   set caption(pretraitement,src)                       "# Fichier source"
+   set caption(pretraitement,output)                    "# Fichier produit"
+   set caption(pretraitement,done)                      "# Remarque"
+   set caption(pretraitement,echec)                     "# Echec de conversion de"
+   set caption(pretraitement,err_analyse)               "# Erreur d'analyse :"
+   set caption(pretraitement,err_entete)                "# Erreur dans l'en-tête FITS :"
+   set caption(pretraitement,nb_select)                 "# Fichiers sélectionnés"
+   set caption(pretraitement,no_selection)              "# Aucune sélection."
+   set caption(pretraitement,no_file)                   "# Aucun fichier convertible dans ce répertoire."
+   set caption(pretraitement,options)                   "# Options"
+   set caption(pretraitement,repertoire)                "# Répertoire sélectionné :"
 
    set caption(pretraitement,image_gene_entree_r+v+b)   "Nome genérico das imagens R, G e B de entrada:"
    set caption(pretraitement,image_sortie_rvb)          "Nome da imagem RGB de saída:"
@@ -780,6 +882,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(audace,menu,pretraite)                   "Preprocessing"
+   set caption(audace,menu,raw2fits)                    "Konvertering: RAW ---> FITS"
    set caption(audace,menu,r+v+b2rvb)                   "Konvertering: R+G+B ---> RGB"
    set caption(audace,menu,rvb2r+v+b)                   "Konvertering: RGB ---> R+G+B"
    set caption(audace,menu,cfa2rvb)                     "Konvertering: CFA ---> RGB"
@@ -803,6 +906,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,faire_offset)                "Optag en Bias frame"
    set caption(audace,menu,faire_dark)                  "Optag en Dark frame"
    set caption(audace,menu,faire_flat_field)            "Optag en flat-field frame"
+
+   set caption(pretraitement,all)                       "# Convertir tous les fichiers"
+   set caption(pretraitement,renum)                     "# Renuméroter les images en sortie"
+   set caption(pretraitement,chg)                       "# Changer le nom générique de sortie en"
+   set caption(pretraitement,destroy_src)               "# Détruire les sources"
+   set caption(pretraitement,src)                       "# Fichier source"
+   set caption(pretraitement,output)                    "# Fichier produit"
+   set caption(pretraitement,done)                      "# Remarque"
+   set caption(pretraitement,echec)                     "# Echec de conversion de"
+   set caption(pretraitement,err_analyse)               "# Erreur d'analyse :"
+   set caption(pretraitement,err_entete)                "# Erreur dans l'en-tête FITS :"
+   set caption(pretraitement,nb_select)                 "# Fichiers sélectionnés"
+   set caption(pretraitement,no_selection)              "# Aucune sélection."
+   set caption(pretraitement,no_file)                   "# Aucun fichier convertible dans ce répertoire."
+   set caption(pretraitement,options)                   "# Options"
+   set caption(pretraitement,repertoire)                "# Répertoire sélectionné :"
 
    set caption(pretraitement,image_gene_entree_r+v+b)   "Serienavn for R, G og B input billeder:"
    set caption(pretraitement,image_sortie_rvb)          "Navn på RGB output billede:"
@@ -908,6 +1027,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
    set caption(audace,menu,pretraite)                   "Preprocessing"
+   set caption(audace,menu,raw2fits)                    "RAW ---> FITS Conversion"
    set caption(audace,menu,r+v+b2rvb)                   "R+G+B ---> RGB Conversion"
    set caption(audace,menu,rvb2r+v+b)                   "RGB ---> R+G+B Conversion"
    set caption(audace,menu,cfa2rvb)                     "CFA ---> RGB Conversion"
@@ -931,6 +1051,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,faire_offset)                "Shoot a bias frame"
    set caption(audace,menu,faire_dark)                  "Shoot a dark frame"
    set caption(audace,menu,faire_flat_field)            "Shoot a flat-field frame"
+
+   set caption(pretraitement,all)                       "# Convertir tous les fichiers"
+   set caption(pretraitement,renum)                     "# Renuméroter les images en sortie"
+   set caption(pretraitement,chg)                       "# Changer le nom générique de sortie en"
+   set caption(pretraitement,destroy_src)               "# Détruire les sources"
+   set caption(pretraitement,src)                       "# Fichier source"
+   set caption(pretraitement,output)                    "# Fichier produit"
+   set caption(pretraitement,done)                      "# Remarque"
+   set caption(pretraitement,echec)                     "# Echec de conversion de"
+   set caption(pretraitement,err_analyse)               "# Erreur d'analyse :"
+   set caption(pretraitement,err_entete)                "# Erreur dans l'en-tête FITS :"
+   set caption(pretraitement,nb_select)                 "# Fichiers sélectionnés"
+   set caption(pretraitement,no_selection)              "# Aucune sélection."
+   set caption(pretraitement,no_file)                   "# Aucun fichier convertible dans ce répertoire."
+   set caption(pretraitement,options)                   "# Options"
+   set caption(pretraitement,repertoire)                "# Répertoire sélectionné :"
 
    set caption(pretraitement,image_gene_entree_r+v+b)   "Generic name for R, G, and B input images:"
    set caption(pretraitement,image_sortie_rvb)          "Name of RGB output image:"
@@ -1036,6 +1172,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
    set caption(audace,menu,pretraite)                   "Preprocessing"
+   set caption(audace,menu,raw2fits)                    "RAW ---> FITS Conversion"
    set caption(audace,menu,r+v+b2rvb)                   "R+G+B ---> RGB Conversion"
    set caption(audace,menu,rvb2r+v+b)                   "RGB ---> R+G+B Conversion"
    set caption(audace,menu,cfa2rvb)                     "CFA ---> RGB Conversion"
@@ -1059,6 +1196,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,faire_offset)                "Shoot a bias frame"
    set caption(audace,menu,faire_dark)                  "Shoot a dark frame"
    set caption(audace,menu,faire_flat_field)            "Shoot a flat-field frame"
+
+   set caption(pretraitement,all)                       "# Convertir tous les fichiers"
+   set caption(pretraitement,renum)                     "# Renuméroter les images en sortie"
+   set caption(pretraitement,chg)                       "# Changer le nom générique de sortie en"
+   set caption(pretraitement,destroy_src)               "# Détruire les sources"
+   set caption(pretraitement,src)                       "# Fichier source"
+   set caption(pretraitement,output)                    "# Fichier produit"
+   set caption(pretraitement,done)                      "# Remarque"
+   set caption(pretraitement,echec)                     "# Echec de conversion de"
+   set caption(pretraitement,err_analyse)               "# Erreur d'analyse :"
+   set caption(pretraitement,err_entete)                "# Erreur dans l'en-tête FITS :"
+   set caption(pretraitement,nb_select)                 "# Fichiers sélectionnés"
+   set caption(pretraitement,no_selection)              "# Aucune sélection."
+   set caption(pretraitement,no_file)                   "# Aucun fichier convertible dans ce répertoire."
+   set caption(pretraitement,options)                   "# Options"
+   set caption(pretraitement,repertoire)                "# Répertoire sélectionné :"
 
    set caption(pretraitement,image_gene_entree_r+v+b)   "Generic name for R, G, and B input images:"
    set caption(pretraitement,image_sortie_rvb)          "Name of RGB output image:"
