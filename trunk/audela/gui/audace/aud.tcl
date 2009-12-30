@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.113 2009-12-28 16:19:38 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.114 2009-12-30 07:52:57 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -586,24 +586,24 @@ namespace eval ::audace {
       wm resizable $This 1 1
       wm deiconify $This
 
-      #--- Je cree la visu de la fenetre principale
+      #--- je cree la visu de la fenetre principale
       set visuNo [ ::confVisu::create $audace(base) ]
 
       #---
       wm title $This "$caption(audace,titre) (visu$visuNo)"
-      wm protocol $This WM_DELETE_WINDOW " ::audace::quitter "
+      wm protocol $This WM_DELETE_WINDOW "::audace::quitter"
       update
 
-      #--- Creation des variables audace dependant de la visu
+      #--- creation des variables audace dependant de la visu
       set audace(visuNo)  $visuNo
       set audace(bufNo)   [visu$visuNo buf]
       set audace(imageNo) [visu$visuNo image]
       set audace(hCanvas) $::confVisu::private($visuNo,hCanvas)
 
-      #--- J'ajoute le repertoire des outils dans le chemin
+      #--- j'ajoute le repertoire des outils dans le chemin
       lappend ::auto_path [file join $audace(rep_plugin) tool]
 
-      #--- Je recherche les fichiers tool/*/pkgIndex.tcl
+      #--- je recherche les fichiers tool/*/pkgIndex.tcl
       set filelist [glob -nocomplain -type f -join "$audace(rep_plugin)" tool * pkgIndex.tcl ]
       #--- Chargement des differents outils
       foreach pkgIndexFileName $filelist {
@@ -674,64 +674,67 @@ namespace eval ::audace {
       Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,nouvelle_visu)" "::confVisu::create"
 
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
+      Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,efface_image)" "::confVisu::deleteImage"
+
+      Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_grise)" \
-              "1" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
+         "1" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_inverse)" \
-              "2" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
+         "2" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_iris)" \
-              "3" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
+         "3" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_arc_en_ciel)" \
-              "4" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
+         "4" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Cascade   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,fcttransfert_titre)"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_lin)" \
-              "1" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
+         "1" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_log)" \
-              "2" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
+         "2" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_exp)" \
-              "3" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
+         "3" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_arc)" \
-              "4" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
+         "4" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,seuils)..." \
-              "::seuilWindow::run $visuNo"
+         "::seuilWindow::run $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,balance_rvb)..." \
-              "::seuilCouleur::run $visuNo"
+         "::seuilCouleur::run $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
-              "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.125)" "0.125" \
-              "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.125)" "0.125" \
+         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
-              "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.25)" "0.25" \
-              "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.25)" "0.25" \
+         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
-              "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.5)" "0.5" \
-              "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.5)" "0.5" \
+         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
-              "$caption(audace,menu,zoom) $caption(audace,menu,zoom_1)" "1" \
-              "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_1)" "1" \
+         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
-              "$caption(audace,menu,zoom) $caption(audace,menu,zoom_2)" "2" \
-              "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_2)" "2" \
+         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
-              "$caption(audace,menu,zoom) $caption(audace,menu,zoom_4)" "4" \
-              "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_4)" "4" \
+         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Check     $visuNo "$caption(audace,menu,affichage)" \
-              "$caption(audace,menu,plein_ecran)" \
-              "::confVisu::private($visuNo,fullscreen)" "::confVisu::setFullScreen $visuNo"
+         "$caption(audace,menu,plein_ecran)" \
+         "::confVisu::private($visuNo,fullscreen)" "::confVisu::setFullScreen $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Check     $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,miroir_x)" \
-              "::confVisu::private($visuNo,mirror_x)" "::confVisu::setMirrorX $visuNo"
+         "::confVisu::private($visuNo,mirror_x)" "::confVisu::setMirrorX $visuNo"
       Menu_Check     $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,miroir_y)" \
-              "::confVisu::private($visuNo,mirror_y)" "::confVisu::setMirrorY $visuNo"
+         "::confVisu::private($visuNo,mirror_y)" "::confVisu::setMirrorY $visuNo"
       Menu_Check     $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,window)" \
-              "::confVisu::private($visuNo,window)" "::confVisu::setWindow $visuNo"
+         "::confVisu::private($visuNo,window)" "::confVisu::setWindow $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
@@ -739,7 +742,7 @@ namespace eval ::audace {
          "::confColor::switchDayNight ; \
             if { [ winfo exists $audace(base).selectColor ] } { \
                destroy $audace(base).selectColor \
-               ::confColor::run $visuNo\
+               ::confColor::run $visuNo \
             } \
          "
 
@@ -748,23 +751,23 @@ namespace eval ::audace {
 
       Menu           $visuNo "$caption(audace,menu,pretraite)"
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,miroir_x)" {
-              if { [ buf$audace(bufNo) imageready ] == "1" } {
-                 buf$audace(bufNo) mirrorx
-                 ::audace::autovisu $audace(visuNo)
-              }
-           }
+            if { [ buf$audace(bufNo) imageready ] == "1" } {
+               buf$audace(bufNo) mirrorx
+               ::audace::autovisu $audace(visuNo)
+            }
+         }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,miroir_y)" {
-              if { [ buf$audace(bufNo) imageready ] == "1" } {
-                 buf$audace(bufNo) mirrory
-                 ::audace::autovisu $audace(visuNo)
-              }
-           }
+            if { [ buf$audace(bufNo) imageready ] == "1" } {
+               buf$audace(bufNo) mirrory
+               ::audace::autovisu $audace(visuNo)
+            }
+         }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,miroir_xy)" {
-              if { [ buf$audace(bufNo) imageready ] == "1" } {
-                 buf$audace(bufNo) imaseries "invert xy"
-                 ::audace::autovisu $audace(visuNo)
-              }
-           }
+            if { [ buf$audace(bufNo) imageready ] == "1" } {
+               buf$audace(bufNo) imaseries "invert xy"
+               ::audace::autovisu $audace(visuNo)
+            }
+         }
 
       Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,r+v+b2rvb)..." \
@@ -918,18 +921,18 @@ namespace eval ::audace {
 
       Menu           $visuNo "$caption(audace,menu,aide)"
       Menu_Command   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,sommaire)" \
-         ::audace::showMain
+         "::audace::showMain"
       Menu_Command   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,fonctions)" \
-         ::audace::showFunctions
+         "::audace::showFunctions"
       Menu_Command   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,tutorial)" \
          "::audace::Lance_Tutorial"
       Menu_Cascade   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,site_audela)"
-      Menu_Command   $visuNo "$caption(audace,menu,site_audela)" "$caption(audace,menu,site_internet)" {
-         set filename "$caption(en-tete,a_propos_de_site)" ; ::audace::Lance_Site_htm $filename }
+      Menu_Command   $visuNo "$caption(audace,menu,site_audela)" "$caption(audace,menu,site_internet)" \
+         { set filename "$caption(en-tete,a_propos_de_site)" ; ::audace::Lance_Site_htm $filename }
       Menu_Command   $visuNo "$caption(audace,menu,site_audela)" "$caption(audace,menu,site_dd)..." \
-         ::audace::editSiteWebAudeLA
+         "::audace::editSiteWebAudeLA"
       Menu_Command   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,notice_pdf)..." \
-         ::audace::editNotice_pdf
+         "::audace::editNotice_pdf"
       Menu_Command   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,a_propos_de)" \
          { ::confVersion::run "$audace(base).confVersion" }
 
@@ -1703,7 +1706,7 @@ proc stackTrace { {procedureFullName "" } } {
    } ]
    #--- je traite les erreur imprevues
    if { $catchError != 0 } {
-      #---  je trace le message d'erreur
+      #--- je trace le message d'erreur
       ::console::affiche_erreur "$::errorInfo\n"
    }
 }
