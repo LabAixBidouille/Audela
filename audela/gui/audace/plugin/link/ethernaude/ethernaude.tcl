@@ -2,10 +2,10 @@
 # Fichier : ethernaude.tcl
 # Description : Interface de liaison EthernAude
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: ethernaude.tcl,v 1.30 2009-11-20 14:18:57 robertdelmas Exp $
+# Mise a jour $Id: ethernaude.tcl,v 1.31 2009-12-30 14:27:05 robertdelmas Exp $
 #
 
-namespace eval ethernaude {
+namespace eval ::ethernaude {
    package provide ethernaude 1.0
    package require audela 1.4.0
 
@@ -171,12 +171,12 @@ proc ::ethernaude::fillConfigPage { frm } {
 
    #--- Coordonnees GPS de l'observateur
    button $frm.coord_gps -text "$caption(ethernaude,coord_gps)" -relief raised -state normal \
-      -command "::eventAude_GPS::run $audace(base).eventAude_GPS"
+      -command "::eventAudeGPS::run $audace(base).eventAudeGPS"
    pack $frm.coord_gps -in $frm.frame4 -anchor center -side left -padx 10 -pady 2 -ipadx 10 -ipady 5 -expand true
 
    #--- Alimentation AlAudine NT avec port I2C
    button $frm.alaudine_nt -text "$caption(ethernaude,alaudine_nt)" -relief raised -state normal \
-      -command "::AlAudine_NT::run $audace(base).alimAlAudineNT"
+      -command "::AlAudineNT::run $audace(base).alimAlAudineNT"
    pack $frm.alaudine_nt -in $frm.frame4 -anchor center -side left -padx 10 -pady 2 -ipadx 10 -ipady 5 -expand true
 
    #--- Lancement de la presentation et du tutorial
