@@ -1,7 +1,7 @@
 #
 # Fichier : aud_proc.tcl
 # Description : Fonctions de chargement, sauvegarde et traitement d'images
-# Mise a jour $Id: aud_proc.tcl,v 1.15 2009-12-19 10:12:07 robertdelmas Exp $
+# Mise a jour $Id: aud_proc.tcl,v 1.16 2009-12-30 10:39:56 michelpujol Exp $
 #
 
 #
@@ -37,95 +37,23 @@ proc loadima { { filename "?" } { visuNo 1 } { affichage "-dovisu" } } {
       buf$bufNo compress none
    }
 
-   #--- Fenetre parent
-   set fenetre [::confVisu::getBase $visuNo]
-
-   if { $filename == "?" } {
-      #--- Ouvre la fenetre de choix des images
-      set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $bufNo "1" $visuNo ]
-   } else {
-      if {[file pathtype $filename] == "relative"} {
-         set filename [file join $audace(rep_images) $filename]
+   if { $filename != "" } {
+      if { $filename == "?" } {
+         #--- Fenetre parent
+         set fenetre [::confVisu::getBase $visuNo]
+         #--- Ouvre la fenetre de choix des images
+         set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $bufNo "1" $visuNo ]
+      } else {
+         if {[file pathtype $filename] == "relative"} {
+            set filename [file join $audace(rep_images) $filename]
+         }
       }
-   }
-
-   #---
-   if { [ string compare $filename "" ] != "0" } {
-      ::confVisu::autovisu $visuNo $affichage $filename
-      ###set result [ buf$bufNo load $filename ]
-      ###if { $result == "" } {
-      ###   ::confVisu::autovisu $visuNo "-no" $filename
-      ###   ##::confVisu::setFileName $visuNo  $filename
-      ###} else {
-      ###   #--- Echec du chargement
-      ###   ::confVisu::autovisu $visuNo "-novisu" "$filename"
-      ###   ##::confVisu::setFileName $visuNo ""
-      ###}
-
-      ####--- Suppression de la zone selectionnee avec la souris si elle est hors de l'image
-      ###if { [ lindex [ list [ ::confVisu::getBox $visuNo ] ] 0 ] != "" } {
-      ###   set box [ ::confVisu::getBox $visuNo ]
-      ###   set x1 [lindex  [confVisu::getBox $visuNo ] 0]
-      ###   set y1 [lindex  [confVisu::getBox $visuNo ] 1]
-      ###   set x2 [lindex  [confVisu::getBox $visuNo ] 2]
-      ###   set y2 [lindex  [confVisu::getBox $visuNo ] 3]
-      ###   if { $x1 > $::confVisu::private($visuNo,picture_w)
-      ###     || $y1 > $::confVisu::private($visuNo,picture_h)
-      ###     || $y2 > $::confVisu::private($visuNo,picture_w)
-      ###     || $y2 > $::confVisu::private($visuNo,picture_h) } {
-      ###      ::confVisu::deleteBox $visuNo
-      ###   }
-      ###}
-
-
-      ####---
-      ###set calib 1
-      ###if { [string compare [lindex [buf$bufNo getkwd CRPIX1] 0] ""] == 0 } {
-      ###   set calib 0
-      ###}
-      ###if { [string compare [lindex [buf$bufNo getkwd CRPIX2] 0] ""] == 0 } {
-      ###   set calib 0
-      ###}
-      ###if { [string compare [lindex [buf$bufNo getkwd CRVAL1] 0] ""] == 0 } {
-      ###   set calib 0
-      ###}
-      ###if { [string compare [lindex [buf$bufNo getkwd CRVAL2] 0] ""] == 0 } {
-      ###   set calib 0
-      ###}
-      ###set classic 0
-      ###set nouveau 0
-      ###if { [string compare [lindex [buf$bufNo getkwd CD1_1] 0] ""] != 0 } {
-      ###   incr nouveau
-      ###}
-      ###if { [string compare [lindex [buf$bufNo getkwd CD1_2] 0] ""] != 0 } {
-      ###   incr nouveau
-      ###}
-      ###if { [string compare [lindex [buf$bufNo getkwd CD2_1] 0] ""] != 0 } {
-      ###   incr nouveau
-      ###}
-      ###if { [string compare [lindex [buf$bufNo getkwd CD2_2] 0] ""] != 0 } {
-      ###   incr nouveau
-      ###}
-      ###if { [string compare [lindex [buf$bufNo getkwd CDELT1] 0] ""] != 0 } {
-      ###   incr classic
-      ###}
-      ###if { [string compare [lindex [buf$bufNo getkwd CDELT2] 0] ""] != 0 } {
-      ###   incr classic
-      ###}
-      ###if { [string compare [lindex [buf$bufNo getkwd CROTA1] 0] ""] != 0 } {
-      ###   incr classic
-      ###}
-      ###if { [string compare [lindex [buf$bufNo getkwd CROTA2] 0] ""] != 0 } {
-      ###   incr classic
-      ###}
-      ###if {(($calib == 1)&&($nouveau==4))||(($calib == 1)&&($classic>=3))} {
-      ###   ::confVisu::setAvailableScale $visuNo "xy_radec"
-      ###} else {
-      ###   ::confVisu::setAvailableScale $visuNo "xy"
-      ###}
    } else {
-      set result ""
+      #--- si le nom du fichier est une chaine vide, j'efface l'image
+      set affichage "-clear"
    }
+
+   ::confVisu::autovisu $visuNo $affichage $filename
 
    return ""
 }
@@ -471,7 +399,7 @@ proc binx { args } {
 #
 # biny y1 y2 [height]
 # Cree une nouvelle image de dimensions height*NAXIS1 dont toutes les lignes sont identiques
-# et egales a la somme de toutes les lignes comprises entre les ordonnées y1 et y2 de l'image
+# et egales a la somme de toutes les lignes comprises entre les ordonnï¿½es y1 et y2 de l'image
 #
 proc biny { args } {
    global audace
