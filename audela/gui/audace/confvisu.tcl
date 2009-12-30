@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.124 2009-12-30 07:53:19 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.125 2009-12-30 10:38:48 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -270,6 +270,7 @@ namespace eval ::confVisu {
    #  force:  -dovisu : rafraichissement complet
    #          -no     : rafraichissement sans recalcul des seuils
    #          -novisu : pas de rafraichissement
+   #          -clear  : efface l'image
    #  filename : nom du fichier contenant l'image
    #          Un nom de fichier FITS peut contenir le numero de HDU en extension apres un poitn virgule
    #          Exemple : vega.fit;3  signifie qu'il faut afficher le HDU numero 3 du fichier vega.fit
@@ -297,144 +298,152 @@ namespace eval ::confVisu {
          Movie::deleteMovieWindow $visuNo
          $private($visuNo,hCanvas) itemconfigure display -state normal
 
-         if { $fileName != "" } {
-            if { [string first ";" $fileName ] != -1 } {
-               #---- je separe le nom du fichier du numero de HDU
-               set fileName [split $fileName ";"]
-               set hduNo    [lindex $fileName 1]
-               set fileName [lindex $fileName 0]
-            } else {
-               set hduNo 1
-            }
-            if { $fileName != [getFileName $visuNo] } {
-               #--- c'est un nouveau fichier,
-               if { $hduName == "" } {
-                  #--- je recupere le nom du HDU du fichier precedent
-                  if { [llength $private($visuNo,fitsHduList) ] > 1 } {
-                     set hduName [lindex [lindex $private($visuNo,fitsHduList) [expr $private($visuNo,currentHduNo) -1]] 0]
-                  }
+         if { $force != "-clear" }  {
+            if { $fileName != "" } {
+               if { [string first ";" $fileName ] != -1 } {
+                  #---- je separe le nom du fichier du numero de HDU
+                  set fileName [split $fileName ";"]
+                  set hduNo    [lindex $fileName 1]
+                  set fileName [lindex $fileName 0]
+               } else {
+                  set hduNo 1
                }
-               #--- je charge le fichier
-               set loadError [ catch {
-                  buf$bufNo load $fileName
-               } ]
-               if { $loadError == 0 } {
-                  #--- je recupere la liste des HDU du fichier
-                  set private($visuNo,fitsHduList)  [initHduList $visuNo $fileName ]
-                  #--- j'affiche liste des HDU s'il y en a plusieurs
-                  if { [llength $private($visuNo,fitsHduList) ] > 1 } {
-                     #--- j'affiche le meme HDU que celui du fichie precedent s'il existe
-                     if { $hduName != "PRIMARY" } {
-                        #--- je cherche un HDU avec le meme nom que celui de l'image precedente
-                        set hduIndex [lsearch -regexp $private($visuNo,fitsHduList) $hduName]
-                        if { $hduIndex != -1 } {
-                           set hduInfo [lindex $private($visuNo,fitsHduList) $hduIndex ]
-                           set hduType [lindex $hduInfo 1]
-                           set hduNo   [expr $hduIndex + 1]
-                           if { $hduType == "Image" } {
-                              #--- je charge le hdu
-                              buf$bufNo load "$fileName;$hduNo"
-                           } else {
-                              #--- si c'est une table, je charge la table dans les variables columnNames et columnValues
-                              #--- j'utilise commande "fits open" car la commande "buf$bufno load" ne focntionne pas que pour les images
-                              set hFile ""
-                              set catchResult [catch {
-                                 #--- je nettoie le buffer pour gagner de la place en memoire car il n'est pas utilise dans ce cas
-                                 buf$bufNo clear
-                                 #--- j'ouvre le fichier en mode lecture
-                                 set hFile [fits open [getFileName $visuNo] 0]
-                                $hFile move $hduNo
-                                 #--- je charge le titre des colonnes
-                                 set columnNames  [$hFile info column ]
-                                 #--- je charge les valeurs de colonnes
-                                 set columnValues [$hFile get table]
-                              } ]
-                              if { $hFile != "" } {
-                                 $hFile close
-                              }
-                              if { $catchResult == 1 } {
-                                 #--- je transmets l'erreur
-                                 error $::errorInfo
+               if { $fileName != [getFileName $visuNo] } {
+                  #--- c'est un nouveau fichier,
+                  if { $hduName == "" } {
+                     #--- je recupere le nom du HDU du fichier precedent
+                     if { [llength $private($visuNo,fitsHduList) ] > 1 } {
+                        set hduName [lindex [lindex $private($visuNo,fitsHduList) [expr $private($visuNo,currentHduNo) -1]] 0]
+                     }
+                  }
+                  #--- je charge le fichier
+                  set loadError [ catch {
+                     buf$bufNo load $fileName
+                  } ]
+                  if { $loadError == 0 } {
+                     #--- je recupere la liste des HDU du fichier
+                     set private($visuNo,fitsHduList)  [initHduList $visuNo $fileName ]
+                     #--- j'affiche liste des HDU s'il y en a plusieurs
+                     if { [llength $private($visuNo,fitsHduList) ] > 1 } {
+                        #--- j'affiche le meme HDU que celui du fichie precedent s'il existe
+                        if { $hduName != "PRIMARY" } {
+                           #--- je cherche un HDU avec le meme nom que celui de l'image precedente
+                           set hduIndex [lsearch -regexp $private($visuNo,fitsHduList) $hduName]
+                           if { $hduIndex != -1 } {
+                              set hduInfo [lindex $private($visuNo,fitsHduList) $hduIndex ]
+                              set hduType [lindex $hduInfo 1]
+                              set hduNo   [expr $hduIndex + 1]
+                              if { $hduType == "Image" } {
+                                 #--- je charge le hdu
+                                 buf$bufNo load "$fileName;$hduNo"
+                              } else {
+                                 #--- si c'est une table, je charge la table dans les variables columnNames et columnValues
+                                 #--- j'utilise commande "fits open" car la commande "buf$bufno load" ne focntionne pas que pour les images
+                                 set hFile ""
+                                 set catchResult [catch {
+                                    #--- je nettoie le buffer pour gagner de la place en memoire car il n'est pas utilise dans ce cas
+                                    buf$bufNo clear
+                                    #--- j'ouvre le fichier en mode lecture
+                                    set hFile [fits open [getFileName $visuNo] 0]
+                                   $hFile move $hduNo
+                                    #--- je charge le titre des colonnes
+                                    set columnNames  [$hFile info column ]
+                                    #--- je charge les valeurs de colonnes
+                                    set columnValues [$hFile get table]
+                                 } ]
+                                 if { $hFile != "" } {
+                                    $hFile close
+                                 }
+                                 if { $catchResult == 1 } {
+                                    #--- je transmets l'erreur
+                                    error $::errorInfo
+                                 }
                               }
                            }
                         }
+                        #--- je charge la liste dans la combobox de la toolbar
+                        ::confVisu::showHduList $visuNo $hduNo
+                        #--- j'affiche la toolbar
+                        ::confVisu::showToolBar $visuNo 1
+                     } else {
+                        set hduType "Image"
+                        ::confVisu::showToolBar $visuNo 0
                      }
-                     #--- je charge la liste dans la combobox de la toolbar
-                     ::confVisu::showHduList $visuNo $hduNo
-                     #--- j'affiche la toolbar
-                     ::confVisu::showToolBar $visuNo 1
+                  } else {
+                     #--- en cas d'erreur de chargement du fichier
+                     #--- je nettoie l'affichage
+                      set private($visuNo,fitsHduList) ""
+                     ::confVisu::setFileName $visuNo "?"
+                     buf$bufNo clear
+                     visu$visuNo  clear
+                     #--- j'affiche l'erreur
+                     console::affiche_erreur "$::errorInfo\n"
+                  }
+                  #--- j'affiche le nom du fichier
+                  ::confVisu::setFileName $visuNo $fileName
+               } else {
+                  #--- C'est le meme fichier, j'ai deja la liste des HDU
+                  #--- je recupere le type de HDU pour savoir si les donnees
+                  #--- doivent etre chargees avec "buf load" pour une image 1D ou 2D
+                  #--- ou avec "fits open" pour une table
+                  if { $private($visuNo,fitsHduList) != "" } {
+                     set hduInfo [lindex $private($visuNo,fitsHduList) [expr $hduNo -1]]
+                     set hduType [lindex $hduInfo 1]
                   } else {
                      set hduType "Image"
-                     ::confVisu::showToolBar $visuNo 0
                   }
-               } else {
-                  #--- en cas d'erreur de chargement du fichier
-                  #--- je nettoie l'affichage
-                   set private($visuNo,fitsHduList) ""
-                  ::confVisu::setFileName $visuNo "?"
-                  buf$bufNo clear
-                  visu$visuNo  clear
-                  #--- j'affiche l'erreur
-                  console::affiche_erreur "$::errorInfo\n"
-               }
-               #--- j'affiche le nom du fichier
-               ::confVisu::setFileName $visuNo $fileName
-            } else {
-               #--- C'est le meme fichier, j'ai deja la liste des HDU
-               #--- je recupere le type de HDU pour savoir si les donnees
-               #--- doivent etre chargees avec "buf load" pour une image 1D ou 2D
-               #--- ou avec "fits open" pour une table
-               if { $private($visuNo,fitsHduList) != "" } {
-                  set hduInfo [lindex $private($visuNo,fitsHduList) [expr $hduNo -1]]
-                  set hduType [lindex $hduInfo 1]
-               } else {
-                  set hduType "Image"
-               }
-               if { $hduType == "Image" } {
-                  #--- si c'est une image, je charge l'image dans le buffer
-                  if { $hduNo != 1 } {
-                     buf$bufNo load "$fileName;$hduNo"
+                  if { $hduType == "Image" } {
+                     #--- si c'est une image, je charge l'image dans le buffer
+                     if { $hduNo != 1 } {
+                        buf$bufNo load "$fileName;$hduNo"
+                     } else {
+                        buf$bufNo load "$fileName"
+                     }
                   } else {
-                     buf$bufNo load "$fileName"
-                  }
-               } else {
-                  #--- si c'est une table, je charge la table dans les variables columnNames et columnValues
-                  #--- j'utilise commande "fits open" car la commande "buf$bufno load" ne focntionne pas que pour les images
-                  set hFile ""
-                  set catchResult [catch {
-                     #--- je nettoie le buffer pour gagner de la place en memoire car il n'est pas utilise dans ce cas
-                     buf$bufNo clear
-                     #--- j'ouvre le fichier en mode lecture
-                     set hFile [fits open [getFileName $visuNo] 0]
-                     $hFile move $hduNo
-                     #--- je charge le titre des colonnes
-                     set columnNames  [$hFile info column ]
-                     #--- je charge les valeurs de colonnes
-                     set columnValues [$hFile get table]
-                  } ]
-                  if { $hFile != "" } {
-                     $hFile close
-                  }
-                  if { $catchResult == 1 } {
-                     #--- je transmets l'erreur
-                     error $::errorInfo
+                     #--- si c'est une table, je charge la table dans les variables columnNames et columnValues
+                     #--- j'utilise commande "fits open" car la commande "buf$bufno load" ne focntionne pas que pour les images
+                     set hFile ""
+                     set catchResult [catch {
+                        #--- je nettoie le buffer pour gagner de la place en memoire car il n'est pas utilise dans ce cas
+                        buf$bufNo clear
+                        #--- j'ouvre le fichier en mode lecture
+                        set hFile [fits open [getFileName $visuNo] 0]
+                        $hFile move $hduNo
+                        #--- je charge le titre des colonnes
+                        set columnNames  [$hFile info column ]
+                        #--- je charge les valeurs de colonnes
+                        set columnValues [$hFile get table]
+                     } ]
+                     if { $hFile != "" } {
+                        $hFile close
+                     }
+                     if { $catchResult == 1 } {
+                        #--- je transmets l'erreur
+                        error $::errorInfo
+                     }
                   }
                }
+               set private($visuNo,picture_w) [buf$bufNo getpixelswidth]
+               set private($visuNo,picture_h) [buf$bufNo getpixelsheight]
+               set private($visuNo,currentHduNo) $hduNo
+            } else {
+               #--- je mets à jour le nom du fichier meme quand l'image ne
+               #--- proviens pas d'un fichier, mais d'une camera
+               #--- afin de permettre le rafraichissement des outils
+               #--- qui sont abonnes au listener addFilenameListener
+               set private($visuNo,fitsHduList) ""
+               ::confVisu::setFileName $visuNo "?"
             }
-            set private($visuNo,picture_w) [buf$bufNo getpixelswidth]
-            set private($visuNo,picture_h) [buf$bufNo getpixelsheight]
-            set private($visuNo,currentHduNo) $hduNo
          } else {
-            #--- je mets à jour le nom du fichier meme quand l'image ne
-            #--- proviens pas d'un fichier, mais d'une camera
-            #--- afin de permettre le rafraichissement des outils
-            #--- qui sont abonnes au listener addFilenameListener
+            #--- si force=-clear , j'efface l'image affichee
             set private($visuNo,fitsHduList) ""
             ::confVisu::setFileName $visuNo "?"
+            buf$bufNo clear
+            visu$visuNo  clear
          }
 
          #--- on affiche l'image
-         if { $force != "-novisu" } {
+         if { $force != "-novisu"} {
             #--- je determine le mode d'affichage en fonction du type d'image
             #---  si type=image2D alors mode=image
             #---  si type=image1D alors mode=graph
