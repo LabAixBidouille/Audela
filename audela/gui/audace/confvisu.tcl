@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.123 2009-12-29 15:06:32 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.124 2009-12-30 07:53:19 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -288,9 +288,9 @@ namespace eval ::confVisu {
          set videoSize [cam$camNo nbpix ]
          set private($visuNo,picture_w) [lindex $videoSize 0]
          set private($visuNo,picture_h) [lindex $videoSize 1]
-         #--- Je mets a jour la taille les scrollbars
+         #--- je mets a jour la taille les scrollbars
          setScrollbarSize $visuNo
-         #--- Je mets a jour la taille du reticule
+         #--- je mets a jour la taille du reticule
          ::confVisu::redrawCrosshair $visuNo
       } else {
          #--- je supprime l'item video s'il existe
@@ -353,7 +353,7 @@ namespace eval ::confVisu {
                                  $hFile close
                               }
                               if { $catchResult == 1 } {
-                                 #--- je transmet l'erreur
+                                 #--- je transmets l'erreur
                                  error $::errorInfo
                               }
                            }
@@ -416,7 +416,7 @@ namespace eval ::confVisu {
                      $hFile close
                   }
                   if { $catchResult == 1 } {
-                     #--- je transmet l'erreur
+                     #--- je transmets l'erreur
                      error $::errorInfo
                   }
                }
@@ -549,39 +549,40 @@ namespace eval ::confVisu {
                      }
                   }
 
-                  #---Mise à jour des glissieres
+                  #--- mise à jour des glissieres
                   if { [ lindex [ buf$bufNo getkwd NAXIS ] 1 ] == "3" } {
-                     #--- Cas d'une image couleur, j'affiche les glissieres R, V et B
-                     #--- Je repositionne les poignees
+                     #--- cas d'une image couleur, j'affiche les glissieres R, V et B
+                     #--- je repositionne les poignees
                      $private($visuNo,This).fra1.sca1 set 0.0
                      $private($visuNo,This).fra1.sca2 set 0.0
-                     #--- Je desactive le reglage des seuils
+                     #--- je desactive le reglage des seuils
                      $private($visuNo,This).fra1.sca1 configure -state disabled \
                         -background $audace(color,backColor) \
                         -activebackground $audace(color,backColor)
                      $private($visuNo,This).fra1.sca2 configure -state disabled \
                         -background $audace(color,backColor) \
                         -activebackground $audace(color,backColor)
-                     #--- J'affiche les glissieres R, V et B
+                     #--- j'affiche les glissieres R, V et B
                      ::colorRGB::run $visuNo
                   } else {
-                     #--- Cas d'une image N&B
-                     #--- J'active le reglage des seuils
+                     #--- cas d'une image N&B
+                     #--- j'active le reglage des seuils
                      $private($visuNo,This).fra1.sca1 configure -state normal \
                         -background $audace(color,cursor_blue) \
                         -activebackground $audace(color,cursor_blue_actif)
                      $private($visuNo,This).fra1.sca2 configure -state normal \
                         -background $audace(color,cursor_blue) \
                         -activebackground $audace(color,cursor_blue_actif)
-                     #--- Je supprime les glissieres R, V et B
+                     #--- je supprime les glissieres R, V et B
                      ::colorRGB::cmdClose $visuNo
                   }
+
                } else {
                   #--- nettoyage de l'affichage s'il n'y a pas d'image dans le buffer
                   set private($visuNo,picture_w) 0
                   set private($visuNo,picture_h) 0
                   visu $visuNo current
-                  #--- Je supprime les glissieres R, V et B
+                  #--- je supprime les glissieres R, V et B
                   ::colorRGB::cmdClose $visuNo
                }
 
@@ -646,10 +647,10 @@ namespace eval ::confVisu {
                   ::confVisu::setAvailableScale $visuNo "xy"
                }
 
-               #--- Je mets a jour la taille des scrollbars
+               #--- je mets a jour la taille des scrollbars
                setScrollbarSize $visuNo
 
-               #--- Je mets a jour la taille du reticule
+               #--- je mets a jour la taille du reticule
                ::confVisu::redrawCrosshair $visuNo
                ::confVisu::setMode $visuNo "image"
 
@@ -714,7 +715,7 @@ namespace eval ::confVisu {
                $tkgraph configure  -plotbackground "white"
                #--- j'affiche le graphe
                ::confVisu::setMode $visuNo "graph"
-               #--- Je supprime les glissieres R, V et B
+               #--- je supprime les glissieres R, V et B
                ::colorRGB::cmdClose $visuNo
 
             } elseif { $mode == "table" } {
@@ -748,7 +749,7 @@ namespace eval ::confVisu {
                if { $hFile != "" } {
                   $hFile close
                }
-               #--- Je supprime les glissieres R, V et B
+               #--- je supprime les glissieres R, V et B
                ::colorRGB::cmdClose $visuNo
             }
          }
@@ -819,12 +820,12 @@ namespace eval ::confVisu {
    proc clear { visuNo } {
       variable private
 
-      #--- Je masque la fenetre des films
+      #--- je masque la fenetre des films
       ::Movie::deleteMovieWindow $visuNo
 
       catch { ::astrometry::quit }
 
-      #--- Suppression de la fenetre a l'ecran
+      #--- suppression de la fenetre a l'ecran
       deleteBox $visuNo
 
       #--- je reinitialise l'image
@@ -1064,9 +1065,9 @@ namespace eval ::confVisu {
             set camName [::confCam::getPluginProperty $camItem "name"]
             set description "$camItem $caption(confVisu,2points) $camName $model"
          }
-         #--- J'affiche le nom de la camera
+         #--- j'affiche le nom de la camera
          $private($visuNo,This).fra1.labCam_name_labURL configure -text $description
-         #--- Je renseigne la dynamique de la camera
+         #--- je renseigne la dynamique de la camera
          set dynamic [ ::confCam::getPluginProperty $camItem "dynamic" ]
          ::confVisu::visuDynamix $visuNo [ lindex $dynamic 0 ] [ lindex $dynamic 1 ]
       }
@@ -1174,7 +1175,7 @@ namespace eval ::confVisu {
                visu$visuNo window $private($visuNo,boxSize)
                deleteBox $visuNo
                ::confVisu::autovisu $visuNo
-               #--- Je redessine le reticule
+               #--- je redessine le reticule
                redrawCrosshair $visuNo
             } else {
                tk_messageBox -title $caption(confVisu,attention) -type ok -message $caption(confVisu,tracer_boite)
@@ -1296,12 +1297,12 @@ namespace eval ::confVisu {
       set camNo   [::confCam::getCamNo $private($visuNo,camItem) ]
 
       if { $state == 1 } {
-         #--- Je supprime l'image precedente
+         #--- je supprime l'image precedente
          buf[visu$visuNo buf] clear
          #--- j'active le mode video
          visu$visuNo mode video
 
-         #--- Je connecte la sortie de la camera a l'image
+         #--- je connecte la sortie de la camera a l'image
          set result [ catch {
             if { [image type image$visuNo ] == "video" } {
                #--- je recupere le handle de l'image de la visu
@@ -1325,14 +1326,12 @@ namespace eval ::confVisu {
             return
          }
 
-         ###visu$visuNo disp
-
          #--- je desactive le reglage des seuils
          $private($visuNo,This).fra1.sca1 configure -state disabled
          $private($visuNo,This).fra1.sca2 configure -state disabled
 
       } else {
-         #--- Je deconnecte la sortie de la camera
+         #--- je deconnecte la sortie de la camera
          set result [ catch { cam$camNo stopvideoview $visuNo } msg ]
          #--- je desactive le mode video
          visu$visuNo mode photo
@@ -1862,6 +1861,7 @@ namespace eval ::confVisu {
       ###createBindCanvas $visuNo <B1-Motion>       ""
       ###createBindCanvas $visuNo <Motion>          ""
       ###createBindCanvas $visuNo <ButtonPress-3>   ""
+
       #--- bind de l'item "display" canvas avec la souris
       $private($visuNo,hCanvas) bind display <ButtonPress-1>   ""
       $private($visuNo,hCanvas) bind display <ButtonRelease-1> ""
@@ -1956,73 +1956,76 @@ namespace eval ::confVisu {
          "::audace::enregistrer_sous $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,file)"
-      Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,entete)" " ::keyword::header $visuNo "
+      Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,entete)" "::keyword::header $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,file)"
-      Menu_Command   $visuNo  "$caption(audace,menu,file)" "$caption(confVisu,fermer)" \
-         " ::confVisu::close $visuNo "
+      Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(confVisu,fermer)" \
+         "::confVisu::close $visuNo"
 
       Menu           $visuNo "$caption(audace,menu,affichage)"
-      Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,nouvelle_visu)" ::confVisu::create
+      Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,nouvelle_visu)" "::confVisu::create"
+
+      Menu_Separator $visuNo "$caption(audace,menu,affichage)"
+      Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,efface_image)" "::confVisu::deleteImage $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_grise)" \
-              "1" "conf(visu_palette,visu$visuNo,mode)" " ::audace::MAJ_palette $visuNo "
+         "1" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_inverse)" \
-              "2" "conf(visu_palette,visu$visuNo,mode)" " ::audace::MAJ_palette $visuNo "
+         "2" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_iris)" \
-              "3" "conf(visu_palette,visu$visuNo,mode)" " ::audace::MAJ_palette $visuNo "
+         "3" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_arc_en_ciel)" \
-              "4" "conf(visu_palette,visu$visuNo,mode)" " ::audace::MAJ_palette $visuNo "
+         "4" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Cascade   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,fcttransfert_titre)"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_lin)" \
-              "1" "conf(fonction_transfert,visu$visuNo,mode)" " ::audace::fonction_transfert $visuNo "
+         "1" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_log)" \
-              "2" "conf(fonction_transfert,visu$visuNo,mode)" " ::audace::fonction_transfert $visuNo "
+         "2" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_exp)" \
-              "3" "conf(fonction_transfert,visu$visuNo,mode)" " ::audace::fonction_transfert $visuNo "
+         "3" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_arc)" \
-              "4" "conf(fonction_transfert,visu$visuNo,mode)" " ::audace::fonction_transfert $visuNo "
+         "4" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,seuils)..." \
-              "::seuilWindow::run $visuNo"
+         "::seuilWindow::run $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,balance_rvb)..." \
-              "::seuilCouleur::run $visuNo"
+         "::seuilCouleur::run $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
-              "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.125)" "0.125" \
-              "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.125)" "0.125" \
+         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
-              "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.25)" "0.25" \
-              "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.25)" "0.25" \
+         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
-              "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.5)" "0.5" \
-              "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.5)" "0.5" \
+         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
-              "$caption(audace,menu,zoom) $caption(audace,menu,zoom_1)" "1" \
-              "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_1)" "1" \
+         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
-              "$caption(audace,menu,zoom) $caption(audace,menu,zoom_2)" "2" \
-              "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_2)" "2" \
+         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
-              "$caption(audace,menu,zoom) $caption(audace,menu,zoom_4)" "4" \
-              "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_4)" "4" \
+         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Check     $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,plein_ecran)" \
-               "::confVisu::private($visuNo,fullscreen)" "::confVisu::setFullScreen $visuNo"
+         "::confVisu::private($visuNo,fullscreen)" "::confVisu::setFullScreen $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Check     $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,miroir_x)" \
-              "::confVisu::private($visuNo,mirror_x)" "::confVisu::setMirrorX $visuNo"
+         "::confVisu::private($visuNo,mirror_x)" "::confVisu::setMirrorX $visuNo"
       Menu_Check     $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,miroir_y)" \
-              "::confVisu::private($visuNo,mirror_y)" "::confVisu::setMirrorY $visuNo"
+         "::confVisu::private($visuNo,mirror_y)" "::confVisu::setMirrorY $visuNo"
       Menu_Check     $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,window)" \
-              "::confVisu::private($visuNo,window)" "::confVisu::setWindow $visuNo"
+         "::confVisu::private($visuNo,window)" "::confVisu::setWindow $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
@@ -2030,13 +2033,13 @@ namespace eval ::confVisu {
          "::confColor::switchDayNight ; \
             if { [ winfo exists $audace(base).selectColor ] } { \
                destroy $audace(base).selectColor \
-               ::confColor::run $visuNo\
+               ::confColor::run $visuNo \
             } \
          "
 
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Command   $visuNo "$caption(audace,menu,affichage)" "[::Crosshair::getLabel]..." \
-              "::Crosshair::run $visuNo"
+         "::Crosshair::run $visuNo"
 
       Menu           $visuNo "$caption(audace,menu,analysis)"
       Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,histo)" "::audace::Histo $visuNo"
@@ -2169,8 +2172,8 @@ namespace eval ::confVisu {
       set zoom   [visu$visuNo zoom]
       set height $private($visuNo,picture_h)
 
-      #--- je prend en compte le fenetrage
-      set windowBox  [visu$visuNo window]
+      #--- je prends en compte le fenetrage
+      set windowBox [visu$visuNo window]
       if {$windowBox=="full"} {
          set x0 1
          set y0 1
@@ -2214,7 +2217,7 @@ namespace eval ::confVisu {
       if { [string compare $::confVisu::private($visuNo,MouseState) rien] == 0 } {
          set bufNo [visu$visuNo buf]
          set liste [::confVisu::screen2Canvas $visuNo [list $x $y]]
-         if {[ buf$bufNo imageready ] == "1" } {
+         if { [ buf$bufNo imageready ] == "1" } {
             set zoom   $private($visuNo,zoom)
             set width  $::confVisu::private($visuNo,picture_w)
             set height $::confVisu::private($visuNo,picture_h)
@@ -2536,6 +2539,19 @@ namespace eval ::confVisu {
    }
 
    #------------------------------------------------------------
+   #  deleteImage
+   #     efface l'image presente dans le canvas
+   #  parametres :
+   #    visuNo: numero de la visu
+   #------------------------------------------------------------
+   proc deleteImage { { visuNo "1" } } {
+      set bufNo [ visu$visuNo buf ]
+      if { [ buf$bufNo imageready ] == "1" } {
+         loadima "" $visuNo
+      }
+   }
+
+   #------------------------------------------------------------
    #  visuDynamix
    #      fixe les bornes des glissierres de reglage des seuils
    #------------------------------------------------------------
@@ -2604,7 +2620,7 @@ namespace eval ::confVisu {
       set bufNo [ visu$visuNo buf ]
       #---
       if { ( [ lindex [ buf$bufNo getkwd NAXIS ] 1 ] == "3" ) || ( [ buf$bufNo imageready ] == "0" ) } {
-         #--- Je desactive le bind des glissieres
+         #--- je desactive le bind des glissieres
          $private($visuNo,This).fra1.sca1 configure -command ""
          $private($visuNo,This).fra1.sca2 configure -command ""
          #--- J'efface les seuils haut et bas
@@ -2612,7 +2628,7 @@ namespace eval ::confVisu {
          $private($visuNo,This).fra1.lab2 configure -text "---"
          return
       } elseif { [ lindex [ buf$bufNo getkwd NAXIS ] 1 ] != "3" } {
-         #--- J'active le bind des glissieres
+         #--- j'active le bind des glissieres
          $private($visuNo,This).fra1.sca1 configure -command "::confVisu::onHiCutCommand $visuNo"
          $private($visuNo,This).fra1.sca2 configure -command "::confVisu::onLoCutCommand $visuNo"
       }
@@ -2676,8 +2692,8 @@ namespace eval ::confVisu {
          set private($visuNo,minindex) [ $private($visuNo,This).fra1.sca1 cget -from ]
          set private($visuNo,maxindex) [ $private($visuNo,This).fra1.sca1 cget -to ]
 
-         #--- Calcul des coefficients de transformation seuil de visu = f(position):
-         #---         cut = a * pos + b
+         #--- Calcul des coefficients de transformation seuil de visu = f(position) :
+         #---  cut = a * pos + b
          set cut_lo $private($visuNo,mincut)
          set cut_hi $private($visuNo,maxcut)
          set index_lo $private($visuNo,minindex)
@@ -3021,7 +3037,7 @@ proc ::confVisu::onGraphMotion { visuNo graph xScreen yScreen } {
    set ly [string length $y]
    if {$ly>8} { set y [string range $y 0 7] }
    $graph  crosshairs configure -position @$xScreen,$yScreen
-   #--- je met a jour la variable des coordonnnees
+   #--- je mets a jour la variable des coordonnnees
    set private($visuNo,graph,coordinate) "$x $private($visuNo,graph,xUnit) $y $private($visuNo,graph,yUnit)"
 }
 
@@ -3295,7 +3311,7 @@ proc ::confVisu::initHduList { visuNo fileName } {
    set fitsHduList ""
    set catchResult [catch {
       #--- j'ouvre le fichier en mode lecture
-      #--- remarque: je normalise le nom du fichier car "fits open" ne trouve pas les fichier du genre ./cdummy.fit
+      #--- remarque : je normalise le nom du fichier car "fits open" ne trouve pas les fichier du genre ./cdummy.fit
       if { [file extension $fileName] == "" } {
          append fileName $::conf(extension,defaut)
       }
@@ -3314,8 +3330,8 @@ proc ::confVisu::initHduList { visuNo fileName } {
          set hduType [lindex [$hFile info hdutype] 0]
 
          #--- je compose le libelle a mettre dans la combobox en fonction du type du HDU
-         #---  si HDU image :   " hduName   width  X height"
-         #---  si HDU table :   " hduName   nbcols X nbrows"
+         #---  si HDU image :   "hduName   width  X height"
+         #---  si HDU table :   "hduName   nbcols X nbrows"
          switch $extensionType {
             0  {
                #--- c'est une image
@@ -3478,7 +3494,7 @@ proc ::confVisu::onSelectHdu { visuNo { hduNo "" } } {
       #--- je recupere l'index du HDU dans la combo (index commence a 0)
       set index [$private($visuNo,This).bar.toolbar.combo getvalue]
       if { $index == -1 } {
-         #--- je prend le premier HDU si aucun n'est deja selectionné
+         #--- je prends le premier HDU si aucun n'est deja selectionné
          set hduNo 1
       } else {
          set hduNo [expr $index +1]
@@ -3541,7 +3557,7 @@ proc ::confVisu::onSelectHdu { visuNo { hduNo "" } } {
       $private($visuNo,This).bar.toolbar.next configure -state normal
    }
 
-   #--- je met a jour la variable a la fin de la procedure car elle est surveillee par un listener
+   #--- je mets a jour la variable a la fin de la procedure car elle est surveillee par un listener
    ###set private($visuNo,currentHduNo) $hduNo
 }
 
@@ -3559,8 +3575,7 @@ namespace eval ::colorRGB {
    proc run { visuNo } {
       variable private
 
-      #---
-      ::colorRGB::initConf $visuNo
+      #--- je recopie les variables conf dans des variables locales
       ::colorRGB::confToWidget $visuNo
 
       #--- je recupere le numero du buffer de la visu
