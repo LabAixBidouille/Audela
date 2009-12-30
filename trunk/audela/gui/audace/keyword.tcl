@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.31 2009-12-19 17:27:11 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.32 2009-12-30 14:25:10 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -479,7 +479,7 @@ proc ::keyword::openSetTemperature { visuNo } {
 
    if { [ ::confCam::getPluginProperty $camItem hasSetTemp ] == "1" } {
       if { [ ::confLink::getLinkNamespace $::conf(audine,port) ] == "ethernaude" } {
-         ::AlAudine_NT::run $::audace(base).alimAlAudineNT
+         ::AlAudineNT::run $::audace(base).alimAlAudineNT
       } else {
          ::confCam::run
       }
