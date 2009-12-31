@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.43 2009-12-30 22:31:13 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.44 2009-12-31 12:14:45 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -37,6 +37,7 @@ set caption(audace,menu,faire_offset)                   "Shoot a bias frame"
 set caption(audace,menu,faire_dark)                     "Shoot a dark frame"
 set caption(audace,menu,faire_flat_field)               "Shoot a flat-field frame"
 
+set caption(pretraitement,conversion)                   "Conversion"
 set caption(pretraitement,all)                          "# Convertir tous les fichiers"
 set caption(pretraitement,renum)                        "# Renuméroter les images en sortie"
 set caption(pretraitement,chg)                          "# Changer le nom générique de sortie en"
@@ -182,6 +183,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,faire_dark)                  "Faire un dark"
    set caption(audace,menu,faire_flat_field)            "Faire un flat-field"
 
+   set caption(pretraitement,conversion)                "Conversion"
    set caption(pretraitement,all)                       "Convertir tous les fichiers"
    set caption(pretraitement,renum)                     "Renuméroter les images en sortie"
    set caption(pretraitement,chg)                       "Changer le nom générique de sortie en"
@@ -327,6 +329,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,faire_dark)                  "Fare un dark"
    set caption(audace,menu,faire_flat_field)            "Fare un flat field"
 
+   set caption(pretraitement,conversion)                "Conversione"
    set caption(pretraitement,all)                       "# Convertir tous les fichiers"
    set caption(pretraitement,renum)                     "# Renuméroter les images en sortie"
    set caption(pretraitement,chg)                       "# Changer le nom générique de sortie en"
@@ -472,6 +475,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,faire_dark)                  "Haz una toma dark"
    set caption(audace,menu,faire_flat_field)            "Haz una toma de campo plano"
 
+   set caption(pretraitement,conversion)                "Conversion"
    set caption(pretraitement,all)                       "# Convertir tous les fichiers"
    set caption(pretraitement,renum)                     "# Renuméroter les images en sortie"
    set caption(pretraitement,chg)                       "# Changer le nom générique de sortie en"
@@ -617,6 +621,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,faire_dark)                  "Ein Schwartz Bild treiben"
    set caption(audace,menu,faire_flat_field)            "Ein Flat-Field Bild treiben"
 
+   set caption(pretraitement,conversion)                "Umstellung"
    set caption(pretraitement,all)                       "# Convertir tous les fichiers"
    set caption(pretraitement,renum)                     "# Renuméroter les images en sortie"
    set caption(pretraitement,chg)                       "# Changer le nom générique de sortie en"
@@ -762,6 +767,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,faire_dark)                  "Executar dark"
    set caption(audace,menu,faire_flat_field)            "Executar flat-field"
 
+   set caption(pretraitement,conversion)                "Conversão"
    set caption(pretraitement,all)                       "# Convertir tous les fichiers"
    set caption(pretraitement,renum)                     "# Renuméroter les images en sortie"
    set caption(pretraitement,chg)                       "# Changer le nom générique de sortie en"
@@ -907,6 +913,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,faire_dark)                  "Optag en Dark frame"
    set caption(audace,menu,faire_flat_field)            "Optag en flat-field frame"
 
+   set caption(pretraitement,conversion)                "Konvertering"
    set caption(pretraitement,all)                       "# Convertir tous les fichiers"
    set caption(pretraitement,renum)                     "# Renuméroter les images en sortie"
    set caption(pretraitement,chg)                       "# Changer le nom générique de sortie en"
@@ -1052,6 +1059,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,faire_dark)                  "Shoot a dark frame"
    set caption(audace,menu,faire_flat_field)            "Shoot a flat-field frame"
 
+   set caption(pretraitement,conversion)                "Conversion"
    set caption(pretraitement,all)                       "# Convertir tous les fichiers"
    set caption(pretraitement,renum)                     "# Renuméroter les images en sortie"
    set caption(pretraitement,chg)                       "# Changer le nom générique de sortie en"
@@ -1197,6 +1205,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,faire_dark)                  "Shoot a dark frame"
    set caption(audace,menu,faire_flat_field)            "Shoot a flat-field frame"
 
+   set caption(pretraitement,conversion)                "Conversion"
    set caption(pretraitement,all)                       "# Convertir tous les fichiers"
    set caption(pretraitement,renum)                     "# Renuméroter les images en sortie"
    set caption(pretraitement,chg)                       "# Changer le nom générique de sortie en"
