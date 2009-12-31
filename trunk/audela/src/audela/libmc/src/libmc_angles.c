@@ -690,6 +690,7 @@ int mctcl_decode_sequences(Tcl_Interp *interp, char *argv[],int *nobjects, mc_OB
 	}
 	// --- default values
 	for (ko=0;ko<nobjs;ko++) {
+		objectdescr[ko].idseq=-1;
 		mc_date_jd(1900,1,1,&objectdescr[ko].const_jd1);
 		mc_date_jd(9999,1,1,&objectdescr[ko].const_jd2);
 		objectdescr[ko].const_immediate=0;
@@ -735,6 +736,7 @@ int mctcl_decode_sequences(Tcl_Interp *interp, char *argv[],int *nobjects, mc_OB
 				continue; 
 			}
 			mc_strupr(argvvvv[0],key);
+			if (strcmp(key,"IDSEQ")==0) { objectdescr[ko].idseq=atoi(argvvvv[1]); }
 			if (strcmp(key,"JD1")==0) { mctcl_decode_date(interp,argvvvv[1],&objectdescr[ko].const_jd1); }
 			if (strcmp(key,"JD2")==0) { mctcl_decode_date(interp,argvvvv[1],&objectdescr[ko].const_jd2); }
 			if (strcmp(key,"IMMEDIATE")==0) { objectdescr[ko].const_immediate=atoi(argvvvv[1]); }
@@ -742,11 +744,17 @@ int mctcl_decode_sequences(Tcl_Interp *interp, char *argv[],int *nobjects, mc_OB
 			if (strcmp(key,"MOONDIST")==0) { objectdescr[ko].const_fullmoondist=atof(argvvvv[1]); }
 			if (strcmp(key,"SUNDIST")==0) { objectdescr[ko].const_sundist=atof(argvvvv[1]); }
 			if (strcmp(key,"SKYLEVEL")==0) { objectdescr[ko].const_skylightlevel=atof(argvvvv[1]); }
-			if (strcmp(key,"STAREXP")==0) { objectdescr[ko].const_startexposures=atoi(argvvvv[1]); }
+			if (strcmp(key,"STARTEXP")==0) { objectdescr[ko].const_startexposures=atoi(argvvvv[1]); }
 			if (strcmp(key,"IDUSER")==0) { objectdescr[ko].user=atoi(argvvvv[1]); }
 			if (strcmp(key,"UPRIORITY")==0) { objectdescr[ko].user_priority=atof(argvvvv[1]); }
 			if (strcmp(key,"UQUOTA")==0) { objectdescr[ko].user_quota=atof(argvvvv[1]); }
-			if (strcmp(key,"AXE_TYPE")==0) { objectdescr[ko].axe_type=atoi(argvvvv[1]); }
+			if (strcmp(key,"AXE_TYPE")==0) { 
+				mc_strupr(argvvvv[1],s);
+				if (strcmp(s,"EQUATORIAL")==0) { objectdescr[ko].axe_type=0; }
+				else if (strcmp(s,"HADEC")==0) { objectdescr[ko].axe_type=1; }
+				else if (strcmp(s,"ALTAZ")==0) { objectdescr[ko].axe_type=2; }
+				else { objectdescr[ko].axe_type=atoi(argvvvv[1]); }
+			}
 			if (strcmp(key,"AXE_SLEW1")==0) { objectdescr[ko].axe_slew1=atof(argvvvv[1]); }
 			if (strcmp(key,"AXE_SLEW2")==0) { objectdescr[ko].axe_slew2=atof(argvvvv[1]); }
 			if (strcmp(key,"AXE_SLEW_SYNCHRO")==0) { objectdescr[ko].axe_slew_synchro=atoi(argvvvv[1]); }

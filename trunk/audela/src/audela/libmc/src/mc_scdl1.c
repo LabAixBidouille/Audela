@@ -351,7 +351,7 @@ int mc_scheduler_objectlocal1(double longmpc, double rhocosphip, double rhosinph
 	int astrometric,njdm;
 	double *dummy1s,*dummy2s,*dummy3s,*dummy4s,*dummy5s,*dummy6s,*dummy7s,*dummy8s,*dummy9s;
 	double *dummy01s,*dummy02s;
-	int kjd,sousech,k,kk;
+	int kjd,sousech,k,kk,kh;
 	double ra,dec,ha,elev,az,da,c,moon_dist_phase,dh;
 	mc_OBJECTLOCAL *objectlocal;
 	double latrad,h,moon_az,moon_elev,sun_az,sun_elev,moon_dist,sun_dist,helev;
@@ -2175,9 +2175,11 @@ int mc_scheduler_objectlocal1(double longmpc, double rhocosphip, double rhosinph
 	*pobjectlocal=objectlocal;
 
 	// --- prepare sous-ech vectors
-	sousech=60;
-	//sousech=3600;
+	njdm=1441;
+	sousech=(int)floor(1.*njd/njdm);
+	if (sousech<1) { sousech=1; }
 	njdm=(int)ceil(1.*njd/sousech);
+	//if (njdm<1440) { njdm=1440; }
 	dummy1s=(double*)calloc(njdm+1,sizeof(double)); // jd sous-ech
 	dummy2s=(double*)calloc(njdm+1,sizeof(double)); // ha sous-ech
 	dummy3s=(double*)calloc(njdm+1,sizeof(double)); // elev sous-ech
@@ -2297,10 +2299,10 @@ int mc_scheduler_objectlocal1(double longmpc, double rhocosphip, double rhosinph
 		sun_dist=acos(c)/(DR);
 		dummy7s[kjd]=sun_dist;
 		// --- skylevel
-		k=(int)(az/(DR));
-		if (k>360) {k-=360;}
-		if (k<0) {k+=360;}
-		helev=horizon_altaz[k].elev;
+		kh=(int)(az/(DR));
+		if (kh>360) {kh-=360;}
+		if (kh<0) {kh+=360;}
+		helev=horizon_altaz[kh].elev;
 		elev/=(DR);
 		moon_dist_phase=objectdescr->const_fullmoondist*(sqrt(fabs(moon_dist)/180.));
 		if (elev<helev) {
@@ -2312,10 +2314,10 @@ int mc_scheduler_objectlocal1(double longmpc, double rhocosphip, double rhosinph
 		} else if (moon_dist<=moon_dist_phase) {
 			dummy8s[kjd]=-50;
 		} else {
-			// luminance(cd/m2) = 10^(-(brillance(mag/arcsec2)-13)/2.5)
+			// Conversions d'unites : luminance(cd/m2) = 10^(-(brillance(mag/arcsec2)-13)/2.5)
 			luminance_ciel_nocturne=5.2e-4; // cd/m2 (equivalent à 21.21 magV/arcsec2 pour une nuit sans Lune)
-			// brillance_ciel_bleus : tableau de mesures pour les elevations -90 -89.9 -89.8 ... +89.9 +90.0
-			cordis=(0.2 - pow (10 , 0.65-4.0*pow((sin(sun_dist*(DR)/2)),2.) ) ) ; // (deg) decalage pour tenir compte de la diffusion autour du Soleil
+			// brillance_ciel_bleus : tableau de mesures du ciel bleu (cd/m2) pour les elevations -90 -89.9 -89.8 ... +89.9 +90.0
+			cordis=(0.2 - pow (10 , 0.65-4.0*pow((sin(sun_dist*(DR)/2)),2.) ) ) ; // (deg) decalage empirique pour tenir compte de la diffusion autour du Soleil
 			kk=(int)(10*(sunmoon[k].sun_elev+90+cordis)); 
 			if (kk<0) { kk=0; }
 			if (kk>1800) { kk=1800; }
@@ -2324,15 +2326,14 @@ int mc_scheduler_objectlocal1(double longmpc, double rhocosphip, double rhosinph
 			kk=(int)(10*(sunmoon[k].moon_elev+90));
 			if (kk<0) { kk=0; }
 			if (kk>1800) { kk=1800; }
-			luminance_ciel_lune=1e-6*luminance_ciel_bleus[kk]; // cd/m2
+			frac_moon=(1+cos(sunmoon[k].moon_phase*(DR)))/2; // fraction illumniee de la Lune (0 a 1)
+			luminance_ciel_lune=1e-6*frac_moon*luminance_ciel_bleus[kk]; // cd/m2
 			// diffusion par la Lune
-			if (sunmoon[k].moon_elev>0) {
-				frac_moon=(1+cos(sunmoon[k].moon_phase*(DR)))/2;
-				luminance_diffusion_lune=1.42857e-3*frac_moon*pow( sin(moon_dist*(DR)/2),-2.1 ); // cd/m2
-			} else {
-				luminance_diffusion_lune=0; // cd/m2
-			}
-			luminance_totale=luminance_ciel_soleil+luminance_ciel_nocturne+luminance_ciel_lune+luminance_diffusion_lune;
+			// pour elev_moon=34 deg : luminance_diffusion_lune=1.42857e-3*frac_moon*pow( sin(moon_dist*(DR)/2),-2.1 ); // cd/m2
+			luminance_diffusion_lune=4.23546e-3*luminance_ciel_bleus[kk]/luminance_ciel_bleus[1800]*frac_moon*pow( sin(moon_dist*(DR)/2),-2.1 ); // cd/m2
+			// luminance totale dans cette direction de visee (cd/m2)
+			luminance_totale=luminance_ciel_nocturne+luminance_ciel_soleil+luminance_ciel_lune+luminance_diffusion_lune;
+			// brillance totale dans cette direction de visee (cd/m2)
 			brillance_totale=13-2.5*log10(luminance_totale);
 			dummy8s[kjd]=brillance_totale;
 		}
@@ -2462,12 +2463,14 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 /************************************************************************/
 /************************************************************************/
 /************************************************************************/
-int mc_nextnight1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,double elev_set,double elev_twilight, double *jdprev, double *jdset,double *jdrise,double *jddusk,double *jddawn,double *jdnext) {
+int mc_nextnight1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,double elev_set,double elev_twilight, double *jdprev, double *jdset,double *jddusk,double *jddawn,double *jdrise,double *jdnext,double *jdriseprev2,double *jdmer2,double *jdset2,double *jddusk2,double *jddawn2,double *jdrisenext2) {
 	double jd_prevmidsun,jd_nextmidsun,djd;
 	int njd,kjd;
 	mc_SUNMOON *sunmoon=NULL;
 
-	// --- compute dates of observing range (=the start-end of the schedule)
+	// === mer2mer ===
+
+	// --- compute dates of observing range (=the start-end of the schedule) mer2mer
 	mc_scheduler_windowdates1(jd_now,longmpc,rhocosphip,rhosinphip,&jd_prevmidsun,&jd_nextmidsun);
 
 	// --- compute mc_SUNMOON vector for the observing range.
@@ -2495,5 +2498,66 @@ int mc_nextnight1(double jd_now, double longmpc, double rhocosphip, double rhosi
 		}
 	}
 	free(sunmoon);
+
+	// === rise2rise ===
+
+	if (jd_now<*jdrise) {
+
+		*jdriseprev2=*jdprev; // a recalculer
+		*jdmer2=*jdprev;
+		*jdset2=*jdset;
+		*jddusk2=*jddusk;
+		*jddawn2=*jddawn;
+		*jdrisenext2=*jdrise;
+
+		jd_now=*jdprev-0.1;
+		// --- compute dates of observing range (=the start-end of the schedule) mer2mer
+		mc_scheduler_windowdates1(jd_now,longmpc,rhocosphip,rhosinphip,&jd_prevmidsun,&jd_nextmidsun);
+
+		// --- compute mc_SUNMOON vector for the observing range.
+		djd=600./86400.;
+		mc_scheduler_sunmoon1(longmpc,rhocosphip,rhosinphip,jd_prevmidsun,jd_nextmidsun,djd,&njd,&sunmoon);
+
+		for (kjd=1;kjd<njd;kjd++) {
+			if ((sunmoon[kjd-1].sun_elev<=elev_set)&&(sunmoon[kjd].sun_elev>elev_set)) {
+				*jdriseprev2=sunmoon[kjd-1].jd;
+			}
+		}
+		free(sunmoon);
+
+	} else {
+		*jdriseprev2=*jdrise;
+		*jdmer2=*jdnext;
+		*jdset2=*jdnext; //  a recalculer
+		*jddusk2=*jdnext; // a recalculer
+		*jddawn2=*jdnext; // a recalculer
+		*jdrisenext2=*jdnext; // a recalculer
+
+		jd_now=*jdnext+0.1;
+		// --- compute dates of observing range (=the start-end of the schedule) mer2mer
+		mc_scheduler_windowdates1(jd_now,longmpc,rhocosphip,rhosinphip,&jd_prevmidsun,&jd_nextmidsun);
+
+		// --- compute mc_SUNMOON vector for the observing range.
+		djd=600./86400.;
+		mc_scheduler_sunmoon1(longmpc,rhocosphip,rhosinphip,jd_prevmidsun,jd_nextmidsun,djd,&njd,&sunmoon);
+
+		for (kjd=1;kjd<njd;kjd++) {
+			if ((sunmoon[kjd-1].sun_elev>=elev_twilight)&&(sunmoon[kjd].sun_elev<elev_twilight)) {
+				*jddusk2=sunmoon[kjd-1].jd;
+			}
+			if ((sunmoon[kjd-1].sun_elev>=elev_set)&&(sunmoon[kjd].sun_elev<elev_set)) {
+				*jdset2=sunmoon[kjd-1].jd;
+			}
+			if ((sunmoon[kjd-1].sun_elev<=elev_set)&&(sunmoon[kjd].sun_elev>elev_set)) {
+				*jdrisenext2=sunmoon[kjd-1].jd;
+			}
+			if ((sunmoon[kjd-1].sun_elev<=elev_twilight)&&(sunmoon[kjd].sun_elev>elev_twilight)) {
+				*jddawn2=sunmoon[kjd-1].jd;
+			}
+		}
+		free(sunmoon);
+
+	}
+
    return 0;
 }

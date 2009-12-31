@@ -1052,13 +1052,15 @@ int Cmd_mctcl_nextnight(ClientData clientData, Tcl_Interp *interp, int argc, cha
 /****************************************************************************/
 /****************************************************************************/
 /*
-mc_nextnight now {GPS 5 E 43 1230} ?elevset? ?elevtwilight?
+mc_nextnight 2009-12-31T00:01 {GPS 5 E 43 1230} 0 -9
+mc_nextnight 2009-12-31T09:01 {GPS 5 E 43 1230} 0 -9
 *
 * Always jdset<jdrise
 */
 /****************************************************************************/
 {
 	double jd,longmpc, rhocosphip, rhosinphip,jdprev,jdset,jdrise,jddusk,jddawn,jdnext,elev_set=0.,elev_twilight;
+	double jdriseprev2,jdmer2,jdset2,jddusk2,jddawn2,jdrisenext2;
 	char s[1024];
    Tcl_DString dsptr;
 
@@ -1084,8 +1086,10 @@ mc_nextnight now {GPS 5 E 43 1230} ?elevset? ?elevtwilight?
 			mctcl_decode_angle(interp,argv[4],&elev_twilight);
 		}
 		/* --- appel aux calculs ---*/
-		mc_nextnight1(jd,longmpc,rhocosphip,rhosinphip,elev_set,elev_twilight,&jdprev,&jdset,&jdrise,&jddusk,&jddawn,&jdnext);
+		mc_nextnight1(jd,longmpc,rhocosphip,rhosinphip,elev_set,elev_twilight,&jdprev,&jdset,&jddusk,&jddawn,&jdrise,&jdnext,&jdriseprev2,&jdmer2,&jdset2,&jddusk2,&jddawn2,&jdrisenext2);
 	   Tcl_DStringInit(&dsptr);
+		strcpy(s,"{ ");
+		Tcl_DStringAppend(&dsptr,s,-1);
 		sprintf(s,"%s ",mc_d2s(jdprev));
 		Tcl_DStringAppend(&dsptr,s,-1);
 		sprintf(s,"%s ",mc_d2s(jdset));
@@ -1098,6 +1102,22 @@ mc_nextnight now {GPS 5 E 43 1230} ?elevset? ?elevtwilight?
 		Tcl_DStringAppend(&dsptr,s,-1);
 		sprintf(s,"%s ",mc_d2s(jdnext));
 		Tcl_DStringAppend(&dsptr,s,-1);
+		strcpy(s," } { ");
+		Tcl_DStringAppend(&dsptr,s,-1);
+		sprintf(s,"%s ",mc_d2s(jdriseprev2));
+		Tcl_DStringAppend(&dsptr,s,-1);
+		sprintf(s,"%s ",mc_d2s(jdmer2));
+		Tcl_DStringAppend(&dsptr,s,-1);
+		sprintf(s,"%s ",mc_d2s(jdset2));
+		Tcl_DStringAppend(&dsptr,s,-1);
+		sprintf(s,"%s ",mc_d2s(jddusk2));
+		Tcl_DStringAppend(&dsptr,s,-1);
+		sprintf(s,"%s ",mc_d2s(jddawn2));
+		Tcl_DStringAppend(&dsptr,s,-1);
+		sprintf(s,"%s ",mc_d2s(jdrisenext2));
+		Tcl_DStringAppend(&dsptr,s,-1);
+		strcpy(s," }");
+		Tcl_DStringAppend(&dsptr,s,-1);
       Tcl_DStringResult(interp,&dsptr);
       Tcl_DStringFree(&dsptr);
 	}	
@@ -1108,7 +1128,14 @@ int Cmd_mctcl_obsconditions(ClientData clientData, Tcl_Interp *interp, int argc,
 /****************************************************************************/
 /****************************************************************************/
 /*
-mc_obsconditions now {GPS 5 E 43 1230} {  { {AXE_TYPE 0} {AXES_0 2009-12-12T00:00:00 80 +26} {AXES_1 2009-12-31T00:00:00 100 -15} } } [expr 60./86400] "c:/d/audela/dev/test.txt"
+mc_obsconditions 2009-12-16T18:00:00 {GPS 5 E 43 1230} {  { {ELEV 0} {AXE_TYPE 0} {AXES_0 2009-12-12T00:00:00 80 +26} {AXES_1 2009-12-31T00:00:00 100 -15} } } [expr 60./86400] "c:/d/audela/dev/test.txt"
+Column identification:
+"%.5f %6.2f  %6.2f %+6.2f  %6.2f %+6.2f %6.2f  %6.2f %+6.2f %6.2f %6.2f %+6.2f  %+6.2f %6.2f %6.2f\n",
+sunmoon[kjd].jd,sunmoon[kjd].lst, 
+sunmoon[kjd].sun_az,sunmoon[kjd].sun_elev, 
+sunmoon[kjd].moon_az,sunmoon[kjd].moon_elev,sunmoon[kjd].moon_phase, 
+objectlocal[kjd].az,objectlocal[kjd].elev,objectlocal[kjd].ha,objectlocal[kjd].ra,objectlocal[kjd].dec,
+objectlocal[kjd].skylevel,objectlocal[kjd].sun_dist,objectlocal[kjd].moon_dist
 */
 /****************************************************************************/
 {
@@ -1120,7 +1147,7 @@ mc_obsconditions now {GPS 5 E 43 1230} {  { {AXE_TYPE 0} {AXES_0 2009-12-12T00:0
 	int nobj=0;
 
    if(argc<5) {
-      sprintf(s,"Usage: %s Date Home ListCandidates step_day output_filename ?type_Horizon Horizon?", argv[0]);
+      sprintf(s,"Usage: %s Date Home Sequence step_day output_filename ?type_Horizon Horizon?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
  	   return TCL_ERROR;
    } else {
@@ -1168,7 +1195,7 @@ mc_scheduler now {GPS 5 E 43 1230} {  { {AXE_TYPE 0} {AXES_0 now 14h34m 26d45'} 
 	int nobj=0;
 
    if(argc<3) {
-      sprintf(s,"Usage: %s Date Home ListCandidates ?type_Horizon Horizon?", argv[0]);
+      sprintf(s,"Usage: %s Date Home Sequences ?type_Horizon Horizon?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
  	   return TCL_ERROR;
    } else {
