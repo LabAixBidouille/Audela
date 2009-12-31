@@ -2,7 +2,7 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snacq.tcl,v 1.23 2009-12-19 16:31:43 robertdelmas Exp $
+# Mise a jour $Id: snacq.tcl,v 1.24 2009-12-31 08:49:23 robertdelmas Exp $
 #
 
 # ===================================================================
@@ -586,7 +586,6 @@ $zone(status_list) insert end "$caption(snacq,status)\n\n"
 
 bind $audace(base).snacq.frame1.labURL_cam <ButtonPress-1> {
    ::confCam::run
-   tkwait window $audace(base).confCam
    if {[::cam::list]!=""} {
       set cap1 "$caption(snacq,typecam) [lindex [cam$audace(camNo) info] 1]"
       ::keyword::onChangeConfOptic $audace(visuNo)
@@ -606,7 +605,6 @@ bind $audace(base).snacq.frame1.labURL_cam <ButtonPress-1> {
 
 bind $audace(base).snacq.frame1.labURL_tel <ButtonPress-1> {
    ::confTel::run
-   tkwait window $audace(base).confTel
    set snconf(telescope) $conf(telescope)
    if {[::tel::list]!=""} {
       set cap2 "$caption(snacq,typetel) [ tel$audace(telNo) name ]"
@@ -645,7 +643,6 @@ bind $audace(base).snacq.frame15.labURL_foclen <ButtonPress-1> {
       set fg $color(blue)
    } else {
       ::confCam::run
-      tkwait window $audace(base).confCam
       if {[::cam::list]!=""} {
          set cap1 "$caption(snacq,typecam) [lindex [cam$audace(camNo) info] 1]"
          ::keyword::onChangeConfOptic $audace(visuNo)

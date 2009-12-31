@@ -2,7 +2,7 @@
 # Fichier : focuseraudecom.tcl
 # Description : Gere le focuser associe a la monture AudeCom
 # Auteur : Robert DELMAS
-# Mise a jour $Id: focuseraudecom.tcl,v 1.12 2008-01-19 12:34:02 robertdelmas Exp $
+# Mise a jour $Id: focuseraudecom.tcl,v 1.13 2009-12-31 08:47:45 robertdelmas Exp $
 #
 
 #
@@ -203,7 +203,6 @@ proc ::focuseraudecom::move { command } {
    } else {
       if { $command != "stop" } {
          ::confTel::run
-        ### tkwait window $audace(base).confTel
       }
    }
 }
@@ -300,7 +299,6 @@ proc ::focuseraudecom::incrementSpeed { origin } {
       }
    } else {
       ::confTel::run
-      tkwait window $audace(base).confTel
       set audace(focus,speed) "0"
    }
 }
@@ -331,7 +329,6 @@ proc ::focuseraudecom::setSpeed { { value "0" } } {
       }
    } else {
       ::confTel::run
-      tkwait window $audace(base).confTel
       set audace(focus,speed) "0"
    }
 }

@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise a jour $Id: foc.tcl,v 1.28 2009-07-13 22:55:26 robertdelmas Exp $
+# Mise a jour $Id: foc.tcl,v 1.29 2009-12-31 08:47:29 robertdelmas Exp $
 #
 
 set ::graphik(compteur) {}
@@ -288,7 +288,6 @@ namespace eval ::foc {
          }
       } else {
          ::confCam::run
-         tkwait window $audace(base).confCam
       }
    }
 
@@ -570,7 +569,6 @@ proc recupPositionAvancementPose { } {
          }
       } else {
          ::confCam::run
-         tkwait window $audace(base).confCam
       }
    }
 
@@ -646,7 +644,6 @@ proc recupPositionAvancementPose { } {
          update
       } else {
          ::confTel::run
-         tkwait window $audace(base).confTel
       }
    }
 
@@ -669,7 +666,6 @@ proc recupPositionAvancementPose { } {
          update
       } else {
          ::confTel::run
-         tkwait window $audace(base).confTel
       }
    }
 
@@ -713,7 +709,6 @@ proc recupPositionAvancementPose { } {
          }
       } else {
          ::confTel::run
-         tkwait window $audace(base).confTel
       }
    }
 

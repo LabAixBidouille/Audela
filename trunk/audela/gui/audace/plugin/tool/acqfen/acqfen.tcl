@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.29 2009-12-13 16:40:11 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.30 2009-12-31 08:46:16 robertdelmas Exp $
 #
 
 # =========================================================
@@ -514,8 +514,8 @@ namespace eval ::acqfen {
                if { $catchError == 1 } {
                   #--- j'affiche et je trace le message d'erreur
                   ::tkutil::displayErrorInfo $::caption(acqfen,titre_fenetrees)
-                  #--- j'arrete la gestionde pose
-                  ###::camera::gestionPose $panneau(acqfen,pose_centrage) 0 cam$audace(camNo) buf$audace(bufNo)
+                  #--- j'arrete la gestion de pose
+                 ### ::camera::gestionPose $panneau(acqfen,pose_centrage) 0 cam$audace(camNo) buf$audace(bufNo)
                   ::camera::Avancement_pose "0"
                   #--- je restaure les boutons
                   set panneau(acqfen,go_stop_cent) go
@@ -540,7 +540,6 @@ namespace eval ::acqfen {
          }
       } else {
          ::confCam::run
-         tkwait window $audace(base).confCam
       }
    }
 
@@ -1233,7 +1232,6 @@ namespace eval ::acqfen {
          }
       } else {
          ::confCam::run
-         tkwait window $audace(base).confCam
       }
    }
 
@@ -1928,10 +1926,4 @@ proc Creefenreglfen { } {
       focus $audace(base).fenreglfen
    }
 }
-
-# =================================
-# === initialisation de l'outil ===
-# =================================
-
-########## The end ##########
 

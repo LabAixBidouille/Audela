@@ -2,7 +2,7 @@
 # Fichier : acqvideo.tcl
 # Description : Outil d'acquisition video
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: acqvideo.tcl,v 1.13 2009-12-19 10:01:02 robertdelmas Exp $
+# Mise a jour $Id: acqvideo.tcl,v 1.14 2009-12-31 08:46:33 robertdelmas Exp $
 #
 
 #==============================================================
@@ -494,7 +494,6 @@ namespace eval ::acqvideo {
                if { $choix == "ok" } {
                   #--- Ouverture de la fenetre de selection des cameras
                   ::confCam::run
-                  tkwait window $audace(base).confCam
                }
                ::audace::menustate normal
             }
@@ -510,7 +509,6 @@ namespace eval ::acqvideo {
                   if { $choix == "ok" } {
                      #--- Ouverture de la fenetre de selection des cameras
                      ::confCam::run
-                     tkwait window $audace(base).confCam
                   }
                #--- Verifier qu'il y a un nom de fichier
                } elseif { $panneau(acqvideo,$visuNo,nom_image) == "" } {
@@ -874,7 +872,6 @@ namespace eval ::acqvideo {
 
       if { [ ::confCam::isReady $camItem ] == 0 } {
          ::confCam::run
-         tkwait window $audace(base).confCam
          #--- Je decoche la checkbox
          set panneau(acqvideo,$visuNo,showvideopreview) "0"
          #--- Je decoche le fenetrage
@@ -1264,7 +1261,6 @@ namespace eval ::acqvideo {
       if { $result == "0" } {
          if { [ ::confVisu::getCamItem $visuNo ] == "" } {
             ::confCam::run
-            tkwait window $audace(base).confCam
             #--- Je decoche la checkbox
             set panneau(acqvideo,$visuNo,showvideopreview) "0"
             #--- Je decoche le fenetrage
@@ -1643,7 +1639,6 @@ namespace eval ::acqvideo {
             if { $choix == "ok" } {
                #--- Ouverture de la fenetre de selection des cameras
                ::confCam::run
-               tkwait window $audace(base).confCam
             }
             ::audace::menustate normal
          }
