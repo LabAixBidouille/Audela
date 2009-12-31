@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.52 2009-12-30 23:14:44 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.53 2009-12-31 12:16:58 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -2405,6 +2405,8 @@ namespace eval ::pretraitement {
 
 namespace eval ::lconv2 {
 
+# Auteur : Raymond ZACHANTKE
+
    #########################################################################
    # Lance le script des conversion                                        #
    #########################################################################
@@ -2414,7 +2416,41 @@ namespace eval ::lconv2 {
       variable widget
       global audace caption
 
-      #--- initialisation
+      #--- icone hourglass
+      set private(lconv2,hourglass) [ image create photo imagehourglass -data {
+         R0lGODlhGAAYAIIAMVQYGKmkKvr8BFlbTKKkp7kDBJprPt7d3ywAAAAAGAAY
+         AAIDZii63P4wyklVuEHkW4UpgfEVJJBVwDAALGt0GnEcRA28nTzPhAoHO1oP
+         VwnIDCrVqQPsDWGLpgkanQ2IP9ngcIUCebRpbjeo+Zgz5LWbq/WSA1hK1bp1
+         DDd6AbBfTjCAHFSDhIUMCQA7
+      } ]
+
+      #--- icone info
+      set private(lconv2,info) [ image create photo imageinfo -data {
+         R0lGODlhGAAYAIIAMS4tNpKSpvD4Nfj5+l1eUHd30goI+66vqiwAAAAAGAAY
+         AAIDkyi6GnHvsTnhGTgfS9nLILh1wgUWRhoeBGWCaVqs7RKEGKriQb3hQBzg
+         ILjxCoVA4SUClIAHnWGGOwyN1Rh1BfhAtdAudgWudovBcqhbQIcCsdR4QCBI
+         BITVZfPL9HoMeUFvbBQAgkEsdncTBABDIY51BTUkDo+CBV2LJBVWF3V8nSR5
+         AUOjo3UERKidh6ytlgEkCQA7
+      } ]
+
+      #--- icone nop
+      set private(lconv2,nop) [ image create photo imagenop -data {
+         R0lGODlhGAAYAIIAMfoFB6WovKvU+e31+uSts3tkd+hSV98vMCwAAAAAGAAY
+         AAIDoTi6GiMwyiCCY0rgvULhF4d5nCYyQvFhpgY9jzt4JnO5URyRRBUQlAzs
+         Rax8LMgWbJgxhjo6idTYEAAt0eluhaTUWMPUs9HUbk2Ua1Y7W82Sa21hPBMW
+         dwcA4HD5Yc0QBnqDBwRvdYAFg4sHaHEReQYHkoIAXChCD3sYBJZVSV0WewSk
+         pIIHClcWc6GVi3puJxmvenyynHmDKrcbBAUHKisJADs=
+      } ]
+
+      #--- icone ok
+      set private(lconv2,ok) [ image create photo imageok -data {
+         R0lGODlhGAAYAIIAMSE8ZASlBAV/C6SrpoKChfr8+hPWE2i5aCwAAAAAGAAY
+         AAIDZ1i63P4wykmrjedcd4wY23IEAgBug0GWxXBSqSADLUG8bc4Y3lzYNkbH
+         c4rJSgNgcKGSERS9mUvZ6AEIvCPgqnxWj4IVsuv9gqVJ6iOqNXUxx8CWTCFs
+         512chLy08PV1QIAhhIWGDAkAOw==
+      } ]
+
+      #--- initialisation de variables
       ::lconv2::initConf
       ::lconv2::confToWidget
 
@@ -2661,7 +2697,7 @@ namespace eval ::lconv2 {
       wm resizable $this 0 0
       wm minsize $this 250 150
       wm deiconify $this
-      wm title $this "$caption(audace,menu,pretraite)"
+      wm title $this "$caption(pretraitement,conversion)"
       wm geometry $this $widget(lconv2,position)
       wm protocol $this WM_DELETE_WINDOW ::lconv2::Fermer
 
@@ -2678,7 +2714,7 @@ namespace eval ::lconv2 {
       set m [ menu $this.but.menu -tearoff "1" ]
       foreach form $private(lconv2,formules) {
          $m add radiobutton -label "$form" -indicatoron "1" -value "$form" \
-            -variable conversion -activeforeground $color(black)
+            -variable conversion
       }
 
       ::lconv2::MenuUpdate
@@ -2697,7 +2733,7 @@ namespace eval ::lconv2 {
          -xscrollcommand [ list $this.hscroll set ] \
          -yscrollcommand [ list $this.vscroll set ] \
          -editendcommand { ::lconv2::applyValue } \
-         -stripebackground $color(lightblue) -exportselection 0 \
+         -exportselection 0 \
          -setfocus 1 -activestyle none -exportselection 0 -stretch all
 
       #--- nomme les colonnes
@@ -2709,7 +2745,7 @@ namespace eval ::lconv2 {
       scrollbar $this.vscroll -command [ list $tbl yview ]
 
       #--- frame du message
-      Label $this.msg -justify center -borderwidth 1 -relief raised -fg $color(blue)
+      Label $this.labURLmsg -justify center -borderwidth 1 -relief raised -fg $color(blue)
 
       #--- frame avec les options
       Label $this.label -text "$caption(pretraitement,options)"
@@ -2750,7 +2786,7 @@ namespace eval ::lconv2 {
          $this.tl 1,0 -cspan 5 -fill both \
          $this.vscroll 1,5 -fill y -width $this.vscroll \
          $this.hscroll 2,0 -cspan 5 -fill x -height $this.hscroll \
-         $this.msg 3,0 -fill x -cspan 6 -height 1c \
+         $this.labURLmsg 3,0 -fill x -cspan 6 -height 1c \
          $this.label 4,1 -rspan 4 -fill x -height 3c\
          $this.all 4,2 -anchor w \
          $this.renum 5,2 -anchor w \
@@ -2763,6 +2799,15 @@ namespace eval ::lconv2 {
       set i [ lsearch -exact $private(lconv2,operations) $private(lconv2,conversion) ]
       incr i
       $this.but.menu invoke $i
+
+      #--- focus
+      focus $this
+
+      #--- raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+      bind $this <Key-F1> { ::console::GiveFocus }
+
+      #--- mise a jour dynamique des couleurs
+      ::confColor::applyColor $this
    }
 
    #########################################################################
@@ -3213,10 +3258,8 @@ namespace eval ::lconv2 {
    #########################################################################
    proc ::lconv2::Avancement { img j } {
       variable private
-      global audace
 
-      set toview [ image create photo -file [ file join $audace(rep_caption) $img.gif ] ]
-      $private(lconv2,tbl) cellconfigure $j,done -image $toview
+      $private(lconv2,tbl) cellconfigure $j,done -image $private(lconv2,$img)
    }
 
    #########################################################################
@@ -3230,11 +3273,11 @@ namespace eval ::lconv2 {
 
       #--- le bouton 'Appliquer' et le message
       if { $etat == "disabled" } {
-         $this.msg configure -text $caption(pretraitement,en_cours)
+         $this.labURLmsg configure -text $caption(pretraitement,en_cours)
          $this.cmd.appliquer configure -relief sunken
       } else {
          #--- actualise le message concernant le nombre de selection
-         $this.msg configure -text $caption(pretraitement,fin_traitement)
+         $this.labURLmsg configure -text $caption(pretraitement,fin_traitement)
          $this.cmd.appliquer configure -relief raised
       }
 
@@ -3265,7 +3308,7 @@ namespace eval ::lconv2 {
 
       set this $private(lconv2,This)
       #--- actualise le message
-      $this.msg configure -text "$caption(pretraitement,nb_select) 0/[ $private(lconv2,tbl) size ]"
+      $this.labURLmsg configure -text "$caption(pretraitement,nb_select) 0/[ $private(lconv2,tbl) size ]"
 
       #--- decoche toutes les options
       foreach child { all renum chg destroy_src } { $this.$child deselect }
@@ -3303,7 +3346,7 @@ namespace eval ::lconv2 {
 
       #--- actualise le message concernant le nombre de selections
       set affiche "$caption(pretraitement,nb_select) $l/$private(lconv2,nb)"
-      $private(lconv2,This).msg configure -text $affiche
+      $private(lconv2,This).labURLmsg configure -text $affiche
    }
 
    #########################################################################
