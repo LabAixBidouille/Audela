@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.92 2009-12-30 14:18:20 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.93 2009-12-31 08:45:25 robertdelmas Exp $
 #
 
 #==============================================================
@@ -665,7 +665,6 @@ proc ::acqfc::testParametreAcquisition { visuNo } {
       if { $choix == "ok" } {
          #--- Ouverture de la fenetre de selection des cameras
          ::confCam::run
-         tkwait window $audace(base).confCam
       }
       ::audace::menustate normal
    }
@@ -765,7 +764,6 @@ proc ::acqfc::testParametreAcquisition { visuNo } {
                   if { $choix == "ok" } {
                      #--- Ouverture de la fenetre de selection des cameras
                      ::confTel::run
-                     tkwait window $audace(base).confTel
                   }
                   ::audace::menustate normal
                }
@@ -824,7 +822,6 @@ proc ::acqfc::testParametreAcquisition { visuNo } {
                   if { $choix == "ok" } {
                      #--- Ouverture de la fenetre de selection des cameras
                      ::confTel::run
-                     tkwait window $audace(base).confTel
                   }
                   ::audace::menustate normal
                }
@@ -903,7 +900,6 @@ proc ::acqfc::testParametreAcquisition { visuNo } {
                   if { $choix == "ok" } {
                      #--- Ouverture de la fenetre de selection des cameras
                      ::confTel::run
-                     tkwait window $audace(base).confTel
                   }
                   ::audace::menustate normal
                }
@@ -997,7 +993,6 @@ proc ::acqfc::testParametreAcquisition { visuNo } {
                   if { $choix == "ok" } {
                      #--- Ouverture de la fenetre de selection des cameras
                      ::confTel::run
-                     tkwait window $audace(base).confTel
                   }
                   ::audace::menustate normal
                }
@@ -2367,7 +2362,6 @@ proc ::acqfc::webcamConfigure { visuNo } {
          if { $choix == "ok" } {
             #--- Ouverture de la fenetre de selection des cameras
             ::confCam::run
-            tkwait window $audace(base).confCam
          }
          ::audace::menustate normal
       }

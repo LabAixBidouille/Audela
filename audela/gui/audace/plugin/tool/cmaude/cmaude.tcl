@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmaude.tcl,v 1.26 2009-12-19 16:39:42 robertdelmas Exp $
+# Mise a jour $Id: cmaude.tcl,v 1.27 2009-12-31 08:47:13 robertdelmas Exp $
 #
 # Remarks :
 # The definition of some variables (binning, exp. time, rythm, etc.)
@@ -437,7 +437,6 @@ namespace eval ::cmaude {
          update
       } else {
          ::confCam::run
-         tkwait window $audace(base).confCam
       }
    #--- End of proc cmdGO
    }
@@ -467,7 +466,6 @@ namespace eval ::cmaude {
          update
       } else {
          ::confCam::run
-         tkwait window $audace(base).confCam
       }
    }
 

@@ -2,7 +2,7 @@
 # Fichier : skybot_resolver.tcl
 # Description : Resolution du nom d'un objet du systeme solaire
 # Auteur : Jerome BERTHIER
-# Mise a jour $Id: skybot_resolver.tcl,v 1.28 2009-07-30 18:15:50 svaillant Exp $
+# Mise a jour $Id: skybot_resolver.tcl,v 1.29 2009-12-31 08:49:07 robertdelmas Exp $
 #
 
 namespace eval skybot_Resolver {
@@ -732,7 +732,6 @@ namespace eval skybot_Resolver {
       #--- Je verifie qu'il y a un telescope connecte
       if { [ ::tel::list ] == "" } {
          ::confTel::run
-         tkwait window $audace(base).confTel
       }
 
       #--- Je verifie si l'outil Telescope est deja actif dans une visu

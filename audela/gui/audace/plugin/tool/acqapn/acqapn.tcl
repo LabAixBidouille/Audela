@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Outil d'acquisition pour APN Nikon CoolPix
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: acqapn.tcl,v 1.40 2009-10-20 11:05:45 robertdelmas Exp $
+# Mise a jour $Id: acqapn.tcl,v 1.41 2009-12-31 08:45:44 robertdelmas Exp $
 #
 
 #============================================================
@@ -291,7 +291,6 @@ namespace eval ::acqapn {
             ::confCam::run
             set conf(webcam,A,longuepose) "0"
             ::confCam::selectNotebook A webcam
-            tkwait window $audace(base).confCam
 
             #--- Message si ce n'est pas un apn ou une webcam
             if { $audace(camNo) != "0" } {

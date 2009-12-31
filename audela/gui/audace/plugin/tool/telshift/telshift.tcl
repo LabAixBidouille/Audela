@@ -4,7 +4,7 @@
 # Auteur : Christian JASINSKI (e-mail : chris.jasinski@wanadoo.fr)
 # Avec l'aide d'Alain KLOTZ pour la partie la plus difficile (grande boucle interne aux procédures)
 # Avec l'aide de Robert DELMAS qui a apporté de nombreuses modifications, notamment en matière de traitement des erreurs
-# Mise a jour $Id: telshift.tcl,v 1.8 2007-04-14 08:43:45 robertdelmas Exp $
+# Mise a jour $Id: telshift.tcl,v 1.9 2009-12-31 08:49:39 robertdelmas Exp $
 #
 
 #!/logiciels/public/Tcl/bin/wish
@@ -439,13 +439,11 @@ namespace eval ::telshift {
 
          } else {
             ::confCam::run
-            tkwait window $audace(base).confCam
             $base.btn.ok configure -relief raised -state normal
          }
 
       } else {
          ::confTel::run
-         tkwait window $audace(base).confTel
          $base.btn.ok configure -relief raised -state normal
       }
 
@@ -594,13 +592,11 @@ namespace eval ::telshift {
 
          } else {
             ::confCam::run
-            tkwait window $audace(base).confCam
             $base.btn.ok configure -relief raised -state normal
          }
 
       } else {
          ::confTel::run
-         tkwait window $audace(base).confTel
          $base.btn.ok configure -relief raised -state normal
       }
 
@@ -777,13 +773,11 @@ namespace eval ::telshift {
 
          } else {
             ::confCam::run
-            tkwait window $audace(base).confCam
             $base.btn.ok configure -relief raised -state normal
          }
 
       } else {
          ::confTel::run
-         tkwait window $audace(base).confTel
          $base.btn.ok configure -relief raised -state normal
       }
 
@@ -949,13 +943,11 @@ namespace eval ::telshift {
 
          } else {
             ::confCam::run
-            tkwait window $audace(base).confCam
             $base.btn.ok configure -relief raised -state normal
          }
 
       } else {
          ::confTel::run
-         tkwait window $audace(base).confTel
          $base.btn.ok configure -relief raised -state normal
       }
 

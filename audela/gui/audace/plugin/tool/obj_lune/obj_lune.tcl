@@ -2,7 +2,7 @@
 # Fichier : obj_lune.tcl
 # Description : Outil dedie a la Lune, avec Goto vers un site choisi, ephemerides et cartographie
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune.tcl,v 1.18 2009-12-06 16:26:51 robertdelmas Exp $
+# Mise a jour $Id: obj_lune.tcl,v 1.19 2009-12-31 08:48:18 robertdelmas Exp $
 #
 
 global audace
@@ -84,7 +84,6 @@ namespace eval ::obj_lune {
          }
       } else {
          ::confTel::run
-         tkwait window $audace(base).confTel
       }
       #--- Gestion des boutons actifs/inactifs
       $This.cmd.goto configure -relief raised -state normal

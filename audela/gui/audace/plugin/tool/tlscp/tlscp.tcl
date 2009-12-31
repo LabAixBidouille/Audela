@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.35 2009-12-19 16:23:02 robertdelmas Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.36 2009-12-31 08:50:01 robertdelmas Exp $
 #
 
 #============================================================
@@ -1350,7 +1350,6 @@ proc ::tlscp::webcamConfigure { visuNo } {
          if { $choix == "ok" } {
              #--- Ouverture de la fenetre de selection des cameras
              ::confCam::run
-             tkwait window $audace(base).confCam
          }
          ::audace::menustate normal
       }

@@ -2,7 +2,7 @@
 # Fichier : focuserlx200.tcl
 # Description : Gere le focuser associe a la monture LX200
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserlx200.tcl,v 1.15 2008-01-19 12:34:32 robertdelmas Exp $
+# Mise a jour $Id: focuserlx200.tcl,v 1.16 2009-12-31 08:48:01 robertdelmas Exp $
 #
 
 #
@@ -193,7 +193,6 @@ proc ::focuserlx200::move { command } {
    } else {
       if { $command != "stop" } {
          ::confTel::run
-        ### tkwait window $audace(base).confTel
       }
    }
 }
@@ -243,7 +242,6 @@ proc ::focuserlx200::incrementSpeed { origin } {
       }
    } else {
       ::confTel::run
-      tkwait window $audace(base).confTel
       set audace(focus,speed) "0"
    }
 }
@@ -274,7 +272,6 @@ proc ::focuserlx200::setSpeed { { value "0" } } {
       }
    } else {
       ::confTel::run
-      tkwait window $audace(base).confTel
       set audace(focus,speed) "0"
    }
 }

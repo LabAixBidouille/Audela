@@ -2,7 +2,7 @@
 # Fichier : acqzadko.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqzadko.tcl,v 1.11 2009-12-13 16:40:55 robertdelmas Exp $
+# Mise a jour $Id: acqzadko.tcl,v 1.12 2009-12-31 08:46:55 robertdelmas Exp $
 #
 
 #==============================================================
@@ -684,7 +684,6 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
       if { $choix == "ok" } {
          #--- Ouverture de la fenetre de selection des cameras
          ::confCam::run
-         tkwait window $audace(base).confCam
       }
       ::audace::menustate normal
    }
@@ -784,7 +783,6 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
                   if { $choix == "ok" } {
                      #--- Ouverture de la fenetre de selection des cameras
                      ::confTel::run
-                     tkwait window $audace(base).confTel
                   }
                   ::audace::menustate normal
                }
@@ -843,7 +841,6 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
                   if { $choix == "ok" } {
                      #--- Ouverture de la fenetre de selection des cameras
                      ::confTel::run
-                     tkwait window $audace(base).confTel
                   }
                   ::audace::menustate normal
                }
@@ -922,7 +919,6 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
                   if { $choix == "ok" } {
                      #--- Ouverture de la fenetre de selection des cameras
                      ::confTel::run
-                     tkwait window $audace(base).confTel
                   }
                   ::audace::menustate normal
                }
@@ -1016,7 +1012,6 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
                   if { $choix == "ok" } {
                      #--- Ouverture de la fenetre de selection des cameras
                      ::confTel::run
-                     tkwait window $audace(base).confTel
                   }
                   ::audace::menustate normal
                }
@@ -2359,7 +2354,6 @@ proc ::acqzadko::webcamConfigure { visuNo } {
          if { $choix == "ok" } {
             #--- Ouverture de la fenetre de selection des cameras
             ::confCam::run
-            tkwait window $audace(base).confCam
          }
          ::audace::menustate normal
       }
@@ -2397,7 +2391,6 @@ proc ::acqzadko::acqzadkoBuildIF { visuNo } {
       pack $panneau(acqzadko,$visuNo,This).config.but -side top -fill x -in $panneau(acqzadko,$visuNo,This).config -ipadx 5 -ipady 4
    pack $panneau(acqzadko,$visuNo,This).config -side top -fill x
 
-###########################
    #--- Trame du bouton de connection de la camera
    frame $panneau(acqzadko,$visuNo,This).camera -borderwidth 2 -relief groove
       button $panneau(acqzadko,$visuNo,This).camera.but -borderwidth 1 -text $caption(acqzadko,connectioncamera) \
@@ -2413,7 +2406,6 @@ proc ::acqzadko::acqzadkoBuildIF { visuNo } {
       pack $panneau(acqzadko,$visuNo,This).raquette.but -side top -fill x -in $panneau(acqzadko,$visuNo,This).raquette -ipadx 5 -ipady 4
    pack $panneau(acqzadko,$visuNo,This).raquette -side top -fill x
 
-###########################
    #--- Trame du temps de pose
    frame $panneau(acqzadko,$visuNo,This).pose -borderwidth 2 -relief ridge
       menubutton $panneau(acqzadko,$visuNo,This).pose.but -text $caption(acqzadko,pose) \
