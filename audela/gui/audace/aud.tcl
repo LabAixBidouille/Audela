@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.115 2009-12-30 22:35:51 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.116 2010-01-01 13:58:40 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -772,12 +772,12 @@ namespace eval ::audace {
       Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,raw2fits)..." \
          { ::lconv2::run "raw2fits" }
-      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,r+v+b2rvb)..." \
-         { ::lconv2::run "r+g+b2rgb" }
-      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,rvb2r+v+b)..." \
-         { ::lconv2::run "rgb2r+g+b" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,cfa2rvb)..." \
          { ::lconv2::run "cfa2rgb" }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,rvb2r+v+b)..." \
+         { ::lconv2::run "rgb2r+g+b" }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,r+v+b2rvb)..." \
+         { ::lconv2::run "r+g+b2rgb" }
 
       Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,window1)..."\
