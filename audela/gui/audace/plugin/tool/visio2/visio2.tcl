@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.46 2010-01-02 16:37:44 michelpujol Exp $
+# Mise a jour $Id: visio2.tcl,v 1.47 2010-01-02 16:53:34 robertdelmas Exp $
 #
 
 namespace eval ::visio2 {
@@ -1025,7 +1025,7 @@ proc ::visio2::localTable::fillTable { visuNo } {
    #--- je trie la table
    set sortorder "-[$private($visuNo,tbl) sortorder]"
    if { $sortorder == "-" } {
-      #--- la premi�re fois
+      #--- la premiere fois
       set sortorder "-increasing"
    }
    $private($visuNo,tbl) sortbycolumn  $::visio2::private($visuNo,sortedColumn) $sortorder
@@ -1155,7 +1155,7 @@ proc ::visio2::localTable::loadItem { visuNo index { doubleClick 0 } } {
          if { $doubleClick == 1 } {
             #--- j'affiche le contenu du repertoire parent
             if { "[file tail $private($visuNo,directory)]" != "" } {
-               #--- si on n'est pas � la racine du disque, on monte d'un repertoire
+               #--- si on n'est pas a la racine du disque, on monte d'un repertoire
                set private($visuNo,directory) [ file dirname "$private($visuNo,directory)" ]
                fillTable $visuNo
             } else {
@@ -1546,7 +1546,7 @@ proc ::visio2::localTable::setSlideShow { visuNo } {
    if { $private($visuNo,slideShowState) == 1 } {
       #--- je recupere le nombre d'images selectionnees
       set selection [$private($visuNo,tbl) curselection ]
-      #--- je verifie que le nombre d'images selectionn�es est suffisant (>=2)
+      #--- je verifie que le nombre d'images selectionnees est suffisant (>=2)
       if { [llength $selection] < 2 } {
          #--- erreur, il n'y a moins de 2 images selectionnees
         ### tk_messageBox -title "$caption(visio2,dialog_title)" -type ok -message "$caption(visio2,slideshow_error)" -icon error
@@ -2248,7 +2248,7 @@ proc ::visio2::renameDialog::fillConfigPage { frm visuNo } {
 
 #------------------------------------------------------------
 # ::visio2::renameDialog::getProperty
-#   retourne la valeur d'un propri�t�
+#   exploration de repertoire
 #------------------------------------------------------------
 proc ::visio2::renameDialog::explore { visuNo } {
    variable private
@@ -2263,7 +2263,7 @@ proc ::visio2::renameDialog::explore { visuNo } {
 
 #------------------------------------------------------------
 # ::visio2::renameDialog::getProperty
-#   retourne la valeur d'un propri�t�
+#   retourne la valeur d'une propriete
 #------------------------------------------------------------
 proc ::visio2::renameDialog::getProperty { visuNo propertyName } {
    variable private
