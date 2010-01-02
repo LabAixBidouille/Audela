@@ -2,7 +2,7 @@
 # Fichier : eshelvisu.tcl
 # Description : Visionneuse d'images eShel
 # Auteurs : Michel Pujol
-# Mise a jour $Id: eshelvisu.tcl,v 1.1 2009-11-07 08:31:05 michelpujol Exp $
+# Mise a jour $Id: eshelvisu.tcl,v 1.2 2010-01-02 16:40:38 michelpujol Exp $
 #
 
 namespace eval ::eshelvisu {
@@ -117,6 +117,28 @@ proc ::eshelvisu::createPluginInstance { tkbase visuNo } {
    if {![info exists conf(eshelvisu,width_column_type)]}   { set conf(eshelvisu,width_column_type)   "-70" }
    if {![info exists conf(eshelvisu,width_column_date)]}   { set conf(eshelvisu,width_column_date)   "-104" }
    if {![info exists conf(eshelvisu,width_column_size)]}   { set conf(eshelvisu,width_column_size)   "-70" }
+
+   if { [lsearch $conf(eshelvisu,enableExtension) "bmp"] == -1 } {
+      lappend conf(visio2,enableExtension) "bmp" "0"
+   }
+   if { [lsearch $conf(eshelvisu,enableExtension) "gif"] == -1 } {
+      lappend conf(visio2,enableExtension) "gif" "0"
+   }
+   if { [lsearch $conf(eshelvisu,enableExtension) "png"] == -1 } {
+      lappend conf(visio2,enableExtension) "png" "0"
+   }
+   if { [lsearch $conf(eshelvisu,enableExtension) "tif"] == -1 } {
+      lappend conf(visio2,enableExtension) "tif" "0"
+   }
+   if { [lsearch $conf(eshelvisu,enableExtension) "xbm"] == -1 } {
+      lappend conf(visio2,enableExtension) "xbm" "0"
+   }
+   if { [lsearch $conf(eshelvisu,enableExtension) "xpm"] == -1 } {
+      lappend conf(visio2,enableExtension) "xpm" "0"
+   }
+   if { [lsearch $conf(eshelvisu,enableExtension) "eps"] == -1 } {
+      lappend conf(visio2,enableExtension) "eps" "0"
+   }
 
    #--- creation des variables locales
    set private($visuNo,This) "$tkbase.eshelVisu"
@@ -858,6 +880,13 @@ proc ::eshelvisu::localTable::fillTable { visuNo } {
    if { [info exists enableExtension(fit)] == 0 } { set enableExtension(fit) 1 }
    if { [info exists enableExtension(jpg)] == 0 } { set enableExtension(jpg) 1 }
    if { [info exists enableExtension(raw)] == 0 } { set enableExtension(raw) 1 }
+   if { [info exists enableExtension(bmp)] == 0 } { set enableExtension(bmp) 1 }
+   if { [info exists enableExtension(gif)] == 0 } { set enableExtension(gif) 1 }
+   if { [info exists enableExtension(png)] == 0 } { set enableExtension(png) 1 }
+   if { [info exists enableExtension(tif)] == 0 } { set enableExtension(tif) 1 }
+   if { [info exists enableExtension(xbm)] == 0 } { set enableExtension(xbm) 1 }
+   if { [info exists enableExtension(xpm)] == 0 } { set enableExtension(xpm) 1 }
+   if { [info exists enableExtension(eps)] == 0 } { set enableExtension(eps) 1 }
 
    #--- raz de la liste
    $tbl delete 0 end
@@ -909,14 +938,14 @@ proc ::eshelvisu::localTable::fillTable { visuNo } {
                || [regexp (.fts.gz)$             [string tolower $name]] && $enableExtension(fit)==1
                || [regexp (.jpg|.jpeg)$          [string tolower $name]] && $enableExtension(jpg)==1
                || [regexp (.crw|.nef|.cr2|.dng)$ [string tolower $name]] && $enableExtension(raw)==1
+               || [regexp (.bmp)$                [string tolower $name]] && $enableExtension(bmp)==1
+               || [regexp (.gif)$                [string tolower $name]] && $enableExtension(gif)==1
+               || [regexp (.tif|.tiff)$          [string tolower $name]] && $enableExtension(tif)==1
+               || [regexp (.png)$                [string tolower $name]] && $enableExtension(png)==1
+               || [regexp (.ps|.eps)$            [string tolower $name]] && $enableExtension(ps)==1
+               || [regexp (.xbm|.xmp)$           [string tolower $name]] && $enableExtension(xbm)==1
                } {
 
-               ###|| [regexp (.bmp)$                [string tolower $name]] && $enableExtension(bmp)==1
-               ###|| [regexp (.gif)$                [string tolower $name]] && $enableExtension(gif)==1
-               ###|| [regexp (.tif|.tiff)$          [string tolower $name]] && $enableExtension(tif)==1
-               ###|| [regexp (.png)$                [string tolower $name]] && $enableExtension(png)==1
-               ###|| [regexp (.ps|.eps)$            [string tolower $name]] && $enableExtension(ps)==1
-               ###|| [regexp (.xbm|.xmp)$           [string tolower $name]] && $enableExtension(xbm)==1
 
          #--- cas d'une image : ajoute une ligne dans la table avec le nom, type, serie et date du fichier
          #--- colonne name
