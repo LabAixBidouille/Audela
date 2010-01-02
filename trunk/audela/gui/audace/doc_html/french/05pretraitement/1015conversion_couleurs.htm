@@ -7,51 +7,50 @@
 <title>Pr&eacute;traitement - Conversions</title>
 </head>
 <body>
-<p class="date">Date de mise &agrave; jour : 31 d&eacute;cembre
-2009</p>
+<p class="date">Date de mise &agrave; jour : 01 janvier 2010</p>
 <h1>Pr&eacute;traitement - Conversions</h1>
 <h2>1. Fonctions</h2>
-<p>Ce script a pour fonctions de convertir des lots d'images en
+<p>Ce script a pour fonction de convertir des lots d'images en
 diff&eacute;rents types :</p>
 <ul>
-<li>conversion RAW--&gt;FITS d'images issus d'appareils photo aux
-formats ARW CR2 CRW DNG ERF MRW NEF ORF RAF RW2 SR2 TIFF
-X3F,</li>
-<li>conversion CFA--&gt;RVB (couleurs),</li>
-<li>conversion RVB--&gt;R+V+B (d&eacute;composition d'une image
-couleurs en plans couleurs),</li>
-<li>conversion R+V+B--&gt;RVB (agr&eacute;gation de plans
-couleurs en une seule image RVB),</li>
+<li>Conversion RAW--&gt;FITS d'images issues d'appareils photo aux
+formats ARW, CR2, CRW, DNG, ERF, MRW, NEF, ORF, RAF, RW2, SR2, TIFF
+et X3F.</li>
+<li>Conversion CFA--&gt;RVB (couleurs).</li>
+<li>Conversion RVB--&gt;R+V+B (d&eacute;composition d'une image
+RVB en 3 plans couleurs).</li>
+<li>Conversion R+V+B--&gt;RVB (agr&eacute;gation de 3 plans
+couleurs en une seule image RVB).</li>
 </ul>
 <p>L'extension de travail est l'extension par d&eacute;faut
-configur&eacute;e dans Configuration/Fichiers image.</p>
+configur&eacute;e dans "Configuration" --> "Fichiers image".</p>
 Il apporte des facilit&eacute;s suppl&eacute;mentaires :
 <ul class="noindent">
-<li>changement de nom g&eacute;n&eacute;rique de sortie,</li>
+<li>changement du nom g&eacute;n&eacute;rique de sortie,</li>
 <li>renum&eacute;rotation des fichiers issus de la
 conversion,</li>
 <li>suppression des fichiers sources,</li>
 <li>d&eacute;tection de collision des fichiers produits avec des
 fichiers pr&eacute;existants ou &agrave; cr&eacute;er,</li>
-<li>substitution automatique des anciens mots-cl&eacute;s par les
-nouveaux (RAW_COLORS --&gt; RAWCOLOR, RAW_FILTR --&gt; RAWFILTE,
+<li>substitution automatique des anciens mots cl&eacute;s par les
+nouveaux (RAW_COLORS --&gt; RAWCOLOR, RAW_FILTER --&gt; RAWFILTE,
 RAW_BLACK --&gt; RAWBLACK et RAW_MAXIMUM --&gt; RAWMAXI),</li>
-<li>d&eacute;tection des erreurs dans les mots-cl&eacute;s :
-elles sont signal&eacute;es sur la console et les images ne sont
+<li>d&eacute;tection des erreurs dans les mots cl&eacute;s,
+elles sont signal&eacute;es sur la Console et les images ne sont
 pas trait&eacute;es,</li>
 <li>emp&ecirc;chement de conversion d'une image non conforme au
-type attendu (qui conduit &agrave; la fermeture d'Aud'Ace).</li>
+type attendu (qui conduit &agrave; la fermeture d'Aud'ACE).</li>
 </ul>
 <p>Pour acc&eacute;l&eacute;rer le traitement la visualisation
 des fichiers est d&eacute;sactiv&eacute;e. Il ne propose pas la
 visualisation du dernier fichier produit.</p>
 <h2>2. Lancement</h2>
-<p>- d&eacute;finir le r&eacute;pertoire de travail par
-Configuration/R&eacute;pertoires/R&eacute;pertoires des images
-avant de lancer le script ;<br />
-- si le r&eacute;pertoire contient au moins une image convertible
+<p>- D&eacute;finir le r&eacute;pertoire de travail par
+"Configuration" --> "R&eacute;pertoires" --> "R&eacute;pertoires des images"
+avant de lancer le script.<br />
+- Si le r&eacute;pertoire contient au moins une image convertible
 une fen&ecirc;tre s'ouvre sinon un message d'erreur conseille de
-changer de r&eacute;pertoire et le script s'arr&ecirc;te.</p>
+changer de r&eacute;pertoire.</p>
 <p><img src="images/lconv2.png" alt=
 "image de la fen&ecirc;tre de conversion" /></p>
 <p>Elle rappelle le nom du r&eacute;pertoire 'images'
@@ -63,6 +62,7 @@ s&eacute;lectionn&eacute; et comporte :</p>
 <li>des cases &agrave; cocher aux fonctions explicites,</li>
 <li>une entr&eacute;e pour modifier le nom
 g&eacute;n&eacute;rique du fichier de sortie,</li>
+<li>un bouton 'OK' pour lancer la conversion et puis fermer la fen&ecirc;tre,</li>
 <li>un bouton 'Appliquer' pour lancer la conversion,</li>
 <li>un bouton 'Aide',</li>
 <li>un bouton 'Fermer' pour quitter.</li>
@@ -73,38 +73,35 @@ conversion, d'o&ugrave; un retard &agrave; l'affichage de la
 fen&ecirc;tre, fonction du nombre et de la nature des fichiers
 :</p>
 <ul>
-<li>les conversions qui correspondent &agrave; des listes vides
-sont d&eacute;sactiv&eacute;es dans le menu du bouton de
-menu,</li>
 <li>si les en-t&ecirc;tes FITS d'un fichier comportent des
 erreurs, un message d'erreur est &eacute;dit&eacute; sur la
-console et le fichier est retir&eacute; de la liste,</li>
+Console et le fichier est retir&eacute; de la liste,</li>
 <li>les images en noir et blanc, 1D (spectres) sont
 ignor&eacute;es,</li>
 <li>la premi&egrave;re conversion possible est
-s&eacute;lectionn&eacute;e. Pour changer de type de conversion,
-utiliser le bouton de menu.</li>
+s&eacute;lectionn&eacute;e.</li> 
 </ul>
+<p>Pour changer de type de conversion, utiliser le bouton de menu.</p>
 <h2>3. Les options</h2>
-<p><b>Tout Convertir</b> s&eacute;lectionne ou
+<p><b>Convertir tous les fichiers</b> s&eacute;lectionne ou
 d&eacute;s&eacute;lectionne tous les fichiers de la liste.</p>
 <p><b>Renum&eacute;roter les images en sortie</b> est
 particuli&egrave;rement utile pour obtenir des s&eacute;ries
 d'images FITS coh&eacute;rentes &agrave; partir d'images RAW
-(avec des num&eacute;ros quelconques) et pour pouvoir aborder les
+(avec des num&eacute;ros quelconques) et pour pouvoir aborder le
 pr&eacute;traitement (offset, dark et flat) sans avoir &agrave;
 renum&eacute;roter les fichiers manuellement.</p>
 <p><b>Changer le nom g&eacute;n&eacute;rique de sortie en</b>
 modifie le nom g&eacute;n&eacute;rique des fichiers produits. Si
-cette option est coch&eacute;e, le script propose un
-g&eacute;n&eacute;rique pour chaque type de conversion : Ce nom
-g&eacute;n&eacute;rique est modifiable : les caract&egrave;res
+cette option est coch&eacute;e, le script propose un nom
+g&eacute;n&eacute;rique pour chaque type de conversion. Ce nom
+g&eacute;n&eacute;rique est modifiable : Les caract&egrave;res
 autoris&eacute;s sont exclusivement les caract&egrave;res
 alphanum&eacute;riques et le underscore _ , toutes les autres
 entr&eacute;es &eacute;tant &eacute;limin&eacute;es. Les
 caract&egrave;res accentu&eacute;s perdent leur accent.
 L'entr&eacute;e doit &ecirc;tre valid&eacute;e par la touche
-'Entrer '. Le changement de g&eacute;n&eacute;rique ne s'applique
+'Entrer '. Le changement de nom g&eacute;n&eacute;rique ne s'applique
 qu'aux images produites par une s&eacute;lection, pas aux images
 sources. Pour permettre de v&eacute;rifier le r&eacute;sultat
 l'affichage est modifi&eacute; instantan&eacute;ment lors de la
@@ -114,13 +111,12 @@ pour la conversion RAW--&gt;FITS de mani&egrave;re &agrave;
 &eacute;viter de perdre les originaux par m&eacute;garde. Cette
 option permet de limiter l'inflation du nombre et du volume des
 fichiers produits.</p>
-<p>Le bouton <b>Menu</b> : affiche la conversion
+<p>Le bouton <b>Menu</b> : Affiche la conversion
 s&eacute;lectionn&eacute;e et permet de naviguer entre les types
-de conversion possibles. Les options qui ne correspondent
-&agrave; aucun fichier pr&eacute;sent sont
-d&eacute;sactiv&eacute;es. A l'issue de chaque conversion, les
+de conversion possibles. A l'issue de chaque conversion, les
 listes de fichiers convertibles et les conversions accessibles
 par le bouton de menu sont actualis&eacute;es.</p>
+<p>Le bouton <b>OK</b> lance la conversion et ferme la fen&ecirc;tre.</p>
 <p>Le bouton <b>Appliquer</b> lance la conversion.</p>
 <p>Le bouton <b>Aide</b> ouvre cette aide.</p>
 <p>Le bouton <b>Fermer</b> ferme la fen&ecirc;tre et arr&ecirc;te
@@ -130,8 +126,8 @@ barres de d&eacute;filement pour explorer des listes relativement
 longues.<br />
 La taille des colonnes s'adapte lors du passage d'une conversion
 &agrave; une autre.</p>
-<p>La ligne de message donne nombre d'options
-s&eacute;lectionn&eacute;es / total ou pr&eacute;traitement en
+<p>La ligne de message donne le nombre de fichiers
+s&eacute;lectionn&eacute;es / le nombre de fichiers total ou pr&eacute;traitement en
 cours ou pr&eacute;traitement termin&eacute;.</p>
 <p><b>Avancement de la conversion</b></p>
 <ul>
@@ -145,35 +141,35 @@ un <img src="images/ok.gif" height="20" width="20" alt=
 terme, la colonne 'Remarque' comporte un <img src=
 "images/info.gif" height="20" width="20" alt=
 "conversion non r&eacute;alis&eacute;e" /><br />
-et la console &eacute;met un message 'Echec de conversion de (nom
+et la Console &eacute;met un message 'Echec de conversion de (nom
 du fichier) : (erreur )'.</li>
 <li>Le symbole <img src="images/nop.gif" alt=
 "conversion interdite" height="20" width="20" /> signifie que la
 conversion ne sera pas effectu&eacute;e car elle conduirait
-&agrave; &eacute;craser un fichier existant. (CF Note sur les
-pi&egrave;ges du traitement par lots sur la page suivante).</li>
+&agrave; &eacute;craser un fichier existant (voir Note sur les
+pi&egrave;ges du traitement par lots).</li>
 </ul>
 <h2>4. Performances</h2>
 <p>Sur la base de s&eacute;ries de 100 images CR2 d'un canon
 350D, 3474x2314 pixels :</p>
 <ul>
-<li>conversion RAW--&gt;FITS : 2.9 secondes/image,</li>
-<li>conversion CFA--&gt;RGB : 4.4 secondes/image,</li>
-<li>conversion RGB--&gt;R+G+B : : 5.3 secondes/image,</li>
-<li>conversion R+G+B--&gt;RGB : 8.6 secondes/image,</li>
-<li>dur&eacute;e du tri de 500 fichiers dans un r&eacute;pertoire
-: de l'ordre de 1 seconde.</li>
+<li>Conversion RAW--&gt;FITS : 2.9 secondes/image.</li>
+<li>Conversion CFA--&gt;RGB : 4.4 secondes/image.</li>
+<li>Conversion RGB--&gt;R+G+B : : 5.3 secondes/image.</li>
+<li>Conversion R+G+B--&gt;RGB : 8.6 secondes/image.</li>
+<li>Dur&eacute;e du tri de 500 fichiers dans un r&eacute;pertoire
+: De l'ordre de 1 seconde.</li>
 </ul>
 <p>Ces dur&eacute;es sont donn&eacute;es &agrave; titre indicatif
-: elles peuvent varier sensiblement en fonction du
+: Elles peuvent varier sensiblement en fonction du
 fen&ecirc;trage effectu&eacute;, de la correction des
-mots-cl&eacute;s qui g&eacute;n&egrave;re une sauvegarde de
+mots cl&eacute;s qui g&eacute;n&egrave;re une sauvegarde de
 l'image convertie, etc.</p>
 <h2>5. Note sur les pi&egrave;ges du traitement par lots et sur
 le filtre mis en place</h2>
 <h3>5.1 Du fait du contenu des images</h3>
 <p>Le script distingue la nature des images (RAW, CFA, RVB, plans
-couleurs) mais pas le contenu des images : les CFA de dark, flat
+couleurs) mais pas le contenu des images : Les CFA de dark, flat
 et offset pr&eacute;sents dans le r&eacute;pertoire seront
 propos&eacute;s &agrave; la conversion CFA--&gt;RGB. Deux
 solutions sont disponibles :</p>
@@ -209,12 +205,12 @@ des fichiers &agrave; cr&eacute;er.</p>
 d&eacute;s&eacute;lectionn&eacute; et la colonne Remarque
 comporte un <img src="images/nop.gif" alt="conversion interdite"
 height="20" width="20" /></p>
-<p>Si l'option 'Tout convertir' &eacute;tait
+<p>Si l'option 'Convertir tous les fichiers' &eacute;tait
 s&eacute;lectionn&eacute;e elle ne l'est plus.</p>
 <p>Les solutions consistent &agrave; :</p>
 <ul>
-<li>ou &agrave; extraire le fichier existant,</li>
-<li>&agrave; le d&eacute;truire ou manuellement ou avec l'option
+<li>extraire le fichier existant,</li>
+<li>ou &agrave; le d&eacute;truire manuellement ou avec l'option
 'D&eacute;truire les sources',</li>
 <li>ou &agrave; changer de g&eacute;n&eacute;rique de sortie
 (sans oublier de confirmer avec la touche 'Entrer' et de
@@ -225,23 +221,55 @@ changement de nom g&eacute;n&eacute;rique, la
 renum&eacute;rotation des fichiers produits et les index peuvent
 rendre d&eacute;licate la conversion d'une longue liste de
 fichiers en une seule passe.</p>
-<h3>5.4 Conversion R+V+B ---> RVB</h3>
-<p>Le but de cette fonction est de reconstituer une image couleur (RVB) au format FITS (3 axes) &agrave; partir de 3 images acquises au travers de filtres dans les bandes de couleur rouge (R), verte (V) et bleue (B), &eacute;galement au format FITS. </p>
-<p>Les noms des 3 images d'entr&eacute;e doivent &ecirc;tre par exemple : </p>
+<h3>5.4 Conversion CFA ---&gt; RVB</h3>
+<p>Le but de cette fonction est d'obtenir &agrave; partir d'une
+image CFA au format FITS (2 axes, NAXIS = 2) une image en couleurs (3 axes, NAXIS = 3),
+&eacute;galement au format FITS, contenant les composantes dans
+les bandes de couleur rouge (R), verte (V) et bleue (B).</p>
+<p>Il est imp&eacute;ratif de changer le nom
+g&eacute;n&eacute;rique de sortie. Les seules r&egrave;gles
+&agrave; observer sont les suivantes :</p>
 <ul>
-  <li>nom_g&eacute;n&eacute;rique_entr&eacute;e_1.fit </li>
-  <li>nom_g&eacute;n&eacute;rique_entr&eacute;e_2.fit </li>
-  <li>nom_g&eacute;n&eacute;rique_entr&eacute;e_3.fit </li>
+<li>les caract&egrave;res autoris&eacute;s sont exclusivement les
+caract&egrave;res alphanum&eacute;riques et le underscore _ ,
+&agrave; l'exception des caract&egrave;res accentu&eacute;s, des
+tr&eacute;mas et des c&eacute;dilles,</li>
+<li>pour que le changement soit pris en compte, il faut activer
+la touche Entrer,</li>
+<li>les caract&egrave;res interdits sont &eacute;limin&eacute;s
+automatiquement.</li>
 </ul>
-<p>Il n'y a pas de r&egrave;gle particuli&egrave;re &agrave; suivre pour d&eacute;finir le nom de l'image de sortie. </p>
-<h3>5.5 Conversion RVB ---> R+V+B</h3>
-<p>Le but de cette fonction est d'obtenir &agrave; partir d'une image couleur (RVB) au format FITS (3 axes) les 3 images composantes dans les bandes de couleur rouge (R), verte (V) et bleue (B), également au format FITS. </p>
-<p>Il n'y a pas de r&egrave;gle particuli&egrave;re &agrave; suivre pour d&eacute;finir le nom de l'image d'entr&eacute;e. </p>
-<p>Par contre, les noms des 3 images de sortie seront par exemple : </p>
+<h3>5.5 Conversion RVB ---&gt; R+V+B</h3>
+<p>Le but de cette fonction est d'obtenir &agrave; partir d'une
+image couleur (RVB) au format FITS (3 axes, NAXIS = 3) les 3 images
+composantes dans les bandes de couleur rouge (R), verte (V) et
+bleue (B), &eacute;galement au format FITS.</p>
+<p>Il n'y a pas de r&egrave;gle particuli&egrave;re &agrave;
+suivre pour d&eacute;finir le nom de l'image de sortie.</p>
+<p>Par contre, les noms des 3 images de sortie seront par exemple
+:</p>
 <ul>
-  <li>nom_g&eacute;n&eacute;rique_sortie_1.fit </li>
-  <li>nom_g&eacute;n&eacute;rique_sortie_2.fit </li>
-  <li>nom_g&eacute;n&eacute;rique_sortie_3.fit </li>
+<li>nom_g&eacute;n&eacute;rique_sortie1.fit</li>
+<li>nom_g&eacute;n&eacute;rique_sortie2.fit</li>
+<li>nom_g&eacute;n&eacute;rique_sortie3.fit</li>
 </ul>
+<h3>5.6 Conversion R+V+B ---&gt; RVB</h3>
+<p>Le but de cette fonction est de reconstituer une image couleur
+(RVB) au format FITS (3 axes, NAXIS = 3) &agrave; partir de 3 images
+acquises au travers de filtres dans les bandes de couleur rouge
+(R), verte (V) et bleue (B), &eacute;galement au format FITS.</p>
+<p>Les noms des 3 images d'entr&eacute;e doivent &ecirc;tre par
+exemple :</p>
+<ul>
+<li>nom_g&eacute;n&eacute;rique_entr&eacute;e1.fit</li>
+<li>nom_g&eacute;n&eacute;rique_entr&eacute;e2.fit</li>
+<li>nom_g&eacute;n&eacute;rique_entr&eacute;e3.fit</li>
+</ul>
+<p>Le nom_g&eacute;n&eacute;rique_entr&eacute;e peut se terminer
+par un indice num&eacute;rique.</p>
+<p>Il n'y a pas de r&egrave;gle particuli&egrave;re &agrave;
+suivre pour d&eacute;finir le nom de l'image de sortie.</p>
+<p>Si les trois plans couleurs ne sont pas r&eacute;unis, la
+conversion ne sera pas propos&eacute;e.</p>
 </body>
 </html>
