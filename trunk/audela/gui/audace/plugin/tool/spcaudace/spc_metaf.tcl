@@ -2,7 +2,7 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spcaudace spc_metaf.tcl ]
 
-# Mise a jour $Id: spc_metaf.tcl,v 1.9 2009-12-19 09:56:22 bmauclaire Exp $
+# Mise a jour $Id: spc_metaf.tcl,v 1.10 2010-01-02 16:37:54 bmauclaire Exp $
 
 
 
@@ -1187,14 +1187,23 @@ proc spc_traite2rinstrum { args } {
        # set fricorr [ spc_rinstrumcorr $fcal $etoile_ref $etoile_cat ]
        set rep_instrum [ spc_rinstrum "$fcalo" "$etoile_cat" ]
        ::console::affiche_resultat "\nRéponse instrumentale sauvée sous $rep_instrum\n"
+       buf$audace(bufNo) load "$audace(rep_images)/$lampecalibree"
+       set naxis1 [  lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+       set cdelt1 [  lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+       set largeur_spectrale [ expr $cdelt1*$naxis1 ]
 
        #--- Correction de l'étoile de référence par la réponse instrumentale :
        ::console::affiche_resultat "\n\n**** Division par la réponse intrumentale ****\n\n"
        if { [ file exists "$audace(rep_images)/${rep_instrum}3$conf(extension,defaut)" ] } {
-	   set fricorr [ spc_divri "$fcalo" ${rep_instrum}3 ]
+	   set fricorr1 [ spc_divri "$fcalo" ${rep_instrum}3 ]
+           set fricorr [ spc_linearcal $fricorr1 ]
+           file delete -force "$audace(rep_images)/$fricorr1$conf(extension,defaut)"
            file copy -force "$audace(rep_images)/$fricorr$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1c$conf(extension,defaut)"
        } elseif { [ file exists "$audace(rep_images)/${rep_instrum}br$conf(extension,defaut)" ] } {
-	   set fricorr [ spc_divri "$fcalo" ${rep_instrum}br ]
+	   #- set fricorr [ spc_divri "$fcalo" ${rep_instrum}br ]
+           set fricorr1 [ spc_divbrut "$fcalo" ${rep_instrum}br ]
+           set fricorr [ spc_linearcal $fricorr1 ]
+           file delete -force "$audace(rep_images)/$fricorr1$conf(extension,defaut)"
            file copy -force "$audace(rep_images)/$fricorr$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1c$conf(extension,defaut)"
        } else {
 	   set fricorr "$fcalo"
@@ -1511,7 +1520,11 @@ proc spc_traite2srinstrum { args } {
                   set fricorr [ spc_divri "$fcal" "$rinstrum" ]
 	       }
 	   } else {
-              set fricorr [ spc_divri "$fcal" "$rinstrum" ]
+              if { $largeur_spectrale >= $spcaudace(bande_br) } {
+                 set fricorr [ spc_divbrut "$fcal" "$rinstrum" ]
+              } else {
+                 set fricorr [ spc_divri "$fcal" "$rinstrum" ]
+              }
 	   }
           if { $largeur_spectrale >= $spcaudace(bande_br) } {
              set spcaudace(imax_tolerence) $imaxtol
