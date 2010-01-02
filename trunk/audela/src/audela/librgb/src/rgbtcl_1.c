@@ -689,7 +689,7 @@ int Cmd_rgbtcl_visu(ClientData clientData, Tcl_Interp *interp, int argc, char *a
       return TCL_ERROR;
    }
 
-   Tk_PhotoPutBlock(ph,&pib,0,0,ww,wh);
+   Tk_PhotoPutBlock(interp,ph,&pib,0,0,ww,wh,TK_PHOTO_COMPOSITE_SET);
 
    if(ptr) free(ptr);
    if(pix_r) free(pix_r);
