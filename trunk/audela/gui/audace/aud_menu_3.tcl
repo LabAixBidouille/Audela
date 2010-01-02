@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.53 2009-12-31 12:16:58 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.54 2010-01-02 07:32:12 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -2458,12 +2458,12 @@ namespace eval ::lconv2 {
       set private(lconv2,extension) $::conf(extension,defaut)
 
       #--- liste les operations de conversion
-      set private(lconv2,operations) [ list "r+g+b2rgb" "rgb2r+g+b" "cfa2rgb" "raw2fits" ]
+      set private(lconv2,operations) [ list "raw2fits" "cfa2rgb" "rgb2r+g+b" "r+g+b2rgb" ]
 
       #--- liste les libelles du menubutton
-      set private(lconv2,formules) [ list "$caption(audace,menu,r+v+b2rvb)" \
-         "$caption(audace,menu,rvb2r+v+b)" "$caption(audace,menu,cfa2rvb)" \
-         "$caption(audace,menu,raw2fits)" ]
+      set private(lconv2,formules) [ list "$caption(audace,menu,raw2fits)" \
+         "$caption(audace,menu,cfa2rvb)" "$caption(audace,menu,rvb2r+v+b)" \
+         "$caption(audace,menu,r+v+b2rvb)" ]
 
       #--- cherche la longueur maximale du libelle des formules
       #--- pour dimensionner la largeur du menuboutton
@@ -2481,19 +2481,17 @@ namespace eval ::lconv2 {
       regsub -all {[ав]}   $dir "a" dir
       regsub -all "з"      $dir "c" dir
 
-      set liste_generiques [ list "img3d_" "plan_" "rgb_" $dir ]
+      set liste_generiques [ list $dir "rgb_" "plan_" "img3d_" ]
       foreach op $private(lconv2,operations) generique $liste_generiques {
          set private(lconv2,$op,generique) $generique
       }
 
       #--- classe et liste les fichiers convertibles par type de conversion
-      #--- les quatre liste sont contenues dans l'array bdd
-      #--- ouvre la fenetre de selection de la conversion si la liste n'est pas vide
+      #--- les quatre listes sont contenues dans l'array bdd
+      #--- ouvre la fenetre de selection de la conversion
       if { [ ::lconv2::ListFiles ] != "0" } {
-
          #--- positionne sur l'operation demandee
          set private(lconv2,conversion) "$type_conversion"
-
          #--- ouvre la fenetre de conversion
          set this "$audace(base).dialog"
          if { [ winfo exists $this ] } {
@@ -2512,16 +2510,9 @@ namespace eval ::lconv2 {
             }
             ::lconv2::CreateDialog "$audace(base).dialog"
          }
-
          #--- initialise les listes de fichiers in & out
          #--- evite une erreur si on appuie sur 'Appliquer'
          lassign { "" "" } private(lconv2,in) private(lconv2,out)
-
-      } else {
-         #--- message d'erreur si pas de fichier convertible
-         ::lconv2::Error "$caption(pretraitement,no_file)"
-         #--- arrete
-         ::lconv2::Fermer
       }
    }
 
@@ -2585,9 +2576,9 @@ namespace eval ::lconv2 {
                #--- extrait les kwd en vue des tests de classification
                set data [ list [ lindex [array get kwds "NAXIS" ] 1 ] \
                   [ lindex [ array get kwds "NAXIS3" ] 1 ] \
-                  [ lindex [array get kwds "RGBFILTR" ] 1 ] \
-                  [ lindex [array get kwds "RAWCOLOR" ] 1 ] \
-                  [ lindex [array get kwds "RAW_COLORS" ] 1 ] ]
+                  [ lindex [ array get kwds "RGBFILTR" ] 1 ] \
+                  [ lindex [ array get kwds "RAWCOLOR" ] 1 ] \
+                  [ lindex [ array get kwds "RAW_COLORS" ] 1 ] ]
                lassign $data naxis naxis3 rgbfiltr rawcolor raw_colors
 
                set file [file tail $fichier ]
@@ -2626,10 +2617,16 @@ namespace eval ::lconv2 {
       }
 
       #--- etape 4 : construit la base de donnees (conversion,liste des fichiers)
-      foreach op $private(lconv2,operations) liste [ list $plan_coul $rgb $cfa $raw ] {
-         set private(lconv2,$op,state) "disabled"
+      foreach op $private(lconv2,operations) liste [ list $raw $cfa $rgb $plan_coul ] {
+         set private(lconv2,$op,no_file) ""
+         if { $liste == "" } {
+            set liste [ list $caption(pretraitement,no_file) ]
+            set private(lconv2,$op,no_file) $liste
+         } else {
+            set private(lconv2,$op,no_file) ""
+         }
+         set private(lconv2,$op,state) "normal"
          if { [ llength $liste ] != "0" } {
-            set private(lconv2,$op,state) "normal"
             array set bdd [ list $op $liste ]
          }
       }
@@ -2816,6 +2813,7 @@ namespace eval ::lconv2 {
    proc ::lconv2::Select { op } {
       variable private
       variable bdd
+      global caption
 
       #--- memorise l'operation
       set private(lconv2,conversion) "$op"
@@ -2825,7 +2823,7 @@ namespace eval ::lconv2 {
 
       #--- extrait la liste des fichiers RAW, CFA, RGB ou R G B de bdd
       set private(lconv2,liste_cibles) [ lsort -dictionary -index 0 [ lindex [ array get bdd $op ] 1 ] ]
-      set private(lconv2,nb) [ llength  $private(lconv2,liste_cibles) ]
+      set private(lconv2,nb) [ llength $private(lconv2,liste_cibles) ]
 
       #--- cree une ligne par fichier convertible
       for { set i 0 } { $i < $private(lconv2,nb) } { incr i } {
@@ -2833,25 +2831,31 @@ namespace eval ::lconv2 {
          #--- adapte le texte a afficher (premier chargement)
          switch -exact $op {
             "raw2fits"  { set out "[ file rootname $cible ]$private(lconv2,extension)" }
-            "r+g+b2rgb" { set out $cible ; set cible "${cible}1 + ${cible}2 + ${cible}3" }
-            "rgb2r+g+b" { set cible "[ file rootname $cible ]"
-                          set out "${cible}1 + ${cible}2 + ${cible}3" }
             "cfa2rgb"   { set cible "[ file rootname $cible ]"
                           set out "[ file rootname $cible ]" }
+            "rgb2r+g+b" { set cible "[ file rootname $cible ]"
+                          set out "${cible}1 + ${cible}2 + ${cible}3" }
+            "r+g+b2rgb" { set out $cible ; set cible "${cible}1 + ${cible}2 + ${cible}3" }
          }
 
          #--- insere la nouvelle ligne
-         $private(lconv2,tbl) insert end [ list "" "$cible" "-->" "$out" "" ]
-
-         #--- insere le checkbutton
-         $private(lconv2,tbl) cellconfigure end,0 -window [ list ::lconv2::CreateCheckButton $i ]
+         if { $cible == "$caption(pretraitement,no_file)" } {
+            $private(lconv2,tbl) insert end [ list "" "$cible" ]
+            set private(lconv2,nb) "0"
+         } elseif { $cible == "$caption(pretraitement,no_file)1 + $caption(pretraitement,no_file)2 + $caption(pretraitement,no_file)3" } {
+            $private(lconv2,tbl) insert end [ list "" "$caption(pretraitement,no_file)" ]
+            set private(lconv2,nb) "0"
+         } else {
+            $private(lconv2,tbl) insert end [ list "" "$cible" "-->" "$out" "" ]
+            #--- insere le checkbutton
+            $private(lconv2,tbl) cellconfigure end,0 -window [ list ::lconv2::CreateCheckButton $i ]
+         }
       }
 
       ::lconv2::WindowConfigure $op
 
       focus $private(lconv2,This)
    }
-
 
    #########################################################################
    # Cree les listes de fichiers selectionnes (entree et sortie)           #
@@ -3308,7 +3312,11 @@ namespace eval ::lconv2 {
 
       set this $private(lconv2,This)
       #--- actualise le message
-      $this.labURLmsg configure -text "$caption(pretraitement,nb_select) 0/[ $private(lconv2,tbl) size ]"
+      if { $private(lconv2,nb) != "0" } {
+         $this.labURLmsg configure -text "$caption(pretraitement,nb_select) 0/[ $private(lconv2,tbl) size ]"
+      } else {
+         $this.labURLmsg configure -text "$caption(pretraitement,nb_select) 0/$private(lconv2,nb)"
+      }
 
       #--- decoche toutes les options
       foreach child { all renum chg destroy_src } { $this.$child deselect }
@@ -3323,8 +3331,21 @@ namespace eval ::lconv2 {
          $this.generique configure -state disabled
       }
 
+      #--- interdit ces widgets s'il n'y a pas de fichiers a convertir
+      if { $private(lconv2,$op,no_file) == [ list $::caption(pretraitement,no_file) ] } {
+         set state disabled
+      } else {
+         set state normal
+      }
+      $this.all configure -state $state
+      $this.renum configure -state $state
+      $this.chg configure -state $state
+      $this.generique configure -state $state
+      if { $op != "raw2fits" } {
+         $this.destroy_src configure -state $state
+      }
+
       #--- interdit la destruction des sources raw
-      set state "normal"
       if { $op == "raw2fits" } { set state disabled }
       $this.destroy_src configure -state $state
    }
@@ -3338,7 +3359,7 @@ namespace eval ::lconv2 {
 
       set l [ llength $private(lconv2,in) ]
       #--- actualise la case a cocher de l'option 'Tout convertir'
-      if { $private(lconv2,nb) ==  $l } {
+      if { $private(lconv2,nb) == $l } {
          $private(lconv2,This).all select
       } else {
          $private(lconv2,This).all deselect
