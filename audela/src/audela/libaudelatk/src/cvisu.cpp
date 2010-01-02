@@ -713,11 +713,13 @@ int CVisu::UpdateDisplay()
    // remarque : si orgww==0 et orgwh==0 , il faut utiliser Tk_PhotoPutBlock car Tk_PhotoPutZoomedBlock
    //            ne supporte pas une image de taille nulle (boucle interne infinie)
    if( zoom == 1 || (orgww==0 && orgwh==0)) {
-      Tk_PhotoPutBlock(ph,&pib,0,0, orgww,orgwh);
+      // USE_COMPOSITELESS_PHOTO_PUT_BLOCK
+      //Tk_PhotoPutBlock(ph,&pib,0,0, orgww,orgwh);
+      Tk_PhotoPutBlock(interp, ph,&pib,0,0, orgww,orgwh, TK_PHOTO_COMPOSITE_SET);
    } else if( zoom > 1) {
-      Tk_PhotoPutZoomedBlock(ph, &pib, 0, 0, (int) (orgww*zoom), (int) (orgwh*zoom), (int) zoom, (int) zoom, 1, 1);
+      Tk_PhotoPutZoomedBlock(interp, ph, &pib, 0, 0, (int) (orgww*zoom), (int) (orgwh*zoom), (int) zoom, (int) zoom, 1, 1, TK_PHOTO_COMPOSITE_SET);
    } else {
-      Tk_PhotoPutZoomedBlock(ph, &pib, 0, 0, (int) (orgww*zoom+1), (int) (orgwh*zoom+1), 1, 1, (int) (1./zoom), (int) (1./zoom));
+      Tk_PhotoPutZoomedBlock(interp, ph, &pib, 0, 0, (int) (orgww*zoom+1), (int) (orgwh*zoom+1), 1, 1, (int) (1./zoom), (int) (1./zoom), TK_PHOTO_COMPOSITE_SET);
    }
 
 
