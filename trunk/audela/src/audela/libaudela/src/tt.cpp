@@ -602,31 +602,31 @@ int CmdFitsHeader(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
    char **units=NULL;
    int *datatypes=NULL;
    Tcl_DString dsptr;
-
-   char *ligne, *ligne2, *s;
+   char ligne[1024];
+   char s[1024];
+   Tcl_DString sourceFileName;
    int nb_arg_min = 2;        // Nombre minimal d'arguments
-
+   
    if(argc<nb_arg_min) {
-      ligne = (char*)calloc(100,sizeof(char));
       sprintf(ligne,"Usage: %s filename",argv[0]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-      free(ligne);
       return TCL_ERROR;
    }
-   msg=Libtt_main(TT_PTR_LOADKEYS,7,argv[1],&nbkeys,&keynames,&values,
+
+   // je convertis les caracteres accentues
+   int length;
+   Tcl_DStringInit(&sourceFileName);
+   char * stringPtr = (char *) Tcl_GetByteArrayFromObj(Tcl_NewStringObj(argv[1],strlen(argv[1])), &length);
+   Tcl_ExternalToUtfDString(Tcl_GetEncoding(interp, "identity"), stringPtr, length, &sourceFileName);
+
+   msg=Libtt_main(TT_PTR_LOADKEYS,7,sourceFileName.string,&nbkeys,&keynames,&values,
       &comments,&units,&datatypes);
    if(msg) {
-      s = (char*)calloc(100,sizeof(char));
-      ligne = (char*)calloc(100,sizeof(char));
       Libtt_main(TT_ERROR_MESSAGE,2,&msg,s);
       sprintf(ligne,"Error while loading header: %s.",s);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-      free(s);
-      free(ligne);
       return TCL_ERROR;
    }
-   ligne = (char*)calloc(300,sizeof(char));
-   ligne2 = (char*)calloc(300,sizeof(char));
 	Tcl_DStringInit(&dsptr);
    for (k=0;k<nbkeys;k++) {
 	   Tcl_DStringAppend(&dsptr,"{",-1);
@@ -668,10 +668,9 @@ int CmdFitsHeader(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 	   Tcl_DStringAppend(&dsptr,ligne,-1);
 	   Tcl_DStringAppend(&dsptr,"} ",-1);
    }
-   free(ligne);
-   free(ligne2);
    Tcl_DStringResult(interp,&dsptr);
    Tcl_DStringFree(&dsptr);
+   Tcl_DStringFree(&sourceFileName);
    msg=Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,
       &comments,&units,&datatypes);
    return TCL_OK;
