@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise a jour $Id: tkutil.tcl,v 1.21 2010-01-02 16:38:29 michelpujol Exp $
+# Mise a jour $Id: tkutil.tcl,v 1.22 2010-01-02 18:23:39 michelpujol Exp $
 #
 
 namespace eval tkutil:: {
@@ -334,13 +334,9 @@ proc ::tkutil::displayErrorInfo { title { messageOptionnel "" } } {
 # @param  newValue valeur apres l'evenement renseigné avec %P
 # @param  oldValue valeur avant l'evenement renseigné avec %s
 # @param  class classe de la valeur attendue
-#            - alnum  caractere alphabetique ou numerique
-#            - alpha  caractere alphabetique
-#            - ascii  caractere ASCII dont le code est inferieur ou egal à 127
-#            - boolean
-#            - fits   caractere autorisé dans un mot clé FITS
-#            - wordchar caractere alphabetique ou numerique ou underscore
-#            - xdigit  caractere hexadecimal
+#            - boolean booleen ( 0, 1, false, true, no, yes , off , on)
+#            - double  nombre decimal
+#            - integer nombre entier
 # @param  minValue valeur minimale du nombre
 # @param  maxValue valeur maximale du nombre
 # @param  errorVariable  nom de la variable d'erreur associee au widget
@@ -380,6 +376,10 @@ proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxVa
                }
             }
          }
+         if { $newValue == "" } {
+            set newValue 0
+            $win configure -text $newValue
+         }
          set fullCheck [expr {$classCheck && ($newValue >= $minValue) && ($newValue <= $maxValue)}]
          set result $fullCheck
       }
@@ -392,7 +392,7 @@ proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxVa
       }
    } else {
       #--- je ne traite pas l'evenement
-      set result 0
+      set result 1
    }
    return $result
 }
@@ -421,9 +421,13 @@ proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxVa
 # @param  newValue valeur apres l'evenement renseigné avec %P
 # @param  oldValue valeur avant l'evenement renseigné avec %s
 # @param  class classe de la valeur attendue
-#            - boolean booleen ( 0, 1, false, true, no, yes , off , on)
-#            - double  nombre decimal
-#            - integer nombre entier
+#            - alnum  caractere alphabetique ou numerique
+#            - alpha  caractere alphabetique
+#            - ascii  caractere ASCII dont le code est inferieur ou egal à 127
+#            - boolean
+#            - fits   caractere autorisé dans un mot clé FITS
+#            - wordchar caractere alphabetique ou numerique ou underscore
+#            - xdigit  caractere hexadecimal
 # @param  minLength longueur minimale de la chaine
 # @param  maxLength longueur maximale de la chaine
 # @param  errorVariable  nom de la variable d'erreur associee au widget
