@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.125 2009-12-30 10:38:48 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.126 2010-01-02 18:48:38 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -3583,6 +3583,9 @@ namespace eval ::colorRGB {
    #########################################################################
    proc run { visuNo } {
       variable private
+
+      #--- j'initialise les glissieres RVB
+      ::colorRGB::initConf $visuNo
 
       #--- je recopie les variables conf dans des variables locales
       ::colorRGB::confToWidget $visuNo
