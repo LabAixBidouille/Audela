@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>    // pour gmtime
+#include <tcl.h>     // pour TclInterp
 
 #include "cfile.h"
 #include "cerror.h"
@@ -32,6 +33,9 @@
 #include "libtt.h"         // fichiers FITS
 #include "libdcjpeg.h"     // fichiers JPEG
 #include "libdcraw.h"      // fichiers RAW
+
+// initialisation des attributs statiques
+Tcl_Interp * CFile::interp = NULL; 
 
 CFile::CFile()
 {
@@ -42,68 +46,163 @@ CFile::~CFile()
 {
 }
 
-
-/**
- *  loadFile
- *  charge un fichier
- *
- *  parameters :
- *    arg1 (IN) : nom du fichier
- *  return :
- *    CFileFormat : file format
- */
-CFileFormat CFile::loadFile(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords)
+void CFile::setTclInterp( Tcl_Interp *interp)
 {
+   CFile::interp = interp;
+}
+
+
+ /**
+ *  getFormatFromHeader
+ *  identifie le format du fichier
+ *
+ *  @param fileName : nom du fichier
+ *  @return : format du fichier (voir l'enumeration CFileFormat) 
+ */
+CFileFormat CFile::getFormatFromHeader(char * fileName)
+{
+   int result;
+   FILE *fichier_in ;
+   char line[11],*fileName0;
    CFileFormat fileFormat;
+   struct libdcraw_DataInfo dataInfo;
+   int n,k,kb=0;
+
+#  define FitsHeader    "SIMPLE"
+#  define JpgHeader     "\xff\xd8"
+#  define GIF87aHeader  "\x47\x49\x46\x38\x37\x61" 
+#  define GIF89aHeader  "\x47\x49\x46\x38\x39\x61"
+#  define PNGHeader     "\x89\x50\x4e\x47\x0d\x0a\x1a\x0a"
+#  define BMPHeader     "BM"
+#  define TIFHeader     "\x49\x49\x2A\x00"
+#  define GzipHeader    "\x1f\x8b\x08"
 
    // je verifie le nom du fichier
-   fileFormat = getFormatFromHeader(filename);
-   switch ( fileFormat ) {
-   case CFILE_FITS :
-      loadFits(filename, dataTypeOut, pixels, keywords);
-      break;
+   if ( fileName == NULL || strlen(fileName) == 0 ) {
+      throw CError("fileName is NULL or empty");
+   }
 
-   case CFILE_JPEG :
-      loadJpeg(filename, dataTypeOut, pixels, keywords);
-      break;
+   // je retire l'extension [ ou ; pour le format etendu de FITSIO
+   n=strlen(fileName);
+   kb=n;
+   for (k=0;k<n;k++) {
+      if ((fileName[k]=='[')||(fileName[k]==';')) {
+         kb=k;
+         break;
+      }
+   }
+   fileName0=(char*)malloc((kb+1)*sizeof(char));
+   if (fileName0==NULL) {
+      throw CError("Filename0 for %s not allocated",fileName);
+   }
+   strncpy(fileName0,fileName,kb);
+   fileName0[kb]='\0';
 
-   //case CFILE_GIF :
-   //   break;
+   // j'ouvre le fichier
+   if ( (fichier_in=fopen(fileName0, "rb")) == NULL) {
+      free(fileName0);
+      throw CError("File %s not found",fileName);
+   }
+   free(fileName0);
 
-   //case CFILE_PNG :
-   //   break;
+   // je lis les 10 premiers  octets
+   result = fread( line, 1, 10, fichier_in );
+   if ( result != 10 ) {
+      fclose(fichier_in);
+      throw CError("File %s too small (less than 10 bytes)",fileName);
+   }
+   fclose(fichier_in);
 
-   case CFILE_RAW :
-      loadRaw(filename, dataTypeOut, pixels, keywords);
-      break;
-
-   default :
-      // unknown format
-      throw CError("loadFile %s error : unknown format.",filename );
+   // identify file format
+   if ( strncmp(line, FitsHeader , 6 ) == 0 ) {
+      fileFormat = CFILE_FITS;
+   } else if ( strncmp(line, GzipHeader , sizeof GzipHeader ) == 0) {
+      // fichier fits comresse
+      fileFormat = CFILE_FITS;
+   } else if ( strncmp(line, JpgHeader , 2 ) == 0 ) {
+      fileFormat = CFILE_JPEG;
+   } else if ( strncmp(line, PNGHeader , 8 ) == 0 ) {
+      fileFormat = CFILE_PNG;
+   } else if ( strncmp(line, GIF87aHeader, 6 ) == 0 || strncmp(line, GIF87aHeader, 6 ) == 0 ) {
+      fileFormat = CFILE_GIF;
+   } else if ( strncmp(line, BMPHeader, 2 ) == 0 ) {
+      fileFormat = CFILE_BMP;
+   } else if ( strncmp(line, TIFHeader, 4 ) == 0 ) {
+      fileFormat = CFILE_TIF;
+   } else if ( libdcraw_getInfoFromFile(fileName, &dataInfo) == 0 ) {
+      fileFormat = CFILE_RAW;
+   } else {
+      fileFormat = CFILE_UNKNOWN;
    }
 
    return fileFormat;
 }
 
 /**
- *  saveFile
- *  enregistre dans un fichier
+ * loadFile
+ * charge une image
  *
- *  parameters :
- *    arg1 (IN) : nom du fichier
- *  return :
- *    CFileFormat : file format
+ * @param fileName   nom du fichier
+ * @param dataTypeOut type de donnees a mettre dans le fichier FITS . Inutilise par les autre formats. 
+ * @param pixels     objet CPixels contenant les pixels lus dans le fichier
+ * @param keywords   objet CFitsKeywords contenant les mots cles lus dans le fichier
+ *
+ * @return : format du fichier (voir l'enumeration CFileFormat) 
+ * @exception  retourne une exception CError en cas d'erreur
  */
-/*
-CFileFormat CFile::saveFile(char * filename, int dataTypeOut, CPixels *pixels, CFitsKeywords *keywords)
+CFileFormat CFile::loadFile(char * fileName, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords)
 {
-   CFileFormat fileFormat = CFILE_UNKNOWN;
+   CFileFormat fileFormat;
 
+   // je verifie le nom du fichier
+   fileFormat = getFormatFromHeader(fileName);
+   switch ( fileFormat ) {
+   case CFILE_FITS :
+      loadFits(fileName, dataTypeOut, pixels, keywords);
+      break;
+
+   case CFILE_JPEG :
+      loadJpeg(fileName, pixels, keywords);
+      break;
+
+   case CFILE_RAW :
+      loadRaw(fileName, pixels, keywords);
+      break;
+
+   case CFILE_BMP :
+   case CFILE_GIF :
+   case CFILE_PNG :
+   case CFILE_TIF :
+      loadTkimg(fileName, pixels, keywords);
+      break;
+
+   default :
+      // unknown format
+      loadTkimg(fileName, pixels, keywords);
+      //throw CError("loadFile %s error : unknown format.",fileName );
+   }
 
    return fileFormat;
 }
-*/
-void CFile::loadFits(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords)
+
+
+//-------------------------------------------------------------------
+//  loadFits
+//    charge une image FITS avec libtt
+//
+//  @param fileName nom du fichier de l'image (IN)
+//  @param dataTypeOut :  type de pixel en sortie (IN)
+//       * FORMAT_BYTE 
+//       * FORMAT_SHORT 
+//       * FORMAT_USHORT 
+//       * FORMAT_FLOAT
+//  @param pixels   : objet de la classe CPixels contenant les pixels de l'image  (OUT)
+//  @param keywords : objet de la classe CFitsKeywords contenant les mots cles de l'image  (OUT)
+//  
+//  @return void
+//  @exception  retourne une exception CError en cas d'erreur
+//-------------------------------------------------------------------
+void CFile::loadFits(char * fileName, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords)
 {
    int msg;                         // Code erreur de libtt
    int naxis,naxis1,naxis2,naxis3;
@@ -120,7 +219,7 @@ void CFile::loadFits(char * filename, int dataTypeOut, CPixels **pixels, CFitsKe
       // je charge le 3ieme HDU. (iaxis=3)
       //   Libtt_main retourne naxis3=3 si le 3ieme HDU existe  => c'est une image RGB
       //   Libtt_main retourne naxis3=1 si le 3ieme HDU n'existe pas => c'est une image GRAY
-      msg = Libtt_main(TT_PTR_LOADIMA3D,13,filename,&dataTypeOut,&iaxis3,&ppix,&naxis1,&naxis2,&naxis3,
+      msg = Libtt_main(TT_PTR_LOADIMA3D,13,fileName,&dataTypeOut,&iaxis3,&ppix,&naxis1,&naxis2,&naxis3,
          &nb_keys,&keynames,&values,&comments,&units,&datatypes);
       if(msg) throw CErrorLibtt(msg);
       switch (dataTypeOut) {
@@ -166,11 +265,11 @@ void CFile::loadFits(char * filename, int dataTypeOut, CPixels **pixels, CFitsKe
 
          iaxis3 = 1;
          msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
-         msg = Libtt_main(TT_PTR_LOADIMA3D,13,filename,&dataTypeOut,&iaxis3,&ppixR,&naxis1,&naxis2,&naxis3,
+         msg = Libtt_main(TT_PTR_LOADIMA3D,13,fileName,&dataTypeOut,&iaxis3,&ppixR,&naxis1,&naxis2,&naxis3,
             &nb_keys,&keynames,&values,&comments,&units,&datatypes);
          iaxis3 = 2;
          msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
-         msg = Libtt_main(TT_PTR_LOADIMA3D,13,filename,&dataTypeOut,&iaxis3,&ppixG,&naxis1,&naxis2,&naxis3,
+         msg = Libtt_main(TT_PTR_LOADIMA3D,13,fileName,&dataTypeOut,&iaxis3,&ppixG,&naxis1,&naxis2,&naxis3,
             &nb_keys,&keynames,&values,&comments,&units,&datatypes);
 
          // je copie les pixels dans la variable de sortie
@@ -195,7 +294,7 @@ void CFile::loadFits(char * filename, int dataTypeOut, CPixels **pixels, CFitsKe
    msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
 }
 
-void CFile::saveFits(char * filename, int dataTypeOut, CPixels *pixels, CFitsKeywords *keywords)
+void CFile::saveFits(char * fileName, int dataTypeOut, CPixels *pixels, CFitsKeywords *keywords)
 {
    int msg;                         // Code erreur de libtt
    TYPE_PIXELS_RGB *pixelsR, *pixelsG, *pixelsB;
@@ -226,7 +325,7 @@ void CFile::saveFits(char * filename, int dataTypeOut, CPixels *pixels, CFitsKey
          pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_B, (void*) pixelsB);
 
          // format des pixels en entree de libtt
-         datatype = TSHORT;
+         datatype = dataTypeOut;
          break;
       default :
          // je recupere l'image GREY a traiter
@@ -234,7 +333,7 @@ void CFile::saveFits(char * filename, int dataTypeOut, CPixels *pixels, CFitsKey
          pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (void*) ppix);
 
          // format des pixels en entree de libtt
-         datatype = TFLOAT;
+         datatype = dataTypeOut;
          break;
    }
 
@@ -255,7 +354,7 @@ void CFile::saveFits(char * filename, int dataTypeOut, CPixels *pixels, CFitsKey
    keywords->SetToArray(&keynames,&values,&comments,&units,&datatypes);
 
    // j'enregistrement l'image.
-   msg = Libtt_main(TT_PTR_SAVEIMAKEYDIM,9,filename,ppix,&datatype,&nb_keys,keynames,values,comments,units,datatypes);
+   msg = Libtt_main(TT_PTR_SAVEIMAKEYDIM,9,fileName,ppix,&datatype,&nb_keys,keynames,values,comments,units,datatypes);
    if(msg) {
       free(ppix);
       throw CErrorLibtt(msg);
@@ -274,7 +373,7 @@ void CFile::saveFits(char * filename, int dataTypeOut, CPixels *pixels, CFitsKey
 
 void CFile::saveFitsTable(char * outputFileName, CFitsKeywords *keywords, int nbRow, int nbCol, char *columnType, char **columnTitle, char **columnUnits, char **columnData )
 {
-   int msg;                         // Code erreur de libtt
+   int msg = 0;                         // Code erreur de libtt
    int nb_keys;
    char **keynames=NULL;
    char **values=NULL;
@@ -291,67 +390,78 @@ void CFile::saveFitsTable(char * outputFileName, CFitsKeywords *keywords, int nb
       if(msg) {
          throw CErrorLibtt(msg);
       }
-   }
-   // Conversion keywords vers tableaux 'Made in Klotz'
-   keywords->SetToArray(&keynames,&values,&comments,&units,&datatypes);
+      // Conversion keywords vers tableaux 'Made in Klotz'
+      keywords->SetToArray(&keynames,&values,&comments,&units,&datatypes);
 
 
-/**************************************************************************/
-/* Fonction d'interface pour sauver les tables (spectres...)              */
-/**************************************************************************/
-/* ------ entrees obligatoires                                            */
-/* arg1 : *fullname (char*)                                               */
-/* arg2 : *dtype (char* : datatypes des champs)                           */
-/*        short, int, float, double, un nombre de carateres               */
-/*        Permet de connaitre aussi le nombre de champs (tfields)         */
-/* arg3 : **tunit (char** : unite des champs)                             */
-/* arg4 : **ttype (char** : intitule des champs)                          */
-/*  A noter que **table, **tunit, **ttype ont ete dimensionnes par        */
-/*  tt_ptr_allotbl.                                                       */
-/* arg5 : "binary" ou "ascii" en fonction du format de sortie desire.     */
-/* ------ entrees facultatives pour l'entete                              */
-/* arg6 : *nbkeys (int*)                                                  */
-/* arg7 : **keynames (char**)                                             */
-/* arg8 : **values (char**)                                               */
-/* arg9 : **comments (char**)                                             */
-/* arg10 : **units (char**)                                               */
-/* arg11 : *datatype (int*)                                               */
-/* ------ entrees des donnees des colonnes                                */
-/* arg12 *char (char*) chaine de la premiere colonne.                     */
-/* arg13 *char (char*) chaine de la deuxieme colonne.                     */
-/* ...                                                                    */
-/**************************************************************************/
+      /**************************************************************************/
+      /* Fonction d'interface pour sauver les tables (spectres...)              */
+      /**************************************************************************/
+      /* ------ entrees obligatoires                                            */
+      /* arg1 : *fullname (char*)                                               */
+      /* arg2 : *dtype (char* : datatypes des champs)                           */
+      /*        short, int, float, double, un nombre de carateres               */
+      /*        Permet de connaitre aussi le nombre de champs (tfields)         */
+      /* arg3 : **tunit (char** : unite des champs)                             */
+      /* arg4 : **ttype (char** : intitule des champs)                          */
+      /*  A noter que **table, **tunit, **ttype ont ete dimensionnes par        */
+      /*  tt_ptr_allotbl.                                                       */
+      /* arg5 : "binary" ou "ascii" en fonction du format de sortie desire.     */
+      /* ------ entrees facultatives pour l'entete                              */
+      /* arg6 : *nbkeys (int*)                                                  */
+      /* arg7 : **keynames (char**)                                             */
+      /* arg8 : **values (char**)                                               */
+      /* arg9 : **comments (char**)                                             */
+      /* arg10 : **units (char**)                                               */
+      /* arg11 : *datatype (int*)                                               */
+      /* ------ entrees des donnees des colonnes                                */
+      /* arg12 *char (char*) chaine de la premiere colonne.                     */
+      /* arg13 *char (char*) chaine de la deuxieme colonne.                     */
+      /* ...                                                                    */
+      /**************************************************************************/
 
-   // j'enregistrement la table
-   if ( nbCol == 9 ) {
-      msg = Libtt_main(TT_PTR_SAVETBL,20,outputFileName,
-         columnType, columnUnits, columnTitle, binary,
-         &nb_keys,keynames,values,comments,units,datatypes,
-         columnData[0],columnData[1],columnData[2],columnData[3],
-         columnData[4],columnData[5],columnData[6],columnData[7],columnData[8]);
-   }
-   if ( nbCol == 13 ) {
-      msg = Libtt_main(TT_PTR_SAVETBL,24,outputFileName,
-         columnType, columnUnits, columnTitle, binary,
-         &nb_keys,keynames,values,comments,units,datatypes,
-         columnData[0],columnData[1],columnData[2],columnData[3],
-         columnData[4],columnData[5],columnData[6],columnData[7],columnData[8],
-         columnData[9],columnData[10],columnData[11],columnData[12],columnData[13]);
-   }
-   if(msg) {
-      throw CErrorLibtt(msg);
-   }
-
-   // Liberation de la memoire allouee par libtt
-   if (nb_keys>0) {
-   msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
-      if(msg) {
-         throw CErrorLibtt(msg);
+      // j'enregistrement la table
+      if ( nbCol == 9 ) {
+         msg = Libtt_main(TT_PTR_SAVETBL,20,outputFileName,
+            columnType, columnUnits, columnTitle, binary,
+            &nb_keys,keynames,values,comments,units,datatypes,
+            columnData[0],columnData[1],columnData[2],columnData[3],
+            columnData[4],columnData[5],columnData[6],columnData[7],columnData[8]);
+         if(msg) {
+            Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+            throw CErrorLibtt(msg);
+         }
       }
+      if ( nbCol == 13 ) {
+         msg = Libtt_main(TT_PTR_SAVETBL,24,outputFileName,
+            columnType, columnUnits, columnTitle, binary,
+            &nb_keys,keynames,values,comments,units,datatypes,
+            columnData[0],columnData[1],columnData[2],columnData[3],
+            columnData[4],columnData[5],columnData[6],columnData[7],columnData[8],
+            columnData[9],columnData[10],columnData[11],columnData[12],columnData[13]);
+         if(msg) {
+            Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+            throw CErrorLibtt(msg);
+         }
+      }
+
+      // Liberation de la memoire allouee par libtt
+      msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
    }
 }
 
-void CFile::loadJpeg(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords)
+//-------------------------------------------------------------------
+//  loadJpeg
+//    charge une image JPEG avec libdcjpeg
+//
+//  @param fileName nom du fichier de l'image (IN)
+//  @param pixels   objet de la classe CPixels contenant les pixels de l'image  (OUT)
+//  @param keywords objet de la classe CFitsKeywords contenant les mots cles de l'image  (OUT)
+//  
+//  @return void
+//  @exception  retourne une exception CError en cas d'erreur
+//-------------------------------------------------------------------
+void CFile::loadJpeg(char * fileName, CPixels **pixels, CFitsKeywords **keywords)
 {
    unsigned char * decodedData;
    long   decodedSize;
@@ -359,13 +469,13 @@ void CFile::loadJpeg(char * filename, int dataTypeOut, CPixels **pixels, CFitsKe
    float initialMipsLo, initialMipsHi;
    int result = -1;
 
-   if( strlen(filename) == 0 ) {
-      throw new CError("loadJpeg : filename is empty");
+   if( strlen(fileName) == 0 ) {
+      throw new CError("loadJpeg : fileName is empty");
    }
 
    // TODO : recuperer les donnees EXIF
 
-   result  = libdcjpeg_loadFile(filename, &decodedData, &decodedSize, &naxis3, &width, &height);
+   result  = libdcjpeg_loadFile(fileName, &decodedData, &decodedSize, &naxis3, &width, &height);
    if (result == 0 )  {
 
       // je copie les pixels dans la variable de sortie *pixels
@@ -398,17 +508,28 @@ void CFile::loadJpeg(char * filename, int dataTypeOut, CPixels **pixels, CFitsKe
    }
 }
 
-void CFile::saveJpeg(char * filename, unsigned char *dataIn, CFitsKeywords *keywords, int planes,  int width, int height, int quality)
+void CFile::saveJpeg(char * fileName, unsigned char *dataIn, CFitsKeywords *keywords, int planes,  int width, int height, int quality)
 {
 
-   // TODO : copier les motcl� dans les donnees EXIF
+   // TODO : copier les motclesdans les donnees EXIF
 
-   libdcjpeg_saveFile(filename, dataIn, planes, width, height, quality);
+   libdcjpeg_saveFile(fileName, dataIn, planes, width, height, quality);
 
 }
 
 
-void CFile::loadRaw(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords)
+//-------------------------------------------------------------------
+//  loadRaw
+//    charge une image JPEG avec libdcraw
+//
+//  @param fileName nom du fichier de l'image (IN)
+//  @param pixels   objet de la classe CPixels contenant les pixels de l'image  (OUT)
+//  @param keywords objet de la classe CFitsKeywords contenant les mots cles de l'image  (OUT)
+//  
+//  @return void
+//  @exception  retourne une exception CError en cas d'erreur
+//-------------------------------------------------------------------
+void CFile::loadRaw(char * fileName, CPixels **pixels, CFitsKeywords **keywords)
 {
    unsigned short * decodedData;
    int   naxis, width, height;
@@ -420,11 +541,11 @@ void CFile::loadRaw(char * filename, int dataTypeOut, CPixels **pixels, CFitsKey
    char  camera[70];
    char  filter[70];
 
-   if( strlen(filename) == 0 ) {
-      throw new CError("loadRaw : filename is empty");
+   if( strlen(fileName) == 0 ) {
+      throw new CError("loadRaw : fileName is empty");
    }
 
-   result  = libdcraw_fileRaw2Cfa(filename, &dataInfo, &decodedData);
+   result  = libdcraw_fileRaw2Cfa(fileName, &dataInfo, &decodedData);
    if (result == 0 )  {
       naxis = 2;
       width  = dataInfo.width;
@@ -561,89 +682,123 @@ void CFile::cfa2Rgb(CPixels *cfaPixels, CFitsKeywords *cfaKeywords, int interpol
       throw CError("libdcraw_fileRaw2Cfa: error=%d", result);
    }
 
-
 }
 
 
-/****************************************************************************
- * utilitaires
- ****************************************************************************/
-
- /**
- *  getFormatFromHeader
- *  identifie le format du fichier
- *
- *  parameters :
- *    arg1 (IN) : nom du fichier
- *  return :
- *    CFileFormat : file format
- */
-CFileFormat CFile::getFormatFromHeader(char * filename)
+//-------------------------------------------------------------------
+//  loadTkimg
+//    charge une image d'un autre format  avec libaudelatk  (PNG, TIFF, ... )
+//  
+//  Remarque : 
+//    On utilise la commande ::visu::loadImage qui est dans libaudelatk.dll car libaudela.dll 
+//    ne peut pas utiliser les fonctions du TK (libaudela.dll doit pourvoir etre chargee sans 
+//    TK quand on lance audela avec l'option --console)
+//
+//  @param fileName nom du fichier de l'image (IN)
+//  @param pixels   objet de la classe CPixels contenant les pixels de l'image  (OUT)
+//  @param keywords objet de la classe CFitsKeywords contenant les mots cles de l'image  (OUT)
+//  
+//  @return void
+//  @exception  retourne une exception CError en cas d'erreur
+//-------------------------------------------------------------------
+void CFile::loadTkimg(char * fileName, CPixels **pixels, CFitsKeywords **keywords)
 {
-   int result;
-   FILE *fichier_in ;
-   char line[11],*filename0;
-   CFileFormat fileFormat;
-   struct libdcraw_DataInfo dataInfo;
-   int n,k,kb=0;
+   char ligne[1024]; 
+   int tclResult;
 
-   char FitsHeader[]  = "SIMPLE";
-   char JpgHeader[]  = { (char) 0xFF, (char) 0xD8 };
-   char GzipHeader[]  = { (char) 0x1F, (char) 0x8B, (char) 0x08 };
-
-
-   // je verifie le nom du fichier
-   if ( filename == NULL || strlen(filename) == 0 ) {
-      throw CError("filename is NULL or empty");
+   if( strlen(fileName) == 0 ) {
+      throw new CError("loadTkimg : fileName is empty");
    }
 
-   // je retire l'extension [ ou ; pour le format etendu de FITSIO
-   n=strlen(filename);
-   kb=n;
-   for (k=0;k<n;k++) {
-      if ((filename[k]=='[')||(filename[k]==';')) {
-         kb=k;
-         break;
+   // je charge l'image
+   sprintf(ligne, "::visu::loadImage {%s}", fileName);
+   tclResult = Tcl_Eval(interp,ligne);
+
+   // je copie l'image dans CPixels et CFitsKeywords
+   if ( tclResult == TCL_OK) {
+      int listArgc;
+      char **listArgv;
+      tclResult = Tcl_SplitList(interp,interp->result,&listArgc,&listArgv);
+      if( tclResult==TCL_OK) {
+         if ( listArgc == 9 ) {
+            int   naxis, width, height, naxis3;
+            float initialMipsLo, initialMipsHi;
+            int pixelSize; 
+            int pitch;
+            int offset[4];
+            long pixelPtr;
+
+            width = atoi(listArgv[0]);
+            height= atoi(listArgv[1]);
+            pixelSize = atoi(listArgv[2]);
+            pitch = atoi(listArgv[3]);
+            offset[0] = atoi(listArgv[4]);
+            offset[1] = atoi(listArgv[5]);
+            offset[2] = atoi(listArgv[6]);
+            offset[3] = atoi(listArgv[7]);
+            pixelPtr  = atol(listArgv[8]);
+
+            // je copie les pixels dans la variable de sortie *pixels      
+            *pixels = new CPixelsRgb(width, height, pixelSize, offset, pitch, (unsigned char*)pixelPtr);
+            
+            // je copie les mots cles dans la variable de sortie *keywords
+            *keywords = new CFitsKeywords();
+            naxis = 3;
+            naxis3= 3;
+            initialMipsLo = 0.0 ;
+            initialMipsHi = 255.0;
+
+            (*keywords)->Add("NAXIS", &naxis,TINT,"","");
+            (*keywords)->Add("NAXIS1",&width,TINT,"","");
+            (*keywords)->Add("NAXIS2",&height,TINT,"","");
+            (*keywords)->Add("NAXIS3",&naxis3,TINT,"","");
+            (*keywords)->Add("MIPS-LO",&initialMipsLo,TFLOAT,"Low cut","ADU");
+            (*keywords)->Add("MIPS-HI",&initialMipsHi,TFLOAT,"Hight cut","ADU");
+
+         } else {
+            tclResult = TCL_ERROR;
+         }
       }
-   }
-   filename0=(char*)malloc((kb+1)*sizeof(char));
-   if (filename0==NULL) {
-      throw CError("Filename0 for %s not allocated",filename);
-   }
-   strncpy(filename0,filename,kb);
-   filename0[kb]='\0';
 
-   // j'ouvre le fichier
-   if ( (fichier_in=fopen(filename0, "rb")) == NULL) {
-      free(filename0);
-      throw CError("File %s not found",filename);
-   }
-   free(filename0);
-
-   // je lis les 10 premiers  octets
-   result = fread( line, 1, 10, fichier_in );
-   if ( result != 10 ) {
-      fclose(fichier_in);
-      throw CError("File %s too small (less than 10 bytes)",filename);
-   }
-   fclose(fichier_in);
-
-   // identify file format
-   if ( strncmp(line, FitsHeader , 6 ) == 0 ) {
-      fileFormat = CFILE_FITS;
-   } else if ( strncmp(line, JpgHeader , 2 ) == 0 ) {
-      fileFormat = CFILE_JPEG;
-   } else if ( libdcraw_getInfoFromFile(filename, &dataInfo) == 0 ) {
-      fileFormat = CFILE_RAW;
-   } else if ( strncmp(line, GzipHeader , sizeof GzipHeader ) == 0) {
-      // fichier fits comresse
-      fileFormat = CFILE_FITS;
-   } else {
-      fileFormat = CFILE_UNKNOWN;
+      // je supprime l'image temporaire 
+      Tcl_Eval(interp,"::visu::freeImage");
    }
 
-   return fileFormat;
+   if (tclResult == TCL_ERROR) {
+      throw CError("CFile::loadTkimg: %s", interp->result);
+   }
 }
 
+//-------------------------------------------------------------------
+//  saveTkimg
+//    charge une image d'un autre format  avec libaudelatk  (PNG, TIFF, ... )
+//  
+//  Remarque : 
+//    On utilise la commande ::visu::loadImage qui est dans libaudelatk.dll car libaudela.dll 
+//    ne peut pas utiliser les fonctions du TK (libaudela.dll doit pourvoir etre chargee sans 
+//    TK quand on lance audela avec l'option --console)
+//
+//  @param fileName nom du fichier de l'image (IN)
+//  @param pixels   objet de la classe CPixels contenant les pixels de l'image  (IN)
+//  
+//  @return void
+//  @exception  retourne une exception CError en cas d'erreur
+//-------------------------------------------------------------------
+void CFile::saveTkimg(char * fileName, unsigned char *pixels, int width, int height)
+{
+   char ligne[1024]; 
+   int tclResult;
+   
+   if( strlen(fileName) == 0 ) {
+      throw new CError("loadTkimg : fileName is empty");
+   }
+   
+   // je sauvegarde l'image 
+   sprintf(ligne, "::visu::saveImage  {%s} %ld %d %d ", fileName, (long) pixels, width, height );
+   tclResult = Tcl_Eval(interp,ligne);
+   if (tclResult == TCL_ERROR) {
+      throw CError("CFile::saveTkimg: %s", interp->result);
+   }
+}
 
 

@@ -217,6 +217,7 @@ public:
    void SaveJpg(char *filename,int quality,int sbsh, double sb,double sh);
    void SaveJpg(char *filename,int quality, float *cuts, unsigned char *palette[3], int mirrorx, int mirrory);
    void SaveRawFile(char *filename);
+   void SaveTkImg(char *filename, unsigned char *palette[3], int mirrorx, int mirrory);
    void SetCompressType(int st);
    void SetExtension(char *ext);
    void SetKeyword(char *nom, char *data, char *datatype, char *comment, char *unit);
