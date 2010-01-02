@@ -1,6 +1,6 @@
 #
 # Fichier : tkutil.cap
-# Mise a jour $Id: tkutil.cap,v 1.16 2009-11-19 22:08:43 robertdelmas Exp $
+# Mise a jour $Id: tkutil.cap,v 1.17 2010-01-02 16:38:30 michelpujol Exp $
 #
 
 #=========================================================================
@@ -83,6 +83,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_pdf)        "Notices"
    set caption(tkutil,fichier_html)       "Fichiers HTML"
    set caption(tkutil,fichier_jar)        "Fichiers JAR"
+   set caption(tkutil,badCharacter)       "%s contient un caractère interdit %s"
+   set caption(tkutil,stringTooShort)     "%s a moins de %s caractère(s)"
+   set caption(tkutil,stringTooLarge)     "%s a plus de %s caractère(s)"
+   set caption(tkutil,numberTooSmall)     "%s est inférieur à %s"
+   set caption(tkutil,numberTooGreat)     "%s est supérieur à %s"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -121,6 +126,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_pdf)        "Guida utente"
    set caption(tkutil,fichier_html)       "File HTML"
    set caption(tkutil,fichier_jar)        "File JAR"
+   set caption(tkutil,badCharacter)       "%s include a forbidden character %s"
+   set caption(tkutil,stringTooShort)     "%s has less than %s character(s)"
+   set caption(tkutil,stringTooLarge)     "%s has more than %s character(s)"
+   set caption(tkutil,numberTooSmall)     "%s is inferior to %s"
+   set caption(tkutil,numberTooGreat)     "%s is superior to %s"
+   set caption(tkutil,badCharacter)       "# %s contient un caractère interdit %s"
+   set caption(tkutil,stringTooShort)     "# %s a moins de %s caractère(s)"
+   set caption(tkutil,stringTooLarge)     "# %s a plus de %s caractère(s)"
+   set caption(tkutil,numberTooSmall)     "# %s est inférieur à %s"
+   set caption(tkutil,numberTooGreat)     "# %s est supérieur à %s"
+
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -159,6 +175,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_pdf)        "Guías de usuario"
    set caption(tkutil,fichier_html)       "Ficheros HTML"
    set caption(tkutil,fichier_jar)        "Ficheros JAR"
+   set caption(tkutil,badCharacter)       "# %s contient un caractère interdit %s"
+   set caption(tkutil,stringTooShort)     "# %s a moins de %s caractère(s)"
+   set caption(tkutil,stringTooLarge)     "# %s a plus de %s caractère(s)"
+   set caption(tkutil,numberTooSmall)     "# %s est inférieur à %s"
+   set caption(tkutil,numberTooGreat)     "# %s est supérieur à %s"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -197,6 +218,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_pdf)        "Hinweisen"
    set caption(tkutil,fichier_html)       "HTML Datei"
    set caption(tkutil,fichier_jar)        "JAR Datei"
+   set caption(tkutil,badCharacter)       "# %s contient un caractère interdit %s"
+   set caption(tkutil,stringTooShort)     "# %s a moins de %s caractère(s)"
+   set caption(tkutil,stringTooLarge)     "# %s a plus de %s caractère(s)"
+   set caption(tkutil,numberTooSmall)     "# %s est inférieur à %s"
+   set caption(tkutil,numberTooGreat)     "# %s est supérieur à %s"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -235,6 +261,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_pdf)        "Guias de utilizador"
    set caption(tkutil,fichier_html)       "Ficheiros HTML"
    set caption(tkutil,fichier_jar)        "Ficheiros JAR"
+   set caption(tkutil,badCharacter)       "# %s contient un caractère interdit %s"
+   set caption(tkutil,stringTooShort)     "# %s a moins de %s caractère(s)"
+   set caption(tkutil,stringTooLarge)     "# %s a plus de %s caractère(s)"
+   set caption(tkutil,numberTooSmall)     "# %s est inférieur à %s"
+   set caption(tkutil,numberTooGreat)     "# %s est supérieur à %s"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -273,6 +304,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_pdf)        "Brugsanvisning"
    set caption(tkutil,fichier_html)       "HTML Filer"
    set caption(tkutil,fichier_jar)        "JAR Filer"
+   set caption(tkutil,badCharacter)       "# %s contient un caractère interdit %s"
+   set caption(tkutil,stringTooShort)     "# %s a moins de %s caractère(s)"
+   set caption(tkutil,stringTooLarge)     "# %s a plus de %s caractère(s)"
+   set caption(tkutil,numberTooSmall)     "# %s est inférieur à %s"
+   set caption(tkutil,numberTooGreat)     "# %s est supérieur à %s"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -311,6 +347,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_pdf)        "User Guides"
    set caption(tkutil,fichier_html)       "HTML Files"
    set caption(tkutil,fichier_jar)        "JAR Files"
+   set caption(tkutil,badCharacter)       "# %s contient un caractère interdit %s"
+   set caption(tkutil,stringTooShort)     "# %s a moins de %s caractère(s)"
+   set caption(tkutil,stringTooLarge)     "# %s a plus de %s caractère(s)"
+   set caption(tkutil,numberTooSmall)     "# %s est inférieur à %s"
+   set caption(tkutil,numberTooGreat)     "# %s est supérieur à %s"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -349,6 +390,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_pdf)        "User Guides"
    set caption(tkutil,fichier_html)       "HTML Files"
    set caption(tkutil,fichier_jar)        "JAR Files"
+   set caption(tkutil,badCharacter)       "# %s contient un caractère interdit %s"
+   set caption(tkutil,stringTooShort)     "# %s a moins de %s caractère(s)"
+   set caption(tkutil,stringTooLarge)     "# %s a plus de %s caractère(s)"
+   set caption(tkutil,numberTooSmall)     "# %s est inférieur à %s"
+   set caption(tkutil,numberTooGreat)     "# %s est supérieur à %s"
 
 }
 

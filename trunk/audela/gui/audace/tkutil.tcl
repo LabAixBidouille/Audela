@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise a jour $Id: tkutil.tcl,v 1.20 2009-11-19 22:16:49 robertdelmas Exp $
+# Mise a jour $Id: tkutil.tcl,v 1.21 2010-01-02 16:38:29 michelpujol Exp $
 #
 
 namespace eval tkutil:: {
@@ -53,6 +53,25 @@ proc ::tkutil::getOpenFileType { } {
       [ list "$caption(tkutil,image_jpeg)"       {.jpeg .jpg} ] \
       [ list "$caption(tkutil,image_raw)"        {.crw .cr2 .nef .dng} ] \
       [ list "$caption(tkutil,image_raw)"        {.CRW .CR2 .NEF .DNG} ] \
+      [ list "$caption(tkutil,image_file)"       {.bmp}       ] \
+      [ list "$caption(tkutil,image_file)"       {.gif}       ] \
+      [ list "$caption(tkutil,image_file)"       {.png}       ] \
+      [ list "$caption(tkutil,image_file)"       {.tiff .tif} ] \
+      [ list "$caption(tkutil,image_file)"       {.xbm}       ] \
+      [ list "$caption(tkutil,image_file)"       {.xpm}       ] \
+      [ list "$caption(tkutil,image_file)"       {.ps .eps}   ] \
+      [ list "$caption(tkutil,image_file)"       {.ps .eps}   ] \
+      [ list "$caption(tkutil,image_bmp)"        {.bmp}       ] \
+      [ list "$caption(tkutil,image_gif)"        {.gif}       ] \
+      [ list "$caption(tkutil,image_png)"        {.png}       ] \
+      [ list "$caption(tkutil,image_tiff)"       {.tiff .tif} ] \
+      [ list "$caption(tkutil,image_xbm)"        {.xbm}       ] \
+      [ list "$caption(tkutil,image_xpm)"        {.xpm}       ] \
+      [ list "$caption(tkutil,image_postscript)" {.ps .eps}   ] \
+      [ list "$caption(tkutil,image_gif)"        {}      GIFF ] \
+      [ list "$caption(tkutil,image_jpeg)"       {}      JPEG ] \
+      [ list "$caption(tkutil,image_png)"        {}      PNGF ] \
+      [ list "$caption(tkutil,image_tiff)"       {}      TIFF ] \
       [ list "$caption(tkutil,fichier_tous)"     *            ]
 }
 
@@ -193,42 +212,51 @@ proc ::tkutil::getSaveFileType { } {
    set n [ list "$caption(tkutil,image_raw) 6"      {.dng}       ]
    set o [ list "$caption(tkutil,image_raw) 7"      {.DNG}       ]
 
+   set bmp [ list "$caption(tkutil,image_bmp)"      {.bmp}       ]
+   set gif [ list "$caption(tkutil,image_gif)"      {.gif}       ]
+   set png [ list "$caption(tkutil,image_png)"      {.png}       ]
+   set tif [ list "$caption(tkutil,image_tiff)"      {.tif}       ]
+   set xbm [ list "$caption(tkutil,image_xpm)"      {.xbm}       ]
+   set xpm [ list "$caption(tkutil,image_xpm)"      {.xpm}       ]
+
    if { [ buf$audace(bufNo) extension ] == ".fit" } {
       if { $conf(fichier,compres) == "0" } {
-         lappend saveFileType $a $b $c $d $e $f $g $h $i $j $k $l $m $n $o
+         lappend saveFileType $a $b $c $d $e $f $g $h $i $j $k $l $m $n $o $bmp $gif $png $tif $xbm $xbm $xpm
       } elseif { $conf(fichier,compres) == "1" } {
-         lappend saveFileType $b $a $c $d $e $f $g $h $i $j $k $l $m $n $o
+         lappend saveFileType $b $a $c $d $e $f $g $h $i $j $k $l $m $n $o $bmp $gif $png $tif $xbm $xbm $xpm
       }
    } elseif { [ buf$audace(bufNo) extension ] == ".fts" } {
       if { $conf(fichier,compres) == "0" } {
-         lappend saveFileType $c $d $a $b $e $f $g $h $i $j $k $l $m $n $o
+         lappend saveFileType $c $d $a $b $e $f $g $h $i $j $k $l $m $n $o $bmp $gif $png $tif $xbm $xbm $xpm
       } elseif { $conf(fichier,compres) == "1" } {
-         lappend saveFileType $d $c $a $b $e $f $g $h $i $j $k $l $m $n $o
+         lappend saveFileType $d $c $a $b $e $f $g $h $i $j $k $l $m $n $o $bmp $gif $png $tif $xbm $xbm $xpm
       }
    } elseif { [ buf$audace(bufNo) extension ] == ".fits" } {
       if { $conf(fichier,compres) == "0" } {
-         lappend saveFileType $e $f $a $b $c $d $g $h $i $j $k $l $m $n $o
+         lappend saveFileType $e $f $a $b $c $d $g $h $i $j $k $l $m $n $o $bmp $gif $png $tif $xbm $xbm $xpm
       } elseif { $conf(fichier,compres) == "1" } {
-         lappend saveFileType $f $e $a $b $c $d $g $h $i $j $k $l $m $n $o
+         lappend saveFileType $f $e $a $b $c $d $g $h $i $j $k $l $m $n $o $bmp $gif $png $tif $xbm $xbm $xpm
       }
    } elseif { [ buf$audace(bufNo) extension ] == ".jpg" } {
-      lappend saveFileType $g $a $b $c $d $e $f $h $i $j $k $l $m $n $o
+      lappend saveFileType $g $a $b $c $d $e $f $h $i $j $k $l $m $n $o $bmp $gif $png $tif $xbm $xbm $xpm
    } elseif { [ buf$audace(bufNo) extension ] == ".crw" } {
-      lappend saveFileType $h $i $j $k $l $m $n $o $a $b $c $d $e $f $g
+      lappend saveFileType $h $i $j $k $l $m $n $o $a $b $c $d $e $f $g $bmp $gif $png $tif $xbm $xbm $xpm
    } elseif { [ buf$audace(bufNo) extension ] == ".CRW" } {
-      lappend saveFileType $i $h $j $k $l $m $n $o $a $b $c $d $e $f $g
+      lappend saveFileType $i $h $j $k $l $m $n $o $a $b $c $d $e $f $g $bmp $gif $png $tif $xbm $xbm $xpm
    } elseif { [ buf$audace(bufNo) extension ] == ".cr2" } {
-      lappend saveFileType $j $k $h $i $l $m $n $o $a $b $c $d $e $f $g
+      lappend saveFileType $j $k $h $i $l $m $n $o $a $b $c $d $e $f $g $bmp $gif $png $tif $xbm $xbm $xpm
    } elseif { [ buf$audace(bufNo) extension ] == ".CR2" } {
-      lappend saveFileType $k $j $h $i $l $m $n $o $a $b $c $d $e $f $g
+      lappend saveFileType $k $j $h $i $l $m $n $o $a $b $c $d $e $f $g $bmp $gif $png $tif $xbm $xbm $xpm
    } elseif { [ buf$audace(bufNo) extension ] == ".nef" } {
-      lappend saveFileType $l $m $h $i $j $k $n $o $a $b $c $d $e $f $g
+      lappend saveFileType $l $m $h $i $j $k $n $o $a $b $c $d $e $f $g $bmp $gif $png $tif $xbm $xbm $xpm
    } elseif { [ buf$audace(bufNo) extension ] == ".NEF" } {
-      lappend saveFileType $m $l $h $i $j $k $n $o $a $b $c $d $e $f $g
+      lappend saveFileType $m $l $h $i $j $k $n $o $a $b $c $d $e $f $g $bmp $gif $png $tif $xbm $xbm $xpm
    } elseif { [ buf$audace(bufNo) extension ] == ".dng" } {
-      lappend saveFileType $n $o $h $i $j $k $l $m $a $b $c $d $e $f $g
+      lappend saveFileType $n $o $h $i $j $k $l $m $a $b $c $d $e $f $g $bmp $gif $png $tif $xbm $xbm $xpm
    } elseif { [ buf$audace(bufNo) extension ] == ".DNG" } {
-      lappend saveFileType $o $n $h $i $j $k $l $m $a $b $c $d $e $f $g
+      lappend saveFileType $o $n $h $i $j $k $l $m $a $b $c $d $e $f $g $bmp $gif $png $tif $xbm $xbm $xpm
+   } elseif { [ buf$audace(bufNo) extension ] == ".DNG" } {
+
    }
 }
 
@@ -292,3 +320,169 @@ proc ::tkutil::displayErrorInfo { title { messageOptionnel "" } } {
       -message "[string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo]]$messageOptionnel"
 }
 
+##--------------------------------------------------------------
+# validateNumber
+#  verifie la valeur saisie dans un un widget
+#  Cette verification est activee en ajoutant les options suivantes au widget
+#  -validate all -validatecommand { ::tkutil::validateNumber  %W %V %P %s <class> <minValue> <maxValue> <errrorVariable> }
+#
+# <br>Exemple
+# <br>  -validatecommand { ::tkutil::validateNumber %W %V %P %s  "numRef" integer -360 360 }
+#
+# @param  win  nom tk du widget renseigné avec %W
+# @param  event evenement (key, focusout,...) sur le widget renseigné avec %V
+# @param  newValue valeur apres l'evenement renseigné avec %P
+# @param  oldValue valeur avant l'evenement renseigné avec %s
+# @param  class classe de la valeur attendue
+#            - alnum  caractere alphabetique ou numerique
+#            - alpha  caractere alphabetique
+#            - ascii  caractere ASCII dont le code est inferieur ou egal à 127
+#            - boolean
+#            - fits   caractere autorisé dans un mot clé FITS
+#            - wordchar caractere alphabetique ou numerique ou underscore
+#            - xdigit  caractere hexadecimal
+# @param  minValue valeur minimale du nombre
+# @param  maxValue valeur maximale du nombre
+# @param  errorVariable  nom de la variable d'erreur associee au widget
+#            - ""
+#
+# @return
+#   - 1 si OK
+#   - 0 si erreur
+# @public
+#----------------------------------------------------------------------------
+proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxValue { errorVariable "" } } {
+   variable widget
+
+   if { $event == "key" || $event == "focusout" || $event == "forced"  } {
+      #--- je verifie la classe
+      set classCheck [expr [string is $class -failindex charIndex $newValue] ]
+      if {! $classCheck} {
+         set fullCheck $classCheck
+         if { $errorVariable != "" } {
+            set $errorVariable  [format $::caption(tkutil,badCharacter) "\"$newValue\"" "\"[string range $newValue $charIndex $charIndex]\"" ]
+         }
+         set result $classCheck
+      } else {
+         #--- je verifie l'ordre des bornes de l'intervalle
+         if {$minValue > $maxValue} {
+            set tmp $minValue; set minValue $maxValue; set maxValue $tmp
+         }
+         #--- je verifie la plage
+         if { $errorVariable != "" } {
+            if {  $newValue < $minValue } {
+               set $errorVariable  [format $::caption(tkutil,numberTooSmall) $newValue $minValue ]
+            } elseif {  $newValue > $maxValue } {
+               set $errorVariable  [format $::caption(tkutil,numberTooGreat) $newValue $maxValue ]
+            } else {
+               if { [info exists $errorVariable] } {
+                  unset $errorVariable
+               }
+            }
+         }
+         set fullCheck [expr {$classCheck && ($newValue >= $minValue) && ($newValue <= $maxValue)}]
+         set result $fullCheck
+      }
+      if { $result == 0 } {
+         #--- j'affiche en inverse video
+         $win configure -bg $::audace(color,entryBackColor2) -fg $::audace(color,entryTextColor)
+      } else {
+         #--- j'affiche normalement
+         $win configure -bg $::audace(color,entryBackColor) -fg $::audace(color,entryTextColor)
+      }
+   } else {
+      #--- je ne traite pas l'evenement
+      set result 0
+   }
+   return $result
+}
+
+## ----------------------------------------------------------------------------
+# validateString
+#  Verifie une de caracteres saisie dans  un widget
+#  Cette verification est activee en ajoutant les options suivantes au widget
+#  -validate all -validatecommand { ::tkutil::validateNumber  %W %V %P %s <class> <minLength> <maxLength> ?<errrorVariable>? }
+#
+# <br>Exemple 1
+# <br>  -validatecommand { ::tkutil::validateString %W %V %P %s fits 1 70 }
+#
+# <br>Exemple 2 : avec variable de contole
+# <br> entry .frame.yyy -validatecommand { ::tkutil::validateString %W %V %P %s fits 1 70 ::xxxx::widget($visuNo,error,yyy) }
+# <br> entry .frame.zzz -validatecommand { ::tkutil::validateString %W %V %P %s fits 1 70 ::xxxx::widget($visuNo,error,zzz) }
+#
+# <br> Puis faire les controle dans la procedure ::xxxx::apply
+#     if { [array names ::xxxx::widget $visuNo,error,* ] != "" } {
+#        #--- j'affiche un message d'erreur s'il existe au moins une variable ::xxxx::widget($visuNo,error,...)
+#        ...
+#     }
+#
+# @param  win  nom tk du widget renseigné avec %W)
+# @param  event evenement sur le widget renseigné avec %V (key, focusout,...)
+# @param  newValue valeur apres l'evenement renseigné avec %P
+# @param  oldValue valeur avant l'evenement renseigné avec %s
+# @param  class classe de la valeur attendue
+#            - boolean booleen ( 0, 1, false, true, no, yes , off , on)
+#            - double  nombre decimal
+#            - integer nombre entier
+# @param  minLength longueur minimale de la chaine
+# @param  maxLength longueur maximale de la chaine
+# @param  errorVariable  nom de la variable d'erreur associee au widget
+# @return
+#   - 1 si OK
+#   - 0 si erreur
+# @private
+#----------------------------------------------------------------------------
+proc ::tkutil::validateString { win event newValue oldValue class minLength maxLength { errorVariable "" } } {
+   variable widget
+
+   if { $event == "key" || $event == "focusout" || $event == "forced" } {
+      #--- je verifie la classe
+      if { $class == "fits" } {
+         set classCheck [expr [string is ascii -failindex charIndex $newValue] ]
+         ###set classCheck [expr [[regexp -all {[\u0000-\u0029]|[\u007F-\u00FF]} $newValue ] != 0 ] ]
+      } else {
+         set classCheck [expr [string is $class -failindex charIndex $newValue] ]
+      }
+      if {! $classCheck} {
+         set $errorVariable  [format $::caption(tkutil,badCharacter) "\"$newValue\"" "\"[string range $newValue $charIndex $charIndex]\"" ]
+         set result $classCheck
+      } else {
+         #--- je verifie l'ordre des bornes de longueur
+         if {$minLength > $maxLength} {
+            set tmp $minLength; set minLength $maxLength; set maxLength $tmp
+         }
+         #--- je verifie la longueur de la chaine
+         set xLength [string length $newValue]
+         if {  $xLength < $minLength } {
+            if { $errorVariable != "" } {
+               set $errorVariable [format $::caption(tkutil,stringTooShort) "\"$newValue\"" $minLength]
+            }
+            set result 0
+         } elseif {  $xLength > $maxLength } {
+            if { $errorVariable != "" } {
+               set $errorVariable [format $::caption(tkutil,stringTooLarge) "\"$newValue\"" $maxLength]
+            }
+            set result 0
+         } else {
+            if { $errorVariable != "" } {
+               if { [info exists  $errorVariable] } {
+                     unset $errorVariable
+               }
+            }
+            set result 1
+         }
+      }
+
+      if { $result == 0 } {
+         #--- j'affiche en inverse video
+         $win configure -bg $::audace(color,entryBackColor2) -fg $::audace(color,entryTextColor)
+      } else {
+         #--- j'affiche normalement
+         $win configure -bg $::audace(color,entryBackColor) -fg $::audace(color,entryTextColor)
+      }
+   } else {
+      #--- je ne traite pas traiter l'evenement
+      set result 1
+   }
+   return $result
+}
