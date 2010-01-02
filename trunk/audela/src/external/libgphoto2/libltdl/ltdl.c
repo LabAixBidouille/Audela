@@ -1105,9 +1105,7 @@ sys_dl_open (loader_data, filename)
      lt_user_data loader_data;
      const char *filename;
 {
-  // modif michel
-  //lt_module   module   = dlopen (filename, LT_LAZY_OR_NOW);
-  lt_module   module   = dlopen (filename);
+  lt_module   module   = dlopen (filename, LT_LAZY_OR_NOW);
 
   if (!module)
     {
