@@ -2,7 +2,7 @@
 # Fichier : acqcolor.tcl
 # Description : Outil pour l'acquisition d'images en couleur
 # Auteurs : Alain KLOTZ et Pierre THIERRY
-# Mise a jour $Id: acqcolor.tcl,v 1.15 2009-01-11 12:01:35 robertdelmas Exp $
+# Mise a jour $Id: acqcolor.tcl,v 1.16 2010-01-02 16:40:15 robertdelmas Exp $
 #
 
 proc testexit { } {
@@ -230,14 +230,14 @@ pack $audace(base).test.frame1 \
    frame $audace(base).test.frame1.fra2 \
       -borderwidth 1 -cursor arrow
 
-      #--- Cree le bouton 'Separation RVB'
-      button $audace(base).test.frame1.fra2.but_seprvb \
-         -text $caption(acqcolor,seprvb) -borderwidth 2 \
-         -command { seprvb }
-      pack $audace(base).test.frame1.fra2.but_seprvb \
+      #--- Cree le bouton 'en-tete_fits'
+      button $audace(base).test.frame1.fra2.but_en-tete_fits \
+         -text $caption(acqcolor,entete_fits) -borderwidth 2 \
+         -command { header_color }
+       pack $audace(base).test.frame1.fra2.but_en-tete_fits \
          -in $audace(base).test.frame1.fra2 -side left -anchor n \
-        -padx 3 -pady 3
-      set zone(seprvb) $audace(base).test.frame1.fra2.but_seprvb
+         -padx 3 -pady 3
+       set zone(entete_fits) $audace(base).test.frame1.fra2.but_en-tete_fits
 
       #--- Cree l'entry 'att'
       entry $audace(base).test.frame1.fra2.ent_att \
@@ -272,24 +272,6 @@ pack $audace(base).test.frame1 \
          -padx 3 -pady 3
       set zone(smedianrvb) $audace(base).test.frame1.fra4.but_smedianrvb
 
-      #--- Cree le bouton 'trichro'
-      button $audace(base).test.frame1.fra4.but_trichro \
-         -text $caption(acqcolor,trichro) -borderwidth 2 \
-         -command { trichro }
-      pack $audace(base).test.frame1.fra4.but_trichro \
-         -in $audace(base).test.frame1.fra4 -side left -anchor n \
-         -padx 3 -pady 3
-       set zone(trichro) $audace(base).test.frame1.fra4.but_trichro
-
-      #--- Cree le bouton 'en-tete_fits'
-      button $audace(base).test.frame1.fra4.but_en-tete_fits \
-         -text $caption(acqcolor,entete_fits) -borderwidth 2 \
-         -command { header_color }
-       pack $audace(base).test.frame1.fra4.but_en-tete_fits \
-         -in $audace(base).test.frame1.fra4 -side left -anchor n \
-         -padx 3 -pady 3
-       set zone(entete_fits) $audace(base).test.frame1.fra4.but_en-tete_fits
-
    pack $audace(base).test.frame1.fra4 \
       -in $audace(base).test.frame1 -anchor n -side top -expand 0 -fill x
 
@@ -303,7 +285,7 @@ pack $audace(base).test.frame1 \
       pack $audace(base).test.frame1.fra5.intercallaire \
          -in $audace(base).test.frame1.fra5 -side left -anchor n \
          -padx 3 -pady 3
-      set zone(entete_fits) $audace(base).test.frame1.fra5.intercallaire
+      set zone(intercallaire) $audace(base).test.frame1.fra5.intercallaire
 
    pack $audace(base).test.frame1.fra5 \
       -in $audace(base).test.frame1 -anchor n -side top -expand 0 -fill x
@@ -672,8 +654,7 @@ bind $zone(image1) <Motion> {
          set intens3 [ expr round($intens3) ]
          set intens "$intens1 $intens2 $intens3"
       }
-   }
-   if { $infos(type_image) == "noiretblanc" } {
+   } elseif { $infos(type_image) == "noiretblanc" } {
       catch {
          set intens [ lindex [ buf1000 getpix [ list $xi $yi ] ] 1 ]
          set intens [ expr round($intens) ]
@@ -730,24 +711,21 @@ proc testcopy1to2 { } {
    global zone
    global infos
 
-   #--- Nettoyage de l'ecran zone(image2)
-   image delete image1001
+   #--- Initialisation de l'ecran zone(image2)
    image create photo image1001
 
    if { $infos(type_image) == "couleur" } {
       catch {
-         #--- Ajuste les scroll bars
+         #--- Ajuste les scrollbars
          set zone(image2,naxis1) [ lindex [buf1000 getkwd NAXIS1] 1 ]
          set zone(image2,naxis2) [ lindex [buf1000 getkwd NAXIS2] 1 ]
          $zone(image2) configure -scrollregion [ list 0 0 $zone(image2,naxis1) $zone(image2,naxis2) ]
          visu1001 disp [ lindex $infos(rgbcuts) 0 ] [ lindex $infos(rgbcuts) 1 ] [ lindex $infos(rgbcuts) 2 ]
-
       }
-   }
-   if { $infos(type_image) == "noiretblanc" } {
+   } elseif { $infos(type_image) == "noiretblanc" } {
       catch {
          visu1001 cut [ visu1000 cut ]
-         #--- Ajuste les scroll bars
+         #--- Ajuste les scrollbars
          set zone(image2,naxis1) [ lindex [ buf1000 getkwd NAXIS1 ] 1 ]
          set zone(image2,naxis2) [ lindex [ buf1000 getkwd NAXIS2 ] 1 ]
          $zone(image2) configure -scrollregion [ list 0 0 $zone(image2,naxis1) $zone(image2,naxis2) ]
@@ -965,7 +943,7 @@ proc testrevisu { } {
 
    if { $infos(type_image) == "couleur" } {
       visu1000 disp [ lindex $infos(rgbcuts) 0 ] [ lindex $infos(rgbcuts) 1 ] [ lindex $infos(rgbcuts) 2 ]
-   } else {
+   } elseif { $infos(type_image) == "noiretblanc" } {
       catch { visu1000 disp }
    }
 }
@@ -974,8 +952,7 @@ proc testvisu { } {
    global zone
    global infos
 
-   #--- Nettoyage de l'ecran zone(image1)
-   image delete image1000
+   #--- Initialisation de l'ecran zone(image1)
    image create photo image1000
 
    if { $infos(type_image) == "couleur" } {
@@ -994,11 +971,11 @@ proc testvisu { } {
       testsetscales $lohi 2
       set lohi [ testseuillimites 1000 3 ]
       testsetscales $lohi 3
-      #--- Ajuste les scroll bars
+      #--- Ajuste les scrollbars
       $zone(image1) configure -scrollregion [ list 0 0 $zone(image1,naxis1) $zone(image1,naxis2) ]
       #--- Affiche l'image
       visu1000 disp $mycuts1 $mycuts2 $mycuts3
-   } else {
+   } elseif { $infos(type_image) == "noiretblanc" } {
       set zone(image1,naxis1) [ lindex [ buf1000 getkwd NAXIS1 ] 1 ]
       set zone(image1,naxis2) [ lindex [ buf1000 getkwd NAXIS2 ] 1 ]
       #--- Statistiques pour calculer les seuils de visu
@@ -1008,7 +985,7 @@ proc testvisu { } {
       set lohi [ testseuillimites 1000 1 ]
       #--- Place les curseurs des barres de seuil au bon endroit
       testsetscales $lohi 1
-      #--- Ajuste les scroll bars
+      #--- Ajuste les scrollbars
       $zone(image1) configure -scrollregion [ list 0 0 $zone(image1,naxis1) $zone(image1,naxis2) ]
       #--- Affiche l'image
       visu1000 disp
@@ -1169,8 +1146,7 @@ proc testsave { } {
             buf100$k setkwd [ lreplace $lo 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 1 ] ]
          }
          rgb_save $filename
-      }
-      if { $infos(type_image) == "noiretblanc" } {
+      } elseif { $infos(type_image) == "noiretblanc" } {
          buf1000 save $filename
       }
    }
@@ -1191,8 +1167,7 @@ proc testsaveauto { } {
             buf100$k setkwd [ lreplace $lo 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 1 ] ]
          }
          rgb_save $filename
-      }
-      if { $infos(type_image) == "noiretblanc" } {
+      } elseif { $infos(type_image) == "noiretblanc" } {
          buf1000 save $filename
       }
    }
@@ -1235,14 +1210,6 @@ proc testchangeHiCut1 { foo } {
    global zone
    global infos
 
-   if { $infos(type_image) == "noiretblanc" } {
-      set sbh [ visu1000 cut ]
-      set mini [ $zone(sh1) cget -from ]
-      set maxi [ $zone(sh1) cget -to ]
-      set s [ expr 1.*($foo-$mini)/($maxi-$mini) ]
-      set s [ expr (1.-$s)*($maxi-$mini)+$mini ]
-      visu1000 cut [ list $s [ lindex $sbh 1 ] ]
-   }
    if { $infos(type_image) == "couleur" } {
       set sbh1 [ lindex $infos(rgbcuts) 0 ]
       set sbh2 [ lindex $infos(rgbcuts) 1 ]
@@ -1255,6 +1222,13 @@ proc testchangeHiCut1 { foo } {
       set infos(rgbcuts) [ list $sbh1 $sbh2 $sbh3 ]
       set seuils_rgb [ visu1000 cut ]
       visu1000 cut [ lreplace $seuils_rgb 0 0 $s ]
+   } elseif { $infos(type_image) == "noiretblanc" } {
+      set sbh [ visu1000 cut ]
+      set mini [ $zone(sh1) cget -from ]
+      set maxi [ $zone(sh1) cget -to ]
+      set s [ expr 1.*($foo-$mini)/($maxi-$mini) ]
+      set s [ expr (1.-$s)*($maxi-$mini)+$mini ]
+      visu1000 cut [ list $s [ lindex $sbh 1 ] ]
    }
 }
 
@@ -1262,14 +1236,6 @@ proc testchangeHiCut2 { foo } {
    global zone
    global infos
 
-   if { $infos(type_image) == "noiretblanc" } {
-      set sbh [ visu1000 cut ]
-      set mini [ $zone(sh2) cget -from ]
-      set maxi [ $zone(sh2) cget -to ]
-      set s [ expr 1.*($foo-$mini)/($maxi-$mini) ]
-      set s [ expr (1.-$s)*($maxi-$mini)+$mini ]
-      visu1000 cut [ list $s [ lindex $sbh 1 ] ]
-   }
    if { $infos(type_image) == "couleur" } {
       set sbh1 [ lindex $infos(rgbcuts) 0 ]
       set sbh2 [ lindex $infos(rgbcuts) 1 ]
@@ -1282,6 +1248,13 @@ proc testchangeHiCut2 { foo } {
       set infos(rgbcuts) [ list $sbh1 $sbh2 $sbh3 ]
       set seuils_rgb [ visu1000 cut ]
       visu1000 cut [ lreplace $seuils_rgb 2 2 $s ]
+   } elseif { $infos(type_image) == "noiretblanc" } {
+      set sbh [ visu1000 cut ]
+      set mini [ $zone(sh2) cget -from ]
+      set maxi [ $zone(sh2) cget -to ]
+      set s [ expr 1.*($foo-$mini)/($maxi-$mini) ]
+      set s [ expr (1.-$s)*($maxi-$mini)+$mini ]
+      visu1000 cut [ list $s [ lindex $sbh 1 ] ]
    }
 }
 
@@ -1289,14 +1262,6 @@ proc testchangeHiCut3 { foo } {
    global zone
    global infos
 
-   if { $infos(type_image) == "noiretblanc" } {
-      set sbh [ visu1000 cut ]
-      set mini [ $zone(sh3) cget -from ]
-      set maxi [ $zone(sh3) cget -to ]
-      set s [ expr 1.*($foo-$mini)/($maxi-$mini) ]
-      set s [ expr (1.-$s)*($maxi-$mini)+$mini ]
-      visu1000 cut [ list $s [ lindex $sbh 1 ] ]
-   }
    if { $infos(type_image) == "couleur" } {
       set sbh1 [ lindex $infos(rgbcuts) 0 ]
       set sbh2 [ lindex $infos(rgbcuts) 1 ]
@@ -1309,6 +1274,13 @@ proc testchangeHiCut3 { foo } {
       set infos(rgbcuts) [ list $sbh1 $sbh2 $sbh3 ]
       set seuils_rgb [ visu1000 cut ]
       visu1000 cut [ lreplace $seuils_rgb 4 4 $s ]
+   } elseif { $infos(type_image) == "noiretblanc" } {
+      set sbh [ visu1000 cut ]
+      set mini [ $zone(sh3) cget -from ]
+      set maxi [ $zone(sh3) cget -to ]
+      set s [ expr 1.*($foo-$mini)/($maxi-$mini) ]
+      set s [ expr (1.-$s)*($maxi-$mini)+$mini ]
+      visu1000 cut [ list $s [ lindex $sbh 1 ] ]
    }
 }
 
@@ -1319,14 +1291,6 @@ proc testchangeLoCut1 { foo } {
    global zone
    global infos
 
-   if { $infos(type_image) == "noiretblanc" } {
-      set sbh [ visu1000 cut ]
-      set mini [ $zone(sb1) cget -from ]
-      set maxi [ $zone(sb1) cget -to ]
-      set s [ expr 1.*($foo-$mini)/($maxi-$mini) ]
-      set s [ expr (1.-$s)*($maxi-$mini)+$mini ]
-      visu1000 cut [ list [ lindex $sbh 0 ] $s ]
-   }
    if { $infos(type_image) == "couleur" } {
       set sbh1 [ lindex $infos(rgbcuts) 0 ]
       set sbh2 [ lindex $infos(rgbcuts) 1 ]
@@ -1339,6 +1303,13 @@ proc testchangeLoCut1 { foo } {
       set infos(rgbcuts) [ list $sbh1 $sbh2 $sbh3 ]
       set seuils_rgb [ visu1000 cut ]
       visu1000 cut [ lreplace $seuils_rgb 1 1 $s ]
+   } elseif { $infos(type_image) == "noiretblanc" } {
+      set sbh [ visu1000 cut ]
+      set mini [ $zone(sb1) cget -from ]
+      set maxi [ $zone(sb1) cget -to ]
+      set s [ expr 1.*($foo-$mini)/($maxi-$mini) ]
+      set s [ expr (1.-$s)*($maxi-$mini)+$mini ]
+      visu1000 cut [ list [ lindex $sbh 0 ] $s ]
    }
 }
 
@@ -1346,14 +1317,6 @@ proc testchangeLoCut2 { foo } {
    global zone
    global infos
 
-   if { $infos(type_image) == "noiretblanc" } {
-      set sbh [ visu1000 cut ]
-      set mini [ $zone(sb2) cget -from ]
-      set maxi [ $zone(sb2) cget -to ]
-      set s [ expr 1.*($foo-$mini)/($maxi-$mini) ]
-      set s [ expr (1.-$s)*($maxi-$mini)+$mini ]
-      visu1000 cut [ list [ lindex $sbh 0 ] $s ]
-   }
    if { $infos(type_image) == "couleur" } {
       set sbh1 [ lindex $infos(rgbcuts) 0 ]
       set sbh2 [ lindex $infos(rgbcuts) 1 ]
@@ -1366,6 +1329,13 @@ proc testchangeLoCut2 { foo } {
       set infos(rgbcuts) [ list $sbh1 $sbh2 $sbh3 ]
       set seuils_rgb [ visu1000 cut ]
       visu1000 cut [ lreplace $seuils_rgb 3 3 $s ]
+   } elseif { $infos(type_image) == "noiretblanc" } {
+      set sbh [ visu1000 cut ]
+      set mini [ $zone(sb2) cget -from ]
+      set maxi [ $zone(sb2) cget -to ]
+      set s [ expr 1.*($foo-$mini)/($maxi-$mini) ]
+      set s [ expr (1.-$s)*($maxi-$mini)+$mini ]
+      visu1000 cut [ list [ lindex $sbh 0 ] $s ]
    }
 }
 
@@ -1373,14 +1343,6 @@ proc testchangeLoCut3 { foo } {
    global zone
    global infos
 
-   if { $infos(type_image) == "noiretblanc" } {
-      set sbh [ visu1000 cut ]
-      set mini [ $zone(sb3) cget -from ]
-      set maxi [ $zone(sb3) cget -to ]
-      set s [ expr 1.*($foo-$mini)/($maxi-$mini) ]
-      set s [ expr (1.-$s)*($maxi-$mini)+$mini ]
-      visu1000 cut [ list [ lindex $sbh 0 ] $s ]
-   }
    if { $infos(type_image) == "couleur" } {
       set sbh1 [ lindex $infos(rgbcuts) 0 ]
       set sbh2 [ lindex $infos(rgbcuts) 1 ]
@@ -1393,6 +1355,13 @@ proc testchangeLoCut3 { foo } {
       set infos(rgbcuts) [ list $sbh1 $sbh2 $sbh3 ]
       set seuils_rgb [ visu1000 cut ]
       visu1000 cut [ lreplace $seuils_rgb 5 5 $s ]
+   } elseif { $infos(type_image) == "noiretblanc" } {
+      set sbh [ visu1000 cut ]
+      set mini [ $zone(sb3) cget -from ]
+      set maxi [ $zone(sb3) cget -to ]
+      set s [ expr 1.*($foo-$mini)/($maxi-$mini) ]
+      set s [ expr (1.-$s)*($maxi-$mini)+$mini ]
+      visu1000 cut [ list [ lindex $sbh 0 ] $s ]
    }
 }
 
@@ -1530,18 +1499,7 @@ proc testjpeg { } {
          catch { file delete [ file join $infos(dir) rgbdummy1 ][ buf1001 extension ] }
          catch { file delete [ file join $infos(dir) rgbdummy2 ][ buf1001 extension ] }
          catch { file delete [ file join $infos(dir) rgbdummy3 ][ buf1001 extension ] }
-         #for { set k 1 } { $k <= 3 } { incr k } {
-         #   set kk [ expr $k-1 ]
-         #   set hi [ buf100$k getkwd MIPS-HI ]
-         #   buf100$k setkwd [ lreplace $hi 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 0 ] ]
-         #   set lo [ buf100$k getkwd MIPS-LO ]
-         #   buf100$k setkwd [ lreplace $lo 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 1 ] ]
-         #}
-         #rgb_save [ file join $infos(dir) rgbdummy ]
-         #fits2colorjpeg "[ file join $infos(dir) rgbdummy ][ buf1000 extension ]" $filename
-         #catch { file delete [ file join $infos(dir) rgbdummy ][ buf1000 extension ] }
-      }
-      if { $infos(type_image) == "noiretblanc" } {
+      } elseif { $infos(type_image) == "noiretblanc" } {
          buf1000 sauve_jpeg $filename
       }
    }
@@ -1633,5 +1591,16 @@ proc color_nb_fenetre { } {
    #--- Configuration des canvas scrollables
    $zone(image1) configure -width $dimx1 -height $dimy1 -scrollregion {0 0 0 0} -cursor crosshair
    $zone(image2) configure -width $dimx1 -height $dimy1 -scrollregion {0 0 0 0} -cursor crosshair
+   #--- Ajuste les scrollbars
+   if { [ buf1000 imageready ] == "1" } {
+      set zone(image1,naxis1) [ lindex [buf1000 getkwd NAXIS1] 1 ]
+      set zone(image1,naxis2) [ lindex [buf1000 getkwd NAXIS2] 1 ]
+      $zone(image1) configure -scrollregion [ list 0 0 $zone(image1,naxis1) $zone(image1,naxis2) ]
+   }
+   if { [ buf1000 imageready ] == "1" } {
+      set zone(image2,naxis1) [ lindex [buf1000 getkwd NAXIS1] 1 ]
+      set zone(image2,naxis2) [ lindex [buf1000 getkwd NAXIS2] 1 ]
+      $zone(image2) configure -scrollregion [ list 0 0 $zone(image2,naxis1) $zone(image2,naxis2) ]
+   }
 }
 
