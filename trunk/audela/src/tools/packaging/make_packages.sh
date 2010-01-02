@@ -9,7 +9,7 @@
 #
 ########################################################################################
 
-# Mise a jour $Id: make_packages.sh,v 1.17 2009-12-29 01:32:19 bmauclaire Exp $
+# Mise a jour $Id: make_packages.sh,v 1.18 2010-01-02 17:13:09 bmauclaire Exp $
 
 
 #--- Utilisation du script :
@@ -153,7 +153,8 @@ DIRECTORY=$BUILD_DIR$INST_DIR
 #--- Menage :
 #-- Efface les paquets et le repertoire BUIL_DIR :
 #- rm -rf $BUILD_DIR
-sudo rm -rf audela-*
+#- sudo rm -rf audela-*
+rm -rf audela-*
 #- rm -f $BUILD_DIR.deb
 rm -rf rpm
 #-- Cree le repertoire de fabrication du paquet :
