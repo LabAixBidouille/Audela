@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.93 2009-12-31 08:45:25 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.94 2010-01-02 18:27:17 michelpujol Exp $
 #
 
 #==============================================================
@@ -2148,7 +2148,8 @@ proc ::acqfc::Intervalle_continu_1 { visuNo } {
       pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.a.lab2 -anchor center -expand 1 -fill none -side left \
          -padx 10 -pady 5
       entry $panneau(acqfc,$visuNo,base).intervalle_continu_1.a.ent1 -width 5 -relief groove \
-         -textvariable panneau(acqfc,$visuNo,intervalle_1) -justify center
+         -textvariable panneau(acqfc,$visuNo,intervalle_1) -justify center \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 9999}
       pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.a.ent1 -anchor center -expand 1 -fill none -side left \
          -padx 10
    pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.a -padx 10 -pady 5
