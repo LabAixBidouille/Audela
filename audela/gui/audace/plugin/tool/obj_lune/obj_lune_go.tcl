@@ -2,7 +2,7 @@
 # Fichier : obj_lune_go.tcl
 # Description : Outil pour le lancement d'Objectif Lune
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune_go.tcl,v 1.13 2009-02-07 11:01:53 robertdelmas Exp $
+# Mise a jour $Id: obj_lune_go.tcl,v 1.14 2010-01-02 18:19:06 robertdelmas Exp $
 #
 
 #============================================================
@@ -92,7 +92,8 @@ proc ::obj_lune::createPluginInstance { { in "" } { visuNo 1 } } {
    global audace
 
    #--- Chargement du package Img pour visualiser les cartes de la Lune au format jpg
-   package require Img 1.3
+   package require Img
+
    #--- Charge le source de la fenetre Objectif Lune
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool obj_lune obj_lune.tcl ]\""
 }

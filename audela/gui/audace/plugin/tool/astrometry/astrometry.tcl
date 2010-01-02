@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: astrometry.tcl,v 1.3 2009-11-04 09:02:17 alainklotz Exp $
+# Mise a jour $Id: astrometry.tcl,v 1.4 2010-01-02 18:18:36 robertdelmas Exp $
 #
 
 #============================================================
@@ -174,7 +174,7 @@ namespace eval ::astrometry {
       global caption
 
       #--- Chargement du package Img pour visualiser l'image jpg de calibration
-      package require Img 1.3
+      package require Img
 
       #--- Recherche une image dans le buffer
       if { [ buf$audace(bufNo) imageready ] == "0" } {
