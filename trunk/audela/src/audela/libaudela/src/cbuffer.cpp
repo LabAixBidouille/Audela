@@ -858,7 +858,7 @@ void CBuffer::SaveJpg(char *filename,int quality,int sbsh, double sb,double sh)
    free(ppix);
 }
 
-void CBuffer::SaveJpg(char *filename,int quality, float *cuts, unsigned char *palette[3], int mirrorx, int mirrory) {
+void CBuffer::SaveJpg(char *filename, int quality, float *cuts, unsigned char *palette[3], int mirrorx, int mirrory) {
    unsigned char * buf256;
    int width, height, planes;
 
@@ -886,6 +886,102 @@ void CBuffer::SaveJpg(char *filename,int quality, float *cuts, unsigned char *pa
    free(buf256);
 
 }
+
+/**
+ *  SaveTkImg
+ *  Sauvegarde une image BMP, GIF, PNG, TIF
+ *    
+ *  @param filename   : nom du fichier de l'image
+ *  @param palette[3] : palette de couleur ( 3 tableaux de 256 octets)
+ *  @param mirrorx    : 0= pas miroir horizontal, 1=miroir horizontal
+ *  @param mirrory    : 0= pas miroir vertical , 1=miroir vertical
+ *  @return void
+ *  @exception  retourne une exception CError en cas d'erreur
+ *    
+ */
+void CBuffer::SaveTkImg(char *filename, unsigned char *palette[3], int mirrorx, int mirrory) {
+   unsigned char * buf256;
+   int width, height, planes;
+   float cuts[6]; 
+   CFitsKeyword *kwd;
+
+   // je recupere la taille
+   width  = pix->GetWidth();
+   height = pix->GetHeight();
+   planes = pix->GetPlanes();
+   cuts[0] = 255;
+   cuts[2] = 255;
+   cuts[4] = 255;
+   cuts[1] = 0;
+   cuts[3] = 0;
+   cuts[5] = 0;
+
+   // je fabrique des seuils par defaut
+   switch ( this->pix->getPixelClass() ) {
+   case CLASS_GRAY :
+      kwd = keywords->FindKeyword((char*)"MIPS-HI");
+      if (kwd != NULL ) {
+         cuts[0] = kwd->GetFloatValue();
+         cuts[2] = kwd->GetFloatValue();
+         cuts[4] = kwd->GetFloatValue();
+      } 
+      kwd = keywords->FindKeyword((char*)"MIPS-LO");
+      if (kwd != NULL ) {
+         cuts[1] = kwd->GetFloatValue();
+         cuts[3] = kwd->GetFloatValue();
+         cuts[5] = kwd->GetFloatValue();
+      }
+      break;
+   case CLASS_RGB :
+      kwd = keywords->FindKeyword((char*)"MIPS-HIR");
+      if (kwd != NULL ) {
+         cuts[0] = kwd->GetFloatValue();
+      }
+      kwd = keywords->FindKeyword((char*)"MIPS-HIG");
+      if (kwd != NULL ) {
+         cuts[2] = kwd->GetFloatValue();
+      }
+      kwd = keywords->FindKeyword((char*)"MIPS-HIB");
+      if (kwd != NULL ) {
+         cuts[4] = kwd->GetFloatValue();
+      } 
+      kwd = keywords->FindKeyword((char*)"MIPS-LOR");
+      if (kwd != NULL ) {
+         cuts[1] = kwd->GetFloatValue();
+      }
+      kwd = keywords->FindKeyword((char*)"MIPS-LOG");
+      if (kwd != NULL ) {
+         cuts[3] = kwd->GetFloatValue();
+      }
+      kwd = keywords->FindKeyword((char*)"MIPS-LOB");
+      if (kwd != NULL ) {
+         cuts[5] = kwd->GetFloatValue();
+      }
+
+      break;
+   }
+
+   // je cree le buffer pour preparer l'image a 256 niveaux
+   buf256 = (unsigned char *) calloc(width*height*4,sizeof(unsigned char));
+   if (buf256==NULL) {
+      throw CError("saveJpeg : not enouth memory for calloc ");
+   }
+
+   // je transforme l'image sur 256 niveaux
+   this->pix->GetPixelsVisu(
+      0, 0, width-1, height-1,   // size
+      mirrorx, mirrory,          // mirror
+      cuts,                      // cuts
+      palette,                   // palette
+      buf256);
+
+   // j'enregistre l'image dans le fichier
+   CFile::saveTkimg(filename, buf256, width, height);
+   free(buf256);
+
+}
+
+
 
 void CBuffer::SaveRawFile(char *filename)
 {

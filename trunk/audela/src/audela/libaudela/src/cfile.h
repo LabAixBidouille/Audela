@@ -25,8 +25,9 @@
 
 #include "fitskw.h"
 #include "cpixels.h"
+#include <tcl.h>
 
-typedef enum { CFILE_FITS, CFILE_JPEG, CFILE_GIF, CFILE_PNG, CFILE_RAW, CFILE_UNKNOWN} CFileFormat;
+typedef enum { CFILE_FITS, CFILE_JPEG, CFILE_PNG, CFILE_GIF, CFILE_BMP, CFILE_TIF, CFILE_RAW, CFILE_UNKNOWN} CFileFormat;
 
 
 class CFile  {
@@ -34,8 +35,13 @@ class CFile  {
 public:
    CFile();
    ~CFile();
+   
+   static void CFile::setTclInterp( Tcl_Interp *interp);
+
 
    static CFileFormat getFormatFromHeader(char * filename);
+   static CFileFormat getFormatFromTkImg(char * filename);
+
    static CFileFormat loadFile(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords);
    static CFileFormat saveFile(char * filename, int dataTypeOut, CPixels *pixels, CFitsKeywords *keywords);   
 
@@ -44,21 +50,19 @@ public:
    static void saveFits(char * filename, int dataTypeOut, CPixels *pixels, CFitsKeywords *keywords);
    static void saveFitsTable(char * outputFileName, CFitsKeywords *keywords, int nbRow, int nbCol, char *columnType, char **columnTitle, char **columnUnits, char **columnData );
 
-   //static void loadBmp(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords);
-   //static void saveBmp(char * filename, unsigned char *dataIn, CFitsKeywords *keywords, int planes,int width, int height, int quality);
-
-   static void loadJpeg(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords);
+   static void loadJpeg(char * filename, CPixels **pixels, CFitsKeywords **keywords);
    static void saveJpeg(char * filename, unsigned char *dataIn, CFitsKeywords *keywords, int planes,int width, int height, int quality);
 
-   //static void loadGif(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords);
-   //static void saveGif(char * filename, unsigned char *dataIn, CFitsKeywords *keywords, int planes,int width, int height, int quality);
-
-   //static void loadPng(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords);
-   //static void savePng(char * filename, unsigned char *dataIn, CFitsKeywords *keywords, int planes,int width, int height, int quality);
-
-   static void loadRaw(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords);
+   static void loadRaw(char * filename, CPixels **pixels, CFitsKeywords **keywords);
    //static void saveRaw(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords);
    static void cfa2Rgb(CPixels *cfaPixels, CFitsKeywords *cfaKeywords, int interpolationMethod, CPixels **rgbPixels, CFitsKeywords **rgbKeywords );
+
+   static void loadTkimg(char * filename, CPixels **pixels, CFitsKeywords **keywords);
+   static void saveTkimg(char * filename, unsigned char *dataIn, int width, int height);
+
+
+protected: 
+   static Tcl_Interp * CFile::interp;
 
 };
 

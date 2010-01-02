@@ -781,11 +781,9 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    char *path2    = NULL;
    char *nom_fichier = NULL;
    char *ext      = NULL;
-   char *ligne    = NULL;
+   char ligne [1024];
    int retour;
    CBuffer *Buffer;
-
-   ligne = (char*)malloc(1000);
 
    if(argc<3) {
       sprintf(ligne,"Usage: %s %s filename ?fits|gif|bmp|jpeg|tiff? ?options? ",argv[0],argv[1]);
@@ -823,8 +821,43 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 
       try {
          if(strcmp(argv[1],"save")==0) {
-            //  save  JPEG
-            if( strcmp(ext, ".jpg")== 0 || strcmp(ext, ".jpeg")== 0 ) {
+            if( strcmp(ext, ".fit")== 0   
+               || strcmp(ext, ".fits")== 0 
+               || strcmp(ext, ".fts")== 0  
+               || strcmp(ext, ".gz")== 0   
+               || strcmp(ext, Buffer->GetExtension())== 0  
+             ) {
+               //--- save FITS file (fit, fits, fts, fit.gz, fits.gz, fts.gz or default extension)
+               if (Buffer->GetCompressType()==BUFCOMPRESS_GZIP) {
+                  // je supprime ".gz" a la fin du fichier si ".gz" est present
+                  // parce que libtt ne supporte pas l'extension ".gz"
+                  // a cause de la deuxieme passe pour l'enregistrement des nouveaux mots cles.
+                  char * strfound = strstr(nom_fichier,".gz");
+                  if ( strfound != NULL && strfound==nom_fichier+strlen(nom_fichier)-3 ) {
+                     nom_fichier[strlen(nom_fichier)-3] = 0;
+                  }
+               }
+               Buffer->SaveFits(nom_fichier);
+               // compression eventuelle du fichier
+               if (Buffer->GetCompressType()==BUFCOMPRESS_GZIP) {
+                  sprintf(ligne,"catch {file delete {%s.gz} }",nom_fichier); Tcl_Eval(interp,ligne);
+                  sprintf(ligne,"gzip {%s}",nom_fichier);
+                  Tcl_Eval(interp,ligne);
+                  if( Tcl_Eval(interp,ligne) != TCL_OK  ) {
+                     throw CError("gzip %s",interp->result);
+                  } else {
+                     // je verifie que gzip retourn "1"
+                     if(strcmp(interp->result,"0")!=0) {
+                        throw CError("gzip %s returns %s : Intermediate file not found ",nom_fichier,interp->result);
+                     }
+                  }
+               }
+
+               retour = TCL_OK;
+
+            } else if( strcmp(ext, ".jpg")== 0 || strcmp(ext, ".jpeg")== 0 ) {
+               //  save  JPEG
+
                unsigned char *palette[3];
                unsigned char pal0[256];
                unsigned char pal1[256];
@@ -877,35 +910,36 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                Buffer->SaveRawFile(nom_fichier);
                retour = TCL_OK;
 
+            } else if( strcmp(ext, ".crw")== 0   // canon raw image
+                    || strcmp(ext, ".nef")== 0   // nikon raw image
+                    || strcmp(ext, ".cr2")== 0   // canon raw image
+                    || strcmp(ext, ".dng")== 0   // nikon raw image
+                     ) {
+               //--- SAVE RAW file (crw, nef, cr2 , dng )
+               Buffer->SaveRawFile(nom_fichier);
             } else {
-               //--- FITS file (fit, fits, fts, fit.gz, fits.gz, fts.gz or default extension)
-               //--- save FITS file
-               if (Buffer->GetCompressType()==BUFCOMPRESS_GZIP) {
-                  // je supprime ".gz" a la fin du fichier si ".gz" est present
-                  // parce que libtt ne supporte pas l'extension ".gz"
-                  // a cause de la deuxieme passe pour l'enregistrement des nouveaux mots cles.
-                  char * strfound = strstr(nom_fichier,".gz");
-                  if ( strfound != NULL && strfound==nom_fichier+strlen(nom_fichier)-3 ) {
-                     nom_fichier[strlen(nom_fichier)-3] = 0;
-                  }
-               }
-               Buffer->SaveFits(nom_fichier);
-               // compression eventuelle du fichier
-               if (Buffer->GetCompressType()==BUFCOMPRESS_GZIP) {
-                  sprintf(ligne,"catch {file delete {%s.gz} }",nom_fichier); Tcl_Eval(interp,ligne);
-                  sprintf(ligne,"gzip {%s}",nom_fichier);
-                  Tcl_Eval(interp,ligne);
-                  if( Tcl_Eval(interp,ligne) != TCL_OK  ) {
-                     throw CError("gzip %s",interp->result);
-                  } else {
-                     // je verifie que gzip retourn "1"
-                     if(strcmp(interp->result,"0")!=0) {
-                        throw CError("gzip %s returns %s : Intermediate file not found ",nom_fichier,interp->result);
-                     }
-                  }
+               //--- SAVE BMP, GIF, PNG, TIF
+               unsigned char *palette[3];
+               unsigned char pal0[256];
+               unsigned char pal1[256];
+               unsigned char pal2[256];
+               int mirrorx;
+               int mirrory;
+
+               // je fabrique une palette par defaut
+               palette[0] = pal0;
+               palette[1] = pal1;
+               palette[2] = pal2;
+               for(int i=0; i<256; i++) {
+                  pal0[i]= (unsigned char) i;
+                  pal1[i]= (unsigned char) i;
+                  pal2[i]= (unsigned char) i;
                }
 
-               retour = TCL_OK;
+               mirrorx = 0;
+               mirrory = 0;
+
+               Buffer->SaveTkImg(nom_fichier, palette, mirrorx, mirrory);
             }
          } else {
             // LoadFile (tous les formats)
@@ -920,7 +954,6 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
          free(ext);
          free(path2);
          free(nom_fichier);
-         free(ligne);
       } catch (const CError& e) {
          // je complete le message de l'erreur
          sprintf(ligne,"%s %s \n%s ",argv[1],argv[2], e.gets());
@@ -932,7 +965,6 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
          if (ext)          free(ext);
          if (path2)        free(path2);
          if (nom_fichier) free(nom_fichier);
-         if (ligne)        free(ligne);
          retour = TCL_ERROR;
       }
    }

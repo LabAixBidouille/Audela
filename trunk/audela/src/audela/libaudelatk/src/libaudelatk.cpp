@@ -27,6 +27,8 @@
 #include "cpool.h"
 #include "cbuffer.h"
 #include "cvisu.h"
+#include "cerror.h"
+
 
 extern "C" int Tkimgvideo_Init(Tcl_Interp *interp);
 
@@ -45,6 +47,9 @@ CPool *visu_pool;
 int CmdCreateVisuItem(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int CmdListVisuItems(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int CmdDeleteVisuItem(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int CmdLoadImage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int CmdFreeImage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int CmdSaveImage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 //------------------------------------------------------------------------------
 // fonction point d'entree pour gerer les commandes d'une visu
@@ -71,6 +76,9 @@ extern "C" int Audelatk_Init(Tcl_Interp *interp)
    Tcl_CreateCommand(interp,"::visu::create",(Tcl_CmdProc *)CmdCreateVisuItem,(void*)visu_pool,NULL);
    Tcl_CreateCommand(interp,"::visu::list",  (Tcl_CmdProc *)CmdListVisuItems,(void*)visu_pool,NULL);
    Tcl_CreateCommand(interp,"::visu::delete",(Tcl_CmdProc *)CmdDeleteVisuItem,(void*)visu_pool,NULL);
+   Tcl_CreateCommand(interp,"::visu::loadImage",  (Tcl_CmdProc *)CmdLoadImage,(void*)visu_pool,NULL);
+   Tcl_CreateCommand(interp,"::visu::freeImage",  (Tcl_CmdProc *)CmdFreeImage,(void*)visu_pool,NULL);
+   Tcl_CreateCommand(interp,"::visu::saveImage",  (Tcl_CmdProc *)CmdSaveImage,(void*)visu_pool,NULL);
 
 #if defined(WIN32)
    // create image type for video (webcam and video recorder)
@@ -204,3 +212,213 @@ int CmdCreateVisuItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
    return retour;
 }
 
+/**
+ *  CmdLoadImage
+ *    Charge une image dans une ressource temporaire 
+ *    Apres utilisation, la procedure appelante doit supprimer l'image temporaire
+ *    avec "::visu::freeImage"  qui utilise CmdFreeImage
+ *    
+ *  @param arg[1] : nom du fichier de l'image
+ *  return : liste de parametres du l'image  
+ *    result[0]  width
+ *    result[1]  height
+ *    result[2]  pixelSize
+ *    result[3]  pitch
+ *    result[4]  offset[0]
+ *    result[5]  offset[1]
+ *    result[6]  offset[2]
+ *    result[7]  offset[3]
+ *    result[8]  pixelPtr  de type long
+ *    
+ */
+
+int CmdLoadImage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   char ligne[1024];
+   int tclResult;
+
+   if(argc!=2) {
+      sprintf(ligne,"Usage: %s fileName",argv[0]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      tclResult = TCL_ERROR;
+   } else  {
+      Tk_PhotoImageBlock pib;
+      Tk_PhotoHandle ph ;
+
+      // j'essaie de charger le package Img pour pouvoir reconnaitre plus de type d'image
+      // Si le package n'existe , je continue quand meme en utilisant les types definis par TK
+      Tcl_PkgRequire(interp, "Img", "1.3", 0);
+
+      // je cree une image tk temporaire.
+      sprintf(ligne,"image create photo temporaryImageVisu -file {%s} ", argv[1]); 
+      tclResult = Tcl_Eval(interp,ligne);
+      if ( tclResult == TCL_OK) {
+         // je recupere le handle de l'image tk
+         ph = Tk_FindPhoto(interp,"temporaryImageVisu");
+         if(ph!=NULL) {
+            // je charge les pixels dans l'image temporaire avec la librairie tkImg 
+            tclResult = Tk_PhotoGetImage(ph,&pib);            
+            if( pib.pixelPtr != NULL) {
+               sprintf(ligne,"%d %d %d %d %d %d %d %d %ld", 
+                  pib.width, pib.height, 
+                  pib.pixelSize, pib.pitch,
+                  pib.offset[0], pib.offset[1],pib.offset[2],pib.offset[3],
+                  pib.pixelPtr );
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               tclResult = TCL_OK;
+            } else {
+               tclResult = TCL_ERROR;
+            }
+         } else {
+            tclResult = TCL_ERROR;
+         }
+      }     
+   }
+  return tclResult;
+}
+
+/**
+ *  CmdFreeImage
+ *    supprime l'image cree par la commande CmdLoadImage
+ *    
+ *  @return TCL_OK ou  TCL_ERROR 
+ *    
+ */
+int CmdFreeImage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   char ligne[1024];
+   int tclResult;
+
+   if(argc!=1) {
+      sprintf(ligne,"Usage: %s ",argv[0]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      tclResult = TCL_ERROR;
+   } else  {
+      // je supprime l'image
+      tclResult = Tcl_Eval(interp,"image delete temporaryImageVisu");
+   }
+  return tclResult;
+}
+
+
+/**
+ *  CmdSaveImage
+ *    sauvegarde une image dans un fichier
+ *    
+ *  Si le parametre "format" n'est pas present, la fonction utilise l'extension
+ *  du nom du fichier pour determiner le format du fichier. 
+ *
+ *  @param arg[1] : nom du fichier de l'image
+ *  @param arg[2] : pointeur de l'objet CPixels contenant l'image a enregistrer
+ *  @param arg[3] : format de l'image bmp|gif|png|tiff (parametre optionel) 
+ *  @return TCL_OK ou  TCL_ERROR
+ *    
+ */
+int CmdSaveImage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   char ligne[1024];
+   int tclResult = TCL_OK;
+
+   if(argc<5) {
+      sprintf(ligne,"Usage: %s fileName pixelPtr width height ?-bmp|gif|jpeg|png|ppm|ps|tiff|xbm|xpm?",argv[0]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      tclResult = TCL_ERROR;
+   } 
+   
+   if (tclResult == TCL_OK) { 
+      char fileName [1024];
+      char format[10];
+      unsigned char * pixelPtr;
+      int width;
+      int height;
+      Tk_PhotoHandle ph ;
+      Tk_PhotoImageBlock pib;
+
+      strcpy(fileName,argv[1]);
+      width = atoi(argv[3]);
+      height= atoi(argv[4]);
+
+      //pixelPtr = (unsigned char *) malloc(width*height*4);
+      //memcpy(pixelPtr,(unsigned char *) atol(argv[2]) ,width*height*4);
+      pixelPtr = (unsigned char *) atol(argv[2]);
+      
+      if ( argc >= 6 ) {         
+         strcmp(format,argv[3]);
+         tclResult = TCL_OK;
+      } else {
+         sprintf(ligne,"string tolower [file extension {%s}]",fileName);
+         tclResult = Tcl_Eval(interp,ligne);
+         if (tclResult == TCL_OK) { 
+
+            // j'identifie  le format de l'image ne fonction de l'extension du fichier
+            if(strcmp(interp->result, ".bmp" )==0) {
+               strcpy(format, "bmp");
+            } else if(strcmp(interp->result, ".gif" )==0) {
+               strcpy(format, "gif");
+            } else if(strcmp(interp->result, ".jpg" )==0 || strcmp(interp->result, ".jpeg")==0) {
+               strcpy(format, "jpeg");
+            } else if(strcmp(interp->result, ".png" )==0) {
+               strcpy(format, "png");
+            } else if(strcmp(interp->result, ".ps"  )==0 || strcmp(interp->result, ".eps" )==0 ) {
+               strcpy(format, "ps");
+            } else if(strcmp(interp->result, ".tiff")==0 || strcmp(interp->result, ".tif" )==0) {
+               strcpy(format, "tiff");
+            } else if(strcmp(interp->result, ".xbm" )==0) {
+               strcpy(format, "xbm");
+            } else if(strcmp(interp->result, ".xpm" )==0) {
+               strcpy(format, "xpm");
+            } else {
+               tclResult = TCL_ERROR;
+            }
+         }
+      } 
+
+      
+      if (tclResult == TCL_OK) { 
+         // j'essaie de charger le package Img pour pouvoir reconnaitre plus de type d'image
+         // Si le package n'existe , je continue quand meme en utilisant les types definis par TK
+         Tcl_PkgRequire(interp, "Img", "1.3", 0);
+
+         // je cree une image tk temporaire.
+         sprintf(ligne,"image create photo temporaryImageVisu");
+         tclResult = Tcl_Eval(interp,ligne) ;
+      }
+
+      
+
+      if (tclResult == TCL_OK) {
+         // je recupere le handle de l'image tk
+         ph = Tk_FindPhoto(interp,"temporaryImageVisu");
+         if(ph==NULL) {
+            sprintf( ligne, "CmdSaveImage : can not find temporaryImageVisu for file %s",fileName); 
+             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            tclResult = TCL_ERROR;
+         }
+      }
+
+      if (tclResult == TCL_OK) {
+         pib.width = width;
+         pib.height = height;
+         pib.pixelSize = 4;         // 2 octets par pixels
+         pib.pitch  = pib.width * pib.pixelSize;    // taille d'une ligne
+         pib.offset[0] = 0;
+         pib.offset[1] = 1;
+         pib.offset[2] = 2;
+         pib.offset[3] = 0;                        
+         pib.pixelPtr = pixelPtr;
+         tclResult = Tk_PhotoPutBlock(interp, ph, &pib, 0, 0, pib.width ,pib.height, TK_PHOTO_COMPOSITE_SET);
+      }      
+      if (tclResult == TCL_OK) {
+         // j'enregistre l'image dans le fichier en utilisant la librairie tkimg ou tk
+         sprintf(ligne,"temporaryImageVisu write \"%s\" -format %s ", fileName, format); 
+         tclResult = Tcl_Eval(interp,ligne) ;
+
+      }
+
+      // je supprime l'image temporaire  (sans tenir compte du resultat pour la suite)
+      sprintf(ligne,"image delete temporaryImageVisu");
+      Tcl_Eval(interp,ligne);
+
+   }
+   return tclResult;
+}

@@ -24,6 +24,7 @@
 #include "libstd.h"
 #include "audela.h"
 #include "libtt.h"            // for TFLOAT, LONG_IMG, TT_PTR_...
+#include "cfile.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -532,7 +533,7 @@ void audelaInit(Tcl_Interp *interp)
    Tcl_CreateCommand(interp,"ping",(Tcl_CmdProc *)CmdPing,NULL,NULL);
    Tcl_CreateCommand(interp,"setip",(Tcl_CmdProc *)CmdSetIP,NULL,NULL);
 
-   // file_tcl.cpp : Gestion des fichiers RAW, JPEG, PNG
+   // file_tcl.cpp : Gestion des fichiers RAW
    Tcl_CreateCommand(interp,"cfa2rgb",(Tcl_CmdProc *)CmdCfa2rgb,(void*)link_pool,NULL);
 
    // copie une commande dans un interpreteur esclave
@@ -577,6 +578,8 @@ void audelaInit(Tcl_Interp *interp)
    Tcl_SetVar2(interp, "audela", "patch", s, TCL_GLOBAL_ONLY);
    Tcl_SetVar2(interp, "audela", "extra", AUDELA_VERSION_EXTRA, TCL_GLOBAL_ONLY);
    Tcl_SetVar2(interp, "audela", "version", AUDELA_VERSION, TCL_GLOBAL_ONLY);
+   // je transmets l'interpreteur a la classe CFile qui l'utilise pour CFile::loadTkimg
+   CFile::setTclInterp(interp);
 }
 
 //------------------------------------------------------------------------------
