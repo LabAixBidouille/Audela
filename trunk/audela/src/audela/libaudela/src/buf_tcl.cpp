@@ -790,6 +790,7 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       retour = TCL_ERROR;
    } else {
+      char fileName[1024];
       name = (char*)calloc(512,sizeof(char));
       extfits = (char*)calloc(128,sizeof(char));
       ext = (char*)calloc(128,sizeof(char));
@@ -797,11 +798,14 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       nom_fichier = (char*)calloc(1000,sizeof(char));
       Buffer = (CBuffer*)clientData;
 
+      // je traite les caracteres accentues
+      utf2Unicode(interp,argv[2],fileName);
+      
       // Decodage du nom de fichier : chemin, nom du fichier, etc.
       // "encoding convertfrom identity" sert a traiter correctement les caracteres accentues
-      sprintf(ligne,"file dirname [encoding convertfrom identity {%s}]",argv[2]); Tcl_Eval(interp,ligne); strcpy(path2,interp->result);
-      sprintf(ligne,"file tail [encoding convertfrom identity {%s}]",argv[2]); Tcl_Eval(interp,ligne); strcpy(name,interp->result);
-      sprintf(ligne,"file extension \"%s\"",argv[2]); Tcl_Eval(interp,ligne);
+      sprintf(ligne,"file dirname [encoding convertfrom identity {%s}]",fileName); Tcl_Eval(interp,ligne); strcpy(path2,interp->result);
+      sprintf(ligne,"file tail [encoding convertfrom identity {%s}]",fileName); Tcl_Eval(interp,ligne); strcpy(name,interp->result);
+      sprintf(ligne,"file extension \"%s\"",fileName); Tcl_Eval(interp,ligne);
       if(strcmp(interp->result, "")==0) {
          // set default extension
          strcpy(extfits,Buffer->GetExtension());
@@ -1203,16 +1207,20 @@ int cmdSave3d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       retour = TCL_ERROR;
    } else {
+      char fileName[1024];
       name = (char*)calloc(512,sizeof(char));
       ext = (char*)calloc(128,sizeof(char));
       path2 = (char*)calloc(256,sizeof(char));
       nom_fichier = (char*)calloc(1000,sizeof(char));
       Buffer = (CBuffer*)clientData;
+   
+      // je traite les caracteres accentues
+      utf2Unicode(interp,argv[2],fileName);
 
       // Decodage du nom de fichier : chemin, nom du fichier, etc.
-      sprintf(ligne,"file dirname {%s}",argv[2]); Tcl_Eval(interp,ligne); strcpy(path2,interp->result);
-      sprintf(ligne,"file tail {%s}",argv[2]); Tcl_Eval(interp,ligne); strcpy(name,interp->result);
-      sprintf(ligne,"file extension \"%s\"",argv[2]); Tcl_Eval(interp,ligne);
+      sprintf(ligne,"file dirname {%s}",fileName); Tcl_Eval(interp,ligne); strcpy(path2,interp->result);
+      sprintf(ligne,"file tail {%s}",fileName); Tcl_Eval(interp,ligne); strcpy(name,interp->result);
+      sprintf(ligne,"file extension \"%s\"",fileName); Tcl_Eval(interp,ligne);
       if(strcmp(interp->result,"")==0) strcpy(ext,Buffer->GetExtension()); else strcpy(ext,"");
       sprintf(ligne,"file join {%s} {%s%s}",path2,name,ext); Tcl_Eval(interp,ligne); strcpy(nom_fichier,interp->result);
 

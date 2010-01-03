@@ -215,7 +215,6 @@ char* Ctt_params::Get(int n)
    return *(parametres+n);
 }
 
-
 //-------------------------------------------------------------------------
 // CmdFits2ColorJpg --
 // Charge trois fichiers FITS en memoire et les sauve en Jpeg Couleur.
@@ -604,7 +603,6 @@ int CmdFitsHeader(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
    Tcl_DString dsptr;
    char ligne[1024];
    char s[1024];
-   Tcl_DString sourceFileName;
    int nb_arg_min = 2;        // Nombre minimal d'arguments
    
    if(argc<nb_arg_min) {
@@ -615,6 +613,7 @@ int CmdFitsHeader(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 
    // je convertis les caracteres accentues
    int length;
+   Tcl_DString sourceFileName;
    Tcl_DStringInit(&sourceFileName);
    char * stringPtr = (char *) Tcl_GetByteArrayFromObj(Tcl_NewStringObj(argv[1],strlen(argv[1])), &length);
    Tcl_ExternalToUtfDString(Tcl_GetEncoding(interp, "identity"), stringPtr, length, &sourceFileName);
@@ -718,6 +717,8 @@ int CmdFitsConvert3d(ClientData clientData, Tcl_Interp *interp, int argc, char *
    bzero=0;
    for (k=1;k<=nb;k++) {
       sprintf(filein,"%s%d%s",argv[1],k,argv[3]);
+     // je convertis les caracteres accentues
+      utf2Unicode(interp, filein, filein);
       if (k==1) {
          msg=Libtt_main(TT_PTR_LOADKEYS,7,filein,&nbkeys0,&keynames0,&values0,
             &comments0,&units0,&datatypes0);
@@ -827,6 +828,7 @@ int CmdFitsConvert3d(ClientData clientData, Tcl_Interp *interp, int argc, char *
    }
    naxis3=nb;
    sprintf(fileout,"%s%s",argv[4],argv[3]);
+   utf2Unicode(interp, fileout, fileout);
    msg=Libtt_main(TT_PTR_SAVEIMA3D,13,fileout,ptot,&datatype,&naxis1,
       &naxis2,&naxis3,&bitpix,&nbkeys0,keynames0,values0,
       comments0,units0,datatypes0);
