@@ -7,7 +7,7 @@
 <title>Pr&eacute;traitement - Conversions</title>
 </head>
 <body>
-<p class="date">Date de mise &agrave; jour : 01 janvier 2010</p>
+<p class="date">Date de mise &agrave; jour : 03 janvier 2010</p>
 <h1>Pr&eacute;traitement - Conversions</h1>
 <h2>1. Fonctions</h2>
 <p>Ce script a pour fonction de convertir des lots d'images en
@@ -246,27 +246,33 @@ composantes dans les bandes de couleur rouge (R), verte (V) et
 bleue (B), &eacute;galement au format FITS.</p>
 <p>Il n'y a pas de r&egrave;gle particuli&egrave;re &agrave;
 suivre pour d&eacute;finir le nom de l'image de sortie.</p>
-<p>Par contre, les noms des 3 images de sortie seront par exemple
+<p>Par contre, pour une s&eacute;rie les noms des 3 images de sortie seront par exemple
 :</p>
 <ul>
-<li>nom_g&eacute;n&eacute;rique_sortie1.fit</li>
-<li>nom_g&eacute;n&eacute;rique_sortie2.fit</li>
-<li>nom_g&eacute;n&eacute;rique_sortie3.fit</li>
+<li>nom_g&eacute;n&eacute;rique_sortie_indexr.fit</li>
+<li>nom_g&eacute;n&eacute;rique_sortie_indexv.fit</li>
+<li>nom_g&eacute;n&eacute;rique_sortie_indexb.fit</li>
 </ul>
+<p>Le nom g&eacute;n&eacute;rique des images de sortie est : <b>nom_g&eacute;n&eacute;rique_sortie_</b></p>
+<p><b>index</b> identifie le rang de l'image dans la s&eacute;rie.</p>
+<p><b>r</b>, <b>v</b> et <b>b</b> identifient les 3 images
+composantes dans les bandes de couleur rouge (R), verte (V) et bleue (B).</p>
 <h3>5.6 Conversion R+V+B ---&gt; RVB</h3>
 <p>Le but de cette fonction est de reconstituer une image couleur
 (RVB) au format FITS (3 axes, NAXIS = 3) &agrave; partir de 3 images
 acquises au travers de filtres dans les bandes de couleur rouge
 (R), verte (V) et bleue (B), &eacute;galement au format FITS.</p>
-<p>Les noms des 3 images d'entr&eacute;e doivent &ecirc;tre par
+<p>Pour une s&eacute;rie les noms des 3 images d'entr&eacute;e doivent &ecirc;tre par
 exemple :</p>
 <ul>
-<li>nom_g&eacute;n&eacute;rique_entr&eacute;e1.fit</li>
-<li>nom_g&eacute;n&eacute;rique_entr&eacute;e2.fit</li>
-<li>nom_g&eacute;n&eacute;rique_entr&eacute;e3.fit</li>
+<li>nom_g&eacute;n&eacute;rique_entr&eacute;e_indexr.fit</li>
+<li>nom_g&eacute;n&eacute;rique_entr&eacute;e_indexv.fit</li>
+<li>nom_g&eacute;n&eacute;rique_entr&eacute;e_indexb.fit</li>
 </ul>
-<p>Le nom_g&eacute;n&eacute;rique_entr&eacute;e peut se terminer
-par un indice num&eacute;rique.</p>
+<p>Le nom g&eacute;n&eacute;rique des images d'entr&eacute;e est : <b>nom_g&eacute;n&eacute;rique_entr&eacute;e_</b></p>
+<p><b>index</b> identifie le rang de l'image dans la s&eacute;rie.</p>
+<p><b>r</b>, <b>v</b> et <b>b</b> identifient les 3 images
+composantes dans les bandes de couleur rouge (R), verte (V) et bleue (B).</p>
 <p>Il n'y a pas de r&egrave;gle particuli&egrave;re &agrave;
 suivre pour d&eacute;finir le nom de l'image de sortie.</p>
 <p>Si les trois plans couleurs ne sont pas r&eacute;unis, la
