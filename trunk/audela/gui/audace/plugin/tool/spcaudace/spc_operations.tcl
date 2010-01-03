@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.20 2009-12-29 01:40:15 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.21 2010-01-03 14:45:00 bmauclaire Exp $
 
 
 ####################################################################
@@ -2514,6 +2514,8 @@ proc spc_1dto2d { args } {
 # Date creation : 05-08-2007
 # Date modification : 05-08-2007
 # Arguments : nom_profil_raies largeur_raie
+# Algo : relation decrite p. 278 Astronomie astrophysique, Agnes Acker, Dunod, 2005.
+#        necessite les raies Ha et Hb en emission.
 ####################################################################
 
 proc spc_derougi { args } {
