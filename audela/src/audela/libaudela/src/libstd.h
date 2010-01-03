@@ -82,6 +82,7 @@ extern int audela_strcasecmp(char *a, char *b);
 
 extern void LogFile(char*s);
 extern void vlogfile(char *fmt, ...);
+extern void utf2Unicode(Tcl_Interp *interp, char * inString, char * outString);
 
 //------------------------------------------------------------------------------
 // Pools de devices
