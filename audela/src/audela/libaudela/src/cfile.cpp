@@ -121,6 +121,8 @@ CFileFormat CFile::getFormatFromHeader(char * fileName)
       fileFormat = CFILE_FITS;
    } else if ( strncmp(line, JpgHeader , 2 ) == 0 ) {
       fileFormat = CFILE_JPEG;
+   } else if ( libdcraw_getInfoFromFile(fileName, &dataInfo) == 0 ) {
+      fileFormat = CFILE_RAW;
    } else if ( strncmp(line, PNGHeader , 8 ) == 0 ) {
       fileFormat = CFILE_PNG;
    } else if ( strncmp(line, GIF87aHeader, 6 ) == 0 || strncmp(line, GIF87aHeader, 6 ) == 0 ) {
@@ -129,8 +131,6 @@ CFileFormat CFile::getFormatFromHeader(char * fileName)
       fileFormat = CFILE_BMP;
    } else if ( strncmp(line, TIFHeader, 4 ) == 0 ) {
       fileFormat = CFILE_TIF;
-   } else if ( libdcraw_getInfoFromFile(fileName, &dataInfo) == 0 ) {
-      fileFormat = CFILE_RAW;
    } else {
       fileFormat = CFILE_UNKNOWN;
    }
@@ -325,7 +325,7 @@ void CFile::saveFits(char * fileName, int dataTypeOut, CPixels *pixels, CFitsKey
          pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_B, (void*) pixelsB);
 
          // format des pixels en entree de libtt
-         datatype = dataTypeOut;
+         datatype = TSHORT;
          break;
       default :
          // je recupere l'image GREY a traiter
@@ -333,7 +333,7 @@ void CFile::saveFits(char * fileName, int dataTypeOut, CPixels *pixels, CFitsKey
          pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (void*) ppix);
 
          // format des pixels en entree de libtt
-         datatype = dataTypeOut;
+         datatype = TFLOAT;
          break;
    }
 
