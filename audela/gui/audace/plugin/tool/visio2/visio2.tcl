@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.48 2010-01-03 15:52:38 robertdelmas Exp $
+# Mise a jour $Id: visio2.tcl,v 1.49 2010-01-03 18:12:16 robertdelmas Exp $
 #
 
 namespace eval ::visio2 {
@@ -775,21 +775,6 @@ proc ::visio2::config::fillConfigPage { frm visuNo } {
       pack $frm.extension.extfit -anchor w -side top -padx 5 -pady 0
    }
 
-   #--- fichiers jpg
-   if { ( $conf(extension,defaut) != ".jpg" ) && ( $conf(extension,defaut) != ".jpeg" ) } {
-      checkbutton $frm.extension.jpg -text ".jpg .jpeg" \
-          -highlightthickness 0 -variable ::visio2::config::widgetEnableExtension(jpg)
-      pack $frm.extension.jpg -anchor w -side top -padx 5 -pady 0
-   } elseif { $conf(extension,defaut) == ".jpg" } {
-      checkbutton $frm.extension.jpg -text ".jpeg" \
-          -highlightthickness 0 -variable ::visio2::config::widgetEnableExtension(jpg)
-      pack $frm.extension.jpg -anchor w -side top -padx 5 -pady 0
-   } elseif { $conf(extension,defaut) == ".jpeg" } {
-      checkbutton $frm.extension.jpg -text ".jpg" \
-          -highlightthickness 0 -variable ::visio2::config::widgetEnableExtension(jpg)
-      pack $frm.extension.jpg -anchor w -side top -padx 5 -pady 0
-   }
-
    #--- fichiers raw
    if { ( $conf(extension,defaut) != ".crw" ) && ( $conf(extension,defaut) != ".cr2" ) && \
       ( $conf(extension,defaut) != ".nef" ) && ( $conf(extension,defaut) != ".dng" ) && \
@@ -830,6 +815,21 @@ proc ::visio2::config::fillConfigPage { frm visuNo } {
       checkbutton $frm.extension.raw -text ".crw .cr2 .nef .dng .CRW .CR2 .NEF" \
           -highlightthickness 0 -variable ::visio2::config::widgetEnableExtension(raw)
       pack $frm.extension.raw -anchor w -side top -padx 5 -pady 0
+   }
+
+   #--- fichiers jpg
+   if { ( $conf(extension,defaut) != ".jpg" ) && ( $conf(extension,defaut) != ".jpeg" ) } {
+      checkbutton $frm.extension.jpg -text ".jpg .jpeg" \
+          -highlightthickness 0 -variable ::visio2::config::widgetEnableExtension(jpg)
+      pack $frm.extension.jpg -anchor w -side top -padx 5 -pady 0
+   } elseif { $conf(extension,defaut) == ".jpg" } {
+      checkbutton $frm.extension.jpg -text ".jpeg" \
+          -highlightthickness 0 -variable ::visio2::config::widgetEnableExtension(jpg)
+      pack $frm.extension.jpg -anchor w -side top -padx 5 -pady 0
+   } elseif { $conf(extension,defaut) == ".jpeg" } {
+      checkbutton $frm.extension.jpg -text ".jpg" \
+          -highlightthickness 0 -variable ::visio2::config::widgetEnableExtension(jpg)
+      pack $frm.extension.jpg -anchor w -side top -padx 5 -pady 0
    }
 
    #--- fichiers bmp
