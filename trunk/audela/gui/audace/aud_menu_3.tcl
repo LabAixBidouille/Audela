@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.55 2010-01-03 18:51:02 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.56 2010-01-03 21:51:44 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -3086,20 +3086,20 @@ namespace eval ::conv2 {
          set private(conv2,to_destroy) ""
          foreach i { r g b } k { 1 2 3 } {
             #--- charge chaque image R, G et B
-            $buf load ${in}$i$ext -novisu
+            $buf load ${in}$i$ext
             #--- si necessaire change les mots cles
             ::conv2::MajHeader ${in}$i$ext
             #--- memorise les fichiers a detruire
             lappend private(conv2,to_destroy) ${in}$i$ext
             #-- sauve les images avec un index numerique
-            saveima ${in}$k$ext
+            $buf save ${in}$k$ext
          }
          #--- conversion en une image
          fitsconvert3d $in 3 $ext $out
-         $buf load $out$ext -novisu
+         $buf load $out$ext
          $buf delkwd "RGBFILTR"
          #--- sauve l'image couleur
-         saveima $out$ext
+         $buf save $out$ext
          #--- supprime les images avec un index numerique
          foreach i { 1 2 3 } { file delete ${in}$i$ext }
       } ]
@@ -3121,7 +3121,7 @@ namespace eval ::conv2 {
       set private(conv2,to_destroy) [ list $in ]
       set err [ catch {
 
-         $buf load $in -novisu
+         $buf load $in
 
          #--- si necessaire change les mots cles et sauve l'image
          ::conv2::MajHeader $in
@@ -3194,7 +3194,7 @@ namespace eval ::conv2 {
          buf$audace(bufNo) cfa2rgb 1
 
          #--- sauve l'image
-         saveima $out
+         buf$audace(bufNo) save $out
 
       } ]
 
@@ -3211,9 +3211,11 @@ namespace eval ::conv2 {
       variable private
       global audace caption
 
+      set buf "buf$audace(bufNo)"
+
       set err [ catch {
          loadima $in $audace(visuNo) -novisu
-         saveima $out
+         $buf save $out
       } ]
 
       if { $err == "1" } {
@@ -3245,7 +3247,7 @@ namespace eval ::conv2 {
             #--- copie l'ancien mot cle
             set data [ buf$audace(bufNo) getkwd $old ]
 
-            if { $data !=  $mot_vide } {
+            if { $data != $mot_vide } {
 
                #--- remplace l'ancien mot par le nouveau
                set data [ lreplace $data 0 0 "$new" ]
