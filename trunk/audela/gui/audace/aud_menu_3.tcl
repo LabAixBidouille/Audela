@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.54 2010-01-02 07:32:12 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.55 2010-01-03 18:51:02 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -2403,21 +2403,21 @@ namespace eval ::pretraitement {
 
 ########################## Fin du namespace pretraitement ##########################
 
-namespace eval ::lconv2 {
+namespace eval ::conv2 {
 
 # Auteur : Raymond ZACHANTKE
 
    #########################################################################
    # Lance le script des conversion                                        #
    #########################################################################
-   proc ::lconv2::run { { type_conversion "" } } {
+   proc ::conv2::run { { type_conversion "" } } {
       variable this
       variable private
       variable widget
       global audace caption
 
       #--- icone hourglass
-      set private(lconv2,hourglass) [ image create photo imagehourglass -data {
+      set private(conv2,hourglass) [ image create photo imagehourglass -data {
          R0lGODlhGAAYAIIAMVQYGKmkKvr8BFlbTKKkp7kDBJprPt7d3ywAAAAAGAAY
          AAIDZii63P4wyklVuEHkW4UpgfEVJJBVwDAALGt0GnEcRA28nTzPhAoHO1oP
          VwnIDCrVqQPsDWGLpgkanQ2IP9ngcIUCebRpbjeo+Zgz5LWbq/WSA1hK1bp1
@@ -2425,7 +2425,7 @@ namespace eval ::lconv2 {
       } ]
 
       #--- icone info
-      set private(lconv2,info) [ image create photo imageinfo -data {
+      set private(conv2,info) [ image create photo imageinfo -data {
          R0lGODlhGAAYAIIAMS4tNpKSpvD4Nfj5+l1eUHd30goI+66vqiwAAAAAGAAY
          AAIDkyi6GnHvsTnhGTgfS9nLILh1wgUWRhoeBGWCaVqs7RKEGKriQb3hQBzg
          ILjxCoVA4SUClIAHnWGGOwyN1Rh1BfhAtdAudgWudovBcqhbQIcCsdR4QCBI
@@ -2434,7 +2434,7 @@ namespace eval ::lconv2 {
       } ]
 
       #--- icone nop
-      set private(lconv2,nop) [ image create photo imagenop -data {
+      set private(conv2,nop) [ image create photo imagenop -data {
          R0lGODlhGAAYAIIAMfoFB6WovKvU+e31+uSts3tkd+hSV98vMCwAAAAAGAAY
          AAIDoTi6GiMwyiCCY0rgvULhF4d5nCYyQvFhpgY9jzt4JnO5URyRRBUQlAzs
          Rax8LMgWbJgxhjo6idTYEAAt0eluhaTUWMPUs9HUbk2Ua1Y7W82Sa21hPBMW
@@ -2443,7 +2443,7 @@ namespace eval ::lconv2 {
       } ]
 
       #--- icone ok
-      set private(lconv2,ok) [ image create photo imageok -data {
+      set private(conv2,ok) [ image create photo imageok -data {
          R0lGODlhGAAYAIIAMSE8ZASlBAV/C6SrpoKChfr8+hPWE2i5aCwAAAAAGAAY
          AAIDZ1i63P4wykmrjedcd4wY23IEAgBug0GWxXBSqSADLUG8bc4Y3lzYNkbH
          c4rJSgNgcKGSERS9mUvZ6AEIvCPgqnxWj4IVsuv9gqVJ6iOqNXUxx8CWTCFs
@@ -2451,29 +2451,29 @@ namespace eval ::lconv2 {
       } ]
 
       #--- initialisation de variables
-      ::lconv2::initConf
-      ::lconv2::confToWidget
+      ::conv2::initConf
+      ::conv2::confToWidget
 
-      set private(lconv2,rep) "$audace(rep_images)"
-      set private(lconv2,extension) $::conf(extension,defaut)
+      set private(conv2,rep) "$audace(rep_images)"
+      set private(conv2,extension) $::conf(extension,defaut)
 
       #--- liste les operations de conversion
-      set private(lconv2,operations) [ list "raw2fits" "cfa2rgb" "rgb2r+g+b" "r+g+b2rgb" ]
+      set private(conv2,operations) [ list "raw2fits" "cfa2rgb" "rgb2r+g+b" "r+g+b2rgb" ]
 
       #--- liste les libelles du menubutton
-      set private(lconv2,formules) [ list "$caption(audace,menu,raw2fits)" \
+      set private(conv2,formules) [ list "$caption(audace,menu,raw2fits)" \
          "$caption(audace,menu,cfa2rvb)" "$caption(audace,menu,rvb2r+v+b)" \
          "$caption(audace,menu,r+v+b2rvb)" ]
 
       #--- cherche la longueur maximale du libelle des formules
       #--- pour dimensionner la largeur du menuboutton
-      set private(lconv2,bwidth) "0"
-      foreach formule $private(lconv2,formules) {
-         set private(lconv2,bwidth) [ expr { max([ string length $formule ],$private(lconv2,bwidth)) } ]
+      set private(conv2,bwidth) "0"
+      foreach formule $private(conv2,formules) {
+         set private(conv2,bwidth) [ expr { max([ string length $formule ],$private(conv2,bwidth)) } ]
       }
 
       #--- definit le nom generique propose pour le fichier de sortie des RAW
-      set dir "[ file tail [ file rootname $private(lconv2,rep) ] ]_"
+      set dir "[ file tail [ file rootname $private(conv2,rep) ] ]_"
 
       #--- remplace les caracteres
       regsub -all {[^\w_]} $dir {} dir
@@ -2482,16 +2482,16 @@ namespace eval ::lconv2 {
       regsub -all "з"      $dir "c" dir
 
       set liste_generiques [ list $dir "rgb_" "plan_" "img3d_" ]
-      foreach op $private(lconv2,operations) generique $liste_generiques {
-         set private(lconv2,$op,generique) $generique
+      foreach op $private(conv2,operations) generique $liste_generiques {
+         set private(conv2,$op,generique) $generique
       }
 
       #--- classe et liste les fichiers convertibles par type de conversion
       #--- les quatre listes sont contenues dans l'array bdd
       #--- ouvre la fenetre de selection de la conversion
-      if { [ ::lconv2::ListFiles ] != "0" } {
+      if { [ ::conv2::ListFiles ] != "0" } {
          #--- positionne sur l'operation demandee
-         set private(lconv2,conversion) "$type_conversion"
+         set private(conv2,conversion) "$type_conversion"
          #--- ouvre la fenetre de conversion
          set this "$audace(base).dialog"
          if { [ winfo exists $this ] } {
@@ -2499,20 +2499,20 @@ namespace eval ::lconv2 {
             wm deiconify $this
             focus $this
             #--- selectionne la conversion
-            set i [ lsearch -exact $private(lconv2,operations) $private(lconv2,conversion) ]
+            set i [ lsearch -exact $private(conv2,operations) $private(conv2,conversion) ]
             incr i
             $this.but.menu invoke $i
          } else {
             if { [ info exists widget(geometry) ] } {
                set deb [ expr 1 + [ string first + $widget(geometry) ] ]
                set fin [ string length $widget(geometry) ]
-               set widget(lconv2,position) "+[string range $widget(geometry) $deb $fin]"
+               set widget(conv2,position) "+[string range $widget(geometry) $deb $fin]"
             }
-            ::lconv2::CreateDialog "$audace(base).dialog"
+            ::conv2::CreateDialog "$audace(base).dialog"
          }
          #--- initialise les listes de fichiers in & out
          #--- evite une erreur si on appuie sur 'Appliquer'
-         lassign { "" "" } private(lconv2,in) private(lconv2,out)
+         lassign { "" "" } private(conv2,in) private(conv2,out)
       }
    }
 
@@ -2520,18 +2520,18 @@ namespace eval ::lconv2 {
    # Liste les images par nature (raw cfa rgb plan_coul)                   #
    # et cree l'array bdd des listes des noms courts de fichiers            #
    #########################################################################
-   proc ::lconv2::ListFiles { } {
+   proc ::conv2::ListFiles { } {
       variable private
       variable bdd
       global caption
 
       #--- initialise les listes
-      lassign { "" "" "" "" "" } raw cfa rgb plan_coul ::lconv2::maj_header
+      lassign { "" "" "" "" "" } raw cfa rgb plan_coul ::conv2::maj_header
 
       #--- etape 1 : recherche les fichiers raw convertibles
       #--- la recherche de l'extension est insensible aux minuscules/majuscules
       foreach extension { ARW CR2 CRW DNG ERF MRW NEF ORF RAF RW2 SR2 TIFF X3F } {
-         set raw [ concat $raw [ glob -nocomplain -type f -join $private(lconv2,rep) *.$extension ] ]
+         set raw [ concat $raw [ glob -nocomplain -type f -join $private(conv2,rep) *.$extension ] ]
       }
 
       #--- remplace le nom par le nom court
@@ -2541,7 +2541,7 @@ namespace eval ::lconv2 {
       }
 
       #--- etape 2 : recherche les fichiers d'extensions par defaut
-      set fits [ glob -nocomplain -type f -join $private(lconv2,rep) *$private(lconv2,extension) ]
+      set fits [ glob -nocomplain -type f -join $private(conv2,rep) *$private(conv2,extension) ]
 
       foreach fichier $fits {
          #--- capture les kwds
@@ -2570,7 +2570,7 @@ namespace eval ::lconv2 {
                   [ array get kwds "RAW_BLACK" ] [ array get kwds "RAW_MAXIMUM" ]
                if { $data != "{} {} {none} {} {}" } {
                   #--- si l'image contient un seul de ces mots cles elle est mise dans la liste
-                  lappend ::lconv2::maj_header "$fichier"
+                  lappend ::conv2::maj_header "$fichier"
                }
 
                #--- extrait les kwd en vue des tests de classification
@@ -2617,15 +2617,15 @@ namespace eval ::lconv2 {
       }
 
       #--- etape 4 : construit la base de donnees (conversion,liste des fichiers)
-      foreach op $private(lconv2,operations) liste [ list $raw $cfa $rgb $plan_coul ] {
-         set private(lconv2,$op,no_file) ""
+      foreach op $private(conv2,operations) liste [ list $raw $cfa $rgb $plan_coul ] {
+         set private(conv2,$op,no_file) ""
          if { $liste == "" } {
             set liste [ list $caption(pretraitement,no_file) ]
-            set private(lconv2,$op,no_file) $liste
+            set private(conv2,$op,no_file) $liste
          } else {
-            set private(lconv2,$op,no_file) ""
+            set private(conv2,$op,no_file) ""
          }
-         set private(lconv2,$op,state) "normal"
+         set private(conv2,$op,state) "normal"
          if { [ llength $liste ] != "0" } {
             array set bdd [ list $op $liste ]
          }
@@ -2637,45 +2637,45 @@ namespace eval ::lconv2 {
    #########################################################################
    # Recupere la position de la fenetre                                    #
    #########################################################################
-   proc ::lconv2::recupPosition { } {
+   proc ::conv2::recupPosition { } {
       variable this
       variable widget
 
       set widget(geometry) [wm geometry $this]
       set deb [ expr 1 + [ string first + $widget(geometry) ] ]
       set fin [ string length $widget(geometry) ]
-      set widget(lconv2,position) "+[string range $widget(geometry) $deb $fin]"
+      set widget(conv2,position) "+[string range $widget(geometry) $deb $fin]"
       #---
-      ::lconv2::widgetToConf
+      ::conv2::widgetToConf
    }
 
    #########################################################################
    # Charge les variables de configuration dans des variables locales      #
    #########################################################################
-   proc ::lconv2::confToWidget { } {
+   proc ::conv2::confToWidget { } {
       variable widget
       global conf
 
-      set widget(lconv2,position) "$conf(lconv2,position)"
+      set widget(conv2,position) "$conf(conv2,position)"
    }
 
    #########################################################################
    # Charge les variables locales dans des variables de configuration      #
    #########################################################################
-   proc ::lconv2::widgetToConf { } {
+   proc ::conv2::widgetToConf { } {
       variable widget
       global conf
 
-      set conf(lconv2,position) "$widget(lconv2,position)"
+      set conf(conv2,position) "$widget(conv2,position)"
    }
 
    #########################################################################
    # Initialisation des variables de configuration                         #
    #########################################################################
-   proc ::lconv2::initConf { } {
+   proc ::conv2::initConf { } {
       global conf
 
-      if { ! [ info exists conf(lconv2,position) ] } { set conf(lconv2,position) "+350+75" }
+      if { ! [ info exists conf(conv2,position) ] } { set conf(conv2,position) "+350+75" }
 
       return
    }
@@ -2683,41 +2683,41 @@ namespace eval ::lconv2 {
    #########################################################################
    # Cree la fenetre de dialogue                                           #
    #########################################################################
-   proc ::lconv2::CreateDialog { this } {
+   proc ::conv2::CreateDialog { this } {
       variable private
       variable widget
       global caption color conf
 
-      set private(lconv2,This) $this
+      set private(conv2,This) $this
       if [ winfo exists $this ] { destroy $this }
       toplevel $this
       wm resizable $this 0 0
       wm minsize $this 250 150
       wm deiconify $this
       wm title $this "$caption(pretraitement,conversion)"
-      wm geometry $this $widget(lconv2,position)
-      wm protocol $this WM_DELETE_WINDOW ::lconv2::Fermer
+      wm geometry $this $widget(conv2,position)
+      wm protocol $this WM_DELETE_WINDOW ::conv2::Fermer
 
       ::blt::table $this
       #--- rappel du repertoire
       Label $this.info -justify left\
-         -text "$caption(pretraitement,repertoire) ./[ file tail $private(lconv2,rep) ]"
+         -text "$caption(pretraitement,repertoire) ./[ file tail $private(conv2,rep) ]"
 
       #--- bouton de menu
       menubutton $this.but -relief raised -textvariable conversion \
-         -menu $this.but.menu -width $private(lconv2,bwidth)
+         -menu $this.but.menu -width $private(conv2,bwidth)
 
       #--- menu du bouton
       set m [ menu $this.but.menu -tearoff "1" ]
-      foreach form $private(lconv2,formules) {
+      foreach form $private(conv2,formules) {
          $m add radiobutton -label "$form" -indicatoron "1" -value "$form" \
             -variable conversion
       }
 
-      ::lconv2::MenuUpdate
+      ::conv2::MenuUpdate
 
       set tbl $this.tl
-      set private(lconv2,tbl) $tbl
+      set private(conv2,tbl) $tbl
 
       #--- definit la structure et les caracteristiques
       ::tablelist::tablelist $tbl \
@@ -2729,7 +2729,7 @@ namespace eval ::lconv2 {
             0 $caption(pretraitement,done) center ] \
          -xscrollcommand [ list $this.hscroll set ] \
          -yscrollcommand [ list $this.vscroll set ] \
-         -editendcommand { ::lconv2::applyValue } \
+         -editendcommand { ::conv2::applyValue } \
          -exportselection 0 \
          -setfocus 1 -activestyle none -exportselection 0 -stretch all
 
@@ -2748,31 +2748,31 @@ namespace eval ::lconv2 {
       Label $this.label -text "$caption(pretraitement,options)"
 
       #--- cree 4 checkbuttons
-      foreach child { all renum chg destroy_src } { ::lconv2::CheckButton $this $child }
-      $this.all configure -command "::lconv2::SelectAll"
+      foreach child { all renum chg destroy_src } { ::conv2::CheckButton $this $child }
+      $this.all configure -command "::conv2::SelectAll"
       #--- pour annuler la cmd
       $this.destroy_src configure -command { }
 
       #--- cree l'entree pour le nom generique
       Entry $this.generique -width 15 -relief sunken \
-         -justify right -state normal -textvariable ::lconv2::private(lconv2,new_name) \
-         -command "::lconv2::EntryCtrl"
+         -justify right -state normal -textvariable ::conv2::private(conv2,new_name) \
+         -command "::conv2::EntryCtrl"
 
       #--- les boutons de commandes
       frame $this.cmd -borderwidth 1 -relief raised
          button $this.cmd.ok -text "$caption(aud_menu_3,ok)" -width 7 \
-            -command "::lconv2::cmdOk"
+            -command "::conv2::cmdOk"
          if { $conf(ok+appliquer)=="1" } {
             pack $this.cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
          }
          button $this.cmd.appliquer -text "$caption(aud_menu_3,appliquer)" -width 8 \
-            -command "::lconv2::Process"
+            -command "::conv2::Process"
          pack $this.cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
          button $this.cmd.fermer -text "$caption(aud_menu_3,fermer)" -width 7 \
-            -command "::lconv2::Fermer"
+            -command "::conv2::Fermer"
          pack $this.cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
          button $this.cmd.aide -text "$caption(aud_menu_3,aide)" -width 7 \
-            -command "::lconv2::afficheAide"
+            -command "::conv2::afficheAide"
          pack $this.cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
       pack $this.cmd -side top -fill x
 
@@ -2793,7 +2793,7 @@ namespace eval ::lconv2 {
          $this.cmd 8,0 -cspan 6 -fill both -height 1c
 
       #--- selectionne la conversion
-      set i [ lsearch -exact $private(lconv2,operations) $private(lconv2,conversion) ]
+      set i [ lsearch -exact $private(conv2,operations) $private(conv2,conversion) ]
       incr i
       $this.but.menu invoke $i
 
@@ -2810,51 +2810,51 @@ namespace eval ::lconv2 {
    #########################################################################
    # Affiche la liste des fichiers convertibles                            #
    #########################################################################
-   proc ::lconv2::Select { op } {
+   proc ::conv2::Select { op } {
       variable private
       variable bdd
       global caption
 
       #--- memorise l'operation
-      set private(lconv2,conversion) "$op"
+      set private(conv2,conversion) "$op"
 
       #--- efface l'ancienne liste
-      catch { $private(lconv2,tbl) delete 0 [ $private(lconv2,tbl) size ] }
+      catch { $private(conv2,tbl) delete 0 [ $private(conv2,tbl) size ] }
 
       #--- extrait la liste des fichiers RAW, CFA, RGB ou R G B de bdd
-      set private(lconv2,liste_cibles) [ lsort -dictionary -index 0 [ lindex [ array get bdd $op ] 1 ] ]
-      set private(lconv2,nb) [ llength $private(lconv2,liste_cibles) ]
+      set private(conv2,liste_cibles) [ lsort -dictionary -index 0 [ lindex [ array get bdd $op ] 1 ] ]
+      set private(conv2,nb) [ llength $private(conv2,liste_cibles) ]
 
       #--- cree une ligne par fichier convertible
-      for { set i 0 } { $i < $private(lconv2,nb) } { incr i } {
-         set cible [ lindex $private(lconv2,liste_cibles) $i ]
+      for { set i 0 } { $i < $private(conv2,nb) } { incr i } {
+         set cible [ lindex $private(conv2,liste_cibles) $i ]
          #--- adapte le texte a afficher (premier chargement)
          switch -exact $op {
-            "raw2fits"  { set out "[ file rootname $cible ]$private(lconv2,extension)" }
+            "raw2fits"  { set out "[ file rootname $cible ]$private(conv2,extension)" }
             "cfa2rgb"   { set cible "[ file rootname $cible ]"
                           set out "[ file rootname $cible ]" }
             "rgb2r+g+b" { set cible "[ file rootname $cible ]"
-                          set out "${cible}1 + ${cible}2 + ${cible}3" }
-            "r+g+b2rgb" { set out $cible ; set cible "${cible}1 + ${cible}2 + ${cible}3" }
+                          set out "${cible}r + ${cible}g + ${cible}b" }
+            "r+g+b2rgb" { set out $cible ; set cible "${cible}r + ${cible}g + ${cible}b" }
          }
 
          #--- insere la nouvelle ligne
          if { $cible == "$caption(pretraitement,no_file)" } {
-            $private(lconv2,tbl) insert end [ list "" "$cible" ]
-            set private(lconv2,nb) "0"
-         } elseif { $cible == "$caption(pretraitement,no_file)1 + $caption(pretraitement,no_file)2 + $caption(pretraitement,no_file)3" } {
-            $private(lconv2,tbl) insert end [ list "" "$caption(pretraitement,no_file)" ]
-            set private(lconv2,nb) "0"
+            $private(conv2,tbl) insert end [ list "" "$cible" ]
+            set private(conv2,nb) "0"
+         } elseif { $cible == "$caption(pretraitement,no_file)r + $caption(pretraitement,no_file)g + $caption(pretraitement,no_file)b" } {
+            $private(conv2,tbl) insert end [ list "" "$caption(pretraitement,no_file)" ]
+            set private(conv2,nb) "0"
          } else {
-            $private(lconv2,tbl) insert end [ list "" "$cible" "-->" "$out" "" ]
+            $private(conv2,tbl) insert end [ list "" "$cible" "-->" "$out" "" ]
             #--- insere le checkbutton
-            $private(lconv2,tbl) cellconfigure end,0 -window [ list ::lconv2::CreateCheckButton $i ]
+            $private(conv2,tbl) cellconfigure end,0 -window [ list ::conv2::CreateCheckButton $i ]
          }
       }
 
-      ::lconv2::WindowConfigure $op
+      ::conv2::WindowConfigure $op
 
-      focus $private(lconv2,This)
+      focus $private(conv2,This)
    }
 
    #########################################################################
@@ -2863,75 +2863,75 @@ namespace eval ::lconv2 {
    # les fichiers peuvent etre renommes et/ou renumerotes                  #
    # de maniere a pouvoir etre pretraites (offset, dark et flat)           #
    #########################################################################
-   proc ::lconv2::UpdateDialog { } {
+   proc ::conv2::UpdateDialog { } {
       variable private
 
       #--- initialise les listes de fichiers in & out
-      lassign { "" "" } private(lconv2,in) private(lconv2,out)
+      lassign { "" "" } private(conv2,in) private(conv2,out)
 
       #--- recupere la valeur de la commande de renumerotation
-      set renumerote $::lconv2::private(lconv2,renum)
+      set renumerote $::conv2::private(conv2,renum)
 
       #--- recupere la valeur de la commande de modification du nom generique
-      set chg_generique $::lconv2::private(lconv2,chg)
-      set this $private(lconv2,This).generique
+      set chg_generique $::conv2::private(conv2,chg)
+      set this $private(conv2,This).generique
       if { $chg_generique == 0 } {
-         set private(lconv2,new_name) ""
+         set private(conv2,new_name) ""
          $this configure -state disabled
       } else {
-         if { $private(lconv2,new_name) == "" } {
-            set op $private(lconv2,conversion)
-            set private(lconv2,new_name) $private(lconv2,$op,generique)
+         if { $private(conv2,new_name) == "" } {
+            set op $private(conv2,conversion)
+            set private(conv2,new_name) $private(conv2,$op,generique)
          }
          $this configure -state normal
       }
 
-      for { set i 0 } { $i < $private(lconv2,nb) } { incr i } {
+      for { set i 0 } { $i < $private(conv2,nb) } { incr i } {
 
-         set in [ lindex $private(lconv2,liste_cibles) $i ]
+         set in [ lindex $private(conv2,liste_cibles) $i ]
          set out [ file rootname $in ]
 
          #--- efface le contenu de la cellule REMARQUE
-         $private(lconv2,tbl) cellconfigure $i,done -image ""
+         $private(conv2,tbl) cellconfigure $i,done -image ""
 
          #--- configure l'affichage des fichiers selectionnes en fonction des options
-         if { $::lconv2::private(lconv2,file_$i) == "1" } {
+         if { $::conv2::private(conv2,file_$i) == "1" } {
 
             #--- decompose le nom en generique et index
             lassign [ decomp $in ] rep generique_in index_out
 
             #--- change le generique
             set out $generique_in
-            if { $chg_generique == "1" } { set out $private(lconv2,new_name) }
+            if { $chg_generique == "1" } { set out $private(conv2,new_name) }
 
             #--- modifie l'indexation des fichiers de sortie
-            if { $renumerote == "1" } { set index_out [ expr { [ llength $private(lconv2,out) ]+1} ] }
+            if { $renumerote == "1" } { set index_out [ expr { [ llength $private(conv2,out) ]+1} ] }
 
             #--- reconstitue le nom de sortie
             set out "$out$index_out"
 
             #--- verifie s'il y a collision avec un fichier exsitant ou a creer
-            if [ ::lconv2::Collision "$in" "$out" ] {
+            if [ ::conv2::Collision "$in" "$out" ] {
                #--- deselectionne le checkbutton
-               set w [ $private(lconv2,tbl) windowpath $i,0 ]
+               set w [ $private(conv2,tbl) windowpath $i,0 ]
                $w deselect
                #--- affiche le symbole interdit
-               ::lconv2::Avancement nop $i
+               ::conv2::Avancement nop $i
             }
          }
 
          #--- rafraichissement du nom 'out' sans extension sauf pour raw2fits
-         switch -exact $private(lconv2,conversion) {
-            "raw2fits"  { set texte "$out$private(lconv2,extension)" }
+         switch -exact $private(conv2,conversion) {
+            "raw2fits"  { set texte "$out$private(conv2,extension)" }
             "r+g+b2rgb" { set texte "$out" }
-            "rgb2r+g+b" { set texte "${out}1 + ${out}2 + ${out}3" }
+            "rgb2r+g+b" { set texte "${out}r + ${out}g + ${out}b" }
             "cfa2rgb"   { set texte "$out" }
          }
 
          #--- actualise l'affichage dans la tablelist
-         $private(lconv2,tbl) cellconfigure $i,dest -text $texte
+         $private(conv2,tbl) cellconfigure $i,dest -text $texte
       }
-      ::lconv2::WindowUpdate
+      ::conv2::WindowUpdate
    }
 
    #########################################################################
@@ -2940,24 +2940,24 @@ namespace eval ::lconv2 {
    # Parametres : nom entrant, nom sortant                                 #
    # Sorties : listes de fichiers in & out, 1 si collision sinon 0         #
    #########################################################################
-   proc ::lconv2::Collision { in out } {
+   proc ::conv2::Collision { in out } {
       variable private
 
-      switch -exact $private(lconv2,conversion) {
-         "raw2fits"  { set file_out "$out$private(lconv2,extension)"
+      switch -exact $private(conv2,conversion) {
+         "raw2fits"  { set file_out "$out$private(conv2,extension)"
                  set explore [ list $file_out ]
                }
          "r+g+b2rgb" { set file_out $out
-                       set explore [ list "$out$private(lconv2,extension)" ]
+                       set explore [ list "$out$private(conv2,extension)" ]
                }
          "rgb2r+g+b" { set file_out "$out"
-                  foreach i { 1 2 3 } {
+                  foreach i { r g b } {
                      set name$i $out
-                     append name$i  "$i$private(lconv2,extension)"
+                     append name$i  "$i$private(conv2,extension)"
                   }
-                  set explore [ list $name1 $name2 $name3 ]
+                  set explore [ list $namer $nameg $nameb ]
                }
-         "cfa2rgb"   { set file_out "$out$private(lconv2,extension)"
+         "cfa2rgb"   { set file_out "$out$private(conv2,extension)"
                  set explore [ list $file_out ]
                }
       }
@@ -2966,16 +2966,16 @@ namespace eval ::lconv2 {
       set err "0"
       foreach f $explore {
          #--- file exists retourne 1 si le fichier teste existe dans le repertoire
-         set err [ expr { $err + [ file exists [ file join $private(lconv2,rep) $f ] ] } ]
+         set err [ expr { $err + [ file exists [ file join $private(conv2,rep) $f ] ] } ]
 
          #--- incremente le nombre d'erreur si le nom du fichier existe dans la liste des fichiers a creer
-         if { $private(lconv2,out) != "" && ($f in $private(lconv2,out)) } { incr err }
+         if { $private(conv2,out) != "" && ($f in $private(conv2,out)) } { incr err }
       }
 
       if { $err == "0" } {
          #--- complete les listes de fichiers entrant et sortant
-         lappend private(lconv2,in) "$in"
-         lappend private(lconv2,out) $file_out
+         lappend private(conv2,in) "$in"
+         lappend private(conv2,out) $file_out
       }
 
       return $err
@@ -2986,15 +2986,15 @@ namespace eval ::lconv2 {
    #########################################################################
    # Pilote les conversions a partir des listes in & out                   #
    #########################################################################
-   proc ::lconv2::cmdOk { } {
-      ::lconv2::Process
-      ::lconv2::Fermer
+   proc ::conv2::cmdOk { } {
+      ::conv2::Process
+      ::conv2::Fermer
    }
 
    #########################################################################
    # Procedure correspondant a l'appui sur le bouton Aide                  #
    #########################################################################
-   proc ::lconv2::afficheAide { } {
+   proc ::conv2::afficheAide { } {
       global help
 
       #---
@@ -3004,68 +3004,68 @@ namespace eval ::lconv2 {
    #########################################################################
    # Pilote les conversions a partir des listes in & out                   #
    #########################################################################
-   proc ::lconv2::Process { } {
+   proc ::conv2::Process { } {
       variable private
       global caption
 
-      set l [ llength $private(lconv2,in) ]
+      set l [ llength $private(conv2,in) ]
       #--- arrete si aucune selection
       if { $l == "0" } {
-         ::lconv2::Error "$caption(pretraitement,no_selection)"
+         ::conv2::Error "$caption(pretraitement,no_selection)"
          return
       }
 
       #--- change l'etat des boutons et appelle la console
       #--- pour les eventuels messages d'erreur
-      ::lconv2::WindowActive disabled
+      ::conv2::WindowActive disabled
       ::console::GiveFocus
       update
 
       for { set i 0 } { $i < $l } { incr i } {
 
          #--- cherche le rang du fichier traite dans la liste initiale
-         set j [ lsearch -exact $private(lconv2,liste_cibles) [ lindex $private(lconv2,in) $i ] ]
+         set j [ lsearch -exact $private(conv2,liste_cibles) [ lindex $private(conv2,in) $i ] ]
 
          #--- definit les noms complets in et out
-         set in [ file join $private(lconv2,rep) [ lindex $private(lconv2,in) $i ] ]
-         set out [ file join $private(lconv2,rep) [ lindex $private(lconv2,out) $i ] ]
+         set in [ file join $private(conv2,rep) [ lindex $private(conv2,in) $i ] ]
+         set out [ file join $private(conv2,rep) [ lindex $private(conv2,out) $i ] ]
 
          #--- amene la cellule dans la zone visible
-         $private(lconv2,tbl) seecell $j,done
-         ::lconv2::Avancement "hourglass" $j
+         $private(conv2,tbl) seecell $j,done
+         ::conv2::Avancement "hourglass" $j
          update
 
          #--- convertit chaque fichier
-         switch [ Do_$private(lconv2,conversion) $in $out ] {
-            0  { ::lconv2::Avancement ok $j }
-            1  { ::console::affiche_erreur "$private(lconv2,msg)\n\n"
-                 ::lconv2::Avancement info $j
+         switch [ Do_$private(conv2,conversion) $in $out ] {
+            0  { ::conv2::Avancement ok $j }
+            1  { ::console::affiche_erreur "$private(conv2,msg)\n\n"
+                 ::conv2::Avancement info $j
                }
          }
          update
 
          #--- si demande, detruit l'image-source
-         if { $private(lconv2,destroy_src) == "1" } {
-            foreach f $private(lconv2,to_destroy) {
+         if { $private(conv2,destroy_src) == "1" } {
+            foreach f $private(conv2,to_destroy) {
                file delete $f
             }
          }
 
          #--- detruit le message d'erreur existant
-         catch { unset private(lconv2,msg) }
+         catch { unset private(conv2,msg) }
       }
 
       #--- met a jour la base de donnees des fichiers
-      ::lconv2::ListFiles
+      ::conv2::ListFiles
 
       #--- met a jour les commandes du menu
-      ::lconv2::MenuUpdate
+      ::conv2::MenuUpdate
 
       #--- change l'etat des boutons
-      ::lconv2::WindowActive normal
+      ::conv2::WindowActive normal
 
       #--- recupere la position de la fenetre
-      ::lconv2::recupPosition
+      ::conv2::recupPosition
    }
 
    #---------------- quatre routines de conversion --------------------------
@@ -3073,33 +3073,39 @@ namespace eval ::lconv2 {
    #########################################################################
    # Conversion R+G+B--> RGB                                               #
    #########################################################################
-   proc ::lconv2::Do_r+g+b2rgb { in out } {
+   proc ::conv2::Do_r+g+b2rgb { in out } {
       variable private
       global audace caption
 
       set buf "buf$audace(bufNo)"
+      set ext "$private(conv2,extension)"
+
       set err [ catch {
 
          #--- charge, modifie les en-tetes et sauve les trois images
-         set private(lconv2,to_destroy) ""
-         foreach i { 1 2 3 } {
+         set private(conv2,to_destroy) ""
+         foreach i { r g b } k { 1 2 3 } {
             #--- charge chaque image R, G et B
-            $buf load ${in}$i$private(lconv2,extension) -novisu
-            #--- si necessaire change les mots cles et sauve l'image
-            ::lconv2::MajHeader ${in}$i$private(lconv2,extension)
+            $buf load ${in}$i$ext -novisu
+            #--- si necessaire change les mots cles
+            ::conv2::MajHeader ${in}$i$ext
             #--- memorise les fichiers a detruire
-            lappend private(lconv2,to_destroy) ${in}$i$private(lconv2,extension)
+            lappend private(conv2,to_destroy) ${in}$i$ext
+            #-- sauve les images avec un index numerique
+            saveima ${in}$k$ext
          }
-
-         fitsconvert3d $in 3 $private(lconv2,extension) $out
-         $buf load $out$private(lconv2,extension) -novisu
+         #--- conversion en une image
+         fitsconvert3d $in 3 $ext $out
+         $buf load $out$ext -novisu
          $buf delkwd "RGBFILTR"
-         saveima $out$private(lconv2,extension)
-
+         #--- sauve l'image couleur
+         saveima $out$ext
+         #--- supprime les images avec un index numerique
+         foreach i { 1 2 3 } { file delete ${in}$i$ext }
       } ]
 
       if { $err == "1" } {
-         set private(lconv2,msg) "$caption(pretraitement,echec) $in : $::errorInfo"
+         set private(conv2,msg) "$caption(pretraitement,echec) $in : $::errorInfo"
       }
       return $err
    }
@@ -3107,18 +3113,18 @@ namespace eval ::lconv2 {
    #########################################################################
    # Conversion RGB-->R+G+B                                                #
    #########################################################################
-   proc ::lconv2::Do_rgb2r+g+b { in out } {
+   proc ::conv2::Do_rgb2r+g+b { in out } {
       variable private
       global audace caption
 
       set buf "buf$audace(bufNo)"
-      set private(lconv2,to_destroy) [ list $in ]
+      set private(conv2,to_destroy) [ list $in ]
       set err [ catch {
 
          $buf load $in -novisu
 
          #--- si necessaire change les mots cles et sauve l'image
-         ::lconv2::MajHeader $in
+         ::conv2::MajHeader $in
 
          #--- je fixe NAXIS a 2
          set kwdNaxis [ $buf getkwd NAXIS ]
@@ -3135,7 +3141,7 @@ namespace eval ::lconv2 {
          if { [ lindex $seuil 0 ] != "" } {
             $buf setkwd [list MIPS-HI [ lindex $seuil 1 ] [ lindex $seuil 2 ] [ lindex $seuil 3 ] [ lindex $seuil 4 ] ]
          }
-         $buf save3d ${out}1 3 1 1
+         $buf save3d ${out}r 3 1 1
 
          $buf setkwd [ list RGBFILTR G string "Color extracted (Green)" "" ]
          set seuil [ $buf getkwd MIPS-LOG ]
@@ -3146,7 +3152,7 @@ namespace eval ::lconv2 {
          if { [ lindex $seuil 0 ] != "" } {
             $buf setkwd [list MIPS-HI [ lindex $seuil 1 ] [ lindex $seuil 2 ] [ lindex $seuil 3 ] [ lindex $seuil 4 ] ]
          }
-         $buf save3d ${out}2 3 2 2
+         $buf save3d ${out}g 3 2 2
 
          $buf setkwd [ list RGBFILTR B string "Color extracted (Blue)" "" ]
          set seuil [ $buf getkwd MIPS-LOB ]
@@ -3157,13 +3163,13 @@ namespace eval ::lconv2 {
          if { [ lindex $seuil 0 ] != "" } {
             $buf setkwd [list MIPS-HI [ lindex $seuil 1 ] [ lindex $seuil 2 ] [ lindex $seuil 3 ] [ lindex $seuil 4 ] ]
          }
-         $buf save3d ${out}3 3 3 3
+         $buf save3d ${out}b 3 3 3
          $buf delkwd "RGBFILTR"
 
       } ]
 
       if { $err == "1" } {
-         set private(lconv2,msg) "$caption(pretraitement,echec) $in : $::errorInfo"
+         set private(conv2,msg) "$caption(pretraitement,echec) $in : $::errorInfo"
       }
       return $err
    }
@@ -3171,18 +3177,18 @@ namespace eval ::lconv2 {
    #########################################################################
    # Conversion CFA --> RGB                                                #
    #########################################################################
-   proc ::lconv2::Do_cfa2rgb { in out } {
+   proc ::conv2::Do_cfa2rgb { in out } {
       variable private
       global audace caption
 
-      set private(lconv2,to_destroy) [ list $in ]
+      set private(conv2,to_destroy) [ list $in ]
       set err [ catch {
 
          #--- charge l'image
          loadima $in $audace(visuNo) -novisu
 
          #--- si necessaire change les mots cles et sauve l'image
-         ::lconv2::MajHeader $in
+         ::conv2::MajHeader $in
 
          #--- convertit en couleurs
          buf$audace(bufNo) cfa2rgb 1
@@ -3193,7 +3199,7 @@ namespace eval ::lconv2 {
       } ]
 
       if { $err == "1" } {
-         set private(lconv2,msg) "$caption(pretraitement,echec) $in : $::errorInfo"
+         set private(conv2,msg) "$caption(pretraitement,echec) $in : $::errorInfo"
       }
       return $err
    }
@@ -3201,7 +3207,7 @@ namespace eval ::lconv2 {
    #########################################################################
    # Conversion RAW --> FITS                                               #
    #########################################################################
-   proc ::lconv2::Do_raw2fits { in out } {
+   proc ::conv2::Do_raw2fits { in out } {
       variable private
       global audace caption
 
@@ -3211,7 +3217,7 @@ namespace eval ::lconv2 {
       } ]
 
       if { $err == "1" } {
-         set private(lconv2,msg) "$caption(pretraitement,echec) $in : $::errorInfo"
+         set private(conv2,msg) "$caption(pretraitement,echec) $in : $::errorInfo"
       }
       return $err
    }
@@ -3224,11 +3230,11 @@ namespace eval ::lconv2 {
    # et sauvegarde de l'image                                              #
    # pour R+G+B il faut charger, modifier et sauver les trois images       #
    #########################################################################
-   proc ::lconv2::MajHeader { file } {
+   proc ::conv2::MajHeader { file } {
       global audace
 
       #--- teste si l'image est dans la liste des fichiers contenant un ancien mot cle
-      if { [ lsearch -regexp $::lconv2::maj_header $file ] != "-1" } {
+      if { [ lsearch -regexp $::conv2::maj_header $file ] != "-1" } {
 
          set old_kwds [ list RAW_COLORS RAW_FILTER RAW_BLACK RAW_MAXIMUM ]
          set new_kwds [ list RAWCOLOR RAWFILTE RAWBLACK RAWMAXI ]
@@ -3260,20 +3266,20 @@ namespace eval ::lconv2 {
    #########################################################################
    # Gere l'image affichee dans la colonne REM                             #
    #########################################################################
-   proc ::lconv2::Avancement { img j } {
+   proc ::conv2::Avancement { img j } {
       variable private
 
-      $private(lconv2,tbl) cellconfigure $j,done -image $private(lconv2,$img)
+      $private(conv2,tbl) cellconfigure $j,done -image $private(conv2,$img)
    }
 
    #########################################################################
    # Active/desactive les commandes                                        #
    #########################################################################
-   proc ::lconv2::WindowActive { etat } {
+   proc ::conv2::WindowActive { etat } {
       variable private
       global caption
 
-      set this $private(lconv2,This)
+      set this $private(conv2,This)
 
       #--- le bouton 'Appliquer' et le message
       if { $etat == "disabled" } {
@@ -3287,12 +3293,12 @@ namespace eval ::lconv2 {
 
       #--- les autes commandes
       set frames { but chg generique renum all cmd.ok cmd.appliquer cmd.aide cmd.fermer }
-      if { $private(lconv2,conversion) != "raw2fits" } { lappend frames "destroy_src" }
+      if { $private(conv2,conversion) != "raw2fits" } { lappend frames "destroy_src" }
       foreach frame $frames { $this.$frame configure -state $etat }
 
       #--- tous les checkbuttons des series
-      for { set i 0 } { $i < $private(lconv2,nb) } { incr i } {
-         set w [ $private(lconv2,tbl) windowpath $i,0 ]
+      for { set i 0 } { $i < $private(conv2,nb) } { incr i } {
+         set w [ $private(conv2,tbl) windowpath $i,0 ]
          $w configure -state $etat
       }
       update
@@ -3301,21 +3307,21 @@ namespace eval ::lconv2 {
    #########################################################################
    # Gere la fenetre lors de la selection d'une conversion                 #
    #########################################################################
-   proc ::lconv2::WindowConfigure { op } {
+   proc ::conv2::WindowConfigure { op } {
       variable private
       global caption
 
       #--- dimensionne la largeur des colonnes
       foreach col {0 1 2 3 4 } wi [ list 3 0 3 0 4 ] {
-         $private(lconv2,tbl) columnconfigure $col -width $wi
+         $private(conv2,tbl) columnconfigure $col -width $wi
       }
 
-      set this $private(lconv2,This)
+      set this $private(conv2,This)
       #--- actualise le message
-      if { $private(lconv2,nb) != "0" } {
-         $this.labURLmsg configure -text "$caption(pretraitement,nb_select) 0/[ $private(lconv2,tbl) size ]"
+      if { $private(conv2,nb) != "0" } {
+         $this.labURLmsg configure -text "$caption(pretraitement,nb_select) 0/[ $private(conv2,tbl) size ]"
       } else {
-         $this.labURLmsg configure -text "$caption(pretraitement,nb_select) 0/$private(lconv2,nb)"
+         $this.labURLmsg configure -text "$caption(pretraitement,nb_select) 0/$private(conv2,nb)"
       }
 
       #--- decoche toutes les options
@@ -3324,15 +3330,15 @@ namespace eval ::lconv2 {
       #--- affiche le texte generique uniquement pour cfa2rgb
       if { $op == "cfa2rgb" } {
          $this.chg toggle
-         set private(lconv2,new_name) $private(lconv2,cfa2rgb,generique)
+         set private(conv2,new_name) $private(conv2,cfa2rgb,generique)
          $this.generique configure -state normal
       } else {
-         set private(lconv2,new_name) ""
+         set private(conv2,new_name) ""
          $this.generique configure -state disabled
       }
 
       #--- interdit ces widgets s'il n'y a pas de fichiers a convertir
-      if { $private(lconv2,$op,no_file) == [ list $::caption(pretraitement,no_file) ] } {
+      if { $private(conv2,$op,no_file) == [ list $::caption(pretraitement,no_file) ] } {
          set state disabled
       } else {
          set state normal
@@ -3353,73 +3359,73 @@ namespace eval ::lconv2 {
    #########################################################################
    # Met a jour la fenetre lors de la selection d'un fichier               #
    #########################################################################
-   proc ::lconv2::WindowUpdate { } {
+   proc ::conv2::WindowUpdate { } {
       variable private
       global caption
 
-      set l [ llength $private(lconv2,in) ]
+      set l [ llength $private(conv2,in) ]
       #--- actualise la case a cocher de l'option 'Tout convertir'
-      if { $private(lconv2,nb) == $l } {
-         $private(lconv2,This).all select
+      if { $private(conv2,nb) == $l } {
+         $private(conv2,This).all select
       } else {
-         $private(lconv2,This).all deselect
+         $private(conv2,This).all deselect
       }
 
       #--- actualise le message concernant le nombre de selections
-      set affiche "$caption(pretraitement,nb_select) $l/$private(lconv2,nb)"
-      $private(lconv2,This).labURLmsg configure -text $affiche
+      set affiche "$caption(pretraitement,nb_select) $l/$private(conv2,nb)"
+      $private(conv2,This).labURLmsg configure -text $affiche
    }
 
    #########################################################################
    # Configure le menu en fonction des listes                              #
    #########################################################################
-   proc ::lconv2::MenuUpdate { } {
+   proc ::conv2::MenuUpdate { } {
       variable private
 
       #--- modifie les commandes liees au menu
-      foreach op $private(lconv2,operations) {
-         set k [ lsearch -exact $private(lconv2,operations) $op ]
+      foreach op $private(conv2,operations) {
+         set k [ lsearch -exact $private(conv2,operations) $op ]
          incr k
-         $private(lconv2,This).but.menu entryconfigure $k \
-            -state $private(lconv2,$op,state) \
-            -command [ list ::lconv2::Select $op ]
+         $private(conv2,This).but.menu entryconfigure $k \
+            -state $private(conv2,$op,state) \
+            -command [ list ::conv2::Select $op ]
       }
    }
 
    #########################################################################
    # Selectionne/deselectionne tous les checkbuttons de la tablelist       #
    #########################################################################
-   proc ::lconv2::SelectAll { } {
+   proc ::conv2::SelectAll { } {
       variable private
 
       set cmd "deselect"
-      if { $::lconv2::private(lconv2,all) == 1 } { set cmd "select" }
-      for { set i 0 } { $i < $private(lconv2,nb) } { incr i } {
-         set w [ $private(lconv2,tbl) windowpath $i,0 ]
+      if { $::conv2::private(conv2,all) == 1 } { set cmd "select" }
+      for { set i 0 } { $i < $private(conv2,nb) } { incr i } {
+         set w [ $private(conv2,tbl) windowpath $i,0 ]
          $w $cmd
       }
-      ::lconv2::UpdateDialog
+      ::conv2::UpdateDialog
    }
 
    #########################################################################
    # Elimine les caracteres non (alphanum ou underscore) dans le nom       #
    #########################################################################
-   proc ::lconv2::EntryCtrl { } {
+   proc ::conv2::EntryCtrl { } {
       variable private
 
-      regsub -all {[^\w_]} $private(lconv2,new_name) {} nom
+      regsub -all {[^\w_]} $private(conv2,new_name) {} nom
       regsub -all {[йикл]} $nom "e" nom
       regsub -all {[ав]}   $nom "a" nom
-      regsub -all "з"      $nom "c" private(lconv2,new_name)
+      regsub -all "з"      $nom "c" private(conv2,new_name)
 
-      ::lconv2::UpdateDialog
+      ::conv2::UpdateDialog
    }
 
    #########################################################################
    # Affiche une fenetre d'erreur                                          #
    # parametre : contenu du message a afficher                             #
    #########################################################################
-   proc ::lconv2::Error { msg } {
+   proc ::conv2::Error { msg } {
       global caption
 
       tk_messageBox -title $caption(pretraitement,attention)\
@@ -3431,12 +3437,12 @@ namespace eval ::lconv2 {
    # parametres : index de la ligne de la tablelist                        #
    # tbl row col et w sont completes automatiquement                       #
    #########################################################################
-   proc ::lconv2::CreateCheckButton { index tbl row col w } {
+   proc ::conv2::CreateCheckButton { index tbl row col w } {
       variable private
 
       checkbutton $w -height 1 -indicatoron 1 -onvalue "1" -offvalue "0" \
-         -variable ::lconv2::private(lconv2,file_$index) \
-         -command "::lconv2::UpdateDialog"
+         -variable ::conv2::private(conv2,file_$index) \
+         -command "::conv2::UpdateDialog"
       $w deselect
    }
 
@@ -3444,35 +3450,35 @@ namespace eval ::lconv2 {
    # Cree un checkbutton normal                                            #
    # parametres : fenetre parent, variable associee                        #
    #########################################################################
-   proc ::lconv2::CheckButton { f var } {
+   proc ::conv2::CheckButton { f var } {
       variable private
       global caption
 
       checkbutton $f.$var -indicatoron 1 -onvalue "1" -offvalue "0" \
          -text "$caption(pretraitement,$var)" \
-         -variable ::lconv2::private(lconv2,$var) \
-         -command "::lconv2::UpdateDialog"
+         -variable ::conv2::private(conv2,$var) \
+         -command "::conv2::UpdateDialog"
       $f.$var deselect
    }
 
    #########################################################################
    # Fermeture de le fenetre et destruction du namespace                   #
    #########################################################################
-   proc ::lconv2::Fermer { } {
+   proc ::conv2::Fermer { } {
       variable private
       variable bdd
 
-      ::lconv2::recupPosition
+      ::conv2::recupPosition
       catch {
          unset bdd
-         destroy $private(lconv2,This)
+         destroy $private(conv2,This)
       }
       unset private
    }
 
 }
 
-############################# Fin du namespace lconv2 #############################[
+############################# Fin du namespace conv2 #############################[
 
 namespace eval ::traiteWindow {
 
