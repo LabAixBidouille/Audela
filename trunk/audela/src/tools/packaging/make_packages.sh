@@ -9,7 +9,7 @@
 #
 ########################################################################################
 
-# Mise a jour $Id: make_packages.sh,v 1.18 2010-01-02 17:13:09 bmauclaire Exp $
+# Mise a jour $Id: make_packages.sh,v 1.19 2010-01-03 00:12:56 bmauclaire Exp $
 
 
 #--- Utilisation du script :
@@ -143,7 +143,8 @@ laversion=`expr "$noteversion" : '.*\s\([0-9]*\.[0-9]*\.[0-9]*\).*'`
 d1=`grep "audela(date)" $rep_bin/version.tcl | tr -d '"'`
 d2=`expr "$d1" : '.*\s\([0-9]*\/[0-9]*\/[0-9]*\).*'`
 ladate=`echo "$d2" | sed -e 's/\///g'`
-DAILY=$laversion-$ladate
+#- DAILY=$laversion-$ladate
+DAILY=$laversion
 echo "Creation des paquets AudeLA version $DAILY :"
 
 BUILD_DIR=audela-$DAILY
