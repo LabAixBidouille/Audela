@@ -2,7 +2,7 @@
 # Fichier : acqzadko.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqzadko.tcl,v 1.12 2009-12-31 08:46:55 robertdelmas Exp $
+# Mise a jour $Id: acqzadko.tcl,v 1.13 2010-01-03 18:48:11 robertdelmas Exp $
 #
 
 #==============================================================
@@ -31,7 +31,7 @@ proc ::acqzadko::createPluginInstance { { in "" } { visuNo 1 } } {
        package require twapi
        set res [twapi::get_process_ids -glob -name "camera.exe"]
        if {$res!=""} {
-    		twapi::end_process $res -force
+          twapi::end_process $res -force
        }
    }
 
@@ -149,7 +149,7 @@ proc ::acqzadko::deletePluginInstance { visuNo } {
        package require twapi
        set res [twapi::get_process_ids -glob -name "camera.exe"]
        if {($res=="")&&($visuNo=="1")} {
-    		set res [twapi::create_process "[pwd]/../bin/camera.exe" -startdir "[pwd]/../bin"]
+          set res [twapi::create_process "[pwd]/../bin/camera.exe" -startdir "[pwd]/../bin"]
        }
    }
 
