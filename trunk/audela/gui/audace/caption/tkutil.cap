@@ -1,6 +1,6 @@
 #
 # Fichier : tkutil.cap
-# Mise a jour $Id: tkutil.cap,v 1.17 2010-01-02 16:38:30 michelpujol Exp $
+# Mise a jour $Id: tkutil.cap,v 1.18 2010-01-03 18:10:55 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -37,7 +37,7 @@ set caption(tkutil,image_png)             "PNG Files"
 set caption(tkutil,image_tiff)            "TIFF Files"
 set caption(tkutil,image_xbm)             "XBM Files"
 set caption(tkutil,image_xpm)             "XPM Files"
-set caption(tkutil,image_postscript)      "Postscript Files"
+set caption(tkutil,image_postscript)      "PostScript Files"
 set caption(tkutil,image_raw)             "RAW Files"
 set caption(tkutil,fichier_tcl)           "TCL Scripts"
 set caption(tkutil,fichier_txt)           "Text Files"
@@ -45,6 +45,12 @@ set caption(tkutil,fichier_tous)          "All Files"
 set caption(tkutil,fichier_pdf)           "User Guides"
 set caption(tkutil,fichier_html)          "HTML Files"
 set caption(tkutil,fichier_jar)           "JAR Files"
+
+set caption(tkutil,badCharacter)          "%s include a forbidden character %s"
+set caption(tkutil,stringTooShort)        "%s has less than %s character(s)"
+set caption(tkutil,stringTooLarge)        "%s has more than %s character(s)"
+set caption(tkutil,numberTooSmall)        "%s is inferior to %s"
+set caption(tkutil,numberTooGreat)        "%s is superior to %s"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -75,7 +81,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,image_tiff)         "Fichiers TIFF"
    set caption(tkutil,image_xbm)          "Fichiers XBM"
    set caption(tkutil,image_xpm)          "Fichiers XPM"
-   set caption(tkutil,image_postscript)   "Fichiers Postscript"
+   set caption(tkutil,image_postscript)   "Fichiers PostScript"
    set caption(tkutil,image_raw)          "Fichiers RAW"
    set caption(tkutil,fichier_tcl)        "Scripts TCL"
    set caption(tkutil,fichier_txt)        "Fichiers textes"
@@ -83,6 +89,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_pdf)        "Notices"
    set caption(tkutil,fichier_html)       "Fichiers HTML"
    set caption(tkutil,fichier_jar)        "Fichiers JAR"
+
    set caption(tkutil,badCharacter)       "%s contient un caractère interdit %s"
    set caption(tkutil,stringTooShort)     "%s a moins de %s caractère(s)"
    set caption(tkutil,stringTooLarge)     "%s a plus de %s caractère(s)"
@@ -118,7 +125,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,image_tiff)         "File TIFF"
    set caption(tkutil,image_xbm)          "File XBM"
    set caption(tkutil,image_xpm)          "File XPM"
-   set caption(tkutil,image_postscript)   "File Postscript"
+   set caption(tkutil,image_postscript)   "File PostScript"
    set caption(tkutil,image_raw)          "File RAW"
    set caption(tkutil,fichier_tcl)        "Script TCL"
    set caption(tkutil,fichier_txt)        "File testo"
@@ -126,11 +133,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_pdf)        "Guida utente"
    set caption(tkutil,fichier_html)       "File HTML"
    set caption(tkutil,fichier_jar)        "File JAR"
-   set caption(tkutil,badCharacter)       "%s include a forbidden character %s"
-   set caption(tkutil,stringTooShort)     "%s has less than %s character(s)"
-   set caption(tkutil,stringTooLarge)     "%s has more than %s character(s)"
-   set caption(tkutil,numberTooSmall)     "%s is inferior to %s"
-   set caption(tkutil,numberTooGreat)     "%s is superior to %s"
+
    set caption(tkutil,badCharacter)       "# %s contient un caractère interdit %s"
    set caption(tkutil,stringTooShort)     "# %s a moins de %s caractère(s)"
    set caption(tkutil,stringTooLarge)     "# %s a plus de %s caractère(s)"
@@ -167,7 +170,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,image_tiff)         "Ficheros TIFF"
    set caption(tkutil,image_xbm)          "Ficheros XBM"
    set caption(tkutil,image_xpm)          "Ficheros XPM"
-   set caption(tkutil,image_postscript)   "Ficheros Postscript"
+   set caption(tkutil,image_postscript)   "Ficheros PostScript"
    set caption(tkutil,image_raw)          "Ficheros RAW"
    set caption(tkutil,fichier_tcl)        "Scripts TCL"
    set caption(tkutil,fichier_txt)        "Ficheros de texto"
@@ -175,6 +178,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_pdf)        "Guías de usuario"
    set caption(tkutil,fichier_html)       "Ficheros HTML"
    set caption(tkutil,fichier_jar)        "Ficheros JAR"
+
    set caption(tkutil,badCharacter)       "# %s contient un caractère interdit %s"
    set caption(tkutil,stringTooShort)     "# %s a moins de %s caractère(s)"
    set caption(tkutil,stringTooLarge)     "# %s a plus de %s caractère(s)"
@@ -210,7 +214,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,image_tiff)         "TIFF Datei"
    set caption(tkutil,image_xbm)          "XBM Datei"
    set caption(tkutil,image_xpm)          "XPM Datei"
-   set caption(tkutil,image_postscript)   "Postscript Datei"
+   set caption(tkutil,image_postscript)   "PostScript Datei"
    set caption(tkutil,image_raw)          "RAW Datei"
    set caption(tkutil,fichier_tcl)        "TCL Skripten"
    set caption(tkutil,fichier_txt)        "Text Datei"
@@ -218,6 +222,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_pdf)        "Hinweisen"
    set caption(tkutil,fichier_html)       "HTML Datei"
    set caption(tkutil,fichier_jar)        "JAR Datei"
+
    set caption(tkutil,badCharacter)       "# %s contient un caractère interdit %s"
    set caption(tkutil,stringTooShort)     "# %s a moins de %s caractère(s)"
    set caption(tkutil,stringTooLarge)     "# %s a plus de %s caractère(s)"
@@ -253,7 +258,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,image_tiff)         "Ficheiros TIFF"
    set caption(tkutil,image_xbm)          "Ficheiros XBM"
    set caption(tkutil,image_xpm)          "Ficheiros XPM"
-   set caption(tkutil,image_postscript)   "Ficheiros Postscript"
+   set caption(tkutil,image_postscript)   "Ficheiros PostScript"
    set caption(tkutil,image_raw)          "Ficheiros RAW"
    set caption(tkutil,fichier_tcl)        "Scripts TCL"
    set caption(tkutil,fichier_txt)        "Ficheiros de texto"
@@ -261,6 +266,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_pdf)        "Guias de utilizador"
    set caption(tkutil,fichier_html)       "Ficheiros HTML"
    set caption(tkutil,fichier_jar)        "Ficheiros JAR"
+
    set caption(tkutil,badCharacter)       "# %s contient un caractère interdit %s"
    set caption(tkutil,stringTooShort)     "# %s a moins de %s caractère(s)"
    set caption(tkutil,stringTooLarge)     "# %s a plus de %s caractère(s)"
@@ -296,7 +302,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,image_tiff)         "TIFF Filer"
    set caption(tkutil,image_xbm)          "XBM Filer"
    set caption(tkutil,image_xpm)          "XPM Filer"
-   set caption(tkutil,image_postscript)   "Postscript Filer"
+   set caption(tkutil,image_postscript)   "PostScript Filer"
    set caption(tkutil,image_raw)          "RAW Filer"
    set caption(tkutil,fichier_tcl)        "TCL Skript"
    set caption(tkutil,fichier_txt)        "Tekstfiler"
@@ -304,6 +310,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_pdf)        "Brugsanvisning"
    set caption(tkutil,fichier_html)       "HTML Filer"
    set caption(tkutil,fichier_jar)        "JAR Filer"
+
    set caption(tkutil,badCharacter)       "# %s contient un caractère interdit %s"
    set caption(tkutil,stringTooShort)     "# %s a moins de %s caractère(s)"
    set caption(tkutil,stringTooLarge)     "# %s a plus de %s caractère(s)"
@@ -339,7 +346,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,image_tiff)         "TIFF Files"
    set caption(tkutil,image_xbm)          "XBM Files"
    set caption(tkutil,image_xpm)          "XPM Files"
-   set caption(tkutil,image_postscript)   "Postscript Files"
+   set caption(tkutil,image_postscript)   "PostScript Files"
    set caption(tkutil,image_raw)          "RAW Files"
    set caption(tkutil,fichier_tcl)        "TCL Scripts"
    set caption(tkutil,fichier_txt)        "Text Files"
@@ -347,6 +354,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_pdf)        "User Guides"
    set caption(tkutil,fichier_html)       "HTML Files"
    set caption(tkutil,fichier_jar)        "JAR Files"
+
    set caption(tkutil,badCharacter)       "# %s contient un caractère interdit %s"
    set caption(tkutil,stringTooShort)     "# %s a moins de %s caractère(s)"
    set caption(tkutil,stringTooLarge)     "# %s a plus de %s caractère(s)"
@@ -382,7 +390,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,image_tiff)         "TIFF Files"
    set caption(tkutil,image_xbm)          "XBM Files"
    set caption(tkutil,image_xpm)          "XPM Files"
-   set caption(tkutil,image_postscript)   "Postscript Files"
+   set caption(tkutil,image_postscript)   "PostScript Files"
    set caption(tkutil,image_raw)          "RAW Files"
    set caption(tkutil,fichier_tcl)        "TCL Scripts"
    set caption(tkutil,fichier_txt)        "Text Files"
@@ -390,6 +398,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_pdf)        "User Guides"
    set caption(tkutil,fichier_html)       "HTML Files"
    set caption(tkutil,fichier_jar)        "JAR Files"
+
    set caption(tkutil,badCharacter)       "# %s contient un caractère interdit %s"
    set caption(tkutil,stringTooShort)     "# %s a moins de %s caractère(s)"
    set caption(tkutil,stringTooLarge)     "# %s a plus de %s caractère(s)"

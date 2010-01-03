@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_2.cap
-# Mise a jour $Id: aud_menu_2.cap,v 1.18 2009-12-30 07:29:06 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.cap,v 1.19 2010-01-03 18:10:15 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -13,7 +13,7 @@ global caption langage
 
 set caption(audace,menu,affichage)                    "View"
 set caption(audace,menu,nouvelle_visu)                "New 'visu'"
-set caption(audace,menu,efface_image)                 "# Effacer l'image"
+set caption(audace,menu,efface_image)                 "Delete Image"
 set caption(audace,menu,palette_grise)                "Grey Swatch"
 set caption(audace,menu,palette_inverse)              "Reversed Swatch"
 set caption(audace,menu,palette_iris)                 "Iris Swatch"
@@ -524,7 +524,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,affichage)                 "View"
    set caption(audace,menu,nouvelle_visu)             "New 'visu'"
-   set caption(audace,menu,efface_image)              "# Effacer l'image"
+   set caption(audace,menu,efface_image)              "Delete Image"
    set caption(audace,menu,palette_grise)             "Grey Swatch"
    set caption(audace,menu,palette_inverse)           "Reversed Swatch"
    set caption(audace,menu,palette_iris)              "Iris Swatch"
@@ -597,7 +597,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,affichage)                 "View"
    set caption(audace,menu,nouvelle_visu)             "New 'visu'"
-   set caption(audace,menu,efface_image)              "# Effacer l'image"
+   set caption(audace,menu,efface_image)              "Delete Image"
    set caption(audace,menu,palette_grise)             "Grey Swatch"
    set caption(audace,menu,palette_inverse)           "Reversed Swatch"
    set caption(audace,menu,palette_iris)              "Iris Swatch"
