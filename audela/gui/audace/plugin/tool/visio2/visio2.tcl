@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.49 2010-01-03 18:12:16 robertdelmas Exp $
+# Mise a jour $Id: visio2.tcl,v 1.50 2010-01-05 11:12:39 robertdelmas Exp $
 #
 
 namespace eval ::visio2 {
@@ -347,7 +347,7 @@ proc ::visio2::configure { visuNo } {
                || [regexp (.tif|.tiff)$          [string tolower $name]] && $enableExtension(tif)==1
                || [regexp (.png)$                [string tolower $name]] && $enableExtension(png)==1
                || [regexp (.ps|.eps)$            [string tolower $name]] && $enableExtension(ps)==1
-               || [regexp (.xbm|.xmp)$           [string tolower $name]] && $enableExtension(xbm)==1
+               || [regexp (.xbm|.xpm)$           [string tolower $name]] && $enableExtension(xbm)==1
                } {
 
 
@@ -868,7 +868,7 @@ proc ::visio2::config::fillConfigPage { frm visuNo } {
       pack $frm.extension.tif -anchor w -side top -padx 5 -pady 0
    }
 
-   #--- fichiers xbm
+   #--- fichiers xbm et xpm
    if { ( $conf(extension,defaut) != ".xbm" ) && ( $conf(extension,defaut) != ".xpm" ) } {
       checkbutton $frm.extension.xbm -text ".xbm .xpm" \
           -highlightthickness 0 -variable ::visio2::config::widgetEnableExtension(xbm)
