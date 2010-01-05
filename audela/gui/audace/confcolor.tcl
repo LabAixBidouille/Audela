@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise a jour $Id: confcolor.tcl,v 1.33 2009-12-31 12:14:18 robertdelmas Exp $
+# Mise a jour $Id: confcolor.tcl,v 1.34 2010-01-05 22:11:46 robertdelmas Exp $
 #
 
 namespace eval confColor:: {
@@ -107,15 +107,18 @@ namespace eval confColor:: {
    #     bascule l'apparance jour <=> nuit
    #------------------------------------------------------------
    proc switchDayNight { } {
+      variable widget
       global audace conf
 
       #--- Je change l'apparence
       if { $conf(confcolor,appearance) == "day" } {
-         set conf(confcolor,appearance) "night"
+         set conf(confcolor,appearance)        "night"
          set conf(confcolor,menu_night_vision) "1"
+         set widget(appearance)                $conf(confcolor,appearance)
       } else {
-         set conf(confcolor,appearance) "day"
+         set conf(confcolor,appearance)        "day"
          set conf(confcolor,menu_night_vision) "0"
+         set widget(appearance)                $conf(confcolor,appearance)
       }
 
       #--- J'applique le changement
@@ -127,8 +130,12 @@ namespace eval confColor:: {
 
       #--- J'affiche les couleurs
       foreach visuNo [ ::visu::list ] {
-         set base [ ::confVisu::getBase $visuNo ]
-         ::confColor::applyColor $base
+         set catchError [ catch {
+            set base [ ::confVisu::getBase $visuNo ]
+         } m ]
+         if { $catchError != "1" } {
+            ::confColor::applyColor $base
+         }
       }
       ::confColor::applyColor $audace(Console)
    }
@@ -220,8 +227,12 @@ namespace eval confColor:: {
 
       #--- J'affiche les couleurs
       foreach visuNo [ ::visu::list ] {
-         set base [ ::confVisu::getBase $visuNo ]
-         ::confColor::applyColor $base
+         set catchError [ catch {
+            set base [ ::confVisu::getBase $visuNo ]
+         } m ]
+         if { $catchError != "1" } {
+            ::confColor::applyColor $base
+         }
       }
       ::confColor::applyColor $audace(Console)
    }
@@ -292,8 +303,12 @@ namespace eval confColor:: {
          }
          #--- J'applique les couleurs precedentes
          foreach visuNo [ ::visu::list ] {
-            set base [ ::confVisu::getBase $visuNo ]
-            ::confColor::applyColor $base
+            set catchError [ catch {
+               set base [ ::confVisu::getBase $visuNo ]
+            } m ]
+            if { $catchError != "1" } {
+               ::confColor::applyColor $base
+            }
          }
          ::confColor::applyColor $audace(Console)
       }
@@ -303,7 +318,7 @@ namespace eval confColor:: {
    #  chooseAppearance
    #     est appele quand on change d'apparence jour/nuit
    #
-   #     param : type de couleur  ( background, foreground, ...)
+   #     parametres : type de couleur (background, foreground, ...)
    #------------------------------------------------------------
    proc chooseAppearance { } {
       variable widget
@@ -320,8 +335,12 @@ namespace eval confColor:: {
 
       #--- J'affiche les couleurs avec l'apparence qui vient d'etre choisie
       foreach visuNo [ ::visu::list ] {
-         set base [ ::confVisu::getBase $visuNo ]
-         ::confColor::applyColor $base
+         set catchError [ catch {
+            set base [ ::confVisu::getBase $visuNo ]
+         } m ]
+         if { $catchError != "1" } {
+            ::confColor::applyColor $base
+         }
       }
       ::confColor::applyColor $audace(Console)
 
@@ -363,8 +382,12 @@ namespace eval confColor:: {
 
       #--- J'affiche les couleurs avec l'apparence qui vient d'etre choisie
       foreach visuNo [ ::visu::list ] {
-         set base [ ::confVisu::getBase $visuNo ]
-         ::confColor::applyColor $base
+         set catchError [ catch {
+            set base [ ::confVisu::getBase $visuNo ]
+         } m ]
+         if { $catchError != "1" } {
+            ::confColor::applyColor $base
+         }
       }
       ::confColor::applyColor $audace(Console)
    }
@@ -645,10 +668,10 @@ namespace eval confColor:: {
 
       #--- Je recupere l'apparence en cours
       if { $::confColor::widget(appearance) == "day" } {
-         set conf(confcolor,appearance) "day"
+         set conf(confcolor,appearance)        "day"
          set conf(confcolor,menu_night_vision) "0"
       } else {
-         set conf(confcolor,appearance) "night"
+         set conf(confcolor,appearance)        "night"
          set conf(confcolor,menu_night_vision) "1"
       }
 
@@ -665,8 +688,12 @@ namespace eval confColor:: {
 
       #--- Je mets a jour les couleurs de la fenetre audace
       foreach visuNo [ ::visu::list ] {
-         set base [ ::confVisu::getBase $visuNo ]
-         ::confColor::applyColor $base
+         set catchError [ catch {
+            set base [ ::confVisu::getBase $visuNo ]
+         } m ]
+         if { $catchError != "1" } {
+            ::confColor::applyColor $base
+         }
       }
       ::confColor::applyColor $audace(Console)
 
