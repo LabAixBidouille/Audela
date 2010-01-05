@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.13 2009-12-26 14:47:30 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.14 2010-01-05 15:15:21 bmauclaire Exp $
 
 
 ####################################################################
@@ -697,7 +697,8 @@ proc spc_calibren { args } {
          buf$audace(bufNo) setkwd [list "CRPIX1" $crpix1 int "Reference pixel" "pixel" ]
       }
       #-- Longueur d'onde de départ :
-      buf$audace(bufNo) setkwd [list "CRVAL1" $lambdaRef double "" "angstrom"]
+      buf$audace(bufNo) setkwd [ list "CRVAL1" $lambdaRef double "" "angstrom" ]
+      buf$audace(bufNo) setkwd [ list "CREATOR" "SpcAudACE $spcaudace(version)" string "Software that create this FITS file" "" ]
       #-- Dispersion moyenne :
       #- Si le mot clé n'existe pas :
       if { [ lsearch $listemotsclef "CDELT1" ] ==-1 } {
