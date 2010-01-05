@@ -2,7 +2,7 @@
 # Fichier : conffont.tcl
 # Description : Selection et mise a jour en direct des polices de l'interface Aud'ACE
 # Auteur : Robert DELMAS
-# Mise a jour $Id: conffont.tcl,v 1.8 2009-01-11 12:09:54 robertdelmas Exp $
+# Mise a jour $Id: conffont.tcl,v 1.9 2010-01-05 22:13:56 robertdelmas Exp $
 #
 
 namespace eval confFont:: {
@@ -178,8 +178,12 @@ proc ::confFont::apply { visuNo } {
 
    #--- J'affiche les polices
    foreach visuNo [ ::visu::list ] {
-      set base [ ::confVisu::getBase $visuNo ]
-      ::confColor::applyColor $base
+      set catchError [ catch {
+         set base [ ::confVisu::getBase $visuNo ]
+      } m ]
+      if { $catchError != "1" } {
+         ::confColor::applyColor $base
+      }
    }
    ::confColor::applyColor $audace(Console)
 }
@@ -262,10 +266,15 @@ proc ::confFont::closeWindow { visuNo } {
       set fonteType [lindex [split $key ,] 1]
       set audace(font,$fonteType) $value
    }
+
    #--- J'applique les polices precedentes
    foreach visuNo [ ::visu::list ] {
-      set base [ ::confVisu::getBase $visuNo ]
-      ::confColor::applyColor $base
+      set catchError [ catch {
+         set base [ ::confVisu::getBase $visuNo ]
+      } m ]
+      if { $catchError != "1" } {
+         ::confColor::applyColor $base
+      }
    }
    ::confColor::applyColor $audace(Console)
 }
@@ -324,8 +333,12 @@ proc ::confFont::restoreFactoryFonts { } {
 
    #--- Je mets a jour les polices de la fenetre audace
    foreach visuNo [ ::visu::list ] {
-      set base [ ::confVisu::getBase $visuNo ]
-      ::confColor::applyColor $base
+      set catchError [ catch {
+         set base [ ::confVisu::getBase $visuNo ]
+      } m ]
+      if { $catchError != "1" } {
+         ::confColor::applyColor $base
+      }
    }
    ::confColor::applyColor $audace(Console)
 
