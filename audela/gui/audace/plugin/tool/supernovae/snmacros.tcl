@@ -2,13 +2,13 @@
 # Fichier : snmacros.tcl
 # Description : Macros des scripts pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snmacros.tcl,v 1.12 2009-12-19 16:31:59 robertdelmas Exp $
+# Mise a jour $Id: snmacros.tcl,v 1.13 2010-01-05 22:05:44 robertdelmas Exp $
 #
 
-proc globgalsn { args } {
+proc globgalsn { files } {
    # idem as glob but don't take d*b* files
    set result ""
-   set errnum [catch {glob $args} result]
+   set errnum [catch {glob $files} result]
    if {$errnum==1} {
       return ""
    }
