@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.30 2009-12-31 08:46:16 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.31 2010-01-07 18:18:24 robertdelmas Exp $
 #
 
 # =========================================================
@@ -162,6 +162,11 @@ namespace eval ::acqfen {
          set panneau(acqfen,mode) "$parametres(acqfen,mode)"
       }
 
+      #--- Fenetre d'avancement de la pose
+      if { ! [ info exists panneau(acqfen,avancement_acq) ] } {
+         set panneau(acqfen,avancement_acq) "$parametres(acqfen,avancement_acq)"
+      }
+
       #--- Mode du bouton de changement de mode
       if { $panneau(acqfen,mode) == "une" } {
          set panneau(acqfen,bouton_mode) "$caption(acqfen,uneimage)"
@@ -210,25 +215,27 @@ namespace eval ::acqfen {
       if { [ file exists $fichier ] } {
          source $fichier
       }
-      if { ! [ info exists parametres(acqfen,pose_centrage) ] } { set parametres(acqfen,pose_centrage) ".2" }  ; #--- Temps de pose : 0.2s
-      if { ! [ info exists parametres(acqfen,bin_centrage) ] }  { set parametres(acqfen,bin_centrage)  "4" }   ; #--- Binning       : 4x4
-      if { ! [ info exists parametres(acqfen,pose) ] }          { set parametres(acqfen,pose)          ".05" } ; #--- Temps de pose : 0.05s
-      if { ! [ info exists parametres(acqfen,bin) ] }           { set parametres(acqfen,bin)           "1" }   ; #--- Binning       : 1x1
-      if { ! [ info exists parametres(acqfen,mode) ] }          { set parametres(acqfen,mode)          "une" } ; #--- Mode          : Une image
+      if { ! [ info exists parametres(acqfen,pose_centrage) ] }  { set parametres(acqfen,pose_centrage)  ".2" }  ; #--- Temps de pose : 0.2s
+      if { ! [ info exists parametres(acqfen,bin_centrage) ] }   { set parametres(acqfen,bin_centrage)   "4" }   ; #--- Binning : 4x4
+      if { ! [ info exists parametres(acqfen,pose) ] }           { set parametres(acqfen,pose)           ".05" } ; #--- Temps de pose : 0.05s
+      if { ! [ info exists parametres(acqfen,bin) ] }            { set parametres(acqfen,bin)            "1" }   ; #--- Binning : 1x1
+      if { ! [ info exists parametres(acqfen,mode) ] }           { set parametres(acqfen,mode)           "une" } ; #--- Mode : Une image
+      if { ! [ info exists parametres(acqfen,avancement_acq) ] } { set parametres(acqfen,avancement_acq) "1" }   ; #--- Barre de progression de la pose : Oui
    }
 #***** Fin de la procedure chargerParametres **********************
 
-#***** Procedure enregistrerparametres ****************************
-   proc enregistrerparametres { } {
+#***** Procedure enregistrerParametres ****************************
+   proc enregistrerParametres { } {
       variable parametres
       global audace panneau
 
       #---
-      set parametres(acqfen,pose_centrage) $panneau(acqfen,pose_centrage)
-      set parametres(acqfen,bin_centrage)  $panneau(acqfen,bin_centrage)
-      set parametres(acqfen,pose)          $panneau(acqfen,pose)
-      set parametres(acqfen,bin)           $panneau(acqfen,bin)
-      set parametres(acqfen,mode)          $panneau(acqfen,mode)
+      set parametres(acqfen,pose_centrage)  $panneau(acqfen,pose_centrage)
+      set parametres(acqfen,bin_centrage)   $panneau(acqfen,bin_centrage)
+      set parametres(acqfen,pose)           $panneau(acqfen,pose)
+      set parametres(acqfen,bin)            $panneau(acqfen,bin)
+      set parametres(acqfen,mode)           $panneau(acqfen,mode)
+      set parametres(acqfen,avancement_acq) $panneau(acqfen,avancement_acq)
 
       #--- Sauvegarde des parametres
       catch {
@@ -243,7 +250,7 @@ namespace eval ::acqfen {
          }
       }
    }
-#***** Fin de la procedure enregistrerparametres ******************
+#***** Fin de la procedure enregistrerParametres ******************
 
    #------------------------------------------------------------
    # startTool
@@ -272,7 +279,7 @@ namespace eval ::acqfen {
       }
 
       #--- Sauvegarde de la configuration de prise de vue
-      ::acqfen::enregistrerparametres
+      ::acqfen::enregistrerParametres
 
       #--- Initialisation du fenetrage
       catch {
@@ -450,17 +457,17 @@ namespace eval ::acqfen {
 
                   #--- Cas des poses de 0 s : Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
                   if { $panneau(acqfen,pose_centrage) == "0" } {
-                     ::camera::Avancement_pose "1"
+                     ::camera::avancementPose $panneau(acqfen,avancement_acq) "1"
                   }
 
                   #--- Lecture du CCD
                   cam$audace(camNo) acq
-                  #--- mise a jour de status_cam (pour multithread)
-                  update
+
                   #--- Alarme sonore de fin de pose
                   ::camera::alarme_sonore $panneau(acqfen,pose_centrage)
+
                   #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
-                  ::camera::gestionPose $panneau(acqfen,pose_centrage) 1 cam$audace(camNo) buf$audace(bufNo)
+                  ::camera::gestionPose $panneau(acqfen,pose_centrage) 1 $panneau(acqfen,avancement_acq) cam$audace(camNo) buf$audace(bufNo)
 
                   #--- Applique un zoom ou un scale (re-echantillonnage)
                   if {$panneau(acqfen,typezoom)=="zoom"} {
@@ -511,33 +518,38 @@ namespace eval ::acqfen {
                   set panneau(acqfen,acquisition) "0"
 
                } ]
+
                if { $catchError == 1 } {
                   #--- j'affiche et je trace le message d'erreur
                   ::tkutil::displayErrorInfo $::caption(acqfen,titre_fenetrees)
-                  #--- j'arrete la gestion de pose
-                 ### ::camera::gestionPose $panneau(acqfen,pose_centrage) 0 cam$audace(camNo) buf$audace(bufNo)
-                  ::camera::Avancement_pose "0"
+
+                  #--- je ferme la fenetre d'avancement
+                  ::camera::avancementPose $panneau(acqfen,avancement_acq) "0"
+
                   #--- je restaure les boutons
                   set panneau(acqfen,go_stop_cent) go
                   $This.acqcent.but configure -text $::caption(acqfen,GO)
                   $This.acqcentred.but configure -text $::caption(acqfen,GO)
                   set panneau(acqfen,acquisition) "0"
-
                }
-
             }
+
             "stop" {
                #--- Mise a jour de variable
                set panneau(acqfen,acquisition) "0"
+
                #--- Annulation de l'alarme de fin de pose
                catch { after cancel bell }
+
                #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
-               ::camera::gestionPose $panneau(acqfen,pose_centrage) 0 cam$audace(camNo) buf$audace(bufNo)
+               ::camera::gestionPose $panneau(acqfen,pose_centrage) 0 $panneau(acqfen,avancement_acq) cam$audace(camNo) buf$audace(bufNo)
+
                #--- Arret de la pose
                catch { cam$audace(camNo) stop }
                after 200
             }
          }
+
       } else {
          ::confCam::run
       }
@@ -576,7 +588,7 @@ namespace eval ::acqfen {
                switch -exact -- $panneau(acqfen,mode) {
                   "une" {
                      set panneau(acqfen,enregistrer) 0
-                     acqfen::acq_acqfen
+                     acqfen::acqAcqfen
                      #--- Affichage avec visu auto
                      audace::autovisu $audace(visuNo)
                   }
@@ -688,7 +700,7 @@ namespace eval ::acqfen {
                            for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
                               if {$panneau(acqfen,demande_arret)==1} {break}
                               #--- Acquisition
-                              acqfen::acq_acqfen
+                              acqfen::acqAcqfen
                               #--- Affichage avec visu auto
                               audace::autovisu $audace(visuNo)
                               #--- Sauvegarde de l'image
@@ -718,7 +730,7 @@ namespace eval ::acqfen {
                            for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
                               if {$panneau(acqfen,demande_arret)==1} {break}
                               #--- Acquisition
-                              acqfen::acq_acqfen
+                              acqfen::acqAcqfen
                               #--- Affichage eventuel
                               if {$nbint==$panneau(acqfen,fenreglfen22)} {
                                  audace::autovisu $audace(visuNo)
@@ -752,7 +764,7 @@ namespace eval ::acqfen {
                            for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
                               if {$panneau(acqfen,demande_arret)==1} {break}
                               #--- Acquisition
-                              acqfen::acq_acqfen
+                              acqfen::acqAcqfen
                               #--- Sauvegarde de l'image
                               set nom $panneau(acqfen,nom_image)
                               #--- Pour eviter un nom de fichier qui commence par un blanc :
@@ -782,7 +794,7 @@ namespace eval ::acqfen {
                            for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
                               if {$panneau(acqfen,demande_arret)==1} {break}
                               #--- Acquisition
-                              acqfen::acq_acqfen
+                              acqfen::acqAcqfen
                               #--- Affichage avec visu auto
                               audace::autovisu $audace(visuNo)
                               #--- Sauvegarde temporaire de l'image
@@ -823,7 +835,7 @@ namespace eval ::acqfen {
                            for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
                               if {$panneau(acqfen,demande_arret)==1} {break}
                               #--- Acquisition
-                              acqfen::acq_acqfen
+                              acqfen::acqAcqfen
                               #--- Affichage eventuel
                               if {$nbint==$panneau(acqfen,fenreglfen22)} {
                                  audace::autovisu $audace(visuNo)
@@ -868,7 +880,7 @@ namespace eval ::acqfen {
                            for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
                               if {$panneau(acqfen,demande_arret)==1} {break}
                               #--- Acquisition
-                              acqfen::acq_acqfen
+                              acqfen::acqAcqfen
                               #--- Sauvegarde temporaire de l'image
                               set buftmp [buf::create]
                               buf$buftmp extension $conf(extension,defaut)
@@ -992,7 +1004,7 @@ namespace eval ::acqfen {
                         "11" {
                            while {$panneau(acqfen,demande_arret)==0} {
                               #--- Acquisition
-                              acqfen::acq_acqfen
+                              acqfen::acqAcqfen
                               #--- Affichage avec visu auto
                               audace::autovisu $audace(visuNo)
                               #--- Si demande, sauvegarde de l'image
@@ -1023,7 +1035,7 @@ namespace eval ::acqfen {
                            set nbint 1
                            while {$panneau(acqfen,demande_arret)==0} {
                               #--- Acquisition
-                              acqfen::acq_acqfen
+                              acqfen::acqAcqfen
                               #--- Affichage eventuel
                               if {$nbint==$panneau(acqfen,fenreglfen22)} {
                                  audace::autovisu $audace(visuNo)
@@ -1058,7 +1070,7 @@ namespace eval ::acqfen {
                         "31" {
                            while {$panneau(acqfen,demande_arret)==0} {
                               #--- Acquisition
-                              acqfen::acq_acqfen
+                              acqfen::acqAcqfen
                               #--- Si demande, sauvegarde de l'image
                               if {$panneau(acqfen,enregistrer)==1} {
                                  set nom $panneau(acqfen,nom_image)
@@ -1089,7 +1101,7 @@ namespace eval ::acqfen {
                            set liste_buffers ""
                            while {$panneau(acqfen,demande_arret)==0} {
                               #--- Acquisition
-                              acqfen::acq_acqfen
+                              acqfen::acqAcqfen
                               #--- Affichage avec visu auto
                               audace::autovisu $audace(visuNo)
                               #--- Si demande, sauvegarde temporaire de l'image
@@ -1128,7 +1140,7 @@ namespace eval ::acqfen {
                            set nbint 1
                            while {$panneau(acqfen,demande_arret)==0} {
                               #--- Acquisition
-                              acqfen::acq_acqfen
+                              acqfen::acqAcqfen
                               #--- Affichage eventuel
                               if {$nbint==$panneau(acqfen,fenreglfen22)} {
                                  audace::autovisu $audace(visuNo)
@@ -1171,7 +1183,7 @@ namespace eval ::acqfen {
                         "32" {
                            while {$panneau(acqfen,demande_arret)==0} {
                               #--- Acquisition
-                              acqfen::acq_acqfen
+                              acqfen::acqAcqfen
                               #--- Si demande, sauvegarde temporaire de l'image
                               if {$panneau(acqfen,enregistrer)==1} {
                                  set buftmp [buf::create]
@@ -1224,7 +1236,7 @@ namespace eval ::acqfen {
                #--- Annulation de l'alarme de fin de pose
                catch { after cancel bell }
                #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
-               ::camera::gestionPose $panneau(acqfen,pose) 0 cam$audace(camNo) buf$audace(bufNo)
+               ::camera::gestionPose $panneau(acqfen,pose) 0 $panneau(acqfen,avancement_acq) cam$audace(camNo) buf$audace(bufNo)
                #--- Arret de la pose
                catch { cam$audace(camNo) stop }
                after 200
@@ -1235,7 +1247,7 @@ namespace eval ::acqfen {
       }
    }
 
-   proc acq_acqfen { } {
+   proc acqAcqfen { } {
       global audace panneau
 
       set catchError [ catch {
@@ -1261,25 +1273,14 @@ namespace eval ::acqfen {
             cam$audace(camNo) exptime $panneau(acqfen,pose)
             #--- Cas des poses de 0 s : Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
             if { $panneau(acqfen,pose) == "0" } {
-               ::camera::Avancement_pose "1"
+               ::camera::avancementPose $panneau(acqfen,avancement_acq) "1"
             }
             #--- Acquisition
             cam$audace(camNo) acq
-            #--- mise a jour de status_cam (pour multithread)
-            update
             #--- Alarme sonore de fin de pose
             ::camera::alarme_sonore $panneau(acqfen,pose)
             #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
-            ::camera::gestionPose $panneau(acqfen,pose) 1 cam$audace(camNo) buf$audace(bufNo)
-
-            #--- Attente de la fin de la pose
-            vwait status_cam$audace(camNo)
-
-            #--- Attente de la fin de la pose (evolution pour le multithread)
-            set statusVariableName "::status_cam$audace(camNo)"
-            if { [set $statusVariableName] == "exp" } {
-               vwait $statusVariableName
-            }
+            ::camera::gestionPose $panneau(acqfen,pose) 1 $panneau(acqfen,avancement_acq) cam$audace(camNo) buf$audace(bufNo)
          } else {
             for {set k 1} {$k<=$panneau(acqfen,fenreglfen12)} {incr k} {cam$audace(camNo) wipe}
             after [expr int(1000*$panneau(acqfen,pose))] [cam$audace(camNo) read]
@@ -1298,11 +1299,14 @@ namespace eval ::acqfen {
             buf$audace(bufNo) window [list $panneau(acqfen,X1) $panneau(acqfen,Y1) \
             $panneau(acqfen,X2) $panneau(acqfen,Y2)]
          }
-
       } ]
+
       if { $catchError == 1 } {
          #--- j'affiche et je trace le message d'erreur
          ::tkutil::displayErrorInfo $::caption(acqfen,titre_fenetrees)
+
+         #--- je ferme la fenetre d'avancement
+         ::camera::avancementPose $panneau(acqfen,avancement_acq) "0"
       }
    }
 
@@ -1516,7 +1520,7 @@ namespace eval ::acqfen {
    }
 #***** Fin de la procedure de test de validite d'une chaine de caracteres *******
 
-   proc fenreglfenquit { } {
+   proc quitFenReglFen { } {
    global audace conf panneau
 
       set panneau(acqfen,fenreglfen1)  $panneau(acqfen,oldfenreglfen1)
@@ -1526,7 +1530,7 @@ namespace eval ::acqfen {
       set panneau(acqfen,fenreglfen3)  $panneau(acqfen,oldfenreglfen3)
       set panneau(acqfen,fenreglfen4)  $panneau(acqfen,oldfenreglfen4)
       #--- Recuperation de la position de la fenetre de reglages
-      ::acqfen::recup_position
+      ::acqfen::recupPosition
       set conf(fenreglfen,position)    $panneau(acqfen,position)
       #---
       destroy $audace(base).fenreglfen
@@ -1534,7 +1538,7 @@ namespace eval ::acqfen {
 
 #---Procedure de recuperation de la position de la fenetre de reglage
 
-   proc recup_position { } {
+   proc recupPosition { } {
       global audace panneau
 
       set panneau(acqfen,geometry) [ wm geometry $audace(base).fenreglfen ]
@@ -1576,7 +1580,7 @@ frame $This -borderwidth 2 -relief groove
    pack $This.config -side top -fill x
 
       #--- Bonton de Configuration
-      button $This.config.but -text $caption(acqfen,congiguration) -borderwidth 1 -command Creefenreglfen
+      button $This.config.but -text $caption(acqfen,congiguration) -borderwidth 1 -command creeFenReglFen
       pack $This.config.but -in $This.config -anchor center -expand 1 -fill both -side top -ipadx 5
 
    #--- Trame acquisition centrage (version complete)
@@ -1786,13 +1790,21 @@ frame $This -borderwidth 2 -relief groove
             pack $This.mode.continu.index.but -side right -fill x
          pack $This.mode.continu.index -expand true -fill both
 
+      #--- Frame pour l'affichage de l'avancement de l'acqusition
+      frame $This.mode.avancement_acq -borderwidth 2 -relief ridge
+        #--- Checkbutton pour l'affichage de l'avancement de l'acqusition
+        checkbutton $This.mode.avancement_acq.check -highlightthickness 0 \
+           -text $caption(acqfen,avancement_acq) -variable panneau(acqfen,avancement_acq)
+        pack $This.mode.avancement_acq.check -side left -fill x
+     pack $This.mode.avancement_acq -side bottom -fill x
+
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
 }
 
 #---Procedure d'affichage de la fenetre de reglages acquisition serie et continu
 
-proc Creefenreglfen { } {
+proc creeFenReglFen { } {
    global audace caption conf panneau
 
    if { ! [ info exists conf(fenreglfen,position) ] } { set conf(fenreglfen,position) "+0+0" }
@@ -1810,7 +1822,7 @@ proc Creefenreglfen { } {
       toplevel $audace(base).fenreglfen
       wm geometry $audace(base).fenreglfen 400x370$panneau(acqfen,position)
       wm title $audace(base).fenreglfen $caption(acqfen,fenreglfen)
-      wm protocol $audace(base).fenreglfen WM_DELETE_WINDOW ::acqfen::fenreglfenquit
+      wm protocol $audace(base).fenreglfen WM_DELETE_WINDOW ::acqfen::quitFenReglFen
 
       #--- Enregistrement des reglages courants
       set panneau(acqfen,oldfenreglfen1)  $panneau(acqfen,fenreglfen1)
@@ -1908,12 +1920,12 @@ proc Creefenreglfen { } {
       pack $audace(base).fenreglfen.buttons
       button $audace(base).fenreglfen.buttons.ok -text $caption(acqfen,ok) -width 19 \
          -command {
-            ::acqfen::recup_position
+            ::acqfen::recupPosition
             set conf(fenreglfen,position) $panneau(acqfen,position)
             destroy $audace(base).fenreglfen
          }
       pack $audace(base).fenreglfen.buttons.ok -side left -expand true -padx 10 -pady 10
-      button $audace(base).fenreglfen.buttons.quit -command ::acqfen::fenreglfenquit \
+      button $audace(base).fenreglfen.buttons.quit -command ::acqfen::quitFenReglFen \
          -text $caption(acqfen,quitter) -width 19
       pack $audace(base).fenreglfen.buttons.quit -side left -expand true -padx 10 -pady 10
 
