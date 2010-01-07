@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: camera.tcl,v 1.37 2010-01-07 11:55:45 robertdelmas Exp $
+# Mise a jour $Id: camera.tcl,v 1.38 2010-01-07 18:19:39 robertdelmas Exp $
 #
 # Procedures utilisees par confCam
 #   ::camera::create : cree une camera
@@ -42,9 +42,9 @@ namespace eval camera {
    namespace export acq
 }
 
-#
+#------------------------------------------------------------
 # init
-#
+#------------------------------------------------------------
 proc ::camera::init { } {
    variable private
 
@@ -186,13 +186,14 @@ proc ::camera::loadSource { camItem sourceFileName } {
    }
 }
 
-#
+#------------------------------------------------------------
 # acq exptime binning
-# Declenche l'acquisition et affiche l'image une fois l'acquisition terminee dans la visu 1
-# (procdure conservee pour compatibilite avec les anciennes versions de Audela (pour les scripts perso des utilisateurs)y
-# Exemple :
-# acq 10 2
+#    Declenche l'acquisition et affiche l'image une fois l'acquisition terminee dans la visu 1
+#    (procdure conservee pour compatibilite avec les anciennes versions de Audela (pour les scripts perso des utilisateurs)y
 #
+# Exemple :
+#    acq 10 2
+#------------------------------------------------------------
 proc ::camera::acq { exptime binning } {
    global audace caption
 
@@ -217,10 +218,10 @@ proc ::camera::acq { exptime binning } {
    wm title $audace(base) "$caption(camera,image_acquisition) $exptime $caption(camera,sec)"
 }
 
-#
-# ::camera::alarme_sonore exptime
-# Alarme sonore de fin de pose
-#
+#------------------------------------------------------------
+# alarme_sonore exptime
+#    Alarme sonore de fin de pose
+#------------------------------------------------------------
 proc ::camera::alarme_sonore { { exptime } } {
    global audace conf
 
@@ -246,10 +247,10 @@ proc ::camera::alarme_sonore { { exptime } } {
    }
 }
 
-#
-# ::camera::dispLine t Nb_Line_sec Nb_Line_Total scan_Delai
-# Decompte du nombre de lignes du scan
-#
+#------------------------------------------------------------
+# dispLine t Nb_Line_sec Nb_Line_Total scan_Delai
+#    Decompte du nombre de lignes du scan
+#------------------------------------------------------------
 proc ::camera::dispLine { t Nb_Line_sec Nb_Line_Total scan_Delai } {
    global audace panneau
 
@@ -267,15 +268,15 @@ proc ::camera::dispLine { t Nb_Line_sec Nb_Line_Total scan_Delai } {
    }
 }
 
-#
-# ::camera::Avancement_scan tt Nb_Line_Total scan_Delai
-# Affichage de la progression en lignes du scan
-#
+#------------------------------------------------------------
+# Avancement_scan tt Nb_Line_Total scan_Delai
+#    Affichage de la progression en lignes du scan
+#------------------------------------------------------------
 proc ::camera::Avancement_scan { tt Nb_Line_Total scan_Delai } {
    global audace caption conf
 
    #--- Recuperation de la position de la fenetre
-   ::camera::recup_position_Avancement_Scan
+   ::camera::recupPositionAvancementScan
 
    #--- Initialisation de la position de la fenetre
    if { ! [ info exists conf(avancement_scan,position) ] } { set conf(avancement_scan,position) "+120+315" }
@@ -334,11 +335,11 @@ proc ::camera::Avancement_scan { tt Nb_Line_Total scan_Delai } {
    }
 }
 
-#
-# ::camera::recup_position_Avancement_Scan
-# Recuperation de la position de la fenetre de progression du scan
-#
-proc ::camera::recup_position_Avancement_Scan { } {
+#------------------------------------------------------------
+# recupPositionAvancementScan
+#    Recuperation de la position de la fenetre de progression du scan
+#------------------------------------------------------------
+proc ::camera::recupPositionAvancementScan { } {
    global audace conf
 
    if [ winfo exists $audace(base).progress_scan ] {
@@ -350,11 +351,11 @@ proc ::camera::recup_position_Avancement_Scan { } {
    }
 }
 
-#
-# ::camera::dispTime CameraName Label_Time Color_Label Proc_Avancement_pose
-# Decompte du temps d'exposition
-# Utilisation dans les scripts : acqcolor.tcl + cmaude.tcl
-#
+#------------------------------------------------------------
+# dispTime CameraName Label_Time Color_Label Proc_Avancement_pose
+#    Decompte du temps d'exposition
+#    Utilisation dans les scripts : acqcolor.tcl + cmaude.tcl
+#------------------------------------------------------------
 proc ::camera::dispTime { CameraName Label_Time { Color_Label "#FF0000" } { Proc_Avancement_pose "" } } {
    global caption
 
@@ -375,11 +376,12 @@ proc ::camera::dispTime { CameraName Label_Time { Color_Label "#FF0000" } { Proc
    }
 }
 
-#
-# ::camera::gestionPose Exposure GO_Stop CameraName BufferName
-# Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
-#
-proc ::camera::gestionPose { Exposure GO_Stop { CameraName "" } { BufferName "" } } {
+#------------------------------------------------------------
+# gestionPose Exposure GO_Stop fenetreAvancementPose CameraName BufferName
+#    Gestion de la pose : Timer, avancement, attente fin, retournement image,
+#    fin anticipee et fenetre d'avancement de la pose
+#------------------------------------------------------------
+proc ::camera::gestionPose { Exposure GO_Stop fenetreAvancementPose { CameraName "" } { BufferName "" } } {
    global audace
 
    #--- Correspond a un demarrage de la pose
@@ -387,7 +389,7 @@ proc ::camera::gestionPose { Exposure GO_Stop { CameraName "" } { BufferName "" 
 
       #--- Appel du timer
       if { $Exposure >= "2" } {
-         ::camera::dispTime_1 $CameraName "::camera::Avancement_pose"
+         ::camera::dispTime1 $CameraName ::camera::avancementPose $fenetreAvancementPose
       }
 
       #--- Attente de la fin de la pose
@@ -402,38 +404,43 @@ proc ::camera::gestionPose { Exposure GO_Stop { CameraName "" } { BufferName "" 
    } elseif { $GO_Stop == "0" } {
 
       #--- Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
-      ::camera::Avancement_pose "1"
+      ::camera::avancementPose $fenetreAvancementPose "1"
 
    }
 }
 
-#
-# ::camera::dispTime_1 CameraName Proc_Avancement_pose
-# Decompte du temps d'exposition
-# Utilisation dans les scripts : acqfen.tcl + snacq.tcl
-#
-proc ::camera::dispTime_1 { CameraName { Proc_Avancement_pose "" } } {
+#------------------------------------------------------------
+# dispTime1 CameraName Proc_Avancement_pose fenetreAvancementPose
+#    Decompte du temps d'exposition
+#    Utilisation dans les scripts : acqfen.tcl + snacq.tcl
+#------------------------------------------------------------
+proc ::camera::dispTime1 { CameraName Proc_Avancement_pose fenetreAvancementPose } {
 
    set t "[ $CameraName timer -1 ]"
 
    if { $t > "1" } {
-      after 1000 ::camera::dispTime_1 $CameraName $Proc_Avancement_pose
+      after 1000 ::camera::dispTime1 $CameraName $Proc_Avancement_pose $fenetreAvancementPose
    }
 
-   if { $Proc_Avancement_pose != "" } {
-      $Proc_Avancement_pose $t
+   if { "$Proc_Avancement_pose" != "" } {
+      $Proc_Avancement_pose $fenetreAvancementPose $t
    }
 }
 
-#
-# ::camera::Avancement_pose t
-# Affichage d'une barre de progression qui simule l'avancement de la pose dans la visu 1
-#
-proc ::camera::Avancement_pose { { t } } {
+#------------------------------------------------------------
+# avancementPose t
+#    Affichage d'une barre de progression qui simule l'avancement de la pose dans la visu 1
+#------------------------------------------------------------
+proc ::camera::avancementPose { fenetreAvancementPose { t } } {
    global audace caption color conf
 
+   #--- Fenetre d'avancement de la pose non demandee
+   if { $fenetreAvancementPose == "0" } {
+      return
+   }
+
    #--- Recuperation de la position de la fenetre
-   ::camera::recup_position_Avancement_Pose
+   ::camera::recupPositionAvancementPose
 
    #--- Initialisation de la barre de progression
    set cpt             "100"
@@ -504,11 +511,11 @@ proc ::camera::Avancement_pose { { t } } {
    }
 }
 
-#
-# ::camera::recup_position_Avancement_Pose
-# Recuperation de la position de la fenetre de progression de la pose
-#
-proc ::camera::recup_position_Avancement_Pose { } {
+#------------------------------------------------------------
+# recupPositionAvancementPose
+#    Recuperation de la position de la fenetre de progression de la pose
+#------------------------------------------------------------
+proc ::camera::recupPositionAvancementPose { } {
    global audace conf
 
    if [ winfo exists $audace(base).progress_pose ] {
@@ -523,8 +530,7 @@ proc ::camera::recup_position_Avancement_Pose { } {
 #------------------------------------------------------------
 # addEvent
 #
-#
-# parametres :
+## parametres :
 #------------------------------------------------------------
 proc ::camera::addCameraEvent { camItem args } {
    variable private
@@ -616,7 +622,7 @@ proc ::camera::centerBrightestStar { camItem callback exptime originCoord target
 
 #------------------------------------------------------------
 # centerRaDec
-#   centre les coordonnees
+#    centre les coordonnees
 #
 # parametres :
 #------------------------------------------------------------
