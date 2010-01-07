@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 29 d&eacute;cembre 2009</p>
+<p class="date">Date de mise &agrave; jour : 07 janvier 2010</p>
 <h1>Cam&eacute;ra </h1>
 <p>Ces commandes permettent de contr&ocirc;ler l'acquisition d'images avec des cam&eacute;ras reconnues par AudeLA : Audine, Hi-SIS, ST7, CookBook 245, Starlight, Kitty, WebCam (port USB Windows uniquement), AudiNet (liaison Ethernet), EthernAude (liaison Ethernet), etc. Les commandes qui permettent de contr&ocirc;ler une cam&eacute;ra s'&eacute;crivent "<code>cam</code>" suivi d'un num&eacute;ro. Ces commandes n'existent pas au d&eacute;marrage de AudeLA, mais sont cr&eacute;&eacute;es par la commande "<code>::cam::create ...</code>". Ainsi il est possible de piloter plusieurs cam&eacute;ras, mais il est laiss&eacute; &agrave; l'utilisateur le soin de ne pas ex&eacute;cuter des commandes simultan&eacute;ment. Lors d'une acquisition, l'image est stock&eacute;e dans un buffer (&agrave; renseigner avec la fonction <a href="#buf">cam1 buf</a>). En plus, si on pr&eacute;cise &agrave; quel t&eacute;lescope (automatique) est reli&eacute;e la cam&eacute;ra (&agrave; renseigner avec <a href="#tel">cam1 tel</a>), elle r&eacute;cup&egrave;re automatiquement ses coordonn&eacute;es, et les inscrit dans le header FITS si l'option <a href="#fromtel">cam1 radecfromtel</a> vaut 1. </p>
 <p>Il est important de savoir que les auteurs ne disposent pas personnellement de ces cam&eacute;ras, et donc qu'il peut y avoir des probl&egrave;mes avec certaines cam&eacute;ras. </p>
@@ -38,7 +38,7 @@
   <code>vwait status_cam1</code> <br />
   <code># la pose est termin&eacute;e</code> <br>
   <code>...</code> </p>
-<p>Si <b>-blocking</b> est pr&eacute;sente , la commande d&eacute;clenche l'acquisition 
+<p>Si <b>-blocking</b> est pr&eacute;sente, la commande d&eacute;clenche l'acquisition 
   d'une image et rend la main seulement apr&egrave;s la fin de l'acquisition car 
   l'interp&eacute;teur TCL est bloqu&eacute; pendant toute la dur&eacute;e de 
   l'acquisition.</p>
