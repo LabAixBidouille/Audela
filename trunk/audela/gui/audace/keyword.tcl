@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.32 2009-12-30 14:25:10 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.33 2010-01-07 09:34:34 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -893,7 +893,8 @@ proc ::keyword::createDialog { visuNo } {
    set frm $private($visuNo,frm)
 
    #--- Recupere la configuration dans le tableau private(...)
-   set private($visuNo,geometry) $::conf(keyword,geometry)
+   set private($visuNo,geometry)                   $::conf(keyword,geometry)
+   set private($private($visuNo,configName),check) $::conf(keyword,$private($visuNo,configName),check)
 
    #--- Toplevel
    toplevel $frm
@@ -1021,7 +1022,7 @@ proc ::keyword::createDialog { visuNo } {
       }
 
       #--- je coche les lignes qui avaient ete cochees dans une session precedente
-      foreach check $::conf(keyword,$private($visuNo,configName),check) {
+      foreach check $private($private($visuNo,configName),check) {
          set private($check) 1
       }
 
@@ -1204,13 +1205,27 @@ proc ::keyword::cmdApply { visuNo} {
 
    #--- je memorise la configuration dans le tableau conf(...)
    set ::conf(keyword,geometry) $private($visuNo,geometry)
+
+   #--- je definis le nom de la configuration des mots cles FITS de l'outil
+   #--- uniquement pour les outils qui configurent les mots cles selon des
+   #--- exigences propres a eux
+   set catchError [ catch {
+      ::[ ::confVisu::getTool $visuNo ]::getNameKeywords $visuNo $private($visuNo,configName)
+   } m ]
+   if { $catchError == "1" } {
+      #--- S'il n'y a pas d'exigences, on passe...
+   }
+
    #--- je sauvegarde la liste des mots cles coches
-   set ::conf(keyword,$private($visuNo,configName),check) ""
+   set private($private($visuNo,configName),check) ""
    foreach name [array names private $visuNo,check,*] {
       if { $private($name) == 1 } {
-         lappend ::conf(keyword,$private($visuNo,configName),check) [list $name]
+         lappend private($private($visuNo,configName),check) [list $name]
       }
    }
+
+   #--- je mets en forme la variable conf
+   set ::conf(keyword,$private($visuNo,configName),check) [ string trimleft $private($private($visuNo,configName),check) "{} " ]
 }
 
 #------------------------------------------------------------------------------
@@ -1500,7 +1515,7 @@ proc ::keyword::copyConfig { visuNo } {
 #    (appelee par la combobox a chaque changement de selection)
 #
 # Parametres :
-#    cb : Element selectionne
+#    visuNo : Numero de la visu
 #------------------------------------------------------------------------------
 proc ::keyword::cbCommand { visuNo } {
    variable private
@@ -1523,8 +1538,12 @@ proc ::keyword::cbCommand { visuNo } {
       #--- S'il n'y a pas d'exigences, on passe...
    }
 
+   #--- je mets en forme la variable conf
+   set ::conf(keyword,$configId,check) [ string trimleft $::conf(keyword,$configId,check) "{} " ]
+   set private($configId,check)        $::conf(keyword,$configId,check)
+
    #--- je coche les lignes
-   foreach check $::conf(keyword,$configId,check) {
+   foreach check $private($configId,check) {
       set private($check) 1
    }
 }
