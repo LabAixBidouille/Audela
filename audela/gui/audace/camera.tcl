@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: camera.tcl,v 1.36 2010-01-07 09:59:37 robertdelmas Exp $
+# Mise a jour $Id: camera.tcl,v 1.37 2010-01-07 11:55:45 robertdelmas Exp $
 #
 # Procedures utilisees par confCam
 #   ::camera::create : cree une camera
@@ -58,7 +58,7 @@ proc ::camera::init { } {
          #--- Je charge le package Thread
          #--- La version minimale 2.6.5.1 pour disposer de la commande thread::copycommand
          if { ! [catch {package require Thread 2.6.5.1}]} {
-            #--- Je redirige les messages d'erreur vers la procedure ::confCam::dispThreadError
+            #--- Je redirige les messages d'erreur vers la procedure ::camera::dispThreadError
             thread::errorproc ::camera::dispThreadError
          } else {
             set ::tcl_platform(threaded) 0
