@@ -1,6 +1,6 @@
 #
 # Fichier : acqfen.cap
-# Mise a jour $Id: acqfen.cap,v 1.16 2009-12-14 17:48:46 robertdelmas Exp $
+# Mise a jour $Id: acqfen.cap,v 1.17 2010-01-07 16:20:52 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -71,6 +71,7 @@ set caption(acqfen,nbiminv)            "Number of Invalid Images\n(must be a pos
 set caption(acqfen,conf)               "Confirm"
 set caption(acqfen,fichdeja)           "This file already exists.\nAre you sure you want to save?"
 set caption(acqfen,indpasun)           "Index is not 1.\nDo you confirm dash number?"
+set caption(acqfen,avancement_acq)     "Acquisition\nProgress"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -135,6 +136,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,conf)            "Confirmer"
    set caption(acqfen,fichdeja)        "Ce fichier existe déjà sur le disque.\nVous confirmez l'enregistrement ?"
    set caption(acqfen,indpasun)        "L'index n'est pas à 1.\nVous confirmez cet index ?"
+   set caption(acqfen,avancement_acq)  "Avancement de\nl'acquisition"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -199,6 +201,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,conf)            "Confermare"
    set caption(acqfen,fichdeja)        "Questo file e` gia` presente.\nConfermare la registrazione?"
    set caption(acqfen,indpasun)        "L'indice non e' 1.\nConfermare il numero?"
+   set caption(acqfen,avancement_acq)  "Avanzamento\nacquisizione"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -263,6 +266,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,conf)            "Confirmar"
    set caption(acqfen,fichdeja)        "Este fichero ya existe.\n¿Seguro que quiere guardar?"
    set caption(acqfen,indpasun)        "El índice no está a 1.\n¿Confirma el índice?"
+   set caption(acqfen,avancement_acq)  "Progreso de la\nadquisición"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -327,6 +331,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,conf)            "Bestätigen"
    set caption(acqfen,fichdeja)        "Diese Datei ist schon auf die Platte.\nBestätigen sie die Speicherung?"
    set caption(acqfen,indpasun)        "Der Index Wert ist nicht 1.\nVollen sie dieser Zeiger bestätigen?"
+   set caption(acqfen,avancement_acq)  "Belichtung\nim Gange"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -391,6 +396,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,conf)            "Confirmar"
    set caption(acqfen,fichdeja)        "Este ficheiro já existe no disco duro.\nConfirma a salvaguarda ?"
    set caption(acqfen,indpasun)        "O índice não é 1.\nConfirma o índice ?"
+   set caption(acqfen,avancement_acq)  "Adiantamento da\naquisição"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -455,6 +461,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,conf)            "Confirm"
    set caption(acqfen,fichdeja)        "This file already exists.\nAre you sure you want to save?"
    set caption(acqfen,indpasun)        "Index is not 1.\nDo you confirm dash number?"
+   set caption(acqfen,avancement_acq)  "Acquisition\nProgress"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -519,6 +526,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,conf)            "Confirm"
    set caption(acqfen,fichdeja)        "This file already exists.\nAre you sure you want to save?"
    set caption(acqfen,indpasun)        "Index is not 1.\nDo you confirm dash number?"
+   set caption(acqfen,avancement_acq)  "Acquisition\nProgress"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -583,6 +591,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,conf)            "Confirm"
    set caption(acqfen,fichdeja)        "This file already exists.\nAre you sure you want to save?"
    set caption(acqfen,indpasun)        "Index is not 1.\nDo you confirm dash number?"
+   set caption(acqfen,avancement_acq)  "Acquisition\nProgress"
 
 }
 
