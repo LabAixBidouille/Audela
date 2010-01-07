@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.94 2010-01-02 18:27:17 michelpujol Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.95 2010-01-07 16:19:55 robertdelmas Exp $
 #
 
 #==============================================================
@@ -399,7 +399,7 @@ proc ::acqfc::Adapt_Panneau_AcqFC { visuNo args } {
       #--- je verifie que le format preselectionne existe dans la liste
       if { [lsearch $formatList $panneau(acqfc,$visuNo,format) ] == -1 } {
          #--- si le format n'existe pas je selectionne la première valeur par defaut
-         set  panneau(acqfc,$visuNo,format) [lindex $formatList 0]
+         set panneau(acqfc,$visuNo,format) [lindex $formatList 0]
       }
       #--- j'affiche la frame du format
       pack $panneau(acqfc,$visuNo,This).format -side top -fill x -before $panneau(acqfc,$visuNo,This).status
@@ -442,11 +442,12 @@ proc ::acqfc::Chargement_Var { visuNo } {
    }
 
    #--- Creation des variables si elles n'existent pas
-   if { ! [ info exists parametres(acqfc,$visuNo,pose) ] } { set parametres(acqfc,$visuNo,pose) "5" }   ; #--- Temps de pose : 5s
-   if { ! [ info exists parametres(acqfc,$visuNo,bin) ] }  { set parametres(acqfc,$visuNo,bin)  "1x1" } ; #--- Binning : 2x2
-   if { ! [ info exists parametres(acqfc,$visuNo,format) ] }  { set parametres(acqfc,$visuNo,format)  "" }
-   if { ! [ info exists parametres(acqfc,$visuNo,obt) ] }  { set parametres(acqfc,$visuNo,obt)  "2" }   ; #--- Obturateur : Synchro
-   if { ! [ info exists parametres(acqfc,$visuNo,mode) ] } { set parametres(acqfc,$visuNo,mode) "1" }   ; #--- Mode : Une image
+   if { ! [ info exists parametres(acqfc,$visuNo,pose) ] }           { set parametres(acqfc,$visuNo,pose)        "5" }   ; #--- Temps de pose : 5s
+   if { ! [ info exists parametres(acqfc,$visuNo,bin) ] }            { set parametres(acqfc,$visuNo,bin)         "1x1" } ; #--- Binning : 2x2
+   if { ! [ info exists parametres(acqfc,$visuNo,format) ] }         { set parametres(acqfc,$visuNo,format)      "" }    ; #--- Format des APN
+   if { ! [ info exists parametres(acqfc,$visuNo,obt) ] }            { set parametres(acqfc,$visuNo,obt)         "2" }   ; #--- Obturateur : Synchro
+   if { ! [ info exists parametres(acqfc,$visuNo,mode) ] }           { set parametres(acqfc,$visuNo,mode)        "1" }   ; #--- Mode : Une image
+   if { ! [ info exists parametres(acqfc,$visuNo,enregistrer) ] }    { set parametres(acqfc,$visuNo,enregistrer) "1" }   ; #--- Sauvegarde des images : Oui
    if { ! [ info exists parametres(acqfc,$visuNo,avancement_acq) ] } {
       if { $visuNo == "1" } {
          set parametres(acqfc,$visuNo,avancement_acq) "1" ; #--- Barre de progression de la pose : Oui
@@ -454,7 +455,6 @@ proc ::acqfc::Chargement_Var { visuNo } {
          set parametres(acqfc,$visuNo,avancement_acq) "0" ; #--- Barre de progression de la pose : Non
       }
    }
-   if { ! [ info exists parametres(acqfc,$visuNo,enregistrer) ] } { set parametres(acqfc,$visuNo,enregistrer) "1" } ; #--- Sauvegarde des images : Oui
 
    #--- Creation des variables de la boite de configuration si elles n'existent pas
    ::acqfcSetup::initToConf $visuNo
@@ -1833,6 +1833,7 @@ proc ::acqfc::dispTime { visuNo } {
 proc ::acqfc::avancementPose { visuNo { t } } {
    global caption color panneau
 
+   #--- Fenetre d'avancement de la pose non demandee
    if { $panneau(acqfc,$visuNo,avancement_acq) != "1" } {
       return
    }
@@ -2707,7 +2708,7 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
 
       #--- Frame pour l'affichage de l'avancement de l'acqusition
       frame $panneau(acqfc,$visuNo,This).avancement_acq -borderwidth 2 -relief ridge
-        #--- Checkbutton petit deplacement
+        #--- Checkbutton pour l'affichage de l'avancement de l'acqusition
         checkbutton $panneau(acqfc,$visuNo,This).avancement_acq.check -highlightthickness 0 \
            -text $caption(acqfc,avancement_acq) -variable panneau(acqfc,$visuNo,avancement_acq)
         pack $panneau(acqfc,$visuNo,This).avancement_acq.check -side left -fill x
