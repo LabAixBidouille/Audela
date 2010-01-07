@@ -2,7 +2,7 @@
 # Fichier : snmacros.tcl
 # Description : Macros des scripts pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snmacros.tcl,v 1.13 2010-01-05 22:05:44 robertdelmas Exp $
+# Mise a jour $Id: snmacros.tcl,v 1.14 2010-01-07 10:32:58 robertdelmas Exp $
 #
 
 proc globgalsn { files } {
@@ -180,7 +180,7 @@ proc snconfacq_verif { } {
       set snconf(position) "+80+40"
    }
    if { [info exists snconf(dossier)] == "0" } {
-      set snconf(dossier) "."
+      set snconf(dossier) "$::audace(rep_images)"
    }
    if { [info exists snconf(haurore)] == "0" } {
       set snconf(haurore) "-10"
@@ -588,13 +588,13 @@ proc snconfvisu_verif { } {
    global snconfvisu
 
    if { [ info exists snconfvisu(rep1) ] == "0" } {
-      set snconfvisu(rep1) ""
+      set snconfvisu(rep1) "$::audace(rep_images)"
    }
    if { [ info exists snconfvisu(rep2) ] == "0" } {
-      set snconfvisu(rep2) ""
+      set snconfvisu(rep2) "$::audace(rep_images)"
    }
    if { [ info exists snconfvisu(rep3) ] == "0" } {
-      set snconfvisu(rep3) ""
+      set snconfvisu(rep3) "$::audace(rep_images)"
    }
    if { [ info exists snconfvisu(cuts_change) ] == "0" } {
       set snconfvisu(cuts_change) "motion"
@@ -678,7 +678,7 @@ proc snconfvisu_save { } {
 # ==========================================================================================
 
 # ==========================================================================================
-proc snvisuconfiguration_save { } {
+proc snSetup_save { } {
    global conf snconfvisu
 
    set result ""
