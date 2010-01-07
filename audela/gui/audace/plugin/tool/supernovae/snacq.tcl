@@ -2,7 +2,7 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snacq.tcl,v 1.24 2009-12-31 08:49:23 robertdelmas Exp $
+# Mise a jour $Id: snacq.tcl,v 1.25 2010-01-07 18:20:09 robertdelmas Exp $
 #
 
 # ===================================================================
@@ -88,7 +88,7 @@ wm geometry $audace(base).snacq 570x460$snconf(position)
 wm resizable $audace(base).snacq 1 1
 wm minsize $audace(base).snacq 510 420
 wm title $audace(base).snacq $caption(snacq,main_title)
-wm protocol $audace(base).snacq WM_DELETE_WINDOW { ::recup_position ; ::ExitSnAcq }
+wm protocol $audace(base).snacq WM_DELETE_WINDOW { ::recupPosition ; ::ExitSnAcq }
 
 #--- Cree un frame pour l'etat des connexions
 frame $audace(base).snacq.frame1 \
@@ -509,13 +509,13 @@ pack $audace(base).snacq.frame2 \
 #--- Cree le boutton GO et ...
 button $audace(base).snacq.frame2.but_go2 \
    -text $caption(snacq,go2) -borderwidth 2 \
-   -command { snacq_go 1 }
+   -command { snacqGo 1 }
 pack $audace(base).snacq.frame2.but_go2 \
    -in $audace(base).snacq.frame2 -side left -anchor w \
    -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 button $audace(base).snacq.frame2.but_go \
    -text $caption(snacq,go) -borderwidth 2 \
-   -command { snacq_go 0 }
+   -command { snacqGo 0 }
 pack $audace(base).snacq.frame2.but_go \
    -in $audace(base).snacq.frame2 -side left -anchor e \
    -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -527,7 +527,7 @@ pack $audace(base).snacq.frame2.but_stop \
    -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 button $audace(base).snacq.frame2.but_exit \
    -text $caption(snacq,exit) -borderwidth 2 \
-   -command { ::recup_position ; $audace(base).snacq.frame2.but_exit configure -relief groove ; ::ExitSnAcq }
+   -command { ::recupPosition ; $audace(base).snacq.frame2.but_exit configure -relief groove ; ::ExitSnAcq }
 pack $audace(base).snacq.frame2.but_exit \
    -in $audace(base).snacq.frame2 -side left -anchor e \
    -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -671,7 +671,7 @@ bind $audace(base).snacq.frame15.labURL_observer <ButtonPress-1> {
 
 
 # =========================================================================================
-proc snacq_go { {sndebug 0} } {
+proc snacqGo { {sndebug 0} } {
 
    global audace
    global zone
@@ -1012,7 +1012,7 @@ proc snacq_go { {sndebug 0} } {
 
             #--- Cas des poses de 0 s : Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
             if { $snconf(exptime) == "0" } {
-               ::camera::Avancement_pose "1"
+               ::camera::avancementPose "1" "1"
             }
 
             #--- Declenchement de l'acquisition
@@ -1030,7 +1030,7 @@ proc snacq_go { {sndebug 0} } {
             }
 
             #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
-            ::camera::gestionPose $snconf(exptime) 1 $camera $buffer
+            ::camera::gestionPose $snconf(exptime) 1 1 $camera $buffer
 
             #--- Visualisation de l'image acquise
             ::audace::autovisu $audace(visuNo)
@@ -1117,10 +1117,10 @@ proc snacq_go { {sndebug 0} } {
 }
 
 # ===========================================================================================
-# recup_position
+# recupPosition
 # Permet de recuperer et de sauvegarder la position de la fenetre SnAcq
 #
-proc recup_position { } {
+proc recupPosition { } {
    global audace
    global conf
    global snconf
@@ -1132,11 +1132,11 @@ proc recup_position { } {
 }
 
 # ===========================================================================================
-# OutSnAcq
+# messageOutSnAcq
 # Affichage d'un message d'alerte lors de la fermeture de la fenetre SnAcq ou de l'appui sur
 # le bouton Quitter
 #
-proc OutSnAcq { } {
+proc messageOutSnAcq { } {
    global audace
    global caption
    global color
@@ -1167,10 +1167,10 @@ proc OutSnAcq { } {
 }
 
 # ===========================================================================================
-# Out_SnAcq
+# OutSnAcq
 # Affichage d'un message d'alerte lors de l'appui sur le bouton Stop
 #
-proc Out_SnAcq { } {
+proc OutSnAcq { } {
    global audace
    global caption
    global color
@@ -1212,7 +1212,7 @@ proc ExitSnAcq { } {
       update ; snconfacq_save ; cd $sn(inidir) ; destroy $audace(base).snacq
    } else {
       set sn(exit) "1"
-      ::OutSnAcq
+      ::messageOutSnAcq
       update ; snconfacq_save ; cd $sn(inidir)
    }
 }
@@ -1229,7 +1229,7 @@ proc StopSnAcq { } {
       $audace(base).snacq.frame2.but_stop configure -relief raised
    } else {
       set sn(stop) "1"
-      ::Out_SnAcq
+      ::OutSnAcq
    }
 }
 
