@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.40 2009-12-13 16:44:35 robertdelmas Exp $
+# @version   $Id: sophie.tcl,v 1.41 2010-01-07 09:46:36 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -255,7 +255,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
 
          #--- Bouton du titre
          Button $frm.titre.but1 -borderwidth 1 -text "$::caption(sophie,aide1)\n$::caption(sophie,titre)" \
-            -command {::audace::Lance_Notice_pdf [ file join $::audace(rep_plugin) tool sophie guidage_193_manuel_utilisateur.pdf ]}
+            -command { ::audace::Lance_Notice_pdf [ file join $::audace(rep_plugin) tool sophie guidage_193_manuel_utilisateur.pdf ] }
            ### -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory \
            ###    [ ::sophie::getPluginType ] ] [ ::sophie::getPluginDirectory ] [ ::sophie::getPluginHelp ]"
          pack $frm.titre.but1 -anchor center -expand 1 -fill both -side top -ipadx 5
@@ -589,19 +589,30 @@ proc ::sophie::stopTool { visuNo } {
 }
 
 #------------------------------------------------------------
+# getNameKeywords
+#    definit le nom de la configuration des mots cles FITS de l'outil
+#    uniquement pour les outils qui configurent les mots cles selon des
+#    exigences propres a eux
+#------------------------------------------------------------
+proc ::sophie::getNameKeywords { visuNo configName } {
+   #--- Je definis le nom
+   set ::conf(sophie,keywordConfigName) $configName
+}
+
+#------------------------------------------------------------
 # configToolKeywords
 #    configure les mots cles FITS de l'outil
 #------------------------------------------------------------
 proc ::sophie::configToolKeywords { visuNo { configName "" } } {
    #--- Je traite la variable configName
-   if { $configName != "" } {
-      set ::conf(sophie,keywordConfigName) $configName
+   if { $configName == "" } {
+      set configName $::conf(sophie,keywordConfigName)
    }
 
    #--- je selectionne les mots cles optionnels a ajouter dans les images
-   ::keyword::selectKeywords $visuNo $::conf(sophie,keywordConfigName) [list RA_MEAN RA_RMS DEC_MEAN DEC_RMS DETNAM INSTRUME TELESCOP SITENAME SITELONG SITELAT SWCREATE]
+   ::keyword::selectKeywords $visuNo $configName [list RA_MEAN RA_RMS DEC_MEAN DEC_RMS DETNAM INSTRUME TELESCOP SITENAME SITELONG SITELAT SWCREATE]
 
    #--- je selectionne la liste des mots cles non modifiables
-   ::keyword::setKeywordState $visuNo $::conf(sophie,keywordConfigName) [list RA_MEAN RA_RMS DEC_MEAN DEC_RMS DETNAM INSTRUME TELESCOP ]
+   ::keyword::setKeywordState $visuNo $configName [list RA_MEAN RA_RMS DEC_MEAN DEC_RMS DETNAM INSTRUME TELESCOP ]
 }
 

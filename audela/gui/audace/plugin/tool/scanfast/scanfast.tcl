@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.52 2009-12-31 08:48:50 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.53 2010-01-07 09:45:35 robertdelmas Exp $
 #
 
 global panneau
@@ -569,21 +569,32 @@ proc ::scanfast::stopTool { visuNo } {
 }
 
 #------------------------------------------------------------
+# getNameKeywords
+#    definit le nom de la configuration des mots cles FITS de l'outil
+#    uniquement pour les outils qui configurent les mots cles selon des
+#    exigences propres a eux
+#------------------------------------------------------------
+proc ::scanfast::getNameKeywords { visuNo configName } {
+   #--- Je definis le nom
+   set ::conf(scanfast,keywordConfigName) $configName
+}
+
+#------------------------------------------------------------
 # configToolKeywords
 #    configure les mots cles FITS de l'outil
 #------------------------------------------------------------
 proc ::scanfast::configToolKeywords { visuNo { configName "" } } {
    #--- Je traite la variable configName
-   if { $configName != "" } {
-      set ::conf(scanfast,keywordConfigName) $configName
+   if { $configName == "" } {
+      set configName $::conf(scanfast,keywordConfigName)
    }
 
    #--- Je selectionne les mots cles optionnels a decocher
    #--- Les mots cles RA et DEC doivent obligatoirement etre decoches
-   ::keyword::deselectKeywords $visuNo $::conf(scanfast,keywordConfigName) [ list RA DEC ]
+   ::keyword::deselectKeywords $visuNo $configName [ list RA DEC ]
 
    #--- Je selectionne la liste des mots cles non modifiables
-   ::keyword::setKeywordState $visuNo $::conf(scanfast,keywordConfigName) [ list RA DEC ]
+   ::keyword::setKeywordState $visuNo $configName [ list RA DEC ]
 
    #--- Je force la capture des mots cles RA et DEC en manuel
    ::keyword::setKeywordsRaDecManuel

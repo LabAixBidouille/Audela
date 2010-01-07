@@ -2,7 +2,7 @@
 # Fichier : eshel.tcl
 # Description : outil de fabrication des fichier Kit et de deploiement des plugin
 # Auteurs : Michel Pujol
-# Mise a jour $Id: eshel.tcl,v 1.2 2009-12-13 16:42:26 robertdelmas Exp $
+# Mise a jour $Id: eshel.tcl,v 1.3 2010-01-07 09:44:58 robertdelmas Exp $
 #
 
 ##------------------------------------------------------------
@@ -55,7 +55,7 @@ proc ::eshel::getPluginOS { } {
 }
 
 #------------------------------------------------------------
-# ::eshel::initPlugin
+# initPlugin
 #    initialise le plugin
 #------------------------------------------------------------
 proc ::eshel::initPlugin { tkbase } {
@@ -110,7 +110,7 @@ proc ::eshel::deletePluginInstance { visuNo } {
 }
 
 #------------------------------------------------------------
-# ::eshel::createPluginInstance
+# createPluginInstance
 #  cree une instance l'outil
 #  initialise les variables globales et locales par defaut
 #  affiche les widgets dans le panneau de l'outil
@@ -620,7 +620,7 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
 }
 
 #------------------------------------------------------------
-# ::eshel::startTool
+# startTool
 #    affiche la fenetre de l'outil
 #------------------------------------------------------------
 proc ::eshel::startTool { visuNo } {
@@ -638,7 +638,7 @@ proc ::eshel::startTool { visuNo } {
 }
 
 #------------------------------------------------------------
-# ::eshel::stopTool
+# stopTool
 #    masque la fenetre de l'outil
 #------------------------------------------------------------
 proc ::eshel::stopTool { visuNo } {
@@ -656,20 +656,31 @@ proc ::eshel::stopTool { visuNo } {
 }
 
 #------------------------------------------------------------
-# ::eshel::configToolKeywords
+# getNameKeywords
+#    definit le nom de la configuration des mots cles FITS de l'outil
+#    uniquement pour les outils qui configurent les mots cles selon des
+#    exigences propres a eux
+#------------------------------------------------------------
+proc ::eshel::getNameKeywords { visuNo configName } {
+   #--- Je definis le nom
+   set ::conf(eshel,keywordConfigName) $configName
+}
+
+#------------------------------------------------------------
+# configToolKeywords
 #    configure les mots cles FITS de l'outil
 #------------------------------------------------------------
 proc ::eshel::configToolKeywords { visuNo { configName "" } } {
    #--- Je traite la variable configName
-   if { $configName != "" } {
-      set ::conf(eshel,keywordConfigName) $configName
+   if { $configName == "" } {
+      set configName $::conf(eshel,keywordConfigName)
    }
 
    #--- je selectionne les mots clefs optionnel a ajouter dans les images
-   ::keyword::selectKeywords $visuNo $::conf(eshel,keywordConfigName) [list IMAGETYP OBJNAME SERIESID DETNAM INSTRUME TELESCOP CONFNAME OBSERVER SITENAME SITELONG SITELAT SWCREATE]
+   ::keyword::selectKeywords $visuNo $configName [list IMAGETYP OBJNAME SERIESID DETNAM INSTRUME TELESCOP CONFNAME OBSERVER SITENAME SITELONG SITELAT SWCREATE]
 
    #--- je selectionne la liste des mots clefs non modifiables
-   ::keyword::setKeywordState $visuNo $::conf(eshel,keywordConfigName) [list IMAGETYP OBJNAME SERIESID DETNAM INSTRUME TELESCOP CONFNAME ]
+   ::keyword::setKeywordState $visuNo $configName [list IMAGETYP OBJNAME SERIESID DETNAM INSTRUME TELESCOP CONFNAME ]
 
 }
 

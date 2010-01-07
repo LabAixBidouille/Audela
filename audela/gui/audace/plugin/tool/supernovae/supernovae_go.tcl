@@ -2,7 +2,7 @@
 # Fichier : supernovae_go.tcl
 # Description : Outil pour l'observation des SnAudes
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: supernovae_go.tcl,v 1.22 2009-12-13 16:46:22 robertdelmas Exp $
+# Mise a jour $Id: supernovae_go.tcl,v 1.23 2010-01-07 09:46:56 robertdelmas Exp $
 #
 
 #============================================================
@@ -18,7 +18,7 @@ namespace eval ::supernovae {
 }
 
 #------------------------------------------------------------
-# ::supernovae::getPluginTitle
+# getPluginTitle
 #    retourne le titre du plugin dans la langue de l'utilisateur
 #------------------------------------------------------------
 proc ::supernovae::getPluginTitle { } {
@@ -28,7 +28,7 @@ proc ::supernovae::getPluginTitle { } {
 }
 
 #------------------------------------------------------------
-# ::supernovae::getPluginHelp
+# getPluginHelp
 #    retourne le nom du fichier d'aide principal
 #------------------------------------------------------------
 proc ::supernovae::getPluginHelp { } {
@@ -36,7 +36,7 @@ proc ::supernovae::getPluginHelp { } {
 }
 
 #------------------------------------------------------------
-# ::supernovae::getPluginType
+# getPluginType
 #    retourne le type de plugin
 #------------------------------------------------------------
 proc ::supernovae::getPluginType { } {
@@ -44,7 +44,7 @@ proc ::supernovae::getPluginType { } {
 }
 
 #------------------------------------------------------------
-# ::supernovae::getPluginDirectory
+# getPluginDirectory
 #    retourne le type de plugin
 #------------------------------------------------------------
 proc ::supernovae::getPluginDirectory { } {
@@ -52,7 +52,7 @@ proc ::supernovae::getPluginDirectory { } {
 }
 
 #------------------------------------------------------------
-# ::supernovae::getPluginOS
+# getPluginOS
 #    retourne le ou les OS de fonctionnement du plugin
 #------------------------------------------------------------
 proc ::supernovae::getPluginOS { } {
@@ -60,7 +60,7 @@ proc ::supernovae::getPluginOS { } {
 }
 
 #------------------------------------------------------------
-# ::supernovae::getPluginProperty
+# getPluginProperty
 #    retourne la valeur de la propriete
 #
 # parametre :
@@ -77,7 +77,7 @@ proc ::supernovae::getPluginProperty { propertyName } {
 }
 
 #------------------------------------------------------------
-# ::supernovae::initPlugin
+# initPlugin
 #    initialise le plugin
 #------------------------------------------------------------
 proc ::supernovae::initPlugin { tkbase } {
@@ -85,7 +85,7 @@ proc ::supernovae::initPlugin { tkbase } {
 }
 
 #------------------------------------------------------------
-# ::supernovae::createPluginInstance
+# createPluginInstance
 #    cree une nouvelle instance de l'outil
 #------------------------------------------------------------
 proc ::supernovae::createPluginInstance { { in "" } { visuNo 1 } } {
@@ -93,7 +93,7 @@ proc ::supernovae::createPluginInstance { { in "" } { visuNo 1 } } {
 }
 
 #------------------------------------------------------------
-# ::supernovae::deletePluginInstance
+# deletePluginInstance
 #    suppprime l'instance du plugin
 #------------------------------------------------------------
 proc ::supernovae::deletePluginInstance { visuNo } {
@@ -105,7 +105,7 @@ proc ::supernovae::deletePluginInstance { visuNo } {
 }
 
 #------------------------------------------------------------
-# ::supernovae::createPanel
+# createPanel
 #    prepare la creation de la fenetre de l'outil
 #------------------------------------------------------------
 proc ::supernovae::createPanel { this } {
@@ -126,7 +126,7 @@ proc ::supernovae::createPanel { this } {
 }
 
 #------------------------------------------------------------
-# ::supernovae::startTool
+# startTool
 #    affiche la fenetre de l'outil
 #------------------------------------------------------------
 proc ::supernovae::startTool { visuNo } {
@@ -142,7 +142,7 @@ proc ::supernovae::startTool { visuNo } {
 }
 
 #------------------------------------------------------------
-# ::supernovae::stopTool
+# stopTool
 #    masque la fenetre de l'outil
 #------------------------------------------------------------
 proc ::supernovae::stopTool { visuNo } {
@@ -166,29 +166,40 @@ proc ::supernovae::stopTool { visuNo } {
 }
 
 #------------------------------------------------------------
-# ::supernovae::configToolKeywords
+# getNameKeywords
+#    definit le nom de la configuration des mots cles FITS de l'outil
+#    uniquement pour les outils qui configurent les mots cles selon des
+#    exigences propres a eux
+#------------------------------------------------------------
+proc ::supernovae::getNameKeywords { visuNo configName } {
+   #--- Je definis le nom
+   set ::conf(supernovae,keywordConfigName) $configName
+}
+
+#------------------------------------------------------------
+# configToolKeywords
 #    configure les mots cles FITS de l'outil
 #------------------------------------------------------------
 proc ::supernovae::configToolKeywords { visuNo { configName "" } } {
    #--- Je traite la variable configName
-   if { $configName != "" } {
-      set ::conf(supernovae,keywordConfigName) $configName
+   if { $configName == "" } {
+      set configName $::conf(supernovae,keywordConfigName)
    }
 
    #--- Je selectionne les mots cles optionnels a ajouter dans les images
    #--- Les mots cles RA, DEC, XPIXSZ et YPIXSZ sont obligatoires pour "snprism" de snmacro.tcl
    #--- OBJNAME a ete rajoute car il caracterise le nom de l'objet pointe
-   ::keyword::selectKeywords $visuNo $::conf(supernovae,keywordConfigName) [ list OBJNAME RA DEC XPIXSZ YPIXSZ ]
+   ::keyword::selectKeywords $visuNo $configName [ list OBJNAME RA DEC XPIXSZ YPIXSZ ]
 
    #--- Je selectionne la liste des mots cles non modifiables
-   ::keyword::setKeywordState $visuNo $::conf(supernovae,keywordConfigName) [ list OBJNAME RA DEC XPIXSZ YPIXSZ ]
+   ::keyword::setKeywordState $visuNo $configName [ list OBJNAME RA DEC XPIXSZ YPIXSZ ]
 
    #--- Je force la capture des mots cles OBJNAME, RA et DEC en automatique
    ::keyword::setKeywordsObjRaDecAuto
 }
 
 #------------------------------------------------------------
-# ::supernovae::supernovaeBuildIF
+# supernovaeBuildIF
 #    cree la fenetre de l'outil
 #------------------------------------------------------------
 proc ::supernovae::supernovaeBuildIF { This } {

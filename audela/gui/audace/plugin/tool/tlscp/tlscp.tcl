@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.36 2009-12-31 08:50:01 robertdelmas Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.37 2010-01-07 09:47:15 robertdelmas Exp $
 #
 
 #============================================================
@@ -677,21 +677,32 @@ proc ::tlscp::stopTool { visuNo } {
 }
 
 #------------------------------------------------------------
+# getNameKeywords
+#    definit le nom de la configuration des mots cles FITS de l'outil
+#    uniquement pour les outils qui configurent les mots cles selon des
+#    exigences propres a eux
+#------------------------------------------------------------
+proc ::tlscp::getNameKeywords { visuNo configName } {
+   #--- Je definis le nom
+   set ::conf(tlscp,keywordConfigName) $configName
+}
+
+#------------------------------------------------------------
 # configToolKeywords
 #    configure les mots cles FITS de l'outil
 #------------------------------------------------------------
 proc ::tlscp::configToolKeywords { visuNo { configName "" } } {
    #--- Je traite la variable configName
-   if { $configName != "" } {
-      set ::conf(tlscp,keywordConfigName) $configName
+   if { $configName == "" } {
+      set configName $::conf(tlscp,keywordConfigName)
    }
 
    #--- Je selectionne les mots cles optionnels a ajouter dans les images
    #--- Ce sont les mots cles OBJNAME, RA, DEC et EQUINOX
-   ::keyword::selectKeywords $visuNo $::conf(tlscp,keywordConfigName) [ list OBJNAME RA DEC EQUINOX ]
+   ::keyword::selectKeywords $visuNo $configName [ list OBJNAME RA DEC EQUINOX ]
 
    #--- Je selectionne la liste des mots cles non modifiables
-   ::keyword::setKeywordState $visuNo $::conf(tlscp,keywordConfigName) [ list OBJNAME RA DEC EQUINOX ]
+   ::keyword::setKeywordState $visuNo $configName [ list OBJNAME RA DEC EQUINOX ]
 
    #--- Je force la capture des mots cles OBJNAME, RA, DEC et EQUINOX en automatique
    ::keyword::setKeywordsObjRaDecAuto
