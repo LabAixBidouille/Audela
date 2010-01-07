@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: camera.tcl,v 1.35 2009-11-06 23:09:38 michelpujol Exp $
+# Mise a jour $Id: camera.tcl,v 1.36 2010-01-07 09:59:37 robertdelmas Exp $
 #
 # Procedures utilisees par confCam
 #   ::camera::create : cree une camera
@@ -211,12 +211,6 @@ proc ::camera::acq { exptime binning } {
    #--- Attente de la fin de la pose
    vwait status_$camera
 
-   #--- Attente de la fin de la pose (evolution pour le multithread)
-   set statusVariableName "::status_$camera"
-   if { [set $statusVariableName] == "exp" } {
-      vwait $statusVariableName
-   }
-
    #--- Visualisation de l'image
    ::audace::autovisu $audace(visuNo)
 
@@ -397,10 +391,7 @@ proc ::camera::gestionPose { Exposure GO_Stop { CameraName "" } { BufferName "" 
       }
 
       #--- Attente de la fin de la pose
-      set statusVariableName "::status_$CameraName"
-      if { [set $statusVariableName] == "exp" } {
-         vwait $statusVariableName
-      }
+      vwait ::status_$CameraName
 
       #--- Effacement de la fenetre de progression
       if [ winfo exists $audace(base).progress_pose ] {
@@ -589,7 +580,7 @@ proc ::camera::acquisition { camItem callback exptime } {
    variable private
 
    #--- je connecte la camera
-   ###::confCam::setConnection  $camItem 1
+   ###::confCam::setConnection $camItem 1
    #--- je renseigne la procedure de retour
    set private($camItem,callback) $callback
    set camThreadNo $private($camItem,threadNo)
@@ -610,7 +601,7 @@ proc ::camera::centerBrightestStar { camItem callback exptime originCoord target
    variable private
 
    #--- je connecte la camera
-   ###::confCam::setConnection  $camItem 1
+   ###::confCam::setConnection $camItem 1
    #--- je renseigne la procedure de retour
    set private($camItem,callback) $callback
    set camThreadNo $private($camItem,threadNo)
@@ -633,7 +624,7 @@ proc ::camera::centerRadec { camItem callback exptime originCoord raDec angle ta
    variable private
 
    #--- je connecte la camera
-   ###::confCam::setConnection  $camItem 1
+   ###::confCam::setConnection $camItem 1
    #--- je renseigne la procedure de retour
    set private($camItem,callback) $callback
    set camThreadNo $private($camItem,threadNo)
@@ -670,7 +661,7 @@ proc ::camera::guide { camItem callback exptime detection originCoord targetCoor
    variable private
 
    #--- je connecte la camera
-   ###::confCam::setConnection  $camItem 1
+   ###::confCam::setConnection $camItem 1
    #--- je renseigne la procedure de retour
    set private($camItem,callback) $callback
    set camThreadNo $private($camItem,threadNo)
@@ -692,7 +683,7 @@ proc ::camera::searchBrightestStar { camItem callback exptime originCoord target
    variable private
 
    #--- je connecte la camera
-   ###::confCam::setConnection  $camItem 1
+   ###::confCam::setConnection $camItem 1
    #--- je renseigne la procedure de retour
    set private($camItem,callback) $callback
    set camThreadNo $private($camItem,threadNo)
