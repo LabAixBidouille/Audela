@@ -2,7 +2,7 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snacq.tcl,v 1.25 2010-01-07 18:20:09 robertdelmas Exp $
+# Mise a jour $Id: snacq.tcl,v 1.26 2010-01-08 17:25:52 robertdelmas Exp $
 #
 
 # ===================================================================
@@ -20,8 +20,8 @@ source [ file join $snconf(repsnaude) snmacros.tcl ]
 source [ file join $snconf(repsnaude) snmacros.cap ]
 
 #--- Chargement de la configuration
-catch { snconfacq_load }
-snconfacq_verif
+catch { snconfacqLoad }
+snconfacqVerif
 
 #--- Recuperation de la localisation de l'observateur
 catch { set snconf(localite) "$audace(posobs,observateur,gps)" }
@@ -88,7 +88,7 @@ wm geometry $audace(base).snacq 570x460$snconf(position)
 wm resizable $audace(base).snacq 1 1
 wm minsize $audace(base).snacq 510 420
 wm title $audace(base).snacq $caption(snacq,main_title)
-wm protocol $audace(base).snacq WM_DELETE_WINDOW { ::recupPosition ; ::ExitSnAcq }
+wm protocol $audace(base).snacq WM_DELETE_WINDOW { ::recupPositionSnAcq ; ::exitSnAcq }
 
 #--- Cree un frame pour l'etat des connexions
 frame $audace(base).snacq.frame1 \
@@ -498,6 +498,14 @@ pack $audace(base).snacq.frame16 \
       -in $audace(base).snacq.frame16 -side left -anchor w \
       -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
+   #--- Create a checkbutton
+   #--- Cree un checkbutton
+   checkbutton $audace(base).snacq.frame16.checkbutton -text "$caption(snacq,avancement_acq)" \
+      -highlightthickness 0 -variable snconf(avancementAcq)
+   pack $audace(base).snacq.frame16.checkbutton \
+      -in $audace(base).snacq.frame16 -side right -anchor w \
+      -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
 #--- Create a frame to put buttons in it
 #--- Cree un frame pour y mettre des boutons
 frame $audace(base).snacq.frame2 \
@@ -509,25 +517,25 @@ pack $audace(base).snacq.frame2 \
 #--- Cree le boutton GO et ...
 button $audace(base).snacq.frame2.but_go2 \
    -text $caption(snacq,go2) -borderwidth 2 \
-   -command { snacqGo 1 }
+   -command { goSnAcq 1 }
 pack $audace(base).snacq.frame2.but_go2 \
    -in $audace(base).snacq.frame2 -side left -anchor w \
    -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 button $audace(base).snacq.frame2.but_go \
    -text $caption(snacq,go) -borderwidth 2 \
-   -command { snacqGo 0 }
+   -command { goSnAcq 0 }
 pack $audace(base).snacq.frame2.but_go \
    -in $audace(base).snacq.frame2 -side left -anchor e \
    -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 button $audace(base).snacq.frame2.but_stop \
    -text $caption(snacq,stop) -borderwidth 2 \
-   -command { $audace(base).snacq.frame2.but_stop configure -relief groove ; ::StopSnAcq }
+   -command { $audace(base).snacq.frame2.but_stop configure -relief groove ; ::stopSnAcq }
 pack $audace(base).snacq.frame2.but_stop \
    -in $audace(base).snacq.frame2 -side left -anchor e \
    -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 button $audace(base).snacq.frame2.but_exit \
    -text $caption(snacq,exit) -borderwidth 2 \
-   -command { ::recupPosition ; $audace(base).snacq.frame2.but_exit configure -relief groove ; ::ExitSnAcq }
+   -command { ::recupPositionSnAcq ; $audace(base).snacq.frame2.but_exit configure -relief groove ; ::exitSnAcq }
 pack $audace(base).snacq.frame2.but_exit \
    -in $audace(base).snacq.frame2 -side left -anchor e \
    -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -541,13 +549,13 @@ pack $audace(base).snacq.frame2.but_help \
    -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 button $audace(base).snacq.frame2.but_gobias \
    -text $caption(snacq,gobias) -borderwidth 2 \
-   -command { makebias }
+   -command { makeBias }
 pack $audace(base).snacq.frame2.but_gobias \
    -in $audace(base).snacq.frame2 -side right -anchor e \
    -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 button $audace(base).snacq.frame2.but_godark \
    -text $caption(snacq,godark) -borderwidth 2 \
-   -command { makedark }
+   -command { makeDark }
 pack $audace(base).snacq.frame2.but_godark \
    -in $audace(base).snacq.frame2 -side right -anchor e \
    -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -586,6 +594,7 @@ $zone(status_list) insert end "$caption(snacq,status)\n\n"
 
 bind $audace(base).snacq.frame1.labURL_cam <ButtonPress-1> {
    ::confCam::run
+   tkwait window $audace(base).confCam
    if {[::cam::list]!=""} {
       set cap1 "$caption(snacq,typecam) [lindex [cam$audace(camNo) info] 1]"
       ::keyword::onChangeConfOptic $audace(visuNo)
@@ -605,6 +614,7 @@ bind $audace(base).snacq.frame1.labURL_cam <ButtonPress-1> {
 
 bind $audace(base).snacq.frame1.labURL_tel <ButtonPress-1> {
    ::confTel::run
+   tkwait window $audace(base).confTel
    set snconf(telescope) $conf(telescope)
    if {[::tel::list]!=""} {
       set cap2 "$caption(snacq,typetel) [ tel$audace(telNo) name ]"
@@ -671,7 +681,7 @@ bind $audace(base).snacq.frame15.labURL_observer <ButtonPress-1> {
 
 
 # =========================================================================================
-proc snacqGo { {sndebug 0} } {
+proc goSnAcq { {sndebug 0} } {
 
    global audace
    global zone
@@ -687,7 +697,7 @@ proc snacqGo { {sndebug 0} } {
    # ================================================
    # === Mise a jour des donnees de configuration ===
    # ================================================
-   ::UpdateSnAcq
+   ::updateSnAcq
 
    # =====================================================
    # === Verifie que tous les composants sont presents ===
@@ -697,13 +707,13 @@ proc snacqGo { {sndebug 0} } {
       set sn2log sn2.log
       if {[::cam::list]==""} {
          bell
-         sninfo "$caption(snacq,nocam)\n"
+         snInfo "$caption(snacq,nocam)\n"
          set sn(exit_visu) "0"
          return
       }
       if {[::tel::list]==""} {
          bell
-         sninfo "$caption(snacq,notel)\n"
+         snInfo "$caption(snacq,notel)\n"
          set sn(exit_visu) "0"
          return
       }
@@ -714,7 +724,7 @@ proc snacqGo { {sndebug 0} } {
       }
       if {$f==""} {
          bell
-         sninfo "$caption(snacq,status_nodark)\n"
+         snInfo "$caption(snacq,status_nodark)\n"
          set sn(exit_visu) "0"
          return
       }
@@ -725,7 +735,7 @@ proc snacqGo { {sndebug 0} } {
       }
       if {$f==""} {
          bell
-         sninfo "$caption(snacq,status_nobias)\n"
+         snInfo "$caption(snacq,status_nobias)\n"
          set sn(exit_visu) "0"
          return
       }
@@ -739,7 +749,7 @@ proc snacqGo { {sndebug 0} } {
    # ================================
    # === Charge des macros utiles ===
    # ================================
-   sninfo "$caption(snacq,status_importemacros)..."
+   snInfo "$caption(snacq,status_importemacros)..."
    source [ file join $snconf(repsnaude) snmacros.tcl ]
 
    # ============================================
@@ -750,33 +760,33 @@ proc snacqGo { {sndebug 0} } {
    # ===================================================================
    # === Calcule les heures de la prochaine nuit et du prochain jour ===
    # ===================================================================
-   sninfo "$caption(snacq,status_hdebfin)"
+   snInfo "$caption(snacq,status_hdebfin)"
    set jj_debutnuit [sunset  $snconf(haurore) $snconf(localite)]
    set jj_debutjour [sunrise $snconf(haurore) $snconf(localite)]
-   sninfo " $caption(snacq,status_debnuit) : [mc_date2ymdhms $jj_debutnuit]"
-   sninfo " $caption(snacq,status_finnuit) : [mc_date2ymdhms $jj_debutjour]"
+   snInfo " $caption(snacq,status_debnuit) : [mc_date2ymdhms $jj_debutnuit]"
+   snInfo " $caption(snacq,status_finnuit) : [mc_date2ymdhms $jj_debutjour]"
 
    # ===============================================
    # === Si il fait jour alors on attend la nuit ===
    # ===============================================
    if {$sndebug==0} {
       if {$jj_debutnuit<$jj_debutjour} {
-         sninfo "$caption(snacq,status_ilfaitjour)\n"
+         snInfo "$caption(snacq,status_ilfaitjour)\n"
          if {$testjour==0} {
             while {[mc_date2jd $now]<=$jj_debutnuit} {
                #--- Cas d'une action sur le bouton Quitter
                set sn(exit_visu) "0"
                if { $sn(exit) == "1" } {
                   destroy $audace(base).snacq
-                  if [winfo exists $audace(base).outSnAcq] {
-                     destroy $audace(base).outSnAcq
+                  if [winfo exists $audace(base).msgExitSnAcq] {
+                     destroy $audace(base).msgExitSnAcq
                   }
                }
                #--- Cas d'une action sur le bouton Stop
                set sn(exit_visu) "0"
                if { $sn(stop) == "1" } {
-                  if [winfo exists $audace(base).out_SnAcq] {
-                     destroy $audace(base).out_SnAcq
+                  if [winfo exists $audace(base).msgStopSnAcq] {
+                     destroy $audace(base).msgStopSnAcq
                      $audace(base).snacq.frame2.but_stop configure -relief raised
                   }
                }
@@ -792,7 +802,7 @@ proc snacqGo { {sndebug 0} } {
       set jj_debutnuit [expr ${jj_debutnuit}-1]
    }
    set jj_finnuit $jj_debutjour
-   sninfo " $caption(snacq,status_obsjusqua) : [mc_date2ymdhms $jj_finnuit]"
+   snInfo " $caption(snacq,status_obsjusqua) : [mc_date2ymdhms $jj_finnuit]"
 
    # =================================================================
    # === Charge la liste des objets et supprime ceux inobservables ===
@@ -800,13 +810,13 @@ proc snacqGo { {sndebug 0} } {
    # === Chaque ligne du fichier des objets est au format suivant :
    # === nom hh mm ss dd ''
    # =================================================================
-   sninfo "$caption(snacq,status_loaddb)..."
-   set objlist [readobjs [ file join $snconf(repsnaude) cata_supernovae $snconf(fichier_sn) ] ]
-   sninfo " [llength $objlist] $caption(snacq,status_galadb)"
-   sninfo "$caption(snacq,status_seledb)..."
-   set objlist [selectobjs $objlist $snconf(decinf) $snconf(decsup) $snconf(localite) $snconf(maginf) $snconf(magsup)]
-   sninfo " [llength $objlist] $caption(snacq,status_galobs)"
-   sninfo ""
+   snInfo "$caption(snacq,status_loaddb)..."
+   set objlist [readObjects [ file join $snconf(repsnaude) cata_supernovae $snconf(fichier_sn) ] ]
+   snInfo " [llength $objlist] $caption(snacq,status_galadb)"
+   snInfo "$caption(snacq,status_seledb)..."
+   set objlist [selectObjects $objlist $snconf(decinf) $snconf(decsup) $snconf(localite) $snconf(maginf) $snconf(magsup)]
+   snInfo " [llength $objlist] $caption(snacq,status_galobs)"
+   snInfo ""
    set contents $objlist
 
    set DR [expr acos(-1)/180.]
@@ -885,7 +895,7 @@ proc snacqGo { {sndebug 0} } {
       }
       foreach fileevent $listfileevent {
          catch {source $fileevent} {
-            sninfo "$caption(snacq,status_alerterror) $fileevent !!!"
+            snInfo "$caption(snacq,status_alerterror) $fileevent !!!"
          }
       }
 
@@ -974,7 +984,7 @@ proc snacqGo { {sndebug 0} } {
          set dec "[lindex $ligne 4]d[lindex $ligne 5]m[lindex $ligne 6]s"
 
          set result "[ mc_date2ymdhms $nownow ]\n[ list $ligne $ra $dec ]"
-         sninfo "$result"
+         snInfo "$result"
 
          if {$sndebug==0} {
             #--- Pointe le telescope
@@ -987,9 +997,9 @@ proc snacqGo { {sndebug 0} } {
 
             #--- Lit la position du telescope
             set result "$caption(snacq,status_telpointe) [ ::telescope::afficheCoord ]"
-            sninfo ""
-            sninfo "$result"
-            sninfo ""
+            snInfo ""
+            snInfo "$result"
+            snInfo ""
 
             #--- Si une raquette existe, rafraichissement de l'affichage des coordonnees
             ::telescope::afficheCoord
@@ -1012,7 +1022,7 @@ proc snacqGo { {sndebug 0} } {
 
             #--- Cas des poses de 0 s : Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
             if { $snconf(exptime) == "0" } {
-               ::camera::avancementPose "1" "1"
+               ::camera::avancementPose $snconf(avancementAcq) 1
             }
 
             #--- Declenchement de l'acquisition
@@ -1030,7 +1040,7 @@ proc snacqGo { {sndebug 0} } {
             }
 
             #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
-            ::camera::gestionPose $snconf(exptime) 1 1 $camera $buffer
+            ::camera::gestionPose $snconf(exptime) 1 $snconf(avancementAcq) $camera $buffer
 
             #--- Visualisation de l'image acquise
             ::audace::autovisu $audace(visuNo)
@@ -1051,7 +1061,7 @@ proc snacqGo { {sndebug 0} } {
             ::confVisu::setFileName $audace(visuNo) ""
 
             #--- Mots cles pour compatibilité Prism
-            snprism
+            snPrism
 
             #--- Sauvegarde de l'image
             $buffer save [ file join $snconf(dossier) ${name} ]
@@ -1061,7 +1071,7 @@ proc snacqGo { {sndebug 0} } {
          #--- Fin du debug
 
          incr nbgal
-         sninfo " "
+         snInfo " "
 
          catch {
             set fileId [ open [ file join $snconf(dossier) ${snlog} ] w ]
@@ -1099,28 +1109,28 @@ proc snacqGo { {sndebug 0} } {
 
    set nbgal0 [expr int(ceil(($nbgal)/$snconf(nbimages)))]
    set result "$caption(snacq,status_nightend) $nbgal0 galaxies"
-   sninfo "$result\n"
+   snInfo "$result\n"
 
    set sn(exit_visu) "0"
    if { $sn(exit) == "1" } {
       destroy $audace(base).snacq
-      if [winfo exists $audace(base).outSnAcq] {
-         destroy $audace(base).outSnAcq
+      if [winfo exists $audace(base).msgExitSnAcq] {
+         destroy $audace(base).msgExitSnAcq
       }
    }
    if { $sn(stop) == "1" } {
-      if [winfo exists $audace(base).out_SnAcq] {
-         destroy $audace(base).out_SnAcq
+      if [winfo exists $audace(base).msgStopSnAcq] {
+         destroy $audace(base).msgStopSnAcq
          $audace(base).snacq.frame2.but_stop configure -relief raised
       }
    }
 }
 
 # ===========================================================================================
-# recupPosition
+# recupPositionSnAcq
 # Permet de recuperer et de sauvegarder la position de la fenetre SnAcq
 #
-proc recupPosition { } {
+proc recupPositionSnAcq { } {
    global audace
    global conf
    global snconf
@@ -1132,96 +1142,95 @@ proc recupPosition { } {
 }
 
 # ===========================================================================================
-# messageOutSnAcq
-# Affichage d'un message d'alerte lors de la fermeture de la fenetre SnAcq ou de l'appui sur
-# le bouton Quitter
+# msgExitSnAcq
+# Affichage d'un message d'alerte lors de la fermeture de la fenetre SnAcq
 #
-proc messageOutSnAcq { } {
+proc msgExitSnAcq { } {
    global audace
    global caption
    global color
 
    #---
-   if [winfo exists $audace(base).outSnAcq] {
-      destroy $audace(base).outSnAcq
+   if [winfo exists $audace(base).msgExitSnAcq] {
+      destroy $audace(base).msgExitSnAcq
    }
-   toplevel $audace(base).outSnAcq
-   wm resizable $audace(base).outSnAcq 0 0
-   wm title $audace(base).outSnAcq "$caption(snacq,attention)"
-   set posx_outSnAcq [ lindex [ split [ wm geometry $audace(base).snacq ] "+" ] 1 ]
-   set posy_outSnAcq [ lindex [ split [ wm geometry $audace(base).snacq ] "+" ] 2 ]
-   wm geometry $audace(base).outSnAcq +[ expr $posx_outSnAcq + 200 ]+[ expr $posy_outSnAcq + 270 ]
-   wm transient $audace(base).outSnAcq $audace(base).snacq
+   toplevel $audace(base).msgExitSnAcq
+   wm resizable $audace(base).msgExitSnAcq 0 0
+   wm title $audace(base).msgExitSnAcq "$caption(snacq,attention)"
+   set posx_msgExitSnAcq [ lindex [ split [ wm geometry $audace(base).snacq ] "+" ] 1 ]
+   set posy_msgExitSnAcq [ lindex [ split [ wm geometry $audace(base).snacq ] "+" ] 2 ]
+   wm geometry $audace(base).msgExitSnAcq +[ expr $posx_msgExitSnAcq + 200 ]+[ expr $posy_msgExitSnAcq + 270 ]
+   wm transient $audace(base).msgExitSnAcq $audace(base).snacq
 
    #--- Cree l'affichage du message
-   label $audace(base).outSnAcq.labURL1 -text "$caption(snacq,texte1)" -fg $color(red)
-   pack $audace(base).outSnAcq.labURL1 -padx 10 -pady 2
-   label $audace(base).outSnAcq.labURL2 -text "$caption(snacq,texte2)" -fg $color(red)
-   pack $audace(base).outSnAcq.labURL2 -padx 10 -pady 2
+   label $audace(base).msgExitSnAcq.labURL1 -text "$caption(snacq,texte1)" -fg $color(red)
+   pack $audace(base).msgExitSnAcq.labURL1 -padx 10 -pady 2
+   label $audace(base).msgExitSnAcq.labURL2 -text "$caption(snacq,texte2)" -fg $color(red)
+   pack $audace(base).msgExitSnAcq.labURL2 -padx 10 -pady 2
 
    #--- La nouvelle fenetre est active
-   focus $audace(base).outSnAcq
+   focus $audace(base).msgExitSnAcq
 
    #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $audace(base).outSnAcq
+   ::confColor::applyColor $audace(base).msgExitSnAcq
 }
 
 # ===========================================================================================
-# OutSnAcq
-# Affichage d'un message d'alerte lors de l'appui sur le bouton Stop
+# msgStopSnAcq
+# Affichage d'un message d'alerte lors de l'arret des acquisitions
 #
-proc OutSnAcq { } {
+proc msgStopSnAcq { } {
    global audace
    global caption
    global color
 
    #---
-   if [winfo exists $audace(base).out_SnAcq] {
-      destroy $audace(base).out_SnAcq
+   if [winfo exists $audace(base).msgStopSnAcq] {
+      destroy $audace(base).msgStopSnAcq
    }
-   toplevel $audace(base).out_SnAcq
-   wm resizable $audace(base).out_SnAcq 0 0
-   wm title $audace(base).out_SnAcq "$caption(snacq,attention)"
-   set posx_out_SnAcq [ lindex [ split [ wm geometry $audace(base).snacq ] "+" ] 1 ]
-   set posy_out_SnAcq [ lindex [ split [ wm geometry $audace(base).snacq ] "+" ] 2 ]
-   wm geometry $audace(base).out_SnAcq +[ expr $posx_out_SnAcq + 200 ]+[ expr $posy_out_SnAcq + 270 ]
-   wm transient $audace(base).out_SnAcq $audace(base).snacq
+   toplevel $audace(base).msgStopSnAcq
+   wm resizable $audace(base).msgStopSnAcq 0 0
+   wm title $audace(base).msgStopSnAcq "$caption(snacq,attention)"
+   set posx_msgStopSnAcq [ lindex [ split [ wm geometry $audace(base).snacq ] "+" ] 1 ]
+   set posy_msgStopSnAcq [ lindex [ split [ wm geometry $audace(base).snacq ] "+" ] 2 ]
+   wm geometry $audace(base).msgStopSnAcq +[ expr $posx_msgStopSnAcq + 200 ]+[ expr $posy_msgStopSnAcq + 270 ]
+   wm transient $audace(base).msgStopSnAcq $audace(base).snacq
 
    #--- Cree l'affichage du message
-   label $audace(base).out_SnAcq.labURL1 -text "$caption(snacq,texte3)" -fg $color(red)
-   pack $audace(base).out_SnAcq.labURL1 -padx 10 -pady 2
-   label $audace(base).out_SnAcq.labURL2 -text "$caption(snacq,texte4)" -fg $color(red)
-   pack $audace(base).out_SnAcq.labURL2 -padx 10 -pady 2
+   label $audace(base).msgStopSnAcq.labURL1 -text "$caption(snacq,texte3)" -fg $color(red)
+   pack $audace(base).msgStopSnAcq.labURL1 -padx 10 -pady 2
+   label $audace(base).msgStopSnAcq.labURL2 -text "$caption(snacq,texte4)" -fg $color(red)
+   pack $audace(base).msgStopSnAcq.labURL2 -padx 10 -pady 2
 
    #--- La nouvelle fenetre est active
-   focus $audace(base).out_SnAcq
+   focus $audace(base).msgStopSnAcq
 
    #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $audace(base).out_SnAcq
+   ::confColor::applyColor $audace(base).msgStopSnAcq
 }
 
 # ===========================================================================================
-# ExitSnAcq
-# Fermer la fenetre SnAcq
+# exitSnAcq
+# Fermeture de la fenetre SnAcq
 #
-proc ExitSnAcq { } {
+proc exitSnAcq { } {
    global audace
    global sn
 
    if { $sn(exit_visu) == "0" } {
-      update ; snconfacq_save ; cd $sn(inidir) ; destroy $audace(base).snacq
+      update ; snconfacqSave ; cd $sn(inidir) ; destroy $audace(base).snacq
    } else {
       set sn(exit) "1"
-      ::messageOutSnAcq
-      update ; snconfacq_save ; cd $sn(inidir)
+      ::msgExitSnAcq
+      update ; snconfacqSave ; cd $sn(inidir)
    }
 }
 
 # ===========================================================================================
-# StopSnAcq
-# Fermer la fenetre SnAcq
+# stopSnAcq
+# Arret des acquisitions de SnAcq
 #
-proc StopSnAcq { } {
+proc stopSnAcq { } {
    global audace
    global sn
 
@@ -1229,23 +1238,23 @@ proc StopSnAcq { } {
       $audace(base).snacq.frame2.but_stop configure -relief raised
    } else {
       set sn(stop) "1"
-      ::OutSnAcq
+      ::msgStopSnAcq
    }
 }
 
 # ===========================================================================================
-# UpdateSnAcq
+# updateSnAcq
 # Mise a jour des variables snconf
 #
-proc UpdateSnAcq { } {
+proc updateSnAcq { } {
    global snconf
    global audace
 
    #--- Sauvegarde des parametres
-   snconfacq_save
+   snconfacqSave
    #--- Chargement de la configuration
-   catch { snconfacq_load }
-   snconfacq_verif
+   catch { snconfacqLoad }
+   snconfacqVerif
    #--- Rafraichissement des variables et des entry
    set extname "[buf$audace(bufNo) extension]"
    set snconf(darkfile) "d$snconf(exptime)b$snconf(binning)$extname"
