@@ -2,7 +2,7 @@
 # Fichier : acqvideo.tcl
 # Description : Outil d'acquisition video
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: acqvideo.tcl,v 1.14 2009-12-31 08:46:33 robertdelmas Exp $
+# Mise a jour $Id: acqvideo.tcl,v 1.15 2010-01-08 21:42:22 robertdelmas Exp $
 #
 
 #==============================================================
@@ -664,11 +664,7 @@ namespace eval ::acqvideo {
                         ::console::affiche_resultat "$caption(acqvideo,start_capture_error) $msg \n"
                      } else {
                         #--- J'attends la fin de l'acquisition
-                        #--- Remarque : La commande [set $xxx] permet de recuperer le contenu d'une variable
-                        set statusVariableName "::status_cam$panneau(acqvideo,$visuNo,camNo)"
-                        if { [set $statusVariableName] == "exp" } {
-                           vwait status_cam$panneau(acqvideo,$visuNo,camNo)
-                        }
+                         vwait status_cam$panneau(acqvideo,$visuNo,camNo)
                      }
                      #--- Incrementer l'index
                      if { $panneau(acqvideo,$visuNo,indexer) == "1" } {
@@ -767,14 +763,12 @@ namespace eval ::acqvideo {
                         cam$panneau(acqvideo,$visuNo,camNo) setvideostatusvariable ::panneau(acqvideo,$visuNo,status)
                         set result [ catch { cam$panneau(acqvideo,$visuNo,camNo) startvideocapture "$nom_rep" "$panneau(acqvideo,$visuNo,lg_film)" "$panneau(acqvideo,$visuNo,rate)" "1" } msg ]
                         if { $result == "1" } {
+                           #--- En cas d'erreur, j'affiche un message d'erreur
+                           #--- Et je passe a la suite sans attendre
                            ::console::affiche_resultat "$caption(acqvideo,start_capture_error) $msg \n"
                         } else {
                            #--- J'attends la fin de l'acquisition
-                           #--- Remarque : La commande [set $xxx] permet de recuperer le contenu d'une variable
-                           set statusVariableName "::status_cam$panneau(acqvideo,$visuNo,camNo)"
-                           if { [set $statusVariableName] == "exp" } {
-                              vwait status_cam$panneau(acqvideo,$visuNo,camNo)
-                           }
+                           vwait status_cam$panneau(acqvideo,$visuNo,camNo)
                            #--- Je desactive le bouton "STOP"
                            $panneau(acqvideo,$visuNo,This).go_stop.but configure -state disabled
                         }
