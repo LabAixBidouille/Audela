@@ -2,10 +2,10 @@
 # Fichier : snmacros.tcl
 # Description : Macros des scripts pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snmacros.tcl,v 1.14 2010-01-07 10:32:58 robertdelmas Exp $
+# Mise a jour $Id: snmacros.tcl,v 1.15 2010-01-08 17:26:19 robertdelmas Exp $
 #
 
-proc globgalsn { files } {
+proc searchGalaxySn { files } {
    # idem as glob but don't take d*b* files
    set result ""
    set errnum [catch {glob $files} result]
@@ -33,14 +33,14 @@ proc globgalsn { files } {
    return $res
 }
 
-proc readobjs { namefile } {
+proc readObjects { namefile } {
    set input [open "$namefile" r]
    set contents [split [read $input] \n]
    close $input
    return $contents
 }
 
-proc selectobjs { objlist {decinf "-15"} {decsup "40"} {localite "GPS 2.33 e 48.8 67"} {maginf -1.5} {magsup 15} } {
+proc selectObjects { objlist {decinf "-15"} {decsup "40"} {localite "GPS 2.33 e 48.8 67"} {maginf -1.5} {magsup 15} } {
    #--- Selectionne uniquement les objets suffisamment loin de la Lune et du Soleil et elimine ceux
    #--- qui sont en dehors des declinaisons pointables, la liste d'objets comprend les colonnes suivantes :
    #--- col 0 : name
@@ -50,8 +50,8 @@ proc selectobjs { objlist {decinf "-15"} {decsup "40"} {localite "GPS 2.33 e 48.
    #--- col 4 : decd
    #--- col 5 : decm
 
-   set radecmoon [moon_info_0h $localite]
-   set radecsun  [ sun_info_0h $localite]
+   set radecmoon [moonInfo0h $localite]
+   set radecsun  [sunInfo0h $localite]
 
    set ra_moon [lindex $radecmoon 0]
    set dec_moon [lindex $radecmoon 1]
@@ -88,7 +88,7 @@ proc selectobjs { objlist {decinf "-15"} {decsup "40"} {localite "GPS 2.33 e 48.
    return $contents
 }
 
-proc moon_info_0h { {localite "GPS 2.33 e 48.8 67"} } {
+proc moonInfo0h { {localite "GPS 2.33 e 48.8 67"} } {
    #--- Calcule RA DEC de la lune pour la plus proche date a 0h TU
    set jd [mc_date2jd now]
    set jd0 [mc_date2jd now0]
@@ -102,7 +102,7 @@ proc moon_info_0h { {localite "GPS 2.33 e 48.8 67"} } {
    return $result
 }
 
-proc sun_info_0h { {localite "GPS 2.33 e 48.8 67"} } {
+proc sunInfo0h { {localite "GPS 2.33 e 48.8 67"} } {
    #--- Calcule RA DEC du Soleil pour la plus proche date a 0h TU
    set jd [mc_date2jd now]
    set jd0 [mc_date2jd now0]
@@ -173,7 +173,7 @@ proc sunrise { {hauteurlim "0"} {localite "GPS 2.33 e 48.8 67"} } {
 }
 
 # ==========================================================================================
-proc snconfacq_verif { } {
+proc snconfacqVerif { } {
    global conf snconf
 
    if { [info exists snconf(position)] == "0" } {
@@ -227,11 +227,14 @@ proc snconfacq_verif { } {
    if { [info exists snconf(fits,OBSERVER)] == "0" } {
       set snconf(fits,OBSERVER) "$conf(posobs,nom_observateur)"
    }
+   if { [info exists snconf(avancementAcq)] == "0" } {
+      set snconf(avancementAcq) "1"
+   }
 }
 # ==========================================================================================
 
 # ==========================================================================================
-proc snconfacq_save { } {
+proc snconfacqSave { } {
    global conf snconf
 
    set result ""
@@ -272,11 +275,13 @@ proc snconfacq_save { } {
    set conf(snconfacq,telescope)     $snconf(telescope)
    #--- FITS Keywords
    set conf(snconfacq,fits,OBSERVER) $snconf(fits,OBSERVER)
+   #--- Exposition progress
+   set conf(snconfacq,avancementAcq) $snconf(avancementAcq)
 }
 # ==========================================================================================
 
 # ==========================================================================================
-proc snconfacq_load { } {
+proc snconfacqLoad { } {
    global conf snconf
 
    set result ""
@@ -317,11 +322,13 @@ proc snconfacq_load { } {
    set snconf(telescope)     $conf(snconfacq,telescope)
    #--- FITS Keywords
    set snconf(fits,OBSERVER) $conf(snconfacq,fits,OBSERVER)
+   #--- Exposition progress
+   set snconf(avancementAcq) $conf(snconfacq,avancementAcq)
 }
 # ==========================================================================================
 
 # ==========================================================================================
-proc sninfo { {result ""} } {
+proc snInfo { {result ""} } {
    global sn zone
 
    if { $sn(exit) != "1" } {
@@ -333,7 +340,7 @@ proc sninfo { {result ""} } {
 # ==========================================================================================
 
 # ==========================================================================================
-proc makebias {} {
+proc makeBias { } {
    global audace caption sn snconf
 
    set sn(stop) "0"
@@ -355,14 +362,14 @@ proc makebias {} {
    set shutter_mode [cam$audace(camNo) shutter]
    cam$audace(camNo) shutter closed
 
-   sninfo "$caption(snmacros,obscurite)"
-   sninfo ""
-   sninfo "[ format $caption(snmacros,acqde1) $nbdarks ]"
-   sninfo ""
+   snInfo "$caption(snmacros,obscurite)"
+   snInfo ""
+   snInfo "[ format $caption(snmacros,acqde1) $nbdarks ]"
+   snInfo ""
 
    for {set k 1} {$k <= $nbdarks} {incr k} {
       set sn(exit_visu) "1"
-      sninfo "$caption(snmacros,acqbias) $k"
+      snInfo "$caption(snmacros,acqbias) $k"
       #--- Sortie de la boucle si appui sur le bouton Quitter
       if { $sn(exit) == "1" } {
          set sn(stop) "1"
@@ -381,8 +388,8 @@ proc makebias {} {
 
    if { $sn(stop) == "0" } {
       #--- Commentaire
-      sninfo ""
-      sninfo "$caption(snmacros,synthesebias)\n"
+      snInfo ""
+      snInfo "$caption(snmacros,synthesebias)\n"
       #--- Synthèse de l'offset final
       smedian d$expt- d${expt}b${bin} $nbdarks
       #--- Ménage
@@ -393,13 +400,13 @@ proc makebias {} {
       loadima d${expt}b${bin}
       #--- Commentaire
       after 2500
-      sninfo "$caption(snmacros,synthesebiasfini)\n"
+      snInfo "$caption(snmacros,synthesebiasfini)\n"
    } elseif { $sn(stop) == "1" } {
       #--- Ménage
       delete2 d$expt- $k
       #--- Commentaire
-      sninfo ""
-      sninfo "$caption(snmacros,acqbias_stop)\n"
+      snInfo ""
+      snInfo "$caption(snmacros,acqbias_stop)\n"
    }
 
    #--- Restauration du mode obturateur
@@ -413,15 +420,15 @@ proc makebias {} {
    set sn(exit_visu) "0"
    if { $sn(exit) == "1" } {
       destroy $audace(base).snacq
-      if [winfo exists $audace(base).outSnAcq] {
-         destroy $audace(base).outSnAcq
+      if [winfo exists $audace(base).msgExitSnAcq] {
+         destroy $audace(base).msgExitSnAcq
       }
    }
    #--- Cas d'une action sur le bouton Stop
    set sn(exit_visu) "0"
    if { $sn(stop) == "1" } {
-      if [winfo exists $audace(base).out_SnAcq] {
-         destroy $audace(base).out_SnAcq
+      if [winfo exists $audace(base).msgStopSnAcq] {
+         destroy $audace(base).msgStopSnAcq
          $audace(base).snacq.frame2.but_stop configure -relief raised
       }
    }
@@ -429,7 +436,7 @@ proc makebias {} {
 # ==========================================================================================
 
 # ==========================================================================================
-proc makedark {} {
+proc makeDark { } {
    global audace caption sn snconf
 
    set sn(stop) "0"
@@ -451,14 +458,14 @@ proc makedark {} {
    set shutter_mode [cam$audace(camNo) shutter]
    cam$audace(camNo) shutter closed
 
-   sninfo "$caption(snmacros,obscurite)"
-   sninfo ""
-   sninfo "[ format $caption(snmacros,acqde2) $nbdarks $expt ]"
-   sninfo ""
+   snInfo "$caption(snmacros,obscurite)"
+   snInfo ""
+   snInfo "[ format $caption(snmacros,acqde2) $nbdarks $expt ]"
+   snInfo ""
 
    for {set k 1} {$k <= $nbdarks} {incr k} {
       set sn(exit_visu) "1"
-      sninfo "$caption(snmacros,acqdark) $k"
+      snInfo "$caption(snmacros,acqdark) $k"
       #--- Sortie de la boucle si appui sur le bouton Quitter
       if { $sn(exit) == "1" } {
          set sn(stop) "1"
@@ -477,8 +484,8 @@ proc makedark {} {
 
    if { $sn(stop) == "0" } {
       #--- Commentaire
-      sninfo ""
-      sninfo "$caption(snmacros,synthesedark)\n"
+      snInfo ""
+      snInfo "$caption(snmacros,synthesedark)\n"
       #--- Synthèse du noir final
       smedian d$expt- d${expt}b${bin} $nbdarks
       #--- Ménage
@@ -489,13 +496,13 @@ proc makedark {} {
       loadima d${expt}b${bin}
       #--- Commentaire
       after 2500
-      sninfo "$caption(snmacros,synthesedarkfini)\n"
+      snInfo "$caption(snmacros,synthesedarkfini)\n"
    } elseif { $sn(stop) == "1" } {
       #--- Ménage
       delete2 d$expt- $k
       #--- Commentaire
-      sninfo ""
-      sninfo "$caption(snmacros,acqdark_stop)\n"
+      snInfo ""
+      snInfo "$caption(snmacros,acqdark_stop)\n"
    }
 
    #--- Restauration du mode obturateur
@@ -509,15 +516,15 @@ proc makedark {} {
    set sn(exit_visu) "0"
    if { $sn(exit) == "1" } {
       destroy $audace(base).snacq
-      if [winfo exists $audace(base).outSnAcq] {
-         destroy $audace(base).outSnAcq
+      if [winfo exists $audace(base).msgExitSnAcq] {
+         destroy $audace(base).msgExitSnAcq
       }
    }
    #--- Cas d'une action sur le bouton Stop
    set sn(exit_visu) "0"
    if { $sn(stop) == "1" } {
-      if [winfo exists $audace(base).out_SnAcq] {
-         destroy $audace(base).out_SnAcq
+      if [winfo exists $audace(base).msgStopSnAcq] {
+         destroy $audace(base).msgStopSnAcq
          $audace(base).snacq.frame2.but_stop configure -relief raised
       }
    }
@@ -525,7 +532,7 @@ proc makedark {} {
 # ==========================================================================================
 
 # ==========================================================================================
-proc snprism { } {
+proc snPrism { } {
    global audace caption snconf
 
    set date_obs [lindex [buf$audace(bufNo) getkwd DATE-OBS] 1]
@@ -584,7 +591,7 @@ proc snprism { } {
 # ==========================================================================================
 
 # ==========================================================================================
-proc snconfvisu_verif { } {
+proc snconfvisuVerif { } {
    global snconfvisu
 
    if { [ info exists snconfvisu(rep1) ] == "0" } {
@@ -630,7 +637,7 @@ proc snconfvisu_verif { } {
 # ==========================================================================================
 
 # ==========================================================================================
-proc snconfvisu_load { } {
+proc snconfvisuLoad { } {
    global conf snconfvisu
 
    set result ""
@@ -664,7 +671,7 @@ proc snconfvisu_load { } {
 # ==========================================================================================
 
 # ==========================================================================================
-proc snconfvisu_save { } {
+proc snconfvisuSave { } {
    global conf snconfvisu
 
    set result ""
@@ -678,7 +685,7 @@ proc snconfvisu_save { } {
 # ==========================================================================================
 
 # ==========================================================================================
-proc snSetup_save { } {
+proc snSetupSave { } {
    global conf snconfvisu
 
    set result ""
@@ -706,7 +713,7 @@ proc snSetup_save { } {
 # ==========================================================================================
 
 # ==========================================================================================
-proc sn_verif_wcs { bufNo } {
+proc snVerifWCS { bufNo } {
    set calib 1
    if { [string compare [lindex [buf$bufNo getkwd CRPIX1] 0] ""] == 0 } {
       set calib 0
@@ -755,8 +762,8 @@ proc sn_verif_wcs { bufNo } {
 # ==========================================================================================
 
 # ==========================================================================================
-proc sn_center_radec { bufNo } {
-   set res [sn_verif_wcs $bufNo]
+proc snCenterRaDec { bufNo } {
+   set res [snVerifWCS $bufNo]
    if {$res==0} {
       return ""
    }

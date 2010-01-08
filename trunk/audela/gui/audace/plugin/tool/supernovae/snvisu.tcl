@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.38 2009-11-23 20:54:34 robertdelmas Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.39 2010-01-08 17:26:44 robertdelmas Exp $
 #
 
 #--- Conventions pour ce script :
@@ -17,8 +17,8 @@ source [ file join $audace(rep_plugin) tool supernovae snvisuzoom.tcl ]
 source [ file join $audace(rep_plugin) tool supernovae sntkutil.tcl ]
 
 #--- Chargement de la configuration
-catch { snconfvisu_load }
-snconfvisu_verif
+catch { snconfvisuLoad }
+snconfvisuVerif
 
 set snvisu(afflog) 1 ; #--- Pour un affichage des images en mode logarithme
 
@@ -68,15 +68,15 @@ set snvisu(ima_rep3_exist) "0"
 set snconfvisu(num_rep2_3) "0"
 set extname "[buf$audace(bufNo) extension]"
 set aa "$rep(1)/*$extname"
-set rep(x1) [globgalsn $aa]
+set rep(x1) [searchGalaxySn $aa]
 set rep00 {}
 set aa "$rep(1)/*${extname}.gz"
-catch {set rep00 [globgalsn $aa]}
+catch {set rep00 [searchGalaxySn $aa]}
 # lappend rep(x1) $rep00
 set rep(x1) [concat $rep(x1) $rep00]
 set rep(xx1) -1
 set aa "$rep(2)/*$extname"
-set rep(x2) [globgalsn $aa]
+set rep(x2) [searchGalaxySn $aa]
 set rep(xx2) -1
 
 set gnaxis1 384
@@ -596,7 +596,7 @@ proc snDelete { } {
       return
    }
    #---
-   snconfvisu_save
+   snconfvisuSave
    #--- Supprime les images et les visu
    if { [ info exists num(visuZoom1) ] } {
       image delete image$num(visuZoom1)
@@ -862,11 +862,11 @@ proc changeDir { numbuf } {
          set rep($numbuf) "$filename"
          set extname "[buf$num(buffer1) extension]"
          set aa "$rep($numbuf)/*$extname"
-         set rep(x$numbuf) [globgalsn $aa]
+         set rep(x$numbuf) [searchGalaxySn $aa]
 
          set rep00 {}
          set aa "$rep($numbuf)/*${extname}.gz"
-         catch {set rep00 [globgalsn $aa]}
+         catch {set rep00 [searchGalaxySn $aa]}
          set rep(x$numbuf) [concat $rep(x$numbuf) $rep00]
 
          set rep(xx$numbuf) -1
@@ -1024,7 +1024,7 @@ proc displayImages { } {
       if {($gren_ha!="")&&($gren_dec!="")&&($gren_alt!="")&&($fwhm!="")} {
          set complus " (ha=[string trim ${gren_ha}] dec=[string trim ${gren_dec}] elev=[string trim ${gren_alt}] fwhm=[string trim ${fwhm}])"
       }
-      $audace(base).snvisu.lst1 insert end "$caption(snvisu,image1) -> $filename $result [sn_center_radec $num(buffer1)] $user $name $complus"
+      $audace(base).snvisu.lst1 insert end "$caption(snvisu,image1) -> $filename $result [snCenterRaDec $num(buffer1)] $user $name $complus"
       $audace(base).snvisu.lst1 yview moveto 1.0
       #--- Disparition du sautillement des widgets inferieurs
       pack $audace(base).snvisu.lst1.scr1 \
@@ -1576,7 +1576,7 @@ proc snSetup { } {
    button $audace(base).snvisu_3.but_go \
       -text $caption(snvisu,go) -borderwidth 2 \
       -command {
-         ::snSetup_save
+         ::snSetupSave
          destroy $audace(base).snvisu_3
          tk_messageBox -message "$caption(snvisu,alerte1)\n$caption(snvisu,alerte2)\n$caption(snvisu,alerte3)\n" -icon warning -title "$caption(snvisu,attention)"
       }
@@ -2176,8 +2176,8 @@ proc snBlinkImage { } {
       buf$num(buffer1) save "$audace(rep_images)/dummy1"
       set objefile "__dummy__"
       set error [ catch {
-         set wcs1 [sn_verif_wcs $num(buffer1)]
-         set wcs2 [sn_verif_wcs $b]
+         set wcs1 [snVerifWCS $num(buffer1)]
+         set wcs2 [snVerifWCS $b]
          if {($wcs1==0)||($wcs2==0)} {
             ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"dummy\" 1 2 \"$ext\" \"$audace(rep_images)\" \"$objefile\" 1 \"$ext\" STAT objefile"
             ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"$objefile\" 1 2 \"$ext\" \"$audace(rep_images)\" \"dummyb\" 1 \"$ext\" REGISTER translate=never"
