@@ -1,6 +1,6 @@
 #
 # Fichier : snacq.cap
-# Mise a jour $Id: snacq.cap,v 1.15 2009-12-19 09:21:08 robertdelmas Exp $
+# Mise a jour $Id: snacq.cap,v 1.16 2010-01-08 17:07:13 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -34,6 +34,7 @@ set caption(snacq,foclen)                    "Focal Length (m)"
 set caption(snacq,fits,OBSERVER)             "Observer"
 set caption(snacq,en-tete_fits)              "FITS Header"
 set caption(snacq,mots_cles)                 "Keywords"
+set caption(snacq,avancement_acq)            "Acquisition Progress"
 set caption(snacq,go2)                       "Simulation"
 set caption(snacq,go)                        "Acquisition"
 set caption(snacq,stop)                      "Stop"
@@ -91,6 +92,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,fits,OBSERVER)          "Observateur"
    set caption(snacq,en-tete_fits)           "En-tête FITS"
    set caption(snacq,mots_cles)              "Mots clés"
+   set caption(snacq,avancement_acq)         "Avancement de l'acquisition"
    set caption(snacq,go2)                    "Simulation"
    set caption(snacq,go)                     "Acquisition"
    set caption(snacq,stop)                   "Stop"
@@ -148,6 +150,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,fits,OBSERVER)          "Osservatore"
    set caption(snacq,en-tete_fits)           "Intestazione FITS"
    set caption(snacq,mots_cles)              "Parole chiave"
+   set caption(snacq,avancement_acq)         "Avanzamento acquisizione"
    set caption(snacq,go2)                    "Simulazione"
    set caption(snacq,go)                     "Acquisizione"
    set caption(snacq,stop)                   "Stop"
@@ -205,6 +208,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,fits,OBSERVER)          "Observador"
    set caption(snacq,en-tete_fits)           "Cabecera FITS"
    set caption(snacq,mots_cles)              "Palabras clave"
+   set caption(snacq,avancement_acq)         "Progreso de la adquisición"
    set caption(snacq,go2)                    "Simulación"
    set caption(snacq,go)                     "Adquisición"
    set caption(snacq,stop)                   "Stop"
@@ -262,6 +266,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,fits,OBSERVER)          "Beobachter"
    set caption(snacq,en-tete_fits)           "FITS Header"
    set caption(snacq,mots_cles)              "Stichwörter"
+   set caption(snacq,avancement_acq)         "Belichtung im Gange"
    set caption(snacq,go2)                    "Simulierung"
    set caption(snacq,go)                     "Belichtung"
    set caption(snacq,stop)                   "Stop"
@@ -319,6 +324,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,fits,OBSERVER)          "Observador"
    set caption(snacq,en-tete_fits)           "Cabeçalho FITS"
    set caption(snacq,mots_cles)              "Palavras-chave"
+   set caption(snacq,avancement_acq)         "Adiantamento da aquisição"
    set caption(snacq,go2)                    "Simulação"
    set caption(snacq,go)                     "Aquisição"
    set caption(snacq,stop)                   "Stop"
@@ -376,6 +382,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,fits,OBSERVER)          "Observer"
    set caption(snacq,en-tete_fits)           "FITS Header"
    set caption(snacq,mots_cles)              "Keywords"
+   set caption(snacq,avancement_acq)         "Acquisition Progress"
    set caption(snacq,go2)                    "Simulation"
    set caption(snacq,go)                     "Acquisition"
    set caption(snacq,stop)                   "Stop"
@@ -433,6 +440,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,fits,OBSERVER)          "Observer"
    set caption(snacq,en-tete_fits)           "FITS Header"
    set caption(snacq,mots_cles)              "Keywords"
+   set caption(snacq,avancement_acq)         "Acquisition Progress"
    set caption(snacq,go2)                    "Simulation"
    set caption(snacq,go)                     "Acquisition"
    set caption(snacq,stop)                   "Stop"
@@ -490,6 +498,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,fits,OBSERVER)          "Observer"
    set caption(snacq,en-tete_fits)           "FITS Header"
    set caption(snacq,mots_cles)              "Keywords"
+   set caption(snacq,avancement_acq)         "Acquisition Progress"
    set caption(snacq,go2)                    "Simulation"
    set caption(snacq,go)                     "Acquisition"
    set caption(snacq,stop)                   "Stop"
