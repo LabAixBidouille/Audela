@@ -559,6 +559,11 @@ typedef struct {
 	double delay_slew; // delay to wait the telescope slewing complete (sec)
 	double delay_instrum; // delay to wait the instrument setup complete (sec)
 	double delay_exposures; // delay to wait the exposures (+readout) complete (sec)
+	// ==========================================================
+	// ==== private
+	// ==========================================================
+	double private_elevmaxi;
+	double private_jdelevmaxi;
 } mc_OBJECTDESCR;
 
 typedef struct {
@@ -570,6 +575,7 @@ typedef struct {
    double moon_dist;
    double sun_dist;
    double skylevel; // -50 = masked by horizon limits, else expected skylight in mag/arcsec2 in V band
+	int flagobs; // 0=inobservable, 1=observable, 2=passage a la plus haute elevation
 } mc_OBJECTLOCAL;
 
 typedef struct {
@@ -581,6 +587,24 @@ typedef struct {
    double moon_phase;
    double lst;
 } mc_SUNMOON;
+
+typedef struct {
+   int idseq;
+   int order;
+   double jd_slew_start;
+   double jd_acq_start;
+   double jd_acq_end;
+   double percent_quota_used;
+   double jd_elev_max;
+} mc_PLANI;
+
+typedef struct {
+   int iduser; // that of mc_OBJECTDESCR.user
+   double percent_quota_used;
+   double percent_quota_authorized;
+} mc_USERS;
+
+
 
 /***************************************************************************/
 /***************************************************************************/

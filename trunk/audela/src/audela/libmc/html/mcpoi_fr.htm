@@ -12,7 +12,7 @@
 <center><b><font size="+3">LIB MC</font></b> <br>
 Cr&eacute;ation et utilisation d'un mod&egrave;le de pointage avec
 la&nbsp; librairie de calculs de m&eacute;canique c&eacute;leste <br>
-version 20091221<br>
+version 20100102<br>
 Alain KLOTZ
 <p><b><font size="+3">Manuel de l'utilisateur</font></b></p>
 </center>
@@ -325,7 +325,8 @@ pointage<br>
 DescObs : Descripteur des indices o&ugrave; l'on trouve les
 coordonn&eacute;es dans les &eacute;l&eacute;ments de ListObs. Dans
 l'ordre on pr&eacute;cisera des indices de {az elev daz delev} ou {ha
-dec dha ddec}.<br>
+dec dha ddec}. Ces indices sont compt&eacute;s &agrave; partir de
+z&eacute;ro.<br>
 <br>
 Sorties :<br>
 <p>On trouvera 3 listes&nbsp;</p>
@@ -479,10 +480,10 @@ close $f<br>
 set decalages [lrange $decalages 0 end-1]<br>
 set modpoi_symbols {IH ID NP CH ME MA}<br>
 set matrices [mc_compute_matrix_modpoi $decalages EQUATORIAL $home
-$modpoi_symbol {2 3 4 5}]<br>
+$modpoi_symbols {2 3 4 5}]<br>
 set matX [lindex $matrices 0]<br>
 set vecY [lindex $matrices 1]<br>
-set vecW [lindex $matrices 0]<br>
+set vecW [lindex $matrices 2]<br>
 <br>
 # === Calcul des coefs du modele<br>
 set resmodels [gsl_mfitmultilin $vecY $matX $vecW]<br>

@@ -27,6 +27,7 @@
 /* Scheduler d'observations                                                */
 /***************************************************************************/
 #include "mc.h"
+int mc_printplani(int npl,mc_PLANI **plani);
 
 /*****************************************************************************/
 /*****************************************************************************/
@@ -2175,7 +2176,7 @@ int mc_scheduler_objectlocal1(double longmpc, double rhocosphip, double rhosinph
 	*pobjectlocal=objectlocal;
 
 	// --- prepare sous-ech vectors
-	njdm=1441;
+	njdm=24*60/10+1;
 	sousech=(int)floor(1.*njd/njdm);
 	if (sousech<1) { sousech=1; }
 	njdm=(int)ceil(1.*njd/sousech);
@@ -2381,6 +2382,12 @@ int mc_scheduler_objectlocal1(double longmpc, double rhocosphip, double rhosinph
 		if (dummy02s[kjd+1]>360) { dummy02s[kjd+1]-=360.; }
 		objectlocal[kjd].ra=dummy02s[kjd+1];
 	}
+	for (kjd=0;kjd<=njd;kjd++) {
+		objectlocal[kjd].flagobs=1;
+		if (objectlocal[kjd].skylevel<0) {
+			objectlocal[kjd].flagobs=0;
+		}
+	}
 	free(luminance_ciel_bleus);
 	free(dummy1s);
 	free(dummy2s);
@@ -2439,27 +2446,299 @@ int mc_obsconditions1(double jd_now, double longmpc, double rhocosphip, double r
 int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,mc_HORIZON_ALTAZ *horizon_altaz,mc_HORIZON_HADEC *horizon_hadec,int nobj,mc_OBJECTDESCR *objectdescr) {
 
 	double jd_prevmidsun,jd_nextmidsun,djd;
-	int njd;
+	int njd,ko,nobjloc,kjd,flag,kp,k,nplanified,kpl,npl,np,ku,k1,k2,kk,kd;
 	mc_SUNMOON *sunmoon=NULL;
-	mc_OBJECTLOCAL *objectlocal=NULL;
+	mc_OBJECTLOCAL *objectlocal0=NULL,**objectlocals=NULL;
+	mc_PLANI **planis=NULL;
+	double *priority_total,*same_priority,*dummys;
+	int *kpriority_total,*ksame_priority,*kdummys;
+	double current_priority,id0,id,jd0,jd1,jd2;
+	int *objectlinks,nu,npl0;
+	mc_USERS *users;
+	double angle,seq_duration,d1,d2,d12;
 
 	// --- compute dates of observing range (=the start-end of the schedule)
 	mc_scheduler_windowdates1(jd_now,longmpc,rhocosphip,rhosinphip,&jd_prevmidsun,&jd_nextmidsun);
 
 	// --- compute mc_SUNMOON vector for the observing range.
-	djd=60./86400.;
+	djd=1./86400.;
 	mc_scheduler_sunmoon1(longmpc,rhocosphip,rhosinphip,jd_prevmidsun,jd_nextmidsun,djd,&njd,&sunmoon);
 
 	// --- compute mc_OBJECTLOCAL vector for the observing range.
-	mc_sheduler_corccoords(&objectdescr[0]);
-	mc_scheduler_objectlocal1(longmpc,rhocosphip,rhosinphip,&objectdescr[0],njd,sunmoon,horizon_altaz,horizon_hadec,&objectlocal);
+	// --- complete the mc_OBJECTLOCAL.flagobs vector
+	// --- complete the objectdescr[ko].private_elevmaxi;
+	// --- complete the objectdescr[ko].private_jdelevmaxi;
+	objectlocals=(mc_OBJECTLOCAL**)malloc(nobj*sizeof(mc_OBJECTLOCAL*));
+	objectlocal0=(mc_OBJECTLOCAL*)malloc(njd*sizeof(mc_OBJECTLOCAL));
+	objectlinks=(int*)calloc(nobj,sizeof(int));
+	nobjloc=0;
+	for (ko=0;ko<nobj;ko++) {
+		if (objectdescr[ko].const_jd2<jd_prevmidsun) {
+			// -- la fin des observations est demandée avant le début du mer2mer
+			continue;
+		}
+		if (objectdescr[ko].const_jd1>jd_nextmidsun) {
+			// -- le debut des observations est demandée apres la fin du mer2mer
+			continue;
+		}
+		mc_sheduler_corccoords(&objectdescr[ko]);
+		objectlocals[nobjloc]=NULL;
+		mc_scheduler_objectlocal1(longmpc,rhocosphip,rhosinphip,&objectdescr[ko],njd,sunmoon,horizon_altaz,horizon_hadec,&objectlocals[nobjloc]);
+		flag=0;
+		for (kjd=0;kjd<=njd;kjd++) {
+			if (objectlocals[nobjloc][kjd].skylevel<objectdescr[ko].const_skylightlevel) {
+				objectlocals[nobjloc][kjd].flagobs=0;
+				flag++;
+			}
+		}
+		if (flag==njd) {
+			// -- l'astre nest jamais observable dans le mer2mer
+			free(objectlocals[nobjloc]);
+			continue;
+		}
+		objectdescr[ko].private_elevmaxi=-90.;
+		objectdescr[ko].private_jdelevmaxi=0.;
+		for (kjd=0;kjd<=njd;kjd++) {
+			if (objectlocals[nobjloc][kjd].flagobs==1) {
+				if (objectlocals[nobjloc][kjd].elev>objectdescr[ko].private_elevmaxi) {
+					objectdescr[ko].private_elevmaxi=objectlocals[nobjloc][kjd].elev;
+					objectdescr[ko].private_jdelevmaxi=sunmoon[kjd].jd;
+				}
+			}
+		}
+		objectlinks[nobjloc]=ko;
+		nobjloc++;
+	}
+	nobjloc--;
+
+	// --- vecteur des users et des quotas
+	dummys=(double*)calloc(nobjloc,sizeof(double));
+	kdummys=(int*)calloc(nobjloc,sizeof(int));
+	for (ko=0;ko<nobjloc;ko++) {
+		dummys[ko]=objectdescr[objectlinks[ko]].user;
+		kdummys[ko]=ko;
+	}
+	mc_quicksort_double(dummys,0,nobjloc-1,kdummys);
+	id0=dummys[0];
+	for (ko=1,nu=1;ko<nobjloc;ko++) {
+		id=dummys[ko];
+		if (id!=id0) {
+			nu++;
+			id0=id;
+		}
+	}
+	users=(mc_USERS*)malloc(nu*sizeof(mc_USERS));
+	nu=0;
+	id0=dummys[0];
+	users[0].iduser=(int)dummys[0];
+	users[0].percent_quota_authorized=objectdescr[objectlinks[kdummys[0]]].user_quota;
+	users[0].percent_quota_used=0.;
+	for (ko=1,nu=0;ko<nobjloc;ko++) {
+		id=dummys[ko];
+		if (id!=id0) {
+			nu++;
+			users[nu].iduser=(int)dummys[ko];
+			users[nu].percent_quota_authorized=objectdescr[objectlinks[kdummys[ko]]].user_quota;
+			users[nu].percent_quota_used=0.;
+			id0=id;
+		}
+	}
+
+	// --- vecteur des priorites trie dans l'ordre croissant
+	priority_total=(double*)calloc(nobjloc,sizeof(double));
+	kpriority_total=(int*)calloc(nobjloc,sizeof(int));
+	for (ko=0;ko<nobjloc;ko++) {
+		priority_total[ko]=objectdescr[objectlinks[ko]].user_priority;
+		kpriority_total[ko]=ko;
+	}
+	mc_quicksort_double(priority_total,0,nobjloc-1,kpriority_total);
+	same_priority=(double*)calloc(nobjloc,sizeof(double));
+	ksame_priority=(int*)calloc(nobjloc,sizeof(int));
+
+	// --- initialise les vecteurs de la planification
+	planis=(mc_PLANI**)malloc(2*sizeof(mc_PLANI*));
+	for (kpl=0;kpl<2;kpl++) {
+		planis[kpl]=(mc_PLANI*)malloc(1*sizeof(mc_PLANI));
+	}
+	npl0=npl=0;
+
+	// --- planification in-quotas
+	// ko : index in objectlocal
+	// kd : index in objectdescr
+	// npl : nombre de scenes planifiees
+	current_priority=priority_total[nobjloc-1];
+	ko=nobjloc;
+	nplanified=0;
+	while (1==1) {
+		ko--;
+		// --- on cherche toutes les sequences de meme priorite
+		for (k=ko,np=0;k>=0;k--,np++) {
+			if (priority_total[k]<current_priority) {
+				break;
+			} else {
+				ksame_priority[np]=kpriority_total[k];
+			}
+		}
+		// --- on place les kp=[0..np] sequences de meme priorite dans la planif
+		for (kp=0;kp<=np;kp++) {
+			kk=ksame_priority[kp]; // kk index in objectlocal
+			kd=objectlinks[kk]; ///// kd index in objectdescr
+			// --- recherche l'indice ku du user dans mc_USERS
+			for (ku=0;ku<nu;ku++) {
+				if (users[ku].iduser==objectdescr[kd].user) {
+					break;
+				}
+			}
+			// --- si le user a dépasse son quota alors on passe a la sequence suivante
+			if (users[ku].percent_quota_used>users[ku].percent_quota_authorized) {
+				continue;
+			}
+			// --- initialize the flagobs vector
+			for (kjd=0;kjd<njd;kjd++) {
+				objectlocal0[kjd].flagobs=objectlocals[kk][kjd].flagobs;
+			}
+			// --- compute the total estimated duration of the sequence (seconds)
+			seq_duration=objectdescr[kd].delay_slew+objectdescr[kd].delay_instrum+objectdescr[kd].delay_exposures;
+			angle=70.;
+			d1=angle/objectdescr[kd].axe_slew1;
+			d2=angle/objectdescr[kd].axe_slew2;
+			d12=(d1>d2)?d1:d2;
+			seq_duration+=d12;
+			// --- switch to zero the flagobs to take account for the sequence duration
+			for (kjd=njd;kjd>0;kjd--) {
+				if ( (kjd==njd) || ((objectlocal0[kjd].flagobs==0)&&(objectlocal0[kjd-1].flagobs==1)) ) {
+					k1=kjd-1;
+					k2=k1-(int)(seq_duration/86400./djd);
+					if (k2<0) { k2=0; }
+					for (k=k1;k>=k2;k--) {
+						objectlocal0[k].flagobs=0;
+					}
+					kjd=k2;
+				}
+			}
+			// --- switch to zero the flagobs to take account for sequences already planified
+			for (k=0;k<npl;k++) {
+				k1=(int)((planis[0][k].jd_slew_start-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd);
+				k2=(int)((planis[0][k].jd_acq_end-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd);
+				for (k=k1;k<=k2;k++) {
+					objectlocal0[k].flagobs=0;
+				}
+			}
+			// --- search for the best start slewing date
+			if (objectdescr[kd].const_immediate==1) {
+				// --- il faut demarrer le plus vite possible
+				for (kjd=0,k=-1;kjd<njd;kjd++) {
+					if (objectlocal0[kjd].flagobs==1) {
+						k=kjd;
+						jd0=sunmoon[kjd].jd;
+						break;
+					}
+				}
+			} else {
+				// --- on observe au meilleur moment du creneau d'observation
+				k1=(int)((objectdescr[kd].private_jdelevmaxi-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd);
+				for (kjd=k1,k=-1;kjd>=0;kjd--) {
+					if (objectlocal0[kjd].flagobs==1) {
+						k=kjd;
+						jd0=sunmoon[kjd].jd;
+						break;
+					}
+				}
+				if (k==-1) {
+					for (kjd=k1,k=-1;kjd<njd;kjd++) {
+						if (objectlocal0[kjd].flagobs==1) {
+							k=kjd;
+							jd0=sunmoon[kjd].jd;
+							break;
+						}
+					}
+				}
+			}
+			if (k==-1) {
+				// --- there is no gap large enough to insert the current sequence
+				continue;
+			}
+			// --- jd0(debut_slew) jd1(debut_acq) jd2(fin_acq)
+			jd1=jd0+d12/86400.;
+			jd2=jd0+seq_duration/86400.;
+			// --- the sequence will be inserted in the gap.
+			// --- on remplit la planif d'indice npl (0 pour la premiere planif)
+			free(planis[1]);
+			planis[1]=(mc_PLANI*)malloc((npl+1)*sizeof(mc_PLANI));
+			k1=0;
+			for (k=k1;k<npl;k++) {
+				if (planis[0][npl].jd_acq_end<=jd1) {
+					planis[1][k]=planis[0][k];
+				} else {
+					k1=k;
+					break;
+				}
+			}
+			planis[1][k1].idseq=objectdescr[kd].idseq;
+			planis[1][k1].jd_slew_start=jd0;
+			planis[1][k1].jd_acq_start=jd1;
+			planis[1][k1].jd_acq_end=jd2;
+			planis[1][k1].jd_elev_max=0.;
+			planis[1][k1].order=npl;
+			planis[1][k1].percent_quota_used=(jd2-jd0)/(jd_nextmidsun-jd_prevmidsun);
+			users[ku].percent_quota_used+=(jd2-jd0)/(jd_nextmidsun-jd_prevmidsun);
+			for (k=k1+1;k<=npl;k++) {
+				planis[1][k]=planis[0][k-1];
+			}
+			free(planis[0]);
+			planis[0]=(mc_PLANI*)malloc((npl+1)*sizeof(mc_PLANI));
+			for (k=0;k<=npl;k++) {
+				planis[0][k]=planis[1][k];
+			}
+			npl++;
+			mc_printplani(npl,planis);
+		}
+		if (npl==npl0) {
+			break;
+		} else {
+			npl0=npl;
+		}
+	}
 
    //mc_fitspline(n1,n2,x,y,dy,s,nn,xx,ff);
+	free(users);
 	free(sunmoon);
-	free(objectlocal);
+	for (kp=0;kp<2;kp++) {
+		free(planis[kp]);
+	}
+	free(planis);
+	for (ko=0;ko<nobjloc;ko++) {
+		free(objectlocals[nobjloc]);
+	}
+	free(objectlocals);
+	free(objectlocal0);
+	free(objectlinks);
+	free(dummys);
+	free(kdummys);
+	free(same_priority);
+	free(ksame_priority);
+	free(priority_total);
+	free(kpriority_total);
    return 0;
 }
 
+int mc_printplani(int npl,mc_PLANI **planis) {
+	FILE *f;
+	int k;
+	f=fopen("planis.txt","wt");
+	for (k=0;k<npl;k++) {
+		fprintf(f,"%5d ",planis[0][k].idseq);
+		fprintf(f,"%15.6f ",planis[0][k].jd_slew_start);
+		fprintf(f,"%15.6f ",planis[0][k].jd_acq_start);
+		fprintf(f,"%15.6f ",planis[0][k].jd_acq_end);
+		fprintf(f,"%15.6f ",planis[0][k].jd_elev_max);
+		fprintf(f,"%5d ",planis[0][k].order);
+		fprintf(f,"%6.4f ",planis[0][k].percent_quota_used);
+		fprintf(f,"\n");
+	}
+	fclose(f);
+	return 0;
+}
 /************************************************************************/
 /************************************************************************/
 /************************************************************************/
