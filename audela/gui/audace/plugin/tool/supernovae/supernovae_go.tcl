@@ -2,7 +2,7 @@
 # Fichier : supernovae_go.tcl
 # Description : Outil pour l'observation des SnAudes
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: supernovae_go.tcl,v 1.23 2010-01-07 09:46:56 robertdelmas Exp $
+# Mise a jour $Id: supernovae_go.tcl,v 1.24 2010-01-08 16:54:29 robertdelmas Exp $
 #
 
 #============================================================
@@ -187,7 +187,7 @@ proc ::supernovae::configToolKeywords { visuNo { configName "" } } {
    }
 
    #--- Je selectionne les mots cles optionnels a ajouter dans les images
-   #--- Les mots cles RA, DEC, XPIXSZ et YPIXSZ sont obligatoires pour "snprism" de snmacro.tcl
+   #--- Les mots cles RA, DEC, XPIXSZ et YPIXSZ sont obligatoires pour "snPrism" de snmacro.tcl
    #--- OBJNAME a ete rajoute car il caracterise le nom de l'objet pointe
    ::keyword::selectKeywords $visuNo $configName [ list OBJNAME RA DEC XPIXSZ YPIXSZ ]
 
