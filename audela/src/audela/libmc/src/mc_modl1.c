@@ -177,7 +177,9 @@ double mc_modpoi_addobs_h(double az,double h,int nb_coef,mc_modpoi_vecy *vecy,mc
 	}
 	dh=0.;
 	for (k=0;k<nb_coef;k++) {
-		dh+=(matx[nb_coef+k].coef*vecy[k].coef);
+//modif michel
+      //dh+=(matx[nb_coef+k].coef*vecy[k].coef);
+		dh+=(matx[k].coef*vecy[k].coef);
 	}
 	return dh;
 }
@@ -232,8 +234,11 @@ double mc_modpoi_addobs_ha(double ha,double dec,double latrad,int nb_coef,mc_mod
 		if (strcmp(vecy[k].type,"MA")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-cosh*tand; }
 		if (strcmp(vecy[k].type,"TF")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosl*sinh/cosd; }
 		if (strcmp(vecy[k].type,"FO")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-		if (strcmp(vecy[k].type,"DAF")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosl*cosh+sinl*tand; }
-		if (strcmp(vecy[k].type,"HF")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sinh/cosd; }
+// modif michel
+      //if (strcmp(vecy[k].type,"DAF")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosl*cosh+sinl*tand; }
+		//if (strcmp(vecy[k].type,"HF")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sinh/cosd; }
+		if (strcmp(vecy[k].type,"DAF")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-cosl*cosh-sinl*tand; }
+		if (strcmp(vecy[k].type,"HF")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-sinh/cosd; }
 		if (strcmp(vecy[k].type,"TX")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=(cosl*sinh*cosd)/(sind*sinl+cosd*cosh*cosl); }
 		if (strcmp(vecy[k].type,"DNP")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sinh*tand; }
 		if (strcmp(vecy[k].type,"EHS")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sinh*sinh*tand; }
@@ -260,7 +265,7 @@ double mc_modpoi_addobs_ha(double ha,double dec,double latrad,int nb_coef,mc_mod
 	for (k=0;k<nb_coef;k++) {
 		dha+=(matx[k].coef*vecy[k].coef);
 	}
-	return ha;
+	return dha;
 }
 
 /****************************************************************************/
