@@ -941,6 +941,7 @@ List_ModelSymbols
 				code=Tcl_SplitList(interp,argvv[k],&argccc,&argvvv);
 				if (argccc<kmax) {
 					// traiter l'erreur
+					sprintf(s,"ListeObs {%s} contains less than %d elements",argvv[k],kmax);
 					pb=1;
 					if (argvvv!=NULL) { Tcl_Free((char *) argvvv); }
 					break;
@@ -953,13 +954,15 @@ List_ModelSymbols
 			}
 		} else {
 			// traiter l'erreur
-			return TCL_ERROR;
-		}
-		if (pb==1) {
-			// traiter l'erreur
+			sprintf(s,"ListeObs {%s} contains less one element",argv[1]);
 			return TCL_ERROR;
 		}
 		if (argvv!=NULL) { Tcl_Free((char *) argvv); }
+		if (pb==1) {
+			// traiter l'erreur
+	      Tcl_SetResult(interp,s,TCL_VOLATILE);
+			return TCL_ERROR;
+		}
       /* --- decode le type de coordonnees d'entree ---*/
 		mc_strupr(argv[2],s);
 		if (s[0]=='A') {
@@ -1211,7 +1214,18 @@ int Cmd_mctcl_scheduler(ClientData clientData, Tcl_Interp *interp, int argc, cha
 /****************************************************************************/
 /****************************************************************************/
 /*
-mc_scheduler now {GPS 5 E 43 1230} {  { {AXE_TYPE 0} {AXES_0 now 14h34m 26d45'} {AXES_1 now 14h34m -16d45'} } { {AXE_TYPE 0} {AXES_0 now 15h +16d} }  } 
+set seqs ""
+lappend seqs { {IDUSER 0} {UQUOTA 30} {UPRIORITY 30} {IDSEQ 0} {AXE_TYPE EQUATORIAL} {AXES_0 now 02h34m 36d45'} {DELAY_EXPOSURES 180} }
+lappend seqs { {IDUSER 0} {UQUOTA 30} {UPRIORITY 30} {IDSEQ 1} {AXE_TYPE EQUATORIAL} {AXES_0 now 04h34m 26d45'} {DELAY_EXPOSURES 181} }
+lappend seqs { {IDUSER 0} {UQUOTA 30} {UPRIORITY 30} {IDSEQ 2} {AXE_TYPE EQUATORIAL} {AXES_0 now 06h34m 16d45'} {DELAY_EXPOSURES 182} }
+lappend seqs { {IDUSER 0} {UQUOTA 30} {UPRIORITY 30} {IDSEQ 3} {AXE_TYPE EQUATORIAL} {AXES_0 now 08h34m 06d45'} {DELAY_EXPOSURES 183} }
+lappend seqs { {IDUSER 1} {UQUOTA 20} {UPRIORITY 20} {IDSEQ 4} {AXE_TYPE EQUATORIAL} {AXES_0 now 10h34m 46d45'} {DELAY_EXPOSURES 184} }
+lappend seqs { {IDUSER 1} {UQUOTA 20} {UPRIORITY 20} {IDSEQ 5} {AXE_TYPE EQUATORIAL} {AXES_0 now 12h34m 56d45'} {DELAY_EXPOSURES 185} }
+lappend seqs { {IDUSER 1} {UQUOTA 20} {UPRIORITY 20} {IDSEQ 6} {AXE_TYPE EQUATORIAL} {AXES_0 now 14h34m 26d45'} {DELAY_EXPOSURES 186} }
+lappend seqs { {IDUSER 1} {UQUOTA 20} {UPRIORITY 20} {IDSEQ 7} {AXE_TYPE EQUATORIAL} {AXES_0 now 16h34m 26d45'} {DELAY_EXPOSURES 187} }
+lappend seqs { {IDUSER 2} {UQUOTA 40} {UPRIORITY 30} {IDSEQ 8} {AXE_TYPE EQUATORIAL} {AXES_0 now 18h34m 26d45'} {DELAY_EXPOSURES 188} }
+lappend seqs { {IDUSER 2} {UQUOTA 40} {UPRIORITY 30} {IDSEQ 9} {AXE_TYPE EQUATORIAL} {AXES_0 now 20h34m 26d45'} {DELAY_EXPOSURES 189} }
+mc_scheduler now {GPS 5 E 43 1230} $seqs
 */
 /****************************************************************************/
 {
