@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.ipport.tcl,v 1.12 2009-06-01 09:50:12 robertdelmas Exp $
+# Mise a jour $Id: tuto.ipport.tcl,v 1.13 2010-01-09 18:34:41 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -120,7 +120,7 @@ Read the Help section of the OS manual.\n\n\
 }
 
 proc connect_ethernaude {} {
-   global audace ipeth caption num
+   global ipeth caption num
    if { [llength [cam::list] ] == 1 } {
       if { [ info exists num(camNo) ] == "1" } {
          if {[lindex [cam$num(camNo) drivername] 0]=="libethernaude"} {
@@ -143,14 +143,17 @@ proc connect_ethernaude {} {
       tk_messageBox -message "$msg" -icon error
       return
    } else {
-      if {[info exists audace]==1} {
-         set num(camNo) $msg
-         cam$num(camNo) buf $audace(bufNo)
-         ::audace::visuDynamix 32767 -32768
-         ::console::affiche_saut "\n"
-         ::console::affiche_erreur "$caption(ethernaude) : $ipeth(ipnumethernaude) \n"
-         ::console::affiche_erreur "[ cam$num(camNo) name ] ([ cam$num(camNo) ccd ]) \n\n"
-      }
+      #--- Je nettoye le buffer et la visu
+      buf$num(bufNo) clear
+      visu$num(visuNo) clear
+      #--- Je change de variable
+      set num(camNo) $msg
+      #--- J'associe le buffer de la visu
+      cam$num(camNo) buf $num(bufNo)
+      #--- J'ecris dans la Console
+      ::console::affiche_saut "\n"
+      ::console::affiche_erreur "$caption(ethernaude) : $ipeth(ipnumethernaude) \n"
+      ::console::affiche_erreur "[ cam$num(camNo) name ] ([ cam$num(camNo) ccd ]) \n\n"
    }
    tk_messageBox -message "Camera connected" -icon info
 }
@@ -234,29 +237,6 @@ pack .second.statusBar.lab -side left -padx 2 -expand yes -fill both
 pack .second.statusBar.foo -side left -padx 2
 pack .second.statusBar -side bottom -fill x -pady 2
 
-#catch {image delete image$num(imageNo)}
-#image create photo image$num(imageNo)
-#if {[info exists audace]==1} {
-#   set rep [ file join $audace(rep_plugin) link ethernaude tutorial ]
-#} else {
-#   set rep "."
-#}
-#image$num(imageNo) configure -file [ file join $rep ethernaude5.gif ]
-#image create photo image21
-#set width [image width image$num(imageNo)]
-#set height [image height image$num(imageNo)]
-#set winwidth [int [expr [winfo screenwidth .second]*.85/1.7]]
-#set winheight [int [expr [winfo screenheight .second]*.85]]
-#if {$width > $winwidth} {
-#   image21 copy image$num(imageNo) -subsample 2 2
-#} elseif {$height > $winheight} {
-#   image21 copy image$num(imageNo) -subsample 2 2
-#} else {
-#   image21 copy image$num(imageNo)
-#}
-#label .second.photo1 -image image21
-#pack .second.photo1 -side right
-
 if {$ipeth(ipon)=="yes"} {
 
    #--- create the window .second
@@ -287,9 +267,6 @@ if {$ipeth(ipon)=="yes"} {
       -in .second.second -expand 1 -side top -anchor center -pady 10
 }
 
-
-
-
 frame .second.textFrame
 pack .second.textFrame -expand yes -fill both
 scrollbar .second.s -orient vertical -command {.second.t yview} -highlightthickness 0 \
@@ -311,7 +288,6 @@ pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 # is right over them (but not when the cursor is to their left or right)
 #
 .second.t tag configure demospace -lmargin1 1c -lmargin2 1c
-
 
 if {[winfo depth .second] == 1} {
    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
@@ -357,7 +333,6 @@ set lastLine ""
 }
 
 # Create the text for the text widget.
-
 
 # ====================
 # === Setting text ===
