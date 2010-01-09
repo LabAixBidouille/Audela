@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.15 2010-01-09 10:35:49 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.16 2010-01-09 21:31:58 bmauclaire Exp $
 
 
 ####################################################################
@@ -1863,11 +1863,12 @@ proc spc_calibretelluric { args } {
       set crval1_initial $crval1
       ::console::affiche_resultat "Loi de calibration lineaire : $crval1+$cdelt1*x\n"
 
-              
+
        #--- Methode 2 : origine decalee du decalage moyen
        if { [ lsearch $spcaudace(calo_meths) 2 ] != -1 } {
           ::console::affiche_resultat "============ 2) Décalage du SHIFT du spectre inital linéarisé ================\n"
           set spectre_lindec [ spc_calibredecal "$spectre_linear" [ expr -1.0*$mean_shift_initial ] ]
+          #- set spectre_lindec [ spc_calibredecal "$spectre_linear" [ expr -1.*$mean_shift_initial ] ]
           set infos_cal [ spc_rms "$spectre_lindec" $listeraies ]
           set rms_lindec [ lindex $infos_cal 1 ]
           set mean_shift_lindec [ lindex $infos_cal 2 ]
