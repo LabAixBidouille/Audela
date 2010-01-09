@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.tcl,v 1.14 2009-06-01 09:53:12 robertdelmas Exp $
+# Mise a jour $Id: tuto.tcl,v 1.15 2010-01-09 18:33:23 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -91,7 +91,7 @@ proc caption_def { langage } {
 #
 # SCCS: @(#) widget 1.35 97/07/19 15:42:22
 
-global texte caption
+global num texte caption
 
 caption_def $langage
 
@@ -371,7 +371,6 @@ proc showStatus index {
       .main.t config -cursor $newcursor
    }
 }
-
 
 # aboutBox --
 #
