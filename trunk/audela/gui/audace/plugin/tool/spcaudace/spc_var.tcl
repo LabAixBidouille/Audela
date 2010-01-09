@@ -3,7 +3,7 @@
 #
 ####################################################################
 
-# Mise a jour $Id: spc_var.tcl,v 1.13 2010-01-05 15:15:21 bmauclaire Exp $
+# Mise a jour $Id: spc_var.tcl,v 1.14 2010-01-09 21:32:02 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -12,7 +12,7 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(version) "1.5.6 - 04/01/2010"
+set spcaudace(version) "1.5.6 - 09/01/2010"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
 
@@ -46,7 +46,8 @@ set spcaudace(reptelluric) [ file join $spcaudace(rep_spc) data telluric ]
 set spcaudace(filetelluric) "$spcaudace(reptelluric)/h2o_calibrage.txt"
 #set spcaudace(filetelluric) "$spcaudace(reptelluric)/h2o_calibrage_140b.txt"
 #-- Liste des methodes de calibrations telluriques :
-set spcaudace(calo_meths) { 1 2 4 5 6 }
+#- set spcaudace(calo_meths) { 1 2 4 5 6 }
+set spcaudace(calo_meths) { 1 2 }
 #- 1 : spectre initial juste linearise ; toutes configs ; ne pas enlever de la liste.
 #- 2 : decalage d'une valeur egale au decalage moyen mean_shift mesure ; toutes configs.
 #- 3 : recallibrage de degre 3 avec les raies telluriques, puis decalage de RMS et linearisation ; que kaf1600.
