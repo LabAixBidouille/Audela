@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.14 2010-01-05 15:15:21 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.15 2010-01-09 10:35:49 bmauclaire Exp $
 
 
 ####################################################################
@@ -597,7 +597,7 @@ proc spc_calibredecal { args } {
 
 proc spc_calibren { args } {
    global conf
-   global audace
+   global audace spcaudace
    set erreur 0.01
    
    set len [expr [ llength $args ]-1 ]
