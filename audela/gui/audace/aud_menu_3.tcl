@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.56 2010-01-03 21:51:44 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.57 2010-01-10 16:03:31 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -2410,7 +2410,7 @@ namespace eval ::conv2 {
    #########################################################################
    # Lance le script des conversion                                        #
    #########################################################################
-   proc ::conv2::run { { type_conversion "" } } {
+   proc run { { type_conversion "" } } {
       variable this
       variable private
       variable widget
@@ -2477,9 +2477,6 @@ namespace eval ::conv2 {
 
       #--- remplace les caracteres
       regsub -all {[^\w_]} $dir {} dir
-      regsub -all {[йикл]} $dir "e" dir
-      regsub -all {[ав]}   $dir "a" dir
-      regsub -all "з"      $dir "c" dir
 
       set liste_generiques [ list $dir "rgb_" "plan_" "img3d_" ]
       foreach op $private(conv2,operations) generique $liste_generiques {
@@ -2520,7 +2517,7 @@ namespace eval ::conv2 {
    # Liste les images par nature (raw cfa rgb plan_coul)                   #
    # et cree l'array bdd des listes des noms courts de fichiers            #
    #########################################################################
-   proc ::conv2::ListFiles { } {
+   proc ListFiles { } {
       variable private
       variable bdd
       global caption
@@ -2637,7 +2634,7 @@ namespace eval ::conv2 {
    #########################################################################
    # Recupere la position de la fenetre                                    #
    #########################################################################
-   proc ::conv2::recupPosition { } {
+   proc recupPosition { } {
       variable this
       variable widget
 
@@ -2652,7 +2649,7 @@ namespace eval ::conv2 {
    #########################################################################
    # Charge les variables de configuration dans des variables locales      #
    #########################################################################
-   proc ::conv2::confToWidget { } {
+   proc confToWidget { } {
       variable widget
       global conf
 
@@ -2662,7 +2659,7 @@ namespace eval ::conv2 {
    #########################################################################
    # Charge les variables locales dans des variables de configuration      #
    #########################################################################
-   proc ::conv2::widgetToConf { } {
+   proc widgetToConf { } {
       variable widget
       global conf
 
@@ -2672,7 +2669,7 @@ namespace eval ::conv2 {
    #########################################################################
    # Initialisation des variables de configuration                         #
    #########################################################################
-   proc ::conv2::initConf { } {
+   proc initConf { } {
       global conf
 
       if { ! [ info exists conf(conv2,position) ] } { set conf(conv2,position) "+350+75" }
@@ -2683,7 +2680,7 @@ namespace eval ::conv2 {
    #########################################################################
    # Cree la fenetre de dialogue                                           #
    #########################################################################
-   proc ::conv2::CreateDialog { this } {
+   proc CreateDialog { this } {
       variable private
       variable widget
       global caption color conf
@@ -2810,7 +2807,7 @@ namespace eval ::conv2 {
    #########################################################################
    # Affiche la liste des fichiers convertibles                            #
    #########################################################################
-   proc ::conv2::Select { op } {
+   proc Select { op } {
       variable private
       variable bdd
       global caption
@@ -2863,7 +2860,7 @@ namespace eval ::conv2 {
    # les fichiers peuvent etre renommes et/ou renumerotes                  #
    # de maniere a pouvoir etre pretraites (offset, dark et flat)           #
    #########################################################################
-   proc ::conv2::UpdateDialog { } {
+   proc UpdateDialog { } {
       variable private
 
       #--- initialise les listes de fichiers in & out
@@ -2940,7 +2937,7 @@ namespace eval ::conv2 {
    # Parametres : nom entrant, nom sortant                                 #
    # Sorties : listes de fichiers in & out, 1 si collision sinon 0         #
    #########################################################################
-   proc ::conv2::Collision { in out } {
+   proc Collision { in out } {
       variable private
 
       switch -exact $private(conv2,conversion) {
@@ -2981,12 +2978,12 @@ namespace eval ::conv2 {
       return $err
    }
 
-   #---------------- pilote de conversion --------------------------
+   #------------------------ pilote de conversion --------------------------
 
    #########################################################################
    # Pilote les conversions a partir des listes in & out                   #
    #########################################################################
-   proc ::conv2::cmdOk { } {
+   proc cmdOk { } {
       ::conv2::Process
       ::conv2::Fermer
    }
@@ -2994,7 +2991,7 @@ namespace eval ::conv2 {
    #########################################################################
    # Procedure correspondant a l'appui sur le bouton Aide                  #
    #########################################################################
-   proc ::conv2::afficheAide { } {
+   proc afficheAide { } {
       global help
 
       #---
@@ -3004,9 +3001,12 @@ namespace eval ::conv2 {
    #########################################################################
    # Pilote les conversions a partir des listes in & out                   #
    #########################################################################
-   proc ::conv2::Process { } {
+   proc Process { } {
       variable private
       global caption
+
+      #--- elimine les caracteres non autorises dans le nom
+      ::conv2::EntryCtrl
 
       set l [ llength $private(conv2,in) ]
       #--- arrete si aucune selection
@@ -3068,12 +3068,12 @@ namespace eval ::conv2 {
       ::conv2::recupPosition
    }
 
-   #---------------- quatre routines de conversion --------------------------
+   #------------------ quatre routines de conversion -----------------------
 
    #########################################################################
    # Conversion R+G+B--> RGB                                               #
    #########################################################################
-   proc ::conv2::Do_r+g+b2rgb { in out } {
+   proc Do_r+g+b2rgb { in out } {
       variable private
       global audace caption
 
@@ -3105,7 +3105,7 @@ namespace eval ::conv2 {
       } ]
 
       if { $err == "1" } {
-         set private(conv2,msg) "$caption(pretraitement,echec) $in : $::errorInfo"
+         set private(conv2,msg) [ format $caption(pretraitement,echec) $in $::errorInfo ]
       }
       return $err
    }
@@ -3113,7 +3113,7 @@ namespace eval ::conv2 {
    #########################################################################
    # Conversion RGB-->R+G+B                                                #
    #########################################################################
-   proc ::conv2::Do_rgb2r+g+b { in out } {
+   proc Do_rgb2r+g+b { in out } {
       variable private
       global audace caption
 
@@ -3121,6 +3121,7 @@ namespace eval ::conv2 {
       set private(conv2,to_destroy) [ list $in ]
       set err [ catch {
 
+         #--- charge l'image
          $buf load $in
 
          #--- si necessaire change les mots cles et sauve l'image
@@ -3169,7 +3170,7 @@ namespace eval ::conv2 {
       } ]
 
       if { $err == "1" } {
-         set private(conv2,msg) "$caption(pretraitement,echec) $in : $::errorInfo"
+         set private(conv2,msg) [ format $caption(pretraitement,echec) $in $::errorInfo ]
       }
       return $err
    }
@@ -3177,7 +3178,7 @@ namespace eval ::conv2 {
    #########################################################################
    # Conversion CFA --> RGB                                                #
    #########################################################################
-   proc ::conv2::Do_cfa2rgb { in out } {
+   proc Do_cfa2rgb { in out } {
       variable private
       global audace caption
 
@@ -3185,7 +3186,7 @@ namespace eval ::conv2 {
       set err [ catch {
 
          #--- charge l'image
-         loadima $in $audace(visuNo) -novisu
+         buf$audace(bufNo) load $in
 
          #--- si necessaire change les mots cles et sauve l'image
          ::conv2::MajHeader $in
@@ -3199,7 +3200,7 @@ namespace eval ::conv2 {
       } ]
 
       if { $err == "1" } {
-         set private(conv2,msg) "$caption(pretraitement,echec) $in : $::errorInfo"
+         set private(conv2,msg) [ format $caption(pretraitement,echec) $in $::errorInfo ]
       }
       return $err
    }
@@ -3207,24 +3208,22 @@ namespace eval ::conv2 {
    #########################################################################
    # Conversion RAW --> FITS                                               #
    #########################################################################
-   proc ::conv2::Do_raw2fits { in out } {
+   proc Do_raw2fits { in out } {
       variable private
       global audace caption
 
-      set buf "buf$audace(bufNo)"
-
       set err [ catch {
-         loadima $in $audace(visuNo) -novisu
-         $buf save $out
+         buf$audace(bufNo) load $in
+         buf$audace(bufNo) save $out
       } ]
 
       if { $err == "1" } {
-         set private(conv2,msg) "$caption(pretraitement,echec) $in : $::errorInfo"
+         set private(conv2,msg) [ format $caption(pretraitement,echec) $in $::errorInfo ]
       }
       return $err
    }
 
-   #------------------------- fonctions diverses   -------------------
+   #------------------------- fonctions diverses ---------------------------
 
    #########################################################################
    # Mise a jour des mots-cles : pour les CFA et les RGB                   #
@@ -3232,7 +3231,7 @@ namespace eval ::conv2 {
    # et sauvegarde de l'image                                              #
    # pour R+G+B il faut charger, modifier et sauver les trois images       #
    #########################################################################
-   proc ::conv2::MajHeader { file } {
+   proc MajHeader { file } {
       global audace
 
       #--- teste si l'image est dans la liste des fichiers contenant un ancien mot cle
@@ -3259,7 +3258,7 @@ namespace eval ::conv2 {
                buf$audace(bufNo) delkwd $old
 
                #--- sauve l'image modifiee
-               saveima $file
+               buf$audace(bufNo) save $file
             }
          }
       }
@@ -3268,7 +3267,7 @@ namespace eval ::conv2 {
    #########################################################################
    # Gere l'image affichee dans la colonne REM                             #
    #########################################################################
-   proc ::conv2::Avancement { img j } {
+   proc Avancement { img j } {
       variable private
 
       $private(conv2,tbl) cellconfigure $j,done -image $private(conv2,$img)
@@ -3277,7 +3276,7 @@ namespace eval ::conv2 {
    #########################################################################
    # Active/desactive les commandes                                        #
    #########################################################################
-   proc ::conv2::WindowActive { etat } {
+   proc WindowActive { etat } {
       variable private
       global caption
 
@@ -3309,7 +3308,7 @@ namespace eval ::conv2 {
    #########################################################################
    # Gere la fenetre lors de la selection d'une conversion                 #
    #########################################################################
-   proc ::conv2::WindowConfigure { op } {
+   proc WindowConfigure { op } {
       variable private
       global caption
 
@@ -3361,7 +3360,7 @@ namespace eval ::conv2 {
    #########################################################################
    # Met a jour la fenetre lors de la selection d'un fichier               #
    #########################################################################
-   proc ::conv2::WindowUpdate { } {
+   proc WindowUpdate { } {
       variable private
       global caption
 
@@ -3381,7 +3380,7 @@ namespace eval ::conv2 {
    #########################################################################
    # Configure le menu en fonction des listes                              #
    #########################################################################
-   proc ::conv2::MenuUpdate { } {
+   proc MenuUpdate { } {
       variable private
 
       #--- modifie les commandes liees au menu
@@ -3397,7 +3396,7 @@ namespace eval ::conv2 {
    #########################################################################
    # Selectionne/deselectionne tous les checkbuttons de la tablelist       #
    #########################################################################
-   proc ::conv2::SelectAll { } {
+   proc SelectAll { } {
       variable private
 
       set cmd "deselect"
@@ -3410,16 +3409,12 @@ namespace eval ::conv2 {
    }
 
    #########################################################################
-   # Elimine les caracteres non (alphanum ou underscore) dans le nom       #
+   # Elimine les caracteres non autorises dans le nom                      #
    #########################################################################
-   proc ::conv2::EntryCtrl { } {
+   proc EntryCtrl { } {
       variable private
 
-      regsub -all {[^\w_]} $private(conv2,new_name) {} nom
-      regsub -all {[йикл]} $nom "e" nom
-      regsub -all {[ав]}   $nom "a" nom
-      regsub -all "з"      $nom "c" private(conv2,new_name)
-
+      regsub -all {[^\w_]} $private(conv2,new_name) {} private(conv2,new_name)
       ::conv2::UpdateDialog
    }
 
@@ -3427,7 +3422,7 @@ namespace eval ::conv2 {
    # Affiche une fenetre d'erreur                                          #
    # parametre : contenu du message a afficher                             #
    #########################################################################
-   proc ::conv2::Error { msg } {
+   proc Error { msg } {
       global caption
 
       tk_messageBox -title $caption(pretraitement,attention)\
@@ -3439,7 +3434,7 @@ namespace eval ::conv2 {
    # parametres : index de la ligne de la tablelist                        #
    # tbl row col et w sont completes automatiquement                       #
    #########################################################################
-   proc ::conv2::CreateCheckButton { index tbl row col w } {
+   proc CreateCheckButton { index tbl row col w } {
       variable private
 
       checkbutton $w -height 1 -indicatoron 1 -onvalue "1" -offvalue "0" \
@@ -3452,7 +3447,7 @@ namespace eval ::conv2 {
    # Cree un checkbutton normal                                            #
    # parametres : fenetre parent, variable associee                        #
    #########################################################################
-   proc ::conv2::CheckButton { f var } {
+   proc CheckButton { f var } {
       variable private
       global caption
 
@@ -3466,7 +3461,7 @@ namespace eval ::conv2 {
    #########################################################################
    # Fermeture de le fenetre et destruction du namespace                   #
    #########################################################################
-   proc ::conv2::Fermer { } {
+   proc Fermer { } {
       variable private
       variable bdd
 
