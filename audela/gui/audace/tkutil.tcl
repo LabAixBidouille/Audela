@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise a jour $Id: tkutil.tcl,v 1.23 2010-01-03 18:13:57 robertdelmas Exp $
+# Mise a jour $Id: tkutil.tcl,v 1.24 2010-01-10 16:05:57 robertdelmas Exp $
 #
 
 namespace eval tkutil:: {
@@ -317,25 +317,24 @@ proc ::tkutil::displayErrorInfo { title { messageOptionnel "" } } {
 
 ##--------------------------------------------------------------
 # validateNumber
-#  verifie la valeur saisie dans un un widget
-#  Cette verification est activee en ajoutant les options suivantes au widget
-#  -validate all -validatecommand { ::tkutil::validateNumber  %W %V %P %s <class> <minValue> <maxValue> <errrorVariable> }
+#    verifie la valeur saisie dans un widget
+#    Cette verification est activee en ajoutant les options suivantes au widget :
+#    -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s <class> <minValue> <maxValue> <errrorVariable> }
 #
 # <br>Exemple
-# <br>  -validatecommand { ::tkutil::validateNumber %W %V %P %s  "numRef" integer -360 360 }
+# <br>    -validatecommand { ::tkutil::validateNumber %W %V %P %s "numRef" integer -360 360 }
 #
-# @param  win  nom tk du widget renseigne avec %W
-# @param  event evenement (key, focusout,...) sur le widget renseigne avec %V
-# @param  newValue valeur apres l'evenement renseigne avec %P
-# @param  oldValue valeur avant l'evenement renseigne avec %s
-# @param  class classe de la valeur attendue
-#            - boolean booleen ( 0, 1, false, true, no, yes , off , on)
-#            - double  nombre decimal
-#            - integer nombre entier
-# @param  minValue valeur minimale du nombre
-# @param  maxValue valeur maximale du nombre
-# @param  errorVariable  nom de la variable d'erreur associee au widget
-#            - ""
+# @param  win      : nom tk du widget renseigne avec %W
+# @param  event    : evenement (key, focusout,...) sur le widget renseigne avec %V
+# @param  newValue : valeur apres l'evenement renseignee avec %P
+# @param  oldValue : valeur avant l'evenement renseignee avec %s
+# @param  class    : classe de la valeur attendue
+#            - boolean : booleen ( 0, 1, false, true, no, yes , off , on)
+#            - double  : nombre decimal
+#            - integer : nombre entier
+# @param  minValue      : valeur minimale du nombre
+# @param  maxValue      : valeur maximale du nombre
+# @param  errorVariable : nom de la variable d'erreur associee au widget
 #
 # @return
 #   - 1 si OK
@@ -345,13 +344,14 @@ proc ::tkutil::displayErrorInfo { title { messageOptionnel "" } } {
 proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxValue { errorVariable "" } } {
    variable widget
 
-   if { $event == "key" || $event == "focusout" || $event == "forced"  } {
+   set result 0
+   if { $event == "key" || $event == "focusout" || $event == "forced" } {
       #--- je verifie la classe
       set classCheck [expr [string is $class -failindex charIndex $newValue] ]
       if {! $classCheck} {
          set fullCheck $classCheck
          if { $errorVariable != "" } {
-            set $errorVariable  [format $::caption(tkutil,badCharacter) "\"$newValue\"" "\"[string range $newValue $charIndex $charIndex]\"" ]
+            set $errorVariable [format $::caption(tkutil,badCharacter) "\"$newValue\"" "\"[string range $newValue $charIndex $charIndex]\"" ]
          }
          set result $classCheck
       } else {
@@ -361,10 +361,10 @@ proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxVa
          }
          #--- je verifie la plage
          if { $errorVariable != "" } {
-            if {  $newValue < $minValue } {
-               set $errorVariable  [format $::caption(tkutil,numberTooSmall) $newValue $minValue ]
-            } elseif {  $newValue > $maxValue } {
-               set $errorVariable  [format $::caption(tkutil,numberTooGreat) $newValue $maxValue ]
+            if { $newValue < $minValue } {
+               set $errorVariable [format $::caption(tkutil,numberTooSmall) $newValue $minValue ]
+            } elseif { $newValue > $maxValue } {
+               set $errorVariable [format $::caption(tkutil,numberTooGreat) $newValue $maxValue ]
             } else {
                if { [info exists $errorVariable] } {
                   unset $errorVariable
@@ -372,8 +372,12 @@ proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxVa
             }
          }
          if { $newValue == "" } {
-            set newValue 0
-            $win configure -text $newValue
+            set textVariable [$win cget -textvariable]
+            set newValue $minValue
+            if { $textVariable != "" } {
+               #---
+               set $textVariable $newValue
+            }
          }
          set fullCheck [expr {$classCheck && ($newValue >= $minValue) && ($newValue <= $maxValue)}]
          set result $fullCheck
@@ -389,43 +393,45 @@ proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxVa
       #--- je ne traite pas l'evenement
       set result 1
    }
+   ####console::disp "win=$win event=$event newValue=$newValue oldValue=$oldValue result=$result\n"
    return $result
 }
 
-## ----------------------------------------------------------------------------
+##--------------------------------------------------------------
 # validateString
-#  Verifie une de caracteres saisie dans  un widget
-#  Cette verification est activee en ajoutant les options suivantes au widget
-#  -validate all -validatecommand { ::tkutil::validateNumber  %W %V %P %s <class> <minLength> <maxLength> ?<errrorVariable>? }
+#    Verifie le caractere saisie dans un widget
+#    Cette verification est activee en ajoutant les options suivantes au widget :
+#    -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s <class> <minLength> <maxLength> ?<errrorVariable>? }
 #
 # <br>Exemple 1
-# <br>  -validatecommand { ::tkutil::validateString %W %V %P %s fits 1 70 }
+# <br>    -validatecommand { ::tkutil::validateString %W %V %P %s fits 1 70 }
 #
-# <br>Exemple 2 : avec variable de contole
-# <br> entry .frame.yyy -validatecommand { ::tkutil::validateString %W %V %P %s fits 1 70 ::xxxx::widget($visuNo,error,yyy) }
-# <br> entry .frame.zzz -validatecommand { ::tkutil::validateString %W %V %P %s fits 1 70 ::xxxx::widget($visuNo,error,zzz) }
+# <br>Exemple 2 : avec variable de controle
+# <br>    entry .frame.yyy -validatecommand { ::tkutil::validateString %W %V %P %s fits 1 70 ::xxxx::widget($visuNo,error,yyy) }
+# <br>    entry .frame.zzz -validatecommand { ::tkutil::validateString %W %V %P %s fits 1 70 ::xxxx::widget($visuNo,error,zzz) }
 #
-# <br> Puis faire les controle dans la procedure ::xxxx::apply
+# <br> puis faire les controles dans la procedure ::xxxx::apply
 #     if { [array names ::xxxx::widget $visuNo,error,* ] != "" } {
 #        #--- j'affiche un message d'erreur s'il existe au moins une variable ::xxxx::widget($visuNo,error,...)
 #        ...
 #     }
 #
-# @param  win  nom tk du widget renseigne avec %W)
-# @param  event evenement sur le widget renseigne avec %V (key, focusout,...)
-# @param  newValue valeur apres l'evenement renseigne avec %P
-# @param  oldValue valeur avant l'evenement renseigne avec %s
-# @param  class classe de la valeur attendue
-#            - alnum  caractere alphabetique ou numerique
-#            - alpha  caractere alphabetique
-#            - ascii  caractere ASCII dont le code est inferieur ou egal à 127
-#            - boolean
-#            - fits   caractere autorise dans un mot clé FITS
-#            - wordchar caractere alphabetique ou numerique ou underscore
-#            - xdigit  caractere hexadecimal
-# @param  minLength longueur minimale de la chaine
-# @param  maxLength longueur maximale de la chaine
-# @param  errorVariable  nom de la variable d'erreur associee au widget
+# @param  win      : nom tk du widget renseigne avec %W
+# @param  event    : evenement sur le widget renseigne avec %V (key, focusout,...)
+# @param  newValue : valeur apres l'evenement renseignee avec %P
+# @param  oldValue : valeur avant l'evenement renseignee avec %s
+# @param  class    : classe de la valeur attendue
+#            - alnum    : caractere alphabetique ou numerique
+#            - alpha    : caractere alphabetique
+#            - ascii    : caractere ASCII dont le code est inferieur ou egal a 127
+#            - boolean  : booleen ( 0, 1, false, true, no, yes , off , on)
+#            - fits     : caractere autorise dans un mot cle FITS
+#            - wordchar : caractere alphabetique ou numerique ou underscore
+#            - xdigit   : caractere hexadecimal
+# @param  minLength     : longueur minimale de la chaine
+# @param  maxLength     : longueur maximale de la chaine
+# @param  errorVariable : nom de la variable d'erreur associee au widget
+#
 # @return
 #   - 1 si OK
 #   - 0 si erreur
@@ -434,6 +440,7 @@ proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxVa
 proc ::tkutil::validateString { win event newValue oldValue class minLength maxLength { errorVariable "" } } {
    variable widget
 
+   set result 0
    if { $event == "key" || $event == "focusout" || $event == "forced" } {
       #--- je verifie la classe
       if { $class == "fits" } {
@@ -443,7 +450,7 @@ proc ::tkutil::validateString { win event newValue oldValue class minLength maxL
          set classCheck [expr [string is $class -failindex charIndex $newValue] ]
       }
       if {! $classCheck} {
-         set $errorVariable  [format $::caption(tkutil,badCharacter) "\"$newValue\"" "\"[string range $newValue $charIndex $charIndex]\"" ]
+         set $errorVariable [format $::caption(tkutil,badCharacter) "\"$newValue\"" "\"[string range $newValue $charIndex $charIndex]\"" ]
          set result $classCheck
       } else {
          #--- je verifie l'ordre des bornes de longueur
@@ -452,26 +459,25 @@ proc ::tkutil::validateString { win event newValue oldValue class minLength maxL
          }
          #--- je verifie la longueur de la chaine
          set xLength [string length $newValue]
-         if {  $xLength < $minLength } {
+         if { $xLength < $minLength } {
             if { $errorVariable != "" } {
                set $errorVariable [format $::caption(tkutil,stringTooShort) "\"$newValue\"" $minLength]
             }
             set result 0
-         } elseif {  $xLength > $maxLength } {
+         } elseif { $xLength > $maxLength } {
             if { $errorVariable != "" } {
                set $errorVariable [format $::caption(tkutil,stringTooLarge) "\"$newValue\"" $maxLength]
             }
             set result 0
          } else {
             if { $errorVariable != "" } {
-               if { [info exists  $errorVariable] } {
-                     unset $errorVariable
+               if { [info exists $errorVariable] } {
+                  unset $errorVariable
                }
             }
             set result 1
          }
       }
-
       if { $result == 0 } {
          #--- j'affiche en inverse video
          $win configure -bg $::audace(color,entryBackColor2) -fg $::audace(color,entryTextColor)
