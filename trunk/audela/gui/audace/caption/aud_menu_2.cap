@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_2.cap
-# Mise a jour $Id: aud_menu_2.cap,v 1.19 2010-01-03 18:10:15 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.cap,v 1.20 2010-01-10 16:00:11 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -159,7 +159,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,affichage)                 "Vista"
    set caption(audace,menu,nouvelle_visu)             "Nuovo 'visu'"
-   set caption(audace,menu,efface_image)              "# Effacer l'image"
+   set caption(audace,menu,efface_image)              "Cancellare immagine"
    set caption(audace,menu,palette_grise)             "Palette grigia"
    set caption(audace,menu,palette_inverse)           "Palette inversa"
    set caption(audace,menu,palette_iris)              "Palette Iris"
@@ -232,7 +232,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,affichage)                 "Ver"
    set caption(audace,menu,nouvelle_visu)             "Nueva 'visu'"
-   set caption(audace,menu,efface_image)              "# Effacer l'image"
+   set caption(audace,menu,efface_image)              "Borrar la imagen"
    set caption(audace,menu,palette_grise)             "Paleta de grises "
    set caption(audace,menu,palette_inverse)           "Paleta invertida "
    set caption(audace,menu,palette_iris)              "Paleta de Iris "
@@ -305,7 +305,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,affichage)                 "Anzeige"
    set caption(audace,menu,nouvelle_visu)             "Neue 'visu'"
-   set caption(audace,menu,efface_image)              "# Effacer l'image"
+   set caption(audace,menu,efface_image)              "Das Bild löschen"
    set caption(audace,menu,palette_grise)             "Graue Palette"
    set caption(audace,menu,palette_inverse)           "Umgekehrte Palette"
    set caption(audace,menu,palette_iris)              "Iris Palette"
