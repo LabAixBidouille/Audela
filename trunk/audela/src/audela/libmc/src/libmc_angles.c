@@ -693,12 +693,12 @@ int mctcl_decode_sequences(Tcl_Interp *interp, char *argv[],int *nobjects, mc_OB
 		objectdescr[ko].idseq=-1;
 		mc_date_jd(1900,1,1,&objectdescr[ko].const_jd1);
 		mc_date_jd(9999,1,1,&objectdescr[ko].const_jd2);
-		objectdescr[ko].const_immediate=0;
 		objectdescr[ko].const_elev=15.;
 		objectdescr[ko].const_fullmoondist=40.;
 		objectdescr[ko].const_sundist=20.;
 		objectdescr[ko].const_skylightlevel=16.;
 		objectdescr[ko].const_startexposures=0;
+		objectdescr[ko].const_startsynchro=0;
 		objectdescr[ko].user=-1;
 		objectdescr[ko].user_priority=1.;
 		objectdescr[ko].user_quota=1.;
@@ -739,12 +739,18 @@ int mctcl_decode_sequences(Tcl_Interp *interp, char *argv[],int *nobjects, mc_OB
 			if (strcmp(key,"IDSEQ")==0) { objectdescr[ko].idseq=atoi(argvvvv[1]); }
 			if (strcmp(key,"JD1")==0) { mctcl_decode_date(interp,argvvvv[1],&objectdescr[ko].const_jd1); }
 			if (strcmp(key,"JD2")==0) { mctcl_decode_date(interp,argvvvv[1],&objectdescr[ko].const_jd2); }
-			if (strcmp(key,"IMMEDIATE")==0) { objectdescr[ko].const_immediate=atoi(argvvvv[1]); }
 			if (strcmp(key,"ELEV")==0) { objectdescr[ko].const_elev=atof(argvvvv[1]); }
 			if (strcmp(key,"MOONDIST")==0) { objectdescr[ko].const_fullmoondist=atof(argvvvv[1]); }
 			if (strcmp(key,"SUNDIST")==0) { objectdescr[ko].const_sundist=atof(argvvvv[1]); }
 			if (strcmp(key,"SKYLEVEL")==0) { objectdescr[ko].const_skylightlevel=atof(argvvvv[1]); }
-			if (strcmp(key,"STARTEXP")==0) { objectdescr[ko].const_startexposures=atoi(argvvvv[1]); }
+			if (strcmp(key,"STARTEXP")==0) {
+				mc_strupr(argvvvv[1],s);
+				if (strcmp(s,"BESTELEV")==0) { objectdescr[ko].const_startexposures=0; }
+				else if (strcmp(s,"IMMEDIATE")==0) { objectdescr[ko].const_startexposures=1; }
+				else if (strcmp(s,"MIDDLE")==0) { objectdescr[ko].const_startexposures=2; }
+				else { objectdescr[ko].const_startexposures=atoi(argvvvv[1]); }
+			}
+			if (strcmp(key,"STARTSYNCHRO")==0) { objectdescr[ko].const_startsynchro=atoi(argvvvv[1]); }
 			if (strcmp(key,"IDUSER")==0) { objectdescr[ko].user=atoi(argvvvv[1]); }
 			if (strcmp(key,"UPRIORITY")==0) { objectdescr[ko].user_priority=atof(argvvvv[1]); }
 			if (strcmp(key,"UQUOTA")==0) { objectdescr[ko].user_quota=atof(argvvvv[1]); }
