@@ -1,8 +1,8 @@
 #
 # Fichier : acqzadko.tcl
 # Description : Outil d'acquisition
-# Auteur : Francois Cochard
-# Mise a jour $Id: acqzadko.tcl,v 1.13 2010-01-03 18:48:11 robertdelmas Exp $
+# Auteurs : Francois Cochard et Myrtille Laas
+# Mise a jour $Id: acqzadko.tcl,v 1.14 2010-01-10 16:09:28 robertdelmas Exp $
 #
 
 #==============================================================
@@ -610,13 +610,14 @@ proc ::acqzadko::setShutter { visuNo state } {
 }
 
 #***** Procedure de test de validite d'un entier *****************
-#--- Cette procedure (copiee de methking.tcl) verifie que la chaine passee en argument decrit bien un entier.
-#--- Elle retourne 1 si c'est la cas, et 0 si ce n'est pas un entier.
+#--- Cette procedure verifie que la chaine passee en argument decrit
+#--- bien un entier different de 0
+#--- Elle retourne 1 si c'est la cas et 0 si ce n'est pas un entier
 proc ::acqzadko::TestEntier { valeur } {
    set test 1
    for { set i 0 } { $i < [ string length $valeur ] } { incr i } {
       set a [string index $valeur $i]
-      if { ![string match {[0-9]} $a] } {
+      if { ![string match {[1-9]} $a] } {
          set test 0
       }
    }
@@ -626,8 +627,9 @@ proc ::acqzadko::TestEntier { valeur } {
 #***** Fin de la procedure de test de validite d'une entier *******
 
 #***** Procedure de test de validite d'une chaine de caracteres *******
-#--- Cette procedure verifie que la chaine passee en argument ne contient que des caracteres valides.
-#--- Elle retourne 1 si c'est la cas, et 0 si ce n'est pas valable.
+#--- Cette procedure verifie que la chaine passee en argument ne contient
+#--- que des caracteres valides
+#--- Elle retourne 1 si c'est la cas et 0 si ce n'est pas valable
 proc ::acqzadko::TestChaine { valeur } {
    set test 1
    for { set i 0 } { $i < [ string length $valeur ] } { incr i } {
@@ -641,8 +643,9 @@ proc ::acqzadko::TestChaine { valeur } {
 #***** Fin de la procedure de test de validite d'une chaine de caracteres *******
 
 #***** Procedure de test de validite d'un nombre reel *****************
-#--- Cette procedure (inspiree de methking.tcl) verifie que la chaine passee en argument decrit bien un reel.
-#--- Elle retourne 1 si c'est la cas, et 0 si ce n'est pas un reel.
+#--- Cette procedure verifie que la chaine passee en argument decrit
+#--- bien un reel
+#--- Elle retourne 1 si c'est la cas et 0 si ce n'est pas un reel
 proc ::acqzadko::TestReel { valeur } {
    set test 1
    for { set i 0 } { $i < [string length $valeur] } { incr i } {
@@ -893,7 +896,7 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
                }
             }
             #--- Verifier que la simulation a ete lancee
-            if { $panneau(acqzadko,$visuNo,intervalle) == "....." } {
+            if { $panneau(acqzadko,$visuNo,intervalle) == "...." } {
                tk_messageBox -title $caption(acqzadko,pb) -type ok \
                   -message $caption(acqzadko,interinv_2)
                set integre non
@@ -904,7 +907,7 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
                set integre non
             #--- Verifier que l'intervalle est superieur a celui calcule par la simulation
             } elseif { ( $panneau(acqzadko,$visuNo,intervalle) > $panneau(acqzadko,$visuNo,intervalle_1) ) && \
-              ( $panneau(acqzadko,$visuNo,intervalle) != "xxx" ) } {
+              ( $panneau(acqzadko,$visuNo,intervalle) != "xxxx" ) } {
                   tk_messageBox -title $caption(acqzadko,pb) -type ok \
                      -message $caption(acqzadko,interinv_1)
                   set integre non
@@ -967,7 +970,7 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
                   }
                }
                #--- Verifier que la simulation a ete lancee
-               if { $panneau(acqzadko,$visuNo,intervalle) == "....." } {
+               if { $panneau(acqzadko,$visuNo,intervalle) == "...." } {
                   tk_messageBox -title $caption(acqzadko,pb) -type ok \
                      -message $caption(acqzadko,interinv_2)
                   set integre non
@@ -978,14 +981,14 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
                   set integre non
                #--- Verifier que l'intervalle est superieur a celui calcule par la simulation
                } elseif { ( $panneau(acqzadko,$visuNo,intervalle) > $panneau(acqzadko,$visuNo,intervalle_2) ) && \
-                 ( $panneau(acqzadko,$visuNo,intervalle) != "xxx" ) } {
+                 ( $panneau(acqzadko,$visuNo,intervalle) != "xxxx" ) } {
                      tk_messageBox -title $caption(acqzadko,pb) -type ok \
                         -message $caption(acqzadko,interinv_1)
                      set integre non
                }
             } else {
                #--- Verifier que la simulation a ete lancee
-               if { $panneau(acqzadko,$visuNo,intervalle) == "....." } {
+               if { $panneau(acqzadko,$visuNo,intervalle) == "...." } {
                   tk_messageBox -title $caption(acqzadko,pb) -type ok \
                      -message $caption(acqzadko,interinv_2)
                   set integre non
@@ -996,7 +999,7 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
                   set integre non
                #--- Verifier que l'intervalle est superieur a celui calcule par la simulation
                } elseif { ( $panneau(acqzadko,$visuNo,intervalle) > $panneau(acqzadko,$visuNo,intervalle_2) ) && \
-                 ( $panneau(acqzadko,$visuNo,intervalle) != "xxx" ) } {
+                 ( $panneau(acqzadko,$visuNo,intervalle) != "xxxx" ) } {
                      tk_messageBox -title $caption(acqzadko,pb) -type ok \
                         -message $caption(acqzadko,interinv_1)
                      set integre non
@@ -1575,7 +1578,7 @@ proc ::acqzadko::Go { visuNo } {
                   if { $exposure == $panneau(acqzadko,$visuNo,pose) } {
                      set panneau(acqzadko,$visuNo,intervalle) [ expr $panneau(acqzadko,$visuNo,fin) - $panneau(acqzadko,$visuNo,debut) ]
                   } else {
-                     set panneau(acqzadko,$visuNo,intervalle) "....."
+                     set panneau(acqzadko,$visuNo,intervalle) "...."
                   }
                   set simu1 "$caption(acqzadko,int_mini_serie) $panneau(acqzadko,$visuNo,intervalle) $caption(acqzadko,sec)"
                   $panneau(acqzadko,$visuNo,base).intervalle_continu_1.lab3 configure -text "$simu1"
@@ -1593,7 +1596,7 @@ proc ::acqzadko::Go { visuNo } {
                   if { $exposure == $panneau(acqzadko,$visuNo,pose) } {
                      set panneau(acqzadko,$visuNo,intervalle) [ expr $panneau(acqzadko,$visuNo,fin) - $panneau(acqzadko,$visuNo,debut) ]
                   } else {
-                     set panneau(acqzadko,$visuNo,intervalle) "....."
+                     set panneau(acqzadko,$visuNo,intervalle) "...."
                   }
                   set simu2 "$caption(acqzadko,int_mini_image) $panneau(acqzadko,$visuNo,intervalle) $caption(acqzadko,sec)"
                   $panneau(acqzadko,$visuNo,base).intervalle_continu_2.lab3 configure -text "$simu2"
@@ -2113,7 +2116,7 @@ proc ::acqzadko::cmdShiftConfig { visuNo } {
 proc ::acqzadko::Intervalle_continu_1 { visuNo } {
    global caption conf panneau
 
-   set panneau(acqzadko,$visuNo,intervalle)            "....."
+   set panneau(acqzadko,$visuNo,intervalle)            "...."
    set panneau(acqzadko,$visuNo,simulation_deja_faite) "0"
 
    ::acqzadko::recup_position $visuNo
@@ -2140,7 +2143,8 @@ proc ::acqzadko::Intervalle_continu_1 { visuNo } {
       pack $panneau(acqzadko,$visuNo,base).intervalle_continu_1.a.lab2 -anchor center -expand 1 -fill none -side left \
          -padx 10 -pady 5
       entry $panneau(acqzadko,$visuNo,base).intervalle_continu_1.a.ent1 -width 5 -relief groove \
-         -textvariable panneau(acqzadko,$visuNo,intervalle_1) -justify center
+         -textvariable panneau(acqzadko,$visuNo,intervalle_1) -justify center \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 9999 }
       pack $panneau(acqzadko,$visuNo,base).intervalle_continu_1.a.ent1 -anchor center -expand 1 -fill none -side left \
          -padx 10
    pack $panneau(acqzadko,$visuNo,base).intervalle_continu_1.a -padx 10 -pady 5
@@ -2149,8 +2153,8 @@ proc ::acqzadko::Intervalle_continu_1 { visuNo } {
       checkbutton $panneau(acqzadko,$visuNo,base).intervalle_continu_1.b.check_simu \
          -text "$caption(acqzadko,simu_deja_faite)" \
          -variable panneau(acqzadko,$visuNo,simulation_deja_faite) -command "::acqzadko::Simu_deja_faite_1 $visuNo"
-     pack $panneau(acqzadko,$visuNo,base).intervalle_continu_1.b.check_simu -anchor w -expand 1 -fill none \
-        -side left -padx 10 -pady 5
+      pack $panneau(acqzadko,$visuNo,base).intervalle_continu_1.b.check_simu -anchor w -expand 1 -fill none \
+         -side left -padx 10 -pady 5
    pack $panneau(acqzadko,$visuNo,base).intervalle_continu_1.b -side bottom -anchor w -padx 10 -pady 5
 
    button $panneau(acqzadko,$visuNo,base).intervalle_continu_1.but1 -text "$caption(acqzadko,simulation)" \
@@ -2174,7 +2178,7 @@ proc ::acqzadko::Intervalle_continu_1 { visuNo } {
 proc ::acqzadko::Command_continu_1 { visuNo } {
    global caption panneau
 
-   set panneau(acqzadko,$visuNo,intervalle) "....."
+   set panneau(acqzadko,$visuNo,intervalle) "...."
    set simu1 "$caption(acqzadko,int_mini_serie) $panneau(acqzadko,$visuNo,intervalle) $caption(acqzadko,sec)"
    $panneau(acqzadko,$visuNo,base).intervalle_continu_1.lab3 configure -text "$simu1"
    set panneau(acqzadko,$visuNo,simulation)  "1"
@@ -2190,12 +2194,12 @@ proc ::acqzadko::Simu_deja_faite_1 { visuNo } {
    global caption panneau
 
    if { $panneau(acqzadko,$visuNo,simulation_deja_faite) == "1" } {
-      set panneau(acqzadko,$visuNo,intervalle) "xxx"
+      set panneau(acqzadko,$visuNo,intervalle) "xxxx"
       $panneau(acqzadko,$visuNo,base).intervalle_continu_1.lab3 configure \
          -text "$caption(acqzadko,int_mini_serie) $panneau(acqzadko,$visuNo,intervalle) $caption(acqzadko,sec)"
       focus $panneau(acqzadko,$visuNo,base).intervalle_continu_1.a.ent1
    } else {
-      set panneau(acqzadko,$visuNo,intervalle) "....."
+      set panneau(acqzadko,$visuNo,intervalle) "...."
       $panneau(acqzadko,$visuNo,base).intervalle_continu_1.lab3 configure \
          -text "$caption(acqzadko,int_mini_serie) $panneau(acqzadko,$visuNo,intervalle) $caption(acqzadko,sec)"
       focus $panneau(acqzadko,$visuNo,base).intervalle_continu_1.but1
@@ -2207,7 +2211,7 @@ proc ::acqzadko::Simu_deja_faite_1 { visuNo } {
 proc ::acqzadko::Intervalle_continu_2 { visuNo } {
    global caption conf panneau
 
-   set panneau(acqzadko,$visuNo,intervalle)            "....."
+   set panneau(acqzadko,$visuNo,intervalle)            "...."
    set panneau(acqzadko,$visuNo,simulation_deja_faite) "0"
 
    ::acqzadko::recup_position $visuNo
@@ -2234,7 +2238,8 @@ proc ::acqzadko::Intervalle_continu_2 { visuNo } {
       pack $panneau(acqzadko,$visuNo,base).intervalle_continu_2.a.lab2 -anchor center -expand 1 -fill none -side left \
          -padx 10 -pady 5
       entry $panneau(acqzadko,$visuNo,base).intervalle_continu_2.a.ent1 -width 5 -relief groove \
-         -textvariable panneau(acqzadko,$visuNo,intervalle_2) -justify center
+         -textvariable panneau(acqzadko,$visuNo,intervalle_2) -justify center \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 9999 }
       pack $panneau(acqzadko,$visuNo,base).intervalle_continu_2.a.ent1 -anchor center -expand 1 -fill none -side left \
          -padx 10
    pack $panneau(acqzadko,$visuNo,base).intervalle_continu_2.a -padx 10 -pady 5
@@ -2268,7 +2273,7 @@ proc ::acqzadko::Intervalle_continu_2 { visuNo } {
 proc ::acqzadko::Command_continu_2 { visuNo } {
    global caption panneau
 
-   set panneau(acqzadko,$visuNo,intervalle) "....."
+   set panneau(acqzadko,$visuNo,intervalle) "...."
    set simu2 "$caption(acqzadko,int_mini_image) $panneau(acqzadko,$visuNo,intervalle) $caption(acqzadko,sec)"
    $panneau(acqzadko,$visuNo,base).intervalle_continu_2.lab3 configure -text "$simu2"
    set panneau(acqzadko,$visuNo,simulation)  "2"
@@ -2285,12 +2290,12 @@ proc ::acqzadko::Simu_deja_faite_2 { visuNo } {
    global caption panneau
 
    if { $panneau(acqzadko,$visuNo,simulation_deja_faite) == "1" } {
-      set panneau(acqzadko,$visuNo,intervalle) "xxx" ; \
+      set panneau(acqzadko,$visuNo,intervalle) "xxxx" ; \
       $panneau(acqzadko,$visuNo,base).intervalle_continu_2.lab3 configure \
          -text "$caption(acqzadko,int_mini_image) $panneau(acqzadko,$visuNo,intervalle) $caption(acqzadko,sec)"
       focus $panneau(acqzadko,$visuNo,base).intervalle_continu_2.a.ent1
    } else {
-      set panneau(acqzadko,$visuNo,intervalle) "....."
+      set panneau(acqzadko,$visuNo,intervalle) "...."
       $panneau(acqzadko,$visuNo,base).intervalle_continu_2.lab3 configure \
          -text "$caption(acqzadko,int_mini_image) $panneau(acqzadko,$visuNo,intervalle) $caption(acqzadko,sec)"
       focus $panneau(acqzadko,$visuNo,base).intervalle_continu_2.but1
@@ -2422,7 +2427,8 @@ proc ::acqzadko::acqzadkoBuildIF { visuNo } {
       label $panneau(acqzadko,$visuNo,This).pose.lab -text $caption(acqzadko,sec)
       pack $panneau(acqzadko,$visuNo,This).pose.lab -side right -fill x -expand true
       entry $panneau(acqzadko,$visuNo,This).pose.entr -width 6 -relief groove \
-        -textvariable panneau(acqzadko,$visuNo,pose) -justify center
+         -textvariable panneau(acqzadko,$visuNo,pose) -justify center \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
       pack $panneau(acqzadko,$visuNo,This).pose.entr -side left -fill both -expand true
    pack $panneau(acqzadko,$visuNo,This).pose -side top -fill x
 
@@ -2438,11 +2444,11 @@ proc ::acqzadko::acqzadkoBuildIF { visuNo } {
       pack $panneau(acqzadko,$visuNo,This).binning.but -side left -fill y -expand true -ipady 1
       set m [ menu $panneau(acqzadko,$visuNo,This).binning.but.menu -tearoff 0 ]
       foreach valbin [ ::confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] binningList ] {
-        $m add radiobutton -label "$valbin" \
-           -indicatoron "1" \
-           -value "$valbin" \
-           -variable panneau(acqzadko,$visuNo,binning) \
-           -command " "
+         $m add radiobutton -label "$valbin" \
+            -indicatoron "1" \
+            -value "$valbin" \
+            -variable panneau(acqzadko,$visuNo,binning) \
+            -command " "
       }
       entry $panneau(acqzadko,$visuNo,This).binning.lab -width 10 -relief groove \
         -textvariable panneau(acqzadko,$visuNo,binning) -justify center
@@ -2456,14 +2462,14 @@ proc ::acqzadko::acqzadkoBuildIF { visuNo } {
       pack $panneau(acqzadko,$visuNo,This).format.but -side left -fill y -expand true -ipady 1
       set m [ menu $panneau(acqzadko,$visuNo,This).format.but.menu -tearoff 0 ]
       foreach format [ ::confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] formatList ] {
-        $m add radiobutton -label "$format" \
-           -indicatoron "1" \
-           -value "$format" \
-           -variable panneau(acqzadko,$visuNo,format) \
-           -command " "
+         $m add radiobutton -label "$format" \
+            -indicatoron "1" \
+            -value "$format" \
+            -variable panneau(acqzadko,$visuNo,format) \
+            -command " "
       }
       entry $panneau(acqzadko,$visuNo,This).format.lab -width 10 -relief groove \
-        -textvariable panneau(acqzadko,$visuNo,format) -justify center -state readonly
+         -textvariable panneau(acqzadko,$visuNo,format) -justify center -state readonly
       pack $panneau(acqzadko,$visuNo,This).format.lab -side left -fill both -expand true
    pack $panneau(acqzadko,$visuNo,This).format -side top -fill x
 
@@ -2495,241 +2501,248 @@ proc ::acqzadko::acqzadkoBuildIF { visuNo } {
    set panneau(acqzadko,$visuNo,mode_en_cours) [ lindex $panneau(acqzadko,$visuNo,list_mode) [ expr $panneau(acqzadko,$visuNo,mode) - 1 ] ]
    frame $panneau(acqzadko,$visuNo,This).mode -borderwidth 5 -relief ridge
       ComboBox $panneau(acqzadko,$visuNo,This).mode.but \
-        -width 15         \
-        -height [llength $panneau(acqzadko,$visuNo,list_mode)] \
-        -relief raised    \
-        -borderwidth 1    \
-        -editable 0       \
-        -takefocus 1      \
-        -justify center   \
-        -textvariable panneau(acqzadko,$visuNo,mode_en_cours) \
-        -values $panneau(acqzadko,$visuNo,list_mode) \
-        -modifycmd "::acqzadko::ChangeMode $visuNo"
-      pack $panneau(acqzadko,$visuNo,This).mode.but -side top
+         -width 15         \
+         -height [llength $panneau(acqzadko,$visuNo,list_mode)] \
+         -relief raised    \
+         -borderwidth 1    \
+         -editable 0       \
+         -takefocus 1      \
+         -justify center   \
+         -textvariable panneau(acqzadko,$visuNo,mode_en_cours) \
+         -values $panneau(acqzadko,$visuNo,list_mode) \
+         -modifycmd "::acqzadko::ChangeMode $visuNo"
+      pack $panneau(acqzadko,$visuNo,This).mode.but -side top -fill x
 
       #--- Definition du sous-panneau "Mode : Une seule image"
       frame $panneau(acqzadko,$visuNo,This).mode.une -borderwidth 0
-        frame $panneau(acqzadko,$visuNo,This).mode.une.nom -relief ridge -borderwidth 2
-           label $panneau(acqzadko,$visuNo,This).mode.une.nom.but -text $caption(acqzadko,nom) -pady 0
-           pack $panneau(acqzadko,$visuNo,This).mode.une.nom.but -fill x -side top
-           entry $panneau(acqzadko,$visuNo,This).mode.une.nom.entr -width 10 -textvariable panneau(acqzadko,$visuNo,nom_image) \
-              -relief groove
-           pack $panneau(acqzadko,$visuNo,This).mode.une.nom.entr -fill x -side top
-           label $panneau(acqzadko,$visuNo,This).mode.une.nom.lab_extension -text $caption(acqzadko,extension) -pady 0
-           pack $panneau(acqzadko,$visuNo,This).mode.une.nom.lab_extension -fill x -side left
-           menubutton $panneau(acqzadko,$visuNo,This).mode.une.nom.extension -textvariable panneau(acqzadko,$visuNo,extension) \
-              -menu $panneau(acqzadko,$visuNo,This).mode.une.nom.extension.menu -relief raised
-           pack $panneau(acqzadko,$visuNo,This).mode.une.nom.extension -side right -fill x -expand true -ipady 1
-           set m [ menu $panneau(acqzadko,$visuNo,This).mode.une.nom.extension.menu -tearoff 0 ]
-           foreach extension $conf(list_extension) {
-             $m add radiobutton -label "$extension" \
-                -indicatoron "1" \
-                -value "$extension" \
-                -variable panneau(acqzadko,$visuNo,extension) \
-                -command " "
-           }
-        pack $panneau(acqzadko,$visuNo,This).mode.une.nom -side top -fill x
-        frame $panneau(acqzadko,$visuNo,This).mode.une.index -relief ridge -borderwidth 2
-           checkbutton $panneau(acqzadko,$visuNo,This).mode.une.index.case -pady 0 -text $caption(acqzadko,index) \
-              -variable panneau(acqzadko,$visuNo,indexer)
-           pack $panneau(acqzadko,$visuNo,This).mode.une.index.case -side top -fill x
-           entry $panneau(acqzadko,$visuNo,This).mode.une.index.entr -width 3 -textvariable panneau(acqzadko,$visuNo,index) \
-              -relief groove -justify center
-           pack $panneau(acqzadko,$visuNo,This).mode.une.index.entr -side left -fill x -expand true
-           button $panneau(acqzadko,$visuNo,This).mode.une.index.but -text "1" -width 3 \
-              -command "set panneau(acqzadko,$visuNo,index) 1"
-           pack $panneau(acqzadko,$visuNo,This).mode.une.index.but -side right -fill x
-        pack $panneau(acqzadko,$visuNo,This).mode.une.index -side top -fill x
-        button $panneau(acqzadko,$visuNo,This).mode.une.sauve -text $caption(acqzadko,sauvegde) \
-           -command "::acqzadko::SauveUneImage $visuNo"
-        pack $panneau(acqzadko,$visuNo,This).mode.une.sauve -side top -fill x
+         frame $panneau(acqzadko,$visuNo,This).mode.une.nom -relief ridge -borderwidth 2
+            label $panneau(acqzadko,$visuNo,This).mode.une.nom.but -text $caption(acqzadko,nom) -pady 0
+            pack $panneau(acqzadko,$visuNo,This).mode.une.nom.but -fill x -side top
+            entry $panneau(acqzadko,$visuNo,This).mode.une.nom.entr -width 10 -textvariable panneau(acqzadko,$visuNo,nom_image) \
+               -relief groove
+            pack $panneau(acqzadko,$visuNo,This).mode.une.nom.entr -fill x -side top
+            label $panneau(acqzadko,$visuNo,This).mode.une.nom.lab_extension -text $caption(acqzadko,extension) -pady 0
+            pack $panneau(acqzadko,$visuNo,This).mode.une.nom.lab_extension -fill x -side left
+            menubutton $panneau(acqzadko,$visuNo,This).mode.une.nom.extension -textvariable panneau(acqzadko,$visuNo,extension) \
+               -menu $panneau(acqzadko,$visuNo,This).mode.une.nom.extension.menu -relief raised
+            pack $panneau(acqzadko,$visuNo,This).mode.une.nom.extension -side right -fill x -expand true -ipady 1
+            set m [ menu $panneau(acqzadko,$visuNo,This).mode.une.nom.extension.menu -tearoff 0 ]
+            foreach extension $conf(list_extension) {
+              $m add radiobutton -label "$extension" \
+                 -indicatoron "1" \
+                 -value "$extension" \
+                 -variable panneau(acqzadko,$visuNo,extension) \
+                 -command " "
+            }
+         pack $panneau(acqzadko,$visuNo,This).mode.une.nom -side top -fill x
+         frame $panneau(acqzadko,$visuNo,This).mode.une.index -relief ridge -borderwidth 2
+            checkbutton $panneau(acqzadko,$visuNo,This).mode.une.index.case -pady 0 -text $caption(acqzadko,index) \
+               -variable panneau(acqzadko,$visuNo,indexer)
+            pack $panneau(acqzadko,$visuNo,This).mode.une.index.case -side top -fill x
+            entry $panneau(acqzadko,$visuNo,This).mode.une.index.entr -width 3 -textvariable panneau(acqzadko,$visuNo,index) \
+               -relief groove -justify center \
+               -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
+            pack $panneau(acqzadko,$visuNo,This).mode.une.index.entr -side left -fill x -expand true
+            button $panneau(acqzadko,$visuNo,This).mode.une.index.but -text "1" -width 3 \
+               -command "set panneau(acqzadko,$visuNo,index) 1"
+            pack $panneau(acqzadko,$visuNo,This).mode.une.index.but -side right -fill x
+         pack $panneau(acqzadko,$visuNo,This).mode.une.index -side top -fill x
+         button $panneau(acqzadko,$visuNo,This).mode.une.sauve -text $caption(acqzadko,sauvegde) \
+            -command "::acqzadko::SauveUneImage $visuNo"
+         pack $panneau(acqzadko,$visuNo,This).mode.une.sauve -side top -fill x
 
       #--- Definition du sous-panneau "Mode : Serie d'images"
       frame $panneau(acqzadko,$visuNo,This).mode.serie
-        frame $panneau(acqzadko,$visuNo,This).mode.serie.nom -relief ridge -borderwidth 2
-           label $panneau(acqzadko,$visuNo,This).mode.serie.nom.but -text $caption(acqzadko,nom) -pady 0
-           pack $panneau(acqzadko,$visuNo,This).mode.serie.nom.but -fill x
-           entry $panneau(acqzadko,$visuNo,This).mode.serie.nom.entr -width 10 -textvariable panneau(acqzadko,$visuNo,nom_image) \
-              -relief groove
-           pack $panneau(acqzadko,$visuNo,This).mode.serie.nom.entr -fill x
-           label $panneau(acqzadko,$visuNo,This).mode.serie.nom.lab_extension -text $caption(acqzadko,extension) -pady 0
-           pack $panneau(acqzadko,$visuNo,This).mode.serie.nom.lab_extension -fill x -side left
-           menubutton $panneau(acqzadko,$visuNo,This).mode.serie.nom.extension -textvariable panneau(acqzadko,$visuNo,extension) \
-              -menu $panneau(acqzadko,$visuNo,This).mode.serie.nom.extension.menu -relief raised
-           pack $panneau(acqzadko,$visuNo,This).mode.serie.nom.extension -side right -fill x -expand true -ipady 1
-           set m [ menu $panneau(acqzadko,$visuNo,This).mode.serie.nom.extension.menu -tearoff 0 ]
-           foreach extension $conf(list_extension) {
-             $m add radiobutton -label "$extension" \
-                -indicatoron "1" \
-                -value "$extension" \
-                -variable panneau(acqzadko,$visuNo,extension) \
-                -command " "
-           }
-        pack $panneau(acqzadko,$visuNo,This).mode.serie.nom -side top -fill x
-        frame $panneau(acqzadko,$visuNo,This).mode.serie.nb -relief ridge -borderwidth 2
-           label $panneau(acqzadko,$visuNo,This).mode.serie.nb.but -text $caption(acqzadko,nombre) -pady 0
-           pack $panneau(acqzadko,$visuNo,This).mode.serie.nb.but -side left -fill y
-           entry $panneau(acqzadko,$visuNo,This).mode.serie.nb.entr -width 3 -textvariable panneau(acqzadko,$visuNo,nb_images) \
-              -relief groove -justify center
-           pack $panneau(acqzadko,$visuNo,This).mode.serie.nb.entr -side left -fill x -expand true
-        pack $panneau(acqzadko,$visuNo,This).mode.serie.nb -side top -fill x
-        frame $panneau(acqzadko,$visuNo,This).mode.serie.index -relief ridge -borderwidth 2
-           label $panneau(acqzadko,$visuNo,This).mode.serie.index.lab -text $caption(acqzadko,index) -pady 0
-           pack $panneau(acqzadko,$visuNo,This).mode.serie.index.lab -side top -fill x
-           entry $panneau(acqzadko,$visuNo,This).mode.serie.index.entr -width 3 -textvariable panneau(acqzadko,$visuNo,index) \
-              -relief groove -justify center
-           pack $panneau(acqzadko,$visuNo,This).mode.serie.index.entr -side left -fill x -expand true
-           button $panneau(acqzadko,$visuNo,This).mode.serie.index.but -text "1" -width 3 \
-              -command "set panneau(acqzadko,$visuNo,index) 1"
-           pack $panneau(acqzadko,$visuNo,This).mode.serie.index.but -side right -fill x
-        pack $panneau(acqzadko,$visuNo,This).mode.serie.index -side top -fill x
-        frame $panneau(acqzadko,$visuNo,This).mode.serie.indexEnd -relief ridge -borderwidth 2
-           label $panneau(acqzadko,$visuNo,This).mode.serie.indexEnd.lab1 \
-              -textvariable panneau(acqzadko,$visuNo,indexEndSerie) -pady 0
-           pack $panneau(acqzadko,$visuNo,This).mode.serie.indexEnd.lab1 -side top -fill x
-        pack $panneau(acqzadko,$visuNo,This).mode.serie.indexEnd -side top -fill x
+         frame $panneau(acqzadko,$visuNo,This).mode.serie.nom -relief ridge -borderwidth 2
+            label $panneau(acqzadko,$visuNo,This).mode.serie.nom.but -text $caption(acqzadko,nom) -pady 0
+            pack $panneau(acqzadko,$visuNo,This).mode.serie.nom.but -fill x
+            entry $panneau(acqzadko,$visuNo,This).mode.serie.nom.entr -width 10 -textvariable panneau(acqzadko,$visuNo,nom_image) \
+               -relief groove
+            pack $panneau(acqzadko,$visuNo,This).mode.serie.nom.entr -fill x
+            label $panneau(acqzadko,$visuNo,This).mode.serie.nom.lab_extension -text $caption(acqzadko,extension) -pady 0
+            pack $panneau(acqzadko,$visuNo,This).mode.serie.nom.lab_extension -fill x -side left
+            menubutton $panneau(acqzadko,$visuNo,This).mode.serie.nom.extension -textvariable panneau(acqzadko,$visuNo,extension) \
+               -menu $panneau(acqzadko,$visuNo,This).mode.serie.nom.extension.menu -relief raised
+            pack $panneau(acqzadko,$visuNo,This).mode.serie.nom.extension -side right -fill x -expand true -ipady 1
+            set m [ menu $panneau(acqzadko,$visuNo,This).mode.serie.nom.extension.menu -tearoff 0 ]
+            foreach extension $conf(list_extension) {
+              $m add radiobutton -label "$extension" \
+                 -indicatoron "1" \
+                 -value "$extension" \
+                 -variable panneau(acqzadko,$visuNo,extension) \
+                 -command " "
+            }
+         pack $panneau(acqzadko,$visuNo,This).mode.serie.nom -side top -fill x
+         frame $panneau(acqzadko,$visuNo,This).mode.serie.nb -relief ridge -borderwidth 2
+            label $panneau(acqzadko,$visuNo,This).mode.serie.nb.but -text $caption(acqzadko,nombre) -pady 0
+            pack $panneau(acqzadko,$visuNo,This).mode.serie.nb.but -side left -fill y
+            entry $panneau(acqzadko,$visuNo,This).mode.serie.nb.entr -width 3 -textvariable panneau(acqzadko,$visuNo,nb_images) \
+               -relief groove -justify center \
+               -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
+            pack $panneau(acqzadko,$visuNo,This).mode.serie.nb.entr -side left -fill x -expand true
+         pack $panneau(acqzadko,$visuNo,This).mode.serie.nb -side top -fill x
+         frame $panneau(acqzadko,$visuNo,This).mode.serie.index -relief ridge -borderwidth 2
+            label $panneau(acqzadko,$visuNo,This).mode.serie.index.lab -text $caption(acqzadko,index) -pady 0
+            pack $panneau(acqzadko,$visuNo,This).mode.serie.index.lab -side top -fill x
+            entry $panneau(acqzadko,$visuNo,This).mode.serie.index.entr -width 3 -textvariable panneau(acqzadko,$visuNo,index) \
+               -relief groove -justify center \
+               -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
+            pack $panneau(acqzadko,$visuNo,This).mode.serie.index.entr -side left -fill x -expand true
+            button $panneau(acqzadko,$visuNo,This).mode.serie.index.but -text "1" -width 3 \
+               -command "set panneau(acqzadko,$visuNo,index) 1"
+            pack $panneau(acqzadko,$visuNo,This).mode.serie.index.but -side right -fill x
+         pack $panneau(acqzadko,$visuNo,This).mode.serie.index -side top -fill x
+         frame $panneau(acqzadko,$visuNo,This).mode.serie.indexEnd -relief ridge -borderwidth 2
+            label $panneau(acqzadko,$visuNo,This).mode.serie.indexEnd.lab1 \
+               -textvariable panneau(acqzadko,$visuNo,indexEndSerie) -pady 0
+            pack $panneau(acqzadko,$visuNo,This).mode.serie.indexEnd.lab1 -side top -fill x
+         pack $panneau(acqzadko,$visuNo,This).mode.serie.indexEnd -side top -fill x
 
       #--- Definition du sous-panneau "Mode : Continu"
       frame $panneau(acqzadko,$visuNo,This).mode.continu
-        frame $panneau(acqzadko,$visuNo,This).mode.continu.sauve -relief ridge -borderwidth 2
-           checkbutton $panneau(acqzadko,$visuNo,This).mode.continu.sauve.case -text $caption(acqzadko,enregistrer) \
-              -variable panneau(acqzadko,$visuNo,enregistrer)
-           pack $panneau(acqzadko,$visuNo,This).mode.continu.sauve.case -side left -fill x  -expand true
-        pack $panneau(acqzadko,$visuNo,This).mode.continu.sauve -side top -fill x
-        frame $panneau(acqzadko,$visuNo,This).mode.continu.nom -relief ridge -borderwidth 2
-           label $panneau(acqzadko,$visuNo,This).mode.continu.nom.but -text $caption(acqzadko,nom) -pady 0
-           pack $panneau(acqzadko,$visuNo,This).mode.continu.nom.but -fill x
-           entry $panneau(acqzadko,$visuNo,This).mode.continu.nom.entr -width 10 -textvariable panneau(acqzadko,$visuNo,nom_image) \
-              -relief groove
-           pack $panneau(acqzadko,$visuNo,This).mode.continu.nom.entr -fill x
-           label $panneau(acqzadko,$visuNo,This).mode.continu.nom.lab_extension -text $caption(acqzadko,extension) -pady 0
-           pack $panneau(acqzadko,$visuNo,This).mode.continu.nom.lab_extension -fill x -side left
-           menubutton $panneau(acqzadko,$visuNo,This).mode.continu.nom.extension -textvariable panneau(acqzadko,$visuNo,extension) \
-              -menu $panneau(acqzadko,$visuNo,This).mode.continu.nom.extension.menu -relief raised
-           pack $panneau(acqzadko,$visuNo,This).mode.continu.nom.extension -side right -fill x -expand true -ipady 1
-           set m [ menu $panneau(acqzadko,$visuNo,This).mode.continu.nom.extension.menu -tearoff 0 ]
-           foreach extension $conf(list_extension) {
-             $m add radiobutton -label "$extension" \
-                -indicatoron "1" \
-                -value "$extension" \
-                -variable panneau(acqzadko,$visuNo,extension) \
-                -command " "
-           }
-        pack $panneau(acqzadko,$visuNo,This).mode.continu.nom -side top -fill x
-        frame $panneau(acqzadko,$visuNo,This).mode.continu.index -relief ridge -borderwidth 2
-           label $panneau(acqzadko,$visuNo,This).mode.continu.index.lab -text $caption(acqzadko,index) -pady 0
-           pack $panneau(acqzadko,$visuNo,This).mode.continu.index.lab -side top -fill x
-           entry $panneau(acqzadko,$visuNo,This).mode.continu.index.entr -width 3 -textvariable panneau(acqzadko,$visuNo,index) \
-              -relief groove -justify center
-           pack $panneau(acqzadko,$visuNo,This).mode.continu.index.entr -side left -fill x -expand true
-           button $panneau(acqzadko,$visuNo,This).mode.continu.index.but -text "1" -width 3 \
-              -command "set panneau(acqzadko,$visuNo,index) 1"
-           pack $panneau(acqzadko,$visuNo,This).mode.continu.index.but -side right -fill x
-        pack $panneau(acqzadko,$visuNo,This).mode.continu.index -side top -fill x
+         frame $panneau(acqzadko,$visuNo,This).mode.continu.sauve -relief ridge -borderwidth 2
+            checkbutton $panneau(acqzadko,$visuNo,This).mode.continu.sauve.case -text $caption(acqzadko,enregistrer) \
+               -variable panneau(acqzadko,$visuNo,enregistrer)
+            pack $panneau(acqzadko,$visuNo,This).mode.continu.sauve.case -side left -fill x  -expand true
+         pack $panneau(acqzadko,$visuNo,This).mode.continu.sauve -side top -fill x
+         frame $panneau(acqzadko,$visuNo,This).mode.continu.nom -relief ridge -borderwidth 2
+            label $panneau(acqzadko,$visuNo,This).mode.continu.nom.but -text $caption(acqzadko,nom) -pady 0
+            pack $panneau(acqzadko,$visuNo,This).mode.continu.nom.but -fill x
+            entry $panneau(acqzadko,$visuNo,This).mode.continu.nom.entr -width 10 -textvariable panneau(acqzadko,$visuNo,nom_image) \
+               -relief groove
+            pack $panneau(acqzadko,$visuNo,This).mode.continu.nom.entr -fill x
+            label $panneau(acqzadko,$visuNo,This).mode.continu.nom.lab_extension -text $caption(acqzadko,extension) -pady 0
+            pack $panneau(acqzadko,$visuNo,This).mode.continu.nom.lab_extension -fill x -side left
+            menubutton $panneau(acqzadko,$visuNo,This).mode.continu.nom.extension -textvariable panneau(acqzadko,$visuNo,extension) \
+               -menu $panneau(acqzadko,$visuNo,This).mode.continu.nom.extension.menu -relief raised
+            pack $panneau(acqzadko,$visuNo,This).mode.continu.nom.extension -side right -fill x -expand true -ipady 1
+            set m [ menu $panneau(acqzadko,$visuNo,This).mode.continu.nom.extension.menu -tearoff 0 ]
+            foreach extension $conf(list_extension) {
+              $m add radiobutton -label "$extension" \
+                 -indicatoron "1" \
+                 -value "$extension" \
+                 -variable panneau(acqzadko,$visuNo,extension) \
+                 -command " "
+            }
+         pack $panneau(acqzadko,$visuNo,This).mode.continu.nom -side top -fill x
+         frame $panneau(acqzadko,$visuNo,This).mode.continu.index -relief ridge -borderwidth 2
+            label $panneau(acqzadko,$visuNo,This).mode.continu.index.lab -text $caption(acqzadko,index) -pady 0
+            pack $panneau(acqzadko,$visuNo,This).mode.continu.index.lab -side top -fill x
+            entry $panneau(acqzadko,$visuNo,This).mode.continu.index.entr -width 3 -textvariable panneau(acqzadko,$visuNo,index) \
+               -relief groove -justify center \
+               -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
+            pack $panneau(acqzadko,$visuNo,This).mode.continu.index.entr -side left -fill x -expand true
+            button $panneau(acqzadko,$visuNo,This).mode.continu.index.but -text "1" -width 3 \
+               -command "set panneau(acqzadko,$visuNo,index) 1"
+            pack $panneau(acqzadko,$visuNo,This).mode.continu.index.but -side right -fill x
+         pack $panneau(acqzadko,$visuNo,This).mode.continu.index -side top -fill x
 
       #--- Definition du sous-panneau "Mode : Series d'images en continu avec intervalle entre chaque serie"
       frame $panneau(acqzadko,$visuNo,This).mode.serie_1
-        frame $panneau(acqzadko,$visuNo,This).mode.serie_1.nom -relief ridge -borderwidth 2
-           label $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.but -text $caption(acqzadko,nom) -pady 0
-           pack $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.but -fill x
-           entry $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.entr -width 10 -textvariable panneau(acqzadko,$visuNo,nom_image) \
-              -relief groove
-           pack $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.entr -fill x
-           label $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.lab_extension -text $caption(acqzadko,extension) -pady 0
-           pack $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.lab_extension -fill x -side left
-           menubutton $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.extension -textvariable panneau(acqzadko,$visuNo,extension) \
-              -menu $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.extension.menu -relief raised
-           pack $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.extension -side right -fill x -expand true -ipady 1
-           set m [ menu $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.extension.menu -tearoff 0 ]
-           foreach extension $conf(list_extension) {
-             $m add radiobutton -label "$extension" \
-                -indicatoron "1" \
-                -value "$extension" \
-                -variable panneau(acqzadko,$visuNo,extension) \
-                -command " "
-           }
-        pack $panneau(acqzadko,$visuNo,This).mode.serie_1.nom -side top -fill x
-        frame $panneau(acqzadko,$visuNo,This).mode.serie_1.nb -relief ridge -borderwidth 2
-           label $panneau(acqzadko,$visuNo,This).mode.serie_1.nb.but -text $caption(acqzadko,nombre) -pady 0
-           pack $panneau(acqzadko,$visuNo,This).mode.serie_1.nb.but -side left -fill y
-           entry $panneau(acqzadko,$visuNo,This).mode.serie_1.nb.entr -width 3 -textvariable panneau(acqzadko,$visuNo,nb_images) \
-              -relief groove -justify center
-           pack $panneau(acqzadko,$visuNo,This).mode.serie_1.nb.entr -side left -fill x -expand true
-        pack $panneau(acqzadko,$visuNo,This).mode.serie_1.nb -side top -fill x
-        frame $panneau(acqzadko,$visuNo,This).mode.serie_1.index -relief ridge -borderwidth 2
-           label $panneau(acqzadko,$visuNo,This).mode.serie_1.index.lab -text $caption(acqzadko,index) -pady 0
-           pack $panneau(acqzadko,$visuNo,This).mode.serie_1.index.lab -side top -fill x
-           entry $panneau(acqzadko,$visuNo,This).mode.serie_1.index.entr -width 3 -textvariable panneau(acqzadko,$visuNo,index) \
-              -relief groove -justify center
-           pack $panneau(acqzadko,$visuNo,This).mode.serie_1.index.entr -side left -fill x -expand true
-           button $panneau(acqzadko,$visuNo,This).mode.serie_1.index.but -text "1" -width 3 \
-              -command "set panneau(acqzadko,$visuNo,index) 1"
-           pack $panneau(acqzadko,$visuNo,This).mode.serie_1.index.but -side right -fill x
-        pack $panneau(acqzadko,$visuNo,This).mode.serie_1.index -side top -fill x
-        frame $panneau(acqzadko,$visuNo,This).mode.serie_1.indexEnd -relief ridge -borderwidth 2
-           label $panneau(acqzadko,$visuNo,This).mode.serie_1.indexEnd.lab1 \
-              -textvariable panneau(acqzadko,$visuNo,indexEndSerieContinu) -pady 0
-           pack $panneau(acqzadko,$visuNo,This).mode.serie_1.indexEnd.lab1 -side top -fill x
-        pack $panneau(acqzadko,$visuNo,This).mode.serie_1.indexEnd -side top -fill x
+         frame $panneau(acqzadko,$visuNo,This).mode.serie_1.nom -relief ridge -borderwidth 2
+            label $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.but -text $caption(acqzadko,nom) -pady 0
+            pack $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.but -fill x
+            entry $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.entr -width 10 -textvariable panneau(acqzadko,$visuNo,nom_image) \
+               -relief groove
+            pack $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.entr -fill x
+            label $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.lab_extension -text $caption(acqzadko,extension) -pady 0
+            pack $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.lab_extension -fill x -side left
+            menubutton $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.extension -textvariable panneau(acqzadko,$visuNo,extension) \
+               -menu $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.extension.menu -relief raised
+            pack $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.extension -side right -fill x -expand true -ipady 1
+            set m [ menu $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.extension.menu -tearoff 0 ]
+            foreach extension $conf(list_extension) {
+              $m add radiobutton -label "$extension" \
+                 -indicatoron "1" \
+                 -value "$extension" \
+                 -variable panneau(acqzadko,$visuNo,extension) \
+                 -command " "
+            }
+         pack $panneau(acqzadko,$visuNo,This).mode.serie_1.nom -side top -fill x
+         frame $panneau(acqzadko,$visuNo,This).mode.serie_1.nb -relief ridge -borderwidth 2
+            label $panneau(acqzadko,$visuNo,This).mode.serie_1.nb.but -text $caption(acqzadko,nombre) -pady 0
+            pack $panneau(acqzadko,$visuNo,This).mode.serie_1.nb.but -side left -fill y
+            entry $panneau(acqzadko,$visuNo,This).mode.serie_1.nb.entr -width 3 -textvariable panneau(acqzadko,$visuNo,nb_images) \
+               -relief groove -justify center \
+               -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
+            pack $panneau(acqzadko,$visuNo,This).mode.serie_1.nb.entr -side left -fill x -expand true
+         pack $panneau(acqzadko,$visuNo,This).mode.serie_1.nb -side top -fill x
+         frame $panneau(acqzadko,$visuNo,This).mode.serie_1.index -relief ridge -borderwidth 2
+            label $panneau(acqzadko,$visuNo,This).mode.serie_1.index.lab -text $caption(acqzadko,index) -pady 0
+            pack $panneau(acqzadko,$visuNo,This).mode.serie_1.index.lab -side top -fill x
+            entry $panneau(acqzadko,$visuNo,This).mode.serie_1.index.entr -width 3 -textvariable panneau(acqzadko,$visuNo,index) \
+               -relief groove -justify center \
+               -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
+            pack $panneau(acqzadko,$visuNo,This).mode.serie_1.index.entr -side left -fill x -expand true
+            button $panneau(acqzadko,$visuNo,This).mode.serie_1.index.but -text "1" -width 3 \
+               -command "set panneau(acqzadko,$visuNo,index) 1"
+            pack $panneau(acqzadko,$visuNo,This).mode.serie_1.index.but -side right -fill x
+         pack $panneau(acqzadko,$visuNo,This).mode.serie_1.index -side top -fill x
+         frame $panneau(acqzadko,$visuNo,This).mode.serie_1.indexEnd -relief ridge -borderwidth 2
+            label $panneau(acqzadko,$visuNo,This).mode.serie_1.indexEnd.lab1 \
+               -textvariable panneau(acqzadko,$visuNo,indexEndSerieContinu) -pady 0
+            pack $panneau(acqzadko,$visuNo,This).mode.serie_1.indexEnd.lab1 -side top -fill x
+         pack $panneau(acqzadko,$visuNo,This).mode.serie_1.indexEnd -side top -fill x
 
       #--- Definition du sous-panneau "Mode : Continu avec intervalle entre chaque image"
       frame $panneau(acqzadko,$visuNo,This).mode.continu_1
-        frame $panneau(acqzadko,$visuNo,This).mode.continu_1.sauve -relief ridge -borderwidth 2
-           checkbutton $panneau(acqzadko,$visuNo,This).mode.continu_1.sauve.case -text $caption(acqzadko,enregistrer) \
-              -variable panneau(acqzadko,$visuNo,enregistrer)
-           pack $panneau(acqzadko,$visuNo,This).mode.continu_1.sauve.case -side left -fill x  -expand true
-        pack $panneau(acqzadko,$visuNo,This).mode.continu_1.sauve -side top -fill x
-        frame $panneau(acqzadko,$visuNo,This).mode.continu_1.nom -relief ridge -borderwidth 2
-           label $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.but -text $caption(acqzadko,nom) -pady 0
-           pack $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.but -fill x
-           entry $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.entr -width 10 -textvariable panneau(acqzadko,$visuNo,nom_image) \
-              -relief groove
-           pack $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.entr -fill x
-           label $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.lab_extension -text $caption(acqzadko,extension) -pady 0
-           pack $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.lab_extension -fill x -side left
-           menubutton $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.extension -textvariable panneau(acqzadko,$visuNo,extension) \
-              -menu $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.extension.menu -relief raised
-           pack $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.extension -side right -fill x -expand true -ipady 1
-           set m [ menu $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.extension.menu -tearoff 0 ]
-           foreach extension $conf(list_extension) {
-             $m add radiobutton -label "$extension" \
-                -indicatoron "1" \
-                -value "$extension" \
-                -variable panneau(acqzadko,$visuNo,extension) \
-                -command " "
-           }
-        pack $panneau(acqzadko,$visuNo,This).mode.continu_1.nom -side top -fill x
-        frame $panneau(acqzadko,$visuNo,This).mode.continu_1.index -relief ridge -borderwidth 2
-           label $panneau(acqzadko,$visuNo,This).mode.continu_1.index.lab -text $caption(acqzadko,index) -pady 0
-           pack $panneau(acqzadko,$visuNo,This).mode.continu_1.index.lab -side top -fill x
-           entry $panneau(acqzadko,$visuNo,This).mode.continu_1.index.entr -width 3 -textvariable panneau(acqzadko,$visuNo,index) \
-              -relief groove -justify center
-           pack $panneau(acqzadko,$visuNo,This).mode.continu_1.index.entr -side left -fill x -expand true
-           button $panneau(acqzadko,$visuNo,This).mode.continu_1.index.but -text "1" -width 3 \
-              -command "set panneau(acqzadko,$visuNo,index) 1"
-           pack $panneau(acqzadko,$visuNo,This).mode.continu_1.index.but -side right -fill x
-        pack $panneau(acqzadko,$visuNo,This).mode.continu_1.index -side top -fill x
+         frame $panneau(acqzadko,$visuNo,This).mode.continu_1.sauve -relief ridge -borderwidth 2
+            checkbutton $panneau(acqzadko,$visuNo,This).mode.continu_1.sauve.case -text $caption(acqzadko,enregistrer) \
+               -variable panneau(acqzadko,$visuNo,enregistrer)
+            pack $panneau(acqzadko,$visuNo,This).mode.continu_1.sauve.case -side left -fill x  -expand true
+         pack $panneau(acqzadko,$visuNo,This).mode.continu_1.sauve -side top -fill x
+         frame $panneau(acqzadko,$visuNo,This).mode.continu_1.nom -relief ridge -borderwidth 2
+            label $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.but -text $caption(acqzadko,nom) -pady 0
+            pack $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.but -fill x
+            entry $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.entr -width 10 -textvariable panneau(acqzadko,$visuNo,nom_image) \
+               -relief groove
+            pack $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.entr -fill x
+            label $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.lab_extension -text $caption(acqzadko,extension) -pady 0
+            pack $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.lab_extension -fill x -side left
+            menubutton $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.extension -textvariable panneau(acqzadko,$visuNo,extension) \
+               -menu $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.extension.menu -relief raised
+            pack $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.extension -side right -fill x -expand true -ipady 1
+            set m [ menu $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.extension.menu -tearoff 0 ]
+            foreach extension $conf(list_extension) {
+              $m add radiobutton -label "$extension" \
+                 -indicatoron "1" \
+                 -value "$extension" \
+                 -variable panneau(acqzadko,$visuNo,extension) \
+                 -command " "
+            }
+         pack $panneau(acqzadko,$visuNo,This).mode.continu_1.nom -side top -fill x
+         frame $panneau(acqzadko,$visuNo,This).mode.continu_1.index -relief ridge -borderwidth 2
+            label $panneau(acqzadko,$visuNo,This).mode.continu_1.index.lab -text $caption(acqzadko,index) -pady 0
+            pack $panneau(acqzadko,$visuNo,This).mode.continu_1.index.lab -side top -fill x
+            entry $panneau(acqzadko,$visuNo,This).mode.continu_1.index.entr -width 3 -textvariable panneau(acqzadko,$visuNo,index) \
+               -relief groove -justify center \
+               -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
+            pack $panneau(acqzadko,$visuNo,This).mode.continu_1.index.entr -side left -fill x -expand true
+            button $panneau(acqzadko,$visuNo,This).mode.continu_1.index.but -text "1" -width 3 \
+               -command "set panneau(acqzadko,$visuNo,index) 1"
+            pack $panneau(acqzadko,$visuNo,This).mode.continu_1.index.but -side right -fill x
+         pack $panneau(acqzadko,$visuNo,This).mode.continu_1.index -side top -fill x
      pack $panneau(acqzadko,$visuNo,This).mode -side top -fill x
 
       #--- Frame pour l'affichage de l'avancement de l'acqusition
       frame $panneau(acqzadko,$visuNo,This).avancement_acq -borderwidth 2 -relief ridge
-        #--- Checkbutton petit deplacement
-        checkbutton $panneau(acqzadko,$visuNo,This).avancement_acq.check -highlightthickness 0 \
-           -text $caption(acqzadko,avancement_acq) -variable panneau(acqzadko,$visuNo,avancement_acq)
-        pack $panneau(acqzadko,$visuNo,This).avancement_acq.check -side left -fill x
-     pack $panneau(acqzadko,$visuNo,This).avancement_acq -side top -fill x
+         #--- Checkbutton petit deplacement
+         checkbutton $panneau(acqzadko,$visuNo,This).avancement_acq.check -highlightthickness 0 \
+            -text $caption(acqzadko,avancement_acq) -variable panneau(acqzadko,$visuNo,avancement_acq)
+         pack $panneau(acqzadko,$visuNo,This).avancement_acq.check -side left -fill x
+      pack $panneau(acqzadko,$visuNo,This).avancement_acq -side top -fill x
 
       #--- Frame petit decalage
       frame $panneau(acqzadko,$visuNo,This).shift -borderwidth 2 -relief ridge
-        #--- Checkbutton petit deplacement
-        checkbutton $panneau(acqzadko,$visuNo,This).shift.buttonShift -highlightthickness 0 \
-           -variable panneau(DlgShift,buttonShift)
-        pack $panneau(acqzadko,$visuNo,This).shift.buttonShift -side left -fill x
-        #--- Bouton configuration petit deplacement
-        button $panneau(acqzadko,$visuNo,This).shift.buttonShiftConfig -text "$caption(acqzadko,buttonShiftConfig)" \
-           -command "::acqzadko::cmdShiftConfig $visuNo"
-        pack $panneau(acqzadko,$visuNo,This).shift.buttonShiftConfig -side right -fill x -expand true
-     pack $panneau(acqzadko,$visuNo,This).shift -side top -fill x
+         #--- Checkbutton petit deplacement
+         checkbutton $panneau(acqzadko,$visuNo,This).shift.buttonShift -highlightthickness 0 \
+            -variable panneau(DlgShift,buttonShift)
+         pack $panneau(acqzadko,$visuNo,This).shift.buttonShift -side left -fill x
+         #--- Bouton configuration petit deplacement
+         button $panneau(acqzadko,$visuNo,This).shift.buttonShiftConfig -text "$caption(acqzadko,buttonShiftConfig)" \
+            -command "::acqzadko::cmdShiftConfig $visuNo"
+         pack $panneau(acqzadko,$visuNo,This).shift.buttonShiftConfig -side right -fill x -expand true
+      pack $panneau(acqzadko,$visuNo,This).shift -side top -fill x
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $panneau(acqzadko,$visuNo,This)

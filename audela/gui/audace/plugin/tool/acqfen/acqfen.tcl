@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.31 2010-01-07 18:18:24 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.32 2010-01-10 16:08:47 robertdelmas Exp $
 #
 
 # =========================================================
@@ -616,7 +616,7 @@ namespace eval ::acqfen {
                         return
                      }
                      #--- On verifie que le nom de fichier ne contient pas de caracteres interdits
-                     if {[acqfen::testerChaine $panneau(acqfen,nom_image)] == 0} {
+                     if {[acqfen::testChaine $panneau(acqfen,nom_image)] == 0} {
                         tk_messageBox -title $caption(acqfen,pb) -type ok \
                            -message $caption(acqfen,mauvcar)
                         #--- On restitue l'affichage du bouton "GO" :
@@ -636,7 +636,7 @@ namespace eval ::acqfen {
                         return
                      }
                      #--- On verifie que l'index est bien un nombre entier
-                     if {[acqfen::testerEntier $panneau(acqfen,index)] == 0} {
+                     if {[acqfen::testEntier $panneau(acqfen,index)] == 0} {
                         tk_messageBox -title $caption(acqfen,pb) -type ok \
                            -message $caption(acqfen,indinv)
                         #--- On restitue l'affichage du bouton "GO" :
@@ -668,7 +668,7 @@ namespace eval ::acqfen {
                         return
                      }
                      #--- On verifie que le nombre d'images a faire est bien un nombre entier
-                     if {[acqfen::testerEntier $panneau(acqfen,nb_images)] == 0} {
+                     if {[acqfen::testEntier $panneau(acqfen,nb_images)] == 0} {
                         tk_messageBox -title $caption(acqfen,pb) -type ok \
                            -message $caption(acqfen,nbiminv)
                         #--- On restitue l'affichage du bouton "GO" :
@@ -941,7 +941,7 @@ namespace eval ::acqfen {
                         return
                      }
                      #--- On verifie que le nom de fichier ne contient pas de caracteres interdits
-                     if {[acqfen::testerChaine $panneau(acqfen,nom_image)] == 0} {
+                     if {[acqfen::testChaine $panneau(acqfen,nom_image)] == 0} {
                         tk_messageBox -title $caption(acqfen,pb) -type ok \
                            -message $caption(acqfen,mauvcar)
                         #--- On restitue l'affichage du bouton "GO" :
@@ -961,7 +961,7 @@ namespace eval ::acqfen {
                         return
                      }
                      #--- On verifie que l'index est bien un nombre entier
-                     if {[acqfen::testerEntier $panneau(acqfen,index)] == 0} {
+                     if {[acqfen::testEntier $panneau(acqfen,index)] == 0} {
                         tk_messageBox -title $caption(acqfen,pb) -type ok \
                            -message $caption(acqfen,indinv)
                         #--- On restitue l'affichage du bouton "GO" :
@@ -1438,7 +1438,7 @@ namespace eval ::acqfen {
          return
       }
       #--- Verifie que le nom de fichier ne contient pas de caracteres interdits
-      if {[acqfen::testerChaine $panneau(acqfen,nom_image)] == 0} {
+      if {[acqfen::testChaine $panneau(acqfen,nom_image)] == 0} {
          tk_messageBox -title $caption(acqfen,pb) -type ok \
             -message $caption(acqfen,mauvcar)
          return
@@ -1452,7 +1452,7 @@ namespace eval ::acqfen {
             return
          }
          #--- Verifier que l'index est bien un nombre entier
-         if {[acqfen::testerEntier $panneau(acqfen,index)] == 0} {
+         if {[acqfen::testEntier $panneau(acqfen,index)] == 0} {
             tk_messageBox -title $caption(acqfen,pb) -type ok \
                -message $caption(acqfen,indinv)
             return
@@ -1490,29 +1490,31 @@ namespace eval ::acqfen {
 #***** Fin de la procedure de sauvegarde de l'image *************
 
 #***** Procedure de test de validite d'un entier *****************
-#--- Cette procedure (copiee de Methking) verifie que la chaine passee en argument decrit
-#--- bien un entier. Elle retourne 1 si c'est la cas, et 0 si ce n'est pas un entier.
-   proc testerEntier { valeur } {
+#--- Cette procedure verifie que la chaine passee en argument decrit
+#--- bien un entier different de 0
+#--- Elle retourne 1 si c'est la cas et 0 si ce n'est pas un entier
+   proc testEntier { valeur } {
       set test 1
-      for {set i 0} {$i < [string length $valeur]} {incr i} {
+      for { set i 0 } { $i < [ string length $valeur ] } { incr i } {
          set a [string index $valeur $i]
-         if {![string match {[0-9]} $a]} {
+         if { ![string match {[1-9]} $a] } {
             set test 0
          }
       }
-      if {$valeur==""} {set test 0}
+      if { $valeur == "" } { set test 0 }
       return $test
    }
 #***** Fin de la procedure de test de validite d'une entier *******
 
 #***** Procedure de test de validite d'une chaine de caracteres *******
-#--- Cette procedure verifie que la chaine passee en argument ne contient que des caracteres
-#--- valides. Elle retourne 1 si c'est la cas, et 0 si ce n'est pas valable.
-   proc testerChaine { valeur } {
+#--- Cette procedure verifie que la chaine passee en argument ne contient
+#--- que des caracteres valides
+#--- Elle retourne 1 si c'est la cas et 0 si ce n'est pas valable
+   proc testChaine { valeur } {
       set test 1
-      for {set i 0} {$i < [string length $valeur]} {incr i} {
-         set a [string index $valeur $i]
-         if {![string match {[-a-zA-Z0-9_]} $a]} {
+      for { set i 0 } { $i < [ string length $valeur ] } { incr i } {
+         set a [ string index $valeur $i ]
+         if { ![string match {[-a-zA-Z0-9_]} $a] } {
             set test 0
          }
       }
@@ -1613,7 +1615,8 @@ frame $This -borderwidth 2 -relief groove
 
          #--- Ligne de saisie du temps de pose
          entry $This.acqcent.pose.pose_ent -width 4 -textvariable panneau(acqfen,pose_centrage) \
-            -relief groove -justify center
+            -relief groove -justify center \
+            -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
          pack $This.acqcent.pose.pose_ent -side left -fill y
 
       pack $This.acqcent.pose -expand true
@@ -1669,7 +1672,8 @@ frame $This -borderwidth 2 -relief groove
 
          #--- Ligne de saisie du temps de pose
          entry $This.acq.pose.pose_ent -width 4 -textvariable panneau(acqfen,pose) \
-            -relief groove -justify center
+            -relief groove -justify center \
+            -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
          pack $This.acq.pose.pose_ent -side left -fill y
 
       pack $This.acq.pose -expand true
@@ -1732,7 +1736,8 @@ frame $This -borderwidth 2 -relief groove
                -variable panneau(acqfen,indexer)
             pack $This.mode.une.index.case -expand true -fill both
             entry $This.mode.une.index.entr -width 3 -textvariable panneau(acqfen,index) \
-               -relief groove -justify center
+               -relief groove -justify center \
+               -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
             pack $This.mode.une.index.entr -side left -fill x -expand true
             button $This.mode.une.index.but -text "1" -width 3 -command {set panneau(acqfen,index) 1}
             pack $This.mode.une.index.but -side right -fill x
@@ -1753,14 +1758,16 @@ frame $This -borderwidth 2 -relief groove
             label $This.mode.serie.nb.but -text $caption(acqfen,nombre) -pady 0
             pack $This.mode.serie.nb.but -side left -fill y
             entry $This.mode.serie.nb.entr -width 3 -textvariable panneau(acqfen,nb_images) \
-               -relief groove -justify center
+               -relief groove -justify center \
+               -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
             pack $This.mode.serie.nb.entr -side left -fill x -expand true
          pack $This.mode.serie.nb -expand true -fill both
          frame $This.mode.serie.index -relief ridge -borderwidth 2
             label $This.mode.serie.index.lab -text $caption(acqfen,index) -pady 0
             pack $This.mode.serie.index.lab -expand true -fill both
             entry $This.mode.serie.index.entr -width 3 -textvariable panneau(acqfen,index) \
-               -relief groove -justify center
+               -relief groove -justify center \
+               -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
             pack $This.mode.serie.index.entr -side left -fill x -expand true
             button $This.mode.serie.index.but -text "1" -width 3 -command {set panneau(acqfen,index) 1}
             pack $This.mode.serie.index.but -side right -fill x
@@ -1784,7 +1791,8 @@ frame $This -borderwidth 2 -relief groove
             label $This.mode.continu.index.lab -text $caption(acqfen,index) -pady 0
             pack $This.mode.continu.index.lab -expand true -fill both
             entry $This.mode.continu.index.entr -width 3 -textvariable panneau(acqfen,index) \
-               -relief groove -justify center
+               -relief groove -justify center \
+               -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
             pack $This.mode.continu.index.entr -side left -fill x -expand true
             button $This.mode.continu.index.but -text "1" -width 3 -command {set panneau(acqfen,index) 1}
             pack $This.mode.continu.index.but -side right -fill x
@@ -1862,7 +1870,8 @@ proc creeFenReglFen { } {
          -variable panneau(acqfen,fenreglfen1) -value 2
       pack $audace(base).fenreglfen.1.2.but -side left
       entry $audace(base).fenreglfen.1.2.ent -textvariable panneau(acqfen,fenreglfen12) \
-         -width 10 -justify center
+         -width 10 -justify center \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 9999 }
       pack $audace(base).fenreglfen.1.2.ent -side left
       frame $audace(base).fenreglfen.2
       pack $audace(base).fenreglfen.2 -expand true -fill x
@@ -1879,7 +1888,8 @@ proc creeFenReglFen { } {
          -variable panneau(acqfen,fenreglfen2) -value 2
       pack $audace(base).fenreglfen.2.2.but -side left
       entry $audace(base).fenreglfen.2.2.ent -textvariable panneau(acqfen,fenreglfen22) \
-         -width 10 -justify center
+         -width 10 -justify center \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 2 9999 }
       pack $audace(base).fenreglfen.2.2.ent -side left
       frame $audace(base).fenreglfen.2.3
       pack $audace(base).fenreglfen.2.3 -expand true -fill x
