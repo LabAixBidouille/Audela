@@ -239,12 +239,10 @@ int mc_interplin1(int n1,int n2,double *x, double *y, double *dy, double s,int n
 /*                                                                                      */
 /****************************************************************************************/
 {
-	int kk,k;
+	int kk,k,nn1;
 	double xx0;
+	nn1=n1;
 	for (kk=1;kk<=nn;kk++) {
-		if (kk>86400) {
-			kk+=0;
-		}
 		xx0=xx[kk];
 		if (xx0<x[n1]) {
 			ff[kk]=0;
@@ -254,12 +252,13 @@ int mc_interplin1(int n1,int n2,double *x, double *y, double *dy, double s,int n
 			ff[kk]=0;
 			continue;
 		}
-		for (k=n1+1;k<=n2;k++) {
+		for (k=nn1+1;k<=n2;k++) {
 			if (xx0<=x[k]) {
 				break;
 			}
 		}
 		ff[kk]=y[k-1]+(xx0-x[k-1])/(x[k]-x[k-1])*(y[k]-y[k-1]);
+		nn1=k-1;
 	}
 	return 0;
 }

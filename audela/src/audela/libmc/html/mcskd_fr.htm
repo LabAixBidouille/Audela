@@ -12,7 +12,7 @@
 <center><b><font size="+3">LIB MC</font></b> <br>
 Planification des observations avec
 la&nbsp; librairie de calculs de m&eacute;canique c&eacute;leste <br>
-version 20091231<br>
+version 20100110<br>
 Alain KLOTZ
 <p><b><font size="+3">Manuel de l'utilisateur</font></b></p>
 </center>
@@ -83,8 +83,6 @@ JD1 : &nbsp;d&eacute;but du cr&eacute;neau d'observation
 (1900-01-01T00:00:00 par d&eacute;faut)<br>
 JD2 : &nbsp;fin du cr&eacute;neau d'observation (9999-01-01T00:00:00
 par d&eacute;faut)<br>
-IMMEDIATE : =1 pour d&eacute;marrer le plus vite possible (0 par
-d&eacute;faut)<br>
 ELEV : &eacute;l&eacute;vation minimale pour observer (15
 degr&eacute;s&nbsp; par d&eacute;faut)<br>
 MOONDIST : angle de garde &agrave; la Lune (40 degr&eacute;s
@@ -92,7 +90,11 @@ MOONDIST : angle de garde &agrave; la Lune (40 degr&eacute;s
 SUNDIST : angle de garde au Soleil (20 degr&eacute;s par d&eacute;faut)<br>
 SKYLEVEL : magnitude surfacique du ciel minimale pour observer (16
 Vmag/arcsec2 par d&eacute;faut)<br>
-STARTEXP : =1 pour synchroniser tr&egrave;s pr&eacute;cis&eacute;ment
+STARTEXP : condition de d&eacute;marrage des acquisitions dans le
+cr&eacute;neau [jd1 jd2]. BESTELEV, IMMEDIATE, MIDDLE (BESTELEV par
+d&eacute;faut)<br>
+STARTSYNCHRO : =1 pour synchroniser tr&egrave;s
+pr&eacute;cis&eacute;ment
 le d&eacute;but d'acquisition avec le pointage (0 par d&eacute;faut)<br>
 IDUSER : index d'utilisateur (-1 par d&eacute;faut)<br>
 UPRIORITY : niveau de priorit&eacute; de l'utilisateur (1 par

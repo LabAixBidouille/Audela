@@ -531,12 +531,12 @@ typedef struct {
 	// --- constraints
 	double const_jd1; // start sequence (julian day)
 	double const_jd2; // stop sequence (julian day)
-	int const_immediate; // =1 start to observe early a s possible
 	double const_elev; // minimum elevation to observe (degrees)
 	double const_fullmoondist; // minimum separation to the full moon (degrees)
 	double const_sundist; // minimum separation to the sun (degrees)
 	double const_skylightlevel; // minimum sky brithness (mag/"2)
-	int const_startexposures; // =0 start exposure as soon as possible, =1 wait a precise position
+	int const_startexposures; // =0 best elevation, =1 start exposure as soon as possible, =2 start in the middle of the [start stop] sequence
+	int const_startsynchro; // =0 normal, =1 wait a precice pointing
 	// --- user
 	int user; // index to define the user
 	double user_priority; // priority of the sequence
@@ -591,17 +591,34 @@ typedef struct {
 typedef struct {
    int idseq;
    int order;
-   double jd_slew_start;
+   double jd_slew_start_with_slew;
+	double jd_slew_start_without_slew;
    double jd_acq_start;
    double jd_acq_end;
    double percent_quota_used;
    double jd_elev_max;
+	double az;
+	double elev;
+	double az_acq_start;
+	double elev_acq_start;
+	double ra_acq_start;
+	double ha_acq_start;
+	double dec_acq_start;
+	double az_acq_end;
+	double elev_acq_end;
+	double ra_acq_end;
+	double ha_acq_end;
+	double dec_acq_end;
 } mc_PLANI;
 
 typedef struct {
    int iduser; // that of mc_OBJECTDESCR.user
-   double percent_quota_used;
    double percent_quota_authorized;
+	// private
+   double percent_quota_used;
+	double duration_total_used;
+	int same_priority;
+	double percent_quota_relative_authorized;
 } mc_USERS;
 
 
