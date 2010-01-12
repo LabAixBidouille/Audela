@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.bague.tcl,v 1.7 2009-05-31 08:21:45 robertdelmas Exp $
+# Mise a jour $Id: tuto.bague.tcl,v 1.8 2010-01-12 16:11:10 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -71,10 +71,6 @@ proc tuto_bague_exit { } {
 global num       # index for devices
 global caption   # texts of captions
 global zone      # window name of usefull screen parts
-
-#--- definition of global variables
-global lpt       # name of the audine port
-set lpt "lpt1"
 
 #--- selection of language
 caption_def_plugcam $langage

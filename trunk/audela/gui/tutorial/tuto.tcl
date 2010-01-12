@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.tcl,v 1.11 2009-06-01 09:29:12 robertdelmas Exp $
+# Mise a jour $Id: tuto.tcl,v 1.12 2010-01-12 16:14:21 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -16,10 +16,11 @@ proc caption_def { langage } {
    global texte caption
    #--- definition of captions
    if {[string compare $langage english] ==0 } {
-      set caption(main_title) "Tuto : A Tutorial for CCD Beginners"
-      set caption(tuto_about) "About..."
-      set caption(tuto_quit)  "Quit"
-      set caption(tuto_tools) "Tools"
+      set caption(main_title)  "Tuto : A Tutorial for CCD Beginners"
+      set caption(tuto_about)  "About..."
+      set caption(tuto_quit)   "Quit"
+      set caption(tuto_tools)  "Tools"
+      set caption(cam_connect) "Camera connected"
       set texte(tuto_1)    "CCD Imagery for Beginners"
       set texte(tuto_2)    "This tutorial helps you shoot your first images with your CCD camera.  It was created with the AudeLA software."
       set texte(tuto_3)    "Plug and Test the Audine Camera"
@@ -42,10 +43,11 @@ proc caption_def { langage } {
       set texte(tuto_about1) "Tutorial for the Audine Camera\n\n\Aude (c) 1999\n\nIn order to change the language, you must edit the file langage.tcl and write another language.\n"
    }
    if {[string compare $langage french] ==0 } {
-      set caption(main_title) "Tuto : Un tutoriel pour les débutants en CCD"
-      set caption(tuto_about) "A propos..."
-      set caption(tuto_quit)  "Quitter"
-      set caption(tuto_tools) "Outils"
+      set caption(main_title)  "Tuto : Un tutoriel pour les débutants en CCD"
+      set caption(tuto_about)  "A propos..."
+      set caption(tuto_quit)   "Quitter"
+      set caption(tuto_tools)  "Outils"
+      set caption(cam_connect) "Caméra connectée"
       set texte(tuto_1)    "Initiation à l'imagerie CCD"
       set texte(tuto_2)    "Ce tutoriel vous permettra de réaliser vos premières images avec une caméra CCD. Il a été réalisé avec le logiciel AudeLA."
       set texte(tuto_3)    "Brancher et tester la caméra Audine"
@@ -80,7 +82,10 @@ proc caption_def { langage } {
 #
 # SCCS: @(#) widget 1.35 97/07/19 15:42:22
 
-global texte caption
+#--- definition of global variables
+global num       # index for devices
+global caption   # texts of captions
+global texte     # texts of captions
 
 #--- si la fenetre secondaire existe deja, je la detruis
 if { [winfo exists .second] } {
@@ -108,24 +113,17 @@ caption_def $langage
 # ========================================
 # === Setting the astronomical devices ===
 # ========================================
-#--- definition of global variables
-global lpt       # name of the audine port
-set lpt "lpt1"
-
-#--- declare a new buffer in memory to place images
-set num(buf1) [buf::create]
-
-#--- je charge le package Thread  si Audela est compile avec l'otion multithread
+#--- charge le package Thread si AudeLA est compile avec l'option multithread
 if { [info exists ::tcl_platform(threaded)] } {
-   if { $::tcl_platform(threaded)==1 } {
-      #--- Je charge le package Thread
-      #--- La version minimale 2.6.5.1 pour disposer de la commande thread::copycommand
+   if { $::tcl_platform(threaded) == 1 } {
+      #--- charge le package Thread
+      #--- version minimale 2.6.5.1 pour disposer de la commande thread::copycommand
       package require Thread 2.6.5.1
    }
 }
 
-#--- declare a new camera
-set num(cam1) [cam::create audine $lpt]
+#--- declare a new buffer in memory to place images
+set num(buf1) [buf::create]
 
 #--- declare a new visu space to display the buffer
 set num(visu1) [visu::create $num(buf1) 100 ]
@@ -133,6 +131,11 @@ set num(visu1) [visu::create $num(buf1) 100 ]
 #--- declare a new image
 set num(image1) $num(visu1)
 
+#----------------------------------------------------------------
+# The code below create the main window, consisting of a menu bar
+# and a text widget that explains how to use the program, plus lists
+# all of the demos as hypertext items.
+#----------------------------------------------------------------
 wm withdraw .
 if {[info command .main] == "" } {
    toplevel .main -class Toplevel
@@ -146,12 +149,6 @@ wm minsize .main ${screenwidth} ${screenheight}
 wm resizable .main 1 1
 wm protocol .main WM_DELETE_WINDOW tuto_exit
 set widgetDemo 1
-
-#----------------------------------------------------------------
-# The code below create the main window, consisting of a menu bar
-# and a text widget that explains how to use the program, plus lists
-# all of the demos as hypertext items.
-#----------------------------------------------------------------
 
 set font {Helvetica 12 bold}
 if {[info command .main.menuBar] == "" } {
@@ -200,13 +197,11 @@ pack .main.textFrame -expand yes -fill both
 # Create a bunch of tags to use in the text widget, such as those for
 # section titles and demo descriptions.  Also define the bindings for
 # tags.
-
 .main.t tag configure title -font {Helvetica 14 bold}
 
 # We put some "space" characters to the left and right of each demo description
 # so that the descriptions are highlighted only when the mouse cursor
 # is right over them (but not when the cursor is to their left or right)
-#
 .main.t tag configure demospace -lmargin1 1c -lmargin2 1c
 
 if {[winfo depth .main] == 1} {
@@ -253,7 +248,6 @@ set lastLine ""
 }
 
 # Create the text for the text widget.
-
 .main.t insert end "$texte(tuto_1)\n\n" title
 .main.t insert end "$texte(tuto_2)\n\n"
 
@@ -297,13 +291,29 @@ set lastLine ""
 .main.t configure -state disabled
 focus .main.s
 
+#--- declare a Audine Kaf-0400 camera
+porttalk open all
+set lpt "LPT1:"
+set erreur [ catch { cam::create audine $lpt -name Audine -ccd kaf401 } msg ]
+if { $erreur == "1" } {
+   tk_messageBox -message "$msg" -icon error
+   return
+} else {
+   set num(cam1) $msg
+   #--- the image from this cam will be transfered to that buffer
+   cam$num(cam1) buf $num(buf1)
+   cam$num(cam1) shutter synchro
+   cam$num(cam1) interrupt 0
+   tk_messageBox -message "$caption(cam_connect)" -icon info
+}
+
 # invoke --
 # This procedure is called when the user clicks on a demo description.
 # It is responsible for invoking the demonstration.
 #
 # Arguments:
 # index - The index of the character that the user clicked on.
-
+#
 proc invoke {index base} {
    global tk_library
    set tags [$base.t tag names $index]

@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.etoile.tcl,v 1.8 2009-05-31 08:22:28 robertdelmas Exp $
+# Mise a jour $Id: tuto.etoile.tcl,v 1.9 2010-01-12 16:12:11 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -175,7 +175,7 @@ pack .second.snap.label1 \
 
 #--- create the widget to select the integration time
 tk_optionMenu .second.snap.optionmenu1 \
-   exposure "1 s" "10 s" "30 s" "60 s"
+   exposure "1 s" "5 s" "10 s" "15 s" "30 s" "60 s"
 .second.snap.optionmenu1 configure \
    -disabledforeground $color(text) -fg $color(text) \
    -activeforeground $color(text) \
@@ -324,12 +324,6 @@ proc acquisition_firstdark {exposure} {
    #--- (waits for the variable cam1_status to change)
    cam$num(cam1) acq
    vwait status_cam$num(cam1)
-
-   #--- wait end of exposure (multithread)
-   set statusVariableName "::status_cam$num(cam1)"
-   if { [set $statusVariableName] == "exp" } {
-      vwait $statusVariableName
-   }
 
    #--- Change the red button text
    $zone(red_button) configure -text $caption(compute) -relief groove
