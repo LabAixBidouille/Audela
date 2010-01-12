@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.firstdark.tcl,v 1.8 2009-05-31 08:22:42 robertdelmas Exp $
+# Mise a jour $Id: tuto.firstdark.tcl,v 1.9 2010-01-12 16:12:30 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -171,7 +171,7 @@ pack .second.snap.label1 \
 
 #--- create the widget to select the integration time
 tk_optionMenu .second.snap.optionmenu1 \
-   exposure "1 s" "10 s" "30 s" "60 s"
+   exposure "1 s" "5 s" "10 s" "15 s" "30 s" "60 s"
 .second.snap.optionmenu1 configure \
    -disabledforeground $color(text) -fg $color(text) \
    -activeforeground $color(text) \
@@ -307,26 +307,19 @@ proc acquisition_firstdark {exposure} {
    grab $zone(red_button)
    update
 
-   #--- The image from this cam will be transfered to that buffer
-   cam$num(cam1) buf $num(buf1)
-
    #--- make a bias which is not displayed
+   cam$num(cam1) shutter closed
    cam$num(cam1) exptime 0
    cam$num(cam1) bin {2 2}
    cam$num(cam1) acq
    vwait status_cam$num(cam1)
-
-   #--- wait end of exposure (multithread)
-   set statusVariableName "::status_cam$num(cam1)"
-   if { [set $statusVariableName] == "exp" } {
-      vwait $statusVariableName
-   }
 
    #--- save the bias image
    buf$num(buf1) save testbias.fit
 
    #--- configure the acquisition
    set expos [lindex $exposure 0]
+   cam$num(cam1) shutter synchro
    cam$num(cam1) exptime $expos
    cam$num(cam1) bin {2 2}
 
@@ -335,12 +328,6 @@ proc acquisition_firstdark {exposure} {
    #--- (waits for the variable cam1_status to change)
    cam$num(cam1) acq
    vwait status_cam$num(cam1)
-
-   #--- wait end of exposure (multithread)
-   set statusVariableName "::status_cam$num(cam1)"
-   if { [set $statusVariableName] == "exp" } {
-      vwait $statusVariableName
-   }
 
    #--- Change the red button text
    $zone(red_button) configure -text $caption(compute) -relief groove

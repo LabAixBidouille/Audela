@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.portoc.tcl,v 1.7 2009-05-31 08:23:43 robertdelmas Exp $
+# Mise a jour $Id: tuto.portoc.tcl,v 1.8 2010-01-12 16:13:43 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -85,10 +85,6 @@ proc tuto_portoc_exit { } {
 global num       # index for devices
 global caption   # texts of captions
 global zone      # window name of usefull screen parts
-
-#--- definition of global variables
-global lpt       # name of the audine port
-set lpt "lpt1"
 
 #--- selection of language
 caption_def_plugcam $langage

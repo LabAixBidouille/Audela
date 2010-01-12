@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.amasglo.tcl,v 1.8 2009-05-31 08:20:57 robertdelmas Exp $
+# Mise a jour $Id: tuto.amasglo.tcl,v 1.9 2010-01-12 16:10:26 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -320,12 +320,6 @@ proc acquisition_firstdark {exposure} {
    #--- (waits for the variable cam1_status to change)
    cam$num(cam1) acq
    vwait status_cam$num(cam1)
-
-   #--- wait end of exposure (multithread)
-   set statusVariableName "::status_cam$num(cam1)"
-   if { [set $statusVariableName] == "exp" } {
-      vwait $statusVariableName
-   }
 
    #--- Change the red button text
    $zone(red_button) configure -text $caption(compute) -relief groove
