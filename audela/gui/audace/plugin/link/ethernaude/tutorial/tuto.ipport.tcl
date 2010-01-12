@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.ipport.tcl,v 1.13 2010-01-09 18:34:41 robertdelmas Exp $
+# Mise a jour $Id: tuto.ipport.tcl,v 1.14 2010-01-12 16:30:41 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -29,8 +29,10 @@ proc caption_def_plugcam { langage } {
    set ipeth(ipnumethernaudeping) [lindex [ping $ipeth(ipnumethernaude)] 0]
 
 if {[string compare $langage french] ==0 } {
-   set caption(ethernaude) "EthernAude"
-   set caption(connect) "Connecter"
+   set caption(ethernaude)   "EthernAude"
+   set caption(connect)      "Connecter"
+   set caption(cam_connect)  "Caméra connectée"
+   set caption(cam_connect1) "Caméra déjà connectée"
    set texte(firstdark_1) "Tutoriel pour les utilisateurs de l'EthernAude"
    set texte(firstdark_2) "Connexion logicielle entre l'ordinateur et l'EthernAude."
    set texte(firstdark_3) "\
@@ -73,8 +75,10 @@ en réseau. Consulter l'aide de votre système d'exploitation.\n\n\
    }
    set texte(firstdark_exit) " Retour à la page principale."
 } else {
-   set caption(ethernaude) "EthernAude"
-   set caption(connect) "Connect"
+   set caption(ethernaude)   "EthernAude"
+   set caption(connect)      "Connect"
+   set caption(cam_connect)  "Camera connected"
+   set caption(cam_connect1) "Camera already connected"
    set texte(firstdark_1) "Tutorial for EthernAude Users"
    set texte(firstdark_2) "Computer - EthernAude Software Connection"
    set texte(firstdark_3) "\
@@ -124,7 +128,7 @@ proc connect_ethernaude {} {
    if { [llength [cam::list] ] == 1 } {
       if { [ info exists num(camNo) ] == "1" } {
          if {[lindex [cam$num(camNo) drivername] 0]=="libethernaude"} {
-            tk_messageBox -message "Camera already connected" -icon info
+            tk_messageBox -message "$caption(cam_connect1)" -icon info
             return
          }
       }
@@ -155,7 +159,7 @@ proc connect_ethernaude {} {
       ::console::affiche_erreur "$caption(ethernaude) : $ipeth(ipnumethernaude) \n"
       ::console::affiche_erreur "[ cam$num(camNo) name ] ([ cam$num(camNo) ccd ]) \n\n"
    }
-   tk_messageBox -message "Camera connected" -icon info
+   tk_messageBox -message "$caption(cam_connect)" -icon info
 }
 
 # widget --
