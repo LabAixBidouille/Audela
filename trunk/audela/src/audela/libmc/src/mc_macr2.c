@@ -306,7 +306,7 @@ void mc_adasaap(double jj,double equinoxe, int astrometric, double longmpc,doubl
 
 }
 
-void mc_xyzasaaphelio(double jj,double longmpc,double rhocosphip,double rhosinphip, struct elemorb elem, int frame, double *xearth,double *yearth,double *zearth,double *xaster,double *yaster,double *zaster, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr)
+void mc_xyzasaaphelio(double jj,double jjutc, double equinoxe, int astrometric,double longmpc,double rhocosphip,double rhosinphip, struct elemorb elem, int frame, double *xearth,double *yearth,double *zearth,double *xaster,double *yaster,double *zaster, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr)
 /***************************************************************************/
 /* Calcul de coord. cartesiennes heliocentriquesa jj donne rapporte a un equinoxe         */
 /* pour un astre defini par ses elements d'orbite.                         */
@@ -325,12 +325,11 @@ void mc_xyzasaaphelio(double jj,double longmpc,double rhocosphip,double rhosinph
    double llp[10],mmp[10],uup[10],jjd,ls,bs,rs,eps,xs,ys,zs;
    double r,x,y,z,m,v,jjda;
    struct pqw elempq;
-   double equinoxe=J2000;
    double dxeq=0.,dyeq=0.,dzeq=0.;
    double xsgeo,ysgeo,zsgeo,xlgeo,ylgeo,zlgeo;
    double r1,r2;
    double reqter=6378.14/UA*1e3,reqsol=696000./UA*1e3;
-   double da1,da2,R1,R2,rho,t1,t2,cosa,aire,airetot;
+   double da1,da2,R1,R2,rho,t1,t2,cosa,aire,airetot,ts,tt;
    int cas=0;
 
    /*FILE *fichier_out;*/
@@ -338,7 +337,7 @@ void mc_xyzasaaphelio(double jj,double longmpc,double rhocosphip,double rhosinph
 
    if (elem.type==4) {
       /*--- frame = equatorial geocentric J2000.0 ---*/
-      mc_xyzgeoelem(jj,elem,longmpc,rhocosphip,rhosinphip,0,xaster,yaster,zaster,xearth,yearth,zearth,&xsgeo,&ysgeo,&zsgeo,&xlgeo,&ylgeo,&zlgeo);
+      mc_xyzgeoelem(jj,jj,J2000,1,elem,longmpc,rhocosphip,rhosinphip,0,xaster,yaster,zaster,xearth,yearth,zearth,&xsgeo,&ysgeo,&zsgeo,&xlgeo,&ylgeo,&zlgeo);
       r= sqrt( (*xaster-xsgeo)*(*xaster-xsgeo) + (*yaster-ysgeo)*(*yaster-ysgeo) + (*zaster-zsgeo)*(*zaster-zsgeo) );
       rs=sqrt( (*xearth-xsgeo)*(*xearth-xsgeo) + (*yearth-ysgeo)*(*yearth-ysgeo) + (*zearth-zsgeo)*(*zearth-zsgeo) );
       /* --- coord. spheriques locales ---*/
@@ -394,6 +393,7 @@ void mc_xyzasaaphelio(double jj,double longmpc,double rhocosphip,double rhosinph
       mc_anovrair(elem,m,&v,&r);
       *rr=r;
       mc_rv_xyz(elempq,r,v,&x,&y,&z); /* equatoriale J2000 */
+
       /* --- heliocentric cartesian coordinates in the equatorial J2000.0 frame ---*/
       *xearth=-xs;
       *yearth=-ys;
@@ -446,18 +446,22 @@ void mc_xyzasaaphelio(double jj,double longmpc,double rhocosphip,double rhosinph
       r1=sqrt((x-*xaster)*(x-*xaster)+(y-*yaster)*(y-*yaster)+(z-*zaster)*(z-*zaster));
       r2=sqrt((*xaster)*(*xaster)+(*yaster)*(*yaster)+(*zaster)*(*zaster));
       cosa=-((x-*xaster)*(*xaster)+(y-*yaster)*(*yaster)+(z-*zaster)*(*zaster))/r1/r2;
-      if ((reqter/r1)>(reqsol/r2)) {
-         R1=reqter/r1;
-         R2=reqsol/r2;
-         cas=0;
-         airetot=PI*R2*R2;
-      } else {
-         R1=reqsol/r2;
-         R2=reqter/r1;
-         cas=1;
-         airetot=PI*R1*R1;
-      }
-      rho=tan(mc_acos(cosa));
+
+		tt=mc_asin(reqter/r1);
+		ts=mc_asin(reqsol/r2);
+
+		if ((reqter/r1)>(reqsol/r2)) {
+			R1=tan(tt);;
+			R2=tan(ts);
+			cas=0;
+			airetot=PI*R2*R2; // aire du disque solaire projete
+		} else {
+			R1=tan(ts);
+			R2=tan(tt);
+			cas=1;
+			airetot=PI*R1*R1; // aire du disque solaire projete
+		}
+		rho=fabs(tan(mc_acos(cosa)));
       t2=2*mc_acos((R2*R2+rho*rho-R1*R1)/2/R2/rho);
       t1=2*mc_acos((R1*R1+rho*rho-R2*R2)/2/R1/rho);
       da1=0.5*R1*R1*(t1-sin(t1));
@@ -767,7 +771,7 @@ void mc_adsolap(double jj,double equinoxe, int astrometric, double longmpc,doubl
 
 }
 
-void mc_adelemap(double jj,struct elemorb elem, double longmpc,double rhocosphip,double rhosinphip, int planete, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun)
+void mc_adelemap(double jj,double jjutc, double equinoxe, int astrometric, struct elemorb elem, double longmpc,double rhocosphip,double rhosinphip, int planete, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun,double *sunfraction)
 /***************************************************************************/
 /* Calcul de l'asd, dec et distance apparentes d'un astre defini par ses elements d'orbite a jj donne.   */
 /***************************************************************************/
@@ -776,30 +780,41 @@ void mc_adelemap(double jj,struct elemorb elem, double longmpc,double rhocosphip
    double llp[10],mmp[10],uup[10],jjd,ls,bs,rs,eps,/*dpsi,deps,*/xs,ys,zs;
    double /*l,b,*/r,x,y,z/*,xg,yg,zg*/;
    double dxeq,dyeq,dzeq;
-   double equinoxe=J2000;
    struct pqw elempq;
    double m,v,jjda;
+	double xaster,yaster,zaster;
+   double da1,da2,R1,R2,rho,t1,t2,cosa,aire,airetot,tt,ts;
+   double r1,r2;
+   double reqter=6378.14/UA*1e3,reqsol=696000./UA*1e3;
+	int cas;
    jjd=jj;
 
+	/* type d'astre (0=inconnu 1=comete 2=asteroide 3=planete 4=geocentrique) */
    if (elem.type!=4) {
-      /*--- soleil ---*/
+      /*--- centre de revolution = Soleil ---*/
       mc_jd2lbr1a(jjd,llp,mmp,uup);
       mc_jd2lbr1b(jjd,SOLEIL,llp,mmp,uup,&ls,&bs,&rs);
       mc_lbr2xyz(ls,bs,rs,&xs,&ys,&zs);
       mc_obliqmoy(jjd,&eps);
-      mc_xyzec2eq(xs,ys,zs,eps,&xs,&ys,&zs);
+      mc_xyzec2eq(xs,ys,zs,eps,&xs,&ys,&zs); /* equatoriale a la date */
    } else {
+      /*--- centre de revolution = Terre ---*/
       xs=0.;ys=0.;zs=0.;
    }
 
    /*--- calcul de la parallaxe ---*/
-   mc_paraldxyzeq(jjd,longmpc,rhocosphip,rhosinphip,&dxeq,&dyeq,&dzeq);
+   mc_paraldxyzeq(jjutc,longmpc,rhocosphip,rhosinphip,&dxeq,&dyeq,&dzeq);
+
+   /*--- coords du centre de revolution geo->topo ---*/
    xs-=dxeq;
    ys-=dyeq;
    zs-=dzeq;
 
    /*--- precession et conversion des elements ---*/
    mc_precelem(elem,elem.jj_equinoxe,equinoxe,&elem);
+
+   /*--- perturabtions seculaires dues a l'applatissement de la Terre ---*/
+	mc_corearthsatelem(jjd,&elem);
    mc_elempqec(elem,&elempq);
    if (elem.type!=4) {
       mc_elempqeq(elempq,eps,&elempq);
@@ -819,28 +834,92 @@ void mc_adelemap(double jj,struct elemorb elem, double longmpc,double rhocosphip
    mc_rv_xyz(elempq,r,v,&x,&y,&z); /* equatoriale J2000 */
    *rr=r;
 
-   /*--- correction planetocentrique + parallaxe ---*/
+   /*--- correction centre de revolution -> topo ---*/
    mc_he2ge(x,y,z,xs,ys,zs,&x,&y,&z);
 
-   /* --- coord. spheriques ---*/
+   /* --- coord. spheriques topocentriques ---*/
    mc_xyz2add(x,y,z,asd,dec,delta);
 
-   /* --- parametres elong et magnitude ---*/
-   r=*rr;
-   mc_elonphas(r,rs,*delta,elong,phase);
-   /*
-   if ((elem.type==1)||(elem.type==2)) {
-      mc_magaster(r,delta,phase,aster.h,aster.g,&mag);
-   }
-   */
+   /* --- calculation of eclipses ---*/
 
-   /*
-   mc_physephem(jjd,planete,xg,yg,zg,x,y,z,diamapp_equ,diamapp_pol,
-      long1,long2,long3,lati,posangle_north,posangle_sun,long1_sun,lati_sun);
-   */
+   /*--- correction de la parallaxe topo -> geo ---*/
+	xaster=x+dxeq;
+	yaster=y+dyeq;
+	zaster=z+dzeq;
+
+   /*--- observer -> geo ---*/
+   x=-dxeq;
+   y=-dyeq;
+   z=-dzeq;
+
+   /*--- soleil geo ---*/
+   mc_jd2lbr1a(jjd,llp,mmp,uup);
+   mc_jd2lbr1b(jjd,SOLEIL,llp,mmp,uup,&ls,&bs,&rs);
+   mc_lbr2xyz(ls,bs,rs,&xs,&ys,&zs);
+   mc_obliqmoy(jjd,&eps);
+   mc_xyzec2eq(xs,ys,zs,eps,&xs,&ys,&zs); /* equatoriale a la date */
+   mc_precxyz(jjd,xs,ys,zs,equinoxe,&xs,&ys,&zs); /* equatoriale J2000 */
+	rs=sqrt(xs*xs+ys*ys+zs*zs);
+
+   r1=sqrt((xaster-x)*(xaster-x)+(yaster-y)*(yaster-y)+(zaster-z)*(zaster-z));
+   r2=sqrt((xs-x)*(xs-x)+(ys-y)*(ys-y)+(zs-z)*(zs-z));
+   cosa=-((xaster-x)*(xs-x)+(yaster-y)*(ys-y)+(zaster-z)*(zs-z))/r1/r2;
+   *elong=mc_acos(cosa);
+
+   r1=sqrt((x-xaster)*(x-xaster)+(y-yaster)*(y-yaster)+(z-zaster)*(z-zaster));
+   r2=sqrt((xs-xaster)*(xs-xaster)+(ys-yaster)*(ys-yaster)+(zs-zaster)*(zs-zaster));
+   cosa=-((x-xaster)*(xs-xaster)+(y-yaster)*(ys-yaster)+(z-zaster)*(zs-zaster))/r1/r2;
+   *phase=mc_acos(cosa);
+
+	tt=mc_asin(reqter/r1);
+	ts=mc_asin(reqsol/r2);
+
+   if ((reqter/r1)>(reqsol/r2)) {
+      R1=tan(tt);;
+      R2=tan(ts);
+      cas=0;
+      airetot=PI*R2*R2; // aire du disque solaire projete
+   } else {
+      R1=tan(ts);
+      R2=tan(tt);
+      cas=1;
+      airetot=PI*R1*R1; // aire du disque solaire projete
+   }
+   rho=fabs(tan(mc_acos(cosa)));
+   t2=2*mc_acos((R2*R2+rho*rho-R1*R1)/2/R2/rho);
+   t1=2*mc_acos((R1*R1+rho*rho-R2*R2)/2/R1/rho);
+   da1=0.5*R1*R1*(t1-sin(t1));
+   da2=0.5*R2*R2*(t2-sin(t2));
+   if (rho<(R1-R2)) {
+      if (cas==0) {
+         aire=0;
+      } else {
+         aire=PI*R1*R1-PI*R2*R2;
+      }
+   } else if (rho<sqrt(R1*R1-R2*R2)) {
+      if (cas==0) {
+         aire=da2-da1;
+      } else {
+         aire=PI*R1*R1-PI*R2*R2+da2-da1;
+      }
+   } else if (rho<(R1+R2)) {
+      if (cas==0) {
+         aire=PI*R2*R2-da1-da2;
+      } else {
+         aire=PI*R1*R1-da1-da2;
+      }
+   } else {
+      if (cas==0) {
+         aire=PI*R2*R2;
+      } else {
+         aire=PI*R1*R1;
+      }
+   }
+   *sunfraction=(aire/airetot);
+
 }
 
-void mc_xyzgeoelem(double jj,struct elemorb elem, double longmpc,double rhocosphip,double rhosinphip, int planete, double *xageo, double *yageo, double *zageo, double *xtgeo, double *ytgeo, double *ztgeo, double *xsgeo, double *ysgeo, double *zsgeo, double *xlgeo, double *ylgeo, double *zlgeo)
+void mc_xyzgeoelem(double jj,double jjutc, double equinoxe, int astrometric, struct elemorb elem, double longmpc,double rhocosphip,double rhosinphip, int planete, double *xageo, double *yageo, double *zageo, double *xtgeo, double *ytgeo, double *ztgeo, double *xsgeo, double *ysgeo, double *zsgeo, double *xlgeo, double *ylgeo, double *zlgeo)
 /***************************************************************************/
 /* Calcul de X,Y,Z geocentrique d'un astre defini par ses elements d'orbite a jj donne.   */
 /***************************************************************************/
@@ -849,16 +928,8 @@ void mc_xyzgeoelem(double jj,struct elemorb elem, double longmpc,double rhocosph
    double llp[10],mmp[10],uup[10],jjd,ls,bs,rs,eps,/*dpsi,deps,*/xs,ys,zs;
    double l,b,r,x,y,z,xl,yl,zl;
    double dxeq,dyeq,dzeq;
-   double equinoxe=J2000;
    struct pqw elempq;
    double m,v;
-   double k_gauss,sini,cosi,e2,a,a2,j2,dt,dws,dos,dm0s,req,n0;
-   double k6,k7,k8,k9,h0,k0,ebar,hbar,kbar,betabar,ht,kt,beta;
-   /*double p2,ntilda,n;*/
-   double e,i;
-
-   double k1,k2,k3,k4,k5;
-   double wbar,mbar,nbar,sqrtmu,abar,w0,m0,req2;
 
    jjd=jj;
 
@@ -885,122 +956,8 @@ void mc_xyzgeoelem(double jj,struct elemorb elem, double longmpc,double rhocosph
    mc_precelem(elem,elem.jj_equinoxe,equinoxe,&elem);
 
    /*--- perturabtions seculaires dues a l'applatissement de la Terre ---*/
-   if (elem.type==4) {
-      k_gauss=KGEOS;
-      a=elem.q/(1-elem.e); /* U.A. */
-      n0=k_gauss/(DR)/pow(a,3./2.); /* deg/day */
-      sini=sin(elem.i);
-      cosi=cos(elem.i);
-      e2=elem.e*elem.e;
-      a2=a*a;
-      req=6378.140e3/(UA); /* equatorial radius of the Earth in U.A. */
-      j2=+1.08263e-3*req*req; /* U.A.2 */
-      dt=jjd-elem.jj_epoque;
-      /* - Dunby */
-      /*
-      dws=dt*3*n0*j2/(2*a2*(1-e2)*(1-e2))*(5./2.*sini*sini-2.);
-      dos=-dt*3*n0*j2/(2*a2*(1-e2)*(1-e2))*cosi;
-      dm0s=dt*(-3*j2/(2*a2*pow((1-e2),3./2.))*(3./2.*sini*sini-1.));
-      i=elem.i;
-      e=elem.e;
-      */
-      /* - Kozai */
-      /*
-      p2=a2*(1.-e2)*(1.-e2);
-      ntilda=n0+j2/p2*n0*(1-3./2.*sini*sini)*sqrt(1.-e2);
-      dws=dt*j2/p2*ntilda*(2.-5./2.*sini*sini)*3./2.;
-      dos=-dt*j2/p2*ntilda*cosi*3./2.;
-      dm0s=dt*ntilda*3./2.;
-      a=a*(1.-j2/p2*(1.-3./2.*sini*sini)*sqrt(1.-e2));
-      i=elem.i;
-      e=elem.e;
-      */
-      /* --- 12540lec05.pdf ---*/
-      /*
-      req=6378.140e3/(UA); // equatorial radius of the Earth in U.A.
-      req2=req*req;
-      j2=+1.08263e-3;
-      ntilda=n0*(1+3./4.*j2*req2/(a2*sqrt((1-e2)*(1-e2)*(1-e2)))*(3.*cosi*cosi-1.));
-      dos=-3./2.*j2*req2/(a2*(1-e2)*(1-e2))*n0*cosi; // (16)
-      dws=+3./4.*j2*req2/(a2*(1-e2)*(1-e2))*n0*(5.*cosi*cosi-1.); // (17)
-      i=elem.i;
-      e=elem.e;
-      dws*=dt;
-      dos*=dt;
-      dm0s=(ntilda*dt);
-      */
-      /* - Born */
-      req=6378.140e3/(UA); // equatorial radius of the Earth in U.A.
-      req2=req*req;
-      j2=+1.08263e-3;
-      // - secular terms -
-      dos=-3./2.*j2*req2/(a2*(1-e2)*(1-e2))*n0*cosi; // (16)
-      dws=+3./2.*j2*req2/(a2*(1-e2)*(1-e2))*n0*(2.-5./2.*sini*sini); // (17)
-      k1=3./2.*j2*req2/a*sini*sini; // U.A.  // (27)
-      w0=elem.w;
-      m0=elem.m0;
-      abar=a-k1*cos(2*(w0+m0)); // (28a)
-      sqrtmu=k_gauss/(DR); // (19)
-      nbar=sqrtmu/pow(abar,3./2.); // deg/day  // (19)
-      dm0s=nbar+3./2.*j2*req2/(a2*sqrt((1-e2)*(1-e2)*(1-e2)))*n0*(1.-3./2.*sini*sini); // (18)
-      wbar=elem.w/(DR)+dws*dt;   // (29)
-      mbar=elem.m0/(DR)+dm0s*dt; // (30)
-      wbar=fmod(wbar,360.);
-      mbar=fmod(mbar,360.);
-      wbar*=(DR);
-      mbar*=(DR);
-      // - periodic terms -
-      k2=j2*req2/a2; // (37)
-      k3=3./8.*k2*sin(2*elem.i); // (37)
-      k4=3./4.*k2*cosi; // (37)
-      k5=3./2.*k2; // (37)
-      a=abar+k1*cos(2*(wbar+mbar)); // (31)
-      e=elem.e + k2*sini*sini*(3./8.*cos(2*wbar+mbar)+7./8.*cos(2*wbar+3*mbar)) + 3./4.*k2*(3*cosi*cosi-1.)*cos(mbar); // (32)
-      i=elem.i + k3*cos(2*(wbar+mbar)); // (33)
-      // - secular  periodic
-      dos =dos*dt  +k4/(DR)*sin(2*(wbar+mbar)); // (34)
-      if (elem.e>0.001) {
-         dws =dws*dt  +k5/(DR)*( (1.-3./2.*sini*sini)*(1./elem.e*sin(mbar)+0.5*sin(2*mbar)) - 0.5*(1.-5./2.*sini*sini)*sin(2*(wbar+mbar)) + sini*sini* (-1./4./elem.e*sin(2*wbar+mbar)+7./12./elem.e*sin(2*wbar+3*mbar)+3./8.*sin(2*wbar+4*mbar) ) ); // (35)
-         dm0s=dm0s*dt +k5/(DR)*(-(1.-3./2.*sini*sini)*(1./elem.e*sin(mbar)+0.5*sin(2*mbar))                                               - sini*sini* (-1./4./elem.e*sin(2*wbar+mbar)+7./12./elem.e*sin(2*wbar+3*mbar)+3./8.*sin(2*wbar+4*mbar) ) ); // (36)
-      } else {
-         k6=0.25*k2*(6.-21./2.*sini*sini); // (62)
-         k7=7./8.*k2*sini*sini;
-         k8=0.25*k2*(6.-15./2.*sini*sini);
-         k9=3./8.*k2*(3.-5.*cosi*cosi);
-         h0=elem.e*sin(elem.w); // (54)
-         k0=elem.e*cos(elem.w); // (54)
-         ebar=sqrt(h0*h0+k0*k0); // (59c)
-         hbar=ebar*sin(wbar);  // (59a)
-         kbar=ebar*cos(wbar); // (59b)
-         betabar=wbar+mbar; // (58b)
-         ht=hbar+k6*sin(betabar)+k7*sin(3*betabar); // (57)
-         kt=kbar+k8*cos(betabar)+k7*cos(3*betabar); // (58)
-         beta=betabar+k9*sin(2*betabar); // (61)
-         e=sqrt(ht*ht+kt*kt); // (63)
-         elem.w=atan2(ht,kt); // (64)
-         elem.m0=beta-elem.w; // (65)
-         dws=0.;
-         dm0s=0.;
-      }
-      /* --- update the elements ---*/
-      elem.w/=(DR);
-      elem.o/=(DR);
-      elem.m0/=(DR);
-      elem.w+=dws;
-      elem.o+=dos;
-      elem.m0+=dm0s;
-      elem.q=a*(1-e);
-      elem.w=fmod(elem.w,360.);
-      elem.o=fmod(elem.o,360.);
-      elem.m0=fmod(elem.m0,360.);
-      elem.w*=(DR);
-      elem.o*=(DR);
-      elem.m0*=(DR);
-      elem.e=e;
-      elem.i=i;
-      elem.jj_epoque=jjd;
-      elem.jj_m0=jjd;
-   }
+	mc_corearthsatelem(jjd,&elem);
+
    mc_elempqec(elem,&elempq);
    /*
    if (elem.type!=4) {

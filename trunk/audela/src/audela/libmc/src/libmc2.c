@@ -2237,7 +2237,10 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
    char **argvv=NULL;
 	int argcc,k,kmin=0,code;
 	double distmin=-1;
-	double sep,posangle;
+	double sep,posangle,sunfraction;
+   double equinoxe=J2000,jdtt;
+	int astrometric=1;
+	double reqter=6378.14*1e3;
 
    if(argc<4) {
       /*
@@ -2246,7 +2249,7 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
       foreach ligne $res { set res2 [mc_radec2altaz [lindex $ligne 1] [lindex $ligne 2] {gps 6.92389 e 43.75222 1270} $date] ; set gis [expr [lindex $res2 0]+180.] ; if {$gis>360} {set gis [expr $gis-360.]} ; append texte "[lindex $ligne 0] [lindex $ligne 1] [lindex $ligne 2] $gis [lindex $res2 1]\n" }
       set f [open d:/geostat/sat.txt w] ; puts -nonewline $f $texte ; close $f
       */
-      sprintf(s,"Usage: %s Date file_tle Home ?-name satname? ?-coord {ra dec}?", argv[0]);
+      sprintf(s,"Usage: %s Date_UTC file_tle Home ?-name satname? ?-coord {ra dec}?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_ERROR;
 	  WriteDisk ("pas assez d'arg");
@@ -2293,96 +2296,16 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
       1 24209U 96044B   03262.91033065 -.00000065  00000-0  00000+0 0  8956
       2 24209   0.0626 123.5457 0004535  56.5151 138.1659  1.00273036 26182
       */
-      /*
-	   result=TCL_OK;
+  	   result=TCL_OK;
 	   Tcl_DStringInit(&dsptr);
-      while (feof(ftle)==0) {
-         fgets(s,255,ftle);
-         valid=0;
-         if (s!=NULL) {
-            if (s[0]=='1') {
-               strcpy(ss,s+1); ss[7-1+1]='\0';
-               strcpy(elem.id_norad,ss);
-               strcpy(ss,s+8); ss[17-1+1]='\0';
-               strcpy(elem.id_cospar,ss);
-               strcpy(ss,s+18); ss[2]='\0';
-               sprintf(sss,"20%s-01-01T00:00:00",ss);
-               mctcl_decode_date(interp,sss,&jj0);
-               strcpy(ss,s+20); ss[12]='\0';
-               jj0+=(atof(ss)-1.);
-            } else if (s[0]=='2') {
-               strcpy(ss,s+8); ss[15-8+1]='\0';
-               elem.i=atof(ss)*(DR);
-               strcpy(ss,s+17); ss[24-17+1]='\0';
-               elem.o=atof(ss)*(DR);
-               strcpy(ss,s+26); ss[32-26+1]='\0';
-               elem.e=1e-7*atof(ss);
-               strcpy(ss,s+34); ss[41-34+1]='\0';
-               elem.w=atof(ss)*(DR);
-               strcpy(ss,s+43); ss[50-43+1]='\0';
-               elem.m0=atof(ss)*(DR);
-               strcpy(ss,s+52); ss[62-52+1]='\0';
-               n=atof(ss);
-               if (strcmp(name,"")==0) {
-                  valid=1;
-               } else if (strstr(elem.designation,name)!=NULL) {
-                  valid=1;
-               }
-            } else {
-               k=(int)strlen(s);
-			   if (k>79) {k=79;s[k]='\0';}
-               strcpy(elem.designation,s);
-               if (k>0) {
-                  elem.designation[k-1]='\0';
-               }
-            }
-         }
-         if (valid==1) {
-            elem.jj_m0=jj0;
-            elem.jj_equinoxe=jj0;
-            elem.jj_epoque=jj0;
-            elem.type=4;
-            elem.h0=0.;
-            elem.g=0.;
-            elem.n=0.;
-            elem.h=0.;
-            elem.nbjours=0;
-            elem.nbobs=0;
-            elem.ceu0=0.;
-            elem.ceut=0.;
-            elem.jj_ceu0=jj0;
-            elem.code1=0;
-            elem.code2=0;
-            elem.code3=0;
-            elem.code4=0;
-            elem.code5=0;
-            elem.code6=0;
-            elem.residu_rms=0.;
-            if (elem.type==4) {
-               k_gauss=KGEOS;
-            } else {
-               k_gauss=K;
-            }
-            n=n*360.; // deg/day
-            a=pow(k_gauss/(DR)/n,2./3.);
-            elem.q=a*(1-elem.e);
-            // --- on lance le calcul ---
-            mc_adelemap(jj,elem,longmpc,rhocosphip,rhosinphip,0,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
-            sprintf(s,"{{{%20s} {%15s} {%15s}} %.15f %.15f %.15g %.15f} ",elem.designation,elem.id_norad,elem.id_cospar,asd/(DR),dec/(DR),delta,elong/(DR));
-            Tcl_DStringAppend(&dsptr,s,-1);
-         }
-      }
-      fclose(ftle);
-      */
- 	   result=TCL_OK;
-	   Tcl_DStringInit(&dsptr);
+		mc_tu2td(jj,&jdtt);
 		k=-1;
       while (feof(ftle)==0) {
 			k++;
          mc_tle_decnext1(ftle,&elem,name,&valid);
          if (valid==1) {
             /* --- on lance le calcul ---*/
-            mc_adelemap(jj,elem,longmpc,rhocosphip,rhosinphip,0,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
+            mc_adelemap(jdtt,jj,equinoxe,astrometric,elem,longmpc,rhocosphip,rhosinphip,0,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun,&sunfraction);
 				if (distmin>0) {
 					mc_sepangle(asd0,asd,dec0,dec,&sep,&posangle);
 					if (sep<distmin) {
@@ -2390,7 +2313,7 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
 						distmin=sep;
 					}
 				} else {
-					sprintf(sss,"{{{%20s} {%15s} {%15s}} %.15f %.15f %.15g %.15f} ",elem.designation,elem.id_norad,elem.id_cospar,asd/(DR),dec/(DR),delta,elong/(DR));
+					sprintf(sss,"{{{%20s} {%15s} {%15s}} %.15f %.15f %.15g %.15f %.15f %.4f} ",elem.designation,elem.id_norad,elem.id_cospar,asd/(DR),dec/(DR),delta*(UA),elong/(DR),phase/(DR),sunfraction);
 					Tcl_DStringAppend(&dsptr,sss,-1);
 				}
          }
@@ -2411,8 +2334,8 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
 				mc_tle_decnext1(ftle,&elem,name,&valid);
 				if ((valid==1)&&(k==kmin)) {
 					/* --- on lance le calcul ---*/
-					mc_adelemap(jj,elem,longmpc,rhocosphip,rhosinphip,0,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
-					sprintf(sss,"{{{%20s} {%15s} {%15s}} %.15f %.15f %.15g %.15f} ",elem.designation,elem.id_norad,elem.id_cospar,asd/(DR),dec/(DR),delta,elong/(DR));
+					mc_adelemap(jdtt,jj,equinoxe,astrometric,elem,longmpc,rhocosphip,rhosinphip,0,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun,&sunfraction);
+					sprintf(sss,"{{{%20s} {%15s} {%15s}} %.15f %.15f %.15g %.15f %.15f %.4f} ",elem.designation,elem.id_norad,elem.id_cospar,asd/(DR),dec/(DR),delta*(UA),elong/(DR),phase/(DR),sunfraction);
 					Tcl_DStringAppend(&dsptr,sss,-1);
 				}
 			}
@@ -2433,6 +2356,8 @@ int Cmd_mctcl_tle2xyz(ClientData clientData, Tcl_Interp *interp, int argc, char 
    char sss[524];
    char name[524];
    struct elemorb elem;
+   double equinoxe=J2000,jdtt;
+	int astrometric=1;
    double jj;
    /*
    double jj0,a,n=0.0,k_gauss;
@@ -2470,13 +2395,14 @@ int Cmd_mctcl_tle2xyz(ClientData clientData, Tcl_Interp *interp, int argc, char 
          result = TCL_ERROR;
 	      return(result);
       }
+		mc_tu2td(jj,&jdtt);
  	   result=TCL_OK;
 	   Tcl_DStringInit(&dsptr);
       while (feof(ftle)==0) {
          mc_tle_decnext1(ftle,&elem,name,&valid);
          if (valid==1) {
             /* --- on lance le calcul ---*/
-            mc_xyzgeoelem(jj,elem,longmpc,rhocosphip,rhosinphip,0,&xageo,&yageo,&zageo,&xtgeo,&ytgeo,&ztgeo,&xsgeo,&ysgeo,&zsgeo,&xlgeo,&ylgeo,&zlgeo);
+            mc_xyzgeoelem(jdtt,jj,equinoxe,astrometric,elem,longmpc,rhocosphip,rhosinphip,0,&xageo,&yageo,&zageo,&xtgeo,&ytgeo,&ztgeo,&xsgeo,&ysgeo,&zsgeo,&xlgeo,&ylgeo,&zlgeo);
             sprintf(sss,"{{{%20s} {%15s} {%15s}} %.15f %.15f %.15f %.15f %.15f %.15f %.15f %.15f %.15f %.15f %.15f %.15f} ",elem.designation,elem.id_norad,elem.id_cospar,xageo,yageo,zageo,xtgeo,ytgeo,ztgeo,xsgeo,ysgeo,zsgeo,xlgeo,ylgeo,zlgeo);
             Tcl_DStringAppend(&dsptr,sss,-1);
          }
@@ -3269,13 +3195,13 @@ int Cmd_mctcl_simulc_sat_stl(ClientData clientData, Tcl_Interp *interp, int argc
          jds[k]=cdrpos[k].jd;
       }
       for (k=0;k<n;k++) {
-   		mc_xyzasaaphelio(cdrpos[k].jd,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+   		mc_xyzasaaphelio(cdrpos[k].jd,cdrpos[k].jd,J2000,1,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
          if (cdr.frame_time==1) {
             /* cdrpos[k].jd etait entre dans le repere de l'asteroide */
             /* Il faut donc soustraire la duree -delta pour savoir quand on l'a vu depuis la Terre en TT */
             mc_aberpla(cdrpos[k].jd,-delta,&jdk);
             cdrpos[k].jdtt=jdk;
-   		   mc_xyzasaaphelio(jdk,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+   		   mc_xyzasaaphelio(jdk,jdk,J2000,1,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
             cdrpos[k].jd=jds[k];
          } else {
             cdrpos[k].jdtt=cdrpos[k].jd;
@@ -3705,13 +3631,13 @@ int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *
          jds[k]=cdrpos[k].jd;
       }
       for (k=0;k<n;k++) {
-   		mc_xyzasaaphelio(cdrpos[k].jd,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+   		mc_xyzasaaphelio(cdrpos[k].jd,cdrpos[k].jd,J2000,1,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
          if (cdr.frame_time==1) {
             /* cdrpos[k].jd etait entre dans le repere de l'asteroide */
             /* Il faut donc soustraire la duree -delta pour savoir quand on l'a vu depuis la Terre en TT */
             mc_aberpla(cdrpos[k].jd,-delta,&jdk);
             cdrpos[k].jdtt=jdk;
-   		   mc_xyzasaaphelio(jdk,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+   		   mc_xyzasaaphelio(jdk,jdk,J2000,1,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
             cdrpos[k].jd=jds[k];
          } else {
             cdrpos[k].jdtt=cdrpos[k].jd;
@@ -4196,7 +4122,7 @@ int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, cha
       for (k=0;k<n;k++) {
          cdrpos[k].phase=1.*k/n;
          cdrpos[k].jd=phi+1.*k/n*cdr.period;
-		   mc_xyzasaaphelio(cdrpos[k].jd,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+		   mc_xyzasaaphelio(cdrpos[k].jd,cdrpos[k].jd,J2000,1,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
          /*
           xearth=1.;
           yearth=0.;
@@ -4658,13 +4584,13 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
       /* --- calcule jd_phase0 dans le repere de l'asteroide ---*/
       if (cdr.frame_time==0) {
          cdr.jd_phase0tt=cdr.jd_phase0;
-         mc_xyzasaaphelio(cdr.jd_phase0,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+         mc_xyzasaaphelio(cdr.jd_phase0,cdr.jd_phase0,J2000,1,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
          /* On transforme jd_phase0 dans le repere de l'asteroide */
          mc_aberpla(cdr.jd_phase0,delta,&cdr.jd_phase0);
       }
       /* --- calcule jd_phase0tt dans le repere terrestre ---*/
       if (cdr.frame_time==1) {
-         mc_xyzasaaphelio(cdr.jd_phase0,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+         mc_xyzasaaphelio(cdr.jd_phase0,cdr.jd_phase0,J2000,1,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
          /* On transforme jd_phase0 dans le repere de terrestre */
          mc_aberpla(cdr.jd_phase0,delta,&cdr.jd_phase0tt);
       }
@@ -4672,13 +4598,13 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
       for (k=0;k<n;k++) {
          cdrpos[k].jd=jds[k];
          /* jd doit etre en TT */
-		   mc_xyzasaaphelio(cdrpos[k].jd,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+		   mc_xyzasaaphelio(cdrpos[k].jd,cdrpos[k].jd,J2000,1,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
          if (cdr.frame_time==1) {
             /* cdrpos[k].jd etait entre dans le repere de l'asteroide */
             /* Il faut donc soustraire la duree -delta pour savoir quand on l'a vu depuis la Terre en TT */
             mc_aberpla(cdrpos[k].jd,-delta,&jdk);
             cdrpos[k].jdtt=jdk;
-   		   mc_xyzasaaphelio(jdk,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+   		   mc_xyzasaaphelio(jdk,jdk,J2000,1,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
             cdrpos[k].jd=jds[k];
          } else {
             cdrpos[k].jdtt=cdrpos[k].jd;
@@ -5147,13 +5073,13 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
       /* --- calcule jd_phase0 dans le repere de l'asteroide ---*/
       if (cdr.frame_time==0) {
          cdr.jd_phase0tt=cdr.jd_phase0;
-         mc_xyzasaaphelio(cdr.jd_phase0,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+         mc_xyzasaaphelio(cdr.jd_phase0,cdr.jd_phase0,J2000,1,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
          /* On transforme jd_phase0 dans le repere de l'asteroide */
          mc_aberpla(cdr.jd_phase0,delta,&cdr.jd_phase0);
       }
       /* --- calcule jd_phase0tt dans le repere terrestre ---*/
       if (cdr.frame_time==1) {
-         mc_xyzasaaphelio(cdr.jd_phase0,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+         mc_xyzasaaphelio(cdr.jd_phase0,cdr.jd_phase0,J2000,1,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
          /* On transforme jd_phase0 dans le repere de terrestre */
          mc_aberpla(cdr.jd_phase0,delta,&cdr.jd_phase0tt);
       }
@@ -5183,7 +5109,7 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
             cdrpos[k].jd=(double)atof(interp->result);
             cdrpos[k].jdtt=cdrpos[k].jd;
             if (cdr.frame_time==1) {
-   		      mc_xyzasaaphelio(cdrpos[k].jd,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+   		      mc_xyzasaaphelio(cdrpos[k].jd,cdrpos[k].jd,J2000,1,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
                /* cdrpos[k].jd etait entre dans le repere de l'asteroide */
                /* Il faut donc soustraire la duree -delta pour savoir quand on l'a vu depuis la Terre en TT */
                mc_aberpla(cdrpos[k].jd,-delta,&jdk);
@@ -5199,7 +5125,7 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
          for (k=0;k<njd;k++) {
             cdrpos100[k].jdtt=jd1+(djd*k)/njd; /* Formule lin1 */
             /* jd est toujours en TT ici */
-		      mc_xyzasaaphelio(cdrpos100[k].jdtt,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+		      mc_xyzasaaphelio(cdrpos100[k].jdtt,cdrpos100[k].jdtt,J2000,1,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
             if (cdr.frame_time==0) {
                /* On transforme JD dans le repere de l'asteroide */
                mc_aberpla(cdrpos100[k].jdtt,delta,&cdrpos100[k].jd);
@@ -5241,12 +5167,12 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
             res=Tcl_Eval(interp,s);
             cdrpos[k].mag0=(double)atof(interp->result);
             /* jd doit etre en TT pour mc_xyzasaaphelio */
-		      mc_xyzasaaphelio(cdrpos[k].jd,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+		      mc_xyzasaaphelio(cdrpos[k].jd,cdrpos[k].jd,J2000,1,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
             if (cdr.frame_time==1) {
                /* cdrpos[k].jd etait entre dans le repere de l'asteroide */
                /* Il faut donc soustraire la duree -delta pour savoir quand on l'a vu depuis la Terre en TT */
                mc_aberpla(cdrpos[k].jd,-delta,&cdrpos[k].jdtt);
-   		      mc_xyzasaaphelio(cdrpos[k].jdtt,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+   		      mc_xyzasaaphelio(cdrpos[k].jdtt,cdrpos[k].jd,J2000,1,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
             } else {
                /* On transforme JD dans le repere de l'asteroide */
                cdrpos[k].jdtt=cdrpos[k].jd;
