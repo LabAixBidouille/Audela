@@ -586,3 +586,138 @@ void mc_refraction(double h,int inout,double temperature,double pressure,double 
    *refraction=r;
 }
 
+
+void mc_corearthsatelem(double jj,struct elemorb *elem)
+/***************************************************************************/
+/* Correction de perturbations de la figure de la Terre pour satellites    */
+/***************************************************************************/
+/***************************************************************************/
+{
+   double k_gauss,sini,cosi,e2,a,a2,j2,dt,dws,dos,dm0s,req,n0;
+   double k6,k7,k8,k9,h0,k0,ebar,hbar,kbar,betabar,ht,kt,beta;
+   /*double p2,ntilda,n;*/
+   double e,i,jjd;
+
+   double k1,k2,k3,k4,k5;
+   double wbar,mbar,nbar,sqrtmu,abar,w0,m0,req2;
+
+   jjd=jj;
+
+   /*--- perturabtions seculaires dues a l'applatissement de la Terre ---*/
+   if (elem->type==4) {
+      k_gauss=KGEOS;
+      a=elem->q/(1-elem->e); /* U.A. */
+      n0=k_gauss/(DR)/pow(a,3./2.); /* deg/day */
+      sini=sin(elem->i);
+      cosi=cos(elem->i);
+      e2=elem->e*elem->e;
+      a2=a*a;
+      req=6378.140e3/(UA); /* equatorial radius of the Earth in U.A. */
+      j2=+1.08263e-3*req*req; /* U.A.2 */
+      dt=jjd-elem->jj_epoque;
+      /* - Dunby */
+      /*
+      dws=dt*3*n0*j2/(2*a2*(1-e2)*(1-e2))*(5./2.*sini*sini-2.);
+      dos=-dt*3*n0*j2/(2*a2*(1-e2)*(1-e2))*cosi;
+      dm0s=dt*(-3*j2/(2*a2*pow((1-e2),3./2.))*(3./2.*sini*sini-1.));
+      i=elem->i;
+      e=elem->e;
+      */
+      /* - Kozai */
+      /*
+      p2=a2*(1.-e2)*(1.-e2);
+      ntilda=n0+j2/p2*n0*(1-3./2.*sini*sini)*sqrt(1.-e2);
+      dws=dt*j2/p2*ntilda*(2.-5./2.*sini*sini)*3./2.;
+      dos=-dt*j2/p2*ntilda*cosi*3./2.;
+      dm0s=dt*ntilda*3./2.;
+      a=a*(1.-j2/p2*(1.-3./2.*sini*sini)*sqrt(1.-e2));
+      i=elem->i;
+      e=elem->e;
+      */
+      /* --- 12540lec05.pdf ---*/
+      /*
+      req=6378.140e3/(UA); // equatorial radius of the Earth in U.A.
+      req2=req*req;
+      j2=+1.08263e-3;
+      ntilda=n0*(1+3./4.*j2*req2/(a2*sqrt((1-e2)*(1-e2)*(1-e2)))*(3.*cosi*cosi-1.));
+      dos=-3./2.*j2*req2/(a2*(1-e2)*(1-e2))*n0*cosi; // (16)
+      dws=+3./4.*j2*req2/(a2*(1-e2)*(1-e2))*n0*(5.*cosi*cosi-1.); // (17)
+      i=elem->i;
+      e=elem->e;
+      dws*=dt;
+      dos*=dt;
+      dm0s=(ntilda*dt);
+      */
+      /* - Born */
+      req=6378.140e3/(UA); // equatorial radius of the Earth in U.A.
+      req2=req*req;
+      j2=+1.08263e-3;
+      // - secular terms -
+      dos=-3./2.*j2*req2/(a2*(1-e2)*(1-e2))*n0*cosi; // (16)
+      dws=+3./2.*j2*req2/(a2*(1-e2)*(1-e2))*n0*(2.-5./2.*sini*sini); // (17)
+      k1=3./2.*j2*req2/a*sini*sini; // U.A.  // (27)
+      w0=elem->w;
+      m0=elem->m0;
+      abar=a-k1*cos(2*(w0+m0)); // (28a)
+      sqrtmu=k_gauss/(DR); // (19)
+      nbar=sqrtmu/pow(abar,3./2.); // deg/day  // (19)
+      dm0s=nbar+3./2.*j2*req2/(a2*sqrt((1-e2)*(1-e2)*(1-e2)))*n0*(1.-3./2.*sini*sini); // (18)
+      wbar=elem->w/(DR)+dws*dt;   // (29)
+      mbar=elem->m0/(DR)+dm0s*dt; // (30)
+      wbar=fmod(wbar,360.);
+      mbar=fmod(mbar,360.);
+      wbar*=(DR);
+      mbar*=(DR);
+      // - periodic terms -
+      k2=j2*req2/a2; // (37)
+      k3=3./8.*k2*sin(2*elem->i); // (37)
+      k4=3./4.*k2*cosi; // (37)
+      k5=3./2.*k2; // (37)
+      a=abar+k1*cos(2*(wbar+mbar)); // (31)
+      e=elem->e + k2*sini*sini*(3./8.*cos(2*wbar+mbar)+7./8.*cos(2*wbar+3*mbar)) + 3./4.*k2*(3*cosi*cosi-1.)*cos(mbar); // (32)
+      i=elem->i + k3*cos(2*(wbar+mbar)); // (33)
+      // - secular  periodic
+      dos =dos*dt  +k4/(DR)*sin(2*(wbar+mbar)); // (34)
+      if (elem->e>0.001) {
+         dws =dws*dt  +k5/(DR)*( (1.-3./2.*sini*sini)*(1./elem->e*sin(mbar)+0.5*sin(2*mbar)) - 0.5*(1.-5./2.*sini*sini)*sin(2*(wbar+mbar)) + sini*sini* (-1./4./elem->e*sin(2*wbar+mbar)+7./12./elem->e*sin(2*wbar+3*mbar)+3./8.*sin(2*wbar+4*mbar) ) ); // (35)
+         dm0s=dm0s*dt +k5/(DR)*(-(1.-3./2.*sini*sini)*(1./elem->e*sin(mbar)+0.5*sin(2*mbar))                                               - sini*sini* (-1./4./elem->e*sin(2*wbar+mbar)+7./12./elem->e*sin(2*wbar+3*mbar)+3./8.*sin(2*wbar+4*mbar) ) ); // (36)
+      } else {
+         k6=0.25*k2*(6.-21./2.*sini*sini); // (62)
+         k7=7./8.*k2*sini*sini;
+         k8=0.25*k2*(6.-15./2.*sini*sini);
+         k9=3./8.*k2*(3.-5.*cosi*cosi);
+         h0=elem->e*sin(elem->w); // (54)
+         k0=elem->e*cos(elem->w); // (54)
+         ebar=sqrt(h0*h0+k0*k0); // (59c)
+         hbar=ebar*sin(wbar);  // (59a)
+         kbar=ebar*cos(wbar); // (59b)
+         betabar=wbar+mbar; // (58b)
+         ht=hbar+k6*sin(betabar)+k7*sin(3*betabar); // (57)
+         kt=kbar+k8*cos(betabar)+k7*cos(3*betabar); // (58)
+         beta=betabar+k9*sin(2*betabar); // (61)
+         e=sqrt(ht*ht+kt*kt); // (63)
+         elem->w=atan2(ht,kt); // (64)
+         elem->m0=beta-elem->w; // (65)
+         dws=0.;
+         dm0s=0.;
+      }
+      /* --- update the elements ---*/
+      elem->w/=(DR);
+      elem->o/=(DR);
+      elem->m0/=(DR);
+      elem->w+=dws;
+      elem->o+=dos;
+      elem->m0+=dm0s;
+      elem->q=a*(1-e);
+      elem->w=fmod(elem->w,360.);
+      elem->o=fmod(elem->o,360.);
+      elem->m0=fmod(elem->m0,360.);
+      elem->w*=(DR);
+      elem->o*=(DR);
+      elem->m0*=(DR);
+      elem->e=e;
+      elem->i=i;
+      elem->jj_epoque=jjd;
+      elem->jj_m0=jjd;
+   }
+}
