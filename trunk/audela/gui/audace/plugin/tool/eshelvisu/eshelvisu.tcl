@@ -2,7 +2,7 @@
 # Fichier : eshelvisu.tcl
 # Description : Visionneuse d'images eShel
 # Auteurs : Michel Pujol
-# Mise a jour $Id: eshelvisu.tcl,v 1.2 2010-01-02 16:40:38 michelpujol Exp $
+# Mise a jour $Id: eshelvisu.tcl,v 1.3 2010-01-15 11:04:21 robertdelmas Exp $
 #
 
 namespace eval ::eshelvisu {
@@ -129,15 +129,6 @@ proc ::eshelvisu::createPluginInstance { tkbase visuNo } {
    }
    if { [lsearch $conf(eshelvisu,enableExtension) "tif"] == -1 } {
       lappend conf(visio2,enableExtension) "tif" "0"
-   }
-   if { [lsearch $conf(eshelvisu,enableExtension) "xbm"] == -1 } {
-      lappend conf(visio2,enableExtension) "xbm" "0"
-   }
-   if { [lsearch $conf(eshelvisu,enableExtension) "xpm"] == -1 } {
-      lappend conf(visio2,enableExtension) "xpm" "0"
-   }
-   if { [lsearch $conf(eshelvisu,enableExtension) "eps"] == -1 } {
-      lappend conf(visio2,enableExtension) "eps" "0"
    }
 
    #--- creation des variables locales
@@ -878,15 +869,12 @@ proc ::eshelvisu::localTable::fillTable { visuNo } {
    #--- je recupere les extensions autorisees dans un tableau
    array set enableExtension $conf(eshelvisu,enableExtension)
    if { [info exists enableExtension(fit)] == 0 } { set enableExtension(fit) 1 }
-   if { [info exists enableExtension(jpg)] == 0 } { set enableExtension(jpg) 1 }
    if { [info exists enableExtension(raw)] == 0 } { set enableExtension(raw) 1 }
+   if { [info exists enableExtension(jpg)] == 0 } { set enableExtension(jpg) 1 }
    if { [info exists enableExtension(bmp)] == 0 } { set enableExtension(bmp) 1 }
    if { [info exists enableExtension(gif)] == 0 } { set enableExtension(gif) 1 }
    if { [info exists enableExtension(png)] == 0 } { set enableExtension(png) 1 }
    if { [info exists enableExtension(tif)] == 0 } { set enableExtension(tif) 1 }
-   if { [info exists enableExtension(xbm)] == 0 } { set enableExtension(xbm) 1 }
-   if { [info exists enableExtension(xpm)] == 0 } { set enableExtension(xpm) 1 }
-   if { [info exists enableExtension(eps)] == 0 } { set enableExtension(eps) 1 }
 
    #--- raz de la liste
    $tbl delete 0 end
@@ -942,8 +930,6 @@ proc ::eshelvisu::localTable::fillTable { visuNo } {
                || [regexp (.gif)$                [string tolower $name]] && $enableExtension(gif)==1
                || [regexp (.tif|.tiff)$          [string tolower $name]] && $enableExtension(tif)==1
                || [regexp (.png)$                [string tolower $name]] && $enableExtension(png)==1
-               || [regexp (.ps|.eps)$            [string tolower $name]] && $enableExtension(ps)==1
-               || [regexp (.xbm|.xmp)$           [string tolower $name]] && $enableExtension(xbm)==1
                } {
 
 
@@ -1787,11 +1773,9 @@ proc ::eshelvisu::config::fillConfigPage { frm visuNo } {
       ( $conf(extension,defaut) == ".CR2" ) || ( $conf(extension,defaut) == ".DNG" ) \
        } {
 
-     ###( $conf(extension,defaut) == ".gif" ) || ( $conf(extension,defaut) == ".bmp" ) || \
-     ### ( $conf(extension,defaut) == ".png" ) || ( $conf(extension,defaut) == ".ps" ) || \
-     ### ( $conf(extension,defaut) == ".eps" ) || ( $conf(extension,defaut) == ".tif" ) || \
-     ### ( $conf(extension,defaut) == ".tiff" ) || ( $conf(extension,defaut) == ".xbm" ) || \
-     ### ( $conf(extension,defaut) == ".xpm" ) || ( $conf(extension,defaut) == ".avi" ) || \
+     ### ( $conf(extension,defaut) == ".gif" )  || ( $conf(extension,defaut) == ".bmp" ) || \
+     ### ( $conf(extension,defaut) == ".png" )  || ( $conf(extension,defaut) == ".tif" ) || \
+     ### ( $conf(extension,defaut) == ".tiff" ) || ( $conf(extension,defaut) == ".avi" ) || \
      ### ( $conf(extension,defaut) == ".mpeg" )
 
       checkbutton $frm.extension.extdefaut -text "$conf(extension,defaut)" \
@@ -1858,21 +1842,6 @@ proc ::eshelvisu::config::fillConfigPage { frm visuNo } {
   ###    pack $frm.extension.png -anchor w -side top -padx 5 -pady 0
   ### }
 
-  ### #--- fichiers ps
-  ### if { ( $conf(extension,defaut) != ".ps" ) && ( $conf(extension,defaut) != ".eps" ) } {
-  ###    checkbutton $frm.extension.ps -text ".ps .eps" \
-  ###        -highlightthickness 0 -variable ::eshelvisu::config::widgetEnableExtension(ps)
-  ###    pack $frm.extension.ps -anchor w -side top -padx 5 -pady 0
-  ### } elseif { $conf(extension,defaut) == ".ps" } {
-  ###    checkbutton $frm.extension.ps -text ".eps" \
-  ###        -highlightthickness 0 -variable ::eshelvisu::config::widgetEnableExtension(ps)
-  ###    pack $frm.extension.ps -anchor w -side top -padx 5 -pady 0
-  ### } elseif { $conf(extension,defaut) == ".eps" } {
-  ###    checkbutton $frm.extension.ps -text ".ps" \
-  ###        -highlightthickness 0 -variable ::eshelvisu::config::widgetEnableExtension(ps)
-  ###    pack $frm.extension.ps -anchor w -side top -padx 5 -pady 0
-  ### }
-
   ### #--- fichiers tif
   ### if { ( $conf(extension,defaut) != ".tif" ) && ( $conf(extension,defaut) != ".tiff" ) } {
   ###    checkbutton $frm.extension.tif -text ".tif .tiff" \
@@ -1886,21 +1855,6 @@ proc ::eshelvisu::config::fillConfigPage { frm visuNo } {
   ###    checkbutton $frm.extension.tif -text ".tif" \
   ###        -highlightthickness 0 -variable ::eshelvisu::config::widgetEnableExtension(tif)
   ###    pack $frm.extension.tif -anchor w -side top -padx 5 -pady 0
-  ### }
-
-  ### #--- fichiers xbm
-  ### if { ( $conf(extension,defaut) != ".xbm" ) && ( $conf(extension,defaut) != ".xpm" ) } {
-  ###    checkbutton $frm.extension.xbm -text ".xbm .xpm" \
-  ###        -highlightthickness 0 -variable ::eshelvisu::config::widgetEnableExtension(xbm)
-  ###    pack $frm.extension.xbm -anchor w -side top -padx 5 -pady 0
-  ### } elseif { $conf(extension,defaut) == ".xbm" } {
-  ###    checkbutton $frm.extension.xbm -text ".xpm" \
-  ###        -highlightthickness 0 -variable ::eshelvisu::config::widgetEnableExtension(xbm)
-  ###    pack $frm.extension.xbm -anchor w -side top -padx 5 -pady 0
-  ### } elseif { $conf(extension,defaut) == ".xpm" } {
-  ###    checkbutton $frm.extension.xbm -text ".xbm" \
-  ###        -highlightthickness 0 -variable ::eshelvisu::config::widgetEnableExtension(xbm)
-  ###    pack $frm.extension.xbm -anchor w -side top -padx 5 -pady 0
   ### }
 
    #--- fichiers raw
@@ -1965,16 +1919,12 @@ proc ::eshelvisu::config::fillConfigPage { frm visuNo } {
   ###    set ::eshelvisu::config::widgetEnableExtension(bmp) 0
   ###    set ::eshelvisu::config::widgetEnableExtension(jpg) 0
   ###    set ::eshelvisu::config::widgetEnableExtension(png) 0
-  ###    set ::eshelvisu::config::widgetEnableExtension(ps)  0
   ###    set ::eshelvisu::config::widgetEnableExtension(tif) 0
-  ###    set ::eshelvisu::config::widgetEnableExtension(xbm) 0
   ###    #--- je desactive les checkbox pour qu'on ne puisse pas les cocher
   ###    $frm.extension.bmp configure -state disabled
   ###    $frm.extension.jpg configure -state disabled
   ###    $frm.extension.png configure -state disabled
-  ###    $frm.extension.ps  configure -state disabled
   ###    $frm.extension.tif configure -state disabled
-  ###    $frm.extension.xbm configure -state disabled
   ### }
 
    #--- pas de film si on est sous Linux ou si le package tmci n'est pas present
