@@ -1,6 +1,6 @@
 #
 # Fichier : visio2.cap
-# Mise a jour $Id: visio2.cap,v 1.17 2009-12-09 16:59:50 robertdelmas Exp $
+# Mise a jour $Id: visio2.cap,v 1.18 2010-01-15 11:05:52 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -67,7 +67,7 @@ set caption(visio2,show_directory)           "Folder is empty or missing."
 #--- fenetre de configuration
 set caption(visio2,known_files)              "Recognized Files:"
 set caption(visio2,show_all_files)           "Display the Other Files"
-set caption(visio2,remark)                   "bmp, jpg, ps, tiff files require Img 1.2.4 package\navi, mov, mpeg files require tmci package (Windows only)."
+set caption(visio2,remark)                   "bmp, jpg, tiff files require Img 1.2.4 package\navi, mov, mpeg files require tmci package (Windows only)."
 set caption(visio2,remark1)                  "avi, mov, mpeg files require tmci package (Windows only)."
 
 #--- fenetre de renommage des fichiers
@@ -139,7 +139,7 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- fenetre de configuration
    set caption(visio2,known_files)           "Fichiers reconnus :"
    set caption(visio2,show_all_files)        "Afficher les autres fichiers"
-   set caption(visio2,remark)                "Les fichiers bmp, jpg, ps, tiff nécessitent le package Img 1.2.4\nLes fichiers avi, mov, mpeg nécessitent le package tmci (Windows uniquement)."
+   set caption(visio2,remark)                "Les fichiers bmp, jpg, tiff nécessitent le package Img 1.2.4\nLes fichiers avi, mov, mpeg nécessitent le package tmci (Windows uniquement)."
    set caption(visio2,remark1)               "Les fichiers avi, mov, mpeg nécessitent le package tmci (Windows uniquement)."
 
    #--- fenetre de renommage des fichiers
@@ -211,7 +211,7 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- fenetre de configuration
    set caption(visio2,known_files)           "File riconosciuti:"
    set caption(visio2,show_all_files)        "Visualizza gli altri file"
-   set caption(visio2,remark)                "I file bmp, jpg, ps, tiff richiedono il package Img 1.2.4\nI file avi, mov, mpeg richiedono il package tmci (solo per Windows)."
+   set caption(visio2,remark)                "I file bmp, jpg, tiff richiedono il package Img 1.2.4\nI file avi, mov, mpeg richiedono il package tmci (solo per Windows)."
    set caption(visio2,remark1)               "I file avi, mov, mpeg richiedono il package tmci (solo per Windows)."
 
    #--- fenetre de renommage des fichiers
@@ -283,7 +283,7 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- fenetre de configuration
    set caption(visio2,known_files)           "Ficheros reconocidos:"
    set caption(visio2,show_all_files)        "Mostrar los otros ficheros"
-   set caption(visio2,remark)                "Los tipos de fichero bmp, jpg, ps, y tiff requieren el paquete Img 1.2.4\nLos ficheros de tipo avi, mov y mpeg requieren el paquete tmci (sólo Windows)."
+   set caption(visio2,remark)                "Los tipos de fichero bmp, jpg, y tiff requieren el paquete Img 1.2.4\nLos ficheros de tipo avi, mov y mpeg requieren el paquete tmci (sólo Windows)."
    set caption(visio2,remark1)               "Los ficheros de tipo avi, mov y mpeg requieren el paquete tmci (sólo Windows)."
 
    #--- fenetre de renommage des fichiers
@@ -355,7 +355,7 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- fenetre de configuration
    set caption(visio2,known_files)           "Erkennten Dateien:"
    set caption(visio2,show_all_files)        "Die andere Dateien zeigen"
-   set caption(visio2,remark)                "Die bmp, jpg, ps, tiff Dateien nötigen das Img 1.2.4 Programmpaket\nDie avi, mov, mpeg Dateien nötigen das tmci Programmpaket (nur Windows)."
+   set caption(visio2,remark)                "Die bmp, jpg, tiff Dateien nötigen das Img 1.2.4 Programmpaket\nDie avi, mov, mpeg Dateien nötigen das tmci Programmpaket (nur Windows)."
    set caption(visio2,remark1)               "Die avi, mov, mpeg Dateien nötigen das tmci Programmpaket (nur Windows)."
 
    #--- fenetre de renommage des fichiers
@@ -427,7 +427,7 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- fenetre de configuration
    set caption(visio2,known_files)           "Ficheiros reconhecidos:"
    set caption(visio2,show_all_files)        "Mostrar os outros ficheiros"
-   set caption(visio2,remark)                "Os ficheiros bmp, jpg, ps, tiff necessitam do pacote Img 1.2.4\nOs ficheiros avi, mov, mpeg necessitam do pacote tmci (Windows somente)."
+   set caption(visio2,remark)                "Os ficheiros bmp, jpg, tiff necessitam do pacote Img 1.2.4\nOs ficheiros avi, mov, mpeg necessitam do pacote tmci (Windows somente)."
    set caption(visio2,remark1)               "Os ficheiros avi, mov, mpeg necessitam do pacote tmci (Windows somente)."
 
    #--- fenetre de renommage des fichiers
@@ -499,7 +499,7 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- fenetre de configuration
    set caption(visio2,known_files)           "Recognized Files:"
    set caption(visio2,show_all_files)        "Display the Other Files"
-   set caption(visio2,remark)                "bmp, jpg, ps, tiff files require Img 1.2.4 package\navi, mov, mpeg files require tmci package (Windows only)."
+   set caption(visio2,remark)                "bmp, jpg, tiff files require Img 1.2.4 package\navi, mov, mpeg files require tmci package (Windows only)."
    set caption(visio2,remark1)               "avi, mov, mpeg files require tmci package (Windows only)."
 
    #--- fenetre de renommage des fichiers
@@ -571,7 +571,7 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- fenetre de configuration
    set caption(visio2,known_files)           "Recognized Files:"
    set caption(visio2,show_all_files)        "Display the Other Files"
-   set caption(visio2,remark)                "bmp, jpg, ps, tiff files require Img 1.2.4 package\navi, mov, mpeg files require tmci package (Windows only)."
+   set caption(visio2,remark)                "bmp, jpg, tiff files require Img 1.2.4 package\navi, mov, mpeg files require tmci package (Windows only)."
    set caption(visio2,remark1)               "avi, mov, mpeg files require tmci package (Windows only)."
 
    #--- fenetre de renommage des fichiers
@@ -643,7 +643,7 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- fenetre de configuration
    set caption(visio2,known_files)           "Recognized Files:"
    set caption(visio2,show_all_files)        "Display the Other Files"
-   set caption(visio2,remark)                "bmp, jpg, ps, tiff files require Img 1.2.4 package\navi, mov, mpeg files require tmci package (Windows only)."
+   set caption(visio2,remark)                "bmp, jpg, tiff files require Img 1.2.4 package\navi, mov, mpeg files require tmci package (Windows only)."
    set caption(visio2,remark1)               "avi, mov, mpeg files require tmci package (Windows only)."
 
    #--- fenetre de renommage des fichiers
