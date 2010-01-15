@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise a jour $Id: tkutil.tcl,v 1.24 2010-01-10 16:05:57 robertdelmas Exp $
+# Mise a jour $Id: tkutil.tcl,v 1.25 2010-01-15 11:03:32 robertdelmas Exp $
 #
 
 namespace eval tkutil:: {
@@ -48,9 +48,6 @@ proc ::tkutil::getOpenFileType { } {
       [ list "$caption(tkutil,image_file)"       {.gif}                ] \
       [ list "$caption(tkutil,image_file)"       {.png}                ] \
       [ list "$caption(tkutil,image_file)"       {.tiff .tif}          ] \
-      [ list "$caption(tkutil,image_file)"       {.xbm}                ] \
-      [ list "$caption(tkutil,image_file)"       {.xpm}                ] \
-      [ list "$caption(tkutil,image_file)"       {.ps .eps}            ] \
       [ list "$caption(tkutil,image_fits)"       {.fit}                ] \
       [ list "$caption(tkutil,image_fits)"       {.fit.gz}             ] \
       [ list "$caption(tkutil,image_fits)"       {.fts}                ] \
@@ -64,11 +61,8 @@ proc ::tkutil::getOpenFileType { } {
       [ list "$caption(tkutil,image_gif)"        {.gif}                ] \
       [ list "$caption(tkutil,image_png)"        {.png}                ] \
       [ list "$caption(tkutil,image_tiff)"       {.tiff .tif}          ] \
-      [ list "$caption(tkutil,image_xbm)"        {.xbm}                ] \
-      [ list "$caption(tkutil,image_xpm)"        {.xpm}                ] \
-      [ list "$caption(tkutil,image_postscript)" {.ps .eps}            ] \
-      [ list "$caption(tkutil,image_gif)"        {}      GIFF          ] \
       [ list "$caption(tkutil,image_jpeg)"       {}      JPEG          ] \
+      [ list "$caption(tkutil,image_gif)"        {}      GIFF          ] \
       [ list "$caption(tkutil,image_png)"        {}      PNGF          ] \
       [ list "$caption(tkutil,image_tiff)"       {}      TIFF          ] \
       [ list "$caption(tkutil,fichier_tous)"     *                     ]
@@ -203,54 +197,58 @@ proc ::tkutil::getSaveFileType { } {
    set l [ list "$caption(tkutil,image_raw) 5"  {.NEF}     ]
    set m [ list "$caption(tkutil,image_raw) 6"  {.dng}     ]
    set n [ list "$caption(tkutil,image_raw) 7"  {.DNG}     ]
-   #---
-   set jpg [ list "$caption(tkutil,image_jpeg)" {.jpg}     ]
-   set bmp [ list "$caption(tkutil,image_bmp)"  {.bmp}     ]
-   set gif [ list "$caption(tkutil,image_gif)"  {.gif}     ]
-   set png [ list "$caption(tkutil,image_png)"  {.png}     ]
-   set tif [ list "$caption(tkutil,image_tiff)" {.tif}     ]
-   set xbm [ list "$caption(tkutil,image_xbm)"  {.xbm}     ]
-   set xpm [ list "$caption(tkutil,image_xpm)"  {.xpm}     ]
+   set o [ list "$caption(tkutil,image_jpeg)"   {.jpg}     ]
+   set p [ list "$caption(tkutil,image_bmp)"    {.bmp}     ]
+   set q [ list "$caption(tkutil,image_png)"    {.png}     ]
+   set r [ list "$caption(tkutil,image_tiff)"   {.tif}     ]
 
    if { [ buf$audace(bufNo) extension ] == ".fit" } {
       if { $conf(fichier,compres) == "0" } {
-         lappend saveFileType $a $b $c $d $e $f $g $h $i $j $k $l $m $n $jpg $bmp $gif $png $tif $xbm $xpm
+         lappend saveFileType $a $b $c $d $e $f $g $h $i $j $k $l $m $n $o $p $q $r
       } elseif { $conf(fichier,compres) == "1" } {
-         lappend saveFileType $b $a $c $d $e $f $g $h $i $j $k $l $m $n $jpg $bmp $gif $png $tif $xbm $xpm
+         lappend saveFileType $b $a $c $d $e $f $g $h $i $j $k $l $m $n $o $p $q $r
       }
    } elseif { [ buf$audace(bufNo) extension ] == ".fts" } {
       if { $conf(fichier,compres) == "0" } {
-         lappend saveFileType $c $d $a $b $e $f $g $h $i $j $k $l $m $n $jpg $bmp $gif $png $tif $xbm $xpm
+         lappend saveFileType $c $d $a $b $e $f $g $h $i $j $k $l $m $n $o $p $q $r
       } elseif { $conf(fichier,compres) == "1" } {
-         lappend saveFileType $d $c $a $b $e $f $g $h $i $j $k $l $m $n $jpg $bmp $gif $png $tif $xbm $xpm
+         lappend saveFileType $d $c $a $b $e $f $g $h $i $j $k $l $m $n $o $p $q $r
       }
    } elseif { [ buf$audace(bufNo) extension ] == ".fits" } {
       if { $conf(fichier,compres) == "0" } {
-         lappend saveFileType $e $f $a $b $c $d $g $h $i $j $k $l $m $n $jpg $bmp $gif $png $tif $xbm $xpm
+         lappend saveFileType $e $f $a $b $c $d $g $h $i $j $k $l $m $n $o $p $q $r
       } elseif { $conf(fichier,compres) == "1" } {
-         lappend saveFileType $f $e $a $b $c $d $g $h $i $j $k $l $m $n $jpg $bmp $gif $png $tif $xbm $xpm
+         lappend saveFileType $f $e $a $b $c $d $g $h $i $j $k $l $m $n $o $p $q $r
       }
    } elseif { [ buf$audace(bufNo) extension ] == ".crw" } {
-      lappend saveFileType $g $h $i $j $k $l $m $n $a $b $c $d $e $f $jpg $bmp $gif $png $tif $xbm $xpm
+      lappend saveFileType $g $h $i $j $k $l $m $n $a $b $c $d $e $f $o $p $q $r
    } elseif { [ buf$audace(bufNo) extension ] == ".CRW" } {
-      lappend saveFileType $h $g $i $j $k $l $m $n $a $b $c $d $e $f $jpg $bmp $gif $png $tif $xbm $xpm
+      lappend saveFileType $h $g $i $j $k $l $m $n $a $b $c $d $e $f $o $p $q $r
    } elseif { [ buf$audace(bufNo) extension ] == ".cr2" } {
-      lappend saveFileType $i $j $k $l $m $n $g $h $a $b $c $d $e $f $jpg $bmp $gif $png $tif $xbm $xpm
+      lappend saveFileType $i $j $k $l $m $n $g $h $a $b $c $d $e $f $o $p $q $r
    } elseif { [ buf$audace(bufNo) extension ] == ".CR2" } {
-      lappend saveFileType $j $i $k $l $m $n $g $h $a $b $c $d $e $f $jpg $bmp $gif $png $tif $xbm $xpm
+      lappend saveFileType $j $i $k $l $m $n $g $h $a $b $c $d $e $f $o $p $q $r
    } elseif { [ buf$audace(bufNo) extension ] == ".nef" } {
-      lappend saveFileType $k $l $m $n $g $h $i $j $a $b $c $d $e $f $jpg $bmp $gif $png $tif $xbm $xpm
+      lappend saveFileType $k $l $m $n $g $h $i $j $a $b $c $d $e $f $o $p $q $r
    } elseif { [ buf$audace(bufNo) extension ] == ".NEF" } {
-      lappend saveFileType $l $k $m $n $g $h $i $j $a $b $c $d $e $f $jpg $bmp $gif $png $tif $xbm $xpm
+      lappend saveFileType $l $k $m $n $g $h $i $j $a $b $c $d $e $f $o $p $q $r
    } elseif { [ buf$audace(bufNo) extension ] == ".dng" } {
-      lappend saveFileType $m $n $g $h $i $j $k $l $a $b $c $d $e $f $jpg $bmp $gif $png $tif $xbm $xpm
+      lappend saveFileType $m $n $g $h $i $j $k $l $a $b $c $d $e $f $o $p $q $r
    } elseif { [ buf$audace(bufNo) extension ] == ".DNG" } {
-      lappend saveFileType $n $m $g $h $i $j $k $l $a $b $c $d $e $f $jpg $bmp $gif $png $tif $xbm $xpm
+      lappend saveFileType $n $m $g $h $i $j $k $l $a $b $c $d $e $f $o $p $q $r
+   } elseif { [ buf$audace(bufNo) extension ] == ".jpg" } {
+      lappend saveFileType $o $p $q $r $n $m $g $h $i $j $k $l $a $b $c $d $e $f
+   } elseif { [ buf$audace(bufNo) extension ] == ".bmp" } {
+      lappend saveFileType $p $q $r $o $n $m $g $h $i $j $k $l $a $b $c $d $e $f
+   } elseif { [ buf$audace(bufNo) extension ] == ".png" } {
+      lappend saveFileType $q $r $o $p $n $m $g $h $i $j $k $l $a $b $c $d $e $f
+   } elseif { [ buf$audace(bufNo) extension ] == ".tif" } {
+      lappend saveFileType $r $o $p $q $n $m $g $h $i $j $k $l $a $b $c $d $e $f
    } else {
       if { $conf(fichier,compres) == "0" } {
-         lappend saveFileType $x $y $a $b $c $d $e $f $g $h $i $j $k $l $m $n $jpg $bmp $gif $png $tif $xbm $xpm
+         lappend saveFileType $x $y $a $b $c $d $e $f $g $h $i $j $k $l $m $n $o $p $q $r
       } elseif { $conf(fichier,compres) == "1" } {
-         lappend saveFileType $y $x $a $b $c $d $e $f $g $h $i $j $k $l $m $n $jpg $bmp $gif $png $tif $xbm $xpm
+         lappend saveFileType $y $x $a $b $c $d $e $f $g $h $i $j $k $l $m $n $o $p $q $r
       }
    }
 }
