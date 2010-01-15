@@ -1,8 +1,8 @@
 #
 # Fichier : convert.tcl
-# Description : Conversion d'images FITS au format BMP, EMF, PS, ICO, JPEG/JPG, PDF, PNG, PSD ou TIFF
+# Description : Conversion d'images FITS au format EMF, PS, ICO, JPEG/JPG, PDF ou PSD
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: convert.tcl,v 1.2 2009-12-09 16:12:37 robertdelmas Exp $
+# Mise a jour $Id: convert.tcl,v 1.3 2010-01-15 11:07:22 robertdelmas Exp $
 #
 
 #============================================================
@@ -84,15 +84,14 @@ proc ::convert::initPlugin { tkbase } {
    variable private
 
    #--- Liste des extensions utilisables
-   set private(liste_extension) [list ".bmp" ".emf" ".ps" ".ico" ".jpg" ".pdf" ".png" ".psd" ".tif" ]
+   set private(liste_extension) [list ".emf" ".ps" ".ico" ".jpg" ".pdf" ".psd" ]
 
    #--- Liste des commentaires pour les extensions utilisables
-   set private(commentaires) [list "Windows Bitmap" "Windows Enhanced Metafile" "Postscript" \
-      "Windows Icon" "JPEG/JPG" "Portable Document Format" "Portable Network Graphics" \
-      "Adobe Photoshop" "Tiff rev. 6" ]
+   set private(commentaires) [list "Windows Enhanced Metafile" "Postscript" \
+      "Windows Icon" "JPEG/JPG" "Portable Document Format" "Adobe Photoshop" ]
 
    #--- Liste des types a entrer dans nconvert pour les extensions utilisables
-   set private(liste_type) [ list bmp emf ps ico jpeg pdf png psd tiff ]
+   set private(liste_type) [ list emf ps ico jpeg pdf psd ]
 
    #--- Liste de listes pour afficher les formats dans la boite de dialogue
    foreach private(extension) $private(liste_extension) com $private(commentaires) {
