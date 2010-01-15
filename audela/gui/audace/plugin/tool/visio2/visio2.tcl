@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.50 2010-01-05 11:12:39 robertdelmas Exp $
+# Mise a jour $Id: visio2.tcl,v 1.51 2010-01-15 11:05:21 robertdelmas Exp $
 #
 
 namespace eval ::visio2 {
@@ -67,16 +67,12 @@ proc ::visio2::createPluginInstance { { in "" } { visuNo 1 } } {
    if { [lsearch $conf(visio2,enableExtension) "fit"] == -1 } {
      lappend conf(visio2,enableExtension) "fit" "1"
    }
-   if { [lsearch $conf(visio2,enableExtension) "jpg"] == -1 } {
-     lappend conf(visio2,enableExtension) "jpg" "1"
-   }
    if { [lsearch $conf(visio2,enableExtension) "raw"] == -1 } {
      lappend conf(visio2,enableExtension) "raw" "1"
    }
-   if { [lsearch $conf(visio2,enableExtension) "avi"] == -1 } {
-     lappend conf(visio2,enableExtension) "avi" "1"
+   if { [lsearch $conf(visio2,enableExtension) "jpg"] == -1 } {
+     lappend conf(visio2,enableExtension) "jpg" "1"
    }
-
    if { [lsearch $conf(visio2,enableExtension) "bmp"] == -1 } {
       lappend conf(visio2,enableExtension) "bmp" "1"
    }
@@ -89,14 +85,8 @@ proc ::visio2::createPluginInstance { { in "" } { visuNo 1 } } {
    if { [lsearch $conf(visio2,enableExtension) "tif"] == -1 } {
       lappend conf(visio2,enableExtension) "tif" "1"
    }
-   if { [lsearch $conf(visio2,enableExtension) "xbm"] == -1 } {
-      lappend conf(visio2,enableExtension) "xbm" "1"
-   }
-   if { [lsearch $conf(visio2,enableExtension) "xpm"] == -1 } {
-      lappend conf(visio2,enableExtension) "xpm" "1"
-   }
-   if { [lsearch $conf(visio2,enableExtension) "eps"] == -1 } {
-      lappend conf(visio2,enableExtension) "eps" "1"
+   if { [lsearch $conf(visio2,enableExtension) "avi"] == -1 } {
+     lappend conf(visio2,enableExtension) "avi" "1"
    }
    if {![info exists conf(visio2,show_all_files)]} { set conf(visio2,show_all_files) "0" }
 
@@ -346,10 +336,7 @@ proc ::visio2::configure { visuNo } {
                || [regexp (.gif)$                [string tolower $name]] && $enableExtension(gif)==1
                || [regexp (.tif|.tiff)$          [string tolower $name]] && $enableExtension(tif)==1
                || [regexp (.png)$                [string tolower $name]] && $enableExtension(png)==1
-               || [regexp (.ps|.eps)$            [string tolower $name]] && $enableExtension(ps)==1
-               || [regexp (.xbm|.xpm)$           [string tolower $name]] && $enableExtension(xbm)==1
                } {
-
 
          #--- cas d'une image : ajoute une ligne dans la table avec le nom, type, serie et date du fichier
          #--- colonne name
@@ -741,10 +728,8 @@ proc ::visio2::config::fillConfigPage { frm visuNo } {
         $conf(extension,defaut) == ".CRW"  || $conf(extension,defaut) == ".NEF"  || \
         $conf(extension,defaut) == ".CR2"  || $conf(extension,defaut) == ".DNG"  || \
         $conf(extension,defaut) == ".gif"  || $conf(extension,defaut) == ".bmp"  || \
-        $conf(extension,defaut) == ".png"  || $conf(extension,defaut) == ".ps"   || \
-        $conf(extension,defaut) == ".eps"  || $conf(extension,defaut) == ".tif"  || \
-        $conf(extension,defaut) == ".tiff" || $conf(extension,defaut) == ".xbm"  || \
-        $conf(extension,defaut) == ".xpm"  || $conf(extension,defaut) == ".avi"  || \
+        $conf(extension,defaut) == ".png"  || $conf(extension,defaut) == ".tif"  || \
+        $conf(extension,defaut) == ".tiff" || $conf(extension,defaut) == ".avi"  || \
         $conf(extension,defaut) == ".mpeg"
       } {
       checkbutton $frm.extension.extdefaut -text "$conf(extension,defaut)" \
@@ -868,36 +853,6 @@ proc ::visio2::config::fillConfigPage { frm visuNo } {
       pack $frm.extension.tif -anchor w -side top -padx 5 -pady 0
    }
 
-   #--- fichiers xbm et xpm
-   if { ( $conf(extension,defaut) != ".xbm" ) && ( $conf(extension,defaut) != ".xpm" ) } {
-      checkbutton $frm.extension.xbm -text ".xbm .xpm" \
-          -highlightthickness 0 -variable ::visio2::config::widgetEnableExtension(xbm)
-      pack $frm.extension.xbm -anchor w -side top -padx 5 -pady 0
-   } elseif { $conf(extension,defaut) == ".xbm" } {
-      checkbutton $frm.extension.xbm -text ".xpm" \
-          -highlightthickness 0 -variable ::visio2::config::widgetEnableExtension(xbm)
-      pack $frm.extension.xbm -anchor w -side top -padx 5 -pady 0
-   } elseif { $conf(extension,defaut) == ".xpm" } {
-      checkbutton $frm.extension.xbm -text ".xbm" \
-          -highlightthickness 0 -variable ::visio2::config::widgetEnableExtension(xbm)
-      pack $frm.extension.xbm -anchor w -side top -padx 5 -pady 0
-   }
-
-   #--- fichiers ps
-   if { ( $conf(extension,defaut) != ".ps" ) && ( $conf(extension,defaut) != ".eps" ) } {
-      checkbutton $frm.extension.ps -text ".ps .eps" \
-          -highlightthickness 0 -variable ::visio2::config::widgetEnableExtension(ps)
-      pack $frm.extension.ps -anchor w -side top -padx 5 -pady 0
-   } elseif { $conf(extension,defaut) == ".ps" } {
-      checkbutton $frm.extension.ps -text ".eps" \
-          -highlightthickness 0 -variable ::visio2::config::widgetEnableExtension(ps)
-      pack $frm.extension.ps -anchor w -side top -padx 5 -pady 0
-   } elseif { $conf(extension,defaut) == ".eps" } {
-      checkbutton $frm.extension.ps -text ".ps" \
-          -highlightthickness 0 -variable ::visio2::config::widgetEnableExtension(ps)
-      pack $frm.extension.ps -anchor w -side top -padx 5 -pady 0
-   }
-
    #--- fichiers avi
    if { ( $conf(extension,defaut) != ".avi" ) && ( $conf(extension,defaut) != ".mpeg" ) } {
       checkbutton $frm.extension.avi -text ".avi .mpeg" \
@@ -918,16 +873,12 @@ proc ::visio2::config::fillConfigPage { frm visuNo } {
       set ::visio2::config::widgetEnableExtension(bmp) 0
       set ::visio2::config::widgetEnableExtension(jpg) 0
       set ::visio2::config::widgetEnableExtension(png) 0
-      set ::visio2::config::widgetEnableExtension(ps)  0
       set ::visio2::config::widgetEnableExtension(tif) 0
-      set ::visio2::config::widgetEnableExtension(xbm) 0
       #--- je desactive les checkbox pour qu'on ne puisse pas les cocher
       $frm.extension.bmp configure -state disabled
       $frm.extension.jpg configure -state disabled
       $frm.extension.png configure -state disabled
-      $frm.extension.ps  configure -state disabled
       $frm.extension.tif configure -state disabled
-      $frm.extension.xbm configure -state disabled
    }
 
    #--- pas de film si on est sous Linux ou si le package tmci n'est pas present

@@ -2,7 +2,7 @@
 # Fichier : visio.tcl
 # Description : Outil de visionnage d'images fits + gestion des series d'images
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: visio.tcl,v 1.20 2009-11-08 14:00:10 robertdelmas Exp $
+# Mise a jour $Id: visio.tcl,v 1.21 2010-01-15 11:04:57 robertdelmas Exp $
 #
 
 # ========================================================
@@ -146,16 +146,16 @@ namespace eval ::visio {
             set panneau(visio,ext,fits_comp) [list "" ".gz"]
          }
       }
-      #--- Liste des extensions de fichiers autres que FITS pris en charge
+      #--- Liste des extensions de fichiers autres que FITS prises en charge
       switch $::tcl_platform(os) {
          "Linux" {
-            set panneau(visio,ext,nofits) [list ".gif" ".GIF" ".bmp" ".BMP" ".jpg" ".JPG" ".jpeg" ".JPEG" ".png" ".PNG" ".ps" ".eps" ".EPS" ".tif" ".TIF" ".tiff" ".TIFF" ".xbm" ".XBM" ".xpm" ".XPM"]
+            set panneau(visio,ext,nofits) [list ".gif" ".GIF" ".bmp" ".BMP" ".jpg" ".JPG" ".jpeg" ".JPEG" ".png" ".PNG" ".tif" ".TIF" ".tiff" ".TIFF"]
          }
          "Darwin" {
-            set panneau(visio,ext,nofits) [list ".gif" ".GIF" ".bmp" ".BMP" ".jpg" ".JPG" ".jpeg" ".JPEG" ".png" ".PNG" ".ps" ".eps" ".EPS" ".tif" ".TIF" ".tiff" ".TIFF" ".xbm" ".XBM" ".xpm" ".XPM"]
+            set panneau(visio,ext,nofits) [list ".gif" ".GIF" ".bmp" ".BMP" ".jpg" ".JPG" ".jpeg" ".JPEG" ".png" ".PNG" ".tif" ".TIF" ".tiff" ".TIFF"]
          }
          default {
-            set panneau(visio,ext,nofits) [list ".gif" ".bmp" ".jpg" ".jpeg" ".png" ".ps" ".eps" ".tif" ".tiff" ".xbm" ".xpm"]
+            set panneau(visio,ext,nofits) [list ".gif" ".bmp" ".jpg" ".jpeg" ".png" ".tif" ".tiff"]
          }
       }
       #--- Construction de l'interface
