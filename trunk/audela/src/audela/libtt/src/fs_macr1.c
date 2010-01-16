@@ -117,128 +117,128 @@ int macr_write(void *arg1,void *arg2,void *arg3,void *arg4,void *arg5,void *arg6
    int match,nbcards=0,nbexclus;
    char **cards=NULL,*cards_data=NULL,**exclus,*exclu0s;
    void **argu;
-
+   
    argu=(void**)(arg11);
    nom_fichier=(char*)(arg1);
    typehdu=*(int*)(arg3);
-
+   
    /* --- ouverture en lecture du fichier de reference ---*/
    ref_file=(arg4!=NULL)?1:0;
    if (ref_file==1) {
       fichier_ref=(char*)(arg4);
       numhdu_ref=(int*)(arg5);
       if ((msg=libfiles_main(FS_FITS_OPEN_FILE,3,&fptr_ref,fichier_ref,&typemode_ref))!=0) {
-	 return(msg);
+         return(msg);
       }
       /* --- selection du header courant du fichier de reference ---*/
       if ((msg=libfiles_main(FS_FITS_GET_NUM_HDUS,2,fptr_ref,&nbhdu))!=0) {
-	 libfiles_main(FS_FITS_CLOSE_FILE,1,fptr_ref);
-	 return(msg);
+         libfiles_main(FS_FITS_CLOSE_FILE,1,fptr_ref);
+         return(msg);
       }
       if ((*numhdu_ref>=1)&&(*numhdu_ref<=nbhdu)) {
-	 if ((msg=libfiles_main(FS_FITS_MOVABS_HDU,3,fptr_ref,numhdu_ref,&typehdu_ref))!=0) {
-	    libfiles_main(FS_FITS_CLOSE_FILE,1,fptr_ref);
-	    return(msg);
-	 }
+         if ((msg=libfiles_main(FS_FITS_MOVABS_HDU,3,fptr_ref,numhdu_ref,&typehdu_ref))!=0) {
+            libfiles_main(FS_FITS_CLOSE_FILE,1,fptr_ref);
+            return(msg);
+         }
       } else {
-	 libfiles_main(FS_FITS_CLOSE_FILE,fptr_ref);
-	 return(FS_ERR_HDUNUM_OVER);
+         libfiles_main(FS_FITS_CLOSE_FILE,fptr_ref);
+         return(FS_ERR_HDUNUM_OVER);
       }
    }
-
+   
    /* --- stockage de l'entete du fichier de reference ---*/
    if (ref_file==1) {
       /*printf("toto 1.5 %p nbmotcle=%d\n",fptr_ref,nbmotcle);*/
       if ((msg=libfiles_main(FS_FITS_GET_HDRSPACE,3,fptr_ref,&nbmotcle,&morekeys))!=0) {
-	 libfiles_main(FS_FITS_CLOSE_FILE,1,fptr_ref);
-	 return(msg);
+         libfiles_main(FS_FITS_CLOSE_FILE,1,fptr_ref);
+         return(msg);
       }
       cards=NULL;
       /*printf("toto 1.6 nbmotcle=%d\n",nbmotcle);*/
       if((cards=(char**)calloc(nbmotcle,sizeof(void*)))==NULL) {
-	 libfiles_main(FS_FITS_CLOSE_FILE,1,fptr_ref);
-	 return(FS_ERR_PB_MALLOC);
+         libfiles_main(FS_FITS_CLOSE_FILE,1,fptr_ref);
+         return(FS_ERR_PB_MALLOC);
       }
       nbcar=(FLEN_CARD)*sizeof(char);
       taille=(nbcar+sizeof(void*)-nbcar%sizeof(void*))*sizeof(char);
       cards_data=NULL;
       if((cards_data=(char*)calloc(nbmotcle,taille))==NULL) {
-	 libfiles_main(FS_FITS_CLOSE_FILE,1,fptr_ref);
-	 return(FS_ERR_PB_MALLOC);
+         libfiles_main(FS_FITS_CLOSE_FILE,1,fptr_ref);
+         return(FS_ERR_PB_MALLOC);
       }
       for (k=0;k<=nbmotcle-1;k++) {
-	 cards[k]=cards_data+k*taille;
+         cards[k]=cards_data+k*taille;
       }
       nbcards=0;
       for (k=1;k<=nbmotcle;k++) {
-	 if ((msg=libfiles_main(FS_FITS_READ_RECORD,3,fptr_ref,&k,card))!=0) {
-	    libfiles_main(FS_FITS_CLOSE_FILE,1,fptr_ref);
-	    return(msg);
-	 }
-	 if ((msg=libfiles_main(FS_FITS_READ_KEYN,5,fptr_ref,&k,keyname,value,comment))!=0) {
-	    libfiles_main(FS_FITS_CLOSE_FILE,1,fptr_ref);
-	    return(msg);
-	 }
-	 if (arg6!=NULL) {
-	    exclus=(char**)(arg6);
-	    nbexclus=0;
-	    while((exclu0s=exclus[nbexclus++])!=NULL);
-	    nbexclus--;
-	 } else {
-	    nbexclus=0;
-	    exclus=NULL;
-	 }
-	 /*printf("adresse exclus=%p (nbexclus=%d)\n",exclus,nbexclus);*/
-	 if ((msg=libfiles_main(FS_UTIL_MATCH_RESERVED_KEY,4,keyname,&match,&exclus,&nbexclus))!=0) {
-	    libfiles_main(FS_FITS_CLOSE_FILE,1,fptr_ref);
-	    return(msg);
-	 }
-	 if (match==0) {
-	    sprintf(cards[nbcards],"%s",card);
-	    nbcards++;
-	 }
+         if ((msg=libfiles_main(FS_FITS_READ_RECORD,3,fptr_ref,&k,card))!=0) {
+            libfiles_main(FS_FITS_CLOSE_FILE,1,fptr_ref);
+            return(msg);
+         }
+         if ((msg=libfiles_main(FS_FITS_READ_KEYN,5,fptr_ref,&k,keyname,value,comment))!=0) {
+            libfiles_main(FS_FITS_CLOSE_FILE,1,fptr_ref);
+            return(msg);
+         }
+         if (arg6!=NULL) {
+            exclus=(char**)(arg6);
+            nbexclus=0;
+            while((exclu0s=exclus[nbexclus++])!=NULL);
+            nbexclus--;
+         } else {
+            nbexclus=0;
+            exclus=NULL;
+         }
+         /*printf("adresse exclus=%p (nbexclus=%d)\n",exclus,nbexclus);*/
+         if ((msg=libfiles_main(FS_UTIL_MATCH_RESERVED_KEY,4,keyname,&match,&exclus,&nbexclus))!=0) {
+            libfiles_main(FS_FITS_CLOSE_FILE,1,fptr_ref);
+            return(msg);
+         }
+         if (match==0) {
+            sprintf(cards[nbcards],"%s",card);
+            nbcards++;
+         }
       }
       if ((msg=libfiles_main(FS_FITS_CLOSE_FILE,1,fptr_ref))!=0) {
-	 free(cards);free(cards_data);
-	 return(msg);
+         free(cards);free(cards_data);
+         return(msg);
       }
    }
-
+   
    /* --- ouverture en ecriture du fichier fits ---*/
    new_file=(arg2==NULL)?1:0;
    if (new_file==1) {
       if ((dummy=fopen(nom_fichier,"r"))!=NULL) {
-	 if ((msg=fclose(dummy))!=0) { return(FS_ERR_REMOVE_FILE); }
-	 if ((msg=remove(nom_fichier))!=0) { return(FS_ERR_REMOVE_FILE); }
+         if ((msg=fclose(dummy))!=0) { return(FS_ERR_REMOVE_FILE); }
+         if ((msg=remove(nom_fichier))!=0) { return(FS_ERR_REMOVE_FILE); }
       }
       if ((msg=libfiles_main(FS_FITS_CREATE_FILE,2,&fptr,nom_fichier))!=0) {
-	 if (ref_file==1) {free(cards);free(cards_data);}
-	 return(msg);
+         if (ref_file==1) {free(cards);free(cards_data);}
+         return(msg);
       }
       numhdu=0;
    } else {
       numhdu=*(int*)(arg2);
       if ((msg=libfiles_main(FS_FITS_OPEN_FILE,3,&fptr,nom_fichier,&typemode))!=0) {
-	 if (ref_file==1) {free(cards);free(cards_data);}
-	 return(msg);
+         if (ref_file==1) {free(cards);free(cards_data);}
+         return(msg);
       }
       /* --- selection du header courant du fichier fits    --- */
       /* --- derriere lequel on inserera la nouvelle entete --- */
       if ((msg=libfiles_main(FS_FITS_GET_NUM_HDUS,2,fptr,&nbhdu))!=0) {
-	 if (ref_file==1) {free(cards);free(cards_data);}
-	 libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	 return(msg);
+         if (ref_file==1) {free(cards);free(cards_data);}
+         libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+         return(msg);
       }
       if ((numhdu<0)||(numhdu>nbhdu)) {
-	 if ((msg=libfiles_main(FS_FITS_CLOSE_FILE,1,fptr))!=0) { return(msg); }
-	 if (ref_file==1) {free(cards);free(cards_data);}
-	 return(FS_ERR_HDUNUM_OVER);
+         if ((msg=libfiles_main(FS_FITS_CLOSE_FILE,1,fptr))!=0) { return(msg); }
+         if (ref_file==1) {free(cards);free(cards_data);}
+         return(FS_ERR_HDUNUM_OVER);
       } else /*if (numhdu!=0)*/ {
-	 if ((msg=libfiles_main(FS_FITS_MOVABS_HDU,3,fptr,&numhdu,&typechdu))!=0) {
-	    if (ref_file==1) {free(cards);free(cards_data);}
-	    libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	    return(msg);
-	 }
+         if ((msg=libfiles_main(FS_FITS_MOVABS_HDU,3,fptr,&numhdu,&typechdu))!=0) {
+            if (ref_file==1) {free(cards);free(cards_data);}
+            libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+            return(msg);
+         }
       }
    }
 
@@ -248,9 +248,9 @@ int macr_write(void *arg1,void *arg2,void *arg3,void *arg4,void *arg5,void *arg6
       naxes=(long*)(arg8);
       bitpix=*(int*)(arg9);
       if ((msg=libfiles_main(FS_FITS_INSERT_IMG,4,fptr,&bitpix,&naxis,naxes))!=0) {
-	 if (ref_file==1) {free(cards);free(cards_data);}
-	 libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	 return(msg);
+         if (ref_file==1) {free(cards);free(cards_data);}
+         libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+         return(msg);
       }
    }
    /* --- creation de l'entete minimale d'une table ---*/
@@ -264,147 +264,147 @@ int macr_write(void *arg1,void *arg2,void *arg3,void *arg4,void *arg5,void *arg6
       printf("tfields=%d nrows=%d\n",tfields,nrows);
       printf("exist <tform=%d ttype=%d tunit=%d>\n",exist_tform,exist_ttype,exist_tunit);
       for (k=1;k<=14;k++) {
-	 printf("adr. arg%d=%d val=%d \n",k,argu[k],*(int*)(argu[k]));
+      printf("adr. arg%d=%d val=%d \n",k,argu[k],*(int*)(argu[k]));
       }
       */
       datatypes=(int*)(argu[12]);
       if (exist_tform==0) {
-	 tform=NULL;
-	 if((tform=(char**)calloc(tfields,sizeof(void*)))==NULL) {
-	    if (ref_file==1) {free(cards);free(cards_data);}
-	    libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	    return(FS_ERR_PB_MALLOC);
-	 }
-	 nbcar=(FLEN_VALUE)*sizeof(char);
-	 taille=(nbcar+sizeof(void*)-nbcar%sizeof(void*))*sizeof(char);
-	 tform_data=NULL;
-	 if((tform_data=(char*)calloc(tfields,taille))==NULL) {
-	    if (ref_file==1) {free(cards);free(cards_data);}
-	    libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	    free(tform);
-	    return(FS_ERR_PB_MALLOC);
-	 }
-	 for (k=0;k<=tfields-1;k++) {
-	    tform[k]=tform_data+k*taille;
-	 }
-	 for (k=0;k<=tfields-1;k++) {
-	    if (datatypes[k]<=TSTRINGS) {
-	       if (typehdu==BINARY_TBL) {
-		  if      (datatypes[k]==TSHORT) { sprintf(tform[k],"1I"); }
-		  else if (datatypes[k]==TINT) { sprintf(tform[k],"1J"); }
-		  else if (datatypes[k]==TLONG) { sprintf(tform[k],"1J"); }
-		  else if (datatypes[k]==TFLOAT) { sprintf(tform[k],"1E"); }
-		  else if (datatypes[k]==TDOUBLE) { sprintf(tform[k],"1D"); }
-		  else { /* datatype non reconnu */ }
-	       } else if (typehdu==ASCII_TBL) {
-		  if      (datatypes[k]==TSHORT) { sprintf(tform[k],"I6"); }
-		  else if (datatypes[k]==TINT) { sprintf(tform[k],"I11"); }
-		  else if (datatypes[k]==TLONG) { sprintf(tform[k],"I20"); }
-		  else if (datatypes[k]==TFLOAT) { sprintf(tform[k],"E15.7"); }
-		  else if (datatypes[k]==TDOUBLE) { sprintf(tform[k],"D23.15"); }
-		  else { /* datatype non reconnu */ }
-	       }
-	    } else {
-	       /* chaine de caracteres */
-	       datatypes[k]-=TSTRINGS;
-	       if (typehdu==BINARY_TBL) {
-		  sprintf(tform[k],"%dA",datatypes[k]);
-	       } else if (typehdu==ASCII_TBL) {
-		  sprintf(tform[k],"A%d",datatypes[k]);
-	       }
-	       datatypes[k]=TSTRING;
-	    }
-	 }
+         tform=NULL;
+         if((tform=(char**)calloc(tfields,sizeof(void*)))==NULL) {
+            if (ref_file==1) {free(cards);free(cards_data);}
+            libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+            return(FS_ERR_PB_MALLOC);
+         }
+         nbcar=(FLEN_VALUE)*sizeof(char);
+         taille=(nbcar+sizeof(void*)-nbcar%sizeof(void*))*sizeof(char);
+         tform_data=NULL;
+         if((tform_data=(char*)calloc(tfields,taille))==NULL) {
+            if (ref_file==1) {free(cards);free(cards_data);}
+            libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+            free(tform);
+            return(FS_ERR_PB_MALLOC);
+         }
+         for (k=0;k<=tfields-1;k++) {
+            tform[k]=tform_data+k*taille;
+         }
+         for (k=0;k<=tfields-1;k++) {
+            if (datatypes[k]<=TSTRINGS) {
+               if (typehdu==BINARY_TBL) {
+                  if      (datatypes[k]==TSHORT) { sprintf(tform[k],"1I"); }
+                  else if (datatypes[k]==TINT) { sprintf(tform[k],"1J"); }
+                  else if (datatypes[k]==TLONG) { sprintf(tform[k],"1J"); }
+                  else if (datatypes[k]==TFLOAT) { sprintf(tform[k],"1E"); }
+                  else if (datatypes[k]==TDOUBLE) { sprintf(tform[k],"1D"); }
+                  else { /* datatype non reconnu */ }
+               } else if (typehdu==ASCII_TBL) {
+                  if      (datatypes[k]==TSHORT) { sprintf(tform[k],"I6"); }
+                  else if (datatypes[k]==TINT) { sprintf(tform[k],"I11"); }
+                  else if (datatypes[k]==TLONG) { sprintf(tform[k],"I20"); }
+                  else if (datatypes[k]==TFLOAT) { sprintf(tform[k],"E15.7"); }
+                  else if (datatypes[k]==TDOUBLE) { sprintf(tform[k],"D23.15"); }
+                  else { /* datatype non reconnu */ }
+               }
+            } else {
+               /* chaine de caracteres */
+               datatypes[k]-=TSTRINGS;
+               if (typehdu==BINARY_TBL) {
+                  sprintf(tform[k],"%dA",datatypes[k]);
+               } else if (typehdu==ASCII_TBL) {
+                  sprintf(tform[k],"A%d",datatypes[k]);
+               }
+               datatypes[k]=TSTRING;
+            }
+         }
       } else {
-	 tform=(char**)(argu[9]);
+         tform=(char**)(argu[9]);
       }
       if (exist_ttype==0) {
-	 ttype=NULL;
-	 if((ttype=(char**)calloc(tfields,sizeof(void*)))==NULL) {
-	    if (ref_file==1) {free(cards);free(cards_data);}
-	    libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	    if (exist_tform==0) {free(tform);free(tform_data);}
-	    return(FS_ERR_PB_MALLOC);
-	 }
-	 nbcar=(FLEN_VALUE)*sizeof(char);
-	 taille=(nbcar+sizeof(void*)-nbcar%sizeof(void*))*sizeof(char);
-	 ttype_data=NULL;
-	 ttype_data=(char*)calloc(tfields,taille);
-	 if((ttype_data=(char*)calloc(tfields,taille))==NULL) {
-	    if (ref_file==1) {free(cards);free(cards_data);}
-	    libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	    free(ttype);
-	    if (exist_tform==0) {free(tform);free(tform_data);}
-	    return(FS_ERR_PB_MALLOC);
-	 }
-	 for (k=0;k<=tfields-1;k++) {
-	    ttype[k]=ttype_data+k*taille;
-	 }
-	 for (k=0;k<=tfields-1;k++) {
-	    sprintf(ttype[k],"col_%d",k+1);
-	 }
+         ttype=NULL;
+         if((ttype=(char**)calloc(tfields,sizeof(void*)))==NULL) {
+            if (ref_file==1) {free(cards);free(cards_data);}
+            libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+            if (exist_tform==0) {free(tform);free(tform_data);}
+            return(FS_ERR_PB_MALLOC);
+         }
+         nbcar=(FLEN_VALUE)*sizeof(char);
+         taille=(nbcar+sizeof(void*)-nbcar%sizeof(void*))*sizeof(char);
+         ttype_data=NULL;
+         ttype_data=(char*)calloc(tfields,taille);
+         if((ttype_data=(char*)calloc(tfields,taille))==NULL) {
+            if (ref_file==1) {free(cards);free(cards_data);}
+            libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+            free(ttype);
+            if (exist_tform==0) {free(tform);free(tform_data);}
+            return(FS_ERR_PB_MALLOC);
+         }
+         for (k=0;k<=tfields-1;k++) {
+            ttype[k]=ttype_data+k*taille;
+         }
+         for (k=0;k<=tfields-1;k++) {
+            sprintf(ttype[k],"col_%d",k+1);
+         }
       } else {
-	 ttype=(char**)(argu[10]);
+         ttype=(char**)(argu[10]);
       }
       if (exist_tunit==0) {
-	 tunit=NULL;
-	 if((tunit=(char**)calloc(tfields,sizeof(void*)))==NULL) {
-	    if (ref_file==1) {free(cards);free(cards_data);}
-	    libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	    if (exist_tform==0) {free(tform);free(tform_data);}
-	    if (exist_ttype==0) {free(ttype);free(ttype_data);}
-	    return(FS_ERR_PB_MALLOC);
-	 }
-	 nbcar=(FLEN_VALUE)*sizeof(char);
-	 taille=(nbcar+sizeof(void*)-nbcar%sizeof(void*))*sizeof(char);
-	 tunit_data=NULL;
-	 if((tunit_data=(char*)calloc(tfields,taille))==NULL) {
-	    if (ref_file==1) {free(cards);free(cards_data);}
-	    libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	    free(tunit);
-	    if (exist_tform==0) {free(tform);free(tform_data);}
-	    if (exist_ttype==0) {free(ttype);free(ttype_data);}
-	    return(FS_ERR_PB_MALLOC);
-	 }
-	 for (k=0;k<=tfields-1;k++) {
-	    tunit[k]=tunit_data+k*taille;
-	 }
-	 for (k=0;k<=tfields-1;k++) {
-	    sprintf(tunit[k],"undefined");
-	 }
+         tunit=NULL;
+         if((tunit=(char**)calloc(tfields,sizeof(void*)))==NULL) {
+            if (ref_file==1) {free(cards);free(cards_data);}
+            libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+            if (exist_tform==0) {free(tform);free(tform_data);}
+            if (exist_ttype==0) {free(ttype);free(ttype_data);}
+            return(FS_ERR_PB_MALLOC);
+         }
+         nbcar=(FLEN_VALUE)*sizeof(char);
+         taille=(nbcar+sizeof(void*)-nbcar%sizeof(void*))*sizeof(char);
+         tunit_data=NULL;
+         if((tunit_data=(char*)calloc(tfields,taille))==NULL) {
+            if (ref_file==1) {free(cards);free(cards_data);}
+            libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+            free(tunit);
+            if (exist_tform==0) {free(tform);free(tform_data);}
+            if (exist_ttype==0) {free(ttype);free(ttype_data);}
+            return(FS_ERR_PB_MALLOC);
+         }
+         for (k=0;k<=tfields-1;k++) {
+            tunit[k]=tunit_data+k*taille;
+         }
+         for (k=0;k<=tfields-1;k++) {
+            sprintf(tunit[k],"undefined");
+         }
       } else {
-	 tunit=(char**)(argu[11]);
+         tunit=(char**)(argu[11]);
       }
       /*
       for (k=0;k<=tfields-1;k++) {
-	 printf("datatypes[%d]=%d\n",k,datatypes[k]);
-	 printf("tform='%s'\n",tform[k]);
-	 printf("ttype='%s'\n",ttype[k]);
-	 printf("tunit='%s'\n",tunit[k]);
+      printf("datatypes[%d]=%d\n",k,datatypes[k]);
+      printf("tform='%s'\n",tform[k]);
+      printf("ttype='%s'\n",ttype[k]);
+      printf("tunit='%s'\n",tunit[k]);
       }
       */
       if (typehdu==BINARY_TBL) {
-	 pcount=0;
-	 if ((msg=libfiles_main(FS_FITS_INSERT_,9,&typehdu,fptr,&nrows,&tfields,ttype,tform,tunit,extname,&pcount))!=0) {
-	    if (ref_file==1) {free(cards);free(cards_data);}
-	    libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	    if (exist_tform==0) {free(tform);free(tform_data);}
-	    if (exist_ttype==0) {free(ttype);free(ttype_data);}
-	    if (exist_tunit==0) {free(tunit);free(tunit_data);}
-	    return(msg);
-	 }
+         pcount=0;
+         if ((msg=libfiles_main(FS_FITS_INSERT_,9,&typehdu,fptr,&nrows,&tfields,ttype,tform,tunit,extname,&pcount))!=0) {
+            if (ref_file==1) {free(cards);free(cards_data);}
+            libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+            if (exist_tform==0) {free(tform);free(tform_data);}
+            if (exist_ttype==0) {free(ttype);free(ttype_data);}
+            if (exist_tunit==0) {free(tunit);free(tunit_data);}
+            return(msg);
+         }
       }
       if (typehdu==ASCII_TBL) {
-	 rowlen=0;
-	 if ((msg=libfiles_main(FS_FITS_INSERT_,10,&typehdu,fptr,&rowlen,&nrows,&tfields,ttype,NULL,tform,tunit,extname))!=0) {
-	    if (ref_file==1) {free(cards);free(cards_data);}
-	    libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	    if (exist_tform==0) {free(tform);free(tform_data);}
-	    if (exist_ttype==0) {free(ttype);free(ttype_data);}
-	    if (exist_tunit==0) {free(tunit);free(tunit_data);}
-	    return(msg);
-	 }
-      }
+         rowlen=0;
+         if ((msg=libfiles_main(FS_FITS_INSERT_,10,&typehdu,fptr,&rowlen,&nrows,&tfields,ttype,NULL,tform,tunit,extname))!=0) {
+            if (ref_file==1) {free(cards);free(cards_data);}
+            libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+            if (exist_tform==0) {free(tform);free(tform_data);}
+            if (exist_ttype==0) {free(ttype);free(ttype_data);}
+            if (exist_tunit==0) {free(tunit);free(tunit_data);}
+            return(msg);
+         }
+         }
       if (exist_tform==0) {free(tform);free(tform_data);}
       if (exist_ttype==0) {free(ttype);free(ttype_data);}
       if (exist_tunit==0) {free(tunit);free(tunit_data);}
@@ -412,20 +412,32 @@ int macr_write(void *arg1,void *arg2,void *arg3,void *arg4,void *arg5,void *arg6
       libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
       if (ref_file==1) {free(cards);free(cards_data);}
       return(FS_ERR_TYPEHDU_NOT_KNOWN);
+      }
+   
+   // suppression des deux mots cles COMMENT inutiles qui sont ajoutes systematiquement par fits_create_file()
+   // COMMENT  "FITS (Flexible Image Transport System) format is defined in 'Astronomy "
+   // COMMENT   "and Astrophysics', volume 376, page 3"
+   if ((msg=libfiles_main(FS_FITS_DELETE_,3,"key",fptr,"COMMENT"))!=0) {
+      libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+      return(msg);
    }
-
+   if ((msg=libfiles_main(FS_FITS_DELETE_,3,"key",fptr,"COMMENT"))!=0) {
+      libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+      return(msg);    
+   }
+   
    /* --- complete l'entete a partir du fichier de reference ---*/
    if (ref_file==1) {
       for (k=0;k<=nbcards-1;k++) {
-	 if ((msg=libfiles_main(FS_FITS_WRITE_RECORD,2,fptr,cards[k]))!=0) {
-	    free(cards);free(cards_data);
-	    libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	    return(msg);
-	 }
+         if ((msg=libfiles_main(FS_FITS_WRITE_RECORD,2,fptr,cards[k]))!=0) {
+            free(cards);free(cards_data);
+            libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+            return(msg);
+         }
       }
       free(cards);free(cards_data);
    }
-
+   
    /* --- enregistrement d'une image ---*/
    if (typehdu==IMAGE_HDU) {
       datatype=*(int*)(arg10);
@@ -433,32 +445,32 @@ int macr_write(void *arg1,void *arg2,void *arg3,void *arg4,void *arg5,void *arg6
       firstelem=1;
       for (k=0,nelements=1;k<=naxis-1;k++) { nelements*=naxes[k]; }
       if ((msg=libfiles_main(FS_FITS_WRITE_IMG,5,fptr,&datatype,&firstelem,&nelements,array))!=0) {
-	 libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	 return(msg);
+         libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+         return(msg);
       }
    }
    /* --- enregistrement d'une table ---*/
    else if ((typehdu==BINARY_TBL)||(typehdu==ASCII_TBL)) {
       for (k=1;k<=tfields;k++) {
-	 firstelem=1;
-	 firstrow=1;
-	 datatype=datatypes[k-1];
-	 if (datatype==TSTRING) {
-	    arraystring=(void**)(argu[13+k-1]);
-	    if ((msg=libfiles_main(FS_FITS_WRITE_COL,7,fptr,&datatype,&k,&firstrow,&firstelem,&nrows,arraystring))!=0) {
-	       libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	       return(msg);
-	    }
-	 } else {
-	    array=argu[13+k-1];
-	    if ((msg=libfiles_main(FS_FITS_WRITE_COL,7,fptr,&datatype,&k,&firstrow,&firstelem,&nrows,array))!=0) {
-	       libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	       return(msg);
-	    }
-	 }
+         firstelem=1;
+         firstrow=1;
+         datatype=datatypes[k-1];
+         if (datatype==TSTRING) {
+            arraystring=(void**)(argu[13+k-1]);
+            if ((msg=libfiles_main(FS_FITS_WRITE_COL,7,fptr,&datatype,&k,&firstrow,&firstelem,&nrows,arraystring))!=0) {
+               libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+               return(msg);
+            }
+         } else {
+            array=argu[13+k-1];
+            if ((msg=libfiles_main(FS_FITS_WRITE_COL,7,fptr,&datatype,&k,&firstrow,&firstelem,&nrows,array))!=0) {
+               libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+               return(msg);
+            }
+         }
       }
    }
-
+   
    /* --- fermeture du fichier ---*/
    if ((msg=libfiles_main(FS_FITS_CLOSE_FILE,1,fptr))!=0) { return(msg); }
    return(OK_DLL);
