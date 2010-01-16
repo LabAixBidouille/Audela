@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.33 2010-01-07 09:34:34 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.34 2010-01-16 00:21:29 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -208,7 +208,7 @@ proc ::keyword::init { } {
    lappend private(infosMotsClefs) [ list "IAU_CODE" $::caption(keyword,lieu)        ::conf(posobs,station_uai)              readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observatory IAU Code"                            "" ]
    lappend private(infosMotsClefs) [ list "SITELONG" $::caption(keyword,lieu)        ::conf(posobs,estouest_long)            readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observatory longitude"                           "degres, minutes, seconds" ]
    lappend private(infosMotsClefs) [ list "SITELAT"  $::caption(keyword,lieu)        ::conf(posobs,nordsud_lat)              readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observatory latitude"                            "degres, minutes, seconds" ]
-   lappend private(infosMotsClefs) [ list "SITEELEV" $::caption(keyword,lieu)        ::conf(posobs,altitude)         readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observatory elevation above the sea level"       "m: meter" ]
+   lappend private(infosMotsClefs) [ list "SITEELEV" $::caption(keyword,lieu)        ::conf(posobs,altitude)                 readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observatory elevation above the sea level"       "m: meter" ]
    lappend private(infosMotsClefs) [ list "GEODSYS"  $::caption(keyword,lieu)        ::conf(posobs,ref_geodesique)           readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Geodetic datum for observatory position"         "" ]
    lappend private(infosMotsClefs) [ list "TELESCOP" $::caption(keyword,instrument)  ::keyword::private(instrument)          readonly $::caption(keyword,parcourir)  "::confOptic::run 1"                           ""                                  ""                                       "" "" "string" "Telescop"                                        "" ]
    lappend private(infosMotsClefs) [ list "APTDIA"   $::caption(keyword,instrument)  ::keyword::private(diametre)            readonly $::caption(keyword,parcourir)  "::confOptic::run 1"                           ""                                  ""                                       "" "" "float"  "Telescop diameter"                               "m: meter" ]
@@ -236,7 +236,7 @@ proc ::keyword::init { } {
    lappend private(infosMotsClefs) [ list "SWCREATE" $::caption(keyword,logiciel)    ::keyword::private(name_software)       readonly ""                             ""                                             ""                                  ""                                       "" "" "string" "Acquisition software: http://www.audela.org/"    "" ]
    lappend private(infosMotsClefs) [ list "SWMODIFY" $::caption(keyword,logiciel)    ::keyword::private(name_software)       readonly ""                             ""                                             ""                                  ""                                       "" "" "string" "Processing software: http://www.audela.org/"     "" ]
    lappend private(infosMotsClefs) [ list "CONFNAME" $::caption(keyword,instrument)  ::keyword::private(confName)            normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Configuration name"                              "" ]
-   lappend private(infosMotsClefs) [ list "COMMENT"  $::caption(keyword,divers)      ::keyword::private(commentaire)         normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Comment"                                         "" ]
+   lappend private(infosMotsClefs) [ list "COMMENT"  $::caption(keyword,divers)      ::keyword::private(commentaire)         normal   ""                             ""                                             ""                                  ""                                       "" "" "string" ""                                                "" ]
 }
 
 #------------------------------------------------------------------------------
@@ -282,7 +282,7 @@ proc ::keyword::run { visuNo configNameVariable } {
    #--- je recupere la consigne et la temperature du CCD
    onChangeTemperature $visuNo
 
-   #--- je recupere le nom de l'objet  (si mode automatique)
+   #--- je recupere le nom de l'objet (si mode automatique)
    onChangeObjname $visuNo
 
    #--- je recupere l'ascension droite et la declinaison l'objet (si mode automatique)
@@ -810,6 +810,10 @@ proc ::keyword::getKeywords { visuNo configName { keywordNameList "" } } {
                      set type "float"
                   }
                }
+               #--- je mets en forme le commentaire
+               if { $motclef == "COMMENT" } {
+                  set commentaire [ ::keyword::headerFitsCompliant $valeur ]
+               }
                #--- j'ajoute les mots cles dans le resultat
                lappend result [list $motclef $valeur $type $commentaire $unite]
                break
@@ -1199,6 +1203,9 @@ proc ::keyword::cmdOk { visuNo } {
 #------------------------------------------------------------------------------
 proc ::keyword::cmdApply { visuNo} {
    variable private
+
+   #--- je mets en forme le mot cle COMMENT
+   set private(commentaire) [ ::keyword::headerFitsCompliant $::keyword::private(commentaire) ]
 
    #--- je recupere le nom de la configuration (attention il faut 2 $ !!!)
    set $private($visuNo,configNameVariable) $private($visuNo,configName)
