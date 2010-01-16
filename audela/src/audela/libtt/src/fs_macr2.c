@@ -130,12 +130,12 @@ int macr_read(void *arg1,void *arg2,void *arg3,void *arg4,void *arg5,void *arg6,
    char mot[FLEN_VALUE];
    int k,kk,pos;
    void **argu;
-
+   
    argu=(void**)(arg10);
    nom_fichier=(char*)(arg1);
    numhdu=(int*)(arg2);
    typehdu=(int*)(arg3);
-
+   
    /* --- ouverture en lecture du fichier fits ---*/
    if ((msg=libfiles_main(FS_FITS_OPEN_FILE,3,&fptr,nom_fichier,&typemode))!=0) {
       return(msg);
@@ -151,16 +151,16 @@ int macr_read(void *arg1,void *arg2,void *arg3,void *arg4,void *arg5,void *arg6,
       return(FS_ERR_HDUNUM_OVER);
    } else {
       if ((msg=libfiles_main(FS_FITS_MOVABS_HDU,3,fptr,numhdu,&typechdu))!=0) {
-	 libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	 return(msg);
+         libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+         return(msg);
       }
       if (typechdu!=*typehdu) {
-	 *typehdu=typechdu;
-	 if ((msg=libfiles_main(FS_FITS_CLOSE_FILE,1,fptr))!=0) { return(msg); }
-	 return(FS_ERR_HDU_NOT_SAME_TYPE);
+         *typehdu=typechdu;
+         if ((msg=libfiles_main(FS_FITS_CLOSE_FILE,1,fptr))!=0) { return(msg); }
+         return(FS_ERR_HDU_NOT_SAME_TYPE);
       }
    }
-
+   
    /* --- lecture de l'entete minimale d'une image ---*/
    if (*typehdu==IMAGE_HDU) {
       naxis=(int*)(arg6);
@@ -168,24 +168,24 @@ int macr_read(void *arg1,void *arg2,void *arg3,void *arg4,void *arg5,void *arg6,
       maxdim=100;
       /*
       if((naxes=(long*)calloc(maxdim,sizeof(long)))==NULL) {
- 	     libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+      libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
 	     return(FS_ERR_PB_MALLOC);
-      }
+        }
       */
       taille=sizeof(long);
       naxes=NULL;
       if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&naxes,&maxdim,&taille,"p->naxes"))!=0) {
- 	     libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	     return(FS_ERR_PB_MALLOC);
+         libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+         return(FS_ERR_PB_MALLOC);
       }
       /**/
       *(long**)(arg7)=naxes;
       if ((msg=libfiles_main(FS_FITS_READ_IMGHDR,9,fptr,&maxdim,&simple,bitpix,naxis,naxes,&pcount,&gcount,&extend))!=0) {
-	 libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	 return(msg);
+         libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+         return(msg);
       }
-
-   /* --- lecture de l'entete minimale d'une table ---*/
+      
+      /* --- lecture de l'entete minimale d'une table ---*/
    } else if ((*typehdu==BINARY_TBL)||(*typehdu==ASCII_TBL)) {
       tfields=(int*)(arg6);
       nrows=(int*)(arg7);
@@ -205,131 +205,131 @@ int macr_read(void *arg1,void *arg2,void *arg3,void *arg4,void *arg5,void *arg6,
       printf("exist : tform=%d ttype=%d tunit=%d\n",exist_tform,exist_ttype,exist_tunit);
       */
       if (exist_tform==1) {
-	 if((tform=(char**)calloc(maxdim,sizeof(void*)))==NULL) {
-	    libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	    return(FS_ERR_PB_MALLOC);
-	 }
-	 nbcar=(FLEN_VALUE)*sizeof(char);
-	 taille=(nbcar+sizeof(void*)-nbcar%sizeof(void*))*sizeof(char);
-	 tform_data=NULL;
-	 if((tform_data=(char*)calloc(maxdim,taille))==NULL) {
-	    libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	    free(tform);
-	    return(FS_ERR_PB_MALLOC);
-	 }
-	 for (k=0;k<=maxdim-1;k++) {
-	    tform[k]=tform_data+k*taille;
-	 }
-	 *ptform=(void*)tform;
+         if((tform=(char**)calloc(maxdim,sizeof(void*)))==NULL) {
+            libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+            return(FS_ERR_PB_MALLOC);
+         }
+         nbcar=(FLEN_VALUE)*sizeof(char);
+         taille=(nbcar+sizeof(void*)-nbcar%sizeof(void*))*sizeof(char);
+         tform_data=NULL;
+         if((tform_data=(char*)calloc(maxdim,taille))==NULL) {
+            libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+            free(tform);
+            return(FS_ERR_PB_MALLOC);
+         }
+         for (k=0;k<=maxdim-1;k++) {
+            tform[k]=tform_data+k*taille;
+         }
+         *ptform=(void*)tform;
       }
       if (exist_ttype==1) {
-	 if((ttype=(char**)calloc(maxdim,sizeof(void*)))==NULL) {
-	    libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	    if (exist_tform==1) { free(tform); free(tform_data); }
-	    return(FS_ERR_PB_MALLOC);
-	 }
-	 nbcar=(FLEN_VALUE)*sizeof(char);
-	 taille=(nbcar+sizeof(void*)-nbcar%sizeof(void*))*sizeof(char);
-	 ttype_data=NULL;
-	 if((ttype_data=(char*)calloc(maxdim,taille))==NULL) {
-	    libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	    if (exist_tform==1) { free(tform); free(tform_data); }
-	    free(ttype);
-	    return(FS_ERR_PB_MALLOC);
-	 }
-	 for (k=0;k<=maxdim-1;k++) {
-	    ttype[k]=ttype_data+k*taille;
-	 }
-	 *pttype=(void*)ttype;
+         if((ttype=(char**)calloc(maxdim,sizeof(void*)))==NULL) {
+            libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+            if (exist_tform==1) { free(tform); free(tform_data); }
+            return(FS_ERR_PB_MALLOC);
+         }
+         nbcar=(FLEN_VALUE)*sizeof(char);
+         taille=(nbcar+sizeof(void*)-nbcar%sizeof(void*))*sizeof(char);
+         ttype_data=NULL;
+         if((ttype_data=(char*)calloc(maxdim,taille))==NULL) {
+            libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+            if (exist_tform==1) { free(tform); free(tform_data); }
+            free(ttype);
+            return(FS_ERR_PB_MALLOC);
+         }
+         for (k=0;k<=maxdim-1;k++) {
+            ttype[k]=ttype_data+k*taille;
+         }
+         *pttype=(void*)ttype;
       }
       if (exist_tunit==1) {
-	 if((tunit=(char**)calloc(maxdim,sizeof(void*)))==NULL) {
-	    libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	    if (exist_tform==1) { free(tform); free(tform_data); }
-	    if (exist_ttype==1) { free(tform); free(ttype_data); }
-	    return(FS_ERR_PB_MALLOC);
-	 }
-	 nbcar=(FLEN_VALUE)*sizeof(char);
-	 taille=(nbcar+sizeof(void*)-nbcar%sizeof(void*))*sizeof(char);
-	 tunit_data=NULL;
-	 if((tunit_data=(char*)calloc(maxdim,taille))==NULL) {
-	    libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	    if (exist_tform==1) { free(tform); free(tform_data); }
-	    if (exist_ttype==1) { free(tform); free(ttype_data); }
-	    free(tunit);
-	    return(FS_ERR_PB_MALLOC);
-	 }
-	 for (k=0;k<=maxdim-1;k++) {
-	    tunit[k]=tunit_data+k*taille;
-	 }
-	 *ptunit=(void*)tunit;
+         if((tunit=(char**)calloc(maxdim,sizeof(void*)))==NULL) {
+            libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+            if (exist_tform==1) { free(tform); free(tform_data); }
+            if (exist_ttype==1) { free(tform); free(ttype_data); }
+            return(FS_ERR_PB_MALLOC);
+         }
+         nbcar=(FLEN_VALUE)*sizeof(char);
+         taille=(nbcar+sizeof(void*)-nbcar%sizeof(void*))*sizeof(char);
+         tunit_data=NULL;
+         if((tunit_data=(char*)calloc(maxdim,taille))==NULL) {
+            libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+            if (exist_tform==1) { free(tform); free(tform_data); }
+            if (exist_ttype==1) { free(tform); free(ttype_data); }
+            free(tunit);
+            return(FS_ERR_PB_MALLOC);
+         }
+         for (k=0;k<=maxdim-1;k++) {
+            tunit[k]=tunit_data+k*taille;
+         }
+         *ptunit=(void*)tunit;
       }
       if (*typehdu==ASCII_TBL) {
-	 if ((msg=libfiles_main(FS_FITS_READ_ATBLHDR,10,fptr,&maxdim,&rowlen,nrows,tfields,ttype,NULL,tform,tunit,NULL))!=0) {
-	    libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	    if (exist_tform==1) { free(tform); free(tform_data); }
-	    if (exist_ttype==1) { free(tform); free(ttype_data); }
-	    if (exist_tunit==1) { free(tunit); free(tunit_data); }
-	    return(msg);
-	 }
+         if ((msg=libfiles_main(FS_FITS_READ_ATBLHDR,10,fptr,&maxdim,&rowlen,nrows,tfields,ttype,NULL,tform,tunit,NULL))!=0) {
+            libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+            if (exist_tform==1) { free(tform); free(tform_data); }
+            if (exist_ttype==1) { free(tform); free(ttype_data); }
+            if (exist_tunit==1) { free(tunit); free(tunit_data); }
+            return(msg);
+         }
       }
       if (*typehdu==BINARY_TBL) {
-	 if ((msg=libfiles_main(FS_FITS_READ_BTBLHDR,9,fptr,&maxdim,nrows,tfields,ttype,tform,tunit,NULL,&pcount))!=0) {
-	    libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	    if (exist_tform==1) { free(tform); free(tform_data); }
-	    if (exist_ttype==1) { free(tform); free(ttype_data); }
-	    if (exist_tunit==1) { free(tunit); free(tunit_data); }
-	    return(msg);
-	 }
+         if ((msg=libfiles_main(FS_FITS_READ_BTBLHDR,9,fptr,&maxdim,nrows,tfields,ttype,tform,tunit,NULL,&pcount))!=0) {
+            libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+            if (exist_tform==1) { free(tform); free(tform_data); }
+            if (exist_ttype==1) { free(tform); free(ttype_data); }
+            if (exist_tunit==1) { free(tunit); free(tunit_data); }
+            return(msg);
+         }
       }
       /* --- on remplit datatypes si l'on ne lit pas les colonnes et on sort ---*/
       if ((array=(void**)(argu[12]))==NULL) {
-	 if((datatypes=(int*)calloc(*tfields,sizeof(int)))==NULL) {
-	    libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	    if (exist_tform==1) { free(tform); free(tform_data); }
-	    if (exist_ttype==1) { free(tform); free(ttype_data); }
-	    if (exist_tunit==1) { free(tunit); free(tunit_data); }
-	    return(FS_ERR_PB_MALLOC);
-	 }
-	 *(int**)(argu[11])=datatypes;
-	 if (*typehdu==BINARY_TBL) {
-	    for (k=0;k<=*tfields-1;k++) {
-	       if      ((car=strstr(tform[k],"I"))!=NULL) { datatypes[k]=TSHORT; }
-	       else if ((car=strstr(tform[k],"J"))!=NULL) { datatypes[k]=TINT; }
-	       else if ((car=strstr(tform[k],"E"))!=NULL) { datatypes[k]=TFLOAT; }
-	       else if ((car=strstr(tform[k],"D"))!=NULL) { datatypes[k]=TDOUBLE; }
-	       else if ((car=strstr(tform[k],"A"))!=NULL) {
-		  datatypes[k]=TSTRINGS;
-		  strcpy(mot,tform[k]);
-		  pos=(int)(car-tform[k]+1);
-		  mot[pos]='\0';
-		  datatypes[k]+=atoi(mot);
-	       }
-	    }
-	 } else if (*typehdu==ASCII_TBL) {
-	    for (k=0;k<=*tfields-1;k++) {
-	       if      ((car=strstr(tform[k],"I"))!=NULL) { datatypes[k]=TSHORT; }
-	       else if ((car=strstr(tform[k],"J"))!=NULL) { datatypes[k]=TINT; }
-	       else if ((car=strstr(tform[k],"E"))!=NULL) { datatypes[k]=TFLOAT; }
-	       else if ((car=strstr(tform[k],"D"))!=NULL) { datatypes[k]=TDOUBLE; }
-	       else if ((car=strstr(tform[k],"A"))!=NULL) {
-		  datatypes[k]=TSTRINGS;
-		  pos=(int)(car-tform[k]+1);
-		  strcpy(mot,tform[k]+pos);
-		  datatypes[k]+=atoi(mot);
-	       }
-	    }
-	 }
-	 libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	 return(OK_DLL);
+         if((datatypes=(int*)calloc(*tfields,sizeof(int)))==NULL) {
+            libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+            if (exist_tform==1) { free(tform); free(tform_data); }
+            if (exist_ttype==1) { free(tform); free(ttype_data); }
+            if (exist_tunit==1) { free(tunit); free(tunit_data); }
+            return(FS_ERR_PB_MALLOC);
+         }
+         *(int**)(argu[11])=datatypes;
+         if (*typehdu==BINARY_TBL) {
+            for (k=0;k<=*tfields-1;k++) {
+               if      ((car=strstr(tform[k],"I"))!=NULL) { datatypes[k]=TSHORT; }
+               else if ((car=strstr(tform[k],"J"))!=NULL) { datatypes[k]=TINT; }
+               else if ((car=strstr(tform[k],"E"))!=NULL) { datatypes[k]=TFLOAT; }
+               else if ((car=strstr(tform[k],"D"))!=NULL) { datatypes[k]=TDOUBLE; }
+               else if ((car=strstr(tform[k],"A"))!=NULL) {
+                  datatypes[k]=TSTRINGS;
+                  strcpy(mot,tform[k]);
+                  pos=(int)(car-tform[k]+1);
+                  mot[pos]='\0';
+                  datatypes[k]+=atoi(mot);
+               }
+            }
+         } else if (*typehdu==ASCII_TBL) {
+            for (k=0;k<=*tfields-1;k++) {
+               if      ((car=strstr(tform[k],"I"))!=NULL) { datatypes[k]=TSHORT; }
+               else if ((car=strstr(tform[k],"J"))!=NULL) { datatypes[k]=TINT; }
+               else if ((car=strstr(tform[k],"E"))!=NULL) { datatypes[k]=TFLOAT; }
+               else if ((car=strstr(tform[k],"D"))!=NULL) { datatypes[k]=TDOUBLE; }
+               else if ((car=strstr(tform[k],"A"))!=NULL) {
+                  datatypes[k]=TSTRINGS;
+                  pos=(int)(car-tform[k]+1);
+                  strcpy(mot,tform[k]+pos);
+                  datatypes[k]+=atoi(mot);
+               }
+            }
+         }
+         libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+         return(OK_DLL);
       } else {
-	 datatypes=*(int**)(argu[11]);
+         datatypes=*(int**)(argu[11]);
       }
    } else {
       libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
       return(FS_ERR_TYPEHDU_NOT_KNOWN);
    }
-
+   
    /* --- lecture d'une image ---*/
    if (*typehdu==IMAGE_HDU) {
       firstelem=(long*)(arg4);
@@ -337,90 +337,90 @@ int macr_read(void *arg1,void *arg2,void *arg3,void *arg4,void *arg5,void *arg6,
       datatype=*(int*)(arg9);
       for (k=0,nelementsmax=1;k<=*naxis-1;k++) { nelementsmax*=naxes[k]; }
       if ((*firstelem<=0)||(*firstelem>=nelementsmax)) {
-	 *firstelem=1;
+         *firstelem=1;
       }
       if (*nelements<=0) {
-	 *nelements=nelementsmax-(*firstelem)+1;
+         *nelements=nelementsmax-(*firstelem)+1;
       } else if (((*nelements)+(*firstelem)-1)>=nelementsmax) {
-	 *nelements=nelementsmax-(*firstelem)+1;
+         *nelements=nelementsmax-(*firstelem)+1;
       }
       array=(void**)(argu[10]);
       if (array==NULL) {
-	 libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	 return(FS_ERR_PTR_NULL);
+         libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+         return(FS_ERR_PTR_NULL);
       }
       nelements_int=(int)(*nelements);
       if ((msg=libfiles_main(FS_UTIL_CALLOC_PTR_DATATYPE,3,array,&nelements_int,&datatype))!=0) {
-	  libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	 return(msg);
+         libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+         return(msg);
       }
       if ((msg=libfiles_main(FS_FITS_READ_IMG,7,fptr,&datatype,firstelem,nelements,NULL,*array,&anynul))!=0) {
-	 libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	 return(msg);
+         libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+         return(msg);
       }
    }
    /* --- lecture d'une table ---*/
    else if ((*typehdu==BINARY_TBL)||(*typehdu==ASCII_TBL)) {
       for (k=1;k<=*tfields;k++) {
-	 firstrow_tbl=(long*)(arg4);
-	 nelements_tbl=(long*)(arg5);
-	 firstelem_tbl=1;
-	 datatype=datatypes[k-1];
-	 if ((*typehdu==ASCII_TBL)||(*typehdu==BINARY_TBL)) {
-	    nelementsmax=*nrows;
-	    if ((*firstrow_tbl<=0)||(*firstrow_tbl>=nelementsmax)) {
-	       *firstrow_tbl=1;
-	    }
-	    if (*nelements_tbl<=0) {
-	       *nelements_tbl=nelementsmax-(*firstrow_tbl)+1;
-	    } else if (((*nelements_tbl)+(*firstrow_tbl)-1)>=nelementsmax) {
-	       *nelements_tbl=nelementsmax-(*firstrow_tbl)+1;
-	    }
-	 }
-	 array=(void**)(argu[12+k-1]);
-	 if (array==NULL) {
-	    libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	    return(FS_ERR_PTR_NULL);
-	 }
-	 if (datatype<TSTRINGS) {
-	    if ((msg=libfiles_main(FS_UTIL_CALLOC_PTR_DATATYPE,3,array,nelements_tbl,&datatype))!=0) {
-	       libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	       return(msg);
-	    }
-	    if ((msg=libfiles_main(FS_FITS_READ_COL,9,fptr,&datatype,&k,firstrow_tbl,&firstelem_tbl,nelements_tbl,NULL,*array,&anynul))!=0) {
-	       libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	       return(msg);
-	    }
-	 } else {
-	    if((parray=(char**)calloc(*nelements_tbl,sizeof(void*)))==NULL) {
-	       libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	       return(FS_ERR_PB_MALLOC);
-	    }
-	    nbcar=(datatype-TSTRINGS)*sizeof(char);
-	    datatype=TSTRING;
-	    taille=(nbcar+sizeof(void*)-nbcar%sizeof(void*))*sizeof(char);
-	    arraystring=NULL;
-	    if((arraystring=(char*)calloc(*nelements_tbl,taille))==NULL) {
-	       libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	       return(FS_ERR_PB_MALLOC);
-	    }
-	    for (kk=0;kk<=*nelements_tbl-1;kk++) {
-	       parray[kk]=arraystring+kk*taille;
-	    }
-	    *(char**)(argu[12+k-1])=(void*)parray;
-	    if ((msg=libfiles_main(FS_FITS_READ_COL,9,fptr,&datatype,&k,firstrow_tbl,&firstelem_tbl,nelements_tbl,NULL,parray,&anynul))!=0) {
-	       libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	       return(msg);
-	    }
-	    /*
-	    for (kk=0;kk<=*nelements_tbl-1;kk++) {
-	       printf("parray[%d]=<%s>\n",kk,parray[kk]);
-	    }
-	    */
-	 }
+         firstrow_tbl=(long*)(arg4);
+         nelements_tbl=(long*)(arg5);
+         firstelem_tbl=1;
+         datatype=datatypes[k-1];
+         if ((*typehdu==ASCII_TBL)||(*typehdu==BINARY_TBL)) {
+            nelementsmax=*nrows;
+            if ((*firstrow_tbl<=0)||(*firstrow_tbl>=nelementsmax)) {
+               *firstrow_tbl=1;
+            }
+            if (*nelements_tbl<=0) {
+               *nelements_tbl=nelementsmax-(*firstrow_tbl)+1;
+            } else if (((*nelements_tbl)+(*firstrow_tbl)-1)>=nelementsmax) {
+               *nelements_tbl=nelementsmax-(*firstrow_tbl)+1;
+            }
+         }
+         array=(void**)(argu[12+k-1]);
+         if (array==NULL) {
+            libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+            return(FS_ERR_PTR_NULL);
+         }
+         if (datatype<TSTRINGS) {
+            if ((msg=libfiles_main(FS_UTIL_CALLOC_PTR_DATATYPE,3,array,nelements_tbl,&datatype))!=0) {
+               libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+               return(msg);
+            }
+            if ((msg=libfiles_main(FS_FITS_READ_COL,9,fptr,&datatype,&k,firstrow_tbl,&firstelem_tbl,nelements_tbl,NULL,*array,&anynul))!=0) {
+               libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+               return(msg);
+            }
+         } else {
+            if((parray=(char**)calloc(*nelements_tbl,sizeof(void*)))==NULL) {
+               libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+               return(FS_ERR_PB_MALLOC);
+            }
+            nbcar=(datatype-TSTRINGS)*sizeof(char);
+            datatype=TSTRING;
+            taille=(nbcar+sizeof(void*)-nbcar%sizeof(void*))*sizeof(char);
+            arraystring=NULL;
+            if((arraystring=(char*)calloc(*nelements_tbl,taille))==NULL) {
+               libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+               return(FS_ERR_PB_MALLOC);
+            }
+            for (kk=0;kk<=*nelements_tbl-1;kk++) {
+               parray[kk]=arraystring+kk*taille;
+            }
+            *(char**)(argu[12+k-1])=(void*)parray;
+            if ((msg=libfiles_main(FS_FITS_READ_COL,9,fptr,&datatype,&k,firstrow_tbl,&firstelem_tbl,nelements_tbl,NULL,parray,&anynul))!=0) {
+               libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+               return(msg);
+            }
+            /*
+            for (kk=0;kk<=*nelements_tbl-1;kk++) {
+            printf("parray[%d]=<%s>\n",kk,parray[kk]);
+            }
+            */
+         }
       }
    }
-
+   
    /* --- fermeture du fichier ---*/
    if ((msg=libfiles_main(FS_FITS_CLOSE_FILE,1,fptr))!=0) { return(msg); }
    return(OK_DLL);
@@ -526,42 +526,42 @@ int macr_write_keys(void *arg1)
       exist_units=(argu[6]==NULL)?0:1;
       datatypes=(int*)(argu[7]);
       if ((exist_keynames==0)||(exist_values==0)) {
-	 libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	 return(FS_ERR_BAD_NBKEYS);
+         libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+         return(FS_ERR_BAD_NBKEYS);
       }
       keynames=(char**)(argu[4]);
       values=(char**)(argu[8]);
       if (exist_comments==0) {comments=NULL;} else {comments=(char**)(argu[5]);}
       if (exist_units==0) {units=NULL;} else {units=(char**)(argu[6]);}
       for (k=0;k<nbkeys;k++) {
-	 datatype=datatypes[k];
-	 val_void=(void*)(values[k]);
-	 if (exist_comments==0) {
-	    if ((msg=libfiles_main(FS_FITS_UPDATE_KEY,5,fptr,&datatype,keynames[k],val_void,NULL))!=0) {
-	       libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	       return(msg);
-	    }
-	 } else {
-	    if (strcmp(comments[k],"")!=0) {
-	       if ((msg=libfiles_main(FS_FITS_UPDATE_KEY,5,fptr,&datatype,keynames[k],val_void,comments[k]))!=0) {
-		  libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-		  return(msg);
-	       }
-	    } else {
-	       if ((msg=libfiles_main(FS_FITS_UPDATE_KEY,5,fptr,&datatype,keynames[k],val_void,NULL))!=0) {
-		  libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-		  return(msg);
-	       }
-	    }
-	 }
-	 if (exist_units==1) {
-	    if (strcmp(units[k],"")!=0) {
-	       if ((msg=libfiles_main(FS_FITS_WRITE_KEY_UNIT,3,fptr,keynames[k],units[k]))!=0) {
-		  libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-		  return(msg);
-	       }
-	    }
-	 }
+         datatype=datatypes[k];
+         val_void=(void*)(values[k]);
+         if (exist_comments==0) {
+            if ((msg=libfiles_main(FS_FITS_UPDATE_KEY,5,fptr,&datatype,keynames[k],val_void,NULL))!=0) {
+               libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+               return(msg);
+            }
+         } else {
+            if (strcmp(comments[k],"")!=0) {
+               if ((msg=libfiles_main(FS_FITS_UPDATE_KEY,5,fptr,&datatype,keynames[k],val_void,comments[k]))!=0) {
+                  libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+                  return(msg);
+               }
+            } else {
+               if ((msg=libfiles_main(FS_FITS_UPDATE_KEY,5,fptr,&datatype,keynames[k],val_void,NULL))!=0) {
+                  libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+                  return(msg);
+               }
+            }
+         }
+         if (exist_units==1) {
+            if (strcmp(units[k],"")!=0) {
+               if ((msg=libfiles_main(FS_FITS_WRITE_KEY_UNIT,3,fptr,keynames[k],units[k]))!=0) {
+                  libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+                  return(msg);
+               }
+            }
+         }
       }
    } else {
       libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
@@ -628,12 +628,12 @@ int macr_read_keys(void *arg1)
    char *chaine;
    char cdigit;
    int ndigit;
-
+   
    argu=(void**)(arg1);
    nom_fichier=(char*)(argu[1]);
    numhdu=*(int*)(argu[2]);
    nbkeys=*(int*)(argu[3]);
-
+   
    /* --- ouverture en ecriture du fichier fits ---*/
    if ((msg=libfiles_main(FS_FITS_OPEN_FILE,3,&fptr,nom_fichier,&typemode))!=0) {
       return(msg);
@@ -649,11 +649,11 @@ int macr_read_keys(void *arg1)
       return(FS_ERR_HDUNUM_OVER);
    } else {
       if ((msg=libfiles_main(FS_FITS_MOVABS_HDU,3,fptr,&numhdu,&typechdu))!=0) {
-	 libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	 return(msg);
+         libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+         return(msg);
       }
    }
-
+   
    if (nbkeys==1) {
       keyname=(char*)(argu[4]);
       comment=(char*)(argu[5]);
@@ -661,31 +661,31 @@ int macr_read_keys(void *arg1)
       datatype=*(int*)(argu[7]);
       value=(char*)(argu[8]);
       if ((msg=libfiles_main(FS_FITS_READ_KEYWORD,4,fptr,keyname,value,comment))!=0) {
-	 libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	 return(msg);
+         libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+         return(msg);
       }
       if ((msg=libfiles_main(FS_FITS_READ_KEY_UNIT,3,fptr,keyname,unit))!=0) {
-	 libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	 return(msg);
+         libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+         return(msg);
       }
       if ((msg=libfiles_main(FS_FITS_GET_KEYTYPE,2,value,&dtype))!=0) {
-	 libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	 return(msg);
+         libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+         return(msg);
       }
       if (&datatype!=NULL) {
-	 if      (dtype=='C') { datatype=TSTRING; }
-	 else if (dtype=='L') { datatype=TSTRING; }
-	 else if (dtype=='I') { datatype=TINT; }
-	 else if (dtype=='F') { datatype=TFLOAT; }
-	 else { datatype=TSTRING; }
-	 if (dtype=='C') {
-	    chaine=value;
-	    len=strlen(chaine);
-	    for (kk=0;kk<(len-1);kk++) {
-	       chaine[kk]=chaine[kk+1];
-	    }
-	    if (len>=2) { chaine[len-2]='\0'; }
-	 }
+         if      (dtype=='C') { datatype=TSTRING; }
+         else if (dtype=='L') { datatype=TSTRING; }
+         else if (dtype=='I') { datatype=TINT; }
+         else if (dtype=='F') { datatype=TFLOAT; }
+         else { datatype=TSTRING; }
+         if (dtype=='C') {
+            chaine=value;
+            len=strlen(chaine);
+            for (kk=0;kk<(len-1);kk++) {
+               chaine[kk]=chaine[kk+1];
+            }
+            if (len>=2) { chaine[len-2]='\0'; }
+         }
       }
    } else if (nbkeys==0) {
       exist_keynames=(argu[4]==NULL)?0:1;
@@ -698,13 +698,13 @@ int macr_read_keys(void *arg1)
       pcomments=(char**)(argu[5]);
       punits=(char**)(argu[6]);
       if ((exist_keynames==0)||(exist_values==0)) {
-	 libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	 return(FS_ERR_BAD_NBKEYS);
+         libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+         return(FS_ERR_BAD_NBKEYS);
       }
       /* --- on calcule le nombre de mots cles dans l'entete ---*/
       if ((msg=libfiles_main(FS_FITS_GET_HDRSPACE,3,fptr,&nbkeys,&morekeys))!=0) {
-	 libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-	 return(msg);
+         libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+         return(msg);
       }
       *(int*)(argu[3])=nbkeys;
       /* --- on dimensionne keynames ---*/
@@ -712,7 +712,7 @@ int macr_read_keys(void *arg1)
       lenp=(int)(FLEN_KEYWORD);
       if ((msg=libtt_main0(TT_UTIL_CALLOC_PTRPTR_CHAR,4,&keynames,&nbkeys,&lenp,"p->keynames"))!=0) {
          tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in macr_read_keys for pointer keynames");
- 	     return(TT_ERR_PB_MALLOC);
+         return(TT_ERR_PB_MALLOC);
       }
       *pkeynames=(void*)keynames;
       /* --- on dimensionne values ---*/
@@ -720,139 +720,144 @@ int macr_read_keys(void *arg1)
       lenp=(int)(FLEN_VALUE);
       if ((msg=libtt_main0(TT_UTIL_CALLOC_PTRPTR_CHAR,4,&values,&nbkeys,&lenp,"p->values"))!=0) {
          tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in macr_read_keys for pointer values");
-    	 tt_util_free_ptrptr2((void***)&keynames,"p->keynames");
- 	     return(TT_ERR_PB_MALLOC);
+         tt_util_free_ptrptr2((void***)&keynames,"p->keynames");
+         return(TT_ERR_PB_MALLOC);
       }
       *pvalues=(void*)values;
       /* --- on dimensionne comments ---*/
       if (exist_comments==1) {
-      comments=NULL;
-      lenp=(int)(FLEN_COMMENT);
-      if ((msg=libtt_main0(TT_UTIL_CALLOC_PTRPTR_CHAR,4,&comments,&nbkeys,&lenp,"p->comments"))!=0) {
-         tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in macr_read_keys for pointer comments");
-    	 tt_util_free_ptrptr2((void***)&keynames,"p->keynames");
-    	 tt_util_free_ptrptr2((void***)&values,"p->values");
- 	     return(TT_ERR_PB_MALLOC);
-      }
-	  *pcomments=(void*)comments;
+         comments=NULL;
+         lenp=(int)(FLEN_COMMENT);
+         if ((msg=libtt_main0(TT_UTIL_CALLOC_PTRPTR_CHAR,4,&comments,&nbkeys,&lenp,"p->comments"))!=0) {
+            tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in macr_read_keys for pointer comments");
+            tt_util_free_ptrptr2((void***)&keynames,"p->keynames");
+            tt_util_free_ptrptr2((void***)&values,"p->values");
+            return(TT_ERR_PB_MALLOC);
+         }
+         *pcomments=(void*)comments;
       }
       /* --- on dimensionne units ---*/
       if (exist_comments==1) {
-      units=NULL;
-      lenp=(int)(FLEN_COMMENT);
-      if ((msg=libtt_main0(TT_UTIL_CALLOC_PTRPTR_CHAR,4,&units,&nbkeys,&lenp,"p->units"))!=0) {
-         tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in macr_read_keys for pointer units");
-    	 tt_util_free_ptrptr2((void***)&keynames,"p->keynames");
-    	 tt_util_free_ptrptr2((void***)&values,"p->values");
-    	 tt_util_free_ptrptr2((void***)&comments,"p->comments");
- 	     return(TT_ERR_PB_MALLOC);
-      }
- 	  *punits=(void*)units;
+         units=NULL;
+         lenp=(int)(FLEN_COMMENT);
+         if ((msg=libtt_main0(TT_UTIL_CALLOC_PTRPTR_CHAR,4,&units,&nbkeys,&lenp,"p->units"))!=0) {
+            tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in macr_read_keys for pointer units");
+            tt_util_free_ptrptr2((void***)&keynames,"p->keynames");
+            tt_util_free_ptrptr2((void***)&values,"p->values");
+            tt_util_free_ptrptr2((void***)&comments,"p->comments");
+            return(TT_ERR_PB_MALLOC);
+         }
+         *punits=(void*)units;
       }
       /* --- on dimensionne datatypes ---*/
       datatypes=NULL;
       lenp=sizeof(int);
       if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&datatypes,&nbkeys,&lenp,"p->datatypes"))!=0) {
          tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in macr_read_keys for pointer datatypes");
-    	 tt_util_free_ptrptr2((void***)&keynames,"p->keynames");
-    	 tt_util_free_ptrptr2((void***)&values,"p->values");
-    	 tt_util_free_ptrptr2((void***)&comments,"p->comments");
-    	 tt_util_free_ptrptr2((void***)&units,"p->units");
- 	     return(TT_ERR_PB_MALLOC);
+         tt_util_free_ptrptr2((void***)&keynames,"p->keynames");
+         tt_util_free_ptrptr2((void***)&values,"p->values");
+         tt_util_free_ptrptr2((void***)&comments,"p->comments");
+         tt_util_free_ptrptr2((void***)&units,"p->units");
+         return(TT_ERR_PB_MALLOC);
       }
       *(int**)(argu[7])=datatypes;
       /* --- on lit la liste ---*/
       for (k=0,kk=1;k<nbkeys;k++,kk++) {
-	     if (exist_comments==1) {
-	        if ((msg=libfiles_main(FS_FITS_READ_KEYN,5,fptr,&kk,keynames[k],values[k],comments[k]))!=0) {
-	           libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-    	       tt_util_free_ptrptr2((void***)&keynames,"p->keynames");
-    	       tt_util_free_ptrptr2((void***)&values,"p->values");
-    	       tt_util_free_ptrptr2((void***)&comments,"p->comments");
-	           if (exist_units==1) {
-    	          tt_util_free_ptrptr2((void***)&units,"p->units");
-               }
-	           tt_free(&datatypes,"p->datatypes");
-	           return(msg);
-	        }
-			if ((exist_units==1) && strcmp(keynames[k],"")) {
-	           if ((msg=libfiles_main(FS_FITS_READ_KEY_UNIT,3,fptr,keynames[k],units[k]))!=0) {
-		          libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-                  tt_free(&datatypes,"p->datatypes");
-                  tt_util_free_ptrptr2((void***)&keynames,"p->keynames");
-    	          tt_util_free_ptrptr2((void***)&values,"p->values");
-            	  tt_util_free_ptrptr2((void***)&comments,"p->comments");
-                  tt_util_free_ptrptr2((void***)&units,"p->units");
-		          return(msg);
-	           }
-	        }
-	    } else {
-	       if ((msg=libfiles_main(FS_FITS_READ_KEYN,5,fptr,&kk,keynames[k],values[k],NULL))!=0) {
-	          libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+         if (exist_comments==1) {
+            if ((msg=libfiles_main(FS_FITS_READ_KEYN,5,fptr,&kk,keynames[k],values[k],comments[k]))!=0) {
+               libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
                tt_util_free_ptrptr2((void***)&keynames,"p->keynames");
-    	       tt_util_free_ptrptr2((void***)&values,"p->values");
-	           if (exist_units==1) {
+               tt_util_free_ptrptr2((void***)&values,"p->values");
+               tt_util_free_ptrptr2((void***)&comments,"p->comments");
+               if (exist_units==1) {
                   tt_util_free_ptrptr2((void***)&units,"p->units");
                }
                tt_free(&datatypes,"p->datatypes");
-	           return(msg);
-	       }
-	    }
+               return(msg);
+            }
+            if ((exist_units==1) && strcmp(keynames[k],"")) {
+               if ((msg=libfiles_main(FS_FITS_READ_KEY_UNIT,3,fptr,keynames[k],units[k]))!=0) {
+                  libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+                  tt_free(&datatypes,"p->datatypes");
+                  tt_util_free_ptrptr2((void***)&keynames,"p->keynames");
+                  tt_util_free_ptrptr2((void***)&values,"p->values");
+                  tt_util_free_ptrptr2((void***)&comments,"p->comments");
+                  tt_util_free_ptrptr2((void***)&units,"p->units");
+                  return(msg);
+               }
+            }
+         } else {
+            if ((msg=libfiles_main(FS_FITS_READ_KEYN,5,fptr,&kk,keynames[k],values[k],NULL))!=0) {
+               libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
+               tt_util_free_ptrptr2((void***)&keynames,"p->keynames");
+               tt_util_free_ptrptr2((void***)&values,"p->values");
+               if (exist_units==1) {
+                  tt_util_free_ptrptr2((void***)&units,"p->units");
+               }
+               tt_free(&datatypes,"p->datatypes");
+               return(msg);
+            }
+         }
       }
       /* --- on decode les datatypes en on enleve les quotes ---*/
       for (k=0;k<nbkeys;k++) {
-		  /* ajout pour FITS2 en cas de COMMENT */
-		  if (strcmp(keynames[k],"COMMENT")==0) {
-             strcpy(values[k]," ");
-          }
-		  if (strcmp(values[k],"")==0) {
-             strcpy(values[k]," ");
-          }
-	     if ((msg=libfiles_main(FS_FITS_GET_KEYTYPE,2,values[k],&dtype))!=0) {
-            tt_util_free_ptrptr2((void***)&keynames,"p->keynames");
-    	    tt_util_free_ptrptr2((void***)&values,"p->values");
-	        if (exist_comments==1) {tt_util_free_ptrptr2((void***)&comments,"p->comments");}
-	        if (exist_units==1) {tt_util_free_ptrptr2((void***)&units,"p->units");}
-            tt_free(&datatypes,"p->datatypes");
-	        return(msg);
-	     }
-	     if      (dtype=='C') { datatypes[k]=TSTRING; }
-	     else if (dtype=='L') { datatypes[k]=TSTRING; }
-	     else if (dtype=='I') { datatypes[k]=TINT; }
-	     else if (dtype=='F') {
-	        chaine=values[k];
-	        len=strlen(chaine);
-                for (ndigit=0,kk=1;kk<len;kk++) {
-                   cdigit=chaine[kk];
-                   if ((cdigit=='e')||(cdigit=='E')) {
-                      break;
-                   }
-                   if ((cdigit>='0')||(cdigit<='9')) {
-                      ndigit++;
-                   }
-                }
-                if (ndigit<=6) {
-                   datatypes[k]=TFLOAT;
-                } else {
-                   datatypes[k]=TDOUBLE;
-                }
-             }
-	     else { datatypes[k]=TSTRING; }
-	     if (dtype=='C') {
-	        chaine=values[k];
-	        len=strlen(chaine);
-	        for (kk=0;kk<(len-1);kk++) {
-	           chaine[kk]=chaine[kk+1];
-	        }
-	        if (len>=2) { chaine[len-2]='\0'; }
-	     }
+         /* ajout pour FITS2 en cas de COMMENT */
+         if (strcmp(keynames[k],"COMMENT")==0) {
+            // le mot cle COMMENT est toujours du type TSTRING
+            // il ne faut pas utiliser la FS_FITS_GET_KEYTYPE pour ce mot cle car elle retourne un type errone. 
+            datatypes[k]=TSTRING;
+            dtype = 'C';
+         } else {
+            if (strcmp(values[k],"")==0) {
+               strcpy(values[k]," ");
+            }
+            if ((msg=libfiles_main(FS_FITS_GET_KEYTYPE,2,values[k],&dtype))!=0) {
+               tt_util_free_ptrptr2((void***)&keynames,"p->keynames");
+               tt_util_free_ptrptr2((void***)&values,"p->values");
+               if (exist_comments==1) {tt_util_free_ptrptr2((void***)&comments,"p->comments");}
+               if (exist_units==1) {tt_util_free_ptrptr2((void***)&units,"p->units");}
+               tt_free(&datatypes,"p->datatypes");
+               return(msg);
+            }
+            if      (dtype=='C') { datatypes[k]=TSTRING; }
+            else if (dtype=='L') { datatypes[k]=TSTRING; }
+            else if (dtype=='I') { datatypes[k]=TINT; }
+            else if (dtype=='F') {
+               chaine=values[k];
+               len=strlen(chaine);
+               for (ndigit=0,kk=1;kk<len;kk++) {
+                  cdigit=chaine[kk];
+                  if ((cdigit=='e')||(cdigit=='E')) {
+                     break;
+                  }
+                  if ((cdigit>='0')||(cdigit<='9')) {
+                     ndigit++;
+                  }
+               }
+               if (ndigit<=6) {
+                  datatypes[k]=TFLOAT;
+               } else {
+                  datatypes[k]=TDOUBLE;
+               }
+            }
+            else { datatypes[k]=TSTRING; }
+         }
+         
+         if (dtype=='C') {
+            chaine=values[k];
+            len=strlen(chaine);
+            for (kk=0;kk<(len-1);kk++) {
+               chaine[kk]=chaine[kk+1];
+            }
+            if (len>=2) { chaine[len-2]='\0'; }
+         }
          /*printf("k=%d %s=%s |%c|%d|\n",k,keynames[k],values[k],dtype,datatypes[k]);*/
       }
    } else {
       libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
       return(FS_ERR_BAD_NBKEYS);
    }
-
+   
    /* --- fermeture du fichier ---*/
    if ((msg=libfiles_main(FS_FITS_CLOSE_FILE,1,fptr))!=0) { return(msg); }
    return(OK_DLL);
