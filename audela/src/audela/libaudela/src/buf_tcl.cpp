@@ -22,7 +22,11 @@
 
 #include <math.h>
 #include <stdio.h>
-
+#ifdef WIN32
+   #pragma warning(disable: 4786 ) // disable ::std warning
+#endif
+#include <set>        // ::std::set
+#include <string>     // ::std::string
 #include "libstd.h"
 #include "cpool.h"
 #include "cbuffer.h"
@@ -336,7 +340,6 @@ int cmdGetKwd(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
    CBuffer *buffer;
    CFitsKeywords *keywords;   // Objet de gestion des mots-cles
-   CFitsKeyword *kwd;
    char *ligne = (char*)calloc(1000,sizeof(char));
    int retour;
 
@@ -350,31 +353,68 @@ int cmdGetKwd(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
          strcpy(ligne,CError::message(ELIBSTD_NO_KWDS));
          retour = TCL_ERROR;
       } else {
-         kwd = keywords->FindKeyword(argv[2]);
-         if(kwd==NULL) {
-            sprintf(ligne,"{} {} {none} {} {}");
-         } else {
-            switch(kwd->GetDatatype()) {
-               case TINT :
-                  sprintf(ligne,"{%s} %d {%s} {%s} {%s}",kwd->GetName(),kwd->GetIntValue(),"int",kwd->GetComment(),kwd->GetUnit());
-                  break;
-               case TFLOAT :
-                  if ((fabs(kwd->GetDoubleValue())<0.1)&&(fabs(kwd->GetDoubleValue())!=0.0)) {
-                     sprintf(ligne,"{%s} %e %s {%s} {%s}",kwd->GetName(),kwd->GetDoubleValue(),"float",kwd->GetComment(),kwd->GetUnit());
-                  } else {
-                     sprintf(ligne,"{%s} %g %s {%s} {%s}",kwd->GetName(),kwd->GetDoubleValue(),"float",kwd->GetComment(),kwd->GetUnit());
-                  }
-                  break;
-               case TDOUBLE :
-                  sprintf(ligne,"{%s} %20.15g %s {%s} {%s}",kwd->GetName(),kwd->GetDoubleValue(),"double",kwd->GetComment(),kwd->GetUnit());
-                  break;
-               case TSTRING :
-                  sprintf(ligne,"{%s} {%s} %s {%s} {%s}",kwd->GetName(),kwd->GetStringValue(),"string",kwd->GetComment(),kwd->GetUnit());
-                  break;
-               default :
-                  sprintf(ligne,"{} {} {none} {} {}");
-                  break;
+         if ( strcmp(argv[2], "COMMENT") != 0 ) {
+            CFitsKeyword *kwd;
+            kwd = keywords->FindKeyword(argv[2]);
+            if(kwd==NULL) {
+               sprintf(ligne,"{} {} {none} {} {}");
+            } else {
+               switch(kwd->GetDatatype()) {
+                  case TINT :
+                     sprintf(ligne,"{%s} %d {%s} {%s} {%s}",kwd->GetName(),kwd->GetIntValue(),"int",kwd->GetComment(),kwd->GetUnit());
+                     break;
+                  case TFLOAT :
+                     if ((fabs(kwd->GetDoubleValue())<0.1)&&(fabs(kwd->GetDoubleValue())!=0.0)) {
+                        sprintf(ligne,"{%s} %e %s {%s} {%s}",kwd->GetName(),kwd->GetDoubleValue(),"float",kwd->GetComment(),kwd->GetUnit());
+                     } else {
+                        sprintf(ligne,"{%s} %g %s {%s} {%s}",kwd->GetName(),kwd->GetDoubleValue(),"float",kwd->GetComment(),kwd->GetUnit());
+                     }
+                     break;
+                  case TDOUBLE :
+                     sprintf(ligne,"{%s} %20.15g %s {%s} {%s}",kwd->GetName(),kwd->GetDoubleValue(),"double",kwd->GetComment(),kwd->GetUnit());
+                     break;
+                  case TSTRING :
+                     sprintf(ligne,"{%s} {%s} %s {%s} {%s}",kwd->GetName(),kwd->GetStringValue(),"string",kwd->GetComment(),kwd->GetUnit());
+                     break;
+                  default :
+                     sprintf(ligne,"{} {} {none} {} {}");
+                     break;
+               }
             }
+         } else {
+            std::list<CFitsKeyword *> keywordList = keywords->FindMultipleKeyword(argv[2]);
+            std::list<CFitsKeyword *>::const_iterator iterator;
+            strcpy(ligne, ""); 
+            for (iterator =  keywordList.begin(); iterator != keywordList.end(); ++iterator) {
+               char ligne2[1024]; 
+               CFitsKeyword * kwd = *iterator;
+
+               switch( kwd->GetDatatype()) {
+                  case TINT :
+                     sprintf(ligne2,"{%s} %d {%s} {%s} {%s} ",kwd->GetName(),kwd->GetIntValue(),"int",kwd->GetComment(),kwd->GetUnit());
+                     break;
+                  case TFLOAT :
+                     if ((fabs(kwd->GetDoubleValue())<0.1)&&(fabs(kwd->GetDoubleValue())!=0.0)) {
+                        sprintf(ligne2,"{%s} %e %s {%s} {%s} ",kwd->GetName(),kwd->GetDoubleValue(),"float",kwd->GetComment(),kwd->GetUnit());
+                     } else {
+                        sprintf(ligne2,"{%s} %g %s {%s} {%s} ",kwd->GetName(),kwd->GetDoubleValue(),"float",kwd->GetComment(),kwd->GetUnit());
+                     }
+                     break;
+                  case TDOUBLE :
+                     sprintf(ligne2,"{%s} %20.15g %s {%s} {%s} ",kwd->GetName(),kwd->GetDoubleValue(),"double",kwd->GetComment(),kwd->GetUnit());
+                     break;
+                  case TSTRING :
+                     sprintf(ligne2,"{%s} {%s} %s {%s} {%s} ",kwd->GetName(),kwd->GetStringValue(),"string",kwd->GetComment(),kwd->GetUnit());
+                     break;
+                  default :
+                     sprintf(ligne2,"{} {} {none} {} {} ");
+                     break;
+               }
+
+               strcat(ligne, ligne2);
+            }
+
+
          }
          retour = TCL_OK;
       }
@@ -460,8 +500,7 @@ int cmdDelKwds(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
 //
 int cmdGetKwds(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
-   int nb_kw, retour, len;
-   char *s;
+   int nb_kw, retour;
    char *ligne;
    CBuffer *buffer;
    CFitsKeywords *keywords;   // Objet de gestion des mots-cles.
@@ -481,7 +520,10 @@ int cmdGetKwds(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
          retour = TCL_ERROR;
       } else {
          if((nb_kw=keywords->GetKeywordNb())>0) {
-         	len = 80*nb_kw;
+            /*
+            char *s;
+            int len;
+            len = 80*nb_kw;
 				s = new char[len];
          	memset(s,0,len);
          	kwd = keywords->GetFirstKeyword();
@@ -491,9 +533,29 @@ int cmdGetKwds(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
          	   strcat(s,"\" ");
             	kwd = kwd->next;
 	         }
-   	      Tcl_SetResult(interp,s,TCL_VOLATILE);
-      	   retour = TCL_OK;
 	         delete[] s;
+            */
+            std::set<std::string> keywordList;
+         	kwd = keywords->GetFirstKeyword();
+	         while(kwd) {
+               //char s[80];
+               ::std::string ss ;
+   	         ss.append("\"");
+      	      ss.append(kwd->GetName());
+         	   ss.append("\" ");
+               keywordList.insert(ss);
+            	kwd = kwd->next;
+	         }
+
+            std::set<::std::string>::const_iterator iterator;
+            strcpy(ligne, ""); 
+            for (iterator =  keywordList.begin(); iterator != keywordList.end(); iterator++ ) {
+               Tcl_AppendResult(interp, iterator->c_str(), NULL);
+            }
+                
+
+   	      //Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      	   retour = TCL_OK;
          } else {
    	      Tcl_SetResult(interp,CError::message(ELIBSTD_NO_KWDS),TCL_VOLATILE);
 	         retour = TCL_ERROR;
@@ -866,9 +928,6 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                unsigned char pal0[256];
                unsigned char pal1[256];
                unsigned char pal2[256];
-               float cuts[6];
-               CFitsKeyword *kwd;
-               int width, height, planes;
                int quality ;
                int mirrorx;
                int mirrory;
@@ -884,26 +943,11 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                   pal2[i]= (unsigned char) i;
                }
 
-               // je fabrique des seuils par defaut
-               kwd = Buffer->GetKeywords()->FindKeyword((char*)"MIPS-HI");
-               cuts[0] = kwd->GetFloatValue();
-               cuts[2] = kwd->GetFloatValue();
-               cuts[4] = kwd->GetFloatValue();
-               kwd = Buffer->GetKeywords()->FindKeyword((char*)"MIPS-LO");
-               cuts[1] = kwd->GetFloatValue();
-               cuts[3] = kwd->GetFloatValue();
-               cuts[5] = kwd->GetFloatValue();
-
-               // je recupere la taille
-               width = Buffer->GetWidth();
-               height = Buffer->GetHeight();
-               planes = Buffer->GetNaxis();
-
                quality = 80;
                mirrorx = 0;
                mirrory = 0;
 
-               Buffer->SaveJpg(nom_fichier, quality, cuts, palette, mirrorx , mirrory ) ;
+               Buffer->SaveJpg(nom_fichier, quality, palette, mirrorx , mirrory ) ;
 
             } else if( strcmp(ext, ".crw")== 0   // canon raw image
                     || strcmp(ext, ".nef")== 0   // nikon raw image
