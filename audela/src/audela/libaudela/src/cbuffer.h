@@ -215,7 +215,7 @@ public:
    void Save1d(char *filename,int iaxis2);
    void Save3d(char *filename,int naxis3,int iaxis3_beg,int iaxis3_end);
    void SaveJpg(char *filename,int quality,int sbsh, double sb,double sh);
-   void SaveJpg(char *filename,int quality, float *cuts, unsigned char *palette[3], int mirrorx, int mirrory);
+   void SaveJpg(char *filename,int quality, unsigned char *palette[3], int mirrorx, int mirrory);
    void SaveRawFile(char *filename);
    void SaveTkImg(char *filename, unsigned char *palette[3], int mirrorx, int mirrory);
    void SetCompressType(int st);
