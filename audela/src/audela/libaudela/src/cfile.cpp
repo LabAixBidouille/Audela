@@ -256,8 +256,6 @@ void CFile::loadFits(char * fileName, int dataTypeOut, CPixels **pixels, CFitsKe
          // je copie les mots cles dans la variable de sortie
          *keywords = new CFitsKeywords();
          (*keywords)->GetFromArray(nb_keys,&keynames,&values,&comments,&units,&datatypes);
-         // je recupere les mots cles
-         (*keywords)->GetFromArray(nb_keys,&keynames,&values,&comments,&units,&datatypes);
          naxis = 3;
          (*keywords)->Add("NAXIS", &naxis,TINT,"","");
          naxis3 = 3;
