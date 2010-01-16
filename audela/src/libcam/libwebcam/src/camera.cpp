@@ -1196,11 +1196,6 @@ int stopVideoPreview(struct camprop *cam) {
 int startVideoCapture(struct camprop *cam, unsigned short exptime, unsigned long microSecPerFrame, char * fileName) {
    int result;
 
-   char ligne [255];
-   // je change le status de la camera
-   sprintf(ligne, "status_cam%d", cam->camno);
-   Tcl_SetVar(cam->interp, ligne, "exp", TCL_GLOBAL_ONLY);
-
    if( cam->params->capture->isCapturingNow() == 1 ) {
       sprintf(cam->msg, "capture already in use");
       return FALSE;
