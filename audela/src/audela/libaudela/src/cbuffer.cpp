@@ -858,15 +858,78 @@ void CBuffer::SaveJpg(char *filename,int quality,int sbsh, double sb,double sh)
    free(ppix);
 }
 
-void CBuffer::SaveJpg(char *filename, int quality, float *cuts, unsigned char *palette[3], int mirrorx, int mirrory) {
-   unsigned char * buf256;
+void CBuffer::SaveJpg(char *filename, int quality, unsigned char *palette[3], int mirrorx, int mirrory) {
+   unsigned char * buf256 = NULL;
    int width, height, planes;
+   CFitsKeyword * kwd;
+   float cuts[6];
 
    // je recupere la taille
    width = GetWidth();
    height = GetHeight();
    planes = this->pix->GetPlanes();
 
+   cuts[0] = 32767;
+   cuts[2] = 32767;
+   cuts[4] = 32767;
+   cuts[1] = 0;
+   cuts[3] = 0;
+   cuts[5] = 0;
+
+   if ( planes == 1 ) {
+      // je fabrique des seuils par defaut
+      kwd = keywords->FindKeyword((char*)"MIPS-HI");
+      if (kwd != NULL ) {
+         cuts[0] = kwd->GetFloatValue();
+         cuts[2] = kwd->GetFloatValue();
+         cuts[4] = kwd->GetFloatValue();
+      } 
+      kwd = keywords->FindKeyword((char*)"MIPS-LO");
+      if (kwd != NULL ) {
+         cuts[1] = kwd->GetFloatValue();
+         cuts[3] = kwd->GetFloatValue();
+         cuts[5] = kwd->GetFloatValue();
+      } 
+   } else {
+      kwd = keywords->FindKeyword((char*)"MIPS-HI");
+      if (kwd != NULL ) {
+         cuts[0] = kwd->GetFloatValue();
+         cuts[2] = kwd->GetFloatValue();
+         cuts[4] = kwd->GetFloatValue();
+      } 
+      kwd = keywords->FindKeyword((char*)"MIPS-LO");
+      if (kwd != NULL ) {
+         cuts[1] = kwd->GetFloatValue();
+         cuts[3] = kwd->GetFloatValue();
+         cuts[5] = kwd->GetFloatValue();
+      } 
+
+      // je fabrique des seuils par defaut
+      kwd = keywords->FindKeyword((char*)"MIPS-HIR");
+      if (kwd != NULL ) { 
+         cuts[0] = kwd->GetFloatValue();
+      } 
+      kwd = keywords->FindKeyword((char*)"MIPS-HIG");
+      if (kwd != NULL ) { 
+         cuts[2] = kwd->GetFloatValue();
+      } 
+      kwd = keywords->FindKeyword((char*)"MIPS-HIB");
+      if (kwd != NULL ) { 
+         cuts[4] = kwd->GetFloatValue();
+      } 
+      kwd = keywords->FindKeyword((char*)"MIPS-LOR");
+      if (kwd != NULL ) { 
+         cuts[1] = kwd->GetFloatValue();
+      } 
+      kwd = keywords->FindKeyword((char*)"MIPS-LOG");
+      if (kwd != NULL ) { 
+         cuts[3] = kwd->GetFloatValue();
+      } 
+      kwd = keywords->FindKeyword((char*)"MIPS-LOB");
+      if (kwd != NULL ) { 
+         cuts[5] = kwd->GetFloatValue();
+      } 
+   }
    // je cree le buffer pour preparer l'image a 256 niveaux
    buf256 = (unsigned char *) calloc(width*height*3,sizeof(unsigned char));
    if (buf256==NULL) {
@@ -883,7 +946,9 @@ void CBuffer::SaveJpg(char *filename, int quality, float *cuts, unsigned char *p
 
    // j'enregistre l'image dans le fichier
    CFile::saveJpeg(filename, buf256, this->keywords, 3, width, height, quality);
-   free(buf256);
+
+
+   if ( buf256 != NULL) { free(buf256); }
 
 }
 
