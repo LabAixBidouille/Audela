@@ -190,7 +190,19 @@ int fts_update_key(void *arg1,void *arg2,void *arg3,void *arg4,void *arg5)
    value=arg4;
    comment=(char*)(arg5);
    status=0;
-   fits_update_key(fptr,datatype,keyname,value,comment,&status);
+   if ( strcmp(keyname,"COMMENT") == 0) {
+      if ( comment != NULL) {
+         // mot cle au format COMMENT : "keyname comment"
+         // Le standard FITS impose un format particulier pour le mot cle COMMENT
+         //  Il contient seulement le nom du mot cle et le commentaire
+         //  Il ne contient pas de signe egale ni de valeur.
+         fits_write_comment(fptr,comment,&status);
+      }
+   } else {
+      // mot cle au format : "keyname = value / [unit] comment"
+      fits_update_key(fptr,datatype,keyname,value,comment,&status);
+   }
+
    return(status);
 }
 
