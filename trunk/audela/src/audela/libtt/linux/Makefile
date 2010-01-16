@@ -20,7 +20,8 @@ SRC = $(SRCDIR)/files.c $(SRCDIR)/fs_fsio1.c $(SRCDIR)/fs_fsio2.c \
       $(SRCDIR)/tt_fits5.c $(SRCDIR)/tt_fsio2.c $(SRCDIR)/tt_poin1.c \
       $(SRCDIR)/tt_poin2.c $(SRCDIR)/tt_scri1.c $(SRCDIR)/tt_seri1.c \
       $(SRCDIR)/tt_seri2.c $(SRCDIR)/tt_seri3.c $(SRCDIR)/tt_seri4.c \
-      $(SRCDIR)/tt_seri5.c $(SRCDIR)/tt_stac1.c $(SRCDIR)/tt_stac2.c \
+      $(SRCDIR)/tt_seri5.c $(SRCDIR)/tt_seri6.c \
+      $(SRCDIR)/tt_stac1.c $(SRCDIR)/tt_stac2.c \
       $(SRCDIR)/tt_time1.c $(SRCDIR)/tt_user1.c $(SRCDIR)/tt_user3.c \
       $(SRCDIR)/tt_user4.c $(SRCDIR)/tt_util1.c $(SRCDIR)/tt_util2.c \
       $(SRCDIR)/tt_util3.c $(SRCDIR)/tt_user2.c $(SRCDIR)/tt_user5.c
