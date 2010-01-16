@@ -39,6 +39,11 @@
    #define LIBAUDELA_API
 #endif//WIN32
 
+#ifdef WIN32
+   #pragma warning(disable: 4786 ) // disable ::std warning
+#endif
+#include <list>         // ::std::list
+
 class LIBAUDELA_API CFitsKeyword {
       protected:
    char *name;           // Chaines de caracteres pour remplir
@@ -79,6 +84,7 @@ class LIBAUDELA_API CFitsKeywords {
    CFitsKeywords();
    ~CFitsKeywords();
    CFitsKeyword* FindKeyword(const char* kw_name);
+   std::list<CFitsKeyword *> FindMultipleKeyword(const char * kw_name);
    CFitsKeyword* AddKeyword(const char* name);
    int Delete(char*kw_name);
 	int DeleteAll();

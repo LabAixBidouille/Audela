@@ -21,9 +21,6 @@
  */
 
 #include <stdlib.h>
-#if defined(OS_WIN)
-	#include <mem.h>
-#endif
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
@@ -141,7 +138,7 @@ void CFitsKeyword::GetIntValue(int*data,int*default_data)
 /*
  * CFitsKeyword::GetPtrValue
  *    retoune la valeur du mot cle sous forme d'un pointeur
- *    sur la variable corresdant au datatype du mot cl�
+ *    sur la variable corresdant au datatype du mot cle
  *
  */
 void * CFitsKeyword::GetPtrValue()
@@ -296,6 +293,45 @@ CFitsKeyword* CFitsKeywords::FindKeyword(const char*kw_name)
    return kwd;
 }
 
+
+
+//------------------------------------------------------------------------------
+// CFitsKeywords::FindMultipleKeyword renvoie une liste de pointeurs du mot-cle s'il existe deja
+// la liste. Sinon elle renvoie NULL.
+//
+std::list<CFitsKeyword *> CFitsKeywords::FindMultipleKeyword(const char * kwdName)
+{
+   CFitsKeyword *kwd;
+   std::list<CFitsKeyword *> keywordList;
+
+   if(kw==NULL) { // S'il n'y a pas de mots-cles, c'est pas la peine de chercher
+      return NULL;
+   } else {
+      kwd = kw;
+   }
+
+   // On recherche deja si le mot-cle existe. Si tel est le cas, alors il
+   // prendra les nouvelles valeurs.
+   for(;;) {
+      if(kwd==NULL) { // S'il n'y a pas de mots-cles, c'est pas la peine de chercher
+         break;
+      } else { // Ben y'en a quand meme ... cherchons.
+         if(kwd->GetName()) { // S'il a un nom, tant mieux.
+            if(strcmp(kwd->GetName(), kwdName)==0) {
+               // je l'ajoute dans la liste
+               keywordList.push_back(kwd);
+            }
+            kwd = kwd->next; // on passe au suivant.
+         } else { // Ben la c'est pas normal : un mot-cle sans nom
+            kwd = NULL;
+            break;
+         }
+      }
+   }
+   return keywordList;
+}
+
+
 //------------------------------------------------------------------------------
 // Fonction d'ajout d'un mot-cle a la liste chainee des mots-cles. Attention !
 // Si le mot-cle n'existe pas deja dans la liste, alors il est cree.
@@ -303,7 +339,12 @@ CFitsKeyword* CFitsKeywords::FindKeyword(const char*kw_name)
 CFitsKeyword* CFitsKeywords::AddKeyword(const char*kw_name)
 {
    CFitsKeyword *kwd;
-   kwd = FindKeyword(kw_name);
+   if ( strcmp(kw_name,"COMMENT") !=0 ) {
+      kwd = FindKeyword(kw_name);
+   } else {
+      // je cree un nouveau mot cle systematiquement car COMMENT est mot cle multiple
+      kwd = NULL;
+   }
    if(kwd==NULL) { // Le mot-cle n'existe pas, donc il faut le creer.
       if(kw==NULL) {
          kw = new CFitsKeyword();
