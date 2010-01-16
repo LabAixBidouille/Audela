@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: camtcl.c,v 1.9 2009-03-14 14:49:43 michelpujol Exp $
+// $Id: camtcl.c,v 1.10 2010-01-16 09:53:09 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -557,13 +557,21 @@ int cmdCamLonguePoseLinkbit(ClientData clientData, Tcl_Interp * interp,
    cam->interp = interp;
 
 
-   if (argc != 3) {
+   if (argc < 2  && argc > 3) {
       sprintf(ligne, "Usage: %s %s ?numbit", argv[0], argv[1]);
       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
       result = TCL_ERROR;
    } else {
-      // je memorise le numero du bit
-      STRNCPY(cam->longueposelinkbit, argv[2] );
+      if ( argc == 2 ) {
+         strcpy(ligne, cam->longueposelinkbit);
+         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         result = TCL_OK;
+      } else {
+         // je memorise le numero du bit
+         STRNCPY(cam->longueposelinkbit, argv[2] );
+         Tcl_SetResult(interp, cam->longueposelinkbit, TCL_VOLATILE);
+         result = TCL_OK;
+      }
    }
    return result;
 }
