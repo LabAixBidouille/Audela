@@ -384,9 +384,9 @@ int cmdGetKwd(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
          } else {
             std::list<CFitsKeyword *> keywordList = keywords->FindMultipleKeyword(argv[2]);
             std::list<CFitsKeyword *>::const_iterator iterator;
-            strcpy(ligne, ""); 
+            strcpy(ligne, "");
             for (iterator =  keywordList.begin(); iterator != keywordList.end(); ++iterator) {
-               char ligne2[1024]; 
+               char ligne2[1024];
                CFitsKeyword * kwd = *iterator;
 
                switch( kwd->GetDatatype()) {
@@ -535,7 +535,7 @@ int cmdGetKwds(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
 	         }
 	         delete[] s;
             */
-            std::set<std::string> keywordList;
+            std::set < std::string > keywordList;
          	kwd = keywords->GetFirstKeyword();
 	         while(kwd) {
                //char s[80];
@@ -547,12 +547,12 @@ int cmdGetKwds(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
             	kwd = kwd->next;
 	         }
 
-            std::set<::std::string>::const_iterator iterator;
-            strcpy(ligne, ""); 
+            std::set < ::std::string > ::const_iterator iterator;
+            strcpy(ligne, "");
             for (iterator =  keywordList.begin(); iterator != keywordList.end(); iterator++ ) {
                Tcl_AppendResult(interp, iterator->c_str(), NULL);
             }
-                
+
 
    	      //Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       	   retour = TCL_OK;
@@ -862,7 +862,7 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 
       // je traite les caracteres accentues
       utf2Unicode(interp,argv[2],fileName);
-      
+
       // Decodage du nom de fichier : chemin, nom du fichier, etc.
       // "encoding convertfrom identity" sert a traiter correctement les caracteres accentues
       sprintf(ligne,"file dirname [encoding convertfrom identity {%s}]",fileName); Tcl_Eval(interp,ligne); strcpy(path2,interp->result);
@@ -887,11 +887,11 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 
       try {
          if(strcmp(argv[1],"save")==0) {
-            if( strcmp(ext, ".fit")== 0   
-               || strcmp(ext, ".fits")== 0 
-               || strcmp(ext, ".fts")== 0  
-               || strcmp(ext, ".gz")== 0   
-               || strcmp(ext, Buffer->GetExtension())== 0  
+            if( strcmp(ext, ".fit")== 0
+               || strcmp(ext, ".fits")== 0
+               || strcmp(ext, ".fts")== 0
+               || strcmp(ext, ".gz")== 0
+               || strcmp(ext, Buffer->GetExtension())== 0
              ) {
                //--- save FITS file (fit, fits, fts, fit.gz, fits.gz, fts.gz or default extension)
                if (Buffer->GetCompressType()==BUFCOMPRESS_GZIP) {
@@ -1257,7 +1257,7 @@ int cmdSave3d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       path2 = (char*)calloc(256,sizeof(char));
       nom_fichier = (char*)calloc(1000,sizeof(char));
       Buffer = (CBuffer*)clientData;
-   
+
       // je traite les caracteres accentues
       utf2Unicode(interp,argv[2],fileName);
 

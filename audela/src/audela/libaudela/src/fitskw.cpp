@@ -305,7 +305,7 @@ std::list<CFitsKeyword *> CFitsKeywords::FindMultipleKeyword(const char * kwdNam
    std::list<CFitsKeyword *> keywordList;
 
    if(kw==NULL) { // S'il n'y a pas de mots-cles, c'est pas la peine de chercher
-      return NULL;
+      return keywordList;
    } else {
       kwd = kw;
    }
