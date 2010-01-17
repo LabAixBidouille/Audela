@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.35 2010-01-17 18:41:24 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.36 2010-01-17 18:59:16 michelpujol Exp $
 #
 
 namespace eval ::keyword {
@@ -58,20 +58,15 @@ proc ::keyword::header { visuNo args } {
       $base.header.slb.list tag configure unit -foreground $::color(orange)
       foreach kwd [ lsort -dictionary [ buf[ ::confVisu::getBufNo $visuNo ] getkwds ] ] {
          set liste [ buf[ ::confVisu::getBufNo $visuNo ] getkwd $kwd ]
-         set koff 0
-         if {[llength $liste]>5} {
-            #--- Detourne un bug eventuel des mots longs (ne devrait jamais arriver !)
-            set koff [expr [llength $liste]-5]
+
+         #--- je fais une boucle pour traiter les mots cles a valeur multiple
+         foreach { name value type comment unit } $liste {
+            $base.header.slb.list insert end "[format "%8s" $name] " keyw
+            $base.header.slb.list insert end "= "         egal
+            $base.header.slb.list insert end "$value "    valu
+            $base.header.slb.list insert end "$comment "  comm
+            $base.header.slb.list insert end "$unit\n"    unit
          }
-         set keyword "$kwd"
-         if {[string length $keyword]<=8} {
-            set keyword "[format "%8s" $keyword]"
-         }
-         $base.header.slb.list insert end "$keyword " keyw
-         $base.header.slb.list insert end "= " egal
-         $base.header.slb.list insert end "[lindex $liste [expr $koff+1]] " valu
-         $base.header.slb.list insert end "[lindex $liste [expr $koff+3]] " comm
-         $base.header.slb.list insert end "[lindex $liste [expr $koff+4]]\n" unit
       }
    } else {
       $base.header.slb.list insert end "$::caption(keyword,header_noimage)"
@@ -813,6 +808,7 @@ proc ::keyword::getKeywords { visuNo configName { keywordNameList "" } } {
                #--- je mets en forme le commentaire
                if { $motclef == "COMMENT" } {
                   set commentaire [ ::keyword::headerFitsCompliant $valeur ]
+                  set valeur ""
                }
                #--- j'ajoute les mots cles dans le resultat
                lappend result [list $motclef $valeur $type $commentaire $unite]
