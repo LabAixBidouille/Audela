@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.53 2010-01-07 09:45:17 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.54 2010-01-17 18:30:55 robertdelmas Exp $
 #
 
 #============================================================
@@ -676,7 +676,7 @@ proc ::scan::cmdGo { { motor motoron } } {
             set attente $panneau(scan,delai)
             if { $panneau(scan,delai) > "0" } {
                while { $panneau(scan,delai) > "0" } {
-                  ::camera::Avancement_scan "-10" $panneau(scan,lig1) $panneau(scan,delai)
+                  ::camera::avancementScan "-10" $panneau(scan,lig1) $panneau(scan,delai)
                   update
                   after 1000
                   incr panneau(scan,delai) "-1"
@@ -762,7 +762,7 @@ proc ::scan::scan { w h bin binY dt f } {
 
    #--- Alarme sonore de fin de pose
    set pseudoexptime [ expr $panneau(scan,lig1) / $panneau(scan,nblg1) ]
-   ::camera::alarme_sonore $pseudoexptime
+   ::camera::alarmeSonore $pseudoexptime
 
    #--- Appel du timer
    if { $panneau(scan,lig1) > "$panneau(scan,nblg1)" } {
@@ -982,26 +982,6 @@ proc ::scan::testEntier { valeur } {
 }
 
 #------------------------------------------------------------
-# testChaine
-#    Cette procedure verifie que la chaine passee en argument ne contient que des caracteres valides
-#
-# Parametres :
-#    valeur : Chaine de caracteres a tester
-# Return :
-#    test : Elle retourne 1 si c'est la cas, et 0 si ce n'est pas valable
-#------------------------------------------------------------
-proc ::scan::testChaine { valeur } {
-   set test 1
-   for { set i 0 } { $i < [ string length $valeur ] } { incr i } {
-      set a [ string index $valeur $i ]
-      if { ![string match {[-a-zA-Z0-9_]} $a] } {
-         set test 0
-      }
-   }
-   return $test
-}
-
-#------------------------------------------------------------
 # sauveUneImage
 #    Sauvegarde du drift scan acquis
 #
@@ -1029,13 +1009,6 @@ proc ::scan::sauveUneImage { } {
    if { [ llength $panneau(scan,nom_image) ] > "1" } {
       tk_messageBox -title $panneau(scan,pb) -type ok \
          -message $panneau(scan,nom_blanc)
-      return
-   }
-
-   #--- Verifier que le nom de fichier ne contient pas de caracteres interdits
-   if { [ testChaine $panneau(scan,nom_image) ] == "0" } {
-      tk_messageBox -title $panneau(scan,pb) -type ok \
-         -message $panneau(scan,mauvais_car)
       return
    }
 
@@ -1331,51 +1304,53 @@ proc scanBuildIF { This } {
       #--- Frame de la sauvegarde de l'image
       frame $This.fra5 -borderwidth 1 -relief groove
 
-        #--- Frame du nom de l'image
-        frame $This.fra5.nom -relief ridge -borderwidth 2
+         #--- Frame du nom de l'image
+         frame $This.fra5.nom -relief ridge -borderwidth 2
 
-           #--- Label du nom de l'image
-           label $This.fra5.nom.lab1 -text $panneau(scan,nom) -pady 0
-           pack $This.fra5.nom.lab1 -fill x -side top
+            #--- Label du nom de l'image
+            label $This.fra5.nom.lab1 -text $panneau(scan,nom) -pady 0
+            pack $This.fra5.nom.lab1 -fill x -side top
 
-           #--- Entry du nom de l'image
-           entry $This.fra5.nom.ent1 -width 10 -textvariable panneau(scan,nom_image) -relief groove
-           pack $This.fra5.nom.ent1 -fill x -side top
+            #--- Entry du nom de l'image
+            entry $This.fra5.nom.ent1 -width 10 -textvariable panneau(scan,nom_image) -relief groove \
+               -validate all -validatecommand { ::tkutil::validateString %W %V %P %s wordchar1 0 100 }
+            pack $This.fra5.nom.ent1 -fill x -side top
 
-           #--- Label de l'extension
-           label $This.fra5.nom.lab_extension -text $panneau(scan,extension) -pady 0
-           pack $This.fra5.nom.lab_extension -fill x -side left
+            #--- Label de l'extension
+            label $This.fra5.nom.lab_extension -text $panneau(scan,extension) -pady 0
+            pack $This.fra5.nom.lab_extension -fill x -side left
 
-           #--- Button pour le choix de l'extension
-           button $This.fra5.nom.extension -textvariable panneau(scan,extension_image) \
-              -width 7 -command "::confFichierIma::run $audace(base).confFichierIma"
-           pack $This.fra5.nom.extension -side right -fill x
+            #--- Button pour le choix de l'extension
+            button $This.fra5.nom.extension -textvariable panneau(scan,extension_image) \
+               -width 7 -command "::confFichierIma::run $audace(base).confFichierIma"
+            pack $This.fra5.nom.extension -side right -fill x
 
-        pack $This.fra5.nom -side top -fill x
+         pack $This.fra5.nom -side top -fill x
 
-        #--- Frame de l'index
-        frame $This.fra5.index -relief ridge -borderwidth 2
+         #--- Frame de l'index
+         frame $This.fra5.index -relief ridge -borderwidth 2
 
-           #--- Checkbutton pour le choix de l'indexation
-           checkbutton $This.fra5.index.case -pady 0 -text $panneau(scan,index) -variable panneau(scan,indexer)
-           pack $This.fra5.index.case -side top -fill x
+            #--- Checkbutton pour le choix de l'indexation
+            checkbutton $This.fra5.index.case -pady 0 -text $panneau(scan,index) -variable panneau(scan,indexer)
+            pack $This.fra5.index.case -side top -fill x
 
-           #--- Entry de l'index
-           entry $This.fra5.index.ent2 -width 3 -textvariable panneau(scan,indice) \
-              -relief groove -justify center
-           pack $This.fra5.index.ent2 -side left -fill x -expand true
+            #--- Entry de l'index
+            entry $This.fra5.index.ent2 -width 3 -textvariable panneau(scan,indice) \
+               -relief groove -justify center \
+               -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
+            pack $This.fra5.index.ent2 -side left -fill x -expand true
 
-           #--- Bouton de mise a 1 de l'index
-           button $This.fra5.index.but1 -text "1" -width 3 -command "set panneau(scan,indice) 1"
-           pack $This.fra5.index.but1 -side right -fill x
+            #--- Bouton de mise a 1 de l'index
+            button $This.fra5.index.but1 -text "1" -width 3 -command "set panneau(scan,indice) 1"
+            pack $This.fra5.index.but1 -side right -fill x
 
-        pack $This.fra5.index -side top -fill x
+         pack $This.fra5.index -side top -fill x
 
-        #--- Bouton pour sauvegarder l'image
-        button $This.fra5.but_sauve -text $panneau(scan,sauvegarde) -command "::scan::sauveUneImage"
-        pack $This.fra5.but_sauve -side top -fill x
+         #--- Bouton pour sauvegarder l'image
+         button $This.fra5.but_sauve -text $panneau(scan,sauvegarde) -command "::scan::sauveUneImage"
+         pack $This.fra5.but_sauve -side top -fill x
 
-     pack $This.fra5 -side top -fill x
+      pack $This.fra5 -side top -fill x
 
    bind $This.fra4.but1 <ButtonPress-3> { ::scan::cmdGo motoron }
 

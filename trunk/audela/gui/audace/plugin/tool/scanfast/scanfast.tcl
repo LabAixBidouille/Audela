@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.53 2010-01-07 09:45:35 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.54 2010-01-17 18:31:17 robertdelmas Exp $
 #
 
 global panneau
@@ -755,7 +755,7 @@ proc ::scanfast::cmdGo { { motor motoron } } {
             set attente $panneau(scanfast,delai)
             if { $panneau(scanfast,delai) > "0" } {
                while { $panneau(scanfast,delai) > "0" } {
-                  ::camera::Avancement_scan "-10" $panneau(scanfast,lig1) $panneau(scanfast,delai)
+                  ::camera::avancementScan "-10" $panneau(scanfast,lig1) $panneau(scanfast,delai)
                   update
                   after 1000
                   incr panneau(scanfast,delai) "-1"
@@ -813,7 +813,7 @@ proc ::scanfast::cmdGo { { motor motoron } } {
             cam$audace(camNo) scan $w $h $bin $panneau(scanfast,interligne) -biny $binY -firstpix $f -tmpfile
             #--- Alarme sonore de fin de pose
             set pseudoexptime [ expr $panneau(scanfast,lig1)/$panneau(scanfast,nblg1) ]
-            ::camera::alarme_sonore $pseudoexptime
+            ::camera::alarmeSonore $pseudoexptime
             #--- Appel du timer
             if { $panneau(scanfast,lig1) > "$panneau(scanfast,nblg)" } {
                set t [ expr $panneau(scanfast,lig1) / $panneau(scanfast,nblg1) ]
@@ -1108,26 +1108,6 @@ proc ::scanfast::testEntier { valeur } {
 }
 
 #------------------------------------------------------------
-# testChaine
-#    Cette procedure verifie que la chaine passee en argument ne contient que des caracteres valides
-#
-# Parametres :
-#    valeur : Chaine de caracteres a tester
-# Return :
-#    test : Elle retourne 1 si c'est la cas, et 0 si ce n'est pas valable
-#------------------------------------------------------------
-proc ::scanfast::testChaine { valeur } {
-   set test 1
-   for { set i 0 } { $i < [ string length $valeur ] } { incr i } {
-      set a [ string index $valeur $i ]
-      if { ![string match {[-a-zA-Z0-9_]} $a] } {
-         set test 0
-      }
-   }
-   return $test
-}
-
-#------------------------------------------------------------
 # sauveUneImage
 #    Sauvegarde du drift scan acquis
 #
@@ -1155,13 +1135,6 @@ proc ::scanfast::sauveUneImage { } {
    if { [ llength $panneau(scanfast,nom_image) ] > "1" } {
       tk_messageBox -title $panneau(scanfast,pb) -type ok \
          -message $panneau(scanfast,nom_blanc)
-      return
-   }
-
-   #--- Verifier que le nom de fichier ne contient pas de caracteres interdits
-   if { [ testChaine $panneau(scanfast,nom_image) ] == "0" } {
-      tk_messageBox -title $panneau(scanfast,pb) -type ok \
-         -message $panneau(scanfast,mauvais_car)
       return
    }
 
@@ -1443,7 +1416,8 @@ proc scanfastBuildIF { This } {
             pack $This.fra5.nom.lab1 -fill x -side top
 
             #--- Entry du nom de l'image
-            entry $This.fra5.nom.ent1 -width 10 -textvariable panneau(scanfast,nom_image) -relief groove
+            entry $This.fra5.nom.ent1 -width 10 -textvariable panneau(scanfast,nom_image) -relief groove \
+               -validate all -validatecommand { ::tkutil::validateString %W %V %P %s wordchar1 0 100 }
             pack $This.fra5.nom.ent1 -fill x -side top
 
             #--- Label de l'extension
@@ -1466,7 +1440,8 @@ proc scanfastBuildIF { This } {
 
             #--- Entry de l'index
             entry $This.fra5.index.ent2 -width 3 -textvariable panneau(scanfast,indice) \
-               -relief groove -justify center
+               -relief groove -justify center \
+               -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
             pack $This.fra5.index.ent2 -side left -fill x -expand true
 
             #--- Bouton de mise a 1 de l'index
