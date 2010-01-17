@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.34 2010-01-16 00:21:29 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.35 2010-01-17 18:41:24 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -961,6 +961,11 @@ proc ::keyword::createDialog { visuNo } {
             -command "::keyword::copyConfig $visuNo"
          pack $frm.config.but.copy -anchor center -side left -padx 5 -pady 5 -ipadx 5
 
+         #--- Decocher tous les mots cles de la configuration courante
+         button $frm.config.but.decheck -text "$::caption(keyword,selectDeselectAll)" -borderwidth 2 \
+            -command "::keyword::selectDeselectAllKeywords $visuNo $private($visuNo,configName)"
+         pack $frm.config.but.decheck -anchor center -side right -padx 5 -pady 5 -ipadx 5
+
       pack $frm.config.but -side bottom -fill x -expand 0
 
    pack $frm.config -side top -fill x -expand 0
@@ -1395,6 +1400,44 @@ proc ::keyword::deselectKeywords { visuNo configName keywordNameList } {
       set var "1,check,$keywordName"
       set idx [ lsearch -exact $::conf(keyword,$configName,check) $var ]
       set ::conf(keyword,$configName,check) [ lreplace $::conf(keyword,$configName,check) $idx $idx "" ]
+      #--- je mets en forme la variable conf
+      set ::conf(keyword,$configName,check) [ string trimleft $::conf(keyword,$configName,check) "{} " ]
+   }
+}
+
+#------------------------------------------------------------------------------
+# selectDeselectAllKeywords
+#    deselectionne tous les mots cles
+#
+# Parametres :
+#    visuNo
+#------------------------------------------------------------------------------
+proc ::keyword::selectDeselectAllKeywords { visuNo configName } {
+   variable private
+
+   #--- je recupere le nomTK du premier checkbutton (indice 0)
+   set w0 [$::keyword::private($visuNo,table) windowpath 0,available ]
+   #--- je recupere la variable du premier checkbutton (indice 0)
+   set variableNomTK [ $w0 cget -variable ]
+   #--- j'affecte la bonne valeur a la variable
+   if { [ set $variableNomTK ] == "0" } {
+      set variable "1"
+   } else {
+      set variable "0"
+   }
+   #--- je selectionne ou deselectionne tous les mots cles
+   for {set i 0 } { $i < [$private($visuNo,table) size] } { incr i } {
+      #--- je recupere le nomTK du checkbutton d'indice i
+      set w [$::keyword::private($visuNo,table) windowpath $i,available ]
+      #--- je recupere l'etat du checkbutton d'indice i
+      set state [ $w cget -state ]
+      #--- je ne modifie que ceux qui sont a l'etat normal
+      if { $state == "normal" } {
+         #--- je recupere la variable du checkbutton d'indice i
+         set variableNomTK [ $w cget -variable ]
+         #--- j'affecte la bonne valeur a la variable du checkbutton d'indice i
+         set $variableNomTK $variable
+      }
    }
 }
 
@@ -1769,8 +1812,12 @@ proc ::keyword::config::apply { visuNo } {
          return
       }
 
+      #--- je recopie la variable
       set ::conf(keyword,$configId,configName) $private(nameConfigCopied)
       set ::conf(keyword,$configId,check) $::conf(keyword,$private(configId),check)
+
+      #--- je mets en forme la variable conf
+      set ::conf(keyword,$configId,check) [ string trimleft $::conf(keyword,$configId,check) "{} " ]
 
       #--- j'ajoute le nom de la configuration
       set ::keyword::private($visuNo,configName) $configId
