@@ -1,6 +1,6 @@
 #
 # Fichier : acqzadko.cap
-# Mise a jour $Id: acqzadko.cap,v 1.4 2009-11-06 19:08:09 robertdelmas Exp $
+# Mise a jour $Id: acqzadko.cap,v 1.5 2010-01-17 18:03:52 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -85,7 +85,7 @@ set caption(acqzadko,lancecont_int)             "Continuously perform an acquisi
 set caption(acqzadko,enregen)                   "(Recorded with the generic name: %s).\n"
 set caption(acqzadko,sansenr)                   "(not recorded).\n"
 set caption(acqzadko,enrim)                     "At %s UT, recording of image %s.\n"
-set caption(acqzadko,lect)                      "Reading"
+set caption(acqzadko,lect)                      "Read CCD"
 set caption(acqzadko,attente)                   "Wait for"
 set caption(acqzadko,en_cours)                  "Acquiring..."
 set caption(acqzadko,demsauv)                   "Saving required by the user at %s UT\n"
@@ -178,7 +178,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqzadko,enregen)                "(avec enregistrement sous le nom générique : %s).\n"
    set caption(acqzadko,sansenr)                "(sans enregistrement).\n"
    set caption(acqzadko,enrim)                  "A %s TU, enregistrement de l'image %s.\n"
-   set caption(acqzadko,lect)                   "Lecture"
+   set caption(acqzadko,lect)                   "Lecture CCD"
    set caption(acqzadko,attente)                "Attente de"
    set caption(acqzadko,en_cours)               "Acquisition en cours..."
    set caption(acqzadko,demsauv)                "Demande de sauvegarde par l'utilisateur à %s TU.\n"
@@ -272,7 +272,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqzadko,enregen)                "(con salvataggio con il nomegenerico: %s).\n"
    set caption(acqzadko,sansenr)                "(senza salvataggio).\n"
    set caption(acqzadko,enrim)                  "A %s TU, salvataggio dell'immagine %s.\n"
-   set caption(acqzadko,lect)                   "Lettura"
+   set caption(acqzadko,lect)                   "Lettura CCD"
    set caption(acqzadko,attente)                "Attesa di"
    set caption(acqzadko,en_cours)               "Acquisizione in corso ..."
    set caption(acqzadko,demsauv)                "Domanda di salvataggio da parte dell'utilizzatore a %s TU\n"
@@ -365,7 +365,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqzadko,enregen)                "(guardando con el nombre genérico: %s).\n"
    set caption(acqzadko,sansenr)                "(sin guardar).\n"
    set caption(acqzadko,enrim)                  "A %s TU, guardando la imagen %s.\n"
-   set caption(acqzadko,lect)                   "Lectura"
+   set caption(acqzadko,lect)                   "Leer CCD"
    set caption(acqzadko,attente)                "Esperando"
    set caption(acqzadko,en_cours)               "Adquiriendo ..."
    set caption(acqzadko,demsauv)                "Petición de guardar por el usuario a %s TU\n"
@@ -458,7 +458,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqzadko,enregen)                "(mit Gattungsnamen: %s speichern).\n"
    set caption(acqzadko,sansenr)                "(ohne Speicherung).\n"
    set caption(acqzadko,enrim)                  "Bei %s WZ, %s Bild Speicherung.\n"
-   set caption(acqzadko,lect)                   "Abstattung"
+   set caption(acqzadko,lect)                   "CCD Lesen"
    set caption(acqzadko,attente)                "Warten von"
    set caption(acqzadko,en_cours)               "Laufende Belichtung..."
    set caption(acqzadko,demsauv)                "Speicherung Antrag vom Benutzer um %s WZ\n"
@@ -551,7 +551,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqzadko,enregen)                "(com salvaguarda sob o nome genérico: %s).\n"
    set caption(acqzadko,sansenr)                "(sem salvaguarda).\n"
    set caption(acqzadko,enrim)                  "Às %s TU, salvaguarda da imagem %s.\n"
-   set caption(acqzadko,lect)                   "Leitura"
+   set caption(acqzadko,lect)                   "Ler CCD"
    set caption(acqzadko,attente)                "Espera de"
    set caption(acqzadko,en_cours)               "Aquisição em curso..."
    set caption(acqzadko,demsauv)                "Pedido de salvaguarda pelo utilizador às %s TU.\n"
@@ -643,7 +643,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqzadko,enregen)                "(Recorded with the generic name: %s).\n"
    set caption(acqzadko,sansenr)                "(not recorded).\n"
    set caption(acqzadko,enrim)                  "At %s UT, recording of image %s.\n"
-   set caption(acqzadko,lect)                   "Reading"
+   set caption(acqzadko,lect)                   "Read CCD"
    set caption(acqzadko,attente)                "Wait for"
    set caption(acqzadko,en_cours)               "Acquiring..."
    set caption(acqzadko,demsauv)                "Saving required by the user at %s UT\n"
@@ -735,7 +735,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqzadko,enregen)                "(Recorded with the generic name: %s).\n"
    set caption(acqzadko,sansenr)                "(not recorded).\n"
    set caption(acqzadko,enrim)                  "At %s UT, recording of image %s.\n"
-   set caption(acqzadko,lect)                   "Reading"
+   set caption(acqzadko,lect)                   "Read CCD"
    set caption(acqzadko,attente)                "Wait for"
    set caption(acqzadko,en_cours)               "Acquiring..."
    set caption(acqzadko,demsauv)                "Saving required by the user at %s UT\n"
@@ -827,7 +827,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqzadko,enregen)                "(Recorded with the generic name: %s).\n"
    set caption(acqzadko,sansenr)                "(not recorded).\n"
    set caption(acqzadko,enrim)                  "At %s UT, recording of image %s.\n"
-   set caption(acqzadko,lect)                   "Reading"
+   set caption(acqzadko,lect)                   "Read CCD"
    set caption(acqzadko,attente)                "Wait for"
    set caption(acqzadko,en_cours)               "Acquiring..."
    set caption(acqzadko,demsauv)                "Saving required by the user at %s UT\n"
