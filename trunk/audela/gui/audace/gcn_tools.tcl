@@ -8,7 +8,7 @@
 # Connected sites are found in http://gcn.gsfc.nasa.gov/sites_cfg.html
 # To create a new connected site http://gcn.gsfc.nasa.gov/gcn/config_builder.html
 #
-# Mise a jour $Id: gcn_tools.tcl,v 1.35 2009-12-05 09:43:40 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.36 2010-01-17 21:46:21 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -966,7 +966,8 @@ proc gcn_pkt_type { pkt_type } {
    if {($pkt_type==107)||($pkt_type==129)||($pkt_type==83)||($pkt_type==51)||($pkt_type==902)||($pkt_type==906)||($pkt_type==46)||($pkt_type==47)} {
       set prompt 0
    }
-   if {($pkt_type==111)||($pkt_type==100)||($pkt_type==121)||($pkt_type==61)||($pkt_type==58)||($pkt_type==53)||($pkt_type==40)||($pkt_type==33)||($pkt_type==35)||($pkt_type==30)||($pkt_type==26)||($pkt_type==28)||($pkt_type==1)||($pkt_type==901)||($pkt_type==905)||($pkt_type==98)} {
+   # $pkt_type==111
+   if {($pkt_type==100)||($pkt_type==121)||($pkt_type==61)||($pkt_type==58)||($pkt_type==53)||($pkt_type==40)||($pkt_type==33)||($pkt_type==35)||($pkt_type==30)||($pkt_type==26)||($pkt_type==28)||($pkt_type==1)||($pkt_type==901)||($pkt_type==905)||($pkt_type==98)} {
       set prompt 1
    }
    if {($pkt_type==101)||($pkt_type==102)||($pkt_type==67)||($pkt_type==54)||($pkt_type==55)||($pkt_type==41)||($pkt_type==42)||($pkt_type==43)||($pkt_type==39)||($pkt_type==903)||($pkt_type==907)} {
