@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise a jour $Id: foc.tcl,v 1.29 2009-12-31 08:47:29 robertdelmas Exp $
+# Mise a jour $Id: foc.tcl,v 1.30 2010-01-17 18:44:39 robertdelmas Exp $
 #
 
 set ::graphik(compteur) {}
@@ -141,6 +141,7 @@ namespace eval ::foc {
       set panneau(foc,dispTimeAfterId)  ""
       set panneau(foc,pose_en_cours)    "0"
       set panneau(foc,demande_arret)    "0"
+      set panneau(foc,avancement_acq)   "1"
 
       focBuildIF $This
    }
@@ -198,7 +199,7 @@ namespace eval ::foc {
       global audace panneau
 
       #--- Je verifie si une operation est en cours
-      if { $panneau(foc,pose_en_cours) == 1 } {
+      if { $panneau(foc,pose_en_cours) == "1" } {
          return -1
       }
 
@@ -214,12 +215,6 @@ namespace eval ::foc {
    proc cmdGo { } {
       variable This
       global audace caption panneau
-
-      #--- Verifie que le temps de pose est bien un réel positif
-      if { [ ::foc::testReel $panneau(foc,exptime) ] == "0" } {
-         tk_messageBox -title $caption(foc,probleme) -type ok -message $caption(foc,entier_positif)
-         return
-      }
 
       #---
       if { [ ::cam::list ] != "" } {
@@ -314,7 +309,7 @@ namespace eval ::foc {
       }
 
       #--- Alarme sonore de fin de pose
-      ::camera::alarme_sonore $panneau(foc,exptime)
+      ::camera::alarmeSonore $panneau(foc,exptime)
 
       #--- Appel de l'arret du moteur de foc a 100 millisecondes de la fin de pose
       set delay 0.100
@@ -405,7 +400,7 @@ namespace eval ::foc {
    }
 
    proc dispTime { } {
-      global audace caption panneau
+      global audace panneau
 
       #--- J'arrete le timer s'il est deja lance
       if { [info exists panneau(foc,dispTimeAfterId)] && $panneau(foc,dispTimeAfterId)!="" } {
@@ -427,110 +422,115 @@ namespace eval ::foc {
       }
    }
 
-proc avancementPose { t } {
-   global audace caption color conf panneau
+   proc avancementPose { t } {
+      global audace caption color conf panneau
 
-   #--- Recuperation de la position de la fenetre
-   ::foc::recupPositionAvancementPose
+      #--- Fenetre d'avancement de la pose non demandee
+      if { $panneau(foc,avancement_acq) == "0" } {
+         return
+      }
 
-   #--- Initialisation de la barre de progression
-   set cpt "100"
+      #--- Recuperation de la position de la fenetre
+      ::foc::recupPositionAvancementPose
 
-   #--- Initialisation de la position de la fenetre
-   if { ! [ info exists conf(foc,avancement,position) ] } { set conf(foc,avancement,position) "+120+315" }
+      #--- Initialisation de la barre de progression
+      set cpt "100"
 
-   #---
-   if { [ winfo exists $audace(base).progress_pose ] != "1" } {
-
-      #--- Cree la fenetre toplevel
-      toplevel $audace(base).progress_pose
-      wm transient $audace(base).progress_pose $audace(base)
-      wm resizable $audace(base).progress_pose 0 0
-      wm title $audace(base).progress_pose "$caption(camera,en_cours)"
-      wm geometry $audace(base).progress_pose $conf(foc,avancement,position)
-
-      #--- Cree le widget et le label du temps ecoule
-      label $audace(base).progress_pose.lab_status -text "" -justify center
-      pack $audace(base).progress_pose.lab_status -side top -fill x -expand true -pady 5
+      #--- Initialisation de la position de la fenetre
+      if { ! [ info exists conf(foc,avancement,position) ] } { set conf(foc,avancement,position) "+120+315" }
 
       #---
-      if { $panneau(foc,demande_arret) == "1" } {
-         $audace(base).progress_pose.lab_status configure -text "$caption(camera,numerisation)"
-      } else {
-         if { $t < "0" } {
-            destroy $audace(base).progress_pose
-         } elseif { $t > "0" } {
-            $audace(base).progress_pose.lab_status configure -text "$t $caption(camera,sec) / \
-               [ format "%d" [ expr int( $panneau(foc,exptime) ) ] ] $caption(camera,sec)"
-            set cpt [ expr $t * 100 / int( $panneau(foc,exptime) ) ]
-            set cpt [ expr 100 - $cpt ]
+      if { [ winfo exists $audace(base).progress_pose ] != "1" } {
+
+         #--- Cree la fenetre toplevel
+         toplevel $audace(base).progress_pose
+         wm transient $audace(base).progress_pose $audace(base)
+         wm resizable $audace(base).progress_pose 0 0
+         wm title $audace(base).progress_pose "$caption(foc,en_cours)"
+         wm geometry $audace(base).progress_pose $conf(foc,avancement,position)
+
+         #--- Cree le widget et le label du temps ecoule
+         label $audace(base).progress_pose.lab_status -text "" -justify center
+         pack $audace(base).progress_pose.lab_status -side top -fill x -expand true -pady 5
+
+         #---
+         if { $panneau(foc,demande_arret) == "1" } {
+            $audace(base).progress_pose.lab_status configure -text "$caption(foc,numerisation)"
          } else {
-            $audace(base).progress_pose.lab_status configure -text "$caption(camera,numerisation)"
-         }
-      }
-
-      #---
-      catch {
-         #--- Cree le widget pour la barre de progression
-         frame $audace(base).progress_pose.cadre -width 200 -height 30 -borderwidth 2 -relief groove
-         pack $audace(base).progress_pose.cadre -in $audace(base).progress_pose -side top \
-            -anchor center -fill x -expand true -padx 8 -pady 8
-
-         #--- Affiche de la barre de progression
-         frame $audace(base).progress_pose.cadre.barre_color_invariant -height 26 -bg $color(blue)
-         place $audace(base).progress_pose.cadre.barre_color_invariant -in $audace(base).progress_pose.cadre \
-            -x 0 -y 0 -relwidth [ expr $cpt / 100.0 ]
-         update
-      }
-
-      #--- Mise a jour dynamique des couleurs
-      if { [ winfo exists $audace(base).progress_pose ] == "1" } {
-         ::confColor::applyColor $audace(base).progress_pose
-      }
-
-   } else {
-
-      #---
-      if { $panneau(foc,pose_en_cours) == 0 } {
-         #--- Je supprime la fenetre s'il n'y a plus de pose en cours
-         destroy $audace(base).progress_pose
-      } else {
-         if { $panneau(foc,demande_arret) == "0" } {
-            if { $t > "0" } {
-               $audace(base).progress_pose.lab_status configure -text "$t $caption(camera,sec) / \
-                  [ format "%d" [ expr int( $panneau(foc,exptime) ) ] ] $caption(camera,sec)"
+            if { $t < "0" } {
+               destroy $audace(base).progress_pose
+            } elseif { $t > "0" } {
+               $audace(base).progress_pose.lab_status configure -text "$t $caption(foc,sec) / \
+                  [ format "%d" [ expr int( $panneau(foc,exptime) ) ] ] $caption(foc,sec)"
                set cpt [ expr $t * 100 / int( $panneau(foc,exptime) ) ]
                set cpt [ expr 100 - $cpt ]
             } else {
-               $audace(base).progress_pose.lab_status configure -text "$caption(camera,numerisation)"
+               $audace(base).progress_pose.lab_status configure -text "$caption(foc,numerisation)"
             }
-         } else {
-            #--- J'affiche "Lecture" des qu'une demande d'arret est demandee
-            $audace(base).progress_pose.lab_status configure -text "$caption(camera,numerisation)"
          }
+
+         #---
          catch {
+            #--- Cree le widget pour la barre de progression
+            frame $audace(base).progress_pose.cadre -width 200 -height 30 -borderwidth 2 -relief groove
+            pack $audace(base).progress_pose.cadre -in $audace(base).progress_pose -side top \
+               -anchor center -fill x -expand true -padx 8 -pady 8
+
             #--- Affiche de la barre de progression
+            frame $audace(base).progress_pose.cadre.barre_color_invariant -height 26 -bg $color(blue)
             place $audace(base).progress_pose.cadre.barre_color_invariant -in $audace(base).progress_pose.cadre \
                -x 0 -y 0 -relwidth [ expr $cpt / 100.0 ]
             update
          }
+
+         #--- Mise a jour dynamique des couleurs
+         if { [ winfo exists $audace(base).progress_pose ] == "1" } {
+            ::confColor::applyColor $audace(base).progress_pose
+         }
+
+      } else {
+
+         #---
+         if { $panneau(foc,pose_en_cours) == "0" } {
+            #--- Je supprime la fenetre s'il n'y a plus de pose en cours
+            destroy $audace(base).progress_pose
+         } else {
+            if { $panneau(foc,demande_arret) == "0" } {
+               if { $t > "0" } {
+                  $audace(base).progress_pose.lab_status configure -text "$t $caption(foc,sec) / \
+                     [ format "%d" [ expr int( $panneau(foc,exptime) ) ] ] $caption(foc,sec)"
+                  set cpt [ expr $t * 100 / int( $panneau(foc,exptime) ) ]
+                  set cpt [ expr 100 - $cpt ]
+               } else {
+                  $audace(base).progress_pose.lab_status configure -text "$caption(foc,numerisation)"
+               }
+            } else {
+               #--- J'affiche "Lecture" des qu'une demande d'arret est demandee
+               $audace(base).progress_pose.lab_status configure -text "$caption(foc,numerisation)"
+            }
+            catch {
+               #--- Affiche de la barre de progression
+               place $audace(base).progress_pose.cadre.barre_color_invariant -in $audace(base).progress_pose.cadre \
+                  -x 0 -y 0 -relwidth [ expr $cpt / 100.0 ]
+               update
+            }
+         }
+
       }
 
    }
 
-}
+   proc recupPositionAvancementPose { } {
+      global audace conf
 
-proc recupPositionAvancementPose { } {
-   global audace conf
-
-   if [ winfo exists $audace(base).progress_pose ] {
-      #--- Determination de la position de la fenetre
-      set geometry [ wm geometry $audace(base).progress_pose ]
-      set deb [ expr 1 + [ string first + $geometry ] ]
-      set fin [ string length $geometry ]
-      set conf(foc,avancement,position) "+[ string range $geometry $deb $fin ]"
+      if [ winfo exists $audace(base).progress_pose ] {
+         #--- Determination de la position de la fenetre
+         set geometry [ wm geometry $audace(base).progress_pose ]
+         set deb [ expr 1 + [ string first + $geometry ] ]
+         set fin [ string length $geometry ]
+         set conf(foc,avancement,position) "+[ string range $geometry $deb $fin ]"
+      }
    }
-}
 
    proc cmdStop { } {
       variable This
@@ -570,19 +570,6 @@ proc recupPositionAvancementPose { } {
       } else {
          ::confCam::run
       }
-   }
-
-   proc testReel { valeur } {
-      #--- Vérifie que la chaine passée en argument décrit bien un réel
-      #--- Elle retourne 1 si c'est la cas, et 0 si ce n'est pas un reel
-      set test 1
-      for { set i 0 } { $i < [ string length $valeur ] } { incr i } {
-         set a [ string index $valeur $i ]
-         if { ! [ string match {[0-9.]} $a ] } {
-            set test 0
-         }
-      }
-      return $test
    }
 
    proc cmdSauveLog { namefile } {
@@ -948,7 +935,8 @@ proc focBuildIF { This } {
 
             #--- Entry pour exptime
             entry $This.fra2.fra1.ent1 -textvariable panneau(foc,exptime) \
-               -relief groove -width 6 -justify center
+               -relief groove -width 6 -justify center \
+               -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
             pack $This.fra2.fra1.ent1 -in $This.fra2.fra1 -side left -fill none -padx 4 -pady 2
 
             #--- Label secondes
@@ -1051,7 +1039,8 @@ proc focBuildIF { This } {
 
             #--- Entry pour nbpas2
             entry $This.fra5.fra2.ent3 -textvariable audace(focus,nbpas2) \
-               -relief groove -width 6 -justify center
+               -relief groove -width 6 -justify center \
+               -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer -32767 32767 }
             pack $This.fra5.fra2.ent3 -in $This.fra5.fra2 -side left -fill none -padx 4 -pady 2
             bind $This.fra5.fra2.ent3 <Enter> { ::foc::formatFoc }
             bind $This.fra5.fra2.ent3 <Leave> { destroy $audace(base).formatfoc }
@@ -1076,6 +1065,16 @@ proc focBuildIF { This } {
          pack $This.fra3.but1 -in $This.fra3 -side bottom -fill x -padx 5 -pady 5 -ipadx 15 -ipady 2
 
       pack $This.fra3 -side top -fill x
+
+      #--- Frame pour l'affichage de l'avancement de l'acqusition
+      frame $This.fra6 -borderwidth 2 -relief ridge
+
+        #--- Checkbutton pour l'affichage de l'avancement de l'acqusition
+        checkbutton $This.fra6.avancement_acq -highlightthickness 0 \
+           -text $caption(foc,avancement_acq) -variable panneau(foc,avancement_acq)
+        pack $This.fra6.avancement_acq -side left -fill x
+
+     pack $This.fra6 -side top -fill x
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
