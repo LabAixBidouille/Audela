@@ -278,7 +278,7 @@ a base de FTDI, tels que quickremote et quickaudine.
 Pour savoir si tel est le cas, brancher un des deux equipements et lancer
 la commande shell lsmod pour lister les drivers utilises par le kernel.
 Generalement celui correspondant a l'identifiant USB de quickremote
-s'appelle ftdi_sio.  Si ce service existe, le supprimer.
+s'appelle ftdi_sio. Si ce service existe, le supprimer.
 
 Pour lister les services, utiliser la commande lsmod.
 Pour arreter un service, utiliser la commande rmmod.
