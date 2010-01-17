@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: remotectrl.tcl,v 1.31 2009-07-15 17:01:10 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.tcl,v 1.32 2010-01-17 18:13:15 robertdelmas Exp $
 #
 
 #============================================================
@@ -796,7 +796,7 @@ namespace eval ::remotectrl {
          }
 
          #--- Alarme sonore de fin de pose
-         set message "send \{::camera::alarme_sonore $exptime\}"
+         set message "send \{::camera::alarmeSonore $exptime\}"
          eval $message
 
          #--- Appel a la fonction d'acquisition
