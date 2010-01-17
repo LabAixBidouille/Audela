@@ -2,7 +2,7 @@
 # Fichier : horloge_asro.tcl
 # Description : Horloge de l'astronome
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: horloge_astro.tcl,v 1.4 2009-01-14 15:23:27 robertdelmas Exp $
+# Mise a jour $Id: horloge_astro.tcl,v 1.5 2010-01-17 18:08:23 robertdelmas Exp $
 #
 
 #---
@@ -55,8 +55,7 @@ proc calcul { } {
    global paramhorloge
 
    if { $paramhorloge(sortie) != "1" } {
-      set now now
-      catch {set now [::audace::date_sys2ut now]}
+      set now [clock format [clock seconds] -gmt 1 -format "%Y %m %d %H %M %S"]
       set tu [mc_date2ymdhms $now ]
       set h [format "%02d" [lindex $tu 3]]
       set m [format "%02d" [lindex $tu 4]]
