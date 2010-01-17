@@ -2,7 +2,7 @@
 # Fichier : modpoithread.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoithread.tcl,v 1.1 2009-12-21 22:37:08 michelpujol Exp $
+# Mise a jour $Id: modpoithread.tcl,v 1.2 2010-01-17 18:10:43 robertdelmas Exp $
 #
 # 3) Pour charger un modele de pointage existant
 #    source modpoi.tcl
@@ -15,7 +15,7 @@
 
 proc modpoi_cat2tel { radec } {
    global modpoi
-   
+
    #--- Catalog 2 observed
    set dateTu [clock format [clock seconds] -gmt 1 -format "%Y-%m-%dT%H:%M:%S"]
    set listv [modpoi_catalogmean2apparent [lindex $radec 0] [lindex $radec 1] J2000.0 $dateTu]
@@ -33,7 +33,7 @@ proc modpoi_cat2tel { radec } {
 
 proc modpoi_tel2cat { radec } {
    global modpoi
-   
+
    #--- Telescope 2 observed
    set radec [modpoi_passage $radec tel2cat ]
    #--- Observed 2 catalog
@@ -194,9 +194,7 @@ proc modpoi_passage { radec sens } {
    #--- Met en forme les valeurs
    set deltah 0
    set deltad 0
-   ###set now now
-   ###catch {set now [::audace::date_sys2ut now]}
-   set now [clock format [clock seconds] -gmt 1 -format "%Y-%m-%dT%H:%M:%S"]   
+   set now [clock format [clock seconds] -gmt 1 -format "%Y-%m-%dT%H:%M:%S"]
    set phi [lindex $modpoi(var,home) 3]
    set ra0 $ra
    set dec0 $dec
