@@ -4,7 +4,7 @@
 # Auteur : Christian JASINSKI (e-mail : chris.jasinski@wanadoo.fr)
 # Avec l'aide d'Alain KLOTZ pour la partie la plus difficile (grande boucle interne aux procédures)
 # Avec l'aide de Robert DELMAS qui a apporté de nombreuses modifications, notamment en matière de traitement des erreurs
-# Mise a jour $Id: telshift.tcl,v 1.9 2009-12-31 08:49:39 robertdelmas Exp $
+# Mise a jour $Id: telshift.tcl,v 1.10 2010-01-17 18:12:27 robertdelmas Exp $
 #
 
 #!/logiciels/public/Tcl/bin/wish
@@ -1024,7 +1024,7 @@ namespace eval ::telshift {
       $camera acq
 
       #--- Alarme sonore de fin de pose
-      ::camera::alarme_sonore $exptime
+      ::camera::alarmeSonore $exptime
 
       #--- call to timer
       if {$exptime>1} {
@@ -1089,7 +1089,7 @@ namespace eval ::telshift {
       $camera acq
 
       #--- Alarme sonore de fin de pose
-      ::camera::alarme_sonore $exptime
+      ::camera::alarmeSonore $exptime
 
       #--- call to timer
       if {$exptime>1} {
