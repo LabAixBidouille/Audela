@@ -327,6 +327,7 @@ int CmdSaveImage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
    
    if (tclResult == TCL_OK) { 
       char fileName [1024];
+      char errorMessage [1024];
       char format[10];
       unsigned char * pixelPtr;
       int width;
@@ -412,13 +413,20 @@ int CmdSaveImage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
          // j'enregistre l'image dans le fichier en utilisant la librairie tkimg ou tk
          sprintf(ligne,"temporaryImageVisu write \"%s\" -format %s ", fileName, format); 
          tclResult = Tcl_Eval(interp,ligne) ;
-
       }
-
+      if (tclResult == TCL_ERROR) {
+         //je sauvegarde le message d'erreur
+         strncpy(errorMessage, interp->result, sizeof(errorMessage) -1);       
+      }
       // je supprime l'image temporaire  (sans tenir compte du resultat pour la suite)
       sprintf(ligne,"image delete temporaryImageVisu");
       Tcl_Eval(interp,ligne);
 
+      if (tclResult == TCL_OK) {
+         Tcl_SetResult(interp,"",TCL_VOLATILE);
+      } else {
+         Tcl_SetResult(interp,errorMessage,TCL_VOLATILE);
+      }
    }
    return tclResult;
 }
