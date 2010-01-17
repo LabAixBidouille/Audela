@@ -1,6 +1,6 @@
 #
 # Fichier : cmaude.cap
-# Mise a jour $Id: cmaude.cap,v 1.25 2009-12-19 09:10:19 robertdelmas Exp $
+# Mise a jour $Id: cmaude.cap,v 1.26 2010-01-17 18:04:44 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -78,6 +78,7 @@ set caption(cmaude,pretraitement)                  "Pre-processing (offset, dark
 set caption(cmaude,image_sauvee)                   "Image pre-processed and saved"
 set caption(cmaude,prochaine_image_dans)           "Next Image in"
 set caption(cmaude,secondes)                       "seconds"
+set caption(cmaude,numerisation)                   "Read CCD"
 
 set caption(cmaude,date_courante)                  "for current date"
 set caption(cmaude,date)                           "Date (y-m-d):"
@@ -168,6 +169,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,image_sauvee)                "Image prétraitée et sauvegardée"
    set caption(cmaude,prochaine_image_dans)        "Prochaine image dans"
    set caption(cmaude,secondes)                    "secondes"
+   set caption(cmaude,numerisation)                "Lecture CCD"
 
    set caption(cmaude,date_courante)               "pour la date courante"
    set caption(cmaude,date)                        "Date (a-m-j) :"
@@ -258,6 +260,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,image_sauvee)                "Immagine pretrattata e salvata"
    set caption(cmaude,prochaine_image_dans)        "Prossima immagine in"
    set caption(cmaude,secondes)                    "secondi"
+   set caption(cmaude,numerisation)                "Lettura CCD"
 
    set caption(cmaude,date_courante)               "per la data corrente"
    set caption(cmaude,date)                        "Data (a-m-g):"
@@ -348,6 +351,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,image_sauvee)                "Imagen pre-procesada y guardada"
    set caption(cmaude,prochaine_image_dans)        "Proxima imagen en"
    set caption(cmaude,secondes)                    "segundos"
+   set caption(cmaude,numerisation)                "Leer CCD"
 
    set caption(cmaude,date_courante)               "para el tiempo actual"
    set caption(cmaude,date)                        "Fecha (y-m-d):"
@@ -438,6 +442,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,image_sauvee)                "Bild vorbehandelt und gespeichert"
    set caption(cmaude,prochaine_image_dans)        "Nächstes Bild in"
    set caption(cmaude,secondes)                    "Sekunden"
+   set caption(cmaude,numerisation)                "CCD Lesen"
 
    set caption(cmaude,date_courante)               "Für das Laufendes Datum"
    set caption(cmaude,date)                        "Datum (Y-M-T):"
@@ -528,6 +533,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,image_sauvee)                "Imagem pré-processada e guardada"
    set caption(cmaude,prochaine_image_dans)        "Próxima imagem em"
    set caption(cmaude,secondes)                    "segundos"
+   set caption(cmaude,numerisation)                "Ler CCD"
 
    set caption(cmaude,date_courante)               "para a data actual"
    set caption(cmaude,date)                        "Data (a-m-d):"
@@ -618,6 +624,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,image_sauvee)                "Image pre-processed and saved"
    set caption(cmaude,prochaine_image_dans)        "Next Image in"
    set caption(cmaude,secondes)                    "Seconds"
+   set caption(cmaude,numerisation)                "Read CCD"
 
    set caption(cmaude,date_courante)               "for current date"
    set caption(cmaude,date)                        "Date (y-m-d):"
@@ -708,6 +715,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,image_sauvee)                "Image pre-processed and saved"
    set caption(cmaude,prochaine_image_dans)        "Next Image in"
    set caption(cmaude,secondes)                    "seconds"
+   set caption(cmaude,numerisation)                "Read CCD"
 
    set caption(cmaude,date_courante)               "for current date"
    set caption(cmaude,date)                        "Date (y-m-d):"
@@ -798,6 +806,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,image_sauvee)                "Image pre-processed and saved"
    set caption(cmaude,prochaine_image_dans)        "Next Image in"
    set caption(cmaude,secondes)                    "seconds"
+   set caption(cmaude,numerisation)                "Read CCD"
 
    set caption(cmaude,date_courante)               "for current date"
    set caption(cmaude,date)                        "Date (y-m-d):"
