@@ -1,6 +1,6 @@
 #
 # Fichier : keyword.cap
-# Mise a jour $Id: keyword.cap,v 1.28 2009-12-19 09:14:28 robertdelmas Exp $
+# Mise a jour $Id: keyword.cap,v 1.29 2010-01-17 18:40:23 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -25,6 +25,7 @@ set caption(keyword,errorEmptyName)                    "Setup Name is Empty."
 set caption(keyword,errorExistingName)                 "Setup Name is already used."
 set caption(keyword,errorDefaultName)                  "Setup cannot be deleted."
 set caption(keyword,confirmDeleteConfig)               "Setup Removal:"
+set caption(keyword,selectDeselectAll)                 "Select / Deselect\nall Keywords"
 
 #--- Fenetre de configuration
 set caption(keyword,titre)                             "FITS Keywords"
@@ -109,6 +110,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,errorExistingName)              "Le nom de la configuration est déjà utilisé."
    set caption(keyword,errorDefaultName)               "Cette configuration ne peut pas être supprimée."
    set caption(keyword,confirmDeleteConfig)            "Suppression de la configuration :"
+   set caption(keyword,selectDeselectAll)              "Sélectionner / Désélectionner\ntous les mots clés"
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "Mots clés FITS"
@@ -193,6 +195,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,errorExistingName)              "Nome della configurazione già presente."
    set caption(keyword,errorDefaultName)               "Configurazione non eliminabile."
    set caption(keyword,confirmDeleteConfig)            "Eliminazione della configurazione:"
+   set caption(keyword,selectDeselectAll)              "# Sélectionner / Désélectionner\ntous les mots clés"
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "Parole chiave FITS"
@@ -277,6 +280,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,errorExistingName)              "El nombre de configuración ya existe."
    set caption(keyword,errorDefaultName)               "Esta configuración no puede ser borrada."
    set caption(keyword,confirmDeleteConfig)            "Supresion de la configuración:"
+   set caption(keyword,selectDeselectAll)              "# Sélectionner / Désélectionner\ntous les mots clés"
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "Palabras clave FITS"
@@ -361,6 +365,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,errorExistingName)              "Der Namen der Konfiguration ist schon benutzt."
    set caption(keyword,errorDefaultName)               "Diese Konfiguration kann nicht erlöscht werden."
    set caption(keyword,confirmDeleteConfig)            "Konfiguration löschen:"
+   set caption(keyword,selectDeselectAll)              "# Sélectionner / Désélectionner\ntous les mots clés"
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "FITS Stichwörter"
@@ -445,6 +450,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,errorExistingName)              "# Le nom de la configuration est déjà utilisé."
    set caption(keyword,errorDefaultName)               "# Cette configuration ne peut pas être supprimée."
    set caption(keyword,confirmDeleteConfig)            "# Suppression de la configuration :"
+   set caption(keyword,selectDeselectAll)              "# Sélectionner / Désélectionner\ntous les mots clés"
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "Palavras-chave FITS"
@@ -529,6 +535,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,errorExistingName)              "Setup Name is already used."
    set caption(keyword,errorDefaultName)               "Setup cannot be deleted."
    set caption(keyword,confirmDeleteConfig)            "Setup Removal:"
+   set caption(keyword,selectDeselectAll)              "Select / Deselect\nall Keywords"
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "FITS Keywords"
@@ -613,6 +620,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,errorExistingName)              "Setup Name is already used."
    set caption(keyword,errorDefaultName)               "Setup cannot be deleted."
    set caption(keyword,confirmDeleteConfig)            "Setup Removal:"
+   set caption(keyword,selectDeselectAll)              "Select / Deselect\nall Keywords"
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "FITS Keywords"
@@ -697,6 +705,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,errorExistingName)              "Setup Name is already used."
    set caption(keyword,errorDefaultName)               "Setup cannot be deleted."
    set caption(keyword,confirmDeleteConfig)            "Setup Removal:"
+   set caption(keyword,selectDeselectAll)              "Select / Deselect\nall Keywords"
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "FITS Keywords"
