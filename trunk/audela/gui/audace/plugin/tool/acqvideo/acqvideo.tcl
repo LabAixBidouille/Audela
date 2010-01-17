@@ -2,7 +2,7 @@
 # Fichier : acqvideo.tcl
 # Description : Outil d'acquisition video
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: acqvideo.tcl,v 1.16 2010-01-10 16:09:06 robertdelmas Exp $
+# Mise a jour $Id: acqvideo.tcl,v 1.17 2010-01-17 18:27:08 robertdelmas Exp $
 #
 
 #==============================================================
@@ -425,55 +425,6 @@ namespace eval ::acqvideo {
    }
 #***** Fin de la procedure de changement du mode d'acquisition *
 
-#***** Procedure de test de validite d'un entier *****************
-#--- Cette procedure verifie que la chaine passee en argument decrit
-#--- bien un entier different de 0
-#--- Elle retourne 1 si c'est la cas et 0 si ce n'est pas un entier
-   proc testEntier { valeur } {
-      set test 1
-      for { set i 0 } { $i < [ string length $valeur ] } { incr i } {
-         set a [string index $valeur $i]
-         if { ![string match {[1-9]} $a] } {
-            set test 0
-         }
-      }
-      if { $valeur == "" } { set test 0 }
-      return $test
-   }
-#***** Fin de la procedure de test de validite d'une entier *******
-
-#***** Procedure de test de validite d'une chaine de caracteres *******
-#--- Cette procedure verifie que la chaine passee en argument ne contient
-#--- que des caracteres valides
-#--- Elle retourne 1 si c'est la cas et 0 si ce n'est pas valable
-   proc testChaine { valeur } {
-      set test 1
-      for { set i 0 } { $i < [ string length $valeur ] } { incr i } {
-         set a [ string index $valeur $i ]
-         if { ![string match {[-a-zA-Z0-9_]} $a] } {
-            set test 0
-         }
-      }
-      return $test
-   }
-#***** Fin de la procedure de test de validite d'une chaine de caracteres *******
-
-#***** Procedure de test de validite d'un nombre reel *****************
-#--- Cette procedure verifie que la chaine passee en argument decrit
-#--- bien un reel
-#--- Elle retourne 1 si c'est la cas et 0 si ce n'est pas un reel
-   proc testReel { valeur } {
-      set test 1
-      for { set i 0 } { $i < [string length $valeur] } { incr i } {
-         set a [string index $valeur $i]
-         if { ![string match {[0-9.]} $a] } {
-            set test 0
-         }
-      }
-      return $test
-   }
-#***** Fin de la procedure de test de validite d'un nombre reel *******
-
 #***** Procedure Go/Stop (appui sur le bouton Go/Stop) *********
    proc goStop { visuNo } {
       global audace caption panneau
@@ -524,11 +475,6 @@ namespace eval ::acqvideo {
                   tk_messageBox -title $caption(acqvideo,pb) -type ok \
                      -message $caption(acqvideo,nomblanc)
                   set integre non
-               #--- Verifier que le nom de fichier ne contient pas de caracteres interdits
-               } elseif { [ testChaine $panneau(acqvideo,$visuNo,nom_image) ] == "0" } {
-                  tk_messageBox -title $caption(acqvideo,pb) -type ok \
-                     -message $caption(acqvideo,mauvcar)
-                  set integre non
                }
 
                #--- Branchement selon le mode de prise de video
@@ -541,11 +487,6 @@ namespace eval ::acqvideo {
                         if { $panneau(acqvideo,$visuNo,index) == "" } {
                            tk_messageBox -title $caption(acqvideo,pb) -type ok \
                                -message $caption(acqvideo,saisind)
-                           set integre non
-                        #--- Verifier que l'index est valide (entier positif)
-                        } elseif { [ testEntier $panneau(acqvideo,$visuNo,index) ] == "0" } {
-                           tk_messageBox -title $caption(acqvideo,pb) -type ok \
-                              -message $caption(acqvideo,indinv)
                            set integre non
                         #--- Envoyer un warning si l'index n'est pas a 1
                         } elseif { $panneau(acqvideo,$visuNo,index) != "1" } {
@@ -565,11 +506,6 @@ namespace eval ::acqvideo {
                            tk_messageBox -title $caption(acqvideo,pb) -type ok \
                                -message $caption(acqvideo,saisind)
                            set integre non
-                        #--- Verifier que l'index est valide (entier positif)
-                        } elseif { [ testEntier $panneau(acqvideo,$visuNo,index) ] == "0" } {
-                           tk_messageBox -title $caption(acqvideo,pb) -type ok \
-                              -message $caption(acqvideo,indinv)
-                           set integre non
                         #--- Envoyer un warning si l'index n'est pas a 1
                         } elseif { $panneau(acqvideo,$visuNo,index) != "1" } {
                            set confirmation [tk_messageBox -title $caption(acqvideo,conf) -type yesno \
@@ -577,11 +513,6 @@ namespace eval ::acqvideo {
                            if { $confirmation == "no" } {
                               set integre non
                            }
-                        #--- Verifier que l'intervalle est valide (entier positif)
-                        } elseif { [ testEntier $panneau(acqvideo,$visuNo,intervalle_video) ] == "0" } {
-                           tk_messageBox -title $caption(acqvideo,pb) -type ok \
-                              -message $caption(acqvideo,interinv)
-                           set integre non
                         #--- Verifier que l'intervalle est superieur a la duree du film
                         } elseif { $panneau(acqvideo,$visuNo,lg_film) > $panneau(acqvideo,$visuNo,intervalle_video) } {
                            tk_messageBox -title $caption(acqvideo,pb) -type ok \
@@ -938,7 +869,7 @@ namespace eval ::acqvideo {
 
       if { $panneau(acqvideo,$visuNo,avancement_acq) == "1" } {
          #--- Recuperation de la position de la fenetre Avancement
-         ::acqvideo::recupPosition1 $visuNo
+         ::acqvideo::recupPositionAvancementPose $visuNo
 
          #--- Initialisation de la barre de progression
          set cpt "100"
@@ -1107,7 +1038,7 @@ namespace eval ::acqvideo {
                -padx 10 -pady 5
             entry $panneau(acqvideo,$visuNo,base).status_video.a.ent1 -width 5 \
                -relief groove -textvariable panneau(acqvideo,$visuNo,intervalle_video) -justify center \
-               -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 9999 }
+               -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
             pack $panneau(acqvideo,$visuNo,base).status_video.a.ent1 -anchor center -expand 1 -fill none \
                -side left -padx 10
          pack $panneau(acqvideo,$visuNo,base).status_video.a -padx 10 -pady 5
@@ -1522,33 +1453,21 @@ namespace eval ::acqvideo {
          -justify center -fill $audace(color,textColor) -tags label_nb_pixel_x_y
 
       #--- Controle la coordonnee x1
-      if { [ testReel $panneau(acqvideo,$visuNo,x1) ] == "0" } {
-         set panneau(acqvideo,$visuNo,x1) "1"
-      }
       if { ( $panneau(acqvideo,$visuNo,x1) > $largeur ) || ( $panneau(acqvideo,$visuNo,x1) ) < "1" } {
          set panneau(acqvideo,$visuNo,x1) "1"
       }
 
       #--- Controle la coordonnee y1
-      if { [ testReel $panneau(acqvideo,$visuNo,y1) ] == "0" } {
-         set panneau(acqvideo,$visuNo,y1) "1"
-      }
       if { ( $panneau(acqvideo,$visuNo,y1) > $hauteur ) || ( $panneau(acqvideo,$visuNo,y1) ) < "1" } {
          set panneau(acqvideo,$visuNo,y1) "1"
       }
 
       #--- Controle la coordonnee x2
-      if { [ testReel $panneau(acqvideo,$visuNo,x2) ] == "0" } {
-         set panneau(acqvideo,$visuNo,x2) "$largeur"
-      }
       if { ( $panneau(acqvideo,$visuNo,x2) > $largeur ) || ( $panneau(acqvideo,$visuNo,x2) < "1" ) } {
          set panneau(acqvideo,$visuNo,x2) "$largeur"
       }
 
       #--- Controle la coordonnee y2
-      if { [ testReel $panneau(acqvideo,$visuNo,y2) ] == "0" } {
-         set panneau(acqvideo,$visuNo,y2) "$hauteur"
-      }
       if { ( $panneau(acqvideo,$visuNo,y2) > $hauteur ) || ( $panneau(acqvideo,$visuNo,y2) < "1" ) } {
          set panneau(acqvideo,$visuNo,y2) "$hauteur"
       }
@@ -1567,33 +1486,21 @@ namespace eval ::acqvideo {
       set hauteur [ lindex [ cam$panneau(acqvideo,$visuNo,camNo) nbpix ] 1 ]
 
       #--- Controle la coordonnee x1
-      if { [ testReel $panneau(acqvideo,$visuNo,x1) ] == "0" } {
-         set panneau(acqvideo,$visuNo,x1) "1"
-      }
       if { ( $panneau(acqvideo,$visuNo,x1) > $largeur ) || ( $panneau(acqvideo,$visuNo,x1) ) < "1" } {
          set panneau(acqvideo,$visuNo,x1) "1"
       }
 
       #--- Controle la coordonnee y1
-      if { [ testReel $panneau(acqvideo,$visuNo,y1) ] == "0" } {
-         set panneau(acqvideo,$visuNo,y1) "1"
-      }
       if { ( $panneau(acqvideo,$visuNo,y1) > $hauteur ) || ( $panneau(acqvideo,$visuNo,y1) ) < "1" } {
          set panneau(acqvideo,$visuNo,y1) "1"
       }
 
       #--- Controle la coordonnee x2
-      if { [ testReel $panneau(acqvideo,$visuNo,x2) ] == "0" } {
-         set panneau(acqvideo,$visuNo,x2) "$largeur"
-      }
       if { ( $panneau(acqvideo,$visuNo,x2) > $largeur ) || ( $panneau(acqvideo,$visuNo,x2) < "1" ) } {
          set panneau(acqvideo,$visuNo,x2) "$largeur"
       }
 
       #--- Controle la coordonnee y2
-      if { [ testReel $panneau(acqvideo,$visuNo,y2) ] == "0" } {
-         set panneau(acqvideo,$visuNo,y2) "$hauteur"
-      }
       if { ( $panneau(acqvideo,$visuNo,y2) > $hauteur ) || ( $panneau(acqvideo,$visuNo,y2) < "1" ) } {
          set panneau(acqvideo,$visuNo,y2) "$hauteur"
       }
@@ -1635,7 +1542,7 @@ namespace eval ::acqvideo {
 #***** Fin enregistrement de la position des fenetres Continu (1), Continu (2), Video et Video (1) ****
 
 #***** Enregistrement de la position de la fenetre Avancement ********
-   proc recupPosition1 { visuNo } {
+   proc recupPositionAvancementPose { visuNo } {
       global panneau
 
       #--- Cas de la fenetre Avancement
@@ -1661,30 +1568,18 @@ namespace eval ::acqvideo {
          set largeur [ lindex [ cam$panneau(acqvideo,$visuNo,camNo) nbpix ] 0 ]
          set hauteur [ lindex [ cam$panneau(acqvideo,$visuNo,camNo) nbpix ] 1 ]
          #--- Controle la coordonnee x1
-         if { [ testReel $panneau(acqvideo,$visuNo,x1) ] == "0" } {
-           set panneau(acqvideo,$visuNo,x1) "1"
-         }
          if { ( $panneau(acqvideo,$visuNo,x1) > $largeur ) || ( $panneau(acqvideo,$visuNo,x1) ) < "1" } {
             set panneau(acqvideo,$visuNo,x1) "1"
          }
          #--- Controle la coordonnee y1
-         if { [ testReel $panneau(acqvideo,$visuNo,y1) ] == "0" } {
-            set panneau(acqvideo,$visuNo,y1) "1"
-         }
          if { ( $panneau(acqvideo,$visuNo,y1) > $hauteur ) || ( $panneau(acqvideo,$visuNo,y1) ) < "1" } {
             set panneau(acqvideo,$visuNo,y1) "1"
          }
          #--- Controle la coordonnee x2
-         if { [ testReel $panneau(acqvideo,$visuNo,x2) ] == "0" } {
-            set panneau(acqvideo,$visuNo,x2) "$largeur"
-         }
          if { ( $panneau(acqvideo,$visuNo,x2) > $largeur ) || ( $panneau(acqvideo,$visuNo,x2) < "1" ) } {
             set panneau(acqvideo,$visuNo,x2) "$largeur"
          }
          #--- Controle la coordonnee y2
-         if { [ testReel $panneau(acqvideo,$visuNo,y2) ] == "0" } {
-            set panneau(acqvideo,$visuNo,y2) "$hauteur"
-         }
          if { ( $panneau(acqvideo,$visuNo,y2) > $hauteur ) || ( $panneau(acqvideo,$visuNo,y2) < "1" ) } {
             set panneau(acqvideo,$visuNo,y2) "$hauteur"
          }
@@ -1790,7 +1685,8 @@ proc acqvideoBuildIF { visuNo } {
             label $panneau(acqvideo,$visuNo,This).mode.video.nom.but -text $caption(acqvideo,nom) -pady 0
             pack $panneau(acqvideo,$visuNo,This).mode.video.nom.but -fill x -side top
             entry $panneau(acqvideo,$visuNo,This).mode.video.nom.entr -width 10 \
-               -textvariable panneau(acqvideo,$visuNo,nom_image) -relief groove
+               -textvariable panneau(acqvideo,$visuNo,nom_image) -relief groove \
+               -validate all -validatecommand { ::tkutil::validateString %W %V %P %s wordchar1 0 100 }
             pack $panneau(acqvideo,$visuNo,This).mode.video.nom.entr -fill x -side top
          pack $panneau(acqvideo,$visuNo,This).mode.video.nom -side top -fill x
          frame $panneau(acqvideo,$visuNo,This).mode.video.index -relief ridge -borderwidth 2
@@ -1818,7 +1714,8 @@ proc acqvideoBuildIF { visuNo } {
             label $panneau(acqvideo,$visuNo,This).mode.video_1.nom.but -text $caption(acqvideo,nom) -pady 0
             pack $panneau(acqvideo,$visuNo,This).mode.video_1.nom.but -fill x -side top
             entry $panneau(acqvideo,$visuNo,This).mode.video_1.nom.entr -width 10 \
-               -textvariable panneau(acqvideo,$visuNo,nom_image) -relief groove
+               -textvariable panneau(acqvideo,$visuNo,nom_image) -relief groove \
+               -validate all -validatecommand { ::tkutil::validateString %W %V %P %s wordchar1 0 100 }
             pack $panneau(acqvideo,$visuNo,This).mode.video_1.nom.entr -fill x -side top
          pack $panneau(acqvideo,$visuNo,This).mode.video_1.nom -side top -fill x
          frame $panneau(acqvideo,$visuNo,This).mode.video_1.index -relief ridge -borderwidth 2
