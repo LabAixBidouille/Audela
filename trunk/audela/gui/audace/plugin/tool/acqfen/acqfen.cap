@@ -1,6 +1,6 @@
 #
 # Fichier : acqfen.cap
-# Mise a jour $Id: acqfen.cap,v 1.17 2010-01-07 16:20:52 robertdelmas Exp $
+# Mise a jour $Id: acqfen.cap,v 1.18 2010-01-17 18:02:50 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -72,11 +72,13 @@ set caption(acqfen,conf)               "Confirm"
 set caption(acqfen,fichdeja)           "This file already exists.\nAre you sure you want to save?"
 set caption(acqfen,indpasun)           "Index is not 1.\nDo you confirm dash number?"
 set caption(acqfen,avancement_acq)     "Acquisition\nProgress"
+set caption(acqfen,en_cours)           "Acquiring..."
+set caption(acqfen,numerisation)       "Read CCD"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-#--- Textes de titres
+   #--- Textes de titres
    set caption(acqfen,audace)          "Aud'ACE"
    set caption(acqfen,titre)           "Acquisition fenêtrée"
    set caption(acqfen,help_titre)      "Aide de cet outil"
@@ -86,7 +88,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,actuxy)          "Actu.\nfenêtrage"
    set caption(acqfen,congiguration)   "Configuration"
 
-#--- Textes pour l'acquisition CCD
+   #--- Textes pour l'acquisition CCD
    set caption(acqfen,pose)            "Pose"
    set caption(acqfen,sec)             "sec."
    set caption(acqfen,bin,1)           "Binning 1x1"
@@ -96,7 +98,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,GO)              "GO"
    set caption(acqfen,stop)               "STOP"
 
-#--- Textes réglages acquisitions série et continu
+   #--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Fenêtre de réglages des acquisitions fenêtrées"
    set caption(acqfen,en-tete_fits)    "En-tête FITS"
    set caption(acqfen,mots_cles)       "Mots clés"
@@ -116,7 +118,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,ok)              "OK"
    set caption(acqfen,quitter)         "Quitter"
 
-#--- Textes modes d'acquisition
+   #--- Textes modes d'acquisition
    set caption(acqfen,uneimage)        "Une image"
    set caption(acqfen,nom)             "Nom"
    set caption(acqfen,index)           "Index"
@@ -137,11 +139,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,fichdeja)        "Ce fichier existe déjà sur le disque.\nVous confirmez l'enregistrement ?"
    set caption(acqfen,indpasun)        "L'index n'est pas à 1.\nVous confirmez cet index ?"
    set caption(acqfen,avancement_acq)  "Avancement de\nl'acquisition"
+   set caption(acqfen,en_cours)        "Acquisition en cours..."
+   set caption(acqfen,numerisation)    "Lecture CCD"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-#--- Textes de titres
+   #--- Textes de titres
    set caption(acqfen,audace)          "Aud'ACE"
    set caption(acqfen,titre)           "Finestra di acquisizione"
    set caption(acqfen,help_titre)      "Aiuto per questo tool"
@@ -151,7 +155,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,actuxy)          "Rinfresco\nfinestra"
    set caption(acqfen,congiguration)   "Configurazione"
 
-#--- Textes pour l'acquisition CCD
+   #--- Textes pour l'acquisition CCD
    set caption(acqfen,pose)            "Posa"
    set caption(acqfen,sec)             "sec."
    set caption(acqfen,bin,1)           "Binning 1x1"
@@ -161,7 +165,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,GO)              "GO"
    set caption(acqfen,stop)            "STOP"
 
-#--- Textes réglages acquisitions série et continu
+   #--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Finestra per regolazioni acquisizione parziale"
    set caption(acqfen,en-tete_fits)    "Intestazione FITS"
    set caption(acqfen,mots_cles)       "Parole chiave"
@@ -181,7 +185,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,ok)              "OK"
    set caption(acqfen,quitter)         "Esci"
 
-#--- Textes modes d'acquisition
+   #--- Textes modes d'acquisition
    set caption(acqfen,uneimage)        "Una immagine"
    set caption(acqfen,nom)             "Nome"
    set caption(acqfen,index)           "Indice"
@@ -202,11 +206,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,fichdeja)        "Questo file e` gia` presente.\nConfermare la registrazione?"
    set caption(acqfen,indpasun)        "L'indice non e' 1.\nConfermare il numero?"
    set caption(acqfen,avancement_acq)  "Avanzamento\nacquisizione"
+   set caption(acqfen,en_cours)        "Acquisizione in corso ..."
+   set caption(acqfen,numerisation)    "Lettura CCD"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-#--- Textes de titres
+   #--- Textes de titres
    set caption(acqfen,audace)          "Aud'ACE"
    set caption(acqfen,titre)           "Adquisición con subzona"
    set caption(acqfen,help_titre)      "Ayuda para esta herramienta"
@@ -216,7 +222,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,actuxy)          "Refrescar\nventana"
    set caption(acqfen,congiguration)   "Configuración"
 
-#--- Textes pour l'acquisition CCD
+   #--- Textes pour l'acquisition CCD
    set caption(acqfen,pose)            "Exp."
    set caption(acqfen,sec)             "seg."
    set caption(acqfen,bin,1)           "Binning 1x1"
@@ -226,7 +232,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,GO)              "GO"
    set caption(acqfen,stop)            "STOP"
 
-#--- Textes réglages acquisitions série et continu
+   #--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Panel de ajustes para adqusicion de sub-cuadro"
    set caption(acqfen,en-tete_fits)    "Cabecera FITS"
    set caption(acqfen,mots_cles)       "Palabras clave"
@@ -246,7 +252,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,ok)              "OK"
    set caption(acqfen,quitter)         "Salir"
 
-#--- Textes modes d'acquisition
+   #--- Textes modes d'acquisition
    set caption(acqfen,uneimage)        "Una imagen"
    set caption(acqfen,nom)             "Nom"
    set caption(acqfen,index)           "Index"
@@ -267,11 +273,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,fichdeja)        "Este fichero ya existe.\n¿Seguro que quiere guardar?"
    set caption(acqfen,indpasun)        "El índice no está a 1.\n¿Confirma el índice?"
    set caption(acqfen,avancement_acq)  "Progreso de la\nadquisición"
+   set caption(acqfen,en_cours)        "Adquiriendo ..."
+   set caption(acqfen,numerisation)    "Leer CCD"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-#--- Textes de titres
+   #--- Textes de titres
    set caption(acqfen,audace)          "Aud'ACE"
    set caption(acqfen,titre)           "Fenster Belichtung"
    set caption(acqfen,help_titre)      "Hilfe für dieses Gerät"
@@ -281,9 +289,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,actuxy)          "Fenster\naktualis."
    set caption(acqfen,congiguration)   "Konfiguration"
 
-#--- Textes pour l'acquisition CCD
+   #--- Textes pour l'acquisition CCD
    set caption(acqfen,pose)            "Bel."
-   set caption(acqfen,sec)             "sek."
+   set caption(acqfen,sec)             "Sek."
    set caption(acqfen,bin,1)           "Binning 1x1"
    set caption(acqfen,bin,2)           "Binning 2x2"
    set caption(acqfen,bin,3)           "Binning 3x3"
@@ -291,7 +299,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,GO)              "GO"
    set caption(acqfen,stop)            "STOP"
 
-#--- Textes réglages acquisitions série et continu
+   #--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Einstellung Fenster für die Fenster Belichtungen"
    set caption(acqfen,en-tete_fits)    "FITS Header"
    set caption(acqfen,mots_cles)       "Stichwörter"
@@ -311,7 +319,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,ok)              "OK"
    set caption(acqfen,quitter)         "Programm beenden"
 
-#--- Textes modes d'acquisition
+   #--- Textes modes d'acquisition
    set caption(acqfen,uneimage)        "Ein Bild"
    set caption(acqfen,nom)             "Namen"
    set caption(acqfen,index)           "Index"
@@ -332,11 +340,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,fichdeja)        "Diese Datei ist schon auf die Platte.\nBestätigen sie die Speicherung?"
    set caption(acqfen,indpasun)        "Der Index Wert ist nicht 1.\nVollen sie dieser Zeiger bestätigen?"
    set caption(acqfen,avancement_acq)  "Belichtung\nim Gange"
+   set caption(acqfen,en_cours)        "Laufende Belichtung..."
+   set caption(acqfen,numerisation)    "CCD Lesen"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-#--- Textes de titres
+   #--- Textes de titres
    set caption(acqfen,audace)          "Aud'ACE"
    set caption(acqfen,titre)           "Aquisição em janela"
    set caption(acqfen,help_titre)      "Ajuda para esta ferramenta"
@@ -346,7 +356,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,actuxy)          "Actu.\njanela"
    set caption(acqfen,congiguration)   "Configuração"
 
-#--- Textes pour l'acquisition CCD
+   #--- Textes pour l'acquisition CCD
    set caption(acqfen,pose)            "Exposição"
    set caption(acqfen,sec)             "seg."
    set caption(acqfen,bin,1)           "Binning 1x1"
@@ -356,7 +366,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,GO)              "GO"
    set caption(acqfen,stop)            "STOP"
 
-#--- Textes réglages acquisitions série et continu
+   #--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Janela de ajuste das aquisições em janela"
    set caption(acqfen,en-tete_fits)    "Cabeçalho FITS"
    set caption(acqfen,mots_cles)       "Palavras-chave"
@@ -376,7 +386,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,ok)              "OK"
    set caption(acqfen,quitter)         "Sair"
 
-#--- Textes modes d'acquisition
+   #--- Textes modes d'acquisition
    set caption(acqfen,uneimage)        "Uma imagem"
    set caption(acqfen,nom)             "Não"
    set caption(acqfen,index)           "Índice"
@@ -397,11 +407,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,fichdeja)        "Este ficheiro já existe no disco duro.\nConfirma a salvaguarda ?"
    set caption(acqfen,indpasun)        "O índice não é 1.\nConfirma o índice ?"
    set caption(acqfen,avancement_acq)  "Adiantamento da\naquisição"
+   set caption(acqfen,en_cours)        "A adquirir..."
+   set caption(acqfen,numerisation)    "Ler CCD"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-#--- Textes de titres
+   #--- Textes de titres
    set caption(acqfen,audace)          "Aud'ACE"
    set caption(acqfen,titre)           "Windowed Acquisition"
    set caption(acqfen,help_titre)      "Help for this Tool"
@@ -411,7 +423,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,actuxy)          "Refresh\nWindow"
    set caption(acqfen,congiguration)   "Setup"
 
-#--- Textes pour l'acquisition CCD
+   #--- Textes pour l'acquisition CCD
    set caption(acqfen,pose)            "Exp."
    set caption(acqfen,sec)             "sec."
    set caption(acqfen,bin,1)           "1x1 Binning"
@@ -421,7 +433,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,GO)              "GO"
    set caption(acqfen,stop)            "STOP"
 
-#--- Textes réglages acquisitions série et continu
+   #--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Setting Window for Windowed Acquisitions"
    set caption(acqfen,en-tete_fits)    "FITS Header"
    set caption(acqfen,mots_cles)       "Keywords"
@@ -441,7 +453,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,ok)              "OK"
    set caption(acqfen,quitter)         "Exit"
 
-#--- Textes modes d'acquisition
+   #--- Textes modes d'acquisition
    set caption(acqfen,uneimage)        "One picture"
    set caption(acqfen,nom)             "Name"
    set caption(acqfen,index)           "Index"
@@ -462,6 +474,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,fichdeja)        "This file already exists.\nAre you sure you want to save?"
    set caption(acqfen,indpasun)        "Index is not 1.\nDo you confirm dash number?"
    set caption(acqfen,avancement_acq)  "Acquisition\nProgress"
+   set caption(acqfen,en_cours)        "Acquiring..."
+   set caption(acqfen,numerisation)    "Read CCD"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -527,6 +541,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,fichdeja)        "This file already exists.\nAre you sure you want to save?"
    set caption(acqfen,indpasun)        "Index is not 1.\nDo you confirm dash number?"
    set caption(acqfen,avancement_acq)  "Acquisition\nProgress"
+   set caption(acqfen,en_cours)        "Acquiring..."
+   set caption(acqfen,numerisation)    "Read CCD"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -592,6 +608,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,fichdeja)        "This file already exists.\nAre you sure you want to save?"
    set caption(acqfen,indpasun)        "Index is not 1.\nDo you confirm dash number?"
    set caption(acqfen,avancement_acq)  "Acquisition\nProgress"
+   set caption(acqfen,en_cours)        "Acquiring..."
+   set caption(acqfen,numerisation)    "Read CCD"
 
 }
 

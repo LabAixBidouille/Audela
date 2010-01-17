@@ -1,6 +1,6 @@
 #
 # Fichier : foc.cap
-# Mise a jour $Id: foc.cap,v 1.11 2009-12-19 09:12:00 robertdelmas Exp $
+# Mise a jour $Id: foc.cap,v 1.12 2010-01-17 18:05:59 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -46,8 +46,10 @@ set caption(foc,formatfoc2)         "comprised between -32767 et 32767."
 set caption(foc,limitefoc1)         "Movement impossible"
 set caption(foc,limitefoc2)         "because limited to 32767."
 set caption(foc,limitefoc3)         "because limited to -32767."
-set caption(foc,probleme)           "Problem"
-set caption(foc,entier_positif)     "Exposure time not valid\n(must be a positive integer)"
+set caption(foc,avancement_acq)     "Acquisition\nProgress"
+set caption(foc,en_cours)           "Acquiring..."
+set caption(foc,sec)                "sec."
+set caption(foc,numerisation)       "Read CCD"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -87,8 +89,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,limitefoc1)      "Déplacement impossible"
    set caption(foc,limitefoc2)      "car limité à 32767."
    set caption(foc,limitefoc3)      "car limité à -32767."
-   set caption(foc,probleme)        "Problème"
-   set caption(foc,entier_positif)  "Temps de pose invalide\n(doit être un nombre positif)"
+   set caption(foc,avancement_acq)  "Avancement de\nl'acquisition"
+   set caption(foc,en_cours)        "Acquisition en cours..."
+   set caption(foc,sec)             "sec."
+   set caption(foc,numerisation)    "Lecture CCD"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -128,8 +132,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,limitefoc1)      "Movimento non possibile:"
    set caption(foc,limitefoc2)      "Limite a 32767."
    set caption(foc,limitefoc3)      "Limite a -32767."
-   set caption(foc,probleme)        "Problema"
-   set caption(foc,entier_positif)  "Tempo di esposizione non valido\n(deve essere un valore positivo)"
+   set caption(foc,avancement_acq)  "Avanzamento\nacquisizione"
+   set caption(foc,en_cours)        "Acquisizione in corso ..."
+   set caption(foc,sec)             "sec."
+   set caption(foc,numerisation)    "Lettura CCD"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -169,8 +175,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,limitefoc1)      "Movimiento imposible"
    set caption(foc,limitefoc2)      "limitado a 32767."
    set caption(foc,limitefoc3)      "limitado a -32767."
-   set caption(foc,probleme)        "Problema"
-   set caption(foc,entier_positif)  "Tiempo de exposición no valido\n(debe ser un número positivo)"
+   set caption(foc,avancement_acq)  "Progreso de la\nadquisición"
+   set caption(foc,en_cours)        "Adquiriendo ..."
+   set caption(foc,sec)             "seg."
+   set caption(foc,numerisation)    "Leer CCD"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -210,8 +218,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,limitefoc1)      "Unmögliche Bewegung"
    set caption(foc,limitefoc2)      "weil größer als 32767."
    set caption(foc,limitefoc3)      "weil kleiner als -32767."
-   set caption(foc,probleme)        "Problem"
-   set caption(foc,entier_positif)  "Ungültig Belichtungszeit \n(muss ein positives Wert sein)"
+   set caption(foc,avancement_acq)  "Belichtung\nim Gange"
+   set caption(foc,en_cours)        "Laufende Belichtung..."
+   set caption(foc,sec)             "Sek."
+   set caption(foc,numerisation)    "CCD Lesen"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -251,8 +261,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,limitefoc1)      "Deslocamento impossível"
    set caption(foc,limitefoc2)      "por ser limitado a 32767."
    set caption(foc,limitefoc3)      "por ser limitado a -32767."
-   set caption(foc,probleme)        "Problema"
-   set caption(foc,entier_positif)  "Tempo de exposição inválido\n(deve ser um número positivo)"
+   set caption(foc,avancement_acq)  "Adiantamento da\naquisição"
+   set caption(foc,en_cours)        "A adquirir..."
+   set caption(foc,sec)             "seg."
+   set caption(foc,numerisation)    "Ler CCD"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -292,8 +304,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,limitefoc1)      "Movement impossible"
    set caption(foc,limitefoc2)      "because limited to 32767."
    set caption(foc,limitefoc3)      "because limited to -32767."
-   set caption(foc,probleme)        "Problem"
-   set caption(foc,entier_positif)  "Exposure time not valid\n(must be a positive integer)"
+   set caption(foc,avancement_acq)  "Acquisition\nProgress"
+   set caption(foc,en_cours)        "Acquiring..."
+   set caption(foc,sec)             "sec."
+   set caption(foc,numerisation)    "Read CCD"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -333,8 +347,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,limitefoc1)      "Movement impossible"
    set caption(foc,limitefoc2)      "because limited to 32767."
    set caption(foc,limitefoc3)      "because limited to -32767."
-   set caption(foc,probleme)        "Problem"
-   set caption(foc,entier_positif)  "Exposure time not valid\n(must be a positive integer)"
+   set caption(foc,avancement_acq)  "Acquisition\nProgress"
+   set caption(foc,en_cours)        "Acquiring..."
+   set caption(foc,sec)             "sec."
+   set caption(foc,numerisation)    "Read CCD"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -374,8 +390,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,limitefoc1)      "Movement impossible"
    set caption(foc,limitefoc2)      "because limited to 32767."
    set caption(foc,limitefoc3)      "because limited to -32767."
-   set caption(foc,probleme)        "Problem"
-   set caption(foc,entier_positif)  "Exposure time not valid\n(must be a positive integer)"
+   set caption(foc,avancement_acq)  "Acquisition\nProgress"
+   set caption(foc,en_cours)        "Acquiring..."
+   set caption(foc,sec)             "sec."
+   set caption(foc,numerisation)    "Read CCD"
 
 }
 
