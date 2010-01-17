@@ -2,7 +2,7 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snacq.tcl,v 1.26 2010-01-08 17:25:52 robertdelmas Exp $
+# Mise a jour $Id: snacq.tcl,v 1.27 2010-01-17 18:18:59 robertdelmas Exp $
 #
 
 # ===================================================================
@@ -1022,14 +1022,14 @@ proc goSnAcq { {sndebug 0} } {
 
             #--- Cas des poses de 0 s : Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
             if { $snconf(exptime) == "0" } {
-               ::camera::avancementPose $snconf(avancementAcq) 1
+               avancementPose $snconf(avancementAcq) 1
             }
 
             #--- Declenchement de l'acquisition
             $camera acq
 
             #--- Alarme sonore de fin de pose
-            ::camera::alarme_sonore $snconf(exptime)
+            ::camera::alarmeSonore $snconf(exptime)
 
             #--- Pretraitement pendant l'integration
             if { [info exist name0] == 1 } {
@@ -1040,7 +1040,7 @@ proc goSnAcq { {sndebug 0} } {
             }
 
             #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
-            ::camera::gestionPose $snconf(exptime) 1 $snconf(avancementAcq) $camera $buffer
+            gestionPose 1
 
             #--- Visualisation de l'image acquise
             ::audace::autovisu $audace(visuNo)
@@ -1207,6 +1207,163 @@ proc msgStopSnAcq { } {
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $audace(base).msgStopSnAcq
+}
+
+#------------------------------------------------------------
+# gestionPose GO_Stop
+#    Gestion de la pose : Timer, avancement, attente fin, retournement image,
+#    fin anticipee et fenetre d'avancement de la pose
+#------------------------------------------------------------
+proc gestionPose { GO_Stop } {
+   global audace
+
+   #--- Correspond a un demarrage de la pose
+   if { $GO_Stop == "1" } {
+
+      #--- Appel du timer
+      after 10 dispTime
+
+      #--- Attente de la fin de la pose
+      vwait ::status_cam$audace(camNo)
+
+      #--- Effacement de la fenetre de progression
+      if [ winfo exists $audace(base).progress_pose ] {
+         destroy $audace(base).progress_pose
+      }
+
+   #--- Correspond a un arret anticipe de la pose
+   } elseif { $GO_Stop == "0" } {
+
+      #--- Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
+      avancementPose "0"
+
+   }
+}
+
+#------------------------------------------------------------
+# dispTime
+#    Decompte du temps d'exposition
+#------------------------------------------------------------
+proc dispTime { } {
+   variable private
+   global audace
+
+   #--- j'arrete le timer s'il est deja lance
+   if { [ info exists variable(dispTimeAfterId) ] && $variable(dispTimeAfterId) != "" } {
+      after cancel $variable(dispTimeAfterId)
+      set variable(dispTimeAfterId) ""
+   }
+
+   #--- je mets a jour la fenetre de progression
+   set t [ cam$audace(camNo) timer -1 ]
+   avancementPose $t
+
+   if { $t > 0 } {
+      #--- je lance l'iteration suivante avec un delai de 1000 millisecondes
+      #--- (mode asynchone pour eviter l'empilement des appels recursifs)
+      set variable(dispTimeAfterId) [ after 1000 dispTime ]
+   } else {
+      #--- je ne relance pas le timer
+      set variable(dispTimeAfterId) ""
+   }
+}
+
+#------------------------------------------------------------
+# avancementPose t
+#    Affichage d'une barre de progression qui simule l'avancement de la pose dans la visu 1
+#------------------------------------------------------------
+proc avancementPose { t } {
+   global audace caption color conf snconf
+
+   #--- Fenetre d'avancement de la pose non demandee
+   if { $snconf(avancementAcq) == "0" } {
+      return
+   }
+
+   #--- Recuperation de la position de la fenetre
+   recupPositionAvancementPose
+
+   #--- Initialisation de la barre de progression
+   set cpt             "100"
+   set dureeExposition [ cam$audace(camNo) exptime ]
+
+   #--- Initialisation de la position de la fenetre
+   if { ! [ info exists conf(avancement_pose,position) ] } { set conf(avancement_pose,position) "+120+315" }
+
+   #---
+   if { [ winfo exists $audace(base).progress_pose ] != "1" } {
+      #---
+      toplevel $audace(base).progress_pose
+      wm transient $audace(base).progress_pose $audace(base)
+      wm resizable $audace(base).progress_pose 0 0
+      wm title $audace(base).progress_pose "$caption(camera,en_cours)"
+      wm geometry $audace(base).progress_pose $conf(avancement_pose,position)
+
+      #--- Cree le widget et le label du temps ecoule
+      label $audace(base).progress_pose.lab_status -text "" -justify center
+      pack $audace(base).progress_pose.lab_status -side top -fill x -expand true -pady 5
+
+      #--- t est un nombre entier
+      if { $t < 0 } {
+         destroy $audace(base).progress_pose
+      } elseif { $t > 0 } {
+         $audace(base).progress_pose.lab_status configure -text "$t $caption(camera,sec) / \
+            [ format "%d" [ expr int( $dureeExposition ) ] ] $caption(camera,sec)"
+         set cpt [ expr $t * 100 / int( $dureeExposition ) ]
+         set cpt [ expr 100 - $cpt ]
+      } else {
+         $audace(base).progress_pose.lab_status configure -text "$caption(camera,numerisation)"
+      }
+      #---
+      catch {
+         #--- Cree le widget pour la barre de progression
+         frame $audace(base).progress_pose.cadre -width 200 -height 30 -borderwidth 2 -relief groove
+         pack $audace(base).progress_pose.cadre -in $audace(base).progress_pose -side top \
+            -anchor center -fill x -expand true -padx 8 -pady 8
+
+         #--- Affiche de la barre de progression
+         frame $audace(base).progress_pose.cadre.barre_color_invariant -height 26 -bg $color(blue)
+         place $audace(base).progress_pose.cadre.barre_color_invariant -in $audace(base).progress_pose.cadre \
+            -x 0 -y 0 -relwidth [ expr $cpt / 100.0 ]
+         update
+      }
+      #--- Mise a jour dynamique des couleurs
+      if { [ winfo exists $audace(base).progress_pose ] } {
+         ::confColor::applyColor $audace(base).progress_pose
+      }
+   } else {
+      #--- t est un nombre entier
+      if { $t > 0 } {
+         $audace(base).progress_pose.lab_status configure -text "$t $caption(camera,sec) / \
+            [ format "%d" [ expr int( $dureeExposition ) ] ] $caption(camera,sec)"
+         set cpt [ expr $t * 100 / int( $dureeExposition ) ]
+         set cpt [ expr 100 - $cpt ]
+      } else {
+         $audace(base).progress_pose.lab_status configure -text "$caption(camera,numerisation)"
+      }
+      catch {
+         #--- Affiche de la barre de progression
+         place $audace(base).progress_pose.cadre.barre_color_invariant -in $audace(base).progress_pose.cadre \
+            -x 0 -y 0 -relwidth [ expr $cpt / 100.0 ]
+         update
+      }
+   }
+}
+
+#------------------------------------------------------------
+# recupPositionAvancementPose
+#    Recuperation de la position de la fenetre de progression de la pose
+#------------------------------------------------------------
+proc recupPositionAvancementPose { } {
+   global audace conf
+
+   if [ winfo exists $audace(base).progress_pose ] {
+      #--- Determination de la position de la fenetre
+      set geometry [ wm geometry $audace(base).progress_pose ]
+      set deb [ expr 1 + [ string first + $geometry ] ]
+      set fin [ string length $geometry ]
+      set conf(avancement_pose,position) "+[ string range $geometry $deb $fin ]"
+   }
 }
 
 # ===========================================================================================
