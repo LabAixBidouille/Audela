@@ -2,7 +2,7 @@
 # Fichier : quickremote.tcl
 # Description : Interface de liaison QuickRemote
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickremote.tcl,v 1.21 2009-03-13 23:51:36 michelpujol Exp $
+# Mise a jour $Id: quickremote.tcl,v 1.22 2010-01-17 17:59:46 robertdelmas Exp $
 #
 
 namespace eval quickremote {
@@ -167,7 +167,7 @@ proc ::quickremote::fillConfigPage { frm } {
    #--- j'affiche la liste des links et le bouton pour rafraichir cette liste
    TitleFrame $frm.available -borderwidth 2 -relief ridge -text $caption(quickremote,available)
 
-      listbox $frm.available.list
+      listbox $frm.available.list -height 3
       pack $frm.available.list -in [$frm.available getframe] -side left -fill both -expand true
 
       Button $frm.available.refresh -highlightthickness 0 -padx 3 -pady 3 -state normal \
@@ -182,8 +182,8 @@ proc ::quickremote::fillConfigPage { frm } {
       label $frm.statusMessage.statusMessage_lab -text "$caption(quickremote,error)"
       pack $frm.statusMessage.statusMessage_lab -in $frm.statusMessage -side top -anchor nw -padx 5 -pady 2
 
-      Label $frm.statusMessage.status -textvariable ::quickremote::private(statusMessage) -height 4 \
-         -wraplength 400 -justify left
+      Label $frm.statusMessage.status -textvariable ::quickremote::private(statusMessage) -height 8 \
+         -wraplength 500 -justify left
       pack $frm.statusMessage.status -in $frm.statusMessage -side top -anchor nw -padx 20
 
    pack $frm.statusMessage -side top -fill x
@@ -232,7 +232,9 @@ proc ::quickremote::getLinkLabels { } {
          lappend labels "$private(genericName)[lindex $instance 0]"
       }
    } catchError
-   set private(statusMessage) $catchError
+   if { $catchError != "" } {
+      set private(statusMessage) "$catchError\n\n$::caption(quickremote,msg)"
+   }
 
    return $labels
 }
