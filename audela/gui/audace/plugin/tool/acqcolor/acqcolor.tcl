@@ -2,7 +2,7 @@
 # Fichier : acqcolor.tcl
 # Description : Outil pour l'acquisition d'images en couleur
 # Auteurs : Alain KLOTZ et Pierre THIERRY
-# Mise a jour $Id: acqcolor.tcl,v 1.16 2010-01-02 16:40:15 robertdelmas Exp $
+# Mise a jour $Id: acqcolor.tcl,v 1.17 2010-01-17 18:17:01 robertdelmas Exp $
 #
 
 proc testexit { } {
@@ -774,10 +774,10 @@ proc testpointage { } {
    }
    cam1000 acq
    #--- Alarme sonore de fin de pose
-   ::camera::alarme_sonore $confcolor(exptime)
+   ::camera::alarmeSonore $confcolor(exptime)
    #--- Appel du timer
    if { $confcolor(exptime) > "2" } {
-      ::camera::dispTime cam1000 $audace(base).test.frame2.fra0.labURL_decompte $color(red)
+      dispTime $audace(base).test.frame2.fra0.labURL_decompte $color(red)
    }
    #--- Attend la fin de la pose
    vwait status_cam1000
@@ -832,10 +832,10 @@ proc testacqfen { } {
    }
    cam1000 acq
    #--- Alarme sonore de fin de pose
-   ::camera::alarme_sonore $confcolor(exptime)
+   ::camera::alarmeSonore $confcolor(exptime)
    #--- Appel du timer
    if { $confcolor(exptime) > "2" } {
-      ::camera::dispTime cam1000 $audace(base).test.frame2.fra0.labURL_decompte $color(red)
+      dispTime $audace(base).test.frame2.fra0.labURL_decompte $color(red)
    }
    #--- Attend la fin de la pose
    vwait status_cam1000
@@ -878,10 +878,10 @@ proc testtotal { } {
    }
    cam1000 acq
    #--- Alarme sonore de fin de pose
-   ::camera::alarme_sonore $confcolor(exptime)
+   ::camera::alarmeSonore $confcolor(exptime)
    #--- Appel du timer
    if { $confcolor(exptime) > "2" } {
-      ::camera::dispTime cam1000 $audace(base).test.frame2.fra0.labURL_decompte $color(red)
+      dispTime $audace(base).test.frame2.fra0.labURL_decompte $color(red)
    }
    #--- Attend la fin de la pose
    vwait status_cam1000
@@ -912,6 +912,22 @@ proc acqserie { } {
    #--- Gestion graphique du bouton
    $audace(base).test.frame1.fra3.but_acqserie configure -relief raised -state normal
    update
+}
+
+proc dispTime { labelTime colorLabel } {
+   global caption
+
+   set t [ cam1000 timer -1 ]
+
+   if { $t > "1" } {
+      $labelTime configure -text "[ expr $t-1 ] / [ format "%d" [ expr int([ cam1000 exptime ]) ] ]" \
+         -fg $colorLabel
+      update
+      after 1000 dispTime $labelTime $colorLabel
+   } else {
+      $labelTime configure -text "$caption(acqcolor,lecture)" -fg $colorLabel
+      update
+   }
 }
 
 proc seprvb { } {
