@@ -2,7 +2,7 @@
 # Fichier : quickaudine.tcl
 # Description : Interface de liaison QuickAudine
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickaudine.tcl,v 1.22 2009-03-13 23:51:36 michelpujol Exp $
+# Mise a jour $Id: quickaudine.tcl,v 1.23 2010-01-17 17:59:25 robertdelmas Exp $
 #
 
 namespace eval quickaudine {
@@ -144,7 +144,7 @@ proc ::quickaudine::fillConfigPage { frm } {
    #--- j'affiche la liste des links et le bouton pour rafraichir cette liste
    TitleFrame $frm.available -borderwidth 2 -relief ridge -text $caption(quickaudine,available)
 
-      listbox $frm.available.list -height 4
+      listbox $frm.available.list -height 3
       pack $frm.available.list -in [$frm.available getframe] -side left -fill both -expand true
 
       Button $frm.available.refresh -highlightthickness 0 -padx 3 -pady 3 -state normal \
@@ -190,8 +190,8 @@ proc ::quickaudine::fillConfigPage { frm } {
       label $frm.statusMessage.statusMessage_lab -text "$caption(quickaudine,error)"
       pack $frm.statusMessage.statusMessage_lab -in $frm.statusMessage -side top -anchor nw -padx 5 -pady 2
 
-      Label $frm.statusMessage.status -textvariable ::quickaudine::private(statusMessage) -height 4 \
-         -wraplength 400 -justify left
+      Label $frm.statusMessage.status -textvariable ::quickaudine::private(statusMessage) -height 8 \
+         -wraplength 500 -justify left
       pack $frm.statusMessage.status -in $frm.statusMessage -side top -anchor nw -padx 20
 
    pack $frm.statusMessage -side top -fill both
@@ -240,7 +240,9 @@ proc ::quickaudine::getLinkLabels { } {
          lappend labels "$private(genericName)[lindex $instance 0]"
       }
    } catchError
-   set private(statusMessage) $catchError
+   if { $catchError != "" } {
+      set private(statusMessage) "$catchError\n\n$::caption(quickaudine,msg)"
+   }
 
    return $labels
 }
