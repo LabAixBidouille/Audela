@@ -2,7 +2,7 @@
 # Fichier origine : ohp_t193.tcl
 # Description : Interface de pilotage du T193 de l'OHP
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: ohp_t193.tcl,v 1.3 2009-12-19 18:15:51 robertdelmas Exp $
+# Mise a jour $Id: ohp_t193.tcl,v 1.4 2010-01-17 18:07:38 robertdelmas Exp $
 #--------------------------------------------------------------------------------
 # Modifications pour le télescope T193 :
 #-------------------------------------
@@ -323,8 +323,7 @@ proc ::clientCoord::ohp_t193_calcul { } {
     }
 
     #--- Temps TU (temps universel)
-    set now now
-    catch {set now [::audace::date_sys2ut now]}
+    set now [clock format [clock seconds] -gmt 1 -format "%Y %m %d %H %M %S"]
     set tu  [mc_date2ymdhms $now]
     set tuh [format "%02d" [lindex $tu 3]]
     set tum [format "%02d" [lindex $tu 4]]
