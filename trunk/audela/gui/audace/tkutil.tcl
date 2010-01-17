@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise a jour $Id: tkutil.tcl,v 1.25 2010-01-15 11:03:32 robertdelmas Exp $
+# Mise a jour $Id: tkutil.tcl,v 1.26 2010-01-17 18:52:49 robertdelmas Exp $
 #
 
 namespace eval tkutil:: {
@@ -220,30 +220,6 @@ proc ::tkutil::getSaveFileType { } {
       } elseif { $conf(fichier,compres) == "1" } {
          lappend saveFileType $f $e $a $b $c $d $g $h $i $j $k $l $m $n $o $p $q $r
       }
-   } elseif { [ buf$audace(bufNo) extension ] == ".crw" } {
-      lappend saveFileType $g $h $i $j $k $l $m $n $a $b $c $d $e $f $o $p $q $r
-   } elseif { [ buf$audace(bufNo) extension ] == ".CRW" } {
-      lappend saveFileType $h $g $i $j $k $l $m $n $a $b $c $d $e $f $o $p $q $r
-   } elseif { [ buf$audace(bufNo) extension ] == ".cr2" } {
-      lappend saveFileType $i $j $k $l $m $n $g $h $a $b $c $d $e $f $o $p $q $r
-   } elseif { [ buf$audace(bufNo) extension ] == ".CR2" } {
-      lappend saveFileType $j $i $k $l $m $n $g $h $a $b $c $d $e $f $o $p $q $r
-   } elseif { [ buf$audace(bufNo) extension ] == ".nef" } {
-      lappend saveFileType $k $l $m $n $g $h $i $j $a $b $c $d $e $f $o $p $q $r
-   } elseif { [ buf$audace(bufNo) extension ] == ".NEF" } {
-      lappend saveFileType $l $k $m $n $g $h $i $j $a $b $c $d $e $f $o $p $q $r
-   } elseif { [ buf$audace(bufNo) extension ] == ".dng" } {
-      lappend saveFileType $m $n $g $h $i $j $k $l $a $b $c $d $e $f $o $p $q $r
-   } elseif { [ buf$audace(bufNo) extension ] == ".DNG" } {
-      lappend saveFileType $n $m $g $h $i $j $k $l $a $b $c $d $e $f $o $p $q $r
-   } elseif { [ buf$audace(bufNo) extension ] == ".jpg" } {
-      lappend saveFileType $o $p $q $r $n $m $g $h $i $j $k $l $a $b $c $d $e $f
-   } elseif { [ buf$audace(bufNo) extension ] == ".bmp" } {
-      lappend saveFileType $p $q $r $o $n $m $g $h $i $j $k $l $a $b $c $d $e $f
-   } elseif { [ buf$audace(bufNo) extension ] == ".png" } {
-      lappend saveFileType $q $r $o $p $n $m $g $h $i $j $k $l $a $b $c $d $e $f
-   } elseif { [ buf$audace(bufNo) extension ] == ".tif" } {
-      lappend saveFileType $r $o $p $q $n $m $g $h $i $j $k $l $a $b $c $d $e $f
    } else {
       if { $conf(fichier,compres) == "0" } {
          lappend saveFileType $x $y $a $b $c $d $e $f $g $h $i $j $k $l $m $n $o $p $q $r
@@ -266,7 +242,7 @@ proc ::tkutil::box_save { { parent } { initialdir } { numero_buffer } { type } {
       set title "$caption(tkutil,sauver_image) (visu$visuNo)"
       ::tkutil::getSaveFileType
       set filetypes "$saveFileType"
-      set filename [ tk_getSaveFile -title $title -filetypes $filetypes -initialdir $initialdir -parent $parent ]
+      set filename [ tk_getSaveFile -title $title -filetypes $filetypes -initialdir $initialdir -parent $parent -defaultextension $conf(extension,defaut) ]
    } elseif { $type == "2" } {
       set title "$caption(tkutil,sauver_image_jpeg) (visu1)"
       set filetypes [ list [ list "$caption(tkutil,image_jpeg)" ".jpg" ] ]
@@ -344,6 +320,13 @@ proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxVa
 
    set result 0
    if { $event == "key" || $event == "focusout" || $event == "forced" } {
+      #--- cas des nombres negatifs
+      if { $minValue < 0 } {
+         if { $newValue == "-" } {
+            set result 1
+            return $result
+         }
+      }
       #--- je verifie la classe
       set classCheck [expr [string is $class -failindex charIndex $newValue] ]
       if {! $classCheck} {
@@ -382,7 +365,7 @@ proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxVa
       }
       if { $result == 0 } {
          #--- j'affiche en inverse video
-         $win configure -bg $::audace(color,entryBackColor2) -fg $::audace(color,entryTextColor)
+         $win configure -bg $::color(lightred) -fg $::color(red)
       } else {
          #--- j'affiche normalement
          $win configure -bg $::audace(color,entryBackColor) -fg $::audace(color,entryTextColor)
@@ -391,7 +374,7 @@ proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxVa
       #--- je ne traite pas l'evenement
       set result 1
    }
-   ####console::disp "win=$win event=$event newValue=$newValue oldValue=$oldValue result=$result\n"
+  ### console::disp "win=$win event=$event newValue=$newValue oldValue=$oldValue result=$result\n"
    return $result
 }
 
@@ -419,16 +402,19 @@ proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxVa
 # @param  newValue : valeur apres l'evenement renseignee avec %P
 # @param  oldValue : valeur avant l'evenement renseignee avec %s
 # @param  class    : classe de la valeur attendue
-#            - alnum    : caractere alphabetique ou numerique
-#            - alpha    : caractere alphabetique
-#            - ascii    : caractere ASCII dont le code est inferieur ou egal a 127
-#            - boolean  : booleen ( 0, 1, false, true, no, yes , off , on)
-#            - fits     : caractere autorise dans un mot cle FITS
-#            - wordchar : caractere alphabetique ou numerique ou underscore
-#            - xdigit   : caractere hexadecimal
-# @param  minLength     : longueur minimale de la chaine
-# @param  maxLength     : longueur maximale de la chaine
-# @param  errorVariable : nom de la variable d'erreur associee au widget
+#            - alnum     : caracteres alphabetiques ou numeriques
+#            - alpha     : caracteres alphabetiques
+#            - ascii     : caracteres ASCII dont le code est inferieur ou egal a 127
+#            - binning   : caracteres autorises dans un binning (1x1, 2x2, 3x5, ...)
+#            - boolean   : booleen ( 0, 1, false, true, no, yes , off , on)
+#            - fits      : caracteres autorises dans un mot cle FITS
+#            - wordchar  : caracteres alphabetiques ou numeriques ou underscore
+#            - wordchar1 : caracteres de wordchar avec "-", sans "\" et "µ"
+#            - wordchar2 : caracteres de wordchar avec "-" et ".", sans "\" et "µ"
+#            - xdigit    : caracteres hexadecimaux
+# @param  minLength      : longueur minimale de la chaine
+# @param  maxLength      : longueur maximale de la chaine
+# @param  errorVariable  : nom de la variable d'erreur associee au widget
 #
 # @return
 #   - 1 si OK
@@ -444,13 +430,64 @@ proc ::tkutil::validateString { win event newValue oldValue class minLength maxL
       if { $class == "fits" } {
          set classCheck [expr [string is ascii -failindex charIndex $newValue] ]
         ### set classCheck [expr [[regexp -all {[\u0000-\u0029]|[\u007F-\u00FF]} $newValue ] != 0 ] ]
+      } elseif { $class == "binning" } {
+         set binx ""
+         set biny ""
+         set ctrl [ scan $newValue "%dx%d" binx biny ]
+         set ctrlValue [ format $binx%s$biny x ]
+         if { $ctrlValue != $newValue } {
+            set classCheck 0
+            set charIndex  ""
+         } else {
+            set classCheck 1
+         }
+      } elseif { $class == "wordchar1" } {
+         set ctrl [ string trimleft $newValue $oldValue ]
+         if { $ctrl == "-" } {
+            set result 1
+            return $result
+         }
+         if { $ctrl == "\"" } {
+            set result 0
+            return $result
+         }
+         if { $ctrl == "µ" } {
+            set result 0
+            return $result
+         } else {
+            set classCheck [expr [string is wordchar -failindex charIndex $ctrl] ]
+         }
+      } elseif { $class == "wordchar2" } {
+         set ctrl [ string trimleft $newValue $oldValue ]
+         if { $ctrl == "-" } {
+            set result 1
+            return $result
+         }
+         if { $ctrl == "." } {
+            set result 1
+            return $result
+         }
+         if { $ctrl == "\"" } {
+            set result 0
+            return $result
+         }
+         if { $ctrl == "µ" } {
+            set result 0
+            return $result
+         } else {
+            set classCheck [expr [string is wordchar -failindex charIndex $ctrl] ]
+         }
       } else {
          set classCheck [expr [string is $class -failindex charIndex $newValue] ]
       }
       if {! $classCheck} {
-         set $errorVariable [format $::caption(tkutil,badCharacter) "\"$newValue\"" "\"[string range $newValue $charIndex $charIndex]\"" ]
-         set result $classCheck
-      } else {
+         if { $charIndex != "" } {
+            set $errorVariable [format $::caption(tkutil,badCharacter) "\"$newValue\"" "\"[string range $newValue $charIndex $charIndex]\"" ]
+            set result $classCheck
+         } else {
+            set result 0
+         }
+     } else {
          #--- je verifie l'ordre des bornes de longueur
          if {$minLength > $maxLength} {
             set tmp $minLength; set minLength $maxLength; set maxLength $tmp
@@ -478,7 +515,7 @@ proc ::tkutil::validateString { win event newValue oldValue class minLength maxL
       }
       if { $result == 0 } {
          #--- j'affiche en inverse video
-         $win configure -bg $::audace(color,entryBackColor2) -fg $::audace(color,entryTextColor)
+         $win configure -bg $::color(lightred) -fg $::color(red)
       } else {
          #--- j'affiche normalement
          $win configure -bg $::audace(color,entryBackColor) -fg $::audace(color,entryTextColor)
@@ -487,6 +524,7 @@ proc ::tkutil::validateString { win event newValue oldValue class minLength maxL
       #--- je ne traite pas l'evenement
       set result 1
    }
+  ### console::disp "win=$win event=$event newValue=$newValue oldValue=$oldValue result=$result\n"
    return $result
 }
 
