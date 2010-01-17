@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmaude.tcl,v 1.27 2009-12-31 08:47:13 robertdelmas Exp $
+# Mise a jour $Id: cmaude.tcl,v 1.28 2010-01-17 18:15:37 robertdelmas Exp $
 #
 # Remarks :
 # The definition of some variables (binning, exp. time, rythm, etc.)
@@ -574,11 +574,11 @@ namespace eval ::cmaude {
       cam$numcam acq
 
       #--- Alarme sonore de fin de pose
-      ::camera::alarme_sonore $exptime
+      ::camera::alarmeSonore $exptime
 
       #--- Annonce Timer
       if { $exptime > "1" } {
-         ::camera::dispTime cam$numcam $This.fra3.labURL4
+         ::cmaude::dispTime $This.fra3.labURL4 "#FF0000"
       }
 
       #--- Attente de la fin de la pose
@@ -596,6 +596,25 @@ namespace eval ::cmaude {
       ::audace::autovisu $audace(visuNo)
 
       wm title $audace(base) "$caption(cmaude,image_acq) $exptime s"
+   }
+
+   #======================
+   #=== Decrement time ===
+
+   proc dispTime { labelTime colorLabel } {
+      global caption numcam
+
+      set t [ cam$numcam timer -1 ]
+
+      if { $t > "1" } {
+         $labelTime configure -text "[ expr $t-1 ] / [ format "%d" [ expr int([ cam$numcam exptime ]) ] ]" \
+            -fg $colorLabel
+         update
+         after 1000 ::cmaude::dispTime $labelTime $colorLabel
+      } else {
+         $labelTime configure -text "$caption(cmaude,numerisation)" -fg $colorLabel
+         update
+      }
    }
 
    #===============================
@@ -884,14 +903,16 @@ global color panneau
          label $This.fra2.lab5 -text "$panneau(cmaude,label_time)" -relief flat
          pack $This.fra2.lab5 -in $This.fra2 -anchor center -expand 1 -fill both -padx 4 -pady 1
          #--- Entry for the exptime
-         entry $This.fra2.ent5 -textvariable panneau(cmaude,time) -width 4 -relief groove -justify center
+         entry $This.fra2.ent5 -textvariable panneau(cmaude,time) -width 4 -relief groove -justify center \
+            -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
          pack $This.fra2.ent5 -in $This.fra2 -anchor center -padx 4 -pady 2
 
          #--- Label for the rythm
          label $This.fra2.lab6 -text "$panneau(cmaude,label_rythm)" -relief flat
          pack $This.fra2.lab6 -in $This.fra2 -anchor center -expand 1 -fill both -padx 4 -pady 2
          #--- Entry for the rythm
-         entry $This.fra2.ent6 -textvariable panneau(cmaude,rythm) -width 5 -relief groove -justify center
+         entry $This.fra2.ent6 -textvariable panneau(cmaude,rythm) -width 5 -relief groove -justify center \
+            -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 9999 }
          pack $This.fra2.ent6 -in $This.fra2 -anchor center -padx 4 -pady 2
 
          #--- Button GO
