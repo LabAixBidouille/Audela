@@ -1,6 +1,6 @@
 #
 # Fichier : quickaudine.cap
-# Mise a jour $Id: quickaudine.cap,v 1.18 2009-11-05 18:24:04 robertdelmas Exp $
+# Mise a jour $Id: quickaudine.cap,v 1.19 2010-01-17 17:58:12 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -19,6 +19,7 @@ set caption(quickaudine,unite)            "1/100 s"
 set caption(quickaudine,lecture_pixel)    "Reading of One Pixel"
 set caption(quickaudine,micro_sec)        "microseconds"
 set caption(quickaudine,error)            "Error Message:"
+set caption(quickaudine,msg)              "QuickAudine users must install the FTDI driver (follow the steps explained in the Help)."
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -31,6 +32,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(quickaudine,lecture_pixel) "Lecture d'un pixel"
    set caption(quickaudine,micro_sec)     "microsecondes"
    set caption(quickaudine,error)         "Message d'erreur :"
+   set caption(quickaudine,msg)           "Utilisateurs de QuickAudine : Vous devez installer le driver FTDI (suivre la procédure décrite dans l'aide)."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -43,6 +45,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(quickaudine,lecture_pixel) "Lettura di un pixel"
    set caption(quickaudine,micro_sec)     "microsecondi"
    set caption(quickaudine,error)         "Messaggio di errore:"
+   set caption(quickaudine,msg)           "# Utilisateurs de QuickAudine : Vous devez installer le driver FTDI (suivre la procédure décrite dans l'aide)."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -55,6 +58,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(quickaudine,lecture_pixel) "Lectura de un píxel"
    set caption(quickaudine,micro_sec)     "microsegundos"
    set caption(quickaudine,error)         "Mensaje de error:"
+   set caption(quickaudine,msg)           "Usuarios de QuickAudine: Deben instalar el driver FTDI (seguir el procedimiento descrito en la ayuda)."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -67,6 +71,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(quickaudine,lecture_pixel) "Ein Rasterpunkt abtasten"
    set caption(quickaudine,micro_sec)     "Mikrosekunden"
    set caption(quickaudine,error)         "Fehlermeldung:"
+   set caption(quickaudine,msg)           "# Utilisateurs de QuickAudine : Vous devez installer le driver FTDI (suivre la procédure décrite dans l'aide)."
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -79,6 +84,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(quickaudine,lecture_pixel) "Leitura de um pixel"
    set caption(quickaudine,micro_sec)     "microsegundos"
    set caption(quickaudine,error)         "Mensagem de erro:"
+   set caption(quickaudine,msg)           "# Utilisateurs de QuickAudine : Vous devez installer le driver FTDI (suivre la procédure décrite dans l'aide)."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -91,6 +97,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(quickaudine,lecture_pixel) "Læsning af én pixel"
    set caption(quickaudine,micro_sec)     "microsekunder"
    set caption(quickaudine,error)         "Fejlmeddelelse:"
+   set caption(quickaudine,msg)           "# Utilisateurs de QuickAudine : Vous devez installer le driver FTDI (suivre la procédure décrite dans l'aide)."
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -103,6 +110,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(quickaudine,lecture_pixel) "Reading of One Pixel"
    set caption(quickaudine,micro_sec)     "microseconds"
    set caption(quickaudine,error)         "Error Message:"
+   set caption(quickaudine,msg)           "QuickAudine users must install the FTDI driver (follow the steps explained in the Help)."
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -115,6 +123,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(quickaudine,lecture_pixel) "Reading of One Pixel"
    set caption(quickaudine,micro_sec)     "microseconds"
    set caption(quickaudine,error)         "Error Message:"
+   set caption(quickaudine,msg)           "QuickAudine users must install the FTDI driver (follow the steps explained in the Help)."
 
 }
 

@@ -1,6 +1,6 @@
 #
 # Fichier : quickremote.cap
-# Mise a jour $Id: quickremote.cap,v 1.13 2009-11-05 18:24:19 robertdelmas Exp $
+# Mise a jour $Id: quickremote.cap,v 1.14 2010-01-17 17:58:42 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -11,74 +11,83 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(quickremote,titre)           "QuickRemote"
-set caption(quickremote,available)       "QuickRemote available"
-set caption(quickremote,refresh)         "Reload"
-set caption(quickremote,error)           "Error Message:"
+set caption(quickremote,titre)            "QuickRemote"
+set caption(quickremote,available)        "QuickRemote available"
+set caption(quickremote,refresh)          "Reload"
+set caption(quickremote,error)            "Error Message:"
+set caption(quickremote,msg)              "QuickRemote users must install the FTDI driver (follow the steps explained in the Help)."
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(quickremote,titre)        "QuickRemote"
-   set caption(quickremote,available)    "QuickRemote disponibles"
-   set caption(quickremote,refresh)      "Rafraîchir"
-   set caption(quickremote,error)        "Message d'erreur :"
+   set caption(quickremote,titre)         "QuickRemote"
+   set caption(quickremote,available)     "QuickRemote disponibles"
+   set caption(quickremote,refresh)       "Rafraîchir"
+   set caption(quickremote,error)         "Message d'erreur :"
+   set caption(quickremote,msg)           "Utilisateurs de QuickRemote : Vous devez installer le driver FTDI (suivre la procédure décrite dans l'aide)."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(quickremote,titre)        "QuickRemote"
-   set caption(quickremote,available)    "QuickRemote disponibile"
-   set caption(quickremote,refresh)      "Rinfresca"
-   set caption(quickremote,error)        "Messaggio di errore:"
+   set caption(quickremote,titre)         "QuickRemote"
+   set caption(quickremote,available)     "QuickRemote disponibile"
+   set caption(quickremote,refresh)       "Rinfresca"
+   set caption(quickremote,error)         "Messaggio di errore:"
+   set caption(quickremote,msg)           "# Utilisateurs de QuickRemote : Vous devez installer le driver FTDI (suivre la procédure décrite dans l'aide)."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(quickremote,titre)        "QuickRemote"
-   set caption(quickremote,available)    "QuickRemote disponibles"
-   set caption(quickremote,refresh)      "Recargar"
-   set caption(quickremote,error)        "Mensaje de error:"
+   set caption(quickremote,titre)         "QuickRemote"
+   set caption(quickremote,available)     "QuickRemote disponibles"
+   set caption(quickremote,refresh)       "Recargar"
+   set caption(quickremote,error)         "Mensaje de error:"
+   set caption(quickremote,msg)           "Usuarios de QuickRemote: Deben instalar el driver FTDI (seguir el procedimiento descrito en la ayuda)."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(quickremote,titre)        "QuickRemote"
-   set caption(quickremote,available)    "QuickRemote verfügbar"
-   set caption(quickremote,refresh)      "Aktualisieren"
-   set caption(quickremote,error)        "Fehlermeldung:"
+   set caption(quickremote,titre)         "QuickRemote"
+   set caption(quickremote,available)     "QuickRemote verfügbar"
+   set caption(quickremote,refresh)       "Aktualisieren"
+   set caption(quickremote,error)         "Fehlermeldung:"
+   set caption(quickremote,msg)           "# Utilisateurs de QuickRemote : Vous devez installer le driver FTDI (suivre la procédure décrite dans l'aide)."
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(quickremote,titre)        "QuickRemote"
-   set caption(quickremote,available)    "QuickRemote disponível"
-   set caption(quickremote,refresh)      "Actualizar"
-   set caption(quickremote,error)        "Mensagem de erro:"
+   set caption(quickremote,titre)         "QuickRemote"
+   set caption(quickremote,available)     "QuickRemote disponível"
+   set caption(quickremote,refresh)       "Actualizar"
+   set caption(quickremote,error)         "Mensagem de erro:"
+   set caption(quickremote,msg)           "# Utilisateurs de QuickRemote : Vous devez installer le driver FTDI (suivre la procédure décrite dans l'aide)."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(quickremote,titre)        "QuickRemote"
-   set caption(quickremote,available)    "QuickRemote disponible"
-   set caption(quickremote,refresh)      "Genindlæs"
-   set caption(quickremote,error)        "Fejlmeddelelse:"
+   set caption(quickremote,titre)         "QuickRemote"
+   set caption(quickremote,available)     "QuickRemote disponible"
+   set caption(quickremote,refresh)       "Genindlæs"
+   set caption(quickremote,error)         "Fejlmeddelelse:"
+   set caption(quickremote,msg)           "# Utilisateurs de QuickRemote : Vous devez installer le driver FTDI (suivre la procédure décrite dans l'aide)."
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
-   set caption(quickremote,titre)        "QuickRemote"
-   set caption(quickremote,available)    "QuickRemote available"
-   set caption(quickremote,refresh)      "Reload"
-   set caption(quickremote,error)        "Error Message:"
+   set caption(quickremote,titre)         "QuickRemote"
+   set caption(quickremote,available)     "QuickRemote available"
+   set caption(quickremote,refresh)       "Reload"
+   set caption(quickremote,error)         "Error Message:"
+   set caption(quickremote,msg)           "QuickRemote users must install the FTDI driver (follow the steps explained in the Help)."
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
-   set caption(quickremote,titre)        "QuickRemote"
-   set caption(quickremote,available)    "QuickRemote available"
-   set caption(quickremote,refresh)      "Reload"
-   set caption(quickremote,error)        "Error Message:"
+   set caption(quickremote,titre)         "QuickRemote"
+   set caption(quickremote,available)     "QuickRemote available"
+   set caption(quickremote,refresh)       "Reload"
+   set caption(quickremote,error)         "Error Message:"
+   set caption(quickremote,msg)           "QuickRemote users must install the FTDI driver (follow the steps explained in the Help)."
 
 }
 
