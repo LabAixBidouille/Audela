@@ -2,7 +2,7 @@
 # Fichier : acqzadko.tcl
 # Description : Outil d'acquisition
 # Auteurs : Francois Cochard et Myrtille Laas
-# Mise a jour $Id: acqzadko.tcl,v 1.14 2010-01-10 16:09:28 robertdelmas Exp $
+# Mise a jour $Id: acqzadko.tcl,v 1.15 2010-01-17 18:22:57 robertdelmas Exp $
 #
 
 #==============================================================
@@ -43,7 +43,7 @@ proc ::acqzadko::createPluginInstance { { in "" } { visuNo 1 } } {
    set panneau(acqzadko,$visuNo,camNo)   [::confCam::getCamNo $panneau(acqzadko,$visuNo,camItem)]
 
    #--- Recuperation de la derniere configuration de l'outil
-   ::acqzadko::Chargement_Var $visuNo
+   ::acqzadko::chargerVariable $visuNo
 
    #--- Initialisation des variables de la boite de configuration
    ::acqzadkoSetup::confToWidget $visuNo
@@ -449,8 +449,8 @@ proc ::acqzadko::Adapt_Panneau_acqzadko { visuNo args } {
    }
 }
 
-#***** Procedure Chargement_Var ********************************
-proc ::acqzadko::Chargement_Var { visuNo } {
+#***** Procedure chargerVariable *******************************
+proc ::acqzadko::chargerVariable { visuNo } {
    variable parametres
    global audace
 
@@ -478,10 +478,10 @@ proc ::acqzadko::Chargement_Var { visuNo } {
    #--- Creation des variables de la boite de configuration si elles n'existent pas
    ::acqzadkoSetup::initToConf $visuNo
 }
-#***** Fin de la procedure Chargement_Var **********************
+#***** Fin de la procedure chargerVariable *********************
 
-#***** Procedure Enregistrement_Var ****************************
-proc ::acqzadko::Enregistrement_Var { visuNo } {
+#***** Procedure enregistrerVariable ***************************
+proc ::acqzadko::enregistrerVariable { visuNo } {
    variable parametres
    global audace panneau
 
@@ -509,7 +509,7 @@ proc ::acqzadko::Enregistrement_Var { visuNo } {
      }
    }
 }
-#***** Fin de la procedure Enregistrement_Var ******************
+#***** Fin de la procedure enregistrerVariable *****************
 
 #***** Procedure startTool *************************************
 proc ::acqzadko::startTool { { visuNo 1 } } {
@@ -540,7 +540,7 @@ proc ::acqzadko::stopTool { { visuNo 1 } } {
    }
 
    #--- Sauvegarde de la configuration de prise de vue
-   ::acqzadko::Enregistrement_Var $visuNo
+   ::acqzadko::enregistrerVariable $visuNo
 
    #--- Destruction des fenetres auxiliaires et sauvegarde de leurs positions si elles existent
    ::acqzadko::recup_position $visuNo
@@ -609,55 +609,6 @@ proc ::acqzadko::setShutter { visuNo state } {
    }
 }
 
-#***** Procedure de test de validite d'un entier *****************
-#--- Cette procedure verifie que la chaine passee en argument decrit
-#--- bien un entier different de 0
-#--- Elle retourne 1 si c'est la cas et 0 si ce n'est pas un entier
-proc ::acqzadko::TestEntier { valeur } {
-   set test 1
-   for { set i 0 } { $i < [ string length $valeur ] } { incr i } {
-      set a [string index $valeur $i]
-      if { ![string match {[1-9]} $a] } {
-         set test 0
-      }
-   }
-   if { $valeur == "" } { set test 0 }
-   return $test
-}
-#***** Fin de la procedure de test de validite d'une entier *******
-
-#***** Procedure de test de validite d'une chaine de caracteres *******
-#--- Cette procedure verifie que la chaine passee en argument ne contient
-#--- que des caracteres valides
-#--- Elle retourne 1 si c'est la cas et 0 si ce n'est pas valable
-proc ::acqzadko::TestChaine { valeur } {
-   set test 1
-   for { set i 0 } { $i < [ string length $valeur ] } { incr i } {
-      set a [ string index $valeur $i ]
-      if { ![string match {[-a-zA-Z0-9_]} $a] } {
-         set test 0
-      }
-   }
-   return $test
-}
-#***** Fin de la procedure de test de validite d'une chaine de caracteres *******
-
-#***** Procedure de test de validite d'un nombre reel *****************
-#--- Cette procedure verifie que la chaine passee en argument decrit
-#--- bien un reel
-#--- Elle retourne 1 si c'est la cas et 0 si ce n'est pas un reel
-proc ::acqzadko::TestReel { valeur } {
-   set test 1
-   for { set i 0 } { $i < [string length $valeur] } { incr i } {
-      set a [string index $valeur $i]
-      if { ![string match {[0-9.]} $a] } {
-         set test 0
-      }
-   }
-   return $test
-}
-#***** Fin de la procedure de test de validite d'un nombre reel *******
-
 #------------------------------------------------------------
 # testParametreAcquisition
 #   Tests generaux d'integrite de la requete
@@ -697,12 +648,6 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
          -message $caption(acqzadko,saistps)
       set integre non
    }
-   #--- Le champ "temps de pose" est-il bien un reel positif ?
-   if { [ TestReel $panneau(acqzadko,$visuNo,pose) ] == "0" } {
-      tk_messageBox -title $caption(acqzadko,pb) -type ok \
-         -message $caption(acqzadko,Tpsinv)
-      set integre non
-   }
 
    #--- Tests d'integrite specifiques a chaque mode d'acquisition
    if { $integre == "oui" } {
@@ -715,12 +660,6 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
                if { $panneau(acqzadko,$visuNo,index) == "" } {
                   tk_messageBox -title $caption(acqzadko,pb) -type ok \
                       -message $caption(acqzadko,saisind)
-                  set integre non
-               }
-               #--- Verifier que l'index est valide (entier positif)
-               if { [ TestEntier $panneau(acqzadko,$visuNo,index) ] == "0" } {
-                  tk_messageBox -title $caption(acqzadko,pb) -type ok \
-                     -message $caption(acqzadko,indinv)
                   set integre non
                }
             }
@@ -743,28 +682,10 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
                      -message $caption(acqzadko,nomblanc)
                   set integre non
                }
-               #--- Verifier que le nom de fichier ne contient pas de caracteres interdits
-               if { [ TestChaine $panneau(acqzadko,$visuNo,nom_image) ] == "0" } {
-                  tk_messageBox -title $caption(acqzadko,pb) -type ok \
-                     -message $caption(acqzadko,mauvcar)
-                  set integre non
-               }
-               #--- Verifier que le nombre de poses est valide (nombre entier)
-               if { [ TestEntier $panneau(acqzadko,$visuNo,nb_images) ] == "0" } {
-                  tk_messageBox -title $caption(acqzadko,pb) -type ok \
-                     -message $caption(acqzadko,nbinv)
-                  set integre non
-               }
                #--- Verifier que l'index existe
                if { $panneau(acqzadko,$visuNo,index) == "" } {
                   tk_messageBox -title $caption(acqzadko,pb) -type ok \
                       -message $caption(acqzadko,saisind)
-                  set integre non
-               }
-               #--- Verifier que l'index est valide (entier positif)
-               if { [ TestEntier $panneau(acqzadko,$visuNo,index) ] == "0" } {
-                  tk_messageBox -title $caption(acqzadko,pb) -type ok \
-                     -message $caption(acqzadko,indinv)
                   set integre non
                }
                #--- Envoyer un warning si l'index n'est pas a 1
@@ -774,6 +695,12 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
                   if { $confirmation == "no" } {
                      set integre non
                   }
+               }
+               #--- Verifier que le nombre de poses existe
+               if { $panneau(acqzadko,$visuNo,nb_images) == "" } {
+                  tk_messageBox -title $caption(acqzadko,pb) -type ok \
+                      -message $caption(acqzadko,nbinv)
+                  set integre non
                }
             }
             #--- Tester si un telescope est bien selectionnee si l'option decalage est selectionnee
@@ -807,22 +734,10 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
                      -message $caption(acqzadko,nomblanc)
                   set integre non
                }
-               #--- Verifier que le nom de fichier ne contient pas de caracteres interdits
-               if { [ TestChaine $panneau(acqzadko,$visuNo,nom_image) ] == "0" } {
-                  tk_messageBox -title $caption(acqzadko,pb) -type ok \
-                     -message $caption(acqzadko,mauvcar)
-                  set integre non
-               }
                #--- Verifier que l'index existe
                if { $panneau(acqzadko,$visuNo,index) == "" } {
                   tk_messageBox -title $caption(acqzadko,pb) -type ok \
                       -message $caption(acqzadko,saisind)
-                  set integre non
-               }
-               #--- Verifier que l'index est valide (entier positif)
-               if { [ TestEntier $panneau(acqzadko,$visuNo,index) ] == "0" } {
-                  tk_messageBox -title $caption(acqzadko,pb) -type ok \
-                     -message $caption(acqzadko,indinv)
                   set integre non
                }
                #--- Envoyer un warning si l'index n'est pas a 1
@@ -863,28 +778,10 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
                   -message $caption(acqzadko,nomblanc)
                set integre non
             }
-            #--- Verifier que le nom de fichier ne contient pas de caracteres interdits
-            if { [ TestChaine $panneau(acqzadko,$visuNo,nom_image) ] == "0" } {
-               tk_messageBox -title $caption(acqzadko,pb) -type ok \
-                  -message $caption(acqzadko,mauvcar)
-               set integre non
-            }
-            #--- Verifier que le nombre de poses est valide (nombre entier)
-            if { [ TestEntier $panneau(acqzadko,$visuNo,nb_images) ] == "0"} {
-               tk_messageBox -title $caption(acqzadko,pb) -type ok \
-                  -message $caption(acqzadko,nbinv)
-               set integre non
-            }
             #--- Verifier que l'index existe
             if { $panneau(acqzadko,$visuNo,index) == "" } {
                tk_messageBox -title $caption(acqzadko,pb) -type ok \
                    -message $caption(acqzadko,saisind)
-               set integre non
-            }
-            #--- Verifier que l'index est valide (entier positif)
-            if { [ TestEntier $panneau(acqzadko,$visuNo,index) ] == "0" } {
-               tk_messageBox -title $caption(acqzadko,pb) -type ok \
-                  -message $caption(acqzadko,indinv)
                set integre non
             }
             #--- Envoyer un warning si l'index n'est pas a 1
@@ -895,15 +792,16 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
                   set integre non
                }
             }
+            #--- Verifier que le nombre de poses existe
+            if { $panneau(acqzadko,$visuNo,nb_images) == "" } {
+               tk_messageBox -title $caption(acqzadko,pb) -type ok \
+                   -message $caption(acqzadko,nbinv)
+               set integre non
+            }
             #--- Verifier que la simulation a ete lancee
             if { $panneau(acqzadko,$visuNo,intervalle) == "...." } {
                tk_messageBox -title $caption(acqzadko,pb) -type ok \
                   -message $caption(acqzadko,interinv_2)
-               set integre non
-            #--- Verifier que l'intervalle est valide (entier positif)
-            } elseif { [ TestEntier $panneau(acqzadko,$visuNo,intervalle_1) ] == "0" } {
-               tk_messageBox -title $caption(acqzadko,pb) -type ok \
-                  -message $caption(acqzadko,interinv)
                set integre non
             #--- Verifier que l'intervalle est superieur a celui calcule par la simulation
             } elseif { ( $panneau(acqzadko,$visuNo,intervalle) > $panneau(acqzadko,$visuNo,intervalle_1) ) && \
@@ -943,22 +841,10 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
                      -message $caption(acqzadko,nomblanc)
                   set integre non
                }
-               #--- Verifier que le nom de fichier ne contient pas de caracteres interdits
-               if { [ TestChaine $panneau(acqzadko,$visuNo,nom_image) ] == "0" } {
-                  tk_messageBox -title $caption(acqzadko,pb) -type ok \
-                     -message $caption(acqzadko,mauvcar)
-                  set integre non
-               }
                #--- Verifier que l'index existe
                if { $panneau(acqzadko,$visuNo,index) == "" } {
                   tk_messageBox -title $caption(acqzadko,pb) -type ok \
                       -message $caption(acqzadko,saisind)
-                  set integre non
-               }
-               #--- Verifier que l'index est valide (entier positif)
-               if { [ TestEntier $panneau(acqzadko,$visuNo,index) ] == "0" } {
-                  tk_messageBox -title $caption(acqzadko,pb) -type ok \
-                     -message $caption(acqzadko,indinv)
                   set integre non
                }
                #--- Envoyer un warning si l'index n'est pas a 1
@@ -974,11 +860,6 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
                   tk_messageBox -title $caption(acqzadko,pb) -type ok \
                      -message $caption(acqzadko,interinv_2)
                   set integre non
-               #--- Verifier que l'intervalle est valide (entier positif)
-               } elseif { [ TestEntier $panneau(acqzadko,$visuNo,intervalle_2) ] == "0" } {
-                  tk_messageBox -title $caption(acqzadko,pb) -type ok \
-                     -message $caption(acqzadko,interinv)
-                  set integre non
                #--- Verifier que l'intervalle est superieur a celui calcule par la simulation
                } elseif { ( $panneau(acqzadko,$visuNo,intervalle) > $panneau(acqzadko,$visuNo,intervalle_2) ) && \
                  ( $panneau(acqzadko,$visuNo,intervalle) != "xxxx" ) } {
@@ -991,11 +872,6 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
                if { $panneau(acqzadko,$visuNo,intervalle) == "...." } {
                   tk_messageBox -title $caption(acqzadko,pb) -type ok \
                      -message $caption(acqzadko,interinv_2)
-                  set integre non
-               #--- Verifier que l'intervalle est valide (entier positif)
-               } elseif { [ TestEntier $panneau(acqzadko,$visuNo,intervalle_2) ] == "0" } {
-                  tk_messageBox -title $caption(acqzadko,pb) -type ok \
-                     -message $caption(acqzadko,interinv)
                   set integre non
                #--- Verifier que l'intervalle est superieur a celui calcule par la simulation
                } elseif { ( $panneau(acqzadko,$visuNo,intervalle) > $panneau(acqzadko,$visuNo,intervalle_2) ) && \
@@ -1163,6 +1039,19 @@ proc ::acqzadko::Go { visuNo } {
       if { [::confCam::getPluginProperty $panneau(acqzadko,$visuNo,camItem) hasBinning] == "1" } {
          #--- je selectionne le binning
          set binning [list [string range $panneau(acqzadko,$visuNo,binning) 0 0] [string range $panneau(acqzadko,$visuNo,binning) 2 2]]
+         #--- je verifie que le binning est conforme
+         set ctrl [ scan $panneau(acqzadko,$visuNo,binning) "%dx%d" binx biny ]
+         if { $ctrl == 2 } {
+            set ctrlValue [ format $binx%s$biny x ]
+            if { $ctrlValue != $panneau(acqzadko,$visuNo,binning) } {
+               set binning "1 1"
+               set panneau(acqzadko,$visuNo,binning) "1x1"
+            }
+         } else {
+            set binning "1 1"
+            set panneau(acqzadko,$visuNo,binning) "1x1"
+         }
+         #--- j'applique le binning
          cam$camNo bin $binning
          set binningMessage $panneau(acqzadko,$visuNo,binning)
       } else {
@@ -1309,7 +1198,7 @@ proc ::acqzadko::Go { visuNo } {
          #--- Je note l'heure de debut de l'image (utile pour les images espacees)
          set panneau(acqzadko,$visuNo,deb_im) [ clock second ]
          #--- Alarme sonore de fin de pose
-         ::camera::alarme_sonore $panneau(acqzadko,$visuNo,pose)
+         ::camera::alarmeSonore $panneau(acqzadko,$visuNo,pose)
          #--- Declenchement l'acquisition (voir la suite dans callbackAcquition)
          ::camera::acquisition $panneau(acqzadko,$visuNo,camItem) "::acqzadko::callbackAcquisition $visuNo" $panneau(acqzadko,$visuNo,pose)
          #--- je lance la boucle d'affichage du status
@@ -1799,10 +1688,10 @@ proc ::acqzadko::dispTime { visuNo } {
             if { [expr $t > 0] } {
                set status "[ expr $t ] / [ format "%d" [ expr int($panneau(acqzadko,$visuNo,pose)) ] ]"
             } else {
-               set status "$caption(camera,numerisation)"
+               set status "$caption(acqzadko,lect)"
             }
          } else {
-            set status "$caption(camera,numerisation)"
+            set status "$caption(acqzadko,lect)"
          }
       } else {
          set status $caption(acqzadko,attente)
@@ -1988,24 +1877,12 @@ proc ::acqzadko::SauveUneImage { visuNo } {
          -message $caption(acqzadko,nomblanc)
       return
    }
-   #--- Verifier que le nom de fichier ne contient pas de caracteres interdits
-   if { [ ::acqzadko::TestChaine $panneau(acqzadko,$visuNo,nom_image) ] == "0" } {
-      tk_messageBox -title $caption(acqzadko,pb) -type ok \
-         -message $caption(acqzadko,mauvcar)
-      return
-   }
    #--- Si la case index est cochee, verifier qu'il y a bien un index
    if { $panneau(acqzadko,$visuNo,indexer) == "1" } {
       #--- Verifier que l'index existe
       if { $panneau(acqzadko,$visuNo,index) == "" } {
          tk_messageBox -title $caption(acqzadko,pb) -type ok \
             -message $caption(acqzadko,saisind)
-         return
-      }
-      #--- Verifier que l'index est bien un nombre entier
-      if { [ ::acqzadko::TestEntier $panneau(acqzadko,$visuNo,index) ] == "0" } {
-         tk_messageBox -title $caption(acqzadko,pb) -type ok \
-            -message $caption(acqzadko,indinv)
          return
       }
    }
@@ -2144,7 +2021,7 @@ proc ::acqzadko::Intervalle_continu_1 { visuNo } {
          -padx 10 -pady 5
       entry $panneau(acqzadko,$visuNo,base).intervalle_continu_1.a.ent1 -width 5 -relief groove \
          -textvariable panneau(acqzadko,$visuNo,intervalle_1) -justify center \
-         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 9999 }
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
       pack $panneau(acqzadko,$visuNo,base).intervalle_continu_1.a.ent1 -anchor center -expand 1 -fill none -side left \
          -padx 10
    pack $panneau(acqzadko,$visuNo,base).intervalle_continu_1.a -padx 10 -pady 5
@@ -2239,7 +2116,7 @@ proc ::acqzadko::Intervalle_continu_2 { visuNo } {
          -padx 10 -pady 5
       entry $panneau(acqzadko,$visuNo,base).intervalle_continu_2.a.ent1 -width 5 -relief groove \
          -textvariable panneau(acqzadko,$visuNo,intervalle_2) -justify center \
-         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 9999 }
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
       pack $panneau(acqzadko,$visuNo,base).intervalle_continu_2.a.ent1 -anchor center -expand 1 -fill none -side left \
          -padx 10
    pack $panneau(acqzadko,$visuNo,base).intervalle_continu_2.a -padx 10 -pady 5
@@ -2451,7 +2328,8 @@ proc ::acqzadko::acqzadkoBuildIF { visuNo } {
             -command " "
       }
       entry $panneau(acqzadko,$visuNo,This).binning.lab -width 10 -relief groove \
-        -textvariable panneau(acqzadko,$visuNo,binning) -justify center
+         -textvariable panneau(acqzadko,$visuNo,binning) -justify center \
+         -validate all -validatecommand { ::tkutil::validateString %W %V %P %s binning 1 5 }
       pack $panneau(acqzadko,$visuNo,This).binning.lab -side left -fill both -expand true
    pack $panneau(acqzadko,$visuNo,This).binning -side top -fill x
 
@@ -2518,8 +2396,9 @@ proc ::acqzadko::acqzadkoBuildIF { visuNo } {
          frame $panneau(acqzadko,$visuNo,This).mode.une.nom -relief ridge -borderwidth 2
             label $panneau(acqzadko,$visuNo,This).mode.une.nom.but -text $caption(acqzadko,nom) -pady 0
             pack $panneau(acqzadko,$visuNo,This).mode.une.nom.but -fill x -side top
-            entry $panneau(acqzadko,$visuNo,This).mode.une.nom.entr -width 10 -textvariable panneau(acqzadko,$visuNo,nom_image) \
-               -relief groove
+            entry $panneau(acqzadko,$visuNo,This).mode.une.nom.entr -width 10 \
+               -textvariable panneau(acqzadko,$visuNo,nom_image) -relief groove \
+               -validate all -validatecommand { ::tkutil::validateString %W %V %P %s wordchar1 0 100 }
             pack $panneau(acqzadko,$visuNo,This).mode.une.nom.entr -fill x -side top
             label $panneau(acqzadko,$visuNo,This).mode.une.nom.lab_extension -text $caption(acqzadko,extension) -pady 0
             pack $panneau(acqzadko,$visuNo,This).mode.une.nom.lab_extension -fill x -side left
@@ -2556,8 +2435,9 @@ proc ::acqzadko::acqzadkoBuildIF { visuNo } {
          frame $panneau(acqzadko,$visuNo,This).mode.serie.nom -relief ridge -borderwidth 2
             label $panneau(acqzadko,$visuNo,This).mode.serie.nom.but -text $caption(acqzadko,nom) -pady 0
             pack $panneau(acqzadko,$visuNo,This).mode.serie.nom.but -fill x
-            entry $panneau(acqzadko,$visuNo,This).mode.serie.nom.entr -width 10 -textvariable panneau(acqzadko,$visuNo,nom_image) \
-               -relief groove
+            entry $panneau(acqzadko,$visuNo,This).mode.serie.nom.entr -width 10 \
+               -textvariable panneau(acqzadko,$visuNo,nom_image) -relief groove \
+               -validate all -validatecommand { ::tkutil::validateString %W %V %P %s wordchar1 0 100 }
             pack $panneau(acqzadko,$visuNo,This).mode.serie.nom.entr -fill x
             label $panneau(acqzadko,$visuNo,This).mode.serie.nom.lab_extension -text $caption(acqzadko,extension) -pady 0
             pack $panneau(acqzadko,$visuNo,This).mode.serie.nom.lab_extension -fill x -side left
@@ -2608,8 +2488,9 @@ proc ::acqzadko::acqzadkoBuildIF { visuNo } {
          frame $panneau(acqzadko,$visuNo,This).mode.continu.nom -relief ridge -borderwidth 2
             label $panneau(acqzadko,$visuNo,This).mode.continu.nom.but -text $caption(acqzadko,nom) -pady 0
             pack $panneau(acqzadko,$visuNo,This).mode.continu.nom.but -fill x
-            entry $panneau(acqzadko,$visuNo,This).mode.continu.nom.entr -width 10 -textvariable panneau(acqzadko,$visuNo,nom_image) \
-               -relief groove
+            entry $panneau(acqzadko,$visuNo,This).mode.continu.nom.entr -width 10 \
+               -textvariable panneau(acqzadko,$visuNo,nom_image) -relief groove \
+               -validate all -validatecommand { ::tkutil::validateString %W %V %P %s wordchar1 0 100 }
             pack $panneau(acqzadko,$visuNo,This).mode.continu.nom.entr -fill x
             label $panneau(acqzadko,$visuNo,This).mode.continu.nom.lab_extension -text $caption(acqzadko,extension) -pady 0
             pack $panneau(acqzadko,$visuNo,This).mode.continu.nom.lab_extension -fill x -side left
@@ -2642,8 +2523,9 @@ proc ::acqzadko::acqzadkoBuildIF { visuNo } {
          frame $panneau(acqzadko,$visuNo,This).mode.serie_1.nom -relief ridge -borderwidth 2
             label $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.but -text $caption(acqzadko,nom) -pady 0
             pack $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.but -fill x
-            entry $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.entr -width 10 -textvariable panneau(acqzadko,$visuNo,nom_image) \
-               -relief groove
+            entry $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.entr -width 10 \
+               -textvariable panneau(acqzadko,$visuNo,nom_image) -relief groove \
+               -validate all -validatecommand { ::tkutil::validateString %W %V %P %s wordchar1 0 100 }
             pack $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.entr -fill x
             label $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.lab_extension -text $caption(acqzadko,extension) -pady 0
             pack $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.lab_extension -fill x -side left
@@ -2694,8 +2576,9 @@ proc ::acqzadko::acqzadkoBuildIF { visuNo } {
          frame $panneau(acqzadko,$visuNo,This).mode.continu_1.nom -relief ridge -borderwidth 2
             label $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.but -text $caption(acqzadko,nom) -pady 0
             pack $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.but -fill x
-            entry $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.entr -width 10 -textvariable panneau(acqzadko,$visuNo,nom_image) \
-               -relief groove
+            entry $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.entr -width 10 \
+               -textvariable panneau(acqzadko,$visuNo,nom_image) -relief groove \
+               -validate all -validatecommand { ::tkutil::validateString %W %V %P %s wordchar1 0 100 }
             pack $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.entr -fill x
             label $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.lab_extension -text $caption(acqzadko,extension) -pady 0
             pack $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.lab_extension -fill x -side left
