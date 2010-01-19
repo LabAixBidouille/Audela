@@ -38,7 +38,7 @@ int tt_histocuts_precis(TT_IMA *p,TT_IMA_SERIES *pseries,double percent_sb,doubl
 int tt_histocuts_myrtille(TT_IMA *p,TT_IMA_SERIES *pseries,double *hicut,double *locut,double *mode,double *mini,double *maxi);
 
 int tt_morphomath_1 (TT_IMA_SERIES *pseries);
-void fittrainee (double lt, double fwhm,int x, int sizex, int sizey,double **mat,double *p,double *carac,double exposure);
+void fittrainee (double lt, double fwhm,double x, int sizex, int sizey,double **mat,double *p,double *carac,double exposure);
 void fittrainee2 (double seuil,double lt, double fwhm,double xc,double yc,int nb,int sizex, int sizey,double **mat,double *p,double *carac,double exposure);
 void fittrainee3 (double seuil,double lt,double xc,double yc,int nb,int sizex, int sizey,double **mat,double *p,double *carac,double exposure);
 double erf( double x );
@@ -597,7 +597,8 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 			yc=(fwhmybi/1.5)+nb;
 			flux=0.0;
 			//lt=lt+2*(fwhm+1);
-			fittrainee2 (seuila,lt,fwhm,xc,yc,nb,sizex, sizey, mat, para, carac, exposure); 				
+			fittrainee (lt,fwhm, xc, sizex, sizey,mat,para,carac, exposure) ;
+			//fittrainee2 (seuila,lt,fwhm,xc,yc,nb,sizex, sizey, mat, para, carac, exposure); 				
 			//fittrainee3 (seuila,lt,xc,yc,nb,sizex, sizey, mat, para, carac, exposure); 
 			//posx  = para[1]+x-fwhm-nb;
 			posx  = para[1]+1.0*x+1.0;
@@ -652,7 +653,7 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 }
 
 
-void fittrainee (double lt, double fwhm,int x, int sizex, int sizey,double **mat,double *p,double *carac, double exposure) 
+void fittrainee (double lt, double fwhm,double x, int sizex, int sizey,double **mat,double *p,double *carac, double exposure) 
 /*********************************************************************************************/
 /* fitte les trainées avec une ellipse														 */
 /*********************************************************************************************/
