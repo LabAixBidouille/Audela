@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.46 2010-01-10 16:00:30 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.47 2010-01-20 18:56:47 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -914,21 +914,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,faire_flat_field)            "Optag en flat-field frame"
 
    set caption(pretraitement,conversion)                "Konvertering"
-   set caption(pretraitement,all)                       "# Convertir tous les fichiers"
-   set caption(pretraitement,renum)                     "# Renuméroter les images en sortie"
-   set caption(pretraitement,chg)                       "# Changer le nom générique de sortie en"
-   set caption(pretraitement,destroy_src)               "# Détruire les sources"
-   set caption(pretraitement,src)                       "# Fichier source"
-   set caption(pretraitement,output)                    "# Fichier produit"
-   set caption(pretraitement,done)                      "# Remarque"
-   set caption(pretraitement,echec)                     "# Echec de conversion de %s : %s"
-   set caption(pretraitement,err_analyse)               "# Erreur d'analyse :"
-   set caption(pretraitement,err_entete)                "# Erreur dans l'en-tête FITS :"
-   set caption(pretraitement,nb_select)                 "# Fichiers sélectionnés"
-   set caption(pretraitement,no_selection)              "# Aucune sélection."
-   set caption(pretraitement,no_file)                   "# Aucun fichier convertible dans ce répertoire"
-   set caption(pretraitement,options)                   "# Options"
-   set caption(pretraitement,repertoire)                "# Répertoire sélectionné :"
+   set caption(pretraitement,all)                       "Konverter alle filer"
+   set caption(pretraitement,renum)                     "Giv output-billeder nyt nummer"
+   set caption(pretraitement,chg)                       "Skift genereret output-navn til"
+   set caption(pretraitement,destroy_src)               "Slet input-fil"
+   set caption(pretraitement,src)                       "Input-fil"
+   set caption(pretraitement,output)                    "Output-fil"
+   set caption(pretraitement,done)                      "Bemærkning"
+   set caption(pretraitement,echec)                     "Konvertering mislykkedes til %s: %s"
+   set caption(pretraitement,err_analyse)               "Analysefejl:"
+   set caption(pretraitement,err_entete)                "FITS header-fejl:"
+   set caption(pretraitement,nb_select)                 "Valgte filer"
+   set caption(pretraitement,no_selection)              "Intet valg."
+   set caption(pretraitement,no_file)                   "Ingen filer i denne folder kan konverteres"
+   set caption(pretraitement,options)                   "Valg"
+   set caption(pretraitement,repertoire)                "Valgt folder:"
 
    set caption(pretraitement,image_gene_entree_r+v+b)   "Serienavn for R, G og B input billeder:"
    set caption(pretraitement,image_sortie_rvb)          "Navn på RGB output billede:"

@@ -1,6 +1,6 @@
 #
 # Fichier : tkutil.cap
-# Mise a jour $Id: tkutil.cap,v 1.20 2010-01-15 11:00:51 robertdelmas Exp $
+# Mise a jour $Id: tkutil.cap,v 1.21 2010-01-20 19:00:11 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -290,11 +290,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_html)       "HTML Filer"
    set caption(tkutil,fichier_jar)        "JAR Filer"
 
-   set caption(tkutil,badCharacter)       "# %s contient un caractère interdit %s"
-   set caption(tkutil,stringTooShort)     "# %s a moins de %s caractère(s)"
-   set caption(tkutil,stringTooLarge)     "# %s a plus de %s caractère(s)"
-   set caption(tkutil,numberTooSmall)     "# %s est inférieur à %s"
-   set caption(tkutil,numberTooGreat)     "# %s est supérieur à %s"
+   set caption(tkutil,badCharacter)       "%s indeholder et ugyldigt tegn %s"
+   set caption(tkutil,stringTooShort)     "%s har mindre end %s tegn"
+   set caption(tkutil,stringTooLarge)     "%s har flere end %s tegn"
+   set caption(tkutil,numberTooSmall)     "%s er mindre end %s"
+   set caption(tkutil,numberTooGreat)     "%s er større end %s"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
