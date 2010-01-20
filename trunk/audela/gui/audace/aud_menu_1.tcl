@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise a jour $Id: aud_menu_1.tcl,v 1.30 2009-11-04 18:42:59 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.tcl,v 1.31 2010-01-20 22:39:47 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -47,31 +47,6 @@ namespace eval ::audace {
       save_cursor
       all_cursor watch
       set errnum [ catch { saveima ? $visuNo } msg ]
-      if { $errnum == "1" } {
-         tk_messageBox -message "$msg" -icon error
-      }
-      restore_cursor
-      menustate normal
-   }
-
-   #
-   # ::audace::copyjpeg visuNo
-   # Enregistre un fichier au format Jpeg
-   #
-   proc copyjpeg { visuNo } {
-      menustate disabled
-      save_cursor
-      all_cursor watch
-      #---
-      set bufNo [ visu$visuNo buf ]
-      #--- On sort immediatement s'il n'y a pas d'image dans le buffer
-      if { [ buf$bufNo imageready ] == "0" } {
-         restore_cursor
-         menustate normal
-         return
-      }
-      #---
-      set errnum [ catch { sauve_jpeg ? } msg ]
       if { $errnum == "1" } {
          tk_messageBox -message "$msg" -icon error
       }
