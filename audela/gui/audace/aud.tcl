@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.117 2010-01-03 18:49:36 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.118 2010-01-20 22:37:24 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -652,8 +652,6 @@ namespace eval ::audace {
          "::audace::enregistrer $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,enregistrer_sous)..." \
          "::audace::enregistrer_sous $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,copyjpeg)..." \
-         "::audace::copyjpeg $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,file)"
       Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,entete)" "::keyword::header $visuNo"
