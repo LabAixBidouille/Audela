@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.39 2010-01-08 17:26:44 robertdelmas Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.40 2010-01-20 19:08:56 robertdelmas Exp $
 #
 
 #--- Conventions pour ce script :
@@ -2103,22 +2103,16 @@ proc snHeader { bufnum } {
       $audace(base).snheader.slb.list tag configure valu -foreground $color(red)
       $audace(base).snheader.slb.list tag configure comm -foreground $color(green1)
       $audace(base).snheader.slb.list tag configure unit -foreground $color(orange)
-      foreach kwd [lsort -dictionary [buf$bufnum getkwds]] {
-         set liste [buf$bufnum getkwd $kwd]
-         set koff 0
-         if {[llength $liste]>5} {
-            #--- Detourne un bug eventuel des mots longs (ne devrait jamais arriver !)
-            set koff [expr [llength $liste]-5]
+      foreach kwd [ lsort -dictionary [ buf$bufnum getkwds ] ] {
+         set liste [ buf$bufnum getkwd $kwd ]
+         #--- je fais une boucle pour traiter les mots cles a valeur multiple
+         foreach { name value type comment unit } $liste {
+            $audace(base).snheader.slb.list insert end "[format "%8s" $name] " keyw
+            $audace(base).snheader.slb.list insert end "= "                    egal
+            $audace(base).snheader.slb.list insert end "$value "               valu
+            $audace(base).snheader.slb.list insert end "$comment "             comm
+            $audace(base).snheader.slb.list insert end "$unit\n"               unit
          }
-         set keyword "$kwd"
-         if {[string length $keyword]<=8} {
-            set keyword "[format "%8s" $keyword]"
-         }
-         $audace(base).snheader.slb.list insert end "$keyword " keyw
-         $audace(base).snheader.slb.list insert end "= " egal
-         $audace(base).snheader.slb.list insert end "[lindex $liste [expr $koff+1]] " valu
-         $audace(base).snheader.slb.list insert end "[lindex $liste [expr $koff+3]] " comm
-         $audace(base).snheader.slb.list insert end "[lindex $liste [expr $koff+4]]\n" unit
       }
    } else {
       $audace(base).snheader.slb.list insert end "$caption(snvisu,header,noimage)"
