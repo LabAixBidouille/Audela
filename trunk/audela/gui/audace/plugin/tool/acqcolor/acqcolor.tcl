@@ -2,7 +2,7 @@
 # Fichier : acqcolor.tcl
 # Description : Outil pour l'acquisition d'images en couleur
 # Auteurs : Alain KLOTZ et Pierre THIERRY
-# Mise a jour $Id: acqcolor.tcl,v 1.17 2010-01-17 18:17:01 robertdelmas Exp $
+# Mise a jour $Id: acqcolor.tcl,v 1.18 2010-01-20 19:07:08 robertdelmas Exp $
 #
 
 proc testexit { } {
@@ -233,7 +233,7 @@ pack $audace(base).test.frame1 \
       #--- Cree le bouton 'en-tete_fits'
       button $audace(base).test.frame1.fra2.but_en-tete_fits \
          -text $caption(acqcolor,entete_fits) -borderwidth 2 \
-         -command { header_color }
+         -command { headerColor }
        pack $audace(base).test.frame1.fra2.but_en-tete_fits \
          -in $audace(base).test.frame1.fra2 -side left -anchor n \
          -padx 3 -pady 3
@@ -266,7 +266,7 @@ pack $audace(base).test.frame1 \
       #--- Cree le bouton 'smedianrvb'
       button $audace(base).test.frame1.fra4.but_smedianrvb \
          -text $caption(acqcolor,smedianrvb) -borderwidth 2 \
-         -command { smedianrvb }
+         -command { smedianRGB }
       pack $audace(base).test.frame1.fra4.but_smedianrvb \
          -in $audace(base).test.frame1.fra4 -side left -anchor n \
          -padx 3 -pady 3
@@ -445,21 +445,21 @@ pack $audace(base).test.frame2b \
       #--- Bouton radio 1 fenetre
       radiobutton $audace(base).test.frame2b.frame_rad.rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(acqcolor,1_fenetre)" -value 0 -variable conf(color_nb_fenetre) \
-         -command { color_nb_fenetre }
+         -command { colorNbFenetre }
       pack $audace(base).test.frame2b.frame_rad.rad0 \
          -in $audace(base).test.frame2b.frame_rad -side left -anchor center \
          -padx 3 -pady 3
       #--- Bouton radio 2 fenetres
       radiobutton $audace(base).test.frame2b.frame_rad.rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(acqcolor,2_fenetre)" -value 1 -variable conf(color_nb_fenetre) \
-         -command { color_nb_fenetre }
+         -command { colorNbFenetre }
       pack $audace(base).test.frame2b.frame_rad.rad1 \
          -in $audace(base).test.frame2b.frame_rad -side left -anchor center \
          -padx 3 -pady 3
       #--- Bouton radio 2 fenetres (special Pierre Thierry)
       radiobutton $audace(base).test.frame2b.frame_rad.rad2 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(acqcolor,2_fenetre_pth)" -value 2 -variable conf(color_nb_fenetre) \
-         -command { color_nb_fenetre }
+         -command { colorNbFenetre }
       pack $audace(base).test.frame2b.frame_rad.rad2 \
          -in $audace(base).test.frame2b.frame_rad -side left -anchor center \
          -padx 3 -pady 3
@@ -930,23 +930,7 @@ proc dispTime { labelTime colorLabel } {
    }
 }
 
-proc seprvb { } {
-   global audace
-
-   catch {
-      source [ file join $audace(rep_plugin) tool acqcolor seprvb.tcl ]
-   }
-}
-
-proc trichro { } {
-   global audace
-
-   catch {
-      source [ file join $audace(rep_plugin) tool acqcolor trichro.tcl ]
-   }
-}
-
-proc smedianrvb { } {
+proc smedianRGB { } {
    global audace
 
    catch {
@@ -1521,7 +1505,7 @@ proc testjpeg { } {
    }
 }
 
-proc header_color { } {
+proc headerColor { } {
    global audace
    global caption
    global color
@@ -1560,22 +1544,16 @@ proc header_color { } {
       $audace(base).header_color.slb.list tag configure valu -foreground $color(red)
       $audace(base).header_color.slb.list tag configure comm -foreground $color(green1)
       $audace(base).header_color.slb.list tag configure unit -foreground $color(orange)
-      foreach kwd [lsort -dictionary [buf1000 getkwds]] {
-         set liste [buf1000 getkwd $kwd]
-         set koff 0
-         if {[llength $liste]>5} {
-            #--- Detourne un bug eventuel des mots longs (ne devrait jamais arriver !)
-            set koff [expr [llength $liste]-5]
+      foreach kwd [ lsort -dictionary [ buf1000 getkwds ] ] {
+         set liste [ buf1000 getkwd $kwd ]
+         #--- je fais une boucle pour traiter les mots cles a valeur multiple
+         foreach { name value type comment unit } $liste {
+            $audace(base).header_color.slb.list insert end "[format "%8s" $name] " keyw
+            $audace(base).header_color.slb.list insert end "= "                    egal
+            $audace(base).header_color.slb.list insert end "$value "               valu
+            $audace(base).header_color.slb.list insert end "$comment "             comm
+            $audace(base).header_color.slb.list insert end "$unit\n"               unit
          }
-         set keyword "$kwd"
-         if {[string length $keyword]<=8} {
-            set keyword "[format "%8s" $keyword]"
-         }
-         $audace(base).header_color.slb.list insert end "$keyword " keyw
-         $audace(base).header_color.slb.list insert end "= " egal
-         $audace(base).header_color.slb.list insert end "[lindex $liste [expr $koff+1]] " valu
-         $audace(base).header_color.slb.list insert end "[lindex $liste [expr $koff+3]] " comm
-         $audace(base).header_color.slb.list insert end "[lindex $liste [expr $koff+4]]\n" unit
       }
    } else {
       $audace(base).header_color.slb.list insert end "$caption(acqcolor,entete_fits_noimage)"
@@ -1588,7 +1566,7 @@ proc header_color { } {
    ::confColor::applyColor $audace(base).header_color
 }
 
-proc color_nb_fenetre { } {
+proc colorNbFenetre { } {
    global audace
    global conf
    global zone
