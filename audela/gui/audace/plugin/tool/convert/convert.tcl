@@ -1,8 +1,8 @@
 #
 # Fichier : convert.tcl
-# Description : Conversion d'images FITS au format EMF, PS, ICO, JPEG/JPG, PDF ou PSD
+# Description : Conversion d'images FITS au format PS ou PDF
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: convert.tcl,v 1.3 2010-01-15 11:07:22 robertdelmas Exp $
+# Mise a jour $Id: convert.tcl,v 1.4 2010-01-20 22:42:04 robertdelmas Exp $
 #
 
 #============================================================
@@ -84,14 +84,13 @@ proc ::convert::initPlugin { tkbase } {
    variable private
 
    #--- Liste des extensions utilisables
-   set private(liste_extension) [list ".emf" ".ps" ".ico" ".jpg" ".pdf" ".psd" ]
+   set private(liste_extension) [list ".ps" ".pdf" ]
 
    #--- Liste des commentaires pour les extensions utilisables
-   set private(commentaires) [list "Windows Enhanced Metafile" "Postscript" \
-      "Windows Icon" "JPEG/JPG" "Portable Document Format" "Adobe Photoshop" ]
+   set private(commentaires) [list "Postscript" "Portable Document Format" ]
 
    #--- Liste des types a entrer dans nconvert pour les extensions utilisables
-   set private(liste_type) [ list emf ps ico jpeg pdf psd ]
+   set private(liste_type) [ list ps pdf ]
 
    #--- Liste de listes pour afficher les formats dans la boite de dialogue
    foreach private(extension) $private(liste_extension) com $private(commentaires) {
