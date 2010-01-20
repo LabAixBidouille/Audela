@@ -1,6 +1,6 @@
 #
 # Fichier : keyword.cap
-# Mise a jour $Id: keyword.cap,v 1.29 2010-01-17 18:40:23 robertdelmas Exp $
+# Mise a jour $Id: keyword.cap,v 1.30 2010-01-20 18:58:50 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -195,7 +195,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,errorExistingName)              "Nome della configurazione già presente."
    set caption(keyword,errorDefaultName)               "Configurazione non eliminabile."
    set caption(keyword,confirmDeleteConfig)            "Eliminazione della configurazione:"
-   set caption(keyword,selectDeselectAll)              "# Sélectionner / Désélectionner\ntous les mots clés"
+   set caption(keyword,selectDeselectAll)              "Selezionare / Deselezionare\ntutte le parole chiave"
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "Parole chiave FITS"
@@ -210,7 +210,7 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- Titres des colonnes
    set caption(keyword,colonne,categorie)              "Categorie"
    set caption(keyword,colonne,description)            "Descrizione"
-   set caption(keyword,colonne,motclef)                "Keyword"
+   set caption(keyword,colonne,motclef)                "Parole chiave"
    set caption(keyword,colonne,valeur)                 "Valore"
 
    #--- Categories des mots clefs
@@ -280,7 +280,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,errorExistingName)              "El nombre de configuración ya existe."
    set caption(keyword,errorDefaultName)               "Esta configuración no puede ser borrada."
    set caption(keyword,confirmDeleteConfig)            "Supresion de la configuración:"
-   set caption(keyword,selectDeselectAll)              "# Sélectionner / Désélectionner\ntous les mots clés"
+   set caption(keyword,selectDeselectAll)              "Seleccionar / Deseleccionar\ntodas las claves"
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "Palabras clave FITS"
@@ -365,7 +365,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,errorExistingName)              "Der Namen der Konfiguration ist schon benutzt."
    set caption(keyword,errorDefaultName)               "Diese Konfiguration kann nicht erlöscht werden."
    set caption(keyword,confirmDeleteConfig)            "Konfiguration löschen:"
-   set caption(keyword,selectDeselectAll)              "# Sélectionner / Désélectionner\ntous les mots clés"
+   set caption(keyword,selectDeselectAll)              "Alle Stichwörter\naktivieren / deaktivieren"
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "FITS Stichwörter"
@@ -380,7 +380,7 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- Titres des colonnes
    set caption(keyword,colonne,categorie)              "Kategorie"
    set caption(keyword,colonne,description)            "Beschreibung"
-   set caption(keyword,colonne,motclef)                "Schlüsselbegriffen"
+   set caption(keyword,colonne,motclef)                "Stichwörter"
    set caption(keyword,colonne,valeur)                 "Wert"
 
    #--- Categories des mots clefs
