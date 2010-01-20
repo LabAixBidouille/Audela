@@ -1,6 +1,6 @@
 #
 # Fichier : quickaudine.cap
-# Mise a jour $Id: quickaudine.cap,v 1.19 2010-01-17 17:58:12 robertdelmas Exp $
+# Mise a jour $Id: quickaudine.cap,v 1.20 2010-01-20 19:02:59 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -45,7 +45,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(quickaudine,lecture_pixel) "Lettura di un pixel"
    set caption(quickaudine,micro_sec)     "microsecondi"
    set caption(quickaudine,error)         "Messaggio di errore:"
-   set caption(quickaudine,msg)           "# Utilisateurs de QuickAudine : Vous devez installer le driver FTDI (suivre la procédure décrite dans l'aide)."
+   set caption(quickaudine,msg)           "Gli utilizzatori di QuickAudine devono Installare il driver FTDI (seguendo le istruzioni descritte nell'help)."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -71,7 +71,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(quickaudine,lecture_pixel) "Ein Rasterpunkt abtasten"
    set caption(quickaudine,micro_sec)     "Mikrosekunden"
    set caption(quickaudine,error)         "Fehlermeldung:"
-   set caption(quickaudine,msg)           "# Utilisateurs de QuickAudine : Vous devez installer le driver FTDI (suivre la procédure décrite dans l'aide)."
+   set caption(quickaudine,msg)           "QuickAudine Benutzer: Sie müssen die FTDI Treiber installieren (das Verfahren ist in der Hilfe beschrieben)."
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -97,7 +97,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(quickaudine,lecture_pixel) "Læsning af én pixel"
    set caption(quickaudine,micro_sec)     "microsekunder"
    set caption(quickaudine,error)         "Fejlmeddelelse:"
-   set caption(quickaudine,msg)           "# Utilisateurs de QuickAudine : Vous devez installer le driver FTDI (suivre la procédure décrite dans l'aide)."
+   set caption(quickaudine,msg)           "QuickAudine brugere skal installere FTDI driver (Følg vejledning i Hjælp!)."
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
