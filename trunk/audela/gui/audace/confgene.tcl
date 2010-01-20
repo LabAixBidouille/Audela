@@ -5,7 +5,7 @@
 #               pose, choix des outils, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.62 2009-12-28 16:19:55 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.63 2010-01-20 22:38:28 robertdelmas Exp $
 #
 
 #
@@ -1798,8 +1798,6 @@ namespace eval ::confChoixOutil {
          "::audace::enregistrer $audace(visuNo)"
       Menu_Command   $audace(visuNo) "$caption(audace,menu,file)" "$caption(audace,menu,enregistrer_sous)..." \
          "::audace::enregistrer_sous $audace(visuNo)"
-      Menu_Command   $audace(visuNo) "$caption(audace,menu,file)" "$caption(audace,menu,copyjpeg)..." \
-         "::audace::copyjpeg $audace(visuNo)"
       Menu_Separator $audace(visuNo) "$caption(audace,menu,file)"
       Menu_Command   $audace(visuNo) "$caption(audace,menu,file)" "$caption(audace,menu,entete)" \
          "::keyword::header $audace(visuNo)"
