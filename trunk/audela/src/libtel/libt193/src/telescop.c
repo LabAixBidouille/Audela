@@ -402,7 +402,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
          strcpy(tel->channel,tel->interp->result);
          
          // je lance la boucle de lecture permanente des coordonnées
-      
+
          /*
          # 19200 : vitesse de transmission (bauds)
          # 0 : 0 bit de parité
@@ -449,7 +449,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
                  usbCardName,usbFilterPort, tel->maxDetectorFilterInput);
 	         error = DAQmxCreateDIChan(tel->inputFilterTaskHandle,lines,"", DAQmx_Val_ChanForAllLines  );  //DAQmx_Val_ChanForAllLines DAQmx_Val_ChanPerLine
          }
-         
+
          // je demarre les taches
          if( ! DAQmxFailed(error) ) {
 	         error = DAQmxStartTask(tel->outputFilterTaskHandle);
@@ -485,24 +485,25 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 
       // j'ouvre la socket de commande du telescope
       result = socket_openTelescopeCommandSocket(tel, tel->telescopeHost, tel->telescopeCommandPort);
-      
+
       // j'ouvre la socket de notification du telescope
       if ( result == 0 ) {
          result = socket_openTelescopeNotificationSocket(tel, tel->telescopeHost, tel->telescopeNotificationPort);
       }
-      
-      
+
       // je demande a recevoir les coordonnees en permanence 
       if ( result == 0 ) {         
          result = mytel_setRadecNotification(tel, 1);
       }
-      
+
+      /*F.FILLION : PAS DE SUIVI AU DEMARRAGE
       // j'active le suivi
       if ( result == 0 ) {
          // attention, il faut mettre 0 tel->radec_motor pour activer le suivi
          tel->radec_motor = 0;
          result = tel_radec_motor(tel);
       }
+		*/
 
       // j'initilise le serveur de coordonnees
       socket_openCoordServerSocket(tel, 5028);
