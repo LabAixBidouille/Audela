@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.42 2009-11-01 21:50:34 michelpujol Exp $
+# @version  $Id: sophiecommand.tcl,v 1.43 2010-01-22 13:30:03 ffillion Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -1578,10 +1578,10 @@ proc ::sophie::startAcquisition { visuNo } {
    }
 
    #--- je verifie la presence d'une monture
-   if { [::confTel::isReady] == 0 } {
-      ::confTel::run
-      return 1
-   }
+#   if { [::confTel::isReady] == 0 } {
+#      ::confTel::run
+#      return 1
+#   }
 
    set catchError [ catch {
       #--- je transforme le bouton GO en bouton STOP
