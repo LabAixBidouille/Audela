@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.25 2009-12-20 17:25:33 michelpujol Exp $
+# Mise a jour $Id: t193.tcl,v 1.26 2010-01-22 13:31:23 ffillion Exp $
 #
 
 namespace eval ::t193 {
@@ -541,7 +541,7 @@ proc ::t193::configureMonture { } {
           tel$telNo home $::conf(posobs,observateur,gps)  
           tel$telNo radec model -symbols $::conf(t193,model,symbols) -coefficients $::conf(t193,model,symbols) -enabled 1
       } else {
-          tel$telNo radec model  -enabled 0
+          #tel$telNo radec model  -enabled 0
       }
       
       #--- Je parametre le niveau de trace
