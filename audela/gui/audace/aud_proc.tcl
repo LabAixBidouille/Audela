@@ -1,7 +1,7 @@
 #
 # Fichier : aud_proc.tcl
 # Description : Fonctions de chargement, sauvegarde et traitement d'images
-# Mise a jour $Id: aud_proc.tcl,v 1.16 2009-12-30 10:39:56 michelpujol Exp $
+# Mise a jour $Id: aud_proc.tcl,v 1.17 2010-01-23 10:14:18 michelpujol Exp $
 #
 
 #
@@ -123,7 +123,13 @@ proc saveima { { filename "?" } { visuNo 1 } } {
    }
    if { [ string compare $filename "" ] != "0" } {
       if { [ buf$bufNo imageready ] == "1" } {
-         set result [ buf$bufNo save $filename ]
+         if { [file extension $filename] == ".jpg" || [file extension $filename] == ".jpeg" } {
+            #--- j'ajoute l'option -quality pour les images jpg
+            set result [ buf$bufNo save $filename -quality $conf(jpegquality,defaut)]
+         } else {
+            #--- pas d'option pour les autres types d'images
+            set result [ buf$bufNo save $filename ]
+         }
          if { $result == "" } {
             wm title $fenetre "$caption(audace,titre) (visu$visuNo) - $filename"
          }
