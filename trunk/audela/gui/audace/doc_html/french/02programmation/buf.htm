@@ -106,10 +106,54 @@
 <code>buf1 load images/toto</code> <br />
 <code>buf1 load images\\toto</code> <br />
 <p>charge l'image toto.fit contenue dans le sous-r&eacute;pertoire images du r&eacute;pertoire courant (peut &ecirc;tre obtenu gr&acirc;ce &agrave; la commande TCL pwd).</p>
-<h3> <a name="save" id="save"></a>buf1 save <em>nom</em></h3>
-<p>Enregistre l'image au format FITS, avec les mots-cl&eacute;s contenus dans le buffer. Si l'extension est donn&eacute;e, elle peut &ecirc;tre diff&eacute;rente de celle par d&eacute;faut (cf. buf1 extension).</p>
+<h3> <a name="save" id="save"></a>buf1 save <em>nom ?-quality [1...100] ?</em></h3>
+<p>Enregistre l'image avec les mots-cl&eacute;s contenus dans le buffer. </p>
+<p>L'extension du fichier d&eacute;termine le format d'enregistrement de l'image 
+  : </p>
+<ul>
+  <li><b>fit, fits, fts, fit.gz, fits.gz, fts.gz </b>: enregistrement au format 
+    FITS</li>
+  <li><b>extension par d&eacute;faut</b> : enregistrement au format FITS (cf. 
+    buf1 extension)</li>
+  <li><b>pas d'extension</b> : enregistrement au format FITS. L'extension par 
+    d&eacute;faut est ajout&eacute;e au nom du fichier (cf. buf1 extension)</li>
+  <li><b>.jpg .jpeg</b> : enregistrement au format JPEG</li>
+  <li><b>.png </b>: enregistrement au format PNG</li>
+  <li><b>.bmp</b> : enregistrement au format BMP</li>
+</ul>
+<p>Option sp&eacute;cifique pour l'enregistrement au format JPEG : </p>
+<ul>
+  <li>Le param&egrave;tre optionnel -quality permet d'indiquer le taux de compression 
+    d'une image JPEG . </li>
+</ul>
+<p>Exemples :</p>
+<table width="75%" border="0">
+  <tr> 
+    <td><code>buf1 save images/toto.fit</code></td>
+    <td> <code>enregistre une image au format FITS</code> </td>
+  </tr>
+  <tr> 
+    <td><code>buf1 save images/toto</code></td>
+    <td> <code>enregistre une image au format FITS</code> nomm&eacute;e images/toto.xxx 
+      si l'extension par d&eacute;faut est .xxx</td>
+  </tr>
+  <tr> 
+    <td><code>buf1 save images/toto</code>.jpg</td>
+    <td> <code>enregistre une image au format JPEG</code> </td>
+  </tr>
+  <tr> 
+    <td><code>buf1 save images/toto</code>.png</td>
+    <td> <code>enregistre une image au format PNG</code></td>
+  </tr>
+</table>
+<p>&nbsp; </p>
 <h3> <a name="savejpeg" id="savejpeg"></a>buf1 savejpeg <em>filename ?quality? ?locut? ?hicut?</em></h3>
-<p>Enregistre l'image au format JPEG. Si l'extension est donn&eacute;e, elle peut &ecirc;tre diff&eacute;rente de "<code>.jpg</code>". L'option <em>quality</em> fixe la qualit&eacute; de l'image (de 5 pour une perte &eacute;norme &agrave; 100 pour une compression sans perte). La valeur par d&eacute;faut de <em>quality</em> est 75. <em>Locut</em> et <em>hicut</em> sont les seuils de visualisation correspondant respectivement au noir et au blanc.</p>
+<p>Enregistre l'image au format JPEG N&amp;B. Si l'extension est donn&eacute;e, 
+  elle peut &ecirc;tre diff&eacute;rente de "<code>.jpg</code>". L'option <em>quality</em> 
+  fixe la qualit&eacute; de l'image (de 5 pour une perte &eacute;norme &agrave; 
+  100 pour une compression sans perte). La valeur par d&eacute;faut de <em>quality</em> 
+  est 75. <em>Locut</em> et <em>hicut</em> sont les seuils de visualisation correspondant 
+  respectivement au noir et au blanc.</p>
 <h2> 3. Gestion des mots-cl&eacute;s FITS</h2>
 <h3> <a name="getkwds" id="getkwds"></a>buf1 getkwds</h3>
 <p>Retourne la liste des mots-cl&eacute;s FITS du buffer sous forme d'une liste TCL.</p>
