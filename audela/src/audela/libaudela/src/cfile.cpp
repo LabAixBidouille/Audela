@@ -778,11 +778,14 @@ void CFile::loadTkimg(char * fileName, CPixels **pixels, CFitsKeywords **keyword
 //
 //  @param fileName nom du fichier de l'image (IN)
 //  @param pixels   objet de la classe CPixels contenant les pixels de l'image  (IN)
+//  @param width    largeur de l'images en pixel
+//  @param height   hauteur de l'images en pixel
+//  @param planes   nombre de plans : 1=image en niveau de gris  3=image RGB
 //  
 //  @return void
 //  @exception  retourne une exception CError en cas d'erreur
 //-------------------------------------------------------------------
-void CFile::saveTkimg(char * fileName, unsigned char *pixels, int width, int height)
+void CFile::saveTkimg(char * fileName, unsigned char *pixels, int width, int height, int planes)
 {
    char ligne[1024]; 
    int tclResult;
@@ -792,7 +795,7 @@ void CFile::saveTkimg(char * fileName, unsigned char *pixels, int width, int hei
    }
    
    // je sauvegarde l'image 
-   sprintf(ligne, "::visu::saveImage  {%s} %ld %d %d ", fileName, (long) pixels, width, height );
+   sprintf(ligne, "::visu::saveImage  {%s} %ld %d %d %d", fileName, (long) pixels, width, height, planes );
    tclResult = Tcl_Eval(interp,ligne);
    if (tclResult == TCL_ERROR) {
       throw CError("CFile::saveTkimg: %s", interp->result);

@@ -58,7 +58,7 @@ public:
    static void cfa2Rgb(CPixels *cfaPixels, CFitsKeywords *cfaKeywords, int interpolationMethod, CPixels **rgbPixels, CFitsKeywords **rgbKeywords );
 
    static void loadTkimg(char * filename, CPixels **pixels, CFitsKeywords **keywords);
-   static void saveTkimg(char * filename, unsigned char *dataIn, int width, int height);
+   static void saveTkimg(char * filename, unsigned char *dataIn, int width, int height, int planes);
 
 
 protected:
