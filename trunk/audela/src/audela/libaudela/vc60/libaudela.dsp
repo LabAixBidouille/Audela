@@ -75,7 +75,7 @@ PostBuild_Cmds=echo on	if not exist ..\..\lib (mkdir ..\..\lib)	copy release\lib
 # PROP Target_Dir ""
 F90=df.exe
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "LIBAUDELA_EXPORTS" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W4 /GX /Zi /I "..\src" /I "..\..\..\include" /I "..\..\..\external\include\win" /I "..\..\..\external\porttalk" /I "..\..\..\external\include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "USE_TCL_STUBS" /D "USE_COMPAT_CONST" /D "LIBAUDELA_EXPORTS" /D "TCL_THREADS" /FR /Fo".\Debug/" /Fd".\Debug/" /FD /c
+# ADD CPP /nologo /MTd /W3 /GX /Zi /I "..\src" /I "..\..\..\include" /I "..\..\..\external\include\win" /I "..\..\..\external\porttalk" /I "..\..\..\external\include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "USE_TCL_STUBS" /D "USE_COMPAT_CONST" /D "LIBAUDELA_EXPORTS" /D "TCL_THREADS" /FR /Fo".\Debug/" /Fd".\Debug/" /FD /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x40c /d "_DEBUG"
