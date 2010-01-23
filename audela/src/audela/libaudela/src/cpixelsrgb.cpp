@@ -1295,7 +1295,7 @@ void CPixelsRgb::GetPixelsRgb( int x1,int y1,int x2, int y2,
  * @param x1       abcisse du coin bas gauche de la zone
  * @param y1       ordonnee du coin bas gauche de la zone
  * @param x2       abcisse du coin haut, doit de la zone
- * @param x2       ordonn�e du coin haut, doit de la zone
+ * @param x2       ordonnee du coin haut, doit de la zone
  * @param mirrorX  0: pas de miroir horizontal, 1: miroir horizontal
  * @param mirrorY  0: pas de miroir vertical, 1 : miroir vertical
  * @param cuts     tableau des 6 seuils : haut rouge, bas rouge, haut vert bas vert , haut bleu , bas bleu
@@ -1369,6 +1369,7 @@ void CPixelsRgb::GetPixelsVisu( int x1,int y1,int x2, int y2,
          pdest[ydest+xdest][0] = palette[0][(unsigned char)min(max(((float)pix[base+0]-fsbRed)  *dynRed,0),255)];
          pdest[ydest+xdest][1] = palette[1][(unsigned char)min(max(((float)pix[base+1]-fsbGreen)*dynGreen,0),255)];
          pdest[ydest+xdest][2] = palette[2][(unsigned char)min(max(((float)pix[base+2]-fsbBlue) *dynBlue,0),255)];
+         pdest[ydest+xdest][3] = 0;
       }
    }
 }
