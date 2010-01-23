@@ -848,7 +848,7 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    CBuffer *Buffer;
 
    if(argc<3) {
-      sprintf(ligne,"Usage: %s %s filename ?fits|gif|bmp|jpeg|tiff? ?options? ",argv[0],argv[1]);
+      sprintf(ligne,"Usage: %s %s filename ?fits|gif|bmp|jpeg|tiff? ?-quality [1...100]? ",argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       retour = TCL_ERROR;
    } else {
@@ -883,7 +883,6 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       sprintf(ligne,"file join {%s} {%s%s}",path2,name,extfits);
       Tcl_Eval(interp,ligne);
       strcpy(nom_fichier,interp->result);
-
 
       try {
          if(strcmp(argv[1],"save")==0) {
@@ -932,6 +931,15 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                int mirrorx;
                int mirrory;
 
+               quality = 80;
+               //  lecture des parametres optionels
+               for (int numArg = 3; numArg < argc; numArg++) {
+                  if ( numArg + 1 <argc ) {
+   	               if (strcmp(argv[numArg], "-quality") == 0) {
+                        quality = atoi(argv[numArg + 1]);
+                     }
+                  }
+	            }
 
                // je fabrique une palette par defaut
                palette[0] = pal0;
@@ -943,7 +951,6 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                   pal2[i]= (unsigned char) i;
                }
 
-               quality = 80;
                mirrorx = 0;
                mirrory = 0;
 
