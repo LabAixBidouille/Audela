@@ -930,7 +930,7 @@ void CBuffer::SaveJpg(char *filename, int quality, unsigned char *palette[3], in
          cuts[5] = kwd->GetFloatValue();
       } 
    }
-   // je cree le buffer pour preparer l'image a 256 niveaux
+   // je cree le buffer pour preparer l'image RGB a 256 niveaux
    buf256 = (unsigned char *) calloc(width*height*3,sizeof(unsigned char));
    if (buf256==NULL) {
       throw CError("saveJpeg : not enouth memory for calloc ");
@@ -944,8 +944,17 @@ void CBuffer::SaveJpg(char *filename, int quality, unsigned char *palette[3], in
       palette,                   // palette
       buf256);
 
+   // je cree un seul plan de couleur pour enregistrer une image JPEG N&B
+   if ( planes == 1 ) {
+      for(int j=0;j<=height-1;j++) {
+         for(int i=0;i<=width-1;i++) {
+            buf256[j*width+i] = buf256[(j*width+i)*3];
+         }
+      }
+   }
+
    // j'enregistre l'image dans le fichier
-   CFile::saveJpeg(filename, buf256, this->keywords, 3, width, height, quality);
+   CFile::saveJpeg(filename, buf256, this->keywords, planes, width, height, quality);
 
 
    if ( buf256 != NULL) { free(buf256); }
@@ -1041,7 +1050,7 @@ void CBuffer::SaveTkImg(char *filename, unsigned char *palette[3], int mirrorx, 
       buf256);
 
    // j'enregistre l'image dans le fichier
-   CFile::saveTkimg(filename, buf256, width, height);
+   CFile::saveTkimg(filename, buf256, width, height, planes);
    free(buf256);
 
 }
