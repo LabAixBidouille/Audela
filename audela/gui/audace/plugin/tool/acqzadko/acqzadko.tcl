@@ -2,7 +2,7 @@
 # Fichier : acqzadko.tcl
 # Description : Outil d'acquisition
 # Auteurs : Francois Cochard et Myrtille Laas
-# Mise a jour $Id: acqzadko.tcl,v 1.15 2010-01-17 18:22:57 robertdelmas Exp $
+# Mise a jour $Id: acqzadko.tcl,v 1.16 2010-01-23 11:00:53 robertdelmas Exp $
 #
 
 #==============================================================
@@ -125,7 +125,7 @@ proc ::acqzadko::createPluginInstance { { in "" } { visuNo 1 } } {
    #--- Surveillance de la connexion d'une camera
    ::confVisu::addCameraListener $visuNo "::acqzadko::Adapt_Panneau_acqzadko $visuNo"
    #--- Surveillance de l'ajout ou de la suppression d'une extension
-   trace add variable ::conf(list_extension) write ::acqzadko::Init_list_extension
+   trace add variable ::conf(list_extension) write "::acqzadko::initExtensionList $visuNo"
 
 }
 #***** Fin de la procedure createPluginInstance*****************
@@ -140,7 +140,7 @@ proc ::acqzadko::deletePluginInstance { visuNo } {
    #--- Je desactive la surveillance de la connexion d'une camera
    ::confVisu::removeCameraListener $visuNo "::acqzadko::Adapt_Panneau_acqzadko $visuNo"
    #--- Je desactive la surveillance de l'ajout ou de la suppression d'une extension
-   trace remove variable ::conf(list_extension) write ::acqzadko::Init_list_extension
+   trace remove variable ::conf(list_extension) write "::acqzadko::initExtensionList $visuNo"
 
    #---
    set conf(acqzadko,avancement,position) $panneau(acqzadko,$visuNo,avancement,position)
@@ -294,8 +294,8 @@ proc ::acqzadko::Arretacqzadko { visuNo } {
 }
 #***** Fin de la procedure Arretacqzadko **************************
 
-#***** Procedure Init_list_extension ***************************
-proc ::acqzadko::Init_list_extension { { a "" } { b "" } { c "" } { visuNo 1 } } {
+#***** Procedure initExtensionList ********************************
+proc ::acqzadko::initExtensionList { visuNo { a "" } { b "" } { c "" } } {
    global conf panneau
 
    #--- Mise a jour de la liste des extensions disponibles pour le mode "Une seule image"
@@ -344,7 +344,7 @@ proc ::acqzadko::Init_list_extension { { a "" } { b "" } { c "" } { visuNo 1 } }
          -command " "
    }
 }
-#***** Fin de la procedure Init_list_extension *****************
+#***** Fin de la procedure initExtensionList **********************
 
 #***** Procedure Adapt_Panneau_acqzadko ***************************
 proc ::acqzadko::Adapt_Panneau_acqzadko { visuNo args } {
