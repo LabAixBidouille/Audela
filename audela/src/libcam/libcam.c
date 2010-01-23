@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.35 2009-12-29 16:31:11 michelpujol Exp $
+ * $Id: libcam.c,v 1.36 2010-01-23 10:12:03 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -1370,12 +1370,9 @@ static int cmdCamStop(ClientData clientData, Tcl_Interp * interp, int argc, char
       CAM_DRV.stop_exp(cam);
       AcqRead((ClientData) cam);
    } else {
-      Tcl_SetResult(interp, "No current exposure", TCL_VOLATILE);
-      retour = TCL_ERROR;
+      setCameraStatus(cam,interp,"stand");
    }
 
-   // je position le status de la camera a "stand"
-   setCameraStatus(cam,interp,"stand");
    return retour;
 }
 
