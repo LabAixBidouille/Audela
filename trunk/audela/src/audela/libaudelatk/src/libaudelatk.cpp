@@ -319,8 +319,8 @@ int CmdSaveImage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
    char ligne[1024];
    int tclResult = TCL_OK;
 
-   if(argc<5) {
-      sprintf(ligne,"Usage: %s fileName pixelPtr width height ?-bmp|gif|jpeg|png|ppm|ps|tiff|xbm|xpm?",argv[0]);
+   if(argc<6) {
+      sprintf(ligne,"Usage: %s fileName pixelPtr width height planes",argv[0]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       tclResult = TCL_ERROR;
    } 
@@ -332,18 +332,20 @@ int CmdSaveImage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
       unsigned char * pixelPtr;
       int width;
       int height;
+      int planes;
       Tk_PhotoHandle ph ;
       Tk_PhotoImageBlock pib;
 
       strcpy(fileName,argv[1]);
       width = atoi(argv[3]);
       height= atoi(argv[4]);
+      planes= atoi(argv[5]);
 
       //pixelPtr = (unsigned char *) malloc(width*height*4);
       //memcpy(pixelPtr,(unsigned char *) atol(argv[2]) ,width*height*4);
       pixelPtr = (unsigned char *) atol(argv[2]);
       
-      if ( argc >= 6 ) {         
+      if ( argc >= 7 ) {         
          strcmp(format,argv[3]);
          tclResult = TCL_OK;
       } else {
@@ -400,18 +402,18 @@ int CmdSaveImage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
       if (tclResult == TCL_OK) {
          pib.width = width;
          pib.height = height;
-         pib.pixelSize = 4;         // 2 octets par pixels
+         pib.pixelSize = 4;         // 4 octets par pixels
          pib.pitch  = pib.width * pib.pixelSize;    // taille d'une ligne
          pib.offset[0] = 0;
          pib.offset[1] = 1;
          pib.offset[2] = 2;
-         pib.offset[3] = 0;                        
+         pib.offset[3] = 0;          
          pib.pixelPtr = pixelPtr;
          tclResult = Tk_PhotoPutBlock(interp, ph, &pib, 0, 0, pib.width ,pib.height, TK_PHOTO_COMPOSITE_SET);
       }      
       if (tclResult == TCL_OK) {
          // j'enregistre l'image dans le fichier en utilisant la librairie tkimg ou tk
-         sprintf(ligne,"temporaryImageVisu write \"%s\" -format %s ", fileName, format); 
+         sprintf(ligne,"temporaryImageVisu write \"%s\" -format %s", fileName, format); 
          tclResult = Tcl_Eval(interp,ligne) ;
       }
       if (tclResult == TCL_ERROR) {
