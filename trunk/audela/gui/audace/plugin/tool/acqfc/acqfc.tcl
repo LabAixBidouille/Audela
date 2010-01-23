@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.97 2010-01-17 18:23:57 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.98 2010-01-23 11:00:29 robertdelmas Exp $
 #
 
 #==============================================================
@@ -118,7 +118,7 @@ proc ::acqfc::createPluginInstance { { in "" } { visuNo 1 } } {
    #--- Surveillance de la connexion d'une camera
    ::confVisu::addCameraListener $visuNo "::acqfc::Adapt_Panneau_AcqFC $visuNo"
    #--- Surveillance de l'ajout ou de la suppression d'une extension
-   trace add variable ::conf(list_extension) write ::acqfc::Init_list_extension
+   trace add variable ::conf(list_extension) write "::acqfc::initExtensionList $visuNo"
 
 }
 #***** Fin de la procedure createPluginInstance*****************
@@ -133,7 +133,7 @@ proc ::acqfc::deletePluginInstance { visuNo } {
    #--- Je desactive la surveillance de la connexion d'une camera
    ::confVisu::removeCameraListener $visuNo "::acqfc::Adapt_Panneau_AcqFC $visuNo"
    #--- Je desactive la surveillance de l'ajout ou de la suppression d'une extension
-   trace remove variable ::conf(list_extension) write ::acqfc::Init_list_extension
+   trace remove variable ::conf(list_extension) write "::acqfc::initExtensionList $visuNo"
 
    #---
    set conf(acqfc,avancement,position) $panneau(acqfc,$visuNo,avancement,position)
@@ -277,8 +277,8 @@ proc ::acqfc::ArretAcqFC { visuNo } {
 }
 #***** Fin de la procedure ArretAcqFC **************************
 
-#***** Procedure Init_list_extension ***************************
-proc ::acqfc::Init_list_extension { { a "" } { b "" } { c "" } { visuNo 1 } } {
+#***** Procedure initExtensionList *****************************
+proc ::acqfc::initExtensionList { visuNo { a "" } { b "" } { c "" } } {
    global conf panneau
 
    #--- Mise a jour de la liste des extensions disponibles pour le mode "Une seule image"
@@ -327,7 +327,7 @@ proc ::acqfc::Init_list_extension { { a "" } { b "" } { c "" } { visuNo 1 } } {
          -command " "
    }
 }
-#***** Fin de la procedure Init_list_extension *****************
+#***** Fin de la procedure initExtensionList *******************
 
 #***** Procedure Adapt_Panneau_AcqFC ***************************
 proc ::acqfc::Adapt_Panneau_AcqFC { visuNo args } {
