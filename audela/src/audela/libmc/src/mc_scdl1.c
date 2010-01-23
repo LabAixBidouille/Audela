@@ -334,7 +334,7 @@ int mc_scheduler_local1(int k,double longmpc, double rhocosphip, double rhosinph
 		// --- type = RADEC
 		mc_sheduler_interpcoords(objectdescr,jd,&ra,&dec);
 		ha=sunmoon[k].lst-ra;
-		if (ha<-360) { ha+=360.; }
+		if (ha<0) { ha+=360.; }
 		if (ha>360) { ha-=360.; }
 		//dummy2s[kjd]=ha;
 		//dummy9s[kjd]=ra; // laisser apres ha
@@ -350,7 +350,7 @@ int mc_scheduler_local1(int k,double longmpc, double rhocosphip, double rhosinph
 		// --- type = HADEC
 		mc_sheduler_interpcoords(objectdescr,jd,&ha,&dec);
 		ra=sunmoon[k].lst-ha;
-		if (ra<-360) { ra+=360.; }
+		if (ra<0) { ra+=360.; }
 		if (ra>360) { ra-=360.; }
 		//dummy9s[kjd]=ra;
 		//dummy2s[kjd]=ha; // laisser apres ra
@@ -367,7 +367,7 @@ int mc_scheduler_local1(int k,double longmpc, double rhocosphip, double rhosinph
 		mc_sheduler_interpcoords(objectdescr,jd,&az,&h);
 		mc_ah2hd(az*(DR),h*(DR),latrad,&ha,&dec);
 		ra=sunmoon[k].lst-ha;
-		if (ra<-360) { ra+=360.; }
+		if (ra<0) { ra+=360.; }
 		if (ra>360) { ra-=360.; }
 		//dummy9s[kjd]=ra;
 		//dummy2s[kjd]=ha; // laisser apres ra
@@ -2319,11 +2319,11 @@ int mc_scheduler_objectlocal1(double longmpc, double rhocosphip, double rhosinph
 	astrometric=0;
 
 	// --- prepare sur-ech vectors
-	objectlocal=(mc_OBJECTLOCAL*)calloc(njd+1,sizeof(mc_OBJECTLOCAL));
 	if (pobjectlocal!=NULL) {
+		objectlocal=(mc_OBJECTLOCAL*)calloc(njd+1,sizeof(mc_OBJECTLOCAL));
 		*pobjectlocal=objectlocal;
+		if (objectlocal==NULL) { free(luminance_ciel_bleus); return 1; }
 	}
-	if (objectlocal==NULL) { free(luminance_ciel_bleus); return 1; }
 
 	// --- prepare sous-ech vectors
 	njdm=24*60+1;
@@ -2341,7 +2341,7 @@ int mc_scheduler_objectlocal1(double longmpc, double rhocosphip, double rhosinph
 	dummy9s=(double*)calloc(njdm+1,sizeof(double)); // ra sous-ech
 	if ((dummy1s==NULL)||(dummy2s==NULL)||(dummy3s==NULL)||(dummy4s==NULL)||(dummy5s==NULL)||(dummy6s==NULL)||(dummy7s==NULL)||(dummy8s==NULL)||(dummy9s==NULL)) {
 		free(luminance_ciel_bleus);
-		free(objectlocal);
+		if (objectlocal!=NULL) { free(objectlocal); }
 		if (dummy1s!=NULL) { free(dummy1s); }
 		if (dummy2s!=NULL) { free(dummy2s); }
 		if (dummy3s!=NULL) { free(dummy3s); }
@@ -2606,7 +2606,7 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 			}
 		}
 		if (compute_mode==1) {
-			err=mc_scheduler_objectlocal1(longmpc,rhocosphip,rhosinphip,&objectdescr[ko],njd,sunmoon,horizon_altaz,horizon_hadec,NULL,objectlocalranges);
+			err=mc_scheduler_objectlocal1(longmpc,rhocosphip,rhosinphip,&objectdescr[ko],njd,sunmoon,horizon_altaz,horizon_hadec,NULL,&objectlocalranges[nobjloc]);
 		}
 		if (err>0) {
 			free(sunmoon);
@@ -2748,7 +2748,7 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 		np--;
 		// --- on place les kp=[0..np] sequences de meme priorite dans la planif
 		for (kp=0;kp<=np;kp++) {
-			kk=ksame_priority[kp]; // kk index in objectlocal
+			kk=ksame_priority[kp]; // kk index in objectlocal ou objectlocalranges
 			kd=objectlinks[kk]; ///// kd index in objectdescr
 			// --- calcule les quotas absolus utilises 
 			if (total_duration_sequenced>0) {
@@ -2778,9 +2778,9 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 				for (kjd=0;kjd<njd;kjd++) {
 					objectlocal0[kjd].flagobs=0;
 				}
-				for (kr=0;kr<objectlocalranges->nbrange;kr++) {
-					k1=(int)((objectlocalranges->jd1[kr]-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)/djd);
-					k2=(int)((objectlocalranges->jd2[kr]-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)/djd);
+				for (kr=0;kr<objectlocalranges[kk].nbrange;kr++) {
+					k1=(int)((objectlocalranges[kk].jd1[kr]-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)/djd);
+					k2=(int)((objectlocalranges[kk].jd2[kr]-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)/djd);
 					for (kjd=k1;kjd<=k2;kjd++) {
 						objectlocal0[kjd].flagobs=1;
 					}
@@ -2966,8 +2966,15 @@ try_a_gap:
 			if (k3>=0) {
 				ha1=planis[0][k3].ha_acq_start; if (ha1>180) { ha1-=360; }
 				dec1=planis[0][k3].dec_acq_start;
-				ha2=objectlocal0[kk2].ha; if (ha2>180) { ha2-=360; }
-				dec2=objectlocal0[kk2].dec;
+				if (compute_mode==0) {
+					ha2=objectlocal0[kk2].ha; if (ha2>180) { ha2-=360; }
+					dec2=objectlocal0[kk2].dec;
+				}
+				if (compute_mode==1) {
+					mc_scheduler_local1(kk2,longmpc,rhocosphip,rhosinphip,latrad,luminance_ciel_bleus,&objectdescr[kd],njd,sunmoon,horizon_altaz,horizon_hadec,&jd_loc,&ha_loc,&elev_loc,&az_loc,&dec_loc,&moon_dist_loc,&sun_dist_loc,&brillance_totale_loc,&ra_loc);
+					ha2=ha_loc;
+					dec2=dec_loc;
+				}
 				angle=fabs(ha1-ha2);
 				d1=angle/objectdescr[kd].axe_slew1;
 				angle=fabs(dec1-dec2);
@@ -3114,505 +3121,6 @@ try_a_gap:
 	free(objectlocal0);
 	free(objectlinks);
 	free(luminance_ciel_bleus);
-	free(dummys);
-	free(kdummys);
-	free(same_priority);
-	free(ksame_priority);
-	free(priority_total);
-	free(kpriority_total);
-   return 0;
-}
-
-/************************************************************************/
-/************************************************************************/
-/************************************************************************/
-int mc_scheduler2(double jd_now, double longmpc, double rhocosphip, double rhosinphip,mc_HORIZON_ALTAZ *horizon_altaz,mc_HORIZON_HADEC *horizon_hadec,int nobj,mc_OBJECTDESCR *objectdescr) {
-
-	double jd_prevmidsun,jd_nextmidsun,djd;
-	int njd,ko,nobjloc,kjd,flag,kp,k,kpl,npl,np,ku,k1,k2,k3,kk,kd,kk1,kk2;
-	mc_SUNMOON *sunmoon=NULL;
-	mc_OBJECTLOCAL *objectlocal0=NULL,**objectlocals=NULL;
-	mc_PLANI **planis=NULL;
-	double *priority_total=NULL,*same_priority=NULL,*dummys=NULL;
-	int *kpriority_total=NULL,*ksame_priority=NULL,*kdummys=NULL;
-	double current_priority,id0,id,jd0,jd1,jd2,jd00;
-	int *objectlinks=NULL,nu,npl0,mode_quota,err;
-	mc_USERS *users;
-	double angle,duration,d1,d2,d12,total_duration_sequenced,d12b,dd;
-	double jdobsmin,jdobsmax,total_duration_obs,jdseq_prev,jdseq_next;
-	double ha1,ha2,dec1,dec2;
-	long clk_tck = CLOCKS_PER_SEC;
-   clock_t clock0;
-	double dt;
-
-	// --- compute dates of observing range (=the start-end of the schedule)
-	mc_scheduler_windowdates1(jd_now,longmpc,rhocosphip,rhosinphip,&jd_prevmidsun,&jd_nextmidsun);
-
-	// --- compute mc_SUNMOON vector for the observing range.
-	djd=1./86400.;
-	mc_scheduler_sunmoon1(longmpc,rhocosphip,rhosinphip,jd_prevmidsun,jd_nextmidsun,djd,&njd,&sunmoon);
-
-	// --- compute mc_OBJECTLOCAL vector for the observing range.
-	// --- complete the mc_OBJECTLOCAL.flagobs vector
-	// --- complete the objectdescr[ko].private_elevmaxi;
-	// --- complete the objectdescr[ko].private_jdelevmaxi;
-	objectlocals=(mc_OBJECTLOCAL**)malloc(nobj*sizeof(mc_OBJECTLOCAL*));
-	objectlocal0=(mc_OBJECTLOCAL*)malloc(njd*sizeof(mc_OBJECTLOCAL));
-	objectlinks=(int*)calloc(nobj,sizeof(int));
-	nobjloc=0;
-	jdobsmin=jd_nextmidsun;
-	jdobsmax=jd_prevmidsun;
-	for (ko=0;ko<nobj;ko++) {
-		if (objectdescr[ko].const_jd2<jd_prevmidsun) {
-			// -- la fin des observations est demandée avant le début du mer2mer
-			continue;
-		}
-		if (objectdescr[ko].const_jd1>jd_nextmidsun) {
-			// -- le debut des observations est demandée apres la fin du mer2mer
-			continue;
-		}
-		mc_sheduler_corccoords(&objectdescr[ko]);
-		objectlocals[nobjloc]=NULL;
-		clock0 = clock();
-		err=mc_scheduler_objectlocal1(longmpc,rhocosphip,rhosinphip,&objectdescr[ko],njd,sunmoon,horizon_altaz,horizon_hadec,&objectlocals[nobjloc],NULL);
-		if (err>0) {
-			free(sunmoon);
-			for (ko=0;ko<nobjloc-1;ko++) {
-				free(objectlocals[ko]);
-			}
-			free(objectlocals);
-			free(objectlocal0);
-			free(objectlinks);
-			return 1;
-		}
-		dt=(double)(clock()-clock0)/(double)clk_tck;
-		flag=0;
-		for (kjd=0;kjd<=njd;kjd++) {
-			if (objectlocals[nobjloc][kjd].skylevel<objectdescr[ko].const_skylightlevel) {
-				objectlocals[nobjloc][kjd].flagobs=0;
-				flag++;
-			}
-		}
-		if (flag>=njd) {
-			// -- l'astre nest jamais observable dans le mer2mer
-			free(objectlocals[nobjloc]);
-			continue;
-		}
-		objectdescr[ko].private_elevmaxi=-90.;
-		objectdescr[ko].private_jdelevmaxi=0.;
-		for (kjd=0;kjd<=njd;kjd++) {
-			if (objectlocals[nobjloc][kjd].flagobs==1) {
-				if (sunmoon[kjd].jd<jdobsmin) {
-					jdobsmin=sunmoon[kjd].jd;
-				}
-				if (sunmoon[kjd].jd>jdobsmax) {
-					jdobsmax=sunmoon[kjd].jd;
-				}
-				if (objectlocals[nobjloc][kjd].elev>objectdescr[ko].private_elevmaxi) {
-					objectdescr[ko].private_elevmaxi=objectlocals[nobjloc][kjd].elev;
-					objectdescr[ko].private_jdelevmaxi=sunmoon[kjd].jd;
-				}
-			}
-		}
-		objectlinks[nobjloc]=ko;
-		nobjloc++;
-	}
-	total_duration_obs=(jdobsmax-jdobsmin);
-	total_duration_sequenced=0.;
-
-	// --- vecteur des users et des quotas
-	dummys=(double*)calloc(nobjloc,sizeof(double));
-	kdummys=(int*)calloc(nobjloc,sizeof(int));
-	for (ko=0;ko<nobjloc;ko++) {
-		dummys[ko]=objectdescr[objectlinks[ko]].user;
-		kdummys[ko]=ko;
-	}
-	mc_quicksort_double(dummys,0,nobjloc-1,kdummys);
-	id0=dummys[0];
-	for (ko=1,nu=1;ko<nobjloc;ko++) {
-		id=dummys[ko];
-		if (id!=id0) {
-			nu++;
-			id0=id;
-		}
-	}
-	users=(mc_USERS*)malloc(nu*sizeof(mc_USERS));
-	id0=dummys[0];
-	users[0].iduser=(int)dummys[0];
-	users[0].percent_quota_authorized=objectdescr[objectlinks[kdummys[0]]].user_quota;
-	users[0].percent_quota_used=0.;
-	users[0].duration_total_used=0.;
-	for (ko=1,nu=1;ko<nobjloc;ko++) {
-		id=dummys[ko];
-		if (id!=id0) {
-			users[nu].iduser=(int)dummys[ko];
-			users[nu].percent_quota_authorized=objectdescr[objectlinks[kdummys[ko]]].user_quota;
-			users[nu].percent_quota_used=0.;
-			users[nu].duration_total_used=0.;
-			nu++;
-			id0=id;
-		}
-	}
-	mc_printusers(nu,users);
-
-	// --- vecteur des priorites trie dans l'ordre croissant
-	priority_total=(double*)calloc(nobjloc,sizeof(double));
-	kpriority_total=(int*)calloc(nobjloc,sizeof(int));
-	for (ko=0;ko<nobjloc;ko++) {
-		priority_total[ko]=objectdescr[objectlinks[ko]].user_priority;
-		kpriority_total[ko]=ko;
-	}
-	mc_quicksort_double(priority_total,0,nobjloc-1,kpriority_total);
-	same_priority=(double*)calloc(nobjloc,sizeof(double));
-	ksame_priority=(int*)calloc(nobjloc,sizeof(int));
-
-	// --- initialise les vecteurs de la planification
-	planis=(mc_PLANI**)malloc(2*sizeof(mc_PLANI*));
-	for (kpl=0;kpl<2;kpl++) {
-		planis[kpl]=(mc_PLANI*)malloc(1*sizeof(mc_PLANI));
-	}
-	npl0=npl=0;
-
-	clock0 = clock();
-	// --- planification in-quotas
-	// ko : index in objectlocal
-	// kd : index in objectdescr
-	// npl : nombre de scenes planifiees
-	// mode_quota : 1=in quotas 2=hors quotas 3=duplique dans les trous
-	mode_quota=1;
-	ko=nobjloc-1;
-	while (1==1) {
-		current_priority=priority_total[ko];
-		// --- on cherche toutes les sequences de meme priorite
-		for (k=ko,np=0;k>=0;k--,np++) {
-			if (priority_total[k]<current_priority) {
-				break;
-			} else {
-				ksame_priority[np]=kpriority_total[k];
-			}
-		}
-		np--;
-		// --- on place les kp=[0..np] sequences de meme priorite dans la planif
-		for (kp=0;kp<=np;kp++) {
-			kk=ksame_priority[kp]; // kk index in objectlocal
-			kd=objectlinks[kk]; ///// kd index in objectdescr
-			// --- calcule les quotas absolus utilises 
-			if (total_duration_sequenced>0) {
-				for (ku=0;ku<nu;ku++) {
-					users[ku].percent_quota_used=(users[ku].duration_total_used/total_duration_obs*100);
-				}
-			}
-			// --- recherche l'indice ku du user dans mc_USERS
-			for (ku=0;ku<nu;ku++) {
-				if (users[ku].iduser==objectdescr[kd].user) {
-					break;
-				}
-			}
-			// --- si le user a dépasse son quota alors on passe a la sequence suivante
-			if ((total_duration_sequenced>0)&&(mode_quota==1)) {
-				if (users[ku].percent_quota_used>users[ku].percent_quota_authorized) {
-					continue;
-				}
-			}
-			// --- initialize the flagobs vector with ever known sequence constraints
-			for (kjd=0;kjd<njd;kjd++) {
-				objectlocal0[kjd]=objectlocals[kk][kjd];
-			}
-			// ----------------------------------------------------------
-			// ===== Description des dates d'une sequence planifiee =====
-			// ----------------------------------------------------------
-			// planis[0][].jd_slew_start_with_slew=jd0;
-			//  <d12>
-			// planis[0][].jd_slew_start_without_slew=jd00;
-			//  <objectdescr[].delay_slew>
-			// planis[0][].jd_acq_start=jd1;
-			//  <objectdescr[].delay_instrum+objectdescr[].delay_exposures>
-			// planis[0][].jd_acq_end=jd2;
-			//
-			// --- switch to zero the flagobs to take account for the sequence duration
-			duration=objectdescr[kd].delay_slew+objectdescr[kd].delay_instrum+objectdescr[kd].delay_exposures;
-			for (kjd=njd;kjd>0;kjd--) {
-				if ( (kjd==njd) || ((objectlocal0[kjd].flagobs==0)&&(objectlocal0[kjd-1].flagobs==1)) ) {
-					k1=kjd-1;
-					if (k1<0) { k1=0; }
-					k2=k1-(int)(duration/86400./djd);
-					if (k2<0) { k2=0; }
-					for (k=k1;k>=k2;k--) {
-						objectlocal0[k].flagobs=0;
-					}
-					kjd=k2;
-				}
-			}
-			// --- switch to zero the flagobs to take account for sequences already planified
-			for (k=0;k<npl;k++) {
-				k1=(int)floor((planis[0][k].jd_slew_start_without_slew-duration/86400.-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd);
-				if (k1<0) { k1=0; }
-				k2=(int)ceil((planis[0][k].jd_acq_end-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd);
-				if (k2>=njd) { k2=njd-1; }
-				for (kjd=k1;kjd<=k2;kjd++) {
-					objectlocal0[kjd].flagobs=0;
-				}
-			}
-try_a_gap:
-			//mc_printobject(njd,sunmoon,objectlocal0);
-			// ------------------------------------------------------------
-			// ------- Reference date for the sequence is jd00 ------------
-			// ------------------------------------------------------------
-			// --- search for the best start without slew (jd00)
-			// --- jd0(slew_start_with_slew) jd00(slew_start_without_slew) jd1(acq_start) jd2(acq_end)
-			// int const_startexposures; // =0 best elevation, =1 start exposure as soon as possible, =2 start in the middle of the [start stop] sequence
-			if (objectdescr[kd].const_startexposures==1) {
-				// --- il faut demarrer le plus vite possible
-				for (kjd=0,k=-1;kjd<njd;kjd++) {
-					if (objectlocal0[kjd].flagobs==1) {
-						k=kjd;
-						jd00=sunmoon[kjd].jd;
-						break;
-					}
-				}
-			} else if (objectdescr[kd].const_startexposures==0) {
-				// --- on observe au meilleur moment du creneau d'observation en explorant de part et d'autre
-				k1=(int)((objectdescr[kd].private_jdelevmaxi-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd);
-				if (k1>=njd) { k1=njd-1; }
-				k3=njd-k1;
-				if (k3>k1) { k2=k3; } else { k2=k1; }
-				for (k3=0,k=-1;k3<=k2;k3++) {
-					kjd=k1+k3;
-					if (kjd<njd) {
-						if (objectlocal0[kjd].flagobs==1) {
-							k=kjd;
-							jd00=sunmoon[kjd].jd;
-							break;
-						}
-					}
-					kjd=k1-k3;
-					if (kjd>=0) {
-						if (objectlocal0[kjd].flagobs==1) {
-							k=kjd;
-							jd00=sunmoon[kjd].jd;
-							break;
-						}
-					}
-				}
-			} else if (objectdescr[kd].const_startexposures==2) {
-				// --- on observe au milieu du creneau d'observation en explorant de part et d'autre
-				k1=(int)(((objectdescr[kd].const_jd1+objectdescr[kd].const_jd2)/2-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd);
-				if (k1>=njd) { k1=njd-1; }
-				k3=njd-k1;
-				if (k3>k1) { k2=k3; } else { k2=k1; }
-				for (k3=0,k=-1;k3<=k2;k3++) {
-					kjd=k1+k3;
-					if (kjd<njd) {
-						if (objectlocal0[kjd].flagobs==1) {
-							k=kjd;
-							jd00=sunmoon[kjd].jd;
-							break;
-						}
-					}
-					kjd=k1-k3;
-					if (kjd>=0) {
-						if (objectlocal0[kjd].flagobs==1) {
-							k=kjd;
-							jd00=sunmoon[kjd].jd;
-							break;
-						}
-					}
-				}
-			}
-			if (k==-1) {
-				// --- There is no gap large enough to insert the current sequence.
-				// --- At these step, the slewing time is not taken into account.
-				continue;
-			}
-			jd0=jd00;
-			//mc_printobject(njd,sunmoon,objectlocal0);
-			// =============================================================================================
-			// ================= DEBUT de la partie qui tient compte des durees de slew ====================
-			// =============================================================================================
-			// --- kk1 : indice dans objectlocal0 pour slew_start_without_slew
-			kk1=(int)floor((jd00-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd);
-			// --- jd0(debut_slew) jd1(debut_acq) jd2(fin_acq)
-			// --- recherche la sequence deja planifiee precedente
-			if (npl>9) {
-				npl+=0;
-			}
-			for (k=0,k3=-1;k<npl;k++) {
-				if (planis[0][k].jd_acq_end<jd00) {
-					k3=k;
-				} else {
-					break;
-				}
-			}
-			// --- calcule d12, le temps de raliement de la fin de la sequence precedente et celle-ci
-			if (k3>=0) {
-				ha1=planis[0][k3].ha_acq_end; if (ha1>180) { ha1-=360; }
-				dec1=planis[0][k3].dec_acq_end;
-				ha2=objectlocal0[kk1].ha; if (ha2>180) { ha2-=360; }
-				dec2=objectlocal0[kk1].dec;
-				angle=fabs(ha1-ha2);
-				d1=angle/objectdescr[kd].axe_slew1;
-				angle=fabs(dec1-dec2);
-				d2=angle/objectdescr[kd].axe_slew2;
-				d12=(d1>d2)?d1:d2;
-				k1=k3;
-			} else {
-				angle=70.;
-				d1=angle/objectdescr[kd].axe_slew1;
-				d2=angle/objectdescr[kd].axe_slew2;
-				d12=(d1>d2)?d1:d2;
-				k3=-1;
-				k1=0;
-			}
-			// --- decalage pour tenir compte du temps de pointage avec la sequence precedente
-			jdseq_prev=jd_prevmidsun;
-			jd0=jd00-d12/86400.;
-			if (k3>=0) {
-				jdseq_prev=planis[0][k3].jd_acq_end;
-				// -- on traite le cas où l'on colle deja a la sequence precedente
-				dd=jd0-planis[0][k3].jd_acq_end;
-				if (dd<0) {
-					jd0=planis[0][k3].jd_acq_end;
-					jd00=jd0+d12/86400;
-				}
-			}
-			// --- kk2 : indice dans objectlocal0 pour acq_end
-			jd2=jd00+duration/86400.;
-			kk2=(int)ceil((jd2-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd); if (kk2>njd) { kk2=njd-1; }
-			// --- recherche la sequence deja planifiee suivante
-			for (k=k1,k3=-1;k<npl;k++) {
-				if (planis[0][k].jd_acq_start>jd2) {
-					k3=k;
-					break;
-				}
-			}
-			// --- calcule d12b, le temps de raliement de la sequence choisie et du debut de la sequence suivante
-			d12b=0;
-			jdseq_next=jd_nextmidsun;
-			if (k3>=0) {
-				ha1=planis[0][k3].ha_acq_start; if (ha1>180) { ha1-=360; }
-				dec1=planis[0][k3].dec_acq_start;
-				ha2=objectlocal0[kk2].ha; if (ha2>180) { ha2-=360; }
-				dec2=objectlocal0[kk2].dec;
-				angle=fabs(ha1-ha2);
-				d1=angle/objectdescr[kd].axe_slew1;
-				angle=fabs(dec1-dec2);
-				d2=angle/objectdescr[kd].axe_slew2;
-				d12b=(d1>d2)?d1:d2;
-				// -- dd est la correction sur jd_slew_start_with_slew de la sequence suivante deja programmee
-				dd=(planis[0][k3].jd_slew_start_without_slew-planis[0][k3].jd_slew_start_with_slew)-d12b/86400.;
-				jdseq_next=planis[0][k3].jd_slew_start_with_slew+dd;
-			}
-			// --- on compare la duree de la sequence avec la largeur du gap dans lequel l'inserer en tenant compte des temps de pointage
-			duration=(d12+duration)/86400.;
-			if (duration>(jdseq_next-jdseq_prev)) {
-				// --- The gap is not large enough to insert the current sequence.
-				kk1=(int)floor((jdseq_prev-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd); if (kk1<0) { kk1=0; }
-				kk2=(int)ceil((jdseq_next-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd); if (kk2>=njd) { kk2=njd-1; }
-				// --- we fill the gap with zeros to avoid to retry the same gap the next time
-				for (kjd=kk1;kjd<=kk2;kjd++) {
-					objectlocal0[kjd].flagobs=0;
-				}
-				goto try_a_gap; // try another gap
-			}
-			// --- the insertion implies to change the pointing duration of the next sequence ever planified
-			if (k3>=0) {
-				planis[0][k3].jd_slew_start_with_slew+=dd;
-			}
-			// =============================================================================================
-			// ================= FIN de la partie qui tient compte des durees de slew ======================
-			// =============================================================================================
-			// --- jd0(slew_start_with_slew) jd00(slew_start_without_slew) jd1(acq_start) jd2(acq_end)
-			// ----------------------------------------------------------
-			// ===== Description des dates d'une sequence planifiee =====
-			// ----------------------------------------------------------
-			// planis[0][].jd_slew_start_with_slew=jd0;
-			//  <d12>
-			// planis[0][].jd_slew_start_without_slew=jd00;
-			//  <objectdescr[].delay_slew>
-			// planis[0][].jd_acq_start=jd1;
-			//  <objectdescr[].delay_instrum+objectdescr[].delay_exposures>
-			// planis[0][].jd_acq_end=jd2;
-			//
-			jd1=jd00+objectdescr[kd].delay_slew/86400.;
-			jd2=jd1+(objectdescr[kd].delay_instrum+objectdescr[kd].delay_exposures)/86400.;
-			// --- the sequence will be inserted in the gap.
-			// --- on remplit la planif d'indice npl (0 pour la premiere planif)
-			// --- a noter que planis[0][*] est la plani officielle et planis[1][*] est un swap utilise lors de l'insertion de la sequence
-			free(planis[1]);
-			planis[1]=(mc_PLANI*)malloc((npl+1)*sizeof(mc_PLANI));
-			k=k1=0;
-			for (k=k1;k<npl;k++) {
-				if (planis[0][k].jd_acq_end<=jd0) {
-					planis[1][k]=planis[0][k];
-				} else {
-					break;
-				}
-			}
-			k1=k;
-			total_duration_sequenced+=(jd2-jd0);
-			users[ku].duration_total_used+=(jd2-jd0);
-			planis[1][k1].idseq=objectdescr[kd].idseq;
-			planis[1][k1].jd_slew_start_with_slew=jd0;
-			planis[1][k1].jd_slew_start_without_slew=jd00;
-			planis[1][k1].jd_acq_start=jd1;
-			planis[1][k1].jd_acq_end=jd2;
-			planis[1][k1].jd_elev_max=0.;
-			planis[1][k1].order=npl;
-			planis[1][k1].percent_quota_used=users[ku].duration_total_used/total_duration_obs*100;
-			kk1=(int)((jd1-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd);
-			planis[1][k1].az_acq_start=objectlocal0[kk1].az;
-			planis[1][k1].elev_acq_start=objectlocal0[kk1].elev;
-			planis[1][k1].ra_acq_start=objectlocal0[kk1].ra;
-			planis[1][k1].ha_acq_start=objectlocal0[kk1].ha;
-			planis[1][k1].dec_acq_start=objectlocal0[kk1].dec;
-			kk2=(int)((jd2-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd);
-			planis[1][k1].az_acq_end=objectlocal0[kk2].az;
-			planis[1][k1].elev_acq_end=objectlocal0[kk2].elev;
-			planis[1][k1].ra_acq_end=objectlocal0[kk2].ra;
-			planis[1][k1].ha_acq_end=objectlocal0[kk2].ha;
-			planis[1][k1].dec_acq_end=objectlocal0[kk2].dec;
-			for (k=k1+1;k<=npl;k++) {
-				planis[1][k]=planis[0][k-1];
-			}
-			free(planis[0]);
-			planis[0]=(mc_PLANI*)malloc((npl+1)*sizeof(mc_PLANI));
-			for (k=0;k<=npl;k++) {
-				planis[0][k]=planis[1][k];
-			}
-			npl++;
-			//mc_printplani(npl,planis);
-		}
-		ko-=(np+1);
-		if (ko<0) {
-			if (mode_quota==1) {
-				ko=nobjloc-1;
-				mode_quota=2;
-			} else {
-				ko=nobjloc-1;
-				if (npl==npl0) {
-					break;
-				}
-			}
-			npl0=npl;
-		}
-	}
-	dt=(double)(clock()-clock0)/(double)clk_tck;
-	mc_printplani(npl,planis);
-	mc_printusers(nu,users);
-
-   //mc_fitspline(n1,n2,x,y,dy,s,nn,xx,ff);
-	free(users);
-	free(sunmoon);
-	for (kp=0;kp<2;kp++) {
-		free(planis[kp]);
-	}
-	free(planis);
-	for (ko=0;ko<nobjloc;ko++) {
-		free(objectlocals[ko]);
-	}
-	free(objectlocals);
-	free(objectlocal0);
-	free(objectlinks);
 	free(dummys);
 	free(kdummys);
 	free(same_priority);
