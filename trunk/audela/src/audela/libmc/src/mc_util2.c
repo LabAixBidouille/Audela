@@ -263,6 +263,45 @@ int mc_interplin1(int n1,int n2,double *x, double *y, double *dy, double s,int n
 	return 0;
 }
 
+/****************************************************************************************/
+int mc_interplin2(int n1,int n2,double *x, double *y, double *dy, double s,int nn, double *xx, double *ff)
+/****************************************************************************************
+/* Interpolation lineaire avec des vecteurs a pas constant                              */
+/* Entrees :                                                                            */
+/*  x[1..n1..n2]                                                                        */
+/*  y[1..n1..n2]                                                                        */
+/*  dy[1..n1..n2] (ne pas mettre zero !!!)                                              */
+/*  s = parametre de lissage (non utilise)                                              */
+/*  xx[1..nn] vecteur des points a calculer                                             */
+/*            xx[1]>=x[n1+2] et xx[nn]<=x[n2-1]                                         */
+/* Sorties :                                                                            */
+/*  ff[1..nn] valeurs calculees pour chaque point du vecteur xx                         */
+/*                                                                                      */
+/* Attention : les indices commencent a 1                                               */
+/* x et xx doivent etre pralablement tries en ordre croissants                          */
+/*                                                                                      */
+/****************************************************************************************/
+{
+	int kk,k;
+	double xx0,cstx,dx;
+	dx=x[2]-x[1];
+	cstx=(n2-n1)/(x[n2]-x[n1]);
+	for (kk=1;kk<=nn;kk++) {
+		xx0=xx[kk];
+		k=(int)ceil(1+n1+(xx0-x[n1])*cstx);
+		if (k<n1) {
+			ff[kk]=0;
+			continue;
+		}
+		if (k>n2) {
+			ff[kk]=0;
+			continue;
+		}
+		ff[kk]=y[k-1]+(xx0-x[k-1])/dx*(y[k]-y[k-1]);
+	}
+	return 0;
+}
+
 char *mc_d2s(double val)
 /***************************************************************************/
 /* Double to String conversion with many digits                            */

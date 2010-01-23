@@ -770,7 +770,7 @@ int mctcl_decode_sequences(Tcl_Interp *interp, char *argv[],int *nobjects, mc_OB
 			if (strcmp(key,"AXE_MUDEC")==0) { objectdescr[ko].axe_mudec=atof(argvvvv[1]); }
 			if (strcmp(key,"AXE_PLX")==0) { objectdescr[ko].axe_plx=atof(argvvvv[1]); }
 			for (kjd=0;kjd<20;kjd++) {
-				sprintf(s,"AXES_%d",kjd);
+				sprintf(s,"AXE_%d",kjd);
 				if (strcmp(key,s)==0) {
 					if (kjd+1>=kjdmax) { kjdmax=kjd+1; }
 					mctcl_decode_date(interp,argvvvv[1],&objectdescr[ko].axe_jd[kjd]);

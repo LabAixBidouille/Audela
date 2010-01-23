@@ -151,6 +151,8 @@
 #define RV_LOG  3
 #define RV_COSM 4
 
+#define NB_OBJECTLOCALRANGES_MAX 20
+
 /***************************************************************************/
 /***************************************************************************/
 /**                DEFINITON DES STRUCTURES DE DONNEES                    **/
@@ -579,6 +581,16 @@ typedef struct {
 } mc_OBJECTLOCAL;
 
 typedef struct {
+   double nbrange;
+   double jd1[NB_OBJECTLOCALRANGES_MAX];
+   double jd2[NB_OBJECTLOCALRANGES_MAX];
+   double jdelevmax[NB_OBJECTLOCALRANGES_MAX];
+   double elev1[NB_OBJECTLOCALRANGES_MAX];
+   double elev2[NB_OBJECTLOCALRANGES_MAX];
+   double elevmax[NB_OBJECTLOCALRANGES_MAX];
+} mc_OBJECTLOCALRANGES;
+
+typedef struct {
    double jd;
    double sun_elev;
    double sun_az;
@@ -966,6 +978,7 @@ int mc_util_astrom_radec2xy(mc_ASTROM *p,double ra,double dec, double *x,double 
 int mc_util_astrom_xy2radec(mc_ASTROM *p, double x,double y,double *ra,double *dec);
 int mc_fitspline(int n1,int n2,double *x, double *y, double *dy, double s,int nn, double *xx, double *ff);
 int mc_interplin1(int n1,int n2,double *x, double *y, double *dy, double s,int nn, double *xx, double *ff);
+int mc_interplin2(int n1,int n2,double *x, double *y, double *dy, double s,int nn, double *xx, double *ff);
 char *mc_d2s(double val);
 int mc_readhip(char *hip_main_file, char *bits, double *values, int *nstars, mc_cata_astrom *hips);
 
