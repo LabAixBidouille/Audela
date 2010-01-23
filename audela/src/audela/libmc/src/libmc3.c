@@ -1234,7 +1234,7 @@ mc_scheduler now {GPS 5 E 43 1230} $seqs
 	mc_HORIZON_ALTAZ *horizon_altaz=NULL;
 	mc_HORIZON_HADEC *horizon_hadec=NULL;
 	mc_OBJECTDESCR *objectdescr=NULL;
-	int nobj=0;
+	int nobj=0,err,res=TCL_OK;
 
    if(argc<3) {
       sprintf(s,"Usage: %s Date Home Sequences ?type_Horizon Horizon?", argv[0]);
@@ -1257,10 +1257,19 @@ mc_scheduler now {GPS 5 E 43 1230} $seqs
 			mctcl_decode_horizon(interp,argv[2],"ALTAZ","{0 0} {90 0} {180 0} {270 0} {365 0}",NULL,&horizon_altaz,&horizon_hadec);
 		}
 		/* --- appel aux calculs ---*/
-		mc_scheduler1(jd,longmpc,rhocosphip,rhosinphip,horizon_altaz,horizon_hadec,nobj,objectdescr);
+		err=mc_scheduler1(jd,longmpc,rhocosphip,rhosinphip,horizon_altaz,horizon_hadec,nobj,objectdescr);
+		if (err==1) {
+			res=TCL_ERROR;
+			sprintf(s,"Error %d.",err);
+			Tcl_SetResult(interp,s,TCL_VOLATILE);
+		} else {
+			sprintf(s,"%d sequences scheduled.",nobj);
+			Tcl_SetResult(interp,s,TCL_VOLATILE);
+		}
 		free(horizon_altaz);
 		free(horizon_hadec);
 		free(objectdescr);
-	}	return TCL_OK;
+	}	
+	return res;
 }
 
