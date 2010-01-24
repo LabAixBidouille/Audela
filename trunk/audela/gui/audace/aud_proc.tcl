@@ -1,7 +1,7 @@
 #
 # Fichier : aud_proc.tcl
 # Description : Fonctions de chargement, sauvegarde et traitement d'images
-# Mise a jour $Id: aud_proc.tcl,v 1.17 2010-01-23 10:14:18 michelpujol Exp $
+# Mise a jour $Id: aud_proc.tcl,v 1.18 2010-01-24 11:41:15 robertdelmas Exp $
 #
 
 #
@@ -28,7 +28,7 @@ proc loadima { { filename "?" } { visuNo 1 } { affichage "-dovisu" } } {
    set result ""
 
    #--- Recuperation de l'extension par defaut
-   buf$bufNo extension "$conf(extension,defaut)"
+   buf$bufNo extension $conf(extension,defaut)
 
    #--- Recuperation de l'information de compression ou non
    if { $conf(fichier,compres) == "1" } {
@@ -88,7 +88,7 @@ proc saveima { { filename "?" } { visuNo 1 } } {
    }
 
    #--- Recuperation de l'extension par defaut
-   buf$bufNo extension "$conf(extension,defaut)"
+   buf$bufNo extension $conf(extension,defaut)
 
    #--- Recuperation de l'information de compression ou non
    if { $conf(fichier,compres) == "1" } {
@@ -539,8 +539,8 @@ proc delete2 { args } {
    global audace conf
 
    #--- Recuperation de l'extension par defaut
-   buf$audace(bufNo) extension "$conf(extension,defaut)"
-   set ext [buf$audace(bufNo) extension]
+   buf$audace(bufNo) extension $conf(extension,defaut)
+   set ext $conf(extension,defaut)
 
    if {[llength $args] == 2} {
       set in [lindex $args 0]

@@ -2,14 +2,14 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snacq.tcl,v 1.27 2010-01-17 18:18:59 robertdelmas Exp $
+# Mise a jour $Id: snacq.tcl,v 1.28 2010-01-24 11:38:39 robertdelmas Exp $
 #
 
 # ===================================================================
 # ===================================================================
 # ===================================================================
 
-global audace snconf
+global audace conf snconf
 
 #--- Initialisation des repertoires
 set sn(inidir)        [ pwd ]
@@ -36,7 +36,7 @@ catch { set snconf(fits,OBSERVER) "$conf(posobs,nom_observateur)" }
 # ===================================================================
 # ===================================================================
 
-set extname          [buf$audace(bufNo) extension]
+set extname          $conf(extension,defaut)
 set snconf(darkfile) "d$snconf(exptime)b$snconf(binning)$extname"
 set snconf(biasfile) "d0b$snconf(binning)$extname"
 
@@ -1033,7 +1033,7 @@ proc goSnAcq { {sndebug 0} } {
 
             #--- Pretraitement pendant l'integration
             if { [info exist name0] == 1 } {
-               set extname "[buf$audace(bufNo) extension]"
+               set extname $conf(extension,defaut)
                ttscript2 "IMA/SERIES \"$snconf(dossier)\" \"$name0\" . . \"$extname\" \"$snconf(dossier)\" \"$name0\" . \"$extname\" OPT \"dark=$snconf(dossier)/$snconf(darkfile)\" \"bias=$snconf(dossier)/$snconf(biasfile)\" unsmearing=$snconf(unsmearing)"
                ttscript2 "IMA/SERIES \"$snconf(dossier)\" \"$name0\" . . \"$extname\" \"$snconf(dossier)\" \"$name0\" . \"$extname\" FILTER kernel_type=med kernel_width=3 kernel_coef=1.2"
                ttscript2 "IMA/SERIES \"$snconf(dossier)\" \"$name0\" . . \"$extname\" \"$snconf(dossier)\" \"$name0\" . \"$extname\" STAT fwhm"
@@ -1100,7 +1100,7 @@ proc goSnAcq { {sndebug 0} } {
    if {$sndebug==0} {
       if { [info exist name0] == 1 } {
          #--- Pretraitement de la derniere pose
-         set extname "[buf$audace(bufNo) extension]"
+         set extname $conf(extension,defaut)
          ttscript2 "IMA/SERIES \"$snconf(dossier)\" \"$name0\" . . \"$extname\" \"$snconf(dossier)\" \"$name0\" . \"$extname\" OPT \"dark=$snconf(dossier)/$snconf(darkfile)\" \"bias=$snconf(dossier)/$snconf(biasfile)\" unsmearing=$snconf(unsmearing)"
          ttscript2 "IMA/SERIES \"$snconf(dossier)\" \"$name0\" . . \"$extname\" \"$snconf(dossier)\" \"$name0\" . \"$extname\" FILTER kernel_type=med kernel_width=3 kernel_coef=1.2"
          ttscript2 "IMA/SERIES \"$snconf(dossier)\" \"$name0\" . . \"$extname\" \"$snconf(dossier)\" \"$name0\" . \"$extname\" STAT fwhm"
@@ -1404,8 +1404,7 @@ proc stopSnAcq { } {
 # Mise a jour des variables snconf
 #
 proc updateSnAcq { } {
-   global snconf
-   global audace
+   global audace conf snconf
 
    #--- Sauvegarde des parametres
    snconfacqSave
@@ -1413,7 +1412,7 @@ proc updateSnAcq { } {
    catch { snconfacqLoad }
    snconfacqVerif
    #--- Rafraichissement des variables et des entry
-   set extname "[buf$audace(bufNo) extension]"
+   set extname $conf(extension,defaut)
    set snconf(darkfile) "d$snconf(exptime)b$snconf(binning)$extname"
    set snconf(biasfile) "d0b$snconf(binning)$extname"
    $audace(base).snacq.frame10.entry_haurore configure -textvariable snconf(haurore)
