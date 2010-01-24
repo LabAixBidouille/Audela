@@ -680,6 +680,7 @@ int mctcl_decode_sequences(Tcl_Interp *interp, char *argv[],int *nobjects, mc_OB
 	char **argvvv=NULL;
 	char **argvvvv=NULL;
 	int argcc,argccc,argcccc,ko,kjd,nobjs,code,ka,kjdmax;
+	double val;
 	mc_OBJECTDESCR *objectdescr;
    code=Tcl_SplitList(interp,argv[0],&argcc,&argvv);
 	nobjs=argcc;
@@ -721,7 +722,7 @@ int mctcl_decode_sequences(Tcl_Interp *interp, char *argv[],int *nobjects, mc_OB
 		objectdescr[ko].delay_instrum=10;
 		objectdescr[ko].delay_exposures=60;
 	}
-	// --- default values
+	// --- read values
 	for (ko=0;ko<nobjs;ko++) {
 	   code=Tcl_SplitList(interp,argvv[ko],&argccc,&argvvv);
 		if (argccc<1) { 
@@ -731,7 +732,7 @@ int mctcl_decode_sequences(Tcl_Interp *interp, char *argv[],int *nobjects, mc_OB
 		kjdmax=-1;
 		for (ka=0;ka<argccc;ka++) {
 			code=Tcl_SplitList(interp,argvvv[ka],&argcccc,&argvvvv);
-			if (argcccc<1) { 
+			if (argcccc<=1) { 
 				if (argvvvv!=NULL) { Tcl_Free((char *) argvvvv); }
 				continue; 
 			}
@@ -761,8 +762,8 @@ int mctcl_decode_sequences(Tcl_Interp *interp, char *argv[],int *nobjects, mc_OB
 				else if (strcmp(s,"ALTAZ")==0) { objectdescr[ko].axe_type=2; }
 				else { objectdescr[ko].axe_type=atoi(argvvvv[1]); }
 			}
-			if (strcmp(key,"AXE_SLEW1")==0) { objectdescr[ko].axe_slew1=atof(argvvvv[1]); }
-			if (strcmp(key,"AXE_SLEW2")==0) { objectdescr[ko].axe_slew2=atof(argvvvv[1]); }
+			if (strcmp(key,"AXE_SLEW1")==0) { val=atof(argvvvv[1]) ; if (val<=0) {val=1.;} ; objectdescr[ko].axe_slew1=val; }
+			if (strcmp(key,"AXE_SLEW2")==0) { val=atof(argvvvv[1]) ; if (val<=0) {val=1.;} ; objectdescr[ko].axe_slew2=val;  }
 			if (strcmp(key,"AXE_SLEW_SYNCHRO")==0) { objectdescr[ko].axe_slew_synchro=atoi(argvvvv[1]); }
 			if (strcmp(key,"AXE_EQUINOX")==0) { mctcl_decode_date(interp,argvvvv[1],&objectdescr[ko].axe_equinox); }
 			if (strcmp(key,"AXE_EPOCH")==0) { mctcl_decode_date(interp,argvvvv[1],&objectdescr[ko].axe_epoch); }
