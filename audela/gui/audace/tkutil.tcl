@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise a jour $Id: tkutil.tcl,v 1.29 2010-01-24 14:22:22 robertdelmas Exp $
+# Mise a jour $Id: tkutil.tcl,v 1.30 2010-01-24 15:05:10 michelpujol Exp $
 #
 
 namespace eval tkutil:: {
@@ -320,7 +320,7 @@ proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxVa
          }
       }
       #--- je verifie la classe
-      set classCheck [expr [string is $class -failindex charIndex $newValue] ]
+      set classCheck [string is $class -failindex charIndex $newValue]
       if { $classCheck == 0 } {
          set fullCheck $classCheck
          if { $errorVariable != "" } {
@@ -406,8 +406,8 @@ proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxVa
 #            - boolean   : booleen ( 0, 1, false, true, no, yes , off , on)
 #            - fits      : caracteres autorises dans un mot cle FITS
 #            - wordchar  : caracteres alphabetiques ou numeriques ou underscore
-#            - wordchar1 : caracteres de wordchar avec "-", sans "\" et "µ"
-#            - wordchar2 : caracteres de wordchar avec "-" et ".", sans "\" et "µ"
+#            - wordchar1 : caracteres de wordchar avec "-", sans "\" et "Âµ"
+#            - wordchar2 : caracteres de wordchar avec "-" et ".", sans "\" et "ï¿½"
 #            - xdigit    : caracteres hexadecimaux
 # @param  minLength      : longueur minimale de la chaine
 # @param  maxLength      : longueur maximale de la chaine
@@ -426,7 +426,7 @@ proc ::tkutil::validateString { win event newValue oldValue class minLength maxL
    if { $event == "key" || $event == "focusout" } {
       #--- je verifie la classe
       if { $class == "fits" } {
-         set classCheck [expr [string is ascii -failindex charIndex $newValue] ]
+         set classCheck [string is ascii -failindex charIndex $newValue]
         ### set classCheck [expr [[regexp -all {[\u0000-\u0029]|[\u007F-\u00FF]} $newValue ] != 0 ] ]
       } elseif { $class == "binning" } {
          set binx ""
@@ -445,23 +445,15 @@ proc ::tkutil::validateString { win event newValue oldValue class minLength maxL
             #--- je refuse le caractere antislash
             set classCheck 0
          } else {
-            set charIndex [string first "µ" $newValue]
+            set charIndex [string first "Âµ" $newValue]
             if { $charIndex != -1} {
                #--- je refuse le caractere machin
                set classCheck 0
             } else {
-               set classCheck [expr [string is wordchar -failindex charIndex $newValue] ]
-               if { $classCheck == 0 } {
-                  #--- je recupere le caractere qui pose probleme
-                  set charValue [string index $newValue $charIndex]
-                  if { $charValue == "-" } {
-                     #--- j'autorise le caractere "-"
-                     set classCheck 1
-                  } else {
-                     #--- je refuse le caractere qui n'est pas de la classe wordchar
-                     set  classCheck 0
-                  }
-               }
+               #--- je supprime le caractere "-"  de la chaine car il est autorise
+               set newValue2 [string map { "-" "" } $newValue ]
+               #--- je verifie les caracteres restant
+               set classCheck [string is wordchar -failindex charIndex $newValue2]
             }
          }
       } elseif { $class == "wordchar2" } {
@@ -470,23 +462,15 @@ proc ::tkutil::validateString { win event newValue oldValue class minLength maxL
             #--- je refuse le caractere antislash
             set classCheck 0
          } else {
-            set charIndex [string first "µ" $newValue]
+            set charIndex [string first "Âµ" $newValue]
             if { $charIndex != -1} {
                #--- je refuse le caractere machin
                set classCheck 0
             } else {
-               set classCheck [expr [string is wordchar -failindex charIndex $newValue] ]
-               if { $classCheck == 0 } {
-                  #--- je recupere le caractere qui pose probleme
-                  set charValue [string index $newValue $charIndex]
-                  if { $charValue == "-" || $charValue == "."  } {
-                     #--- j'autorise le caractere "-" et "."
-                     set classCheck 1
-                  } else {
-                     #--- je refuse le caractere qui n'est pas de la classe wordchar
-                     set  classCheck 0
-                  }
-               }
+               #--- je supprime les caracteres "-" et "." de la chaine car ils sont autorises
+               set newValue2 [string map { "-" "" "." "" } $newValue ]
+               #--- je verifie les caracteres restant
+               set classCheck [string is wordchar -failindex charIndex $newValue2]
             }
          }
       }
