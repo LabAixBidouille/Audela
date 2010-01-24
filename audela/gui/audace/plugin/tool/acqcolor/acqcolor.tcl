@@ -2,7 +2,7 @@
 # Fichier : acqcolor.tcl
 # Description : Outil pour l'acquisition d'images en couleur
 # Auteurs : Alain KLOTZ et Pierre THIERRY
-# Mise a jour $Id: acqcolor.tcl,v 1.18 2010-01-20 19:07:08 robertdelmas Exp $
+# Mise a jour $Id: acqcolor.tcl,v 1.19 2010-01-24 12:08:14 robertdelmas Exp $
 #
 
 proc testexit { } {
@@ -543,10 +543,37 @@ bind $audace(base).test <Destroy> { testexit }
 #--- Declare un buffer pour placer les images en mémoire
 global conf
 
-buf::create 1000
-buf1000 extension "$conf(extension,defaut)"
-buf::create 1001
-buf1001 extension "$conf(extension,defaut)"
+#--- Creation du buffer 1000
+::buf::create 1000
+
+#--- Configuration du buffer 1000
+buf1000 extension $conf(extension,defaut)
+if { $conf(fichier,compres) == "0" } {
+   buf1000 compress "none"
+} else {
+   buf1000 compress "gzip"
+}
+if { $conf(format_fichier_image) == "0" } {
+   buf1000 bitpix ushort
+} else {
+   buf1000 bitpix float
+}
+
+#--- Creation du buffer 1001
+::buf::create 1001
+
+#--- Configuration du buffer 1000
+buf1001 extension $conf(extension,defaut)
+if { $conf(fichier,compres) == "0" } {
+   buf1001 compress "none"
+} else {
+   buf1001 compress "gzip"
+}
+if { $conf(format_fichier_image) == "0" } {
+   buf1001 bitpix ushort
+} else {
+   buf1001 bitpix float
+}
 
 #--- Re-affiche l'image si on relache les curseurs des glissieres
 for { set k 1 } { $k <= 3 } { incr k } {
@@ -670,14 +697,14 @@ if {$audace(acqvisu,ccd)=="kac1310"} {
    #---
    if { ! [ info exists conf(scr1300xtc,port) ] } { set conf(scr1300xtc,port) "lpt1" }
    #---
-   cam::create synonyme $conf(scr1300xtc,port) -num 1000
+   ::cam::create synonyme $conf(scr1300xtc,port) -num 1000
    cam1000 interrupt 0
    cam1000 buf 1000
 } elseif { $audace(acqvisu,ccd) == "kaf1600" } {
    #---
    if { ! [ info exists conf(audine,port) ] } { set conf(audine,port) "lpt1" }
    #---
-   cam::create audine $conf(audine,port) -num 1000 -ccd kaf1602
+   ::cam::create audine $conf(audine,port) -num 1000 -ccd kaf1602
    cam1000 buf 1000
    cam1000 shutter synchro
    cam1000 shuttertype "audine"
@@ -685,7 +712,7 @@ if {$audace(acqvisu,ccd)=="kac1310"} {
    #---
    if { ! [ info exists conf(audine,port) ] } { set conf(audine,port) "lpt1" }
    #---
-   cam::create audine $conf(audine,port) -num 1000 -ccd kaf401
+   ::cam::create audine $conf(audine,port) -num 1000 -ccd kaf401
    cam1000 buf 1000
    cam1000 shutter synchro
    cam1000 shuttertype "thierry"
@@ -845,7 +872,7 @@ proc testacqfen { } {
    } else {
       rgb_split 1000 -rgb cfa
    }
-   buf1000 extension "$conf(extension,defaut)"
+   buf1000 extension $conf(extension,defaut)
    testvisu
    #--- Affichage du status
    $audace(base).test.frame2.fra0.labURL_decompte configure -text ""
@@ -1486,7 +1513,7 @@ proc testjpeg { } {
          buf1000 save [ file join $infos(dir) rgbdummy ]
          for { set k 1 } { $k <= 3 } { incr k } {
             set kk [ expr $k-1 ]
-            buf1001 load3d "[ file join $infos(dir) rgbdummy ][ buf1000 extension ]" $k
+            buf1001 load3d "[ file join $infos(dir) rgbdummy ]$::conf(extension,defaut)" $k
             set hi [ buf1001 getkwd MIPS-HI ]
             buf1001 setkwd [ lreplace $hi 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 0 ] ]
             set lo [ buf1001 getkwd MIPS-LO ]
@@ -1494,11 +1521,11 @@ proc testjpeg { } {
             buf1001 setkwd [ list NAXIS 2 int {} {} ]
             buf1001 save [ file join $infos(dir) rgbdummy$k ]
          }
-         fits2colorjpeg "[ file join $infos(dir) rgbdummy1 ][ buf1001 extension ]" "[ file join $infos(dir) rgbdummy2 ][ buf1001 extension ]" "[ file join $infos(dir) rgbdummy3 ][ buf1001 extension ]" $filename 80
-         catch { file delete [ file join $infos(dir) rgbdummy ][ buf1000 extension ] }
-         catch { file delete [ file join $infos(dir) rgbdummy1 ][ buf1001 extension ] }
-         catch { file delete [ file join $infos(dir) rgbdummy2 ][ buf1001 extension ] }
-         catch { file delete [ file join $infos(dir) rgbdummy3 ][ buf1001 extension ] }
+         fits2colorjpeg "[ file join $infos(dir) rgbdummy1 ]$::conf(extension,defaut)" "[ file join $infos(dir) rgbdummy2 ]$::conf(extension,defaut)" "[ file join $infos(dir) rgbdummy3 ]$::conf(extension,defaut)" $filename 80
+         catch { file delete [ file join $infos(dir) rgbdummy ]$::conf(extension,defaut) }
+         catch { file delete [ file join $infos(dir) rgbdummy1 ]$::conf(extension,defaut) }
+         catch { file delete [ file join $infos(dir) rgbdummy2 ]$::conf(extension,defaut) }
+         catch { file delete [ file join $infos(dir) rgbdummy3 ]$::conf(extension,defaut) }
       } elseif { $infos(type_image) == "noiretblanc" } {
          buf1000 sauve_jpeg $filename
       }

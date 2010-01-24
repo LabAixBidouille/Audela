@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.40 2010-01-20 19:08:56 robertdelmas Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.41 2010-01-24 12:12:03 robertdelmas Exp $
 #
 
 #--- Conventions pour ce script :
@@ -66,7 +66,7 @@ set snvisu(exit_blink)     "1"
 set snvisu(ima_rep2_exist) "0"
 set snvisu(ima_rep3_exist) "0"
 set snconfvisu(num_rep2_3) "0"
-set extname "[buf$audace(bufNo) extension]"
+set extname $conf(extension,defaut)
 set aa "$rep(1)/*$extname"
 set rep(x1) [searchGalaxySn $aa]
 set rep00 {}
@@ -558,21 +558,64 @@ bind $zone(image2) <ButtonPress-1> {
 # ========================================
 
 #--- Declare a new buffer in memory to place images
-set num(buffer1)  [buf::create]
-buf$num(buffer1)  extension $conf(extension,defaut)
-set num(buffer2)  [buf::create]
-buf$num(buffer2)  extension $conf(extension,defaut)
-set num(buffer1b) [buf::create]
+set num(buffer1) [::buf::create]
+buf$num(buffer1) extension $conf(extension,defaut)
+if { $conf(fichier,compres) == "0" } {
+   buf$num(buffer1) compress "none"
+} else {
+   buf$num(buffer1) compress "gzip"
+}
+if { $conf(format_fichier_image) == "0" } {
+   buf$num(buffer1) bitpix ushort
+} else {
+   buf$num(buffer1) bitpix float
+}
+
+#--- Declare a new buffer in memory to place images
+set num(buffer2) [::buf::create]
+buf$num(buffer2) extension $conf(extension,defaut)
+if { $conf(fichier,compres) == "0" } {
+   buf$num(buffer2) compress "none"
+} else {
+   buf$num(buffer2) compress "gzip"
+}
+if { $conf(format_fichier_image) == "0" } {
+   buf$num(buffer2) bitpix ushort
+} else {
+   buf$num(buffer2) bitpix float
+}
+
+#--- Declare a new buffer in memory to place images
+set num(buffer1b) [::buf::create]
 buf$num(buffer1b) extension $conf(extension,defaut)
-set num(buffer2b) [buf::create]
+if { $conf(fichier,compres) == "0" } {
+   buf$num(buffer1b) compress "none"
+} else {
+   buf$num(buffer1b) compress "gzip"
+}
+if { $conf(format_fichier_image) == "0" } {
+   buf$num(buffer1b) bitpix ushort
+} else {
+   buf$num(buffer1b) bitpix float
+}
+
+#--- Declare a new buffer in memory to place images
+set num(buffer2b) [::buf::create]
 buf$num(buffer2b) extension $conf(extension,defaut)
-if {[info exists audace]==1} {
-   buf$num(buffer2) compress [buf$audace(bufNo) compress]
+if { $conf(fichier,compres) == "0" } {
+   buf$num(buffer2b) compress "none"
+} else {
+   buf$num(buffer2b) compress "gzip"
+}
+if { $conf(format_fichier_image) == "0" } {
+   buf$num(buffer2b) bitpix ushort
+} else {
+   buf$num(buffer2b) bitpix float
 }
 
 #--- Image 100 et 200
-set num(visu1) [visu::create $num(buffer1) 100 ]
-set num(visu2) [visu::create $num(buffer2) 200 ]
+set num(visu1) [::visu::create $num(buffer1) 100 ]
+set num(visu2) [::visu::create $num(buffer2) 200 ]
 
 visu$num(visu1) zoom $snconfvisu(zoom_normal)
 visu$num(visu2) zoom $snconfvisu(zoom_normal)
@@ -588,6 +631,7 @@ $zone(image2) create image 0 0 -image image200 -anchor nw -tag display
 proc snDelete { } {
    global num
    global audace
+   global conf
    global snvisu
    global snconfvisu
 
@@ -600,25 +644,25 @@ proc snDelete { } {
    #--- Supprime les images et les visu
    if { [ info exists num(visuZoom1) ] } {
       image delete image$num(visuZoom1)
-      visu::delete $num(visuZoom1)
+      ::visu::delete $num(visuZoom1)
       unset num(visuZoom1)
    }
    if { [ info exists num(visuZoom2) ] } {
       image delete image$num(visuZoom2)
-      visu::delete $num(visuZoom2)
+      ::visu::delete $num(visuZoom2)
       unset num(visuZoom2)
    }
    #--- Supprime les images
    image delete image100
    image delete image200
    #--- Supprime les visu
-   visu::delete $num(visu1)
-   visu::delete $num(visu2)
+   ::visu::delete $num(visu1)
+   ::visu::delete $num(visu2)
    #--- Supprime les buffer
-   buf::delete $num(buffer1)
-   buf::delete $num(buffer2)
-   buf::delete $num(buffer1b)
-   buf::delete $num(buffer2b)
+   ::buf::delete $num(buffer1)
+   ::buf::delete $num(buffer2)
+   ::buf::delete $num(buffer1b)
+   ::buf::delete $num(buffer2b)
    #---
    destroy $audace(base).snvisu
    #--- Effacement des fenetres des zooms si elles existent
@@ -639,7 +683,7 @@ proc snDelete { } {
       destroy $audace(base).snvisu_3
    }
    #--- Nettoyage des eventuels fichiers crees
-   set ext [buf$audace(bufNo) extension]
+   set ext $conf(extension,defaut)
    catch {
       file delete [ file join $snconfvisu(rep1) filter$ext ]
       file delete [ file join $snconfvisu(rep1) filter2$ext ]
@@ -728,6 +772,7 @@ proc setSeuils { numbuf } {
 proc noCosmic { } {
    global audace
    global caption
+   global conf
    global rep
    global zone
    global num
@@ -736,7 +781,7 @@ proc noCosmic { } {
    if { [ buf$num(buffer1) imageready ] == "1" } {
       set filename [lindex $rep(x1) $rep(xx1)]
       set name [file tail "$filename"]
-      set extname "[buf$num(buffer1) extension]"
+      set extname $conf(extension,defaut)
       set name [string range $name 0 [expr [string last "$extname" "$name"]-1]]
       ttscript2 "IMA/SERIES \"$rep(1)\" \"$name\" . . \"$extname\" \"$rep(1)\" \"filter\" . \"$extname\" FILTER kernel_type=med kernel_width=3 kernel_coef=1.2"
       set filename "$rep(1)/filter$extname"
@@ -755,6 +800,7 @@ proc noCosmic { } {
 proc snSubSky { } {
    global audace
    global caption
+   global conf
    global rep
    global zone
    global num
@@ -771,9 +817,8 @@ proc snSubSky { } {
    catch {
       set filename [lindex $rep(x1) $rep(xx1)]
       set name [file tail $filename]
-      set extname "[buf$num(buffer1) extension]"
+      set extname $conf(extension,defaut)
       set name [string range $name 0 [expr [string last "$extname" "$name"]-1]]
-      set extname "[buf$num(buffer1) extension]"
       ttscript2 "IMA/SERIES \"$rep(1)\" \"$name\"  . . \"$extname\" \"$rep(1)\" \"filter\" . \"$extname\" BACK sub "
       ttscript2 "IMA/SERIES \"$rep(1)\" \"filter\" . . \"$extname\" \"$rep(1)\" \"filter\" . \"$extname\" STAT"
       set filename "$rep(1)/filter$extname"
@@ -791,7 +836,7 @@ proc snSubSky { } {
          set filename $rep(nom2)
          set name [file tail $filename]
          set name [string range $name 0 [expr [string last "$extname" "$name"]-1]]
-         set extname "[buf$num(buffer1) extension]"
+         set extname $conf(extension,defaut)
          ttscript2 "IMA/SERIES \"$rep(2)\" \"$name\"   . . \"$extname\" \"$rep(1)\" \"filter2\" . \"$extname\" BACK sub "
          ttscript2 "IMA/SERIES \"$rep(1)\" \"filter2\" . . \"$extname\" \"$rep(1)\" \"filter2\" . \"$extname\" STAT"
          set filename "$rep(1)/filter2$extname"
@@ -808,7 +853,7 @@ proc snSubSky { } {
          set filename $rep(nom2)
          set name [file tail $filename]
          set name [string range $name 0 [expr [string last "$extname" "$name"]-1]]
-         set extname "[buf$num(buffer1) extension]"
+         set extname $conf(extension,defaut)
          ttscript2 "IMA/SERIES \"$rep(3)\" \"$name\"   . . \"$extname\" \"$rep(1)\" \"filter2\" . \"$extname\" BACK sub "
          ttscript2 "IMA/SERIES \"$rep(1)\" \"filter2\" . . \"$extname\" \"$rep(1)\" \"filter2\" . \"$extname\" STAT"
          set filename "$rep(1)/filter2$extname"
@@ -832,6 +877,7 @@ proc snSubSky { } {
 proc changeDir { numbuf } {
    global audace
    global caption
+   global conf
    global rep
    global zone
    global snconfvisu
@@ -860,7 +906,7 @@ proc changeDir { numbuf } {
    if {[string compare $filename ""] != 0 } {
       catch {
          set rep($numbuf) "$filename"
-         set extname "[buf$num(buffer1) extension]"
+         set extname $conf(extension,defaut)
          set aa "$rep($numbuf)/*$extname"
          set rep(x$numbuf) [searchGalaxySn $aa]
 
@@ -1321,6 +1367,7 @@ proc snSetup { } {
    #--- Variables shared
    global audace
    global caption
+   global conf
    global snconfvisu
 
    #---
@@ -1505,14 +1552,14 @@ proc snSetup { } {
          -padx 5 -pady 5
       #--- Bouton radio 1 - Option enregistrement image non compressee
       radiobutton $audace(base).snvisu_3.frame4.but_rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-         -text [ buf$audace(bufNo) extension ] -value "no" -variable snconfvisu(gzip) \
+         -text "$conf(extension,defaut)" -value "no" -variable snconfvisu(gzip) \
          -command { set rep(gz) "$snconfvisu(gzip)" }
       pack $audace(base).snvisu_3.frame4.but_rad0 \
          -in $audace(base).snvisu_3.frame4 -side left -anchor center \
          -padx 5 -pady 5
       #--- Bouton radio 2 - Option enregistrement image compressee
       radiobutton $audace(base).snvisu_3.frame4.but_rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-         -text "[ buf$audace(bufNo) extension ].gz" -value "yes" -variable snconfvisu(gzip) \
+         -text "$conf(extension,defaut).gz" -value "yes" -variable snconfvisu(gzip) \
          -command { set rep(gz) "$snconfvisu(gzip)" }
       pack $audace(base).snvisu_3.frame4.but_rad1 \
          -in $audace(base).snvisu_3.frame4 -side left -anchor center \
@@ -1705,9 +1752,7 @@ proc saveImage { } {
 
 proc saveImagesJpeg { { invew 0 } { invns 0 } } {
    #--- Sauve les deux buffers en Jpeg
-   global rep
-   global num
-   global audace conf
+   global audace conf num rep
 
    set filename [lindex $rep(x1) $rep(xx1)]
    set shortname [file rootname [file tail $filename]]
@@ -1716,7 +1761,7 @@ proc saveImagesJpeg { { invew 0 } { invns 0 } } {
    set rep1 "$rep(1)"
    set filename "$rep1"
 
-   set extname "[buf$num(buffer1) extension]"
+   set extname $conf(extension,defaut)
    append filename "/i$extname"
    #--- buffer 1
    set result [buf$num(buffer1) save "$filename"]
@@ -1777,23 +1822,28 @@ proc saveImagesJpeg { { invew 0 } { invns 0 } } {
       #--- je converti l'image FIT en JPG
      # ttscript2 "IMA/SERIES \"$repDSS\" \"$shortname\" . . \"$extname\" \"$rep1\" \"$shortname-DSS\" . \"$extname\" COPY \"jpegfile\""
 
-      set num(bufDSS) [buf::create]
+      set num(bufDSS) [::buf::create]
       buf$num(bufDSS) extension $conf(extension,defaut)
-      visu::create $num(bufDSS) 300
-     # if {[info exists audace]==1} {
-     #    buf$num(bufDSS) compress [buf$num(bufDSS)) compress]
-     # }
+      if { $conf(fichier,compres) == "0" } {
+         buf$num(bufDSS) compress "none"
+      } else {
+         buf$num(bufDSS) compress "gzip"
+      }
+      if { $conf(format_fichier_image) == "0" } {
+         buf$num(bufDSS) bitpix ushort
+      } else {
+         buf$num(bufDSS) bitpix float
+      }
+
+      ::visu::create $num(bufDSS) 300
       set result [buf$num(bufDSS) load $filenameDSS]
       set hight [expr [lindex [buf$num(bufDSS) stat] 0] * 3]
-      set low [lindex [buf$num(bufDSS) stat] 1]
+      set low   [lindex [buf$num(bufDSS) stat] 1]
 
-     # visu$num(bufDSS) cut "$hight $low"
-     # visu$num(bufDSS) cut [lrange [buf$num(bufDSS) autocuts] 0 1]
-     # visu$num(bufDSS) disp
       if { [ file exist "$rep1/${shortname}\-DSS\.jpg" ] == "1" } {
          set result [buf$num(bufDSS) sauve_jpeg "$rep1/${shortname}\-DSS\.jpg" 80 $low $hight]
       }
-      buf::delete $num(bufDSS)
+      ::buf::delete $num(bufDSS)
    }
 }
 
@@ -2128,6 +2178,7 @@ proc snHeader { bufnum } {
 proc snBlinkImage { } {
    global audace
    global caption
+   global conf
    global num
    global snconfvisu
    global snvisu
@@ -2157,8 +2208,12 @@ proc snBlinkImage { } {
 
    #--- Recentrage de l'image de reference
    set b [::buf::create]
-   set ext [buf$audace(bufNo) extension]
+   set ext $conf(extension,defaut)
    buf$b extension "$ext"
+   set compress [buf$audace(bufNo) compress]
+   buf$b compress "$compress"
+   set bitpix [buf$audace(bufNo) bitpix]
+   buf$b bitpix "$bitpix"
    set filename [lindex $rep(x1) $rep(xx1)]
    if {$rep(blink,last)!=$filename} {
       set rep(blink,last) "$filename"
