@@ -7,75 +7,75 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 29 mai 2007</p>
+<p class="date">Date de mise &agrave; jour : 23 janvier 2010</p>
 <h1>Buffer </h1>
 <p>Les commandes qui suivent peuvent &ecirc;tre appel&eacute;es gr&acirc;ce aux commandes <code>buf1</code>, <code>buf2</code>, ... qui sont cr&eacute;&eacute;es par "<code>::buf::create</code>". Ces sous-commandes permettent de formater une image, de manipuler les mots-cl&eacute;s FITS, et de r&eacute;aliser certains traitements sur l'image port&eacute;e par le buffer. Elles sont d&eacute;crites avec la commande <code>buf1</code>, mais sont valables pour toutes les autres commandes de buffer. </p>
 <h2> 1. Gestion du buffer</h2>
-<h3> <a name="setpixels" id="setpixels"></a>buf1 setpixels class width height 
+<h3> <a name="setpixels" id="setpixels"></a>buf1 setpixels class width height
   format compression pixeldata ?-keep_keywords? ?-pixels_size? ?-reverse_x? ?-reverse_y?</h3>
-<p>Dimensionne l'image du buffer &agrave; la taille pr&eacute;cis&eacute;e par 
-  les arguments <em>largeur</em> et <em>hauteur (*)</em> : Deux entiers repr&eacute;sentant 
-  la largeur et la hauteur souhait&eacute;es de l'image. Si une image existait 
-  avant cette commande, elle est effac&eacute;e. Si pixelData est nul, alors les 
+<p>Dimensionne l'image du buffer &agrave; la taille pr&eacute;cis&eacute;e par
+  les arguments <em>largeur</em> et <em>hauteur (*)</em> : Deux entiers repr&eacute;sentant
+  la largeur et la hauteur souhait&eacute;es de l'image. Si une image existait
+  avant cette commande, elle est effac&eacute;e. Si pixelData est nul, alors les
   pixels sont initialis&eacute;s &agrave; z&eacute;ro.</p>
 <p>Param&egrave;tres obligatoires : </p>
-<blockquote> 
+<blockquote>
   <p>class : CLASS_GRAY|CLASS_RGB<br>
     width : Nombre de colonnes (*)<br>
     height : Nombre de lignes (*)<br>
     format : FORMAT_BYTE|FORMAT_SHORT|FORMAT_USHORT|FORMAT_FLOAT <br>
     compression : COMPRESS_NONE|COMPRESS_I420|COMPRESS_JPEG|COMPRESS_RAW<br>
-    pixeldata : Pointeur vers les valeurs des pixels (si pixelData est nul, cr&eacute;e 
+    pixeldata : Pointeur vers les valeurs des pixels (si pixelData est nul, cr&eacute;e
     une image avec tous les pixels &agrave; z&eacute;ro)</p>
 </blockquote>
 <p>Param&egrave;tres facultatifs :</p>
-<blockquote> 
-  <p> -keep_keywords : Conserve les mots cl&eacute;s qui &eacute;taient d&eacute;j&agrave; 
+<blockquote>
+  <p> -keep_keywords : Conserve les mots cl&eacute;s qui &eacute;taient d&eacute;j&agrave;
     dans le buffer <br>
-    -pixelSize size : Nombre d'octets point&eacute;s par pixelData pour les images 
-    JPEG et RAW (*). Ce param&egrave;tre est obligatoire pour les images JPEG 
+    -pixelSize size : Nombre d'octets point&eacute;s par pixelData pour les images
+    JPEG et RAW (*). Ce param&egrave;tre est obligatoire pour les images JPEG
     et RAW.<br>
     -reverseX : Si &quot;1&quot;, applique un miroir vertical<br>
     -reverseY : Si &quot;1&quot;, applique un miroir horizontal</p>
 </blockquote>
-<p>(*) Pour les images JPEG ou RAW (compression=COMPRESS_JPEG|COMPRESS_RAW), les 
-  param&egrave;tres &quot;width&quot;et &quot;height&quot; ne sont pas utilis&eacute;s. 
-  Les nombres de colonnes et de lignes sont extraits des donn&eacute;es &quot;pixelData&quot; 
-  avec les commandes &quot;buf1 getpixelswidth&quot; et &quot;buf1 getpixelsheight&quot; 
+<p>(*) Pour les images JPEG ou RAW (compression=COMPRESS_JPEG|COMPRESS_RAW), les
+  param&egrave;tres &quot;width&quot;et &quot;height&quot; ne sont pas utilis&eacute;s.
+  Les nombres de colonnes et de lignes sont extraits des donn&eacute;es &quot;pixelData&quot;
+  avec les commandes &quot;buf1 getpixelswidth&quot; et &quot;buf1 getpixelsheight&quot;
   apr&egrave;s d&eacute;compression par la commande &quot;buf1 setpixels&quot; </p>
 <p>Exemple : Image Audine KAF-0400</p>
-<blockquote> 
+<blockquote>
   <p>buf1 setpixels CLASS_GRAY 768 512 FORMAT_USHORT COMPRESS_NONE 180412736</p>
-  <p>Les donn&eacute;es point&eacute;es par &quot;pixeldata&quot; &agrave; l'adresse 
-    180412736 sont sous la forme d'un tableau d'entiers 16 bits non sign&eacute;s de 768 colonnes 
+  <p>Les donn&eacute;es point&eacute;es par &quot;pixeldata&quot; &agrave; l'adresse
+    180412736 sont sous la forme d'un tableau d'entiers 16 bits non sign&eacute;s de 768 colonnes
     et 512 lignes.</p>
   <p></p>
 </blockquote>
 <p>Exemple : Image Webcam Vesta Pro, TouCam couleur</p>
-<blockquote> 
+<blockquote>
   <p>buf1 setpixels CLASS_RGB 640 480 FORMAT_BYTE COMPRESS_NONE 180412736</p>
-  <p>Les donn&eacute;es point&eacute;es par &quot;pixeldata&quot; &agrave; l'adresse 
-    180412736 sont sous la forme d'un tableau d'entiers 8 bits non sign&eacute;s de 640x3 colonnes 
+  <p>Les donn&eacute;es point&eacute;es par &quot;pixeldata&quot; &agrave; l'adresse
+    180412736 sont sous la forme d'un tableau d'entiers 8 bits non sign&eacute;s de 640x3 colonnes
     et 480 lignes.</p>
 </blockquote>
 <p>Exemple : Image Canon 300D, JPEG, large:normal</p>
-<blockquote> 
-  <p>buf1 setpixels CLASS_RGB 0 0 FORMAT_SHORT COMPRESS_JPEG 180412736 -pixelSize 
+<blockquote>
+  <p>buf1 setpixels CLASS_RGB 0 0 FORMAT_SHORT COMPRESS_JPEG 180412736 -pixelSize
     1178832</p>
-  <p>Les donn&eacute;es point&eacute;es par &quot;pixeldata&quot; &agrave; l'adresse 
-    180412736 sont sous la forme d'un bloc de 1178832 octets contenant une image JPEG au format 
-    d&eacute;fini par le standard JPEG (voir <a href="http://www.ijg.org">http://www.ijg.org</a> 
-    ). La commande &quot;setpixels&quot; utilise la librairie &quot;libjpeg&quot; 
+  <p>Les donn&eacute;es point&eacute;es par &quot;pixeldata&quot; &agrave; l'adresse
+    180412736 sont sous la forme d'un bloc de 1178832 octets contenant une image JPEG au format
+    d&eacute;fini par le standard JPEG (voir <a href="http://www.ijg.org">http://www.ijg.org</a>
+    ). La commande &quot;setpixels&quot; utilise la librairie &quot;libjpeg&quot;
     pour d&eacute;compresser ces donn&eacute;es.</p>
   </blockquote>
 <p>Exemple : Image Canon 300D, RAW</p>
-<blockquote> 
-  <p>buf1 setpixels CLASS_GRAY 0 0 FORMAT_SHORT COMPRESS_RAW 180412736 -pixelSize 
+<blockquote>
+  <p>buf1 setpixels CLASS_GRAY 0 0 FORMAT_SHORT COMPRESS_RAW 180412736 -pixelSize
     7562236 </p>
-  <p>Les donn&eacute;es point&eacute;es par &quot;pixeldata&quot; &agrave; l'adresse 
-    180412736 sont sous la forme d'un bloc de 7562236 octets contenant une image RAW au format 
-    d&eacute;fini par le constructeur Canon (voir <a href="http://www.cybercom.net/%7Edcoffin/dcraw">http://www.cybercom.net/~dcoffin/dcraw</a> 
-    ). La commande &quot;setpixels&quot; utilise la librairie &quot;libdcraw&quot; 
+  <p>Les donn&eacute;es point&eacute;es par &quot;pixeldata&quot; &agrave; l'adresse
+    180412736 sont sous la forme d'un bloc de 7562236 octets contenant une image RAW au format
+    d&eacute;fini par le constructeur Canon (voir <a href="http://www.cybercom.net/%7Edcoffin/dcraw">http://www.cybercom.net/~dcoffin/dcraw</a>
+    ). La commande &quot;setpixels&quot; utilise la librairie &quot;libdcraw&quot;
     pour d&eacute;compresser ces donn&eacute;es. </p>
 </blockquote>
 <h3><a name="clear" id="clear"></a>buf1 clear</h3>
@@ -107,52 +107,52 @@
 <code>buf1 load images\\toto</code> <br />
 <p>charge l'image toto.fit contenue dans le sous-r&eacute;pertoire images du r&eacute;pertoire courant (peut &ecirc;tre obtenu gr&acirc;ce &agrave; la commande TCL pwd).</p>
 <h3> <a name="save" id="save"></a>buf1 save <em>nom ?-quality [1...100] ?</em></h3>
-<p>Enregistre l'image avec les mots-cl&eacute;s contenus dans le buffer. </p>
-<p>L'extension du fichier d&eacute;termine le format d'enregistrement de l'image 
+<p>Enregistre l'image avec les mots cl&eacute;s contenus dans le buffer. </p>
+<p>L'extension du fichier d&eacute;termine le format d'enregistrement de l'image
   : </p>
 <ul>
-  <li><b>fit, fits, fts, fit.gz, fits.gz, fts.gz </b>: enregistrement au format 
+  <li><b>.fit, .fits, .fts, .fit.gz, .fits.gz, .fts.gz </b>: Enregistrement au format
     FITS</li>
-  <li><b>extension par d&eacute;faut</b> : enregistrement au format FITS (cf. 
+  <li><b>extension par d&eacute;faut</b> : Enregistrement au format FITS (cf.
     buf1 extension)</li>
-  <li><b>pas d'extension</b> : enregistrement au format FITS. L'extension par 
+  <li><b>pas d'extension</b> : Enregistrement au format FITS. L'extension par
     d&eacute;faut est ajout&eacute;e au nom du fichier (cf. buf1 extension)</li>
-  <li><b>.jpg .jpeg</b> : enregistrement au format JPEG</li>
-  <li><b>.png </b>: enregistrement au format PNG</li>
-  <li><b>.bmp</b> : enregistrement au format BMP</li>
+  <li><b>.jpg .jpeg</b> : Enregistrement au format JPEG</li>
+  <li><b>.png </b>: Enregistrement au format PNG</li>
+  <li><b>.bmp</b> : Enregistrement au format BMP</li>
+  <li><b>.tif</b> : Enregistrement au format TIFF</li>
 </ul>
 <p>Option sp&eacute;cifique pour l'enregistrement au format JPEG : </p>
 <ul>
-  <li>Le param&egrave;tre optionnel -quality permet d'indiquer le taux de compression 
-    d'une image JPEG . </li>
+  <li>Le param&egrave;tre optionnel -quality permet d'indiquer le taux de compression
+    d'une image JPEG. </li>
 </ul>
 <p>Exemples :</p>
-<table width="75%" border="0">
-  <tr> 
+<table width="100%" border="0">
+  <tr>
     <td><code>buf1 save images/toto.fit</code></td>
-    <td> <code>enregistre une image au format FITS</code> </td>
+    <td> <code>Enregistre une image au format FITS</code> </td>
   </tr>
-  <tr> 
+  <tr>
     <td><code>buf1 save images/toto</code></td>
-    <td> <code>enregistre une image au format FITS</code> nomm&eacute;e images/toto.xxx 
-      si l'extension par d&eacute;faut est .xxx</td>
+    <td> <code>Enregistre une image au format FITS nomm&eacute;e <b>images/toto.xxx</b>
+      si l'extension par d&eacute;faut est <b>.xxx</b></code></td>
   </tr>
-  <tr> 
+  <tr>
     <td><code>buf1 save images/toto</code>.jpg</td>
-    <td> <code>enregistre une image au format JPEG</code> </td>
+    <td> <code>Enregistre une image au format JPEG</code> </td>
   </tr>
-  <tr> 
+  <tr>
     <td><code>buf1 save images/toto</code>.png</td>
-    <td> <code>enregistre une image au format PNG</code></td>
+    <td> <code>Enregistre une image au format PNG</code></td>
   </tr>
 </table>
-<p>&nbsp; </p>
 <h3> <a name="savejpeg" id="savejpeg"></a>buf1 savejpeg <em>filename ?quality? ?locut? ?hicut?</em></h3>
-<p>Enregistre l'image au format JPEG N&amp;B. Si l'extension est donn&eacute;e, 
-  elle peut &ecirc;tre diff&eacute;rente de "<code>.jpg</code>". L'option <em>quality</em> 
-  fixe la qualit&eacute; de l'image (de 5 pour une perte &eacute;norme &agrave; 
-  100 pour une compression sans perte). La valeur par d&eacute;faut de <em>quality</em> 
-  est 75. <em>Locut</em> et <em>hicut</em> sont les seuils de visualisation correspondant 
+<p>Enregistre l'image au format JPEG N&amp;B. Si l'extension est donn&eacute;e,
+  elle peut &ecirc;tre diff&eacute;rente de "<code>.jpg</code>". L'option <em>quality</em>
+  fixe la qualit&eacute; de l'image (de 5 pour une perte &eacute;norme &agrave;
+  100 pour une compression sans perte). La valeur par d&eacute;faut de <em>quality</em>
+  est 75. <em>Locut</em> et <em>hicut</em> sont les seuils de visualisation correspondant
   respectivement au noir et au blanc.</p>
 <h2> 3. Gestion des mots-cl&eacute;s FITS</h2>
 <h3> <a name="getkwds" id="getkwds"></a>buf1 getkwds</h3>
@@ -177,26 +177,26 @@
 <h2> 4. Traitement d'image</h2>
 <p>Les fonctions de traitement d'images propos&eacute;es par AudeLA agissent au niveau du buffer.</p>
 <h3> <a name="getpix" id="getpix"></a>buf1 getpix <em>coord</em></h3>
-<p>Renvoie la valeur du pixel ayant les coordonn&eacute;es (x,y) pass&eacute;es en param&egrave;tre 
-  sous la forme d'une liste &agrave; deux &eacute;l&eacute;ments [list $x $y]. 
-  Les coordonn&eacute;es de l'image vont de (1,1) &agrave; (NAXIS1,NAXIS2). getpix 
+<p>Renvoie la valeur du pixel ayant les coordonn&eacute;es (x,y) pass&eacute;es en param&egrave;tre
+  sous la forme d'une liste &agrave; deux &eacute;l&eacute;ments [list $x $y].
+  Les coordonn&eacute;es de l'image vont de (1,1) &agrave; (NAXIS1,NAXIS2). getpix
   retourne une liste dont le premier &eacute;l&eacute;ment est le nombre de plan couleur, et les &eacute;l&eacute;ments suivants sont les intensit&eacute;s du pixel dans chaque plan.</p>
-<p>Exemple 1 : Pour une image en niveaux de gris, getpix retoune une seule intensit&eacute;. 
+<p>Exemple 1 : Pour une image en niveaux de gris, getpix retoune une seule intensit&eacute;.
 </p>
 <pre>loadima m57<br>buf1 getpix [list 100 100]<br># 1 330.000</pre>
 <p>Exemple 2 : Pour une image couleur, getpix retourne les 3 intensit&eacute;s pour les plans R, G et B.</p>
 <pre>loadima 47toucan.jpg<br>buf1 getpix [list 100 100]<br># 3 7.000 1.000 5.000</pre>
-<h3> <a name="setpix" id="setpix"></a>buf1 setpix <em>coord (valgray | valred 
+<h3> <a name="setpix" id="setpix"></a>buf1 setpix <em>coord (valgray | valred
   valgreen valblue)</em></h3>
-<p>Affecte la valeur du pixel ayant les coordonn&eacute;es (x,y) pass&eacute;es en param&egrave;tre 
-  sous la forme d'une liste &agrave; deux &eacute;l&eacute;ments [list $x $y]. 
-  Les coordonn&eacute;es de l'image vont de (1,1) &agrave; (NAXIS1,NAXIS2). La 
-  nouvelle valeur affect&eacute;e est valgrey pour une image en niveaux de gris 
+<p>Affecte la valeur du pixel ayant les coordonn&eacute;es (x,y) pass&eacute;es en param&egrave;tre
+  sous la forme d'une liste &agrave; deux &eacute;l&eacute;ments [list $x $y].
+  Les coordonn&eacute;es de l'image vont de (1,1) &agrave; (NAXIS1,NAXIS2). La
+  nouvelle valeur affect&eacute;e est valgrey pour une image en niveaux de gris
   ou valred,valgreen,valblue pour une image couleur. </p>
 <p>Exemple 1 : Pour une image en niveaux de gris, affecte 51 au pixel (100,100).
 </p>
 <pre>loadima m57<br>buf1 setpix [list 100 100] 51<br># </pre>
-<p>Exemple 2 : Pour une image couleur, affecte rouge=51 vert=52 bleu=53 au pixel 
+<p>Exemple 2 : Pour une image couleur, affecte rouge=51 vert=52 bleu=53 au pixel
   (100,100).</p>
 <pre>loadima 47toucan.jpg<br>buf1 setpix [list 100 100] 51 52 53<br>#</pre>
 <h3></h3>
