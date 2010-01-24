@@ -2,7 +2,7 @@
 # Fichier : acqzadko.tcl
 # Description : Outil d'acquisition
 # Auteurs : Francois Cochard et Myrtille Laas
-# Mise a jour $Id: acqzadko.tcl,v 1.16 2010-01-23 11:00:53 robertdelmas Exp $
+# Mise a jour $Id: acqzadko.tcl,v 1.17 2010-01-24 12:15:03 robertdelmas Exp $
 #
 
 #==============================================================
@@ -126,7 +126,6 @@ proc ::acqzadko::createPluginInstance { { in "" } { visuNo 1 } } {
    ::confVisu::addCameraListener $visuNo "::acqzadko::Adapt_Panneau_acqzadko $visuNo"
    #--- Surveillance de l'ajout ou de la suppression d'une extension
    trace add variable ::conf(list_extension) write "::acqzadko::initExtensionList $visuNo"
-
 }
 #***** Fin de la procedure createPluginInstance*****************
 
@@ -297,6 +296,9 @@ proc ::acqzadko::Arretacqzadko { visuNo } {
 #***** Procedure initExtensionList ********************************
 proc ::acqzadko::initExtensionList { visuNo { a "" } { b "" } { c "" } } {
    global conf panneau
+
+   #--- Mise a jour de l'extension par defaut
+   set panneau(acqzadko,$visuNo,extension) $conf(extension,defaut)
 
    #--- Mise a jour de la liste des extensions disponibles pour le mode "Une seule image"
    $panneau(acqzadko,$visuNo,This).mode.une.nom.extension.menu delete 0 20
