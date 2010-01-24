@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.54 2010-01-17 18:30:55 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.55 2010-01-24 11:34:37 robertdelmas Exp $
 #
 
 #============================================================
@@ -134,6 +134,9 @@ proc ::scan::createPluginInstance { { in "" } { visuNo 1 } } {
 
    #--- Mise en place de l'interface graphique
    createPanel $in.scan
+
+   #--- Surveillance de l'extension par defaut
+   trace add variable ::conf(extension,defaut) write ::scan::initExtension
 }
 
 #------------------------------------------------------------
@@ -146,7 +149,8 @@ proc ::scan::createPluginInstance { { in "" } { visuNo 1 } } {
 #    Rien
 #------------------------------------------------------------
 proc ::scan::deletePluginInstance { visuNo } {
-
+   #--- Je desactive la surveillance de l'extension par defaut
+   trace remove variable ::conf(extension,defaut) write ::scan::initExtension
 }
 
 #------------------------------------------------------------
@@ -218,7 +222,7 @@ proc ::scan::createPanel { this } {
 }
 
 #------------------------------------------------------------
-# chargementVar
+# chargerVar
 #    Chargement des variables locales
 #
 # Parametres :
@@ -226,7 +230,7 @@ proc ::scan::createPanel { this } {
 # Return :
 #    Rien
 #------------------------------------------------------------
-proc ::scan::chargementVar { } {
+proc ::scan::chargerVar { } {
    variable parametres
    global audace
 
@@ -263,7 +267,7 @@ proc ::scan::chargementVar { } {
 }
 
 #------------------------------------------------------------
-# enregistrementVar
+# enregistrerVar
 #    Sauvegarde des variables locales
 #
 # Parametres :
@@ -271,7 +275,7 @@ proc ::scan::chargementVar { } {
 # Return :
 #    Rien
 #------------------------------------------------------------
-proc ::scan::enregistrementVar { } {
+proc ::scan::enregistrerVar { } {
    variable parametres
    global audace panneau
 
@@ -298,6 +302,22 @@ proc ::scan::enregistrementVar { } {
          close $fichier
       }
    }
+}
+
+#------------------------------------------------------------
+# initExtension
+#    Met a jour l'affichage de l'extension par defaut
+#
+# Parametres :
+#    Tous optionnels et indispensables
+# Return :
+#    Rien
+#------------------------------------------------------------
+proc ::scan::initExtension { { a "" } { b "" } { c "" } } {
+   global conf panneau
+
+   #--- Mise a jour de l'extension par defaut
+   set panneau(scan,extension_image) $conf(extension,defaut)
 }
 
 #------------------------------------------------------------
@@ -435,7 +455,7 @@ proc ::scan::startTool { visuNo } {
    if { ! [ info exists ::conf(scan,keywordConfigName) ] } { set ::conf(scan,keywordConfigName) "default" }
 
    #--- Chargement de la configuration
-   chargementVar
+   chargerVar
 
    #--- Initialisation des variables de l'outil
    set panneau(scan,col1)     "$parametres(scan,col1)"
@@ -495,7 +515,7 @@ proc ::scan::stopTool { visuNo } {
    }
 
    #--- Sauvegarde de la configuration
-   enregistrementVar
+   enregistrerVar
 
    #--- Les mots cles RA et DEC sont a nouveau modifiables
    ::keyword::setKeywordState $visuNo $::conf(scan,keywordConfigName) [ list ]
@@ -991,10 +1011,10 @@ proc ::scan::testEntier { valeur } {
 #    Rien
 #------------------------------------------------------------
 proc ::scan::sauveUneImage { } {
-   global audace panneau
+   global audace conf panneau
 
    #--- Enregistrer l'extension des fichiers
-   set ext [ buf[ ::confVisu::getBufNo 1 ] extension ]
+   set ext $conf(extension,defaut)
 
    #--- Tests d'integrite de la requete
 
