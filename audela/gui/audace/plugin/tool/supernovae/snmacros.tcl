@@ -2,7 +2,7 @@
 # Fichier : snmacros.tcl
 # Description : Macros des scripts pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snmacros.tcl,v 1.15 2010-01-08 17:26:19 robertdelmas Exp $
+# Mise a jour $Id: snmacros.tcl,v 1.16 2010-01-24 11:36:33 robertdelmas Exp $
 #
 
 proc searchGalaxySn { files } {
@@ -341,7 +341,7 @@ proc snInfo { {result ""} } {
 
 # ==========================================================================================
 proc makeBias { } {
-   global audace caption sn snconf
+   global audace caption conf sn snconf
 
    set sn(stop) "0"
 
@@ -395,7 +395,7 @@ proc makeBias { } {
       #--- Ménage
       delete2 d$expt- $nbdarks
       #--- Calcule les stats sur l'offset médian (stockées dans l'entête)
-      set extname "[buf$audace(bufNo) extension]"
+      set extname $conf(extension,defaut)
       ttscript2 "IMA/STAT \"$snconf(dossier)\" \"d${expt}b${bin}\" . . \"$extname\" \"$snconf(dossier)\" \"d${expt}b${bin}\" . \"$extname\" STAT"
       loadima d${expt}b${bin}
       #--- Commentaire
@@ -437,7 +437,7 @@ proc makeBias { } {
 
 # ==========================================================================================
 proc makeDark { } {
-   global audace caption sn snconf
+   global audace caption conf sn snconf
 
    set sn(stop) "0"
 
@@ -491,7 +491,7 @@ proc makeDark { } {
       #--- Ménage
       delete2 d$expt- $nbdarks
       #--- Calcule les stats sur le noir médian (stockées dans l'entête)
-      set extname "[buf$audace(bufNo) extension]"
+      set extname $conf(extension,defaut)
       ttscript2 "IMA/STAT \"$snconf(dossier)\" \"d${expt}b${bin}\" . . \"$extname\" \"$snconf(dossier)\" \"d${expt}b${bin}\" . \"$extname\" STAT"
       loadima d${expt}b${bin}
       #--- Commentaire

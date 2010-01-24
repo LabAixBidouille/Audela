@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.33 2010-01-17 18:33:25 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.34 2010-01-24 11:40:02 robertdelmas Exp $
 #
 
 # =========================================================
@@ -597,7 +597,7 @@ namespace eval ::acqfen {
 
       if { [::cam::list] != "" } {
          #--- Enregistrement de l'extension des fichiers
-         set ext [ buf$audace(bufNo) extension ]
+         set ext $conf(extension,defaut)
          #---
          switch -exact -- $panneau(acqfen,go_stop) {
             "go" {
@@ -1562,10 +1562,10 @@ namespace eval ::acqfen {
    #--- Procedure lancee par appui sur le bouton "enregistrer", uniquement dans le
    #--- mode "Une image".
    proc sauveUneImage { } {
-      global audace caption panneau
+      global audace caption conf panneau
 
       #--- Enregistrement de l'extension des fichiers
-      set ext [ buf$audace(bufNo) extension ]
+      set ext $conf(extension,defaut)
 
       #--- Verifier qu'il y a bien un nom de fichier
       if {$panneau(acqfen,nom_image) == ""} {
