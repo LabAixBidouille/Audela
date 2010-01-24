@@ -5,7 +5,7 @@
 #               pose, choix des outils, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.63 2010-01-20 22:38:28 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.64 2010-01-24 12:20:47 robertdelmas Exp $
 #
 
 #
@@ -1283,48 +1283,42 @@ namespace eval ::confFichierIma {
    #
    proc appliquer { } {
       variable This
-      global audace conf confgene
+      global audace confgene
 
-      #---
-      catch {
-         buf1000 extension "$confgene(extension,new)"
-         buf1001 extension "$confgene(extension,new)"
-         buf1002 extension "$confgene(extension,new)"
-         buf1003 extension "$confgene(extension,new)"
-      }
-      #---
-      buf$audace(bufNo) extension "$confgene(extension,new)"
-      if { $confgene(fichier,compres) == "0" } {
-         buf$audace(bufNo) compress "none"
-      } else {
-         buf$audace(bufNo) compress "gzip"
-      }
-      $This.labURL2 configure -text "$confgene(extension,new)"
-      $This.labURL5 configure -text "$confgene(jpegquality,new)"
-      #---
-      set listExtensionFile ""
-      if { ( [ buf$audace(bufNo) extension ] != ".fit" ) && ( [ buf$audace(bufNo) extension ] != ".fts" ) &&
-         ( [ buf$audace(bufNo) extension ] != ".fits" ) } {
-         set listExtensionFile "[ buf$audace(bufNo) extension ] [ buf$audace(bufNo) extension ].gz"
-      }
-      set listExtensionFile "$listExtensionFile .fit .fit.gz .fts .fts.gz .fits .fits.gz .jpeg .jpg .crw .cr2 .nef .dng"
-      set confgene(fichier,list_extension) $listExtensionFile
-      #---
-      widgetToConf
-      #--- Mise a jour de l'extension des fichiers image pour toutes les visu disponibles
-      foreach visuNo [ ::visu::list ] {
-         ::confFichierIma::MajExtension
-      }
-      #--- Mise a jour du format des fichiers image pour tous les buffers disponibles
+      #--- Mises a jour pour tous les buffers disponibles
       foreach visuNo [ ::visu::list ] {
          set bufNo [ visu$visuNo buf ]
-         #--- Format entier ou flottant
-         if { $conf(format_fichier_image) == "0" } {
+         #--- Extension par defaut associee au buffer
+         buf$bufNo extension $confgene(extension,new)
+         #--- Fichiers FITS compresses ou non
+         if { $confgene(fichier,compres) == "0" } {
+            buf$bufNo compress "none"
+         } else {
+            buf$bufNo compress "gzip"
+         }
+         #--- Format des fichiers image (entier ou flottant)
+         if { $confgene(fichier,format) == "0" } {
             buf$bufNo bitpix ushort
          } else {
             buf$bufNo bitpix float
          }
       }
+
+      #--- Mise a jour des widgets
+      $This.labURL2 configure -text "$confgene(extension,new)"
+      $This.labURL5 configure -text "$confgene(jpegquality,new)"
+
+      #--- Mise a jour de la liste des extensions
+      set listExtensionFile ""
+      if { ( $confgene(extension,new) != ".fit" ) && ( $confgene(extension,new) != ".fts" ) &&
+         ( $confgene(extension,new) != ".fits" ) } {
+         set listExtensionFile "$confgene(extension,new) $confgene(extension,new).gz"
+      }
+      set listExtensionFile "$listExtensionFile .fit .fit.gz .fts .fts.gz .fits .fits.gz .jpg .jpeg .crw .cr2 .nef .dng"
+      set confgene(fichier,list_extension) $listExtensionFile
+
+      #--- Sauvegarde de la configuration
+      widgetToConf
    }
 
    #
@@ -1356,7 +1350,6 @@ namespace eval ::confFichierIma {
       global conf
 
       #--- Initialisation indispensable de 3 variables dans aud.tcl (::audace::Recup_Config)
-      if { ! [ info exists conf(cicatriser_changer_garder) ] } { set conf(cicatriser_changer_garder) "0" }
       if { ! [ info exists conf(save_seuils_visu) ] }          { set conf(save_seuils_visu)          "1" }
       if { ! [ info exists conf(format_fichier_image) ] }      { set conf(format_fichier_image)      "0" }
       if { ! [ info exists conf(extension,defaut) ] }          { set conf(extension,defaut)          ".fit" }
@@ -1373,7 +1366,6 @@ namespace eval ::confFichierIma {
       global audace caption color conf confgene
 
       #--- confToWidget
-      set confgene(fichier,cicatriser_changer_garder) $conf(cicatriser_changer_garder)
       set confgene(fichier,save_seuils_visu)          $conf(save_seuils_visu)
       set confgene(fichier,format)                    $conf(format_fichier_image)
       set confgene(extension,new)                     $conf(extension,new)
@@ -1473,7 +1465,9 @@ namespace eval ::confFichierIma {
       label $This.lab3 -text "$caption(confgene,fichier_image_new_ext)"
       pack $This.lab3 -in $This.frame10 -anchor center -side left -padx 10 -pady 5
 
-      entry $This.newext -textvariable confgene(extension,new) -width 5 -justify center
+      entry $This.newext -textvariable confgene(extension,new) -width 5 -justify center \
+         -validate all -validatecommand { ::confFichierIma::extensionProhibited %W %V %P %s extension } \
+         -invcmd bell
       pack $This.newext -in $This.frame10 -anchor center -side right -padx 10 -pady 5
 
       #--- Ouvre le choix aux fichiers compresses
@@ -1536,7 +1530,6 @@ namespace eval ::confFichierIma {
    proc widgetToConf { } {
       global conf confgene
 
-      set conf(cicatriser_changer_garder) $confgene(fichier,cicatriser_changer_garder)
       set conf(save_seuils_visu)          $confgene(fichier,save_seuils_visu)
       set conf(format_fichier_image)      $confgene(fichier,format)
       set conf(extension,defaut)          $confgene(extension,new)
@@ -1547,33 +1540,47 @@ namespace eval ::confFichierIma {
       set conf(list_extension)            $confgene(fichier,list_extension)
    }
 
-   proc MajExtension { } {
-      variable This
-      global conf confgene panneau
-
-      #---
-      if { ( $conf(extension,new) == ".jpg" )  || ( $conf(extension,new) == ".jpeg" ) \
-         || ( $conf(extension,new) == ".crw" ) || ( $conf(extension,new) == ".CRW" ) \
-         || ( $conf(extension,new) == ".cr2" ) || ( $conf(extension,new) == ".CR2" ) \
-         || ( $conf(extension,new) == ".nef" ) || ( $conf(extension,new) == ".NEF" ) \
-         || ( $conf(extension,new) == ".dng" ) || ( $conf(extension,new) == ".DNG" ) } {
-         set confgene(fichier,compres) "0"
-         $This.compress configure -variable confgene(fichier,compres)
-         set conf(fichier,compres) $confgene(fichier,compres)
-      }
-
-      #--- Mise a jour de l'extension des fichiers image pour toutes les visu disponibles
-      foreach visuNo [ ::visu::list ] {
-         if { $conf(fichier,compres) == "1" } {
-            set panneau(acqfc,$visuNo,extension)  $conf(extension,new).gz
-            set panneau(scan,extension_image)     $conf(extension,new).gz
-            set panneau(scanfast,extension_image) $conf(extension,new).gz
+   #
+   # confFichierIma::extensionProhibited
+   # Controle la saisie au clavier de la nouvelle extension FITS
+   #
+   proc extensionProhibited { win event newValue oldValue class { errorVariable "" } } {
+      set result 0
+      if { $event == "key" || $event == "focusout" || $event == "forced" } {
+         set ctrl [ string range $newValue 0 0 ]
+         if { $ctrl == "." } {
+            set result 1
+            if {  ( $newValue == ".crw" ) || ( $newValue == ".CRW" ) \
+               || ( $newValue == ".cr2" ) || ( $newValue == ".CR2" ) \
+               || ( $newValue == ".nef" ) || ( $newValue == ".NEF" ) \
+               || ( $newValue == ".dng" ) || ( $newValue == ".DNG" ) \
+               || ( $newValue == ".jpg" ) || ( $newValue == ".jpeg" ) \
+               || ( $newValue == ".bmp" ) || ( $newValue == ".gif" ) \
+               || ( $newValue == ".tif" ) || ( $newValue == ".tiff" ) \
+               || ( $newValue == ".png" ) || ( $newValue == ".ps" ) \
+               || ( $newValue == ".pdf" ) || ( $newValue == ".txt" ) \
+               || ( $newValue == ".htm" ) || ( $newValue == ".html" ) \
+               || ( $newValue == ".tcl" ) || ( $newValue == ".cap" ) \
+               || ( $newValue == ".jar" ) } {
+               set result 0
+            } else {
+               set result 1
+            }
          } else {
-            set panneau(acqfc,$visuNo,extension)  $conf(extension,new)
-            set panneau(scan,extension_image)     $conf(extension,new)
-            set panneau(scanfast,extension_image) $conf(extension,new)
+            set result 0
          }
+         if { $result == 1 } {
+            #--- j'affiche normalement
+            $win configure -bg $::audace(color,entryBackColor) -fg $::audace(color,entryTextColor)
+         } else {
+            #--- j'affiche en inverse video
+            $win configure -bg $::color(lightred) -fg $::color(red)
+         }
+      } else {
+         #--- je ne traite pas l'evenement
+         set result 1
       }
+      return $result
    }
 }
 
