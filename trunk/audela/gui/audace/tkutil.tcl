@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise a jour $Id: tkutil.tcl,v 1.28 2010-01-24 14:00:14 michelpujol Exp $
+# Mise a jour $Id: tkutil.tcl,v 1.29 2010-01-24 14:22:22 robertdelmas Exp $
 #
 
 namespace eval tkutil:: {
@@ -406,8 +406,8 @@ proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxVa
 #            - boolean   : booleen ( 0, 1, false, true, no, yes , off , on)
 #            - fits      : caracteres autorises dans un mot cle FITS
 #            - wordchar  : caracteres alphabetiques ou numeriques ou underscore
-#            - wordchar1 : caracteres de wordchar avec "-", sans "\" et "ï¿½"
-#            - wordchar2 : caracteres de wordchar avec "-" et ".", sans "\" et "ï¿½"
+#            - wordchar1 : caracteres de wordchar avec "-", sans "\" et "µ"
+#            - wordchar2 : caracteres de wordchar avec "-" et ".", sans "\" et "µ"
 #            - xdigit    : caracteres hexadecimaux
 # @param  minLength      : longueur minimale de la chaine
 # @param  maxLength      : longueur maximale de la chaine
@@ -445,7 +445,7 @@ proc ::tkutil::validateString { win event newValue oldValue class minLength maxL
             #--- je refuse le caractere antislash
             set classCheck 0
          } else {
-            set charIndex [string first "ï¿½" $newValue]
+            set charIndex [string first "µ" $newValue]
             if { $charIndex != -1} {
                #--- je refuse le caractere machin
                set classCheck 0
@@ -470,7 +470,7 @@ proc ::tkutil::validateString { win event newValue oldValue class minLength maxL
             #--- je refuse le caractere antislash
             set classCheck 0
          } else {
-            set charIndex [string first "ï¿½" $newValue]
+            set charIndex [string first "µ" $newValue]
             if { $charIndex != -1} {
                #--- je refuse le caractere machin
                set classCheck 0
