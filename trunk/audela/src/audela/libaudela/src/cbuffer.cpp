@@ -3816,6 +3816,7 @@ int CBuffer::A_filtrGauss (TYPE_PIXELS fwhm, int radius, TYPE_PIXELS threshin,
    double dsig2 = 2*sig*sig;
    double dpisig2 = 3.14159265358979*dsig2; //=2*pi*sig^2
    double summ = 0.0;
+   int nbStar = 0; 
 
    /* Creation of matrix with Gauss/normal distribution values */
    for (y=0; y<gmsize; y++)
@@ -3906,6 +3907,7 @@ int CBuffer::A_filtrGauss (TYPE_PIXELS fwhm, int radius, TYPE_PIXELS threshin,
       if(fout != NULL) {
          fclose(fout);
       }
+      nbStar = i;
    }
 
    if ( fileFormat == 2 ) {
@@ -4016,9 +4018,10 @@ int CBuffer::A_filtrGauss (TYPE_PIXELS fwhm, int radius, TYPE_PIXELS threshin,
          }
       }
 
-
       try {
-         CFile::saveFitsTable(filename, this->keywords, nbRow2, nbCol, columnTypes, columnUnits,  columnTitle, columnData);
+         if ( nbRow2 > 0 ) {
+            CFile::saveFitsTable(filename, this->keywords, nbRow2, nbCol, columnTypes, columnUnits,  columnTitle, columnData);
+         }
       } catch (const CError& e) {
          for (col=0 ; col < nbCol; col++ ) {
             free(columnData[col]);
@@ -4032,10 +4035,11 @@ int CBuffer::A_filtrGauss (TYPE_PIXELS fwhm, int radius, TYPE_PIXELS threshin,
       }
 
       Libtt_main(TT_PTR_FREETBL,2,&columnUnits,&columnTitle);
+      nbStar = nbRow2;
    }
 
 
-   return i-1;  //number of stars
+   return nbStar;  //number of stars
 }
 
 
