@@ -2,7 +2,7 @@
 # Fichier : ros.tcl
 # Description : Function to launch Robotic Observatory Software installation
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: ros.tcl,v 1.13 2009-03-13 22:17:37 alainklotz Exp $
+# Mise a jour $Id: ros.tcl,v 1.14 2010-01-24 10:49:45 alainklotz Exp $
 #
 
 proc ros { args } {
@@ -505,8 +505,8 @@ proc ros { args } {
 			set ros(rosmodpoi,modpoi,coefs,symbs)     {IA                      IE                     NPAE                       CA                               AN                        AW                        ACEC                    ECEC                               ACES                     ECES NRX NRY ACEC2 ACES2 ACEC3 ACES3 AN2 AW2 AN3 AW3 ACEC4 ACES4 AN4 AW4 ACEC5 ACES5 AN5 AW5 ACEC6 ACES6 AN6 AW6}
 			set ros(rosmodpoi,modpoi,coefs,intitules) {"Décalage du codeur A" "Décalage du codeur E" "Non perpendicularité A/E" "Non perpendicularité A/optique" "Décalage N-S de l'axe A" "Décalage E-W de l'axe A" "Décentrement A en cos" "Décentrement E en cos (flexion)"  "Décentrement A en sin"  "Décentrement E en sin" "Déplacement vertical du Nasmyth" "Déplacement vertical du Nasmyth" "Décentrement 2A en cos" "Décentrement 2A en sin" "Décentrement 3A en cos" "Décentrement 3A en sin" "décalage N-S de l'axe 2A" "Décalage E-W de l'axe 2A" "décalage N-S de l'axe 3A" "Décalage E-W de l'axe 3A" "Décentrement 4A en cos" "Décentrement 4A en sin" "décalage N-S de l'axe 4A" "Décalage E-W de l'axe 4A" "Décentrement 5A en cos" "Décentrement 5A en sin" "décalage N-S de l'axe 5A" "Décalage E-W de l'axe 5A" "Décentrement 6A en cos" "Décentrement 6A en sin" "décalage N-S de l'axe 6A" "Décalage E-W de l'axe 6A"}
 		} else {
-			set ros(rosmodpoi,modpoi,coefs,symbs)     {IH                      ID                     NP                         CH                               ME                              MA                              TF                          FO                    DAF                 HF                        TX                          DNP                              FARHC         FARHS         FARDC         FARDS         FARHC2         FARHS2         FARHC3         FARHS3         FARDC2         FARDS2         IHDEG               IHATAN         FARHCATAN           FARHSATAN}
-			set ros(rosmodpoi,modpoi,coefs,intitules) {"Décalage du codeur H" "Décalage du codeur D" "Non perpendicularité H/D" "Non perpendicularité D/optique" "Décalage N-S de l'axe polaire" "Décalage E-W de l'axe polaire" "Flexion de tube en sin(z)" "Flexion de fourche"  "Flexion de l'axe D" "Flexion du fer a cheval" "Flexion de tube en tan(z)" "Non perpendicularite dynamique" "FARO H cosh" "FARO H sinh" "FARO D cosh" "FARO D sinh" "FARO H cos2h" "FARO H sin2h" "FARO H cos3h" "FARO H sin3h" "FARO D cos2h" "FARO D sin2h" "FARO H drift/Hdeg" "FARO IH*atan" "FARO cos(ha)*atan" "FARO sin(ha)*atan"}
+			set ros(rosmodpoi,modpoi,coefs,symbs)     {IH                      ID                     NP                         CH                               ME                              MA                              TF                          FO                    DAF                 HF                        TX                          DNP                              FARHC         FARHS         FARDC         FARDS         FARHC2         FARHS2         FARHC3         FARHS3         FARDC2         FARDS2         IHDEG               IHATAN         FARHCATAN           FARHSATAN           X1HS                    X1HC}
+			set ros(rosmodpoi,modpoi,coefs,intitules) {"Décalage du codeur H" "Décalage du codeur D" "Non perpendicularité H/D" "Non perpendicularité D/optique" "Décalage N-S de l'axe polaire" "Décalage E-W de l'axe polaire" "Flexion de tube en sin(z)" "Flexion de fourche"  "Flexion de l'axe D" "Flexion du fer a cheval" "Flexion de tube en tan(z)" "Non perpendicularite dynamique" "FARO H cosh" "FARO H sinh" "FARO D cosh" "FARO D sinh" "FARO H cos2h" "FARO H sin2h" "FARO H cos3h" "FARO H sin3h" "FARO D cos2h" "FARO D sin2h" "FARO H drift/Hdeg" "FARO IH*atan" "FARO cos(ha)*atan" "FARO sin(ha)*atan" "effet sin(H) sur E-W" "effet cos(H) sur E-W"}
 		}
 		set ros(rosmodpoi,pi) [expr 4.*atan(1)]
 		set argus [lrange $args 2 end]
@@ -1953,6 +1953,8 @@ proc rosmodpoi_modpoi_addobs { vecY matX vecW dazim delev azim elev} {
 		   if {$sym=="FARHCATAN"} { set coefha [expr 0.9+(1-0.9)*atan(3*($decdeg-30.)*$ros(rosmodpoi,pi)/180.)/($ros(rosmodpoi,pi)/2.)] ; lappend res [expr $cosh*$coefha] }
 		   if {$sym=="FARHSATAN"} { set coefha [expr 0.9+(1-0.9)*atan(3*($decdeg-30.)*$ros(rosmodpoi,pi)/180.)/($ros(rosmodpoi,pi)/2.)] ; lappend res [expr $sinh*$coefha] }
 		   if {$sym=="IHATAN"} { set coefih [expr (1.-1.*atan(3*($decdeg-10.)*$ros(rosmodpoi,pi)/180.)/($ros(rosmodpoi,pi)/2.))] ; lappend res [expr $coefih] }
+		   if {$sym=="X1HC"} { lappend res [expr $cosh/$cosd] }
+		   if {$sym=="X1HS"} { lappend res [expr $sinh/$cosd] }
 	   }
 	   #
 	   lappend matX $res
@@ -1987,6 +1989,8 @@ proc rosmodpoi_modpoi_addobs { vecY matX vecW dazim delev azim elev} {
 		   if {$sym=="FARHCATAN"} { lappend res 0 }
 		   if {$sym=="FARHSATAN"} { lappend res 0 }
 		   if {$sym=="IHATAN"} { lappend res 0 }
+		   if {$sym=="X1HC"} { lappend res 0 }
+		   if {$sym=="X1HS"} { lappend res 0 }
 	   }
    }
    lappend matX $res

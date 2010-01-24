@@ -253,9 +253,11 @@ double mc_modpoi_addobs_ha(double ha,double dec,double latrad,int nb_coef,mc_mod
 		if (strcmp(vecy[k].type,"D2HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 		if (strcmp(vecy[k].type,"D3HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 		if (strcmp(vecy[k].type,"D4HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+		if (strcmp(vecy[k].type,"X1HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sinh/cosd; }
 		if (strcmp(vecy[k].type,"X2HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin2h/cosd; }
 		if (strcmp(vecy[k].type,"X3HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin3h/cosd; }
 		if (strcmp(vecy[k].type,"X4HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin4h/cosd; }
+		if (strcmp(vecy[k].type,"X1HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosh/cosd; }
 		if (strcmp(vecy[k].type,"X2HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos2h/cosd; }
 		if (strcmp(vecy[k].type,"X3HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos3h/cosd; }
 		if (strcmp(vecy[k].type,"X4HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos4h/cosd; }
@@ -334,9 +336,11 @@ double mc_modpoi_addobs_dec(double ha,double dec,double latrad, int nb_coef,mc_m
 		if (strcmp(vecy[k].type,"D2HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos2d; }
 		if (strcmp(vecy[k].type,"D3HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos3d; }
 		if (strcmp(vecy[k].type,"D4HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos4d; }
+		if (strcmp(vecy[k].type,"X1HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 		if (strcmp(vecy[k].type,"X2HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 		if (strcmp(vecy[k].type,"X3HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 		if (strcmp(vecy[k].type,"X4HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+		if (strcmp(vecy[k].type,"X1HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 		if (strcmp(vecy[k].type,"X2HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 		if (strcmp(vecy[k].type,"X3HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 		if (strcmp(vecy[k].type,"X4HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
