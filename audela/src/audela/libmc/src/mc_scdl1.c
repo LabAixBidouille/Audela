@@ -2550,7 +2550,7 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 	mc_OBJECTLOCALRANGES *objectlocalranges=NULL;
 	double *luminance_ciel_bleus=NULL;
 	double jd_loc,ha_loc,elev_loc,az_loc,dec_loc,moon_dist_loc,sun_dist_loc,brillance_totale_loc,ra_loc;
-	double latitude,altitude,latrad;
+	double latitude,altitude,latrad,j1,j2,jdseq_prev0,jdseq_next0,dd0,durationtot;
 	
 	// --- compute dates of observing range (=the start-end of the schedule)
 	mc_scheduler_windowdates1(jd_now,longmpc,rhocosphip,rhosinphip,&jd_prevmidsun,&jd_nextmidsun);
@@ -2631,7 +2631,7 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 			}
 		}
 		if (compute_mode==1) {
-			if (objectlocalranges->nbrange==0) {
+			if (objectlocalranges[ko].nbrange==0) {
 				// -- l'astre nest jamais observable dans le mer2mer
 				continue;
 			}
@@ -2655,16 +2655,16 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 			}
 		}
 		if (compute_mode==1) {
-			for (kr=0;kr<objectlocalranges->nbrange;kr++) {
-				if (objectlocalranges->jd1[kr]<jdobsmin) {
-					jdobsmin=objectlocalranges->jd1[kr];
+			for (kr=0;kr<objectlocalranges[ko].nbrange;kr++) {
+				if (objectlocalranges[ko].jd1[kr]<jdobsmin) {
+					jdobsmin=objectlocalranges[ko].jd1[kr];
 				}
-				if (objectlocalranges->jd2[kr]>jdobsmax) {
-					jdobsmax=objectlocalranges->jd2[kr];
+				if (objectlocalranges[ko].jd2[kr]>jdobsmax) {
+					jdobsmax=objectlocalranges[ko].jd2[kr];
 				}
-				if (objectlocalranges->elevmax[kr]>objectdescr[ko].private_elevmaxi) {
-					objectdescr[ko].private_elevmaxi=objectlocalranges->elevmax[kr];
-					objectdescr[ko].private_jdelevmaxi=objectlocalranges->jdelevmax[kr];
+				if (objectlocalranges[ko].elevmax[kr]>objectdescr[ko].private_elevmaxi) {
+					objectdescr[ko].private_elevmaxi=objectlocalranges[ko].elevmax[kr];
+					objectdescr[ko].private_jdelevmaxi=objectlocalranges[ko].jdelevmax[kr];
 				}
 			}
 		}
@@ -2864,7 +2864,14 @@ try_a_gap:
 				}
 			} else if (objectdescr[kd].const_startexposures==2) {
 				// --- on observe au milieu du creneau d'observation en explorant de part et d'autre
-				k1=(int)(((objectdescr[kd].const_jd1+objectdescr[kd].const_jd2)/2-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd);
+				if ((objectdescr[kd].const_jd1<jd_prevmidsun)||(objectdescr[kd].const_jd2>jd_nextmidsun)) {
+					j1=jd_prevmidsun;
+					j2=jd_nextmidsun;
+				} else {
+					j1=objectdescr[kd].const_jd1;
+					j2=objectdescr[kd].const_jd2;
+				}
+				k1=(int)(((j1+j2)/2-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd);
 				if (k1>=njd) { k1=njd-1; }
 				k3=njd-k1;
 				if (k3>k1) { k2=k3; } else { k2=k1; }
@@ -2886,6 +2893,9 @@ try_a_gap:
 						}
 					}
 				}
+				if ((jd00<j1)||(jd00>j2)) {
+					// --- trou trouve en dohors des limites d'observations
+				}
 			}
 			if (k==-1) {
 				// --- There is no gap large enough to insert the current sequence.
@@ -2901,7 +2911,7 @@ try_a_gap:
 			kk1=(int)floor((jd00-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd);
 			// --- jd0(debut_slew) jd1(debut_acq) jd2(fin_acq)
 			// --- recherche la sequence deja planifiee precedente
-			if (npl>9) {
+			if (npl>=116) {
 				npl+=0;
 			}
 			for (k=0,k3=-1;k<npl;k++) {
@@ -2939,14 +2949,14 @@ try_a_gap:
 				k1=0;
 			}
 			// --- decalage pour tenir compte du temps de pointage avec la sequence precedente
-			jdseq_prev=jd_prevmidsun;
+			jdseq_prev0=jdseq_prev=jd_prevmidsun;
 			jd0=jd00-d12/86400.;
 			if (k3>=0) {
-				jdseq_prev=planis[0][k3].jd_acq_end;
+				jdseq_prev0=jdseq_prev=planis[0][k3].jd_acq_end;
 				// -- on traite le cas où l'on colle deja a la sequence precedente
-				dd=jd0-planis[0][k3].jd_acq_end;
+				dd=jd0-jdseq_prev;
 				if (dd<0) {
-					jd0=planis[0][k3].jd_acq_end;
+					jd0=jdseq_prev;
 					jd00=jd0+d12/86400;
 				}
 			}
@@ -2954,15 +2964,22 @@ try_a_gap:
 			jd2=jd00+duration/86400.;
 			kk2=(int)ceil((jd2-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd); if (kk2>njd) { kk2=njd-1; }
 			// --- recherche la sequence deja planifiee suivante
-			for (k=k1,k3=-1;k<npl;k++) {
-				if (planis[0][k].jd_acq_start>jd2) {
-					k3=k;
-					break;
+			if (k3>=0) {
+				k3++;
+				if (k3>=npl) {
+					k3=-1;
+				}
+			} else {
+				for (k=k1,k3=-1;k<npl;k++) {
+					if (planis[0][k].jd_acq_start>jd2) {
+						k3=k;
+						break;
+					}
 				}
 			}
 			// --- calcule d12b, le temps de raliement de la sequence choisie et du debut de la sequence suivante
 			d12b=0;
-			jdseq_next=jd_nextmidsun;
+			jdseq_next0=jdseq_next=jd_nextmidsun;
 			if (k3>=0) {
 				ha1=planis[0][k3].ha_acq_start; if (ha1>180) { ha1-=360; }
 				dec1=planis[0][k3].dec_acq_start;
@@ -2983,18 +3000,36 @@ try_a_gap:
 				// -- dd est la correction sur jd_slew_start_with_slew de la sequence suivante deja programmee
 				dd=(planis[0][k3].jd_slew_start_without_slew-planis[0][k3].jd_slew_start_with_slew)-d12b/86400.;
 				jdseq_next=planis[0][k3].jd_slew_start_with_slew+dd;
+				jdseq_next0=planis[0][k3].jd_slew_start_without_slew;
 			}
 			// --- on compare la duree de la sequence avec la largeur du gap dans lequel l'inserer en tenant compte des temps de pointage
-			duration=(d12+duration)/86400.;
-			if (duration>(jdseq_next-jdseq_prev)) {
+			durationtot=jd2-jd0;
+			if (durationtot>(jdseq_next-jdseq_prev)) {
 				// --- The gap is not large enough to insert the current sequence.
-				kk1=(int)floor((jdseq_prev-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd); if (kk1<0) { kk1=0; }
-				kk2=(int)ceil((jdseq_next-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd); if (kk2>=njd) { kk2=njd-1; }
+				kk1=(int)floor((jdseq_prev0-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd); if (kk1<0) { kk1=0; }
+				kk2=(int)ceil((jdseq_next0-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd); if (kk2>=njd) { kk2=njd-1; }
 				// --- we fill the gap with zeros to avoid to retry the same gap the next time
 				for (kjd=kk1;kjd<=kk2;kjd++) {
 					objectlocal0[kjd].flagobs=0;
 				}
 				goto try_a_gap; // try another gap
+			} 
+			if (jd2>jdseq_next) {
+				// --- The gap must be shifted to be just aside the beginning of the next sequence
+				dd0=jd2-jdseq_next;
+				jd2-=dd0;
+				jd00-=dd0;
+				jd0-=dd0;
+				if (jd0<jdseq_prev) {
+					// --- The gap is definitively to small
+					kk1=(int)floor((jdseq_prev0-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd); if (kk1<0) { kk1=0; }
+					kk2=(int)ceil((jdseq_next0-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd); if (kk2>=njd) { kk2=njd-1; }
+					// --- we fill the gap with zeros to avoid to retry the same gap the next time
+					for (kjd=kk1;kjd<=kk2;kjd++) {
+						objectlocal0[kjd].flagobs=0;
+					}
+					goto try_a_gap; // try another gap
+				}
 			}
 			// --- the insertion implies to change the pointing duration of the next sequence ever planified
 			if (k3>=0) {
@@ -3022,14 +3057,20 @@ try_a_gap:
 			// --- a noter que planis[0][*] est la plani officielle et planis[1][*] est un swap utilise lors de l'insertion de la sequence
 			free(planis[1]);
 			planis[1]=(mc_PLANI*)malloc((npl+1)*sizeof(mc_PLANI));
+			// --- on commence par copier les sequences planifiées precedentes.
 			k=k1=0;
 			for (k=k1;k<npl;k++) {
 				if (planis[0][k].jd_acq_end<=jd0) {
 					planis[1][k]=planis[0][k];
 				} else {
+					if (planis[1][k1].jd_slew_start_with_slew<planis[1][k].jd_acq_end) {
+						// --- probleme dans le calcul
+						k+=0;
+					}
 					break;
 				}
 			}
+			// --- insertion de la sequence
 			k1=k;
 			total_duration_sequenced+=(jd2-jd0);
 			users[ku].duration_total_used+=(jd2-jd0);
@@ -3073,11 +3114,17 @@ try_a_gap:
 				planis[1][k1].ha_acq_end=ha_loc;
 				planis[1][k1].dec_acq_end=dec_loc;
 			}
+			// --- on termine en copiant les sequences planifiées suivantes.
 			for (k=k1+1;k<=npl;k++) {
 				planis[1][k]=planis[0][k-1];
+				if (planis[1][k1].jd_acq_end>planis[1][k].jd_slew_start_with_slew) {
+					// --- probleme dans le calcul
+					k+=0;
+				}
 			}
 			free(planis[0]);
 			planis[0]=(mc_PLANI*)malloc((npl+1)*sizeof(mc_PLANI));
+			// --- on met a jour la planification.
 			for (k=0;k<=npl;k++) {
 				planis[0][k]=planis[1][k];
 			}
@@ -3096,6 +3143,10 @@ try_a_gap:
 				}
 			}
 			npl0=npl;
+			dt=(double)(clock()-clock0)/(double)clk_tck;
+			if (dt>300) {
+				break;
+			}
 		}
 	}
 	dt=(double)(clock()-clock0)/(double)clk_tck;
