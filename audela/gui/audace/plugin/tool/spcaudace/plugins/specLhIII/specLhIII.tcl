@@ -2,7 +2,7 @@
 # Fichier : specLhIII.tcl
 # Description : Reduction complete des spectres Lhires III
 # Auteur : François COCHARD
-# Mise a jour $Id: specLhIII.tcl,v 1.2 2008-12-20 10:54:38 robertdelmas Exp $
+# Mise a jour $Id: specLhIII.tcl,v 1.3 2010-01-24 11:20:51 robertdelmas Exp $
 #
 
 #==============================================================
@@ -339,7 +339,7 @@ namespace eval ::spbmfc {
       set integre(precharge) oui
 
       # Enregistrement de l'extension des fichiers
-      set ext [buf$audace(bufNo) extension]
+      set ext $::conf(extension,defaut)
 
       # Je commence par regarder si la correction cosmétique est demandée...
       if {$data_spbmfc(cosmPrech) == 1} {
@@ -419,7 +419,7 @@ namespace eval ::spbmfc {
       Message consolog $caption(specLhIII,debPrech)
 
       # Enregistrement de l'extension des fichiers
-      set ext [buf$audace(bufNo) extension]
+      set ext $::conf(extension,defaut)
 
       if {$data_spbmfc(cosmPrech) == 1} {
          # Dans le cas où la correction cosmétique est demandée
@@ -505,7 +505,7 @@ namespace eval ::spbmfc {
       set integre(noir) oui
 
       # Enregistrement de l'extension des fichiers
-      set ext [buf$audace(bufNo) extension]
+      set ext $::conf(extension,defaut)
 
       # Je commence par regarder si la correction cosmétique est demandée...
       if {$data_spbmfc(cosmNoir) == 1} {
@@ -646,7 +646,7 @@ namespace eval ::spbmfc {
       set integre(noir_PLU) oui
 
       # Enregistrement de l'extension des fichiers
-      set ext [buf$audace(bufNo) extension]
+      set ext $::conf(extension,defaut)
 
       # Je commence par regarder si la correction cosmétique est demandée...
       if {$data_spbmfc(cosmNrPLU) == 1} {
@@ -786,7 +786,7 @@ namespace eval ::spbmfc {
       set integre(PLU) oui
 
       # Enregistrement de l'extension des fichiers
-      set ext [buf$audace(bufNo) extension]
+      set ext $::conf(extension,defaut)
 
       # Je commence par regarder si la correction cosmétique est demandée...
       if {$data_spbmfc(cosmPLU) == 1} {
@@ -937,7 +937,7 @@ namespace eval ::spbmfc {
       update idletasks
 
       # Enregistrement de l'extension des fichiers
-      set ext [buf$audace(bufNo) extension]
+      set ext $::conf(extension,defaut)
 
       desactiveBoutons
 
@@ -1174,7 +1174,7 @@ namespace eval ::spbmfc {
       set integre(brut) oui
 
       # Enregistrement de l'extension des fichiers
-      set ext [buf$audace(bufNo) extension]
+      set ext $::conf(extension,defaut)
 
       # Je commence par regarder si la correction cosmétique est demandée...
       if {$data_spbmfc(cosmBrut) == 1} {
@@ -1324,7 +1324,7 @@ namespace eval ::spbmfc {
       global audace caption data_spbmfc integre
 
       # Enregistrement de l'extension des fichiers
-      set ext [buf$audace(bufNo) extension]
+      set ext $::conf(extension,defaut)
 
       # Le cas échéant, je lance les opération préliminéires
       if {$data_spbmfc(PLU_a_faire_br) == "oui"} {

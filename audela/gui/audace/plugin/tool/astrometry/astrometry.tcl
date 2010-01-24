@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: astrometry.tcl,v 1.4 2010-01-02 18:18:36 robertdelmas Exp $
+# Mise a jour $Id: astrometry.tcl,v 1.5 2010-01-24 11:18:11 robertdelmas Exp $
 #
 
 #============================================================
@@ -536,7 +536,7 @@ namespace eval ::astrometry {
 
    proc start { { sextractor no } { silent no } } {
       variable astrom
-      global audace caption color
+      global audace caption color conf
 
       #--- Search empty header keywords
       if { [ ::astrometry::wcsempty ] == "1" } {
@@ -636,7 +636,7 @@ namespace eval ::astrometry {
       }
       $astrom(This).status.lab configure -text "$caption(astrometry,start,0)"
       update
-      set ext [buf$audace(bufNo) extension]
+      set ext $conf(extension,defaut)
       #--- Remplacement de "$audace(rep_images)" par "." dans "mypath" - Cela permet a
       #--- Sextractor de ne pas etre sensible aux noms de repertoire contenant des
       #--- espaces et ayant une longueur superieure a 70 caracteres
@@ -1168,7 +1168,7 @@ namespace eval ::astrometry {
    }
 
    proc delete_dummy { } {
-      global audace
+      global audace conf
 
       #--- Remplacement de "$audace(rep_images)" par "." dans "mypath" - Cela permet a
       #--- Sextractor de ne pas etre sensible aux noms de repertoire contenant des
@@ -1177,7 +1177,7 @@ namespace eval ::astrometry {
       set sky "dummy"
 
       #--- Suppression des images temporaires
-      set ext [ buf$audace(bufNo) extension ]
+      set ext $conf(extension,defaut)
       if { [ file exists [ file join $mypath ${sky}a.jpg ] ] } {
          file delete [ file join $mypath ${sky}a.jpg ]
       }

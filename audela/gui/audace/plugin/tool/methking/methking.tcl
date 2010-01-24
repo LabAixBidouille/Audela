@@ -2,7 +2,7 @@
 # Fichier : methking.tcl
 # Description : Outil d'aide a la mise en station par la methode de King
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: methking.tcl,v 1.26 2009-11-17 16:59:08 robertdelmas Exp $
+# Mise a jour $Id: methking.tcl,v 1.27 2010-01-24 11:23:24 robertdelmas Exp $
 #
 
 #============================================================
@@ -381,7 +381,7 @@ namespace eval ::methking {
    set nb_images [expr $nb_im_par_seq * 2]
    set nb_etoiles $panneau(methking,nbboites)
    buf$audace(bufNo) extension "$conf(extension,defaut)"
-   set ext_fichier [buf$audace(bufNo) extension]
+   set ext_fichier "$conf(extension,defaut)"
 
    if {$nb_etoiles == 0} {
       tk_messageBox -message $caption(methking,pas_selectionne) \
@@ -861,7 +861,7 @@ namespace eval ::methking {
       set nb_im_par_seq $panneau(methking,nb_im_par_seq)
       set nb_images [expr $nb_im_par_seq * 2]
       buf$audace(bufNo) extension "$conf(extension,defaut)"
-      set ext_fichier [buf$audace(bufNo) extension]
+      set ext_fichier "$conf(extension,defaut)"
 
       # Etape 1: Recalage de toutes les images
       Message consolog "%s\n" $caption(methking,recalage)
@@ -1395,7 +1395,7 @@ namespace eval ::methking {
       buf$audace(bufNo) extension "$conf(extension,defaut)"
       for {set image 1} {$image <= [expr $king_config(poseparseq,$config_active) * 2]} {incr image} {
          set nom_fichier $nom$image
-         append nom_fichier [buf$audace(bufNo) extension]
+         append nom_fichier "$conf(extension,defaut)"
          if {[buf$audace(bufNo) compress] == "gzip"} {
             append nom_fichier ".gz"
          }

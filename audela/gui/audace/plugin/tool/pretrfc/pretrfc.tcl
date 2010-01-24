@@ -2,7 +2,7 @@
 # Fichier : pretrfc.tcl
 # Description : Outil pour le pretraitement automatique
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: pretrfc.tcl,v 1.22 2009-02-07 11:02:06 robertdelmas Exp $
+# Mise a jour $Id: pretrfc.tcl,v 1.23 2010-01-24 11:22:03 robertdelmas Exp $
 #
 
 #============================================================
@@ -398,7 +398,7 @@ proc getPluginHelp { } {
       set integre(precharge) oui
 
       #--- Enregistrement de l'extension des fichiers
-      set ext [buf$audace(bufNo) extension]
+      set ext $::conf(extension,defaut)
 
       #--- Je commence par regarder si la correction cosmetique est demandee...
       if {$conf_pt_fc(cosmPrech) == 1} {
@@ -478,7 +478,7 @@ proc getPluginHelp { } {
       Message consolog $caption(pretrfc,debPrech)
 
       #--- Enregistrement de l'extension des fichiers
-      set ext [buf$audace(bufNo) extension]
+      set ext $::conf(extension,defaut)
 
       if {$conf_pt_fc(cosmPrech) == 1} {
          #--- Dans le cas ou la correction cosmetique est demandee
@@ -564,7 +564,7 @@ proc getPluginHelp { } {
       set integre(noir) oui
 
       #--- Enregistrement de l'extension des fichiers
-      set ext [buf$audace(bufNo) extension]
+      set ext $::conf(extension,defaut)
 
       #--- Je commence par regarder si la correction cosmetique est demandee...
       if {$conf_pt_fc(cosmNoir) == 1} {
@@ -705,7 +705,7 @@ proc getPluginHelp { } {
       set integre(noir_PLU) oui
 
       #--- Enregistrement de l'extension des fichiers
-      set ext [buf$audace(bufNo) extension]
+      set ext $::conf(extension,defaut)
 
       #--- Je commence par regarder si la correction cosmetique est demandee...
       if {$conf_pt_fc(cosmNrPLU) == 1} {
@@ -845,7 +845,7 @@ proc getPluginHelp { } {
       set integre(PLU) oui
 
       #--- Enregistrement de l'extension des fichiers
-      set ext [buf$audace(bufNo) extension]
+      set ext $::conf(extension,defaut)
 
       #--- Je commence par regarder si la correction cosmetique est demandee...
       if {$conf_pt_fc(cosmPLU) == 1} {
@@ -996,7 +996,7 @@ proc getPluginHelp { } {
       update idletasks
 
       #--- Enregistrement de l'extension des fichiers
-      set ext [buf$audace(bufNo) extension]
+      set ext $::conf(extension,defaut)
 
       desactiveBoutons
 
@@ -1233,7 +1233,7 @@ proc getPluginHelp { } {
       set integre(brut) oui
 
       #--- Enregistrement de l'extension des fichiers
-      set ext [buf$audace(bufNo) extension]
+      set ext $::conf(extension,defaut)
 
       #--- Je commence par regarder si la correction cosmetique est demandee...
       if {$conf_pt_fc(cosmBrut) == 1} {
@@ -1383,7 +1383,7 @@ proc getPluginHelp { } {
       global audace caption conf_pt_fc
 
       #--- Enregistrement de l'extension des fichiers
-      set ext [buf$audace(bufNo) extension]
+      set ext $::conf(extension,defaut)
 
       #--- Le cas echeant, je lance les operation prelimineires
       if {$conf_pt_fc(PLU_a_faire_br) == "oui"} {
