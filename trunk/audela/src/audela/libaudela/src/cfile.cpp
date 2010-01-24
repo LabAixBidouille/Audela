@@ -116,7 +116,7 @@ CFileFormat CFile::getFormatFromHeader(char * fileName)
    // identify file format
    if ( strncmp(line, FitsHeader , 6 ) == 0 ) {
       fileFormat = CFILE_FITS;
-   } else if ( strncmp(line, GzipHeader , sizeof GzipHeader ) == 0) {
+   } else if ( strncmp(line, GzipHeader , 3 ) == 0) {
       // fichier fits comresse
       fileFormat = CFILE_FITS;
    } else if ( strncmp(line, JpgHeader , 2 ) == 0 ) {
