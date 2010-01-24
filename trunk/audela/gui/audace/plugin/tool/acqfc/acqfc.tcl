@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.98 2010-01-23 11:00:29 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.99 2010-01-24 12:14:27 robertdelmas Exp $
 #
 
 #==============================================================
@@ -119,7 +119,6 @@ proc ::acqfc::createPluginInstance { { in "" } { visuNo 1 } } {
    ::confVisu::addCameraListener $visuNo "::acqfc::Adapt_Panneau_AcqFC $visuNo"
    #--- Surveillance de l'ajout ou de la suppression d'une extension
    trace add variable ::conf(list_extension) write "::acqfc::initExtensionList $visuNo"
-
 }
 #***** Fin de la procedure createPluginInstance*****************
 
@@ -280,6 +279,9 @@ proc ::acqfc::ArretAcqFC { visuNo } {
 #***** Procedure initExtensionList *****************************
 proc ::acqfc::initExtensionList { visuNo { a "" } { b "" } { c "" } } {
    global conf panneau
+
+   #--- Mise a jour de l'extension par defaut
+   set panneau(acqfc,$visuNo,extension) $conf(extension,defaut)
 
    #--- Mise a jour de la liste des extensions disponibles pour le mode "Une seule image"
    $panneau(acqfc,$visuNo,This).mode.une.nom.extension.menu delete 0 20
