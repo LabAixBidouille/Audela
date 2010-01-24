@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise a jour $Id: tkutil.tcl,v 1.27 2010-01-24 12:00:33 robertdelmas Exp $
+# Mise a jour $Id: tkutil.tcl,v 1.28 2010-01-24 14:00:14 michelpujol Exp $
 #
 
 namespace eval tkutil:: {
@@ -311,7 +311,7 @@ proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxVa
    variable widget
 
    set result 0
-   if { $event == "key" || $event == "focusout" || $event == "forced" } {
+   if { $event == "key" || $event == "focusout"  } {
       #--- cas des nombres negatifs
       if { $minValue < 0 } {
          if { $newValue == "-" } {
@@ -321,28 +321,17 @@ proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxVa
       }
       #--- je verifie la classe
       set classCheck [expr [string is $class -failindex charIndex $newValue] ]
-      if {! $classCheck} {
+      if { $classCheck == 0 } {
          set fullCheck $classCheck
          if { $errorVariable != "" } {
             set $errorVariable [format $::caption(tkutil,badCharacter) "\"$newValue\"" "\"[string range $newValue $charIndex $charIndex]\"" ]
          }
-         set result $classCheck
+         set result 0
       } else {
-         #--- je verifie l'ordre des bornes de l'intervalle
-         if {$minValue > $maxValue} {
-            set tmp $minValue; set minValue $maxValue; set maxValue $tmp
-         }
          #--- je verifie la plage
-         if { $errorVariable != "" } {
-            if { $newValue < $minValue } {
-               set $errorVariable [format $::caption(tkutil,numberTooSmall) $newValue $minValue ]
-            } elseif { $newValue > $maxValue } {
-               set $errorVariable [format $::caption(tkutil,numberTooGreat) $newValue $maxValue ]
-            } else {
-               if { [info exists $errorVariable] } {
-                  unset $errorVariable
-               }
-            }
+         if {$minValue > $maxValue} {
+            #--- je verifie l'ordre des bornes de l'intervalle
+            set tmp $minValue; set minValue $maxValue; set maxValue $tmp
          }
          if { $newValue == "" } {
             set textVariable [$win cget -textvariable]
@@ -352,21 +341,37 @@ proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxVa
                set $textVariable $newValue
             }
          }
-         set fullCheck [expr {$classCheck && ($newValue >= $minValue) && ($newValue <= $maxValue)}]
-         set result $fullCheck
+         if { $newValue < $minValue } {
+            if { $errorVariable != "" } {
+               set $errorVariable [format $::caption(tkutil,numberTooSmall) $newValue $minValue ]
+            }
+            set result 0
+         } elseif { $newValue > $maxValue } {
+            if { $errorVariable != "" } {
+               set $errorVariable [format $::caption(tkutil,numberTooGreat) $newValue $maxValue ]
+            }
+            set result 0
+         } else {
+            if { $errorVariable != "" } {
+               if { [info exists $errorVariable] } {
+                  unset $errorVariable
+               }
+            }
+            set result 1
+         }
       }
       if { $result == 0 } {
          #--- j'affiche en inverse video
-         $win configure -bg $::color(lightred) -fg $::color(red)
+         ####$win configure -bg $::color(lightred) -fg $::audace(color,entryTextColor)
+         bell
       } else {
          #--- j'affiche normalement
-         $win configure -bg $::audace(color,entryBackColor) -fg $::audace(color,entryTextColor)
+         ####$win configure -bg $::audace(color,entryBackColor) -fg $::audace(color,entryTextColor)
       }
    } else {
       #--- je ne traite pas l'evenement
       set result 1
    }
-  ### console::disp "win=$win event=$event newValue=$newValue oldValue=$oldValue result=$result\n"
    return $result
 }
 
@@ -401,8 +406,8 @@ proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxVa
 #            - boolean   : booleen ( 0, 1, false, true, no, yes , off , on)
 #            - fits      : caracteres autorises dans un mot cle FITS
 #            - wordchar  : caracteres alphabetiques ou numeriques ou underscore
-#            - wordchar1 : caracteres de wordchar avec "-", sans "\" et "µ"
-#            - wordchar2 : caracteres de wordchar avec "-" et ".", sans "\" et "µ"
+#            - wordchar1 : caracteres de wordchar avec "-", sans "\" et "ï¿½"
+#            - wordchar2 : caracteres de wordchar avec "-" et ".", sans "\" et "ï¿½"
 #            - xdigit    : caracteres hexadecimaux
 # @param  minLength      : longueur minimale de la chaine
 # @param  maxLength      : longueur maximale de la chaine
@@ -417,7 +422,8 @@ proc ::tkutil::validateString { win event newValue oldValue class minLength maxL
    variable widget
 
    set result 0
-   if { $event == "key" || $event == "focusout" || $event == "forced" } {
+   set charIndex -1
+   if { $event == "key" || $event == "focusout" } {
       #--- je verifie la classe
       if { $class == "fits" } {
          set classCheck [expr [string is ascii -failindex charIndex $newValue] ]
@@ -434,57 +440,67 @@ proc ::tkutil::validateString { win event newValue oldValue class minLength maxL
             set classCheck 1
          }
       } elseif { $class == "wordchar1" } {
-         set ctrl [ string trimleft $newValue $oldValue ]
-         if { $ctrl == "-" } {
-            set result 1
-            return $result
-         }
-         if { $ctrl == "\"" } {
-            set result 0
-            return $result
-         }
-         if { $ctrl == "µ" } {
-            set result 0
-            return $result
+         set charIndex [string first "\\" $newValue]
+         if { $charIndex != -1} {
+            #--- je refuse le caractere antislash
+            set classCheck 0
          } else {
-            set classCheck [expr [string is wordchar -failindex charIndex $ctrl] ]
+            set charIndex [string first "ï¿½" $newValue]
+            if { $charIndex != -1} {
+               #--- je refuse le caractere machin
+               set classCheck 0
+            } else {
+               set classCheck [expr [string is wordchar -failindex charIndex $newValue] ]
+               if { $classCheck == 0 } {
+                  #--- je recupere le caractere qui pose probleme
+                  set charValue [string index $newValue $charIndex]
+                  if { $charValue == "-" } {
+                     #--- j'autorise le caractere "-"
+                     set classCheck 1
+                  } else {
+                     #--- je refuse le caractere qui n'est pas de la classe wordchar
+                     set  classCheck 0
+                  }
+               }
+            }
          }
       } elseif { $class == "wordchar2" } {
-         set ctrl [ string trimleft $newValue $oldValue ]
-         if { $ctrl == "-" } {
-            set result 1
-            return $result
-         }
-         if { $ctrl == "." } {
-            set result 1
-            return $result
-         }
-         if { $ctrl == "\"" } {
-            set result 0
-            return $result
-         }
-         if { $ctrl == "µ" } {
-            set result 0
-            return $result
+         set charIndex [string first "\\" $newValue]
+         if { $charIndex != -1} {
+            #--- je refuse le caractere antislash
+            set classCheck 0
          } else {
-            set classCheck [expr [string is wordchar -failindex charIndex $ctrl] ]
+            set charIndex [string first "ï¿½" $newValue]
+            if { $charIndex != -1} {
+               #--- je refuse le caractere machin
+               set classCheck 0
+            } else {
+               set classCheck [expr [string is wordchar -failindex charIndex $newValue] ]
+               if { $classCheck == 0 } {
+                  #--- je recupere le caractere qui pose probleme
+                  set charValue [string index $newValue $charIndex]
+                  if { $charValue == "-" || $charValue == "."  } {
+                     #--- j'autorise le caractere "-" et "."
+                     set classCheck 1
+                  } else {
+                     #--- je refuse le caractere qui n'est pas de la classe wordchar
+                     set  classCheck 0
+                  }
+               }
+            }
          }
-      } else {
-         set classCheck [expr [string is $class -failindex charIndex $newValue] ]
       }
-      if {! $classCheck} {
-         if { $charIndex != "" } {
+      if { $classCheck == 0} {
+         if { $charIndex != -1 && $errorVariable != ""  } {
             set $errorVariable [format $::caption(tkutil,badCharacter) "\"$newValue\"" "\"[string range $newValue $charIndex $charIndex]\"" ]
-            set result $classCheck
-         } else {
-            set result 0
          }
+         set result 0
      } else {
-         #--- je verifie l'ordre des bornes de longueur
+         #--- je verifie la longueur de la chaine
          if {$minLength > $maxLength} {
+            #--- je verifie l'ordre des bornes de longueur
             set tmp $minLength; set minLength $maxLength; set maxLength $tmp
          }
-         #--- je verifie la longueur de la chaine
          set xLength [string length $newValue]
          if { $xLength < $minLength } {
             if { $errorVariable != "" } {
@@ -505,18 +521,19 @@ proc ::tkutil::validateString { win event newValue oldValue class minLength maxL
             set result 1
          }
       }
+      #--- je change de couleur si la longueur est incorrecte
       if { $result == 0 } {
          #--- j'affiche en inverse video
-         $win configure -bg $::color(lightred) -fg $::color(red)
+         ###$win configure -bg $::color(lightred) -fg $::audace(color,entryTextColor)
+         bell
       } else {
          #--- j'affiche normalement
-         $win configure -bg $::audace(color,entryBackColor) -fg $::audace(color,entryTextColor)
+         ###$win configure -bg $::audace(color,entryBackColor) -fg $::audace(color,entryTextColor)
       }
    } else {
       #--- je ne traite pas l'evenement
       set result 1
    }
-  ### console::disp "win=$win event=$event newValue=$newValue oldValue=$oldValue result=$result\n"
    return $result
 }
 
