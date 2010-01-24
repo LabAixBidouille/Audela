@@ -3,7 +3,7 @@
 # Description : procedures d'acqusitition et de traitement avec
 #         plusieurs cameras simultan�es exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise a jour $Id: camerathread.tcl,v 1.18 2009-12-29 16:32:54 michelpujol Exp $
+# Mise a jour $Id: camerathread.tcl,v 1.19 2010-01-24 17:16:38 michelpujol Exp $
 #
 
 namespace eval ::camerathread {
@@ -321,59 +321,52 @@ proc ::camerathread::processAcquisitionLoop { } {
       set istar ""
       set cstar ""
       set astar ""
+      set pixelMinCount 50
       #--- je calcule l'ecart dx,dy entre la cible et l'origine
       if { ($private(mode) == "guide" || $private(mode) == "center")  } {
          if { $private(detection) == "PSF" } {
-            #--- je calcule les coordonnees de la cible autour de l'etoile
-            set x  [lindex $private(targetCoord) 0]
-            set y  [lindex $private(targetCoord) 1]
-            set x1 [expr int($x) - $private(targetBoxSize)]
-            set x2 [expr int($x) + $private(targetBoxSize)]
-            set y1 [expr int($y) - $private(targetBoxSize)]
-            set y2 [expr int($y) + $private(targetBoxSize)]
-            ###set centro [buf$bufNo centro "[list $x1 $y1 $x2 $y2]"]
-            ###set private(targetCoord) [lrange $centro 0 1]
-            ###set centro [buf$bufNo fitgauss "[list $x1 $y1 $x2 $y2]"]
             set starDetectionMode 1
-            set pixelMinCount 50
-            set centro [buf$bufNo slitcentro "[list $x1 $y1 $x2 $y2]" $starDetectionMode $pixelMinCount $private(slitWidth) $private(slitRatio)]
-            set starStatus [lindex $centro 0]
-            set starX      [lindex $centro 1]
-            set starY      [lindex $centro 2]
-            set maxIntensity  [lindex $centro 3]
-            set message       [lindex $centro 4]
-            if { $starStatus == "DETECTED" } {
-               set private(targetCoord) [list $starX $starY ]
-            }
-###::camerathread::disp  "PSF= y1=$y1 y2=$y2 starStatus=$starStatus result=$centro\n"
+             #--- je calcule les coordonnees de la cible autour de l'etoile
+             set x  [lindex $private(targetCoord) 0]
+             set y  [lindex $private(targetCoord) 1]
+             set x1 [expr int($x) - $private(targetBoxSize)]
+             set x2 [expr int($x) + $private(targetBoxSize)]
+             set y1 [expr int($y) - $private(targetBoxSize)]
+             set y2 [expr int($y) + $private(targetBoxSize)]
+             set centro [buf$bufNo slitcentro "[list $x1 $y1 $x2 $y2]" $starDetectionMode $pixelMinCount $private(slitWidth) $private(slitRatio)]
+             set starStatus [lindex $centro 0]
+             set starX      [lindex $centro 1]
+             set starY      [lindex $centro 2]
+             set maxIntensity  [lindex $centro 3]
+             set message       [lindex $centro 4]
+             if { $starStatus == "DETECTED" } {
+                set private(targetCoord) [list $starX $starY ]
+             }
          } elseif { $private(detection)=="SLIT" } {
             #--- SLIT : je cherche l'etoile dans la zone cible proche de la fente
             if { $private(dynamicDectection) == "SLIT" } {
-                #--- l'etoile �tait proche de la fente dans l'image pr�c�dente
-                set x  [lindex $private(targetCoord) 0]
-                set y  [lindex $private(targetCoord) 1]
-                set x1 [expr int($x) - $private(targetBoxSize)]
-                set x2 [expr int($x) + $private(targetBoxSize)]
-                set y1 [expr int($y) - $private(targetBoxSize)]
-                set y2 [expr int($y) + $private(targetBoxSize)]
-                set centro [buf$bufNo slitcentro "[list $x1 $y1 $x2 $y2]" $private(slitWidth) $private(slitRatio) ]
-                set private(targetCoord) [lrange $centro 0 1]
-###::camerathread::disp  "SLIT= y1=$y1 y2=$y2 $centro \n"
+                #--- l'etoile était proche de la fente dans l'image précédente
+                set starDetectionMode 2
             } else {
-                #--- l'etoile �tait loin de la fente dans l'image pr�c�dente
-                set x  [lindex $private(targetCoord) 0]
-                set y  [lindex $private(targetCoord) 1]
-                set x1 [expr int($x) - $private(targetBoxSize)]
-                set x2 [expr int($x) + $private(targetBoxSize)]
-                set y1 [expr int($y) - $private(targetBoxSize)]
-                set y2 [expr int($y) + $private(targetBoxSize)]
-                ##set centro [buf$bufNo centro "[list $x1 $y1 $x2 $y2]" ]
-                ##set private(targetCoord) [lrange $centro 0 1]
-                set centro [buf$bufNo fitgauss "[list $x1 $y1 $x2 $y2]"]
-                set private(targetCoord) [list [lindex $centro 1] [lindex $centro 5]]
-                ##::camerathread::disp  "PSF=$centro \n"
-###::camerathread::disp  "PSF-SLIT= y1=$y1 y2=$y2 $centro \n"
+                #--- l'etoile était loin de la fente dans l'image précédente
+                set starDetectionMode 1
             }
+             #--- je calcule les coordonnees de la cible autour de l'etoile
+             set x  [lindex $private(targetCoord) 0]
+             set y  [lindex $private(targetCoord) 1]
+             set x1 [expr int($x) - $private(targetBoxSize)]
+             set x2 [expr int($x) + $private(targetBoxSize)]
+             set y1 [expr int($y) - $private(targetBoxSize)]
+             set y2 [expr int($y) + $private(targetBoxSize)]
+             set centro [buf$bufNo slitcentro "[list $x1 $y1 $x2 $y2]" $starDetectionMode $pixelMinCount $private(slitWidth) $private(slitRatio)]
+             set starStatus [lindex $centro 0]
+             set starX      [lindex $centro 1]
+             set starY      [lindex $centro 2]
+             set maxIntensity  [lindex $centro 3]
+             set message       [lindex $centro 4]
+             if { $starStatus == "DETECTED" } {
+                set private(targetCoord) [list $starX $starY ]
+             }
          } elseif { $private(detection) == "STAT" || $private(detection)=="BOGUMIL" } {
             set tempPath "."
             set fileName "dummy"
