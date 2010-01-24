@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.41 2010-01-24 12:12:03 robertdelmas Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.42 2010-01-24 14:03:45 robertdelmas Exp $
 #
 
 #--- Conventions pour ce script :
@@ -1757,12 +1757,13 @@ proc saveImagesJpeg { { invew 0 } { invns 0 } } {
    set filename [lindex $rep(x1) $rep(xx1)]
    set shortname [file rootname [file tail $filename]]
    set rep(gif_dss) "[string tolower $shortname].gif"
+
    #---
    set rep1 "$rep(1)"
    set filename "$rep1"
-
    set extname $conf(extension,defaut)
    append filename "/i$extname"
+
    #--- buffer 1
    set result [buf$num(buffer1) save "$filename"]
    set jpgname $rep(1)
@@ -1784,6 +1785,7 @@ proc saveImagesJpeg { { invew 0 } { invns 0 } } {
       ttscript2 "IMA/SERIES \"$rep1\" \"i\" . . \"$extname\" \"$rep1\" \"i\" . \"$extname\" INVERT flip "
    }
    ttscript2 "IMA/SERIES \"$rep1\" \"i\" . . \"$extname\" \"$rep1\" \"i\" . \"$extname\" COPY \"jpegfile=$jpgname\""
+   ttscript2 "IMA/SERIES \"$rep1\" \"i\" . . \"$extname\" \"$rep1\" \"i\" . \"$extname\" DELETE"
 
    #--- buffer 2
    set result [buf$num(buffer2) save $filename]
@@ -1808,42 +1810,15 @@ proc saveImagesJpeg { { invew 0 } { invns 0 } } {
    ttscript2 "IMA/SERIES \"$rep1\" \"i\" . . \"$extname\" \"$rep1\" \"i\" . \"$extname\" COPY \"jpegfile=$jpgname\""
    ttscript2 "IMA/SERIES \"$rep1\" \"i\" . . \"$extname\" \"$rep1\" \"i\" . \"$extname\" DELETE"
 
-   #--- buffer DSS
    #--- conversion FIT en JPG de l'image DSS si elle existe dans rep(3)
    set repDSS $rep(3)
    set filenameDSS $repDSS
    append filenameDSS /${shortname}$extname
-
    set rep(jpg_dss) ""
-
    if { [file exists $filenameDSS] } {
       set rep(jpg_dss) "$shortname-DSS\.jpg"
-      set extJPG ".jpg"
-      #--- je converti l'image FIT en JPG
-     # ttscript2 "IMA/SERIES \"$repDSS\" \"$shortname\" . . \"$extname\" \"$rep1\" \"$shortname-DSS\" . \"$extname\" COPY \"jpegfile\""
-
-      set num(bufDSS) [::buf::create]
-      buf$num(bufDSS) extension $conf(extension,defaut)
-      if { $conf(fichier,compres) == "0" } {
-         buf$num(bufDSS) compress "none"
-      } else {
-         buf$num(bufDSS) compress "gzip"
-      }
-      if { $conf(format_fichier_image) == "0" } {
-         buf$num(bufDSS) bitpix ushort
-      } else {
-         buf$num(bufDSS) bitpix float
-      }
-
-      ::visu::create $num(bufDSS) 300
-      set result [buf$num(bufDSS) load $filenameDSS]
-      set hight [expr [lindex [buf$num(bufDSS) stat] 0] * 3]
-      set low   [lindex [buf$num(bufDSS) stat] 1]
-
-      if { [ file exist "$rep1/${shortname}\-DSS\.jpg" ] == "1" } {
-         set result [buf$num(bufDSS) sauve_jpeg "$rep1/${shortname}\-DSS\.jpg" 80 $low $hight]
-      }
-      ::buf::delete $num(bufDSS)
+      ttscript2 "IMA/SERIES \"$repDSS\" \"$shortname\" . . \"$extname\" \"$rep1\" \"$shortname-DSS\" . \"$extname\" COPY \"jpegfile\""
+      ttscript2 "IMA/SERIES \"$rep1\" \"$shortname-DSS\" . . \"$extname\" \"$rep1\" \"$shortname-DSS\" . \"$extname\" DELETE"
    }
 }
 
