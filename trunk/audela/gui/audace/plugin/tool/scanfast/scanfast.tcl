@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.54 2010-01-17 18:31:17 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.55 2010-01-24 11:35:08 robertdelmas Exp $
 #
 
 global panneau
@@ -217,6 +217,9 @@ proc ::scanfast::createPluginInstance { { in "" } { visuNo 1 } } {
 
    #--- Mise en place de l'interface graphique
    createPanel $in.scanfast
+
+   #--- Surveillance de l'extension par defaut
+   trace add variable ::conf(extension,defaut) write ::scanfast::initExtension
 }
 
 #------------------------------------------------------------
@@ -229,7 +232,8 @@ proc ::scanfast::createPluginInstance { { in "" } { visuNo 1 } } {
 #    Rien
 #------------------------------------------------------------
 proc ::scanfast::deletePluginInstance { visuNo } {
-
+   #--- Je desactive la surveillance de l'extension par defaut
+   trace remove variable ::conf(extension,defaut) write ::scanfast::initExtension
 }
 
 #------------------------------------------------------------
@@ -299,7 +303,7 @@ proc ::scanfast::createPanel { this } {
 }
 
 #------------------------------------------------------------
-# chargementVar
+# chargerVar
 #    Chargement des variables locales
 #
 # Parametres :
@@ -307,7 +311,7 @@ proc ::scanfast::createPanel { this } {
 # Return :
 #    Rien
 #------------------------------------------------------------
-proc ::scanfast::chargementVar { } {
+proc ::scanfast::chargerVar { } {
    variable parametres
    global audace
 
@@ -344,7 +348,7 @@ proc ::scanfast::chargementVar { } {
 }
 
 #------------------------------------------------------------
-# enregistrementVar
+# enregistrerVar
 #    Sauvegarde des variables locales
 #
 # Parametres :
@@ -352,7 +356,7 @@ proc ::scanfast::chargementVar { } {
 # Return :
 #    Rien
 #------------------------------------------------------------
-proc ::scanfast::enregistrementVar { } {
+proc ::scanfast::enregistrerVar { } {
    variable parametres
    global audace panneau
 
@@ -379,6 +383,22 @@ proc ::scanfast::enregistrementVar { } {
          close $fichier
       }
    }
+}
+
+#------------------------------------------------------------
+# initExtension
+#    Met a jour l'affichage de l'extension par defaut
+#
+# Parametres :
+#    Tous optionnels et indispensables
+# Return :
+#    Rien
+#------------------------------------------------------------
+proc ::scanfast::initExtension { { a "" } { b "" } { c "" } } {
+   global conf panneau
+
+   #--- Mise a jour de l'extension par defaut
+   set panneau(scanfast,extension_image) $conf(extension,defaut)
 }
 
 #------------------------------------------------------------
@@ -503,7 +523,7 @@ proc ::scanfast::startTool { visuNo } {
    if { ! [ info exists ::conf(scanfast,keywordConfigName) ] } { set ::conf(scanfast,keywordConfigName) "default" }
 
    #--- Chargement de la configuration
-   chargementVar
+   chargerVar
 
    #--- Initialisation des variables de l'outil
    set panneau(scanfast,col1)       "$parametres(scanfast,col1)"
@@ -556,7 +576,7 @@ proc ::scanfast::stopTool { visuNo } {
    }
 
    #--- Sauvegarde de la configuration
-   enregistrementVar
+   enregistrerVar
 
    #--- Les mots cles RA et DEC sont a nouveau modifiables
    ::keyword::setKeywordState $visuNo $::conf(scanfast,keywordConfigName) [ list ]
@@ -1117,10 +1137,10 @@ proc ::scanfast::testEntier { valeur } {
 #    Rien
 #------------------------------------------------------------
 proc ::scanfast::sauveUneImage { } {
-   global audace panneau
+   global audace conf panneau
 
    #--- Enregistrer l'extension des fichiers
-   set ext [ buf[ ::confVisu::getBufNo 1 ] extension ]
+   set ext $conf(extension,defaut)
 
    #--- Tests d'integrite de la requete
 
