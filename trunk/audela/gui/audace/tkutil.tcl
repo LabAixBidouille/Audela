@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise a jour $Id: tkutil.tcl,v 1.31 2010-01-24 15:19:54 michelpujol Exp $
+# Mise a jour $Id: tkutil.tcl,v 1.32 2010-01-24 15:28:16 michelpujol Exp $
 #
 
 namespace eval tkutil:: {
@@ -407,7 +407,7 @@ proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxVa
 #            - fits      : caracteres autorises dans un mot cle FITS
 #            - wordchar  : caracteres alphabetiques ou numeriques ou underscore
 #            - wordchar1 : caracteres de wordchar avec "-", sans "\" et "µ"
-#            - wordchar2 : caracteres de wordchar avec "-" et ".", sans "\" et ""µ"
+#            - wordchar2 : caracteres de wordchar avec "-" et ".", sans "\" et "µ"
 #            - xdigit    : caracteres hexadecimaux
 # @param  minLength      : longueur minimale de la chaine
 # @param  maxLength      : longueur maximale de la chaine
