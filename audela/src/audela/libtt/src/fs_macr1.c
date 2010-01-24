@@ -215,6 +215,7 @@ int macr_write(void *arg1,void *arg2,void *arg3,void *arg4,void *arg5,void *arg6
          if (ref_file==1) {free(cards);free(cards_data);}
          return(msg);
       }
+
       numhdu=0;
    } else {
       numhdu=*(int*)(arg2);
@@ -241,7 +242,7 @@ int macr_write(void *arg1,void *arg2,void *arg3,void *arg4,void *arg5,void *arg6
          }
       }
    }
-
+   
    /* --- creation de l'entete minimale d'une image ---*/
    if (typehdu==IMAGE_HDU) {
       naxis=*(int*)(arg7);
@@ -252,6 +253,11 @@ int macr_write(void *arg1,void *arg2,void *arg3,void *arg4,void *arg5,void *arg6
          libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
          return(msg);
       }
+      // suppression des deux mots cles COMMENT inutiles qui sont ajoutes systematiquement par fits_create_file()
+      // COMMENT  "FITS (Flexible Image Transport System) format is defined in 'Astronomy "
+      // COMMENT   "and Astrophysics', volume 376, page 3"   
+      libfiles_main(FS_FITS_DELETE_,3,"key",fptr,"COMMENT");
+      libfiles_main(FS_FITS_DELETE_,3,"key",fptr,"COMMENT");
    }
    /* --- creation de l'entete minimale d'une table ---*/
    else if ((typehdu==BINARY_TBL)||(typehdu==ASCII_TBL)) {
@@ -404,7 +410,7 @@ int macr_write(void *arg1,void *arg2,void *arg3,void *arg4,void *arg5,void *arg6
             if (exist_tunit==0) {free(tunit);free(tunit_data);}
             return(msg);
          }
-         }
+      }
       if (exist_tform==0) {free(tform);free(tform_data);}
       if (exist_ttype==0) {free(ttype);free(ttype_data);}
       if (exist_tunit==0) {free(tunit);free(tunit_data);}
@@ -412,20 +418,8 @@ int macr_write(void *arg1,void *arg2,void *arg3,void *arg4,void *arg5,void *arg6
       libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
       if (ref_file==1) {free(cards);free(cards_data);}
       return(FS_ERR_TYPEHDU_NOT_KNOWN);
-      }
-   
-   // suppression des deux mots cles COMMENT inutiles qui sont ajoutes systematiquement par fits_create_file()
-   // COMMENT  "FITS (Flexible Image Transport System) format is defined in 'Astronomy "
-   // COMMENT   "and Astrophysics', volume 376, page 3"
-   if ((msg=libfiles_main(FS_FITS_DELETE_,3,"key",fptr,"COMMENT"))!=0) {
-      libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-      return(msg);
    }
-   if ((msg=libfiles_main(FS_FITS_DELETE_,3,"key",fptr,"COMMENT"))!=0) {
-      libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
-      return(msg);    
-   }
-   
+      
    /* --- complete l'entete a partir du fichier de reference ---*/
    if (ref_file==1) {
       for (k=0;k<=nbcards-1;k++) {
