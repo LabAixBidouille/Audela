@@ -3,7 +3,7 @@
 # Description : Scripts pour un usage aise des fonctions d'Aud'ACE
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
 #
-# Mise a jour $Id: mauclaire.tcl,v 1.27 2009-07-01 16:01:19 bmauclaire Exp $
+# Mise a jour $Id: mauclaire.tcl,v 1.28 2010-01-24 09:43:59 robertdelmas Exp $
 #
 
 #
@@ -865,9 +865,9 @@ proc bm_correctprism { args } {
       foreach fichier $liste_fichiers2 {
          set fichier [ file rootname  $fichier ]
          #bifsconv $fichier
-         buf$audace(bufNo) load $audace(rep_images)/$fichier$conf(extension,defaut)
+         buf$audace(bufNo) load [ file join $audace(rep_images) $fichier$conf(extension,defaut) ]
          buf$audace(bufNo) setkwd { COMMENT 0 int "" "" }
-         buf$audace(bufNo) save $audace(rep_images)/$fichier$conf(extension,defaut)
+         buf$audace(bufNo) save [ file join $audace(rep_images) $fichier$conf(extension,defaut) ]
       }
 
       #--- Fin script
