@@ -2,7 +2,7 @@
 # Fichier : tri_fwmh.tcl
 # Description : Script pour le tri d'images par le critere de fwhm
 # Auteurs : Francois Cochard et Jacques Michelet
-# Mise a jour $Id: tri_fwhm.tcl,v 1.7 2008-06-01 14:00:36 robertdelmas Exp $
+# Mise a jour $Id: tri_fwhm.tcl,v 1.8 2010-01-24 11:19:29 robertdelmas Exp $
 #
 
 namespace eval ::TriFWHM {
@@ -61,7 +61,7 @@ namespace eval ::TriFWHM {
     #    - sinon, initialisation à une valeur standard                         #
     #--------------------------------------------------------------------------#
     proc RecuperationParametres {} {
-        global audace
+        global audace conf
         variable parametres
 
         # Initialisation
@@ -78,7 +78,7 @@ namespace eval ::TriFWHM {
         if {![info exists parametres(nombre)]} {set parametres(nombre) 20}
         if {![info exists parametres(indice_destination)]} {set parametres(indice_destination) 1}
         if {![info exists parametres(mode)]} {set parametres(mode) "automatique"}
-        if {![info exists parametres(extension)]} {set parametres(extension) [buf$audace(bufNo) extension]}
+        if {![info exists parametres(extension)]} {set parametres(extension) $conf(extension,defaut)}
     }
     #--Fin de RecuperationParametres-------------------------------------------#
 
@@ -714,7 +714,7 @@ namespace eval ::TriFWHM {
     #    - Effacement de l'image temporaire                                    #
     #--------------------------------------------------------------------------#
     proc CalculeFWHMAutomatique {} {
-        global audace
+        global audace conf
         variable parametres
         variable liste_fwhm
         variable fwhm_image
@@ -730,7 +730,7 @@ namespace eval ::TriFWHM {
 
         #  Calcul des FWHM de toutes les images (librairie LibTT)                  #
         Message console "%s\n" $cap_tri(calcul_principal)
-        set ext [buf$audace(bufNo) extension]
+        set ext $conf(extension,defaut)
         ttscript2 "IMA/SERIES $audace(rep_images) $nom $indice_source [expr $indice_source + $nombre_image -1] $ext $audace(rep_images) $nom_temp 1 $ext STAT fwhm"
 
         #  Pour toutes les images temporaires (créés par LibTT)                    #
