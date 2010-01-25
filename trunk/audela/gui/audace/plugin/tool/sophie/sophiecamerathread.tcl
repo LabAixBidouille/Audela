@@ -2,11 +2,11 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.23 2009-11-01 21:50:45 michelpujol Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.24 2010-01-25 21:49:17 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
-# @brief   procedure d'acquisition et de traitement exécutee dans le thread de la camera
+# @brief   procedure d'acquisition et de traitement exÃ©cutee dans le thread de la camera
 #
 #------------------------------------------------------------
 namespace eval ::camerathread {
@@ -92,10 +92,18 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          } else {
             #--- je simule la duree de l'acquisition
             after [expr int($private(exptime) * 1000.0)]
-            #--- je charge l'image à la place de celle de la camer
+            #--- je charge l'image Ã  la place de celle de la camer
             set extension [buf$bufNo extension]
             set fileName "$private(simulationGenericFileName)$private(simulationCounter)$extension"
             buf$bufNo load "$fileName"
+
+            #--- je simule le miroir
+            if { [cam$private(camNo) mirrorh] == 1 } {
+                buf$bufNo mirrorx
+            }
+            if { [cam$private(camNo) mirrorv] == 1 } {
+                buf$bufNo mirrory
+             }
 
             #--- je simule le fenetrage
             set windowing [cam$private(camNo) window]
@@ -139,7 +147,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
                set previousFiberX [lindex $private(fiberCoord) 0]
                set previousFiberY [lindex $private(fiberCoord) 1]
             } else {
-               #--- la fenetre correspond à toute l'image qui est centree sur la consigne
+               #--- la fenetre correspond Ã  toute l'image qui est centree sur la consigne
                set x1 1
                set y1 1
                set x2 [buf$bufNo getpixelswidth]
@@ -178,7 +186,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          # @param     Argv[2]= [list x1 y1 x2 y2 ] fenetre de detection de l'etoile
          # @param     Argv[3]=starDetectionMode    1=fit de gaussienne  2=barycentre
          # @param     Argv[4]=integratedImage      0=pas d'image integree, 1=image integree centree la fenetre, 2=image integree centree sur la consigne
-         # @param     Argv[5]=findFiber            1=recherche de l'entrée de fibre , 0= ne pas rechercher
+         # @param     Argv[5]=findFiber            1=recherche de l'entrÃ©e de fibre , 0= ne pas rechercher
          # @param     Argv[6]=maskBufNo            numero du buffer du masque
          # @param     Argv[7]=sumBufNo             numero du buffer de l'image integree
          # @param     Argv[8]=fiberBufNo           numero du buffer de l'image resultat
@@ -194,13 +202,13 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          #
          # @return si TCL_OK
          #            list[0] starStatus           resultat de la recherche de la fibre (DETECTED NO_SIGNAL)
-         #            list[1] starX                abcisse du centre de la fibre   (pixel binné)
-         #            list[2] starY                ordonnee du centre de la fibre  (pixel binné
+         #            list[1] starX                abcisse du centre de la fibre   (pixel binnÃ©)
+         #            list[2] starY                ordonnee du centre de la fibre  (pixel binnÃ©
          #            list[3] fiberStatus          resultat de la recherche de la fibre (DETECTED NO_SIGNAL)
-         #            list[4] fiberX               abcisse du centre de la fibre  (pixel binné)
-         #            list[5] fiberY               ordonnee du centre de la fibre (pixel binné)
-         #            list[6] measuredFwhmX        gaussienne mesuree (pixel binné)
-         #            list[7] measuredFwhmY        gaussienne mesuree (pixel binné)
+         #            list[4] fiberX               abcisse du centre de la fibre  (pixel binnÃ©)
+         #            list[5] fiberY               ordonnee du centre de la fibre (pixel binnÃ©)
+         #            list[6] measuredFwhmX        gaussienne mesuree (pixel binnÃ©)
+         #            list[7] measuredFwhmY        gaussienne mesuree (pixel binnÃ©)
          #            list[8] background           fond du ciel (ADU)
          #            list[9] maxIntensity         intensite max (ADU)
          #            list[10] message             message d'information
@@ -291,7 +299,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
                #--- je calcule le terme integrateur
                set private(xDiffCumul) [expr $private(xDiffCumul) + $dx * $interval]
                set private(yDiffCumul) [expr $private(yDiffCumul) + $dy * $interval]
-               #--- J’ecrete le terme integrateur s’il engendre un déplacement superieur au demi cote de la fenetre d’analyse
+               #--- Jâ€™ecrete le terme integrateur sâ€™il engendre un dÃ©placement superieur au demi cote de la fenetre dâ€™analyse
                if { [expr abs($private(xDiffCumul)) - $private(targetBoxSize) ] > 0} {
                   set private(xDiffCumul) 0
                }
@@ -318,7 +326,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
                   set deltaDerivativeTerm 0
                   set private(yPreviousDiff) $dy
                }
-               #--- je calcule la correction avec les termes proportionnels, integrateurs et dérivateurs
+               #--- je calcule la correction avec les termes proportionnels, integrateurs et dÃ©rivateurs
                set alphaCorrection [expr $alphaDiff * $private(alphaProportionalGain) + $alphaIntegralTerm * $private(alphaIntegralGain) + $alphaDerivativeTerm * $private(alphaDerivativeGain)]
                set deltaCorrection [expr $deltaDiff * $private(deltaProportionalGain) + $deltaIntegralTerm * $private(deltaIntegralGain) + $deltaDerivativeTerm * $private(deltaDerivativeGain)]
             } else {
@@ -335,7 +343,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
 
             #--- je verifie si le centrage est fini
             if { $private(mode)=="CENTER" } {
-               #--- j'ajoute les nouvelles valeurs à la fin de la liste
+               #--- j'ajoute les nouvelles valeurs Ã  la fin de la liste
                lappend private(centerDeltaList) [list $alphaCorrection $deltaCorrection ]
                #--- je supprime le premier element
                set private(centerDeltaList) [lrange $private(centerDeltaList) 1 end ]
@@ -350,10 +358,10 @@ proc ::camerathread::sophieAcquisitionLoop { } {
                set xmean [expr $xmean / [llength $private(centerDeltaList)]]
                set ymean [expr $ymean / [llength $private(centerDeltaList)]]
 
-               #--- je vérifie si la moyenne est inferieure au seuil
+               #--- je vÃ©rifie si la moyenne est inferieure au seuil
                if { $xmean < $private(centerMaxLimit)  && $ymean < $private(centerMaxLimit) } {
                   ::camerathread::notify "acquisitionResult" "CENTER" $private(targetCoord)
-                  ###::camerathread::disp  "camerathread: Le centrage est terminé ([format "%6.1f" $xmean]<$private(centerMaxLimit))  ([format "%6.1f" $ymean]<$private(centerMaxLimit) arsec) \n"
+                  ###::camerathread::disp  "camerathread: Le centrage est terminÃ© ([format "%6.1f" $xmean]<$private(centerMaxLimit))  ([format "%6.1f" $ymean]<$private(centerMaxLimit) arsec) \n"
                } else {
                   ###::camerathread::disp  "camerathread: Le centrage continue : ([format "%6.1f" $xmean]>$private(centerMaxLimit)) ([format "%6.1f" $ymean]>$private(centerMaxLimit) arsec) \n"
                }
@@ -441,18 +449,18 @@ proc ::camerathread::sophieAcquisitionLoop { } {
               } else {
                   set alphaDelay [expr abs($alphaCorrection) / $private(alphaSpeed)  ]
                   set deltaDelay [expr abs($deltaCorrection) / $private(deltaSpeed)  ]
-                  ###::camerathread::disp  "camerathread: telescope move [format "%s %.3fs" $alphaDirection $alphaDelay ]   [format "%s %.3fs" $deltaDirection $deltaDelay ]\n"
-                  #--- tel1 radec move n|s|e|w ?rate? ?delay (ms)?
-                 switch $private(mountMotionWhile) {
+                  switch $private(mountMotionWhile) {
                     1 {
                        #--- envoie d'une commande move avec la duree en seconde
                        tel1 radec move $alphaDirection 0.1 $alphaDelay
-                       tel1 radec move $deltaDirection 0.1 $deltaDelay                                                 
+                       tel1 radec move $deltaDirection 0.1 $deltaDelay
                     }
                     2 {
+                       ::camerathread::disp  "camerathread: tel1 correct $alphaDirection [format "%.3f" [expr abs($alphaCorrection)]] $deltaDirection [format "%.3f" [expr abs($deltaCorrection)]] 0.1 \n"
                        #--- envoie d'une commande correct avec la distance en arcseconde
-                       tel1 correct $alphaDirection 0.1 [expr abs($alphaCorrection)]
-                       tel1 correct $deltaDirection 0.1 [expr abs($deltaCorrection)]                         
+                       ###tel1 correct $alphaDirection 0.1 [expr abs($alphaCorrection)]
+                       ###tel1 correct $deltaDirection 0.1 [expr abs($deltaCorrection)]
+                       tel1 correct $alphaDirection [expr abs($alphaCorrection)] $deltaDirection [expr abs($deltaCorrection)] 0.1
                     }
                  }
                }
