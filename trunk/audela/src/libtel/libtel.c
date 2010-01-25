@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libtel.c,v 1.19 2009-12-21 23:28:41 michelpujol Exp $
+// $Id: libtel.c,v 1.20 2010-01-25 21:56:19 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -329,6 +329,23 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
 						return TCL_ERROR;
 					}  
 				}
+
+            // je duplique la commande "mc_hip2tel" dans la thread du telescope
+            sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_hip2tel");
+            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
+               sprintf(s, "cmdTelCreate: %s",interp->result);
+               Tcl_SetResult(interp, s, TCL_VOLATILE);
+               return TCL_ERROR;
+            }
+
+            // je duplique la commande "mc_tel2cat" dans la thread du telescope
+            sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_tel2cat");
+            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
+               sprintf(s, "cmdTelCreate: %s",interp->result);
+               Tcl_SetResult(interp, s, TCL_VOLATILE);
+               return TCL_ERROR;
+            }
+
 
             // je prepare la commande de creation du telescope dans la thread du telescope :
             // thread::send $threadId { {argv0} {argv1} ... {argvn} mainThreadId $mainThreadId }
@@ -915,16 +932,16 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       if (strcmp(argv[2],"init")==0) {
          /* --- init ---*/
          if (argc>=4) {
-			 /* - call the pointing model if exists -*/
+            /* - call the pointing model if exists -*/
             sprintf(ligne,"set libtel(radec) {%s}",argv[3]);
             Tcl_Eval(interp,ligne);
-			if (strcmp(tel->model_cat2tel,"")!=0) {
+            if (strcmp(tel->model_cat2tel,"")!=0) {
                sprintf(ligne,"catch {set libtel(radec) [%s {%s}]}",tel->model_cat2tel,argv[3]);
                Tcl_Eval(interp,ligne);
-			}
+            }
             Tcl_Eval(interp,"set libtel(radec) $libtel(radec)");
             strcpy(ligne,interp->result);
-			 /* - end of pointing model-*/
+            /* - end of pointing model-*/
             libtel_Getradec(interp,ligne,&tel->ra0,&tel->dec0);
             tel_radec_init(tel);
             Tcl_SetResult(interp,"",TCL_VOLATILE);
@@ -936,14 +953,34 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       } else if (strcmp(argv[2],"coord")==0) {
          /* --- coord ---*/
          tel_radec_coord(tel,texte);
-         /* - call the pointing model if exists -*/
-         sprintf(ligne,"set libtel(radec) {%s}",texte);
-         Tcl_Eval(interp,ligne);
-         sprintf(ligne,"catch {set libtel(radec) [%s {%s}]}",tel->model_tel2cat,texte);
-         Tcl_Eval(interp,ligne);
-         Tcl_Eval(interp,"set libtel(radec) $libtel(radec)");
-         strcpy(ligne,interp->result);
-         /* - end of pointing model-*/
+         if (tel->radec_model_enabled == 1 ) {
+            // j'applique le modele de pointage avec la focntion de LIBMC
+             char tu[20];
+            // je recupere la date courante TU
+            sprintf(ligne, "clock format [clock seconds] -gmt 1 -format \"%Y-%m-%dT%H:%M:%S\""); 
+            result = Tcl_Eval(interp,ligne);
+            if ( result == TCL_OK) {
+               strcpy(tu, interp->result);
+            } 
+            if ( result == TCL_OK) {
+               // mc_tel2cat {12h 36d} EQUATORIAL now {GPS 5 E 43 1230} 101325 290 { symbols } { values }
+               sprintf(ligne, "mc_tel2cat { %s } EQUATORIAL %s %s %s 101325 290 { %s } { %s } ", 
+                  texte, tu, tel->homePosition, tel->radec_model_symbols, tel->radec_model_coefficients);
+               result = Tcl_Eval(interp,ligne);
+               strcpy(ligne, interp->result);
+            }
+         } else if ( strcmp(tel->model_tel2cat,"") != 0 ) {
+            // j'applique le modele de pointage avec la procedure TCL
+            sprintf(ligne,"set libtel(radec) {%s}",texte);
+            Tcl_Eval(interp,ligne);
+            sprintf(ligne,"catch {set libtel(radec) [%s {%s}]}",tel->model_tel2cat,texte);
+            Tcl_Eval(interp,ligne);
+            Tcl_Eval(interp,"set libtel(radec) $libtel(radec)");
+            strcpy(ligne,interp->result);
+            /* - end of pointing model-*/
+         } else {
+            strcpy(ligne, texte);
+         }
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       } else if (strcmp(argv[2],"state")==0) {
          /* --- state ---*/
@@ -967,23 +1004,10 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                   }
                }
             }
-            /* - call the pointing model if exists -*/
-            if (strcmp(tel->model_cat2tel,"")!=0) {
-               sprintf(ligne,"set libtel(radec) {%s}",argv[3]);
-               Tcl_Eval(interp,ligne);
-               sprintf(ligne,"set libtel(radec) [%s {%s}]",tel->model_cat2tel,argv[3]);
-               Tcl_Eval(interp,ligne);
-               Tcl_Eval(interp,"set libtel(radec) $libtel(radec)");
-               strcpy(ligne,interp->result);
-               libtel_Getradec(interp,ligne,&tel->ra0,&tel->dec0);
-               /* - end of pointing model-*/
-
-            } else {
-               libtel_Getradec(interp,argv[3],&tel->ra0,&tel->dec0);
-            }
             
-            // correction avec le modele de pointage par la fonction de libmc
+            // correction avec le modele de pointage 
             if (tel->radec_model_enabled == 1 ) {
+                //  par la fonction de libmc
                libtel_Getradec(interp,argv[3],&tel->ra0,&tel->dec0);
                if ( result == TCL_OK) {
                   char tu[20];
@@ -1031,8 +1055,22 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                   // rien a faire car la fonction libtel_Getradec a deja renseigne les message d'erreur
                }
 
-            } 
+            } else  if (strcmp(tel->model_cat2tel,"")!=0) {
+               // correction avec une procedure TCL
+               sprintf(ligne,"set libtel(radec) {%s}",argv[3]);
+               Tcl_Eval(interp,ligne);
+               sprintf(ligne,"set libtel(radec) [%s {%s}]",tel->model_cat2tel,argv[3]);
+               Tcl_Eval(interp,ligne);
+               Tcl_Eval(interp,"set libtel(radec) $libtel(radec)");
+               strcpy(ligne,interp->result);
+               libtel_Getradec(interp,ligne,&tel->ra0,&tel->dec0);
+               /* - end of pointing model-*/
 
+            } else {
+               // pas de correction
+               libtel_Getradec(interp,argv[3],&tel->ra0,&tel->dec0);
+            }
+            
             if ( result == TCL_OK)  {
                if ( tel_radec_goto(tel) == 0 ) {
                   Tcl_SetResult(interp,"",TCL_VOLATILE);
@@ -1099,45 +1137,45 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                sprintf(ligne,"delai=%d ms",timerDelay);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                result = TCL_OK;
-            }        
-         } else if (strcmp(argv[2],"model")==0) {
-            /* --- model ---*/
-            if (argc>=5) {
-               Tcl_ResetResult(interp);
-
-               for (k=4;k<=argc-1;k++) {
-                  if (strcmp(argv[k],"-symbols")==0) {
-                     if ( strlen(argv[k+1]) < sizeof(tel->radec_model_symbols) ) {
-                        strcpy(tel->radec_model_symbols, argv[k+1]);
-                     } else {
-                        sprintf(ligne,"error: value length>%d for %s %s",
-                           sizeof(tel->radec_model_symbols), argv[k], argv[k+1]);
-                        Tcl_AppendResult(interp, ligne, NULL);
-                     }
-                  }
-                  if (strcmp(argv[k],"-coefficients")==0) {
-                     if ( strlen(argv[k+1]) < sizeof(tel->radec_model_symbols) ) {
-                        strcpy(tel->radec_model_coefficients, argv[k+1]);
-                     } else {
-                        sprintf(ligne,"error: value length>%d for %s %s",
-                           sizeof(tel->radec_model_symbols), argv[k], argv[k+1]);
-                        Tcl_AppendResult(interp, ligne, NULL);
-                     }
-                  }
-                  if (strcmp(argv[k],"-temperature")==0) {
-                     tel->radec_model_temperature =atoi(argv[k+1]);
-                  }
-                  if (strcmp(argv[k],"-pressure")==0) {
-                     tel->radec_model_pressure =atoi(argv[k+1]);
-                  }
-                  if (strcmp(argv[k],"-enabled")==0) {
-                     tel->radec_model_enabled =atoi(argv[k+1]);
+            } 
+         }
+      } else if (strcmp(argv[2],"model")==0) {
+         /* --- model ---*/
+         if (argc>=5) {
+            Tcl_ResetResult(interp);
+            
+            for (k=3;k<=argc-1;k++) {
+               if (strcmp(argv[k],"-symbols")==0) {
+                  if ( strlen(argv[k+1]) < sizeof(tel->radec_model_symbols) ) {
+                     strcpy(tel->radec_model_symbols, argv[k+1]);
+                  } else {
+                     sprintf(ligne,"error: value length>%d for %s %s",
+                        sizeof(tel->radec_model_symbols), argv[k], argv[k+1]);
+                     Tcl_AppendResult(interp, ligne, NULL);
                   }
                }
-
-            } else if (argc==3) {
-			   
-            }         
+               if (strcmp(argv[k],"-coefficients")==0) {
+                  if ( strlen(argv[k+1]) < sizeof(tel->radec_model_symbols) ) {
+                     strcpy(tel->radec_model_coefficients, argv[k+1]);
+                  } else {
+                     sprintf(ligne,"error: value length>%d for %s %s",
+                        sizeof(tel->radec_model_symbols), argv[k], argv[k+1]);
+                     Tcl_AppendResult(interp, ligne, NULL);
+                  }
+               }
+               if (strcmp(argv[k],"-temperature")==0) {
+                  tel->radec_model_temperature =atoi(argv[k+1]);
+               }
+               if (strcmp(argv[k],"-pressure")==0) {
+                  tel->radec_model_pressure =atoi(argv[k+1]);
+               }
+               if (strcmp(argv[k],"-enabled")==0) {
+                  tel->radec_model_enabled =atoi(argv[k+1]);
+               }
+            }
+            
+         } else if (argc==3) {
+            // je retourne les valeurs des parametres
          } else {
             sprintf(ligne,"Usage: %s %s model -enabled 0|1 -symbols {IH ID NP CH ME MA} -coefficients { symbols vlues} -temperature value -pressure",argv[0],argv[1]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
