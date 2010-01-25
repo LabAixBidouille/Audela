@@ -104,48 +104,63 @@ int cmdTelFilter(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
 int cmdTelCorrect(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    char ligne[256];
    struct telprop *tel;
-   char *direction;
-   double distance;
+   char   alphaDirection;
+   double alphaDistance;
+   char   deltaDirection;
+   double deltaDistance;
    
    tel = (struct telprop *)clientData;
-   if(argc!=5) {
-      sprintf(ligne,"Usage: %s %s {n,e,w,s} speed distance",argv[0],argv[1]);
+   if(argc!=7) {
+      sprintf(ligne,"Usage: %s %s {e|w|} distanceAlpha {n|s} distanceDelta speed",argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       return TCL_ERROR;
    } else {
       switch(argv[2][0]) {
-      case 'n':
-      case 'N':
-         direction = "n";
-         break;
       case 'e':
       case 'E':
-         direction = "e";
+         alphaDirection = 'E';
          break;
       case 'w':
       case 'W':
-         direction = "w";
+         alphaDirection = 'W';
+         break;
+      default:
+         sprintf(ligne,"Usage: %s %s direction time\nalpahaDirection shall be e|w",argv[0],argv[1]);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+      if (Tcl_GetDouble(interp, argv[3], &alphaDistance) != TCL_OK) {
+         sprintf(ligne,"Usage: %s %s distance \nalphaDistance shall be a decimal number",argv[0],argv[1]);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+      switch(argv[4][0]) {
+      case 'n':
+      case 'N':
+         deltaDirection = 'N';
          break;
       case 's':
       case 'S':
-         direction = "s";
+         deltaDirection = 'S';
          break;
       default:
-         sprintf(ligne,"Usage: %s %s direction time\ndirection shall be n|e|w|s",argv[0],argv[1]);
+         sprintf(ligne,"Usage: %s %s direction time\ndirection shall be n|s",argv[0],argv[1]);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          return TCL_ERROR;
       }
-      if (Tcl_GetDouble(interp, argv[3], &tel->radec_move_rate) != TCL_OK) {
-         sprintf(ligne,"Usage: %s %s spped time\ntime shall be an float between 0.0 and 1.0",argv[0],argv[1]);
+      if (Tcl_GetDouble(interp, argv[5], &deltaDistance) != TCL_OK) {
+         sprintf(ligne,"Usage: %s %s distance \ndistance shall be a decimal number",argv[0],argv[1]);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          return TCL_ERROR;
       }
-      if (Tcl_GetDouble(interp, argv[4], &distance) != TCL_OK) {
-         sprintf(ligne,"Usage: %s %s distance \ndistance shall be an integer between 0 and 9999",argv[0],argv[1]);
+      if (Tcl_GetDouble(interp, argv[6], &tel->radec_move_rate) != TCL_OK) {
+         sprintf(ligne,"Usage: %s %s speed \nspeed shall be a decimal number between 0.0 and 1.0",argv[0],argv[1]);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          return TCL_ERROR;
       }
-      if ( mytel_correct(tel,direction,distance) == 0 ) {
+
+      // j'applique la correction
+      if ( mytel_correct(tel,alphaDirection,alphaDistance,deltaDirection,deltaDistance) == 0 ) {
          Tcl_SetResult(interp,"",TCL_VOLATILE);
       } else {
          Tcl_SetResult(interp,tel->msg,TCL_VOLATILE);

@@ -98,7 +98,7 @@ int tel_filter_stop(struct  telprop *tel);
 int tel_filter_extremity(struct telprop *tel, char * extremity);
 
 int mytel_tcleval(struct telprop *tel,char *ligne);
-int mytel_correct(struct telprop *tel,char *direction, double distance);
+int mytel_correct(struct telprop *tel,char alphaDirection, double alphaDistance, char deltaDirection, double deltaDistance);
 
 //codes retours avec l'interface
 #define BACKCMD_RECEIVED	  0 // Commande prise en compte : acquittement d'envoi de commande à la PMAC (sans erreur)
