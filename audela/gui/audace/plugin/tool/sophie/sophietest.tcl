@@ -2,11 +2,11 @@
 # @file     sophietest.tcl
 # @brief    Fichier du namespace ::sophie::test
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietest.tcl,v 1.22 2009-12-08 22:57:29 michelpujol Exp $
+# @version  $Id: sophietest.tcl,v 1.23 2010-01-25 21:52:11 michelpujol Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
-# @brief    Procï¿½dures de test de l'outil sophie et simulation des interfaces externes
+# @brief    ProcÃ©dures de test de l'outil sophie et simulation des interfaces externes
 #
 #------------------------------------------------------------
 namespace eval ::sophie::test {
@@ -19,15 +19,16 @@ namespace eval ::sophie::test {
    set private(telescopeControl,decSpeed) ""
    set private(telescopeControl,slewMode) ""
    set private(telescopeControl,sideralSpeed)   "15.0"   ; #--- vitesse de 360 degres/jour soit 15 arsec/seconde vers l'ouest 
-   set private(telescopeControl,lunarSpeed)     "14.375" ; #--- vitesse de (360-15) degrés/jour soit 14.375 arsec/seconde vers l'ouest   
+   set private(telescopeControl,lunarSpeed)     "14.375" ; #--- vitesse de (360-15) degrÃ©s/jour soit 14.375 arsec/seconde vers l'ouest   
    set private(telescopeControl,guidingSpeed)   "3.75"   ; #--- vitesse de correction en centrage (le triple de la vitesse siderale)
    set private(telescopeControl,centeringSpeed) "45.0"   ; #--- vitesse de correction en guidage (le quart de la vitesse siderale en arcsec/s
+   set private(telescopeControl,centering2Speed) "60.0"   ; #--- vitesse de correction en guidage (le quart de la vitesse siderale en arcsec/s
    set private(telescopeControl,gotoSpeed)      "6500.0"   ; #--- vitesse de goto (500 fois la vitesse siderale en arcsec/s
    set private(telescopeControl,focusPosition)  "0.0"
    set private(telescopeControl,focusSpeed)  "0"
-    
+
    set private(clientCoord,socketChannel) ""
-    
+
 }
 
 #------------------------------------------------------------
@@ -310,7 +311,7 @@ proc ::sophie::test::createDialogSimul { } {
    wm resizable $frm 1 1
    wm protocol $frm WM_DELETE_WINDOW ::sophie::test::fermer
 
-	#--- On utilise les valeurs contenues dans le tableau conf pour l'initialisation
+   #--- On utilise les valeurs contenues dans le tableau conf pour l'initialisation
    set private(simulation)                $::conf(sophie,simulation)
    set private(simulationGenericFileName) $::conf(sophie,simulationGenericFileName)
 
@@ -360,7 +361,7 @@ proc ::sophie::test::createDialogSimul { } {
       grid $frm.pcsophie.hostEntry -in [ $frm.pcsophie getframe ] -row 0 -column 1 -sticky ens -padx 2
 
       #--- Bouton connect et disconnect
-      button $frm.pcsophie.connect -text "Démarrer serveur" -command "::sophie::test::connecterPcGuidage"
+      button $frm.pcsophie.connect -text "DÃ©marrer serveur" -command "::sophie::test::connecterPcGuidage"
       grid $frm.pcsophie.connect -in [ $frm.pcsophie getframe ] -row 0 -column 2 -sticky ens -padx 2
 
       #--- Bouton envoi de commande
@@ -380,7 +381,7 @@ proc ::sophie::test::createDialogSimul { } {
       grid columnconfigure [$frm.pcsophie getframe] 1 -weight 1
       grid columnconfigure [$frm.pcsophie getframe] 2 -weight 1
       grid columnconfigure [$frm.pcsophie getframe] 3 -weight 1
-      
+
    pack $frm.pcsophie -in $frm -side top -fill x -expand 0
 
    #--- Frame pour le test d'impulsion vers le telescope
@@ -412,7 +413,7 @@ proc ::sophie::test::createDialogSimul { } {
 
       grid columnconfigure [$frm.pulse getframe] 0 -weight 1
       grid columnconfigure [$frm.pulse getframe] 1 -weight 1
-      
+
    pack $frm.pulse -in $frm -side top -fill x -expand 0
 
    #--- Frame pour l'interface de controle du T193
@@ -422,7 +423,7 @@ proc ::sophie::test::createDialogSimul { } {
       button $frm.pccontrol.connect -text "Demarrer le simulateur de l'interface de controle" -command "::sophie::test::connectTelescopeControl"
       grid $frm.pccontrol.connect -in [$frm.pccontrol getframe] -row 0 -column 0 -columnspan 4 -sticky "" -padx 2
 
-      #--- affiche les positions et les vitesses  Ra Dec  
+      #--- affiche les positions et les vitesses  Ra Dec
       label $frm.pccontrol.labelRA -text "RA position"
       grid $frm.pccontrol.labelRA -in [$frm.pccontrol getframe] -row 1 -column 0 -sticky w -padx 0
       label $frm.pccontrol.entryRA   -textvariable ::sophie::test::private(telescopeControl,ra) -relief  ridge
@@ -443,13 +444,13 @@ proc ::sophie::test::createDialogSimul { } {
       label $frm.pccontrol.entryDecSpeed   -textvariable ::sophie::test::private(telescopeControl,decSpeed) -relief  ridge
       grid $frm.pccontrol.entryDecSpeed -in [$frm.pccontrol getframe] -row 2 -column 3 -sticky ew -padx 2
 
-      #--- affiche le mode de suivi  
+      #--- affiche le mode de suivi
       label $frm.pccontrol.labelSlewMode -text "Suivi Mode"
       grid $frm.pccontrol.labelSlewMode -in [$frm.pccontrol getframe] -row 3 -column 0 -sticky w -padx 0
       label $frm.pccontrol.entrySlewMode   -textvariable ::sophie::test::private(telescopeControl,slewMode) -relief  ridge
       grid $frm.pccontrol.entrySlewMode -in [$frm.pccontrol getframe] -row 3 -column 1 -sticky ew -padx 2
 
-      #--- configuration 
+      #--- configuration
       label $frm.pccontrol.labelConfiguration -text "Configuration des vitesses (arsec/sec)"
       grid $frm.pccontrol.labelConfiguration -in [$frm.pccontrol getframe] -row 4 -column 0 -columnspan 4 -sticky w -padx 0
 
@@ -462,7 +463,12 @@ proc ::sophie::test::createDialogSimul { } {
       grid $frm.pccontrol.labelCenteringSpeed -in [$frm.pccontrol getframe] -row 5 -column 2 -sticky w -padx 0
       entry $frm.pccontrol.entryCenteringSpeed -textvariable ::sophie::test::private(telescopeControl,centeringSpeed)
       grid $frm.pccontrol.entryCenteringSpeed -in [$frm.pccontrol getframe] -row 5 -column 3 -sticky w -padx 2
-   
+
+      label $frm.pccontrol.labelCentering2Speed -text "Vitesse centrage2" -justify left
+      grid $frm.pccontrol.labelCentering2Speed -in [$frm.pccontrol getframe] -row 6 -column 2 -sticky w -padx 0
+      entry $frm.pccontrol.entryCentering2Speed -textvariable ::sophie::test::private(telescopeControl,centering2Speed)
+      grid $frm.pccontrol.entryCentering2Speed -in [$frm.pccontrol getframe] -row 6 -column 3 -sticky w -padx 2
+
       label $frm.pccontrol.labelGotoSpeed -text "Vitesse goto" -justify left
       grid $frm.pccontrol.labelGotoSpeed -in [$frm.pccontrol getframe] -row 6 -column 0 -sticky w -padx 0
       entry $frm.pccontrol.entryGotoSpeed -textvariable ::sophie::test::private(telescopeControl,gotoSpeed)
@@ -490,7 +496,7 @@ proc ::sophie::test::createDialogSimul { } {
 
       button $frm.pccontrol.validate -text "Enregistrer" -command "::sophie::test::configure"
       grid $frm.pccontrol.validate -in [$frm.pccontrol getframe] -row 9 -column 0 -columnspan 4 -sticky nw -padx 2
-   
+
       grid columnconfigure [$frm.pccontrol getframe] 0 -weight 1
       grid columnconfigure [$frm.pccontrol getframe] 1 -weight 1
       grid columnconfigure [$frm.pccontrol getframe] 2 -weight 1
@@ -501,8 +507,8 @@ proc ::sophie::test::createDialogSimul { } {
       grid columnconfigure [$frm.pccontrol getframe] 7 -weight 1
       grid columnconfigure [$frm.pccontrol getframe] 8 -weight 1
       grid columnconfigure [$frm.pccontrol getframe] 9 -weight 1
-      
-      pack $frm.pccontrol -in $frm -side top -anchor w -fill x -expand 0 
+
+      pack $frm.pccontrol -in $frm -side top -anchor w -fill x -expand 0
 
    #--- Frame pour les boutons
    frame $frm.frameButton -borderwidth 1 -relief raised
@@ -618,7 +624,7 @@ proc ::sophie::test::connecterPcGuidage { } {
    set catchError [ catch {
       if { $private(pcSophie,socketChannel) == "" } {
          ::sophie::test::openSocketSophie
-         $private(frm).pcsophie.connect configure -text "déconnecter"
+         $private(frm).pcsophie.connect configure -text "dÃ©connecter"
       } else {
          ::sophie::test::closeSocketSophie
          $private(frm).pcsophie.connect configure -text "connecter"
@@ -774,12 +780,12 @@ proc ::sophie::test::updateGui { ra dec raSpeed decSpeed slewMode slewSpeed focu
    set private(telescopeControl,slewSpeed) $slewSpeed
    set private(telescopeControl,focusPosition) $focusPosition
    set private(telescopeControl,focusSpeed) $focusSpeed
-            
+
 }
 
 #------------------------------------------------------------
 # configure
-#   envoi les parametres de configuration au thread de simulation 
+#   envoi les parametres de configuration au thread de simulation
 #   cette procedure est appelee par le thread du simulteur chaque fois que le teslescope change de position
 #------------------------------------------------------------
 proc ::sophie::test::configure { } {
@@ -787,7 +793,7 @@ proc ::sophie::test::configure { } {
    ::thread::send -async $private(controlThreadId) [list ::sophie::testcontrol::configure \
          $private(telescopeControl,sideralSpeed) $private(telescopeControl,lunarSpeed) \
          $private(telescopeControl,guidingSpeed) $private(telescopeControl,centeringSpeed) \
-         $private(telescopeControl,gotoSpeed) \
+         $private(telescopeControl,centering2Speed) $private(telescopeControl,gotoSpeed) \
          $::audace(posobs,observateur,gps)]
 }
 
@@ -801,7 +807,7 @@ proc ::sophie::test::configure { } {
 
 #------------------------------------------------------------
 # openSocketCoord
-#   ouvre une socket en ecriture pour simuler 
+#   ouvre une socket en ecriture pour simuler
 #
 # @param host adress IP ou nom DNS du PC de guidage (parametre optionel, valeur par defaut= localhost)
 #------------------------------------------------------------
@@ -811,7 +817,7 @@ proc ::sophie::test::openSocketCoord { } {
    set private(clientCoord,socketChannel) [socket "localhost" "5028" ]
    #---  -translation binary -encoding binary
    fconfigure $private(clientCoord,socketChannel) -buffering line -blocking true -translation binary -encoding binary
-   ###fconfigure $private(clientCoord,socketChannel) -buffering line -blocking true 
+   ###fconfigure $private(clientCoord,socketChannel) -buffering line -blocking true
    fileevent $private(clientCoord,socketChannel) readable [list ::sophie::test::readSocketCoord ]
 
 }
@@ -847,7 +853,7 @@ proc ::sophie::test::readSocketCoord {  } {
 }
 
 
-#--- demarrage du contexte pour les tests 
+#--- demarrage du contexte pour les tests
 #::sophie::simul
 #::sophie::test::connectTelescopeControl
 #set ::conf(telescope) "t193"
