@@ -19,6 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+// @version  $Id: telescop.c,v 1.23 2010-01-25 21:58:23 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -890,13 +891,16 @@ int tel_radec_move(struct telprop *tel,char *direction)
          char response[NOTIFICATION_MAX_SIZE];
          if ( tel->radec_move_rate == 0.0 ) {
             // vitesse de guidage
-            sprintf(command,"!RADEC MOVE %c guidage 0 @\n", direction2 );  
+            sprintf(command,"!RADEC MOVE %c guidage @\n", direction2 );  
          } else if ( tel->radec_move_rate == 0.33 ) {
             // vitesse de centrage
-            sprintf(command,"!RADEC MOVE %c centrage 0 @\n", direction2 );
+            sprintf(command,"!RADEC MOVE %c centrage @\n", direction2 );
+         } else if ( tel->radec_move_rate == 0.66 ) {
+            // vitesse de centrage
+            sprintf(command,"!RADEC MOVE %c centrage2 @\n", direction2 );
          } else {
             // par defaut vitesse de guidage
-            sprintf(command,"!RADEC MOVE %c guidage 0 @\n", direction2 );  
+            sprintf(command,"!RADEC MOVE %c guidage @\n", direction2 );  
          }
 		   //envoi du mouvement et recupération du code 0
          result = socket_writeTelescopeCommandSocket(tel, command, response);
@@ -1048,15 +1052,17 @@ int tel_radec_stop(struct telprop *tel,char *direction)
 // avec une distance donnee en arcseconde   
 //
 // @param tel   pointeur structure telprop
-// @param direction direction de la correction N,S, E, W  
-// @param distance  valeur de la correction en arseconde  
+// @param direction direction de la correction sur l'axe alpha E, W  
+// @param distance  valeur de la correction sur l'axe alpha en arseconde  
+// @param direction direction de la correction sur l'axe delta N ,S  
+// @param distance  valeur de la correction sur l'axe delta en arseconde  
 // @return  0 = OK,  1= erreur
 //-------------------------------------------------------------
-int mytel_correct(struct telprop *tel,char *direction, double distance)
+int mytel_correct(struct telprop *tel, char alphaDirection, double alphaDistance, char deltaDirection, double deltaDistance)
 {
    int result ;
 
-   if (fabs(distance) < 0.001) return 0; //ajout F.FILLION : pas de JOG continue en guidage (rem: 0.001 arcsec = 0.2 cts de #2)
+   if (fabs(alphaDistance) < 0.001  && fabs(deltaDistance) < 0.001 ) return 0; //ajout F.FILLION : pas de JOG continue en guidage (rem: 0.001 arcsec = 0.2 cts de #2)
  
    // je verifie s'il n'y a pas deja un mouvement en cours
    if ( tel->radecIsMoving != 0 ) {
@@ -1070,43 +1076,31 @@ int mytel_correct(struct telprop *tel,char *direction, double distance)
 
       if ( tel->telescopeCommandSocket != 0 ) {
 
-         // je convertis en majuscule
-         char direction2 = toupper(direction[0]);
-
-         // je verifie la valeur
-         switch (direction2) {
-         case 'N' : 
-         case 'S' : 
-         case 'E' : 
-         case 'W' : 
-            result = 0; 
-            break;
-         default : 
-            sprintf(tel->msg,"invalid direction %s",direction);
-            result = 1;
-         }
-
          if ( result == 0 ) {
             char command[NOTIFICATION_MAX_SIZE];
             char response[NOTIFICATION_MAX_SIZE];
             if ( tel->radec_move_rate == 0.0 ) {
                // vitesse de guidage
-               sprintf(command,"!RADEC MOVE %c guidage %.3f @\n", direction2, distance );  
+               sprintf(command,"!RADEC CORRECT %c %.3f %c %.3f guidage @\n", alphaDirection, alphaDistance, deltaDirection, deltaDistance );  
             } else if ( tel->radec_move_rate == 0.33 ) {
                // vitesse de centrage
-               sprintf(command,"!RADEC MOVE %c centrage %.3f @\n", direction2, distance );
+               sprintf(command,"!RADEC CORRECT %c %.3f %c %.3f centrage @\n", alphaDirection, alphaDistance, deltaDirection, deltaDistance );  
+            } else if ( tel->radec_move_rate == 0.66 ) {
+               // vitesse de centrage
+               sprintf(command,"!RADEC CORRECT %c %.3f %c %.3f centrage2 @\n", alphaDirection, alphaDistance, deltaDirection, deltaDistance );  
             } else {
                // par defaut vitesse de guidage
-               sprintf(command,"!RADEC MOVE %c guidage %.3f @\n", direction2, distance );  
+               sprintf(command,"!RADEC CORRECT %c %.3f %c %.3f guidage @\n", alphaDirection, alphaDistance, deltaDirection, deltaDistance );    
             }
 
             result = socket_writeTelescopeCommandSocket(tel,command,response);
 
             if ( result == 0 ) {
                int returnCode;
-               int returnDirection; 
-               int readValue = sscanf(response,"!RADEC MOVE %d %c @", &returnCode, &returnDirection);
-               if (readValue != 2) {
+               char returnAlphaDirection; 
+               char returnDeltaDirection; 
+               int readValue = sscanf(response,"!RADEC CORRECT %d %c %c @", &returnCode, &returnAlphaDirection, &returnDeltaDirection);
+               if (readValue != 3) {
                   sprintf(tel->msg,"RADEC MOVE error: readValue=%d %s", readValue, response );
                   result = 1;
                } else {
