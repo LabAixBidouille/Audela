@@ -2,11 +2,11 @@
 # @file     sophiesimulcontrol.tcl
 # @brief    Fichier du namespace ::sophie::testcontrol
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietestcontrol.tcl,v 1.8 2009-12-10 07:20:54 michelpujol Exp $
+# @version  $Id: sophietestcontrol.tcl,v 1.9 2010-01-25 21:54:50 michelpujol Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
-# @brief    Procédures de test de l'outil sophie et simulation des interfaces externes
+# @brief    ProcÃ©dures de test de l'outil sophie et simulation des interfaces externes
 #
 #------------------------------------------------------------
 
@@ -41,6 +41,7 @@ proc ::sophie::testcontrol::init { mainThreadNo telescopeCommandPort telescopeNo
    set private(motor,slewSpeed,2)   0.0
    set private(motor,guidage)       0.0
    set private(motor,centrage)      0.0
+   set private(motor,centrage2)     0.0
    set private(motor,gotoSpeed)     0.0
 
    #--- variables de travail
@@ -49,16 +50,16 @@ proc ::sophie::testcontrol::init { mainThreadNo telescopeCommandPort telescopeNo
    set private(motor,mode)    "NONE"      ; #--- NONE, ILLIMITED_MOVE, LIMITED_MOVE, GOTO
    set private(goto,raSpeed)  0.0
    set private(goto,decSpeed) 0.0
-   
+
    set private(focus,mode)    "NONE"
    set private(focus,speed)   0.0         ; #--- vitesse courante du focus
-   set private(focus,L)       1           ; #--- vitesse lente de focus ( 1% par seconde)        
-   set private(focus,R)       5           ; #--- vitesse rapide du focus ( 5% par seconde) 
-   set private(focus,goto)    5           ; #--- vitesse du goto du focus( 5% par seconde) 
-   set private(focus,position)  "0"       ; #--- position courante du focus 
+   set private(focus,L)       1           ; #--- vitesse lente de focus ( 1% par seconde)
+   set private(focus,R)       5           ; #--- vitesse rapide du focus ( 5% par seconde)
+   set private(focus,goto)    5           ; #--- vitesse du goto du focus( 5% par seconde)
+   set private(focus,position)  "0"       ; #--- position courante du focus
    set private(focus,targetPosition)  "0" ; #--- position cible du focus pour un GOTO ou un MOVE limite
    set private(focus,notificationEnabled) "0"  ; #---notification de la position du focus
-   
+
    #--- je charge la librairie de calcul de mecanique celeste dans le thread
    set binDirectory [file dirname [info nameofexecutable]]
    load [file join $binDirectory libmc[info sharedlibextension]]
@@ -99,6 +100,7 @@ proc ::sophie::testcontrol::openTelescopeControlSocket { } {
    }]
 
    set private(radecCoord,enabled) 0
+   set private(motor,mode) "NONE"
 
    if { $catchError != 0 } {
       #--- je referme les sockets ouvertes
@@ -209,9 +211,19 @@ proc ::sophie::testcontrol::readTelescopeCommandSocket { channel } {
                      #---  je recupere la direction et la vitesse
                      set direction [lindex $commandArray 2]
                      set speedCode [lindex $commandArray 3]
-                     set distance  [lindex $commandArray 4]
-                     set returnCode [startRadecMove $direction $speedCode $distance]
+                     set returnCode [startRadecMove $direction $speedCode]
                      set response [format "!RADEC MOVE %d %s @" $returnCode $direction ]
+                     writeTelescopeCommandSocket $channel $response
+                   }
+                   CORRECT {
+                     #---  je recupere la direction et la vitesse
+                     set alphaDirection [lindex $commandArray 2]
+                     set alphaDistance  [lindex $commandArray 3]
+                     set deltaDirection [lindex $commandArray 4]
+                     set deltaDistance  [lindex $commandArray 5]
+                     set speedCode      [lindex $commandArray 6]
+                     set returnCode [startRadecCorrect $alphaDirection $alphaDistance $deltaDirection $deltaDistance $speedCode]
+                     set response [format "!RADEC CORRECT %d %s %s @" $returnCode $alphaDirection $deltaDistance ]
                      writeTelescopeCommandSocket $channel $response
                   }
                   STOP {
@@ -276,7 +288,7 @@ proc ::sophie::testcontrol::readTelescopeCommandSocket { channel } {
                      #---  je recupere la direction et la vitesse
                      set direction [lindex $commandArray 2]
                      set speedCode [lindex $commandArray 3]
-                     set distance  [lindex $commandArray 4]                     
+                     set distance  [lindex $commandArray 4]
                      set returnCode [startFocusMove $direction $speedCode $distance]
                      #--- je retourne la reponse
                      set response [format "!FOC MOVE %d @" $returnCode ]
@@ -396,7 +408,7 @@ proc ::sophie::testcontrol::writeTelescopeNotificationSocket { notification } {
 
 #------------------------------------------------------------
 # startRadecNotification
-#   demarre l'envoi des notifications coordonnees 
+#   demarre l'envoi des notifications coordonnees
 #
 # @param donnees a envoyer
 # @return code retour 0=OK , 1=Erreur
@@ -456,7 +468,7 @@ proc ::sophie::testcontrol::sendRadecNotification { } {
 }
 
 #------------------------------------------------------------
-# sendRadecNotification
+# sendRadecNotificationLoop
 #   envoie une donnee au PC de guidage
 #
 # @param donnees a envoyer
@@ -506,10 +518,9 @@ proc ::sophie::testcontrol::setRadecSlew { slewMode } {
 #
 # @param direction N S E W
 # @param speedCode guidage ou centrage
-# @param distance en arcsec
 # @return code retour 0=OK , 1=Erreur
 #------------------------------------------------------------
-proc ::sophie::testcontrol::startRadecMove { direction speedCode distance} {
+proc ::sophie::testcontrol::startRadecMove { direction speedCode} {
    variable private
 
    set catchError [ catch {
@@ -533,36 +544,84 @@ proc ::sophie::testcontrol::startRadecMove { direction speedCode distance} {
             }
          }
 
-         if { $distance == 0 } {
-            set private(motor,mode) "ILLIMITED_MOVE"
-         } else {
-            set private(motor,mode) "LIMITED_MOVE"
-            #--- je calcule les coordonnees cibles
-            switch $direction {
-               "E" {
-                  set private(target,ra) [expr $private(motor,ra) + $distance / 3600.0]
-                  set private(target,dec) $private(motor,dec)
-               }
-               "W" {
-                  set private(target,ra) [expr $private(motor,ra) - $distance / 3600.0]
-                  set private(target,dec) $private(motor,dec)
-               }
-               "N" {
-                  set private(target,ra) $private(motor,ra)
-                  set private(target,dec) [expr $private(motor,dec) + $distance / 3600.0]
-               }
-               "S" {
-                  set private(target,ra) $private(motor,ra)
-                  set private(target,dec) [expr $private(motor,dec) - $distance / 3600.0]
-               }
-            }
-         }
+         set private(motor,mode) "ILLIMITED_MOVE"
          set result 0
       } else {
          #--- le telescope est deja en mouvement
          set result 1
       }
    }]
+
+   if { $catchError != 0 } {
+      ::sophie::testcontrol::disp  "$::errorInfo \n"
+      set result 1
+   }
+
+   return $result
+}
+
+#------------------------------------------------------------
+# startRadecCorrect
+#   demarre un mouvement de moteur
+#
+# @param alphaDirection direction E W
+# @param alphaDistance en arcsec
+# @param alphaDirection direction N S
+# @param deltaDistance en arcsec
+# @param speedCode guidage ou centrage
+# @return code retour 0=OK , 1=Erreur
+#------------------------------------------------------------
+proc ::sophie::testcontrol::startRadecCorrect { alphaDirection alphaDistance deltaDirection deltaDistance speedCode } {
+   variable private
+
+   set catchError [ catch {
+
+       if { $private(motor,mode) == "NONE" } {
+          set speed $private(motor,$speedCode)
+
+          #--- je change la vitesse de la monture
+          switch $alphaDirection {
+             "E" {
+                set private(motor,raSpeed) $speed
+             }
+             "W" {
+                set private(motor,raSpeed) [expr 0 - $speed]
+             }
+          }
+          switch $deltaDirection {
+             "N" {
+                set private(motor,decSpeed) $speed
+             }
+             "S" {
+                set private(motor,decSpeed) [expr 0 - $speed]
+             }
+          }
+
+          set private(motor,mode) "LIMITED_MOVE"
+          #--- je calcule les coordonnees cibles
+          switch $alphaDirection {
+             "E" {
+                set private(target,ra) [expr $private(motor,ra) + $alphaDistance / 3600.0]
+             }
+             "W" {
+                set private(target,ra) [expr $private(motor,ra) - $alphaDistance / 3600.0]
+             }
+          }
+          #--- je calcule les coordonnees cibles
+          switch $deltaDirection {
+             "N" {
+                set private(target,dec) [expr $private(motor,dec) + $deltaDistance / 3600.0]
+             }
+             "S" {
+                set private(target,dec) [expr $private(motor,dec) - $deltaDistance / 3600.0]
+             }
+          }
+          set result 0
+       } else {
+          #--- le telescope est deja en mouvement
+          set result 1
+       }
+    }]
 
    if { $catchError != 0 } {
       ::sophie::testcontrol::disp  "$::errorInfo \n"
@@ -651,7 +710,7 @@ proc ::sophie::testcontrol::startRadecGoto { ra dec } {
          set private(motor,mode) "GOTO"
 
       } else {
-         set result
+         set result 2
       }
    } else {
       set result 1
@@ -669,7 +728,7 @@ proc ::sophie::testcontrol::startRadecGoto { ra dec } {
 
 #------------------------------------------------------------
 # startFocusMove
-#   demarre un mouvement du focus 
+#   demarre un mouvement du focus
 #
 # @param direction + ou -
 # @param speedCode L ou R
@@ -681,7 +740,7 @@ proc ::sophie::testcontrol::startFocusMove { direction speedCode distance} {
 
    set catchError [ catch {
       set result 0
-      
+
       if { $private(focus,mode) == "NONE" } {
          set speed $private(focus,$speedCode)
 
@@ -694,8 +753,8 @@ proc ::sophie::testcontrol::startFocusMove { direction speedCode distance} {
                set private(focus,speed) [expr 0 - $speed]
             }
             default {
-               set result 2  ; # erreur: direction incorrecte    
-            }               
+               set result 2  ; # erreur: direction incorrecte
+            }
          }
 
          if { $result == 0 } {
@@ -730,7 +789,7 @@ proc ::sophie::testcontrol::startFocusMove { direction speedCode distance} {
 
 #------------------------------------------------------------
 # startFocusGoto
-#   demarre un goto du focus 
+#   demarre un goto du focus
 #
 # @param targetPosition position cibble du goto
 # @return code retour 0=OK , 1=Erreur
@@ -740,7 +799,7 @@ proc ::sophie::testcontrol::startFocusGoto { targetPosition } {
 
    disp "::sophie::testcontrol::startFocusGoto targetPosition=$targetPosition \n"
    if { $private(motor,mode) == "NONE" } {
-      #--- je calcule le sens de deplacement 
+      #--- je calcule le sens de deplacement
       if { $targetPosition > $private(focus,position) } {
          set private(focus,speed) $private(focus,goto)
       } else {
@@ -773,7 +832,7 @@ proc ::sophie::testcontrol::stopFocusMove { } {
 
 #------------------------------------------------------------
 # startFocusNotification
-#   demarre l'envoi des notifications de la position du focus 
+#   demarre l'envoi des notifications de la position du focus
 #
 # @return code retour 0=OK , 1=Erreur
 #------------------------------------------------------------
@@ -789,7 +848,7 @@ proc ::sophie::testcontrol::startFocusNotification { } {
 
 #------------------------------------------------------------
 # stopFocusNotification
-#   arrete l'envoi des notifications de la position du focus 
+#   arrete l'envoi des notifications de la position du focus
 #
 # @return code retour 0=OK , 1=Erreur
 #------------------------------------------------------------
@@ -873,7 +932,7 @@ proc ::sophie::testcontrol::simulateMotor { } {
                set private(motor,mode) "NONE"
                set private(motor,raSpeed) 0
                set private(motor,decSpeed) 0
-               ##disp "simulateMotor fin de mouvement limité\n"
+               ##disp "simulateMotor fin de mouvement limitÃ©\n"
                #--- j'envoie une notification pour signaler que le GOTO est termine
                ::sophie::testcontrol::sendRadecNotification
             }
@@ -893,7 +952,7 @@ proc ::sophie::testcontrol::simulateMotor { } {
 
             if { $private(motor,ra) == $private(target,ra) && $private(motor,dec) == $private(target,dec) } {
                #--- je memorise l'arret du GOTO
-               disp "simulateMotor fin de mouvement limité\n"
+               disp "simulateMotor fin de mouvement limitÃ©\n"
                set private(motor,mode) "NONE"
                #--- j'envoie une notification pour signaler que le GOTO est termine
                ::sophie::testcontrol::sendRadecNotification
@@ -903,7 +962,7 @@ proc ::sophie::testcontrol::simulateMotor { } {
 
       switch $private(focus,mode) {
          "NONE" {
-            #--- rien a faire 
+            #--- rien a faire
          }
          "ILLIMITED_MOVE" {
             #--- je simule le deplacement illimitee
@@ -941,9 +1000,9 @@ proc ::sophie::testcontrol::simulateMotor { } {
                #--- j'envoie une notification pour signaler que le GOTO est termine
                ::sophie::testcontrol::sendFocusPosition
             }
-         }         
+         }
       }
-      
+
       ###disp "simulateMotor delai=$delay ra=$private(motor,ra) dec=$private(motor,ra) \n"
 
       #--- je met a jour la fenetre du simulateur
@@ -969,13 +1028,14 @@ proc ::sophie::testcontrol::simulateMotor { } {
 # @param centeringSpeed vitesse de centrage (arsec/sec)
 # @param observaterPosition position de l'observateur au format "GPS 0.142300 E 42.936639 2890.5"
 #------------------------------------------------------------
-proc ::sophie::testcontrol::configure { sideralSpeed lunarSpeed guidingSpeed centeringSpeed gotoSpeed observaterPosition } {
+proc ::sophie::testcontrol::configure { sideralSpeed lunarSpeed guidingSpeed centeringSpeed centering2Speed gotoSpeed observaterPosition } {
    variable private
 
    set private(motor,slewSpeed,1)   $sideralSpeed
    set private(motor,slewSpeed,2)   $lunarSpeed
    set private(motor,guidage)       $guidingSpeed
    set private(motor,centrage)      $centeringSpeed
+   set private(motor,centrage2)     $centering2Speed
    set private(motor,gotoSpeed)     $gotoSpeed
    set private(observaterPosition)  $observaterPosition
 }
@@ -984,7 +1044,7 @@ proc ::sophie::testcontrol::configure { sideralSpeed lunarSpeed guidingSpeed cen
 #------------------------------------------------------------
 # updateGui
 #  envoie les valeurs courantes au thread principal pour les afficher dans la fenetre du simulateur
-#  pour simuler la dérive du telescope par rapport au ciel
+#  pour simuler la dÃ©rive du telescope par rapport au ciel
 #------------------------------------------------------------
 proc ::sophie::testcontrol::updateGui { } {
    variable private
