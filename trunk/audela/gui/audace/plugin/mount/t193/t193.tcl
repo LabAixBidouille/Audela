@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.26 2010-01-22 13:31:23 ffillion Exp $
+# Mise a jour $Id: t193.tcl,v 1.27 2010-01-25 21:46:01 michelpujol Exp $
 #
 
 namespace eval ::t193 {
@@ -103,9 +103,11 @@ proc ::t193::initPlugin { } {
    if { ! [ info exists conf(t193,dureeMaxAttenuateur) ] }       { set conf(t193,dureeMaxAttenuateur)       "16" }
    #--- traces dans la Console
    if { ! [ info exists conf(t193,consoleLog) ] }                { set conf(t193,consoleLog)                "0" }
-   if { ! [ info exists conf(t193,model,enabled) ] }             { set conf(t193,model,enabled)                "0" }
-      
-   #--- modification des valeurs par rapport à la version precedente du 20/09/2009
+   #--- modele de pointage
+   if { ! [ info exists conf(t193,model,enabled) ] }             { set conf(t193,model,enabled)             "0" }
+   if { ! [ info exists conf(t193,model,id) ] }                  { set conf(t193,model,id)                  "0" }
+
+   #--- modification des valeurs par rapport ? la version precedente du 20/09/2009
    if { $::conf(t193,mode) == 0 } {
       set ::conf(t193,mode) "HP1000"
    }
@@ -122,24 +124,29 @@ proc ::t193::initPlugin { } {
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::t193::confToWidget { } {
-   variable private
+   variable widget
    global conf
 
    #--- Recupere la configuration de la monture du T193 de l'OHP dans le tableau private(...)
-   set private(portSerie)                 $conf(t193,portSerie)
-   set private(mode)                      $conf(t193,mode)
-   set private(nomCarte)                  $conf(t193,nomCarte)
-   set private(minDelay)                  $conf(t193,minDelay)
-   set private(nomPortTelescope)          $conf(t193,nomPortTelescope)
-   set private(nomPortAttenuateur)        $conf(t193,nomPortAttenuateur)
-   set private(alphaGuidingSpeed)         $conf(t193,alphaGuidingSpeed)
-   set private(deltaGuidingSpeed)         $conf(t193,deltaGuidingSpeed)
-   set private(hostEthernet)              $conf(t193,hostEthernet)
-   set private(telescopeCommandPort)      $conf(t193,telescopeCommandPort)
-   set private(telescopeNotificationPort) $conf(t193,telescopeNotificationPort)
-   set private(dureeMaxAttenuateur)       $conf(t193,dureeMaxAttenuateur)
-   set private(raquette)                  $conf(raquette)
-   set private(consoleLog)                $conf(t193,consoleLog)
+   set widget(portSerie)                 $conf(t193,portSerie)
+   set widget(mode)                      $conf(t193,mode)
+   set widget(nomCarte)                  $conf(t193,nomCarte)
+   set widget(minDelay)                  $conf(t193,minDelay)
+   set widget(nomPortTelescope)          $conf(t193,nomPortTelescope)
+   set widget(nomPortAttenuateur)        $conf(t193,nomPortAttenuateur)
+   set widget(alphaGuidingSpeed)         $conf(t193,alphaGuidingSpeed)
+   set widget(deltaGuidingSpeed)         $conf(t193,deltaGuidingSpeed)
+   set widget(hostEthernet)              $conf(t193,hostEthernet)
+   set widget(telescopeCommandPort)      $conf(t193,telescopeCommandPort)
+   set widget(telescopeNotificationPort) $conf(t193,telescopeNotificationPort)
+   set widget(dureeMaxAttenuateur)       $conf(t193,dureeMaxAttenuateur)
+   set widget(consoleLog)                $conf(t193,consoleLog)
+   set widget(model,enabled)             $conf(t193,model,enabled)
+   set widget(model,id)                  $conf(t193,model,id)
+   set widget(model,date)                ""
+
+   set widget(raquette)                  $conf(raquette)
+
 }
 
 #
@@ -147,24 +154,28 @@ proc ::t193::confToWidget { } {
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::t193::widgetToConf { } {
-   variable private
+   variable widget
    global conf
 
    #--- Memorise la configuration de la monture du T193 de l'OHP dans le tableau conf(t193,...)
-   set conf(t193,portSerie)                 $private(portSerie)
-   set conf(t193,mode)                      $private(mode)
-   set conf(t193,nomCarte)                  $private(nomCarte)
-   set conf(t193,minDelay)                  $private(minDelay)
-   set conf(t193,nomPortTelescope)          $private(nomPortTelescope)
-   set conf(t193,nomPortAttenuateur)        $private(nomPortAttenuateur)
-   set conf(t193,alphaGuidingSpeed)         $private(alphaGuidingSpeed)
-   set conf(t193,deltaGuidingSpeed)         $private(deltaGuidingSpeed)
-   set conf(t193,hostEthernet)              $private(hostEthernet)
-   set conf(t193,telescopeCommandPort)      $private(telescopeCommandPort)
-   set conf(t193,telescopeNotificationPort) $private(telescopeNotificationPort)
-   set conf(t193,dureeMaxAttenuateur)       $private(dureeMaxAttenuateur)
-   set conf(raquette)                       $private(raquette)
-   set conf(t193,consoleLog)                $private(consoleLog)
+   set conf(t193,portSerie)                 $widget(portSerie)
+   set conf(t193,mode)                      $widget(mode)
+   set conf(t193,nomCarte)                  $widget(nomCarte)
+   set conf(t193,minDelay)                  $widget(minDelay)
+   set conf(t193,nomPortTelescope)          $widget(nomPortTelescope)
+   set conf(t193,nomPortAttenuateur)        $widget(nomPortAttenuateur)
+   set conf(t193,alphaGuidingSpeed)         $widget(alphaGuidingSpeed)
+   set conf(t193,deltaGuidingSpeed)         $widget(deltaGuidingSpeed)
+   set conf(t193,hostEthernet)              $widget(hostEthernet)
+   set conf(t193,telescopeCommandPort)      $widget(telescopeCommandPort)
+   set conf(t193,telescopeNotificationPort) $widget(telescopeNotificationPort)
+   set conf(t193,dureeMaxAttenuateur)       $widget(dureeMaxAttenuateur)
+   set conf(t193,consoleLog)                $widget(consoleLog)
+   set conf(t193,model,enabled)             $widget(model,enabled)
+   set conf(t193,model,id)                  $widget(model,id)
+
+   set conf(raquette)                       $widget(raquette)
+
 }
 
 #
@@ -172,6 +183,7 @@ proc ::t193::widgetToConf { } {
 #    Interface de configuration de la monture du T193 de l'OHP
 #
 proc ::t193::fillConfigPage { frm } {
+   variable widget
    variable private
    global audace caption
 
@@ -200,23 +212,23 @@ proc ::t193::fillConfigPage { frm } {
    TitleFrame $frm.ethernet -borderwidth 2 -relief ridge -text $caption(t193,ethernet)
       #--- Definition du host Ethernet
       label $frm.labhost -text $caption(t193,host)
-      pack $frm.labhost -in [ $frm.ethernet getframe ] -anchor n -side left -padx 2 -pady 2  
+      pack $frm.labhost -in [ $frm.ethernet getframe ] -anchor n -side left -padx 2 -pady 2
       #--- Entry du host Ethernet
-      entry $frm.host -textvariable ::t193::private(hostEthernet) -width 15 -justify center
+      entry $frm.host -textvariable ::t193::widget(hostEthernet) -width 15 -justify center
       pack $frm.host -in [ $frm.ethernet getframe ] -anchor n -side left -padx 2 -pady 2
-   
+
       #--- Definition du port Ethernet de commande
       label $frm.labportCommand -text $caption(t193,portCommand)
-      pack $frm.labportCommand -in [ $frm.ethernet getframe ] -anchor n -side left -padx 2 -pady 2  
+      pack $frm.labportCommand -in [ $frm.ethernet getframe ] -anchor n -side left -padx 2 -pady 2
       #--- Entry du port Ethernet de commande
-      entry $frm.portCommand -textvariable ::t193::private(telescopeCommandPort) -width 7 -justify center
+      entry $frm.portCommand -textvariable ::t193::widget(telescopeCommandPort) -width 7 -justify center
       pack $frm.portCommand -in [ $frm.ethernet getframe ] -anchor n -side left -padx 2 -pady 2
-   
+
       #--- Definition du port Ethernet de notification
       label $frm.labportNotification -text $caption(t193,portNotification)
-      pack $frm.labportNotification -in [ $frm.ethernet getframe ] -anchor n -side left -padx 2 -pady 2  
+      pack $frm.labportNotification -in [ $frm.ethernet getframe ] -anchor n -side left -padx 2 -pady 2
       #--- Entry du port Ethernet de notification
-      entry $frm.portNotification -textvariable ::t193::private(telescopeNotificationPort) -width 7 -justify center
+      entry $frm.portNotification -textvariable ::t193::widget(telescopeNotificationPort) -width 7 -justify center
       pack $frm.portNotification -in [ $frm.ethernet getframe ] -anchor n -side left -padx 2 -pady 2
 
    pack $frm.ethernet -side top -fill x
@@ -224,26 +236,17 @@ proc ::t193::fillConfigPage { frm } {
    TitleFrame $frm.attenuateur -borderwidth 2 -relief ridge -text $::caption(t193,attenuateur)
       #--- Definition du nom de la carte USB-6501 et de son port
       label $frm.attenuateur.label -text $caption(t193,nom_carte)
-      pack $frm.attenuateur.label -in [$frm.attenuateur getframe] -anchor n -side left -padx 2 -pady 2      
+      pack $frm.attenuateur.label -in [$frm.attenuateur getframe] -anchor n -side left -padx 2 -pady 2
       #--- Entry du nom de la carte USB-6501
-      entry $frm.attenuateur.nomCarte -textvariable ::t193::private(nomCarte) -width 15 -justify left
+      entry $frm.attenuateur.nomCarte -textvariable ::t193::widget(nomCarte) -width 15 -justify left
       pack $frm.attenuateur.nomCarte -in [$frm.attenuateur getframe] -anchor n -side left -padx 2 -pady 2
    pack $frm.attenuateur -side top -fill x
- 
+
    frame $frm.frame3 -borderwidth 0 -relief raised
    pack $frm.frame3 -in [ $frm.carteUSB getframe ] -side top -fill x
 
    frame $frm.frame4 -borderwidth 0 -relief raised
    pack $frm.frame4 -in [ $frm.carteUSB getframe ] -side top -fill x
-
-   frame $frm.frame7 -borderwidth 0 -relief raised
-   pack $frm.frame7 -side bottom -fill x -pady 2
-
-   frame $frm.frame6 -borderwidth 0 -relief raised
-   pack $frm.frame6 -side bottom -fill x -pady 2
-
-   frame $frm.frame5 -borderwidth 0 -relief raised
-   pack $frm.frame5 -side bottom -fill x
 
    #--- Definition du port serie
    label $frm.lab4 -text "$caption(t193,port)"
@@ -253,10 +256,10 @@ proc ::t193::fillConfigPage { frm } {
    if { [ llength $list_connexion ] > 0 } {
       #--- Si la liste n'est pas vide,
       #--- je verifie que la valeur par defaut existe dans la liste
-      if { [ lsearch -exact $list_connexion $private(portSerie) ] == -1 } {
+      if { [ lsearch -exact $list_connexion $widget(portSerie) ] == -1 } {
          #--- Si la valeur par defaut n'existe pas dans la liste,
          #--- je la remplace par le premier item de la liste
-         set private(portSerie) [ lindex $list_connexion 0 ]
+         set widget(portSerie) [ lindex $list_connexion 0 ]
       }
    } else {
       #--- Si la liste est vide, on continue quand meme
@@ -265,7 +268,7 @@ proc ::t193::fillConfigPage { frm } {
    #--- Bouton de configuration des ports
    button $frm.configure -text "$caption(t193,configurer)" -relief raised \
       -command {
-         ::confLink::run ::t193::private(portSerie) { serialport } \
+         ::confLink::run ::t193::widget(portSerie) { serialport } \
             "- $caption(t193,controle) - $caption(t193,monture)"
       }
    pack $frm.configure -in $frm.frame3 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
@@ -276,20 +279,20 @@ proc ::t193::fillConfigPage { frm } {
       -height [ llength $list_connexion ] \
       -relief sunken    \
       -borderwidth 1    \
-      -textvariable ::t193::private(portSerie) \
+      -textvariable ::t193::widget(portSerie) \
       -editable 0       \
       -values $list_connexion
    pack $frm.portSerie -in $frm.frame3 -anchor n -side left -padx 10 -pady 10
 
    #--- Mode carte USB National Instruments
    radiobutton $frm.mode.radio0 -anchor nw -highlightthickness 0 \
-      -text "$caption(t193,carteUSB)" -value "HP1000" -variable ::t193::private(mode) \
+      -text "$caption(t193,carteUSB)" -value "HP1000" -variable ::t193::widget(mode) \
       -command { ::t193::configureConfigPage }
    pack $frm.mode.radio0 -in [ $frm.mode getframe ] -anchor n -side left -padx 10 -pady 0
 
    #--- Mode Ethernet (interface de controle OHP)
    radiobutton $frm.mode.radio1 -anchor nw -highlightthickness 0 \
-      -text "$caption(t193,ethernet)" -value "ETHERNET" -variable ::t193::private(mode) \
+      -text "$caption(t193,ethernet)" -value "ETHERNET" -variable ::t193::widget(mode) \
       -command { ::t193::configureConfigPage }
    pack $frm.mode.radio1 -in [ $frm.mode getframe ] -anchor n -side left -padx 10 -pady 0
 
@@ -298,11 +301,11 @@ proc ::t193::fillConfigPage { frm } {
    pack $frm.lab2 -in $frm.frame4 -anchor n -side left -padx 10 -pady 5
 
    #--- Entry du nom de la carte USB-6501 et de son port
-   entry $frm.nomCarte -textvariable ::t193::private(nomCarte) -width 15 -justify left
+   entry $frm.nomCarte -textvariable ::t193::widget(nomCarte) -width 15 -justify left
    pack $frm.nomCarte -in $frm.frame4 -anchor n -side left -padx 10 -pady 5
 
    #--- Entry de la longueur de l'impulsion minimale
-   entry $frm.minDelay -textvariable ::t193::private(minDelay) -width 5 -justify left
+   entry $frm.minDelay -textvariable ::t193::widget(minDelay) -width 5 -justify left
    pack $frm.minDelay -in $frm.frame4 -anchor n -side right -padx 10 -pady 5
 
    #--- Definition de la longueur de l'impulsion minimale
@@ -314,14 +317,14 @@ proc ::t193::fillConfigPage { frm } {
 
       #--- Vitesse de rappel alpha
       label $frm.frame3.speed.labelAlpha -text "$caption(t193,rappelAlpha)"
-      entry $frm.frame3.speed.entryAlpha -textvariable ::t193::private(alphaGuidingSpeed) \
+      entry $frm.frame3.speed.entryAlpha -textvariable ::t193::widget(alphaGuidingSpeed) \
          -width 5 -justify left
       grid $frm.frame3.speed.labelAlpha  -row 0 -column 0 -ipadx 3
       grid $frm.frame3.speed.entryAlpha  -row 0 -column 1 -ipadx 3
 
       #--- Vitesse de rappel delta
       label $frm.frame3.speed.labelDelta -text "$caption(t193,rappelDelta)"
-      entry $frm.frame3.speed.entryDelta -textvariable ::t193::private(deltaGuidingSpeed) \
+      entry $frm.frame3.speed.entryDelta -textvariable ::t193::widget(deltaGuidingSpeed) \
          -width 5 -justify left
       grid $frm.frame3.speed.labelDelta  -row 1 -column 0 -ipadx 3
       grid $frm.frame3.speed.entryDelta  -row 1 -column 1 -ipadx 3
@@ -334,137 +337,196 @@ proc ::t193::fillConfigPage { frm } {
 
    pack $frm.frame3.speed -in $frm.frame3 -anchor n -side right -pady 5 -ipadx 5 -ipady 1 -expand 0
 
-   #--- J'affiche les boutons N, S, E et O
-   TitleFrame $frm.test1 -borderwidth 2 -relief ridge -text "$caption(t193,raquette)"
+   #--- boutons de tests (test mouvement, test radec, test attenuateurs),
+   frame $frm.frame5 -borderwidth 0 -relief raised
+      #--- J'affiche les boutons N, S, E et O
+      TitleFrame $frm.test1 -borderwidth 2 -relief ridge -text "$caption(t193,raquette)"
 
-      #--- J'affiche le bouton E
-      button $frm.test1.est -text "$caption(t193,est)" -relief ridge -width 2
-      grid $frm.test1.est -in [ $frm.test1 getframe ] -row 1 -column 1 -ipadx 5
+         #--- J'affiche le bouton E
+         button $frm.test1.est -text "$caption(t193,est)" -relief ridge -width 2
+         grid $frm.test1.est -in [ $frm.test1 getframe ] -row 1 -column 1 -ipadx 5
 
-      #--- J'affiche le bouton N
-      button $frm.test1.nord -text "$caption(t193,nord)" -relief ridge -width 2
-      grid $frm.test1.nord -in [ $frm.test1 getframe ] -row 0 -column 2 -ipadx 5
+         #--- J'affiche le bouton N
+         button $frm.test1.nord -text "$caption(t193,nord)" -relief ridge -width 2
+         grid $frm.test1.nord -in [ $frm.test1 getframe ] -row 0 -column 2 -ipadx 5
 
-      #--- J'affiche le bouton S
-      button $frm.test1.sud -text "$caption(t193,sud)" -relief ridge -width 2
-      grid $frm.test1.sud -in [ $frm.test1 getframe ] -row 2 -column 2 -ipadx 5
+         #--- J'affiche le bouton S
+         button $frm.test1.sud -text "$caption(t193,sud)" -relief ridge -width 2
+         grid $frm.test1.sud -in [ $frm.test1 getframe ] -row 2 -column 2 -ipadx 5
 
-      #--- J'affiche le bouton O
-      button $frm.test1.ouest -text "$caption(t193,ouest)" -relief ridge -width 2
-      grid $frm.test1.ouest -in [ $frm.test1 getframe ] -row 1 -column 3 -ipadx 5
+         #--- J'affiche le bouton O
+         button $frm.test1.ouest -text "$caption(t193,ouest)" -relief ridge -width 2
+         grid $frm.test1.ouest -in [ $frm.test1 getframe ] -row 1 -column 3 -ipadx 5
 
-      grid rowconfigure [ $frm.test1 getframe ] 0 -minsize 25 -weight 0
-      grid rowconfigure [ $frm.test1 getframe ] 1 -minsize 25 -weight 0
-      grid rowconfigure [ $frm.test1 getframe ] 2 -minsize 25 -weight 0
+         grid rowconfigure [ $frm.test1 getframe ] 0 -minsize 25 -weight 0
+         grid rowconfigure [ $frm.test1 getframe ] 1 -minsize 25 -weight 0
+         grid rowconfigure [ $frm.test1 getframe ] 2 -minsize 25 -weight 0
 
-      grid columnconfigure [ $frm.test1 getframe ] 1 -minsize 40 -weight 0
-      grid columnconfigure [ $frm.test1 getframe ] 2 -minsize 40 -weight 0
-      grid columnconfigure [ $frm.test1 getframe ] 3 -minsize 40 -weight 0
+         grid columnconfigure [ $frm.test1 getframe ] 1 -minsize 40 -weight 0
+         grid columnconfigure [ $frm.test1 getframe ] 2 -minsize 40 -weight 0
+         grid columnconfigure [ $frm.test1 getframe ] 3 -minsize 40 -weight 0
 
-   pack $frm.test1 -in $frm.frame5 -side left -anchor w -fill none -pady 5 -expand 1
+         #--- Actions des boutons E, N, S et O
+         bind $frm.test1.est <ButtonPress-1>     "::t193::moveTelescop e press"
+         bind $frm.test1.est <ButtonRelease-1>   "::t193::moveTelescop e release"
+         bind $frm.test1.nord <ButtonPress-1>    "::t193::moveTelescop n press"
+         bind $frm.test1.nord <ButtonRelease-1>  "::t193::moveTelescop n release"
+         bind $frm.test1.sud <ButtonPress-1>     "::t193::moveTelescop s press"
+         bind $frm.test1.sud <ButtonRelease-1>   "::t193::moveTelescop s release"
+         bind $frm.test1.ouest <ButtonPress-1>   "::t193::moveTelescop w press"
+         bind $frm.test1.ouest <ButtonRelease-1> "::t193::moveTelescop w release"
 
-   #--- J'affiche le bouton pour la lecture des coordonnees AD et Dec.
-   TitleFrame $frm.test2 -borderwidth 2 -relief ridge -text "$caption(t193,coordonnées)"
+      pack $frm.test1 -in $frm.frame5 -side left -anchor w -fill y -pady 5 -expand 1
 
-      #--- J'affiche le label pour l'AD
-      label $frm.test2.labAD -text $caption(t193,AD)
-      grid $frm.test2.labAD -in [ $frm.test2 getframe ] -row 0 -column 1
+      #--- J'affiche le bouton pour la lecture des coordonnees AD et Dec.
+      TitleFrame $frm.test2 -borderwidth 2 -relief ridge -text "$caption(t193,coordonnees)"
 
-      #--- J'affiche l'entry de l'AD
-      entry $frm.test2.entryAD -textvariable audace(telescope,getra) -width 15 \
-         -justify center -state disabled
-      grid $frm.test2.entryAD -in [ $frm.test2 getframe ] -row 1 -column 1
+         #--- J'affiche le label pour l'AD
+         label $frm.test2.labAD -text $caption(t193,AD)
+         grid $frm.test2.labAD -in [ $frm.test2 getframe ] -row 0 -column 1
 
-      #--- J'affiche le label pour la Dec.
-      label $frm.test2.labDec -text $caption(t193,Dec)
-      grid $frm.test2.labDec -in [ $frm.test2 getframe ] -row 0 -column 2
+         #--- J'affiche l'entry de l'AD
+         entry $frm.test2.entryAD -textvariable audace(telescope,getra) -width 15 \
+            -justify center -state disabled
+         grid $frm.test2.entryAD -in [ $frm.test2 getframe ] -row 1 -column 1
 
-      #--- J'affiche l'entry de la Dec.
-      entry $frm.test2.entryDec -textvariable audace(telescope,getdec) -width 15 \
-         -justify center -state disabled
-      grid $frm.test2.entryDec -in [ $frm.test2 getframe ] -row 1 -column 2
+         #--- J'affiche le label pour la Dec.
+         label $frm.test2.labDec -text $caption(t193,Dec)
+         grid $frm.test2.labDec -in [ $frm.test2 getframe ] -row 0 -column 2
 
-      grid rowconfigure [ $frm.test2 getframe ] 0 -minsize 30 -weight 0
-      grid rowconfigure [ $frm.test2 getframe ] 2 -minsize 30 -weight 0
+         #--- J'affiche l'entry de la Dec.
+         entry $frm.test2.entryDec -textvariable audace(telescope,getdec) -width 15 \
+            -justify center -state disabled
+         grid $frm.test2.entryDec -in [ $frm.test2 getframe ] -row 1 -column 2
 
-   pack $frm.test2 -in $frm.frame5 -side left -anchor w -fill none -pady 5 -expand 1
+         grid rowconfigure [ $frm.test2 getframe ] 0 -minsize 30 -weight 0
+         grid rowconfigure [ $frm.test2 getframe ] 2 -minsize 30 -weight 0
 
-   #--- J'affiche les boutons - et + de l'attenuateur
-   TitleFrame $frm.test3 -borderwidth 2 -relief ridge -text "$caption(t193,attenuateur)"
+      pack $frm.test2 -in $frm.frame5 -side left -anchor w -fill y -pady 5 -expand 1
 
-      #--- J'affiche le label pour la duree du deplacement
-      label $frm.test3.attenuateur -text $caption(t193,duree)
-      grid $frm.test3.attenuateur -in [ $frm.test3 getframe ] -row 0 -column 1
+      #--- J'affiche les boutons - et + de l'attenuateur
+      TitleFrame $frm.test3 -borderwidth 2 -relief ridge -text "$caption(t193,attenuateur)"
 
-      #--- J'affiche l'entry de la duree du deplacement
-      entry $frm.test3.entryDuree -textvariable ::t193::private(dureeMaxAttenuateur) -width 5 \
-         -justify left
-      grid $frm.test3.entryDuree -in [ $frm.test3 getframe ] -row 0 -column 2
+         #--- J'affiche le label pour la duree du deplacement
+         label $frm.test3.attenuateur -text $caption(t193,duree)
+         grid $frm.test3.attenuateur -in [ $frm.test3 getframe ] -row 0 -column 1
 
-      #--- J'affiche le bouton -
-      button $frm.test3.attenuateur- -text "$caption(t193,attenuateur-)" -relief ridge -width 2
-      grid $frm.test3.attenuateur- -in [ $frm.test3 getframe ] -row 1 -column 1 -ipadx 5
+         #--- J'affiche l'entry de la duree du deplacement
+         entry $frm.test3.entryDuree -textvariable ::t193::widget(dureeMaxAttenuateur) -width 5 \
+            -justify left
+         grid $frm.test3.entryDuree -in [ $frm.test3 getframe ] -row 0 -column 2
 
-      #--- J'affiche le bouton +
-      button $frm.test3.attenuateur+ -text "$caption(t193,attenuateur+)" -relief ridge -width 2
-      grid $frm.test3.attenuateur+ -in [ $frm.test3 getframe ] -row 1 -column 2 -ipadx 5
+         #--- J'affiche le bouton -
+         button $frm.test3.attenuateur- -text "$caption(t193,attenuateur-)" -relief ridge -width 2
+         grid $frm.test3.attenuateur- -in [ $frm.test3 getframe ] -row 1 -column 1 -ipadx 5
 
-      #--- J'affiche l'entry de la position de l'attenuateur
-      entry $frm.test3.entryPosition -textvariable ::t193::private(position) \
-         -justify center -state disabled
-      grid $frm.test3.entryPosition -in [ $frm.test3 getframe ] -row 2 -column 1 -columnspan 2 \
-         -sticky ew
+         #--- J'affiche le bouton +
+         button $frm.test3.attenuateur+ -text "$caption(t193,attenuateur+)" -relief ridge -width 2
+         grid $frm.test3.attenuateur+ -in [ $frm.test3 getframe ] -row 1 -column 2 -ipadx 5
 
-      grid rowconfigure [ $frm.test3 getframe ] 0 -minsize 25 -weight 0
-      grid rowconfigure [ $frm.test3 getframe ] 1 -minsize 25 -weight 0
-      grid rowconfigure [ $frm.test3 getframe ] 2 -minsize 25 -weight 0
+         #--- J'affiche l'entry de la position de l'attenuateur
+         entry $frm.test3.entryPosition -textvariable ::t193::private(position) \
+            -justify center -state disabled
+         grid $frm.test3.entryPosition -in [ $frm.test3 getframe ] -row 2 -column 1 -columnspan 2 \
+            -sticky ew
 
-      grid columnconfigure [ $frm.test3 getframe ] 1 -minsize 40 -weight 0
-      grid columnconfigure [ $frm.test3 getframe ] 2 -minsize 40 -weight 0
+         grid rowconfigure [ $frm.test3 getframe ] 0 -minsize 25 -weight 0
+         grid rowconfigure [ $frm.test3 getframe ] 1 -minsize 25 -weight 0
+         grid rowconfigure [ $frm.test3 getframe ] 2 -minsize 25 -weight 0
 
-   pack $frm.test3 -in $frm.frame5 -side left -anchor w -fill none -pady 5 -expand 1
+         grid columnconfigure [ $frm.test3 getframe ] 1 -minsize 40 -weight 0
+         grid columnconfigure [ $frm.test3 getframe ] 2 -minsize 40 -weight 0
 
-   #--- Le checkbutton pour obtenir des traces dans la Console
-   checkbutton $frm.checkLog -text $caption(t193,tracesConsole) \
-      -highlightthickness 0 -variable ::t193::private(consoleLog) \
+         #--- Actions des boutons - et + de l'attenuateur
+         bind $frm.test3.attenuateur- <ButtonPress-1>   "::t193::moveFilter -"
+         bind $frm.test3.attenuateur- <ButtonRelease-1> "::t193::stopFilter"
+         bind $frm.test3.attenuateur+ <ButtonPress-1>   "::t193::moveFilter +"
+         bind $frm.test3.attenuateur+ <ButtonRelease-1> "::t193::stopFilter"
+
+      pack $frm.test3 -in $frm.frame5 -side left -anchor w -fill y -pady 5 -expand 1
+   pack $frm.frame5 -side top -fill x
+
+   #--- modele de pointage
+   ###TitleFrame $frm.model -borderwidth 2 -relief ridge -text $caption(t193,model,title)
+   ###   #--- Le checkbutton pour obtenir des traces dans la Console
+   ###   checkbutton $frm.model.enabled -text $caption(t193,model,enabled) \
+   ###   -highlightthickness 0 -variable ::t193::widget(model,enabled) \
+   ###   -command "::t193::onEnableModel"
+   ###   pack $frm.model.enabled -in [$frm.model getframe] -anchor w -side left -padx 2
+   ###
+   ###   #--- j'affiche la liste des modeles de pointage
+   ###   set modelList [::confTel::getModelList ]
+   ###   ComboBox $frm.model.modelList \
+   ###     -width [ ::tkutil::lgEntryComboBox $modelList ] \
+   ###     -height [ llength $modelList ] \
+   ###     -relief sunken -borderwidth 1 -editable 0 \
+   ###     -modifycmd "::t193::onSelectModel $frm.model.modelList" \
+   ###      -values $modelList
+   ###   pack $frm.model.modelList -in [$frm.model getframe] -anchor w -side left -fill none -padx 2
+   ###
+   ###   #--- je verifie que le modele precedemment selectionne existe toujours
+   ###   if { [info exists ::conf(confTel,model,$::conf(t193,model,id),name)] != 0 } {
+   ###      #--- je recupere le nom du modele pour verifier s'il existe
+   ###      set index [lsearch $modelList $::conf(t193,model,$::conf(t193,model,id),name)]
+   ###      if { $index == -1 } {
+   ###         #--- je selectionne le premier si celui precedemment selectionne n'existe plus
+   ###         set index 0
+   ###      }
+   ###   } else {
+   ###      #--- je selectionne le premier si celui precedemment selectionne n'existe plusiste plus
+   ###      set index 0
+   ###   }
+   ###   #--- je selectionne le modele dans la combobox
+   ###   $frm.model.modelList setvalue "@$index"
+   ###
+   ###   #--- date du modele
+   ###   label $frm.model.dateLabel -text $caption(t193,model,date)
+   ###   pack $frm.model.dateLabel  -in [$frm.model getframe] -anchor w -side left -padx 0
+   ###   label $frm.model.dateValue -textvariable ::t193::widget(model,date)
+   ###   pack $frm.model.dateValue -in [$frm.model getframe] -anchor w -side left -padx 0
+   ###
+   ###   #--- bouton de configuration des modeles
+   ###   button $frm.model.configure -text $caption(t193,model,configure)  \
+   ###      -command ""
+   ###   pack $frm.model.configure -in [$frm.model getframe] -anchor w -side left -padx 2
+   ###   #--- je configure l'etat des widgets du modele
+   ###   ::t193::onEnableModel
+   ###   ::t193::onSelectModel $frm.model.modelList
+   ###
+   ###pack $frm.model -in $frm -anchor w -side top -fill x -padx 2
+
+   #--- choix raquette et traces
+   frame $frm.pad -borderwidth 0 -relief raised
+      #--- Le checkbutton pour la visibilite de la raquette a l'ecran
+      checkbutton $frm.raquette -text "$caption(t193,raquette_tel)" \
+         -highlightthickness 0 -variable ::t193::widget(raquette)
+      pack $frm.raquette -in $frm.pad -anchor center -side left -padx 10 -pady 10
+
+      #--- Frame raquette
+      ::confPad::createFramePad $frm.nom_raquette "::confTel::private(nomRaquette)"
+      pack $frm.nom_raquette -in $frm.pad -anchor center -side left -padx 0 -pady 10
+
+      #--- Le checkbutton pour obtenir des traces dans la Console
+      checkbutton $frm.checkLog -text $caption(t193,tracesConsole) \
+      -highlightthickness 0 -variable ::t193::widget(consoleLog) \
       -command "::t193::tracesConsole"
-   pack $frm.checkLog -in $frm.frame6 -anchor w -side right -padx 10
+      pack $frm.checkLog -in $frm.pad -anchor w -side left -padx 10
 
-   #--- Le checkbutton pour la visibilite de la raquette a l'ecran
-   checkbutton $frm.raquette -text "$caption(t193,raquette_tel)" \
-      -highlightthickness 0 -variable ::t193::private(raquette)
-   pack $frm.raquette -in $frm.frame6 -anchor center -side left -padx 10 -pady 10
-
-   #--- Frame raquette
-   ::confPad::createFramePad $frm.nom_raquette "::confTel::private(nomRaquette)"
-   pack $frm.nom_raquette -in $frm.frame6 -anchor center -side left -padx 0 -pady 10
+   pack $frm.pad -side top -fill x -pady 2
 
    #--- Site web officiel du T193 de l'OHP
-   label $frm.lab103 -text "$caption(t193,titre_site_web)"
-   pack $frm.lab103 -in $frm.frame7 -side top -fill x -pady 2
+   frame $frm.website -borderwidth 0 -relief raised
+      label $frm.webSiteLabel -text "$caption(t193,titre_site_web)"
+      pack  $frm.webSiteLabel -in $frm.website -side top -fill x -pady 2
 
-   set labelName [ ::confTel::createUrlLabel $frm.frame7 "$caption(t193,site_t193)" \
-      "$caption(t193,site_t193)" ]
-   pack $labelName -side top -fill x -pady 2
+      set webSiteUrl [ ::confTel::createUrlLabel $frm.website "$caption(t193,site_t193)" \
+         "$caption(t193,site_t193)" ]
+      pack $webSiteUrl -side top -fill x -pady 2
+   pack $frm.website -side top -fill x -pady 2
 
    #--- Configuration des boutons de test
    ::t193::configureConfigPage
 
-   #--- Actions des boutons E, N, S et O
-   bind $frm.test1.est <ButtonPress-1>     "::t193::moveTelescop e press"
-   bind $frm.test1.est <ButtonRelease-1>   "::t193::moveTelescop e release"
-   bind $frm.test1.nord <ButtonPress-1>    "::t193::moveTelescop n press"
-   bind $frm.test1.nord <ButtonRelease-1>  "::t193::moveTelescop n release"
-   bind $frm.test1.sud <ButtonPress-1>     "::t193::moveTelescop s press"
-   bind $frm.test1.sud <ButtonRelease-1>   "::t193::moveTelescop s release"
-   bind $frm.test1.ouest <ButtonPress-1>   "::t193::moveTelescop w press"
-   bind $frm.test1.ouest <ButtonRelease-1> "::t193::moveTelescop w release"
-
-   #--- Actions des boutons - et + de l'attenuateur
-   bind $frm.test3.attenuateur- <ButtonPress-1>   "::t193::moveFilter -"
-   bind $frm.test3.attenuateur- <ButtonRelease-1> "::t193::stopFilter"
-   bind $frm.test3.attenuateur+ <ButtonPress-1>   "::t193::moveFilter +"
-   bind $frm.test3.attenuateur+ <ButtonRelease-1> "::t193::stopFilter"
 }
 
 #
@@ -507,6 +569,10 @@ proc ::t193::configureMonture { } {
             set ::audace(telescope,getdec) "00d00m00"
             #--- je lance la lecture periodique des coordonnees
             ::t193::readRadec
+            #--- J'affiche un message d'information dans la Console
+            ::console::affiche_entete "$caption(t193,port_t193) $caption(t193,2points) $conf(t193,portSerie)\n"
+            ::console::affiche_entete "$caption(t193,nom_carte) $caption(t193,2points) $conf(t193,nomCarte)\n"
+            ::console::affiche_saut "\n"
          }
          "ETHERNET" {
             #--- Je cree la monture
@@ -522,6 +588,10 @@ proc ::t193::configureMonture { } {
                -maxDetectorFilterInput 3 \
                -filterMaxDelay $conf(t193,dureeMaxAttenuateur) \
             ]
+             #--- J'affiche un message d'information dans la Console
+             ::console::affiche_entete "$caption(t193,port_t193) $caption(t193,2points) $conf(t193,portSerie)\n"
+             ::console::affiche_entete "$caption(t193,host) $caption(t193,2points) $conf(t193,hostEthernet) $caption(t193,portCommand) $caption(t193,2points) $::conf(t193,telescopeCommandPort) $caption(t193,portNotification) $caption(t193,2points) $::conf(t193,telescopeNotificationPort)\n"
+             ::console::affiche_saut "\n"
          }
          "REMOTE" {
             #--- Je cree la monture
@@ -533,25 +603,25 @@ proc ::t193::configureMonture { } {
       }
       #--- Je configure la position geographique du telescope
       #--- (la position geographique est utilisee pour calculer le temps sideral)
-      # tel$telno home GPS long e|w lat alt
-      tel$telNo home $::conf(posobs,observateur,gps)  
+      #--- format :  tel$telno home GPS long e|w lat alt
+      tel$telNo home $::conf(posobs,observateur,gps)
       tel$telNo home name $::conf(posobs,nom_observatoire)
-      
+
+       #--- Je configure le modele de pointage
       if { $::conf(t193,model,enabled) == 1 } {
-          tel$telNo home $::conf(posobs,observateur,gps)  
-          tel$telNo radec model -symbols $::conf(t193,model,symbols) -coefficients $::conf(t193,model,symbols) -enabled 1
+          tel$telNo home $::conf(posobs,observateur,gps)
+          set modelId $::conf(t193,model,id)
+          tel$telNo radec model -enabled 1 \
+            -symbols $::conf(confTel,model,$modelId,symbols) \
+            -coefficients $::conf(confTel,model,$modelId,coefficients)
       } else {
           #tel$telNo radec model  -enabled 0
       }
-      
+
       #--- Je parametre le niveau de trace
       tel$telNo consolelog $::conf(t193,consoleLog)
 
-      #--- J'affiche un message d'information dans la Console
-      ::console::affiche_entete "$caption(t193,port_t193) $caption(t193,2points) $conf(t193,portSerie)\n"
-      ::console::affiche_entete "$caption(t193,nom_carte) $caption(t193,2points) $conf(t193,nomCarte)\n"
-      ::console::affiche_saut "\n"
-      #--- Je change de variable
+      #--- Je memorise le numero du telescope
       set private(telNo) $telNo
       #--- Configuration des boutons de test
       ::t193::configureConfigPage
@@ -616,16 +686,17 @@ proc ::t193::stop { } {
 #
 proc ::t193::configureConfigPage { } {
    variable private
+   variable widget
 
    if { [ winfo exists $private(frm) ] } {
-      if { $private(mode) == "HP1000" } {
+      if { $widget(mode) == "HP1000" } {
          pack forget $private(frm).ethernet
          pack forget $private(frm).attenuateur
-         pack $private(frm).carteUSB -side top -fill x
-      } elseif { $private(mode) == "ETHERNET" } {
+         pack $private(frm).carteUSB -side top -fill x -after $private(frm).mode
+      } elseif { $widget(mode) == "ETHERNET" } {
          pack forget $private(frm).carteUSB
-         pack $private(frm).ethernet -side top -fill x
-         pack $private(frm).attenuateur -side top -fill x
+         pack $private(frm).ethernet -side top -fill x -after $private(frm).mode
+         pack $private(frm).attenuateur -side top -fill x -after $private(frm).ethernet
       }
       if { [ ::t193::isReady ] == 1 } {
          #--- J'active les boutons de l'interface
@@ -740,7 +811,7 @@ proc ::t193::getPluginProperty { propertyName } {
       hasManualMotion         { return 1 }
       hasControlSuivi         { return 1 }
       hasCorrectionRefraction { return 0 }
-      hasMotionWhile          { 
+      hasMotionWhile          {
          if {$::conf(t193,mode) == "ETHERNET"} {
             #--- les corrections sont demandees avec une distance en arseconde
             return 2
@@ -760,7 +831,7 @@ proc ::t193::getPluginProperty { propertyName } {
 
 #------------------------------------------------------------
 # readRadec
-#    lit les coordonnees toutes les 2 secondes
+#    lit les coordonnees toutes les 2 secondes sur le port serie du HP1000
 #
 #    "06h 23m 36.73s / +44d 35' 29'' /   -1d"
 #------------------------------------------------------------
@@ -772,7 +843,7 @@ proc ::t193::readRadec { } {
       set data [split $data "\n" ]
       if { $data != "" } {
          ###console::disp "::t193::readRadec data=$data \n"
-         #--- je recupere le dernier message (au cas ou il en aurait plusieurs qui se seraient accumulés)
+         #--- je recupere le dernier message (au cas ou il en aurait plusieurs qui se seraient accumul?s)
          set data [lindex $data end]
          set ah ""
          set am ""
@@ -816,6 +887,51 @@ proc ::t193::tracesConsole { } {
       return
    }
 
-   tel$private(telNo) consolelog $private(consoleLog)
+   tel$private(telNo) consolelog $::conf(t193,consoleLog)
 }
+
+#------------------------------------------------------------
+# onEnableModel
+#    active ou desactive le modele de pointage
+#
+#------------------------------------------------------------
+proc ::t193::onEnableModel { } {
+   variable private
+   variable widget
+
+   if { $widget(model,enabled) == 0 } {
+      $private(frm).model.modelList configure -state disabled
+      $private(frm).model.configure configure -state disabled
+   } else {
+      $private(frm).model.modelList configure -state normal
+      $private(frm).model.configure configure -state normal
+   }
+}
+
+#------------------------------------------------------------
+# onSelectModel
+#    selectionne le modele de pointage
+#
+# @param tkCombo combobox contenant la liste des noms des modeles
+
+#------------------------------------------------------------
+proc ::t193::onSelectModel { tkCombo } {
+   variable widget
+
+   #--- je recupere l'identifiant du modele correspondant la ligne selectionne dans la combobox
+   set modelId [::confTel::getModelIdentifiant [$tkCombo get]]
+   if { $modelId != "" } {
+      #--- j'ajoute les parametres manquants (en cas d'evolution de la liste des attributs d'un modele)
+      if { [info exists ::conf(confTel,model,$modelId,name)] == 0 } { set ::conf(confTel,model,$modelId,name) $modelId }
+      if { [info exists ::conf(confTel,model,$modelId,symbols)] == 0 } { set ::conf(confTel,model,$modelId,symbols) "" }
+      if { [info exists ::conf(confTel,model,$modelId,coefficients)] == 0 } { set ::conf(confTel,model,$modelId,coefficients) "" }
+
+      set widget(model,id) $modelId
+      set widget(model,date) $::conf(confTel,model,$modelId,date)
+   }
+}
+
+
+
+
 
