@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.52 2009-12-04 21:56:42 michelpujol Exp $
+# Mise a jour $Id: telescope.tcl,v 1.53 2010-01-25 21:43:45 michelpujol Exp $
 #
 
 namespace eval ::telescope {
@@ -582,6 +582,8 @@ proc ::telescope::incrementSpeed { } {
          if { $audace(telescope,speed) == "1" } {
             setSpeed "2"
          } elseif { $audace(telescope,speed) == "2" } {
+            setSpeed "3"
+         } elseif { $audace(telescope,speed) == "3" } {
             setSpeed "1"
          } else {
             setSpeed "1"
@@ -764,6 +766,11 @@ proc ::telescope::setSpeed { { value "2" } } {
             set audace(telescope,labelspeed) "2"
             set audace(telescope,rate) "0.33"
             set statustel(speed) "0.33"
+         } elseif { $value == "3" } {
+            set audace(telescope,speed) "3"
+            set audace(telescope,labelspeed) "3"
+            set audace(telescope,rate) "0.66"
+            set statustel(speed) "0.66"
          } else {
             set audace(telescope,speed) "1"
             set audace(telescope,labelspeed) "1"
