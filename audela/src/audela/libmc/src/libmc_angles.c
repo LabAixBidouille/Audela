@@ -666,6 +666,40 @@ int Cmd_mctcl_xy2radec(ClientData clientData, Tcl_Interp *interp, int argc, char
    return(result);
 }
 
+int Cmd_mctcl_nutation(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+/****************************************************************************/
+/* Retourne les parametres de la nutation                                   */
+/****************************************************************************/
+/* Entrees :                 												             */
+/* Date           								                                  */
+/*																			                   */
+/* Sorties :																                */
+/* dpsi deps eps 													                      */
+/****************************************************************************/
+   double jj=0.,eps,dpsi,deps;
+   double ss=0.;
+   int result;
+   char s[256];
+
+   if(argc<=1) {
+      sprintf(s,"Usage: %s Date", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else {
+      /* --- decode la date ---*/
+      mctcl_decode_date(interp,argv[1],&jj);
+		/* --- obliquite moyenne --- */
+		mc_obliqmoy(jj,&eps);
+		/* --- longitude vraie du soleil ---*/
+		mc_nutation(jj,1,&dpsi,&deps);
+      /* --- sortie des resultats ---*/
+	   sprintf(s,"%.8f %.8f %.8f",dpsi/(DR),deps/(DR),eps/(DR));
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_OK;
+   }
+   return result;
+}
+
 int mctcl_decode_sequences(Tcl_Interp *interp, char *argv[],int *nobjects, mc_OBJECTDESCR **pobjectdescr)
 /****************************************************************************/
 /* Decode des sequences                                                     */

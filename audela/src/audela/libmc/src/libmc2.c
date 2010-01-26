@@ -5672,7 +5672,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
    double rhocosphip=0.,rhosinphip=0.;
    double latitude,altitude,longitude;
 	double ra,cosdec,mura,mudec,parallax,temperature,pressure;
-	char sens[3];
+	char sens[3],commentaire[1024];
 	double duree,date;
 	double dec,asd2,dec2,delta,mag,diamapp,elong,phase,r,diamapp_equ,diamapp_pol,long1,long2,long3,lati,posangle_sun,posangle_north,long1_sun,lati_sun;
 	double ha,az,h,jd,djd,star_site,star_gise;
@@ -5700,7 +5700,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 	double ttsec,jdtt;
 	int ttsecok=0;
 	double dpsi,deps,eps,tsl,tand,dasd,ddec;
-	double h0,az0;
+	double h0,az0,sunguard=10.;
 	int corrections;
 
    if(argc<2) {
@@ -5980,6 +5980,12 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				} else {
 					strcpy(PointingModelFile,"");
 				}
+				/* --- decode le home ---*/
+				sprintf(s,"global meo ; set ::meo(sunguard)");
+				res=Tcl_Eval(interp,s);
+				if (res==TCL_OK) {
+					sunguard=(double)atof(interp->result);
+				}
 				/* --- charge le modele de pointage ---*/
 				if (strcmp(PointingModelFile,"")!=0) {
 					sprintf(s,"source \"%s\"",PointingModelFile);
@@ -6088,7 +6094,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 					mc_sepangle(star_gise,sun_gise,star_site,sun_site,&sep,&posangle);
 					sep/=(DR);
 					valid=1;
-					if (sep<10) {
+					if (sep<sunguard) {
 						valid=0;
 					}
 					/* --- refraction ---*/
@@ -6096,6 +6102,8 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 					h+=refraction;
 			      mc_hd2parallactic(ha,dec,latitude,&parallactic);
 					star_site=h;
+					/* --- correction du ruban --- */
+					// TODO
 					// --- Transforme les coordonnees observées en coordonnées télescope
 					if ((strcmp(PointingModelFile,"")!=0)&&(matx!=NULL)&&(vecy!=NULL)) {
 						tane=tan(h);
@@ -6267,6 +6275,12 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				} else {
 					corrections=0;
 				}
+				/* --- decode le home ---*/
+				sprintf(s,"global meo ; set ::meo(sunguard)");
+				res=Tcl_Eval(interp,s);
+				if (res==TCL_OK) {
+					sunguard=(double)atof(interp->result);
+				}
 				/* --- charge le modele de pointage ---*/
 				if (strcmp(PointingModelFile,"")!=0) {
 					sprintf(s,"source \"%s\"",PointingModelFile);
@@ -6350,7 +6364,8 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				nlig=0;
 				while (feof(finp)==0) {
 					if (fgets(s,1000,finp)==NULL) { continue; }
-					sscanf(s,"%lf %lf %lf %lf",&sod,&h,&az,&distance);
+					strcpy(commentaire,"");
+					sscanf(s,"%lf %lf %lf %lf %s",&sod,&h,&az,&distance,commentaire);
 					az=(az-180.)*DR;
 					h*=(DR);
 					az0=fmod(az+2*PI,2*PI);
@@ -6390,7 +6405,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 					mc_sepangle(star_gise,sun_gise,star_site,sun_site,&sep,&posangle);
 					sep/=(DR);
 					valid=1;
-					if (sep<10) {
+					if (sep<sunguard) {
 						valid=0;
 					}
 					/* --- refraction ---*/
@@ -6398,6 +6413,8 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 					h+=refraction;
 			      mc_hd2parallactic(ha,dec,latitude,&parallactic);
 					star_site=h;
+					/* --- correction du ruban --- */
+					// TODO
 					// --- Transforme les coordonnees observées en coordonnées télescope
 					if ((strcmp(PointingModelFile,"")!=0)&&(matx!=NULL)&&(vecy!=NULL)) {
 						tane=tan(h);
@@ -6510,7 +6527,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 					parallactic/=(DR);
 					if (star_gise<0) { star_gise+=360; }
 					// --- Mise en forme finale de la ligne
-					sprintf(ligne,"%9.3f %9.6f %10.6f %13.6f %.6f %d",sod,star_site,star_gise,distance,parallactic,valid);
+					sprintf(ligne,"%9.3f %9.6f %10.6f %13.6f %s %.6f %d",sod,star_site,star_gise,distance,commentaire,parallactic,valid);
 					fprintf(f,"%s\n",ligne);
 					nlig++;
 				}
