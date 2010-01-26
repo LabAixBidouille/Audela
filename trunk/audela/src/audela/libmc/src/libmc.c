@@ -118,6 +118,7 @@
    Tcl_CreateCommand(interp,"mc_horizon",(Tcl_CmdProc *)Cmd_mctcl_horizon,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_compute_matrix_modpoi",(Tcl_CmdProc *)Cmd_mctcl_compute_matrix_modpoi,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_nextnight",(Tcl_CmdProc *)Cmd_mctcl_nextnight,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"mc_nutation",(Tcl_CmdProc *)Cmd_mctcl_nutation,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
 
    Tcl_PkgProvide(interp,"libmc","1.0");
 

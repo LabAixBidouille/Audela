@@ -361,29 +361,58 @@ int Cmd_mctcl_date2lst(ClientData clientData, Tcl_Interp *interp, int argc, char
 /* Sorties :																                */
 /* h m s.s   														                      */
 /****************************************************************************/
-   double jj=0.;
+   double jj=0.,eps,dpsi,deps;
    double ss=0.;
    double longi=0.,tsl=0.,rhocosphip,rhosinphip;
    int hhh=0,mmm=0;
-   int result;
-   char s[100];
+   int result,do_nutation=0,type_format=0,ko;
+   char s[256];
 
    if(argc<=2) {
-      sprintf(s,"Usage: %s Date Home", argv[0]);
+      sprintf(s,"Usage: %s Date Home ?-nutation 0|1? ?-format hms|deg?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_ERROR;
    } else {
       /* --- decode la date ---*/
-
       mctcl_decode_date(interp,argv[1],&jj);
       /* --- decode le Home ---*/
       mctcl_decode_topo(interp,argv[2],&longi,&rhocosphip,&rhosinphip);
+      /* --- decode les options ---*/
+      for (ko=3;ko<argc-1;ko++) {
+	      strcpy(s,argv[ko]);
+		   mc_strupr(s,s);
+	      if (strcmp(s,"-NUTATION")==0) {
+			   do_nutation=(int)atoi(argv[ko+1]);
+			}
+	      if (strcmp(s,"-FORMAT")==0) {
+				strcpy(s,argv[ko+1]);
+				mc_strupr(s,s);
+				if (strcmp(s,"HMS")==0) { type_format=0; }
+				else if (strcmp(s,"DEG")==0) { type_format=1; }
+			}
+		}
       /* --- calcul du TSL en radians ---*/
       mc_tsl(jj,-longi,&tsl);
-      /* --- conversion radian vers hms ---*/
-      mc_deg2h_m_s((tsl/(DR)),&hhh,&mmm,&ss);
+		/* --- nutation ---*/
+		if (do_nutation==1) {
+			/* --- obliquite moyenne --- */
+			mc_obliqmoy(jj,&eps);
+			/* --- longitude vraie du soleil ---*/
+			mc_nutation(jj,1,&dpsi,&deps);
+			/* --- correction ---*/
+			tsl+=dpsi*cos(eps);
+		}
+		/* --- formatage de sortie --- */
+		if (type_format==0) {
+			/* --- conversion radian vers hms ---*/
+			mc_deg2h_m_s((tsl/(DR)),&hhh,&mmm,&ss);
+	      sprintf(s,"%d %d %f",hhh,mmm,ss);
+		} else {
+			tsl/=(DR);
+			tsl=fmod(720.+tsl,360);
+	      sprintf(s,"%.7f",tsl);
+		}
       /* --- sortie des resultats ---*/
-      sprintf(s,"%d %d %f",hhh,mmm,ss);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_OK;
    }
