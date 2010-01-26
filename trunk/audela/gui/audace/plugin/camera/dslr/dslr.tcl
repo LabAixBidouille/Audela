@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.37 2009-12-29 17:52:34 michelpujol Exp $
+# Mise a jour $Id: dslr.tcl,v 1.38 2010-01-26 18:43:54 michelpujol Exp $
 #
 
 namespace eval ::dslr {
@@ -686,7 +686,7 @@ proc ::dslr::setLoadParameters { camItem } {
    ::confColor::applyColor $audace(base).telecharge_image
 
 
-   #--- Mise � jour des radio boutons en fonction des parametres deja choisis
+   #--- Mise � jour des radio boutons en fonction des parametres deja choisis
    ::dslr::utiliserCF $camItem
 
 }
@@ -729,8 +729,10 @@ proc ::dslr::utiliserCF { camItem } {
 
 #
 # ::dslr::supprimerImage
-#    Supprime une image
-#
+#    transmet la valeur de l'indicateur $conf(dslr,supprimer_image) à la
+#    librairie libdigicam.dll afin d'indiquer si l'image doit être supprimée
+#    lors des acquisitions suivantes.
+# @private
 proc ::dslr::supprimerImage { camItem } {
    global conf
    variable private
