@@ -138,7 +138,7 @@ foreach ligne $lignes {
 			append texte "         \} else \{\n"
 			# --- cas où le nb d'arguments en entree est suffisant
 			append texte "            strcpy(ligne,\"\");\n"
-			set kk -1
+			set kk 2
 			set params ""
 			for {set k 0} {$k<$n} {incr k} {
 				set typeargu [lindex $typeargus $k]
