@@ -132,7 +132,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_ulong[1]=(unsigned long)atol(argv[0]);
+            param_ulong[1]=(unsigned long)atol(argv[3]);
             res=GetAcquiredData(&param_long[0],param_ulong[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -151,7 +151,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_ulong[1]=(unsigned long)atol(argv[0]);
+            param_ulong[1]=(unsigned long)atol(argv[3]);
             res=GetAcquiredData16(&param_WORD[0],param_ulong[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -170,7 +170,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_ulong[1]=(unsigned long)atol(argv[0]);
+            param_ulong[1]=(unsigned long)atol(argv[3]);
             res=GetAcquiredFloatData(&param_float[0],param_ulong[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -225,7 +225,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=GetAdjustedRingExposureTimes(param_int[0],&param_float[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -244,7 +244,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_ulong[1]=(unsigned long)atol(argv[0]);
+            param_ulong[1]=(unsigned long)atol(argv[3]);
             res=GetAllDMAData(&param_long[0],param_ulong[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -263,9 +263,9 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            strcpy(param_char[1],argv[1]);
-            param_int[2]=(int)atoi(argv[2]);
+            param_int[0]=(int)atoi(argv[3]);
+            strcpy(param_char[1],argv[4]);
+            param_int[2]=(int)atoi(argv[5]);
             res=GetAmpDesc(param_int[0],param_char[1],param_int[2]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -284,7 +284,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=GetAmpMaxSpeed(param_int[0],&param_float[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -321,7 +321,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_ulong[1]=(unsigned long)atol(argv[0]);
+            param_ulong[1]=(unsigned long)atol(argv[3]);
             res=GetBackground(&param_long[0],param_ulong[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -340,7 +340,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=GetBitDepth(param_int[0],&param_int[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -377,7 +377,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_long[0]=(long)atol(argv[0]);
+            param_long[0]=(long)atol(argv[3]);
             res=GetCameraHandle(param_long[0],&param_long[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -396,7 +396,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=GetCameraInformation(param_int[0],&param_long[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -451,7 +451,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            strcpy(param_char[0],argv[0]);
+            strcpy(param_char[0],argv[3]);
             res=GetControllerCardModel(param_char[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -560,8 +560,8 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_double[0]=(double)atof(argv[0]);
-            param_double[1]=(double)atof(argv[1]);
+            param_double[0]=(double)atof(argv[3]);
+            param_double[1]=(double)atof(argv[4]);
             res=GetDDGPulse(param_double[0],param_double[1],&param_double[2],&param_double[3]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -707,7 +707,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=GetFKVShiftSpeed(param_int[0],&param_int[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -726,7 +726,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=GetFKVShiftSpeedF(param_int[0],&param_float[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -763,7 +763,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            strcpy(param_char[0],argv[0]);
+            strcpy(param_char[0],argv[3]);
             res=GetHeadModel(param_char[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -782,7 +782,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=GetHorizontalSpeed(param_int[0],&param_int[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -801,9 +801,9 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
-            param_int[2]=(int)atoi(argv[2]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
+            param_int[2]=(int)atoi(argv[5]);
             res=GetHSSpeed(param_int[0],param_int[1],param_int[2],&param_float[3]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -840,7 +840,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=GetID(param_int[0],&param_int[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -859,9 +859,9 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_long[0]=(long)atol(argv[0]);
-            param_long[1]=(long)atol(argv[1]);
-            param_ulong[3]=(unsigned long)atol(argv[2]);
+            param_long[0]=(long)atol(argv[3]);
+            param_long[1]=(long)atol(argv[4]);
+            param_ulong[3]=(unsigned long)atol(argv[5]);
             res=GetImages (param_long[0],param_long[1],&param_long[2],param_ulong[3],&param_long[4],&param_long[5]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -880,9 +880,9 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_long[0]=(long)atol(argv[0]);
-            param_long[1]=(long)atol(argv[1]);
-            param_ulong[3]=(unsigned long)atol(argv[2]);
+            param_long[0]=(long)atol(argv[3]);
+            param_long[1]=(long)atol(argv[4]);
+            param_ulong[3]=(unsigned long)atol(argv[5]);
             res=GetImages16 (param_long[0],param_long[1],&param_WORD[2],param_ulong[3],&param_long[4],&param_long[5]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -937,8 +937,8 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
             res=GetMaximumBinning(param_int[0],param_int[1],&param_int[2]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -975,7 +975,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=GetMCPGain(param_int[0],&param_int[1],&param_float[2]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -1030,8 +1030,8 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_ulong[0]=(unsigned long)atol(argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
+            param_ulong[0]=(unsigned long)atol(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
             res=GetMostRecentColorImage16 (param_ulong[0],param_int[1],&param_WORD[2],&param_WORD[3],&param_WORD[4]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -1050,7 +1050,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_ulong[1]=(unsigned long)atol(argv[0]);
+            param_ulong[1]=(unsigned long)atol(argv[3]);
             res=GetMostRecentImage (&param_long[0],param_ulong[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -1069,7 +1069,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_ulong[1]=(unsigned long)atol(argv[0]);
+            param_ulong[1]=(unsigned long)atol(argv[3]);
             res=GetMostRecentImage16 (&param_WORD[0],param_ulong[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -1088,7 +1088,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[2]=(int)atoi(argv[0]);
+            param_int[2]=(int)atoi(argv[3]);
             res=GetMSTimingsData(&param_stime[0],&param_float[1],param_int[2]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -1109,7 +1109,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_ulong[1]=(unsigned long)atol(argv[0]);
+            param_ulong[1]=(unsigned long)atol(argv[3]);
             res=GetNewData(&param_long[0],param_ulong[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -1128,7 +1128,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_ulong[1]=(unsigned long)atol(argv[0]);
+            param_ulong[1]=(unsigned long)atol(argv[3]);
             res=GetNewData16(&param_WORD[0],param_ulong[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -1147,7 +1147,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_ulong[1]=(unsigned long)atol(argv[0]);
+            param_ulong[1]=(unsigned long)atol(argv[3]);
             res=GetNewData8(param_uchar[0],param_ulong[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -1166,7 +1166,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_ulong[1]=(unsigned long)atol(argv[0]);
+            param_ulong[1]=(unsigned long)atol(argv[3]);
             res=GetNewFloatData(&param_float[0],param_ulong[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -1293,8 +1293,8 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
             res=GetNumberHSSpeeds(param_int[0],param_int[1],&param_int[2]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -1421,7 +1421,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_ulong[1]=(unsigned long)atol(argv[0]);
+            param_ulong[1]=(unsigned long)atol(argv[3]);
             res=GetOldestImage (&param_long[0],param_ulong[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -1440,7 +1440,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_ulong[1]=(unsigned long)atol(argv[0]);
+            param_ulong[1]=(unsigned long)atol(argv[3]);
             res=GetOldestImage16 (&param_WORD[0],param_ulong[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -1495,7 +1495,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=GetPreAmpGain(param_int[0],&param_float[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -1730,7 +1730,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=GetVerticalSpeed(param_int[0],&param_int[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -1750,7 +1750,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=GetVSSpeed(param_int[0],&param_float[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -1769,10 +1769,10 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_short[1]=(short)atoi(argv[1]);
-            strcpy(param_char[2],argv[2]);
-            param_int[3]=(int)atoi(argv[3]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_short[1]=(short)atoi(argv[4]);
+            strcpy(param_char[2],argv[5]);
+            param_int[3]=(int)atoi(argv[6]);
             res=GPIBReceive(param_int[0],param_short[1],param_char[2],param_int[3]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -1791,9 +1791,9 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_short[1]=(short)atoi(argv[1]);
-            strcpy(param_char[2],argv[2]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_short[1]=(short)atoi(argv[4]);
+            strcpy(param_char[2],argv[5]);
             res=GPIBSend(param_int[0],param_short[1],param_char[2]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -1812,8 +1812,8 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_BYTE[0]=(BYTE)atoi(argv[0]);
-            param_long[1]=(long)atol(argv[1]);
+            param_BYTE[0]=(BYTE)atoi(argv[3]);
+            param_long[1]=(long)atol(argv[4]);
             res=I2CBurstRead(param_BYTE[0],param_long[1],&param_BYTE[2]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -1832,8 +1832,8 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_BYTE[0]=(BYTE)atoi(argv[0]);
-            param_long[1]=(long)atol(argv[1]);
+            param_BYTE[0]=(BYTE)atoi(argv[3]);
+            param_long[1]=(long)atol(argv[4]);
             res=I2CBurstWrite(param_BYTE[0],param_long[1],&param_BYTE[2]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -1852,8 +1852,8 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_BYTE[0]=(BYTE)atoi(argv[0]);
-            param_BYTE[1]=(BYTE)atoi(argv[1]);
+            param_BYTE[0]=(BYTE)atoi(argv[3]);
+            param_BYTE[1]=(BYTE)atoi(argv[4]);
             res=I2CRead(param_BYTE[0],param_BYTE[1],&param_BYTE[2]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -1874,9 +1874,9 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_BYTE[0]=(BYTE)atoi(argv[0]);
-            param_BYTE[1]=(BYTE)atoi(argv[1]);
-            param_BYTE[2]=(BYTE)atoi(argv[2]);
+            param_BYTE[0]=(BYTE)atoi(argv[3]);
+            param_BYTE[1]=(BYTE)atoi(argv[4]);
+            param_BYTE[2]=(BYTE)atoi(argv[5]);
             res=I2CWrite(param_BYTE[0],param_BYTE[1],param_BYTE[2]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -1897,7 +1897,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=InAuxPort(param_int[0],&param_int[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -1916,7 +1916,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            strcpy(param_char[0],argv[0]);
+            strcpy(param_char[0],argv[3]);
             res=Initialize(param_char[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -1935,7 +1935,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            strcpy(param_char[0],argv[0]);
+            strcpy(param_char[0],argv[3]);
             res=InitializeDevice(param_char[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -1972,10 +1972,10 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
-            param_int[2]=(int)atoi(argv[2]);
-            param_int[3]=(int)atoi(argv[3]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
+            param_int[2]=(int)atoi(argv[5]);
+            param_int[3]=(int)atoi(argv[6]);
             res=IsPreAmpGainAvailable(param_int[0],param_int[1],param_int[2],param_int[3],&param_int[4]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -1994,7 +1994,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=IsTriggerModeAvailable(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2013,11 +2013,11 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_long[1]=(long)atol(argv[0]);
-            param_long[2]=(long)atol(argv[1]);
-            param_long[3]=(long)atol(argv[2]);
-            param_long[5]=(long)atol(argv[3]);
-            param_long[6]=(long)atol(argv[4]);
+            param_long[1]=(long)atol(argv[3]);
+            param_long[2]=(long)atol(argv[4]);
+            param_long[3]=(long)atol(argv[5]);
+            param_long[5]=(long)atol(argv[6]);
+            param_long[6]=(long)atol(argv[7]);
             res=Merge(&param_int[0],param_long[1],param_long[2],param_long[3],&param_float[4],param_long[5],param_long[6],&param_long[7],&param_float[8],&param_float[9]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2036,8 +2036,8 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
             res=OutAuxPort(param_int[0],param_int[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2058,10 +2058,10 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            strcpy(param_char[0],argv[0]);
-            strcpy(param_char[1],argv[1]);
-            param_long[2]=(long)atol(argv[2]);
-            param_long[3]=(long)atol(argv[3]);
+            strcpy(param_char[0],argv[3]);
+            strcpy(param_char[1],argv[4]);
+            param_long[2]=(long)atol(argv[5]);
+            param_long[3]=(long)atol(argv[6]);
             res=SaveAsBmp(param_char[0],param_char[1],param_long[2],param_long[3]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2080,8 +2080,8 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            strcpy(param_char[0],argv[0]);
-            strcpy(param_char[1],argv[1]);
+            strcpy(param_char[0],argv[3]);
+            strcpy(param_char[1],argv[4]);
             res=SaveAsCommentedSif(param_char[0],param_char[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2100,8 +2100,8 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            strcpy(param_char[0],argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
+            strcpy(param_char[0],argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
             res=SaveAsEDF(param_char[0],param_int[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2120,8 +2120,8 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            strcpy(param_char[0],argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
+            strcpy(param_char[0],argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
             res=SaveAsFITS(param_char[0],param_int[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2140,8 +2140,8 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            strcpy(param_char[0],argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
+            strcpy(param_char[0],argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
             res=SaveAsRaw(param_char[0],param_int[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2160,7 +2160,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            strcpy(param_char[0],argv[0]);
+            strcpy(param_char[0],argv[3]);
             res=SaveAsSif(param_char[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2179,7 +2179,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            strcpy(param_char[0],argv[0]);
+            strcpy(param_char[0],argv[3]);
             res=SaveAsSPC(param_char[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2198,10 +2198,10 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            strcpy(param_char[0],argv[0]);
-            strcpy(param_char[1],argv[1]);
-            param_int[2]=(int)atoi(argv[2]);
-            param_int[3]=(int)atoi(argv[3]);
+            strcpy(param_char[0],argv[3]);
+            strcpy(param_char[1],argv[4]);
+            param_int[2]=(int)atoi(argv[5]);
+            param_int[3]=(int)atoi(argv[6]);
             res=SaveAsTiff(param_char[0],param_char[1],param_int[2],param_int[3]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2220,11 +2220,11 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            strcpy(param_char[0],argv[0]);
-            strcpy(param_char[1],argv[1]);
-            param_int[2]=(int)atoi(argv[2]);
-            param_int[3]=(int)atoi(argv[3]);
-            param_int[4]=(int)atoi(argv[4]);
+            strcpy(param_char[0],argv[3]);
+            strcpy(param_char[1],argv[4]);
+            param_int[2]=(int)atoi(argv[5]);
+            param_int[3]=(int)atoi(argv[6]);
+            param_int[4]=(int)atoi(argv[7]);
             res=SaveAsTiffEx(param_char[0],param_char[1],param_int[2],param_int[3],param_int[4]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2243,7 +2243,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            strcpy(param_char[0],argv[0]);
+            strcpy(param_char[0],argv[3]);
             res=SaveEEPROMToFile(param_char[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2262,7 +2262,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            strcpy(param_char[0],argv[0]);
+            strcpy(param_char[0],argv[3]);
             res=SaveToClipBoard(param_char[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2281,7 +2281,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SelectDevice(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2302,7 +2302,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_float[0]=(float)atof(argv[0]);
+            param_float[0]=(float)atof(argv[3]);
             res=SetAccumulationCycleTime(param_float[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2322,7 +2322,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetAcquisitionMode(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2341,7 +2341,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetAcquisitionType(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2360,7 +2360,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetADChannel(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2379,7 +2379,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetAdvancedTriggerModeState(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2398,7 +2398,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_ulong[1]=(unsigned long)atol(argv[0]);
+            param_ulong[1]=(unsigned long)atol(argv[3]);
             res=SetBackground(&param_long[0],param_ulong[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2417,7 +2417,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetBaselineClamp(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2436,7 +2436,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetBaselineOffset(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2455,7 +2455,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_DWORD[0]=(DWORD)atoi(argv[0]);
+            param_DWORD[0]=(DWORD)atoi(argv[3]);
             res=SetCameraStatusEnable(param_DWORD[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2474,7 +2474,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetComplexImage(param_int[0],&param_int[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2493,7 +2493,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetCoolerMode(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2512,9 +2512,9 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
-            param_int[2]=(int)atoi(argv[2]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
+            param_int[2]=(int)atoi(argv[5]);
             res=SetCropMode(param_int[0],param_int[1],param_int[2]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2533,7 +2533,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_long[0]=(long)atol(argv[0]);
+            param_long[0]=(long)atol(argv[3]);
             res=SetCurrentCamera(param_long[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2552,7 +2552,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetCustomTrackHBin(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2571,7 +2571,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetDataType(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2590,11 +2590,11 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_BYTE[0]=(BYTE)atoi(argv[0]);
-            param_BYTE[1]=(BYTE)atoi(argv[1]);
-            param_BYTE[2]=(BYTE)atoi(argv[2]);
-            param_BYTE[3]=(BYTE)atoi(argv[3]);
-            param_BYTE[4]=(BYTE)atoi(argv[4]);
+            param_BYTE[0]=(BYTE)atoi(argv[3]);
+            param_BYTE[1]=(BYTE)atoi(argv[4]);
+            param_BYTE[2]=(BYTE)atoi(argv[5]);
+            param_BYTE[3]=(BYTE)atoi(argv[6]);
+            param_BYTE[4]=(BYTE)atoi(argv[7]);
             res=SetDDGAddress(param_BYTE[0],param_BYTE[1],param_BYTE[2],param_BYTE[3],param_BYTE[4]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2613,7 +2613,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetDDGGain(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2632,7 +2632,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_double[0]=(double)atof(argv[0]);
+            param_double[0]=(double)atof(argv[3]);
             res=SetDDGGateStep(param_double[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2651,7 +2651,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetDDGInsertionDelay(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2670,7 +2670,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetDDGIntelligate(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2689,7 +2689,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetDDGIOC(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2708,7 +2708,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_double[0]=(double)atof(argv[0]);
+            param_double[0]=(double)atof(argv[3]);
             res=SetDDGIOCFrequency(param_double[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2727,7 +2727,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_ulong[0]=(unsigned long)atol(argv[0]);
+            param_ulong[0]=(unsigned long)atol(argv[3]);
             res=SetDDGIOCNumber(param_ulong[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2746,9 +2746,9 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_double[0]=(double)atof(argv[0]);
-            param_double[1]=(double)atof(argv[1]);
-            param_double[2]=(double)atof(argv[2]);
+            param_double[0]=(double)atof(argv[3]);
+            param_double[1]=(double)atof(argv[4]);
+            param_double[2]=(double)atof(argv[5]);
             res=SetDDGTimes(param_double[0],param_double[1],param_double[2]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2767,7 +2767,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetDDGTriggerMode(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2786,9 +2786,9 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_double[1]=(double)atof(argv[1]);
-            param_double[2]=(double)atof(argv[2]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_double[1]=(double)atof(argv[4]);
+            param_double[2]=(double)atof(argv[5]);
             res=SetDDGVariableGateStep(param_int[0],param_double[1],param_double[2]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2807,9 +2807,9 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_short[1]=(short)atoi(argv[1]);
-            param_int[2]=(int)atoi(argv[2]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_short[1]=(short)atoi(argv[4]);
+            param_int[2]=(int)atoi(argv[5]);
             res=SetDelayGenerator(param_int[0],param_short[1],param_int[2]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2828,8 +2828,8 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_float[1]=(float)atof(argv[1]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_float[1]=(float)atof(argv[4]);
             res=SetDMAParameters(param_int[0],param_float[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2849,7 +2849,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetEMAdvanced(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2868,7 +2868,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetEMCCDGain(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2887,7 +2887,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetEMClockCompensation(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2906,7 +2906,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetEMGainMode(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2925,7 +2925,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_float[0]=(float)atof(argv[0]);
+            param_float[0]=(float)atof(argv[3]);
             res=SetExposureTime(param_float[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2944,7 +2944,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetFanMode(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2963,7 +2963,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetFastExtTrigger(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -2982,12 +2982,12 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
-            param_float[2]=(float)atof(argv[2]);
-            param_int[3]=(int)atoi(argv[3]);
-            param_int[4]=(int)atoi(argv[4]);
-            param_int[5]=(int)atoi(argv[5]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
+            param_float[2]=(float)atof(argv[5]);
+            param_int[3]=(int)atoi(argv[6]);
+            param_int[4]=(int)atoi(argv[7]);
+            param_int[5]=(int)atoi(argv[8]);
             res=SetFastKinetics(param_int[0],param_int[1],param_float[2],param_int[3],param_int[4],param_int[5]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3006,13 +3006,13 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
-            param_float[2]=(float)atof(argv[2]);
-            param_int[3]=(int)atoi(argv[3]);
-            param_int[4]=(int)atoi(argv[4]);
-            param_int[5]=(int)atoi(argv[5]);
-            param_int[6]=(int)atoi(argv[6]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
+            param_float[2]=(float)atof(argv[5]);
+            param_int[3]=(int)atoi(argv[6]);
+            param_int[4]=(int)atoi(argv[7]);
+            param_int[5]=(int)atoi(argv[8]);
+            param_int[6]=(int)atoi(argv[9]);
             res=SetFastKineticsEx(param_int[0],param_int[1],param_float[2],param_int[3],param_int[4],param_int[5],param_int[6]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3031,7 +3031,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetFilterMode(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3050,12 +3050,12 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_float[1]=(float)atof(argv[1]);
-            param_int[2]=(int)atoi(argv[2]);
-            param_float[3]=(float)atof(argv[3]);
-            param_int[4]=(int)atoi(argv[4]);
-            param_int[5]=(int)atoi(argv[5]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_float[1]=(float)atof(argv[4]);
+            param_int[2]=(int)atoi(argv[5]);
+            param_float[3]=(float)atof(argv[6]);
+            param_int[4]=(int)atoi(argv[7]);
+            param_int[5]=(int)atoi(argv[8]);
             res=SetFilterParameters(param_int[0],param_float[1],param_int[2],param_float[3],param_int[4],param_int[5]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3074,7 +3074,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetFKVShiftSpeed(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3093,7 +3093,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetFPDP(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3112,7 +3112,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetFrameTransferMode(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3131,8 +3131,8 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
             res=SetFullImage(param_int[0],param_int[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3151,7 +3151,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetFVBHBin(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3170,7 +3170,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetGain(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3189,9 +3189,9 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_float[0]=(float)atof(argv[0]);
-            param_float[1]=(float)atof(argv[1]);
-            param_float[2]=(float)atof(argv[2]);
+            param_float[0]=(float)atof(argv[3]);
+            param_float[1]=(float)atof(argv[4]);
+            param_float[2]=(float)atof(argv[5]);
             res=SetGate(param_float[0],param_float[1],param_float[2]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3210,7 +3210,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetGateMode(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3229,7 +3229,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetHighCapacity(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3248,7 +3248,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetHorizontalSpeed(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3267,8 +3267,8 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
             res=SetHSSpeed(param_int[0],param_int[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3287,12 +3287,12 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
-            param_int[2]=(int)atoi(argv[2]);
-            param_int[3]=(int)atoi(argv[3]);
-            param_int[4]=(int)atoi(argv[4]);
-            param_int[5]=(int)atoi(argv[5]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
+            param_int[2]=(int)atoi(argv[5]);
+            param_int[3]=(int)atoi(argv[6]);
+            param_int[4]=(int)atoi(argv[7]);
+            param_int[5]=(int)atoi(argv[8]);
             res=SetImage(param_int[0],param_int[1],param_int[2],param_int[3],param_int[4],param_int[5]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3311,8 +3311,8 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
             res=SetImageFlip(param_int[0],param_int[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3331,7 +3331,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetImageRotate(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3350,11 +3350,11 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
-            param_int[2]=(int)atoi(argv[2]);
-            param_int[3]=(int)atoi(argv[3]);
-            param_int[4]=(int)atoi(argv[4]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
+            param_int[2]=(int)atoi(argv[5]);
+            param_int[3]=(int)atoi(argv[6]);
+            param_int[4]=(int)atoi(argv[7]);
             res=SetIsolatedCropMode (param_int[0],param_int[1],param_int[2],param_int[3],param_int[4]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3373,7 +3373,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_float[0]=(float)atof(argv[0]);
+            param_float[0]=(float)atof(argv[3]);
             res=SetKineticCycleTime(param_float[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3392,7 +3392,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetMCPGating(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3412,9 +3412,9 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
-            param_int[2]=(int)atoi(argv[2]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
+            param_int[2]=(int)atoi(argv[5]);
             res=SetMultiTrack(param_int[0],param_int[1],param_int[2],&param_int[3],&param_int[4]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3433,7 +3433,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetMultiTrackHBin(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3452,10 +3452,10 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_long[1]=(long)atol(argv[0]);
-            param_long[2]=(long)atol(argv[1]);
-            param_long[3]=(long)atol(argv[2]);
-            param_long[4]=(long)atol(argv[3]);
+            param_long[1]=(long)atol(argv[3]);
+            param_long[2]=(long)atol(argv[4]);
+            param_long[3]=(long)atol(argv[5]);
+            param_long[4]=(long)atol(argv[6]);
             res=SetNextAddress(&param_long[0],param_long[1],param_long[2],param_long[3],param_long[4]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3474,10 +3474,10 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_long[1]=(long)atol(argv[0]);
-            param_long[2]=(long)atol(argv[1]);
-            param_long[3]=(long)atol(argv[2]);
-            param_long[4]=(long)atol(argv[3]);
+            param_long[1]=(long)atol(argv[3]);
+            param_long[2]=(long)atol(argv[4]);
+            param_long[3]=(long)atol(argv[5]);
+            param_long[4]=(long)atol(argv[6]);
             res=SetNextAddress16(&param_long[0],param_long[1],param_long[2],param_long[3],param_long[4]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3496,7 +3496,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetNumberAccumulations(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3515,7 +3515,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetNumberKinetics(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3534,7 +3534,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetOutputAmplifier(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3553,8 +3553,8 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
             res=SetPCIMode(param_int[0],param_int[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3573,7 +3573,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetPhotonCounting(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3592,8 +3592,8 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_long[0]=(long)atol(argv[0]);
-            param_long[1]=(long)atol(argv[1]);
+            param_long[0]=(long)atol(argv[3]);
+            param_long[1]=(long)atol(argv[4]);
             res=SetPhotonCountingThreshold(param_long[0],param_long[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3612,8 +3612,8 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
             res=SetPixelMode(param_int[0],param_int[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3632,7 +3632,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetPreAmpGain(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3651,7 +3651,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetRandomTracks(param_int[0],&param_int[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3670,7 +3670,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetReadMode(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3689,7 +3689,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetRegisterDump(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3708,7 +3708,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetRingExposureTimes(param_int[0],&param_float[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3728,10 +3728,10 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
-            param_int[2]=(int)atoi(argv[2]);
-            param_int[3]=(int)atoi(argv[3]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
+            param_int[2]=(int)atoi(argv[5]);
+            param_int[3]=(int)atoi(argv[6]);
             res=SetShutter(param_int[0],param_int[1],param_int[2],param_int[3]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3750,11 +3750,11 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
-            param_int[2]=(int)atoi(argv[2]);
-            param_int[3]=(int)atoi(argv[3]);
-            param_int[4]=(int)atoi(argv[4]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
+            param_int[2]=(int)atoi(argv[5]);
+            param_int[3]=(int)atoi(argv[6]);
+            param_int[4]=(int)atoi(argv[7]);
             res=SetShutterEx(param_int[0],param_int[1],param_int[2],param_int[3],param_int[4]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3773,14 +3773,14 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
-            param_int[2]=(int)atoi(argv[2]);
-            param_int[3]=(int)atoi(argv[3]);
-            param_int[4]=(int)atoi(argv[4]);
-            param_int[5]=(int)atoi(argv[5]);
-            param_int[6]=(int)atoi(argv[6]);
-            param_int[7]=(int)atoi(argv[7]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
+            param_int[2]=(int)atoi(argv[5]);
+            param_int[3]=(int)atoi(argv[6]);
+            param_int[4]=(int)atoi(argv[7]);
+            param_int[5]=(int)atoi(argv[8]);
+            param_int[6]=(int)atoi(argv[9]);
+            param_int[7]=(int)atoi(argv[10]);
             res=SetShutters(param_int[0],param_int[1],param_int[2],param_int[3],param_int[4],param_int[5],param_int[6],param_int[7]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3799,7 +3799,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            strcpy(param_char[0],argv[0]);
+            strcpy(param_char[0],argv[3]);
             res=SetSifComment(param_char[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3818,8 +3818,8 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
             res=SetSingleTrack(param_int[0],param_int[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3838,7 +3838,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetSingleTrackHBin(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3857,10 +3857,10 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
-            strcpy(param_char[2],argv[2]);
-            param_int[3]=(int)atoi(argv[3]);
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
+            strcpy(param_char[2],argv[5]);
+            param_int[3]=(int)atoi(argv[6]);
             res=SetSpool(param_int[0],param_int[1],param_char[2],param_int[3]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3879,7 +3879,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_long[0]=(long)atol(argv[0]);
+            param_long[0]=(long)atol(argv[3]);
             res=SetStorageMode(param_long[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3898,7 +3898,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetTemperature(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3917,7 +3917,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetTriggerMode(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3937,8 +3937,8 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_long[0]=(long)atol(argv[0]);
-            param_long[1]=(long)atol(argv[1]);
+            param_long[0]=(long)atol(argv[3]);
+            param_long[1]=(long)atol(argv[4]);
             res=SetUSGenomics(param_long[0],param_long[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3957,7 +3957,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetVerticalRowBuffer(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3976,7 +3976,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetVerticalSpeed(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -3995,7 +3995,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetVirtualChip(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -4014,7 +4014,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetVSAmplitude(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -4033,7 +4033,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=SetVSSpeed(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -4060,7 +4060,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_long[0]=(long)atol(argv[0]);
+            param_long[0]=(long)atol(argv[3]);
             res=WaitForAcquisitionByHandle(param_long[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -4079,8 +4079,8 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_long[0]=(long)atol(argv[0]);
-            param_int[1]=(int)atoi(argv[1]);
+            param_long[0]=(long)atol(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
             res=WaitForAcquisitionByHandleTimeOut(param_long[0],param_int[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
@@ -4099,7 +4099,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            param_int[0]=(int)atoi(argv[0]);
+            param_int[0]=(int)atoi(argv[3]);
             res=WaitForAcquisitionTimeOut(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
