@@ -6289,7 +6289,8 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 					if (fgets(s,1000,finp)==NULL) { continue; }
 					strcpy(commentaire,"");
 					sscanf(s,"%lf %lf %lf %lf %s",&sod,&h,&az,&distance,commentaire);
-					jd=floor(jddeb-0.5)+sod/86400.;
+					//jd=floor(jddeb-0.5)+sod/86400.;
+					jd=floor(jddeb)+(sod-43200)/86400.;
 					nlig++;
 				}
 				jdfin=jd;
@@ -6383,8 +6384,9 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				mc_nutation((jdfin+jddeb)/2.,1,&dpsi,&deps);
 				/* --- calculs ---*/
 				duree=(jdfin-jddeb);
-				if (duree<=0) {
-					sprintf(s,"error DateDeb(%s) > DateFin(%s)",argv[4],argv[5]);
+				if (duree<0) {
+					//sprintf(s,"error DateDeb(%s) > DateFin(%s)",argv[4],argv[5]);
+					sprintf(s,"error DateDeb(%15.5f) > DateFin(%15.5f)",jddeb,jdfin);
 					Tcl_SetResult(interp,s,TCL_VOLATILE);
 					result = TCL_ERROR;
 					if (matx!=NULL) { free(matx); }
@@ -6436,7 +6438,8 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 					h*=(DR);
 					az0=fmod(az+2*PI,2*PI);
 					h0=h;
-					jd=floor(jddeb-0.5)+sod/86400.;
+					//jd=floor(jddeb-0.5)+sod/86400.;
+					jd=floor(jddeb)+(sod-43200)/86400.;
 					nlig++;
 					mc_ah2hd(az,h,latitude,&ha,&dec);
 					/* --- correction de la nutation ---*/
