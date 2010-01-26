@@ -319,3 +319,23 @@ char *mc_d2s(double val)
 	}		
    return s+kk;
 }
+
+int mc_meo_ruban(double az, double montee,double descente,double larg,double amplitude,double *daz)
+/***************************************************************************/
+/* Fonction du ruban cordeur de MEO                                        */
+/***************************************************************************/
+/***************************************************************************/
+{
+	double gise,dazmontee,dazdescente;
+	gise=az/(DR)-180;
+	/*
+	montee=-7; // deg
+	descente=7; // deg
+	larg=2.; // deg
+	amplitude=0.; // arcsec
+	*/
+	dazmontee=1./(1+exp(-(gise-montee)*larg));
+	dazdescente=1-1./(1+exp(-(gise-descente)*larg));
+	*daz=amplitude*dazmontee*dazdescente/3600*(DR);
+	return 0;
+}

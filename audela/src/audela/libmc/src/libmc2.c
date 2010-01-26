@@ -5702,6 +5702,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 	double dpsi,deps,eps,tsl,tand,dasd,ddec;
 	double h0,az0,sunguard=10.;
 	int corrections;
+	double montee=-7,descente=7,larg=2.,amplitude=0.;
 
    if(argc<2) {
       sprintf(s,"Usage: %s Action ?parameters?", argv[0]);
@@ -5980,11 +5981,31 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				} else {
 					strcpy(PointingModelFile,"");
 				}
-				/* --- decode le home ---*/
+				/* --- decode le sunguard et parametres du ruban ---*/
 				sprintf(s,"global meo ; set ::meo(sunguard)");
 				res=Tcl_Eval(interp,s);
 				if (res==TCL_OK) {
 					sunguard=(double)atof(interp->result);
+				}
+				sprintf(s,"global meo ; set ::meo(ruban,montee)");
+				res=Tcl_Eval(interp,s);
+				if (res==TCL_OK) {
+					montee=(double)atof(interp->result);
+				}
+				sprintf(s,"global meo ; set ::meo(ruban,descente)");
+				res=Tcl_Eval(interp,s);
+				if (res==TCL_OK) {
+					descente=(double)atof(interp->result);
+				}
+				sprintf(s,"global meo ; set ::meo(ruban,amplitude)");
+				res=Tcl_Eval(interp,s);
+				if (res==TCL_OK) {
+					amplitude=(double)atof(interp->result);
+				}
+				sprintf(s,"global meo ; set ::meo(ruban,larg)");
+				res=Tcl_Eval(interp,s);
+				if (res==TCL_OK) {
+					larg=(double)atof(interp->result);
 				}
 				/* --- charge le modele de pointage ---*/
 				if (strcmp(PointingModelFile,"")!=0) {
@@ -6102,8 +6123,6 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 					h+=refraction;
 			      mc_hd2parallactic(ha,dec,latitude,&parallactic);
 					star_site=h;
-					/* --- correction du ruban --- */
-					// TODO
 					// --- Transforme les coordonnees observées en coordonnées télescope
 					if ((strcmp(PointingModelFile,"")!=0)&&(matx!=NULL)&&(vecy!=NULL)) {
 						tane=tan(h);
@@ -6206,6 +6225,9 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 						az+=(daz/60.*DR);
 						h+=(dh/60.*DR);
 					}
+					/* --- correction du ruban --- */
+					mc_meo_ruban(az,montee,descente,larg,amplitude,&daz);
+					az+=daz;
 					/* --- final ---*/
 					star_site=h;
 					star_gise=az-PI+4*PI;
@@ -6275,11 +6297,31 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				} else {
 					corrections=0;
 				}
-				/* --- decode le home ---*/
+				/* --- decode le sunguard et les parametres du ruban ---*/
 				sprintf(s,"global meo ; set ::meo(sunguard)");
 				res=Tcl_Eval(interp,s);
 				if (res==TCL_OK) {
 					sunguard=(double)atof(interp->result);
+				}
+				sprintf(s,"global meo ; set ::meo(ruban,montee)");
+				res=Tcl_Eval(interp,s);
+				if (res==TCL_OK) {
+					montee=(double)atof(interp->result);
+				}
+				sprintf(s,"global meo ; set ::meo(ruban,descente)");
+				res=Tcl_Eval(interp,s);
+				if (res==TCL_OK) {
+					descente=(double)atof(interp->result);
+				}
+				sprintf(s,"global meo ; set ::meo(ruban,amplitude)");
+				res=Tcl_Eval(interp,s);
+				if (res==TCL_OK) {
+					amplitude=(double)atof(interp->result);
+				}
+				sprintf(s,"global meo ; set ::meo(ruban,larg)");
+				res=Tcl_Eval(interp,s);
+				if (res==TCL_OK) {
+					larg=(double)atof(interp->result);
 				}
 				/* --- charge le modele de pointage ---*/
 				if (strcmp(PointingModelFile,"")!=0) {
@@ -6413,8 +6455,6 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 					h+=refraction;
 			      mc_hd2parallactic(ha,dec,latitude,&parallactic);
 					star_site=h;
-					/* --- correction du ruban --- */
-					// TODO
 					// --- Transforme les coordonnees observées en coordonnées télescope
 					if ((strcmp(PointingModelFile,"")!=0)&&(matx!=NULL)&&(vecy!=NULL)) {
 						tane=tan(h);
@@ -6517,6 +6557,9 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 						az+=(daz/60.*DR);
 						h+=(dh/60.*DR);
 					}
+					/* --- correction du ruban --- */
+					mc_meo_ruban(az,montee,descente,larg,amplitude,&daz);
+					az+=daz;
 					/* --- final ---*/
 					star_site=h;
 					star_gise=az-PI+4*PI;
