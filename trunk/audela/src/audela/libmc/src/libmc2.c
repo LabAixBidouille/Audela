@@ -6270,6 +6270,30 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 	  	      mctcl_decode_date(interp,argv[k++],&jddeb);
 	  	      mctcl_decode_date(interp,argv[k++],&jdfin);
 				strcpy(InputFile,argv[k++]);
+				// --- verifie les heures debut et fin
+				finp=fopen(InputFile,"r");
+				if (finp==NULL) {
+					sprintf(s,"Error opening file %s",InputFile);
+					Tcl_SetResult(interp,s,TCL_VOLATILE);
+					result = TCL_ERROR;
+					return(result);
+				}
+				fgets(s,1000,finp);
+				fgets(s,1000,finp);
+				sscanf(s,"%lf %lf",&sod,&jddeb);
+				jddeb+=2400000.5;
+				fgets(s,1000,finp);
+				kl=0;
+				nlig=0;
+				while (feof(finp)==0) {
+					if (fgets(s,1000,finp)==NULL) { continue; }
+					strcpy(commentaire,"");
+					sscanf(s,"%lf %lf %lf %lf %s",&sod,&h,&az,&distance,commentaire);
+					jd=floor(jddeb-0.5)+sod/86400.;
+					nlig++;
+				}
+				jdfin=jd;
+				fclose(finp);
 				strcpy(home,argv[k++]);
 				result=mctcl_decode_home(interp,home,&longitude,sens,&latitude,&altitude,&longitude,&rhocosphip,&rhosinphip);
 				if (result==TCL_ERROR) {
