@@ -46,9 +46,16 @@
  l'appareil photo et g&ecirc;ner AudeLA surtout pendant les longues poses.</p>
 <p>Si vous souhaitez faire des acquisitions longue pose avec votre APN par l'interm&eacute;diare d'un QuickRemote,
  vous devez configurer l'option longue pose comme sur l'image ci-dessous : </p>
-<img src="images/configquickremote.gif" alt="" width="737" height="474" />
-<p>Si vous utilisez la prise Jack du QuickRemote, le champ <b>Num&eacute;ro du bit de commande</b> doit &ecirc;tre &agrave;
- <b>0</b> et le champ <b>Commande au début de la pose</b> doit &ecirc;tre &agrave; <b>1</b>.</p>
+<img src="images/configquickremote.gif" alt="" width="737" height="474" /> 
+<p>L'option &quot;Arr&ecirc;t de la d&eacute;tection automatique des appareils 
+  photo num&eacute;riques&quot; emp&ecirc;che Windows d'afficher la fen&ecirc;tre 
+  pour demander quel logiciel il doit lancer. Cela &eacute;vite de perturber Audela 
+  pendant l'utilisation de la cam&eacute;ra.Cela ne vaut que pendant l'utilisation 
+  de la cam&eacute;ra par Audela et le fonctionnement normal de Windows est r&eacute;tabli 
+  quand on arr&ecirc;te l'utilisation de la cam&eacute;ra avec Audela.</p>
+<p>Si vous utilisez la prise Jack du QuickRemote, le champ <b>Num&eacute;ro du 
+  bit de commande</b> doit &ecirc;tre &agrave; <b>0</b> et le champ <b>Commande 
+  au début de la pose</b> doit &ecirc;tre &agrave; <b>1</b>.</p>
 <p>Par contre si vous souhaitez faire des acquisitions longue pose avec votre APN par l'interm&eacute;diare du port
  parall&egrave;le vous devez configurer l'option longue pose comme sur l'image ci-dessous : </p>
 <img src="images/configportparallele.gif" alt="" width="737" height="474" />
@@ -172,9 +179,11 @@ wait cam1_status<br>confVisu::autovisu 1
 <blockquote>
   <p>S&eacute;lectionne la qualit&eacute; d'image. Les valeurs possibles d&eacute;pendent 
     de la marque et des mod&egrave;les. Il faut utiliser la commande &quot;cam1 
-    quality list&quot; pour conna&icirc;tre les valeurs disponibles. L'ordre de 
-    changement de qualit&eacute; est envoy&eacute; &agrave; l'appareil au lancement 
-    d'une acquisition avec la commande &quot;cam1 acq&quot;</p>
+    quality list&quot; pour conna&icirc;tre les valeurs disponibles. </p>
+  <p>La commande &quot;cam1 quality&quot; configure la qualit&eacute; d'image 
+    dans Audela. Ensuite l'ordre de changement de qualit&eacute; n'est r&eacute;ellement 
+    envoy&eacute; &agrave; l'appareil qu'au lancement d'une acquisition avec la 
+    commande &quot;cam1 acq&quot;.</p>
   <p>(*) La valeur par d&eacute;faut est le premier &eacute;l&eacute;ment retourn&eacute; 
     par la commande &quot;cam1 quality list&quot;</p>
   <p>Exemple de programmation avec un Canon 300D :</p>
@@ -249,11 +258,13 @@ t&eacute;l&eacute;charge la pose n&deg;3</pre>
     courante. </p>
   <p>Remarques :</p>
   <ul>
-    <li>Equivalent &agrave; la commande WINDOWS : Panneau de configuration -&gt; Outils 
-      d'administration -&gt; Services -&gt; Acquisition d'image Windows (WIA) -&gt; D&eacute;marrer/Arr&ecirc;ter</li>
+    <li>Equivalent &agrave; la commande WINDOWS : Panneau de configuration -&gt; 
+      Outils d'administration -&gt; Services -&gt; Acquisition d'image Windows 
+      (WIA) -&gt; D&eacute;marrer/Arr&ecirc;ter</li>
     <li>N&eacute;cessite d'avoir des droits utilisateur &eacute;tendus sous WINDOWS, 
       sinon la commande reste sans effet.</li>
     <li>N'est pas impl&eacute;ment&eacute; pour LINUX.</li>
+    <li></li>
   </ul>
 </blockquote>
 <h3>cam1 longuepose {0|1|2} <b>(d&eacute;faut = 0)</b></h3>
