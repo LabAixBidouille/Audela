@@ -5668,7 +5668,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 	char action[50],InputType[50],OutputFile[1024],InputFile[1024],PointingModelFile[1024];
 	char home[60],ligne[1024];
 	double jddeb, jdfin,equinox,epoch;
-   int result,k,res,k1,k10;
+   int result,k,res,k1,k10,ks1,ks2;
    double rhocosphip=0.,rhosinphip=0.;
    double latitude,altitude,longitude;
 	double ra,cosdec,mura,mudec,parallax,temperature,pressure;
@@ -6280,7 +6280,24 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				}
 				fgets(s,1000,finp);
 				fgets(s,1000,finp);
-				sscanf(s,"%lf %lf",&sod,&jddeb);
+				nlig=strlen(s);
+				if (nlig>3) {
+					for (kl=1;kl<nlig;kl++) {
+						if ((s[kl-1]!=' ')&&(s[kl]==' ')) {
+							break;
+						}
+					}
+					ks1=kl+1;
+					for (kl=ks1;kl<nlig;kl++) {
+						if ((s[kl-1]!=' ')&&(s[kl]==' ')) {
+							break;
+						}
+					}
+					ks2=kl-1;
+					s[ks2]='\0';
+					jddeb=atof(s+ks1);
+				}
+				//sscanf(s,"%lf %lf",&sod,&jddeb);
 				jdsod0=floor(jddeb)+2400000.5;
 				jddeb+=2400000.5;
 				fgets(s,1000,finp);
@@ -6427,9 +6444,11 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				}
 				if (fgets(s,1000,finp)!=0) { fprintf(f,"%s",s); }
 				if (fgets(s,1000,finp)!=0) { fprintf(f,"%s",s); }
+				/*
 				sscanf(s,"%lf %lf",&sod,&jddeb);
 				jdsod0=floor(jddeb)+2400000.5;
 				jddeb+=2400000.5;
+				*/
 				if (fgets(s,1000,finp)!=0) { fprintf(f,"%s",s); }
 				kl=0;
 				nlig=0;
