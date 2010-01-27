@@ -5691,7 +5691,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 	int longligne=255;
 	int planetnum;
 	char objename[10000],orbitformat[15],orbitfile[1024],field[500];
-	double ra1=0,ra2=0,ra3=0,dec1=0,dec3=0,mu,mu2;
+	double ra1=0,ra2=0,ra3=0,dec1=0,dec3=0,mu,mu2,jdsod0;
    Tcl_DString dsptr;
 	double equinoxe=J2000;
 	int astrometric=1,ephemphys=0;
@@ -6281,6 +6281,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				fgets(s,1000,finp);
 				fgets(s,1000,finp);
 				sscanf(s,"%lf %lf",&sod,&jddeb);
+				jdsod0=floor(jddeb)+2400000.5;
 				jddeb+=2400000.5;
 				fgets(s,1000,finp);
 				kl=0;
@@ -6290,7 +6291,8 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 					strcpy(commentaire,"");
 					sscanf(s,"%lf %lf %lf %lf %s",&sod,&h,&az,&distance,commentaire);
 					//jd=floor(jddeb-0.5)+sod/86400.;
-					jd=floor(jddeb)+(sod-43200)/86400.;
+					//jd=floor(jddeb)+(sod-43200)/86400.;
+					jd=jdsod0+sod/86400.;
 					nlig++;
 				}
 				jdfin=jd;
@@ -6426,6 +6428,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				if (fgets(s,1000,finp)!=0) { fprintf(f,"%s",s); }
 				if (fgets(s,1000,finp)!=0) { fprintf(f,"%s",s); }
 				sscanf(s,"%lf %lf",&sod,&jddeb);
+				jdsod0=floor(jddeb)+2400000.5;
 				jddeb+=2400000.5;
 				if (fgets(s,1000,finp)!=0) { fprintf(f,"%s",s); }
 				kl=0;
@@ -6439,7 +6442,8 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 					az0=fmod(az+2*PI,2*PI);
 					h0=h;
 					//jd=floor(jddeb-0.5)+sod/86400.;
-					jd=floor(jddeb)+(sod-43200)/86400.;
+					//jd=floor(jddeb)+(sod-43200)/86400.;
+					jd=jdsod0+sod/86400.;
 					nlig++;
 					mc_ah2hd(az,h,latitude,&ha,&dec);
 					/* --- correction de la nutation ---*/
