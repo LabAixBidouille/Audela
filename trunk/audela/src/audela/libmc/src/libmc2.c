@@ -5702,7 +5702,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 	double dpsi,deps,eps,tsl,tand,dasd,ddec;
 	double h0,az0,sunguard=10.;
 	int corrections;
-	double montee=-7,descente=7,larg=2.,amplitude=0.;
+	double montee=-7,descente=7,largmontee=2.,largdescente=2.,amplitude=0.;
 
    if(argc<2) {
       sprintf(s,"Usage: %s Action ?parameters?", argv[0]);
@@ -6002,10 +6002,15 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				if (res==TCL_OK) {
 					amplitude=(double)atof(interp->result);
 				}
-				sprintf(s,"global meo ; set ::meo(ruban,larg)");
+				sprintf(s,"global meo ; set ::meo(ruban,largmontee)");
 				res=Tcl_Eval(interp,s);
 				if (res==TCL_OK) {
-					larg=(double)atof(interp->result);
+					largmontee=(double)atof(interp->result);
+				}
+				sprintf(s,"global meo ; set ::meo(ruban,largdescente)");
+				res=Tcl_Eval(interp,s);
+				if (res==TCL_OK) {
+					largdescente=(double)atof(interp->result);
 				}
 				/* --- charge le modele de pointage ---*/
 				if (strcmp(PointingModelFile,"")!=0) {
@@ -6226,7 +6231,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 						h+=(dh/60.*DR);
 					}
 					/* --- correction du ruban --- */
-					mc_meo_ruban(az,montee,descente,larg,amplitude,&daz);
+					mc_meo_ruban(az,montee,descente,largmontee,largdescente,amplitude,&daz);
 					az+=daz;
 					/* --- final ---*/
 					star_site=h;
@@ -6362,10 +6367,15 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				if (res==TCL_OK) {
 					amplitude=(double)atof(interp->result);
 				}
-				sprintf(s,"global meo ; set ::meo(ruban,larg)");
+				sprintf(s,"global meo ; set ::meo(ruban,largmontee)");
 				res=Tcl_Eval(interp,s);
 				if (res==TCL_OK) {
-					larg=(double)atof(interp->result);
+					largmontee=(double)atof(interp->result);
+				}
+				sprintf(s,"global meo ; set ::meo(ruban,largdescente)");
+				res=Tcl_Eval(interp,s);
+				if (res==TCL_OK) {
+					largdescente=(double)atof(interp->result);
 				}
 				/* --- charge le modele de pointage ---*/
 				if (strcmp(PointingModelFile,"")!=0) {
@@ -6608,7 +6618,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 						h+=(dh/60.*DR);
 					}
 					/* --- correction du ruban --- */
-					mc_meo_ruban(az,montee,descente,larg,amplitude,&daz);
+					mc_meo_ruban(az,montee,descente,largmontee,largdescente,amplitude,&daz);
 					az+=daz;
 					/* --- final ---*/
 					star_site=h;

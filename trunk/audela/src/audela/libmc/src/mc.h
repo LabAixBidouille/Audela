@@ -981,7 +981,7 @@ int mc_interplin1(int n1,int n2,double *x, double *y, double *dy, double s,int n
 int mc_interplin2(int n1,int n2,double *x, double *y, double *dy, double s,int nn, double *xx, double *ff);
 char *mc_d2s(double val);
 int mc_readhip(char *hip_main_file, char *bits, double *values, int *nstars, mc_cata_astrom *hips);
-int mc_meo_ruban(double az, double montee,double descente,double larg,double amplitude,double *daz);
+int mc_meo_ruban(double az, double montee,double descente,double largmontee,double largdescente,double amplitude,double *daz);
 
 /***************************************************************************/
 /* Utilitaires de planificateur d'observations                             */
@@ -1208,7 +1208,7 @@ int mc_interplin1(int n1,int n2,double *x, double *y, double *dy, double s,int n
    Interpolation lineaire
 char *mc_d2s(double val)
    Double to String conversion with many digits
-int mc_meo_ruban(double az, double montee,double descente,double larg,double amplitude,double *daz)
+int mc_meo_ruban(double az, double montee,double descente,double largmontee,double largdescente,double amplitude,double *daz);
    Fonction du ruban cordeur de MEO
 */
 
