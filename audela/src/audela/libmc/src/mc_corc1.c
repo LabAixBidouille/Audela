@@ -593,7 +593,7 @@ void mc_corearthsatelem(double jj,struct elemorb *elem)
 /***************************************************************************/
 /***************************************************************************/
 {
-   double k_gauss,sini,cosi,e2,a,a2,j2,dt,dws,dos,dm0s,req,n0;
+   double k_gauss,sini,cosi,e2,a,a2,j2,dt,dws=0,dos=0,dm0s=0,req,n0;
    double k6,k7,k8,k9,h0,k0,ebar,hbar,kbar,betabar,ht,kt,beta;
    /*double p2,ntilda,n;*/
    double e,i,jjd;
@@ -615,14 +615,15 @@ void mc_corearthsatelem(double jj,struct elemorb *elem)
       req=6378.140e3/(UA); /* equatorial radius of the Earth in U.A. */
       j2=+1.08263e-3*req*req; /* U.A.2 */
       dt=jjd-elem->jj_epoque;
+		e=elem->e;
       /* - Dunby */
-      /*
+		/*
       dws=dt*3*n0*j2/(2*a2*(1-e2)*(1-e2))*(5./2.*sini*sini-2.);
       dos=-dt*3*n0*j2/(2*a2*(1-e2)*(1-e2))*cosi;
       dm0s=dt*(-3*j2/(2*a2*pow((1-e2),3./2.))*(3./2.*sini*sini-1.));
       i=elem->i;
       e=elem->e;
-      */
+		*/
       /* - Kozai */
       /*
       p2=a2*(1.-e2)*(1.-e2);
@@ -649,6 +650,7 @@ void mc_corearthsatelem(double jj,struct elemorb *elem)
       dm0s=(ntilda*dt);
       */
       /* - Born */
+		/*
       req=6378.140e3/(UA); // equatorial radius of the Earth in U.A.
       req2=req*req;
       j2=+1.08263e-3;
@@ -701,6 +703,7 @@ void mc_corearthsatelem(double jj,struct elemorb *elem)
          dws=0.;
          dm0s=0.;
       }
+		*/
       /* --- update the elements ---*/
       elem->w/=(DR);
       elem->o/=(DR);
@@ -718,6 +721,6 @@ void mc_corearthsatelem(double jj,struct elemorb *elem)
       elem->e=e;
       elem->i=i;
       elem->jj_epoque=jjd;
-      elem->jj_m0=jjd;
+      //elem->jj_m0=jjd;
    }
 }
