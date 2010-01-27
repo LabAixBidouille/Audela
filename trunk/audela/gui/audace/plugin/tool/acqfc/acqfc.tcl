@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.99 2010-01-24 12:14:27 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.100 2010-01-27 00:10:33 myrtillelaas Exp $
 #
 
 #==============================================================
@@ -2256,6 +2256,41 @@ proc ::acqfc::webcamConfigure { visuNo } {
 }
 #***** Fin de la fenetre de configuration de WebCam ******************
 
+################ EMCCD ##############################
+proc ::acqfc::updateGainEMCCD {camNo visuNo gain} {
+
+	global audace caption conf panneau
+	
+	::console::affiche_resultat "Gain EMCCD : $gain \n"
+	
+	cam$camNo native SetEMCCDGain $gain
+}
+
+#***** Procedure de changement du mode d'acquisition ***********
+proc ::acqfc::EmccdValid { visuNo { mode "" } } {
+   global panneau
+
+   set camNo   [::confCam::getCamNo $panneau(acqfc,$visuNo,camItem)]
+   cam$camNo exptime $panneau(acqfc,$visuNo,pose)
+   ::console::affiche_resultat "cam$camNo exptime $panneau(acqfc,$visuNo,pose) \n"
+   if {$panneau(acqfc,$visuNo,emccdmode)=="0"} {
+	   set acqmodeemccd "series"
+	   cam$camNo acqmode $acqmodeemccd 1 0 $panneau(acqfc,$visuNo,emccdtriggermode)
+   	   ::console::affiche_resultat "cam$camNo acqmode $acqmodeemccd 1 0 $panneau(acqfc,$visuNo,emccdtriggermode)\n"
+
+   } else {
+	   set acqmodeemccd "accumulate"
+	   set panneau(acqfc,$visuNo,emccdtriggermode) 0
+	   cam$camNo acqmode $acqmodeemccd $panneau(acqfc,$visuNo,emccd_nb) $panneau(acqfc,$visuNo,AccuCycleTme) 0
+       ::console::affiche_resultat "cam$camNo acqmode $acqmodeemccd $panneau(acqfc,$visuNo,emccd_nb) $panneau(acqfc,$visuNo,AccuCycleTme) 0\n"
+
+   } 
+   
+}
+#***** Fin de la procedure de changement du mode d'acquisition *
+################ FIN EMCCD ##############################
+
+
 proc ::acqfc::acqfcBuildIF { visuNo } {
    global audace caption conf panneau
 
@@ -2625,6 +2660,93 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
          pack $panneau(acqfc,$visuNo,This).shift.buttonShiftConfig -side right -fill x -expand true
       pack $panneau(acqfc,$visuNo,This).shift -side top -fill x
 
+      set camname ""
+      catch {set camname [cam1 name]}
+      
+      if {$camname=="Luc285_MONO"} {
+	      	::console::affiche_resultat "Mode EMCCD"
+	      	set camNo   [::confCam::getCamNo $panneau(acqfc,$visuNo,camItem)]
+	        # param par défault :
+	        set panneau(acqfc,$visuNo,emccd_nb) 0
+	        set panneau(acqfc,$visuNo,AccuCycleTme) [expr $panneau(acqfc,$visuNo,pose)+1]
+	        set panneau(acqfc,$visuNo,emccdmode) 0
+	        set panneau(acqfc,$visuNo,emccdtriggermode) 0
+	      	#--- Create a dummy space
+        	frame $panneau(acqfc,$visuNo,This).vide -height 2 -borderwidth 0 -relief flat 
+        	pack $panneau(acqfc,$visuNo,This).vide -side top -fill x -pady 3
+
+	      	#--- Frame Titre EMCCD
+      		frame $panneau(acqfc,$visuNo,This).param
+      			label $panneau(acqfc,$visuNo,This).param.paramEMCCD -text "Paramètres EMCCD" -bg $audace(color,activeTextColor) \
+      				-font {-size 20 -weight bold} -foreground red
+      			pack $panneau(acqfc,$visuNo,This).param.paramEMCCD -side right -fill x -expand true
+      		pack $panneau(acqfc,$visuNo,This).param -side top -fill x -pady 5
+      		
+			#--- Frame Mode EMCCD : single or accumulate
+      		frame $panneau(acqfc,$visuNo,This).modechoix
+      			label $panneau(acqfc,$visuNo,This).modechoix.titre -text "MODE EMCCD" 
+      			pack $panneau(acqfc,$visuNo,This).modechoix.titre -side top -fill x -expand true
+      			radiobutton $panneau(acqfc,$visuNo,This).modechoix.but1 -text Single -variable panneau(acqfc,$visuNo,emccdmode) -value "0" 
+      			radiobutton $panneau(acqfc,$visuNo,This).modechoix.but2 -text Accumulate -variable panneau(acqfc,$visuNo,emccdmode) -value "1"      		
+      			pack $panneau(acqfc,$visuNo,This).modechoix.but1 $panneau(acqfc,$visuNo,This).modechoix.but2 -side right -fill x -expand true
+      		pack $panneau(acqfc,$visuNo,This).modechoix -side top -fill x	
+	      	#--- Frame Mode EMCCD : accumulate parameter
+	      	frame $panneau(acqfc,$visuNo,This).modeaccu -borderwidth 0
+	         frame $panneau(acqfc,$visuNo,This).modeaccu.nom -relief ridge -borderwidth 2
+	            label $panneau(acqfc,$visuNo,This).modeaccu.nom.but -text "Accu Cycle Time (sec)" -pady 0            
+	            entry $panneau(acqfc,$visuNo,This).modeaccu.nom.entr -width 10 \
+	               -textvariable panneau(acqfc,$visuNo,AccuCycleTme) -relief groove \
+	               -validate all \
+				   -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
+				pack $panneau(acqfc,$visuNo,This).modeaccu.nom.but -side left -fill x -expand true
+	            pack $panneau(acqfc,$visuNo,This).modeaccu.nom.entr -fill x -side top
+	            
+	            frame $panneau(acqfc,$visuNo,This).modeaccu.nb -relief ridge -borderwidth 2
+	            label $panneau(acqfc,$visuNo,This).modeaccu.nb.but -text $caption(acqfc,nombre) -pady 0
+	            pack $panneau(acqfc,$visuNo,This).modeaccu.nb.but -side left -fill y
+	            entry $panneau(acqfc,$visuNo,This).modeaccu.nb.entr -width 3 -textvariable panneau(acqfc,$visuNo,emccd_nb) \
+	               -relief groove -justify center \
+	               -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
+	            pack $panneau(acqfc,$visuNo,This).modeaccu.nb.entr -side left -fill x -expand true
+	         	pack $panneau(acqfc,$visuNo,This).modeaccu.nb -side top -fill x
+	        pack $panneau(acqfc,$visuNo,This).modeaccu.nom -side top -fill x 
+      	   pack $panneau(acqfc,$visuNo,This).modeaccu -side top -fill x 
+      	   #--- Frame Mode EMCCD : trigger mode
+      		frame $panneau(acqfc,$visuNo,This).modetrigger
+      			label $panneau(acqfc,$visuNo,This).modetrigger.titre -text "TRIGGER MODE" 
+      			pack $panneau(acqfc,$visuNo,This).modetrigger.titre -side top -fill x -expand true
+      			radiobutton $panneau(acqfc,$visuNo,This).modetrigger.but1 -text Internal -variable panneau(acqfc,$visuNo,emccdtriggermode) -value "0" 
+      			radiobutton $panneau(acqfc,$visuNo,This).modetrigger.but2 -text External -variable panneau(acqfc,$visuNo,emccdtriggermode) -value "1"
+      			pack $panneau(acqfc,$visuNo,This).modetrigger.but1 $panneau(acqfc,$visuNo,This).modetrigger.but2 -side right -fill x -expand true
+      		pack $panneau(acqfc,$visuNo,This).modetrigger -side top -fill x	
+      		
+      		#--- Frame Mode EMCCD : validation
+      		frame $panneau(acqfc,$visuNo,This).valiemccd
+	      		button $panneau(acqfc,$visuNo,This).valiemccd.but -text "VALIDATION avant GO CCD" -borderwidth 1\
+	               -command "::acqfc::EmccdValid $visuNo"
+	            pack $panneau(acqfc,$visuNo,This).valiemccd.but -side top -fill x
+	        pack $panneau(acqfc,$visuNo,This).valiemccd -side top -fill x	
+	        
+	        #--- Create a dummy space
+        	frame $panneau(acqfc,$visuNo,This).vide2 -height 2 -borderwidth 0 -relief flat 
+        	pack $panneau(acqfc,$visuNo,This).vide2 -side top -fill x -pady 5
+
+	      	#--- Frame Titre Gain EMCCD
+      		frame $panneau(acqfc,$visuNo,This).titregain
+      			label $panneau(acqfc,$visuNo,This).titregain.titre -text "GAIN EMCCD" 
+      			pack $panneau(acqfc,$visuNo,This).titregain.titre -side right -fill x -expand true
+      		pack $panneau(acqfc,$visuNo,This).titregain -side top -fill x	
+	      	#--- Frame Gain EMCCD
+      		frame $panneau(acqfc,$visuNo,This).gain
+      			scale $panneau(acqfc,$visuNo,This).gain.scrolbar -orient horizontal -length 200 -from 0 -to 200 \
+      			-tickinterval 50  -activebackground red -bg $audace(color,entryBackColor) -relief sunken -command "::acqfc::updateGainEMCCD $camNo $visuNo"
+      			#\-highlightbackground backColor
+
+      			pack $panneau(acqfc,$visuNo,This).gain.scrolbar -side right -fill x -expand true
+      		pack $panneau(acqfc,$visuNo,This).gain -side top -fill x
+	       	
+      }
+      
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $panneau(acqfc,$visuNo,This)
 }
