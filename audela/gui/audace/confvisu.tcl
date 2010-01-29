@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.126 2010-01-02 18:48:38 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.127 2010-01-29 15:57:10 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -17,7 +17,6 @@ namespace eval ::confVisu {
       global conf
 
       #--- je charge la librairie libfitstcl
-      #--- (ne fonctionne pas encore sur linux)
       set oldPath "[pwd]"
       set catchResult [ catch {
          cd $::audela_start_dir
@@ -2562,7 +2561,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  visuDynamix
-   #      fixe les bornes des glissierres de reglage des seuils
+   #      fixe les bornes des glissieres de reglage des seuils
    #------------------------------------------------------------
    proc visuDynamix { visuNo max min } {
       variable private
@@ -3590,39 +3589,8 @@ namespace eval ::colorRGB {
       #--- je recopie les variables conf dans des variables locales
       ::colorRGB::confToWidget $visuNo
 
-      #--- je recupere le numero du buffer de la visu
-      set bufNo [ ::confVisu::getBufNo $visuNo ]
-
-      #--- liste des mots cles a recuperer
-      set liste_kwd         [ list MIPS-HIR MIPS-LOR MIPS-HIG MIPS-LOG MIPS-HIB MIPS-LOB ]
-      set liste_alternative [ list DATAMAX DATAMIN DATAMAX DATAMIN DATAMAX DATAMIN ]
-
-      foreach kwd $liste_kwd alterne $liste_alternative {
-
-         #--- capture le contenu du mot cle
-         catch { set data [ buf$bufNo getkwd $kwd ] }
-
-         #--- si le mot cle concernant la couleur est absent
-         if { [ lindex $data 1 ] == "" } { set data [ buf$bufNo getkwd $alterne ] }
-
-         #--- si la valeur est indefinie
-         set val [ lindex $data 1 ]
-         if { $val == "" } { set val 0 }
-
-         #--- etablit la liste des valeurs de seuils dans le bon ordre
-         lappend private(colorRGB,$visuNo,mycuts) $val
-
-      }
-
-      #--- traite le cas des images jpg en couleur qui n'ont que 2 seuils (HI et LO) avec NAXIS = 3
-      if { $private(colorRGB,$visuNo,mycuts) == "0 0 0 0 0 0" } {
-
-         #--- lit les mots cles
-         set hi [ lindex [ buf$bufNo getkwd MIPS-HI ] 1 ]
-         set lo [ lindex [ buf$bufNo getkwd MIPS-LO ] 1 ]
-         set private(colorRGB,$visuNo,mycuts) "$hi $lo $hi $lo $hi $lo"
-
-      }
+      #--- je recupere les seuils de l'image affichee
+      set mycuts [visu$visuNo cut]
 
       #--- fenetre de base
       set base $::confVisu::private($visuNo,This)
@@ -3655,7 +3623,6 @@ namespace eval ::colorRGB {
       if { ! [ info exists conf(colorRGB,visu$visuNo,position) ] } { set conf(colorRGB,visu$visuNo,position) "+350+75" }
 
       set private(colorRGB,child)          [ list hir lor hig log hib lob ]
-      set private(colorRGB,$visuNo,mycuts) ""
    }
 
    #########################################################################
@@ -3755,17 +3722,18 @@ namespace eval ::colorRGB {
       variable private
 
       #--- rafraîchit la liste des 6 seuils
-      set private(colorRGB,$visuNo,mycuts) ""
+      set mycuts ""
       foreach scale $private(colorRGB,child) {
-         lappend private(colorRGB,$visuNo,mycuts) [ $private($visuNo,This).val_variant.$scale get ]
+         lappend mycuts [ $private($visuNo,This).val_variant.$scale get ]
       }
+
+      #--- rafraichit la visu
+      visu$visuNo cut $mycuts
+      visu$visuNo disp
 
       #--- actualise les glissieres
       ::colorRGB::configureScale $visuNo
 
-      #--- rafraichit la visu
-      visu$visuNo cut $private(colorRGB,$visuNo,mycuts)
-      visu$visuNo disp
    }
 
    #########################################################################
@@ -3774,21 +3742,23 @@ namespace eval ::colorRGB {
    proc configureScale { visuNo } {
       variable private
 
+      set mycuts [visu$visuNo cut]
+
       #--- etablit la liste des seuils bas et haut pour chaque couleur
       foreach indice [ list 0 2 4 ] color [ list r g b ] {
 
          #--- isole la valeur des seuils
-         set maxi [ expr { int([ lindex $private(colorRGB,$visuNo,mycuts) $indice ]) } ]
+         set maxi [ expr { int([ lindex $mycuts $indice ]) } ]
          incr indice
-         set mini [ expr { int([ lindex $private(colorRGB,$visuNo,mycuts) $indice ]) } ]
+         set mini [ expr { int([ lindex $mycuts $indice ]) } ]
 
          #--- invers les seuils si lo > hi
          if { $maxi < $mini } {
-            set private(colorRGB,$visuNo,mycuts) \
-               [ lreplace $private(colorRGB,$visuNo,mycuts) $indice $indice $maxi ]
+            set mycuts \
+               [ lreplace $mycuts $indice $indice $maxi ]
             incr indice -1
-            set private(colorRGB,$visuNo,mycuts) \
-               [ lreplace $private(colorRGB,$visuNo,mycuts) $indice $indice $mini ]
+            set mycuts \
+               [ lreplace $mycuts $indice $indice $mini ]
          }
 
          set range [ expr $maxi-$mini ]
@@ -3800,6 +3770,8 @@ namespace eval ::colorRGB {
          set mini_maxi_$color [ list $mini $maxi ]
 
       }
+
+
 
       #--- calcule la nouvelle dynamique de deplacement des curseurs a ressort
       if { $::conf(seuils,auto_manuel) == 1 } {
@@ -3819,7 +3791,7 @@ namespace eval ::colorRGB {
 
             #--- fixe la valeur de chaque glissiere
             set index [ lsearch -exact $private(colorRGB,child) $child ]
-            set val [ expr { int([ lindex $private(colorRGB,$visuNo,mycuts) $index ]) } ]
+            set val [ expr { int([ lindex $mycuts $index ]) } ]
             $private($visuNo,This).val_variant.$child set $val
 
          }
@@ -3853,6 +3825,9 @@ namespace eval ::colorRGB {
       #--- definit un mot cle inexistant
       set mot_vide "{} {} {none} {} {}"
 
+      #--- je recupere les seuils de liimage dans la visu
+      set mycuts [visu$visuNo cut]
+
       foreach scale $private(colorRGB,child) {
 
          #--- definit le mot cle a rechercher
@@ -3871,7 +3846,7 @@ namespace eval ::colorRGB {
             set i [ lsearch $private(colorRGB,child) $scale ]
 
             #--- remplace la valeur par la valeur actuelle
-            set data [ lreplace $data 1 1 [ lindex $private(colorRGB,$visuNo,mycuts) $i ] ]
+            set data [ lreplace $data 1 1 [ lindex $mycuts $i ] ]
 
          } else {
 
