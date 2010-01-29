@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_2.tcl
 # Description : Script regroupant les fonctionnalites du menu Affichage
-# Mise a jour $Id: aud_menu_2.tcl,v 1.22 2009-12-17 22:23:22 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.tcl,v 1.23 2010-01-29 15:57:47 michelpujol Exp $
 #
 
 namespace eval ::audace {
@@ -182,7 +182,7 @@ namespace eval ::audace {
             }
          }
          4 {
-            #--- Fonction de transfert arctangente / sigmoïde
+            #--- Fonction de transfert arctangente / sigmoï¿½de
             if {$conf(fonction_transfert,param4)==0} {
                #--- On est ramene au cas lineaire
                visu$visuNo pal $fichier_palette
@@ -1072,8 +1072,6 @@ namespace eval ::seuilCouleur {
          visu$visuNo cut $mycuts
          #--- Affichage de l'image
          visu$visuNo disp
-         #--- Chargement de la variable pour actualiser les glissieres RVB
-         set ::colorRGB::private(colorRGB,$visuNo,mycuts) $mycuts
          #--- Actualisation des glissieres RVB
          ::colorRGB::configureScale $visuNo
          #--- Initialisation
