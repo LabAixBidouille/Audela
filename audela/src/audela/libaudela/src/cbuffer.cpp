@@ -3344,6 +3344,11 @@ void CBuffer::Stat( int x1,int y1,int x2,int y2,
    int i,naxis11,naxis22;
    TYPE_PIXELS *ppix= NULL;
 
+
+   if ( pix->IsPixelsReady() == 0 ) {
+      // je retourne une erreur si le buffer est vide
+      throw CError("buffer is empty");
+   }
    naxis1=GetWidth();
    naxis2=GetHeight();
 
@@ -3378,12 +3383,17 @@ void CBuffer::Stat( int x1,int y1,int x2,int y2,
       if(msg) throw CErrorLibtt(msg);
    }
 
-   *locut = (float)dlocut; *hicut = (float)dhicut;
-   *maxi = (float)dmaxi; *mini = (float)dmini;
-   *mean = (float)dmean; *sigma = (float)dsigma;
-   *bgmean = (float)dbgmean; *bgsigma = (float)dbgsigma;
+   *locut = (float)dlocut; 
+   *hicut = (float)dhicut;
+   *maxi = (float)dmaxi; 
+   *mini = (float)dmini;
+   *mean = (float)dmean; 
+   *sigma = (float)dsigma;
+   *bgmean = (float)dbgmean; 
+   *bgsigma = (float)dbgsigma;
    *contrast = (float)dcontrast;
 
+   // si la statistique porte sur l'image entière, je mets a jour les mots cls de l'image
    if ((x1==-1)&&(y1==-1)&&(x2==-1)&&(y2==-1)) {
       fLo = (float) dlocut;
       fHi = (float) dhicut;

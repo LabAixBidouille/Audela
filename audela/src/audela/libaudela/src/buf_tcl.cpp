@@ -2758,6 +2758,10 @@ int cmdTtOpt(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 //   Calcul des statistiques de l'image
 //   Equivalent de QMiPS : STAT
 //
+//  @return retourne la liste des valeurs 
+//          { locut hicut maxi mini mean sigma bgmean bgsigma contrast }
+//          retourne une erreur si le buffer est vide
+//           
 int cmdTtStat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
    CBuffer *buffer;
@@ -2841,7 +2845,11 @@ int cmdTtStat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          retour = TCL_OK;
       } catch(const CError& e) {
-         sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
+         if ( argv[2] == NULL ) {
+            sprintf(ligne,"%s : %s ",argv[1], e.gets());
+         } else {
+            sprintf(ligne,"%s %s : %s ",argv[1],argv[2], e.gets());
+         }
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          retour = TCL_ERROR;
       }
