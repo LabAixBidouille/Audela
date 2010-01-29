@@ -2,7 +2,7 @@
 # Fichier : qsi.tcl
 # Description : Configuration de la camera QSI
 # Auteur : Michel Pujol
-# Mise a jour $Id: qsi.tcl,v 1.10 2009-12-06 17:53:02 michelpujol Exp $
+# Mise a jour $Id: qsi.tcl,v 1.11 2010-01-29 20:56:21 michelpujol Exp $
 #
 
 namespace eval ::qsi {
@@ -316,7 +316,7 @@ proc ::qsi::configureCamera { camItem bufNo } {
             set ::conf(qsi,filterNo) 0
          }
          if { [ info exists private(frm) ] } {
-             if { [ winfo exists $private(frm) ] } {           
+             if { [ winfo exists $private(frm) ] } {
                $private(frm).frame2.frame6.wheel.filterList configure -values  $private(filterNames)
                $private(frm).frame2.frame6.wheel.filterList setvalue "@$::conf(qsi,filterNo)"
              }
@@ -383,7 +383,7 @@ proc ::qsi::getPluginProperty { camItem propertyName } {
             return $binList
          } else {
             return ""
-         }   
+         }
       }
       binningXListScan { return [ list "" ] }
       binningYListScan { return [ list "" ] }
@@ -493,6 +493,16 @@ proc ::qsi::setConfigTemperature { camItem } {
       }
    }
 }
+
+#
+# ::fingerlakes::setTempCCD
+#    Procedure pour retourner la consigne de temperature du CCD
+#
+proc ::qsi::setTempCCD { } {
+
+   return $::conf(qsi,setTemperature)
+}
+
 
 #
 # displayTemperature
