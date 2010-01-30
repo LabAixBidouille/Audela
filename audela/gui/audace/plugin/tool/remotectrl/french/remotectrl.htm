@@ -1,14 +1,500 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=us-ascii" />
 <title>Contr&ocirc;le &agrave; distance</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+ p.c1 {font-weight: bold}
+ ul { line-height: 150%; }
+ td { padding-bottom: 20px;padding-left: 20px;}
+/*]]>*/
+</style>
 </head>
-
 <body>
-<p class="date">Date de mise &agrave; jour : 11 novembre 2004</p>
-<h1>Contr&ocirc;le &agrave; distance </h1>
+<p class="date">Date de mise &agrave; jour : 30 janvier 2010</p>
+<h1>Contr&ocirc;le &agrave; distance</h1>
+<p>Le processus d&eacute;crit est destin&eacute; &agrave;
+connecter deux ordinateurs dans le cadre d'un <b>r&eacute;seau
+local</b>, l'un &eacute;tant situ&eacute; pr&egrave;s du
+t&eacute;lescope (d&eacute;sign&eacute; comme l'ordinateur
+Jardin), l'autre &eacute;tant situ&eacute; dans un autre local
+(d&eacute;sign&eacute; comme l'ordinateur Maison). Les
+ordinateurs peuvent &ecirc;tre r&eacute;li&eacute;s par
+l'interm&eacute;diaire d'un c&acirc;ble &eacute;thernet
+crois&eacute; ou par l'interm&eacute;diaire d'une "box", des
+c&acirc;bles &eacute;thernet, combin&eacute;s ou pas avec des
+prises CPL. Les commandes pass&eacute;es sur le PC Maison sont
+alors ex&eacute;cut&eacute;es par le PC Jardin.</p>
+<p>Pour en savoir plus, consulter l'adresse suivante : <a href=
+"http://www.audela.org/audela2004/script4.htm">http://www.audela.org/audela2004/script4.htm</a></p>
+<p>Avant de connecter l'APN au PC Jardin, il convient de le
+configurer correctement. Les seuls r&eacute;glages de l'APN
+accessibles dans cette interface &eacute;tant les temps
+d'exposition et le format de l'image, il convient de
+r&eacute;gler et de v&eacute;rifier les autres param&egrave;tres
+:</p>
+<ul>
+<li>R&eacute;glage sur mode manuel, de la sensibilit&eacute;, du
+diaphragme, du relevage du miroir, du d&eacute;lai avant
+extinction et arr&ecirc;t de la dur&eacute;e de revue, etc.</li>
+<li>Mode de communication sur 'Connexion PC'.</li>
+<li>Alimentation et limitation de tout ce qui consomme de
+l'&eacute;nergie (signal sonore, luminosit&eacute; de
+l'&eacute;cran).</li>
+<li>Connexion du ou des c&acirc;bles.</li>
+</ul>
+<p><b>Lors de la configuration de la cam&eacute;ra il convient de
+la relier &agrave; la visu1, peu importe l'item A, B ou
+C.</b></p>
+<h2>1. R&eacute;glages sur le PC Jardin</h2>
+<table>
+<tr>
+<td><img src="img/lancement.gif" alt=
+"panneau ouvert au lancement" /></td>
+<td>Lancer AudeLA sur le PC 'Jardin'.<br />
+S&eacute;lectionner le menu <b>Outils --> Contr&ocirc;le &agrave;
+distance</b>.<br />
+L'outil <b>Contr&ocirc;le &agrave; distance</b> appara&icirc;t
+&agrave; la gauche de l'&eacute;cran.<br />
+Appuyez sur le bouton <b>Connecter</b>.</td>
+</tr>
+<tr>
+<td><img src="img/config.gif" alt=
+"second panneau de configuration" /></td>
+<td>La fen&ecirc;tre <b>Configuration de la connexion</b> s'ouvre
+et propose le choix entre 'Jardin' et 'Maison'.<br />
+S&eacute;lectionner <b>Jardin</b>.</td>
+</tr>
+<tr>
+<td><img src="img/configjardin.gif" alt=
+"second panneau de configuration" /></td>
+<td>Une seconde fen&ecirc;tre de configuration s'ouvre.<br />
+Appuyer sur <b>Connexion</b>.<br />
+Si la cam&eacute;ra et le telescope ne sont pas
+d&eacute;j&agrave; s&eacute;lectionn&eacute;s et
+configur&eacute;s, des fen&ecirc;tres annexes s'ouvrent.<br /></td>
+</tr>
+<tr>
+<td><img src="img/connexionreussie.gif" alt=
+"cconfirmation de la connexion" /></td>
+<td>Lorsque le t&eacute;lescope et l'imageur sont correctement
+connect&eacute;s, le coin inf&eacute;rieur droit d'Aud'Ace
+comporte l'identification des connexions &eacute;tablies et la
+Console confirme les connexions.</td>
+</tr>
+<tr>
+<td><img src="img/parefeu.gif" alt=
+"d&eacute;bloquer programme" /></td>
+<td>Note : Si c'est la premi&egrave;re fois que ce type de
+connexion est &eacute;tablie, il est possible que le pare-feu de
+Windows demande de valider l'autorisation de d&eacute;blocage
+pour AudeLA : R&eacute;pondre positivement en appuyant sur
+<b>D&eacute;bloquer</b>. AudeLA appara&icirc;t alors dans les
+exceptions (autoris&eacute;es &agrave; communiquer) par le
+pare-feu.</td>
+</tr>
+<tr>
+<td><img src="img/infojardin.gif" alt=
+"configuration de la connexion Jardin" /></td>
+<td>La configuration est termin&eacute;e : Le bouton a
+chang&eacute; de libell&eacute; et le mot 'Jardin' remplace la
+mention 'Non connect&eacute;'.<br />
+Une bulle d'aide accompagne le mot 'Jardin' et indique l'IP et le
+num&eacute;ro de port RCP de la connexion.</td>
+</tr>
+</table>
+<h2>2. R&eacute;glages sur le PC Maison</h2>
+<table>
+<tr>
+<td><img src="img/confighome.gif" alt=
+"second panneau de configuration" /></td>
+<td>Proc&eacute;der comme pour les r&eacute;glages sur le PC
+Jardin : Lancer AudeLA, s&eacute;lectionner le menu
+<b>Outils --> Contr&ocirc;le &agrave; distance</b>. Cliquer sur
+<b>Connecter</b> puis <b>Maison</b>. Une seconde fen&ecirc;tre de
+configuration s'ouvre.<br />
+V&eacute;rifier que l'IP et le num&eacute;ro du port RCP du PC
+Jardin sont identiques aux donn&eacute;es du PC Jardin sinon
+faire les corrections n&eacute;cessaires.<br />
+L'IP du PC Maison est affich&eacute;e
+<b>automatiquement</b>.<br />
+V&eacute;rifier que le num&eacute;ro du port RCP du PC Maison est
+diff&eacute;rent de celui du PC Jardin.<br />
+Indiquer le port ftp de transfert (21) ou l'identifiant du
+lecteur r&eacute;seau (Z: dans l'exemple ci-contre, Cf. le paragraphe 
+6. Connexion d'un lecteur r&eacute;seau).<br />
+Appuyer sur <b>Connexion</b>.<br />
+Note : Si c'est la premi&egrave;re fois que ce type de connexion
+est &eacute;tablie, il est possible que le pare-feu de Windows
+demande de valider l'autorisation de d&eacute;blocage pour AudeLA
+: R&eacute;pondre positivement. AudeLA appara&icirc;t alors dans
+les exceptions.</td>
+</tr>
+</table>
+<h2>3. Panneau Maison</h2>
+<table>
+<tr>
+<td><img src="img/infomaison.gif" alt="panneau serveur" /></td>
+<td>Le panneau <b>Maison</b> se d&eacute;masque : Il est
+sp&eacute;cifique du mat&eacute;riel connect&eacute; au PC
+Jardin. N&eacute;amoins il comporte toujours trois sections :
+<ul>
+<li>La premi&egrave;re partie concerne la connexion. Elle
+comporte un bouton d'aide et un bouton de d&eacute;connexion. Le
+mot 'Maison' comporte une bulle d'aide qui donne les
+carat&eacute;ristiques de la connexion : Il suffit de passer le
+pointeur de la souris sur le mot 'Maison'.</li>
+<li>La seconde a trait aux coordonn&eacute;es vis&eacute;es par le
+t&eacute;lescope et &agrave; la gestion de la raquette de
+commande (Cf. le paragraphe 4 ci-apr&egrave;s).</li>
+<li>La troisi&egrave;me d&eacute;pend du mat&eacute;riel de prise
+de vue : Cam&eacute;ra CCD, APN (Appareil Photo Num&eacute;rique) (Cf. le
+ paragraphe 5 ci-dessous).</li>
+</ul>
+</td>
+</tr>
+</table>
+<h2>4. Panneau Pointage</h2>
+<h2>5. Panneau DSLR</h2>
+<table>
+<tr>
+<td><img src="img/DSLR.gif" alt=
+"description du panneau DSLR" /></td>
+<td>
+<p>Le panneau permettant de piloter les prises de vues &agrave;
+partir d'un APN comporte :</p>
+<p>Un bouton de s&eacute;lection du <b>mode de
+d&eacute;clenchement de l'APN et de s&eacute;lection de la gamme
+de temps d'exposition</b>. Il comporte une ou deux options selon
+le mode de connexion de l'APN au PC Jardin :<br /></p>
+<ul>
+<li>Si l'APN a &eacute;t&eacute; connect&eacute; avec le seul
+c&acirc;ble USB normal, le bouton affiche <b>USB</b> mais il est
+d&eacute;sactiv&eacute;.</li>
+<li>S'il a &eacute;t&eacute; configur&eacute; en mode longue
+pose, les options sont <b>{ USB | Longue pose }</b>, ce qui
+permet de basculer d'un mode vers l'autre depuis le PC Maison
+sans avoir &agrave; intervenir manuellement sur la configuration
+de la cam&eacute;ra sur le PC Jardin.<br />
+Limitation : A la r&eacute;ouverture d'une session,
+imm&eacute;diatement apr&egrave;s une fermeture, le
+red&eacute;marrage se fait sur le dernier mode actif (USB ou
+Longue Pose). Il est donc pr&eacute;f&eacute;rable de quitter sur
+le mode <b>Longue Pose</b> pour retrouver toutes les
+possibilit&eacute;s.</li>
+</ul>
+<p>Un bouton de s&eacute;lection du mode de <b>sauvegarde</b> des
+images. Le menu varie en fonction du choix lors de la connexion
+:</p>
+<ul>
+<li>Si le choix s'est port&eacute; sur le port ftp, le menu
+comporte quatre options <b>{ Carte m&eacute;moire | Jardin |
+Maison et Jardin | Maison }</b>.</li>
+<li>Si le choix s'est port&eacute; sur un lecteur r&eacute;seau
+(par exemple dossier <b>images</b> du PC Jardin en dossier
+partag&eacute;), le menu comporte les options <b>{ Carte
+M&eacute;moire | Lecteur nom_du_lecteur_r&eacute;seau }</b>.</li>
+</ul>
+Les caract&eacute;ristiques de ces modes sont les suivantes :
+<ul>
+<li><b>Carte m&eacute;moire</b> : Les images prises sont
+stock&eacute;es exclusivement sur la carte m&eacute;moire dans
+l'APN.</li>
+<li><b>Lecteur r&eacute;seau</b> : Les images sont
+stock&eacute;es sur le lecteur r&eacute;seau et effac&eacute;es
+de la carte m&eacute;moire.</li>
+<li><b>Jardin</b> : Les images sont stock&eacute;es dans le
+r&eacute;pertoire Images dans Aud'Ace du PC Jardin et
+effac&eacute;es de la carte m&eacute;moire.</li>
+<li><b>Maison et Jardin</b> : En plus d'&ecirc;tre
+stock&eacute;es sur le PC Jardin, elles sont
+t&eacute;l&eacute;charg&eacute;es et stock&eacute;es dans le
+r&eacute;pertoire Images du PC Maison.</li>
+<li><b>Maison</b> : Les images sont
+t&eacute;l&eacute;charg&eacute;es et stock&eacute;es dans le
+r&eacute;pertoire Images du PC Maison. Elles sont effac&eacute;es
+de la carte m&eacute;moire et du PC Jardin.</li>
+</ul>
+<p>Un bouton de s&eacute;lection du <b>format</b> des images. Les
+choix offerts en mati&egrave;re de formats par l'APN sont
+r&eacute;pertori&eacute;s sous forme de menu. Le r&eacute;glage
+actuel est coch&eacute;.<br />
+Le format RAW est automatiquement transform&eacute; en image
+portant l'extension FITS par d&eacute;faut tandis que les autres
+formats sont transform&eacute;s en JPEG. Le format est
+rappel&eacute; &agrave; gauche du bouton de s&eacute;lection.</p>
+<p>Le menu du bouton de s&eacute;lection du <b>mode</b> de prise
+vue comporte trois options <b>{ Une image | Une s&eacute;rie |
+Une rafale }</b></p>
+<ul>
+<li>Le mode <b>Une image</b> inhibe seulement l'entr&eacute;e
+<b>Intervalle</b>, tous les autres r&eacute;glages restant
+acessibles.</li>
+<li>Le mode <b>Une s&eacute;rie</b> autorise l'entr&eacute;e d'un
+intervalle apr&egrave;s r&eacute;alisation d'un <b>Test</b>
+permettant de mesurer l'intervalle minimum (Cf. le bouton
+Test).<br /></li>
+<li>Le mode <b>Une rafale</b> consiste &agrave; prendre une
+s&eacute;quence d'images aussi rapidement que possible. Pour
+fixer rapidement les images il est n&eacute;cessaire de passer
+par la commande par USB et par le stockage sur la carte
+m&eacute;moire de l'APN. En cons&eacute;quence le entr&eacute;es
+g&eacute;rant le nom de l'image, l'intervalle et la visualisation
+sont inhib&eacute;es. Le format, le nombre de pose, le temps
+d'exposition et le d&eacute;lai restent accessibles. Note : Ce
+mode de rafale n'est pas identique au mode Rafale de l'APN, plus
+lent (environ une image Raw / 4 secondes) il permet de saisir un
+nombre d'images plus important.</li>
+<li>Les modes <b>Une s&eacute;rie</b> et <b>Une rafale</b>
+supporte le bracketing (pour les photographes), c'est &agrave;
+dire le changement de temps d'exposition entre deux prises de
+vue. Il permet de saisir des &eacute;v&egrave;nements
+&eacute;volutifs &agrave; exposition constante ou encore de
+saisir les hautes et les basses lumi&egrave;res en modifiant les
+temps d'exposition, soit dans le sens croissant, soit dans le
+sens d&eacute;croissant.<br />
+Le bouton <b>Pas</b>, lib&eacute;r&eacute; lors de la
+s&eacute;lection du mode, propose des variations de pas
+d'exposition de +6 &agrave; -6 en passant par 0 (s&eacute;rie
+&agrave; temps constant). Le programme calcule l'exposition
+&agrave; appliquer aux images suivantes &agrave; partir de
+l'exposition initiale. Une variation de 3 pas modifie le temps
+d'exposition d'un coefficient 2 ou 1/2 selon le sens (+ ou -).
+M&ecirc;me si un message informe du d&eacute;passement de la
+plage des temps propos&eacute;s, la coh&eacute;rence des
+donn&eacute;es <b>Nombre de poses &agrave; prendre/Exposition
+initiale/Variation d'exposition</b> doit &ecirc;tre
+v&eacute;rifi&eacute;e pour que l'exposition finale ne soit pas
+sup&eacute;rieure ou inf&eacute;rieure aux capacit&eacute;s de
+l'APN.</li>
+</ul>
+<p>Un bouton <b>Test</b> est fonctionnel dans tous les modes de
+prises de vue. Il permet de mesurer la dur&eacute;e d'une
+s&eacute;quence compl&egrave;te entre l'acquisition et
+l'affichage et d&eacute;finit l'intervalle de temps minimum entre
+deux prises de vues. Il a pour effet de prendre une photo test
+dans les conditions r&eacute;elles telles que programm&eacute;es
+(format, temps d'exposition, stockage, visualisation).<br />
+A la fin du test le temps mesur&eacute; est
+transf&eacute;r&eacute; dans la fen&ecirc;tre de l'intervalle en
+tant qu'intervalle minimum et l'image test est
+effac&eacute;e.<br />
+A l'&eacute;vidence le plus rapide est de ne stocker que sur la
+carte m&eacute;moire de l'APN mais il faut alors se passer de
+visualisation. Pour r&eacute;sumer :</p>
+<ul>
+<li>Pour des cadences rapides, pr&eacute;f&eacute;rer le stockage
+sur la carte m&eacute;moire.</li>
+<li>Pour des mises au point, pr&eacute;f&eacute;rer le format
+Small (environ 6 fois plus rapide que le RAW et en
+couleurs).</li>
+<li>Pour des photos &agrave; traiter ult&eacute;rieurement,
+s&eacute;lectionner RAW.</li>
+<li>De toute fa&ccedil;on : Mesurer !</li>
+</ul>
+<p>Une fen&ecirc;tre d'affichage : Vide au repos, elle affiche
+les principales &eacute;tapes au cours d'une session <b>{ Attente
+| Acquisition | Chargement | Affichage }</b>.</p>
+<p>Une fen&ecirc;tre pour saisir le <b>nom
+g&eacute;n&eacute;rique</b> sous lequel l'image ou les images
+seront sauvegard&eacute;es.<br />
+En l'absence de saisie le nom de l'image sera
+<b>tmp{N&deg;}$extension</b>.<br />
+Seuls les caract&egrave;res alphanum&eacute;riques et le
+underscore _ sont autoris&eacute;s. Les autres caract&egrave;res
+sont automatiquement &eacute;limin&eacute;s sans
+avertissement.</p>
+<p>Une fen&ecirc;tre pour saisir le <b>temps d'exposition</b>. La
+fixation du temps d'exposition d&eacute;pend du mode de
+d&eacute;clenchement <b>{ USB | longuepose }</b> :</p>
+<ul>
+<li>En mode <b>USB</b>, il faut s&eacute;lectionner l'une des
+valeurs propos&eacute;es par la liste d&eacute;roulante de
+l'entr&eacute;e <b>Pose</b>. Ces valeurs sont les expositions
+standards exprim&eacute;es soit en fraction (1/4000), soit en
+d&eacute;cimal (0.5) soit encore en nombre entier (2). Le
+temps maximum est de 30 secondes. Note : Demander un temps
+d'exposition non pr&eacute;vu pour l'APN conduit l'APN &agrave;
+adopter un r&eacute;ponse par d&eacute;faut, exemple demander
+1/8000 &agrave; un Canon 350 D conduit &agrave; un temps de
+1/4000. Demander 0 seconde et il donnera 1 seconde !</li>
+<li>En mode <b>longue pose</b>, une fen&ecirc;tre de saisie
+remplace la liste d&eacute;roulante. Indiquer le temps
+d'exposition exprim&eacute; en nombre de secondes enti&egrave;res
+ou d&eacute;cimales. L'entr&eacute;e est filtr&eacute;e : En cas
+d'erreur de saisie (caract&egrave;re non num&eacute;rique ou une
+virgule &agrave; la place du point) le temps est fix&eacute; au
+temps minimum de 31 secondes.</li>
+</ul>
+<p>Une fen&ecirc;tre pour saisir le <b>nombre de photos</b>
+&agrave; prendre. Le nombre entr&eacute; doit &ecirc;tre un
+entier &gt; 0.<br />
+Le nombre est d&eacute;cr&eacute;ment&eacute; en cours de
+session. A la fin de la session le nombre est remis &agrave; 1.
+Le d&eacute;clenchement n'a aucun effet lorsque le nombre est
+&eacute;gal &agrave; 0.<br />
+Les images sont auto-index&eacute;es par ordre de prise de vue :
+Le nom de l'image sera
+<b>nom_g&eacute;n&eacute;rique{N&deg;}$extension</b>. L'extension
+est soit .jpg soit l'extension FITS par d&eacute;faut.<br />
+Compte tenu de l'auto-indexation il est conseill&eacute; de
+modifier le nom g&eacute;n&eacute;rique pour chaque nouvelle
+s&eacute;rie, sous peine d'&eacute;craser les images
+pr&eacute;c&eacute;dentes.</p>
+<p>Une fen&ecirc;tre pour saisir le <b>d&eacute;lai</b> avant la
+premi&egrave;re prise de vue, exprim&eacute; en nombre entier de
+secondes.</p>
+<p>Une fen&ecirc;tre pour saisir l'<b>intervalle</b> de temps
+entre deux photos pour l'option <b>Une s&eacute;rie</b>.<br />
+Cette entr&eacute;e n'est active que si le nombre de poses est
+sup&eacute;rieur &agrave; 1.<br />
+Le d&eacute;lai doit &ecirc;tre un nombre entier de secondes.<br />
+L'intervalle minimum d&eacute;pend des choix effectu&eacute;s en
+mati&egrave;re de temps d'exposition, de stockage des images, de
+la taille des images, de la visualisation, de la vitesse de
+communication support&eacute;e par le r&eacute;seau. Le plus
+simple est donc de le mesurer avec le bouton 'Test'.<br />
+A la fin du test la vitesse mesur&eacute;e est
+transf&eacute;r&eacute;e dans la fen&ecirc;tre de l'intervalle en
+tant qu'intervalle minimum. Il est conseill&eacute; de faire
+plusieurs mesures car les temps peuvent varier.</p>
+<p>Une case &agrave; cocher pour afficher les images. L'option
+'stockage sur la carte m&eacute;moire' invalide automatiquement
+l'option <b>Affichage</b> car les images ne sont ni
+transf&eacute;r&eacute;es, ni
+t&eacute;l&eacute;charg&eacute;es.</p>
+<p>Le bouton de <b>d&eacute;clenchement</b> lance
+l'ex&eacute;cution des prises de vues, de
+t&eacute;l&eacute;chargement et d'affichage tels que
+programm&eacute;s.<br />
+Toutes les commandes sont gel&eacute;es durant une session :
+Aucun changement n'est possible.</p>
+<p><b>Bon &agrave; savoir</b> :</p>
+<ul>
+<li>Les IP, les ports RCP et le port de transfert (ftp ou lecteur
+virtuel) sont m&eacute;moris&eacute;s pour &ecirc;tre
+rappel&eacute;s lors de la session suivante.</li>
+<li>Le PC Maison communique l'extension par d&eacute;faut des
+images FITS au PC Jardin &agrave; chaque prise de vue : Il est
+donc possible de modifier l'extension par d&eacute;faut entre
+deux s&eacute;ries de prises de vues. Cette extension par
+d&eacute;faut ne s'applique qu'aux images RAW, les autres restant
+au format JPEG.</li>
+<li>Lors de la connexion l'acc&egrave;s au lecteur r&eacute;seau
+est test&eacute;. Un message est &eacute;mis en cas
+d'&eacute;chec : Le processus se poursuit mais le lecteur
+r&eacute;seau n'appara&icirc;t pas dans la liste des moyens de
+stockage qui est r&eacute;duite &agrave; sa plus simple
+expression : La carte m&eacute;moire de l'APN (si elle est
+pr&eacute;sente).<br />
+Pour &eacute;viter cette limitation proc&eacute;der &agrave; la
+v&eacute;rification &eacute;voqu&eacute;e &agrave; la rubrique
+<b>d&eacute;pannage</b> (fin du paragraphe 6) avant de lancer
+l'outil <b>Contr&ocirc;le &agrave; distance</b>.</li>
+<li>Un message d'avertissement est &eacute;mis si l'appareil
+photo ne r&eacute;pond pas, ce qui peut &ecirc;tre le cas si le
+temps de mise en veille est trop court, s'il s'est mis en erreur,
+si l'alimentation est insuffisante ou si une liaison
+mat&eacute;rielle est d&eacute;fectueuse.</li>
+<li>Une bulle d'aide accompagne les principales
+entr&eacute;es.</li>
+</ul>
+</td>
+</tr>
+</table>
+<h2>6. Connexion d'un lecteur r&eacute;seau</h2>
+<h3>Etape 1 : Cr&eacute;ation du dossier partag&eacute; sur le PC
+Jardin.</h3>
+<table>
+<tr>
+<td>Aller dans <b>C:/Program Files/Audela</b> et
+s&eacute;lectionner le dossier <b>images</b>,<br />
+Clic droit de la souris : S&eacute;lectionner
+<b>Propri&eacute;t&eacute;s</b>.<br />
+Onglet <b>Partage</b> : Cocher <b>Partager ce dossier sur le
+r&eacute;seau</b> ainsi que <b>Autoriser les utilisateurs
+&agrave; modifier mes fichiers</b> Remplisser la case <b>Nom du
+partage</b> en donnant un nom reconnaissable. Cliquer sur
+<b>OK</b>.<br />
+L'ic&ocirc;ne du dossier images se modifie (Cf. l'illustration
+&agrave; droite).</td>
+<td><img src="img/dossierpartage.gif" alt=
+"dossier partag&eacute;" /></td>
+</tr>
+<tr>
+<td>Dans le dossier des <b>Favoris r&eacute;seau</b> du PC
+Maison, le dossier partag&eacute; appara&icirc;t sous le nom
+donn&eacute; ci-dessus (Partage accompagn&eacute; du chemin
+d'acc&egrave;s au dossier).</td>
+<td><img src="img/favorireseau.gif" alt="favori reseau" /></td>
+</tr>
+</table>
+<h3>Etape 2 : Cr&eacute;ation du lecteur r&eacute;seau</h3>
+<table>
+<tr>
+<td>Dans la fen&ecirc;tre <b>Favoris r&eacute;seau</b> du PC
+Maison s&eacute;lectionner le menu <b>Outils/Connecter un lecteur
+r&eacute;seau ...</b>. La fen&ecirc;tre ci-contre
+appara&icirc;t :<br />
+S&eacute;lectionner un lecteur.<br />
+Dans la case <b>Dossier</b> indiquer le chemin d'acc&egrave;s
+ou,<br />
+plus simplement, cliquer sur <b>Parcourir...</b></td>
+<td><img src="img/connecterlecteur.gif" alt=
+"fenetre de configuration d'un lecteur r&eacute;seau" /></td>
+</tr>
+<tr>
+<td>Dans la fen&ecirc;tre <b>Rechercher un dossier</b> chercher
+et s&eacute;lectionner le nom du dossier partag&eacute; (Partage
+sur Jardin dans l'exemple de droite). Cliquer sur <b>OK</b>.</td>
+<td><img src="img/selectiondossier.gif" alt=
+"fenetre de s&eacute;lection d'un dossier" /></td>
+</tr>
+<tr>
+<td>Dans la fen&ecirc;tre <b>Connecter un lecteur r&eacute;seau
+...</b> confirmer par <b>Terminer</b>.<br />
+Le lecteur r&eacute;seau appara&icirc;t dans le poste de travail
+comme dans l'illustration de droite (Partage sur Jardin, lecteur
+Z:).<br />
+Le <b>nom du lecteur r&eacute;seau</b> (Z:) sera indiqu&eacute;
+comme port pour les images en lieu et place du port ftp 21 dans
+la fen&ecirc;tre de <b>Configuration de la connexion</b> du PC
+Maison (Cf. paragraphe 2).</td>
+<td><img src="img/lecteurreseau.gif" alt=
+"lecteur r&eacute;seau" /></td>
+</tr>
+<tr>
+<td>Voies alternatives de cr&eacute;ation du lecteur
+r&eacute;seau :<br />
+<ul>
+<li>Acc&eacute;der &agrave; la fen&ecirc;tre par
+D&eacute;marrer/Poste de Travail/ clic droit /Connecter un
+lecteur r&eacute;seau.</li>
+<li>D&eacute;marr&eacute;r/Ex&eacute;cuter : Dans la ligne de
+commande taper "net use lettre_du_lecteur:
+\\adresse_ip_jardin\nom_dossier_partag&eacute;" puis OK</li>
+</ul>
+</td>
+</tr>
+</table>
+<h3><b>D&eacute;pannage et v&eacute;rification</b> :</h3>
+<p>La cause la plus fr&eacute;quente de l'apparition du message
+d'&eacute;chec de connexion au lecteur r&eacute;seau est la perte
+de l'association entre le nom du lecteur et le nom du dossier
+partag&eacute;.<br />
+Il suffit de retourner &agrave; l'&eacute;tape 2 : Ouvrir
+<b>Favoris r&eacute;seau/Outils/Connecter un lecteur
+r&eacute;seau...</b><br />
+V&eacute;rifier que le nom du dossier partag&eacute; est bien
+affich&eacute;. Sinon appuyer sur l'index (&agrave; droite de la
+fen&ecirc;tre) qui fait appara&icirc;tre la liste des noms
+d&eacute;j&agrave; utilis&eacute;s.<br />
+S&eacute;lectionner le nom correct. Cliquer sur Terminer.<br />
+Note : Il est conseill&eacute; de faire cette v&eacute;rification
+avant de lancer l'outil <b>Contr&ocirc;le &agrave; distance</b>.</p>
 </body>
-
 </html>
