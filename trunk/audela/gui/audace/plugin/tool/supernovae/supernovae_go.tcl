@@ -2,7 +2,7 @@
 # Fichier : supernovae_go.tcl
 # Description : Outil pour l'observation des SnAudes
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: supernovae_go.tcl,v 1.24 2010-01-08 16:54:29 robertdelmas Exp $
+# Mise a jour $Id: supernovae_go.tcl,v 1.25 2010-01-30 14:23:07 robertdelmas Exp $
 #
 
 #============================================================
@@ -69,7 +69,6 @@ proc ::supernovae::getPluginOS { } {
 #------------------------------------------------------------
 proc ::supernovae::getPluginProperty { propertyName } {
    switch $propertyName {
-      menu         { return "tool" }
       function     { return "acquisition" }
       subfunction1 { return "aiming" }
       display      { return "panel" }

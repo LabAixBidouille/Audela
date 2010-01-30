@@ -1,7 +1,7 @@
 #
 # Fichier : select.tcl
 # Description : Interface permettant la selection d'images
-# Mise a jour $Id: select.tcl,v 1.1 2009-02-07 10:54:59 robertdelmas Exp $
+# Mise a jour $Id: select.tcl,v 1.2 2010-01-30 14:21:43 robertdelmas Exp $
 #
 
 #============================================================
@@ -67,8 +67,7 @@ namespace eval ::select {
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
-         menu         { return "file" }
-         function     { return "display" }
+         function     { return "file" }
          subfunction1 { return "select" }
          display      { return "window" }
       }

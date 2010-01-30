@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.55 2010-01-24 11:34:37 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.56 2010-01-30 14:20:31 robertdelmas Exp $
 #
 
 #============================================================
@@ -96,7 +96,6 @@ proc ::scan::getPluginOS { } {
 #------------------------------------------------------------
 proc ::scan::getPluginProperty { propertyName } {
    switch $propertyName {
-      menu         { return "tool" }
       function     { return "acquisition" }
       subfunction1 { return "scan" }
       display      { return "panel" }
@@ -1101,7 +1100,7 @@ proc scanBuildIF { This } {
       #--- Frame du titre
       frame $This.fra0 -borderwidth 2 -relief groove
 
-         #--- Label du titre
+         #--- Bouton du titre
          Button $This.fra0.but -borderwidth 1 \
             -text "$panneau(scan,aide1)\n$panneau(scan,titre)" \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::scan::getPluginType ] ] \

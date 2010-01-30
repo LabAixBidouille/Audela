@@ -2,7 +2,7 @@
 # Fichier : eshel.tcl
 # Description : outil de fabrication des fichier Kit et de deploiement des plugin
 # Auteurs : Michel Pujol
-# Mise a jour $Id: eshel.tcl,v 1.3 2010-01-07 09:44:58 robertdelmas Exp $
+# Mise a jour $Id: eshel.tcl,v 1.4 2010-01-30 14:12:30 robertdelmas Exp $
 #
 
 ##------------------------------------------------------------
@@ -35,8 +35,8 @@ namespace eval ::eshel {
 #------------------------------------------------------------
 proc ::eshel::getPluginProperty { propertyName } {
    switch $propertyName {
-      menu         { return "tool" }
       function     { return "acquisition" }
+      subfunction1 { return "" }
       display      { return "panel" }
    }
 }

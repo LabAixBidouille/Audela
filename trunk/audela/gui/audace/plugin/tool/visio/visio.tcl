@@ -2,7 +2,7 @@
 # Fichier : visio.tcl
 # Description : Outil de visionnage d'images fits + gestion des series d'images
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: visio.tcl,v 1.21 2010-01-15 11:04:57 robertdelmas Exp $
+# Mise a jour $Id: visio.tcl,v 1.22 2010-01-30 14:28:25 robertdelmas Exp $
 #
 
 # ========================================================
@@ -72,9 +72,8 @@ namespace eval ::visio {
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
-         menu         { return "tool" }
-         function     { return "display" }
-         subfunction1 { return "" }
+         function     { return "file" }
+         subfunction1 { return "display" }
          display      { return "panel" }
       }
    }

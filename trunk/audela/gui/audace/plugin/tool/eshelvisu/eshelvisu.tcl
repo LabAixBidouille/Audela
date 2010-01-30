@@ -2,7 +2,7 @@
 # Fichier : eshelvisu.tcl
 # Description : Visionneuse d'images eShel
 # Auteurs : Michel Pujol
-# Mise a jour $Id: eshelvisu.tcl,v 1.3 2010-01-15 11:04:21 robertdelmas Exp $
+# Mise a jour $Id: eshelvisu.tcl,v 1.4 2010-01-30 14:13:05 robertdelmas Exp $
 #
 
 namespace eval ::eshelvisu {
@@ -25,8 +25,8 @@ namespace eval ::eshelvisu {
 #------------------------------------------------------------
 proc ::eshelvisu::getPluginProperty { propertyName } {
    switch $propertyName {
-      menu         { return "tool" }
-      function     { return "edit" }
+      function     { return "file" }
+      subfunction1 { return "display" }
       display      { return "panel" }
       multivisu    { return 1 }
    }
@@ -153,7 +153,7 @@ proc ::eshelvisu::createPluginInstance { tkbase visuNo } {
    #--- Frame du titre
    frame $This.titre -borderwidth 2 -relief groove
 
-   #--- Label du titre
+   #--- Bouton du titre
    Button $This.titre.but -borderwidth 1 \
       -text "$::caption(eshelvisu,help_titre1)\n$::caption(eshelvisu,title)" \
       -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::eshelvisu::getPluginType ] ] \

@@ -1,4 +1,4 @@
-# Mise a jour $Id: spcaudace.tcl,v 1.12 2009-12-19 09:57:48 bmauclaire Exp $
+# Mise a jour $Id: spcaudace.tcl,v 1.13 2010-01-30 14:22:29 robertdelmas Exp $
 
 
 ####################################################################################
@@ -178,7 +178,6 @@ proc ::spcaudace::getPluginOS { } {
 #------------------------------------------------------------
 proc ::spcaudace::getPluginProperty { propertyName } {
    switch $propertyName {
-      menu         { return "analysis" }
       function     { return "analysis" }
       subfunction1 { return "spectroscopy" }
       display      { return "window" }

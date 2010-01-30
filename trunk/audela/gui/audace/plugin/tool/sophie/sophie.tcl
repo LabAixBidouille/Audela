@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.41 2010-01-07 09:46:36 robertdelmas Exp $
+# @version   $Id: sophie.tcl,v 1.42 2010-01-30 14:30:10 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -93,9 +93,8 @@ proc ::sophie::getPluginOS { } {
 #------------------------------------------------------------
 proc ::sophie::getPluginProperty { propertyName } {
    switch $propertyName {
-      menu         { return "tool" }
-      function     { return "autoguider" }
-      subfunction1 { return "focusing" }
+      function     { return "aiming" }
+      subfunction1 { return "guiding" }
       display      { return "panel" }
    }
 }

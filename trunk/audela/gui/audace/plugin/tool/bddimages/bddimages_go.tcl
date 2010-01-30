@@ -47,9 +47,8 @@ proc ::bddimages::getPluginType { } {
 #------------------------------------------------------------
 proc ::bddimages::getPluginProperty { propertyName } {
    switch $propertyName {
-      menu         { return "tool" }
-      function     { return "analysis" }
-      subfunction1 { return "solar system" }
+      function     { return "file" }
+      subfunction1 { return "display" }
       display      { return "panel" }
    }
 }
@@ -196,7 +195,7 @@ proc ::bddimages::bddimagesBuildIF { This } {
       #--- Frame du titre
       frame $This.fra1 -borderwidth 2 -relief groove
 
-         #--- Label du titre
+         #--- Bouton du titre
          Button $This.fra1.but -borderwidth 1 \
             -text "$panneau(bddimages,aide1)\n$panneau(bddimages,titre)" \
             -command "::audace::showHelpPlugin tool bddimages bddimages.htm"

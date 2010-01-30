@@ -2,7 +2,7 @@
 # Fichier : methking.tcl
 # Description : Outil d'aide a la mise en station par la methode de King
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: methking.tcl,v 1.27 2010-01-24 11:23:24 robertdelmas Exp $
+# Mise a jour $Id: methking.tcl,v 1.28 2010-01-30 14:18:03 robertdelmas Exp $
 #
 
 #============================================================
@@ -1083,9 +1083,8 @@ namespace eval ::methking {
    #--------------------------------------------------------------------------#
    proc getPluginProperty { propertyName } {
       switch $propertyName {
-         menu         { return "tool" }
-         function     { return "utility" }
-         subfunction1 { return "aiming" }
+         function     { return "aiming" }
+         subfunction1 { return "" }
          display      { return "panel" }
       }
    }
@@ -2266,7 +2265,7 @@ proc methkingBuildIF {This tableau} {
    #--- Trame du titre du panneau
    frame $This.ftitre -borderwidth 2 -height 75 -relief groove -width 92
 
-   #--- Label du titre
+   #--- Bouton du titre
    Button $This.ftitre.l -borderwidth 2 \
       -text "$caption(methking,help,titre1)\n$caption(methking,titre)" \
       -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::methking::getPluginType ] ] \
