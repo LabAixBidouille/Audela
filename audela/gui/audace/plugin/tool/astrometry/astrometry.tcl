@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: astrometry.tcl,v 1.5 2010-01-24 11:18:11 robertdelmas Exp $
+# Mise a jour $Id: astrometry.tcl,v 1.6 2010-01-30 14:07:38 robertdelmas Exp $
 #
 
 #============================================================
@@ -68,7 +68,6 @@ namespace eval ::astrometry {
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
-         menu         { return "analysis" }
          function     { return "analysis" }
          subfunction1 { return "astrometry" }
          display      { return "window" }

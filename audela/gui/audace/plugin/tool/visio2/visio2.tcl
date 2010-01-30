@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.51 2010-01-15 11:05:21 robertdelmas Exp $
+# Mise a jour $Id: visio2.tcl,v 1.52 2010-01-30 14:29:08 robertdelmas Exp $
 #
 
 namespace eval ::visio2 {
@@ -130,9 +130,8 @@ proc ::visio2::deletePluginInstance { visuNo } {
 #------------------------------------------------------------
 proc ::visio2::getPluginProperty { propertyName } {
    switch $propertyName {
-      menu         { return "tool" }
-      function     { return "display" }
-      subfunction1 { return "" }
+      function     { return "file" }
+      subfunction1 { return "display" }
       display      { return "panel" }
       multivisu    { return 1 }
    }
@@ -580,7 +579,7 @@ proc ::visio2::createPanel { visuNo } {
    #--- Frame du titre
    frame $This.titre -borderwidth 2 -relief groove
 
-   #--- Label du titre
+   #--- Bouton du titre
    Button $This.titre.but -borderwidth 1 \
       -text "$caption(visio2,help,titre1)\n$caption(visio2,title)" \
       -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::visio2::getPluginType ] ] \

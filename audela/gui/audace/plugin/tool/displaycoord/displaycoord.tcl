@@ -2,7 +2,7 @@
 # Fichier : displaycoord.tcl
 # Description : Outil pour l'observation des SnAudes
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: displaycoord.tcl,v 1.3 2009-12-20 17:23:25 michelpujol Exp $
+# Mise a jour $Id: displaycoord.tcl,v 1.4 2010-01-30 14:11:47 robertdelmas Exp $
 #
 
 #============================================================
@@ -69,9 +69,8 @@ proc ::displaycoord::getPluginOS { } {
 #------------------------------------------------------------
 proc ::displaycoord::getPluginProperty { propertyName } {
    switch $propertyName {
-      menu         { return "tool" }
-      function     { return "acquisition" }
-      subfunction1 { return "aiming" }
+      function     { return "aiming" }
+      subfunction1 { return "" }
       display      { return "window" }
    }
 }
@@ -89,22 +88,22 @@ proc ::displaycoord::initPlugin { tkbase } {
 #    cree une nouvelle instance de l'outil
 #------------------------------------------------------------
 proc ::displaycoord::createPluginInstance { { tkParent "" } { visuNo 1 } } {
-   variable private 
-   
+   variable private
+
    #--- Creation des variables si elles n'exitaitent pas
    if { ! [ info exists ::conf(displaycoord,serverHost) ] }  { set ::conf(displaycoord,serverHost)  "localhost" }
    if { ! [ info exists ::conf(displaycoord,serverPort) ] }  { set ::conf(displaycoord,serverPort)  "5028" }
-   if { ! [ info exists ::conf(displaycoord,windowPosition) ] } { set ::conf(displaycoord,windowPosition)     "640x480+50+15" }   
-   if { ! [ info exists ::conf(displaycoord,windowMaximize) ] } { set ::conf(displaycoord,windowMaximize)     0 }   
-   
+   if { ! [ info exists ::conf(displaycoord,windowPosition) ] } { set ::conf(displaycoord,windowPosition)     "640x480+50+15" }
+   if { ! [ info exists ::conf(displaycoord,windowMaximize) ] } { set ::conf(displaycoord,windowMaximize)     0 }
+
    set dir [ file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [getPluginType]] [getPluginDirectory]]
    source [ file join $dir displayconfig.tcl ]
-         
+
    #--- j'intialise les variables locale
    set private(socketChannel) ""
    set private(etat) "NOT_CONNECTED"
    set private(connexionTimerId) ""
-      
+
    #--- Initialisation
    set private(base) "$tkParent.displaycoord"
    set private(sortie)     "0"
@@ -117,12 +116,12 @@ proc ::displaycoord::createPluginInstance { { tkParent "" } { visuNo 1 } } {
    font create displayCoordFont1 -family tahoma -size 60 -weight bold
    font create displayCoordFont2 -family tahoma -size 20 -weight normal
    font create displayCoordFont3 -family arial  -size 20 -weight bold
-   set private(fonttitle)  {displayCoordFont1} 
-   set private(font1)      {displayCoordFont1}  
+   set private(fonttitle)  {displayCoordFont1}
+   set private(font1)      {displayCoordFont1}
    set private(font2)      {displayCoordFont2}
    set private(font3)      {displayCoordFont3}
    set private(font4)      {displayCoordFont2}
-   
+
    set private(ra0)        "00h 00m 00.00s"
    set private(dec0)       "+00° 00' 00.00''"
    set private(azimutDms)  "000° 00' 00.0''"
@@ -135,35 +134,35 @@ proc ::displaycoord::createPluginInstance { { tkParent "" } { visuNo 1 } } {
 #------------------------------------------------------------
 proc ::displaycoord::deletePluginInstance { visuNo } {
    variable private
-   
+
    #--- je deconnecte le serveur de coordonnnes
    ::displaycoord::closeSocketCoord
    #--- je memorise l'etat de la fentre (normal=0 , maximized=1)
-   if { [wm state $private(base)] == "zoomed" } {      
+   if { [wm state $private(base)] == "zoomed" } {
       set ::conf(displaycoord,windowMaximize) 1
    } else {
       set ::conf(displaycoord,windowMaximize) 0
    }
-      
+
    if { [wm state $private(base)] != "normal" } {
       #--- j'affiche la fenetre en mode normal pour pouvoir recuperer la taille
-      wm state $private(base) normal      
+      wm state $private(base) normal
    }
    #--- je memorise la position courante et la taille de la fenetre
    set ::conf(displaycoord,windowPosition) [ wm geometry $private(base) ]
    #--- je supprime la fenetre
    destroy $private(base)
-   
+
    set index [lsearch $::confVisu::private($visuNo,pluginInstanceList) ::displaycoord ]
    if { $index != -1 } {
       set ::confVisu::private($visuNo,pluginInstanceList) \
          [lreplace  $::confVisu::private($visuNo,pluginInstanceList) $index $index]
    }
-   
+
    font delete displayCoordFont1
    font delete displayCoordFont2
    font delete displayCoordFont3
-         
+
 }
 
 #------------------------------------------------------------
@@ -171,19 +170,19 @@ proc ::displaycoord::deletePluginInstance { visuNo } {
 #    affiche la fenetre de l'outil
 #------------------------------------------------------------
 proc ::displaycoord::startTool { visuNo } {
-   variable private 
+   variable private
    #--- j'affiche la fenetre
    if { [winfo exists $private(base) ] == 0 } {
       ::displaycoord::createWindow $visuNo
       #--- je lance la boucle pour se connecter au serveur
-      startConnectionLoop                 
+      startConnectionLoop
    } else {
       #--- si la fenetre existe deja, je lui donne le focus
       wm withdraw $private(base)
       wm deiconify $private(base)
       focus $private(base)
    }
-  
+
    #--- j'affiche les valeurs par defaut dans les champs
    ::displaycoord::readSocketCoord
 
@@ -204,7 +203,7 @@ proc ::displaycoord::stopTool { visuNo } {
 #------------------------------------------------------------
 proc ::displaycoord::createWindow { visuNo } {
    variable private
-   
+
    set couleur_blanche       #FFFFFF
    set couleur_noire         #000000
    set couleur_or            #FFAA00
@@ -214,7 +213,7 @@ proc ::displaycoord::createWindow { visuNo } {
    set couleur_rouge         #FF5500
    set private(color,back) $couleur_bleu
    set private(color,text) $couleur_or
-   
+
    #--- Create the toplevel window
    set  base $private(base)
    toplevel $base -class Toplevel
@@ -240,36 +239,36 @@ proc ::displaycoord::createWindow { visuNo } {
    #set private(ohp_t193,decinit) +00°00'00\"
    set private(ohp_t193,fichierlog) codeurs_t193.log
 
-   
+
    #--- frame principale
    frame $base.f -bg $private(color,back)
-   
+
    #--- titre et bouton de configuration
-   frame $base.f.titre -bg $private(color,back)   
+   frame $base.f.titre -bg $private(color,back)
    label $base.f.titre.lab_titre \
      -bg $private(color,back) -fg $couleur_bleuclair \
      -font $private(fonttitle) -text $::caption(displaycoord,title)
-   ###pack $base.f.titre.lab_titre -anchor c 
-   grid $base.f.titre.lab_titre -row 0 -column 0 -sticky ew   
-   
+   ###pack $base.f.titre.lab_titre -anchor c
+   grid $base.f.titre.lab_titre -row 0 -column 0 -sticky ew
+
    button $base.f.titre.configuration  -text $::caption(displaycoord,configuration) \
-      -command "::displaycoord::config::run $private(base) $visuNo"   
+      -command "::displaycoord::config::run $private(base) $visuNo"
    grid $base.f.titre.configuration -row 0 -column 1 -sticky e -padx 4
    grid columnconfig $base.f.titre 0 -weight 1
-   
+
    pack $base.f.titre -fill x -pady 2 -anchor e
-   
-   #--- Etat du telescope   
+
+   #--- Etat du telescope
    label $base.f.lab_etat \
       -bg $private(color,text) -fg $private(color,back) \
       -font $private(font1) -height 2 -anchor center
    pack $base.f.lab_etat -fill none -pady 2 -anchor e
-    
+
    #--- temps
    label $base.f.lab_tu \
      -bg $private(color,back) -fg $private(color,text) \
      -font $private(font1)
-     
+
    label $base.f.lab_tsl \
      -bg $private(color,back) -fg $private(color,text) \
      -font $private(font1)
@@ -290,7 +289,7 @@ proc ::displaycoord::createWindow { visuNo } {
             -bg $private(color,back) -fg $private(color,text) \
             -font $private(font1)
       grid $base.f.coord.alpha_calage -row 0 -column 2 -sticky w
-   
+
       label $base.f.coord.delta_label -text $::caption(displaycoord,dec) \
          -bg $private(color,back) -fg $private(color,text) \
          -font $private(font1)
@@ -303,14 +302,14 @@ proc ::displaycoord::createWindow { visuNo } {
          -bg $private(color,back) -fg $private(color,text) \
          -font $private(font1)
       grid $base.f.coord.delta_calage -row 1 -column 2 -sticky w
-   
-      grid columnconfig $base.f.coord 0 -weight 1      
-      grid columnconfig $base.f.coord 1 -weight 1      
-      grid columnconfig $base.f.coord 2 -weight 1      
+
+      grid columnconfig $base.f.coord 0 -weight 1
+      grid columnconfig $base.f.coord 1 -weight 1
+      grid columnconfig $base.f.coord 2 -weight 1
    pack $base.f.coord -fill x -pady 2 -padx 2 -anchor w
-                                                             
+
    #--- coordonnees brutes (sans modele de pointage) et azimut
-   frame $base.f.brut -bg $private(color,back)  
+   frame $base.f.brut -bg $private(color,back)
       #--- ascension droite brute
       label $base.f.brut.ra0_label -text $::caption(displaycoord,ad0) \
          -bg $private(color,back) -fg $couleur_bleuclair -font $private(font3)
@@ -318,7 +317,7 @@ proc ::displaycoord::createWindow { visuNo } {
       label $base.f.brut.ra0_value -textvariable ::displaycoord::private(ra0) \
          -bg $private(color,back) -fg $couleur_bleuclair -font $private(font3)
       grid $base.f.brut.ra0_value -row 0 -column 1 -sticky w -padx 2
-   
+
       #--- declinaison brute
       label $base.f.brut.dec0_label -text $::caption(displaycoord,dec0) \
          -bg $private(color,back) -fg $couleur_bleuclair -font $private(font3)
@@ -326,7 +325,7 @@ proc ::displaycoord::createWindow { visuNo } {
       label $base.f.brut.dec0_value -textvariable ::displaycoord::private(dec0) \
          -bg $private(color,back) -fg $couleur_bleuclair -font $private(font3)
       grid $base.f.brut.dec0_value -row 1 -column 1 -sticky w -padx 2
-   
+
       #--- azimut
       label $base.f.brut.azimut_label -text $::caption(displaycoord,azimut) \
          -bg $private(color,back) -fg $couleur_bleuclair -font $private(font3)
@@ -334,7 +333,7 @@ proc ::displaycoord::createWindow { visuNo } {
       label $base.f.brut.azimut_value -textvariable ::displaycoord::private(azimutDms) \
          -bg $private(color,back) -fg $couleur_bleuclair -font $private(font3)
       grid $base.f.brut.azimut_value -row 0 -column 3 -sticky w -padx 2
-   
+
       #--- hauteur
       label $base.f.brut.hauteur_label -text $::caption(displaycoord,hauteur) \
          -bg $private(color,back) -fg $couleur_bleuclair -font $private(font3)
@@ -342,43 +341,43 @@ proc ::displaycoord::createWindow { visuNo } {
       label $base.f.brut.hauteur_value -textvariable ::displaycoord::private(hauteurDms) \
          -bg $private(color,back) -fg $couleur_bleuclair -font $private(font3)
       grid $base.f.brut.hauteur_value -row 1 -column 3 -sticky w -padx 2
-         
-      grid columnconfig $base.f.brut 0 -weight 1      
-      grid columnconfig $base.f.brut 1 -weight 1      
-      grid columnconfig $base.f.brut 2 -weight 1      
-      grid columnconfig $base.f.brut 3 -weight 1      
+
+      grid columnconfig $base.f.brut 0 -weight 1
+      grid columnconfig $base.f.brut 1 -weight 1
+      grid columnconfig $base.f.brut 2 -weight 1
+      grid columnconfig $base.f.brut 3 -weight 1
    pack $base.f.brut -fill x -pady 2 -anchor center
-   
+
    #--- angle horaire
    label $base.f.lab_ha \
      -bg $private(color,back) -fg $couleur_bleuclair\
      -font $private(font1)
    pack $base.f.lab_ha -fill none -pady 2 -anchor center
 
-   #--- nom du site 
+   #--- nom du site
    label $base.f.lab_ohp \
      -bg $private(color,back) -fg $private(color,text) \
      -font $private(font4) \
      -text ""
-   pack $base.f.lab_ohp -fill none -pady 2 -anchor w  
-   
-   #--- Latitude - Longitude - Altitude   
+   pack $base.f.lab_ohp -fill none -pady 2 -anchor w
+
+   #--- Latitude - Longitude - Altitude
    label $base.f.lab_altaz \
      -bg $private(color,back) -fg $private(color,text) \
      -font $private(font2) -justify left
-   pack $base.f.lab_altaz -fill none -pady 0 -padx 10  -anchor w 
-   
+   pack $base.f.lab_altaz -fill none -pady 0 -padx 10  -anchor w
+
    #--- modele de pointage
    label $base.f.lab_model \
      -bg $private(color,back) -fg $private(color,text) \
      -font $private(font2) \
-     -text "$::caption(displaycoord,modeldescr) : " 
-   pack $base.f.lab_model -fill y -pady 0 -padx 10 -anchor w 
+     -text "$::caption(displaycoord,modeldescr) : "
+   pack $base.f.lab_model -fill y -pady 0 -padx 10 -anchor w
 
-   pack $base.f -fill both -expand 1 
-   
+   pack $base.f -fill both -expand 1
+
    bind  $private(base).f <Configure> [list onResizeWindow %w %h ]
-   
+
 }
 
 
@@ -392,24 +391,24 @@ proc onResizeWindow { width height } {
    variable private
    set nbCol  35
    set nbLine 20
-   
-   
+
+
    set widthFontSize [expr int($width / $nbCol) ]
    set heightFontSize [expr int($height / $nbLine) ]
    if { $widthFontSize < $heightFontSize } {
       set fontSize1 $widthFontSize
    } else {
-      set fontSize1 $heightFontSize           
+      set fontSize1 $heightFontSize
    }
    if {  $fontSize1 < 8 } {
       set fontSize1 8
    }
-   
+
    set  fontSize23 [expr int($fontSize1 /2)]
    if {  $fontSize23 < 8 } {
       set fontSize23 8
    }
-   
+
    font configure displayCoordFont1 -size $fontSize1
    font configure displayCoordFont2 -size $fontSize23
    font configure displayCoordFont3 -size $fontSize23
@@ -424,7 +423,7 @@ proc onResizeWindow { width height } {
 
 #------------------------------------------------------------
 # startConnectionLoop
-#   Ouvre une socket en lecture pour recevoir les notifications des coordonnees 
+#   Ouvre une socket en lecture pour recevoir les notifications des coordonnees
 #   Les parametres de la sconnexion sont dans des variables globales
 #     adresse/nom de host = ::conf(displaycoord,serverHost)
 #     port = ::conf(displaycoord,serverPort)
@@ -432,16 +431,16 @@ proc onResizeWindow { width height } {
 #------------------------------------------------------------
 proc ::displaycoord::startConnectionLoop { } {
    variable private
-   
-   #--- je connecte au serveur de coordonnees 
-   #--- avec un délai de 5 secondes pour ne pas retarder le demarrage d'Audela 
-   #--- si cet outil est lancé au démarrage d'audela 
-   set private(connexionTimerId) [after 5000 ::displaycoord::openSocketCoord ]  
-   
+
+   #--- je connecte au serveur de coordonnees
+   #--- avec un délai de 5 secondes pour ne pas retarder le demarrage d'Audela
+   #--- si cet outil est lancé au démarrage d'audela
+   set private(connexionTimerId) [after 5000 ::displaycoord::openSocketCoord ]
+
 }
 #------------------------------------------------------------
 # openSocketCoord
-#   Ouvre une socket en lecture pour recevoir les notifications des coordonnees 
+#   Ouvre une socket en lecture pour recevoir les notifications des coordonnees
 #   Les parametres de la sconnexion sont dans des variables globales
 #     adresse/nom de host = ::conf(displaycoord,serverHost)
 #     port = ::conf(displaycoord,serverPort)
@@ -449,18 +448,18 @@ proc ::displaycoord::startConnectionLoop { } {
 #------------------------------------------------------------
 proc ::displaycoord::openSocketCoord { } {
    variable private
-   
+
    set catchError [ catch {
-      
+
       if { $private(socketChannel) != "" } {
-          ::displaycoord::closeSocketCoord 
+          ::displaycoord::closeSocketCoord
       }
-      
+
       set private(socketChannel) [socket $::conf(displaycoord,serverHost) $::conf(displaycoord,serverPort) ]
       #---  -translation binary -encoding binary
       fconfigure $private(socketChannel) -buffering line -blocking true -translation binary -encoding binary
       fileevent $private(socketChannel) readable [list ::displaycoord::readSocketCoord ]
-      
+
       set private(etat) "CONNECTED"
       #--- j'affiche l'affichage (je fais comme si on avais recu une notification)
       readSocketCoord
@@ -468,11 +467,11 @@ proc ::displaycoord::openSocketCoord { } {
       ###console::disp "::displaycoord::openSocketCoord $private(etat)\n"
    } ]
    if { $catchError != 0 } {
-      #--- j'affiche l'etat 
+      #--- j'affiche l'etat
       readSocketCoord
       console::disp "::displaycoord::openSocketCoord $private(etat)\n"
-      #--- je fais une nouvelle tentative dans 30s 
-      set private(connexionTimerId) [after 30000 ::displaycoord::openSocketCoord ]    
+      #--- je fais une nouvelle tentative dans 30s
+      set private(connexionTimerId) [after 30000 ::displaycoord::openSocketCoord ]
    }
 }
 
@@ -487,15 +486,15 @@ proc ::displaycoord::closeSocketCoord { } {
       close $private(socketChannel)
       set private(socketChannel) ""
       #--- j'affiche l'affichage (je fais comme si on avais recu une notification)
-      readSocketCoord      
-   } 
-   
-   #--- j'arrete le timer de reconnexion s'il etait lancé 
+      readSocketCoord
+   }
+
+   #--- j'arrete le timer de reconnexion s'il etait lancé
    if { $private(connexionTimerId) != "" } {
       after cancel $private(connexionTimerId)
       set private(connexionTimerId) ""
    }
- 
+
 }
 
 #------------------------------------------------------------
@@ -515,14 +514,14 @@ proc ::displaycoord::readSocketCoord {  } {
       set ra0 "00h00m00s00"
       set dec0 "00d00m00s00"
       set raCalage "A"
-      set decCalage "A"            
+      set decCalage "A"
       set longitudeDegres  "000.0"
       set estouest  "E"
       set latitudeDegres   "+00.0"
       set altitude  "0000.0"
       set nomObservatoire  ""
-      
-      
+
+
       if { $private(socketChannel) == "" } {
          #--- j'affiche les valeurs par defaut
             set private(etat) "NOT_CONNECTED"
@@ -536,14 +535,14 @@ proc ::displaycoord::readSocketCoord {  } {
          } else {
             set private(etat) "CONNECTED"
             set notification [gets $private(socketChannel) ]
-            
-            #--- je recupere les valeurs 
+
+            #--- je recupere les valeurs
             # !RADEC COORD [Code retour] [TU] [TS] [alpha_corr] [delta_corr] [alpha_0] [delta_0] [calage_alpha] [calage_delta] @\n
             # Code retour
             #     0   OK
             #     5   Probleme moteur
             #     6   Butées atteintes
-            # TU  (format ISO 8601) 
+            # TU  (format ISO 8601)
             #     Format= "%04d-%02d-%02dT%02d:%02d:%02d"
             # TS
             #     Format= "%02d:%02d:%02d"
@@ -571,16 +570,16 @@ proc ::displaycoord::readSocketCoord {  } {
             #     Format "%10.6f"
             # altitude (en metre)
             #     Format "%5.1f"
-            # nom_site 
+            # nom_site
             #     Format "\"%s\""
-            
+
             set nbVar [scan $notification {!RADEC COORD %d %s %s %s %s %s %s %s %s %f %s %f %f "%[^"]" @} \
                  returnCode tu ts ra dec ra0 dec0 raCalage decCalage longitudeDegres estouest latitudeDegres altitude nomObservatoire ]
             if { $nbVar == 14 } {
                if { $returnCode == 0 } {
                   #--- pas d'erreur a signaler
                } else {
-                  console::affiche_erreur "::displaycoord::readSocketCoord warning returnCode=$returnCode notification=$notification\n"   
+                  console::affiche_erreur "::displaycoord::readSocketCoord warning returnCode=$returnCode notification=$notification\n"
                    set tu     "0000-00-00T00:00:00"
                    set ts     "0000-00-00T00:00:00"
                    set ra     "00h00m00s00"
@@ -588,100 +587,100 @@ proc ::displaycoord::readSocketCoord {  } {
                    set ra0    "00h00m00s00"
                    set dec0   "00d00m00s00"
                    set raCalage  "A"
-                   set decCalage "A"            
+                   set decCalage "A"
                    set longitude "000.0"
                    set estouest  "E"
                    set latitude  "+00.0"
                    set altitude  "0000.0"
-                   set nomObservatoire  ""                  
+                   set nomObservatoire  ""
                }
             } else {
-               #--- le message n'a pas le format attendu 
+               #--- le message n'a pas le format attendu
                console::affiche_erreur "::displaycoord::readSocketCoord error nbVar=$nbVar notification=$notification\n"
-            }         
+            }
          }
       }
-      
-      #--- je mets en forme l'etat de la connexion       
+
+      #--- je mets en forme l'etat de la connexion
       switch $private(etat) {
-         "NOT_CONNECTED" { 
-            set etat $::caption(displaycoord,nonConnecte)          
+         "NOT_CONNECTED" {
+            set etat $::caption(displaycoord,nonConnecte)
          }
          "CONNECTED" {
-            set etat "$::caption(displaycoord,connecte)" 
+            set etat "$::caption(displaycoord,connecte)"
          }
-      }  
+      }
 
-      #--- je mets en forme l'heure tu et ts           
-      scan $tu "%d-%d-%dT%d:%d:%ds" tuy tumo tud tuh tum tus      
+      #--- je mets en forme l'heure tu et ts
+      scan $tu "%d-%d-%dT%d:%d:%ds" tuy tumo tud tuh tum tus
       set tuHms [format "%02dh %02dm %02ds" $tuh $tum $tus ]
       scan $ts "%d:%d:%d" tslh tslm tsls
       set tsHms [format "%02dh %02dm %02ds" $tslh $tslm $tsls ]
-      
+
       #--- je mets en forme l'ascension droite et la declinaison
       set alpha "[string range $ra 0 1]h [string range $ra 3 4]m [string range $ra) 6 7].[string range $ra 9 10]s "
       set delta "[string range $dec 0 2]° [string range $dec 4 5]'   [string range $dec) 7 8].[string range $dec 10 10]0'' "
       set private(ra0) "[string range $ra0 0 1]h [string range $ra0 3 4]m [string range $ra0) 6 7].[string range $ra0 9 10]s "
       set private(dec0) "[string range $dec0 0 2]° [string range $dec0 4 5]'   [string range $dec0) 7 8].[string range $dec0 10 10]0'' "
-      
-      #--- je mets en forme la longitude et la latitude     
+
+      #--- je mets en forme la longitude et la latitude
       set longitudeList [mc_angle2dms $longitudeDegres 180 nozero 1 auto list]
-      set longitudeDms [format "%d° %2d' %0.1f''" [lindex $longitudeList 0] [lindex $longitudeList 1] [lindex $longitudeList 2] ]            
+      set longitudeDms [format "%d° %2d' %0.1f''" [lindex $longitudeList 0] [lindex $longitudeList 1] [lindex $longitudeList 2] ]
       set latitudeList [mc_angle2dms $latitudeDegres 90 nozero 1 auto list]
-      set latitudeDms [format "%d° %2d' %0.1f''" [lindex $latitudeList 0] [lindex $latitudeList 1] [lindex $latitudeList 2] ]            
+      set latitudeDms [format "%d° %2d' %0.1f''" [lindex $latitudeList 0] [lindex $latitudeList 1] [lindex $latitudeList 2] ]
 
       #--- je calcule l'azimut, la hauteur et la secanteZ
       if { $returnCode == 0 } {
          set res [mc_radec2altaz $ra $dec "GPS $longitudeDegres $estouest $latitudeDegres $altitude" $tu]
          set azimutDegres  [lindex $res 0]
          set azimutList [mc_angle2dms $azimutDegres 360 nozero 1 auto list]
-         set private(azimutDms) [format " %02d° %02d' %04.1f''" [lindex $azimutList 0] [lindex $azimutList 1] [lindex $azimutList 2] ]            
+         set private(azimutDms) [format " %02d° %02d' %04.1f''" [lindex $azimutList 0] [lindex $azimutList 1] [lindex $azimutList 2] ]
          set hauteurDegres [lindex $res 1]
          set hauteurList [mc_angle2dms $hauteurDegres 90 nozero 1 auto list]
-         set private(hauteurDms) [format "%+02d° %02d' %04.1f''" [lindex $hauteurList 0] [lindex $hauteurList 1] [lindex $hauteurList 2] ]            
-         #--- je calcule secz (masse d'air)   
+         set private(hauteurDms) [format "%+02d° %02d' %04.1f''" [lindex $hauteurList 0] [lindex $hauteurList 1] [lindex $hauteurList 2] ]
+         #--- je calcule secz (masse d'air)
          if { $hauteurDegres >= "0" } {
             set distanceZenithale [ expr 90.0 - $hauteurDegres ]
             set distanceZenithale [ mc_angle2rad $distanceZenithale ]
             set secz [format "%5.2f" [ expr 1. / cos($distanceZenithale) ] ]
          } else {
             set secz $::caption(displaycoord,horizon)
-         }         
+         }
       } else {
          set private(azimutDms)  " 00° 00' 00.0''"
          set private(hauteurDms) "+00° 00' 00.0''"
          set secz "0.00"
       }
 
-      #--- je mets en forme le calage des moteurs      
+      #--- je mets en forme le calage des moteurs
       if { $raCalage != "C" && $raCalage != "D" && $raCalage != "A" } {
          set raCalage "A"
       }
       if { $decCalage != "C" && $decCalage != "D" && $decCalage != "A" } {
          set decCalage "A"
       }
-      
+
       #--- Affichage de l'etat du telescope
       $private(base).f.lab_etat configure  -text $etat
-      
+
       #--- Affichage temps (TU, TSL) et coordonnees (ALPHA, DELTA, ANGLE HORAIRE, Azimut, hauteur du telescope)
       $private(base).f.lab_tu configure    -text "$::caption(displaycoord,tu)  $tuHms"
-      $private(base).f.lab_tsl configure   -text "$::caption(displaycoord,tsl)  $tsHms"      
+      $private(base).f.lab_tsl configure   -text "$::caption(displaycoord,tsl)  $tsHms"
       $private(base).f.lab_ha configure    -text "SECZ : $secz"
-      
-      #--- affichage de la position du site 
+
+      #--- affichage de la position du site
       $private(base).f.lab_ohp configure   -text "$::caption(displaycoord,observatoire) $nomObservatoire"
-      $private(base).f.lab_altaz configure -text "$::caption(displaycoord,longitude): $longitudeDms $estouest   $::caption(displaycoord,latitude): $latitudeDms  $::caption(displaycoord,altitude): $altitude m" 
-      
+      $private(base).f.lab_altaz configure -text "$::caption(displaycoord,longitude): $longitudeDms $estouest   $::caption(displaycoord,latitude): $latitudeDms  $::caption(displaycoord,altitude): $altitude m"
+
       $private(base).f.coord.alpha_value configure -text $alpha
       $private(base).f.coord.alpha_calage configure -text $::caption(displaycoord,calage,$raCalage)
       $private(base).f.coord.delta_value configure -text $delta
       $private(base).f.coord.delta_calage configure -text $::caption(displaycoord,calage,$decCalage)
-      
-      
+
+
    }]
    if { $catchError != 0 } {
       console::affiche_erreur ":$::errorInfo\n"
    }
-     
+
 }

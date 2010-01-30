@@ -2,7 +2,7 @@
 # Fichier : fieldchart.tcl
 # Description : Interfaces graphiques pour les fonctions carte de champ
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: fieldchart.tcl,v 1.3 2009-10-31 20:39:35 robertdelmas Exp $
+# Mise a jour $Id: fieldchart.tcl,v 1.4 2010-01-30 14:13:41 robertdelmas Exp $
 #
 
 #============================================================
@@ -68,7 +68,6 @@ namespace eval ::fieldchart {
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
-         menu         { return "analysis" }
          function     { return "analysis" }
          subfunction1 { return "fieldchart" }
          display      { return "window" }

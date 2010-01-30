@@ -2,7 +2,7 @@
 # Fichier : modpoi_go.tcl
 # Description : Outil pour la determination du modele de pointage
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi_go.tcl,v 1.14 2009-07-13 22:56:38 robertdelmas Exp $
+# Mise a jour $Id: modpoi_go.tcl,v 1.15 2010-01-30 14:18:47 robertdelmas Exp $
 #
 
 #============================================================
@@ -69,9 +69,8 @@ proc ::modpoi::getPluginOS { } {
 #------------------------------------------------------------
 proc ::modpoi::getPluginProperty { propertyName } {
    switch $propertyName {
-      menu         { return "tool" }
-      function     { return "utility" }
-      subfunction1 { return "aiming" }
+      function     { return "aiming" }
+      subfunction1 { return "" }
       display      { return "panel" }
    }
 }
@@ -154,7 +153,7 @@ proc ::modpoi::modpoiBuildIF { This } {
       #--- Frame du titre
       frame $This.fra1 -borderwidth 2 -relief groove
 
-         #--- Label du titre
+         #--- Bouton du titre
          Button $This.fra1.but -borderwidth 1 \
             -text "$panneau(modpoi,aide1)\n$panneau(modpoi,titre)" \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::modpoi::getPluginType ] ] \

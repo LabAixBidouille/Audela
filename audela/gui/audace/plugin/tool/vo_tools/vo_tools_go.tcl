@@ -2,7 +2,7 @@
 # Fichier : vo_tools_go.tcl
 # Description : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur : Robert DELMAS
-# Mise a jour $Id: vo_tools_go.tcl,v 1.19 2009-08-10 09:08:38 robertdelmas Exp $
+# Mise a jour $Id: vo_tools_go.tcl,v 1.20 2010-01-30 14:29:42 robertdelmas Exp $
 #
 
 #============================================================
@@ -69,7 +69,6 @@ proc ::vo_tools::getPluginOS { } {
 #------------------------------------------------------------
 proc ::vo_tools::getPluginProperty { propertyName } {
    switch $propertyName {
-      menu         { return "analysis" }
       function     { return "analysis" }
       subfunction1 { return "solar system" }
       display      { return "panel" }
@@ -167,7 +166,7 @@ proc ::vo_tools::vo_toolsBuildIF { This } {
       frame $This.fra1 -borderwidth 2 -relief groove
       set packoptions "-anchor center -expand 1 -fill both -side top -ipadx 5"
 
-         #--- Label du titre
+         #--- Bouton du titre
          Button $This.fra1.but -borderwidth 1 \
             -text "$panneau(vo_tools,aide1)\n$panneau(vo_tools,titre)" \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::vo_tools::getPluginType ] ] \
