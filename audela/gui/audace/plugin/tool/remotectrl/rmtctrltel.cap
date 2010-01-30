@@ -1,0 +1,250 @@
+#
+# Fichier : remotectrl.cap
+# Mise a jour $Id: rmtctrltel.cap,v 1.1 2010-01-30 14:48:20 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(remotectrl,delay)                             "Duration:"
+set caption(remotectrl,ms)                                "ms"
+set caption(remotectrl,coord)                             "Coord."
+set caption(remotectrl,match)                             "MATCH"
+set caption(remotectrl,match_confirm)                     "Continue?"
+set caption(remotectrl,goto)                              "GOTO"
+set caption(remotectrl,tel)                               "Mount"
+set caption(remotectrl,non_connecte)                      "not connected"
+set caption(remotectrl,astre_est)                         "The target is"
+set caption(remotectrl,pas_leve)                          "below the horizon."
+set caption(remotectrl,camera)                            "Camera"
+set caption(remotectrl,non_connectee)                     "not connected"
+set caption(remotectrl,nord)                              "N"
+set caption(remotectrl,est)                               "E"
+set caption(remotectrl,ouest)                             "W"
+set caption(remotectrl,sud)                               "S"
+set caption(remotectrl,x1)                                "x1"
+set caption(remotectrl,x5)                                "x5"
+set caption(remotectrl,200)                               "200"
+set caption(remotectrl,NS)                                "NS"
+set caption(remotectrl,HS)                                "HS"
+set caption(remotectrl,interro)                           "?"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(remotectrl,delay)                          "Durée :"
+   set caption(remotectrl,ms)                             "ms"
+   set caption(remotectrl,coord)                          "Coord."
+   set caption(remotectrl,match)                          "MATCH"
+   set caption(remotectrl,match_confirm)                  "Voulez-vous poursuivre ?"
+   set caption(remotectrl,goto)                           "GOTO"
+   set caption(remotectrl,tel)                            "Monture"
+   set caption(remotectrl,non_connecte)                   "non connectée"
+   set caption(remotectrl,astre_est)                      "L'astre n'est"
+   set caption(remotectrl,pas_leve)                       "pas levé."
+   set caption(remotectrl,camera)                         "Caméra"
+   set caption(remotectrl,non_connectee)                  "non connect é e"
+   set caption(remotectrl,nord)                           "N"
+   set caption(remotectrl,est)                            "E"
+   set caption(remotectrl,ouest)                          "O"
+   set caption(remotectrl,sud)                            "S"
+   set caption(remotectrl,x1)                             "x1"
+   set caption(remotectrl,x5)                             "x5"
+   set caption(remotectrl,200)                            "200"
+   set caption(remotectrl,NS)                             "NS"
+   set caption(remotectrl,HS)                             "HS"
+   set caption(remotectrl,interro)                        "?"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(remotectrl,delay)                          "Durata:"
+   set caption(remotectrl,ms)                             "ms"
+   set caption(remotectrl,coord)                          "Coord."
+   set caption(remotectrl,match)                          "MATCH"
+   set caption(remotectrl,match_confirm)                  "Volete continuare?"
+   set caption(remotectrl,goto)                           "GOTO"
+   set caption(remotectrl,tel)                            "Montatura"
+   set caption(remotectrl,non_connecte)                   "non connessa"
+   set caption(remotectrl,astre_est)                      "Il campo si trova"
+   set caption(remotectrl,pas_leve)                       "sotto l'orizzonte."
+   set caption(remotectrl,camera)                         "Camera"
+   set caption(remotectrl,non_connectee)                  "non connesso"
+   set caption(remotectrl,nord)                           "N"
+   set caption(remotectrl,est)                            "E"
+   set caption(remotectrl,ouest)                          "O"
+   set caption(remotectrl,sud)                            "S"
+   set caption(remotectrl,x1)                             "x1"
+   set caption(remotectrl,x5)                             "x5"
+   set caption(remotectrl,200)                            "200"
+   set caption(remotectrl,NS)                             "NS"
+   set caption(remotectrl,HS)                             "HS"
+   set caption(remotectrl,interro)                        "?"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(remotectrl,delay)                          "Duración:"
+   set caption(remotectrl,ms)                             "ms"
+   set caption(remotectrl,coord)                          "Coord."
+   set caption(remotectrl,match)                          "MATCH"
+   set caption(remotectrl,match_confirm)                  "Continuar?"
+   set caption(remotectrl,goto)                           "GOTO"
+   set caption(remotectrl,tel)                            "Montura"
+   set caption(remotectrl,non_connecte)                   "no conectado"
+   set caption(remotectrl,astre_est)                      "El astro está"
+   set caption(remotectrl,pas_leve)                       "bajo el horizonte."
+   set caption(remotectrl,camera)                         "Cámara"
+   set caption(remotectrl,non_connectee)                  "no connectada"
+   set caption(remotectrl,nord)                           "N"
+   set caption(remotectrl,est)                            "E"
+   set caption(remotectrl,ouest)                          "W"
+   set caption(remotectrl,sud)                            "S"
+   set caption(remotectrl,x1)                             "x1"
+   set caption(remotectrl,x5)                             "x5"
+   set caption(remotectrl,200)                            "200"
+   set caption(remotectrl,NS)                             "NS"
+   set caption(remotectrl,HS)                             "HS"
+   set caption(remotectrl,interro)                        "?"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(remotectrl,delay)                          "Zeit:"
+   set caption(remotectrl,ms)                             "ms"
+   set caption(remotectrl,coord)                          "Koord."
+   set caption(remotectrl,match)                          "MATCH"
+   set caption(remotectrl,match_confirm)                  "Vollen sie weiterführen ?"
+   set caption(remotectrl,goto)                           "GOTO"
+   set caption(remotectrl,tel)                            "Montierung"
+   set caption(remotectrl,non_connecte)                   "nicht verbun."
+   set caption(remotectrl,astre_est)                      "Das Gestirn ist"
+   set caption(remotectrl,pas_leve)                       "unter dem Horizont."
+   set caption(remotectrl,camera)                         "Kamera"
+   set caption(remotectrl,non_connectee)                  "nicht verbun."
+   set caption(remotectrl,nord)                           "N"
+   set caption(remotectrl,est)                            "O"
+   set caption(remotectrl,ouest)                          "W"
+   set caption(remotectrl,sud)                            "S"
+   set caption(remotectrl,x1)                             "x1"
+   set caption(remotectrl,x5)                             "x5"
+   set caption(remotectrl,200)                            "200"
+   set caption(remotectrl,NS)                             "NS"
+   set caption(remotectrl,HS)                             "HS"
+   set caption(remotectrl,interro)                        "?"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(remotectrl,delay)                          "Duração:"
+   set caption(remotectrl,ms)                             "ms"
+   set caption(remotectrl,coord)                          "Coord."
+   set caption(remotectrl,match)                          "MATCH"
+   set caption(remotectrl,match_confirm)                  "Pretende prosseguir ?"
+   set caption(remotectrl,goto)                           "GOTO"
+   set caption(remotectrl,tel)                            "Montagem"
+   set caption(remotectrl,non_connecte)                   "não ligado"
+   set caption(remotectrl,astre_est)                      "O astro encontra-se"
+   set caption(remotectrl,pas_leve)                       "abaixo do horizonte."
+   set caption(remotectrl,camera)                         "Câmara"
+   set caption(remotectrl,non_connectee)                  "não ligado"
+   set caption(remotectrl,nord)                           "N"
+   set caption(remotectrl,est)                            "E"
+   set caption(remotectrl,ouest)                          "O"
+   set caption(remotectrl,sud)                            "S"
+   set caption(remotectrl,x1)                             "x1"
+   set caption(remotectrl,x5)                             "x5"
+   set caption(remotectrl,200)                            "200"
+   set caption(remotectrl,NS)                             "NS"
+   set caption(remotectrl,HS)                             "HS"
+   set caption(remotectrl,interro)                        "?"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(remotectrl,delay)                          "Duration:"
+   set caption(remotectrl,ms)                             "ms"
+   set caption(remotectrl,coord)                          "Coord."
+   set caption(remotectrl,match)                          "MATCH"
+   set caption(remotectrl,match_confirm)                  "Continue?"
+   set caption(remotectrl,goto)                           "GOTO"
+   set caption(remotectrl,tel)                            "Mount"
+   set caption(remotectrl,non_connecte)                   "not connected"
+   set caption(remotectrl,astre_est)                      "The target is"
+   set caption(remotectrl,pas_leve)                       "below the horizon."
+   set caption(remotectrl,camera)                         "Camera"
+   set caption(remotectrl,non_connectee)                  "not connected"
+   set caption(remotectrl,nord)                           "N"
+   set caption(remotectrl,est)                            "E"
+   set caption(remotectrl,ouest)                          "W"
+   set caption(remotectrl,sud)                            "S"
+   set caption(remotectrl,x1)                             "x1"
+   set caption(remotectrl,x5)                             "x5"
+   set caption(remotectrl,200)                            "200"
+   set caption(remotectrl,NS)                             "NS"
+   set caption(remotectrl,HS)                             "HS"
+   set caption(remotectrl,interro)                        "?"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(remotectrl,delay)                          "Duration:"
+   set caption(remotectrl,ms)                             "ms"
+   set caption(remotectrl,coord)                          "Coord."
+   set caption(remotectrl,match)                          "MATCH"
+   set caption(remotectrl,match_confirm)                  "Continue?"
+   set caption(remotectrl,goto)                           "GOTO"
+   set caption(remotectrl,tel)                            "Mount"
+   set caption(remotectrl,non_connecte)                   "not connected"
+   set caption(remotectrl,astre_est)                      "The target is"
+   set caption(remotectrl,pas_leve)                       "below the horizon."
+   set caption(remotectrl,camera)                         "Camera"
+   set caption(remotectrl,non_connectee)                  "not connected"
+   set caption(remotectrl,nord)                           "N"
+   set caption(remotectrl,est)                            "E"
+   set caption(remotectrl,ouest)                          "W"
+   set caption(remotectrl,sud)                            "S"
+   set caption(remotectrl,x1)                             "x1"
+   set caption(remotectrl,x5)                             "x5"
+   set caption(remotectrl,200)                            "200"
+   set caption(remotectrl,NS)                             "NS"
+   set caption(remotectrl,HS)                             "HS"
+   set caption(remotectrl,interro)                        "?"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(remotectrl,delay)                          "Duration:"
+   set caption(remotectrl,ms)                             "ms
+   set caption(remotectrl,coord)                          "Coord."
+   set caption(remotectrl,match)                          "MATCH"
+   set caption(remotectrl,match_confirm)                  "Continue?"
+   set caption(remotectrl,goto)                           "GOTO"
+   set caption(remotectrl,tel)                            "Mount"
+   set caption(remotectrl,non_connecte)                   "not connected"
+   set caption(remotectrl,astre_est)                      "The target is"
+   set caption(remotectrl,pas_leve)                       "below the horizon."
+   set caption(remotectrl,camera)                         "Camera"
+   set caption(remotectrl,non_connectee)                  "not connected"
+   set caption(remotectrl,nord)                           "N"
+   set caption(remotectrl,est)                            "E"
+   set caption(remotectrl,ouest)                          "W"
+   set caption(remotectrl,sud)                            "S"
+   set caption(remotectrl,x1)                             "x1"
+   set caption(remotectrl,x5)                             "x5"
+   set caption(remotectrl,200)                            "200"
+   set caption(remotectrl,NS)                             "NS"
+   set caption(remotectrl,HS)                             "HS"
+   set caption(remotectrl,interro)                        "?"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

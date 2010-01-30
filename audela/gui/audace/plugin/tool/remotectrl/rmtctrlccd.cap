@@ -1,0 +1,79 @@
+#
+# Fichier : remotectrl.cap
+# Mise a jour $Id: rmtctrlccd.cap,v 1.1 2010-01-30 14:47:36 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(remotectrl,seconde)                          "sec."
+set caption(remotectrl,binning)                          "Binning"
+set caption(remotectrl,numerisation)                     "Read CCD"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(remotectrl,seconde)                       "sec."
+   set caption(remotectrl,binning)                       "Binning"
+   set caption(remotectrl,numerisation)                  "Lecture CCD"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(remotectrl,seconde)                       "sec."
+   set caption(remotectrl,binning)                       "Binning"
+   set caption(remotectrl,numerisation)                  "Lettura CCD"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(remotectrl,seconde)                       "seg."
+   set caption(remotectrl,binning)                       "Binning"
+   set caption(remotectrl,numerisation)                  "Leer CCD"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(remotectrl,seconde)                       "sek."
+   set caption(remotectrl,binning)                       "Binning"
+   set caption(remotectrl,numerisation)                  "CCD Lesen"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(remotectrl,seconde)                       "seg."
+   set caption(remotectrl,binning)                       "Binning"
+   set caption(remotectrl,numerisation)                  "Leitura do CCD"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(remotectrl,seconde)                       "sec."
+   set caption(remotectrl,binning)                       "Binning"
+   set caption(remotectrl,numerisation)                  "Read CCD"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(remotectrl,seconde)                       "sec."
+   set caption(remotectrl,binning)                       "Binning"
+   set caption(remotectrl,numerisation)                  "Read CCD"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(remotectrl,seconde)                       "sec."
+   set caption(remotectrl,binning)                       "Binning"
+   set caption(remotectrl,numerisation)                  "Read CCD"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
