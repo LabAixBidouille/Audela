@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.35 2010-01-29 20:45:01 michelpujol Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.36 2010-01-30 14:36:03 robertdelmas Exp $
 #
 
 # =========================================================
@@ -72,7 +72,6 @@ namespace eval ::acqfen {
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
-         menu         { return "tool" }
          function     { return "acquisition" }
          subfunction1 { return "windowed" }
          display      { return "panel" }
@@ -167,7 +166,7 @@ namespace eval ::acqfen {
       set panneau(acqfen,mtx_x) 81
       set panneau(acqfen,mtx_y) 54
 
-      #--- Valeurs initiales des coordonnees de la "bo�te"
+      #--- Valeurs initiales des coordonnees de la "boite"
       set panneau(acqfen,X1) "-"
       set panneau(acqfen,Y1) "-"
       set panneau(acqfen,X2) "-"
@@ -249,7 +248,7 @@ namespace eval ::acqfen {
       if { ! [ info exists parametres(acqfen,nb_images) ] }      { set parametres(acqfen,nb_images)      "5" }   ; #--- Serie : Nombre de poses
       if { ! [ info exists parametres(acqfen,avancement_acq) ] } { set parametres(acqfen,avancement_acq) "1" }   ; #--- Barre de progression de la pose : Oui
 
-      #--- je converis les anciennes valeurs pour assurer la compatibilité
+      #--- je convertis les anciennes valeurs pour assurer la compatibilite
       if { $parametres(acqfen,mode) == "une" }     { set parametres(acqfen,mode) 1 }
       if { $parametres(acqfen,mode) == "serie" }   { set parametres(acqfen,mode) 2 }
       if { $parametres(acqfen,mode) == "continu" } { set parametres(acqfen,mode) 3 }
