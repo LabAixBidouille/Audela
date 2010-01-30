@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot_principal.tcl,v 1.5 2009-11-17 16:57:48 robertdelmas Exp $
+# $Id: calaphot_principal.tcl,v 1.6 2010-01-30 13:47:17 robertdelmas Exp $
 #
 
 ###catch {namespace delete ::Calaphot}
@@ -740,7 +740,7 @@ namespace eval ::CalaPhot {
             set value [lindex $listligne 1]
             # --- si la valeur vaut IMA/SERIES REGISTER ...
             if {$value == "IMA/SERIES REGISTER"} {
-                # --- alors on extrait l'indice du mot cl� TT
+                # --- alors on extrait l'indice du mot cle TT
                 set keyname [lindex $listligne 0]
                 set lenkeyname [string length $keyname]
                 set indice [string range $keyname 2 [expr $lenkeyname] ]
@@ -762,11 +762,11 @@ namespace eval ::CalaPhot {
             incr indice
             set listligne [buf$audace(bufNo) getkwd "TT$indice"]
 
-            # --- on �value la valeur de la ligne FITS
+            # --- on evalue la valeur de la ligne FITS
             set param2 [lindex $listligne 1]
             set dy [lindex $param2 2]
 
-            # Fin de la lecture du d�calage
+            # Fin de la lecture du decalage
             set dec [list $dx $dy]
         }
         return $dec

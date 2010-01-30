@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_2.tcl
 # Description : Script regroupant les fonctionnalites du menu Affichage
-# Mise a jour $Id: aud_menu_2.tcl,v 1.23 2010-01-29 15:57:47 michelpujol Exp $
+# Mise a jour $Id: aud_menu_2.tcl,v 1.24 2010-01-30 13:48:59 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -182,7 +182,7 @@ namespace eval ::audace {
             }
          }
          4 {
-            #--- Fonction de transfert arctangente / sigmo�de
+            #--- Fonction de transfert arctangente / sigmoide
             if {$conf(fonction_transfert,param4)==0} {
                #--- On est ramene au cas lineaire
                visu$visuNo pal $fichier_palette

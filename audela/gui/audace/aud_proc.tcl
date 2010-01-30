@@ -1,7 +1,7 @@
 #
 # Fichier : aud_proc.tcl
 # Description : Fonctions de chargement, sauvegarde et traitement d'images
-# Mise a jour $Id: aud_proc.tcl,v 1.18 2010-01-24 11:41:15 robertdelmas Exp $
+# Mise a jour $Id: aud_proc.tcl,v 1.19 2010-01-30 13:43:38 robertdelmas Exp $
 #
 
 #
@@ -405,7 +405,7 @@ proc binx { args } {
 #
 # biny y1 y2 [height]
 # Cree une nouvelle image de dimensions height*NAXIS1 dont toutes les lignes sont identiques
-# et egales a la somme de toutes les lignes comprises entre les ordonn�es y1 et y2 de l'image
+# et egales a la somme de toutes les lignes comprises entre les ordonnees y1 et y2 de l'image
 #
 proc biny { args } {
    global audace
