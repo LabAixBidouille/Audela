@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.127 2010-01-29 15:57:10 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.128 2010-01-30 13:59:57 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -3721,7 +3721,7 @@ namespace eval ::colorRGB {
    proc updateVisu { visuNo } {
       variable private
 
-      #--- rafraîchit la liste des 6 seuils
+      #--- rafraichit la liste des 6 seuils
       set mycuts ""
       foreach scale $private(colorRGB,child) {
          lappend mycuts [ $private($visuNo,This).val_variant.$scale get ]
