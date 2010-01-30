@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.36 2010-01-17 18:59:16 michelpujol Exp $
+# Mise a jour $Id: keyword.tcl,v 1.37 2010-01-30 14:00:49 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -58,14 +58,13 @@ proc ::keyword::header { visuNo args } {
       $base.header.slb.list tag configure unit -foreground $::color(orange)
       foreach kwd [ lsort -dictionary [ buf[ ::confVisu::getBufNo $visuNo ] getkwds ] ] {
          set liste [ buf[ ::confVisu::getBufNo $visuNo ] getkwd $kwd ]
-
          #--- je fais une boucle pour traiter les mots cles a valeur multiple
          foreach { name value type comment unit } $liste {
             $base.header.slb.list insert end "[format "%8s" $name] " keyw
-            $base.header.slb.list insert end "= "         egal
-            $base.header.slb.list insert end "$value "    valu
-            $base.header.slb.list insert end "$comment "  comm
-            $base.header.slb.list insert end "$unit\n"    unit
+            $base.header.slb.list insert end "= "                    egal
+            $base.header.slb.list insert end "$value "               valu
+            $base.header.slb.list insert end "$comment "             comm
+            $base.header.slb.list insert end "$unit\n"               unit
          }
       }
    } else {
@@ -808,7 +807,7 @@ proc ::keyword::getKeywords { visuNo configName { keywordNameList "" } } {
                #--- je mets en forme le commentaire
                if { $motclef == "COMMENT" } {
                   set commentaire [ ::keyword::headerFitsCompliant $valeur ]
-                  set valeur ""
+                  set valeur      ""
                }
                #--- j'ajoute les mots cles dans le resultat
                lappend result [list $motclef $valeur $type $commentaire $unite]
