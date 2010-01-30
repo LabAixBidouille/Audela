@@ -1,6 +1,6 @@
 #
 # Fichier : acqfc.cap
-# Mise a jour $Id: acqfc.cap,v 1.46 2010-01-27 00:10:33 myrtillelaas Exp $
+# Mise a jour $Id: acqfc.cap,v 1.47 2010-01-30 14:04:51 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -42,7 +42,7 @@ set caption(acqfc,titre_2)                   "Continuous Images at Regular Inter
 set caption(acqfc,intervalle_2)              "Interval Between Each Image Exposure Start (sec.)"
 set caption(acqfc,int_mini_image)            "Minimum Interval Between Each Image Exposure Start:"
 set caption(acqfc,simu_deja_faite)           "A simulation has already been performed with the same shooting parameters."
-set caption(acqfc,accu_emccd)				 "EMCCD Accumulation"
+set caption(acqfc,accu_emccd)                "EMCCD Accumulation"
 set caption(acqfc,enregistrer)               "Record"
 set caption(acqfc,config)                    "Setup"
 set caption(acqfc,pb)                        "Problem"
@@ -134,7 +134,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,intervalle_2)           "Intervalle entre chaque début d'image (sec.)"
    set caption(acqfc,int_mini_image)         "Intervalle mini entre chaque début d'image :"
    set caption(acqfc,simu_deja_faite)        "Une simulation a déjà été faite avec les mêmes paramètres de prise de vue."
-   set caption(acqfc,accu_emccd)			 "EMCCD Accumulation"
+   set caption(acqfc,accu_emccd)             "EMCCD Accumulation"
    set caption(acqfc,enregistrer)            "Enregistrer"
    set caption(acqfc,config)                 "Configuration"
    set caption(acqfc,pb)                     "Problème"
@@ -227,7 +227,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,intervalle_2)           "Intervallo tra l'inizio di ogni esposizione (sec.)"
    set caption(acqfc,int_mini_image)         "Intervallo minimo tra l'inizio di ogni esposizione:"
    set caption(acqfc,simu_deja_faite)        "Una simulazione e` stata fatta con gli stessi parametri di esposizione."
-   set caption(acqfc,accu_emccd)			 "EMCCD Accumulation"
+   set caption(acqfc,accu_emccd)             "EMCCD Accumulation"
    set caption(acqfc,enregistrer)            "Registrare"
    set caption(acqfc,config)                 "Settaggio"
    set caption(acqfc,pb)                     "Problema"
@@ -320,7 +320,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,intervalle_2)           "Intervalo entre cada imagen (seg.)"
    set caption(acqfc,int_mini_image)         "Mínimo intervalo entre cada imagen:"
    set caption(acqfc,simu_deja_faite)        "Se ha efectuado una simulación con los mismos parámetros de la adquisición."
-   set caption(acqfc,accu_emccd)			 "EMCCD Accumulation"
+   set caption(acqfc,accu_emccd)             "EMCCD Accumulation"
    set caption(acqfc,enregistrer)            "Guardar"
    set caption(acqfc,config)                 "Configuración"
    set caption(acqfc,pb)                     "Problema"
@@ -413,7 +413,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,intervalle_2)           "Abstand zwischen jedes Bild Anfang (sek.)"
    set caption(acqfc,int_mini_image)         "Mindest Abstand zwischen jedes Bild Anfang:"
    set caption(acqfc,simu_deja_faite)        "Die Simulation ist schon mit die selben Aufnahme Parametern gemacht worden."
-   set caption(acqfc,accu_emccd)			 "EMCCD Accumulation"
+   set caption(acqfc,accu_emccd)             "EMCCD Accumulation"
    set caption(acqfc,enregistrer)            "Speichern"
    set caption(acqfc,config)                 "Konfiguration"
    set caption(acqfc,pb)                     "Problem"
@@ -506,7 +506,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,intervalle_2)           "Intervalo entre cada novo início de imagem (sec.)"
    set caption(acqfc,int_mini_image)         "Intervalo mínimo entre cada novo início de imagem:"
    set caption(acqfc,simu_deja_faite)        "Já foi efectuada uma simulação com os mesmos parâmetros de visualização."
-   set caption(acqfc,accu_emccd)			 "EMCCD Accumulation"
+   set caption(acqfc,accu_emccd)             "EMCCD Accumulation"
    set caption(acqfc,enregistrer)            "Guardar"
    set caption(acqfc,config)                 "Configuração"
    set caption(acqfc,pb)                     "Problema"
@@ -599,7 +599,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,intervalle_2)           "Interval Between Each Image Exposure Start (sec.)"
    set caption(acqfc,int_mini_image)         "Minimum Interval Between Each Image Exposure Start:"
    set caption(acqfc,simu_deja_faite)        "A simulation has already been performed with the same shooting parameters."
-   set caption(acqfc,accu_emccd)			 "EMCCD Accumulation"
+   set caption(acqfc,accu_emccd)             "EMCCD Accumulation"
    set caption(acqfc,enregistrer)            "Record"
    set caption(acqfc,config)                 "Setup"
    set caption(acqfc,pb)                     "Problem"
@@ -691,7 +691,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,intervalle_2)           "Interval Between Each Image Exposure Start (sec.)"
    set caption(acqfc,int_mini_image)         "Minimum Interval Between Each Image Exposure Start:"
    set caption(acqfc,simu_deja_faite)        "A simulation has already been performed with the same shooting parameters."
-   set caption(acqfc,accu_emccd)			 "EMCCD Accumulation"
+   set caption(acqfc,accu_emccd)             "EMCCD Accumulation"
    set caption(acqfc,enregistrer)            "Record"
    set caption(acqfc,config)                 "Setup"
    set caption(acqfc,pb)                     "Problem"
@@ -783,7 +783,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,intervalle_2)           "Interval Between Each Image Exposure Start (sec.)"
    set caption(acqfc,int_mini_image)         "Minimum Interval Between Each Image Exposure Start:"
    set caption(acqfc,simu_deja_faite)        "A simulation has already been performed with the same shooting parameters."
-   set caption(acqfc,accu_emccd)			 "EMCCD Accumulation"
+   set caption(acqfc,accu_emccd)             "EMCCD Accumulation"
    set caption(acqfc,enregistrer)            "Record"
    set caption(acqfc,config)                 "Setup"
    set caption(acqfc,pb)                     "Problem"
