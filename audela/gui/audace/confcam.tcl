@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.131 2009-06-10 18:29:52 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.132 2010-01-30 13:56:02 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -665,6 +665,7 @@ proc ::confCam::isReady { camItem } {
 # multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
 # name :             Retourne le modele de la camera
 # product :          Retourne le nom du produit
+# rawExtension :     Retourne les extensions des images RAW de la camera
 # shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 # title :            Retourne le titre du plugin
 #------------------------------------------------------------
@@ -694,6 +695,7 @@ proc ::confCam::getPluginProperty { camItem propertyName } {
       multiCamera      { set result 0 }
       name             { set result "" }
       product          { set result "" }
+      rawExtension     { set result "" }
       shutterList      { set result [ list "" ] }
       title            { set result "" }
       default          { set result "" }

@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.38 2010-01-26 18:43:54 michelpujol Exp $
+# Mise a jour $Id: dslr.tcl,v 1.39 2010-01-30 13:52:18 robertdelmas Exp $
 #
 
 namespace eval ::dslr {
@@ -686,7 +686,7 @@ proc ::dslr::setLoadParameters { camItem } {
    ::confColor::applyColor $audace(base).telecharge_image
 
 
-   #--- Mise � jour des radio boutons en fonction des parametres deja choisis
+   #--- Mise a jour des radio boutons en fonction des parametres deja choisis
    ::dslr::utiliserCF $camItem
 
 }
@@ -729,9 +729,9 @@ proc ::dslr::utiliserCF { camItem } {
 
 #
 # ::dslr::supprimerImage
-#    transmet la valeur de l'indicateur $conf(dslr,supprimer_image) à la
-#    librairie libdigicam.dll afin d'indiquer si l'image doit être supprimée
-#    lors des acquisitions suivantes.
+#    transmet la valeur de l'indicateur $conf(dslr,supprimer_image) a la
+#    librairie libdigicam.dll afin d'indiquer si l'image doit etre supprimee
+#    lors des acquisitions suivantes
 # @private
 proc ::dslr::supprimerImage { camItem } {
    global conf
@@ -782,7 +782,7 @@ proc ::dslr::changerSelectionTelechargementAPN { camItem } {
 # hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
 # hasFormat :        Retourne l'existence d'un format (1 : Oui, 0 : Non)
 # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
-# hasQuality :       Retourne l'existence d'une qualit� (1 : Oui, 0 : Non)
+# hasQuality :       Retourne l'existence d'une qualite (1 : Oui, 0 : Non)
 # hasScan :          Retourne l'existence du mode scan (1 : Oui, 0 : Non)
 # hasShutter :       Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
 # hasTempSensor      Retourne l'existence du capteur de temperature (1 : Oui, 0 : Non)
@@ -794,6 +794,7 @@ proc ::dslr::changerSelectionTelechargementAPN { camItem } {
 # multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
 # name :             Retourne le modele de la camera
 # product :          Retourne le nom du produit
+# rawExtension :     Retourne les extensions des images RAW de la camera
 # shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 #
 proc ::dslr::getPluginProperty { camItem propertyName } {
@@ -834,6 +835,7 @@ proc ::dslr::getPluginProperty { camItem propertyName } {
             return ""
          }
       }
+      rawExtension     { return [ list .crw .cr2 .nef .dng ] }
       shutterList      { return [ list "" ] }
    }
 }
