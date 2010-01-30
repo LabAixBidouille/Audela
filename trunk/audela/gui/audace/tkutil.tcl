@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise a jour $Id: tkutil.tcl,v 1.32 2010-01-24 15:28:16 michelpujol Exp $
+# Mise a jour $Id: tkutil.tcl,v 1.33 2010-01-30 16:16:28 robertdelmas Exp $
 #
 
 namespace eval tkutil:: {
@@ -362,11 +362,11 @@ proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxVa
       }
       if { $result == 0 } {
          #--- j'affiche en inverse video
-         ####$win configure -bg $::color(lightred) -fg $::audace(color,entryTextColor)
+        ### $win configure -bg $::color(lightred) -fg $::audace(color,entryTextColor)
          bell
       } else {
          #--- j'affiche normalement
-         ####$win configure -bg $::audace(color,entryBackColor) -fg $::audace(color,entryTextColor)
+        ### $win configure -bg $::audace(color,entryBackColor) -fg $::audace(color,entryTextColor)
       }
    } else {
       #--- je ne traite pas l'evenement
@@ -406,8 +406,8 @@ proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxVa
 #            - boolean   : booleen ( 0, 1, false, true, no, yes , off , on)
 #            - fits      : caracteres autorises dans un mot cle FITS
 #            - wordchar  : caracteres alphabetiques ou numeriques ou underscore
-#            - wordchar1 : caracteres de wordchar avec "-", sans "\" et "Âµ"
-#            - wordchar2 : caracteres de wordchar avec "-" et ".", sans "\" et "Âµ"
+#            - wordchar1 : caracteres de wordchar avec "-", sans "\" et "µ"
+#            - wordchar2 : caracteres de wordchar avec "-", ".", "/" et ":", sans "\" et "µ"
 #            - xdigit    : caracteres hexadecimaux
 # @param  minLength      : longueur minimale de la chaine
 # @param  maxLength      : longueur maximale de la chaine
@@ -445,7 +445,7 @@ proc ::tkutil::validateString { win event newValue oldValue class minLength maxL
             #--- je refuse le caractere antislash
             set classCheck 0
          } else {
-            set charIndex [string first "Âµ" $newValue]
+            set charIndex [string first "µ" $newValue]
             if { $charIndex != -1} {
                #--- je refuse le caractere machin
                set classCheck 0
@@ -462,13 +462,13 @@ proc ::tkutil::validateString { win event newValue oldValue class minLength maxL
             #--- je refuse le caractere antislash
             set classCheck 0
          } else {
-            set charIndex [string first "Âµ" $newValue]
+            set charIndex [string first "µ" $newValue]
             if { $charIndex != -1} {
                #--- je refuse le caractere machin
                set classCheck 0
             } else {
-               #--- je supprime les caracteres "-" et "." de la chaine car ils sont autorises
-               set newValue2 [string map { "-" "" "." "" } $newValue ]
+               #--- je supprime les caracteres "-", ".", ":" et "/" de la chaine car ils sont autorises
+               set newValue2 [string map { "-" "" "." "" ":" "" "/" "" } $newValue ]
                #--- je verifie les caracteres restant
                set classCheck [string is wordchar -failindex charIndex $newValue2]
             }
@@ -508,11 +508,11 @@ proc ::tkutil::validateString { win event newValue oldValue class minLength maxL
       #--- je change de couleur si la longueur est incorrecte
       if { $result == 0 } {
          #--- j'affiche en inverse video
-         ###$win configure -bg $::color(lightred) -fg $::audace(color,entryTextColor)
+        ### $win configure -bg $::color(lightred) -fg $::audace(color,entryTextColor)
          bell
       } else {
          #--- j'affiche normalement
-         ###$win configure -bg $::audace(color,entryBackColor) -fg $::audace(color,entryTextColor)
+        ### $win configure -bg $::audace(color,entryBackColor) -fg $::audace(color,entryTextColor)
       }
    } else {
       #--- je ne traite pas l'evenement
