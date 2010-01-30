@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_7.cap
-# Mise a jour $Id: aud_menu_7.cap,v 1.24 2009-12-09 16:48:42 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.cap,v 1.25 2010-01-30 14:33:09 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -11,7 +11,7 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(audace,menu,configuration)            "Setup"
+set caption(audace,menu,setup)                    "Setup"
 set caption(audace,menu,langue)                   "Language"
 set caption(audace,menu,repertoire)               "Folders"
 set caption(audace,menu,logiciels_externes)       "External Programs"
@@ -67,7 +67,7 @@ set caption(aud_menu_7,aide)                      "Help"
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(audace,menu,configuration)         "Configuration"
+   set caption(audace,menu,setup)                 "Configuration"
    set caption(audace,menu,langue)                "Langue"
    set caption(audace,menu,repertoire)            "Répertoires"
    set caption(audace,menu,logiciels_externes)    "Logiciels externes"
@@ -123,7 +123,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(audace,menu,configuration)         "Configurazione"
+   set caption(audace,menu,setup)                 "Configurazione"
    set caption(audace,menu,langue)                "Lingue"
    set caption(audace,menu,repertoire)            "Directories"
    set caption(audace,menu,logiciels_externes)    "Programmi esterni"
@@ -179,7 +179,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(audace,menu,configuration)         "Configuración"
+   set caption(audace,menu,setup)                 "Configuración"
    set caption(audace,menu,langue)                "Idioma"
    set caption(audace,menu,repertoire)            "Directorios"
    set caption(audace,menu,logiciels_externes)    "Programas externos"
@@ -235,7 +235,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(audace,menu,configuration)         "Konfiguration"
+   set caption(audace,menu,setup)                 "Konfiguration"
    set caption(audace,menu,langue)                "Sprache"
    set caption(audace,menu,repertoire)            "Verzeichnis"
    set caption(audace,menu,logiciels_externes)    "Äußere Programmen"
@@ -291,7 +291,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(audace,menu,configuration)         "Configuração"
+   set caption(audace,menu,setup)                 "Configuração"
    set caption(audace,menu,langue)                "Idioma"
    set caption(audace,menu,repertoire)            "Pastas"
    set caption(audace,menu,logiciels_externes)    "Programas externos"
@@ -347,7 +347,7 @@ if { [ string compare $langage "french" ] == "0" } {
    # *************** Version danoise **************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(audace,menu,configuration)         "Konfiguration"
+   set caption(audace,menu,setup)                 "Konfiguration"
    set caption(audace,menu,langue)                "Sprog"
    set caption(audace,menu,repertoire)            "Mappe"
    set caption(audace,menu,logiciels_externes)    "Eksterne programmer"
@@ -403,7 +403,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
-   set caption(audace,menu,configuration)         "Setup"
+   set caption(audace,menu,setup)                 "Setup"
    set caption(audace,menu,langue)                "Language"
    set caption(audace,menu,repertoire)            "Folders"
    set caption(audace,menu,logiciels_externes)    "External Programs"
@@ -459,7 +459,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
-   set caption(audace,menu,configuration)         "Setup"
+   set caption(audace,menu,setup)                 "Setup"
    set caption(audace,menu,langue)                "Language"
    set caption(audace,menu,repertoire)            "Folders"
    set caption(audace,menu,logiciels_externes)    "External Programs"

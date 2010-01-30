@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.47 2010-01-20 18:56:47 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.48 2010-01-30 14:31:18 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -11,7 +11,7 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(audace,menu,pretraite)                      "Preprocessing"
+set caption(audace,menu,preprocess)                     "Preprocessing"
 set caption(audace,menu,raw2fits)                       "RAW ---> FITS Conversion"
 set caption(audace,menu,r+v+b2rvb)                      "R+G+B ---> RGB Conversion"
 set caption(audace,menu,rvb2r+v+b)                      "RGB ---> R+G+B Conversion"
@@ -157,7 +157,7 @@ set caption(aud_menu_3,aide)                            "Help"
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(audace,menu,pretraite)                   "Prétraitement"
+   set caption(audace,menu,preprocess)                  "Prétraitement"
    set caption(audace,menu,raw2fits)                    "Conversion RAW ---> FITS"
    set caption(audace,menu,r+v+b2rvb)                   "Conversion R+V+B ---> RVB"
    set caption(audace,menu,rvb2r+v+b)                   "Conversion RVB ---> R+V+B"
@@ -303,7 +303,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(audace,menu,pretraite)                   "Pretrattamento"
+   set caption(audace,menu,preprocess)                  "Pretrattamento"
    set caption(audace,menu,raw2fits)                    "Conversione RAW ---> FITS"
    set caption(audace,menu,r+v+b2rvb)                   "Conversione R+V+B ---> RVB"
    set caption(audace,menu,rvb2r+v+b)                   "Conversione RVB ---> R+V+B"
@@ -449,7 +449,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(audace,menu,pretraite)                   "Preprocesando"
+   set caption(audace,menu,preprocess)                  "Preprocesando"
    set caption(audace,menu,raw2fits)                    "Conversion RAW ---> FITS"
    set caption(audace,menu,r+v+b2rvb)                   "Conversion R+V+A ---> RVA"
    set caption(audace,menu,rvb2r+v+b)                   "Conversion RVA ---> R+V+A"
@@ -595,7 +595,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(audace,menu,pretraite)                   "Voraufbereitung"
+   set caption(audace,menu,preprocess)                  "Voraufbereitung"
    set caption(audace,menu,raw2fits)                    "RAW ---> FITS Umstellung"
    set caption(audace,menu,r+v+b2rvb)                   "R+G+B ---> RGB Umstellung"
    set caption(audace,menu,rvb2r+v+b)                   "RGB ---> R+G+B Umstellung"
@@ -741,7 +741,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(audace,menu,pretraite)                   "Pré-tratamento"
+   set caption(audace,menu,preprocess)                  "Pré-tratamento"
    set caption(audace,menu,raw2fits)                    "Conversão RAW ---> FITS"
    set caption(audace,menu,r+v+b2rvb)                   "Conversão R+G+B ---> RGB"
    set caption(audace,menu,rvb2r+v+b)                   "Conversão RGB ---> R+G+B"
@@ -887,7 +887,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(audace,menu,pretraite)                   "Preprocessing"
+   set caption(audace,menu,preprocess)                  "Preprocessing"
    set caption(audace,menu,raw2fits)                    "Konvertering: RAW ---> FITS"
    set caption(audace,menu,r+v+b2rvb)                   "Konvertering: R+G+B ---> RGB"
    set caption(audace,menu,rvb2r+v+b)                   "Konvertering: RGB ---> R+G+B"
@@ -1033,7 +1033,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
-   set caption(audace,menu,pretraite)                   "Preprocessing"
+   set caption(audace,menu,preprocess)                  "Preprocessing"
    set caption(audace,menu,raw2fits)                    "RAW ---> FITS Conversion"
    set caption(audace,menu,r+v+b2rvb)                   "R+G+B ---> RGB Conversion"
    set caption(audace,menu,rvb2r+v+b)                   "RGB ---> R+G+B Conversion"
@@ -1179,7 +1179,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
-   set caption(audace,menu,pretraite)                   "Preprocessing"
+   set caption(audace,menu,preprocess)                  "Preprocessing"
    set caption(audace,menu,raw2fits)                    "RAW ---> FITS Conversion"
    set caption(audace,menu,r+v+b2rvb)                   "R+G+B ---> RGB Conversion"
    set caption(audace,menu,rvb2r+v+b)                   "RGB ---> R+G+B Conversion"

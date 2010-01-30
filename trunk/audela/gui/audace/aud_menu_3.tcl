@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.57 2010-01-10 16:03:31 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.58 2010-01-30 14:32:11 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -135,7 +135,7 @@ namespace eval ::pretraitement {
       toplevel $This
       wm resizable $This 0 0
       wm deiconify $This
-      wm title $This "$caption(audace,menu,pretraite)"
+      wm title $This "$caption(audace,menu,preprocess)"
       wm geometry $This $widget(pretraitement,position)
       wm transient $This $audace(base)
       wm protocol $This WM_DELETE_WINDOW ::pretraitement::cmdClose
@@ -3585,7 +3585,7 @@ namespace eval ::traiteWindow {
       toplevel $This
       wm resizable $This 0 0
       wm deiconify $This
-      wm title $This "$caption(audace,menu,pretraite)"
+      wm title $This "$caption(audace,menu,preprocess)"
       wm geometry $This $widget(traiteWindow,position)
       wm transient $This $audace(base)
       wm protocol $This WM_DELETE_WINDOW ::traiteWindow::cmdClose
@@ -4220,7 +4220,7 @@ namespace eval ::faireImageRef {
       toplevel $This
       wm resizable $This 0 0
       wm deiconify $This
-      wm title $This "$caption(audace,menu,pretraite)"
+      wm title $This "$caption(audace,menu,preprocess)"
       wm geometry $This $widget(faireImageRef,position)
       wm transient $This $audace(base)
       wm protocol $This WM_DELETE_WINDOW ::faireImageRef::cmdClose
@@ -4400,7 +4400,7 @@ namespace eval ::faireImageRef {
          frame $This.usr.1 -borderwidth 1 -relief raised
             #--- Liste des pretraitements disponibles
             set list_faireImageRef [ list $caption(audace,menu,faire_offset) $caption(audace,menu,faire_dark) \
-               $caption(audace,menu,faire_flat_field) $caption(audace,menu,pretraite) ]
+               $caption(audace,menu,faire_flat_field) $caption(audace,menu,preprocess) ]
             #---
             menubutton $This.usr.1.but1 -textvariable faireImageRef(captionOperation) -menu $This.usr.1.but1.menu \
                -relief raised
@@ -4466,7 +4466,7 @@ namespace eval ::faireImageRef {
       } elseif { $type_image_reference == "faire_flat_field" } {
          set faireImageRef(captionOperation) "$caption(audace,menu,faire_flat_field)"
       } elseif { $type_image_reference == "pretraitement" } {
-         set faireImageRef(captionOperation) "$caption(audace,menu,pretraite)"
+         set faireImageRef(captionOperation) "$caption(audace,menu,preprocess)"
       }
    }
 
@@ -4484,7 +4484,7 @@ namespace eval ::faireImageRef {
          set faireImageRef(operation) "faire_dark"
       } elseif { $type_image_reference == "$caption(audace,menu,faire_flat_field)" } {
          set faireImageRef(operation) "faire_flat_field"
-      } elseif { $type_image_reference == "$caption(audace,menu,pretraite)" } {
+      } elseif { $type_image_reference == "$caption(audace,menu,preprocess)" } {
          set faireImageRef(operation) "pretraitement"
       }
    }
