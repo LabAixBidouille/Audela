@@ -2,7 +2,7 @@
 # Fichier : acqzadko.tcl
 # Description : Outil d'acquisition
 # Auteurs : Francois Cochard et Myrtille Laas
-# Mise a jour $Id: acqzadko.tcl,v 1.17 2010-01-24 12:15:03 robertdelmas Exp $
+# Mise a jour $Id: acqzadko.tcl,v 1.18 2010-01-30 14:37:48 robertdelmas Exp $
 #
 
 #==============================================================
@@ -123,9 +123,9 @@ proc ::acqzadko::createPluginInstance { { in "" } { visuNo 1 } } {
    pack $panneau(acqzadko,$visuNo,mode,$panneau(acqzadko,$visuNo,mode)) -anchor nw -fill x
 
    #--- Surveillance de la connexion d'une camera
-   ::confVisu::addCameraListener $visuNo "::acqzadko::Adapt_Panneau_acqzadko $visuNo"
+   ::confVisu::addCameraListener $visuNo "::acqzadko::adaptOutilAcqzadko $visuNo"
    #--- Surveillance de l'ajout ou de la suppression d'une extension
-   trace add variable ::conf(list_extension) write "::acqzadko::initExtensionList $visuNo"
+   trace add variable ::audace(extensionList) write "::acqzadko::initExtensionList $visuNo"
 }
 #***** Fin de la procedure createPluginInstance*****************
 
@@ -137,9 +137,9 @@ proc ::acqzadko::deletePluginInstance { visuNo } {
    global conf panneau
 
    #--- Je desactive la surveillance de la connexion d'une camera
-   ::confVisu::removeCameraListener $visuNo "::acqzadko::Adapt_Panneau_acqzadko $visuNo"
+   ::confVisu::removeCameraListener $visuNo "::acqzadko::adaptOutilAcqzadko $visuNo"
    #--- Je desactive la surveillance de l'ajout ou de la suppression d'une extension
-   trace remove variable ::conf(list_extension) write "::acqzadko::initExtensionList $visuNo"
+   trace remove variable ::audace(extensionList) write "::acqzadko::initExtensionList $visuNo"
 
    #---
    set conf(acqzadko,avancement,position) $panneau(acqzadko,$visuNo,avancement,position)
@@ -171,7 +171,6 @@ proc ::acqzadko::deletePluginInstance { visuNo } {
 #------------------------------------------------------------
 proc ::acqzadko::getPluginProperty { propertyName } {
    switch $propertyName {
-      menu         { return "tool" }
       function     { return "acquisition" }
       subfunction1 { return "" }
       display      { return "panel" }
@@ -299,10 +298,12 @@ proc ::acqzadko::initExtensionList { visuNo { a "" } { b "" } { c "" } } {
 
    #--- Mise a jour de l'extension par defaut
    set panneau(acqzadko,$visuNo,extension) $conf(extension,defaut)
+   set camItem [ ::confVisu::getCamItem $visuNo ]
+   set extensionList " $::audace(extensionList) [ confCam::getPluginProperty $camItem rawExtension ]"
 
    #--- Mise a jour de la liste des extensions disponibles pour le mode "Une seule image"
    $panneau(acqzadko,$visuNo,This).mode.une.nom.extension.menu delete 0 20
-   foreach extension $conf(list_extension) {
+   foreach extension $extensionList {
       $panneau(acqzadko,$visuNo,This).mode.une.nom.extension.menu add radiobutton -label "$extension" \
          -indicatoron "1" \
          -value "$extension" \
@@ -311,7 +312,7 @@ proc ::acqzadko::initExtensionList { visuNo { a "" } { b "" } { c "" } } {
    }
    #--- Mise a jour de la liste des extensions disponibles pour le mode "Serie d'images"
    $panneau(acqzadko,$visuNo,This).mode.serie.nom.extension.menu delete 0 20
-   foreach extension $conf(list_extension) {
+   foreach extension $extensionList {
       $panneau(acqzadko,$visuNo,This).mode.serie.nom.extension.menu add radiobutton -label "$extension" \
          -indicatoron "1" \
          -value "$extension" \
@@ -320,7 +321,7 @@ proc ::acqzadko::initExtensionList { visuNo { a "" } { b "" } { c "" } } {
    }
    #--- Mise a jour de la liste des extensions disponibles pour le mode "Continu"
    $panneau(acqzadko,$visuNo,This).mode.continu.nom.extension.menu delete 0 20
-   foreach extension $conf(list_extension) {
+   foreach extension $extensionList {
       $panneau(acqzadko,$visuNo,This).mode.continu.nom.extension.menu add radiobutton -label "$extension" \
          -indicatoron "1" \
          -value "$extension" \
@@ -329,7 +330,7 @@ proc ::acqzadko::initExtensionList { visuNo { a "" } { b "" } { c "" } } {
    }
    #--- Mise a jour de la liste des extensions disponibles pour le mode "Series d'images en continu avec intervalle entre chaque serie"
    $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.extension.menu delete 0 20
-   foreach extension $conf(list_extension) {
+   foreach extension $extensionList {
       $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.extension.menu add radiobutton -label "$extension" \
          -indicatoron "1" \
          -value "$extension" \
@@ -338,7 +339,7 @@ proc ::acqzadko::initExtensionList { visuNo { a "" } { b "" } { c "" } } {
    }
    #--- Mise a jour de la liste des extensions disponibles pour le mode "Continu avec intervalle entre chaque image"
    $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.extension.menu delete 0 20
-   foreach extension $conf(list_extension) {
+   foreach extension $extensionList {
       $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.extension.menu add radiobutton -label "$extension" \
          -indicatoron "1" \
          -value "$extension" \
@@ -348,8 +349,8 @@ proc ::acqzadko::initExtensionList { visuNo { a "" } { b "" } { c "" } } {
 }
 #***** Fin de la procedure initExtensionList **********************
 
-#***** Procedure Adapt_Panneau_acqzadko ***************************
-proc ::acqzadko::Adapt_Panneau_acqzadko { visuNo args } {
+#***** Procedure adaptOutilAcqzadko *******************************
+proc ::acqzadko::adaptOutilAcqzadko { visuNo args } {
    global conf panneau
 
    set panneau(acqzadko,$visuNo,camItem) [::confVisu::getCamItem $visuNo]
@@ -449,6 +450,9 @@ proc ::acqzadko::Adapt_Panneau_acqzadko { visuNo args } {
       #--- je masque la frame de l'obturateur
       pack forget $panneau(acqzadko,$visuNo,This).obt
    }
+
+   #--- je mets a jour la liste des extensions
+   ::acqzadko::initExtensionList $visuNo
 }
 
 #***** Procedure chargerVariable *******************************
@@ -528,7 +532,7 @@ proc ::acqzadko::startTool { { visuNo 1 } } {
    }
 
    pack $panneau(acqzadko,$visuNo,This) -side left -fill y
-   ::acqzadko::Adapt_Panneau_acqzadko $visuNo
+   ::acqzadko::adaptOutilAcqzadko $visuNo
 }
 #***** Fin de la procedure startTool ***************************
 
@@ -2408,7 +2412,7 @@ proc ::acqzadko::acqzadkoBuildIF { visuNo } {
                -menu $panneau(acqzadko,$visuNo,This).mode.une.nom.extension.menu -relief raised
             pack $panneau(acqzadko,$visuNo,This).mode.une.nom.extension -side right -fill x -expand true -ipady 1
             set m [ menu $panneau(acqzadko,$visuNo,This).mode.une.nom.extension.menu -tearoff 0 ]
-            foreach extension $conf(list_extension) {
+            foreach extension $::audace(extensionList) {
               $m add radiobutton -label "$extension" \
                  -indicatoron "1" \
                  -value "$extension" \
@@ -2447,7 +2451,7 @@ proc ::acqzadko::acqzadkoBuildIF { visuNo } {
                -menu $panneau(acqzadko,$visuNo,This).mode.serie.nom.extension.menu -relief raised
             pack $panneau(acqzadko,$visuNo,This).mode.serie.nom.extension -side right -fill x -expand true -ipady 1
             set m [ menu $panneau(acqzadko,$visuNo,This).mode.serie.nom.extension.menu -tearoff 0 ]
-            foreach extension $conf(list_extension) {
+            foreach extension $::audace(extensionList) {
               $m add radiobutton -label "$extension" \
                  -indicatoron "1" \
                  -value "$extension" \
@@ -2500,7 +2504,7 @@ proc ::acqzadko::acqzadkoBuildIF { visuNo } {
                -menu $panneau(acqzadko,$visuNo,This).mode.continu.nom.extension.menu -relief raised
             pack $panneau(acqzadko,$visuNo,This).mode.continu.nom.extension -side right -fill x -expand true -ipady 1
             set m [ menu $panneau(acqzadko,$visuNo,This).mode.continu.nom.extension.menu -tearoff 0 ]
-            foreach extension $conf(list_extension) {
+            foreach extension $::audace(extensionList) {
               $m add radiobutton -label "$extension" \
                  -indicatoron "1" \
                  -value "$extension" \
@@ -2535,7 +2539,7 @@ proc ::acqzadko::acqzadkoBuildIF { visuNo } {
                -menu $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.extension.menu -relief raised
             pack $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.extension -side right -fill x -expand true -ipady 1
             set m [ menu $panneau(acqzadko,$visuNo,This).mode.serie_1.nom.extension.menu -tearoff 0 ]
-            foreach extension $conf(list_extension) {
+            foreach extension $::audace(extensionList) {
               $m add radiobutton -label "$extension" \
                  -indicatoron "1" \
                  -value "$extension" \
@@ -2588,7 +2592,7 @@ proc ::acqzadko::acqzadkoBuildIF { visuNo } {
                -menu $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.extension.menu -relief raised
             pack $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.extension -side right -fill x -expand true -ipady 1
             set m [ menu $panneau(acqzadko,$visuNo,This).mode.continu_1.nom.extension.menu -tearoff 0 ]
-            foreach extension $conf(list_extension) {
+            foreach extension $::audace(extensionList) {
               $m add radiobutton -label "$extension" \
                  -indicatoron "1" \
                  -value "$extension" \
