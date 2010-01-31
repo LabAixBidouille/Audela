@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.24 2010-01-25 21:49:17 michelpujol Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.25 2010-01-31 16:58:21 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -330,10 +330,10 @@ proc ::camerathread::sophieAcquisitionLoop { } {
                set alphaCorrection [expr $alphaDiff * $private(alphaProportionalGain) + $alphaIntegralTerm * $private(alphaIntegralGain) + $alphaDerivativeTerm * $private(alphaDerivativeGain)]
                set deltaCorrection [expr $deltaDiff * $private(deltaProportionalGain) + $deltaIntegralTerm * $private(deltaIntegralGain) + $deltaDerivativeTerm * $private(deltaDerivativeGain)]
             } else {
-               #--- je ne prends que 90% de la valeur car les anciens moteurs vont trop vite surtout pour centrer en delta 
+               #--- je ne prends que 90% de la valeur car les anciens moteurs vont trop vite surtout pour centrer en delta
                set alphaCorrection [expr $alphaDiff * 0.9]
-               set deltaCorrection [expr $deltaDiff * 0.9]               
-               #--- raz du cumul pour le calcul du terme integrateur 
+               set deltaCorrection [expr $deltaDiff * 0.9]
+               #--- raz du cumul pour le calcul du terme integrateur
                set private(xDiffCumul) "0"
                set private(yDiffCumul) "0"
                #--- raz de la position precedente pour le calcul du terme derivateur
@@ -407,7 +407,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             set deltaCorrection 0.0
          }
          update
-         #--- j'envoi une notification pour mettre a jour l'affichage de la fenetre principale
+         #--- j'envoi une notification au thread princpal pour mettre a jour l'affichage de la fenetre principale
          ::camerathread::notify "targetCoord" \
             $private(targetCoord) $dx $dy $targetDetection $fiberStatus \
             [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
@@ -440,30 +440,13 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             } else {
                set deltaDirection "s"
             }
+
+            #--- j'envoi un message au thread principal pour afficher les informations concenrnant la correction
             ::camerathread::notify "mountInfo" $alphaDirection [expr abs($alphaCorrection)] $deltaDirection [expr abs($deltaCorrection)]
 
             #--- je deplace le telescope
             if { $alphaCorrection != 0 || $deltaCorrection != 0 } {
-               if { $private(mainThreadNo)==0 } {
-                  interp eval "" [list ::telescope::moveTelescope $alphaDirection $alphaCorrection $deltaDirection $deltaCorrection  ]
-              } else {
-                  set alphaDelay [expr abs($alphaCorrection) / $private(alphaSpeed)  ]
-                  set deltaDelay [expr abs($deltaCorrection) / $private(deltaSpeed)  ]
-                  switch $private(mountMotionWhile) {
-                    1 {
-                       #--- envoie d'une commande move avec la duree en seconde
-                       tel1 radec move $alphaDirection 0.1 $alphaDelay
-                       tel1 radec move $deltaDirection 0.1 $deltaDelay
-                    }
-                    2 {
-                       ::camerathread::disp  "camerathread: tel1 correct $alphaDirection [format "%.3f" [expr abs($alphaCorrection)]] $deltaDirection [format "%.3f" [expr abs($deltaCorrection)]] 0.1 \n"
-                       #--- envoie d'une commande correct avec la distance en arcseconde
-                       ###tel1 correct $alphaDirection 0.1 [expr abs($alphaCorrection)]
-                       ###tel1 correct $deltaDirection 0.1 [expr abs($deltaCorrection)]
-                       tel1 correct $alphaDirection [expr abs($alphaCorrection)] $deltaDirection [expr abs($deltaCorrection)] 0.1
-                    }
-                 }
-               }
+               tel1 radec correct $alphaDirection [expr abs($alphaCorrection)] $deltaDirection [expr abs($deltaCorrection)] 0.1
             }
          }
          ###::camerathread::disp  "camerathread: dx,dy=[format "%6.1f" $dx],[format "%6.1f" $dy]pixel dAlpha,ddelta=[format "%6.2f" $alphaDiff],[format "%6.2f" $deltaDiff] arsec correction=[format "%6.2f" $alphaCorrection],[format "%6.2f" $deltaCorrection]arsec tel move [format "%s %4.3fs" $alphaDirection $alphaDelay] [format "%s %4.3fs" $deltaDirection $deltaDelay ]\n"
