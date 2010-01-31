@@ -2,7 +2,7 @@
 # Fichier : ascom.tcl
 # Description : Configuration de la monture ASCOM
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ascom.tcl,v 1.16 2009-12-04 17:59:44 robertdelmas Exp $
+# Mise a jour $Id: ascom.tcl,v 1.17 2010-01-31 16:56:38 michelpujol Exp $
 #
 
 namespace eval ::ascom {
@@ -177,7 +177,7 @@ proc ::ascom::fillConfigPage { frm } {
 
    #--- Bouton de configuration du plugin
    button $frm.configure -text "$caption(ascom,configurer)" -relief raised \
-      -command { $::ascom_variable(1) SetupDialog }
+      -command "::ascom::displayDriverSetupDialog"
    pack $frm.configure -in $frm.frame1 -anchor center -side left -pady 10 -ipadx 10 -ipady 5
 
    #--- Le checkbutton pour la visibilite de la raquette a l'ecran
@@ -199,6 +199,18 @@ proc ::ascom::fillConfigPage { frm } {
 
    #--- Gestion du bouton actif/inactif
    ::ascom::confAscom
+}
+
+#
+# displayDriverSetupDialog
+#    affiche la fenetre de configuration
+#    fournie par le driver de la monture
+#
+proc ::ascom::displayDriverSetupDialog { } {
+   variable private
+   if { $private(telNo) != 0 } {
+      tel$private(telNo) setup
+   }
 }
 
 #
@@ -258,7 +270,7 @@ proc ::ascom::stop { } {
 
 #
 # confAscom
-# Permet d'activer ou de désactiver le bouton
+# Permet d'activer ou de dï¿½sactiver le bouton
 #
 proc ::ascom::confAscom { } {
    variable private
