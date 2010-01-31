@@ -46,7 +46,9 @@
    double radec_goto_rate;\
    int radec_goto_blocking;\
    double radec_move_rate;\
-   int radec_motor;\
+   int    radec_motor; \
+   int    radecGuidingState; \
+   double radecGuidingSpeed; \
    double focus0;\
    int focus_motor;\
    double focus_goto_rate;\
@@ -67,13 +69,14 @@
    int active_backlash;\
    char mainThreadId[20]; \
    char telThreadId[20]; \
-   Tcl_TimerToken timerToken; \
    Tcl_Obj *      timerVar; \
    int            timeDone; \
    int            minRadecDelay;  \
    int            consoleLog; \
    struct telprop *next;
 
+//Tcl_TimerToken timerToken; \
+   
 
 extern char *tel_ports[];
 
@@ -91,6 +94,14 @@ struct telini {
 /* --- Structure sur la liste des CCD disponibles pour ce ---*/
 /* --- telescope et leurs parametres d'initialisation           ---*/
 extern struct telini tel_ini[];
+
+struct tel_drv_t {
+    int (*tel_correct) (struct telprop *tel, char *alphaDirection, double alphaDistance, char *deltaDirection, double deltaDistance);
+    int (*tel_get_radec_guiding) (struct telprop * cam, int *guiding) ;
+    int (*tel_set_radec_guiding) (struct telprop * cam, int guiding) ;
+};
+
+extern struct tel_drv_t TEL_DRV;
 
 
 #endif
