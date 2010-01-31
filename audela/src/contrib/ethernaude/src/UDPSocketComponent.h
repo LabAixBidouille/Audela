@@ -101,8 +101,6 @@
 #  define    OK  0
 #endif
 
-/* #define UDPSOCKET_DEBUG */
-
 /* les types utilisés: */
 typedef unsigned char TBuffer[1600];
 typedef TBuffer *PBuffer;
@@ -136,8 +134,7 @@ extern struct TEtherLinkUDP EtherLinkUDP;
 
 extern unsigned int SocketHandle;	/* As its name tell, it is the handle of the UDP socket open with the EthernAude */
 
-extern unsigned int
- Trame_a_venir, Premiere_Trame, Nombre_Trame, Trame_check, Nb_Last_Packet;
+extern unsigned int Trame_a_venir, Premiere_Trame, Nombre_Trame, Trame_check, Nb_Last_Packet;
 	/* Trame_a_venir: index of the first packet of the next command */
 	/* Premiere_Trame: index of the first packet of an "image" */
 	/* Nombre_Trame: amount of packet in the "image" */
@@ -182,5 +179,56 @@ int send_broadcast(int fd, unsigned char *buffer, int nbytes, unsigned short por
 int send_ip_addr(int fd, unsigned short port, unsigned char Ip1, unsigned char Ip2, unsigned char Ip3, unsigned char Ip4);
 
 int receive_data(const char *addr, int n_packet, PBufferList buffer, const unsigned int *n_byte_recvd_list);
+
+#define LOG_FILE_NAME "ethernaude_driver.txt"
+#define WARNING_LOGGER
+#ifdef WARNING_LOGGER
+#define LOG_WARNING( fmt, ... ) do { \
+    FILE * f; \
+    f = fopen( LOG_FILE_NAME, "at" ); \
+    fprintf( f, "WARNING %s[%s:%d]: " fmt, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__ ); \
+    fclose( f ); \
+	} while(0)
+#else
+#define LOG_WARNING( fmt, ... )
+#endif
+
+//#define NOTICE_LOGGER
+#ifdef NOTICE_LOGGER
+#define LOG_NOTICE( fmt, ... ) do { \
+    FILE * f; \
+    f = fopen( LOG_FILE_NAME, "at" ); \
+    fprintf( f, "NOTICE %s[%s:%d]: " fmt, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__ ); \
+    fclose( f ); \
+	} while(0)
+#else
+#define LOG_NOTICE( fmt, ... )
+#endif
+
+//#define INFO_LOGGER
+#ifdef INFO_LOGGER
+#define LOG_INFO( fmt, ... ) do { \
+    FILE * f; \
+    f = fopen( LOG_FILE_NAME, "at" ); \
+    fprintf( f, "INFO %s[%s:%d]: " fmt, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__ ); \
+    fclose( f ); \
+	} while(0)
+#else
+#define LOG_INFO( fmt, ... )
+#endif
+
+//#define DEBUG_LOGGER
+#ifdef DEBUG_LOGGER
+#define LOG_DEBUG( fmt, ... ) do { \
+    FILE * f; \
+    f = fopen( LOG_FILE_NAME, "at" ); \
+    fprintf( f, "DEBUG %s[%s:%d]: " fmt, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__ ); \
+    fclose( f ); \
+	} while(0)
+#else
+#define LOG_DEBUG( fmt, ... )
+#endif
+
+
 
 #endif				/* ifndef UDPSOCKETCOMPONENT_H */

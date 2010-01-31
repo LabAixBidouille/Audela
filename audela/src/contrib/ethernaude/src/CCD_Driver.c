@@ -90,45 +90,43 @@ void ethernaude_main(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
     /* --- Copy empty strings in the output structure --- */
     errnum = paramCCD_clearall(ParamCCDOut, 0);
     if (errnum != 0) {
-	paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
-	sprintf(ligne, "%dth element of ParamCCDOut is a NULL pointer", errnum);
-	paramCCD_put(-1, ligne, ParamCCDOut, 0);
-	return;
+        paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
+        sprintf(ligne, "%dth element of ParamCCDOut is a NULL pointer", errnum);
+        paramCCD_put(-1, ligne, ParamCCDOut, 0);
+        return;
     }
 
     /* --- Case of no command in the input structure --- */
     if (ParamCCDIn->Param[0] == NULL) {
-	paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
-	paramCCD_put(-1, "No input command", ParamCCDOut, 0);
-	return;
+        paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
+        paramCCD_put(-1, "No input command", ParamCCDOut, 0);
+    return;
     }
-    #ifdef CCDDRIVER_DEBUG
-    printf("%f Commande=%s\n", GetTimeStamp(), ParamCCDIn->Param[0]);
-    #endif
+    LOG_DEBUG("%f Commande=%s\n", GetTimeStamp(), ParamCCDIn->Param[0]);
 
     /* --- Go to the function, relative to the input command --- */
     if (strcmp(ParamCCDIn->Param[0], "GetDriverCCD_DLLinfos") == 0) {
-	GetDriverCCD_DLLinfos(ParamCCDIn, ParamCCDOut);
+        GetDriverCCD_DLLinfos(ParamCCDIn, ParamCCDOut);
     } else if (strcmp(ParamCCDIn->Param[0], "OPEN_Driver") == 0) {
-	OPEN_Driver(ParamCCDIn, ParamCCDOut);
+        OPEN_Driver(ParamCCDIn, ParamCCDOut);
     } else if (strcmp(ParamCCDIn->Param[0], "GetCCD_infos") == 0) {
-	GetCCD_infos(ParamCCDIn, ParamCCDOut);
+        GetCCD_infos(ParamCCDIn, ParamCCDOut);
     } else if (strcmp(ParamCCDIn->Param[0], "GetClockModes") == 0) {
-	GetClockModes(ParamCCDIn, ParamCCDOut);
+        GetClockModes(ParamCCDIn, ParamCCDOut);
     } else if (strcmp(ParamCCDIn->Param[0], "InitExposure") == 0) {
-	InitExposure(ParamCCDIn, ParamCCDOut);
+        InitExposure(ParamCCDIn, ParamCCDOut);
     } else if (strcmp(ParamCCDIn->Param[0], "CCDStatus") == 0) {
-	CCDStatus(ParamCCDIn, ParamCCDOut);
+        CCDStatus(ParamCCDIn, ParamCCDOut);
     } else if (strcmp(ParamCCDIn->Param[0], "StartReadoutCCD") == 0) {
-	StartReadoutCCD(ParamCCDIn, ParamCCDOut);
+        StartReadoutCCD(ParamCCDIn, ParamCCDOut);
     } else if (strcmp(ParamCCDIn->Param[0], "AbortExposure") == 0) {
-	AbortExposure(ParamCCDIn, ParamCCDOut);
+        AbortExposure(ParamCCDIn, ParamCCDOut);
     } else if (strcmp(ParamCCDIn->Param[0], "CLOSE_Driver") == 0) {
-	CLOSE_Driver(ParamCCDIn, ParamCCDOut);
+        CLOSE_Driver(ParamCCDIn, ParamCCDOut);
     } else {
-	paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
-	sprintf(ligne, "%s is not a known command", ParamCCDIn->Param[0]);
-	paramCCD_put(-1, ligne, ParamCCDOut, 0);
+        paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
+        sprintf(ligne, "%s is not a known command", ParamCCDIn->Param[0]);
+        paramCCD_put(-1, ligne, ParamCCDOut, 0);
     }
     return;
 }
@@ -139,6 +137,7 @@ int GetDriverCCD_DLLinfos(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
 /* ========================================================*/
 /* ========================================================*/
 {
+    LOG_INFO( "%s ParamCCDIn=%p ParamCCDOut=%p\n", "GetDriverCCD_DLLinfos", ParamCCDIn, ParamCCDOut );
     char ligne[MAXLENGTH + 1];
     char version[MAXLENGTH + 1];
     /* --- Complete some elements of ethernaude_var structure --- */
@@ -173,6 +172,7 @@ int OPEN_Driver(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
 /* ========================================================*/
 /* ========================================================*/
 {
+    LOG_NOTICE( "%s ParamCCDIn=%p ParamCCDOut=%p\n", "OPEN_Driver", ParamCCDIn, ParamCCDOut );
     int errnum, k;
     char ligne[MAXLENGTH + 1];
     char keyword[MAXLENGTH + 1];
@@ -181,33 +181,33 @@ int OPEN_Driver(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
     int destport;
     int inverseshutter;
     int canspeed;
-    /*int listenport; */
     char destIP[50];
     unsigned char ip[4];
 
     /* --- Return value of IP from ParamCCDIn structure --- */
     for (k = 1; k <= 4; k++) {
-	sprintf(keyword, "ParamSetup%d", k);
-	ip[k - 1] = 0;
-	if (util_param_search(ParamCCDIn, keyword, value, &paramtype) == 0) {
-	    ip[k - 1] = (unsigned char) atoi(value);
-	} else {
-	    paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
-	    sprintf(ligne, "No ParamSetup%d", k);
-	    paramCCD_put(-1, ligne, ParamCCDOut, 0);
-	    return k;
-	}
+        sprintf(keyword, "ParamSetup%d", k);
+        ip[k - 1] = 0;
+        if (util_param_search(ParamCCDIn, keyword, value, &paramtype) == 0) {
+            ip[k - 1] = (unsigned char) atoi(value);
+        }
+        else {
+            paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
+            sprintf(ligne, "No ParamSetup%d", k);
+            paramCCD_put(-1, ligne, ParamCCDOut, 0);
+            return k;
+        }
     }
 
     /* --- Return value of port from ParamCCDIn structure --- */
     strcpy(keyword, "ParamSetup5");
     destport = 0;
     if (util_param_search(ParamCCDIn, keyword, value, &paramtype) == 0) {
-	destport = (unsigned short) atoi(value);
+        destport = (unsigned short) atoi(value);
     } else {
-	destport = 192;		/* default value */
+        destport = 192;		/* default value */
 
-/*	  paramCCD_put(-1,"FAILED",ParamCCDOut,0);
+/*    paramCCD_put(-1,"FAILED",ParamCCDOut,0);
       paramCCD_put(-1,"No ParamSetup5",ParamCCDOut,0);
       return 5;    */
     }
@@ -216,11 +216,12 @@ int OPEN_Driver(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
     strcpy(keyword, "ParamSetup7");
     inverseshutter = 1;
     if (util_param_search(ParamCCDIn, keyword, value, &paramtype) == 0) {
-	if (strcmp(value, "TRUE") == 0) {
-	    inverseshutter = 0;
-	}
-    } else {
-	inverseshutter = 1;	/* default value  */
+        if (strcmp(value, "TRUE") == 0) {
+            inverseshutter = 0;
+        }
+    }
+    else {
+        inverseshutter = 1;	/* default value  */
 
 /*      paramCCD_put(-1,"FAILED",ParamCCDOut,0);
       paramCCD_put(-1,"No ParamSetup7",ParamCCDOut,0);
@@ -231,9 +232,10 @@ int OPEN_Driver(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
     strcpy(keyword, "ParamSetup8");
     canspeed = 4;
     if (util_param_search(ParamCCDIn, keyword, value, &paramtype) == 0) {
-	canspeed = (unsigned short) atoi(value);
-    } else {
-	canspeed = 4;		/* default value  */
+        canspeed = (unsigned short) atoi(value);
+    }
+    else {
+        canspeed = 4;		/* default value  */
 /*      paramCCD_put(-1,"FAILED",ParamCCDOut,0);
       paramCCD_put(-1,"No ParamSetup8",ParamCCDOut,0);
       return 7;  */
@@ -248,21 +250,21 @@ int OPEN_Driver(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
     errnum = ethernaude_0x00(&ethvar, ParamCCDOut);
 
     if (errnum != 0) {
-	return errnum;
+        return errnum;
     }
 
     /* inverse shutter port if necessary */
     if (inverseshutter == 0) {
-	errnum = ethernaude_0x05(&ethvar, ParamCCDOut);
-	if (errnum != 0) {
-	    return errnum;
-	}
+        errnum = ethernaude_0x05(&ethvar, ParamCCDOut);
+        if (errnum != 0) {
+            return errnum;
+        }
     }
 
     /* set the speed of CAN */
     errnum = ethernaude_0x0C(&ethvar, ParamCCDOut);
     if (errnum != 0) {
-	return errnum;
+        return errnum;
     }
 
     ethvar.CCDDrivenAmount = 1;
@@ -278,7 +280,6 @@ int OPEN_Driver(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
     sprintf(ligne, "SX52_Ethernet_Release = %s", ethvar.SX52_Ethernet_Release);
     paramCCD_put(-1, ligne, ParamCCDOut, 0);
     strcpy(ethvar.CCDStatus, "Idle");
-
 
     return 0;
 }
@@ -299,23 +300,24 @@ int GetCCD_infos(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
     strcpy(keyword, "CCD#");
     ccdnb = 0;
     if (util_param_search(ParamCCDIn, keyword, value, &paramtype) == 0) {
-	ccdnb = atoi(value);
-    } else {
-	paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
-	paramCCD_put(-1, "No CCD#", ParamCCDOut, 0);
-	return 1;
+        ccdnb = atoi(value);
+    }
+    else {
+        paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
+        paramCCD_put(-1, "No CCD#", ParamCCDOut, 0);
+        return 1;
     }
     if (ccdnb > ethvar.CCDDrivenAmount) {
-	paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
-	sprintf(ligne, "Bad CCD#=%d. Only %d CCDs", ccdnb, ethvar.CCDDrivenAmount);
-	paramCCD_put(-1, ligne, ParamCCDOut, 0);
-	return 2;
+        paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
+        sprintf(ligne, "Bad CCD#=%d. Only %d CCDs", ccdnb, ethvar.CCDDrivenAmount);
+        paramCCD_put(-1, ligne, ParamCCDOut, 0);
+        return 2;
     }
     if (ccdnb <= 0) {
-	paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
-	sprintf(ligne, "Bad CCD#=%d. Must be between 1 and %d", ccdnb, ethvar.CCDDrivenAmount);
-	paramCCD_put(-1, ligne, ParamCCDOut, 0);
-	return 3;
+        paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
+        sprintf(ligne, "Bad CCD#=%d. Must be between 1 and %d", ccdnb, ethvar.CCDDrivenAmount);
+        paramCCD_put(-1, ligne, ParamCCDOut, 0);
+        return 3;
     }
     /* --- Ask Ethernaude to ID_CCD informations and   --- */
     /* --- converts them to ethernaude_var structure.  --- */
@@ -327,7 +329,7 @@ int GetCCD_infos(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
     /* --- Complete some elements of ethernaude_var structure --- */
     errnum = ethernaude_0x03(&ethvar, ParamCCDOut);
     if (errnum != 0) {
-	return errnum;
+        return errnum;
     }
     /* --- Complete some elements of ethernaude_var structure --- */
     ethvar.InfoCCD_ClockModes = 1;
@@ -336,13 +338,16 @@ int GetCCD_infos(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
     /* --- Returned Parameters --- */
     paramCCD_put(-1, "SUCCES", ParamCCDOut, 0);
     if (ethvar.Camera_ID == 1) {
-	strcpy(ligne, "InfoCCD_NAME = Kaf0400");
-    } else if (ethvar.Camera_ID == 2) {
-	strcpy(ligne, "InfoCCD_NAME = Kaf1600");
-    } else if (ethvar.Camera_ID == 3) {
-	strcpy(ligne, "InfoCCD_NAME = Kaf3200");
-    } else {
-	sprintf(ligne, "InfoCCD_NAME = %s", ethvar.InfoCCD_NAME);
+        strcpy(ligne, "InfoCCD_NAME = Kaf0400");
+    }
+    else if (ethvar.Camera_ID == 2) {
+        strcpy(ligne, "InfoCCD_NAME = Kaf1600");
+    }
+    else if (ethvar.Camera_ID == 3) {
+        strcpy(ligne, "InfoCCD_NAME = Kaf3200");
+    }
+    else {
+        sprintf(ligne, "InfoCCD_NAME = %s", ethvar.InfoCCD_NAME);
     }
     paramCCD_put(-1, ligne, ParamCCDOut, 0);
     paramCCD_put(-1, "InfoCCD_HasTDICaps = TRUE", ParamCCDOut, 0);
@@ -351,9 +356,10 @@ int GetCCD_infos(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
     sprintf(ligne, "InfoCCD_MaxExposureTime = %d", ethvar.InfoCCD_MaxExposureTime);
     paramCCD_put(-1, ligne, ParamCCDOut, 0);
     if (ethvar.InfoCCD_IsGuidingCCD == 1) {
-	paramCCD_put(-1, "InfoCCD_IsGuidingCCD =TRUE", ParamCCDOut, 0);
-    } else {
-	paramCCD_put(-1, "InfoCCD_IsGuidingCCD =FALSE", ParamCCDOut, 0);
+        paramCCD_put(-1, "InfoCCD_IsGuidingCCD =TRUE", ParamCCDOut, 0);
+    }
+    else {
+        paramCCD_put(-1, "InfoCCD_IsGuidingCCD =FALSE", ParamCCDOut, 0);
     }
     paramCCD_put(-1, "InfoCCD_HasEmbeddedShutter = TRUE", ParamCCDOut, 0);
     paramCCD_put(-1, "InfoCCD_IsColorCCD = FALSE", ParamCCDOut, 0);
@@ -383,45 +389,47 @@ int GetClockModes(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
     strcpy(keyword, "CCD#");
     ccdnb = 0;
     if (util_param_search(ParamCCDIn, keyword, value, &paramtype) == 0) {
-	ccdnb = atoi(value);
-    } else {
-	paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
-	paramCCD_put(-1, "No CCD#", ParamCCDOut, 0);
-	return 1;
+    	ccdnb = atoi(value);
+    }
+    else {
+        paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
+        paramCCD_put(-1, "No CCD#", ParamCCDOut, 0);
+        return 1;
     }
     if (ccdnb > ethvar.CCDDrivenAmount) {
-	paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
-	sprintf(ligne, "Bad CCD#=%d. Only %d CCDs", ccdnb, ethvar.CCDDrivenAmount);
-	paramCCD_put(-1, ligne, ParamCCDOut, 0);
-	return 2;
+        paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
+        sprintf(ligne, "Bad CCD#=%d. Only %d CCDs", ccdnb, ethvar.CCDDrivenAmount);
+        paramCCD_put(-1, ligne, ParamCCDOut, 0);
+        return 2;
     }
     if (ccdnb <= 0) {
-	paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
-	sprintf(ligne, "Bad CCD#=%d. Must be between 1 and %d", ccdnb, ethvar.CCDDrivenAmount);
-	paramCCD_put(-1, ligne, ParamCCDOut, 0);
-	return 3;
+        paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
+        sprintf(ligne, "Bad CCD#=%d. Must be between 1 and %d", ccdnb, ethvar.CCDDrivenAmount);
+        paramCCD_put(-1, ligne, ParamCCDOut, 0);
+        return 3;
     }
     /* --- Return value of ClockMode from ParamCCDIn strcuture --- */
     strcpy(keyword, "ClockMode");
     clocknb = 0;
     if (util_param_search(ParamCCDIn, keyword, value, &paramtype) == 0) {
-	clocknb = atoi(value);
-    } else {
-	paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
-	paramCCD_put(-1, "No ClockMode", ParamCCDOut, 0);
+        clocknb = atoi(value);
+    }
+    else {
+        paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
+        paramCCD_put(-1, "No ClockMode", ParamCCDOut, 0);
 	return 1;
     }
     if (clocknb > ethvar.InfoCCD_ClockModes) {
-	paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
-	sprintf(ligne, "Bad ClockMode=%d. Only %d ClockModes", ccdnb, ethvar.InfoCCD_ClockModes);
-	paramCCD_put(-1, ligne, ParamCCDOut, 0);
-	return 2;
+        paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
+        sprintf(ligne, "Bad ClockMode=%d. Only %d ClockModes", ccdnb, ethvar.InfoCCD_ClockModes);
+        paramCCD_put(-1, ligne, ParamCCDOut, 0);
+        return 2;
     }
     if (ccdnb <= 0) {
-	paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
-	sprintf(ligne, "Bad ClockMode=%d. Must be between 1 and %d", ccdnb, ethvar.InfoCCD_ClockModes);
-	paramCCD_put(-1, ligne, ParamCCDOut, 0);
-	return 3;
+        paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
+        sprintf(ligne, "Bad ClockMode=%d. Must be between 1 and %d", ccdnb, ethvar.InfoCCD_ClockModes);
+        paramCCD_put(-1, ligne, ParamCCDOut, 0);
+        return 3;
     }
     /* --- Ask Ethernaude to ID_CCD informations and   --- */
     /* --- converts them to ethernaude_var structure.  --- */
@@ -623,20 +631,20 @@ int CCDStatus(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
 
     strcpy(keyword, "CCD#");
     if (util_param_search(ParamCCDIn, keyword, value, &paramtype) == 0) {
-	CCDno = (int) atoi(value);
+        CCDno = (int) atoi(value);
     } else {
-	paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
-	paramCCD_put(-1, "No CCD# parameter", ParamCCDOut, 0);
-	return 1;
+        paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
+        paramCCD_put(-1, "No CCD# parameter", ParamCCDOut, 0);
+        return 1;
     }
     /* --- Returned parameters --- */
     strcpy(ethvar.CCDStatus, "Idle");
     if (Exposure_Pending == true)
-	strcpy(ethvar.CCDStatus, "EXPOSURE_PENDING");
+        strcpy(ethvar.CCDStatus, "EXPOSURE_PENDING");
     if (Exposure_Completed == true)
-	strcpy(ethvar.CCDStatus, "EXPOSURE_COMPLETED");
+        strcpy(ethvar.CCDStatus, "EXPOSURE_COMPLETED");
     if (Readout_in_Progress == true)
-	strcpy(ethvar.CCDStatus, "READOUT_in_PROGRESS");
+        strcpy(ethvar.CCDStatus, "READOUT_in_PROGRESS");
     paramCCD_put(-1, "SUCCES", ParamCCDOut, 0);
     #ifdef CCDDRIVER_DEBUG
     printf("%f CCDStatus=%s\n", GetTimeStamp(), ethvar.CCDStatus);
@@ -661,33 +669,38 @@ int StartReadoutCCD(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
  /**/
 /* ========================================================*/
 {
+    LOG_NOTICE( "%s ParamCCDIn=%p ParamCCDOut=%p\n", "StartReadoutCCD", ParamCCDIn, ParamCCDOut );
     int errnum;
     char keyword[MAXLENGTH + 1];
     char value[MAXLENGTH + 1];
     int paramtype;
-    int CCDno, ImageAddress = 0;
+    int CCDno = 0;
+    unsigned char * ImageAddress = 0;
 
     strcpy(keyword, "CCD#");
     if (util_param_search(ParamCCDIn, keyword, value, &paramtype) == 0) {
-	CCDno = (int) atoi(value);
-    } else {
-	paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
-	paramCCD_put(-1, "No CCD# parameter", ParamCCDOut, 0);
-	return 1;
+        CCDno = (int) atoi(value);
+    }
+    else {
+        paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
+        paramCCD_put(-1, "No CCD# parameter", ParamCCDOut, 0);
+        return 1;
     }
     strcpy(keyword, "ImageAddress");
     if (util_param_search(ParamCCDIn, keyword, value, &paramtype) == 0) {
-	ImageAddress = (int) atoi(value);
-    } else {
-	paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
-	paramCCD_put(-1, "No ImageAddress parameter", ParamCCDOut, 0);
-	return 1;
+        LOG_DEBUG( "%s %s\n", "value=", value );
+        ImageAddress = (unsigned char *)strtol( value, 0, 0 );
+    }
+    else {
+        paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
+        paramCCD_put(-1, "No ImageAddress parameter", ParamCCDOut, 0);
+        return 1;
     }
     /* on lance la lecture du CCD */
-    ethvar.ImageAddress = (int) ImageAddress;
+    ethvar.ImageAddress = ImageAddress;
     errnum = ethernaude_0x04(&ethvar, ParamCCDOut);
     if (errnum != 0) {
-	return errnum;
+        return errnum;
     }
     /* --- Returned parameters --- */
     paramCCD_put(-1, "SUCCES", ParamCCDOut, 0);
@@ -720,15 +733,16 @@ int ethernaude_0x00(ethernaude_var * ethvar, TParamCCD * ParamCCDOut)
     paramCCD_clearall(ParamCCDOut, 0);
     /* --- Ask Ethernaude to Reset --- */
     if (EthernaudeReset(message)) {
-	while (Info_Received() == 0);
+        while (Info_Received() == 0);
     }
     if (EthernaudeReset(message)) {
-	/* --- Receive Reset informations --- */
-	while (Info_Received() == 0);
-    } else {
-	paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
-	paramCCD_put(-1, "Cause is : Error sending Reset to socket", ParamCCDOut, 0);
-	return 1;
+		/* --- Receive Reset informations --- */
+		while (Info_Received() == 0);
+    }
+	else {
+		paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
+		paramCCD_put(-1, "Cause is : Error sending Reset to socket", ParamCCDOut, 0);
+		return 1;
     }
     /* --- Converts Reset infos to ethernaude_var structure  --- */
     sprintf(ethvar->SX52_Ethernet_Release, "%d.%02d", (int) message[0], (int) message[1]);
@@ -827,6 +841,8 @@ int ethernaude_0x04(ethernaude_var * ethvar, TParamCCD * ParamCCDOut)
 /* Read an image                                           */
 /* ========================================================*/
 {
+    LOG_INFO( "%s ParamCCDIn=%p ParamCCDOut=%p\n", "ethernaude_0x04", ethvar, ParamCCDOut );
+    LOG_DEBUG( "ImageAddress=%p\n", ethvar->ImageAddress );
     unsigned char *p;
     int dx, dy;
     paramCCD_clearall(ParamCCDOut, 0);

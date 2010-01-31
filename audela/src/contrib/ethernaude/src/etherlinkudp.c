@@ -50,6 +50,7 @@ int NbParams;
 
 int Init_TEtherLinkUDP(char *ip)
 {
+    LOG_NOTICE( "%s\n", __FUNCTION__ );
     EtherLinkUDP.ucPacketID = 0;
     SocketHandle = udp_init_connection();
     pthread_mutex_init(&Mutex, NULL);
@@ -63,6 +64,7 @@ int Init_TEtherLinkUDP(char *ip)
 
 int Close_TEtherLinkUDP()
 {
+    LOG_NOTICE( "%s\n", __FUNCTION__ );
     SocketHandle = udp_close_connection();
     pthread_mutex_destroy(&Mutex);
     return 0;
@@ -71,71 +73,78 @@ int Close_TEtherLinkUDP()
 BOOL Info_Received()
 {
     struct timespec Time_ns;
-#ifdef UDPSOCKET_DEBUG
-    printf("%f Received dans info=%d\n", GetTimeStamp(), Received);
-#endif
+//    LOG_DEBUG("tps=%f InfoReceived=%d\n", GetTimeStamp(), Received);
     if (Received == true) {
 /*      Received = false;   */
-	return true;
-    } else {
-	Time_ns.tv_sec = 0;
-	Time_ns.tv_nsec = 1000000;
+        LOG_DEBUG("tps=%f InfoReceived=%d\n", GetTimeStamp(), Received);
+        return true;
+    }
+    else {
+        Time_ns.tv_sec = 0;
+        Time_ns.tv_nsec = 1000000;
 #ifdef LINUX
-	nanosleep(&Time_ns, NULL);
+        nanosleep(&Time_ns, NULL);
 #endif
 #ifdef WINDOWS
-	Sleep(1);
+        Sleep(1);
 #endif
-	return false;
+        return false;
     }
 }
 
 void SendData_TEtherLinkUDP(int NbByteToSend, int port)
 {
+    LOG_NOTICE( "%s\n", __FUNCTION__ );
     int ret;
     ret = send_data(SocketHandle, NbByteToSend, NULL, &EtherLinkUDP.ucPacketID);
     if (ret == -1) {
-#ifdef ETHERLINK_DEBUG
-	printf("Error in sendData\n");
-#endif
+//        LOG_DEBUG("Error in sendData\n");
     }
 }
 
 void Set_IP(int IP1, int IP2, int IP3, int IP4)
 {
+    LOG_NOTICE( "%s\n", __FUNCTION__ );
     char IP[20];
     sprintf(IP, "%d.%d.%d.%d", IP1, IP2, IP3, IP4);
     EtherLinkUDP.Socket_Address.sin_addr.s_addr = inet_addr(IP);
 }
 
 int EthernaudeReset(unsigned char *Buffer)
-{				/*send a reset, need a buffer of 2 bytes */
+{
+    /*send a reset, need a buffer of 2 bytes */
+    LOG_NOTICE( "%s Buffer=%p\n", __FUNCTION__, Buffer );
+
     int ret;
     Received = false;
     EtherLinkUDP.BufferUDP = Buffer;
     ret = send_reset(SocketHandle, NULL);
-    if (ret == 4) {
-	return true;
-    } else
-	return false;
+    if (ret == 4)
+        return true;
+    else
+        return false;
 }
 
 int Identity(unsigned char *Buffer)
 {
+    LOG_NOTICE( "%s Buffer=%p\n", __FUNCTION__, Buffer );
     int ret;
     EtherLinkUDP.BufferUDP = Buffer;
     Buffer_Ordre[0] = 3;
     NbParams = 1;
     Received = false;
     ret = send_data(SocketHandle, NbParams, NULL, &EtherLinkUDP.ucPacketID);
-    if (ret == NbParams + 2) {
-	return true;
-    } else
-	return false;
+    if (ret == NbParams + 2)
+        return true;
+    else
+        return false;
 }
 
 int ClearCCD(unsigned char *Buffer, unsigned char number)
-{				/*clear the CCD, 'number' times */
+{
+    LOG_NOTICE( "%s Buffer=%p number=%d\n", __FUNCTION__, Buffer, number );
+
+    /*clear the CCD, 'number' times */
     int ret;
     EtherLinkUDP.BufferUDP = Buffer;
     Buffer_Ordre[0] = 1;
@@ -143,14 +152,16 @@ int ClearCCD(unsigned char *Buffer, unsigned char number)
     NbParams = 2;
     Received = false;
     ret = send_data(SocketHandle, NbParams, NULL, &EtherLinkUDP.ucPacketID);
-    if (ret == NbParams + 2) {
-	return true;
-    } else
-	return false;
+    if (ret == NbParams + 2)
+        return true;
+    else
+        return false;
 }
 
 int Exposure(unsigned char *Buffer, int time, int shutter)
-{				/*exposure of time ms */
+{
+    LOG_NOTICE( "%s Buffer=%p time=%d shutter=%d\n", __FUNCTION__, Buffer, time, shutter );
+    /*exposure of time ms */
     int ret;
     EtherLinkUDP.BufferUDP = Buffer;
     Buffer_Ordre[0] = 2;
@@ -163,44 +174,47 @@ int Exposure(unsigned char *Buffer, int time, int shutter)
     Exposure_Pending = true;
     ret = send_data(SocketHandle, NbParams, NULL, &EtherLinkUDP.ucPacketID);
 
-    if (ret == NbParams + 2) {
-	return true;
-    } else
-	return false;
+    if (ret == NbParams + 2)
+        return true;
+    else
+        return false;
 }
 
 
 int StopExposure(unsigned char *Buffer)
-{				/*abort the current exposure */
+{
+    LOG_NOTICE( "%s Buffer=%p\n", __FUNCTION__, Buffer );
+    /*abort the current exposure */
     int ret;
     if (Exposure_Pending == true) {
-	EtherLinkUDP.BufferUDP = Buffer;
-	Buffer_Ordre[0] = 0xFA;
-	NbParams = 1;
+        EtherLinkUDP.BufferUDP = Buffer;
+        Buffer_Ordre[0] = 0xFA;
+        NbParams = 1;
 
 /*      Received = false;   */
-	ret = send_data(SocketHandle, NbParams, NULL, &EtherLinkUDP.ucPacketID);
-	if (ret == NbParams + 2) {
-	    return true;
-	} else
-	    return false;
-    } else
-	return false;
+        ret = send_data(SocketHandle, NbParams, NULL, &EtherLinkUDP.ucPacketID);
+        if (ret == NbParams + 2)
+            return true;
+        else
+            return false;
+    }
+    else
+        return false;
 }
 
 
 
 void Readout(unsigned char *Buffer, unsigned char BinX, unsigned char BinY, int X1, int Y1, int DX, int DY)
-{				/* Readout of CCD */
+{
+    LOG_NOTICE( "%s Buffer=%p BinX=%u BinY=%u X1=%d Y1=%d DX=%d DY=%d\n", __FUNCTION__, Buffer, BinX, BinY, X1, Y1, DX, DY );
+    /* Readout of CCD */
     int ret;
     unsigned int i, j;
     int T_Sleep;
     struct timespec Time_ns;
 
-#ifdef ETHERLINK_DEBUG
     if (Received == false)
-	printf("%f ATTENTION Received= false\n", GetTimeStamp());
-#endif
+        LOG_WARNING("%f ATTENTION Received= false\n", GetTimeStamp());
     Time_ns.tv_sec = 0;
     Time_ns.tv_nsec = 1000000;
     T_Sleep = 1;
@@ -214,10 +228,10 @@ void Readout(unsigned char *Buffer, unsigned char BinX, unsigned char BinY, int 
  */
     while (Received == false) {
 #ifdef LINUX
-	nanosleep(&Time_ns, NULL);
+    nanosleep(&Time_ns, NULL);
 #endif
 #ifdef WINDOWS
-	Sleep(T_Sleep);
+    Sleep(T_Sleep);
 #endif
     }
 
@@ -238,58 +252,57 @@ void Readout(unsigned char *Buffer, unsigned char BinX, unsigned char BinY, int 
     Exposure_Completed = false;
     Readout_in_Progress = true;
 
-/* #ifdef ETHERLINK_DEBUG
-  printf ("%f Received= %d\n",GetTimeStamp(), Received);
-#endif */
+    LOG_DEBUG ("%f Received= %d\n",GetTimeStamp(), Received);
 
     Premiere_Trame = Trame_a_venir;
     Trame_check = Premiere_Trame;
     Nombre_Trame = (DX * DY) / 511;
     Nb_Last_Packet = (DX * DY) % 511;
     if (Nb_Last_Packet != 0) {
-	Nombre_Trame++;
+        Nombre_Trame++;
     }
     Trame_a_venir += Nombre_Trame;
     if (Trame_a_venir > 65535) {
-	Trame_a_venir -= 65536;
-	Overflow = true;
+        Trame_a_venir -= 65536;
+        Overflow = true;
     }
     j = Premiere_Trame;
     for (i = 0; i < Nombre_Trame + 5; i++) {
-	TrameOK[j] = false;
-	j++;
-	if (j == 65536)
-	    j = 0;
+        TrameOK[j] = false;
+        j++;
+        if (j == 65536)
+            j = 0;
     }
 
-/*  #ifdef ETHERLINK_DEBUG
-  printf("NETTOIE de %d a %d\n",Premiere_Trame,j);
-  #endif   */
-
-
+    LOG_DEBUG("NETTOIE de %d a %d\n",Premiere_Trame,j);
     Received = false;
     ret = send_data(SocketHandle, NbParams, NULL, &EtherLinkUDP.ucPacketID);
     if (ret == -1) {
-	printf("Error in sendData\n");
+        printf("Error in sendData\n");
     }
 }
 
 int ShutterChange(unsigned char *Buffer)
-{				/*inverse the shutter port */
+{
+    LOG_NOTICE( "%s Buffer=%p\n", __FUNCTION__, Buffer );
+
+    /*inverse the shutter port */
     int ret;
     EtherLinkUDP.BufferUDP = Buffer;
     Buffer_Ordre[0] = 5;
     NbParams = 1;
     Received = false;
     ret = send_data(SocketHandle, NbParams, NULL, &EtherLinkUDP.ucPacketID);
-    if (ret == NbParams + 2) {
-	return true;
-    } else
-	return false;
+    if (ret == NbParams + 2)
+        return true;
+    else
+        return false;
 }
 
 int SetCANSpeed(unsigned char *Buffer, unsigned char speed)
-{				/* set the speed of CAN */
+{
+    LOG_NOTICE( "%s Buffer=%p speed=%u\n", __FUNCTION__, Buffer, speed );
+    /* set the speed of CAN */
     int ret;
     EtherLinkUDP.BufferUDP = Buffer;
     Buffer_Ordre[0] = 0x0C;
@@ -298,7 +311,7 @@ int SetCANSpeed(unsigned char *Buffer, unsigned char speed)
     Received = false;
     ret = send_data(SocketHandle, NbParams, NULL, &EtherLinkUDP.ucPacketID);
     if (ret == NbParams + 2) {
-	return true;
+        return true;
     } else
-	return false;
+        return false;
 }
