@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.128 2010-01-30 13:59:57 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.129 2010-01-31 09:49:46 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -324,7 +324,7 @@ namespace eval ::confVisu {
                      set private($visuNo,fitsHduList)  [initHduList $visuNo $fileName ]
                      #--- j'affiche liste des HDU s'il y en a plusieurs
                      if { [llength $private($visuNo,fitsHduList) ] > 1 } {
-                        #--- j'affiche le meme HDU que celui du fichie precedent s'il existe
+                        #--- j'affiche le meme HDU que celui du fichier precedent s'il existe
                         if { $hduName != "PRIMARY" } {
                            #--- je cherche un HDU avec le meme nom que celui de l'image precedente
                            set hduIndex [lsearch -regexp $private($visuNo,fitsHduList) $hduName]
@@ -343,7 +343,7 @@ namespace eval ::confVisu {
                                     #--- je nettoie le buffer pour gagner de la place en memoire car il n'est pas utilise dans ce cas
                                     buf$bufNo clear
                                     #--- j'ouvre le fichier en mode lecture
-                                    set hFile [fits open [getFileName $visuNo] 0]
+                                    set hFile [fits open $fileName 0]
                                    $hFile move $hduNo
                                     #--- je charge le titre des colonnes
                                     set columnNames  [$hFile info column ]
@@ -369,14 +369,51 @@ namespace eval ::confVisu {
                         ::confVisu::showToolBar $visuNo 0
                      }
                   } else {
-                     #--- en cas d'erreur de chargement du fichier
-                     #--- je nettoie l'affichage
-                      set private($visuNo,fitsHduList) ""
-                     ::confVisu::setFileName $visuNo "?"
-                     buf$bufNo clear
-                     visu$visuNo  clear
-                     #--- j'affiche l'erreur
-                     console::affiche_erreur "$::errorInfo\n"
+                     #--- en cas d'erreur de chargement du fichier avec buf load
+                     #--- je verifie si le fichier contient un deuxième HDU non vide
+                     #--- je recupere la liste des HDU du fichier
+                     set private($visuNo,fitsHduList)  [initHduList $visuNo $fileName ]
+                     if { [llength $private($visuNo,fitsHduList) ] > 1 } {
+                        set hduIndex 1
+                        set hduInfo [lindex $private($visuNo,fitsHduList) $hduIndex ]
+                        set hduType [lindex $hduInfo 1]
+                        set hduNo   [expr $hduIndex + 1]
+                        if { $hduType == "Image" } {
+                           #--- je charge le hdu
+                           buf$bufNo load "$fileName;$hduNo"
+                        } else {
+                           #--- si c'est une table, je charge la table dans les variables columnNames et columnValues
+                           #--- j'utilise commande "fits open" car la commande "buf$bufno load" ne focntionne pas que pour les images
+                           set hFile ""
+                           set catchResult [catch {
+                               #--- je nettoie le buffer pour gagner de la place en memoire car il n'est pas utilise dans ce cas
+                               buf$bufNo clear
+                               #--- j'ouvre le fichier en mode lecture
+                               set hFile [fits open $fileName 0]
+                               $hFile move $hduNo
+                               #--- je charge le titre des colonnes
+                               set columnNames  [$hFile info column ]
+                               #--- je charge les valeurs de colonnes
+                               set columnValues [$hFile get table]
+                            } ]
+                           if { $hFile != "" } {
+                              $hFile close
+                           }
+                           if { $catchResult == 1 } {
+                              #--- je transmets l'erreur
+                              error $::errorInfo
+                           }
+                        }
+                     } else {
+                        #--- en cas d'erreur de chargement du fichier
+                        #--- je nettoie l'affichage
+                         set private($visuNo,fitsHduList) ""
+                        ::confVisu::setFileName $visuNo "?"
+                        buf$bufNo clear
+                        visu$visuNo  clear
+                        #--- j'affiche l'erreur
+                        console::affiche_erreur "$::errorInfo\n"
+                     }
                   }
                   #--- j'affiche le nom du fichier
                   ::confVisu::setFileName $visuNo $fileName
@@ -392,11 +429,23 @@ namespace eval ::confVisu {
                      set hduType "Image"
                   }
                   if { $hduType == "Image" } {
-                     #--- si c'est une image, je charge l'image dans le buffer
-                     if { $hduNo != 1 } {
-                        buf$bufNo load "$fileName;$hduNo"
-                     } else {
-                        buf$bufNo load "$fileName"
+                     set loadError [catch {
+                        #--- si c'est une image, je charge l'image dans le buffer
+                        if { $hduNo != 1 } {
+                           buf$bufNo load "$fileName;$hduNo"
+                        } else {
+                           buf$bufNo load "$fileName"
+                        }
+                     }]
+                     if { $loadError != 0 } {
+                        #--- en cas d'erreur de chargement du fichier
+                        #--- je nettoie l'affichage
+                        set private($visuNo,fitsHduList) ""
+                        ::confVisu::setFileName $visuNo "?"
+                        buf$bufNo clear
+                        visu$visuNo  clear
+                        #--- j'affiche l'erreur
+                        console::affiche_erreur "$::errorInfo\n"
                      }
                   } else {
                      #--- si c'est une table, je charge la table dans les variables columnNames et columnValues
@@ -833,11 +882,15 @@ namespace eval ::confVisu {
 
       catch { ::astrometry::quit }
 
-      #--- suppression de la fenetre a l'ecran
+      #--- suppression de la boite
       deleteBox $visuNo
-
-      #--- je reinitialise l'image
-      visu$visuNo clear
+      #--- raz des variables
+      setFileName $visuNo  ""
+      set private($visuNo,fitsHduList) ""
+      #--- raz de la visu
+      visu$visuNo  clear
+      #--- je selectionne le mode par defaut
+      confVisu::setMode $visuNo "image"
    }
 
    #------------------------------------------------------------
@@ -2914,7 +2967,7 @@ proc ::confVisu::loadIma { visuNo fileName { hduName "" } } {
 
 #------------------------------------------------------------
 # setMode
-#   change le mode de visualsation (photo, video, graph, table)
+#   change le mode de visualisation (image, graph, table)
 #
 #------------------------------------------------------------
 proc ::confVisu::setMode { visuNo mode} {
@@ -3310,9 +3363,9 @@ proc ::confVisu::getToolBar { visuNo } {
 proc ::confVisu::initHduList { visuNo fileName } {
    variable private
 
-        if { [info command fits] == "" } {
-       #--- si la commande fits n'existe pas, on ne peut lire que le premier HDU
-       return ""
+   if { [info command fits] == "" } {
+      #--- si la commande fits n'existe pas, on ne peut lire que le premier HDU
+      return ""
    }
    #--- je recupere la liste des HDU si on n'a pas precise le HDU en suffixe du nom de fichier
    set hFile ""
