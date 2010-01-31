@@ -426,12 +426,14 @@ int util_param_decode(char *ligne, char *keyword, char *value, int *paramtype)
 
     /* ========= search position of the first '=' & extract keyword ====== */
     len = strlen(ligne);
-    for (k = 0; k < len; k++) {
-	c = ligne[k];
-	keyword[k] = c;
-	if (c == '=') {
-	    break;
-	}
+    for (k = 0; k < len; k++)
+    {
+        c = ligne[k];
+        keyword[k] = c;
+        if (c == '=')
+        {
+            break;
+        }
     }
     keyword[k] = '\0';
     posequal = k;
@@ -439,37 +441,43 @@ int util_param_decode(char *ligne, char *keyword, char *value, int *paramtype)
     len = strlen(keyword);
     k = 0;
     kdeb = 0;
-    while (keyword[k] == ' ') {
-	k++;
+    while (keyword[k] == ' ')
+    {
+        k++;
     }
     kdeb = k;
     /* - trim right spaces of the keyword - */
     len = strlen(keyword);
     k = len;
     kfin = len;
-    while (keyword[k - 1] == ' ') {
-	k--;
+    while (keyword[k - 1] == ' ')
+    {
+        k--;
     }
     kfin = k;
     /* - supress trim spaces of keyword - */
-    for (k = 0; k < kfin; k++) {
-	keyword[k] = keyword[k + kdeb];
+    for (k = 0; k < kfin; k++)
+    {
+        keyword[k] = keyword[k + kdeb];
     }
     keyword[k] = '\0';
 
     /* ========= extract value ====== */
     len = strlen(ligne);
-    for (kk = 0, k = posequal + 1; k < len; k++, kk++) {
-	   c = ligne[k];
-	   dummy[kk] = c;
+    for (kk = 0, k = posequal + 1; k < len; k++, kk++)
+    {
+        c = ligne[k];
+        dummy[kk] = c;
     }
     dummy[kk] = '\0';
-    if ( strlen( dummy ) > 0 ) {
+    if ( strlen( dummy ) > 0 )
+    {
         /* - trim left spaces of the dummy - */
         len = strlen(dummy);
         k = 0;
         kdeb = 0;
-        while (dummy[k] == ' ') {
+        while (dummy[k] == ' ')
+        {
             k++;
         }
         kdeb = k;
@@ -477,7 +485,8 @@ int util_param_decode(char *ligne, char *keyword, char *value, int *paramtype)
         len = strlen(dummy);
         k = len;
         kfin = len;
-        while (dummy[k - 1] == ' ') {
+        while (dummy[k - 1] == ' ')
+        {
             k--;
         }
         kfin = k;
@@ -491,49 +500,58 @@ int util_param_decode(char *ligne, char *keyword, char *value, int *paramtype)
     *paramtype = 0;
 
     /* ============== case of a value that begins with # ================ */
-    if (dummy[0] == '#') {
-	len = strlen(dummy);
-	kk = 0;
-	kdeb = 0;
-	kfin = 0;
-	for (k = 0; k < len; k++) {
-	    c = dummy[k];
-	    if (c == '#') {
-		kk++;
-		if (kk == 3) {
-		    kdeb = k;
-		    kfin = k;
-		}
-		if (kk == 4) {
-		    kfin = k;
-		}
-	    }
-	}
-	for (kk = 0, k = kdeb + 1; k < kfin; k++, kk++) {
-	    value[kk] = dummy[k];
-	}
-	value[kk] = '\0';
-	/* - trim left spaces of the value - */
-	len = strlen(value);
-	k = 0;
-	kdeb = 0;
-	while (value[k] == ' ') {
-	    k++;
-	}
-	kdeb = k;
-	/* - trim right spaces of the value - */
-	len = strlen(value);
-	k = len;
-	kfin = len;
-	while (value[k - 1] == ' ') {
-	    k--;
-	}
-	kfin = k;
-	/* - supress trim spaces of value - */
-	for (k = 0; k < kfin; k++) {
-	    value[k] = value[k + kdeb];
-	}
-	value[k] = '\0';
+    if (dummy[0] == '#')
+    {
+        len = strlen(dummy);
+        kk = 0;
+        kdeb = 0;
+        kfin = 0;
+        for (k = 0; k < len; k++)
+        {
+            c = dummy[k];
+            if (c == '#')
+            {
+                kk++;
+                if (kk == 3)
+                {
+                    kdeb = k;
+                    kfin = k;
+                }
+                if (kk == 4)
+                {
+                    kfin = k;
+                }
+            }
+        }
+        for (kk = 0, k = kdeb + 1; k < kfin; k++, kk++)
+        {
+            value[kk] = dummy[k];
+        }
+        value[kk] = '\0';
+        /* - trim left spaces of the value - */
+        len = strlen(value);
+        k = 0;
+        kdeb = 0;
+        while (value[k] == ' ')
+        {
+            k++;
+        }
+        kdeb = k;
+        /* - trim right spaces of the value - */
+        len = strlen(value);
+        k = len;
+        kfin = len;
+        while (value[k - 1] == ' ')
+        {
+            k--;
+        }
+        kfin = k;
+        /* - supress trim spaces of value - */
+        for (k = 0; k < kfin; k++)
+        {
+            value[k] = value[k + kdeb];
+        }
+        value[k] = '\0';
     }
     return 0;
 }
@@ -545,22 +563,22 @@ int util_log(char *message, int signal)
        return 0;
     }
     if (signal == 0) {
-	f = fopen("eth.txt", "at");
-	fprintf(f, "%s\n", message);
-	fclose(f);
-	return (0);
+        f = fopen("ethernaude.txt", "at");
+        fprintf(f, "%s\n", message);
+        fclose(f);
+        return (0);
     }
     if (signal == 1) {
-	f = fopen("eth.txt", "at");
-	fprintf(f, "===== Send following ParamCCDIn to AskForExecuteCCDCommand =====\n");
-	fclose(f);
-	return (0);
+        f = fopen("ethernaude.txt", "at");
+        fprintf(f, "===== Send following ParamCCDIn to AskForExecuteCCDCommand =====\n");
+        fclose(f);
+        return (0);
     }
     if (signal == 2) {
-	f = fopen("eth.txt", "at");
-	fprintf(f, "----- Read following ParamCCDOut -----\n");
-	fclose(f);
-	return (0);
+        f = fopen("ethernaude.txt", "at");
+        fprintf(f, "----- Read following ParamCCDOut -----\n");
+        fclose(f);
+        return (0);
     }
     return (1);
 }

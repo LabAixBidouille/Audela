@@ -88,7 +88,7 @@ typedef struct {
     /* asked by user */
     unsigned char nbwipe;
     int Exposure;
-    int ImageAddress;
+    unsigned char * ImageAddress;
     int CCDno;
     int ClockMode;
     int X1;

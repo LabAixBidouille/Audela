@@ -1,7 +1,7 @@
 /* camera.c
- * 
+ *
  * Copyright (C) 2002-2004 Michel MEUNIER <michel.meunier@tiscali.fr>
- * 
+ *
  * Mettre ici le texte de la license.
  *
  */
@@ -20,11 +20,11 @@
 #include "camera.h"
 #include <libcam/util.h>
 
-/*
-#define ETH_DEBUGFILE
-*/
+
+//#define ETH_DEBUGFILE 1
+
 #if defined ETH_DEBUGFILE
-#define LOG_ETHDEBUGFILE(s) {FILE *f; f = fopen("eth2.txt", "at"); fprintf(f, s); fclose(f);}
+#define LOG_ETHDEBUGFILE(s) {FILE *f; f = fopen("ethernaude2.txt", "at"); fprintf(f, s); fclose(f);}
 #else
 #define LOG_ETHDEBUGFILE(s)
 #endif
@@ -335,7 +335,7 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
          exptime = (int) (cam->exptime * 1000.);	/* en ms */
          binx = cam->binx;
          biny = cam->biny;
-         
+
          x1 = cam->x1 + 1;
          x2 = cam->x2 + 1;
          sprintf(ligne,"<LIBETHERNAUDE/cam_start_exp:%d> cam->mirrorv=%d",__LINE__,cam->mirrorv); util_log(ligne,0);
@@ -353,7 +353,7 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
             x2 = cam->nb_deadbeginphotox + x2;
          }
          sprintf(ligne,"<LIBETHERNAUDE/cam_start_exp:%d>   -> x1=%d, x2=%d",__LINE__,x1,x2); util_log(ligne,0);
-         
+
          y1 = cam->y1 + 1;
          y2 = cam->y2 + 1;
          sprintf(ligne,"<LIBETHERNAUDE/cam_start_exp:%d> cam->mirrorh=%d",__LINE__,cam->mirrorh); util_log(ligne,0);
@@ -406,7 +406,7 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
             }
          }
 #if defined ETH_DEBUGFILE
-         f = fopen("eth2.txt", "at");
+         f = fopen("ethernaude2.txt", "at");
          fprintf(f, "START_EXP : <%s>\n", cam->msg);
          fclose(f);
 #endif
@@ -462,7 +462,7 @@ void cam_stop_exp(struct camprop *cam)
             strcpy(cam->msg, "AbortExposure Failed");
          }
       }
-      
+
    }
    if (util_param_search(&ParamCCDOut, "TimeDone", value, &paramtype) == 0) {
       cam->exptime_when_acq_stopped = (float) (atof(value) / 1000.0);
@@ -520,7 +520,7 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
    paramCCD_clearall(&ParamCCDIn, 1);
    paramCCD_put(-1, "StartReadoutCCD", &ParamCCDIn, 1);
    paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
-   sprintf(result, "ImageAddress=%d", (int) (void *) p);
+   sprintf(result, "ImageAddress=%p", p);
    paramCCD_put(-1, result, &ParamCCDIn, 1);
    AskForExecuteCCDCommand_Dump(&ParamCCDIn, &ParamCCDOut);
 
@@ -607,7 +607,7 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
          sprintf(ligne,"Keyword 'Date' not found");
          util_log(ligne, 0);
       }
-      
+
       if ( gps_non_synchro == 0 ) {
          sprintf(ligne, "buf%d setkwd [list GPS-DATE 1 int {1 if datation is derived from GPS, else 0} {}]", cam->bufno);
          Tcl_Eval(cam->interp, ligne);
@@ -626,7 +626,7 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
       }
    }
 
-   
+
    /* --- mirroir de l'image ? --- */
    /*pdim=cam->w*cam->h;
    for (k=0;k<pdim;k++) {
@@ -655,9 +655,9 @@ void cam_measure_temperature(struct camprop *cam)
     char ligne[MAXLENGTH];
     char result[MAXLENGTH];
     int failed, paramtype;
-    
+
     strcpy(cam->msg, "");
-    // je verifie qu'il n'y a pas d'acquisition en cours, car la lecture de la température ne peut être lue pendant une acquisition.
+    // je verifie qu'il n'y a pas d'acquisition en cours, car la lecture de la tempï¿½rature ne peut ï¿½tre lue pendant une acquisition.
     if ( cam->acquisitionInProgress == 0 ) {
        if (cam->authorized == 1) {
           if (!cam->ethvar.InfoCCD_HasRegulationTempCaps) {
@@ -703,7 +703,7 @@ void cam_measure_temperature(struct camprop *cam)
           cam->CCDStatus = 1;
        }
     } else {
-       strcpy(cam->msg, "acquisition in progress"); 
+       strcpy(cam->msg, "acquisition in progress");
     }
 }
 
@@ -721,7 +721,7 @@ void cam_cooler_check(struct camprop *cam)
    char ligne[MAXLENGTH];
    char result[MAXLENGTH];
    int sortie, failed;
-   
+
    strcpy(cam->msg, "");
    if ( cam->acquisitionInProgress == 0 ) {
       if (cam->authorized == 1) {
@@ -766,7 +766,7 @@ void cam_cooler_check(struct camprop *cam)
          cam->CCDStatus = 1;
       }
    } else {
-      strcpy(cam->msg, "acquisition in progress"); 
+      strcpy(cam->msg, "acquisition in progress");
    }
 
 }
@@ -796,14 +796,14 @@ void cam_update_window(struct camprop *cam)
       cam->x1 = 0;
    if (cam->x2 > maxx - 1)
       cam->x2 = maxx - 1;
-   
+
    if (cam->y1 > cam->y2)
       libcam_swap(&(cam->y1), &(cam->y2));
    if (cam->y1 < 0)
       cam->y1 = 0;
    if (cam->y2 > maxy - 1)
       cam->y2 = maxy - 1;
-   
+
    cam->w = (cam->x2 - cam->x1) / cam->binx +1;
    cam->x2 = cam->x1 + cam->w * cam->binx - 1;
    cam->h = (cam->y2 - cam->y1) / cam->biny +1;
@@ -825,35 +825,37 @@ int test_driver()
 #if defined(OS_WIN)
     ethernaude = LoadLibrary(ETHERNAUDE_NAME);
     if ((ethernaude != NULL)) {
-	ETHERNAUDE_MAIN = (ETHERNAUDE_CALL *) GetProcAddress(ethernaude, ETHERNAUDE_MAINQ);
-	if (ETHERNAUDE_MAIN == NULL) {
-	    close_ethernaude();
-	    return (2);
-	}
-	ETHERNAUDE_DIRECTMAIN = (ETHERNAUDE_DIRECTCALL *) GetProcAddress(ethernaude, ETHERNAUDE_DIRECTMAINQ);
-	if (ETHERNAUDE_DIRECTMAIN == NULL) {
-	    close_ethernaude();
-	    return (3);
-	}
-    } else {
-	return (1);
+        ETHERNAUDE_MAIN = (ETHERNAUDE_CALL *) GetProcAddress(ethernaude, ETHERNAUDE_MAINQ);
+        if (ETHERNAUDE_MAIN == NULL) {
+            close_ethernaude();
+            return (2);
+        }
+        ETHERNAUDE_DIRECTMAIN = (ETHERNAUDE_DIRECTCALL *) GetProcAddress(ethernaude, ETHERNAUDE_DIRECTMAINQ);
+        if (ETHERNAUDE_DIRECTMAIN == NULL) {
+            close_ethernaude();
+            return (3);
+        }
+    }
+    else {
+        return (1);
     }
 #endif
 #if defined(OS_LIN) || defined(OS_MACOS)
     ethernaude = dlopen(ETHERNAUDE_NAME, RTLD_LAZY);
     if (ethernaude != NULL) {
-	ETHERNAUDE_MAIN = dlsym(ethernaude, ETHERNAUDE_MAINQ);
-	if (ETHERNAUDE_MAIN == NULL) {
-	    close_ethernaude();
-	    return (2);
-	}
-	ETHERNAUDE_DIRECTMAIN = dlsym(ethernaude, ETHERNAUDE_DIRECTMAINQ);
-	if (ETHERNAUDE_DIRECTMAIN == NULL) {
-	    close_ethernaude();
-	    return (3);
-	}
-    } else {
-	return (1);
+        ETHERNAUDE_MAIN = dlsym(ethernaude, ETHERNAUDE_MAINQ);
+        if (ETHERNAUDE_MAIN == NULL) {
+            close_ethernaude();
+            return (2);
+        }
+        ETHERNAUDE_DIRECTMAIN = dlsym(ethernaude, ETHERNAUDE_DIRECTMAINQ);
+        if (ETHERNAUDE_DIRECTMAIN == NULL) {
+            close_ethernaude();
+            return (3);
+        }
+    }
+    else {
+        return (1);
     }
 #endif
     return (0);

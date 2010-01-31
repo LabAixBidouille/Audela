@@ -40,13 +40,6 @@
 #include "os.h"
 #include "UDPSocketComponent.h"
 
-//#define ETHERLINK_DEBUG
-//#define UDPSOCKET_DEBUG
-
-/* #include <iostream> */
-
-#ifdef LINUX
-#endif
 
 #ifdef WINDOWS
 /* #include	<pthread.h> */
@@ -54,20 +47,12 @@
 #include	<winbase.h>
 #endif
 
-/* #include "common.h"
-#include "error.h" */
-
-
 struct TReorderBuffer {		/* struct to bufferize the datas incoming from the socket */
     int FirstPacket;
     int NbPacket;
     int SizePacket;
     int SizeBuffer;
 };
-
-
-
-
 
 int Init_TEtherLinkUDP();
 

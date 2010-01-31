@@ -51,12 +51,12 @@
 int paramCCD_new(TParamCCD * ParamCCD);
 int paramCCD_delete(TParamCCD * ParamCCD);
 int paramCCD_put(int index, char *string, TParamCCD * ParamCCD, int alloc);
-int paramCCD_get(int index, char *string, TParamCCD * ParamCCD);
+int paramCCD_get(int index, char *string, const TParamCCD * ParamCCD);
 int paramCCD_clearall(TParamCCD * ParamCCD, int alloc);
 
 /* To manage strings */
 int util_splitline(char *ligne, int *xargc, char ***xargv);
-int util_param_search(TParamCCD * ParamCCD, char *keyword, char *value, int *paramtype);
+int util_param_search(const TParamCCD * ParamCCD, const char *keyword, char *value, int *paramtype);
 int util_param_decode(char *ligne, char *keyword, char *value, int *paramtype);
 int util_free(void *p);
 

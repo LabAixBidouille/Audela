@@ -61,7 +61,7 @@ int open_ethernaude(void)
 #if defined(OS_LIN) || defined(OS_MACOS)
     char s[1000], ss[1000];
     getcwd(s, 1000);
-    sprintf(ss, "%s", ETHERNAUDE_NAME);
+    sprintf(ss, "%s/%s/%s", s, "../bin", ETHERNAUDE_NAME);
     ethernaude = dlopen(ss, RTLD_LAZY);
     /*ethernaude=dlopen(ETHERNAUDE_NAME,RTLD_LAZY); */
     if (ethernaude != NULL) {
@@ -138,7 +138,7 @@ int new_ethernaude(struct new_ethernaude_inp *inparams, ethernaude_var * ethvar)
     char value[MAXLENGTH + 1];
     int paramtype;
 #ifdef ETHERNAUDE_DEBUG
-    remove("eth.txt");
+    remove("ethernaude.txt");
 #endif
 
     strcpy(ethvar->message, "");
