@@ -2,14 +2,14 @@
 # Fichier : eshelvisu.tcl
 # Description : Visionneuse d'images eShel
 # Auteurs : Michel Pujol
-# Mise a jour $Id: eshelvisu.tcl,v 1.4 2010-01-30 14:13:05 robertdelmas Exp $
+# Mise a jour $Id: eshelvisu.tcl,v 1.5 2010-01-31 11:46:16 michelpujol Exp $
 #
 
 namespace eval ::eshelvisu {
    global caption
-   package provide eshelvisu 1.10.20090419
+   package provide eshelvisu 1.11
 
-   #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
+   #--- Chargement des captions pour rÃ©cuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] eshelvisu.cap ]
 
    package require audela 1.5.0
@@ -295,50 +295,6 @@ proc ::eshelvisu::configure { visuNo } {
    localTable::refresh $visuNo
 }
 
-#------------------------------------------------------------
-#  exportFits
-#    enregistre un ou plusieurs HDU dans des fichiers FITS separes
-# Parameters
-#    profileNo  numero de la fenetre
-#  Return
-#     rien
-#------------------------------------------------------------
-proc ::eshelvisu::exportFits { visuNo } {
-   variable private
-
-   set fileName [::confVisu::getFileName $visuNo]
-   if { $fileName == "?" } {
-      set message "$::caption(eshelvisu,table,selectFileError)"
-      tk_messageBox -title $::caption(eshelvisu,title) -type ok -message "$message" -icon error
-      return
-   }
-
-   #--- les donnees sont dans le HDU courant
-   ::eshel::exportfits::run $visuNo $fileName [::confVisu::getHduNo $visuNo]
-
-}
-
-#------------------------------------------------------------
-#  exportBess
-#    enregistre le HDU dans un fichier FITS
-# Parameters
-#    profileNo  numero de la fenetre
-#  Return
-#     rien
-#------------------------------------------------------------
-proc ::eshelvisu::exportBess { visuNo } {
-   variable private
-
-   set fileName [::confVisu::getFileName $visuNo]
-   if { $fileName == "?" } {
-      set message "$::caption(eshelvisu,table,selectFileError)"
-      tk_messageBox -title $::caption(eshelvisu,title) -type ok -message "$message" -icon error
-      return
-   }
-
-   ::eshel::exportbess::run $visuNo $fileName 1
-}
-
 
 
 #------------------------------------------------------------
@@ -532,7 +488,7 @@ proc ::eshelvisu::showOrderLabel { visuNo } {
          set yc       [lindex [lindex [$hFile get table "yc" $n ] 0] 0]
          set yc [expr $yc + 8 ]
          set centralLambda [$hFile get table "central" $n ]
-         set orderlabel "N°$numOrder: $centralLambda"
+         set orderlabel "NÂ°$numOrder: $centralLambda"
          set coord [::confVisu::picture2Canvas $visuNo [list $x $yc]]
          $hCanvas create text [lindex $coord 0] [lindex $coord 1] -text $orderlabel -tag orderLabel -state normal -fill yellow
       }
@@ -543,7 +499,6 @@ proc ::eshelvisu::showOrderLabel { visuNo } {
    if { $hFile != "" } {
       $hFile close
    }
-
 }
 
 ##------------------------------------------------------------
@@ -565,7 +520,7 @@ proc ::eshelvisu::getKeyword { hFile keywordName} {
       set keywords [$hFile get keyword $keywordName]
    }]
    if { $catchResult !=0 } {
-      #--- je transmets l'erreur en ajoutant le nom du mot clé
+      #--- je transmets l'erreur en ajoutant le nom du mot clÃ©
       error "keyword $keywordName not found\n$::errorInfo"
    }
 
@@ -670,8 +625,8 @@ proc ::eshelvisu::showCalibrationLine { visuNo } {
                set beta2 [expr $beta - $alpha]
                set x [expr $foclen * $beta2/$pixel + $xc + $dx_ref]
                if { $lambda == 6242.941 } {
-                  ::console::disp "showCalibrationLine lambda=$lambda gamma=$gamma foclen=$foclen pixel=$pixel xc=$xc m=$m \n"
-                  ::console::disp "showCalibrationLine lambda=$lambda beta=$beta beta2=$beta2 xc=$xc dx_ref=$dx_ref x=$x \n"
+                  ###::console::disp "showCalibrationLine lambda=$lambda gamma=$gamma foclen=$foclen pixel=$pixel xc=$xc m=$m \n"
+                  ###::console::disp "showCalibrationLine lambda=$lambda beta=$beta beta2=$beta2 xc=$xc dx_ref=$dx_ref x=$x \n"
                }
                $hFile move $private($visuNo,orderHduNum)
                set n [expr $orderNum - $min_order +1 ]
@@ -822,6 +777,64 @@ proc ::eshelvisu::localTable::init { visuNo mainframe directory } {
    fillTable $visuNo
 }
 
+#------------------------------------------------------------
+#  exportFits
+#    enregistre un ou plusieurs HDU dans des fichiers FITS separes
+# Parameters
+#    profileNo  numero de la fenetre
+#  Return
+#     rien
+#------------------------------------------------------------
+proc ::eshelvisu::localTable::exportFits { visuNo } {
+   variable private
+
+   set tbl $private($visuNo,tbl)
+   set selection [$tbl curselection]
+
+   #--- je constitue la liste des noms des fichiers
+   set fileList [list ]
+   foreach index $selection {
+      set name [string trimleft [$tbl cellcget $index,0 -text]]
+      set type [$tbl cellcget $index,1 -text]
+      if { $type != "$private(folder)" } {
+         lappend fileList [file join $private($visuNo,directory) $name]
+      }
+   }
+
+   #--- je retourne immediatemment si aucun item n'est selectionne
+   if { [llength $fileList ] == 0 } {
+      set message "$::caption(eshelvisu,table,selectFileError)"
+      tk_messageBox -title $::caption(eshelvisu,title) -type ok -message "$message" -icon error
+      return
+   }
+
+   #--- les donnees sont dans le HDU courant
+   ::eshel::exportfits::run $visuNo $fileList
+
+}
+
+#------------------------------------------------------------
+#  exportBess
+#    enregistre le HDU dans un fichier FITS
+# Parameters
+#    profileNo  numero de la fenetre
+#  Return
+#     rien
+#------------------------------------------------------------
+proc ::eshelvisu::localTable::exportBess { visuNo } {
+   variable private
+
+   set fileName [::confVisu::getFileName $visuNo]
+   if { $fileName == "?" } {
+      set message "$::caption(eshelvisu,table,selectFileError)"
+      tk_messageBox -title $::caption(eshelvisu,title) -type ok -message "$message" -icon error
+      return
+   }
+
+   ::eshel::exportbess::run $visuNo $fileName 1
+}
+
+
 #------------------------------------------------------------------------------
 # localTable::getDirectory
 #   retourne le reperoire courant
@@ -846,7 +859,7 @@ proc ::eshelvisu::localTable::fillTable { visuNo } {
    #--- je trie la table
    set sortorder "-[$private($visuNo,tbl) sortorder]"
    if { $sortorder == "-" } {
-      #--- la première fois
+      #--- la premiÃ¨re fois
       set sortorder "-increasing"
    }
    #--- je tri la table
@@ -1078,7 +1091,7 @@ proc ::eshelvisu::localTable::cmdButton1Click { visuNo tbl } {
 
    set selection [$tbl curselection]
    #--- retourne immediatemment si aucun item selectionne
-   if { "$selection" == "" } {
+   if { $selection == "" } {
       return
    }
    if { $private($visuNo,slideShowState) == 1 } {
@@ -1148,6 +1161,12 @@ proc ::eshelvisu::localTable::loadItem { visuNo index { doubleClick 0 } { hduNam
       set type [$tbl cellcget $index,1 -text]
       set filename [file join "$private($visuNo,directory)" "$name"]
 
+      #--- protection pour Ã©viter de charger plusieurs fois le mÃªme fichier
+      #--- quand on dÃ©place la souris dans la tablelist avec le bouton gauche appuyÃ©
+      if { $filename == [::confVisu::getFileName $visuNo] && $doubleClick == 0 } {
+         return
+      }
+
       if { [string first "$private(fileImage)" "$type" ] != -1 } {
          #--- j'affiche l'image
          ::confVisu::loadIma $visuNo $filename $hduName
@@ -1163,7 +1182,7 @@ proc ::eshelvisu::localTable::loadItem { visuNo index { doubleClick 0 } { hduNam
          if { $doubleClick == 1 } {
             #--- j'affiche le contenu du repertoire parent
             if { "[file tail $private($visuNo,directory)]" != "" } {
-               #--- si on n'est pas à la racine du disque, on monte d'un repertoire
+               #--- si on n'est pas Ã  la racine du disque, on monte d'un repertoire
                set private($visuNo,directory) [ file dirname "$private($visuNo,directory)" ]
                fillTable $visuNo
             } else {
@@ -1225,6 +1244,15 @@ proc ::eshelvisu::localTable::refresh { visuNo { fileName "" } { hduName "" }  }
          loadItem $visuNo $index 0 $hduName
       }
    }
+
+   #--- je nettoie la visu si le fichier courant a ete efface
+   set currentFileName [::confVisu::getFileName $visuNo ]
+   if { $currentFileName != "" && $currentFileName !="?" } {
+      if { [file exists $currentFileName] == 0 } {
+         ::confVisu::clear $visuNo
+      }
+   }
+
 }
 
 #------------------------------------------------------------------------------
@@ -1440,7 +1468,7 @@ proc ::eshelvisu::localTable::setSlideShow { visuNo { state "" } } {
    if { $private($visuNo,slideShowState) == 1 } {
       #--- je recupere le nombre d'images selectionnees
       set selection [$private($visuNo,tbl) curselection ]
-      #--- je verifie que le nombre d'images selectionnées est suffisant (>=2)
+      #--- je verifie que le nombre d'images selectionnÃ©es est suffisant (>=2)
       if { [llength $selection] < 2 } {
          #--- erreur, il n'y a moins de 2 images selectionnees
          tk_dialog .tempdialog \
@@ -1597,6 +1625,17 @@ proc ::eshelvisu::localTable::createTbl { visuNo frame } {
    $tbl columnconfigure "date" -hide [expr !$conf(eshelvisu,show_column_date) ]
    $tbl columnconfigure "size" -hide [expr !$conf(eshelvisu,show_column_size) ]
 
+   #--- bind de la souris et du clavier
+   bind $tbl  <<ListboxSelect>> [list ::eshelvisu::localTable::cmdButton1Click $visuNo $tbl]
+   bind [$tbl bodypath] <Double-1>  [list ::eshelvisu::localTable::cmdButton1DoubleClick $visuNo $tbl]
+   bind [$tbl bodypath] <Button-3>  [list tk_popup $menu %X %Y]
+   bind [$tbl bodypath] <Return>    [list ::eshelvisu::localTable::cmdButton1DoubleClick $visuNo $tbl]
+   bind [$tbl bodypath] <Key-Delete>    [list ::eshelvisu::localTable::deleteFile $visuNo]
+   bind [$tbl bodypath] <Control-Key-A>    [list ::eshelvisu::localTable::selectAll $visuNo]
+   bind [$tbl bodypath] <Control-Key-a>    [list ::eshelvisu::localTable::selectAll $visuNo]
+   bind [$tbl bodypath] <Key-F5>    [list ::eshelvisu::localTable::refresh $visuNo]
+
+
    #--- choix de l'ordre aphabetique en fonction de l'OS ( pour ne pas depayser les habitues)
    if { $::tcl_platform(os) == "Linux" } {
       #--- je classe les fichiers par ordre alphabetique, en tenant compte des majuscules/minuscules
@@ -1624,18 +1663,21 @@ proc ::eshelvisu::localTable::createTbl { visuNo frame } {
    #--- pop-up menu associe a la table
    menu $menu -tearoff no
    $menu add command -label $::caption(eshelvisu,refresh) \
+      -accelerator "F5" \
       -command "::eshelvisu::localTable::refresh $visuNo"
    $menu add command -label $::caption(eshelvisu,select_all) \
+      -accelerator "Ctrl+A" \
       -command "::eshelvisu::localTable::selectAll $visuNo"
    $menu add command -label $::caption(eshelvisu,rename_file)  \
       -command "::eshelvisu::localTable::renameFile $visuNo"
    $menu add command -label $::caption(eshelvisu,delete_file) \
+      -accelerator "Delete" \
       -command "::eshelvisu::localTable::deleteFile $visuNo"
    $menu add separator
-   $menu add command -label $::caption(eshelvisu,exportBess) \
-      -command "::eshelvisu::exportBess $visuNo"
-   $menu add command -label $::caption(eshelvisu,exportFits) \
-      -command "::eshelvisu::exportFits $visuNo"
+   $menu add command -label "$::caption(eshelvisu,exportBess) ..." \
+      -command "::eshelvisu::localTable::exportBess $visuNo"
+   $menu add command -label "$::caption(eshelvisu,exportFits) ..." \
+      -command "::eshelvisu::localTable::exportFits $visuNo"
 
    $menu add separator
    $menu add checkbutton -label $::caption(eshelvisu,table,column_type)   \
@@ -1648,15 +1690,6 @@ proc ::eshelvisu::localTable::createTbl { visuNo frame } {
       -variable conf(eshelvisu,show_column_size)       \
       -command "::eshelvisu::localTable::showColumn $visuNo $::eshelvisu::localTable::private($visuNo,tbl) size"
 
-
-   ###$menu add command -label $::caption(eshelvisu,config) -command "::eshelvisu::configure $visuNo"
-
-
-   bind [$tbl bodypath] <<Button3>> [list tk_popup $menu %X %Y]
-
-   bind $tbl <<ListboxSelect>>      [list ::eshelvisu::localTable::cmdButton1Click $visuNo $tbl]
-   bind [$tbl bodypath] <Double-1>  [list ::eshelvisu::localTable::cmdButton1DoubleClick $visuNo $tbl]
-   bind [$tbl bodypath] <Return>    [list ::eshelvisu::localTable::cmdButton1DoubleClick $visuNo $tbl]
 
 }
 
@@ -2084,8 +2117,9 @@ proc ::eshelvisu::renameDialog::fillConfigPage { frm visuNo } {
 }
 
 #------------------------------------------------------------
-# ::eshelvisu::renameDialog::getProperty
-#   retourne la valeur d'un propriété
+# ::eshelvisu::renameDialog::explore
+# selectionne un repertoire
+#
 #------------------------------------------------------------
 proc ::eshelvisu::renameDialog::explore { visuNo } {
    variable private
@@ -2100,7 +2134,7 @@ proc ::eshelvisu::renameDialog::explore { visuNo } {
 
 #------------------------------------------------------------
 # ::eshelvisu::renameDialog::getProperty
-#   retourne la valeur d'un propriété
+#   retourne la valeur d'une propriÃ©tÃ©
 #------------------------------------------------------------
 proc ::eshelvisu::renameDialog::getProperty { visuNo propertyName } {
    variable private
