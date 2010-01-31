@@ -5,7 +5,7 @@
 #               pose, choix des outils, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.66 2010-01-31 08:06:44 michelpujol Exp $
+# Mise a jour $Id: confgene.tcl,v 1.67 2010-01-31 09:20:38 michelpujol Exp $
 #
 
 #
@@ -2284,6 +2284,37 @@ namespace eval ::confChoixOutil {
             }
          }
       }
+   }
+
+   #
+   # setDisplayState
+   #    change l'etat d'affichage d'un plugin dans les menus
+   #    Cette procedure peur etre appelée par d'autres outils comme updateAudela
+   #
+   # @param nameSpace     namespace de l'outil
+   # @param displayState  1=afficher dans les menus 0=ne pas afficher
+   # @return void
+   #
+   proc setDisplayState { nameSpace displayState } {
+
+      #--- je cherche le plugin dans la liste des plugins a afficher dans les menus
+      set index [lsearch $::conf(afficheOutils) $nameSpace ]
+      if { $displayState == 1 } {
+         if { $index == -1 } {
+            #--- j'ajoute le plugin dans la liste
+            lappend ::conf(afficheOutils) $nameSpace ""
+         } else {
+            #--- rien a faire car le plugin est deja dans la liste
+         }
+      } else {
+         if { $index != -1 } {
+            #--- je supprime le plugin de la liste des plugins a afficher
+            set ::conf(afficheOutils) [lreplace $::conf(afficheOutils) $index [expr $index +1] ]
+         } else {
+            #--- rien a faire car le plugin n'est pas dans la liste
+         }
+      }
+      return ""
    }
 }
 
