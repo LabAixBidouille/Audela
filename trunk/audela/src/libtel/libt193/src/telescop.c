@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-// @version  $Id: telescop.c,v 1.23 2010-01-25 21:58:23 michelpujol Exp $
+// @version  $Id: telescop.c,v 1.24 2010-01-31 17:19:42 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -44,7 +44,7 @@
 
 #define DAQmxErrChk(functionCall) if( DAQmxFailed(error=(functionCall)) ) goto Error; else
 
-
+extern void logConsole(struct telprop *tel, char *messageFormat, ...);
  /*
  *  Definition of different cameras supported by this driver
  *  (see declaration in libstruc.h)
@@ -62,6 +62,8 @@ struct telini tel_ini[] = {
   	 1.        /* default focal lenght of optic system */
    },
 };
+
+
 
 // variables locales
  
@@ -115,6 +117,10 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    flog=fopen("mouchard_protocole_T193.txt","wt");
    fclose(flog);
 
+   // je configure les fonctions specifiques du telescope
+   TEL_DRV.tel_correct =  tel_radec_correct;
+   TEL_DRV.tel_get_radec_guiding = tel_get_radec_guiding;
+   TEL_DRV.tel_set_radec_guiding = tel_set_radec_guiding;
    // j'intialise les variables
    strcpy(tel->channel , "");
    tel->outputTelescopTaskHandle = 0;
@@ -1046,7 +1052,7 @@ int tel_radec_stop(struct telprop *tel,char *direction)
 }
 
 //-------------------------------------------------------------
-// mytel_correct
+// tel_radec_correct
 //
 // envoie une correction en ascension droite ou en declinaison
 // avec une distance donnee en arcseconde   
@@ -1058,7 +1064,7 @@ int tel_radec_stop(struct telprop *tel,char *direction)
 // @param distance  valeur de la correction sur l'axe delta en arseconde  
 // @return  0 = OK,  1= erreur
 //-------------------------------------------------------------
-int mytel_correct(struct telprop *tel, char alphaDirection, double alphaDistance, char deltaDirection, double deltaDistance)
+int tel_radec_correct(struct telprop *tel, char *alphaDirection, double alphaDistance, char *deltaDirection, double deltaDistance)
 {
    int result ;
 
@@ -1081,16 +1087,16 @@ int mytel_correct(struct telprop *tel, char alphaDirection, double alphaDistance
             char response[NOTIFICATION_MAX_SIZE];
             if ( tel->radec_move_rate == 0.0 ) {
                // vitesse de guidage
-               sprintf(command,"!RADEC CORRECT %c %.3f %c %.3f guidage @\n", alphaDirection, alphaDistance, deltaDirection, deltaDistance );  
+               sprintf(command,"!RADEC CORRECT %c %.3f %c %.3f guidage @\n", alphaDirection[0], alphaDistance, deltaDirection[0], deltaDistance );  
             } else if ( tel->radec_move_rate == 0.33 ) {
                // vitesse de centrage
-               sprintf(command,"!RADEC CORRECT %c %.3f %c %.3f centrage @\n", alphaDirection, alphaDistance, deltaDirection, deltaDistance );  
+               sprintf(command,"!RADEC CORRECT %c %.3f %c %.3f centrage @\n", alphaDirection[0], alphaDistance, deltaDirection[0], deltaDistance );  
             } else if ( tel->radec_move_rate == 0.66 ) {
                // vitesse de centrage
-               sprintf(command,"!RADEC CORRECT %c %.3f %c %.3f centrage2 @\n", alphaDirection, alphaDistance, deltaDirection, deltaDistance );  
+               sprintf(command,"!RADEC CORRECT %c %.3f %c %.3f centrage2 @\n", alphaDirection[0], alphaDistance, deltaDirection[0], deltaDistance );  
             } else {
                // par defaut vitesse de guidage
-               sprintf(command,"!RADEC CORRECT %c %.3f %c %.3f guidage @\n", alphaDirection, alphaDistance, deltaDirection, deltaDistance );    
+               sprintf(command,"!RADEC CORRECT %c %.3f %c %.3f guidage @\n", alphaDirection[0], alphaDistance, deltaDirection[0], deltaDistance );    
             }
 
             result = socket_writeTelescopeCommandSocket(tel,command,response);
@@ -1116,6 +1122,11 @@ int mytel_correct(struct telprop *tel, char alphaDirection, double alphaDistance
                      }
                   }
                }
+            }
+
+            // j'affiche une trace dans la console si l'utilisateur l'a demandé
+            if ( tel->consoleLog >= 1 ) {
+               logConsole(tel, "T193 %s", command);
             }
          }
       }
@@ -1157,6 +1168,71 @@ int tel_radec_motor(struct telprop *tel) {
       if ( result == 0 ) {
          int returnCode;
          int readValue = sscanf(response,"!RADEC SLEW %d @", &returnCode);
+         if (readValue != 1) {
+            sprintf(tel->msg,"tel_radec_motor error: readValue=%d %s", readValue, response );
+            result = 1;
+         } else {
+            if ( returnCode != 0 ) {
+               sprintf(tel->msg,"tel_radec_motor error: returnCode=%d", returnCode );
+               result = 1;
+            }
+         }                  
+      }
+   } else {
+      result = 0; 
+   }
+   return result;
+}
+
+//-------------------------------------------------------------
+// tel_get_radec_guiding 
+//
+//  retourne l'etat de l'autoguidage 
+//
+// @param tel   pointeur structure telprop
+// @param guiding  0 : auto guidage arrete, 1 : auto guidage actif
+// @return   0 = OK,  1= erreur
+//-------------------------------------------------------------
+int tel_get_radec_guiding(struct telprop *tel, int *guiding) {
+   
+   *guiding = tel->radecGuidingState;   
+   return 0;  
+}
+
+//-------------------------------------------------------------
+// tel_set_radec_guiding 
+//
+//  commande marche/arret du guidage
+//  Avertit l'interface de controle Audela est en auto-guidage (checkbox du bandeau sophie dans AudeLA)
+//  pour inhiber les raquettes physiques au T193 pendant l'uto-guidage
+//
+// @param tel   pointeur structure telprop
+// @param guiding  0 : auto guidage arrete, 1 : auto guidage actif
+// @return   0 = OK,  1= erreur
+//-------------------------------------------------------------
+int tel_set_radec_guiding(struct telprop *tel, int guiding) {
+   int result; 
+
+   if ( tel->telescopeCommandSocket != 0 ) {
+      char command[NOTIFICATION_MAX_SIZE];
+      char response[NOTIFICATION_MAX_SIZE];
+      int slew ; 
+
+      if (tel->radec_motor == 0 ) {
+         slew = 1; 
+      } else {
+         slew = 0;
+      }
+
+      if ( guiding == 1 ) {
+         sprintf(command,"!RADEC GUIDING ON @\n");
+      } else {
+         sprintf(command,"!RADEC GUIDING OFF @\n");
+      }
+      result = socket_writeTelescopeCommandSocket(tel,command,response);
+      if ( result == 0 ) {
+         int returnCode;
+         int readValue = sscanf(response,"!RADEC GUIDING %d @", &returnCode);
          if (readValue != 1) {
             sprintf(tel->msg,"tel_radec_motor error: readValue=%d %s", readValue, response );
             result = 1;

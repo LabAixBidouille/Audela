@@ -25,9 +25,5 @@
 
 /* ----- defines specifiques aux fonctions de cette camera ----*/
 int cmdTelFilter(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int cmdTelCorrect(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-//int cmdTelSendCommand(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int cmdTelConsoleLog(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int cmdTelTest(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #endif

@@ -79,6 +79,10 @@ int tel_radec_coord(struct telprop *tel,char *result);
 int tel_radec_move(struct telprop *tel,char *direction);
 int tel_radec_stop(struct telprop *tel,char *direction);
 int tel_radec_motor(struct telprop *tel);
+int tel_get_radec_guiding(struct telprop *tel, int *guiding);
+int tel_set_radec_guiding(struct telprop *tel, int guiding);
+int tel_radec_correct(struct telprop *tel,char* alphaDirection, double alphaDistance, char *deltaDirection, double deltaDistance);
+
 int tel_focus_init(struct telprop *tel);
 int tel_focus_goto(struct telprop *tel);
 int tel_focus_coord(struct telprop *tel,char *result);
@@ -98,7 +102,7 @@ int tel_filter_stop(struct  telprop *tel);
 int tel_filter_extremity(struct telprop *tel, char * extremity);
 
 int mytel_tcleval(struct telprop *tel,char *ligne);
-int mytel_correct(struct telprop *tel,char alphaDirection, double alphaDistance, char deltaDirection, double deltaDistance);
+
 
 //codes retours avec l'interface
 #define BACKCMD_RECEIVED	  0 // Commande prise en compte : acquittement d'envoi de commande à la PMAC (sans erreur)
