@@ -2,11 +2,11 @@
 # Fichier : updateaudela.tcl
 # Description : Outil de fabrication des fichiers Kit et de deploiement des plugins
 # Auteur : Michel Pujol
-# Mise a jour $Id: updateaudela.tcl,v 1.24 2010-01-30 14:26:29 robertdelmas Exp $
+# Mise a jour $Id: updateaudela.tcl,v 1.25 2010-01-31 09:26:36 michelpujol Exp $
 #
 
 namespace eval ::updateaudela {
-   package provide updateaudela 1.4
+   package provide updateaudela 1.5
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] updateaudela.cap ]
@@ -169,6 +169,15 @@ proc ::updateaudela::deletePlugin { pluginName pluginType } {
 
    set pluginDirectory [getTypeDirectory $pluginType $pluginName]
    set pkgIndexFileName [file join $pluginDirectory pkgIndex.tcl]
+
+   #--- je supprime le plugin des menus si pluginInfo(type) == "tool"
+   if { [::audace::getPluginInfo $pkgIndexFileName pluginInfo ] == 0 } {
+      if { $pluginInfo(type) == "tool" } {
+         ::confChoixOutil::setDisplayState $pluginInfo(namespace) 0
+      }
+   }
+
+   #--- je supprime le repertoire , sauf les fichiers CVS
    set dirs $pluginDirectory
    if { [ file exists [file join $pluginDirectory "cvs" ]] == 1
    && [file exists [file join $pluginDirectory "CVS" ]] == 1 } {
@@ -380,6 +389,11 @@ proc ::updateaudela::installKit { kitFileName } {
                   $pluginInfo(namespace)::install
                } else {
                   ##console::disp "::updateaudela::installKit la procedure [info command ::$pluginInfo(namespace)::install] n'existe pas\n"
+               }
+
+               #--- j'ajoute le plugin dans les menus si pluginInfo(type)=tool
+               if { $pluginInfo(type)== "tool" } {
+                   ::confChoixOutil::setDisplayState $pluginInfo(namespace) 1
                }
 
                #--- j'affiche un message OK
