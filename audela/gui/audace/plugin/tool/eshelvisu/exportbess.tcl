@@ -2,7 +2,7 @@
 # Fichier : exportbess.tcl
 # Description : Export de fichier au format BeSS
 # Auteurs : Michel Pujol
-# Mise a jour $Id: exportbess.tcl,v 1.1 2009-11-07 08:31:05 michelpujol Exp $
+# Mise a jour $Id: exportbess.tcl,v 1.2 2010-01-31 11:48:15 michelpujol Exp $
 #
 
 ################################################################
@@ -94,8 +94,8 @@ proc ::eshel::exportbess::run { visuNo inputFileName keywordHduIndex} {
 ## ------------------------------------------------------------
 # retourne le titre de la fenetre
 #
-# Cette procedure est appelée par ::confGenerique::getLabel
-# @return  titre de la fenêtre
+# Cette procedure est appelÃ©e par ::confGenerique::getLabel
+# @return  titre de la fenÃªtre
 # @private
 #------------------------------------------------------------
 proc ::eshel::exportbess::getLabel { } {
@@ -107,8 +107,8 @@ proc ::eshel::exportbess::getLabel { } {
 
 ##------------------------------------------------------------
 # controle et exporte les profils (appelle ::eshel::exportbess::saveFile)
-# <br> Propose d'afficher la liste des profils exportés
-# Cette procedure est appelée par ::confGenerique::apply
+# <br> Propose d'afficher la liste des profils exportÃ©s
+# Cette procedure est appelÃ©e par ::confGenerique::apply
 # @param visuNo  numero de la visu parent
 # @return rien
 # @private
@@ -142,7 +142,7 @@ proc ::eshel::exportbess::apply { visuNo } {
          confVisu::selectTool $visuDir ::eshelvisu
          #--- je pointe le repertoire des images brutes
          set ::eshelvisu::localTable::private($visuDir,directory) $::conf(eshel,exportbess,outputDirectory)
-         #--- j'affiche le contenu du répertoire
+         #--- j'affiche le contenu du rÃ©pertoire
          ::eshelvisu::localTable::fillTable $visuDir
       }
    }
@@ -154,8 +154,8 @@ proc ::eshel::exportbess::apply { visuNo } {
 #
 # @param visuNo  numero de la visu
 # @return
-#   - 0  s'il ne faut pas fermer la fenêtre
-#   - 1  s'il faut fermer la fenêtre
+#   - 0  s'il ne faut pas fermer la fenÃªtre
+#   - 1  s'il faut fermer la fenÃªtre
 # @public
 #------------------------------------------------------------
 proc ::eshel::exportbess::closeWindow { visuNo } {
@@ -178,7 +178,7 @@ proc ::eshel::exportbess::closeWindow { visuNo } {
 ##------------------------------------------------------------
 # cree les widgets de la fenetre de controle
 #
-# Cette procedure est appelée par ::confGenerique::fillConfigPage
+# Cette procedure est appelÃ©e par ::confGenerique::fillConfigPage
 # @param frm nom tk de la frame cree par ::confgene::fillConfigPage
 # @param visuNo numero de la visu
 # @return  rien
@@ -278,13 +278,13 @@ proc ::eshel::exportbess::fillConfigPage { frm visuNo } {
 
 
 ##------------------------------------------------------------
-# recupere la valeur de la configuration instrument courante pour les mots clés
+# recupere la valeur de la configuration instrument courante pour les mots clÃ©s
 #  - BSS_INST  : avec le nom de la configuration courante
-#  - DETNAM    : avec le nom de la caméra de la configuration courante
+#  - DETNAM    : avec le nom de la camÃ©ra de la configuration courante
 #  - INSTRUME  : avec le nom du spectrographe de la configuration courante
-#  - TELESCOP  : avec le nom du télescope de la configuration courante
+#  - TELESCOP  : avec le nom du tÃ©lescope de la configuration courante
 # @param visuNo numero de la visu
-# @param configName nom du mot clé
+# @param configName nom du mot clÃ©
 # @return  rien
 # @private
 #------------------------------------------------------------
@@ -313,7 +313,7 @@ proc ::eshel::exportbess::getCurrentInstrumentValue { visuNo keywordName } {
 # <br>  format : <nom fichier origine>-<nom HDU>.fit
 #
 # @param visuNo numero de la visu
-# @param configName nom du mot clé
+# @param configName nom du mot clÃ©
 # @return  rien
 # @private
 #------------------------------------------------------------
@@ -329,8 +329,8 @@ proc ::eshel::exportbess::onSelectExportedOrder { visuNo } {
 
 ##------------------------------------------------------------
 # selectOuputDirectory
-#   selectionne le répertoire dans lequel les fichiers sont exportés
-# @param numéro de la visu
+#   selectionne le rÃ©pertoire dans lequel les fichiers sont exportÃ©s
+# @param numÃ©ro de la visu
 # @return rien
 # @private
 #------------------------------------------------------------
@@ -592,7 +592,7 @@ proc ::eshel::exportbess::getKeyword { hFile keywordName} {
 #   si un mot clefs n'est pas correctement rempli
 #      retourne une exception
 #
-# @param numéro de la visu
+# @param numÃ©ro de la visu
 # @return rien
 # @private
 #------------------------------------------------------------
@@ -630,7 +630,7 @@ proc ::eshel::exportbess::saveFile { visuNo } {
          set value [expr $value + 1.0/3600.0]
          set fitsValue [ mc_angle2hms $value 360 nozero 0 auto string]
          #--- je compare la valeur avec ce qu'on doit obtenir au format HMS
-         #---   la comparaison est limitée aux nombre de caracteres saisis afin de pouvoir omettre la saisie des decimales de secondes
+         #---   la comparaison est limitÃ©e aux nombre de caracteres saisis afin de pouvoir omettre la saisie des decimales de secondes
          if { [string compare -length [string length $private($visuNo,value,BSS_RA)] $private($visuNo,value,BSS_RA) $fitsValue] } {
             append badKeywords "BSS_RA: [format $::caption(eshelvisu,exportBess,keywordBadRa) $::caption(eshelvisu,exportBess,label,BSS_RA)]\n"
          }
@@ -643,7 +643,7 @@ proc ::eshel::exportbess::saveFile { visuNo } {
          set value [mc_angle2deg $private($visuNo,value,BSS_DEC)]
          set fitsValue [ mc_angle2dms $value 90 nozero 0 + string]
          #--- je compare la valeur avec ce qu'on doit obtenir au format DMS
-         #---   la comparaison est limitée aux nombre de caracteres saisis afin de pouvoir omettre la saisie des decimales de secondes
+         #---   la comparaison est limitÃ©e aux nombre de caracteres saisis afin de pouvoir omettre la saisie des decimales de secondes
          if { [string compare -length [string length $private($visuNo,value,BSS_DEC)] $private($visuNo,value,BSS_DEC) $fitsValue] } {
             append badKeywords "BSS_DEC: [format $::caption(eshelvisu,exportBess,keywordBadDec) $::caption(eshelvisu,exportBess,label,BSS_DEC)]\n"
          }
@@ -656,7 +656,7 @@ proc ::eshel::exportbess::saveFile { visuNo } {
 
       set dateObs $private($visuNo,value,DATE-OBS)
       set fitsDateObs [ mc_date2iso8601 $dateObs ]
-      #---   la comparaison est limitée aux nombre de caracteres saisis afin de pouvoir omette la saisie des decimales de secondes
+      #---   la comparaison est limitÃ©e aux nombre de caracteres saisis afin de pouvoir omette la saisie des decimales de secondes
       if { [string compare -length [string length $dateObs] $dateObs $fitsDateObs ] } {
          append badKeywords "DATE-OBS: [format $::caption(eshelvisu,exportBess,keywordBadDate) $private($visuNo,value,DATE-OBS)]\n"
       }
@@ -666,7 +666,7 @@ proc ::eshel::exportbess::saveFile { visuNo } {
    #---    Verifier la date au format iso8601
       set dateEnd $private($visuNo,value,DATE-END)
       set fitsDateEnd [ mc_date2iso8601 $dateEnd]
-      #---   la comparaison est limitée aux nombre de caracteres saisis afin de pouvoir omette la saisie des decimales de secondes
+      #---   la comparaison est limitÃ©e aux nombre de caracteres saisis afin de pouvoir omette la saisie des decimales de secondes
       if { [string compare -length [string length $dateEnd] $dateEnd $fitsDateEnd] } {
          append badKeywords "DATE-END: [format $::caption(eshelvisu,exportBess,keywordBadDate) $private($visuNo,value,DATE-END)]\n"
       }
@@ -682,7 +682,7 @@ proc ::eshel::exportbess::saveFile { visuNo } {
 
    #--- controle BSS_SITE
    #---    Verifier le longueur du champ
-   #---    Verifier les caractères
+   #---    Verifier les caractÃ¨res
    if { [string length $private($visuNo,value,BSS_SITE)] > 40 } {
       append badKeywords "$::caption(eshelvisu,exportBess,label,OBJNAME) is too large (40 c. max)\n"
    } elseif { [string is print -failindex charIndex $private($visuNo,value,BSS_SITE)] == 0  } {
@@ -691,7 +691,7 @@ proc ::eshel::exportbess::saveFile { visuNo } {
 
    #--- controle BSS_INST
    #---    Verifier le longueur du champ
-   #---    Verifier les caractères
+   #---    Verifier les caractÃ¨res
    if { [string length $private($visuNo,value,BSS_INST)] > 40 } {
       append badKeywords "$::caption(eshelvisu,exportBess,label,BSS_INST) is too large (40 c. max)\n"
    } elseif { [string is print -failindex charIndex $private($visuNo,value,BSS_INST)] == 0  } {
@@ -707,7 +707,7 @@ proc ::eshel::exportbess::saveFile { visuNo } {
 
    #--- controle BSS_TELL
    #---    Verifier le longueur du champ
-   #---    Verifier les caractères
+   #---    Verifier les caractÃ¨res
    if { [string length $private($visuNo,value,BSS_TELL)] > 70 } {
       append badKeywords "$::caption(eshelvisu,exportBess,label,BSS_TELL) is too large\n"
    } elseif { [string is print -failindex charIndex $private($visuNo,value,BSS_TELL)] == 0  } {
@@ -716,7 +716,7 @@ proc ::eshel::exportbess::saveFile { visuNo } {
 
    #--- controle BSS_NORM
    #---    Verifier le longueur du champ
-   #---    Verifier les caractères
+   #---    Verifier les caractÃ¨res
    if { [string length $private($visuNo,value,BSS_NORM)] > 70 } {
       append badKeywords ". $::caption(eshelvisu,exportBess,label,BSS_NORM) is too large\n"
    } elseif { [string is print -failindex charIndex $private($visuNo,value,BSS_NORM)] == 0  } {
@@ -725,7 +725,7 @@ proc ::eshel::exportbess::saveFile { visuNo } {
 
    #--- controle OBSERVER
    #---    Verifier le longueur du champ
-   #---    Verifier les caractères
+   #---    Verifier les caractÃ¨res
    if { [string length $private($visuNo,value,OBSERVER)] > 70 } {
       append badKeywords "$::caption(eshelvisu,exportBess,label,OBSERVER) are too large\n"
    } elseif { [string is print -failindex charIndex $private($visuNo,value,OBSERVER)] == 0  } {
@@ -831,7 +831,7 @@ proc ::eshel::exportbess::saveFile { visuNo } {
          #--- j'insere l'image
          $hBess  put image 1 $intensity
          #--- j'ajoute les mots clefs requis par BeSS
-         #--- remarque: je protège par des quotes les mots clefs de type string qui peuvent contenir des espaces
+         #--- remarque: je protÃ¨ge par des quotes les mots clefs de type string qui peuvent contenir des espaces
          $hBess put keyword "OBJNAME  '$private($visuNo,value,OBJNAME)'  Object name "
          $hBess put keyword "DATE-OBS '$private($visuNo,value,DATE-OBS)' \[Iso 8601\] Start of exposure. FITS standard"
          $hBess put keyword "DATE-END '$private($visuNo,value,DATE-END)' \[Iso 8601\] Start of exposure. FITS standard"
