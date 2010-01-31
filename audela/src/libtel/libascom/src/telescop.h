@@ -88,9 +88,8 @@ int mytel_get_format(struct telprop *tel);
 int mytel_set_format(struct telprop *tel,int longformatindex);
 int mytel_flush(struct telprop *tel);
 int mytel_tcleval(struct telprop *tel,char *ligne);
-int mytel_correct(struct telprop *tel,char *direction, int duration);
 
 void mytel_decimalsymbol(char *strin, char decin, char decout, char *strout);
-
+void mytel_setupDialog(struct telprop *tel);
 #endif
 

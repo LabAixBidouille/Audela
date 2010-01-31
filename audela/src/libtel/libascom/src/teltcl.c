@@ -107,3 +107,19 @@ int cmdTelMethods(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 	Tcl_DStringFree(&dsptr);
    return result;
 }
+
+// ---------------------------------------------------------------------------
+// cmdTelSetupDialog 
+//    affiche la fenetre de configuration fournie par le driver de la camera
+// return
+//    TCL_OK
+// ---------------------------------------------------------------------------
+int cmdTelSetupDialog(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+    struct telprop *tel = (struct telprop *) clientData;
+    mytel_setupDialog(tel);
+    Tcl_SetResult(interp, (char*)"", TCL_VOLATILE);
+    return TCL_OK;
+}
+
+
