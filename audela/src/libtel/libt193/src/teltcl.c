@@ -101,12 +101,13 @@ int cmdTelFilter(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
    return result;
 }
 
+/*
 int cmdTelCorrect(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    char ligne[256];
    struct telprop *tel;
-   char   alphaDirection;
+   char   alphaDirection[2];
    double alphaDistance;
-   char   deltaDirection;
+   char   deltaDirection[2];
    double deltaDistance;
    
    tel = (struct telprop *)clientData;
@@ -118,17 +119,20 @@ int cmdTelCorrect(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
       switch(argv[2][0]) {
       case 'e':
       case 'E':
-         alphaDirection = 'E';
+         alphaDirection[0] = 'E';
+         alphaDirection[1] =  0;
          break;
       case 'w':
       case 'W':
-         alphaDirection = 'W';
+         alphaDirection[0] = 'W';
+         alphaDirection[1] =  0;
          break;
       default:
          sprintf(ligne,"Usage: %s %s direction time\nalpahaDirection shall be e|w",argv[0],argv[1]);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          return TCL_ERROR;
       }
+
       if (Tcl_GetDouble(interp, argv[3], &alphaDistance) != TCL_OK) {
          sprintf(ligne,"Usage: %s %s distance \nalphaDistance shall be a decimal number",argv[0],argv[1]);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -137,17 +141,20 @@ int cmdTelCorrect(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
       switch(argv[4][0]) {
       case 'n':
       case 'N':
-         deltaDirection = 'N';
+         deltaDirection[0] = 'N';
+         deltaDirection[1] =  0;
          break;
       case 's':
       case 'S':
-         deltaDirection = 'S';
+         deltaDirection[0]= 'S';
+         deltaDirection[1]=  0;
          break;
       default:
          sprintf(ligne,"Usage: %s %s direction time\ndirection shall be n|s",argv[0],argv[1]);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          return TCL_ERROR;
       }
+
       if (Tcl_GetDouble(interp, argv[5], &deltaDistance) != TCL_OK) {
          sprintf(ligne,"Usage: %s %s distance \ndistance shall be a decimal number",argv[0],argv[1]);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -169,6 +176,7 @@ int cmdTelCorrect(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
    }
    return TCL_OK;
 }
+*/
 
 
 /*
@@ -225,84 +233,3 @@ int cmdTelSendCommand(ClientData clientData, Tcl_Interp *interp, int argc, char 
 }
 */
 
-
-/*
- * -----------------------------------------------------------------------------
- *  timerTestCallback()
- *
- *  active/desactive la prise de controle du telescope 
- *  thread::send  -async [tel1 threadid] "tel1 test 5000" 
- *  
- *  thread::send [tel1 threadid]  "tel1 test stop"
- *  tel1 test 10000
- *  tel1 test stop
- * -----------------------------------------------------------------------------
- */
-
-static void timerTestCallback(ClientData clientData ) {
-   struct telprop *   tel = (struct telprop *)clientData;
-   tel->timeDone = 1;
-}
-
-
-/*
- * -----------------------------------------------------------------------------
- *  cmdTelTest()
- *
- *  active/desactive la prise de controle du telescope 
- *  thread::send  -async [tel1 threadid] "tel1 test 5000" 
- *  
- *  thread::send [tel1 threadid]  "tel1 test stop"
- *  tel1 test 10000
- *  tel1 test stop
- * -----------------------------------------------------------------------------
- */
-
-int cmdTelTest(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
-   char ligne[256];
-   int result = TCL_OK,pb=0;
-   struct telprop *tel;
-   tel = (struct telprop *)clientData;
-   if(argc!=3) {
-      pb=1;
-   }  else {
-      int timerDelay;
-      int result;
-      int foundEvent;
-
-      pb=0;
-      if (strcmp(argv[2],"stop")  == 0 ) {
-            Tcl_DeleteTimerHandler(tel->timerToken);
-            tel->timeDone = 2;
-            Tcl_SetResult(interp, "stop OK",TCL_VOLATILE);
-            result = TCL_OK     ;          
-         return result;
-      }
-
-      timerDelay = atoi(argv[2]);
-
-      tel->timerToken = Tcl_CreateTimerHandler(timerDelay, timerTestCallback, (ClientData) tel);
-
-      // j'attends un evenement
-      tel->timeDone = 0; 
-      foundEvent = 1;
-      while (!tel->timeDone && foundEvent) {
-         foundEvent = Tcl_DoOneEvent(TCL_ALL_EVENTS);
-         if (Tcl_LimitExceeded(interp)) {
-            break;
-         }
-      }
-
-      //sprintf(ligne,"fin du timer %d", tel->timeDone);
-      tel->timeDone = 0;
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-      result = TCL_OK;
-   
-   }
-   if (pb==1) {
-      sprintf(ligne,"Usage: %s %s ?0|1?",argv[0],argv[1]);
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-      result = TCL_ERROR;
-   } 
-   return result;
-}
