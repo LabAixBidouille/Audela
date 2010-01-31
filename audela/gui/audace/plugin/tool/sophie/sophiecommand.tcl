@@ -2,11 +2,11 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.43 2010-01-22 13:30:03 ffillion Exp $
+# @version  $Id: sophiecommand.tcl,v 1.44 2010-01-31 17:05:10 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
-# @brief   commandes de la fenêtre principale de l'outil sophie
+# @brief   commandes de la fenÃªtre principale de l'outil sophie
 #
 #------------------------------------------------------------
 namespace eval ::sophie {
@@ -235,7 +235,7 @@ proc ::sophie::setBinningAndWindow { binning { windowSize ""} { centerCoords "" 
       loadBias [list $x1b $y1b $x2b $y2b]
    }
 
-   #--- je change les paramètres dans le thread
+   #--- je change les paramÃ¨tres dans le thread
    if { $private(acquisitionState) != 0 } {
       set targetBoxSize [ expr int($private(targetBoxSize) / (2.0 * $private(xBinning))) ]
       ::camera::setAsynchroneParameter $private(camItem) \
@@ -264,7 +264,7 @@ proc ::sophie::setExposure { { exposure "" } } {
       set ::conf(sophie,exposure) $exposure
    }
 
-   #--- je change les paramètres dans le thread
+   #--- je change les paramÃ¨tres dans le thread
    if { $private(acquisitionState) != 0 } {
       ###set private(AsynchroneParameter) 1
       ::camera::setAsynchroneParameter $private(camItem) "exptime" $::conf(sophie,exposure)
@@ -422,8 +422,8 @@ proc ::sophie::onGuide { } {
 ##------------------------------------------------------------
 # setMode
 #    change le mode d'acquisition
-#      - change les paramètres de l'acquisition continue dans le thread de la camera
-#      - met à jour l'affichage de la fenetre de contole
+#      - change les paramÃ¨tres de l'acquisition continue dans le thread de la camera
+#      - met Ã  jour l'affichage de la fenetre de contole
 #      - ouvre la visu de la fibre si mode=GUIDE et guidingMode=OBJECT
 #
 # @param mode mode d'acquisition: CENTER, FOCUS, GUIDE, ""
@@ -490,7 +490,7 @@ proc ::sophie::setMode { { mode "" } } {
             "mode" "CENTER" \
             "findFiber" $private(findFiber) \
             "zoom" 4
-         #--- je change le binning et je cree une fenetre centree sur l'étoile
+         #--- je change le binning et je cree une fenetre centree sur l'Ã©toile
          setBinningAndWindow $::conf(sophie,focuseBinning) $private(targetBoxSize) $private(targetCoord)
          ::sophie::fiberview::closeWindow
       }
@@ -550,8 +550,8 @@ proc ::sophie::setMode { { mode "" } } {
 ##------------------------------------------------------------
 # setGuidingMode
 #    - change la position de la consigne en fonction de la variable ::conf(sophie,guidingMode)
-#    - met à jour l'affichage de la fenetre de controle
-#    - met à jour le thread de la camera si l'acquisition est en cours
+#    - met a jour l'affichage de la fenetre de controle
+#    - met a jour le thread de la camera si l'acquisition est en cours
 #    - ouvre la visu de la fibre si mode=GUIDE et guidingMode=OBJECT
 # @param visuNo numero de visu de la fenetre principale de sophie
 #------------------------------------------------------------
@@ -606,7 +606,7 @@ proc ::sophie::setGuidingMode { visuNo } {
    ::sophie::control::setOriginCoords [lindex $private(originCoord) 0] [lindex $private(originCoord) 1]
    ::sophie::control::setGuidingMode $::conf(sophie,guidingMode)
 
-   #--- je change les paramètres dans le thread de la camera
+   #--- je change les paramÃ¨tres dans le thread de la camera
    if { $private(acquisitionState) != 0 } {
       set xOriginCoord [ expr ( [lindex $private(originCoord) 0] - $private(xWindow) + 1 ) / $private(xBinning)  ]
       set yOriginCoord [ expr ( [lindex $private(originCoord) 1] - $private(yWindow) + 1 ) / $private(yBinning)  ]
@@ -657,9 +657,9 @@ proc ::sophie::adaptIncrement { } {
 
 ##------------------------------------------------------------
 # startMoveFilter
-#  démarre le changement d'attenuation
-#  Ne fait rien si le telescope n'est pas connecté
-# @param  direction "-" =diminution de l'attenuation , "+" =augmentation de l'atténuation
+#  dÃ©marre le changement d'attenuation
+#  Ne fait rien si le telescope n'est pas connectÃ©
+# @param  direction "-" =diminution de l'attenuation , "+" =augmentation de l'attï¿½nuation
 #
 #------------------------------------------------------------
 proc ::sophie::startMoveFilter { direction } {
@@ -694,7 +694,7 @@ proc ::sophie::stopMoveFilter { } {
          #--- je recupere l'etat de butees
          set extremity [ tel$::audace(telNo) filter extremity ]
 
-         #--- j'arrete le rafraichissement de l'affichage du taux d'atténuation
+         #--- j'arrete le rafraichissement de l'affichage du taux d'attÃ©nuation
          set private(updateFilterState) 0
          if { $private(updateFilterId)!="" } {
             after cancel $private(updateFilterId)
@@ -770,7 +770,7 @@ proc ::sophie::updateFilterPercent { } {
 # initFilter
 #  demarrage un mouvement "-" de l'attenuateur pour initialiser
 #  la position des attenuateurs sur l'extremitee MIN
-#  la duree de recherche est limitee à 1.5 * private(filterMaxDelay)
+#  la duree de recherche est limitee Ã  1.5 * private(filterMaxDelay)
 # @return rien
 #------------------------------------------------------------
 proc ::sophie::initFilter {  } {
@@ -797,7 +797,7 @@ proc ::sophie::initFilter {  } {
 
 ##------------------------------------------------------------
 # initFilterLoop
-#  continue le mouvement "-" de l'attenuateur jusqu'à ce que
+#  continue le mouvement "-" de l'attenuateur jusqu'Ã  ce que
 #  l' extremite MIN soit atteinte
 # @return rien
 #------------------------------------------------------------
@@ -1016,7 +1016,7 @@ proc ::sophie::showImage { } {
       set visuSophie [ ::confVisu::create ]
       #--- je selectionne l'outil Visionneuse bis
       ::confVisu::selectTool $visuSophie ::visio2
-      #--- je selectionne le répertoire
+      #--- je selectionne le rÃ©pertoire
       ::visio2::localTable::init $visuSophie "" $::audace(rep_images)
       #--- j'affiche le contenu du repertoire
       ##::visio2::localTable::fillTable $visuSophie
@@ -1173,8 +1173,8 @@ proc ::sophie::onMousePressButton1 { visuNo w x y } {
    #--- je recupere le type de l'item (deuxieme tag)
    set typeItem [lindex $tags 1]
 
-   #--- je vérifie que le guidage est sur OBJECT
-   #---- (il ne faut pas pouvoir déplacer la consigne si on est en mode FIBER)
+   #--- je vÃ©rifie que le guidage est sur OBJECT
+   #---- (il ne faut pas pouvoir dÃ©placer la consigne si on est en mode FIBER)
    ###if { $typeItem == "origin" && $::conf(sophie,guidingMode) != "OBJECT" } {
    ###   return
    ###}
@@ -1534,7 +1534,7 @@ proc ::sophie::createFiberB { visuNo } {
 #   active ou descative l'envoi des commandes de guidage a la monture.
 #
 # @param visuNo      numero de la visu courante
-# @param state       activation/desactivation de l'envoi des commandes à la monture
+# @param state       activation/desactivation de l'envoi des commandes Ã  la monture
 #   -  si state = 1 , les commandes sont envoyees
 #   -  si state = 0 , les commandes ne sont pas envoyees
 #
@@ -1669,7 +1669,7 @@ proc ::sophie::startAcquisition { visuNo } {
       set targetX [ expr ( [lindex $private(targetCoord) 0] - $private(xWindow) + 1 ) / $private(xBinning) ]
       set targetY [ expr ( [lindex $private(targetCoord) 1] - $private(yWindow) + 1 ) / $private(yBinning) ]
       set targetBoxSize [ expr int( $private(targetBoxSize) / (2.0 * $private(xBinning) )) ]
-      
+
       #--- je fais l'acquisition
       ::camera::guideSophie $private(camItem) "::sophie::callbackAcquisition $visuNo" \
          $::conf(sophie,exposure)           \
@@ -1722,9 +1722,9 @@ proc ::sophie::stopAcquisition { visuNo } {
       #--- je mets a jour la fenetre de controle
       ::sophie::control::setAcquisitionState  $private(acquisitionState)
 
-      #--- j'arrete le centrage s'il était en cours
+      #--- j'arrete le centrage s'il Ã©tait en cours
       stopCenter
-      #--- j'arrete le guidage s'il était en cours
+      #--- j'arrete le guidage s'il Ã©tait en cours
       stopGuide
 
       #--- l'obturateur de la camera est ferme a la fin de la derniere acquisition pour ne pas la perturber.
@@ -1754,6 +1754,8 @@ proc ::sophie::startCenter { } {
 
    #--- je configure le telescope avec la vitesse de guidage
    ::telescope::setSpeed 1
+   #--- je signale au telescope que je demarre une session de centrage
+   tel$::audace(telNo) radec guiding 1
 
    set private(centerEnabled) 1
    #--- j'active le centrage dans le thread de la camera
@@ -1781,6 +1783,11 @@ proc ::sophie::stopCenter { } {
    ###set private(AsynchroneParameter) 1
    ::camera::setAsynchroneParameter $private(camItem) \
          "mountEnabled" 0
+
+   #--- je signale au telescope que j'arrete une session de centrage
+   tel$::audace(telNo) radec guiding 1
+
+
    #--- je mets a jour le voyant dans la fenetre de controle
    ::sophie::control::setCenterState $private(centerEnabled)
 }
@@ -1802,6 +1809,9 @@ proc ::sophie::startGuide { } {
    set private(guideEnabled) 1
    #--- je configure le telescope avec la vitesse de guidage
    ::telescope::setSpeed 1
+   #--- je signale au telescope que je demarre une session de guidage
+   tel$::audace(telNo) radec guiding 1
+
 
    #--- j'active le guidage dans le thread de la camera
    ###set private(AsynchroneParameter) 1
@@ -1825,6 +1835,10 @@ proc ::sophie::stopGuide { } {
    #--- j'arrete le centrage dans le thread de la camera
    ###::telescope::stop ""
    ###set private(AsynchroneParameter) 1
+
+   #--- je signale au telescope que j'arret une session de guidage
+   tel$::audace(telNo) radec guiding 0
+
    ::camera::setAsynchroneParameter $private(camItem) \
          "mountEnabled" 0
 
@@ -1890,9 +1904,9 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
          }
          "targetCoord" {
             # description des parametres recus
-            # args 0 = coordonnees de l'étoile, ou coordonnees du centre de la zone de recherche si l'étoile n'a pas ete trouvee
-            # args 1 = dx   (ramené au binning 1x1)
-            # args 2 = dy   (ramené au binning 1x1)
+            # args 0 = coordonnees de l'Ã©toile, ou coordonnees du centre de la zone de recherche si l'ï¿½toile n'a pas ete trouvee
+            # args 1 = dx   (ramenÃ© au binning 1x1)
+            # args 2 = dy   (ramenÃ© au binning 1x1)
             # args 3 = targetDetection
             # args 4 = fiberStatus  (=DETECTED NO_SIGNAL UNCHANGED DISABLED )
             # args 5 = fiberX
@@ -1967,12 +1981,12 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                   if { $fiberStatus == "DETECTED" } {
                      switch $::conf(sophie,guidingMode)  {
                         "FIBER_HR" {
-                           #--- je calcule l'écart par rapport à la position de depart
+                           #--- je calcule l'Ã©cart par rapport Ã  la position de depart
                            set originDx  [expr [lindex $private(originCoord) 0] - [lindex $private(originCoordGuide) 0] ]
                            set originDy  [expr [lindex $private(originCoord) 1] - [lindex $private(originCoordGuide) 1] ]
                         }
                         "FIBER_HE" {
-                           #--- je calcule l'écart par rapport à la position de depart
+                           #--- je calcule l'Ã©cart par rapport Ã  la position de depart
                            set originDx  [expr [lindex $private(originCoord) 0] - [lindex $private(originCoordGuide) 0] ]
                            set originDy  [expr [lindex $private(originCoord) 1] - [lindex $private(originCoordGuide) 1] ]
                         }
@@ -2074,7 +2088,7 @@ proc ::sophie::removeAcquisitionListener { visuNo cmd } {
 # @param cameraAngle angle de la camera
 # @param targetBoxSize taille de la zone de recherche de l'etoile
 # @param mountEnabled  1=envoyer les corrections a la monture. 0=ne pas envoyer les corrections
-# @param mountCorrection  0=commandes move/stop 1=commande move avec duree 2=commande correct avec distance en arsec 
+# @param mountCorrection  0=commandes move/stop 1=commande move avec duree 2=commande correct avec distance en arsec
 # @param alphaSpeed    vitesse de correction alpha de la monture en arcsec/seconde de temps
 # @param deltaSpeed    vitesse de correction delta de la monture en arcsec/seconde de temps
 # @param alphaReverse  1=inverser le sens des correction en alpha. 0=ne pas inverser le sens des corrections
