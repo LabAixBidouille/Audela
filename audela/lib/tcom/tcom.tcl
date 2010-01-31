@@ -1,6 +1,11 @@
-# $Id: tcom.tcl,v 1.1.1.1 2005-12-03 20:53:19 denismarchais Exp $
+# $Id: tcom.tcl,v 1.2 2010-01-31 17:25:50 michelpujol Exp $
 
 namespace eval ::tcom {
+    # Tear down all event connections to the object.
+    proc unbind {handle} {
+	::tcom::bind $handle {}
+    }
+
     # Look for the file in the directories in the package load path.
     # Return the full path of the file.
     proc search_auto_path {fileSpec} {
@@ -44,6 +49,7 @@ namespace eval ::tcom {
 	set key "HKEY_CLASSES_ROOT\\$verIndependentProgId"
 	registry set $key "" "$className Class"
 	registry set "$key\\CLSID" "" $clsid
+	registry set "$key\\CurVer" "" $progId
 
 	set key "HKEY_CLASSES_ROOT\\CLSID\\$clsid"
 	registry set $key "" "$className Class"
@@ -55,7 +61,6 @@ namespace eval ::tcom {
 	if {$inproc} {
 	    set key "HKEY_CLASSES_ROOT\\CLSID\\$clsid\\InprocServer32"
 	    registry set $key "" $dllPath
-	    registry set $key "ThreadingModel" "Apartment"
 	}
 
 	if {$local} {
