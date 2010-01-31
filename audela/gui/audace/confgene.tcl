@@ -5,7 +5,7 @@
 #               pose, choix des outils, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.65 2010-01-30 14:40:32 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.66 2010-01-31 08:06:44 michelpujol Exp $
 #
 
 #
@@ -1791,7 +1791,7 @@ namespace eval ::confChoixOutil {
       variable private
       global audace caption conf panneau
 
-      #---
+      set visuNo $audace(visuNo)
       set conf(afficheOutils) ""
       foreach m [array names panneau menu_name,*] {
          set namespace [ lindex [ split $m "," ] 1 ]
