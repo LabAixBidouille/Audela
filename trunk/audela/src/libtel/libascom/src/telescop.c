@@ -35,7 +35,7 @@
 #include "telescop.h"
 #include <libtel/util.h>
 
-
+extern void logConsole(struct telprop *tel, char *messageFormat, ...);
  /*
  *  Definition of different cameras supported by this driver
  *  (see declaration in libstruc.h)
@@ -106,7 +106,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
       tel->sDecimal='.';
    }
    strcpy(s,"$telcmd Tracking 1"); mytel_tcleval(tel,s);
-   tel->rateunity=0.1;  /* deg/s when rate=1 */
+   tel->rateunity=0.1;           //  deg/s when rate=1   
    strcpy(s,"$telcmd Unpark"); mytel_tcleval(tel,s);
    return 0;
 }
@@ -131,9 +131,24 @@ int tel_close(struct telprop *tel)
       return 1;
    }
    strcpy(s,"$telcmd Connected 0"); mytel_tcleval(tel,s);
+   sprintf(s,"unset telcmd"); mytel_tcleval(tel,s);
    sprintf(s,"unset ::ascom_variable(1)"); mytel_tcleval(tel,s);
    return 0;
 }
+
+// ---------------------------------------------------------------------------
+// ascomcamSetupDialog 
+//    affiche la fenetre de configuration fournie par le driver de la monture
+// @return void
+//    
+// ---------------------------------------------------------------------------
+
+void mytel_setupDialog(struct telprop *tel)
+{
+   char s[1024];
+   strcpy(s,"after idle $::ascom_variable(1) SetupDialog"); mytel_tcleval(tel,s);
+}
+
 
 int tel_radec_init(struct telprop *tel)
 /* ----------------------------------- */
@@ -609,6 +624,8 @@ int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude
    }
    return 0;
 }
+
+
 /* ================================================================ */
 /* ================================================================ */
 /* ===     Fonctions etendues pour le pilotage du telescope     === */

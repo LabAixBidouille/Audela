@@ -27,5 +27,7 @@
 int cmdTelPut(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelProperties(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelMethods(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelSetupDialog(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+
 
 #endif
