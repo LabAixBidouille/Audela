@@ -1,8 +1,8 @@
 #
 # Fichier : pkgIndex.tcl
 # Description : Definition du point d'entree du plugin
-# Mise a jour $Id: pkgIndex.tcl,v 1.6 2009-12-30 07:26:07 robertdelmas Exp $
+# Mise a jour $Id: pkgIndex.tcl,v 1.7 2010-01-31 09:27:12 michelpujol Exp $
 #
 
-package ifneeded updateaudela 1.4 [ list source [ file join $dir updateaudela.tcl ] ]
+package ifneeded updateaudela 1.5 [ list source [ file join $dir updateaudela.tcl ] ]
 
