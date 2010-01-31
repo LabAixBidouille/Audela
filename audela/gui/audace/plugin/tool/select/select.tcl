@@ -1,7 +1,7 @@
 #
 # Fichier : select.tcl
 # Description : Interface permettant la selection d'images
-# Mise a jour $Id: select.tcl,v 1.2 2010-01-30 14:21:43 robertdelmas Exp $
+# Mise a jour $Id: select.tcl,v 1.3 2010-01-31 11:29:42 robertdelmas Exp $
 #
 
 #============================================================
@@ -79,8 +79,6 @@ namespace eval ::select {
    #------------------------------------------------------------
    proc initPlugin { tkbase } {
       variable This
-      variable widget
-      global caption conf
 
       #--- Inititalisation du nom de la fenetre
       set This "$tkbase"
@@ -121,9 +119,7 @@ namespace eval ::select {
 
    proc run { } {
       variable This
-      global audace
-      global caption
-      global select
+      global audace caption select
 
       #--- Initialisation des variables
       set select(nomEntree)   ""
@@ -208,7 +204,7 @@ namespace eval ::select {
 
       pack $This.tool.fra2 -anchor center -expand 0 -fill y -side left
 
-      #--- Creation des variables audace dependant de la visu
+      #--- Creation des variables locales dependant de la visu
       set select(buffer) [visu$select(visuNo) buf]
       set select(canvas) $::confVisu::private($select(visuNo),hCanvas)
 
@@ -224,8 +220,7 @@ namespace eval ::select {
 
    proc parcourir { Entree_Sortie } {
       variable This
-      global audace
-      global select
+      global audace select
 
       #--- Fenetre parent
       set fenetre "$This"
@@ -253,13 +248,12 @@ namespace eval ::select {
 
    proc auto { } {
       variable This
-      global audace
-      global select
+      global audace conf select
 
       if { ( $select(nomSortie) != "" ) && ( $select(indexSortie) != "" ) } {
-         set in $select(nomEntree)
-         set nb [ llength $select(liste_entree) ]
-         catch { unset liste }
+         set in    $select(nomEntree)
+         set nb    [ llength $select(liste_entree) ]
+         set liste ""
          #--- Cette boucle cree une liste dont les elements sont des listes a 2 elems : [ list fwhm nom_image ]
          foreach img $select(liste_entree) {
             buf$select(buffer) load "$img"
@@ -279,7 +273,7 @@ namespace eval ::select {
          foreach elem $liste {
             $This.tool.fra2.i.t insert insert "# $elem\n"
             set org "[ lindex $elem 1 ]"
-            set dest [ file join $audace(rep_images) $select(nomSortie)$select(indexSortie)[ buf$select(buffer) extension ]$cmp ]
+            set dest [ file join $audace(rep_images) $select(nomSortie)$select(indexSortie)$conf(extension,defaut)$cmp ]
             file copy -force "$org" "$dest"
             $This.tool.fra2.i.t insert insert "file copy -force $org $dest\n\n"
             incr select(indexSortie)
@@ -291,9 +285,7 @@ namespace eval ::select {
 
    proc record { } {
       variable This
-      global audace
-      global caption
-      global select
+      global audace caption conf select
 
       if { ( $select(nomSortie) != "" ) && ( $select(indexSortie) != "" ) } {
          $This.tool.fra2.h.b3 configure -state disabled
@@ -305,7 +297,7 @@ namespace eval ::select {
          }
          #--- Copie du fichier
          set org "[ lindex $select(liste_entree) $select(index) ]"
-         set dest [ file join $audace(rep_images) $select(nomSortie)$select(indexSortie)[ buf$select(buffer) extension ]$cmp ]
+         set dest [ file join $audace(rep_images) $select(nomSortie)$select(indexSortie)$conf(extension,defaut)$cmp ]
          file copy -force $org $dest
          $This.tool.fra2.i.t insert insert "file copy -force $org $dest\n"
          #--- Incrementation de l'index de sortie
@@ -326,8 +318,7 @@ namespace eval ::select {
 
    proc dispima { index } {
       variable This
-      global audace
-      global select
+      global audace conf select
 
       if { $index >= "0" } {
          set nom [ lindex $select(liste_entree) $index ]
@@ -335,7 +326,7 @@ namespace eval ::select {
             buf$select(buffer) load $nom
          }
          ::audace::autovisu $select(visuNo)
-         set a [ scan $nom [ file join $audace(rep_images) $select(nomEntree)%d[ buf$select(buffer) extension ] ] val ]
+         set a [ scan $nom [ file join $audace(rep_images) $select(nomEntree)%d$conf(extension,defaut) ] val ]
          set num [ catch { set select(indexEntree) $val } msg ]
          if { $num == "1" } {
             ::select::start
@@ -358,9 +349,7 @@ namespace eval ::select {
 
    proc start { } {
       variable This
-      global audace
-      global caption
-      global select
+      global audace caption select
 
       #--- Nettoyage de l'affichage des images
       visu$select(visuNo) clear
