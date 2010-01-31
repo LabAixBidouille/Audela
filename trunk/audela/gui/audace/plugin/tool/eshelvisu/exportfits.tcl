@@ -2,7 +2,7 @@
 # Fichier : exportfits.tcl
 # Description : Export de fichier au format Fits
 # Auteurs : Michel Pujol
-# Mise a jour $Id: exportfits.tcl,v 1.1 2009-11-07 08:31:05 michelpujol Exp $
+# Mise a jour $Id: exportfits.tcl,v 1.2 2010-01-31 11:47:05 michelpujol Exp $
 #
 
 ################################################################
@@ -18,7 +18,6 @@ namespace eval ::eshel::exportfits {
 
 }
 
-
 #------------------------------------------------------------
 # run
 #    affiche la fenetre d'export des fichiers fits
@@ -27,52 +26,29 @@ namespace eval ::eshel::exportfits {
 #    inputFileName   nom du fichier d'entree
 #    keywordHduIndex   numero du HDU contenant les mots clefs (1 pour le permier HDU)
 #    keywordHduIndex   numero du HDU contenant les
-# return
-#   1 si la saisie est validee
-#   0 si la saisie est abandonne
+# @return void
 #------------------------------------------------------------
-proc ::eshel::exportfits::run { visuNo inputFileName dataHduIndex} {
+proc ::eshel::exportfits::run { visuNo fileNameList} {
    variable private
 
    #--- Creation des variables si elles n'existaient pas
-   if { ! [ info exists ::conf(eshel,exportfitsPosition) ] } { set ::conf(eshel,exportfitsPosition)     "420x440+100+15" }
-   if { ! [ info exists ::conf(eshel,exportfits,outputDirectory) ] } { set ::conf(eshel,exportfits,outputDirectory)  $::audace(rep_images) }
-   if { ! [ info exists ::conf(eshel,exportfits,outputBitpix) ] }    { set ::conf(eshel,exportfits,outputBitpix)  -32 }
+   if { ! [ info exists ::conf(eshel,exportfits,position) ] }      { set ::conf(eshel,exportfits,position)     "340x200+100+15" }
+   if { ! [ info exists ::conf(eshel,exportfits,outputDirectory)]} { set ::conf(eshel,exportfits,outputDirectory)  $::audace(rep_images) }
+   if { ! [ info exists ::conf(eshel,exportfits,outputBitpix) ] }  { set ::conf(eshel,exportfits,outputBitpix)  -32 }
+   if { ! [ info exists ::conf(eshel,exportfits,hduNameList) ] }   { set ::conf(eshel,exportfits,hduNameList)  "" }
 
-   set private($visuNo,closeWindow) 1
-   set private($visuNo,inputFileName) $inputFileName
-   set private($visuNo,addKeyword) 1
-   set private($visuNo,zipFile)    0
-   set private($visuNo,hduList)    ""
-
-   #--- je charge la liste des HDU
-   set catchResult [catch {
-      loadFile $visuNo $inputFileName $dataHduIndex
-   } ]
-
-   if { $catchResult == 1 } {
-      #--- j'affiche un message d'erreut
-      tk_messageBox -message  $::errorInfo -icon error -title $::caption(eshelvisu,exportfits,title)
-      ::console::affiche_erreur "$::errorInfo\n"
-      return
-   }
-
+   set private($visuNo,fileNameList) $fileNameList
+   set private($visuNo,progressBarValue) -1
    #--- j'affiche la fenetre de controle des mots clefs
    set tkBase [::confVisu::getBase $visuNo]
    set private($visuNo,This) "$tkBase.exportfits"
-   set result [::confGenerique::run $visuNo $private($visuNo,This) "::eshel::exportfits" \
-      -modal 0 -geometry $::conf(eshel,exportfitsPosition) -resizable 1 ]
+   ::confGenerique::run $visuNo $private($visuNo,This) "::eshel::exportfits" \
+      -modal 0 -geometry $::conf(eshel,exportfits,position) -resizable 1
+   wm minsize $private($visuNo,This) 340 200
 
-   #--- je purge la table
-   $private($visuNo,hduTable) delete 0 end
-   #--- j'ajoute les lignes dans la table
-   foreach hduName $private($visuNo,hduList) {
-      addRow $visuNo "end" $hduName
-   }
-
-   #--- je selectionne les profils
-   return $result
+   return
 }
+
 
 #------------------------------------------------------------
 # ::eshel::exportfits::getLabel
@@ -80,130 +56,6 @@ proc ::eshel::exportfits::run { visuNo inputFileName dataHduIndex} {
 #------------------------------------------------------------
 proc ::eshel::exportfits::getLabel { } {
    return "$::caption(eshelvisu,title) - $::caption(eshelvisu,exportfits,title)"
-}
-
-
-#------------------------------------------------------------
-# config::apply
-#   export les HDU selectionnes dans des fichiers separes
-#------------------------------------------------------------
-proc ::eshel::exportfits::apply { visuNo } {
-   variable private
-   variable widget
-
-   set hFile ""
-   set hOutputFile ""
-
-   set ::conf(eshel,exportfits,outputDirectory) [file normalize $widget($visuNo,outputDirectory)]
-
-   set catchResult [catch {
-      #--- j'ouvre le fichier d'entree
-      set hFile [fits open $private($visuNo,inputFileName)]
-      set nbHdu [$hFile info nhdu]
-
-      #--- je balaie la liste des HDU
-      set hduNum 1
-      foreach hduName $private($visuNo,hduList) {
-         #--- je verifie si le HDU a ete selectionne
-         if { $private(selectHdu,$hduName) == 1 } {
-            #--- je pointe le hdu dans le fichier d'entree
-            set extensionType [$hFile move $hduNum]
-            #--- je copie le HDU dans le fichier de sortie
-            set outpuFileName [file join $::conf(eshel,exportfits,outputDirectory) [file rootname [file tail $private($visuNo,inputFileName)]]]
-            append outpuFileName "_$hduName"
-            append outpuFileName [file extension $private($visuNo,inputFileName)]
-
-            if { $extensionType == 0 } {
-               #--- je verifie que c'est une image 1D
-               set hduNaxes [$hFile info imgdim]
-               set bitpix    [$hFile info imgType]
-               if { [llength $hduNaxes] == 1 && $bitpix != $::conf(eshel,exportfits,outputBitpix) } {
-                  #--- je convertis le profil en 32 bits
-                  #--- je cree le fichier de sortie
-                  file delete -force $outpuFileName
-                  set hOutputFile [fits open $outpuFileName 2]
-                  set bitpix $::conf(eshel,exportfits,outputBitpix)
-                  #--- je cree le HDU
-                  $hOutputFile insert image $bitpix "1" [lindex $hduNaxes 0]
-                  #--- j'insere l'image
-                  $hOutputFile put image 1 [$hFile get image]
-                  #--- je copie les mots clefs
-                  foreach keyword [$hFile get keyword] {
-                     set keywordName [lindex $keyword 0]
-                     set keywordValue [lindex $keyword 1]
-                     set keywordComment [lindex $keyword 2]
-                     if { [lsearch [list NAXIS NAXIS1 BITPIX GCOUNT PCOUNT XTENSION EXTNAME HDUVERS] $keywordName ] != -1 } {
-                        continue
-                     }
-                     $hOutputFile put keyword "$keywordName $keywordValue $keywordComment"
-                  }
-                  $hOutputFile close
-               } else {
-                  #--- j'enregistre l'image telle que
-                  $hFile copy $outpuFileName
-               }
-            } else {
-               #--- la table est enregistree automatiquement dans le deuxième HDU
-               $hFile copy $outpuFileName
-            }
-
-            update
-         }
-         incr hduNum
-      }
-      #--- je referme le fichier d'entree
-      $hFile close
-
-   } ]
-
-   if { $catchResult == 1 } {
-      if { $hFile != "" } {
-         $hFile close
-      }
-      if { $hOutputFile != "" } {
-         $hOutputFile close
-      }
-      #--- j'affiche un message d'erreur pour toutes autres erreurs non prevues
-      ::tkutil::displayErrorInfo $::caption(eshelvisu,exportfits,title)
-      set private($visuNo,closeWindow) 0
-  } else {
-      set private($visuNo,closeWindow) 1
-      set message [format $::caption(eshelvisu,exportfits,exportDone) $::conf(eshel,exportfits,outputDirectory)]
-      set choix [ tk_messageBox -type yesno -message $message -icon info -title $::caption(eshelvisu,exportfits,title)]
-      if { $choix == "yes" } {
-         #--- j'ouvre une fenetre pour afficher des profils
-         set visuDir [::confVisu::create]
-         #--- je selectionne l'outil eShel Visu
-         confVisu::selectTool $visuDir ::eshelvisu
-         #--- je pointe le repertoire des images brutes
-         set ::eshelvisu::localTable::private($visuDir,directory) $::conf(eshel,exportfits,outputDirectory)
-         #--- j'affiche le contenu du répertoire
-         ::eshelvisu::localTable::fillTable $visuDir
-      }
-   }
-}
-
-#------------------------------------------------------------
-# config::closeWindow
-#   ferme la fentre si la commande apply n'a pas detecte d'erreur
-#   sinon ne fait rien
-# return
-#   0  s'il ne faut pas fermer la fenetre
-#   rien s'il faut fermer la fenetre
-#------------------------------------------------------------
-proc ::eshel::exportfits::closeWindow { visuNo } {
-   variable private
-
-   if { $private($visuNo,closeWindow) == 0 } {
-      set private($visuNo,closeWindow) 1
-      #--- je retourne 0 pour empecher la fermeture de la fenetre
-      return 0
-   }
-
-   #--- je memorise la position courante de la fenetre
-   set ::conf(eshel,exportfitsPosition) [ wm geometry $private($visuNo,This) ]
-
-   return
 }
 
 #------------------------------------------------------------
@@ -218,282 +70,177 @@ proc ::eshel::exportfits::fillConfigPage { frm visuNo } {
    set private($visuNo,frm) $frm
 
    set widget($visuNo,outputDirectory) [file nativename $::conf(eshel,exportfits,outputDirectory)]
+   set widget($visuNo,selectP1A)       0
+   set widget($visuNo,selectP1B)       0
 
-   TitleFrame $frm.file -borderwidth 2 -relief ridge -text $::caption(eshelvisu,exportfits,exportedFile)
-
-      #--- choix : copier dans un fichier ZIP
-      checkbutton $frm.file.zip -text $::caption(eshelvisu,exportfits,zipFile) \
-         -variable ::eshel::exportfits::private($visuNo,zipFile) -state disabled
-      pack $frm.file.zip -in [$frm.file getframe] -side top -fill x -expand 1
-      frame $frm.file.directory -borderwidth 0
-         Label $frm.file.directory.label -text $::caption(eshelvisu,exportfits,outputDirectory)
-         Entry $frm.file.directory.entry -textvariable ::eshel::exportfits::widget($visuNo,outputDirectory)
-         Button $frm.file.directory.button -text "..." -command "::eshel::exportfits::selectOuputDirectory $visuNo"
-         pack $frm.file.directory.label -side left -fill none -expand 0
-         pack $frm.file.directory.entry -side left -fill x -expand 1
-         pack $frm.file.directory.button -side left -fill none -expand 0
-      pack $frm.file.directory -side bottom -fill x -expand 1
-   pack $frm.file -side bottom -fill x -expand 0
+   foreach hduName $::conf(eshel,exportfits,hduNameList) {
+      switch $hduName {
+         "P_1A" {
+            set widget($visuNo,selectP1A) 1
+         }
+         "P_1B" {
+            set widget($visuNo,selectP1B) 1
+         }
+         "P_1C" {
+            set widget($visuNo,selectP1C) 1
+         }
+         "P_FULL" {
+            set widget($visuNo,selectPFULL) 1
+         }
+         "ORDERS" {
+            set widget($visuNo,selectOrders) 1
+         }
+         "PRIMARY" {
+            set widget($visuNo,selectPrimary) 1
+         }
+      }
+   }
 
    #--- choix des HDU a extraire
-   #    un HDU  (par defaut HDU courant)
-   #    profils non calibres
-   #    profils calibres
    TitleFrame $frm.hdu -borderwidth 2 -relief ridge -text $::caption(eshelvisu,exportfits,selectHDU)
-      set private($visuNo,hduTable) $frm.hdu.table
-      scrollbar $frm.hdu.ysb -command "$private($visuNo,hduTable) yview"
-      scrollbar $frm.hdu.xsb -command "$private($visuNo,hduTable) xview" -orient horizontal
-      ::tablelist::tablelist $private($visuNo,hduTable) \
-            -columns [ list \
-               0   "Export" left  \
-               0  "HDU"  center \
-               ] \
-            -xscrollcommand [list $frm.hdu.xsb set] -yscrollcommand [list $frm.hdu.ysb set] \
-            -exportselection 0 \
-            -setfocus 1 \
-            -activestyle none
-      #--- je donne un nom a chaque colonne
-      $private($visuNo,hduTable) columnconfigure 0 -name hduSelect -editwindow checkbutton
-      $private($visuNo,hduTable) columnconfigure 1 -name hduName -stretchable 1
+      checkbutton $frm.hdu.selectPrimary -text $::caption(eshelvisu,exportfits,selectPrimary) \
+      -variable ::eshel::exportfits::widget($visuNo,selectPrimary)
+      grid $frm.hdu.selectPrimary -in [$frm.hdu getframe] -row 0 -column 0 -sticky nw
 
-      #--- Boutons de selection predefinie des HDU
-      frame $frm.hdu.select
-         button $frm.hdu.select.current -text $::caption(eshelvisu,exportfits,selectCurrent) \
-            -command "::eshel::exportfits::selectHdu $visuNo CURRENT"
-         button $frm.hdu.select.p1A -text $::caption(eshelvisu,exportfits,selectP1A) \
-            -command "::eshel::exportfits::selectHdu $visuNo P1A"
-         button $frm.hdu.select.p1B -text $::caption(eshelvisu,exportfits,selectP1B) \
-            -command "::eshel::exportfits::selectHdu $visuNo P1B"
-         button $frm.hdu.select.flat1A -text $::caption(eshelvisu,exportfits,selectFlat1A) \
-            -command "::eshel::exportfits::selectHdu $visuNo FLAT1A"
-         button $frm.hdu.select.flat1B -text $::caption(eshelvisu,exportfits,selectFlat1B) \
-            -command "::eshel::exportfits::selectHdu $visuNo FLAT1B"
-         button $frm.hdu.select.all -text $::caption(eshelvisu,exportfits,selectAll) \
-            -command "::eshel::exportfits::selectHdu $visuNo ALL"
-         button $frm.hdu.select.none -text $::caption(eshelvisu,exportfits,selectNone) \
-            -command "::eshel::exportfits::selectHdu $visuNo NONE"
-         pack $frm.hdu.select.current -side top -fill x -expand 0  -padx 2 -pady 2
-         pack $frm.hdu.select.p1A  -side top -fill x -expand 0 -padx 2 -pady 2
-         pack $frm.hdu.select.p1B  -side top -fill x -expand 0 -padx 2 -pady 2
-         pack $frm.hdu.select.flat1A  -side top -fill x -expand 0 -padx 2 -pady 2
-         pack $frm.hdu.select.flat1B  -side top -fill x -expand 0 -padx 2 -pady 2
-         pack $frm.hdu.select.all  -side top -fill x -expand 0 -padx 2 -pady 2
-         pack $frm.hdu.select.none -side top -fill x -expand 0 -padx 2 -pady 2
+      checkbutton $frm.hdu.selectPFull -text $::caption(eshelvisu,exportfits,selectPFull) \
+      -variable ::eshel::exportfits::widget($visuNo,selectPFull)
+      grid $frm.hdu.selectPFull -in [$frm.hdu getframe] -row 0 -column 1 -sticky nw
 
-      #--- choix ajouter les mots clefs du premier HDU
-      checkbutton $frm.hdu.keyword -text $::caption(eshelvisu,exportfits,keyword) \
-         -variable ::eshel::exportfits::private($visuNo,addKeyword)
+      checkbutton $frm.hdu.selectOrders -text $::caption(eshelvisu,exportfits,selectOrders) \
+      -variable ::eshel::exportfits::widget($visuNo,selectOrders)
+      grid $frm.hdu.selectOrders -in [$frm.hdu getframe] -row 0 -column 2 -sticky nw
 
-      #--- je positionne les widgets dans la frame
-      grid $private($visuNo,hduTable) -in [$frm.hdu getframe] -row 0 -column 0 -sticky nsew
-      grid $frm.hdu.ysb     -in [$frm.hdu getframe] -row 0 -column 1 -sticky nsew
-      grid $frm.hdu.xsb     -in [$frm.hdu getframe] -row 1 -column 0 -sticky ew
-      grid $frm.hdu.select  -in [$frm.hdu getframe] -row 0 -column 2 -columnspan 1 -sticky ewns
-      grid $frm.hdu.keyword -in [$frm.hdu getframe] -row 2 -column 0 -columnspan 2 -sticky ew
-      grid rowconfig    [$frm.hdu getframe]  0 -weight 1
-      grid rowconfig    [$frm.hdu getframe]  1 -weight 0
-      grid rowconfig    [$frm.hdu getframe]  2 -weight 0
+      checkbutton $frm.hdu.selectP1A -text $::caption(eshelvisu,exportfits,selectP1A) \
+            -variable ::eshel::exportfits::widget($visuNo,selectP1A)
+      grid $frm.hdu.selectP1A -in [$frm.hdu getframe] -row 1 -column 0 -sticky nw
+
+      checkbutton $frm.hdu.selectP1B -text $::caption(eshelvisu,exportfits,selectP1B) \
+         -variable ::eshel::exportfits::widget($visuNo,selectP1B)
+      grid $frm.hdu.selectP1B -in [$frm.hdu getframe] -row 1 -column 1 -sticky nw
+
+      checkbutton $frm.hdu.selectP1C -text $::caption(eshelvisu,exportfits,selectP1C) \
+      -variable ::eshel::exportfits::widget($visuNo,selectP1C)
+      grid $frm.hdu.selectP1C -in [$frm.hdu getframe] -row 1 -column 2 -sticky nw
+
       grid columnconfig [$frm.hdu getframe]  0 -weight 1
-      grid columnconfig [$frm.hdu getframe]  1 -weight 0
-      grid columnconfig [$frm.hdu getframe]  2 -weight 0
-   pack $frm.hdu -side top -fill both -expand 1
+      grid columnconfig [$frm.hdu getframe]  1 -weight 1
+      grid columnconfig [$frm.hdu getframe]  2 -weight 1
+   pack $frm.hdu -side top -fill x -expand 0
+
+   #--- repertoire de sortie
+   TitleFrame $frm.directory -borderwidth 2 -relief ridge -text $::caption(eshelvisu,exportfits,exportedFile)
+
+      Label $frm.directory.label -text $::caption(eshelvisu,exportfits,outputDirectory)
+      pack $frm.directory.label -in [$frm.directory getframe] -side left -fill none -expand 0
+
+      Entry $frm.directory.entry -textvariable ::eshel::exportfits::widget($visuNo,outputDirectory)
+      pack $frm.directory.entry -in [$frm.directory getframe] -side left -fill x -expand 1
+
+      Button $frm.directory.button -text "..." -command "::eshel::exportfits::selectOuputDirectory $visuNo"
+      pack $frm.directory.button -in [$frm.directory getframe] -side left -fill none -expand 0
+   pack $frm.directory -side top -fill x -expand 0
+
+   #--- barre de progression
+   ###ProgressBar $frm.progressBar -width 100 -type normal -relief raised \
+   ###   -bg $::audace(color,backColor) -fg $::audace(color,activeTextColor) \
+   ###   -variable ::eshel::exportfits::private($visuNo,progressBarValue)
+   ttk::progressbar $frm.progressBar  \
+      -variable ::eshel::exportfits::private($visuNo,progressBarValue)
+
+   pack $frm.progressBar -side top -anchor center -fill none -expand 0 -pady 4
 
 }
 
 #------------------------------------------------------------
-#  addRow
-#     ajoute une ligne dans la table
+# config::apply
+#   export les HDU selectionnes dans des fichiers separes
 #------------------------------------------------------------
-proc ::eshel::exportfits::addRow { visuNo rowIndex hduName } {
+proc ::eshel::exportfits::apply { visuNo } {
    variable private
+   variable widget
 
-   $private($visuNo,hduTable) insert $rowIndex [list "" $hduName]
-   $private($visuNo,hduTable) cellconfigure $rowIndex,hduSelect \
-      -window [ list ::eshel::exportfits::createCheckbutton $hduName ] \
-      -windowdestroy [ list ::eshel::exportfits::deleteCheckbutton ]
-   $private($visuNo,hduTable) rowconfigure $rowIndex -name $hduName
-}
-
-#------------------------------------------------------------------------------
-# createCheckbutton
-#    cree un checkbutton dans la table
-#
-# Parametres :
-#    rowName      : nom de la ligne (correspondant au nopm de l'étoile)
-#    tkTable      : nom Tk de la table
-#    row          : numero de ligne
-#    col          : numero de colonne
-#    w            : nom Tk du bouton
-#------------------------------------------------------------------------------
-proc ::eshel::exportfits::createCheckbutton { hduName tkTable row col w } {
-   variable private
-   #--- je cree la variable qui contient l'état du checkbutton
-   set private(selectHdu,$hduName) 0
-   #--- je cree le checkbutton
-   checkbutton $w -highlightthickness 0 -takefocus 0 -variable ::eshel::exportfits::private(selectHdu,$hduName)
-}
-
-#------------------------------------------------------------------------------
-# deleteCheckbutton
-#    supprime un checkbutton dans la table
-#
-# Parametres :
-#    tkTable      : nom Tk de la table
-#    row          : numero de ligne
-#    col          : numero de colonne
-#    w            : nom Tk du bouton
-#------------------------------------------------------------------------------
-proc ::eshel::exportfits::deleteCheckbutton { tkTable row col w } {
-   variable private
-   set hduName [$tkTable cellcget $row,hduName -text]
-   #--- je supprime le checkbutton
-   destroy $w
-   #--- je supprime la variable qui contient l'etat du checkbutton
-   unset private(selectHdu,$hduName)
-}
+   set ::conf(eshel,exportfits,outputDirectory) [file normalize $widget($visuNo,outputDirectory)]
 
 
-#------------------------------------------------------------
-# ::eshel::process::loadFile
-#    charge un fichier FITS Eshel
-# Parameters
-#    fileName   nom du fichier d'entree
-#    keywordHduIndex   numero du HDU contenant les mots clefs (1 pour le permier HDU)
-#    dataHduIndex      numero du HDU contenant le profil      (1 pour le permier HDU)
-# return
-#
-#------------------------------------------------------------
-proc ::eshel::exportfits::loadFile { visuNo inputFileName dataHduIndex} {
-   variable private
 
-   set hFile ""
+   set ::conf(eshel,exportfits,hduNameList) ""
+   if { $widget($visuNo,selectP1A) == 1 } {
+      lappend ::conf(eshel,exportfits,hduNameList) "P_1A"
+   }
+   if { $widget($visuNo,selectP1B) == 1 } {
+      lappend ::conf(eshel,exportfits,hduNameList) "P_1B"
+   }
+   if { $widget($visuNo,selectP1C) == 1 } {
+      lappend ::conf(eshel,exportfits,hduNameList) "P_1C"
+   }
+   if { $widget($visuNo,selectPFull) == 1 } {
+      lappend ::conf(eshel,exportfits,hduNameList) "P_FULL"
+   }
+   if { $widget($visuNo,selectOrders) == 1 } {
+      lappend ::conf(eshel,exportfits,hduNameList) "ORDERS"
+   }
+   if { $widget($visuNo,selectPrimary) == 1 } {
+      lappend ::conf(eshel,exportfits,hduNameList) "PRIMARY"
+   }
 
-   #--- j'ouvre le fichier
    set catchResult [catch {
+      set private($visuNo,progressBarValue) 0
+      #--- je mets a jour la  valeur maximale de la barre de progress
+      $private($visuNo,frm).progressBar  configure  -maximum [llength $private($visuNo,fileNameList)]
 
-      #--- j'ouvre le fichier d'entree
-      set hFile [fits open $inputFileName]
-      set nbHdu [$hFile info nhdu]
-
-      #--- je verifie que le keywordHduIndex existe dans le fichier
-      if { $dataHduIndex < 1 || $dataHduIndex > $nbHdu } {
-         $hFile close
-         error "Invalid HDU $dataHduIndex"
+      foreach inputFileName $private($visuNo,fileNameList) {
+         saveFile $inputFileName $::conf(eshel,exportfits,hduNameList) $::conf(eshel,exportfits,outputDirectory)
+         incr private($visuNo,progressBarValue)
       }
 
-      #--- prepare la liste des HDU
-      set private($visuNo,hduList) ""
-      for { set i 1 } { $i <= $nbHdu } { incr i } {
-         $hFile move $i
-         if { $i != 1 } {
-            set hduName [string trim [string map {"'" ""} [lindex [lindex [$hFile get keyword "EXTNAME"] 0] 1]]]
-         } else {
-            set hduName "PRIMARY"
-         }
-         lappend private($visuNo,hduList) $hduName
-         if { $i == $dataHduIndex } {
-            set private($visuNo,currentHduName) $hduName
-         }
-      }
    } ]
 
-   #--- je referme le fichier d'entree
-   if { $hFile != "" } {
-      $hFile close
-   }
-
-   #--- je traite les cas d'erreur
    if { $catchResult == 1 } {
-      #--- je transmet l'erreur a la procedure appelante.
-      error $::errorInfo
+      #--- j'affiche un message d'erreur pour toutes autres erreurs non prÃ©vues
+      ::tkutil::displayErrorInfo $::caption(eshelvisu,exportfits,title)
+   } else {
+      #--- je ferme la boite de dialogue
+      closeWindow $visuNo
+
+      if { $::conf(eshel,exportfits,hduNameList) != "" } {
+         set message [format $::caption(eshelvisu,exportfits,exportDone) $::conf(eshel,exportfits,outputDirectory)]
+         set choix [ tk_messageBox -type yesno -message $message -icon info -title $::caption(eshelvisu,exportfits,title)]
+         if { $choix == "yes" } {
+            #--- j'ouvre une fenetre pour afficher des profils
+            set visuDir [::confVisu::create]
+            #--- je selectionne l'outil eShel Visu
+            confVisu::selectTool $visuDir ::eshelvisu
+            #--- je pointe le repertoire des images brutes
+            set ::eshelvisu::localTable::private($visuDir,directory) $::conf(eshel,exportfits,outputDirectory)
+            #--- j'affiche le contenu du rÃ©pertoire
+            ::eshelvisu::localTable::fillTable $visuDir
+         }
+      }
    }
 }
 
 #------------------------------------------------------------
-# selectHdu
-#   selectionne les profils a exporter
-#
-# Parameters
-#    visuNo          nom du fichier d'entree
-#    mode   : CURRENT_HDU = current HDU
-#             CALIBRATED_PROFILES = calibrated profiles
+# config::closeWindow
+#   ferme la fenetre si la commande apply n'a pas detecte d'erreur
+#   sinon ne fait rien
 # return
-#   rien
+#   0  s'il ne faut pas fermer la fenetre
+#   rien s'il faut fermer la fenetre
 #------------------------------------------------------------
-proc ::eshel::exportfits::selectHdu { visuNo mode } {
+proc ::eshel::exportfits::closeWindow { visuNo } {
    variable private
 
-   switch $mode {
-      CURRENT {
-         #--- je coche le HDU courant
-         foreach hduName $private($visuNo,hduList) {
-            if { $hduName == $private($visuNo,currentHduName) } {
-               set private(selectHdu,$hduName) 1
-            } else {
-               set private(selectHdu,$hduName) 0
-            }
-         }
+   #--- je sauve la taille et la position de la fenetre
+   set ::conf(eshel,exportfits,position) [winfo geometry [winfo toplevel $private($visuNo,frm) ]]
 
-      }
-      P1A {
-         #--- je coche les profils non calibres
-         foreach hduName $private($visuNo,hduList) {
-            if { [string equal -length 5 $hduName "P_1A_"] == 1 } {
-               set private(selectHdu,$hduName) 1
-            } else {
-               set private(selectHdu,$hduName) 0
-            }
-         }
-      }
-      P1B {
-         #--- je coche les profils calibres
-         foreach hduName $private($visuNo,hduList) {
-            if { [string equal -length 5 $hduName "P_1B_"] == 1 } {
-               set private(selectHdu,$hduName) 1
-            } else {
-               set private(selectHdu,$hduName) 0
-            }
-         }
-      }
-      FLAT1A {
-         #--- je coche les profils non calibres
-         foreach hduName $private($visuNo,hduList) {
-            if { [string equal -length 8 $hduName "FLAT_1A_"] == 1 } {
-               set private(selectHdu,$hduName) 1
-            } else {
-               set private(selectHdu,$hduName) 0
-            }
-         }
-      }
-      FLAT1B {
-         #--- je coche les profils calibres
-         foreach hduName $private($visuNo,hduList) {
-            if { [string equal -length 8 $hduName "FLAT_1B_"] == 1 } {
-               set private(selectHdu,$hduName) 1
-            } else {
-               set private(selectHdu,$hduName) 0
-            }
-         }
-      }
-      ALL {
-         #--- je decoche tout
-         foreach hduName $private($visuNo,hduList) {
-            set private(selectHdu,$hduName) 1
-         }
-      }
-      NONE  {
-         #--- je decoche tout
-         foreach hduName $private($visuNo,hduList) {
-            set private(selectHdu,$hduName) 0
-         }
-      }
-   }
+   return ""
 }
+
 
 ##------------------------------------------------------------
 # selectOuputDirectory
 #   selectionne le nom du fichier de sortie
-# @param numéro de la visu
+# @param numï¿½ro de la visu
 # @return rien
 #------------------------------------------------------------
 proc ::eshel::exportfits::selectOuputDirectory { visuNo } {
@@ -510,6 +257,105 @@ proc ::eshel::exportfits::selectOuputDirectory { visuNo } {
          return
    } else {
       set widget($visuNo,outputDirectory) [file nativename $outputDirectory]
+   }
+}
+
+
+#------------------------------------------------------------
+# config::saveFile
+#   exporte les HDU dans des fichiers separes
+#   les fichers de sortie ont pour nom  {inputFilename}_{hduName}.{inputfileName extension}
+#
+# Exemple :
+# @param intputFileName  nom du fichier d'entree
+# @param hduNameList     liste des noms de HDU Ã  extraire PRIMARY P_1A P_1B P_1C FULL FULL0
+# @param outputDirectory rÃ©pertoire de sortie des fichiers
+#------------------------------------------------------------
+proc ::eshel::exportfits::saveFile { intputFileName hduNameList outputDirectory } {
+   variable private
+   variable widget
+
+   set hFile ""
+   set hOutputFile ""
+
+   set catchResult [catch {
+      #--- j'ouvre le fichier d'entree en lecture
+      set hFile [fits open $intputFileName 0]
+      set nbHdu [$hFile info nhdu]
+      set primaryKeywords ""
+
+      #--- je balaie la liste des HDU
+      for { set hduNum 1 } { $hduNum <= $nbHdu }  { incr hduNum } {
+         #--- je pointe le hdu dans le fichier d'entree (retourne 0-image, 1-ASCII table, 2-Binary Table.  )
+         set extensionType [$hFile move $hduNum]
+         if { $hduNum != 1 } {
+            set hduName [string trim [string map {"'" ""} [lindex [lindex [$hFile get keyword "EXTNAME"] 0] 1]]]
+         } else {
+            set hduName PRIMARY
+            #--- je recupere les mots cles du HDU principal
+            set primaryKeywords [$hFile dump]
+         }
+         foreach requiredHduName $hduNameList {
+            #--- je verifie que le nom du HDU fait partie de la liste des HDU demandÃ©s
+            if { [string first $requiredHduName $hduName] == 0 && $hduName != "P_FULL0" } {
+               set outpuFileName [file join $outputDirectory [file rootname [file tail $intputFileName]]]
+               append outpuFileName "_$hduName"
+               append outpuFileName [file extension $intputFileName]
+               if { $extensionType == 0 } {
+                  #--- je verifie que c'est une image 1D
+                  set hduNaxes [$hFile info imgdim]
+                  set bitpix    [$hFile info imgType]
+                  if { [llength $hduNaxes] == 1 && $bitpix != $::conf(eshel,exportfits,outputBitpix) } {
+                     #--- je convertis le profil en 32 bits
+                     #--- je cree le fichier de sortie
+                     file delete -force $outpuFileName
+                     set hOutputFile [fits open $outpuFileName 2]
+                     set bitpix $::conf(eshel,exportfits,outputBitpix)
+                     #--- je cree le HDU (cree automatiquement les mots cles BITPIX COMMENT EXTEND=T NAXIS NAXISn SIMPLE
+                     $hOutputFile insert image $bitpix "1" [lindex $hduNaxes 0]
+                     #--- j'insere l'image
+                     $hOutputFile put image 1 [$hFile get image]
+                     #--- je copie les mots cles du PRIMARY HDU
+                     foreach keyword $primaryKeywords {
+                        set keywordName [lindex $keyword 0]
+                        if { [lsearch [list BITPIX NAXIS NAXIS1 NAXIS2 NAXIS3 EXTEND SIMPLE BGMEAN BGSIGMA MIPS-HI MIPS-LO MEAN CONTRAST SIGMA DATAMAX DATAMIN ] $keywordName ] == -1 } {
+                           $hOutputFile put keyword $keyword 0
+                        }
+                     }
+                     #--- je copie les mots clefs du HDU courant
+                     foreach keyword [$hFile dump] {
+                        set keywordName [lindex $keyword 0]
+                        if { [lsearch [list BITPIX NAXIS NAXIS1 GCOUNT PCOUNT XTENSION ] $keywordName ] == -1 } {
+                           $hOutputFile put keyword $keyword 0
+                        }
+                     }
+                     $hOutputFile close
+                     set hOutputFile ""
+                  } else {
+                     #--- j'enregistre l'image telle quel
+                     $hFile copy $outpuFileName
+                  }
+               } else {
+                  #--- la table est enregistree automatiquement dans le deuxiÃ¨me HDU
+                  $hFile copy $outpuFileName
+               }
+            }
+            update
+         }
+      }
+      #--- je referme le fichier d'entree
+      $hFile close
+   } ]
+
+   if { $catchResult == 1 } {
+      if { $hFile != "" } {
+         $hFile close
+      }
+      if { $hOutputFile != "" } {
+         $hOutputFile close
+      }
+      #--- j'affiche un message d'erreur pour toutes autres erreurs non prevues
+       error $::errorInfo
    }
 }
 

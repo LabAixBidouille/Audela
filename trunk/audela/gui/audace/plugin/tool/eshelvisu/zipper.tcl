@@ -2,7 +2,7 @@
 # Fichier : zipper.tcl
 # Description : Export de fichier au format BeSS
 # Auteurs : Michel Pujol
-# Mise a jour $Id: zipper.tcl,v 1.1 2009-11-07 09:37:34 robertdelmas Exp $
+# Mise a jour $Id: zipper.tcl,v 1.2 2010-01-31 11:47:18 michelpujol Exp $
 #
 
 ################################################################
@@ -24,7 +24,7 @@ namespace eval ::eshel::zipper {
 
 
 ## zip ------------------------------------------------------------
-# affiche la fenetre d'eport des profils au format BeSS
+# affiche la fenêtre d'export des profils au format BeSS
 #
 # @param visuNo  numero de la visu
 # @param fileName   nom du fichier d'entree
