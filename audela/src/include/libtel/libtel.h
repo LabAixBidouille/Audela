@@ -104,6 +104,9 @@ int libtel_Getradec(Tcl_Interp *interp,char *tcllist,double *ra,double *dec);
 
 int tel_init_common(struct telprop *tel, int argc, char **argv);
 
-
+// ---- fonctions par defaut de struct tel_drv_t TEL_DRV 
+int default_tel_correct(struct telprop *tel, char *alphaDirection, double alphaDistance, char *deltaDirection, double deltaDistance);
+int default_tel_set_radec_guiding(struct telprop *tel, int guiding) ;
+int default_tel_get_radec_guiding(struct telprop *tel, int *guiding) ;
 #endif
 

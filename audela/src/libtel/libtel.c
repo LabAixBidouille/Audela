@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libtel.c,v 1.20 2010-01-25 21:56:19 michelpujol Exp $
+// $Id: libtel.c,v 1.21 2010-01-31 17:08:17 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -55,6 +55,13 @@ char *tel_ports[] = {
    NULL
 };
 
+// fonctions appelees depuis libtel.c
+struct tel_drv_t TEL_DRV = {  
+   default_tel_correct,                // tel_correct
+   default_tel_get_radec_guiding,      // tel_set_radec_guiding	
+   default_tel_set_radec_guiding ,     // tel_get_radec_guiding	
+};
+
 #if !defined(OS_WIN)
 #define MB_OK 1
 void MessageBox(void *handle, char *msg, char *title, int bof)
@@ -77,9 +84,9 @@ void logConsole(struct telprop *tel, char *messageFormat, ...) {
 	va_end (mkr);
 
    if ( strcmp(tel->telThreadId,"") == 0 ) {
-      sprintf(ligne,"::console::disp \"Telescope: %s\n\" ",message); 
+      sprintf(ligne,"::console::disp \"Telescope: %s\" ",message); 
    } else {
-      sprintf(ligne,"::thread::send -async %s { ::console::disp \"Telescope: %s \n\" } " , tel->mainThreadId, message); 
+      sprintf(ligne,"::thread::send -async %s { ::console::disp \"Telescope: %s\" } " , tel->mainThreadId, message); 
    }
    result = Tcl_Eval(tel->interp,ligne);
 }
@@ -914,10 +921,6 @@ int cmdTelHome(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
    return result;
 }
 
-static void timerCallback(ClientData clientData ) {
-   ((struct telprop *)clientData)->timeDone = 1;
-}
-
 int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    char ligne[2256],texte[256];
    int result = TCL_OK,k;
@@ -1090,55 +1093,94 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             if (argc>=5) {
                tel->radec_move_rate=atof(argv[4]);
             }
-            if (argc < 6) {
-               // deplacement de duree indeterminee
-               // exemple:  tel1 radec move n 1
-               tel_radec_move(tel,argv[3]);
-               Tcl_SetResult(interp,"",TCL_VOLATILE);
-            } else {
-               // deplacement de duree determinee
-               // argv[5]= duree du déplacement en seconde 
-               // exemple:  tel1 radec move n 1 0.4
-               int timerDelay = (int) (1000.0 * atof(argv[5]));
-               int foundEvent;
-               if ( timerDelay >= tel->minRadecDelay ) {
-                  if ( tel->consoleLog >= 1 ) {
-                     logConsole(tel, "move to %s %.3fs", argv[3], (float)timerDelay/1000);
-                  }
-            
-                  tel->timerToken = Tcl_CreateTimerHandler(timerDelay, timerCallback, (ClientData) tel);
-                  tel_radec_move(tel,argv[3]);
-
-                  // j'attends un evenement
-                  tel->timeDone = 0; 
-                  foundEvent = 1;
-                  while (!tel->timeDone && foundEvent) {
-                     foundEvent = Tcl_DoOneEvent(TCL_ALL_EVENTS);
-                     //if (Tcl_LimitExceeded(interp)) {
-                     //   break;
-                     //}
-                  }
-                  if (argc>=4) {
-                     tel_radec_stop(tel,argv[3]);
-
-                  } else {
-                     tel_radec_stop(tel,"");
-                  }
-
-                  tel->timeDone = 0;
-                  tel->timerToken = NULL;
-               } else {
-                  if ( tel->consoleLog >= 1 ) {
-                     logConsole(tel, "move to %s %.3fs ignored (<%.3fs)", argv[3], (float)timerDelay/1000,(float) tel->minRadecDelay/1000);
-                  }
-               }
-
-            
-               sprintf(ligne,"delai=%d ms",timerDelay);
-               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-               result = TCL_OK;
-            } 
+            tel_radec_move(tel,argv[3]);
+            Tcl_SetResult(interp,"",TCL_VOLATILE);
+             
          }
+         
+      } else if (strcmp(argv[2],"correct")==0) {
+         // correction pour le guidage en ascension droite et en declinaison
+         //  cette commande permet de faire des corrections simultanees sur les deux axes par les telescopes qui
+         //  en sont capables. 
+         char   alphaDirection[2];
+         double alphaDistance;
+         char   deltaDirection[2];
+         double deltaDistance;
+
+         if(argc!=8) {
+            sprintf(ligne,"Usage: %s %s %s {e|w|} distanceAlpha {n|s} distanceDelta speed",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            result = TCL_ERROR;
+         } else {
+            switch(argv[3][0]) {
+            case 'e':
+            case 'E':
+               alphaDirection[0] = 'E';
+               alphaDirection[1] =  0;
+               break;
+            case 'w':
+            case 'W':
+               alphaDirection[0] = 'W';
+               alphaDirection[1] =  0;
+               break;
+            default:
+               sprintf(ligne,"Usage: %s %s %s direction time\nalpahaDirection shall be e|w",argv[0],argv[1],argv[2]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               result =  TCL_ERROR;
+            }
+            
+            if ( result == TCL_OK) {
+               if (Tcl_GetDouble(interp, argv[4], &alphaDistance) != TCL_OK) {
+                  sprintf(ligne,"Usage: %s %s %s distance \nalphaDistance shall be a decimal number",argv[0],argv[1],argv[2]);
+                  Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+                  return TCL_ERROR;
+               }
+               switch(argv[5][0]) {
+               case 'n':
+               case 'N':
+                  deltaDirection[0] = 'N';
+                  deltaDirection[1] =  0;
+                  break;
+               case 's':
+               case 'S':
+                  deltaDirection[0]= 'S';
+                  deltaDirection[1]=  0;
+                  break;
+               default:
+                  sprintf(ligne,"Usage: %s %s %s direction time\ndirection shall be n|s",argv[0],argv[1],argv[2]);
+                  Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+                  result =  TCL_ERROR;
+               }
+            }
+            
+            if ( result == TCL_OK) {
+               if (Tcl_GetDouble(interp, argv[6], &deltaDistance) != TCL_OK) {
+                  sprintf(ligne,"Usage: %s %s %s distance \ndistance shall be a decimal number",argv[0],argv[1],argv[2]);
+                  Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+                  result =  TCL_ERROR;
+               }
+            }
+            
+            if ( result == TCL_OK) {
+               if (Tcl_GetDouble(interp, argv[7], &tel->radec_move_rate) != TCL_OK) {
+                  sprintf(ligne,"Usage: %s %s %s speed \nspeed shall be a decimal number between 0.0 and 1.0",argv[0],argv[1],argv[2]);
+                  Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+                  result =  TCL_ERROR;
+               }
+            }
+            
+            // j'applique la correction
+            if ( result == TCL_OK) {
+               int correctResult = TEL_DRV.tel_correct(tel,alphaDirection,alphaDistance,deltaDirection,deltaDistance);
+               if ( correctResult == 0 ) {
+                  Tcl_SetResult(interp,"",TCL_VOLATILE);
+                  result =  TCL_OK;
+               } else {
+                  Tcl_SetResult(interp,tel->msg,TCL_VOLATILE);
+                  result =  TCL_ERROR;
+               }
+            }
+         }         
       } else if (strcmp(argv[2],"model")==0) {
          /* --- model ---*/
          if (argc>=5) {
@@ -1183,11 +1225,10 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
          }
       } else if (strcmp(argv[2],"stop")==0) {
          /* --- stop ---*/
-         tel->timeDone = 2; 
-         Tcl_DeleteTimerHandler(tel->timerToken);
+         // j'arrete le timer utilise par tel_correct 
+         tel->timeDone = 1; 
          if (argc>=4) {
             tel_radec_stop(tel,argv[3]);
-
          } else {
             tel_radec_stop(tel,"");
          }
@@ -1219,6 +1260,44 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             // je retourne la valeur courante
             sprintf(ligne,"%d", tel->minRadecDelay);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         }
+      } else if (strcmp(argv[2],"guiding")==0) {
+         if(argc!=3 && argc!=4) {
+            sprintf(ligne,"Usage: %s %s {0|1}",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            if (argc == 3 ) {
+               sprintf(ligne,"%d",tel->radecGuidingState);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               result = TCL_OK;
+            } else {
+               int guiding;
+               if (Tcl_GetInt(interp, argv[3], &guiding) != TCL_OK) {
+                  sprintf(ligne,"Usage: %s %s \nguiding shall be {0|1]}",argv[0],argv[1]);
+                  Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+                  result = TCL_ERROR;
+               } else {
+                  if ( guiding != 0 && guiding != 1 ) {
+                     sprintf(ligne,"Usage: %s %s \nguiding shall be {0|1]}",argv[0],argv[1]);
+                     Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+                     result = TCL_ERROR;
+                  } else {
+                     result = TEL_DRV.tel_set_radec_guiding(tel, guiding) ;
+                     if ( result == 1 ) {
+                        Tcl_SetResult(interp,tel->msg,TCL_VOLATILE);
+                        result = TCL_ERROR;
+                     } else {
+                        // je memorise la nouvelle valeur 
+                        tel->radecGuidingState = guiding;
+                        // je retourne la nouvelle valeur au TCL
+                        sprintf(ligne,"%d",tel->radecGuidingState);
+                        Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+                        result = TCL_OK;
+                     }
+                  }
+               }
+            }
          }
       } else {
          /* --- sub command not found ---*/
@@ -1463,7 +1542,147 @@ int cmdTelConsoleLog(ClientData clientData, Tcl_Interp *interp, int argc, char *
    return result;
 }
 
+//-------------------------------------------------------------
+//
+// FONCTIONS PAR DEFAUT de struct tel_drv_t TEL_DRV
+//
+//-------------------------------------------------------------
 
+static void timerCallback(ClientData tel ) {
+  ((struct telprop *)tel)->timeDone  = 1;
+}
+
+
+
+//-------------------------------------------------------------
+// default_tel_correct
+//
+// envoie une correction en ascension droite et en declinaison
+// avec une distance donnee en arcseconde   
+//
+// @param tel   pointeur structure telprop
+// @param direction direction de la correction sur l'axe alpha E, W  
+// @param distance  valeur de la correction sur l'axe alpha en arseconde  
+// @param direction direction de la correction sur l'axe delta N ,S  
+// @param distance  valeur de la correction sur l'axe delta en arseconde  
+// @return  0 = OK,  1= erreur
+//-------------------------------------------------------------
+int default_tel_correct(struct telprop *tel, char *alphaDirection, double alphaDistance, char *deltaDirection, double deltaDistance)
+{
+   char alphaLog[1024];
+   char deltaLog[1024];
+   
+   if ( alphaDistance > 0 ) { 
+      // je calcule le delai de deplacement en milliseconde sur l'axe alpha
+      // delai(miliseconde) = 1000 * distance(arcsec) * vitesse(arsec/seconde)
+      int timerDelay = (int) (1000.0 * alphaDistance / tel->radecGuidingSpeed);
+      
+      if ( timerDelay >= tel->minRadecDelay ) {
+         int foundEvent= 1;
+         Tcl_TimerToken timerToken;
+         tel->timeDone = 0;
+
+         // je cree un timer
+         timerToken = Tcl_CreateTimerHandler(timerDelay, timerCallback, (ClientData) tel);
+         // je demarre le mouvement
+         tel_radec_move(tel,alphaDirection);
+         
+         // j'attends un evenement de fin du timer
+
+         while ( tel->timeDone == 0) {
+            foundEvent = Tcl_DoOneEvent(TCL_ALL_EVENTS);
+            //if (Tcl_LimitExceeded(interp)) {
+            //   break;
+            //}
+         }
+         // j'arrete le mouvement
+         tel_radec_stop(tel,alphaDirection);            
+         // je ssupprime le timer
+         Tcl_DeleteTimerHandler(timerToken);
+         
+         if ( tel->consoleLog >= 1 ) {
+            sprintf(alphaLog, "%s %.3fs",  alphaDirection, (float)timerDelay/1000);
+         }
+         
+      } else {
+         if ( tel->consoleLog >= 1 ) {
+            sprintf(alphaLog, "%s %.3fs ignored (<%.3fs)", alphaDirection, (float)timerDelay/1000,(float) tel->minRadecDelay/1000);
+         }
+      } 
+   }
+   if ( deltaDistance > 0 ) { 
+      // je calcule le delai de deplacement en milliseconde sur l'axe delta
+      // delai(miliseconde) = 1000 * distance(arcsec) * vitesse(arsec/seconde)
+      int timerDelay = (int) (1000.0 * deltaDistance / tel->radecGuidingSpeed);
+      
+      if ( timerDelay >= tel->minRadecDelay ) {
+         int foundEvent= 1;
+         Tcl_TimerToken timerToken;
+         tel->timeDone = 0;
+
+         // je cree un timer
+         timerToken = Tcl_CreateTimerHandler(timerDelay, timerCallback, (ClientData) tel);
+         // je demarre le mouvement
+         tel_radec_move(tel,deltaDirection);
+         
+         // j'attends un evenement de fin du timer
+         while (tel->timeDone == 0) {
+            foundEvent = Tcl_DoOneEvent(TCL_ALL_EVENTS);
+            //if (Tcl_LimitExceeded(interp)) {
+            //   break;
+            //}
+         }
+         // j'arrete le mouvement
+         tel_radec_stop(tel,deltaDirection);            
+         // je ssupprime le timer
+         Tcl_DeleteTimerHandler(timerToken);
+         
+         if ( tel->consoleLog >= 1 ) {
+            sprintf(deltaLog, "%s %.3fs", deltaDirection, (float)timerDelay/1000);
+         }
+         
+      } else {
+         if ( tel->consoleLog >= 1 ) {
+            sprintf(deltaLog, "%s %.3fs ignored (<%.3fs)", deltaDirection, (float)timerDelay/1000,(float) tel->minRadecDelay/1000);
+         }
+      } 
+   }
+   
+   if ( tel->consoleLog >= 1 ) {
+      logConsole(tel, "move to %s %s\n", alphaLog, deltaLog);
+   }
+   return 0;
+}
+
+//-------------------------------------------------------------
+// tel_get_radec_guiding 
+//
+//  retourne l'etat de l'autoguidage 
+//
+// @param tel   pointeur structure telprop
+// @param guiding  0 : auto guidage arrete, 1 : auto guidage actif
+// @return   0 = OK,  1= erreur
+//-------------------------------------------------------------
+int default_tel_get_radec_guiding(struct telprop *tel, int *guiding) {   
+   *guiding = tel->radecGuidingState;   
+   return 0;  
+}
+
+//-------------------------------------------------------------
+// tel_set_radec_guiding 
+//
+//  commande marche/arret du guidage
+//  Avertit l'interface de controle Audela est en auto-guidage (checkbox du bandeau sophie dans AudeLA)
+//  pour inhiber les raquettes physiques au T193 pendant l'uto-guidage
+//
+// @param tel   pointeur structure telprop
+// @param guiding  0 : auto guidage arrete, 1 : auto guidage actif
+// @return   0 = OK,  1= erreur
+//-------------------------------------------------------------
+int default_tel_set_radec_guiding(struct telprop *tel, int guiding) {
+   tel->radecGuidingState = guiding;
+   return 0;
+}
 
 int tel_init_common(struct telprop *tel, int argc, char **argv)
 /* --------------------------------------------------------- */
@@ -1511,6 +1730,8 @@ int tel_init_common(struct telprop *tel, int argc, char **argv)
    tel->focus0=0.;
    tel->focus_goto_rate=0;
    tel->focus_move_rate=0;
+   tel->radecGuidingState = 0;   // etat de la session de guidage par defaut
+   tel->radecGuidingSpeed = 5;   // vitesse de guidage par defaut (arcsec/seconde)
    tel->minRadecDelay = 0;
    tel->consoleLog = 0;    
    tel->radec_model_enabled = 0;
