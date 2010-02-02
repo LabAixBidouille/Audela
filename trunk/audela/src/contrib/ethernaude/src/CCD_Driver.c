@@ -689,7 +689,7 @@ int StartReadoutCCD(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
     strcpy(keyword, "ImageAddress");
     if (util_param_search(ParamCCDIn, keyword, value, &paramtype) == 0) {
         LOG_DEBUG( "%s %s\n", "value=", value );
-        ImageAddress = (unsigned char *)strtol( value, 0, 0 );
+        ImageAddress = (unsigned char *)strtoul( value, 0, 0 );
     }
     else {
         paramCCD_put(-1, "FAILED", ParamCCDOut, 0);
