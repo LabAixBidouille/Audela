@@ -617,7 +617,6 @@ double ml_getGpsDate ()
 	} else {
 		date = 0;
 	}
-	free(majtime);
 	return date;
 #else
 	return 0;
