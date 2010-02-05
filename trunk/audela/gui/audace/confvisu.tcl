@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.129 2010-01-31 09:49:46 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.130 2010-02-05 18:45:19 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -344,7 +344,7 @@ namespace eval ::confVisu {
                                     buf$bufNo clear
                                     #--- j'ouvre le fichier en mode lecture
                                     set hFile [fits open $fileName 0]
-                                   $hFile move $hduNo
+                                    $hFile move $hduNo
                                     #--- je charge le titre des colonnes
                                     set columnNames  [$hFile info column ]
                                     #--- je charge les valeurs de colonnes
@@ -395,7 +395,7 @@ namespace eval ::confVisu {
                                set columnNames  [$hFile info column ]
                                #--- je charge les valeurs de colonnes
                                set columnValues [$hFile get table]
-                            } ]
+                           } ]
                            if { $hFile != "" } {
                               $hFile close
                            }
@@ -407,7 +407,7 @@ namespace eval ::confVisu {
                      } else {
                         #--- en cas d'erreur de chargement du fichier
                         #--- je nettoie l'affichage
-                         set private($visuNo,fitsHduList) ""
+                        set private($visuNo,fitsHduList) ""
                         ::confVisu::setFileName $visuNo "?"
                         buf$bufNo clear
                         visu$visuNo  clear
