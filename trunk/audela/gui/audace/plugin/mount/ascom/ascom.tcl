@@ -2,7 +2,7 @@
 # Fichier : ascom.tcl
 # Description : Configuration de la monture ASCOM
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ascom.tcl,v 1.17 2010-01-31 16:56:38 michelpujol Exp $
+# Mise a jour $Id: ascom.tcl,v 1.18 2010-02-05 18:37:37 robertdelmas Exp $
 #
 
 namespace eval ::ascom {
@@ -270,7 +270,7 @@ proc ::ascom::stop { } {
 
 #
 # confAscom
-# Permet d'activer ou de d�sactiver le bouton
+# Permet d'activer ou de desactiver le bouton
 #
 proc ::ascom::confAscom { } {
    variable private
