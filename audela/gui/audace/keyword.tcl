@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.37 2010-01-30 14:00:49 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.38 2010-02-05 11:31:10 michelpujol Exp $
 #
 
 namespace eval ::keyword {
@@ -155,7 +155,7 @@ proc ::keyword::init { } {
          set ::conf(keyword,default,check) $::conf(keyword,visu1,check)
          unset ::conf(keyword,visu1,check)
       } else {
-         set ::conf(keyword,default,check) "1,check,DETNAM 1,check,EXPTIME 1,check,SWMODIFY 1,check,SWCREATE"
+         set ::conf(keyword,default,check) "1,check,DETNAM 1,check,SWMODIFY 1,check,SWCREATE"
       }
    }
 
@@ -178,7 +178,6 @@ proc ::keyword::init { } {
    set private(radecsys)            ""
    set private(typeImage)           "Object"
    set private(seriesId)            ""
-   set private(expTime)             ""
    set private(raMean)              ""
    set private(raRms)               ""
    set private(decMean)             ""
@@ -220,7 +219,6 @@ proc ::keyword::init { } {
    lappend private(infosMotsClefs) [ list "RADECSYS" $::caption(keyword,cible)       ::keyword::private(radecsys)            normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Coordinates system"                              "" ]
    lappend private(infosMotsClefs) [ list "IMAGETYP" $::caption(keyword,acquisition) ::keyword::private(typeImage)           readonly ""                             ""                                             $::keyword::private(listTypeImage)  ::conf(keyword,typeImageSelected)        0  "" "string" "Image type"                                      "" ]
    lappend private(infosMotsClefs) [ list "SERIESID" $::caption(keyword,acquisition) ::keyword::private(seriesId)            normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Series identifiant"                              "" ]
-   lappend private(infosMotsClefs) [ list "EXPTIME"  $::caption(keyword,acquisition) ::keyword::private(expTime)             normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "Exposure time"                                   "s" ]
    lappend private(infosMotsClefs) [ list "RA_MEAN"  $::caption(keyword,acquisition) ::keyword::private(raMean)              normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "RA mean correction"                              "arsec" ]
    lappend private(infosMotsClefs) [ list "RA_RMS"   $::caption(keyword,acquisition) ::keyword::private(raRms)               normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "RA rms correction"                               "arsec" ]
    lappend private(infosMotsClefs) [ list "DEC_MEAN" $::caption(keyword,acquisition) ::keyword::private(decMean)             normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "DEC mean correction"                             "arsec" ]
@@ -851,12 +849,12 @@ proc ::keyword::getKeywords { visuNo configName { keywordNameList "" } } {
 #------------------------------------------------------------------------------
 proc ::keyword::headerFitsCompliant { stringInput } {
    set res $stringInput
-   set res [regsub -all {[é;ê;è;ë]} $res e]
-   set res [regsub -all {[à;â;ä]} $res a]
-   set res [regsub -all {[ï;î]} $res i]
-   set res [regsub -all {[ö;ô]} $res o]
-   set res [regsub -all {[ü;û;ù]} $res u]
-   set res [regsub -all {[ç]} $res c]
+   set res [regsub -all {[Ã©;Ãª;Ã¨;Ã«]} $res e]
+   set res [regsub -all {[Ã ;Ã¢;Ã¤]} $res a]
+   set res [regsub -all {[Ã¯;Ã®]} $res i]
+   set res [regsub -all {[Ã¶;Ã´]} $res o]
+   set res [regsub -all {[Ã¼;Ã»;Ã¹]} $res u]
+   set res [regsub -all {[Ã§]} $res c]
    set res [regsub -all {[']} $res " "]
    set stringOutput $res
    return $stringOutput
@@ -1773,7 +1771,7 @@ proc ::keyword::config::apply { visuNo } {
 
          #--- je selectionne l'item suivant a la place de celui qui vient d'etre supprime
          if { $index == [llength $configList] } {
-            #--- je decremente l'index si l'element supprimé etait le dernier de la liste
+            #--- je decremente l'index si l'element supprimÃ© etait le dernier de la liste
             incr index -1
          }
          $tkCombo setvalue "@$index"
