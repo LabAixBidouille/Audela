@@ -2,7 +2,7 @@
 # Fichier : exportfits.tcl
 # Description : Export de fichier au format Fits
 # Auteurs : Michel Pujol
-# Mise a jour $Id: exportfits.tcl,v 1.2 2010-01-31 11:47:05 michelpujol Exp $
+# Mise a jour $Id: exportfits.tcl,v 1.3 2010-02-05 18:44:08 robertdelmas Exp $
 #
 
 ################################################################
@@ -240,7 +240,7 @@ proc ::eshel::exportfits::closeWindow { visuNo } {
 ##------------------------------------------------------------
 # selectOuputDirectory
 #   selectionne le nom du fichier de sortie
-# @param num�ro de la visu
+# @param numero de la visu
 # @return rien
 #------------------------------------------------------------
 proc ::eshel::exportfits::selectOuputDirectory { visuNo } {

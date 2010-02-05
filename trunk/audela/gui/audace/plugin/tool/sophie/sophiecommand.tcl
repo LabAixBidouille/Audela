@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.44 2010-01-31 17:05:10 michelpujol Exp $
+# @version  $Id: sophiecommand.tcl,v 1.45 2010-02-05 18:44:46 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -659,7 +659,7 @@ proc ::sophie::adaptIncrement { } {
 # startMoveFilter
 #  démarre le changement d'attenuation
 #  Ne fait rien si le telescope n'est pas connecté
-# @param  direction "-" =diminution de l'attenuation , "+" =augmentation de l'att�nuation
+# @param  direction "-" =diminution de l'attenuation , "+" =augmentation de l'attenuation
 #
 #------------------------------------------------------------
 proc ::sophie::startMoveFilter { direction } {
@@ -1904,7 +1904,7 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
          }
          "targetCoord" {
             # description des parametres recus
-            # args 0 = coordonnees de l'étoile, ou coordonnees du centre de la zone de recherche si l'�toile n'a pas ete trouvee
+            # args 0 = coordonnees de l'etoile, ou coordonnees du centre de la zone de recherche si l'etoile n'a pas ete trouvee
             # args 1 = dx   (ramené au binning 1x1)
             # args 2 = dy   (ramené au binning 1x1)
             # args 3 = targetDetection
