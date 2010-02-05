@@ -2,7 +2,7 @@
 # Fichier : audnet.tcl
 # Description : Network functions using RPC or simple TCP sockets
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: audnet.tcl,v 1.6 2009-11-04 18:43:42 robertdelmas Exp $
+# Mise a jour $Id: audnet.tcl,v 1.7 2010-02-05 18:36:37 robertdelmas Exp $
 #
 
 # ====================================================================
@@ -192,7 +192,7 @@ proc sock_send { arg } {
    global rpcid
    global caption
    ::console::affiche_resultat "$caption(audace,reseau_execute) $arg \n"
-   ::console::affiche_resultat "$caption(audace,reseau_reponse_vers) $rpcid(client)\n"
+  ### ::console::affiche_resultat "$caption(audace,reseau_reponse_vers) $rpcid(client)\n"
    #puts $rpcid(client) "\{ $arg \}"
    puts $rpcid(client) "$arg"
    set res [gets $rpcid(client)]
