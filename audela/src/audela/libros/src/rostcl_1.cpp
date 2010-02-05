@@ -32,6 +32,7 @@
 
 #if defined(OS_WIN)
 #include "Bc637pci.h"
+
 #include <process.h>
 //pour gerer la datation par GPS: d�claration des varaiables globales
 HANDLE EventThreadGps;
@@ -424,7 +425,7 @@ ros_gps close symmetricom
 //	struct tm *majtime;
 //	long majc;
 	//OtherData otherdata;
-	HANDLE EventThreadGps;
+	//HANDLE EventThreadGps;
 	//HANDLE hIntThrd;
 	//DWORD threadID;
 #else
@@ -469,13 +470,8 @@ ros_gps close symmetricom
       }
       /* --- open ---*/
       if ((mode==1)&&(modele==1)) {
-			if ( bcStartPCI (0) != RC_OK ) {
-				printf(s,"Error opening device %s",argv[2]);
-				Tcl_SetResult(interp,s,TCL_VOLATILE);
-				return TCL_ERROR;
-			}
-			bcSetMode(MODE_GPS);
-         sprintf(s,"Connection with %s is opened",argv[2]);
+		 _beginthread(ServeurGps,0,NULL);
+		 sprintf(s,"Connection with %s is opened",argv[2]);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_OK;
       }
@@ -483,14 +479,14 @@ ros_gps close symmetricom
       if ((mode==2)&&(modele==1)) {
 			//SetEvent(EventThreadGps); //Declenche le thread gps
 			//WaitForSingleObject(EventThreadGps,INFINITE); //Attende de demande d'image
-			_beginthread(ServeurGps,0,NULL);
+		
 			ThreadGps = 1;
 			SetEvent(EventThreadGps); //Declenche le thread gps
 			while (ThreadGps != 0)
 				{//Attendre pour la datation de l'obturateur
 					i++;
 					Sleep(50);//Attendre 10ms
-					if(i>=40) //Attendre 2s
+					if(i>=100) //Attendre ?s
 					{
 						printf("\nThread datation non declench");
 						break; //Probleme pour la datation gps
@@ -509,10 +505,12 @@ ros_gps close symmetricom
 			 Tcl_SetResult(interp,s,TCL_VOLATILE);
 			 return TCL_OK;
 		  }
+		   CloseHandle(EventThreadGps);
+		   
       }
       /* --- close ---*/
-      if ((mode==4)&&(modele==1)) {
-		 CloseHandle(EventThreadGps);
+      if ((mode==4)&&(modele==1)) {	
+		 _endthread(); 
 		 bcStopPCI();
          sprintf(s,"Connection with %s is closed",argv[2]);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -537,12 +535,13 @@ ros_gps close symmetricom
 //***************************************************************************
 void ServeurGps(void *Parametre)
 {
-	// Start Device
+// Start Device
 #if defined OS_WIN
+
 	if ( bcStartPCI (0) != RC_OK ){
 		printf ("Error openning device!!!");
 	}
-
+		
 	bcSetMode( MODE_GPS );
 
 	while(1)
@@ -551,11 +550,12 @@ void ServeurGps(void *Parametre)
 		WaitForSingleObject(EventThreadGps,INFINITE); //Attende de demande d'image
 		ThreadGps = 0; //Traitement
 		DateGps = ml_getGpsDate();
-
+	
 	}
 
 	// Stop Device
-	bcStopPCI ();
+	bcStopPCI (); 
+
 #endif
 }
 //***************************************************************************
