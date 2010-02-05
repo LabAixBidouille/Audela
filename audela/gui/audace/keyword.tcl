@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.38 2010-02-05 11:31:10 michelpujol Exp $
+# Mise a jour $Id: keyword.tcl,v 1.39 2010-02-05 16:57:14 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -1771,7 +1771,7 @@ proc ::keyword::config::apply { visuNo } {
 
          #--- je selectionne l'item suivant a la place de celui qui vient d'etre supprime
          if { $index == [llength $configList] } {
-            #--- je decremente l'index si l'element supprimé etait le dernier de la liste
+            #--- je decremente l'index si l'element supprime etait le dernier de la liste
             incr index -1
          }
          $tkCombo setvalue "@$index"
