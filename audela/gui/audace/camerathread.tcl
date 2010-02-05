@@ -1,9 +1,9 @@
 #
 # Fichier : camerathread.tcl
-# Description : procedures d'acqusitition et de traitement avec
-#         plusieurs cameras simultan�es exploitant le mode multithread
+# Description : procedures d'acquisition et de traitement avec
+#         plusieurs cameras simultanees exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise a jour $Id: camerathread.tcl,v 1.19 2010-01-24 17:16:38 michelpujol Exp $
+# Mise a jour $Id: camerathread.tcl,v 1.20 2010-02-05 18:43:37 robertdelmas Exp $
 #
 
 namespace eval ::camerathread {
@@ -391,7 +391,7 @@ proc ::camerathread::processAcquisitionLoop { } {
             buf$bufNo load [file join $tempPath $fileName]
             #--- je calcule les coordonnees (x,y) correspondant au (ra,dec) cible
             set private(targetCoord)  [buf$bufNo radec2xy $private(radec) 1]
-            # j'ouvre le fichier des �toiles de l'image (obs.lst)
+            # j'ouvre le fichier des etoiles de l'image (obs.lst)
             set fcom [open "obs.lst" r]
             set istar ""
             # j'affiche les etoiles
@@ -402,7 +402,7 @@ proc ::camerathread::processAcquisitionLoop { } {
             }
             close $fcom
 
-            # j'ouvre le fichier des �toiles du catalogue (usno.lst)
+            # j'ouvre le fichier des etoiles du catalogue (usno.lst)
             set fcom [open "usno.lst" r]
             set cstar ""
             # j'affiche les etoiles
@@ -413,7 +413,7 @@ proc ::camerathread::processAcquisitionLoop { } {
             }
             close $fcom
 
-            # j'ouvre le fichier resultat des �toiles appareill�es
+            # j'ouvre le fichier resultat des etoiles appareillees
             set fcom [open "com.lst" r]
             set astar ""
             while {-1 != [gets $fcom line1]} {
@@ -540,7 +540,7 @@ proc ::camerathread::processAcquisitionLoop { } {
          }
 
          if { $private(mode)  == "center" } {
-            #--- j'ajoute les nouvelles valeurs � la fin de la liste
+            #--- j'ajoute les nouvelles valeurs a la fin de la liste
             lappend private(centerDeltaList) [list $dx $dy]
             #--- je supprime le premier element
             set private(centerDeltaList) [lrange $private(centerDeltaList) 1 end ]
@@ -554,7 +554,7 @@ proc ::camerathread::processAcquisitionLoop { } {
             #--- je calcule la moyenne des ecarts
             set xmean [expr $xmean / [llength $private(centerDeltaList)]]
             set ymean [expr $ymean / [llength $private(centerDeltaList)]]
-            #--- je v�rifie si la moyenne est inferieure au seuil
+            #--- je verifie si la moyenne est inferieure au seuil
             if { $xmean < $private(seuilx)  && $ymean < $private(seuily) } {
                ::camerathread::notify "acquisitionResult" $private(targetCoord)
                #--- j'arrete le centrage
@@ -607,7 +607,7 @@ proc ::camerathread::processAcquisitionLoop { } {
 #    recherche les coordonnees des etoiles
 #
 # parametres :
-#    searchBox : zone de recherche de l'�toile
+#    searchBox : zone de recherche de l'etoile
 # return
 #    coordonnes de l'etoile la plus brillante
 #    ou "" si l'toile n'est pas trouvee
@@ -633,7 +633,7 @@ proc ::camerathread::searchStar { searchBox threshin fwhm radius threshold } {
    #           when procerure is looking for stars, pixels below threshold are not taken
 
 
-   #--- je cherche les �toiles
+   #--- je cherche les etoiles
    set resultFile "[pwd]/searchStar.txt"
    set searchBorder [expr $radius + 2]
    set result [buf$bufNo A_starlist $threshin $resultFile n $fwhm $radius $searchBorder $threshold $searchBox 1]
@@ -752,7 +752,7 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName c
    buf$bufNo setkwd [list "EQUINOX"    "2000.0"    float  "System of equatorial coordinates" "" ]
 
 
-   #---- recherche des �toiles dans l'image
+   #---- recherche des etoiles dans l'image
    #  input :
    #     dummy0.fit
    #  output
@@ -763,7 +763,7 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName c
    #           OBJEFILE = D:/images/idummy.fit Filename of objects list
    #           OBJEKEY = 2007-11-15T10:47:28:24901 Link key for objefile
    #           TT1 = IMA/SERIES STAT TT History
-   #     idummy.fit  contenant la table des etoiles trouv�es dans l'image
+   #     idummy.fit  contenant la table des etoiles trouvees dans l'image
    set resultFile "${tempPath}/i$fileName$ext"
    if { $detection=="STAT" } {
       buf$bufNo save "${tempPath}/${fileName}$ext"
@@ -781,13 +781,13 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName c
       error "detection unknown : $detection"
    }
 
-   #---- recherche des �toiles dans le catalogue
+   #---- recherche des etoiles dans le catalogue
    #  input :
    #     dummy.fit
    #  output
    #     dummy.fit    avec les nouveaux mots cles
-   #     cdummy.fit   contenant la table des etoiles trouv�es dans le catalogue
-   #     cdummy.jpg   superposition des �toiles du catalogue sur l'image de d�part
+   #     cdummy.fit   contenant la table des etoiles trouvees dans le catalogue
+   #     cdummy.jpg   superposition des etoiles du catalogue sur l'image de depart
    #     usno.lst
    ttscript2 "IMA/SERIES \"$tempPath\" \"$fileName\" . . \"$ext\" \"$tempPath\" \"$fileName\" . \"$ext\" CATCHART \"path_astromcatalog=$cataloguePath\" astromcatalog=$catalogueName \"catafile=${tempPath}/c$fileName$ext\" \"magrlim=$maxMagnitude\" \"magblim=$maxMagnitude\""
 
