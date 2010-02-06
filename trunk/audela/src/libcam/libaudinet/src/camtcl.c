@@ -23,7 +23,7 @@
 /*
  * Fonctions C-Tcl specifiques a cette camera. A programmer.
  *
- * $Id: camtcl.c,v 1.5 2008-12-05 21:33:53 michelpujol Exp $
+ * $Id: camtcl.c,v 1.6 2010-02-06 11:25:17 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -83,19 +83,9 @@ int cmdAudinetWipe(ClientData clientData, Tcl_Interp * interp, int argc,
 
     logInfo("cmdAudinetWipe begin");
 
-
     CAM_DRV.start_exp(cam, "amplioff");
-
-
-
     libcam_GetCurrentFITSDate(interp, cam->date_obs);
-    libcam_GetCurrentFITSDate_function(interp, cam->date_obs,
-				       "::audace::date_sys2ut");
-
-
-
     logInfo("cmdAudinetWipe end");
-
 
     return TCL_OK;
 }
@@ -134,10 +124,6 @@ int cmdAudinetRead(ClientData clientData, Tcl_Interp * interp, int argc,
    p = (unsigned short *) calloc(naxis1 * naxis2, sizeof(unsigned short));
    
    libcam_GetCurrentFITSDate(interp, cam->date_end);
-   libcam_GetCurrentFITSDate_function(interp, cam->date_end,
-      "::audace::date_sys2ut");
-   
-   /*cam_stop_exp(cam); */
    CAM_DRV.read_ccd(cam, p);
    
    /*
@@ -609,28 +595,18 @@ int cmdAudinetScan(ClientData clientData, Tcl_Interp * interp, int argc,
 				/* traiter ce cas ou l'on ne peut pas enregistrer l'image */
 				/* ni ds la memoire, ni ds le disque */
 			    }
-			}
-		    }
-		    /* mesure de la difference entre le temps systeme et le temps TU */
-		    libcam_GetCurrentFITSDate(interp, ligne);
-		    strcpy(ligne2, ligne);
-		    libcam_GetCurrentFITSDate_function(interp, ligne2,
-						       "::audace::date_sys2ut");
-		    sprintf(text, "expr [[mc_date2jd %s]-[mc_date2jd %s]]",
-			    ligne2, ligne);
-		    if (Tcl_Eval(interp, text) == TCL_OK) {
-			TheScanStruct->tumoinstl = atof(interp->result);
-		    }
-		    /* coordonnes du telescope au debut de l'acquisition */
-		    libcam_get_tel_coord(interp, &TheScanStruct->ra,
-					 &TheScanStruct->dec, cam,
-					 &status);
-		    if (status == 1) {
-			TheScanStruct->ra = -1.;
-		    }
-
-		    /* Nettoyage du ccd  */
-		    audinet_fast_vidage_inv(cam);
+         }
+          }
+                    /* coordonnes du telescope au debut de l'acquisition */
+          libcam_get_tel_coord(interp, &TheScanStruct->ra,
+             &TheScanStruct->dec, cam,
+             &status);
+          if (status == 1) {
+             TheScanStruct->ra = -1.;
+          }
+          
+          /* Nettoyage du ccd  */
+          audinet_fast_vidage_inv(cam);
 
 
 
@@ -875,14 +851,8 @@ void ScanTransfer(ClientData clientData)
    Tcl_Eval(interp, s);
    pp = (float *) atoi(interp->result);
    
-   sprintf(s, "mc_date2iso8601 [expr [mc_date2jd %s]+%f]",
-      TheScanStruct->dateobs, TheScanStruct->tumoinstl);
-   Tcl_Eval(interp, s);
-   strcpy(dateobs_tu, interp->result);
-   sprintf(s, "mc_date2iso8601 [expr [mc_date2jd %s]+%f]",
-      TheScanStruct->dateend, TheScanStruct->tumoinstl);
-   Tcl_Eval(interp, s);
-   strcpy(dateend_tu, interp->result);
+   strcpy(dateobs_tu, TheScanStruct->dateobs);
+   strcpy(dateend_tu, TheScanStruct->dateend);
    
    sprintf(s, "mc_date2jd %s", TheScanStruct->dateobs);
    Tcl_Eval(interp, s);

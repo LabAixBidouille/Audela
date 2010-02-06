@@ -107,7 +107,6 @@ typedef struct {
     int *dts;			/* tableau des délais */
     unsigned long loopmilli1;	/* nb de boucles pour faire une milliseconde (~10000) */
     int stop;			/* indicateur d'arret (1=>pose arretee au prochain coup) */
-    double tumoinstl;		/* TU-TL */
     double ra;			/* RA at the bigining */
     double dec;			/* DEC at the bigining */
 } ScanStruct;
@@ -266,7 +265,6 @@ int cmdAudineWipe(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
 
     CAM_DRV.start_exp(cam, "amplioff");
     libcam_GetCurrentFITSDate(interp, cam->date_obs);
-    libcam_GetCurrentFITSDate_function(interp, cam->date_obs, "::audace::date_sys2ut");
 
     return TCL_OK;
 }
@@ -298,7 +296,6 @@ int cmdAudineRead(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
    p = (unsigned short*)malloc(naxis1*naxis2 * sizeof(unsigned short));
    
    libcam_GetCurrentFITSDate(interp, cam->date_end);
-   libcam_GetCurrentFITSDate_function(interp, cam->date_end, "::audace::date_sys2ut");
    
    /*cam_stop_exp(cam); */
    CAM_DRV.read_ccd(cam,p);
@@ -1032,14 +1029,6 @@ int cmdAudineScan(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
                       }
                    }
                 }
-                /* mesure de la difference entre le temps systeme et le temps TU */
-                libcam_GetCurrentFITSDate(interp, ligne);
-                strcpy(ligne2, ligne);
-                libcam_GetCurrentFITSDate_function(interp, ligne2, "::audace::date_sys2ut");
-                sprintf(text, "expr [[mc_date2jd %s]-[mc_date2jd %s]]", ligne2, ligne);
-                if (Tcl_Eval(interp, text) == TCL_OK) {
-                   TheScanStruct->tumoinstl = atof(interp->result);
-                }
                 /* coordonnes du telescope au debut de l'acquisition */
                 libcam_get_tel_coord(interp, &TheScanStruct->ra, &TheScanStruct->dec, cam, &status);
                 if (status == 1) {
@@ -1054,12 +1043,10 @@ int cmdAudineScan(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
                 if (blocking == 0) {
                    TheScanStruct->TimerToken = Tcl_CreateTimerHandler(idt, AudineScanCallback, (ClientData) cam);
                    libcam_GetCurrentFITSDate(interp, TheScanStruct->dateobs);
-                   libcam_GetCurrentFITSDate_function(interp, TheScanStruct->dateobs, "::audace::date_sys2ut");
                    Tcl_ResetResult(interp);
                 } else {
                    nb_lignes = TheScanStruct->height;
                    libcam_GetCurrentFITSDate(interp, TheScanStruct->dateobs);
-                   libcam_GetCurrentFITSDate_function(interp, TheScanStruct->dateobs, "::audace::date_sys2ut");
                    if (cam->authorized == 1) {
                       if (cam->interrupt == 1) {
                          libcam_bloquer();
@@ -1084,7 +1071,6 @@ int cmdAudineScan(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
                       }
                    }
                    libcam_GetCurrentFITSDate(interp, TheScanStruct->dateend);
-                   libcam_GetCurrentFITSDate_function(interp, TheScanStruct->dateend, "::audace::date_sys2ut");
                    AudineScanTerminateSequence(clientData, cam->camno, "Normally terminated.");
                 }
              } else {
@@ -1160,7 +1146,6 @@ void AudineScanCallback(ClientData clientData)
 
     if (TheScanStruct->stop == 1) {	/* Arret a la demande de l'utilisateur */
 	libcam_GetCurrentFITSDate(TheScanStruct->interp, TheScanStruct->dateend);
-	libcam_GetCurrentFITSDate_function(TheScanStruct->interp, TheScanStruct->dateend, "::audace::date_sys2ut");
 	AudineScanTerminateSequence(clientData, cam->camno, "User aborted exposure.");
     } else if (TheScanStruct->y < TheScanStruct->height) {	/* On continue : */
 	n1 = TheScanStruct->t0;
@@ -1171,14 +1156,12 @@ void AudineScanCallback(ClientData clientData)
 	TheScanStruct->dts[TheScanStruct->y - 1] = (int) next_occur;
 	if (next_occur <= 0) {	/* ben non : decalage temporel trop grand, on arrete l'image. */
 	    libcam_GetCurrentFITSDate(TheScanStruct->interp, TheScanStruct->dateend);
-	    libcam_GetCurrentFITSDate_function(TheScanStruct->interp, TheScanStruct->dateend, "::audace::date_sys2ut");
 	    AudineScanTerminateSequence(clientData, cam->camno, "Error : Aborted because CCD line transfers couldn't be re-scheduled (too busy system, or dt too small).");
 	} else {		/* OK on continue */
 	    TheScanStruct->TimerToken = Tcl_CreateTimerHandler((int) next_occur, AudineScanCallback, (ClientData) cam);
 	}
     } else {			/* Image terminee : */
 	libcam_GetCurrentFITSDate(TheScanStruct->interp, TheScanStruct->dateend);
-	libcam_GetCurrentFITSDate_function(TheScanStruct->interp, TheScanStruct->dateend, "::audace::date_sys2ut");
 	AudineScanTerminateSequence(clientData, cam->camno, "Normally terminated.");
     }
 }
@@ -1262,12 +1245,8 @@ void AudineScanTransfer(ClientData clientData)
       Tcl_Eval(interp, s);
    }
    
-   sprintf(s, "mc_date2iso8601 [expr [mc_date2jd %s]+%f]", TheScanStruct->dateobs, TheScanStruct->tumoinstl);
-   Tcl_Eval(interp, s);
-   strcpy(dateobs_tu, interp->result);
-   sprintf(s, "mc_date2iso8601 [expr [mc_date2jd %s]+%f]", TheScanStruct->dateend, TheScanStruct->tumoinstl);
-   Tcl_Eval(interp, s);
-   strcpy(dateend_tu, interp->result);
+   strcpy(dateobs_tu, TheScanStruct->dateobs);
+   strcpy(dateend_tu,  TheScanStruct->dateend);
    
    sprintf(s, "mc_date2jd %s", TheScanStruct->dateobs);
    Tcl_Eval(interp, s);
