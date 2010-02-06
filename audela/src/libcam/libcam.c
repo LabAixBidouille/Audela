@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.36 2010-01-23 10:12:03 michelpujol Exp $
+ * $Id: libcam.c,v 1.37 2010-02-06 11:25:17 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -580,6 +580,7 @@ void libcam_GetCurrentFITSDate(Tcl_Interp * interp, char *s)
 {
    int clock = 0;
    char ligne[256];
+#if defined(OS_WIN) 
 #if defined(_Windows)
    /* cas special a Borland Builder pour avoir les millisecondes */
    struct time t1;
@@ -591,49 +592,45 @@ void libcam_GetCurrentFITSDate(Tcl_Interp * interp, char *s)
 #endif
 #if defined(_MSC_VER)
    /* cas special a Microsoft C++ pour avoir les millisecondes */
+   
    struct _timeb timebuffer;
    char message[50];
    time_t ltime;
    clock = 1;
-   _ftime(&timebuffer);
-   time(&ltime);
-   strftime(message, 45, "%Y-%m-%dT%H:%M:%S", localtime(&ltime));
+   _ftime(&timebuffer);   // retourne la date GMT
+   time(&ltime);          // retourne la date GMT
+   strftime(message, 45, "%Y-%m-%dT%H:%M:%S", gmtime(&ltime));
    sprintf(s, "%s.%02d", message, (int) (timebuffer.millitm / 10));
+   
+
+   /*
+   struct _SYSTEMTIME temps_pc;
+   clock = 1;
+	GetSystemTime(&temps_pc);
+   sprintf(s, "%04d-%02d-%02dT%02d:%02d:%02d.%02d", 
+      temps_pc.wYear, temps_pc.wMonth, temps_pc.wDay, 
+      temps_pc.wHour, temps_pc.wMinute, temps_pc.wSecond, 
+      temps_pc.wMilliseconds/10);
+   */
+#endif
+#elif defined(OS_LIN)
+    struct timeb timebuffer;
+    time_t ltime;
+    ftime(&timebuffer);
+    time(&ltime);
+    gettimeofday(&t,NULL);  // retourne la date GMT
+    strftime(message,45,"%Y-%m-%dT%H:%M:%S",gmtime((const time_t*)(&t.tv_sec)));
+    sprintf(s1,"%s.%02d : ",message,(t.tv_usec)/10000);
+
 #endif
    if (clock == 0) {
       strcpy(ligne, "clock format [clock seconds] -format \"%Y-%m-%dT%H:%M:%S.00\"");
       Tcl_Eval(interp, ligne);
       strcpy(s, interp->result);
    }
-}
 
-
-/*
- * GetCurrentFITSDate_variable(char s[23])
- *
- */
-void libcam_GetCurrentFITSDate_function(Tcl_Interp * interp, char *s, char *function)
-{
-   /* --- conversion TSystem -> TU pour l'interface Aud'ACE par exemple --- */
-   /*     (function = ::audace::date_sys2ut) */
-   char ligne[1024];
-   /*
-   sprintf(ligne, "info commands  %s", function);
-   Tcl_Eval(interp, ligne);
-   if (strcmp(interp->result, function) == 0) {
-      sprintf(ligne, "mc_date2iso8601 [%s now]", function);
-      Tcl_Eval(interp, ligne);
-      strcpy(s, interp->result);
-   }
-   */
-   strcpy(ligne, "clock format [clock seconds] -gmt 1 -format %Y-%m-%dT%H:%M:%S");
-   Tcl_Eval(interp, ligne);
-   if ( Tcl_Eval(interp, ligne) == TCL_OK) {
-      strcpy(s, interp->result);
-   }
 
 }
-
 /*
  * libcam_get_tel_coord : lecture des coordonnes du telescope associe
  *
@@ -1001,7 +998,6 @@ static void AcqRead(ClientData clientData )
    p = (unsigned short *) calloc(cam->w * cam->h, sizeof(unsigned short));
 
    libcam_GetCurrentFITSDate(cam->interpCam, cam->date_end);
-   libcam_GetCurrentFITSDate_function(cam->interpCam, cam->date_end, "::audace::date_sys2ut");
 
    /* Ces deux mots cles sont assignes avant d'appeller la fonction */
    /* de lecture de la camera, ce qui permet a celle-ci de les ecraser */
@@ -1311,7 +1307,6 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
             // je teste cam->timerExpiration car il peut etre nul si cmdCamStop a ete appele entre temps
             if( cam->timerExpiration != NULL ) {
                libcam_GetCurrentFITSDate(cam->interpCam, cam->date_obs);
-               libcam_GetCurrentFITSDate_function(cam->interpCam, cam->date_obs, "::audace::date_sys2ut");
                /* Creation du timer pour realiser le temps de pose. */
                i = (int) (1000 * cam->exptimeTimer);
                cam->timerExpiration->TimerToken = Tcl_CreateTimerHandler(i, AcqRead, (ClientData) cam);

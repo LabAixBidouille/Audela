@@ -21,7 +21,7 @@
  */
 
 /* 
- * $Id: scanstruct.h,v 1.2 2006-01-22 22:01:28 michelpujol Exp $
+ * $Id: scanstruct.h,v 1.3 2010-02-06 11:25:17 michelpujol Exp $
  */
 
 #ifndef __SCANSTRUCT_H__
@@ -51,7 +51,6 @@ typedef struct {
     int *dts;			/* tableau des délais */
     unsigned long loopmilli1;	/* nb de boucles pour faire une milliseconde (~10000) */
     int stop;			/* indicateur d'arret (1=>pose arretee au prochain coup) */
-    double tumoinstl;		/* TU-TL */
     double ra;			/* RA at the bigining */
     double dec;			/* DEC at the bigining */
 } ScanStruct;

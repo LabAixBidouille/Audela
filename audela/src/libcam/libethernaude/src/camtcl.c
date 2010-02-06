@@ -52,7 +52,6 @@ typedef struct {
     unsigned short *pix;	/* stockage de l'image */
     unsigned short *pix2;	/* pointeur defilant sur le contenu de pix */
     int stop;			/* indicateur d'arret (1=>pose arretee au prochain coup) */
-    double tumoinstl;		/* TU-TL */
     double ra;			/* RA at the bigining */
     double dec;			/* DEC at the bigining */
 } ScanStruct;
@@ -403,15 +402,6 @@ int cmdEthernaudeScan(ClientData clientData, Tcl_Interp * interp, int argc, char
    TheScanStruct->pix = (unsigned short*)calloc(TheScanStruct->line_size*h,sizeof(unsigned short));
    TheScanStruct->pix2 = TheScanStruct->pix;
 
-   /* mesure de la difference entre le temps systeme et le temps TU */
-   libcam_GetCurrentFITSDate(interp, ligne);
-   strcpy(ligne2, ligne);
-   libcam_GetCurrentFITSDate_function(interp, ligne2, "::audace::date_sys2ut");
-   sprintf(text, "expr [[mc_date2jd %s]-[mc_date2jd %s]]", ligne2, ligne);
-   if (Tcl_Eval(interp, text) == TCL_OK) {
-      TheScanStruct->tumoinstl = atof(interp->result);
-   }
-
    /* coordonnes du telescope au debut de l'acquisition */
    libcam_get_tel_coord(interp, &TheScanStruct->ra, &TheScanStruct->dec, cam, &status);
    if (status == 1) {
@@ -420,7 +410,6 @@ int cmdEthernaudeScan(ClientData clientData, Tcl_Interp * interp, int argc, char
 
    TheScanStruct->TimerToken = Tcl_CreateTimerHandler(TheScanStruct->idt, EthernaudeScanCallback, (ClientData) cam);
    libcam_GetCurrentFITSDate(interp, TheScanStruct->dateobs);
-   libcam_GetCurrentFITSDate_function(interp, TheScanStruct->dateobs, "::audace::date_sys2ut");
    
    Tcl_ResetResult(interp);
    return TCL_OK;
@@ -463,7 +452,6 @@ void EthernaudeScanCallback(ClientData clientData)
       if (TheScanStruct->y == TheScanStruct->height) {
          // La derniere ligne du scan est atteinte.
          libcam_GetCurrentFITSDate(TheScanStruct->interp, TheScanStruct->dateend);
-         libcam_GetCurrentFITSDate_function(TheScanStruct->interp, TheScanStruct->dateend, "::audace::date_sys2ut");
          cam = (struct camprop *)clientData;
          EthernaudeScanTerminateSequence(clientData, cam->camno, "Normal end: last line reached.");
       } else {
@@ -539,12 +527,8 @@ void EthernaudeScanTransfer(ClientData clientData)
    }
 
    /* Conversion des dates d'acquisition */
-   sprintf(s, "mc_date2iso8601 [expr [mc_date2jd %s]+%f]", TheScanStruct->dateobs, TheScanStruct->tumoinstl);
-   Tcl_Eval(interp, s);
-   strcpy(dateobs_tu, interp->result);
-   sprintf(s, "mc_date2iso8601 [expr [mc_date2jd %s]+%f+%f]", TheScanStruct->dateobs, TheScanStruct->tumoinstl, ((float)(naxis2))*dt/24./3600.);
-   Tcl_Eval(interp, s);
-   strcpy(dateend_tu, interp->result);
+   strcpy(dateobs_tu, TheScanStruct->dateobs);
+   strcpy(dateend_tu, TheScanStruct->dateend);
 
    /* Transfert de la memoire temporaire vers le buffer image AudeLA */
    nbpix = naxis1 * naxis2;

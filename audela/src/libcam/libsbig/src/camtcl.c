@@ -408,8 +408,6 @@ void AcqReadTrack(ClientData clientData)
     p = (unsigned short *) calloc(naxis1 * naxis2, sizeof(unsigned short));
 
     libcam_GetCurrentFITSDate(interp, cam->date_endtrack);
-    libcam_GetCurrentFITSDate_function(interp, cam->date_endtrack,
-				       "::audace::date_sys2ut");
 
     /*cam_stop_exp(cam); */
     sbig_cam_read_ccdtrack(cam, p);
@@ -532,7 +530,6 @@ int cmdSbigAcqTrack(ClientData clientData, Tcl_Interp * interp, int argc,
 	    Tcl_Eval(interp, "clock seconds");
 	    cam->clockbegin = (unsigned long) atoi(interp->result);
 	    libcam_GetCurrentFITSDate(interp, cam->date_obstrack);
-	    libcam_GetCurrentFITSDate_function(interp, cam->date_obstrack, "::audace::date_sys2ut");
 	    /* Creation du timer pour realiser le temps de pose. */
 	    cam->timerExpirationTrack->TimerToken =
 		Tcl_CreateTimerHandler(i, AcqReadTrack, (ClientData) cam);

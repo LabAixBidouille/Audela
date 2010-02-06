@@ -89,7 +89,6 @@ typedef struct {
     int *dts;			/* tableau des délais */
     unsigned long loopmilli1;	/* nb de boucles pour faire une milliseconde (~10000) */
     int stop;			/* indicateur d'arret (1=>pose arretee au prochain coup) */
-    double tumoinstl;		/* TU-TL */
     double ra;			/* RA at the bigining */
     double dec;			/* DEC at the bigining */
 } ScanStruct;

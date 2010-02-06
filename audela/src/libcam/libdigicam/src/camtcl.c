@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: camtcl.c,v 1.10 2010-01-16 09:53:09 michelpujol Exp $
+// $Id: camtcl.c,v 1.11 2010-02-06 11:25:17 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -278,7 +278,6 @@ int cmdCamLoadLastImage(ClientData clientData, Tcl_Interp * interp, int argc, ch
    
    if( status == 0) {
       libcam_GetCurrentFITSDate(interp, cam->date_end);
-      libcam_GetCurrentFITSDate_function(interp, cam->date_end, "::audace::date_sys2ut");
             
       // Ce test permet de savoir si le buffer existe
       sprintf(s, "buf%d bitpix", cam->bufno);
