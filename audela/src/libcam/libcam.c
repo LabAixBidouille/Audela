@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.37 2010-02-06 11:25:17 michelpujol Exp $
+ * $Id: libcam.c,v 1.38 2010-02-06 13:53:58 jacquesmichelet Exp $
  */
 
 #include "sysexp.h"
@@ -35,6 +35,10 @@
 #include <string.h>
 #include <time.h>               /* time, ftime, strftime, localtime */
 #include <sys/timeb.h>          /* ftime, struct timebuffer */
+
+#if defined(OS_LIN)
+#include <sys/time.h>           /* gettimeofday */
+#endif
 
 #include "camera.h"
 
@@ -307,7 +311,7 @@ static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, ch
       const char *platform;
       const char *threaded;
 
-      // 
+      //
       if((platform=Tcl_GetVar(interp,"tcl_platform(platform)",TCL_GLOBAL_ONLY))==NULL) {
          sprintf(s, "cmdCamCreate: Global variable tcl_platform(os) not found");
          Tcl_SetResult(interp, s, TCL_VOLATILE);
@@ -322,7 +326,7 @@ static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, ch
       if ( strcmp(argv[argc-2],"mainThreadId") != 0 ) {
          if ( strcmp(threaded,"1") == 0 ) {
             // Cas de l'environnement multi-thread : je cree un thread dediee a la camera ,
-            if ( !( strcmp(argv[0],"webcam") == 0 && strcmp(platform,"windows")==0) 
+            if ( !( strcmp(argv[0],"webcam") == 0 && strcmp(platform,"windows")==0)
                ) {
                // Cas normal en mutlti-thread
 
@@ -450,8 +454,8 @@ static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, ch
             if ( Tcl_Eval(interp, s) == TCL_OK ) {
                char telThreadId[20] ;
                strcpy(telThreadId, interp->result);
-               // je copie la commande du telescope dans le thread de la camera 
-               sprintf(s, "thread::send -async %s [list thread::copycommand %s tel%d]", 
+               // je copie la commande du telescope dans le thread de la camera
+               sprintf(s, "thread::send -async %s [list thread::copycommand %s tel%d]",
                   telThreadId, cam->camThreadId, cam->telno);
                Tcl_Eval(interp, s);
             }
@@ -470,8 +474,8 @@ static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, ch
             if ( Tcl_Eval(interp, s) == TCL_OK ) {
                char telThreadId[20] ;
                strcpy(telThreadId, interp->result);
-               // je copie la commande du telescope dans le thread de la camera 
-               sprintf(s, "thread::send -async %s [list thread::copycommand %s tel%d]",  
+               // je copie la commande du telescope dans le thread de la camera
+               sprintf(s, "thread::send -async %s [list thread::copycommand %s tel%d]",
                   telThreadId, cam->camThreadId, cam->telno);
                Tcl_Eval(interp, s);
             }
@@ -484,7 +488,7 @@ static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, ch
       //sprintf(s, "status_cam%d", cam->camno);
       //Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
       setCameraStatus(cam,interp,"stand");
-      
+
       libcam_log(LOG_DEBUG, "cmdCamCreate: create camera data at %p\n", cam);
    }
    return TCL_OK;
@@ -508,17 +512,17 @@ static int cmdCam(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
       Tcl_SetResult(interp, s, TCL_VOLATILE);
       retour = TCL_ERROR;
    } else {
-      
+
       if ( cam->camThreadId[0] != 0 ) {
          // cas du mutltithread
          char currentThread[80];
          // je recupere la thread courante
          Tcl_Eval(interp, "thread::id");
          strcpy(currentThread,interp->result);
-        if ( (strcmp(argv[1],"timer") == 0 )  
+        if ( (strcmp(argv[1],"timer") == 0 )
 #if defined(OS_WIN)
               // ces commandes de webcam doivent s'executer dans la thread principale sous Windows car elles ouvrer une fenetre.
-              || (strcmp(CAM_INI[0].product,"webcam") == 0 && (strcmp(argv[1],"close") == 0 || strcmp(argv[1],"videoformat") == 0|| strcmp(argv[1],"videosource") == 0 || strcmp(argv[1],"startvideoview") == 0 || strcmp(argv[1],"stopvideoview") == 0 || strcmp(argv[1],"startvideocapture") == 0 || strcmp(argv[1],"stopvideocapture") == 0 || strcmp(argv[1],"startvideocrop") == 0 || strcmp(argv[1],"stopvideocrop") == 0 )) 
+              || (strcmp(CAM_INI[0].product,"webcam") == 0 && (strcmp(argv[1],"close") == 0 || strcmp(argv[1],"videoformat") == 0|| strcmp(argv[1],"videosource") == 0 || strcmp(argv[1],"startvideoview") == 0 || strcmp(argv[1],"stopvideoview") == 0 || strcmp(argv[1],"startvideocapture") == 0 || strcmp(argv[1],"stopvideocapture") == 0 || strcmp(argv[1],"startvideocrop") == 0 || strcmp(argv[1],"stopvideocrop") == 0 ))
 #endif
               )
          {
@@ -580,7 +584,7 @@ void libcam_GetCurrentFITSDate(Tcl_Interp * interp, char *s)
 {
    int clock = 0;
    char ligne[256];
-#if defined(OS_WIN) 
+#if defined(OS_WIN)
 #if defined(_Windows)
    /* cas special a Borland Builder pour avoir les millisecondes */
    struct time t1;
@@ -592,7 +596,7 @@ void libcam_GetCurrentFITSDate(Tcl_Interp * interp, char *s)
 #endif
 #if defined(_MSC_VER)
    /* cas special a Microsoft C++ pour avoir les millisecondes */
-   
+
    struct _timeb timebuffer;
    char message[50];
    time_t ltime;
@@ -601,27 +605,24 @@ void libcam_GetCurrentFITSDate(Tcl_Interp * interp, char *s)
    time(&ltime);          // retourne la date GMT
    strftime(message, 45, "%Y-%m-%dT%H:%M:%S", gmtime(&ltime));
    sprintf(s, "%s.%02d", message, (int) (timebuffer.millitm / 10));
-   
+
 
    /*
    struct _SYSTEMTIME temps_pc;
    clock = 1;
 	GetSystemTime(&temps_pc);
-   sprintf(s, "%04d-%02d-%02dT%02d:%02d:%02d.%02d", 
-      temps_pc.wYear, temps_pc.wMonth, temps_pc.wDay, 
-      temps_pc.wHour, temps_pc.wMinute, temps_pc.wSecond, 
+   sprintf(s, "%04d-%02d-%02dT%02d:%02d:%02d.%02d",
+      temps_pc.wYear, temps_pc.wMonth, temps_pc.wDay,
+      temps_pc.wHour, temps_pc.wMinute, temps_pc.wSecond,
       temps_pc.wMilliseconds/10);
    */
 #endif
 #elif defined(OS_LIN)
-    struct timeb timebuffer;
-    time_t ltime;
-    ftime(&timebuffer);
-    time(&ltime);
-    gettimeofday(&t,NULL);  // retourne la date GMT
-    strftime(message,45,"%Y-%m-%dT%H:%M:%S",gmtime((const time_t*)(&t.tv_sec)));
-    sprintf(s1,"%s.%02d : ",message,(t.tv_usec)/10000);
-
+    char message[50];
+    struct timeval t;
+    gettimeofday (&t, NULL);  // retourne la date GMT
+    strftime (message, 45, "%Y-%m-%dT%H:%M:%S",gmtime ((const time_t*)(&t.tv_sec)));
+    sprintf (s, "%s.%02d : ", message, (int)(t.tv_usec/10000));
 #endif
    if (clock == 0) {
       strcpy(ligne, "clock format [clock seconds] -format \"%Y-%m-%dT%H:%M:%S.00\"");
@@ -879,11 +880,11 @@ static int cmdCamTel(ClientData clientData, Tcl_Interp * interp, int argc, char 
       } else {
          cam = (struct camprop *) clientData;
          cam->telno = i_telno;
-         if ( argc >= 4 &&  cam->camThreadId[0] != 0 ) {          
+         if ( argc >= 4 &&  cam->camThreadId[0] != 0 ) {
             char telThreadId[20] ;
             strcpy(telThreadId, argv[3]);
-            // je copie la commande du telescope dans le thread de la camera 
-            sprintf(ligne, "thread::send -async %s [list thread::copycommand %s tel%d]", 
+            // je copie la commande du telescope dans le thread de la camera
+            sprintf(ligne, "thread::send -async %s [list thread::copycommand %s tel%d]",
                telThreadId, cam->camThreadId, cam->telno);
             result = Tcl_Eval(interp, ligne);
 
@@ -1019,8 +1020,8 @@ static void AcqRead(ClientData clientData )
    CAM_DRV.read_ccd(cam, (unsigned short *) p);
 
    // si cam->pixel_data n'est pas nul, la camera a mis les pixels dans cam->pixel_data
-   if(cam->pixel_data != NULL) {
-      if ( (int) cam->pixel_data != -1 ) {
+   if (cam->pixel_data != NULL) {
+      if (cam->pixel_data != (void *)-1) {
          // je supprime le buffer par defaut pointe par "p"
          free( p);
          // je fais pointer "p"sur le buffer cree par la camera
@@ -1092,8 +1093,8 @@ static void AcqRead(ClientData clientData )
          libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
       }
 
-      //--- get height after decompression . 
-      //--- Indispensable pour recuperer la taille relle de l'image 
+      //--- get height after decompression .
+      //--- Indispensable pour recuperer la taille relle de l'image
       //--- en particulier pour les APN ou l'utilisateur peut changer le format de l'image
       sprintf(s, "buf%d getpixelsheight", cam->bufno);
       libcam_log(LOG_DEBUG, s);
@@ -1250,7 +1251,7 @@ static void AcqRead(ClientData clientData )
       free(cam->timerExpiration);
       cam->timerExpiration = NULL;
    }
-   cam->acquisitionInProgress = 0; 
+   cam->acquisitionInProgress = 0;
 }
 
 
@@ -1274,7 +1275,7 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
       if ( argc == 3 ) {
          cam->blockingAcquisition = 1;
       } else {
-         cam->blockingAcquisition = 0;    
+         cam->blockingAcquisition = 0;
       }
 
       if (cam->timerExpiration == NULL) {
@@ -1318,7 +1319,7 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
             if(cam->blockingAcquisition == 1 ) {
                // j'attend la fin de l'acquisition
                int foundEvent = 1;
-               cam->acquisitionInProgress = 1; 
+               cam->acquisitionInProgress = 1;
                while (cam->acquisitionInProgress != 0 && foundEvent) {
                   foundEvent = Tcl_DoOneEvent(TCL_ALL_EVENTS);
                   //if (Tcl_LimitExceeded(interp)) {
@@ -1354,7 +1355,7 @@ static int cmdCamStop(ClientData clientData, Tcl_Interp * interp, int argc, char
    int retour = TCL_OK;
 
    cam = (struct camprop *) clientData;
-   cam->acquisitionInProgress = 2; 
+   cam->acquisitionInProgress = 2;
 
    if (cam->timerExpiration != NULL ) {
       Tcl_DeleteTimerHandler(cam->timerExpiration->TimerToken);
@@ -1906,7 +1907,7 @@ static int cmdCamClose(ClientData clientData, Tcl_Interp * interp, int argc, cha
       // Pas necesaire de changer l'etat de la variable dans la thread de la camera  car la thread est supprimee juste apres
       //sprintf(s, "thread::send -async %s { unset status_cam%d }", cam->camThreadId, cam->camno);
       //Tcl_Eval(interp, s);
-   
+
       // je supprime la thread de la camera
       if ( strcmp(cam->camThreadId,"")!= 0 ) {
          sprintf(s,"thread::release %s" , cam->camThreadId);
@@ -2047,12 +2048,12 @@ static int cam_init_common(struct camprop *cam, int argc, char **argv)
    cam->timerExpiration = NULL;
    cam->radecFromTel = 1;
    strcpy(cam->headerproc,"");
-   cam->blockingAcquisition = 0; 
+   cam->blockingAcquisition = 0;
    //---  valeurs par defaut des capacites offertes par la camera
    cam->capabilities.expTimeCommand = 1;  // existance du choix du temps de pose
    cam->capabilities.expTimeList    = 0;  // existance de la liste des temps de pose predefini
    cam->capabilities.videoMode      = 0;  // existance du mode video
-   cam->acquisitionInProgress = 0; 
+   cam->acquisitionInProgress = 0;
    return 0;
 }
 
