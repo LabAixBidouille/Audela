@@ -1,6 +1,6 @@
 #
 # Fichier : obscgi.tcl
-# Mise a jour $Id: obscgi.tcl,v 1.3 2007-12-28 11:21:20 robertdelmas Exp $
+# Mise Ã  jour $Id: obscgi.tcl,v 1.4 2010-02-06 22:18:07 robertdelmas Exp $
 #
 
 # - variables communes a tous les scripts
@@ -32,14 +32,15 @@ set sortie no
 while {$sortie=="no"} {
    after 1000
    update
-   # - Analyse les requêtes présentes sur le disque
+   set now [clock format [clock seconds] -gmt 1 -format "%Y %m %d %H %M %S"]
+   # - Analyse les requÃªtes prÃ©sentes sur le disque
    set list_file ""
    catch {set list_file [lsort -increasing [glob "$rep(req)/*.req"]]} result
    set observable no
    if {[llength $list_file]!=0} {
       foreach file $list_file {
          source "$file"
-         set result [mc_radec2altaz $ra $dec {gps 2.1383 e 45.1234 125} now]
+         set result [mc_radec2altaz $ra $dec {gps 2.1383 e 45.1234 125} $now]
          set h [lindex $result 2]
          set alt [lindex $result 1]
          if {((($h<60)||($h>300))&&($alt>30)&&($dec<50))} {
@@ -59,16 +60,16 @@ while {$sortie=="no"} {
       append obsname "[string range $t 11 12][string range $t 14 15][string range $t 17 18]_"
       set name "$obsname$reqname"
       set fullname "$rep(visu)/$name"
-      # - Pointe le télescope
+      # - Pointe le tÃ©lescope
       tel1 goto [list $ra $dec]
-      # - Réalise l'image CCD
+      # - RÃ©alise l'image CCD
       cam1 exptime $exptime
       cam1 bin [list $binning $binning]
       cam1 acq
       vwait status_cam1
       # - Enregistre l'image sur le disque
       buf1 save "$fullname"
-      # - detruit le fichier requete exécuté
+      # - detruit le fichier requete exÃ©cutÃ©
       file delete "$file"
    }
 }
