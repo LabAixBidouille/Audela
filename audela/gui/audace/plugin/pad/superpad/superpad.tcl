@@ -2,7 +2,7 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise a jour $Id: superpad.tcl,v 1.29 2009-10-31 09:25:11 michelpujol Exp $
+# Mise à jour $Id: superpad.tcl,v 1.30 2010-02-06 22:17:01 robertdelmas Exp $
 #
 
 package provide superpad 1.0
@@ -755,7 +755,7 @@ namespace eval ::AlignManager {
          set magnitude [lindex $result 4]
 
          if { $equinox != "now" } {
-            set listv [modpoi_catalogmean2apparent $ra $dec $equinox now]
+            set listv [modpoi_catalogmean2apparent $ra $dec $equinox [ ::audace::date_sys2ut now ] ]
             set ra [lindex $listv 0]
             set ra [mc_angle2hms $ra 360 nozero 1 auto string]
             set ra [string range $ra 0 [string first "s" "$ra" ] ]
@@ -776,10 +776,12 @@ namespace eval ::AlignManager {
    #  modpoi_catalogmean2apparent
    #     Input :
    #       rae,dece : coordinates J2000.0 (degrees)
+   #       equinox  : equinox (exemple : J2000.0)
+   #       date     : date en TU
    #     Output :
    #       rav,decv : true coordinates (degrees)
-   #         Hv : true hour angle (degrees)
-   #         hv : true altitude altaz coordinate (degrees)
+   #         Hv  : true hour angle (degrees)
+   #         hv  : true altitude altaz coordinate (degrees)
    #         azv : true azimut altaz coodinate (degrees)
    #------------------------------------------------------------
    proc modpoi_catalogmean2apparent { rae dece equinox date } {

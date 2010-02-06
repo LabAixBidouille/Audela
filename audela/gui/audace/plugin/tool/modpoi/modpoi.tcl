@@ -2,7 +2,7 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi.tcl,v 1.24 2009-12-21 22:37:08 michelpujol Exp $
+# Mise Ã  jour $Id: modpoi.tcl,v 1.25 2010-02-06 22:17:21 robertdelmas Exp $
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
@@ -160,7 +160,7 @@ proc modpoi_wiz { { mode new } } {
    #--- Const init
    set modpoi(centering,star_index) 0
    #--- Param init
-   #--- Nombre d'étoiles pointées
+   #--- Nombre d'Ã©toiles pointÃ©es
    set modpoi(stars,nb) "$parametres(modpoi,nb_stars)"
    #--- Accuracy of automatic recentering
    set modpoi(centering,accuracy) "$parametres(centering,accuracy)"
@@ -281,7 +281,7 @@ proc modpoi_wiz1b { } {
    #--- Nombre d'etoiles (>=5 ?)
    #--- Centrage automatique
    #--- Binning, exptime
-   #--- Coordonnées du centre de l'image (x,y)
+   #--- CoordonnÃ©es du centre de l'image (x,y)
    #---
    #--- Limite angle horaire est, west
    frame $modpoi(g,base).fra_hlim
@@ -524,7 +524,7 @@ proc modpoi_wiz1c { } {
    -padx 5 -pady 3 -expand 0
    #---
    #--- Binning, exptime
-   #--- Coordonnées du centre de l'image (x,y)
+   #--- CoordonnÃ©es du centre de l'image (x,y)
    #--- Limite angle horaire est, west
    #--- Coordinates to center
    frame $modpoi(g,base).fra_c0
@@ -903,8 +903,8 @@ proc modpoi_wiz2 { } {
    }
 }
 
-#--- Wizard de pointage d'une étoile
-#--- h0, d0, meilleure position de l'étoile
+#--- Wizard de pointage d'une Ã©toile
+#--- h0, d0, meilleure position de l'Ã©toile
 proc modpoi_wiz3 { { h0 0 } { d0 0 } { starindex 1 } } {
    global caption modpoi
 
@@ -927,7 +927,7 @@ proc modpoi_wiz3 { { h0 0 } { d0 0 } { starindex 1 } } {
    set dece   [mc_angle2dms $dece 90 nozero 0 + string]
    set raadt  [mc_angle2hms $raadt 360 nozero 1 auto string]
    set decadt [mc_angle2dms $decadt 90 nozero 0 + string]
-   #--- Stocke le résultat pour etoile $starindex
+   #--- Stocke le rÃ©sultat pour etoile $starindex
    set modpoi(star$starindex,starname0) "$starname"
    set modpoi(star$starindex,rae)       $rae
    set modpoi(star$starindex,dece)      $dece
@@ -1510,10 +1510,12 @@ proc modpoi_coord { } {
 proc modpoi_catalogmean2apparent { rae dece equinox date { dra_dan "" } { ddec_dan "" } { epoch "" } } {
 #--- Input
 #--- rae,dece : coordinates J2000.0 (degrees)
+#--- equinox  : equinox (example : J2000.0)
+#--- date     : date en TU
 #--- Output
 #--- rav,decv : true coordinates (degrees)
-#--- Hv : true hour angle (degrees)
-#--- hv : true altitude altaz coordinate (degrees)
+#--- Hv  : true hour angle (degrees)
+#--- hv  : true altitude altaz coordinate (degrees)
 #--- azv : true azimut altaz coodinate (degrees)
    global modpoi
 
@@ -1605,12 +1607,15 @@ proc modpoi_apparent2observed { listvdt { pressure 101325 } { temperature 290 } 
 
 proc modpoi_observed2apparent { rao deco { pressure 101325 } { temperature 290 } { date now } } {
 #--- Input
-#--- rao : observed (topocentric refracted) ra
-#--- deco : observed (topocentric refracted) dec
+#--- rao         : observed (topocentric refracted) ra
+#--- deco        : observed (topocentric refracted) dec
+#--- pressure    : pressure
+#--- temperature : temperature
+#--- date        : date en TU
 #--- Output
 #--- rav,decv : true coordinates (degrees)
-#--- Hv : true hour angle (degrees)
-#--- hv : true altitude altaz coordinate (degrees)
+#--- Hv  : true hour angle (degrees)
+#--- hv  : true altitude altaz coordinate (degrees)
 #--- azv : true azimut altaz coodinate (degrees)
    global modpoi
 
@@ -1787,7 +1792,7 @@ proc modpoi_choose_beststar { { h0 0 } { dec0 80 } { date now } } {
           {23h3m46 28d4m58}\
           {23h4m46 15d12m19} }
    }
-   #--- Calcule l'angle horaire de toutes les étoiles
+   #--- Calcule l'angle horaire de toutes les Ã©toiles
    set home $modpoi(var,home)
    set radec_moon [lindex [mc_ephem moon [list [mc_date2tt [mc_date2jd [::audace::date_sys2ut]] ] ] {RA DEC} -topo "$home"] 0]
    catch {unset lcoords}
@@ -1890,7 +1895,7 @@ proc modpoi_computecoef { {fileinp ""} } {
       set dec $modpoi(star$k,dec_cal)
       set h $modpoi(star$k,h_cal)
       set phi [lindex $modpoi(var,home) 3]
-      #--- Ajoute deux lignes à la matrice
+      #--- Ajoute deux lignes Ã  la matrice
       ::console::affiche_resultat "$deltah $deltad $dec $h\n"
       set res [modpoi_addobs "$vecY" "$matX" "$vecW" $deltah $deltad $dec $h $phi]
       set vecY [lindex $res 0]
@@ -1908,7 +1913,7 @@ proc modpoi_computecoef { {fileinp ""} } {
    set output [ open [ file join $audace(rep_plugin) tool modpoi model_modpoi $modpoi(Filename).txt ] w ]
    puts -nonewline $output "$res $modpoi(corrections,refraction)"
    close $output
-   #--- Affecte le modèle pour l'objet télescope
+   #--- Affecte le modÃ¨le pour l'objet tÃ©lescope
    if { [ ::tel::list ] == "" } {
    } else {
       tel$audace(telNo) model modpoi_cat2tel modpoi_tel2cat
@@ -1977,7 +1982,7 @@ proc modpoi_testcoef { vec chisq covar } {
       set dec $modpoi(star$k,dec_cal)
       set h $modpoi(star$k,h_cal)
       set phi [lindex $modpoi(var,home) 3]
-      #--- Ajoute deux lignes à la matrice
+      #--- Ajoute deux lignes Ã  la matrice
       set res [modpoi_addobs "$vecY" "$matX" "$vecW" $deltah $deltad $dec $h $phi]
       set matX [lindex $res 1]
       #--- Calcul direct
@@ -2052,7 +2057,7 @@ proc modpoi_passage { radec sens } {
    #--- Calcule l'angle horaire
    set dummy [mc_radec2altaz $ra $dec $modpoi(var,home) $now]
    set h [lindex $dummy 2]
-   #--- Ajoute deux lignes à la matrice
+   #--- Ajoute deux lignes Ã  la matrice
    set vecY ""
    set matX ""
    set vecW ""
@@ -2070,7 +2075,7 @@ proc modpoi_passage { radec sens } {
       #--- Calcule l'angle horaire
       set dummy [mc_radec2altaz $ra $dec $modpoi(var,home) $now]
       set h [lindex $dummy 2]
-      #--- Ajoute deux lignes à la matrice
+      #--- Ajoute deux lignes Ã  la matrice
       set vecY ""
       set matX ""
       set vecW ""
@@ -2113,20 +2118,20 @@ proc modpoi_load { { fileres "modpoi_res.txt" } } {
       } else {
          tel$audace(telNo) model modpoi_cat2tel modpoi_tel2cat
          set telThreadId [tel$audace(telNo)  threadid ]
-         if { $telThreadId != "" } { 
+         if { $telThreadId != "" } {
             #--- je charge les procedures tel2cat et cat2tel dans l'interpreteur du thread du telescope
-            ::thread::send $telThreadId [list uplevel #0 source \"[file join file join $audace(rep_plugin) tool modpoi modpoithread.tcl]\"]    
-            #--- j'initilise les variables du modèle de pointage en copiant toutes les valeurs de modpoi
-            ::thread::send $telThreadId [list array set modpoi [array get modpoi]]  
-            ::thread::copycommand $telThreadId  "gsl_mmult"            
-            ::thread::copycommand $telThreadId  "mc_refraction"   
-            ::thread::copycommand $telThreadId  "mc_altaz2radec"            
-            ::thread::copycommand $telThreadId  "mc_altaz2hadec"   
+            ::thread::send $telThreadId [list uplevel #0 source \"[file join file join $audace(rep_plugin) tool modpoi modpoithread.tcl]\"]
+            #--- j'initilise les variables du modÃ¨le de pointage en copiant toutes les valeurs de modpoi
+            ::thread::send $telThreadId [list array set modpoi [array get modpoi]]
+            ::thread::copycommand $telThreadId  "gsl_mmult"
+            ::thread::copycommand $telThreadId  "mc_refraction"
+            ::thread::copycommand $telThreadId  "mc_altaz2radec"
+            ::thread::copycommand $telThreadId  "mc_altaz2hadec"
             ::thread::copycommand $telThreadId  "mc_aberrationradec"
             ::thread::copycommand $telThreadId  "mc_nutationradec"
             ::thread::copycommand $telThreadId  "mc_precessradec"
-            ::thread::copycommand $telThreadId  "mc_aberrationradec"             
-         }                                    
+            ::thread::copycommand $telThreadId  "mc_aberrationradec"
+         }
       }
       tk_messageBox -title "$caption(modpoi,wiz1b,warning)" -message "$caption(modpoi,modele_existe)" -type ok
       return $modpoi(vec)

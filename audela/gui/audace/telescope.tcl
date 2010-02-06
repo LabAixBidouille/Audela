@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.53 2010-01-25 21:43:45 michelpujol Exp $
+# Mise à jour $Id: telescope.tcl,v 1.54 2010-02-06 22:15:59 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -1289,12 +1289,12 @@ proc ::telescope::park { state } {
 
 #------------------------------------------------------------
 # catalogmean2apparent
-#    converti ra,dec en coordonnees de l'equinoxe
+#    converti ra et dec en coordonnees de l'equinoxe
 #
 # Parametres :
 #    rae,dece : coordinates (degrees)
-#    equinox  : equinox (example : J2000.0)
-#    date     : date
+#    equinox  : equinox (exemple : J2000.0)
+#    date     : date en TU
 # Return
 #    rav,decv : true coordinates (degrees)
 #    Hv       : true hour angle (degrees)
