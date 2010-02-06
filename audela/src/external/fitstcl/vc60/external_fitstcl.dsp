@@ -46,7 +46,7 @@ F90=df.exe
 # ADD BASE F90 /compile_only /include:"Release/" /dll /nologo /warn:nofileopt
 # ADD F90 /compile_only /include:"Release/" /dll /nologo /warn:nofileopt
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "FITSTCL_EXPORTS" /YX /FD /c
-# ADD CPP /nologo /MD /w /W0 /GX /O2 /I "..\..\include" /I "..\..\include\win" /I "..\..\cfitsio\cfitsio3090" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "FITSTCL_EXPORTS" /D "__WIN32__" /FR /YX /FD /c
+# ADD CPP /nologo /MD /w /W0 /GX /O2 /I "..\..\include" /I "..\..\include\win" /I "..\..\cfitsio\cfitsio3210" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "FITSTCL_EXPORTS" /D "__WIN32__" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -76,7 +76,7 @@ F90=df.exe
 # ADD BASE F90 /check:bounds /compile_only /debug:full /include:"Debug/" /dll /nologo /traceback /warn:argument_checking /warn:nofileopt
 # ADD F90 /browser /check:bounds /compile_only /debug:full /include:"Debug/" /dll /nologo /traceback /warn:argument_checking /warn:nofileopt
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "FITSTCL_EXPORTS" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "..\..\include" /I "..\..\include\win" /I "..\..\cfitsio\cfitsio3090" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "FITSTCL_EXPORTS" /D "__WIN32__" /FR /YX /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "..\..\include" /I "..\..\include\win" /I "..\..\cfitsio\cfitsio3210" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "FITSTCL_EXPORTS" /D "__WIN32__" /FR /YX /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
