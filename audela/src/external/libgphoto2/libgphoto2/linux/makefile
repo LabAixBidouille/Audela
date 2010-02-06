@@ -13,7 +13,7 @@ ifneq ($(strip $(C_DEPS)),)
 endif
 endif
 
--include ../makefile.defs
+-include ../../../../Makefile.defs
 
 # Add inputs and outputs from these tool invocations to the build variables 
 
@@ -23,11 +23,8 @@ all: libgphoto2.so
 # Tool invocations
 libgphoto2.so: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
-	@echo "*lib:" > libgphoto2.specs
-	@echo "    -rpath ." >> libgphoto2.specs
 	@echo 'Invoking: GCC C Linker'
-	gcc -L../../libgphoto2_port/libgphoto2_port/linux  -specs libgphoto2.specs -shared -o"libgphoto2.so" $(OBJS) $(USER_OBJS) $(LIBS)
-	@$(RM) libgphoto2.specs
+	gcc -ldl -lm -lstdc++ -L/usr/lib -ltclstub8.5 -L/usr/lib -ltkstub8.5 -Xlinker -rpath $(OUTPUTDIR) -L../../libgphoto2_port/libgphoto2_port/linux -shared -o"libgphoto2.so" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -37,8 +34,8 @@ clean:
 	-@echo ' '
 
 install: all
-	cp libgphoto2.so     ../../../../../bin/libgphoto2.so
-	cp ../libgphoto2.h ../../../include/libgphoto2.h
+	cp libgphoto2.so $(OUTPUTDIR)/libgphoto2.so
+	cp ../libgphoto2.h $(EXTINC)/libgphoto2.h
 	-@echo ' '
 
 .PHONY: all clean dependents install
