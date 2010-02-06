@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.130 2010-02-05 18:45:19 robertdelmas Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.131 2010-02-06 15:43:02 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -2019,6 +2019,23 @@ namespace eval ::confVisu {
       Menu_Separator $visuNo "$caption(audace,menu,file)"
       Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,entete)" "::keyword::header $visuNo"
 
+      #--- Affichage des plugins multivisu de type file du menu deroulant Fichier
+      Menu_Separator $visuNo "$caption(audace,menu,file)"
+      set liste ""
+      foreach m [array names panneau menu_name,*] {
+         lappend liste [list "$panneau($m) " $m]
+      }
+      set liste [lsort -dictionary $liste]
+      foreach m $liste {
+         set m [lindex $m 1]
+         scan "$m" "menu_name,%s" pluginName
+         if { [ ::$pluginName\::getPluginProperty multivisu ] == "1" } {
+            if { [ ::$pluginName\::getPluginProperty function ] == "file" } {
+               Menu_Command $visuNo "$caption(audace,menu,file)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$pluginName"
+            }
+         }
+      }
+
       Menu_Separator $visuNo "$caption(audace,menu,file)"
       Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(confVisu,fermer)" \
          "::confVisu::close $visuNo"
@@ -2116,24 +2133,38 @@ namespace eval ::confVisu {
       Menu           $visuNo "$caption(audace,menu,tool)"
       Menu_Command   $visuNo "$caption(audace,menu,tool)" "$caption(audace,menu,pas_outil)" "::confVisu::stopTool $visuNo"
 
-      Menu_Separator $visuNo "$caption(audace,menu,tool)"
-      #--- Remplissage du menu deroulant outils
+      #--- Affichage des plugins multivisu de type tool du menu deroulant Outils
       set liste ""
       foreach m [array names panneau menu_name,*] {
          lappend liste [list "$panneau($m) " $m]
       }
-      set firstTool ""
+      set indexAcquisition 0
+      set indexAiming      0
+      set firstTool        ""
       set liste [lsort -dictionary $liste]
       foreach m $liste {
          set m [lindex $m 1]
          scan "$m" "menu_name,%s" pluginName
-         if { [ ::$pluginName\::getPluginProperty "multivisu" ] == "1" } {
+         if { [ ::$pluginName\::getPluginProperty multivisu ] == "1" } {
             if { $firstTool == "" } {
                set firstTool $pluginName
                #--- Lancement automatique du premier outil de la liste
                ::confVisu::selectTool $visuNo ::$firstTool
             }
-            Menu_Command $visuNo "$caption(audace,menu,tool)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$pluginName"
+            if { [ ::$pluginName\::getPluginProperty function ] == "acquisition" } {
+               if { $indexAcquisition == 0 } {
+                  Menu_Separator $visuNo "$caption(audace,menu,tool)"
+               }
+               incr indexAcquisition
+               Menu_Command $visuNo "$caption(audace,menu,tool)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$pluginName"
+            }
+            if { [ ::$pluginName\::getPluginProperty function ] == "aiming" } {
+               if { $indexAiming == 0 } {
+                  Menu_Separator $visuNo "$caption(audace,menu,tool)"
+               }
+               incr indexAiming
+               Menu_Command $visuNo "$caption(audace,menu,tool)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$pluginName"
+            }
          }
       }
 
