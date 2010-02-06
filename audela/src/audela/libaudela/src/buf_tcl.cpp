@@ -4755,15 +4755,15 @@ int cmdRegion(ClientData , Tcl_Interp *interp, int argc, char *argv[])
 
 
 //==============================================================================
-// buf$i slitcentro {x1 y1 x2 y2} starDetectionMode pixelMinCount slitWidth signalRatio
+// buf$i slitcentro {x1 y1 x2 y2} starDetectionMode pixelMinCount slitWidth slitRatio
 //   Fonction de calcul du centroide sur une fente.
 //
 //  Parameters IN:
-//  @param     Argv[2]=[list x1 y1 x2 y2] fenetre de detection de l'etoile
-//  @param     Argv[3]=starDetectionMode  1=ajustement de gaussienne  2=slit
+//  @param     Argv[2]=[list x1 y1 x2 y2] coordonnées de la fenetre de detection de l'etoile (pixels)
+//  @param     Argv[3]=starDetectionMode  Algorithme de détection 1=ajustement de gaussienne  2=fente
 //  @param     Argv[4]=pixelMinCount      nombre minimal de pixels (nombre entier)
 //  @param     Argv[5]=slitWidth          largeur de la fente (nombre entier de pixels)
-//  @param     Argv[6]=signalRatio        ratio pour convertir le rapport de flux en nombre de pixels
+//  @param     Argv[6]=slitRatio          pourcentage pour convertir le rapport de flux en nombre de pixels
 //
 //  @return
 //             list[0] starStatus       resultat de la recherche de l'etoile
@@ -4776,19 +4776,20 @@ int cmdRegion(ClientData , Tcl_Interp *interp, int argc, char *argv[])
 int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
    enum {CMD_CENTRO=1,CMD_FLUX,CMD_PHOT};
-   int x1, y1, x2, y2, slitWidth, temp;
+   int x1, y1, x2, y2, temp;
+   int slitWidth = 0;
    int starDetectionMode;
-   double signalRatio;
+   double slitRatio = 0;
    int pixelMinCount=0;
    int retour = TCL_OK;
    char ligne[1000];
    CBuffer *buffer;
    char **listArgv;                   // Liste des argulents passes a getpix.
    int listArgc;                      // Nombre d'elements dans la liste des coordonnees.
-   char parameters[]= "{x1 y1 x2 y2} starDetectionMode pixelMinCount slitWidth signalRatio";
+   char parameters[]= "{x1 y1 x2 y2} starDetectionMode pixelMinCount ?slitWidth? ?slitRatio?";
 
    // je recupere les parametres
-   if(argc!=7) {
+   if(argc < 5) {
       sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],parameters);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       retour = TCL_ERROR;
@@ -4829,15 +4830,24 @@ int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
          Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
       }
-      if(Tcl_GetInt(interp,argv[5],&slitWidth)!=TCL_OK) {
-            sprintf(ligne,"Usage: %s %s %s\nslitwidth must be an integer",argv[0],argv[1],parameters);
-            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-            retour = TCL_ERROR;
-      }
-      if(Tcl_GetDouble(interp,argv[6],&signalRatio)!=TCL_OK) {
-            sprintf(ligne,"Usage: %s %s %s\nsignalRatio must be a float",argv[0],argv[1],parameters);
-            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-            retour = TCL_ERROR;
+
+      if ( starDetectionMode == 2 ) {
+         if ( argc == 7 ) {
+            if(Tcl_GetInt(interp,argv[5],&slitWidth)!=TCL_OK) {
+                  sprintf(ligne,"Usage: %s %s %s\nslitwidth must be an integer",argv[0],argv[1],parameters);
+                  Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+                  retour = TCL_ERROR;
+            }
+            if(Tcl_GetDouble(interp,argv[6],&slitRatio)!=TCL_OK) {
+                  sprintf(ligne,"Usage: %s %s %s\nslitRatio must be a float",argv[0],argv[1],parameters);
+                  Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+                  retour = TCL_ERROR;
+            }
+         } else {
+            slitWidth = 4;
+            slitRatio = 1.0;
+         }
+              
       }
 
       if ( retour == TCL_OK ) {
@@ -4868,7 +4878,7 @@ int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
                x1 -= 1; y1 -= 1; x2 -= 1; y2 -= 1;
 
                buffer->AstroSlitCentro(x1, y1, x2, y2, starDetectionMode, pixelMinCount,
-                   slitWidth, signalRatio,
+                   slitWidth, slitRatio,
                    starStatus, &xc, &yc, &maxIntensity, message);
 
                // retour dans le repere d'origine (1,1)

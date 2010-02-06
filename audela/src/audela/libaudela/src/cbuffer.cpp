@@ -1988,7 +1988,7 @@ void CBuffer::AstroPhotom(int x1, int y1, int x2, int y2, int method, double r1,
  *  @param     starDetectionMode 1=fit de gaussienne  2=barycentre
  *  @param     pixelMinCount nombre minimal de pixels au dessus du seuil de qualite
  *  @param     slitWidth   largeur de la fente (en pixel)
- *  @param     signalRatio ratio pour convertir le rapport de flux en nombre de pixels
+ *  @param     slitRatio ratio pour convertir le rapport de flux en nombre de pixels
  *  Parameters OUT:
  *  @param     starStatus     resultat de la recherche de l'etoile (DISABLED, DETECTED, NO_SIGNAL)
  *  @param     *xc abcisse du centre de l'etoile
@@ -2001,7 +2001,7 @@ void CBuffer::AstroPhotom(int x1, int y1, int x2, int y2, int method, double r1,
  */
 void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2,
                               int starDetectionMode, int pixelMinCount,
-                              int slitWidth, double signalRatio,
+                              int slitWidth, double slitRatio,
                               char *starStatus, double *xc, double *yc,
                               TYPE_PIXELS* maxIntensity, char * message)
 {
@@ -2193,7 +2193,7 @@ void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2,
          v = s2;
       }
       if ( v != 0.0 ) {
-         *yc += signalRatio * (s1-s2)/v;
+         *yc += slitRatio * (s1-s2)/v;
       }
 
       // ecretage des valeurs
