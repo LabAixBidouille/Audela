@@ -263,7 +263,11 @@
 <h3> <a name="scale" id="scale"></a>buf1 scale ListOfTwoScalingFactors ?NormaFlux?</h3>
 <p>Re&eacute;chantillonne (bilin&eacute;aire) l'image en tenant compte de facteurs d'&eacute;chelle sur chaque axe. La valeur normaflux permet de fixer le facteur de "dilution" du flux apr&egrave;s le re&eacute;chantillonnage. Si sx et sy sont les facteurs d'&eacute;chelle, la valeur par d&eacute;faut de normaflux est 1./(sx*sy). Une valeur de normaflux=1 permet de garder la dynamique initiale.</p>
 <h2> 5. Analyse</h2>
-<h3> <a name="xy2radec" id="xy2radec"></a>buf1 xy2radec <em>coord</em></h3>
+<h3> <a name="autocuts" id="autocuts"></a>buf1 autocuts</h3>
+<p>Calcule et retourne la valeur des seuils haut et bas de visualisation. Ces 
+  valeurs sont ajout&eacute;s aux mots cl&eacute;s MIPS-Hi et MIPS-LO de l'en-t&ecirc;te 
+  FITS de l'image.</p>
+<h3><a name="xy2radec" id="xy2radec"></a>buf1 xy2radec <em>coord</em></h3>
 <p>Conversion des coordonn&eacute;es image en coordonn&eacute;es c&eacute;lestes : il faut que l'image soit pr&eacute;alablement calibr&eacute;e astrom&eacute;triquement. Les coordonn&eacute;es d'entr&eacute;e sont sous la forme d'une liste de deux nombres, entiers ou d&eacute;cimaux. Le r&eacute;sultat est une liste compos&eacute;e de l'ascension droite, et de la d&eacute;clinaison, exprim&eacute;es en degr&eacute;s d&eacute;cimaux.</p>
 <h3> <a name="radec2xy" id="radec2xy"></a>buf1 radec2xy <em>coord</em></h3>
 <p>Conversion de coordonn&eacute;es c&eacute;lestes en coordonn&eacute;es image : il faut &eacute;galement que l'image soit calibr&eacute;e astrom&eacute;triquement. L'ascension droite et la d&eacute;clinaison doivent &ecirc;tre exprim&eacute;es en degr&eacute;s d&eacute;cimaux. Le r&eacute;sultat est une liste des coordonn&eacute;es x et y exprim&eacute;es en pixels d&eacute;cimaux (rarement des valeurs enti&egrave;res).</p>
@@ -304,9 +308,8 @@
 <p>dF = sqrt ( F1*G + F2*F5*G + F5*R*R*G*G) / G </p>
 <p>Si l'on ne connait pas, a priori le bruit de lecture de la cam&eacute;ra, on peut approximer l'expression par :</p>
 <p>dF = sqrt ( F1*G + F5*F4*F4*G*G) / G </p>
-<p>Si l'on connait le nombre de P de pixels ayant permis de mesurer la valeur du fond (r2&lt;r&lt;r3) alors on peut remplacer F5 par F5*(1+F5/P).</p>
-<h3> <a name="autocuts" id="autocuts"></a>buf1 autocuts</h3>
-<p>Calcule et retourne la valeur des seuils haut et bas de visualisation. Ces valeurs sont ajout&eacute;s aux mots cl&eacute;s MIPS-Hi et MIPS-LO de l'en-t&ecirc;te FITS de l'image.</p>
+<p>Si l'on connait le nombre de P de pixels ayant permis de mesurer la valeur 
+  du fond (r2&lt;r&lt;r3) alors on peut remplacer F5 par F5*(1+F5/P).</p>
 <h3> <a name="fitgauss" id="fitgauss"></a>buf1 fitgauss {x1 y1 x2 y2} ?-sub? ?-fwhmx value? ?-fwhmx value?</h3>
 <p>Calcule les param&egrave;tres d'ajustement de deux gaussiennes &agrave; partir des profils des valeurs cumul&eacute;es sur les c&ocirc;t&eacute;s de la fen&ecirc;tre d&eacute;finie par la liste {x1 y1 x2 y2}. L'ajustement est effectu&eacute; aux moindres carr&eacute;s. Les valeurs de retour sont dans une liste dans l'ordre suivant :</p>
 <ul>
@@ -323,9 +326,57 @@
 <h3> <a name="histo" id="histo"></a>buf1 histo ?NbBins? ?min? ?max?</h3>
 <p>Retourne trois listes contenant les informations sur l'histogramme de l'image. Chaque liste d&eacute;finit :</p>
 <ul>
-  <li>Liste du nombre de pixels dans l'intervalle [adumin;adumax]. Le nombre d'&eacute;l&eacute;ments de cette liste est fix&eacute; par la valeur de NbBins (10 par d&eacute;faut). Les bornes de valeurs de l'histogramme sont fix&eacute;es par min et max.</li>
-  <li>Liste des valeurs moyennes (en adu) des pixels. Cette liste contient NbBins &eacute;l&eacute;ments. </li>
-  <li>Liste des valeurs adumin;adumax (en adu) des pixels. Cette liste contient NbBins+1 &eacute;l&eacute;ments.</li>
+  <li>Liste du nombre de pixels dans l'intervalle [adumin;adumax]. Le nombre d'&eacute;l&eacute;ments 
+    de cette liste est fix&eacute; par la valeur de NbBins (10 par d&eacute;faut). 
+    Les bornes de valeurs de l'histogramme sont fix&eacute;es par min et max.</li>
+  <li>Liste des valeurs moyennes (en adu) des pixels. Cette liste contient NbBins 
+    &eacute;l&eacute;ments. </li>
+  <li>Liste des valeurs adumin;adumax (en adu) des pixels. Cette liste contient 
+    NbBins+1 &eacute;l&eacute;ments.</li>
+</ul>
+<h3> <a name="slitCentro" id="histo"></a>buf1 slitCentro {x1 y1 x2 y2} starDetectionMode 
+  pixelMinCount ?slitWidth? ?signalRatio?</h3>
+<p>Calcule le centre de la fen&ecirc;tre avec un ajustement de gaussienne ou avec 
+  un calcul de barycentre si une fente est pr&eacute;sente dans la fen&ecirc;tre.</p>
+<p>Param&egrave;tres : </p>
+<ul>
+  <li><b>{x1 y1 x2 y2}</b> : coordonn&eacute;es de la fen&ecirc;tre de d&eacute;tection 
+    de l'etoile (en pixels). Param&egrave;tre obligatoire </li>
+  <li><b>starDetectionMode</b> : choix de l'algorithme de d&eacute;tection . Param&egrave;tre 
+    obligatoire . 
+    <ul>
+      <li><b>starDetectionMode=</b>1 calcule le centre avec un ajustement de de 
+        gaussienne sur les 2 axes X et Y.</li>
+      <li><b>starDetectionMode=</b>2 calcule le centre de la fen&ecirc;tre en 
+        tenant compte de la pr&eacute;sence d'une fente. Calcule xc avec un ajustement 
+        de gaussienne sur l'axe X et calcule yc avec un barycentre sur l'axe Y 
+        en excluant la zone de de la fente horizontale plac&eacute;e approximativement 
+        au milieu de la fen&ecirc;tre telle que y=(y2-y1)/2 +-slitWith/2 (voir 
+        les param&egrave;tre <b>slitWidth</b> et <b>slitRatio</b>) . </li>
+    </ul>
+  </li>
+  <li><b>pixelMinCount</b>: nombre minimal de pixels pour d&eacute;terminer la 
+    qualit&eacute; de l'image ( nombre entier positif.). Param&egrave;tre obligatoire 
+    si <b>starDetectionMode</b>=2. pixelMinCount est le nombre minimal de pixels 
+    dans la fen&ecirc;tre tels que l'intensit&eacute; est sup&eacute;rieure au 
+    fond du ciel + 6 x sigma(fond du ciel) .</li>
+  <li><b>slitWidth:</b> largeur de la fente en pixel (nombre entier positif). 
+    Param&egrave;tre obligatoire si <b>starDetectionMode</b>=2 . Valeur par d&eacute;faut=4 
+    . </li>
+  <li><b>slitRatio</b>: ratio pour convertir le rapport de flux en nombre de pixels. 
+    Param&egrave;tre obligatoire sii <b>starDetectionMode=</b>2 . Valeur par d&eacute;faut=1.0</li>
+</ul>
+<p>Retourne une liste de 4 elements { status xc yc maxIntensity message } </p>
+<ul>
+  <li><b>status</b>: status =DETECTED si l'image a la qualit&eacute; requise (voir 
+    le param&egrave;tre <b>pixelMinCount</b>), sinon status = NO_SIGNAL</li>
+  <li><b>xc yc</b> : coordonn&eacute;es du centre de la fen&ecirc;tre en pixels 
+    (nombres d&eacute;cimaux). Si status=NO_SIGNAL , les coordonn&eacute;es sont 
+    &eacute;gales au centre g&eacute;om&eacute;trique de la fen&ecirc;tre.</li>
+  <li><b>maxIntensity</b> : intensit&eacute; du pixel le plus brillant de la fen&ecirc;tre 
+    (utile pour savoir si l'image est satur&eacute;e)</li>
+  <li><b>message</b>: message d'erreur compl&eacute;mentaire en cas d'erreur ou 
+    pour debugage</li>
 </ul>
 </body>
 
