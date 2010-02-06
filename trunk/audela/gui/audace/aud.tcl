@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.119 2010-01-30 14:44:11 robertdelmas Exp $
+# Mise à jour $Id: aud.tcl,v 1.120 2010-02-06 15:42:15 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -873,15 +873,11 @@ namespace eval ::audace {
       Menu           $visuNo "$caption(audace,menu,tool)"
       Menu_Command   $visuNo "$caption(audace,menu,tool)" "$caption(audace,menu,pas_outil)" "::audace::pasOutil"
 
-      Menu_Separator $visuNo "$caption(audace,menu,tool)"
       #--- Affichage des plugins de type tool du menu deroulant Outils
-      ::confChoixOutil::displayPlugin $visuNo acquisition
-      Menu_Separator $visuNo "$caption(audace,menu,tool)"
-      ::confChoixOutil::displayPlugin $visuNo focusing
-      Menu_Separator $visuNo "$caption(audace,menu,tool)"
-      ::confChoixOutil::displayPlugin $visuNo aiming
-      Menu_Separator $visuNo "$caption(audace,menu,tool)"
-      ::confChoixOutil::displayPlugin $visuNo observatory
+      foreach mode { acquisition focusing aiming observatory } {
+         Menu_Separator $visuNo "$caption(audace,menu,tool)"
+         ::confChoixOutil::displayPlugin $visuNo $mode
+      }
 
       Menu           $visuNo "$caption(audace,menu,setup)"
       Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,langue)..." \
@@ -1530,7 +1526,7 @@ namespace eval ::audace {
 
    #------------------------------------------------------------
    #  appendUpdateMessage
-   #    Ajoute un message de mise � jour
+   #    Ajoute un message de mise à jour
    #    a executer au prochain demarrage de Audela
    #------------------------------------------------------------
    proc appendUpdateMessage { updateMessage } {
