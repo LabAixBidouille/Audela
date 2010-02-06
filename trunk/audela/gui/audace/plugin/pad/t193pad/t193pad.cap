@@ -1,6 +1,6 @@
 #
 # Fichier : t193pad.cap
-# Mise a jour $Id: t193pad.cap,v 1.5 2009-11-11 14:32:54 robertdelmas Exp $
+# Mise a jour $Id: t193pad.cap,v 1.6 2010-02-06 12:51:06 michelpujol Exp $
 #
 
 #=========================================================================
@@ -17,9 +17,6 @@ set caption(t193pad,nord)                 "N"
 set caption(t193pad,sud)                  "S"
 set caption(t193pad,est)                  "E"
 set caption(t193pad,ouest)                "W"
-
-set caption(t193pad,suivi_marche)         "Tracking On"
-set caption(t193pad,suivi_arret)          "Tracking Off"
 
 set caption(t193pad,goto)                 "GOTO"
 set caption(t193pad,stopGoto)             "STOP"
@@ -42,9 +39,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193pad,est)               "E"
    set caption(t193pad,ouest)             "O"
 
-   set caption(t193pad,suivi_marche)      "Suivi On"
-   set caption(t193pad,suivi_arret)       "Suivi Off"
-
    set caption(t193pad,goto)              "GOTO"
    set caption(t193pad,stopGoto)          "STOP"
    set caption(t193pad,RA)                "AD"
@@ -65,9 +59,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193pad,sud)               "S"
    set caption(t193pad,est)               "E"
    set caption(t193pad,ouest)             "O"
-
-   set caption(t193pad,suivi_marche)      "Inseguimento On"
-   set caption(t193pad,suivi_arret)       "Inseguimento Off"
 
    set caption(t193pad,goto)              "GOTO"
    set caption(t193pad,stopGoto)          "STOP"
@@ -90,9 +81,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193pad,est)               "E"
    set caption(t193pad,ouest)             "W"
 
-   set caption(t193pad,suivi_marche)      "Seguimiento On"
-   set caption(t193pad,suivi_arret)       "Seguimiento Off"
-
    set caption(t193pad,goto)              "GOTO"
    set caption(t193pad,stopGoto)          "STOP"
    set caption(t193pad,RA)                "RA"
@@ -114,9 +102,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193pad,est)               "O"
    set caption(t193pad,ouest)             "W"
 
-   set caption(t193pad,suivi_marche)      "Folgung auf"
-   set caption(t193pad,suivi_arret)       "Folgung aus"
-
    set caption(t193pad,goto)              "GOTO"
    set caption(t193pad,stopGoto)          "STOP"
    set caption(t193pad,RA)                "RA"
@@ -137,9 +122,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193pad,sud)               "S"
    set caption(t193pad,est)               "E"
    set caption(t193pad,ouest)             "O"
-
-   set caption(t193pad,suivi_marche)      "Seguimento On"
-   set caption(t193pad,suivi_arret)       "Seguimento Off"
 
    set caption(t193pad,goto)              "GOTO"
    set caption(t193pad,stopGoto)          "STOP"
@@ -167,9 +149,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193pad,RA)                "RA"
    set caption(t193pad,DEC)               "Dec."
 
-   set caption(t193pad,suivi_marche)      "Tracking tilsluttet"
-   set caption(t193pad,suivi_arret)       "Tracking frakoblet"
-
    set caption(t193pad,moteur_foc)        "Fokuseringsmotor"
    set caption(t193pad,gotoFoc)           "GOTO Fokus."
 
@@ -185,9 +164,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193pad,sud)               "S"
    set caption(t193pad,est)               "E"
    set caption(t193pad,ouest)             "W"
-
-   set caption(t193pad,suivi_marche)      "Tracking On"
-   set caption(t193pad,suivi_arret)       "Tracking Off"
 
    set caption(t193pad,goto)              "GOTO"
    set caption(t193pad,stopGoto)          "STOP"
@@ -209,9 +185,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193pad,sud)               "S"
    set caption(t193pad,est)               "E"
    set caption(t193pad,ouest)             "W"
-
-   set caption(t193pad,suivi_marche)      "Tracking On"
-   set caption(t193pad,suivi_arret)       "Tracking Off"
 
    set caption(t193pad,goto)              "GOTO"
    set caption(t193pad,stopGoto)          "STOP"

@@ -2,7 +2,7 @@
 # Fichier : t193pad.tcl
 # Description : Raquette specifique au T193 de l'OHP
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: t193pad.tcl,v 1.7 2009-12-06 22:48:23 robertdelmas Exp $
+# Mise a jour $Id: t193pad.tcl,v 1.8 2010-02-06 12:51:06 michelpujol Exp $
 #
 
 namespace eval ::t193pad {
@@ -85,7 +85,6 @@ proc ::t193pad::initConf { } {
 
    set private(targetRa)      "00h00m00.00s"
    set private(targetDec)     "+00d00m00.00s"
-   set private(controleSuivi) 1    ; #--- le suivi est actif par defaut
    set private(positionDome)  "0"
    set private(synchro)       "1"
    set private(gotoFocus)     0
@@ -329,15 +328,6 @@ proc ::t193pad::createDialog { } {
       -relief ridge
    pack $This.frame2.s.canv1 -expand 0 -side top -padx 10 -pady 4
 
-   #--- Label du controle du suivi : Suivi on ou Suivi off
-   if { [ ::confTel::getPluginProperty hasControlSuivi ] == "1" } {
-      checkbutton $This.frame2.s.controleSuivi -indicatoron 0 -font [ list {Arial} 12 bold ] \
-         -bg $color(gray_pad) -fg $color(white) -selectcolor $color(gray_pad) \
-         -text $caption(t193pad,suivi_marche) -variable ::t193pad::private(controleSuivi) \
-         -command "::t193pad::setSlew"
-      pack $This.frame2.s.controleSuivi -expand 1 -fill none -side left -anchor center -pady 2
-   }
-
    #--- LabelEntry pour AD
    LabelEntry $This.frame3.ad -label $caption(t193pad,RA) \
       -textvariable ::t193pad::private(targetRa) -width 14 -fg $color(white) \
@@ -519,58 +509,6 @@ proc ::t193pad::cmdStartGoto { } {
    set catchError [catch {
       ::telescope::goto [ list $private(targetRa) $private(targetDec) ] 0 $This.frame3.buttonGoto
    }]
-   if { $catchError != 0 } {
-      ::tkutil::displayErrorInfo $::caption(t193pad,titre)
-   }
-}
-
-#------------------------------------------------------------
-#  setSlew
-#     marche/arret du suivi
-#------------------------------------------------------------
-proc ::t193pad::setSlew { } {
-   variable private
-   variable This
-
-   set catchError [catch {
-      ::telescope::controleSuivi
-   }]
-
-   #--- je mets a jour les widgets avant d'afficher un eventuel message d'erreur
-   if { $::audace(telescope,controle) == $::caption(telescope,suivi_marche) } {
-      set private(controleSuivi) 1
-      $This.frame2.s.controleSuivi configure -text $::caption(t193pad,suivi_marche)
-   } else {
-      set private(controleSuivi) 0
-      $This.frame2.s.controleSuivi configure -text $::caption(t193pad,suivi_arret)
-   }
-
-   if { $catchError != 0 } {
-      ::tkutil::displayErrorInfo $::caption(t193pad,titre)
-   }
-}
-
-#------------------------------------------------------------
-#  setSlew
-#     marche/arret du suivi
-#------------------------------------------------------------
-proc ::t193pad::setSlew { } {
-   variable private
-   variable This
-
-   set catchError [catch {
-      ::telescope::controleSuivi
-   }]
-
-   #--- je mets a jour les widgets avant d'afficher un eventuel message d'erreur
-   if { $::audace(telescope,controle) == $::caption(telescope,suivi_marche) } {
-      set private(controleSuivi) 1
-      $This.frame2.s.controleSuivi configure -text $::caption(t193pad,suivi_marche)
-   } else {
-      set private(controleSuivi) 0
-      $This.frame2.s.controleSuivi configure -text $::caption(t193pad,suivi_arret)
-   }
-
    if { $catchError != 0 } {
       ::tkutil::displayErrorInfo $::caption(t193pad,titre)
    }
