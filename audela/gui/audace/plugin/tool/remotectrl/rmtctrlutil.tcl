@@ -1,3 +1,10 @@
+#
+# Fichier : rmtctrlutil.tcl
+# Description : Script pour la configuration de l'outil
+# Auteur : Raymond ZACHANTKE
+# Mise a jour $Id: rmtctrlutil.tcl,v 1.2 2010-02-07 18:51:54 robertdelmas Exp $
+#
+
    #########################################################################
    #--   Au lancement collecte les donnees sur la camera et les memorise   #
    #########################################################################
@@ -8,10 +15,10 @@
       set camNo $panneau(remotectrl,camNo)
 
       #--   desactive le systeme_service
-      eval "send \{cam$camNo systemservice 0\}"
+      send "cam$camNo systemservice 0"
 
       #--   fixe drivemode
-      eval "send \{cam$camNo drivemode 0\}"
+      send "cam$camNo drivemode 0"
 
       #--   ouvre la liste des types de declenchement
       set panneau(remotectrl,longueposeLabels) \
@@ -21,7 +28,7 @@
       set panneau(remotectrl,status) [ list "0" ]
 
       #--   si la camera est connectee en mode longue pose
-      if [ eval "send \{cam$camNo longuepose\}" ] {
+      if [ send "cam$camNo longuepose" ] {
 
          #--   complete la liste des types de declenchement
          lappend panneau(remotectrl,longueposeLabels) \
@@ -76,7 +83,7 @@
 
       #--   liste les formats possibles
       set panneau(remotectrl,qualityLabels) \
-         [ eval "send \{cam$camNo quality list\}" ]
+         [ send "cam$camNo quality list" ]
 
       #--   liste les modes Rafale (bracketing)
       set panneau(remotectrl,bracketLabels) \
@@ -121,8 +128,8 @@
          panneau(remotectrl,intervalle_mini) panneau(remotectrl,action)
 
       #--   selectionne le mode de declenchement de niveau le plus eleve
-      #set panneau(remotectrl,longuepose) \
-      #   [ lindex $panneau(remotectrl,longueposeLabels) end ]
+      set panneau(remotectrl,longuepose) \
+         [ lindex $panneau(remotectrl,longueposeLabels) end ]
 
       #--   selectionne le mode de stockage de niveau le plus eleve
       set panneau(remotectrl,stock) \
@@ -130,7 +137,7 @@
 
       #--   selectionne le format actuel d'image
       set panneau(remotectrl,quality) \
-         [ eval "send \{cam$panneau(remotectrl,camNo) quality\}" ]
+         [ send "cam$panneau(remotectrl,camNo) quality" ]
 
       #--   indique le format (jpeg ou fits)
       ::remotectrl::configFormat
@@ -157,7 +164,7 @@
       set camNo $panneau(remotectrl,camNo)
 
       menubutton $Dslr.$var -menu $Dslr.$var.m \
-         -relief raised -width 10 -borderwidth 2 \
+        -relief raised -width 10 -borderwidth 2 \
          -textvar panneau(remotectrl,$var)
       menu $Dslr.$var.m -tearoff 0
 
@@ -176,7 +183,7 @@
                               "1"  {  set cmd "::remotectrl::switchLonguepose $camNo 1" }
                            }
                         }
-          "quality"     {  set cmd "eval \"send \{cam$camNo quality $label\}\" ;
+          "quality"     {  set cmd "send \"cam$camNo quality $label\" ;
                            ::remotectrl::configFormat" }
           "step"        {  set cmd "::remotectrl::test_rafale" }
           "stock"       {  switch $indice {
@@ -214,7 +221,7 @@
 
       configStock
       configLonguepose
-      foreach child { step nb_poses } {
+      foreach child { step nom nb_poses } {
          $Dslr.$child configure -state normal
       }
    }
@@ -265,31 +272,15 @@
          $Dslr.stock.m invoke 0
          $Dslr.stock configure -state disabled
 
-      } else {
+      } elseif { $panneau(remotectrl,ip2) == "127.0.0.1" } {
 
-         #--   sinon tous les modes sont presents
-         #--   libere le bouton
-         $Dslr.stock configure -state normal
+            #--   Maison et Jardin
+            $Dslr.stock.m invoke 2
 
-         #--   si ce n'est pas le mode rafale
-         if { $panneau(remotectrl,bracket) != "$caption(remotectrl,bracket,rafale)" } {
+            $Dslr.stock.m entryconfigure 1 -state disabled
+            $Dslr.stock.m entryconfigure 3 -state disabled
 
-            #--   desinhibe longuepose s'il existe
-            if { [ llength $panneau(remotectrl,longueposeLabels) ] == "2" } {
-               $Dslr.longuepose.m entryconfigure 1 -state normal
-            }
-
-            #--   adopte le niveau de stockage le plus eleve
-            if { $panneau(remotectrl,stock) != $caption(remotectrl,stock,cf) \
-               && [ lindex $panneau(remotectrl,status) 1 ] == "0" } {
-
-                $Dslr.stock.m invoke end
-            }
-
-            #--   les autres entrees de stock seront activees
-            set etat normal
-
-         } else {
+      } elseif { $panneau(remotectrl,bracket) == "$caption(remotectrl,bracket,rafale)" } {
 
             #--   en mode rafale active la carte CF
             $Dslr.stock.m invoke 0
@@ -304,11 +295,32 @@
             if { [ llength $panneau(remotectrl,longueposeLabels) ] == "2" } {
                $Dslr.longuepose.m entryconfigure 1 -state disabled
             }
+
+            #--   active/desactive les autres entrees que(0)du menu
+            for { set i 1 } { $i < $l } { incr i } {
+               $Dslr.stock.m entryconfigure $i -state disabled
+            }
+
+     } else {
+
+         #--   sinon tous les modes sont presents
+         #--   libere le bouton
+         $Dslr.stock configure -state normal
+
+         #--   desinhibe longuepose s'il existe
+         if { [ llength $panneau(remotectrl,longueposeLabels) ] == "2" } {
+            $Dslr.longuepose.m entryconfigure 1 -state normal
+         }
+
+         #--   adopte le niveau de stockage le plus eleve
+         if { $panneau(remotectrl,stock) != $caption(remotectrl,stock,cf) \
+            && [ lindex $panneau(remotectrl,status) 1 ] == "0" } {
+            $Dslr.stock.m invoke end
          }
 
          #--   active/desactive les autres entrees que(0)du menu
          for { set i 1 } { $i < $l } { incr i } {
-            $Dslr.stock.m entryconfigure $i -state $etat
+            $Dslr.stock.m entryconfigure $i -state normal
          }
       }
    }
@@ -361,7 +373,7 @@
       set longueur_liste [ llength [$Dslr.exptime cget -values] ]
 
       if { $etat_anterieur != $ul } {
-         set status [ eval "send \{cam$camNo longuepose $ul\}" ]
+         set status [ send "cam$camNo longuepose $ul" ]
          #--   memorise le nouvel etat
          set panneau(remotectrl,status) [ lreplace \
             $panneau(remotectrl,status) 0 0 "$status" ]
@@ -408,9 +420,9 @@
       set etat_anterieur [ lindex $panneau(remotectrl,status) 1 ]
 
       if { $etat_anterieur != $sto } {
-         eval "send \{cam$camNo autoload $sto\}"
+         send "cam$camNo autoload $sto"
          set l [ expr { 1 - $sto } ]
-         eval "send \{cam$camNo usecf $l\}"
+         send "cam$camNo usecf $l"
          #--   memorise le nouvel etat
          set panneau(remotectrl,status) \
             [ lreplace $panneau(remotectrl,status) end end "$sto" ]
@@ -473,7 +485,8 @@
 
       while { [ set $var ] != "0" } {
             after 1000
-            incr $var "-1"
+            set $var [ expr { [ set $var ]-1 } ]
+            if { [ set $var ] <= 0 } { set $var 0 }
             update
       }
    }

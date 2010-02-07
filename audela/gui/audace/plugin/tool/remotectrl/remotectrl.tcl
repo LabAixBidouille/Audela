@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: remotectrl.tcl,v 1.33 2010-01-30 14:49:56 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.tcl,v 1.34 2010-02-07 18:50:17 robertdelmas Exp $
 #
 
 #============================================================
@@ -148,12 +148,12 @@ namespace eval ::remotectrl {
       }
 
       set variables [ list ip1 port1 ftp_port1 ip2 port2 path_img ]
-      set values [ list "[Ip]" "4000" "21" "[Ip]" 4001" "21" ]
+      set values [ list "[Ip]" "5000" "21" "[Ip]" 5001" "21" ]
       foreach var $variables val $values {
          if { ! [ info exists parametres($var) ] } { set parametres($var) $val }
       }
       #--- Dans le cas de l'utilisation d'un dossier partage sous Windows uniquement
-      ### if { ! [ info exists parametres(path_img) ] }  { set parametres(path_img) "[pwd]/" }
+      ### if { ! [ info exists parametres(path_img) ] } { set parametres(path_img) "[pwd]/" }
    }
 
    proc enregistrementVar { } {
@@ -354,7 +354,7 @@ proc remotectrlBuildIF { This } {
    }
 
    ##########################################################
-   #-- Panneau 2 de configuration de la connexion client #
+   #-- Panneau 2 de configuration de la connexion client    #
    ##########################################################
    proc wizConClient { } {
       global audace panneau caption
@@ -596,13 +596,9 @@ proc remotectrlBuildIF { This } {
                if {$rpcid(state)==""} { return }
 
                set This $panneau(remotectrl,base)
-               DynamicHelp::add $This.fraconf.labURL2 \
-                  -text "[ format $caption(remotectrl,ip_port) $panneau(remotectrl,ip2) \
-                     $panneau(remotectrl,port2) ]"
-
                $This.fraconf.labURL2 configure -text $caption(remotectrl,backyard) -fg $color(blue)
                DynamicHelp::add $This.fraconf.labURL2 \
-                  -text "[ format $caption(remotectrl,ip_port) [Ip] $panneau(remotectrl,port2) ]"
+                  -text "[ format $caption(remotectrl,ip_port) [Ip] $panneau(remotectrl,port1) ]"
                $This.fraconf.but1 configure -text $caption(remotectrl,unconnect)
 
                #--- Le serveur masque les commandes
@@ -637,19 +633,19 @@ proc remotectrlBuildIF { This } {
    proc transferFTP { nom } {
       global audace panneau
 
-       eval "send \{catch \{ set ::ftpd::port \$panneau(remotectrl,ftp_port1) \} \}"
-       eval "send \{catch \{ set ::ftpd::cwd \$audace(rep_images) \} \}"
+      send "catch { set ::ftpd::port \$panneau(remotectrl,ftp_port1) }"
+      send "catch { set ::ftpd::cwd \$audace(rep_images) }"
 
-       set error [catch {package require ftp} msg]
-       if {$error==0} {
+      set error [catch {package require ftp} msg]
+      if {$error==0} {
          set error [catch {::ftp::Open $panneau(remotectrl,ip1) anonymous software.audela@free.fr -timeout 15} msg]
-            if {($error==0)} {
-               set ftpid $msg
-               ::ftp::Type $ftpid binary
-               ::ftp::Get $ftpid $nom $audace(rep_images)
-               ::ftp::Close $ftpid
-            }
-       }
+         if {($error==0)} {
+            set ftpid $msg
+            ::ftp::Type $ftpid binary
+            ::ftp::Get $ftpid $nom $audace(rep_images)
+            ::ftp::Close $ftpid
+         }
+      }
    }
 
    ##########################################################
@@ -706,20 +702,19 @@ proc remotectrlBuildIF { This } {
       global audace conf panneau
 
       #--   demande le N° de cam et de tel
-      set cmd "send \{set a \[ list \"\$audace(camNo)\" \"\$audace(telNo)\"\]\}"
-      lassign [ eval $cmd ] camNo telNo
+      lassign [ send { set a [ list $audace(camNo) $audace(telNo) ] } ] camNo telNo
 
       set camName ""
       if { $camNo != "0" } {
 
          #--   demande nom de la camera
-         set camName [ eval "send \{cam$camNo name\}" ]
+         set camName [ send "cam$camNo name" ]
 
          #--   demande le product de la camera
-         set camProduct [ eval "send \{cam$camNo product\}" ]
+         set camProduct [ send "cam$camNo product" ]
 
          #--   demande attachement A,B,C de la camera
-         set camItem [ eval "send \{::confVisu::getCamItem $camNo\}" ]
+         set camItem [ send "::confVisu::getCamItem $camNo" ]
 
          #--
          set conf(camera,$camItem,camName) "$camProduct"
@@ -732,10 +727,10 @@ proc remotectrlBuildIF { This } {
       if { $telNo != "0" } {
 
          #--   demande nom du telescope
-         set telName [ eval "send \{tel$telNo name\}" ]
+         set telName [ send "tel$telNo name" ]
 
          #--   demande product du telescope
-         set telProduct [ eval "send \{tel$telNo product\}" ]
+         set telProduct [ send "tel$telNo product" ]
 
          #--
          set conf(telescope) "$telProduct"
@@ -746,3 +741,4 @@ proc remotectrlBuildIF { This } {
 
       return $camName
    }
+

@@ -1,8 +1,8 @@
 #
 # Fichier : rmtctrlccd.tcl
 # Description : Script pour le controle de la camera CCD
-# Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: rmtctrlccd.tcl,v 1.1 2010-01-30 14:47:56 robertdelmas Exp $
+# Auteur : Alain KLOTZ
+# Mise a jour $Id: rmtctrlccd.tcl,v 1.2 2010-02-07 18:51:20 robertdelmas Exp $
 #
 
    proc fillCCDPanel {} {
