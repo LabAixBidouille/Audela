@@ -2,7 +2,7 @@
 # Fichier : rmtctrlapn.tcl
 # Description : Script pour le controle de l'APN
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: rmtctrlapn.tcl,v 1.1 2010-01-30 14:47:15 robertdelmas Exp $
+# Mise a jour $Id: rmtctrlapn.tcl,v 1.2 2010-02-07 18:51:03 robertdelmas Exp $
 #
 
    ###################################################################
@@ -121,7 +121,7 @@
 
       #--   s'il y a lieu synchronise les extensions des images fits
       if { $panneau(remotectrl,format) == "fits" } {
-         eval "send \{set conf(extension,defaut) \"$conf(extension,defaut)\"\}"
+         send "set conf(extension,defaut) $conf(extension,defaut)"
       }
 
       #--   compte les images
@@ -133,24 +133,23 @@
          set panneau(remotectrl,action) $caption(remotectrl,action,acq)
 
          #--  regle le temps d'exposition
-         eval "send \{cam$camNo exptime $::remotectrl::exptime\}"
+         send "cam$camNo exptime $::remotectrl::exptime"
 
          #--- le temps maintenant
          set time_now [ clock seconds ]
 
          #--- Alarme sonore de fin de pose sur le pc Jardin
-         #set message "send \{::camera::alarmeSonore $::remotectrl::exptime\}"
-         #eval $message
+         #send "::camera::alarmeSonore $::remotectrl::exptime"
 
          #--  definit la commande
          if { $type == $caption(remotectrl,bracket,rafale) } {
             #--   retard pour valider le changement de temps d'exposition
             if { $delta != "0" } { after 1500 }
-            catch { eval "send \{cam$camNo acq -blocking\}" } msg
+            catch { send "cam$camNo acq -blocking" } msg
          } else {
             #--   acquiert l'image
-            catch {  eval "send \{cam$camNo acq\}"
-                     eval "send \{vwait status_cam$camNo\}" } msg
+            catch {  send "cam$camNo acq"
+                     send "vwait status_cam$camNo" } msg
          }
 
          if [ regexp "Dialog error" $msg ] {
@@ -218,53 +217,69 @@
    #-- parametre : index de l'image                                     #
    ######################################################################
    proc loadandseeImg { k } {
-      global panneau caption
+      global audace panneau caption
 
       #--   affiche le status 'Sauvegarde'
       set panneau(remotectrl,action) $caption(remotectrl,action,load)
 
+      #--   nomme l'image
       set name $remotectrl::nom
       if { $name == "" } { set name "tmp" }
 
       #---  donne un index et une extension a l'image
       append name $k $panneau(remotectrl,extension)
 
-      #---  repertoire image Jardin
-      set file "\$audace(rep_images)/$name"
-
       #--   demande le N° du buffer
-      set bufNo [ eval "send \{set bufNo [visu1 buf]\}" ]
+      set bufNo [ send "set bufNo [visu1 buf]" ]
 
       #--   attend que le buffer du Jardin soit pret
-      eval "send \{ while \{ \[ buf$bufNo imageready \] != \"1\" \} \{ after 10 \} ; buf$bufNo stat\}"
+      send "while { \[ buf$bufNo stat \] == \"buffer is empty\" } { after 100 }"
 
       #--   sauve l'image sur Jardin
-      if { $panneau(remotectrl,extension) != ".jpg" } {
-         eval "send \{buf$bufNo save \"$file\"\}"
-      } else {
-         eval "send \{buf$bufNo save \"$file\" -quality 100\}"
+      send "buf$bufNo save [ file join \$audace(rep_images) $name ]"
+
+      #--   designe le repertoire contenant l'image a visualiser
+      set rep $audace(rep_images)
+      if ![ TestEntier $panneau(remotectrl,path_img) ] {
+
+         #--   cas du dossier partage
+         set rep $panneau(remotectrl,path_img)
+
       }
 
-      #--   operation en fonction du choix de stockage
-      if [ TestEntier $panneau(remotectrl,path_img) ] {
+      #--   transfert ftp selon stockage et visualisation
+      if { [ TestEntier $panneau(remotectrl,path_img) ] == "1" \
+         && $panneau(remotectrl,ip2) != "127.0.0.1" } {
 
-         #--   transfert par FTP
-         transferFTP $name
+          #--   transfert ftp si visualisation ou stockage = Maison ou stockage = Maison et Jardin
+         if { $::panneau(remotectrl,stock) == "$caption(remotectrl,stock,home)" || \
+            $::panneau(remotectrl,stock) == "$caption(remotectrl,stock,home&backyard)" \
+            || $::remotectrl::see == "1" } {
 
-         #--   detruit l'image Jardin si stockage = Maison seulement
-         if { $::panneau(remotectrl,stock) == "$caption(remotectrl,stock,home)" } {
-            eval "send \{ file delete \"\$audace(rep_images)/$name\" \}"
+            #--   transfert par FTP
+            transferFTP $name
          }
       }
 
-       #--  affiche l'image
       if { $::remotectrl::see == "1" } {
 
          #--   affiche le status 'Affichage'
          set panneau(remotectrl,action) $caption(remotectrl,see)
 
          #--   affiche l'image
-         loadima "$panneau(remotectrl,path_img)/$name"
+         loadima [ file join $rep $name ]
+      }
+
+      if { $::panneau(remotectrl,stock) == "$caption(remotectrl,stock,home)" } {
+
+         #--   detruit l'image Jardin si stockage = Maison seulement
+         send "file delete [ file join \$audace(rep_images) $name ]"
+
+      } elseif { $::panneau(remotectrl,stock) == "$caption(remotectrl,stock,backyard)" } {
+
+         #--   detruit l'image Maison si stockage = Jardin seulement
+         file delete [ file join $audace(rep_images) $name ]
+
       }
    }
 
@@ -309,17 +324,13 @@
 
       #--   efface le(s) fichier(s) de test
       switch -exact $panneau(remotectrl,stock) {
-         "$caption(remotectrl,stock,cf)" { \
-            #--   efface l'image stockee seulement sur la carte memoire
-            eval "send \{cam$panneau(remotectrl,camNo) delete 1 \}"
-         }
          "$caption(remotectrl,stock,backyard)" { \
             #--   efface l'image stockee seulement sur le serveur
-            eval "send \{ file delete \"\$audace(rep_images)/$file\" \}"
+            send "file delete \"\$audace(rep_images)/$file\""
          }
          "$caption(remotectrl,stock,home&backyard)" { \
             #--   efface l'image stockee sur le serveur et le client
-            eval "send \{ file delete \"\$audace(rep_images)/$file\" \}"
+            send "file delete [ file join $audace(rep_images) $file ]"
             file delete [ file join $audace(rep_images) $file ]
          }
          "$caption(remotectrl,stock,home)" { \
@@ -327,7 +338,7 @@
             file delete [ file join $audace(rep_images) $file ]
          }
          "default" {
-            #--   efface l'image stockee seulement sur le lecteur reseau
+            #--   efface l'image stockee sur le lecteur reseau
             file delete "$panneau(remotectrl,path_img)/$file"
          }
       }

@@ -1,6 +1,6 @@
 #
 # Fichier : remotectrl.cap
-# Mise a jour $Id: rmtctrlapn.cap,v 1.1 2010-01-30 14:46:49 robertdelmas Exp $
+# Mise a jour $Id: rmtctrlapn.cap,v 1.2 2010-02-07 18:50:44 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -50,7 +50,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(remotectrl,stock,cf)                      "Carte CF"
    set caption(remotectrl,stock,backyard)                "Jardin"
    set caption(remotectrl,stock,home)                    "Maison"
-   set caption(remotectrl,stock,home&backyard)           "Maison et Jardin"
+   set caption(remotectrl,stock,home&backyard)           "Maison & Jardin"
    set caption(remotectrl,longuepose,usb)                "USB"
    set caption(remotectrl,longuepose,lp)                 "Longue Pose"
    set caption(remotectrl,bracket,one)                   "Une image"

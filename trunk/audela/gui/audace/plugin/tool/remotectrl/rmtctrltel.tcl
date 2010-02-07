@@ -1,8 +1,8 @@
 #
 # Fichier : rmtctrltel.tcl
 # Description : Script pour le controle de la monture
-# Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: rmtctrltel.tcl,v 1.1 2010-01-30 14:48:43 robertdelmas Exp $
+# Auteur : Alain KLOTZ
+# Mise a jour $Id: rmtctrltel.tcl,v 1.2 2010-02-07 18:51:37 robertdelmas Exp $
 #
 
    proc fillTelPanel { } {
