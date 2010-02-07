@@ -3,39 +3,40 @@
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>Appareil Photo Num&eacute;rique</title>
+<title>Appareil Photo Num&eacute;rique - APN</title>
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 29 d&eacute;cembre 2008</p>
-<h1>Appareil Photo Num&eacute;rique </h1>
-<blockquote> 
+<p class="date">Date de mise &agrave; jour : 07 f&eacute;vrier 2010</p>
+<h1>Appareil Photo Num&eacute;rique - APN </h1>
+<blockquote>
   <p>Pilotage des appareils photo num&eacute;riques Canon via USB.</p>
-  <p>AudeLA utilise la librairie OpenSource <a href="http://www.gphoto.org/">LIBGPHOTO2 
-    v2.2.0 </a>pour piloter les appareils photo num&eacute;riques. Cette librairie 
-    a &eacute;t&eacute; modifi&eacute;e pour supporter les acquisitions en longue 
+  <p>AudeLA utilise la librairie OpenSource <a href="http://www.gphoto.org/">LIBGPHOTO2
+    v2.2.0</a> pour piloter les appareils photo num&eacute;riques. Cette librairie
+    a &eacute;t&eacute; modifi&eacute;e pour supporter les acquisitions en longue
     pose et est int&eacute;gr&eacute;e dans AudeLA.</p>
   <p>&nbsp;</p>
 </blockquote>
 <h1>Manuel d'utilisation </h1>
-<p>Avant la premi&egrave;re utilisation avec AudeLA et WINDOWS, il est n&eacute;cessaire 
+<p>Avant la premi&egrave;re utilisation avec AudeLA et Windows, il est n&eacute;cessaire
   d'installer le driver &quot;libusb-win32&quot; : </p>
-<blockquote> 
-  <p> T&eacute;l&eacute;charger libusb-win32-filter-bin-0.1.10.1.exe disponible 
-    sur site http://libusb-win32.sourceforge.net , </p>
+<blockquote>
+  <p> T&eacute;l&eacute;charger libusb-win32-filter-bin-0.1.10.1.exe qui est disponible
+    sur le site <a href="http://libusb-win32.sourceforge.net">http://libusb-win32.sourceforge.net</a> </p>
   <p>Lien direct : <br>
-    http://downloads.sourceforge.net/libusb-win32/libusb-win32-filter-bin-0.1.10.1.exe<br>
+    <a href="http://downloads.sourceforge.net/libusb-win32/libusb-win32-filter-bin-0.1.10.1.exe">
+    http://downloads.sourceforge.net/libusb-win32/libusb-win32-filter-bin-0.1.10.1.exe</a><br>
   </p>
-  <p>Puis installer libusb-win32 en ex&eacute;cutant ce fichier avec les options 
+  <p>Puis installer libusb-win32 en ex&eacute;cutant ce fichier avec les options
     par d&eacute;faut.</p>
-  <p>Enfin lancer AudeLA et connecter l'appareil num&eacute;rique avec le panneau 
-    de configuration &quot;APN&quot;</p>
-  <p>Remarque : L'installation de &quot;libusb&quot; avec LINUX n'est pas n&eacute;cessaire 
-    car cette librairie est maintenant fournie en standard dans les distributions 
-    LINUX.</p>
-  <p><font color="#990000">Remarque importante : L'&eacute;cran de contr&ocirc;le 
-    de l'appareil doit &ecirc;tre &eacute;teint quand AudeLA envoie des commandes 
-    &agrave; l'appareil. </font></p>
+  <p>Enfin lancer AudeLA et connecter l'appareil photo num&eacute;rique avec la fen&ecirc;tre
+    de configuration des cam&eacute;ras et l'onglet &quot;APN&quot;</p>
+  <p>Remarque : L'installation de &quot;libusb&quot; avec Linux n'est pas n&eacute;cessaire
+    car cette librairie est maintenant fournie en standard dans les distributions
+    Linux.</p>
+  <p><font color="#990000">Remarque importante : L'&eacute;cran de contr&ocirc;le
+    de l'appareil doit &ecirc;tre &eacute;teint quand AudeLA envoie des commandes
+    &agrave; l'APN. </font></p>
   <p>&nbsp;</p>
 </blockquote>
 <h1>Configuration de l'onglet APN pour une longue pose avec un QuickRemote ou un port parall&egrave;le </h1>
@@ -43,18 +44,18 @@
  tension l'APN, Windows affiche une fen&ecirc;tre pour demander quel logiciel il doit lancer : </p>
 <img src="images/windowsrebel300D.gif" alt="" width="311" height="329" />
 <p>Il faut cliquer sur "Annuler" car sinon un autre logiciel peut prendre la main sur
- l'appareil photo et g&ecirc;ner AudeLA surtout pendant les longues poses.</p>
+ l'APN et g&ecirc;ner AudeLA surtout pendant les longues poses.</p>
 <p>Si vous souhaitez faire des acquisitions longue pose avec votre APN par l'interm&eacute;diare d'un QuickRemote,
  vous devez configurer l'option longue pose comme sur l'image ci-dessous : </p>
-<img src="images/configquickremote.gif" alt="" width="737" height="474" /> 
-<p>L'option &quot;Arr&ecirc;t de la d&eacute;tection automatique des appareils 
-  photo num&eacute;riques&quot; emp&ecirc;che Windows d'afficher la fen&ecirc;tre 
-  pour demander quel logiciel il doit lancer. Cela &eacute;vite de perturber Audela 
-  pendant l'utilisation de la cam&eacute;ra.Cela ne vaut que pendant l'utilisation 
-  de la cam&eacute;ra par Audela et le fonctionnement normal de Windows est r&eacute;tabli 
-  quand on arr&ecirc;te l'utilisation de la cam&eacute;ra avec Audela.</p>
-<p>Si vous utilisez la prise Jack du QuickRemote, le champ <b>Num&eacute;ro du 
-  bit de commande</b> doit &ecirc;tre &agrave; <b>0</b> et le champ <b>Commande 
+<img src="images/configquickremote.gif" alt="" width="737" height="474" />
+<p>L'option &quot;Arr&ecirc;t de la d&eacute;tection automatique des appareils
+  photo num&eacute;riques&quot; emp&ecirc;che Windows d'afficher la fen&ecirc;tre
+  pour demander quel logiciel il doit lancer. Cela &eacute;vite de perturber AudeLA
+  pendant l'utilisation de la cam&eacute;ra. Cela ne vaut que pendant l'utilisation
+  de la cam&eacute;ra par AudeLA et le fonctionnement normal de Windows est r&eacute;tabli
+  quand on arr&ecirc;te l'utilisation de la cam&eacute;ra avec AudeLA.</p>
+<p>Si vous utilisez la prise Jack du QuickRemote, le champ <b>Num&eacute;ro du
+  bit de commande</b> doit &ecirc;tre &agrave; <b>0</b> et le champ <b>Commande
   au début de la pose</b> doit &ecirc;tre &agrave; <b>1</b>.</p>
 <p>Par contre si vous souhaitez faire des acquisitions longue pose avec votre APN par l'interm&eacute;diare du port
  parall&egrave;le vous devez configurer l'option longue pose comme sur l'image ci-dessous : </p>
@@ -67,48 +68,47 @@
 <p>Vous devez faire ce test avec seulement le bo&icirc;tier photo et le c&acirc;ble de commande longue pose :</p>
 <p>- Mettez sous tension le bo&icirc;tier photo et r&eacute;glez-le en mode Manuel.</p>
 <p>- Branchez la prise Jack dans le bo&icirc;tier.</p>
-<p>- Court-circuitez avec un pi&egrave;ce m&eacute;tallique les broches &agrave; l'autre bout du Jack 
+<p>- Court-circuitez avec un pi&egrave;ce m&eacute;tallique les broches &agrave; l'autre bout du Jack
  (les broches 1 et 3, en num&eacute;rotant &agrave; partir de l'extr&eacute;mit&eacute; du Jack).</p>
 <p>Le miroir doit s'abaisser quand on fait le court-circuit et il doit se relever quand on supprime le court-circuit.
  Si le miroir ne se rel&egrave;ve pas, c'est probablement parce que le Jack est trop enfonc&eacute; ou mal positionn&eacute;
  dans le bo&icirc;tier photo.</p>
-<p>Remarque : J'ai constat&eacute; qu'un faux contact entre les broches 2 (mise au point automatique) et 3 
- (abaissement du miroir) du Jack fait "planter" le firmware de l'appareil photo. Dans ce cas, il faut "rebooter" l'APN 
+<p>Remarque : J'ai constat&eacute; qu'un faux contact entre les broches 2 (mise au point automatique) et 3
+ (abaissement du miroir) du Jack fait "planter" le firmware de l'appareil photo. Dans ce cas, il faut "rebooter" l'APN
  pour reprendre la main. Cela &eacute;tait d&ucirc; &agrave; un court-circuit du connecteur Jack qui &eacute;tait trop
  enfonc&eacute; dans le bo&icirc;tier de l'appareil photo.<p>
 <h2>Cas particulier de l'acquisition d'offsets avec le QuickRemote connect&eacute;</h2>
-<p>L'acquisition avec un APN en mode longue pose via un Quickremote a du mal avec des poses de moins de 300 ms environ.
- Parfois &ccedil;a passe, mais cela d&eacute;pend beaucoup du mod&egrave;le d'APN (la commmande par la prise Jack est 
+<p>L'acquisition avec un APN en mode longue pose via un Quickremote peut g&eacute;n&eacute;rer des probl&egrave;mes avec des poses de moins de 300 ms environ.
+ Parfois &ccedil;a passe, mais cela d&eacute;pend beaucoup du mod&egrave;le d'APN (la commmande par la prise Jack est
  p&eacute;vue pour une pose B manuelle) et aussi de la charge du micro-ordinateur de contr&ocirc;le.</p>
-<p>Aussi je vous propose de faire vos offsets sans la longue pose. Vous devez d&eacute;cocher <b>Longue pose</b> dans 
+<p>Aussi je vous recommande de faire vos offsets sans la longue pose. Vous devez d&eacute;cocher <b>Longue pose</b> dans
  l'onglet de configuration des APN pour d&eacute;connecter le QuickRemote.</p>
 <h1>Manuel de programmation</h1>
 <h2>Commande de cr&eacute;ation d'une cam&eacute;ra dslr</h2>
-<blockquote> 
-  <blockquote> 
+<blockquote>
+  <blockquote>
     <p></p>
   </blockquote>
 </blockquote>
 <p><b>cam::create digicam {-name &quot;xxxx&quot; } {-gphoto2_win_dll_dir &quot;xxxxxxx&quot;}</b></p>
 <p><b>Param&egrave;tre -gphoto2_win_dll_dir (d&eacute;faut = &quot;../bin&quot;)</b></p>
 <blockquote>
-  <p>Indique le r&eacute;pertoire o&ugrave; se trouve les fichiers de la librairie 
-    GPHOTO pour WINDOWS uniquement (fichiers libgphoto2.dll, libgphoto2_canon.dll, 
-    libgphoto2_port.dll, libgphoto2_port_usb.dll, libgphoto2_port_usb.dll, libgphoto2_ptp2.dll).</p>
+  <p>Indique le r&eacute;pertoire o&ugrave; se trouve les fichiers de la librairie
+    GPHOTO pour Windows uniquement (fichiers libgphoto2.dll, libgphoto2_canon.dll,
+    libgphoto2_port.dll, libgphoto2_port_usb.dll).</p>
 </blockquote>
 <p><b>Param&egrave;tre -name (d&eacute;faut = &quot;DSLR&quot;)</b></p>
 <blockquote>
-  <p>Indique le nom de la cam&eacute;ra. &quot;DSLR&quot; est la seule valeur possible 
+  <p>Indique le nom de la cam&eacute;ra. &quot;DSLR&quot; est la seule valeur possible
     actuellement.</p>
 </blockquote>
 <p><b>Exemples de programmation :</b></p>
-<blockquote> 
+<blockquote>
   <pre><b>cam::create digicam
 ou
-cam::create digicam  -name DSLR</b></pre>
+cam::create digicam -name DSLR</b></pre>
 </blockquote>
-<p>&nbsp;</p>
-<h2>Commandes g&eacute;n&eacute;riques<b> ( <a href="../../../../doc_html/french/02programmation/cam.htm">cf. 
+<h2>Commandes g&eacute;n&eacute;riques<b> ( <a href="../../../../doc_html/french/02programmation/cam.htm">cf.
   programmation des cam&eacute;ras</a> )</b></h2>
 <ul>
   <ul>
@@ -117,59 +117,58 @@ cam::create digicam  -name DSLR</b></pre>
     <li>buf </li>
     <li>stop </li>
     <li>tel</li>
-    <li>close 
-      <blockquote> 
+    <li>close
+      <blockquote>
         <h3> </h3>
       </blockquote>
     </li>
   </ul>
 </ul>
 <blockquote>
-  <p>Les commandes <b></b> g&eacute;n&eacute;riques non impl&eacute;ment&eacute;es 
+  <p>Les commandes <b></b> g&eacute;n&eacute;riques non impl&eacute;ment&eacute;es
     retournent des valeurs nulles.</p>
 </blockquote>
-<h2>&nbsp;</h2>
 <h2>Commandes sp&eacute;cifiques </h2>
 <h3>cam1 autoload {0|1} <b>(d&eacute;faut = &quot;1&quot;)</b></h3>
-<blockquote> 
-  <p>1 = active ou 0 = d&eacute;sactive le chargement automatique des images apr&egrave;s 
+<blockquote>
+  <p>1 = active ou 0 = d&eacute;sactive le chargement automatique des images apr&egrave;s
     la fin de chaque pose. </p>
-  <p>Si le chargement automatique est activ&eacute;, l'image est charg&eacute;e 
-    et supprim&eacute;e de la m&eacute;moire de l'appareil photo. Si le chargement 
-    automatique est d&eacute;sactiv&eacute;, l'image reste dans la m&eacute;moire 
-    de l'appreil. Il est possible de charger ult&eacute;rieurement l'image avec 
+  <p>Si le chargement automatique est activ&eacute;, l'image est charg&eacute;e
+    et supprim&eacute;e de la m&eacute;moire de l'appareil photo. Si le chargement
+    automatique est d&eacute;sactiv&eacute;, l'image reste dans la m&eacute;moire
+    de l'appreil. Il est possible de charger ult&eacute;rieurement l'image avec
     la commande &quot;cam1 loadlastimage&quot;</p>
   <p>Exemple de programmation :</p>
   <pre>cam1 autoload 1
-cam1 acq  
-wait cam1_status<br>confVisu::autovisu 1  
+cam1 acq
+wait status_cam1<br>confVisu::autovisu 1
 
 cam1 autoload 0
-cam1 acq  
-wait cam1_status
+cam1 acq
+wait status_cam1
 ....
 <b>cam1 loadlastimage</b><br>confVisu::autovisu 1                      </pre>
 </blockquote>
 <h3>cam1 drivemode {0|1|2} <b>(d&eacute;faut = &quot;0&quot;)</b></h3>
-<blockquote> 
+<blockquote>
   <p>S&eacute;lection du mode d'acquisition de l'appareil :</p>
 </blockquote>
 <ul>
   <li> 0 : Normal (acquisition sans rafale et sans retardarteur).</li>
-  <li> 1 : Rafale (acquisition de plusieurs images en rafale, le nombre d'images 
-    acquises d&eacute;pend des caract&eacute;ristiques de l'appareil et de la dur&eacute;e 
+  <li> 1 : Rafale (acquisition de plusieurs images en rafale avec le m&ecirc;me temps d'expositon, le nombre d'images
+    acquises d&eacute;pend des caract&eacute;ristiques de l'appareil et de la dur&eacute;e
     de l'impulsion de d&eacute;clenchement).</li>
-  <li> 2 : Activation du retardateur interne de l'appareil. 
+  <li> 2 : Activation du retardateur interne de l'appareil.
     <p>Exemple de programmation :</p>
     <pre>cam1 drivemode 0
-cam1 acq  
-wait cam1_status<br>confVisu::autovisu 1  
+cam1 acq
+wait status_cam1<br>confVisu::autovisu 1
 </pre>
   </li>
 </ul>
 <h3>cam1 quality list </h3>
-<blockquote> 
-  <p>Retourne la liste des qualit&eacute;s d'image disponibles sur l'appareil.</p>
+<blockquote>
+  <p>Retourne la liste des qualit&eacute;s (formats) d'image disponibles sur l'appareil.</p>
   <p>Exemple de programmation avec un Canon 300D :</p>
   <pre>cam1 quality list
    Large:Fine Large:Normal Middle:Fine Middle:Normal Small:Fine Small:Normal CRW </pre>
@@ -177,55 +176,57 @@ wait cam1_status<br>confVisu::autovisu 1
 <h3>cam1 quality {xxxxx} <b>(d&eacute;faut = (*) )</b><br>
 </h3>
 <blockquote>
-  <p>S&eacute;lectionne la qualit&eacute; d'image. Les valeurs possibles d&eacute;pendent 
-    de la marque et des mod&egrave;les. Il faut utiliser la commande &quot;cam1 
+  <p>S&eacute;lectionne la qualit&eacute; (format) d'image. Les valeurs possibles d&eacute;pendent
+    de la marque et des mod&egrave;les. Il faut utiliser la commande &quot;cam1
     quality list&quot; pour conna&icirc;tre les valeurs disponibles. </p>
-  <p>La commande &quot;cam1 quality&quot; configure la qualit&eacute; d'image 
-    dans Audela. Ensuite l'ordre de changement de qualit&eacute; n'est r&eacute;ellement 
-    envoy&eacute; &agrave; l'appareil qu'au lancement d'une acquisition avec la 
+  <p>La commande &quot;cam1 quality&quot; configure la qualit&eacute; (format) d'image
+    dans AudeLA. Ensuite l'ordre de changement de qualit&eacute; n'est r&eacute;ellement
+    envoy&eacute; &agrave; l'appareil qu'au lancement d'une acquisition avec la
     commande &quot;cam1 acq&quot;.</p>
-  <p>(*) La valeur par d&eacute;faut est le premier &eacute;l&eacute;ment retourn&eacute; 
+  <p>(*) La valeur par d&eacute;faut est le premier &eacute;l&eacute;ment retourn&eacute;
     par la commande &quot;cam1 quality list&quot;</p>
+  <p>La commande &quot;cam1 quality&quot; sans param&egrave;tre retourne la valeur
+    courante. </p>
   <p>Exemple de programmation avec un Canon 300D :</p>
   <pre>cam1 quality list
-   Large:Fine Large:Normal Middle:Fine Middle:Normal Small:Fine Small:Normal CRW    
+   Large:Fine Large:Normal Middle:Fine Middle:Normal Small:Fine Small:Normal CRW
 cam1 quality Small:Normal
 cam1 acq                  =&gt; l'appareil affiche le choix qualit&eacute;=Small:Normal
 cam1 quality CRW
 cam1 acq                  =&gt; l'appareil affiche le choix qualit&eacute;=CRW</pre>
   </blockquote>
 <h3>cam1 loadlastimage </h3>
-<blockquote> 
-  <p>Charge la derni&egrave;re image acquise pr&eacute;sente dans la m&eacute;moire 
-    de l'appareil. Cette commande est utile en particulier pour gagner du temps 
-    en chargeant une image pendant l'acquisition de l'image suivante en combinaison 
+<blockquote>
+  <p>Charge la derni&egrave;re image acquise pr&eacute;sente dans la m&eacute;moire
+    de l'appareil. Cette commande est utile en particulier pour gagner du temps
+    en chargeant une image pendant l'acquisition de l'image suivante en combinaison
     avec la commande <b>&quot;autoload 0&quot;</b>.</p>
   <p>Exemple de programmation : </p>
 
 <table width="75%" border="0" cellspacing="0">
-      <tr> 
-        <td valign="top"> 
+      <tr>
+        <td valign="top">
           <pre><b>cam1 autoload 0 </b>
 cam1 exptime 300
 
 cam1 acq
-wait cam1_status
+wait status_cam1
 ...
 cam1 acq
 <b>cam1 loadlastimage</b>
-wait cam1_status
+wait status_cam1
 ...
 cam1 acq
 <b>cam1 loadlastimage</b>
-wait cam1_status
+wait status_cam1
 ...
 <b>cam1 loadlastimage</b>
 </pre>
         </td>
-        <td valign="top"> 
+        <td valign="top">
           <pre>
 d&eacute;sactive le chargement automatique
-fixe la dur&eacute;e des poses &agrave; 5 minutes 
+fixe la dur&eacute;e des poses &agrave; 5 minutes
 
 lance la pose n&deg;1
 attend la fin de la pose n&deg;1
@@ -243,55 +244,52 @@ t&eacute;l&eacute;charge la pose n&deg;3</pre>
       </tr>
     </table>
   </blockquote>
-
-<p>&nbsp;</p>
 <h3>cam1 systemservice {0|1} <b>(d&eacute;faut = 1 )</b></h3>
-<blockquote> 
-  <p>1 = active ou 0 = d&eacute;sactive le service de d&eacute;tection automatique 
-    des appareils photo num&eacute;riques g&eacute;r&eacute; par le syst&egrave;me 
-    d'exploitation WINDOWS.</p>
-  <p>Il vaut mieux d&eacute;sactiver ce service pour &eacute;viter de perdre des 
-    images pendant leur rapatriement &agrave; cause d'un conflit d'acc&egrave;s 
-    entre Aud'ACE et d'autres logiciels qui utilisent ce service notamment l'explorateur 
-    de WINDOWS.</p>
-  <p>La commande &quot;cam1 systemservice&quot; sans param&egrave;tre retourne la valeur 
+<blockquote>
+  <p>1 = active ou 0 = d&eacute;sactive le service de d&eacute;tection automatique
+    des appareils photo num&eacute;riques g&eacute;r&eacute; par le syst&egrave;me
+    d'exploitation Windows.</p>
+  <p>Il vaut mieux d&eacute;sactiver ce service pour &eacute;viter de perdre des
+    images pendant leur rapatriement &agrave; cause d'un conflit d'acc&egrave;s
+    entre Aud'ACE et d'autres logiciels qui utilisent ce service notamment l'explorateur
+    de Windows.</p>
+  <p>La commande &quot;cam1 systemservice&quot; sans param&egrave;tre retourne la valeur
     courante. </p>
   <p>Remarques :</p>
   <ul>
-    <li>Equivalent &agrave; la commande WINDOWS : Panneau de configuration -&gt; 
-      Outils d'administration -&gt; Services -&gt; Acquisition d'image Windows 
+    <li>Equivalent &agrave; la commande Windows : Panneau de configuration -&gt;
+      Outils d'administration -&gt; Services -&gt; Acquisition d'image Windows
       (WIA) -&gt; D&eacute;marrer/Arr&ecirc;ter</li>
-    <li>N&eacute;cessite d'avoir des droits utilisateur &eacute;tendus sous WINDOWS, 
+    <li>N&eacute;cessite d'avoir des droits utilisateur &eacute;tendus sous Windows,
       sinon la commande reste sans effet.</li>
-    <li>N'est pas impl&eacute;ment&eacute; pour LINUX.</li>
-    <li></li>
+    <li>N'est pas impl&eacute;ment&eacute; pour Linux.</li>
   </ul>
 </blockquote>
 <h3>cam1 longuepose {0|1|2} <b>(d&eacute;faut = 0)</b></h3>
-<blockquote> 
+<blockquote>
   <p>S&eacute;lectionne la liaison servant au d&eacute;clenchement des acquisitions.</p>
-  <p>0 : D&eacute;clenchement des acquisitions via le c&acirc;ble USB de l'appareil. 
+  <p>0 : D&eacute;clenchement des acquisitions via le c&acirc;ble USB de l'appareil.
     Pas de longue pose.<br>
-    D&eacute;clenche le d&eacute;but de l'acquisition et attend que l'appareil 
+    D&eacute;clenche le d&eacute;but de l'acquisition et attend que l'appareil
     signale lui-m&ecirc;me la fin de l'acquisition.<br>
-    Limitation : La dur&eacute;e d'acquisition est limit&eacute;e sur certains 
+    Limitation : La dur&eacute;e d'acquisition est limit&eacute;e sur certains
     appareils &agrave; 30 secondes.</p>
-  <p>1 : D&eacute;clenchement des acquisitions via un autre lien que le cable 
-    USB de l'appareil (port parall&egrave;le, quickremote, ...). Permet les longues 
-    poses. Le lien utilis&eacute; doit &ecirc;tre indiqu&eacute; avec la commande 
+  <p>1 : D&eacute;clenchement des acquisitions via un autre lien que le cable
+    USB de l'appareil (port parall&egrave;le, quickremote, etc.). Permet les longues
+    poses. Le lien utilis&eacute; doit &ecirc;tre indiqu&eacute; avec la commande
     &quot;cam1 longueposelinkno x&quot; <br>
   </p>
-  <p>2 : D&eacute;clenchement des acquisitions via un autre dispositif ind&eacute;pendant 
-    de AudeLA. Dans ce cas AudeLA ne d&eacute;clenche pas la pose mais attend 
-    que l'appareil signale la fin d'une acquisition via le cable USB (attente 
+  <p>2 : D&eacute;clenchement des acquisitions via un autre dispositif ind&eacute;pendant
+    de AudeLA. Dans ce cas AudeLA ne d&eacute;clenche pas la pose mais attend
+    que l'appareil signale la fin d'une acquisition via le cable USB (attente
     de 120 secondes maximum).</p>
-  <p> La commande &quot;cam1 longuepose&quot; sans param&egrave;tre retourne la valeur 
+  <p> La commande &quot;cam1 longuepose&quot; sans param&egrave;tre retourne la valeur
     courante. </p>
   <p>Exemple d'utilisation : </p>
-  <pre>#--- declenchement par la liaison USB 
+  <pre>#--- declenchement par la liaison USB
 cam1 longuepose 0
 cam1 acq
-wait cam1_status
+wait status_cam1
 confVisu::autovisu 1
 
 #--- declenchement par le port parallele LPT1 ou /dev/parport1
@@ -302,7 +300,7 @@ cam1 longueposelinkbit 3
 cam1 longueposestartvalue 1
 cam1 longueposestopvalue 0
 cam1 acq
-wait cam1_status<br>confVisu::autovisu 1
+wait status_cam1<br>confVisu::autovisu 1
 
 #--- declenchement par quickremote
 cam1 longuepose 1
@@ -312,66 +310,76 @@ cam1 longueposelinkbit 3
 cam1 longueposestartvalue 1
 cam1 longueposestopvalue 0
 cam1 acq
-wait cam1_status
+wait status_cam1
 confVsu::autovisu 1
 </pre>
 <pre>#--- declenchement externe independant de AudeLA
 cam1 longuepose 2
 cam1 acq
-wait cam1_status (attend qu'une pose soit declenchee par une action independante de AudeLA (par exemple appuyer sur le bouton l'appareil) 
+wait status_cam1 (attend qu'une pose soit declenchee par une action independante de AudeLA, par exemple appuyer sur le bouton l'appareil).
 confVisu::autovisu 1
 </pre>
 </blockquote>
 <h3>cam1 longueposelinkno {xx} <b>(d&eacute;faut = 0)</b></h3>
-<blockquote> 
-  <p>Indique le num&eacute;ro du lien qui sert au d&eacute;clenchement longue pose. Ce param&egrave;tre 
-    est utilis&eacute; en combinaison avec &quot;cam1 longuepose 1&quot;, il est 
+<blockquote>
+  <p>Indique le num&eacute;ro du lien qui sert au d&eacute;clenchement longue pose. Ce param&egrave;tre
+    est utilis&eacute; en combinaison avec &quot;cam1 longuepose 1&quot;, il est
     ignor&eacute; dans les autres cas.</p>
-  <p>La commande &quot;cam1 longueposelinkno&quot; sans param&egrave;tre retourne 
+  <p>La commande &quot;cam1 longueposelinkno&quot; sans param&egrave;tre retourne
     la valeur courante.</p>
   <p>Exemple d'utilisation : Voir ci-dessus.</p>
 </blockquote>
 <h3>cam1 longueposelinkbit {0...7} <b>(d&eacute;faut = 0)</b></h3>
-<blockquote> 
-  <p>Indique le num&eacute;ro du bit qui sert au d&eacute;clenchement longue pose. Ce 
-    param&egrave;tre est utilis&eacute; en combinaison avec &quot;cam1 longuepose 1&quot; 
-    et avec un port parall&egrave;le ou un quickremote, il est ignor&eacute; dans les autres 
+<blockquote>
+  <p>Indique le num&eacute;ro du bit qui sert au d&eacute;clenchement longue pose. Ce
+    param&egrave;tre est utilis&eacute; en combinaison avec &quot;cam1 longuepose 1&quot;
+    et avec un port parall&egrave;le ou un quickremote, il est ignor&eacute; dans les autres
     cas.</p>
-  <p>La commande &quot;cam1 longueposelinkbit&quot; sans param&egrave;tre retourne 
+  <p>La commande &quot;cam1 longueposelinkbit&quot; sans param&egrave;tre retourne
     la valeur courante.</p>
   <p>Exemple d'utilisation : Voir ci-dessus.</p>
 </blockquote>
 <h3>cam1 longueposestartvalue {0|1} <b>(d&eacute;faut = 1)</b></h3>
-<blockquote> 
-  <p>Indique l'&eacute;tat du bit pour d&eacute;clencher une longue pose. Ce param&egrave;tre 
-    est utilis&eacute; en combinaison avec &quot;cam1 longuepose 1&quot;, il est 
+<blockquote>
+  <p>Indique l'&eacute;tat du bit pour d&eacute;clencher une longue pose. Ce param&egrave;tre
+    est utilis&eacute; en combinaison avec &quot;cam1 longuepose 1&quot;, il est
     ignor&eacute; dans les autres cas.</p>
   <blockquote>
-    <p>cam1 longueposestartvalue 1 : D&eacute;clenchement d'une acquisition quand 
+    <p>cam1 longueposestartvalue 1 : D&eacute;clenchement d'une acquisition quand
       le bit passe de 0 &agrave; 1.</p>
-    <p>cam1 longueposestartvalue 0 : D&eacute;clenchement d'une acquisition quand 
+    <p>cam1 longueposestartvalue 0 : D&eacute;clenchement d'une acquisition quand
       le bit passe de 1 &agrave; 0.</p>
   </blockquote>
-  <p>La commande &quot;cam1 longueposestartvalue&quot; sans param&egrave;tre retourne 
+  <p>La commande &quot;cam1 longueposestartvalue&quot; sans param&egrave;tre retourne
     la valeur courante.</p>
   <p>Exemple d'utilisation : Voir ci-dessus.</p>
 </blockquote>
 <h3>cam1 longueposestopvalue {0|1} <b>(d&eacute;faut = 1)</b></h3>
-<blockquote> 
-  <p>Indique l'&eacute;tat du bit pour arr&ecirc;ter une longue pose. Ce param&egrave;tre 
-    est utilis&eacute; en combinaison avec &quot;cam1 longuepose 1&quot;, il est 
+<blockquote>
+  <p>Indique l'&eacute;tat du bit pour arr&ecirc;ter une longue pose. Ce param&egrave;tre
+    est utilis&eacute; en combinaison avec &quot;cam1 longuepose 1&quot;, il est
     ignor&eacute; dans les autres cas.</p>
-  <blockquote> 
-    <p>cam1 longueposestopvalue 1 : Arr&ecirc;t d'une acquisition quand 
+  <blockquote>
+    <p>cam1 longueposestopvalue 1 : Arr&ecirc;t d'une acquisition quand
       le bit passe de 0 &agrave; 1.</p>
-    <p>cam1 longueposestopvalue 0 : Arr&ecirc;t d'une acquisition quand 
+    <p>cam1 longueposestopvalue 0 : Arr&ecirc;t d'une acquisition quand
       le bit passe de 1 &agrave; 0.</p>
   </blockquote>
-  <p>La commande &quot;cam1 longueposestopvalue&quot; sans param&egrave;tre retourne 
+  <p>La commande &quot;cam1 longueposestopvalue&quot; sans param&egrave;tre retourne
     la valeur courante.</p>
   <p>Exemple d'utilisation : Voir ci-dessus.</p>
 </blockquote>
-<p>&nbsp;</p>
+<h3>cam1 usecf {0|1}</h3>
+<blockquote>
+  <p>G&egrave;re l'usage de la carte m&eacute;moire dans l'APN par la
+  fen&ecirc;tre Configuration --> Cam&eacute;ra --> APN --> T&eacute;l&eacute;charger
+  image.</p>
+<blockquote>
+  <p>cam1 usecf 1 : Stockage sur la carte m&eacute;moire.</p>
+  <p>cam1 usecf 0 : Pas de stockage sur la carte m&eacute;moire.</p>
+</blockquote>
+  <p>La commande "cam1 usecf" sans param&egrave;tre retourne la
+  valeur courante du r&eacute;glage.</p>
+</blockquote>
 </body>
-
 </html>
