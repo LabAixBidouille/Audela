@@ -1,6 +1,6 @@
 #
 # Fichier : t193.cap
-# Mise a jour $Id: t193.cap,v 1.16 2010-01-25 21:44:08 michelpujol Exp $
+# Mise a jour $Id: t193.cap,v 1.17 2010-02-09 17:49:42 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -13,7 +13,7 @@ global caption langage
 
 set caption(t193,monture)                    "T193"
 set caption(t193,port)                       "HP1000 Com Port"
-set caption(t193,configurer)                 "Set up"
+set caption(t193,configurer)                 "Set up..."
 set caption(t193,rappelAlpha)                "R.A. Guide Speed (arcsec/sec.)"
 set caption(t193,rappelDelta)                "Dec. Guide Speed (arcsec/sec.)"
 set caption(t193,mode)                       "Mode"
@@ -39,6 +39,9 @@ set caption(t193,Dec)                        "Declination"
 set caption(t193,controle)                   "Control"
 set caption(t193,raquette_tel)               "Hand controller on screen"
 set caption(t193,tracesConsole)              "Console Log"
+set caption(t193,model,title)                "Aiming Model"
+set caption(t193,model,enabled)              "Enable"
+set caption(t193,model,date)                 "Date"
 
 set caption(t193,port_t193)                  "HP1000 Com Port"
 set caption(t193,2points)                    ":"
@@ -51,7 +54,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(t193,monture)                 "T193"
    set caption(t193,port)                    "Port Com HP1000"
-   set caption(t193,configurer)              "Configurer"
+   set caption(t193,configurer)              "Configurer..."
    set caption(t193,rappelAlpha)             "Vitesse de rappel en A.D. (arcsec/sec.)"
    set caption(t193,rappelDelta)             "Vitesse de rappel en Déc. (arcsec/sec.)"
    set caption(t193,mode)                    "Mode"
@@ -71,7 +74,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,duree)                   "Durée de\ndéplacement entre\nle mini et le maxi (sec.)"
    set caption(t193,attenuateur-)            "-"
    set caption(t193,attenuateur+)            "+"
-   set caption(t193,coordonnees)             "coordonnees AD et Déc."
+   set caption(t193,coordonnees)             "Coordonnées AD et Déc."
    set caption(t193,AD)                      "Ascension droite"
    set caption(t193,Dec)                     "Déclinaison"
    set caption(t193,controle)                "Contrôle"
@@ -79,7 +82,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,tracesConsole)           "Traces dans la Console"
    set caption(t193,model,title)             "Modèle de pointage"
    set caption(t193,model,enabled)           "Activer"
-   set caption(t193,model,configure)         "Configurer ..."
    set caption(t193,model,date)              "Date"
 
    set caption(t193,port_t193)               "Port Com HP1000"
@@ -93,7 +95,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(t193,monture)                 "T193"
    set caption(t193,port)                    "Porta Com HP1000"
-   set caption(t193,configurer)              "Configurare"
+   set caption(t193,configurer)              "Configurare..."
    set caption(t193,rappelAlpha)             "Velocità guida in A.R. (arcsec/sec.)"
    set caption(t193,rappelDelta)             "Velocità guida in Dec. (arcsec/sec.)"
    set caption(t193,mode)                    "Modalita`"
@@ -119,6 +121,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,controle)                "Controllo"
    set caption(t193,raquette_tel)            "Pulsantiera a schermo"
    set caption(t193,tracesConsole)           "Traccia sulla Console"
+   set caption(t193,model,title)             "Modello di puntamento"
+   set caption(t193,model,enabled)           "Abilita"
+   set caption(t193,model,date)              "Data"
 
    set caption(t193,port_t193)               "Porta Com HP1000"
    set caption(t193,2points)                 ":"
@@ -131,7 +136,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(t193,monture)                 "T193"
    set caption(t193,port)                    "Puerto Com HP1000"
-   set caption(t193,configurer)              "Configurar"
+   set caption(t193,configurer)              "Configurar..."
    set caption(t193,rappelAlpha)             "Velocidad de guiado A.R. (arcsec/sec.)"
    set caption(t193,rappelDelta)             "Velocidad de guiado Dec. (arcsec/sec.)"
    set caption(t193,mode)                    "Modo"
@@ -157,6 +162,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,controle)                "Control"
    set caption(t193,raquette_tel)            "Controlador virtual"
    set caption(t193,tracesConsole)           "Log en la Consola"
+   set caption(t193,model,title)             "Modelo de apuntado"
+   set caption(t193,model,enabled)           "Permitir"
+   set caption(t193,model,date)              "Fecha"
 
    set caption(t193,port_t193)               "Puerto Com HP1000"
    set caption(t193,2points)                 ":"
@@ -169,7 +177,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(t193,monture)                 "T193"
    set caption(t193,port)                    "HP1000 Com Port"
-   set caption(t193,configurer)              "Konfigurieren"
+   set caption(t193,configurer)              "Konfigurieren..."
    set caption(t193,rappelAlpha)             "R.A. Rückruf Geschwindigkeit (arcsek/Sek.)"
    set caption(t193,rappelDelta)             "Dek. Rückruf Geschwindigkeit (arcsek/Sek.)"
    set caption(t193,mode)                    "Modus"
@@ -195,6 +203,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,controle)                "Kontroll"
    set caption(t193,raquette_tel)            "Hand Kontroller am Bildschirm"
    set caption(t193,tracesConsole)           "Konsole Log"
+   set caption(t193,model,title)             "Richtung Modell"
+   set caption(t193,model,enabled)           "Befähigen"
+   set caption(t193,model,date)              "Datum"
 
    set caption(t193,port_t193)               "HP1000 Com Port"
    set caption(t193,2points)                 ":"
@@ -207,7 +218,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(t193,monture)                 "T193"
    set caption(t193,port)                    "Porta Com HP1000"
-   set caption(t193,configurer)              "Configuração"
+   set caption(t193,configurer)              "Configuração..."
    set caption(t193,rappelAlpha)             "Velocidade de guia A.R. (arcsec/sec.)"
    set caption(t193,rappelDelta)             "Velocidade de guia Dec. (arcsec/sec.)"
    set caption(t193,mode)                    "Modo"
@@ -233,6 +244,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,controle)                "Controlo"
    set caption(t193,raquette_tel)            "Controlador de mão no ecrã"
    set caption(t193,tracesConsole)           "Log na Consola"
+   set caption(t193,model,title)             "Modelo de apontamento"
+   set caption(t193,model,enabled)           "Activar"
+   set caption(t193,model,date)              "Data"
 
    set caption(t193,port_t193)               "Porta Com HP1000"
    set caption(t193,2points)                 ":"
@@ -245,7 +259,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(t193,monture)                 "T193"
    set caption(t193,port)                    "HP1000 Com Port"
-   set caption(t193,configurer)              "Set up"
+   set caption(t193,configurer)              "Set up..."
    set caption(t193,rappelAlpha)             "R.A. Guide Speed (arcsec/sec.)"
    set caption(t193,rappelDelta)             "Dec. Guide Speed (arcsec/sec.)"
    set caption(t193,mode)                    "Mode"
@@ -271,6 +285,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,controle)                "Control"
    set caption(t193,raquette_tel)            "Hand controller on screen"
    set caption(t193,tracesConsole)           "Console Log"
+   set caption(t193,model,title)             "Aiming Model"
+   set caption(t193,model,enabled)           "Enable"
+   set caption(t193,model,date)              "Date"
 
    set caption(t193,port_t193)               "HP1000 Com Port"
    set caption(t193,2points)                 ":"
@@ -283,7 +300,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(t193,monture)                 "T193"
    set caption(t193,port)                    "HP1000 Com Port"
-   set caption(t193,configurer)              "Set up"
+   set caption(t193,configurer)              "Set up..."
    set caption(t193,rappelAlpha)             "R.A. Guide Speed (arcsec/sec.)"
    set caption(t193,rappelDelta)             "Dec. Guide Speed (arcsec/sec.)"
    set caption(t193,mode)                    "Mode"
@@ -309,6 +326,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,controle)                "Control"
    set caption(t193,raquette_tel)            "Hand controller on screen"
    set caption(t193,tracesConsole)           "Console Log"
+   set caption(t193,model,title)             "Aiming Model"
+   set caption(t193,model,enabled)           "Enable"
+   set caption(t193,model,date)              "Date"
 
    set caption(t193,port_t193)               "HP1000 Com Port"
    set caption(t193,2points)                 ":"
@@ -321,7 +341,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(t193,monture)                 "T193"
    set caption(t193,port)                    "HP1000 Com Port"
-   set caption(t193,configurer)              "Set up"
+   set caption(t193,configurer)              "Set up..."
    set caption(t193,rappelAlpha)             "R.A. Guide Speed (arcsec/sec.)"
    set caption(t193,rappelDelta)             "Dec. Guide Speed (arcsec/sec.)"
    set caption(t193,mode)                    "Mode"
@@ -347,6 +367,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,controle)                "Control"
    set caption(t193,raquette_tel)            "Hand controller on screen"
    set caption(t193,tracesConsole)           "Console Log"
+   set caption(t193,model,title)             "Aiming Model"
+   set caption(t193,model,enabled)           "Enable"
+   set caption(t193,model,date)              "Date"
 
    set caption(t193,port_t193)               "HP1000 Com Port"
    set caption(t193,2points)                 ":"
