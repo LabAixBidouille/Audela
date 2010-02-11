@@ -432,7 +432,7 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
             strcat(ligne, result);
             strcpy(cam->msg, "");
             if (Tcl_Eval(cam->interp, ligne) != TCL_OK) {
-               sprintf(cam->msg, cam->interp->result);
+               sprintf(cam->msg, "%s", cam->interp->result);
             }
          }
       }
@@ -520,7 +520,12 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
    paramCCD_clearall(&ParamCCDIn, 1);
    paramCCD_put(-1, "StartReadoutCCD", &ParamCCDIn, 1);
    paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
+#if defined(OS_WIN)
+   // Only 32 bits "pointers" are supported. Too bad ...
+   sprintf(result, "ImageAddress=%d", (int) (void *) p);
+#else
    sprintf(result, "ImageAddress=%p", p);
+#endif
    paramCCD_put(-1, result, &ParamCCDIn, 1);
    AskForExecuteCCDCommand_Dump(&ParamCCDIn, &ParamCCDOut);
 
@@ -697,7 +702,7 @@ void cam_measure_temperature(struct camprop *cam)
              strcat(ligne, result);
              strcpy(cam->msg, "");
              if (Tcl_Eval(cam->interp, ligne) != TCL_OK) {
-                sprintf(cam->msg, cam->interp->result);
+                sprintf(cam->msg, "%s", cam->interp->result);
              }
           }
           cam->CCDStatus = 1;
@@ -760,7 +765,7 @@ void cam_cooler_check(struct camprop *cam)
             strcat(ligne, result);
             strcpy(cam->msg, "");
             if (Tcl_Eval(cam->interp, ligne) != TCL_OK) {
-               sprintf(cam->msg, cam->interp->result);
+               sprintf(cam->msg, "%s", cam->interp->result);
             }
          }
          cam->CCDStatus = 1;

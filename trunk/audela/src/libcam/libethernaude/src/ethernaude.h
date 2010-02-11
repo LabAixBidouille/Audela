@@ -1,7 +1,7 @@
 /* ethernaude.h
- * 
+ *
  * Copyright (C) 2002-2004 Michel MEUNIER <michel.meunier@tiscali.fr>
- * 
+ *
  * Mettre ici le texte de la license.
  *
  */
@@ -88,7 +88,12 @@ typedef struct {
     /* asked by user */
     unsigned char nbwipe;
     int Exposure;
+#ifdef OS_WIN
+    // Only 32 bits "pointers" are supported. Too bad ...
+    int ImageAddress;
+#else
     unsigned char * ImageAddress;
+#endif
     int CCDno;
     int ClockMode;
     int X1;
