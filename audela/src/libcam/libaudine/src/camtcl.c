@@ -902,7 +902,6 @@ int cmdAudineScan(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
     double loopmilli1 = 0;
     unsigned long msloop, msloop10, msloops[10];
     char msgtcl[] = "Usage: %s %s width height bin dt ?-firstpix index? ?-fast speed? ?-perfo? ?-tmpfile?";
-    char text[1024];
     
     
     ligne = (char *) calloc(200, sizeof(char));
