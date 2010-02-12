@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.38 2010-02-06 13:53:58 jacquesmichelet Exp $
+ * $Id: libcam.c,v 1.39 2010-02-12 21:29:32 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -577,7 +577,8 @@ static int cmdCam(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
 
 
 /*
- * GetCurrentFITSDate(char s[23])
+ * libcam_GetCurrentFITSDate(char s[23])
+ *  retourne la date TU avec le 1/1000 de seconde
  *
  */
 void libcam_GetCurrentFITSDate(Tcl_Interp * interp, char *s)
@@ -592,7 +593,7 @@ void libcam_GetCurrentFITSDate(Tcl_Interp * interp, char *s)
    clock = 1;
    getdate(&d1);
    gettime(&t1);
-   sprintf(s, "%04d-%02d-%02dT%02d:%02d:%02d.%02d", d1.da_year, d1.da_mon, d1.da_day, t1.ti_hour, t1.ti_min, t1.ti_sec, t1.ti_hund);
+   sprintf(s, "%04d-%02d-%02dT%02d:%02d:%02d.%03d", d1.da_year, d1.da_mon, d1.da_day, t1.ti_hour, t1.ti_min, t1.ti_sec, t1.ti_hund);
 #endif
 #if defined(_MSC_VER)
    /* cas special a Microsoft C++ pour avoir les millisecondes */
@@ -604,17 +605,17 @@ void libcam_GetCurrentFITSDate(Tcl_Interp * interp, char *s)
    _ftime(&timebuffer);   // retourne la date GMT
    time(&ltime);          // retourne la date GMT
    strftime(message, 45, "%Y-%m-%dT%H:%M:%S", gmtime(&ltime));
-   sprintf(s, "%s.%02d", message, (int) (timebuffer.millitm / 10));
+   sprintf(s, "%s.%03d", message, (int) timebuffer.millitm );
 
 
    /*
    struct _SYSTEMTIME temps_pc;
    clock = 1;
 	GetSystemTime(&temps_pc);
-   sprintf(s, "%04d-%02d-%02dT%02d:%02d:%02d.%02d",
+   sprintf(s, "%04d-%02d-%02dT%02d:%02d:%02d.%03d",
       temps_pc.wYear, temps_pc.wMonth, temps_pc.wDay,
       temps_pc.wHour, temps_pc.wMinute, temps_pc.wSecond,
-      temps_pc.wMilliseconds/10);
+      temps_pc.wMilliseconds);
    */
 #endif
 #elif defined(OS_LIN)
@@ -622,10 +623,10 @@ void libcam_GetCurrentFITSDate(Tcl_Interp * interp, char *s)
     struct timeval t;
     gettimeofday (&t, NULL);  // retourne la date GMT
     strftime (message, 45, "%Y-%m-%dT%H:%M:%S",gmtime ((const time_t*)(&t.tv_sec)));
-    sprintf (s, "%s.%02d : ", message, (int)(t.tv_usec/10000));
+    sprintf (s, "%s.%03d : ", message, (int)(t.tv_usec/1000));
 #endif
    if (clock == 0) {
-      strcpy(ligne, "clock format [clock seconds] -format \"%Y-%m-%dT%H:%M:%S.00\"");
+      strcpy(ligne, "clock format [clock seconds] -format \"%Y-%m-%dT%H:%M:%S.000\"");
       Tcl_Eval(interp, ligne);
       strcpy(s, interp->result);
    }
@@ -994,25 +995,13 @@ static void AcqRead(ClientData clientData )
    cam->pixels_reverse_y = 0;
    cam->pixel_data = NULL;
    strcpy(cam->msg,"");
-
+   cam->gps_date = 0;    // mis a 1 par CAM_DRV.read_ccd si la camera a une datation avec GPS
    // allocation par defaut du buffer
    p = (unsigned short *) calloc(cam->w * cam->h, sizeof(unsigned short));
 
    libcam_GetCurrentFITSDate(cam->interpCam, cam->date_end);
 
-   /* Ces deux mots cles sont assignes avant d'appeller la fonction */
-   /* de lecture de la camera, ce qui permet a celle-ci de les ecraser */
-   sprintf(s, "buf%d setkwd [list GPS-DATE 0 int {1 if datation is derived from GPS, else 0} {}]", cam->bufno);
-   libcam_log(LOG_DEBUG, s);
-   if (Tcl_Eval(interp, s) == TCL_ERROR) {
-      libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
-   }
-   sprintf(s, "buf%d setkwd [list CAMERA {%s %s %s} string {} {}]", cam->bufno, CAM_INI[cam->index_cam].name, CAM_INI[cam->index_cam].ccd, CAM_LIBNAME);
-   libcam_log(LOG_DEBUG, s);
-   if (Tcl_Eval(interp, s) == TCL_ERROR) {
-      libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
-   }
-
+   
    //  capture
    // TODO 2 : une autre solution serait de passer l'adresse de p  comme ceci :
    // CAM_DRV.read_ccd(cam, (unsigned short **)&p);
@@ -1193,6 +1182,26 @@ static void AcqRead(ClientData clientData )
          libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
       }
 
+      if (cam->gps_date == 1) {
+         sprintf(s, "buf%d setkwd [list GPS-DATE 1 int {1 if datation is derived from GPS, else 0} {}]", cam->bufno);
+         if (Tcl_Eval(interp, s) == TCL_ERROR) {
+            libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+         }
+         sprintf(s, "buf%d setkwd {CAMERA \"%s+GPS %s %s\" string \"\" \"\"}", cam->bufno, CAM_INI[cam->index_cam].name, CAM_INI[cam->index_cam].ccd, CAM_LIBNAME);
+         if (Tcl_Eval(interp, s) == TCL_ERROR) {
+            libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+         }
+
+      } else {
+         sprintf(s, "buf%d setkwd [list GPS-DATE 0 int {1 if datation is derived from GPS, else 0} {}]", cam->bufno);
+         if (Tcl_Eval(interp, s) == TCL_ERROR) {
+            libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+         }
+         sprintf(s, "buf%d setkwd [list CAMERA {%s %s %s} string {} {}]", cam->bufno, CAM_INI[cam->index_cam].name, CAM_INI[cam->index_cam].ccd, CAM_LIBNAME);
+         if (Tcl_Eval(interp, s) == TCL_ERROR) {
+            libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+         }
+      }
 
       /* - call the header proc to add additional informations -*/
       if ( cam->headerproc[0] != 0 ) {
@@ -2054,6 +2063,7 @@ static int cam_init_common(struct camprop *cam, int argc, char **argv)
    cam->capabilities.expTimeList    = 0;  // existance de la liste des temps de pose predefini
    cam->capabilities.videoMode      = 0;  // existance du mode video
    cam->acquisitionInProgress = 0;
+   cam->gps_date = 0;
    return 0;
 }
 
