@@ -614,8 +614,9 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
       }
 
       if ( gps_non_synchro == 0 ) {
-         sprintf(ligne, "buf%d setkwd [list GPS-DATE 1 int {1 if datation is derived from GPS, else 0} {}]", cam->bufno);
-         Tcl_Eval(cam->interp, ligne);
+         cam->gps_date = 1;
+      } else {
+         cam->gps_date = 0;
       }
    } else {
       // Sans eventaude, en cas d'arret premature il faut mettre a jour date_end car c'est lui qui permet de calculer
