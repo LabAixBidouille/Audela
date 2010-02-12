@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libstruc.h,v 1.15 2009-12-29 16:29:42 michelpujol Exp $
+ * $Id: libstruc.h,v 1.16 2010-02-12 21:41:12 michelpujol Exp $
  */
 
 #ifndef __LIBSTRUC_H__
@@ -96,6 +96,7 @@ struct Capabilities {
    int interrupt;\
    char date_obs[30];\
    char date_end[30];\
+   int  gps_date;\
    unsigned long clockbegin;\
    Tcl_Interp *interp;\
    Tcl_Interp *interpCam;\
