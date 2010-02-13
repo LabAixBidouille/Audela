@@ -3,7 +3,7 @@
 #
 ####################################################################
 
-# Mise a jour $Id: spc_var.tcl,v 1.14 2010-01-09 21:32:02 bmauclaire Exp $
+# Mise a jour $Id: spc_var.tcl,v 1.15 2010-02-13 17:20:31 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -62,6 +62,9 @@ set spcaudace(flag_rmcalo) "o"
 #-- Superflat binne et normalise :
 set spcaudace(binned_flat) "n"
 
+#-- Utilisation d'abord de la methode 1 de detection de l'angle de tilt. Par defaut, utilise que la methode 2 (valeur=n) :
+set spcaudace(tilt_normal) "n"
+
 #-- Répertoire de la bibliothèque spectrale :
 set spcaudace(rep_spcbib) [ file join $spcaudace(rep_spc) data bibliotheque_spectrale ]
 
@@ -69,7 +72,7 @@ set spcaudace(rep_spcbib) [ file join $spcaudace(rep_spc) data bibliotheque_spec
 set spcaudace(rep_spccal) [ file join $spcaudace(rep_spc) data calibration_lambda ]
 
 
-#--- Fichiers tulisés :
+#--- Fichiers utilisés :
 set spcaudace(sp_eau) "h2o_6500_6700.fit"
 
 
@@ -95,14 +98,20 @@ set spcaudace(sitebebuil) "http://astrosurf.com/buil/us/becat.htm"
 set spcaudace(sitearasbeam) "http://arasbeam.free.fr/"
 
 
-#--- Option prédéfinies dans les pipelines :
+#--- Options prédéfinies dans les pipelines :
 set spcaudace(methsel) "moy"
 set spcaudace(methreg) "spc"
 set spcaudace(methsky) "med"
 set spcaudace(methbin) "rober"
 
 
+#--- Options prédéfinies :
+set spcaudace(meth_somme) "add"
+
+
 #--- Valeur de paramètres des euristhiques algorithmiques :
+#-- Valeur du parametre Kappa servant dans la somme type Kappa-Sigma :
+set spcaudace(ssk_kappa) 0.8
 #-- Degré du polynome pour l'extraction du continuum :
 set spcaudace(degpoly_cont) 5
 #-- Fraction des bords ignorés dans certains calculs (spc_divri...) pour la détermination du Imax du profil :
