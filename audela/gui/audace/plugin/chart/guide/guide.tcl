@@ -2,7 +2,7 @@
 # Fichier : guide.tcl
 # Description : Plugin de communication avec "guide"
 # Auteur : Robert DELMAS
-# Mise a jour $Id: guide.tcl,v 1.23 2008-11-16 15:47:45 robertdelmas Exp $
+# Mise a jour $Id: guide.tcl,v 1.24 2010-02-13 13:27:39 michelpujol Exp $
 #
 
 namespace eval guide {
@@ -28,9 +28,7 @@ namespace eval guide {
    # return : valeur de la propriete ou "" si la propriete n'existe pas
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
-      switch $propertyName {
 
-      }
    }
 
    #------------------------------------------------------------

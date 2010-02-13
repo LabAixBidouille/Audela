@@ -2,7 +2,7 @@
 # Fichier : lx200pad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: lx200pad.tcl,v 1.16 2008-11-01 17:50:09 robertdelmas Exp $
+# Mise a jour $Id: lx200pad.tcl,v 1.17 2010-02-13 13:23:45 michelpujol Exp $
 #
 
 namespace eval ::lx200pad {
@@ -30,8 +30,6 @@ namespace eval ::lx200pad {
    # return : valeur de la propriete, ou "" si la propriete n'existe pas
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
-      switch $propertyName {
-      }
    }
 
    #------------------------------------------------------------

@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows uniquement
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv2.tcl,v 1.23 2009-11-23 20:56:11 robertdelmas Exp $
+# Mise a jour $Id: carteducielv2.tcl,v 1.24 2010-02-13 13:27:39 michelpujol Exp $
 #
 
 namespace eval carteducielv2 {
@@ -34,9 +34,7 @@ proc ::carteducielv2::initPlugin { } {
 # return : valeur de la propriete, ou "" si la propriete n'existe pas
 #------------------------------------------------------------
 proc ::carteducielv2::getPluginProperty { propertyName } {
-   switch $propertyName {
 
-   }
 }
 
 #------------------------------------------------------------

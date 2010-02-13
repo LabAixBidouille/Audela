@@ -2,7 +2,7 @@
 # Fichier : gphoto2.tcl
 # Description : Interface de liaison GPhoto2
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: gphoto2.tcl,v 1.15 2009-11-16 23:17:10 robertdelmas Exp $
+# Mise a jour $Id: gphoto2.tcl,v 1.16 2010-02-13 13:23:14 michelpujol Exp $
 #
 
 namespace eval gphoto2 {
@@ -76,9 +76,6 @@ proc ::gphoto2::deletePluginInstance { linkLabel deviceId usage } {
 # return : valeur de la propriete , ou "" si la propriete n'existe pas
 #------------------------------------------------------------
 proc ::gphoto2::getPluginProperty { propertyName } {
-   switch $propertyName {
-
-   }
 }
 
 #------------------------------------------------------------

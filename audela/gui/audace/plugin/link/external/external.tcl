@@ -2,7 +2,7 @@
 # Fichier : external.tcl
 # Description : Interface de liaison manuelle
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: external.tcl,v 1.11 2009-03-13 23:51:36 michelpujol Exp $
+# Mise a jour $Id: external.tcl,v 1.12 2010-02-13 13:24:48 michelpujol Exp $
 #
 
 namespace eval external {
@@ -75,9 +75,6 @@ proc ::external::deletePluginInstance { linkLabel deviceId usage } {
 # return : valeur de la propriete , ou "" si la propriete n'existe pas
 #------------------------------------------------------------
 proc ::external::getPluginProperty { propertyName } {
-   switch $propertyName {
-
-   }
 }
 
 #------------------------------------------------------------

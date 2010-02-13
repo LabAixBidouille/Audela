@@ -2,7 +2,7 @@
 # Fichier : ethernaude.tcl
 # Description : Interface de liaison EthernAude
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: ethernaude.tcl,v 1.31 2009-12-30 14:27:05 robertdelmas Exp $
+# Mise a jour $Id: ethernaude.tcl,v 1.32 2010-02-13 13:28:48 michelpujol Exp $
 #
 
 namespace eval ::ethernaude {
@@ -219,9 +219,6 @@ proc ::ethernaude::fillConfigPage { frm } {
 # return : valeur de la propriete , ou "" si la propriete n'existe pas
 #------------------------------------------------------------
 proc ::ethernaude::getPluginProperty { propertyName } {
-   switch $propertyName {
-
-   }
 }
 
 #------------------------------------------------------------
