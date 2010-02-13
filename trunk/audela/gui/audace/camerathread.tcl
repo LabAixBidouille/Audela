@@ -3,7 +3,7 @@
 # Description : procedures d'acquisition et de traitement avec
 #         plusieurs cameras simultanees exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise a jour $Id: camerathread.tcl,v 1.20 2010-02-05 18:43:37 robertdelmas Exp $
+# Mise a jour $Id: camerathread.tcl,v 1.21 2010-02-13 13:13:59 michelpujol Exp $
 #
 
 namespace eval ::camerathread {
@@ -377,7 +377,7 @@ proc ::camerathread::processAcquisitionLoop { } {
             set pixsize1   [expr [lindex [cam$private(camNo) celldim] 0] * 1000000]
             set pixsize2   [expr [lindex [cam$private(camNo) celldim] 1] * 1000000]
 
-            calibre $bufNo $tempPath $fileName $private(detection) \
+            set calibreResult [calibre $bufNo $tempPath $fileName $private(detection) \
                $private(catalogueName) $private(cataloguePath) \
                $crval1 $crval2 $crpix1 $crpix2 \
                $pixsize1 $pixsize2 \
@@ -386,47 +386,68 @@ proc ::camerathread::processAcquisitionLoop { } {
                $private(threshin)  $private(fwhm)   $private(radius) $private(threshold) \
                $private(maxMagnitude) \
                $private(delta) $private(epsilon)
+            ]
 
+            set imageStarNb     [lindex $calibreResult 0]
+            set catalogueStarNb [lindex $calibreResult 1]
+            set matchedStarNb   [lindex $calibreResult 2]
             #--- je charge l'image avec les nouveaux mots cles
             buf$bufNo load [file join $tempPath $fileName]
-            #--- je calcule les coordonnees (x,y) correspondant au (ra,dec) cible
-            set private(targetCoord)  [buf$bufNo radec2xy $private(radec) 1]
-            # j'ouvre le fichier des etoiles de l'image (obs.lst)
-            set fcom [open "obs.lst" r]
-            set istar ""
-            # j'affiche les etoiles
-            while {-1 != [gets $fcom line1]} {
-               set xpic   [expr [lindex $line1 0] + 1]
-               set ypic   [expr [lindex $line1 1] + 1]
-               lappend istar [list $xpic $ypic]
-            }
-            close $fcom
 
-            # j'ouvre le fichier des etoiles du catalogue (usno.lst)
-            set fcom [open "usno.lst" r]
-            set cstar ""
-            # j'affiche les etoiles
-            while {-1 != [gets $fcom line1]} {
-               set xpic   [expr [lindex $line1 1] + 1]
-               set ypic   [expr [lindex $line1 2] + 1]
-               lappend cstar [list $xpic $ypic]
+            if { $imageStarNb > 0 } {
+                #--- je charge la liste des etoiles trouvees dans l'image (obs.lst)image (obs.lst)
+               set fcom [open "obs.lst" r]
+               set istar ""
+               while {-1 != [gets $fcom line1]} {
+                  set xpic   [expr [lindex $line1 0] + 1]
+                  set ypic   [expr [lindex $line1 1] + 1]
+                  lappend istar [list $xpic $ypic]
+               }
+               close $fcom
+               set message ""
+            } else {
+                set istar ""
+                set message "No star found in image."
             }
-            close $fcom
 
-            # j'ouvre le fichier resultat des etoiles appareillees
-            set fcom [open "com.lst" r]
-            set astar ""
-            while {-1 != [gets $fcom line1]} {
-               #--- je convertis en coordonnes picture
-               set ximapic   [expr [lindex $line1 0] + 1]
-               set yimapic   [expr [lindex $line1 1] + 1]
-               set xobspic   [expr [lindex $line1 3] + 1]
-               set yobspic   [expr [lindex $line1 4] + 1]
-               lappend astar [list $ximapic $yimapic $xobspic $yobspic]
+             #--- je charge la liste des etoiles trouvees dans le catalogue (usno.lst)
+             if { $catalogueStarNb > 0 } {
+               set fcom [open "usno.lst" r]
+               set cstar ""
+               # j'affiche les etoiles
+               while {-1 != [gets $fcom line1]} {
+                  set xpic   [expr [lindex $line1 1] + 1]
+                  set ypic   [expr [lindex $line1 2] + 1]
+                  lappend cstar [list $xpic $ypic]
+               }
+               close $fcom
+             } else {
+                set cstar ""
+                append message " No star found in catalogue."
+             }
+
+            #--- je charge la liste des etoiles appariées
+            if { $matchedStarNb > 0 } {
+               set fcom [open "com.lst" r]
+               set astar ""
+               while {-1 != [gets $fcom line1]} {
+                  #--- je convertis en coordonnes picture
+                  set ximapic   [expr [lindex $line1 0] + 1]
+                  set yimapic   [expr [lindex $line1 1] + 1]
+                  set xobspic   [expr [lindex $line1 3] + 1]
+                  set yobspic   [expr [lindex $line1 4] + 1]
+                  lappend astar [list $ximapic $yimapic $xobspic $yobspic]
+               }
+               close $fcom
+               set starStatus "DETECTED"
+               #--- je calcule les coordonnees (x,y) correspondant au (ra,dec) cible
+               set private(targetCoord)  [buf$bufNo radec2xy $private(radec) 1]
+            } else {
+                set astar ""
+                set starStatus "NO_SIGNAL"
+                append message " No matched star."
             }
-            close $fcom
 
-            set starStatus "DETECTED"
             set maxIntensity 0
             set message ""
          }
@@ -539,7 +560,7 @@ proc ::camerathread::processAcquisitionLoop { } {
             }
          }
 
-         if { $private(mode)  == "center" } {
+         if { $private(mode)  == "center" && $starStatus == "DETECTED"  } {
             #--- j'ajoute les nouvelles valeurs a la fin de la liste
             lappend private(centerDeltaList) [list $dx $dy]
             #--- je supprime le premier element
@@ -719,6 +740,7 @@ proc ::camerathread::searchStar { searchBox threshin fwhm radius threshold } {
 #------------------------------------------------------------
 #  calibre
 #   calibration astrometrique de l'image
+# @return { imageStarNb catalogueStarNb matchedStarNb }
 #------------------------------------------------------------
 
 proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName cataloguePath crval1 crval2 crpix1 crpix2 pixsize1 pixsize2 foclen crota2 kappa threshin fwhm radius threshold maxMagnitude delta epsilon } {
@@ -729,6 +751,10 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName c
    file delete -force "${tempPath}/$fileName$ext"
    file delete -force "${tempPath}/i$fileName$ext"
    file delete -force "${tempPath}/c$fileName$ext"
+
+   set imageStarNb   0
+   set catalogueStarNb 0
+   set matchedStarNb 0
 
    #--- je verifie la presence d'une image dans le buffer
    set naxis [lindex [buf$bufNo getkwd NAXIS] 1]
@@ -775,7 +801,7 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName c
       buf$bufNo setkwd [list "OBJEFILE" "$resultFile" string "" "" ]
       buf$bufNo setkwd [list "OBJEKEY" "test" string "" "" ]
       buf$bufNo setkwd [list "TTNAME" "OBJELIST" string "Table name" "" ]
-      buf$bufNo A_starlist $threshin $resultFile n $fwhm $radius $searchBorder $threshold $searchBox 2
+      set imageStarNb [buf$bufNo A_starlist $threshin $resultFile n $fwhm $radius $searchBorder $threshold $searchBox 2]
       buf$bufNo save "${tempPath}/${fileName}$ext"
    } else {
       error "detection unknown : $detection"
@@ -790,6 +816,14 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName c
    #     cdummy.jpg   superposition des etoiles du catalogue sur l'image de depart
    #     usno.lst
    ttscript2 "IMA/SERIES \"$tempPath\" \"$fileName\" . . \"$ext\" \"$tempPath\" \"$fileName\" . \"$ext\" CATCHART \"path_astromcatalog=$cataloguePath\" astromcatalog=$catalogueName \"catafile=${tempPath}/c$fileName$ext\" \"magrlim=$maxMagnitude\" \"magblim=$maxMagnitude\""
+   #--- je compte les etoiles trouvees dans le catalogue
+   set fcom [open "usno.lst" r]
+   set catalogueStarNb 0
+   # je traite le fichier de coordonnes
+   while {-1 != [gets $fcom line1]} {
+      incr catalogueStarNb
+   }
+   close $fcom
 
 
    #---- appariement du catalogue
@@ -804,8 +838,18 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName c
    #     pointzero.lst
    #     usno.lst
    #     xy.lst
+   if { $imageStarNb != 0 && $catalogueStarNb !=  0 } {
+      ttscript2 "IMA/SERIES \"$tempPath\" \"$fileName\" . . \"$ext\" \"$tempPath\" \"$fileName\" . \"$ext\" ASTROMETRY delta=$delta epsilon=$epsilon"
+      set fcom [open "com.lst" r]
+      set matchedStarNb 0
+      while {-1 != [gets $fcom line1]} {
+         incr matchedStarNb
+      }
+      close $fcom
 
-   ttscript2 "IMA/SERIES \"$tempPath\" \"$fileName\" . . \"$ext\" \"$tempPath\" \"$fileName\" . \"$ext\" ASTROMETRY delta=$delta epsilon=$epsilon"
+   }
+
+   return [list $imageStarNb $catalogueStarNb $matchedStarNb]
 }
 
 
