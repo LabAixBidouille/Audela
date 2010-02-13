@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.16 2010-01-09 21:31:58 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.17 2010-02-13 17:08:19 bmauclaire Exp $
 
 
 ####################################################################
@@ -101,7 +101,7 @@ proc spc_calibrms { args } {
 
       #--- Calculs de la dispersion :
       set meanshift [ expr $diff/$nblines ]
-      set rms [ expr sqrt($diff2)/$nblines ]
+      set rms [ expr sqrt($diff2/$nblines) ]
 
       ::console::affiche_resultat "Decalage moyen=$meanshift ; RMS=$rms.\n"
       return $rms
@@ -2108,7 +2108,7 @@ proc spc_calibretelluric { args } {
             buf$audace(bufNo) load "$audace(rep_images)/$spectre_ocallinbis"
             set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_calobis double "" "angstrom" ]
+            #- buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_calobis double "" "angstrom" ]
             buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 4)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
@@ -2122,7 +2122,7 @@ proc spc_calibretelluric { args } {
             buf$audace(bufNo) load "$audace(rep_images)/$spectre_ocalshifted"
             set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_calo double "" "angstrom" ]
+            #- buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_calo double "" "angstrom" ]
             buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 3)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
@@ -2137,7 +2137,7 @@ proc spc_calibretelluric { args } {
             buf$audace(bufNo) load "$audace(rep_images)/$spectre_lindec"
             set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_lindec double "" "angstrom" ]
+            #- buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_lindec double "" "angstrom" ]
             buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 2)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
@@ -2151,7 +2151,7 @@ proc spc_calibretelluric { args } {
             buf$audace(bufNo) load "$audace(rep_images)/$spectre_lindec_rms"
             set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_lindec_rms double "" "angstrom" ]
+            #- buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_lindec_rms double "" "angstrom" ]
             buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 5)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
@@ -2165,7 +2165,7 @@ proc spc_calibretelluric { args } {
             buf$audace(bufNo) load "$audace(rep_images)/$spectre_lindec_drms"
             set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-            buf$audace(bufNo) setkwd [ list "SPC_RMS" $drms_dec double "" "angstrom" ]
+            #- buf$audace(bufNo) setkwd [ list "SPC_RMS" $drms_dec double "" "angstrom" ]
             buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 6)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
@@ -2179,7 +2179,7 @@ proc spc_calibretelluric { args } {
             buf$audace(bufNo) load "$audace(rep_images)/$spectre_dec"
             set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_dec double "" "angstrom" ]
+            #- buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_dec double "" "angstrom" ]
             buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 7)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
@@ -2193,7 +2193,7 @@ proc spc_calibretelluric { args } {
             buf$audace(bufNo) load "$audace(rep_images)/$spectre_linear"
             set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_initial double "" "angstrom" ]
+            #- buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_initial double "" "angstrom" ]
             buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 1)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
@@ -3183,7 +3183,7 @@ proc spc_corrvhelio { args } {
    global conf
 
    if { [llength $args] == 2 || [llength $args] == 8 || [llength $args] == 11 } {
-       if { [llength $args] == 1 } {
+       if { [llength $args] == 2 } {
            set spectre [ lindex $args 0 ]
            set lambda_cal [ lindex $args 1 ]
            set vhelio [ spc_vhelio $spectre ]
@@ -3442,7 +3442,7 @@ proc spc_rinstrum { args } {
            #set rinstrum [ spc_ajustripbas $result_division ]
            #file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-3$conf(extension,defaut)"
            #-- Meth 6 : filtrage passe bas fort -> RI 2
-           set rinstrum [ spc_ajustripbasfort $result_division n ]
+           set rinstrum [ spc_ajustripbasfort $result_division "o" ]
            file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-2$conf(extension,defaut)"
            #-- Meth 4 : interpolation polynomiale de 4 -> RI 3
            #- set rinstrum [ spc_polynomefilter $result_division 3 150 o ]
@@ -3453,13 +3453,13 @@ proc spc_rinstrum { args } {
                #-- Lhires3+résos 600 t/mm et 1200 t/mm-kaf1600 :
                ## set rinstrum [ spc_pwlfilter $result_division 280 o 51 201 10 2 50 ]
                # set rinstrum [  spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.3 10000 { 1.0 2.0 } "o" 18 ]
-               set rinstrum [  spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.0 1000000. { 1.0 1.0 10000000. 1. } "n" 50 ]
+               set rinstrum [  spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.0 1000000. { 1.0 1.0 10000000. 1. } "o" 50 ]
            } else {
            #-- Lhires3+résos 300 et 150 t/mm :
               ## set rinstrum [ spc_pwlfilter $result_division 50 o 11 51 70 50 100 ]
               # set rinstrum [ spc_pwlfilter $result_division 24 o 3 3 50 50 50 ]
               # set rinstrum [ spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.1 10 { 1.0 2.0 } "o" 18 ]
-              set rinstrum [ spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.1 50. { 1. 5. 1500. } "n" 18 ]
+              set rinstrum [ spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.1 50. { 1. 5. 1500. } "o" 18 ]
            }
            file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-br$conf(extension,defaut)"
        }
