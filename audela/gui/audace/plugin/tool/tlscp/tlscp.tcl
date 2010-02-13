@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.38 2010-01-30 14:24:45 robertdelmas Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.39 2010-02-13 13:16:27 michelpujol Exp $
 #
 
 #============================================================
@@ -1211,21 +1211,31 @@ proc ::tlscp::callbackAcquisition { visuNo command args } {
          set private($visuNo,acquisitionState) ""
       }
       "targetCoord" {
-         set private($visuNo,targetCoord) [lindex $args 0]
+         #--- parametres :
+         #    args[0]      starStatus
+         #    args[1]      targetCoord
+         #    args[2 3]    dx dy
+         #    args[4]      maxIntensity
+         #    args[5]      imageStar
+         #    args[6]      catalogueStar
+         #    args[7]      matchedStar
+         #    args[8]      message
+         set starStatus [lindex $args 0]
+         set private($visuNo,targetCoord) [lindex $args 1]
 
          #--- je deplace la cible
          ::tlscp::moveTarget $visuNo $private($visuNo,targetCoord)
 
          #--- j'affiche la distance entre l'etoile cible et l'otrgine
-         set private($visuNo,dx) [format "%##0.1f" [lindex $args 1]]
-         set private($visuNo,dy) [format "%##0.1f" [lindex $args 2]]
+         set private($visuNo,dx) [format "%##0.1f" [lindex $args 2]]
+         set private($visuNo,dy) [format "%##0.1f" [lindex $args 3]]
 
          #--- j'efface les marques precedentes
          set hCanvas [::confVisu::getCanvas $visuNo]
          $hCanvas delete tlscpstar
 
          #--- j'affiche les marques des etoiles detectees dans l'image (cercle bleu)
-         foreach coords [lindex $args 3] {
+         foreach coords [lindex $args 5] {
             #--- je convertis en coordonnes canvas
             set coord [::confVisu::picture2Canvas $visuNo $coords ]
             set xcan  [lindex $coord 0]
@@ -1236,7 +1246,7 @@ proc ::tlscp::callbackAcquisition { visuNo command args } {
          }
 
          #--- j'affiche les marques des etoiles trouvees dans le catalogue (cercle vert)
-         foreach coords [lindex $args 4] {
+         foreach coords [lindex $args 6] {
             #--- je convertis en coordonnes canvas
             set coord [::confVisu::picture2Canvas $visuNo $coords ]
             set xcan  [lindex $coord 0]
@@ -1247,7 +1257,7 @@ proc ::tlscp::callbackAcquisition { visuNo command args } {
          }
 
          #--- j'affiche les marques des etoiles appereillees
-         foreach coords [lindex $args 5] {
+         foreach coords [lindex $args 7] {
             set ximapic   [lindex $coords 0]
             set yimapic   [lindex $coords 1]
             set xobspic   [lindex $coords 2]
@@ -1263,6 +1273,10 @@ proc ::tlscp::callbackAcquisition { visuNo command args } {
             $hCanvas create line $ximacan $yimacan $xobscan $yobscan -fill red -width 2 -activewidth 3 -tag "tlscpstar $ximapic $yimapic $xobspic $yobspic"
          }
 
+         #--- j'affiche un eventuel message dans la console
+         if { [lindex $args 8] != "" } {
+            console::disp "Telescope::center [lindex $args 8]\n"
+         }
       }
       "error" {
          console::affiche_erreur "callbackAcquisition visu=$visuNo command=$command args=$args\n"
@@ -1789,6 +1803,7 @@ proc ::tlscp::config::apply { visuNo } {
    ::camera::setParam $::tlscp::private($visuNo,camItem) "alphaReverse" $conf(tlscp,alphaReverse)
    ::camera::setParam $::tlscp::private($visuNo,camItem) "deltaReverse" $conf(tlscp,deltaReverse)
    ::camera::setParam $::tlscp::private($visuNo,camItem) "seuilx" $conf(tlscp,seuilx)
+   ::camera::setParam $::tlscp::private($visuNo,camItem) "seuily" $conf(tlscp,seuily)
 
    #--- je redessine la cible
    ::tlscp::createTarget $visuNo
