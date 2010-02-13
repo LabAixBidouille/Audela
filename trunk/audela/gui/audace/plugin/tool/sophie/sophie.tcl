@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.42 2010-01-30 14:30:10 robertdelmas Exp $
+# @version   $Id: sophie.tcl,v 1.43 2010-02-13 13:20:01 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -10,23 +10,23 @@
 #
 # @image html logosophie.gif
 #
-# Dans un premier temps, les éléments remplacés sont :
-# - le PC de guidage et logiciel de guidage sont remplacés ( => Windows Vista et Audela),
-# - la caméra de guidage est remplacée par la caméra FLI,
-# - la carte wrappée est remplacée par la carte N.I. USB-6501.
+# Dans un premier temps, les Ã©lÃ©ments remplacÃ©s sont :
+# - le PC de guidage et logiciel de guidage sont remplacÃ©s ( => Windows Vista et Audela),
+# - la camÃ©ra de guidage est remplacÃ©e par la camÃ©ra FLI,
+# - la carte wrappÃ©e est remplacÃ©e par la carte N.I. USB-6501.
 #
-# Puis, dans un deuxième temps :
-# - le HP1000 est remplacé par un « PC T193 » avec les nouveaux moteurs associés (moteurs ETEL et BRADFOR commandés par une carte DELTATAU).
+# Puis, dans un deuxiÃ¨me temps :
+# - le HP1000 est remplacÃ© par un l'interface de controle avec les nouveaux moteurs associÃ©s (moteurs ETEL et BRADFOR commandÃ©s par une carte DELTATAU).
 #
-# Le cahier des charges « cahier des charges_guidage_193_v0.pdf » décrit les besoins suivants :
-# - Le logiciel doit permettre de s'interfacer avec les équipements de la configuration intermédiaire puis de la configuration cible.
-# - Il doit fournir les fonctions de centrage d'une étoile sur une consigne, d'aide à la mise au point (focalisation) et de guidage automatique du télescope pendant les poses du spectrographe Sophie.
+# Le cahier des charges les besoins suivants :
+# - Le logiciel doit permettre de s'interfacer avec les Ã©quipements de la configuration intermÃ©diaire puis de la configuration cible.
+# - Il doit fournir les fonctions de centrage d'une Ã©toile sur une consigne, d'aide Ã  la mise au point (focalisation) et de guidage automatique du tÃ©lescope pendant les poses du spectrographe Sophie.
 #
-# Interlocuteurs opérationnels :
-# - Luc Arnold : Nouveau PC guidage et caméra FLI
-# - François Moreau : jouvance T193
+# Interlocuteurs opÃ©rationnels :
+# - Luc Arnold : Nouveau PC guidage et camÃ©ra FLI
+# - FranÃ§ois Moreau : jouvance T193
 # - Jean Pierre Menier : spectrographe Sophie
-# - Xavier Regal : commandes atténuateurs, carte National Instrument
+# - Xavier Regal : commandes attÃ©nuateurs, carte National Instrument
 # - Fabien Fillion : PC de supervision du T193
 #
 #------------------------------------------------------------
@@ -186,10 +186,10 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(mode)              "CENTER"
    set private(zoom)              "1"
    set private(attenuateur)       "5"
-   set private(windowing)         "full"            ; #--- fenetrage, contient "full" ou la longueur du coté du carré de fenetrage
+   set private(windowing)         "full"            ; #--- fenetrage, contient "full" ou la longueur du cotÃ© du carrÃ© de fenetrage
    set private(findFiber)         0                 ; #---  1= detection de la fibre activee 0=detection fibre desactivee
    set private(updateFilterId)    ""                ; #--- identifiant de la commande after pour la mise a jour de l'affichage du taux d'attenuation
-   set private(updateFilterSate)  0                 ; #--- 0=pas de modificationde l'atténuation en cour, 1= modification de l'attennuation en cours
+   set private(updateFilterSate)  0                 ; #--- 0=pas de modificationde l'attÃ©nuation en cour, 1= modification de l'attennuation en cours
    set private(targetBoxSize)     100
    set private(cameraCells)       [list 1536 1024 ] ; #--- dimensions par defaut du capteur de la camera . cette valeur est mise a jour par ::sophie::adaptPanel
 
@@ -499,12 +499,11 @@ proc ::sophie::startTool { visuNo } {
    #--- j'active la mise a jour automatique de l'affichage quand on change de miroir
    ::confVisu::addMirrorListener $visuNo "::sophie::onChangeSubWindow $visuNo"
 
-   #--- j'adapte l'affichage de l'outil
-   adaptPanel $visuNo
-
    #--- Ouverture de la fenetre de controle de l'interface
    ::sophie::showControlWindow $visuNo
-   #--- je mets à jour le mode
+   #--- j'adapte l'affichage de l'outil (attention : il faut que la fentre de controle exiete deja)
+   adaptPanel $visuNo
+   #--- je mets Ã  jour le mode
    ::sophie::setMode $private(mode)
    #--- je mets a jour le mode de guidage
    ::sophie::setGuidingMode $visuNo
@@ -514,6 +513,7 @@ proc ::sophie::startTool { visuNo } {
    createOrigin $visuNo
    #--- j'affiche la fibreB sur l'image
    createFiberB $visuNo
+
 
    set catchError [ catch {
       #--- j'ouvre la liaison pour recevoir les commandes du PC Sophie
