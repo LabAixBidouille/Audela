@@ -2,7 +2,7 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spcaudace spc_metaf.tcl ]
 
-# Mise a jour $Id: spc_metaf.tcl,v 1.10 2010-01-02 16:37:54 bmauclaire Exp $
+# Mise a jour $Id: spc_metaf.tcl,v 1.11 2010-02-13 17:18:51 bmauclaire Exp $
 
 
 
@@ -1359,6 +1359,21 @@ proc spc_traite2srinstrum { args } {
        }
 
 
+       #--- Correction du l'inclinaison (tilt) :
+       if { $flag_nonstellaire==1 } {
+	   #- Pas de correction de l'inclinaison pour les spectres non stellaires :
+	   ::console::affiche_erreur "\n\nPAS DE CORRECTION DE L'INCLINAISON POUR LES SPECTRES NON STELLAIRES\n\n"
+	   set ftilt "$fpretrait"
+       } else {
+	   ::console::affiche_resultat "\n\n**** Correction du l'inclinaison (tilt) ****\n\n"
+	   if { $methejtilt == "o" } {
+	       set ftilt [ spc_tiltautoimgs $fpretrait o ]
+	   } else {
+	       set ftilt [ spc_tiltautoimgs $fpretrait n ]
+	   }
+       }
+
+
        #--- Corrections géométriques des raies (smile selon l'axe x ou slant) :
        ::console::affiche_resultat "\n\n**** Corrections géométriques du spectre 2D ****\n\n"
        buf$audace(bufNo) load "$audace(rep_images)/$lampe"
@@ -1367,30 +1382,16 @@ proc spc_traite2srinstrum { args } {
 	   set spc_ycenter [ lindex [ buf$audace(bufNo) getkwd "SPC_SLX1" ] 1 ]
 	   set spc_cdeg2 [ lindex [ buf$audace(bufNo) getkwd "SPC_SLX2" ] 1 ]
 	   ::console::affiche_resultat "\n** Correction de la courbure des raies (smile selon l'axe x)... **\n"
-	   set fgeom [ spc_smileximgs $fpretrait $spc_ycenter $spc_cdeg2 ]
+	   set fgeom [ spc_smileximgs $ftilt $spc_ycenter $spc_cdeg2 ]
        } elseif { [ lsearch $listemotsclef "SPC_SLA" ] !=-1 } {
 	   set pente [ lindex [ buf$audace(bufNo) getkwd "SPC_SLA" ] 1 ]
 	   ::console::affiche_resultat "\n** Correction de l'inclinaison des raies (slant)... **\n"
 	   set fgeom [ spc_slant2imgs $fpretrait $pente ]
        } else {
 	   ::console::affiche_resultat "\n** Aucune correction géométrique nécessaire. **\n"
-	   set fgeom "$fpretrait"
+	   set fgeom "$ftilt"
        }
 
-
-       #--- Correction du l'inclinaison (tilt) :
-       if { $flag_nonstellaire==1 } {
-	   #- Pas de correction de l'inclinaison pour les spectres non stellaires :
-	   ::console::affiche_erreur "\n\nPAS DE CORRECTION DE L'INCLINAISON POUR LES SPECTRES NON STELLAIRES\n\n"
-	   set ftilt "$fgeom"
-       } else {
-	   ::console::affiche_resultat "\n\n**** Correction du l'inclinaison (tilt) ****\n\n"
-	   if { $methejtilt == "o" } {
-	       set ftilt [ spc_tiltautoimgs $fgeom o ]
-	   } else {
-	       set ftilt [ spc_tiltautoimgs $fgeom n ]
-	   }
-       }
 
        #--- Effacement des images prétraitées :
        if { $rmfpretrait=="o" } {
@@ -1403,9 +1404,9 @@ proc spc_traite2srinstrum { args } {
        #--- Appariement horizontal :
        ::console::affiche_resultat "\n\n**** Appariement horizontal de $nbimg images ****\n\n"
        if { $flag_2lamps == "o" } {
-          set fhreg [ spc_registerh "$lampe" "$ftilt" ]
+          set fhreg [ spc_registerh "$lampe" "$fgeom" ]
        } else {
-          set fhreg "$ftilt"
+          set fhreg "$fgeom"
        }
 
        #--- Appariement vertical de $nbimg images :
@@ -1433,7 +1434,8 @@ proc spc_traite2srinstrum { args } {
           set fsadd [ spc_somme "$freg" add ]
        } else {
           #-- Somme moyenne des images pour les spectres stellaires car brillants :
-          set fsadd [ spc_somme "$freg" moy ]
+          #- set fsadd [ spc_somme "$freg" moy ] par defaut
+          set fsadd [ spc_somme "$freg" ]
        }
 
        if { $rmfpretrait=="o" } {
@@ -1498,7 +1500,19 @@ proc spc_traite2srinstrum { args } {
 
        #--- Correction de la réponse intrumentale :
        if { $rinstrum=="none" } {
-	   set fricorr "$fcal"
+          set fricorr "$fcal"
+          #-- Linearisation de la calibration a partir du niveau 1b_lin :
+          set fricorrlin1 [ spc_linearcal "$fricorr" ]             
+          #-- Elimination des bords "nuls" :
+          if { $spcaudace(rm_edges)=="o" } {
+             set fricorrlin [ spc_rmedges "$fricorrlin1" ]
+             file delete -force "$audace(rep_images)/$fricorrlin1$conf(extension,defaut)"
+          } else {
+             set fricorrlin "$fricorrlin1"
+          }
+          file copy -force "$audace(rep_images)/$fricorrlin$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1b$conf(extension,defaut)"
+          file copy -force "$audace(rep_images)/$fricorr$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1b_nonlin$conf(extension,defaut)"
+          file delete -force "$audace(rep_images)/$fricorr$conf(extension,defaut)"
        } else {
           ::console::affiche_resultat "\n\n**** Correction de la réponse intrumentale ****\n\n"
           buf$audace(bufNo) load "$audace(rep_images)/$rinstrum"
@@ -1544,17 +1558,18 @@ proc spc_traite2srinstrum { args } {
 	       ::console::affiche_erreur "\nLa division par la réponse intrumentale n'a pas pu peut être calculée.\n"
 	       return 0
 	   } else {
+              #-- Linearisation de la calibration a partir du niveau 1c :
               set fricorrlin1 [ spc_linearcal "$fricorr" ]             
               #-- Elimination des bords "nuls" :
               if { $spcaudace(rm_edges)=="o" } {
                  set fricorrlin [ spc_rmedges "$fricorrlin1" ]
+                 file delete -force "$audace(rep_images)/$fricorrlin1$conf(extension,defaut)"
               } else {
                  set fricorrlin "$fricorrlin1"
               }
               file copy -force "$audace(rep_images)/$fricorrlin$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1c$conf(extension,defaut)"
               file copy -force "$audace(rep_images)/$fricorr$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1c_nonlin$conf(extension,defaut)"
               file delete -force "$audace(rep_images)/$fricorr$conf(extension,defaut)"
-              file delete -force "$audace(rep_images)/$fricorrlin1$conf(extension,defaut)"
 	   }
        }
 
