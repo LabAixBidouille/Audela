@@ -7,7 +7,185 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.21 2010-01-03 14:45:00 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.22 2010-02-13 17:29:00 bmauclaire Exp $
+
+
+
+####################################################################
+# Cicatrise les zones specifiees en longueur d'onde
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 2010-01-26
+# Date modification : 2010-01-26
+# Arguments : fichier .fit {lambda1 lambda2} {lambda1 lambda2} ...
+####################################################################
+
+proc spc_scar { args } {
+    global audace conf
+
+    set nb_args [ llength $args ]
+    if { $nb_args >= 2 } {
+       set spectre [ file rootname [ lindex $args 0 ] ]
+       set liste_coords [ lrange $args 1 [ llength $args ] ]
+
+       #--- Recupere les informations :
+       buf$audace(bufNo) load "$audace(rep_images)/$spectre"
+       set listemotsclef [ buf$audace(bufNo) getkwds ]
+       set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+       set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+       if { [ lsearch $listemotsclef "CRPIX1" ] !=-1 } {
+          set crpix1 [ lindex [ buf$audace(bufNo) getkwd "CRPIX1" ] 1 ]
+       } else {
+          set crpix1 1
+       }
+
+       #--- Circatrise chaque morceaux :
+       foreach zone $liste_coords {
+          set l1 [ lindex $zone 0 ]
+          set l2 [ lindex $zone 1 ]
+          if { $l2>$l1 } {
+             set x1 [ expr round(($l1-$crval1)/$cdelt1+$crpix1) ]
+             set x2 [ expr round(($l2-$crval1)/$cdelt1+$crpix1) ]
+             ::console::affiche_resultat "Circatrisation entre $l1-$l2 ($x1-$x2)...\n"
+             buf$audace(bufNo) scar [ list $x1 1 $x2 1 ]
+          }
+       }
+
+       #--- Enregistrement :
+       buf$audace(bufNo) bitpix float
+       buf$audace(bufNo) save "$audace(rep_images)/${spectre}-cic"
+       buf$audace(bufNo) bitpix short
+       ::console::affiche_resultat "Image sauvée sous ${spectre}-cic.\n"
+       return ${spectre}-cic
+    } else {
+        ::console::affiche_erreur "Usage : spc_scar nom_profil_de_raies {lambda1 lambda2} {lambda1 lambda2} ...\n\n"
+    }
+}
+#*****************************************************************#
+
+
+
+####################################################################
+# Corrige un defaut de libtt du 01/2010 qui met EXPOSURE a 0 lors du pretraitraiment
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 2010-01-29
+# Date modification : 2010-01-29
+# Arguments : nom_fichiers_brut nom_fichiers_pretraites
+####################################################################
+
+proc spc_correxposure { args } {
+    global audace conf
+
+    if { [ llength $args ] == 1 } {
+       set nombrut [ lindex $args 0 ]
+       set listefile [ lsort -dictionary [ glob ${nombrut}\[0-9\]$conf(extension,defaut) ${nombrut}\[0-9\]\[0-9\]$conf(extension,defaut) ${nombrut}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+
+       #--- Recupere le mot clef :
+       set fichier_brut1 [ lindex $listefile 0 ]
+       buf$audace(bufNo) load "$audace(rep_images)/$fichier_brut1"
+       set listemotsclef [ buf$audace(bufNo) getkwds ]
+       if { [ lsearch $listemotsclef "EXPTIME" ] !=-1 && [ lsearch $listemotsclef "EXPOSURE" ] !=-1 } {
+          set exptime [ lindex [ buf$audace(bufNo) getkwd "EXPTIME" ] 1 ]
+          if { $exptime==0.0 } {
+             set flag_corr 1
+          } else {
+             set flag_corr 0
+          }
+       } else {
+          set flag_corr 0
+       }
+
+       #--- Maj des images pretraitees :
+       if { $flag_corr } {
+          foreach fichier $listefile {
+             buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+             buf$audace(bufNo) delkwd "EXPTIME"
+             buf$audace(bufNo) save "$audace(rep_images)/$fichier"
+          }
+       }
+
+       ::console::affiche_resultat "EXPTIME=0 efface des fichiers $nombrut.\n"
+       return $nombrut
+    } else {
+        ::console::affiche_erreur "Usage : spc_correxposure nom_fichiers_brut\n\n"
+    }
+}
+#*****************************************************************#
+
+
+####################################################################
+# Corrige un defaut de libtt du 01/2010 qui met EXPOSURE a 0 lors du pretraitraiment
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 2010-01-29
+# Date modification : 2010-01-29
+# Arguments : nom_fichiers_brut nom_fichiers_pretraites
+####################################################################
+
+proc spc_correxposure0 { args } {
+    global audace conf
+
+    if { [ llength $args ] == 2 } {
+       set nombrut [ lindex $args 0 ]
+       set nom_spectres [ lindex $args 1 ]
+       #set fichier_brut1 [ lindex [ glob -dir $audace(rep_images) ${nombrut}\[0-9\]$conf(extension,defaut) ${nombrut}\[0-9\]\[0-9\]$conf(extension,defaut) ${nombrut}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] 0 ]
+       set fichier_brut1 [ lindex [ glob ${nombrut}\[0-9\]$conf(extension,defaut) ${nombrut}\[0-9\]\[0-9\]$conf(extension,defaut) ${nombrut}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] 0 ]
+       set listefile [ lsort -dictionary [ glob ${nom_spectres}\[0-9\]$conf(extension,defaut) ${nom_spectres}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_spectres}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+
+       #--- Recupere le mot clef :
+       buf$audace(bufNo) load "$audace(rep_images)/$fichier_brut1"
+       set exposure [ lindex [ buf$audace(bufNo) getkwd "EXPOSURE" ] 1 ]
+
+       #--- Maj des images pretraitees :
+       foreach fichier $listefile {
+          buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+          buf$audace(bufNo) setkwd [ list "EXPOSURE" $exposure float "" "second" ]
+          buf$audace(bufNo) bitpix float
+          buf$audace(bufNo) save "$audace(rep_images)/$fichier"
+       }
+       buf$audace(bufNo) bitpix short
+       ::console::affiche_resultat "EXPOSURE des fichiers $nom_spectres corrige.\n"
+       return $nom_spectres
+    } else {
+        ::console::affiche_erreur "Usage : spc_correxposure nom_fichiers_brut nom_fichiers_pretraites\n\n"
+    }
+}
+#*****************************************************************#
+
+
+
+
+####################################################################
+# Ajoute une valeur a toutes les intensites
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 2009-10-06
+# Date modification : 2009-10-06
+# Arguments : fichier .fit offset
+####################################################################
+
+proc spc_offset { args } {
+    global audace conf
+
+    set nb_args [ llength $args ]
+    if { $nb_args == 2 } {
+       set spectre [ file rootname [ lindex $args 0 ] ]
+       set offset [ lindex $args 1 ]
+
+       buf$audace(bufNo) load "$audace(rep_images)/$spectre"
+       buf$audace(bufNo) offset $offset
+       buf$audace(bufNo) bitpix float
+       buf$audace(bufNo) save "$audace(rep_images)/${spectre}_off"
+       buf$audace(bufNo) bitpix short
+       ::console::affiche_resultat "Image sauvée sous ${spectre}_off.\n"
+       return ${spectre}_off
+    } else {
+        ::console::affiche_erreur "Usage : spc_offset nom_profil_de_raies offset\n\n"
+    }
+}
+#*****************************************************************#
+
 
 
 ####################################################################
@@ -617,10 +795,10 @@ proc spc_rmedges { args } {
        if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
           set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
           #-- Recupere la totalite des mots clef :
-          set keywords ""
-          foreach keywordName [ buf$audace(bufNo) getkwds ] {
-             lappend keywords [ buf$audace(bufNo) getkwd $keywordName ]
-          }
+          #set keywords ""
+          #foreach keywordName [ buf$audace(bufNo) getkwds ] {
+          #   lappend keywords [ buf$audace(bufNo) getkwd $keywordName ]
+          #}
        } else {
           ::console::affiche_erreur "Le spectre doit être calibré et avec une loi linéaire.\n"
           return ""
@@ -696,9 +874,10 @@ proc spc_rmedges { args } {
        buf$audace(bufNo) load "$audace(rep_images)/$spectre"
        set newBufNo [ buf::create ]
        buf$newBufNo setpixels CLASS_GRAY $new_longueur 1 FORMAT_FLOAT COMPRESS_NONE 0
-       foreach keyword $keywords {
-          buf$newBufNo setkwd $keyword
-       }
+       #foreach keyword $keywords {
+       #   buf$newBufNo setkwd $keyword
+       #}
+       buf$newBufNo copykwd $audace(bufNo)
        buf$newBufNo setkwd [ list "NAXIS" 1 int "" "" ]
        buf$newBufNo setkwd [ list "NAXIS1" $new_longueur int "" "" ]
        #-- k=compteur des pixels ; i=index des intensites a prendre dans la liste de selection.
@@ -928,6 +1107,8 @@ proc spc_pretrait { args } {
        }
        # ::console::affiche_resultat "Corr : b=$pref_stellaire, d=$pref_dark, f=$pref_flat, df=$pref_darkflat\n"
 
+       #--- Gestion d'un laxisme de libtt qui peut utiliser exptime au lieu exposure :
+       spc_correxposure "${pref_stellaire}"
 
        #--- Prétraitement des flats :
        #-- Somme médiane des dark, dark_flat et offset :
@@ -1078,6 +1259,9 @@ proc spc_pretrait { args } {
        div2 "${pref_stellaire}_moinsnoir-" "${pref_flat}-smd$nb_flat" "${pref_stellaire}-t-" $intensite_moyenne $nb_stellaire
        set image_traite_1 [ lindex [ lsort -dictionary [ glob ${pref_stellaire}-t-\[0-9\]*$conf(extension,defaut) ] ] 0 ]
 
+       #--- Compensation d'un bug de libtt qui met EXPOSURE a 0 :
+       #spc_correxposure "${pref_stellaire}" "${pref_stellaire}-t-"
+
 
        #--- Affichage et netoyage :
        loadima "$image_traite_1"
@@ -1121,15 +1305,14 @@ proc spc_pretrait { args } {
 ###############################################################################
 
 proc spc_somme { args } {
-   global audace
+   global audace spcaudace
    global conf
 
    set nb_args [ llength $args]
    if { $nb_args <= 2 } {
       if { $nb_args == 1 } {
          set nom_generique [ file tail [ file rootname [ lindex $args 0 ] ] ]
-         set methsomme "moy"
-         # faire une var globalle
+         set methsomme $spcaudace(meth_somme)
       } elseif { $nb_args == 2 } {
          set nom_generique [ file tail [ file rootname [ lindex $args 0 ] ] ]
          set methsomme [ lindex $args 1 ]
@@ -1141,19 +1324,26 @@ proc spc_somme { args } {
        set liste_fichiers [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_generique}\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
        set nb_file [ llength $liste_fichiers ]
 
-       #--- Gestion de la durée totale d'exposition :
-       buf$audace(bufNo) load [ lindex $liste_fichiers 0 ]
-       #-- Pour contrecarer l'influence de smean sur date-obs 20081004 :
-       set dateobs_img1 [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
+       #--- Duree d'acquisition d'une pose :
+       set fichier1 [ file tail [ lindex $liste_fichiers 0 ] ]
+       buf$audace(bufNo) load "$audace(rep_images)/$fichier1"
        set listemotsclef [ buf$audace(bufNo) getkwds ]
-       if { [ lsearch $listemotsclef "EXPOSURE" ] !=-1 } {
-           set unit_exposure [ lindex [ buf$audace(bufNo) getkwd "EXPOSURE" ] 1 ]
-       } elseif { [ lsearch $listemotsclef "EXPTIME" ] !=-1 } {
-           set unit_exposure [ lindex [ buf$audace(bufNo) getkwd "EXPTIME" ] 1 ]
+       #-- Pour contrecarer l'influence de smean sur date-obs 20081004 :
+       if { $methsomme == "moy" } {
+          set dateobs_img1 [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
+          if { [ lsearch $listemotsclef "EXPOSURE" ] !=-1 } {
+             set unit_exposure [ lindex [ buf$audace(bufNo) getkwd "EXPOSURE" ] 1 ]
+          } elseif { [ lsearch $listemotsclef "EXPTIME" ] !=-1 } {
+             set unit_exposure [ lindex [ buf$audace(bufNo) getkwd "EXPTIME" ] 1 ]
+          } else {
+             set unit_exposure 0
+          }
+          set exposure [ expr $unit_exposure*$nb_file ]
        } else {
-           set unit_exposure 0
+          if { [ lsearch $listemotsclef "EXPOSURE" ] !=-1 } {
+             set unit_exposure [ lindex [ buf$audace(bufNo) getkwd "EXPOSURE" ] 1 ]
+          }
        }
-       set exposure [ expr $unit_exposure*$nb_file ]
 
        #--- Somme :
        ::console::affiche_resultat "Somme de $nb_file images...\n"
@@ -1163,11 +1353,15 @@ proc spc_somme { args } {
          # in out number first_index "bitpix=32"
       } elseif { $methsomme == "moy" } {
          smean "$nom_generique" "${nom_generique}-s$nb_file" $nb_file
+      } elseif { $methsomme == "sigmakappa" } {
+         ssk "$nom_generique" "${nom_generique}-s$nb_file" $nb_file $spcaudace(ssk_kappa)
+      } elseif { $methsomme == "med" } {
+         smedian "$nom_generique" "${nom_generique}-s$nb_file" $nb_file
       }
 
        #--- Calcul de EXPTIME et MID-HJD :
-       #-- Extime :
-       set exptime [ bm_exptime $nom_generique ]
+       #-- Exptime :
+       set exptime [ expr round([ bm_exptime $nom_generique ]) ]
 
        #-- Recuperation de la date de la derniere image :
        buf$audace(bufNo) load [ lindex $liste_fichiers [ expr $nb_file-1 ] ]
@@ -1181,25 +1375,32 @@ proc spc_somme { args } {
        set mjdobsdeb [ mc_date2jd $dateobs ]
 
        #-- Création de MID-HJD :
-       #- Calcul a revoir car il doit etre tenu compte de  date julienne heliocentrique qui tient compte de la position de la terre sur son orbite et la ramène au soleil.
-       set midhjd [ expr 0.5*($mjdobsend+$mjdobsdeb) ]
-       # ::console::affiche_resultat "end=$mjdobsend ; deb=$mjdobsdeb ; mid=$midhjd\n"
-       buf$audace(bufNo) setkwd [ list "MID-JD" $midhjd double "Heliocentric Julian Date at mid-exposure" "day" ]
-       if { [ lsearch $listemotsclef "DATE-END" ] !=-1 } {
-           buf$audace(bufNo) delkwd "DATE-END"
+       if { [ lsearch $listemotsclef "MID-MJD" ]==-1 } {
+          #- Calcul a revoir car il doit etre tenu compte de  date julienne heliocentrique qui tient compte de la position de la terre sur son orbite et la ramène au soleil.
+          set midhjd [ expr 0.5*($mjdobsend+$mjdobsdeb) ]
+          # ::console::affiche_resultat "end=$mjdobsend ; deb=$mjdobsdeb ; mid=$midhjd\n"
+          buf$audace(bufNo) setkwd [ list "MID-JD" $midhjd double "Heliocentric Julian Date at mid-exposure" "day" ]
        }
+
+       #-- Efface DATE-END car engendre une errur pour ? BeSS ? :
+       #if { [ lsearch $listemotsclef "DATE-END" ] !=-1 } {
+       #    buf$audace(bufNo) delkwd "DATE-END"
+       #}
+
        #--- Mise a jour du motclef EXPTIME : calcul en fraction de jour
        buf$audace(bufNo) setkwd [ list "EXPTIME" $exptime float "Total duration: dobsN-dobs1+1 exposure" "second" ]
-       buf$audace(bufNo) setkwd [ list "EXPOSURE" $exposure float "Total time of exposure" "second" ]
-       #-- Corrige l'influence de smean sur dateobs 20081004 :
-       buf$audace(bufNo) setkwd [ list "DATE-OBS" $dateobs_img1 string "" "" ]
+       if { $methsomme == "moy" } {
+          buf$audace(bufNo) setkwd [ list "EXPOSURE" $exposure float "Total time of exposure" "second" ]
+          #-- Corrige l'influence de smean sur dateobs 20081004 :
+          buf$audace(bufNo) setkwd [ list "DATE-OBS" $dateobs_img1 string "" "" ]
+       }
        buf$audace(bufNo) save "$audace(rep_images)/${nom_generique}-s$nb_file"
 
        #--- Traitement du resultat :
-       ::console::affiche_resultat "Somme sauvées sous ${nom_generique}-s$nb_file\n"
+       ::console::affiche_resultat "Somme $methsomme sauvées sous ${nom_generique}-s$nb_file\n"
        return "${nom_generique}-s$nb_file"
    } else {
-       ::console::affiche_erreur "Usage: spc_somme nom_generique_fichier ?méthode somme (add/moy)?\n\n"
+       ::console::affiche_erreur "Usage: spc_somme nom_generique_fichier ?méthode somme (add/moy/sigmakappa/med)?\n\n"
    }
 }
 #-----------------------------------------------------------------------------#
