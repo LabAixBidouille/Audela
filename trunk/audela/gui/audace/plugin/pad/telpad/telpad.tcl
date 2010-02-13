@@ -2,7 +2,7 @@
 # Fichier : telpad.tcl
 # Description : Raquette simplifiee a l'usage des telescopes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: telpad.tcl,v 1.21 2009-05-15 07:24:47 robertdelmas Exp $
+# Mise a jour $Id: telpad.tcl,v 1.22 2010-02-13 13:22:42 michelpujol Exp $
 #
 
 namespace eval telpad {
@@ -30,8 +30,6 @@ namespace eval telpad {
    # return : valeur de la propriete, ou "" si la propriete n'existe pas
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
-      switch $propertyName {
-      }
    }
 
    #------------------------------------------------------------
