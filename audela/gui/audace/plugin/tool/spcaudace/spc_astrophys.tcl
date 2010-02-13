@@ -1,7 +1,7 @@
 
 # Procédures d'exploitation astrophysique des spectres
 
-# Mise a jour $Id: spc_astrophys.tcl,v 1.5 2009-12-19 09:53:39 bmauclaire Exp $
+# Mise a jour $Id: spc_astrophys.tcl,v 1.6 2010-02-13 17:03:59 bmauclaire Exp $
 
 
 
@@ -252,6 +252,8 @@ proc spc_vradialecorr { args } {
 
    global audace
    global conf
+   #-- Precision de la mesure d'une longueur d'onde a +- 1/4 de pixel :
+   set precision 0.25
 
    if { [llength $args] == 4 || [llength $args] == 10 || [llength $args] == 13 } {
        if { [llength $args] == 4 } {
@@ -317,13 +319,13 @@ proc spc_vradialecorr { args } {
        #--- Calcul la vitesse radiale : Acker p.101 Dunod 2005.
        set delta_lambda [ expr $lambda_centre-$lambda_ref ]
        set vrad [ expr 299792.458*$delta_lambda/$lambda_ref ]
-       set delta_vrad [ expr 299792.458*$cdelt1/$lambda_ref ]
+       set delta_vrad [ expr 299792.458*$precision*$cdelt1/$lambda_ref ]
        #-- The correction hc has to apply to the measured radial velocity: Vrad, real = Vrad,measured + hc.
        set vradcorrigee [ expr $vrad+$vhelio ]
 
        #--- Formatage du résultat :
        ::console::affiche_resultat "(Vrad=$vrad km/s, Vhelio=$vhelio km/s)\n\# La vitesse radiale de l'objet est :\n\# Vrad=$vradcorrigee +- $delta_vrad km/s\n"
-       set results [ list $vradcorrigee $vrad $vhelio ]
+       set results [ list $vradcorrigee $delta_vrad $vhelio $vrad ]
        return $results
    } else {
        ::console::affiche_erreur "Usage: spc_vradialecorr profil_raies_étalonné type_raie (e/a) lambda_raie_approché lambda_réf ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
@@ -2138,7 +2140,304 @@ proc spc_vrcourbe { args } {
 #*******************************************************************************#
 
 
+#------- Debut spc_ajustplanck -----------------------------------------------#
+##########################################################
+# Procedure d'ajustement d'un continuum extrait par une fonction de Planck pour la détermination de la température
+#
+# Auteur : Patrick LAILLY, Benjamin MAUCLAIRE
+# Date de création : 18-12-2009
+# Date de mise à jour : 19-01-2010
+# Arguments : fichier .fit du profil de raie,increment pour le calcul de la temperature (1000)
+##########################################################
 
+proc spc_ajustplanck { args } {
+
+   global audace
+   global conf
+
+   set tmin 3000
+   set tmax 46000
+   set tpas 200
+   set abscissemin 800
+   set beta 1.
+   # le parametre beta definit la ponderation entre les 2 termes apparaissant
+   # dans la definition de la norme H1
+
+   set nbargs [ llength $args ] 
+   if { $nbargs==1 } {
+      set fichier [ file rootname [ lindex $args 0 ] ]
+      set tpas 1000
+   } elseif { $nbargs==2 } {
+      set fichier [ file rootname [ lindex $args 0 ] ]
+      set tpas [ lindex $args 1 ]
+   } else {
+      ::console::affiche_erreur "Usage: spc_ajustplanck3 nom_profil_calibré_fits ?pas du calcul (1000)?\n\n"
+      return ""
+   }
+   #--- pretraitements
+   set coords [ spc_fits2data $fichier ]
+   set abscisses [ lindex $coords 0 ]
+   set intensites [ lindex $coords 1 ]
+   set limits [ spc_findnnul $intensites ]
+   set i_inf [ lindex $limits 0 ]
+   set i_sup [ lindex $limits 1 ]
+   set abscisses [ lrange $abscisses $i_inf $i_sup ]
+   set lintens [ lrange $intensites $i_inf $i_sup ]
+   set len [ llength $lintens ]
+   set len_1 [ expr $len -1 ]
+   set ldiff [ list ]
+   for { set i 0 } { $i < $len_1 } { incr i } {
+      set ip1 [ expr $i + 1 ]
+      set diff [ expr [ lindex $lintens $ip1 ] - [ lindex $lintens $i ] ]
+      lappend ldiff $diff
+   }
+      
+   #-- calcul de la norme l2 et de la semi norme h1 des intensites
+   set mintens [ list ]
+   lappend mintens $lintens
+   set mdiff [ list ]
+   lappend mdiff $ldiff
+   set tintens [ gsl_mtranspose $mintens ]
+   set tdiff [ gsl_mtranspose $mdiff ]
+   set l2 [ gsl_mindex [ gsl_mmult $mintens $tintens ] 1 1 ] 
+   set h1 [ gsl_mindex [ gsl_mmult $mdiff $tdiff ] 1 1 ]
+   # ci-dessous ratio est calcule de facon a rendre le poids de la seminorme h1 beta fois plus grand 
+   # que la norme l2
+   # on definit ainsi le produit  scalaire h1
+   ::console::affiche_resultat "l2= $l2, h1= $h1, len=$len ; "
+   set ratio [ expr $beta * $l2 / $h1 ]
+   set norm2 [ expr $l2 + $ratio * $h1 ]
+   ::console::affiche_resultat "norm2= $norm2 ; "
+   #--- Effectue l'ajustement par moindre carres d'une focntion de Planck :
+   ::console::affiche_resultat "Calcul de l'ajustement...\n"
+   set i 1
+   set rmss [ list ]
+   for { set tempe $tmin } { $tempe<=$tmax } { set tempe [ expr $tempe+$tpas ] } {
+      ::console::affiche_resultat "T=$tempe ; "
+      set lplanck [ list ]
+      #set corr 0.
+      #-- calcul des echant de la courbe de planck
+      foreach abscisse $abscisses {
+	 set iplanck [ spc_planckval $tempe $abscisse ]
+	 lappend lplanck $iplanck
+      }
+      #-- calcul du coefficient multiplicatif des intensites qui permet le meilleur 
+      #-- ajustement sur la courbe de Planck pour la temperature consideree
+      set corr [ spc_scalh1 $lintens $lplanck $ratio ]
+      set alpha3 [ expr $corr / $norm2 ]
+      #-- calcul de l'ecart quadratique entre planck et les intensites renormalisees
+      set diff2 [ spc_quad $lintens $lplanck $alpha3 $ratio ]
+         
+      if { $i==1 } {
+	 lappend rmss [ expr sqrt($diff2)/$len ]
+	 set tempe [ expr $tempe+$tpas ]
+	 ::console::affiche_resultat "T=$tempe ; "
+	 set lplanck [ list ]
+	 #set corr 0.
+	 #-- calcul des echant de la courbe de planck
+	 foreach abscisse $abscisses {
+	    set iplanck [ spc_planckval $tempe $abscisse ]
+	    lappend lplanck $iplanck
+	 }
+	 #-- calcul du coefficient multiplicatif des intensites qui permet le meilleur 
+	 #-- ajustement sur la courbe de Planck pour la temperature consideree
+	 set corr [ spc_scalh1 $lintens $lplanck $ratio ]
+	 set alpha2 [ expr $corr / $norm2 ]
+	 #-- calcul de l'ecart quadratique entre planck et les intensites renormalisees
+	 set diff2 [ spc_quad $lintens $lplanck $alpha2 $ratio ]
+	 set rms [ expr sqrt($diff2)/$len ]
+	 lappend rmss $rms
+	 set tempe [ expr $tempe+$tpas ]
+	 ::console::affiche_resultat "T=$tempe, RMS=$rms ; "
+	 set lplanck [ list ]
+	 #set corr 0.
+	 #-- calcul des echant de la courbe de planck
+	 foreach abscisse $abscisses {
+	    set iplanck [ spc_planckval $tempe $abscisse ]
+	    lappend lplanck $iplanck
+	 }
+	 #-- calcul du coefficient multiplicatif des intensites qui permet le meilleur 
+	 #-- ajustement sur la courbe de Planck pour la temperature consideree
+	 set corr [ spc_scalh1 $lintens $lplanck $ratio ]
+	 set alpha3 [ expr $corr / $norm2 ]
+	 #-- calcul de l'ecart quadratique entre planck et les intensites renormalisees
+	 set diff2 [ spc_quad $lintens $lplanck $alpha3 $ratio ]
+	 lappend rmss [ expr sqrt($diff2)/$len ]
+	 set i 3
+      } else {
+	 set rms1 [ lindex $rmss 0 ]
+	 set rms2 [ lindex $rmss 1 ]
+	 set rms3 [ lindex $rmss 2 ]            
+	 set rmss [ lreplace $rmss 0 0 $rms2 ]
+	 set rmss [ lreplace $rmss 1 1 $rms3 ]
+	 set rms [ expr sqrt($diff2)/$len ]
+	 set rmss [ lreplace $rmss 2 2 $rms ]
+	 ::console::affiche_resultat "RMS=$rms ; "
+      }
+
+      #-- Comparaison :
+      set rms1 [ lindex $rmss 0 ]
+      set rms2 [ lindex $rmss 1 ]
+      set rms3 [ lindex $rmss 2 ]
+      #- ::console::affiche_resultat "RMSS=$rmss\n"
+      if { $rms2<$rms1 && $rms2<$rms3 } {
+	 ::console::affiche_resultat "\n"
+	 ::console::affiche_resultat "Température déterminée : $rms1>RMS=$rms2<$rms3\n"
+	 set tempe [ expr $tempe-$tpas ]
+	 break
+         }
+      set lastalpha $alpha3
+   }
+
+   #--- Traitement du résultat :
+   #-- normalisation des intensités
+   set newintens [ list ]
+   for { set i 0 } { $i < $len } { incr i } {
+      set newint [ expr $lastalpha * [ lindex $lintens $i ] ]
+      lappend newintens $newint
+   }
+   #-- Complement en longueur d'ondes jusqu'a 800 A pour l'affichage :
+   ::console::affiche_resultat "Calcul de la courbe de Planck de l'UV au rouge...\n"
+   set lmin [ lindex $abscisses 0 ]
+   set lmax [ lindex $abscisses [ expr $len-1 ] ]
+   set cdelt1 [ expr ($lmax-$lmin)/($len-1) ]
+   set crpix1 1
+   set nabscisses [ list ]
+   set iplancks [ list ]
+   set kmax [ expr round(($lmax-$abscissemin)/$cdelt1) ]
+   for { set k 1 } { $k<=$kmax } { incr k } {
+      set nabscisse [ spc_calpoly $k $crpix1 $abscissemin $cdelt1 0 0 ]
+      lappend nabscisses $nabscisse
+      lappend iplancks [ spc_planckval $tempe $nabscisse ]
+   }
+
+      
+      
+
+   #-- Representation graphique :
+   ::plotxy::clf
+   #::plotxy::plot $abscisses $intensites ob 0
+      
+   ::plotxy::plot $nabscisses $iplancks r 1
+   ::plotxy::hold on
+   ::plotxy::plot $abscisses $newintens b 1
+   ::plotxy::plotbackground #FFFFFF
+   ::plotxy::xlabel "Lambda (A)                                 made by SpcAudace"
+   ::plotxy::ylabel "Relative intensity"
+   ::plotxy::title "- Bleu : continuum stellaire de $fichier\n- Rouge : courbe de Planck (T=$tempe K)\n"
+   #-- Renvois :
+   ::console::affiche_resultat "Température trouvée : $tempe K\n"
+   return $tempe
+}
+#****************************************************************#
+
+
+##########################################################
+#
+# Calcul de l'ecart quadratique h1 entre planck et les intensites renormalisees par coeff :
+# Auteur : P. Lailly
+# Date : 03-01-2010
+#
+##########################################################
+
+proc spc_quad { args } {
+   set lintens [ lindex $args 0 ]
+   set lplanck [ lindex $args 1 ]
+   set coeff [ lindex $args 2 ]
+   set ratio [ lindex $args 3 ]
+   set len [ llength $lintens ]
+   set coeff2 [ expr $coeff * $coeff ]
+   if { $coeff2 == 0.0 } {
+      ::console::affiche_erreur " spc_ajustplanck : coeff2= $coeff2 , le calcul ne peut etre effectue ; augmenter tmin \n ; "
+      return 0
+   }
+   # calcul de la difference entre planck et le profil renormalise
+   set ldiff [ list ]
+   for { set i 0 } { $i < $len } { incr i } {
+      set in [ lindex $lintens $i ]
+      set pl [ lindex $lplanck $i ]
+      set diff [ expr $coeff * $in - $pl ]
+      lappend ldiff $diff
+   }
+   set quad [ spc_scalh1 $ldiff $ldiff $ratio ]
+   set quad [ expr $quad / $coeff2 ]
+   return $quad
+}	
+#*****************************************************************#
+
+
+##########################################################
+#
+# Cette proc calcule le produit scalaire h1 (pondéré par ratio) de deux vecteurs transmis sous forme de liste
+# Auteur : P. Lailly
+# Date : 03-01-2010
+#
+##########################################################
+
+proc spc_scalh1 { args } {
+
+   set list1 [ lindex $args 0 ]
+   set list2 [ lindex $args 1 ]
+   set ratio [ lindex $args 2 ]
+   set len [ llength $list1 ]
+   set len_1 [ expr $len -1 ]
+   set ldiff1 [ list ]
+   set ldiff2 [ list ]
+   for { set i 0 } { $i < $len_1 } { incr i } {
+      set ip1 [ expr $i + 1 ]
+      set diff1 [ expr [ lindex $list1 $ip1 ] - [ lindex $list1 $i ] ]
+      set diff2 [ expr [ lindex $list2 $ip1 ] - [ lindex $list2 $i ] ]
+      lappend ldiff1 $diff1
+      lappend ldiff2 $diff2
+   }
+   set m1 [ list ]
+   set m2 [ list ]
+   set mdiff1 [ list ]
+   set mdiff2 [ list ]
+   lappend m1 $list1  
+   lappend m2 $list2 
+   lappend mdiff1 $ldiff1 
+   lappend mdiff2 $ldiff2 
+   #set t1 [ gsl_mtranspose $m1 ]
+   set t2 [ gsl_mtranspose $m2 ]
+   #set tdiff1 [ gsl_mtranspose $mdiff1 ]
+   set tdiff2 [ gsl_mtranspose $mdiff2 ]
+   set l2 [ gsl_mindex [ gsl_mmult $m1 $t2 ] 1 1 ] 
+   set h1 [ gsl_mindex [ gsl_mmult $mdiff1 $tdiff2 ] 1 1 ]
+   #::console::affiche_resultat "dim matrice [ gsl_mlength [ gsl_mmult $mdiff1 $tdiff2 ] ] ; "
+   set prodscal [ expr $l2 + $ratio * $h1 ]
+   #::console::affiche_resultat "prodscal= $prodscal \n ; "
+   return $prodscal
+}
+#*****************************************************************#
+
+
+##########################################################
+# Procedure de calcul de l'intensité de la courbe de Planck pour une température et une longueur d'onde données.
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 3-01-2010
+# Date de mise à jour : 3-01-2010
+# Arguments : temperature, longueur d'onde
+##########################################################
+
+proc spc_planckval { args } {
+
+   #- set coefnorm 4.0E-15
+   #- set coefnorm 4.5E-15
+   set coefnorm 4.6E-15
+
+   if {[llength $args] == 2} {
+      set tempe [ lindex $args 0 ]
+      set abscisse [ lindex $args 1 ]
+
+      return [ expr $coefnorm*1.191043934E-16/pow($abscisse*1E-10,5)*1/(exp(1.438768660E-2/($abscisse*1E-10*$tempe))-1) ]
+   } else {
+      ::console::affiche_erreur "Usage: spc_planckval temperature longueur_d_onde\n"
+   }
+}
+#****************************************************************#
+#------- Fin spc_ajustplanck -----------------------------------------------#
 
 
 
