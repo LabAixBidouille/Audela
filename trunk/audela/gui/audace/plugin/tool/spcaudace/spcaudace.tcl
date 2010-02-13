@@ -1,4 +1,4 @@
-# Mise a jour $Id: spcaudace.tcl,v 1.13 2010-01-30 14:22:29 robertdelmas Exp $
+# Mise a jour $Id: spcaudace.tcl,v 1.14 2010-02-13 17:46:46 bmauclaire Exp $
 
 
 ####################################################################################
@@ -49,7 +49,7 @@
 #============================================================
 namespace eval ::spcaudace {
    global caption
-   package provide spcaudace 1.5.6
+   package provide spcaudace 1.5.7
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [ file dirname [info script] ] spcaudace.cap ]
@@ -178,6 +178,8 @@ proc ::spcaudace::getPluginOS { } {
 #------------------------------------------------------------
 proc ::spcaudace::getPluginProperty { propertyName } {
    switch $propertyName {
+      #- A decommenter pour fonctionner avec Audela <= 1.5.20100201 
+      # menu         { return "analysis" }
       function     { return "analysis" }
       subfunction1 { return "spectroscopy" }
       display      { return "window" }
