@@ -2,7 +2,7 @@
 # Procedures des traitements géométriques
 # Lancement en console : source $audace(rep_scripts)/spcaudace/spc_geom.tcl
 
-# Mise a jour $Id: spc_geom.tcl,v 1.4 2010-02-13 17:15:43 bmauclaire Exp $
+# Mise a jour $Id: spc_geom.tcl,v 1.5 2010-02-14 17:56:48 bmauclaire Exp $
 
 
 
@@ -1431,6 +1431,7 @@ proc spc_findtilt { args } {
    global audace caption spcaudace
    global conf
    set pi [ expr acos(-1.0) ]
+   #-- Angles>0 penchés vers le haut à droite de l'image
 
    if {[llength $args] <= 1} {
        if {[llength $args] == 1} {
@@ -1479,7 +1480,7 @@ proc spc_findtilt { args } {
           set x2 [ expr int($naxis1-1.5*$largeur) ]
           set y2 [ lindex [buf$audace(bufNo) centro $windowcoords ] 1]
           
-          #-- Angles>0 vers le haut de l'image
+          #-- Angles>0 penchés vers le haut à droite de l'image
           set pente [ expr 1.0*($y2-$y1)/($x2-$x1) ]
           set angle [ expr 180./$pi*atan($pente) ]
           #- Mise a 0 car methode peu précise : 2008-02-24
@@ -1511,7 +1512,7 @@ proc spc_findtilt { args } {
                #- 2010-02-08 :
 	       lappend liste_y [ lindex [ buf$audace(bufNo) fitgauss $windowcoords ] 5 ]
                #- 091214 :
-               # lappend liste_y [ lindex [ buf$audace(bufNo) centro $windowcoords ] 1 ]
+               #lappend liste_y [ lindex [ buf$audace(bufNo) centro $windowcoords ] 1 ]
 	       file delete -force "$audace(rep_images)/$fsortie$conf(extension,defaut)"
 	       set k [ expr $k+$xpas-1 ]
 	   }

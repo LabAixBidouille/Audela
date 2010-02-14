@@ -1,4 +1,4 @@
-# Mise a jour $Id: spcaudace.tcl,v 1.14 2010-02-13 17:46:46 bmauclaire Exp $
+# Mise a jour $Id: spcaudace.tcl,v 1.15 2010-02-14 17:56:49 bmauclaire Exp $
 
 
 ####################################################################################
@@ -177,8 +177,8 @@ proc ::spcaudace::getPluginOS { } {
 # return : valeur de la propriete ou "" si la propriete n'existe pas
 #------------------------------------------------------------
 proc ::spcaudace::getPluginProperty { propertyName } {
+   #- menu : a decommenter pour fonctionner avec Audela <= 1.5.20100201 
    switch $propertyName {
-      #- A decommenter pour fonctionner avec Audela <= 1.5.20100201 
       # menu         { return "analysis" }
       function     { return "analysis" }
       subfunction1 { return "spectroscopy" }
