@@ -2,11 +2,11 @@
 # @file     sophiecontrol.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecontrol.tcl,v 1.37 2009-11-20 22:31:36 robertdelmas Exp $
+# @version  $Id: sophiecontrol.tcl,v 1.38 2010-02-14 16:31:18 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
-# @brief   fenêtre de controle du centrage, de la focalisation et du guidage
+# @brief   fenÃªtre de controle du centrage, de la focalisation et du guidage
 #
 #------------------------------------------------------------
 namespace eval ::sophie::control {
@@ -54,7 +54,7 @@ proc ::sophie::control::run { visuNo tkbase } {
    ###set private(activeColor)                     "#77ff77" ; #--- vert tendre
    set private(activeColor)                     "#48ebff" ; #--- bleu tendre 9 221 232
    set private(inactiveColor)                   "#ff9582" ; #--- rouge tendre
-   set private(vectorLength)                    50        ; #--- nombre de valeurs conservées dans les vecteurs
+   set private(vectorLength)                    50        ; #--- nombre de valeurs conservÃ©es dans les vecteurs
    set private(listMaxIntensity)                ""
 
    #--- vecteur des abcisses
@@ -238,7 +238,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -in [ $frm.voyant getframe ] \
          -row 3 -column 0 -columnspan 2 -sticky ns -pady 4 -ipadx 20 -ipady 4
 
-      #--- Durée entre 2 poses
+      #--- DurÃ©e entre 2 poses
       LabelEntry $frm.voyant.entryRealDelay \
          -borderwidth 0 -relief flat\
          -label $::caption(sophie,realDelay) \
@@ -249,7 +249,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -in [ $frm.voyant getframe ] \
          -row 4 -column 0 -columnspan 2 -sticky w -padx 2 -pady 2
 
-      #--- Nom de l'image Bias utilisée
+      #--- Nom de l'image Bias utilisÃ©e
       LabelEntry $frm.voyant.entryBiasUse \
          -borderwidth 0 -relief flat\
          -label $::caption(sophie,biasUse) \
@@ -388,7 +388,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -row 2 -column 3 -sticky ew
 
       #--- Ecart etoile
-      label $frm.position.labelEcartEtoile -text $::caption(sophie,ecartEtoile)
+      label $frm.position.labelEcartEtoile -text "$::caption(sophie,ecartEtoile)\n$::caption(sophie,arcsec)"
       grid $frm.position.labelEcartEtoile \
          -in [ $frm.position getframe ] \
          -row 0 -column 4 -columnspan 2 -sticky ew
@@ -420,7 +420,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -row 2 -column 5 -sticky ew
 
       #--- Correction
-      label $frm.position.labelCorrection -text $::caption(sophie,correction)
+      label $frm.position.labelCorrection -text "$::caption(sophie,correction)\n$::caption(sophie,arcsec)"
       grid $frm.position.labelCorrection \
          -in [ $frm.position getframe ] \
          -row 0 -column 6 -columnspan 2 -sticky ew
@@ -679,7 +679,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             -in [ $frm.guidage.seeing getframe ] \
             -row 1 -column 3 -sticky ens
 
-      pack $frm.guidage.seeing -side top -anchor w -fill x -expand 1
+      pack $frm.guidage.seeing -side top -anchor nw -fill x -expand 0
 
       #--- Frame des graphes des ecarts et des corrections
       TitleFrame $frm.guidage.positionconsigne -borderwidth 2 -relief ridge \
@@ -702,12 +702,14 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             ###$frm.guidage.positionconsigne.correction.ecartConsigne_simple legend configure -hide no -position plotarea -anchor nw
 
             grid $frm.guidage.positionconsigne.correction.ecartConsigne_simple \
-               -row 0 -column 0 -sticky ew
+               -in $frm.guidage.positionconsigne.correction \
+               -row 0 -column 0 -sticky ewns
             grid columnconfig $frm.guidage.positionconsigne.correction 0 -weight 1
+            grid rowconfig    $frm.guidage.positionconsigne.correction 0 -weight 1
 
          pack $frm.guidage.positionconsigne.correction \
            -in [ $frm.guidage.positionconsigne getframe ] \
-           -side top -anchor w -fill x -expand 1
+           -side top -anchor w -fill both -expand 1
 
          #--- Frame pour modifier la position de la consigne
          frame $frm.guidage.positionconsigne.positionXY -borderwidth 0 -relief ridge
@@ -758,11 +760,11 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
 
             set private(guidageIncrement) 1
 
-      pack $frm.guidage.positionconsigne -side top -anchor w -fill x -expand 1
+      pack $frm.guidage.positionconsigne -side top -anchor w -fill both -expand 1
 
       #--- Frame des ecarts en alpha et delta
       TitleFrame $frm.guidage.ecarts -borderwidth 2 -relief ridge \
-         -text $::caption(sophie,ecartEtoile)
+         -text "$::caption(sophie,ecartEtoile) $::caption(sophie,arcsec)"
 
          #--- Graphe de la erreur en alpha et delta
          createGraph $visuNo $frm.guidage.ecarts.graph_simple 105
@@ -792,13 +794,15 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          grid $frm.guidage.ecarts.graph_simple \
             -in [ $frm.guidage.ecarts getframe ] \
             -row 0 -column 0 -sticky nsew
-        grid columnconfig [ $frm.guidage.ecarts getframe ] 0 -weight 1
 
-      pack $frm.guidage.ecarts -side top -anchor w -fill x -expand 1
+        grid columnconfig [ $frm.guidage.ecarts getframe ] 0 -weight 1
+        grid rowconfig    [ $frm.guidage.ecarts getframe ] 0 -weight 1
+
+      pack $frm.guidage.ecarts -side top -anchor w -fill both -expand 1
 
       #--- Frame pour visualiser les corrections du telescope en alpha et delta
       TitleFrame $frm.guidage.corrections -borderwidth 2 -relief ridge \
-         -text $::caption(sophie,correction)
+         -text "$::caption(sophie,correction) $::caption(sophie,arcsec)"
 
          #--- Graphe de la correction en delta
          createGraph $visuNo $frm.guidage.corrections.graph_simple 105
@@ -828,10 +832,11 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
 
          grid $frm.guidage.corrections.graph_simple \
             -in [ $frm.guidage.corrections getframe ] \
-            -row 1 -column 0 -sticky nsew
+            -row 0 -column 0 -sticky nsew
 
         grid columnconfig [ $frm.guidage.corrections getframe ] 0 -weight 1
-      pack $frm.guidage.corrections -side top -anchor w -fill x -expand 1
+        grid rowconfig [ $frm.guidage.corrections getframe ] 0 -weight 1
+      pack $frm.guidage.corrections -side top -anchor w -fill both -expand 1
 
     # pack $frm.guidage -side top -fill both
 }
@@ -883,7 +888,7 @@ proc ::sophie::control::setGuidingMode { guidingMode } {
             -side top -anchor w -fill x -expand 1 -pady 2
          pack $frm.guidage.positionconsigne.positionXY \
             -in [ $frm.guidage.positionconsigne getframe ] \
-            -side top -anchor w -fill x -expand 1
+            -side top -anchor w -fill x -expand 0
       }
       "FIBER_HR" -
       "FIBER_HE" {
@@ -893,7 +898,7 @@ proc ::sophie::control::setGuidingMode { guidingMode } {
          #--- j'affiche le graphe des ecarts de la consigne
          pack $frm.guidage.positionconsigne.correction \
             -in [ $frm.guidage.positionconsigne getframe ] \
-            -side top -anchor w -fill x -expand 1
+            -side top -anchor w -fill both -expand 1
       }
    }
 }
@@ -1035,9 +1040,9 @@ proc ::sophie::control::setMode { mode } {
             pack forget $frm.seeing
             pack forget $frm.centrage
             pack forget $frm.focalisation
-            pack $frm.voyant     -side top -fill x
-            pack $frm.position   -side top -fill x
-            pack $frm.guidage    -side top -fill x
+            pack $frm.voyant     -side top -fill x -expand 0
+            pack $frm.position   -side top -fill x -expand 0
+            pack $frm.guidage    -side top -fill both -expand 1
             #--- raz des vecteurs
             resetGuideVector
          }
@@ -1049,10 +1054,10 @@ proc ::sophie::control::setMode { mode } {
 }
 
 ##------------------------------------------------------------
-# setMode
-#    met a jour l'affichage en fonction du mode
+# setMinMaxDiff
+#    change la valeur du seuil des ecarts
 #
-# @param mode  mode de fonctionnement (centrage, focalisation, guidage)
+# @param minMaxValue  valeur max (la valeur min est l'opposÃ©e de la valeur max)
 # @return rien
 #------------------------------------------------------------
 proc ::sophie::control::setMinMaxDiff { minMaxValue } {
@@ -1227,7 +1232,7 @@ proc ::sophie::control::setRealDelay { delay } {
 # @param fwhmX            largeur a mi hauter sur l'axe X
 # @param fwhmY            largeur a mi hauter sur l'axe Y
 # @param background       fond du ciel
-# @param maxIntensity     intensité max
+# @param maxIntensity     intensitÃ© max
 # @param starDx           ecart de l'abcisse de l'etoile en pixel
 # @param starDy           ecart de l'ordonne de l'etoile en pixel
 # @param alphaDiff        ecart de l'ascension droite de l'etoile en arcseconde
@@ -1256,7 +1261,7 @@ proc ::sophie::control::setCenterInformation { starDetection fiberStatus originX
    #--- je mets a jour le voyant "trouDetecte"
    switch $fiberStatus {
       "DETECTED" {
-         #--- le trou est détecte
+         #--- le trou est dÃ©tecte
          $frm.voyant.trou_color_invariant configure \
             -text $::caption(sophie,trouDetecte) \
             -bg   $private(activeColor)
@@ -1278,7 +1283,7 @@ proc ::sophie::control::setCenterInformation { starDetection fiberStatus originX
       "OUTSIDE" -
       "NO_SIGNAL" -
       default {
-         #--- le trou n'est pas détecte
+         #--- le trou n'est pas dÃ©tecte
          $frm.voyant.trou_color_invariant configure \
             -text "$::caption(sophie,trouNonDetecte) ($fiberStatus)" \
             -bg   $private(inactiveColor)
@@ -1324,7 +1329,7 @@ proc ::sophie::control::setCenterInformation { starDetection fiberStatus originX
 # @param alphaDiff     ecart de l'ascension droite de l'etoile en arcseconde
 # @param deltaDiff     ecart de la declinaison de l'etoile en arcseconde
 # @param background    fond du ciel
-# @param maxIntensity  intensité max
+# @param maxIntensity  intensitÃ© max
 #
 # @return rien
 #------------------------------------------------------------
@@ -1347,7 +1352,7 @@ proc ::sophie::control::setFocusInformation { starDetection fiberStatus originX 
    #--- je mets a jour le voyant "trouDetecte"
    switch $fiberStatus {
       "DETECTED" {
-         #--- le trou est détecte
+         #--- le trou est dÃ©tecte
          $frm.voyant.trou_color_invariant configure \
             -text $::caption(sophie,trouDetecte) \
             -bg   $private(activeColor)
@@ -1369,7 +1374,7 @@ proc ::sophie::control::setFocusInformation { starDetection fiberStatus originX 
       "OUTSIDE" -
       "NO_SIGNAL" -
       default {
-         #--- le trou n'est pas détecte
+         #--- le trou n'est pas dÃ©tecte
          $frm.voyant.trou_color_invariant configure \
             -text "$::caption(sophie,trouNonDetecte) ($fiberStatus)" \
             -bg   $private(inactiveColor)
@@ -1433,7 +1438,7 @@ proc ::sophie::control::setFocusInformation { starDetection fiberStatus originX 
 # @param deltaCorrection  correction en delta (en arcsec)
 # @param originDx         correction de la consigne en X  (en pixel)
 # @param originDy         correction de la consigne en Y  (en pixel)
-# @param maxIntensity     intensité max
+# @param maxIntensity     intensitÃ© max
 # @return null
 #------------------------------------------------------------
 proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX originY starX starY starDx starDy alphaCorrection deltaCorrection originDx originDy maxIntensity} {
@@ -1455,7 +1460,7 @@ proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX 
    #--- je mets a jour le voyant "trouDetecte"
    switch $fiberStatus {
       "DETECTED" {
-         #--- le trou est détecte
+         #--- le trou est dÃ©tecte
          $frm.voyant.trou_color_invariant configure \
             -text $::caption(sophie,trouDetecte) \
             -bg   $private(activeColor)
@@ -1478,7 +1483,7 @@ proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX 
       "NO_SIGNAL" -
       "OUTSIDE" -
       default {
-         #--- le trou n'est pas détecte
+         #--- le trou n'est pas dÃ©tecte
          $frm.voyant.trou_color_invariant configure \
             -text "$::caption(sophie,trouNonDetecte) ($fiberStatus)" \
             -bg   $private(inactiveColor)
@@ -1508,46 +1513,65 @@ proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX 
    }
 
    #--- j'ajoute la valeur le graphe sophieEcartConsigneX
-   ::sophieEcartConsigneX append $originDx
    if { [::sophieEcartConsigneX length] >= $private(vectorLength) } {
       #--- je supprime le point le plus ancien
       ::sophieEcartConsigneX delete 0
    }
+   ::sophieEcartConsigneX append $originDx
 
    #--- j'ajoute la valeur le graphe sophieEcartConsigneY
-   ::sophieEcartConsigneY append $originDy
    if { [::sophieEcartConsigneY length] >= $private(vectorLength) } {
       #--- je supprime le point le plus ancien
       ::sophieEcartConsigneY delete 0
    }
+   ::sophieEcartConsigneY append $originDy
 
    #--- j'ajoute la valeur le graphe sophieEcartEtoileX
-   ::sophieEcartEtoileX append $starDx
    if { [::sophieEcartEtoileX length] >= $private(vectorLength) } {
+      set private(alphaQuadraticSum) [expr $private(alphaQuadraticSum) - [::sophieEcartEtoileX index 0] * [::sophieEcartEtoileX index 0]]
       #--- je supprime le point le plus ancien
       ::sophieEcartEtoileX delete 0
    }
+   ::sophieEcartEtoileX append $starDx
+   set private(alphaQuadraticSum) [expr $private(alphaQuadraticSum) + $starDx * $starDx]
 
    #--- j'ajoute la valeur le graphe sophieEcartEtoileY
-   ::sophieEcartEtoileY append $starDy
    if { [::sophieEcartEtoileY length] >= $private(vectorLength) } {
+      set private(deltaQuadraticSum) [expr $private(deltaQuadraticSum) - [::sophieEcartEtoileY index 0] * [::sophieEcartEtoileY index 0] ]
       #--- je supprime le point le plus ancien
       ::sophieEcartEtoileY delete 0
    }
+   ::sophieEcartEtoileY append $starDy
+   set private(deltaQuadraticSum) [expr $private(deltaQuadraticSum) + $starDy * $starDy]
 
    #--- j'ajoute la valeur le graphe alphaCorrection
-   ::sophieCorrectionAlpha append $alphaCorrection
    if { [::sophieCorrectionAlpha length] >= $private(vectorLength) } {
       #--- je supprime le point le plus ancien
       ::sophieCorrectionAlpha delete 0
    }
+   ::sophieCorrectionAlpha append $alphaCorrection
 
    #--- j'ajoute la valeur le graphe deltaCorrection
-   ::sophieCorrectionDelta append $deltaCorrection
    if { [::sophieCorrectionDelta length] >= $private(vectorLength) } {
       #--- je supprime le point le plus ancien
       ::sophieCorrectionDelta delete 0
    }
+   ::sophieCorrectionDelta append $deltaCorrection
+
+   #--- j'affiche le RMS dans le titre de la frame "ecart etoile/consigne"
+   if { [::sophieEcartEtoileX length] != 0 } {
+      set alphaRms [expr sqrt($private(alphaQuadraticSum)/[::sophieEcartEtoileX length]) ]
+   } else {
+      set alphaRms 0
+   }
+   if { [::sophieEcartEtoileY length] != 0 } {
+      set deltaRms [expr sqrt($private(deltaQuadraticSum)/[::sophieEcartEtoileY length]) ]
+   } else {
+      set deltaRms 0
+   }
+   set title [format "$::caption(sophie,ecartEtoile)  RMS alpha=%6.2f  RMS Delta=%6.2f" $alphaRms $deltaRms]
+   $frm.guidage.ecarts configure -text $title
+
 }
 
 ##------------------------------------------------------------
@@ -1654,7 +1678,13 @@ proc ::sophie::control::resetFocusVector {  } {
    }
 }
 
+#------------------------------------------------------------
+# resetGuideVector
+#    remise a zero des vecteurs utilises dans les graphe de guidage
+#
+#------------------------------------------------------------
 proc ::sophie::control::resetGuideVector {  } {
+   variable private
    #--- raz des vecteurs
 
    if { [::sophieEcartConsigneX length] > 0 } {
@@ -1673,8 +1703,12 @@ proc ::sophie::control::resetGuideVector {  } {
       ::sophieCorrectionAlpha delete 0:end
    }
    if { [::sophieCorrectionDelta length] > 0 } {
-      sophieCorrectionDelta delete 0:end
+      ::sophieCorrectionDelta delete 0:end
    }
+
+   set private(alphaQuadraticSum) 0
+   set private(deltaQuadraticSum) 0
+
 }
 
 #############################################################
