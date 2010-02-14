@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: dslr.tcl,v 1.40 2010-02-14 13:25:25 robertdelmas Exp $
+# Mise à jour $Id: dslr.tcl,v 1.41 2010-02-14 16:13:47 robertdelmas Exp $
 #
 
 namespace eval ::dslr {
@@ -116,7 +116,7 @@ proc ::dslr::confToWidget { } {
    set private(longueposeport)       $conf(dslr,longueposeport)
    set private(longueposelinkbit)    $conf(dslr,longueposelinkbit)
    set private(longueposestartvalue) $conf(dslr,longueposestartvalue)
-  ### set private(longueposestopvalue)  $conf(dslr,longueposestopvalue)
+   set private(longueposestopvalue)  $conf(dslr,longueposestopvalue)
    set private(statut_service)       $conf(dslr,statut_service)
    set private(mirh)                 $conf(dslr,mirh)
    set private(mirv)                 $conf(dslr,mirv)
@@ -136,7 +136,7 @@ proc ::dslr::widgetToConf { camItem } {
    set conf(dslr,longueposeport)       $private(longueposeport)
    set conf(dslr,longueposelinkbit)    $private(longueposelinkbit)
    set conf(dslr,longueposestartvalue) $private(longueposestartvalue)
-   set conf(dslr,longueposestopvalue)  [ expr $private(longueposestartvalue) == 0 ]
+   set conf(dslr,longueposestopvalue)  [ expr { 1- $private(longueposestartvalue) } ]
    set conf(dslr,statut_service)       $private(statut_service)
    set conf(dslr,mirh)                 $private(mirh)
    set conf(dslr,mirv)                 $private(mirv)
