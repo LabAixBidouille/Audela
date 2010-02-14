@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_2.tcl
 # Description : Script regroupant les fonctionnalites du menu Affichage
-# Mise a jour $Id: aud_menu_2.tcl,v 1.24 2010-01-30 13:48:59 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_2.tcl,v 1.25 2010-02-14 17:40:54 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -397,7 +397,7 @@ namespace eval ::audace {
       global help
 
       #---
-      ::audace::showHelpItem "$help(dir,affichage)" "1020transfert.htm"
+      ::audace::showHelpItem "$help(dir,affichage)" "1040transfert.htm"
    }
 
    #
@@ -813,7 +813,7 @@ namespace eval ::seuilWindow {
       global help
 
       #---
-      ::audace::showHelpItem "$help(dir,affichage)" "1030seuils.htm"
+      ::audace::showHelpItem "$help(dir,affichage)" "1050seuils.htm"
    }
 
    #
@@ -1105,7 +1105,7 @@ namespace eval ::seuilCouleur {
       global help
 
       #---
-      ::audace::showHelpItem "$help(dir,affichage)" "1035balance_rvb.htm"
+      ::audace::showHelpItem "$help(dir,affichage)" "1060balance_rvb.htm"
    }
 
    #
