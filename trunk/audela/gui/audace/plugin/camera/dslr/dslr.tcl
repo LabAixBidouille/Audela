@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.39 2010-01-30 13:52:18 robertdelmas Exp $
+# Mise à jour $Id: dslr.tcl,v 1.40 2010-02-14 13:25:25 robertdelmas Exp $
 #
 
 namespace eval ::dslr {
@@ -178,7 +178,7 @@ proc ::dslr::fillConfigPage { frm camItem } {
    }
 
    #--- Je constitue la liste des liaisons pour la longuepose
-   set list_combobox2 [ ::confLink::getLinkLabels { "parallelport" "quickremote" "external" } ]
+   set list_combobox2 [ ::confLink::getLinkLabels { "parallelport" "quickremote" "serialport" "external" } ]
 
    #--- Je verifie le contenu de la liste
    if { [ llength $list_combobox2 ] > 0 } {
@@ -261,28 +261,6 @@ proc ::dslr::fillConfigPage { frm camItem } {
                      "- $caption(dslr,longuepose) - $caption(dslr,camera)"
                }
             pack $frm.frame1.frame7.frame8.configure_longuepose -side left -pady 10 -ipadx 10 -ipady 1
-
-            #--- Je constitue la liste des liaisons pour la longuepose
-            set list_combobox2 [ ::confLink::getLinkLabels { "parallelport" "quickremote" "serialport" } ]
-
-            #--- Je verifie le contenu de la liste
-            if { [ llength $list_combobox2 ] > 0 } {
-               #--- Si la liste n'est pas vide,
-               #--- Je verifie que la valeur par defaut existe dans la liste
-               if { [ lsearch -exact $list_combobox2 $private(longueposeport) ] == -1 } {
-                  #--- Si la valeur par defaut n'existe pas dans la liste,
-                  #--- Je la remplace par le premier item de la liste
-                  set private(longueposeport) [ lindex $list_combobox2 0 ]
-               }
-            } else {
-               #--- Si la liste est vide
-               #--- Je desactive l'option longue pose
-               set private(longueposeport) ""
-               set private(longuepose) 0
-               #--- J'empeche de selectionner l'option longue
-               $frm.frame1.frame7.frame8.moyen_longuepose configure -state disable
-            }
-
 
             #--- Choix du port ou de la liaison
             ComboBox $frm.frame1.frame7.frame8.moyen_longuepose \
@@ -597,7 +575,6 @@ proc ::dslr::configureAPNLinkLonguePose { } {
       set private(longueposelinkbit) [lindex $bitList 0 ]
    }
 
-
    #--- Je positionne startvalue par defaut en fonction du type de liaison
    switch [ ::confLink::getLinkNamespace $private(longueposeport) ] {
       "parallelport" {
@@ -610,7 +587,6 @@ proc ::dslr::configureAPNLinkLonguePose { } {
          set private(longueposestartvalue) "1"
       }
    }
-
 }
 
 #
@@ -685,10 +661,8 @@ proc ::dslr::setLoadParameters { camItem } {
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $audace(base).telecharge_image
 
-
    #--- Mise a jour des radio boutons en fonction des parametres deja choisis
    ::dslr::utiliserCF $camItem
-
 }
 
 #
@@ -724,7 +698,6 @@ proc ::dslr::utiliserCF { camItem } {
       $audace(base).telecharge_image.rad3 configure -state normal
       $audace(base).telecharge_image.supprime_image configure -state normal
    }
-
 }
 
 #
