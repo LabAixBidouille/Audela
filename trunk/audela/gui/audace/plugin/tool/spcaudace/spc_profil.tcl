@@ -20,7 +20,7 @@
 # et renommer ce fichier mauclaire.tcl ;-)
 
 
-# Mise a jour $Id: spc_profil.tcl,v 1.6 2009-12-19 09:53:39 bmauclaire Exp $
+# Mise a jour $Id: spc_profil.tcl,v 1.7 2010-02-14 17:56:48 bmauclaire Exp $
 
 
 
@@ -1574,7 +1574,7 @@ proc spc_profilx { args } {
 	::console::affiche_resultat "Profil d'intensité de la ligne sauvé sous ${fichier}_spcx$conf(extension,defaut)\n"
 	return ${fichier}_spcx
     } else {
-	::console::affiche_erreur "Usage: spc_profilx image_fits abscisse_x_de_la_ligne\n\n"
+	::console::affiche_erreur "Usage: spc_profilx image_fits abscisse_x_de_la_ligne demi_epaisseur_binning\n\n"
     }
 }
 ###############################################################

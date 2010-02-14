@@ -1,7 +1,7 @@
 
 # Procédures d'exploitation astrophysique des spectres
 
-# Mise a jour $Id: spc_astrophys.tcl,v 1.6 2010-02-13 17:03:59 bmauclaire Exp $
+# Mise a jour $Id: spc_astrophys.tcl,v 1.7 2010-02-14 17:56:48 bmauclaire Exp $
 
 
 
@@ -2171,7 +2171,7 @@ proc spc_ajustplanck { args } {
       set fichier [ file rootname [ lindex $args 0 ] ]
       set tpas [ lindex $args 1 ]
    } else {
-      ::console::affiche_erreur "Usage: spc_ajustplanck3 nom_profil_calibré_fits ?pas du calcul (1000)?\n\n"
+      ::console::affiche_erreur "Usage: spc_ajustplanck nom_profil_calibré ?pas du calcul (1000)?\n\n"
       return ""
    }
    #--- pretraitements

@@ -3,7 +3,7 @@
 #
 ####################################################################
 
-# Mise a jour $Id: spc_var.tcl,v 1.16 2010-02-13 17:46:46 bmauclaire Exp $
+# Mise a jour $Id: spc_var.tcl,v 1.17 2010-02-14 17:56:49 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -105,7 +105,7 @@ set spcaudace(methsky) "med"
 set spcaudace(methbin) "rober"
 
 
-#--- Options prédéfinies :
+#--- Options prédéfinies (par defaut add, options=add, moy, med, sigmakappa) :
 set spcaudace(meth_somme) "add"
 
 
