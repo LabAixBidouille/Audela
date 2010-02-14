@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: remotectrl.tcl,v 1.34 2010-02-07 18:50:17 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.tcl,v 1.35 2010-02-14 17:58:47 robertdelmas Exp $
 #
 
 #============================================================
@@ -148,12 +148,12 @@ namespace eval ::remotectrl {
       }
 
       set variables [ list ip1 port1 ftp_port1 ip2 port2 path_img ]
-      set values [ list "[Ip]" "5000" "21" "[Ip]" 5001" "21" ]
+      set values [ list "[Ip]" "4000" "21" "[Ip]" 4001" "21" ]
       foreach var $variables val $values {
          if { ! [ info exists parametres($var) ] } { set parametres($var) $val }
       }
       #--- Dans le cas de l'utilisation d'un dossier partage sous Windows uniquement
-      ### if { ! [ info exists parametres(path_img) ] } { set parametres(path_img) "[pwd]/" }
+      ### if { ! [ info exists parametres(path_img) ] }  { set parametres(path_img) "[pwd]/" }
    }
 
    proc enregistrementVar { } {
@@ -473,10 +473,9 @@ proc remotectrlBuildIF { This } {
             set texte "[ format $caption(remotectrl,ip_port) $panneau(remotectrl,ip2) $panneau(remotectrl,port2) ]"
             append  texte "\n$caption(remotectrl,wizConClient,connect) \n"
             append texte "[ format $caption(remotectrl,ip_port) $panneau(remotectrl,ip1) $panneau(remotectrl,port1) ]"
-            DynamicHelp::add $This.fraconf.labURL2 \
-               -text $texte
+            DynamicHelp::add $This.fraconf.labURL2 -text $texte
 
-            #--   spécialise les panneaux
+            #--   specialise les panneaux
             set camName [ searchCamTel ]
             switch -exact $camName {
                "DSLR"   {  source [ file join $audace(rep_plugin) tool remotectrl rmtctrlapn.cap ]
@@ -631,21 +630,21 @@ proc remotectrlBuildIF { This } {
    #-- parametre : nom court (avec extension) de l'image    #
    ##########################################################
    proc transferFTP { nom } {
-      global audace panneau
+   global audace panneau
 
-      send "catch { set ::ftpd::port \$panneau(remotectrl,ftp_port1) }"
-      send "catch { set ::ftpd::cwd \$audace(rep_images) }"
+       send "catch { set ::ftpd::port \$panneau(remotectrl,ftp_port1) }"
+       send "catch { set ::ftpd::cwd \$audace(rep_images) }"
 
-      set error [catch {package require ftp} msg]
-      if {$error==0} {
+       set error [catch {package require ftp} msg]
+       if {$error==0} {
          set error [catch {::ftp::Open $panneau(remotectrl,ip1) anonymous software.audela@free.fr -timeout 15} msg]
-         if {($error==0)} {
-            set ftpid $msg
-            ::ftp::Type $ftpid binary
-            ::ftp::Get $ftpid $nom $audace(rep_images)
-            ::ftp::Close $ftpid
-         }
-      }
+            if {($error==0)} {
+               set ftpid $msg
+               ::ftp::Type $ftpid binary
+               ::ftp::Get $ftpid $nom $audace(rep_images)
+               ::ftp::Close $ftpid
+            }
+       }
    }
 
    ##########################################################
@@ -686,7 +685,7 @@ proc remotectrlBuildIF { This } {
    }
 
    ##########################################################
-   #-- Retourne l'IP locale formatée                       #
+   #-- Retourne l'IP locale formatee                        #
    ##########################################################
    #--   retourne l'ip dans le reseau
    proc Ip {} {
@@ -741,4 +740,3 @@ proc remotectrlBuildIF { This } {
 
       return $camName
    }
-

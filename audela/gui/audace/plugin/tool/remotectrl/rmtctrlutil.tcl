@@ -2,27 +2,23 @@
 # Fichier : rmtctrlutil.tcl
 # Description : Script pour la configuration de l'outil
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: rmtctrlutil.tcl,v 1.2 2010-02-07 18:51:54 robertdelmas Exp $
+# Mise a jour $Id: rmtctrlutil.tcl,v 1.3 2010-02-14 17:58:49 robertdelmas Exp $
 #
 
    #########################################################################
    #--   Au lancement collecte les donnees sur la camera et les memorise   #
    #########################################################################
    proc searchInfoDslr {} {
-      global conf audace panneau caption
+      global panneau caption
 
       #--   raccourci
       set camNo $panneau(remotectrl,camNo)
 
-      #--   desactive le systeme_service
-      send "cam$camNo systemservice 0"
-
-      #--   fixe drivemode
+      #--   fixe drivemode a 0
       send "cam$camNo drivemode 0"
 
       #--   ouvre la liste des types de declenchement
-      set panneau(remotectrl,longueposeLabels) \
-         [ list "$caption(remotectrl,longuepose,usb)" ]
+      set panneau(remotectrl,poseLabels) [ list "<30" ]
 
       #--   memorise l'etat
       set panneau(remotectrl,status) [ list "0" ]
@@ -31,8 +27,12 @@
       if [ send "cam$camNo longuepose" ] {
 
          #--   complete la liste des types de declenchement
-         lappend panneau(remotectrl,longueposeLabels) \
-            "$caption(remotectrl,longuepose,lp)"
+         lappend panneau(remotectrl,poseLabels) ">30"
+
+         set panneau(remotectrl,linkNo) [ send "cam$camNo longueposelinkno" ]
+         set panneau(remotectrl,bitNo) [ send "cam$camNo longueposelinkbit" ]
+         set panneau(remotectrl,startvalue) [ send "cam$camNo longueposestartvalue" ]
+         set panneau(remotectrl,stopvalue) [ send "cam$camNo longueposestopvalue" ]
 
          #--   memorise l'etat
          set panneau(remotectrl,status) [ list "1" ]
@@ -43,27 +43,27 @@
          [ list "$caption(remotectrl,stock,cf)" ]
 
       #--   complete l'etat
-      lappend panneau(remotectrl,status) "0"
+      lappend panneau(remotectrl,status) "1"
 
       #--   liste les autres modes de stockage
       if ![ TestEntier $panneau(remotectrl,path_img) ] {
 
          #--   teste l'acces au lecteur reseau
          set file [ file join $panneau(remotectrl,path_img) test.log ]
-         if ![ catch {
-            set fd [ open $file w+ ]
-            puts $fd "test"
-            close $fd
-            file delete $file
-         } msg ] {
+         set err [ writeLog $file "test" ]
+         if { $err == "0" } {
 
+            #--   ajoute le lecteur reseau a la liste
             lappend panneau(remotectrl,stockLabels) \
                "$caption(remotectrl,drive) $panneau(remotectrl,path_img)"
 
+            #--   detruit le fichier test
+            file delete $file
+
          } else {
 
-            tk_messageBox -title $caption(remotectrl,attention)\
-               -icon error -type ok -message $caption(remotectrl,no_acces)
+            #--   message de non acces
+            avertiUser "no_acces"
          }
 
       } else {
@@ -78,18 +78,22 @@
       #--   finalise l'etat
       if { [ llength $panneau(remotectrl,stockLabels) ] > "1" } {
            set panneau(remotectrl,status) \
-            [ lreplace $panneau(remotectrl,status) end end "1" ]
+            [ lreplace $panneau(remotectrl,status) end end "0" ]
       }
 
       #--   liste les formats possibles
-      set panneau(remotectrl,qualityLabels) \
-         [ send "cam$camNo quality list" ]
+      set panneau(remotectrl,qualityLabels) [ send "cam$camNo quality list" ]
 
-      #--   liste les modes Rafale (bracketing)
+      #--   liste les modes de prise de vue
       set panneau(remotectrl,bracketLabels) \
          [ list "$caption(remotectrl,bracket,one)" \
             "$caption(remotectrl,bracket,serie)" \
-            "$caption(remotectrl,bracket,rafale)" ]
+            "$caption(remotectrl,bracket,continu)" ]
+
+      #--   ajoute le mode Rafale si la longuepose existe
+      if { [ llength $panneau(remotectrl,poseLabels) ] == "2" } {
+         lappend panneau(remotectrl,bracketLabels) "$caption(remotectrl,bracket,rafale)"
+      }
 
       #--   liste les pas du bracketing
       set panneau(remotectrl,stepLabels) \
@@ -115,40 +119,142 @@
       apnBuildIF
    }
 
+   ###################################################################
+   #-- Complete le panneau d'acquisition                             #
+   ###################################################################
+   proc apnBuildIF {} {
+      global panneau caption
+      variable Dslr
+      variable This
+
+      #--   changement de variable
+      set Dslr $This.fra6.dslr
+
+      #--   le frame cantonnant le DSLR
+      frame $Dslr -borderwidth 1 -relief sunken
+      pack $Dslr
+      ::blt::table $Dslr
+
+      #---   construit les menubutton
+      foreach var { stock quality step bracket pose } {
+         buildMenuButton $var
+      }
+      $Dslr.step configure -textvar "" -text $caption(remotectrl,step) -width 2
+      $Dslr.pose configure -width 2
+
+      #--   label pour afficher le format de l'image
+      label $Dslr.format -textvariable panneau(remotectrl,format) \
+         -width 4 -borderwidth 1
+
+      #--   construit le bouton 'Test'
+      button $Dslr.test -relief raised -width 10 -borderwidth 2 \
+         -text $caption(remotectrl,test) -command "::remotectrl::testTime"
+
+      #--   construit les entrees de donnees
+      foreach var { nom nb_poses delai intervalle } {
+         buildLabelEntry $var
+      }
+      $Dslr.nom configure -labelwidth 6 -width 10
+      bind $Dslr.nom <Leave> { ::remotectrl::test_bracketing ; ::remotectrl::test_nom }
+
+      #--   la combobox pour le temps de pose
+      ComboBox $Dslr.exptime -borderwidth 1 -width 8 -relief sunken \
+         -height 10 -justify center \
+         -textvariable panneau(remotectrl,time) \
+         -modifycmd "::remotectrl::test_bracketing ; ::remotectrl::test_exptime"
+      bind $Dslr.exptime <Leave> { ::remotectrl::test_bracketing ; ::remotectrl::test_exptime }
+
+      #--   checkbutton pour la visualisation
+      checkbutton $Dslr.see -text $caption(remotectrl,see) \
+         -indicatoron "1" -onvalue "1" -offvalue "0" \
+         -variable ::remotectrl::see
+
+      #--   checkbutton pour le fenetrage
+      checkbutton $Dslr.wind -text $caption(remotectrl,wind) \
+         -indicatoron "1" -onvalue "1" -offvalue "0" \
+         -variable ::remotectrl::wind \
+         -command "::remotectrl::getWindow"
+
+      #--   label pour afficher les etapes
+      label $Dslr.state -textvariable panneau(remotectrl,action) \
+         -width 14 -borderwidth 2 -relief sunken
+
+      #--   packaging des widgets
+      ::blt::table $Dslr \
+         $Dslr.stock 0,0 -cspan 2 \
+         $Dslr.format 1,0 \
+         $Dslr.quality 1,1 \
+         $Dslr.step 2,0 \
+         $Dslr.bracket 2,1 \
+         $Dslr.test 3,0 -cspan 2 \
+         $Dslr.state 4,0 -cspan 2 \
+         $Dslr.nom 5,0 -cspan 2 \
+         $Dslr.nb_poses 6,0 -cspan 2 \
+         $Dslr.pose 7,0 \
+         $Dslr.exptime 7,1 \
+         $Dslr.delai 8,0 -cspan 2 \
+         $Dslr.intervalle 9,0 -cspan 2 \
+         $Dslr.see 10,0 -cspan 2 \
+         $Dslr.wind 11,0 -cspan 2
+         ::blt::table configure $Dslr r* -pady 2
+
+      #--   ajoute les bulles d'aide
+      foreach child { step test nom nb_poses pose delai wind } {
+         DynamicHelp::add $Dslr.$child -text $caption(remotectrl,help$child)
+      }
+
+      initPar
+
+      #--   demarre sur la configuration 'Une image'
+      configImg
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $Dslr
+   }
+
    ############################################################################
    #--   Initialise les variables                                             #
    ############################################################################
    proc initPar {} {
-      global panneau
-      variable Dslr
+      global audace panneau caption
 
-      #--  initialise les variables saisies
-      lassign { "" "1" "0" "0" "0" " " } ::remotectrl::nom \
-         ::remotectrl::nb_poses ::remotectrl::delai ::remotectrl::intervalle \
-         panneau(remotectrl,intervalle_mini) panneau(remotectrl,action)
-
-      #--   selectionne le mode de declenchement de niveau le plus eleve
-      set panneau(remotectrl,longuepose) \
-         [ lindex $panneau(remotectrl,longueposeLabels) end ]
+      lassign { "" "0" "0" "0" " " } ::remotectrl::nom ::remotectrl::delai \
+         panneau(remotectrl,intervalle_mini) panneau(remotectrl,test) \
+         panneau(remotectrl,action)
 
       #--   selectionne le mode de stockage de niveau le plus eleve
-      set panneau(remotectrl,stock) \
-         [ lindex $panneau(remotectrl,stockLabels) end ]
+      set panneau(remotectrl,stock) [ lindex $panneau(remotectrl,stockLabels) end ]
 
       #--   selectionne le format actuel d'image
-      set panneau(remotectrl,quality) \
-         [ send "cam$panneau(remotectrl,camNo) quality" ]
+      set panneau(remotectrl,quality) [ send "cam$panneau(remotectrl,camNo) quality" ]
 
       #--   indique le format (jpeg ou fits)
       ::remotectrl::configFormat
 
       #--   selectionne le mode de prise de vue 'Une image"
-      set panneau(remotectrl,bracket) \
-         [ lindex $panneau(remotectrl,bracketLabels) 0 ]
+      set panneau(remotectrl,bracket) [ lindex $panneau(remotectrl,bracketLabels) 0 ]
 
-      #-- selectionne le nombre de pas "0"
-      set panneau(remotectrl,step) \
-         [ lindex $panneau(remotectrl,stepLabels) 6 ]
+      #--   selectionne le nombre de pas "0"
+      set panneau(remotectrl,step) [ lindex $panneau(remotectrl,stepLabels) 6 ]
+
+       #--   selectionne le mode de declenchement de niveau le plus eleve
+      set l [ llength  $panneau(remotectrl,poseLabels) ]
+      incr l "-1"
+      set panneau(remotectrl,pose) [ lindex $panneau(remotectrl,poseLabels) $l ]
+
+      #--   selectionne la gamme de temps d'exposition
+      configTimeScale $l
+
+      #--   initalise le fichier log
+      set rep "$audace(rep_images)"
+      if ![ TestEntier $panneau(remotectrl,path_img) ] {
+          set rep $panneau(remotectrl,path_img)
+      }
+      set nom "DSLR remotectrl "
+      set date [clock format [clock seconds] -format "%A %d %B %Y"]
+      append nom $date ".log"
+      set panneau(remotectrl,log) [ file join $rep $nom ]
+      writeLog $panneau(remotectrl,log) "$caption(remotectrl,ouvsess)"
    }
 
    ############################################################################
@@ -156,39 +262,44 @@
    #  appelee par ApnBuildIF                                                  #
    ############################################################################
    proc buildMenuButton { var } {
-      global panneau caption
+      global panneau
       variable Dslr
 
       #--   raccourcis
       set data $panneau(remotectrl,${var}Labels)
       set camNo $panneau(remotectrl,camNo)
 
-      menubutton $Dslr.$var -menu $Dslr.$var.m \
-        -relief raised -width 10 -borderwidth 2 \
-         -textvar panneau(remotectrl,$var)
+      menubutton $Dslr.$var -menu $Dslr.$var.m -relief raised \
+         -width 10 -borderwidth 2 -textvar panneau(remotectrl,$var)
       menu $Dslr.$var.m -tearoff 0
 
       #--   specifie les commandes associees a chaque item du menu
       foreach label $data {
          set indice [ lsearch $data $label ]
          switch -exact $var {
-          "bracket"     {  switch $indice {
-                              "0"   {  set cmd "::remotectrl::configImg" }
-                              "1"   {  set cmd "::remotectrl::configSerie" }
-                              "2"   {  set cmd "::remotectrl::configRafale" }
-                           }
+          "bracket"  {  switch $indice {
+                           "0"   {  set cmd "::remotectrl::configImg ;
+                                    set panneau(remotectrl,test) 0"
+                                 }
+                           "1"   {  set cmd "::remotectrl::configSerie ;
+                                    set panneau(remotectrl,test) 0"
+                                 }
+                           "2"   {  set cmd "::remotectrl::configContinu" }
+                           "3"   {  set cmd "::remotectrl::configRafale" }
                         }
-          "longuepose"  {  switch $indice {
-                              "0"  {  set cmd "::remotectrl::switchLonguepose $camNo 0" }
-                              "1"  {  set cmd "::remotectrl::switchLonguepose $camNo 1" }
+                     }
+          "pose"     {  switch $indice {
+                              "0"  {  set cmd "::remotectrl::switchExpTime 0" }
+                              "1"  {  set cmd "::remotectrl::switchExpTime 1" }
                            }
                         }
           "quality"     {  set cmd "send \"cam$camNo quality $label\" ;
-                           ::remotectrl::configFormat" }
-          "step"        {  set cmd "::remotectrl::test_rafale" }
+                              ::remotectrl::configFormat"
+                        }
+          "step"        {  set cmd "::remotectrl::test_bracketing" }
           "stock"       {  switch $indice {
-                              "0"     { set cmd "::remotectrl::switchStorage $camNo 0" }
-                              default { set cmd "::remotectrl::switchStorage $camNo 1" }
+                              "0"     { set cmd "::remotectrl::switchStock 1" }
+                              default { set cmd "::remotectrl::switchStock 0" }
                            }
                         }
          }
@@ -198,16 +309,51 @@
          }
    }
 
+   ######################################################################
+   #--   Gere l'etat des widgets lies a DSLR                            #
+   ######################################################################
+   proc setWindowState { state } {
+      global panneau
+      variable Dslr
+      variable This
+
+      set children [ list stock quality step bracket test \
+         nom nb_poses pose exptime delai intervalle see wind ]
+
+      foreach child $children {
+         $Dslr.$child configure -state $state
+      }
+      $This.fra6.but1 configure -state $state
+
+      if { $state == "normal" } {
+         set k [ lsearch $panneau(remotectrl,bracketLabels) $panneau(remotectrl,bracket) ]
+         switch -exact  $k {
+            "0"   { configImg }
+            "1"   { configSerie }
+            "2"   { configContinu }
+            "3"   { configRafale }
+         }
+      }
+   }
+
    #########################################################################
    #--   Configure le panneau pour une image seule                         #
    #  appelee par le bouton de mode de prise de vue et par setWindowState  #
    #########################################################################
    proc configImg { } {
+      global panneau
       variable Dslr
 
       configStock
-      configLonguepose
-      foreach child { step nb_poses intervalle } {
+      configPose
+      configIntervalle "1"
+
+      foreach child { test nom } {
+         $Dslr.$child configure -state normal
+      }
+
+      set ::remotectrl::nb_poses "1"
+      foreach child { step nb_poses } {
          $Dslr.$child configure -state disabled
       }
    }
@@ -217,12 +363,42 @@
    #  appelee par le bouton de mode de prise de vue et par setWindowState  #
    #########################################################################
    proc configSerie { } {
+      global panneau
       variable Dslr
 
       configStock
-      configLonguepose
-      foreach child { step nom nb_poses } {
+      configPose
+      configIntervalle "2"
+
+      set ::remotectrl::nb_poses "2"
+      foreach child { test nom nb_poses } {
          $Dslr.$child configure -state normal
+      }
+
+      set etat "normal"
+      if { $panneau(remotectrl,pose) == ">31" } {
+         set etat "disabled"
+      }
+      $Dslr.step configure -state $etat
+   }
+
+   #########################################################################
+   #--   Configure le panneau pour une serie continue d'images             #
+   #  appelee par le bouton de mode de prise de vue et par setWindowState  #
+   #########################################################################
+   proc configContinu { } {
+      variable Dslr
+
+      configStock
+      configPose
+      configIntervalle "3"
+
+      set ::remotectrl::nb_poses "2"
+      foreach child { step nb_poses } {
+         $Dslr.$child configure -state normal
+      }
+      foreach child { test nom } {
+         $Dslr.$child configure -state disabled
       }
    }
 
@@ -234,25 +410,12 @@
       variable Dslr
 
       configStock
-      configLonguepose
-      foreach child { step nb_poses } {
-         $Dslr.$child configure -state normal
-      }
-   }
+      configPose
+      configIntervalle "4"
 
-   #########################################################################
-   #--   Configure le nom et la visualisation                              #
-   #########################################################################
-   proc configNomSee { etat } {
-      global panneau caption
-      variable  Dslr
-
-      if { $etat == "disabled" } {
-         set ::remotectrl::nom ""
-         set ::remotectrl::see "0"
-      }
-      foreach child { nom intervalle see } {
-         $Dslr.$child configure -state $etat
+      set ::remotectrl::nb_poses " "
+      foreach child { step test nom nb_poses } {
+         $Dslr.$child configure -state disabled
       }
    }
 
@@ -265,142 +428,132 @@
 
       set l [ llength $panneau(remotectrl,stockLabels) ]
 
-      #--   si carte CF seule
-      if { $l <= "1" } {
-
-         #--   desactive les autres modes de stockage
+      #--   si carte CF seule ou mode continu ou mode rafale
+      if { $l == "1" \
+         || $panneau(remotectrl,bracket) == "$caption(remotectrl,bracket,continu)" \
+         || $panneau(remotectrl,bracket) == "$caption(remotectrl,bracket,rafale)" } {
+         #--   active usecf 1
          $Dslr.stock.m invoke 0
+         #--   gele le bouton
          $Dslr.stock configure -state disabled
-
       } elseif { $panneau(remotectrl,ip2) == "127.0.0.1" } {
-
-            #--   Maison et Jardin
-            $Dslr.stock.m invoke 2
-
-            $Dslr.stock.m entryconfigure 1 -state disabled
-            $Dslr.stock.m entryconfigure 3 -state disabled
-
-      } elseif { $panneau(remotectrl,bracket) == "$caption(remotectrl,bracket,rafale)" } {
-
-            #--   en mode rafale active la carte CF
-            $Dslr.stock.m invoke 0
-
-            #--   les autres entrees de stock seront desactivees
-            set etat disabled
-
-            #--   selectionne le mode USB
-            $Dslr.longuepose.m invoke 0
-
-            #--   inhibe longuepose s'il existe
-            if { [ llength $panneau(remotectrl,longueposeLabels) ] == "2" } {
-               $Dslr.longuepose.m entryconfigure 1 -state disabled
-            }
-
-            #--   active/desactive les autres entrees que(0)du menu
-            for { set i 1 } { $i < $l } { incr i } {
-               $Dslr.stock.m entryconfigure $i -state disabled
-            }
-
-     } else {
-
-         #--   sinon tous les modes sont presents
-         #--   libere le bouton
-         $Dslr.stock configure -state normal
-
-         #--   desinhibe longuepose s'il existe
-         if { [ llength $panneau(remotectrl,longueposeLabels) ] == "2" } {
-            $Dslr.longuepose.m entryconfigure 1 -state normal
-         }
-
-         #--   adopte le niveau de stockage le plus eleve
-         if { $panneau(remotectrl,stock) != $caption(remotectrl,stock,cf) \
-            && [ lindex $panneau(remotectrl,status) 1 ] == "0" } {
-            $Dslr.stock.m invoke end
-         }
-
-         #--   active/desactive les autres entrees que(0)du menu
-         for { set i 1 } { $i < $l } { incr i } {
-            $Dslr.stock.m entryconfigure $i -state normal
-         }
+         #--   Maison et Jardin
+         $Dslr.stock.m invoke 2
+         $Dslr.stock.m entryconfigure 1 -state disabled
+         $Dslr.stock.m entryconfigure 3 -state disabled
+      } else {
+        $Dslr.stock configure -state normal
       }
    }
 
    #########################################################################
    #--   Configure le bouton USB/Longuepose                                #
    #########################################################################
-   proc configLonguepose {} {
+   proc configPose {} {
       global panneau caption
       variable Dslr
 
-      if { [ llength $panneau(remotectrl,longueposeLabels) ] == "1" } {
-
-         #--   commute vers USB
-         $Dslr.longuepose.m invoke 0
-
-         #--   desactive le bouton
-         $Dslr.longuepose configure -state disabled
-
+      if { [ llength $panneau(remotectrl,poseLabels) ] == "2" \
+         && $panneau(remotectrl,bracket) != "$caption(remotectrl,bracket,continu)" \
+         && $panneau(remotectrl,bracket) != "$caption(remotectrl,bracket,rafale)" } {
+            set etat "normal"
       } else {
-
-         #--   autorise le bouton
-         $Dslr.longuepose configure -state normal
-
-         #--   active/desactive le mode longuepose
-         if { $panneau(remotectrl,bracket) != "$caption(remotectrl,bracket,rafale)" } {
-
-            #--   si ce n'est pas une rafale, longuepose est desinhibe
-            $Dslr.longuepose.m entryconfigure 1 -state normal
-
-         } else {
-
-            #--   une rafale : inhibe longuepose
-            $Dslr.longuepose configure -state disabled
-         }
-
-         #--   indentifie la selection
-         set k [ lsearch $panneau(remotectrl,longueposeLabels) \
-            $panneau(remotectrl,longuepose) ]
-         switchLonguepose $panneau(remotectrl,camNo) $k
+            $Dslr.pose.m invoke 0
+            set etat "disabled"
       }
+      $Dslr.pose configure -state $etat
    }
 
-   #-- pour commuter USB/Longuepose
-   proc switchLonguepose { camNo ul } {
+   #########################################################################
+   #--   Commute USB/Longuepose                                            #
+   #  parametres : camNo choix ( si USB ul =0 sinon ul=1 )                 #
+   #########################################################################
+   proc switchExpTime { ul } {
       global panneau
       variable Dslr
 
       set etat_anterieur [ lindex $panneau(remotectrl,status) 0 ]
-      set longueur_liste [ llength [$Dslr.exptime cget -values] ]
 
       if { $etat_anterieur != $ul } {
-         set status [ send "cam$camNo longuepose $ul" ]
+         set status [ send "cam$panneau(remotectrl,camNo) longuepose $ul" ]
          #--   memorise le nouvel etat
-         set panneau(remotectrl,status) [ lreplace \
-            $panneau(remotectrl,status) 0 0 "$status" ]
+         set panneau(remotectrl,status) \
+            [ lreplace $panneau(remotectrl,status) 0 0 "$status" ]
       }
 
-      if { $etat_anterieur != $ul || $longueur_liste == "0" } {
-         switch $ul {
-            "0"   {  #--   met en place la liste standard
-                     $Dslr.exptime configure -editable 0 \
-                        -values "$panneau(remotectrl,exptimeLabels)" -height 10
-                     #--   selectionne 1 seconde
-                     $Dslr.exptime setvalue @15
-                  }
-            "1"   {  #--   met en place la liste ouverte
-                     $Dslr.exptime configure -editable 1 -values "31" -height 1
-                     #--   selectionne 31
-                     $Dslr.exptime setvalue @0
-                  }
-         }
-
+      #--   adapte l'entree du temps d'exposition
+      if { $etat_anterieur != $ul || [ llength [ $Dslr.exptime cget -values ] ] == "0" } {
+         configTimeScale $ul
          #--   transfert la valeur
          set ::remotectrl::exptime $panneau(remotectrl,time)
          update
       }
-    }
+   }
 
-   #--   pour configurer le format et l'extension
+   #########################################################################
+   #--   Configure l'entree du temps d'exposition                          #
+   #  parametre : camNo choix ( si USB s =0 sinon s=1 )                    #
+   #########################################################################
+   proc  configTimeScale { s } {
+      global panneau
+      variable Dslr
+
+      switch $s {
+         "0"   {  #--   met en place la liste standard
+                  $Dslr.exptime configure -editable 0 \
+                     -values "$panneau(remotectrl,exptimeLabels)" -height 10
+                  #--   selectionne 1 seconde
+                  $Dslr.exptime setvalue @15
+               }
+         "1"   {  #--   met en place la liste ouverte
+                  $Dslr.exptime configure -editable 1 -values "31" -height 1
+                  #--   selectionne 31
+                  $Dslr.exptime setvalue @0
+               }
+      }
+
+      #--   transfert la valeur
+      set ::remotectrl::exptime $panneau(remotectrl,time)
+      update
+   }
+
+   #########################################################################
+   #--   Commute la memoire                                                #
+   #  parametres : camNo stockage ( si CF sto =1 sinon sto=0 )             #
+   #########################################################################
+   proc switchStock { sto } {
+      global panneau
+      variable Dslr
+
+      set camNo $panneau(remotectrl,camNo)
+      set etat_anterieur [ lindex $panneau(remotectrl,status) 1 ]
+
+      if { $etat_anterieur != $sto } {
+         send "cam$camNo autoload [ expr { 1-$sto } ]"
+         send "cam$camNo usecf $sto"
+         #--   memorise le nouvel etat
+         set panneau(remotectrl,status) \
+            [ lreplace $panneau(remotectrl,status) end end "$sto" ]
+      }
+
+      #--   si usage de CF
+      if { $sto == "1" } {
+         set ::remotectrl::nom ""
+         set ::remotectrl::see "0"
+         set ::remotectrl::wind "0"
+         set etat "disabled"
+      } else {
+         set etat "normal"
+      }
+
+      foreach child { nom see wind } {
+         $Dslr.$child configure -state $etat
+      }
+   }
+
+   #########################################################################
+   #--   Configure le format et l'extension                                #
+   #########################################################################
    proc configFormat { } {
       global panneau conf
 
@@ -411,58 +564,65 @@
          set panneau(remotectrl,format) "jpeg"
          set panneau(remotectrl,extension) ".jpg"
       }
+
+      #--   decoche le fenetrage a chaque changement de format
+      set ::remotectrl::wind "0"
+      set panneau(remotectrl,box) ""
    }
 
-   #--   pour commuter la memoire
-   proc switchStorage { camNo sto } {
-      global panneau
-
-      set etat_anterieur [ lindex $panneau(remotectrl,status) 1 ]
-
-      if { $etat_anterieur != $sto } {
-         send "cam$camNo autoload $sto"
-         set l [ expr { 1 - $sto } ]
-         send "cam$camNo usecf $l"
-         #--   memorise le nouvel etat
-         set panneau(remotectrl,status) \
-            [ lreplace $panneau(remotectrl,status) end end "$sto" ]
-      }
-      if { [ lindex $panneau(remotectrl,status) 1 ] == "0" } {
-         configNomSee disabled
-      } else {
-         configNomSee normal
-      }
-   }
-
-   ######################################################################
-   #--   Gere l'etat des widgets lies a DSLR                            #
-   ######################################################################
-   proc setWindowState { state } {
-      global panneau
+   #########################################################################
+   #--   Configure l'entree Intervalle                                     #
+   #########################################################################
+   proc configIntervalle { n } {
+      global panneau caption
       variable Dslr
-      variable This
 
-      set children [ list longuepose stock quality step bracket test \
-         nom nb_poses exptime delai intervalle see ]
+      set var "intervalle"
+      #--   si rafale
+      if { $n == "4" } { set var "duree" }
 
-      foreach child $children {
-         $Dslr.$child configure -state $state
+      if { $n == "1" || $n == "2" } {
+         if { $panneau(remotectrl,test) != "1" } {
+            set val " "
+            set state "disabled"
+         } else {
+            set val $panneau(remotectrl,intervalle_mini)
+            set state "normal"
+         }
+       } elseif { $n == "3" } {
+
+         set val " "
+         set state "disabled"
+
+       } elseif { $n == "4" } {
+
+         set val "1"
+         set state "normal"
+
       }
-      $This.fra6.but1 configure -state $state
 
-      if { $state == "normal" } {
-         set k [ lsearch $panneau(remotectrl,bracketLabels) $panneau(remotectrl,bracket) ]
-         switch -exact  $k {
-            "0"   { configImg }
-            "1"   { configSerie }
-            "2"   { configRafale }
+      set ::remotectrl::intervalle $val
+      $Dslr.intervalle configure -label $caption(remotectrl,$var) -state $state
+      DynamicHelp::add $Dslr.intervalle -text $caption(remotectrl,help$var)
+   }
+
+   ######################################################################
+   #--   Dimensionne une selection pour le fenetrage                    #
+   ######################################################################
+   proc getWindow {} {
+      global audace panneau
+
+      set panneau(remotectrl,box) ""
+      if { $::remotectrl::wind == "1" } {
+         set bufNo [ visu$audace(visuNo) buf ]
+         if [  buf$bufNo imageready ] {
+            set panneau(remotectrl,box) [ ::confVisu::getBox $audace(visuNo) ]
          }
       }
    }
 
    ######################################################################
-   #--   Cree une entree avec un label                                  #
-   #  appelee par ApnBuildIF                                            #
+   #--   Cree une entree avec un label appelee par ApnBuildIF           #
    #  parametres : nom descendant                                       #
    ######################################################################
    proc buildLabelEntry { child } {
@@ -477,17 +637,27 @@
    }
 
    ######################################################################
-   #--   Decompteur de secondes                                         #
-   #  parametre : nom de la variable a decompter (delai ou intervalle)  #
+   #--   Ecriture du fichier log                                        #
+   #  parametres :   nom du fichier texte                               #
    ######################################################################
-   proc delay { var } {
-      global panneau
+   proc writeLog { f m } {
 
-      while { [ set $var ] != "0" } {
-            after 1000
-            set $var [ expr { [ set $var ]-1 } ]
-            if { [ set $var ] <= 0 } { set $var 0 }
-            update
-      }
+      set err [ catch {
+            set fd [ open $f a+ ]
+            puts $fd $m
+            close $fd
+         } msg ]
+      return $err
+   }
+
+   ######################################################################
+   #--   Fenetre d'avertissement                                        #
+   #  parametres :   variable de caption                                #
+   ######################################################################
+   proc avertiUser { v } {
+      global caption
+
+      tk_messageBox -title $caption(remotectrl,attention)\
+         -icon error -type ok -message $caption(remotectrl,$v)
    }
 
