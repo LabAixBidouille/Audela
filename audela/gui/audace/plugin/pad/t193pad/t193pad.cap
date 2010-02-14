@@ -1,6 +1,6 @@
 #
 # Fichier : t193pad.cap
-# Mise a jour $Id: t193pad.cap,v 1.6 2010-02-06 12:51:06 michelpujol Exp $
+# Mise a jour $Id: t193pad.cap,v 1.7 2010-02-14 16:41:10 michelpujol Exp $
 #
 
 #=========================================================================
@@ -25,6 +25,7 @@ set caption(t193pad,DEC)                  "Dec."
 
 set caption(t193pad,moteur_foc)           "Focusing Motor"
 set caption(t193pad,gotoFoc)              "GOTO Focus"
+set caption(t193pad,stopFoc)              "STOP"
 
 set caption(t193pad,dome)                 "Dome"
 set caption(t193pad,synchroMonture)       "Synchro with Telescope"
@@ -46,6 +47,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(t193pad,moteur_foc)        "Moteur de la focalisation"
    set caption(t193pad,gotoFoc)           "GOTO Foc"
+   set caption(t193pad,stopFoc)           "STOP"
 
    set caption(t193pad,dome)              "Dôme"
    set caption(t193pad,synchroMonture)    "Synchro avec le télescope"
@@ -67,6 +69,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(t193pad,moteur_foc)        "Motore della focheggiamento"
    set caption(t193pad,gotoFoc)           "GOTO focheg."
+   set caption(t193pad,stopFoc)           "STOP"
 
    set caption(t193pad,dome)              "Cupola"
    set caption(t193pad,synchroMonture)    "Sincronizza con il telescopio"
@@ -88,6 +91,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(t193pad,moteur_foc)        "Motor enfoque"
    set caption(t193pad,gotoFoc)           "GOTO enfoque"
+   set caption(t193pad,stopFoc)           "STOP"
 
    set caption(t193pad,dome)              "Cúpula"
    set caption(t193pad,synchroMonture)    "Sincronizar con el telescopio"
@@ -109,6 +113,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(t193pad,moteur_foc)        "Fokussierung Motor"
    set caption(t193pad,gotoFoc)           "GOTO Fokus."
+   set caption(t193pad,stopFoc)           "STOP"
 
    set caption(t193pad,dome)              "Kuppel"
    set caption(t193pad,synchroMonture)    "Synchron mit dem Teleskop"
@@ -130,6 +135,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(t193pad,moteur_foc)        "Motor de focagem"
    set caption(t193pad,gotoFoc)           "GOTO focagem"
+   set caption(t193pad,stopFoc)           "STOP"
 
    set caption(t193pad,dome)              "Abóbada"
    set caption(t193pad,synchroMonture)    "Sincronização com o telescópio"
@@ -172,6 +178,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(t193pad,moteur_foc)        "Focusing Motor"
    set caption(t193pad,gotoFoc)           "GOTO Focus"
+   set caption(t193pad,stopFoc)           "STOP"
 
    set caption(t193pad,dome)              "Dome"
    set caption(t193pad,synchroMonture)    "Synchro with Telescope"
@@ -193,6 +200,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(t193pad,moteur_foc)        "Focusing Motor"
    set caption(t193pad,gotoFoc)           "GOTO Focus"
+   set caption(t193pad,stopFoc)           "STOP"
 
    set caption(t193pad,dome)              "Dome"
    set caption(t193pad,synchroMonture)    "Synchro with Telescope"
