@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.25 2010-01-31 16:58:21 michelpujol Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.26 2010-02-14 16:38:08 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -224,20 +224,23 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             $private(maskRadius) $private(maskFwhm) $private(pixelMinCount) $private(maskPercent) \
             $private(biasValue)]
 
+         set binning [cam$private(camNo) bin]
+         set xBinning [lindex $binning 0]
+         set yBinning [lindex $binning 1]
+
          set starStatus       [lindex $result 0 ]
          set starX            [lindex $result 1 ]
          set starY            [lindex $result 2 ]
          set fiberStatus      [lindex $result 3 ]
          set fiberX           [lindex $result 4 ]
          set fiberY           [lindex $result 5 ]
-         set measuredFwhmX    [lindex $result 6 ]
-         set measuredFwhmY    [lindex $result 7 ]
+         set measuredFwhmX    [expr [lindex $result 6 ] * $xBinning]
+         set measuredFwhmY    [expr [lindex $result 7 ] * $yBinning]
          set background       [lindex $result 8 ]
          set maxIntensity     [lindex $result 9 ]
          set infoMessage      [lindex $result 10 ]
 
          ###::camerathread::disp  "starStatus=$starStatus starX,starY=$starX $starY fiberStatus=$fiberStatus fiberX,fiberY=$fiberX $fiberY infoMessage=$infoMessage\n"
-
          if { $starStatus == "DETECTED" } {
             #--- l'etoile est detectee
             set targetDetection 1
@@ -267,21 +270,20 @@ proc ::camerathread::sophieAcquisitionLoop { } {
           ###::camerathread::disp  "camerathread: private(targetCoord)=$private(targetCoord) private(originCoord)=$private(originCoord)\n"
          ###::camerathread::disp  "camerathread: FIBER= y1=$y1 y2=$y2 fiberStatus=$fiberStatus\n"
 
-         set binning [cam$private(camNo) bin]
          #--- je calcule l'ecart de position entre la cible et la consigne (en pixels ramene au binning 1x1)
-         set dx [expr (double([lindex $private(targetCoord) 0]) - [lindex $private(originCoord) 0]) * [lindex $binning 0] ]
-         set dy [expr (double([lindex $private(targetCoord) 1]) - [lindex $private(originCoord) 1]) * [lindex $binning 1] ]
+         set dx [expr (double([lindex $private(targetCoord) 0]) - [lindex $private(originCoord) 0]) * $xBinning ]
+         set dy [expr (double([lindex $private(targetCoord) 1]) - [lindex $private(originCoord) 1]) * $yBinning ]
          ###::camerathread::disp  "camerathread: etoile dx=[format "%6.1f" $dx] dy=[format "%6.1f" $dy] \n"
 
         #--- je pondere la position si on est en mode GUIDE avec detection de la fibre
          if { $private(mode) == "GUIDE" && $private(findFiber) == 1 } {
             set cgx $dx
-            if { [expr abs($dx) * [lindex $binning 0] ] < 16 } {
+            if { [expr abs($dx) * $xBinning ] < 16 } {
                #--- le denominateur est toujours non nul parce que dx > 1.7/0.04)
                set dx [expr $dx / (1.7 - abs($dx) * 0.04)]
             }
             set cgy $dy
-            if { [expr abs($dy) * [lindex $binning 1] ] < 16 } {
+            if { [expr abs($dy) * $yBinning ] < 16 } {
                set dy [expr $dy / (1.7 - abs($dy) * 0.04)]
             }
             ###::camerathread::disp  "correction cgx [format "%6.1f" $cgx] => [format "%6.1f" $dx] cgy: [format "%6.1f" $cgy] => [format "%6.1f" $dy (pixel)] \n"
@@ -379,7 +381,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             set alphaCorrection [expr $alphaCorrection / (cos($private(targetDec) * 3.14159265359/180)) ]
 
             #--- j'ecrete l'ampleur du deplacement en alpha
-            set maxAlpha [expr $private(targetBoxSize) * [lindex $binning 0] * $private(pixelScale) ]
+            set maxAlpha [expr $private(targetBoxSize) * $xBinning * $private(pixelScale) ]
             if { $alphaCorrection > 0 } {
                if { $alphaCorrection > $maxAlpha } {
                   set alphaCorrection $maxAlpha
@@ -391,7 +393,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             }
 
             #--- j'ecrete l'ampleur du deplacement en delta
-            set maxDelta [expr $private(targetBoxSize) * [lindex $binning 1] * $private(pixelScale) ]
+            set maxDelta [expr $private(targetBoxSize) * $yBinning * $private(pixelScale) ]
             if { $deltaCorrection > 0 } {
                if { $deltaCorrection > $maxDelta } {
                   set deltaCorrection $maxDelta
@@ -406,7 +408,6 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             set alphaCorrection 0.0
             set deltaCorrection 0.0
          }
-         update
          #--- j'envoi une notification au thread princpal pour mettre a jour l'affichage de la fenetre principale
          ::camerathread::notify "targetCoord" \
             $private(targetCoord) $dx $dy $targetDetection $fiberStatus \
@@ -414,6 +415,8 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             $measuredFwhmX $measuredFwhmY $background $maxIntensity  \
             $alphaDiff $deltaDiff $alphaCorrection $deltaCorrection $infoMessage
       }
+
+      ###update
 
       ###::camerathread::disp  "camerathread: alphaCorrection=$alphaCorrection deltaCorrection=$deltaCorrection \n"
       if { $private(acquisitionState) == "1" } {
@@ -446,7 +449,17 @@ proc ::camerathread::sophieAcquisitionLoop { } {
 
             #--- je deplace le telescope
             if { $alphaCorrection != 0 || $deltaCorrection != 0 } {
-               tel1 radec correct $alphaDirection [expr abs($alphaCorrection)] $deltaDirection [expr abs($deltaCorrection)] 0.1
+               set correctError [ catch {
+                  tel1 radec correct $alphaDirection [expr abs($alphaCorrection)] $deltaDirection [expr abs($deltaCorrection)] 0.1
+               }]
+               if { $correctError != 0 } {
+                  if { [string first  "tel_radec_goto already moving" $::errorInfo  ] == 0 } {
+                     #--- c'est une erreur non bloquante, je continue la boucle
+                  } else {
+                      #--- c'est une erreur bloquante, j'interromp la bloucle en tranmettant l'erreur
+                      error $::errorInfo
+                  }
+               }
             }
          }
          ###::camerathread::disp  "camerathread: dx,dy=[format "%6.1f" $dx],[format "%6.1f" $dy]pixel dAlpha,ddelta=[format "%6.2f" $alphaDiff],[format "%6.2f" $deltaDiff] arsec correction=[format "%6.2f" $alphaCorrection],[format "%6.2f" $deltaCorrection]arsec tel move [format "%s %4.3fs" $alphaDirection $alphaDelay] [format "%s %4.3fs" $deltaDirection $deltaDelay ]\n"
