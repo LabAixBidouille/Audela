@@ -15,7 +15,7 @@
 </style>
 </head>
 <body>
-<p class="date">Date de mise &agrave; jour : 05 f&eacute;vrier
+<p class="date">Date de mise &agrave; jour : 12 f&eacute;vrier
 2010</p>
 <h1>Contr&ocirc;le &agrave; distance</h1>
 <p>Le processus d&eacute;crit est destin&eacute; &agrave;
@@ -40,13 +40,18 @@ r&eacute;seau ou non.</p>
 configurer correctement ( CF aide disponible sous Configuration
 Cam&eacute;ra/APN ).<br />
 Les seuls r&eacute;glages de l'APN accessibles dans cette
-interface &eacute;tant les temps d'exposition et le format de
-l'image, il convient de r&eacute;gler et de v&eacute;rifier les
-autres param&egrave;tres :</p>
+interface &eacute;tant les temps d'exposition, le format de
+l'image et le mode (Normal ou Rafale), il convient de
+r&eacute;gler et de v&eacute;rifier les autres param&egrave;tres
+:</p>
 <ul>
 <li>R&eacute;glage sur mode manuel, de la sensibilit&eacute;, du
 diaphragme, du relevage du miroir, du d&eacute;lai avant
 extinction et arr&ecirc;t de la dur&eacute;e de revue, etc.</li>
+<li>Eventuellement synchronisation de l'heure de l'APN avec
+l'heure UTC des PC, pr&eacute;alablement synchronis&eacute;s
+&agrave; l'aide de logiciels tels que Timemo ou NetTime (clients
+de serveurs NTP).</li>
 <li>Mode de communication sur 'Connexion PC'.</li>
 <li>Alimentation et limitation de tout ce qui consomme de
 l'&eacute;nergie (signal sonore, luminosit&eacute; de
@@ -80,6 +85,9 @@ Appuyer sur <b>Connexion</b>.<br />
 Si la cam&eacute;ra et le telescope ne sont pas
 d&eacute;j&agrave; s&eacute;lectionn&eacute;s et
 configur&eacute;s, des fen&ecirc;tres annexes s'ouvrent.<br />
+En l'absence de t&eacute;lescope selectionner LX200 : les
+commandes concernant l'APN seront utilisables quand
+m&ecirc;me.<br />
 <b>Lors de la configuration de la cam&eacute;ra il convient de la
 relier &agrave; la visu1, peu importe l'item A, B ou C et de
 configurer la longue pose si elle existe.</b></td>
@@ -172,34 +180,14 @@ de vue : Cam&eacute;ra CCD, APN (Appareil Photo Num&eacute;rique)
 "description du panneau DSLR" /></td>
 <td>
 <p>Le panneau permettant de piloter les prises de vues &agrave;
-partir d'un APN comporte :</p>
-<p>Un bouton de s&eacute;lection du <b>mode de
-d&eacute;clenchement de l'APN et de s&eacute;lection de la gamme
-de temps d'exposition</b>. Il comporte une ou deux options selon
-le mode de connexion de l'APN au PC Jardin :<br /></p>
-<ul>
-<li>Si l'APN a &eacute;t&eacute; connect&eacute; avec le seul
-c&acirc;ble USB normal, le bouton affiche <b>USB</b> mais il est
-d&eacute;sactiv&eacute;.</li>
-<li>S'il a &eacute;t&eacute; configur&eacute; en mode longue
-pose, les options sont <b>{ USB | Longue pose }</b>, ce qui
-permet de basculer d'un mode vers l'autre depuis le PC Maison
-sans avoir &agrave; intervenir manuellement sur la configuration
-de la cam&eacute;ra sur le PC Jardin.<br />
-Limitation : A la r&eacute;ouverture d'une session,
-imm&eacute;diatement apr&egrave;s une fermeture, le
-red&eacute;marrage se fait sur le dernier mode actif (USB ou
-Longue Pose). Il est donc pr&eacute;f&eacute;rable de quitter sur
-le mode <b>Longue Pose</b> pour retrouver toutes les
-possibilit&eacute;s.</li>
-</ul>
-<p>Un bouton de s&eacute;lection du mode de <b>sauvegarde</b> des
+partir d'un APN comporte (du haut en bas):</p>
+<p>Un bouton de s&eacute;lection du lieu de <b>sauvegarde</b> des
 images. Le menu varie en fonction du choix lors de la connexion
 :</p>
 <ul>
 <li>Si le choix s'est port&eacute; sur le port ftp, le menu
-comporte quatre options <b>{ Carte m&eacute;moire | Jardin |
-Maison et Jardin | Maison }</b>.</li>
+comporte quatre options <b>{ Carte CF | Jardin | Maison et Jardin
+| Maison }</b>.</li>
 <li>Si le choix s'est port&eacute; sur un lecteur r&eacute;seau
 (par exemple dossier <b>images</b> du PC Jardin en dossier
 partag&eacute;), le menu comporte les options <b>{ Carte
@@ -207,9 +195,8 @@ M&eacute;moire | Lecteur nom_du_lecteur_r&eacute;seau }</b>.</li>
 </ul>
 Les caract&eacute;ristiques de ces modes sont les suivantes :
 <ul>
-<li><b>Carte m&eacute;moire</b> : Les images prises sont
-stock&eacute;es exclusivement sur la carte m&eacute;moire dans
-l'APN.</li>
+<li><b>Carte CF</b> : Les images prises sont stock&eacute;es
+exclusivement sur la carte m&eacute;moire dans l'APN.</li>
 <li><b>Lecteur r&eacute;seau</b> : Les images sont
 stock&eacute;es sur le lecteur r&eacute;seau et effac&eacute;es
 de la carte m&eacute;moire.</li>
@@ -229,43 +216,44 @@ de la carte m&eacute;moire et du PC Jardin.</li>
 choix offerts en mati&egrave;re de formats par l'APN sont
 r&eacute;pertori&eacute;s sous forme de menu. Le r&eacute;glage
 actuel est coch&eacute;.<br />
-Le format RAW est automatiquement transform&eacute; en image
-portant l'extension FITS par d&eacute;faut tandis que les autres
-formats sont transform&eacute;s en JPEG. Le format est
-rappel&eacute; &agrave; gauche du bouton de s&eacute;lection.</p>
-<p>Le menu du bouton de s&eacute;lection du <b>mode</b> de prise
-vue comporte trois options <b>{ Une image | Une s&eacute;rie |
-Une rafale }</b></p>
+Les formats autres que RAW sont en JPEG. Les images RAW sont
+automatiquement transform&eacute;s en image portant l'extension
+FITS par d&eacute;faut d&eacute;finie dans
+Aud'Ace/Configuration/Fichiers image... Le format est
+rappel&eacute; &agrave; gauche du bouton de
+s&eacute;lection.<br />
+Le PC Maison communique l'extension par d&eacute;faut des images
+FITS au PC Jardin &agrave; chaque prise de vue RAW : il est donc
+possible de modifier l'extension par d&eacute;faut entre deux
+prises de vues.</p>
+<p>Le menu du bouton de s&eacute;lection de la <b>prise de
+vue</b> comporte au moins trois options <b>{ Une image | Une
+s&eacute;rie | En continu }</b>. L'option <b>Une rafale</b> vient
+en plus si la longuepose existe. <b>Une image</b> et <b>Une
+s&eacute;rie</b> permettent de choisir le lieu de stockage, la
+visualisation et le mode de d&eacute;clenchement. <b>En
+continu</b> et <b>Une rafale</b> imposent le lieu de
+stockage(carte CF) et l'absence de visualisation
+imm&eacute;diate.</p>
 <ul>
-<li>Le mode <b>Une image</b> inhibe seulement l'entr&eacute;e
-<b>Intervalle</b>, tous les autres r&eacute;glages restant
-acessibles.</li>
-<li>Le mode <b>Une s&eacute;rie</b> autorise l'entr&eacute;e d'un
+<li><b>Une image</b> inhibe seulement le <b>nombre de poses</b>
+et l'entr&eacute;e <b>Intervalle</b> ; tous les autres
+r&eacute;glages sont acessibles.</li>
+<li><b>Une s&eacute;rie</b> autorise l'entr&eacute;e d'un
 intervalle apr&egrave;s r&eacute;alisation d'un <b>Test</b>
 permettant de mesurer l'intervalle minimum (Cf. le bouton
-Test).<br /></li>
-<li>Le mode <b>Une rafale</b> consiste &agrave; prendre une
-s&eacute;quence d'images aussi rapidement que possible. Pour
-fixer rapidement les images il est n&eacute;cessaire de passer
-par la commande par USB et par le stockage sur la carte
-m&eacute;moire de l'APN. En cons&eacute;quence le entr&eacute;es
-g&eacute;rant le nom de l'image, l'intervalle et la visualisation
-sont inhib&eacute;es. Le format, le nombre de pose, le temps
-d'exposition et le d&eacute;lai restent accessibles. Note : Ce
-mode de rafale n'est pas identique au mode Rafale de l'APN, plus
-lent (environ une image Raw / 4 secondes) il permet de saisir un
-nombre d'images plus important.</li>
-<li>Les modes <b>Une s&eacute;rie</b> et <b>Une rafale</b>
-supporte le bracketing (pour les photographes), c'est &agrave;
-dire le changement de temps d'exposition entre deux prises de
-vue. Il permet de saisir des &eacute;v&egrave;nements
-&eacute;volutifs &agrave; exposition constante ou encore de
-saisir les hautes et les basses lumi&egrave;res en modifiant les
-temps d'exposition, soit dans le sens croissant, soit dans le
-sens d&eacute;croissant.<br />
+Test).<br />
+Si le mode de d&eacute;clenchement est en mode USB (pose de moins
+de 30 secondes), <b>Une s&eacute;rie</b> supporte le bracketing
+(pour les photographes), c'est &agrave; dire le changement de
+temps d'exposition entre deux prises de vue. Il permet de saisir
+des &eacute;v&egrave;nements &eacute;volutifs &agrave; exposition
+constante ou encore de saisir les hautes et les basses
+lumi&egrave;res en modifiant les temps d'exposition, soit dans le
+sens croissant, soit dans le sens d&eacute;croissant.<br />
 Le bouton <b>Pas</b>, lib&eacute;r&eacute; lors de la
 s&eacute;lection du mode, propose des variations de pas
-d'exposition de +6 &agrave; -6 en passant par 0 (s&eacute;rie
+d'exposition de -6 &agrave; +6 en passant par 0 (s&eacute;rie
 &agrave; temps constant). Le programme calcule l'exposition
 &agrave; appliquer aux images suivantes &agrave; partir de
 l'exposition initiale. Une variation de 3 pas modifie le temps
@@ -277,10 +265,36 @@ initiale/Variation d'exposition</b> doit &ecirc;tre
 v&eacute;rifi&eacute;e pour que l'exposition finale ne soit pas
 sup&eacute;rieure ou inf&eacute;rieure aux capacit&eacute;s de
 l'APN.</li>
+<li><b>En continu</b> consiste &agrave; prendre une
+s&eacute;quence d'images aussi rapidement que possible. Pour
+fixer rapidement les images il est n&eacute;cessaire de passer
+par le mode USB et par le stockage sur la carte m&eacute;moire de
+l'APN. En cons&eacute;quence les entr&eacute;es g&eacute;rant le
+nom de l'image, l'intervalle et la visualisation sont
+inhib&eacute;es. Le format, le nombre de pose, le temps
+d'exposition et le d&eacute;lai restent accessibles. Ce mode
+supporte &eacute;galement le bracketing c'est &agrave; dire le
+changement d'exposition &agrave; chaque prise de vue.<br />
+Note: ce mode diff&egrave;re du mode Rafale de l'APN : plus lent
+(environ une image Raw / 4 secondes) il permet de saisir un
+nombre d'images plus important. Il ne n&eacute;cessite pas
+l'existence de la longuepose.</li>
+<li>Le mode <b>Une rafale</b>, pr&eacute;sent seulement si la
+longuepose existe, active le mode Rafale de l'APN. Les temps de
+pose doivent &ecirc;tre courts et les images sont stock&eacute;es
+sur la carte m&eacute;moire de l'APN (pas de visualisation). Les
+entr&eacute;es g&eacute;rant le nom de l'image, le nombre de
+poses et la visualisation sont inhib&eacute;es. Le format, le
+temps d'exposition et le d&eacute;lai restent accessibles alors
+que l'entr&eacute;e 'Intervalle' est modifi&eacute;e en
+'Dur&eacute;e' de la rafale. La s&eacute;quence d'instructions
+transmises &agrave; l'APN, par le biais d'une prise de vue,
+introduit un retard au d&eacute;marrage de la rafale d'environ 2
+secondes.</li>
 </ul>
-<p>Un bouton <b>Test</b> est fonctionnel dans tous les modes de
-prises de vue. Il permet de mesurer la dur&eacute;e d'une
-s&eacute;quence compl&egrave;te entre l'acquisition et
+<p>Un bouton <b>Test</b> est fonctionnel avec <b>Une image</b> et
+<b>Une s&eacute;rie</b>. Il permet de mesurer la dur&eacute;e
+d'une s&eacute;quence compl&egrave;te entre l'acquisition et
 l'affichage et d&eacute;finit l'intervalle de temps minimum entre
 deux prises de vues. Il a pour effet de prendre une photo test
 dans les conditions r&eacute;elles telles que programm&eacute;es
@@ -315,24 +329,45 @@ Seuls les caract&egrave;res alphanum&eacute;riques et le
 underscore _ sont autoris&eacute;s. Les autres caract&egrave;res
 sont automatiquement &eacute;limin&eacute;s sans
 avertissement.</p>
-<p>Une fen&ecirc;tre pour saisir le <b>temps d'exposition</b>. La
-fixation du temps d'exposition d&eacute;pend du mode de
-d&eacute;clenchement <b>{ USB | longuepose }</b> :</p>
+<p>Un bouton de s&eacute;lection de la plage de temps
+d'exposition. Il comporte une ou deux options selon le mode de
+connexion de l'APN au PC Jardin :</p>
 <ul>
-<li>En mode <b>USB</b>, il faut s&eacute;lectionner l'une des
-valeurs propos&eacute;es par la liste d&eacute;roulante de
-l'entr&eacute;e <b>Pose</b>. Ces valeurs sont les expositions
-standards exprim&eacute;es soit en fraction (1/4000), soit en
-d&eacute;cimal (0.5) soit encore en nombre entier (2). Le temps
-maximum est de 30 secondes. Note : Demander un temps d'exposition
-non pr&eacute;vu pour l'APN conduit l'APN &agrave; adopter un
-r&eacute;ponse par d&eacute;faut, exemple demander 1/8000
-&agrave; un Canon 350 D conduit &agrave; un temps de 1/4000.
-Demander 0 seconde et il donnera 1 seconde !</li>
-<li>En mode <b>longue pose</b>, une fen&ecirc;tre de saisie
-remplace la liste d&eacute;roulante. Indiquer le temps
-d'exposition exprim&eacute; en nombre de secondes enti&egrave;res
-ou d&eacute;cimales. L'entr&eacute;e est filtr&eacute;e : En cas
+<li>Si l'APN a &eacute;t&eacute; connect&eacute; avec le seul
+c&acirc;ble USB, le bouton affiche <b>&lt;30</b> (moins de 30
+secondes) mais il est d&eacute;sactiv&eacute;.
+Simultan&eacute;ment la gamme de temps d'exposition (entre 1/8000
+et 30 secondes) est propos&eacute;e sous forme de liste
+d&eacute;roulante &agrave; la droite du bouton.</li>
+<li>S'il a &eacute;t&eacute; configur&eacute; en mode longue
+pose, les options sont <b>{ &lt;30 | &gt;30 }</b>, ce qui permet
+de basculer d'un mode vers l'autre depuis le PC Maison sans avoir
+&agrave; intervenir manuellement sur la configuration de la
+cam&eacute;ra sur le PC Jardin. En mode <b>&gt;30</b> le temps
+d'expostion minimal est de 31 secondes.<br />
+Limitation : A la r&eacute;ouverture d'une session,
+imm&eacute;diatement apr&egrave;s une fermeture, le
+red&eacute;marrage se fait sur le dernier mode actif (USB ou
+Longue Pose). Il est donc pr&eacute;f&eacute;rable de quitter sur
+le mode <b>&gt;30</b> (Longue Pose) pour retrouver toutes les
+possibilit&eacute;s.</li>
+</ul>
+<p>Une fen&ecirc;tre pour s&eacute;lectionner ou saisir le
+<b>temps d'exposition</b> :</p>
+<ul>
+<li>En mode <b>&lt;30</b>, il faut s&eacute;lectionner l'une des
+valeurs propos&eacute;es par la liste d&eacute;roulante. Ces
+valeurs sont les expositions standards exprim&eacute;es soit en
+fraction (exemple 1/4000), soit en d&eacute;cimal (exemple 0.5)
+soit encore en nombre entier (exemple 2). Note : Demander un
+temps d'exposition non pr&eacute;vu pour l'APN conduit l'APN
+&agrave; adopter un r&eacute;ponse par d&eacute;faut, exemple
+demander 1/8000 &agrave; un Canon 350 D conduit &agrave; un temps
+de 1/4000. Demander 0 seconde et il donnera 1 seconde !</li>
+<li>En mode <b>&gt;30</b>, une fen&ecirc;tre de saisie remplace
+la liste d&eacute;roulante. Indiquer le temps d'exposition
+exprim&eacute; en nombre de secondes enti&egrave;res ou
+d&eacute;cimales. L'entr&eacute;e est filtr&eacute;e : En cas
 d'erreur de saisie (caract&egrave;re non num&eacute;rique ou une
 virgule &agrave; la place du point) le temps est fix&eacute; au
 temps minimum de 31 secondes.</li>
@@ -369,12 +404,24 @@ simple est donc de le mesurer avec le bouton 'Test'.<br />
 A la fin du test la vitesse mesur&eacute;e est
 transf&eacute;r&eacute;e dans la fen&ecirc;tre de l'intervalle en
 tant qu'intervalle minimum. Il est conseill&eacute; de faire
-plusieurs mesures car les temps peuvent varier.</p>
+plusieurs mesures car les temps peuvent varier.<br />
+Dans le mode <b>Rafale</b> cette entr&eacute;e devient
+l'entr&eacute;e de la dur&eacute;e de la rafale.</p>
 <p>Une case &agrave; cocher pour afficher les images. L'option
-'stockage sur la carte m&eacute;moire' invalide automatiquement
-l'option <b>Affichage</b> car les images ne sont ni
+<b>Carte CF</b> invalide automatiquement l'option
+<b>Affichage</b> car les images ne sont ni
 transf&eacute;r&eacute;es, ni
 t&eacute;l&eacute;charg&eacute;es.</p>
+<p>Une case &agrave; cocher pour <b>fen&ecirc;trer</b> les images
+r&eacute;cup&eacute;r&eacute;es sur le PC Jardin. Le processus
+est le suivant : afficher une image sur le PC Maison ; &agrave;
+l'aide de la souris d&eacute;finir la s&eacute;lection &agrave;
+r&eacute;cup&eacute;rer ; poursuivre les acquisitions avec le
+m&ecirc;me format d'image (sinon la s&eacute;lection est
+d&eacute;truite). La fen&ecirc;tre affich&eacute;e sur le PC
+Maison peut-&ecirc;tre modifi&eacute;e avec le zoom et
+analys&eacute;e (histogramme, coupe, statistiques , etc.) en vue
+d'affiner les r&eacute;glages.</p>
 <p>Le bouton de <b>d&eacute;clenchement</b> lance
 l'ex&eacute;cution des prises de vues, de
 t&eacute;l&eacute;chargement et d'affichage tels que
@@ -383,15 +430,13 @@ Toutes les commandes sont gel&eacute;es durant une session :
 Aucun changement n'est possible.</p>
 <p><b>Bon &agrave; savoir</b> :</p>
 <ul>
+<li>Pour faciliter la s&eacute;lection du temps d'exposition sans
+saturation, la console indique la valeur maximale, moyenne et
+minimale d'une image au formats FITS, m&ecirc;me quand celle-ci
+n'est pas visualis&eacute;e sur le PC Maison.</li>
 <li>Les IP, les ports RCP et le port de transfert (ftp ou lecteur
 r&eacute;seau) sont m&eacute;moris&eacute;s pour &ecirc;tre
 rappel&eacute;s lors de la session suivante.</li>
-<li>Le PC Maison communique l'extension par d&eacute;faut des
-images FITS au PC Jardin &agrave; chaque prise de vue : il est
-donc possible de modifier l'extension par d&eacute;faut entre
-deux s&eacute;ries de prises de vues. Cette extension par
-d&eacute;faut ne s'applique qu'aux images RAW, les autres restant
-au format JPEG.</li>
 <li>Dans le cas d'un lecteur r&eacute;seau, l'acc&egrave;s au
 lecteur est test&eacute; lors de la connexion. Un message est
 &eacute;mis en cas d'&eacute;chec : le processus se poursuit mais
@@ -410,6 +455,13 @@ si l'alimentation est insuffisante ou si une liaison
 mat&eacute;rielle est d&eacute;fectueuse.</li>
 <li>Une bulle d'aide accompagne les principales
 entr&eacute;es.</li>
+<li>Un fichier log, se trouvant dans le r&eacute;pertoire images,
+rend compte des prises de vues autres que les tests. Il mentionne
+le lieu de stockage, le nature de la prise de vue, le nom court
+de l'image avec son extension, le format et le temps de pose en
+secondes. En cas de stockage sur la carte m&eacute;moire le nom
+se r&eacute;sume &agrave; l'index et &agrave; l'extension (jpg ou
+raw).</li>
 </ul>
 </td>
 </tr>
@@ -508,29 +560,34 @@ distance</b>.</p>
 <h2>7. Contr&ocirc;le d'un APN avec un seul PC</h2>
 <h3>PC isol&eacute; disposant d'une adresse r&eacute;seau local
 (par exemple derri&egrave;re une 'Box')</h3>
-<p>Ouvrir une premi&egrave;re instance d'Aud'ACE. La configurer
-comme PC Jardin (Cf. paragraphe 1).<br />
-Ouvrir une seconde instance d'Aud'ACE et la configurer comme PC
+<p>Ouvrir une premi&egrave;re instance d'Aud'Ace. La configurer
+comme PC Jardin (CF paragraphe 1).<br />
+Ouvrir une seconde instance d'Aud'Ace et la configurer comme PC
 Maison avec les param&egrave;tres suivants :<br />
-- Maison IP <b>127.0.0.1</b>,<br />
-- Port pour les images <b>21</b>.<br />
+-Maison IP <b>127.0.0.1</b>,<br />
+-Port pour les images <b>21</b>.<br />
 Le r&eacute;pertoire images &eacute;tant commun aux deux
 instances, le stockage est limit&eacute; &agrave; <b>Carte CF</b>
 et <b>Maison & jardin</b>. Toutes les autres fonctions sont
 accessibles.</p>
 <h3>PC isol&eacute; (en campagne)</h3>
-<p>Ouvrir une premi&egrave;re instance d'Aud'ACE. La configurer
-comme PC Jardin (Cf. paragraphe 1).<br />
-Ouvrir une seconde instance d'Aud'ACE et la configurer comme PC
+<p>Ouvrir une premi&egrave;re instance d'Aud'Ace. La configurer
+comme PC Jardin (CF paragraphe 1).<br />
+Ouvrir une seconde instance d'Aud'Ace et la configurer comme PC
 Maison avec les param&egrave;tres suivants :<br />
-- Jardin IP <b>127.0.0.1</b>,<br />
-- Maison IP <b>127.0.0.1</b>,<br />
-- Port pour les images <b>21</b>.<br />
+-Jardin IP <b>127.0.0.1</b>,<br />
+-Maison IP <b>127.0.0.1</b>,<br />
+-Port pour les images <b>21</b>.<br />
 Il faut veiller &agrave; ce que les ports RCP soient
 diff&eacute;rents.<br />
 Le r&eacute;pertoire images &eacute;tant commun aux deux
 instances, le stockage est limit&eacute; &agrave; <b>Carte CF</b>
 et <b>Maison & jardin</b>. Toutes les autres fonctions sont
 accessibles.</p>
+<h3>Prise de contr&ocirc;le d'un PC par VNC</h3>
+<p>Sous r&eacute;serve de choisir des num&eacute;ros de ports
+distincts, il est possible combiner la commande par
+l'interm&eacute;diaire de VNC et l'une des deux solutions
+pr&eacute;c&eacute;dentes.</p>
 </body>
 </html>

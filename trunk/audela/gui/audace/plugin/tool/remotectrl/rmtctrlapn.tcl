@@ -2,102 +2,14 @@
 # Fichier : rmtctrlapn.tcl
 # Description : Script pour le controle de l'APN
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: rmtctrlapn.tcl,v 1.2 2010-02-07 18:51:03 robertdelmas Exp $
+# Mise a jour $Id: rmtctrlapn.tcl,v 1.3 2010-02-14 17:58:49 robertdelmas Exp $
 #
-
-   ###################################################################
-   #-- Complete le panneau d'acquistion                              #
-   ###################################################################
-   proc apnBuildIF {} {
-      global panneau caption
-      variable Dslr
-      variable This
-
-      #--   changement de variable
-      set Dslr $This.fra6.dslr
-
-      #--   le frame cantonnant le DSLR
-      frame $Dslr -borderwidth 1 -relief sunken
-      pack $Dslr
-      ::blt::table $Dslr
-
-      #---   construit les menubutton
-      foreach var { longuepose stock quality step bracket } {
-         buildMenuButton $var
-      }
-      $Dslr.step configure -textvar "" -text $caption(remotectrl,step) -width 2
-
-      #--   label pour afficher le format de l'image
-      label $Dslr.format -textvariable panneau(remotectrl,format) \
-         -width 4 -borderwidth 1
-
-      #--   construit le bouton 'Test'
-      button $Dslr.test -relief raised -width 10 -borderwidth 2 \
-         -text $caption(remotectrl,test) -command "::remotectrl::testTime"
-
-      #--   label pour afficher les etapes
-      label $Dslr.state -textvariable panneau(remotectrl,action) \
-         -width 14 -borderwidth 2 -relief sunken
-
-      #--   construit les entrees de donnees
-      foreach var { nom nb_poses delai intervalle } {
-         buildLabelEntry $var
-      }
-      $Dslr.nom configure -labelwidth 6 -width 10
-      bind $Dslr.nom <Leave> { ::remotectrl::test_rafale ; ::remotectrl::test_nom }
-
-      #--   la combobox pour le temps de pose
-      label $Dslr.lab_exptime -text $caption(remotectrl,exptime)
-      ComboBox $Dslr.exptime -borderwidth 1 -width 8 -relief sunken \
-         -height 10 -justify center \
-         -textvariable panneau(remotectrl,time) \
-         -modifycmd "::remotectrl::test_rafale ; ::remotectrl::test_exptime"
-      bind $Dslr.exptime <Leave> { ::remotectrl::test_rafale ; ::remotectrl::test_exptime }
-
-      #--   checkbutton pour la visualisation
-      checkbutton $Dslr.see -text $caption(remotectrl,see) \
-         -indicatoron "1" -onvalue "1" -offvalue "0" \
-         -variable ::remotectrl::see
-
-      #--   packaging des widgets
-      ::blt::table $Dslr \
-         $Dslr.longuepose 0,0 -cspan 2 \
-         $Dslr.stock 1,0 -cspan 2 \
-         $Dslr.format 2,0 \
-         $Dslr.quality 2,1 \
-         $Dslr.step 3,0 \
-         $Dslr.bracket 3,1\
-         $Dslr.test 4,0 -cspan 2 \
-         $Dslr.state 5,0 -cspan 2 \
-         $Dslr.nom 6,0 -cspan 2 \
-         $Dslr.nb_poses 7,0 -cspan 2 \
-         $Dslr.lab_exptime 8,0 -anchor w \
-         $Dslr.exptime 8,1 -anchor e \
-         $Dslr.delai 9,0 -cspan 2 \
-         $Dslr.intervalle 10,0 -cspan 2 \
-         $Dslr.see 11,0 -cspan 2
-      ::blt::table configure $Dslr r* -pady 2
-
-      #--   ajoute les bulles d'aide
-      foreach child { step test nom nb_poses exptime delai intervalle } {
-         DynamicHelp::add $Dslr.$child -text $caption(remotectrl,help_$child)
-      }
-
-      initPar
-
-      #--   demarre sur la configuration 'Une image'
-      configImg
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $Dslr
-   }
 
    ######################################################################
    #-- Gere les prises de vue a partir des reglages de l'utilisateur    #
    ######################################################################
    proc shoot {} {
       global panneau conf caption
-      variable Dslr
 
       #--   gele les commandes
       setWindowState disabled
@@ -105,24 +17,56 @@
       #--   affiche le status 'Attente'
       set panneau(remotectrl,action) $caption(remotectrl,action,wait)
 
-      #--   raccourcis
-      set camNo $panneau(remotectrl,camNo)
-      set type $panneau(remotectrl,bracket)
-      set storage $panneau(remotectrl,stock)
-      set nb_poses $remotectrl::nb_poses
-      set timer $::remotectrl::intervalle
-      set n [ lsearch $panneau(remotectrl,exptimeValues) $::remotectrl::exptime ]
-      set delta [ expr { -1*$panneau(remotectrl,step) } ]
+      #--   identifie l'operation par un nombre
+      set n [ lsearch $panneau(remotectrl,bracketLabels) $panneau(remotectrl,bracket) ]
+
+      #--   synchronise les extensions des images fits
+      if { $panneau(remotectrl,format) == "fits" } {
+         send "set conf(extension,defaut) $conf(extension,defaut)"
+      }
 
       #---  si la pose est differee, affichage du temps restant
       if { $::remotectrl::delai != 0 } {
          delay ::remotectrl::delai
       }
 
-      #--   s'il y a lieu synchronise les extensions des images fits
-      if { $panneau(remotectrl,format) == "fits" } {
-         send "set conf(extension,defaut) $conf(extension,defaut)"
+      if { $n == "3" } {
+
+         #--   affiche le status 'Acquisition'
+         set panneau(remotectrl,action) $caption(remotectrl,action,acq)
+
+         shootRafale
+
+         #--   complete le fichier log
+         infLog "$caption(remotectrl,duree) $::remotectrl::intervalle sec."
+
+      } else {
+
+         shootImg $n
+
       }
+
+      set panneau(remotectrl,action) " "
+
+      #--   degele les commandes
+      setWindowState normal
+   }
+
+   ######################################################################
+   #-- Commande les prises de vue autres que le mode Rafale de l'APN    #
+   ######################################################################
+   proc shootImg { op } {
+      global panneau caption
+
+      #--   raccourcis
+      set camNo $panneau(remotectrl,camNo)
+      set exptime $::remotectrl::exptime
+
+      #--   memorise
+      set nb_poses $remotectrl::nb_poses
+      set timer $::remotectrl::intervalle
+      set n [ lsearch $panneau(remotectrl,exptimeValues) $exptime ]
+      set delta [ expr { -1*$panneau(remotectrl,step) } ]
 
       #--   compte les images
       set i 1
@@ -133,32 +77,42 @@
          set panneau(remotectrl,action) $caption(remotectrl,action,acq)
 
          #--  regle le temps d'exposition
-         send "cam$camNo exptime $::remotectrl::exptime"
+         send "cam$camNo exptime $exptime"
 
          #--- le temps maintenant
          set time_now [ clock seconds ]
 
          #--- Alarme sonore de fin de pose sur le pc Jardin
-         #send "::camera::alarmeSonore $::remotectrl::exptime"
+         #send "::camera::alarmeSonore $exptime"
 
          #--  definit la commande
-         if { $type == $caption(remotectrl,bracket,rafale) } {
-            #--   retard pour valider le changement de temps d'exposition
-            if { $delta != "0" } { after 1500 }
+         if { $op == "2" } {
+
+            #--   En Continu, retard pour valider le changement de temps d'exposition
+            if { $delta != "0" } {
+               after 1500
+            }
             catch { send "cam$camNo acq -blocking" } msg
+
          } else {
-            #--   acquiert l'image
+
+            #--   Une image ou Une serie
             catch {  send "cam$camNo acq"
                      send "vwait status_cam$camNo" } msg
          }
 
-         if [ regexp "Dialog error" $msg ] {
-            tk_messageBox -title $caption(remotectrl,attention)\
-               -icon error -type ok -message $caption(remotectrl,cam_pb)
-         }
+         if ![ regexp "Dialog error" $msg ] {
+            if { $remotectrl::nom != "Test" } {
+               set name $remotectrl::nom
+               append name $i $panneau(remotectrl,extension)
+               infLog "$name"
+            }
+        } else {
+            avertiUser "cam_pb"
+        }
 
          #--  charge et visualise l'image si stockage autre que carte CF
-         if { $storage != "$caption(remotectrl,stock,cf)" } {
+         if { $panneau(remotectrl,stock) != "$caption(remotectrl,stock,cf)" } {
             loadandseeImg $i
          }
 
@@ -169,22 +123,27 @@
          incr i
 
          #--   si ce n'est pas la derniere image
-         if { $nb_poses >= $i && $type != $caption(remotectrl,bracket,one) } {
+         if { $nb_poses >= $i && $op != 0 } {
 
             #--   recalcule et affiche exptime pour serie et rafale
             if { $delta != "0" } {
+
                #--   incremente l'index = regresse dans la liste
                incr n "$delta"
+
                #--   extrait le temps de pose
                set ::remotectrl::exptime [ lindex  $panneau(remotectrl,exptimeValues) $n ]
+
                #--   actualise le temps de pose sur le panneau
                $Dslr.exptime setvalue @$n
                update
             }
 
-            #--   met a jour l'intervalle si on a a faire a une serie
-            if { $type == $caption(remotectrl,bracket,serie) } {
+            #--   met a jour l'intervalle pour Une serie
+            if { $op == 1 } {
+
                set d [ expr { $time_now + $timer -[ clock seconds ] } ]
+
                if { $d > 1 } {
                   #--   met a jour le timer
                   set ::remotectrl::intervalle $d
@@ -193,23 +152,46 @@
                }
             }
          }
-      #--   fin du while
+      }
+   }
+
+   ######################################################################
+   #-- Commande le mode Rafale de l'APN                                 #
+   ######################################################################
+   proc shootRafale {} {
+      global panneau
+
+      #--   raccourcis
+      set camNo $panneau(remotectrl,camNo)
+      set linkNo $panneau(remotectrl,linkNo)
+      set bitNo $panneau(remotectrl,bitNo)
+
+      #--  regle le temps d'exposition
+      send "cam$camNo exptime $::remotectrl::exptime"
+
+      #--   passe en mode 'rafale'
+      send "cam$camNo drivemode 1"
+
+      #--   prend une photo juste pour passer les parametres
+      catch {  send "cam$camNo acq -noblocking" } msg
+
+      if [ regexp "Dialog error" $msg ] {
+            avertiUser "cam_pb"
       }
 
-      #--   recharge le nb_poses
-      set ::remotectrl::nb_poses "1"
+      #--   passe en mode longuepose
+      send "cam$camNo longuepose 1"
 
-      #--   recharge l'intervalle mini
-      set remotectrl::intervalle $timer
+      #--   actionne le bit
+      send "link$linkNo bit $bitNo $panneau(remotectrl,startvalue)"
+      after [ expr { $remotectrl::intervalle*1000 } ]
+      send "link$linkNo bit $bitNo $panneau(remotectrl,stopvalue)"
 
-      #--   efface le status
-      set panneau(remotectrl,action) ""
+      #--   repasse en mode USB
+      send "cam$camNo longuepose 0"
 
-      #--   selectionne la valeur d'exposition finale
-      $Dslr.exptime setvalue @$n
-
-      #--   degele les commandes
-      setWindowState normal
+      #--   repasse en mode normal
+      send "cam$camNo drivemode 0"
    }
 
    ######################################################################
@@ -230,10 +212,23 @@
       append name $k $panneau(remotectrl,extension)
 
       #--   demande le N° du buffer
-      set bufNo [ send "set bufNo [visu1 buf]" ]
+      set bufNo [ send "set bufNo [ visu1 buf ]" ]
 
-      #--   attend que le buffer du Jardin soit pret
-      send "while { \[ buf$bufNo stat \] == \"buffer is empty\" } { after 100 }"
+      #--   attend que le buffer du Jardin soit pret pour fixer les seuils
+      set stat [ send "while { \[ buf$bufNo imageready \] == \"0\" } { after 50 } ; buf$bufNo stat" ]
+
+      #--   envoie les valeurs vers la console pour une image RAW
+      if { $panneau(remotectrl,format) == "fits" } {
+         ::console::affiche_resultat "\n$name\n\
+            $caption(remotectrl,maxi) [ lindex $stat 2 ]\n\
+            $caption(remotectrl,moyenne) [ lindex $stat 4 ]\n\
+            $caption(remotectrl,mini) [ lindex $stat 3 ]\n\n"
+      }
+
+      #--   fenetre l'image
+      if { $::remotectrl::wind == "1" && $panneau(remotectrl,box) !="" } {
+         send "buf$bufNo window \[ list $panneau(remotectrl,box) \]"
+      }
 
       #--   sauve l'image sur Jardin
       send "buf$bufNo save [ file join \$audace(rep_images) $name ]"
@@ -241,10 +236,8 @@
       #--   designe le repertoire contenant l'image a visualiser
       set rep $audace(rep_images)
       if ![ TestEntier $panneau(remotectrl,path_img) ] {
-
          #--   cas du dossier partage
          set rep $panneau(remotectrl,path_img)
-
       }
 
       #--   transfert ftp selon stockage et visualisation
@@ -278,8 +271,10 @@
       } elseif { $::panneau(remotectrl,stock) == "$caption(remotectrl,stock,backyard)" } {
 
          #--   detruit l'image Maison si stockage = Jardin seulement
-         file delete [ file join $audace(rep_images) $name ]
-
+         set file [ file join $audace(rep_images) $name ]
+         if [ file exists $file ] {
+            file delete $file
+         }
       }
    }
 
@@ -307,14 +302,11 @@
       #--   lance une acquisition
       shoot
 
-      #--   calcule la duree de la sequence
-      set duree [ expr { ([clock milliseconds ]-$t0)/1000.0 } ]
-
       #--   memorise l'intervalle
-      set panneau(remotecrtl,intervalle_mini) "$duree"
+      set panneau(remotectrl,intervalle_mini) [ format "%.1f" [ expr { ([clock milliseconds ]-$t0)/1000.0 } ] ]
 
       #--   fixe l'intervalle mini a afficher
-      set ::remotectrl::intervalle "[ format "%.1f" $duree ]"
+      set ::remotectrl::intervalle $panneau(remotectrl,intervalle_mini)
 
       #--   definit le nom du fichier
       set file ${::remotectrl::nom}1$panneau(remotectrl,extension)
@@ -343,6 +335,9 @@
          }
       }
 
+      #--   memorise le test
+      set panneau(remotectrl,test) "1"
+
       #--   libere les commandes
       setWindowState normal
    }
@@ -351,30 +346,30 @@
    #-- Verifie et Formate le temps en décimal                           #
    ######################################################################
    proc test_exptime {} {
-      global panneau caption
+      global panneau
 
       set exptime $panneau(remotectrl,time)
 
-      if { $panneau(remotectrl,longuepose) == "$caption(remotectrl,longuepose,lp)" } {
+      if { $panneau(remotectrl,pose) == "<30" } {
 
-         #--   test en mode Longuepose (entree manuelle)
+         #--   en mode USB, cherche l'index de la valeur
+         set i [ lsearch $panneau(remotectrl,exptimeLabels) $exptime ]
+
+         #--   lit le resultat dans la liste de conversion
+         set resultat [ lindex $panneau(remotectrl,exptimeValues) $i ]
+
+      } else {
+
+         #--   en mode Longuepose, teste l'entree
          #--   ote tout ce qui suit la virgule
          regsub -all {[^0-9\.]} $exptime {} resultat
 
          if { $exptime != $resultat || $exptime <= "30" } {
-            set resultat "31"
             #--   modifie l'affichage
             set $panneau(remotectrl,time) "31"
+            set resultat "31"
          }
-
-      } else {
-
-         #--   en mode USB, fait
-         set i [ lsearch $panneau(remotectrl,exptimeLabels) $exptime ]
-         #--   lit le resultat dans la liste de conversion
-         set resultat [ lindex $panneau(remotectrl,exptimeValues) $i ]
       }
-
       set ::remotectrl::exptime $resultat
    }
 
@@ -382,18 +377,18 @@
    #-- Ote tous les caracteres non alphanumeriques ou non underscore #
    ###################################################################
    proc test_nom {} {
+
       #-- seuls les caracteres alphanumériques et le underscore sont autorises
       regsub -all {[^\w_]} $::remotectrl::nom {} ::remotectrl::nom
+
    }
 
    ###################################################################
    #-- Si le nombre de poses n'est pas un entier il est fixe a 1     #
    ###################################################################
    proc test_nb_poses {} {
-      variable Dslr
 
       if ![ TestEntier $::remotectrl::nb_poses ] {
-         #-- par defaut le nombre de pose est egal a 1
          set ::remotectrl::nb_poses "1"
       }
    }
@@ -413,42 +408,72 @@
    }
 
    ###################################################################
-   #-- Si le nombre de poses n'est pas un entier il est fixe a 0     #
+   #-- Si le delai n'est pas un entier il est fixe a 0               #
    ###################################################################
-   proc test_delai { } {
+   proc test_delai {} {
+
       if ![ TestEntier $::remotectrl::delai ] {
          set ::remotectrl::delai "0"
       }
    }
 
-   #######################################################################
-   #-- Teste si la valeur d'exposition finale est dans la plage          #
-   #-- appelee par le bouton Pas, le nb de poses et le temps d'exposition#
-   #######################################################################
-   proc test_rafale { } {
-      global panneau caption
-      variable Dslr
+   #########################################################################
+   #-- Teste si la valeur d'exposition finale est dans la plage            #
+   #-- appelee par le bouton Pas, le nb de poses et le temps d'exposition  #
+   #-- s'applique uniquement a 'Une serie' ou 'En continu'                 #
+   #########################################################################
+   proc test_bracketing {} {
+      global panneau
 
-      #--sans objet si une image
-      if { $panneau(remotectrl,bracket) == $caption(remotectrl,bracket,one) } {
-         return
-      }
+      set exptimeLabels $panneau(remotectrl,exptimeLabels)
+      set n [ lsearch $panneau(remotectrl,bracketLabels) $panneau(remotectrl,bracket) ]
 
-      #--   recherche l'indice du temps affiche
-      set i_initial [ lsearch $panneau(remotectrl,exptimeLabels) $panneau(remotectrl,time) ]
+      if { $panneau(remotectrl,pose) == "<30" &&  ( $n == "1" || $n == "2" ) } {
 
-      #--   selectionne cette valeur
-      $Dslr.exptime setvalue @$i_initial
+         #--   recherche l'indice du temps affiche
+         set i_initial [ lsearch $exptimeLabels $panneau(remotectrl,time) ]
 
-      #--   calcule l'indice de la valeur finale
-      set i_final [ expr { $i_initial+$panneau(remotectrl,step)*(1-$::remotectrl::nb_poses) } ]
+         #--   calcule l'indice de la valeur finale
+         set i_final [ expr { $i_initial+$panneau(remotectrl,step)*(1-$::remotectrl::nb_poses) } ]
 
-      if { $i_final < 0 || $i_final > [ llength $panneau(remotectrl,exptimeLabels) ] } {
-         #--   message d'alerte si hors plage
-         tk_messageBox -title $caption(remotectrl,attention)\
-            -icon error -type ok -message $caption(remotectrl,out_of_limits)
-         #--   remet pas a 0
-         set panneau(remotectrl,step) 0
+         if { $i_final < 0 || $i_final > [ llength $exptimeLabels ] } {
+
+            #--   message d'alerte si hors plage
+            avertiUser "out_of_limits"
+
+            #--   remet pas a 0
+            set panneau(remotectrl,step) "0"
+         }
       }
    }
 
+   ######################################################################
+   #-- Complete le fichier log                                          #
+   #-- parametre : nom de l'image                                       #
+   ######################################################################
+   proc infLog { name } {
+      global panneau
+
+      set texte [ list \
+            "$panneau(remotectrl,stock)" \
+            "$panneau(remotectrl,bracket)" \
+            "$panneau(remotectrl,quality)" \
+            $::remotectrl::exptime \
+            "$name" ]
+      writeLog $panneau(remotectrl,log) $texte
+   }
+
+   ######################################################################
+   #--   Decompteur de secondes                                         #
+   #  parametre : nom de la variable a decompter (delai ou intervalle)  #
+   ######################################################################
+   proc delay { var } {
+      global panneau
+
+      while { [ set $var ] != "0" } {
+            after 1000
+            set $var [ expr { [ set $var ]-1 } ]
+            if { [ set $var ] <= 0 } { set $var 0 }
+            update
+      }
+   }
