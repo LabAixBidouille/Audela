@@ -2,7 +2,7 @@
 # Fichier : lhires.tcl
 # Description : Gere un focuser sur port parallele ou quickremote
 # Auteur : Michel PUJOL
-# Mise a jour $Id: lhires.tcl,v 1.2 2009-11-07 09:09:54 robertdelmas Exp $
+# Mise a jour $Id: lhires.tcl,v 1.3 2010-02-14 17:43:18 robertdelmas Exp $
 #
 
 namespace eval ::lhires {
@@ -68,12 +68,12 @@ proc ::lhires::initPlugin { } {
 }
 
 #------------------------------------------------------------
-#  ::lhires::getHelp
+#  ::lhires::getPluginHelp
 #     retourne la documentation du equipement
 #
 #  return "nom_equipement.htm"
 #------------------------------------------------------------
-proc ::lhires::getHelp { } {
+proc ::lhires::getPluginHelp { } {
    return "lhires.htm"
 }
 
@@ -237,7 +237,6 @@ proc ::lhires::createPlugin { } {
    #--- j'intialise les bits a zero
    link$private(linkNo) bit $conf(lhires,bitLampOff) "0"
    link$private(linkNo) bit $conf(lhires,bitLampOn)  "0"
-
 }
 
 #------------------------------------------------------------
@@ -298,7 +297,7 @@ proc ::lhires::move { command } {
          #--- j'attend au moins 500 ms entre deux commandes (cas du quickremote sous Linux)
          after 500
          link$private(linkNo) bit $conf(lhires,bitLampOff) "1"
-         #--- j'attend que le basculement de la lampe soit terminé
+         #--- j'attend que le basculement de la lampe soit terminÃ©
          after 2000
          #---- je coupe l'alimentation du moteur
          link$private(linkNo) bit $conf(lhires,bitLampOff) "0"
@@ -309,5 +308,4 @@ proc ::lhires::move { command } {
    }
    return 0
 }
-
 
