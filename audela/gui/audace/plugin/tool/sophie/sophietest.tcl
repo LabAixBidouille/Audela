@@ -2,7 +2,7 @@
 # @file     sophietest.tcl
 # @brief    Fichier du namespace ::sophie::test
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietest.tcl,v 1.24 2010-02-14 10:55:10 robertdelmas Exp $
+# @version  $Id: sophietest.tcl,v 1.25 2010-02-14 16:25:40 michelpujol Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -567,7 +567,7 @@ proc ::sophie::test::openSocketSophie { } {
 
    set private(pcSophie,socketChannel) [socket $private(host) $::conf(sophie,socketPort) ]
    #---  -translation binary -encoding binary
-   fconfigure $private(pcSophie,socketChannel) -buffering line -blocking false -translation binary -encoding binary
+   fconfigure $private(pcSophie,socketChannel) -buffering line -blocking true -translation binary -encoding binary
    fileevent $private(pcSophie,socketChannel) readable [list ::sophie::test::readSocketSophie ]
 
 }
@@ -594,7 +594,7 @@ proc ::sophie::test::readSocketSophie {  } {
    variable private
 
    set private(pcSophie,socketResponse) [gets $private(pcSophie,socketChannel) ]
-   ###return $result
+   return $private(pcSophie,socketResponse)
 }
 
 #------------------------------------------------------------
@@ -650,13 +650,8 @@ proc ::sophie::test::sendPcGuidage { commandName } {
             ::sophie::test::writeSocketSophie "!STAT_OFF@"
          }
          "GET_STAT" {
-            #--- je purge la socket
-            set private(pcSophie,socketResponse) ""
-
             ::sophie::test::writeSocketSophie "!GET_STAT@"
-            ###set result [::sophie::test::readSocketSophie]
-            update
-            set result $private(pcSophie,socketResponse)
+            set result [::sophie::test::readSocketSophie]
             #--- j'affiche le resultat
             tk_messageBox -title $::caption(sophie,simulation) -type ok -message "statistiques=$result" -icon info
          }
