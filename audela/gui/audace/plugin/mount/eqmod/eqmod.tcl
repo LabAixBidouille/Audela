@@ -2,7 +2,7 @@
 # Fichier : eqmod.tcl
 # Description : Configuration de la monture EQMOD
 # Auteur : Robert DELMAS
-# Mise a jour $Id: eqmod.tcl,v 1.7 2009-11-26 19:07:27 denismarchais Exp $
+# Mise a jour $Id: eqmod.tcl,v 1.8 2010-02-14 10:52:44 robertdelmas Exp $
 #
 
 namespace eval ::eqmod {
@@ -161,7 +161,7 @@ proc ::eqmod::fillConfigPage { frm } {
    frame $frm.frame2b -borderwidth 0 -relief raised
 
    frame $frm.frame2c -borderwidth 0 -relief raised
-   
+
    frame $frm.frame3 -borderwidth 0 -relief raised
 
    frame $frm.frame4 -borderwidth 0 -relief raised
@@ -249,7 +249,7 @@ proc ::eqmod::fillConfigPage { frm } {
    radiobutton $frm.posSouth -text "Sud" \
       -highlightthickness 0 -variable ::eqmod::private(eqmod,initpos) -value "south"
    pack $frm.posSouth -in $frm.frame2c -anchor center -side right -padx 0 -pady 10
-   
+
    #--- Le checkbutton pour le demarrage du suivi sideral a l'init
    checkbutton $frm.moteur_on -text "$caption(eqmod,moteur_on)" -highlightthickness 0 -variable ::eqmod::private(eqmod,moteur_on)
    pack $frm.moteur_on -in $frm.frame2b -anchor center -side left -padx 10 -pady 10
@@ -437,3 +437,4 @@ proc ::eqmod::getPluginProperty { propertyName } {
       backlash                { return 0 }
    }
 }
+

@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot.tcl,v 1.2 2010-01-30 14:09:41 robertdelmas Exp $
+# $Id: calaphot.tcl,v 1.3 2010-02-14 10:53:24 robertdelmas Exp $
 #
 namespace eval ::CalaPhot {
    package provide calaphot 5.0
@@ -103,19 +103,19 @@ namespace eval ::CalaPhot {
                 return 1
             }
         }
-		catch {package require BLT} erreur
-		if {$erreur != "2.4"} {
-		    catch {load blt24[info sharedlibextension]} erreur
-		    if {$erreur !=    ""} {
-		        ::console::affiche_erreur "$erreur\n"
-		        return 1
-		    } else {
-		        if {[catch {package require BLT} erreur]} {
-		            ::console::affiche_erreur "$erreur\n"
-		            return 1
-		        }
-		    }
-		}
+      catch {package require BLT} erreur
+      if {$erreur != "2.4"} {
+          catch {load blt24[info sharedlibextension]} erreur
+          if {$erreur !=    ""} {
+              ::console::affiche_erreur "$erreur\n"
+              return 1
+          } else {
+              if {[catch {package require BLT} erreur]} {
+                  ::console::affiche_erreur "$erreur\n"
+                  return 1
+              }
+          }
+      }
    }
 
    #------------------------------------------------------------
@@ -151,3 +151,4 @@ namespace eval ::CalaPhot {
       #--- Rien a faire, car la fenetre est fermee par l'utilisateur
    }
 }
+

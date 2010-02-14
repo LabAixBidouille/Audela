@@ -2,7 +2,7 @@
 # Fichier : session.tcl
 # Description : configuration des parametres de session
 # Auteur : Michel PUJOL
-# Mise a jour $Id: displayconfig.tcl,v 1.1 2009-12-14 18:56:14 michelpujol Exp $
+# Mise a jour $Id: displayconfig.tcl,v 1.2 2010-02-14 10:54:44 robertdelmas Exp $
 #
 
 ################################################################
@@ -11,7 +11,7 @@
 ################################################################
 
 namespace eval ::displaycoord::config {
-   
+
 }
 
 ##------------------------------------------------------------
@@ -25,14 +25,14 @@ namespace eval ::displaycoord::config {
 #------------------------------------------------------------
 proc ::displaycoord::config::run { tkbase visuNo } {
    variable private
-   
+
    #--- Creation des variables si elles n'existaient pas
    if { ! [ info exists ::conf(displaycoord,configWindowPosition) ] } { set ::conf(displaycoord,configWindowPosition) "300x200+20+10" }
-   
+
    #--- j'affiche la fenetre
    set private($visuNo,This) "$tkbase.config"
    ::confGenerique::run  $visuNo $private($visuNo,This) "::displaycoord::config" -modal 0 -geometry $::conf(displaycoord,configWindowPosition) -resizable 1
-   
+
 }
 
 ##------------------------------------------------------------
@@ -46,7 +46,7 @@ proc ::displaycoord::config::run { tkbase visuNo } {
 #------------------------------------------------------------
 proc ::displaycoord::config::closeWindow { visuNo } {
    variable private
-   
+
    #--- je memorise la position courante de la fenetre
    set ::conf(displaycoord,configWindowPosition) [ wm geometry $private($visuNo,This) ]
 }
@@ -63,7 +63,6 @@ proc ::displaycoord::config::showHelp { } {
    [::eshel::getPluginDirectory] [::eshel::getPluginHelp]
 }
 
-
 ##------------------------------------------------------------
 # enregistre les modifications
 #
@@ -74,14 +73,14 @@ proc ::displaycoord::config::showHelp { } {
 #------------------------------------------------------------
 proc ::displaycoord::config::apply { visuNo } {
    variable widget
-      
+
    #--- je copie les autres valeurs dans les variables
    set ::conf(displaycoord,serverHost)  $widget(serverHost)
    set ::conf(displaycoord,serverPort)  $widget(serverPort)
-   
+
    #--- je relance la connexion au serveur de coordonnees
-   ::displaycoord::startConnectionLoop    
-   
+   ::displaycoord::startConnectionLoop
+
 }
 
 ##------------------------------------------------------------
@@ -97,31 +96,28 @@ proc ::displaycoord::config::fillConfigPage { frm visuNo } {
    variable widget
    variable private
    global caption
-   
+
    set private($visuNo,frm) $frm
-   
+
    #--- j'initalise les variables temporaires
    set widget(serverHost) $::conf(displaycoord,serverHost)
    set widget(serverPort) $::conf(displaycoord,serverPort)
-   
-   
+
    label  $frm.serverHostLabel  -text $caption(displaycoord,serverHost) -justify left
    entry  $frm.serverHostEntry  -textvariable ::displaycoord::config::widget(serverHost) -justify left
    label  $frm.serverPortLabel  -text $caption(displaycoord,serverPort) -justify left
    entry  $frm.serverPortEntry  -textvariable ::displaycoord::config::widget(serverPort) -justify left -width 8
-   
+
    #--- placement dans la grille
    grid $frm.serverHostLabel    -in $frm -row 0 -column 0 -sticky wn  -padx 2
    grid $frm.serverHostEntry    -in $frm -row 0 -column 1 -sticky wen -padx 2
    grid $frm.serverPortLabel    -in $frm -row 1 -column 0 -sticky wn  -padx 2
    grid $frm.serverPortEntry    -in $frm -row 1 -column 1 -sticky wn  -padx 2
-   
+
    grid columnconfig $frm 1 -weight 1
-   
-   
+
    pack $frm  -side top -fill x -expand 1
 }
-
 
 ##------------------------------------------------------------
 # retourne le titre de la fenetre
@@ -132,6 +128,7 @@ proc ::displaycoord::config::fillConfigPage { frm visuNo } {
 #------------------------------------------------------------
 proc ::displaycoord::config::getLabel { } {
    global caption
-   
+
    return "$caption(displaycoord,title)"
 }
+

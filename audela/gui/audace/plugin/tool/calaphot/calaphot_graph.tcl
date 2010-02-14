@@ -5,7 +5,7 @@
 #
 # @brief Routines de gestion des affichages de Calaphot
 #
-# $Id: calaphot_graph.tcl,v 1.3 2009-06-09 07:56:36 jacquesmichelet Exp $
+# $Id: calaphot_graph.tcl,v 1.4 2010-02-14 10:54:16 robertdelmas Exp $
 
 namespace eval ::CalaPhot {
 
@@ -579,7 +579,7 @@ namespace eval ::CalaPhot {
         }
 
         if { ![info exists data_script(trace_cste_premier)] } {
-            # Aucune image n'est valide    
+            # Aucune image n'est valide
             tk_messageBox -message $calaphot(texte,pas_image_valide) -icon error -title $calaphot(texte,probleme)
             return
         }
@@ -1594,3 +1594,4 @@ namespace eval ::CalaPhot {
         #Procedure pour bloquer la suppression des fenetres esclaves
     }
 }
+
