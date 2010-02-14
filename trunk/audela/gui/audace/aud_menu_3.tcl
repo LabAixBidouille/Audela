@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.58 2010-01-30 14:32:11 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_3.tcl,v 1.59 2010-02-14 17:41:28 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -1386,29 +1386,29 @@ namespace eval ::pretraitement {
 
       #---
       if { $pretraitement(operation) == "multi_recadrer" } {
-         set pretraitement(page_web) "1019recadrer"
+         set pretraitement(page_web) "1030recadrer"
       } elseif { $pretraitement(operation) == "multi_reechantillonner" } {
-         set pretraitement(page_web) "1020reechantillonner"
+         set pretraitement(page_web) "1040reechantillonner"
       } elseif { $pretraitement(operation) == "multi_ajouter_cte" } {
-         set pretraitement(page_web) "1030ajouter_cte"
+         set pretraitement(page_web) "1050ajouter_cte"
       } elseif { $pretraitement(operation) == "multi_multiplier_cte" } {
-         set pretraitement(page_web) "1040multiplier_cte"
+         set pretraitement(page_web) "1060multiplier_cte"
       } elseif { $pretraitement(operation) == "multi_ecreter" } {
-         set pretraitement(page_web) "1044ecreter"
+         set pretraitement(page_web) "1070ecreter"
       } elseif { $pretraitement(operation) == "multi_soust_fond_ciel" } {
-         set pretraitement(page_web) "1046soust_fond_ciel"
+         set pretraitement(page_web) "1080soust_fond_ciel"
       } elseif { $pretraitement(operation) == "multi_norm_fond" } {
-         set pretraitement(page_web) "1050norm_fond"
+         set pretraitement(page_web) "1090norm_fond"
       } elseif { $pretraitement(operation) == "multi_norm_eclai" } {
-         set pretraitement(page_web) "1060norm_eclai"
+         set pretraitement(page_web) "1100norm_eclai"
       } elseif { $pretraitement(operation) == "multi_addition" } {
-         set pretraitement(page_web) "1070addition"
+         set pretraitement(page_web) "1110addition"
       } elseif { $pretraitement(operation) == "multi_soustraction" } {
-         set pretraitement(page_web) "1080soustraction"
+         set pretraitement(page_web) "1120soustraction"
       } elseif { $pretraitement(operation) == "multi_division" } {
-         set pretraitement(page_web) "1090division"
+         set pretraitement(page_web) "1130division"
       } elseif { $pretraitement(operation) == "multi_opt_noir" } {
-         set pretraitement(page_web) "1095opt_noir"
+         set pretraitement(page_web) "1140opt_noir"
       }
 
       #---
@@ -2995,7 +2995,7 @@ namespace eval ::conv2 {
       global help
 
       #---
-      ::audace::showHelpItem "$help(dir,pretrait)" "1015conversion_couleurs.htm"
+      ::audace::showHelpItem "$help(dir,pretrait)" "1020conversion_couleurs.htm"
    }
 
    #########################################################################
@@ -3944,15 +3944,15 @@ namespace eval ::traiteWindow {
 
       #---
       if { $traiteWindow(operation) == "serie_mediane" } {
-         set traiteWindow(page_web) "1120serie_mediane"
+         set traiteWindow(page_web) "1150serie_mediane"
       } elseif { $traiteWindow(operation) == "serie_somme" } {
-         set traiteWindow(page_web) "1130serie_somme"
+         set traiteWindow(page_web) "1160serie_somme"
       } elseif { $traiteWindow(operation) == "serie_moyenne" } {
-         set traiteWindow(page_web) "1140serie_moyenne"
+         set traiteWindow(page_web) "1170serie_moyenne"
       } elseif { $traiteWindow(operation) == "serie_ecart_type" } {
-         set traiteWindow(page_web) "1150serie_ecart_type"
+         set traiteWindow(page_web) "1180serie_ecart_type"
       } elseif { $traiteWindow(operation) == "serie_recentrer" } {
-         set traiteWindow(page_web) "1160serie_recentrer"
+         set traiteWindow(page_web) "1190serie_recentrer"
       }
 
       #---
@@ -4935,13 +4935,13 @@ namespace eval ::faireImageRef {
 
       #---
       if { $faireImageRef(operation) == "faire_offset" } {
-         set faireImageRef(page_web) "1113faire_offset"
+         set faireImageRef(page_web) "1200faire_offset"
       } elseif { $faireImageRef(operation) == "faire_dark" } {
-         set faireImageRef(page_web) "1114faire_dark"
+         set faireImageRef(page_web) "1210faire_dark"
       } elseif { $faireImageRef(operation) == "faire_flat_field" } {
-         set faireImageRef(page_web) "1115faire_flat_field"
+         set faireImageRef(page_web) "1220faire_flat_field"
       } elseif { $faireImageRef(operation) == "pretraitement" } {
-         set faireImageRef(page_web) "1116pretraitement"
+         set faireImageRef(page_web) "1230pretraitement"
       }
 
       #---
