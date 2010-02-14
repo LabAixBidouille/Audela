@@ -2,7 +2,7 @@
 # Fichier : t193pad.tcl
 # Description : Raquette specifique au T193 de l'OHP
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: t193pad.tcl,v 1.8 2010-02-06 12:51:06 michelpujol Exp $
+# Mise a jour $Id: t193pad.tcl,v 1.9 2010-02-14 16:40:33 michelpujol Exp $
 #
 
 namespace eval ::t193pad {
@@ -244,12 +244,6 @@ proc ::t193pad::createDialog { } {
    frame $This.frame3 -borderwidth 1 -relief groove -bg $color(blue_pad)
    pack $This.frame3 -side top -fill both -expand 1
 
-   frame $This.frame4 -borderwidth 1 -relief groove -bg $color(blue_pad)
-   pack $This.frame4 -side top -fill both -expand 1
-
-   frame $This.frame5 -borderwidth 1 -relief groove -bg $color(blue_pad)
-   pack $This.frame5 -side top -fill both -expand 1
-
    #--- Label pour AD
    label $This.frame1.ent1 -textvariable audace(telescope,getra) \
       -fg $color(white) -bg $color(blue_pad) -font [ list {Arial} 12 bold ]
@@ -261,10 +255,9 @@ proc ::t193pad::createDialog { } {
    pack $This.frame1.ent2 -anchor center -fill none -pady 1
 
    #--- Bind de l'affichage des coordonnees
-   set zone(radec) $This.frame1
-   bind $zone(radec) <ButtonPress-1>      { ::telescope::afficheCoord }
-   bind $zone(radec).ent1 <ButtonPress-1> { ::telescope::afficheCoord }
-   bind $zone(radec).ent2 <ButtonPress-1> { ::telescope::afficheCoord }
+   bind $This.frame1      <ButtonPress-1> { ::telescope::afficheCoord }
+   bind $This.frame1.ent1 <ButtonPress-1> { ::telescope::afficheCoord }
+   bind $This.frame1.ent2 <ButtonPress-1> { ::telescope::afficheCoord }
 
    #--- Frame du bouton 'N'
    frame $This.frame2.n -width 27 -borderwidth 0 -relief flat -bg $color(blue_pad)
@@ -332,6 +325,7 @@ proc ::t193pad::createDialog { } {
    LabelEntry $This.frame3.ad -label $caption(t193pad,RA) \
       -textvariable ::t193pad::private(targetRa) -width 14 -fg $color(white) \
       -bg $color(blue_pad) -entrybg $color(gray_pad) -justify center \
+      -labelwidth 5 \
       -labelfont [ list {Arial} 10 bold ] -font [ list {Arial} 12 bold ]
    pack $This.frame3.ad -anchor center -fill none -pady 2
 
@@ -339,20 +333,21 @@ proc ::t193pad::createDialog { } {
    LabelEntry $This.frame3.dec -label $caption(t193pad,DEC) \
       -textvariable ::t193pad::private(targetDec) -width 14 -fg $color(white) \
       -bg $color(blue_pad) -entrybg $color(gray_pad) -justify center \
+      -labelwidth 5 \
       -labelfont [ list {Arial} 10 bold ] -font [ list {Arial} 12 bold ]
    pack $This.frame3.dec -anchor center -fill none -pady 2
 
-   #--- Bouton GOTO
-   button $This.frame3.buttonGoto -borderwidth 1 -width 14 \
+   #--- Bouton GOTO start
+   button $This.frame3.buttonGoto -borderwidth 1 -width 8 \
       -font [ list {Arial} 12 bold ] -text $caption(t193pad,goto) -relief ridge \
       -fg $color(white) -bg $color(gray_pad) -command "::t193pad::cmdStartGoto"
-   pack $This.frame3.buttonGoto -anchor center -fill x -side left -pady 2
+   pack $This.frame3.buttonGoto -anchor center -fill x -expand 1 -side left -padx 4 -pady 2
 
-   #--- Bouton Stop GOTO
-   button $This.frame3.buttonStopGoto -borderwidth 1 -width 10 \
+   #--- Bouton GOTO stop
+   button $This.frame3.buttonStopGoto -borderwidth 1 -width 8 \
       -font [ list {Arial} 12 bold ] -text $caption(t193pad,stopGoto) -relief ridge \
       -fg $color(white) -bg $color(gray_pad) -command "::telescope::stopGoto"
-   pack $This.frame3.buttonStopGoto -anchor center -fill x -pady 2
+   pack $This.frame3.buttonStopGoto -anchor center -fill x -expand 1  -side left -padx 4 -pady 2
 
    #--- Bind des boutons 'N', 'E', 'O' et 'S'
    set zone(n) $This.frame2.n.canv1
@@ -371,123 +366,132 @@ proc ::t193pad::createDialog { } {
    #--- Bind de la vitesse de la monture
    bind $This.frame2.we.vitesseMonture <ButtonPress-1> { ::telescope::incrementSpeed }
 
-   #--- Label pour le moteur de focalisation
-   label $This.frame4.focus -text $caption(t193pad,moteur_foc) -relief flat \
-      -fg $color(white) -bg $color(blue_pad) -font [ list {Arial} 12 bold ]
-   pack $This.frame4.focus -anchor center -fill none -padx 4 -pady 1
+   #--- Frame du FOCUS
+   frame $This.focus -borderwidth 1 -relief groove -bg $color(blue_pad)
+      #--- Titre pour le moteur de focalisation
+      label $This.focus.titre -text $caption(t193pad,moteur_foc) -relief flat \
+         -fg $color(white) -bg $color(blue_pad) -font [ list {Arial} 12 bold ]
+      pack $This.focus.titre -anchor center -fill none -padx 4 -pady 1
 
-   #--- Frame pour les boutons '-' et '+'
-   frame $This.frame4.pm -width 27 -borderwidth 0 -relief flat -bg $color(blue_pad)
-   pack $This.frame4.pm -side top -fill x
+      #--- Frame pour les boutons '-' et '+' du FOCUS
+      frame $This.focus.pm -width 27 -borderwidth 0 -relief flat -bg $color(blue_pad)
+         #--- Bouton '-'
+         button $This.focus.pm.buttonMoins -borderwidth 2 \
+            -font [ list {Arial} 12 bold ] \
+            -fg $color(white) \
+            -bg $color(gray_pad) \
+            -text "-" \
+            -width 2 \
+            -anchor center \
+            -relief ridge
+         pack $This.focus.pm.buttonMoins -expand 0 -side left -padx 10 -pady 4
 
-   #--- Bouton '-'
-   button $This.frame4.pm.canv1 -borderwidth 2 \
-      -font [ list {Arial} 12 bold ] \
-      -fg $color(white) \
-      -bg $color(gray_pad) \
-      -text "-" \
-      -width 2 \
-      -anchor center \
-      -relief ridge
-   pack $This.frame4.pm.canv1 -expand 0 -side left -padx 10 -pady 4
+         #--- Label pour la position de la focalisation courante
+         label $This.focus.pm.positionFoc -textvariable ::audace(telescope,currentFocus) \
+            -bg $color(blue_pad) -fg $color(white) -font [ list {Arial} 12 bold ] -width 10 \
+            -borderwidth 0 -relief flat
+         pack $This.focus.pm.positionFoc -expand 1 -side left
 
-   #--- Label pour la position de la focalisation courante
-   label $This.frame4.pm.positionFoc -textvariable ::audace(telescope,currentFocus) \
-      -bg $color(blue_pad) -fg $color(white) -font [ list {Arial} 12 bold ] -width 10 \
-      -borderwidth 0 -relief flat
-   pack $This.frame4.pm.positionFoc -expand 1 -side left
+         #--- Bouton '+'
+         button $This.focus.pm.buttonPlus -borderwidth 2 \
+            -font [ list {Arial} 12 bold ] \
+            -fg $color(white) \
+            -bg $color(gray_pad) \
+            -text "+" \
+            -width 2 \
+            -anchor center \
+            -relief ridge
+         pack $This.focus.pm.buttonPlus -expand 0 -side right -padx 10 -pady 4
 
-   #--- Bouton '+'
-   button $This.frame4.pm.canv2 -borderwidth 2 \
-      -font [ list {Arial} 12 bold ] \
-      -fg $color(white) \
-      -bg $color(gray_pad) \
-      -text "+" \
-      -width 2 \
-      -anchor center \
-      -relief ridge
-   pack $This.frame4.pm.canv2 -expand 0 -side right -padx 10 -pady 4
+         #--- Bind des boutons '+' et '-'
+         bind $This.focus.pm.buttonMoins <ButtonPress-1>   { ::t193pad::startFocus "-" }
+         bind $This.focus.pm.buttonMoins <ButtonRelease-1> { ::t193pad::stopFocus }
+         bind $This.focus.pm.buttonPlus  <ButtonPress-1>   { ::t193pad::startFocus "+" }
+         bind $This.focus.pm.buttonPlus  <ButtonRelease-1> { ::t193pad::stopFocus }
 
-   #--- Label de la vitesse du moteur de focalisation
-   label $This.frame4.vitesseFocus -font [ list {Arial} 12 bold ] \
-      -textvariable audace(focus,labelspeed) -bg $color(blue_pad) -fg $color(white) \
-      -width 2 -borderwidth 0 -relief flat
-   pack $This.frame4.vitesseFocus -anchor center -fill none -pady 2
 
-   #--- Bouton GOTOFoc
-   button $This.frame4.buttonGotoFoc -borderwidth 1 -width 10 \
-      -font [ list {Arial} 12 bold ] -text $caption(t193pad,gotoFoc) -relief ridge \
-      -fg $color(white) -bg $color(gray_pad) -command "::t193pad::gotoFocus"
-   pack $This.frame4.buttonGotoFoc -anchor center -fill x -side left -pady 2
+         #--- Label de la vitesse du moteur de focalisation
+         ###label $This.focus.vitesseFocus -font [ list {Arial} 12 bold ] \
+         ###   -textvariable audace(focus,labelspeed) -bg $color(blue_pad) -fg $color(white) \
+         ###   -width 2 -borderwidth 0 -relief flat
+         ###pack $This.focus.vitesseFocus -anchor center -fill none -pady 2
 
-   #--- LabelEntry pour la position du GOTO de la focalisation
-   LabelEntry $This.frame4.positionGotoFoc -textvariable ::t193pad::private(gotoFocus) \
-      -width 10 -entrybg $color(gray_pad) -justify center -font [ list {Arial} 12 bold ]
-   pack $This.frame4.positionGotoFoc -anchor center -fill none -pady 2
+      #--- Bind de la vitesse du moteur de focalisation
+         ###bind $This.focus.vitesseFocus <ButtonPress-1> { ::focus::incrementSpeed $::conf(t193pad,focuserLabel) pad }
 
-   #--- Bind des boutons '+' et '-'
-   set zone(moins) $This.frame4.pm.canv1
-   set zone(plus)  $This.frame4.pm.canv2
-   bind $zone(moins) <ButtonPress-1>   { ::t193pad::startFocus "-" }
-   bind $zone(moins) <ButtonRelease-1> { ::t193pad::stopFocus }
-   bind $zone(plus)  <ButtonPress-1>   { ::t193pad::startFocus "+" }
-   bind $zone(plus)  <ButtonRelease-1> { ::t193pad::stopFocus }
+      pack $This.focus.pm -side top -fill x
 
-   #--- Bind de la vitesse du moteur de focalisation
-   bind $This.frame4.vitesseFocus <ButtonPress-1> { ::focus::incrementSpeed $::conf(t193pad,focuserLabel) pad }
+      #--- Frame pour FOCUS GOTO
+      frame $This.focus.goto -width 27 -borderwidth 0 -relief flat -bg $color(blue_pad)
+         #--- Bouton FOCUS GOTO
+         button $This.focus.goto.buttonGotoFoc -borderwidth 1 -width 8 \
+            -font [ list {Arial} 12 bold ] -text $caption(t193pad,gotoFoc) -relief ridge \
+            -fg $color(white) -bg $color(gray_pad) -command "::t193pad::gotoFocus"
+         pack $This.focus.goto.buttonGotoFoc -anchor center -fill x -side left -padx 4 -pady 2 -expand 1
 
-   #--- Label pour le dome
-   label $This.frame5.dome -text $caption(t193pad,dome) -relief flat \
-      -fg $color(white) -bg $color(blue_pad) -font [ list {Arial} 12 bold ]
-   pack $This.frame5.dome -anchor center -fill none -padx 4 -pady 1
+         #--- Entry pour la position du GOTO de la focalisation
+         Entry $This.focus.goto.positionGotoFoc -textvariable ::t193pad::private(gotoFocus) \
+            -width 4 -bg $color(gray_pad) -justify center -font [ list {Arial} 12 bold ]
+         pack $This.focus.goto.positionGotoFoc -anchor center -fill x -side left -padx 4 -pady 2 -expand 1
 
-   #--- Frame pour les boutons '-' et '+'
-   frame $This.frame5.pm -width 27 -borderwidth 0 -relief flat -bg $color(blue_pad)
-   pack $This.frame5.pm -side top -fill x
+         #--- Bouton FOCUS STOP
+         button $This.focus.goto.buttonStopFoc -borderwidth 1 -width 8 \
+         -font [ list {Arial} 12 bold ] -text $caption(t193pad,stopFoc) -relief ridge \
+         -fg $color(white) -bg $color(gray_pad) -command ::t193pad::stopFocus
+         pack $This.focus.goto.buttonStopFoc -anchor center -fill x -side left -padx 4 -pady 2 -expand 1
 
-   #--- Bouton '-'
-   button $This.frame5.pm.canv1 -borderwidth 2 \
-      -font [ list {Arial} 12 bold ] \
-      -fg $color(white) \
-      -bg $color(gray_pad) \
-      -text "-" \
-      -width 2 \
-      -anchor center \
-      -relief ridge
-   pack $This.frame5.pm.canv1 -expand 0 -side left -padx 10 -pady 4
+      pack $This.focus.goto -side top -fill x -expand 1
 
-   #--- Label pour la position du dome
-   label $This.frame5.pm.positionDome -textvariable ::t193pad::private(positionDome) \
-      -bg $color(blue_pad) -fg $color(white) -font [ list {Arial} 12 bold ] -width 10 \
-      -borderwidth 0 -relief flat
-   pack $This.frame5.pm.positionDome -expand 1 -side left
+   pack $This.focus -side top -fill both -expand 1 -pady 4
 
-   #--- Bouton '+'
-   button $This.frame5.pm.canv2 -borderwidth 2 \
-      -font [ list {Arial} 12 bold ] \
-      -fg $color(white) \
-      -bg $color(gray_pad) \
-      -text "+" \
-      -width 2 \
-      -anchor center \
-      -relief ridge
-   pack $This.frame5.pm.canv2 -expand 0 -side right -padx 10 -pady 4
+   #--- Frame du DOME
+   frame $This.dome -borderwidth 1 -relief groove -bg $color(blue_pad)
+      #--- titre pour le dome
+      label $This.dome.titre -text $caption(t193pad,dome) -relief flat \
+         -fg $color(white) -bg $color(blue_pad) -font [ list {Arial} 12 bold ]
+      pack $This.dome.titre -anchor center -fill none -padx 4 -pady 1
 
-   #--- Checkbutton pour la synchronisation du dome sur la monture
-   checkbutton $This.frame5.check -text "$caption(t193pad,synchroMonture)" \
-      -variable ::t193pad::private(synchro) -bg $color(blue_pad) -fg $color(white) \
-      -activebackground $color(blue_pad) -activeforeground $color(white) \
-      -selectcolor $color(blue_pad) -highlightbackground $color(blue_pad) \
-      -font [ list {Arial} 12 bold ] -command "  "
-   pack $This.frame5.check -anchor center -fill none -pady 2
+      #--- Frame pour les boutons '-' et '+'
+      frame $This.dome.pm -width 27 -borderwidth 0 -relief flat -bg $color(blue_pad)
+      pack $This.dome.pm -side top -fill x
 
-   #--- Bind des boutons '+' et '-'
-   set zone(moins) $This.frame5.pm.canv1
-   set zone(plus)  $This.frame5.pm.canv2
-   bind $zone(moins) <ButtonPress-1>   {  }
-   bind $zone(moins) <ButtonRelease-1> {  }
-   bind $zone(plus)  <ButtonPress-1>   {  }
-   bind $zone(plus)  <ButtonRelease-1> {  }
+      #--- Bouton '-'
+      button $This.dome.pm.buttonMoins -borderwidth 2 \
+         -font [ list {Arial} 12 bold ] \
+         -fg $color(white) \
+         -bg $color(gray_pad) \
+         -text "-" \
+         -width 2 \
+         -anchor center \
+         -relief ridge
+      pack $This.dome.pm.buttonMoins -expand 0 -side left -padx 10 -pady 4
+
+      #--- Label pour la position du dome
+      label $This.dome.pm.positionDome -textvariable ::t193pad::private(positionDome) \
+         -bg $color(blue_pad) -fg $color(white) -font [ list {Arial} 12 bold ] -width 10 \
+         -borderwidth 0 -relief flat
+      pack $This.dome.pm.positionDome -expand 1 -side left
+
+      #--- Bouton '+'
+      button $This.dome.pm.buttonPlus -borderwidth 2 \
+         -font [ list {Arial} 12 bold ] \
+         -fg $color(white) \
+         -bg $color(gray_pad) \
+         -text "+" \
+         -width 2 \
+         -anchor center \
+         -relief ridge
+      pack $This.dome.pm.buttonPlus -expand 0 -side right -padx 10 -pady 4
+
+      #--- Checkbutton pour la synchronisation du dome sur la monture
+      checkbutton $This.dome.check -text "$caption(t193pad,synchroMonture)" \
+         -variable ::t193pad::private(synchro) -bg $color(blue_pad) -fg $color(white) \
+         -activebackground $color(blue_pad) -activeforeground $color(white) \
+         -selectcolor $color(blue_pad) -highlightbackground $color(blue_pad) \
+         -font [ list {Arial} 12 bold ] -command "  "
+      pack $This.dome.check -anchor center -fill none -pady 2
+
+   pack $This.dome -side top -fill both -expand 1
 
    #--- Initialise et affiche la vitesse du focuser
    ::focus::setSpeed "$conf(superpad,focuserLabel)" "0"
