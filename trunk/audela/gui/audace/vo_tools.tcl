@@ -2,7 +2,7 @@
 # Fichier : vo_tools.tcl
 # Description : Outils pour l'Observatoire Virtuel
 # Auteur : Alain KLOTZ et Jerome BERTHIER
-# Mise a jour $Id: vo_tools.tcl,v 1.27 2009-09-26 12:28:06 alainklotz Exp $
+# Mise a jour $Id: vo_tools.tcl,v 1.28 2010-02-14 10:52:11 robertdelmas Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -363,7 +363,7 @@ proc vo_skybotconesearch { args } {
       # Ces trois cas sont traites differemment suivant le type de table demande
       #  - type text : lorsque la liste est vide on renvoit "no"
       #  - type mime : si la liste est vide pas de traitement particulier
-      # 
+      #
       # Valeur de $flag : 0 == liste vide , > 0 sinon
       #
       if { $erreur == 0 } {

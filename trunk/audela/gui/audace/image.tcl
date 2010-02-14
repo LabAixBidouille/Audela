@@ -2,7 +2,7 @@
 # Fichier : image.tcl
 # Description : Manipulation des images (a deplacer dans aud1.tcl)
 # Auteur : Michel PUJOL
-# Mise a jour $Id: image.tcl,v 1.8 2009-09-13 14:59:51 michelpujol Exp $
+# Mise a jour $Id: image.tcl,v 1.9 2010-02-14 10:51:12 robertdelmas Exp $
 #
 
 ##############################################################################
@@ -13,7 +13,7 @@
 #############################################################################
 
 namespace eval ::Image {
-   
+
    #------------------------------------------------------------------------------
    #  loadmovie
    #    charge un film dans la fenetre standard
@@ -176,5 +176,4 @@ array set ::Image::private {
    animationAfterId    ""
    animationDelay      ".5"
 }
-
 

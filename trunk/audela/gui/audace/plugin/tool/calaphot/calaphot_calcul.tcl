@@ -5,7 +5,7 @@
 #
 # @brief Routines de calcul de photometrie de Calaphot
 #
-# $Id: calaphot_calcul.tcl,v 1.1 2009-04-21 19:58:50 jacquesmichelet Exp $
+# $Id: calaphot_calcul.tcl,v 1.2 2010-02-14 10:53:54 robertdelmas Exp $
 
 namespace eval ::CalaPhot {
 
@@ -587,18 +587,18 @@ namespace eval ::CalaPhot {
         # Fin de la boucle sur les images
     }
 
-	##
-	# @brief Elimination de certaines images.
-	# @details Pour plus de détail, voir le paragraphe @ref doc_tech_filtrage_sb
-	# @param i : indice de l'image dans la séquence.
+    ##
+    # @brief Elimination de certaines images.
+    # @details Pour plus de détail, voir le paragraphe @ref doc_tech_filtrage_sb
+    # @param i : indice de l'image dans la séquence.
     # @pre Les variables suivantes doivent contenir :
-	# - data_script(nombre_reference) : nbre d'étoile de référence.
-	# - data_image(i,ref,sb_j) : rapport signal/bruit de l'étoile de référence j dans l'image i.
+    # - data_script(nombre_reference) : nbre d'étoile de référence.
+    # - data_image(i,ref,sb_j) : rapport signal/bruit de l'étoile de référence j dans l'image i.
     # - parametres(signal_bruit) : rapport signal/bruit limite entré par l'utilisateur.
-	# .
+    # .
     # @post Les variables suivantes contiendront :
-	# - data_image(i,valide) : drapeau de validite de l'image i.
-	# .
+    # - data_image(i,valide) : drapeau de validite de l'image i.
+    # .
     proc FiltrageSB {i} {
         variable parametres
         variable data_image
@@ -688,29 +688,29 @@ namespace eval ::CalaPhot {
       return [list $convergence $iterations $valeurs_X0 $valeurs_Y0 $valeurs_Signal $valeurs_Fond $valeurs_Sigma_X $valeurs_Sigma_Y $valeurs_Ro $valeurs_Alpha $valeurs_Sigma_1 $valeurs_Sigma_2 $valeurs_Flux $incertitudes_X0 $incertitudes_Y0 $incertitudes_Signal $incertitudes_Fond $incertitudes_Sigma_X $incertitudes_Sigma_Y $incertitudes_Ro $incertitudes_Alpha $incertitudes_Sigma_1 $incertitudes_Sigma_2 $incertitudes_Flux]
     }
 
-	##
+    ##
     # @brief Détermination du flux par ouverture centrée sur l'astre.
     # @details L'ensemble de l'algorithme est décrit dans la documentation technique, <i> à l'exception des calculs de correction de la masse d'air qui <b>ne sont pas activés</b> dans cette version du logiciel </i>.
     # - @ref doc_tech_mesure_flux_ouv_disque_interne "mesure du flux total de l'astre".
     # - @ref doc_tech_mesure_flux_ouv_couronne_externe "mesure du fond de ciel".
-	# - @ref doc_tech_mesure_flux_ouv_flux "flux spécifique à l'astre".
-	# .
-	# @param i : indice de l'image .
+    # - @ref doc_tech_mesure_flux_ouv_flux "flux spécifique à l'astre".
+    # .
+    # @param i : indice de l'image .
     # @param classe : type de l'astre ( @b ref pour une étoile de référence, @b var pour les astéroides).
-	# @param j : indice de l'astre dans sa classe.
+    # @param j : indice de l'astre dans sa classe.
     # @pre Les variables suivantes doivent contenir :
-	# - @c data_image($i,$classe,centroide_x_$j) et data_image($i,$classe,centroide_y_$j) : coordonnées du centroide de l'astre d'indice j dans sa classe pour l'image i.
-	# - @c data_image($i,r1x), $data_image($i,r1y) et data_image($i,ro) : paramètres (axe principaux et facteur d'allongement) de l'ellipse de la fenêtre d'ouverture du flux de l'astre.
-	# - @c data_image($i,r2) et data_image($i,r3) : rayons interne et externe de la couronne destinée à la mesure du fond de ciel.
-	# - @c parametres(surechantillonage) : facteur linéaire de suréchantillonage. Les pixels seront divisés en parametres(surechantillonage) * parametres(surechantillonage) sous-pixels carrés pour augmenter la précision des calculs.
-	# .
+    # - @c data_image($i,$classe,centroide_x_$j) et data_image($i,$classe,centroide_y_$j) : coordonnées du centroide de l'astre d'indice j dans sa classe pour l'image i.
+    # - @c data_image($i,r1x), $data_image($i,r1y) et data_image($i,ro) : paramètres (axe principaux et facteur d'allongement) de l'ellipse de la fenêtre d'ouverture du flux de l'astre.
+    # - @c data_image($i,r2) et data_image($i,r3) : rayons interne et externe de la couronne destinée à la mesure du fond de ciel.
+    # - @c parametres(surechantillonage) : facteur linéaire de suréchantillonage. Les pixels seront divisés en parametres(surechantillonage) * parametres(surechantillonage) sous-pixels carrés pour augmenter la précision des calculs.
+    # .
     # @post Les variables suivantes contiendront :
-	# - @c data_image($i,$classe,flux_$j) : flux de l'astre j dans sa classe pour l'image i.
-	# - @c data_image($i,$classe,nb_pixels_$j) : nombre de pixels de l'ellipse qui a servi au calcul du flux de l'astre j dans sa classe pour l'image i.
+    # - @c data_image($i,$classe,flux_$j) : flux de l'astre j dans sa classe pour l'image i.
+    # - @c data_image($i,$classe,nb_pixels_$j) : nombre de pixels de l'ellipse qui a servi au calcul du flux de l'astre j dans sa classe pour l'image i.
     # - @c data_image($i,$classe,fond_$j) : valeur moyenne du fond de ciel pour l'astre j dans sa classe pour l'image i.
     # - @c data_image($i,$classe,nb_pixels_fond_$j) : nombre de pixels de la couronne qui a servià la mesure du fond de ciel pour l'astre j dans sa classe pour l'image i.
     # - @c data_image($i,$classe,sigma_fond_$j) : écart-type de valeur du fond de ciel pour l'astre j dans sa classe pour l'image i.
-	# .
+    # .
     proc FluxOuverture {i classe j} {
         global audace
         variable data_image
@@ -752,21 +752,21 @@ namespace eval ::CalaPhot {
         Message debug "image %d : %s %d  flux=%10.4f nb_pix=%10.4f fond=%10.4f nb_pix_fond=%10.4f sigma=%10.4f\n" $i $classe $j $data_image($i,$classe,flux_$j) $data_image($i,$classe,nb_pixels_$j) $data_image($i,$classe,fond_$j) $data_image($i,$classe,nb_pixels_fond_$j) $data_image($i,$classe,sigma_fond_$j)
     }
 
-	##
-	# @brief Calcul du flux de la super-étoile et des pseudo-super-étoiles.
-	# @details Détails des calculs :
-	# - pour la @ref doc_tech_calcul_flux_super_etoile "super-étoile".
-	# - pour les @ref doc_tech_calcul_flux_pseudo-super_etoile "pseudo-super-étoiles".
-	# .
-	# @param image : indice de l'image courante
-	# @pre Les variables suivantes doivent contenir :
-	# - @c data_script(nombre_reference) : le nombre d'étoile de référence.
+    ##
+    # @brief Calcul du flux de la super-étoile et des pseudo-super-étoiles.
+    # @details Détails des calculs :
+    # - pour la @ref doc_tech_calcul_flux_super_etoile "super-étoile".
+    # - pour les @ref doc_tech_calcul_flux_pseudo-super_etoile "pseudo-super-étoiles".
+    # .
+    # @param image : indice de l'image courante
+    # @pre Les variables suivantes doivent contenir :
+    # - @c data_script(nombre_reference) : le nombre d'étoile de référence.
     # - @c data_image(image,ref,flux_j) : le flux de toutes les étoiles de référence j dans l'image courante.
-	# .
-	# @post Les variables suivantes contiendront :
-	# - @c data_image(image, flux_ref_j) : flux de la pseudo-super-étoile pour l'étoile de référence j dans l'image courante.
+    # .
+    # @post Les variables suivantes contiendront :
+    # - @c data_image(image, flux_ref_j) : flux de la pseudo-super-étoile pour l'étoile de référence j dans l'image courante.
     # - @c data_image(image, flux_ref_total) : flux de la super-étoile dans l'image courante.
-	# .
+    # .
     proc FluxReference {image} {
         variable data_script
         variable data_image
@@ -818,24 +818,24 @@ namespace eval ::CalaPhot {
     }
 
 
-	##
-	# @brief Calcul de magnitudes et des incertitudes associées
-	# @details Ce calcul est fait pour l'astétoïde et pour les étoiles de référence. Est aussi calculé une constante des magnitudes, magnitude d'un astre dont le flux intégré sur une unité de temps (ici la seconde) correspond à 1 ADU au dessus du fond de ciel. @n
-	# Formules de calcul :
-	# - pour les astres, voir @ref doc_tech_calcul_mag_astre "magnitude des astres"
-	# - pour la constante des magnitudes, voir @ref doc_tech_calcul_cste_mag "constante des magnitudes"
-	# .
-	# Les incertitudes sur la magnitude de l'astre sont aussi calculées depuis cette procédure. Voir @ref CalculErreurOuverture , @ref CalculErreurModelisation ou @ref CalculErreurSextractor.
-	# @param i : numéro de l'image dans la liste
+    ##
+    # @brief Calcul de magnitudes et des incertitudes associées
+    # @details Ce calcul est fait pour l'astétoïde et pour les étoiles de référence. Est aussi calculé une constante des magnitudes, magnitude d'un astre dont le flux intégré sur une unité de temps (ici la seconde) correspond à 1 ADU au dessus du fond de ciel. @n
+    # Formules de calcul :
+    # - pour les astres, voir @ref doc_tech_calcul_mag_astre "magnitude des astres"
+    # - pour la constante des magnitudes, voir @ref doc_tech_calcul_cste_mag "constante des magnitudes"
+    # .
+    # Les incertitudes sur la magnitude de l'astre sont aussi calculées depuis cette procédure. Voir @ref CalculErreurOuverture , @ref CalculErreurModelisation ou @ref CalculErreurSextractor.
+    # @param i : numéro de l'image dans la liste
     # @pre Les variables suivantes devront contenir :
-	# - @c data_script(nombre_variable) : nbre d'asteroïde.
-	# - @c data_image(i,c,flux_j) : flux de l'astéroïde ou l'étoile de référence j dans l'image i.
+    # - @c data_script(nombre_variable) : nbre d'asteroïde.
+    # - @c data_image(i,c,flux_j) : flux de l'astéroïde ou l'étoile de référence j dans l'image i.
     # - @c data_image(i,flux_ref_total) : flux de la super-étoile dans l'image i.
     # - @c data_script(mag_ref_totale) : magnitude de la super-étoile.
     # - @c data_image(i,temps_expo) : temps de pose de l'image i.
     # @post Les variables suivantes contiendront :
-	# - @c data_image(i,c,mag_j) : magnitude de l'astéroide ou de l'étoile de référence j dans l'image i
-	# - @c data_image(i,c,sb_j) : snr de l'etoile j de classe c dans l'image i
+    # - @c data_image(i,c,mag_j) : magnitude de l'astéroide ou de l'étoile de référence j dans l'image i
+    # - @c data_image(i,c,sb_j) : snr de l'etoile j de classe c dans l'image i
     # - @c data_image(i,c,erreur_mag_j) : incertitude sur la mag de l'étoile j de classe c dans l'image i
     # - @c data_image(i,c,bruit_flux_j) : bruit de photon de l'étoile j de classe c dans l'image i
     # - @c data_image(i,constante_mag) : constante des magnitudes
@@ -849,7 +849,7 @@ namespace eval ::CalaPhot {
         # Calcul par la formule de Pogson
         for {set etoile 0} {$etoile < $data_script(nombre_variable)} {incr etoile} {
             if {([expr $data_image($i,var,flux_$etoile)] > 0) &&  ([expr $data_image($i,flux_ref_total)] > 0)} {
-				# La formule principale de tout le script !
+            # La formule principale de tout le script !
                 set mag [expr $data_script(mag_ref_totale) -2.5 * log10($data_image($i,var,flux_$etoile) / $data_image($i,flux_ref_total))]
                 set data_image($i,var,mag_$etoile) $mag
 

@@ -2,7 +2,7 @@
 # @file     sophietest.tcl
 # @brief    Fichier du namespace ::sophie::test
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietest.tcl,v 1.23 2010-01-25 21:52:11 michelpujol Exp $
+# @version  $Id: sophietest.tcl,v 1.24 2010-02-14 10:55:10 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -10,24 +10,23 @@
 #
 #------------------------------------------------------------
 namespace eval ::sophie::test {
-   set private(telescopeControl,commandSocket) ""
-   set private(telescopeControl,dataSocket) ""
-   set private(controlThreadId) ""
-   set private(telescopeControl,ra) ""
-   set private(telescopeControl,dec) ""
-   set private(telescopeControl,raSpeed) ""
-   set private(telescopeControl,decSpeed) ""
-   set private(telescopeControl,slewMode) ""
-   set private(telescopeControl,sideralSpeed)   "15.0"   ; #--- vitesse de 360 degres/jour soit 15 arsec/seconde vers l'ouest 
-   set private(telescopeControl,lunarSpeed)     "14.375" ; #--- vitesse de (360-15) degrés/jour soit 14.375 arsec/seconde vers l'ouest   
-   set private(telescopeControl,guidingSpeed)   "3.75"   ; #--- vitesse de correction en centrage (le triple de la vitesse siderale)
-   set private(telescopeControl,centeringSpeed) "45.0"   ; #--- vitesse de correction en guidage (le quart de la vitesse siderale en arcsec/s
+   set private(telescopeControl,commandSocket)   ""
+   set private(telescopeControl,dataSocket)      ""
+   set private(controlThreadId)                  ""
+   set private(telescopeControl,ra)              ""
+   set private(telescopeControl,dec)             ""
+   set private(telescopeControl,raSpeed)         ""
+   set private(telescopeControl,decSpeed)        ""
+   set private(telescopeControl,slewMode)        ""
+   set private(telescopeControl,sideralSpeed)    "15.0"   ; #--- vitesse de 360 degres/jour soit 15 arsec/seconde vers l'ouest
+   set private(telescopeControl,lunarSpeed)      "14.375" ; #--- vitesse de (360-15) degrés/jour soit 14.375 arsec/seconde vers l'ouest
+   set private(telescopeControl,guidingSpeed)    "3.75"   ; #--- vitesse de correction en centrage (le triple de la vitesse siderale)
+   set private(telescopeControl,centeringSpeed)  "45.0"   ; #--- vitesse de correction en guidage (le quart de la vitesse siderale en arcsec/s
    set private(telescopeControl,centering2Speed) "60.0"   ; #--- vitesse de correction en guidage (le quart de la vitesse siderale en arcsec/s
-   set private(telescopeControl,gotoSpeed)      "6500.0"   ; #--- vitesse de goto (500 fois la vitesse siderale en arcsec/s
-   set private(telescopeControl,focusPosition)  "0.0"
-   set private(telescopeControl,focusSpeed)  "0"
-
-   set private(clientCoord,socketChannel) ""
+   set private(telescopeControl,gotoSpeed)       "6500.0" ; #--- vitesse de goto (500 fois la vitesse siderale en arcsec/s
+   set private(telescopeControl,focusPosition)   "0.0"
+   set private(telescopeControl,focusSpeed)      "0"
+   set private(clientCoord,socketChannel)        ""
 
 }
 
@@ -295,7 +294,6 @@ proc ::sophie::test::createDialogSimul { } {
    set private(sendPulse,waitDelay)  "2"
    set private(sendPulse,direction)  "w"
 
-
    set frm $private(frm)
    if { [ winfo exists $frm ] } {
       wm withdraw $frm
@@ -315,7 +313,7 @@ proc ::sophie::test::createDialogSimul { } {
    set private(simulation)                $::conf(sophie,simulation)
    set private(simulationGenericFileName) $::conf(sophie,simulationGenericFileName)
 
-   #--- Frame pour la simulation des acquisitions   
+   #--- Frame pour la simulation des acquisitions
    TitleFrame $frm.simulAcquisition -borderwidth 2 -relief groove -text $::caption(sophie,simulAcquisition)
 
       #--- Frame pour la simulation
@@ -613,7 +611,6 @@ proc ::sophie::test::writeSocketSophie { data } {
 
 }
 
-
 #------------------------------------------------------------
 # connecterPcGuidage
 #    connecter/deconnecter au PC de guidage
@@ -680,13 +677,11 @@ proc ::sophie::test::sendPcGuidage { commandName } {
 
 }
 
-
 #============================================================
 #
 # test impulsion telescope par carte NI
 #  source audace/plugin/tool/sophie/sophietest.tcl
 #============================================================
-
 proc ::sophie::test::startPulse { } {
    variable private
 
@@ -712,7 +707,6 @@ proc ::sophie::test::sendPulse { } {
       ::console::disp "Fin pulse\n"
    }
 }
-
 
 #============================================================
 #
@@ -797,8 +791,6 @@ proc ::sophie::test::configure { } {
          $::audace(posobs,observateur,gps)]
 }
 
-
-
 #============================================================
 #
 # SIMULATION D'UN AFFICHEUR DE COORDONNEES
@@ -851,7 +843,6 @@ proc ::sophie::test::readSocketCoord {  } {
       console::disp "readSocketCoord $response\n"
    }
 }
-
 
 #--- demarrage du contexte pour les tests
 #::sophie::simul

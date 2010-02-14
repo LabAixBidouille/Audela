@@ -8,7 +8,7 @@
 # Connected sites are found in http://gcn.gsfc.nasa.gov/sites_cfg.html
 # To create a new connected site http://gcn.gsfc.nasa.gov/gcn/config_builder.html
 #
-# Mise a jour $Id: gcn_tools.tcl,v 1.36 2010-01-17 21:46:21 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.37 2010-02-14 10:50:54 robertdelmas Exp $
 #
 
 # ==========================================================================================
@@ -17,27 +17,27 @@
 proc socket_client_send_gcn { name ipserver portserver {data {3 2008 07 07 23 45 21.123 123.4567 -46.4321 1.5 2 600}} } {
    global audace
    global gcn
-   
+
    # --- init longs
    set longs ""
    for {set k 0 } {$k<40} {incr k} {
-   	lappend longs 0
-	}
+      lappend longs 0
+   }
    # --- data
-	if {1==0} {
-		set data ""
-		lappend data 901 ; # packet type = 901
-		set date [mc_date2ymdhms now]
-		for {set k 0} {$k<6} {incr k} {
-			lappend $data [lindex $date $k] ; # date YMDHMS
-		}
-		lappend data 123.4567 ; # ra J2000.0 (deg)
-		lappend data -46.4321 ; # dec J2000.0 (deg)
-		lappend data 1.5 ; # boite d'erreur (arcmin)
-		lappend data 2 ; # nombre de neutrinos 1=unique mais intense
-		lappend data 600. ; # duree d'integration (seconds)
-	}
-	if {$data=="*"} {
+   if {1==0} {
+      set data ""
+      lappend data 901 ; # packet type = 901
+      set date [mc_date2ymdhms now]
+      for {set k 0} {$k<6} {incr k} {
+         lappend $data [lindex $date $k] ; # date YMDHMS
+      }
+      lappend data 123.4567 ; # ra J2000.0 (deg)
+      lappend data -46.4321 ; # dec J2000.0 (deg)
+      lappend data 1.5 ; # boite d'erreur (arcmin)
+      lappend data 2 ; # nombre de neutrinos 1=unique mais intense
+      lappend data 600. ; # duree d'integration (seconds)
+   }
+   if {$data=="*"} {
       set now [mc_date2ymdhms now]
       set y  [lindex $now 0]
       set m  [lindex $now 1]
@@ -48,114 +48,114 @@ proc socket_client_send_gcn { name ipserver portserver {data {3 2008 07 07 23 45
       set lst [mc_date2lst now {GPS 115 E -31 50}]
       set ra [mc_angle2deg [lindex $lst 0]h[lindex $lst 1]m[lindex $lst 2]s] ; # meridien
       set dec 5
-      set data [list 61 $y $m $d $hh $mm $ss $ra $dec 3. 1 600]   	
-	}
-	# --- decodage data -> longs
-	#
-	#TYPE=901 PACKET CONTENTS:
-	#
-	#The ANTARES_GRB_POSITION packet consists of 40 four-byte quantities.
-	#The order and contents are listed in the table below:
-	#
-	#Declaration  Index   Item         Units           Comments
-	#Type                 Name
-	#-----------  -----   ---------    ----------      ----------------
-	#long         0       pkt_type     integer         Packet type number (=61)
-	#long         1       pkt_sernum   integer         1 thru infinity
-	#long         2       pkt_hop_cnt  integer         Incremented by each node
-	#long         3       pkt_sod      [centi-sec]     (int)(sssss.sss *100) 
-	#long         4       trig_obs_num integers        Trigger num & Observation num
-	#long         5       burst_tjd    [days]          Truncated Julian Day
-	#long         6       burst_sod    [centi-sec]     (int)(sssss.sss *100)
-	#long         7       burst_ra     [0.0001-deg]    (int)(0.0 to 359.9999 *10000)
-	#long         8       burst_dec    [0.0001-deg]    (int)(-90.0 to +90.0 *10000)
-	#long         9       burst_flue   [counts]        Num events during trig window, 0 to inf
-	#long         10      burst_ipeak  [cnts*ff]       Counts in image-plane peak, 0 to infinity
-	#long         11      burst_error  [0.0001-deg]    (int)(0.0 to 180.0 *10000)
-	#long         12      phi          [centi-deg]     (int)(0.0 to 359.9999 *100)
-	#long         13      theta        [centi-deg]     (int)(0.0 to +70.0 *100)
-	#long         14      integ_time   [4mSec]         Duration of the trigger interval, 1 to inf
-	#long         15      spare        integer         4 bytes for the future
-	#long         16      lon_lat      2_shorts        (int)(Longitude,Lattitude *100)
-	#long         17      trig_index   integer         Rate_Trigger index
-	#long         18      soln_status  bits            Type of source/trigger found
-	#long         19      misc         bits            Misc stuff packed in here
-	#long         20      image_signif [centi-sigma]   (int)(sig2noise *100)
-	#long         21      rate_signif  [centi-sigma]   (int)(sig2noise *100)
-	#long         22      bkg_flue     [counts]        Num events during the bkg interval, 0 to inf
-	#long         23      bkg_start    [centi-sec]     (int)(sssss.sss *100)
-	#long         24      bkg_dur      [centi-sec]     (int)(0-80,000 *100)
-	#long         25      cat_num      integer         On-board cat match ID number
-	#long         26-35   spare[10]    integer         40 bytes for the future
-	#long         36      merit_0-3    integers        Merit params 0,1,2,3 (-127 to +127)
-	#long         37      merit_4-7    integers        Merit params 4,5,6,7 (-127 to +127)
-	#long         38      merit_8-9    integers        Merit params 8,9     (-127 to +127)
-	#long         39      pkt_term     integer         Pkt Termination (always = \n)
-	set burst_pkt_type [lindex $data 0]
-	set longs [lreplace $longs 0 0 $burst_pkt_type]
-	set burst_pkt_sernum 1
-	set longs [lreplace $longs 1 1 $burst_pkt_sernum]
-	set burst_pkt_hop_cnt 1
-	set longs [lreplace $longs 2 2 $burst_pkt_hop_cnt]
-	set date [mc_date2jd now]
-	set sod [expr ($date-floor($date-0.5))*86400.]
-	set burst_pkt_sod [expr int($sod*100)]
-	set longs [lreplace $longs 3 3 $burst_pkt_sod]
-	set burst_trig_obs_num 1
-	set longs [lreplace $longs 4 4 $burst_trig_obs_num]
-	set burst_date_year [lindex $data 1]
-	set burst_date_month [lindex $data 2]
-	set burst_date_day [lindex $data 3]
-	set burst_date_hour [lindex $data 4]
-	set burst_date_minute [lindex $data 5]
-	set burst_date_seconds [lindex $data 6]
-	set jd [mc_date2jd [lrange $data 1 6]]
-	set burst_tjd [expr int($jd+13370.+1.-[mc_date2jd {2005 1 1}])]
-	set longs [lreplace $longs 5 5 $burst_tjd]
-	set sod [expr ($jd-floor($jd-0.5))*86400.]
-	set burst_sod [expr int($sod*100)]
-	set longs [lreplace $longs 6 6 $burst_sod]
-	set burst_ra [expr int([lindex $data 7]/0.0001)]
-	set longs [lreplace $longs 7 7 $burst_ra]
-	set burst_dec [expr int([lindex $data 8]/0.0001)]
-	set longs [lreplace $longs 8 8 $burst_dec]
-	set burst_flue [lindex $data 10]
-	set longs [lreplace $longs 9 9 $burst_flue]
-	set burst_error [expr int([lindex $data 9]/60./0.0001)]
-	set longs [lreplace $longs 11 11 $burst_error]
-	set burst_integ_time [expr int([lindex $data 11]/4e-3)]
-	set longs [lreplace $longs 14 14 $burst_integ_time]
-	# --- convert longs into the binary stream
-	#::console::affiche_resultat "longs=<$longs>\n"
-	set line [binary format I* $longs]
-	#::console::affiche_resultat "line=<$line>\n"
-	# --- open socket connexion
-	for {set k 0} {$k<2} {incr k} {
+      set data [list 61 $y $m $d $hh $mm $ss $ra $dec 3. 1 600]
+   }
+   # --- decodage data -> longs
+   #
+   #TYPE=901 PACKET CONTENTS:
+   #
+   #The ANTARES_GRB_POSITION packet consists of 40 four-byte quantities.
+   #The order and contents are listed in the table below:
+   #
+   #Declaration  Index   Item         Units           Comments
+   #Type                 Name
+   #-----------  -----   ---------    ----------      ----------------
+   #long         0       pkt_type     integer         Packet type number (=61)
+   #long         1       pkt_sernum   integer         1 thru infinity
+   #long         2       pkt_hop_cnt  integer         Incremented by each node
+   #long         3       pkt_sod      [centi-sec]     (int)(sssss.sss *100)
+   #long         4       trig_obs_num integers        Trigger num & Observation num
+   #long         5       burst_tjd    [days]          Truncated Julian Day
+   #long         6       burst_sod    [centi-sec]     (int)(sssss.sss *100)
+   #long         7       burst_ra     [0.0001-deg]    (int)(0.0 to 359.9999 *10000)
+   #long         8       burst_dec    [0.0001-deg]    (int)(-90.0 to +90.0 *10000)
+   #long         9       burst_flue   [counts]        Num events during trig window, 0 to inf
+   #long         10      burst_ipeak  [cnts*ff]       Counts in image-plane peak, 0 to infinity
+   #long         11      burst_error  [0.0001-deg]    (int)(0.0 to 180.0 *10000)
+   #long         12      phi          [centi-deg]     (int)(0.0 to 359.9999 *100)
+   #long         13      theta        [centi-deg]     (int)(0.0 to +70.0 *100)
+   #long         14      integ_time   [4mSec]         Duration of the trigger interval, 1 to inf
+   #long         15      spare        integer         4 bytes for the future
+   #long         16      lon_lat      2_shorts        (int)(Longitude,Lattitude *100)
+   #long         17      trig_index   integer         Rate_Trigger index
+   #long         18      soln_status  bits            Type of source/trigger found
+   #long         19      misc         bits            Misc stuff packed in here
+   #long         20      image_signif [centi-sigma]   (int)(sig2noise *100)
+   #long         21      rate_signif  [centi-sigma]   (int)(sig2noise *100)
+   #long         22      bkg_flue     [counts]        Num events during the bkg interval, 0 to inf
+   #long         23      bkg_start    [centi-sec]     (int)(sssss.sss *100)
+   #long         24      bkg_dur      [centi-sec]     (int)(0-80,000 *100)
+   #long         25      cat_num      integer         On-board cat match ID number
+   #long         26-35   spare[10]    integer         40 bytes for the future
+   #long         36      merit_0-3    integers        Merit params 0,1,2,3 (-127 to +127)
+   #long         37      merit_4-7    integers        Merit params 4,5,6,7 (-127 to +127)
+   #long         38      merit_8-9    integers        Merit params 8,9     (-127 to +127)
+   #long         39      pkt_term     integer         Pkt Termination (always = \n)
+   set burst_pkt_type [lindex $data 0]
+   set longs [lreplace $longs 0 0 $burst_pkt_type]
+   set burst_pkt_sernum 1
+   set longs [lreplace $longs 1 1 $burst_pkt_sernum]
+   set burst_pkt_hop_cnt 1
+   set longs [lreplace $longs 2 2 $burst_pkt_hop_cnt]
+   set date [mc_date2jd now]
+   set sod [expr ($date-floor($date-0.5))*86400.]
+   set burst_pkt_sod [expr int($sod*100)]
+   set longs [lreplace $longs 3 3 $burst_pkt_sod]
+   set burst_trig_obs_num 1
+   set longs [lreplace $longs 4 4 $burst_trig_obs_num]
+   set burst_date_year [lindex $data 1]
+   set burst_date_month [lindex $data 2]
+   set burst_date_day [lindex $data 3]
+   set burst_date_hour [lindex $data 4]
+   set burst_date_minute [lindex $data 5]
+   set burst_date_seconds [lindex $data 6]
+   set jd [mc_date2jd [lrange $data 1 6]]
+   set burst_tjd [expr int($jd+13370.+1.-[mc_date2jd {2005 1 1}])]
+   set longs [lreplace $longs 5 5 $burst_tjd]
+   set sod [expr ($jd-floor($jd-0.5))*86400.]
+   set burst_sod [expr int($sod*100)]
+   set longs [lreplace $longs 6 6 $burst_sod]
+   set burst_ra [expr int([lindex $data 7]/0.0001)]
+   set longs [lreplace $longs 7 7 $burst_ra]
+   set burst_dec [expr int([lindex $data 8]/0.0001)]
+   set longs [lreplace $longs 8 8 $burst_dec]
+   set burst_flue [lindex $data 10]
+   set longs [lreplace $longs 9 9 $burst_flue]
+   set burst_error [expr int([lindex $data 9]/60./0.0001)]
+   set longs [lreplace $longs 11 11 $burst_error]
+   set burst_integ_time [expr int([lindex $data 11]/4e-3)]
+   set longs [lreplace $longs 14 14 $burst_integ_time]
+   # --- convert longs into the binary stream
+   #::console::affiche_resultat "longs=<$longs>\n"
+   set line [binary format I* $longs]
+   #::console::affiche_resultat "line=<$line>\n"
+   # --- open socket connexion
+   for {set k 0} {$k<2} {incr k} {
       if {[info exists audace(socket,client,$name)]==0} {
-   		#::console::affiche_resultat "$ipserver $portserver\n"
-   	   set errno [ catch {
-   	      set fid [socket $ipserver $portserver ]
-      		#::console::affiche_resultat "fid=$fid\n"
-   	   } msg]
-   	   if {$errno==1} {
-   	      error $msg
-   	   } else {
-   			set audace(socket,client,$name) $fid
-   	   }
+         #::console::affiche_resultat "$ipserver $portserver\n"
+         set errno [ catch {
+            set fid [socket $ipserver $portserver ]
+            #::console::affiche_resultat "fid=$fid\n"
+         } msg]
+         if {$errno==1} {
+            error $msg
+         } else {
+            set audace(socket,client,$name) $fid
+         }
       }
       set fid $audace(socket,client,$name)
-   	#::console::affiche_resultat "fid=<$fid>\n"
+      #::console::affiche_resultat "fid=<$fid>\n"
       fconfigure $fid -buffering full -translation binary -encoding binary -buffersize 160
-   	# --- send packet
+      # --- send packet
       set errsoc [ catch {
-   	   puts -nonewline $fid $line
+         puts -nonewline $fid $line
       } msgsoc ]
       if {$errsoc==1} {
          gcn_print "socket error : $msgsoc"
          catch {
-      		close $audace(socket,client,$name)
-      		unset audace(socket,client,$name)
-   		}
+            close $audace(socket,client,$name)
+            unset audace(socket,client,$name)
+         }
       } else {
          break
       }
@@ -168,37 +168,37 @@ proc socket_client_send_gcn { name ipserver portserver {data {3 2008 07 07 23 45
 proc socket_client_send_gcn_native { name ipserver portserver longs } {
    global audace
    global gcn
-	# --- convert longs into the binary stream
-	#::console::affiche_resultat "longs=<$longs>\n"
-	set line [binary format I* $longs]
-	#::console::affiche_resultat "line=<$line>\n"
-	# --- open socket connexion
-	for {set k 0} {$k<2} {incr k} {
+   # --- convert longs into the binary stream
+   #::console::affiche_resultat "longs=<$longs>\n"
+   set line [binary format I* $longs]
+   #::console::affiche_resultat "line=<$line>\n"
+   # --- open socket connexion
+   for {set k 0} {$k<2} {incr k} {
       if {[info exists audace(socket,client,$name)]==0} {
-   		#::console::affiche_resultat "$ipserver $portserver\n"
-   	   set errno [ catch {
-   	      set fid [socket $ipserver $portserver ]
-      		#::console::affiche_resultat "fid=$fid\n"
-   	   } msg]
-   	   if {$errno==1} {
-   	      error $msg
-   	   } else {
-   			set audace(socket,client,$name) $fid
-   	   }
+         #::console::affiche_resultat "$ipserver $portserver\n"
+         set errno [ catch {
+            set fid [socket $ipserver $portserver ]
+            #::console::affiche_resultat "fid=$fid\n"
+         } msg]
+         if {$errno==1} {
+            error $msg
+         } else {
+            set audace(socket,client,$name) $fid
+         }
       }
       set fid $audace(socket,client,$name)
-   	#::console::affiche_resultat "fid=<$fid>\n"
+      #::console::affiche_resultat "fid=<$fid>\n"
       fconfigure $fid -buffering full -translation binary -encoding binary -buffersize 160
-   	# --- send packet
+      # --- send packet
       set errsoc [ catch {
-   	   puts -nonewline $fid $line
+         puts -nonewline $fid $line
       } msgsoc ]
       if {$errsoc==1} {
          gcn_print "socket error : $msgsoc"
          catch {
-      		close $audace(socket,client,$name)
-      		unset audace(socket,client,$name)
-   		}
+            close $audace(socket,client,$name)
+            unset audace(socket,client,$name)
+         }
       } else {
          break
       }
@@ -210,8 +210,8 @@ proc socket_client_close_gcn { name } {
    global audace
    global gcn
    if {[info exists audace(socket,client,$name)]==1} {
-		close $audace(socket,client,$name)
-		unset audace(socket,client,$name)
+      close $audace(socket,client,$name)
+      unset audace(socket,client,$name)
    }
 }
 
@@ -300,48 +300,48 @@ proc socket_server_respons_gcn {fid {sockname dummy} {redir_hosts ""} {redir_por
          close $fid
       } elseif {![fblocked $fid]} {
          # --- redir if needed
-         set kredir 0  
+         set kredir 0
          set gcn(gcn_${sockname},redir_msg) ""
          foreach redir_host $redir_hosts {
             set ipserver [lindex $redir_hosts $kredir]
-            set portserver [lindex $redir_ports $kredir]               
+            set portserver [lindex $redir_ports $kredir]
             #gcn_print "ETAPE 1 ipserver=$ipserver portserver=$portserver"
             #catch {gren_info "ETAPE 1 ipserver=$ipserver portserver=$portserver"}
             incr kredir
             set name redir${kredir}_${sockname}
-         	# --- open socket connexion
-         	catch {
-            	# --- open socket connexion
-            	for {set k 0} {$k<2} {incr k} {
+            # --- open socket connexion
+            catch {
+               # --- open socket connexion
+               for {set k 0} {$k<2} {incr k} {
                   if {[info exists audace(socket,client,$name)]==0} {
-               		#::console::affiche_resultat "$ipserver $portserver\n"
-               	   set errno [ catch {
-               	      set fid [socket $ipserver $portserver ]
-                  		#::console::affiche_resultat "fid=$fid\n"
-               	   } msg]
-               	   if {$errno==1} {
-               	      error $msg
-               	   } else {
-               			set audace(socket,client,$name) $fid
-               	   }
+                     #::console::affiche_resultat "$ipserver $portserver\n"
+                     set errno [ catch {
+                        set fid [socket $ipserver $portserver ]
+                        #::console::affiche_resultat "fid=$fid\n"
+                     } msg]
+                     if {$errno==1} {
+                        error $msg
+                     } else {
+                        set audace(socket,client,$name) $fid
+                     }
                   }
                   set fid $audace(socket,client,$name)
-               	#::console::affiche_resultat "fid=<$fid>\n"
+                  #::console::affiche_resultat "fid=<$fid>\n"
                   fconfigure $fid -buffering full -translation binary -encoding binary -buffersize 160
-               	# --- send packet
+                  # --- send packet
                   set errsoc [ catch {
-               	   puts -nonewline $fid $line
-               	   flush $fid
+                     puts -nonewline $fid $line
+                     flush $fid
                   } msgsoc ]
                   #catch {gren_info "ETAPE 2 errsoc=$errsoc msgsoc=$msgsoc line=<$line>"}
                   if {$errsoc==1} {
                      #gcn_print "socket error : $msgsoc"
                      catch {
-                  		close $audace(socket,client,$name)
-               		}
-               		catch {
-                  		unset audace(socket,client,$name)
-               		}
+                        close $audace(socket,client,$name)
+                     }
+                     catch {
+                        unset audace(socket,client,$name)
+                     }
                   } else {
                      set texte "REDIR OK for ipserver=$ipserver portserver=$portserver"
                      append gcn(gcn_${sockname},redir_msg) "$texte. "
@@ -471,7 +471,7 @@ proc gcn_decode { longs sockname } {
       set gcn($sockname,descr,prompt) [lindex $res 2]
       gcn_print "$date_rec_notice ($sockname) type $pkt_type: $gcn($sockname,descr,type)"
       #if {$gcn($sockname,descr,type)==""} {
-	   #   return
+      #   return
       #}
       gcn_print "($sockname) $longs"
       # --- common codes
@@ -479,19 +479,19 @@ proc gcn_decode { longs sockname } {
          set gcn($sockname,long,$k) [string toupper [lindex $longs $k] ]
       }
       set items [gcn_pkt_indices]
-		#gcn_print "----"
+      #gcn_print "----"
       foreach item $items {
          set k [lindex $item 0]
          set name [lindex $item 1]
          set gcn($sockname,long,$name) $gcn($sockname,long,$k)
-			#gcn_print "gcn($sockname,long,$name)=$gcn($sockname,long,$name)"
+         #gcn_print "gcn($sockname,long,$name)=$gcn($sockname,long,$name)"
       }
       # --- date de l'envoi de la notice
-		#gcn_print "----"
+      #gcn_print "----"
       set res [mc_date2ymdhms $date_rec_notice]
       set res [lrange $res 0 2]
       set pkt_date [mc_date2jd $res]
-		#gcn_print "gcn($sockname,long,pkt_sod)=$gcn($sockname,long,pkt_sod)"
+      #gcn_print "gcn($sockname,long,pkt_sod)=$gcn($sockname,long,pkt_sod)"
       set pkt_time [expr $gcn($sockname,long,pkt_sod)/100.]
       set gcn($sockname,descr,jd_pkt) [expr $pkt_date+$pkt_time/86400.] ; # jd de la notice
       if {[expr $gcn($sockname,descr,jd_pkt)-[mc_date2jd $date_rec_notice]]>0.5} {
@@ -514,9 +514,9 @@ proc gcn_decode { longs sockname } {
          set grb_date [expr $gcn($sockname,long,burst_tjd)-13370.-1.+[mc_date2jd {2005 1 1}]] ; # TJD=13370 is 01 Jan 2005
          set grb_time [expr $gcn($sockname,long,burst_sod)/100.]
          set gcn($sockname,descr,burst_jd) [expr $grb_date+$grb_time/86400.] ; # jd du trigger
-	      if {($gcn($sockname,descr,burst_jd)-$gcn($sockname,descr,jd_pkt))>0.5} {
-		      set gcn($sockname,descr,burst_jd) [expr $gcn($sockname,descr,burst_jd)-1] ; # bug GCN du quart d'heure avant minuit
-	      }
+         if {($gcn($sockname,descr,burst_jd)-$gcn($sockname,descr,jd_pkt))>0.5} {
+            set gcn($sockname,descr,burst_jd) [expr $gcn($sockname,descr,burst_jd)-1] ; # bug GCN du quart d'heure avant minuit
+         }
       }
       if {$gcn($sockname,descr,satellite)=="INTEGRAL"} {
          set grb_date [expr $gcn($sockname,long,burst_tjd)-12640.+[mc_date2jd {2003 1 1}]]
@@ -563,9 +563,9 @@ proc gcn_decode { longs sockname } {
          set grb_date [expr $gcn($sockname,long,burst_tjd)-13370.-1.+[mc_date2jd {2005 1 1}]] ; # TJD=13370 is 01 Jan 2005
          set grb_time [expr $gcn($sockname,long,burst_sod)/100.]
          set gcn($sockname,descr,burst_jd) [expr $grb_date+$grb_time/86400.] ; # jd du trigger
-	      #if {($gcn($sockname,descr,burst_jd)-$gcn($sockname,descr,jd_pkt))>0.5} {
-		   #   set gcn($sockname,descr,burst_jd) [expr $gcn($sockname,descr,burst_jd)-1] ; # bug GCN du quart d'heure avant minuit
-	      #}
+         #if {($gcn($sockname,descr,burst_jd)-$gcn($sockname,descr,jd_pkt))>0.5} {
+         #   set gcn($sockname,descr,burst_jd) [expr $gcn($sockname,descr,burst_jd)-1] ; # bug GCN du quart d'heure avant minuit
+         #}
       }
       if {$gcn($sockname,descr,satellite)=="AGILE"} {
          set gcn($sockname,descr,burst_ra) [expr $gcn($sockname,long,burst_ra)*0.0001]
@@ -583,9 +583,9 @@ proc gcn_decode { longs sockname } {
          set grb_date [expr $gcn($sockname,long,burst_tjd)-13370.-1.+[mc_date2jd {2005 1 1}]] ; # TJD=13370 is 01 Jan 2005
          set grb_time [expr $gcn($sockname,long,burst_sod)/100.]
          set gcn($sockname,descr,burst_jd) [expr $grb_date+$grb_time/86400.] ; # jd du trigger
-	      #if {($gcn($sockname,descr,burst_jd)-$gcn($sockname,descr,jd_pkt))>0.5} {
-		   #   set gcn($sockname,descr,burst_jd) [expr $gcn($sockname,descr,burst_jd)-1] ; # bug GCN du quart d'heure avant minuit
-	      #}
+         #if {($gcn($sockname,descr,burst_jd)-$gcn($sockname,descr,jd_pkt))>0.5} {
+         #   set gcn($sockname,descr,burst_jd) [expr $gcn($sockname,descr,burst_jd)-1] ; # bug GCN du quart d'heure avant minuit
+         #}
       }
       if {$gcn($sockname,descr,satellite)=="MILAGRO"} {
          set gcn($sockname,descr,burst_ra) [expr $gcn($sockname,long,burst_ra)*0.0001]
@@ -982,257 +982,258 @@ proc gcn_pkt_type { pkt_type } {
 # ===================================
 
 proc grb_help {} {
-	grb_man
+   grb_man
 }
 
 proc grb_man {} {
-	::console::affiche_resultat " \n"
-	::console::affiche_resultat " ======================================================\n"
-	::console::affiche_resultat " AudeLA Menu -> Configuration -> Repertoires -> Images\n"
-	::console::affiche_resultat " ======================================================\n"
-	::console::affiche_resultat " Vérifier que c'est un vrai GRB (This is a GRB)\n"
-	::console::affiche_resultat " Vérifier la présentce d'un afterglow sur image somme\n"
-	::console::affiche_resultat " Vérifier la valeur de l'extinction interstellaire galactique.\n"
-	::console::affiche_resultat " Vérifier l'image traînée et la télécharger\n"
-	::console::affiche_resultat " Vérifier la présence d'un afterglow sur premières images et les télécharger\n"
-	::console::affiche_resultat " ======================================================\n"
-	::console::affiche_resultat " Renommer les images : grb_copy\n"
-	::console::affiche_resultat " Renommer les images : grb_sum ic\n"
-	::console::affiche_resultat " Renommer les images : grb_aladin ic\n"
-	::console::affiche_resultat " ======================================================\n"
-	::console::affiche_resultat " Etoile de reference NOMAD1: (V-R)=+0.4+(Av-Ar)\n"
-	::console::affiche_resultat " Mesurer les magnitudes avec Menu -> Analyse -> Ajuster une gaussienne\n"
-	::console::affiche_resultat " ======================================================\n"
+   ::console::affiche_resultat " \n"
+   ::console::affiche_resultat " ======================================================\n"
+   ::console::affiche_resultat " AudeLA Menu -> Configuration -> Repertoires -> Images\n"
+   ::console::affiche_resultat " ======================================================\n"
+   ::console::affiche_resultat " Vérifier que c'est un vrai GRB (This is a GRB)\n"
+   ::console::affiche_resultat " Vérifier la présentce d'un afterglow sur image somme\n"
+   ::console::affiche_resultat " Vérifier la valeur de l'extinction interstellaire galactique.\n"
+   ::console::affiche_resultat " Vérifier l'image traînée et la télécharger\n"
+   ::console::affiche_resultat " Vérifier la présence d'un afterglow sur premières images et les télécharger\n"
+   ::console::affiche_resultat " ======================================================\n"
+   ::console::affiche_resultat " Renommer les images : grb_copy\n"
+   ::console::affiche_resultat " Renommer les images : grb_sum ic\n"
+   ::console::affiche_resultat " Renommer les images : grb_aladin ic\n"
+   ::console::affiche_resultat " ======================================================\n"
+   ::console::affiche_resultat " Etoile de reference NOMAD1: (V-R)=+0.4+(Av-Ar)\n"
+   ::console::affiche_resultat " Mesurer les magnitudes avec Menu -> Analyse -> Ajuster une gaussienne\n"
+   ::console::affiche_resultat " ======================================================\n"
 }
 
 proc grb_copy { {first 1} {date_trigger ""} } {
 
-	global audace
-	
-	set toto [info script]
-	set path $audace(rep_images)
-	::console::affiche_resultat " \n"
-	::console::affiche_resultat " ======================================================\n"
-	::console::affiche_resultat " COPY IMAGES OF $path\n"
-	::console::affiche_resultat " ======================================================\n"
-	if {$first=="?"} {
-		::console::affiche_resultat "Synatax : grb_copy ?first? ?date_trigger?\n"
-		return
-	}
-	
-	set methods ""
-	lappend methods window
-	
-	set bufno $audace(bufNo)
-	
-	# --- Recherche l'instant du trigger
-	set mjd0 2450000.
-	if {$date_trigger==""} {
-		set err [catch {
-			set fichiers [lsort [glob ${path}/GRB*.txt]]
-			set fichier [lindex $fichiers 0]
-			set f [open $fichier r]
-			set lignes [split [read $f] \n]
-			close $f
-			foreach ligne $lignes {
-				set kwd [lindex $ligne 0]
-				if {$kwd=="GRB_JD"} {
-					set tgrb [lindex $ligne 1]
-				}
-			}
-		} msg ]
-		if {$err==1} {
-			set tgrb 0
-		}
-	} else {
-		set tgrb [mc_date2jd $date_trigger]
-	}
-	set jdgrb [mc_date2jd $tgrb]
-	
-	# --- recherche les images
-	set fichiers [lsort [glob ${path}/*.fits.gz]]
-	
-	foreach method $methods {
-		if {$method=="window"} {			
-			set first [expr $first-1]
-			set fichier "[lindex $fichiers $first]"
-			buf$bufno load "$fichier"
-			set naxis1 [lindex [buf$bufno getkwd NAXIS1] 1]
-			set naxis2 [lindex [buf$bufno getkwd NAXIS2] 1]
-			if {$naxis1>1000} {
-				set ra [lindex [buf$bufno getkwd RA] 1]
-				set dec [lindex [buf$bufno getkwd DEC] 1]
-				set xy [buf$bufno radec2xy [list $ra $dec]]				
-				#set xc [expr $naxis1/2]
-				#set yc [expr $naxis2/2]
-				set xc [lindex $xy 0]
-				set yc [lindex $xy 1]
-				set fen 300
-			} else {
-				set fen 125
-				set xc [expr 129./2]
-				set yc [expr 129./2]
-			}
-			#set naxis12 105
-			set box [list [expr int($xc-$fen)] [expr int($yc-$fen)] [expr int($xc+$fen)] [expr int($yc+$fen)]]
-			set n [llength $fichiers]
-			set kkc 0
-			set kkv 0
-			set kkr 0
-			set kki 0
-			
-			for {set k $first} {$k<$n} {incr k} {
-				set fichier "[lindex $fichiers $k]"
-				buf$bufno load "$fichier"
-				#set ligne [buf$bufno getkwd CRPIX2]  ; set crpix [expr 0+[lindex $ligne 1]] ; set ligne [lreplace $ligne 1 1 $crpix] ; buf$bufno setkwd $ligne
-				set exposure [lindex [buf$bufno getkwd EXPOSURE] 1]
-				set nbstars [lindex [buf$bufno getkwd NBSTARS] 1]
-				set date_obs [lindex [buf$bufno getkwd DATE-OBS] 1]
-				set filter [string trim [lindex [buf$bufno getkwd FILTER] 1]]
-				set tempccd [string trim [lindex [buf$bufno getkwd TEMPCCD] 1]]
-				set trackspa [string trim [lindex [buf$bufno getkwd TRACKSPA] 1]]
-				if {($tgrb==0)&&($k==$first)} {
-					set tgrb $date_obs
-					set jdgrb [mc_date2jd $tgrb]
-				}
-				set track ""
-				if {$filter=="C"} {
-					set series c
-					# 0.0041781
-					if {$trackspa<0.00417} {
-						set kkc 0
-						set track "(trailed image)"
-					} else {
-						incr kkc
-					}
-					set kk $kkc
-				} elseif {$filter=="V"} {
-					set series v
-					incr kkv
-					set kk $kkv
-				} elseif {$filter=="R"} {
-					set series r
-					incr kkr
-					set kk $kkr
-				} elseif {$filter=="I"} {
-					set series i
-					incr kki
-					set kk $kki
-				}
-				#::console::affiche_resultat "[file tail $fichier] [expr 86400.*([mc_date2jd $date_obs]-$jdgrb)+$exposure/2] secs $date_obs $exposure $nbstars ${tempccd}°C\n"
-				::console::affiche_resultat "[file tail $fichier] [expr 1440.*([mc_date2jd $date_obs]-$jdgrb)+$exposure/2/60] mins $date_obs $exposure $nbstars ${tempccd}°C\n"
-				#::console::affiche_resultat "[file tail $fichier] [expr 24.*([mc_date2jd $date_obs]-$jdgrb)+$exposure/2/3600.] hours $date_obs $exposure $nbstars ${tempccd}°C\n"
-				buf$bufno window $box
-				buf$bufno save ${path}/i${series}${kk}
-				set naxis1 [lindex [buf$bufno getkwd NAXIS1] 1]
-				#
-				#set res [buf$bufno stat]
-				#set fond [lindex $res 6]
-				#set sigma [lindex $res 7]
-				set res [buf$bufno autocuts]
-				visu1 cut [lrange $res 0 1]
-				#subsky 10 0.2
-				visu1 disp
-				buf$bufno save ${path}/i${series}${kk}
-				::console::affiche_resultat " => i${series}${kk} $track\n"
-			}
-		}
-	}
-	::console::affiche_resultat " ======================================================\n"
+   global audace
+
+   set toto [info script]
+   set path $audace(rep_images)
+   ::console::affiche_resultat " \n"
+   ::console::affiche_resultat " ======================================================\n"
+   ::console::affiche_resultat " COPY IMAGES OF $path\n"
+   ::console::affiche_resultat " ======================================================\n"
+   if {$first=="?"} {
+      ::console::affiche_resultat "Synatax : grb_copy ?first? ?date_trigger?\n"
+      return
+   }
+
+   set methods ""
+   lappend methods window
+
+   set bufno $audace(bufNo)
+
+   # --- Recherche l'instant du trigger
+   set mjd0 2450000.
+   if {$date_trigger==""} {
+      set err [catch {
+         set fichiers [lsort [glob ${path}/GRB*.txt]]
+         set fichier [lindex $fichiers 0]
+         set f [open $fichier r]
+         set lignes [split [read $f] \n]
+         close $f
+         foreach ligne $lignes {
+            set kwd [lindex $ligne 0]
+            if {$kwd=="GRB_JD"} {
+               set tgrb [lindex $ligne 1]
+            }
+         }
+      } msg ]
+      if {$err==1} {
+         set tgrb 0
+      }
+   } else {
+      set tgrb [mc_date2jd $date_trigger]
+   }
+   set jdgrb [mc_date2jd $tgrb]
+
+   # --- recherche les images
+   set fichiers [lsort [glob ${path}/*.fits.gz]]
+
+   foreach method $methods {
+      if {$method=="window"} {
+         set first [expr $first-1]
+         set fichier "[lindex $fichiers $first]"
+         buf$bufno load "$fichier"
+         set naxis1 [lindex [buf$bufno getkwd NAXIS1] 1]
+         set naxis2 [lindex [buf$bufno getkwd NAXIS2] 1]
+         if {$naxis1>1000} {
+            set ra [lindex [buf$bufno getkwd RA] 1]
+            set dec [lindex [buf$bufno getkwd DEC] 1]
+            set xy [buf$bufno radec2xy [list $ra $dec]]
+            #set xc [expr $naxis1/2]
+            #set yc [expr $naxis2/2]
+            set xc [lindex $xy 0]
+            set yc [lindex $xy 1]
+            set fen 300
+         } else {
+            set fen 125
+            set xc [expr 129./2]
+            set yc [expr 129./2]
+         }
+         #set naxis12 105
+         set box [list [expr int($xc-$fen)] [expr int($yc-$fen)] [expr int($xc+$fen)] [expr int($yc+$fen)]]
+         set n [llength $fichiers]
+         set kkc 0
+         set kkv 0
+         set kkr 0
+         set kki 0
+
+         for {set k $first} {$k<$n} {incr k} {
+            set fichier "[lindex $fichiers $k]"
+            buf$bufno load "$fichier"
+            #set ligne [buf$bufno getkwd CRPIX2]  ; set crpix [expr 0+[lindex $ligne 1]] ; set ligne [lreplace $ligne 1 1 $crpix] ; buf$bufno setkwd $ligne
+            set exposure [lindex [buf$bufno getkwd EXPOSURE] 1]
+            set nbstars [lindex [buf$bufno getkwd NBSTARS] 1]
+            set date_obs [lindex [buf$bufno getkwd DATE-OBS] 1]
+            set filter [string trim [lindex [buf$bufno getkwd FILTER] 1]]
+            set tempccd [string trim [lindex [buf$bufno getkwd TEMPCCD] 1]]
+            set trackspa [string trim [lindex [buf$bufno getkwd TRACKSPA] 1]]
+            if {($tgrb==0)&&($k==$first)} {
+               set tgrb $date_obs
+               set jdgrb [mc_date2jd $tgrb]
+            }
+            set track ""
+            if {$filter=="C"} {
+               set series c
+               # 0.0041781
+               if {$trackspa<0.00417} {
+                  set kkc 0
+                  set track "(trailed image)"
+               } else {
+                  incr kkc
+               }
+               set kk $kkc
+            } elseif {$filter=="V"} {
+               set series v
+               incr kkv
+               set kk $kkv
+            } elseif {$filter=="R"} {
+               set series r
+               incr kkr
+               set kk $kkr
+            } elseif {$filter=="I"} {
+               set series i
+               incr kki
+               set kk $kki
+            }
+            #::console::affiche_resultat "[file tail $fichier] [expr 86400.*([mc_date2jd $date_obs]-$jdgrb)+$exposure/2] secs $date_obs $exposure $nbstars ${tempccd}°C\n"
+            ::console::affiche_resultat "[file tail $fichier] [expr 1440.*([mc_date2jd $date_obs]-$jdgrb)+$exposure/2/60] mins $date_obs $exposure $nbstars ${tempccd}°C\n"
+            #::console::affiche_resultat "[file tail $fichier] [expr 24.*([mc_date2jd $date_obs]-$jdgrb)+$exposure/2/3600.] hours $date_obs $exposure $nbstars ${tempccd}°C\n"
+            buf$bufno window $box
+            buf$bufno save ${path}/i${series}${kk}
+            set naxis1 [lindex [buf$bufno getkwd NAXIS1] 1]
+            #
+            #set res [buf$bufno stat]
+            #set fond [lindex $res 6]
+            #set sigma [lindex $res 7]
+            set res [buf$bufno autocuts]
+            visu1 cut [lrange $res 0 1]
+            #subsky 10 0.2
+            visu1 disp
+            buf$bufno save ${path}/i${series}${kk}
+            ::console::affiche_resultat " => i${series}${kk} $track\n"
+         }
+      }
+   }
+   ::console::affiche_resultat " ======================================================\n"
 }
 
 proc grb_register { {name ic} {number 0} } {
 
-	global audace
-	
-	set toto [info script]
-	set path $audace(rep_images)
-	::console::affiche_resultat " \n"
-	::console::affiche_resultat " ======================================================\n"
-	::console::affiche_resultat " REGISTER IMAGES OF $path\n"
-	::console::affiche_resultat " ======================================================\n"
-	if {$name=="?"} {
-		::console::affiche_resultat "Synatax : grb_register ?name? ?number?\n"
-		return
-	}
-	
-	set bufno $audace(bufNo)
+   global audace
 
-	set n 1
-	set sortie 0
-	while {$sortie==0} {
-		if {[file exists "$path/${name}$n.fit"]==0} {
-			incr n -1
-			set sortie 1
-			break
-		}
-		incr n
-	}
-	if {($number>0)&&($number<$n)} {
-		set n $number
-	}
-	::console::affiche_resultat " $n images $name...\n"
-	
-	registerfine $name $name $n 1 10 1 bitpix=-32
-	
-	::console::affiche_resultat " ======================================================\n"
+   set toto [info script]
+   set path $audace(rep_images)
+   ::console::affiche_resultat " \n"
+   ::console::affiche_resultat " ======================================================\n"
+   ::console::affiche_resultat " REGISTER IMAGES OF $path\n"
+   ::console::affiche_resultat " ======================================================\n"
+   if {$name=="?"} {
+      ::console::affiche_resultat "Synatax : grb_register ?name? ?number?\n"
+      return
+   }
+
+   set bufno $audace(bufNo)
+
+   set n 1
+   set sortie 0
+   while {$sortie==0} {
+      if {[file exists "$path/${name}$n.fit"]==0} {
+         incr n -1
+         set sortie 1
+         break
+      }
+      incr n
+   }
+   if {($number>0)&&($number<$n)} {
+      set n $number
+   }
+   ::console::affiche_resultat " $n images $name...\n"
+
+   registerfine $name $name $n 1 10 1 bitpix=-32
+
+   ::console::affiche_resultat " ======================================================\n"
 }
 
 proc grb_sum { {name ic} {first 1} {number 0} } {
 
-	global audace
-	
-	set toto [info script]
-	set path $audace(rep_images)
-	::console::affiche_resultat " \n"
-	::console::affiche_resultat " ======================================================\n"
-	::console::affiche_resultat " SUM IMAGES OF $path\n"
-	::console::affiche_resultat " ======================================================\n"
-	if {$name=="?"} {
-		::console::affiche_resultat "Synatax : grb_sum ?name? ?first? ?number?\n"
-		return
-	}
-	
-	set bufno $audace(bufNo)
+   global audace
 
-	set n $first
-	set sortie 0
-	while {$sortie==0} {
-		if {[file exists "$path/${name}$n.fit"]==0} {
-			incr n -1
-			set sortie 1
-			break
-		}
-		incr n
-	}
-	if {($number>0)&&($number<$n)} {
-		set n $number
-	}
-	::console::affiche_resultat " $n images $name...\n"
-	
-	sadd $name $name $n $first bitpix=-32
-	
-	::console::affiche_resultat " ======================================================\n"
+   set toto [info script]
+   set path $audace(rep_images)
+   ::console::affiche_resultat " \n"
+   ::console::affiche_resultat " ======================================================\n"
+   ::console::affiche_resultat " SUM IMAGES OF $path\n"
+   ::console::affiche_resultat " ======================================================\n"
+   if {$name=="?"} {
+      ::console::affiche_resultat "Synatax : grb_sum ?name? ?first? ?number?\n"
+      return
+   }
+
+   set bufno $audace(bufNo)
+
+   set n $first
+   set sortie 0
+   while {$sortie==0} {
+      if {[file exists "$path/${name}$n.fit"]==0} {
+         incr n -1
+         set sortie 1
+         break
+      }
+      incr n
+   }
+   if {($number>0)&&($number<$n)} {
+      set n $number
+   }
+   ::console::affiche_resultat " $n images $name...\n"
+
+   sadd $name $name $n $first bitpix=-32
+
+   ::console::affiche_resultat " ======================================================\n"
 }
 
 proc grb_aladin { {name ic} {catalogs "VizieR(NOMAD1)"} } {
 
-	global audace
-	
-	set toto [info script]
-	set path $audace(rep_images)
-	::console::affiche_resultat " \n"
-	::console::affiche_resultat " ======================================================\n"
-	::console::affiche_resultat " ALADIN OF $path\n"
-	::console::affiche_resultat " ======================================================\n"
-	if {$name=="?"} {
-		::console::affiche_resultat "Synatax : grb_aladin ?name? ?catalogs?\n"
-		return
-	}
-	
-	set bufno $audace(bufNo)
+   global audace
 
-	vo_aladin load $name $catalogs
-	
-	::console::affiche_resultat " ======================================================\n"
+   set toto [info script]
+   set path $audace(rep_images)
+   ::console::affiche_resultat " \n"
+   ::console::affiche_resultat " ======================================================\n"
+   ::console::affiche_resultat " ALADIN OF $path\n"
+   ::console::affiche_resultat " ======================================================\n"
+   if {$name=="?"} {
+      ::console::affiche_resultat "Synatax : grb_aladin ?name? ?catalogs?\n"
+      return
+   }
+
+   set bufno $audace(bufNo)
+
+   vo_aladin load $name $catalogs
+
+   ::console::affiche_resultat " ======================================================\n"
 }
+
