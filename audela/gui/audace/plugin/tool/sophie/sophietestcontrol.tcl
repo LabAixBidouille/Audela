@@ -2,7 +2,7 @@
 # @file     sophiesimulcontrol.tcl
 # @brief    Fichier du namespace ::sophie::testcontrol
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietestcontrol.tcl,v 1.10 2010-01-31 11:49:13 michelpujol Exp $
+# @version  $Id: sophietestcontrol.tcl,v 1.11 2010-02-14 16:27:06 michelpujol Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -475,7 +475,7 @@ proc ::sophie::testcontrol::sendRadecNotification { } {
 
 #------------------------------------------------------------
 # sendRadecNotificationLoop
-#   envoie une donnee au PC de guidage
+#   boucle d'envoi des notificiations de la position radec
 #
 # @param donnees a envoyer
 #------------------------------------------------------------
@@ -847,7 +847,7 @@ proc ::sophie::testcontrol::startFocusNotification { } {
 
    if { $private(focus,notificationEnabled) == 0 } {
       set private(focus,notificationEnabled) 1
-      after 500 ::sophie::testcontrol::sendFocusPosition
+      after 500 ::sophie::testcontrol::sendFocusNotificationLoop
    }
    return 0
 }
@@ -862,6 +862,22 @@ proc ::sophie::testcontrol::stopFocusNotification { } {
    variable private
    set private(focus,notificationEnabled) 0
    return 0
+}
+
+#------------------------------------------------------------
+# sendFocusNotificationLoop
+#   boucle d'envoi des notificiations de la position du focus
+#
+# @param donnees a envoyer
+#------------------------------------------------------------
+proc ::sophie::testcontrol::sendFocusNotificationLoop { } {
+   variable private
+
+   sendFocusPosition
+   if { $private(focus,notificationEnabled) == 1 } {
+      #--- je lance une nouvelle iteration apres 1000 miliscondes
+      after 500 ::sophie::testcontrol::sendFocusNotificationLoop
+   }
 }
 
 #------------------------------------------------------------
@@ -885,12 +901,8 @@ proc ::sophie::testcontrol::sendFocusPosition { } {
    }
    set returnCode 0
    set response [format "!FOC COORD %d %d %s @" $returnCode $moveCode $private(focus,position)]
-   disp "sendFocusPosition $response private(focus,notificationEnabled)=$private(focus,notificationEnabled)\n"
+   disp "sendFocusPosition $response \n"
    ::sophie::testcontrol::writeTelescopeNotificationSocket $response
-   if { $private(focus,notificationEnabled) == 1 } {
-      #--- je lance une nouvelle iteration apres 1000 miliscondes
-      after 1000 ::sophie::testcontrol::sendFocusPosition
-   }
 }
 
 #------------------------------------------------------------
@@ -993,11 +1005,11 @@ proc ::sophie::testcontrol::simulateMotor { } {
             #--- je simule le GOTO
             if { [expr abs($private(focus,position) - $private(focus,targetPosition)) > abs($delay * $private(focus,speed)) ] } {
                set private(focus,position) [expr $private(focus,position) + $delay * $private(focus,speed) ]
-               disp "simulateMotor delai=$delay private(focus,position)=$private(focus,position)\n"
+               ###disp "simulateMotor delai=$delay private(focus,position)=$private(focus,position)\n"
             } else {
                #--- l'ecart est tout petit, je considere qu'on a atteint la position cible
                set private(focus,position) $private(focus,targetPosition)
-               disp "simulateMotor delai=$delay private(focus,position)=$private(focus,position) FIN \n"
+               ###disp "simulateMotor delai=$delay private(focus,position)=$private(focus,position) FIN \n"
             }
 
             if { $private(focus,position) == $private(focus,targetPosition) } {
