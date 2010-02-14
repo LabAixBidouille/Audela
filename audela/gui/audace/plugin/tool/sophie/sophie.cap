@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.42 2009-12-22 18:27:12 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.43 2010-02-14 16:39:24 michelpujol Exp $
 #
 
 #=========================================================================
@@ -127,10 +127,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,sophieEncours)                 "Pose Sophie en cours"
    set caption(sophie,sophieArretee)                 "Pose Sophie arrêtée"
    set caption(sophie,position)                      "Position"
+   set caption(sophie,pixel)                         "(pixel)"
+   set caption(sophie,arcsec)                        "(arcsec)"
    set caption(sophie,positionEtoile)                "Position étoile\n(pixel)"
    set caption(sophie,positionConsigne)              "Position consigne\n(pixel)"
-   set caption(sophie,ecartEtoile)                   "Ecart étoile/consigne\n(arcsec)"
-   set caption(sophie,correction)                    "Correction télescope\n(arcsec)"
+   set caption(sophie,ecartEtoile)                   "Ecart étoile/consigne"
+   set caption(sophie,correction)                    "Correction télescope"
    set caption(sophie,seeing)                        "Seeing"
    set caption(sophie,FWHMX)                         "FWHM X (arcsec)"
    set caption(sophie,FWHMY)                         "FWHM Y (arcsec)"
