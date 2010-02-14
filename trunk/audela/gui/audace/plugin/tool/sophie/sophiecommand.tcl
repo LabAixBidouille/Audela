@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.45 2010-02-05 18:44:46 robertdelmas Exp $
+# @version  $Id: sophiecommand.tcl,v 1.46 2010-02-14 16:36:17 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -146,15 +146,16 @@ proc ::sophie::showControlWindow { visuNo } {
 }
 
 ##------------------------------------------------------------
-# setBinningAndWindow
+# setModeAndBinningAndWindow
 #  applique le changement de binning et le fentrage de l'acquisition d'image
 #
 # @param  binning   binning x et y  sous la forme 1x1 2x2 ...
 # @param  windowSize  "full" ou taille de la fenetre d'acquisition
 # @param  centerCoords  coordonnees du centre de la fenetre d'acquisition si la taille n'est pas full n'est pas "full"
+# @param  zoom      zoom a appliquer apres le changement de mode
 # @return rien
 #------------------------------------------------------------
-proc ::sophie::setBinningAndWindow { binning { windowSize ""} { centerCoords "" } } {
+proc ::sophie::setModeAndBinningAndWindow { binning windowSize centerCoords zoom } {
    variable private
 
    if { [lsearch $private(listeBinning) $binning] == -1 } {
@@ -169,10 +170,6 @@ proc ::sophie::setBinningAndWindow { binning { windowSize ""} { centerCoords "" 
    set width  [lindex $private(cameraCells) 0 ]
    set height [lindex $private(cameraCells) 1 ]
 
-   if { $windowSize == "" } {
-      set windowSize $private(windowSize)
-   }
-
    if { $windowSize == "full" } {
       #--- pas de fenetrage
       set x1 1
@@ -183,9 +180,6 @@ proc ::sophie::setBinningAndWindow { binning { windowSize ""} { centerCoords "" 
       set private(xWindow) $x1
       set private(yWindow) $y1
    } else {
-      if { $centerCoords == "" } {
-         set centerCoords $private(centerCoords)
-      }
       set size [expr $windowSize / 2 ]
       set x  [lindex $centerCoords 0]
       set y  [lindex $centerCoords 1]
@@ -239,6 +233,9 @@ proc ::sophie::setBinningAndWindow { binning { windowSize ""} { centerCoords "" 
    if { $private(acquisitionState) != 0 } {
       set targetBoxSize [ expr int($private(targetBoxSize) / (2.0 * $private(xBinning))) ]
       ::camera::setAsynchroneParameter $private(camItem) \
+         "mode"         $private(mode) \
+         "findFiber"    $private(findFiber) \
+         "zoom"         $zoom \
          "binning"      [list $private(xBinning) $private(yBinning)] \
          "window"       [list $x1 $y1 $x2 $y2 ] \
          "targetCoord"  [list $xTargetCoord $yTargetCoord] \
@@ -276,13 +273,13 @@ proc ::sophie::setExposure { { exposure "" } } {
 #  cette procedure est appellee par la combobox de choix du binning
 #  pour changer de binning
 #------------------------------------------------------------
-proc ::sophie::onChangeBinning { visuNo } {
-   variable private
-
-   #--- je change le binning
-   ###setBinning $private(widgetBinning)
-   setBinningAndWindow $private(widgetBinning)
-}
+###proc ::sophie::onChangeBinning { visuNo } {
+###   variable private
+###
+###   #--- je change le binning
+###   ###setBinning $private(widgetBinning)
+###   setBinningAndWindow $private(widgetBinning)
+###}
 
 ##------------------------------------------------------------
 # onChangeExposure
@@ -458,13 +455,15 @@ proc ::sophie::setMode { { mode "" } } {
          set private(findFiber) 0
          #--- je change la taille de la cible
          set private(targetBoxSize) $::conf(sophie,centerWindowSize)
+         set zoom 1
+
          #--- je mets le thread de la camera en mode centrage et je desactive la detection de la fibre
-         ::camera::setAsynchroneParameter $private(camItem) \
-            "mode" "CENTER" \
-            "findFiber" $private(findFiber) \
-            "zoom" 1
+         ###::camera::setAsynchroneParameter $private(camItem) \
+         ###   "mode" "CENTER" \
+         ###   "findFiber" $private(findFiber) \
+         ###   "zoom" 1
          #--- je change le binning et je supprime le fentrage
-         setBinningAndWindow $::conf(sophie,centerBinning) "full"
+         setModeAndBinningAndWindow $::conf(sophie,centerBinning) "full" $private(centerCoords) $zoom
          ::sophie::fiberview::closeWindow
       }
       "FOCUS" {
@@ -485,13 +484,14 @@ proc ::sophie::setMode { { mode "" } } {
          set private(findFiber) 0
          #--- je change la taille de d'analyse de la cible
          set private(targetBoxSize) $::conf(sophie,centerWindowSize)
+         set zoom 4
          #--- je mets le thread de la camera en mode centrage et je desactive la detection de la fibre
-         ::camera::setAsynchroneParameter $private(camItem) \
-            "mode" "CENTER" \
-            "findFiber" $private(findFiber) \
-            "zoom" 4
+         ###::camera::setAsynchroneParameter $private(camItem) \
+         ###   "mode" "FOCUS" \
+         ###   "findFiber" $private(findFiber) \
+         ###   "zoom" 4
          #--- je change le binning et je cree une fenetre centree sur l'étoile
-         setBinningAndWindow $::conf(sophie,focuseBinning) $private(targetBoxSize) $private(targetCoord)
+         setModeAndBinningAndWindow $::conf(sophie,focuseBinning) $private(targetBoxSize) $private(targetCoord) $zoom
          ::sophie::fiberview::closeWindow
       }
       "GUIDE" {
@@ -515,31 +515,30 @@ proc ::sophie::setMode { { mode "" } } {
             $private(frm).mode.findFiber  configure -state disabled
             set private(findFiber) 0
          }
-
-         ###buf$private(maskBufNo)  clear
-         ###buf$private(sumBufNo)   clear
-         ###buf$private(fiberBufNo) clear
          #--- je memorise les coordonnes de l'origine
          set private(originCoordGuide) $private(originCoord)
          #--- je change la taille de d'analyse de la cible
          set private(targetBoxSize) $::conf(sophie,guidingWindowSize)
          #--- je mets le thread de la camera en mode centrage
-         ::camera::setAsynchroneParameter $private(camItem) \
-            "mode"               "GUIDE"    \
-            "findFiber"          $private(findFiber) \
-            "originSumCounter"   0 \
-            "zoom"               8
-
+         ###::camera::setAsynchroneParameter $private(camItem) \
+         ###   "mode"               "GUIDE"    \
+         ###   "findFiber"          $private(findFiber) \
+         ###   "originSumCounter"   0 \
+         ###   "zoom"               8
+         set zoom 8
          #--- je change le binning
          if { $::conf(sophie,guidingMode) != "OBJECT" } {
-            setBinningAndWindow $::conf(sophie,guideBinning) $::conf(sophie,guidingWindowSize) $private(originCoord)
+            setModeAndBinningAndWindow $::conf(sophie,guideBinning) $::conf(sophie,guidingWindowSize) $private(originCoord) $zoom
             #--- je ferme la fenetre d'affichage de la fibre au cas ou elle serait enore ouverte
             ::sophie::fiberview::closeWindow
          } else {
-            setBinningAndWindow $::conf(sophie,guideBinning) "full"
+            setModeAndBinningAndWindow $::conf(sophie,guideBinning) "full" $private(centerCoords) $zoom
             #--- j'affiche la fenetre d'affichage de la fibre
             ::sophie::fiberview::run $private(visuNo)
          }
+         ::camera::setAsynchroneParameter $private(camItem) \
+            "originSumCounter"   0
+
       }
    }
    ::sophie::setGuidingMode $private(visuNo)
@@ -1785,7 +1784,9 @@ proc ::sophie::stopCenter { } {
          "mountEnabled" 0
 
    #--- je signale au telescope que j'arrete une session de centrage
-   tel$::audace(telNo) radec guiding 1
+   if { $::audace(telNo) != 0 } {
+      tel$::audace(telNo) radec guiding 1
+   }
 
 
    #--- je mets a jour le voyant dans la fenetre de controle
@@ -1837,7 +1838,9 @@ proc ::sophie::stopGuide { } {
    ###set private(AsynchroneParameter) 1
 
    #--- je signale au telescope que j'arret une session de guidage
-   tel$::audace(telNo) radec guiding 0
+   if { $::audace(telNo) != 0 } {
+      tel$::audace(telNo) radec guiding 0
+   }
 
    ::camera::setAsynchroneParameter $private(camItem) \
          "mountEnabled" 0
@@ -1907,12 +1910,12 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
             # args 0 = coordonnees de l'etoile, ou coordonnees du centre de la zone de recherche si l'etoile n'a pas ete trouvee
             # args 1 = dx   (ramené au binning 1x1)
             # args 2 = dy   (ramené au binning 1x1)
-            # args 3 = targetDetection
+            # args 3 = starStatus
             # args 4 = fiberStatus  (=DETECTED NO_SIGNAL UNCHANGED DISABLED )
             # args 5 = fiberX
             # args 6 = fiberY
-            # args 7 = measuredFwhmX
-            # args 8 = measuredFwhmY
+            # args 7 = measuredFwhmX (en pixel ramené au binning 1x1)
+            # args 8 = measuredFwhmY (en pixel ramené au binning 1x1)
             # args 9 = background
             # args 10= maxIntensity
             # args 11= diffAlpha        ecart etoile/consigne en alpha (en arcsec)
@@ -1930,8 +1933,10 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
             set fiberStatus          [lindex $args 4]
             set originX              [expr [lindex $args 5] * $private(xBinning) + $private(xWindow) -1 ]
             set originY              [expr [lindex $args 6] * $private(yBinning) + $private(yWindow) -1 ]
-            set fwhmX                [expr [lindex $args 7] * $private(xBinning) * $::conf(sophie,pixelScale)]
-            set fwhmY                [expr [lindex $args 8] * $private(yBinning) * $::conf(sophie,pixelScale)]
+            ###set fwhmX                [expr [lindex $args 7] * $private(xBinning) * $::conf(sophie,pixelScale)]
+            ###set fwhmY                [expr [lindex $args 8] * $private(yBinning) * $::conf(sophie,pixelScale)]
+            set fwhmX                [expr [lindex $args 7] * $::conf(sophie,pixelScale)]
+            set fwhmY                [expr [lindex $args 8] * $::conf(sophie,pixelScale)]
             set background           [lindex $args 9]
             set maxIntensity         [lindex $args 10]
             set alphaDiff            [lindex $args 11]
@@ -1955,8 +1960,6 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
 
             #--- j'affiche le symbole de la fibre B
             ::sophie::createFiberB $visuNo
-
-            ##console::disp "callbackAcquisition origin= $private(originCoord) detail=$infoMessage\n"
 
             #--- j'affiche les informations dans la fenetre de controle
             switch $private(mode) {
