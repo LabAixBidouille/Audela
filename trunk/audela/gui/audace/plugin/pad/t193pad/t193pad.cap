@@ -1,6 +1,6 @@
 #
 # Fichier : t193pad.cap
-# Mise a jour $Id: t193pad.cap,v 1.7 2010-02-14 16:41:10 michelpujol Exp $
+# Mise a jour $Id: t193pad.cap,v 1.8 2010-02-14 16:49:45 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -157,6 +157,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(t193pad,moteur_foc)        "Fokuseringsmotor"
    set caption(t193pad,gotoFoc)           "GOTO Fokus."
+   set caption(t193pad,stopFoc)           "STOP"
 
    set caption(t193pad,dome)              "Kuppel"
    set caption(t193pad,synchroMonture)    "Synkroniseret med teleskop"
