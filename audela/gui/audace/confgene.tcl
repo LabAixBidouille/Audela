@@ -5,7 +5,7 @@
 #               pose, choix des outils, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: confgene.tcl,v 1.68 2010-02-06 15:42:39 robertdelmas Exp $
+# Mise à jour $Id: confgene.tcl,v 1.69 2010-02-15 17:36:02 robertdelmas Exp $
 #
 
 #
@@ -2093,7 +2093,7 @@ namespace eval ::confChoixOutil {
       global help
 
       #---
-      ::audace::showHelpItem "$help(dir,tool)" "1900choix_outil.htm"
+      ::audace::showHelpItem "$help(dir,config+)" "1010choix_outil.htm"
    }
 
    #
@@ -2457,7 +2457,7 @@ namespace eval ::confTypeFenetre {
       global help
 
       #---
-      ::audace::showHelpItem "$help(dir,config)" "1100type_fenetre.htm"
+      ::audace::showHelpItem "$help(dir,config)" "1080type_fenetre.htm"
    }
 
    #

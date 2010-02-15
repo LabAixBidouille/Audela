@@ -2,7 +2,7 @@
 # Fichier : help.tcl
 # Description : Aide d'Aud'ACE
 # Auteur : Michel PUJOL
-# Mise a jour $Id: help.tcl,v 1.5 2007-09-01 11:13:42 robertdelmas Exp $
+# Mise à jour $Id: help.tcl,v 1.6 2010-02-15 17:36:46 robertdelmas Exp $
 #
 
 ###########################################################################################
@@ -34,10 +34,11 @@ set help(dir,optic)         "09setup/04optic"
 set help(dir,equipment)     "09setup/05equipment"
 set help(dir,pad)           "09setup/06pad"
 set help(dir,chart)         "09setup/07chart"
+set help(dir,config+)       "09setup"
 set help(dir,aide)          "10help"
 set help(dir,divers)        "11misc"
 
-# *************** Version fran�aise ***************************
+# *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
    set help(dir,intro)      "01presentation"
    set help(dir,prog)       "02programmation"
@@ -54,6 +55,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set help(dir,equipment)  "09configuration/05equipement"
    set help(dir,pad)        "09configuration/06raquette"
    set help(dir,chart)      "09configuration/07carte"
+   set help(dir,config+)    "09configuration"
    set help(dir,aide)       "10aide"
    set help(dir,divers)     "11divers"
 }
@@ -237,6 +239,33 @@ namespace eval ::audace {
       update
 
       ::HelpViewer::LoadFile $audace(help_window) [ file join $audace(help_dir) $help(dir,prog) "interfa5c.htm" ] 1 ""
+
+      #--- Focus
+      focus $audace(help_window)
+
+   }
+
+   #------------------------------------------------------------
+   #  ::audace::showMenus
+   #
+   #  ouvre la fenetre de l'inventaire des menus
+   #------------------------------------------------------------
+   proc ::audace::showMenus { } {
+      global audace help
+
+      #--- J'affiche la fenetre si ce n'est pas deja fait
+      if { ! [ info exists audace(help_window) ] || ! [ winfo exists $audace(help_window) ] } {
+         ::audace::initHelp
+      }
+
+      if { [ winfo exists $audace(base).help ] } {
+         wm deiconify $audace(base).help
+      }
+
+      #--- J'attends que la fenetre d'aide soit creee
+      update
+
+      ::HelpViewer::LoadFile $audace(help_window) [ file join $audace(help_dir) $help(dir,aide) "1020menus.htm" ] 1 ""
 
       #--- Focus
       focus $audace(help_window)

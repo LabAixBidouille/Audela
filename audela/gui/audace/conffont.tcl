@@ -2,7 +2,7 @@
 # Fichier : conffont.tcl
 # Description : Selection et mise a jour en direct des polices de l'interface Aud'ACE
 # Auteur : Robert DELMAS
-# Mise a jour $Id: conffont.tcl,v 1.9 2010-01-05 22:13:56 robertdelmas Exp $
+# Mise à jour $Id: conffont.tcl,v 1.10 2010-02-15 17:35:41 robertdelmas Exp $
 #
 
 namespace eval confFont:: {
@@ -121,7 +121,7 @@ proc ::confFont::getLabel { } {
 proc ::confFont::showHelp { } {
    global help
 
-   ::audace::showHelpItem "$help(dir,config)" "1120police.htm"
+   ::audace::showHelpItem "$help(dir,config)" "1100police.htm"
 }
 
 #------------------------------------------------------------

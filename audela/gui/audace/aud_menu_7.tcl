@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise a jour $Id: aud_menu_7.tcl,v 1.18 2009-10-30 23:26:21 michelpujol Exp $
+# Mise à jour $Id: aud_menu_7.tcl,v 1.19 2010-02-15 17:36:22 robertdelmas Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -803,7 +803,7 @@ namespace eval ::confEditScript {
       global help
 
       #---
-      ::audace::showHelpItem "$help(dir,config)" "1030editeur.htm"
+      ::audace::showHelpItem "$help(dir,config)" "1030logiciels_externes.htm"
    }
 
    #

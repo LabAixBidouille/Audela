@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise a jour $Id: confcolor.tcl,v 1.34 2010-01-05 22:11:46 robertdelmas Exp $
+# Mise à jour $Id: confcolor.tcl,v 1.35 2010-02-15 17:35:16 robertdelmas Exp $
 #
 
 namespace eval confColor:: {
@@ -167,7 +167,7 @@ namespace eval confColor:: {
    proc showHelp { } {
       global help
 
-      ::audace::showHelpItem "$help(dir,config)" "1110apparence.htm"
+      ::audace::showHelpItem "$help(dir,config)" "1090apparence.htm"
    }
 
    #------------------------------------------------------------
