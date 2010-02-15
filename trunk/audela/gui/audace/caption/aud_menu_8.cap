@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_8.cap
-# Mise a jour $Id: aud_menu_8.cap,v 1.7 2009-11-04 18:29:49 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_8.cap,v 1.8 2010-02-15 17:33:53 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -13,6 +13,7 @@ global caption langage
 
 set caption(audace,menu,aide)                         "Help"
 set caption(audace,menu,sommaire)                     "Contents"
+set caption(audace,menu,menu)                         "Menus"
 set caption(audace,menu,fonctions)                    "Function Index"
 set caption(audace,menu,tutorial)                     "Tutorial"
 set caption(audace,menu,site_audela)                  "Web Site"
@@ -30,6 +31,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,aide)                      "Aide"
    set caption(audace,menu,sommaire)                  "Sommaire"
+   set caption(audace,menu,menu)                      "Menus"
    set caption(audace,menu,fonctions)                 "Index des fonctions"
    set caption(audace,menu,tutorial)                  "Tutoriel"
    set caption(audace,menu,site_audela)               "Site Web"
@@ -47,6 +49,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,aide)                      "Aiuto"
    set caption(audace,menu,sommaire)                  "Sommario"
+   set caption(audace,menu,menu)                      "Menu"
    set caption(audace,menu,fonctions)                 "Indice delle funzioni"
    set caption(audace,menu,tutorial)                  "Tutorial"
    set caption(audace,menu,site_audela)               "Sito Web"
@@ -64,6 +67,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,aide)                      "Ayuda"
    set caption(audace,menu,sommaire)                  "Tabla de Contenidos"
+   set caption(audace,menu,menu)                      "Menús"
    set caption(audace,menu,fonctions)                 "Indice de funciones"
    set caption(audace,menu,tutorial)                  "Tutorial"
    set caption(audace,menu,site_audela)               "Sitio Web"
@@ -81,6 +85,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,aide)                      "Hilfe"
    set caption(audace,menu,sommaire)                  "Inhalt"
+   set caption(audace,menu,menu)                      "Menüs"
    set caption(audace,menu,fonctions)                 "Funktionen Register"
    set caption(audace,menu,tutorial)                  "Tutorial"
    set caption(audace,menu,site_audela)               "Webseite"
@@ -98,6 +103,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,aide)                      "Ajuda"
    set caption(audace,menu,sommaire)                  "Conteúdos"
+   set caption(audace,menu,menu)                      "Menus"
    set caption(audace,menu,fonctions)                 "Indice de funções"
    set caption(audace,menu,tutorial)                  "Tutorial"
    set caption(audace,menu,site_audela)               "Site Web"
@@ -115,6 +121,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,aide)                      "Hjælp"
    set caption(audace,menu,sommaire)                  "Indhold"
+   set caption(audace,menu,menu)                      "Menuer"
    set caption(audace,menu,fonctions)                 "Funktionsindex"
    set caption(audace,menu,tutorial)                  "Tutorial"
    set caption(audace,menu,site_audela)               "Hjemmeside"
@@ -132,6 +139,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,aide)                      "Help"
    set caption(audace,menu,sommaire)                  "Contents"
+   set caption(audace,menu,menu)                      "Menus"
    set caption(audace,menu,fonctions)                 "Function Index"
    set caption(audace,menu,tutorial)                  "Tutorial"
    set caption(audace,menu,site_audela)               "Web Site"
@@ -149,6 +157,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,aide)                      "Help"
    set caption(audace,menu,sommaire)                  "Contents"
+   set caption(audace,menu,menu)                      "Menus"
    set caption(audace,menu,fonctions)                 "Function Index"
    set caption(audace,menu,tutorial)                  "Tutorial"
    set caption(audace,menu,site_audela)               "Web Site"
