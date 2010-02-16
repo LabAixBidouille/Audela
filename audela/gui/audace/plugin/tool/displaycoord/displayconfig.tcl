@@ -1,15 +1,14 @@
 #
 # Fichier : session.tcl
-# Description : configuration des parametres de session
+# Description : Configuration des parametres de session
 # Auteur : Michel PUJOL
-# Mise a jour $Id: displayconfig.tcl,v 1.2 2010-02-14 10:54:44 robertdelmas Exp $
+# Mise Ã  jour $Id: displayconfig.tcl,v 1.3 2010-02-16 14:10:08 robertdelmas Exp $
 #
 
 ################################################################
 # namespace ::displaycoord::config
-#
+#    initialise le namespace
 ################################################################
-
 namespace eval ::displaycoord::config {
 
 }
@@ -18,7 +17,7 @@ namespace eval ::displaycoord::config {
 # affiche la fenetre du traitement
 #
 # Utilise les fonctions de la classe parent ::confGenerique
-# @param tkbase nom tk de la fenêtre parent
+# @param tkbase nom tk de la fenÃªtre parent
 # @param visuNo  numero de la visu parent
 # @return rien
 # @public
@@ -40,8 +39,8 @@ proc ::displaycoord::config::run { tkbase visuNo } {
 #
 # @param visuNo  numero de la visu
 # @return
-#   - 0  s'il ne faut pas fermer la fenêtre
-#   - 1  s'il faut fermer la fenêtre
+#   - 0  s'il ne faut pas fermer la fenÃªtre
+#   - 1  s'il faut fermer la fenÃªtre
 # @public
 #------------------------------------------------------------
 proc ::displaycoord::config::closeWindow { visuNo } {
@@ -54,19 +53,19 @@ proc ::displaycoord::config::closeWindow { visuNo } {
 ##------------------------------------------------------------
 # affiche l'aide de cet outil
 #
-# Cette procedure est appelée par ::confGenerique::showHelp
+# Cette procedure est appelÃ©e par ::confGenerique::showHelp
 # @return rien
 # @private
 #------------------------------------------------------------
 proc ::displaycoord::config::showHelp { } {
    ::audace::showHelpPlugin [::audace::getPluginTypeDirectory [::displaycoord::getPluginType]] \
-   [::eshel::getPluginDirectory] [::eshel::getPluginHelp]
+   [::displaycoord::getPluginDirectory] [::displaycoord::getPluginHelp]
 }
 
 ##------------------------------------------------------------
 # enregistre les modifications
 #
-# Cette procedure est appelée par ::confGenerique::apply
+# Cette procedure est appelÃ©e par ::confGenerique::apply
 # @param visuNo  numero de la visu parent
 # @return rien
 # @private
@@ -84,9 +83,9 @@ proc ::displaycoord::config::apply { visuNo } {
 }
 
 ##------------------------------------------------------------
-# Crée les widgets de la fenetre de configuration de la session
+# CrÃ©e les widgets de la fenetre de configuration de la session
 #
-# Cette procedure est appelée par ::confGenerique::fillConfigPage a la creation de la fenetre
+# Cette procedure est appelÃ©e par ::confGenerique::fillConfigPage a la creation de la fenetre
 # @param frm nom tk de la frame cree par ::confgene::fillConfigPage
 # @param visuNo numero de la visu
 # @return  rien
@@ -122,8 +121,8 @@ proc ::displaycoord::config::fillConfigPage { frm visuNo } {
 ##------------------------------------------------------------
 # retourne le titre de la fenetre
 #
-# Cette procedure est appelée par ::confGenerique::getLabel
-# @return  titre de la fenêtre
+# Cette procedure est appelÃ©e par ::confGenerique::getLabel
+# @return  titre de la fenÃªtre
 # @private
 #------------------------------------------------------------
 proc ::displaycoord::config::getLabel { } {
