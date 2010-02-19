@@ -2302,7 +2302,7 @@ int Cmd_mctcl_angle2rad(ClientData clientData, Tcl_Interp *interp, int argc, cha
    } else {
 	  /* --- decode l'angle ---*/
       mctcl_decode_angle(interp,argv[1],&angle);
-      sprintf(s,"%12f",angle*(DR));
+      sprintf(s,"%.12f",angle*(DR));
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_OK;
    }
