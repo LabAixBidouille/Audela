@@ -2,13 +2,13 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: modpoi.tcl,v 1.25 2010-02-06 22:17:21 robertdelmas Exp $
+# Mise à jour $Id: modpoi.tcl,v 1.26 2010-02-19 17:31:51 michelpujol Exp $
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
 #    * La determination du modele de pointage est realisee a partir de n etoiles (n = 8).
 #    * Lancer le wizard (cf. point 2).
-#
+#s
 # 2) Pour lancer le wizard :
 #    modpoi_wiz
 #    * A la fin :
@@ -1933,14 +1933,14 @@ proc modpoi_addobs { vecY matX vecW deltah deltad dec h phi } {
    #---
    #--- dh
    set res ""
-   lappend res 1
-   lappend res 0
-   lappend res $tand
-   lappend res $secd
-   lappend res [expr $sinh*$tand]
-   lappend res [expr -1.*$cosh*$tand]
-   lappend res 0
-   lappend res [expr -1.*$sinh*$secd]                         ; #--- MT : Mount Flexure
+   lappend res 1                                              ; #--- IH
+   lappend res 0                                              ; #--- ID
+   lappend res $tand                                          ; #--- NP
+   lappend res $secd                                          ; #--- CH
+   lappend res [expr $sinh*$tand]                             ; #--- ME
+   lappend res [expr -1.*$cosh*$tand]                         ; #--- MA
+   lappend res 0                                              ; #--- FO  : Fork Flexure
+   lappend res [expr -1.*$sinh*$secd]                         ; #--- MT  (=HF?) : Mount Flexure
    lappend res [expr -1.*$cosphi*$cosh-1.*$sinphi*$tand]      ; #--- DAF : Delta Axis Flexure
    lappend res [expr $cosphi*$sinh*$secd]                     ; #--- TF : Tube Flexure
    #---
@@ -1949,16 +1949,16 @@ proc modpoi_addobs { vecY matX vecW deltah deltad dec h phi } {
    lappend vecW 0.5
    #--- ddec
    set res ""
-   lappend res 0
-   lappend res 1
-   lappend res 0
-   lappend res 0
-   lappend res $cosh
-   lappend res $sinh
-   lappend res $cosh                                          ; #--- Fo : Fork Flexure
-   lappend res 0
-   lappend res 0
-   lappend res [expr $cosphi*$cosh*$sind-$sinphi*$cosd]
+   lappend res 0                                              ; #--- IH
+   lappend res 1                                              ; #--- ID
+   lappend res 0                                              ; #--- NP
+   lappend res 0                                              ; #--- CH
+   lappend res $cosh                                          ; #--- ME
+   lappend res $sinh                                          ; #--- MA
+   lappend res $cosh                                          ; #--- FO : Fork Flexure
+   lappend res 0                                              ; #--- MT(=HF?) : Mount Flexure
+   lappend res 0                                              ; #--- DAF : Delta Axis Flexure
+   lappend res [expr $cosphi*$cosh*$sind-$sinphi*$cosd]       ; #--- TF : Tube Flexure
    #---
    lappend matX $res
    lappend vecY $deltad
@@ -2014,16 +2014,16 @@ proc modpoi_cat2tel { radec } {
    }
    set radec [lrange $listv 0 1]
    #--- Observed 2 telescope
-   return [modpoi_passage $radec cat2tel ]
+   return [modpoi_passage $radec cat2tel $now]
 }
 
 proc modpoi_tel2cat { radec } {
    global modpoi
 
-   #--- Telescope 2 observed
-   set radec [modpoi_passage $radec tel2cat ]
    #--- Observed 2 catalog
    set now [::audace::date_sys2ut now]
+   #--- Telescope 2 observed
+   set radec [modpoi_passage $radec tel2cat $now]
    #--- Case :
    #--- The telescope mount computes the refraction corrections
    #--- yes = 1 (case of the Meade LX200, Sky Sensor 2000, ...)
@@ -2037,7 +2037,7 @@ proc modpoi_tel2cat { radec } {
    return [list $ra $dec]
 }
 
-proc modpoi_passage { radec sens } {
+proc modpoi_passage { radec sens date } {
    global modpoi
 
    set ra [lindex $radec 0]
@@ -2050,13 +2050,15 @@ proc modpoi_passage { radec sens } {
    #--- Met en forme les valeurs
    set deltah 0
    set deltad 0
-   set now [::audace::date_sys2ut now]
+   ###set now [::audace::date_sys2ut now]
    set phi [lindex $modpoi(var,home) 3]
    set ra0 $ra
    set dec0 $dec
    #--- Calcule l'angle horaire
-   set dummy [mc_radec2altaz $ra $dec $modpoi(var,home) $now]
+   set dummy [mc_radec2altaz $ra $dec $modpoi(var,home) $date]
    set h [lindex $dummy 2]
+   set ha0  [lindex $dummy 2]
+   set tsl [mc_angle2deg "[ mc_date2lst $date $modpoi(var,home) ] h" 360 zero 2 auto string]
    #--- Ajoute deux lignes à la matrice
    set vecY ""
    set matX ""
@@ -2067,14 +2069,20 @@ proc modpoi_passage { radec sens } {
    set res [gsl_mmult $matX $modpoi(vec)]
    set dra_c [expr [lindex $res 0]/60.]
    set ddec_c [expr [lindex $res 1]/60.]
-   set ra [mc_angle2hms [mc_anglescomp $ra0 $signe $dra_c] 360 nozero 1 auto string]
+   ##set ra [mc_angle2hms [mc_anglescomp $ra0 $signe $dra_c] 360 nozero 1 auto string]
+   set ha [mc_anglescomp $ha0 "-" $dra_c]
+   set ra [mc_anglescomp $tsl "-" $ha]
+   set ra [mc_angle2hms $ra 360 nozero 1 auto string]
+
    set dec [mc_angle2dms [mc_anglescomp $dec0 $signe $ddec_c] 90 nozero 0 + string]
    if {$sens=="tel2cat"} {
       #--- On itere dans le sens inverse pour gagner la precision de
       #--- la derive lors de la difference tel-cat.
       #--- Calcule l'angle horaire
-      set dummy [mc_radec2altaz $ra $dec $modpoi(var,home) $now]
-      set h [lindex $dummy 2]
+      set dummy [mc_radec2altaz $ra $dec $modpoi(var,home) $date]
+      ###set h [lindex $dummy 2]
+      ###console::disp "modpoi_passage 2 ha0=$h dra_c=$dra_c\n"
+      set h [expr $h - $dra_c ]
       #--- Ajoute deux lignes à la matrice
       set vecY ""
       set matX ""
@@ -2083,10 +2091,15 @@ proc modpoi_passage { radec sens } {
       set matX [lindex $res 1]
       #--- Calcul direct
       set res [gsl_mmult $matX $modpoi(vec)]
+
       set dra_c [expr [lindex $res 0]/60.]
       set ddec_c [expr [lindex $res 1]/60.]
-      set ra [mc_angle2hms [mc_anglescomp $ra0 $signe $dra_c] 360 nozero 1 auto string]
+      ##set ra [mc_angle2hms [mc_anglescomp $ra0 $signe $dra_c] 360 nozero 2 auto string]
       set dec [mc_angle2dms [mc_anglescomp $dec0 $signe $ddec_c] 90 nozero 0 + string]
+
+      set ha [mc_anglescomp $ha0 "-" $dra_c]
+      set ra [mc_anglescomp $tsl "-" $ha]
+      set ra [mc_angle2hms $ra 360 nozero 1 auto string]
    }
    set ratel $ra
    set dectel $dec
@@ -2094,6 +2107,29 @@ proc modpoi_passage { radec sens } {
 }
 
 proc modpoi_load { { fileres "modpoi_res.txt" } } {
+   global audace caption modpoi
+
+   set catchError [catch {
+      set modpoi(vec) [modpoi_load_without_gui $fileres]
+      tk_messageBox -title "$caption(modpoi,wiz1b,warning)" -message "$caption(modpoi,modele_existe)" -type ok
+   }]
+
+   if { $catchError != 0 } {
+      if { [ info exists modpoi(vec) ] == "1" } {
+         tk_messageBox -title "$caption(modpoi,wiz1b,warning)" -message "$caption(modpoi,modele_non_charge)\n\
+         $caption(modpoi,modele_precedent)" -icon error
+         return $modpoi(vec)
+      } else {
+         tk_messageBox -title "$caption(modpoi,wiz1b,warning)" -message "$caption(modpoi,modele_non_charge)" -icon error
+         return ""
+      }
+   } else {
+      return $modpoi(vec)
+   }
+}
+
+
+proc modpoi_load_without_gui { { fileres "modpoi_res.txt" } } {
    global audace caption modpoi
 
    set modpoi(modpoi_choisi) $fileres
@@ -2133,15 +2169,9 @@ proc modpoi_load { { fileres "modpoi_res.txt" } } {
             ::thread::copycommand $telThreadId  "mc_aberrationradec"
          }
       }
-      tk_messageBox -title "$caption(modpoi,wiz1b,warning)" -message "$caption(modpoi,modele_existe)" -type ok
       return $modpoi(vec)
    } else {
-      if { [ info exists modpoi(vec) ] == "1" } {
-         tk_messageBox -title "$caption(modpoi,wiz1b,warning)" -message "$caption(modpoi,modele_non_charge)\n\
-            $caption(modpoi,modele_precedent)" -icon error
-      } else {
-         tk_messageBox -title "$caption(modpoi,wiz1b,warning)" -message "$caption(modpoi,modele_non_charge)" -icon error
-      }
+     error $caption(modpoi,modele_non_charge)
    }
 }
 
