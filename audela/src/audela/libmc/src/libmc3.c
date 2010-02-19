@@ -711,7 +711,7 @@ List_ModelValues
    double latitude,altitude,latrad;
 	double ra,temperature,pressure;
 	double dec,asd2,dec2;
-	double ha,az,h,ddec=0.,dha=0.,refraction=0.;
+	double ha,az,hauteur,ddec=0.,dha=0.,refraction=0.;
 	double dh=0.,daz=0.;
 	int type=0;
 	double az0,ra0,dec0,h0,ha0;
@@ -794,41 +794,41 @@ List_ModelValues
 		if (type==0) {
 			mc_ad2hd(jd,longmpc,ra0,&ha0);
 		}
-		ha=ha0; az=az0; h=h0; dec=dec0; ra=ra0;
+		ha=ha0; az=az0; hauteur=h0; dec=dec0; ra=ra0;
 		/* --- Modele de pointage ---*/
 		if (nb_coef>0) {
 			nb_star=1;
 			matx=(mc_modpoi_matx*)malloc(2*nb_star*nb_coef*sizeof(mc_modpoi_matx));
 			if (type==1) {
 				/* --- altaz corrections ---*/
-				daz=mc_modpoi_addobs_az(az,h,nb_coef,vecy,matx);
-				dh=mc_modpoi_addobs_h(az,h,nb_coef,vecy,matx);
+				daz=mc_modpoi_addobs_az(az,hauteur,nb_coef,vecy,matx);
+				dh=mc_modpoi_addobs_h(az,hauteur,nb_coef,vecy,matx);
 				az=az0-daz/60*(DR);
-				h=h0-dh/60*(DR);
-				daz=mc_modpoi_addobs_az(az,h,nb_coef,vecy,matx);
-				dh=mc_modpoi_addobs_h(az,h,nb_coef,vecy,matx);
+				hauteur=h0-dh/60*(DR);
+				daz=mc_modpoi_addobs_az(az,hauteur,nb_coef,vecy,matx);
+				dh=mc_modpoi_addobs_h(az,hauteur,nb_coef,vecy,matx);
 				az=az0-daz/60*(DR);
-				h=h0-dh/60*(DR);
-				if (h>PISUR2)  { h=PISUR2-(h-PISUR2); az+=(PI); }
-				if (h<-PISUR2) { h=-PISUR2+(-PISUR2-h); az+=(PI); }
+				hauteur=h0-dh/60*(DR);
+				if (hauteur>PISUR2)  { hauteur=PISUR2-(hauteur-PISUR2); az+=(PI); }
+				if (hauteur<-PISUR2) { hauteur=-PISUR2+(-PISUR2-hauteur); az+=(PI); }
 			   az=fmod(4*PI+az,2*PI);
-				mc_ah2hd(az,h,latrad,&ha,&dec);
+				mc_ah2hd(az,hauteur,latrad,&ha,&dec);
 				mc_hd2ad(jd,longmpc,ha,&ra);
 			}
 			if ((type==0)||(type==2)) {
 				/* --- hadec corrections ---*/
 				dha=mc_modpoi_addobs_ha(ha,dec,latrad,nb_coef,vecy,matx);
 				ddec=mc_modpoi_addobs_dec(ha,dec,latrad,nb_coef,vecy,matx);
-				ha=ha0-dha/60*(DR);
-				dec=dec0-ddec/60*(DR);
+				ha=ha0-dha/60.*(DR);
+				dec=dec0-ddec/60.*(DR);
 				dha=mc_modpoi_addobs_ha(ha,dec,latrad,nb_coef,vecy,matx);
 				ddec=mc_modpoi_addobs_dec(ha,dec,latrad,nb_coef,vecy,matx);
-				ha=ha0-dha/60*(DR);
-				dec=dec0-ddec/60*(DR);
+				ha=ha0-dha/60.*(DR);
+				dec=dec0-ddec/60.*(DR);
 				if (dec>PISUR2)  { dec=PISUR2-(dec-PISUR2); ha+=(PI); }
 				if (dec<-PISUR2) { dec=-PISUR2+(-PISUR2-dec); ha+=(PI); }
 			   ha=fmod(4*PI+ha,2*PI);
-				mc_hd2ah(ha,dec,latrad,&az,&h);
+				mc_hd2ah(ha,dec,latrad,&az,&hauteur);
 				mc_hd2ad(jd,longmpc,ha,&ra);
 			}
 			/* --- free pointers ---*/
@@ -836,33 +836,30 @@ List_ModelValues
 			if (vecy!=NULL) { free(vecy); }
 		}
 		/* === CALCULS === */
-      if ( model_only == 1 ) {
-		   /* --- coordonnees equatoriales ---*/
-		   mc_hd2ad(jd,longmpc,ha,&ra);
-		   ra0=ra;
-		   dec0=dec;
-      } else {
-		   /* --- refraction ---*/
-		   mc_refraction(h,-1,temperature,pressure,&refraction);
-		   h-=refraction;
-		   /* --- coordonnees equatoriales ---*/
-		   mc_hd2ad(jd,longmpc,ha,&ra);
-		   ra0=ra;
-		   dec0=dec;
-		   /* --- correction de nutation */
-		   mc_nutradec(jd,ra,dec,&asd2,&dec2,-1);
-		   ra=asd2;
-		   dec=dec2;
-		   /* --- aberration de l'aberration diurne*/
-		   mc_aberration_diurne(jd,ra,dec,longmpc,rhocosphip,rhosinphip,&asd2,&dec2,-1);
-		   /* --- calcul de la precession ---*/
-		   mc_precad(jd,ra,dec,equinox,&asd2,&dec2);
-		   ra=asd2;
-		   dec=dec2;
-		   /* --- aberration annuelle ---*/
-		   mc_aberration_annuelle(jd,ra,dec,&asd2,&dec2,-1);
-		   ra=asd2;
-		   dec=dec2;
+      if ( model_only == 0 ) {
+         /* --- refraction ---*/
+         mc_refraction(hauteur,-1,temperature,pressure,&refraction);
+         hauteur-=refraction;
+         mc_ah2hd(az,hauteur,latrad,&ha,&dec2);
+         mc_hd2ad(jd,longmpc,ha,&asd2);
+         ra=asd2;
+         dec=dec2;
+         /* --- correction de nutation */
+         mc_nutradec(jd,ra,dec,&asd2,&dec2,-1);
+         ra=asd2;
+         dec=dec2;
+         /* --- aberration de l'aberration diurne*/
+         mc_aberration_diurne(jd,ra,dec,longmpc,rhocosphip,rhosinphip,&asd2,&dec2,-1);
+         ra=asd2;
+         dec=dec2;
+         /* --- calcul de la precession ---*/
+         mc_precad(jd,ra,dec,equinox,&asd2,&dec2);
+         ra=asd2;
+         dec=dec2;
+         /* --- aberration annuelle ---*/
+         mc_aberration_annuelle(jd,ra,dec,&asd2,&dec2,-1);
+         ra=asd2;
+         dec=dec2;
       }
 		//
 		strcpy(s,"");
