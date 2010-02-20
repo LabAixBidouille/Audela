@@ -1,6 +1,6 @@
 #
 # Fichier : gps.cap
-# Mise a jour $Id: gps.cap,v 1.16 2009-12-19 09:12:51 robertdelmas Exp $
+# Mise à jour $Id: gps.cap,v 1.17 2010-02-20 07:50:53 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -11,7 +11,8 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(gps,titre)                       "GPS"
+set caption(gps,titre)                       "Time and position using a GPS receiver"
+set caption(gps,titre1)                      "Time and position\nusing a GPS receiver"
 set caption(gps,parametre)                   "Parameters"
 set caption(gps,port)                        "Serial Port"
 set caption(gps,lancement_gps)               "GPS Com."
@@ -72,7 +73,8 @@ set caption(gps,pas_synchro)                 "No synchronisation"
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(gps,titre)                    "GPS"
+   set caption(gps,titre)                    "Heure et position avec un GPS"
+   set caption(gps,titre1)                   "Heure et position\navec un GPS"
    set caption(gps,parametre)                "Paramètres"
    set caption(gps,port)                     "Port série"
    set caption(gps,lancement_gps)            "Com. GPS"
@@ -133,7 +135,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(gps,titre)                    "GPS"
+   set caption(gps,titre)                    "# Heure et position avec un GPS"
+   set caption(gps,titre1)                   "# Heure et position\navec un GPS"
    set caption(gps,parametre)                "Parametri"
    set caption(gps,port)                     "Porta seriale"
    set caption(gps,lancement_gps)            "Com. GPS"
@@ -194,7 +197,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(gps,titre)                    "GPS"
+   set caption(gps,titre)                    "Hora y posición con un GPS"
+   set caption(gps,titre1)                   "Hora y posición\ncon un GPS"
    set caption(gps,parametre)                "Parámetros"
    set caption(gps,port)                     "Puerto serie"
    set caption(gps,lancement_gps)            "Com. GPS"
@@ -255,7 +259,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(gps,titre)                    "GPS"
+   set caption(gps,titre)                    "# Heure et position avec un GPS"
+   set caption(gps,titre1)                   "# Heure et position\navec un GPS"
    set caption(gps,parametre)                "Parameter"
    set caption(gps,port)                     "Comport"
    set caption(gps,lancement_gps)            "GPS Kom."
@@ -316,7 +321,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(gps,titre)                    "GPS"
+   set caption(gps,titre)                    "# Heure et position avec un GPS"
+   set caption(gps,titre1)                   "# Heure et position\navec un GPS"
    set caption(gps,parametre)                "Parâmetros"
    set caption(gps,port)                     "Porta série"
    set caption(gps,lancement_gps)            "Com. GPS"
@@ -377,7 +383,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(gps,titre)                    "GPS"
+   set caption(gps,titre)                    "Time and position using a GPS receiver"
+   set caption(gps,titre1)                   "Time and position\nusing a GPS receiver"
    set caption(gps,parametre)                "Parameters"
    set caption(gps,port)                     "Serial Port"
    set caption(gps,lancement_gps)            "GPS Com."
@@ -438,7 +445,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
-   set caption(gps,titre)                    "GPS"
+   set caption(gps,titre)                    "Time and position using a GPS receiver"
+   set caption(gps,titre1)                   "Time and position\nusing a GPS receiver"
    set caption(gps,parametre)                "Parameters"
    set caption(gps,port)                     "Serial Port"
    set caption(gps,lancement_gps)            "GPS Com."
@@ -499,7 +507,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
-   set caption(gps,titre)                    "GPS"
+   set caption(gps,titre)                    "Time and position using a GPS receiver"
+   set caption(gps,titre1)                   "Time and position\nusing a GPS receiver"
    set caption(gps,parametre)                "Parameters"
    set caption(gps,port)                     "Serial Port"
    set caption(gps,lancement_gps)            "GPS Com."
