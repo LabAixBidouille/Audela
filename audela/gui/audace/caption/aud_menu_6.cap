@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_6.cap
-# Mise à jour $Id: aud_menu_6.cap,v 1.7 2010-02-20 07:51:26 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_6.cap,v 1.8 2010-02-20 11:04:37 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -13,7 +13,7 @@ global caption langage
 
 set caption(audace,menu,tool)                         "Tools"
 set caption(audace,menu,acquisition)                  "Camera"
-set caption(audace,menu,aiming                        "Telescope"
+set caption(audace,menu,aiming)                       "Telescope"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -69,7 +69,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,tool)                      "Tools"
    set caption(audace,menu,acquisition)               "Camera"
-   set caption(audace,menu,aiming                     "Telescope"
+   set caption(audace,menu,aiming)                    "Telescope"
 
 }
 
