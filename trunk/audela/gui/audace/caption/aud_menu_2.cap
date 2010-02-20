@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_2.cap
-# Mise a jour $Id: aud_menu_2.cap,v 1.21 2010-01-20 18:56:15 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_2.cap,v 1.22 2010-02-20 07:51:55 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -13,6 +13,7 @@ global caption langage
 
 set caption(audace,menu,affichage)                    "View"
 set caption(audace,menu,nouvelle_visu)                "New 'visu'"
+set caption(audace,menu,pas_outil)                    "Hide Panel"
 set caption(audace,menu,efface_image)                 "Delete Image"
 set caption(audace,menu,palette_grise)                "Grey Swatch"
 set caption(audace,menu,palette_inverse)              "Reversed Swatch"
@@ -86,6 +87,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,affichage)                 "Affichage"
    set caption(audace,menu,nouvelle_visu)             "Nouvelle 'visu'"
+   set caption(audace,menu,pas_outil)                 "Masquer le panneau"
    set caption(audace,menu,efface_image)              "Effacer l'image"
    set caption(audace,menu,palette_grise)             "Palette grise"
    set caption(audace,menu,palette_inverse)           "Palette inversée"
@@ -159,6 +161,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,affichage)                 "Vista"
    set caption(audace,menu,nouvelle_visu)             "Nuovo 'visu'"
+   set caption(audace,menu,pas_outil)                 "# Masquer le panneau"
    set caption(audace,menu,efface_image)              "Cancellare immagine"
    set caption(audace,menu,palette_grise)             "Palette grigia"
    set caption(audace,menu,palette_inverse)           "Palette inversa"
@@ -232,6 +235,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,affichage)                 "Ver"
    set caption(audace,menu,nouvelle_visu)             "Nueva 'visu'"
+   set caption(audace,menu,pas_outil)                 "Ocultar el panel"
    set caption(audace,menu,efface_image)              "Borrar la imagen"
    set caption(audace,menu,palette_grise)             "Paleta de grises "
    set caption(audace,menu,palette_inverse)           "Paleta invertida "
@@ -305,6 +309,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,affichage)                 "Anzeige"
    set caption(audace,menu,nouvelle_visu)             "Neue 'visu'"
+   set caption(audace,menu,pas_outil)                 "# Masquer le panneau"
    set caption(audace,menu,efface_image)              "Das Bild löschen"
    set caption(audace,menu,palette_grise)             "Graue Palette"
    set caption(audace,menu,palette_inverse)           "Umgekehrte Palette"
@@ -378,6 +383,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,affichage)                 "Ver"
    set caption(audace,menu,nouvelle_visu)             "Novo 'visu'"
+   set caption(audace,menu,pas_outil)                 "# Masquer le panneau"
    set caption(audace,menu,efface_image)              "# Effacer l'image"
    set caption(audace,menu,palette_grise)             "Paleta de cinzentos"
    set caption(audace,menu,palette_inverse)           "Paleta inversa"
@@ -451,6 +457,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,affichage)                 "Vis"
    set caption(audace,menu,nouvelle_visu)             "Ny 'visu'"
+   set caption(audace,menu,pas_outil)                 "Skjul panel"
    set caption(audace,menu,efface_image)              "Slet billede"
    set caption(audace,menu,palette_grise)             "Grå palet"
    set caption(audace,menu,palette_inverse)           "Modsat farve"
@@ -524,6 +531,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,affichage)                 "View"
    set caption(audace,menu,nouvelle_visu)             "New 'visu'"
+   set caption(audace,menu,pas_outil)                 "Hide Panel"
    set caption(audace,menu,efface_image)              "Delete Image"
    set caption(audace,menu,palette_grise)             "Grey Swatch"
    set caption(audace,menu,palette_inverse)           "Reversed Swatch"
@@ -597,6 +605,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,affichage)                 "View"
    set caption(audace,menu,nouvelle_visu)             "New 'visu'"
+   set caption(audace,menu,pas_outil)                 "Hide Panel"
    set caption(audace,menu,efface_image)              "Delete Image"
    set caption(audace,menu,palette_grise)             "Grey Swatch"
    set caption(audace,menu,palette_inverse)           "Reversed Swatch"
