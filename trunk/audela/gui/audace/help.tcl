@@ -2,7 +2,7 @@
 # Fichier : help.tcl
 # Description : Aide d'Aud'ACE
 # Auteur : Michel PUJOL
-# Mise à jour $Id: help.tcl,v 1.6 2010-02-15 17:36:46 robertdelmas Exp $
+# Mise à jour $Id: help.tcl,v 1.7 2010-02-20 15:20:26 robertdelmas Exp $
 #
 
 ###########################################################################################
@@ -26,7 +26,6 @@ set help(dir,affichage)     "04view"
 set help(dir,pretrait)      "05preprocessing"
 set help(dir,trait)         "06processing"
 set help(dir,analyse)       "07analysis"
-set help(dir,tool)          "08tools"
 set help(dir,config)        "09setup/01audace"
 set help(dir,camera)        "09setup/02camera"
 set help(dir,telescope)     "09setup/03mount"
@@ -47,7 +46,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set help(dir,pretrait)   "05pretraitement"
    set help(dir,trait)      "06traitement"
    set help(dir,analyse)    "07analyse"
-   set help(dir,tool)       "08outils"
    set help(dir,config)     "09configuration/01audace"
    set help(dir,camera)     "09configuration/02camera"
    set help(dir,telescope)  "09configuration/03monture"
