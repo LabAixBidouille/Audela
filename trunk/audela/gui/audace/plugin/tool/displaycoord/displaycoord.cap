@@ -1,6 +1,6 @@
 #
 # Fichier : displaycoord.cap
-# Mise a jour $Id: displaycoord.cap,v 1.4 2010-02-16 14:08:54 robertdelmas Exp $
+# Mise à jour $Id: displaycoord.cap,v 1.5 2010-02-20 07:50:10 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -71,7 +71,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(displaycoord,title)          "# Coordonnées du télescope"
    set caption(displaycoord,observatoire)   "Osservatorio:"
-   set caption(displaycoord,nonConnecte)    "# Non connecté\n au serveur de coordonnées"
+   set caption(displaycoord,nonConnecte)    "# Non connecté\nau serveur de coordonnées"
    set caption(displaycoord,connecte)       "Connesso"
    set caption(displaycoord,tu)             "TU:"
    set caption(displaycoord,tsl)            "TS:"
@@ -98,9 +98,9 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(displaycoord,title)          "# Coordonnées du télescope"
+   set caption(displaycoord,title)          "Coordenadas del telescopio"
    set caption(displaycoord,observatoire)   "Observatorio:"
-   set caption(displaycoord,nonConnecte)    "# Non connecté\n au serveur de coordonnées"
+   set caption(displaycoord,nonConnecte)    "No conectado\na un servidor de coordenadas"
    set caption(displaycoord,connecte)       "Conectado"
    set caption(displaycoord,tu)             "TU:"
    set caption(displaycoord,tsl)            "TS:"
@@ -129,7 +129,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(displaycoord,title)          "# Coordonnées du télescope"
    set caption(displaycoord,observatoire)   "Sternwarte:"
-   set caption(displaycoord,nonConnecte)    "# Non connecté\n au serveur de coordonnées"
+   set caption(displaycoord,nonConnecte)    "# Non connecté\nau serveur de coordonnées"
    set caption(displaycoord,connecte)       "Angeschlossen"
    set caption(displaycoord,tu)             "WT:"
    set caption(displaycoord,tsl)            "SZ:"
@@ -158,7 +158,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(displaycoord,title)          "# Coordonnées du télescope"
    set caption(displaycoord,observatoire)   "Observatório:"
-   set caption(displaycoord,nonConnecte)    "# Non connecté\n au serveur de coordonnées"
+   set caption(displaycoord,nonConnecte)    "# Non connecté\nau serveur de coordonnées"
    set caption(displaycoord,connecte)       "Conectado"
    set caption(displaycoord,tu)             "TU:"
    set caption(displaycoord,tsl)            "TS:"
