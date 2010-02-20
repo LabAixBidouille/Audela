@@ -2,7 +2,7 @@
 # @file     sophieview.tcl
 # @brief    Fichier du namespace ::sophie::view
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophieview.tcl,v 1.14 2009-10-19 21:09:10 michelpujol Exp $
+# @version  $Id: sophieview.tcl,v 1.15 2010-02-20 07:55:47 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -16,7 +16,7 @@ namespace eval ::sophie::view {
 ##------------------------------------------------------------
 # run
 #    affiche la fenetre du configuration
-# @param sophieVisuNo  numero de la visu de la fenetre principale de l'outil sophie
+# @param sophieVisuNo  numéro de la visu de la fenetre principale de l'outil sophie
 # @return null
 #------------------------------------------------------------
 proc ::sophie::view::run { sophieVisuNo } {
@@ -29,7 +29,7 @@ proc ::sophie::view::run { sophieVisuNo } {
 
    #--- j'affiche l'outil
    confVisu::selectTool $visuNo ""
-   Menu_Delete $visuNo $::caption(audace,menu,tool) all
+   Menu_Delete $visuNo $::caption(audace,menu,aiming) all
    createPluginInstance [::confVisu::getBase $visuNo].tool $visuNo
    lappend ::confVisu::private($visuNo,pluginInstanceList) "sophie::view"
    set ::confVisu::private($visuNo,currentTool) "sophie::view"

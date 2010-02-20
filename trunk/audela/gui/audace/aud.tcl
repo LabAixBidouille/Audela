@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.121 2010-02-15 17:34:39 robertdelmas Exp $
+# Mise à jour $Id: aud.tcl,v 1.122 2010-02-20 07:53:02 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -672,6 +672,7 @@ namespace eval ::audace {
       Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,nouvelle_visu)" "::confVisu::create"
 
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
+      Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,pas_outil)" "::audace::pasOutil $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,efface_image)" "::confVisu::deleteImage"
 
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
@@ -870,14 +871,13 @@ namespace eval ::audace {
       Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,carte)" \
          "::carte::showMapFromBuffer buf$audace(bufNo)"
 
-      Menu           $visuNo "$caption(audace,menu,tool)"
-      Menu_Command   $visuNo "$caption(audace,menu,tool)" "$caption(audace,menu,pas_outil)" "::audace::pasOutil"
+      Menu           $visuNo "$caption(audace,menu,acquisition)"
+      #--- Affichage des plugins de type tool du menu deroulant Camera
+      ::confChoixOutil::displayPlugin $visuNo acquisition
 
-      #--- Affichage des plugins de type tool du menu deroulant Outils
-      foreach mode { acquisition focusing aiming observatory } {
-         Menu_Separator $visuNo "$caption(audace,menu,tool)"
-         ::confChoixOutil::displayPlugin $visuNo $mode
-      }
+      Menu           $visuNo "$caption(audace,menu,aiming)"
+      #--- Affichage des plugins de type tool du menu deroulant Telescope
+      ::confChoixOutil::displayPlugin $visuNo aiming
 
       Menu           $visuNo "$caption(audace,menu,setup)"
       Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,langue)..." \
@@ -921,7 +921,7 @@ namespace eval ::audace {
 
       Menu_Separator $visuNo "$caption(audace,menu,setup)"
       Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,choix_outils)..." \
-         { ::confChoixOutil::run "$audace(base).confChoixOutil" }
+         "::confChoixOutil::run $audace(base).confChoixOutil $visuNo"
       #--- Affichage des plugins de type tool et de fonction setup du menu deroulant Configuration
       ::confChoixOutil::displayPlugins $visuNo setup
 
@@ -958,9 +958,9 @@ namespace eval ::audace {
       Menu_Bind $visuNo $This <Control-q> "$caption(audace,menu,file)" "$caption(audace,menu,quitter)" \
          "$caption(touche,controle,Q)"
       bind $audace(Console) <Control-q> "focus $audace(base) ; ::audace::quitter"
-      Menu_Bind $visuNo $This <F12>       "$caption(audace,menu,tool)" "$caption(audace,menu,pas_outil)" \
+      Menu_Bind $visuNo $This <F12>       "$caption(audace,menu,affichage)" "$caption(audace,menu,pas_outil)" \
          "$caption(touche,F12)"
-      bind $audace(Console) <F12> "focus $audace(base) ; ::audace::pasOutil"
+      bind $audace(Console) <F12> "focus $audace(base) ; ::audace::pasOutil $visuNo"
    }
 
    proc initLastEnv { visuNo } {

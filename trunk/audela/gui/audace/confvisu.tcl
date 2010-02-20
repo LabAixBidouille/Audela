@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.131 2010-02-06 15:43:02 robertdelmas Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.132 2010-02-20 07:54:40 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -2044,6 +2044,7 @@ namespace eval ::confVisu {
       Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,nouvelle_visu)" "::confVisu::create"
 
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
+      Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,pas_outil)" "::audace::pasOutil $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,efface_image)" "::confVisu::deleteImage $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
@@ -2130,17 +2131,14 @@ namespace eval ::confVisu {
       Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,subfitgauss)" "subfitgauss $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,scar)" "scar $visuNo"
 
-      Menu           $visuNo "$caption(audace,menu,tool)"
-      Menu_Command   $visuNo "$caption(audace,menu,tool)" "$caption(audace,menu,pas_outil)" "::confVisu::stopTool $visuNo"
+      Menu           $visuNo "$caption(audace,menu,acquisition)"
 
-      #--- Affichage des plugins multivisu de type tool du menu deroulant Outils
+      #--- Affichage des plugins multivisu de type tool du menu deroulant Camera
       set liste ""
       foreach m [array names panneau menu_name,*] {
          lappend liste [list "$panneau($m) " $m]
       }
-      set indexAcquisition 0
-      set indexAiming      0
-      set firstTool        ""
+      set firstTool ""
       set liste [lsort -dictionary $liste]
       foreach m $liste {
          set m [lindex $m 1]
@@ -2152,18 +2150,31 @@ namespace eval ::confVisu {
                ::confVisu::selectTool $visuNo ::$firstTool
             }
             if { [ ::$pluginName\::getPluginProperty function ] == "acquisition" } {
-               if { $indexAcquisition == 0 } {
-                  Menu_Separator $visuNo "$caption(audace,menu,tool)"
-               }
-               incr indexAcquisition
-               Menu_Command $visuNo "$caption(audace,menu,tool)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$pluginName"
+               Menu_Command $visuNo "$caption(audace,menu,acquisition)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$pluginName"
+            }
+         }
+      }
+
+      Menu           $visuNo "$caption(audace,menu,aiming)"
+
+      #--- Affichage des plugins multivisu de type tool du menu deroulant Telescope
+      set liste ""
+      foreach m [array names panneau menu_name,*] {
+         lappend liste [list "$panneau($m) " $m]
+      }
+      set firstTool ""
+      set liste [lsort -dictionary $liste]
+      foreach m $liste {
+         set m [lindex $m 1]
+         scan "$m" "menu_name,%s" pluginName
+         if { [ ::$pluginName\::getPluginProperty multivisu ] == "1" } {
+            if { $firstTool == "" } {
+               set firstTool $pluginName
+               #--- Lancement automatique du premier outil de la liste
+               ::confVisu::selectTool $visuNo ::$firstTool
             }
             if { [ ::$pluginName\::getPluginProperty function ] == "aiming" } {
-               if { $indexAiming == 0 } {
-                  Menu_Separator $visuNo "$caption(audace,menu,tool)"
-               }
-               incr indexAiming
-               Menu_Command $visuNo "$caption(audace,menu,tool)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$pluginName"
+               Menu_Command $visuNo "$caption(audace,menu,aiming)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$pluginName"
             }
          }
       }

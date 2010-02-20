@@ -1,9 +1,9 @@
 #
 # Fichier : foc.tcl
 # Description : Outil pour le controle de la focalisation
-# Compatibilité : Protocoles LX200 et AudeCom
+# CompatibilitÃ© : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise a jour $Id: foc.tcl,v 1.31 2010-01-30 14:14:18 robertdelmas Exp $
+# Mise Ã  jour $Id: foc.tcl,v 1.32 2010-02-20 07:54:57 robertdelmas Exp $
 #
 
 set ::graphik(compteur) {}
@@ -76,8 +76,8 @@ namespace eval ::foc {
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
-         function     { return "focusing" }
-         subfunction1 { return "acquisition" }
+         function     { return "aiming" }
+         subfunction1 { return "focusing" }
          display      { return "panel" }
       }
    }
@@ -1011,7 +1011,7 @@ proc focBuildIF { This } {
          label $This.fra5.lab1 -text $panneau(foc,position) -relief flat
          pack $This.fra5.lab1 -in $This.fra5 -anchor center -fill none -padx 4 -pady 1
 
-         #--- Bouton "Se trouve à"
+         #--- Bouton "Se trouve Ã "
          button $This.fra5.but1 -borderwidth 2 -text $panneau(foc,trouve) -command { ::foc::cmdSeTrouveA }
          pack $This.fra5.but1 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
 
@@ -1029,7 +1029,7 @@ proc focBuildIF { This } {
 
          pack $This.fra5.fra1 -in $This.fra5 -anchor center -fill none
 
-         #--- Bouton "Aller à"
+         #--- Bouton "Aller Ã "
          button $This.fra5.but2 -borderwidth 2 -text $panneau(foc,deplace) -command { ::foc::cmdSeDeplaceA }
          pack $This.fra5.but2 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
 
