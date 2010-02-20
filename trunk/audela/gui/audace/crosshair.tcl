@@ -2,7 +2,7 @@
 # Fichier : crosshair.tcl
 # Description : Affiche un reticule sur l'image
 # Auteur : Michel PUJOL
-# Mise à jour $Id: crosshair.tcl,v 1.12 2010-02-14 17:42:00 robertdelmas Exp $
+# Mise à jour $Id: crosshair.tcl,v 1.13 2010-02-20 10:28:49 robertdelmas Exp $
 #
 
 namespace eval ::Crosshair {
@@ -128,7 +128,7 @@ namespace eval ::Crosshair {
    proc showHelp { } {
       global help
 
-      ::audace::showHelpItem "$help(dir,affichage)" "1120crosshair.htm"
+      ::audace::showHelpItem "$help(dir,affichage)" "1130crosshair.htm"
    }
 
    #------------------------------------------------------------
