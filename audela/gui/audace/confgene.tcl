@@ -5,7 +5,7 @@
 #               pose, choix des outils, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: confgene.tcl,v 1.69 2010-02-15 17:36:02 robertdelmas Exp $
+# Mise à jour $Id: confgene.tcl,v 1.70 2010-02-20 07:54:20 robertdelmas Exp $
 #
 
 #
@@ -1761,15 +1761,15 @@ namespace eval ::confAlarmeFinPose {
 namespace eval ::confChoixOutil {
 
    #
-   # confChoixOutil::run this
+   # confChoixOutil::run this visuNo
    # Cree la fenetre de configuration du choix des outils a afficher dans le menu Outil
    # this = chemin de la fenetre
    #
-   proc run { this } {
+   proc run { this visuNo } {
       variable This
 
       set This $this
-      createDialog
+      createDialog $visuNo
       tkwait visibility $This
    }
 
@@ -1778,8 +1778,8 @@ namespace eval ::confChoixOutil {
    # Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer la configuration
    # et fermer la fenetre du choix des outils a afficher dans le menu Outil
    #
-   proc ok { } {
-      appliquer
+   proc ok { visuNo } {
+      appliquer $visuNo
       fermer
    }
 
@@ -1787,11 +1787,11 @@ namespace eval ::confChoixOutil {
    # confChoixOutil::appliquer
    # Fonction 'Appliquer' pour memoriser et appliquer la configuration sur toutes les visu
    #
-   proc appliquer { } {
+   proc appliquer { visuNo } {
       variable private
       global audace caption conf panneau
 
-      set visuNo $audace(visuNo)
+     ### set visuNo $audace(visuNo)
       set conf(afficheOutils) ""
       foreach m [array names panneau menu_name,*] {
          set namespace [ lindex [ split $m "," ] 1 ]
@@ -1914,16 +1914,17 @@ namespace eval ::confChoixOutil {
       Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,carte)" \
          "::carte::showMapFromBuffer buf$audace(bufNo)"
 
-      #--- Je supprime toutes les entrees du menu Outils
-      Menu_Delete $visuNo "$caption(audace,menu,tool)" entries
-      #--- Rafraichissement du menu Outils
-      Menu_Command   $visuNo "$caption(audace,menu,tool)" "$caption(audace,menu,pas_outil)" \
-         "::audace::pasOutil"
-      #--- Affichage des plugins de type tool du menu deroulant Outils
-      foreach mode { acquisition focusing aiming observatory } {
-         Menu_Separator $visuNo "$caption(audace,menu,tool)"
-         ::confChoixOutil::displayPlugin $visuNo $mode
-      }
+      #--- Je supprime toutes les entrees du menu Camera
+      Menu_Delete $visuNo "$caption(audace,menu,acquisition)" entries
+      #--- Rafraichissement du menu Camera
+      #--- Affichage des plugins de type tool du menu deroulant Camera
+      ::confChoixOutil::displayPlugin $visuNo acquisition
+
+      #--- Je supprime toutes les entrees du menu Telescope
+      Menu_Delete $visuNo "$caption(audace,menu,aiming)" entries
+      #--- Rafraichissement du menu Telescope
+      #--- Affichage des plugins de type tool du menu deroulant Telescope
+      ::confChoixOutil::displayPlugin $visuNo aiming
 
       #--- Je supprime toutes les entrees du menu Configuration
       Menu_Delete $visuNo "$caption(audace,menu,setup)" entries
@@ -1966,7 +1967,7 @@ namespace eval ::confChoixOutil {
          "::confCat::run"
       Menu_Separator $visuNo "$caption(audace,menu,setup)"
       Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,choix_outils)..." \
-         { ::confChoixOutil::run "$audace(base).confChoixOutil" }
+         "::confChoixOutil::run $audace(base).confChoixOutil $visuNo"
       #--- Affichage des plugins de type tool et de fonction setup du menu deroulant Configuration
       ::confChoixOutil::displayPlugins $visuNo setup
       Menu_Separator $visuNo "$caption(audace,menu,setup)"
@@ -1984,7 +1985,7 @@ namespace eval ::confChoixOutil {
       Menu_Bind $visuNo $This <Control-q> "$caption(audace,menu,file)" "$caption(audace,menu,quitter)" \
          "$caption(touche,controle,Q)"
       bind $audace(Console) <Control-q> "focus $audace(base) ; ::audace::quitter"
-      Menu_Bind $visuNo $This <F12> "$caption(audace,menu,tool)" "$caption(audace,menu,pas_outil)" \
+      Menu_Bind $visuNo $This <F12> "$caption(audace,menu,affichage)" "$caption(audace,menu,pas_outil)" \
          "$caption(touche,F12)"
 
       #--- Rafraichissement des menus Fichier et Outils pour les nouvelles visu
@@ -2032,16 +2033,14 @@ namespace eval ::confChoixOutil {
                   Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(confVisu,fermer)" \
                      "::confVisu::close $visuNo"
 
-                  #--- Je supprime toutes les entrees du menu Outils
-                  Menu_Delete $visuNo "$caption(audace,menu,tool)" entries
+                  #--- Je supprime toutes les entrees du menu Camera
+                  Menu_Delete $visuNo "$caption(audace,menu,acquisition)" entries
                   #--- Je reconstitue la liste triee des outils
                   set liste ""
                   foreach m [ array names panneau menu_name,* ] {
                      lappend liste [ list "$panneau($m) " $m ]
                   }
-                  set indexAcquisition 0
-                  set indexAiming      0
-                  set firstTool        ""
+                  set firstTool ""
                   set liste [ lsort -dictionary $liste ]
                   #--- Je recupere le pluginName de chaque outil
                   foreach m $liste {
@@ -2058,20 +2057,42 @@ namespace eval ::confChoixOutil {
                                  #--- Lancement automatique du premier outil de la liste
                                  ::confVisu::selectTool $visuNo ::$firstTool
                               }
-                              #--- Affichage des plugins multivisu de type tool du menu deroulant Outils
+                              #--- Affichage des plugins multivisu de type tool du menu deroulant Camera
                               if { [ ::$pluginName\::getPluginProperty function ] == "acquisition" } {
-                                 if { $indexAcquisition == 0 } {
-                                    Menu_Separator $visuNo "$caption(audace,menu,tool)"
-                                 }
-                                 incr indexAcquisition
-                                 Menu_Command $visuNo "$caption(audace,menu,tool)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$pluginName"
+                                 Menu_Command $visuNo "$caption(audace,menu,acquisition)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$pluginName"
                               }
+                           }
+                        }
+                     }
+                  }
+
+                  #--- Je supprime toutes les entrees du menu Telescope
+                  Menu_Delete $visuNo "$caption(audace,menu,aiming)" entries
+                  #--- Je reconstitue la liste triee des outils
+                  set liste ""
+                  foreach m [ array names panneau menu_name,* ] {
+                     lappend liste [ list "$panneau($m) " $m ]
+                  }
+                  set firstTool ""
+                  set liste [ lsort -dictionary $liste ]
+                  #--- Je recupere le pluginName de chaque outil
+                  foreach m $liste {
+                     set m [ lindex $m 1 ]
+                     scan "$m" "menu_name,%s" pluginName
+                     #--- Je selectionne les outils multivisu
+                     if { [ ::$pluginName\::getPluginProperty multivisu ] == "1" } {
+                        #--- Je liste les outils a afficher
+                        foreach { namespace raccourci } $conf(afficheOutils) {
+                           #--- Je verifie que l'outil multivisu est dans la liste des outils a afficher
+                           if { $namespace == $pluginName } {
+                              if { $firstTool == "" } {
+                                 set firstTool $pluginName
+                                 #--- Lancement automatique du premier outil de la liste
+                                 ::confVisu::selectTool $visuNo ::$firstTool
+                              }
+                              #--- Affichage des plugins multivisu de type tool du menu deroulant Telescope
                               if { [ ::$pluginName\::getPluginProperty function ] == "aiming" } {
-                                 if { $indexAiming == 0 } {
-                                    Menu_Separator $visuNo "$caption(audace,menu,tool)"
-                                 }
-                                 incr indexAiming
-                                 Menu_Command $visuNo "$caption(audace,menu,tool)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$pluginName"
+                                 Menu_Command $visuNo "$caption(audace,menu,aiming)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$pluginName"
                               }
                            }
                         }
@@ -2106,7 +2127,7 @@ namespace eval ::confChoixOutil {
       destroy $This
    }
 
-   proc createDialog { } {
+   proc createDialog { visuNo } {
       variable This
       variable private
       global caption color conf panneau
@@ -2257,14 +2278,14 @@ namespace eval ::confChoixOutil {
 
       #--- Cree le bouton 'OK'
       button $This.but_ok -text "$caption(confgene,ok)" -width 7 -borderwidth 2 \
-         -command { ::confChoixOutil::ok }
+         -command "::confChoixOutil::ok $visuNo"
       if { $conf(ok+appliquer) == "1" } {
          pack $This.but_ok -in $This.frame4 -side left -anchor w -padx 3 -pady 3 -ipady 5
       }
 
       #--- Cree le bouton 'Appliquer'
       button $This.but_appliquer -text "$caption(confgene,appliquer)" -width 8 -borderwidth 2 \
-         -command { ::confChoixOutil::appliquer }
+         -command "::confChoixOutil::appliquer $visuNo"
       pack $This.but_appliquer -in $This.frame4 -side left -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- Cree le bouton 'Fermer'
@@ -2315,7 +2336,7 @@ namespace eval ::confChoixOutil {
          #---
          if { [ info exist affiche($namespace) ] } {
             if { [ ::$namespace\::getPluginProperty function ] == "$function" } {
-               Menu_Command $visuNo "$caption(audace,menu,tool)" "$panneau(menu_name,$namespace)" "::confVisu::selectTool $visuNo ::$namespace"
+               Menu_Command $visuNo "$caption(audace,menu,$function)" "$panneau(menu_name,$namespace)" "::confVisu::selectTool $visuNo ::$namespace"
                if { $affiche($namespace) != "" } {
                   if { [string range $affiche($namespace) 0 3] == "Alt+" } {
                      set event "Alt-[string tolower [string range $affiche($namespace) 4 4]]"
@@ -2325,7 +2346,7 @@ namespace eval ::confChoixOutil {
                      set event $affiche($namespace)
                   }
                   #---
-                  Menu_Bind $visuNo $audace(base) <$event> "$caption(audace,menu,tool)" "$panneau(menu_name,$namespace)" "$affiche($namespace)"
+                  Menu_Bind $visuNo $audace(base) <$event> "$caption(audace,menu,$function)" "$panneau(menu_name,$namespace)" "$affiche($namespace)"
                      bind $audace(Console) <$event> "focus $audace(base) ; ::confVisu::selectTool $visuNo ::$namespace"
                }
             }

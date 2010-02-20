@@ -2,7 +2,7 @@
 # @file     fiberview.tcl
 # @brief    Fichier du namespace ::sophie::fiberview
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiefiberview.tcl,v 1.3 2009-10-19 21:08:02 michelpujol Exp $
+# @version  $Id: sophiefiberview.tcl,v 1.4 2010-02-20 07:55:30 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -18,7 +18,7 @@ namespace eval ::sophie::fiberview {
 ##------------------------------------------------------------
 # run
 #    cree une visu pour voir la fibre
-# @param sophieVisuNo  numero de la visu de la fenetre principale de l'outil sophie
+# @param sophieVisuNo  numéro de la visu de la fenetre principale de l'outil sophie
 # @return numero de la visu de visualisation de la fibre A
 #------------------------------------------------------------
 proc ::sophie::fiberview::run { sophieVisuNo  } {
@@ -63,8 +63,8 @@ proc ::sophie::fiberview::createPluginInstance { in visuNo  } {
    variable private
 
    set tkBase [::confVisu::getBase $visuNo]
-   #--- je vide le menu des outils
-   Menu_Delete $visuNo $::caption(audace,menu,tool) all
+   #--- je vide le menu des outils Telescope
+   Menu_Delete $visuNo $::caption(audace,menu,aiming) all
    #--- j'affiche la fentre au dessus de la fenetre principale de sophie
    wm transient $tkBase [::confVisu::getBase $private(sophieVisuNo)]
    #--- je change le titre

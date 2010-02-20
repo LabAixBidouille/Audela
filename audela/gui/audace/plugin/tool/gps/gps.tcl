@@ -2,7 +2,7 @@
 # Fichier : gps.tcl
 # Description : Outil de synchronisation GPS
 # Auteur : Jacques MICHELET
-# Mise a jour $Id: gps.tcl,v 1.17 2010-01-30 14:35:18 robertdelmas Exp $
+# Mise à jour $Id: gps.tcl,v 1.18 2010-02-20 07:55:14 robertdelmas Exp $
 #
 
 namespace eval ::gps {
@@ -475,7 +475,7 @@ namespace eval ::gps {
         #--- Bouton du titre
         Button $This.fra1.but \
             -borderwidth 2 \
-            -text "$caption(gps,help,titre1)\n$caption(gps,titre)" \
+            -text "$caption(gps,help,titre1)\n$caption(gps,titre1)" \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::gps::getPluginType ] ] \
                 [ ::gps::getPluginDirectory ] [ ::gps::getPluginHelp ]"
         ::pack $This.fra1.but \
@@ -865,7 +865,7 @@ namespace eval ::gps {
     ##############################################################
     proc getPluginProperty { propertyName } {
         switch $propertyName {
-            function     { return "observatory" }
+            function     { return "setup" }
             subfunction1 { return "gps" }
             display      { return "panel" }
         }
