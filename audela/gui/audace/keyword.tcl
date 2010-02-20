@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.40 2010-02-05 17:42:50 robertdelmas Exp $
+# Mise Ã  jour $Id: keyword.tcl,v 1.41 2010-02-20 15:21:15 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -849,12 +849,12 @@ proc ::keyword::getKeywords { visuNo configName { keywordNameList "" } } {
 #------------------------------------------------------------------------------
 proc ::keyword::headerFitsCompliant { stringInput } {
    set res $stringInput
-   set res [regsub -all {[é;ê;è;ë]} $res e]
-   set res [regsub -all {[à;â;ä]} $res a]
-   set res [regsub -all {[ï;î]} $res i]
-   set res [regsub -all {[ö;ô]} $res o]
-   set res [regsub -all {[ü;û;ù]} $res u]
-   set res [regsub -all {[ç]} $res c]
+   set res [regsub -all {[Ã©;Ãª;Ã¨;Ã«]} $res e]
+   set res [regsub -all {[Ã ;Ã¢;Ã¤]} $res a]
+   set res [regsub -all {[Ã¯;Ã®]} $res i]
+   set res [regsub -all {[Ã¶;Ã´]} $res o]
+   set res [regsub -all {[Ã¼;Ã»;Ã¹]} $res u]
+   set res [regsub -all {[Ã§]} $res c]
    set res [regsub -all {[']} $res " "]
    set stringOutput $res
    return $stringOutput
@@ -1241,7 +1241,7 @@ proc ::keyword::cmdApply { visuNo} {
 #    aucun
 #------------------------------------------------------------------------------
 proc ::keyword::afficheAide { } {
-   ::audace::showHelpItem "$::help(dir,tool)" "keyword.htm"
+   ::audace::showHelpItem "$::help(dir,camera)" "1030keyword.htm"
 }
 
 #------------------------------------------------------------------------------
