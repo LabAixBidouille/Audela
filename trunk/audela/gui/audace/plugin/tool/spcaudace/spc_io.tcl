@@ -10,7 +10,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_io.tcl,v 1.8 2009-12-27 01:28:09 bmauclaire Exp $
+# Mise a jour $Id: spc_io.tcl,v 1.9 2010-02-21 17:59:00 bmauclaire Exp $
 
 
 # Remarque (par Benoît) : il faut mettre remplacer toutes les variables textes par des variables caption(mauclaire,...)
@@ -1501,20 +1501,8 @@ proc spc_multifit2png { args } {
     set lpart 0
 
     if { [llength $args] != 0 } {
-
         set nbfiles [ llength $args ]
-        #--- Creation d'une liste de fichier sans extension :
-        set listefile ""
-        set i 1
-        foreach fichier $args {
-            #if { $i==1 } {
-                #set verticaloffset [ lindex $args 0 ]
-            #} else {
-            lappend listefile [ file rootname $fichier ]
-            spc_fits2dat $fichier
-            #}
-            incr i
-        }
+        set listefile $args
 
         #--- Adapte la légende de l'abscisse :
         set fichier1 [ lindex $args 0 ]
@@ -1607,6 +1595,106 @@ proc spc_multifit2png { args } {
         return "multiplot.png"
     } else {
         ::console::affiche_erreur "Usage: spc_multifit2png fichier_fits1 fichier_fits2 ... fichier_fitsn\n\n"
+    }
+}
+####################################################################
+
+
+####################################################################
+#  Procedure de conversion de fichier profil de raie calibré .fit en .png
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 29-01-2007
+# Date modification : 29-01-2007/16-02-2010
+# Arguments : xdeb xfin ydeb yfin fichiers .fit du profil de raie
+####################################################################
+
+proc spc_multifit2pngopt { args } {
+    global audace spcaudace
+    global conf
+    global tcl_platform
+
+    #-- 3%=0.03
+    set lpart 0
+
+    set nbargs [ llength $args ]
+    if { $nbargs != 0 } {
+        set nbargs [ llength $args ]
+        set coords [ lrange $args 0 3 ]
+        set listefichiers [ lrange $args 4 [ expr $nbargs-1 ] ]
+        set nbfiles [ expr $nbargs-4 ]
+
+        #--- Coordonnees des extremes du graphe :
+        set xdeb [ lindex $coords 0 ]
+        set xfin [ lindex $coords 1 ]
+        set ydeb [ lindex $coords 2 ]
+        set yfin [ lindex $coords 3 ]
+
+
+        #--- Adapte la légende de l'abscisse :
+        set fichier1 [ lindex $listefichiers 0 ]
+        buf$audace(bufNo) load "$audace(rep_images)/$fichier1"
+        set listemotsclef [ buf$audace(bufNo) getkwds ]
+        if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+            set xdeb0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+        } else {
+            set xdeb 1.0
+        }
+        if { $xdeb0 == 1.0 } {
+            set legendex "Position (Pixel)"
+        } else {
+            set legendex "Wavelength (A)"
+        }
+        set titre ""
+        set legendey ""
+
+        #--- Conversion en dat :
+        set i 1
+        set listedat ""
+        set plotcmd ""
+        foreach fichier $listefichiers {
+            set filedat [ spc_fits2dat "$fichier" ]
+            lappend listedat $filedat
+            if { $i != $nbfiles } {
+                #append plotcmd "'$audace(rep_images)/$filedat' w l, "
+                append plotcmd "'$filedat' w l, "
+                #append plotcmd "'$filedat' using 1:($2+$i) w l, "
+            } elseif { $i==1 } {
+                append plotcmd "'$filedat' w l, "
+            } else {
+                #append plotcmd "'$audace(rep_images)/$filedat' w l"
+                append plotcmd "'$filedat' w l"
+            }
+            incr i
+        }
+
+        #--- Construction du fichier btach de Gnuplot :
+        set file_id [open "$audace(rep_images)/multiplot.gp" w+]
+        # puts $file_id "call \"$spcaudace(repgp)/gp_multi.cfg\" \"$plotcmd\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/multiplot.png\" \"$legendex\" \"$legendey\" "
+        puts $file_id "call \"$spcaudace(repgp)/gp_multi.cfg\" \"$plotcmd\" \"$titre\" $ydeb $yfin $xdeb $xfin * \"$audace(rep_images)/multiplot.png\" \"$legendex\" "
+        close $file_id
+
+
+        #--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
+        set repdflt [ bm_goodrep ]
+        if { $tcl_platform(os)=="Linux" } {
+            set answer [ catch { exec gnuplot $audace(rep_images)/multiplot.gp } ]
+            ::console::affiche_resultat "gnuplot résultat : $answer\n"
+        } else {
+            set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/multiplot.gp } ]
+            ::console::affiche_resultat "gnuplot résultat : $answer\n"
+        }
+        cd $repdflt
+
+        #--- Effacement des fichiers de batch :
+        file delete -force "$audace(rep_images)/multiplot.gp"
+        foreach fichier $listedat {
+            file delete -force "$audace(rep_images)/$fichier"
+        }
+        ::console::affiche_resultat "Profils de raie exporté sous multiplot.png\n"
+        return "multiplot.png"
+    } else {
+        ::console::affiche_erreur "Usage: spc_multifit2pngopt xdeb xfin ydeb yfin fichier_fits1 fichier_fits2 ... fichier_fitsn\n\n"
     }
 }
 ####################################################################
