@@ -13,12 +13,14 @@ build:
 install:
 	@if [ ! -d $(EXTINC) ]; then mkdir -p $(EXTINC); fi
 	cp -f sbig/include/Sbigudrv.h $(EXTINC)
-	@if [ ! -d $(EXTLIB) ]; then mkdir -p $(EXTLIB); fi
-	$(CP) -f sbig/lib_$(lib_version)/libsbigudrv-4.57-linux-amd$(lib_version).a  $(EXTLIB)/udrv4.0.a
+	@if [ ! -d $(EXTLIB) ]; then mkdir -p $(EXTLIB); fi	
+	$(CP) -f sbig/lib/libsbigudrv.1.4.43.so  $(EXTLIB)/libsbigudrv.1.4.43.so
+	$(CP) -f sbig/lib/libsbigudrv.1.4.43.so  $(OUTPUTDIR)/libsbigudrv.1.4.43.so
 
 clean:
 	$(RM) $(EXTINC)/Sbigudrv.h
-	$(RM) $(EXTLIB)/udrv4.0.a
+	$(RM) $(EXTLIB)/libsbigudrv.1.4.43.so
+	$(RM) $(OUTPUTDIR)/libsbigudrv.1.4.43.so
 
 distclean: clean
 	$(RM) *~ *.bak
