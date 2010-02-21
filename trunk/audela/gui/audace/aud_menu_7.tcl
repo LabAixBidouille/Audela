@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise à jour $Id: aud_menu_7.tcl,v 1.19 2010-02-15 17:36:22 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_7.tcl,v 1.20 2010-02-21 10:48:42 robertdelmas Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -85,18 +85,18 @@ namespace eval ::cwdWindow {
                entry $This.usr.1.a.ent1 -textvariable cwdWindow(dir_images) -width $cwdWindow(long)
                pack $This.usr.1.a.ent1 -side right -padx 5 -pady 5
             pack $This.usr.1.a -side top -fill both -expand 1
-            ###frame $This.usr.1.b -borderwidth 0 -relief raised
-            ###   #--- Label nouveau sous-repertoire
-            ###   label $This.usr.1.b.label_sous_rep -text "$caption(cwdWindow,label_sous_rep)"
-            ###   pack $This.usr.1.b.label_sous_rep -side left -padx 5 -pady 5
-            ###   #--- Entry nouveau sous-repertoire
-            ###   entry $This.usr.1.b.ent_sous_rep -textvariable cwdWindow(sous_repertoire) -width 30
-            ###   pack $This.usr.1.b.ent_sous_rep -side left -padx 5 -pady 5
-            ###   #--- Button creation du sous-repertoire
-            ###   button $This.usr.1.b.button_sous_rep -text "$caption(cwdWindow,creation_sous_rep)" -width 7 \
-            ###      -command { ::cwdWindow::cmdCreateSubDir }
-            ###   pack $This.usr.1.b.button_sous_rep -side left -padx 5 -pady 5 -ipady 5
-            ###pack $This.usr.1.b -side top -fill both -expand 1
+           ### frame $This.usr.1.b -borderwidth 0 -relief raised
+           ###    #--- Label nouveau sous-repertoire
+           ###    label $This.usr.1.b.label_sous_rep -text "$caption(cwdWindow,label_sous_rep)"
+           ###    pack $This.usr.1.b.label_sous_rep -side left -padx 5 -pady 5
+           ###    #--- Entry nouveau sous-repertoire
+           ###    entry $This.usr.1.b.ent_sous_rep -textvariable cwdWindow(sous_repertoire) -width 30
+           ###    pack $This.usr.1.b.ent_sous_rep -side left -padx 5 -pady 5
+           ###    #--- Button creation du sous-repertoire
+           ###    button $This.usr.1.b.button_sous_rep -text "$caption(cwdWindow,creation_sous_rep)" -width 7 \
+           ###       -command { ::cwdWindow::cmdCreateSubDir }
+           ###    pack $This.usr.1.b.button_sous_rep -side left -padx 5 -pady 5 -ipady 5
+           ### pack $This.usr.1.b -side top -fill both -expand 1
             #--- Frame du titre et de la configuration
             frame $This.usr.1.subdir -borderwidth 0 -relief groove
                #--- pas de sous repertoire
@@ -863,8 +863,9 @@ namespace eval ::audace {
             -title "$caption(audace,enregistrer_config1)" -icon question -type yesno ]
          if { $choice == "yes" } {
             #--- Enregistrer la configuration
-            array set theconf [ini_merge file_conf conf]
-            ini_writeIniFile $filename2 theconf
+           ### array set theconf [ini_merge file_conf conf]
+           ### ini_writeIniFile $filename2 theconf
+            ini_writeIniFile $filename2 conf
          } elseif {$choice=="no"} {
             #--- Pas d'enregistrement
             ::console::affiche_resultat "$caption(audace,enregistrer_config2)\n\n"

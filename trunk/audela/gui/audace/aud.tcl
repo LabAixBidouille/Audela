@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.122 2010-02-20 07:53:02 robertdelmas Exp $
+# Mise à jour $Id: aud.tcl,v 1.123 2010-02-21 10:48:00 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -1246,27 +1246,28 @@ namespace eval ::audace {
       return [ ::confVisu::picture2Canvas $audace(visuNo) $coord ]
    }
 
-   #
-   # Determination des elements qui sont dans le fichier de configuration et pas en memoire
-   #
-   proc ini_onlyInFile { f_a m_a } {
-      upvar $f_a file_array
-      upvar $m_a mem_array
-      set file_names [array names file_array]
-      set mem_names [array names mem_array]
-      set onlyInFile {}
-      foreach a $file_names {
-         if {[lsearch -exact $mem_names $a]==-1} {
-            lappend onlyInFile $a
-         }
-      }
-      return $onlyInFile
-   }
+  ### #
+  ### # Determination des elements qui sont dans le fichier de configuration et pas en memoire
+  ### #
+  ### proc ini_onlyInFile { f_a m_a } {
+  ###    upvar $f_a file_array
+  ###    upvar $m_a mem_array
+  ###    set file_names [array names file_array]
+  ###    set mem_names [array names mem_array]
+  ###    set onlyInFile {}
+  ###    foreach a $file_names {
+  ###       if {[lsearch -exact $mem_names $a]==-1} {
+  ###          lappend onlyInFile $a
+  ###       }
+  ###    }
+  ###    return $onlyInFile
+  ### }
 
    #
    # f_a : tableau de configuration dans le fichier
    # m_a : tableau de configuration en memoire
    # Renvoie 1 si il faut reecrire le fichier de configuration
+   # Renvoie 0 si les configurations dans le fichier et en memoire sont identiques
    #
    proc ini_fileNeedWritten { f_a m_a } {
       #---
@@ -1295,23 +1296,24 @@ namespace eval ::audace {
       return 0
    }
 
-   #
-   # filename : nom du fichier
-   # f_a : tableau de configuration dans le fichier
-   # m_a : tableau de configuration en memoire
-   #
-   proc ini_merge { f_a m_a } {
-      upvar $f_a file_array
-      upvar $m_a mem_array
-      array set merge_array [array get mem_array]
-      foreach a [ini_onlyInFile file_array mem_array] {
-         set merge_array($a) "$file_array($a)"
-      }
-      return [array get merge_array]
-   }
+  ### #
+  ### # filename : nom du fichier
+  ### # f_a : tableau de configuration dans le fichier
+  ### # m_a : tableau de configuration en memoire
+  ### #
+  ### proc ini_merge { f_a m_a } {
+  ###    upvar $f_a file_array
+  ###    upvar $m_a mem_array
+  ###    array set merge_array [array get mem_array]
+  ###    foreach a [ini_onlyInFile file_array mem_array] {
+  ###       set merge_array($a) "$file_array($a)"
+  ###    }
+  ###    return [array get merge_array]
+  ### }
 
    #
    # filename : nom du fichier
+   # Charge un fichier dans le tableau conf(...)
    #
    proc ini_getArrayFromFile { filename } {
       global conf
@@ -1326,15 +1328,16 @@ namespace eval ::audace {
    #
    # filename : nom du fichier
    # f_a : tableau de configuration dans le fichier
+   # Enregistre le tableau conf(...) dans un fichier
    #
    proc ini_writeIniFile { filename f_a } {
       upvar $f_a file_array
       if {[catch {
          set fid [open $filename w]
          puts $fid "global conf"
-         #foreach {a b} [array get file_array] {
-         #   puts $fid "set conf($a) \"$b\""
-         #}
+        ### foreach {a b} [array get file_array] {
+        ###    puts $fid "set conf($a) \"$b\""
+        ### }
          foreach a [lsort -dictionary [array names file_array]] {
             puts $fid "set conf($a) \"[lindex [array get file_array $a] 1]\""
          }
@@ -1344,39 +1347,40 @@ namespace eval ::audace {
       }
    }
 
-   proc writeIniFile { } {
-      global audace
-      global conf
-      global caption
-
-      if { $::tcl_platform(os) == "Linux" } {
-         set filename [ file join ~ .audela config.ini ]
-         set filebak  [ file join ~ .audela config.bak ]
-      } else {
-         set filename [ file join $audace(rep_audela) audace config.ini ]
-         set filebak  [ file join $audace(rep_audela) audace config.bak ]
-      }
-      set filename2 $filename
-      catch {
-         file copy -force $filename $filebak
-      }
-      array set file_conf [ ini_getArrayFromFile $filename ]
-      if { [ ini_fileNeedWritten file_conf conf ] } {
-         set old_focus [focus]
-         set choice [ tk_messageBox -message "$caption(audace,enregistrer_config1)" \
-            -title "$caption(audace,enregistrer_config2)" -icon question -type yesno ]
-         if {$choice=="yes"} {
-            array set theconf [ini_merge file_conf conf]
-            ini_writeIniFile $filename2 theconf
-            ::console::affiche_resultat "$caption(audace,enregistrer_config3)\n"
-         } else {
-            ::console::affiche_resultat "caption(audace,enregistrer_config5)\n"
-         }
-         focus $old_focus
-      } else {
-         ::console::affiche_resultat "caption(audace,enregistrer_config4)\n\n"
-      }
-   }
+  ### proc writeIniFile { } {
+  ###    global audace
+  ###    global conf
+  ###    global caption
+  ###
+  ###    if { $::tcl_platform(os) == "Linux" } {
+  ###       set filename [ file join ~ .audela config.ini ]
+  ###       set filebak  [ file join ~ .audela config.bak ]
+  ###    } else {
+  ###       set filename [ file join $audace(rep_audela) audace config.ini ]
+  ###       set filebak  [ file join $audace(rep_audela) audace config.bak ]
+  ###    }
+  ###    set filename2 $filename
+  ###    catch {
+  ###       file copy -force $filename $filebak
+  ###    }
+  ###    array set file_conf [ ini_getArrayFromFile $filename ]
+  ###    if { [ ini_fileNeedWritten file_conf conf ] } {
+  ###       set old_focus [focus]
+  ###       set choice [ tk_messageBox -message "$caption(audace,enregistrer_config1)" \
+  ###          -title "$caption(audace,enregistrer_config2)" -icon question -type yesno ]
+  ###       if {$choice=="yes"} {
+  ###         ### array set theconf [ini_merge file_conf conf]
+  ###         ### ini_writeIniFile $filename2 theconf
+  ###          ini_writeIniFile $filename2 conf
+  ###          ::console::affiche_resultat "$caption(audace,enregistrer_config3)\n"
+  ###       } else {
+  ###          ::console::affiche_resultat "caption(audace,enregistrer_config5)\n"
+  ###       }
+  ###       focus $old_focus
+  ###    } else {
+  ###       ::console::affiche_resultat "caption(audace,enregistrer_config4)\n\n"
+  ###    }
+  ### }
 
    #------------------------------------------------------------
    #  getPluginInfo
@@ -1710,9 +1714,6 @@ proc stackTrace { {procedureFullName "" } } {
    }
 }
 
-
-
-
 #
 #--- Execute en premier au demarrage
 #
@@ -1720,7 +1721,6 @@ proc stackTrace { {procedureFullName "" } } {
 #--- On cache la fenetre mere
 wm focusmodel . passive
 wm withdraw .
-
 
 ::audace::run
 focus -force $audace(Console)
