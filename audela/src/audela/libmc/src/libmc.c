@@ -81,6 +81,7 @@
    Tcl_CreateCommand(interp,"mc_home2gps",(Tcl_CmdProc *)Cmd_mctcl_home2gps,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);           
    Tcl_CreateCommand(interp,"mc_home2mpc",(Tcl_CmdProc *)Cmd_mctcl_home2mpc,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);           
    Tcl_CreateCommand(interp,"mc_home2geosys",(Tcl_CmdProc *)Cmd_mctcl_home2geosys,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);           
+   Tcl_CreateCommand(interp,"mc_homecep",(Tcl_CmdProc *)Cmd_mctcl_home_cep,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_menu",(Tcl_CmdProc *)Cmd_mctcl_menu,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);           
    Tcl_CreateCommand(interp,"mc_libration",(Tcl_CmdProc *)Cmd_mctcl_libration,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);           
    Tcl_CreateCommand(interp,"mc_baryvel",(Tcl_CmdProc *)Cmd_mctcl_baryvel,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);           

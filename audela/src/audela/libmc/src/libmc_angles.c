@@ -386,6 +386,120 @@ int Cmd_mctcl_home2geosys(ClientData clientData, Tcl_Interp *interp, int argc, c
 }
 /* mc_home2geosys {gps 1.3780 e 43.6609 142} ED50 WGS84 -height */
 
+int Cmd_mctcl_home2gps(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Transforme le type Home en format GPS                                     */
+/****************************************************************************/
+/****************************************************************************/
+{
+   int result;
+   char s[255],sens[10];
+   double longitude,latitude,altitude,longmpc,rhocosphip,rhosinphip;
+
+   if(argc<=1) {
+      sprintf(s,"Usage: %s Home", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else {
+      result=mctcl_decode_home(interp,argv[1],&longitude,sens,&latitude,&altitude,&longmpc,&rhocosphip,&rhosinphip);
+		if (result==TCL_ERROR) {
+         Tcl_SetResult(interp,"Input string is not regonized amongst Home type",TCL_VOLATILE);
+		} else {
+         sprintf(s,"GPS %12f %s %12f %f",longitude/(DR),sens,latitude/(DR),altitude);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         result = TCL_OK;
+		}
+	}
+	return(result);
+}
+
+int Cmd_mctcl_home2mpc(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Transforme le type Home en format MPC                                     */
+/****************************************************************************/
+/****************************************************************************/
+{
+   int result;
+   char s[255],sens[10];
+   double longitude,latitude,altitude,longmpc,rhocosphip,rhosinphip;
+
+   if(argc<=1) {
+      sprintf(s,"Usage: %s Home", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else {
+      result=mctcl_decode_home(interp,argv[1],&longitude,sens,&latitude,&altitude,&longmpc,&rhocosphip,&rhosinphip);
+		if (result==TCL_ERROR) {
+         Tcl_SetResult(interp,"Input string is not regonized amongst Home type",TCL_VOLATILE);
+		} else {
+         sprintf(s,"MPC %12f %12f %12f",longmpc/(DR),rhocosphip,rhosinphip);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         result = TCL_OK;
+		}
+	}
+	return(result);
+}
+
+int Cmd_mctcl_home_cep(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Corrrige les coordonnees du pole vrai                                    */
+/****************************************************************************/
+/*
+/* O. Zarrouati, "Trajectoires Spatiales" CNES, ed. Cepadues, p 244-245
+mc_homecep { GPS 0 E 40 1000 } 0.03703 0.19683
+*/
+/****************************************************************************/
+{
+   int result;
+   char s[255],sens[10];
+   double longitude,latitude,altitude,longmpc,rhocosphip,rhosinphip;
+	double xp,yp;
+	double cl,sl,cp,sp,cu,su,cv,sv;
+   Tcl_DString res;
+
+   if(argc<=3) {
+      sprintf(s,"Usage: %s Home xp_arcsec yp_arcsec", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else {
+      result=mctcl_decode_home(interp,argv[1],&longitude,sens,&latitude,&altitude,&longmpc,&rhocosphip,&rhosinphip);
+		Tcl_DStringInit(&res);
+		if (result==TCL_ERROR) {
+         Tcl_SetResult(interp,"Input string is not regonized amongst Home type",TCL_VOLATILE);
+		} else {
+			xp=atof(argv[2])*(DR)/3600.;
+			yp=atof(argv[3])*(DR)/3600.;
+			if (sens[0]=='E') {
+				longitude*=-1;
+			}
+			cl=cos(longitude);
+			sl=sin(longitude);
+			cp=cos(latitude);
+			sp=sin(latitude);
+			cu=cos(xp);
+			su=sin(xp);
+			cv=cos(yp);
+			sv=sin(yp);
+			latitude=mc_asin(cl*cp*su-sl*cp*cu*sv+cu*cv*sp);
+			longitude=atan2(sl*cp*cv+sv*sp , cl*cp*cu+sl*cp*su*sv-su*cv*sp);
+			longitude/=(DR);
+			longitude=fmod(720+longitude,360);
+			if (longitude>180) {
+				longitude=fabs(longitude-360);
+				strcpy(sens,"E");
+			} else {
+				strcpy(sens,"W");
+			}
+         sprintf(s,"GPS %12f %s %12f %f",longitude,sens,latitude/(DR),altitude);
+			Tcl_DStringAppend(&res,s,-1);
+			Tcl_DStringResult(interp,&res);
+			Tcl_DStringFree(&res);
+         result = TCL_OK;
+		}
+	}
+	return(result);
+}
+
 int Cmd_mctcl_dms2deg(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 /****************************************************************************/
 /* Convertit un angle dms en degres                                         */

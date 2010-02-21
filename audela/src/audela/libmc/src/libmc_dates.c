@@ -273,13 +273,13 @@ int Cmd_mctcl_date2listdates(ClientData clientData, Tcl_Interp *interp, int argc
 /****************************************************************************/
 /* cree une liste de dates a partir d'une date et d'un pas en jours         */
 /****************************************************************************/
-/* Entrees :                 												*/
+/* Entrees :                 												             */
 /* date sous n'importe quel format                                          */
 /* pas en jours                                                             */
 /* nombre de pas                                                            */
-/*																			*/
-/* Sorties :																*/
-/* Liste de jd															    */
+/*																			                   */
+/* Sorties :																                */
+/* Liste de jd															                   */
 /****************************************************************************/
    int result,nbstep,k,retour;
    char s[100];
@@ -365,11 +365,14 @@ int Cmd_mctcl_date2lst(ClientData clientData, Tcl_Interp *interp, int argc, char
    double ss=0.;
    double longi=0.,tsl=0.,rhocosphip,rhosinphip;
    int hhh=0,mmm=0;
-   int result,do_nutation=0,type_format=0,ko;
+   int result,do_nutation=1,type_format=0,ko;
+	double tai_utc=0.;
+	double ut1_utc=0.;
    char s[256];
 
    if(argc<=2) {
-      sprintf(s,"Usage: %s Date Home ?-nutation 0|1? ?-format hms|deg?", argv[0]);
+      //sprintf(s,"Usage: %s Date_UTC Home_cep ?-tai-utc TAI-UTC(sec)? ?-ut1-utc UT1-UTC(sec)? ?-nutation 1|0? ?-format hms|deg?", argv[0]);
+      sprintf(s,"Usage: %s Date_UTC Home_cep ?-ut1-utc UT1-UTC(sec)? ?-nutation 1|0? ?-format hms|deg?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_ERROR;
    } else {
@@ -390,11 +393,25 @@ int Cmd_mctcl_date2lst(ClientData clientData, Tcl_Interp *interp, int argc, char
 				if (strcmp(s,"HMS")==0) { type_format=0; }
 				else if (strcmp(s,"DEG")==0) { type_format=1; }
 			}
+			/*
+	      if (strcmp(s,"-TAI-UTC")==0) {
+			   tai_utc=atof(argv[ko+1])/86400.;
+			}
+			*/
+	      if (strcmp(s,"-UT1-UTC")==0) {
+			   ut1_utc=atof(argv[ko+1]);
+				if (ut1_utc>1)  { ut1_utc = 1.; }
+				if (ut1_utc<-1) { ut1_utc = -1.; }
+				ut1_utc/=86400;
+			}
 		}
+		jj+=ut1_utc;
       /* --- calcul du TSL en radians ---*/
       mc_tsl(jj,-longi,&tsl);
 		/* --- nutation ---*/
-		if (do_nutation==1) {
+		if (do_nutation==0) {
+			jj-=ut1_utc;
+			mc_tu2td(jj,&jj);
 			/* --- obliquite moyenne --- */
 			mc_obliqmoy(jj,&eps);
 			/* --- longitude vraie du soleil ---*/
