@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.58 2009-08-30 20:32:40 michelpujol Exp $
+# Mise a jour $Id: conftel.tcl,v 1.59 2010-02-21 18:31:34 michelpujol Exp $
 #
 
 namespace eval ::confTel {
@@ -21,6 +21,8 @@ proc ::confTel::init { } {
    if { ! [ info exists conf(telescope) ] }          { set conf(telescope)          "lx200" }
    if { ! [ info exists conf(telescope,start) ] }    { set conf(telescope,start)    "0" }
    if { ! [ info exists conf(telescope,geometry) ] } { set conf(telescope,geometry) "540x500+15+0" }
+   if { ! [ info exists conf(telescope,model,fileName) ] } { set conf(telescope,model,fileName) "" }
+   if { ! [ info exists conf(telescope,model,enabled) ]  } { set conf(telescope,model,enabled)  "" }
 
    #--- Charge le fichier caption
    source [ file join $audace(rep_caption) conftel.cap ]
@@ -60,11 +62,32 @@ proc ::confTel::init { } {
 #------------------------------------------------------------
 proc ::confTel::run { } {
    variable private
+   variable widget
    global conf
 
    set private(nomRaquette) [::confPad::getCurrentPad]
+   set widget(model,enabled)  $conf(telescope,model,enabled)
+   set widget(model,fileName) $conf(telescope,model,fileName)
+   set widget(model,name) ""
+   set widget(model,date) ""
+
+   set loadModelError [catch {
+      if { $widget(model,fileName) != "" } {
+         set result [loadModel  $conf(telescope,model,fileName)]
+         set widget(model,name) [lindex $result 1]
+         set widget(model,date) [lindex $result 2]
+      }
+   }]
+
    createDialog
    selectNotebook $conf(telescope)
+
+   if { $loadModelError != 0 } {
+      #--- je desactive le modele de pointage
+      set widget(model,enabled) 0
+      #--- je signale que le modèle n'est pas chargé
+      ::tkutil::displayErrorInfo $::caption(conftel,config)
+   }
 }
 
 #------------------------------------------------------------
@@ -165,7 +188,7 @@ proc ::confTel::createDialog { } {
    wm minsize $private(frm) 540 500
    wm resizable $private(frm) 1 1
    wm deiconify $private(frm)
-   wm title $private(frm) "$caption(conftel,config)"
+   wm title $private(frm) $caption(conftel,config)
    wm protocol $private(frm) WM_DELETE_WINDOW ::confTel::fermer
 
    #--- Frame des boutons OK, Appliquer, Aide et Fermer
@@ -203,6 +226,29 @@ proc ::confTel::createDialog { } {
       pack $private(frm).start.chk -side left -padx 3 -pady 3 -expand true
 
    pack $private(frm).start -side bottom -fill x
+
+   #--- Frame du modele de pointage
+   frame $private(frm).model -borderwidth 1 -relief raised
+      label $private(frm).model.title -text  $caption(conftel,model,title)
+      pack $private(frm).model.title -side left -padx 3 -pady 3 -expand 0
+
+      checkbutton $private(frm).model.enabled -text $caption(conftel,model,enabled) \
+         -highlightthickness 0 -variable ::confTel::widget(model,enabled)
+      pack $private(frm).model.enabled -side left -padx 3 -pady 3 -expand 0
+
+      entry $private(frm).model.name -textvariable ::confTel::widget(model,name)  \
+         -state readonly
+      pack $private(frm).model.name -side left -padx 3 -pady 3 -fill x -expand true
+
+      entry $private(frm).model.date -textvariable ::confTel::widget(model,date)  \
+         -state readonly -width 19
+      pack $private(frm).model.date -side left -padx 3 -pady 3 -expand false
+
+      button $private(frm).model.configure -text $caption(conftel,configurer) \
+         -command { ::confTel::selectModel }
+      pack $private(frm).model.configure -side left -padx 3 -pady 3 -expand 0
+
+   pack $private(frm).model -side bottom -fill x
 
    #--- Frame de la fenetre de configuration
    frame $private(frm).usr -borderwidth 0 -relief raised
@@ -398,6 +444,34 @@ proc ::confTel::configureMonture { } {
       #--- Je recupere telNo
       set private(telNo) [ ::$private(mountName)::getTelNo ]
 
+      #--- Je configure le modèle de pointage
+      set loadModelError [catch {
+         if { $conf(telescope,model,enabled) == 1} {
+            #--- je charge le modele
+            set result [loadModel  $conf(telescope,model,fileName) ]
+            set modelName [lindex $result 1]
+            set modelSymbols [lindex $result 3]
+            set modelCoeffficients [lindex $result 4]
+            set modelPressure 101325
+            set modelTemperature 290
+            #--- j'active le modele de pointage
+            tel$private(telNo) radec model -enabled 1 -name $modelName \
+               -pressure $modelPressure -temperature $modelTemperature \
+               -symbols $modelSymbols -coefficients $modelCoeffficients ]
+         } else {
+            #--- je desctive le modele de pointage
+            tel$private(telNo) radec model -enable 0
+         }
+      }]
+
+       if { $loadModelError != 0 } {
+          #--- je signale que le modèle n'est pas chargé
+          ::tkutil::displayErrorInfo $::caption(conftel,config)
+          #--- je supprime le telescope
+          ::$private(mountName)::stop
+       }
+
+
       #--- Mise a jour de la variable audace
       set audace(telNo) $private(telNo)
 
@@ -458,12 +532,19 @@ proc ::confTel::configureMonture { } {
 #------------------------------------------------------------
 proc ::confTel::widgetToConf { } {
    variable private
+   variable widget
    global conf
 
    #--- Memorise la configuration de la monture
    set mountName          [ $private(frm).usr.onglet raise ]
    set private(mountName) $mountName
    set conf(telescope)    $mountName
+   set conf(telescope,model,fileName) $widget(model,fileName)
+   if { $conf(telescope,model,fileName) == "" } {
+      #--- je descative le modele de pointage si aucun fichier n'est seelectionne
+      set widget(model,enabled) 0
+   }
+   set conf(telescope,model,enabled)  $widget(model,enabled)
 
    ::$private(mountName)::widgetToConf
 }
@@ -624,6 +705,107 @@ proc ::confTel::findPlugin { } {
       return 0
    }
 }
+
+################################################################
+#
+# Modeles de pointage
+#
+################################################################
+
+##------------------------------------------------------------
+# selectModel
+#  affiche une fentre pour selectionner le modele
+#
+# @return void
+# @public
+#------------------------------------------------------------
+proc ::confTel::selectModel { } {
+   variable private
+   variable widget
+
+   #--- j'ouvre la fenetre de selection du modele de pointage
+   set initialdir [ file join $::audace(rep_plugin) tool modpoi model_modpoi ]
+   set fileName [ ::tkutil::box_load [winfo toplevel $private(frm)] $initialdir $::audace(bufNo) "10" ]
+   if { $fileName != "" } {
+      #--- je charge les donnees du modele de pointage
+      set loadModelError [catch {
+          if { $fileName != "" } {
+             set result [loadModel  $fileName ]
+             set widget(model,fileName) $fileName
+             set widget(model,name) [lindex $result 1]
+             set widget(model,date) [lindex $result 2]
+          }
+       }]
+
+      if { $loadModelError != 0 } {
+         #--- je desactive le modele de pointage
+         set widget(model,enabled) 0
+         set widget(model,fileName) ""
+         set widget(model,name)     ""
+         set widget(model,date)     ""
+         #--- je signale que le modèle n'est pas chargé
+         ::tkutil::displayErrorInfo $::caption(conftel,config)
+      }
+   }
+}
+
+##------------------------------------------------------------
+# Retourne la liste des modeles de pointage
+#
+# @return liste des modeles
+# @public
+#------------------------------------------------------------
+proc ::confTel::getModelList { } {
+   set modelList [list]
+   foreach modelPath [array names ::conf confTel,model,*,name] {
+      set modelId [lindex [split $modelPath "," ] 2]
+      lappend modelList $::conf(confTel,model,$modelId,name)
+   }
+   #--- je trie par ordre alphabetique (l'option -dictionary est equivalente a nocase)
+   return [lsort -dictionary $modelList ]
+}
+
+#------------------------------------------------------------
+# loadModel
+#    charge un modele a partir d'un fichier
+# Exemple :
+#   ::confTel::loadModel  $::audace(rep_plugin)/tool/modpoi/model_modpoi/test-juin-2009_synthese_17�toiles.txt
+# @param fileName  nom du fichier
+# @return liste contenant les informations du modele
+#    * result[0] fileName
+#    * result[1] name
+#    * result[2] date
+#    * result[3] symbols
+#    * result[4] coefficents
+#------------------------------------------------------------
+proc ::confTel::loadModel { fileName } {
+
+   set catchResult [catch {
+      set hFile [ open $fileName r ]
+      set data [read $hFile]
+      close $hFile
+      set dataLen [llength $data ]
+      if { $dataLen == 3 } {
+         lappend $data "0"
+      } elseif  { $dataLen == 4 } {
+         #--- rien a faire
+
+      } else {
+         error "::confTel::loadModel error data length=$dataLen . Must be 3 or 4"
+      }
+      set name [file tail $fileName]
+      set date [clock format [file mtime $fileName] -format "%d-%m-%Y %H:%M:%S" -timezone :localtime ]
+      set symbols {IH ID NP CH ME MA FO HF DAF TF}
+      set coefficients [lindex $data 0]
+    }]
+   if { $catchResult == 1 } {
+      #--- je transmet l'erreur
+      error $::errorInfo
+   }
+
+   return [list $fileName $name $date $symbols $coefficients]
+}
+
 
 #--- Connexion au demarrage de la monture selectionnee par defaut
 ::confTel::init
