@@ -59,11 +59,12 @@
    char homePosition[128];\
    char model_cat2tel[50];\
    char model_tel2cat[50];\
+   char radec_model_coefficients[1024]; \
    int  radec_model_enabled; \
-   char radec_model_symbols[50]; \
-   char radec_model_coefficients[100]; \
-   int radec_model_temperature; \
-   int radec_model_pressure; \
+   char radec_model_name[255]; \
+   int  radec_model_pressure; \
+   char radec_model_symbols[255]; \
+   int  radec_model_temperature; \
    double speed;\
    double focusspeed;\
    int active_backlash;\
