@@ -2,7 +2,7 @@
 # Fichier : rmtctrlapn.tcl
 # Description : Script pour le controle de l'APN
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: rmtctrlapn.tcl,v 1.3 2010-02-14 17:58:49 robertdelmas Exp $
+# Mise a jour $Id: rmtctrlapn.tcl,v 1.4 2010-02-21 18:51:55 robertdelmas Exp $
 #
 
    ######################################################################
@@ -27,7 +27,7 @@
 
       #---  si la pose est differee, affichage du temps restant
       if { $::remotectrl::delai != 0 } {
-         delay ::remotectrl::delai
+         delay "delai"
       }
 
       if { $n == "3" } {
@@ -57,6 +57,7 @@
    ######################################################################
    proc shootImg { op } {
       global panneau caption
+      variable Dslr
 
       #--   raccourcis
       set camNo $panneau(remotectrl,camNo)
@@ -65,7 +66,7 @@
       #--   memorise
       set nb_poses $remotectrl::nb_poses
       set timer $::remotectrl::intervalle
-      set n [ lsearch $panneau(remotectrl,exptimeValues) $exptime ]
+      set rang [ lsearch $panneau(remotectrl,exptimeValues) $exptime ]
       set delta [ expr { -1*$panneau(remotectrl,step) } ]
 
       #--   compte les images
@@ -129,13 +130,13 @@
             if { $delta != "0" } {
 
                #--   incremente l'index = regresse dans la liste
-               incr n "$delta"
+               incr rang "$delta"
 
                #--   extrait le temps de pose
-               set ::remotectrl::exptime [ lindex  $panneau(remotectrl,exptimeValues) $n ]
+               set exptime [ lindex  $panneau(remotectrl,exptimeValues) $rang ]
 
                #--   actualise le temps de pose sur le panneau
-               $Dslr.exptime setvalue @$n
+               $Dslr.exptime setvalue @$rang
                update
             }
 
@@ -148,7 +149,7 @@
                   #--   met a jour le timer
                   set ::remotectrl::intervalle $d
                   #--   decompte les secondes
-                  ::remotectrl::delay "::remotectrl::intervalle"
+                  delay "intervalle"
                }
             }
          }
@@ -176,7 +177,7 @@
       catch {  send "cam$camNo acq -noblocking" } msg
 
       if [ regexp "Dialog error" $msg ] {
-            avertiUser "cam_pb"
+         avertiUser "cam_pb"
       }
 
       #--   passe en mode longuepose
@@ -184,7 +185,7 @@
 
       #--   actionne le bit
       send "link$linkNo bit $bitNo $panneau(remotectrl,startvalue)"
-      after [ expr { $remotectrl::intervalle*1000 } ]
+      after [ expr { int($remotectrl::intervalle*1000) } ]
       send "link$linkNo bit $bitNo $panneau(remotectrl,stopvalue)"
 
       #--   repasse en mode USB
@@ -303,10 +304,7 @@
       shoot
 
       #--   memorise l'intervalle
-      set panneau(remotectrl,intervalle_mini) [ format "%.1f" [ expr { ([clock milliseconds ]-$t0)/1000.0 } ] ]
-
-      #--   fixe l'intervalle mini a afficher
-      set ::remotectrl::intervalle $panneau(remotectrl,intervalle_mini)
+      set panneau(remotectrl,intervalle_mini) [ expr { int(([clock milliseconds ]-$t0)/1000.0) } ]
 
       #--   definit le nom du fichier
       set file ${::remotectrl::nom}1$panneau(remotectrl,extension)
@@ -340,6 +338,9 @@
 
       #--   libere les commandes
       setWindowState normal
+
+      #--   fixe l'intervalle mini a afficher
+      set ::remotectrl::intervalle $panneau(remotectrl,intervalle_mini)
    }
 
    ######################################################################
@@ -400,7 +401,7 @@
    proc test_intervalle {} {
       global panneau
 
-      regsub -all {[^0-9\.]} $::remotectrl::intervalle {} resultat
+      regsub -all {[^0-9]} $::remotectrl::intervalle {} resultat
       if { $resultat < $panneau(remotectrl,intervalle_mini) } {
          set resultat $panneau(remotectrl,intervalle_mini)
       }
@@ -468,12 +469,13 @@
    #  parametre : nom de la variable a decompter (delai ou intervalle)  #
    ######################################################################
    proc delay { var } {
-      global panneau
 
-      while { [ set $var ] != "0" } {
+      upvar 1 ::remotectrl::$var t
+      while { $t > "0" } {
             after 1000
-            set $var [ expr { [ set $var ]-1 } ]
-            if { [ set $var ] <= 0 } { set $var 0 }
+            incr t "-1"
             update
       }
+      set t "0"
+      update
    }

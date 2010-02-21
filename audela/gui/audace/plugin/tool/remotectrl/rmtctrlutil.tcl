@@ -2,7 +2,7 @@
 # Fichier : rmtctrlutil.tcl
 # Description : Script pour la configuration de l'outil
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: rmtctrlutil.tcl,v 1.3 2010-02-14 17:58:49 robertdelmas Exp $
+# Mise a jour $Id: rmtctrlutil.tcl,v 1.4 2010-02-21 18:51:40 robertdelmas Exp $
 #
 
    #########################################################################
@@ -229,7 +229,7 @@
       set panneau(remotectrl,quality) [ send "cam$panneau(remotectrl,camNo) quality" ]
 
       #--   indique le format (jpeg ou fits)
-      ::remotectrl::configFormat
+      configFormat
 
       #--   selectionne le mode de prise de vue 'Une image"
       set panneau(remotectrl,bracket) [ lindex $panneau(remotectrl,bracketLabels) 0 ]
@@ -356,6 +356,7 @@
       foreach child { step nb_poses } {
          $Dslr.$child configure -state disabled
       }
+      set panneau(remotectrl,test) "0"
    }
 
    #########################################################################
@@ -380,6 +381,7 @@
          set etat "disabled"
       }
       $Dslr.step configure -state $etat
+      set panneau(remotectrl,test) "0"
    }
 
    #########################################################################
@@ -578,27 +580,17 @@
       variable Dslr
 
       set var "intervalle"
-      #--   si rafale
-      if { $n == "4" } { set var "duree" }
+      set state "disabled"
+      set val " "
 
-      if { $n == "1" || $n == "2" } {
-         if { $panneau(remotectrl,test) != "1" } {
-            set val " "
-            set state "disabled"
-         } else {
-            set val $panneau(remotectrl,intervalle_mini)
-            set state "normal"
-         }
-       } elseif { $n == "3" } {
-
-         set val " "
-         set state "disabled"
-
-       } elseif { $n == "4" } {
-
+      if { $n == "4" } {
+         set var "duree"
          set val "1"
-         set state "normal"
+      }
+      set ::remotectrl::intervalle $val
 
+      if { ( $n == "2" && $panneau(remotectrl,test) == "1" ) || $n == "3" } {
+         set state "normal"
       }
 
       set ::remotectrl::intervalle $val
@@ -637,7 +629,7 @@
    }
 
    ######################################################################
-   #--   Ecriture du fichier log                                        #
+  #--   Ecriture du fichier log                                        #
    #  parametres :   nom du fichier texte                               #
    ######################################################################
    proc writeLog { f m } {
