@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: remotectrl.tcl,v 1.35 2010-02-14 17:58:47 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.tcl,v 1.36 2010-02-21 18:52:10 robertdelmas Exp $
 #
 
 #============================================================
@@ -148,7 +148,7 @@ namespace eval ::remotectrl {
       }
 
       set variables [ list ip1 port1 ftp_port1 ip2 port2 path_img ]
-      set values [ list "[Ip]" "4000" "21" "[Ip]" 4001" "21" ]
+      set values [ list "[Ip]" "5000" "21" "[Ip]" 5001" "21" ]
       foreach var $variables val $values {
          if { ! [ info exists parametres($var) ] } { set parametres($var) $val }
       }
