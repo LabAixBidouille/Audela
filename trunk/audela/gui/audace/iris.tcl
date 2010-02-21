@@ -1,11 +1,10 @@
 #
 # Fichier : iris.tcl
-# Description : Ce script permet d'exÈcuter des commandes Iris depuis un script tcl
+# Description : Ce script permet d'ex√©cuter des commandes Iris depuis un script tcl
+# Documentation : Voir la page iris.htm dans le dossier \doc_html\french\02programmation
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: iris.tcl,v 1.8 2008-06-01 16:29:41 robertdelmas Exp $
+# Mise √† jour $Id: iris.tcl,v 1.9 2010-02-21 09:46:56 robertdelmas Exp $
 #
-
-#--- Documentation : Voir la page iris.htm dans le dossier doc_html
 
 proc iris_initlinux { } {
    global audace
@@ -57,7 +56,7 @@ proc iris { {commande} {arg1 ""} {arg2 ""} {arg3 ""} {arg4 ""} {arg5 ""} {arg6 "
 
    append line $commande " " $arg1 " " $arg2 " " $arg3 " " $arg4 " " $arg5 " " $arg6 " " $arg7 " " $arg8 " " $arg9 " " $arg10 " " $arg11 " " $arg12 " " $arg13 " " $arg14 " " $arg15
 
-   #--- Suppression des blancs ‡ la fin
+   #--- Suppression des blancs √† la fin
    set nb_blocs [llength $line]
    set mine [lrange $line 0 [expr $nb_blocs-1]]
 
@@ -108,7 +107,7 @@ proc iris { {commande} {arg1 ""} {arg2 ""} {arg3 ""} {arg4 ""} {arg5 ""} {arg6 "
 proc iris2_select { {nom_ini} {nom_final} {nombre} } {
    global audace
 
-   #--- Suppression prÈalable si la sÈrie de destination est dÈj‡ existante
+   #--- Suppression pr√©alable si la s√©rie de destination est d√©j√† existante
    suppr_serie $nom_final -ext .fit
    set nom_rep [file join $audace(rep_images) select.lst]
    set fileId [open $nom_rep r]
@@ -122,27 +121,27 @@ proc iris2_select { {nom_ini} {nom_final} {nombre} } {
 proc iris2_compute_trichro1 { {maitre} {r} {v} {b} {taille} {nb_select} {nb_total} } {
    global audace caption conf
 
-   #--- CrÈation du sous-rÈpertoire de traitement
+   #--- Cr√©ation du sous-r√©pertoire de traitement
    console::affiche_resultat $caption(iris,subdir)
    set subdir [cree_sousrep -nom_base "iris2_compute_trichro1"]
    console::affiche_resultat ${subdir}\n
-   #--- Normalisation de l'offset de la sÈquence maÓtre
+   #--- Normalisation de l'offset de la s√©quence ma√Ætre
    console::affiche_resultat $caption(iris,normoffset_maitre)
    noffset2 $maitre "tmp_maitre_" "0" $nb_total
-   #--- RÈhaussement du contraste de la sÈquence maÓtre par masque flou
+   #--- R√©haussement du contraste de la s√©quence ma√Ætre par masque flou
    console::affiche_resultat $caption(iris,mf)
    iris "unsharp2" "tmp_maitre_" "tmp_unsharp_" "3" "6" "0" $nb_total
-   #--- Bestof sur la sÈquence maÓtre de contraste rÈhaussÈ
+   #--- Bestof sur la s√©quence ma√Ætre de contraste r√©hauss√©
    console::affiche_resultat $caption(iris,bestof)
    iris "bestof" "tmp_unsharp_" $nb_total
-   #--- Suppression de la sÈquence maÓtre de contraste rÈhaussÈ
+   #--- Suppression de la s√©quence ma√Ætre de contraste r√©hauss√©
    suppr_serie "tmp_unsharp_"
-   #--- On ne garde que les meilleures images de la sÈquence maÓtre
+   #--- On ne garde que les meilleures images de la s√©quence ma√Ætre
    suppr_serie "tmp_maitre2_"
    iris2_select "tmp_maitre_" "tmp_maitre2_" $nb_select
-   #--- Suppression des images non triÈes
+   #--- Suppression des images non tri√©es
    suppr_serie "tmp_maitre_"
-   #--- Chargement de la premiËre image maÓtre dans Iris pour sÈlectionner le centre de la planËte
+   #--- Chargement de la premi√®re image ma√Ætre dans Iris pour s√©lectionner le centre de la plan√®te
    console::affiche_resultat $caption(iris,selectmsg)
    iris "load" "tmp_maitre2_1"
    #--- NB : On ajuste les seuils pour bien la voir
@@ -153,12 +152,12 @@ proc iris2_compute_trichro1 { {maitre} {r} {v} {b} {taille} {nb_select} {nb_tota
    buf::delete $num_buf_tmp
    iris "visu" [lrange $stats 0 1]
    tk_messageBox -type ok -message $caption(iris,select)
-   #--- Registration des images maÓtres triÈes
+   #--- Registration des images ma√Ætres tri√©es
    console::affiche_resultat $caption(iris,registr_maitre)
    iris "pregister" "tmp_maitre2_" "tmp_maitre3_" $taille $nb_select
    #--- Addition de ces images
    sadd "tmp_maitre3_" "tmp_maitre" $nb_select
-   #--- Suppression des fichiers maÓtres temporaires
+   #--- Suppression des fichiers ma√Ætres temporaires
    suppr_serie "tmp_maitre2_"
    #--- Traitement des images rouges
    console::affiche_resultat $caption(iris,ima_r)
@@ -202,11 +201,11 @@ proc iris2_compute_trichro1 { {maitre} {r} {v} {b} {taille} {nb_select} {nb_tota
       suppr_serie "tmp_b2_"
       file rename [file join $audace(rep_images) tmp_b$conf(extension,defaut)] [file join $subdir b$conf(extension,defaut)]
    }
-   #--- Suppression, si ce n'est dÈj‡ fait, du dernier fichier maÓtre temporaire
+   #--- Suppression, si ce n'est d√©j√† fait, du dernier fichier ma√Ætre temporaire
    if {[file exist [file join $audace(rep_images) tmp_maitre$conf(extension,defaut)]]=="1"} {
       file delete [file join $audace(rep_images) tmp_maitre$conf(extension,defaut)]
    }
-   #--- Inscription dans un fichier texte des caractÈristiques du traitement
+   #--- Inscription dans un fichier texte des caract√©ristiques du traitement
    set fileId [open [file join $subdir iris2_compute_trichro1.txt] w]
    puts $fileId $caption(iris,nom_maitre)$maitre
    puts $fileId $caption(iris,nom_rouge)$r
