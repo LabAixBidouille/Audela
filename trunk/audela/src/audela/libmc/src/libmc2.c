@@ -1097,60 +1097,6 @@ int mctcl_decode_home(Tcl_Interp *interp, char *argv0,double *longitude ,char *s
    return(result);
 }
 
-int Cmd_mctcl_home2gps(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
-/****************************************************************************/
-/* Transcope le type Home en format GPS                                     */
-/****************************************************************************/
-/****************************************************************************/
-{
-   int result;
-   char s[255],sens[10];
-   double longitude,latitude,altitude,longmpc,rhocosphip,rhosinphip;
-
-   if(argc<=1) {
-      sprintf(s,"Usage: %s Home", argv[0]);
-      Tcl_SetResult(interp,s,TCL_VOLATILE);
-      result = TCL_ERROR;
-   } else {
-      result=mctcl_decode_home(interp,argv[1],&longitude,sens,&latitude,&altitude,&longmpc,&rhocosphip,&rhosinphip);
-		if (result==TCL_ERROR) {
-         Tcl_SetResult(interp,"Input string is not regonized amongst Home type",TCL_VOLATILE);
-		} else {
-         sprintf(s,"GPS %12f %s %12f %f",longitude/(DR),sens,latitude/(DR),altitude);
-         Tcl_SetResult(interp,s,TCL_VOLATILE);
-         result = TCL_OK;
-		}
-	}
-	return(result);
-}
-
-int Cmd_mctcl_home2mpc(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
-/****************************************************************************/
-/* Transcope le type Home en format MPC                                     */
-/****************************************************************************/
-/****************************************************************************/
-{
-   int result;
-   char s[255],sens[10];
-   double longitude,latitude,altitude,longmpc,rhocosphip,rhosinphip;
-
-   if(argc<=1) {
-      sprintf(s,"Usage: %s Home", argv[0]);
-      Tcl_SetResult(interp,s,TCL_VOLATILE);
-      result = TCL_ERROR;
-   } else {
-      result=mctcl_decode_home(interp,argv[1],&longitude,sens,&latitude,&altitude,&longmpc,&rhocosphip,&rhosinphip);
-		if (result==TCL_ERROR) {
-         Tcl_SetResult(interp,"Input string is not regonized amongst Home type",TCL_VOLATILE);
-		} else {
-         sprintf(s,"MPC %12f %12f %12f",longmpc/(DR),rhocosphip,rhosinphip);
-         Tcl_SetResult(interp,s,TCL_VOLATILE);
-         result = TCL_OK;
-		}
-	}
-	return(result);
-}
-
 
 int mctcl_debug(char *filename,char *type,char *string)
 /****************************************************************************/
