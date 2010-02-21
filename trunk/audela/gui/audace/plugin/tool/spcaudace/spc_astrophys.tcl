@@ -1,7 +1,7 @@
 
 # Procédures d'exploitation astrophysique des spectres
 
-# Mise a jour $Id: spc_astrophys.tcl,v 1.7 2010-02-14 17:56:48 bmauclaire Exp $
+# Mise a jour $Id: spc_astrophys.tcl,v 1.8 2010-02-21 17:57:44 bmauclaire Exp $
 
 
 
@@ -719,82 +719,90 @@ proc spc_ne2 { args } {
 
 proc spc_ewcourbe { args } {
 
-    global audace spcaudace
-    global conf
-    global tcl_platform
-
-    set ewfile "ewcourbe"
-    set ext ".dat"
-
-    if { [llength $args]==1 } {
-	set lambda [lindex $args 0 ]
-
-	set ldates ""
-	set list_ew ""
-	set intensite_raie 1
-	set fileliste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails *$conf(extension,defaut) ] ]
-
-	foreach fichier $fileliste {
-	    ::console::affiche_resultat "\nTraitement de $fichier\n"
-	    buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-	    #set date [ lindex [buf$audace(bufNo) getkwd "MJD-OBS"] 1 ]
-	    set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
-	    if { [ string length $ladate ]<=10 } {
-		set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE" ] 1 ]
-	    }
-	    set date [ mc_date2jd $ladate ]
-	    #- Ne tient que des 4 premières décimales du jour julien et retranche 50000 jours juliens
-	    #lappend ldates [ expr int($date*10000.)/10000.-50000.+0.5 ]
-	    #lappend ldates [ expr round($date*10000.)/10000.-2400000.5 ]
-	    lappend ldates [ expr int(($date-2400000.5)*10000.)/10000. ]
-	    set results [ spc_autoew2 $fichier $lambda ]
-	    lappend list_ew [ lindex $results 0 ]
-	    lappend list_sigmaew [ lindex $results 1 ]
-	}
-
-	#--- Création du fichier de données
-	# ::console::affiche_resultat "$ldates \n $list_ew\n"
-	set file_id1 [open "$audace(rep_images)/${ewfile}.dat" w+]
-	foreach sdate $ldates ew $list_ew sew $list_sigmaew {
-	    puts $file_id1 "$sdate\t$ew\t$sew"
-	}
-	close $file_id1
-
-	#--- Création du script de tracage avec gnuplot :
-	set ew0 [ lindex $list_ew 0 ]
-	if { $ew0<0 } {
-	    set invert_opt "reverse"
-	} else {
-	    set invert_opt "noreverse"
-	}
-	set titre "Evolution de la largeur equivalente EW au cours du temps"
-	set legendey "Largeur equivalente EW (A)"
-	set legendex "Date (JD-2450000)"
-	set file_id2 [open "$audace(rep_images)/${ewfile}.gp" w+]
-	puts $file_id2 "call \"$spcaudace(repgp)/gp_points_err.cfg\" \"$audace(rep_images)/${ewfile}.dat\" \"$titre\" * * * * $invert_opt \"$audace(rep_images)/ew_courbe.png\" \"$legendex\" \"$legendey\" "
-	close $file_id2
-	if { $tcl_platform(os)=="Linux" } {
-	    set answer [ catch { exec gnuplot $audace(rep_images)/${ewfile}.gp } ]
-	    ::console::affiche_resultat "$answer\n"
-	} else {
-	    #-- wgnuplot et pgnuplot doivent etre dans le rep gp de spcaudace
-	    set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/${ewfile}.gp } ]
-	    ::console::affiche_resultat "$answer\n"
-	}
-
-	#--- Affichage du graphe PNG :
-	if { $conf(edit_viewer)!="" } {
-	    set answer [ catch { exec $conf(edit_viewer) "$audace(rep_images)/ew_courbe.png" & } ]
-	} else {
-	    ::console::affiche_resultat "Configurer \"Editeurs/Visualisateur d'images\" pour permettre l'affichage du graphique\n"
-	}
-
-
-	#--- Traitement du résultat :
-	return "ew_courbe.png"
-    } else {
-	::console::affiche_erreur "Usage: spc_ewcourbe lambda_raie\n\n"
-    }
+   global audace spcaudace
+   global conf
+   global tcl_platform
+   
+   set ewfile "ewcourbe"
+   set ext ".dat"
+   
+   set nbargs [ llength $args ]
+   if { $nbargs==1 } {
+      set lambda [ lindex $args 0 ]
+   } elseif { $nbargs==2 } {
+      set ldeb [ lindex $args 0 ] 
+      set lfin [ lindex $args 1 ]
+   } else {
+      ::console::affiche_erreur "Usage: spc_ewcourbe lambda_raie/lambda_deb lambda_fin\n\n"
+      return ""
+   }
+   
+   set ldates ""
+   set list_ew ""
+   set intensite_raie 1
+   set fileliste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails *$conf(extension,defaut) ] ]
+   
+   foreach fichier $fileliste {
+      ::console::affiche_resultat "\nTraitement de $fichier\n"
+      buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+      #set date [ lindex [buf$audace(bufNo) getkwd "MJD-OBS"] 1 ]
+      set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
+      if { [ string length $ladate ]<=10 } {
+         set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE" ] 1 ]
+      }
+      set date [ mc_date2jd $ladate ]
+      #- Ne tient que des 4 premières décimales du jour julien et retranche 50000 jours juliens
+      #lappend ldates [ expr int($date*10000.)/10000.-50000.+0.5 ]
+      #lappend ldates [ expr round($date*10000.)/10000.-2400000.5 ]
+      lappend ldates [ expr int(($date-2400000.5)*10000.)/10000. ]
+      if { $nbargs==1 } {
+         set results [ spc_autoew $fichier $lambda ]
+      } elseif { $nbargs==2 } {
+         set results [ spc_autoew $fichier $ldeb $lfin ]
+      }
+      lappend list_ew [ lindex $results 0 ]
+      lappend list_sigmaew [ lindex $results 1 ]
+   }
+   
+   #--- Création du fichier de données
+   # ::console::affiche_resultat "$ldates \n $list_ew\n"
+   set file_id1 [open "$audace(rep_images)/${ewfile}.dat" w+]
+   foreach sdate $ldates ew $list_ew sew $list_sigmaew {
+      puts $file_id1 "$sdate\t$ew\t$sew"
+   }
+   close $file_id1
+   
+   #--- Création du script de tracage avec gnuplot :
+   set ew0 [ lindex $list_ew 0 ]
+   if { $ew0<0 } {
+      set invert_opt "reverse"
+   } else {
+      set invert_opt "noreverse"
+   }
+   set titre "Evolution de la largeur equivalente EW au cours du temps"
+   set legendey "Largeur equivalente EW (A)"
+   set legendex "Date (JD-2450000)"
+   set file_id2 [open "$audace(rep_images)/${ewfile}.gp" w+]
+   puts $file_id2 "call \"$spcaudace(repgp)/gp_points_err.cfg\" \"$audace(rep_images)/${ewfile}.dat\" \"$titre\" * * * * $invert_opt \"$audace(rep_images)/ew_courbe.png\" \"$legendex\" \"$legendey\" "
+   close $file_id2
+   if { $tcl_platform(os)=="Linux" } {
+      set answer [ catch { exec gnuplot $audace(rep_images)/${ewfile}.gp } ]
+      ::console::affiche_resultat "$answer\n"
+   } else {
+      #-- wgnuplot et pgnuplot doivent etre dans le rep gp de spcaudace
+      set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/${ewfile}.gp } ]
+      ::console::affiche_resultat "$answer\n"
+   }
+   
+   #--- Affichage du graphe PNG :
+   if { $conf(edit_viewer)!="" } {
+      set answer [ catch { exec $conf(edit_viewer) "$audace(rep_images)/ew_courbe.png" & } ]
+   } else {
+      ::console::affiche_resultat "Configurer \"Editeurs/Visualisateur d'images\" pour permettre l'affichage du graphique\n"
+   }
+     
+   #--- Traitement du résultat :
+   return "ew_courbe.png"
 }
 #*******************************************************************************#
 
@@ -1072,116 +1080,6 @@ proc spc_ew1 { args } {
 }
 #****************************************************************#
 
-proc spc_ew_170406 { args } {
-
-   global audace
-   global conf
-
-   if {[llength $args] == 4} {
-       set fichier [ lindex $args 0 ]
-       set ldeb [ expr int([lindex $args 1 ]) ]
-       set lfin [ expr int([lindex $args 2]) ]
-       set type [ lindex $args 3 ]
-
-       #--- Mesure de la FWHM, I_continuum et de Imax
-       buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-       set crval [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
-       set cdelt [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
-       set xdeb [ expr int(($ldeb-$crval)/$cdelt) ]
-       set xfin [ expr int(($lfin-$crval)/$cdelt) ]
-       set listcoords [list $xdeb 1 $xfin 1]
-       if { [string compare $type "a"] == 0 } {
-	   # fitgauss ne fonctionne qu'avec les raies d'emission, on inverse donc le spectre d'absorption
-	   buf$audace(bufNo) mult -1.0
-	   set lreponse [buf$audace(bufNo) fitgauss $listcoords]
-	   # Inverse de nouveau le spectre pour le rendre comme l'original
-	   buf$audace(bufNo) mult -1.0
-	   set fwhm [ expr $cdelt*[ lindex $lreponse 2 ] ]
-	   set icontinuum [ lindex $lreponse 3 ]
-	   set imax [ lindex $lreponse 0 ]
-       } elseif { [string compare $type "e"] == 0 } {
-	   set lreponse [buf$audace(bufNo) fitgauss $listcoords]
-	   set fwhm [ expr $cdelt*[ lindex $lreponse 2 ] ]
-	   set icontinuum [ lindex $lreponse 3 ]
-	   set imax [ expr $icontinuum+[ lindex $lreponse 0 ] ]
-       }
-       set sigma [ expr $fwhm/sqrt(8.0*log(2.0)) ]
-       ::console::affiche_resultat "Imax=$imax, Icontinuum=$icontinuum, FWHM=$fwhm, sigma=$sigma.\n"
-
-       #--- Calcul de EW
-       #set aeqw [ expr sqrt(acos(-1.0)/log(2.0))*0.5*$fwhm ]
-       # set aeqw [ expr sqrt((acos(-1.0)*$fwhm)/(8.0*sqrt(log(2.0))))*$i_continuum ]
-       #- 1.675x-0.904274 : coefficent de réajustement par rapport a Midas.
-       #set aeqw [ expr sqrt((acos(-1.0)*$fwhm)/(8.0*sqrt(log(2.0))))*1.6751-1.15 ]
-       # Klotz : 060416, A=imax*sqrt(pi)*sigma, GOOD
-       set aeqw [ expr sqrt(acos(-1.0)/(8.0*log(2.0)))*$fwhm*$imax ]
-       # A=sqrt(sigma*pi)
-       #set aeqw [ expr sqrt(acos(-1.0)*$fwhm/(sqrt(8.0*log(2.0)))) ]
-       # A=sqrt(sigma*pi/2) car exp(-x/sigma)^2 et non exp(-x^2/2*sigma^2)
-       #set aeqw [ expr sqrt(acos(-1.0)*$fwhm/(2*sqrt(8.0*log(2.0)))) ]
-       # A=sqrt(pi/2)*sigma, vérité calculé pour exp(-x/sigma)^2
-       #set aeqw [ expr sqrt(acos(-1.0)/(16.0*log(2.0)))*$fwhm ]
-
-       if { [string compare $type "a"] == 0 } {
-	   set eqw $aeqw
-       } elseif { [string compare $type "e"] == 0 } {
-	   set eqw [ expr (-1.0)*$aeqw ]
-       }
-       ::console::affiche_resultat "La largeur équivalente de la raie est : $eqw angstroms\n"
-       return $eqw
-   } else {
-       ::console::affiche_erreur "Usage: spc_ew nom_fichier (de type fits et sans extension) x_debut x_fin a/e\n\n"
-   }
-}
-#****************************************************************#
-
-proc spc_ew_211205 { args } {
-
-   global audace
-   global conf
-
-   if {[llength $args] == 4} {
-     set fichier [ lindex $args 0 ]
-     set ldeb [ expr int([lindex $args 1 ]) ]
-     set lfin [ expr int([lindex $args 2]) ]
-     set type [ lindex $args 3 ]
-
-     buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-     #buf$audace(bufNo) load $fichier
-     set crval [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
-     set cdelt [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
-     set xdeb [ expr int(($ldeb-$crval)/$cdelt) ]
-     set xfin [ expr int(($lfin-$crval)/$cdelt) ]
-
-     set listcoords [list $xdeb 1 $xfin 1]
-     if { [string compare $type "a"] == 0 } {
-	 # fitgauss ne fonctionne qu'avec les raies d'emission, on inverse donc le spectre d'absorption
-	 buf$audace(bufNo) mult -1.0
-	 set lreponse [buf$audace(bufNo) fitgauss $listcoords]
-	 set flag 1
-	 # Inverse de nouveau le spectre pour le rendre comme l'original
-	 buf$audace(bufNo) mult -1.0
-     } elseif { [string compare $type "e"] == 0 } {
-	 set lreponse [buf$audace(bufNo) fitgauss $listcoords]
-	 set flag 0
-     }
-     set I_continum [ lindex $lreponse 7 ]
-     # Attention, $lreponse 2 est en pixels
-     set if0 [ expr ([ lindex $lreponse 2 ]*$cdelt+$crval)*.601*sqrt(acos(-1)) ]
-     set intensity [ expr [ lindex $lreponse 0 ]*$if0 ]
-     if { $flag == 1 } {
-	 set eqw [ expr (-1.0)*$intensity/$I_continum ]
-     } else {
-	 set eqw [ expr $intensity/$I_continum ]
-     }
-     ::console::affiche_resultat "La largeur équivalente de la raie est : $eqw angstroms\n"
-     return $eqw
-
-   } else {
-     ::console::affiche_erreur "Usage: spc_ew nom_fichier (de type fits et sans extension) x_debut x_fin a/e\n\n"
-   }
-}
-#****************************************************************#
 
 
 
@@ -1531,7 +1429,7 @@ proc spc_autoew3 { args } {
          set lambda_deb [ lindex $args 1 ]
          set lambda_fin [ lindex $args 2 ]
       } else {
-         ::console::affiche_erreur "Usage: spc_autoew3 nom_profil_raies_normalisé lambda_raie/lambda_deb lambda_fin\n"
+         ::console::affiche_erreur "Usage: spc_autoew3 nom_profil_raies lambda_raie/lambda_deb lambda_fin\n"
       }
 
       set filename_norma [ spc_autonorma $filename ]
@@ -1616,7 +1514,7 @@ proc spc_autoew3 { args } {
       set results [ list $ew_short $sigma_ew $snr_short "EW($delta_l=$l_deb-$l_fin)" ]
       return $results
    } else {
-      ::console::affiche_erreur "Usage: spc_autoew3 nom_profil_raies_normalisé lambda_raie/lambda_deb lambda_fin\n"
+      ::console::affiche_erreur "Usage: spc_autoew3 nom_profil_raies lambda_raie/lambda_deb lambda_fin\n"
    }
 }
 #***************************************************************************#
@@ -1762,7 +1660,7 @@ proc spc_autoew { args } {
          set lambda_deb [ lindex $args 1 ]
          set lambda_fin [ lindex $args 2 ]
       } else {
-         ::console::affiche_erreur "Usage: spc_autoew nom_profil_raies_normalisé lambda_raie/lambda_deb lambda_fin\n"
+         ::console::affiche_erreur "Usage: spc_autoew nom_profil_raies lambda_raie/lambda_deb lambda_fin\n"
          return 0
       }
 
@@ -1782,7 +1680,7 @@ proc spc_autoew { args } {
        #--- Traitement des resultats :
        return $results_ew
     } else {
-       ::console::affiche_erreur "Usage: spc_autoew nom_profil_raies_normalisé lambda_raie/lambda_deb lambda_fin\n"
+       ::console::affiche_erreur "Usage: spc_autoew nom_profil_raies lambda_raie/lambda_deb lambda_fin\n"
     }
 }
 #***************************************************************************#
@@ -2155,8 +2053,8 @@ proc spc_ajustplanck { args } {
    global audace
    global conf
 
-   set tmin 3000
-   set tmax 46000
+   set tmin 1000
+   set tmax 50000
    set tpas 200
    set abscissemin 800
    set beta 1.
@@ -2447,3 +2345,113 @@ proc spc_planckval { args } {
 #           Acnciennes implémentations                                     #
 #==========================================================================#
 
+proc spc_ew_170406 { args } {
+
+   global audace
+   global conf
+
+   if {[llength $args] == 4} {
+       set fichier [ lindex $args 0 ]
+       set ldeb [ expr int([lindex $args 1 ]) ]
+       set lfin [ expr int([lindex $args 2]) ]
+       set type [ lindex $args 3 ]
+
+       #--- Mesure de la FWHM, I_continuum et de Imax
+       buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+       set crval [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
+       set cdelt [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
+       set xdeb [ expr int(($ldeb-$crval)/$cdelt) ]
+       set xfin [ expr int(($lfin-$crval)/$cdelt) ]
+       set listcoords [list $xdeb 1 $xfin 1]
+       if { [string compare $type "a"] == 0 } {
+	   # fitgauss ne fonctionne qu'avec les raies d'emission, on inverse donc le spectre d'absorption
+	   buf$audace(bufNo) mult -1.0
+	   set lreponse [buf$audace(bufNo) fitgauss $listcoords]
+	   # Inverse de nouveau le spectre pour le rendre comme l'original
+	   buf$audace(bufNo) mult -1.0
+	   set fwhm [ expr $cdelt*[ lindex $lreponse 2 ] ]
+	   set icontinuum [ lindex $lreponse 3 ]
+	   set imax [ lindex $lreponse 0 ]
+       } elseif { [string compare $type "e"] == 0 } {
+	   set lreponse [buf$audace(bufNo) fitgauss $listcoords]
+	   set fwhm [ expr $cdelt*[ lindex $lreponse 2 ] ]
+	   set icontinuum [ lindex $lreponse 3 ]
+	   set imax [ expr $icontinuum+[ lindex $lreponse 0 ] ]
+       }
+       set sigma [ expr $fwhm/sqrt(8.0*log(2.0)) ]
+       ::console::affiche_resultat "Imax=$imax, Icontinuum=$icontinuum, FWHM=$fwhm, sigma=$sigma.\n"
+
+       #--- Calcul de EW
+       #set aeqw [ expr sqrt(acos(-1.0)/log(2.0))*0.5*$fwhm ]
+       # set aeqw [ expr sqrt((acos(-1.0)*$fwhm)/(8.0*sqrt(log(2.0))))*$i_continuum ]
+       #- 1.675x-0.904274 : coefficent de réajustement par rapport a Midas.
+       #set aeqw [ expr sqrt((acos(-1.0)*$fwhm)/(8.0*sqrt(log(2.0))))*1.6751-1.15 ]
+       # Klotz : 060416, A=imax*sqrt(pi)*sigma, GOOD
+       set aeqw [ expr sqrt(acos(-1.0)/(8.0*log(2.0)))*$fwhm*$imax ]
+       # A=sqrt(sigma*pi)
+       #set aeqw [ expr sqrt(acos(-1.0)*$fwhm/(sqrt(8.0*log(2.0)))) ]
+       # A=sqrt(sigma*pi/2) car exp(-x/sigma)^2 et non exp(-x^2/2*sigma^2)
+       #set aeqw [ expr sqrt(acos(-1.0)*$fwhm/(2*sqrt(8.0*log(2.0)))) ]
+       # A=sqrt(pi/2)*sigma, vérité calculé pour exp(-x/sigma)^2
+       #set aeqw [ expr sqrt(acos(-1.0)/(16.0*log(2.0)))*$fwhm ]
+
+       if { [string compare $type "a"] == 0 } {
+	   set eqw $aeqw
+       } elseif { [string compare $type "e"] == 0 } {
+	   set eqw [ expr (-1.0)*$aeqw ]
+       }
+       ::console::affiche_resultat "La largeur équivalente de la raie est : $eqw angstroms\n"
+       return $eqw
+   } else {
+       ::console::affiche_erreur "Usage: spc_ew nom_fichier (de type fits et sans extension) x_debut x_fin a/e\n\n"
+   }
+}
+#****************************************************************#
+
+proc spc_ew_211205 { args } {
+
+   global audace
+   global conf
+
+   if {[llength $args] == 4} {
+     set fichier [ lindex $args 0 ]
+     set ldeb [ expr int([lindex $args 1 ]) ]
+     set lfin [ expr int([lindex $args 2]) ]
+     set type [ lindex $args 3 ]
+
+     buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+     #buf$audace(bufNo) load $fichier
+     set crval [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
+     set cdelt [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
+     set xdeb [ expr int(($ldeb-$crval)/$cdelt) ]
+     set xfin [ expr int(($lfin-$crval)/$cdelt) ]
+
+     set listcoords [list $xdeb 1 $xfin 1]
+     if { [string compare $type "a"] == 0 } {
+	 # fitgauss ne fonctionne qu'avec les raies d'emission, on inverse donc le spectre d'absorption
+	 buf$audace(bufNo) mult -1.0
+	 set lreponse [buf$audace(bufNo) fitgauss $listcoords]
+	 set flag 1
+	 # Inverse de nouveau le spectre pour le rendre comme l'original
+	 buf$audace(bufNo) mult -1.0
+     } elseif { [string compare $type "e"] == 0 } {
+	 set lreponse [buf$audace(bufNo) fitgauss $listcoords]
+	 set flag 0
+     }
+     set I_continum [ lindex $lreponse 7 ]
+     # Attention, $lreponse 2 est en pixels
+     set if0 [ expr ([ lindex $lreponse 2 ]*$cdelt+$crval)*.601*sqrt(acos(-1)) ]
+     set intensity [ expr [ lindex $lreponse 0 ]*$if0 ]
+     if { $flag == 1 } {
+	 set eqw [ expr (-1.0)*$intensity/$I_continum ]
+     } else {
+	 set eqw [ expr $intensity/$I_continum ]
+     }
+     ::console::affiche_resultat "La largeur équivalente de la raie est : $eqw angstroms\n"
+     return $eqw
+
+   } else {
+     ::console::affiche_erreur "Usage: spc_ew nom_fichier (de type fits et sans extension) x_debut x_fin a/e\n\n"
+   }
+}
+#****************************************************************#
