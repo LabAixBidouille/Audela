@@ -5206,6 +5206,9 @@ fi
 
 
 
+ARCHITECTURE=`uname -m`
+echo "Found architecture $ARCHITECTURE"
+
 TARGET=`uname -s`
 echo "Found target $TARGET"
 if test $TARGET = "Darwin"; then
@@ -5343,11 +5346,15 @@ fi
 
 LIBCAMS="libaudinet libethernaude"
 if test x"$TARGET" = x"Linux" ; then
-	LIBCAMS="$LIBCAMS libaudine libcamth libcookbook libhisis libk2 libquicka libsbig libstarlight libsynonyme"
+	LIBCAMS="$LIBCAMS libaudine libcamth libcookbook libhisis libk2 libquicka libstarlight libsynonyme"
 fi
 if test x"$WEBCAM_ENABLE" = x"1" ; then
 	LIBCAMS="$LIBCAMS libwebcam"
 fi
+if test $ARCHITECTURE != "x86_64"; then
+	LIBCAMS="$LIBCAMS libsbig"
+fi
+
 
 LIBTELS="libaudecom libcelestron libcombit libdeltatau libdfm libeqmod liblx200 liblxnet libouranos libtemma"
 
