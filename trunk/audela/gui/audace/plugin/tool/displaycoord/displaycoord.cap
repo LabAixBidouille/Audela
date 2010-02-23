@@ -1,6 +1,6 @@
 #
 # Fichier : displaycoord.cap
-# Mise à jour $Id: displaycoord.cap,v 1.5 2010-02-20 07:50:10 robertdelmas Exp $
+# Mise à jour $Id: displaycoord.cap,v 1.6 2010-02-23 20:20:29 michelpujol Exp $
 #
 
 #=========================================================================
@@ -11,31 +11,33 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(displaycoord,title)             "Telescope Coordinates"
-set caption(displaycoord,observatoire)      "Observatory:"
-set caption(displaycoord,nonConnecte)       "Not connected\nto the coordinates server"
-set caption(displaycoord,connecte)          "Connected"
-set caption(displaycoord,tu)                "UT:"
-set caption(displaycoord,tsl)               "ST:"
-set caption(displaycoord,secz)              "SECZ:"
-set caption(displaycoord,angle_horaire)     "HA:"
-set caption(displaycoord,azimut)            "Azimuth:"
-set caption(displaycoord,hauteur)           "Elevation:"
-set caption(displaycoord,modeldescr)        "Model:"
-set caption(displaycoord,ad)                "ALPHA:"
-set caption(displaycoord,dec)               "DELTA:"
-set caption(displaycoord,ad0)               "ALPHA (raw):"
-set caption(displaycoord,dec0)              "DELTA (raw):"
-set caption(displaycoord,calage,C)          "# CALE"
-set caption(displaycoord,calage,D)          "# DECALE"
-set caption(displaycoord,calage,A)          "# CALAGE ?"
-set caption(displaycoord,configuration)     "Setup"
-set caption(displaycoord,serverHost)        "IP Address"
-set caption(displaycoord,serverPort)        "Port"
-set caption(displaycoord,longitude)         "Longitude:"
-set caption(displaycoord,latitude)          "Latitude:"
-set caption(displaycoord,altitude)          "Altitude:"
-set caption(displaycoord,horizon)           "The target is below the horizon."
+   set caption(displaycoord,title)          "Telescope Coordinates"
+   set caption(displaycoord,observatoire)   "Observatory:"
+   set caption(displaycoord,nonConnecte)    "Not connected\nto the coordinates server"
+   set caption(displaycoord,connecte)       "Connected"
+   set caption(displaycoord,tu)             "UT:"
+   set caption(displaycoord,tsl)            "ST:"
+   set caption(displaycoord,secz)           "SECZ:"
+   set caption(displaycoord,angle_horaire)  "HA:"
+   set caption(displaycoord,azimut)         "Azimuth:"
+   set caption(displaycoord,hauteur)        "Elevation:"
+   set caption(displaycoord,modeldescr)     "Model:"
+   set caption(displaycoord,ad)             "ALPHA:"
+   set caption(displaycoord,dec)            "DELTA:"
+   set caption(displaycoord,ad0)            "ALPHA (raw):"
+   set caption(displaycoord,dec0)           "DELTA (raw):"
+   set caption(displaycoord,calage,C)       "# CALE"
+   set caption(displaycoord,calage,D)       "# DECALE"
+   set caption(displaycoord,calage,A)       "# CALAGE ?"
+   set caption(displaycoord,configuration)  "Setup"
+   set caption(displaycoord,serverHost)     "IP Address"
+   set caption(displaycoord,serverPort)     "Port"
+   set caption(displaycoord,longitude)      "Longitude:"
+   set caption(displaycoord,latitude)       "Latitude:"
+   set caption(displaycoord,altitude)       "Altitude:"
+   set caption(displaycoord,horizon)        "The target is below the horizon."
+   set caption(displaycoord,enabled)        "MODEL ON"
+   set caption(displaycoord,disabled)       "MODEL OFF"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -65,6 +67,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(displaycoord,latitude)       "Latitude :"
    set caption(displaycoord,altitude)       "Altitude :"
    set caption(displaycoord,horizon)        "L'astre est sous l'horizon."
+   set caption(displaycoord,enabled)        "MODELE ACTIF"
+   set caption(displaycoord,disabled)       "MODELE INACTIF"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -94,6 +98,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(displaycoord,latitude)       "Latitudine:"
    set caption(displaycoord,altitude)       "Altitudine:"
    set caption(displaycoord,horizon)        "Il campo si trova sotto l'orizzonte."
+   set caption(displaycoord,enabled)        "MODELLO ON"
+   set caption(displaycoord,disabled)       "MODELLO OFF"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -123,6 +129,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(displaycoord,latitude)       "Latitud:"
    set caption(displaycoord,altitude)       "Altitud:"
    set caption(displaycoord,horizon)        "El astro está bajo el horizonte."
+   set caption(displaycoord,enabled)        "MODELO ON"
+   set caption(displaycoord,disabled)       "MODELO OFF"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -152,6 +160,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(displaycoord,latitude)       "Breite:"
    set caption(displaycoord,altitude)       "Höhe:"
    set caption(displaycoord,horizon)        "Das Gestirn ist unter dem Horizont."
+   set caption(displaycoord,enabled)        "MODELL ON"
+   set caption(displaycoord,disabled)       "MODELL OFF"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -181,6 +191,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(displaycoord,latitude)       "Latitude:"
    set caption(displaycoord,altitude)       "Altitude:"
    set caption(displaycoord,horizon)        "O alvo é abaixo do horizonte."
+   set caption(displaycoord,enabled)        "MODELO ACTIVO"
+   set caption(displaycoord,disabled)       "MODELO INACTIVO"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -210,6 +222,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(displaycoord,latitude)       "Latitude:"
    set caption(displaycoord,altitude)       "Altitude:"
    set caption(displaycoord,horizon)        "The target is below the horizon."
+   set caption(displaycoord,enabled)        "MODEL ON"
+   set caption(displaycoord,disabled)       "MODEL OFF"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -239,6 +253,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(displaycoord,latitude)       "Latitude:"
    set caption(displaycoord,altitude)       "Altitude:"
    set caption(displaycoord,horizon)        "The target is below the horizon."
+   set caption(displaycoord,enabled)        "MODEL ON"
+   set caption(displaycoord,disabled)       "MODEL OFF"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -268,6 +284,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(displaycoord,latitude)       "Latitude:"
    set caption(displaycoord,altitude)       "Altitude:"
    set caption(displaycoord,horizon)        "The target is below the horizon."
+   set caption(displaycoord,enabled)        "MODEL ON"
+   set caption(displaycoord,disabled)       "MODEL OFF"
 
 }
 
