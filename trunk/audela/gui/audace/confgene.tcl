@@ -5,7 +5,7 @@
 #               pose, choix des outils, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: confgene.tcl,v 1.70 2010-02-20 07:54:20 robertdelmas Exp $
+# Mise à jour $Id: confgene.tcl,v 1.71 2010-02-23 23:06:31 robertdelmas Exp $
 #
 
 #
@@ -2213,15 +2213,6 @@ namespace eval ::confChoixOutil {
             frame $This.framea$num -borderwidth 0
                #--- Selection d'un outil a afficher et menu deroulant d'appartenance
                set function [ ::$namespace\::getPluginProperty function ]
-               if { $function == "acquisition" } {
-                  set function "tool"
-               } elseif { $function == "aiming" } {
-                  set function "tool"
-               } elseif { $function == "focusing" } {
-                  set function "tool"
-               } elseif { $function == "observatory" } {
-                  set function "tool"
-               }
                checkbutton $This.panneau$num -text "($caption(audace,menu,$function))   $panneau(menu_name,$namespace)" \
                -highlightthickness 0 -variable ::confChoixOutil::private(affiche,$namespace)
                pack $This.panneau$num -in $This.framea$num -side left -padx 5 -pady 0
@@ -2245,15 +2236,6 @@ namespace eval ::confChoixOutil {
             frame $This.frameb$num -borderwidth 0
                #--- Selection d'un outil a afficher et menu deroulant d'appartenance
                set function [ ::$namespace\::getPluginProperty function ]
-               if { $function == "acquisition" } {
-                  set function "tool"
-               } elseif { $function == "aiming" } {
-                  set function "tool"
-               } elseif { $function == "focusing" } {
-                  set function "tool"
-               } elseif { $function == "observatory" } {
-                  set function "tool"
-               }
                checkbutton $This.panneau$num -text "($caption(audace,menu,$function))   $panneau(menu_name,$namespace)" \
                   -highlightthickness 0 -variable ::confChoixOutil::private(affiche,$namespace)
                pack $This.panneau$num -in $This.frameb$num -side left -padx 5 -pady 0
