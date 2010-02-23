@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_2.cap
-# Mise à jour $Id: aud_menu_2.cap,v 1.22 2010-02-20 07:51:55 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_2.cap,v 1.23 2010-02-23 23:04:49 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -161,7 +161,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,affichage)                 "Vista"
    set caption(audace,menu,nouvelle_visu)             "Nuovo 'visu'"
-   set caption(audace,menu,pas_outil)                 "# Masquer le panneau"
+   set caption(audace,menu,pas_outil)                 "Nascondi pannello"
    set caption(audace,menu,efface_image)              "Cancellare immagine"
    set caption(audace,menu,palette_grise)             "Palette grigia"
    set caption(audace,menu,palette_inverse)           "Palette inversa"
@@ -309,7 +309,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,affichage)                 "Anzeige"
    set caption(audace,menu,nouvelle_visu)             "Neue 'visu'"
-   set caption(audace,menu,pas_outil)                 "# Masquer le panneau"
+   set caption(audace,menu,pas_outil)                 "Tafel ausblenden"
    set caption(audace,menu,efface_image)              "Das Bild löschen"
    set caption(audace,menu,palette_grise)             "Graue Palette"
    set caption(audace,menu,palette_inverse)           "Umgekehrte Palette"
