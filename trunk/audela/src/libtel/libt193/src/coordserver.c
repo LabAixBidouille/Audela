@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-// Mise a jour $Id: coordserver.c,v 1.4 2009-12-20 16:56:49 michelpujol Exp $
+// Mise a jour $Id: coordserver.c,v 1.5 2010-02-23 20:08:14 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -266,11 +266,16 @@ void socket_writeCoordServerSocket(struct telprop *tel, int returnCode, char * r
             //     Format "%5.1f"
             // nom_observatoire  (le nom doit etre entre guillement pour proteger les eventuels espaces)
             //     Format "\"%s\""
+            // nom modele de pointage  (le nom doit etre entre guillement pour proteger les eventuels espaces)
+            //     Format "\"%s\""
+            // etat du modle ACTIF=1 INACTIF=0 
+            //     Format %d
 
-            sprintf(notification, "!RADEC COORD %d %s %s %s %s %s %s %c %c %10.6f %c %10.6f %5.1f \"%s\" @\n", 
+            sprintf(notification, "!RADEC COORD %d %s %s %s %s %s %s %c %c %10.6f %c %10.6f %5.1f \"%s \" \"%s \" %d @\n", 
                returnCode, tu, ts, ra, dec, raBrut, decBrut, raCalage, decCalage,
-               longitude, estouest, latitude, altitude, tel->homeName); 
+               longitude, estouest, latitude, altitude, tel->homeName, tel->radec_model_name, tel->radec_model_enabled ); 
             writeResult = Tcl_WriteChars(clientCoordSocketList[index], notification, strlen(notification));
+
             if ( writeResult == -1) {
                Tcl_Close( tel->interp, clientCoordSocketList[index]);
                // je supprime la socket client de la liste            
