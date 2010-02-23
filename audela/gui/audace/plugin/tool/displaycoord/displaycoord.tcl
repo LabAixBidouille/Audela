@@ -2,7 +2,7 @@
 # Fichier : displaycoord.tcl
 # Description : Affichage des coordonnees du telescope
 # Auteur : Michel PUJOL
-# Mise à jour $Id: displaycoord.tcl,v 1.5 2010-02-16 14:09:32 robertdelmas Exp $
+# Mise à jour $Id: displaycoord.tcl,v 1.6 2010-02-23 20:20:30 michelpujol Exp $
 #
 
 #============================================================
@@ -126,6 +126,9 @@ proc ::displaycoord::createPluginInstance { { tkParent "" } { visuNo 1 } } {
    set private(dec0)       "+00° 00' 00.00''"
    set private(azimutDms)  "000° 00' 00.0''"
    set private(hauteurDms) "+00° 00' 00.0''"
+   set private(modelName)  ""
+   set private(modelEnabled)  0
+
 }
 
 #------------------------------------------------------------
@@ -365,11 +368,23 @@ proc ::displaycoord::createWindow { visuNo } {
    pack $base.f.lab_altaz -fill none -pady 0 -padx 10  -anchor w
 
    #--- modele de pointage
-   label $base.f.lab_model \
-     -bg $private(color,back) -fg $private(color,text) \
-     -font $private(font2) \
-     -text "$::caption(displaycoord,modeldescr) "
-   pack $base.f.lab_model -fill y -pady 0 -padx 10 -anchor w
+   frame $base.f.model -bg $private(color,back)
+      label $base.f.model.label \
+         -bg $private(color,back) -fg $private(color,text) \
+         -font $private(font2) \
+         -text $::caption(displaycoord,modeldescr)
+      pack $base.f.model.label -side left -fill none -pady 0 -padx 0 -anchor w
+      label $base.f.model.name \
+         -bg $private(color,back) -fg $private(color,text) \
+         -font $private(font2) \
+         -textvariable ::displaycoord::private(modelName)
+      pack $base.f.model.name -side left -fill none -pady 0 -padx 2 -anchor w
+     label $base.f.model.enabled \
+        -bg $private(color,back) -fg $private(color,text) \
+        -font $private(font2) \
+        -textvariable ::displaycoord::private(modelEnabled)
+     pack $base.f.model.enabled -side left -fill none -pady 0 -padx 2 -anchor w
+   pack $base.f.model -fill y -pady 0 -padx 10 -anchor w
 
    pack $base.f -fill both -expand 1
 
@@ -465,8 +480,8 @@ proc ::displaycoord::openSocketCoord { } {
       #--- j'affiche l'etat
       readSocketCoord
       console::disp "::displaycoord::openSocketCoord $private(etat)\n"
-      #--- je fais une nouvelle tentative dans 30s
-      set private(connexionTimerId) [after 30000 ::displaycoord::openSocketCoord ]
+      #--- je fais une nouvelle tentative dans 10s
+      set private(connexionTimerId) [after 10000 ::displaycoord::openSocketCoord ]
    }
 }
 
@@ -516,6 +531,8 @@ proc ::displaycoord::readSocketCoord {  } {
       set latitudeDegres   "+00.0"
       set altitude  "0000.0"
       set nomObservatoire  ""
+      set nomModelePointage  ""
+      set etatModelePointage  0
 
       if { $private(socketChannel) == "" } {
          #--- j'affiche les valeurs par defaut
@@ -525,8 +542,8 @@ proc ::displaycoord::readSocketCoord {  } {
             #--- la connexion est ferme par le serveur
             set private(etat) "NOT_CONNECTED"
             ::displaycoord::closeSocketCoord
-            #--- je lance une tentative de connexion dans 30s
-            set private(connexionTimerId) [after 30000 ::displaycoord::openSocketCoord ]
+            #--- je lance une tentative de connexion dans 5s
+            set private(connexionTimerId) [after 5000 ::displaycoord::openSocketCoord ]
          } else {
             set private(etat) "CONNECTED"
             set notification [gets $private(socketChannel) ]
@@ -567,10 +584,15 @@ proc ::displaycoord::readSocketCoord {  } {
             #     Format "%5.1f"
             # nom_site
             #     Format "\"%s\""
+            # nom du modele
+            #     Format "\"%s\""
+            # etat du modle ACTIF=1 INACTIF=0
+            #     Format %d
 
-            set nbVar [scan $notification {!RADEC COORD %d %s %s %s %s %s %s %s %s %f %s %f %f "%[^"]" @} \
-                 returnCode tu ts ra dec ra0 dec0 raCalage decCalage longitudeDegres estouest latitudeDegres altitude nomObservatoire ]
-            if { $nbVar == 14 } {
+            set nbVar [scan $notification {!RADEC COORD %d %s %s %s %s %s %s %s %s %f %s %f %f "%[^"]" "%[^"]" %d @} \
+                 returnCode tu ts ra dec ra0 dec0 raCalage decCalage longitudeDegres estouest latitudeDegres altitude \
+                 nomObservatoire nomModelePointage etatModelePointage ]
+            if { $nbVar == 16 } {
                if { $returnCode == 0 } {
                   #--- pas d'erreur a signaler
                } else {
@@ -588,6 +610,8 @@ proc ::displaycoord::readSocketCoord {  } {
                    set latitude        "+00.0"
                    set altitude        "0000.0"
                    set nomObservatoire ""
+                   set nomModelePointage ""
+                   set etatModelePointage 0
                }
             } else {
                #--- le message n'a pas le format attendu
@@ -596,15 +620,19 @@ proc ::displaycoord::readSocketCoord {  } {
          }
       }
 
-      #--- je mets en forme l'etat de la connexion
+      #--- j'affiche l'etat de la connexion
       switch $private(etat) {
          "NOT_CONNECTED" {
-            set etat $::caption(displaycoord,nonConnecte)
+             $private(base).f.lab_etat configure  -text $::caption(displaycoord,nonConnecte) \
+                -bg $private(color,back) -fg $private(color,text)
          }
          "CONNECTED" {
-            set etat "$::caption(displaycoord,connecte)"
+            $private(base).f.lab_etat configure  -text $::caption(displaycoord,connecte) \
+               -bg $private(color,text) -fg $private(color,back)
          }
       }
+
+
 
       #--- je mets en forme l'heure tu et ts
       scan $tu "%d-%d-%dT%d:%d:%ds" tuy tumo tud tuh tum tus
@@ -655,8 +683,6 @@ proc ::displaycoord::readSocketCoord {  } {
          set decCalage "A"
       }
 
-      #--- Affichage de l'etat du telescope
-      $private(base).f.lab_etat configure  -text $etat
 
       #--- Affichage temps (TU, TSL) et coordonnees (ALPHA, DELTA, ANGLE HORAIRE, Azimut, hauteur du telescope)
       $private(base).f.lab_tu configure    -text "$::caption(displaycoord,tu) $tuHms"
@@ -671,6 +697,16 @@ proc ::displaycoord::readSocketCoord {  } {
       $private(base).f.coord.alpha_calage configure -text $::caption(displaycoord,calage,$raCalage)
       $private(base).f.coord.delta_value configure -text $delta
       $private(base).f.coord.delta_calage configure -text $::caption(displaycoord,calage,$decCalage)
+
+      #--- affichage du modele
+      set private(modelName) $nomModelePointage
+      if { $etatModelePointage == 1 } {
+         set private(modelEnabled)  $::caption(displaycoord,enabled)
+         $private(base).f.model.enabled configure -bg $private(color,text) -fg $private(color,back)
+      } else {
+         set private(modelEnabled)  $::caption(displaycoord,disabled)
+         $private(base).f.model.enabled configure -bg $private(color,back) -fg $private(color,text)
+      }
 
    }]
    if { $catchError != 0 } {
