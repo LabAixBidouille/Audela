@@ -2,7 +2,7 @@
 # @file     sophietest.tcl
 # @brief    Fichier du namespace ::sophie::test
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietest.tcl,v 1.25 2010-02-14 16:25:40 michelpujol Exp $
+# @version  $Id: sophietest.tcl,v 1.26 2010-02-23 20:22:57 michelpujol Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -10,6 +10,7 @@
 #
 #------------------------------------------------------------
 namespace eval ::sophie::test {
+   variable private
    set private(telescopeControl,commandSocket)   ""
    set private(telescopeControl,dataSocket)      ""
    set private(controlThreadId)                  ""
