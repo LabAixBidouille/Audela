@@ -2,7 +2,7 @@
 # Fichier : updateaudela.tcl
 # Description : Outil de fabrication des fichiers Kit et de deploiement des plugins
 # Auteur : Michel Pujol
-# Mise a jour $Id: updateaudela.tcl,v 1.25 2010-01-31 09:26:36 michelpujol Exp $
+# Mise a jour $Id: updateaudela.tcl,v 1.26 2010-02-23 21:10:28 michelpujol Exp $
 #
 
 namespace eval ::updateaudela {
@@ -173,7 +173,7 @@ proc ::updateaudela::deletePlugin { pluginName pluginType } {
    #--- je supprime le plugin des menus si pluginInfo(type) == "tool"
    if { [::audace::getPluginInfo $pkgIndexFileName pluginInfo ] == 0 } {
       if { $pluginInfo(type) == "tool" } {
-         ::confChoixOutil::setDisplayState $pluginInfo(namespace) 0
+         ::confChoixOutil::setDisplayState [string trim $pluginInfo(namespace) "::"] 0
       }
    }
 
@@ -393,7 +393,7 @@ proc ::updateaudela::installKit { kitFileName } {
 
                #--- j'ajoute le plugin dans les menus si pluginInfo(type)=tool
                if { $pluginInfo(type)== "tool" } {
-                   ::confChoixOutil::setDisplayState $pluginInfo(namespace) 1
+                   ::confChoixOutil::setDisplayState [string trim $pluginInfo(namespace) "::"]  1
                }
 
                #--- j'affiche un message OK
