@@ -1,6 +1,6 @@
 #
 # Fichier : displaycoord.cap
-# Mise à jour $Id: displaycoord.cap,v 1.6 2010-02-23 20:20:29 michelpujol Exp $
+# Mise à jour $Id: displaycoord.cap,v 1.7 2010-02-24 18:08:10 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -73,9 +73,9 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(displaycoord,title)          "# Coordonnées du télescope"
+   set caption(displaycoord,title)          "Coordinate del telescopio"
    set caption(displaycoord,observatoire)   "Osservatorio:"
-   set caption(displaycoord,nonConnecte)    "# Non connecté\nau serveur de coordonnées"
+   set caption(displaycoord,nonConnecte)    "Non connesso\nal server delle coordinate"
    set caption(displaycoord,connecte)       "Connesso"
    set caption(displaycoord,tu)             "TU:"
    set caption(displaycoord,tsl)            "TS:"
@@ -135,9 +135,9 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(displaycoord,title)          "# Coordonnées du télescope"
+   set caption(displaycoord,title)          "Teleskop Koordinaten"
    set caption(displaycoord,observatoire)   "Sternwarte:"
-   set caption(displaycoord,nonConnecte)    "# Non connecté\nau serveur de coordonnées"
+   set caption(displaycoord,nonConnecte)    "Nicht mit den\nKoordinaten-Server verbunden"
    set caption(displaycoord,connecte)       "Angeschlossen"
    set caption(displaycoord,tu)             "WT:"
    set caption(displaycoord,tsl)            "SZ:"
