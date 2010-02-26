@@ -260,7 +260,30 @@ kernel_type=graddown : filtre gradient &eacute;clair&eacute; par le bas
 <p>theta : angle de l'ellipse repr&eacute;sentant au mieux l'objet</p>
 <p>flag : flag sextractor</p>
 <h4> <a name="UNSMEARING" id="UNSMEARING"></a>1.3.17. Fonction UNSMEARING</h4>
-<p>Effectue une correction de tra&icirc;n&eacute;e (deconvflat) dans le cas d'une image effectu&eacute;e avec une cam&eacute;ra sans obturateur. Pour ce faire, indiquer la valeur du rapport de lecture (en g&eacute;n&eacute;ral proche de 0.0005) dans le param&egrave;tre [unsmearing]. Cette correction doit &ecirc;tre effectu&eacute;e apr&egrave;s correction du bias et du dark.</p>
+<p>Effectue une correction de tra&icirc;n&eacute;e (deconvflat) dans le cas d'une 
+  image effectu&eacute;e avec une cam&eacute;ra sans obturateur. Pour ce faire, 
+  indiquer la valeur du rapport de lecture (en g&eacute;n&eacute;ral proche de 
+  0.0005) dans le param&egrave;tre [unsmearing]. Le coefficient UNSMEARING=[unsmearing] 
+  correspond au rapport du temps de lecture d'une ligne par rapport a l'image 
+  enti&egrave;re. </p>
+<p>Cette correction doit &ecirc;tre effectu&eacute;e apr&egrave;s correction du 
+  bias et du dark.</p>
+<p>Remarque : Le smearing peut suppirm&eacute; aussi avec les commandes <a href="#OPT">OPT</a> 
+  et <a href="#SUBDARK">SUBDARK</a> .</p>
+<p>Exemple : Supprimer le smearing de 3 images ugc192-1.fit , ugc192-2.fit , ugc192-3.fit 
+  acquises avec une Audine Kaf400 avec 512 lignes en binning 2x2 . Le coefficient 
+  vaut environ 1 / (binningx * binningy * nb lignes) = 0.0005 . On suppose que 
+  les images sont dans le r&eacute;pertoire par d&eacute;faut d&eacute;fini dans 
+  la variable ::audace(rep_images) . </p>
+<pre>set in &quot;ugc192-&quot;
+set first 1
+set ni 3
+set ext &quot;.fit&quot;
+set out &quot;ugc192unsmear-&quot;
+set coefficientUnsmear 0.0005</pre>
+<pre>ttscript2 &quot;IMA/SERIES \&quot;$::audace(rep_images)\&quot; \&quot;$in\&quot; $first $ni \&quot;$ext\&quot; \&quot;$::audace(rep_images)\&quot; \&quot;$out\&quot; 1 \&quot;$ext\&quot; UNSMEARING UNSMEARING=$coefficientUnsmear&quot;</pre>
+<p>La commande cree les 3 images traitees : ugc192unsmear-1.fits , ugc192unsmear-2.fits 
+  , ugc192unsmear-3.fits </p>
 <h4> <a name="INVERT" id="INVERT"></a>1.3.18. Fonction INVERT</h4>
 <p>Echange les pixels de l'image en fonction de l'option pr&eacute;cis&eacute;e :</p>
 <p>MIRROR : l'image est invers&eacute;e gauche droite. </p>
@@ -276,7 +299,7 @@ kernel_type=graddown : filtre gradient &eacute;clair&eacute; par le bas
 <h4> <a name="SUBDARK" id="SUBDARK"></a>1.3.20. Fonction SUBDARK</h4>
 <p>Soustraction d'un dark de temps de pose diff&eacute;rent des images brutes. Le nom du dark est [dark] et celui du bias est [bias]. Si [exptime] est le temps d'int&eacute;gration des images et [dexptime] le temps d'exposition du dark, le dark est corrig&eacute; du rapport de ces valeurs. Si [exptime] et [dexptime] sont des cha&icirc;nes de caract&egrave;res, alors la valeur des temps d'int&eacute;gration sera recherch&eacute;e comme la valeur de ces mots cl&eacute;.</p>
 <p>Par d&eacute;faut, [exptime]="EXPTIME" et [dexptime]="EXPTIME". </p>
-<p>A la suite des corrections pr&eacute;c&eacute;dentes, il est possible d'effectuer 
+<p>Si l'argument UNSMEARING=[unsmearing] est pr&eacute;sent, il est possible d'effectuer 
   une correction de tra&icirc;n&eacute;e (deconvflat) dans le cas d'une image 
   effectu&eacute;e avec une cam&eacute;ra sans obturateur. Pour ce faire, indiquer 
   la valeur du rapport de lecture (en g&eacute;n&eacute;ral proche de 0.0005) 
