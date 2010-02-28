@@ -196,18 +196,21 @@ cdebug = -O2
 !endif
 
 !if $(MSVCRT)
-crt = -MD$(DBGX)
+#-- ce devrait etre -MD mais -MD ne focntionne pas avec VC9
+crt = -MT$(DBGX)
 !else
 crt = -MT$(DBGX)
 !endif
 
-cflags = -nologo -c -W2 -YX -GB $(cdebug) $(crt) \
+## cflags = -nologo -c -W2 -YX -GB $(cdebug) $(crt)
+
+cflags = -nologo -c -W2 $(cdebug) $(crt) \
 	-DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -DBUILD_thread \
 	-Fp$(TMP_DIR)\ -Fo$(TMP_DIR)\ $(TCL_INCLUDES)
 
-!if $(PENT_0F_ERRATA)
-cflags = $(cflags) -QI0f
-!endif
+###!if $(PENT_0F_ERRATA)
+###cflags = $(cflags) -QI0f
+###!endif
 
 !if $(ITAN_B_ERRATA)
 cflags = $(cflags) -QIA64_Bx
