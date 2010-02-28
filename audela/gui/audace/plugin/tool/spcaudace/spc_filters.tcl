@@ -1,7 +1,7 @@
 
 
 
-# Mise a jour $Id: spc_filters.tcl,v 1.4 2009-12-19 09:53:39 bmauclaire Exp $
+# Mise a jour $Id: spc_filters.tcl,v 1.5 2010-02-28 14:40:07 bmauclaire Exp $
 
 
 
@@ -404,6 +404,166 @@ proc spc_smooth3 { args } {
 }
 #***************************************************************************#
 
+####################################################################
+# Procedure de filtrage passe bas (fonction rectangulaire ou "Blackman")
+#
+# Auteur : Patrick LAILLY
+# Date creation : 18-3-07
+# Date modification : 21-11-09/18-01-10 (test calibration lineaire)
+# Arguments : fichier fits, ?demi-largeur du motif à gommer?, type de filtre
+# Cette procedure cree une version filtree du profil donne en argument.
+# Le profil de sortie a meme longueur que le profil d'entree.
+# Algo : application (par passage dans l'espace de Fourier) d'un filtre
+# passe-bas de réponse impulsionnelle finie. Deux types de filtres sont
+# proposés : rectangle ou Blackman. Les données filtrées sont calculées
+# sauf aux bords (dont l'étendue est égale à la demi-largeur du filtre).
+# Sur ces bords on reproduit les données d'entrée.
+# Bien entendu cette procedure n'est applicable que si la calibration est lineaire
+####################################################################
+
+proc spc_passebas { args } {
+   global conf
+   global audace
+
+   if { [llength $args] <= 2 } {
+      if { [llength $args] == 2 } {
+	 set fichier_input [ lindex $args 0 ] 
+	 set demilargeur [ lindex $args 1 ]
+      } elseif { [llength $args] == 1 } {
+	 set fichier_input [ lindex $args 0 ]
+	 set demilargeur 25
+      } else {
+	 ::console::affiche_erreur "Usage: spc_passebas profil_de_raies.fit ?demi-largeur motif à gommer(25)?\n\n"
+	 return 0
+      }
+   set fichier [ file rootname $fichier_input ] 
+      if { [ spc_testlincalib $fichier ] == -1 } {
+	 ::console::affiche_erreur " spc_passebasnew : le profil $fichier_input n'est pas calibre lineairement => calibration lineaire \n\n"
+	 set fichier [ spc_linearcal $fichier ]
+      }
+		
+
+      #--- Initialisation des listes de valeurs :
+      set datas [ spc_fits2data $fichier ]
+      set abscisses_ini [ lindex $datas 0 ]
+      set ordonnees_ini [ lindex $datas 1 ]
+
+      #--- Délimination à l'intervalle des valeurs pertientes (sans 0 au début et en fin) :
+      set limits [ spc_findnnul $ordonnees_ini ]
+      set i_inf [ lindex $limits 0 ]
+      set i_sup [ lindex $limits 1 ]
+      set len_ini [ llength $ordonnees_ini ]
+      set abscisses_cut [ list  ] 
+      set ordonnees_cut [ list  ] 
+      for { set i $i_inf } { $i<$i_sup } { incr i } {
+	 lappend abscisses_cut [ lindex $abscisses_ini $i ]
+	 lappend ordonnees_cut [ lindex $ordonnees_ini $i ]
+      }
+      set len_cut [ llength $abscisses_cut ]
+      set abscisses $abscisses_cut
+      set ordonnees $ordonnees_cut
+      set nordonnees $ordonnees
+      set nabscisses $abscisses
+
+
+      #---test sur la parité du nombre d'écchantillons
+      set len [ llength $abscisses ]
+      set nlen $len
+      set dx [ expr [ lindex $abscisses [ expr $nlen-1 ] ]-[ lindex $abscisses [ expr $nlen-2 ] ] ]
+      #::console::affiche_resultat "dx=$dx\n"
+
+      if { [ expr $len%2 ]==0 } {
+	 lappend nordonnees 0.
+	    lappend nabscisses [ expr [ lindex $abscisses [ expr $nlen-1 ] ] + $dx ]
+	 set nlen [ expr $nlen +1 ]
+      }
+
+      #--- initialisation du filtre
+      set nlarg [ expr 2*$demilargeur+1 ]
+      #::console::affiche_resultat "demi-largeur du filtre=$demilargeur\n"
+      set amplit [ expr 1./$nlarg ]
+      set filtr [ list ]
+      set temps ""
+      set lignezeros ""
+      for {set i 0} {$i<$nlen} {incr i} {
+	 lappend filtr 0.
+	 lappend lignezeros 0.
+	    lappend temps [ expr $i*1. ]
+      }
+      #::console::affiche_resultat "nlen= $nlen\n"
+      #::console::affiche_resultat "longueur filtre= [llength $filtr ]\n"
+      for {set i 0} {$i<=$demilargeur} {incr i} {
+	 set filtr [ lreplace $filtr $i $i $amplit ]
+      }
+      #::console::affiche_resultat "longueur filtre= [llength $filtr ]\n"
+      set redemar [ expr $nlen-$demilargeur ]
+      #::console::affiche_resultat "redemar=$redemar\n"
+      for {set i $redemar} {$i<$nlen} {incr i} {
+	 set filtr [ lreplace $filtr $i $i $amplit ]
+      }
+      set filtrfft [ gsl_fft $filtr $temps]
+      set refiltrfft [ lindex $filtrfft 0 ]
+      set imfiltrfft [ lindex $filtrfft 1 ]
+      #if {$imfiltrfft != $lignezeros} {
+      #::console::affiche_resultat "erreur part imag filtr=$imfiltrfft\n"
+      #}
+      #::console::affiche_resultat "longueur partie imag fft= [ llength $imfiltrfft ]\n"
+      set amplitfft [ gsl_fft $nordonnees $temps]
+      set reamplitfft [ lindex $amplitfft 0 ]
+      set imamplitfft [ lindex $amplitfft 1 ]
+      set reprod ""
+      set improd ""
+      for {set i 0} {$i<$nlen} {incr i} {
+	 set prod1 [ expr [ lindex $refiltrfft $i ]*[ lindex $reamplitfft $i ] ]
+	    set prod2 [ expr [ lindex $refiltrfft $i ]*[ lindex $imamplitfft $i ] ]
+	 lappend reprod $prod1
+	 lappend improd $prod2
+      }
+      
+      set result [ gsl_ifft $reprod $improd $temps ]
+      set reconvol [ lindex $result 0 ]
+      set imconvol [ lindex $result 1 ]
+      #if {$imconvol != $lignezeros} {
+      #::console::affiche_resultat "erreur part imag filtr=$imfiltrfft\n"
+      #}
+      #::console::affiche_resultat "longueur resultat convolution= [ llength $reconvol ]\n"
+      #---elimination des effets de bord (remplacement par les valeurs d'origine)
+
+      for {set i 0} {$i<$demilargeur} {incr i} {
+	 set reconvol [ lreplace $reconvol $i $i [ lindex $ordonnees $i ] ]
+      }
+      for {set i [expr $len-$demilargeur ]} {$i<$len} {incr i} {
+	 set reconvol [ lreplace $reconvol $i $i [ lindex $ordonnees $i ] ]
+      }
+      
+      set nordonnees [ lrange $reconvol 0 [ expr $len-1 ] ]
+      
+      if { 1==0 } {
+	 #--- Affichage du graphe
+	 #--- Meth1
+	 ::plotxy::clf
+	 ::plotxy::plot $abscisses $nordonnees r 1
+	 ::plotxy::hold on
+	 ::plotxy::plot $abscisses $ordonnees ob 0
+	 ::plotxy::plotbackground #FFFFFF
+	 ##::plotxy::xlabel "x"
+	 ##::plotxy::ylabel "y"
+	 ::plotxy::title "bleu : orginal ; rouge : passe bas largeur $demilargeur"
+      }
+
+
+      #--- Rajout des valeurs nulles en début et en fin pour retrouver la dimension initiale du fichier de départ :
+      set nordonnees1 [ lrange $ordonnees_ini 0 [ expr $i_inf -1 ] ]
+      set nordonnees3 [ lrange $ordonnees_ini $i_sup end ]
+      set newordonnees [ concat $nordonnees1 $nordonnees $nordonnees3 ]
+      set crval1 [ lindex $abscisses_ini 0 ]
+      set file_out [ spc_fileupdate $fichier $crval1 $dx $newordonnees pbas non ]
+      return $file_out
+   } else {
+      ::console::affiche_erreur "Usage: spc_passebas profil_de_raies.fit ? demi-largeur motif à gommer(25)?\n\n"
+   }
+}
+#****************************************************************#
 
 
 
@@ -477,7 +637,7 @@ proc spc_passebas1 { args } {
 # Sur ces bords on reproduit les données d'entrée.
 ####################################################################
 
-proc spc_passebas { args } {
+proc spc_passebasold { args } {
     global conf
     global audace
 
