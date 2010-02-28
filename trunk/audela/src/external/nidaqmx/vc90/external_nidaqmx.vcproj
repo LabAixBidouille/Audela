@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="external_nidaqmx"
 	ProjectGUID="{52EDD44E-0846-471C-9B7E-FD55B9CB8707}"
 	RootNamespace="external_nidaqmx"
@@ -18,6 +18,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="0"
 			BuildLogFile=""
 			>

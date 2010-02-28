@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="external_libvantage"
 	ProjectGUID="{4734BFE3-EBE4-4FAB-B810-ECBF54769212}"
 	RootNamespace="external_libvantage"
@@ -18,6 +18,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="0"
 			BuildLogFile=""
 			>
