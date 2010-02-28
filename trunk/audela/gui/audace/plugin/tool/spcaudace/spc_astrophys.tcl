@@ -1,7 +1,7 @@
 
 # Procédures d'exploitation astrophysique des spectres
 
-# Mise a jour $Id: spc_astrophys.tcl,v 1.8 2010-02-21 17:57:44 bmauclaire Exp $
+# Mise a jour $Id: spc_astrophys.tcl,v 1.9 2010-02-28 14:36:48 bmauclaire Exp $
 
 
 
@@ -324,7 +324,7 @@ proc spc_vradialecorr { args } {
        set vradcorrigee [ expr $vrad+$vhelio ]
 
        #--- Formatage du résultat :
-       ::console::affiche_resultat "(Vrad=$vrad km/s, Vhelio=$vhelio km/s)\n\# La vitesse radiale de l'objet est :\n\# Vrad=$vradcorrigee +- $delta_vrad km/s\n"
+       ::console::affiche_resultat "(Vdoppler=$vrad km/s, Vhelio=$vhelio km/s)\n\# La vitesse radiale de l'objet est :\n\# Vrad=$vradcorrigee +- $delta_vrad km/s\n"
        set results [ list $vradcorrigee $delta_vrad $vhelio $vrad ]
        return $results
    } else {
