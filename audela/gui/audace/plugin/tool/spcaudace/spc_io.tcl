@@ -10,7 +10,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_io.tcl,v 1.9 2010-02-21 17:59:00 bmauclaire Exp $
+# Mise a jour $Id: spc_io.tcl,v 1.10 2010-02-28 14:40:49 bmauclaire Exp $
 
 
 # Remarque (par Benoît) : il faut mettre remplacer toutes les variables textes par des variables caption(mauclaire,...)
@@ -25,6 +25,92 @@
 # spc_spc2png : converti un profil de raies format fits en une image format png avec gnuplot
 #
 #######################################################
+
+
+####################################################################
+# Procedure de mise a jour des intensites d'un profil fits
+# (cas ou les nouvelles intensites sont echantillonees lineairement) 
+#
+# Auteur : Patrick LAILLY
+# Date creation : 25-11-09
+# Date modification : 25-11-09
+# Arguments : nom fichier fits, CRVAL1, CDELT1, liste nouvelles intensites, (suffixe, option effacement ancien fichier (oui/non))
+# exemple : spc_fileupdate nom_fich 6237.54321 0.312765 list_intensites
+# exemple : spc_fileupdate nom_fich 6237.54321 0.312765 list_intensites suffixe oui
+####################################################################
+proc spc_fileupdate { args } {
+   global audace spcaudace conf
+   set nbargs [ llength $args ]
+   if { $nbargs ==6 || $nbargs ==4 } { 
+      set nomfich [ lindex $args 0 ]
+      set crval1 [ lindex $args 1 ]
+      set cdelt1 [ lindex $args 2 ]
+      set listeintens [ lindex $args 3 ]
+      set suffixe new
+      if { $nbargs ==6 } {
+	 set suffixe [ lindex $args 4 ]
+	 set delopt [ lindex $args 5 ]
+      }
+      buf$audace(bufNo) load "$audace(rep_images)/$nomfich"	
+      set listemotsclef [ buf$audace(bufNo) getkwds ]
+      if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+	 buf$audace(bufNo) delkwd "SPC_A"
+      }
+      if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
+	 buf$audace(bufNo) delkwd "SPC_B"
+      }
+      if { [ lsearch $listemotsclef "SPC_C" ] !=-1 } {
+	 buf$audace(bufNo) delkwd "SPC_C"
+      }
+      if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
+	 buf$audace(bufNo) delkwd "SPC_D"
+      } 
+      if { [ lsearch $listemotsclef "SPC_DESC" ] !=-1 } {
+	 buf$audace(bufNo) delkwd "SPC_DESC"
+      }
+      set lintens [ llength $listeintens ]
+      set naxis1 [ lindex [ buf$audace(bufNo) getkwd NAXIS1 ] 1 ]
+      #set nbunit "float"
+      #set nbunit1 "double"
+      #buf$audace(bufNo) setpixels CLASS_GRAY $naxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
+      set naxis [ lindex [ buf$audace(bufNo) getkwd NAXIS ] 1 ]
+      if { $naxis != 1 } {
+	 ::console::affiche_erreur "spc_fileupdate : le fichier fits $nomfich n'est pas un profil\n\n"
+	 break
+      }
+      if { $lintens != $naxis1 } {
+      	::console::affiche_erreur "spc_fileupdate : mise a jour du fichier fits $nomfich impossible : les longueurs des intensites du fichier $naxis1 et de la liste $lintens sont differentes\n\n"
+      	break
+      }	
+      buf$audace(bufNo) setkwd [list "NAXIS1" $naxis1 int "" ""]
+      #buf$audace(bufNo) setkwd [list "NAXIS2" 1 int "" ""]
+      buf$audace(bufNo) setkwd [list "CRVAL1" $crval1 double "" "Angstrom"]
+      #-- Dispersion
+      buf$audace(bufNo) setkwd [list "CDELT1" $cdelt1 double "" "Angstrom/pixel"]
+      #--- Rempli la matrice 1D du fichier fits avec les valeurs du profil de raie ---
+      for {set k 0} { $k < $naxis1 } {incr k} {
+	 		buf$audace(bufNo) setpix [list [expr $k+1] 1] [lindex $listeintens $k ]
+      }
+      #--- Sauvegarde du fichier fits ainsi cree
+      buf$audace(bufNo) bitpix float
+      set suff "_$suffixe"
+      set nom_fich_output "$nomfich$suff"
+      buf$audace(bufNo) save "$audace(rep_images)/$nom_fich_output"
+      ::console::affiche_resultat " sauvegarde du fichier $nom_fich_output \n"
+      buf$audace(bufNo) bitpix short 
+      set yes oui
+      if { $delopt == $yes } {
+	 file delete -force "$audace(rep_images)/$nomfich$conf(extension,defaut)"
+      	::console::affiche_resultat " effacement du fichier $nomfich \n"
+      }
+      return $nom_fich_output   
+   } else {
+      ::console::affiche_erreur "Usage: spc_fileupdate nom_fich_fits ? liste_param_header ? liste_intensites ? suffixe ? option effacement ?\n\n"
+      return 0
+   }
+}
+#*************************************************************************
+
 
 
 #######################################################
