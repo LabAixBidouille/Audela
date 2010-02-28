@@ -3,7 +3,382 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.17 2010-02-13 17:08:19 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.18 2010-02-28 14:38:48 bmauclaire Exp $
+
+
+
+###################################################################
+# Procedure de test de calibration lineaire d'un profil fits 
+#
+# Auteur : Patrick LAILLY
+# Date creation : 25-11-09
+# Date modification : 25-11-09
+# Argument : nom fichier fits
+# exemple : spc_testlincalib nom_fich
+####################################################################
+
+proc spc_testlincalib { args } {
+   global audace conf
+   if { [ llength $args ] == 1 } {
+      set nom_fich [ lindex $args 0 ]
+      buf$audace(bufNo) load "$audace(rep_images)/$nom_fich"	
+      set listemotsclef [ buf$audace(bufNo) getkwds ]
+      if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } { 
+	 return -1
+      } else {
+	 return 1
+      }     
+   } else {
+      ::console::affiche_erreur "Usage: spc_testlincalib nom_fich_fits\n\n"
+   }
+}
+#********************************************************************
+
+
+####################################################################
+# Procedure de calcul d'une réponse instrumentale intrinseque c'est a dire en eliminant l'effet de la transmission
+# atmospherique
+#
+# Auteur : Patrick LAILLY
+# Date creation : 2009-10-10
+# Date modification : 2010-01-18
+# Arguments : fichier .fit du profil 1b mesure (calibré linéairement), type spectral (doit etre dans bibliotheque 
+# spectrale)  correspondant ? liste donnant les parametres requis pour le calcul de la transmission atmospherique ?
+# Cette liste comprend : altitude observatoire (en km), hauteur (en °) de l'astre, le temps 
+# qu'il fait a choiisr entre sec ou normal ou lourd ou orageux ou valeur numerique qui sera 
+# la valeur de AOD specifiee par l'utilisateur, en option : desert ?
+# Sortie : la procedure cree le fichier ri_intris avec le meme echantillonage que le profil mesure
+# Exemples d'utilisation : spc_calriintrins altair.fit a7v liste_atmosph
+# Exemple de liste_atmosph { 0.8 45.0 lourd }
+# Exemple de liste_atmosph { 3842. 45.0 normal desert }
+# Exemple de liste_atmosph { 0.8 45.0 0.15 }
+####################################################################
+
+proc spc_calriintrins { args } {
+   global audace spcaudace
+   #set spcaudace(imax_tolerence) 1.2
+   if { [ llength $args ] == 3 } {
+      set fich_profile [ lindex $args 0 ]
+      set type_spectral [ lindex $args 1 ]
+      set suff .fit
+      set fich_profile_ref "$spcaudace(rep_spcbib)/$type_spectral$suff"
+      set liste_atmosph [ lindex $args 2 ]
+      if { [ llength $liste_atmosph ] > 4 } {
+	 ::console::affiche_erreur "Usage : spc_calriintrins la liste $liste_atmosph decrivant les parametres pour la correction atmospherique est trop longue \n\n" 
+	 return 0
+      } else {
+	 set altitude [ lindex $liste_atmosph 0 ]
+	 set haut [ lindex $liste_atmosph 1 ]
+	 set weather [ lindex $liste_atmosph 2 ]
+	 if { [ llength $liste_atmosph ] ==4 } {
+	    set location [ lindex $liste_atmosph 3 ]
+	 }
+	 if { [ spc_testlincalib  $fich_profile ] == -1 } {
+	    ::console::affiche_resultat "le profil entre n'est pas calibre lineairement => on linearise la loi de calibration \n"
+	    set fich_profile [ spc_linearcal $fich_profile ]
+	 }
+	 #set profile [ spc_fits2data $fich_profile ]
+	 buf$audace(bufNo) load "$audace(rep_images)/$fich_profile"
+	 #--- Renseigne sur les parametres de l'image :
+	 set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+	 set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+	 set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+	 set caract_lambda [ list ]
+	 ::console::affiche_resultat "caractéristiques profil mesure cdelt1= $cdelt1 naxis1= $naxis1 crval1= $crval1 \n"
+	 lappend caract_lambda $naxis1
+	 lappend caract_lambda $crval1
+	 lappend caract_lambda $cdelt1
+	 ::console::affiche_resultat "caractéristiques prfil mesure cdelt1= $cdelt1 naxis1= $naxis1 crval1= $crval1 \n"
+	 set ecart_lambda [ expr ($naxis1 -1) * $cdelt1 ]
+	 #--- test si plage longueurs d'ondes assez large
+	 if { $ecart_lambda < 500. } {
+	    ::console::affiche_resultat "spc_calriintrins : avertissement : la plage de longueurs d'ondes explorees ($ecart_lambda) est petite : le calcul peut etre non significatif mais sera quand meme effectue \n"
+	 }
+	 
+	 #--- calcul de la transmission atmospherique
+	 if { [ llength $liste_atmosph ] ==4 } {
+	    set transm_atmosph [ spc_atmosph $haut $altitude $caract_lambda $weather $location ]
+	 } else {
+	    set transm_atmosph [ spc_atmosph $haut $altitude $caract_lambda $weather ]
+	 }
+	 #--- division profil mesure par transmission atmospherique
+	 set fich_profile_corr_transm [ spc_divri $fich_profile $transm_atmosph ]
+	 #--- calcul de la reponse instrumentale intrinseque
+	 file copy -force $fich_profile_ref "$audace(rep_images)/$type_spectral$suff"
+	 set output_rinstrum [ spc_rinstrum $fich_profile_corr_transm "$type_spectral$suff" ]
+	 #set ad_hoc br
+	 #set ri_intrins "ri_intrins$suff"
+	 #::console::affiche_resultat " sortie rinstrum : $output_rinstrum   $output_rinstrum$ad_hoc$suff \n"
+	 #file copy -force "$audace(rep_images)/$output_rinstrum$ad_hoc$suff" "$audace(rep_images)/$ri_intrins"
+	 # faut il coder en dur le nom riinstr ou bien le faire passer en argument ???????????????????????????????????
+	 ::console::affiche_resultat " la reponse instrumentale intrinseque a ete calculee\n"
+	 # nettoyage des fichiers temporaires
+	 file delete -force "$audace(rep_images)/$output_rinstrum$suff"
+	 file delete -force "$audace(rep_images)/$fich_profile_corr_transm$suff"
+	 file delete -force "$audace(rep_images)/$transm_atmosph"
+	 file delete -force "$audace(rep_images)/$type_spectral$suff"
+      }
+      return $output_rinstrum
+   }  else  {
+      ::console::affiche_erreur "Usage : spc_calriintrins profil mesure ? type spectral ? caract_lambda ? liste atmosph \n\n" 
+   }
+}
+#********************************************************************
+
+
+ 
+####################################################################
+# Procedure de corrrection d'un profil par la réponse instrumentale intrinseque c'est a dire en prenant en compte 
+# l'effet de la transmission atmospherique
+#
+# Auteur : Patrick LAILLY
+# Date creation : 2009-10-10
+# Date modification : 2010-01-18
+# Arguments : fichier .fit du profil 1b mesure (calibré linéairement), fichier .fit donnant la ri intrinseque, liste
+# donnant les parametres requis pour le calcul de la transmission atmospherique ?
+# Cette liste comprend : altitude observatoire (en km), hauteur (en °) de l'astre, le temps 
+# qu'il fait a choiisr entre sec ou normal ou lourd ou orageux ou valeur numerique qui sera 
+# la valeur de AOD specifiee par l'utilisateur, en option : desert ?
+# Sortie : la procedure cree le fichier 1c associe au profil mesure
+# Exemples d'utilisation : spc_corrriintrins zeta_tau.fit reponse_instrumentale-br.fit liste_atmosph
+# Exemple de liste_atmosph { 0.8 45.0 lourd }
+# Exemple de liste_atmosph { 3.842 45.0 normal desert }
+# Exemple de liste_atmosph { 0.8 45.0 0.15 }
+####################################################################
+
+proc spc_corrriintrins { args } {
+   global audace spcaudace
+   #set spcaudace(imax_tolerence) 1.2
+   #--- lecture arguments
+   if { [ llength $args ] == 3 } {
+      set fich_profile [ lindex $args 0 ]
+      set ri_intrins [ lindex $args 1 ]
+      set liste_atmosph [ lindex $args 2 ]
+      #--- calcul de la transmission atmospherique
+      if { [ llength $liste_atmosph ] > 4 } {
+	 ::console::affiche_erreur "Usage : spc_calriintrins la liste $liste_atmosph decrivant les parametres pour la correction atmospherique est trop longue \n\n" 
+	 return 0
+      } else {
+	 set altitude [ lindex $liste_atmosph 0 ]
+	 set haut [ lindex $liste_atmosph 1 ]
+	 set weather [ lindex $liste_atmosph 2 ]
+	 if { [ llength $liste_atmosph ] ==4 } {
+	    set location [ lindex $liste_atmosph 3 ]
+	 }
+	 if { [ spc_testlincalib  $fich_profile ] == -1 } {
+	    ::console::affiche_resultat "le profil entre n'est pas calibre lineairement => on linearise la loi de calibration \n"
+	    set fich_profile [ spc_linearcal $fich_profile ]
+	 }
+	 #set profile [ spc_fits2data $fich_profile ]
+	 buf$audace(bufNo) load "$audace(rep_images)/$fich_profile"
+	 #--- Renseigne sur les parametres de l'image :
+	 set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+	 set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+	 set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+	 ::console::affiche_resultat "caractéristiques prfil mesure cdelt1= $cdelt1 naxis1= $naxis1 crval1= $crval1 \n"
+	 set caract_lambda [ list ]
+	 lappend caract_lambda $naxis1
+	 lappend caract_lambda $crval1
+	 lappend caract_lambda $cdelt1
+	 ::console::affiche_resultat "caractéristiques prfil mesure cdelt1= $cdelt1 naxis1= $naxis1 crval1= $crval1 \n"
+	 set ecart_lambda [ expr ($naxis1 -1) * $cdelt1 ]
+	 #--- test si plage longueurs d'ondes assez large
+	 if { $ecart_lambda < 500. } {
+	    ::console::affiche_resultat " spc_corrriintrins : avertissement : la plage de longueurs d'ondes explorees ($ecart_lambda) est petite : le calcul peut etre non significatif mais sera quand meme effectue \n"
+	 }
+	 
+	 #--- calcul de la transmission atmospherique
+	 if { [ llength $liste_atmosph ] ==4 } {
+	    set transm_atmosph [ spc_atmosph $haut $altitude $caract_lambda $weather $location ]
+	 } else {
+	    set transm_atmosph [ spc_atmosph $haut $altitude $caract_lambda $weather ]
+	 }
+	 #--- division profil mesure par transmission atmospherique
+	 set fich_profile_corr_transm [ spc_divri $fich_profile $transm_atmosph ]
+	 #--- division de ce resultat par la riintrins et sauvegarde du resultat (profil 1c)
+	 set nom_fich [ spc_divri $fich_profile_corr_transm $ri_intrins ]
+	 set nom_fich [ file rootname $nom_fich ]
+	 set suff1 -1c
+	 set suff .fit
+	 # la gestion des noms de fichiers sera a revoir !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	 set fich_profile [ file rootname $fich_profile ]
+	 file rename -force "$audace(rep_images)/$nom_fich$suff" "$audace(rep_images)/$fich_profile$suff1$suff"
+	 ::console::affiche_resultat " le profil corrige de la reponse instrumentale intrinseque a ete sauvegarde sous le nom $fich_profile$suff1$suff \n"
+	 #--- nettoyage des fichiers temporaires
+	 file delete -force "$audace(rep_images)/$fich_profile_corr_transm$suff"
+	 file delete -force "$audace(rep_images)/$transm_atmosph$suff"
+	 file delete -force "$audace(rep_images)/$nom_fich$suff"
+      }
+      set nom_fich "$fich_profile$suff1"
+      return $nom_fich 
+   }  else  {
+      ::console::affiche_erreur "Usage : spc_corrriintrins profil mesure ? ri intrinseque ? liste atmosph \n\n" 
+   }
+}
+#************************************************************************
+
+
+
+ 
+####################################################################
+# Procedure pour calculer la transmission atmospherique (attenuation) pour un astre de hauteur
+# zenithale donnee (spectro basse resolution)
+# Auteur : Patrick Lailly (ref. doc Ch. Buil))
+# Date creation : 2009-09-25
+# Date modification : 2009-09-25
+# Attention dans cette version l'argument est la hauteur de l'astre (avant c'etait la hauteur zenithale)
+# Arguments :  hauteur de l'astre (en °), altitude observatoire (en km), liste 
+# donnant les caracteristiques (naxis1, crval1, cdelt1) de la liste des lambdas, le temps 
+# qu'il fait a choiisr entre sec ou normal ou lourd ou orageux ou valeur numerique qui sera 
+# la valeur de AOD specifiee par l'utilisateur, en option : desert 
+# Sortie : fichier fits (transm_atmosph.fit) donnant liste des valeurs de la transmission
+# atmopherique pour les longueurs d'ondes considerees
+# Exemple : spc_atmosph 35 .9 caract_lambda lourd
+# Exemple : spc_atmosph 35 .9 caract_lambda .05
+# Exemple : spc_atmosph 35 .9 caract_lambda sec desert
+####################################################################
+
+proc spc_atmosph { args } {
+   global audace spcaudace
+   if { [ llength $args ] == 4 || [ llength $args ] == 5 } {
+      set haut [ lindex $args 0 ]
+      set haut_zen [ expr 90. - $haut ]
+      set alt_obs [ lindex $args 1 ]
+      set caract_lambda [ lindex $args 2 ]
+      set weather [ lindex $args 3 ]
+      set location 0
+      if { [ llength $args ] == 5 } {
+	 set location [ lindex $args 4 ]
+      }
+      set test  0
+      switch $weather {
+	 sec { 
+	    set AOD .07 ; set test 1 
+	    ::console::affiche_resultat "acquisition par temps sec specifie par l'utilisateur\n"
+	 }
+	 normal { 
+	    set AOD .14 ; set test 1 
+	    ::console::affiche_resultat "acquisition par temps normal specifie par l'utilisateur\n"
+	 }
+	 lourd { 
+	    set AOD .25 ; set test 1 
+	    ::console::affiche_resultat "acquisition par temps lourd specifie par l'utilisateur\n"
+	 }
+	 orageux { 
+	    set AOD .45 ; set test 1
+	    ::console::affiche_resultat "acquisition par temps orageux specifie par l'utilisateur\n" 
+	 }
+      }
+      if { $location == {desert} } {
+	 set AOD [ expr $AOD * .5 ]
+	 ::console::affiche_resultat "acquisition en zone desertique specifiee explicitement par l'utilisateur\n"
+	 
+      }
+      if { $test == 0 } { 
+	 set AOD [ lindex $args 3 ] 
+	 ::console::affiche_resultat "AOD specifie explicitement par l'utilisateur a la valeur de $AOD\n"
+      }
+      set z [ mc_angle2rad $haut_zen ]
+      #--- calcul de la masse d'air
+      set X [ expr cos ( $z ) + .025 * exp ( -11. * cos ( $z ) ) ]
+      set X [ expr 1. / $X ]
+      if { [ llength $caract_lambda ] != 3 } {
+	 ::console::affiche_erreur " spc_atmosph la liste donnant les caracteristiques des longueurs d'ondes considerees n'a pas la bonne longueur \n\n" 
+	 return 0
+      }
+      set naxis1 [ lindex $caract_lambda 0 ]
+      set crval1 [ lindex $caract_lambda 1 ]
+      set cdelt1 [ lindex $caract_lambda 2 ]
+      ::console::affiche_resultat " longueurs d'ondes considerees definies par naxis1 = $naxis1 crval1 = $crval1 cdelt1 = $cdelt1 \n "
+      set list_lambda [ list ]
+      for { set i 0 } { $i < $naxis1 } { incr i } {
+	 set lambda [ expr $crval1 + $cdelt1 * $i ]
+	 lappend list_lambda $lambda
+      }
+      
+      #--- calcul diffusion de Rayleigh + absorption ozone
+      set A1R .0094977
+      set A2R [ expr exp (-$alt_obs/7.996) ]
+      set listR [ list ]
+      for { set i 0 } { $i < $naxis1 } { incr i } {
+	 set lambda [ expr [ lindex $list_lambda $i ] *.0001 ]
+	 #--Rayleigh
+	 set invlambda2 [ expr 1. / ( $lambda * $lambda ) ] 
+	 set A1 .23465
+	 set A1 [ expr $A1 + 107.6 / ( 146. - $invlambda2 ) ]	
+	 set A1 [ expr $A1 + .93161 / ( 41. - $invlambda2 ) ]	
+	 set A1 [ expr $A1 * $A1 ]
+	 set A2 [ expr $A1R * $A2R * $A1 * $invlambda2 * $invlambda2 ]
+	 #-- ozone
+	 set Tz [ expr exp (-.0168 * exp ( -15. * abs ( $lambda - .59 ) ) ) ]
+	 #-- logarithme decimal
+	 set Ao [ expr -2.5 * log10 ( $Tz ) ]
+	 #--effet de aerosols
+	 set Aa [ expr $lambda / .55 ]
+	 set Aa [ expr pow ($Aa, -1.3) ]
+	 set Aa [ expr 2.5 * log10 ( exp ( $AOD * $Aa ) ) ]
+	 # +2.5 d'apres Buil
+	 lappend listR [ expr $A2 + $Ao +$Aa]
+      }
+
+      ::console::affiche_resultat " AOD utilise = $AOD \n"
+      
+      set transm [ list ]
+      for { set i 0 } { $i < $naxis1 } { incr i } {
+	 set XX [ expr -.4 *  [ lindex $listR $i ] * $X ]
+	 set XX [ expr pow (10, $XX) ]
+	 lappend transm $XX
+      }
+      
+      #--- visualisation du resultat
+      ::plotxy::clf
+      ::plotxy::figure 1
+      ::plotxy::plot $list_lambda $transm r 1
+      #::plotxy::plot $abscissesorig $riliss1 g 1
+      ::plotxy::hold on
+      ::plotxy::plotbackground #FFFFFF
+      ::plotxy::xlabel "lambda"
+      ::plotxy::ylabel "transm. atmosph."
+      ::plotxy::hold on
+      ::plotxy::title "AOD= $AOD"
+      #-- creation fichier fits transm_atmosph
+      #-- creation du nouveau fichier 
+      set nbunit "float"
+      set nbunit1 "double"
+      buf$audace(bufNo) setpixels CLASS_GRAY $naxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
+      buf$audace(bufNo) setkwd [ list "NAXIS" 1 int "" "" ]
+      buf$audace(bufNo) setkwd [list "NAXIS1" $naxis1 int "" ""]
+      buf$audace(bufNo) setkwd [list "NAXIS2" 1 int "" ""]
+      #-- Valeur minimale de l'abscisse (xdepart) : =0 si profil non étalonné
+      #set xdepart [ expr 1.0*[lindex $lambda 0]]
+      buf$audace(bufNo) setkwd [list "CRVAL1" $crval1 $nbunit1 "" "Angstrom"]
+      #-- Dispersion
+      buf$audace(bufNo) setkwd [list "CDELT1" $cdelt1 $nbunit1 "" "Angstrom/pixel"]
+      #-- Rempli la matrice 1D du fichier fits avec les valeurs du profil de raie ---
+      # Une liste commence à 0 ; Un vecteur fits commence à 1
+      #set intensite [ list ]
+      for {set k 0} { $k < $naxis1 } {incr k} {
+	 #append intensite [lindex $profileref $k]
+	 #::console::affiche_resultat "$intensite\n"
+	 #if { [regexp {([0-9]+\.*[0-9]*)} $intensite match mintensite] } {}
+	 buf$audace(bufNo) setpix [list [expr $k+1] 1] [lindex $transm $k ]
+         #set intensite 0
+      }
+      #--- Sauvegarde du fichier fits ainsi créé
+      buf$audace(bufNo) bitpix float
+      set nom_fich_output "transm_atmosph"
+      buf$audace(bufNo) save "$audace(rep_images)/$nom_fich_output"
+      ::console::affiche_resultat " nom fichier sortie $nom_fich_output \n"
+      buf$audace(bufNo) bitpix short
+      return $nom_fich_output  		 
+     
+   } else { 
+      ::console::affiche_erreur "Usage : spc_atmosph hauteur_astre(degre) altitude_observatoire_(km) {naxis1 crval1 cdelt1} ?weather(sec/normal/orageux/lourd)/AOD? ?desert?\n\n" 
+   } 
+}
+#*********************************************************************
+
+
 
 
 ####################################################################
@@ -3356,6 +3731,7 @@ proc spc_rinstrum { args } {
    global audace spcaudace
    global conf
    set precision 0.0001
+   #-- basse résolution si bande spectrale couverte >800A
 
    set nbargs [ llength $args ]
    if { $nbargs==2 } {
@@ -3493,7 +3869,7 @@ proc spc_rinstrum { args } {
           }
        }
    } else {
-       ::console::affiche_erreur "Usage: spc_rinstrum profil_de_raies_mesuré profil_de_raies_de_référence ?option basse résolution >800A (o/n)?\n\n"
+       ::console::affiche_erreur "Usage: spc_rinstrum profil_de_raies_mesuré profil_de_raies_de_référence\n\n"
    }
 }
 #****************************************************************#
