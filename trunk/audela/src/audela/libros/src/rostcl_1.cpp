@@ -598,7 +598,7 @@ double ml_getGpsDate ()
 		if ( maj != evtmaj || min != evtmin){
 
 			// Convert Binary Time to structure
-			majtime = gmtime( (const long *)&maj );
+			majtime = gmtime( (const time_t *)&maj );
 
 			//pour la precision au millime de seconde et pas plus
 			min=(unsigned long int)(min*0.001);
