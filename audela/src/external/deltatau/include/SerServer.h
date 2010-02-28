@@ -4,7 +4,10 @@
 #include <windows.h>
 #include <windowsx.h>
 
-#include <iostream.h>
+// modif Michel
+// suppression de #include <iostream.h> qui faisait planter la compilation avec VC9 car iostream.h  n'existe plus.
+//#include <iostream.h>
+
 #include <string.h>
 #include <conio.h>
 
