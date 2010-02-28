@@ -20,14 +20,16 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: liblink.cpp,v 1.5 2009-10-30 10:18:53 jacquesmichelet Exp $
+// $Id: liblink.cpp,v 1.6 2010-02-28 14:30:28 michelpujol Exp $
 
 
 #include "sysexp.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
+#if _MSC_VER < 1500
 #define vsnprintf _vsnprintf
+#endif
 #endif
 #if defined(_MSC_VER)
 #include <sys/timeb.h>
