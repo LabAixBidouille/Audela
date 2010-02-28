@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="external_cfitsio"
 	ProjectGUID="{55983A0B-C057-416C-9AB2-C8B9D01D7D2C}"
 	RootNamespace="external_cfitsio"
@@ -75,7 +75,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile=".\Release/external_cfitsio.dll"
+				OutputFile=".\Release/cfitsio.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				GenerateManifest="false"
@@ -83,7 +83,7 @@
 				ProgramDatabaseFile=".\Release/external_cfitsio.pdb"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary=".\Release/external_cfitsio.lib"
+				ImportLibrary=".\Release/cfitsio.lib"
 				TargetMachine="1"
 			/>
 			<Tool
