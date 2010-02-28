@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="external_libftd2xx"
 	ProjectGUID="{9D9072EF-1CBD-4337-98C4-850FCDC9EA70}"
 	RootNamespace="external_libftd2xx"
@@ -18,6 +18,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="0"
 			BuildLogFile=""
 			>
