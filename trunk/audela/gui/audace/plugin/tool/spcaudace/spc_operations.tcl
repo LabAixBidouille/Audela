@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.22 2010-02-13 17:29:00 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.23 2010-02-28 14:42:36 bmauclaire Exp $
 
 
 
@@ -2162,10 +2162,10 @@ proc spc_echant { args } {
              set crpix1 1
           }
           #-- Recupere la totalite des mots clef :
-          set keywords ""
-          foreach keywordName [ buf$audace(bufNo) getkwds ] {
-             lappend keywords [ buf$audace(bufNo) getkwd $keywordName ]
-          }
+          #set keywords ""
+          #foreach keywordName [ buf$audace(bufNo) getkwds ] {
+          #   lappend keywords [ buf$audace(bufNo) getkwd $keywordName ]
+          #}
           #-- Lecture des intensites :
           for { set i 1 } { $i<=$naxis1_orig } { incr i } {
              lappend intensites_a_echant [ lindex [ buf$audace(bufNo) getpix [ list $i 1 ] ] 1 ]
@@ -2206,11 +2206,15 @@ proc spc_echant { args } {
 
 
        #--- Crée le fichier FITS :
+       buf$audace(bufNo) load "$audace(rep_images)/$fichier_modele"
        set newBufNo [ buf::create ]
        buf$newBufNo setpixels CLASS_GRAY $naxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
-       foreach keyword $keywords {
-          buf$newBufNo setkwd $keyword
-       }
+       buf$newBufNo copykwd $audace(bufNo)
+       buf$newBufNo setkwd [ list "NAXIS" 1 int "" "" ]
+
+       #foreach keyword $keywords {
+       #   buf$newBufNo setkwd $keyword
+       #}
        #-- Initalise les intensites :
        if { $flag_spccal } {
           #-- Profil calibré en longueur d'onde :
