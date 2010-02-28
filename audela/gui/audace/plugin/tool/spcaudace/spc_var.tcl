@@ -3,7 +3,7 @@
 #
 ####################################################################
 
-# Mise a jour $Id: spc_var.tcl,v 1.17 2010-02-14 17:56:49 bmauclaire Exp $
+# Mise a jour $Id: spc_var.tcl,v 1.18 2010-02-28 14:54:11 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -12,7 +12,7 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(version) "1.5.7 - 13/02/2010"
+set spcaudace(version) "1.5.8 - 24/02/2010"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
 
@@ -118,8 +118,8 @@ set spcaudace(degpoly_cont) 5
 set spcaudace(pourcent_bord) 0.15
 #-- Taux de croissance de l'intensité pour considérer que l'on passe du bord (proche de 0) au continuum :
 set spcaudace(croissbord) 0.2
-#-- Tolérence sur l'écart à l'intensité maximale (spc_divri) : 5%
-set spcaudace(imax_tolerence) 1.05
+#-- Tolérence sur l'écart à l'intensité maximale (spc_divri) : 50% (avant 5%)
+set spcaudace(imax_tolerence) 1.5
 #-- Largeur spectrale considérée comme basse résolution :
 set spcaudace(bande_br) 1000.0
 #-- Fraction des bords ignorés dans la détermination de l'angle de TILT :
