@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="external_fitstcl"
 	ProjectGUID="{2E31F74D-753C-471C-90BB-1C70C6CEED08}"
 	RootNamespace="external_fitstcl"
@@ -50,7 +50,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\include,..\..\include\win,..\..\cfitsio\cfitsio3090"
+				AdditionalIncludeDirectories="..\..\include;..\..\include\win;..\..\cfitsio\cfitsio3210"
 				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;_USRDLL;FITSTCL_EXPORTS;_CRT_SECURE_NO_WARNINGS;__WIN32__;_export=__cdecl"
 				StringPooling="true"
 				RuntimeLibrary="0"
@@ -148,7 +148,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include,..\..\include\win,..\..\cfitsio\cfitsio3090"
+				AdditionalIncludeDirectories="..\..\include,..\..\include\win,..\..\cfitsio\cfitsio3210"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_USRDLL;FITSTCL_EXPORTS;_CRT_SECURE_NO_WARNINGS;__WIN32__"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -381,6 +381,14 @@
 		<Filter
 			Name="Header Files"
 			>
+			<File
+				RelativePath="..\fitstcl\fitsTcl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\fitstcl\fitsTclInt.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
