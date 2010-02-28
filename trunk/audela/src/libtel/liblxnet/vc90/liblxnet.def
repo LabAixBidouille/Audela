@@ -1,0 +1,5 @@
+;
+; $Id: liblxnet.def,v 1.1 2010-02-28 14:19:04 michelpujol Exp $
+ 
+LIBRARY liblxnet
+EXPORTS Lxnet_Init @1
