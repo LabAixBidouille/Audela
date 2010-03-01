@@ -22,10 +22,10 @@ clean cleanall:
 local-clean:
 	$(RM) *~
 
-dist-clean: local-clean
+distclean: local-clean
 	@$(foreach DIR, $(MYTARGETS), make -C $(DIR)/linux distclean -o makedep ; )
 
-dist: dist-clean
+dist: distclean
 	mkdir -p $(distdir)
 	cp -r * $(distdir)
 
