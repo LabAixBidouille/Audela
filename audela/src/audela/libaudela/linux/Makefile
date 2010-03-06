@@ -8,7 +8,7 @@ SRC = $(SRCDIR)/buf_tcl.cpp $(SRCDIR)/cam_tcl.cpp $(SRCDIR)/cbuffer.cpp \
       $(SRCDIR)/tel_tcl.cpp $(SRCDIR)/tt.cpp $(SRCDIR)/cfile.cpp\
       $(SRCDIR)/utils.cpp $(SRCDIR)/cerror.cpp $(SRCDIR)/cpixels.cpp \
       $(SRCDIR)/cpixelsgray.cpp $(SRCDIR)/cpixelsrgb.cpp $(SRCDIR)/link_tcl.cpp \
-      $(SRCDIR)/file_tcl.cpp $(SRCDIR)/fourier.cpp $(SRCDIR)/fourier_tcl.cpp
+      $(SRCDIR)/file_tcl.cpp
 
 OBJ  = $(patsubst $(SRCDIR)/%.cpp, %.o, $(filter $(SRCDIR)/%.cpp, $(SRC)))
 
