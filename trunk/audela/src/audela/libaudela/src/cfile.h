@@ -30,7 +30,7 @@
 typedef enum { CFILE_FITS, CFILE_JPEG, CFILE_PNG, CFILE_GIF, CFILE_BMP, CFILE_TIF, CFILE_RAW, CFILE_UNKNOWN} CFileFormat;
 
 
-class CFile  {
+class LIBAUDELA_API CFile  {
 
 public:
    CFile();
