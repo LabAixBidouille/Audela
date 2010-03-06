@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="libaudela"
 	ProjectGUID="{5A1A1AAC-22A5-4E69-A441-0488B3F9DC4C}"
 	RootNamespace="libaudela"
@@ -204,7 +204,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="echo on&#x0D;&#x0A;if not exist ..\..\lib (mkdir ..\..\lib)&#x0D;&#x0A;copy debug\libaudela.lib ..\..\lib&#x0D;&#x0A;if not exist ..\..\include (mkdir ..\..\include)&#x0D;&#x0A;copy ..\src\audela.h ..\..\include&#x0D;&#x0A;copy ..\src\cbuffer.h ..\..\include&#x0D;&#x0A;copy ..\src\cdevice.h ..\..\include&#x0D;&#x0A;copy ..\src\cerror.h ..\..\include&#x0D;&#x0A;copy ..\src\cpixels.h ..\..\include&#x0D;&#x0A;copy ..\src\cpool.h ..\..\include&#x0D;&#x0A;copy ..\src\fitskw.h ..\..\include&#x0D;&#x0A;copy ..\src\libstd.h ..\..\include&#x0D;&#x0A;copy ..\src\libtt.h ..\..\include&#x0D;&#x0A;copy ..\src\palette.h ..\..\include&#x0D;&#x0A;copy ..\src\cpixelsgray.h ..\..\include&#x0D;&#x0A;copy ..\src\cpixelsrgb.h ..\..\include&#x0D;&#x0A;"
+				CommandLine="echo on&#x0D;&#x0A;if not exist ..\..\lib (mkdir ..\..\lib)&#x0D;&#x0A;copy debug\libaudela.lib ..\..\lib&#x0D;&#x0A;if not exist ..\..\include (mkdir ..\..\include)&#x0D;&#x0A;copy ..\src\audela.h ..\..\include&#x0D;&#x0A;copy ..\src\cbuffer.h ..\..\include&#x0D;&#x0A;copy ..\src\cdevice.h ..\..\include&#x0D;&#x0A;copy ..\src\cerror.h ..\..\include&#x0D;&#x0A;copy ..\src\cpixels.h ..\..\include&#x0D;&#x0A;copy ..\src\cpool.h ..\..\include&#x0D;&#x0A;copy ..\src\fitskw.h ..\..\include&#x0D;&#x0A;copy ..\src\libstd.h ..\..\include&#x0D;&#x0A;copy ..\src\libtt.h ..\..\include&#x0D;&#x0A;copy ..\src\palette.h ..\..\include&#x0D;&#x0A;copy ..\src\cpixelsgray.h ..\..\include&#x0D;&#x0A;copy ..\src\cpixelsrgb.h ..\..\include&#x0D;&#x0A;copy ..\src\cfile.h ..\..\include&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
