@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="external_qsi"
 	ProjectGUID="{AA890CDB-EDFC-46BC-A569-FD6883578D2F}"
 	RootNamespace="external_qsi"
@@ -25,9 +25,9 @@
 			>
 			<Tool
 				Name="VCNMakeTool"
-				BuildCommandLine="cd .. &amp; make /f Makefile.vc install"
-				ReBuildCommandLine="cd .. &amp; make /f Makefile.vc clean install"
-				CleanCommandLine="cd .. &amp; make /f Makefile.vc clean"
+				BuildCommandLine="cd .. &amp; nmake /f Makefile.vc install"
+				ReBuildCommandLine="cd .. &amp; nmake /f Makefile.vc clean install"
+				CleanCommandLine="cd .. &amp; nmake /f Makefile.vc clean"
 				Output=""
 				PreprocessorDefinitions="WIN32;_DEBUG"
 				IncludeSearchPath=""
@@ -46,7 +46,7 @@
 			>
 			<Tool
 				Name="VCNMakeTool"
-				BuildCommandLine="cd .. &amp; make /f Makefile.vc install"
+				BuildCommandLine="cd .. &amp; nmake /f Makefile.vc install"
 				ReBuildCommandLine="cd .. &amp; nmake /f Makefile.vc clean install"
 				CleanCommandLine="cd .. &amp; nmake /f Makefile.vc clean"
 				Output=""
