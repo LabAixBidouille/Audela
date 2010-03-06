@@ -8,7 +8,7 @@ SRC = $(SRCDIR)/buf_tcl.cpp $(SRCDIR)/cam_tcl.cpp $(SRCDIR)/cbuffer.cpp \
       $(SRCDIR)/tel_tcl.cpp $(SRCDIR)/tt.cpp $(SRCDIR)/cfile.cpp\
       $(SRCDIR)/utils.cpp $(SRCDIR)/cerror.cpp $(SRCDIR)/cpixels.cpp \
       $(SRCDIR)/cpixelsgray.cpp $(SRCDIR)/cpixelsrgb.cpp $(SRCDIR)/link_tcl.cpp \
-      $(SRCDIR)/file_tcl.cpp
+      $(SRCDIR)/file_tcl.cpp $(SRCDIR)/fourier.cpp $(SRCDIR)/fourier_tcl.cpp
 
 OBJ  = $(patsubst $(SRCDIR)/%.cpp, %.o, $(filter $(SRCDIR)/%.cpp, $(SRC)))
 
@@ -31,10 +31,14 @@ $(OUTPUT): $(OBJ) $(OUTPUTDIR)/libdcraw.so $(OUTPUTDIR)/libdcjpeg.so
 	cp -f ../src/cdevice.h  ../../include
 	cp -f ../src/cerror.h  ../../include
 	cp -f ../src/palette.h  ../../include
-	cp -f ../src/cdevice.h  ../../include
 	cp -f ../src/cbuffer.h  ../../include
 	cp -f ../src/cpixels.h  ../../include
+	cp -f ../src/cpixelsgray.h  ../../include
+	cp -f ../src/cpixelsrgb.h  ../../include
 	cp -f ../src/fitskw.h   ../../include
+	cp -f ../src/cfile.h   ../../include
+	cp -f ../src/libtt.h   ../../include
+	cp -f ../src/libstd.h   ../../include
 
 all: $(OUTPUT)
 
