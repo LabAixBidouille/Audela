@@ -131,6 +131,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libhisis", "libcam\libhisis\vc90\libhisis.vcproj", "{A378419F-5576-42F2-8530-3263DEEA9781}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libjm", "audela\libjm\vc90\libjm.vcproj", "{EA2496D9-D481-499C-AC46-4674447DAFC7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5A1A1AAC-22A5-4E69-A441-0488B3F9DC4C} = {5A1A1AAC-22A5-4E69-A441-0488B3F9DC4C}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libk2", "libcam\libk2\vc90\libk2.vcproj", "{17B06CD7-168F-40B6-8166-F823F940A3E0}"
 EndProject
