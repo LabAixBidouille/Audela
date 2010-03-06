@@ -2758,10 +2758,10 @@ int cmdTtOpt(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 //   Calcul des statistiques de l'image
 //   Equivalent de QMiPS : STAT
 //
-//  @return retourne la liste des valeurs 
+//  @return retourne la liste des valeurs
 //          { locut hicut maxi mini mean sigma bgmean bgsigma contrast }
 //          retourne une erreur si le buffer est vide
-//           
+//
 int cmdTtStat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
    CBuffer *buffer;
@@ -3207,8 +3207,6 @@ int cmdPointer(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
       // Appel a la methode du buffer
       buffer = (CBuffer*)clientData;
       buffer->GetPixelsPointer(&pixelsPointer);
-      //Yassine
-      //sprintf(ligne,"%d",(int) pixelsPointer);
       sprintf(ligne,"%ld",(long) pixelsPointer);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    }
@@ -4759,8 +4757,8 @@ int cmdRegion(ClientData , Tcl_Interp *interp, int argc, char *argv[])
 //   Fonction de calcul du centroide sur une fente.
 //
 //  Parameters IN:
-//  @param     Argv[2]=[list x1 y1 x2 y2] coordonnées de la fenetre de detection de l'etoile (pixels)
-//  @param     Argv[3]=starDetectionMode  Algorithme de détection 1=ajustement de gaussienne  2=fente
+//  @param     Argv[2]=[list x1 y1 x2 y2] coordonnï¿½es de la fenetre de detection de l'etoile (pixels)
+//  @param     Argv[3]=starDetectionMode  Algorithme de dï¿½tection 1=ajustement de gaussienne  2=fente
 //  @param     Argv[4]=pixelMinCount      nombre minimal de pixels (nombre entier)
 //  @param     Argv[5]=slitWidth          largeur de la fente (nombre entier de pixels)
 //  @param     Argv[6]=slitRatio          pourcentage pour convertir le rapport de flux en nombre de pixels
@@ -4847,7 +4845,7 @@ int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
             slitWidth = 4;
             slitRatio = 1.0;
          }
-              
+
       }
 
       if ( retour == TCL_OK ) {

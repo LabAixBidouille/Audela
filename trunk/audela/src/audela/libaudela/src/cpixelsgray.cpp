@@ -395,10 +395,8 @@ void CPixelsGray::GetPixelsPointer(TYPE_PIXELS **pixels) {
 /**
   GetPixels
   retourne le tableau de pixels correspondant à la fenetre (x1,y1)-(x2,y2)
-  en inlcuant les valeur limites x=x1, x=x2, y=y1 , y=y2
+  en incluant les valeur limites x=x1, x=x2, y=y1 , y=y2
 **/
-// Yassine
-//void CPixelsGray::GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, int pixels) {
 void CPixelsGray::GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, void* pixels) {
    int width  = x2-x1+1;
    int x, y;
