@@ -2,7 +2,7 @@
 # @file     sophiecontrol.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecontrol.tcl,v 1.38 2010-02-14 16:31:18 michelpujol Exp $
+# @version  $Id: sophiecontrol.tcl,v 1.39 2010-03-06 19:54:40 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -1569,7 +1569,7 @@ proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX 
    } else {
       set deltaRms 0
    }
-   set title [format "$::caption(sophie,ecartEtoile)  RMS alpha=%6.2f  RMS Delta=%6.2f" $alphaRms $deltaRms]
+   set title [format "$::caption(sophie,ecartEtoile)  RMS alpha=%6.2f  RMS Delta=%6.2f %s" $alphaRms $deltaRms $::caption(sophie,arcsec)]
    $frm.guidage.ecarts configure -text $title
 
 }
