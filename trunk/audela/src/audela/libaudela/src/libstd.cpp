@@ -150,8 +150,8 @@ void LogFile(char*s)
    #endif
    f = fopen(libstd_log_filename,"at+");
    if(f!=NULL) {
-      fprintf(f,s1);
-      fprintf(f,s);
+      fprintf(f, "%s\n", s1);
+      fprintf(f, "%s\n", s);
       fflush(f);
       fclose(f);
    }
@@ -574,7 +574,6 @@ void audelaInit(Tcl_Interp *interp)
    Tcl_CreateCommand(interp,"::link::delete",(Tcl_CmdProc *)CmdDeletePoolItem,(void*)link_pool,NULL);
    Tcl_CreateCommand(interp,"::link::available",(Tcl_CmdProc *)CmdAvailablePoolItem,(void*)link_pool,NULL);
    Tcl_CreateCommand(interp,"::link::genericname",(Tcl_CmdProc *)CmdGetGenericNamePoolItem,(void*)link_pool,NULL);
-
 
    Tcl_CreateCommand(interp,"audela_version",(Tcl_CmdProc *)CmdAudelaVersion,(void*)NULL,NULL);
 
