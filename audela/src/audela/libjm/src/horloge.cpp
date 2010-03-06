@@ -3,17 +3,17 @@
  * This file is part of the libjm libfrary for AudeLA project.
  *
  * Initial author : Jacques MICHELET <jacques.michelet@laposte.net>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -25,8 +25,7 @@
  * Description : Fonctions de gestion de l'heure
  * =============================================
 */
-
-#include "jm.h"
+#include <sysexp.h>
 
 #if defined(OS_LIN)
 #include <sys/time.h>
@@ -34,11 +33,159 @@
 extern int errno;
 #endif
 
+#include <math.h>
+#include "libjm.h"
+#include "horloge.h"
+
+
+
+namespace LibJM {
+
+
+/* ******************* jd *********************
+ * Donne le jour julien correspondant a la date
+ * annee : valeur de l'annee correspondante
+ * mois  : valeur du mois correspondant
+ * jour  : valeur du jour decimal correspondant
+ * *jj   : valeur du jour julien converti
+ * ********************************************/
+int Horloge::jd(int annee,int mois,double jour,double *jj)
+{
+double a,m,j,aa,bb;
+
+a=(double)annee;
+m=(double)mois;
+j=jour;
+
+if (m<=2)
+   {
+   a=a-1;
+   m=m+12;
+   }
+
+aa=floor(a/100);
+bb=2-aa+floor(aa/4);
+*jj=floor(365.25*(a+4716))+floor(30.6001*(m+1))+j+bb-1524.5;
+return Generique::OK;
+}
+
+/* ******************* jd2 *********************
+ * Donne le jour julien correspondant a la date
+ * annee   : valeur de l'annee correspondante
+ * mois    : valeur du mois correspondant
+ * jour    : valeur du jour correspondant
+ * heure   : valeur des heures correspondantes
+ * minute  : valeur des minutes correspondantes
+ * minute  : valeur des secondes correspondantes
+ * seconde : valeur des milli-secondes correspondantes
+ * *jj   : valeur du jour julien converti
+ * ********************************************/
+int Horloge::jd2 (int annee,int mois,int jour,int heure,int minute,int seconde,int milli,double *jj)
+{
+	double jour_decimal;
+	jour_decimal = jour + (heure / 24.0) + (minute / 1440.0)
+		+ (seconde / 86400.0) + (milli / 86400000.0);
+	return jd(annee, mois, jour_decimal, jj);
+}
+
+int jc (int *annee, int *mois, double *jour, double jj)
+{
+	double jjj, z, f, a, alpha, b, c, d, e;
+
+	jjj = jj + 0.5;
+	z = floor(jjj);
+	f = jjj - z;
+
+	if (z < 2299161.0)
+		a = z;
+	else
+	{
+		alpha = floor((z - 1867216.25)/36524.25);
+		a = z + 1 + alpha - floor(alpha / 4);
+	}
+
+	b = a + 1524;
+	c = floor((b - 121.1) / 365.25);
+	d = floor(365.25 * c);
+	e = floor((b - d) / 30.6001);
+
+	*jour = b - d - floor(30.6001 * e) + f;
+	if (e < 14)
+		*mois = (int)(e - 1);
+	else
+		*mois = (int)(e - 13);
+	if (*mois > 2)
+		*annee = (int)(c - 4716);
+	else
+		*annee = (int)(c - 4715);
+
+	return Generique::OK;
+}
+
+
+int Horloge::jc (int *annee, int *mois, double *jour, double jj)
+{
+    double jjj, z, f, a, alpha, b, c, d, e;
+
+    jjj = jj + 0.5;
+    z = floor(jjj);
+    f = jjj - z;
+
+    if (z < 2299161.0)
+        a = z;
+    else
+    {
+        alpha = floor((z - 1867216.25)/36524.25);
+        a = z + 1 + alpha - floor(alpha / 4);
+    }
+
+    b = a + 1524;
+    c = floor((b - 121.1) / 365.25);
+    d = floor(365.25 * c);
+    e = floor((b - d) / 30.6001);
+
+    *jour = b - d - floor(30.6001 * e) + f;
+    if (e < 14)
+        *mois = (int)(e - 1);
+    else
+        *mois = (int)(e - 13);
+    if (*mois > 2)
+        *annee = (int)(c - 4716);
+    else
+        *annee = (int)(c - 4715);
+
+    return Generique::OK;
+}
+
+
+/* ***************** jc2 ****************************
+ * Conversion d'un jour julien en jour calendaire
+ * **************************************************/
+int Horloge::jc2(int *annee, int *mois, int *jour, int *heure, int *minute, int *seconde, int *milli, double jj)
+{
+  double jour_decimal, t;
+
+
+  /* Conversion en date calendaire */
+  jc(annee, mois, &jour_decimal, jj);
+  *jour = (int)floor(jour_decimal);
+  t = 24.0 * (jour_decimal - (double)(*jour));
+  *heure = (int)floor(t);
+  t = 60.0 * (t - (double)(*heure));
+  *minute = (int)floor(t);
+  t = 60.0 * (t - (double)(*minute));
+  *seconde = (int)floor(t);
+  t = 1000.0 * (t - (double)(*seconde));
+  *milli = (int)floor(t);
+  return Generique::OK;
+}
+
+
 /* ***************** LitHeurePC ****************
  * LitHeurePC
  * Lecture de l'heure d'un PC
  * *********************************************/
-int LitHeurePC(int *annee, int *mois, int *jour, int *heure, int *minute, int *seconde, int *milli)
+int Horloge::LitHeurePC(int *annee, int *mois, int *jour, int *heure, int *minute, int *seconde, int *milli)
 {
 #if defined(OS_WIN)
 	struct _SYSTEMTIME temps_pc;
@@ -59,7 +206,7 @@ int LitHeurePC(int *annee, int *mois, int *jour, int *heure, int *minute, int *s
 	double jour_decimal, jj, t;
 
 	gettimeofday(&temps_pc, &fuseau);
-	
+
 	/* conversion en jour décimaux et ajout du jj du 01/01/1970 */
 	jj = (double)temps_pc.tv_sec / 86400.0 + 2440587.5;
 
@@ -72,17 +219,17 @@ int LitHeurePC(int *annee, int *mois, int *jour, int *heure, int *minute, int *s
 	*minute = (int)floor(t);
 	t = 60.0 * (t - (double)(*minute));
 	*seconde = (int)floor(t);
-	
+
 	*milli = floor(temps_pc.tv_usec / 1000);
 #endif
-	return OK;
+	return Generique::OK;
 }
 
 /* ***************** EcritHeurePC ****************
  * EcritHeurePC
  * Ecriture de l'heure d'un PC
  * ***********************************************/
-int EcritHeurePC(int annee, int mois, int jour, int heure, int minute, int seconde, int milli)
+int Horloge::EcritHeurePC(int annee, int mois, int jour, int heure, int minute, int seconde, int milli)
 {
 #if defined(OS_WIN)
 	struct _SYSTEMTIME temps_pc;
@@ -95,16 +242,16 @@ int EcritHeurePC(int annee, int mois, int jour, int heure, int minute, int secon
 	temps_pc.wSecond = seconde;
 	temps_pc.wMilliseconds = milli;
 	if (!SetSystemTime(&temps_pc))
-	  return PB;
+        return Generique::PB;
 #endif
 #if defined(OS_LIN)
 	struct timeval temps_pc;
 	struct timezone fuseau;
 	double jour_decimal, jj;
-	
+
 	/* La lecture sert à initialiser le fuseau */
 	gettimeofday(&temps_pc, &fuseau);
-	
+
 	/* Conversion en jj et retrait du jj correspondant au 01/01/1970 */
 	jour_decimal = (double)(jour + (heure / 24.0) + (minute / 1440.0) + (seconde / 86400.0));
 	jd(annee, mois, jour_decimal, &jj);
@@ -115,19 +262,19 @@ int EcritHeurePC(int annee, int mois, int jour, int heure, int minute, int secon
 
 	if (settimeofday(&temps_pc, &fuseau)) {
 	  if (errno == EPERM)
-	    return PB2;
+	    return Generique::PB2;
 	  if (errno)
-	    return PB;
+	    return Generique::PB;
 	}
 #endif
-	return OK;
+	return Generique::OK;
 }
 
 /* ***************** ReglageHeurePC ****************
  * ReglageHeurePC
  * Reglage de l'heure d'un PC
  * *************************************************/
-int ReglageHeurePC(long *decalage_reel, long decalage)
+int Horloge::ReglageHeurePC(long *decalage_reel, long decalage)
 {
 #if defined(OS_WIN)
 
@@ -176,7 +323,7 @@ int ReglageHeurePC(long *decalage_reel, long decalage)
 	temps_pc.wSecond = seconde;
 	temps_pc.wMilliseconds = milli;
 	if (!SetSystemTime(&temps_pc))
-		return PB;
+        return Generique::PB;
 
 	/* Verification  */
 	GetSystemTime(&temps_pc);
@@ -201,35 +348,36 @@ int ReglageHeurePC(long *decalage_reel, long decalage)
 	double jj, jj1;
 
 	gettimeofday(&temps_pc, &fuseau);
-	
+
 	/* conversion en secondes */
 	jj = ((double)temps_pc.tv_sec + (double)temps_pc.tv_usec / 1000000.0);
 
-	/* Mise en m�moire */
+	/* Mise en mémoire */
 	jj1 = jj;
 
-	/* Ajout de la correction (le d�calage est en ms)*/
+	/* Ajout de la correction (le décalage est en ms)*/
 	jj += ((double)decalage / 1000.0);
 
 	temps_pc.tv_sec = (long)floor(jj);
 	temps_pc.tv_usec = (long)((jj - floor(jj)) * 1000000.0);
-        
+
 	if (settimeofday(&temps_pc, &fuseau)) {
 	  if (errno == EPERM)
-	    return PB2;
+	    return Generique::PB2;
 	  if (errno)
-	    return PB;
+	    return Generique::PB;
 	}
-	
+
 	/* Verification  */
 	gettimeofday(&temps_pc, &fuseau);
-	
+
 	/* conversion en secondes */
 	jj = (double)temps_pc.tv_sec + ((double)temps_pc.tv_usec / 1000000.0);
 
 	*decalage_reel = (long)(((jj - jj1) * 1000.0));
 #endif
-	return OK;
+	return Generique::OK;
 }
 
+}
 
