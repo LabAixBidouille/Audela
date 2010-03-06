@@ -27,13 +27,14 @@
  * ============================================
 */
 
-#define NUMERO_VERSION "3.2"
 
 
-#ifndef __LIBJMH__
-#define __LIBJMH__
 
-#include "sysexp.h"
+#ifndef __LIBJM_H__
+#define __LIBJM_H__
+
+#include <sysexp.h>
+#include <string>
 
 #ifdef LIBRARY_DLL
 # include <windows.h>
@@ -53,15 +54,27 @@
 # include <tcl.h>
 #endif
 
-#include "jm_c_tcl.h"
-#include "jm.h"
+namespace LibJM
+{
+    class Generique
+    {
+    public:
+        static const int OK = 0;
+        static const int PB = 1;
+        static const int PB2 = 2;
+        static const std::string NUMERO_VERSION;
+
+        static int CmdVersionLib(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+    };
+}
+
 
 #ifdef LIBRARY_DLL
-   __declspec(dllexport) int __cdecl Jm_Init(Tcl_Interp *interp);
+   extern "C" int __cdecl Jm_Init(Tcl_Interp *interp);
 #endif
 
 #ifdef LIBRARY_SO
-   extern int Jm_Init(Tcl_Interp *interp);
+   extern "C" int Jm_Init(Tcl_Interp *interp);
 #endif
 
 #endif
