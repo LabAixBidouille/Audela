@@ -170,7 +170,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile=".\Debug/external_cfitsio.dll"
+				OutputFile=".\Debug/cfitsio.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				ModuleDefinitionFile=".\cfitsio.def"
@@ -178,7 +178,7 @@
 				ProgramDatabaseFile=".\Debug/external_cfitsio.pdb"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary=".\Debug/external_cfitsio.lib"
+				ImportLibrary=".\Debug/cfitsio.lib"
 				TargetMachine="1"
 			/>
 			<Tool
