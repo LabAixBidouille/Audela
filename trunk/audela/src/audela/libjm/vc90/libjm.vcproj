@@ -4,6 +4,7 @@
 	Version="9.00"
 	Name="libjm"
 	ProjectGUID="{EA2496D9-D481-499C-AC46-4674447DAFC7}"
+	RootNamespace="libjm"
 	TargetFrameworkVersion="0"
 	>
 	<Platforms>
@@ -144,7 +145,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\include,..\..\..\external\include\win"
+				AdditionalIncludeDirectories="..\..\..\include;..\..\include;..\..\..\external\include\win"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;USE_TCL_STUBS;USE_TK_STUBS;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
@@ -217,114 +218,32 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat;for;f90"
 			>
 			<File
-				RelativePath="..\src\jm_c_tcl.c"
+				RelativePath="..\src\calaphot.cpp"
 				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\src\jm_photo.c"
+				RelativePath="..\src\calaphot_tcl.cpp"
 				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\src\jm_temps.c"
+				RelativePath="..\src\divers.cpp"
 				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\src\jm_util.c"
+				RelativePath="..\src\divers_tcl.cpp"
 				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\src\libjm.c"
+				RelativePath="..\src\horloge.cpp"
 				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\src\horloge_tcl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\libjm.cpp"
+				>
 			</File>
 			<File
 				RelativePath="libjm.def"
@@ -335,6 +254,22 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;fi;fd"
 			>
+			<File
+				RelativePath="..\src\calaphot.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\divers.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\horloge.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\libjm.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
