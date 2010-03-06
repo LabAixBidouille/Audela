@@ -2,7 +2,7 @@
 # Fichier : t193pad.tcl
 # Description : Raquette specifique au T193 de l'OHP
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: t193pad.tcl,v 1.9 2010-02-14 16:40:33 michelpujol Exp $
+# Mise a jour $Id: t193pad.tcl,v 1.10 2010-03-06 19:55:56 michelpujol Exp $
 #
 
 namespace eval ::t193pad {
@@ -82,6 +82,8 @@ proc ::t193pad::initConf { } {
 
    if { ! [ info exists conf(t193pad,wmgeometry) ] }   { set conf(t193pad,wmgeometry)   "240x520+643+180" }
    if { ! [ info exists conf(t193pad,focuserLabel) ] } { set conf(t193pad,focuserLabel) "" }
+   if { ! [ info exists conf(t193pad,radecPulse,enabled)]} { set conf(t193pad,radecPulse,enabled) 0 }
+   if { ! [ info exists conf(t193pad,radecPulse,value)] }  { set conf(t193pad,radecPulse,value) 1 }
 
    set private(targetRa)      "00h00m00.00s"
    set private(targetDec)     "+00d00m00.00s"
@@ -232,17 +234,18 @@ proc ::t193pad::createDialog { } {
       wm geometry $This 240x520+643+180
    }
    wm resizable $This 1 1
+   wm minsize $This 235 310
    wm protocol $This WM_DELETE_WINDOW ::t193pad::deletePluginInstance
 
    #--- Creation des differents frames
    frame $This.frame1 -borderwidth 1 -relief groove -bg $color(blue_pad)
-   pack $This.frame1 -side top -fill both -expand 1
+   pack $This.frame1 -side top -fill x -expand 0
 
    frame $This.frame2 -borderwidth 1 -relief groove -bg $color(blue_pad)
-   pack $This.frame2 -side top -fill both -expand 1
+   pack $This.frame2 -side top -fill x -expand 0
 
    frame $This.frame3 -borderwidth 1 -relief groove -bg $color(blue_pad)
-   pack $This.frame3 -side top -fill both -expand 1
+   pack $This.frame3 -side top -fill x -expand 0
 
    #--- Label pour AD
    label $This.frame1.ent1 -textvariable audace(telescope,getra) \
@@ -259,67 +262,95 @@ proc ::t193pad::createDialog { } {
    bind $This.frame1.ent1 <ButtonPress-1> { ::telescope::afficheCoord }
    bind $This.frame1.ent2 <ButtonPress-1> { ::telescope::afficheCoord }
 
-   #--- Frame du bouton 'N'
-   frame $This.frame2.n -width 27 -borderwidth 0 -relief flat -bg $color(blue_pad)
-   pack $This.frame2.n -side top -fill x
+   #         0     1      2
+   #    0          N     monocoup
+   #    1    E   speed    W
+   #    2          S
 
    #--- Bouton 'N'
-   button $This.frame2.n.canv1 -borderwidth 2 \
-      -font [ list {Arial} 12 bold ] \
+   button $This.frame2.nord -borderwidth 2 \
+      -font [ list {Arial} 16 bold ] -width 4 \
       -fg $color(white) \
       -bg $color(gray_pad) \
-      -text "$caption(t193pad,nord)" \
-      -width 2 \
+      -text $caption(t193pad,nord) \
       -anchor center \
       -relief ridge
-   pack $This.frame2.n.canv1 -expand 0 -side top -padx 10 -pady 4
-
-   #--- Frame des boutons 'E', 'O' et de la vitesse de la monture
-   frame $This.frame2.we -width 27 -borderwidth 0 -relief flat -bg $color(blue_pad)
-   pack $This.frame2.we -side top -fill x
+   grid $This.frame2.nord  -row 0 -column 1 -padx 10 -pady 0
 
    #--- Bouton 'E'
-   button $This.frame2.we.canv1 -borderwidth 2 \
-      -font [ list {Arial} 12 bold ] \
-      -fg $color(white) \
-      -bg $color(gray_pad) \
+   button $This.frame2.est -borderwidth 2 \
+      -font [ list {Arial} 16 bold ] -width 4 \
+      -fg $color(white) -bg $color(gray_pad) \
       -text "$caption(t193pad,est)" \
-      -width 2 \
       -anchor center \
       -relief ridge
-   pack $This.frame2.we.canv1 -expand 0 -side left -padx 10 -pady 4
+   grid $This.frame2.est  -row 1 -column 0 -padx 10 -pady 0
 
    #--- Label de la vitesse de la monture
-   label $This.frame2.we.vitesseMonture -font [ list {Arial} 12 bold ] \
-      -textvariable audace(telescope,labelspeed) -bg $color(blue_pad) -fg $color(white) \
-      -borderwidth 0 -relief flat
-   pack $This.frame2.we.vitesseMonture -expand 1 -side left
+   label $This.frame2.vitesseMonture -font [ list {Arial} 12 bold ] \
+      -bg $color(gray_pad) -fg $color(white) \
+      -font [ list {Arial} 12 bold ] \
+      -borderwidth 2 -width 3 -relief ridge \
+      -textvariable audace(telescope,labelspeed)
+   grid $This.frame2.vitesseMonture  -row 1 -column 1 -padx 10 -pady 0
 
    #--- Bouton 'O'
-   button $This.frame2.we.canv2 -borderwidth 2 \
-      -font [ list {Arial} 12 bold ] \
-      -fg $color(white) \
-      -bg $color(gray_pad) \
+   button $This.frame2.ouest -borderwidth 2 \
+      -font [ list {Arial} 16 bold ] -width 4 \
+      -fg $color(white) -bg $color(gray_pad) \
       -text $caption(t193pad,ouest) \
-      -width 2 \
       -anchor center \
       -relief ridge
-   pack $This.frame2.we.canv2 -expand 0 -side right -padx 10 -pady 4
-
-   #--- Frame du bouton 'S'
-   frame $This.frame2.s -width 27 -borderwidth 0 -relief flat -bg $color(blue_pad)
-   pack $This.frame2.s -side top -fill x
+   grid $This.frame2.ouest  -row 1 -column 2 -padx 10 -pady 0
 
    #--- Bouton 'S'
-   button $This.frame2.s.canv1 -borderwidth 2 \
-      -font [ list {Arial} 12 bold ] \
-      -fg $color(white) \
-      -bg $color(gray_pad) \
+   button $This.frame2.sud -borderwidth 2 \
+      -font [ list {Arial} 16 bold ] -width 4 \
+      -fg $color(white) -bg $color(gray_pad) \
       -text $caption(t193pad,sud) \
-      -width 2 \
       -anchor center \
       -relief ridge
-   pack $This.frame2.s.canv1 -expand 0 -side top -padx 10 -pady 4
+   grid $This.frame2.sud -row 2 -column 1 -padx 10 -pady 0
+
+   #--- activation / desactivation mode impulsion des déplacements radec (monocoup)
+   frame $This.frame2.pulseMode  -borderwidth 0 -bg $color(blue_pad)
+      checkbutton $This.frame2.pulseMode.enabled \
+         -font [ list {Arial} 12 bold ] \
+         -bg $color(blue_pad) -fg $color(white) \
+         -activebackground $color(blue_pad) -activeforeground $color(white) \
+         -selectcolor $color(blue_pad) -highlightbackground $color(blue_pad) \
+         -text $caption(t193pad,radecPulse) \
+         -variable ::conf(t193pad,radecPulse,enabled) \
+         -command ::t193pad::setRadecPulseEnabled
+      pack $This.frame2.pulseMode.enabled -side left
+      label $This.frame2.pulseMode.value  -bg $color(gray_pad)  -fg $color(white) \
+         -font [ list {Arial} 12 bold ] \
+         -borderwidth 2 -width 3 -relief ridge \
+         -textvariable ::conf(t193pad,radecPulse,value)
+      pack $This.frame2.pulseMode.value -side left -padx 4
+      label $This.frame2.pulseMode.unit  -bg $color(blue_pad)   -fg $color(white)\
+         -font [ list {Arial} 12 bold ] \
+         -text "arcsec"
+      pack $This.frame2.pulseMode.unit -side left -padx 2
+   grid $This.frame2.pulseMode  -row 3 -column 0 -columnspan 3 -padx 10 -pady 4
+
+   grid columnconfigure $This.frame2 0 -weight 1
+   grid columnconfigure $This.frame2 1 -weight 1
+   grid columnconfigure $This.frame2 2 -weight 1
+
+   #--- Bind des boutons 'N', 'E', 'O' et 'S'
+   bind $This.frame2.est <ButtonPress-1>     { ::t193pad::moveRadec e }
+   bind $This.frame2.est <ButtonRelease-1>   { ::t193pad::stopRadec e }
+   bind $This.frame2.ouest <ButtonPress-1>   { ::t193pad::moveRadec w }
+   bind $This.frame2.ouest <ButtonRelease-1> { ::t193pad::stopRadec w }
+   bind $This.frame2.sud <ButtonPress-1>     { ::t193pad::moveRadec s }
+   bind $This.frame2.sud <ButtonRelease-1>   { ::t193pad::stopRadec s }
+   bind $This.frame2.nord <ButtonPress-1>    { ::t193pad::moveRadec n }
+   bind $This.frame2.nord <ButtonRelease-1>  { ::t193pad::stopRadec n }
+   #--- Bind de la vitesse de la monture
+   bind $This.frame2.vitesseMonture <ButtonPress-1> { ::telescope::incrementSpeed }
+   #--- Bind valeur impulsion monocoup
+   bind $This.frame2.pulseMode.value <ButtonPress-1> { ::t193pad::incrementRadecPulse }
 
    #--- LabelEntry pour AD
    LabelEntry $This.frame3.ad -label $caption(t193pad,RA) \
@@ -348,23 +379,6 @@ proc ::t193pad::createDialog { } {
       -font [ list {Arial} 12 bold ] -text $caption(t193pad,stopGoto) -relief ridge \
       -fg $color(white) -bg $color(gray_pad) -command "::telescope::stopGoto"
    pack $This.frame3.buttonStopGoto -anchor center -fill x -expand 1  -side left -padx 4 -pady 2
-
-   #--- Bind des boutons 'N', 'E', 'O' et 'S'
-   set zone(n) $This.frame2.n.canv1
-   set zone(e) $This.frame2.we.canv1
-   set zone(w) $This.frame2.we.canv2
-   set zone(s) $This.frame2.s.canv1
-   bind $zone(e) <ButtonPress-1>   { ::telescope::move e }
-   bind $zone(e) <ButtonRelease-1> { ::telescope::stop e }
-   bind $zone(w) <ButtonPress-1>   { ::telescope::move w }
-   bind $zone(w) <ButtonRelease-1> { ::telescope::stop w }
-   bind $zone(s) <ButtonPress-1>   { ::telescope::move s }
-   bind $zone(s) <ButtonRelease-1> { ::telescope::stop s }
-   bind $zone(n) <ButtonPress-1>   { ::telescope::move n }
-   bind $zone(n) <ButtonRelease-1> { ::telescope::stop n }
-
-   #--- Bind de la vitesse de la monture
-   bind $This.frame2.we.vitesseMonture <ButtonPress-1> { ::telescope::incrementSpeed }
 
    #--- Frame du FOCUS
    frame $This.focus -borderwidth 1 -relief groove -bg $color(blue_pad)
@@ -442,7 +456,7 @@ proc ::t193pad::createDialog { } {
 
       pack $This.focus.goto -side top -fill x -expand 1
 
-   pack $This.focus -side top -fill both -expand 1 -pady 4
+   pack $This.focus -side top -fill x -expand 0 -pady 4
 
    #--- Frame du DOME
    frame $This.dome -borderwidth 1 -relief groove -bg $color(blue_pad)
@@ -491,17 +505,106 @@ proc ::t193pad::createDialog { } {
          -font [ list {Arial} 12 bold ] -command "  "
       pack $This.dome.check -anchor center -fill none -pady 2
 
-   pack $This.dome -side top -fill both -expand 1
+   pack $This.dome -side top -fill x -expand 0
 
    #--- Initialise et affiche la vitesse du focuser
    ::focus::setSpeed "$conf(superpad,focuserLabel)" "0"
 
+   #--- active ou descative le choix de l'impulsion
+   setRadecPulseEnabled
    #--- La fenetre est active
    focus $This
+
+
 
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
    bind $This <Key-F1> { ::console::GiveFocus }
 }
+
+#------------------------------------------------------------
+# moveRadec
+#
+# @param direction  direction du deplacement e w n s
+# @return void
+#------------------------------------------------------------
+proc ::t193pad::moveRadec { direction } {
+
+   if { $::conf(t193pad,radecPulse,enabled) == 0 } {
+      #--- debut de mouvement
+      ::telescope::move $direction
+   } else {
+      #--- mouvement d'amplitude limite
+      switch  $direction {
+         "e" -
+         "w" {
+            #--- en alpha
+            tel$::audace(telNo) radec correct $direction $::conf(t193pad,radecPulse,value) "n" 0 $::audace(telescope,rate)
+         }
+         "n" -
+         "s" {
+            #--- en delta
+            tel$::audace(telNo) radec correct "e" 0 $direction $::conf(t193pad,radecPulse,value) $::audace(telescope,rate)
+
+         }
+      }
+   }
+}
+
+#------------------------------------------------------------
+# stopRadec
+#   arrete le deplacement dans une direction
+#
+# @param direction  direction du deplacement e w n s
+# @return void
+#------------------------------------------------------------
+proc ::t193pad::stopRadec { direction } {
+   if { $::conf(t193pad,radecPulse,enabled) == 0 } {
+      #--- fin de mouvement
+      ::telescope::stop $direction
+   } else {
+      #--- rien a faire car le mouvement a été arrete automatiquement à la fin de l'impulsion.
+   }
+}
+
+#------------------------------------------------------------
+#  setRadecPulseEnabled
+#     active le choix de la valeur de l'impulsion
+#------------------------------------------------------------
+proc ::t193pad::setRadecPulseEnabled {  } {
+   variable private
+   variable This
+
+   if { $::conf(t193pad,radecPulse,enabled) == 0 } {
+      $This.frame2.pulseMode.value configure -state disabled
+      $This.frame2.pulseMode.unit  configure -state disabled
+   } else {
+      $This.frame2.pulseMode.value configure -state normal
+      $This.frame2.pulseMode.unit  configure -state normal
+   }
+
+}
+#------------------------------------------------------------
+#  incrementRadecPulse
+#     change la velur de l'impulsion radec
+#------------------------------------------------------------
+proc ::t193pad::incrementRadecPulse {  } {
+   variable private
+
+   if { $::conf(t193pad,radecPulse,enabled) == 1 } {
+      switch $::conf(t193pad,radecPulse,value) {
+         "0.1" {
+            set ::conf(t193pad,radecPulse,value) "0.5"
+         }
+         "0.5" {
+            set ::conf(t193pad,radecPulse,value) "1"
+         }
+         default {
+            set ::conf(t193pad,radecPulse,value) "0.1"
+         }
+      }
+   }
+}
+
 
 #------------------------------------------------------------
 #  cmdStartGoto
@@ -566,4 +669,7 @@ proc ::t193pad::gotoFocus {  } {
       ::tkutil::displayErrorInfo $::caption(t193pad,titre)
    }
 }
+
+
+
 
