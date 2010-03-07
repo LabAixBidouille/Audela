@@ -487,6 +487,7 @@ ros_gps close symmetricom
 			//_beginthread(ServeurGps,0,NULL);
 			ThreadGps = 1;
 			SetEvent(EventThreadGps); //Declenche le thread gps
+            i = 0;
 			while (ThreadGps != 0)
 				{//Attendre pour la datation de l'obturateur
 					i++;
