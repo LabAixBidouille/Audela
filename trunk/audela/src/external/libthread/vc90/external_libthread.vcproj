@@ -49,10 +49,10 @@
 			>
 			<Tool
 				Name="VCNMakeTool"
-				BuildCommandLine="cd ..\thread26\win\vc &amp; nmake -nologo -f makefile.vc OPTS=symbols TCLDIR=..\tk8.4.12 MSVCDIR=IDE"
-				ReBuildCommandLine="nmake -nologo -f makefile.vc OPTS=symbols TCLDIR=..\tk8.4.12 MSVCDIR=IDE -a"
-				CleanCommandLine=""
-				Output="Debug\external_libthread26d.dll"
+				BuildCommandLine="cd ..\thread26\win\vc &amp; nmake -nologo -f makefile.vc OPTS=symbols TCLDIR=..\..\..\..  INSTALLDIR=..\..\..\..\..\.. MSVCDIR=IDE all"
+				ReBuildCommandLine="cd ..\thread26\win\vc &amp; nmake -nologo -f makefile.vc OPTS=symbols TCLDIR=..\..\..\..  INSTALLDIR=..\..\..\..\..\.. MSVCDIR=IDE hose all"
+				CleanCommandLine="cd ..\thread26\win\vc  &amp; nmake  -f makefile.vc TCLDIR=..\..\..\..  INSTALLDIR=..\..\..\..\..\.. MSVCDIR=IDE OPTS=thread  DOTVERSION=2.6.5.1 hose"
+				Output=""
 				PreprocessorDefinitions=""
 				IncludeSearchPath=""
 				ForcedIncludes=""
