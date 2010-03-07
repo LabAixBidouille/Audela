@@ -109,7 +109,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="cd ..\..\.. &amp; install.bat"
+				CommandLine="cd ..\..\.. &amp; install.bat Debug"
 			/>
 		</Configuration>
 		<Configuration
@@ -207,7 +207,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="cd ..\..\.. &amp; install.bat"
+				CommandLine="cd ..\..\.. &amp; install.bat Release"
 			/>
 		</Configuration>
 	</Configurations>
