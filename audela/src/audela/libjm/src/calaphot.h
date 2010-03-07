@@ -57,6 +57,17 @@ struct data {
         fclose( f ); \
 } while(0)
 
+#if defined(WIN32) && defined(_MSC_VER) &&( _MSC_VER < 1500)
+// Les versions VisualC++ anterieures a VC90 ne suportent pas les macros avec un nombre de parametre variable
+#define CALAPHOT_LOG_FILE 
+#define CALAPHOT_LOG
+# define CALAPHOT_ERROR
+# define CALAPHOT_WARNING
+# define CALAPHOT_NOTICE
+# define CALAPHOT_INFO
+# define CALAPHOT_DEBUG
+
+#else 
 
 #define CALAPHOT_LOG_FILE( __level, fmt,... ) do { \
     FILE * f; \
@@ -79,6 +90,11 @@ struct data {
 # define CALAPHOT_DEBUG(...) CALAPHOT_LOG(CALAPHOT_DEBUG_LEVEL,__VA_ARGS__)
 
 #define CALAPHOT_TRACES
+
+#endif
+
+
+
 #endif // ifndef CALAPHOT_TRACES
 
 class Calaphot

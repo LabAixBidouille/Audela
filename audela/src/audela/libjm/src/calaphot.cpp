@@ -134,18 +134,19 @@ namespace LibJM {
         {
             /* Recuperation des pixels de la couronne entre r2 et r3 */
             /* Bas de la couronne */
-            for (double y = (y0 - r3); y <= (y0 - r2); y++)
+           // Les versions VisualC++ anterieures a VC90 ne suportent pas la redefinition des variables dans des boucles for consécutives
+            for (double yy = (y0 - r3); yy <= (y0 - r2); yy++)
             {
-                double x3 = (r3 * r3) - ((y - y0) * (y - y0));
+                double x3 = (r3 * r3) - ((yy - y0) * (yy - y0));
                 if (x3 < 0.0)
                     x3 = 0.0;
                 double xmin = x0 - sqrt(x3);
                 double xmax = x0 + sqrt(x3);
 
-                int yi = (int)floor(y + 0.5);
-                for (double x = xmin; x <= xmax; x++)
+                int yi = (int)floor(yy + 0.5);
+                for (double xx = xmin; xx <= xmax; xx++)
                 {
-                    int xi = (int)floor(x + 0.5);
+                    int xi = (int)floor(xx + 0.5);
                     LecturePixel (xi, yi, &pixel);
                     flux_fond += pixel;
                     flux_fond2 += (pixel * pixel);
@@ -154,15 +155,15 @@ namespace LibJM {
             }
 
             /* Milieu de la couronne (parties gauche et droite) */
-            for (double y = (y0 - r2); y <= (y0 + r2); y++)
+            for (double yyy = (y0 - r2); yyy <= (y0 + r2); yyy++)
             {
-                double x3 = (r3 * r3) - ((y - y0) * (y - y0));
+                double x3 = (r3 * r3) - ((yyy - y0) * (yyy - y0));
                 if (x3 < 0.0)
                     x3 = 0.0;
-                double x2 = (r2 * r2) - ((y - y0) * (y - y0));
+                double x2 = (r2 * r2) - ((yyy - y0) * (yyy - y0));
                 if (x2 < 0.0)
                     x2 = 0.0;
-                int yi = (int)floor(y + 0.5);
+                int yi = (int)floor(yyy + 0.5);
 
                 double xmin = x0 - sqrt(x3);
                 double xmax = x0 - sqrt(x2);
@@ -177,9 +178,9 @@ namespace LibJM {
 
                 xmin = x0 + sqrt(x2);
                 xmax = x0 + sqrt(x3);
-                for (double x = xmin; x <= xmax; x++)
+                for (double xx = xmin; xx <= xmax; xx++)
                 {
-                    int xi = (int)floor(x + 0.5);
+                    int xi = (int)floor(xx + 0.5);
                     LecturePixel (xi, yi, &pixel);
                     flux_fond += pixel;
                     flux_fond2 += (pixel * pixel);
@@ -239,14 +240,14 @@ namespace LibJM {
             /* Calcul du flux dans l'ellipse (r1x, r1y, ro) */
             double delta_y = r1y / sqrt(1 - ro*ro);
             double delta_x = r1x / sqrt(1 - ro*ro);
-            for (double y = (y0 - delta_y); y <= (y0 + delta_y); y += cinv)
+            for (double y4 = (y0 - delta_y); y4 <= (y0 + delta_y); y4 += cinv)
             {
-                int yi = (int)floor(y + 0.5);
+                int yi = (int)floor(y4 + 0.5);
                 /* on pourrait optimiser en calculant la valeur de x sur l'ellipse */
                 /* A faire a la retraite, a 85 ans ...*/
                 for (double x = (x0 - delta_x); x <= (x0 + delta_x); x += cinv)
                 {
-                    double t = ((x-x0)*(x-x0))/(r1x*r1x) + ((y-y0)*(y-y0))/(r1y*r1y) - 2.0*ro*(x-x0)*(y-y0)/(r1x*r1y) - 1.0;
+                    double t = ((x-x0)*(x-x0))/(r1x*r1x) + ((y4-y0)*(y4-y0))/(r1y*r1y) - 2.0*ro*(x-x0)*(y4-y0)/(r1x*r1y) - 1.0;
                     if (t <= 0.0)
                     {
                         /* Le point (x,y) est dans l'ellipse */
