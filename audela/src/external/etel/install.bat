@@ -1,3 +1,3 @@
 copy include\*.h ..\include
-move *.lib   ..\lib
-move *.dll ..\..\..\bin
+copy lib\dsa20c.lib   ..\lib
+copy bin\dsa20c.dll ..\..\..\bin
