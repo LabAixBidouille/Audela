@@ -72,10 +72,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib ..\..\..\external\lib\tclstub85.lib ..\..\..\external\lib\dsa20cd.lib"
+				AdditionalDependencies="tclstub85.lib dsa20c.lib"
 				OutputFile="..\..\..\..\bin\libetel.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="..\..\..\external\lib"
 				IgnoreDefaultLibraryNames="msvcrt.lib"
 				ModuleDefinitionFile=".\libetel.def"
 				GenerateDebugInformation="true"

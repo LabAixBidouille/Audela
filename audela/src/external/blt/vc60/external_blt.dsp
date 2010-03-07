@@ -77,7 +77,7 @@ PostBuild_Cmds=install.bat Release
 # PROP Target_Dir ""
 F90=df.exe
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "BLT_EXPORTS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /w /W0 /Od /I "../blt2.4z/src" /I "../../include/win" /D "WIN32" /D "CONSOLE" /D "TCL_THREADS" /D "__STDC__" /FR /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /w /W0 /Zi /Od /I "../blt2.4z/src" /I "../../include/win" /D "WIN32" /D "CONSOLE" /D "TCL_THREADS" /D "__STDC__" /FR /YX /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x40c /d "_DEBUG"

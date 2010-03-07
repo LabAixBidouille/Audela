@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="external_sbig"
 	ProjectGUID="{639D4CE0-462B-481E-8B84-44C96384EB00}"
 	RootNamespace="external_sbig"
@@ -27,7 +27,7 @@
 				Name="VCNMakeTool"
 				BuildCommandLine="cd .. &amp; nmake /f Makefile.vc install"
 				ReBuildCommandLine="cd .. &amp; nmake /f Makefile.vc clean install"
-				CleanCommandLine="cd .. &amp; nmake /f Makefile.vc clea"
+				CleanCommandLine="cd .. &amp; nmake /f Makefile.vc clean"
 				Output=""
 				PreprocessorDefinitions="WIN32;_DEBUG"
 				IncludeSearchPath=""
