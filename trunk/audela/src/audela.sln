@@ -16,6 +16,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_jpeg6b", "external\jpeg6b\vc90\external_jpeg6b.vcproj", "{DD2A2284-F3B3-411A-BB8B-1E8F1AB7D3D1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_libltdl", "external\libgphoto2\libltdl\vc90\external_libltdl.vcproj", "{01D1C7A3-E153-4AF0-9CC1-EB31C5DCEC84}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C40A605B-E0B8-4D8F-9C08-23825CD5C6A4} = {C40A605B-E0B8-4D8F-9C08-23825CD5C6A4}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_libgphoto2_port", "external\libgphoto2\libgphoto2_port\libgphoto2_port\vc90\external_libgphoto2_port.vcproj", "{D5FFF436-2BFE-4C64-AFC6-36F947EBCB0F}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -113,6 +116,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libeqmod", "libtel\libeqmod\vc90\libeqmod.vcproj", "{34760CCF-8A64-4FD3-96F5-3E14909C7749}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libetel", "libtel\libetel\vc90\libetel.vcproj", "{2F4EEDE2-4FF4-4FB8-89B7-D66EA4AC970A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8653FD7B-CCB6-49BD-B454-C8B951F8B757} = {8653FD7B-CCB6-49BD-B454-C8B951F8B757}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libethernaude", "libcam\libethernaude\vc90\libethernaude.vcproj", "{79AA39E1-678E-4AA6-A3F5-053969D64803}"
 EndProject
@@ -164,6 +170,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "librgb", "audela\librgb\vc90\librgb.vcproj", "{ABC2B9E5-57E0-4EF2-B28D-428815AB77E2}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libros", "audela\libros\vc90\libros.vcproj", "{57EEE55E-350B-4630-948F-AFC095AB1D3C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EA31B717-A7E3-47EE-AA44-C8D3C4A002C0} = {EA31B717-A7E3-47EE-AA44-C8D3C4A002C0}
+		{4734BFE3-EBE4-4FAB-B810-ECBF54769212} = {4734BFE3-EBE4-4FAB-B810-ECBF54769212}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libsbig", "libcam\libsbig\vc90\libsbig.vcproj", "{4F7DD8F2-9DE0-4D74-A995-5B63D372ACEA}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -231,6 +241,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libqsi", "libcam\libqsi\vc9
 	ProjectSection(ProjectDependencies) = postProject
 		{AA890CDB-EDFC-46BC-A569-FD6883578D2F} = {AA890CDB-EDFC-46BC-A569-FD6883578D2F}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_etel", "external\etel\vc90\external_etel.vcproj", "{8653FD7B-CCB6-49BD-B454-C8B951F8B757}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -558,6 +570,10 @@ Global
 		{76478489-9E93-46FC-A31C-633B59030C00}.Debug|Win32.Build.0 = Debug|Win32
 		{76478489-9E93-46FC-A31C-633B59030C00}.Release|Win32.ActiveCfg = Release|Win32
 		{76478489-9E93-46FC-A31C-633B59030C00}.Release|Win32.Build.0 = Release|Win32
+		{8653FD7B-CCB6-49BD-B454-C8B951F8B757}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8653FD7B-CCB6-49BD-B454-C8B951F8B757}.Debug|Win32.Build.0 = Debug|Win32
+		{8653FD7B-CCB6-49BD-B454-C8B951F8B757}.Release|Win32.ActiveCfg = Release|Win32
+		{8653FD7B-CCB6-49BD-B454-C8B951F8B757}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
