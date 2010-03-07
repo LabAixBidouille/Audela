@@ -44,7 +44,7 @@ RSC=rc.exe
 # PROP Target_Dir ""
 F90=df.exe
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /c
-# ADD CPP /nologo /MT /W3 /GX /O2 /I "..\..\..\include" /I "..\..\..\external\include\win" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "USE_TCL_STUBS" /D "USE_TK_STUBS" /FD /c
+# ADD CPP /nologo /MT /W3 /GX /O2 /I "..\..\include" /I "..\..\..\include" /I "..\..\..\external\include\win" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "USE_TCL_STUBS" /D "USE_TK_STUBS" /FD /c
 # SUBTRACT CPP /X /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
@@ -55,7 +55,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib ..\..\..\external\lib\tclstub85.lib ..\..\..\external\lib\gsl.lib ..\..\..\external\lib\gslcblas.lib /nologo /subsystem:windows /dll /machine:I386 /nodefaultlib:"msvcrt.lib" /nodefaultlib:"libc.lib" /out:"..\..\..\..\bin\libjm.dll"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib tclstub85.lib gsl.lib gslcblas.lib libaudela.lib /nologo /subsystem:windows /dll /machine:I386 /nodefaultlib:"msvcrt.lib" /nodefaultlib:"libc.lib" /out:"..\..\..\..\bin\libjm.dll" /libpath:"..\..\..\external\lib" /libpath:"..\..\lib"
 # SUBTRACT LINK32 /incremental:yes
 
 !ELSEIF  "$(CFG)" == "libjm - Win32 Debug"
@@ -73,7 +73,7 @@ LINK32=link.exe
 # PROP Target_Dir ""
 F90=df.exe
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "..\..\..\include" /I "..\..\..\external\include\win" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "USE_TCL_STUBS" /D "USE_TK_STUBS" /FR /FD /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "..\..\include" /I "..\..\..\include" /I "..\..\..\external\include\win" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "USE_TCL_STUBS" /D "USE_TK_STUBS" /FR /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -84,7 +84,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib ..\..\..\external\lib\tclstub85.lib ..\..\..\external\lib\gsl.lib ..\..\..\external\lib\gslcblas.lib /nologo /subsystem:windows /dll /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /nodefaultlib:"libc.lib" /out:"..\..\..\..\bin\libjm.dll"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib tclstub85.lib gsl.lib gslcblas.lib libaudela.lib /nologo /subsystem:windows /dll /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /nodefaultlib:"libc.lib" /out:"..\..\..\..\bin\libjm.dll" /libpath:"..\..\..\external\lib" /libpath:"..\..\lib"
 
 !ENDIF 
 
@@ -97,23 +97,31 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat;for;f90"
 # Begin Source File
 
-SOURCE=..\src\jm_c_tcl.c
+SOURCE=..\src\calaphot.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\jm_photo.c
+SOURCE=..\src\calaphot_tcl.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\jm_temps.c
+SOURCE=..\src\divers.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\jm_util.c
+SOURCE=..\src\divers_tcl.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\libjm.c
+SOURCE=..\src\horloge.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\horloge_tcl.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\libjm.cpp
 # End Source File
 # Begin Source File
 

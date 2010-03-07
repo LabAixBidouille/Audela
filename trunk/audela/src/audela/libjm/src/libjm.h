@@ -59,9 +59,14 @@ namespace LibJM
     class Generique
     {
     public:
+#if defined(WIN32) && defined(_MSC_VER) &&( _MSC_VER < 1500)
+// Les versions VisualC++ anterieures a VC90 ne suportent pas l'initialisation des variables statiques
+        enum{OK = 1, PB = 1, PB2 = 2};
+#else 
         static const int OK = 0;
         static const int PB = 1;
         static const int PB2 = 2;
+#endif
         static const std::string NUMERO_VERSION;
 
         static int CmdVersionLib(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
