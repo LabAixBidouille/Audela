@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libtel.c,v 1.22 2010-02-21 18:35:28 michelpujol Exp $
+// $Id: libtel.c,v 1.23 2010-03-07 16:42:28 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -955,59 +955,67 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
          }
       } else if (strcmp(argv[2],"coord")==0) {
          /* --- coord ---*/
-         tel_radec_coord(tel,texte);
-         if (tel->radec_model_enabled == 1 ) {
-            char tu[20];
-            // j'applique le modele de pointage avec la fonction mc_tel2cat de LIBMC
-            // ======================================================================
-            // je recupere la date courante TU
-            result = Tcl_Eval(interp,"clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC");
-            if ( result == TCL_OK) {
-               strcpy(tu, interp->result);
-            } 
-            if ( result == TCL_OK) {
-               // je convertis en coordonnes catalogue
-               //usage: mc_tel2cat {12h 36d} EQUATORIAL now {GPS 5 E 43 1230} 101325 290 { symbols } { values }
-               sprintf(ligne, "mc_tel2cat { %s } EQUATORIAL %s %s %d %d { %s } { %s } ", 
-                  texte, tu, tel->homePosition, 
-                  tel->radec_model_pressure, tel->radec_model_temperature, 
-                  tel->radec_model_symbols, tel->radec_model_coefficients);
-               result = Tcl_Eval(interp,ligne);
-               // je convertis les angles en HMS et DMS
-               sprintf(ligne,"return \"[mc_angle2hms [lindex {%s} 0] 360 zero 2 auto string]  [mc_angle2dms [lindex {%s} 1] 90 zero 2 + string]\"",interp->result, interp->result); 
-               if ( mytel_tcleval(tel,ligne) == TCL_ERROR) {
-                  sprintf(tel->msg, "cmdTelRaDec %s error: %s", ligne, tel->interp->result);
-                  result = TCL_ERROR; 
-               } else {
-                  strcpy(ligne,interp->result);
-                  ligne[8]  = '.';
-                  ligne[11] = 's';
-                  ligne[22] = '.';
-                  ligne[25] = 's';
-                  ligne[26] = '\0';
+         if ( tel_radec_coord(tel,texte) == 0 ) {
+            // il n'y a pas d'erreur, je traite les coordonnees
+            if (tel->radec_model_enabled == 1 ) {
+               char tu[20];
+               // j'applique le modele de pointage avec la fonction mc_tel2cat de LIBMC
+               // ======================================================================
+               // je recupere la date courante TU
+               result = Tcl_Eval(interp,"clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC");
+               if ( result == TCL_OK) {
+                  strcpy(tu, interp->result);
                } 
+               if ( result == TCL_OK) {
+                  // je convertis en coordonnes catalogue
+                  //usage: mc_tel2cat {12h 36d} EQUATORIAL now {GPS 5 E 43 1230} 101325 290 { symbols } { values }
+                  sprintf(ligne, "mc_tel2cat { %s } EQUATORIAL %s %s %d %d { %s } { %s } ", 
+                     texte, tu, tel->homePosition, 
+                     tel->radec_model_pressure, tel->radec_model_temperature, 
+                     tel->radec_model_symbols, tel->radec_model_coefficients);
+                  result = Tcl_Eval(interp,ligne);
+                  // je convertis les angles en HMS et DMS
+                  sprintf(ligne,"return \"[mc_angle2hms [lindex {%s} 0] 360 zero 2 auto string]  [mc_angle2dms [lindex {%s} 1] 90 zero 2 + string]\"",interp->result, interp->result); 
+                  if ( mytel_tcleval(tel,ligne) == TCL_ERROR) {
+                     sprintf(tel->msg, "cmdTelRaDec %s error: %s", ligne, tel->interp->result);
+                     result = TCL_ERROR; 
+                  } else {
+                     strcpy(ligne,interp->result);
+                     ligne[8]  = '.';
+                     ligne[11] = 's';
+                     ligne[22] = '.';
+                     ligne[25] = 's';
+                     ligne[26] = '\0';
+                  } 
 
+               }
+            } else if ( strcmp(tel->model_tel2cat,"") != 0 ) {
+               // j'applique le modele de pointage avec la procedure modpoi_tel2cat du TCL
+               // ========================================================================
+               sprintf(ligne,"set libtel(radec) {%s}",texte);
+               Tcl_Eval(interp,ligne);
+               sprintf(ligne,"catch {set libtel(radec) [%s {%s}]}",tel->model_tel2cat,texte);
+               Tcl_Eval(interp,ligne);
+               Tcl_Eval(interp,"set libtel(radec) $libtel(radec)");
+               strcpy(ligne,interp->result);
+               /* - end of pointing model-*/
+            } else {
+               // je n'applique pas de modele de pointage
+               // =======================================
+               strcpy(ligne, texte);
             }
-         } else if ( strcmp(tel->model_tel2cat,"") != 0 ) {
-            // j'applique le modele de pointage avec la procedure modpoi_tel2cat du TCL
-            // ========================================================================
-            sprintf(ligne,"set libtel(radec) {%s}",texte);
-            Tcl_Eval(interp,ligne);
-            sprintf(ligne,"catch {set libtel(radec) [%s {%s}]}",tel->model_tel2cat,texte);
-            Tcl_Eval(interp,ligne);
-            Tcl_Eval(interp,"set libtel(radec) $libtel(radec)");
-            strcpy(ligne,interp->result);
-            /* - end of pointing model-*/
          } else {
-            // je n'applique pas de modele de pointage
-            // =======================================
-            strcpy(ligne, texte);
+            // tel_radec_coord a retourne une erreur, je recupere le message d'erreur
+            strcpy(ligne, tel->msg);
+            result = TCL_ERROR;
          }
+
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+
       } else if (strcmp(argv[2],"state")==0) {
          /* --- state ---*/
 			tel_radec_state(tel,texte);
-            Tcl_SetResult(interp,texte,TCL_VOLATILE);
+         Tcl_SetResult(interp,texte,TCL_VOLATILE);
       } else if (strcmp(argv[2],"goto")==0) {
          tel->active_backlash = 0;
          tel->radec_goto_blocking = 0;        
