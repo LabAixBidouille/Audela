@@ -26,7 +26,7 @@
 			>
 			<Tool
 				Name="VCNMakeTool"
-				BuildCommandLine="cd ..\thread26\win\vc  &amp; nmake -nologo -f makefile.vc TCLDIR=..\..\..\..  INSTALLDIR=..\..\..\..\..\.. MSVCDIR=IDE OPTS=thread  DOTVERSION=2.6.5.1&#x0D;&#x0A;                                        "
+				BuildCommandLine="cd ..\thread26\win\vc  &amp; nmake -nologo -f makefile.vc TCLDIR=..\..\..\..  INSTALLDIR=..\..\..\..\..\.. MSVCDIR=IDE OPTS=thread  DOTVERSION=2.6.5.1 all&#x0D;&#x0A;                                        "
 				ReBuildCommandLine="cd ..\thread26\win\vc  &amp; nmake  -f makefile.vc TCLDIR=..\..\..\..  INSTALLDIR=..\..\..\..\..\.. MSVCDIR=IDE OPTS=thread  DOTVERSION=2.6.5.1 hose all"
 				CleanCommandLine="cd ..\thread26\win\vc  &amp; nmake  -f makefile.vc TCLDIR=..\..\..\..  INSTALLDIR=..\..\..\..\..\.. MSVCDIR=IDE OPTS=thread  DOTVERSION=2.6.5.1 hose"
 				Output=""
@@ -49,9 +49,9 @@
 			>
 			<Tool
 				Name="VCNMakeTool"
-				BuildCommandLine="cd ..\thread26\win\vc &amp; nmake -nologo -f makefile.vc OPTS=symbols TCLDIR=..\..\..\..  INSTALLDIR=..\..\..\..\..\.. MSVCDIR=IDE all"
-				ReBuildCommandLine="cd ..\thread26\win\vc &amp; nmake -nologo -f makefile.vc OPTS=symbols TCLDIR=..\..\..\..  INSTALLDIR=..\..\..\..\..\.. MSVCDIR=IDE hose all"
-				CleanCommandLine="cd ..\thread26\win\vc  &amp; nmake  -f makefile.vc TCLDIR=..\..\..\..  INSTALLDIR=..\..\..\..\..\.. MSVCDIR=IDE OPTS=thread  DOTVERSION=2.6.5.1 hose"
+				BuildCommandLine="cd ..\thread26\win\vc &amp; nmake -nologo -f makefile.vc OPTS=symbols TCLDIR=..\..\..\..  INSTALLDIR=..\..\..\..\..\.. MSVCDIR=IDE DOTVERSION=2.6.5.1 all"
+				ReBuildCommandLine="cd ..\thread26\win\vc &amp; nmake -nologo -f makefile.vc OPTS=symbols TCLDIR=..\..\..\..  INSTALLDIR=..\..\..\..\..\.. MSVCDIR=IDE DOTVERSION=2.6.5.1 hose all"
+				CleanCommandLine="cd ..\thread26\win\vc  &amp; nmake  -f makefile.vc TCLDIR=..\..\..\..  INSTALLDIR=..\..\..\..\..\.. MSVCDIR=IDE OPTS=thread  DOTVERSION=2.6.5.1 DOTVERSION=2.6.5.1 hose"
 				Output=""
 				PreprocessorDefinitions=""
 				IncludeSearchPath=""
