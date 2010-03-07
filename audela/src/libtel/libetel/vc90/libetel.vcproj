@@ -170,10 +170,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib ..\..\..\external\lib\tclstub85.lib ..\..\..\external\lib\dsa20c.lib ..\..\..\external\lib\etb10c.lib ..\..\..\external\lib\dmd10c.lib ..\..\..\external\lib\tra10c.lib"
+				AdditionalDependencies="tclstub85.lib dsa20c.lib"
 				OutputFile="..\..\..\..\bin\libetel.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="..\..\..\external\lib"
 				ModuleDefinitionFile=".\libetel.def"
 				ProgramDatabaseFile=".\Release/libetel.pdb"
 				RandomizedBaseAddress="1"
