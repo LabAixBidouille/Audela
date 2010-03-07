@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise à jour $Id: aud_menu_1.tcl,v 1.32 2010-02-21 10:48:26 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_1.tcl,v 1.33 2010-03-07 13:54:36 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -250,8 +250,6 @@ namespace eval ::audace {
                   -title "$caption(audace,enregistrer_config_3)" -icon question -type yesnocancel]
             if {$choice=="yes"} {
                #--- Enregistrer la configuration
-              ### array set theconf [ini_merge file_conf conf]
-              ### ini_writeIniFile $filename2 theconf
                ini_writeIniFile $filename2 conf
                ::audace::shutdown_devices
                exit
