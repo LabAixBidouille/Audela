@@ -47,7 +47,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="4"
-				AdditionalIncludeDirectories="..\src,..\..\..\include,..\..\..\external\include\win,..\..\..\external\tcl\tcl\include"
+				AdditionalIncludeDirectories="..\src,..\..\..\include,..\..\..\external\include\win,..\..\..\external\include"
 				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;USE_TCL_STUBS;USE_TK_STUBS;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="0"
 				PrecompiledHeaderFile=".\Release/libandor.pch"
