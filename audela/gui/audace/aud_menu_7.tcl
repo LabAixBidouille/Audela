@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise à jour $Id: aud_menu_7.tcl,v 1.20 2010-02-21 10:48:42 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_7.tcl,v 1.21 2010-03-07 13:53:04 robertdelmas Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -863,8 +863,6 @@ namespace eval ::audace {
             -title "$caption(audace,enregistrer_config1)" -icon question -type yesno ]
          if { $choice == "yes" } {
             #--- Enregistrer la configuration
-           ### array set theconf [ini_merge file_conf conf]
-           ### ini_writeIniFile $filename2 theconf
             ini_writeIniFile $filename2 conf
          } elseif {$choice=="no"} {
             #--- Pas d'enregistrement
