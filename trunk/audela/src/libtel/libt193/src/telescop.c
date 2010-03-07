@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-// @version  $Id: telescop.c,v 1.25 2010-02-21 18:36:12 michelpujol Exp $
+// @version  $Id: telescop.c,v 1.26 2010-03-07 16:43:36 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -66,7 +66,6 @@ struct telini tel_ini[] = {
 
 
 // variables locales
- 
 
 // fonctions locales
 void mytel_logConsole(struct telprop *tel, char *messageFormat, ...) ;
@@ -81,6 +80,58 @@ int mytel_sendCommandFilter(struct telprop *tel, int command);
 int mytel_setRadecNotification(struct telprop *tel, int mode);
 int mytel_setFocusNotification(struct telprop *tel, int mode);
 void mytel_processNotification(struct telprop *tel, char * notification);
+const char * mytel_getControlInterfaceLabelError(int numMessage) ;
+int mytel_checkControlInterfaceResponse(struct telprop *tel, char *fonction, char *command, char *response, int returnCode, int requiredValue, int readValue);
+
+//codes retours avec l'interface de controle
+#define BACKCMD_RECEIVED	  0 // Commande prise en compte : acquittement d'envoi de commande à la PMAC (sans erreur)
+#define BACKCMD_COMPLETED	  1 // Commande terminée        : acquittement de fin de commande sur la PMAC (sans erreur)
+#define BACKCMD_UNKNOWN		  2 // Commande inconnue ou erreur de paramètre ou erreur de type
+#define BACKCMD_ERRREFUSED	  3 // Commande refusée (mouvement en cours, etc.)
+#define BACKCMD_ERRCOMM		  4 // Accès PMAC impossible
+#define BACKCMD_ERRMOTOR	  5 // Problème moteur
+#define BACKCMD_ERRLIM		  6 // Butée atteinte (option)
+#define BACKCMD_ERRCONTROL	  7 // Couple moteur dépassé/erreur poursuite (option)
+#define BACKCMD_MOTORSTOPPED  8 // Moteur déjà arrêté (commande STOP)
+
+#define BACKCMD_BAD_PARAM_NUMBER 101 // nombre de parametres incorrect
+#define BACKCMD_CAT2TEL_ERROR 102  
+
+
+
+/**
+ * mytel_getControlInterfaceLabelError 
+ *   retoune le libellé d'un message d'erreur de l'interface de controle
+ * @param tel  
+ * @param messageFormat chaine de formatage du message suivi d'un nombre variable de parametres
+ * @return  void
+ */
+const char * mytel_getControlInterfaceLabelError(int numMessage) {
+
+   switch (numMessage) {
+      case BACKCMD_RECEIVED :
+         return "OK";
+      case BACKCMD_COMPLETED :	
+         return "Acquittement de fin de commande sur la PMAC (sans erreur)";
+      case BACKCMD_UNKNOWN	:	  
+         return "Commande inconnue ou erreur de paramètre ou erreur de type )";
+      case BACKCMD_ERRREFUSED :	 
+          return "Commande refusée (mouvement en cours, etc.)";
+      case BACKCMD_ERRCOMM	:	
+          return "Accès PMAC impossible";
+      case BACKCMD_ERRMOTOR :	 
+          return "Problème moteur";
+      case BACKCMD_ERRLIM :		 
+          return "Butée atteinte";
+      case BACKCMD_ERRCONTROL :	 
+          return "Couple moteur dépassé/erreur poursuite";
+      case BACKCMD_MOTORSTOPPED : 
+          return "Moteur déjà arrêté (commande STOP)";
+      default:
+         return "code inconnu";
+   }   
+}
+
 
 /* ========================================================= */
 /* ========================================================= */
@@ -635,20 +686,12 @@ int tel_radec_coord(struct telprop *tel,char *coord)
             int returnCode;
             char ra[NOTIFICATION_MAX_SIZE];
             char dec[NOTIFICATION_MAX_SIZE];
-            
             int readValue = sscanf(response,"!RADEC COORD %d %s %s @", &returnCode, ra, dec);
-            if (readValue != 3) {
-               sprintf(tel->msg,"tel_radec_coord error: readValue=%d %s", readValue, response );
-               result = 1;
-            } else {
-               if ( returnCode != 0 ) {
-                  sprintf(tel->msg,"tel_radec_coord error: returnCode=%d", returnCode );
-                  result = 1;
-               } else {
-                  // je copie les coordonnees dans la variable de sortie
-                  sprintf(coord,"%s %s", ra, dec);
-                  result = 0;
-               }
+            result = mytel_checkControlInterfaceResponse(tel, "tel_radec_coord", command, response, returnCode, 3, readValue); 
+            if (result == 0 ) {
+               // je copie les coordonnees dans la variable de sortie
+               sprintf(coord,"%s %s", ra, dec);
+               result = 0;
             }
          }
       } else {
@@ -661,8 +704,6 @@ int tel_radec_coord(struct telprop *tel,char *coord)
       strcpy(coord,"00h00m00.00s +00d00m00.00s");
       result = 0; 
    }
-
-
    return result;
 }
 
@@ -689,24 +730,17 @@ int mytel_setRadecNotification(struct telprop *tel, int mode )
       if ( result == 0 ) {
          int returnCode;
          int readValue = sscanf(response,"!RADEC COORD %d @", &returnCode);
-         if (readValue != 1) {
-            sprintf(tel->msg,"setRadecNotification error: readValue=%d %s", readValue, response );
-            result = 1;
-         } else {
-            if ( returnCode != 0 ) {
-               sprintf(tel->msg,"setRadecNotification error: returnCode=%d", returnCode );
-               result = 1;
-            } else {
-               // je memorise l'etat des notifications (1=marche 0=arret)
-               switch (mode) {
-               case 0 : 
+         result = mytel_checkControlInterfaceResponse(tel, "mytel_setRadecNotification", command, response, returnCode, 1, readValue);
+         if (result == 0) {
+            // je memorise l'etat des notifications (1=marche 0=arret)
+            switch (mode) {
+            case 0 : 
                //   tel->radecNotification = 0;
-                  break;
-               case 1 : 
+               break;
+            case 1 : 
                //   tel->radecNotification = 1;
-                  break; 
-               }                  
-            }
+               break; 
+            }                  
          }
       }
    } else {
@@ -793,17 +827,10 @@ int tel_radec_goto(struct telprop *tel) {
          char newRa[13];
          char newDec[13]; 
          int readValue = sscanf(response,"!RADEC GOTO %d %s %s @", &returnCode, newRa, newDec);
-         if (readValue != 3) {
-            sprintf(tel->msg,"RADEC GOTO error: readValue=%d response=%s", readValue, response );
-            result = 1;
-         } else {
-            if ( returnCode == 0 ) {
-               //strcpy(tel->ra , newRa);
-               //strcpy(tel->dec , newDec);
-            } else {
-               sprintf(tel->msg,"RADEC GOTO error: returnCode=%d", returnCode );
-               result = 1;
-            } 
+         result = mytel_checkControlInterfaceResponse(tel, "tel_radec_goto", command, response, returnCode, 3, readValue);
+         if (result == 0) {
+            //strcpy(tel->ra , newRa);
+            //strcpy(tel->dec , newDec);
          }
       } else {
          // rien a faire. Le message d'erreur est deja dans tel->msg
@@ -918,15 +945,7 @@ int tel_radec_move(struct telprop *tel,char *direction)
             int returnCode;
             int returnDirection; 
             int readValue = sscanf(response,"!RADEC MOVE %d %c @", &returnCode, &returnDirection);
-            if (readValue != 2) {
-               sprintf(tel->msg,"RADEC MOVE error: readValue=%d response=%s", readValue, response );
-               result = 1;
-            } else {
-               if ( returnCode != 0 ) {
-                  sprintf(tel->msg,"RADEC MOVE error: returnCode=%d", returnCode );
-                  result = 1;
-               } 
-            }
+            result = mytel_checkControlInterfaceResponse(tel, "tel_radec_move", command, response, returnCode, 2, readValue);
          }
       }
    } else {
@@ -1034,18 +1053,9 @@ int tel_radec_stop(struct telprop *tel,char *direction)
             int returnCode;
             char returnDirection;
             int readValue = sscanf(response,"!RADEC STOP %d %c @", &returnCode, &returnDirection);
-            if (readValue != 2) {
-               sprintf(tel->msg,"RADEC STOP error: readValue=%d %s", readValue, response );
-               result = 1;
-            } else {
-               if ( returnCode != 0 ) {
-                  sprintf(tel->msg,"RADEC STOP error: returnCode=%d", returnCode );
-                  result = 1;
-               } 
-            }
+            result = mytel_checkControlInterfaceResponse(tel, "tel_radec_stop", command, response, returnCode, 2, readValue);
          }
       }
-
    } else {
       // je simule l'envoi de la commande
       //mytel_logConsole(tel, "simul radec stop %s OK",direction);
@@ -1109,20 +1119,13 @@ int tel_radec_correct(struct telprop *tel, char *alphaDirection, double alphaDis
                char returnAlphaDirection; 
                char returnDeltaDirection; 
                int readValue = sscanf(response,"!RADEC CORRECT %d %c %c @", &returnCode, &returnAlphaDirection, &returnDeltaDirection);
-               if (readValue != 3) {
-                  sprintf(tel->msg,"RADEC MOVE error: readValue=%d %s", readValue, response );
-                  result = 1;
-               } else {
-                  if ( returnCode != 0 ) {
-                     sprintf(tel->msg,"RADEC MOVE error: returnCode=%d", returnCode );
-                     result = 1;
-                  } else {
-                     int foundEvent = 1;
-                     tel->radecIsMoving = 1;
-                     // j'attend la fin du mouvement (tel->moving est mis a jour par mytel_processNotification ) 
-                     while (tel->radecIsMoving /*&& foundEvent*/) { //F.FILLION : modif pour éviter l'arrêt du guidage lors d'une correction en cours
-                        foundEvent = Tcl_DoOneEvent(TCL_ALL_EVENTS);
-                     }
+               result = mytel_checkControlInterfaceResponse(tel, "tel_radec_correct", command, response, returnCode, 3, readValue);
+               if (result == 0) {
+                  int foundEvent = 1;
+                  tel->radecIsMoving = 1;
+                  // j'attend la fin du mouvement (tel->moving est mis a jour par mytel_processNotification ) 
+                  while (tel->radecIsMoving /*&& foundEvent*/) { //F.FILLION : modif pour éviter l'arrêt du guidage lors d'une correction en cours
+                     foundEvent = Tcl_DoOneEvent(TCL_ALL_EVENTS);
                   }
                }
             }
@@ -1171,15 +1174,7 @@ int tel_radec_motor(struct telprop *tel) {
       if ( result == 0 ) {
          int returnCode;
          int readValue = sscanf(response,"!RADEC SLEW %d @", &returnCode);
-         if (readValue != 1) {
-            sprintf(tel->msg,"tel_radec_motor error: readValue=%d %s", readValue, response );
-            result = 1;
-         } else {
-            if ( returnCode != 0 ) {
-               sprintf(tel->msg,"tel_radec_motor error: returnCode=%d", returnCode );
-               result = 1;
-            }
-         }                  
+         result = mytel_checkControlInterfaceResponse(tel, "tel_radec_motor", command, response, returnCode, 1, readValue);
       }
    } else {
       result = 0; 
@@ -1236,15 +1231,7 @@ int tel_set_radec_guiding(struct telprop *tel, int guiding) {
       if ( result == 0 ) {
          int returnCode;
          int readValue = sscanf(response,"!RADEC GUIDING %d @", &returnCode);
-         if (readValue != 1) {
-            sprintf(tel->msg,"tel_radec_motor error: readValue=%d %s", readValue, response );
-            result = 1;
-         } else {
-            if ( returnCode != 0 ) {
-               sprintf(tel->msg,"tel_radec_motor error: returnCode=%d", returnCode );
-               result = 1;
-            }
-         }                  
+         result = mytel_checkControlInterfaceResponse(tel, "tel_set_radec_guiding", command, response, returnCode, 1, readValue);
       }
    } else {
       result = 0; 
@@ -1289,20 +1276,8 @@ int tel_focus_coord(struct telprop *tel,char *position)
       result = socket_writeTelescopeCommandSocket(tel,command,response);
       if ( result == 0 ) {
          int returnCode;
-
          int readValue = sscanf(response,"!FOC COORD %d %s @", &returnCode, position);
-         if (readValue != 2) {
-            sprintf(tel->msg,"tel_radec_coord error: readValue=%d %s", readValue, response );
-            result = 1;
-         } else {
-            if ( returnCode != 0 ) {
-               sprintf(tel->msg,"tel_radec_coord error: returnCode=%d", returnCode );
-               result = 1;
-            } else {
-               // je copie les coordonnees dans la variable de sortie
-               result = 0;
-            }
-         }
+         result = mytel_checkControlInterfaceResponse(tel, "tel_focus_coord", command, response, returnCode, 2, readValue);
       }
    } else {
       // je retourne une reponse par defaut 
@@ -1342,28 +1317,21 @@ int tel_focus_goto(struct telprop *tel)
             int returnCode;
 			   // j'extrait le code retour
             int readValue = sscanf(response,"!FOC GOTO %d @", &returnCode);
-            if (readValue != 1) {
-               sprintf(tel->msg,"FOC STOP error: readValue=%d response=%s", readValue, response );
-               result = 1;
-            } else {
-               if ( returnCode != 0 ) {
-                  sprintf(tel->msg,"FOC GOTO error: returnCode=%d", returnCode );
-                  result = 1;
-               } else {                  
-                  // j'active les notifications de la position du focus
-                  result = mytel_setFocusNotification(tel, 1);
-                  // si le goto est lance en mode bloquant , j'attends la fin du deplacement
-                  if ( tel->focus_goto_blocking == 1 ) {
-                     int foundEvent = 1;
-                     tel->focusIsMoving = 1;
-                     // j'attend la fin du mouvement (tel->moving est mis a jour par mytel_processNotification ) 
-                     while (tel->focusIsMoving && foundEvent) {
-                        foundEvent = Tcl_DoOneEvent(TCL_ALL_EVENTS);
-                        Tcl_Sleep(1);
-                     }
+            result = mytel_checkControlInterfaceResponse(tel, "tel_focus_goto", command, response, returnCode, 1, readValue);
+            if (result == 0) {
+               // j'active les notifications de la position du focus
+               result = mytel_setFocusNotification(tel, 1);
+               // si le goto est lance en mode bloquant , j'attends la fin du deplacement
+               if ( tel->focus_goto_blocking == 1 ) {
+                  int foundEvent = 1;
+                  tel->focusIsMoving = 1;
+                  // j'attend la fin du mouvement (tel->moving est mis a jour par mytel_processNotification ) 
+                  while (tel->focusIsMoving && foundEvent) {
+                     foundEvent = Tcl_DoOneEvent(TCL_ALL_EVENTS);
+                     Tcl_Sleep(1);
                   }
-                  result = 0;
                }
+               result = 0;
             }
          }
       }
@@ -1433,15 +1401,7 @@ int tel_focus_move(struct telprop *tel,char *direction)
          if ( result == 0 ) {
             int returnCode;
             int readValue = sscanf(response,"!FOC MOVE %d @", &returnCode);
-            if (readValue != 1) {
-               sprintf(tel->msg,"FOC MOVE error: readValue=%d response=%s", readValue, response );
-               result = 1;
-            } else {
-               if ( returnCode != 0 ) {
-                  sprintf(tel->msg,"FOC MOVE error: returnCode=%d", returnCode );
-                  result = 1;
-               } 
-            }
+            result = mytel_checkControlInterfaceResponse(tel, "tel_focus_move", command, response, returnCode, 1, readValue);
          }
       }
    }
@@ -1472,17 +1432,9 @@ int tel_focus_stop(struct telprop *tel,char * direction)
          if ( result == 0 ) {
             int returnCode;
             int readValue = sscanf(response,"!FOC STOP %d @", &returnCode);
-            if (readValue != 1) {
-               sprintf(tel->msg,"FOC STOP error: readValue=%d response=%s", readValue, response );
-               result = 1;
-            } else {
-               if ( returnCode != 0 ) {
-                  sprintf(tel->msg,"FOC STOP error: returnCode=%d", returnCode );
-                  result = 1;
-               } 
-               // j'arrete la notification de la position du focuseur
-               mytel_setFocusNotification(tel, 0);
-            }
+            result = mytel_checkControlInterfaceResponse(tel, "tel_focus_stop", command, response, returnCode, 1, readValue);
+            // j'arrete la notification de la position du focuseur
+            mytel_setFocusNotification(tel, 0);
          }
       }
    }
@@ -1511,17 +1463,7 @@ int mytel_setFocusNotification(struct telprop *tel, int mode )
       if ( result == 0 ) {
          int returnCode;
          int readValue = sscanf(response,"!FOC COORD %d @", &returnCode);
-         if (readValue != 1) {
-            sprintf(tel->msg,"tel_radec_coord error: readValue=%d %s", readValue, response );
-            result = 1;
-         } else {
-            if ( returnCode != 0 ) {
-               sprintf(tel->msg,"tel_radec_coord error: returnCode=%d", returnCode );
-               result = 1;
-            } else {
-               result = 0;
-            }
-         }
+         result = mytel_checkControlInterfaceResponse(tel, "mytel_setFocusNotification", command, response, returnCode, 1, readValue);
       }
    } else {
       result = 0; 
@@ -2064,6 +2006,7 @@ void mytel_sendNotificationError(struct telprop *tel, int errorNo, char *message
    vsprintf(message, messageFormat, mkr);
 	va_end (mkr);
 
+
    // j'affiche une erreur dans la console
    if ( strcmp(tel->telThreadId,"") == 0 ) {
       sprintf(ligne,"error \"t193 error=%d notification=%s \" ",errorNo, message); 
@@ -2352,10 +2295,13 @@ double mytel_stopTimer(struct telprop *tel)
 }
 
 
-//////////////////////////////////////////////////////////////////////
-//  gestion des traces
-/////////////////////////////////////////////////////////////////////
-
+/**
+ * mytel_logConsole 
+ *   affiche un message dans la console d'Audela
+ * @param tel  
+ * @param messageFormat chaine de formatage du message suivi d'un nombre variable de parametres
+ * @return  void
+ */
 void mytel_logConsole(struct telprop *tel, char *messageFormat, ...) {
    char message[1024];
    char ligne[1200];
@@ -2377,6 +2323,30 @@ void mytel_logConsole(struct telprop *tel, char *messageFormat, ...) {
    
 }
 
+/**
+ * mytel_getControlInterfaceLabelError 
+ *   retoune le libellé d'un message d'erreur de l'interface de controle
+ * @param tel  
+ * @param messageFormat chaine de formatage du message suivi d'un nombre variable de parametres
+ * @return  void
+ */
+int mytel_checkControlInterfaceResponse(struct telprop *tel, char *fonction, char *command, char *response, int returnCode, int requiredValue, int readValue) {
+   int result;
+   if (readValue != requiredValue) {
+      sprintf(tel->msg,"%s error: l'interface de controle a retourné un nombre de parametres incorrects=%d (attendu=%d) \nCommand=%s Response=%s",
+         fonction,readValue, requiredValue, command, response );
+      result = 1;
+   } else {
+      if ( returnCode != 0 ) {
+         sprintf(tel->msg,"%s error: L'interface de controle a retourné le code erreur=%d (%s)\nCommand=%sReponse=%s", 
+            fonction, returnCode, mytel_getControlInterfaceLabelError(returnCode), command, response);
+         result = returnCode;
+      } else {
+         result = 0;
+      }
+   }
+   return result;
+}
 
 //#define MOUCHARD
 
