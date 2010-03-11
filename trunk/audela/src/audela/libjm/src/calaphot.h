@@ -35,7 +35,7 @@ struct data {
 	double * pixels;
 };
 
-#ifndef CALAPHOT_TRACES
+#define CALAPHOT_LOG_FILE_NAME "libjm_calaphot.log"
 
 /* --- Macros pour générer des traces --- */
 #ifndef __CALAPHOT_STRINGIFY
@@ -43,59 +43,54 @@ struct data {
 # define __CALAPHOT_STRINGIFY(y) __CALAPHOT_TSTRHELPER(y)
 #endif /* __CALAPHOT_STRINGIFY  */
 
-#define CALAPHOT_LOG_FILE_NAME "CALAPHOT.txt"
+#  define sdsp_log(level,__s) \
+    if (level >= Calaphot::_log_verbosity) { sdsp_log_on_stream(log_stream,__CALAPHOT_STRINGIFY(level),__s) }
 
-#define CALAPHOT_ERROR_LEVEL 5
-#define CALAPHOT_WARNING_LEVEL 4
-#define CALAPHOT_NOTICE_LEVEL 3
-#define CALAPHOT_INFO_LEVEL 2
-#define CALAPHOT_DEBUG_LEVEL 1
+#  define sdsp_verbose_log(level,__s) \
+    if (level >= Calaphot::_log_verbosity) { sdsp_verbose_log_on_stream(log_stream,__CALAPHOT_STRINGIFY(level),__s) }
 
-#define CALAPHOT_LOG_FILE_CREATE do { \
-        FILE * f; \
-        f = fopen( CALAPHOT_LOG_FILE_NAME, "w" ); \
-        fclose( f ); \
-} while(0)
+#  if defined(__GNUC__)
+#   define sdsp_log_on_stream(__stream,level,str) \
+                 (__stream) << str << "\n"; \
+                 (__stream).flush();
+#   define sdsp_verbose_log_on_stream(__stream,level,str) \
+                 (__stream) << "[" << level << "] " <<__FILE__ << ":" << __LINE__ << " ("<<__PRETTY_FUNCTION__<<") -" << "- " << str << "\n"; \
+                 (__stream).flush();
+#  else /* !__GNUC__ */
+#   define sdsp_log_on_stream(__stream,level,str) \
+                 (__stream) << str << "\n"; \
+                 (__stream).flush();
+#   define sdsp_verbose_log_on_stream(__stream,level,str) \
+                 (__stream) << "[" << level << "] " << __FILE__ << ":" << __LINE__ << " -" << str << "\n"; \
+                 (__stream).flush();
+#  endif /* !__GNUC__*/
 
+#if 0
 #if defined(WIN32) && defined(_MSC_VER) &&( _MSC_VER < 1500)
 // Les versions VisualC++ anterieures a VC90 ne suportent pas les macros avec un nombre de parametre variable
-#define CALAPHOT_LOG_FILE 
+#define CALAPHOT_LOG_FILE
 #define CALAPHOT_LOG
-# define CALAPHOT_ERROR
-# define CALAPHOT_WARNING
-# define CALAPHOT_NOTICE
-# define CALAPHOT_INFO
-# define CALAPHOT_DEBUG
-
-#else 
-
-#define CALAPHOT_LOG_FILE( __level, fmt,... ) do { \
-    FILE * f; \
-    f = fopen( CALAPHOT_LOG_FILE_NAME, "at" ); \
-    fprintf( f, "%s %s[%s:%d]: " fmt, __level, __FILE__, __FUNCTION__, __LINE__, ##__VA_ARGS__ ); \
-    fclose( f ); \
-} while(0)
-
-#define CALAPHOT_LOG(__level,...) do { \
-    static int CALAPHOT_verbosity = CALAPHOT_DEBUG_LEVEL; \
-    if (__level >= CALAPHOT_verbosity) { \
-      CALAPHOT_LOG_FILE(__CALAPHOT_STRINGIFY(__level),__VA_ARGS__); \
-    } \
-} while(0)
-
-# define CALAPHOT_ERROR(...) CALAPHOT_LOG(CALAPHOT_ERROR_LEVEL,__VA_ARGS__)
-# define CALAPHOT_WARNING(...) CALAPHOT_LOG(CALAPHOT_WARNING_LEVEL,__VA_ARGS__)
-# define CALAPHOT_NOTICE(...) CALAPHOT_LOG(CALAPHOT_NOTICE_LEVEL,__VA_ARGS__)
-# define CALAPHOT_INFO(...) CALAPHOT_LOG(CALAPHOT_INFO_LEVEL,__VA_ARGS__)
-# define CALAPHOT_DEBUG(...) CALAPHOT_LOG(CALAPHOT_DEBUG_LEVEL,__VA_ARGS__)
-
-#define CALAPHOT_TRACES
-
+# define calaphot_error
+# define calaphot_warning
+# define calaphot_notice
+# define calaphot_info_1
+# define calaphot_info_2
+# define calaphot_info_3
+# define calaphot_debug
+#else
+#endif
 #endif
 
+# define calaphot_error(__s)    sdsp_log(Calaphot::Error_Level,__s)
+# define calaphot_warning(__s)  sdsp_log(Calaphot::Warning_Level,__s)
+# define calaphot_notice(__s)   sdsp_log(Calaphot::Notice_Level,__s)
+# define calaphot_info1(__s)    sdsp_verbose_log(Calaphot::Info1_Level,__s)
+# define calaphot_info2(__s)    sdsp_verbose_log(Calaphot::Info2_Level,__s)
+# define calaphot_info3(__s)    sdsp_verbose_log(Calaphot::Info3_Level,__s)
+# define calaphot_debug(__s)    sdsp_verbose_log(Calaphot::Debug_Level,__s)
 
 
-#endif // ifndef CALAPHOT_TRACES
+
 
 class Calaphot
 {
@@ -124,6 +119,16 @@ public :
         size_t nxy;
     };
 
+    enum log_level
+    {
+        Error_Level = 7,
+        Warning_level = 6,
+        Notice_Level = 5,
+        Info1_Level = 4,
+        Info2_Level = 3,
+        Info3_Level = 2,
+        Debug_Level = 1
+    };
     static Calaphot * instance();
     static int CmdFluxEllipse (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
     static int CmdAjustementGaussien (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
@@ -135,8 +140,12 @@ public :
     int SoustractionGaussienne (int *carre, Calaphot::ajustement *p);
     int Magnitude(double flux_etoile, double flux_ref, double mag_ref, double *mag_etoile);
     CBuffer * set_buffer (int);
+    static int _log_verbosity;
+    static std::ofstream log_stream;
 
 private :
+    Calaphot();
+    ~Calaphot();
     static Calaphot * _unique_instance;
     CBuffer * _buffer;
     void Gauss (struct rectangle * rect, gsl_vector *vect_s, gsl_vector *vect_w, gsl_matrix *mat_x, gsl_vector *vect_c, gsl_matrix *mat_cov, double *chi2, double *me1, Calaphot::ajustement *p, Calaphot::ajustement *incert, int *iter);

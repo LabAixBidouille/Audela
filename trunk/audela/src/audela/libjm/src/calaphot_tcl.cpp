@@ -27,6 +27,8 @@
  * Description : Fonctions interfaces entre TCL et C
  * =================================================
 */
+#include <iostream>
+#include <fstream>
 #include <string.h>
 #include <math.h>
 #include <gsl/gsl_vector.h>
@@ -49,7 +51,7 @@ int Calaphot::CmdFluxEllipse(ClientData clientData, Tcl_Interp *interp, int argc
     double nb_pixel, nb_pixel_fond;
     double flux_etoile, flux_fond, sigma_fond;
 
-    CALAPHOT_DEBUG ("argc = %d\n", argc);
+    calaphot_debug ("argc = " << argc);
 
     /* La facteur de rotation doit imperativement etre de module inferieur a 1 */
     if (fabs(atof(argv[6])) >= 1.0)
@@ -114,13 +116,13 @@ int Calaphot::CmdFluxEllipse(ClientData clientData, Tcl_Interp *interp, int argc
 /***************************/
 /* Magnitude etoile        */
 /***************************/
-int CmdMagnitude(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+int Calaphot::CmdMagnitude(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
   char s[256];
   double magnitude;
   int tampon = 0;  // En fait ce code n'est pas opérationnel. A reprendre...
 
-  CALAPHOT_DEBUG ("argc = %d\n", argc);
+  calaphot_debug ("argc = " << argc);
 
   if (argc == 5)
     {
@@ -163,9 +165,9 @@ int Calaphot::CmdAjustementGaussien (ClientData clientData, Tcl_Interp *interp, 
     Calaphot::ajustement valeurs, incertitudes;
     int retour;
 
-    CALAPHOT_DEBUG ("argc = %d\n", argc);
+    calaphot_debug ("argc = " << argc);
     for (int arg = 0; arg < argc; arg++)
-        CALAPHOT_DEBUG ("argv[%d] = %s\n", arg, argv[arg]);
+        calaphot_debug ("argv[" << arg << "] = " << argv[arg]);
 
     if((argc < 3) || (argc > 4))
     {
@@ -237,9 +239,9 @@ int Calaphot::CmdAjustementGaussien (ClientData clientData, Tcl_Interp *interp, 
         }
         catch (const CError& e)
         {
-            CALAPHOT_ERROR ("%s\n",e.gets ());
+            calaphot_error (e.gets ());
             for (int arg = 0; arg < argc; arg++)
-                CALAPHOT_ERROR ("\t argv[%d] = %s\n", arg, argv[arg]);
+                calaphot_error ("\t argv[" << arg << "] = " << argv[arg]);
             Tcl_SetResult( interp, e.gets(), TCL_VOLATILE );
             return TCL_ERROR;
         }
