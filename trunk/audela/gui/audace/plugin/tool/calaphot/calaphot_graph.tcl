@@ -5,7 +5,7 @@
 #
 # @brief Routines de gestion des affichages de Calaphot
 #
-# $Id: calaphot_graph.tcl,v 1.4 2010-02-14 10:54:16 robertdelmas Exp $
+# $Id: calaphot_graph.tcl,v 1.5 2010-03-11 19:49:48 jacquesmichelet Exp $
 
 namespace eval ::CalaPhot {
 
@@ -1180,8 +1180,7 @@ namespace eval ::CalaPhot {
             signal_bruit \
             gain_camera \
             bruit_lecture \
-            sortie \
-            fichier_cl} {
+            sortie } {
             set valeur_defaut($champ) $::CalaPhot::parametres($champ)
             label $t.trame1.l$champ \
                 -text $calaphot(texte,$champ)

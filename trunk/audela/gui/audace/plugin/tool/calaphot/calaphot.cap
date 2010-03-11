@@ -1,6 +1,6 @@
 #
 # Fichier : calaphot.cap
-# Mise a jour $Id: calaphot.cap,v 1.8 2009-12-19 09:09:45 robertdelmas Exp $
+# Mise a jour $Id: calaphot.cap,v 1.9 2010-03-11 19:50:35 jacquesmichelet Exp $
 #
 
 #=========================================================================
@@ -27,7 +27,7 @@ set calaphot(texte,tailleboite)            "Window Half-Width"
 set calaphot(texte,o_rayon1)               "Inner Oval Radius (in FWHM)"
 set calaphot(texte,o_rayon2)               "Inner Crown Radius (in FWHM)"
 set calaphot(texte,o_rayon3)               "Outer Crown Radius (in FWHM)"
-set calaphot(texte,sortie)                 "Output File Name"
+set calaphot(texte,sortie)                 "Output Generic File Name"
 set calaphot(texte,signal_bruit)           "Minimum S/N Ratio"
 set calaphot(texte,mode)                   "Calculation Mode"
 set calaphot(texte,mode_ouverture)         "Aperture Photometry"
@@ -141,7 +141,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,o_rayon1)            "Rayon de l'ovale intérieur (en FWHM)"
    set calaphot(texte,o_rayon2)            "Rayon interne de la couronne (en FWHM)"
    set calaphot(texte,o_rayon3)            "Rayon externe de la couronne (en FWHM)"
-   set calaphot(texte,sortie)              "Nom du fichier texte résultat"
+   set calaphot(texte,sortie)              "Nom générique des fichiers résultat"
    set calaphot(texte,signal_bruit)        "Rapport S/B limite"
    set calaphot(texte,mode)                "Mode de calcul"
    set calaphot(texte,mode_ouverture)      "Phot. d'ouverture"
@@ -710,7 +710,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,o_rayon1)            "Inner Oval Radius (in FWHM)"
    set calaphot(texte,o_rayon2)            "Inner Crown Radius (in FWHM)"
    set calaphot(texte,o_rayon3)            "Outer Crown Radius (in FWHM)"
-   set calaphot(texte,sortie)              "Output File Name"
+   set calaphot(texte,sortie)              "Output Generic File Name"
    set calaphot(texte,signal_bruit)        "Maximum S/N Ratio"
    set calaphot(texte,mode)                "Calculation Mode"
    set calaphot(texte,mode_ouverture)      "Aperture Photometry"
@@ -824,7 +824,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,o_rayon1)            "Inner Oval Radius (in FWHM)"
    set calaphot(texte,o_rayon2)            "Inner Crown Radius (in FWHM)"
    set calaphot(texte,o_rayon3)            "Outer Crown Radius (in FWHM)"
-   set calaphot(texte,sortie)              "Output File Name"
+   set calaphot(texte,sortie)              "Output Generic File Name"
    set calaphot(texte,signal_bruit)        "Minimum S/N Ratio"
    set calaphot(texte,mode)                "Calculation Mode"
    set calaphot(texte,mode_ouverture)      "Aperture Photometry"
@@ -938,7 +938,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,o_rayon1)            "Inner Oval Radius (in FWHM)"
    set calaphot(texte,o_rayon2)            "Inner Crown Radius (in FWHM)"
    set calaphot(texte,o_rayon3)            "Outer Crown Radius (in FWHM)"
-   set calaphot(texte,sortie)              "Output File Name"
+   set calaphot(texte,sortie)              "Output Generic File Name"
    set calaphot(texte,signal_bruit)        "Minimum S/N Ratio"
    set calaphot(texte,mode)                "Calculation Mode"
    set calaphot(texte,mode_ouverture)      "Aperture Photometry"

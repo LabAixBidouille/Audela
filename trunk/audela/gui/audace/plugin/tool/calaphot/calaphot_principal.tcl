@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot_principal.tcl,v 1.6 2010-01-30 13:47:17 robertdelmas Exp $
+# $Id: calaphot_principal.tcl,v 1.7 2010-03-11 19:50:07 jacquesmichelet Exp $
 #
 
 ###catch {namespace delete ::Calaphot}
@@ -179,8 +179,8 @@ namespace eval ::CalaPhot {
 
         catch {file delete [file join $audace(rep_images) $parametres(sortie)]}
 
-        TraceFichier notice "%s %s\n" $calaphot(texte,titre) $calaphot(init,version_ini)
-        TraceFichier notice "%s\n" $calaphot(texte,copyright)
+        TraceFichier ${parametres(sortie)}.txt notice "%s %s\n" $calaphot(texte,titre) $calaphot(init,version_ini)
+        TraceFichier ${parametres(sortie)}.txt notice "%s\n" $calaphot(texte,copyright)
 
         if {$demande_arret == 1} {
             Message probleme "%s\n" $calaphot(texte,fin_anticipee)
@@ -487,6 +487,7 @@ namespace eval ::CalaPhot {
          } else {
             AffichageCDR
          }
+         AffichageCSV
 
         # Destruction des fichiers de configs Sextractor
         DestructionFichiersSextractor
@@ -496,7 +497,7 @@ namespace eval ::CalaPhot {
          Message notice "%s\n" $calaphot(texte,fin_normale)
 
          # Affichage de la courbe de lumiere
-         CourbeLumiere
+###         CourbeLumiere
 
     }
 
@@ -590,6 +591,43 @@ namespace eval ::CalaPhot {
             }
         }
         Message notice "---------------------------------------------------------------------------------------\n"
+    }
+
+    ##
+    # @brief Affichage avec le format CSV (Comma Separated Values)
+    # @details Le resultat de cet affichage peut directement etre importé par un tableur
+    # @return toujours 0
+    proc AffichageCSV {} {
+        variable data_image
+        variable parametres
+        variable calaphot
+        variable data_script
+        variable liste_image
+
+        Message debug "%s\n" [info level [info level]]
+
+        TraceFichier ${parametres(sortie)}.csv notice "year;month;day;hour;min;sec;"
+        TraceFichier ${parametres(sortie)}.csv notice "JJ;Mag var;Inc var;"
+        for {set etoile 0} {$etoile < $data_script(nombre_reference)} {incr etoile} {
+            TraceFichier ${parametres(sortie)}.csv notice "Mag ref%d;+/-;" $etoile
+        }
+        TraceFichier ${parametres(sortie)}.csv notice "Const. mag;Valid\n"
+        foreach i $liste_image {
+            set temps [mc_date2ymdhms $data_image($i,date)]
+            TraceFichier ${parametres(sortie)}.csv notice "%02d;%02d;%04d;" [lindex $temps 0] [lindex $temps 1] [lindex $temps 2]
+            TraceFichier ${parametres(sortie)}.csv notice "%02d;%02d;%02d;" [lindex $temps 3] [lindex $temps 4] [expr round([lindex $temps 5])]
+            TraceFichier ${parametres(sortie)}.csv notice "%04d;%15.5f;" $i $data_image($i,date)
+            if {[info exists data_image($i,var,mag_0)]} {
+                TraceFichier ${parametres(sortie)}.csv notice "%07.4f;%07.4f;" $data_image($i,var,mag_0) $data_image($i,var,incertitude_0)
+                for {set etoile 0} {$etoile < $data_script(nombre_reference)} {incr etoile} {
+                    TraceFichier ${parametres(sortie)}.csv notice "%07.4f;%07.4f;" $data_image($i,ref,mag_$etoile) $data_image($i,ref,incertitude_$etoile)
+                }
+            } else {
+                TraceFichier ${parametres(sortie)}.csv notice "99.9999;99.9999"
+            }
+            TraceFichier ${parametres(sortie)}.csv notice "%7.4f;" $data_image($i,constante_mag)
+            TraceFichier ${parametres(sortie)}.csv notice "%s\n" $data_image($i,valide)
+        }
     }
 
     ##
@@ -926,17 +964,18 @@ namespace eval ::CalaPhot {
     }
 
     ##
-    # @brief Sortie de valeur aur la console et le fichier de log
+    # @brief Sortie de valeur sur la console et le fichier de log
     # @details @see @ref Console
     # @param[in] niveau_info : le niveau d'affichage
     # @param[in] args : le message formatte a afficher
     # @return
     proc Message {niveau_info args} {
         global audace
+        variable parametres
 
         set param [eval [concat {format} $args]]
         Console $niveau_info $param
-        TraceFichier $niveau_info $param
+        TraceFichier ${parametres(sortie)}.txt $niveau_info $param
     }
 
     ##
@@ -1284,13 +1323,13 @@ namespace eval ::CalaPhot {
     # @param[in] niveau_info : le niveau d'affichage
     # @param[in] args : le message formatte a afficher
     # @return
-    proc TraceFichier {niveau_info args} {
+    proc TraceFichier {fichier niveau_info args} {
         global audace
         variable calaphot
         variable parametres
 
         if {($calaphot(niveau_notice) <= $calaphot(niveau_$niveau_info))} {
-            set fid [open [file join $audace(rep_images) $parametres(sortie)] a]
+            set fid [open [file join $audace(rep_images) $fichier] a]
             puts -nonewline $fid [eval [concat {format} $args]]
             close $fid
         }
