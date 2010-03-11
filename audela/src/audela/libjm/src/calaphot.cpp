@@ -20,6 +20,8 @@
  * </pre>
  */
 
+#include <iostream>
+#include <fstream>
 #include <string.h>
 #include <math.h>
 #include <gsl/gsl_math.h>
@@ -36,6 +38,21 @@
 namespace LibJM {
 
     Calaphot * Calaphot::_unique_instance = 0;
+    int Calaphot::_log_verbosity = Calaphot::Notice_Level;
+    std::ofstream Calaphot::log_stream;
+
+    Calaphot::Calaphot()
+    {
+    	log_stream.open(CALAPHOT_LOG_FILE_NAME, std::ios::trunc);
+    	if( !log_stream ) {
+    		std::cerr << "Error opening input stream" << std::endl;
+    	}
+    }
+
+    Calaphot::~Calaphot()
+    {
+    	log_stream.close();
+    }
 
     Calaphot * Calaphot::instance ()
     {
@@ -68,7 +85,7 @@ namespace LibJM {
     CBuffer * Calaphot::set_buffer (int tampon)
     {
         _buffer = CBuffer::Chercher (tampon);
-        CALAPHOT_DEBUG ("tampon = %d buffer = %p\n", tampon, _buffer);
+        calaphot_debug ("tampon = "<< tampon << " buffer = "<< (void*) _buffer);
         if (_buffer)
             return _buffer;
         else
@@ -91,7 +108,7 @@ namespace LibJM {
         }
         catch (const CError& e)
         {
-            CALAPHOT_ERROR ("%s x=%d y=%d\n",e.gets(), x, y);
+            calaphot_error (e.gets() << "x=" << x << " y=" << y);
             *pixel = 0;
             throw e;
         }
@@ -134,7 +151,7 @@ namespace LibJM {
         {
             /* Recuperation des pixels de la couronne entre r2 et r3 */
             /* Bas de la couronne */
-           // Les versions VisualC++ anterieures a VC90 ne suportent pas la redefinition des variables dans des boucles for consécutives
+           // Les versions VisualC++ anterieures a VC90 ne suportent pas la redefinition des variables dans des boucles for consï¿½cutives
             for (double yy = (y0 - r3); yy <= (y0 - r2); yy++)
             {
                 double x3 = (r3 * r3) - ((yy - y0) * (yy - y0));
@@ -261,7 +278,7 @@ namespace LibJM {
         }
         catch ( const CError& e )
         {
-            CALAPHOT_ERROR ("%s x0=%f y0=%f r1x=%f r1y=%f r2=%f r3=%f\n",e.gets(), x0, y0, r1x, r1y, r2, r3);
+            calaphot_error (e.gets() << " x0=" << x0 << " y0=" << y0 << " r1x=" << r1x << " r1y=" << r1y << " r2="<< r2 << " r3="<< r3);
             throw e;
         }
 
@@ -308,7 +325,7 @@ int Calaphot::LectureRectangle (rectangle * rect, gsl_vector *vect_s)
             }
             catch (const CError& e)
             {
-                CALAPHOT_ERROR ("%s x=%d y=%d x1=%d y1=%d x2=%d y2=%d\n", e.gets(), x, y, rect->x1, rect->y1, rect->x2, rect->y2);
+                calaphot_error (e.gets() << " x=" << x << " y=" << y << " x1=" << rect->x1 << " y1=" << rect->y1 << " x2=" << rect->x2 << " y2=" << rect->y2);
                 throw e;
             }
             gsl_vector_set (vect_s, i++, (double)valeur_pixel);
@@ -875,7 +892,7 @@ int Calaphot::AjustementGaussien(int *carre, double *fgauss, double *stat, ajust
     }
     catch (const CError& e)
     {
-        CALAPHOT_ERROR ("%s",e.gets ());
+        calaphot_error (e.gets ());
         *iter = 0;
         gsl_matrix_free(mat_cov);
         gsl_matrix_free(mat_x);
@@ -1091,7 +1108,7 @@ int Calaphot::SoustractionGaussienne(int *carre, ajustement *p)
     }
     catch ( const CError& e )
     {
-        CALAPHOT_ERROR ("%s x1=%d y1=%d x2=%d y2=%d\n", e.gets(), carre[0], carre[1], carre[2], carre[3]);
+        calaphot_error (e.gets() << " x1=" << carre[0] << " y1=" << carre[1] << " x2=" << carre[2] << " y2=" << carre[3]);
         throw e;
     }
     return 0;

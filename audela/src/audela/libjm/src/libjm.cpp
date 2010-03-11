@@ -22,6 +22,8 @@
 
 #undef _LIBJM_FOURIER_
 
+#include <iostream>
+#include <fstream>
 #include <string.h>		/* strdup() */
 #include <stdlib.h>		/* free() */
 #include <math.h>
@@ -37,7 +39,7 @@
 #include "calaphot.h"
 #include "horloge.h"
 
-#ifdef _LIBJM_FOURIER
+#ifdef _LIBJM_FOURIER_
 #include "fourier.h"
 #endif
 
@@ -78,15 +80,13 @@ extern "C" int Jm_Init(Tcl_Interp *interp)
     Tcl_CreateCommand(interp,"jm_fluxellipse",(Tcl_CmdProc *)LibJM::Calaphot::CmdFluxEllipse,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
     Tcl_CreateCommand(interp,"jm_fitgauss2d",(Tcl_CmdProc *)LibJM::Calaphot::CmdAjustementGaussien,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
 
-#ifdef _LIBJM_FOURIER
+#ifdef _LIBJM_FOURIER_
     Tcl_CreateCommand( interp, "dft", (Tcl_CmdProc *)LibJM::Fourier::CmdFourierDirect, NULL, NULL );
     Tcl_CreateCommand( interp, "idft", (Tcl_CmdProc *)LibJM::Fourier::CmdFourierInverse, NULL, NULL );
     Tcl_CreateCommand( interp, "acorr", (Tcl_CmdProc *)LibJM::Fourier::CmdAutoCorrelation, NULL, NULL );
     Tcl_CreateCommand( interp, "icorr", (Tcl_CmdProc *)LibJM::Fourier::CmdInterCorrelation, NULL, NULL );
     Tcl_CreateCommand( interp, "conv", (Tcl_CmdProc *)LibJM::Fourier::CmdConvolution, NULL, NULL );
 #endif
-
-    CALAPHOT_LOG_FILE_CREATE;
 
     return TCL_OK;
 }
@@ -97,10 +97,10 @@ namespace LibJM
 
     int Generique::CmdVersionLib(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
     {
-        char s[256];
+        char *s;
 
-        strcpy(s, NUMERO_VERSION.c_str());
-        Tcl_SetResult(interp,s,TCL_VOLATILE);
+        s = strdup(NUMERO_VERSION.c_str());
+        Tcl_SetResult(interp, s, TCL_VOLATILE);
         return TCL_OK;
     }
 
