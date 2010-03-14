@@ -2,7 +2,8 @@
 # @file     sophiespectro.tcl
 # @brief    fichier du namespace ::sophie::spectro
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiespectro.tcl,v 1.12 2009-12-13 16:45:08 robertdelmas Exp $
+# @version  $Id: sophiespectro.tcl,v 1.13 2010-03-14 09:40:05 michelpujol Exp $
+# UTF8 (Ã )
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -127,7 +128,8 @@ proc ::sophie::spectro::readSocket { channel } {
             set resultList [::sophie::spectro::getStatistics ]
             #--- je calcule le seeing en faisant la moyenne de xFwhm et yFwhm
             set seeing [expr ($private(xFwhm) + $private(yFwhm)) / 2.0 ]
-            #--- j'enregistre l'image integree
+            #--- j'enregistre l'image integree et je recupere son nom
+            #--- S'il n'y a pas d'image integree disponible, la commande retourne NO_FILE
             set fileName [saveImage [lindex $resultList 0] [lindex $resultList 1] [lindex $resultList 2] [lindex $resultList 3] $seeing $private(skyLevel)]
             #--- j'ajoute un message dans le fichier de log
             set log [ format "%s Ecart : A=%5.2f  Arms=%5.2f  D=%5.2f  Drms=%5.2f  Seeing=%5.2f skyLevel= %5.2f Gain : AP=%s  AI=%s AD=%s DP=%s  DI=%s DD=%s Coord : RA=%s  Dec=%s\n" \
@@ -144,11 +146,6 @@ proc ::sophie::spectro::readSocket { channel } {
                $::audace(telescope,getra) $::audace(telescope,getdec) ]
             ::sophie::log::writeLogFile $::audace(visuNo) log $log
             #--- je mets en forme le resultat pour le PC Sophie
-            #--- a revoir ...A<20h>=<20h><20h><20h>2.68<20h><20h>Arms<20h>=<20h><20h>83.17<20h>D<20h>=<20h><20h><20h>2.74<20h>Drms<20h>=<20h>177.85<20h>
-            ###set resultString [format "!GET_STAT@    A = %5.2f  Arms = %5.2f  D = %5.2f  Drms = %5.2f" \
-            ###   [lindex $resultList 0] [lindex $resultList 1] \
-            ###   [lindex $resultList 2] [lindex $resultList 3] \
-            ###]
             set resultString [format "!GET_STAT@    A = %5.2f  Arms = %5.2f  D = %5.2f  Drms = %5.2f  Seeing= %5.2f  SkyLevel= %5.2f FileName= %s " \
                [lindex $resultList 0] [lindex $resultList 1] \
                [lindex $resultList 2] [lindex $resultList 3] \
@@ -187,16 +184,17 @@ proc ::sophie::spectro::resetStatistics { } {
 
 ##------------------------------------------------------------
 # saveImage
-#  enregistre l'image integree
-#  Le nom du fichier est "guidage-dateISO8601.fit"
+#  enregistre l'image integree. Le nom du fichier est "guidage-<dateISO8601>.fit"
+#  Exemple : guidage-2009-05-13T18:51:30.250.fit
 #
-#  exemple : guidage-2009-05-13T18:51:30.250.fit
+#  S'il n'y a pas d'image integree disponible, la commande n'enregistre pas d'image
+#  et retourne NO_FILE
 #
 #  Mots cles enregistre dans l'image integree :
 #   - BIN1     binning horizontal
 #   - BIN2     binning vertical
-#   - DATE-OBS  date de debut de pose
-#   - DATE-END  date de fin de pose
+#   - DATE-OBS  date de debut de pose de Sophie (date de reception de la commade STAT_ON)
+#   - DATE-END  date de fin de pose de Sophie (date de reception de la commade STAT_OFF)
 #   - EXPOSURE  temps de pose individuel des images
 #   - NAXIS1   largeur de l'image en pixel
 #   - NAXIS2   hauteur de l'image en pixel
@@ -218,7 +216,8 @@ proc ::sophie::spectro::resetStatistics { } {
 # @param xFwhm
 # @param yFwhm
 #
-# @return filename
+# @return nom du fichier de l'image intÃ©grÃ©e ou NO_FILE s'il n'y a pas eu de correction
+#         de guidage ou pas d'image disponible
 #------------------------------------------------------------
 proc ::sophie::spectro::saveImage { alphaMean alphaRms deltaMean deltaRms seeing skyLevel } {
    variable private
@@ -228,38 +227,43 @@ proc ::sophie::spectro::saveImage { alphaMean alphaRms deltaMean deltaRms seeing
    set sumBufNo [::sophie::getBufNo "sumBufNo"]
    if { $sumBufNo != 0 && [buf$sumBufNo imageready] == 1 } {
       set catchError [ catch {
-         set visuNo  [::sophie::getVisuNo]
-         set camItem [::confVisu::getCamItem $visuNo ]
-         if { [file exists $::audace(rep_images)] == 0 } {
-            #--- je signale que le repertoire n'existe pas
-            error [format $::caption(sophie,directoryNotFound) $::audace(rep_images)]
-         }
+         if { $private(correctionNb) > 0 } {
+            set visuNo  [::sophie::getVisuNo]
+            set camItem [::confVisu::getCamItem $visuNo ]
+            if { [file exists $::audace(rep_images)] == 0 } {
+               #--- je signale que le repertoire n'existe pas
+               error [format $::caption(sophie,directoryNotFound) $::audace(rep_images)]
+            }
 
-         #--- je recupere la date UT
-         set shortName "$::conf(sophie,guidingFileNameprefix)-[mc_date2iso8601 [::audace::date_sys2ut now]]$::conf(extension,defaut)"
-         #--- je remplace ":" par "-" car ce n'est pas un caractere autorise dasn le nom d'un fichier.
-         set shortName [string map { ":" "-" } $shortName]
-         #--- j'ajoute le repertoire dans le nom du fichier
-         set fileName [file join $::audace(rep_images) $shortName]
-         #--- j'ajoute les mots cles dans l'image integree
-         ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "RA_MEAN"  $alphaMean
-         ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "RA_RMS"   $alphaRms
-         ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "DEC_MEAN" $deltaMean
-         ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "DEC_RMS"  $deltaRms
-         ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "SEEING"   $seeing
-         ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "SKYLEVEL" $skyLevel
-         ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "DETNAM"   [::confCam::getPluginProperty $camItem "name"]
-         ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "TELESCOP" $::conf(telescope)
-         ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "SWCREATE" "[::audela::getPluginTitle] $::audela(version)"
-         set keywordNameList [list RA_MEAN RA_RMS DEC_MEAN DEC_RMS SEEING SKYLEVEL DETNAM TELESCOP SWCREATE]
-         #--- j'ajoute des mots cles dans l'en-tete FITS de l'image
-         foreach keyword [ ::keyword::getKeywords $visuNo $::conf(sophie,keywordConfigName) $keywordNameList] {
-            #--- j'ajoute tous les mots cles qui ne sont pas vide
-            buf$sumBufNo setkwd $keyword
-         }
+            #--- je recupere la date UT
+            set shortName "$::conf(sophie,guidingFileNameprefix)-[mc_date2iso8601 [::audace::date_sys2ut now]]$::conf(extension,defaut)"
+            #--- je remplace ":" par "-" car ce n'est pas un caractere autorise dasn le nom d'un fichier.
+            set shortName [string map { ":" "-" } $shortName]
+            #--- j'ajoute le repertoire dans le nom du fichier
+            set fileName [file join $::audace(rep_images) $shortName]
+            #--- j'ajoute les mots cles dans l'image integree
+            ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "RA_MEAN"  $alphaMean
+            ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "RA_RMS"   $alphaRms
+            ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "DEC_MEAN" $deltaMean
+            ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "DEC_RMS"  $deltaRms
+            ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "SEEING"   $seeing
+            ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "SKYLEVEL" $skyLevel
+            ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "DETNAM"   [::confCam::getPluginProperty $camItem "name"]
+            ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "TELESCOP" $::conf(telescope)
+            ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "SWCREATE" "[::audela::getPluginTitle] $::audela(version)"
+            set keywordNameList [list RA_MEAN RA_RMS DEC_MEAN DEC_RMS SEEING SKYLEVEL DETNAM TELESCOP SWCREATE]
+            #--- j'ajoute des mots cles dans l'en-tete FITS de l'image
+            foreach keyword [ ::keyword::getKeywords $visuNo $::conf(sophie,keywordConfigName) $keywordNameList] {
+               #--- j'ajoute tous les mots cles qui ne sont pas vide
+               buf$sumBufNo setkwd $keyword
+            }
 
-         #--- Sauvegarde de l'image
-         buf$sumBufNo save $fileName
+            #--- Sauvegarde de l'image
+            buf$sumBufNo save $fileName
+         } else {
+            #--- il n'y a pas de eu de correction
+             set shortName "NO_FILE"
+         }
       } ]
 
       if { $catchError != 0 } {
@@ -267,7 +271,9 @@ proc ::sophie::spectro::saveImage { alphaMean alphaRms deltaMean deltaRms seeing
          ::console::affiche_erreur $::errorInfo
       }
    } else {
+      #--- il n'y a pas d'image disponible
       ::console::affiche_erreur $::caption(sophie,sumNotReady)
+      set shortName "NO_FILE"
    }
 
    return $shortName
@@ -382,7 +388,7 @@ proc ::sophie::spectro::updateStatistics { alphaDiff deltaDiff } {
    incr private(correctionNb)
    set epsilon "1.0e-300"
 
-   #--- j’initialise les moyennes pour la première itération
+   #--- jï¿½initialise les moyennes pour la premiï¿½re itï¿½ration
    if { $private(correctionNb) == 1 }  {
       set private(alphaMean) $alphaDiff
       set private(deltaMean) $deltaDiff
