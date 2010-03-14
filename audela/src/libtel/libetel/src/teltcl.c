@@ -67,19 +67,24 @@ int cmdTelExecuteCommandXS(ClientData clientData, Tcl_Interp *interp, int argc, 
 	DSA_COMMAND_PARAM params[] = { {0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0} };
    struct telprop *tel;
 	int cmd, nparams,k,kk;
+   int axisno;
+
    tel = (struct telprop *)clientData;
    if (argc<4) {
-   	sprintf(ligne,"usage: %s %s cmd nparams ?typ1 conv1 par1? ?type2 conv2 par2? ...",argv[0],argv[1]);
+   	sprintf(ligne,"usage: %s %s axisno cmd nparams ?typ1 conv1 par1? ?type2 conv2 par2? ...",argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 		return TCL_ERROR;
 	}
-	if (argc>=3) {
-   	cmd=atoi(argv[2]);
-	}
+
+   axisno=atoi(argv[2]);
+
 	if (argc>=4) {
-   	nparams=atoi(argv[3]);
+   	cmd=atoi(argv[3]);
 	}
-	for (k=4;k<argc-2;k+=3) {
+	if (argc>=5) {
+   	nparams=atoi(argv[4]);
+	}
+	for (k=5;k<argc-2;k+=3) {
 		kk=(k-4)/3;
 		if (kk>4) {
 			break;
@@ -92,7 +97,7 @@ int cmdTelExecuteCommandXS(ClientData clientData, Tcl_Interp *interp, int argc, 
 		   params[kk].val.d=atof(argv[k+1]);
 		}
 	}
-	if (err = dsa_execute_command_x_s(tel->drv[k],cmd,params,nparams,FALSE,FALSE,DSA_DEF_TIMEOUT)) {
+	if (err = dsa_execute_command_x_s(tel->drv[axisno],cmd,params,nparams,FALSE,FALSE,DSA_DEF_TIMEOUT)) {
 		mytel_error(tel,k,err);
    	sprintf(ligne,"%s",tel->msg);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
