@@ -326,6 +326,7 @@ int main(int argc , char **argv)
    int i, k;
    int default_tcltk_libs = 0;
    char rootpath[MAX_STRING];
+   char binpath[MAX_STRING];
 
    char env_var[MAX_STRING];
    int tcl_argc = 1;
@@ -428,8 +429,16 @@ int main(int argc , char **argv)
       sprintf(env_var,"TK_LIBRARY=%s%c..%clib%ctk8.0",rootpath,PATH_SEP,PATH_SEP,PATH_SEP);
       putenv(env_var);
    }
-   sprintf(env_var,"LD_LIBRARY_PATH=%s",rootpath);
+
+
+#if defined(OS_LIN)
+   if ( getenv("LD_LIBRARY_PATH") != NULL ) {
+      sprintf(env_var,"LD_LIBRARY_PATH=%s:%s:%s",getenv("LD_LIBRARY_PATH"),getcwd(binpath,sizeof(binpath)),rootpath);
+   } else {
+      sprintf(env_var,"LD_LIBRARY_PATH=%s:%s",getcwd(binpath,sizeof(binpath)),rootpath);
+   }
    putenv(env_var);
+#endif
 
    if(gVerbose) {
       LOG("Environment variable TCL_LIBRARY=%s\n",getenv("TCL_LIBRARY"));
