@@ -650,7 +650,6 @@ void mc_corearthsatelem(double jj,struct elemorb *elem)
       dm0s=(ntilda*dt);
       */
       /* - Born */
-		/*
       req=6378.140e3/(UA); // equatorial radius of the Earth in U.A.
       req2=req*req;
       j2=+1.08263e-3;
@@ -703,7 +702,6 @@ void mc_corearthsatelem(double jj,struct elemorb *elem)
          dws=0.;
          dm0s=0.;
       }
-		*/
       /* --- update the elements ---*/
       elem->w/=(DR);
       elem->o/=(DR);
@@ -711,6 +709,76 @@ void mc_corearthsatelem(double jj,struct elemorb *elem)
       elem->w+=dws;
       elem->o+=dos;
       elem->m0+=dm0s;
+      elem->q=a*(1-e);
+      elem->w=fmod(elem->w,360.);
+      elem->o=fmod(elem->o,360.);
+      elem->m0=fmod(elem->m0,360.);
+      elem->w*=(DR);
+      elem->o*=(DR);
+      elem->m0*=(DR);
+      elem->e=e;
+      elem->i=i;
+      elem->jj_epoque=jjd;
+      //elem->jj_m0=jjd;
+   }
+}
+
+void mc_cor_sgp4_satelem(double jj,struct elemorb *elem)
+/***************************************************************************/
+/* Correction de perturbations modele SGP4 pour satellites                 */
+/***************************************************************************/
+/* En cours d'ecriture                                                     */
+/***************************************************************************/
+{
+   double k_gauss,sini0,cosi0,e0,e02;
+	double j2,j3,j4,re,ge,ke,ae;
+	double k2,k4,a30,q0,s;
+	double a1,delta1,a0,delta0,npp0,app0;
+	double per,setoile;
+	double e=0,i=0,n0,a,jjd;
+
+   jjd=jj;
+   /*--- perturabtions seculaires dues a l'applatissement de la Terre ---*/
+   if (elem->type==4) {
+      k_gauss=KGEOS;
+      a=elem->q/(1-elem->e); /* U.A. */
+      n0=k_gauss/(DR)/pow(a,3./2.); /* deg/day */
+      sini0=sin(elem->i);
+      cosi0=cos(elem->i);
+      e0=elem->e;
+      e02=elem->e*elem->e;
+		//
+      j2=0.0010826158;
+		j3=-0.00000253881;
+		j4=-0.00000165597;
+      re=6378.135; /* equatorial radius of the Earth in km */
+		ge=398600.8; /* la constante geocentrique de la gravitation */
+		ke=sqrt(3600.*ge/re/re/re);
+		ae=1.; /* unite de distance exprimee en rayons terrestres */
+		//
+		k2=j2/2*ae*ae;
+		k4=-3./8*j4*ae*ae*ae*ae;
+		a30=-j3*ae*ae*ae;
+		q0=120/re;
+		s=78/re;
+		//
+		a1=pow(ke/n0,2./3);
+		delta1=3./2*k2/a1/a1*(3*cosi0*cosi0-1)/pow((1-e02),1.5);
+		a0=a1*(1-delta1/3-delta1*delta1-134./81*delta1*delta1*delta1);
+		delta0=3./2*k2/a0/a0*(3*cosi0*cosi0-1)/pow((1-e02),1.5);
+		npp0=n0/(1+delta0);
+		app0=a0/(1-delta0);
+		//
+		per=re*(app0*(1-e0)-1);
+		if ((per>=98)&&(per<156)) {
+			setoile=per/re-s;
+		} else if (per<98) {
+			setoile=20/re;
+		}
+      /* --- update the elements ---*/
+      elem->w/=(DR);
+      elem->o/=(DR);
+      elem->m0/=(DR);
       elem->q=a*(1-e);
       elem->w=fmod(elem->w,360.);
       elem->o=fmod(elem->o,360.);

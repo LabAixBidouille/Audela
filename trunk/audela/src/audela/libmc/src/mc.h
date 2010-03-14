@@ -569,7 +569,16 @@ typedef struct {
 	// ==========================================================
 	double private_elevmaxi;
 	double private_jdelevmaxi;
+	int status_plani;
 } mc_OBJECTDESCR;
+
+#define STATUS_PLANI_NOT_PLANIFIED 0
+#define STATUS_PLANI_END_OBS_BEFORE_RANGE 1
+#define STATUS_PLANI_START_OBS_AFTER_RANGE 2
+#define STATUS_PLANI_NEVER_VISIBLE_IN_RANGE 3
+#define STATUS_PLANI_OVER_QUOTA 4
+#define STATUS_PLANI_PLANIFIED 5
+#define STATUS_PLANI_PLANIFIED_OVER 6
 
 typedef struct {
    double elev;
@@ -840,6 +849,7 @@ void mc_preclb(double jd1, double lon1, double lat1, double jd2, double *lon2, d
 void mc_rhophi2latalt(double rhosinphip,double rhocosphip,double *latitude,double *altitude);
 void mc_refraction(double h,int inout,double temperature,double pressure,double *refraction);
 void mc_corearthsatelem(double jj,struct elemorb *elem);
+void mc_cor_sgp4_satelem(double jj,struct elemorb *elem);
 
 /***************************************************************************/
 /* Utilitaires mathematiques                                               */
@@ -992,7 +1002,7 @@ int mc_meo_ruban(double az, double montee,double descente,double largmontee,doub
 int mc_sheduler_interpcoords(mc_OBJECTDESCR *objectdescr,double jd,double *pos1,double *pos2);
 int mc_sheduler_corccoords(mc_OBJECTDESCR *objectdescr);
 int mc_obsconditions1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,mc_HORIZON_ALTAZ *horizon_altaz,mc_HORIZON_HADEC *horizon_hadec,int nobj,mc_OBJECTDESCR *objectdescr,double djd,char *fullfilename);
-int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,mc_HORIZON_ALTAZ *horizon_altaz,mc_HORIZON_HADEC *horizon_hadecint,int nobj,mc_OBJECTDESCR *objectdescr);
+int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,mc_HORIZON_ALTAZ *horizon_altaz,mc_HORIZON_HADEC *horizon_hadec,int nobj,mc_OBJECTDESCR *objectdescr,int output_type, char *output_file);
 int mc_nextnight1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,double elev_set,double elev_twilight, double *jdprev, double *jdset,double *jddusk,double *jddawn,double *jdrise,double *jdnext,double *jdriseprev2,double *jdmer2,double *jdset2,double *jddusk2,double *jddawn2,double *jdrisenext2);
 
 /***************************************************************************/
@@ -1284,6 +1294,8 @@ void mc_refraction(double h,int inout,double temperature,double pressure,double 
    Retourne la valeur de la refraction.
 void mc_corearthsatelem(double jj,struct elemorb *elem);
    Correction de perturbations de la figure de la Terre pour satellites
+void mc_cor_sgp4_satelem(double jj,struct elemorb *elem);
+   Correction de perturbations modele SGP4 pour satellites
 */
 
 /***************************************************************************/

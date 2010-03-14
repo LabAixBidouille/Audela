@@ -1222,7 +1222,11 @@ lappend seqs { {IDUSER 1} {UQUOTA 20} {UPRIORITY 20} {IDSEQ 6} {AXE_TYPE EQUATOR
 lappend seqs { {IDUSER 1} {UQUOTA 20} {UPRIORITY 20} {IDSEQ 7} {AXE_TYPE EQUATORIAL} {AXES_0 now 16h34m 26d45'} {DELAY_EXPOSURES 187} }
 lappend seqs { {IDUSER 2} {UQUOTA 40} {UPRIORITY 30} {IDSEQ 8} {AXE_TYPE EQUATORIAL} {AXES_0 now 18h34m 26d45'} {DELAY_EXPOSURES 188} }
 lappend seqs { {IDUSER 2} {UQUOTA 40} {UPRIORITY 30} {IDSEQ 9} {AXE_TYPE EQUATORIAL} {AXES_0 now 20h34m 26d45'} {DELAY_EXPOSURES 189} }
-mc_scheduler now {GPS 5 E 43 1230} $seqs
+set res [mc_scheduler now {GPS 5 E 43 1230} $seqs]
+set comments [lindex $res 0]
+set status [lindex $res 1]
+lindex $comments [lindex $status 0]
+
 */
 /****************************************************************************/
 {
@@ -1231,10 +1235,13 @@ mc_scheduler now {GPS 5 E 43 1230} $seqs
 	mc_HORIZON_ALTAZ *horizon_altaz=NULL;
 	mc_HORIZON_HADEC *horizon_hadec=NULL;
 	mc_OBJECTDESCR *objectdescr=NULL;
-	int nobj=0,err,res=TCL_OK;
+	int nobj=0,err,res=TCL_OK,k;
+	int output_type=0;
+	char *output_file=NULL;
+   Tcl_DString dsptr;
 
    if(argc<3) {
-      sprintf(s,"Usage: %s Date Home Sequences ?type_Horizon Horizon?", argv[0]);
+      sprintf(s,"Usage: %s Date Home Sequences ?type_Horizon Horizon? ?-output_type 0|1? ?-output_file filename?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
  	   return TCL_ERROR;
    } else {
@@ -1253,15 +1260,33 @@ mc_scheduler now {GPS 5 E 43 1230} $seqs
 		} else {
 			mctcl_decode_horizon(interp,argv[2],"ALTAZ","{0 0} {90 0} {180 0} {270 0} {365 0}",NULL,&horizon_altaz,&horizon_hadec);
 		}
+		if (argc>=7) {
+			for (k=6;k<argc-1;k++) {
+				if (strcmp(argv[k],"-output_type")==0) { output_type=atoi(argv[k+1]); }
+				if (strcmp(argv[k],"-output_file")==0) { output_file=argv[k+1]; }
+			}
+		}
 		/* --- appel aux calculs ---*/
-		err=mc_scheduler1(jd,longmpc,rhocosphip,rhosinphip,horizon_altaz,horizon_hadec,nobj,objectdescr);
+		err=mc_scheduler1(jd,longmpc,rhocosphip,rhosinphip,horizon_altaz,horizon_hadec,nobj,objectdescr,output_type,output_file);
 		if (err==1) {
 			res=TCL_ERROR;
 			sprintf(s,"Error %d.",err);
 			Tcl_SetResult(interp,s,TCL_VOLATILE);
 		} else {
-			sprintf(s,"%d sequences scheduled.",nobj);
-			Tcl_SetResult(interp,s,TCL_VOLATILE);
+		   Tcl_DStringInit(&dsptr);
+			strcpy(s,"{Not_planified End_obs_before_range Start_obs_after_range Never_visible_in_range Over_quota Planified} ");
+			Tcl_DStringAppend(&dsptr,s,-1);
+			strcpy(s,"{");
+			Tcl_DStringAppend(&dsptr,s,-1);
+			sprintf(s,"%d ",objectdescr[k].status_plani);
+			for (k=0;k<nobj;k++) {
+				sprintf(s,"%d ",objectdescr[k].status_plani);
+				Tcl_DStringAppend(&dsptr,s,-1);
+			}
+			strcpy(s,"}");
+			Tcl_DStringAppend(&dsptr,s,-1);
+			Tcl_DStringResult(interp,&dsptr);
+			Tcl_DStringFree(&dsptr);
 		}
 		free(horizon_altaz);
 		free(horizon_hadec);
