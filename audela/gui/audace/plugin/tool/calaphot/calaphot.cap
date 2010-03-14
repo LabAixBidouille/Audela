@@ -1,6 +1,6 @@
 #
 # Fichier : calaphot.cap
-# Mise a jour $Id: calaphot.cap,v 1.9 2010-03-11 19:50:35 jacquesmichelet Exp $
+# Mise a jour $Id: calaphot.cap,v 1.10 2010-03-14 17:29:26 jacquesmichelet Exp $
 #
 
 #=========================================================================
@@ -711,7 +711,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,o_rayon2)            "Inner Crown Radius (in FWHM)"
    set calaphot(texte,o_rayon3)            "Outer Crown Radius (in FWHM)"
    set calaphot(texte,sortie)              "Output Generic File Name"
-   set calaphot(texte,signal_bruit)        "Maximum S/N Ratio"
+   set calaphot(texte,signal_bruit)        "Minimum S/N Ratio"
    set calaphot(texte,mode)                "Calculation Mode"
    set calaphot(texte,mode_ouverture)      "Aperture Photometry"
    set calaphot(texte,mode_modelisation)   "Star Modelling"
