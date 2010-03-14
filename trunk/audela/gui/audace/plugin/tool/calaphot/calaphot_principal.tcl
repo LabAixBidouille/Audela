@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot_principal.tcl,v 1.7 2010-03-11 19:50:07 jacquesmichelet Exp $
+# $Id: calaphot_principal.tcl,v 1.8 2010-03-14 17:31:53 jacquesmichelet Exp $
 #
 
 ###catch {namespace delete ::Calaphot}
@@ -487,7 +487,8 @@ namespace eval ::CalaPhot {
          } else {
             AffichageCDR
          }
-         AffichageCSV
+        AffichageCSV
+        AffichageDAT
 
         # Destruction des fichiers de configs Sextractor
         DestructionFichiersSextractor
@@ -594,10 +595,11 @@ namespace eval ::CalaPhot {
     }
 
     ##
-    # @brief Affichage avec le format CSV (Comma Separated Values)
+    # @brief Stockage des résultats avec le format CSV (Comma Separated Values)
     # @details Le resultat de cet affichage peut directement etre importé par un tableur
     # @return toujours 0
     proc AffichageCSV {} {
+        global audace
         variable data_image
         variable parametres
         variable calaphot
@@ -606,27 +608,72 @@ namespace eval ::CalaPhot {
 
         Message debug "%s\n" [info level [info level]]
 
-        TraceFichier ${parametres(sortie)}.csv notice "year;month;day;hour;min;sec;"
-        TraceFichier ${parametres(sortie)}.csv notice "JJ;Mag var;Inc var;"
+        set nom_fichier ${parametres(sortie)}.cvs
+        # effacement de la version précédente
+        catch {[file delete -force [file join $audace(rep_images) $nom_fichier]]}
+
+        TraceFichier $nom_fichier notice "year;month;day;hour;min;sec;"
+        TraceFichier $nom_fichier notice "JJ;Mag var;Inc var;"
         for {set etoile 0} {$etoile < $data_script(nombre_reference)} {incr etoile} {
-            TraceFichier ${parametres(sortie)}.csv notice "Mag ref%d;+/-;" $etoile
+            TraceFichier $nom_fichier notice "Mag ref%d;+/-;" $etoile
         }
-        TraceFichier ${parametres(sortie)}.csv notice "Const. mag;Valid\n"
+        TraceFichier $nom_fichier notice "Const. mag;Valid\n"
         foreach i $liste_image {
             set temps [mc_date2ymdhms $data_image($i,date)]
-            TraceFichier ${parametres(sortie)}.csv notice "%02d;%02d;%04d;" [lindex $temps 0] [lindex $temps 1] [lindex $temps 2]
-            TraceFichier ${parametres(sortie)}.csv notice "%02d;%02d;%02d;" [lindex $temps 3] [lindex $temps 4] [expr round([lindex $temps 5])]
-            TraceFichier ${parametres(sortie)}.csv notice "%04d;%15.5f;" $i $data_image($i,date)
+            TraceFichier $nom_fichier notice "%02d;%02d;%04d;" [lindex $temps 0] [lindex $temps 1] [lindex $temps 2]
+            TraceFichier $nom_fichier notice "%02d;%02d;%02d;" [lindex $temps 3] [lindex $temps 4] [expr round([lindex $temps 5])]
+            TraceFichier $nom_fichier notice "%04d;%15.5f;" $i $data_image($i,date)
             if {[info exists data_image($i,var,mag_0)]} {
-                TraceFichier ${parametres(sortie)}.csv notice "%07.4f;%07.4f;" $data_image($i,var,mag_0) $data_image($i,var,incertitude_0)
+                TraceFichier $nom_fichier notice "%07.4f;%07.4f;" $data_image($i,var,mag_0) $data_image($i,var,incertitude_0)
                 for {set etoile 0} {$etoile < $data_script(nombre_reference)} {incr etoile} {
-                    TraceFichier ${parametres(sortie)}.csv notice "%07.4f;%07.4f;" $data_image($i,ref,mag_$etoile) $data_image($i,ref,incertitude_$etoile)
+                    TraceFichier $nom_fichier notice "%07.4f;%07.4f;" $data_image($i,ref,mag_$etoile) $data_image($i,ref,incertitude_$etoile)
                 }
             } else {
-                TraceFichier ${parametres(sortie)}.csv notice "99.9999;99.9999"
+                TraceFichier $nom_fichier notice "99.9999;99.9999"
             }
-            TraceFichier ${parametres(sortie)}.csv notice "%7.4f;" $data_image($i,constante_mag)
-            TraceFichier ${parametres(sortie)}.csv notice "%s\n" $data_image($i,valide)
+            TraceFichier $nom_fichier notice "%7.4f;" $data_image($i,constante_mag)
+            TraceFichier $nom_fichier notice "%s\n" $data_image($i,valide)
+        }
+    }
+
+    ##
+    # @brief Stockage des résultats avec un format CSV pour Gnuplot
+    # @details Le resultat de cet affichage peut directement etre importé lu par Gnuplot
+    # @return toujours 0
+    proc AffichageDAT {} {
+
+        global audace
+        variable data_image
+        variable parametres
+        variable calaphot
+        variable data_script
+        variable liste_image
+
+        Message debug "%s\n" [info level [info level]]
+        
+        set nom_fichier ${parametres(sortie)}.dat
+        # effacement de la version précédente
+        catch {[file delete -force [file join $audace(rep_images) $nom_fichier]]}
+
+        set premier 1
+        foreach i $liste_image {
+            set temps [mc_date2ymdhms $data_image($i,date)]
+            if {[info exists data_image($i,var,mag_0)]} {
+                if {$premier != 0} {
+                    set orig_mag_var_0 $data_image($i,var,mag_0)
+                    for {set etoile 0} {$etoile < $data_script(nombre_reference)} {incr etoile} {
+                        set orig_mag_ref($etoile) $data_image($i,ref,mag_$etoile)
+                    }
+                    set orig_cste_mag $data_image($i,constante_mag)
+                    set premier 0
+                }
+                TraceFichier $nom_fichier notice "%04d;%15.5f;" $i [expr $data_image($i,date) - 2400000.5]
+                TraceFichier $nom_fichier notice "%07.4f;%07.4f;" [expr $data_image($i,var,mag_0) - $orig_mag_var_0] $data_image($i,var,incertitude_0)
+                for {set etoile 0} {$etoile < $data_script(nombre_reference)} {incr etoile} {
+                    TraceFichier $nom_fichier notice "%07.4f;%07.4f;" [expr $data_image($i,ref,mag_$etoile) - $orig_mag_ref($etoile) + 1.0] $data_image($i,ref,incertitude_$etoile)
+                }
+                TraceFichier $nom_fichier notice "%7.4f\n" [expr $data_image($i,constante_mag) - $orig_cste_mag + 2.0]
+            }
         }
     }
 
