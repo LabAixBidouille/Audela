@@ -2,7 +2,7 @@
 # Fichier : vo_tools.tcl
 # Description : Outils pour l'Observatoire Virtuel
 # Auteur : Alain KLOTZ et Jerome BERTHIER
-# Mise a jour $Id: vo_tools.tcl,v 1.28 2010-02-14 10:52:11 robertdelmas Exp $
+# Mise a jour $Id: vo_tools.tcl,v 1.29 2010-03-14 19:25:58 alainklotz Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -699,4 +699,144 @@ proc vo_sesame_url { args } {
       error "Usage: vo_sesame_url ?CDS|ADS|ADAC|CADC?"
    }
 }
+
+# ------------------------------------------------------------------------------------
+proc vo_name2coord { object_name } {
+	package require SOAP
+	set name "$object_name"
+	set resultType "xp"
+	set server "http://cdsws.u-strasbg.fr/axis/services/Sesame"
+	SOAP::create sesame -uri $server -proxy $server \
+	-action "urn:Sesame" \
+	-params { "name" "string" "resultType" "string" }
+	set xml_text [sesame $name $resultType]
+	set ra [vo_xml_decode $xml_text {Sesame Target Resolver jradeg}]
+	set dec [vo_xml_decode $xml_text {Sesame Target Resolver jdedeg}]
+	return [list $ra $dec]
+}
+
+# ------------------------------------------------------------------------------------
+# source audace/vo_tools.tcl ; set star [vo_neareststar 23.45678 +34.56742 ]
+proc vo_neareststar { ra dec } {
+	set target "[string trim [mc_angle2deg $ra]] [string trim [format %+.5f [mc_angle2deg $dec 90]]]"
+	if {1==0} {
+		package require SOAP
+		set server "http://cdsws.u-strasbg.fr/axis/services/VizieRBeta"
+		SOAP::create vizier -uri $server -proxy $server \
+		-action "urn:VizieRBeta" \
+		-params { "target" "string" "radius" "double" "unit" "string" "text" "string"}
+		set xml_text [vizier $target 3 arcmin " "]
+	} else {
+		set minor_planet "ceres"
+		set url "http://vizier.u-strasbg.fr/viz-bin/VizieR/VizieR-2"
+		package require http
+		set query [::http::formatQuery "!-4c;" "Find Data" "-source" "I/297/out" "-c" "$target" "-c.eq" "J2000" "-c.r" "1" "-c.u" "arcmin" "-oc.form" "dec" "-c.geom" "r" "-out.add" "_r" "-sort" "_r"]
+		set token [::http::geturl $url -query "$query"]
+		upvar #0 $token state
+		set html_text $state(body)
+		# ----
+		set k1 [string first "<EM>1</EM>" $html_text]
+		set texte [string range $html_text $k1 end]
+		set res [vo_html_decode1 $texte]		
+		set val [lindex $res 0]
+		set texte [lindex $res 1]
+		set res [vo_html_decode1 $texte <EM>]		
+		set id [lindex $res 0]
+		set texte [lindex $res 1]
+		set res [vo_html_decode1 $texte <EM>]		
+		set val [lindex $res 0]
+		set texte [lindex $res 1]
+		set res [vo_html_decode1 $texte <EM>]		
+		set ra [string trimleft [lindex $res 0] 0]
+		set texte [lindex $res 1]
+		set res [vo_html_decode1 $texte <EM>]		
+		set dec [lindex $res 0]
+		set texte [lindex $res 1]
+		for {set k 1} {$k<=5} {incr k} {
+			set res [vo_html_decode1 $texte <EM>]		
+			set texte [lindex $res 1]
+			set val [lindex $res 0]
+		}
+		set res [vo_html_decode1 $texte <EM>]		
+		set texte [lindex $res 1]
+		set magb [lindex $res 0]
+		if {[catch {expr $magb}]==1} { set magb ""}
+		set res [vo_html_decode1 $texte <EM>]		
+		set val [lindex $res 0]
+		set texte [lindex $res 1]
+		set res [vo_html_decode1 $texte <EM>]		
+		set texte [lindex $res 1]
+		set magv [lindex $res 0]
+		if {[catch {expr $magv}]==1} { set magv ""}
+		set res [vo_html_decode1 $texte <EM>]		
+		set val [lindex $res 0]
+		set texte [lindex $res 1]
+		set res [vo_html_decode1 $texte <EM>]		
+		set texte [lindex $res 1]
+		set magr [lindex $res 0]
+		if {[catch {expr $magr}]==1} { set magr ""}
+		set res [vo_html_decode1 $texte <EM>]		
+		set val [lindex $res 0]
+		set texte [lindex $res 1]
+		set res [vo_html_decode1 $texte <EM>]		
+		set texte [lindex $res 1]
+		set magj [lindex $res 0]
+		if {[catch {expr $magj}]==1} { set magj ""}
+		set res [vo_html_decode1 $texte <EM>]		
+		set texte [lindex $res 1]
+		set magh [lindex $res 0]
+		if {[catch {expr $magh}]==1} { set magh ""}
+		set res [vo_html_decode1 $texte <EM>]		
+		set texte [lindex $res 1]
+		set magk [lindex $res 0]
+		if {[catch {expr $magk}]==1} { set magk ""}
+	}
+	return [list [list NOMAD-1 $id] $ra $dec $magb $magv $magr $magj $magh $magk]
+}
+
+# ------------------------------------------------------------------------------------
+proc vo_html_decode1 { texte {taglim ""} } {
+	# set tag "<TD ALIGN=RIGHT NOWRAP>"
+	set tag "<TD"
+	set k1 [string first "$tag" $texte]
+	if {$taglim!=""} {
+		set k1e [string first "$taglim" $texte]
+		if {$k1e<$k1} {
+			return [list "" ""]
+		}
+	}
+	set texte [string range $texte $k1 end]
+	set k1 [string first ">" $texte]
+	set texte [string range $texte $k1 end]
+	set k1 [string first ">" $texte]
+	set k2 [string first "<" $texte]		
+	set res [string range $texte [expr $k1+1] [expr $k2-1]]
+	return [list $res $texte]
+}
+
+# ------------------------------------------------------------------------------------
+proc vo_xml_decode { xml tags {kdeb 0} } {
+	set klast -1
+	set n [llength $tags]
+	set tag [lindex $tags 0]
+	#::console::affiche_resultat "tag=$tag n=$n\n"
+	set k1 [string first <$tag $xml $kdeb]
+	set k11 [string first > $xml $k1]
+	#::console::affiche_resultat "k1=$k1 k11=$k11\n"
+	if {($k1>=0)&&($n==1)} {
+		set k2 [string first </$tag $xml $kdeb]
+		#::console::affiche_resultat "k2=$k2\n"
+		if {($k2>=0)} {
+			set value [string range $xml [expr $k11+1] [expr $k2-1]]
+			return $value
+		}
+	} elseif {($k1>=0)&&($n>1)} {
+		set tags [lrange $tags 1 end]
+		#::console::affiche_resultat "appel vo_xml_decode xml $tags $k11\n"
+		return [vo_xml_decode $xml $tags $k11]
+	} else {
+		return ""
+	}
+	return ""
+}			
 
