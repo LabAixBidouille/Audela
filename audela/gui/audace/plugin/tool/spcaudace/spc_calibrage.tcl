@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.18 2010-02-28 14:38:48 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.19 2010-03-20 21:21:44 bmauclaire Exp $
 
 
 
@@ -1062,7 +1062,7 @@ proc spc_calibren { args } {
          #- set b1 [ lindex [ lindex $coeffsdeg1 0 ] 1 ]
          set lambdafin [ spc_calpoly $naxis1 $crpix1 $a $b $c $d ]
          set dispersion [ expr 1.0*($lambdafin-$lambdaRef)/($naxis1-1) ]
-         ::console::affiche_resultat "Loi linéarisée : $lambdaRef+$dispersion*(x-$crpix1)\n"
+         ::console::affiche_prompt "Loi linéarisée : $lambdaRef+$dispersion*(x-$crpix1)\n"
       } else {
          set dispersion $b
       }
@@ -1100,7 +1100,7 @@ proc spc_calibren { args } {
       buf$audace(bufNo) bitpix float
       buf$audace(bufNo) save "$audace(rep_images)/l${filename}"
       buf$audace(bufNo) bitpix short
-      ::console::affiche_resultat "\nLoi de calibration : $a+$b*(x-$crpix1)+$c*(x-$crpix1)^2+$d*(x-$crpix1)^3 avec RMS=$rms\n"
+      ::console::affiche_prompt "\nLoi de calibration : $a+$b*(x-$crpix1)+$c*(x-$crpix1)^2+$d*(x-$crpix1)^3 avec RMS=$rms\n"
       ::console::affiche_resultat "Spectre étalonné sauvé sous l${filename}\n"
       return l${filename}
    } else {
@@ -2518,9 +2518,9 @@ proc spc_calibretelluric { args } {
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
             buf$audace(bufNo) bitpix short
             #-- Exploitatoin des résultats :
-            ::console::affiche_resultat "\nSpectre de calibration avec (2) de meilleure qualité (dec de Meanshift).\n"
-            ::console::affiche_resultat "Loi de calibration finale linéarisée : $crval1+$cdelt1*x\n"
-            ::console::affiche_resultat "Qualité de la calibration :\nRMS=$rms_lindec A\nEcart moyen=$mean_shift_lindec A\n\n"
+            ::console::affiche_prompt "\nSpectre de calibration avec (2) de meilleure qualité (dec de Meanshift).\n"
+            ::console::affiche_prompt "Loi de calibration finale linéarisée : $crval1+$cdelt1*(x-$crpix1)\n"
+            ::console::affiche_prompt "Qualité de la calibration :\nRMS=$rms_lindec A\nEcart moyen=$mean_shift_lindec A\n\n"
         } elseif { $best_rms_name == "lindec_rms" } {
             #-- Le spectre linéarisé juste décalé avec l'eau est meilleur :
             buf$audace(bufNo) load "$audace(rep_images)/$spectre_lindec_rms"
@@ -2574,9 +2574,9 @@ proc spc_calibretelluric { args } {
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
             buf$audace(bufNo) bitpix short
             #-- Exploitatoin des résultats :
-            ::console::affiche_resultat "\nSpectre de calibration (1) initiale de meilleure qualité.\n"
-            ::console::affiche_resultat "Loi de calibration finale linéarisée : $crval1+$cdelt1*x\n"
-            ::console::affiche_resultat "Qualité de la calibration :\nRMS=$rms_initial A\nEcart moyen=$mean_shift_initial A\n\n"
+            ::console::affiche_prompt "\nSpectre de calibration (1) initiale de meilleure qualité.\n"
+            ::console::affiche_prompt "Loi de calibration finale linéarisée : $crval1+$cdelt1*(x-$crpix1)\n"
+            ::console::affiche_prompt "Qualité de la calibration :\nRMS=$rms_initial A\nEcart moyen=$mean_shift_initial A\n\n"
         }
 
         #--- Effacement des fichiers resultats des 4 methodes :

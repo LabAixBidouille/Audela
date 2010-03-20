@@ -2,7 +2,7 @@
 # Procedures des traitements géométriques
 # Lancement en console : source $audace(rep_scripts)/spcaudace/spc_geom.tcl
 
-# Mise a jour $Id: spc_geom.tcl,v 1.5 2010-02-14 17:56:48 bmauclaire Exp $
+# Mise a jour $Id: spc_geom.tcl,v 1.6 2010-03-20 21:21:49 bmauclaire Exp $
 
 
 
@@ -728,9 +728,10 @@ proc spc_smilex { args } {
 	#set yfin [ lindex $args 4 ]
 
 	#--- Initialisation de variables liées aux dimensions du spectre de la lampe de calibration :
-	#loadima "$audace(rep_images)/$filenamespc"
+	# loadima "$audace(rep_images)/$filenamespc"
 	buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
-	::confVisu::autovisu 1
+        visu1 cut [ lrange [ buf$audace(bufNo) stat ] 0 1 ] ; visu1 disp
+	# ::confVisu::autovisu 1
 
 	set naxis2i [lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1 ]
 	# set pas [ expr $naxis2i/200 ]

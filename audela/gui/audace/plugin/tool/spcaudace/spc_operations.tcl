@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.23 2010-02-28 14:42:36 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.24 2010-03-20 21:21:50 bmauclaire Exp $
 
 
 
@@ -1651,7 +1651,7 @@ proc spc_rescalecont { args } {
 
        #--- Détermination de la valeur du continuum :
        if { $nbargs==2 } {
-          set icont [ spc_icontinuum $fichier $lambdacont ]
+          set icont [ spc_icontinuum $fichier $lambdaconti ]
        } else {
           set icont [ spc_icontinuum $fichier ]
        }
