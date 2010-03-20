@@ -5,7 +5,7 @@
 # Auteurs     : François Cochard (francois.cochard@wanadoo.fr)
 #               Sur la forme, je suis parti du script calaphot de Jacques Michelet (jacques.michelet@laposte.net)
 #               Par ailleurs, je m'appuie sur les routines spc_audace de Benjamin Mauclaire
-# Mise a jour $Id: bess_module.tcl,v 1.9 2009-03-15 22:06:27 bmauclaire Exp $
+# Mise a jour $Id: bess_module.tcl,v 1.10 2010-03-20 21:20:13 bmauclaire Exp $
 # Mise à jour FC mars 2007
 # Dernière mise à jour: 24 mars 2007 - 11h00
 #
@@ -679,6 +679,10 @@ namespace eval ::bess {
                set spc_resl [ lindex [ buf$audace(bufNo) getkwd "SPC_RESL" ] 1 ]
                buf$audace(bufNo) setkwd [ list "BSS_RESP" $spc_resp float "Power of resolution at BSS_RESL wavelength" "" ]
                buf$audace(bufNo) setkwd [ list "BSS_RESL" $spc_resl double "Wavelength where power of resolution was computed" "angstrom" ]
+            }
+            #- Efface ce mot clef qui pose un probleme d'arrondi au centieme de seconde avec la validation Bess :
+            if { [ lsearch $listemotsclef "DATE-END" ] !=-1 } {
+               buf$audace(bufNo) delkwd "DATE-END"
             }
 
 
