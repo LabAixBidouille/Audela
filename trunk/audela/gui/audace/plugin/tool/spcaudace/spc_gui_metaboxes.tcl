@@ -5,7 +5,7 @@
 #*********************************************************************************#
 # Chargement : source $audace(rep_scripts)/spcaudace/spc_gui_boxes.tcl
 
-# Mise a jour $Id: spc_gui_metaboxes.tcl,v 1.5 2009-12-19 09:54:34 bmauclaire Exp $
+# Mise a jour $Id: spc_gui_metaboxes.tcl,v 1.6 2010-03-20 21:21:49 bmauclaire Exp $
 
 
 
@@ -4270,12 +4270,15 @@ namespace eval ::param_spc_audace_traitestellaire {
       set audace(param_spc_audace,traitestellaire,config,methinv) "n"
       set audace(param_spc_audace,traitestellaire,config,methraie) "o"
       set audace(param_spc_audace,traitestellaire,config,methcos) "n"
-      set audace(param_spc_audace,traitestellaire,config,norma) "n"
+      # n
+      set audace(param_spc_audace,traitestellaire,config,norma) "r"
       set audace(param_spc_audace,traitestellaire,config,offset) "none"
-      set audace(param_spc_audace,traitestellaire,config,cal_eau) "n"
+      # n
+      set audace(param_spc_audace,traitestellaire,config,cal_eau) "o"
       set audace(param_spc_audace,traitestellaire,config,export_png) "n"
       set audace(param_spc_audace,traitestellaire,config,export_bess) "n"
-      set audace(param_spc_audace,traitestellaire,config,2lamps) "n"
+      # n
+      set audace(param_spc_audace,traitestellaire,config,2lamps) "o"
 
 
       # === Variables d'environnement
