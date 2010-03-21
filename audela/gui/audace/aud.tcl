@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise Ã  jour $Id: aud.tcl,v 1.126 2010-03-14 21:23:14 alainklotz Exp $
+# Mise Ã  jour $Id: aud.tcl,v 1.127 2010-03-21 11:38:42 robertdelmas Exp $
 #
 
 #--- Chargement du package BWidget
@@ -1667,9 +1667,8 @@ if {[info exists audela(img_filename)]==1} {
 }
 
 #--- On execute eventuellement un script audela/gui/perso.tcl au lancement de AudeLA
-# Cela permet à chacun de personnalisé l'initialisation de
-# son interface graphique pour AudeLA.
+#--- Cela permet a chacun de personnaliser l'initialisation de son interface graphique
 if {[file exists perso.tcl]==1} {
-	source perso.tcl
+   source perso.tcl
 }
 
