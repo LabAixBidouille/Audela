@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot_principal.tcl,v 1.8 2010-03-14 17:31:53 jacquesmichelet Exp $
+# $Id: calaphot_principal.tcl,v 1.9 2010-03-21 13:16:27 jacquesmichelet Exp $
 #
 
 ###catch {namespace delete ::Calaphot}
@@ -61,6 +61,7 @@ namespace eval ::CalaPhot {
     # @brief Initialisation generale des variables par défaut
     # @return
     proc InitialisationStatique {} {
+        global env
         global audace
         variable parametres
         variable calaphot
@@ -88,15 +89,17 @@ namespace eval ::CalaPhot {
         set calaphot(texte,notice)              "notice"
         set calaphot(texte,probleme)            "probleme"
         set calaphot(texte,erreur)              "erreur"
+        
+        set calaphot(repertoire_fichier)        [file join $env(HOME) .audela calaphot]
 
-        set calaphot(nom_fichier_ini)           [file join audace plugin tool calaphot calaphot.ini]
-        set calaphot(nom_fichier_log)           [file join audace plugin tool calaphot trace_calaphot.log]
+        set calaphot(nom_fichier_ini)           [file join $calaphot(repertoire_fichier) calaphot.ini]
+        set calaphot(nom_fichier_log)           [file join $calaphot(repertoire_fichier) calaphot.log]
 
-        set calaphot(sextractor,catalog)        [ file join audace plugin tool calaphot calaphot.cat ]
-        set calaphot(sextractor,config)         [ file join audace plugin tool calaphot calaphot.sex ]
-        set calaphot(sextractor,param)          [ file join audace plugin tool calaphot calaphot.param ]
-        set calaphot(sextractor,neurone)        [ file join audace plugin tool calaphot calaphot.nnw ]
-        set calaphot(sextractor,assoc)          [ file join audace plugin tool calaphot calaphot.assoc ]
+        set calaphot(sextractor,catalog)        [ file join $calaphot(repertoire_fichier) calaphot.cat ]
+        set calaphot(sextractor,config)         [ file join $calaphot(repertoire_fichier) calaphot.sex ]
+        set calaphot(sextractor,param)          [ file join $calaphot(repertoire_fichier) calaphot.param ]
+        set calaphot(sextractor,neurone)        [ file join $calaphot(repertoire_fichier) calaphot.nnw ]
+        set calaphot(sextractor,assoc)          [ file join $calaphot(repertoire_fichier) calaphot.assoc ]
 
         set calaphot(init,mode)                 ouverture
         set calaphot(init,operateur)            "Tycho Brahe"
@@ -177,7 +180,7 @@ namespace eval ::CalaPhot {
         SaisieParametres
         SauvegardeParametres
 
-        catch {file delete [file join $audace(rep_images) $parametres(sortie)]}
+        catch {file delete [file join $calaphot(repertoire_fichier) $parametres(sortie)]}
 
         TraceFichier ${parametres(sortie)}.txt notice "%s %s\n" $calaphot(texte,titre) $calaphot(init,version_ini)
         TraceFichier ${parametres(sortie)}.txt notice "%s\n" $calaphot(texte,copyright)
@@ -487,8 +490,9 @@ namespace eval ::CalaPhot {
          } else {
             AffichageCDR
          }
-        AffichageCSV
-        AffichageDAT
+        GenerationFichierCSV
+        set origine_temps [GenerationFichierDAT]
+        GenerationFichierGnuplot $origine_temps
 
         # Destruction des fichiers de configs Sextractor
         DestructionFichiersSextractor
@@ -498,7 +502,7 @@ namespace eval ::CalaPhot {
          Message notice "%s\n" $calaphot(texte,fin_normale)
 
          # Affichage de la courbe de lumiere
-###         CourbeLumiere
+        ExecutionGnuplot
 
     }
 
@@ -598,7 +602,7 @@ namespace eval ::CalaPhot {
     # @brief Stockage des résultats avec le format CSV (Comma Separated Values)
     # @details Le resultat de cet affichage peut directement etre importé par un tableur
     # @return toujours 0
-    proc AffichageCSV {} {
+    proc GenerationFichierCSV {} {
         global audace
         variable data_image
         variable parametres
@@ -608,9 +612,9 @@ namespace eval ::CalaPhot {
 
         Message debug "%s\n" [info level [info level]]
 
-        set nom_fichier ${parametres(sortie)}.cvs
+        set nom_fichier [file join $audace(rep_images) ${parametres(sortie)}.cvs]
         # effacement de la version précédente
-        catch {[file delete -force [file join $audace(rep_images) $nom_fichier]]}
+        catch {[file delete -force $nom_fichier]}
 
         TraceFichier $nom_fichier notice "year;month;day;hour;min;sec;"
         TraceFichier $nom_fichier notice "JJ;Mag var;Inc var;"
@@ -639,8 +643,8 @@ namespace eval ::CalaPhot {
     ##
     # @brief Stockage des résultats avec un format CSV pour Gnuplot
     # @details Le resultat de cet affichage peut directement etre importé lu par Gnuplot
-    # @return toujours 0
-    proc AffichageDAT {} {
+    # @return la partie entière du jour julien de la première image
+    proc GenerationFichierDAT {} {
 
         global audace
         variable data_image
@@ -651,15 +655,16 @@ namespace eval ::CalaPhot {
 
         Message debug "%s\n" [info level [info level]]
         
-        set nom_fichier ${parametres(sortie)}.dat
+        set nom_fichier [file join $audace(rep_images) ${parametres(sortie)}.dat]
         # effacement de la version précédente
-        catch {[file delete -force [file join $audace(rep_images) $nom_fichier]]}
+        catch {[file delete -force $nom_fichier]}
 
         set premier 1
         foreach i $liste_image {
             set temps [mc_date2ymdhms $data_image($i,date)]
             if {[info exists data_image($i,var,mag_0)]} {
                 if {$premier != 0} {
+                    set orig_temps [expr floor($data_image($i,date))]
                     set orig_mag_var_0 $data_image($i,var,mag_0)
                     for {set etoile 0} {$etoile < $data_script(nombre_reference)} {incr etoile} {
                         set orig_mag_ref($etoile) $data_image($i,ref,mag_$etoile)
@@ -667,7 +672,7 @@ namespace eval ::CalaPhot {
                     set orig_cste_mag $data_image($i,constante_mag)
                     set premier 0
                 }
-                TraceFichier $nom_fichier notice "%04d;%15.5f;" $i [expr $data_image($i,date) - 2400000.5]
+                TraceFichier $nom_fichier notice "%04d;%15.5f;" $i [expr $data_image($i,date) - $orig_temps]
                 TraceFichier $nom_fichier notice "%07.4f;%07.4f;" [expr $data_image($i,var,mag_0) - $orig_mag_var_0] $data_image($i,var,incertitude_0)
                 for {set etoile 0} {$etoile < $data_script(nombre_reference)} {incr etoile} {
                     TraceFichier $nom_fichier notice "%07.4f;%07.4f;" [expr $data_image($i,ref,mag_$etoile) - $orig_mag_ref($etoile) + 1.0] $data_image($i,ref,incertitude_$etoile)
@@ -675,8 +680,61 @@ namespace eval ::CalaPhot {
                 TraceFichier $nom_fichier notice "%7.4f\n" [expr $data_image($i,constante_mag) - $orig_cste_mag + 2.0]
             }
         }
+        return $orig_temps
     }
 
+    ##
+    # @brief Création d'un fichier destiné à être exécuté par Gnuplot
+    # @details Ce fichier script utilise le fichier DAT comme source des données
+    # @return toujours 0
+    proc GenerationFichierGnuplot {origine_temps} {
+
+        global audace
+        variable data_image
+        variable parametres
+        variable calaphot
+        variable data_script
+        variable liste_image
+
+        Message debug "%s\n" [info level [info level]]
+        
+        set nom_fichier_gplt [file join $audace(rep_images) ${parametres(sortie)}.plt]
+        set nom_fichier_dat [file join $audace(rep_images) ${parametres(sortie)}.dat]
+        # effacement de la version précédente
+        catch {[file delete -force $nom_fichier_plt]}
+        set f [open $nom_fichier_gplt "w"]
+        puts $f "set datafile separator \";\""
+        puts $f "set title \"$parametres(objet)\""
+        puts $f "set xlabel \"time - $origine_temps\""
+        puts $f "set ylabel \"Relative magnitudes\""
+        puts -nonewline $f "plot \'$nom_fichier_dat\' using 2:3:4 with errorlines title \"$parametres(objet)\""
+        for {set etoile 0} {$etoile < $data_script(nombre_reference)} {incr etoile} { 
+            puts $f " , \\"
+            puts -nonewline $f "    \'\' using 2:[expr 5 + 2 * $etoile]:[expr 6 + 2* $etoile] with errorline title \"ref. $etoile\""
+        }
+        puts $f " , \\"
+        puts -nonewline $f "    \'\' using 2:[expr 5 + 2 * $etoile] with lines title \"const. mag.\""
+        puts $f ""
+        puts $f "pause -1"
+        close $f
+    }
+
+    ##
+    # @brief Execution du fichier Gnuplot créé par GenerationFichierGnuplot
+    # @details Uniquement sous Linux
+    # @return toujours 0
+    proc ExecutionGnuplot {} {
+        
+        global tcl_platform
+        global audace
+        variable parametres
+        
+        if {$tcl_platform(os) == "Linux"} {
+            set nom_fichier_gplt [file join $audace(rep_images) ${parametres(sortie)}.plt]
+            catch {exec gnuplot $nom_fichier_gplt &}
+        }
+    }
+    
     ##
     # @brief Affichage dans la console
     # @details Le niveau d'affichage est comparé au niveau defini dans la saisie des parametres. S'il est plus faible (plus grande priorite)
@@ -697,7 +755,7 @@ namespace eval ::CalaPhot {
             update
 
             if {[info exists trace_log]} {
-                set filetest [open [file join $audace(rep_scripts) trace_calaphot.log] a]
+                set filetest [open [file join $calaphot(repertoire_fichier) trace_calaphot.log] a]
                 if {$filetest != ""} {
                     puts -nonewline $filetest [concat [string repeat "." [expr [info level] - 1]] [eval [concat {format} $args]] ]
                 }
@@ -915,6 +973,7 @@ namespace eval ::CalaPhot {
     # @todo Voir si cette routine ne peut etre refondue dans InitialisationStatique
     proc Initialisations {} {
         global audace
+        variable calaphot
         variable vx_temp
         variable vy1_temp
         variable vy2_temp
@@ -945,6 +1004,10 @@ namespace eval ::CalaPhot {
         set data_script(nombre_indes) 0
 
         set data_script(nombre_fichier_ouvert) 0
+        
+        if {[file exists $calaphot(repertoire_fichier)] == 0} {
+            file mkdir $calaphot(repertoire_fichier)
+        }
 
     }
 
@@ -1317,7 +1380,6 @@ namespace eval ::CalaPhot {
 
         Message debug "%s\n" [info level [info level]]
 
-#        set fichier [OuvertureFichier [file join calaphot $calaphot(nom_fichier_ini)] w]
         set fichier [OuvertureFichier $calaphot(nom_fichier_ini) w]
         if {($fichier != "")} {
             foreach {a b} [array get parametres] {
@@ -1341,30 +1403,6 @@ namespace eval ::CalaPhot {
     }
 
     ##
-    # @brief Generation d'un script pour recreer la courbe de lumiere
-    # @deprecated
-    # @param[in] x : vecteur sur l'axe X
-    # @param[in] y1 : vecteur sur l'axe Y
-    # @param[in] y2 : vecteur sur l'axe Y
-    # @param[in] y3 : vecteur sur l'axe Y
-    proc ScriptCourbeLumiere {x y1 y2 y3} {
-        set liste_commande [list { \
-                      {package require BLT} \
-                      {set baseplotxy ".calaphot"}
-                      {catch {destroy $baseplotxy}} \
-                      {toplevel $baseplotxy} \
-                      {wm geometry $baseplotxy 631x453+100+0} \
-                      {wm maxsize $baseplotxy [winfo screenwidth .] [winfo screenheight .]} \
-                      {wm minsize $baseplotxy 200 200} \
-                      {wm resizable $baseplotxy 1 1} \
-                  }]
-
-        foreach commande $liste_commande {
-            Message console "%s\n" $commande
-        }
-    }
-
-    ##
     # @brief Ecrit des messages dans un fichier de log
     # @details @see @ref Console
     # @param[in] niveau_info : le niveau d'affichage
@@ -1376,7 +1414,7 @@ namespace eval ::CalaPhot {
         variable parametres
 
         if {($calaphot(niveau_notice) <= $calaphot(niveau_$niveau_info))} {
-            set fid [open [file join $audace(rep_images) $fichier] a]
+            set fid [open [file join $calaphot(repertoire_fichier) $fichier] a]
             puts -nonewline $fid [eval [concat {format} $args]]
             close $fid
         }
