@@ -2,7 +2,7 @@
 # Fichier : gps.tcl
 # Description : Outil de synchronisation GPS
 # Auteur : Jacques MICHELET
-# Mise à jour $Id: gps.tcl,v 1.19 2010-03-23 08:56:40 jacquesmichelet Exp $
+# Mise à jour $Id: gps.tcl,v 1.20 2010-03-23 20:36:10 jacquesmichelet Exp $
 #
 
 namespace eval ::gps {
@@ -664,6 +664,59 @@ namespace eval ::gps {
     }
 
     ##############################################################
+    ### ConfigureSerie ###########################################
+    ##############################################################
+    proc ConfigureSerie {} {
+        global caption
+        variable parametres
+        variable gps
+
+        if {[catch {open $parametres(port_serie) r+} serie]} {
+            tk_messageBox \
+                -type ok \
+                -message $caption(gps,conseil_serie) \
+                -title $caption(gps,erreur) \
+                 -icon error
+            return 0
+        }
+
+        # Sauvegarde de la configuration du port serie
+        if {[catch {fconfigure $serie -blocking} confserie]} {
+            tk_messageBox \
+                -type ok \
+                -message $caption(gps,non_rs232) \
+                -title $caption(gps,erreur) \
+                -icon error
+            return 0
+        } else {
+            set gps(configuration_serie_blocking) $confserie
+        }
+
+        if {[catch {fconfigure $serie -mode} confserie]} {
+            tk_messageBox \
+                -type ok \
+                -message $caption(gps,non_rs232) \
+                -title $caption(gps,erreur) \
+                -icon error
+            return 0
+        } else {
+            set gps(configuration_serie_mode) $confserie
+        }
+
+        if {[catch {fconfigure $serie -buffering} confserie]} {
+            tk_messageBox \
+                -type ok \
+                -message $caption(gps,non_rs232) \
+                -title $caption(gps,erreur) \
+                -icon error
+            return 0
+        } else {
+            set gps(configuration_serie_buffering) $confserie
+        }
+        return $serie
+    }    
+
+    ##############################################################
     ### DemarrageAuto ############################################
     ##############################################################
     proc DemarrageAuto {} {
@@ -675,11 +728,9 @@ namespace eval ::gps {
         variable gps
         variable test
 
-        if {[catch {open $parametres(port_serie) r+} serie]} {
-            tk_messageBox -type ok -message $caption(gps,conseil_serie) -title $caption(gps,erreur) -icon error
-            return
-        }
-
+        set serie [ConfigureSerie]
+        if {$serie == 0} {return}
+        
         set gps(etat) automatique
 
         pack forget $This.fautomatique.fautobis.bdemarrage_auto
@@ -982,48 +1033,8 @@ namespace eval ::gps {
         variable gps
         variable test
 
-        if {[catch {open $parametres(port_serie) r+} serie]} {
-            tk_messageBox \
-                -type ok \
-                -message $caption(gps,conseil_serie) \
-                -title $caption(gps,erreur) \
-                -icon error
-            return
-        }
-
-        # Sauvegarde de la configuration du port serie
-        if {[catch {fconfigure $serie -blocking} confserie]} {
-            tk_messageBox \
-                -type ok \
-                -message $caption(gps,non_rs232) \
-                -title $caption(gps,erreur) \
-                -icon error
-            return
-        } else {
-            set gps(configuration_serie_blocking) $confserie
-        }
-
-        if {[catch {fconfigure $serie -mode} confserie]} {
-            tk_messageBox \
-                -type ok \
-                -message $caption(gps,non_rs232) \
-                -title $caption(gps,erreur) \
-                -icon error
-            return
-        } else {
-            set gps(configuration_serie_mode) $confserie
-        }
-
-        if {[catch {fconfigure $serie -buffering} confserie]} {
-            tk_messageBox \
-                -type ok \
-                -message caption(gps,non_rs232) \
-                -title $caption(gps,erreur) \
-                -icon error
-            return
-        } else {
-            set gps(configuration_serie_buffering) $confserie
-        }
+        set serie [ConfigureSerie]
+        if {$serie == 0} {return}
 
         set gps(etat) gps
 
