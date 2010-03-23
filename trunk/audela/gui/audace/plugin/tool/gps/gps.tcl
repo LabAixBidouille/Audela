@@ -2,7 +2,7 @@
 # Fichier : gps.tcl
 # Description : Outil de synchronisation GPS
 # Auteur : Jacques MICHELET
-# Mise à jour $Id: gps.tcl,v 1.18 2010-02-20 07:55:14 robertdelmas Exp $
+# Mise à jour $Id: gps.tcl,v 1.19 2010-03-23 08:56:40 jacquesmichelet Exp $
 #
 
 namespace eval ::gps {
@@ -10,7 +10,7 @@ namespace eval ::gps {
     variable parametres
     variable base
 
-    package provide gps 3.6
+    package provide gps 3.7
     package require audela 1.4.0
 
     source [file join [file dirname [info script]] gps.cap]
@@ -191,7 +191,6 @@ namespace eval ::gps {
     proc ArretAuto {} {
         variable This
         variable gps
-        variable etat
         variable serie
         global caption
 
@@ -224,7 +223,7 @@ namespace eval ::gps {
             }
         }
         Message infos ""
-        set etat repos
+        set gps(etat) repos
         set gps(heure_arret) [clock seconds]
     }
 
@@ -235,7 +234,6 @@ namespace eval ::gps {
         variable This
         variable base
         variable gps
-        variable etat
         variable serie
         global caption
 
@@ -269,7 +267,7 @@ namespace eval ::gps {
         }
         destroy $base.tableau_bord
         Message infos ""
-        set etat repos
+        set gps(etat) repos
         set gps(heure_arret) [clock seconds]
     }
 
@@ -279,7 +277,6 @@ namespace eval ::gps {
     proc ArretHorloge {} {
         variable This
         variable horloge
-        variable etat
         global caption
         global audace
 
@@ -297,7 +294,7 @@ namespace eval ::gps {
         vwait ::gps::horloge(confirmation_arret)
         Message infos ""
         Message consolog "%s %d ms\n" $caption(gps,decalage_horloge) $horloge(decalage_total)
-        set etat repos
+        set gps(etat) repos
     }
 
     ##############################################################
@@ -355,10 +352,11 @@ namespace eval ::gps {
     ### createPanel ##############################################
     ##############################################################
     proc createPanel {this} {
-        global caption conf audace color
+        global caption conf audace color env
         variable This
         variable parametres
         variable couleur
+        variable gps
 
         if {[catch {load libjm[info sharedlibextension]} chargement_lib]} {
             Message console "%s\n" $chargement_lib
@@ -384,8 +382,9 @@ namespace eval ::gps {
         CreationPanneauGPS $This
 
         # Si le repertoire gps n'existe pas, le creer
-        if {![file exist [file join $audace(rep_plugin) tool gps]]} {
-            file mkdir [file join $audace(rep_plugin) tool gps]
+        set gps(home) [file join $env(HOME) .audela tool gps]
+        if {![file exist $gps(home)]} {
+            file mkdir $gps(home)
         }
     }
 
@@ -674,7 +673,6 @@ namespace eval ::gps {
         variable parametres
         variable serie
         variable gps
-        variable etat
         variable test
 
         if {[catch {open $parametres(port_serie) r+} serie]} {
@@ -682,7 +680,7 @@ namespace eval ::gps {
             return
         }
 
-        set etat automatique
+        set gps(etat) automatique
 
         pack forget $This.fautomatique.fautobis.bdemarrage_auto
         pack $This.fautomatique.fautobis.barret_auto -side top -fill x -padx 3 -pady 3
@@ -732,14 +730,13 @@ namespace eval ::gps {
         global caption
         variable This
         variable horloge
-        variable etat
 
         # On cherche a savoir si l'utilisateur a les droits suffisants pour modifier l'horloge systeme
         set erreur [catch {set temps [time {jm_reglageheurepc 0} 10] } resultat ]
         if { $erreur } {
             tk_messageBox -title $caption(gps,ecoute_horloge) -type ok -icon error -message $caption(gps,droit_acces)
         } else {
-            set etat horloge
+            set gps(etat) horloge
 
             pack forget $This.fmanuel.freg.becoute_horloge
             pack $This.fmanuel.freg.barret_horloge -side top -fill x -padx 3 -pady 3
@@ -904,10 +901,10 @@ namespace eval ::gps {
         global caption
         variable position
         variable parametres
-        variable etat
+        variable gps
 
-        if {[info exists etat]} {
-            if {$etat == "automatique"} {return}
+        if {[info exists gps(etat)]} {
+            if {$gps(etat) == "automatique"} {return}
         }
 
         # Recuperation des informations de position
@@ -943,7 +940,7 @@ namespace eval ::gps {
         set position(altitude) $conf(posobs,altitude)
 
         # Ouverture du fichier de parametres
-        set fichier [file join $audace(rep_plugin) tool gps gps.ini]
+        set fichier [file join $gps(home) gps.ini]
         if {[file exists $fichier]} {
             source $fichier
         }
@@ -971,7 +968,7 @@ namespace eval ::gps {
 
         Message consolog "---------- %s %s ----------\n" $caption(gps,bienvenue) [ package version gps ]
         Message consolog "%s\n" $caption(gps,copyright)
-        set etat repos
+        set gps(etat) repos
     }
 
     ##############################################################
@@ -983,7 +980,6 @@ namespace eval ::gps {
         variable parametres
         variable serie
         variable gps
-        variable etat
         variable test
 
         if {[catch {open $parametres(port_serie) r+} serie]} {
@@ -1029,7 +1025,7 @@ namespace eval ::gps {
             set gps(configuration_serie_buffering) $confserie
         }
 
-        set etat gps
+        set gps(etat) gps
 
         pack forget $This.fmanuel.fgps.blancement_gps
         pack $This.fmanuel.fgps.barret_gps -side top -fill x -padx 3 -pady 3
@@ -1071,6 +1067,7 @@ namespace eval ::gps {
     proc Message {niveau args} {
         global audace
         variable This
+        variable gps
 
         switch -exact -- $niveau {
             console {
@@ -1087,7 +1084,7 @@ namespace eval ::gps {
             }
             consolog {
                 ::console::disp [eval [concat {format} $args]]
-                set nom_fichier [file join $audace(rep_plugin) tool gps gps.log]
+                set nom_fichier [file join $gps(home) gps.log]
                 if [catch {open $nom_fichier a} fichier] {
                     ::console::disp $fichier
                     ::console::disp "\n"
@@ -1100,7 +1097,7 @@ namespace eval ::gps {
                 update idletasks
             }
             log {
-                set nom_fichier [file join $audace(rep_plugin) tool gps gps.log]
+                set nom_fichier [file join $gps(home) gps.log]
                 if [catch {open $nom_fichier a} fichier] {
                     ::console::disp $fichier
                     ::console::disp "\n"
@@ -1289,18 +1286,18 @@ namespace eval ::gps {
     ##############################################################
     proc Terminaison {This} {
         global audace
-        variable parametres
-        variable etat
         global caption
+        variable parametres
+        variable gps
 
-        if {$etat == "automatique"} {return}
-        if {$etat == "gps"} {ArretGPS}
-        if {$etat == "horloge"} {ArretHorloge}
+        if {$gps(etat) == "automatique"} {return}
+        if {$gps(etat) == "gps"} {ArretGPS}
+        if {$gps(etat) == "horloge"} {ArretHorloge}
 
         Message consolog "---------- %s -------------\n\n" $caption(gps,tchao)
 
         # Sauvegarde des parametres
-        set nom_fichier [file join $audace(rep_plugin) tool gps gps.ini]
+        set nom_fichier [file join $gps(home) gps.ini]
         if [catch {open $nom_fichier w} fichier] {
             Message console "%s\n" $fichier
         } else {
