@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot_principal.tcl,v 1.10 2010-03-24 09:22:11 jacquesmichelet Exp $
+# $Id: calaphot_principal.tcl,v 1.11 2010-03-24 20:07:53 jacquesmichelet Exp $
 #
 
 ###catch {namespace delete ::Calaphot}
@@ -547,11 +547,13 @@ namespace eval ::CalaPhot {
     # @details Le contenu de ce fichier peut directement etre exporté pour le logiciel Courbrot
     # @return toujours 0
     proc GenerationFichierCDR {} {
+        global audace
         variable data_image
         variable parametres
         variable calaphot
         variable data_script
         variable liste_image
+      
 
         Message debug "%s\n" [info level [info level]]
 
@@ -562,25 +564,25 @@ namespace eval ::CalaPhot {
         set premier [lindex $liste_image 0]
 
         set f [open $nom_fichier "w"]
-        puts $f -nonewline [format "NOM %s\n" $parametres(objet)]
-        puts $f -nonewline [format"MES %s" $parametres(operateur)]
+        puts -nonewline $f [format "NOM %s\n" $parametres(objet)]
+        puts -nonewline $f [format "MES %s" $parametres(operateur)]
         if {[string length $parametres(code_UAI)] != 0} {
-            puts $f -nonewline [format " @%s\n" $parametres(code_UAI)]
+            puts -nonewline $f [format " @%s\n" $parametres(code_UAI)]
         } else {
-            puts $f
+            puts $f "\n"
         }
-        puts $f -nonewline [format "POS 0 %5.2f\n" $data_image($premier,temps_expo)]
-        puts $f -nonewline [format "CAP %s\n" $parametres(type_capteur)]
-        puts $f -nonewline [format "TEL %s %s %s\n" $parametres(diametre_telescope) $parametres(focale_telescope) $parametres(type_telescope)]
-        puts $f -nonewline [format "CAT %s\n" $parametres(catalogue_reference)]
-        puts $f -nonewline [format "FIL %s\n" $parametres(filtre_optique)]
-        puts $f -nonewline [format "; %s %s %s\n" $calaphot(texte,banniere_CDR_1) $calaphot(init,version_ini) $calaphot(texte,banniere_CDR_2)]
+        puts -nonewline $f [format "POS 0 %5.2f\n" $data_image($premier,temps_expo)]
+        puts -nonewline $f [format "CAP %s\n" $parametres(type_capteur)]
+        puts -nonewline $f [format "TEL %s %s %s\n" $parametres(diametre_telescope) $parametres(focale_telescope) $parametres(type_telescope)]
+        puts -nonewline $f [format "CAT %s\n" $parametres(catalogue_reference)]
+        puts -nonewline $f [format "FIL %s\n" $parametres(filtre_optique)]
+        puts -nonewline $f [format "; %s %s %s\n" $calaphot(texte,banniere_CDR_1) $calaphot(init,version_ini) $calaphot(texte,banniere_CDR_2)]
         set image 0
 
         foreach i $liste_image {
             if {$data_image($i,valide) == "Y"} {
                 incr image
-                puts $f -nonewline " 1 1"
+                puts -nonewline $f " 1 1"
                 # Passage de la date en format amj,ddd
                 set amjhms [mc_date2ymdhms $data_image($i,date)]
                 set date_claire "[format %04d [lindex $amjhms 0]]"
@@ -589,11 +591,10 @@ namespace eval ::CalaPhot {
                 set hms [format %6.5f [expr double([lindex $amjhms 3])/24.0 + double([lindex $amjhms 4])/1440.0 + double([lindex $amjhms 5])/86400.0]]
                 set hms [string range $hms [string first . $hms] end]
                 append date_claire $hms
-                puts $f -nonewline [format " %14.5f" $date_claire]
-                puts $f -nonewline " T"
-                puts $f -nonewline [format " %6.3f" $data_image($i,var,mag_0)]
-                puts $f -nonewline [format " %6.3f" $data_image($i,var,incertitude_0)]
-                puts $f
+                puts -nonewline $f [format " %14.5f" $date_claire]
+                puts -nonewline $f " T"
+                puts -nonewline $f [format " %6.3f" $data_image($i,var,mag_0)]
+                puts -nonewline $f [format " %6.3f\n" $data_image($i,var,incertitude_0)]
             }
         }
         close $f
