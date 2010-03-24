@@ -1,13 +1,13 @@
 #
 # Fichier : calaphot.cap
-# Mise a jour $Id: calaphot.cap,v 1.10 2010-03-14 17:29:26 jacquesmichelet Exp $
+# Mise a jour $Id: calaphot.cap,v 1.11 2010-03-24 09:22:11 jacquesmichelet Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global texte_photo langage
+global langage
 
 # Hors version
 set calaphot(texte,titre)                  "Calaphot"
@@ -100,9 +100,6 @@ set calaphot(texte,arret)                  "Stop"
 set calaphot(texte,fichier_cl)             "Name of Resulting PostScript File"
 set calaphot(texte,rien_a_voir)            "No Light Curve"
 set calaphot(texte,tri_images)             "Sorting by Date of Images"
-# Texte sans accent (pour les fichiers Postscripts)
-set calaphot(texte,reference_sacc)         "Reference"
-# Fin du texte sans accent
 set calaphot(texte,type_capteur)           "CCD Model"
 set calaphot(texte,type_telescope)         "Telescope Type"
 set calaphot(texte,diametre_telescope)     "Telescope Aperture (m)"
@@ -125,6 +122,7 @@ set calaphot(texte,aide)                   "Help"
 set calaphot(texte,pas_image_valide)       "No valid image. You should check the minimum S/N ratio."
 set calaphot(texte,image)                  "Image"
 set calaphot(texte,temps_pose_nul)         "Void exposure duration"
+set calaphot(texte,mag_relative)           "Relative Magnitude"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -214,9 +212,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,fichier_cl)          "Nom du fichier PostScript résultat"
    set calaphot(texte,rien_a_voir)         "Pas de courbe de lumière à montrer"
    set calaphot(texte,tri_images)          "Tri des images par date croissante"
-   # Texte sans accent (pour les fichiers Postscripts)
-   set calaphot(texte,reference_sacc)      "Reference"
-   # Fin du texte sans accent
    set calaphot(texte,type_capteur)        "Type du capteur"
    set calaphot(texte,type_telescope)      "Type du telescope"
    set calaphot(texte,diametre_telescope)  "Diamètre du télescope (m)"
@@ -239,6 +234,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,pas_image_valide)    "Aucune image n'est valide. Vérifiez le rapport S/B limite."
    set calaphot(texte,image)               "Image"
    set calaphot(texte,temps_pose_nul)      "Temps de pose nul"
+   set calaphot(texte,mag_relative)        "Magnitude relative"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -328,9 +324,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,fichier_cl)          "Nome del file PostScript risultato"
    set calaphot(texte,rien_a_voir)         "Nessuna curva di luce da mostrare"
    set calaphot(texte,tri_images)          "Selezione immagini per data"
-   # Texte sans accent (pour les fichiers Postscripts)
-   set calaphot(texte,reference_sacc)      "Riferimenti"
-   # Fin du texte sans accent
    set calaphot(texte,type_capteur)        "Modello CCD"
    set calaphot(texte,type_telescope)      "Tipo di telescopio"
    set calaphot(texte,diametre_telescope)  "Diametro telescopio (m)"
@@ -353,6 +346,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,pas_image_valide)    "Nessuna immagine valida. Verificare il rapporto S/N minimo."
    set calaphot(texte,image)               "Immagine"
    set calaphot(texte,temps_pose_nul)      "Tempo do posa nulla"
+#### Ajout JM
+   set calaphot(texte,mag_relative)        "Relative Magnitude"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -442,9 +437,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,fichier_cl)          "Nombre del fichero PostScript resultado"
    set calaphot(texte,rien_a_voir)         "No existe curva de luz"
    set calaphot(texte,tri_images)          "Ordenado por fecha de las imagenes"
-   # Texte sans accent (pour les fichiers Postscripts)
-   set calaphot(texte,reference_sacc)      "Referencia"
-   # Fin du texte sans accent
    set calaphot(texte,type_capteur)        "Tipo de CCD"
    set calaphot(texte,type_telescope)      "Tipo de telescopio"
    set calaphot(texte,diametre_telescope)  "Diametro del telescopio (m)"
@@ -467,6 +459,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,pas_image_valide)    "Imagen no valida. Verificar el limite S/R."
    set calaphot(texte,image)               "Imagen"
    set calaphot(texte,temps_pose_nul)      "Tiempo de exposición nulo"
+#### Ajout JM
+   set calaphot(texte,mag_relative)        "Relative Magnitude"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -556,9 +550,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,fichier_cl)          "Namen des Erfolg Postscript Datei"
    set calaphot(texte,rien_a_voir)         "Keine Lichtkurve zu zeigen"
    set calaphot(texte,tri_images)          "Mit steigend Datum Bilder Aussortierung"
-   # Texte sans accent (pour les fichiers Postscripts)
-   set calaphot(texte,reference_sacc)      "Zeichen"
-   # Fin du texte sans accent
    set calaphot(texte,type_capteur)        "CCD Typ"
    set calaphot(texte,type_telescope)      "Teleskop Typ"
    set calaphot(texte,diametre_telescope)  "Teleskop Durchmesser (m)"
@@ -581,6 +572,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,pas_image_valide)    "Kein Bild ist gültig. Überprüfen Sie die S/N Grenze."
    set calaphot(texte,image)               "Bild"
    set calaphot(texte,temps_pose_nul)      "Null Erleuchtung Zeit"
+#### Ajout JM
+   set calaphot(texte,mag_relative)        "Relative Magnitude"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -670,8 +663,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,fichier_cl)          "Nome do ficheiro PostScript resultante"
    set calaphot(texte,rien_a_voir)         "Não existe curva de brilho para expôr"
    set calaphot(texte,tri_images)          "Triagem de imagens por data crescente"
-   # Texte sans accent (pour les fichiers Postscripts)
-   set calaphot(texte,reference_sacc)      "Referência"
    set calaphot(texte,type_capteur)        "Tipo de captor"
    set calaphot(texte,type_telescope)      "Tipo de telescópio"
    set calaphot(texte,diametre_telescope)  "Diâmetro do telescópio (m)"
@@ -694,6 +685,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,pas_image_valide)    "Nenhuma imagem válida. Verifique o limite de SNR."
    set calaphot(texte,image)               "Imagem"
    set calaphot(texte,temps_pose_nul)      "Tempo de exposição nulo"
+#### Ajout JM
+   set calaphot(texte,mag_relative)        "Relative Magnitude"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -783,9 +776,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,fichier_cl)          "Name of Resulting PostScript File"
    set calaphot(texte,rien_a_voir)         "No Light Curve"
    set calaphot(texte,tri_images)          "Sorting by Date of Images"
-   # Texte sans accent (pour les fichiers Postscripts)
-   set calaphot(texte,reference_sacc)      "Reference"
-   # Fin du texte sans accent
    set calaphot(texte,type_capteur)        "CCD Model"
    set calaphot(texte,type_telescope)      "Telescope Type"
    set calaphot(texte,diametre_telescope)  "Telescope Aperture (m)"
@@ -808,6 +798,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,pas_image_valide)    "No valid image. You should check the minimum S/N ratio."
    set calaphot(texte,image)               "Image"
    set calaphot(texte,temps_pose_nul)      "Void exposure duration"
+   set calaphot(texte,mag_relative)        "Relative Magnitude"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -897,9 +888,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,fichier_cl)          "Name of Resulting PostScript File"
    set calaphot(texte,rien_a_voir)         "No Light Curve"
    set calaphot(texte,tri_images)          "Sorting by Date of Images"
-   # Texte sans accent (pour les fichiers Postscripts)
-   set calaphot(texte,reference_sacc)      "Reference"
-   # Fin du texte sans accent
    set calaphot(texte,type_capteur)        "CCD Model"
    set calaphot(texte,type_telescope)      "Telescope Type"
    set calaphot(texte,diametre_telescope)  "Telescope Aperture (m)"
@@ -922,6 +910,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,pas_image_valide)    "No valid image. You should check the minimum S/N ratio."
    set calaphot(texte,image)               "Image"
    set calaphot(texte,temps_pose_nul)      "Void exposure duration"
+   set calaphot(texte,mag_relative)        "Relative Magnitude"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -1011,9 +1000,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,fichier_cl)          "Name of Resulting PostScript File"
    set calaphot(texte,rien_a_voir)         "No Light Curve"
    set calaphot(texte,tri_images)          "Sorting by Date of Images"
-   # Texte sans accent (pour les fichiers Postscripts)
-   set calaphot(texte,reference_sacc)      "Reference"
-   # Fin du texte sans accent
    set calaphot(texte,type_capteur)        "CCD Model"
    set calaphot(texte,type_telescope)      "Telescope Type"
    set calaphot(texte,diametre_telescope)  "Telescope Aperture (m)"
@@ -1036,6 +1022,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,pas_image_valide)    "No valid image. You should check the minimum S/N ratio."
    set calaphot(texte,image)               "Image"
    set calaphot(texte,temps_pose_nul)      "Void exposure duration"
+   set calaphot(texte,mag_relative)        "Relative Magnitude"
 
 }
 

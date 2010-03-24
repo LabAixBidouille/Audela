@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot_principal.tcl,v 1.9 2010-03-21 13:16:27 jacquesmichelet Exp $
+# $Id: calaphot_principal.tcl,v 1.10 2010-03-24 09:22:11 jacquesmichelet Exp $
 #
 
 ###catch {namespace delete ::Calaphot}
@@ -90,7 +90,7 @@ namespace eval ::CalaPhot {
         set calaphot(texte,probleme)            "probleme"
         set calaphot(texte,erreur)              "erreur"
         
-        set calaphot(repertoire_fichier)        [file join $env(HOME) .audela calaphot]
+        set calaphot(repertoire_fichier)        [file join $env(HOME) .audela tool calaphot]
 
         set calaphot(nom_fichier_ini)           [file join $calaphot(repertoire_fichier) calaphot.ini]
         set calaphot(nom_fichier_log)           [file join $calaphot(repertoire_fichier) calaphot.log]
@@ -488,7 +488,7 @@ namespace eval ::CalaPhot {
          if {$parametres(format_sortie) == "canopus"} {
             AffichageCanopus
          } else {
-            AffichageCDR
+            GenerationFichierCDR
          }
         GenerationFichierCSV
         set origine_temps [GenerationFichierDAT]
@@ -543,10 +543,10 @@ namespace eval ::CalaPhot {
     }
 
     ##
-    # @brief Affichage avec le format CDR (cf site de Raoul Behrend)
-    # @details Le resultat de cet affichage peut directement etre exporté pour le logiciel Courbrot
+    # @brief Stockage des résultats avec le format CDR (cf site de Raoul Behrend)
+    # @details Le contenu de ce fichier peut directement etre exporté pour le logiciel Courbrot
     # @return toujours 0
-    proc AffichageCDR {} {
+    proc GenerationFichierCDR {} {
         variable data_image
         variable parametres
         variable calaphot
@@ -555,31 +555,32 @@ namespace eval ::CalaPhot {
 
         Message debug "%s\n" [info level [info level]]
 
-        set premier [lindex $liste_image 0]
-        set dernier [lindex $liste_image end]
+        set nom_fichier [file join $audace(rep_images) ${parametres(sortie)}.cdr]
+        # effacement de la version précédente
+        catch {[file delete -force $nom_fichier]}
 
-        Message notice "\n\n\n"
-        Message notice "---------------------------------------------------------------------------------------\n"
-        Message notice "Format CDR\n"
-        Message notice "---------------------------------------------------------------------------------------\n"
-        Message notice "NOM %s\n" $parametres(objet)
+        set premier [lindex $liste_image 0]
+
+        set f [open $nom_fichier "w"]
+        puts $f -nonewline [format "NOM %s\n" $parametres(objet)]
+        puts $f -nonewline [format"MES %s" $parametres(operateur)]
         if {[string length $parametres(code_UAI)] != 0} {
-            Message notice "MES %s @%s\n" $parametres(operateur) $parametres(code_UAI)
+            puts $f -nonewline [format " @%s\n" $parametres(code_UAI)]
         } else {
-            Message notice "MES %s\n" $parametres(operateur)
+            puts $f
         }
-        Message notice "POS 0 %5.2f\n" $data_image($premier,temps_expo)
-        Message notice "CAP %s\n" $parametres(type_capteur)
-        Message notice "TEL %s %s %s\n" $parametres(diametre_telescope) $parametres(focale_telescope) $parametres(type_telescope)
-        Message notice "CAT %s\n" $parametres(catalogue_reference)
-        Message notice "FIL %s\n" $parametres(filtre_optique)
-        Message notice "; %s %s %s\n" $calaphot(texte,banniere_CDR_1) $calaphot(init,version_ini) $calaphot(texte,banniere_CDR_2)
+        puts $f -nonewline [format "POS 0 %5.2f\n" $data_image($premier,temps_expo)]
+        puts $f -nonewline [format "CAP %s\n" $parametres(type_capteur)]
+        puts $f -nonewline [format "TEL %s %s %s\n" $parametres(diametre_telescope) $parametres(focale_telescope) $parametres(type_telescope)]
+        puts $f -nonewline [format "CAT %s\n" $parametres(catalogue_reference)]
+        puts $f -nonewline [format "FIL %s\n" $parametres(filtre_optique)]
+        puts $f -nonewline [format "; %s %s %s\n" $calaphot(texte,banniere_CDR_1) $calaphot(init,version_ini) $calaphot(texte,banniere_CDR_2)]
         set image 0
 
         foreach i $liste_image {
             if {$data_image($i,valide) == "Y"} {
                 incr image
-                Message notice " 1 1"
+                puts $f -nonewline " 1 1"
                 # Passage de la date en format amj,ddd
                 set amjhms [mc_date2ymdhms $data_image($i,date)]
                 set date_claire "[format %04d [lindex $amjhms 0]]"
@@ -588,14 +589,14 @@ namespace eval ::CalaPhot {
                 set hms [format %6.5f [expr double([lindex $amjhms 3])/24.0 + double([lindex $amjhms 4])/1440.0 + double([lindex $amjhms 5])/86400.0]]
                 set hms [string range $hms [string first . $hms] end]
                 append date_claire $hms
-                Message notice " %14.5f" $date_claire
-                Message notice " T"
-                Message notice " %6.3f" $data_image($i,var,mag_0)
-                Message notice " %6.3f" $data_image($i,var,incertitude_0)
-                Message notice "\n"
+                puts $f -nonewline [format " %14.5f" $date_claire]
+                puts $f -nonewline " T"
+                puts $f -nonewline [format " %6.3f" $data_image($i,var,mag_0)]
+                puts $f -nonewline [format " %6.3f" $data_image($i,var,incertitude_0)]
+                puts $f
             }
         }
-        Message notice "---------------------------------------------------------------------------------------\n"
+        close $f
     }
 
     ##
@@ -705,15 +706,15 @@ namespace eval ::CalaPhot {
         set f [open $nom_fichier_gplt "w"]
         puts $f "set datafile separator \";\""
         puts $f "set title \"$parametres(objet)\""
-        puts $f "set xlabel \"time - $origine_temps\""
-        puts $f "set ylabel \"Relative magnitudes\""
+        puts $f "set xlabel \"$calaphot(texte,jour_julien) - $origine_temps\""
+        puts $f "set ylabel \"$calaphot(texte,mag_relative)\""
         puts -nonewline $f "plot \'$nom_fichier_dat\' using 2:3:4 with errorlines title \"$parametres(objet)\""
         for {set etoile 0} {$etoile < $data_script(nombre_reference)} {incr etoile} { 
             puts $f " , \\"
-            puts -nonewline $f "    \'\' using 2:[expr 5 + 2 * $etoile]:[expr 6 + 2* $etoile] with errorline title \"ref. $etoile\""
+            puts -nonewline $f "    \'\' using 2:[expr 5 + 2 * $etoile]:[expr 6 + 2* $etoile] with errorline title \"$calaphot(texte,etoile_reference)  $etoile\""
         }
         puts $f " , \\"
-        puts -nonewline $f "    \'\' using 2:[expr 5 + 2 * $etoile] with lines title \"const. mag.\""
+        puts -nonewline $f "    \'\' using 2:[expr 5 + 2 * $etoile] with lines title \"$calaphot(texte,constante_mag)\""
         puts $f ""
         puts $f "pause -1"
         close $f
