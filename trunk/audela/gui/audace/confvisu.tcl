@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.132 2010-02-20 07:54:40 robertdelmas Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.133 2010-03-27 14:12:55 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -217,6 +217,9 @@ namespace eval ::confVisu {
          #--- je ferme la camera associee a la visu
          ::confCam::stopItem $private($visuNo,camItem)
 
+         #--- je ferme la sous fenetre header (avec arret des listeners)
+         ::keyword::closeHeader $visuNo
+
          #--- je memorise les variables dans conf(.)
          set conf(audace,visu$visuNo,wmgeometry)     [wm geometry $::confVisu::private($visuNo,This)]
          set conf(seuils,visu$visuNo,intervalleSHSB) $private($visuNo,intervalleSHSB)
@@ -415,8 +418,6 @@ namespace eval ::confVisu {
                         console::affiche_erreur "$::errorInfo\n"
                      }
                   }
-                  #--- j'affiche le nom du fichier
-                  ::confVisu::setFileName $visuNo $fileName
                } else {
                   #--- C'est le meme fichier, j'ai deja la liste des HDU
                   #--- je recupere le type de HDU pour savoir si les donnees
@@ -810,6 +811,11 @@ namespace eval ::confVisu {
                ::colorRGB::cmdClose $visuNo
             }
          }
+         #--- j'affiche le nom du fichier
+         #--- cette procedure declenche les procedures qui sont a l'ecoute du changement
+         #--- de nom de fichier avec addFileNameListener
+         ::confVisu::setFileName $visuNo $fileName
+
       }
    }
 
