@@ -617,3 +617,18 @@ int cmdTelTolPos(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
    Tcl_SetResult(interp,s,TCL_VOLATILE);
    return TCL_OK;
 }
+
+/*
+ *   flag de simultaneite des mouvements lors d'un GOTO
+ */
+int cmdTelSimultaneus(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char s[1024];
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;   
+   if (argc>=3) {   
+      tel->simultaneus=atoi(argv[2]);
+   }
+   sprintf(s,"%d",tel->simultaneus);
+   Tcl_SetResult(interp,s,TCL_VOLATILE);
+   return TCL_OK;
+}

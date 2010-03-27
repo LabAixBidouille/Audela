@@ -34,5 +34,6 @@ static struct cmditem cmdlist[] = {
    {"speedslew",(Tcl_CmdProc *)cmdTelSpeedslew},\
    {"lst",(Tcl_CmdProc *)cmdTelLst},\
    {"tolpos",(Tcl_CmdProc *)cmdTelTolPos},\
+   {"simultaneus",(Tcl_CmdProc *)cmdTelSimultaneus},\
    {NULL, NULL}
 };

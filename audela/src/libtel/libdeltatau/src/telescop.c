@@ -119,6 +119,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 	} else {
 		tel->type=1;
 	}
+	tel->simultaneus=0;
 	/* ============ */
 	/* === UMAC === */
 	/* ============ */
@@ -1141,7 +1142,7 @@ int deltatau_match(struct telprop *tel)
 
 int deltatau_goto(struct telprop *tel)
 {
-   char s[1024],axe;
+   char s[1024],axe,s1[1024],s2[1024];
    int res;
    int retournement=0;
    int p;
@@ -1175,9 +1176,13 @@ int deltatau_goto(struct telprop *tel)
    sprintf(s,"#%cI%c22=%.12f",axe,axe,v);
    res=deltatau_put(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   sprintf(s,"#%cj=%d",axe,p);
-   res=deltatau_put(tel,s);
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+	if (tel->simultaneus==0) {
+		sprintf(s,"#%cj=%d",axe,p);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+	} else {
+		sprintf(s1,"%cj=%d",axe,p);
+	}
    /* --- Effectue le pointage DEC --- */
    if (retournement==1) {
       v=(tel->latitude)/fabs(tel->latitude)*180-tel->dec0;
@@ -1190,16 +1195,25 @@ int deltatau_goto(struct telprop *tel)
    sprintf(s,"#%cI%c22=%.12f",axe,axe,v);
    res=deltatau_put(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   sprintf(s,"#%cj=%d",axe,p);
-   res=deltatau_put(tel,s);
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+	if (tel->simultaneus==0) {
+		sprintf(s,"#%cj=%d",axe,p);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+	} else {
+		sprintf(s2,"%cj=%d",axe,p);
+	}
    /* --- --- */
+	if (tel->simultaneus==1) {
+		sprintf(s,"#%s %s",s1,s2);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+	}
    return 0;
 }
 
 int deltatau_hadec_goto(struct telprop *tel)
 {
-   char s[1024],axe;
+   char s[1024],axe,s1[1024],s2[1024];
    int res;
    int retournement=0;
    int p;
@@ -1230,9 +1244,13 @@ int deltatau_hadec_goto(struct telprop *tel)
    sprintf(s,"#%cI%c22=%.12f",axe,axe,v);
    res=deltatau_put(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   sprintf(s,"#%cj=%d",axe,p);
-   res=deltatau_put(tel,s);
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+	if (tel->simultaneus==0) {
+		sprintf(s,"#%cj=%d",axe,p);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+	} else {
+		sprintf(s1,"%cj=%d",axe,p);
+	}
    /* --- Effectue le pointage DEC --- */
    if (retournement==1) {
       v=(tel->latitude)/fabs(tel->latitude)*180-tel->dec0;
@@ -1245,10 +1263,19 @@ int deltatau_hadec_goto(struct telprop *tel)
    sprintf(s,"#%cI%c22=%.12f",axe,axe,v);
    res=deltatau_put(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   sprintf(s,"#%cj=%d",axe,p);
-   res=deltatau_put(tel,s);
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+	if (tel->simultaneus==0) {
+		sprintf(s,"#%cj=%d",axe,p);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+	} else {
+		sprintf(s2,"%cj=%d",axe,p);
+	}
    /* --- --- */
+	if (tel->simultaneus==1) {
+		sprintf(s,"#%s %s",s1,s2);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+	}
    return 0;
 }
 
