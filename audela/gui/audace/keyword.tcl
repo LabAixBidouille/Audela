@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: keyword.tcl,v 1.42 2010-02-21 10:49:02 robertdelmas Exp $
+# Mise à jour $Id: keyword.tcl,v 1.43 2010-03-27 14:21:25 michelpujol Exp $
 #
 
 namespace eval ::keyword {
@@ -13,8 +13,12 @@ namespace eval ::keyword {
 #    Affiche l'en-tete FITS d'un fichier
 #
 # Parametres :
-#    visuNo
-#    args : valeurs fournies par le gestionnaire de listener
+# @param  visuNo numero de la visu
+# @param  args   valeurs fournies par le gestionnaire de listener
+#        (car cette procedure peut etre appelee par un listener)
+#
+# @TODO il faudrait remplacer ::confVisu::private($visuNo,mode) par l'appel d'une
+#       procedure pour eviter d'utiliser ici une variable privee
 #------------------------------------------------------------------------------
 proc ::keyword::header { visuNo args } {
    variable private
@@ -68,7 +72,48 @@ proc ::keyword::header { visuNo args } {
          }
       }
    } else {
-      $base.header.slb.list insert end "$::caption(keyword,header_noimage)"
+      set fileName [ ::confVisu::getFileName $visuNo ]
+      if { $fileName != "?"  &&  $::confVisu::private($visuNo,mode) == "table" } {
+         #--- je charge les mots cles du HDU de la table
+         set catchResult [ catch {
+             #--- j'ouvre le fichier d'entree
+             set hFile [fits open $fileName]
+             set hduNo [::confVisu::getHduNo $visuNo]
+             #--- je pointe le HDU courant
+             $hFile move [::confVisu::getHduNo $visuNo]
+             #--- je lis les mot cles du HDU
+             set keywords [$hFile get keyword ]
+             $hFile close
+             $base.header.slb.list tag configure keyw -foreground $::color(blue)
+             $base.header.slb.list tag configure egal -foreground $::color(black)
+             $base.header.slb.list tag configure valu -foreground $::color(red)
+             $base.header.slb.list tag configure comm -foreground $::color(green1)
+             $base.header.slb.list tag configure unit -foreground $::color(orange)
+             #--- je cherche le mot cle qui a exactement le nom requis
+             foreach keyword [ lsort -dictionary $keywords ] {
+                set name [lindex $keyword 0]
+                #--- je supprime les apostrophes et les espaces qui entourent la valeur
+                set value [string trim [string map {"'" ""} [lindex $keyword 1] ]]
+                set comment [lindex $keyword 2]
+                set unit ""
+                #--- j'affiche les mots cles
+                $base.header.slb.list insert end "[format "%8s" $name] " keyw
+                $base.header.slb.list insert end "= "                    egal
+                $base.header.slb.list insert end "$value "               valu
+                $base.header.slb.list insert end "$comment "             comm
+                $base.header.slb.list insert end "$unit\n"               unit
+             }
+          }]
+
+         if { $catchResult !=0 } {
+            #--- je transmets l'erreur en ajoutant le nom du mot clé
+            error "load keywords hduNo=[::confVisu::getHduNo $visuNo]\n$::errorInfo"
+         }
+
+      } else {
+         $base.header.slb.list insert end "$::caption(keyword,header_noimage)"
+
+      }
    }
 }
 
@@ -80,10 +125,12 @@ proc ::keyword::header { visuNo args } {
 #    visuNo
 #------------------------------------------------------------------------------
 proc ::keyword::closeHeader { visuNo } {
-   ::keyword::headerRecupPosition $visuNo
-   ::confVisu::removeFileNameListener $visuNo "::keyword::header $visuNo"
-   ::confVisu::removeHduListener $visuNo "::keyword::header $visuNo"
-   destroy [ ::confVisu::getBase $visuNo ].header
+   if { [ winfo exists [::confVisu::getBase $visuNo].header] == 1 } {
+      ::keyword::headerRecupPosition $visuNo
+      ::confVisu::removeFileNameListener $visuNo "::keyword::header $visuNo"
+      ::confVisu::removeHduListener $visuNo "::keyword::header $visuNo"
+      destroy [ ::confVisu::getBase $visuNo ].header
+   }
 }
 
 #------------------------------------------------------------------------------
