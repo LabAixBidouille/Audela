@@ -77,8 +77,8 @@ extern "C" int Jm_Init(Tcl_Interp *interp)
     Tcl_CreateCommand(interp,"jm_reglageheurepc",(Tcl_CmdProc *)LibJM::Horloge::CmdReglageHeurePC,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
 
 
-    Tcl_CreateCommand(interp,"jm_fluxellipse",(Tcl_CmdProc *)LibJM::Calaphot::CmdFluxEllipse,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
-    Tcl_CreateCommand(interp,"jm_fitgauss2d",(Tcl_CmdProc *)LibJM::Calaphot::CmdAjustementGaussien,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+    Tcl_CreateCommand(interp,"calaphot_fluxellipse",(Tcl_CmdProc *)LibJM::Calaphot::CmdFluxEllipse,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+    Tcl_CreateCommand(interp,"calaphot_fitgauss2d",(Tcl_CmdProc *)LibJM::Calaphot::CmdAjustementGaussien,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
 
 #ifdef _LIBJM_FOURIER_
     Tcl_CreateCommand( interp, "dft", (Tcl_CmdProc *)LibJM::Fourier::CmdFourierDirect, NULL, NULL );
