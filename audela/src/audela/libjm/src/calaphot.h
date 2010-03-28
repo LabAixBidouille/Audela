@@ -65,22 +65,6 @@ struct data {
                  (__stream).flush();
 #  endif /* !__GNUC__*/
 
-#if 0
-#if defined(WIN32) && defined(_MSC_VER) &&( _MSC_VER < 1500)
-// Les versions VisualC++ anterieures a VC90 ne suportent pas les macros avec un nombre de parametre variable
-#define CALAPHOT_LOG_FILE
-#define CALAPHOT_LOG
-# define calaphot_error
-# define calaphot_warning
-# define calaphot_notice
-# define calaphot_info_1
-# define calaphot_info_2
-# define calaphot_info_3
-# define calaphot_debug
-#else
-#endif
-#endif
-
 # define calaphot_error(__s)    sdsp_log(Calaphot::Error_Level,__s)
 # define calaphot_warning(__s)  sdsp_log(Calaphot::Warning_Level,__s)
 # define calaphot_notice(__s)   sdsp_log(Calaphot::Notice_Level,__s)
@@ -88,9 +72,6 @@ struct data {
 # define calaphot_info2(__s)    sdsp_verbose_log(Calaphot::Info2_Level,__s)
 # define calaphot_info3(__s)    sdsp_verbose_log(Calaphot::Info3_Level,__s)
 # define calaphot_debug(__s)    sdsp_verbose_log(Calaphot::Debug_Level,__s)
-
-
-
 
 class Calaphot
 {
