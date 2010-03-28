@@ -1274,6 +1274,7 @@ lindex $comments [lindex $status 0]
 			Tcl_SetResult(interp,s,TCL_VOLATILE);
 		} else {
 		   Tcl_DStringInit(&dsptr);
+			/* list "status plani comments" defined in mc.h */
 			strcpy(s,"{Not_planified End_obs_before_range Start_obs_after_range Never_visible_in_range Over_quota Planified} ");
 			Tcl_DStringAppend(&dsptr,s,-1);
 			strcpy(s,"{");

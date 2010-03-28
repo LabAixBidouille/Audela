@@ -788,7 +788,7 @@ void mc_tle_decnext1(FILE *ftle,struct elemorb *elem,char *name,int *valid)
 /* Le flag valid=1 si la lecture a reussi                                  */
 /***************************************************************************/
 {
-   int k;
+   int k,expo;
    char s[524];
    char ss[524];
    char sss[524];
@@ -820,6 +820,20 @@ void mc_tle_decnext1(FILE *ftle,struct elemorb *elem,char *name,int *valid)
             mc_dateobs2jd(sss,&jj0);
             strcpy(ss,s+20); ss[12]='\0';
             jj0+=(atof(ss)-1.);
+            strcpy(ss,s+33); ss[42-33+1]='\0';
+            elem->ndot=atof(ss);
+            strcpy(ss,s+44); ss[49-44+1]='\0';
+				sprintf(s,".%f",ss);
+            elem->ndotdot=atof(s);
+            strcpy(ss,s+50); ss[51-50+1]='\0';
+            expo=atoi(ss);
+				elem->ndotdot=elem->ndotdot*pow(10,expo);
+            strcpy(ss,s+53); ss[58-53+1]='\0';
+				sprintf(s,".%f",ss);
+            elem->bstar=atof(s);
+            strcpy(ss,s+59); ss[60-59+1]='\0';
+            expo=atoi(ss);
+				elem->bstar=elem->bstar*pow(10,expo);
             *valid=0;
          } else if (s[0]=='2') {
             strcpy(ss,s+8); ss[15-8+1]='\0';
@@ -834,7 +848,8 @@ void mc_tle_decnext1(FILE *ftle,struct elemorb *elem,char *name,int *valid)
             elem->m0=atof(ss)*(DR);
             strcpy(ss,s+52); ss[62-52+1]='\0';
             n=atof(ss);
-            if (strcmp(name,"")==0) {
+				elem->nrevperday=n;
+				if (strcmp(name,"")==0) {
                *valid=1;
             } else if (strstr(elem->designation,name)!=NULL) {
                *valid=1;
