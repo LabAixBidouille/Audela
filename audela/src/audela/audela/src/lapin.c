@@ -192,13 +192,13 @@ char* audela_getcwd(char *buf, size_t size)
  * char* audela_setcwd(char *buf, size_t size)
  *    Set the current working directory in buf.
  */
-void audela_setcwd(char *buf)
+int audela_setcwd(char *buf)
 {
 #if defined(OS_WIN)
-   SetCurrentDirectory(buf);
+   return SetCurrentDirectory(buf);
 #endif
 #if defined(OS_LIN) || defined(OS_MACOS)
-   chdir(buf);
+   return chdir(buf);
 #endif
 }
 
@@ -252,7 +252,7 @@ void log_write(char *fmt,...)
       vsprintf(s,fmt,va);
       va_end(va);
       audela_getfitsdate(fitsdate,25);
-      fprintf(f,fitsdate);
+      fprintf(f,"%s",fitsdate);
       fprintf(f," : %s",s);
       fclose(f);
    }
@@ -326,9 +326,7 @@ int main(int argc , char **argv)
    int i, k;
    int default_tcltk_libs = 0;
    char rootpath[MAX_STRING];
-   char binpath[MAX_STRING];
 
-   char env_var[MAX_STRING];
    int tcl_argc = 1;
    char *tcl_argv[2];
    FILE *fid;
@@ -421,23 +419,18 @@ int main(int argc , char **argv)
       LOG("Starting new AudeLA session (no initial file).\n");
    }
 
-   /* Assignment of environment variables allows to locate */
-   /* the Tcl/Tk libraries and AudeLA+users' libraries     */
-   if(default_tcltk_libs==0) {
-      sprintf(env_var,"TCL_LIBRARY=%s%c..%clib%ctcl8.0",rootpath,PATH_SEP,PATH_SEP,PATH_SEP);
-      putenv(env_var);
-      sprintf(env_var,"TK_LIBRARY=%s%c..%clib%ctk8.0",rootpath,PATH_SEP,PATH_SEP,PATH_SEP);
-      putenv(env_var);
-   }
-
-
 #if defined(OS_LIN)
-   if ( getenv("LD_LIBRARY_PATH") != NULL ) {
-      sprintf(env_var,"LD_LIBRARY_PATH=%s:%s:%s",getenv("LD_LIBRARY_PATH"),getcwd(binpath,sizeof(binpath)),rootpath);
-   } else {
-      sprintf(env_var,"LD_LIBRARY_PATH=%s:%s",getcwd(binpath,sizeof(binpath)),rootpath);
+   {
+      char env_var[MAX_STRING];
+      char binpath[MAX_STRING];
+      // j'ajoute le repertoire bin dans la variable d'environnement LD_LIBRARY_PATH
+      if ( getenv("LD_LIBRARY_PATH") != NULL ) {
+         sprintf(env_var,"LD_LIBRARY_PATH=%s:%s:%s",getenv("LD_LIBRARY_PATH"),getcwd(binpath,sizeof(binpath)),rootpath);
+      } else {
+         sprintf(env_var,"LD_LIBRARY_PATH=%s:%s",getcwd(binpath,sizeof(binpath)),rootpath);
+      }
+      putenv(env_var);
    }
-   putenv(env_var);
 #endif
 
    if(gVerbose) {
