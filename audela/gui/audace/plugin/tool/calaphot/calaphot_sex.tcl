@@ -5,7 +5,7 @@
 #
 # @brief Routines d'appel et de configuration de sextractor pour Calaphot
 #
-# Mise a jour $Id: calaphot_sex.tcl,v 1.2 2009-10-30 11:01:05 michelpujol Exp $
+# Mise a jour $Id: calaphot_sex.tcl,v 1.3 2010-03-28 16:34:38 jacquesmichelet Exp $
 
 
 proc FichierNeuronalSex { {filename default.nnw} } {
@@ -217,26 +217,15 @@ proc FichierConfigurationSex { {filename calaphot.sex} } {
         }
     }
 
-    proc CreationFichiersSextractor {} {
+    proc CreationFichiersSextractor { } {
         global audace
         variable calaphot
 
-        Message debug "%s\n" [info level [info level]]
+        Message debug "%s\n" [ info level [ info level ] ]
 
         FichierParametresSex $calaphot(sextractor,param)
         FichierConfigurationSex $calaphot(sextractor,config)
         FichierNeuronalSex $calaphot(sextractor,neurone)
-    }
-
-    proc DestructionFichiersSextractor {} {
-        global audace
-        variable calaphot
-
-        Message debug "%s\n" [info level [info level]]
-
-        catch {file delete $calaphot(sextractor,param)}
-        catch {file delete $calaphot(sextractor,config)}
-        catch {file delete $calaphot(sextractor,neurone)}
     }
 
     proc RechercheCatalogue { image type etoile } {

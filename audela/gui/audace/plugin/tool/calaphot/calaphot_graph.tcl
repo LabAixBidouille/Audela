@@ -5,7 +5,7 @@
 #
 # @brief Routines de gestion des affichages de Calaphot
 #
-# $Id: calaphot_graph.tcl,v 1.6 2010-03-21 13:16:27 jacquesmichelet Exp $
+# $Id: calaphot_graph.tcl,v 1.7 2010-03-28 16:34:38 jacquesmichelet Exp $
 
 namespace eval ::CalaPhot {
 
@@ -1219,8 +1219,8 @@ namespace eval ::CalaPhot {
                 # Calcul pour le pre-affichage des valeurs de magnitudes
                 set cxx [expr int(round($cx))]
                 set cyy [expr int(round($cy))]
-                set q [jm_fitgauss2d $audace(bufNo) [list [expr $cxx - $boite] [expr $cyy - $boite] [expr $cxx + $boite] [expr $cyy + $boite]]]
-                if {![info exists flux_premiere_etoile]} {
+                set q [ calaphot_fitgauss2d $audace(bufNo) [ list [ expr $cxx - $boite ] [ expr $cyy - $boite ] [ expr $cxx + $boite ] [ expr $cyy + $boite ] ] ]
+                if { ![ info exists flux_premiere_etoile ] } {
                     set mag_affichage 13.5
                     if {[lindex $q 1] != 0} {
                         set flux_premiere_etoile [lindex $q 12]
@@ -1331,7 +1331,7 @@ namespace eval ::CalaPhot {
         set x2 [expr round([lindex $pos_reel($image,indes,$j) 0] + $largeur)]
         set y2 [expr round([lindex $pos_reel($image,indes,$j) 1] + $largeur)]
 
-        set t [jm_fitgauss2d $audace(bufNo) [list $x1 $y1 $x2 $y2] -sub]
+        set t [calaphot_fitgauss2d $audace(bufNo) [list $x1 $y1 $x2 $y2] -sub]
         if {[lindex t 0] == 0} {
             buf$audace(bufNo) fitgauss [list $x1 $y1 $x2 $y2] -sub
         }

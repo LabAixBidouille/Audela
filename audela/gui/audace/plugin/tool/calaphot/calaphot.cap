@@ -1,6 +1,6 @@
 #
 # Fichier : calaphot.cap
-# Mise a jour $Id: calaphot.cap,v 1.11 2010-03-24 09:22:11 jacquesmichelet Exp $
+# Mise a jour $Id: calaphot.cap,v 1.12 2010-03-28 16:34:37 jacquesmichelet Exp $
 #
 
 #=========================================================================
@@ -123,6 +123,7 @@ set calaphot(texte,pas_image_valide)       "No valid image. You should check the
 set calaphot(texte,image)                  "Image"
 set calaphot(texte,temps_pose_nul)         "Void exposure duration"
 set calaphot(texte,mag_relative)           "Relative Magnitude"
+set calaphot(texte,err_modelisation)       "Error in fitting"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -235,6 +236,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,image)               "Image"
    set calaphot(texte,temps_pose_nul)      "Temps de pose nul"
    set calaphot(texte,mag_relative)        "Magnitude relative"
+   set calaphot(texte,err_modelisation)    "Erreur de modelisation"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -348,6 +350,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,temps_pose_nul)      "Tempo do posa nulla"
 #### Ajout JM
    set calaphot(texte,mag_relative)        "Relative Magnitude"
+   set calaphot(texte,err_modelisation)    "Error in fitting"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -461,6 +464,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,temps_pose_nul)      "Tiempo de exposición nulo"
 #### Ajout JM
    set calaphot(texte,mag_relative)        "Relative Magnitude"
+   set calaphot(texte,err_modelisation)    "Error in fitting"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -574,6 +578,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,temps_pose_nul)      "Null Erleuchtung Zeit"
 #### Ajout JM
    set calaphot(texte,mag_relative)        "Relative Magnitude"
+   set calaphot(texte,err_modelisation)    "Error in fitting"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -687,6 +692,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,temps_pose_nul)      "Tempo de exposição nulo"
 #### Ajout JM
    set calaphot(texte,mag_relative)        "Relative Magnitude"
+   set calaphot(texte,err_modelisation)    "Error in fitting"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -799,6 +805,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,image)               "Image"
    set calaphot(texte,temps_pose_nul)      "Void exposure duration"
    set calaphot(texte,mag_relative)        "Relative Magnitude"
+   set calaphot(texte,err_modelisation)    "Error in fitting"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -911,6 +918,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,image)               "Image"
    set calaphot(texte,temps_pose_nul)      "Void exposure duration"
    set calaphot(texte,mag_relative)        "Relative Magnitude"
+   set calaphot(texte,err_modelisation)    "Error in fitting"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -1023,7 +1031,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,image)               "Image"
    set calaphot(texte,temps_pose_nul)      "Void exposure duration"
    set calaphot(texte,mag_relative)        "Relative Magnitude"
-
+   set calaphot(texte,err_modelisation)    "Error in fitting"
 }
 
 #=========================================================================

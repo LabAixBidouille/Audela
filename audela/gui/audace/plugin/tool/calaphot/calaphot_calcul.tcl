@@ -5,7 +5,7 @@
 #
 # @brief Routines de calcul de photometrie de Calaphot
 #
-# $Id: calaphot_calcul.tcl,v 1.2 2010-02-14 10:53:54 robertdelmas Exp $
+# $Id: calaphot_calcul.tcl,v 1.3 2010-03-28 16:34:37 jacquesmichelet Exp $
 
 namespace eval ::CalaPhot {
 
@@ -27,14 +27,14 @@ namespace eval ::CalaPhot {
     # - data_image($i,r3) rayon externe de la couronne pour l'image i
     # - data_image($i,ro) facteur d'allongement de l'ellipse moyenne pour l'image i
     # - data_image($i,alpha) angle des axes principaux de léllipse moyenne avec les bords de l'image i
-    proc CalculEllipses {image} {
+    proc CalculEllipses { image } {
         global audace
         variable pos_theo
         variable parametres
         variable data_script
         variable data_image
 
-        Message debug "%s\n" [info level [info level]]
+        Message debug "%s\n" [ info level [ info level ] ]
 
         set fwhm_x 0
         set fwhm_y 0
@@ -47,8 +47,8 @@ namespace eval ::CalaPhot {
         set r3 0
         set bon 0
 
-        for {set etoile 0} {$etoile < $data_script(nombre_reference)} {incr etoile} {
-            if {$data_image($image,ref,centroide_x_$etoile) >= 0} {
+        for { set etoile 0 } { $etoile < $data_script(nombre_reference) } { incr etoile } {
+            if { $data_image($image,ref,centroide_x_$etoile) >= 0 } {
                 set fwhm_x [expr $fwhm_x + $data_image($image,ref,fwhm1_$etoile)]
                 set fwhm_y [expr $fwhm_y + $data_image($image,ref,fwhm2_$etoile)]
                 set ro [expr $ro + $data_image($image,ref,ro_$etoile)]
@@ -57,7 +57,7 @@ namespace eval ::CalaPhot {
             }
         }
 
-        if {$n > 0} {
+        if { $n > 0 } {
             set fwhm_x [expr $fwhm_x / $n]
             set fwhm_y [expr $fwhm_y / $n]
             set ro [expr $ro / $n]
@@ -66,7 +66,7 @@ namespace eval ::CalaPhot {
             set r1x [expr $parametres(rayon1) * 0.600561 * $fwhm_x]
             set r1y [expr $parametres(rayon1) * 0.600561 * $fwhm_y]
             # r2 et r3 sont calcules par rapport au plus grand des 2 fwhm
-            if {$fwhm_x > $fwhm_y} {
+            if { $fwhm_x > $fwhm_y } {
                 set r2 [expr $parametres(rayon2) * 0.600561 * $fwhm_x]
                 set r3 [expr $parametres(rayon3) * 0.600561 * $fwhm_x]
             } else {
@@ -75,7 +75,7 @@ namespace eval ::CalaPhot {
             }
             set bon 1
         } else {
-            set data_script($i,invalidation) [list ellipses]
+            set data_script($i,invalidation) [ list ellipses [ info level [ info level ] ] ]
         }
 
         set data_image($image,r1x) $r1x
@@ -718,13 +718,22 @@ namespace eval ::CalaPhot {
         variable parametres
         variable trace_log
 
-        Message debug "%s\n" [info level [info level]]
+        Message debug "%s\n" [ info level [ info level ] ]
 
         Message debug "x0=%f y0=%f\n" $data_image($i,$classe,centroide_x_$j) $data_image($i,$classe,centroide_y_$j)
 
-        if {($data_image($i,$classe,centroide_y_$j) > 0) && ($data_image($i,$classe,centroide_x_$j) > 0)} {
+        if { ( $data_image($i,$classe,centroide_y_$j) > 0 ) && ( $data_image($i,$classe,centroide_x_$j) > 0 ) } {
             # Mesure du flux, et recuperation des donnees
-            set temp [jm_fluxellipse $audace(bufNo) $data_image($i,$classe,centroide_x_$j) $data_image($i,$classe,centroide_y_$j) $data_image($i,r1x) $data_image($i,r1y) $data_image($i,ro) $data_image($i,r2) $data_image($i,r3) $parametres(surechantillonage)]
+            set temp [ calaphot_fluxellipse \
+             $audace(bufNo) \
+             $data_image($i,$classe,centroide_x_$j) \
+             $data_image($i,$classe,centroide_y_$j) \
+             $data_image($i,r1x) \
+             $data_image($i,r1y) \
+             $data_image($i,ro) \
+             $data_image($i,r2) \
+             $data_image($i,r3) \
+             $parametres(surechantillonage) ]
             set data_image($i,$classe,flux_$j) [lindex $temp 0]
             set data_image($i,$classe,nb_pixels_$j) [lindex $temp 1]
             set data_image($i,$classe,fond_$j) [lindex $temp 2]
@@ -960,27 +969,26 @@ namespace eval ::CalaPhot {
     #        si la mod. est impossible, les parametres retournes ont des      #
     #        valeurs volontairement aberrantes                                #
     #*************************************************************************#
-    proc Modelisation2D {i j classe coordonnees} {
+    proc Modelisation2D { i j classe coordonnees } {
         global audace
         variable parametres
         variable data_image
         variable data_script
         variable trace_log
 
-        Message debug "%s\n" [info level [info level]]
+        Message debug "%s\n" [ info level [ info level ] ]
 
-        set x_etoile [lindex $coordonnees 0]
-        set y_etoile [lindex $coordonnees 1]
+        set x_etoile [ lindex $coordonnees 0 ]
+        set y_etoile [ lindex $coordonnees 1 ]
 
-        set x1 [expr round($x_etoile - $parametres(tailleboite))]
-        set y1 [expr round($y_etoile - $parametres(tailleboite))]
-        set x2 [expr round($x_etoile + $parametres(tailleboite))]
-        set y2 [expr round($y_etoile + $parametres(tailleboite))]
+        set x1 [ expr round($x_etoile - $parametres(tailleboite)) ]
+        set y1 [ expr round($y_etoile - $parametres(tailleboite)) ]
+        set x2 [ expr round($x_etoile + $parametres(tailleboite)) ]
+        set y2 [ expr round($y_etoile + $parametres(tailleboite)) ]
 
         # Modelisation
-        set temp [jm_fitgauss2d $audace(bufNo) [list $x1 $y1 $x2 $y2]]
-        set temp [jm_fitgauss2db $audace(bufNo) [list $x1 $y1 $x2 $y2]]
-        #::console::affiche_resultat "temp=$temp\n-------------------\n"
+        set temp [ calaphot_fitgauss2d $audace(bufNo) [ list $x1 $y1 $x2 $y2 ] ]
+#        set temp [ jm_fitgauss2db $audace(bufNo) [list $x1 $y1 $x2 $y2] ]
 
         # Recuperation des resultats
         if {([lindex $temp 1] != 0) && ([lindex $temp 15] != 0)} {
@@ -1021,7 +1029,8 @@ namespace eval ::CalaPhot {
             set data_image($i,$classe,fwhm2_$j) 0
             set data_image($i,$classe,nb_pixels_$j) 0
             set data_image($i,$classe,nb_pixels_fond_$j) 0
-            set data_script($i,invalidation) [list modelisation $classe $j]
+            set data_script($i,invalidation) [ list modelisation $classe $j ]
+            Message info "%s image %d %s %d_n" $calaphot(texte,erreur_modelisation) $i $classe $j
             set retour -1
         }
 #            if {[info exists data_script(correction_masse_air)]} {
