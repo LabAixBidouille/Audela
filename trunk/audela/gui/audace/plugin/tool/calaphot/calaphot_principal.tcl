@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot_principal.tcl,v 1.11 2010-03-24 20:07:53 jacquesmichelet Exp $
+# $Id: calaphot_principal.tcl,v 1.12 2010-03-28 16:34:38 jacquesmichelet Exp $
 #
 
 ###catch {namespace delete ::Calaphot}
@@ -34,7 +34,6 @@
 #   - multiples asteroides en // : voir le tag MultAster pour retablir la fonctionnalite
 #   - differencier les aster. par couleur dans le graph. de la cl.
 #   - pouvoir les nommer individuellement dans le graph. de la cl.
-#   - integration en tant que panneau (outil audace)
 #   - nommer les etoiles de ref : voir le tag NomRef
 #   - tenir compte de la masse d'air si les images sont recalées astrometriquement
 #   .
@@ -283,6 +282,9 @@ namespace eval ::CalaPhot {
             # A priori, l'image est bonne. On verra par la suite
             set data_image($i,valide) "Y"
 
+            # Effacement des symboles mis sur l'image précédente
+            EffaceMotif astres
+
             # Detection de l'appui sur le bouton d'arret
             if {$demande_arret == 1} {
                 ArretScript
@@ -299,7 +301,6 @@ namespace eval ::CalaPhot {
             if { [DateImage $i] } {
                 Message probleme "%s %i : %s\n" $calaphot(texte,image) $i $calaphot(texte,temps_pose_nul)
                 ArretScript
-                EffaceMotif astres
                 Message probleme "%s\n" $calaphot(texte,fin_anticipee)
                 return
             }
@@ -311,9 +312,9 @@ namespace eval ::CalaPhot {
             CalculPositionsTheoriques $i
 
             # Calcul de toutes les positions reelles des astres (asteroides compris) a considerer ET a supprimer, en tenant compte du decalage en coordonnees des images
-            set test [CalculPositionsReelles $i]
-            if {$test != 0} {
-                set data_image($i,valide) "N"
+            set test [ CalculPositionsReelles $i ]
+            if { $test != 0 } {
+                EliminationImage $i
                 continue
             }
 
@@ -332,64 +333,64 @@ namespace eval ::CalaPhot {
             # Les astres (etoiles + asteroides) sont modelisees dans TOUS les cas
             #  Un certain nombre de valeurs individuelles sont mises a jour dans data_image
             set test 0
-            for {set j 0} {$j < $data_script(nombre_reference)} {incr j} {
+            for { set j 0 } { $j < $data_script(nombre_reference) } { incr j } {
                 # Dessin d un rectangle
-                Dessin rectangle $pos_reel($i,ref,$j) [list $parametres(tailleboite) $parametres(tailleboite)] $color(green) etoile_$j
+                Dessin rectangle $pos_reel($i,ref,$j) [ list $parametres(tailleboite) $parametres(tailleboite) ] $color(green) etoile_$j
                 # Modelisation
-                incr test [Modelisation2D $i $j ref $pos_reel($i,ref,$j)]
+                incr test [ Modelisation2D $i $j ref $pos_reel($i,ref,$j) ]
             }
-            for {set j 0} {$j < $data_script(nombre_variable)} {incr j} {
+            for { set j 0 } { $j < $data_script(nombre_variable) } { incr j } {
                 # Dessin d un rectangle
-                Dessin rectangle $pos_reel($i,var,$j) [list $parametres(tailleboite) $parametres(tailleboite)] $color(yellow) etoile_$j
+                Dessin rectangle $pos_reel($i,var,$j) [ list $parametres(tailleboite) $parametres(tailleboite) ] $color(yellow) etoile_$j
                 # Modelisation
-##                incr test [Modelisation2D $i $j var $pos_reel($i,var,$j)]
-                Modelisation2D $i $j var $pos_reel($i,var,$j)
+                incr test [ Modelisation2D $i $j var $pos_reel($i,var,$j) ]
             }
-            if {$test != 0} {
+            if { $test != 0 } {
                 # Au moins un asteroide ou une etoile de ref. n'a pas ete modelisee correctement
                 # Donc on elimine l'image
-                set data_image($i,valide) "N"
+                EliminationImage $i
                 continue
             }
 
-
-            if {$parametres(mode) == "ouverture"} {
+            if { $parametres(mode) == "ouverture" } {
                 # Cas ouverture
                 # Calcul des axes principaux des ellipses a partir des fwhm des etoiles de reference
                 # NB : il faut pour cela connaitre les modeles de TOUTES les etoiles
-                set ellipses [CalculEllipses $i]
-                if {[lindex $ellipses 0] == 1} {
+                set ellipses [ CalculEllipses $i ]
+                if { [ lindex $ellipses 0 ] == 1 } {
                     set r1x [lindex $ellipses 1]
                     set r1y [lindex $ellipses 2]
                     set r2 [lindex $ellipses 3]
                     set r3 [lindex $ellipses 4]
 
-                    for {set j 0} {$j < $data_script(nombre_reference)} {incr j} {
+                    for { set j 0 } { $j < $data_script(nombre_reference) } { incr j } {
                        FluxOuverture $i ref $j
                     }
-                    for {set j 0} {$j < $data_script(nombre_variable)} {incr j} {
+                    for { set j 0 } { $j < $data_script(nombre_variable) } { incr j } {
                        FluxOuverture $i var $j
                     }
                 } else {
-                    set data_image($i,valide) "N"
+                    EliminationImage $i
+                    continue
                 }
             }
 
             if {($parametres(mode) == "sextractor")} {
                 # Cas Sextractor
-                set test [Sextractor [file join $audace(rep_images) $parametres(source)$i$conf(extension,defaut) ] ]
-                if {$test != 0} {
-                    set data_script($i,invalidation) [list sextractor]
+                set test [ Sextractor [file join $audace(rep_images) $parametres(source)$i$conf(extension,defaut) ] ]
+                if { $test != 0 } {
+                    set data_script($i,invalidation) [ list sextractor ]
                     set data_image($i,valide) "N"
+                    EliminationImage $i
                     continue
                 }
-                for {set j 0} {$j < $data_script(nombre_reference)} {incr j} {
-                    set temp [RechercheCatalogue $i ref $j]
-                    if {[llength $temp] != 0} {
+                for { set j 0 } { $j < $data_script(nombre_reference) } { incr j } {
+                    set temp [ RechercheCatalogue $i ref $j ]
+                    if { [ llength $temp ] != 0 } {
                         FluxSextractor $i ref $j $temp
                     } else {
-                        set data_script($i,invalidation) [list sextractor ref $j]
-                        set data_image($i,valide) "N"
+                        set data_script($i,invalidation) [ list sextractor ref $j ]
+                        EliminationImage $i
                         break
                     }
                 }
@@ -400,13 +401,13 @@ namespace eval ::CalaPhot {
                         FluxSextractor $i var $j $temp
                     } else {
                         set data_script($i,invalidation) [list sextractor var $j]
-                        set data_image($i,valide) "N"
+                        EliminationImage $i
                         break
                     }
                 }
             }
 
-            if {$data_image($i,valide) == "N"} {continue}
+            if { $data_image($i,valide) == "N" } { continue }
 
             # Dessin des symboles
             for {set j 0} {$j < $data_script(nombre_reference)} {incr j} {
@@ -454,15 +455,15 @@ namespace eval ::CalaPhot {
             # Affiche le resultat dans la console
             AffichageResultatsBruts $i
 
-            # Effacement des marqueurs d'etoile
-            EffaceMotif astres
-
             # Calculs des vecteurs pour le pre-affichage de la courbe de lumiere
             PreAffiche $i
          }
          # Fin de la boucle sur les images
 
-         # Suppression du bouton d'arret
+         # Effacement des marqueurs d'etoile
+         EffaceMotif astres
+
+        # Suppression du bouton d'arret
          destroy $audace(base).bouton_arret_color_invariant
 
          # Sauvegarde des decalages entre images
@@ -494,8 +495,7 @@ namespace eval ::CalaPhot {
         set origine_temps [GenerationFichierDAT]
         GenerationFichierGnuplot $origine_temps
 
-        # Destruction des fichiers de configs Sextractor
-        DestructionFichiersSextractor
+        DestructionFichiersAuxiliaires
 
          # Affiche l'heure de fin de traitement
          Message notice "\n\n%s %s\n" $calaphot(texte,heure_fin) [clock format [clock seconds]]
@@ -604,7 +604,7 @@ namespace eval ::CalaPhot {
     # @brief Stockage des résultats avec le format CSV (Comma Separated Values)
     # @details Le resultat de cet affichage peut directement etre importé par un tableur
     # @return toujours 0
-    proc GenerationFichierCSV {} {
+    proc GenerationFichierCSV { } {
         global audace
         variable data_image
         variable parametres
@@ -612,41 +612,46 @@ namespace eval ::CalaPhot {
         variable data_script
         variable liste_image
 
-        Message debug "%s\n" [info level [info level]]
+        Message debug "%s\n" [ info level [ info level ] ]
 
-        set nom_fichier [file join $audace(rep_images) ${parametres(sortie)}.cvs]
+        set nom_fichier [ file join $audace(rep_images) ${parametres(sortie)}.csv ]
         # effacement de la version précédente
-        catch {[file delete -force $nom_fichier]}
+        catch { file delete -force $nom_fichier }
+        if { [ catch { open $nom_fichier "w" } f ] } {
+            Message erreur $f
+            return
+        }
 
-        TraceFichier $nom_fichier notice "year;month;day;hour;min;sec;"
-        TraceFichier $nom_fichier notice "JJ;Mag var;Inc var;"
-        for {set etoile 0} {$etoile < $data_script(nombre_reference)} {incr etoile} {
-            TraceFichier $nom_fichier notice "Mag ref%d;+/-;" $etoile
+        puts -nonewline $f [ format "year;month;day;hour;min;sec;" ]
+        puts -nonewline $f [ format "JJ;Mag var;Inc var;" ]
+        for { set etoile 0 } { $etoile < $data_script(nombre_reference) } { incr etoile } {
+            puts -nonewline $f [ format "Mag ref%d;+/-;" $etoile ]
         }
-        TraceFichier $nom_fichier notice "Const. mag;Valid\n"
+        puts -nonewline $f [ format "Const. mag;Valid\n" ]
         foreach i $liste_image {
-            set temps [mc_date2ymdhms $data_image($i,date)]
-            TraceFichier $nom_fichier notice "%02d;%02d;%04d;" [lindex $temps 0] [lindex $temps 1] [lindex $temps 2]
-            TraceFichier $nom_fichier notice "%02d;%02d;%02d;" [lindex $temps 3] [lindex $temps 4] [expr round([lindex $temps 5])]
-            TraceFichier $nom_fichier notice "%04d;%15.5f;" $i $data_image($i,date)
-            if {[info exists data_image($i,var,mag_0)]} {
-                TraceFichier $nom_fichier notice "%07.4f;%07.4f;" $data_image($i,var,mag_0) $data_image($i,var,incertitude_0)
-                for {set etoile 0} {$etoile < $data_script(nombre_reference)} {incr etoile} {
-                    TraceFichier $nom_fichier notice "%07.4f;%07.4f;" $data_image($i,ref,mag_$etoile) $data_image($i,ref,incertitude_$etoile)
+            set temps [ mc_date2ymdhms $data_image($i,date) ]
+            puts -nonewline $f [ format "%02d;%02d;%04d;" [lindex $temps 0] [lindex $temps 1] [lindex $temps 2] ]
+            puts -nonewline $f [ format "%02d;%02d;%02d;" [lindex $temps 3] [lindex $temps 4] [expr round([lindex $temps 5])] ]
+            puts -nonewline $f [ format "%04d;%15.5f;" $i $data_image($i,date) ]
+            if { [ info exists data_image($i,var,mag_0) ] } {
+                puts -nonewline $f [ format "%07.4f;%07.4f;" $data_image($i,var,mag_0) $data_image($i,var,incertitude_0) ]
+                for { set etoile 0 } { $etoile < $data_script(nombre_reference) } { incr etoile } {
+                    puts -nonewline $f [ format "%07.4f;%07.4f;" $data_image($i,ref,mag_$etoile) $data_image($i,ref,incertitude_$etoile) ]
                 }
+                puts -nonewline $f [ format "%7.4f;" $data_image($i,constante_mag) ]
             } else {
-                TraceFichier $nom_fichier notice "99.9999;99.9999"
+                puts -nonewline $f [ format "99.9999;99.9999\n" ]
             }
-            TraceFichier $nom_fichier notice "%7.4f;" $data_image($i,constante_mag)
-            TraceFichier $nom_fichier notice "%s\n" $data_image($i,valide)
+            puts -nonewline $f [ format "%s\n" $data_image($i,valide) ]
         }
+        close $f
     }
 
     ##
     # @brief Stockage des résultats avec un format CSV pour Gnuplot
     # @details Le resultat de cet affichage peut directement etre importé lu par Gnuplot
     # @return la partie entière du jour julien de la première image
-    proc GenerationFichierDAT {} {
+    proc GenerationFichierDAT { } {
 
         global audace
         variable data_image
@@ -655,33 +660,41 @@ namespace eval ::CalaPhot {
         variable data_script
         variable liste_image
 
-        Message debug "%s\n" [info level [info level]]
+        Message debug "%s\n" [ info level [ info level ] ]
         
         set nom_fichier [file join $audace(rep_images) ${parametres(sortie)}.dat]
         # effacement de la version précédente
-        catch {[file delete -force $nom_fichier]}
+        catch { file delete -force $nom_fichier }
+        if { [ catch { open $nom_fichier "w" } f ] } {
+            Message erreur $f
+            return
+        }
 
         set premier 1
         foreach i $liste_image {
             set temps [mc_date2ymdhms $data_image($i,date)]
-            if {[info exists data_image($i,var,mag_0)]} {
-                if {$premier != 0} {
-                    set orig_temps [expr floor($data_image($i,date))]
+            if { [ info exists data_image($i,var,mag_0) ] } {
+                if { $premier != 0 } {
+                    # Mise en mémoire de la première donnée
+                    set orig_temps [ expr floor($data_image($i,date)) ]
                     set orig_mag_var_0 $data_image($i,var,mag_0)
-                    for {set etoile 0} {$etoile < $data_script(nombre_reference)} {incr etoile} {
+                    for { set etoile 0 } { $etoile < $data_script(nombre_reference) } { incr etoile } {
                         set orig_mag_ref($etoile) $data_image($i,ref,mag_$etoile)
                     }
                     set orig_cste_mag $data_image($i,constante_mag)
                     set premier 0
                 }
-                TraceFichier $nom_fichier notice "%04d;%15.5f;" $i [expr $data_image($i,date) - $orig_temps]
-                TraceFichier $nom_fichier notice "%07.4f;%07.4f;" [expr $data_image($i,var,mag_0) - $orig_mag_var_0] $data_image($i,var,incertitude_0)
-                for {set etoile 0} {$etoile < $data_script(nombre_reference)} {incr etoile} {
-                    TraceFichier $nom_fichier notice "%07.4f;%07.4f;" [expr $data_image($i,ref,mag_$etoile) - $orig_mag_ref($etoile) + 1.0] $data_image($i,ref,incertitude_$etoile)
+                # Enregistrement des données relatives à la première donnée
+                # Pour que le diagramme soit plus lisible, les références ont un décalage de 1 mag, la cste des mag de 2
+                puts -nonewline $f [ format "%04d;%15.5f;" $i [ expr $data_image($i,date) - $orig_temps ] ]
+                puts -nonewline $f [ format "%07.4f;%07.4f;" [ expr $data_image($i,var,mag_0) - $orig_mag_var_0 ] $data_image($i,var,incertitude_0) ]
+                for { set etoile 0 } { $etoile < $data_script(nombre_reference) } { incr etoile } {
+                    puts -nonewline $f [ format "%07.4f;%07.4f;" [ expr $data_image($i,ref,mag_$etoile) - $orig_mag_ref($etoile) + 1.0 ] $data_image($i,ref,incertitude_$etoile) ]
                 }
-                TraceFichier $nom_fichier notice "%7.4f\n" [expr $data_image($i,constante_mag) - $orig_cste_mag + 2.0]
+                puts -nonewline $f [ format "%7.4f\n" [ expr $data_image($i,constante_mag) - $orig_cste_mag + 2.0 ] ]
             }
         }
+        close $f
         return $orig_temps
     }
 
@@ -733,7 +746,7 @@ namespace eval ::CalaPhot {
         
         if {$tcl_platform(os) == "Linux"} {
             set nom_fichier_gplt [file join $audace(rep_images) ${parametres(sortie)}.plt]
-            catch {exec gnuplot $nom_fichier_gplt &}
+            catch { exec gnuplot $nom_fichier_gplt & }
         }
     }
     
@@ -918,6 +931,26 @@ namespace eval ::CalaPhot {
     }
 
     ##
+    # @brief Destruction des fichiers auxiliaires
+    # @return rien
+    proc DestructionFichiersAuxiliaires { } {
+        global audace
+        variable calaphot
+
+        Message debug "%s\n" [ info level [ info level ] ]
+
+        catch { file delete $calaphot(sextractor,param) }
+        catch { file delete $calaphot(sextractor,config) }
+        catch { file delete $calaphot(sextractor,neurone) }
+        catch { file delete $calaphot(sextractor,assoc) }
+        catch { file delete $calaphot(sextractor,catalog) }
+        catch { file delete [ file join $audace(rep_images) t1.fit ] }
+        catch { file delete [ file join $audace(rep_images) t2.fit ] }
+        catch { file delete [ file join $audace(rep_images) u1.fit ] }
+        catch { file delete [ file join $audace(rep_images) u2.fit ] }
+    }
+
+    ##
     # @brief Conversion de degres sexagesimaux en degres decimaux
     # @param[in] dms : valeur en degres sexagesimaux a convertir
     # @return valeur en degres decimaux
@@ -931,6 +964,25 @@ namespace eval ::CalaPhot {
         return [expr ($d + $m/60.0 + $s/3600)]
     }
 
+    ##
+    # @brief Elimination d'une image
+    # @param[in] image : image à marquer invalide
+    # @return
+    proc EliminationImage { image } {
+        variable data_image
+        variable data_script
+        variable calaphot
+        
+        set data_image($image,valide) "N"
+        Message notice "%04d " $image
+        if { [ info exists data_script($image,invalidation) ] } {
+            Message info "%s " $data_script($image,invalidation)
+        }
+        Message notice "%s\n" $calaphot(texte,image_rejetee)
+    }
+
+        
+        
     ##
     # @brief Fermeture de fichier
     # @details L'interet de ce code est de pouvoir tracer le nombre de fichier ouverts à un moment donne. Cela sert a detecter les "fuites de fileid", c'est-a-dire les fichiers qui sont ouverts et jamais fermes. On peut aussi tracer les fichiers qu'on tente de fermer alors qu'ils n'ont pas été ouverts.
