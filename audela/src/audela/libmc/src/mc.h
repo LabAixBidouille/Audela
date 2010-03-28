@@ -156,6 +156,10 @@
 // seconds
 #define TT_MINUS_TAI 32.184
 
+#define MC_NORAD_SGP 0
+#define MC_NORAD_SGP4 1
+#define MC_NORAD_SDP4 2
+
 /***************************************************************************/
 /***************************************************************************/
 /**                DEFINITON DES STRUCTURES DE DONNEES                    **/
@@ -244,6 +248,10 @@ struct elemorb {
    int code5;
    int code6;
    double residu_rms;   /* residu o-c rms en arcsec*/
+	double ndot; /* derivee 1 du mouvement d'un satellite terrestre */
+	double ndotdot; /* derivee 2 du mouvement d'un satellite terrestre */
+	double bstar;  /* pression de radiation d'un satellite terrestre */
+	double nrevperday; /* nb revolution / jour d'un satellite terrestre */
 } ;
 
 /***************************************************************************/
@@ -572,6 +580,7 @@ typedef struct {
 	int status_plani;
 } mc_OBJECTDESCR;
 
+/* status plani comments */
 #define STATUS_PLANI_NOT_PLANIFIED 0
 #define STATUS_PLANI_END_OBS_BEFORE_RANGE 1
 #define STATUS_PLANI_START_OBS_AFTER_RANGE 2
@@ -767,6 +776,8 @@ void mc_simulc(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int n,
 void mc_simulc_sat_stl(mc_cdr cdr,struct_point *point1,struct_point *point2,struct_point *point3,struct_point *point4,int n_in,double albedo,mc_cdrpos *cdrpos,int n,char *genefilename);
 void mc_simulcbin(mc_cdr cdr,double *relief1,double *albedo1,double *relief2,double *albedo2,mc_cdrpos *cdrpos,int n,char *genefilename);
 char *mc_savefits(float *mat,int naxis1, int naxis2,char *filename,mc_wcs *wcs);
+
+void mc_norad_sgp4(double jj,struct elemorb *elem,double *xgeo,double *ygeo,double *zgeo,double *vxgeo,double *vygeo,double *vzgeo);
 
 /***************************************************************************/
 /* Determination des elements d'orbite.                                    */
@@ -1115,6 +1126,9 @@ void mc_simulcbin(mc_cdr cdr,double *relief1,double *albedo1,double *relief2,dou
    Simulation de la courbe de lumiere d'un asteroide SSB.
 char *mc_savefits(float *mat,int naxis1, int naxis2,char *filename,mc_wcs *wcs);
    Save the *mat as a FITS file
+MC_NORA.C
+void mc_norad_sgp4(double jj,struct elemorb *elem,double *xgeo,double *ygeo,double *zgeo,double *vxgeo,double *vygeo,double *vzgeo);
+	Model SGP4 for satellites
 */
 
 /***************************************************************************/

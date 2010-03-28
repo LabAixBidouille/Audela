@@ -2294,6 +2294,141 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
    return result;
 }
 
+int Cmd_mctcl_tle2ephem2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   Tcl_DString dsptr;
+   int result,valid;
+   char s[524];
+   char sss[524];
+   char name[524];
+   struct elemorb elem;
+   double jj;
+   /*
+   double jj0,a,n=0.0,k_gauss;
+   char ss[524];
+   int k;
+   */
+   double longmpc,rhocosphip,rhosinphip;
+   double diamapp_equ,diamapp_pol,long1,long2,long3,lati,posangle_sun,posangle_north;
+   double long1_sun=0.,lati_sun=0.;
+   double asd,dec,delta,mag,diamapp,elong,phase,rr,asd0,dec0;
+   FILE *ftle;
+   char **argvv=NULL;
+	int argcc,k,kmin=0,code;
+	double distmin=-1;
+	double sep,posangle,sunfraction;
+   double equinoxe=J2000,jdtt;
+	int astrometric=1;
+	double reqter=6378.14*1e3;
+	double xgeo,ygeo,zgeo,vxgeo,vygeo,vzgeo;
+
+   if(argc<4) {
+      /*
+      set date 2003-09-23T20:30:00.00 ; set res [mc_tle2ephem [mc_date2tt $date] d:/geostat/gps24/geo.tle {gps 6.92389 e 43.75222 1270} "TELECOM 2D"]
+      set texte ""
+      foreach ligne $res { set res2 [mc_radec2altaz [lindex $ligne 1] [lindex $ligne 2] {gps 6.92389 e 43.75222 1270} $date] ; set gis [expr [lindex $res2 0]+180.] ; if {$gis>360} {set gis [expr $gis-360.]} ; append texte "[lindex $ligne 0] [lindex $ligne 1] [lindex $ligne 2] $gis [lindex $res2 1]\n" }
+      set f [open d:/geostat/sat.txt w] ; puts -nonewline $f $texte ; close $f
+      */
+      sprintf(s,"Usage: %s Date_UTC file_tle Home ?-name satname? ?-coord {ra dec}?", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_ERROR;
+	  WriteDisk ("pas assez d'arg");
+	   return(result);
+   } else {
+      /* --- decode la Date---*/
+      mctcl_decode_date(interp,argv[1],&jj);
+      /* --- decode le Home ---*/
+      longmpc=0.;
+      rhocosphip=0.;
+      rhosinphip=0.;
+      mctcl_decode_topo(interp,argv[3],&longmpc,&rhocosphip,&rhosinphip);
+      strcpy(name,"");
+      if (argc==5) {
+			strcpy(name,argv[4]);
+		} else if (argc>=6) {
+			for (k=4;k<argc-1;k++) {
+				if (strcmp(argv[k],"-name")==0) {
+		         strcpy(name,argv[k+1]);
+				} else if (strcmp(argv[k],"-coord")==0) {
+					code=Tcl_SplitList(interp,argv[k+1],&argcc,&argvv);
+					if (argcc>=2) {
+						mctcl_decode_angle(interp,argvv[0],&asd0);
+						asd0*=(DR);
+						mctcl_decode_angle(interp,argvv[1],&dec0);
+						dec0*=(DR);
+						distmin=1e11;
+					}
+		         Tcl_Free((char *) argvv);
+				}
+			}
+      }
+      /* --- decode le fichier TLE ---*/
+      ftle=fopen(argv[2],"rt");
+      if (ftle==NULL) {
+         Tcl_SetResult(interp,"File not found",TCL_VOLATILE);
+         result = TCL_ERROR;
+	      return(result);
+      }
+      /*
+      0         1         2         3         4         5         6         7
+       123456789 123456789 123456789 123456789 123456789 123456789 123456789
+      TELECOM 2D
+      1 24209U 96044B   03262.91033065 -.00000065  00000-0  00000+0 0  8956
+      2 24209   0.0626 123.5457 0004535  56.5151 138.1659  1.00273036 26182
+      */
+  	   result=TCL_OK;
+	   Tcl_DStringInit(&dsptr);
+		mc_tu2td(jj,&jdtt);
+		k=-1;
+      while (feof(ftle)==0) {
+			k++;
+         mc_tle_decnext1(ftle,&elem,name,&valid);
+         if (valid==1) {
+            /* --- on lance le calcul ---*/
+				mc_norad_sgp4(jj,&elem,&xgeo,&ygeo,&zgeo,&vxgeo,&vygeo,&vzgeo);
+            mc_adelemap(jdtt,jj,equinoxe,astrometric,elem,longmpc,rhocosphip,rhosinphip,0,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun,&sunfraction);
+				if (distmin>0) {
+					mc_sepangle(asd0,asd,dec0,dec,&sep,&posangle);
+					if (sep<distmin) {
+						kmin=k;
+						distmin=sep;
+					}
+				} else {
+					sprintf(sss,"{{{%20s} {%15s} {%15s}} %.15f %.15f %.15g %.15f %.15f %.4f} ",elem.designation,elem.id_norad,elem.id_cospar,asd/(DR),dec/(DR),delta*(UA),elong/(DR),phase/(DR),sunfraction);
+					Tcl_DStringAppend(&dsptr,sss,-1);
+				}
+         }
+      }
+      fclose(ftle);
+		if (distmin>0) {
+			/* --- decode le fichier TLE ---*/
+			ftle=fopen(argv[2],"rt");
+			if (ftle==NULL) {
+				Tcl_SetResult(interp,"File not found",TCL_VOLATILE);
+				result = TCL_ERROR;
+				return(result);
+			}
+ 			result=TCL_OK;
+			k=-1;
+			while (feof(ftle)==0) {
+				k++;
+				mc_tle_decnext1(ftle,&elem,name,&valid);
+				if ((valid==1)&&(k==kmin)) {
+					/* --- on lance le calcul ---*/
+					mc_adelemap(jdtt,jj,equinoxe,astrometric,elem,longmpc,rhocosphip,rhosinphip,0,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun,&sunfraction);
+					sprintf(sss,"{{{%20s} {%15s} {%15s}} %.15f %.15f %.15g %.15f %.15f %.4f} ",elem.designation,elem.id_norad,elem.id_cospar,asd/(DR),dec/(DR),delta*(UA),elong/(DR),phase/(DR),sunfraction);
+					Tcl_DStringAppend(&dsptr,sss,-1);
+				}
+			}
+			fclose(ftle);
+		}
+		/* --- libere les pointeurs ---*/
+      Tcl_DStringResult(interp,&dsptr);
+      Tcl_DStringFree(&dsptr);
+   }
+   return result;
+}
+
 int Cmd_mctcl_tle2xyz(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
    Tcl_DString dsptr;
