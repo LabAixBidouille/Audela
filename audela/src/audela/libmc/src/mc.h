@@ -252,6 +252,7 @@ struct elemorb {
 	double ndotdot; /* derivee 2 du mouvement d'un satellite terrestre */
 	double bstar;  /* pression de radiation d'un satellite terrestre */
 	double nrevperday; /* nb revolution / jour d'un satellite terrestre */
+	double tle_epoch; /* epoch as read in TLEs */
 } ;
 
 /***************************************************************************/

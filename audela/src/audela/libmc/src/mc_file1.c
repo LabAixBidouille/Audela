@@ -820,6 +820,8 @@ void mc_tle_decnext1(FILE *ftle,struct elemorb *elem,char *name,int *valid)
             mc_dateobs2jd(sss,&jj0);
             strcpy(ss,s+20); ss[12]='\0';
             jj0+=(atof(ss)-1.);
+            strcpy(ss,s+18); ss[31-18+1]='\0';
+            elem->tle_epoch=atof(ss);
             strcpy(ss,s+33); ss[42-33+1]='\0';
             elem->ndot=atof(ss);
             strcpy(ss,s+44); ss[49-44+1]='\0';
