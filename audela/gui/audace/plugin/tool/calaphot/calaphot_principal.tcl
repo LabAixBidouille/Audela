@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot_principal.tcl,v 1.12 2010-03-28 16:34:38 jacquesmichelet Exp $
+# $Id: calaphot_principal.tcl,v 1.13 2010-03-29 18:54:14 jacquesmichelet Exp $
 #
 
 ###catch {namespace delete ::Calaphot}
@@ -65,7 +65,6 @@ namespace eval ::CalaPhot {
         variable parametres
         variable calaphot
         variable police
-        variable demande_arret
         variable trace_log
         variable data_script
         variable data_image

@@ -5,7 +5,7 @@
 #
 # @brief Routines de gestion des affichages de Calaphot
 #
-# $Id: calaphot_graph.tcl,v 1.7 2010-03-28 16:34:38 jacquesmichelet Exp $
+# $Id: calaphot_graph.tcl,v 1.8 2010-03-29 18:54:14 jacquesmichelet Exp $
 
 namespace eval ::CalaPhot {
 
@@ -399,18 +399,19 @@ namespace eval ::CalaPhot {
     #*************************************************************************#
     #*************  ArretScript  *********************************************#
     #*************************************************************************#
-    proc ArretScript {} {
+    proc ArretScript { } {
         global audace
         variable demande_arret
 
-        Message debug "%s\n" [info level [info level]]
+        Message debug "%s\n" [ info level [ info level ] ]
 
         set demande_arret 1
         EffaceMotif astres
-        catch {destroy $audace(base).selection_etoile}
-        catch {destroy $audace(base).selection_aster}
-        catch { destroy $audace(base).selection_indes}
-        catch {destroy $audace(base).bouton_arret_color_invariant}
+        catch { destroy $audace(base).selection_etoile }
+        catch { destroy $audace(base).selection_aster }
+        catch { destroy $audace(base).selection_indes }
+        catch { destroy $audace(base).bouton_arret_color_invariant }
+        DestructionFichiersAuxiliaires
     }
 
     ##
