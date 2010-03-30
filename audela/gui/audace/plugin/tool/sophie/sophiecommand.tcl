@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.46 2010-02-14 16:36:17 michelpujol Exp $
+# @version  $Id: sophiecommand.tcl,v 1.47 2010-03-30 11:49:48 ffillion Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -1785,7 +1785,7 @@ proc ::sophie::stopCenter { } {
 
    #--- je signale au telescope que j'arrete une session de centrage
    if { $::audace(telNo) != 0 } {
-      tel$::audace(telNo) radec guiding 1
+      tel$::audace(telNo) radec guiding 0
    }
 
 
