@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-// @version  $Id: telescop.c,v 1.26 2010-03-07 16:43:36 michelpujol Exp $
+// @version  $Id: telescop.c,v 1.27 2010-03-30 12:08:44 ffillion Exp $
 
 #include "sysexp.h"
 
@@ -131,7 +131,8 @@ const char * mytel_getControlInterfaceLabelError(int numMessage) {
          return "code inconnu";
    }   
 }
-
+/* noms des fichier LOG pour les coirrections de guidage */
+char lognamecorrA[256], lognamecorrD[256];
 
 /* ========================================================= */
 /* ========================================================= */
@@ -163,10 +164,36 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    int         result = 0;
    char s[1024],ssres[1024];
    char ss[256],ssusb[256];
+   char tu[20];
    int k;
-   FILE *flog;
+
+   FILE *flog,*flogCorrA,*flogCorrD;
    flog=fopen("mouchard_protocole_T193.txt","wt");
    fclose(flog);
+
+   // 2 fichiers Log des corrections de guidage en Alpha et Delta
+   strcpy(lognamecorrA,"");
+   strcpy(lognamecorrD,"");
+   strcpy(ss, "clock format [ clock seconds ] -format %Y-%m-%d_T%H-%M-%S -timezone :UTC "); 
+   result = Tcl_Eval(tel->interp,ss);
+   if ( result == TCL_OK) {
+      strcpy(tu, tel->interp->result);
+      sprintf(lognamecorrA, "mouchard_correction_alpha_T193-%s.txt", tu);
+      sprintf(lognamecorrD, "mouchard_correction_delta_T193-%s.txt", tu);
+   } else {
+      strcpy(lognamecorrA, "mouchard_correction_alpha_T193-00h00m00s.txt");
+      strcpy(lognamecorrD, "mouchard_correction_delta_T193-00h00m00s.txt");
+   }
+   flogCorrA=fopen(lognamecorrA,"wt");
+   fclose(flogCorrA);
+   flogCorrD=fopen(lognamecorrD,"wt");
+   fclose(flogCorrD);
+   flogCorrA=fopen(lognamecorrA,"at");
+   fprintf(flogCorrA,"%s\t\t\t%s\t%s\n","date","direction (E|W)","correction ALPHA (arcsec)");
+   fclose(flogCorrA);
+   flogCorrD=fopen(lognamecorrD,"at");
+   fprintf(flogCorrD,"%s\t\t\t%s\t%s\n","date","direction (N|S)","correction DELTA (arcsec)");
+   fclose(flogCorrD);
 
    // je configure les fonctions specifiques du telescope
    TEL_DRV.tel_correct =  tel_radec_correct;
@@ -1080,6 +1107,9 @@ int tel_radec_stop(struct telprop *tel,char *direction)
 int tel_radec_correct(struct telprop *tel, char *alphaDirection, double alphaDistance, char *deltaDirection, double deltaDistance)
 {
    int result ;
+	FILE *flogCorrA, *flogCorrD;
+	char ss[256],tu[20];
+	int tclresult;
 
    if (fabs(alphaDistance) < 0.001  && fabs(deltaDistance) < 0.001 ) return 0; //ajout F.FILLION : pas de JOG continue en guidage (rem: 0.001 arcsec = 0.2 cts de #2)
  
@@ -1098,6 +1128,21 @@ int tel_radec_correct(struct telprop *tel, char *alphaDirection, double alphaDis
          if ( result == 0 ) {
             char command[NOTIFICATION_MAX_SIZE];
             char response[NOTIFICATION_MAX_SIZE];
+				//LOG des corrections
+				strcpy(ss, "clock format [ clock seconds ] -format %Y-%m-%dT%H:%M:%S -timezone :UTC "); 
+				tclresult = Tcl_Eval(tel->interp,ss);
+				if ( tclresult == TCL_OK) {
+					strcpy(tu, tel->interp->result);
+				} else {
+					strcpy(tu, "erreur date");
+				}
+			   flogCorrA = fopen(lognamecorrA, "at");
+				fprintf(flogCorrA, "\n%s\t%c\t\t%6.3lf", tu, alphaDirection[0], alphaDistance);
+				fclose(flogCorrA);
+				flogCorrD = fopen(lognamecorrD, "at");
+				fprintf(flogCorrD, "\n%s\t%c\t\t%6.3lf", tu, deltaDirection[0], deltaDistance);
+				fclose(flogCorrD);
+
             if ( tel->radec_move_rate == 0.0 ) {
                // vitesse de guidage
                sprintf(command,"!RADEC CORRECT %c %.3f %c %.3f guidage @\n", alphaDirection[0], alphaDistance, deltaDirection[0], deltaDistance );  
@@ -1210,6 +1255,7 @@ int tel_get_radec_guiding(struct telprop *tel, int *guiding) {
 //-------------------------------------------------------------
 int tel_set_radec_guiding(struct telprop *tel, int guiding) {
    int result; 
+	FILE *flogCorrA, *flogCorrD;
 
    if ( tel->telescopeCommandSocket != 0 ) {
       char command[NOTIFICATION_MAX_SIZE];
@@ -1224,6 +1270,13 @@ int tel_set_radec_guiding(struct telprop *tel, int guiding) {
 
       if ( guiding == 1 ) {
          sprintf(command,"!RADEC GUIDING ON @\n");
+			//LOG des corrections
+		   flogCorrA = fopen(lognamecorrA, "at");
+			fprintf(flogCorrA, "\n%s", "--------------------------- nouvelle étoile ---------------------------");
+			fclose(flogCorrA);
+			flogCorrD = fopen(lognamecorrD, "at");
+			fprintf(flogCorrD, "\n%s", "--------------------------- nouvelle étoile ---------------------------");
+			fclose(flogCorrD);
       } else {
          sprintf(command,"!RADEC GUIDING OFF @\n");
       }
