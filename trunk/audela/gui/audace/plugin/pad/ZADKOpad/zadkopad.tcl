@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.44 2010-01-17 18:10:11 robertdelmas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.45 2010-03-31 09:57:29 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -188,8 +188,8 @@ namespace eval ::zadkopad {
             #set paramhorloge(speeddec) 0;      # coef multiplicateur du speedtrack
        }
 
-       set err [catch {source "$ros(root,conf)/conf/src/telescope/pointing_model_zadko.tcl"}]
-        if {($err!=1)&&($ros(common,mode)=="zadko_australia_pcwincam")} {
+       set err1 [catch {source "$ros(root,conf)/conf/src/telescope/pointing_model_zadko.tcl"}]
+        if {($err!=1)&&($err1!=1)&&($ros(common,mode)=="zadko_australia_pcwincam")} {
             set paramhorloge(dra) $ros(telescope,private,dra);               # offset (deg) for hour angle
             set paramhorloge(ddec) $ros(telescope,private,ddec);             # offset (deg) for declination
         } else {
