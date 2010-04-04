@@ -196,6 +196,10 @@ SOURCE=..\src\mc_nora1.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\mc_nora2.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\mc_orbi1.c
 # End Source File
 # Begin Source File

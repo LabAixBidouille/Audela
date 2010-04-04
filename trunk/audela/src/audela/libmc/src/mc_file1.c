@@ -788,7 +788,7 @@ void mc_tle_decnext1(FILE *ftle,struct elemorb *elem,char *name,int *valid)
 /* Le flag valid=1 si la lecture a reussi                                  */
 /***************************************************************************/
 {
-   int k,expo;
+   int k,expo,sign;
    char s[524];
    char ss[524];
    char sss[524];
@@ -811,31 +811,35 @@ void mc_tle_decnext1(FILE *ftle,struct elemorb *elem,char *name,int *valid)
       *valid=0;
       if (s!=NULL) {
          if (s[0]=='1') {
-            strcpy(ss,s+1); ss[7-1+1]='\0';
+            strcpy(ss,s+2); ss[7-2+1]='\0';
             strcpy(elem->id_norad,ss);
-            strcpy(ss,s+8); ss[17-1+1]='\0';
+            strcpy(ss,s+9); ss[16-9+1]='\0';
             strcpy(elem->id_cospar,ss);
             strcpy(ss,s+18); ss[2]='\0';
             sprintf(sss,"20%s-01-01T00:00:00",ss);
             mc_dateobs2jd(sss,&jj0);
-            strcpy(ss,s+20); ss[12]='\0';
+            strcpy(ss,s+20); ss[12]='\0'; // Epoch (Day of the year and fractional portion of the day)
             jj0+=(atof(ss)-1.);
-            strcpy(ss,s+18); ss[31-18+1]='\0';
+            strcpy(ss,s+18); ss[31-18+1]='\0'; // Epoch (total)
             elem->tle_epoch=atof(ss);
-            strcpy(ss,s+33); ss[42-33+1]='\0';
+            strcpy(ss,s+33); ss[42-33+1]='\0'; // First Time Derivative of the Mean Motion
             elem->ndot=atof(ss);
-            strcpy(ss,s+44); ss[49-44+1]='\0';
-				sprintf(s,".%f",ss);
+            strcpy(ss,s+44); ss[44-44+1]='\0'; // Second Time Derivative of Mean Motion (sign)
+				if (ss[0]=='-') { sign=-1; } else { sign=1; }
+            strcpy(ss,s+45); ss[49-45+1]='\0'; // Second Time Derivative of Mean Motion
+				sprintf(s,".%s",ss);
             elem->ndotdot=atof(s);
-            strcpy(ss,s+50); ss[51-50+1]='\0';
+            strcpy(ss,s+50); ss[51-50+1]='\0'; // (decimal point assumed)
             expo=atoi(ss);
-				elem->ndotdot=elem->ndotdot*pow(10,expo);
-            strcpy(ss,s+53); ss[58-53+1]='\0';
-				sprintf(s,".%f",ss);
+				elem->ndotdot=sign*elem->ndotdot*pow(10,expo);
+            strcpy(ss,s+53); ss[53-53+1]='\0'; // BSTAR drag term (sign)
+				if (ss[0]=='-') { sign=-1; } else { sign=1; }
+            strcpy(ss,s+54); ss[58-54+1]='\0'; // BSTAR drag term
+				sprintf(s,".%s",ss);
             elem->bstar=atof(s);
-            strcpy(ss,s+59); ss[60-59+1]='\0';
+            strcpy(ss,s+59); ss[60-59+1]='\0'; // (decimal point assumed)
             expo=atoi(ss);
-				elem->bstar=elem->bstar*pow(10,expo);
+				elem->bstar=sign*elem->bstar*pow(10,expo); 
             *valid=0;
          } else if (s[0]=='2') {
             strcpy(ss,s+8); ss[15-8+1]='\0';

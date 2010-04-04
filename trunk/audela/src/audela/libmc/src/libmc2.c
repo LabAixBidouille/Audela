@@ -2161,7 +2161,7 @@ char Buffer[300];
 	return 0;
 }
 
-int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+int Cmd_mctcl_tle2ephem2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
    Tcl_DString dsptr;
    int result,valid;
@@ -2294,7 +2294,7 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
    return result;
 }
 
-int Cmd_mctcl_tle2ephem2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
    Tcl_DString dsptr;
    int result,valid;
@@ -2320,7 +2320,7 @@ int Cmd_mctcl_tle2ephem2(ClientData clientData, Tcl_Interp *interp, int argc, ch
    double equinoxe=J2000,jdtt;
 	int astrometric=1;
 	double reqter=6378.14*1e3;
-	double xgeo,ygeo,zgeo,vxgeo,vygeo,vzgeo;
+	/*double xgeo,ygeo,zgeo,vxgeo,vygeo,vzgeo;*/
 
    if(argc<4) {
       /*
@@ -2385,8 +2385,7 @@ int Cmd_mctcl_tle2ephem2(ClientData clientData, Tcl_Interp *interp, int argc, ch
          mc_tle_decnext1(ftle,&elem,name,&valid);
          if (valid==1) {
             /* --- on lance le calcul ---*/
-				mc_norad_sgp4(jj,&elem,&xgeo,&ygeo,&zgeo,&vxgeo,&vygeo,&vzgeo);
-            mc_adelemap(jdtt,jj,equinoxe,astrometric,elem,longmpc,rhocosphip,rhosinphip,0,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun,&sunfraction);
+            mc_adelemap_sgp(jdtt,jj,equinoxe,astrometric,elem,longmpc,rhocosphip,rhosinphip,0,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun,&sunfraction);
 				if (distmin>0) {
 					mc_sepangle(asd0,asd,dec0,dec,&sep,&posangle);
 					if (sep<distmin) {

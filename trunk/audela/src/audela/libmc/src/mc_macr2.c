@@ -919,6 +919,136 @@ void mc_adelemap(double jj,double jjutc, double equinoxe, int astrometric, struc
 
 }
 
+void mc_adelemap_sgp(double jj,double jjutc, double equinoxe, int astrometric, struct elemorb elem, double longmpc,double rhocosphip,double rhosinphip, int planete, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun,double *sunfraction)
+/***************************************************************************/
+/* Calcul de l'asd, dec et distance apparentes d'un astre defini par ses  elements d'orbite GEOCENTRIQUES uniquement a jj donne.   */
+/***************************************************************************/
+/***************************************************************************/
+{
+   double llp[10],mmp[10],uup[10],jjd,ls,bs,rs,eps,/*dpsi,deps,*/xs,ys,zs;
+   double /*l,b,*/x,y,z/*,xg,yg,zg*/;
+   double dxeq,dyeq,dzeq;
+   double jjda;
+	double xaster,yaster,zaster;
+   double da1,da2,R1,R2,rho,t1,t2,cosa,aire,airetot,tt,ts;
+   double r1,r2;
+   double reqter=6378.14/UA*1e3,reqsol=696000./UA*1e3;
+	int cas;
+	double xgeo,ygeo,zgeo,vxgeo,vygeo,vzgeo;
+   jjd=jj;
+
+	/* type d'astre (0=inconnu 1=comete 2=asteroide 3=planete 4=geocentrique) */
+   if (elem.type!=4) {
+		return;
+   } else {
+      /*--- centre de revolution = Terre ---*/
+      xs=0.;ys=0.;zs=0.;
+   }
+
+   /*--- calcul de la parallaxe ---*/
+   mc_paraldxyzeq(jjutc,longmpc,rhocosphip,rhosinphip,&dxeq,&dyeq,&dzeq);
+
+   /*--- coords du centre de revolution geo->topo ---*/
+   xs-=dxeq;
+   ys-=dyeq;
+   zs-=dzeq;
+
+   /*--- astre a observer ---*/
+	/* equatorial coordinates at epoch=jj */
+	mc_norad_sgdp48(jjd,4,&elem,&xgeo,&ygeo,&zgeo,&vxgeo,&vygeo,&vzgeo);
+	/* geo -> topo */
+   mc_he2ge(xgeo,ygeo,zgeo,xs,ys,zs,&x,&y,&z);
+   mc_xyz2add(x,y,z,asd,dec,delta);
+
+   /* --- astre corrige de l'aberration de la lumiere ---*/
+   mc_aberpla(jjd,*delta,&jjda);
+
+	/* equatorial coordinates at epoch=jj-timelight */
+	mc_norad_sgdp48(jjda,4,&elem,&xgeo,&ygeo,&zgeo,&vxgeo,&vygeo,&vzgeo);
+	/* geo -> topo */
+   mc_he2ge(xgeo,ygeo,zgeo,xs,ys,zs,&x,&y,&z); /* topocentric at epoch */
+   mc_precxyz(jjd,x,y,z,equinoxe,&x,&y,&z); /* topocentric equatoriale J2000 */
+   mc_xyz2add(x,y,z,asd,dec,delta);
+
+   /* --- calculation of eclipses ---*/
+
+   /*--- correction de la parallaxe topo -> geo ---*/
+	xaster=x+dxeq;
+	yaster=y+dyeq;
+	zaster=z+dzeq;
+
+   /*--- observer -> geo ---*/
+   x=-dxeq;
+   y=-dyeq;
+   z=-dzeq;
+
+   /*--- soleil geo ---*/
+   mc_jd2lbr1a(jjd,llp,mmp,uup);
+   mc_jd2lbr1b(jjd,SOLEIL,llp,mmp,uup,&ls,&bs,&rs);
+   mc_lbr2xyz(ls,bs,rs,&xs,&ys,&zs);
+   mc_obliqmoy(jjd,&eps);
+   mc_xyzec2eq(xs,ys,zs,eps,&xs,&ys,&zs); /* equatoriale a la date */
+   mc_precxyz(jjd,xs,ys,zs,equinoxe,&xs,&ys,&zs); /* equatoriale J2000 */
+	rs=sqrt(xs*xs+ys*ys+zs*zs);
+
+   r1=sqrt((xaster-x)*(xaster-x)+(yaster-y)*(yaster-y)+(zaster-z)*(zaster-z));
+   r2=sqrt((xs-x)*(xs-x)+(ys-y)*(ys-y)+(zs-z)*(zs-z));
+   cosa=-((xaster-x)*(xs-x)+(yaster-y)*(ys-y)+(zaster-z)*(zs-z))/r1/r2;
+   *elong=mc_acos(cosa);
+
+   r1=sqrt((x-xaster)*(x-xaster)+(y-yaster)*(y-yaster)+(z-zaster)*(z-zaster));
+   r2=sqrt((xs-xaster)*(xs-xaster)+(ys-yaster)*(ys-yaster)+(zs-zaster)*(zs-zaster));
+   cosa=-((x-xaster)*(xs-xaster)+(y-yaster)*(ys-yaster)+(z-zaster)*(zs-zaster))/r1/r2;
+   *phase=mc_acos(cosa);
+
+	tt=mc_asin(reqter/r1);
+	ts=mc_asin(reqsol/r2);
+
+   if ((reqter/r1)>(reqsol/r2)) {
+      R1=tan(tt);;
+      R2=tan(ts);
+      cas=0;
+      airetot=PI*R2*R2; // aire du disque solaire projete
+   } else {
+      R1=tan(ts);
+      R2=tan(tt);
+      cas=1;
+      airetot=PI*R1*R1; // aire du disque solaire projete
+   }
+   rho=fabs(tan(mc_acos(cosa)));
+   t2=2*mc_acos((R2*R2+rho*rho-R1*R1)/2/R2/rho);
+   t1=2*mc_acos((R1*R1+rho*rho-R2*R2)/2/R1/rho);
+   da1=0.5*R1*R1*(t1-sin(t1));
+   da2=0.5*R2*R2*(t2-sin(t2));
+   if (rho<(R1-R2)) {
+      if (cas==0) {
+         aire=0;
+      } else {
+         aire=PI*R1*R1-PI*R2*R2;
+      }
+   } else if (rho<sqrt(R1*R1-R2*R2)) {
+      if (cas==0) {
+         aire=da2-da1;
+      } else {
+         aire=PI*R1*R1-PI*R2*R2+da2-da1;
+      }
+   } else if (rho<(R1+R2)) {
+      if (cas==0) {
+         aire=PI*R2*R2-da1-da2;
+      } else {
+         aire=PI*R1*R1-da1-da2;
+      }
+   } else {
+      if (cas==0) {
+         aire=PI*R2*R2;
+      } else {
+         aire=PI*R1*R1;
+      }
+   }
+   *sunfraction=(aire/airetot);
+
+}
+
 void mc_xyzgeoelem(double jj,double jjutc, double equinoxe, int astrometric, struct elemorb elem, double longmpc,double rhocosphip,double rhosinphip, int planete, double *xageo, double *yageo, double *zageo, double *xtgeo, double *ytgeo, double *ztgeo, double *xsgeo, double *ysgeo, double *zsgeo, double *xlgeo, double *ylgeo, double *zlgeo)
 /***************************************************************************/
 /* Calcul de X,Y,Z geocentrique d'un astre defini par ses elements d'orbite a jj donne.   */
