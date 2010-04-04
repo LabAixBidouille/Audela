@@ -132,7 +132,7 @@
 #define ASTEROIDE 2
 #define PLANETE 3
 #define MAXCHAINE 256
-#define UA 1.49597870e11
+#define UA 1.49597870691e11
 #define CLIGHT 2.99792458e8
 
 #define TYPE_MPEC1 1
@@ -159,6 +159,8 @@
 #define MC_NORAD_SGP 0
 #define MC_NORAD_SGP4 1
 #define MC_NORAD_SDP4 2
+#define MC_NORAD_SGP8 3
+#define MC_NORAD_SDP8 4
 
 /***************************************************************************/
 /***************************************************************************/
@@ -756,6 +758,7 @@ void mc_adplaap(double jj,double equinoxe, int astrometric, double longmpc,doubl
 void mc_adlunap(int planete, double jj, double jjutc, double equinoxe, int astrometric, double longmpc,double rhocosphip,double rhosinphip,double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun);
 void mc_adsolap(double jj,double equinoxe, int astrometric, double longmpc,double rhocosphip,double rhosinphip, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun);
 void mc_adelemap(double jj,double jjutc, double equinoxe, int astrometric, struct elemorb elem, double longmpc,double rhocosphip,double rhosinphip, int planete, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun,double *sunfraction);
+void mc_adelemap_sgp(double jj,double jjutc, double equinoxe, int astrometric, struct elemorb elem, double longmpc,double rhocosphip,double rhosinphip, int planete, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun,double *sunfraction);
 void mc_xyzgeoelem(double jj,double jjutc, double equinoxe, int astrometric, struct elemorb elem, double longmpc,double rhocosphip,double rhosinphip, int planete, double *xageo, double *yageo, double *zageo, double *xtgeo, double *ytgeo, double *ztgeo, double *xsgeo, double *ysgeo, double *zsgeo, double *xlgeo, double *ylgeo, double *zlgeo);
 void mc_affielem(struct elemorb elem);
 void mc_bowell1(char *nom_fichier_in,double jj,double equinoxe,double lim_mag_sup, double lim_mag_inf,double lim_elong,double lim_dec_sup, double lim_dec_inf,double lim_inc_sup, double lim_inc_inf,int flag1,int flag2,int flag3,char *nom_fichier_out);
@@ -778,7 +781,7 @@ void mc_simulc_sat_stl(mc_cdr cdr,struct_point *point1,struct_point *point2,stru
 void mc_simulcbin(mc_cdr cdr,double *relief1,double *albedo1,double *relief2,double *albedo2,mc_cdrpos *cdrpos,int n,char *genefilename);
 char *mc_savefits(float *mat,int naxis1, int naxis2,char *filename,mc_wcs *wcs);
 
-void mc_norad_sgp4(double jj,struct elemorb *elem,double *xgeo,double *ygeo,double *zgeo,double *vxgeo,double *vygeo,double *vzgeo);
+void mc_norad_sgdp48(double jj,int sgp, struct elemorb *elem,double *xgeo,double *ygeo,double *zgeo,double *vxgeo,double *vygeo,double *vzgeo);
 
 /***************************************************************************/
 /* Determination des elements d'orbite.                                    */
@@ -1066,6 +1069,8 @@ void mc_adsolap(double jj,double equinoxe, int astrometric, double longmpc,doubl
    Calcul de l'asd, dec et distance apparentes du Soleil a jj donne
 void mc_adelemap(double jj,double jjutc, double equinoxe, int astrometric, struct elemorb elem, double longmpc,double rhocosphip,double rhosinphip, int planete, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun,double *sunfraction);
    Calcul de l'asd, dec et distance apparentes d'un astre defini par ses elements d'orbite a jj donne.
+void mc_adelemap_sgp(double jj,double jjutc, double equinoxe, int astrometric, struct elemorb elem, double longmpc,double rhocosphip,double rhosinphip, int planete, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun,double *sunfraction);
+   Calcul de l'asd, dec et distance apparentes d'un astre defini par ses  elements d'orbite GEOCENTRIQUES uniquement a jj donne.
 void mc_affielem(struct elemorb elem);
    Affiche les elements d'orbite en clair a l'ecran.
 void mc_bowell1(char *nom_fichier_in,double jj,double equinoxe,double lim_mag_sup, double lim_mag_inf,double lim_elong,double lim_dec_sup, double lim_dec_inf,double lim_inc_sup, double lim_inc_inf,int flag1,int flag2,int flag3,char *nom_fichier_out);
@@ -1128,8 +1133,8 @@ void mc_simulcbin(mc_cdr cdr,double *relief1,double *albedo1,double *relief2,dou
 char *mc_savefits(float *mat,int naxis1, int naxis2,char *filename,mc_wcs *wcs);
    Save the *mat as a FITS file
 MC_NORA.C
-void mc_norad_sgp4(double jj,struct elemorb *elem,double *xgeo,double *ygeo,double *zgeo,double *vxgeo,double *vygeo,double *vzgeo);
-	Model SGP4 for satellites
+void mc_norad_sgdp48(double jj,int sgp, struct elemorb *elem,double *xgeo,double *ygeo,double *zgeo,double *vxgeo,double *vygeo,double *vzgeo);
+   models NORAD SGP, SGP4, SDP4, SGP8, SDP8 for satellites
 */
 
 /***************************************************************************/
