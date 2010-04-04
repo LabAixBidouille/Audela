@@ -2298,7 +2298,7 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
 {
    Tcl_DString dsptr;
    int result,valid;
-   char s[524];
+   char s[524],sens[3];
    char sss[524];
    char name[524];
    struct elemorb elem;
@@ -2320,7 +2320,8 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
    double equinoxe=J2000,jdtt;
 	int astrometric=1;
 	double reqter=6378.14*1e3;
-	/*double xgeo,ygeo,zgeo,vxgeo,vygeo,vzgeo;*/
+	int sgp_method=4;
+	double zlong,zlat;
 
    if(argc<4) {
       /*
@@ -2329,7 +2330,7 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
       foreach ligne $res { set res2 [mc_radec2altaz [lindex $ligne 1] [lindex $ligne 2] {gps 6.92389 e 43.75222 1270} $date] ; set gis [expr [lindex $res2 0]+180.] ; if {$gis>360} {set gis [expr $gis-360.]} ; append texte "[lindex $ligne 0] [lindex $ligne 1] [lindex $ligne 2] $gis [lindex $res2 1]\n" }
       set f [open d:/geostat/sat.txt w] ; puts -nonewline $f $texte ; close $f
       */
-      sprintf(s,"Usage: %s Date_UTC file_tle Home ?-name satname? ?-coord {ra dec}?", argv[0]);
+      sprintf(s,"Usage: %s Date_UTC file_tle Home ?-name satname? ?-coord {ra dec}? ?-sgp 0|4|8?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_ERROR;
 	  WriteDisk ("pas assez d'arg");
@@ -2349,6 +2350,10 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
 			for (k=4;k<argc-1;k++) {
 				if (strcmp(argv[k],"-name")==0) {
 		         strcpy(name,argv[k+1]);
+				} else if (strcmp(argv[k],"-sgp")==0) {
+		         strcpy(sss,argv[k+1]);
+					if (sss[0]=='0') { sgp_method=0; }
+					if (sss[0]=='8') { sgp_method=8; }
 				} else if (strcmp(argv[k],"-coord")==0) {
 					code=Tcl_SplitList(interp,argv[k+1],&argcc,&argvv);
 					if (argcc>=2) {
@@ -2385,7 +2390,7 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
          mc_tle_decnext1(ftle,&elem,name,&valid);
          if (valid==1) {
             /* --- on lance le calcul ---*/
-            mc_adelemap_sgp(jdtt,jj,equinoxe,astrometric,elem,longmpc,rhocosphip,rhosinphip,0,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun,&sunfraction);
+            mc_adelemap_sgp(sgp_method,jdtt,jj,equinoxe,astrometric,elem,longmpc,rhocosphip,rhosinphip,0,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun,&sunfraction,&zlong,&zlat);
 				if (distmin>0) {
 					mc_sepangle(asd0,asd,dec0,dec,&sep,&posangle);
 					if (sep<distmin) {
@@ -2393,7 +2398,15 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
 						distmin=sep;
 					}
 				} else {
-					sprintf(sss,"{{{%20s} {%15s} {%15s}} %.15f %.15f %.15g %.15f %.15f %.4f} ",elem.designation,elem.id_norad,elem.id_cospar,asd/(DR),dec/(DR),delta*(UA),elong/(DR),phase/(DR),sunfraction);
+					zlong/=(DR);
+					if (zlong>180) {
+						strcpy(sens,"W");
+						zlong=360-zlong;
+					} else {
+						strcpy(sens,"E");
+					}
+					zlat/=(DR);
+					sprintf(sss,"{{{%20s} {%15s} {%15s}} %.15f %.15f %.15g %.15f %.15f %.4f {GPS %f %s %f 0} } ",elem.designation,elem.id_norad,elem.id_cospar,asd/(DR),dec/(DR),delta*(UA),elong/(DR),phase/(DR),sunfraction,zlong,sens,zlat);
 					Tcl_DStringAppend(&dsptr,sss,-1);
 				}
          }

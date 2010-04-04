@@ -919,7 +919,7 @@ void mc_adelemap(double jj,double jjutc, double equinoxe, int astrometric, struc
 
 }
 
-void mc_adelemap_sgp(double jj,double jjutc, double equinoxe, int astrometric, struct elemorb elem, double longmpc,double rhocosphip,double rhosinphip, int planete, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun,double *sunfraction)
+void mc_adelemap_sgp(int sgp_method,double jj,double jjutc, double equinoxe, int astrometric, struct elemorb elem, double longmpc,double rhocosphip,double rhosinphip, int planete, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun,double *sunfraction,double *zenith_longmpc,double *zenith_latmpc)
 /***************************************************************************/
 /* Calcul de l'asd, dec et distance apparentes d'un astre defini par ses  elements d'orbite GEOCENTRIQUES uniquement a jj donne.   */
 /***************************************************************************/
@@ -931,51 +931,55 @@ void mc_adelemap_sgp(double jj,double jjutc, double equinoxe, int astrometric, s
    double jjda;
 	double xaster,yaster,zaster;
    double da1,da2,R1,R2,rho,t1,t2,cosa,aire,airetot,tt,ts;
-   double r1,r2;
+   double r1,r2,r;
    double reqter=6378.14/UA*1e3,reqsol=696000./UA*1e3;
 	int cas;
 	double xgeo,ygeo,zgeo,vxgeo,vygeo,vzgeo;
+	double tsl,zlong,zlat,latitude,altitude;
    jjd=jj;
 
 	/* type d'astre (0=inconnu 1=comete 2=asteroide 3=planete 4=geocentrique) */
    if (elem.type!=4) {
 		return;
-   } else {
-      /*--- centre de revolution = Terre ---*/
-      xs=0.;ys=0.;zs=0.;
    }
 
    /*--- calcul de la parallaxe ---*/
    mc_paraldxyzeq(jjutc,longmpc,rhocosphip,rhosinphip,&dxeq,&dyeq,&dzeq);
 
-   /*--- coords du centre de revolution geo->topo ---*/
-   xs-=dxeq;
-   ys-=dyeq;
-   zs-=dzeq;
-
    /*--- astre a observer ---*/
-	/* equatorial coordinates at epoch=jj */
-	mc_norad_sgdp48(jjd,4,&elem,&xgeo,&ygeo,&zgeo,&vxgeo,&vygeo,&vzgeo);
+	/* equatorial coordinates at epoch=jjutc by definition of TLEs */
+	mc_norad_sgdp48(jjutc,sgp_method,&elem,&xgeo,&ygeo,&zgeo,&vxgeo,&vygeo,&vzgeo);
 	/* geo -> topo */
-   mc_he2ge(xgeo,ygeo,zgeo,xs,ys,zs,&x,&y,&z);
+   mc_he2ge(xgeo,ygeo,zgeo,-dxeq,-dyeq,-dzeq,&x,&y,&z);
    mc_xyz2add(x,y,z,asd,dec,delta);
 
    /* --- astre corrige de l'aberration de la lumiere ---*/
-   mc_aberpla(jjd,*delta,&jjda);
+   mc_aberpla(jjutc,*delta,&jjda);
 
 	/* equatorial coordinates at epoch=jj-timelight */
-	mc_norad_sgdp48(jjda,4,&elem,&xgeo,&ygeo,&zgeo,&vxgeo,&vygeo,&vzgeo);
+	mc_norad_sgdp48(jjda,sgp_method,&elem,&xgeo,&ygeo,&zgeo,&vxgeo,&vygeo,&vzgeo);
 	/* geo -> topo */
-   mc_he2ge(xgeo,ygeo,zgeo,xs,ys,zs,&x,&y,&z); /* topocentric at epoch */
+   mc_he2ge(xgeo,ygeo,zgeo,-dxeq,-dyeq,-dzeq,&x,&y,&z);
    mc_precxyz(jjd,x,y,z,equinoxe,&x,&y,&z); /* topocentric equatoriale J2000 */
    mc_xyz2add(x,y,z,asd,dec,delta);
+
+	/* --- calcul des coordonnees terrestre ou ca passe au zenith ---*/
+	r=sqrt(xgeo*xgeo+ygeo*ygeo+zgeo*zgeo);
+	zlat=asin(zgeo/r);
+	mc_rhophi2latalt(sin(zlat),cos(zlat),&latitude,&altitude);
+	zlat=latitude*(DR);
+	zlong=atan2(ygeo,xgeo);
+   mc_tsl(jjutc,0,&tsl);
+	zlong=fmod(4*(PI)+zlong-tsl,2*(PI));
+	*zenith_longmpc=zlong;
+	*zenith_latmpc=zlat;
 
    /* --- calculation of eclipses ---*/
 
    /*--- correction de la parallaxe topo -> geo ---*/
-	xaster=x+dxeq;
-	yaster=y+dyeq;
-	zaster=z+dzeq;
+	xaster=xgeo;
+	yaster=ygeo;
+	zaster=zgeo;
 
    /*--- observer -> geo ---*/
    x=-dxeq;
@@ -988,7 +992,6 @@ void mc_adelemap_sgp(double jj,double jjutc, double equinoxe, int astrometric, s
    mc_lbr2xyz(ls,bs,rs,&xs,&ys,&zs);
    mc_obliqmoy(jjd,&eps);
    mc_xyzec2eq(xs,ys,zs,eps,&xs,&ys,&zs); /* equatoriale a la date */
-   mc_precxyz(jjd,xs,ys,zs,equinoxe,&xs,&ys,&zs); /* equatoriale J2000 */
 	rs=sqrt(xs*xs+ys*ys+zs*zs);
 
    r1=sqrt((xaster-x)*(xaster-x)+(yaster-y)*(yaster-y)+(zaster-z)*(zaster-z));

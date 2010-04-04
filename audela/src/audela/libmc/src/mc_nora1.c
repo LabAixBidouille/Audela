@@ -156,6 +156,7 @@ void mc_norad_sgdp48(double jj,int sgp, struct elemorb *elem,double *xgeo,double
 	bstar=bstar/ae;
 	tsince=(jj-epoch)*24*60; // tsince expressed in minutes since epoch
 	//tsince=1440.;
+	//tsince=5100;
    epoch=elem->tle_epoch;
 	//method=MC_NORAD_SGP4;
 	iflag=1;
@@ -303,14 +304,14 @@ void mc_norad_sgdp48(double jj,int sgp, struct elemorb *elem,double *xgeo,double
 			s4=s;
 			qoms24=qoms2t;
 			perige=(aodp*(1.-eo)-ae)*xkmper;
-			if (perige >= 156.) {
-				s4=perige-78.;
-				if (perige > 98.) {
+			if(perige < 156) {
+				if(perige <= 98) {
+					s4 = 20;
 				} else {
-					s4=20.;	
+					s4 = perige-78;
 				}
-				qoms24=pow(((120.-s4)*ae/xkmper),4);
-				s4=s4/xkmper+ae;
+				qoms24 = pow((120-s4)*ae/xkmper,4);
+				s4 = s4/xkmper+ae;
 			}
 			pinvsq=1./(aodp*aodp*betao2*betao2);
 			tsi=1./(aodp-s4);

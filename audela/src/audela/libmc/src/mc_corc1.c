@@ -516,7 +516,6 @@ void mc_rhophi2latalt(double rhosinphip,double rhocosphip,double *latitude,doubl
 /* Latitude en degres decimaux.                                            */
 /* Altitude en metres.                                                     */
 /* Algo : Meeus "Astronomical Algorithms" p78                              */
-/* On impose ici une altitude=0. A completer...                            */
 /***************************************************************************/
 {
    double aa,ff,bb,lat,alt,phip,rho,phi0,u0,rhosinphip0,rhocosphip0,rho0;
@@ -551,6 +550,7 @@ void mc_rhophi2latalt(double rhosinphip,double rhocosphip,double *latitude,doubl
    *latitude=lat/(DR);
    *altitude=alt;
 }
+
 
 void mc_refraction(double h,int inout,double temperature,double pressure,double *refraction)
 /***************************************************************************/
