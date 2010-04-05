@@ -919,7 +919,7 @@ void mc_adelemap(double jj,double jjutc, double equinoxe, int astrometric, struc
 
 }
 
-void mc_adelemap_sgp(int sgp_method,double jj,double jjutc, double equinoxe, int astrometric, struct elemorb elem, double longmpc,double rhocosphip,double rhosinphip, int planete, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun,double *sunfraction,double *zenith_longmpc,double *zenith_latmpc)
+void mc_adelemap_sgp(int sgp_method,double jj,double jjutc, double equinoxe, int astrometric, struct elemorb elem, double longmpc,double rhocosphip,double rhosinphip, int planete, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun,double *sunfraction,double *zenith_longmpc,double *zenith_latmpc,double *azimuth, double *elevation, double *parallactic, double *hour_angle)
 /***************************************************************************/
 /* Calcul de l'asd, dec et distance apparentes d'un astre defini par ses  elements d'orbite GEOCENTRIQUES uniquement a jj donne.   */
 /***************************************************************************/
@@ -956,12 +956,18 @@ void mc_adelemap_sgp(int sgp_method,double jj,double jjutc, double equinoxe, int
    /* --- astre corrige de l'aberration de la lumiere ---*/
    mc_aberpla(jjutc,*delta,&jjda);
 
-	/* equatorial coordinates at epoch=jj-timelight */
+	/* equatorial coordinates at epoch=jjutc-timelight */
 	mc_norad_sgdp48(jjda,sgp_method,&elem,&xgeo,&ygeo,&zgeo,&vxgeo,&vygeo,&vzgeo);
 	/* geo -> topo */
    mc_he2ge(xgeo,ygeo,zgeo,-dxeq,-dyeq,-dzeq,&x,&y,&z);
-   mc_precxyz(jjd,x,y,z,equinoxe,&x,&y,&z); /* topocentric equatoriale J2000 */
    mc_xyz2add(x,y,z,asd,dec,delta);
+
+	/* --- local coordinates ---*/
+	mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
+	latitude*=(DR);
+   mc_ad2hd(jjutc,longmpc,*asd,hour_angle);
+   mc_hd2ah(*hour_angle,*dec,latitude,azimuth,elevation);
+   mc_hd2parallactic(*hour_angle,*dec,latitude,parallactic);
 
 	/* --- calcul des coordonnees terrestre ou ca passe au zenith ---*/
 	r=sqrt(xgeo*xgeo+ygeo*ygeo+zgeo*zgeo);
@@ -974,7 +980,20 @@ void mc_adelemap_sgp(int sgp_method,double jj,double jjutc, double equinoxe, int
 	*zenith_longmpc=zlong;
 	*zenith_latmpc=zlat;
 
-   /* --- calculation of eclipses ---*/
+	/* === J2000 astrometric coordinates ---*/
+   //mc_precxyz(jjd,x,y,z,equinoxe,&x,&y,&z); /* topocentric equatoriale J2000 */
+   //mc_xyz2add(x,y,z,asd,dec,delta);
+
+   /*--- correction de l'aberration annuelle ---*/
+	if (astrometric==0) {
+		mc_nutradec(jjd,*asd,*dec,asd,dec,1);
+		mc_aberration_annuelle(jjd,*asd,*dec,asd,dec,1);
+	}
+
+   /*--- correction de la precession ---*/
+   mc_precad(jjd,*asd,*dec,equinoxe,asd,dec); /* equatoriale J2000 */
+
+   /* === calculation of eclipses ---*/
 
    /*--- correction de la parallaxe topo -> geo ---*/
 	xaster=xgeo;
