@@ -2322,6 +2322,7 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
 	double reqter=6378.14*1e3;
 	int sgp_method=4;
 	double zlong,zlat;
+	double azimuth, elevation, parallactic, hour_angle;
 
    if(argc<4) {
       /*
@@ -2390,7 +2391,7 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
          mc_tle_decnext1(ftle,&elem,name,&valid);
          if (valid==1) {
             /* --- on lance le calcul ---*/
-            mc_adelemap_sgp(sgp_method,jdtt,jj,equinoxe,astrometric,elem,longmpc,rhocosphip,rhosinphip,0,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun,&sunfraction,&zlong,&zlat);
+            mc_adelemap_sgp(sgp_method,jdtt,jj,equinoxe,astrometric,elem,longmpc,rhocosphip,rhosinphip,0,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun,&sunfraction,&zlong,&zlat,&azimuth,&elevation,&parallactic,&hour_angle);
 				if (distmin>0) {
 					mc_sepangle(asd0,asd,dec0,dec,&sep,&posangle);
 					if (sep<distmin) {
@@ -2406,7 +2407,7 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
 						strcpy(sens,"E");
 					}
 					zlat/=(DR);
-					sprintf(sss,"{{{%20s} {%15s} {%15s}} %.15f %.15f %.15g %.15f %.15f %.4f {GPS %f %s %f 0} } ",elem.designation,elem.id_norad,elem.id_cospar,asd/(DR),dec/(DR),delta*(UA),elong/(DR),phase/(DR),sunfraction,zlong,sens,zlat);
+					sprintf(sss,"{{{%20s} {%15s} {%15s}} %.15f %.15f %.15g %.15f %.15f %.4f {GPS %f %s %f 0} %.15f %.15f %.15f %.15f} ",elem.designation,elem.id_norad,elem.id_cospar,asd/(DR),dec/(DR),delta*(UA),elong/(DR),phase/(DR),sunfraction,zlong,sens,zlat,azimuth/(DR), elevation/(DR), parallactic/(DR), hour_angle/(DR));
 					Tcl_DStringAppend(&dsptr,sss,-1);
 				}
          }
