@@ -10,7 +10,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_io.tcl,v 1.10 2010-02-28 14:40:49 bmauclaire Exp $
+# Mise a jour $Id: spc_io.tcl,v 1.11 2010-04-09 20:13:06 bmauclaire Exp $
 
 
 # Remarque (par Benoît) : il faut mettre remplacer toutes les variables textes par des variables caption(mauclaire,...)
@@ -2394,9 +2394,13 @@ proc spc_autofit2png { args } {
             set equipement [ lindex [ buf$audace(bufNo) getkwd "EQUIPMEN" ] 1 ]
             set equipement [ string trim $equipement " " ]
         } else {
-            set equipement  "Spectrographe reseau"
+            set equipement  "Spectrographe"
         }
 
+        #--- Détermination de l'équipement :
+        if { $telescope=="Telescope" && $equipement=="Spectrographe" && [ lsearch $listemotsclef "BSS_INST" ] !=-1 } {
+          set equipement [ lindex [ buf$audace(bufNo) getkwd "BSS_INST" ] 1 ]
+        }
 
         #--- Détermination de la date de prise de vue :
         if { [ lsearch $listemotsclef "DATE-OBS" ] !=-1 } {
@@ -2455,22 +2459,27 @@ proc spc_autofit2png { args } {
         set nom_objet [ suppr_accents $nom_objet ]
         set telescope [ suppr_accents $telescope ]
         set equipement [ suppr_accents $equipement ]
+        if { $telescope=="Telescope" && $equipement!="Spectrographe" } {
+           set matos "$equipement"
+        } else {
+           set matos "$telescope + $equipement"
+        }
 
 
         #--- Élaboration du titre du graphique :
         if { $dispersion == 0.0 } {
             if { $nombre_poses == 0 } {
-                set titre_graphique "$nom_objet - $ladate - $telescope + $equipement - $duree_totale s"
+                set titre_graphique "$nom_objet - $ladate - $matos - $duree_totale s"
             } else {
                 set duree_exposition [ expr int($duree_totale/$nombre_poses) ]
-                set titre_graphique "$nom_objet - $ladate - $telescope + $equipement - ${nombre_poses}x$duree_exposition s"
+                set titre_graphique "$nom_objet - $ladate - $matos - ${nombre_poses}x$duree_exposition s"
             }
         } else {
             if { $nombre_poses == 0 } {
-                set titre_graphique "$nom_objet - $ladate - $telescope + $equipement - $dispersion A/pixel - $duree_totale s"
+                set titre_graphique "$nom_objet - $ladate - $matos - $dispersion A/pixel - $duree_totale s"
             } else {
                 set duree_exposition [ expr int($duree_totale/$nombre_poses) ]
-                set titre_graphique "$nom_objet - $ladate - $telescope + $equipement - $dispersion A/pixel - ${nombre_poses}x$duree_exposition s"
+                set titre_graphique "$nom_objet - $ladate - $matos - $dispersion A/pixel - ${nombre_poses}x$duree_exposition s"
             }
         }
 

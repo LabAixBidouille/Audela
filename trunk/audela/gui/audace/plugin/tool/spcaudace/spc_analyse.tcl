@@ -1,7 +1,7 @@
 
 # Procédures d'analyse spectrale
 # source $audace(rep_scripts)/spcaudace/spc_analyse.tcl
-# Mise a jour $Id: spc_analyse.tcl,v 1.6 2009-12-19 09:53:39 bmauclaire Exp $
+# Mise a jour $Id: spc_analyse.tcl,v 1.7 2010-04-09 20:13:06 bmauclaire Exp $
 
 
 
@@ -915,6 +915,7 @@ proc spc_snr { args } {
        }
        if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
            set disp [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+           set crval1 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
        } else {
            set disp 1.
        }
@@ -942,7 +943,13 @@ proc spc_snr { args } {
        set S [ lindex [ lindex $listresults 0 ] 0 ]
        set xdeb [ lindex [ lindex $listresults 0 ] 2 ]
        set xfin [ lindex [ lindex $listresults 0 ] 3 ]
-       #::console::affiche_resultat "$xdeb ; $xfin ; $S\n"
+       set xmid [ expr round($xdeb+0.5*($xfin-$xdeb)) ]
+       if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
+         set lambda_mid [ spc_calpoly $xmid 1 $crval1 $disp 0 0 ]
+       } else {
+         set lambda_mid $xmid
+       }
+      #::console::affiche_resultat "$xdeb ; $xfin ; $S\n"
 
 
        #--- Calcul la déviation standard :
@@ -967,7 +974,7 @@ proc spc_snr { args } {
 
        #--- Affichage des résultats :
        file delete -force "$audace(rep_images)/${fichier}_crop$conf(extension,defaut)"
-       ::console::affiche_resultat "SNR=$S/$N=$SNR\n"
+       ::console::affiche_resultat "SNR=$S/$N=$SNR a la position $lambda_mid\n"
        return $SNR
 
    } else {

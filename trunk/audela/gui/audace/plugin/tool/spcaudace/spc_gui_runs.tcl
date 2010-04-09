@@ -1,12 +1,133 @@
 #*****************************************************************************#
 #                                                                             #
-# Boîtes graphiques TK de saisie des paramètres pour les focntoins Spcaudace  #
+# Boîtes graphiques TK de saisie des paramètres pour les fonctions Spcaudace  #
 #                                                                             #
 #*****************************************************************************#
 # Chargement : source $audace(rep_scripts)/spcaudace/spc_gui_runs.tcl
 
-# Mise a jour $Id: spc_gui_runs.tcl,v 1.2 2009-12-19 09:54:34 bmauclaire Exp $
+# Mise a jour $Id: spc_gui_runs.tcl,v 1.3 2010-04-09 20:13:06 bmauclaire Exp $
 
+
+########################################################################
+# Interface pour l'appel de la fonction spc_scar
+#
+# Auteurs : Benjamin Mauclaire
+# Date de création : 23-03-2010
+# Date de modification : 23-03-2010
+########################################################################
+
+proc spc_scar_w {} {
+
+   global audace
+
+   spc_scar
+}
+#**********************************************************************#
+
+
+########################################################################
+# Interface pour l'appel de la fonction spc_ajustplanck
+#
+# Auteurs : Benjamin Mauclaire
+# Date de création : 23-03-2010
+# Date de modification : 23-03-2010
+########################################################################
+
+proc spc_ajustplanck_w {} {
+
+   global audace
+
+   spc_ajustplanck
+}
+#**********************************************************************#
+
+
+########################################################################
+# Interface pour l'appel de la fonction spc_offset
+#
+# Auteurs : Benjamin Mauclaire
+# Date de création : 23-03-2010
+# Date de modification : 23-03-2010
+########################################################################
+
+proc spc_offset_w {} {
+
+   global audace
+
+   spc_offset
+}
+#**********************************************************************#
+
+
+########################################################################
+# Interface pour l'appel de la fonction spc_sommeadd_w
+#
+# Auteurs : Benjamin Mauclaire
+# Date de création : 23-03-2010
+# Date de modification : 23-03-2010
+########################################################################
+
+proc spc_sommeadd_w {} {
+
+   global audace spcaudace
+
+   set spcaudace(meth_somme) "addi"
+   ::console::affiche_prompt "Addition des spectres par une somme simple activée.\n"
+}
+#**********************************************************************#
+
+
+########################################################################
+# Interface pour l'appel de la fonction spc_sommekappa_w
+#
+# Auteurs : Benjamin Mauclaire
+# Date de création : 23-03-2010
+# Date de modification : 23-03-2010
+########################################################################
+
+proc spc_sommekappa_w {} {
+
+   global audace spcaudace
+
+   set spcaudace(meth_somme) "sigmakappa"
+   ::console::affiche_prompt "Addition des spectres par une somme kappa-sigma activée.\n"
+}
+#**********************************************************************#
+
+
+########################################################################
+# Interface pour l'appel de la fonction spc_multc
+#
+# Auteurs : Benjamin Mauclaire
+# Date de création : 23-03-2010
+# Date de modification : 23-03-2010
+########################################################################
+
+proc spc_multc_w {} {
+
+   global audace
+
+   spc_multc
+}
+#**********************************************************************#
+
+
+
+########################################################################
+# Interface pour l'appel de la fonction spc_ajustpoints
+#
+# Auteurs : Benjamin Mauclaire
+# Date de création : 23-03-2010
+# Date de modification : 23-03-2010
+########################################################################
+
+proc spc_ajustpoints_w {} {
+
+   global audace
+
+   spc_ajustpoints
+}
+#**********************************************************************#
 
 
 ########################################################################
@@ -19,10 +140,12 @@
 
 proc spc_pretraitementfc_w {} {
 
-    global audace
+   global audace
 
    ::confVisu::selectTool $audace(visuNo) ::pretrfc
 }
+#**********************************************************************#
+
 
 
 ########################################################################

@@ -3,7 +3,7 @@
 # Modification : 08/12/2005
 #
 
-# Mise a jour $Id: spc_cap.tcl,v 1.4 2009-12-19 09:54:34 bmauclaire Exp $
+# Mise a jour $Id: spc_cap.tcl,v 1.5 2010-04-09 20:13:06 bmauclaire Exp $
 
 
 global caption langage
@@ -30,7 +30,7 @@ global caption langage
    set caption(spcaudace,gui,spc_file_space)                     "----------------------------------------------"
    set caption(spcaudace,gui,loadspcfit)                         "Load a FITS lines profil"
    set caption(spcaudace,gui,loadspctxt)                         "Load a DAT lines profile"
-   set caption(spcaudace,gui,spc_load)                            "Load a FITS or DAT lines profil"
+   set caption(spcaudace,gui,spc_load)                           "Load a FITS or DAT lines profil"
    set caption(spcaudace,gui,gloadmore)                          "Load more FITS lines profile"
    set caption(spcaudace,gui,gdelete)                            "Erase one lines profile ploted"
    set caption(spcaudace,gui,gdeleteall)                         "Erase all lines profile ploted"
@@ -40,6 +40,8 @@ global caption langage
    set caption(spcaudace,gui,spc_uves)                           "Go to UVES web data base"
    set caption(spcaudace,gui,print_on)                           "Print with "
    set caption(spcaudace,gui,quitspc)                            "Exit SpcAud'ACE's window"
+   set caption(spcaudace,gui,spc_sommeadd_w)                     "Set summ to simple summ"
+   set caption(spcaudace,gui,spc_sommekappa_w)                   "Set summ to sigma-kappa summ"
 
    #--- Menu Conversions ---#
    set caption(spcaudace,gui,conv)                               "Conversions"
@@ -88,6 +90,10 @@ global caption langage
    set caption(spcaudace,gui,spc_calibre_space)                  "---------------------------------------------------------------------------"
    set caption(spcaudace,gui,spc_norma_w)                        "Normalisation by continuum extraction"
    set caption(spcaudace,gui,spc_rescalecont_w)                  "Rescaling continuum to value 1"
+   set caption(spcaudace,gui,spc_scar_w)                         "Remove cosmics by scaring zones"
+   set caption(spcaudace,gui,spc_offset_w)                       "Add an offset value to intensities"
+   set caption(spcaudace,gui,spc_multc_w)                        "Multiply intensities by a number"
+   set caption(spcaudace,gui,spc_ajustpoints_w)                  "Fitting continuum with selected points"
 
 
    #--- Menu Mesures ---#
@@ -154,6 +160,7 @@ global caption langage
    set caption(spcaudace,gui,spc_npne_w)                         "Electronic density of a nebula"
    set caption(spcaudace,gui,spc_normahbeta)                     "Normalisation with H-beta line"
    set caption(spcaudace,gui,spc_spectrum)                       "SPECTRUM: Launch synthetic spectra software"
+   set caption(spcaudace,gui,spc_ajustplanck_w)                  "Compute stellar temperature by Planck fitting"
 
    #--- Menu Aide ---#
    set caption(spcaudace,gui,spc_aide)                           "Help"
@@ -177,7 +184,7 @@ if { [string compare $langage "french"] == "0" } {
      #--- Divers ---#
      set caption(spcaudace,gui,pixel)                         "Position (pixel)"
      set caption(spcaudace,gui,angstrom)                      "Angström"
-     set caption(spcaudace,gui,angstroms)                     "Longueur d'onde (Angström)"
+     set caption(spcaudace,gui,angstroms)                     "Longueur d'onde (Angstrom)"
      set caption(spcaudace,gui,intensity)                     "Intensité (ADU)"
      set caption(spcaudace,gui,adu)                           "ADU"
      set caption(spcaudace,gui,spc_profile)                   "profil SPC"
@@ -201,6 +208,8 @@ if { [string compare $langage "french"] == "0" } {
      set caption(spcaudace,gui,spc_uves)                      "Accès au site de la base UVES"
      set caption(spcaudace,gui,print_on)                      "Imprimer avec "
      set caption(spcaudace,gui,quitspc)                       "Quitter la fenêtre SpcAud'ACE"
+     set caption(spcaudace,gui,spc_sommeadd_w)                "Paramètre l'addition de spectres en somme simple"
+     set caption(spcaudace,gui,spc_sommekappa_w)              "Paramètre l'addition de spectres en somme kappa-sigma"
 
 
      #--- Menu Conversions ---#
@@ -247,6 +256,10 @@ if { [string compare $langage "french"] == "0" } {
      set caption(spcaudace,gui,spc_calibre_space)             "---------------------------------------------------------------------------"
      set caption(spcaudace,gui,spc_norma_w)                   "Normalisation par extraction du continuum"
      set caption(spcaudace,gui,spc_rescalecont_w)             "Mise à l'échelle à 1 du continuum"
+     set caption(spcaudace,gui,spc_scar_w)                    "Retrait des cosmics par cicatrisation de zones"
+     set caption(spcaudace,gui,spc_offset_w)                  "Ajoute une valeur aux intensités"
+     set caption(spcaudace,gui,spc_multc_w)                   "Multiplie les intensités par un nombre"
+     set caption(spcaudace,gui,spc_ajustpoints_w)             "Ajustement du continuum avec des points choisis"
 
 
      #--- Menu Mesures ---#
@@ -314,6 +327,8 @@ if { [string compare $langage "french"] == "0" } {
      set caption(spcaudace,gui,spc_ewdirw)                    "Extraction de EW avec des infos dans un fichier d'une série"
      set caption(spcaudace,gui,spc_normahbeta)                "Normalisation par rapport à l'intensité de la raie H-beta"
      set caption(spcaudace,gui,spc_spectrum)                  "SPECTRUM : Synthèse de spectres"
+     set caption(spcaudace,gui,spc_ajustplanck_w)             "Détermination de la température stellaire par ajustement de Planck"
+
 
      #--- Menu Aide ---#
      set caption(spcaudace,gui,spc_aide)                      "Aide"
