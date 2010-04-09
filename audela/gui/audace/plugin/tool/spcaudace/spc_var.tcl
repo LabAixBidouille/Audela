@@ -3,7 +3,7 @@
 #
 ####################################################################
 
-# Mise a jour $Id: spc_var.tcl,v 1.18 2010-02-28 14:54:11 bmauclaire Exp $
+# Mise a jour $Id: spc_var.tcl,v 1.19 2010-04-09 20:13:06 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -12,7 +12,7 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(version) "1.5.8 - 24/02/2010"
+set spcaudace(version) "1.5.9 - 22/03/2010"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
 
@@ -105,8 +105,8 @@ set spcaudace(methsky) "med"
 set spcaudace(methbin) "rober"
 
 
-#--- Options prédéfinies (par defaut add, options=add, moy, med, sigmakappa) :
-set spcaudace(meth_somme) "add"
+#--- Options prédéfinies (par defaut addi, options=add, moy, med, sigmakappa) :
+set spcaudace(meth_somme) "addi"
 
 
 #--- Valeur de paramètres des euristhiques algorithmiques :

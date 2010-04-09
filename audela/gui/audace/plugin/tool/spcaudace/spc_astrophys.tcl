@@ -1,7 +1,7 @@
 
 # Procédures d'exploitation astrophysique des spectres
 
-# Mise a jour $Id: spc_astrophys.tcl,v 1.9 2010-02-28 14:36:48 bmauclaire Exp $
+# Mise a jour $Id: spc_astrophys.tcl,v 1.10 2010-04-09 20:13:06 bmauclaire Exp $
 
 
 
@@ -743,7 +743,7 @@ proc spc_ewcourbe { args } {
    set fileliste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails *$conf(extension,defaut) ] ]
    
    foreach fichier $fileliste {
-      ::console::affiche_resultat "\nTraitement de $fichier\n"
+      ::console::affiche_prompt "\nTraitement de $fichier...\n"
       buf$audace(bufNo) load "$audace(rep_images)/$fichier"
       #set date [ lindex [buf$audace(bufNo) getkwd "MJD-OBS"] 1 ]
       set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
@@ -762,13 +762,14 @@ proc spc_ewcourbe { args } {
       }
       lappend list_ew [ lindex $results 0 ]
       lappend list_sigmaew [ lindex $results 1 ]
+      lappend list_snr [ lindex $results 2 ]
    }
    
    #--- Création du fichier de données
    # ::console::affiche_resultat "$ldates \n $list_ew\n"
    set file_id1 [open "$audace(rep_images)/${ewfile}.dat" w+]
-   foreach sdate $ldates ew $list_ew sew $list_sigmaew {
-      puts $file_id1 "$sdate\t$ew\t$sew"
+   foreach sdate $ldates ew $list_ew sew $list_sigmaew snr $list_snr {
+      puts $file_id1 "$sdate\t$ew\t$sew\t$snr"
    }
    close $file_id1
    
@@ -1432,11 +1433,25 @@ proc spc_autoew3 { args } {
          ::console::affiche_erreur "Usage: spc_autoew3 nom_profil_raies lambda_raie/lambda_deb lambda_fin\n"
       }
 
+      #--- Normalisation :
       set filename_norma [ spc_autonorma $filename ]
+
+      #--- Determine la date en jours Juliens :
+      buf$audace(bufNo) load "$audace(rep_images)/$filename"
+      set listemotsclef [ buf$audace(bufNo) getkwds ]
+      if { [ lsearch $listemotsclef "MID-JD" ] !=-1 } {
+         set jd [ lindex [ buf$audace(bufNo) getkwd "MID-JD" ] 1 ]
+      } else {
+         set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
+         set jd [ mc_date2jd $ladate ]
+      }
+
+
       if { $nb_args == 2 } {
-         #--- Extraction des valeurs :
-         buf$audace(bufNo) load "$audace(rep_images)/$filename"
+         #--- Extraction des mots clef :
          set cdelt1 [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+
+         #--- Caleur moyenne du continuum :
          set icont [ spc_icontinuum $filename_norma ]
          #set icont [ spc_icontinuum ${filename}_conti $lambda_raie ]
 
@@ -1479,7 +1494,7 @@ proc spc_autoew3 { args } {
       set rapport [ expr $ew/$deltal ]
       if { $rapport>=1.0 } {
          set deltal [ expr $ew+0.1 ]
-         ::console::affiche_resultat "Attention : largeur d'intégration<EW !\n"
+         ::console::affiche_prompt "Attention : largeur d'intégration<EW !\n"
       }
       if { $snr != 0 } {
          set sigma [ expr sqrt(1+1/(1-$ew/$deltal))*(($deltal-$ew)/$snr) ]
@@ -1511,7 +1526,7 @@ proc spc_autoew3 { args } {
       ::console::affiche_resultat "SNR=$snr_short.\n\n"
       #set resultats [ list $ew $sigma_ew ]
       #return $ew
-      set results [ list $ew_short $sigma_ew $snr_short "EW($delta_l=$l_deb-$l_fin)" ]
+      set results [ list $ew_short $sigma_ew $snr_short "EW($delta_l=$l_deb-$l_fin)" $jd ]
       return $results
    } else {
       ::console::affiche_erreur "Usage: spc_autoew3 nom_profil_raies lambda_raie/lambda_deb lambda_fin\n"

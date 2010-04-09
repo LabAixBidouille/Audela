@@ -1,7 +1,7 @@
 
 # Procédures liées à 'linterface graphique et au tracé des profils de raies.
 
-# Mise a jour $Id: spc_gui.tcl,v 1.7 2009-12-19 09:53:39 bmauclaire Exp $
+# Mise a jour $Id: spc_gui.tcl,v 1.8 2010-04-09 20:13:06 bmauclaire Exp $
 
 
 
@@ -68,6 +68,9 @@ proc spc_winini { } {
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_bess) -command "spc_bess" -underline 0
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_arasbeam) -command "spc_arasbeam" -underline 0
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_uves) -command "spc_uves" -underline 0
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_file_space)
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_sommeadd_w) -command "spc_sommeadd_w" -underline 0
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_sommekappa_w) -command "spc_sommekappa_w" -underline 0
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_file_space)
       if {$nbprinters>0} {
          for {set k 0} {$k<$nbprinters} {incr k} {
@@ -154,9 +157,14 @@ proc spc_winini { } {
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_calibre_space)
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_dry) -command "spc_dry" -underline 0
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_extractcont) -command "spc_extractcont" -underline 0
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_ajustpoints_w) -command "spc_ajustpoints_w" -underline 0
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_calibre_space)
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_norma_w) -command "spc_autonorma" -underline 0
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_rescalecont_w) -command "spc_rescalecont" -underline 0
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_calibre_space)
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_scar_w) -command "spc_scar_w" -underline 0
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_offset_w) -command "spc_offset_w" -underline 0
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_multc_w) -command "spc_multc_w" -underline 0
 
       .spc configure -menu .spc.menuBar
       #-- Raccourcis calviers :
@@ -241,6 +249,7 @@ proc spc_winini { } {
       #bind .spc <Control-g-a> ::param_spc_audace_geom2rinstrum::run
       #bind .spc <Control-7> ::spcmfc::Demarragespbmfc
 
+
       #--- Menu Astrophysique ---#
       .spc.menuBar add cascade -menu .spc.menuBar.analyse -label $caption(spcaudace,gui,spc_analyse) -underline 0 -background $colorspc(backmenu)
       menu .spc.menuBar.analyse -tearoff 0 -background $colorspc(backmenu)
@@ -260,6 +269,7 @@ proc spc_winini { } {
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_ewcourbe_w) -command "spc_ewcourbe" -underline 0
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_ewdirw) -command "spc_ewdirw" -underline 0
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_file_space)
+      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_ajustplanck_w) -command "spc_ajustplanck_w" -underline 0
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_te) -command "spc_te" -underline 0 -accelerator "Ctrl-T"
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_ne) -command "spc_ne" -underline 0 -accelerator "Ctrl-N-E"
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_npte_w) -command "spc_npte" -underline 0

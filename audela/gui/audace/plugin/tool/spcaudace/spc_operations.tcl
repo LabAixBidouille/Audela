@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.24 2010-03-20 21:21:50 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.25 2010-04-09 20:13:06 bmauclaire Exp $
 
 
 
@@ -1317,7 +1317,7 @@ proc spc_somme { args } {
          set nom_generique [ file tail [ file rootname [ lindex $args 0 ] ] ]
          set methsomme [ lindex $args 1 ]
       } else {
-         ::console::affiche_erreur "Usage: spc_somme nom_generique_fichier ?méthode somme (add/moy)?\n\n"
+         ::console::affiche_erreur "Usage: spc_somme nom_generique_fichier ?méthode somme (addi/moy/sigmakappa/med)?\n\n"
          return ""
       }
 
@@ -1348,7 +1348,7 @@ proc spc_somme { args } {
        #--- Somme :
        ::console::affiche_resultat "Somme de $nb_file images...\n"
        renumerote "$nom_generique"
-      if { $methsomme == "add" } {
+      if { $methsomme == "addi" } {
          sadd "$nom_generique" "${nom_generique}-s$nb_file" $nb_file
          # in out number first_index "bitpix=32"
       } elseif { $methsomme == "moy" } {
@@ -1400,7 +1400,7 @@ proc spc_somme { args } {
        ::console::affiche_resultat "Somme $methsomme sauvées sous ${nom_generique}-s$nb_file\n"
        return "${nom_generique}-s$nb_file"
    } else {
-       ::console::affiche_erreur "Usage: spc_somme nom_generique_fichier ?méthode somme (add/moy/sigmakappa/med)?\n\n"
+       ::console::affiche_erreur "Usage: spc_somme nom_generique_fichier ?méthode somme (addi/moy/sigmakappa/med)?\n\n"
    }
 }
 #-----------------------------------------------------------------------------#
