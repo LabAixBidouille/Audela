@@ -3,12 +3,14 @@
 # Description : Scripts pour un usage aise des fonctions d'Aud'ACE
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
 #
-# Mise a jour $Id: mauclaire.tcl,v 1.28 2010-01-24 09:43:59 robertdelmas Exp $
+# Mise a jour $Id: mauclaire.tcl,v 1.29 2010-04-09 17:50:53 bmauclaire Exp $
 #
 
 #
 ##--------------------- Liste des fonctions -----------------------------------#
 #
+# bm_mkdir               : creation d'un repertoire
+# bm_plot                : Trace un graphique simple avec plotxy a partir de 2 listes de valeurs
 # bm_addmotcleftxt       : Ajoute et initialise un mot clef et sa valeur
 # bm_autoflat            : Trouve le temps de pose optimal pour faire un flat d'une intensite moyenne donnee
 # bm_cleanfit            : Remet en conformite les caracteres des mots clefs du header
@@ -44,6 +46,61 @@
 # bm_sphot               : Extrait le contenu d'un mot clef d'une serie de fichiers
 # bm_zoomima             : Zoom de l'image ou d'une partie selectionnee a la souris de l'image chargee
 #-----------------------------------------------------------------------------#
+
+
+####################################################################
+# Cree une presentation graphique a partir de 2 listes abscisses eet ordonnees
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 2010-01-26
+# Date modification : 2010-01-262009-10-06
+# Arguments : liste_abscisses liste_ordonnees
+####################################################################
+
+proc bm_plot { args } {
+    global audace conf
+
+    set nb_args [ llength $args ]
+    if { $nb_args == 2 } {
+       set abscisses [  lindex $args 0 ]
+       set ordonnees [ lindex $args 1 ]
+
+       ::plotxy::clf
+       ::plotxy::hold on
+       ::plotxy::plot $abscisses $ordonnees ob 0
+       ::plotxy::plotbackground #FFFFFF
+       ::plotxy::xlabel "x"
+       ::plotxy::ylabel "y"
+       ::plotxy::title "Représentation graphique des données"
+       #return ${spectre}_off
+    } else {
+       ::console::affiche_erreur "Usage : bm_plot liste_abscisses liste_ordonnees\n\n"
+    }
+}
+#*****************************************************************#
+
+
+####################################################################
+# Compresse le repertoire image de la nuit et l'envoie par ftp sur Atlantis
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 07-04-2008
+# Date modification : 07-04-2008
+# Arguments : nom du repertoire des images de la nuit
+####################################################################
+
+proc bm_mkdir { args } {
+
+    global audace conf
+    if { [ llength $args ] == 1 } {
+	set lerep [ lindex $args 0 ]
+	file mkdir "$audace(rep_images)/$lerep"
+	::console::affiche_resultat "Répertoire $audace(rep_images)/$lerep crée.\n"
+    } else {
+	::console::affiche_erreur "Usage: bm_mkdir nom_repertoire\n"
+    }
+}
+#**********************************************************************************#
 
 
 
