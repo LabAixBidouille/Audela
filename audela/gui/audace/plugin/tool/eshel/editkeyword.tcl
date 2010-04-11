@@ -2,7 +2,7 @@
 # Fichier : eshel.tcl
 # Description : fenetre saisie des mots clefs
 # Auteurs : Michel Pujol
-# Mise a jour $Id: editkeyword.tcl,v 1.1 2009-11-07 08:13:07 michelpujol Exp $
+# Mise a jour $Id: editkeyword.tcl,v 1.2 2010-04-11 13:24:25 michelpujol Exp $
 #
 
 ################################################################
@@ -164,7 +164,7 @@ proc ::eshel::editkeyword::fillConfigPage { frm visuNo } {
          set keywordValue [$private(tkTable) cellcget $fileIndex,$keywordName -text]
          switch $keywordName {
             DATE-OBS {
-               #--- j'utilise DATE-OBS comme identifiant de la série
+               #--- j'utilise DATE-OBS comme identifiant de la sï¿½rie
                if { $private(selected,SERIESID) == "" } {
                   #--- je prends la premiere valeur de DATE-OBS renceontree
                   set private(selected,SERIESID) $keywordValue

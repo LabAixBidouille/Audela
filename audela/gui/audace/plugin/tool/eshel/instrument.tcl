@@ -2,7 +2,7 @@
 # Fichier : instrument.tcl
 # Description : commande des instruments de l'outil eShel
 # Auteur : Michel PUJOL
-# Mise a jour $Id: instrument.tcl,v 1.1 2009-11-07 08:13:07 michelpujol Exp $
+# Mise a jour $Id: instrument.tcl,v 1.2 2010-04-11 13:24:25 michelpujol Exp $
 #
 
 namespace eval ::eshel::instrument {
@@ -136,6 +136,7 @@ proc ::eshel::instrument::setCurrentConfig { } {
 #  thar,bit
 #  cameraNamespace
 #  maxOrder
+#  flatfieldEnabled
 #  responseOption
 #  responseFileName
 #
@@ -380,7 +381,7 @@ proc ::eshel::instrument::getKeyword { hFile keywordName} {
       set keywords [$hFile get keyword $keywordName]
    }]
    if { $catchResult !=0 } {
-      #--- je transmets l'erreur en ajoutant le nom du mot clé
+      #--- je transmets l'erreur en ajoutant le nom du mot clï¿½
       error "keyword $keywordName not found\n$::errorInfo"
    }
 

@@ -1,6 +1,6 @@
 #
 # Fichier : eshel.cap
-# Mise a jour $Id: eshel.cap,v 1.4 2009-12-12 09:35:12 robertdelmas Exp $
+# Mise a jour $Id: eshel.cap,v 1.5 2010-04-11 13:24:25 michelpujol Exp $
 #
 
 #=========================================================================
@@ -96,9 +96,11 @@ set caption(eshel,instrument,configAlreadyExist)             "Configuration \"%s
 set caption(eshel,instrument,exportConfigTitle)              "Export a configuration"
 
 set caption(eshel,instrument,spectrograph)                   "Spectrograph"
+set caption(eshel,instrument,spectrograph,type)              "Echelle type"
 set caption(eshel,instrument,spectrograph,name)              "Name"
-set caption(eshel,instrument,spectrograph,alpha)             "Input angle (degrees)"
-set caption(eshel,instrument,spectrograph,gamma)             "Shift angle (degrees)"
+set caption(eshel,instrument,spectrograph,alpha)             "Incidence angle alpha(degrees)"
+set caption(eshel,instrument,spectrograph,beta)              "Diffraction angle beta (degrees)"
+set caption(eshel,instrument,spectrograph,gamma)             "Shift angle gamma (degrees)"
 set caption(eshel,instrument,spectrograph,grating)           "Grating (lines/mm)"
 set caption(eshel,instrument,spectrograph,focale)            "Obj Focal (mm)"
 set caption(eshel,instrument,spectrograph,command)           "Calibration lamp & Fiber Injection Unit command"
@@ -182,6 +184,7 @@ set caption(eshel,instrument,reference,selectAction)         "Please select anot
 set caption(eshel,instrument,reference,confirmDelete)        "Delete reference"
 
 set caption(eshel,process,title)                             "Processing setup"
+set caption(eshel,instrument,process,flatFieldEnabled)       "Use 2D flat field"
 set caption(eshel,process,manualCommand)                     "Manual command"
 set caption(eshel,process,generateRoadmap)                   "Generate processing roadmap"
 set caption(eshel,process,generateAndStart)                  "Generate and start processing"
@@ -303,9 +306,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,exportConfigTitle)           "Exporter une configuration"
 
    set caption(eshel,instrument,spectrograph)                "Spectrographe"
+   set caption(eshel,instrument,spectrograph,type)           "Type"
    set caption(eshel,instrument,spectrograph,name)           "Nom"
-   set caption(eshel,instrument,spectrograph,alpha)          "Angle d'incidence (degrés)"
-   set caption(eshel,instrument,spectrograph,gamma)          "Angle de déport (degrés)"
+   set caption(eshel,instrument,spectrograph,alpha)          "Angle alpha d'incidence (degrés)"
+   set caption(eshel,instrument,spectrograph,beta)           "Angle beta de diffraction (degrés)"
+   set caption(eshel,instrument,spectrograph,gamma)          "Angle gamma de déport (degrés)"
    set caption(eshel,instrument,spectrograph,grating)        "Résolution du réseau (traits/mm)"
    set caption(eshel,instrument,spectrograph,focale)         "Focale (mm)"
    set caption(eshel,instrument,spectrograph,command)        "Commande de la bonnette et des lampes"
@@ -357,6 +362,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,process,slant)               "Slant"
 
    set caption(eshel,instrument,objectProcess)               "Traitement objet"
+   set caption(eshel,instrument,process,flatFieldEnabled)    "Utiliser un flat field 2D"
    set caption(eshel,instrument,process,response,title)      "Réponse instrumentale"
    set caption(eshel,instrument,process,response,manual)     "Sélection manuelle"
    set caption(eshel,instrument,process,response,auto)       "Sélection automatique"
