@@ -969,7 +969,7 @@ int mctcl_decode_topo(Tcl_Interp *interp, char *argv0,double *longmpc, double *r
    double longitude,latitude,altitude;
 
    code=Tcl_SplitList(interp,argv0,&argcc,&argvv);
-   if (code==TCL_OK) {
+   if (code==TCL_OK && argcc > 0 ) {
 	  /* decode le premier element */
 	  strcpy(name,argvv[0]);
 	  mc_strupr(name,name);
