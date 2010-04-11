@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.59 2010-02-21 18:31:34 michelpujol Exp $
+# Mise a jour $Id: conftel.tcl,v 1.60 2010-04-11 13:11:13 michelpujol Exp $
 #
 
 namespace eval ::confTel {
@@ -74,8 +74,8 @@ proc ::confTel::run { } {
    set loadModelError [catch {
       if { $widget(model,fileName) != "" } {
          set result [loadModel  $conf(telescope,model,fileName)]
-         set widget(model,name) [lindex $result 1]
-         set widget(model,date) [lindex $result 2]
+         set widget(model,name) [lindex $result 0]
+         set widget(model,date) [lindex $result 1]
       }
    }]
 
@@ -447,11 +447,14 @@ proc ::confTel::configureMonture { } {
       #--- Je configure le modèle de pointage
       set loadModelError [catch {
          if { $conf(telescope,model,enabled) == 1} {
+            tel$private(telNo) home $::conf(posobs,observateur,gps)
+            tel$private(telNo) home name $::conf(posobs,nom_observatoire)
+
             #--- je charge le modele
             set result [loadModel  $conf(telescope,model,fileName) ]
-            set modelName [lindex $result 1]
-            set modelSymbols [lindex $result 3]
-            set modelCoeffficients [lindex $result 4]
+            set modelName [lindex $result 0]
+            set modelSymbols [lindex $result 4]
+            set modelCoeffficients [lindex $result 5]
             set modelPressure 101325
             set modelTemperature 290
             #--- j'active le modele de pointage
@@ -467,8 +470,8 @@ proc ::confTel::configureMonture { } {
        if { $loadModelError != 0 } {
           #--- je signale que le modèle n'est pas chargé
           ::tkutil::displayErrorInfo $::caption(conftel,config)
-          #--- je supprime le telescope
-          ::$private(mountName)::stop
+          #--- je continue sans le modele
+          tel$private(telNo) radec model -enabled 0
        }
 
 
@@ -732,8 +735,8 @@ proc ::confTel::selectModel { } {
           if { $fileName != "" } {
              set result [loadModel  $fileName ]
              set widget(model,fileName) $fileName
-             set widget(model,name) [lindex $result 1]
-             set widget(model,date) [lindex $result 2]
+             set widget(model,name) [lindex $result 0]
+             set widget(model,date) [lindex $result 1]
           }
        }]
 
@@ -772,39 +775,173 @@ proc ::confTel::getModelList { } {
 #   ::confTel::loadModel  $::audace(rep_plugin)/tool/modpoi/model_modpoi/test-juin-2009_synthese_17�toiles.txt
 # @param fileName  nom du fichier
 # @return liste contenant les informations du modele
-#    * result[0] fileName
-#    * result[1] name
-#    * result[2] date
-#    * result[3] symbols
-#    * result[4] coefficents
+#    * result[0] name
+#    * result[1] date
+#    * result[2] comment
+#    * result[3] starList
+#    * result[4] symbols
+#    * result[5] coefficents
+#    * result[6] chisquare
+#    * result[7] covars
+#    * result[8] refraction
 #------------------------------------------------------------
 proc ::confTel::loadModel { fileName } {
 
-   set catchResult [catch {
-      set hFile [ open $fileName r ]
-      set data [read $hFile]
-      close $hFile
-      set dataLen [llength $data ]
-      if { $dataLen == 3 } {
-         lappend $data "0"
-      } elseif  { $dataLen == 4 } {
-         #--- rien a faire
+   ###set catchResult [catch {
+   ###   set hFile [ open $fileName r ]
+   ###   set data [read $hFile]
+   ###   close $hFile
+   ###   set dataLen [llength $data ]
+   ###   if { $dataLen == 3 } {
+   ###      lappend $data "0"
+   ###   } elseif  { $dataLen == 4 } {
+   ###      #--- rien a faire
+   ###
+   ###   } else {
+   ###      error "::confTel::loadModel error data length=$dataLen . Must be 3 or 4"
+   ###   }
+   ###   set name [file tail $fileName]
+   ###   set date [clock format [file mtime $fileName] -format "%d-%m-%Y %H:%M:%S" -timezone :localtime ]
+   ###   set symbols {IH ID NP CH ME MA FO HF DAF TF}
+   ###   set coefficients [lindex $data 0]
+   ###   set chisquare    [lindex $data 1]
+   ###   set covars       [lindex $data 2]
+   ###}]
+   ###if { $catchResult == 1 } {
+   ###   #--- je transmet l'erreur
+   ###   error $::errorInfo
+   ###}
+   ###
+   ###return [list $fileName $name $date $symbols $coefficients $chisquare $covars]
+
+
+   package require dom
+
+   #--- je charge les donnees du modele de pointage
+   set modelName    ""
+   set modelDate    ""
+   set modelComment ""
+   set starList ""
+   set symbols ""
+   set coefficients ""
+   set covars ""
+   set chisquare ""
+   set refraction 0
+
+   #--- je charge le fichier existant
+   set hfile [open $fileName r]
+   set data [read $hfile]
+   close $hfile
+   #--- je parse les données lues
+   set catchError [ catch {
+      set modelDom [::dom::tcl::parse $data]
+      set modelElement [::dom::tcl::document cget $modelDom -documentElement]
+      #--- je recupere les attributs du modele
+      set modelName    [file tail [file rootname $fileName]]
+      set modelVersion [::dom::element getAttribute $modelElement "VERSION" ]
+      set modelDate    [::dom::element getAttribute $modelElement "UT_DATE" ]
+      set modelComment [::dom::element getAttribute $modelElement "COMMENT" ]
+
+      #--- je recupere la liste des etoiles
+      set starsNode [lindex [set [::dom::element getElementsByTagName $modelElement "STARS" ]] 0]
+       if { $starsNode != "" } {
+         foreach starNode [set [::dom::element getElementsByTagName $starsNode STAR ]] {
+            set star ""
+            lappend star [::dom::element getAttribute $starNode "NAME"]
+            lappend star [::dom::element getAttribute $starNode "DATE"]
+            lappend star [::dom::element getAttribute $starNode "RA_CAL"]
+            lappend star [::dom::element getAttribute $starNode "DE_CAL"]
+            lappend star [::dom::element getAttribute $starNode "RA_DELTA"]
+            lappend star [::dom::element getAttribute $starNode "DE_DELTA"]
+            lappend star [::dom::element getAttribute $starNode "HA_CAL"]
+            #--- j'ajoute l'etoile dans la liste des etoiles
+            lappend starList $star
+         }
+      }
+
+      set coeffsNode [lindex [set [::dom::element getElementsByTagName $modelElement "COEFFICIENTS" ]] 0]
+      if { $coeffsNode != "" } {
+         foreach coeffNode [set [::dom::element getElementsByTagName $coeffsNode COEFFICIENT ]] {
+            lappend symbols [::dom::element getAttribute $coeffNode "SYMBOL"]
+            lappend coefficients [::dom::element getAttribute $coeffNode "VALUE"]
+            lappend covars [::dom::element getAttribute $coeffNode "COVAR"]
+         }
+         set chisquare [::dom::element getAttribute $coeffsNode "CHISQUARE"]
+         set refraction [::dom::element getAttribute $coeffsNode "REFRACTION"]
 
       } else {
-         error "::confTel::loadModel error data length=$dataLen . Must be 3 or 4"
+         ### TODO : calculer le modèle
       }
-      set name [file tail $fileName]
-      set date [clock format [file mtime $fileName] -format "%d-%m-%Y %H:%M:%S" -timezone :localtime ]
-      set symbols {IH ID NP CH ME MA FO HF DAF TF}
-      set coefficients [lindex $data 0]
-    }]
-   if { $catchResult == 1 } {
-      #--- je transmet l'erreur
-      error $::errorInfo
+      ::dom::tcl::destroy $modelDom
+   } catchMessage ]
+
+   if { $catchError != 0 } {
+      if { [string compare -length 14 $catchMessage "unexpectedtext"] == 0 } {
+         #--- je charge le modele ancien format
+
+         set catchResult [catch {
+            set hFile [ open $fileName r ]
+            set data [read $hFile]
+            close $hFile
+            set dataLen [llength $data ]
+            if { $dataLen == 3 } {
+               #--- j'ajoute l'indicateur de réfraction
+               lappend $data "0"
+            } elseif  { $dataLen == 4 } {
+               #--- rien a faire
+
+            } else {
+               error "::confTel::loadModel error data length=$dataLen . Must be 3 or 4"
+            }
+            set modelName [file tail $fileName]
+            set modelDate [clock format [file mtime $fileName] -format "%d-%m-%Y %H:%M:%S" -timezone :localtime ]
+            set modelComment ""
+            set symbols {IH ID NP CH ME MA FO HF DAF TF}
+            set coefficients [lindex $data 0]
+            set chisquare    [lindex $data 1]
+            set covars       [lindex $data 2]
+            set refraction   [lindex $data 3]
+         }]
+         if { $catchResult == 1 } {
+            #--- je transmet l'erreur
+            error $::errorInfo
+         }
+
+         #--- je charge la liste des etoiles ancien format
+         set catchResult [catch {
+            set starFileName "[file rootname $fileName]_inp.txt"
+            set input [ open [ file join $::audace(rep_plugin) tool modpoi model_modpoi $starFileName ] r ]
+            set inputData [split [read $input] \n]
+            close $input
+            set starList ""
+            set k 1
+            foreach line $inputData {
+               if { [llength $line] == 4 } {
+                  set name     "star$k"
+                  set date     ""
+                  set ra_cal   ""
+                  set dec_cal  [mc_angle2deg [lindex $line 1] 90]
+                  set ra_delta [format "%8.3f" [lindex $line 2]]
+                  set de_delta [format "%8.3f" [lindex $line 3]]
+                  set ha_cal   [mc_angle2deg [lindex $line 0] 360]
+                  lappend starList [list $name $date $ra_cal $dec_cal $ra_delta $de_delta $ha_cal]
+                  incr k
+               }
+            }
+         }]
+         if { $catchResult == 1 } {
+            #--- je ne transmet pas l'erreur car la liste des etoiles n'est pas indispensable
+            set starList ""
+         }
+      } else {
+         #--- je transmet l'erreur
+         error $::errorInfo
+      }
    }
 
-   return [list $fileName $name $date $symbols $coefficients]
+   return [list $modelName $modelDate $modelComment $starList $symbols $coefficients $chisquare $covars $refraction]
 }
+
 
 
 #--- Connexion au demarrage de la monture selectionnee par defaut
