@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise a jour $Id: tkutil.tcl,v 1.33 2010-01-30 16:16:28 robertdelmas Exp $
+# Mise Ã  jour $Id: tkutil.tcl,v 1.34 2010-04-11 13:22:03 michelpujol Exp $
 #
 
 namespace eval tkutil:: {
@@ -104,7 +104,7 @@ proc ::tkutil::box_load { { parent } { initialdir } { numero_buffer } { type } {
       set filetypes [ list [ list "$::caption(tkutil,fichier_tous)" "*" ] ]
    } elseif { $type == "10" } {
       set title "$::caption(tkutil,editer_modpoi)"
-      set filetypes [ list [ list "$::caption(tkutil,fichier_txt)" ".txt" ] ]
+      set filetypes [ list [ list "Tpoint model" ".xml .txt" ] [ list "XML" ".xml" ] [ list "TXT " ".txt" ] ]
    } elseif { $type == "11" } {
       set title "$::caption(tkutil,editer_fichier)"
       set filetypes [ list [ list "$::caption(tkutil,fichier_txt)" "*" ] ]
@@ -406,8 +406,8 @@ proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxVa
 #            - boolean   : booleen ( 0, 1, false, true, no, yes , off , on)
 #            - fits      : caracteres autorises dans un mot cle FITS
 #            - wordchar  : caracteres alphabetiques ou numeriques ou underscore
-#            - wordchar1 : caracteres de wordchar avec "-", sans "\" et "µ"
-#            - wordchar2 : caracteres de wordchar avec "-", ".", "/" et ":", sans "\" et "µ"
+#            - wordchar1 : caracteres de wordchar avec "-", sans "\" et "Âµ"
+#            - wordchar2 : caracteres de wordchar avec "-", ".", "/" et ":", sans "\" et "Âµ"
 #            - xdigit    : caracteres hexadecimaux
 # @param  minLength      : longueur minimale de la chaine
 # @param  maxLength      : longueur maximale de la chaine
@@ -445,7 +445,7 @@ proc ::tkutil::validateString { win event newValue oldValue class minLength maxL
             #--- je refuse le caractere antislash
             set classCheck 0
          } else {
-            set charIndex [string first "µ" $newValue]
+            set charIndex [string first "Âµ" $newValue]
             if { $charIndex != -1} {
                #--- je refuse le caractere machin
                set classCheck 0
@@ -462,7 +462,7 @@ proc ::tkutil::validateString { win event newValue oldValue class minLength maxL
             #--- je refuse le caractere antislash
             set classCheck 0
          } else {
-            set charIndex [string first "µ" $newValue]
+            set charIndex [string first "Âµ" $newValue]
             if { $charIndex != -1} {
                #--- je refuse le caractere machin
                set classCheck 0
