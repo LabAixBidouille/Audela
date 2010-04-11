@@ -2,7 +2,7 @@
 # Fichier : eshelvisu.tcl
 # Description : Visionneuse d'images eShel
 # Auteurs : Michel Pujol
-# Mise a jour $Id: eshelvisu.tcl,v 1.5 2010-01-31 11:46:16 michelpujol Exp $
+# Mise a jour $Id: eshelvisu.tcl,v 1.6 2010-04-11 13:25:58 michelpujol Exp $
 #
 
 namespace eval ::eshelvisu {
@@ -613,7 +613,7 @@ proc ::eshelvisu::showCalibrationLine { visuNo } {
 
          #--- j'affiche un carre autour de chaque ligne
          $hCanvas delete calibrationLine
-         for {set i 1 } { $i < $nbLine } { incr i } {
+         for {set i 1 } { $i <= $nbLine } { incr i } {
             #--- je pointe la table des raies de calibration
             $hFile move $private($visuNo,lineHduNum)
             set orderNum [lindex [lindex [$hFile get table "order" $i ] 0] 0]
