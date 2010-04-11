@@ -2,7 +2,7 @@
 # Fichier : quickaudine.tcl
 # Description : Interface de liaison QuickAudine
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickaudine.tcl,v 1.23 2010-01-17 17:59:25 robertdelmas Exp $
+# Mise a jour $Id: quickaudine.tcl,v 1.24 2010-04-11 13:54:30 michelpujol Exp $
 #
 
 namespace eval quickaudine {
@@ -87,9 +87,7 @@ proc ::quickaudine::deletePluginInstance { linkLabel deviceId usage } {
 # return : valeur de la propriete , ou "" si la propriete n'existe pas
 #------------------------------------------------------------
 proc ::quickaudine::getPluginProperty { propertyName } {
-   switch $propertyName {
 
-   }
 }
 
 #------------------------------------------------------------

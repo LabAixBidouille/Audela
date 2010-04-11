@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.45 2010-03-31 09:57:29 myrtillelaas Exp $
+# Mise à jour $Id: zadkopad.tcl,v 1.46 2010-04-11 13:54:30 michelpujol Exp $
 #
 
 namespace eval ::zadkopad {
@@ -214,8 +214,7 @@ namespace eval ::zadkopad {
     # return : valeur de la propriete, ou "" si la propriete n'existe pas
     #------------------------------------------------------------
     proc getPluginProperty { propertyName } {
-       switch $propertyName {
-       }
+
     }
 
     #------------------------------------------------------------
