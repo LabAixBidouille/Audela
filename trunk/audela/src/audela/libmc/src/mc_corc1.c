@@ -570,18 +570,33 @@ void mc_refraction(double h,int inout,double temperature,double pressure,double 
    double r,angle;
    if (inout==-1) {
       h=h/(DR);
-	  angle=(h+7.31/(h+4.4))*(DR);
-	  r=1./tan(angle);
-	  r=r-0.06*sin((14.7*r+13)*(DR));
-	  r=r/60.*(DR);
+      angle=(h+7.31/(h+4.4))*(DR);
+      r=1./tan(angle);
+      r=r-0.06*sin((14.7*r+13)*(DR));
+      r=r/60.*(DR);
+      if (temperature>0.) {
+         r=r*fabs(pressure)/101000.*283/temperature;
+      }
    } else {
+      double tolerance = .01 * (DR) / 3600.;
+      int n_iter = 10;
+      double delta = 1.;
+
       h=h/(DR);
-	  angle=(h+10.3/(h+5.11))*(DR);
-	  r=1.02/tan(angle);
-	  r=r/60.*(DR);
-   }
-   if (temperature>0.) {
-      r=r*fabs(pressure)/101000.*283/temperature;
+      angle=(h+10.3/(h+5.11))*(DR);
+      r=1.02/tan(angle);
+      r=r/60.*(DR);
+
+      if (temperature>0.) {
+         r=r*fabs(pressure)/101000.*283/temperature;
+      }
+
+      h = h*(DR);
+      while( n_iter-- && (delta > tolerance || delta < -tolerance)) {
+         delta = r;
+         mc_refraction( h + r, -1, temperature, pressure, &r);
+         delta -= r;
+      }
    }
    *refraction=r;
 }
