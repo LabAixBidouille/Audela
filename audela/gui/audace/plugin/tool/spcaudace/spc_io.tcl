@@ -10,7 +10,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_io.tcl,v 1.11 2010-04-09 20:13:06 bmauclaire Exp $
+# Mise a jour $Id: spc_io.tcl,v 1.12 2010-04-11 13:59:39 michelpujol Exp $
 
 
 # Remarque (par Benoît) : il faut mettre remplacer toutes les variables textes par des variables caption(mauclaire,...)
@@ -29,7 +29,7 @@
 
 ####################################################################
 # Procedure de mise a jour des intensites d'un profil fits
-# (cas ou les nouvelles intensites sont echantillonees lineairement) 
+# (cas ou les nouvelles intensites sont echantillonees lineairement)
 #
 # Auteur : Patrick LAILLY
 # Date creation : 25-11-09
@@ -41,7 +41,7 @@
 proc spc_fileupdate { args } {
    global audace spcaudace conf
    set nbargs [ llength $args ]
-   if { $nbargs ==6 || $nbargs ==4 } { 
+   if { $nbargs ==6 || $nbargs ==4 } {
       set nomfich [ lindex $args 0 ]
       set crval1 [ lindex $args 1 ]
       set cdelt1 [ lindex $args 2 ]
@@ -51,7 +51,7 @@ proc spc_fileupdate { args } {
 	 set suffixe [ lindex $args 4 ]
 	 set delopt [ lindex $args 5 ]
       }
-      buf$audace(bufNo) load "$audace(rep_images)/$nomfich"	
+      buf$audace(bufNo) load "$audace(rep_images)/$nomfich"
       set listemotsclef [ buf$audace(bufNo) getkwds ]
       if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
 	 buf$audace(bufNo) delkwd "SPC_A"
@@ -64,7 +64,7 @@ proc spc_fileupdate { args } {
       }
       if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
 	 buf$audace(bufNo) delkwd "SPC_D"
-      } 
+      }
       if { [ lsearch $listemotsclef "SPC_DESC" ] !=-1 } {
 	 buf$audace(bufNo) delkwd "SPC_DESC"
       }
@@ -75,13 +75,13 @@ proc spc_fileupdate { args } {
       #buf$audace(bufNo) setpixels CLASS_GRAY $naxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
       set naxis [ lindex [ buf$audace(bufNo) getkwd NAXIS ] 1 ]
       if { $naxis != 1 } {
-	 ::console::affiche_erreur "spc_fileupdate : le fichier fits $nomfich n'est pas un profil\n\n"
-	 break
+	      ::console::affiche_erreur "spc_fileupdate : le fichier fits $nomfich n'est pas un profil\n\n"
+	      return 0
       }
       if { $lintens != $naxis1 } {
       	::console::affiche_erreur "spc_fileupdate : mise a jour du fichier fits $nomfich impossible : les longueurs des intensites du fichier $naxis1 et de la liste $lintens sont differentes\n\n"
-      	break
-      }	
+      	return 0
+      }
       buf$audace(bufNo) setkwd [list "NAXIS1" $naxis1 int "" ""]
       #buf$audace(bufNo) setkwd [list "NAXIS2" 1 int "" ""]
       buf$audace(bufNo) setkwd [list "CRVAL1" $crval1 double "" "Angstrom"]
@@ -97,13 +97,13 @@ proc spc_fileupdate { args } {
       set nom_fich_output "$nomfich$suff"
       buf$audace(bufNo) save "$audace(rep_images)/$nom_fich_output"
       ::console::affiche_resultat " sauvegarde du fichier $nom_fich_output \n"
-      buf$audace(bufNo) bitpix short 
+      buf$audace(bufNo) bitpix short
       set yes oui
       if { $delopt == $yes } {
 	 file delete -force "$audace(rep_images)/$nomfich$conf(extension,defaut)"
       	::console::affiche_resultat " effacement du fichier $nomfich \n"
       }
-      return $nom_fich_output   
+      return $nom_fich_output
    } else {
       ::console::affiche_erreur "Usage: spc_fileupdate nom_fich_fits ? liste_param_header ? liste_intensites ? suffixe ? option effacement ?\n\n"
       return 0
@@ -435,7 +435,7 @@ proc spc_dat2fitslin { args } {
          ::console::affiche_erreur "Usage: spc_dat2fits fichier_profil.dat ?fichier_sortie.fit?\n\n"
          return 0
       }
-      
+
       #--- Lecture du fichier de donnees du profil de raie ===
       set input [open "$audace(rep_images)/$filenamespc" r]
       set contents [split [read $input] \n]
@@ -478,12 +478,12 @@ proc spc_dat2fitslin { args } {
       }
       #-- Détermine la derniere longueur d'onde :
       set lambda_fin [ lindex $abscisses [ expr $naxis1-1 ] ]
-      
+
       #--- Calcul les longueurs éspacées d'un pas constant :
       if { $flag_spccal } {
          #-- Calcul le pas del calibration linéaire :
          set dispersion [ expr ($lambda_fin-$lambda_deb)/($naxis1 +1) ]
-         
+
          #-- Calcul les longueurs d'onde (linéaires) associées a chaque pixel :
          set lambdas [ list ]
          for {set i 0} {$i<$naxis1} {incr i} {
@@ -527,7 +527,7 @@ proc spc_dat2fitslin { args } {
             buf$newBufNo setpix [list $k 1] [ lindex $good_intensites [ expr $k-1 ] ]
          }
       }
-      
+
       #--- Sauve le fichier fits ainsi constitué :
       buf$newBufNo bitpix float
       if { [llength $args]==1 || [llength $args]==0 } {
@@ -610,7 +610,7 @@ proc spc_dat2fits { args } {
           }
        }
        set naxis1 $k
-       
+
        #--- Creation du fichier fits :
        #-- Initialisation à blanc d'un fichier fits :
        buf$audace(bufNo) setpixels CLASS_GRAY $naxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
@@ -618,7 +618,7 @@ proc spc_dat2fits { args } {
        buf$audace(bufNo) setkwd [ list "NAXIS1" $naxis1 int "" "" ]
        set crpix1 1
        buf$audace(bufNo) setkwd [ list "CRPIX1" $crpix1 int "Reference pixel" "pixel" ]
-       
+
        #-- Rempli la matrice 1D du fichier fits avec les valeurs du profil de raie :
        #- Une liste commence à 0 ; Un vecteur fits commence à 1
        set intensite 0
@@ -629,7 +629,7 @@ proc spc_dat2fits { args } {
              set intensite 0
           }
        }
-       
+
        #--- Détermine la première longueur d'onde :
        foreach abscisse $abscisses {
           if { [ regexp {([0-9]+\.*[0-9]*)} $abscisse match mabscisse ] } {
@@ -701,8 +701,8 @@ proc spc_dat2fits { args } {
              set dispersion [ expr 1.0*($lambdafin-$lambdadeb)/($naxis1-1) ]
           }
        }
-       
-       
+
+
        #--- Affecte une valeur aux mots cle liés à la spectroscopie :
        ::console::affiche_resultat "Dispersion : $dispersion ; RMS=$rms\n"
        buf$audace(bufNo) setkwd [ list "DATE-OBS" "0000-00-00T00:00:00.00" string "Start of exposure. FITS standard" "Iso 8601"]
@@ -726,7 +726,7 @@ proc spc_dat2fits { args } {
              buf$audace(bufNo) setkwd [list "SPC_D" $spc_d double "" "angstrom.angstrom.angstrom/pixel.pixel.pixel"]
           }
        }
-       
+
        #--- Sauve le fichier fits ainsi constitué :
        set ldernier [ lindex $abscisses [expr $naxis1-1] ]
        ::console::affiche_resultat "Xdep : $lambdadeb ; Xfin : $ldernier\n"
@@ -793,7 +793,7 @@ proc spc_fits2dat { args } {
            ::console::affiche_erreur "Usage: spc_fits2dat fichier_profil.fit ?fichier_sortie.dat?\n\n"
            return ""
         }
-     }     
+     }
 
      buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
      set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
@@ -831,7 +831,7 @@ proc spc_fits2dat { args } {
      #--- Type de spectre : LINEAR ou NONLINEAR (elinine les espaces dans la valeur du mot clef.
      #set len [ expr int($naxis1/$dispersion) ]
      ::console::affiche_resultat "$naxis1 intensités à traiter\n"
-     
+
      if { $nbargs==1 || $nbargs==0 } {
         set fileetalonnespc [ file rootname $filenamespc ]
         set fileout ${fileetalonnespc}$spcaudace(extdat)
@@ -840,11 +840,11 @@ proc spc_fits2dat { args } {
         set fileout $filenameout
         set file_id [open "$audace(rep_images)/$fileout" w+]
      }
-     
+
      #--- configure le fichier de sortie avec les fin de ligne "xODx0A"
      #-- independamment du systeme LINUX ou WINDOWS
      fconfigure $file_id -translation crlf
-     
+
      if { [regexp {1.3.0} $audela(version) match resu ] } {
         #--- Lecture pixels Audela 130 :
         if { $flag_noncal==0 } {
@@ -971,7 +971,7 @@ proc spc_data2fits { args } {
          ::console::affiche_erreur "Usage: spc_data2fits nom_fichier_fits_sortie liste_coordonnées_x_et_y unitée_intensités (short/float/double)\n\n"
          return ""
       }
-      
+
       #--- Initialise les informations :
       set abscisses [lindex $coordonnees 0]
       set intensites [lindex $coordonnees 1]
@@ -1049,7 +1049,7 @@ proc spc_data2fits { args } {
          ::console::affiche_resultat "Dispersion : $dispersion ; RMS=$rms\n"
       }
 
-       
+
       #--- Affecte une valeur aux mots cle liés à la spectroscopie :
       buf$audace(bufNo) setpixels CLASS_GRAY $naxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
       #-- Ecrit les intensites :
@@ -1086,8 +1086,8 @@ proc spc_data2fits { args } {
             buf$audace(bufNo) setkwd [list "SPC_D" $spc_d double "" "angstrom.angstrom.angstrom/pixel.pixel.pixel"]
          }
       }
-      
-     
+
+
       #--- Sauvegarde du fichier fits ainsi créé
       if { $nbunit == "double" || $nbunit == "float" } {
          buf$audace(bufNo) bitpix float
@@ -2090,7 +2090,7 @@ proc spc_spc2fits { args } {
 #    set profilspc(xunit) "Position"
 #    set profilspc(yunit) "ADU"
 
- 
+
 
  if {[llength $args] <= 1} {
      if {[llength $args] == 1} {
@@ -2123,7 +2123,7 @@ proc spc_spc2fits { args } {
     set profilspc(exptime) [expr [lindex $contents 2]]
     set dateobs [lindex $contents 4]
     set profilspc(object) [lindex $contents 7]
-    
+
     #-- Initialise les longueurs :
     #set offset [expr [lindex $contents 1]+3]
     set offset [expr [lindex $contents 1]+15]
@@ -2147,7 +2147,7 @@ proc spc_spc2fits { args } {
     buf$audace(bufNo) setkwd [ list "NAXIS1" $len int "" "" ]
     set crpix1 1
     buf$audace(bufNo) setkwd [ list "CRPIX1" $crpix1 int "Reference pixel" "pixel" ]
-    
+
 
     #--- Rempli la matrice 1D du fichier fits avec les valeurs du profil de raie ---
     #-- Une liste commence à 0 ; Un vecteur fits commence à 1
@@ -3700,7 +3700,7 @@ proc spc_data2fits_2005 { args } {
      set intensites [lindex $coordonnees 1]
      set naxis1 [llength $abscisses]
      set crpix1 1
-     
+
      #--- Création du fichier fits
      buf$audace(bufNo) setpixels CLASS_GRAY $naxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
      buf$audace(bufNo) setkwd [ list "NAXIS" 1 int "" "" ]
@@ -3711,14 +3711,14 @@ proc spc_data2fits_2005 { args } {
      #-- Valeur minimale de l'abscisse (xdepart) : =0 si profil non étalonné
      set xdepart [expr 1.0*[lindex $abscisses 0] ]
      buf$audace(bufNo) setkwd [ list "CRVAL1" $xdepart double "" "angstrom" ]
-     
-     
+
+
      #--- Calcul de la dispersion par régression linéaire :
-     set dispersion [ expr ([ lindex $abscisses [ expr $naxis-1 ] ]-$xdepart)/($naxis-1) ]     
+     set dispersion [ expr ([ lindex $abscisses [ expr $naxis-1 ] ]-$xdepart)/($naxis-1) ]
      #-- Mise à jour fichier fits
      buf$audace(bufNo) setkwd [ list "CDELT1" $dispersion double "" "angstrom/pixel" ]
      buf$audace(bufNo) setkwd [ list "CRPIX1" $crpix1 int "Reference pixel" "pixel" ]
-     
+
      #--- Calcul de la loi de calibration non-linéaire :
      set results [ spc_ajustdeg3 $xpos $abscisses 1 $crpix1 ]
      set coeffs [ lindex $results 0 ]
@@ -3738,8 +3738,8 @@ proc spc_data2fits_2005 { args } {
         buf$audace(bufNo) setkwd [list "SPC_C" $spc_c double "" "angstrom.angstrom/pixel.pixel"]
         buf$audace(bufNo) setkwd [list "SPC_D" $spc_d double "" "angstrom.angstrom.angstrom/pixel.pixel.pixel"]
      }
-     
-     
+
+
      #--- Rempli la matrice 1D du fichier fits avec les valeurs du profil de raie ---
      #-- Une liste commence à 0 ; Un vecteur fits commence à 1
      set intensite 0
@@ -3750,7 +3750,7 @@ proc spc_data2fits_2005 { args } {
            set intensite 0
         }
      }
-     
+
      #--- Sauvegarde du fichier fits ainsi créé
      if { $nbunit == "double" || $nbunit == "float" } {
         buf$audace(bufNo) bitpix float
