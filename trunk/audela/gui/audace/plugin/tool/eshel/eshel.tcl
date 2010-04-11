@@ -2,7 +2,7 @@
 # Fichier : eshel.tcl
 # Description : outil de fabrication des fichier Kit et de deploiement des plugin
 # Auteurs : Michel Pujol
-# Mise a jour $Id: eshel.tcl,v 1.4 2010-01-30 14:12:30 robertdelmas Exp $
+# Mise a jour $Id: eshel.tcl,v 1.5 2010-04-11 13:24:25 michelpujol Exp $
 #
 
 ##------------------------------------------------------------
@@ -175,6 +175,7 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
    #------ Spectographe
    if { ! [ info exists conf($prefix,spectroName) ] }     { set conf($prefix,spectroName)      "eshel" }
    if { ! [ info exists conf($prefix,alpha) ] }           { set conf($prefix,alpha)            62.2 }
+   if { ! [ info exists conf($prefix,beta) ] }            { set conf($prefix,beta)             0 }
    if { ! [ info exists conf($prefix,gamma) ] }           { set conf($prefix,gamma)            5.75 }
    if { ! [ info exists conf($prefix,grating) ] }         { set conf($prefix,grating)          79.0 }
    if { ! [ info exists conf($prefix,focale) ] }          { set conf($prefix,focale)           85.0 }
@@ -215,6 +216,7 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
    if { ! [ info exists conf($prefix,hotPixelList) ] }    { set conf($prefix,hotPixelList)     [list ] }
    if { ! [ info exists conf($prefix,cosmicEnabled)] }    { set conf($prefix,cosmicEnabled)    0 }
    if { ! [ info exists conf($prefix,cosmicThreshold)] }  { set conf($prefix,cosmicThreshold)  400 }
+   if { ! [ info exists conf($prefix,flatFieldEnabled)] } { set conf($prefix,flatFieldEnabled) 0 }
    if { ! [ info exists conf($prefix,responseOption)] }   { set conf($prefix,responseOption)   "AUTO" }
    if { ! [ info exists conf($prefix,responseFileName)] } { set conf($prefix,responseFileName) "" }
    #--- liste des mots clefs a mettre dans les acquisitions
@@ -404,7 +406,7 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
    #--- si ce n'est pas le cas, je cree la variable avec la valeur de la configuration "defaut"
    foreach configPath [array names ::conf eshel,instrument,config,*,orderDefinition] {
       set configId [lindex [split $configPath "," ] 3]
-      #--- je verifie que tous les parametres existent ( necessaires pour les parametres qui seront ajoutés dans les futures versions
+      #--- je verifie que tous les parametres existent ( necessaires pour les parametres qui seront ajoutï¿½s dans les futures versions
       foreach paramFullName  [array names ::conf eshel,instrument,config,default,*] {
          set paramName [string range $paramFullName [string length "eshel,instrument,config,default,"] end]
          if { [ info exists ::conf(eshel,instrument,config,$configId,$paramName) ] == 0 } {
@@ -425,10 +427,10 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
 
    #--- je cree deux exemples de sequences de reference
    if { [array names ::conf  eshel,instrument,reference,* ] == "" } {
-      set ::conf(eshel,instrument,reference,reference_debut,name)  "Référence début"
+      set ::conf(eshel,instrument,reference,reference_debut,name)  "Reference debut"
       set ::conf(eshel,instrument,reference,reference_debut,state) 1
       set ::conf(eshel,instrument,reference,reference_debut,actionList) [list [list biasSerie [list expNb 5]] [list darkSerie [list expTime 15 expNb 5]]  [list darkSerie [list expTime 600 expNb 4]] [list flatSerie [list expTime 15 expNb 8]] [list wait [list expTime 8 ]] [list tharSerie [list expTime 60 expNb 2]] ]
-      set ::conf(eshel,instrument,reference,reference_flat_thar,name) "Référence flat thar"
+      set ::conf(eshel,instrument,reference,reference_flat_thar,name) "Reference flat thar"
       set ::conf(eshel,instrument,reference,reference_flat_thar,state) 0
       set ::conf(eshel,instrument,reference,reference_flat_thar,actionList) [list [list flatSerie [list expTime 10 expNb 5]] [list tharSerie [list expTime 10 expNb 5]] ]
    }
@@ -597,7 +599,7 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
    pack $frm.process -side top -fill x -padx 2
 
    TitleFrame $frm.config -borderwidth 2 -relief groove -text "Administration"
-      #--- Paramètres instrument
+      #--- Paramï¿½tres instrument
       button $frm.config.instrument -text "$caption(eshel,instrument)" -height 1 \
         -borderwidth 1 -padx 2 -pady 2 -command "::eshel::instrumentgui::run [winfo toplevel $private($visuNo,frm)] $visuNo"
       pack $frm.config.instrument -in [$frm.config getframe] -fill x -padx 2 -pady 2 -expand true
@@ -788,7 +790,7 @@ proc ::eshel::adaptPanel { visuNo args } {
 
          #--- je verifie que le binning preselectionne existe dans la liste
          if { [lsearch $binningList $::conf(eshel,binning)] == -1 } {
-            #--- si le binning n'existe pas je selectionne la première valeur par defaut
+            #--- si le binning n'existe pas je selectionne la premiï¿½re valeur par defaut
             set  ::conf(eshel,binning) [lindex $binningList 0]
          }
          #--- j'affiche la frame du binning
@@ -863,7 +865,7 @@ proc ::eshel::onStartAcquisition { visuNo args } {
    set comment    ""
    switch $sequenceType {
       objectSequence {
-         #--- je vérifie que le nom de l'objet est renseigne
+         #--- je vï¿½rifie que le nom de l'objet est renseigne
          #if {  $private($visuNo,objname) == "" } {
          #    console::affiche_erreur "$::caption(eshel,acquisition,errorObject) \n"
          #   tk_messageBox -message "$::caption(eshel,acquisition,errorObject)" -icon error -title $::caption(eshel,title)
@@ -935,6 +937,11 @@ proc ::eshel::onStartAcquisition { visuNo args } {
             darkPreview {
                set actionType  "darkSerie"
                set actionParam [list expTime $::conf(eshel,exptime) expNb 1 saveFile 0 binning $binning ]
+               set actionList  [list [list $actionType $actionParam]]
+            }
+            flatfieldPreview {
+               set actionType  "flatfieldSerie"
+               set actionParam [list expTime $::conf(eshel,exptime) expNb 1 saveFile 0 binning $::conf(eshel,binning) ]
                set actionList  [list [list $actionType $actionParam]]
             }
             flatPreview {
@@ -1143,7 +1150,7 @@ proc ::eshel::setProcessAuto { } {
 #------------------------------------------------------------
 proc ::eshel::checkDirectory { } {
 
-   #--- je vérifie que le repertoire des fichiers bruts existe
+   #--- je vï¿½rifie que le repertoire des fichiers bruts existe
    if {  [file exists $::conf(eshel,rawDirectory)] == 0 } {
       error [format $::caption(eshel,directoryNotFound) $::conf(eshel,rawDirectory)]
    }
@@ -1167,7 +1174,7 @@ proc ::eshel::checkDirectory { } {
 
 #------------------------------------------------------------
 # showRawDirectory
-#   affiche le répertoire des images brutes
+#   affiche le rï¿½pertoire des images brutes
 #------------------------------------------------------------
 proc ::eshel::showRawDirectory { } {
 
@@ -1179,7 +1186,7 @@ proc ::eshel::showRawDirectory { } {
    confVisu::selectTool $visuDir ::eshelvisu
    #--- je pointe le repertoire des images brutes
    set ::eshelvisu::localTable::private($visuDir,directory)  $::conf(eshel,rawDirectory)
-   #--- j'affiche le contenu du répertoire
+   #--- j'affiche le contenu du rï¿½pertoire
    ::eshelvisu::localTable::fillTable $visuDir
 }
 
@@ -1195,9 +1202,9 @@ proc ::eshel::showProfile { } {
    #confVisu::selectTool $visuDir ::visio2
    #--- je selectionne l'outil eShel Visu
    confVisu::selectTool $visuDir ::eshelvisu
-   #--- je pointe le répertoire des images brutes
+   #--- je pointe le rï¿½pertoire des images brutes
    set ::eshelvisu::localTable::private($visuDir,directory) $::conf(eshel,mainDirectory)
-   #--- j'affiche le contenu du répertoire
+   #--- j'affiche le contenu du rï¿½pertoire
    ::eshelvisu::localTable::fillTable $visuDir
 }
 
@@ -1205,7 +1212,7 @@ proc ::eshel::showProfile { } {
 # showObjectProfile
 # affiche le profil P_FULL d'un objet dans une nouvelle visu
 #
-# Le fichier est recherché dans le répertoire des profils traités.
+# Le fichier est recherchï¿½ dans le rï¿½pertoire des profils traitï¿½s.
 #
 # @param fileName nom du fichier
 # @return rien
@@ -1218,7 +1225,7 @@ proc ::eshel::showObjectProfile { fileName } {
    #confVisu::selectTool $profileVisu ::visio2
    #--- je selectionne l'outil eShel Visu
    confVisu::selectTool $profileVisu ::eshelvisu
-   #--- je pointe le répertoire des images brutes
+   #--- je pointe le rï¿½pertoire des images brutes
    set ::eshelvisu::localTable::private($profileVisu,directory) $::conf(eshel,processedDirectory)
    #--- j'affiche le contenu du fichier
    :::eshelvisu::localTable::refresh $profileVisu $fileName "P_1C_FULL"

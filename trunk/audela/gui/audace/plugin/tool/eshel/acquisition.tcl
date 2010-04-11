@@ -2,7 +2,7 @@
 # Fichier : acquisition.tcl
 # Description : acquisition eShel
 # Auteur : Michel PUJOL
-# Mise a jour $Id: acquisition.tcl,v 1.2 2009-12-13 16:42:11 robertdelmas Exp $
+# Mise a jour $Id: acquisition.tcl,v 1.3 2010-04-11 13:24:25 michelpujol Exp $
 #
 
 namespace eval ::eshel::acquisition {
@@ -28,7 +28,7 @@ proc ::eshel::acquisition::validateFitsData { value valueLabel } {
 # @param visuNo numero de la visu
 # @param actionList liste des actions d'acquisitions a faire. C'est une liste de couples de valeurs :
 #          -  actionType  : type de l'action
-#              types d'action connus:  objectSerie, darkSerie, flatSerie, tharSerie, neonSerie, biasSerie, wait
+#              types d'action connus:  objectSerie, darkSerie, flatfieldSerie,flatSerie, tharSerie, neonSerie, biasSerie, wait
 #          - actionParams : parametres de l'action
 #              expTime     (defaut= 0 seconde)
 #              expNb       (defaut= 1 image)
@@ -38,7 +38,7 @@ proc ::eshel::acquisition::validateFitsData { value valueLabel } {
 #
 # @param sequenceName nom de la sequence (parametre optionel, ce libelle est utilise pour les traces
 # @param sequenceRepeat nombre de repetetion de la sequence ( 1 par defaut)
-# @param sequenceComment commentaire de la sequence (parametre optionel, ce libelle est ajouté dans le mot clé COMMENT1 des images
+# @param sequenceComment commentaire de la sequence (parametre optionel, ce libelle est ajoutï¿½ dans le mot clï¿½ COMMENT1 des images
 #
 # @return rien , ou une exception en cas d'erreur
 #
@@ -153,6 +153,11 @@ proc ::eshel::acquisition::startSequence { visuNo actionList { sequenceName "" }
                   #--- je ferme l'obturateur de la camera
                   ::confCam::setShutter $camItem 1 "set"
                }
+               flatfield  {
+                  set statusLabel "flatfield"
+                  #--- je mets l'obturateur en mode syncho
+                  ::confCam::setShutter $camItem 2 "set"
+               }
                flatSerie  {
                   set statusLabel "flat"
                   #--- je mets l'obturateur en mode syncho
@@ -257,6 +262,11 @@ proc ::eshel::acquisition::startSequence { visuNo actionList { sequenceName "" }
                         #--- Mode Dark
                         append fileName "DARK-$actionParams(expTime)s"
                         set imageType "DARK"
+                     }
+                     flatfield  {
+                         #--- Mode Dark
+                         append fileName "FLATFIELD-$actionParams(expTime)s"
+                         set imageType "FLATFIELD"
                      }
                      flatSerie {
                         #--- Mode Flat
@@ -371,6 +381,9 @@ proc ::eshel::acquisition::startSequence { visuNo actionList { sequenceName "" }
                         ::eshel::instrument::setSpectrographLamp $bonnetteLinkNo "mirror" 0
                      }
                   }
+                  flatfieldSerie  {
+                     #--- rien a faire
+                  }
                   tharSerie {
                      if { $::conf(eshel,enableGuidingUnit) == 1  } {
                         #--- j'eteins la lampe
@@ -450,7 +463,7 @@ proc ::eshel::acquisition::startSequence { visuNo actionList { sequenceName "" }
 
    if { $private($visuNo,acquisitionState) == "error" } {
       set private($visuNo,acquisitionState) ""
-      #--- je retourne uen erreur à la procedure appelante
+      #--- je retourne uen erreur ï¿½ la procedure appelante
       error $::caption(eshel,acquisition,acquisitionError)
    } else {
       set private($visuNo,acquisitionState) ""

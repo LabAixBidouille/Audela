@@ -2,7 +2,7 @@
 # Fichier : process.tcl
 # Description : fenertre de configuration instrument eShel
 # Auteur : Michel PUJOL
-# Mise a jour $Id: instrumentgui.tcl,v 1.1 2009-11-07 08:13:07 michelpujol Exp $
+# Mise a jour $Id: instrumentgui.tcl,v 1.2 2010-04-11 13:24:25 michelpujol Exp $
 #
 
 ################################################################
@@ -25,11 +25,12 @@ proc ::eshel::instrumentgui::run { tkbase visuNo } {
    variable private
 
    set private(configList)  [list]
-   set private(actionTypeList)  [ list biasSerie darkSerie flatSerie tharSerie neonSerie wait ]
+   set private(actionTypeList)  [ list biasSerie darkSerie flatfieldSerie flatSerie tharSerie neonSerie wait ]
    #--- liste des paraemtres des actions
    set private(actionParamNames) [ list expTime expNb ]
    set private(action,biasSerie,paramNames) [ list expNb ]
    set private(action,darkSerie,paramNames) [ list expTime expNb ]
+   set private(action,flatfieldSerie,paramNames) [ list expTime expNb ]
    set private(action,flatSerie,paramNames) [ list expTime expNb ]
    set private(action,tharSerie,paramNames) [ list expTime expNb ]
    set private(action,neonSerie,paramNames) [ list expTime expNb ]
@@ -190,6 +191,12 @@ proc ::eshel::instrumentgui::fillSpectrographPage { frm visuNo } {
    variable private
    global caption
 
+
+   #--- type de spectro
+   checkbutton $frm.spectroType  -justify left \
+      -text $caption(eshel,instrument,spectrograph,type) \
+      -variable ::eshel::instrumentgui::private(spectroType)
+   #--- name
    LabelEntry $frm.name  -label $caption(eshel,instrument,spectrograph,name)\
       -labeljustify left -labelwidth 30  -width 30 -justify left \
       -validate key -validatecommand { ::eshel::validateString %W %V %P %s fits 1 70 ::eshel::instrumentgui::widget(error,spectroName) } \
@@ -204,6 +211,11 @@ proc ::eshel::instrumentgui::fillSpectrographPage { frm visuNo } {
       -labeljustify left -labelwidth 30  -width 10 -justify right \
       -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s double 0.0 180.0 ::eshel::instrumentgui::widget(error,alpha) } \
       -textvariable ::eshel::instrumentgui::private(alpha)
+   #--- angle beta
+   LabelEntry $frm.beta  -label $caption(eshel,instrument,spectrograph,beta)\
+      -labeljustify left -labelwidth 30  -width 10 -justify right \
+      -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s double 0.0 180.0 ::eshel::instrumentgui::widget(error,beta) } \
+      -textvariable ::eshel::instrumentgui::private(beta)
    #--- angle gamma
    LabelEntry $frm.gamma  -label $caption(eshel,instrument,spectrograph,gamma)\
       -labeljustify left -labelwidth 30  -width 10 -justify right \
@@ -290,9 +302,11 @@ proc ::eshel::instrumentgui::fillSpectrographPage { frm visuNo } {
       grid $frm.link.neonLabel   -in [$frm.link getframe] -row 4 -column 0 -sticky w
       grid $frm.link.neonBit     -in [$frm.link getframe] -row 4 -column 1 -sticky ens
 
+   pack $frm.spectroType -side top -anchor w -fill none -expand 0
    pack $frm.name    -side top -anchor w -fill none -expand 0
    pack $frm.grating -side top -anchor w -fill none -expand 0
    pack $frm.alpha   -side top -anchor w -fill none -expand 0
+   pack $frm.beta    -side top -anchor w -fill none -expand 0
    pack $frm.gamma   -side top -anchor w -fill none -expand 0
    pack $frm.focale  -side top -anchor w -fill none -expand 0
    pack $frm.link    -side top -anchor w -fill none -expand 0
@@ -403,7 +417,7 @@ proc ::eshel::instrumentgui::fillCameraPage { frm visuNo } {
       pack $frm.hotpixel.text -in [$frm.hotpixel getframe] -side left -anchor w -fill both -expand 1
       pack $frm.hotpixel.ysb -in [$frm.hotpixel getframe]  -side left -anchor w -fill y -expand 1
 
-   #--- Parametres de réparation des cosmiques
+   #--- Parametres de rï¿½paration des cosmiques
    TitleFrame $frm.cosmic -borderwidth 2 -relief ridge -text $caption(eshel,instrument,camera,cosmic)
       checkbutton $frm.cosmic.enabled  -justify left -text $caption(eshel,instrument,camera,cosmicEnabled) -variable ::eshel::instrumentgui::private(cosmicEnabled)
       LabelEntry $frm.cosmic.threshold -label $caption(eshel,instrument,camera,cosmicThreshold) \
@@ -634,7 +648,7 @@ proc ::eshel::instrumentgui::fillProcessPage { frm visuNo } {
    TitleFrame $frm.reference -borderwidth 2 -relief ridge -text $caption(eshel,instrument,process,referenceOrder)
       LabelEntry $frm.reference.refNum  -label $caption(eshel,instrument,process,refNum)\
          -labeljustify left -labelwidth 20 -width 10 -justify right \
-         -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 30 54 ::eshel::instrumentgui::widget(error,refNum) } \
+         -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 54 ::eshel::instrumentgui::widget(error,refNum) } \
          -textvariable ::eshel::instrumentgui::private(refNum)
       LabelEntry $frm.reference.refX  -label $caption(eshel,instrument,process,refX)\
          -labeljustify left -labelwidth 20 -width 10 -justify right \
@@ -689,12 +703,12 @@ proc ::eshel::instrumentgui::fillProcessPage { frm visuNo } {
       pack $frm.detection.boxWide -in [$frm.detection getframe] -side top  -anchor w -fill none -expand 1
       LabelEntry $frm.detection.minOrder  -label $caption(eshel,instrument,process,minOrder)\
          -labeljustify left -labelwidth 20 -width 10 -justify right \
-         -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 30 60 ::eshel::instrumentgui::widget(error,minOrder) } \
+         -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 60 ::eshel::instrumentgui::widget(error,minOrder) } \
          -textvariable ::eshel::instrumentgui::private(minOrder)
       pack $frm.detection.minOrder -in [$frm.detection getframe] -side top  -anchor w -fill none -expand 1
       LabelEntry $frm.detection.maxOrder  -label $caption(eshel,instrument,process,maxOrder)\
          -labeljustify left -labelwidth 20 -width 10 -justify right \
-         -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 30 60 ::eshel::instrumentgui::widget(error,maxOrder) } \
+         -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 60 ::eshel::instrumentgui::widget(error,maxOrder) } \
          -textvariable ::eshel::instrumentgui::private(maxOrder)
       pack $frm.detection.maxOrder -in [$frm.detection getframe] -side top  -anchor w -fill none -expand 1
 
@@ -762,6 +776,13 @@ proc ::eshel::instrumentgui::fillObjectProcessPage { frm visuNo } {
    variable private
    global caption
 
+
+   #--- flatfield
+   checkbutton $frm.flatFieldEnabled  -justify left \
+      -text $caption(eshel,instrument,process,flatFieldEnabled) \
+      -variable ::eshel::instrumentgui::private(flatFieldEnabled)
+
+
    #--- reponse instrumentale
    TitleFrame $frm.response -borderwidth 2 -relief ridge -text $caption(eshel,instrument,process,response,title)
       radiobutton $frm.response.manual -highlightthickness 0 -padx 0 -pady 0 -state normal \
@@ -793,17 +814,17 @@ proc ::eshel::instrumentgui::fillObjectProcessPage { frm visuNo } {
       pack $frm.response.auto -in [$frm.response getframe] -side top  -anchor w -fill none -expand 0
       pack $frm.response.none -in [$frm.response getframe] -side top  -anchor w -fill none -expand 0
 
+   grid $frm.flatFieldEnabled -in $frm -row 0 -column 0 -sticky w -pady 4
+   grid $frm.response         -in $frm -row 1 -column 0 -sticky ewn
 
-
-   grid $frm.response -in $frm -row 0 -column 0 -sticky ewn
-
-   grid rowconfig    $frm 0 -weight 1
+   grid rowconfig    $frm 0 -weight 0
+   grid rowconfig    $frm 1 -weight 1
    grid columnconfig $frm 0 -weight 1
 }
 
 #----------------------------------------------------------------------------
 # onSelectConfig
-#    met à jour les variables et les widgets quand on selectionne une configuration
+#    met ï¿½ jour les variables et les widgets quand on selectionne une configuration
 #    dans la combobox
 #----------------------------------------------------------------------------
 proc ::eshel::instrumentgui::onSelectConfig { visuNo } {
@@ -834,9 +855,15 @@ proc ::eshel::instrumentgui::onSelectConfig { visuNo } {
    }
 
    #--- spectrographe
+   if { $::conf(eshel,instrument,config,$configId,gamma) == 0 } {
+      set private(spectroType) 0
+   } else {
+      set private(spectroType) 1
+   }
    set private(spectroName) $::conf(eshel,instrument,config,$configId,spectroName)
    set private(grating)    $::conf(eshel,instrument,config,$configId,grating)
    set private(alpha)      $::conf(eshel,instrument,config,$configId,alpha)
+   set private(beta)      $::conf(eshel,instrument,config,$configId,beta)
    set private(gamma)      $::conf(eshel,instrument,config,$configId,gamma)
    set private(focale)     $::conf(eshel,instrument,config,$configId,focale)
    set private(spectrograhLink)   $::conf(eshel,instrument,config,$configId,spectrograhLink)
@@ -873,6 +900,7 @@ proc ::eshel::instrumentgui::onSelectConfig { visuNo } {
    set private(hotPixelEnabled)   $::conf(eshel,instrument,config,$configId,hotPixelEnabled)
    set private(cosmicEnabled)     $::conf(eshel,instrument,config,$configId,cosmicEnabled)
    set private(cosmicThreshold)   $::conf(eshel,instrument,config,$configId,cosmicThreshold)
+   set private(flatFieldEnabled)  $::conf(eshel,instrument,config,$configId,flatFieldEnabled)
    set private(responseOption)    $::conf(eshel,instrument,config,$configId,responseOption)
    set private(responseFileName)  [file nativename $::conf(eshel,instrument,config,$configId,responseFileName)]
 
@@ -899,13 +927,13 @@ proc ::eshel::instrumentgui::onSelectConfig { visuNo } {
       $tkOrderDefinition insert end $definition
    }
 
-   #--- je rafraichis les widgets de la réponse instrmentale
+   #--- je rafraichis les widgets de la rï¿½ponse instrmentale
    onSelectResponseOption $visuNo
 }
 
 #----------------------------------------------------------------------------
 # onSelectCamera
-#    met à jour les variables et les widgets quand on selectionne une camera
+#    met ï¿½ jour les variables et les widgets quand on selectionne une camera
 #----------------------------------------------------------------------------
 proc ::eshel::instrumentgui::onSelectCamera { visuNo } {
    variable private
@@ -923,7 +951,7 @@ proc ::eshel::instrumentgui::onSelectCamera { visuNo } {
 
 #----------------------------------------------------------------------------
 # onSelectResponseOption
-#    met à jour les variables et les widgets quand on selectionne une option de la reponse instrumentale
+#    met ï¿½ jour les variables et les widgets quand on selectionne une option de la reponse instrumentale
 #----------------------------------------------------------------------------
 proc ::eshel::instrumentgui::onSelectResponseOption { visuNo } {
    variable private
@@ -945,7 +973,7 @@ proc ::eshel::instrumentgui::onSelectResponseOption { visuNo } {
 
 #----------------------------------------------------------------------------
 # apply
-#    met à jour les variables et les widgets quand on applique les modifications d'une configuration
+#    met ï¿½ jour les variables et les widgets quand on applique les modifications d'une configuration
 #----------------------------------------------------------------------------
 proc ::eshel::instrumentgui::apply { visuNo } {
    variable private
@@ -961,6 +989,8 @@ proc ::eshel::instrumentgui::apply { visuNo } {
       switch $valueName {
          spectroName -
          grating -
+         alpha -
+         beta -
          alpha -
          gamma -
          focale {
@@ -1011,6 +1041,7 @@ proc ::eshel::instrumentgui::apply { visuNo } {
    set ::conf(eshel,instrument,config,$configId,spectroName)   $private(spectroName)
    set ::conf(eshel,instrument,config,$configId,grating)       $private(grating)
    set ::conf(eshel,instrument,config,$configId,alpha)         $private(alpha)
+   set ::conf(eshel,instrument,config,$configId,beta)          $private(beta)
    set ::conf(eshel,instrument,config,$configId,gamma)         $private(gamma)
    set ::conf(eshel,instrument,config,$configId,focale)        $private(focale)
    set ::conf(eshel,instrument,config,$configId,spectrograhLink) $private(spectrograhLink)
@@ -1054,7 +1085,8 @@ proc ::eshel::instrumentgui::apply { visuNo } {
    set ::conf(eshel,instrument,config,$configId,hotPixelEnabled)   $private(hotPixelEnabled)
    set ::conf(eshel,instrument,config,$configId,cosmicEnabled)     $private(cosmicEnabled)
    set ::conf(eshel,instrument,config,$configId,cosmicThreshold)   $private(cosmicThreshold)
-   set ::conf(eshel,instrument,config,$configId,responseOption)   $private(responseOption)
+   set ::conf(eshel,instrument,config,$configId,flatFieldEnabled)  $private(flatFieldEnabled)
+   set ::conf(eshel,instrument,config,$configId,responseOption)    $private(responseOption)
    set ::conf(eshel,instrument,config,$configId,responseFileName) [file normalize $private(responseFileName)]
 
    #--- je recupere la liste des pixels chauds de reference
@@ -1331,7 +1363,7 @@ proc ::eshel::instrumentgui::deleteConfig { visuNo } {
 
       #--- je selectionne l'item suivant a la place de celui qui vient d'etre supprime
       if { $index == [llength $configList] } {
-         #--- je decrement l'index si l'element supprimé etait le dernier de la liste
+         #--- je decrement l'index si l'element supprimï¿½ etait le dernier de la liste
          incr index -1
       }
       $tkCombo setvalue "@$index"
@@ -1362,7 +1394,7 @@ proc ::eshel::instrumentgui::importConfig { visuNo } {
       set catchResult [ catch {
          #--- je lis le fichier
          array set params [::eshel::instrument::importConfig $fileName ]
-         #--- je verifie que la configuration n'existe pas déjé
+         #--- je verifie que la configuration n'existe pas dï¿½jï¿½
          set configName $params(configName)
          set configId [::eshel::instrument::getConfigIdentifiant $configName]
          if { [info exists ::conf(eshel,instrument,config,$configId,configName)]==1 } {
@@ -1429,7 +1461,7 @@ proc ::eshel::instrumentgui::importCalibrationConfig { visuNo } {
       set catchResult [ catch {
          #--- je lis le fichier
          array set params [::eshel::instrument::importCalibrationConfig $fileName ]
-         #--- je verifie que la configuration n'existe pas déja
+         #--- je verifie que la configuration n'existe pas dï¿½ja
          set configName $params(configName)
          set configId [::eshel::instrument::getConfigIdentifiant $configName]
          if { [info exists ::conf(eshel,instrument,config,$configId,configName)]==1 } {
@@ -1538,7 +1570,7 @@ proc ::eshel::instrumentgui::createReference { visuNo } {
       append referenceId $c
    }
 
-   #--- je verifie que l'identifiant n'existe pas déja
+   #--- je verifie que l'identifiant n'existe pas dï¿½ja
    if { [info exists private($referenceId,actionList) ] == 1 } {
       tk_messageBox -message "$referenceName\n$::caption(eshel,instrument,reference,alreadyExist)" -icon error -title $::caption(eshel,title)
       return
@@ -1599,7 +1631,7 @@ proc ::eshel::instrumentgui::copyReference { visuNo } {
       append referenceId $c
    }
 
-   #--- je verifie que l'identifiant n'existe pas déja
+   #--- je verifie que l'identifiant n'existe pas dï¿½ja
    if { [info exists private($referenceId,actionList) ] == 1 } {
       tk_messageBox -message "$referenceName\n$::caption(eshel,instrument,reference,alreadyExist)" -icon error -title $::caption(eshel,title)
       return
@@ -2035,7 +2067,7 @@ proc ::eshel::instrumentgui::modifyAction { visuNo } {
       lappend actionParams $paramName $private(action,$paramName)
    }
 
-   #--- je mets à jour la table des actions
+   #--- je mets ï¿½ jour la table des actions
    $private(actionTable) cellconfigure $actionIndex,0 -text $actionType
    $private(actionTable) cellconfigure $actionIndex,1 -text $actionParams
 }
@@ -2203,7 +2235,7 @@ proc ::eshel::instrumentgui::selectResponseFileName { visuNo } {
 #
 #  Remarque IMPORTANTE : le nom de configuration ne doit contenir
 #  que des caracrteres alphanumeriques  ou underscore car il est
-#  est utilisé en tant qu'indice d' array
+#  est utilisï¿½ en tant qu'indice d' array
 ################################################################
 
 namespace eval ::eshel::instrumentgui::nameDialog {

@@ -2,7 +2,7 @@
 # Fichier : eshel.tcl
 # Description : fenetre saisie des mots clefs
 # Auteurs : Michel Pujol
-# Mise a jour $Id: makeseries.tcl,v 1.1 2009-11-07 08:13:07 michelpujol Exp $
+# Mise a jour $Id: makeseries.tcl,v 1.2 2010-04-11 13:24:25 michelpujol Exp $
 #
 
 ################################################################
@@ -37,6 +37,7 @@ proc ::eshel::makeseries::run { tkbase visuNo tkTable fileIndexes } {
 
    set private(tkTable) $tkTable
    set private(fileIndexes) $fileIndexes
+   set private(defautImageType) "BIAS"
 
 
    foreach keywordName $keywordList {
@@ -177,7 +178,7 @@ proc ::eshel::makeseries::fillConfigPage { frm visuNo } {
          switch $keywordName {
             ###DATE-OBS {
             ###   $private(values,$keywordName)
-            ###   #--- j'utilise DATE-OBS comme identifiant de la série
+            ###   #--- j'utilise DATE-OBS comme identifiant de la sï¿½rie
             ###   if { $private(selected,SERIESID) == "" } {
             ###      #--- je prends la premiere valeur de DATE-OBS rencontree
             ###      set private(selected,SERIESID) $keywordValue
@@ -238,12 +239,37 @@ proc ::eshel::makeseries::fillConfigPage { frm visuNo } {
 
       #--- ajoute un bouton les mots clefs qui possedent une valeur par defaut dans la configuration instrument
       switch $keywordName {
-         INSTRUME -
-         TELESCOP -
+         INSTRUME {
+            Button $frm.button$keywordName -text "current specrograph : $::conf(eshel,instrument,config,$::conf(eshel,currentInstrument),spectroName)" \
+            -command "::eshel::makeseries::getCurrentInstrumentValue $visuNo $keywordName"
+            grid $frm.button$keywordName -in $frm -row $row -column 2  -sticky nw
+         }
+         TELESCOP {
+            Button $frm.button$keywordName -text "current telescope : $::conf(eshel,instrument,config,$::conf(eshel,currentInstrument),telescopeName)" \
+            -command "::eshel::makeseries::getCurrentInstrumentValue $visuNo $keywordName"
+            grid $frm.button$keywordName -in $frm -row $row -column 2  -sticky nw
+         }
          DETNAM {
-            Button $frm.button$keywordName -text "current instrument" \
+            Button $frm.button$keywordName -text "current camera : $::conf(eshel,instrument,config,$::conf(eshel,currentInstrument),cameraName)" \
                -command "::eshel::makeseries::getCurrentInstrumentValue $visuNo $keywordName"
             grid $frm.button$keywordName -in $frm -row $row -column 2  -sticky nw
+         }
+         SITENAME {
+            Button $frm.button$keywordName -text "current site : $::conf(posobs,nom_observatoire)" \
+            -command "::eshel::makeseries::getCurrentInstrumentValue $visuNo $keywordName"
+            grid $frm.button$keywordName -in $frm -row $row -column 2  -sticky nw
+         }
+         IMAGETYP {
+            #--- j'ajoute une combo avec la liste des type d'images
+            set defautImageTypeList { BIAS DARK FLATFIELD FLAT CALIB OBJECT RESPONSE }
+            ComboBox $frm.defautImageType \
+               -height [ llength $defautImageTypeList ] \
+               -width  [ ::tkutil::lgEntryComboBox $defautImageTypeList ] \
+               -relief sunken -borderwidth 1 -editable 0 \
+               -textvariable ::eshel::makeseries::private(defautImageType) \
+               -modifycmd "::eshel::makeseries::selectImageType $visuNo" \
+               -values $defautImageTypeList
+            grid $frm.defautImageType -in $frm -row $row -column 2  -sticky nw
          }
       }
       grid columnconfig $frm $row -weight 1
@@ -272,7 +298,22 @@ proc ::eshel::makeseries::getCurrentInstrumentValue { visuNo keywordName } {
       TELESCOP {
          set private(selected,TELESCOP)  $::conf(eshel,instrument,config,$::conf(eshel,currentInstrument),telescopeName)
       }
+      SITENAME {
+         set private(selected,SITENAME)  $::conf(posobs,nom_observatoire)
+      }
    }
 
 }
+
+#------------------------------------------------------------
+# selectImageType
+#   copie le type d'image selectionne dans le mot cle ImageType
+#   return void
+#------------------------------------------------------------
+proc ::eshel::makeseries::selectImageType { visuNo } {
+   variable private
+
+   set private(selected,IMAGETYP)  $private(defautImageType)
+}
+
 

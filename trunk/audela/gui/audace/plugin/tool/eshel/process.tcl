@@ -2,7 +2,7 @@
 # Fichier : process.tcl
 # Description : traitements eShel
 # Auteur : Michel PUJOL
-# Mise a jour $Id: process.tcl,v 1.1 2009-11-07 08:13:07 michelpujol Exp $
+# Mise a jour $Id: process.tcl,v 1.2 2010-04-11 13:24:25 michelpujol Exp $
 #
 
 ################################################################
@@ -21,7 +21,7 @@
 #
 # ::eshel::process::startScript
 #    lance le script de traitement
-#    (le script est lancé dans une thread separee)
+#    (le script est lancï¿½ dans une thread separee)
 #
 ################################################################
 
@@ -221,14 +221,15 @@ proc ::eshel::process::generateNightlog { } {
       #--- je recherche le type d'image
       if { [info exists keywordArray(IMAGETYP)] == 1 && $keywordArray(IMAGETYP) != "" } {
          switch $keywordArray(IMAGETYP) {
-            BIAS -
-            DARK -
-            FLAT -
-            CALIB {
+            "BIAS" -
+            "DARK" -
+            "FLATFIELD" -
+            "FLAT" -
+            "CALIB" {
                #--- pas d'autre verification a faire
                set nodeType $keywordArray(IMAGETYP)
             }
-            RESPONSE {
+            "RESPONSE" {
                #--- j'ignore le fichier si la selection de la RI n'est pas en mode automatique
                ###if { [::eshel::instrument::getConfigurationProperty responseOption] != "AUTO" } {
                ###   continue
@@ -273,7 +274,7 @@ proc ::eshel::process::generateNightlog { } {
       }
    }
 
-   #--- j'ajoute la réponse instrumentale choisie manuellement
+   #--- j'ajoute la rÃ©ponse instrumentale choisie manuellement
    if { [::eshel::instrument::getConfigurationProperty responseOption] == "MANUAL" } {
       set fileName [::eshel::instrument::getConfigurationProperty responseFileName]
       set catchResult [catch {
@@ -338,7 +339,7 @@ proc ::eshel::process::generateProcess { } {
    }
    set roadmapNode [::dom::document createElement $nightNode PROCESS ]
 
-   #--- je recupere la liste des series identifiées
+   #--- je recupere la liste des series identifiÃ©es
    set filesNode [::eshel::process::getFilesNode]
 
    #--- j'affiche une trace dans la console pour marque le debut de la generation des traitements
@@ -351,7 +352,7 @@ proc ::eshel::process::generateProcess { } {
          #--- ce bias est deja traite
          continue
       }
-      #--- je cree un traitement à faire
+      #--- je cree un traitement Ã  faire
       set processNode [::dom::document createElement $roadmapNode "BIAS-PROCESS" ]
       #--- je copie la serie des fichiers bruts a traiter
       ::dom::tcl::node appendChild $processNode [::dom::node cloneNode $fileNode 1 ]
@@ -370,12 +371,12 @@ proc ::eshel::process::generateProcess { } {
    #--- Pretraitement IMAGETYP=DARK
    foreach fileNode [set [::dom::element getElementsByTagName $filesNode DARK ]] {
       if { [::dom::element getAttribute $fileNode "RAW"] == 0 } {
-         #--- cet dark est deja traite
+         #--- cet dark est deja traite car n'a pas l'attribut RAW
          continue
       }
       #--- j'initialise le message d'erreur
       set errorMessage ""
-      #--- je cree un traitement à faire
+      #--- je cree un traitement Ã  faire
       set processNode [::dom::document createElement $roadmapNode "DARK-PROCESS" ]
       #--- je copie la serie de darks a traiter
       ::dom::tcl::node appendChild $processNode [::dom::node cloneNode $fileNode 1]
@@ -388,6 +389,51 @@ proc ::eshel::process::generateProcess { } {
       ::dom::element setAttribute $processNode "COMMENT" $errorMessage
       #--- je trace dans la console
       logGenerateProcess  $status "DARK-PROCESS" $fileName $errorMessage
+   }
+
+
+   #--- Pretraitement IMAGETYP=FLATFIELD
+   foreach fileNode [set [::dom::element getElementsByTagName $filesNode FLATFIELD ]] {
+      if { [::dom::element getAttribute $fileNode "RAW"] == 0 } {
+         #--- cet flat est deja traite
+         continue
+      }
+      #--- j'initialise le message d'erreur
+      set errorMessage ""
+      #--- je recherche le bias
+      set biasNode [findCompatibleImage $fileNode "BIAS" [list NAXIS1 NAXIS2 BIN1 BIN2 CAMERA] ]
+      if { $biasNode == "" } {
+         lappend errorMessage [format $::caption(eshel,process,fileNotFound) "BIAS" ]
+      }
+      #--- je recherche le dark
+      set darkNode [findCompatibleImage $fileNode "DARK" [list NAXIS1 NAXIS2 BIN1 BIN2 CAMERA ] ]
+      if { $darkNode == "" } {
+         lappend errorMessage [format $::caption(eshel,process,fileNotFound) "DARK" ]
+      }
+
+      #--- je cree le traitement a faire
+      set processNode [::dom::document createElement $roadmapNode "FLATFIELD-PROCESS" ]
+      if { $errorMessage == "" } {
+         #--- je copie la serie de darks a traiter
+         ::dom::tcl::node appendChild $processNode [::dom::node cloneNode $fileNode 1]
+         #--- j'ajoute le bias
+         ::dom::tcl::node appendChild $processNode [::dom::node cloneNode $biasNode 0]
+         #--- j'ajoute le dark
+         ::dom::tcl::node appendChild $processNode [::dom::node cloneNode $darkNode 0]
+         set status "todo"
+         lappend errorMessage "$::caption(eshel,process,with) BIAS=[::dom::element getAttribute $biasNode FILENAME] "
+         lappend errorMessage "$::caption(eshel,process,with) DARK=[::dom::element getAttribute $darkNode FILENAME] "
+      } else {
+         set status "error"
+      }
+
+      #--- je renseigne le status du traitement
+      set fileName [::dom::element getAttribute $fileNode "FILENAME" ]
+      ::dom::element setAttribute $processNode "FILENAME" $fileName
+      ::dom::element setAttribute $processNode "STATUS" $status
+      ::dom::element setAttribute $processNode "COMMENT" $errorMessage
+      #--- je trace dans la console
+      logGenerateProcess  $status "FLAT-PROCESS" $fileName $errorMessage
    }
 
    #--- Pretraitement IMAGETYP=FLAT
@@ -434,7 +480,7 @@ proc ::eshel::process::generateProcess { } {
       logGenerateProcess  $status "FLAT-PROCESS" $fileName $errorMessage
    }
 
-   #--- Préraitement IMAGETYP=CALIB
+   #--- PrÃ©traitement IMAGETYP=CALIB
    foreach fileNode [set [::dom::element getElementsByTagName $filesNode CALIB ]] {
       if { [::dom::element getAttribute $fileNode "RAW"] == 0 } {
          #--- cette calibration est deja traite
@@ -506,7 +552,13 @@ proc ::eshel::process::generateProcess { } {
          lappend errorMessage [format $::caption(eshel,process,fileNotFound) "DARK" ]
       }
 
-      #--- je recherche le flat
+      #--- je recherche le flatflied
+      if { [::eshel::instrument::getConfigurationProperty flatFieldEnabled] == 1 } {
+         set flatfieldNode [findCompatibleImage $fileNode "FLATFIELD" [list NAXIS1 NAXIS2 BIN1 BIN2 DETNAM INSTRUME TELESCOP] ]
+         if { $flatfieldNode == "" } {
+            lappend errorMessage "FLATFIELD missing"
+         }
+      }
       ###set flatNode [findCompatibleImage $fileNode "FLAT" [list NAXIS1 NAXIS2 BIN1 BIN2 DETNAM INSTRUME TELESCOP] ]
       ###if { $flatNode == "" } {
       ###   lappend errorMessage "FLAT missing "
@@ -536,7 +588,7 @@ proc ::eshel::process::generateProcess { } {
          }
          NONE -
          default {
-            #--- pas de fichier de réponse instrumentale
+            #--- pas de fichier de rï¿½ponse instrumentale
             set responseNode ""
          }
       }
@@ -552,6 +604,10 @@ proc ::eshel::process::generateProcess { } {
          lappend errorMessage "$::caption(eshel,process,with) DARK=[::dom::element getAttribute $darkNode FILENAME] "
          #--- j'ajoute le dark
          ::dom::tcl::node appendChild $processNode [::dom::node cloneNode $darkNode 0]
+         if { [::eshel::instrument::getConfigurationProperty flatFieldEnabled] == 1 } {
+            #--- j'ajoute le flatfield
+            ::dom::tcl::node appendChild $processNode [::dom::node cloneNode $flatfieldNode 0]
+         }
          ####--- j'ajoute le flat
          ###::dom::tcl::node appendChild $processNode [::dom::node cloneNode $flatNode 0]
          #--- j'ajoute la calib
@@ -599,6 +655,7 @@ proc ::eshel::process::generateScript { } {
    set name $::conf(eshel,currentInstrument)
    putCommand $hScriptFile "#--- Spectrograph parameters"
    putCommand $hScriptFile "set alpha     $::conf(eshel,instrument,config,$name,alpha)"
+   putCommand $hScriptFile "set beta      $::conf(eshel,instrument,config,$name,beta)"
    putCommand $hScriptFile "set gamma     $::conf(eshel,instrument,config,$name,gamma)"
    putCommand $hScriptFile "set grating   $::conf(eshel,instrument,config,$name,grating)     "
    putCommand $hScriptFile "set focale    $::conf(eshel,instrument,config,$name,focale)      "
@@ -671,6 +728,26 @@ proc ::eshel::process::generateScript { } {
             putImaStack  $hScriptFile $::conf(eshel,rawDirectory) $darkNames $::conf(eshel,referenceDirectory) $fileNameOut  "MED"
             putMoveFiles $hScriptFile $::conf(eshel,rawDirectory) $::conf(eshel,archiveDirectory) $darkNames
             putCatchEnd $hScriptFile "DARK-PROCESS" $fileNameOut
+         }
+
+         "FLATFIELD-PROCESS" {
+            #--- nom du flatfield pretraite en sortie
+            set flatfieldNode [lindex [set [::dom::element getElementsByTagName $processNode FLATFIELD ]] 0]
+            set fileNameOut   [::dom::element getAttribute $flatfieldNode "FILENAME"]
+
+            #--- Nom des darks bruts en entree
+            set flatfieldNames ""
+            foreach fileNode [::dom::tcl::node children $flatfieldNode] {
+               lappend flatfieldNames [::dom::element getAttribute $fileNode "FILENAME" ]
+            }
+
+            #--- j'ajoute le script
+            putCatchBegin $hScriptFile "FLATFIELD-PROCESS" $fileNameOut
+            putImaStack  $hScriptFile $::conf(eshel,rawDirectory) $flatfieldNames $::conf(eshel,referenceDirectory) $fileNameOut  "MED"
+            putImaSeries $hScriptFile $::conf(eshel,referenceDirectory) $fileNameOut $::conf(eshel,referenceDirectory) $fileNameOut  "STAT"
+            putCommand   $hScriptFile "file rename -force \"[file join $::conf(eshel,referenceDirectory) ${fileNameOut}1.fit]\"  \"[file join $::conf(eshel,referenceDirectory) $fileNameOut]\" "
+            putMoveFiles $hScriptFile $::conf(eshel,rawDirectory) $::conf(eshel,archiveDirectory) $flatfieldNames
+            putCatchEnd $hScriptFile "FLATFIELD-PROCESS" $fileNameOut
          }
 
          "FLAT-PROCESS" {
@@ -776,14 +853,26 @@ proc ::eshel::process::generateScript { } {
             set calibFileName [::dom::element getAttribute $calibNode "FILENAME"]
             set calibFileName [file join $::conf(eshel,referenceDirectory) $calibFileName]
 
+            #--- Nom du flatfield (optionnel)
+            set flatfieldNode [lindex [set [::dom::element getElementsByTagName $processNode FLATFIELD ]] 0]
+            if { $flatfieldNode != "" } {
+               set flatfieldFileName [::dom::element getAttribute $flatfieldNode "FILENAME"]
+            } else {
+               set flatfieldFileName ""
+            }
+
             #--- Nom de la reponse instrumentale (optionnel)
             set responseNode [lindex [set [::dom::element getElementsByTagName $processNode RESP_MANUAL ]] 0]
             if { $responseNode != "" } {
                set responseFileName [::dom::element getAttribute $responseNode "FILENAME"]
             } else {
+               #--- je cherche une selectionne automatiquement
                set responseNode [lindex [set [::dom::element getElementsByTagName $processNode RESPONSE ]] 0]
                if { $responseNode != "" } {
                   set responseFileName [::dom::element getAttribute $responseNode "FILENAME"]
+                  if {[file pathtype $responseFileName ] == "relative" } {
+                     set responseFileName [file join $::conf(eshel,referenceDirectory) $responseFileName]
+                  }
                } else {
                   set responseFileName ""
                }
@@ -821,7 +910,19 @@ proc ::eshel::process::generateScript { } {
 
             #--- tempName(i) = objectRaw(i) - (dark thermique) * (objectExptime/darkExptime) - bias
             if { $::conf(eshel,instrument,config,$name,quickProcess) == 1 } {
+               #--- je soustrais le dark+bias
                putImaSeries $hScriptFile $::conf(eshel,rawDirectory) $objectsNames $::conf(eshel,tempDirectory) "temp-" "SUBDARK $subDarkOption"
+
+               #--- je divise par le flatfield
+               if { $flatfieldFileName != "" } {
+                  set fullFlatfieldName [file join $::conf(eshel,referenceDirectory) $flatfieldFileName]
+                  #--- je recupere la moyenne du flatfield
+                  putCommand $hScriptFile "set keywords \[fitsheader \"$fullFlatfieldName\"\]"
+                  putCommand $hScriptFile "set flatFieldMean  \[lindex \[lsearch -index 0 -inline \$keywords MEAN\] 1\]"
+                  #--- je divise par le flatfield
+                  putImaSeries $hScriptFile $::conf(eshel,tempDirectory) $tempNames $::conf(eshel,tempDirectory) "temp-" "DIV \\\"file=$fullFlatfieldName\\\" constant=\$flatFieldMean"
+               }
+
                putImaStack  $hScriptFile $::conf(eshel,tempDirectory) $tempNames $::conf(eshel,tempDirectory) $fileNameOut  "ADD bitpix=32"
                putProcessObject $hScriptFile [file join $::conf(eshel,tempDirectory) $fileNameOut] [file join $::conf(eshel,processedDirectory) $fileNameOut] $calibFileName $responseFileName
             } else {
@@ -1076,7 +1177,7 @@ proc ::eshel::process::putScriptBegin { hfile  } {
    set command "\n"
    append  command "####################################################\n"
    append  command "# eShel script generated on $date TU  \n"
-   append  command "#    Spectrograph $::conf(eshel,instrument,config,$name,spectroName)  \n"
+   append  command "#    Spectrograph $::conf(eshel,instrument,config,$name,spectroName) \n"
    append  command "#    Camera       $::conf(eshel,instrument,config,$name,cameraName)  \n"
    append  command "#    Telescope    $::conf(eshel,instrument,config,$name,telescopeName)  \n"
    append  command "####################################################\n"
@@ -1197,7 +1298,7 @@ proc ::eshel::process::putProcessFlat { hfile dirIn fileIn dirOut fileOut } {
    set command "eshel_processFlat "
    append command "\"[file join $dirIn $fileIn]\" "
    append command "\"[file join $dirOut $fileOut]\" "
-   append command {$alpha $gamma $focale $grating $pixelSize }
+   append command {$alpha $beta $gamma $focale $grating $pixelSize }
    append command {$width $height }
    append command {$boxWide $wideOrder $stepOrder $wideSky $threshold }
    append command {$minOrder $maxOrder }
@@ -1226,7 +1327,7 @@ proc ::eshel::process::putProcessObject { hfile objectFileNameIn objectFileNameO
    append command "\"$calibFileName\" "
    append command {$minOrder $maxOrder -merge 1 }
 
-   #--- option pour diviser par la repons einstrumentale
+   #--- option pour diviser par la reponse instrumentale
    if { $responseFileName != "" } {
       append command "-response \"$responseFileName\""
    }
@@ -1272,6 +1373,7 @@ proc ::eshel::process::startScript {  } {
          #--- je cree une thread
          set private(threadNo) [thread::create ]
          #--- je copie les commandes dans la thread du traitement
+         ::thread::copycommand $private(threadNo) "fitsheader"
          ::thread::copycommand $private(threadNo) "ttscript2"
          ::thread::copycommand $private(threadNo) "mc_date2jd"
          ::thread::copycommand $private(threadNo) "eshel_processFlat"
@@ -1328,7 +1430,7 @@ proc ::eshel::process::stopScript {  } {
       #--- je met a jour la fenetre des traitements
       ::eshel::processgui::setFrameState
    } else {
-      #--- si la thread n'est pas encore démarre
+      #--- si la thread n'est pas encore dï¿½marre
       set private(running) "stopping"
    }
 }
@@ -1337,7 +1439,7 @@ proc ::eshel::process::stopScript {  } {
 #------------------------------------------------------------
 # endScript
 #  cette procedure est appellee par la thread des traitements
-#  quand les traitements sont terminés
+#  quand les traitements sont terminï¿½s
 #  si traitement manuel : regenere la roadmap
 #  si traitement auto   : lance un nouveau traitement
 #  Cette procedure est appelee a la fin d'un script
@@ -1410,6 +1512,7 @@ proc ::eshel::process::getFileName { serieNode } {
          append fileName "-${nbImage}x${exptime}s"
       }
       FLAT -
+      FLATFIELD -
       CALIB -
       DARK {
          #--- j'ajoute le type d'image
@@ -1443,7 +1546,7 @@ proc ::eshel::process::getFileName { serieNode } {
 # findCompatibleImage
 #   Recherche une image d'un type donne et avec les meme mot clefs
 #
-#   Si plusieurs images respectent ces critères, alors l'image retournée est:
+#   Si plusieurs images respectent ces critÃ¨res, alors l'image retournï¿½e est:
 #   - si le type d'image est "DARK"
 #       celle qui a le temps d'exposition EXPOSURE le plus proche de celui de reference
 #   - sinon pour les autres types d'images :
@@ -1451,8 +1554,8 @@ proc ::eshel::process::getFileName { serieNode } {
 #
 # Parameters
 #   referenceNode :     node de l'image de reference
-#   searchedImageType : type d'image recherché
-#   keywordNames :      liste des mots clefs servant de critère de recherche
+#   searchedImageType : type d'image recherchÃ©
+#   keywordNames :      liste des mots clefs servant de critÃ¨re de recherche
 # return
 #   node de l'image la plus compatible ou "" si aucune image compatible n'a ete trouvee
 #------------------------------------------------------------
@@ -1468,7 +1571,7 @@ proc ::eshel::process::findCompatibleImage { referenceNode searchedImageType key
 
    set nightNode [::dom::tcl::document cget $private(nightlog) -documentElement]
    set filesNode [lindex [set [::dom::element getElementsByTagName $nightNode "FILES" ]] 0]
-   #--- je definis le pretraitement à faire sur les BIAS
+   #--- je definis le pretraitement Ã  faire sur les BIAS
    foreach fileNode [set [::dom::element getElementsByTagName $filesNode $searchedImageType ]] {
       #--- je compare les mots clefs
       set badKeyword ""
@@ -1505,15 +1608,15 @@ proc ::eshel::process::findCompatibleImage { referenceNode searchedImageType key
             #--- c'est la premiere image compatible, je verifie si je peux prendre ...
             set diffExpTime [ expr $fileExptime - $refExptime]
             if { $diffExpTime >= 0  } {
-               #--- le temps de pose est inférieur ou egal a celui du DARK, je prends ...
+               #--- le temps de pose est infï¿½rieur ou egal a celui du DARK, je prends ...
                set foundNode    $fileNode
                set foundDiffExpTime $diffExpTime
             } else {
-               #--- le temps de pose est supérieur , je ne prends pas.
+               #--- le temps de pose est supï¿½rieur , je ne prends pas.
             }
          } else {
             #--- c'est la premiere image compatible, je prends ...
-            #--- remarque: la fonction abs() permet de prendre en compte les dates antérieures et/ou posterieures
+            #--- remarque: la fonction abs() permet de prendre en compte les dates antï¿½rieures et/ou posterieures
             set foundNode    $fileNode
             set foundDiffDateObs  [ expr abs([mc_date2jd $refDateObs] - [mc_date2jd $fileDateObs]) ]
          }
@@ -1531,7 +1634,7 @@ proc ::eshel::process::findCompatibleImage { referenceNode searchedImageType key
                   #--- le temps de pose n'est pas plus proche, je ne prends pas.
                }
             } else {
-               #--- le temps de pose est supérieur a la reference , je ne prends pas.
+               #--- le temps de pose est supï¿½rieur a la reference , je ne prends pas.
             }
          } else {
             #--- je compare la date
@@ -1653,7 +1756,7 @@ proc ::eshel::process::findSeries { } {
          if { $badKeywords == "" } {
             #--- je deplace le fichier dans la serie
             ::dom::tcl::node appendChild $serieNode $fileNode
-            #--- je renseigne DATE-OBS de la série avec celle du fichier si celle est inferieure
+            #--- je renseigne DATE-OBS de la sÃ©rie avec celle du fichier si celle est inferieure
             set fileDateObs [::dom::element getAttribute $fileNode DATE-OBS ]
             set serieDateObs [::dom::element getAttribute $serieNode DATE-OBS ]
             if { [string compare $fileDateObs $serieDateObs] < 0 } {
@@ -1688,7 +1791,7 @@ proc ::eshel::process::findSeries { } {
 # makeSerie
 #   fabrique une serie (ou complete une serie existant) avec les fichiers selectionnes pas l'utilisateur
 #
-#   les fichiers RAW ssont dans le répertoire
+#   les fichiers RAW ssont dans le rï¿½pertoire
 #
 #------------------------------------------------------------
 proc ::eshel::process::makeSerie { fileNames  } {
@@ -1720,11 +1823,11 @@ proc ::eshel::process::makeSerie { fileNames  } {
                      } else {
                         #---
                         if { $dataObsMini == "" } {
-                           #--- j'utilise DATE-OBS comme identifiant de la série
+                           #--- j'utilise DATE-OBS comme identifiant de la sÃ©rie
                            set dataObsMini $keywordValue
                         } else {
                            if { [string compare $keywordValue $temp(SERIESID)] < 0 } {
-                              #--- j'utilise DATE-OBS comme identifiant de la série
+                              #--- j'utilise DATE-OBS comme identifiant de la sÃ©rie
                               #--- si elle est plus petite que celle rencontre dans un autre fichier
                               set dataObsMini $keywordValue
                            }
@@ -1766,11 +1869,11 @@ proc ::eshel::process::makeSerie { fileNames  } {
       set temp(SERIESID) $dataObsMini
    }
 
-   #--- je vérifie que les attributs de la serie sont tous renseignes
+   #--- je vï¿½rifie que les attributs de la serie sont tous renseignes
    foreach keywordName $private(serieAttributes) {
       switch $keywordName {
          FILES {
-            #--- pas de controle à faire
+            #--- pas de controle Ã  faire
          }
          OBJNAME {
             #--- je ne controle l'objet que si IMAGETYP = OBJECT
@@ -1944,7 +2047,7 @@ proc ::eshel::process::loadFile { fileName } {
    set hfile [open $private(fileName) r]
    set data [read $hfile]
    close $hfile
-   set $private(nightlog) [::dom::tcl::parse $data]
+   set private(nightlog) [::dom::tcl::parse $data]
 }
 
 #------------------------------------------------------------
@@ -1955,7 +2058,7 @@ proc ::eshel::process::loadFile { fileName } {
 proc ::eshel::process::updateFileKeywords {  } {
    variable private
 
-   #--- je mets à jour les mots clefs des fichiers des series
+   #--- je mets ï¿½ jour les mots clefs des fichiers des series
    set nightNode [::dom::tcl::document cget $private(nightlog) -documentElement]
    set filesNode [lindex [set [::dom::element getElementsByTagName $nightNode "FILES" ]] 0]
    foreach serieNode [::dom::tcl::node children $filesNode] {
@@ -2080,9 +2183,9 @@ proc ::eshel::process::logError { message  } {
 #  cette procedure est appellee par la thread des traitements
 #
 # @param nom du fichier traite
-# @param état du traitement
+# @param ï¿½tat du traitement
 #    - running : le traitement est en cours
-#    - done    : le tratement est terminé correctement.
+#    - done    : le tratement est terminï¿½ correctement.
 #    - error   : le traitemnt avec des erreurs
 # @return rien
 # @private
