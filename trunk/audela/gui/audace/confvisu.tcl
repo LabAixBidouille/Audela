@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.133 2010-03-27 14:12:55 michelpujol Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.134 2010-04-11 13:14:12 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -284,7 +284,7 @@ namespace eval ::confVisu {
 
       #--- petit raccourci pour la suite
       set bufNo [visu$visuNo buf]
-
+      set hduNo 1
       if { [ image type image[visu$visuNo image] ] == "video" } {
          #--- je recupere la largeur et la hauteur de la video
          set camNo [::confCam::getCamNo $private($visuNo,camItem)]
@@ -474,10 +474,11 @@ namespace eval ::confVisu {
                }
                set private($visuNo,picture_w) [buf$bufNo getpixelswidth]
                set private($visuNo,picture_h) [buf$bufNo getpixelsheight]
+               ::confVisu::setFileName $visuNo $fileName
                set private($visuNo,currentHduNo) $hduNo
             } else {
                #--- je mets à jour le nom du fichier meme quand l'image ne
-               #--- proviens pas d'un fichier, mais d'une camera
+               #--- provient pas d'un fichier, mais d'une camera
                #--- afin de permettre le rafraichissement des outils
                #--- qui sont abonnes au listener addFilenameListener
                set private($visuNo,fitsHduList) ""
@@ -815,6 +816,10 @@ namespace eval ::confVisu {
          #--- cette procedure declenche les procedures qui sont a l'ecoute du changement
          #--- de nom de fichier avec addFileNameListener
          ::confVisu::setFileName $visuNo $fileName
+
+         #--- je met a jour le numero du hdu
+         #--- cette procedure declenche les procedures qui sont a l'ecoute du changement
+         set private($visuNo,currentHduNo) $hduNo
 
       }
    }
