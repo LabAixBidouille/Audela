@@ -464,222 +464,224 @@ List_ModelSymbols
 List_ModelValues
 */
 {
-	char s[1024];
-	double equinox=2451545.00000,epoch=2448349.06250;
-	mc_cata_astrom hips;
-	int code,argcc;
-	char **argvv=NULL;
-	double jd,longmpc;
-	mc_modpoi_matx *matx=NULL; /* 2*nb_star */
-	mc_modpoi_vecy *vecy=NULL; /* nb_coef */
-	int nb_coef,nb_star,k;
+   char s[1024];
+   double equinox=2451545.00000,epoch=2448349.06250;
+   mc_cata_astrom hips;
+   int code,argcc;
+   char **argvv=NULL;
+   double jd,longmpc;
+   mc_modpoi_matx *matx=NULL; /* 2*nb_star */
+   mc_modpoi_vecy *vecy=NULL; /* nb_coef */
+   int nb_coef,nb_star,k;
    double rhocosphip=0.,rhosinphip=0.;
    double latitude,altitude,latrad;
-	double ra,cosdec,mura,mudec,parallax,temperature,pressure;
-	double dec,asd2,dec2;
-	double ha,az,h,ddec=0.,dha=0.,refraction=0.;
-	double dh=0.,daz=0.;
-	double rat,dect,hat,ht,azt,dra;
+   double ra,cosdec,mura,mudec,parallax,temperature,pressure;
+   double dec,asd2,dec2;
+   double ha,az,h,ddec=0.,dha=0.,refraction=0.;
+   double dh=0.,daz=0.;
+   double rat,dect,hat,ht,azt,dra;
    int model_only = 0; 
 
    if(argc<4) {
       sprintf(s,"Usage: %s List_coords Date_UTC Home Pressure Temperature ?List_ModelSymbols List_ModelValues? ?model_only?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
- 	   return TCL_ERROR;
+      return TCL_ERROR;
    } else {
       /* --- decode les coordonnees catalogue ---*/
       code=Tcl_SplitList(interp,argv[1],&argcc,&argvv);
-		if (argcc>8) {
-			hips.id  = atoi(argvv[0]);
-			hips.mag = atof(argvv[1]);
-			hips.ra  = atof(argvv[2]);
-			hips.dec = atof(argvv[3]);
-	  	   mctcl_decode_date(interp,argvv[4],&equinox);
-	  	   mctcl_decode_date(interp,argvv[5],&epoch);
-			hips.mura = atoi(argvv[6]);
-			hips.mudec = atoi(argvv[7]);
-			hips.plx = atoi(argvv[8]);
-			if (argvv!=NULL) { Tcl_Free((char *) argvv); }
-		} else {
-			// traite l'erreur
-			return TCL_ERROR;
-		}
+      if (argcc>8) {
+         hips.id  = atoi(argvv[0]);
+         hips.mag = atof(argvv[1]);
+         hips.ra  = atof(argvv[2]);
+         hips.dec = atof(argvv[3]);
+         mctcl_decode_date(interp,argvv[4],&equinox);
+         mctcl_decode_date(interp,argvv[5],&epoch);
+         hips.mura = atoi(argvv[6]);
+         hips.mudec = atoi(argvv[7]);
+         hips.plx = atoi(argvv[8]);
+         if (argvv!=NULL) { Tcl_Free((char *) argvv); }
+      } else {
+         // traite l'erreur
+         return TCL_ERROR;
+      }
       /* --- decode la Date ---*/
-	  	mctcl_decode_date(interp,argv[2],&jd);
+      mctcl_decode_date(interp,argv[2],&jd);
       /* --- decode le Home ---*/
       longmpc=0.;
       rhocosphip=0.;
       rhosinphip=0.;
       mctcl_decode_topo(interp,argv[3],&longmpc,&rhocosphip,&rhosinphip);
-		mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
-		latrad=latitude*(DR);
-		/* --- Pressure ---*/
-		pressure=atof(argv[4]);
-		/* --- Temperature ---*/
-		temperature=atof(argv[5]);
-		/* --- decode le Modele de pointage ---*/
-		nb_coef=0;
-		if (argc>=8) {
-			code=Tcl_SplitList(interp,argv[6],&argcc,&argvv);
-			if (argcc>0) {
-				nb_coef=argcc;
-				vecy=(mc_modpoi_vecy*)calloc(nb_coef,sizeof(mc_modpoi_vecy));
-				for (k=0;k<argcc;k++) {
-					vecy[k].k=k;
-					strcpy(vecy[k].type,argvv[k]);
-				}
-				if (argvv!=NULL) { Tcl_Free((char *) argvv); }
-				code=Tcl_SplitList(interp,argv[7],&argcc,&argvv);
-				if (argcc!=nb_coef) {
-					// Traite l'erreur nb_symbol == nb_coef
-					return TCL_ERROR;
-				}
-				for (k=0;k<argcc;k++) {
-					vecy[k].coef=atof(argvv[k]);
-				}
-				if (argvv!=NULL) { Tcl_Free((char *) argvv); }
-			} else {
-				if (argvv!=NULL) { Tcl_Free((char *) argvv); }
-			}
-		}
-		if (argc>=9) {
+      mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
+      latrad=latitude*(DR);
+      /* --- Pressure ---*/
+      pressure=atof(argv[4]);
+      /* --- Temperature ---*/
+      temperature=atof(argv[5]);
+      /* --- decode le Modele de pointage ---*/
+      nb_coef=0;
+      if (argc>=8) {
+         code=Tcl_SplitList(interp,argv[6],&argcc,&argvv);
+         if (argcc>0) {
+            nb_coef=argcc;
+            vecy=(mc_modpoi_vecy*)calloc(nb_coef,sizeof(mc_modpoi_vecy));
+            for (k=0;k<argcc;k++) {
+               vecy[k].k=k;
+               strcpy(vecy[k].type,argvv[k]);
+            }
+            if (argvv!=NULL) { Tcl_Free((char *) argvv); }
+            code=Tcl_SplitList(interp,argv[7],&argcc,&argvv);
+            if (argcc!=nb_coef) {
+               // Traite l'erreur nb_symbol == nb_coef
+               return TCL_ERROR;
+            }
+            for (k=0;k<argcc;k++) {
+               vecy[k].coef=atof(argvv[k]);
+            }
+            if (argvv!=NULL) { Tcl_Free((char *) argvv); }
+         } else {
+            if (argvv!=NULL) { Tcl_Free((char *) argvv); }
+         }
+      }
+      if (argc>=9) {
          if ( strcmp( argv[8],"model_only") == 0 ) {
             model_only = 1;
          }
       }
 
-		/* === CALCULS === */
+      /* === CALCULS === */
       ra=hips.ra*(DR);
       dec=hips.dec*(DR);
-		cosdec=cos(dec);
-		mura=hips.mura*1e-3/86400/cosdec;
-		mudec=hips.mudec*1e-3/86400;
-		parallax=hips.plx;
+      cosdec=cos(dec);
+      mura=hips.mura*1e-3/86400/cosdec;
+      mudec=hips.mudec*1e-3/86400;
+      parallax=hips.plx;
       if (model_only == 1 ) {
-		   /* --- coordonnees horizontales---*/
-		   mc_ad2hd(jd,longmpc,ra,&ha);
-		   mc_hd2ah(ha,dec,latrad,&az,&h);
+         /* --- coordonnees horizontales---*/
+         mc_ad2hd(jd,longmpc,ra,&ha);
+         mc_hd2ah(ha,dec,latrad,&az,&h);
       } else {
-		   /* --- aberration annuelle ---*/
-		   mc_aberration_annuelle(jd,ra,dec,&asd2,&dec2,1);
-		   ra=asd2;
-		   dec=dec2;
-		   /* --- calcul de mouvement propre ---*/
-		   ra+=(jd-epoch)/365.25*mura;
-		   dec+=(jd-epoch)/365.25*mudec;
-		   /* --- calcul de la precession ---*/
-		   mc_precad(equinox,ra,dec,jd,&asd2,&dec2);
-		   ra=asd2;
-		   dec=dec2;
-		   /* --- correction de parallaxe stellaire*/
-		   if (parallax>0) {
-		      mc_parallaxe_stellaire(jd,ra,dec,&asd2,&dec2,parallax);
-			   ra=asd2;
-			   dec=dec2;
-		   }
-		   /* --- correction de nutation */
-		   mc_nutradec(jd,ra,dec,&asd2,&dec2,1);
-		   ra=asd2;
-		   dec=dec2;
-		   /* --- aberration de l'aberration diurne*/
-		   mc_aberration_diurne(jd,ra,dec,longmpc,rhocosphip,rhosinphip,&asd2,&dec2,1);
-		   ra=asd2;
-		   dec=dec2;
-		   /* --- coordonnees horizontales---*/
-		   mc_ad2hd(jd,longmpc,ra,&ha);
-		   mc_hd2ah(ha,dec,latrad,&az,&h);
-		   /* --- refraction ---*/
-		   mc_refraction(h,1,temperature,pressure,&refraction);
-		   h+=refraction;
+         /* --- aberration annuelle ---*/
+         mc_aberration_annuelle(jd,ra,dec,&asd2,&dec2,1);
+         ra=asd2;
+         dec=dec2;
+         /* --- calcul de mouvement propre ---*/
+         ra+=(jd-epoch)/365.25*mura;
+         dec+=(jd-epoch)/365.25*mudec;
+         /* --- calcul de la precession ---*/
+         mc_precad(equinox,ra,dec,jd,&asd2,&dec2);
+         ra=asd2;
+         dec=dec2;
+         /* --- correction de parallaxe stellaire*/
+         if (parallax>0) {
+            mc_parallaxe_stellaire(jd,ra,dec,&asd2,&dec2,parallax);
+            ra=asd2;
+            dec=dec2;
+         }
+         /* --- correction de nutation */
+         mc_nutradec(jd,ra,dec,&asd2,&dec2,1);
+         ra=asd2;
+         dec=dec2;
+         /* --- aberration de l'aberration diurne*/
+         mc_aberration_diurne(jd,ra,dec,longmpc,rhocosphip,rhosinphip,&asd2,&dec2,1);
+         ra=asd2;
+         dec=dec2;
+
+         /* --- coordonnees horizontales---*/
+         mc_ad2hd(jd,longmpc,ra,&ha);
+         mc_hd2ah(ha,dec,latrad,&az,&h);
+         /* --- refraction ---*/
+         mc_refraction(h,1,temperature,pressure,&refraction);
+         h+=refraction;
       } 
 
-		mc_ah2hd(az,h,latrad,&ha,&dec);
-		rat=ra;
-		dect=dec;
-		hat=ha;
-		ht=h;
-		azt=az;
-		/* --- Modele de pointage ---*/
-		if (nb_coef>0) {
-			nb_star=1;
-			matx=(mc_modpoi_matx*)malloc(2*nb_star*nb_coef*sizeof(mc_modpoi_matx));
-			/* --- altaz corrections ---*/
-			daz=mc_modpoi_addobs_az(az,h,nb_coef,vecy,matx);
-			dh=mc_modpoi_addobs_h(az,h,nb_coef,vecy,matx);
-			/* --- hadec corrections ---*/
-			dha=mc_modpoi_addobs_ha(ha,dec,latrad,nb_coef,vecy,matx);
-			ddec=mc_modpoi_addobs_dec(ha,dec,latrad,nb_coef,vecy,matx);
-			/* --- corrections pure EQU of coordinates ---*/
-			if (((dha!=0)||(ddec!=0))&&(daz==0)&&(dh==0)) {
-				ha=hat+dha/60*(DR);
-				dec=dect+ddec/60*(DR);
-				if (dec>PISUR2)  { dec=PISUR2-(dec-PISUR2); ha+=(PI); }
-				if (dec<-PISUR2) { dec=-PISUR2+(-PISUR2-dec); ha+=(PI); }
-			   ha=fmod(4*PI+ha,2*PI);
-				mc_hd2ah(ha,dec,latrad,&az,&h);
-				mc_hd2ad(jd,longmpc,ha,&ra);
-				daz=az-azt;
-				if (daz<-PI) { daz+=2*(PI); }
-				if (daz>PI)  { daz-=2*(PI); }
-				dh=h-ht;
-				dra=ra-rat;
-				if (dra<-PI) { dra+=2*(PI); }
-				if (dra>PI)  { dra-=2*(PI); }
-			}
-			/* --- corrections pure ALTAZ of coordinates ---*/
-			if (((daz!=0)||(dh!=0))&&(dha==0)&&(ddec==0)) {
-				az=azt+daz/60*(DR);
-				h=ht+dh/60*(DR);
-				if (h>PISUR2)  { h=PISUR2-(h-PISUR2); az+=(PI); }
-				if (h<-PISUR2) { h=-PISUR2+(-PISUR2-h); az+=(PI); }
-			   az=fmod(4*PI+az,2*PI);
-				mc_ah2hd(az,h,latrad,&ha,&dec);
-				mc_hd2ad(jd,longmpc,ha,&ra);
-				dha=ha-hat;
-				if (dha<-PI) { dha+=2*(PI); }
-				if (dha>PI)  { dha-=2*(PI); }
-				ddec=dec-dect;
-				dra=ra-rat;
-				if (dra<-PI) { dra+=2*(PI); }
-				if (dra>PI)  { dra-=2*(PI); }
-			}
-			/* --- free pointers ---*/
-			if (matx!=NULL) { free(matx); }
-			if (vecy!=NULL) { free(vecy); }
-		}
-		strcpy(s,"");
-		strcat(s,mc_d2s(rat/(DR)));
-		strcat(s," ");
-		strcat(s,mc_d2s(dect/(DR)));
-		strcat(s," ");
-		strcat(s,mc_d2s(hat/(DR)));
-		strcat(s," ");
-		strcat(s,mc_d2s(azt/(DR)));
-		strcat(s," ");
-		strcat(s,mc_d2s(ht/(DR)));
-		strcat(s," ");
-		strcat(s,mc_d2s(dra/60));
-		strcat(s," ");
-		strcat(s,mc_d2s(ddec/60));
-		strcat(s," ");
-		strcat(s,mc_d2s(dha/60));
-		strcat(s," ");
-		strcat(s,mc_d2s(daz/60));
-		strcat(s," ");
-		strcat(s,mc_d2s(dh/60));
-		strcat(s," ");
-		strcat(s,mc_d2s(ra/(DR)));
-		strcat(s," ");
-		strcat(s,mc_d2s(dec/(DR)));
-		strcat(s," ");
-		strcat(s,mc_d2s(ha/(DR)));
-		strcat(s," ");
-		strcat(s,mc_d2s(az/(DR)));
-		strcat(s," ");
-		strcat(s,mc_d2s(h/(DR)));
+      mc_ah2hd(az,h,latrad,&ha,&dec);
+      mc_hd2ad(jd,longmpc,ha,&ra);
+      rat=ra;
+      dect=dec;
+      hat=ha;
+      ht=h;
+      azt=az;
+      /* --- Modele de pointage ---*/
+      if (nb_coef>0) {
+         nb_star=1;
+         matx=(mc_modpoi_matx*)malloc(2*nb_star*nb_coef*sizeof(mc_modpoi_matx));
+         /* --- altaz corrections ---*/
+         daz=mc_modpoi_addobs_az(az,h,nb_coef,vecy,matx);
+         dh=mc_modpoi_addobs_h(az,h,nb_coef,vecy,matx);
+         /* --- hadec corrections ---*/
+         dha=mc_modpoi_addobs_ha(ha,dec,latrad,nb_coef,vecy,matx);
+         ddec=mc_modpoi_addobs_dec(ha,dec,latrad,nb_coef,vecy,matx);
+         /* --- corrections pure EQU of coordinates ---*/
+         if (((dha!=0)||(ddec!=0))&&(daz==0)&&(dh==0)) {
+            ha=hat+dha/60*(DR);
+            dec=dect+ddec/60*(DR);
+            if (dec>PISUR2)  { dec=PISUR2-(dec-PISUR2); ha+=(PI); }
+            if (dec<-PISUR2) { dec=-PISUR2+(-PISUR2-dec); ha+=(PI); }
+            ha=fmod(4*PI+ha,2*PI);
+            mc_hd2ah(ha,dec,latrad,&az,&h);
+            mc_hd2ad(jd,longmpc,ha,&ra);
+            daz=az-azt;
+            if (daz<-PI) { daz+=2*(PI); }
+            if (daz>PI)  { daz-=2*(PI); }
+            dh=h-ht;
+            dra=ra-rat;
+            if (dra<-PI) { dra+=2*(PI); }
+            if (dra>PI)  { dra-=2*(PI); }
+         }
+         /* --- corrections pure ALTAZ of coordinates ---*/
+         if (((daz!=0)||(dh!=0))&&(dha==0)&&(ddec==0)) {
+            az=azt+daz/60*(DR);
+            h=ht+dh/60*(DR);
+            if (h>PISUR2)  { h=PISUR2-(h-PISUR2); az+=(PI); }
+            if (h<-PISUR2) { h=-PISUR2+(-PISUR2-h); az+=(PI); }
+            az=fmod(4*PI+az,2*PI);
+            mc_ah2hd(az,h,latrad,&ha,&dec);
+            mc_hd2ad(jd,longmpc,ha,&ra);
+            dha=ha-hat;
+            if (dha<-PI) { dha+=2*(PI); }
+            if (dha>PI)  { dha-=2*(PI); }
+            ddec=dec-dect;
+            dra=ra-rat;
+            if (dra<-PI) { dra+=2*(PI); }
+            if (dra>PI)  { dra-=2*(PI); }
+         }
+         /* --- free pointers ---*/
+         if (matx!=NULL) { free(matx); }
+         if (vecy!=NULL) { free(vecy); }
+      }
+      strcpy(s,"");
+      strcat(s,mc_d2s(rat/(DR)));
+      strcat(s," ");
+      strcat(s,mc_d2s(dect/(DR)));
+      strcat(s," ");
+      strcat(s,mc_d2s(hat/(DR)));
+      strcat(s," ");
+      strcat(s,mc_d2s(azt/(DR)));
+      strcat(s," ");
+      strcat(s,mc_d2s(ht/(DR)));
+      strcat(s," ");
+      strcat(s,mc_d2s(dra/60));
+      strcat(s," ");
+      strcat(s,mc_d2s(ddec/60));
+      strcat(s," ");
+      strcat(s,mc_d2s(dha/60));
+      strcat(s," ");
+      strcat(s,mc_d2s(daz/60));
+      strcat(s," ");
+      strcat(s,mc_d2s(dh/60));
+      strcat(s," ");
+      strcat(s,mc_d2s(ra/(DR)));
+      strcat(s," ");
+      strcat(s,mc_d2s(dec/(DR)));
+      strcat(s," ");
+      strcat(s,mc_d2s(ha/(DR)));
+      strcat(s," ");
+      strcat(s,mc_d2s(az/(DR)));
+      strcat(s," ");
+      strcat(s,mc_d2s(h/(DR)));
       Tcl_SetResult(interp,s,TCL_VOLATILE);
-	}
-	return TCL_OK;
+   }
+   return TCL_OK;
 }
 
 int Cmd_mctcl_tel2cat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
@@ -792,7 +794,7 @@ List_ModelValues
       }
 
 		if (type==0) {
-			mc_ad2hd(jd,longmpc,ra0,&ha0);
+			mc_ad2hd(jd,longmpc,ra0,&ha0);         
 		}
 		ha=ha0; az=az0; hauteur=h0; dec=dec0; ra=ra0;
 		/* --- Modele de pointage ---*/
@@ -861,7 +863,7 @@ List_ModelValues
          ra=asd2;
          dec=dec2;
       }
-		//
+      //
 		strcpy(s,"");
 		strcat(s,mc_d2s(ra/(DR)));
 		strcat(s," ");
