@@ -7,7 +7,225 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.25 2010-04-09 20:13:06 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.26 2010-04-14 17:20:58 bmauclaire Exp $
+
+
+####################################################################
+# Procédure de recherche et d'élimination des comsics dans un profil de raies calibré
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 12-04-2010
+# Date modification : 12-04-2010
+# Arguments : nom_profil_raies largeur_raie
+####################################################################
+
+proc spc_rmcosmics { args } {
+   global conf
+   global audace spcaudace
+
+   ## set pas 10
+   set ecart 4.0
+   set fwhm_max 5.0
+   set imoy_part 0.15
+   set nbsigma 2.5
+   
+   set nbargs [ llength $args ]
+   if { $nbargs<=4 } {
+      if { $nbargs==1 } {
+         set filename [ lindex $args 0 ]
+         set imoy_part $imoy_part
+         set fwhm_max $fwhm_max
+         set largeur $spcaudace(largeur_raie_detect)
+      } elseif { $nbargs==2 } {
+         set filename [ lindex $args 0 ]
+         set imoy_part [ lindex $args 1 ]
+         set fwhm_max $fwhm_max
+         set largeur $spcaudace(largeur_raie_detect)
+      } elseif { $nbargs==3 } {
+         set filename [ lindex $args 0 ]
+         set imoy_part [ lindex $args 1 ]
+         set fwhm_max [ lindex $args 2 ]
+         set largeur $spcaudace(largeur_raie_detect)
+      } elseif { $nbargs==4 } {
+         set filename [ lindex $args 0 ]
+         set imoy_part [ lindex $args 1 ]
+         set fwhm_max [ lindex $args 2 ]
+         set largeur [ expr int([ lindex $args 3 ]) ]
+      } else {
+         ::console::affiche_erreur "Usage: spc_rmcosmics nom_profil_de_raies ?intensite_min_cosmic(\% du continuum $imoy_part)? ?cosmic_fwhm_max(pixels $fwhm_max)? ?largeur_raie_pixels ($spcaudace(largeur_raie_detect))?\n"
+         return ""
+      }
+      set pas [ expr int($largeur/2) ]
+      
+      set continuum [ expr $imoy_part*[ spc_icontinuum $filename ] ]
+      
+      #--- Gestion des profils calibrés en longueur d'onde :
+      buf$audace(bufNo) load "$audace(rep_images)/$filename"
+      set listemotsclef [ buf$audace(bufNo) getkwds ]
+      if { [ lsearch $listemotsclef "CRPIX1" ] !=-1 } {
+         set crpix1 [ lindex [buf$audace(bufNo) getkwd "CRPIX1"] 1 ]
+      } else {
+         set crpix1 1
+      }
+      if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+         if { [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]!=1. && [ lindex [ buf$audace(bufNo) getkwd "NAXIS" ] 1 ]==1 } {
+            set flag_cal 1
+         } else {
+            set flag_cal 0
+            ::console::affiche_erreur "Le profil doit être calibré en longueur d'onde.\n"
+            return ""
+         }
+      } else {
+         set flag_cal 0
+         ::console::affiche_erreur "Le profil doit être calibré en longueur d'onde.\n"
+         return ""
+      }
+
+      
+      #-- Retire les petites raies qui seraient des pixels chauds ou autre :
+      # commenté le 2008-03-21
+      # buf$audace(bufNo) imaseries "CONV kernel_type=gaussian sigma=0.9"
+      # A tester : uncosmic $spcaudace(uncosmic)
+      #-- Renseigne sur les parametres de l'image :
+      set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
+      set nbrange [ expr int($naxis1/$largeur) ]
+      # ::console::affiche_resultat "nb intervalles : $nbrange\n"
+      
+      #--- Recherche des raies d'émission :
+      ::console::affiche_resultat "Recherche des raies d'émission...\n"
+      for { set i 1 } { $i<=[ expr $naxis1-2*$largeur ] } { set i [ expr $i+$pas ] } {
+         set xdeb $i
+         set xfin [ expr $i+$largeur-1 ]
+         set coords [ list $xdeb 1 $xfin 1 ]
+         #-- Meth 1 : fit gaussien
+         ## set gauss [ buf$audace(bufNo) fitgauss $coords -fwhmx $largeur ]
+         #::console::affiche_resultat "Centre $i avant fitgauss\n"
+         set gauss [ buf$audace(bufNo) fitgauss $coords ]
+         #::console::affiche_resultat "Centre $i après fitgauss\n"
+         #- Commentee le 091216 : manquait un pixel
+         #- lappend xcenters [ expr [ lindex $gauss 1 ] -$ecartfitgauss ]
+         lappend xcenters [ lindex $gauss 1 ]
+         #-- Intensite en X :
+         lappend intensites [ lindex $gauss 0 ]
+         lappend fwhms [ lindex $gauss 2 ]
+         #set xc [ lindex $gauss 1 ]
+         #::console::affiche_resultat "Centre $i trouvé; Xfin=$xfin\n"
+         
+         #-- Meth 2 : centroide
+         ##lappend intensites [ lindex [ buf$audace(bufNo) flux $coords ]  0 ]
+         #lappend intensites [ lindex [ buf$audace(bufNo) fitgauss $coords ] 0 ]
+         #lappend xcenters [ lindex [ buf$audace(bufNo) centro $coords ]  0 ]
+      }
+      
+      #-- Contruit les elements de la liste :
+      foreach imax $intensites abscisse $xcenters fwhm $fwhms {
+         lappend doubleliste [ list $abscisse $imax $fwhm ]
+      }
+      
+      
+      #--- Elimination des raies trop proches :
+      set doubleliste [ lsort -increasing -real -index 0 $doubleliste ]
+      
+      #::console::affiche_resultat "[ lrange $doubleliste 0 20]\n"
+      
+      set len [ expr [ llength $doubleliste ]-1 ]
+      set doublelistesorted [ list ]
+      for { set j 0 } { $j<$len } { incr j } {
+         #-- Approx : la raie trouvee et retenue ne srea pas forcement celle avec l'intensite maximale a cette position :
+         lappend doublelistesorted [ lindex $doubleliste $j ]
+         set abscissej [ lindex [ lindex $doubleliste $j ] 0 ]
+         incr j
+         for { set k $j } { $k<$len } { incr k } {
+            if { [ expr int($abscissej) ]==[ expr int([ lindex [ lindex $doubleliste $k ] 0 ]) ] } {
+               incr k
+            } else {
+               break
+            }
+         }
+      }
+      # ::console::affiche_resultat "[ lrange $doublelistesorted 0 20 ]\n"
+      
+      
+      #--- Elimination des raies trop faibles :
+      ::console::affiche_resultat "Elimination des raies trop faibles...\n"
+      set doublelistesorted [ lsort -decreasing -real -index 1 $doublelistesorted ]
+      set k 0
+      foreach eline $doublelistesorted {
+         if { [ lindex $eline 1 ]<$continuum } {
+            break
+         } else { incr k }
+      }
+      set doublelistesorted [ lrange $doublelistesorted 0 $k ]
+      ::console::affiche_resultat "$k raies restantes.\n"
+      
+      
+      #::console::affiche_resultat "[ lrange $doublelistesorted 0 20 ]\n"
+      
+      #--- Elimination des raies dont la fwhm>fwhm_max :
+      ::console::affiche_resultat "Elimination des raies trop larges...\n"
+      set doublelistesorted [ lsort -increasing -real -index 2 $doublelistesorted ]
+      set k 0
+      foreach eline $doublelistesorted {
+         if { [ lindex $eline 2 ]>$fwhm_max } {
+            break
+         } else { incr k }
+      }
+      set doublelistesorted [ lrange $doublelistesorted 0 [ expr $k-1 ] ]
+      ::console::affiche_resultat "$k raies restantes.\n"
+      
+      
+      #--- Tri par intensite decroissante :
+      set doublelistesorted [ lsort -increasing -real -index 0 $doublelistesorted ]
+      set nbraies [ llength $doublelistesorted ]
+      
+      
+      #--- Cicatrisation des cosmics :
+      ::console::affiche_resultat "Cicatrisation des cosmics...\n"
+      set coefspoly [ spc_coefscalibre "$filename" ]
+      set spc_a [ lindex $coefspoly 0 ]
+      set spc_b [ lindex $coefspoly 1 ]
+      set spc_c [ lindex $coefspoly 2 ]
+      set spc_d [ lindex $coefspoly 3 ]
+      set k 0
+      set zones [ list ]
+      foreach eline $doublelistesorted {
+         #-- xdeb=xline-fwhm_line :
+         #set xdeb [ expr round([ lindex $eline 0 ]-[ lindex $eline 2 ]) ]
+         #set xfin [ expr round([ lindex $eline 0 ]+[ lindex $eline 2 ]) ]
+         set xdeb [ expr [ lindex $eline 0 ]-$nbsigma*[ lindex $eline 2 ] ]
+         set xfin [ expr [ lindex $eline 0 ]+$nbsigma*[ lindex $eline 2 ] ]
+         set lambdadeb [ spc_calpoly $xdeb $crpix1 $spc_a $spc_b $spc_c $spc_d ]
+         set lambdafin [ spc_calpoly $xfin $crpix1 $spc_a $spc_b $spc_c $spc_d ]
+         lappend zones [ list $lambdadeb $lambdafin ]
+      }
+      ::console::affiche_resultat "Zones à cicatriser : $zones\n"
+      #set leszones [ lindex $zones 0 ]
+      #spc_scar "$filename" $leszones      
+      set zones [ linsert $zones 0 "$filename" ]
+      spc_scar $zones
+      
+      
+      #--- Conversion des abscisses en longueur d'onde :
+      set selection6 $doublelistesorted
+      foreach raie $selection6 {
+         set x [ lindex $raie 0 ]
+         set abscisse [ spc_calpoly $x $crpix1 $spc_a $spc_b $spc_c $spc_d ]
+         set intensite [ lindex $raie 1 ]
+         set fwhm [ lindex $raie 2 ]
+         set selection6 [ lreplace $selection6 $k $k [ list $abscisse $intensite $fwhm ] ]
+         incr k
+      }
+      
+      
+      #--- Affichage du résultat :
+      set selection6 [ lrange $selection6 0 14 ]
+      set mylistabscisses $selection6
+      ::console::affiche_resultat "$nbraies raies trouvees : $mylistabscisses\n\n"
+      return $mylistabscisses
+   }
+   ::console::affiche_erreur "Usage: spc_rmcosmics nom_profil_de_raies ?intensite_min_cosmic(\% du continuum $imoy_part)? ?cosmic_fwhm_max(pixels $fwhm_max)? ?largeur_raie_pixels ($spcaudace(largeur_raie_detect))?\n"
+}
+#***************************************************************************#
 
 
 
@@ -27,6 +245,23 @@ proc spc_scar { args } {
     if { $nb_args >= 2 } {
        set spectre [ file rootname [ lindex $args 0 ] ]
        set liste_coords [ lrange $args 1 [ llength $args ] ]
+    } elseif { $nb_args==1 } {
+       #-- Cas d'un appel depuis un script avec une liste contenant le total des argumetns :
+       set fichier [ lindex [ lindex $args 0 ] 0 ]
+       set element1 [ lindex [ lindex $args 0 ] 1 ]
+       if { [ file exists "$audace(rep_images)/$fichier$conf(extension,defaut)" ] && $element1!="" } {
+          set args [ lindex $args 0 ]
+          set spectre [ file rootname [ lindex $args 0 ] ]
+          set liste_coords [ lrange $args 1 [ llength $args ] ]
+       } else {
+          ::console::affiche_erreur "Usage : spc_scar nom_profil_de_raies {lambda1 lambda2} {lambda1 lambda2} ...\n\n"
+          return ""
+       }
+    } else {
+       ::console::affiche_erreur "Usage : spc_scar nom_profil_de_raies {lambda1 lambda2} {lambda1 lambda2} ...\n\n"
+       return ""
+    }
+       
 
        #--- Recupere les informations :
        buf$audace(bufNo) load "$audace(rep_images)/$spectre"
@@ -55,11 +290,8 @@ proc spc_scar { args } {
        buf$audace(bufNo) bitpix float
        buf$audace(bufNo) save "$audace(rep_images)/${spectre}-cic"
        buf$audace(bufNo) bitpix short
-       ::console::affiche_resultat "Image sauvée sous ${spectre}-cic.\n"
+       ::console::affiche_resultat "Profil de raies sauvée sous ${spectre}-cic.\n"
        return ${spectre}-cic
-    } else {
-        ::console::affiche_erreur "Usage : spc_scar nom_profil_de_raies {lambda1 lambda2} {lambda1 lambda2} ...\n\n"
-    }
 }
 #*****************************************************************#
 
@@ -1237,6 +1469,9 @@ proc spc_pretrait { args } {
                buf$audace(bufNo) save "${pref_stellaire}_moinsnoir"
            } else {
                sub2 "$nom_stellaire" "${pref_dark}-smd$nb_dark" "${pref_stellaire}_moinsnoir-" 0 $nb_stellaire
+               # sub2 "$nom_stellaire" "${pref_dark}-smd$nb_dark" "${pref_stellaire}_moinsnoir-" 0 $nb_stellaire "COSMIC_THRESHOLD=300"
+               # Lent :
+               # ttscript2 "IMA/SERIES \"$::audace(rep_images)\" \"$nom_stellaire\" 1 $nb_stellaire \"$::conf(extension,defaut)\" \"$::audace(rep_images)\" \"${pref_stellaire}_moinsnoir-\" 1 \"$::conf(extension,defaut)\" SUB \"file=$::audace(rep_images)/${pref_dark}-smd$nb_dark\" offset=0 \"COSMIC_THRESHOLD=300\" "
            }
        } else {
            ::console::affiche_resultat "Optimisation des noirs associés aux images stellaires...\n"

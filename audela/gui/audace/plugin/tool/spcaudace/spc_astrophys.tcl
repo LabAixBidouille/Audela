@@ -1,7 +1,7 @@
 
 # Procédures d'exploitation astrophysique des spectres
 
-# Mise a jour $Id: spc_astrophys.tcl,v 1.10 2010-04-09 20:13:06 bmauclaire Exp $
+# Mise a jour $Id: spc_astrophys.tcl,v 1.11 2010-04-14 17:20:58 bmauclaire Exp $
 
 
 
@@ -752,9 +752,10 @@ proc spc_ewcourbe { args } {
       }
       set date [ mc_date2jd $ladate ]
       #- Ne tient que des 4 premières décimales du jour julien et retranche 50000 jours juliens
-      #lappend ldates [ expr int($date*10000.)/10000.-50000.+0.5 ]
-      #lappend ldates [ expr round($date*10000.)/10000.-2400000.5 ]
-      lappend ldates [ expr int(($date-2400000.5)*10000.)/10000. ]
+      ## lappend ldates [ expr int($date*10000.)/10000.-50000.+0.5 ]
+      ## lappend ldates [ expr round($date*10000.)/10000.-2400000.5 ]
+      # lappend ldates [ expr int(($date-2400000.5)*10000.)/10000. ]
+      lappend ldates [ expr int(($date-2400000.)*10000.)/10000. ]
       if { $nbargs==1 } {
          set results [ spc_autoew $fichier $lambda ]
       } elseif { $nbargs==2 } {
@@ -782,7 +783,7 @@ proc spc_ewcourbe { args } {
    }
    set titre "Evolution de la largeur equivalente EW au cours du temps"
    set legendey "Largeur equivalente EW (A)"
-   set legendex "Date (JD-2450000)"
+   set legendex "Date (JD-2400000)"
    set file_id2 [open "$audace(rep_images)/${ewfile}.gp" w+]
    puts $file_id2 "call \"$spcaudace(repgp)/gp_points_err.cfg\" \"$audace(rep_images)/${ewfile}.dat\" \"$titre\" * * * * $invert_opt \"$audace(rep_images)/ew_courbe.png\" \"$legendex\" \"$legendey\" "
    close $file_id2
@@ -871,7 +872,7 @@ proc spc_ewcourbe_opt { args } {
 	}
 	set titre "Evolution de la largeur equivalente au cours du temps"
 	set legendey "Largeur equivalente (A)"
-	set legendex "Date (JD-2450000)"
+	set legendex "Date (JD-2400000)"
 	set file_id2 [open "$audace(rep_images)/${ewfile}.gp" w+]
 	puts $file_id2 "call \"$spcaudace(repgp)/gp_points.cfg\" \"$audace(rep_images)/${ewfile}.dat\" \"$titre\" * * * * $invert_opt \"$audace(rep_images)/ew_courbe.png\" \"$legendex\" \"$legendey\" "
 	close $file_id2
@@ -949,7 +950,8 @@ proc spc_ewdirw { args } {
 	    #- 070707 :
 	    set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
 	    set date [ mc_date2jd $ladate ]
-	    set jddate [ expr int(($date-2400000.5)*10000.)/10000. ]
+	    # set jddate [ expr int(($date-2400000.5)*10000.)/10000. ]
+	    set jddate [ expr int(($date-2400000.)*10000.)/10000. ]
 	    #--
 	    set mesure [ spc_autoew2 $fichier $lambda ]
 	    set ew [ lindex $mesure 0 ]
