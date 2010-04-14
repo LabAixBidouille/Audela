@@ -1,7 +1,7 @@
 
 # Procédures d'analyse spectrale
 # source $audace(rep_scripts)/spcaudace/spc_analyse.tcl
-# Mise a jour $Id: spc_analyse.tcl,v 1.7 2010-04-09 20:13:06 bmauclaire Exp $
+# Mise a jour $Id: spc_analyse.tcl,v 1.8 2010-04-14 17:20:58 bmauclaire Exp $
 
 
 
@@ -703,7 +703,7 @@ proc spc_findbiglines { args } {
 	    set typeraies [ lindex $args 1 ]
 	    set largeur [ expr int([ lindex $args 2 ]) ]
 	} else {
-	    ::console::affiche_erreur "Usage: spc_findbiglines nom_profil_de_raies type_raies ?largeur_raie?\n"
+	    ::console::affiche_erreur "Usage: spc_findbiglines nom_profil_de_raies type_raies ?largeur_raie_pixels ($spcaudace(largeur_raie_detect))?\n"
 	    return ""
 	}
 	set pas [ expr int($largeur/2) ]
@@ -878,7 +878,7 @@ proc spc_findbiglines { args } {
         ::console::affiche_resultat "Abscisse et I des raies les plus intenses : $mylistabscisses\n"
         return $mylistabscisses
     }
-    ::console::affiche_erreur "Usage: spc_findbiglines nom_profil_de_raies type_raies ?largeur_raie?\n"
+    ::console::affiche_erreur "Usage: spc_findbiglines nom_profil_de_raies type_raies ?largeur_raie_pixels ($spcaudace(largeur_raie_detect))?\n"
 }
 #***************************************************************************#
 
