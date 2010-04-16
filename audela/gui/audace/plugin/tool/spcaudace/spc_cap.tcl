@@ -3,7 +3,7 @@
 # Modification : 08/12/2005
 #
 
-# Mise a jour $Id: spc_cap.tcl,v 1.5 2010-04-09 20:13:06 bmauclaire Exp $
+# Mise a jour $Id: spc_cap.tcl,v 1.6 2010-04-16 14:02:52 bmauclaire Exp $
 
 
 global caption langage
@@ -91,6 +91,7 @@ global caption langage
    set caption(spcaudace,gui,spc_norma_w)                        "Normalisation by continuum extraction"
    set caption(spcaudace,gui,spc_rescalecont_w)                  "Rescaling continuum to value 1"
    set caption(spcaudace,gui,spc_scar_w)                         "Remove cosmics by scaring zones"
+   set caption(spcaudace,gui,spc_rmcosmics_w)                    "Automatic removing cosmics"
    set caption(spcaudace,gui,spc_offset_w)                       "Add an offset value to intensities"
    set caption(spcaudace,gui,spc_multc_w)                        "Multiply intensities by a number"
    set caption(spcaudace,gui,spc_ajustpoints_w)                  "Fitting continuum with selected points"
@@ -257,6 +258,7 @@ if { [string compare $langage "french"] == "0" } {
      set caption(spcaudace,gui,spc_norma_w)                   "Normalisation par extraction du continuum"
      set caption(spcaudace,gui,spc_rescalecont_w)             "Mise à l'échelle à 1 du continuum"
      set caption(spcaudace,gui,spc_scar_w)                    "Retrait des cosmics par cicatrisation de zones"
+     set caption(spcaudace,gui,spc_rmcosmics_w)               "Retrait automatique des cosmics"
      set caption(spcaudace,gui,spc_offset_w)                  "Ajoute une valeur aux intensités"
      set caption(spcaudace,gui,spc_multc_w)                   "Multiplie les intensités par un nombre"
      set caption(spcaudace,gui,spc_ajustpoints_w)             "Ajustement du continuum avec des points choisis"

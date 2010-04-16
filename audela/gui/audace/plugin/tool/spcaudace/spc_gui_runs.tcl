@@ -5,7 +5,24 @@
 #*****************************************************************************#
 # Chargement : source $audace(rep_scripts)/spcaudace/spc_gui_runs.tcl
 
-# Mise a jour $Id: spc_gui_runs.tcl,v 1.3 2010-04-09 20:13:06 bmauclaire Exp $
+# Mise a jour $Id: spc_gui_runs.tcl,v 1.4 2010-04-16 14:02:52 bmauclaire Exp $
+
+
+########################################################################
+# Interface pour l'appel de la fonction spc_rmcosmics
+#
+# Auteurs : Benjamin Mauclaire
+# Date de création : 23-03-2010
+# Date de modification : 23-03-2010
+########################################################################
+
+proc spc_rmcosmics_w {} {
+
+   global audace
+
+   spc_rmcosmics
+}
+#**********************************************************************#
 
 
 ########################################################################

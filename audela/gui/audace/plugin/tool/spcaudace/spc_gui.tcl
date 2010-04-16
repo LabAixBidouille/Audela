@@ -1,7 +1,7 @@
 
 # Procédures liées à 'linterface graphique et au tracé des profils de raies.
 
-# Mise a jour $Id: spc_gui.tcl,v 1.8 2010-04-09 20:13:06 bmauclaire Exp $
+# Mise a jour $Id: spc_gui.tcl,v 1.9 2010-04-16 14:02:52 bmauclaire Exp $
 
 
 
@@ -163,6 +163,7 @@ proc spc_winini { } {
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_rescalecont_w) -command "spc_rescalecont" -underline 0
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_calibre_space)
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_scar_w) -command "spc_scar_w" -underline 0
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_rmcosmics_w) -command "spc_rmcosmics_w" -underline 0
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_offset_w) -command "spc_offset_w" -underline 0
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_multc_w) -command "spc_multc_w" -underline 0
 
