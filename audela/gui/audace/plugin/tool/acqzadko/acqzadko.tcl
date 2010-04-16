@@ -2,7 +2,7 @@
 # Fichier : acqzadko.tcl
 # Description : Outil d'acquisition
 # Auteurs : Francois Cochard et Myrtille Laas
-# Mise a jour $Id: acqzadko.tcl,v 1.18 2010-01-30 14:37:48 robertdelmas Exp $
+# Mise a jour $Id: acqzadko.tcl,v 1.19 2010-04-16 06:11:42 myrtillelaas Exp $
 #
 
 #==============================================================
@@ -25,15 +25,6 @@ proc ::acqzadko::createPluginInstance { { in "" } { visuNo 1 } } {
    #--- Chargement des fichiers auxiliaires
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqzadko acqzadkoSetup.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqzadko dlgshift.tcl ]\""
-
-   #--- Tue camera.exe
-   if {[lindex [hostaddress] end]=="ikon"} {
-       package require twapi
-       set res [twapi::get_process_ids -glob -name "camera.exe"]
-       if {$res!=""} {
-          twapi::end_process $res -force
-       }
-   }
 
    #---
    set panneau(acqzadko,$visuNo,base) "$in"
@@ -2241,12 +2232,34 @@ proc ::acqzadko::webcamConfigure { visuNo } {
          set integre non
          if { $choix == "ok" } {
             #--- Ouverture de la fenetre de selection des cameras
-            ::confCam::run
+            #--- Tue camera.exe
+				if {[lindex [hostaddress] end]=="ikon"} {
+				       package require twapi
+				       set res [twapi::get_process_ids -glob -name "camera.exe"]
+				       if {$res!=""} {
+				          twapi::end_process $res -force
+				       }
+				}
+            ::confCam::run      
          }
          ::audace::menustate normal
       }
    }
 }
+#***** Affichage de la fenetre de configuration de WebCam ************
+proc ::acqzadko::camConfigure { visuNo } {
+	global audace caption
+	#--- Tue camera.exe
+	if {[lindex [hostaddress] end]=="ikon"} {
+	       package require twapi
+	       set res [twapi::get_process_ids -glob -name "camera.exe"]
+	       if {$res!=""} {
+	          twapi::end_process $res -force
+	       }
+	}
+   ::confCam::run 
+}
+   
 #***** Fin de la fenetre de configuration de WebCam ******************
 
 proc ::acqzadko::acqzadkoBuildIF { visuNo } {
@@ -2282,7 +2295,7 @@ proc ::acqzadko::acqzadkoBuildIF { visuNo } {
    #--- Trame du bouton de connection de la camera
    frame $panneau(acqzadko,$visuNo,This).camera -borderwidth 2 -relief groove
       button $panneau(acqzadko,$visuNo,This).camera.but -borderwidth 1 -text $caption(acqzadko,connectioncamera) \
-        -command "::confCam::run"
+        -command "::acqzadko::camConfigure $visuNo"
       pack $panneau(acqzadko,$visuNo,This).camera.but -side top -fill x -in $panneau(acqzadko,$visuNo,This).camera -ipadx 5 -ipady 4
    pack $panneau(acqzadko,$visuNo,This).camera -side top -fill x
 
