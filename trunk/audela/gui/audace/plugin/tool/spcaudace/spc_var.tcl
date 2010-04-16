@@ -3,7 +3,7 @@
 #
 ####################################################################
 
-# Mise a jour $Id: spc_var.tcl,v 1.19 2010-04-09 20:13:06 bmauclaire Exp $
+# Mise a jour $Id: spc_var.tcl,v 1.20 2010-04-16 14:02:52 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -12,7 +12,7 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(version) "1.5.9 - 22/03/2010"
+set spcaudace(version) "1.6.0 - 16/04/2010"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
 
@@ -110,6 +110,12 @@ set spcaudace(meth_somme) "addi"
 
 
 #--- Valeur de paramètres des euristhiques algorithmiques :
+#-- Valeur de la fwhm des cosmics a detecter :
+set spcaudace(cosmics_fwhm) 5.0
+#-- Intensitee minimale des cosmics en % du continuum :
+set spcaudace(cosmics_imin) 0.15
+#-- Largeur du cosmic en nombre de fwhm :
+set spcaudace(cosmics_nbsigma) 2.5
 #-- Valeur du parametre Kappa servant dans la somme type Kappa-Sigma :
 set spcaudace(ssk_kappa) 0.8
 #-- Degré du polynome pour l'extraction du continuum :

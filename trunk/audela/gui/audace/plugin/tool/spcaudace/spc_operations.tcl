@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.26 2010-04-14 17:20:58 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.27 2010-04-16 14:02:52 bmauclaire Exp $
 
 
 ####################################################################
@@ -25,21 +25,19 @@ proc spc_rmcosmics { args } {
 
    ## set pas 10
    set ecart 4.0
-   set fwhm_max 5.0
-   set imoy_part 0.15
-   set nbsigma 2.5
+   set nbsigma $spcaudace(cosmics_nbsigma)
    
    set nbargs [ llength $args ]
    if { $nbargs<=4 } {
       if { $nbargs==1 } {
          set filename [ lindex $args 0 ]
-         set imoy_part $imoy_part
-         set fwhm_max $fwhm_max
+         set imoy_part $spcaudace(cosmics_imin)
+         set fwhm_max $spcaudace(cosmics_fwhm)
          set largeur $spcaudace(largeur_raie_detect)
       } elseif { $nbargs==2 } {
          set filename [ lindex $args 0 ]
          set imoy_part [ lindex $args 1 ]
-         set fwhm_max $fwhm_max
+         set fwhm_max $spcaudace(cosmics_fwhm)
          set largeur $spcaudace(largeur_raie_detect)
       } elseif { $nbargs==3 } {
          set filename [ lindex $args 0 ]
@@ -52,7 +50,7 @@ proc spc_rmcosmics { args } {
          set fwhm_max [ lindex $args 2 ]
          set largeur [ expr int([ lindex $args 3 ]) ]
       } else {
-         ::console::affiche_erreur "Usage: spc_rmcosmics nom_profil_de_raies ?intensite_min_cosmic(\% du continuum $imoy_part)? ?cosmic_fwhm_max(pixels $fwhm_max)? ?largeur_raie_pixels ($spcaudace(largeur_raie_detect))?\n"
+         ::console::affiche_erreur "Usage: spc_rmcosmics nom_profil_de_raies ?intensite_min_cosmic(\% du continuum $spcaudace(cosmics_imin))? ?cosmic_fwhm_max(pixels $spcaudace(cosmics_fwhm))? ?largeur_raie_pixels ($spcaudace(largeur_raie_detect))?\n"
          return ""
       }
       set pas [ expr int($largeur/2) ]
@@ -178,31 +176,35 @@ proc spc_rmcosmics { args } {
       set doublelistesorted [ lsort -increasing -real -index 0 $doublelistesorted ]
       set nbraies [ llength $doublelistesorted ]
       
-      
-      #--- Cicatrisation des cosmics :
-      ::console::affiche_resultat "Cicatrisation des cosmics...\n"
-      set coefspoly [ spc_coefscalibre "$filename" ]
-      set spc_a [ lindex $coefspoly 0 ]
-      set spc_b [ lindex $coefspoly 1 ]
-      set spc_c [ lindex $coefspoly 2 ]
-      set spc_d [ lindex $coefspoly 3 ]
-      set k 0
-      set zones [ list ]
-      foreach eline $doublelistesorted {
-         #-- xdeb=xline-fwhm_line :
-         #set xdeb [ expr round([ lindex $eline 0 ]-[ lindex $eline 2 ]) ]
-         #set xfin [ expr round([ lindex $eline 0 ]+[ lindex $eline 2 ]) ]
-         set xdeb [ expr [ lindex $eline 0 ]-$nbsigma*[ lindex $eline 2 ] ]
-         set xfin [ expr [ lindex $eline 0 ]+$nbsigma*[ lindex $eline 2 ] ]
-         set lambdadeb [ spc_calpoly $xdeb $crpix1 $spc_a $spc_b $spc_c $spc_d ]
-         set lambdafin [ spc_calpoly $xfin $crpix1 $spc_a $spc_b $spc_c $spc_d ]
-         lappend zones [ list $lambdadeb $lambdafin ]
+      if { $k != 0 } {
+         #--- Cicatrisation des cosmics :
+         ::console::affiche_resultat "Cicatrisation des cosmics...\n"
+         set coefspoly [ spc_coefscalibre "$filename" ]
+         set spc_a [ lindex $coefspoly 0 ]
+         set spc_b [ lindex $coefspoly 1 ]
+         set spc_c [ lindex $coefspoly 2 ]
+         set spc_d [ lindex $coefspoly 3 ]
+         set k 0
+         set zones [ list ]
+         foreach eline $doublelistesorted {
+            #-- xdeb=xline-fwhm_line :
+            #set xdeb [ expr round([ lindex $eline 0 ]-[ lindex $eline 2 ]) ]
+            #set xfin [ expr round([ lindex $eline 0 ]+[ lindex $eline 2 ]) ]
+            set xdeb [ expr [ lindex $eline 0 ]-$nbsigma*[ lindex $eline 2 ] ]
+            set xfin [ expr [ lindex $eline 0 ]+$nbsigma*[ lindex $eline 2 ] ]
+            set lambdadeb [ spc_calpoly $xdeb $crpix1 $spc_a $spc_b $spc_c $spc_d ]
+            set lambdafin [ spc_calpoly $xfin $crpix1 $spc_a $spc_b $spc_c $spc_d ]
+            lappend zones [ list $lambdadeb $lambdafin ]
+         }
+         ::console::affiche_resultat "Zones à cicatriser : $zones\n"
+         #set leszones [ lindex $zones 0 ]
+         #spc_scar "$filename" $leszones      
+         set zones [ linsert $zones 0 "$filename" ]
+         set spectre_cic [ spc_scar $zones ]
+      } else {
+         ::console::affiche_resultat "Aucune zone à cicatriser trouvée.\n"
+         set spectre_cic "$filename"
       }
-      ::console::affiche_resultat "Zones à cicatriser : $zones\n"
-      #set leszones [ lindex $zones 0 ]
-      #spc_scar "$filename" $leszones      
-      set zones [ linsert $zones 0 "$filename" ]
-      spc_scar $zones
       
       
       #--- Conversion des abscisses en longueur d'onde :
@@ -221,9 +223,9 @@ proc spc_rmcosmics { args } {
       set selection6 [ lrange $selection6 0 14 ]
       set mylistabscisses $selection6
       ::console::affiche_resultat "$nbraies raies trouvees : $mylistabscisses\n\n"
-      return $mylistabscisses
+      return $spectre_cic
    }
-   ::console::affiche_erreur "Usage: spc_rmcosmics nom_profil_de_raies ?intensite_min_cosmic(\% du continuum $imoy_part)? ?cosmic_fwhm_max(pixels $fwhm_max)? ?largeur_raie_pixels ($spcaudace(largeur_raie_detect))?\n"
+   ::console::affiche_erreur "Usage: spc_rmcosmics nom_profil_de_raies ?intensite_min_cosmic(\% du continuum $spcaudace(cosmics_imin))? ?cosmic_fwhm_max(pixels $spcaudace(cosmics_fwhm))? ?largeur_raie_pixels ($spcaudace(largeur_raie_detect))?\n"
 }
 #***************************************************************************#
 

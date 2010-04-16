@@ -10,9 +10,9 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_io.tcl,v 1.13 2010-04-14 18:15:59 bmauclaire Exp $
-# Id: spc_io.tcl,v 1.11 2010/04/09 20:13:06 bmauclaire Exp 
-# Id: spc_io.tcl,v 1.12 2010/04/11 13:59:39 michelpujol Exp
+# Mise a jour $Id: spc_io.tcl,v 1.14 2010-04-16 14:02:52 bmauclaire Exp $
+
+
 
 # Remarque (par Benoît) : il faut mettre remplacer toutes les variables textes par des variables caption(mauclaire,...)
 # qui seront initialisées dans le fichier cap_mauclaire.tcl
