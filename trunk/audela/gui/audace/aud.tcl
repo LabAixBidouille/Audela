@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.127 2010-03-21 11:38:42 robertdelmas Exp $
+# Mise à jour $Id: aud.tcl,v 1.128 2010-04-18 10:40:44 robertdelmas Exp $
 #
 
 #--- Chargement du package BWidget
@@ -106,6 +106,9 @@ namespace eval ::audace {
       }
       if { ! [info exists conf(rep_images,mode) ] } {
          set conf(rep_images,mode) "none"
+      }
+      if { ! [info exists conf(rep_images,refModeAuto) ] } {
+         set conf(rep_images,refModeAuto) "12"
       }
       if { ! [info exists conf(rep_images,subdir) ] } {
          set conf(rep_images,subdir) ""
