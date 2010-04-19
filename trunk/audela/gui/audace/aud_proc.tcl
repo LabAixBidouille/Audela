@@ -1,7 +1,7 @@
 #
 # Fichier : aud_proc.tcl
 # Description : Fonctions de chargement, sauvegarde et traitement d'images
-# Mise a jour $Id: aud_proc.tcl,v 1.19 2010-01-30 13:43:38 robertdelmas Exp $
+# Mise a jour $Id: aud_proc.tcl,v 1.20 2010-04-19 14:49:00 robertdelmas Exp $
 #
 
 #
@@ -48,12 +48,14 @@ proc loadima { { filename "?" } { visuNo 1 } { affichage "-dovisu" } } {
             set filename [file join $audace(rep_images) $filename]
          }
       }
+      if { $filename != "" } {
+         ::confVisu::autovisu $visuNo $affichage $filename
+      }
    } else {
       #--- si le nom du fichier est une chaine vide, j'efface l'image
       set affichage "-clear"
+      ::confVisu::autovisu $visuNo $affichage $filename
    }
-
-   ::confVisu::autovisu $visuNo $affichage $filename
 
    return ""
 }
