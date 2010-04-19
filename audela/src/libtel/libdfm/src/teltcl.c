@@ -166,7 +166,7 @@ int cmdTelSpeedtrack(ClientData clientData, Tcl_Interp *interp, int argc, char *
    struct telprop *tel;
    tel = (struct telprop *)clientData;
    if ((argc!=2)&&(argc<4)) {
-      sprintf(ligne,"Usage: %s %s ?speed_track_ra|diurnal speed_track_dec?",argv[0],argv[1]);
+      sprintf(ligne,"Usage: %s %s ?speed_track_ra|diurnal speed_track_dec? ?1=start_now?",argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       result = TCL_ERROR;
       return result;
@@ -184,6 +184,11 @@ int cmdTelSpeedtrack(ClientData clientData, Tcl_Interp *interp, int argc, char *
       if (value<-5.) { value=-5.; }
       if (value>5.)  { value=5.; }
       tel->speed_track_dec=value;
+	   if (argc>=5) {
+	      if (strcmp(argv[4],"1")==0) {
+				dfm_suivi_marche(tel);
+			}
+		}
    }
    sprintf(ligne,"%f %f",tel->speed_track_ra,tel->speed_track_dec);
    Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -390,6 +395,9 @@ int cmdTelDFMFocus(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 
 /*
  *   Choice for the blocking method for Goto
+ *
+ * =0 : test the DFM bit of end of pointing (sometimes long) 
+ * =1 : test the read coordinates 
  */
 int cmdTelBlockingMethod(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    char ligne[2048];

@@ -422,12 +422,17 @@ int mytel_radec_state(struct telprop *tel,char *result)
 int mytel_radec_goto(struct telprop *tel)
 {
    char s[1024],bits[25];
-   int time_in=0,time_out=70;
+   int time_in=0,time_out=70,res;
 	double sepangledeg,sepangledeglim;
    dfm_arret_pointage(tel);
+   /* --- function TRACK --- */
+   sprintf(s,"#14,%.6f,0,%.6f,0;",tel->track_diurnal*3600,tel->track_diurnal*3600);
+   res=dfm_put(tel,s);
+   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    dfm_goto(tel);
    sate_move_radec='A';
 	sepangledeglim=5./3600;
+   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    if (tel->radec_goto_blocking==1) {
       /* A loop is actived until the telescope is stopped */
 		if (tel->blockingmethod==0) {
@@ -446,6 +451,7 @@ int mytel_radec_goto(struct telprop *tel)
 				if (sepangledeg<sepangledeglim) { break; }
 				if (time_in>=time_out) {break;}
 			}
+		   dfm_arret_pointage(tel);
 		}
       sate_move_radec=' ';
       dfm_suivi_marche(tel);
