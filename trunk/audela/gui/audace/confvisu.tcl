@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.134 2010-04-11 13:14:12 michelpujol Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.135 2010-04-19 14:47:13 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -300,7 +300,7 @@ namespace eval ::confVisu {
          Movie::deleteMovieWindow $visuNo
          $private($visuNo,hCanvas) itemconfigure display -state normal
 
-         if { $force != "-clear" }  {
+         if { $force != "-clear" } {
             if { $fileName != "" } {
                if { [string first ";" $fileName ] != -1 } {
                   #---- je separe le nom du fichier du numero de HDU
@@ -375,7 +375,7 @@ namespace eval ::confVisu {
                      #--- en cas d'erreur de chargement du fichier avec buf load
                      #--- je verifie si le fichier contient un deuxième HDU non vide
                      #--- je recupere la liste des HDU du fichier
-                     set private($visuNo,fitsHduList)  [initHduList $visuNo $fileName ]
+                     set private($visuNo,fitsHduList) [initHduList $visuNo $fileName ]
                      if { [llength $private($visuNo,fitsHduList) ] > 1 } {
                         set hduIndex 1
                         set hduInfo [lindex $private($visuNo,fitsHduList) $hduIndex ]
@@ -413,7 +413,7 @@ namespace eval ::confVisu {
                         set private($visuNo,fitsHduList) ""
                         ::confVisu::setFileName $visuNo "?"
                         buf$bufNo clear
-                        visu$visuNo  clear
+                        visu$visuNo clear
                         #--- j'affiche l'erreur
                         console::affiche_erreur "$::errorInfo\n"
                      }
@@ -444,7 +444,7 @@ namespace eval ::confVisu {
                         set private($visuNo,fitsHduList) ""
                         ::confVisu::setFileName $visuNo "?"
                         buf$bufNo clear
-                        visu$visuNo  clear
+                        visu$visuNo clear
                         #--- j'affiche l'erreur
                         console::affiche_erreur "$::errorInfo\n"
                      }
@@ -489,7 +489,7 @@ namespace eval ::confVisu {
             set private($visuNo,fitsHduList) ""
             ::confVisu::setFileName $visuNo "?"
             buf$bufNo clear
-            visu$visuNo  clear
+            visu$visuNo clear
          }
 
          #--- on affiche l'image
@@ -896,10 +896,10 @@ namespace eval ::confVisu {
       #--- suppression de la boite
       deleteBox $visuNo
       #--- raz des variables
-      setFileName $visuNo  ""
+      setFileName $visuNo ""
       set private($visuNo,fitsHduList) ""
       #--- raz de la visu
-      visu$visuNo  clear
+      visu$visuNo clear
       #--- je selectionne le mode par defaut
       confVisu::setMode $visuNo "image"
    }
@@ -3410,7 +3410,7 @@ proc ::confVisu::getToolBar { visuNo } {
 # @return
 #    liste du nom, type et nombre d'axes des HDU
 #    exemple :
-#    { { hduName hduType { naxis1 naxis2 ...}  }  { hduName1 hduType1 { naxis1 naxis2 ...} ... } ... }
+#    { { hduName hduType { naxis1 naxis2 ...} } { hduName1 hduType1 { naxis1 naxis2 ...} ... } ... }
 #        avec hduType= Image ou Binary
 #------------------------------------------------------------
 proc ::confVisu::initHduList { visuNo fileName } {
