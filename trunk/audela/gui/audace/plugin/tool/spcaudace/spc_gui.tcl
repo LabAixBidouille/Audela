@@ -1,7 +1,7 @@
 
 # Procédures liées à 'linterface graphique et au tracé des profils de raies.
 
-# Mise a jour $Id: spc_gui.tcl,v 1.9 2010-04-16 14:02:52 bmauclaire Exp $
+# Mise a jour $Id: spc_gui.tcl,v 1.10 2010-04-20 16:58:36 bmauclaire Exp $
 
 
 
@@ -68,9 +68,6 @@ proc spc_winini { } {
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_bess) -command "spc_bess" -underline 0
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_arasbeam) -command "spc_arasbeam" -underline 0
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_uves) -command "spc_uves" -underline 0
-      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_file_space)
-      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_sommeadd_w) -command "spc_sommeadd_w" -underline 0
-      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_sommekappa_w) -command "spc_sommekappa_w" -underline 0
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_file_space)
       if {$nbprinters>0} {
          for {set k 0} {$k<$nbprinters} {incr k} {
@@ -238,6 +235,12 @@ proc spc_winini { } {
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_geom2rinstrum_w) -command "::param_spc_audace_geom2rinstrum::run" -underline 0 -accelerator "Ctrl-g-a"
       #.spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
       #.spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_specLhIII_w) -command "::spbmfc::fenetreSpData" -underline 0 -accelerator "Ctrl-8"
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_anim_w) -command "spc_anim_w" -underline 0
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_sommeadd_w) -command "spc_sommeadd_w" -underline 0
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_sommekappa_w) -command "spc_sommekappa_w" -underline 0
+
       .spc configure -menu .spc.menuBar
       #-- Raccourcis calviers :
       #bind .spc <Control-i> ::param_spc_audace_traite2rinstrum::run
