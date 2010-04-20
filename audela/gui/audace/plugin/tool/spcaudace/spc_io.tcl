@@ -10,7 +10,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_io.tcl,v 1.14 2010-04-16 14:02:52 bmauclaire Exp $
+# Mise a jour $Id: spc_io.tcl,v 1.15 2010-04-20 16:57:26 bmauclaire Exp $
 
 
 
@@ -1346,7 +1346,7 @@ proc spc_fit2pngman { args } {
         close $file_id
 
         #--- Execute Gnuplot pour l'export en png
-        if { $tcl_platform(os)=="Linux" } {
+        if { $tcl_platform(platform)=="unix" } {
             set answer [ catch { exec gnuplot $audace(rep_images)/${spcfile}.gp } ]
             ::console::affiche_resultat "$answer\n"
         } else {
@@ -1431,7 +1431,7 @@ proc spc_fit2png { args } {
         #exec gnuplot "$audace(rep_images)/${spcfile}.gp"
         # exec gnuplot $repertoire_gp/run_gp
         # exec rm -f $repertoire_gp/run_pg
-        if { $tcl_platform(os)=="Linux" } {
+        if { $tcl_platform(platform)=="unix" } {
             # set gnuplotex "/usr/bin/gnuplot"
             # catch { exec $gnuplotex "$audace(rep_images)/${spcfile}.gp" }
             set answer [ catch { exec gnuplot $audace(rep_images)/${spcfile}.gp } ]
@@ -1547,7 +1547,7 @@ proc spc_fit2pngopt { args } {
         close $file_id
 
         #--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
-        if { $tcl_platform(os)=="Linux" } {
+        if { $tcl_platform(platform)=="unix" } {
             set answer [ catch { exec gnuplot $audace(rep_images)/${spcfile}.gp } ]
             ::console::affiche_resultat "gnuplot résultat : $answer\n"
         } else {
@@ -1662,7 +1662,7 @@ proc spc_multifit2png { args } {
 
         #--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
         set repdflt [ bm_goodrep ]
-        if { $tcl_platform(os)=="Linux" } {
+        if { $tcl_platform(platform)=="unix" } {
             set answer [ catch { exec gnuplot $audace(rep_images)/multiplot.gp } ]
             ::console::affiche_resultat "gnuplot résultat : $answer\n"
         } else {
@@ -1764,7 +1764,7 @@ proc spc_multifit2pngopt { args } {
 
         #--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
         set repdflt [ bm_goodrep ]
-        if { $tcl_platform(os)=="Linux" } {
+        if { $tcl_platform(platform)=="unix" } {
             set answer [ catch { exec gnuplot $audace(rep_images)/multiplot.gp } ]
             ::console::affiche_resultat "gnuplot résultat : $answer\n"
         } else {
@@ -1857,7 +1857,7 @@ proc spc_fit2ps { args } {
         close $file_id
 
         #--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
-        if { $tcl_platform(os)=="Linux" } {
+        if { $tcl_platform(platform)=="unix" } {
             set answer [ catch { exec gnuplot $audace(rep_images)/${spcfile}.gp } ]
             ::console::affiche_resultat "gnuplot résultat : $answer\n"
         } else {
@@ -2007,7 +2007,7 @@ proc spc_dat2png { args } {
         close $file_id
 
         #--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
-        if { $tcl_platform(os)=="Linux" } {
+        if { $tcl_platform(platform)=="unix" } {
             set answer [ catch { exec gnuplot $audace(rep_images)/${spcfile}.gp } ]
             ::console::affiche_resultat "$answer\n"
         } else {
@@ -2054,7 +2054,7 @@ proc spc_dat2pngman { args } {
         close $file_id
 
         #--- Execute Gnuplot pour l'export en png
-        if { $tcl_platform(os)=="Linux" } {
+        if { $tcl_platform(platform)=="unix" } {
             set answer [ catch { exec gnuplot $audace(rep_images)/${spcfile}.gp } ]
             ::console::affiche_resultat "$answer\n"
         } else {
@@ -2983,7 +2983,7 @@ proc spc_dat2png_27042006 { args } {
         close $file_id
 
         #--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
-        if { $tcl_platform(os)=="Linux" } {
+        if { $tcl_platform(platform)=="unix" } {
             set answer [ catch { exec gnuplot $audace(rep_images)/${spcfile}.gp } ]
             ::console::affiche_resultat "$answer\n"
         } else {
