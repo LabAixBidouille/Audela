@@ -3,7 +3,7 @@
 # Modification : 08/12/2005
 #
 
-# Mise a jour $Id: spc_cap.tcl,v 1.6 2010-04-16 14:02:52 bmauclaire Exp $
+# Mise a jour $Id: spc_cap.tcl,v 1.7 2010-04-20 16:58:36 bmauclaire Exp $
 
 
 global caption langage
@@ -40,8 +40,6 @@ global caption langage
    set caption(spcaudace,gui,spc_uves)                           "Go to UVES web data base"
    set caption(spcaudace,gui,print_on)                           "Print with "
    set caption(spcaudace,gui,quitspc)                            "Exit SpcAud'ACE's window"
-   set caption(spcaudace,gui,spc_sommeadd_w)                     "Set summ to simple summ"
-   set caption(spcaudace,gui,spc_sommekappa_w)                   "Set summ to sigma-kappa summ"
 
    #--- Menu Conversions ---#
    set caption(spcaudace,gui,conv)                               "Conversions"
@@ -141,6 +139,9 @@ global caption langage
    set caption(spcaudace,gui,spc_geom2calibre_w)                 "Geometrics corrections -> Wavelength calibration"
    set caption(spcaudace,gui,spc_geom2rinstrum_w)                "Geometrics corrections -> Intrsunmental reposne correction"
    set caption(spcaudace,gui,spc_specLhIII_w)                    "LhiresIII spectral preprocessing (empty)"
+   set caption(spcaudace,gui,spc_sommeadd_w)                     "Set summ to simple summ"
+   set caption(spcaudace,gui,spc_sommekappa_w)                   "Set summ to sigma-kappa summ"
+   set caption(spcaudace,gui,spc_anim_w)                         "Make an animation of a whole of spectra"
 
    #--- Menu Astrophysique ---#
    set caption(spcaudace,gui,spc_analyse)                        "Astrophysic"
@@ -209,9 +210,6 @@ if { [string compare $langage "french"] == "0" } {
      set caption(spcaudace,gui,spc_uves)                      "Accès au site de la base UVES"
      set caption(spcaudace,gui,print_on)                      "Imprimer avec "
      set caption(spcaudace,gui,quitspc)                       "Quitter la fenêtre SpcAud'ACE"
-     set caption(spcaudace,gui,spc_sommeadd_w)                "Paramètre l'addition de spectres en somme simple"
-     set caption(spcaudace,gui,spc_sommekappa_w)              "Paramètre l'addition de spectres en somme kappa-sigma"
-
 
      #--- Menu Conversions ---#
      set caption(spcaudace,gui,conv)                          "Conversions"
@@ -309,6 +307,9 @@ if { [string compare $langage "french"] == "0" } {
      set caption(spcaudace,gui,spc_geom2calibre_w)            "Corrections géométriques -> Calibration"
      set caption(spcaudace,gui,spc_geom2rinstrum_w)           "Corrections géométriques -> Correction instrumentale"
      set caption(spcaudace,gui,spc_specLhIII_w)               "Réduction des spectres Lhires III (vide)"
+     set caption(spcaudace,gui,spc_sommeadd_w)                "Paramètre l'addition de spectres en somme simple"
+     set caption(spcaudace,gui,spc_sommekappa_w)              "Paramètre l'addition de spectres en somme kappa-sigma"
+     set caption(spcaudace,gui,spc_anim_w)                    "Fabrique une animation d'une série de spectres"
 
      #--- Menu Astrophysique ---#
      set caption(spcaudace,gui,spc_analyse)                   "Astrophysique"

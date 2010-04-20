@@ -7,7 +7,122 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.27 2010-04-16 14:02:52 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.28 2010-04-20 16:58:36 bmauclaire Exp $
+
+
+
+
+####################################################################
+# Creation d'une animation gif a partir d'une serie de spectres dans le repertoire de travail
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 2010-04-19
+# Date modification : 2010-04-19
+# Arguments : nom_objet_sans_espace
+####################################################################
+
+proc spc_anim { args } {
+   global audace conf spcaudace tcl_platform
+
+   if { [ llength $args ]==1 } {
+      set nom_astre [ lindex $args 0 ]
+
+      #--- Copie des fichiers :
+      set listefichiers [ lsort -dictionary [ glob -dir $audace(rep_images) -tail *$conf(extension,defaut) ] ]
+      if { [ file exists $audace(rep_images)/originaux ]!=1 } {
+         ::console::affiche_prompt "\nSauvegardes des fichiers dans originaux...\n"
+         file mkdir $audace(rep_images)/originaux
+         foreach fichier $listefichiers {
+            file copy "$audace(rep_images)/$fichier" "$audace(rep_images)/originaux/$fichier"
+         }
+      }
+
+      #--- Determination de lambda_min et lambda_max :
+      ::console::affiche_prompt "\nDétermination de lambda_max et lambda_min...\n"
+      set bande_liste [ list ]
+      foreach fichier $listefichiers {
+         set resultats [ spc_info $fichier ]
+         set lmin [ lindex $resultats 3 ]
+         set lmax [ lindex $resultats 4 ]
+         lappend bande_liste [ list $fichier $lmin $lmax ]
+      }
+      set lambda_min [ lindex [ lindex [ lsort -real -decreasing -index 1 $bande_liste ] 0 ] 1 ]
+      set lambda_max [ lindex [ lindex [ lsort -real -increasing -index 2 $bande_liste ] 0 ] 2 ]
+      ::console::affiche_resultat "\nLambda_min=$lambda_min et Lambda_max=$lambda_max\n"
+
+if { 1==1 } {
+      #--- Decoupage de la zone commune :
+      ::console::affiche_prompt "\nDécoupage de la zone commune...\n"
+      foreach fichier $listefichiers {
+         spc_select "$fichier" $lambda_min $lambda_max
+         file delete -force "$audace(rep_images)/$fichier"
+      }
+
+      #--- Normalisation :
+      ::console::affiche_prompt "\nNormalisation des spectres...\n"
+      set listefichiers [ lsort -dictionary [ glob -dir $audace(rep_images) -tail *_sel$conf(extension,defaut) ] ]
+      foreach fichier $listefichiers {
+         spc_autonorma "$fichier"
+         file delete -force "$audace(rep_images)/$fichier"
+      }
+
+
+      #--- Determination de ymin et ymax :
+      ::console::affiche_prompt "\nDétermination de ymax et ymin...\n"
+      set listefichiers [ lsort -dictionary [ glob -dir $audace(rep_images) -tail *_norm$conf(extension,defaut) ] ]
+      set intensity_liste [ list ]
+      foreach fichier $listefichiers {
+         buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+         buf$audace(bufNo) mult 1000
+         set resultats [ buf$audace(bufNo) stat ]
+         set ymin [ lindex $resultats 3 ]
+         set ymax [ lindex $resultats 2 ]
+         lappend intensity_liste [ list $fichier $ymin $ymax ]
+      }
+      set ymin [ expr 0.97*[ lindex [ lindex [ lsort -real -increasing -index 1 $intensity_liste ] 0 ] 1 ]/1000. ]
+      set ymax [ expr 1.03*[ lindex [ lindex [ lsort -real -decreasing -index 2 $intensity_liste ] 0 ] 2 ]/1000. ]
+      ::console::affiche_resultat "\nYmin=$ymin et Ymax=$ymax\n"
+
+
+      #--- Export au format PNG :
+      ::console::affiche_prompt "\nExport au format PNG...\n"
+      foreach fichier $listefichiers {
+         spc_autofit2png "$fichier" "$nom_astre" * * $ymin $ymax
+      }
+      set listefichiers [ lsort -dictionary [ glob -dir $audace(rep_images) -tail *_norm$conf(extension,defaut) ] ]
+      foreach fichier $listefichiers {
+         file delete -force "$audace(rep_images)/$fichier"
+      }
+
+
+      #--- Creation de la l'animation :
+      ::console::affiche_prompt "\nCreation de l'animation...\n"
+      if { $tcl_platform(platform)=="unix" } {
+         if { [ file exists /usr/bin/convert ] } {
+            set answer [ catch { exec convert -delay 40 -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif } ]
+            ::console::affiche_resultat "$answer\n"
+         } else {
+            ::console::affiche_erreur "Vous devez installer le paquet d'ImageMagick et executer la commande :\n convert -delay 40 -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif\n"
+            return ""
+         }
+      } elseif { $tcl_platform(platform)=="windows" } {
+         if { [ file exists $spcaudace(rep_spc)/plugins/im/convert ] } {
+            set answer [ catch { exec $spcaudace(rep_spc)/plugins/im/convert -delay 40 -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif } ]
+            ::console::affiche_resultat "$answer\n"
+         } else {
+            ::console::affiche_erreur "Vous devez installer l'archive d'ImageMagick Mini dans $spcaudace(rep_spc)\plugins\im\ et executer la commande :\n $spcaudace(rep_spc)\plugins\im\convert -delay 40 -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif\n"
+            return ""
+         }
+      }
+      ::console::affiche_resultat "Animation sauvée sous ${nom_astre}_anim.gif.\n"
+}
+      #--- Traitement du resultat :
+   } else {
+      ::console::affiche_erreur "Usage: spc_anim nom_astre_sans_espaces\n"
+   }
+}
+#**********************************************************************************#
+
 
 
 ####################################################################

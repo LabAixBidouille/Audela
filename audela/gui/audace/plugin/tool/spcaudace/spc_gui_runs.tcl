@@ -5,7 +5,24 @@
 #*****************************************************************************#
 # Chargement : source $audace(rep_scripts)/spcaudace/spc_gui_runs.tcl
 
-# Mise a jour $Id: spc_gui_runs.tcl,v 1.4 2010-04-16 14:02:52 bmauclaire Exp $
+# Mise a jour $Id: spc_gui_runs.tcl,v 1.5 2010-04-20 16:58:36 bmauclaire Exp $
+
+
+########################################################################
+# Interface pour l'appel de la fonction spc_anim
+#
+# Auteurs : Benjamin Mauclaire
+# Date de création : 20-04-2010
+# Date de modification : 20-04-2010
+########################################################################
+
+proc spc_anim_w {} {
+
+   global audace
+
+   spc_anim
+}
+#**********************************************************************#
 
 
 ########################################################################
