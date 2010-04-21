@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.28 2010-04-20 16:58:36 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.29 2010-04-21 15:07:06 bmauclaire Exp $
 
 
 
@@ -106,11 +106,11 @@ if { 1==1 } {
             return ""
          }
       } elseif { $tcl_platform(platform)=="windows" } {
-         if { [ file exists $spcaudace(rep_spc)/plugins/im/convert ] } {
-            set answer [ catch { exec $spcaudace(rep_spc)/plugins/im/convert -delay 40 -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif } ]
+         if { [ file exists $spcaudace(rep_spc)/plugins/imwin/convert ] } {
+            set answer [ catch { exec $spcaudace(rep_spc)/plugins/imwin/convert -delay 40 -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif } ]
             ::console::affiche_resultat "$answer\n"
          } else {
-            ::console::affiche_erreur "Vous devez installer l'archive d'ImageMagick Mini dans $spcaudace(rep_spc)\plugins\im\ et executer la commande :\n $spcaudace(rep_spc)\plugins\im\convert -delay 40 -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif\n"
+            ::console::affiche_erreur "Vous devez installer l'archive d'ImageMagick Mini et executer la commande DOS :\n $spcaudace(rep_spc)\plugins\imwin\convert -delay 40 -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif\n"
             return ""
          }
       }
