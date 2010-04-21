@@ -3,7 +3,7 @@
 # Description : Scripts pour un usage aise des fonctions d'Aud'ACE
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
 #
-# Mise a jour $Id: mauclaire.tcl,v 1.29 2010-04-09 17:50:53 bmauclaire Exp $
+# Mise a jour $Id: mauclaire.tcl,v 1.30 2010-04-21 15:30:24 robertdelmas Exp $
 #
 
 #
@@ -90,18 +90,17 @@ proc bm_plot { args } {
 ####################################################################
 
 proc bm_mkdir { args } {
+   global audace conf
 
-    global audace conf
-    if { [ llength $args ] == 1 } {
-	set lerep [ lindex $args 0 ]
-	file mkdir "$audace(rep_images)/$lerep"
-	::console::affiche_resultat "Répertoire $audace(rep_images)/$lerep crée.\n"
-    } else {
-	::console::affiche_erreur "Usage: bm_mkdir nom_repertoire\n"
-    }
+   if { [ llength $args ] == 1 } {
+      set lerep [ lindex $args 0 ]
+      file mkdir "$audace(rep_images)/$lerep"
+      ::console::affiche_resultat "Répertoire $audace(rep_images)/$lerep créé.\n"
+   } else {
+     ::console::affiche_erreur "Usage: bm_mkdir nom_repertoire\n"
+   }
 }
 #**********************************************************************************#
-
 
 
 ###############################################################################
