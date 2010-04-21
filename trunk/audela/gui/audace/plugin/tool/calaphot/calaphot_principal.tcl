@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot_principal.tcl,v 1.13 2010-03-29 18:54:14 jacquesmichelet Exp $
+# $Id: calaphot_principal.tcl,v 1.14 2010-04-21 15:42:18 robertdelmas Exp $
 #
 
 ###catch {namespace delete ::Calaphot}
@@ -87,7 +87,7 @@ namespace eval ::CalaPhot {
         set calaphot(texte,notice)              "notice"
         set calaphot(texte,probleme)            "probleme"
         set calaphot(texte,erreur)              "erreur"
-        
+
         set calaphot(repertoire_fichier)        [file join $env(HOME) .audela tool calaphot]
 
         set calaphot(nom_fichier_ini)           [file join $calaphot(repertoire_fichier) calaphot.ini]
@@ -552,7 +552,6 @@ namespace eval ::CalaPhot {
         variable calaphot
         variable data_script
         variable liste_image
-      
 
         Message debug "%s\n" [info level [info level]]
 
@@ -651,7 +650,6 @@ namespace eval ::CalaPhot {
     # @details Le resultat de cet affichage peut directement etre importé lu par Gnuplot
     # @return la partie entière du jour julien de la première image
     proc GenerationFichierDAT { } {
-
         global audace
         variable data_image
         variable parametres
@@ -660,7 +658,7 @@ namespace eval ::CalaPhot {
         variable liste_image
 
         Message debug "%s\n" [ info level [ info level ] ]
-        
+
         set nom_fichier [file join $audace(rep_images) ${parametres(sortie)}.dat]
         # effacement de la version précédente
         catch { file delete -force $nom_fichier }
@@ -702,7 +700,6 @@ namespace eval ::CalaPhot {
     # @details Ce fichier script utilise le fichier DAT comme source des données
     # @return toujours 0
     proc GenerationFichierGnuplot {origine_temps} {
-
         global audace
         variable data_image
         variable parametres
@@ -711,7 +708,7 @@ namespace eval ::CalaPhot {
         variable liste_image
 
         Message debug "%s\n" [info level [info level]]
-        
+
         set nom_fichier_gplt [file join $audace(rep_images) ${parametres(sortie)}.plt]
         set nom_fichier_dat [file join $audace(rep_images) ${parametres(sortie)}.dat]
         # effacement de la version précédente
@@ -722,7 +719,7 @@ namespace eval ::CalaPhot {
         puts $f "set xlabel \"$calaphot(texte,jour_julien) - $origine_temps\""
         puts $f "set ylabel \"$calaphot(texte,mag_relative)\""
         puts -nonewline $f "plot \'$nom_fichier_dat\' using 2:3:4 with errorlines title \"$parametres(objet)\""
-        for {set etoile 0} {$etoile < $data_script(nombre_reference)} {incr etoile} { 
+        for {set etoile 0} {$etoile < $data_script(nombre_reference)} {incr etoile} {
             puts $f " , \\"
             puts -nonewline $f "    \'\' using 2:[expr 5 + 2 * $etoile]:[expr 6 + 2* $etoile] with errorline title \"$calaphot(texte,etoile_reference)  $etoile\""
         }
@@ -738,17 +735,16 @@ namespace eval ::CalaPhot {
     # @details Uniquement sous Linux
     # @return toujours 0
     proc ExecutionGnuplot {} {
-        
         global tcl_platform
         global audace
         variable parametres
-        
+
         if {$tcl_platform(os) == "Linux"} {
             set nom_fichier_gplt [file join $audace(rep_images) ${parametres(sortie)}.plt]
             catch { exec gnuplot $nom_fichier_gplt & }
         }
     }
-    
+
     ##
     # @brief Affichage dans la console
     # @details Le niveau d'affichage est comparé au niveau defini dans la saisie des parametres. S'il est plus faible (plus grande priorite)
@@ -971,7 +967,7 @@ namespace eval ::CalaPhot {
         variable data_image
         variable data_script
         variable calaphot
-        
+
         set data_image($image,valide) "N"
         Message notice "%04d " $image
         if { [ info exists data_script($image,invalidation) ] } {
@@ -980,8 +976,6 @@ namespace eval ::CalaPhot {
         Message notice "%s\n" $calaphot(texte,image_rejetee)
     }
 
-        
-        
     ##
     # @brief Fermeture de fichier
     # @details L'interet de ce code est de pouvoir tracer le nombre de fichier ouverts à un moment donne. Cela sert a detecter les "fuites de fileid", c'est-a-dire les fichiers qui sont ouverts et jamais fermes. On peut aussi tracer les fichiers qu'on tente de fermer alors qu'ils n'ont pas été ouverts.
@@ -1057,7 +1051,7 @@ namespace eval ::CalaPhot {
         set data_script(nombre_indes) 0
 
         set data_script(nombre_fichier_ouvert) 0
-        
+
         if {[file exists $calaphot(repertoire_fichier)] == 0} {
             file mkdir $calaphot(repertoire_fichier)
         }
