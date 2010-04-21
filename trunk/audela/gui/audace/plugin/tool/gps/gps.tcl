@@ -2,7 +2,7 @@
 # Fichier : gps.tcl
 # Description : Outil de synchronisation GPS
 # Auteur : Jacques MICHELET
-# Mise à jour $Id: gps.tcl,v 1.20 2010-03-23 20:36:10 jacquesmichelet Exp $
+# Mise à jour $Id: gps.tcl,v 1.21 2010-04-21 15:36:24 robertdelmas Exp $
 #
 
 namespace eval ::gps {
@@ -714,7 +714,7 @@ namespace eval ::gps {
             set gps(configuration_serie_buffering) $confserie
         }
         return $serie
-    }    
+    }
 
     ##############################################################
     ### DemarrageAuto ############################################
@@ -730,7 +730,7 @@ namespace eval ::gps {
 
         set serie [ConfigureSerie]
         if {$serie == 0} {return}
-        
+
         set gps(etat) automatique
 
         pack forget $This.fautomatique.fautobis.bdemarrage_auto
