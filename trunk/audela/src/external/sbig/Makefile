@@ -12,15 +12,17 @@ build:
 
 install:
 	@if [ ! -d $(EXTINC) ]; then mkdir -p $(EXTINC); fi
-	cp -f sbig/include/Sbigudrv.h $(EXTINC)
+	cp -f sbig/include/sbigudrv.h $(EXTINC)
 	@if [ ! -d $(EXTLIB) ]; then mkdir -p $(EXTLIB); fi	
-	$(CP) -f sbig/lib/libsbigudrv.1.4.43.so  $(EXTLIB)/libsbigudrv.1.4.43.so
-	$(CP) -f sbig/lib/libsbigudrv.1.4.43.so  $(OUTPUTDIR)/libsbigudrv.1.4.43.so
+	$(CP) -f sbig/lib/libsbigudrv.1.4.60.so  $(EXTLIB)/libsbigudrv.1.4.60.so
+	$(CP) -f sbig/lib/libsbigudrv.1.4.60.so  $(OUTPUTDIR)/libsbigudrv.1.4.60.so
+	$(CP) -f sbig/lib/udrv4.0.a $(EXTLIB)/udrv4.0.a
 
 clean:
-	$(RM) $(EXTINC)/Sbigudrv.h
-	$(RM) $(EXTLIB)/libsbigudrv.1.4.43.so
-	$(RM) $(OUTPUTDIR)/libsbigudrv.1.4.43.so
+	$(RM) $(EXTINC)/sbigudrv.h
+	$(RM) $(EXTLIB)/libsbigudrv.1.4.60.so
+	$(RM) $(EXTLIB)/udrv4.0.a
+	$(RM) $(OUTPUTDIR)/libsbigudrv.1.4.60.so
 
 distclean: clean
 	$(RM) *~ *.bak
