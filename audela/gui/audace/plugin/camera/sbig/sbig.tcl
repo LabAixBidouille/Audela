@@ -2,7 +2,7 @@
 # Fichier : sbig.tcl
 # Description : Configuration de la camera SBIG
 # Auteur : Robert DELMAS
-# Mise a jour $Id: sbig.tcl,v 1.25 2009-11-08 14:28:32 robertdelmas Exp $
+# Mise a jour $Id: sbig.tcl,v 1.26 2010-04-22 07:38:56 bmauclaire Exp $
 #
 
 namespace eval ::sbig {
@@ -371,7 +371,11 @@ proc ::sbig::configureCamera { camItem bufNo } {
          set lptAddress ""
       }
       #--- Je cree la camera
-      set camNo [ cam::create sbig $conf(sbig,port) -ip $conf(sbig,host) -lptaddress $lptAddress ]
+      if { $conf(sbig,port)=="USB" || $conf(sbig,port)=="Ethernet" } {
+        set camNo [ cam::create sbig $conf(sbig,port) -ip $conf(sbig,host) ]
+      } else {
+        set camNo [ cam::create sbigparallel $conf(sbig,port) -lptaddress $lptAddress ]
+      }
       console::affiche_entete "$caption(sbig,port_camera) ([ cam$camNo name ]) $caption(sbig,2points) $conf(sbig,port)\n"
       console::affiche_saut "\n"
       #--- Je change de variable
