@@ -34,7 +34,7 @@
 #include "libname.h"
 #include <libcam/libstruc.h>
 
-#include <Sbigudrv.h>
+#include <sbigudrv.h>
 
 
 #undef CST7_DEBUG
