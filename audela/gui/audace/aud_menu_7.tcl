@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise à jour $Id: aud_menu_7.tcl,v 1.22 2010-04-18 10:45:26 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_7.tcl,v 1.23 2010-04-23 17:03:06 robertdelmas Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -376,7 +376,7 @@ namespace eval ::cwdWindow {
       }
 
       if {[file exists $normalized_dir_scripts] && [file isdirectory $normalized_dir_scripts]} {
-         set conf(rep_scripts) $normalized_dir_scripts
+         set conf(rep_scripts)   $normalized_dir_scripts
          set audace(rep_scripts) $normalized_dir_scripts
       } else {
          set m "$cwdWindow(dir_scripts)"
@@ -386,7 +386,7 @@ namespace eval ::cwdWindow {
       }
 
       if {[file exists $normalized_dir_catalogues] && [file isdirectory $normalized_dir_catalogues]} {
-         set conf(rep_catalogues) $normalized_dir_catalogues
+         set conf(rep_catalogues)   $normalized_dir_catalogues
          set audace(rep_catalogues) $normalized_dir_catalogues
       } else {
          set m "$cwdWindow(dir_catalogues)"

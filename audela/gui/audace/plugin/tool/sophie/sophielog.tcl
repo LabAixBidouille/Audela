@@ -2,7 +2,7 @@
 # @file     sophielog.tcl
 # @brief    Fichier du namespace ::sophie::log
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophielog.tcl,v 1.1 2009-09-10 19:03:56 robertdelmas Exp $
+# @version  $Id: sophielog.tcl,v 1.2 2010-04-23 17:02:33 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -21,7 +21,11 @@ proc ::sophie::log::startLogFile { visuNo } {
    #--- Creation du nom de fichier log
    set nom_generique "guidage-sophie-"
    #--- Heure a partir de laquelle on passe sur un nouveau fichier de log
-   set heure_nouveau_fichier "12"
+   if { $::conf(rep_images,refModeAuto) == "0" } {
+      set heure_nouveau_fichier "0"
+   } else {
+      set heure_nouveau_fichier "12"
+   }
    set heure_courante [ lindex [ split $::audace(tu,format,hmsint) h ] 0 ]
    if { $heure_courante < $heure_nouveau_fichier } {
       #--- Si on est avant l'heure de changement, je prends la date de la veille

@@ -2,7 +2,7 @@
 # Fichier : acqzadko.tcl
 # Description : Outil d'acquisition
 # Auteurs : Francois Cochard et Myrtille Laas
-# Mise a jour $Id: acqzadko.tcl,v 1.19 2010-04-16 06:11:42 myrtillelaas Exp $
+# Mise a jour $Id: acqzadko.tcl,v 1.20 2010-04-23 17:02:00 robertdelmas Exp $
 #
 
 #==============================================================
@@ -227,7 +227,11 @@ proc ::acqzadko::Demarrageacqzadko { visuNo } {
    #--- Creation du nom de fichier log
    set nom_generique "acqzadko-visu$visuNo-"
    #--- Heure a partir de laquelle on passe sur un nouveau fichier de log
-   set heure_nouveau_fichier "12"
+   if { $::conf(rep_images,refModeAuto) == "0" } {
+      set heure_nouveau_fichier "0"
+   } else {
+      set heure_nouveau_fichier "12"
+   }
    set heure_courante [lindex [split $audace(tu,format,hmsint) h] 0]
    if { $heure_courante < $heure_nouveau_fichier } {
       #--- Si avant l'heure de changement, je prends la date de la veille
@@ -1272,6 +1276,7 @@ proc ::acqzadko::Go { visuNo } {
                   if { $sauvegardeValidee == "1" && $panneau(acqzadko,$visuNo,sauve_img_interrompue) == "0" } {
                      #--- Sauvegarde de l'image
                      saveima [append nom $panneau(acqzadko,$visuNo,index) $panneau(acqzadko,$visuNo,extension)] $visuNo
+                     #--- Indique l'heure d'enregistrement dans le fichier log
                      set heure $audace(tu,format,hmsint)
                      Message $visuNo consolog $caption(acqzadko,enrim) $heure $nom
                      incr panneau(acqzadko,$visuNo,index)
@@ -1309,6 +1314,7 @@ proc ::acqzadko::Go { visuNo } {
                   if { $sauvegardeValidee == "1" && $panneau(acqzadko,$visuNo,sauve_img_interrompue) == "0" } {
                      #--- Sauvegarde de l'image
                      saveima [append nom $panneau(acqzadko,$visuNo,index) $panneau(acqzadko,$visuNo,extension)] $visuNo
+                     #--- Indique l'heure d'enregistrement dans le fichier log
                      set heure $audace(tu,format,hmsint)
                      Message $visuNo consolog $caption(acqzadko,enrim) $heure $nom
                      incr panneau(acqzadko,$visuNo,index)
@@ -1342,6 +1348,7 @@ proc ::acqzadko::Go { visuNo } {
                   if { $sauvegardeValidee == "1" && $panneau(acqzadko,$visuNo,sauve_img_interrompue) == "0" } {
                      #--- Sauvegarde de l'image
                      saveima [append nom $panneau(acqzadko,$visuNo,index) $panneau(acqzadko,$visuNo,extension)] $visuNo
+                     #--- Indique l'heure d'enregistrement dans le fichier log
                      set heure $audace(tu,format,hmsint)
                      Message $visuNo consolog $caption(acqzadko,enrim) $heure $nom
                      incr panneau(acqzadko,$visuNo,index)
@@ -1402,6 +1409,7 @@ proc ::acqzadko::Go { visuNo } {
                   if { $sauvegardeValidee == "1" && $panneau(acqzadko,$visuNo,sauve_img_interrompue) == "0" } {
                      #--- Sauvegarde de l'image
                      saveima [append nom $panneau(acqzadko,$visuNo,index) $panneau(acqzadko,$visuNo,extension)] $visuNo
+                     #--- Indique l'heure d'enregistrement dans le fichier log
                      set heure $audace(tu,format,hmsint)
                      Message $visuNo consolog $caption(acqzadko,enrim) $heure $nom
                      incr panneau(acqzadko,$visuNo,index)
@@ -1921,13 +1929,12 @@ proc ::acqzadko::SauveUneImage { visuNo } {
       }
    }
 
-   #--- Indiquer l'enregistrement dans le fichier log
+   #--- Sauvegarde de l'image
+   saveima [append nom $panneau(acqzadko,$visuNo,extension)] $visuNo
+   #--- Indique l'heure d'enregistrement dans le fichier log
    set heure $audace(tu,format,hmsint)
    Message $visuNo consolog $caption(acqzadko,demsauv) $heure
    Message $visuNo consolog $caption(acqzadko,imsauvnom) $nom $panneau(acqzadko,$visuNo,extension)
-   #--- Sauvegarder l'image
-   saveima $nom$panneau(acqzadko,$visuNo,extension) $visuNo
-
 }
 #***** Fin de la procedure de sauvegarde de l'image *************
 
@@ -2233,14 +2240,14 @@ proc ::acqzadko::webcamConfigure { visuNo } {
          if { $choix == "ok" } {
             #--- Ouverture de la fenetre de selection des cameras
             #--- Tue camera.exe
-				if {[lindex [hostaddress] end]=="ikon"} {
-				       package require twapi
-				       set res [twapi::get_process_ids -glob -name "camera.exe"]
-				       if {$res!=""} {
-				          twapi::end_process $res -force
-				       }
-				}
-            ::confCam::run      
+            if {[lindex [hostaddress] end]=="ikon"} {
+               package require twapi
+               set res [twapi::get_process_ids -glob -name "camera.exe"]
+               if {$res!=""} {
+                  twapi::end_process $res -force
+               }
+            }
+            ::confCam::run
          }
          ::audace::menustate normal
       }
@@ -2248,18 +2255,19 @@ proc ::acqzadko::webcamConfigure { visuNo } {
 }
 #***** Affichage de la fenetre de configuration de WebCam ************
 proc ::acqzadko::camConfigure { visuNo } {
-	global audace caption
-	#--- Tue camera.exe
-	if {[lindex [hostaddress] end]=="ikon"} {
-	       package require twapi
-	       set res [twapi::get_process_ids -glob -name "camera.exe"]
-	       if {$res!=""} {
-	          twapi::end_process $res -force
-	       }
-	}
-   ::confCam::run 
+   global audace caption
+
+   #--- Tue camera.exe
+   if {[lindex [hostaddress] end]=="ikon"} {
+      package require twapi
+      set res [twapi::get_process_ids -glob -name "camera.exe"]
+      if {$res!=""} {
+         twapi::end_process $res -force
+      }
+   }
+   ::confCam::run
 }
-   
+
 #***** Fin de la fenetre de configuration de WebCam ******************
 
 proc ::acqzadko::acqzadkoBuildIF { visuNo } {

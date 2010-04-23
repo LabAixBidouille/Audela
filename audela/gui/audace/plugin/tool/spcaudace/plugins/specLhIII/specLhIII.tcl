@@ -2,7 +2,7 @@
 # Fichier : specLhIII.tcl
 # Description : Reduction complete des spectres Lhires III
 # Auteur : François COCHARD
-# Mise a jour $Id: specLhIII.tcl,v 1.3 2010-01-24 11:20:51 robertdelmas Exp $
+# Mise a jour $Id: specLhIII.tcl,v 1.4 2010-04-23 17:02:51 robertdelmas Exp $
 #
 
 #==============================================================
@@ -44,8 +44,12 @@ namespace eval ::spbmfc {
 #  # Gestion du fichier de log
 #  # Creation du nom de fichier log
 #       set nom_generique specLhIII
-#       # Heure à partir de laquelle on passe sur un nouveau fichier de log...
-#       set heure_nouveau_fichier 4
+#       # Heure a partir de laquelle on passe sur un nouveau fichier de log
+#       if { $::conf(rep_images,refModeAuto) == "0" } {
+#          set heure_nouveau_fichier "0"
+#       } else {
+#          set heure_nouveau_fichier "12"
+#       }
 #       set heure_courante [lindex [split $audace(tu,format,hmsint) h] 0]
 #       if {$heure_courante < $heure_nouveau_fichier} {
 #          # Si avant l'heure de changement... Je prends la date de la veille

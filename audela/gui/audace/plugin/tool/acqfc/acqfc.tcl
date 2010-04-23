@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.101 2010-01-30 14:38:49 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.102 2010-04-23 17:01:22 robertdelmas Exp $
 #
 
 #==============================================================
@@ -219,7 +219,11 @@ proc ::acqfc::DemarrageAcqFC { visuNo } {
    #--- Creation du nom de fichier log
    set nom_generique "acqfc-visu$visuNo-"
    #--- Heure a partir de laquelle on passe sur un nouveau fichier de log
-   set heure_nouveau_fichier "12"
+   if { $::conf(rep_images,refModeAuto) == "0" } {
+      set heure_nouveau_fichier "0"
+   } else {
+      set heure_nouveau_fichier "12"
+   }
    set heure_courante [lindex [split $audace(tu,format,hmsint) h] 0]
    if { $heure_courante < $heure_nouveau_fichier } {
       #--- Si avant l'heure de changement, je prends la date de la veille
@@ -1260,6 +1264,7 @@ proc ::acqfc::Go { visuNo } {
                   if { $sauvegardeValidee == "1" && $panneau(acqfc,$visuNo,sauve_img_interrompue) == "0" } {
                      #--- Sauvegarde de l'image
                      saveima [append nom $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)] $visuNo
+                     #--- Indique l'heure d'enregistrement dans le fichier log
                      set heure $audace(tu,format,hmsint)
                      Message $visuNo consolog $caption(acqfc,enrim) $heure $nom
                      incr panneau(acqfc,$visuNo,index)
@@ -1297,6 +1302,7 @@ proc ::acqfc::Go { visuNo } {
                   if { $sauvegardeValidee == "1" && $panneau(acqfc,$visuNo,sauve_img_interrompue) == "0" } {
                      #--- Sauvegarde de l'image
                      saveima [append nom $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)] $visuNo
+                     #--- Indique l'heure d'enregistrement dans le fichier log
                      set heure $audace(tu,format,hmsint)
                      Message $visuNo consolog $caption(acqfc,enrim) $heure $nom
                      incr panneau(acqfc,$visuNo,index)
@@ -1330,6 +1336,7 @@ proc ::acqfc::Go { visuNo } {
                   if { $sauvegardeValidee == "1" && $panneau(acqfc,$visuNo,sauve_img_interrompue) == "0" } {
                      #--- Sauvegarde de l'image
                      saveima [append nom $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)] $visuNo
+                     #--- Indique l'heure d'enregistrement dans le fichier log
                      set heure $audace(tu,format,hmsint)
                      Message $visuNo consolog $caption(acqfc,enrim) $heure $nom
                      incr panneau(acqfc,$visuNo,index)
@@ -1390,6 +1397,7 @@ proc ::acqfc::Go { visuNo } {
                   if { $sauvegardeValidee == "1" && $panneau(acqfc,$visuNo,sauve_img_interrompue) == "0" } {
                      #--- Sauvegarde de l'image
                      saveima [append nom $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)] $visuNo
+                     #--- Indique l'heure d'enregistrement dans le fichier log
                      set heure $audace(tu,format,hmsint)
                      Message $visuNo consolog $caption(acqfc,enrim) $heure $nom
                      incr panneau(acqfc,$visuNo,index)
@@ -1941,13 +1949,12 @@ proc ::acqfc::SauveUneImage { visuNo } {
       }
    }
 
-   #--- Indiquer l'enregistrement dans le fichier log
+   #--- Sauvegarde de l'image
+   saveima [append nom $panneau(acqfc,$visuNo,extension)] $visuNo
+   #--- Indique l'heure d'enregistrement dans le fichier log
    set heure $audace(tu,format,hmsint)
    Message $visuNo consolog $caption(acqfc,demsauv) $heure
    Message $visuNo consolog $caption(acqfc,imsauvnom) $nom $panneau(acqfc,$visuNo,extension)
-   #--- Sauvegarder l'image
-   saveima $nom$panneau(acqfc,$visuNo,extension) $visuNo
-
 }
 #***** Fin de la procedure de sauvegarde de l'image *************
 

@@ -2,7 +2,7 @@
 # Fichier : pretrfc.tcl
 # Description : Outil pour le pretraitement automatique
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: pretrfc.tcl,v 1.24 2010-01-30 14:19:51 robertdelmas Exp $
+# Mise a jour $Id: pretrfc.tcl,v 1.25 2010-04-23 17:02:18 robertdelmas Exp $
 #
 
 #============================================================
@@ -35,7 +35,11 @@ namespace eval ::pretrfc {
             #--- Creation du nom de fichier log
             set nom_generique "pretrfc-"
             #--- Heure a partir de laquelle on passe sur un nouveau fichier de log
-            set heure_nouveau_fichier 4
+            if { $::conf(rep_images,refModeAuto) == "0" } {
+               set heure_nouveau_fichier "0"
+            } else {
+               set heure_nouveau_fichier "12"
+            }
             set heure_courante [lindex [split $audace(tu,format,hmsint) h] 0]
             if {$heure_courante < $heure_nouveau_fichier} {
                #--- Si avant l'heure de changement... Je prends la date de la veille
