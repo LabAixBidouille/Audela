@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration des systemes optiques associes aux cameras A, B et C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.32 2009-03-13 23:44:20 michelpujol Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.33 2010-04-23 16:45:08 robertdelmas Exp $
 #
 
 namespace eval ::confOptic {
@@ -500,10 +500,10 @@ namespace eval ::confOptic {
 
       #--- Cas de la camera A
       #--- Je formate les entry pour permettre le calcul decimal
-      set widget(A,diametre) [ format "%.1f" $widget(A,diametre) ]
+      set widget(A,diametre) [ format "%.3f" $widget(A,diametre) ]
       $widget(frm).entDiametre configure -textvariable ::confOptic::widget(A,diametre)
 
-      set widget(A,focale) [ format "%.1f" $widget(A,focale) ]
+      set widget(A,focale) [ format "%.3f" $widget(A,focale) ]
       $widget(frm).entFocale configure -textvariable ::confOptic::widget(A,focale)
 
       #--- Je mets a jour la combobox de configuration du systeme optique
