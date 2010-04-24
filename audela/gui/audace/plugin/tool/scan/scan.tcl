@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.57 2010-04-24 10:08:03 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.58 2010-04-24 10:27:56 robertdelmas Exp $
 #
 
 #============================================================
@@ -448,13 +448,13 @@ proc ::scan::updateCellDim { args } {
 proc ::scan::startTool { visuNo } {
    variable This
    variable parametres
-   global caption env panneau
+   global caption panneau
 
    #--- On cree la variable de configuration des mots cles
    if { ! [ info exists ::conf(scan,keywordConfigName) ] } { set ::conf(scan,keywordConfigName) "default" }
 
    #--- Si le repertoire scan n'existe pas, le creer
-   set panneau(homeDirectory) [ file join $env(HOME) .audela tool scan ]
+   set panneau(homeDirectory) [ file join $::env(HOME) .audela tool scan ]
    if { ! [ file exist $panneau(homeDirectory) ] } {
       file mkdir $panneau(homeDirectory)
    }
