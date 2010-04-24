@@ -2,7 +2,7 @@
 # Fichier : cmanimate.tcl
 # Description : Animation/slides control panel for Cloud Monitor
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmanimate.tcl,v 1.18 2010-01-30 14:10:51 robertdelmas Exp $
+# Mise a jour $Id: cmanimate.tcl,v 1.19 2010-04-24 10:27:37 robertdelmas Exp $
 #
 
 #****************************************************************
@@ -118,18 +118,8 @@ namespace eval ::cmanimate {
    #------------------------------------------------------------
    proc createPanel { this } {
       variable This
-      global audace caption cmconf panneau
+      global caption cmconf panneau
 
-      #--- Chargement des variables de configuration de cmaude
-      set fichier_cmaude [ file join $audace(rep_plugin) tool cmaude cmaude_ini.tcl ]
-      if { [ file exists $fichier_cmaude ] } {
-         source $fichier_cmaude
-      }
-      #--- Chargement des variables de configuration
-      set fichier_cmanimate [ file join $audace(rep_plugin) tool cmanimate cmanimate.ini ]
-      if { [ file exists $fichier_cmanimate ] } {
-         source $fichier_cmanimate
-      }
       #--- Initialisation du nom de la fenetre
       set This $this
       #--- Initialisation des captions
@@ -164,10 +154,10 @@ namespace eval ::cmanimate {
 
    proc chargementVar { } {
       variable parametres
-      global audace
+      global panneau
 
       #--- Ouverture du fichier de parametres
-      set fichier [ file join $audace(rep_plugin) tool cmanimate cmanimate.ini ]
+      set fichier [ file join $panneau(homeDirectory) cmanimate.ini ]
       if { [ file exists $fichier ] } {
          source $fichier
       }
@@ -176,13 +166,13 @@ namespace eval ::cmanimate {
 
    proc enregistrementVar { } {
       variable parametres
-      global audace panneau
+      global panneau
 
       set parametres(cmanimate,position) "$panneau(cmanimate,position)"
 
       #--- Sauvegarde des parametres
       catch {
-         set nom_fichier [ file join $audace(rep_plugin) tool cmanimate cmanimate.ini ]
+         set nom_fichier [ file join $panneau(homeDirectory) cmanimate.ini ]
          if [ catch { open $nom_fichier w } fichier ] {
             #---
          } else {
@@ -238,7 +228,19 @@ namespace eval ::cmanimate {
    proc startTool { visuNo } {
       variable This
       variable parametres
-      global caption panneau
+      global audace caption panneau
+
+      #--- Si le repertoire cmanimate n'existe pas, le creer
+      set panneau(homeDirectory) [ file join $::env(HOME) .audela tool cmanimate ]
+      if { ! [ file exist $panneau(homeDirectory) ] } {
+         file mkdir $panneau(homeDirectory)
+      }
+
+      #--- Chargement des variables de configuration de cmaude
+      set fichier_cmaude [ file join $audace(rep_plugin) tool cmaude cmaude_ini.tcl ]
+      if { [ file exists $fichier_cmaude ] } {
+         source $fichier_cmaude
+      }
 
       trace add variable ::panneau(cmanimate,position) write ::cmanimate::adaptOutilcmanimate
       ::cmanimate::chargementVar
