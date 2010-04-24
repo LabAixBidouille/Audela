@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.56 2010-01-30 14:21:12 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.57 2010-04-24 10:08:23 robertdelmas Exp $
 #
 
 global panneau
@@ -312,10 +312,10 @@ proc ::scanfast::createPanel { this } {
 #------------------------------------------------------------
 proc ::scanfast::chargerVar { } {
    variable parametres
-   global audace
+   global audace panneau
 
    #--- Ouverture du fichier de parametres
-   set fichier [ file join $audace(rep_plugin) tool scanfast scanfast.ini ]
+   set fichier [ file join $panneau(homeDirectory) scanfast.ini ]
    if { [ file exists $fichier ] } {
       source $fichier
    }
@@ -372,7 +372,7 @@ proc ::scanfast::enregistrerVar { } {
 
    #--- Sauvegarde des parametres
    catch {
-      set nom_fichier [ file join $audace(rep_plugin) tool scanfast scanfast.ini ]
+      set nom_fichier [ file join $panneau(homeDirectory) scanfast.ini ]
       if [ catch { open $nom_fichier w } fichier ] {
          #---
       } else {
@@ -516,10 +516,16 @@ proc ::scanfast::adaptOutilScanfast { args } {
 proc ::scanfast::startTool { visuNo } {
    variable This
    variable parametres
-   global caption panneau
+   global caption env panneau
 
    #--- On cree la variable de configuration des mots cles
    if { ! [ info exists ::conf(scanfast,keywordConfigName) ] } { set ::conf(scanfast,keywordConfigName) "default" }
+
+   #--- Si le repertoire scanfast n'existe pas, le creer
+   set panneau(homeDirectory) [ file join $env(HOME) .audela tool scanfast ]
+   if { ! [ file exist $panneau(homeDirectory) ] } {
+      file mkdir $panneau(homeDirectory)
+   }
 
    #--- Chargement de la configuration
    chargerVar
