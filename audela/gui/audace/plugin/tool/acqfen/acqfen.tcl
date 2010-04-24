@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.37 2010-04-24 09:33:41 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.38 2010-04-24 10:07:22 robertdelmas Exp $
 #
 
 # =========================================================
@@ -133,9 +133,9 @@ namespace eval ::acqfen {
       set This $this
 
       #--- Si le repertoire acqfen n'existe pas, le creer
-      set panneau(home) [ file join $env(HOME) .audela tool acqfen ]
-      if { ! [ file exist $panneau(home) ] } {
-         file mkdir $panneau(home)
+      set panneau(homeDirectory) [ file join $env(HOME) .audela tool acqfen ]
+      if { ! [ file exist $panneau(homeDirectory) ] } {
+         file mkdir $panneau(homeDirectory)
       }
 
       #--- Recuperation de la derniere configuration de prise de vue
@@ -243,7 +243,7 @@ namespace eval ::acqfen {
       global audace panneau
 
       #--- Ouverture du fichier de parametres
-      set fichier [ file join $panneau(home) acqfen.ini ]
+      set fichier [ file join $panneau(homeDirectory) acqfen.ini ]
       if { [ file exists $fichier ] } {
          source $fichier
       }
@@ -277,7 +277,7 @@ namespace eval ::acqfen {
 
       #--- Sauvegarde des parametres
       catch {
-         set nom_fichier [ file join $panneau(home) acqfen.ini ]
+         set nom_fichier [ file join $panneau(homeDirectory) acqfen.ini ]
          if [ catch { open $nom_fichier w } fichier ] {
             #---
          } else {
