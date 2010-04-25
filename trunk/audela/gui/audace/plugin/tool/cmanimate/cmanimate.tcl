@@ -2,7 +2,7 @@
 # Fichier : cmanimate.tcl
 # Description : Animation/slides control panel for Cloud Monitor
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmanimate.tcl,v 1.20 2010-04-25 09:00:49 robertdelmas Exp $
+# Mise a jour $Id: cmanimate.tcl,v 1.21 2010-04-25 18:21:34 robertdelmas Exp $
 #
 
 #****************************************************************
@@ -230,7 +230,7 @@ namespace eval ::cmanimate {
       variable parametres
       global audace caption panneau
 
-      #--- Si le repertoire cmanimate n'existe pas, le creer
+      #--- Si le repertoire .audela n'existe pas, le creer
       set panneau(homeDirectory) [ file join $::env(HOME) .audela ]
       if { ! [ file exist $panneau(homeDirectory) ] } {
          file mkdir $panneau(homeDirectory)

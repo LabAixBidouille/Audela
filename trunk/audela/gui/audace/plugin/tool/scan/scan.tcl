@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.59 2010-04-25 09:01:12 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.60 2010-04-25 18:22:29 robertdelmas Exp $
 #
 
 #============================================================
@@ -231,7 +231,7 @@ proc ::scan::createPanel { this } {
 #------------------------------------------------------------
 proc ::scan::chargerVar { } {
    variable parametres
-   global audace panneau
+   global panneau
 
    #--- Ouverture du fichier de parametres
    set fichier [ file join $panneau(homeDirectory) scan.ini ]
@@ -276,7 +276,7 @@ proc ::scan::chargerVar { } {
 #------------------------------------------------------------
 proc ::scan::enregistrerVar { } {
    variable parametres
-   global audace panneau
+   global panneau
 
    #--- Changement de variables
    set parametres(scan,col1)     $panneau(scan,col1)
@@ -453,7 +453,7 @@ proc ::scan::startTool { visuNo } {
    #--- On cree la variable de configuration des mots cles
    if { ! [ info exists ::conf(scan,keywordConfigName) ] } { set ::conf(scan,keywordConfigName) "default" }
 
-   #--- Si le repertoire scan n'existe pas, le creer
+   #--- Si le repertoire .audela n'existe pas, le creer
    set panneau(homeDirectory) [ file join $::env(HOME) .audela ]
    if { ! [ file exist $panneau(homeDirectory) ] } {
       file mkdir $panneau(homeDirectory)
@@ -971,7 +971,7 @@ proc ::scan::cmdDec { } {
 #------------------------------------------------------------
 proc ::scan::changeObt { } {
    variable This
-   global audace panneau
+   global panneau
 
    if { [ ::cam::list ] != "" } {
       set camItem [ ::confVisu::getCamItem 1 ]

@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: remotectrl.tcl,v 1.36 2010-02-21 18:52:10 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.tcl,v 1.37 2010-04-25 18:22:12 robertdelmas Exp $
 #
 
 #============================================================
@@ -118,6 +118,12 @@ namespace eval ::remotectrl {
       variable parametres
       variable This
 
+      #--- Si le repertoire .audela n'existe pas, le creer
+      set panneau(homeDirectory) [ file join $::env(HOME) .audela ]
+      if { ! [ file exist $panneau(homeDirectory) ] } {
+         file mkdir $panneau(homeDirectory)
+      }
+
       #--- Chargement des variables
       ::remotectrl::chargementVar
 
@@ -125,30 +131,30 @@ namespace eval ::remotectrl {
       set This $this
 
       #---
-      set panneau(remotectrl,base)          "$this"
-      set panneau(remotectrl,wizCon1,base)  "$audace(base).wiz_remotectrl"
+      set panneau(remotectrl,base)         "$this"
+      set panneau(remotectrl,wizCon1,base) "$audace(base).wiz_remotectrl"
 
       #---
       foreach var [ list ip1 port1 ftp_port1 ip2 port2 path_img ] {
          set panneau(remotectrl,$var) "$parametres($var)"
       }
-      set panneau(remotectrl,debug)     "no"
+      set panneau(remotectrl,debug) "no"
 
       remotectrlBuildIF $This
    }
 
    proc chargementVar { } {
-      global audace
+      global panneau
       variable parametres
 
       #--- Ouverture du fichier de parametres
-      set fichier [ file join $audace(rep_plugin) tool remotectrl remotectrl.ini ]
+      set fichier [ file join $panneau(homeDirectory) remotectrl.ini ]
       if { [ file exists $fichier ] } {
          source $fichier
       }
 
       set variables [ list ip1 port1 ftp_port1 ip2 port2 path_img ]
-      set values [ list "[Ip]" "5000" "21" "[Ip]" 5001" "21" ]
+      set values [ list "[Ip]" "5000" "21" "[Ip]" "5001" "21" ]
       foreach var $variables val $values {
          if { ! [ info exists parametres($var) ] } { set parametres($var) $val }
       }
@@ -157,7 +163,7 @@ namespace eval ::remotectrl {
    }
 
    proc enregistrementVar { } {
-      global audace panneau
+      global panneau
       variable parametres
 
       set variables [ list ip1 port1 ftp_port1 ip2 port2 path_img ]
@@ -167,7 +173,7 @@ namespace eval ::remotectrl {
 
       #--- Sauvegarde des parametres
       catch {
-         set nom_fichier [ file join $audace(rep_plugin) tool remotectrl remotectrl.ini ]
+         set nom_fichier [ file join $panneau(homeDirectory) remotectrl.ini ]
          if [ catch { open $nom_fichier w } fichier ] {
             #---
          } else {

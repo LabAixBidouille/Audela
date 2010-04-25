@@ -2,7 +2,7 @@
 # Fichier : pretrfc.tcl
 # Description : Outil pour le pretraitement automatique
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: pretrfc.tcl,v 1.26 2010-04-25 17:48:21 robertdelmas Exp $
+# Mise a jour $Id: pretrfc.tcl,v 1.27 2010-04-25 18:21:52 robertdelmas Exp $
 #
 
 #============================================================
@@ -22,7 +22,7 @@ namespace eval ::pretrfc {
    proc DemarragePretraitFC { } {
       global audace caption panneau
 
-      #--- Si le repertoire acqfen n'existe pas, le creer
+      #--- Si le repertoire .audela n'existe pas, le creer
       set panneau(homeDirectory) [ file join $::env(HOME) .audela ]
       if { ! [ file exist $panneau(homeDirectory) ] } {
          file mkdir $panneau(homeDirectory)
@@ -233,7 +233,7 @@ proc getPluginHelp { } {
 
 #***** Procedure RecuperationParametres ******************************
    proc RecuperationParametres { } {
-      global audace conf_pt_fc panneau
+      global conf_pt_fc panneau
 
       #--- Initialisation
       if {[info exists conf_pt_fc]} {unset conf_pt_fc}
@@ -275,7 +275,7 @@ proc getPluginHelp { } {
 
 #***** Procedure SauvegardeParametres ********************************
     proc SauvegardeParametres { } {
-       global audace caption conf_pt_fc panneau
+       global caption conf_pt_fc panneau
 
        catch {
           set nom_fichier [file join $panneau(homeDirectory) pretrfc.ini]

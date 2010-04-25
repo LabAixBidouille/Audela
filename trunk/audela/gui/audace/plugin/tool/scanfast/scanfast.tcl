@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.59 2010-04-25 09:01:34 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.60 2010-04-25 18:22:45 robertdelmas Exp $
 #
 
 global panneau
@@ -312,7 +312,7 @@ proc ::scanfast::createPanel { this } {
 #------------------------------------------------------------
 proc ::scanfast::chargerVar { } {
    variable parametres
-   global audace panneau
+   global panneau
 
    #--- Ouverture du fichier de parametres
    set fichier [ file join $panneau(homeDirectory) scanfast.ini ]
@@ -357,7 +357,7 @@ proc ::scanfast::chargerVar { } {
 #------------------------------------------------------------
 proc ::scanfast::enregistrerVar { } {
    variable parametres
-   global audace panneau
+   global panneau
 
    #--- Changement de variables
    set parametres(scanfast,col1)       $panneau(scanfast,col1)
@@ -521,7 +521,7 @@ proc ::scanfast::startTool { visuNo } {
    #--- On cree la variable de configuration des mots cles
    if { ! [ info exists ::conf(scanfast,keywordConfigName) ] } { set ::conf(scanfast,keywordConfigName) "default" }
 
-   #--- Si le repertoire scanfast n'existe pas, le creer
+   #--- Si le repertoire .audela n'existe pas, le creer
    set panneau(homeDirectory) [ file join $::env(HOME) .audela ]
    if { ! [ file exist $panneau(homeDirectory) ] } {
       file mkdir $panneau(homeDirectory)
@@ -1097,7 +1097,7 @@ proc ::scanfast::infoCam { } {
 #------------------------------------------------------------
 proc ::scanfast::changeObt { } {
    variable This
-   global audace panneau
+   global panneau
 
    if { [ ::cam::list ] != "" } {
       set camItem [ ::confVisu::getCamItem 1 ]
