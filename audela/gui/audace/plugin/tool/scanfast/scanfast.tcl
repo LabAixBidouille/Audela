@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.58 2010-04-24 10:28:16 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.59 2010-04-25 09:01:34 robertdelmas Exp $
 #
 
 global panneau
@@ -522,7 +522,7 @@ proc ::scanfast::startTool { visuNo } {
    if { ! [ info exists ::conf(scanfast,keywordConfigName) ] } { set ::conf(scanfast,keywordConfigName) "default" }
 
    #--- Si le repertoire scanfast n'existe pas, le creer
-   set panneau(homeDirectory) [ file join $::env(HOME) .audela tool scanfast ]
+   set panneau(homeDirectory) [ file join $::env(HOME) .audela ]
    if { ! [ file exist $panneau(homeDirectory) ] } {
       file mkdir $panneau(homeDirectory)
    }
