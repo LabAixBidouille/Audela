@@ -43,7 +43,7 @@ int mc_scheduler_windowdates1(double jd_now, double longmpc, double rhocosphip, 
 	double jd,djd,latitude,altitude,jd_max,jd1,jd2,dt;
 	int k,astrometric;
 	double ra,dec,delta,mag,diamapp,elong,phase,r,diamapp_equ,diamapp_pol,long1,long2,long3,lati,posangle_sun,posangle_north,long1_sun,lati_sun;
-	double ha,ha1;
+	double ha,ha1=0;
 
 	// --- initialize
 	mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
@@ -314,11 +314,11 @@ int mc_sheduler_corccoords(mc_OBJECTDESCR *objectdescr) {
 /*****************************************************************************/
 int mc_scheduler_local1(int k,double longmpc, double rhocosphip, double rhosinphip, double latrad, double *luminance_ciel_bleus, mc_OBJECTDESCR *objectdescr,int njd, mc_SUNMOON *sunmoon,mc_HORIZON_ALTAZ *horizon_altaz,mc_HORIZON_HADEC *horizon_hadecint,double *pjd,double *pha,double *pelev,double *paz,double *pdec,double *pmoon_dist,double *psun_dist,double *pbrillance_totale,double *pra) {
 	double jd;
-	double *dummy1s=NULL,*dummy2s=NULL,*dummy3s=NULL,*dummy4s=NULL,*dummy5s=NULL,*dummy6s=NULL,*dummy7s=NULL,*dummy8s=NULL,*dummy9s=NULL;
-	double *dummy01s=NULL,*dummy02s=NULL;
+	//double *dummy1s=NULL,*dummy2s=NULL,*dummy3s=NULL,*dummy4s=NULL,*dummy5s=NULL,*dummy6s=NULL,*dummy7s=NULL,*dummy8s=NULL,*dummy9s=NULL;
+	//double *dummy01s=NULL,*dummy02s=NULL;
 	int kk,kh;
-	double ra,dec,ha,elev,az,c,moon_dist_phase,dh;
-	mc_OBJECTLOCAL *objectlocal=NULL;
+	double ra,dec,ha,elev=0,az,c,moon_dist_phase,dh;
+	//mc_OBJECTLOCAL *objectlocal=NULL;
 	double h,moon_az,moon_elev,sun_az,sun_elev,moon_dist,sun_dist,helev;
 	double luminance_diffusion_lune;
 	double luminance_totale,brillance_totale;
@@ -456,7 +456,9 @@ int mc_sheduler_interpcoords(mc_OBJECTDESCR *objectdescr,double jd,double *pos1,
 		if (da<-180) { objectdescr->axe_pos1[k]+=360.; }
 		if (da>180) { objectdescr->axe_pos1[k]-=360.; }
 	}
-	if ((jd>objectdescr->axe_jd[0]==0)||(n==1)) {
+	p1=objectdescr->axe_pos1[0];
+	p2=objectdescr->axe_pos2[0];
+	if ((jd>objectdescr->axe_jd[0])||(objectdescr->axe_jd[0]==0)||(n==1)) {
 		p1=objectdescr->axe_pos1[0];
 		p2=objectdescr->axe_pos2[0];
 	} else {
@@ -2306,7 +2308,7 @@ int mc_scheduler_objectlocal1(double longmpc, double rhocosphip, double rhosinph
 	mc_OBJECTLOCAL *objectlocal=NULL;
 	double latrad;
 	double *luminance_ciel_bleus=NULL; // -90 -89.9 -89.8 ... +89.9 +90.0
-	double maxelev,da,elev;
+	double maxelev=0,da,elev;
 	int started;
 
 	// --- cd/m2
@@ -2554,7 +2556,7 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 	double latitude,altitude,latrad,j1,j2,jdseq_prev0,jdseq_next0,dd0,durationtot;
 	double *jdsets=NULL;
 	int *kjdsets=NULL,user,user0,prio_order;
-	FILE *fid,*fidlog;
+	FILE *fid=NULL,*fidlog=NULL;
 	char s[300];
 
 	// --- open log file
@@ -2953,6 +2955,7 @@ try_a_gap:
 			// --- search for the best start without slew (jd00)
 			// --- jd0(slew_start_with_slew) jd00(slew_start_without_slew) jd1(acq_start) jd2(acq_end)
 			// int const_startexposures; // =0 best elevation, =1 start exposure as soon as possible, =2 start in the middle of the [start stop] sequence
+			jd00=0;
 			if (objectdescr[kd].const_startexposures==1) {
 				// --- il faut demarrer le plus vite possible
 				for (kjd=0,k=-1;kjd<njd;kjd++) {
@@ -3078,6 +3081,7 @@ try_a_gap:
 			// --- decalage pour tenir compte du temps de pointage avec la sequence precedente
 			jdseq_prev0=jdseq_prev=jd_prevmidsun;
 			jd0=jd00-d12/86400.;
+			dd=0;
 			if (k3>=0) {
 				jdseq_prev0=jdseq_prev=planis[0][k3].jd_acq_end;
 				// -- on traite le cas où l'on colle deja a la sequence precedente
@@ -3166,7 +3170,7 @@ try_a_gap:
 						objectlocal0[kjd].flagobs=0;
 					}
 					if (fidlog!=NULL) {
-						fprintf(fidlog," kd=%4d (%4d/%4d:3d). The gap is definitively to small. Go to try another gap.\n",kd,kp,np,ku);
+						fprintf(fidlog," kd=%4d (%4d/%4d:%3d). The gap is definitively to small. Go to try another gap.\n",kd,kp,np,ku);
 					}
 					goto try_a_gap; // try another gap
 				}
@@ -3539,3 +3543,4 @@ int mc_nextnight1(double jd_now, double longmpc, double rhocosphip, double rhosi
 
    return 0;
 }
+
