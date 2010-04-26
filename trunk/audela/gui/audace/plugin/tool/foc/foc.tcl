@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise à jour $Id: foc.tcl,v 1.32 2010-02-20 07:54:57 robertdelmas Exp $
+# Mise à jour $Id: foc.tcl,v 1.33 2010-04-26 20:59:15 robertdelmas Exp $
 #
 
 set ::graphik(compteur) {}
@@ -115,6 +115,13 @@ namespace eval ::foc {
       global caption panneau
 
       set This $this
+
+      #--- Si le repertoire .audela\log n'existe pas, le creer
+      set panneau(homeDirectory) [ file join $::env(HOME) .audela log ]
+      if { ! [ file exist $panneau(homeDirectory) ] } {
+         file mkdir $panneau(homeDirectory)
+      }
+
       #---
       set panneau(foc,titre)            "$caption(foc,focalisation)"
       set panneau(foc,aide)             "$caption(foc,help_titre)"
@@ -572,10 +579,10 @@ namespace eval ::foc {
    }
 
    proc cmdSauveLog { namefile } {
-      global audace
+      global panneau
 
       catch {
-         set fileId [ open [ file join $audace(rep_plugin) tool foc $namefile ] w ]
+         set fileId [ open [ file join $panneau(homeDirectory) $namefile ] w ]
          puts -nonewline $fileId $::graphik(fichier)
          close $fileId
       }
