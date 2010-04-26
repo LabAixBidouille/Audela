@@ -869,6 +869,12 @@ int mctcl_decode_sequences(Tcl_Interp *interp, char *argv[],int *nobjects, mc_OB
 		objectdescr[ko].delay_slew=10;
 		objectdescr[ko].delay_instrum=10;
 		objectdescr[ko].delay_exposures=60;
+		// -- private
+		objectdescr[ko].private_elevmaxi=0;
+		objectdescr[ko].private_jdelevmaxi=0;
+		objectdescr[ko].status_plani=STATUS_PLANI_NOT_PLANIFIED;
+		objectdescr[ko].nb_plani=0;
+		strcpy(objectdescr[ko].comments,"");
 	}
 	// --- read values
 	for (ko=0;ko<nobjs;ko++) {
@@ -930,6 +936,9 @@ int mctcl_decode_sequences(Tcl_Interp *interp, char *argv[],int *nobjects, mc_OB
 			if (strcmp(key,"DELAY_SLEW")==0) { objectdescr[ko].delay_slew=atof(argvvvv[1]); }
 			if (strcmp(key,"DELAY_INSTRUM")==0) { objectdescr[ko].delay_instrum=atof(argvvvv[1]); }
 			if (strcmp(key,"DELAY_EXPOSURES")==0) { objectdescr[ko].delay_exposures=atof(argvvvv[1]); }
+			// -- special debug
+			if (strcmp(key,"NAMEREQ")==0) { strncpy(objectdescr[ko].comments,argvvvv[1],OBJECTDESCR_MAXCOM-2); }
+			// -- free
 			if (argvvvv!=NULL) { Tcl_Free((char *) argvvvv); }
 		}
 		objectdescr[ko].axe_njd=kjdmax;

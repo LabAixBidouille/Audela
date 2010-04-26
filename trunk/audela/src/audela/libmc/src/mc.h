@@ -542,6 +542,7 @@ typedef struct {
    double ha_set;
 } mc_HORIZON_HADEC;
 
+#define OBJECTDESCR_MAXCOM 50
 typedef struct {
 	int idseq; // index
 	// --- constraints
@@ -581,6 +582,8 @@ typedef struct {
 	double private_elevmaxi;
 	double private_jdelevmaxi;
 	int status_plani;
+	int nb_plani;
+	char comments[OBJECTDESCR_MAXCOM];
 } mc_OBJECTDESCR;
 
 /* status plani comments */
@@ -1016,7 +1019,7 @@ int mc_meo_ruban(double az, double montee,double descente,double largmontee,doub
 int mc_sheduler_interpcoords(mc_OBJECTDESCR *objectdescr,double jd,double *pos1,double *pos2);
 int mc_sheduler_corccoords(mc_OBJECTDESCR *objectdescr);
 int mc_obsconditions1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,mc_HORIZON_ALTAZ *horizon_altaz,mc_HORIZON_HADEC *horizon_hadec,int nobj,mc_OBJECTDESCR *objectdescr,double djd,char *fullfilename);
-int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,mc_HORIZON_ALTAZ *horizon_altaz,mc_HORIZON_HADEC *horizon_hadec,int nobj,mc_OBJECTDESCR *objectdescr,int output_type, char *output_file);
+int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,mc_HORIZON_ALTAZ *horizon_altaz,mc_HORIZON_HADEC *horizon_hadec,int nobj,mc_OBJECTDESCR *objectdescr,int output_type, char *output_file, char *log_file);
 int mc_nextnight1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,double elev_set,double elev_twilight, double *jdprev, double *jdset,double *jddusk,double *jddawn,double *jdrise,double *jdnext,double *jdriseprev2,double *jdmer2,double *jdset2,double *jddusk2,double *jddawn2,double *jdrisenext2);
 
 /***************************************************************************/
