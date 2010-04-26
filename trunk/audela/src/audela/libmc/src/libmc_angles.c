@@ -791,7 +791,6 @@ int Cmd_mctcl_nutation(ClientData clientData, Tcl_Interp *interp, int argc, char
 /* dpsi deps eps 													                      */
 /****************************************************************************/
    double jj=0.,eps,dpsi,deps;
-   double ss=0.;
    int result;
    char s[256];
 
