@@ -2528,7 +2528,7 @@ int mc_obsconditions1(double jd_now, double longmpc, double rhocosphip, double r
 /************************************************************************/
 /************************************************************************/
 /************************************************************************/
-int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,mc_HORIZON_ALTAZ *horizon_altaz,mc_HORIZON_HADEC *horizon_hadec,int nobj,mc_OBJECTDESCR *objectdescr,int output_type, char *output_file) {
+int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,mc_HORIZON_ALTAZ *horizon_altaz,mc_HORIZON_HADEC *horizon_hadec,int nobj,mc_OBJECTDESCR *objectdescr,int output_type, char *output_file, char *log_file) {
 
 	double jd_prevmidsun,jd_nextmidsun,djd;
 	int njd,ko,nobjloc,kjd,flag,kp,kpp,kppp,k,kpl,npl,np,ku,k1,k2,k3,kk,kd,kk1,kk2,kr;
@@ -2553,11 +2553,21 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 	double jd_loc,ha_loc,elev_loc,az_loc,dec_loc,moon_dist_loc,sun_dist_loc,brillance_totale_loc,ra_loc;
 	double latitude,altitude,latrad,j1,j2,jdseq_prev0,jdseq_next0,dd0,durationtot;
 	double *jdsets=NULL;
-	int *kjdsets=NULL,user,user0;
-	FILE *fid;
-	
+	int *kjdsets=NULL,user,user0,prio_order;
+	FILE *fid,*fidlog;
+	char s[300];
+
+	// --- open log file
+	if (log_file!=NULL) {
+		fidlog=fopen(log_file,"wt");
+	}
+
 	// --- compute dates of observing range (=the start-end of the schedule)
 	mc_scheduler_windowdates1(jd_now,longmpc,rhocosphip,rhosinphip,&jd_prevmidsun,&jd_nextmidsun);
+	if (fidlog!=NULL) {
+		fprintf(fidlog,"=== Day %f\n",jd_now);
+		fprintf(fidlog," jd_prevmidsun=%f jd_nextmidsun=%f\n",jd_prevmidsun,jd_nextmidsun);
+	}
 
 	// --- compute mc_SUNMOON vector for the observing range.
 	djd=1./86400.;
@@ -2588,16 +2598,31 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 	nobjloc=0;
 	jdobsmin=jd_nextmidsun;
 	jdobsmax=jd_prevmidsun;
+	if (fidlog!=NULL) {
+		fprintf(fidlog,"=== First loop to compute observing conditions of %d sequences:\n",nobj);
+	}
 	for (ko=0;ko<nobj;ko++) {
 		objectdescr[ko].status_plani=STATUS_PLANI_NOT_PLANIFIED;
+		//sprintf(s,"%d / %d",ko,nobj);
+		//strncpy(objectdescr[ko].comments,s,OBJECTDESCR_MAXCOM-1);
+		objectdescr[ko].nb_plani=0;
 		if (objectdescr[ko].const_jd2<jd_prevmidsun) {
 			// -- la fin des observations est demandée avant le début du mer2mer
 			objectdescr[ko].status_plani=STATUS_PLANI_END_OBS_BEFORE_RANGE;
+			sprintf(s,"jd2 = %f < %f",objectdescr[ko].const_jd2,jd_prevmidsun);
+			if (fidlog!=NULL) {
+				fprintf(fidlog," Sequence %d: not observable (%s) %s\n",ko,s,objectdescr[ko].comments);
+			}
+			strncpy(objectdescr[ko].comments,s,OBJECTDESCR_MAXCOM-1);
 			continue;
-		}
-		if (objectdescr[ko].const_jd1>jd_nextmidsun) {
+		} else if (objectdescr[ko].const_jd1>jd_nextmidsun) {
 			// -- le debut des observations est demandée apres la fin du mer2mer
 			objectdescr[ko].status_plani=STATUS_PLANI_START_OBS_AFTER_RANGE;
+			sprintf(s,"jd1 = %f > %f",objectdescr[ko].const_jd1,jd_nextmidsun);
+			if (fidlog!=NULL) {
+				fprintf(fidlog," Sequence %d: not observable (%s) %s\n",ko,s,objectdescr[ko].comments);
+			}
+			strncpy(objectdescr[ko].comments,s,OBJECTDESCR_MAXCOM-1);
 			continue;
 		}
 		mc_sheduler_corccoords(&objectdescr[ko]);
@@ -2639,9 +2664,14 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 			}
 		}
 		if (compute_mode==1) {
-			if (objectlocalranges[ko].nbrange==0) {
+			if (objectlocalranges[nobjloc].nbrange==0) {
 				// -- l'astre nest jamais observable dans le mer2mer
 				objectdescr[ko].status_plani=STATUS_PLANI_NEVER_VISIBLE_IN_RANGE;
+				sprintf(s,"elevmax = %f",objectdescr[ko].private_elevmaxi);
+				if (fidlog!=NULL) {
+					fprintf(fidlog," Sequence %d: not observable in this mer2mer. %s\n",ko,objectdescr[ko].comments);
+				}
+				strncpy(objectdescr[ko].comments,s,OBJECTDESCR_MAXCOM-1);
 				continue;
 			}
 		}
@@ -2664,17 +2694,20 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 			}
 		}
 		if (compute_mode==1) {
-			for (kr=0;kr<objectlocalranges[ko].nbrange;kr++) {
-				if (objectlocalranges[ko].jd1[kr]<jdobsmin) {
-					jdobsmin=objectlocalranges[ko].jd1[kr];
+			for (kr=0;kr<objectlocalranges[nobjloc].nbrange;kr++) {
+				if (objectlocalranges[nobjloc].jd1[kr]<jdobsmin) {
+					jdobsmin=objectlocalranges[nobjloc].jd1[kr];
 				}
-				if (objectlocalranges[ko].jd2[kr]>jdobsmax) {
-					jdobsmax=objectlocalranges[ko].jd2[kr];
+				if (objectlocalranges[nobjloc].jd2[kr]>jdobsmax) {
+					jdobsmax=objectlocalranges[nobjloc].jd2[kr];
 				}
-				if (objectlocalranges[ko].elevmax[kr]>objectdescr[ko].private_elevmaxi) {
-					objectdescr[ko].private_elevmaxi=objectlocalranges[ko].elevmax[kr];
-					objectdescr[ko].private_jdelevmaxi=objectlocalranges[ko].jdelevmax[kr];
+				if (objectlocalranges[nobjloc].elevmax[kr]>objectdescr[ko].private_elevmaxi) {
+					objectdescr[ko].private_elevmaxi=objectlocalranges[nobjloc].elevmax[kr];
+					objectdescr[ko].private_jdelevmaxi=objectlocalranges[nobjloc].jdelevmax[kr];
 				}
+			}
+			if (fidlog!=NULL) {
+				fprintf(fidlog," Sequence %d: observable %.0f times (jdobsmin=%f jdobsmax=%f elevmax=%f jdelevmax=%f) %s\n",ko,objectlocalranges[nobjloc].nbrange,jdobsmin,jdobsmax,objectdescr[ko].private_elevmaxi,objectdescr[ko].private_jdelevmaxi,objectdescr[ko].comments);
 			}
 		}
 		objectlinks[nobjloc]=ko;
@@ -2683,7 +2716,31 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 	total_duration_obs=(jdobsmax-jdobsmin);
 	total_duration_sequenced=0.;
 
+	// ---
+	if (nobjloc==0) {
+		if (fidlog!=NULL) {
+			fprintf(fidlog,"=== Free memory");
+		}
+		free(sunmoon);
+		if (compute_mode==0) {
+			free(objectlocals);
+		} 
+		if (compute_mode==1) {
+			free(objectlocal);
+		} 
+		free(objectlocal0);
+		free(objectlinks);
+		free(luminance_ciel_bleus);
+		if (fidlog!=NULL) {
+			fclose(fidlog);
+		}
+		return 2;
+	}
+
 	// --- vecteur des users et des quotas
+	if (fidlog!=NULL) {
+		fprintf(fidlog,"=== Compute users\n");
+	}
 	dummys=(double*)calloc(nobjloc,sizeof(double));
 	kdummys=(int*)calloc(nobjloc,sizeof(int));
 	for (ko=0;ko<nobjloc;ko++) {
@@ -2712,6 +2769,9 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 			users[nu].percent_quota_authorized=objectdescr[objectlinks[kdummys[ko]]].user_quota;
 			users[nu].percent_quota_used=0.;
 			users[nu].duration_total_used=0.;
+			if (fidlog!=NULL) {
+				fprintf(fidlog," %d : user_id=%d quota=%f\n",nu,users[nu].iduser,users[nu].percent_quota_authorized);
+			}
 			nu++;
 			id0=id;
 		}
@@ -2721,6 +2781,9 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 	}
 
 	// --- vecteur des priorites trie dans l'ordre croissant
+	if (fidlog!=NULL) {
+		fprintf(fidlog,"=== Sort priorities\n");
+	}
 	priority_total=(double*)calloc(nobjloc,sizeof(double));
 	kpriority_total=(int*)calloc(nobjloc,sizeof(int));
 	for (ko=0;ko<nobjloc;ko++) {
@@ -2742,6 +2805,9 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 	}
 	npl0=npl=0;
 
+	if (fidlog!=NULL) {
+		fprintf(fidlog,"=== Enter in the great loop for %d sequences potentially observable:\n",nobjloc);
+	}
 	clock0 = clock();
 	// --- planification in-quotas
 	// ko : index in objectlocal
@@ -2750,6 +2816,7 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 	// mode_quota : 1=in quotas 2=hors quotas 3=duplique dans les trous
 	mode_quota=1;
 	ko=nobjloc-1;
+	prio_order=0;
 	while (1==1) {
 		current_priority=priority_total[ko];
 		// --- on cherche toutes les sequences de meme priorite
@@ -2787,10 +2854,18 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 				}
 			}
 		}
+		if (fidlog!=NULL) {
+			fprintf(fidlog,"--- mode_quota=%d current_priority=%f np=%d\n",mode_quota,current_priority,np);
+		}
 		// --- on place les kp=[0..np] sequences de meme priorite dans la planif
 		for (kp=0;kp<=np;kp++) {
 			kk=ksame_priority[kjdsets[kp]]; // kk index in objectlocal ou objectlocalranges
 			kd=objectlinks[kk]; ///// kd index in objectdescr
+			prio_order++;
+			if (objectdescr[kd].status_plani==STATUS_PLANI_NOT_PLANIFIED) {
+				sprintf(s,"prio=%.1f (%d / %d) prio_order=%d",current_priority,kp,np,prio_order);
+				strncpy(objectdescr[kd].comments,s,OBJECTDESCR_MAXCOM-1);
+			}
 			// --- calcule les quotas absolus utilises 
 			if (total_duration_sequenced>0) {
 				for (ku=0;ku<nu;ku++) {
@@ -2808,6 +2883,11 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 				if (users[ku].percent_quota_used>users[ku].percent_quota_authorized) {
 					if (objectdescr[kd].status_plani<STATUS_PLANI_PLANIFIED) {
 						objectdescr[kd].status_plani=STATUS_PLANI_OVER_QUOTA;	
+						sprintf(s,"quotas %.1f > %.1f prio=%.1f prio_order=%d",users[ku].percent_quota_used,users[ku].percent_quota_authorized,current_priority,prio_order);
+						strncpy(objectdescr[kd].comments,s,OBJECTDESCR_MAXCOM-1);
+					}
+					if (fidlog!=NULL) {
+						fprintf(fidlog," kd=%4d (%4d/%4d:%3d). prio_order=%d. Over_quota : %s\n",kd,kp,np,ku,prio_order,s);
 					}
 					continue;
 				}
@@ -2938,12 +3018,15 @@ try_a_gap:
 					}
 				}
 				if ((jd00<j1)||(jd00>j2)) {
-					// --- trou trouve en dohors des limites d'observations
+					// --- trou trouve en dehors des limites d'observations
 				}
 			}
 			if (k==-1) {
 				// --- There is no gap large enough to insert the current sequence.
 				// --- At these step, the slewing time is not taken into account.
+				if (fidlog!=NULL) {
+					fprintf(fidlog," kd=%4d (%4d/%4d:%3d). There is no gap large enough to insert the current sequence\n",kd,kp,np,ku);
+				}
 				continue;
 			}
 			jd0=jd00;
@@ -3056,14 +3139,24 @@ try_a_gap:
 				for (kjd=kk1;kjd<=kk2;kjd++) {
 					objectlocal0[kjd].flagobs=0;
 				}
+				if (fidlog!=NULL) {
+					fprintf(fidlog," kd=%4d (%4d/%4d:%3d). The gap is not large enough to insert the current sequence. Go to try another gap.\n",kd,kp,np,ku);
+				}
 				goto try_a_gap; // try another gap
 			} 
 			if (jd2>jdseq_next) {
+				if (fidlog!=NULL) {
+					fprintf(fidlog," kd=%4d (%4d/%4d:%3d). The gap must be shifted to be just aside the beginning of the next sequence.\n",kd,kp,np,ku);
+					//fprintf(fidlog," kd=%4d (%4d/%4d). A jdseq_prev=%f jd0=%f jd00=%f jd2=%f jdseq_next=%f.\n",kd,kp,np,jdseq_prev,jd0,jd00,jd2,jdseq_next);
+				}
 				// --- The gap must be shifted to be just aside the beginning of the next sequence
 				dd0=jd2-jdseq_next;
 				jd2-=dd0;
 				jd00-=dd0;
 				jd0-=dd0;
+				if (fidlog!=NULL) {
+					//fprintf(fidlog," kd=%4d (%4d/%4d). B jdseq_prev=%f jd0=%f jd00=%f jd2=%f jdseq_next=%f.\n",kd,kp,np,jdseq_prev,jd0,jd00,jd2,jdseq_next);
+				}
 				if (jd0<jdseq_prev) {
 					// --- The gap is definitively to small
 					kk1=(int)floor((jdseq_prev0-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd); if (kk1<0) { kk1=0; }
@@ -3071,6 +3164,9 @@ try_a_gap:
 					// --- we fill the gap with zeros to avoid to retry the same gap the next time
 					for (kjd=kk1;kjd<=kk2;kjd++) {
 						objectlocal0[kjd].flagobs=0;
+					}
+					if (fidlog!=NULL) {
+						fprintf(fidlog," kd=%4d (%4d/%4d:3d). The gap is definitively to small. Go to try another gap.\n",kd,kp,np,ku);
 					}
 					goto try_a_gap; // try another gap
 				}
@@ -3109,7 +3205,9 @@ try_a_gap:
 				} else {
 					if (planis[1][k1].jd_slew_start_with_slew<planis[1][k].jd_acq_end) {
 						// --- probleme dans le calcul
-						k+=0;
+						if (fidlog!=NULL) {
+							fprintf(fidlog," kd=%4d (%4d/%4d:%3d). PROBLEM 1.\n",kd,kp,np,ku);
+						}
 					}
 					break;
 				}
@@ -3164,14 +3262,23 @@ try_a_gap:
 				if (planis[1][k1].jd_acq_end>planis[1][k].jd_slew_start_with_slew) {
 					// --- probleme dans le calcul
 					k+=0;
+					if (fidlog!=NULL) {
+						fprintf(fidlog," kd=%4d (%4d/%4d:%3d). PROBLEM 0.\n",kd,kp,np,ku);
+					}
 				}
 			}
 			free(planis[0]);
 			planis[0]=(mc_PLANI*)malloc((npl+1)*sizeof(mc_PLANI));
+			objectdescr[kd].nb_plani++;
+			sprintf(s,"(mode_quota=%d nb_plani=%d prio=%.1f prio_order=%d)",mode_quota,objectdescr[kd].nb_plani,current_priority,prio_order);
+			strncpy(objectdescr[kd].comments,s,OBJECTDESCR_MAXCOM-1);
 			if (objectdescr[kd].status_plani==STATUS_PLANI_PLANIFIED) {
 				objectdescr[kd].status_plani=STATUS_PLANI_PLANIFIED_OVER;
 			} else {
 				objectdescr[kd].status_plani=STATUS_PLANI_PLANIFIED;
+			}
+			if (fidlog!=NULL) {
+				fprintf(fidlog," kd=%4d (%4d/%4d:%3d). Planified %s (%d)\n",kd,kp,np,ku,s,objectdescr[kd].status_plani);
 			}
 			// --- on met a jour la planification.
 			for (k=0;k<=npl;k++) {
@@ -3185,6 +3292,7 @@ try_a_gap:
 			if (mode_quota==1) {
 				ko=nobjloc-1;
 				mode_quota=2;
+				prio_order=0;
 			} else {
 				ko=nobjloc-1;
 				if (npl==npl0) {
@@ -3203,6 +3311,10 @@ try_a_gap:
 		mc_printplani(npl,planis);
 		mc_printusers(nu,users);
 	}
+	if (fidlog!=NULL) {
+		fprintf(fidlog,"=== Quit the great loop");
+	}
+
 	/* --- sorties ---*/
 	if (output_type==1) {
 		fid=fopen(output_file,"wt");
@@ -3233,6 +3345,9 @@ try_a_gap:
 	}
 
    //mc_fitspline(n1,n2,x,y,dy,s,nn,xx,ff);
+	if (fidlog!=NULL) {
+		fprintf(fidlog,"=== Free memory");
+	}
 	free(users);
 	free(sunmoon);
 	for (kp=0;kp<2;kp++) {
@@ -3257,6 +3372,9 @@ try_a_gap:
 	free(ksame_priority);
 	free(priority_total);
 	free(kpriority_total);
+	if (fidlog!=NULL) {
+		fclose(fidlog);
+	}
    return 0;
 }
 

@@ -1240,10 +1240,11 @@ lindex $comments [lindex $status 0]
 	int nobj=0,err,res=TCL_OK,k;
 	int output_type=0;
 	char *output_file=NULL;
+	char *log_file=NULL;
    Tcl_DString dsptr;
 
    if(argc<3) {
-      sprintf(s,"Usage: %s Date Home Sequences ?type_Horizon Horizon? ?-output_type 0|1? ?-output_file filename?", argv[0]);
+      sprintf(s,"Usage: %s Date Home Sequences ?type_Horizon Horizon? ?-output_type 0|1? ?-output_file filename? ?-log_file filename?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
  	   return TCL_ERROR;
    } else {
@@ -1266,30 +1267,42 @@ lindex $comments [lindex $status 0]
 			for (k=6;k<argc-1;k++) {
 				if (strcmp(argv[k],"-output_type")==0) { output_type=atoi(argv[k+1]); }
 				if (strcmp(argv[k],"-output_file")==0) { output_file=argv[k+1]; }
+				if (strcmp(argv[k],"-log_file")==0)    { log_file=argv[k+1]; }				
 			}
 		}
 		/* --- appel aux calculs ---*/
-		err=mc_scheduler1(jd,longmpc,rhocosphip,rhosinphip,horizon_altaz,horizon_hadec,nobj,objectdescr,output_type,output_file);
-		if (err==1) {
-			res=TCL_ERROR;
-			sprintf(s,"Error %d.",err);
-			Tcl_SetResult(interp,s,TCL_VOLATILE);
-		} else {
-		   Tcl_DStringInit(&dsptr);
-			/* list "status plani comments" defined in mc.h */
-			strcpy(s,"{Not_planified End_obs_before_range Start_obs_after_range Never_visible_in_range Over_quota Planified} ");
-			Tcl_DStringAppend(&dsptr,s,-1);
-			strcpy(s,"{");
-			Tcl_DStringAppend(&dsptr,s,-1);
-			sprintf(s,"%d ",objectdescr[k].status_plani);
-			for (k=0;k<nobj;k++) {
-				sprintf(s,"%d ",objectdescr[k].status_plani);
+		if (nobj>0) {
+			err=mc_scheduler1(jd,longmpc,rhocosphip,rhosinphip,horizon_altaz,horizon_hadec,nobj,objectdescr,output_type,output_file,log_file);
+			if (err>0) {
+				res=TCL_ERROR;
+				sprintf(s,"Error %d.",err);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+			} else {
+				Tcl_DStringInit(&dsptr);
+				/* list "status plani comments" defined in mc.h */
+				strcpy(s,"{Not_planified End_obs_before_range Start_obs_after_range Never_visible_in_range Over_quota Planified Planified_over} ");
 				Tcl_DStringAppend(&dsptr,s,-1);
+				strcpy(s,"{ ");
+				Tcl_DStringAppend(&dsptr,s,-1);
+				for (k=0;k<nobj;k++) {
+					strcpy(s,"{");
+					Tcl_DStringAppend(&dsptr,s,-1);
+					sprintf(s,"%d ",objectdescr[k].status_plani);
+					Tcl_DStringAppend(&dsptr,s,-1);
+					sprintf(s,"\"%s\" ",objectdescr[k].comments);
+					Tcl_DStringAppend(&dsptr,s,-1);
+					strcpy(s,"} ");
+					Tcl_DStringAppend(&dsptr,s,-1);
+				}
+				strcpy(s," } ");
+				Tcl_DStringAppend(&dsptr,s,-1);
+				Tcl_DStringResult(interp,&dsptr);
+				Tcl_DStringFree(&dsptr);
 			}
-			strcpy(s,"}");
-			Tcl_DStringAppend(&dsptr,s,-1);
-			Tcl_DStringResult(interp,&dsptr);
-			Tcl_DStringFree(&dsptr);
+		} else {
+			res=TCL_ERROR;
+			sprintf(s,"Error. No sequence !");
+			Tcl_SetResult(interp,s,TCL_VOLATILE);
 		}
 		free(horizon_altaz);
 		free(horizon_hadec);
@@ -1297,4 +1310,3 @@ lindex $comments [lindex $status 0]
 	}	
 	return res;
 }
-
