@@ -2723,16 +2723,16 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 		if (fidlog!=NULL) {
 			fprintf(fidlog,"=== Free memory");
 		}
-		free(sunmoon);
+		if (sunmoon!=NULL) free(sunmoon);
 		if (compute_mode==0) {
-			free(objectlocals);
+			if (objectlocals!=NULL) free(objectlocals);
 		} 
 		if (compute_mode==1) {
-			free(objectlocal);
+			if (objectlocal!=NULL) free(objectlocal);
 		} 
-		free(objectlocal0);
-		free(objectlinks);
-		free(luminance_ciel_bleus);
+		if (objectlocal0!=NULL) free(objectlocal0);
+		if (objectlinks!=NULL) free(objectlinks);
+		if (luminance_ciel_bleus!=NULL) free(luminance_ciel_bleus);
 		if (fidlog!=NULL) {
 			fclose(fidlog);
 		}
@@ -3352,30 +3352,32 @@ try_a_gap:
 	if (fidlog!=NULL) {
 		fprintf(fidlog,"=== Free memory");
 	}
-	free(users);
-	free(sunmoon);
+	if (users!=NULL) free(users);
+	if (sunmoon!=NULL) free(sunmoon);
 	for (kp=0;kp<2;kp++) {
-		free(planis[kp]);
+		if (planis[kp]!=NULL) free(planis[kp]);
 	}
-	free(planis);
+	if (planis!=NULL) free(planis);
 	if (compute_mode==0) {
 		for (ko=0;ko<nobjloc;ko++) {
-			free(objectlocals[ko]);
+			if (objectlocals[ko]!=NULL) free(objectlocals[ko]);
 		}
-		free(objectlocals);
+		if (objectlocals!=NULL) free(objectlocals);
 	} 
 	if (compute_mode==1) {
-		free(objectlocal);
+		if (objectlocal!=NULL) free(objectlocal);
 	} 
-	free(objectlocal0);
-	free(objectlinks);
-	free(luminance_ciel_bleus);
-	free(dummys);
-	free(kdummys);
-	free(same_priority);
-	free(ksame_priority);
-	free(priority_total);
-	free(kpriority_total);
+	if (objectlocal0!=NULL) free(objectlocal0);
+	if (objectlinks!=NULL) free(objectlinks);
+	if (luminance_ciel_bleus!=NULL) free(luminance_ciel_bleus);
+	if (dummys!=NULL) free(dummys);
+	if (kdummys!=NULL) free(kdummys);
+	if (same_priority!=NULL) free(same_priority);
+	if (ksame_priority!=NULL) free(ksame_priority);
+	if (priority_total!=NULL) free(priority_total);
+	if (kpriority_total!=NULL) free(kpriority_total);
+	if (jdsets!=NULL) free(jdsets);
+	if (kjdsets!=NULL) free(kjdsets);
 	if (fidlog!=NULL) {
 		fclose(fidlog);
 	}
