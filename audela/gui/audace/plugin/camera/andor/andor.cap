@@ -1,6 +1,6 @@
 #
 # Fichier : andor.cap
-# Mise a jour $Id: andor.cap,v 1.7 2009-11-08 14:26:10 robertdelmas Exp $
+# Mise a jour $Id: andor.cap,v 1.8 2010-04-28 23:52:06 alainklotz Exp $
 #
 
 #=========================================================================
@@ -31,7 +31,7 @@ set caption(andor,ouvert_obtu)                  "Shutter Opening Delay"
 set caption(andor,ferm_obtu)                    "Shutter Closing Delay"
 set caption(andor,ms)                           "ms"
 
-set caption(andor,port_camera)                  "FLI Port"
+set caption(andor,port_camera)                  "Andor Port"
 set caption(andor,2points)                      ":"
 
 set caption(andor,titre_site_web)               "Reference Web Site:"
@@ -60,7 +60,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(andor,ferm_obtu)                 "Délai de fermeture de l'obturateur"
    set caption(andor,ms)                        "ms"
 
-   set caption(andor,port_camera)               "Port FLI"
+   set caption(andor,port_camera)               "Port Andor"
    set caption(andor,2points)                   ":"
 
    set caption(andor,titre_site_web)            "Site Web de référence :"
@@ -89,7 +89,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(andor,ferm_obtu)                 "Ritardo di chiusura otturatore"
    set caption(andor,ms)                        "ms"
 
-   set caption(andor,port_camera)               "Porta FLI"
+   set caption(andor,port_camera)               "Porta Andor"
    set caption(andor,2points)                   ":"
 
    set caption(andor,titre_site_web)            "Sito Web di riferimento:"
@@ -118,7 +118,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(andor,ferm_obtu)                 "Retardo de cerrado de obturador"
    set caption(andor,ms)                        "ms"
 
-   set caption(andor,port_camera)               "Puerto FLI"
+   set caption(andor,port_camera)               "Puerto Andor"
    set caption(andor,2points)                   ":"
 
    set caption(andor,titre_site_web)            "Sitio Web de referencia:"
@@ -147,7 +147,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(andor,ferm_obtu)                 "Verschluss Schließen Verspätung"
    set caption(andor,ms)                        "ms"
 
-   set caption(andor,port_camera)               "FLI Port"
+   set caption(andor,port_camera)               "Andor Port"
    set caption(andor,2points)                   ":"
 
    set caption(andor,titre_site_web)            "Referenz Webseite:"
@@ -176,7 +176,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(andor,ferm_obtu)                 "Atraso de encerramento do obturador"
    set caption(andor,ms)                        "ms"
 
-   set caption(andor,port_camera)               "Porta FLI"
+   set caption(andor,port_camera)               "Porta Andor"
    set caption(andor,2points)                   ":"
 
    set caption(andor,titre_site_web)            "Site Web de referência:"
@@ -205,7 +205,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(andor,ferm_obtu)                 "Shutter Closing Delay"
    set caption(andor,ms)                        "ms"
 
-   set caption(andor,port_camera)               "FLI Port"
+   set caption(andor,port_camera)               "Andor Port"
    set caption(andor,2points)                   ":"
 
    set caption(andor,titre_site_web)            "Reference Web Site:"
@@ -234,7 +234,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(andor,ferm_obtu)                 "Shutter Closing Delay"
    set caption(andor,ms)                        "ms"
 
-   set caption(andor,port_camera)               "FLI Port"
+   set caption(andor,port_camera)               "Andor Port"
    set caption(andor,2points)                   ":"
 
    set caption(andor,titre_site_web)            "Reference Web Site:"
@@ -263,7 +263,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(andor,ferm_obtu)                 "Shutter Closing Delay"
    set caption(andor,ms)                        "ms"
 
-   set caption(andor,port_camera)               "FLI Port"
+   set caption(andor,port_camera)               "Andor Port"
    set caption(andor,2points)                   ":"
 
    set caption(andor,titre_site_web)            "Reference Web Site:"
