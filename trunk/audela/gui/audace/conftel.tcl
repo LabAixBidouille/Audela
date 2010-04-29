@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.60 2010-04-11 13:11:13 michelpujol Exp $
+# Mise a jour $Id: conftel.tcl,v 1.61 2010-04-29 18:12:17 michelpujol Exp $
 #
 
 namespace eval ::confTel {
@@ -447,23 +447,14 @@ proc ::confTel::configureMonture { } {
       #--- Je configure le modèle de pointage
       set loadModelError [catch {
          if { $conf(telescope,model,enabled) == 1} {
-            tel$private(telNo) home $::conf(posobs,observateur,gps)
-            tel$private(telNo) home name $::conf(posobs,nom_observatoire)
-
             #--- je charge le modele
-            set result [loadModel  $conf(telescope,model,fileName) ]
-            set modelName [lindex $result 0]
-            set modelSymbols [lindex $result 4]
-            set modelCoeffficients [lindex $result 5]
-            set modelPressure 101325
-            set modelTemperature 290
+            setModelFileName $conf(telescope,model,fileName)
             #--- j'active le modele de pointage
-            tel$private(telNo) radec model -enabled 1 -name $modelName \
-               -pressure $modelPressure -temperature $modelTemperature \
-               -symbols $modelSymbols -coefficients $modelCoeffficients ]
+            setModelEnabled $conf(telescope,model,enabled)
+
          } else {
-            #--- je desctive le modele de pointage
-            tel$private(telNo) radec model -enable 0
+            #--- je desactive le modele de pointage
+            setModelEnabled $conf(telescope,model,enabled)
          }
       }]
 
@@ -529,6 +520,141 @@ proc ::confTel::configureMonture { } {
    }
 }
 
+
+#------------------------------------------------------------
+# setModelEnabled
+#    active/descative le modele de pointage du telescope
+#
+# @param modelEnabled   0=desctive le modele s1=active le modele
+# @public  cette procedure peut etre appelee depuis l'exterieur du namespace
+#------------------------------------------------------------
+proc ::confTel::setModelEnabled { modelEnabled } {
+   variable private
+   variable widget
+
+   #--- j'active le modele de pointage
+   if { $private(telNo) != 0 } {
+
+      tel$private(telNo) radec model -enabled $modelEnabled \
+   }
+
+   set ::conf(telescope,model,enabled)  $modelEnabled
+
+   #--- j'affiche l'activation du modele si la fenetre de
+   #--- configuration de la monture est ouverte
+   if { [ winfo exists $private(frm) ] } {
+      set widget(model,enabled)  $modelEnabled
+   }
+}
+
+
+#------------------------------------------------------------
+# setModelFileName
+#    configure le modele de pointage du telescope
+#
+# @param modelFileName
+# @public  cette procedure peut etre appelee depuis l'exterieur du namespace
+#------------------------------------------------------------
+proc ::confTel::setModelFileName { modelFileName } {
+   variable private
+   variable widget
+
+
+   set loadModelError [catch {
+      tel$private(telNo) home $::conf(posobs,observateur,gps)
+      tel$private(telNo) home name $::conf(posobs,nom_observatoire)
+
+      #--- je charge le modele
+      set result [loadModel  $modelFileName ]
+      set modelName [lindex $result 0]
+      set modelDate [lindex $result 1]
+      set modelSymbols [lindex $result 4]
+      set modelCoeffficients [lindex $result 5]
+      set modelPressure 101325
+      set modelTemperature 290
+      if { $private(telNo) != 0 } {
+         #--- j'active le modele de pointage
+         #--- j'active le modele de pointage
+         tel$private(telNo) radec model \
+            -name $modelName -date $modelDate \
+            -pressure $modelPressure -temperature $modelTemperature \
+            -symbols $modelSymbols -coefficients $modelCoeffficients ]
+      }
+
+      set ::conf(telescope,model,fileName) $modelFileName
+      #--- j'affiche le nom et la date du modele dans les widgets si la fenetre de
+      #--- configuration de la monture est ouverte
+      if { [ winfo exists $private(frm) ] } {
+         set widget(model,fileName) $modelFileName
+         set widget(model,name)     $modelName
+         set widget(model,date)     $modelDate
+      }
+
+   }]
+
+    if { $loadModelError != 0 } {
+       #--- je signale que le modèle n'est pas chargé
+       ::tkutil::displayErrorInfo $::caption(conftel,config)
+       if { $private(telNo) != 0 } {
+          #--- je continue sans le modele
+          tel$private(telNo) radec model -enabled 0
+       }
+    }
+
+
+}
+
+#------------------------------------------------------------
+# configureModel
+#    configure le modele de pointage du telescope
+#
+# @param modelEnabled   0|1
+# @param modelName
+# @param modelDate
+# @param modelSymbols
+# @param modelCoeffficients
+# @public  cette procedure peut etre appelee depuis l'exterieur du namespace
+#------------------------------------------------------------
+proc ::confTel::configureModel { modelEnabled modelName modelDate modelSymbols modelCoeffficients } {
+   variable private
+   tel$private(telNo) home $::conf(posobs,observateur,gps)
+   tel$private(telNo) home name $::conf(posobs,nom_observatoire)
+
+   set modelPressure 101325
+   set modelTemperature 290
+
+
+   if { $modelEnabled == 1 } {
+      #--- j'active le modele de pointage
+      tel$private(telNo) radec model -enabled $modelEnabled \
+         -name $modelName -date $modelDate \
+         -pressure $modelPressure -temperature $modelTemperature \
+         -symbols $modelSymbols -coefficients $modelCoeffficients ]
+
+      set conf(telescope,model,enabled)  $modelEnabled
+      set conf(telescope,model,fileName)  $modelEnabled
+
+      #--- j'affiche le nom et la date du modele dans les widgets si la fenetre de
+      #--- configuration de la monture est ouverte
+      if { [ winfo exists $private(frm) ] } {
+         set widget(model,enabled)  $modelEnabled
+         set widget(model,fileName) ""
+         set widget(model,name)     $modelName
+         set widget(model,date)     $modelDate
+      }
+
+   } else {
+      #--- je desactive le modele
+      tel$private(telNo) radec model -enabled $modelEnabled
+      set conf(telescope,model,enabled)  $modelEnabled
+      if { [ winfo exists $private(frm) ] } {
+         set widget(model,enabled)  $modelEnabled
+      }
+   }
+}
+
+
+
 #------------------------------------------------------------
 # widgetToConf
 #    Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
@@ -544,7 +670,7 @@ proc ::confTel::widgetToConf { } {
    set conf(telescope)    $mountName
    set conf(telescope,model,fileName) $widget(model,fileName)
    if { $conf(telescope,model,fileName) == "" } {
-      #--- je descative le modele de pointage si aucun fichier n'est seelectionne
+      #--- je desactive le modele de pointage si aucun fichier n'est selectionne
       set widget(model,enabled) 0
    }
    set conf(telescope,model,enabled)  $widget(model,enabled)
@@ -727,7 +853,12 @@ proc ::confTel::selectModel { } {
    variable widget
 
    #--- j'ouvre la fenetre de selection du modele de pointage
-   set initialdir [ file join $::audace(rep_plugin) tool modpoi model_modpoi ]
+   set initialdir [file join $::env(HOME) .audela modpoi]
+   if { ! [ file exist $initialdir ] } {
+      #--- Si le repertoire modpoi n'existe pas, le creer
+      file mkdir $initialdir
+   }
+
    set fileName [ ::tkutil::box_load [winfo toplevel $private(frm)] $initialdir $::audace(bufNo) "10" ]
    if { $fileName != "" } {
       #--- je charge les donnees du modele de pointage
@@ -787,34 +918,6 @@ proc ::confTel::getModelList { } {
 #------------------------------------------------------------
 proc ::confTel::loadModel { fileName } {
 
-   ###set catchResult [catch {
-   ###   set hFile [ open $fileName r ]
-   ###   set data [read $hFile]
-   ###   close $hFile
-   ###   set dataLen [llength $data ]
-   ###   if { $dataLen == 3 } {
-   ###      lappend $data "0"
-   ###   } elseif  { $dataLen == 4 } {
-   ###      #--- rien a faire
-   ###
-   ###   } else {
-   ###      error "::confTel::loadModel error data length=$dataLen . Must be 3 or 4"
-   ###   }
-   ###   set name [file tail $fileName]
-   ###   set date [clock format [file mtime $fileName] -format "%d-%m-%Y %H:%M:%S" -timezone :localtime ]
-   ###   set symbols {IH ID NP CH ME MA FO HF DAF TF}
-   ###   set coefficients [lindex $data 0]
-   ###   set chisquare    [lindex $data 1]
-   ###   set covars       [lindex $data 2]
-   ###}]
-   ###if { $catchResult == 1 } {
-   ###   #--- je transmet l'erreur
-   ###   error $::errorInfo
-   ###}
-   ###
-   ###return [list $fileName $name $date $symbols $coefficients $chisquare $covars]
-
-
    package require dom
 
    #--- je charge les donnees du modele de pointage
@@ -847,13 +950,17 @@ proc ::confTel::loadModel { fileName } {
        if { $starsNode != "" } {
          foreach starNode [set [::dom::element getElementsByTagName $starsNode STAR ]] {
             set star ""
+            lappend star [::dom::element getAttribute $starNode "AMER_AZ"]
+            lappend star [::dom::element getAttribute $starNode "AMER_EL"]
             lappend star [::dom::element getAttribute $starNode "NAME"]
-            lappend star [::dom::element getAttribute $starNode "DATE"]
-            lappend star [::dom::element getAttribute $starNode "RA_CAL"]
-            lappend star [::dom::element getAttribute $starNode "DE_CAL"]
-            lappend star [::dom::element getAttribute $starNode "RA_DELTA"]
-            lappend star [::dom::element getAttribute $starNode "DE_DELTA"]
-            lappend star [::dom::element getAttribute $starNode "HA_CAL"]
+            lappend star [::dom::element getAttribute $starNode "CAT_RA"]
+            lappend star [::dom::element getAttribute $starNode "CAT_DE"]
+            lappend star [::dom::element getAttribute $starNode "CAT_EQUINOX"]
+            lappend star [::dom::element getAttribute $starNode "OBS_DATE"]
+            lappend star [::dom::element getAttribute $starNode "OBS_RA"]
+            lappend star [::dom::element getAttribute $starNode "OBS_DE"]
+            lappend star [::dom::element getAttribute $starNode "PRESSURE"]
+            lappend star [::dom::element getAttribute $starNode "TEMPERATURE"]
             #--- j'ajoute l'etoile dans la liste des etoiles
             lappend starList $star
          }
@@ -917,6 +1024,8 @@ proc ::confTel::loadModel { fileName } {
             set k 1
             foreach line $inputData {
                if { [llength $line] == 4 } {
+                  set amerAz   "0"
+                  set amerEl   "0"
                   set name     "star$k"
                   set date     ""
                   set ra_cal   ""
@@ -924,7 +1033,7 @@ proc ::confTel::loadModel { fileName } {
                   set ra_delta [format "%8.3f" [lindex $line 2]]
                   set de_delta [format "%8.3f" [lindex $line 3]]
                   set ha_cal   [mc_angle2deg [lindex $line 0] 360]
-                  lappend starList [list $name $date $ra_cal $dec_cal $ra_delta $de_delta $ha_cal]
+                  lappend starList [list $amerAz $amerEl $name $date $ra_cal $dec_cal $ra_delta $de_delta $ha_cal]
                   incr k
                }
             }
@@ -942,6 +1051,26 @@ proc ::confTel::loadModel { fileName } {
    return [list $modelName $modelDate $modelComment $starList $symbols $coefficients $chisquare $covars $refraction]
 }
 
+#------------------------------------------------------------
+# addMountListener
+# ajoute une procedure a appeler si on change de monture
+#
+# parametres :
+# @param cmd : commande TCL a lancer quand la monture change
+#------------------------------------------------------------
+proc ::confTel::addMountListener { cmd } {
+   trace add variable "::audace(telNo)" write $cmd
+}
+
+#------------------------------------------------------------
+# removeMountListener
+# supprime une procedure a appeler si on change de monture
+#
+# @param cmd : commande TCL a lancer quand la monture change
+#------------------------------------------------------------
+proc ::confTel::removeMountListener { cmd } {
+   trace remove variable "::audace(telNo)" write $cmd
+}
 
 
 #--- Connexion au demarrage de la monture selectionnee par defaut
