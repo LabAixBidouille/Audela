@@ -2,7 +2,7 @@
 # Fichier : eshelvisu.tcl
 # Description : Visionneuse d'images eShel
 # Auteurs : Michel Pujol
-# Mise a jour $Id: eshelvisu.tcl,v 1.6 2010-04-11 13:25:58 michelpujol Exp $
+# Mise a jour $Id: eshelvisu.tcl,v 1.7 2010-04-29 18:13:01 michelpujol Exp $
 #
 
 namespace eval ::eshelvisu {
@@ -598,13 +598,12 @@ proc ::eshelvisu::showCalibrationLine { visuNo } {
          set alpha   [expr $alpha*$PI/180.0]
          set gamma   [expr $gamma*$PI/180.0]
          set xc      [expr $width / 2 ]
-         #--- je recupere la liste des raies de calibration
-         ###set nbLine [lindex [lindex [$hFile get keyword "NAXIS2"] 0] 1]
-         ###for {set i 1 } { $i < $nbLine } { incr i } {
-            ###   set numOrder [lindex [lindex [$hFile get table "order" $n ] 0] 0]
-            ###   set lambda [lindex [lindex [$hFile get table "lambda" $n ] 0] 0]
-            ###   set private(lines,$numOrder,$lambda,lambda) $lineList
-            ###}
+
+
+         #--- je recupere la taille de la boite de rechercher wide_x , wide_y
+         $hFile move $private($visuNo,orderHduNum)
+         set wide_x [lindex [lindex [$hFile get table "wide_x" 1 ] 0] 0]
+         set wide_y [lindex [lindex [$hFile get table "wide_y" 1 ] 0] 0]
 
          #--- je recupere la liste des raies de calibration
          $hFile move $private($visuNo,lineHduNum)
@@ -644,10 +643,10 @@ proc ::eshelvisu::showCalibrationLine { visuNo } {
                ###::console::disp " x=$x y=$y\n"
                set boxSize 11
                #--- je calcule les ccordonnees de la boite dans le buffer
-               set x1 [expr int($x) - $boxSize]
-               set x2 [expr int($x) + $boxSize]
-               set y1 [expr int($y) - $boxSize]
-               set y2 [expr int($y) + $boxSize]
+               set x1 [expr int($x) - $wide_x/2]
+               set x2 [expr int($x) + $wide_x/2]
+               set y1 [expr int($y) - $wide_y/2]
+               set y2 [expr int($y) + $wide_y/2]
                #--- je calcule les coordonnees dans le canvas
                set coord [::confVisu::picture2Canvas $visuNo [list $x1 $y1 ]]
                set x1 [lindex $coord 0]
@@ -656,7 +655,7 @@ proc ::eshelvisu::showCalibrationLine { visuNo } {
                set x2 [lindex $coord 0]
                set y2 [lindex $coord 1]
                ###$hCanvas create text [lindex $coord 0] [lindex $coord 1] -text $orderlabel -tag orderLabel -state normal -fill yellow
-               $hCanvas create rect [list $x1 $y1 $x2 $y2] -outline "#FF5522" -width 1 -dash {. } -offset center -tag "calibrationLine"
+               $hCanvas create rect [list $x1 $y1 $x2 $y2] -outline "#FF5522" -width 1 -dash {- } -offset center -tag "calibrationLine"
             }
 
             if { $private($visuNo,showObservatedLines) == 1 } {
@@ -668,10 +667,10 @@ proc ::eshelvisu::showCalibrationLine { visuNo } {
 
                set boxSize 12
                #--- je calcule les ccordonnees de la boite dans le buffer
-               set x1 [expr int($x) - $boxSize ]
-               set x2 [expr int($x) + $boxSize ]
-               set y1 [expr int($y) - $boxSize ]
-               set y2 [expr int($y) + $boxSize ]
+               set x1 [expr int($x) - $wide_x/2 ]
+               set x2 [expr int($x) + $wide_x/2 ]
+               set y1 [expr int($y) - $wide_y/2 ]
+               set y2 [expr int($y) + $wide_y/2 ]
                #--- je calcule les coordonnees dans le canvas
                set coord [::confVisu::picture2Canvas $visuNo [list $x1 $y1 ]]
                set x1 [lindex $coord 0]
