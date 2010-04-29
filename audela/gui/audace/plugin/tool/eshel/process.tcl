@@ -2,7 +2,7 @@
 # Fichier : process.tcl
 # Description : traitements eShel
 # Auteur : Michel PUJOL
-# Mise a jour $Id: process.tcl,v 1.2 2010-04-11 13:24:25 michelpujol Exp $
+# Mise a jour $Id: process.tcl,v 1.3 2010-04-29 18:13:01 michelpujol Exp $
 #
 
 ################################################################
@@ -905,7 +905,7 @@ proc ::eshel::process::generateScript { } {
             }
             if { $::conf(eshel,instrument,config,$name,cosmicEnabled) == 1 } {
                #--- j'ajoute l'option pour le retrait des cosmiques
-               append subDarkOption "\\\"COSMIC_THRESHOLD=$::conf(eshel,instrument,config,$name,cosmicThreshold)\\\""
+               append subDarkOption " \\\"COSMIC_THRESHOLD=$::conf(eshel,instrument,config,$name,cosmicThreshold)\\\""
             }
 
             #--- tempName(i) = objectRaw(i) - (dark thermique) * (objectExptime/darkExptime) - bias
