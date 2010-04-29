@@ -2,7 +2,7 @@
 # @file     sophietest.tcl
 # @brief    Fichier du namespace ::sophie::test
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietest.tcl,v 1.26 2010-02-23 20:22:57 michelpujol Exp $
+# @version  $Id: sophietest.tcl,v 1.27 2010-04-29 18:04:33 michelpujol Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -784,7 +784,7 @@ proc ::sophie::test::configure { } {
          $private(telescopeControl,sideralSpeed) $private(telescopeControl,lunarSpeed) \
          $private(telescopeControl,guidingSpeed) $private(telescopeControl,centeringSpeed) \
          $private(telescopeControl,centering2Speed) $private(telescopeControl,gotoSpeed) \
-         $::audace(posobs,observateur,gps)]
+         $::conf(posobs,observateur,gps)]
 }
 
 #============================================================
