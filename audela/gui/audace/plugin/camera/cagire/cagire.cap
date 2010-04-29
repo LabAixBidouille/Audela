@@ -1,6 +1,6 @@
 #
 # Fichier : cagire.cap
-# Mise a jour $Id: cagire.cap,v 1.1 2010-04-29 00:28:00 alainklotz Exp $
+# Mise a jour $Id: cagire.cap,v 1.2 2010-04-29 04:58:33 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -27,8 +27,8 @@ set caption(cagire,deg_c)                        "°C"
 set caption(cagire,refroidissement_1)            "°C"
 set caption(cagire,temperature_CCD)              "CCD Temperature:"
 set caption(cagire,fonc_obtu)                    "Shutter Operation"
-set caption(cagire,ipserver)                  "IP server"
-set caption(cagire,portserver)                    "Port server"
+set caption(cagire,ipserver)                     "IP server"
+set caption(cagire,portserver)                   "Port server"
 set caption(cagire,ms)                           ""
 
 set caption(cagire,port_camera)                  "Cagire Port"
@@ -56,9 +56,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cagire,refroidissement_1)         "°C"
    set caption(cagire,temperature_CCD)           "Température du CCD :"
    set caption(cagire,fonc_obtu)                 "Fonctionnement de l'obturateur"
-	set caption(cagire,ipserver)               "IP serveur"
-	set caption(cagire,portserver)                 "Port serveur"
-	set caption(cagire,ms)                        ""
+   set caption(cagire,ipserver)                  "IP serveur"
+   set caption(cagire,portserver)                "Port serveur"
+   set caption(cagire,ms)                        ""
 
    set caption(cagire,port_camera)               "Port Cagire"
    set caption(cagire,2points)                   ":"
@@ -85,9 +85,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cagire,refroidissement_1)         "°C"
    set caption(cagire,temperature_CCD)           "CCD Temperatura:"
    set caption(cagire,fonc_obtu)                 "Funzionamento otturatore"
-	set caption(cagire,ipserver)               "IP server"
-	set caption(cagire,portserver)                 "Port server"
-	set caption(cagire,ms)                        ""
+   set caption(cagire,ipserver)                  "IP server"
+   set caption(cagire,portserver)                "Port server"
+   set caption(cagire,ms)                        ""
 
    set caption(cagire,port_camera)               "Porta Cagire"
    set caption(cagire,2points)                   ":"
@@ -114,9 +114,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cagire,refroidissement_1)         "°C"
    set caption(cagire,temperature_CCD)           "Temperatura CCD:"
    set caption(cagire,fonc_obtu)                 "Funcionamiento del obturador"
-	set caption(cagire,ipserver)               "IP server"
-	set caption(cagire,portserver)                 "Porta server"
-	set caption(cagire,ms)                        ""
+   set caption(cagire,ipserver)                  "IP server"
+   set caption(cagire,portserver)                "Porta server"
+   set caption(cagire,ms)                        ""
 
    set caption(cagire,port_camera)               "Puerto Cagire"
    set caption(cagire,2points)                   ":"
@@ -143,9 +143,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cagire,refroidissement_1)         "°C kühlen"
    set caption(cagire,temperature_CCD)           "Temperatur CCD:"
    set caption(cagire,fonc_obtu)                 "Verschluss Arbeiten"
-	set caption(cagire,ipserver)               "IP server"
-	set caption(cagire,portserver)                 "Port server"
-	set caption(cagire,ms)                        ""
+   set caption(cagire,ipserver)                  "IP server"
+   set caption(cagire,portserver)                "Port server"
+   set caption(cagire,ms)                        ""
 
    set caption(cagire,port_camera)               "Cagire Port"
    set caption(cagire,2points)                   ":"
@@ -172,9 +172,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cagire,refroidissement_1)         "°C"
    set caption(cagire,temperature_CCD)           "Temperatura do CCD:"
    set caption(cagire,fonc_obtu)                 "Operação do obturador"
-	set caption(cagire,ipserver)               "IP server"
-	set caption(cagire,portserver)                 "Port server"
-	set caption(cagire,ms)                        ""
+   set caption(cagire,ipserver)                  "IP server"
+   set caption(cagire,portserver)                "Port server"
+   set caption(cagire,ms)                        ""
 
    set caption(cagire,port_camera)               "Porta Cagire"
    set caption(cagire,2points)                   ":"
@@ -201,9 +201,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cagire,refroidissement_1)         "°C"
    set caption(cagire,temperature_CCD)           "CCD Temperature:"
    set caption(cagire,fonc_obtu)                 "Shutter Operation"
-	set caption(cagire,ipserver)               "IP server"
-	set caption(cagire,portserver)                 "Port server"
-	set caption(cagire,ms)                        ""
+   set caption(cagire,ipserver)                  "IP server"
+   set caption(cagire,portserver)                "Port server"
+   set caption(cagire,ms)                        ""
 
    set caption(cagire,port_camera)               "Cagire Port"
    set caption(cagire,2points)                   ":"
@@ -230,9 +230,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cagire,refroidissement_1)         "°C"
    set caption(cagire,temperature_CCD)           "CCD Temperature:"
    set caption(cagire,fonc_obtu)                 "Shutter Operation"
-	set caption(cagire,ipserver)               "IP server"
-	set caption(cagire,portserver)                 "Port server"
-	set caption(cagire,ms)                        ""
+   set caption(cagire,ipserver)                  "IP server"
+   set caption(cagire,portserver)                "Port server"
+   set caption(cagire,ms)                        ""
 
    set caption(cagire,port_camera)               "Cagire Port"
    set caption(cagire,2points)                   ":"
@@ -259,9 +259,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cagire,refroidissement_1)         "°C"
    set caption(cagire,temperature_CCD)           "CCD Temperature:"
    set caption(cagire,fonc_obtu)                 "Shutter Operation"
-	set caption(cagire,ipserver)               "IP server"
-	set caption(cagire,portserver)                 "Port server"
-	set caption(cagire,ms)                        ""
+   set caption(cagire,ipserver)                  "IP server"
+   set caption(cagire,portserver)                "Port server"
+   set caption(cagire,ms)                        ""
 
    set caption(cagire,port_camera)               "Cagire Port"
    set caption(cagire,2points)                   ":"
