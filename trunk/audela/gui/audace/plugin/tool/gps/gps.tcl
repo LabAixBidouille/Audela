@@ -2,7 +2,7 @@
 # Fichier : gps.tcl
 # Description : Outil de synchronisation GPS
 # Auteur : Jacques MICHELET
-# Mise à jour $Id: gps.tcl,v 1.21 2010-04-21 15:36:24 robertdelmas Exp $
+# Mise à jour $Id: gps.tcl,v 1.22 2010-04-30 08:32:56 jacquesmichelet Exp $
 #
 
 namespace eval ::gps {
@@ -10,7 +10,7 @@ namespace eval ::gps {
     variable parametres
     variable base
 
-    package provide gps 3.7
+    package provide gps 3.8
     package require audela 1.4.0
 
     source [file join [file dirname [info script]] gps.cap]
@@ -381,11 +381,17 @@ namespace eval ::gps {
 
         CreationPanneauGPS $This
 
-        # Si le repertoire gps n'existe pas, le creer
-        set gps(home) [file join $env(HOME) .audela tool gps]
-        if {![file exist $gps(home)]} {
-            file mkdir $gps(home)
+        # Pour le stockage des fichiers .ini et .log
+        set gps_home [ file join $::env(HOME) .audela ]
+        if { ![ file exist $gps_home ] } {
+            file mkdir $gps_home
         }
+        set gps(fichier_ini) [ file join $gps_home gps.ini ]
+        set gps_home_log [ file join $::env(HOME) .audela log ]
+        if { ![ file exist $gps_home_log ] } {
+            file mkdir $gps_home_log
+        }
+        set gps(fichier_log) [ file join $gps_home_log gps.log ]
     }
 
     ##############################################################
@@ -991,9 +997,8 @@ namespace eval ::gps {
         set position(altitude) $conf(posobs,altitude)
 
         # Ouverture du fichier de parametres
-        set fichier [file join $gps(home) gps.ini]
-        if {[file exists $fichier]} {
-            source $fichier
+        if { [ file exists $gps(fichier_ini) ] } {
+            source $gps(fichier_ini)
         }
         if {![info exists parametres(os)]} {set parametres(os) $::tcl_platform(os)}
         if {![info exists parametres(port_serie)]} {set parametres(port_serie) [lindex $audace(list_com) 0]}
@@ -1095,8 +1100,7 @@ namespace eval ::gps {
             }
             consolog {
                 ::console::disp [eval [concat {format} $args]]
-                set nom_fichier [file join $gps(home) gps.log]
-                if [catch {open $nom_fichier a} fichier] {
+                if [catch {open $gps(fichier_log) a} fichier] {
                     ::console::disp $fichier
                     ::console::disp "\n"
                 } else {
@@ -1108,8 +1112,7 @@ namespace eval ::gps {
                 update idletasks
             }
             log {
-                set nom_fichier [file join $gps(home) gps.log]
-                if [catch {open $nom_fichier a} fichier] {
+                if [catch {open $gps(fichier_log) a} fichier] {
                     ::console::disp $fichier
                     ::console::disp "\n"
                 } else {
@@ -1244,7 +1247,8 @@ namespace eval ::gps {
             set SDD_lat -$SDD_lat
         }
         set conf(posobs,observateur,gps) "GPS [mc_angle2deg [list $position(DD_lon) $position(MM_lon) $position(SS_lon)]] $position(EW) [mc_angle2deg [list $SDD_lat $position(MM_lat) $position(SS_lat)]] $position(altitude)"
-
+        set audace(posobs,observateur,gps) $conf(posobs,observateur,gps)
+        
         Message consolog "%s\n" $caption(gps,m_synchro_position_1)
         set message "\t"
         append message $caption(gps,m_synchro_position_2)
@@ -1308,8 +1312,7 @@ namespace eval ::gps {
         Message consolog "---------- %s -------------\n\n" $caption(gps,tchao)
 
         # Sauvegarde des parametres
-        set nom_fichier [file join $gps(home) gps.ini]
-        if [catch {open $nom_fichier w} fichier] {
+        if [catch {open $gps(fichier_ini) w} fichier] {
             Message console "%s\n" $fichier
         } else {
             foreach {a b} [array get parametres] {
