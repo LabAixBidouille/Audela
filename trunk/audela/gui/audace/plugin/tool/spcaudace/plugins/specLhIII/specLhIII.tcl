@@ -2,7 +2,7 @@
 # Fichier : specLhIII.tcl
 # Description : Reduction complete des spectres Lhires III
 # Auteur : François COCHARD
-# Mise a jour $Id: specLhIII.tcl,v 1.4 2010-04-23 17:02:51 robertdelmas Exp $
+# Mise a jour $Id: specLhIII.tcl,v 1.5 2010-04-30 15:55:24 robertdelmas Exp $
 #
 
 #==============================================================
@@ -33,7 +33,13 @@ namespace eval ::spbmfc {
       variable fichier_log
       variable log_id
       variable numero_version
-      global audace caption
+      global panneau
+
+      #--- Si le repertoire .audela n'existe pas, le creer
+      set panneau(homeDirectory) [ file join $::env(HOME) .audela ]
+      if { ! [ file exist $panneau(homeDirectory) ] } {
+         file mkdir $panneau(homeDirectory)
+      }
 
       # Lecture du fichier de configuration
       RecuperationParametres
@@ -151,22 +157,22 @@ namespace eval ::spbmfc {
 
 #***** Procedure RecuperationParametres ******************************
    proc RecuperationParametres { } {
-      global audace data_spbmfc
+      global data_spbmfc panneau
 
       # Initialisation
       if {[info exists data_spbmfc]} {unset data_spbmfc}
       # Ouverture du fichier de paramètres
-      set fichier [file join $audace(rep_plugin) tool specLhIII spdata.ini]
+      set fichier [file join $panneau(homeDirectory) spdata.ini]
       if {[file exists $fichier]} {source $fichier}
    }
 #***** Fin de la procedure RecuperationParametres ******************************
 
 #***** Procedure SauvegardeParametres ******************************
    proc SauvegardeParametres { } {
-      global audace data_spbmfc
+      global data_spbmfc panneau
 
       catch {
-         set nom_fichier [file join $audace(rep_plugin) tool specLhIII spdata.ini]
+         set nom_fichier [file join $panneau(homeDirectory) spdata.ini]
          if [catch {open $nom_fichier w} fichier] {
             message console "%s\n" $caption(specLhIII,PbSauveConfig)
          } else {
