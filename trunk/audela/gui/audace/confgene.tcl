@@ -5,7 +5,7 @@
 #               pose, choix des outils, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: confgene.tcl,v 1.71 2010-02-23 23:06:31 robertdelmas Exp $
+# Mise à jour $Id: confgene.tcl,v 1.72 2010-04-30 05:42:29 robertdelmas Exp $
 #
 
 #
@@ -993,7 +993,7 @@ namespace eval ::confPosObs {
    #
    proc widgetToConf { } {
       variable This
-      global conf confgene
+      global audace conf confgene
 
       #--- J'ajoute l'observatoire en tete dans le tableau des observatoires precedents s'il n'y est pas deja
       array set config_observatoire { }
@@ -1058,6 +1058,9 @@ namespace eval ::confPosObs {
       set conf(posobs,observateur,mpc)        $confgene(posobs,observateur,mpc)
       set conf(posobs,observateur,mpcstation) $confgene(posobs,observateur,mpcstation)
 
+      #---
+      set audace(posobs,observateur,gps)      $conf(posobs,observateur,gps)
+
       #--- Concatenation de variables pour l'en-tete FITS
       set conf(posobs,estouest_long)          $conf(posobs,estouest)$conf(posobs,long)
       set conf(posobs,nordsud_lat)            $conf(posobs,nordsud)$conf(posobs,lat)
@@ -1069,7 +1072,7 @@ namespace eval ::confPosObs {
    #
    proc majListComboBox { } {
       variable This
-      global conf confgene
+      global audace conf confgene
 
       #--- Je configure la combobox des observatoires
       $This.nom_observatoire configure -values $confgene(posobs,nom_observatoire_liste)
@@ -1104,6 +1107,8 @@ namespace eval ::confPosObs {
          set conf(posobs,station_uai)            $confgene(posobs,station_uai)
          set conf(posobs,observateur,mpc)        $confgene(posobs,observateur,mpc)
          set conf(posobs,observateur,mpcstation) $confgene(posobs,observateur,mpcstation)
+         #---
+         set audace(posobs,observateur,gps)      $conf(posobs,observateur,gps)
          #--- Concatenation de variables pour l'en-tete FITS
          set conf(posobs,estouest_long)          $conf(posobs,estouest)$conf(posobs,long)
          set conf(posobs,nordsud_lat)            $conf(posobs,nordsud)$conf(posobs,lat)
