@@ -2,7 +2,7 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: modpoi.tcl,v 1.26 2010-02-19 17:31:51 michelpujol Exp $
+# Mise à jour $Id: modpoi.tcl,v 1.27 2010-04-30 06:35:51 robertdelmas Exp $
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
@@ -46,7 +46,7 @@ source [ file join $audace(rep_plugin) tool modpoi modpoi.cap ]
 
 proc Chargement_Var { } {
    variable parametres
-   global audace modpoi
+   global audace modpoi panneau
 
    #---
    if { [ info exists modpoi(var,home) ] == "0" } {
@@ -57,7 +57,7 @@ proc Chargement_Var { } {
       }
    }
    #--- Ouverture du fichier de parametres
-   set fichier [ file join $audace(rep_plugin) tool modpoi modpoi.ini ]
+   set fichier [ file join $panneau(homeDirectory) modpoi.ini ]
    if { [ file exists $fichier ] } {
       source $fichier
    }
@@ -88,7 +88,7 @@ proc Chargement_Var { } {
 
 proc Enregistrement_Var { } {
    variable parametres
-   global audace modpoi
+   global audace modpoi panneau
 
    set parametres(modpoi,position)       $modpoi(toplevel,position)
    set parametres(modpoi,nb_stars)       $modpoi(stars,nb)
@@ -110,7 +110,7 @@ proc Enregistrement_Var { } {
 
    #--- Sauvegarde des parametres
    catch {
-      set nom_fichier [ file join $audace(rep_plugin) tool modpoi modpoi.ini ]
+      set nom_fichier [ file join $panneau(homeDirectory) modpoi.ini ]
       if [ catch { open $nom_fichier w } fichier ] {
          #---
       } else {
@@ -1218,9 +1218,9 @@ proc modpoi_wiz5 { } {
    if { $::tcl_platform(os) == "Linux" } {
       wm minsize $modpoi(g,base) 560 680
    } else {
-      wm minsize $modpoi(g,base) 440 500
+      wm minsize $modpoi(g,base) 440 560
    }
-   wm resizable $modpoi(g,base) 1 0
+   wm resizable $modpoi(g,base) 1 1
    wm title $modpoi(g,base) $caption(modpoi,wiz5,title)
    #--- Compute the coefficients
    set res [modpoi_computecoef]
