@@ -2,7 +2,7 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: modpoi.tcl,v 1.27 2010-04-30 06:35:51 robertdelmas Exp $
+# Mise à jour $Id: modpoi.tcl,v 1.28 2010-04-30 06:52:36 robertdelmas Exp $
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
@@ -88,7 +88,7 @@ proc Chargement_Var { } {
 
 proc Enregistrement_Var { } {
    variable parametres
-   global audace modpoi panneau
+   global modpoi panneau
 
    set parametres(modpoi,position)       $modpoi(toplevel,position)
    set parametres(modpoi,nb_stars)       $modpoi(stars,nb)
@@ -2107,7 +2107,7 @@ proc modpoi_passage { radec sens date } {
 }
 
 proc modpoi_load { { fileres "modpoi_res.txt" } } {
-   global audace caption modpoi
+   global caption modpoi
 
    set catchError [catch {
       set modpoi(vec) [modpoi_load_without_gui $fileres]
