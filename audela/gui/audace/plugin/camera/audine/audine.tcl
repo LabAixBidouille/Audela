@@ -2,7 +2,7 @@
 # Fichier : audine.tcl
 # Description : Configuration de la camera Audine
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audine.tcl,v 1.26 2009-12-30 14:26:24 robertdelmas Exp $
+# Mise a jour $Id: audine.tcl,v 1.27 2010-04-30 15:27:18 robertdelmas Exp $
 #
 
 namespace eval ::audine {
@@ -437,7 +437,6 @@ proc ::audine::configureCamera { camItem bufNo } {
                }
             }
             #--- Je configure la vitesse de lecture de chaque pixel
-            ### set conf(ethernaude,host) [ ::audace::verifip $conf(ethernaude,host) ]
             set eth_canspeed "0"
             set eth_canspeed [ expr round(($conf(ethernaude,canspeed)-7.11)/(39.51-7.11)*30.) ]
             if { $eth_canspeed < "0" } { set eth_canspeed "0" }
@@ -507,7 +506,7 @@ proc ::audine::configureCamera { camItem bufNo } {
          } elseif { $conf(audine,typeobtu) == "$caption(audine,obtu_i2c)" } {
             cam$camNo shuttertype audine
          } elseif { $conf(audine,typeobtu) == "$caption(audine,obtu_thierry)" } {
-            set confcolor(obtu_pierre) "1"
+            set ::confcolor(obtu_pierre) "1"
             ::Obtu_Pierre::run $camNo
             cam$camNo shuttertype thierry
         }
