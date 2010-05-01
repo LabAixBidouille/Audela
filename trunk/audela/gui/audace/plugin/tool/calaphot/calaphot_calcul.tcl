@@ -5,7 +5,7 @@
 #
 # @brief Routines de calcul de photometrie de Calaphot
 #
-# $Id: calaphot_calcul.tcl,v 1.3 2010-03-28 16:34:37 jacquesmichelet Exp $
+# $Id: calaphot_calcul.tcl,v 1.4 2010-05-01 16:30:27 jacquesmichelet Exp $
 
 namespace eval ::CalaPhot {
 
@@ -616,7 +616,7 @@ namespace eval ::CalaPhot {
     }
 
     #*************************************************************************#
-    #*************  jm_fitgauss2db  ******************************************#
+    #*************  FitGauss2db  *********************************************#
     #*************************************************************************#
     # Note de Alain Klotz le 30 septembre 2007 :
     # Fonction pour inhiber les problemes de jm_fitgauss2d
@@ -626,23 +626,26 @@ namespace eval ::CalaPhot {
     # Note de Jacques Michelet (11 septembre 2008)
     # la fonction jm_fitgauss2d a ete profondement remaniee. Son taux d'echec
     # est devenu tres faible.
-    proc jm_fitgauss2db { bufno box {moinssub ""} } {
-      if {$moinssub == "-sub"} {
-         set temp [jm_fitgauss2d $bufno $box -sub]
-      } else {
-         set temp [jm_fitgauss2d $bufno $box]
-      }
-      # test si le nombre d'iteration est non nul, et si l'erreur de modelisation
-      # est acceptable (sur les images du T80, le seuil de 5 fait rejeter 3% des
-      # objets vus par sextractor, et ce sont le plus souvent des objets non
-      # stellaires)
-      if {([lindex $temp 1] > 0) && ([lindex $temp 0] < 5.0)} {
-         # La modelisation est correcte
-         return $temp
-      }
-      # Echec de jm_fitgauss2d. On effectue une modelisation plus grossiere
-        Message debug "jm_fitgauss2d a echoue\n"
-      set valeurs [buf$bufno fitgauss $box]
+    proc FitGauss2d { bufno box {moinssub ""} } {
+
+        Message debug "%s\n" [info level [info level]]
+
+        if {$moinssub == "-sub"} {
+            set temp [calaphot_fitgauss2d $bufno $box -sub]
+        } else {
+            set temp [calaphot_fitgauss2d $bufno $box]
+        }
+        # test si le nombre d'iteration est non nul, et si l'erreur de modelisation
+         # est acceptable (sur les images du T80, le seuil de 5 fait rejeter 3% des
+        # objets vus par sextractor, et ce sont le plus souvent des objets non
+        # stellaires)
+        if {([lindex $temp 1] > 0) && ([lindex $temp 0] < 5.0)} {
+            # La modelisation est correcte
+            return $temp
+        }
+        # Echec de calaphot_fitgauss2d. On effectue une modelisation plus grossiere
+        Message debug "calaphot_fitgauss a échoué\n"
+        set valeurs [buf$bufno fitgauss $box]
       set dif 0.
       set intx [lindex $valeurs 0]
       set xc [lindex $valeurs 1]
@@ -685,6 +688,7 @@ namespace eval ::CalaPhot {
       set incertitudes_Sigma_1 0.01
       set incertitudes_Sigma_2 0.01
       set incertitudes_Flux [expr 0.001*$if0]
+        Message debug "x0=%f y0=%f fwhmx=%f fwhmy=%f\n" $valeurs_X0 $valeurs_Y0 $valeurs_Sigma_X $valeurs_Sigma_Y
       return [list $convergence $iterations $valeurs_X0 $valeurs_Y0 $valeurs_Signal $valeurs_Fond $valeurs_Sigma_X $valeurs_Sigma_Y $valeurs_Ro $valeurs_Alpha $valeurs_Sigma_1 $valeurs_Sigma_2 $valeurs_Flux $incertitudes_X0 $incertitudes_Y0 $incertitudes_Signal $incertitudes_Fond $incertitudes_Sigma_X $incertitudes_Sigma_Y $incertitudes_Ro $incertitudes_Alpha $incertitudes_Sigma_1 $incertitudes_Sigma_2 $incertitudes_Flux]
     }
 
@@ -974,7 +978,7 @@ namespace eval ::CalaPhot {
         variable parametres
         variable data_image
         variable data_script
-        variable trace_log
+        variable calaphot
 
         Message debug "%s\n" [ info level [ info level ] ]
 
@@ -987,8 +991,8 @@ namespace eval ::CalaPhot {
         set y2 [ expr round($y_etoile + $parametres(tailleboite)) ]
 
         # Modelisation
-        set temp [ calaphot_fitgauss2d $audace(bufNo) [ list $x1 $y1 $x2 $y2 ] ]
-#        set temp [ jm_fitgauss2db $audace(bufNo) [list $x1 $y1 $x2 $y2] ]
+#        set temp [ calaphot_fitgauss2d $audace(bufNo) [ list $x1 $y1 $x2 $y2 ] ]
+        set temp [ FitGauss2d $audace(bufNo) [list $x1 $y1 $x2 $y2] ]
 
         # Recuperation des resultats
         if {([lindex $temp 1] != 0) && ([lindex $temp 15] != 0)} {
@@ -1030,7 +1034,7 @@ namespace eval ::CalaPhot {
             set data_image($i,$classe,nb_pixels_$j) 0
             set data_image($i,$classe,nb_pixels_fond_$j) 0
             set data_script($i,invalidation) [ list modelisation $classe $j ]
-            Message info "%s image %d %s %d_n" $calaphot(texte,erreur_modelisation) $i $classe $j
+            Message info "%s image %d %s %d_n" $calaphot(texte,err_modelisation) $i $classe $j
             set retour -1
         }
 #            if {[info exists data_script(correction_masse_air)]} {
