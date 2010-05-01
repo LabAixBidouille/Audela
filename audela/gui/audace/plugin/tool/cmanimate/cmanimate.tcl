@@ -2,7 +2,7 @@
 # Fichier : cmanimate.tcl
 # Description : Animation/slides control panel for Cloud Monitor
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmanimate.tcl,v 1.21 2010-04-25 18:21:34 robertdelmas Exp $
+# Mise à jour $Id: cmanimate.tcl,v 1.22 2010-05-01 08:55:07 robertdelmas Exp $
 #
 
 #****************************************************************
@@ -154,10 +154,9 @@ namespace eval ::cmanimate {
 
    proc chargementVar { } {
       variable parametres
-      global panneau
 
       #--- Ouverture du fichier de parametres
-      set fichier [ file join $panneau(homeDirectory) cmanimate.ini ]
+      set fichier [ file join $::audace(rep_home) cmanimate.ini ]
       if { [ file exists $fichier ] } {
          source $fichier
       }
@@ -172,7 +171,7 @@ namespace eval ::cmanimate {
 
       #--- Sauvegarde des parametres
       catch {
-         set nom_fichier [ file join $panneau(homeDirectory) cmanimate.ini ]
+         set nom_fichier [ file join $::audace(rep_home) cmanimate.ini ]
          if [ catch { open $nom_fichier w } fichier ] {
             #---
          } else {
@@ -229,12 +228,6 @@ namespace eval ::cmanimate {
       variable This
       variable parametres
       global audace caption panneau
-
-      #--- Si le repertoire .audela n'existe pas, le creer
-      set panneau(homeDirectory) [ file join $::env(HOME) .audela ]
-      if { ! [ file exist $panneau(homeDirectory) ] } {
-         file mkdir $panneau(homeDirectory)
-      }
 
       #--- Chargement des variables de configuration de cmaude
       set fichier_cmaude [ file join $audace(rep_plugin) tool cmaude cmaude_ini.tcl ]
