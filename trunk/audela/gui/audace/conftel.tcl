@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.61 2010-04-29 18:12:17 michelpujol Exp $
+# Mise a jour $Id: conftel.tcl,v 1.62 2010-05-01 08:29:40 robertdelmas Exp $
 #
 
 namespace eval ::confTel {
@@ -561,7 +561,7 @@ proc ::confTel::setModelFileName { modelFileName } {
 
 
    set loadModelError [catch {
-      tel$private(telNo) home $::conf(posobs,observateur,gps)
+      tel$private(telNo) home $::audace(posobs,observateur,gps)
       tel$private(telNo) home name $::conf(posobs,nom_observatoire)
 
       #--- je charge le modele
@@ -617,7 +617,7 @@ proc ::confTel::setModelFileName { modelFileName } {
 #------------------------------------------------------------
 proc ::confTel::configureModel { modelEnabled modelName modelDate modelSymbols modelCoeffficients } {
    variable private
-   tel$private(telNo) home $::conf(posobs,observateur,gps)
+   tel$private(telNo) home $::audace(posobs,observateur,gps)
    tel$private(telNo) home name $::conf(posobs,nom_observatoire)
 
    set modelPressure 101325
@@ -853,7 +853,7 @@ proc ::confTel::selectModel { } {
    variable widget
 
    #--- j'ouvre la fenetre de selection du modele de pointage
-   set initialdir [file join $::env(HOME) .audela modpoi]
+   set initialdir [file join $::audace(rep_home) modpoi]
    if { ! [ file exist $initialdir ] } {
       #--- Si le repertoire modpoi n'existe pas, le creer
       file mkdir $initialdir
@@ -903,7 +903,7 @@ proc ::confTel::getModelList { } {
 # loadModel
 #    charge un modele a partir d'un fichier
 # Exemple :
-#   ::confTel::loadModel  $::audace(rep_plugin)/tool/modpoi/model_modpoi/test-juin-2009_synthese_17�toiles.txt
+#   ::confTel::loadModel  $::audace(rep_home)/modpoi/model_modpoi/test-juin-2009_synthese_17etoiles.txt
 # @param fileName  nom du fichier
 # @return liste contenant les informations du modele
 #    * result[0] name
