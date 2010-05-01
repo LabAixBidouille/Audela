@@ -2,7 +2,7 @@
 # Fichier : obtu_pierre.tcl
 # Description : Permet le parametrage de l'obturateur a base de servo pour modelisme
 # Auteurs : Pierre Thierry et Robert DELMAS
-# Mise a jour $Id: obtu_pierre.tcl,v 1.7 2010-04-30 15:27:58 robertdelmas Exp $
+# Mise a jour $Id: obtu_pierre.tcl,v 1.8 2010-05-01 08:36:28 robertdelmas Exp $
 #
 
 namespace eval Obtu_Pierre {
@@ -16,12 +16,6 @@ proc ::Obtu_Pierre::run { camNo } {
    variable This
    variable parametres
    global confcolor
-
-   #--- Si le repertoire .audela n'existe pas, le creer
-   set confcolor(homeDirectory) [ file join $::env(HOME) .audela ]
-   if { ! [ file exist $confcolor(homeDirectory) ] } {
-      file mkdir $confcolor(homeDirectory)
-   }
 
    #--- Chargement du fichier de configuration
    ::Obtu_Pierre::Chargement_Var
@@ -88,9 +82,9 @@ proc ::Obtu_Pierre::Chargement_Var { } {
 
    #--- Ouverture du fichier de parametres
    if { $confcolor(obtu_pierre) == "0" } {
-      set fichier [ file join $confcolor(homeDirectory) obtu_pierre_color.ini ]
+      set fichier [ file join $::audace(rep_home) obtu_pierre_color.ini ]
    } elseif { $confcolor(obtu_pierre) == "1" } {
-      set fichier [ file join $confcolor(homeDirectory) obtu_pierre_nb.ini ]
+      set fichier [ file join $::audace(rep_home) obtu_pierre_nb.ini ]
    }
    if { [ file exists $fichier ] } {
       source $fichier
@@ -121,9 +115,9 @@ proc ::Obtu_Pierre::Enregistrement_Var { } {
    #--- Sauvegarde des parametres
    catch {
       if { $confcolor(obtu_pierre) == "0" } {
-         set nom_fichier [ file join $confcolor(homeDirectory) obtu_pierre_color.ini ]
+         set nom_fichier [ file join $::audace(rep_home) obtu_pierre_color.ini ]
       } elseif { $confcolor(obtu_pierre) == "1" } {
-         set nom_fichier [ file join $confcolor(homeDirectory) obtu_pierre_nb.ini ]
+         set nom_fichier [ file join $::audace(rep_home) obtu_pierre_nb.ini ]
       }
       if [ catch { open $nom_fichier w } fichier ] {
          #---
