@@ -2,7 +2,7 @@
 # Fichier : process.tcl
 # Description : fenertre de configuration instrument eShel
 # Auteur : Michel PUJOL
-# Mise a jour $Id: instrumentgui.tcl,v 1.2 2010-04-11 13:24:25 michelpujol Exp $
+# Mise à jour $Id: instrumentgui.tcl,v 1.3 2010-05-01 09:04:13 robertdelmas Exp $
 #
 
 ################################################################
@@ -417,7 +417,7 @@ proc ::eshel::instrumentgui::fillCameraPage { frm visuNo } {
       pack $frm.hotpixel.text -in [$frm.hotpixel getframe] -side left -anchor w -fill both -expand 1
       pack $frm.hotpixel.ysb -in [$frm.hotpixel getframe]  -side left -anchor w -fill y -expand 1
 
-   #--- Parametres de r�paration des cosmiques
+   #--- Parametres de reparation des cosmiques
    TitleFrame $frm.cosmic -borderwidth 2 -relief ridge -text $caption(eshel,instrument,camera,cosmic)
       checkbutton $frm.cosmic.enabled  -justify left -text $caption(eshel,instrument,camera,cosmicEnabled) -variable ::eshel::instrumentgui::private(cosmicEnabled)
       LabelEntry $frm.cosmic.threshold -label $caption(eshel,instrument,camera,cosmicThreshold) \
@@ -824,7 +824,7 @@ proc ::eshel::instrumentgui::fillObjectProcessPage { frm visuNo } {
 
 #----------------------------------------------------------------------------
 # onSelectConfig
-#    met � jour les variables et les widgets quand on selectionne une configuration
+#    met a jour les variables et les widgets quand on selectionne une configuration
 #    dans la combobox
 #----------------------------------------------------------------------------
 proc ::eshel::instrumentgui::onSelectConfig { visuNo } {
@@ -927,13 +927,13 @@ proc ::eshel::instrumentgui::onSelectConfig { visuNo } {
       $tkOrderDefinition insert end $definition
    }
 
-   #--- je rafraichis les widgets de la r�ponse instrmentale
+   #--- je rafraichis les widgets de la reponse instrmentale
    onSelectResponseOption $visuNo
 }
 
 #----------------------------------------------------------------------------
 # onSelectCamera
-#    met � jour les variables et les widgets quand on selectionne une camera
+#    met a jour les variables et les widgets quand on selectionne une camera
 #----------------------------------------------------------------------------
 proc ::eshel::instrumentgui::onSelectCamera { visuNo } {
    variable private
@@ -951,7 +951,7 @@ proc ::eshel::instrumentgui::onSelectCamera { visuNo } {
 
 #----------------------------------------------------------------------------
 # onSelectResponseOption
-#    met � jour les variables et les widgets quand on selectionne une option de la reponse instrumentale
+#    met a jour les variables et les widgets quand on selectionne une option de la reponse instrumentale
 #----------------------------------------------------------------------------
 proc ::eshel::instrumentgui::onSelectResponseOption { visuNo } {
    variable private
@@ -973,7 +973,7 @@ proc ::eshel::instrumentgui::onSelectResponseOption { visuNo } {
 
 #----------------------------------------------------------------------------
 # apply
-#    met � jour les variables et les widgets quand on applique les modifications d'une configuration
+#    met a jour les variables et les widgets quand on applique les modifications d'une configuration
 #----------------------------------------------------------------------------
 proc ::eshel::instrumentgui::apply { visuNo } {
    variable private
@@ -1176,20 +1176,15 @@ proc ::eshel::instrumentgui::apply { visuNo } {
    }
 
    #--- j'enregistre les modifications sur disque
-   if { $::tcl_platform(os) == "Linux" } {
-      set filename [ file join ~ .audela config.ini ]
-      set filebak  [ file join ~ .audela config.bak ]
-   } else {
-      set filename [ file join $::audace(rep_audela) audace config.ini ]
-      set filebak  [ file join $::audace(rep_audela) audace config.bak ]
-   }
+   set filename [ file join $::audace(rep_home) config.ini ]
+   set filebak  [ file join $::audace(rep_home) config.bak ]
    array set file_conf [ ::audace::ini_getArrayFromFile $filename ]
    set currentConfig    [array get ::conf eshel,instrument,config,* ]
    set currentReference [array get ::conf eshel,instrument,reference,* ]
 
-   #--- je sauvegarde le fichier .ini
-   if {  [file exists $filename ] } {
-      #--- je sauvegarde le fichier config.ini
+   #--- je sauvegarde le fichier de configuration
+   if { [file exists $filename ] } {
+      #--- je sauvegarde le fichier de configuration
       file copy -force $filename $filebak
    }
    #--- je purge les configurations et les sequences du fichier que celles qui ont ete effacees ne soient pas conservees
@@ -1363,7 +1358,7 @@ proc ::eshel::instrumentgui::deleteConfig { visuNo } {
 
       #--- je selectionne l'item suivant a la place de celui qui vient d'etre supprime
       if { $index == [llength $configList] } {
-         #--- je decrement l'index si l'element supprim� etait le dernier de la liste
+         #--- je decrement l'index si l'element supprime etait le dernier de la liste
          incr index -1
       }
       $tkCombo setvalue "@$index"
@@ -1394,7 +1389,7 @@ proc ::eshel::instrumentgui::importConfig { visuNo } {
       set catchResult [ catch {
          #--- je lis le fichier
          array set params [::eshel::instrument::importConfig $fileName ]
-         #--- je verifie que la configuration n'existe pas d�j�
+         #--- je verifie que la configuration n'existe pas deja
          set configName $params(configName)
          set configId [::eshel::instrument::getConfigIdentifiant $configName]
          if { [info exists ::conf(eshel,instrument,config,$configId,configName)]==1 } {
@@ -1461,7 +1456,7 @@ proc ::eshel::instrumentgui::importCalibrationConfig { visuNo } {
       set catchResult [ catch {
          #--- je lis le fichier
          array set params [::eshel::instrument::importCalibrationConfig $fileName ]
-         #--- je verifie que la configuration n'existe pas d�ja
+         #--- je verifie que la configuration n'existe pas deja
          set configName $params(configName)
          set configId [::eshel::instrument::getConfigIdentifiant $configName]
          if { [info exists ::conf(eshel,instrument,config,$configId,configName)]==1 } {
@@ -1570,7 +1565,7 @@ proc ::eshel::instrumentgui::createReference { visuNo } {
       append referenceId $c
    }
 
-   #--- je verifie que l'identifiant n'existe pas d�ja
+   #--- je verifie que l'identifiant n'existe pas deja
    if { [info exists private($referenceId,actionList) ] == 1 } {
       tk_messageBox -message "$referenceName\n$::caption(eshel,instrument,reference,alreadyExist)" -icon error -title $::caption(eshel,title)
       return
@@ -1631,7 +1626,7 @@ proc ::eshel::instrumentgui::copyReference { visuNo } {
       append referenceId $c
    }
 
-   #--- je verifie que l'identifiant n'existe pas d�ja
+   #--- je verifie que l'identifiant n'existe pas deja
    if { [info exists private($referenceId,actionList) ] == 1 } {
       tk_messageBox -message "$referenceName\n$::caption(eshel,instrument,reference,alreadyExist)" -icon error -title $::caption(eshel,title)
       return
@@ -2067,7 +2062,7 @@ proc ::eshel::instrumentgui::modifyAction { visuNo } {
       lappend actionParams $paramName $private(action,$paramName)
    }
 
-   #--- je mets � jour la table des actions
+   #--- je mets a jour la table des actions
    $private(actionTable) cellconfigure $actionIndex,0 -text $actionType
    $private(actionTable) cellconfigure $actionIndex,1 -text $actionParams
 }
@@ -2234,8 +2229,8 @@ proc ::eshel::instrumentgui::selectResponseFileName { visuNo } {
 #  fenetre de saisie du nom de configuration
 #
 #  Remarque IMPORTANTE : le nom de configuration ne doit contenir
-#  que des caracrteres alphanumeriques  ou underscore car il est
-#  est utilis� en tant qu'indice d' array
+#  que des caracrteres alphanumeriques ou underscore car il est
+#  est utilise en tant qu'indice d' array
 ################################################################
 
 namespace eval ::eshel::instrumentgui::nameDialog {
