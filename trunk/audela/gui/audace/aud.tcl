@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.128 2010-04-18 10:40:44 robertdelmas Exp $
+# Mise à jour $Id: aud.tcl,v 1.129 2010-05-01 08:18:34 robertdelmas Exp $
 #
 
 #--- Chargement du package BWidget
@@ -86,12 +86,12 @@ namespace eval ::audace {
       set confgene(EditScript,error_aladin) "1"
       #--- On retourne dans le repertoire principal
       cd ..
-      set audace(rep_gui)    "[pwd]"
-      set audace(rep_audela) "[pwd]"
+      set audace(rep_gui)    [pwd]
+      set audace(rep_audela) [pwd]
       #--- Repertoire d'installation
       set audace(rep_install) [ file normalize [ file join $audace(rep_audela) .. ] ]
-      #--- Chargement de la configuration (config.ini)
-      Recup_Config
+      #--- Chargement de la configuration
+      loadSetup
       #--- Chargement du repertoire des images
       if { [ info exists conf(rep_images) ] } {
          if { [ file exists "$conf(rep_images)" ] } {
@@ -510,7 +510,7 @@ namespace eval ::audace {
       return $repertoire
    }
 
-   proc Recup_Config { { visuNo 1 } } {
+   proc loadSetup { { visuNo 1 } } {
       global conf
       global audace
 
@@ -518,16 +518,8 @@ namespace eval ::audace {
       if {[info exists conf]} {unset conf}
 
       #--- Ouverture du fichier de parametres
-      if { $::tcl_platform(os) == "Linux" } {
-         set fichier [ file join ~ .audela config.ini ]
-         #--- Si le dossier ~/.audela n'existe pas, on le cree
-         if { ! [ file exist [ file join ~ .audela ] ] } {
-            file mkdir [ file join ~ .audela ]
-         }
-      } else {
-         set fichier [ file join audace config.ini ]
-      }
-      if { [ file exists $fichier ] } { uplevel #0 "source $fichier" }
+      set fichier [ file join $::audace(rep_home) config.ini ]
+      if { [ file exists $fichier ] } { uplevel #0 "source \"$fichier\"" }
 
       #--- Initialisation de la liste des binnings si aucune camera n'est connectee
       set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
@@ -996,26 +988,14 @@ namespace eval ::audace {
       #--- On stocke le nom de ce fichier dans tmp(fichier_palette)
       #--- Attention : On stocke le nom du fichier sans l'extension .pal
       if { ! [ info exist tmp(fichier_palette) ] } {
-         switch $::tcl_platform(os) {
-            Linux {
-               #--- Si le dossier /tmp/.audela n'existe pas, on le cree avec les permissions d'ecriture pour tout le monde
-               if {[file exist [file join /tmp .audela]]=="0"} {
-                  file mkdir [file join /tmp .audela]
-                  exec chmod a+w [file join /tmp .audela]
-               }
-               set tmp(fichier_palette) [ file rootname [ cree_fichier -nom_base fonction_transfert -rep [ file join /tmp .audela ] -ext .pal ] ]
-            }
-            default {
-               set tmp(fichier_palette) [ file rootname [ cree_fichier -nom_base fonction_transfert -rep [ file join $audace(rep_audela) audace palette ] -ext .pal ] ]
-            }
-         }
+         set tmp(fichier_palette) [ file rootname [ cree_fichier -nom_base fonction_transfert -rep $::audace(rep_temp) -ext .pal ] ]
       }
 
       #--- Configure PortTalk
       if { $::tcl_platform(os) == "Windows NT" } {
          set res [ catch { set result [ porttalk open all ] } msg ]
          set no_administrator "PortTalk: You do not have rights to access"
-         if { ( $res == "1" ) && ( [ file exists "[ file join $audace(rep_install) bin allowio.txt ]" ] == "0" ) } {
+         if { ( $res == "1" ) && ( [ file exists [ file join $::audace(rep_home) allowio.txt ] ] == "0" ) } {
             if { [ string range $msg 0 41 ] != "$no_administrator" } {
                ::console::affiche_erreur "$msg\n\n$caption(audace,porttalk_msg_erreur)\n"
             } else {
@@ -1043,7 +1023,7 @@ namespace eval ::audace {
             button $base.but1 -text "$caption(audace,ok)" \
                -command {
                   if { $saveallowio == "1" } {
-                     set f [ open "[ file join $audace(rep_install) bin allowio.txt ]" w ]
+                     set f [ open [ file join $::audace(rep_home) allowio.txt ] w ]
                      close $f
                   }
                   destroy .allowio
