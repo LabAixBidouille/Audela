@@ -2,7 +2,7 @@
 # Fichier : gps.tcl
 # Description : Outil de synchronisation GPS
 # Auteur : Jacques MICHELET
-# Mise à jour $Id: gps.tcl,v 1.22 2010-04-30 08:32:56 jacquesmichelet Exp $
+# Mise à jour $Id: gps.tcl,v 1.23 2010-05-01 09:07:01 robertdelmas Exp $
 #
 
 namespace eval ::gps {
@@ -352,7 +352,7 @@ namespace eval ::gps {
     ### createPanel ##############################################
     ##############################################################
     proc createPanel {this} {
-        global caption conf audace color env
+        global caption conf audace color
         variable This
         variable parametres
         variable couleur
@@ -381,16 +381,10 @@ namespace eval ::gps {
 
         CreationPanneauGPS $This
 
-        # Pour le stockage des fichiers .ini et .log
-        set gps_home [ file join $::env(HOME) .audela ]
-        if { ![ file exist $gps_home ] } {
-            file mkdir $gps_home
-        }
+        # Pour le stockage des fichiers d'initialisation et de traces
+        set gps_home $::audace(rep_home)
         set gps(fichier_ini) [ file join $gps_home gps.ini ]
-        set gps_home_log [ file join $::env(HOME) .audela log ]
-        if { ![ file exist $gps_home_log ] } {
-            file mkdir $gps_home_log
-        }
+        set gps_home_log $::audace(rep_log)
         set gps(fichier_log) [ file join $gps_home_log gps.log ]
     }
 
@@ -1248,7 +1242,7 @@ namespace eval ::gps {
         }
         set conf(posobs,observateur,gps) "GPS [mc_angle2deg [list $position(DD_lon) $position(MM_lon) $position(SS_lon)]] $position(EW) [mc_angle2deg [list $SDD_lat $position(MM_lat) $position(SS_lat)]] $position(altitude)"
         set audace(posobs,observateur,gps) $conf(posobs,observateur,gps)
-        
+
         Message consolog "%s\n" $caption(gps,m_synchro_position_1)
         set message "\t"
         append message $caption(gps,m_synchro_position_2)
