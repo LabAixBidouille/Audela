@@ -1,6 +1,6 @@
 #
 # Fichier : calaphot.cap
-# Mise a jour $Id: calaphot.cap,v 1.12 2010-03-28 16:34:37 jacquesmichelet Exp $
+# Mise a jour $Id: calaphot.cap,v 1.13 2010-05-01 16:30:27 jacquesmichelet Exp $
 #
 
 #=========================================================================
@@ -15,7 +15,7 @@ set calaphot(texte,copyright)              "(c)2001-2010 O. Thizy & J. Michelet"
 
 # *************** Version anglaise ****************************
 
-set calaphot(texte,titre_menu)             "Differential Photometry"
+set calaphot(texte,titre_menu)             "Differential Photometry (Calaphot)"
 set calaphot(texte,titre_saisie)           "Photometry Script Parameters"
 set calaphot(texte,operateur)              "Operator Name"
 set calaphot(texte,objet)                  "Object Name"
@@ -124,11 +124,12 @@ set calaphot(texte,image)                  "Image"
 set calaphot(texte,temps_pose_nul)         "Void exposure duration"
 set calaphot(texte,mag_relative)           "Relative Magnitude"
 set calaphot(texte,err_modelisation)       "Error in fitting"
+set calaphot(texte,plus_jeune)             " is older than the previous one"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set calaphot(texte,titre_menu)          "Photométrie différentielle"
+   set calaphot(texte,titre_menu)          "Photométrie différentielle (Calaphot)"
    set calaphot(texte,titre_saisie)        "Paramètres du script de photométrie"
    set calaphot(texte,operateur)           "Nom de l'opérateur"
    set calaphot(texte,objet)               "Nom de l'objet"
@@ -237,11 +238,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,temps_pose_nul)      "Temps de pose nul"
    set calaphot(texte,mag_relative)        "Magnitude relative"
    set calaphot(texte,err_modelisation)    "Erreur de modelisation"
+   set calaphot(texte,plus_jeune)          " est plus ancienne que la précédente"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set calaphot(texte,titre_menu)          "Fotometria differenziale"
+   set calaphot(texte,titre_menu)          "Fotometria differenziale (Calaphot)"
    set calaphot(texte,titre_saisie)        "Parametri dello script di fotometria"
    set calaphot(texte,operateur)           "Nome dell'operatore"
    set calaphot(texte,objet)               "Nome oggetto"
@@ -351,11 +353,12 @@ if { [ string compare $langage "french" ] == "0" } {
 #### Ajout JM
    set calaphot(texte,mag_relative)        "Relative Magnitude"
    set calaphot(texte,err_modelisation)    "Error in fitting"
+   set calaphot(texte,plus_jeune)          " is older than the previous one"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set calaphot(texte,titre_menu)          "Photometria diferencial"
+   set calaphot(texte,titre_menu)          "Photometria diferencial (Calaphot)"
    set calaphot(texte,titre_saisie)        "Parámetros del script de fotometría"
    set calaphot(texte,operateur)           "Nombre del operador"
    set calaphot(texte,objet)               "Nombre del objecto"
@@ -465,11 +468,12 @@ if { [ string compare $langage "french" ] == "0" } {
 #### Ajout JM
    set calaphot(texte,mag_relative)        "Relative Magnitude"
    set calaphot(texte,err_modelisation)    "Error in fitting"
+   set calaphot(texte,plus_jeune)          " is older than the previous one"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set calaphot(texte,titre_menu)          "Differential Licht Messung"
+   set calaphot(texte,titre_menu)          "Differential Licht Messung (Calaphot)"
    set calaphot(texte,titre_saisie)        "Skript Photomessung Parametern"
    set calaphot(texte,operateur)           "Bedienungsperson Namen"
    set calaphot(texte,objet)               "Objekt Namen"
@@ -579,11 +583,12 @@ if { [ string compare $langage "french" ] == "0" } {
 #### Ajout JM
    set calaphot(texte,mag_relative)        "Relative Magnitude"
    set calaphot(texte,err_modelisation)    "Error in fitting"
+   set calaphot(texte,plus_jeune)          " is older than the previous one"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set calaphot(texte,titre_menu)          "Fotometria diferencial"
+   set calaphot(texte,titre_menu)          "Fotometria diferencial (Calaphot)"
    set calaphot(texte,titre_saisie)        "Parâmetros do script de fotometria"
    set calaphot(texte,operateur)           "Nome do operador"
    set calaphot(texte,objet)               "Nome do objecto"
@@ -693,11 +698,12 @@ if { [ string compare $langage "french" ] == "0" } {
 #### Ajout JM
    set calaphot(texte,mag_relative)        "Relative Magnitude"
    set calaphot(texte,err_modelisation)    "Error in fitting"
+   set calaphot(texte,plus_jeune)          " is older than the previous one"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set calaphot(texte,titre_menu)          "Differential Photometry"
+   set calaphot(texte,titre_menu)          "Differential Photometry (Calaphot)"
    set calaphot(texte,titre_saisie)        "Photometry Script Parameters"
    set calaphot(texte,operateur)           "Operator Name"
    set calaphot(texte,objet)               "Object Name"
@@ -806,11 +812,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,temps_pose_nul)      "Void exposure duration"
    set calaphot(texte,mag_relative)        "Relative Magnitude"
    set calaphot(texte,err_modelisation)    "Error in fitting"
+   set calaphot(texte,plus_jeune)          " is older than the previous one"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
-   set calaphot(texte,titre_menu)          "Differential Photometry"
+   set calaphot(texte,titre_menu)          "Differential Photometry (Calaphot)"
    set calaphot(texte,titre_saisie)        "Photometry Script Parameters"
    set calaphot(texte,operateur)           "Operator Name"
    set calaphot(texte,objet)               "Object Name"
@@ -919,11 +926,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,temps_pose_nul)      "Void exposure duration"
    set calaphot(texte,mag_relative)        "Relative Magnitude"
    set calaphot(texte,err_modelisation)    "Error in fitting"
+   set calaphot(texte,plus_jeune)          " is older than the previous one"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
-   set calaphot(texte,titre_menu)          "Differential Photometry"
+   set calaphot(texte,titre_menu)          "Differential Photometry (Calaphot)"
    set calaphot(texte,titre_saisie)        "Photometry Script Parameters"
    set calaphot(texte,operateur)           "Operator Name"
    set calaphot(texte,objet)               "Object Name"
@@ -1032,6 +1040,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,temps_pose_nul)      "Void exposure duration"
    set calaphot(texte,mag_relative)        "Relative Magnitude"
    set calaphot(texte,err_modelisation)    "Error in fitting"
+   set calaphot(texte,plus_jeune)          " is older than the previous one"
 }
 
 #=========================================================================

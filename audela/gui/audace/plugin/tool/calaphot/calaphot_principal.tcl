@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot_principal.tcl,v 1.14 2010-04-21 15:42:18 robertdelmas Exp $
+# $Id: calaphot_principal.tcl,v 1.15 2010-05-01 16:30:27 jacquesmichelet Exp $
 #
 
 ###catch {namespace delete ::Calaphot}
@@ -60,7 +60,6 @@ namespace eval ::CalaPhot {
     # @brief Initialisation generale des variables par défaut
     # @return
     proc InitialisationStatique {} {
-        global env
         global audace
         variable parametres
         variable calaphot
@@ -88,16 +87,14 @@ namespace eval ::CalaPhot {
         set calaphot(texte,probleme)            "probleme"
         set calaphot(texte,erreur)              "erreur"
 
-        set calaphot(repertoire_fichier)        [file join $env(HOME) .audela tool calaphot]
+        set calaphot(nom_fichier_ini)           [file join $::audace(rep_home) calaphot.ini]
+        set calaphot(nom_fichier_log)           [file join $::audace(rep_log) calaphot.log]
 
-        set calaphot(nom_fichier_ini)           [file join $calaphot(repertoire_fichier) calaphot.ini]
-        set calaphot(nom_fichier_log)           [file join $calaphot(repertoire_fichier) calaphot.log]
-
-        set calaphot(sextractor,catalog)        [ file join $calaphot(repertoire_fichier) calaphot.cat ]
-        set calaphot(sextractor,config)         [ file join $calaphot(repertoire_fichier) calaphot.sex ]
-        set calaphot(sextractor,param)          [ file join $calaphot(repertoire_fichier) calaphot.param ]
-        set calaphot(sextractor,neurone)        [ file join $calaphot(repertoire_fichier) calaphot.nnw ]
-        set calaphot(sextractor,assoc)          [ file join $calaphot(repertoire_fichier) calaphot.assoc ]
+        set calaphot(sextractor,catalog)        [ file join $::audace(rep_temp) calaphot.cat ]
+        set calaphot(sextractor,config)         [ file join $::audace(rep_temp) calaphot.sex ]
+        set calaphot(sextractor,param)          [ file join $::audace(rep_temp) calaphot.param ]
+        set calaphot(sextractor,neurone)        [ file join $::audace(rep_temp) calaphot.nnw ]
+        set calaphot(sextractor,assoc)          [ file join $::audace(rep_temp) calaphot.assoc ]
 
         set calaphot(init,mode)                 ouverture
         set calaphot(init,operateur)            "Tycho Brahe"
@@ -111,12 +108,12 @@ namespace eval ::CalaPhot {
         set calaphot(init,rayon1)               1
         set calaphot(init,rayon2)               3
         set calaphot(init,rayon3)               6
-        set calaphot(init,sortie)               "kandrup.txt"
-        set calaphot(init,fichier_cl)           "kandrup.ps"
+        set calaphot(init,sortie)               "kandrup"
+        set calaphot(init,fichier_cl)           "kandrup"
         set calaphot(init,objet)                Kandrup
         set calaphot(init,code_UAI)             615
         set calaphot(init,surechantillonage)    5
-        set calaphot(init,type_capteur)         "Kaf401E"
+        set calaphot(init,type_capteur)         "Kaf1600"
         set calaphot(init,type_telescope)       "Schmidt-Cassegrain"
         set calaphot(init,diametre_telescope)   "0.203"
         set calaphot(init,focale_telescope)     "1.260"
@@ -134,7 +131,7 @@ namespace eval ::CalaPhot {
         set calaphot(init,version_ini)          $numero_version
 
         # couleur des affichages console
-        foreach niveau { debug info notice probleme erreur } couleur_style { green orange blue purple red } {
+        foreach niveau { debug info notice probleme erreur } couleur_style { black purple blue orange red } {
             $audace(Console).txt1 tag configure calaphot(style_$niveau) -foreground $couleur_style
         }
     }
@@ -178,7 +175,7 @@ namespace eval ::CalaPhot {
         SaisieParametres
         SauvegardeParametres
 
-        catch {file delete [file join $calaphot(repertoire_fichier) $parametres(sortie)]}
+        catch {file delete [file join $::audace(rep_images) $parametres(sortie)]}
 
         TraceFichier ${parametres(sortie)}.txt notice "%s %s\n" $calaphot(texte,titre) $calaphot(init,version_ini)
         TraceFichier ${parametres(sortie)}.txt notice "%s\n" $calaphot(texte,copyright)
@@ -297,8 +294,17 @@ namespace eval ::CalaPhot {
             Visualisation rapide
 
             # Recherche la date de l'image dans l'entete FITS (deja fait si les images etaient declarees non triees)
-            if { [DateImage $i] } {
-                Message probleme "%s %i : %s\n" $calaphot(texte,image) $i $calaphot(texte,temps_pose_nul)
+            if { [ DateImage $i ] } {
+                EliminationImage $i
+                Message erreur "%s %i : %s\n" $calaphot(texte,image) $i $calaphot(texte,temps_pose_nul)
+                ArretScript
+                Message probleme "%s\n" $calaphot(texte,fin_anticipee)
+                return
+            }
+
+            if { [ DateCroissante $i ] } {
+                EliminationImage $i
+                Message erreur "%s %i : %s\n" $calaphot(texte,image) $i $calaphot(texte,plus_jeune) 
                 ArretScript
                 Message probleme "%s\n" $calaphot(texte,fin_anticipee)
                 return
@@ -369,6 +375,7 @@ namespace eval ::CalaPhot {
                        FluxOuverture $i var $j
                     }
                 } else {
+                    set data_script($i,invalidation) [ list ellipses ]
                     EliminationImage $i
                     continue
                 }
@@ -376,7 +383,7 @@ namespace eval ::CalaPhot {
 
             if {($parametres(mode) == "sextractor")} {
                 # Cas Sextractor
-                set test [ Sextractor [file join $audace(rep_images) $parametres(source)$i$conf(extension,defaut) ] ]
+                set test [ Sextractor [file join $::audace(rep_images) $parametres(source)$i$conf(extension,defaut) ] ]
                 if { $test != 0 } {
                     set data_script($i,invalidation) [ list sextractor ]
                     set data_image($i,valide) "N"
@@ -406,7 +413,10 @@ namespace eval ::CalaPhot {
                 }
             }
 
-            if { $data_image($i,valide) == "N" } { continue }
+            if { $data_image($i,valide) == "N" } {
+                EliminationImage $i
+                continue 
+            }
 
             # Dessin des symboles
             for {set j 0} {$j < $data_script(nombre_reference)} {incr j} {
@@ -555,7 +565,7 @@ namespace eval ::CalaPhot {
 
         Message debug "%s\n" [info level [info level]]
 
-        set nom_fichier [file join $audace(rep_images) ${parametres(sortie)}.cdr]
+        set nom_fichier [file join $::audace(rep_images) ${parametres(sortie)}.cdr]
         # effacement de la version précédente
         catch {[file delete -force $nom_fichier]}
 
@@ -612,7 +622,7 @@ namespace eval ::CalaPhot {
 
         Message debug "%s\n" [ info level [ info level ] ]
 
-        set nom_fichier [ file join $audace(rep_images) ${parametres(sortie)}.csv ]
+        set nom_fichier [ file join $::audace(rep_images) ${parametres(sortie)}.csv ]
         # effacement de la version précédente
         catch { file delete -force $nom_fichier }
         if { [ catch { open $nom_fichier "w" } f ] } {
@@ -659,7 +669,7 @@ namespace eval ::CalaPhot {
 
         Message debug "%s\n" [ info level [ info level ] ]
 
-        set nom_fichier [file join $audace(rep_images) ${parametres(sortie)}.dat]
+        set nom_fichier [file join $::audace(rep_images) ${parametres(sortie)}.dat]
         # effacement de la version précédente
         catch { file delete -force $nom_fichier }
         if { [ catch { open $nom_fichier "w" } f ] } {
@@ -709,8 +719,8 @@ namespace eval ::CalaPhot {
 
         Message debug "%s\n" [info level [info level]]
 
-        set nom_fichier_gplt [file join $audace(rep_images) ${parametres(sortie)}.plt]
-        set nom_fichier_dat [file join $audace(rep_images) ${parametres(sortie)}.dat]
+        set nom_fichier_gplt [file join $::audace(rep_images) ${parametres(sortie)}.plt]
+        set nom_fichier_dat [file join $::audace(rep_images) ${parametres(sortie)}.dat]
         # effacement de la version précédente
         catch {[file delete -force $nom_fichier_plt]}
         set f [open $nom_fichier_gplt "w"]
@@ -740,7 +750,7 @@ namespace eval ::CalaPhot {
         variable parametres
 
         if {$tcl_platform(os) == "Linux"} {
-            set nom_fichier_gplt [file join $audace(rep_images) ${parametres(sortie)}.plt]
+            set nom_fichier_gplt [file join $::audace(rep_images) ${parametres(sortie)}.plt]
             catch { exec gnuplot $nom_fichier_gplt & }
         }
     }
@@ -765,11 +775,39 @@ namespace eval ::CalaPhot {
             update
 
             if {[info exists trace_log]} {
-                set filetest [open [file join $calaphot(repertoire_fichier) trace_calaphot.log] a]
+                set filetest [open [file join $::audace(rep_log) trace_calaphot.log] a]
                 if {$filetest != ""} {
                     puts -nonewline $filetest [concat [string repeat "." [expr [info level] - 1]] [eval [concat {format} $args]] ]
                 }
                 close $filetest
+            }
+        }
+    }
+
+    ##
+    # @brief Verification que les images sont dans un ordre de date croissante
+    # @param[in] i : numero de l'image dans la sequence
+    # @return : -1 si le temps de l'image est plus petit que celui de l'image précédente, 0, dans le cas normal
+    proc DateCroissante { i } {
+        variable data_script
+        variable liste_image
+        variable data_image
+
+        Message debug "%s\n" [ info level [ info level ] ]
+
+        if { $i == $data_script(premier_liste) } {
+            # On ne fait rien pour la 1ere image
+            return 0
+        } else {
+            # Recherche de l'image précédente
+            set index [ lsearch $liste_image $i ]
+            incr index -1
+            set j [ lindex $liste_image $index ]
+            if { $data_image($i,date) > $data_image($j,date) } {
+                return 0
+            } else {
+                Message probleme "Date image %d %f <= date image %d %f\n" $i $data_image($i,date) $j $data_image($j,date)
+                return -1
             }
         }
     }
@@ -785,7 +823,6 @@ namespace eval ::CalaPhot {
         variable data_image
         variable data_script
         variable parametres
-        variable liste_image
         variable trace_log
         variable parametres
 
@@ -801,8 +838,9 @@ namespace eval ::CalaPhot {
             set expo [lindex [buf$audace(bufNo) getkwd "EXP_TIME"] 1]
         }
 
-        Message debug "temps exposition : %d\n" $expo
+        Message debug "Image %d: Temps exposition : %f\n" $i $expo
         if { ([string length $expo] == 0) || ($expo == 0) } {
+            Message probleme "%s %i : %s\n" $calaphot(texte,image) $i $calaphot(texte,temps_pose_nul)
             return -1
         }
 
@@ -812,7 +850,7 @@ namespace eval ::CalaPhot {
         set data_image($i,temps_expo) $expo
 
         # Calcul de la date exacte
-        set jd [JourJulienImage]
+        set jd [ JourJulienImage ]
         if {$parametres(date_images) == "debut_pose"} {
             # Cas debut de pose (on rajoute le 1/2 temps de pose converti en jour julien).
             set data_image($i,date) [expr $jd + ($expo / 172800.0)]
@@ -820,20 +858,8 @@ namespace eval ::CalaPhot {
             # Cas milieu de pose
             set data_image($i,date) $jd
         }
-        Message debug "Image %d: date %s\n" $i $data_image($i,date)
+        Message debug "Image %d: Date %s\n" $i $data_image($i,date)
 
-        # Cas où des images sont mal classees
-        if {$i == [lindex $liste_image 0]} {
-            set data_script(date_max) $data_image($i,date)
-        } else {
-            if {($data_image($i,date) <= $data_script(date_max))} {
-                Message debug "Date en recul !\n"
-                set data_script($i,invalidation) [list date $data_image($i,date) "<" $data_script(date_max) ]
-                set data_image($i,valide) "N"
-            } else {
-                set data_script(date_max) $data_image($i,date)
-            }
-        }
         return 0
     }
 
@@ -866,7 +892,7 @@ namespace eval ::CalaPhot {
         set jdLast [JourJulienImage]
         set data_script(jd_dernier) $jdLast
 
-        set delta_jd [expr $jdLast-$jdFirst]
+        set delta_jd [expr $jdLast - $jdFirst]
         set data_script(delta_jd) $delta_jd
 
         return [list $jdFirst $jdLast $delta_jd]
@@ -939,10 +965,10 @@ namespace eval ::CalaPhot {
         catch { file delete $calaphot(sextractor,neurone) }
         catch { file delete $calaphot(sextractor,assoc) }
         catch { file delete $calaphot(sextractor,catalog) }
-        catch { file delete [ file join $audace(rep_images) t1.fit ] }
-        catch { file delete [ file join $audace(rep_images) t2.fit ] }
-        catch { file delete [ file join $audace(rep_images) u1.fit ] }
-        catch { file delete [ file join $audace(rep_images) u2.fit ] }
+        catch { file delete [ file join $::audace(rep_images) t1.fit ] }
+        catch { file delete [ file join $::audace(rep_images) t2.fit ] }
+        catch { file delete [ file join $::audace(rep_images) u1.fit ] }
+        catch { file delete [ file join $::audace(rep_images) u2.fit ] }
     }
 
     ##
@@ -967,6 +993,8 @@ namespace eval ::CalaPhot {
         variable data_image
         variable data_script
         variable calaphot
+
+        Message debug "%s\n" [info level [info level]]
 
         set data_image($image,valide) "N"
         Message notice "%04d " $image
@@ -1051,11 +1079,6 @@ namespace eval ::CalaPhot {
         set data_script(nombre_indes) 0
 
         set data_script(nombre_fichier_ouvert) 0
-
-        if {[file exists $calaphot(repertoire_fichier)] == 0} {
-            file mkdir $calaphot(repertoire_fichier)
-        }
-
     }
 
     ##
@@ -1083,20 +1106,19 @@ namespace eval ::CalaPhot {
         Message debug "%s\n" [info level [info level]]
 
         # Recherche du mot cle DATE-OBS dans l'en-tete FITS
-        set date [buf$audace(bufNo) getkwd DATE-OBS]
-        set date [lindex $date 1]
+        set date [ lindex [ buf$audace(bufNo) getkwd DATE-OBS ] 1 ]
         # Si la date n'est pas au format Y2K (date+heure)...
-        if {[string range $date 10 10] != "T"} {
+        if { ([ string range $date 10 10 ] != "T") \
+            || ([ string range $date 4 4 ] != "-") \
+            || ([ string range $date 7 7 ] != "-") } {
             # Recherche mot cle TIME-OBS
-            set time [buf$audace(bufNo) getkwd TIME-OBS]
-            set time [lindex $time 1]
+            set time [ lindex [ buf$audace(bufNo) getkwd TIME-OBS ] 1 ]
             if {[string length $time] != 0} {
                 # ...convertit en format Y2K!
                 set date [string range $date 0 9]
                 set time [string range $time 0 7]
                 append date "T"
                 append date $time
-        #        unset time
             } else {
                 set time [buf$audace(bufNo) getkwd UT-START]
                 set time [lindex $time 1]
@@ -1106,15 +1128,16 @@ namespace eval ::CalaPhot {
                     set time [string range $time 0 7]
                     append date "T"
                     append date $time
-        #            unset time
                 } else {
-                    Message console "Pas d 'heure"
+                    Message erreur "Pas d'heure"
+                    set date "0000-00-00T00:00:00"
                 }
             }
         } else {
             set date [string range $date 0 22]
         }
 
+        Message debug "Date=%s\n" $date
         # Conversion en jour julien (Julian Day)
         set jd_instant [mc_date2jd $date]
         return $jd_instant
@@ -1129,10 +1152,24 @@ namespace eval ::CalaPhot {
     proc Message {niveau_info args} {
         global audace
         variable parametres
+        variable calaphot
 
         set param [eval [concat {format} $args]]
-        Console $niveau_info $param
-        TraceFichier ${parametres(sortie)}.txt $niveau_info $param
+        if { $niveau_info == "debug" } {
+            set niveau_pile [ info level ]
+            incr niveau_pile -1
+#            ::console::affiche_resultat " NP= $niveau_pile \n"
+            if { $niveau_pile >= 0 } { 
+                set procedure [ lindex [info level $niveau_pile] 0 ]
+            } else {
+                set procedure ""
+            }
+            Console $niveau_info "$procedure :: $param"
+            TraceFichier ${parametres(sortie)}.txt $niveau_info "$procedure :: $param"
+        } else {
+            Console $niveau_info $param
+            TraceFichier ${parametres(sortie)}.txt $niveau_info $param
+        }
     }
 
     ##
@@ -1276,7 +1313,7 @@ namespace eval ::CalaPhot {
         Message debug "%s\n" [info level [info level]]
 
         catch {unset liste_decalage}
-        set fichier [OuvertureFichier [file join $audace(rep_images) $parametres(source).lst] r "non"]
+        set fichier [OuvertureFichier [file join $::audace(rep_images) $parametres(source).lst] r "non"]
         if {$fichier != ""} {
             while {[gets $fichier line] >= 0} {
                 set image [lindex $line 0]
@@ -1401,7 +1438,7 @@ namespace eval ::CalaPhot {
         if {$parametres(type_images) == "non_recalees"} {
             # On ne sauvegarde les decalages que si les images ne sont pas recalees a la base
 
-            set fichier [OuvertureFichier [file join $audace(rep_images) $parametres(source).lst] w]
+            set fichier [OuvertureFichier [file join $::audace(rep_images) $parametres(source).lst] w]
             if {($fichier != "")} {
                 foreach image $liste_image {
                     puts $fichier "$image $data_image($image,decalage_x) $data_image($image,decalage_y)"
@@ -1455,14 +1492,14 @@ namespace eval ::CalaPhot {
     # @param[in] niveau_info : le niveau d'affichage
     # @param[in] args : le message formatte a afficher
     # @return
-    proc TraceFichier {fichier niveau_info args} {
+    proc TraceFichier { fichier niveau_info args } {
         global audace
         variable calaphot
         variable parametres
 
-        if {($calaphot(niveau_notice) <= $calaphot(niveau_$niveau_info))} {
-            set fid [open [file join $calaphot(repertoire_fichier) $fichier] a]
-            puts -nonewline $fid [eval [concat {format} $args]]
+        if { ( $calaphot(niveau_notice) <= $calaphot(niveau_$niveau_info) ) } {
+            set fid [ open [ file join $::audace(rep_log) $fichier ] a ]
+            puts -nonewline $fid [ eval [ concat { format } $args ] ]
             close $fid
         }
     }
@@ -1508,7 +1545,7 @@ namespace eval ::CalaPhot {
             }
 
             # On efface une liste de recalage, pour ne pas prendre de risque
-            catch {file delete [file join $audace(rep_images) $parametres(source).lst]}
+            catch {file delete [file join $::audace(rep_images) $parametres(source).lst]}
         } else {
             # Images triees : la liste va juste reprendre les indices des images
             for {set i $parametres(indice_premier)} {$i <= $parametres(indice_dernier)} {incr i 1} {
@@ -1540,7 +1577,7 @@ namespace eval ::CalaPhot {
         # Verification de ce que les images existent
         Message info $calaphot(texte,verification) $parametres(source) $parametres(indice_premier) $parametres(indice_dernier) "\n"
         for {set image $parametres(indice_premier)} {$image <= $parametres(indice_dernier)} {incr image} {
-            set nom_fichier [file join $audace(rep_images) $parametres(source)$image$conf(extension,defaut)]
+            set nom_fichier [file join $::audace(rep_images) $parametres(source)$image$conf(extension,defaut)]
             if {![file exists $nom_fichier]} {
                 # Recherche si le fichier existe en compresse
                 set nom_fichier_gz $nom_fichier
