@@ -2,7 +2,7 @@
 # Fichier : parallelport.tcl
 # Description : Interface de liaison Port Parallele
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: parallelport.tcl,v 1.22 2009-03-13 23:51:36 michelpujol Exp $
+# Mise a jour $Id: parallelport.tcl,v 1.23 2010-05-01 08:38:21 robertdelmas Exp $
 #
 
 namespace eval parallelport {
@@ -252,7 +252,7 @@ proc ::parallelport::fillConfigPage { frm } {
          label $frm.porttalk.lab2 -anchor nw -highlightthickness 0 -text "$caption(parallelport,porttalk)" -padx 0 -pady 0
          pack $frm.porttalk.lab2 -in $frm.porttalk -side left -padx 40 -pady 5
 
-         if { [ file exist [ file join $audace(rep_install) bin allowio.txt ] ] } {
+         if { [ file exist [ file join $::audace(rep_home) allowio.txt ] ] } {
             set porttalkButton "$caption(parallelport,non)"
          } else {
             set porttalkButton "$caption(parallelport,oui)"
@@ -287,13 +287,13 @@ proc ::parallelport::afficheMsgPorttalk { } {
    global audace caption
 
    set frm $private(frm)
-   if { [ file exist [ file join $audace(rep_install) bin allowio.txt ] ] } {
+   if { [ file exist [ file join $::audace(rep_home) allowio.txt ] ] } {
       $frm.porttalk.but configure -text "$caption(parallelport,oui)"
       #--- Acces au message d'erreur Porttalk au prochain demarrage
-      file delete [ file join $audace(rep_install) bin allowio.txt ]
+      file delete [ file join $::audace(rep_home) allowio.txt ]
    } else {
       $frm.porttalk.but configure -text "$caption(parallelport,non)"
-      set f [ open "[ file join $audace(rep_install) bin allowio.txt ]" w ]
+      set f [ open [ file join $::audace(rep_home) allowio.txt ] w ]
       close $f
    }
 }
