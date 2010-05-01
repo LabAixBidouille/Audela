@@ -2,7 +2,7 @@
 # Fichier : modpoi_main.tcl
 # Description : fenetre principale
 # Auteur : Michel Pujol
-# Mise a jour $Id: modpoi_main.tcl,v 1.1 2010-04-29 18:10:32 michelpujol Exp $
+# Mise à jour $Id: modpoi_main.tcl,v 1.2 2010-05-01 09:11:11 robertdelmas Exp $
 #
 
 namespace eval ::modpoi2::main {
@@ -349,7 +349,7 @@ proc ::modpoi2::main::onLoadModel { visuNo } {
    variable private
 
    #--- j'ouvre la fenetre de selection du modele de pointage
-   set initialdir [ file join $::env(HOME) .audela modpoi ]
+   set initialdir [ file join $::audace(rep_home) modpoi ]
    set fileName [ ::tkutil::box_load [winfo toplevel $private($visuNo,frm)] $initialdir $::audace(bufNo) "10" ]
    #--- je charge les donnees du modele de pointage
    if { $fileName != "" } {
@@ -418,7 +418,7 @@ proc ::modpoi2::main::onSaveAs { visuNo } {
    variable private
 
    #--- j'ouvre la fenetre de selection du modele de pointage
-   set initialdir [ file join $::env(HOME) .audela modpoi ]
+   set initialdir [ file join $::audace(rep_home) modpoi ]
    if { ! [ file exist $initialdir ] } {
       #--- Si le repertoire modpoi n'existe pas, le creer
       file mkdir $initialdir
