@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.102 2010-04-23 17:01:22 robertdelmas Exp $
+# Mise Ã  jour $Id: acqfc.tcl,v 1.103 2010-05-01 08:52:55 robertdelmas Exp $
 #
 
 #==============================================================
@@ -90,7 +90,7 @@ proc ::acqfc::createPluginInstance { { in "" } { visuNo 1 } } {
       set panneau(acqfc,$visuNo,mode) "$parametres(acqfc,$visuNo,mode)"
    } else {
       if { $panneau(acqfc,$visuNo,mode) > 5 } {
-         #--- je positionne mode=1 si un mode > 5 dans config.ini,
+         #--- je positionne mode=1 si un mode > 5 dans le fichier de configuration,
          #--- car les modes 6 et 7 n'exitent plus. Ils sont deplaces dans l'outil d'acquisition video.
          set panneau(acqfc,$visuNo,mode) 1
       }
@@ -215,8 +215,12 @@ proc ::acqfc::initPlugin { tkbase } {
 proc ::acqfc::DemarrageAcqFC { visuNo } {
    global audace caption
 
+   #--- Creation du sous-repertoire a la date du jour
+   #--- en mode automatique s'il n'existe pas
+   ::cwdWindow::updateImageDirectory
+
    #--- Gestion du fichier de log
-   #--- Creation du nom de fichier log
+   #--- Creation du nom du fichier log
    set nom_generique "acqfc-visu$visuNo-"
    #--- Heure a partir de laquelle on passe sur un nouveau fichier de log
    if { $::conf(rep_images,refModeAuto) == "0" } {
@@ -383,7 +387,7 @@ proc ::acqfc::adaptOutilAcqFC { visuNo args } {
       }
       #--- je verifie que le binning preselectionne existe dans la liste
       if { [lsearch $binningList $panneau(acqfc,$visuNo,binning) ] == -1 } {
-         #--- si le binning n'existe pas je selectionne la première valeur par defaut
+         #--- si le binning n'existe pas je selectionne la premiÃ¨re valeur par defaut
          set  panneau(acqfc,$visuNo,binning) [lindex $binningList 0]
       }
       #--- j'affiche la frame du binning
@@ -407,7 +411,7 @@ proc ::acqfc::adaptOutilAcqFC { visuNo args } {
       }
       #--- je verifie que le format preselectionne existe dans la liste
       if { [lsearch $formatList $panneau(acqfc,$visuNo,format) ] == -1 } {
-         #--- si le format n'existe pas je selectionne la première valeur par defaut
+         #--- si le format n'existe pas je selectionne la premiÃ¨re valeur par defaut
          set panneau(acqfc,$visuNo,format) [lindex $formatList 0]
       }
       #--- j'affiche la frame du format
@@ -445,10 +449,9 @@ proc ::acqfc::adaptOutilAcqFC { visuNo args } {
 #***** Procedure chargerVariable *******************************
 proc ::acqfc::chargerVariable { visuNo } {
    variable parametres
-   global audace
 
    #--- Ouverture du fichier de parametres
-   set fichier [ file join $audace(rep_plugin) tool acqfc acqfc.ini ]
+   set fichier [ file join $::audace(rep_home) acqfc.ini ]
    if { [ file exists $fichier ] } {
       source $fichier
    }
@@ -476,7 +479,7 @@ proc ::acqfc::chargerVariable { visuNo } {
 #***** Procedure enregistrerVariable ***************************
 proc ::acqfc::enregistrerVariable { visuNo } {
    variable parametres
-   global audace panneau
+   global panneau
 
    #---
    set panneau(acqfc,$visuNo,mode)              [ expr [ lsearch "$panneau(acqfc,$visuNo,list_mode)" "$panneau(acqfc,$visuNo,mode_en_cours)" ] + 1 ]
@@ -491,7 +494,7 @@ proc ::acqfc::enregistrerVariable { visuNo } {
 
    #--- Sauvegarde des parametres
    catch {
-     set nom_fichier [ file join $audace(rep_plugin) tool acqfc acqfc.ini ]
+     set nom_fichier [ file join $::audace(rep_home) acqfc.ini ]
      if [ catch { open $nom_fichier w } fichier ] {
         #---
      } else {
@@ -610,7 +613,7 @@ proc ::acqfc::setShutter { visuNo state } {
 #   retourne oui ou non
 #------------------------------------------------------------
 proc ::acqfc::testParametreAcquisition { visuNo } {
-   global audace caption panneau
+   global caption panneau
 
    #--- Recopie de l'extension des fichiers image
    set ext $panneau(acqfc,$visuNo,extension)
@@ -1198,7 +1201,7 @@ proc ::acqfc::Go { visuNo } {
          if { $panneau(acqfc,$visuNo,acquisitionState) == "error" } {
             #--- j'interromps la boucle des acquisitions dans la thread de la camera
             ::acqfc::stopAcquisition $visuNo
-            #--- je ferme la fenetre de décompte
+            #--- je ferme la fenetre de dÃ©compte
             if { $panneau(acqfc,$visuNo,dispTimeAfterId) != "" } {
                after cancel $panneau(acqfc,$visuNo,dispTimeAfterId)
                set panneau(acqfc,$visuNo,dispTimeAfterId) ""
@@ -1218,7 +1221,7 @@ proc ::acqfc::Go { visuNo } {
             buf$bufNo setkwd $keyword
          }
 
-         #--- je trace la duree réelle de la pose s'il y a eu une interruption
+         #--- je trace la duree rÃ©elle de la pose s'il y a eu une interruption
          if { $panneau(acqfc,$visuNo,demande_arret) == "1" } {
             set exposure [ lindex [ buf$bufNo getkwd EXPOSURE ] 1 ]
             #--- je verifie qu'il y eu interruption vraiment pendant l'acquisition
@@ -2248,7 +2251,7 @@ proc ::acqfc::recup_position_1 { visuNo } {
 
 #***** Affichage de la fenetre de configuration de WebCam ************
 proc ::acqfc::webcamConfigure { visuNo } {
-   global audace caption
+   global caption
 
    set result [::webcam::config::run $visuNo [::confVisu::getCamItem $visuNo]]
    if { $result == "1" } {
@@ -2682,7 +2685,7 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
 
          #--- Frame Titre EMCCD
          frame $panneau(acqfc,$visuNo,This).param
-            label $panneau(acqfc,$visuNo,This).param.paramEMCCD -text "Paramètres EMCCD" -bg $audace(color,activeTextColor) \
+            label $panneau(acqfc,$visuNo,This).param.paramEMCCD -text "ParamÃ¨tres EMCCD" -bg $audace(color,activeTextColor) \
                -font {-size 20 -weight bold} -foreground red
             pack $panneau(acqfc,$visuNo,This).param.paramEMCCD -side right -fill x -expand true
          pack $panneau(acqfc,$visuNo,This).param -side top -fill x -pady 5

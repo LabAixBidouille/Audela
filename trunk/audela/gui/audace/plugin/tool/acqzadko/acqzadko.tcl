@@ -2,7 +2,7 @@
 # Fichier : acqzadko.tcl
 # Description : Outil d'acquisition
 # Auteurs : Francois Cochard et Myrtille Laas
-# Mise a jour $Id: acqzadko.tcl,v 1.20 2010-04-23 17:02:00 robertdelmas Exp $
+# Mise Ã  jour $Id: acqzadko.tcl,v 1.21 2010-05-01 08:53:39 robertdelmas Exp $
 #
 
 #==============================================================
@@ -90,7 +90,7 @@ proc ::acqzadko::createPluginInstance { { in "" } { visuNo 1 } } {
       set panneau(acqzadko,$visuNo,mode) "$parametres(acqzadko,$visuNo,mode)"
    } else {
       if { $panneau(acqzadko,$visuNo,mode) > 5 } {
-         #--- je positionne mode=1 si un mode > 5 dans config.ini,
+         #--- je positionne mode=1 si un mode > 5 dans le fichier de configuration,
          #--- car les modes 6 et 7 n'exitent plus. Ils sont deplaces dans l'outil d'acquisition video.
          set panneau(acqzadko,$visuNo,mode) 1
       }
@@ -223,8 +223,12 @@ proc ::acqzadko::initPlugin { tkbase } {
 proc ::acqzadko::Demarrageacqzadko { visuNo } {
    global audace caption
 
+   #--- Creation du sous-repertoire a la date du jour
+   #--- en mode automatique s'il n'existe pas
+   ::cwdWindow::updateImageDirectory
+
    #--- Gestion du fichier de log
-   #--- Creation du nom de fichier log
+   #--- Creation du nom du fichier log
    set nom_generique "acqzadko-visu$visuNo-"
    #--- Heure a partir de laquelle on passe sur un nouveau fichier de log
    if { $::conf(rep_images,refModeAuto) == "0" } {
@@ -391,7 +395,7 @@ proc ::acqzadko::adaptOutilAcqzadko { visuNo args } {
       }
       #--- je verifie que le binning preselectionne existe dans la liste
       if { [lsearch $binningList $panneau(acqzadko,$visuNo,binning) ] == -1 } {
-         #--- si le binning n'existe pas je selectionne la première valeur par defaut
+         #--- si le binning n'existe pas je selectionne la premiÃ¨re valeur par defaut
          set  panneau(acqzadko,$visuNo,binning) [lindex $binningList 0]
       }
       #--- j'affiche la frame du binning
@@ -415,7 +419,7 @@ proc ::acqzadko::adaptOutilAcqzadko { visuNo args } {
       }
       #--- je verifie que le format preselectionne existe dans la liste
       if { [lsearch $formatList $panneau(acqzadko,$visuNo,format) ] == -1 } {
-         #--- si le format n'existe pas je selectionne la première valeur par defaut
+         #--- si le format n'existe pas je selectionne la premiÃ¨re valeur par defaut
          set  panneau(acqzadko,$visuNo,format) [lindex $formatList 0]
       }
       #--- j'affiche la frame du format
@@ -453,20 +457,19 @@ proc ::acqzadko::adaptOutilAcqzadko { visuNo args } {
 #***** Procedure chargerVariable *******************************
 proc ::acqzadko::chargerVariable { visuNo } {
    variable parametres
-   global audace
 
    #--- Ouverture du fichier de parametres
-   set fichier [ file join $audace(rep_plugin) tool acqzadko acqzadko.ini ]
+   set fichier [ file join $::audace(rep_home) acqzadko.ini ]
    if { [ file exists $fichier ] } {
       source $fichier
    }
 
    #--- Creation des variables si elles n'existent pas
-   if { ! [ info exists parametres(acqzadko,$visuNo,pose) ] } { set parametres(acqzadko,$visuNo,pose) "5" }   ; #--- Temps de pose : 5s
-   if { ! [ info exists parametres(acqzadko,$visuNo,bin) ] }  { set parametres(acqzadko,$visuNo,bin)  "1x1" } ; #--- Binning : 2x2
-   if { ! [ info exists parametres(acqzadko,$visuNo,format) ] }  { set parametres(acqzadko,$visuNo,format)  "" }
-   if { ! [ info exists parametres(acqzadko,$visuNo,obt) ] }  { set parametres(acqzadko,$visuNo,obt)  "2" }   ; #--- Obturateur : Synchro
-   if { ! [ info exists parametres(acqzadko,$visuNo,mode) ] } { set parametres(acqzadko,$visuNo,mode) "1" }   ; #--- Mode : Une image
+   if { ! [ info exists parametres(acqzadko,$visuNo,pose) ] }           { set parametres(acqzadko,$visuNo,pose)   "5" }   ; #--- Temps de pose : 5s
+   if { ! [ info exists parametres(acqzadko,$visuNo,bin) ] }            { set parametres(acqzadko,$visuNo,bin)    "1x1" } ; #--- Binning : 2x2
+   if { ! [ info exists parametres(acqzadko,$visuNo,format) ] }         { set parametres(acqzadko,$visuNo,format) "" }
+   if { ! [ info exists parametres(acqzadko,$visuNo,obt) ] }            { set parametres(acqzadko,$visuNo,obt)    "2" }   ; #--- Obturateur : Synchro
+   if { ! [ info exists parametres(acqzadko,$visuNo,mode) ] }           { set parametres(acqzadko,$visuNo,mode)   "1" }   ; #--- Mode : Une image
    if { ! [ info exists parametres(acqzadko,$visuNo,avancement_acq) ] } {
       if { $visuNo == "1" } {
          set parametres(acqzadko,$visuNo,avancement_acq) "1" ; #--- Barre de progression de la pose : Oui
@@ -484,7 +487,7 @@ proc ::acqzadko::chargerVariable { visuNo } {
 #***** Procedure enregistrerVariable ***************************
 proc ::acqzadko::enregistrerVariable { visuNo } {
    variable parametres
-   global audace panneau
+   global panneau
 
    #---
    set panneau(acqzadko,$visuNo,mode)              [ expr [ lsearch "$panneau(acqzadko,$visuNo,list_mode)" "$panneau(acqzadko,$visuNo,mode_en_cours)" ] + 1 ]
@@ -499,7 +502,7 @@ proc ::acqzadko::enregistrerVariable { visuNo } {
 
    #--- Sauvegarde des parametres
    catch {
-     set nom_fichier [ file join $audace(rep_plugin) tool acqzadko acqzadko.ini ]
+     set nom_fichier [ file join $::audace(rep_home) acqzadko.ini ]
      if [ catch { open $nom_fichier w } fichier ] {
         #---
      } else {
@@ -1210,7 +1213,7 @@ proc ::acqzadko::Go { visuNo } {
          if { $panneau(acqzadko,$visuNo,acquisitionState) == "error" } {
             #--- j'interromps la boucle des acquisitions dans la thread de la camera
             ::acqzadko::stopAcquisition $visuNo
-            #--- je ferme la fenetre de décompte
+            #--- je ferme la fenetre de dÃ©compte
             if { $panneau(acqzadko,$visuNo,dispTimeAfterId) != "" } {
                after cancel $panneau(acqzadko,$visuNo,dispTimeAfterId)
                set panneau(acqzadko,$visuNo,dispTimeAfterId) ""
@@ -1230,7 +1233,7 @@ proc ::acqzadko::Go { visuNo } {
          foreach keyword [ ::keyword::getKeywords $visuNo $::conf(acqzadko,keywordConfigName) ] {
             buf$bufNo setkwd $keyword
          }
-         #--- je trace la duree réelle de la pose s'il y a eu une interruption
+         #--- je trace la duree rÃ©elle de la pose s'il y a eu une interruption
          if { $panneau(acqzadko,$visuNo,demande_arret) == "1" } {
             set exposure [ lindex [ buf$bufNo getkwd EXPOSURE ] 1 ]
             #--- je verifie qu'il y eu interruption vraiment pendant l'acquisition
