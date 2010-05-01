@@ -1,5 +1,5 @@
 #
-# Update $Id: audela.tcl,v 1.16 2009-11-15 13:47:51 michelpujol Exp $
+# Update $Id: audela.tcl,v 1.17 2010-05-01 08:10:08 robertdelmas Exp $
 #
 #--- Welcome to the AudeLA-Interfaces Easy Launcher
 #
@@ -34,9 +34,26 @@ if {($nameofexecutable!="audela")&&([file exists ../ros]==1)} {
 
 source version.tcl
 
-if {[file exists audace.txt]==1} {
+#--- Creation du repertoire de configuration d'Aud'ACE
+set ::audace(rep_home) [ file join $::env(HOME) .audela ]
+if { ! [ file exist $::audace(rep_home) ] } {
+   file mkdir $::audace(rep_home)
+}
+#--- Creation du repertoire des traces
+set ::audace(rep_log) [ file join $::audace(rep_home) log ]
+if { ! [ file exist $::audace(rep_log) ] } {
+   file mkdir $::audace(rep_log)
+}
+#--- Creation du repertoire des fichiers temporaires
+if { $::tcl_platform(platform) == "linux" } {
+   set ::audace(rep_temp) [ file join /temp .audace ]
+} else {
+   set ::audace(rep_temp) [ file join $::env(TMP) .audace ]
+}
+
+if { [ file exists [ file join $::audace(rep_home) audace.txt ] ] == 1 } {
    set langage english
-   catch {source langage.tcl}
+   catch { source [ file join $::audace(rep_home) langage.tcl ] }
    cd ../gui/audace
    source aud.tcl
    return
@@ -49,7 +66,7 @@ proc selectLangage { langue } {
    $base.fra1.$::langage configure -borderwidth 0
    set ::langage $langue
    $base.fra1.$langue configure -borderwidth 3
-   set f [open "[ file join $::audela_start_dir langage.tcl ]" w]
+   set f [open [ file join $::audace(rep_home) langage.tcl ] w]
    puts $f "set langage \"$langue\""
    close $f
    basecaption "$langage"
@@ -62,7 +79,7 @@ proc selectLangage { langue } {
 proc apply { } {
    global base caption
 
-   set f [open audace.txt w]
+   set f [ open [ file join $::audace(rep_home) audace.txt ] w ]
    close $f
    unset caption
    cd ../gui/audace
@@ -78,7 +95,7 @@ proc basecaption { {langage ""} } {
    #--- Selection of langage
    if {[string compare $langage ""] ==0 } {
       #--- First time initialisations
-      catch {source langage.tcl}
+      catch { source [ file join $::audace(rep_home) langage.tcl ] }
       if {[info exists langage] == "0"} {
          set langage [lindex $caption(lg) 0]
       }
@@ -86,7 +103,7 @@ proc basecaption { {langage ""} } {
          set langage [lindex $caption(lg) 0]
       }
       catch {
-         set f [open "langage.tcl" w]
+         set f [ open [ file join $::audace(rep_home) langage.tcl ] w ]
          puts $f "set langage \"$langage\""
          close $f
       }
