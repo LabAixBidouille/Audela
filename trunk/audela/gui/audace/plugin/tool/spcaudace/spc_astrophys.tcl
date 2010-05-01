@@ -1,7 +1,7 @@
 
 # Procédures d'exploitation astrophysique des spectres
 
-# Mise a jour $Id: spc_astrophys.tcl,v 1.11 2010-04-14 17:20:58 bmauclaire Exp $
+# Mise a jour $Id: spc_astrophys.tcl,v 1.12 2010-05-01 10:18:49 bmauclaire Exp $
 
 
 
@@ -2074,9 +2074,9 @@ proc spc_ajustplanck { args } {
    set tmax 50000
    set tpas 200
    set abscissemin 800
-   set beta 1.
    # le parametre beta definit la ponderation entre les 2 termes apparaissant
    # dans la definition de la norme H1
+   set beta 1.
 
    set nbargs [ llength $args ] 
    if { $nbargs==1 } {
@@ -2263,7 +2263,7 @@ proc spc_quad { args } {
    set len [ llength $lintens ]
    set coeff2 [ expr $coeff * $coeff ]
    if { $coeff2 == 0.0 } {
-      ::console::affiche_erreur " spc_ajustplanck : coeff2= $coeff2 , le calcul ne peut etre effectue ; augmenter tmin \n ; "
+      ::console::affiche_erreur "\n spc_ajustplanck : coeff2= $coeff2 , le calcul ne peut etre effectue ; augmenter tmin \n ; "
       return 0
    }
    # calcul de la difference entre planck et le profil renormalise
