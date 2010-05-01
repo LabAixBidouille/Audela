@@ -5,7 +5,7 @@
 #               pose, choix des outils, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: confgene.tcl,v 1.72 2010-04-30 05:42:29 robertdelmas Exp $
+# Mise à jour $Id: confgene.tcl,v 1.73 2010-05-01 08:24:41 robertdelmas Exp $
 #
 
 #
@@ -85,7 +85,7 @@ namespace eval ::confPosObs {
 
    #
    # confPosObs::initConf
-   # Initialisation de variables dans aud.tcl (::audace::Recup_Config) pour le lancement d'Aud'ACE
+   # Initialisation de variables dans aud.tcl (::audace::loadSetup) pour le lancement d'Aud'ACE
    #
    proc initConf { } {
       global conf
@@ -1354,7 +1354,7 @@ namespace eval ::confFichierIma {
    proc initConf { } {
       global conf
 
-      #--- Initialisation indispensable de 3 variables dans aud.tcl (::audace::Recup_Config)
+      #--- Initialisation indispensable de 3 variables dans aud.tcl (::audace::loadSetup)
       if { ! [ info exists conf(save_seuils_visu) ] }          { set conf(save_seuils_visu)          "1" }
       if { ! [ info exists conf(format_fichier_image) ] }      { set conf(format_fichier_image)      "0" }
       if { ! [ info exists conf(extension,defaut) ] }          { set conf(extension,defaut)          ".fit" }
@@ -2505,7 +2505,7 @@ namespace eval ::confTypeFenetre {
       variable This
       global caption conf confgene
 
-      #--- Initialisation indispensable de la variable du type de fenetre dans aud.tcl (::audace::Recup_Config)
+      #--- Initialisation indispensable de la variable du type de fenetre dans aud.tcl (::audace::loadSetup)
       #--- initConf
 
       #--- confToWidget
@@ -2805,7 +2805,7 @@ namespace eval ::confLangue {
       $This.$::langage configure -borderwidth 0
       set ::langage $langue
       $This.$langue configure -borderwidth 3
-      set f [open "[ file join $::audela_start_dir langage.tcl ]" w]
+      set f [open [ file join $::audace(rep_home) langage.tcl ] w]
       puts $f "set langage \"$langue\""
       close $f
 
