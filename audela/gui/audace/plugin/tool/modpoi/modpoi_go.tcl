@@ -2,7 +2,7 @@
 # Fichier : modpoi_go.tcl
 # Description : Outil pour la determination du modele de pointage
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi_go.tcl,v 1.16 2010-04-30 06:36:06 robertdelmas Exp $
+# Mise à jour $Id: modpoi_go.tcl,v 1.17 2010-05-01 09:10:04 robertdelmas Exp $
 #
 
 #============================================================
@@ -109,11 +109,6 @@ proc ::modpoi::createPanel { this } {
 
    #--- Initialisation du nom de la fenetre
    set This $this
-   #--- Si le repertoire .audela n'existe pas, le creer
-   set panneau(homeDirectory) [ file join $::env(HOME) .audela ]
-   if { ! [ file exist $panneau(homeDirectory) ] } {
-      file mkdir $panneau(homeDirectory)
-   }
    #--- Initialisation des captions
    set panneau(modpoi,titre)   "$caption(modpoi_go,modpoi)"
    set panneau(modpoi,aide)    "$caption(modpoi_go,help_titre)"
