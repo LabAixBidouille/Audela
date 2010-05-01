@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.60 2010-04-25 18:22:29 robertdelmas Exp $
+# Mise Ã  jour $Id: scan.tcl,v 1.61 2010-05-01 09:20:08 robertdelmas Exp $
 #
 
 #============================================================
@@ -231,10 +231,9 @@ proc ::scan::createPanel { this } {
 #------------------------------------------------------------
 proc ::scan::chargerVar { } {
    variable parametres
-   global panneau
 
    #--- Ouverture du fichier de parametres
-   set fichier [ file join $panneau(homeDirectory) scan.ini ]
+   set fichier [ file join $::audace(rep_home) scan.ini ]
    if { [ file exists $fichier ] } {
       source $fichier
    }
@@ -291,7 +290,7 @@ proc ::scan::enregistrerVar { } {
 
    #--- Sauvegarde des parametres
    catch {
-      set nom_fichier [ file join $panneau(homeDirectory) scan.ini ]
+      set nom_fichier [ file join $::audace(rep_home) scan.ini ]
       if [ catch { open $nom_fichier w } fichier ] {
          #---
       } else {
@@ -453,12 +452,6 @@ proc ::scan::startTool { visuNo } {
    #--- On cree la variable de configuration des mots cles
    if { ! [ info exists ::conf(scan,keywordConfigName) ] } { set ::conf(scan,keywordConfigName) "default" }
 
-   #--- Si le repertoire .audela n'existe pas, le creer
-   set panneau(homeDirectory) [ file join $::env(HOME) .audela ]
-   if { ! [ file exist $panneau(homeDirectory) ] } {
-      file mkdir $panneau(homeDirectory)
-   }
-
    #--- Chargement de la configuration
    chargerVar
 
@@ -604,7 +597,7 @@ proc ::scan::cmdGo { { motor motoron } } {
          set panneau(scan,acquisition) "1"
          set panneau(Scan,Stop)        "0"
 
-         #--- Les champs "Colonnes" et "Lignes" ne doivent pas être vides
+         #--- Les champs "Colonnes" et "Lignes" ne doivent pas etre vides
          if { $panneau(scan,col1) == "" } {
             set panneau(scan,col1) $parametres(scan,col1)
          }

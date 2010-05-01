@@ -1,8 +1,8 @@
 #
 # Fichier : specLhIII.tcl
 # Description : Reduction complete des spectres Lhires III
-# Auteur : François COCHARD
-# Mise a jour $Id: specLhIII.tcl,v 1.5 2010-04-30 15:55:24 robertdelmas Exp $
+# Auteur : FranÃ§ois COCHARD
+# Mise Ã  jour $Id: specLhIII.tcl,v 1.6 2010-05-01 09:24:26 robertdelmas Exp $
 #
 
 #==============================================================
@@ -25,27 +25,25 @@ namespace eval ::spbmfc {
       source [ file join $repspc plugins specLhIII specLhIII.cap ]
    }
 
-   # Numéro de la version du logiciel
+   # NumÃ©ro de la version du logiciel
    set numero_version "0.10"
 
-#***** Procédure Demarragespbmfc ********************************
+#***** ProcÃ©dure Demarragespbmfc ********************************
    proc Demarragespbmfc { } {
       variable fichier_log
       variable log_id
       variable numero_version
       global panneau
 
-      #--- Si le repertoire .audela n'existe pas, le creer
-      set panneau(homeDirectory) [ file join $::env(HOME) .audela ]
-      if { ! [ file exist $panneau(homeDirectory) ] } {
-         file mkdir $panneau(homeDirectory)
-      }
-
       # Lecture du fichier de configuration
       RecuperationParametres
 
-# 19/08/06 Création du fichier de log... cette partie doit être basculée dans l'éxécution du panneau. Maintenant, c'est à chaque réduction qu'un fichier de log doit
-# être créé !
+# 19/08/06 CrÃ©ation du fichier de log... cette partie doit Ãªtre basculÃ©e dans l'Ã©xÃ©cution du panneau. Maintenant, c'est Ã  chaque rÃ©duction qu'un fichier de log doit
+# Ãªtre crÃ©Ã© !
+
+#  #--- Creation du sous-repertoire a la date du jour
+#  #--- en mode automatique s'il n'existe pas
+#  ::cwdWindow::updateImageDirectory
 
 #  # Gestion du fichier de log
 #  # Creation du nom de fichier log
@@ -72,44 +70,44 @@ namespace eval ::spbmfc {
 #     Message console $caption(specLhIII,pbouvfichcons)
 #          tk_messageBox -title $caption(specLhIII,pb) -type ok \
 #     -message $caption(specLhIII,pbouvfich)
-# # Note importante: Je détecte si j'ai un pb à l'ouverture du fichier, mais je ne sais
+# # Note importante: Je dÃ©tecte si j'ai un pb Ã  l'ouverture du fichier, mais je ne sais
 # # pas traiter ce cas: Il faudrait interdire l'ouverture du panneau, mais le processus
-# # est déjà lancé à ce stade... Tout ce que je fais, c'est inviter l'utilisateur à
+# # est dÃ©jÃ  lancÃ© Ã  ce stade... Tout ce que je fais, c'est inviter l'utilisateur Ã 
 # # changer d'outil !
 #          } else {
-#          # Entête du fichier
+#          # EntÃªte du fichier
 #     Message log $caption(specLhIII,ouvsess) $numero_version
 #        set date [clock format [clock seconds] -format "%A %d %B %Y"]
 #          set heure $audace(tu,format,hmsint)
 #     Message log $caption(specLhIII,affheure) $date $heure
 #          }
    }
-#***** Fin de la procédure Demarragespbmfc **********************
+#***** Fin de la procÃ©dure Demarragespbmfc **********************
 
-#***** Procédure Arretspbmfc ************************************
+#***** ProcÃ©dure Arretspbmfc ************************************
    proc Arretspbmfc { } {
       variable log_id
       global audace caption data_spbmfc panneau
 
       # Fermeture du fichier de log
       set heure $audace(tu,format,hmsint)
-# Je m'assure que le fichier se termine correctement, en particulier pour le cas où il y
-# a eu un problème à l'ouverture (C'est un peu une rustine...)
+# Je m'assure que le fichier se termine correctement, en particulier pour le cas oÃ¹ il y
+# a eu un problÃ¨me Ã  l'ouverture (C'est un peu une rustine...)
       if {[catch {Message log $caption(specLhIII,finsess) $heure} bug]} {
          Message console $caption(specLhIII,pbfermfichcons)
       } else {
          catch { close $log_id }
       }
 
-      # Récupération de la position de la fenêtre de réglages
+      # RÃ©cupÃ©ration de la position de la fenÃªtre de rÃ©glages
       ::spbmfc::recup_position
       set data_spbmfc(fenetreSpData,position) $panneau(fenetreSpData,position)
-      # Sauvegarde des paramètres dans le fichier de config
+      # Sauvegarde des paramÃ¨tres dans le fichier de config
       SauvegardeParametres
-      # Fermeture de la fenêtre de prétraitement
+      # Fermeture de la fenÃªtre de prÃ©traitement
       destroy $audace(base).fenetreSpData
    }
-#***** Fin de la procédure Arretspbmfc **************************
+#***** Fin de la procÃ©dure Arretspbmfc **************************
 
 #***** Procedure recup_position ********************************
    proc recup_position { } {
@@ -122,7 +120,7 @@ namespace eval ::spbmfc {
    }
 #***** Fin de la procedure recup_position ************************
 
-#***** Procédure fenetreSpData ************************************
+#***** ProcÃ©dure fenetreSpData ************************************
    proc fenetreSpData { } {
       global audace caption data_spbmfc panneau
 
@@ -157,22 +155,22 @@ namespace eval ::spbmfc {
 
 #***** Procedure RecuperationParametres ******************************
    proc RecuperationParametres { } {
-      global data_spbmfc panneau
+      global data_spbmfc
 
       # Initialisation
       if {[info exists data_spbmfc]} {unset data_spbmfc}
-      # Ouverture du fichier de paramètres
-      set fichier [file join $panneau(homeDirectory) spdata.ini]
+      # Ouverture du fichier de paramÃ¨tres
+      set fichier [file join $::audace(rep_home) spdata.ini]
       if {[file exists $fichier]} {source $fichier}
    }
 #***** Fin de la procedure RecuperationParametres ******************************
 
 #***** Procedure SauvegardeParametres ******************************
    proc SauvegardeParametres { } {
-      global data_spbmfc panneau
+      global data_spbmfc
 
       catch {
-         set nom_fichier [file join $panneau(homeDirectory) spdata.ini]
+         set nom_fichier [file join $::audace(rep_home) spdata.ini]
          if [catch {open $nom_fichier w} fichier] {
             message console "%s\n" $caption(specLhIII,PbSauveConfig)
          } else {
@@ -185,15 +183,15 @@ namespace eval ::spbmfc {
    }
 #***** Fin de la procedure SauvegardeParametres ******************************
 
-# 19/08/06 Toute la partie traitement cosmétique doit être reprise, pour travailler à partir d'un fichier .lst
-# #***** Procédure rechargeCosm ************************************
+# 19/08/06 Toute la partie traitement cosmÃ©tique doit Ãªtre reprise, pour travailler Ã  partir d'un fichier .lst
+# #***** ProcÃ©dure rechargeCosm ************************************
 #    proc rechargeCosm { } {
-#       # Cette procédure a pour fonction de recharger le script de correction
-#       #    cosmétique (pour permettre à l'utilisateur de faire du debug sans
+#       # Cette procÃ©dure a pour fonction de recharger le script de correction
+#       #    cosmÃ©tique (pour permettre Ã  l'utilisateur de faire du debug sans
 #       #    sortir de Audela !
 #       global data_spbmfc audace caption
 
-#       # Vérifie validité du nom du fichier de script
+#       # VÃ©rifie validitÃ© du nom du fichier de script
 #       if {[TestNomFichier $data_spbmfc(FichScript)] == 0} {
 #          tk_messageBox -title $caption(specLhIII,pb) -type ok \
 #             -message $caption(specLhIII,pbNomFichScr)
@@ -213,11 +211,11 @@ namespace eval ::spbmfc {
 #       }
 # #***** Fin de la procedure rechargeCosm ****************************
 
-# #***** Procédure goCosm************************************
+# #***** ProcÃ©dure goCosm************************************
 #    proc goCosm { } {
 #       global caption integre
 
-#       # Dans un premier temps, je teste l'intégrité de l'opération
+#       # Dans un premier temps, je teste l'intÃ©gritÃ© de l'opÃ©ration
 #  testCosm
 #       # Si tout est Ok, je lance le traitement
 #       if {$integre(cosm) == "oui"} {
@@ -226,7 +224,7 @@ namespace eval ::spbmfc {
 #       }
 # #***** Fin de la procedure goCosm******************************
 
-# #***** Procédure testCosm************************************
+# #***** ProcÃ©dure testCosm************************************
 #    proc testCosm { } {
 #       global audace caption data_spbmfc integre
 
@@ -234,14 +232,14 @@ namespace eval ::spbmfc {
 #       set integre(cosm) oui
 
 #       if {[TestNomFichier $data_spbmfc(procCorr)] == 0} {
-#          # Teste si le nom de la procédure est Ok (un seul champ, pas de caractère interdit...)
+#          # Teste si le nom de la procÃ©dure est Ok (un seul champ, pas de caractÃ¨re interdit...)
 #          set integre(cosm) non
 #          tk_messageBox -title $caption(specLhIII,pb) -type ok \
 #             -message $caption(specLhIII,pbProcCorr)
 #          } elseif {[info procs $data_spbmfc(procCorr)] == ""} {
-#          # Teste si la procédure de correction cosmétique existe
+#          # Teste si la procÃ©dure de correction cosmÃ©tique existe
 #          # Alors je dois regarder si j'ai de quoi charger le fichier contenant le script
-#          # Teste si le nom de fichier est Ok (un seul champ, pas de caractère interdit...)
+#          # Teste si le nom de fichier est Ok (un seul champ, pas de caractÃ¨re interdit...)
 #          if {[TestNomFichier $data_spbmfc(FichScript)] == 0} {
 #             set integre(cosm) non
 #             tk_messageBox -title $caption(specLhIII,pb) -type ok \
@@ -257,7 +255,7 @@ namespace eval ::spbmfc {
 #                } else {
 #                # Alors dans ce cas, je charge le fichier
 #                source $nomFich
-#                # et je me repose la question de l'existence de la procédure:
+#                # et je me repose la question de l'existence de la procÃ©dure:
 #                if {[info procs $data_spbmfc(procCorr)] == ""} {
 #                   tk_messageBox -title $caption(specLhIII,pb) -type ok \
 #                      -message $caption(specLhIII,procCorrIntrouv)
@@ -270,69 +268,69 @@ namespace eval ::spbmfc {
 #       }
 # #***** Fin de la procedure testCosm******************************
 
-# #***** Procédure traiteCosm************************************
+# #***** ProcÃ©dure traiteCosm************************************
 #    proc traiteCosm { } {
 #       global caption data_spbmfc integre
 
 #       desactiveBoutons
-#       # Applique la procédure de correction cosmétique à l'image en cours
+#       # Applique la procÃ©dure de correction cosmÃ©tique Ã  l'image en cours
 #       eval $data_spbmfc(procCorr)
 #       activeBoutons
 #       }
 # #***** Fin de la procedure traiteCosm******************************
 
-#***** Procédure goLienBeSS ************************************
+#***** ProcÃ©dure goLienBeSS ************************************
    proc goLienBeSS { } {
    }
 #***** Fin de la procedure goLienBeSS ******************************
 
-#***** Procédure goLienNiveaux ************************************
+#***** ProcÃ©dure goLienNiveaux ************************************
    proc goLienNiveaux { } {
    }
 #***** Fin de la procedure goLienNiveaux ******************************
 
-#***** Procédure effacerChampsCalcules ************************************
+#***** ProcÃ©dure effacerChampsCalcules ************************************
    proc effacerChampsCalcules { } {
    }
 #***** Fin de la procedure effacerChampsCalcules ******************************
 
-#***** Procédure cdeEffacerTout ************************************
+#***** ProcÃ©dure cdeEffacerTout ************************************
    proc cdeEffacerTout { } {
    }
 #***** Fin de la procedure cdeEffacerTout ******************************
 
-#***** Procédure cdeAnnuler ************************************
+#***** ProcÃ©dure cdeAnnuler ************************************
    proc cdeAnnuler { } {
    }
 #***** Fin de la procedure cdeAnnuler ******************************
 
-#***** Procédure cdeGo ************************************
+#***** ProcÃ©dure cdeGo ************************************
    proc cdeGo { } {
    }
 #***** Fin de la procedure cdeGo ******************************
 
-#***** Procédure cdeEnregistrer ************************************
+#***** ProcÃ©dure cdeEnregistrer ************************************
    proc cdeEnregistrer { } {
    }
 #***** Fin de la procedure cdeEnregistrer ******************************
 
-#***** Procédure cdeFermer  ************************************
+#***** ProcÃ©dure cdeFermer  ************************************
    proc cdeFermer { } {
       ::spbmfc::Arretspbmfc
    }
 #***** Fin de la procedure cdeFermer  ******************************
 
-#***** Procédure cdeAide ************************************
+#***** ProcÃ©dure cdeAide ************************************
    proc cdeAide { } {
       ::audace::showHelpPlugin tool [ file join spcaudace plugins specLhIII ] specLhIII.htm
    }
 #***** Fin de la procedure cdeAide ******************************
 
-#***** Procédure goPrecharge ************************************
+#***** ProcÃ©dure goPrecharge ************************************
    proc goPrecharge { } {
       global caption integre
 
-      # Dans un premier temps, je teste l'intégrité de l'opération
+      # Dans un premier temps, je teste l'intÃ©gritÃ© de l'opÃ©ration
       testPrecharge
       # Si tout est Ok, je lance le traitement
       if {$integre(precharge) == "oui"} {
@@ -341,7 +339,7 @@ namespace eval ::spbmfc {
    }
 #***** Fin de la procedure goPrecharge ******************************
 
-#***** Procédure testPrecharge ************************************
+#***** ProcÃ©dure testPrecharge ************************************
    proc testPrecharge { } {
       global audace caption data_spbmfc integre
 
@@ -351,9 +349,9 @@ namespace eval ::spbmfc {
       # Enregistrement de l'extension des fichiers
       set ext $::conf(extension,defaut)
 
-      # Je commence par regarder si la correction cosmétique est demandée...
+      # Je commence par regarder si la correction cosmÃ©tique est demandÃ©e...
       if {$data_spbmfc(cosmPrech) == 1} {
-         # Alors je teste si la définition de la correction cosmétique est Ok
+         # Alors je teste si la dÃ©finition de la correction cosmÃ©tique est Ok
          testCosm
          if {$integre(cosm) != "oui"} {
             set integre(precharge) non
@@ -363,13 +361,13 @@ namespace eval ::spbmfc {
 
       desactiveBoutons
 
-      # Teste si le nom de fichier source est Ok (un seul champ, pas de caractère interdit...)
+      # Teste si le nom de fichier source est Ok (un seul champ, pas de caractÃ¨re interdit...)
       if {[TestNomFichier $data_spbmfc(nmObj)] == 0} {
          set integre(precharge) non
          tk_messageBox -title $caption(specLhIII,pb) -type ok \
             -message $caption(specLhIII,pbNomPrechSrce)
       } elseif {[TestNomFichier $data_spbmfc(nmPrechRes)] == 0} {
-         # Teste si le nom de fichier résultant est Ok (un seul champ, pas de caractère interdit...)
+         # Teste si le nom de fichier rÃ©sultant est Ok (un seul champ, pas de caractÃ¨re interdit...)
          set integre(noir) non
          tk_messageBox -title $caption(specLhIII,pb) -type ok \
             -message $caption(specLhIII,pbNomPrechRes)
@@ -391,7 +389,7 @@ namespace eval ::spbmfc {
             tk_messageBox -title $caption(specLhIII,pb) -type ok \
                -message $caption(specLhIII,fichPrechAbs)
          } else {
-            # Teste si le fichier résultant existe déja
+            # Teste si le fichier rÃ©sultant existe dÃ©ja
             set nomFich $audace(rep_images)
             append nomFich "/" $data_spbmfc(nmPrechRes) $ext
             if {[file exists $nomFich] == 1} {
@@ -403,7 +401,7 @@ namespace eval ::spbmfc {
                   return
                }
             }
-            # Dans le cas où le filtrage est demandé, je vérifie que le nb est valide
+            # Dans le cas oÃ¹ le filtrage est demandÃ©, je vÃ©rifie que le nb est valide
             if {$data_spbmfc(medFiltree) == 1} {
                if {[TestEntier $data_spbmfc(filtrage)] == 0} {
                   tk_messageBox -title $caption(specLhIII,pb) -type ok \
@@ -417,7 +415,7 @@ namespace eval ::spbmfc {
    }
 #***** Fin de la procedure testPrecharge ******************************
 
-#***** Procédure traitePrecharge ************************************
+#***** ProcÃ©dure traitePrecharge ************************************
    proc traitePrecharge { } {
       global audace caption data_spbmfc integre
 
@@ -425,14 +423,14 @@ namespace eval ::spbmfc {
       focus $audace(Console)
 
       desactiveBoutons
-      # Affichage du message de démarrage du prétraitement des noirs
+      # Affichage du message de dÃ©marrage du prÃ©traitement des noirs
       Message consolog $caption(specLhIII,debPrech)
 
       # Enregistrement de l'extension des fichiers
       set ext $::conf(extension,defaut)
 
       if {$data_spbmfc(cosmPrech) == 1} {
-         # Dans le cas où la correction cosmétique est demandée
+         # Dans le cas oÃ¹ la correction cosmÃ©tique est demandÃ©e
          Message consolog $caption(specLhIII,lanceCosmPrech)
          for {set i 1} {$i <= $data_spbmfc(nbPrech)} {incr i} {
             set instr "loadima $data_spbmfc(nmObj)$i"
@@ -449,7 +447,7 @@ namespace eval ::spbmfc {
             eval $instr
          }
       }
-      # Affichage de la première image de noir
+      # Affichage de la premiÃ¨re image de noir
       set nomFich $data_spbmfc(nmObj)
       append nomFich "1"
       Message consolog $caption(specLhIII,chargPremPrech)
@@ -459,14 +457,14 @@ namespace eval ::spbmfc {
       Message consolog "\n"
       eval $instr
 
-      # Calcul de la médiane des images
+      # Calcul de la mÃ©diane des images
       set instr "smedian $data_spbmfc(nmObj) $data_spbmfc(nmPrechRes) $data_spbmfc(nbPrech)"
       Message consolog $caption(specLhIII,CalcMedPrech)
       Message consolog $instr
       Message consolog "\n"
       eval $instr
 
-      # Opération éventuelle de filtrage
+      # OpÃ©ration Ã©ventuelle de filtrage
       if {$data_spbmfc(medFiltree) == 1} {
          Message consolog $caption(specLhIII,filtrage)
          set taille $data_spbmfc(filtrage)
@@ -478,7 +476,7 @@ namespace eval ::spbmfc {
          eval $instr
       }
 
-      # Affichage de l'image de précharge résultante
+      # Affichage de l'image de prÃ©charge rÃ©sultante
       set nomFich $data_spbmfc(nmPrechRes)
       Message consolog $caption(specLhIII,chargPrechRes)
       set instr "loadima $nomFich"
@@ -486,7 +484,7 @@ namespace eval ::spbmfc {
       Message consolog "\n"
       eval $instr
 
-      # Affichage du message de fin du prétraitement de la précharge
+      # Affichage du message de fin du prÃ©traitement de la prÃ©charge
       Message consolog $caption(specLhIII,finPrech)
 
       activeBoutons
@@ -494,11 +492,11 @@ namespace eval ::spbmfc {
    }
 #***** Fin de la procedure traitePrecharge ******************************
 
-#***** Procédure goNoir ************************************
+#***** ProcÃ©dure goNoir ************************************
    proc goNoir { } {
       global caption integre
 
-      # Dans un premier temps, je teste l'intégrité de l'opération
+      # Dans un premier temps, je teste l'intÃ©gritÃ© de l'opÃ©ration
       testNoir
       # Si tout est Ok, je lance le traitement
       if {$integre(noir) == "oui"} {
@@ -507,7 +505,7 @@ namespace eval ::spbmfc {
    }
 #***** Fin de la procedure goNoir ******************************
 
-#***** Procédure testNoir ************************************
+#***** ProcÃ©dure testNoir ************************************
    proc testNoir { } {
       global audace caption data_spbmfc integre
 
@@ -517,9 +515,9 @@ namespace eval ::spbmfc {
       # Enregistrement de l'extension des fichiers
       set ext $::conf(extension,defaut)
 
-      # Je commence par regarder si la correction cosmétique est demandée...
+      # Je commence par regarder si la correction cosmÃ©tique est demandÃ©e...
       if {$data_spbmfc(cosmNoir) == 1} {
-         # Alors je teste si la définition de la correction cosmétique est Ok
+         # Alors je teste si la dÃ©finition de la correction cosmÃ©tique est Ok
          testCosm
          if {$integre(cosm) != "oui"} {
             set integre(noir) non
@@ -529,13 +527,13 @@ namespace eval ::spbmfc {
 
       desactiveBoutons
 
-      # Teste si le nom de fichier source est Ok (un seul champ, pas de caractère interdit...)
+      # Teste si le nom de fichier source est Ok (un seul champ, pas de caractÃ¨re interdit...)
       if {[TestNomFichier $data_spbmfc(nmNrSce)] == 0} {
          set integre(noir) non
          tk_messageBox -title $caption(specLhIII,pb) -type ok \
             -message $caption(specLhIII,pbNomNoirSrce)
       } elseif {[TestNomFichier $data_spbmfc(nmNoirRes)] == 0} {
-         # Teste si le nom de fichier résultant est Ok (un seul champ, pas de caractère interdit...)
+         # Teste si le nom de fichier rÃ©sultant est Ok (un seul champ, pas de caractÃ¨re interdit...)
          set integre(noir) non
          tk_messageBox -title $caption(specLhIII,pb) -type ok \
             -message $caption(specLhIII,pbNomNoirRes)
@@ -557,7 +555,7 @@ namespace eval ::spbmfc {
             tk_messageBox -title $caption(specLhIII,pb) -type ok \
                -message $caption(specLhIII,fichNoirAbs)
          } else {
-            # Teste si le fichier résultant existe déja
+            # Teste si le fichier rÃ©sultant existe dÃ©ja
             set nomFich $audace(rep_images)
             append nomFich "/" $data_spbmfc(nmNoirRes) $ext
             if {[file exists $nomFich] == 1} {
@@ -573,7 +571,7 @@ namespace eval ::spbmfc {
    }
 #***** Fin de la procedure testNoir ******************************
 
-#***** Procédure traiteNoir ************************************
+#***** ProcÃ©dure traiteNoir ************************************
    proc traiteNoir { } {
       global audace caption data_spbmfc integre
 
@@ -581,11 +579,11 @@ namespace eval ::spbmfc {
       focus $audace(Console)
 
       desactiveBoutons
-      # Affichage du message de démarrage du prétraitement des noirs
+      # Affichage du message de dÃ©marrage du prÃ©traitement des noirs
       Message consolog $caption(specLhIII,debNoir)
 
       if {$data_spbmfc(cosmNoir) == 1} {
-         # Dans le cas où la correction cosmétique est demandée
+         # Dans le cas oÃ¹ la correction cosmÃ©tique est demandÃ©e
          Message consolog $caption(specLhIII,lanceCosmNoir)
          for {set i 1} {$i <= $data_spbmfc(nbNoirs)} {incr i} {
             set instr "loadima $data_spbmfc(nmNrSce)$i"
@@ -602,7 +600,7 @@ namespace eval ::spbmfc {
             eval $instr
          }
       }
-      # Affichage de la première image de noir
+      # Affichage de la premiÃ¨re image de noir
       set nomFich $data_spbmfc(nmNrSce)
       append nomFich "1"
       Message consolog $caption(specLhIII,chargPremNoir)
@@ -612,14 +610,14 @@ namespace eval ::spbmfc {
       Message consolog "\n"
       eval $instr
 
-      # Calcul de la médiane des images
+      # Calcul de la mÃ©diane des images
       set instr "smedian $data_spbmfc(nmNrSce) $data_spbmfc(nmNoirRes) $data_spbmfc(nbNoirs)"
       Message consolog $caption(specLhIII,CalcMedNoir)
       Message consolog $instr
       Message consolog "\n"
       eval $instr
 
-      # Affichage de l'image noire résultante
+      # Affichage de l'image noire rÃ©sultante
       set nomFich $data_spbmfc(nmNoirRes)
       Message consolog $caption(specLhIII,chargNoirRes)
       set instr "loadima $nomFich"
@@ -627,7 +625,7 @@ namespace eval ::spbmfc {
       Message consolog "\n"
       eval $instr
 
-      # Affichage du message de fin du prétraitement des noirs
+      # Affichage du message de fin du prÃ©traitement des noirs
       Message consolog $caption(specLhIII,finNoir)
 
       activeBoutons
@@ -635,11 +633,11 @@ namespace eval ::spbmfc {
    }
 #***** Fin de la procedure traiteNoir ******************************
 
-#***** Procédure goNoirDePLU ************************************
+#***** ProcÃ©dure goNoirDePLU ************************************
    proc goNoirDePLU { } {
       global caption integre
 
-      # Dans un premier temps, je teste l'intégrité de l'opération
+      # Dans un premier temps, je teste l'intÃ©gritÃ© de l'opÃ©ration
       testNoirDePLU
       # Si tout est Ok, je lance le traitement
       if {$integre(noir_PLU) == "oui"} {
@@ -648,7 +646,7 @@ namespace eval ::spbmfc {
    }
 #***** Fin de la procedure goNoirDePLU ******************************
 
-#***** Procédure testNoirDePLU ************************************
+#***** ProcÃ©dure testNoirDePLU ************************************
    proc testNoirDePLU { } {
       global audace caption data_spbmfc integre
 
@@ -658,9 +656,9 @@ namespace eval ::spbmfc {
       # Enregistrement de l'extension des fichiers
       set ext $::conf(extension,defaut)
 
-      # Je commence par regarder si la correction cosmétique est demandée...
+      # Je commence par regarder si la correction cosmÃ©tique est demandÃ©e...
       if {$data_spbmfc(cosmNrPLU) == 1} {
-         # Alors je teste si la définition de la correction cosmétique est Ok
+         # Alors je teste si la dÃ©finition de la correction cosmÃ©tique est Ok
          testCosm
          if {$integre(cosm) != "oui"} {
             set integre(noir_PLU) non
@@ -670,13 +668,13 @@ namespace eval ::spbmfc {
 
       desactiveBoutons
 
-      # Teste si le nom de fichier source est Ok (un seul champ, pas de caractère interdit...)
+      # Teste si le nom de fichier source est Ok (un seul champ, pas de caractÃ¨re interdit...)
       if {[TestNomFichier $data_spbmfc(nmNrPLUSce)] == 0} {
          set integre(noir_PLU) non
          tk_messageBox -title $caption(specLhIII,pb) -type ok \
             -message $caption(specLhIII,pbNomNrPLUSrce)
       } elseif {[TestNomFichier $data_spbmfc(nmNrPLURes)] == 0} {
-         # Teste si le nom de fichier résultant est Ok (un seul champ, pas de caractère interdit...)
+         # Teste si le nom de fichier rÃ©sultant est Ok (un seul champ, pas de caractÃ¨re interdit...)
          set integre(noir_PLU) non
          tk_messageBox -title $caption(specLhIII,pb) -type ok \
             -message $caption(specLhIII,pbNomNrPLURes)
@@ -698,7 +696,7 @@ namespace eval ::spbmfc {
             tk_messageBox -title $caption(specLhIII,pb) -type ok \
                -message $caption(specLhIII,fichNrPLUAbs)
          } else {
-            # Teste si le fichier résultant existe déja
+            # Teste si le fichier rÃ©sultant existe dÃ©ja
             set nomFich $audace(rep_images)
             append nomFich "/" $data_spbmfc(nmNrPLURes) $ext
             if {[file exists $nomFich] == 1} {
@@ -714,7 +712,7 @@ namespace eval ::spbmfc {
    }
 #***** Fin de la procedure testNoirDePLU ******************************
 
-#***** Procédure traiteNoirDePLU ************************************
+#***** ProcÃ©dure traiteNoirDePLU ************************************
    proc traiteNoirDePLU { } {
       global audace caption data_spbmfc integre
 
@@ -722,11 +720,11 @@ namespace eval ::spbmfc {
       focus $audace(Console)
 
       desactiveBoutons
-      # Affichage du message de démarrage du prétraitement des noir de PLU
+      # Affichage du message de dÃ©marrage du prÃ©traitement des noir de PLU
       Message consolog $caption(specLhIII,debNrPLU)
 
       if {$data_spbmfc(cosmNrPLU) == 1} {
-         # Dans le cas où la correction cosmétique est demandée
+         # Dans le cas oÃ¹ la correction cosmÃ©tique est demandÃ©e
          Message consolog $caption(specLhIII,cosmNoirDePLU)
          for {set i 1} {$i <= $data_spbmfc(nbNrPLU)} {incr i} {
             set instr "loadima $data_spbmfc(nmNrPLUSce)$i"
@@ -744,7 +742,7 @@ namespace eval ::spbmfc {
          }
       }
 
-      # Affichage de la première image de noir de PLU
+      # Affichage de la premiÃ¨re image de noir de PLU
       set nomFich $data_spbmfc(nmNrPLUSce)
       append nomFich "1"
       Message consolog $caption(specLhIII,chargPremNrPLU)
@@ -753,14 +751,14 @@ namespace eval ::spbmfc {
       Message consolog "\n"
       eval $instr
 
-      # Calcul de la médiane des images
+      # Calcul de la mÃ©diane des images
       set instr "smedian $data_spbmfc(nmNrPLUSce) $data_spbmfc(nmNrPLURes) $data_spbmfc(nbNrPLU)"
       Message consolog $caption(specLhIII,CalcMedNrPLU)
       Message consolog $instr
       Message consolog "\n"
       eval $instr
 
-      # Affichage de l'image de noir de PLU résultante
+      # Affichage de l'image de noir de PLU rÃ©sultante
       set nomFich $data_spbmfc(nmNrPLURes)
       Message consolog $caption(specLhIII,chargNrPLURes)
       set instr "loadima $nomFich"
@@ -768,18 +766,18 @@ namespace eval ::spbmfc {
       Message consolog "\n"
       eval $instr
 
-      # Affichage du fin de démarrage du prétraitement des noirs de PLU
+      # Affichage du fin de dÃ©marrage du prÃ©traitement des noirs de PLU
       Message consolog $caption(specLhIII,finNrPLU)
       activeBoutons
       focus $audace(base).fenetreSpData
    }
 #***** Fin de la procedure traiteNoirDePLU ******************************
 
-#***** Procédure goPLU ************************************
+#***** ProcÃ©dure goPLU ************************************
    proc goPLU { } {
       global caption integre
 
-      # Dans un premier temps, je teste l'intégrité de l'opération
+      # Dans un premier temps, je teste l'intÃ©gritÃ© de l'opÃ©ration
       testPLU
       # Si tout est Ok, je lance le traitement
       if {$integre(PLU) == "oui"} {
@@ -788,7 +786,7 @@ namespace eval ::spbmfc {
    }
 #***** Fin de la procedure goPLU ******************************
 
-#***** Procédure testPLU ************************************
+#***** ProcÃ©dure testPLU ************************************
    proc testPLU { } {
       global audace caption data_spbmfc integre
 
@@ -798,9 +796,9 @@ namespace eval ::spbmfc {
       # Enregistrement de l'extension des fichiers
       set ext $::conf(extension,defaut)
 
-      # Je commence par regarder si la correction cosmétique est demandée...
+      # Je commence par regarder si la correction cosmÃ©tique est demandÃ©e...
       if {$data_spbmfc(cosmPLU) == 1} {
-         # Alors je teste si la définition de la correction cosmétique est Ok
+         # Alors je teste si la dÃ©finition de la correction cosmÃ©tique est Ok
          testCosm
          if {$integre(cosm) != "oui"} {
             set integre(PLU) non
@@ -813,13 +811,13 @@ namespace eval ::spbmfc {
       set data_spbmfc(precharge_a_faire_pl) non
       set data_spbmfc(noir_a_faire_pl) non
 
-      # Teste si le nom de fichier source est Ok (un seul champ, pas de caractère interdit...)
+      # Teste si le nom de fichier source est Ok (un seul champ, pas de caractÃ¨re interdit...)
       if {[TestNomFichier $data_spbmfc(nmPLUSce)] == 0} {
          set integre(PLU) non
          tk_messageBox -title $caption(specLhIII,pb) -type ok \
             -message $caption(specLhIII,pbNomPLUSrce)
       } elseif {[TestNomFichier $data_spbmfc(nmPLURes)] == 0} {
-         # Teste si le nom de fichier résultant est Ok (un seul champ, pas de caractère interdit...)
+         # Teste si le nom de fichier rÃ©sultant est Ok (un seul champ, pas de caractÃ¨re interdit...)
          set integre(PLU) non
          tk_messageBox -title $caption(specLhIII,pb) -type ok \
             -message $caption(specLhIII,pbNomPLURes)
@@ -841,7 +839,7 @@ namespace eval ::spbmfc {
             tk_messageBox -title $caption(specLhIII,pb) -type ok \
                -message $caption(specLhIII,fichPLUAbs)
          } else {
-            # Teste si le fichier résultant existe déja
+            # Teste si le fichier rÃ©sultant existe dÃ©ja
             set nomFich $audace(rep_images)
             append nomFich "/" $data_spbmfc(nmPLURes) $ext
             if {[file exists $nomFich] == 1} {
@@ -854,7 +852,7 @@ namespace eval ::spbmfc {
                }
             }
             if {$data_spbmfc(modePLU) == "simple"} {
-               # A partir de là, c'est selon le mode de traitement de la PLU retenue
+               # A partir de lÃ , c'est selon le mode de traitement de la PLU retenue
                # Teste si le fichier de noir de PLU existe bien
                set nomFich $audace(rep_images)
                append nomFich "/" $data_spbmfc(nmNrPLURes) $ext
@@ -868,7 +866,7 @@ namespace eval ::spbmfc {
                   } else {
                      # J'ai tout pour faire le noir de PLU
                      set data_spbmfc(fich_pour_PLU_ok) oui
-                     # Alors je mémorise que je dois le faire
+                     # Alors je mÃ©morise que je dois le faire
                      set data_spbmfc(noir_de_PLU_a_faire_pl) oui
                   }
                } else {
@@ -876,7 +874,7 @@ namespace eval ::spbmfc {
                }
             } elseif {$data_spbmfc(modePLU) != ""} {
                # Dans ce cas, on a choisit les options rapp tps pose ou optimisation
-               # Teste si le fichier de précharge existe bien
+               # Teste si le fichier de prÃ©charge existe bien
                set nomFich $audace(rep_images)
                append nomFich "/" $data_spbmfc(nmPrechRes) $ext
                if {[file exists $nomFich] == 0} {
@@ -887,9 +885,9 @@ namespace eval ::spbmfc {
                      set integre(PLU) non
                      set data_spbmfc(fich_pour_PLU_ok) non
                   } else {
-                     # J'ai tout pour faire la précharge
+                     # J'ai tout pour faire la prÃ©charge
                      set data_spbmfc(fich_pour_PLU_ok) oui
-                     # Alors je mémorise que je dois le faire
+                     # Alors je mÃ©morise que je dois le faire
                      set data_spbmfc(precharge_a_faire_pl) oui
                   }
                } else {
@@ -909,7 +907,7 @@ namespace eval ::spbmfc {
                      } else {
                         # J'ai tout pour faire le noir
                         set data_spbmfc(fich_pour_PLU_ok) oui
-                        # Alors je mémorise que je dois le faire
+                        # Alors je mÃ©morise que je dois le faire
                         set data_spbmfc(noir_a_faire_pl) oui
                      }
                   } else {
@@ -917,7 +915,7 @@ namespace eval ::spbmfc {
                   }
                }
             } else {
-               # Vérifie qu'un mode de traitement est bien sélectionné
+               # VÃ©rifie qu'un mode de traitement est bien sÃ©lectionnÃ©
                tk_messageBox -title $caption(specLhIII,pb) -type ok \
                   -message $caption(specLhIII,choisir_mode_PLU)
                set integre(PLU) non
@@ -928,7 +926,7 @@ namespace eval ::spbmfc {
    }
 #***** Fin de la procedure testPLU ******************************
 
-#***** Procédure traitePLU ************************************
+#***** ProcÃ©dure traitePLU ************************************
    proc traitePLU { } {
       global audace caption data_spbmfc integre
 
@@ -951,7 +949,7 @@ namespace eval ::spbmfc {
 
       desactiveBoutons
 
-      # Affichage du message de démarrage du prétraitement des noirs
+      # Affichage du message de dÃ©marrage du prÃ©traitement des noirs
       Message consolog $caption(specLhIII,debPLU)
       switch -exact $data_spbmfc(modePLU) {
          simple {
@@ -966,7 +964,7 @@ namespace eval ::spbmfc {
       }
 
       if {$data_spbmfc(cosmPLU) == 1} {
-         # Dans le cas où la correction cosmétique est demandée
+         # Dans le cas oÃ¹ la correction cosmÃ©tique est demandÃ©e
          Message consolog $caption(specLhIII,lanceCosmPLU)
          for {set i 1} {$i <= $data_spbmfc(nbPLU)} {incr i} {
             set instr "loadima $data_spbmfc(nmPLUSce)$i"
@@ -981,7 +979,7 @@ namespace eval ::spbmfc {
          }
       }
 
-      # Affichage de la première image de PLU
+      # Affichage de la premiÃ¨re image de PLU
       set nomFich $data_spbmfc(nmPLUSce)
       append nomFich "1"
       Message consolog $caption(specLhIII,chargPremPLU)
@@ -1001,7 +999,7 @@ namespace eval ::spbmfc {
          }
          rapTps {
             # Lecture du temps de pose de l'image PLU
-            # Je vérifie que le champ exposure est bien présent dans l'entête FITS
+            # Je vÃ©rifie que le champ exposure est bien prÃ©sent dans l'entÃªte FITS
             if {[lsearch [buf$audace(bufNo) getkwds] EXPOSURE] != -1} {
                set motCle EXPOSURE
             } else {
@@ -1017,7 +1015,7 @@ namespace eval ::spbmfc {
             Message consolog "%s\n" $instr
             eval $instr
             # Lecture du temps de pose du noir
-            # Je vérifie que le champ exposure est bien présent dans l'entête FITS
+            # Je vÃ©rifie que le champ exposure est bien prÃ©sent dans l'entÃªte FITS
             if {[lsearch [buf$audace(bufNo) getkwds] EXPOSURE] != -1} {
                set motCle EXPOSURE
             } else {
@@ -1044,7 +1042,7 @@ namespace eval ::spbmfc {
             Message consolog $caption(specLhIII,multNoir)
             Message consolog "%s\n" $instr
             eval $instr
-            # Sauvegarde le noir pondéré
+            # Sauvegarde le noir pondÃ©rÃ©
             set instr "saveima noir_pondere_temp"
             Message consolog $caption(specLhIII,SauveNoirPond)
             Message consolog "%s\n" $instr
@@ -1056,7 +1054,7 @@ namespace eval ::spbmfc {
             Message consolog $caption(specLhIII,SoustrPrechPLUProv)
             Message consolog "%s\n" $instr
             eval $instr
-            # Retire le noir pondéré de toutes les images de PLU
+            # Retire le noir pondÃ©rÃ© de toutes les images de PLU
             set instr "sub2 $nom_fich noir_pondere_temp $nom_fich 0 $data_spbmfc(nbPLU)"
             Message consolog $caption(specLhIII,SoustrNoirPondPLU)
             Message consolog "%s\n" $instr
@@ -1069,12 +1067,12 @@ namespace eval ::spbmfc {
                Message consolog $caption(specLhIII,ChargeNoir)
                Message consolog "%s\n" $instr
                eval $instr
-               # Addition de la précharge
+               # Addition de la prÃ©charge
                set instr "add $data_spbmfc(nmPrechRes) 0"
                Message consolog $caption(specLhIII,ajoutePrechNoir)
                Message consolog "%s\n" $instr
                eval $instr
-               # Sauvegarde le noir contenant la précharge
+               # Sauvegarde le noir contenant la prÃ©charge
                set instr "saveima noir_avec_prech"
                Message consolog $caption(specLhIII,SauveNoirAvecPrech)
                Message consolog "%s\n" $instr
@@ -1095,7 +1093,7 @@ namespace eval ::spbmfc {
          }
       }
 
-      # Affichage de la première image de PLU, corrigée du noir
+      # Affichage de la premiÃ¨re image de PLU, corrigÃ©e du noir
       set nomFich $data_spbmfc(nmPLUSce)
       append nomFich "_moinsnoir_1"
       Message consolog $caption(specLhIII,chargPremPLUCorrNrPLU)
@@ -1104,13 +1102,13 @@ namespace eval ::spbmfc {
       Message consolog "%s\n" $instr
       eval $instr
 
-      # Calcul de la valeur moyenne de la première image:
+      # Calcul de la valeur moyenne de la premiÃ¨re image:
       set instr "set valMoyenne \[lindex \[stat\] 4\]"
       Message consolog $caption(specLhIII,calcMoyPremIm)
       Message consolog "%s\n" $instr
       eval $instr
 
-      # Mise au même niveau de tous les PLU
+      # Mise au mÃªme niveau de tous les PLU
       set instr "ngain2 "
       append instr $data_spbmfc(nmPLUSce)
       append instr "_moinsnoir_ "
@@ -1120,7 +1118,7 @@ namespace eval ::spbmfc {
       Message consolog "%s\n" $instr
       eval $instr
 
-      # Calcul de la médiane des images
+      # Calcul de la mÃ©diane des images
       set instr "smedian "
       append instr $data_spbmfc(nmPLUSce)
       append instr _auniveau " " $data_spbmfc(nmPLURes) " " $data_spbmfc(nbPLU)
@@ -1128,14 +1126,14 @@ namespace eval ::spbmfc {
       Message consolog "%s\n" $instr
       eval $instr
 
-      # Affichage de l'image noire résultante
+      # Affichage de l'image noire rÃ©sultante
       set nomFich $data_spbmfc(nmPLURes)
       Message consolog $caption(specLhIII,chargPLURes)
       set instr "loadima $nomFich"
       Message consolog "%s\n" $instr
       eval $instr
 
-      # Effacement du disque des images générées par le prétraitement:
+      # Effacement du disque des images gÃ©nÃ©rÃ©es par le prÃ©traitement:
       Message consolog $caption(specLhIII,effacePLUInter)
       for {set i 1} {$i <= $data_spbmfc(nbPLU)} {incr i} {
          set nomFich $audace(rep_images)
@@ -1156,18 +1154,18 @@ namespace eval ::spbmfc {
          file delete $nomFich
       }
 
-      # Affichage du message de fin du prétraitement des noirs
+      # Affichage du message de fin du prÃ©traitement des noirs
       Message consolog $caption(specLhIII,finPLU)
       activeBoutons
       focus $audace(base).fenetreSpData
    }
 #***** Fin de la procedure traitePLU ******************************
 
-#***** Procédure goBrut ************************************
+#***** ProcÃ©dure goBrut ************************************
    proc goBrut { } {
       global caption integre
 
-      # Dans un premier temps, je teste l'intégrité de l'opération
+      # Dans un premier temps, je teste l'intÃ©gritÃ© de l'opÃ©ration
       testBrut
       # Si tout est Ok, je lance le traitement
       if {$integre(brut) == "oui"} {
@@ -1176,7 +1174,7 @@ namespace eval ::spbmfc {
    }
 #***** Fin de la procedure goBrut ******************************
 
-#***** Procédure testBrut ************************************
+#***** ProcÃ©dure testBrut ************************************
    proc testBrut { } {
       global audace caption data_spbmfc integre
 
@@ -1186,9 +1184,9 @@ namespace eval ::spbmfc {
       # Enregistrement de l'extension des fichiers
       set ext $::conf(extension,defaut)
 
-      # Je commence par regarder si la correction cosmétique est demandée...
+      # Je commence par regarder si la correction cosmÃ©tique est demandÃ©e...
       if {$data_spbmfc(cosmBrut) == 1} {
-         # Alors je teste si la définition de la correction cosmétique est Ok
+         # Alors je teste si la dÃ©finition de la correction cosmÃ©tique est Ok
          testCosm
          if {$integre(cosm) != "oui"} {
             set integre(brut) non
@@ -1203,13 +1201,13 @@ namespace eval ::spbmfc {
       set data_spbmfc(PLU_ok) non
       set data_spbmfc(precharge_ok) non
 
-      # Teste si le nom de fichier source est Ok (un seul champ, pas de caractère interdit...)
+      # Teste si le nom de fichier source est Ok (un seul champ, pas de caractÃ¨re interdit...)
       if {[TestNomFichier $data_spbmfc(nmBrutSce)] == 0} {
          set integre(brut) non
          tk_messageBox -title $caption(specLhIII,pb) -type ok \
             -message $caption(specLhIII,pbNomBrutSrce)
       } elseif {[TestNomFichier $data_spbmfc(nmBrutRes)] == 0} {
-         # Teste si le nom de fichier résultant est Ok (un seul champ, pas de caractère interdit...)
+         # Teste si le nom de fichier rÃ©sultant est Ok (un seul champ, pas de caractÃ¨re interdit...)
          set integre(brut) non
          tk_messageBox -title $caption(specLhIII,pb) -type ok \
             -message $caption(specLhIII,pbNomBrutRes)
@@ -1238,13 +1236,13 @@ namespace eval ::spbmfc {
                # Dans ce cas, je regarde si je peux calculer le noir...
                testNoir
                if {$integre(noir) == "non"} {
-                  # Je n'ai pas les éléments pour faire le noir
+                  # Je n'ai pas les Ã©lÃ©ments pour faire le noir
                   tk_messageBox -title $caption(specLhIII,pb) -type ok \
                      -message $caption(specLhIII,fichNoirBrutAbs)
                   set integre(brut) non
                   set data_spbmfc(noir_ok) non
                } else {
-                  # Alors je dois prévoir de faire le calcul du noir pendant le traitement
+                  # Alors je dois prÃ©voir de faire le calcul du noir pendant le traitement
                   set data_spbmfc(noir_a_faire_br) oui
                   # Et je memorise que c'est Ok pour les noirs
                   set data_spbmfc(noir_ok) oui
@@ -1260,13 +1258,13 @@ namespace eval ::spbmfc {
                   # Dans ce cas, je regarde si je peux calculer le PLU...
                   testPLU
                   if {$integre(PLU) == "non"} {
-                  # Je n'ai pas les éléments pour faire le PLU
+                  # Je n'ai pas les Ã©lÃ©ments pour faire le PLU
                      tk_messageBox -title $caption(specLhIII,pb) -type ok \
                         -message $caption(specLhIII,fichPLUBrutAbs)
                      set integre(brut) non
                      set data_spbmfc(PLU_ok) non
                   } else {
-                     # Alors je dois prévoir de faire le calcul du PLU pendant le traitement
+                     # Alors je dois prÃ©voir de faire le calcul du PLU pendant le traitement
                      set data_spbmfc(PLU_a_faire_br) oui
                      set data_spbmfc(PLU_ok) oui
                   }
@@ -1275,7 +1273,7 @@ namespace eval ::spbmfc {
                }
             }
             if {$data_spbmfc(PLU_ok) == "oui" && $data_spbmfc(noir_ok) == "oui"} {
-               # Teste si les fichiers résultants existent déja
+               # Teste si les fichiers rÃ©sultants existent dÃ©ja
                for {set i 1} {$i <= $data_spbmfc(nbBrut)} {incr i} {
                   set nomFich $audace(rep_images)
                   append nomFich "/" $data_spbmfc(nmBrutRes) $i $ext
@@ -1293,22 +1291,22 @@ namespace eval ::spbmfc {
             }
             if {$data_spbmfc(PLU_ok) == "oui" && $data_spbmfc(noir_ok) == "oui"} {
                if {$data_spbmfc(modeBrut) != "simple" || $data_spbmfc(NrContientPrech) == 0} {
-                  # Teste si le fichier de précharge existe bien (dans le cas où l'option
+                  # Teste si le fichier de prÃ©charge existe bien (dans le cas oÃ¹ l'option
                   #   retenue est optimisation ou rapp. tps de pose) ou bien si le noir
-                  #   ne contient pas la précharge: J'ai alors besoin de la précharge
+                  #   ne contient pas la prÃ©charge: J'ai alors besoin de la prÃ©charge
                   set nomFich $audace(rep_images)
                   append nomFich "/" $data_spbmfc(nmPrechRes) $ext
                   if {[file exists $nomFich] == 0} {
-                     # Dans ce cas, je regarde si je peux calculer la précharge...
+                     # Dans ce cas, je regarde si je peux calculer la prÃ©charge...
                      testPrecharge
                      if {$integre(precharge) == "non"} {
-                        # Je n'ai pas les éléments pour faire la précharge
+                        # Je n'ai pas les Ã©lÃ©ments pour faire la prÃ©charge
                         tk_messageBox -title $caption(specLhIII,pb) -type ok \
                            -message $caption(specLhIII,fichPrechBrutAbs)
                         set integre(brut) non
                         set data_spbmfc(precharge_ok) non
                      } else {
-                        # Alors je dois prévoir de faire le calcul du PLU pendant le traitement
+                        # Alors je dois prÃ©voir de faire le calcul du PLU pendant le traitement
                         set data_spbmfc(precharge_a_faire_br) oui
                         set data_spbmfc(precharge_ok) oui
                      }
@@ -1317,7 +1315,7 @@ namespace eval ::spbmfc {
                   }
                }
             }
-            # Teste qu'un mode est bien sélectionné
+            # Teste qu'un mode est bien sÃ©lectionnÃ©
             if {$data_spbmfc(modeBrut) == ""} {
                tk_messageBox -title $caption(specLhIII,pb) -type ok \
                   -message $caption(specLhIII,fichModeBrutAbs)
@@ -1329,19 +1327,19 @@ namespace eval ::spbmfc {
    }
 #***** Fin de la procedure testBrut ******************************
 
-#***** Procédure traiteBrut ************************************
+#***** ProcÃ©dure traiteBrut ************************************
    proc traiteBrut { } {
       global audace caption data_spbmfc integre
 
       # Enregistrement de l'extension des fichiers
       set ext $::conf(extension,defaut)
 
-      # Le cas échéant, je lance les opération préliminéires
+      # Le cas Ã©chÃ©ant, je lance les opÃ©ration prÃ©liminÃ©ires
       if {$data_spbmfc(PLU_a_faire_br) == "oui"} {
          traitePLU
       }
       if {$data_spbmfc(precharge_a_faire_br) == "oui"} {
-         # Je vérifie que le fichier n'existe pas déjà (il a pu être crée par le traitement de PLU...)
+         # Je vÃ©rifie que le fichier n'existe pas dÃ©jÃ  (il a pu Ãªtre crÃ©e par le traitement de PLU...)
          set nomFich $audace(rep_images)
          append nomFich "/" $data_spbmfc(nmPrechRes) $ext
          if {[file exists $nomFich] == 0} {
@@ -1349,7 +1347,7 @@ namespace eval ::spbmfc {
          }
       }
       if {$data_spbmfc(noir_a_faire_br) == "oui"} {
-         # Je vérifie que le fichier n'existe pas déjà (il a pu être crée par le traitement de PLU...)
+         # Je vÃ©rifie que le fichier n'existe pas dÃ©jÃ  (il a pu Ãªtre crÃ©e par le traitement de PLU...)
          set nomFich $audace(rep_images)
          append nomFich "/" $data_spbmfc(nmNoirRes) $ext
          if {[file exists $nomFich] == 0} {
@@ -1362,7 +1360,7 @@ namespace eval ::spbmfc {
 
       desactiveBoutons
 
-      # Affichage du message de démarrage du prétraitement des noirs
+      # Affichage du message de dÃ©marrage du prÃ©traitement des noirs
       Message consolog $caption(specLhIII,debBrut)
       switch -exact $data_spbmfc(modeBrut) {
          simple {
@@ -1377,7 +1375,7 @@ namespace eval ::spbmfc {
       }
 
       if {$data_spbmfc(cosmBrut) == 1} {
-         # Dans le cas où la correction cosmétique est demandée
+         # Dans le cas oÃ¹ la correction cosmÃ©tique est demandÃ©e
          Message consolog $caption(specLhIII,lanceCosmStellaire)
          for {set i 1} {$i <= $data_spbmfc(nbBrut)} {incr i} {
             set instr "loadima $data_spbmfc(nmBrutSce)$i"
@@ -1395,7 +1393,7 @@ namespace eval ::spbmfc {
          }
       }
 
-      # Affichage de la première image stellaire
+      # Affichage de la premiÃ¨re image stellaire
       set nomFich $data_spbmfc(nmBrutSce)
       append nomFich "1"
       Message consolog $caption(specLhIII,chargPremBrut)
@@ -1412,7 +1410,7 @@ namespace eval ::spbmfc {
             Message consolog $instr
             Message consolog "\n"
             eval $instr
-            # Si le noir ne contient pas la précharge, soustraction de la précharge
+            # Si le noir ne contient pas la prÃ©charge, soustraction de la prÃ©charge
             if {$data_spbmfc(NrContientPrech) == 0} {
                set instr "sub2 $data_spbmfc(nmBrutSce)"
                append instr "_moinsnoir_ $data_spbmfc(nmPrechRes) $data_spbmfc(nmBrutSce)"
@@ -1425,7 +1423,7 @@ namespace eval ::spbmfc {
          }
          rapTps {
             # Lecture du temps de pose des images stellaires
-            # Je vérifie que le champ exposure est bien présent dans l'entête FITS
+            # Je vÃ©rifie que le champ exposure est bien prÃ©sent dans l'entÃªte FITS
             if {[lsearch [buf$audace(bufNo) getkwds] EXPOSURE] != -1} {
                set motCle EXPOSURE
             } else {
@@ -1441,7 +1439,7 @@ namespace eval ::spbmfc {
             Message consolog "%s\n" $instr
             eval $instr
             # Lecture du temps de pose du noir
-            # Je vérifie que le champ exposure est bien présent dans l'entête FITS
+            # Je vÃ©rifie que le champ exposure est bien prÃ©sent dans l'entÃªte FITS
             if {[lsearch [buf$audace(bufNo) getkwds] EXPOSURE] != -1} {
                set motCle EXPOSURE
             } else {
@@ -1468,7 +1466,7 @@ namespace eval ::spbmfc {
             Message consolog $caption(specLhIII,multNoir)
             Message consolog "%s\n" $instr
             eval $instr
-            # Sauvegarde le noir pondéré
+            # Sauvegarde le noir pondÃ©rÃ©
             set instr "saveima noir_pondere_temp"
             Message consolog $caption(specLhIII,SauveNoirPond)
             Message consolog "%s\n" $instr
@@ -1480,26 +1478,26 @@ namespace eval ::spbmfc {
             Message consolog $caption(specLhIII,SoustrPrechStelProv)
             Message consolog "%s\n" $instr
             eval $instr
-            # Retire le noir pondéré de toutes les images stellaires
+            # Retire le noir pondÃ©rÃ© de toutes les images stellaires
             set instr "sub2 $nom_fich noir_pondere_temp $nom_fich 0 $data_spbmfc(nbBrut)"
             Message consolog $caption(specLhIII,SoustrNoirPondStel)
             Message consolog "%s\n" $instr
             eval $instr
          }
          opt {
-            # Vérifie si le noir contient la précharge... et agit en conséquence
+            # VÃ©rifie si le noir contient la prÃ©charge... et agit en consÃ©quence
             if {$data_spbmfc(NrContientPrech) == 0} {
                # Si offset non inclus... chargement de l'image de noir
                set instr "loadima $data_spbmfc(nmNoirRes)"
                Message consolog $caption(specLhIII,ChargeNoir)
                Message consolog "%s\n" $instr
                eval $instr
-               # Addition de la précharge
+               # Addition de la prÃ©charge
                set instr "add $data_spbmfc(nmPrechRes) 0"
                Message consolog $caption(specLhIII,ajoutePrechNoir)
                Message consolog "%s\n" $instr
                eval $instr
-               # Sauvegarde le noir contenant la précharge
+               # Sauvegarde le noir contenant la prÃ©charge
                set instr "saveima noir_avec_prech"
                Message consolog $caption(specLhIII,SauveNoirAvecPrech)
                Message consolog "%s\n" $instr
@@ -1512,7 +1510,7 @@ namespace eval ::spbmfc {
             }
             set nom_fich_sortie $data_spbmfc(nmBrutSce)
             append nom_fich_sortie "_moinsnoir_"
-            # Lancement de l'optimisation; le noir doit contenir la précharge !
+            # Lancement de l'optimisation; le noir doit contenir la prÃ©charge !
             set instr "opt2 $data_spbmfc(nmBrutSce) $noir_avec_prech $data_spbmfc(nmPrechRes) \
                $nom_fich_sortie $data_spbmfc(nbBrut)"
             Message consolog $caption(specLhIII,OptBrutes)
@@ -1545,7 +1543,7 @@ namespace eval ::spbmfc {
       Message consolog "\n"
       eval $instr
 
-      # Affichage de la première image résultante
+      # Affichage de la premiÃ¨re image rÃ©sultante
       set nomFich $data_spbmfc(nmBrutRes)
       append nomFich "1"
       Message consolog $caption(specLhIII,chargBrutRes)
@@ -1554,7 +1552,7 @@ namespace eval ::spbmfc {
       Message consolog "\n"
       eval $instr
 
-      # Effacement du disque des images générées par le prétraitement:
+      # Effacement du disque des images gÃ©nÃ©rÃ©es par le prÃ©traitement:
       Message consolog $caption(specLhIII,effaceBrutsInter)
       for {set i 1} {$i <= $data_spbmfc(nbBrut)} {incr i} {
          set nomFich $audace(rep_images)
@@ -1572,14 +1570,14 @@ namespace eval ::spbmfc {
          file delete $nomFich
       }
 
-      # Affichage du message de fin du prétraitement des noirs
+      # Affichage du message de fin du prÃ©traitement des noirs
       Message consolog $caption(specLhIII,finBrut)
       activeBoutons
       focus $audace(base).fenetreSpData
    }
 #***** Fin de la procedure traiteBrut ************************************
 
-#***** Procédure de désactivation des boutons de la fenêtre **************
+#***** ProcÃ©dure de dÃ©sactivation des boutons de la fenÃªtre **************
    proc desactiveBoutons { } {
       global audace
 
@@ -1622,9 +1620,9 @@ namespace eval ::spbmfc {
       $audace(base).fenetreSpData.et6.ligne3.rad2 configure -state disabled
       $audace(base).fenetreSpData.et6.ligne3.rad3 configure -state disabled
    }
-#***** Fin de la procédure de désactivation des boutons de la fenêtre ****
+#***** Fin de la procÃ©dure de dÃ©sactivation des boutons de la fenÃªtre ****
 
-#***** Procédure d'activation des boutons de la fenêtre **************
+#***** ProcÃ©dure d'activation des boutons de la fenÃªtre **************
    proc activeBoutons { } {
       global audace
 
@@ -1667,10 +1665,10 @@ namespace eval ::spbmfc {
       $audace(base).fenetreSpData.et6.ligne3.rad2 configure -state normal
       $audace(base).fenetreSpData.et6.ligne3.rad3 configure -state normal
    }
-#***** Fin de la procédure d'activation des boutons de la fenêtre ****
+#***** Fin de la procÃ©dure d'activation des boutons de la fenÃªtre ****
 
-#***** Procedure de test de validité d'un nom de fichier *****************
-# Cette procédure (copiée de Methking) vérifie que la chaine passée en argument est un
+#***** Procedure de test de validitÃ© d'un nom de fichier *****************
+# Cette procÃ©dure (copiÃ©e de Methking) vÃ©rifie que la chaine passÃ©e en argument est un
 # nom de fichier valide.
    proc TestNomFichier { valeur } {
       set test 1
@@ -1682,16 +1680,16 @@ namespace eval ::spbmfc {
       if {[llength $valeur] > 1} {
          set test 0
       }
-      # Teste que le nom des images ne contient pas de caractèrs interdits
+      # Teste que le nom des images ne contient pas de caractÃ¨rs interdits
       if {[TestChaine $valeur] == 0} {
          set test 0
       }
       return $test
    }
-#***** Fin de la procedure de test de validité d'un nom de fichier *******
+#***** Fin de la procedure de test de validitÃ© d'un nom de fichier *******
 
-#***** Procedure de test de validité d'un entier *****************
-# Cette procédure (copiée de Methking) vérifie que la chaine passée en argument décrit
+#***** Procedure de test de validitÃ© d'un entier *****************
+# Cette procÃ©dure (copiÃ©e de Methking) vÃ©rifie que la chaine passÃ©e en argument dÃ©crit
 # bien un entier. Elle retourne 1 si c'est la cas, et 0 si ce n'est pas un entier.
    proc TestEntier { valeur } {
       set test 1
@@ -1706,10 +1704,10 @@ namespace eval ::spbmfc {
       }
       return $test
    }
-#***** Fin de la procedure de test de validité d'un entier *******
+#***** Fin de la procedure de test de validitÃ© d'un entier *******
 
-#***** Procedure de test de validité d'une chaine de caractères *******
-# Cette procédure vérifie que la chaine passée en argument ne contient que des caractères
+#***** Procedure de test de validitÃ© d'une chaine de caractÃ¨res *******
+# Cette procÃ©dure vÃ©rifie que la chaine passÃ©e en argument ne contient que des caractÃ¨res
 # valides. Elle retourne 1 si c'est la cas, et 0 si ce n'est pas valable.
    proc TestChaine { valeur } {
       set test 1
@@ -1721,11 +1719,11 @@ namespace eval ::spbmfc {
       }
       return $test
    }
-#***** Fin de la procedure de test de validité d'une chaine de caractères *******
+#***** Fin de la procedure de test de validitÃ© d'une chaine de caractÃ¨res *******
 
-#***** Procedure de test de validité d'un nombre réel *****************
-# Cette procédure (inspirée de Methking) vérifie que la chaine passée en argument décrit
-# bien un réel. Elle retourne 1 si c'est la cas, et 0 si ce n'est pas un entier.
+#***** Procedure de test de validitÃ© d'un nombre rÃ©el *****************
+# Cette procÃ©dure (inspirÃ©e de Methking) vÃ©rifie que la chaine passÃ©e en argument dÃ©crit
+# bien un rÃ©el. Elle retourne 1 si c'est la cas, et 0 si ce n'est pas un entier.
    proc TestReel { valeur } {
       set test 1
       for {set i 0} {$i < [string length $valeur]} {incr i} {
@@ -1736,10 +1734,10 @@ namespace eval ::spbmfc {
       }
       return $test
    }
-#***** Fin de la procedure de test de validité d'un nombre réel *******
+#***** Fin de la procedure de test de validitÃ© d'un nombre rÃ©el *******
 
 #***** Procedure d'affichage des messages ************************
-# Cette procédure est recopiée de Methking.tcl. Elle permet l'affichage de differents
+# Cette procÃ©dure est recopiÃ©e de Methking.tcl. Elle permet l'affichage de differents
 # messages (dans la console, le fichier log, etc...)
    proc Message { niveau args } {
       global caption conf
@@ -1788,17 +1786,17 @@ proc creeFenspbmfc { } {
 
    set panneau(AcqFC,list_mode) [ list "toto" "titi" ]
 
-   #--- Trame de l'étape 1
+   #--- Trame de l'Ã©tape 1
    frame $audace(base).fenetreSpData.et1 -borderwidth 2 -relief groove
 
-      #--- Titre de l'étape 1: Données d'entrée
+      #--- Titre de l'Ã©tape 1: DonnÃ©es d'entrÃ©e
       frame $audace(base).fenetreSpData.et1.titre -borderwidth 1 -relief groove
          # Affichage du titre
          label $audace(base).fenetreSpData.et1.titre.nom -text $caption(specLhIII,titret1) -justify left
          pack $audace(base).fenetreSpData.et1.titre.nom -side left -in $audace(base).fenetreSpData.et1.titre
       pack $audace(base).fenetreSpData.et1.titre -side top -fill x
 
-      #--- Premiere ligne de l'étape 1
+      #--- Premiere ligne de l'Ã©tape 1
       frame $audace(base).fenetreSpData.et1.fr1
          frame $audace(base).fenetreSpData.et1.fr1.ligne1
             # Affichage du label
@@ -1811,11 +1809,11 @@ proc creeFenspbmfc { } {
          pack $audace(base).fenetreSpData.et1.fr1.ligne1 -side left
       pack $audace(base).fenetreSpData.et1.fr1 -side top
 
-#       #--- Seconde ligne de l'étape 1 "Spectres"
+#       #--- Seconde ligne de l'Ã©tape 1 "Spectres"
 #       frame $audace(base).fenetreSpData.et1.ligne2
 #       pack $audace(base).fenetreSpData.et1.ligne2 -side top -fill x
 
-      #--- Troisième ligne de l'étape 1 "Objet - RA - DEC"
+      #--- TroisiÃ¨me ligne de l'Ã©tape 1 "Objet - RA - DEC"
       frame $audace(base).fenetreSpData.et1.ligne3
          # Affichage du label
          label $audace(base).fenetreSpData.et1.ligne3.lab1 -text $caption(specLhIII,spnomobj) \
@@ -1843,7 +1841,7 @@ proc creeFenspbmfc { } {
          pack $audace(base).fenetreSpData.et1.ligne3.ent3 -side left
       pack $audace(base).fenetreSpData.et1.ligne3 -side top -fill x
 
-      #--- Quatrième ligne de l'étape 1 "Equipement - site"
+      #--- QuatriÃ¨me ligne de l'Ã©tape 1 "Equipement - site"
       frame $audace(base).fenetreSpData.et1.ligne4
          # Affichage du label & combobox
          label $audace(base).fenetreSpData.et1.ligne4.lab2 -text $caption(specLhIII,spconf) \
@@ -1864,7 +1862,7 @@ proc creeFenspbmfc { } {
          pack $audace(base).fenetreSpData.et1.ligne4.ent3 -side left
       pack $audace(base).fenetreSpData.et1.ligne4 -side top -fill x
 
-      #--- Cinquième ligne de l'étape 2 "Observateurs"
+      #--- CinquiÃ¨me ligne de l'Ã©tape 2 "Observateurs"
       frame $audace(base).fenetreSpData.et1.ligne5
          # Affichage du label
          label $audace(base).fenetreSpData.et1.ligne5.lab1 -text $caption(specLhIII,spobservers) \
@@ -1884,7 +1882,7 @@ proc creeFenspbmfc { } {
          pack $audace(base).fenetreSpData.et1.ligne5.ent3 -side left
       pack $audace(base).fenetreSpData.et1.ligne5 -side top -fill x
 
-      #--- Sixième ligne de l'étape 1 "Noirs"
+      #--- SixiÃ¨me ligne de l'Ã©tape 1 "Noirs"
       frame $audace(base).fenetreSpData.et1.ligne6
          # Affichage du label
          label $audace(base).fenetreSpData.et1.ligne6.lab1 -text $caption(specLhIII,spnoirs) \
@@ -1904,7 +1902,7 @@ proc creeFenspbmfc { } {
          pack $audace(base).fenetreSpData.et1.ligne6.ent2 -side left
       pack $audace(base).fenetreSpData.et1.ligne6 -side top -fill x
 
-      #--- Septième ligne de l'étape 1 "Type de soustraction des noirs"
+      #--- SeptiÃ¨me ligne de l'Ã©tape 1 "Type de soustraction des noirs"
       frame $audace(base).fenetreSpData.et1.ligne7
          label $audace(base).fenetreSpData.et1.ligne7.lab1 -text $caption(specLhIII,SoustrNr)
          pack $audace(base).fenetreSpData.et1.ligne7.lab1 -side left
@@ -1919,27 +1917,27 @@ proc creeFenspbmfc { } {
          pack $audace(base).fenetreSpData.et1.ligne7.rad3 -side left
       pack $audace(base).fenetreSpData.et1.ligne7 -side top -fill x
 
-      #--- Huitième ligne de l'étape 1 "NeonAV"
+      #--- HuitiÃ¨me ligne de l'Ã©tape 1 "NeonAV"
       frame $audace(base).fenetreSpData.et1.ligne8
          # Affichage du label
          label $audace(base).fenetreSpData.et1.ligne8.lab1 -text $caption(specLhIII,neonavfich) \
             -width 29 -justify right
          pack $audace(base).fenetreSpData.et1.ligne8.lab1 -side left
-         # Affichage du champ de saisie "Procédure de correction cosmétique"
+         # Affichage du champ de saisie "ProcÃ©dure de correction cosmÃ©tique"
          entry $audace(base).fenetreSpData.et1.ligne8.ent1 -width 16 -relief flat\
             -textvariable data_spbmfc(nomFichNeonAvIn) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetreSpData.et1.ligne8.ent1 -side left
-         # Affichage du label "Procédure de correction cosmétique"
+         # Affichage du label "ProcÃ©dure de correction cosmÃ©tique"
          label $audace(base).fenetreSpData.et1.ligne8.lab2 -text $caption(specLhIII,fichres) \
             -width 29 -justify right
          pack $audace(base).fenetreSpData.et1.ligne8.lab2 -side left
-         # Affichage du champ de saisie "Procédure de correction cosmétique"
+         # Affichage du champ de saisie "ProcÃ©dure de correction cosmÃ©tique"
          entry $audace(base).fenetreSpData.et1.ligne8.ent2 -width 16 -relief flat\
             -textvariable data_spbmfc(nomFichNeonAvOut) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetreSpData.et1.ligne8.ent2 -side left
       pack $audace(base).fenetreSpData.et1.ligne8 -side top -fill x
 
-      #--- Neuvième ligne de l'étape 1 "NeonAP"
+      #--- NeuviÃ¨me ligne de l'Ã©tape 1 "NeonAP"
       frame $audace(base).fenetreSpData.et1.ligne9
          # Affichage du label
          label $audace(base).fenetreSpData.et1.ligne9.lab1 -text $caption(specLhIII,neonapfich) \
@@ -1959,7 +1957,7 @@ proc creeFenspbmfc { } {
          pack $audace(base).fenetreSpData.et1.ligne9.ent2 -side left
       pack $audace(base).fenetreSpData.et1.ligne9 -side top -fill x
 
-      #--- Dixième ligne de l'étape 1 "Noirs néon"
+      #--- DixiÃ¨me ligne de l'Ã©tape 1 "Noirs nÃ©on"
       frame $audace(base).fenetreSpData.et1.ligne10
          # Affichage du label
          label $audace(base).fenetreSpData.et1.ligne10.lab1 -text $caption(specLhIII,spnoirsneon) \
@@ -1979,7 +1977,7 @@ proc creeFenspbmfc { } {
          pack $audace(base).fenetreSpData.et1.ligne10.ent2 -side left
       pack $audace(base).fenetreSpData.et1.ligne10 -side top -fill x
 
-      #--- Onzième ligne de l'étape 1 "Type de soustraction des noirs"
+      #--- OnziÃ¨me ligne de l'Ã©tape 1 "Type de soustraction des noirs"
       frame $audace(base).fenetreSpData.et1.ligne11
          label $audace(base).fenetreSpData.et1.ligne11.lab1 -text $caption(specLhIII,SoustrNr)
          pack $audace(base).fenetreSpData.et1.ligne11.lab1 -side left
@@ -1994,7 +1992,7 @@ proc creeFenspbmfc { } {
          pack $audace(base).fenetreSpData.et1.ligne11.rad3 -side left
       pack $audace(base).fenetreSpData.et1.ligne11 -side top -fill x
 
-      #--- Douzième ligne de l'étape 1 "Flats"
+      #--- DouziÃ¨me ligne de l'Ã©tape 1 "Flats"
       frame $audace(base).fenetreSpData.et1.ligne12
          # Affichage du label
          label $audace(base).fenetreSpData.et1.ligne12.lab1 -text $caption(specLhIII,spPLUs) \
@@ -2014,7 +2012,7 @@ proc creeFenspbmfc { } {
          pack $audace(base).fenetreSpData.et1.ligne12.ent2 -side left
       pack $audace(base).fenetreSpData.et1.ligne12 -side top -fill x
 
-      #--- Treizième ligne de l'étape 1 "Noirs de flats"
+      #--- TreiziÃ¨me ligne de l'Ã©tape 1 "Noirs de flats"
       frame $audace(base).fenetreSpData.et1.ligne13
          # Affichage du label
          label $audace(base).fenetreSpData.et1.ligne13.lab1 -text $caption(specLhIII,spnoirsPLUs) \
@@ -2034,7 +2032,7 @@ proc creeFenspbmfc { } {
          pack $audace(base).fenetreSpData.et1.ligne13.ent2 -side left
       pack $audace(base).fenetreSpData.et1.ligne13 -side top -fill x
 
-      #--- Quatorzième ligne de l'étape 1 "Type de soustraction des noirs de flats"
+      #--- QuatorziÃ¨me ligne de l'Ã©tape 1 "Type de soustraction des noirs de flats"
       frame $audace(base).fenetreSpData.et1.ligne14
          label $audace(base).fenetreSpData.et1.ligne14.lab1 -text $caption(specLhIII,SoustrNr)
          pack $audace(base).fenetreSpData.et1.ligne14.lab1 -side left
@@ -2049,7 +2047,7 @@ proc creeFenspbmfc { } {
          pack $audace(base).fenetreSpData.et1.ligne14.rad3 -side left
       pack $audace(base).fenetreSpData.et1.ligne14 -side top -fill x
 
-      #--- Quinzième ligne de l'étape 1 "Offsets"
+      #--- QuinziÃ¨me ligne de l'Ã©tape 1 "Offsets"
       frame $audace(base).fenetreSpData.et1.ligne15
          # Affichage du label
          label $audace(base).fenetreSpData.et1.ligne15.lab1 -text $caption(specLhIII,spoffsets) \
@@ -2070,7 +2068,7 @@ proc creeFenspbmfc { } {
       pack $audace(base).fenetreSpData.et1.ligne15 -side top -fill x
 
       frame $audace(base).fenetreSpData.et1.f1 -borderwidth 4 -relief groove -padx 15 -pady 3
-         #--- Seizième ligne de l'étape 1
+         #--- SeiziÃ¨me ligne de l'Ã©tape 1
          frame $audace(base).fenetreSpData.et1.f1.ligne16
             # Affichage du label
             label $audace(base).fenetreSpData.et1.f1.ligne16.lab1 -text $caption(specLhIII,spfichcosme) -width 20
@@ -2079,7 +2077,7 @@ proc creeFenspbmfc { } {
             entry $audace(base).fenetreSpData.et1.f1.ligne16.ent1 -width 16 -relief flat \
                -textvariable data_spbmfc(nomFichCosm) -justify left -borderwidth 1 -relief groove
             pack $audace(base).fenetreSpData.et1.f1.ligne16.ent1 -side left
-            # Affichage du bouton de sélection
+            # Affichage du bouton de sÃ©lection
             button $audace(base).fenetreSpData.et1.f1.ligne16.but1 -borderwidth 2 -width 1 -text $caption(specLhIII,troispoints) \
                -command ::spbmfc::goBrut
             pack $audace(base).fenetreSpData.et1.f1.ligne16.but1 -side left
@@ -2091,13 +2089,13 @@ proc creeFenspbmfc { } {
             entry $audace(base).fenetreSpData.et1.f1.ligne16.ent2 -width 16 -relief flat\
                -textvariable data_spbmfc(nomFichRepInst) -justify left -borderwidth 1 -relief groove
             pack $audace(base).fenetreSpData.et1.f1.ligne16.ent2 -side left
-            # Affichage du bouton de sélection
+            # Affichage du bouton de sÃ©lection
             button $audace(base).fenetreSpData.et1.f1.ligne16.but2 -borderwidth 2 -width 1 -text $caption(specLhIII,troispoints) \
                -command ::spbmfc::goBrut
             pack $audace(base).fenetreSpData.et1.f1.ligne16.but2 -side left
          pack $audace(base).fenetreSpData.et1.f1.ligne16 -side top -fill x
 
-         #--- dix-septième ligne de l'étape 1
+         #--- dix-septiÃ¨me ligne de l'Ã©tape 1
          frame $audace(base).fenetreSpData.et1.f1.ligne17
             # Affichage du label
             label $audace(base).fenetreSpData.et1.f1.ligne17.lab1 -text $caption(specLhIII,fichcalibneon) \
@@ -2107,7 +2105,7 @@ proc creeFenspbmfc { } {
             entry $audace(base).fenetreSpData.et1.f1.ligne17.ent1 -width 16 -relief flat\
                -textvariable data_spbmfc(nomFichRaiesNeon) -justify left -borderwidth 1 -relief groove
             pack $audace(base).fenetreSpData.et1.f1.ligne17.ent1 -side left
-            # Affichage du bouton de sélection
+            # Affichage du bouton de sÃ©lection
             button $audace(base).fenetreSpData.et1.f1.ligne17.but1 -borderwidth 2 -width 1 -text $caption(specLhIII,troispoints) \
                -command ::spbmfc::goBrut
             pack $audace(base).fenetreSpData.et1.f1.ligne17.but1 -side left
@@ -2118,15 +2116,15 @@ proc creeFenspbmfc { } {
             entry $audace(base).fenetreSpData.et1.f1.ligne17.ent2 -width 16 -relief flat\
                -textvariable data_spbmfc(nomFichRaiesAtm) -justify left -borderwidth 1 -relief groove
             pack $audace(base).fenetreSpData.et1.f1.ligne17.ent2 -side left
-                  # Affichage du bouton de sélection
+                  # Affichage du bouton de sÃ©lection
             button $audace(base).fenetreSpData.et1.f1.ligne17.but2 -borderwidth 2 -width 1 -text $caption(specLhIII,troispoints) \
                -command ::spbmfc::goBrut
             pack $audace(base).fenetreSpData.et1.f1.ligne17.but2 -side left
          pack $audace(base).fenetreSpData.et1.f1.ligne17 -side top -fill x
 
-         #--- Dix-huitième ligne de l'étape 1 "Images inversées"
+         #--- Dix-huitiÃ¨me ligne de l'Ã©tape 1 "Images inversÃ©es"
          frame $audace(base).fenetreSpData.et1.f1.ligne18
-            # Affichage dele case à cocher
+            # Affichage dele case Ã  cocher
             checkbutton $audace(base).fenetreSpData.et1.f1.ligne18.chk1 -text $caption(specLhIII,spinverse) \
                -variable data_spbmfc(inverser)
             pack $audace(base).fenetreSpData.et1.f1.ligne18.chk1 -side top
@@ -2135,17 +2133,17 @@ proc creeFenspbmfc { } {
 
    pack $audace(base).fenetreSpData.et1 -side top
 
-   #--- Trame de l'étape 2
+   #--- Trame de l'Ã©tape 2
    frame $audace(base).fenetreSpData.et2 -borderwidth 2 -relief groove
 
-      #--- Titre de l'étape 2: Prétraitement des noirs & option cosmétique
+      #--- Titre de l'Ã©tape 2: PrÃ©traitement des noirs & option cosmÃ©tique
       frame $audace(base).fenetreSpData.et2.titre -borderwidth 1 -relief groove
          # Affichage du titre
          label $audace(base).fenetreSpData.et2.titre.nom -text $caption(specLhIII,titret2) -justify left
          pack $audace(base).fenetreSpData.et2.titre.nom -side left -in $audace(base).fenetreSpData.et2.titre
       pack $audace(base).fenetreSpData.et2.titre -side top -fill x
 
-      #--- Première ligne de l'étape 2 "fichier de sortie"
+      #--- PremiÃ¨re ligne de l'Ã©tape 2 "fichier de sortie"
       frame $audace(base).fenetreSpData.et2.ligne1
          # Affichage du label
          label $audace(base).fenetreSpData.et2.ligne1.lab1 -text $caption(specLhIII,nmfichsortie) -width 20
@@ -2154,15 +2152,15 @@ proc creeFenspbmfc { } {
          entry $audace(base).fenetreSpData.et2.ligne1.ent1 -width 16 -relief flat\
             -textvariable data_spbmfc(nomFichSpOut) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetreSpData.et2.ligne1.ent1 -side left
-         # Affichage de la case à cocher pour filtrer la médiane
+         # Affichage de la case Ã  cocher pour filtrer la mÃ©diane
          checkbutton $audace(base).fenetreSpData.et2.ligne1.chk1 -text $caption(specLhIII,resfitbess) \
             -variable data_spbmfc(out-fit)
          pack $audace(base).fenetreSpData.et2.ligne1.chk1 -side left -in $audace(base).fenetreSpData.et2.ligne1
-         # Affichage de la case à cocher pour filtrer la médiane
+         # Affichage de la case Ã  cocher pour filtrer la mÃ©diane
          checkbutton $audace(base).fenetreSpData.et2.ligne1.chk2 -text $caption(specLhIII,resdat) \
             -variable data_spbmfc(out-dat)
          pack $audace(base).fenetreSpData.et2.ligne1.chk2 -side left -in $audace(base).fenetreSpData.et2.ligne1
-         # Affichage de la case à cocher pour filtrer la médiane
+         # Affichage de la case Ã  cocher pour filtrer la mÃ©diane
          checkbutton $audace(base).fenetreSpData.et2.ligne1.chk3 -text $caption(specLhIII,respng) \
             -variable data_spbmfc(out-png)
          pack $audace(base).fenetreSpData.et2.ligne1.chk3 -side left -in $audace(base).fenetreSpData.et2.ligne1
@@ -2174,21 +2172,21 @@ proc creeFenspbmfc { } {
          pack $audace(base).fenetreSpData.et2.ligne1.but1 -side right
       pack $audace(base).fenetreSpData.et2.ligne1 -side top -fill x
 
-      #--- Seconde ligne de l'étape 2 "images intermédiaires"
+      #--- Seconde ligne de l'Ã©tape 2 "images intermÃ©diaires"
       frame $audace(base).fenetreSpData.et2.ligne2
          # Affichage du label
          label $audace(base).fenetreSpData.et2.ligne2.lab1 -text $caption(specLhIII,fichinterm) \
             -width 20 -justify right
          pack $audace(base).fenetreSpData.et2.ligne2.lab1 -side left
-         # Affichage de la case à cocher
+         # Affichage de la case Ã  cocher
          checkbutton $audace(base).fenetreSpData.et2.ligne2.chk1 -text $caption(specLhIII,fich_0b) \
             -variable data_spbmfc(out-0b)
          pack $audace(base).fenetreSpData.et2.ligne2.chk1 -side left -in $audace(base).fenetreSpData.et2.ligne2
-         # Affichage de la case à cocher
+         # Affichage de la case Ã  cocher
          checkbutton $audace(base).fenetreSpData.et2.ligne2.chk2 -text $caption(specLhIII,fich_1a) \
             -variable data_spbmfc(out-1a)
          pack $audace(base).fenetreSpData.et2.ligne2.chk2 -side left -in $audace(base).fenetreSpData.et2.ligne2
-         # Affichage de la case à cocher
+         # Affichage de la case Ã  cocher
          checkbutton $audace(base).fenetreSpData.et2.ligne2.chk3 -text $caption(specLhIII,fich_1b) \
             -variable data_spbmfc(out-1b)
          pack $audace(base).fenetreSpData.et2.ligne2.chk3 -side left -in $audace(base).fenetreSpData.et2.ligne2
@@ -2199,23 +2197,23 @@ proc creeFenspbmfc { } {
 
    pack $audace(base).fenetreSpData.et2 -side top -fill x
 
-   #--- Trame de l'étape 3
+   #--- Trame de l'Ã©tape 3
    frame $audace(base).fenetreSpData.et3 -borderwidth 2 -relief groove -bg blue
 
-      #--- Titre de l'étape 3: Prétraitement des noirs & option cosmétique
+      #--- Titre de l'Ã©tape 3: PrÃ©traitement des noirs & option cosmÃ©tique
       frame $audace(base).fenetreSpData.et3.titre -borderwidth 1 -relief groove
          # Affichage du titre
          label $audace(base).fenetreSpData.et3.titre.nom -text $caption(specLhIII,titret3) -justify left
          pack $audace(base).fenetreSpData.et3.titre.nom -side left -in $audace(base).fenetreSpData.et3.titre
       pack $audace(base).fenetreSpData.et3.titre -side top -fill x
 
-      #--- Cinquième ligne de l'étape 3
+      #--- CinquiÃ¨me ligne de l'Ã©tape 3
       frame $audace(base).fenetreSpData.et3.ligne5
       pack $audace(base).fenetreSpData.et3.ligne5 -side top -fill x
 
       frame $audace(base).fenetreSpData.et3.deuxlignes
          frame $audace(base).fenetreSpData.et3.deuxlignes.f1
-            #--- Sixième ligne de l'étape 3
+            #--- SixiÃ¨me ligne de l'Ã©tape 3
             frame $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne6
                # Affichage du label "Nom du fichier destination"
                label $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne6.lab1 -text $caption(specLhIII,spanglerot) \
@@ -2226,7 +2224,7 @@ proc creeFenspbmfc { } {
                   -textvariable data_spbmfc(angleRot) -justify left -borderwidth 1 -relief groove -state disabled
                pack $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne6.ent1 -side left
             pack $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne6 -side top -fill x
-            #--- Septième ligne de l'étape 3
+            #--- SeptiÃ¨me ligne de l'Ã©tape 3
             frame $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne7
                # Affichage du label
                label $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne7.lab1 -text $caption(specLhIII,spcorrgeom) \
@@ -2236,7 +2234,7 @@ proc creeFenspbmfc { } {
                entry $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne7.ent1 -width 16 -relief flat\
                   -textvariable data_spbmfc(CorrGeom) -justify left -borderwidth 1 -relief groove -state disabled
                pack $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne7.ent1 -side left
-               # Affichage de la case à cocher pour indiquer si le noir contient la précharge
+               # Affichage de la case Ã  cocher pour indiquer si le noir contient la prÃ©charge
                #--- Bouton "Effacer"
             pack $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne7 -side top -fill x
          pack $audace(base).fenetreSpData.et3.deuxlignes.f1 -side left -fill x

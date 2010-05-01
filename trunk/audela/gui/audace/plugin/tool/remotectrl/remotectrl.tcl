@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: remotectrl.tcl,v 1.37 2010-04-25 18:22:12 robertdelmas Exp $
+# Mise à jour $Id: remotectrl.tcl,v 1.38 2010-05-01 09:18:34 robertdelmas Exp $
 #
 
 #============================================================
@@ -118,12 +118,6 @@ namespace eval ::remotectrl {
       variable parametres
       variable This
 
-      #--- Si le repertoire .audela n'existe pas, le creer
-      set panneau(homeDirectory) [ file join $::env(HOME) .audela ]
-      if { ! [ file exist $panneau(homeDirectory) ] } {
-         file mkdir $panneau(homeDirectory)
-      }
-
       #--- Chargement des variables
       ::remotectrl::chargementVar
 
@@ -144,11 +138,10 @@ namespace eval ::remotectrl {
    }
 
    proc chargementVar { } {
-      global panneau
       variable parametres
 
       #--- Ouverture du fichier de parametres
-      set fichier [ file join $panneau(homeDirectory) remotectrl.ini ]
+      set fichier [ file join $::audace(rep_home) remotectrl.ini ]
       if { [ file exists $fichier ] } {
          source $fichier
       }
@@ -173,7 +166,7 @@ namespace eval ::remotectrl {
 
       #--- Sauvegarde des parametres
       catch {
-         set nom_fichier [ file join $panneau(homeDirectory) remotectrl.ini ]
+         set nom_fichier [ file join $::audace(rep_home) remotectrl.ini ]
          if [ catch { open $nom_fichier w } fichier ] {
             #---
          } else {
@@ -706,7 +699,7 @@ proc remotectrlBuildIF { This } {
    proc searchCamTel {} {
       global audace conf panneau
 
-      #--   demande le N° de cam et de tel
+      #--   demande les numeros de cam et de tel
       lassign [ send { set a [ list $audace(camNo) $audace(telNo) ] } ] camNo telNo
 
       set camName ""
