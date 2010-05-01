@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Outil d'acquisition pour APN Nikon CoolPix
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: acqapn.tcl,v 1.42 2010-01-30 14:03:33 robertdelmas Exp $
+# Mise à jour $Id: acqapn.tcl,v 1.43 2010-05-01 08:48:43 robertdelmas Exp $
 #
 
 #============================================================
@@ -129,9 +129,8 @@ namespace eval ::acqapn {
       set compteur_erreur "1"
 
       #--- Les repertoires specifiques
-      set panneau(acqapn,saveconf) [ file join $audace(rep_plugin) tool acqapn saveconf.log ]
-      set panneau(acqapn,saverep)  [ file join $audace(rep_plugin) tool acqapn saverep.log ]
-      set panneau(acqapn,savecmd)  [ file join $audace(rep_plugin) tool acqapn savecmd.log ]
+      set panneau(acqapn,saveconf) [ file join $::audace(rep_log) saveconf.log ]
+      set panneau(acqapn,saverep)  [ file join $::audace(rep_log) saverep.log ]
       set panneau(acqapn,photopc)  [ file join $audace(rep_plugin) tool acqapn photopc.exe ]
 
       #--- Chargement de la base de donnees des apn
@@ -143,7 +142,7 @@ namespace eval ::acqapn {
       #--- Creation de la variable pour le vitesse de communication
       ::acqapn::config::initToConf
 
-      #--- Creation des infos de configuration (config.ini) si elles n'existent pas
+      #--- Creation des infos de configuration si elles n'existent pas
       if {![info exists conf(coolpix,adjust)]}       {set conf(coolpix,adjust)       "Standard"}
       if {![info exists conf(coolpix,compression)]}  {set conf(coolpix,compression)  "Basic"}
       #--- dzoom multiplie par 10 ??????
@@ -212,7 +211,7 @@ namespace eval ::acqapn {
    #
    # ::acqapn::SetOptions
    #--- Fonction appelee au demarrage et par le bouton 'Reinitialiser'
-   #--- Specifie les variables private(coolpix,...) en rappellant les valeurs memorisees dans config.ini
+   #--- Specifie les variables private(coolpix,...) en rappellant les valeurs memorisees
    #
    proc SetOptions { } {
       variable private
@@ -229,7 +228,7 @@ namespace eval ::acqapn {
    #
    # ::acqapn::SaveOptions
    #--- Fonction appelee par le bouton 'Memoriser'
-   #--- Memorise les valeurs de conf(coolpix,...) dans config.ini
+   #--- Memorise les valeurs de conf(coolpix,...)
    #
    proc SaveOptions { } {
       variable private
@@ -412,7 +411,7 @@ namespace eval ::acqapn {
       #--- Commandes secretes
      ### id "DIAG RAW" ou "NIKON DIGITAL CAMERA"
 
-      #--- Cree le fichier audace\audace\plugin\tool\acqapn\saveconf.log
+      #--- Cree le fichier des traces de la configuration
       catch { set reponse [exec $panneau(acqapn,photopc) -q $panneau(acqapn,cmd_usb) clock -t -f 3\
          -s $conf(coolpix,baud) autoshut-host 1800 autoshut-field 1800 id  "NIKON DIGITAL CAMERA" query] } msg
       if {![info exists reponse] || ( [info exists reponse] && $msg!="$reponse" ) } {
@@ -1053,7 +1052,7 @@ namespace eval ::acqapn {
 
          if { $private(coolpix,nb_images) > "0" } {
 
-            #--- Cree le fichier saverep.log dans audace\audace\plugin\tool\acqapn\saverep.log
+            #--- Cree le fichier des traces des images de la carte memoire
             catch { set infos [exec $panneau(acqapn,photopc) $panneau(acqapn,cmd_usb) -s $conf(coolpix,baud) list] } msg
             set msg_court [ string range $msg 0 10 ]
             if { $msg_court=="Error 10003" } {
@@ -1321,7 +1320,7 @@ namespace eval ::acqapn {
       pack $This.info.connect\
          -in $This.info -anchor center -side top
 
-      #--- Identification du n� de serie
+      #--- Identification du n° de serie
       LabelFrame $This.info.numser -text $caption(acqapn,info,serial) -side left -padx 5
          label $This.info.numser.num -textvariable ::acqapn::private(coolpix_init,serial_number)
          pack $This.info.numser.num\
