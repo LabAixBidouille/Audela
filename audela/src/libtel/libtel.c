@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libtel.c,v 1.23 2010-03-07 16:42:28 michelpujol Exp $
+// $Id: libtel.c,v 1.24 2010-05-01 15:38:06 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -959,6 +959,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             // il n'y a pas d'erreur, je traite les coordonnees
             if (tel->radec_model_enabled == 1 ) {
                char tu[20];
+               char home[256];
                // j'applique le modele de pointage avec la fonction mc_tel2cat de LIBMC
                // ======================================================================
                // je recupere la date courante TU
@@ -967,25 +968,27 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                   strcpy(tu, interp->result);
                } 
                if ( result == TCL_OK) {
+                  //je recupere la position de l'onservatoire
+                   tel_home_get(tel,home);
                   // je convertis en coordonnes catalogue
                   //usage: mc_tel2cat {12h 36d} EQUATORIAL now {GPS 5 E 43 1230} 101325 290 { symbols } { values }
-                  sprintf(ligne, "mc_tel2cat { %s } EQUATORIAL %s %s %d %d { %s } { %s } ", 
+                  sprintf(ligne, "mc_tel2cat { %s } EQUATORIAL { %s } { %s } %d %d { %s } { %s } ", 
                      texte, tu, tel->homePosition, 
                      tel->radec_model_pressure, tel->radec_model_temperature, 
                      tel->radec_model_symbols, tel->radec_model_coefficients);
                   result = Tcl_Eval(interp,ligne);
                   // je convertis les angles en HMS et DMS
-                  sprintf(ligne,"return \"[mc_angle2hms [lindex {%s} 0] 360 zero 2 auto string]  [mc_angle2dms [lindex {%s} 1] 90 zero 2 + string]\"",interp->result, interp->result); 
+                  sprintf(ligne,"return \"[mc_angle2hms [lindex {%s} 0] 360 zero 0 auto string]  [mc_angle2dms [lindex {%s} 1] 90 zero 0 + string]\"",interp->result, interp->result); 
                   if ( mytel_tcleval(tel,ligne) == TCL_ERROR) {
                      sprintf(tel->msg, "cmdTelRaDec %s error: %s", ligne, tel->interp->result);
                      result = TCL_ERROR; 
                   } else {
                      strcpy(ligne,interp->result);
-                     ligne[8]  = '.';
-                     ligne[11] = 's';
-                     ligne[22] = '.';
-                     ligne[25] = 's';
-                     ligne[26] = '\0';
+                     //ligne[8]  = '.';
+                     //ligne[11] = 's';
+                     //ligne[22] = '.';
+                     //ligne[25] = 's';
+                     //ligne[26] = '\0';
                   } 
 
                }
@@ -1042,11 +1045,12 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                libtel_Getradec(interp,argv[3],&tel->ra0,&tel->dec0);
                if ( result == TCL_OK) {
                   char tu[20];
+                  char home[255];
                   // je recupere la date courante TU
                   result = Tcl_Eval(interp,"clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC");
                   if ( result == TCL_OK) {
                      strcpy(tu, interp->result);
-                  
+                     tel_home_get(tel,home);
                      // usage mc_hip2tel $hip $date $home $pressure $temperature $modpoi_symbols $modpoi_coefs
                      // avec hip = 
                      //   identifiant hypparcos de l'etoile (nombre entier), si non utilisé =0  
@@ -1059,10 +1063,13 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                      //   mudec : mouvement propre dec (en degré par an)
                      //   plx   : parallaxe , =0 si inconnu (en mas=milliseconde d'arc)s
                      
-                     sprintf(ligne, "mc_hip2tel { 0 0 %f %f J2000 0 0 0 0 } %s %s %d %d {%s} {%s}", 
-                        tel->ra0, tel->dec0, tu, tel->homePosition, 
+                     sprintf(ligne, "mc_hip2tel { 0 0 %f %f J2000 0 0 0 0 } { %s } { %s } %d %d { %s } { %s }", 
+                        tel->ra0, tel->dec0, tu, home, 
                         tel->radec_model_pressure, tel->radec_model_temperature, 
                         tel->radec_model_symbols, tel->radec_model_coefficients);
+                     if ( tel->consoleLog >= 1 ) {
+                        logConsole(tel, "goto %s\n", ligne);
+                     }
                      result = Tcl_Eval(interp,ligne);
                      if (result == TCL_OK) {
                         char **listArgv;
@@ -1102,14 +1109,17 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                // =======================================
                libtel_Getradec(interp,argv[3],&tel->ra0,&tel->dec0);
             }
-            
             if ( result == TCL_OK)  {
                if ( tel_radec_goto(tel) == 0 ) {
                   Tcl_SetResult(interp,"",TCL_VOLATILE);
+                  if ( tel->consoleLog >= 1 ) {
+                     logConsole(tel, "goto RA= %f DEC= %f\n", tel->ra0,tel->dec0);
+                  }            
                } else {
                   Tcl_SetResult(interp,tel->msg,TCL_VOLATILE);
                   result = TCL_ERROR;
                }
+
             }
          } else {
             sprintf(ligne,"Usage: %s %s goto {angle_ra angle_dec} ?-rate value? ?-blocking boolean? ?-backlash boolean?",argv[0],argv[1]);
@@ -1239,6 +1249,16 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                      result = TCL_ERROR;
                   }
                }
+               if (strcmp(argv[k],"-date")==0) {
+                  if ( strlen(argv[k+1]) < sizeof(tel->radec_model_date) ) {
+                     strcpy(tel->radec_model_date, argv[k+1]);
+                  } else {
+                     sprintf(ligne,"error: value length>%d for %s %s",
+                        sizeof(tel->radec_model_date), argv[k], argv[k+1]);
+                     Tcl_AppendResult(interp, ligne, NULL);
+                     result = TCL_ERROR;
+                  }
+               }
                if (strcmp(argv[k],"-pressure")==0) {
                   tel->radec_model_pressure =atoi(argv[k+1]);
                }
@@ -1256,7 +1276,6 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                   tel->radec_model_temperature =atoi(argv[k+1]);
                }
             }
-
             
          } else if (argc==4) {
             // je retourne les valeurs des parametres
@@ -1270,6 +1289,9 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             } else if (strcmp(argv[3],"-name")==0) {
                Tcl_SetResult(interp,tel->radec_model_name,TCL_VOLATILE);  
                result =  TCL_OK;
+            } else if (strcmp(argv[3],"-date")==0) {
+               Tcl_SetResult(interp,tel->radec_model_date,TCL_VOLATILE);  
+               result =  TCL_OK;
             } else if (strcmp(argv[3],"-pressure")==0) {
                sprintf(ligne,"%d",tel->radec_model_pressure);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -1282,11 +1304,13 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                result =  TCL_OK;
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             } else {
-               sprintf(ligne,"Usage: %s %s model -enabled 0|1 -symbols {IH ID NP CH ME MA} -coefficients { values } -temperature value -pressure",argv[0],argv[1]);            
+               sprintf(ligne,"Usage: %s %s model -enabled 0|1 -name ?value? -date ?value? -symbols {IH ID ... } -coefficients ?values? -temperature ?value? -pressure ?value?",argv[0],argv[1]);            
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               result =  TCL_ERROR;
             }
                
          } else {
-            sprintf(ligne,"Usage: %s %s model -enabled 0|1 -symbols {IH ID NP CH ME MA} -coefficients { values } -temperature value -pressure",argv[0],argv[1]);
+            sprintf(ligne,"Usage: %s %s model -enabled 0|1 -name ?value? -date ?value? -symbols {IH ID ... } -coefficients ?values? -temperature ?value? -pressure ?value?",argv[0],argv[1]);            
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             result = TCL_ERROR;
          }
