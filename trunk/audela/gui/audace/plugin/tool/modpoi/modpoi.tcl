@@ -2,7 +2,7 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: modpoi.tcl,v 1.28 2010-04-30 06:52:36 robertdelmas Exp $
+# Mise à jour $Id: modpoi.tcl,v 1.29 2010-05-01 09:08:26 robertdelmas Exp $
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
@@ -46,7 +46,7 @@ source [ file join $audace(rep_plugin) tool modpoi modpoi.cap ]
 
 proc Chargement_Var { } {
    variable parametres
-   global audace modpoi panneau
+   global audace modpoi
 
    #---
    if { [ info exists modpoi(var,home) ] == "0" } {
@@ -57,7 +57,7 @@ proc Chargement_Var { } {
       }
    }
    #--- Ouverture du fichier de parametres
-   set fichier [ file join $panneau(homeDirectory) modpoi.ini ]
+   set fichier [ file join $::audace(rep_home) modpoi.ini ]
    if { [ file exists $fichier ] } {
       source $fichier
    }
@@ -88,7 +88,7 @@ proc Chargement_Var { } {
 
 proc Enregistrement_Var { } {
    variable parametres
-   global modpoi panneau
+   global modpoi
 
    set parametres(modpoi,position)       $modpoi(toplevel,position)
    set parametres(modpoi,nb_stars)       $modpoi(stars,nb)
@@ -110,7 +110,7 @@ proc Enregistrement_Var { } {
 
    #--- Sauvegarde des parametres
    catch {
-      set nom_fichier [ file join $panneau(homeDirectory) modpoi.ini ]
+      set nom_fichier [ file join $::audace(rep_home) modpoi.ini ]
       if [ catch { open $nom_fichier w } fichier ] {
          #---
       } else {
