@@ -1,37 +1,32 @@
 #####################################################################
 #
 # Fichier     : bess_module.tcl
-# Description : Script pour générer un fichier FITS de spectre conforme à la base de données bess
-# Auteurs     : François Cochard (francois.cochard@wanadoo.fr)
+# Description : Script pour gÃ©nÃ©rer un fichier FITS de spectre conforme Ã  la base de donnÃ©es bess
+# Auteurs     : FranÃ§ois Cochard (francois.cochard@wanadoo.fr)
 #               Sur la forme, je suis parti du script calaphot de Jacques Michelet (jacques.michelet@laposte.net)
 #               Par ailleurs, je m'appuie sur les routines spc_audace de Benjamin Mauclaire
-# Mise a jour $Id: bess_module.tcl,v 1.10 2010-03-20 21:20:13 bmauclaire Exp $
-# Mise à jour FC mars 2007
-# Dernière mise à jour: 24 mars 2007 - 11h00
+# Mise Ã  jour $Id: bess_module.tcl,v 1.11 2010-05-01 13:19:17 robertdelmas Exp $
+# DerniÃ¨re mise Ã  jour: 24 mars 2007 - 11h00
 #
 #####################################################################
 
-# Bugs à corriger avant release
-# - Permettre l'accès à la routine aussi bien en standalone (script) que par une ligne de cde avec nom de fichier en argument
-# - Virer les appels à consolog: pas besoin de générer un fichier de log !
-# - Le message "fin normale du script arrive trop tôt dans la console
+# Bugs Ã  corriger
+# - Permettre l'accÃ¨s Ã  la routine aussi bien en standalone (script) que par une ligne de cde avec nom de fichier en argument
+# - Virer les appels Ã  consolog: pas besoin de gÃ©nÃ©rer un fichier de log !
+# - Le message "fin normale du script arrive trop tÃ´t dans la console
 # - Ajouter des coches pour les traitements (tell; helio, norm...)
-# - Bug : Permettre de mettre des # dans les champs prédefinis
+# - Bug : Permettre de mettre des # dans les champs prÃ©definis
 # - Bug "affichage fin ANTICIPEE du script..."
-# - Demander confirmation avant d'écraser le fichier...
-# - Tenir compte du fait que la vitesse héliocentrique est optionnelle
+# - Demander confirmation avant d'Ã©craser le fichier...
+# - Tenir compte du fait que la vitesse hÃ©liocentrique est optionnelle
 # - Ajouter la correction tellurique, la normalisation, la vitesse helio
-# - Recharger dynamiquement le fichier des prédéfinis
+# - Recharger dynamiquement le fichier des prÃ©dÃ©finis
 
-# Définition d'un espace réservé à ce script
+# DÃ©finition d'un espace rÃ©servÃ© Ã  ce script
 catch {namespace delete ::bess}
 namespace eval ::bess {
 
-   variable parametres
-   variable text_bess
    variable police
-   variable test
-   variable parametres
    set fich_in ""
 
    set numero_version v0.2
@@ -64,14 +59,6 @@ namespace eval ::bess {
    #*************  Principal  ***********************************************#
    #*************************************************************************#
    proc Principal { fich_in } {
-
-      global audace color
-      variable parametres
-      variable text_bess
-      variable liste_instruments
-      variable liste_sites
-      variable liste_observers
-
       LitFichesBeSSPredefinies
       ChargeFichier $fich_in
       EditeParametres $fich_in
@@ -128,10 +115,9 @@ namespace eval ::bess {
    #*************************************************************************#
    #*************  LitFichesBeSSPredefinies  **********************************#
    #*************************************************************************#
-   # Lit les noms prédéfinis pour les sites, les instruments et les observateurs
+   # Lit les noms prÃ©dÃ©finis pour les sites, les instruments et les observateurs
    proc LitFichesBeSSPredefinies { } {
       global audace
-#       variable parametres
       variable liste_instrument
       variable liste_site
       variable liste_observer
@@ -144,8 +130,8 @@ namespace eval ::bess {
       if {[info exists liste_site]} {unset liste_site}
       if {[info exists liste_observer]} {unset liste_observer}
 
-      # Ouverture du fichier de paramètres
-      set fichier [file join $audace(rep_plugin) tool spcaudace plugins bess_module BeSSParam.ini]
+      # Ouverture du fichier de paramÃ¨tres
+      set fichier [file join $::audace(rep_home) BeSSParam.ini]
 
       if {[file exists $fichier]} {
 # On ouvre le fichier
@@ -180,7 +166,7 @@ namespace eval ::bess {
     # Nettoyage des characteres <espace> en trop
     set ligne [string trim $ligne]
 
-    # Cas de la ligne de commentaires (ignorée)
+    # Cas de la ligne de commentaires (ignorÃ©e)
     if {[string first \# $ligne] == 0} {
         return -2
     }
@@ -194,7 +180,7 @@ namespace eval ::bess {
     }
     set motcle [string tolower [string range $ligne [expr $cg+1] [expr $cd-1]]]
 
-    # Isolement de la valeur associée, et nettoyage des caractères <espace> résiduels
+    # Isolement de la valeur associÃ©e, et nettoyage des caractÃ¨res <espace> rÃ©siduels
     set valeur [string trim [string range $ligne [expr $cd+1] end]]
     if {[string length $valeur] == 0} {
         return -3
@@ -202,17 +188,15 @@ namespace eval ::bess {
     return 0
     }
 
-
    #*************************************************************************#
    #*************  ChargeFichier  ********************************************#
    #*************************************************************************#
-   # Va chercher les mots-clé fits dans le header du fichier sélectionné
-      proc ChargeFichier { fich_in } {
-         # On procède par étapes:
-         # - On regarde le format du fichier, et on convertit si besoin
-         # - On lit le header pour initialiser les variables
-         # - On duplique les données du header pour en garder trace
-
+   # Va chercher les mots-clÃ© fits dans le header du fichier sÃ©lectionnÃ©
+   proc ChargeFichier { fich_in } {
+      # On procÃ¨de par Ã©tapes:
+      # - On regarde le format du fichier, et on convertit si besoin
+      # - On lit le header pour initialiser les variables
+      # - On duplique les donnÃ©es du header pour en garder trace
       global audace
       variable parametres
       variable parametresOld
@@ -238,7 +222,7 @@ namespace eval ::bess {
                ".spc" {
                   spc_spc2fits $racine.spc
                   buf$audace(bufNo) load [file join $audace(rep_images) $racine]
-                  # Corriger: virer l'extension _spc à la création du fichier (cf Benjamin)
+                  # Corriger: virer l'extension _spc Ã  la crÃ©ation du fichier (cf Benjamin)
                }
                ".fit" {
                   # On se contente de charger le fichier
@@ -255,22 +239,22 @@ namespace eval ::bess {
          }
       }
 
-# On liste les mots-clé BeSS
+# On liste les mots-clÃ© BeSS
       foreach motcle { OBJNAME BSS_RA BSS_DEC OBSERVER BSS_INST BSS_SITE DATE-OBS EXPTIME BSS_VHEL BSS_NORM BSS_TELL BSS_COSM} {
          set ligne [buf$audace(bufNo) getkwd $motcle]
 #           Message console "mot cle - %s - %s\n" $motcle [lindex $ligne 1]
           set parametres($motcle) [lindex $ligne 1]
       }
-# Sépare le champ DATE-OBS
+# SÃ©pare le champ DATE-OBS
       set parametres(datedeb) [lindex [split $parametres(DATE-OBS) T] 0]
       set parametres(heuredeb) [lindex [split $parametres(DATE-OBS) T] 1]
 
-# Sépare le champ Observer en 3 noms
+# SÃ©pare le champ Observer en 3 noms
       set parametres(obs1) [string trim [lindex [split $parametres(OBSERVER) ,] 0]]
       set parametres(obs2) [string trim [lindex [split $parametres(OBSERVER) ,] 1]]
       set parametres(obs3) [string trim [lindex [split $parametres(OBSERVER) ,] 2]]
 
-# On garde trace des éléments du header - on n'enregistrera que ceux qui sont modifiés
+# On garde trace des Ã©lÃ©ments du header - on n'enregistrera que ceux qui sont modifiÃ©s
       }
       if {[info exists parametresOld]} {unset parametresOld}
       foreach indice [array names parametres] {
@@ -281,9 +265,10 @@ namespace eval ::bess {
    #*************************************************************************#
    #*************  SelectFile  **********************************************#
    #*************************************************************************#
-   # Ouvre un menu de sélection de fichier
+   # Ouvre un menu de sÃ©lection de fichier
    proc SelectFile { } {
       global audace
+
       set nomFichier [tk_getOpenFile -filetypes { { {FIT} {.fit} } { {DAT} {.dat} } { {SPC} {.spc} } } -initialdir $audace(rep_images)]
       set nomFichier [file tail $nomFichier]
       set ::bess::fich_in [file tail $nomFichier]
@@ -294,19 +279,17 @@ namespace eval ::bess {
    #*************  EditeParametres  ****************************************#
    #*************************************************************************#
    proc EditeParametres { fich_in } {
-      global audace
-      global color
+      global audace color
       variable parametres
-      variable parametresOld
       variable text_bess
       variable police
       variable liste_instrument
       variable liste_site
       variable liste_observer
-#       variable fich_out
 
       variable bess_export_fg
       set bess_export_fg #ECE9D8
+
       variable bess_entry_fg
       set bess_entry_fg $color(white)
 
@@ -318,7 +301,7 @@ namespace eval ::bess {
 #       Provisioire (debug)
 #       Message console "fichier - %s - Ok (editeur)\n" $fich_in
 
-      # Construction de la fenêtre des paramètres
+      # Construction de la fenÃªtre des paramÃ¨tres
       toplevel $audace(base).saisie -borderwidth 2 -relief groove -bg $bess_export_fg
       #wm geometry $audace(base).saisie 560x550+120+50
       wm geometry $audace(base).saisie 605x570+120+50
@@ -333,21 +316,20 @@ namespace eval ::bess {
       set t [frame $c.t]
       $c create window 0 0 -anchor nw -window $t
 
-
       # Trame du titre
   if { 1==0 } {
       frame $t.trame0 -borderwidth 5 -relief groove -bg $bess_export_fg
       label $t.trame0.titre \
-	      -font [ list {Arial} 16 bold ] -text $text_bess(titrePanneau) \
-	      -borderwidth 0 -relief flat -bg $bess_export_fg  \
-	      -fg $color(blue_pad)
+         -font [ list {Arial} 16 bold ] -text $text_bess(titrePanneau) \
+         -borderwidth 0 -relief flat -bg $bess_export_fg  \
+         -fg $color(blue_pad)
 #label $t.trame0.titre -text $text_bess(titrePanneau) -font {helvetica 16 bold} -justify center -fg $color(blue_pad) -bg $bess_export_fg
       pack $t.trame0.titre -in $t -fill x -side top -pady 15
       #pack $t.trame0.titre -side top -fill both -expand true
   }
 
       #--------------------------------------------------------------------------------
-      # Trame du nom des fichier à éditer et de sortie
+      # Trame du nom des fichier Ã  Ã©diter et de sortie
       frame $t.trame1 -borderwidth 5 -relief groove -bg $bess_export_fg
 
       label $t.trame1.titre -text $text_bess(titrePanneau) -font {helvetica 16 bold} -justify center -fg $color(blue_pad) -bg $bess_export_fg
@@ -365,9 +347,8 @@ namespace eval ::bess {
 
       pack $t.trame1 -side top -fill both -expand true
 
-
       #--------------------------------------------------------------------------------
-      # Trame des renseignements généraux
+      # Trame des renseignements gÃ©nÃ©raux
       frame $t.trame2 -borderwidth 5 -relief groove -bg $bess_export_fg
 #       label $t.trame2.titre -text $text_bess(param_generaux) -font $police(titre) -fg $color(blue_pad) -bg $bess_export_fg
       label $t.trame2.opt -text $text_bess(optionnel) -font $police(gras) -fg $color(blue_pad) -bg $bess_export_fg
@@ -408,14 +389,13 @@ namespace eval ::bess {
       pack $t.trame3.b3 -side right -padx 10 -pady 10
       pack $t.trame3.b4 -side right -padx 35 -pady 10
 
-
       pack $t.trame3 -side top -fill both -expand true
 
       pack $c -side left -fill both -expand true
 
       tkwait window $audace(base).saisie
       if { "$::bess::fich_out"!="" } {
-	   return "$::bess::fich_out"
+      return "$::bess::fich_out"
       }
    }
 
@@ -423,16 +403,15 @@ namespace eval ::bess {
    #*************  WebBeSS  ************************************#
    #*************************************************************************#
    proc WebBeSS { } {
-
-      global audace conf spcaudace
+      global conf spcaudace
       variable text_bess
 
      if { $conf(editsite_htm)!="" } {
-	      set answer [ catch { exec $conf(editsite_htm) "$spcaudace(sitebess)" &
-	      } ]
+         set answer [ catch { exec $conf(editsite_htm) "$spcaudace(sitebess)" &
+         } ]
       } else {
-	      set message_erreur $text_bess(pb_editweb)
-	      tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
+         set message_erreur $text_bess(pb_editweb)
+         tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
     }
    }
 
@@ -440,13 +419,9 @@ namespace eval ::bess {
    #*************  EditeConfigs  ************************************#
    #*************************************************************************#
    proc EditeConfigs { } {
-
       global audace conf
-      variable liste_instruments
-      variable liste_sites
-      variable liste_observers
 
-      set fichier [file join $audace(rep_plugin) tool spcaudace plugins bess_module BeSSParam.ini]
+      set fichier [file join $::audace(rep_home) BeSSParam.ini]
       catch {
          exec $conf(editscript) $fichier
          tkwait visibility $audace(base).saisie
@@ -458,9 +433,8 @@ namespace eval ::bess {
    #*************************************************************************#
    #*************  valideMotCle  ********************************************#
    #*************************************************************************#
-# Cette procédure teste la validité d'un mote-clé BeSS
+# Cette procÃ©dure teste la validitÃ© d'un mote-clÃ© BeSS
    proc valideMotCle { motcle valeurmotle } {
-      global audace
       variable parametres
       variable text_bess
 
@@ -468,11 +442,11 @@ namespace eval ::bess {
 
         "OBJNAME" {
 #          Verifier le longueur du champ
-# Verifier les caractères utilisés
+# Verifier les caractÃ¨res utilisÃ©s
           set result 1        }
 
           "BSS_RA" {
-#            Verifier que DEC est aussi présent
+#            Verifier que DEC est aussi prÃ©sent
              if {!([string is double $parametres(BSS_RA)])} {
                 set message_erreur $text_bess(pb_ra)
                 tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
@@ -483,7 +457,7 @@ namespace eval ::bess {
           }
 
           "BSS_DEC" {
-#                  Verifier que RA est aussi présent
+#                  Verifier que RA est aussi prÃ©sent
              if {!([string is double $parametres(BSS_DEC)])} {
                 set message_erreur $text_bess(pb_dec)
                 tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
@@ -508,7 +482,7 @@ namespace eval ::bess {
             set result 1        }
 
           "DATE-OBS" {
-#            Vérifier le format
+#            VÃ©rifier le format
             set result 1        }
 
           "EXPTIME" {
@@ -556,14 +530,14 @@ namespace eval ::bess {
       variable parametres
       variable parametresOld
 
-#       Dans un premier temps, on commence par regarder si les mots-cle modifiés sont valides.
-# La variable motCleAModifier contiendra la liste des mots-clé modifiés
+#       Dans un premier temps, on commence par regarder si les mots-cle modifiÃ©s sont valides.
+# La variable motCleAModifier contiendra la liste des mots-clÃ© modifiÃ©s
       if {[info exists motCleAModifier]} {unset motCleAModifier}
-# La variable pas_glop est à 0 tant que les champs sont corrects. Le processus est interrompu sinon
+# La variable pas_glop est Ã  0 tant que les champs sont corrects. Le processus est interrompu sinon
       set pas_glop 0
 #       Message console "fichier %s\n" $fich_out
 
-#       On traite le cas à part du mot-clé OBSERVER (séparé en 3 dans le panneau)
+#       On traite le cas Ã  part du mot-clÃ© OBSERVER (sÃ©parÃ© en 3 dans le panneau)
       if { $parametres(obs1) != $parametresOld(obs1) ||
           $parametres(obs2) != $parametresOld(obs2) ||
           $parametres(obs3) != $parametresOld(obs3) } {
@@ -576,7 +550,7 @@ namespace eval ::bess {
          set parametres(OBSERVER) $parametresOld(OBSERVER)
       }
 
-#       On traite le cas à part du mot-clé DATE-OBS (séparé en 2 dans le panneau)
+#       On traite le cas Ã  part du mot-clÃ© DATE-OBS (sÃ©parÃ© en 2 dans le panneau)
       if {$parametres(datedeb) != $parametresOld(datedeb) ||
           $parametres(heuredeb) != $parametresOld(heuredeb) } {
              set parametres(DATE-OBS) $parametres(datedeb)
@@ -586,10 +560,10 @@ namespace eval ::bess {
          set parametres(DATE-OBS) $parametresOld(DATE-OBS)
       }
 
-#       On traite maintenant en bloc tous le smots-clé
+#       On traite maintenant en bloc tous le smots-clÃ©
       foreach motcle { OBJNAME BSS_RA BSS_DEC OBSERVER BSS_INST BSS_SITE DATE-OBS EXPTIME BSS_VHEL BSS_NORM BSS_TELL BSS_NORM} {
          if { $parametres($motcle) != $parametresOld($motcle)} {
-#           Le mot-cle a été modifié
+#           Le mot-cle a Ã©tÃ© modifiÃ©
               if { [valideMotCle $motcle $parametres($motcle)] != 1 } {
                  set pas_glop 1
 #                Message console "Erreur:  %s - %s\n" $motcle $parametres($motcle)
@@ -601,7 +575,7 @@ namespace eval ::bess {
          }
       }
       if {$pas_glop == 0} {
-   #     On peut maintenant enregistrer les mots-cé...
+   #     On peut maintenant enregistrer les mots-cÃ©...
    #       J'initialise les valeurs qui seront mises dans le header
          set formatmotcle(OBJNAME)  "string"
          set formatmotcle(BSS_RA)   "float"
@@ -664,16 +638,16 @@ namespace eval ::bess {
                buf$audace(bufNo) delkwd "RADECSYS"
             }
 
-	     #-- Complete les mots clefs vides :
-	     if { [ lsearch $listemotsclef "BSS_VHEL" ] ==-1 } {
-		 buf$audace(bufNo) setkwd [ list BSS_VHEL 0.0 float "Heliocentric velocity at data date" "km/s" ]
-	     }
-	     if { [ lsearch $listemotsclef "BSS_NORM" ] ==-1 } {
-		 buf$audace(bufNo) setkwd [ list BSS_NORM "no" string "Yes or no if normalisation has been done" "" ]
-	     }
-	     if { [ lsearch $listemotsclef "BSS_COSM" ] ==-1 } {
-		 buf$audace(bufNo) setkwd [ list BSS_COSM "no" string "Yes or no if cosmics correction has been done" "" ]
-	     }
+        #-- Complete les mots clefs vides :
+        if { [ lsearch $listemotsclef "BSS_VHEL" ] ==-1 } {
+       buf$audace(bufNo) setkwd [ list BSS_VHEL 0.0 float "Heliocentric velocity at data date" "km/s" ]
+        }
+        if { [ lsearch $listemotsclef "BSS_NORM" ] ==-1 } {
+       buf$audace(bufNo) setkwd [ list BSS_NORM "no" string "Yes or no if normalisation has been done" "" ]
+        }
+        if { [ lsearch $listemotsclef "BSS_COSM" ] ==-1 } {
+       buf$audace(bufNo) setkwd [ list BSS_COSM "no" string "Yes or no if cosmics correction has been done" "" ]
+        }
             if { [ lsearch $listemotsclef "SPC_RESP" ] !=-1 } {
                set spc_resp [ lindex [ buf$audace(bufNo) getkwd "SPC_RESP" ] 1 ]
                set spc_resl [ lindex [ buf$audace(bufNo) getkwd "SPC_RESL" ] 1 ]
@@ -685,22 +659,21 @@ namespace eval ::bess {
                buf$audace(bufNo) delkwd "DATE-END"
             }
 
-
             #---   Et je sauve le fichier... si le nom de fichier n'est pas vide
             if { $fich_out != ""} {
                set fichier [file root $fich_out]
                append fichier ".fit"
                set okpoursauver 0
                if {[file exists [file join $audace(rep_images) $fichier]]} {
-	               set message_erreur $text_bess(FichExiste)
-	               if {[tk_messageBox -message $message_erreur -icon warning -type yesno -title $text_bess(probleme)] == "yes"} {
-	                  set okpoursauver 1
+                  set message_erreur $text_bess(FichExiste)
+                  if {[tk_messageBox -message $message_erreur -icon warning -type yesno -title $text_bess(probleme)] == "yes"} {
+                     set okpoursauver 1
                   }
                } else {
-	               set okpoursauver 1
+                  set okpoursauver 1
                }
                if { $okpoursauver == 1 } {
-	           buf$audace(bufNo) bitpix float
+              buf$audace(bufNo) bitpix float
                    buf$audace(bufNo) save [file join $audace(rep_images) $fich_out]
                    buf$audace(bufNo) bitpix short
                    ChargeFichier $fich_out
@@ -721,5 +694,4 @@ namespace eval ::bess {
 
 #-- BMauclaire - 070619 : ne lance pas la fenetre au chargement de l'ensemble des scripts bess
 # ::bess::Principal ""
-
 
