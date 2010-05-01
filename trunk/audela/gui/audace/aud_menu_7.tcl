@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise à jour $Id: aud_menu_7.tcl,v 1.23 2010-04-23 17:03:06 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_7.tcl,v 1.24 2010-05-01 08:22:35 robertdelmas Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -395,7 +395,7 @@ namespace eval ::cwdWindow {
          return -1
       }
 
-     return 0
+      return 0
    }
 
    #
@@ -420,6 +420,46 @@ namespace eval ::cwdWindow {
       set cwdWindow(geometry) [wm geometry $This]
       destroy $This
       unset This
+   }
+
+   #
+   # ::cwdWindow::updateImageDirectory
+   # Test de l'existence d'un repertoire avec creation du repertoire s'il n'existe pas
+   #
+   proc updateImageDirectory { } {
+      if { $::conf(rep_images,mode) == "date" } {
+         #--- Je calcule la date du jour (a partir de l'heure TU)
+         if { $::conf(rep_images,refModeAuto) == "0" } {
+            set heure_nouveau_repertoire "0"
+         } else {
+            set heure_nouveau_repertoire "12"
+         }
+         set heure_courante [ lindex [ split $::audace(tu,format,hmsint) h ] 0 ]
+         if { $heure_courante < $heure_nouveau_repertoire } {
+            #--- Si on est avant l'heure de changement, je prends la date de la veille
+            set ::cwdWindow(sous_repertoire_date) [ clock format [ expr { [ clock seconds ] - 86400 } ] -format "%Y%m%d" ]
+         } else {
+            #--- Sinon, je prends la date du jour
+            set ::cwdWindow(sous_repertoire_date) [ clock format [ clock seconds ] -format "%Y%m%d" ]
+         }
+
+         #--- Substituer les \ par des /
+         set normalized_dir_images [ file normalize $::conf(rep_images) ]
+
+         #--- Creation du sous-repertoire du jour s'il n'existe pas
+         set dirName [ file join $normalized_dir_images $::cwdWindow(sous_repertoire_date) ]
+         if { ![ file exists $dirName ] } {
+            #--- je cree le repertoire
+            set catchError [catch {
+               file mkdir $dirName
+            }]
+            if { $catchError != 0 } {
+               ::tkutil::displayErrorInfo "$::caption(cwdWindow,label_sous_rep)"
+               return
+            }
+         }
+         set ::audace(rep_images) $dirName
+      }
    }
 
 }
@@ -882,13 +922,8 @@ namespace eval ::audace {
       set conf(console,wmgeometry)            [ wm geometry $audace(Console) ]
 
       #---
-      if { $::tcl_platform(os) == "Linux" } {
-         set filename [ file join ~ .audela config.ini ]
-         set filebak [ file join ~ .audela config.bak ]
-      } else {
-         set filename [ file join $audace(rep_audela) audace config.ini ]
-         set filebak [ file join $audace(rep_audela) audace config.bak ]
-      }
+      set filename [ file join $::audace(rep_home) config.ini ]
+      set filebak  [ file join $::audace(rep_home) config.bak ]
       set filename2 $filename
       catch {
          file copy -force $filename $filebak
