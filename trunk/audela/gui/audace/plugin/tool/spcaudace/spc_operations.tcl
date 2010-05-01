@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.29 2010-04-21 15:07:06 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.30 2010-05-01 10:19:47 bmauclaire Exp $
 
 
 
@@ -24,19 +24,38 @@
 proc spc_anim { args } {
    global audace conf spcaudace tcl_platform
 
-   if { [ llength $args ]==1 } {
+   set nbargs [ llength $args ] 
+   if { $nbargs==1 } {
       set nom_astre [ lindex $args 0 ]
+      set delay_images 40
+   } elseif { $nbargs==2 } {
+      set nom_astre [ lindex $args 0 ]
+      set delay_images [ lindex $args 1 ]
+   } elseif { $nbargs==6 } {
+      set nom_astre [ lindex $args 0 ]
+      set delay_images [ lindex $args 1 ]
+      set lambda_min [ lindex $args 2 ]
+      set lambda_max [ lindex $args 3 ]
+      set ymin [ lindex $args 4 ]
+      set ymax [ lindex $args 5 ]
+   } else {
+      ::console::affiche_erreur "Usage: spc_anim nom_astre_sans_espaces ?delay_images(40) ?lambda_min lambda_max ymin ymax??\n"
+      return ""
+   }
+      
 
-      #--- Copie des fichiers :
-      set listefichiers [ lsort -dictionary [ glob -dir $audace(rep_images) -tail *$conf(extension,defaut) ] ]
-      if { [ file exists $audace(rep_images)/originaux ]!=1 } {
-         ::console::affiche_prompt "\nSauvegardes des fichiers dans originaux...\n"
-         file mkdir $audace(rep_images)/originaux
-         foreach fichier $listefichiers {
-            file copy "$audace(rep_images)/$fichier" "$audace(rep_images)/originaux/$fichier"
-         }
+   #--- Copie des fichiers :
+   set listefichiers [ lsort -dictionary [ glob -dir $audace(rep_images) -tail *$conf(extension,defaut) ] ]
+   if { [ file exists $audace(rep_images)/originaux ]!=1 } {
+      ::console::affiche_prompt "\nSauvegardes des fichiers dans originaux...\n"
+      file mkdir $audace(rep_images)/originaux
+      foreach fichier $listefichiers {
+         file copy "$audace(rep_images)/$fichier" "$audace(rep_images)/originaux/$fichier"
       }
+   }
 
+
+   if { $nbargs<=2 } {
       #--- Determination de lambda_min et lambda_max :
       ::console::affiche_prompt "\nDétermination de lambda_max et lambda_min...\n"
       set bande_liste [ list ]
@@ -50,26 +69,31 @@ proc spc_anim { args } {
       set lambda_max [ lindex [ lindex [ lsort -real -increasing -index 2 $bande_liste ] 0 ] 2 ]
       ::console::affiche_resultat "\nLambda_min=$lambda_min et Lambda_max=$lambda_max\n"
 
-if { 1==1 } {
-      #--- Decoupage de la zone commune :
-      ::console::affiche_prompt "\nDécoupage de la zone commune...\n"
-      foreach fichier $listefichiers {
-         spc_select "$fichier" $lambda_min $lambda_max
-         file delete -force "$audace(rep_images)/$fichier"
-      }
-
-      #--- Normalisation :
-      ::console::affiche_prompt "\nNormalisation des spectres...\n"
-      set listefichiers [ lsort -dictionary [ glob -dir $audace(rep_images) -tail *_sel$conf(extension,defaut) ] ]
-      foreach fichier $listefichiers {
-         spc_autonorma "$fichier"
-         file delete -force "$audace(rep_images)/$fichier"
-      }
+   }
 
 
-      #--- Determination de ymin et ymax :
+   #--- Decoupage de la zone commune :
+   ::console::affiche_prompt "\nDécoupage de la zone commune...\n"
+   foreach fichier $listefichiers {
+      spc_select "$fichier" $lambda_min $lambda_max
+      file delete -force "$audace(rep_images)/$fichier"
+   }
+
+
+   #--- Normalisation :
+   ::console::affiche_prompt "\nNormalisation des spectres...\n"
+   set listefichiers [ lsort -dictionary [ glob -dir $audace(rep_images) -tail *_sel$conf(extension,defaut) ] ]
+   foreach fichier $listefichiers {
+      spc_autonorma "$fichier"
+      file delete -force "$audace(rep_images)/$fichier"
+   }
+
+
+
+   #--- Determination de ymin et ymax :
+   set listefichiers [ lsort -dictionary [ glob -dir $audace(rep_images) -tail *_norm$conf(extension,defaut) ] ]
+   if { $nbargs<=3 } {
       ::console::affiche_prompt "\nDétermination de ymax et ymin...\n"
-      set listefichiers [ lsort -dictionary [ glob -dir $audace(rep_images) -tail *_norm$conf(extension,defaut) ] ]
       set intensity_liste [ list ]
       foreach fichier $listefichiers {
          buf$audace(bufNo) load "$audace(rep_images)/$fichier"
@@ -82,44 +106,43 @@ if { 1==1 } {
       set ymin [ expr 0.97*[ lindex [ lindex [ lsort -real -increasing -index 1 $intensity_liste ] 0 ] 1 ]/1000. ]
       set ymax [ expr 1.03*[ lindex [ lindex [ lsort -real -decreasing -index 2 $intensity_liste ] 0 ] 2 ]/1000. ]
       ::console::affiche_resultat "\nYmin=$ymin et Ymax=$ymax\n"
-
-
-      #--- Export au format PNG :
-      ::console::affiche_prompt "\nExport au format PNG...\n"
-      foreach fichier $listefichiers {
-         spc_autofit2png "$fichier" "$nom_astre" * * $ymin $ymax
-      }
-      set listefichiers [ lsort -dictionary [ glob -dir $audace(rep_images) -tail *_norm$conf(extension,defaut) ] ]
-      foreach fichier $listefichiers {
-         file delete -force "$audace(rep_images)/$fichier"
-      }
-
-
-      #--- Creation de la l'animation :
-      ::console::affiche_prompt "\nCreation de l'animation...\n"
-      if { $tcl_platform(platform)=="unix" } {
-         if { [ file exists /usr/bin/convert ] } {
-            set answer [ catch { exec convert -delay 40 -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif } ]
-            ::console::affiche_resultat "$answer\n"
-         } else {
-            ::console::affiche_erreur "Vous devez installer le paquet d'ImageMagick et executer la commande :\n convert -delay 40 -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif\n"
-            return ""
-         }
-      } elseif { $tcl_platform(platform)=="windows" } {
-         if { [ file exists $spcaudace(rep_spc)/plugins/imwin/convert ] } {
-            set answer [ catch { exec $spcaudace(rep_spc)/plugins/imwin/convert -delay 40 -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif } ]
-            ::console::affiche_resultat "$answer\n"
-         } else {
-            ::console::affiche_erreur "Vous devez installer l'archive d'ImageMagick Mini et executer la commande DOS :\n $spcaudace(rep_spc)\plugins\imwin\convert -delay 40 -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif\n"
-            return ""
-         }
-      }
-      ::console::affiche_resultat "Animation sauvée sous ${nom_astre}_anim.gif.\n"
-}
-      #--- Traitement du resultat :
-   } else {
-      ::console::affiche_erreur "Usage: spc_anim nom_astre_sans_espaces\n"
    }
+
+
+   #--- Export au format PNG :
+   ::console::affiche_prompt "\nExport au format PNG...\n"
+   foreach fichier $listefichiers {
+      spc_autofit2png "$fichier" "$nom_astre" * * $ymin $ymax
+   }
+   set listefichiers [ lsort -dictionary [ glob -dir $audace(rep_images) -tail *_norm$conf(extension,defaut) ] ]
+   foreach fichier $listefichiers {
+      file delete -force "$audace(rep_images)/$fichier"
+   }
+
+
+   #--- Creation de la l'animation :
+   ::console::affiche_prompt "\nCreation de l'animation...\n"
+   if { $tcl_platform(platform)=="unix" } {
+      if { [ file exists /usr/bin/convert ] } {
+         set answer [ catch { exec convert -delay $delay_images -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif } ]
+         ::console::affiche_resultat "$answer\n"
+      } else {
+         ::console::affiche_erreur "Vous devez installer le paquet d'ImageMagick et executer la commande :\n convert -delay $delay_images -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif\n"
+         return ""
+      }
+   } elseif { $tcl_platform(platform)=="windows" } {
+      if { [ file exists $spcaudace(rep_spc)/plugins/imwin/convert.exe ] } {
+         set answer [ catch { exec $spcaudace(rep_spc)/plugins/imwin/convert.exe -delay $delay_images -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif } ]
+         ::console::affiche_resultat "$answer\n"
+      } else {
+         ::console::affiche_erreur "Vous devez installer l'archive d'ImageMagick Mini et executer la commande DOS :\n $spcaudace(rep_spc)\plugins\imwin\convert.exe -delay $delay_images -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif\n"
+         return ""
+      }
+   }
+   
+   #--- Traitement du resultat :
+   ::console::affiche_resultat "Animation sauvée sous ${nom_astre}_anim.gif.\n"
+   return "${nom_astre}_anim.gif"
 }
 #**********************************************************************************#
 
