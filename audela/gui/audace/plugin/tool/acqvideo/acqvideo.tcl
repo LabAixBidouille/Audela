@@ -2,7 +2,7 @@
 # Fichier : acqvideo.tcl
 # Description : Outil d'acquisition video
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: acqvideo.tcl,v 1.19 2010-04-23 17:01:41 robertdelmas Exp $
+# Mise à jour $Id: acqvideo.tcl,v 1.20 2010-05-01 08:53:15 robertdelmas Exp $
 #
 
 #==============================================================
@@ -194,8 +194,12 @@ namespace eval ::acqvideo {
    proc demarrageAcqVideo { visuNo } {
       global audace caption
 
+      #--- Creation du sous-repertoire a la date du jour
+      #--- en mode automatique s'il n'existe pas
+      ::cwdWindow::updateImageDirectory
+
       #--- Gestion du fichier de log
-      #--- Creation du nom de fichier log
+      #--- Creation du nom du fichier log
       set nom_generique "acqvideo-visu$visuNo-"
       #--- Heure a partir de laquelle on passe sur un nouveau fichier de log
       if { $::conf(rep_images,refModeAuto) == "0" } {
@@ -302,22 +306,21 @@ namespace eval ::acqvideo {
 #***** Procedure chargerVariable *******************************
    proc chargerVariable { visuNo } {
       variable parametres
-      global audace
 
       #--- Ouverture du fichier de parametres
-      set fichier [ file join $audace(rep_plugin) tool acqvideo acqvideo.ini ]
+      set fichier [ file join $::audace(rep_home) acqvideo.ini ]
       if { [ file exists $fichier ] } {
          source $fichier
       }
 
       #--- Creation des variables si elles n'existent pas
-      if { ! [ info exists parametres(acqvideo,$visuNo,mode) ] }           { set parametres(acqvideo,$visuNo,mode)        "1" }   ; #--- Mode : Video
-      if { ! [ info exists parametres(acqvideo,$visuNo,lg_film) ] }        { set parametres(acqvideo,$visuNo,lg_film)     "10" }  ; #--- Duree de la video : 10s
-      if { ! [ info exists parametres(acqvideo,$visuNo,rate) ] }           { set parametres(acqvideo,$visuNo,rate)        "5" }   ; #--- Images/sec. : 5
-      if { ! [ info exists parametres(acqvideo,$visuNo,x1) ] }             { set parametres(acqvideo,$visuNo,x1)          "100" } ; #--- Video fenetree : x1
-      if { ! [ info exists parametres(acqvideo,$visuNo,y1) ] }             { set parametres(acqvideo,$visuNo,y1)          "100" } ; #--- Video fenetree : y1
-      if { ! [ info exists parametres(acqvideo,$visuNo,x2) ] }             { set parametres(acqvideo,$visuNo,x2)          "350" } ; #--- Video fenetree : x2
-      if { ! [ info exists parametres(acqvideo,$visuNo,y2) ] }             { set parametres(acqvideo,$visuNo,y2)          "250" } ; #--- Video fenetree : y2
+      if { ! [ info exists parametres(acqvideo,$visuNo,mode) ] }           { set parametres(acqvideo,$visuNo,mode)    "1" }   ; #--- Mode : Video
+      if { ! [ info exists parametres(acqvideo,$visuNo,lg_film) ] }        { set parametres(acqvideo,$visuNo,lg_film) "10" }  ; #--- Duree de la video : 10s
+      if { ! [ info exists parametres(acqvideo,$visuNo,rate) ] }           { set parametres(acqvideo,$visuNo,rate)    "5" }   ; #--- Images/sec. : 5
+      if { ! [ info exists parametres(acqvideo,$visuNo,x1) ] }             { set parametres(acqvideo,$visuNo,x1)      "100" } ; #--- Video fenetree : x1
+      if { ! [ info exists parametres(acqvideo,$visuNo,y1) ] }             { set parametres(acqvideo,$visuNo,y1)      "100" } ; #--- Video fenetree : y1
+      if { ! [ info exists parametres(acqvideo,$visuNo,x2) ] }             { set parametres(acqvideo,$visuNo,x2)      "350" } ; #--- Video fenetree : x2
+      if { ! [ info exists parametres(acqvideo,$visuNo,y2) ] }             { set parametres(acqvideo,$visuNo,y2)      "250" } ; #--- Video fenetree : y2
       if { ! [ info exists parametres(acqvideo,$visuNo,avancement_acq) ] } {
          if { $visuNo == "1" } {
             set parametres(acqvideo,$visuNo,avancement_acq) "1" ; #--- Barre de progression de la pose : Oui
@@ -334,7 +337,7 @@ namespace eval ::acqvideo {
 #***** Procedure enregistrerVariable ***************************
    proc enregistrerVariable { visuNo } {
       variable parametres
-      global audace panneau
+      global panneau
 
       #---
       set panneau(acqvideo,$visuNo,mode)              [ expr [ lsearch "$panneau(acqvideo,$visuNo,list_mode)" "$panneau(acqvideo,$visuNo,mode_en_cours)" ] + 1 ]
@@ -349,7 +352,7 @@ namespace eval ::acqvideo {
       set parametres(acqvideo,$visuNo,avancement_acq) $panneau(acqvideo,$visuNo,avancement_acq)
       #--- Sauvegarde des parametres
       catch {
-        set nom_fichier [ file join $audace(rep_plugin) tool acqvideo acqvideo.ini ]
+        set nom_fichier [ file join $::audace(rep_home) acqvideo.ini ]
         if [ catch { open $nom_fichier w } fichier ] {
            #---
         } else {
