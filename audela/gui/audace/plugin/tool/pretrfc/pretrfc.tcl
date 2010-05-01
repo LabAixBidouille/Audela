@@ -2,7 +2,7 @@
 # Fichier : pretrfc.tcl
 # Description : Outil pour le pretraitement automatique
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: pretrfc.tcl,v 1.27 2010-04-25 18:21:52 robertdelmas Exp $
+# Mise à jour $Id: pretrfc.tcl,v 1.28 2010-05-01 09:14:14 robertdelmas Exp $
 #
 
 #============================================================
@@ -21,12 +21,6 @@ namespace eval ::pretrfc {
 #***** Procedure DemarragePretraitFC *********************************
    proc DemarragePretraitFC { } {
       global audace caption panneau
-
-      #--- Si le repertoire .audela n'existe pas, le creer
-      set panneau(homeDirectory) [ file join $::env(HOME) .audela ]
-      if { ! [ file exist $panneau(homeDirectory) ] } {
-         file mkdir $panneau(homeDirectory)
-      }
 
       #--- Lecture du fichier de configuration
       ::pretrfc::RecuperationParametres
@@ -183,7 +177,7 @@ proc getPluginHelp { } {
 
 #***** Procedure stopTool ********************************************
    proc stopTool { visuNo } {
-      #--- Rien � faire
+      #--- Rien à faire
    }
 #***** Fin de la procedure stopTool **********************************
 
@@ -233,12 +227,12 @@ proc getPluginHelp { } {
 
 #***** Procedure RecuperationParametres ******************************
    proc RecuperationParametres { } {
-      global conf_pt_fc panneau
+      global conf_pt_fc
 
       #--- Initialisation
       if {[info exists conf_pt_fc]} {unset conf_pt_fc}
       #--- Ouverture du fichier de parametres
-      set fichier [file join $panneau(homeDirectory) pretrfc.ini]
+      set fichier [file join $::audace(rep_home) pretrfc.ini]
       if {[file exists $fichier]} {source $fichier}
       #--- Creation des variables si elles n'existent pas
       if { ! [ info exists conf_pt_fc(nbPLU) ]  }          { set conf_pt_fc(nbPLU)           "5" }
@@ -275,10 +269,10 @@ proc getPluginHelp { } {
 
 #***** Procedure SauvegardeParametres ********************************
     proc SauvegardeParametres { } {
-       global caption conf_pt_fc panneau
+       global caption conf_pt_fc
 
        catch {
-          set nom_fichier [file join $panneau(homeDirectory) pretrfc.ini]
+          set nom_fichier [file join $::audace(rep_home) pretrfc.ini]
           if [catch {open $nom_fichier w} fichier] {
              Message console "%s\n" $caption(pretrfc,PbSauveConfig)
           } else {

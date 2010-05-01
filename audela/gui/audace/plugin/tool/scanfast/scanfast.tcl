@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.60 2010-04-25 18:22:45 robertdelmas Exp $
+# Mise Ã  jour $Id: scanfast.tcl,v 1.61 2010-05-01 09:21:56 robertdelmas Exp $
 #
 
 global panneau
@@ -312,10 +312,9 @@ proc ::scanfast::createPanel { this } {
 #------------------------------------------------------------
 proc ::scanfast::chargerVar { } {
    variable parametres
-   global panneau
 
    #--- Ouverture du fichier de parametres
-   set fichier [ file join $panneau(homeDirectory) scanfast.ini ]
+   set fichier [ file join $::audace(rep_home) scanfast.ini ]
    if { [ file exists $fichier ] } {
       source $fichier
    }
@@ -372,7 +371,7 @@ proc ::scanfast::enregistrerVar { } {
 
    #--- Sauvegarde des parametres
    catch {
-      set nom_fichier [ file join $panneau(homeDirectory) scanfast.ini ]
+      set nom_fichier [ file join $::audace(rep_home) scanfast.ini ]
       if [ catch { open $nom_fichier w } fichier ] {
          #---
       } else {
@@ -521,12 +520,6 @@ proc ::scanfast::startTool { visuNo } {
    #--- On cree la variable de configuration des mots cles
    if { ! [ info exists ::conf(scanfast,keywordConfigName) ] } { set ::conf(scanfast,keywordConfigName) "default" }
 
-   #--- Si le repertoire .audela n'existe pas, le creer
-   set panneau(homeDirectory) [ file join $::env(HOME) .audela ]
-   if { ! [ file exist $panneau(homeDirectory) ] } {
-      file mkdir $panneau(homeDirectory)
-   }
-
    #--- Chargement de la configuration
    chargerVar
 
@@ -665,7 +658,7 @@ proc ::scanfast::cmdGo { { motor motoron } } {
          set panneau(scanfast,acquisition) "1"
          set panneau(Scan,Stop)            "0"
 
-         #--- Les champs "Colonnes", "Lignes" et "Interligne" ne doivent pas être vides
+         #--- Les champs "Colonnes", "Lignes" et "Interligne" ne doivent pas etre vides
          if { $panneau(scanfast,col1) == "" } {
             set panneau(scanfast,col1) $parametres(scanfast,col1)
          }
@@ -679,7 +672,7 @@ proc ::scanfast::cmdGo { { motor motoron } } {
             set panneau(scanfast,interligne) $parametres(scanfast,interligne)
          }
 
-         #--- Les 2 champs de la "Calibration" ne doivent pas être vides
+         #--- Les 2 champs de la "Calibration" ne doivent pas etre vides
          if { $panneau(scanfast,dt) == "" } {
             cmdCalcul
          }
@@ -957,7 +950,7 @@ proc ::scanfast::cmdCalcul { } {
       $This.fra33.but1 configure -relief groove -state disabled
       update
 
-      #--- Les champs "Colonnes", "Lignes" et "Interligne" ne doivent pas être vides
+      #--- Les champs "Colonnes", "Lignes" et "Interligne" ne doivent pas etre vides
       if { $panneau(scanfast,col1) == "" } {
          set panneau(scanfast,col1) $parametres(scanfast,col1)
       }
