@@ -2,7 +2,7 @@
 # Fichier : acqdslr.tcl
 # Description : Outil d'acquisition pour APN Canon
 # Auteur : Raymond Zachantke
-# Mise a jour $Id: acqdslr.tcl,v 1.1 2010-04-19 15:12:42 robertdelmas Exp $
+# Mise a jour $Id: acqdslr.tcl,v 1.2 2010-05-01 08:03:57 robertdelmas Exp $
 #
 
 #============================================================
@@ -69,7 +69,7 @@ namespace eval ::acqdslr {
    proc getPluginProperty { propertyName } {
       switch $propertyName {
          function     { return "acquisition" }
-         subfunction { return "acqdslr" }
+         subfunction  { return "acqdslr" }
          display      { return "panel" }
       }
    }
@@ -1201,3 +1201,4 @@ proc acqdslrBuildIF { This } {
          lappend panneau(acqdslr,status) "0"
       }
    }
+
