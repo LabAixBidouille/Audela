@@ -724,6 +724,14 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\src\mc_nora1.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\mc_nora2.c"
+				>
+			</File>
+			<File
 				RelativePath="..\src\mc_orbi1.c"
 				>
 				<FileConfiguration
