@@ -2,7 +2,7 @@
 # Fichier : eshel.tcl
 # Description : outil de fabrication des fichier Kit et de deploiement des plugin
 # Auteurs : Michel Pujol
-# Mise a jour $Id: eshel.tcl,v 1.5 2010-04-11 13:24:25 michelpujol Exp $
+# Mise a jour $Id: eshel.tcl,v 1.6 2010-05-01 15:30:58 michelpujol Exp $
 #
 
 ##------------------------------------------------------------
@@ -179,6 +179,7 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
    if { ! [ info exists conf($prefix,gamma) ] }           { set conf($prefix,gamma)            5.75 }
    if { ! [ info exists conf($prefix,grating) ] }         { set conf($prefix,grating)          79.0 }
    if { ! [ info exists conf($prefix,focale) ] }          { set conf($prefix,focale)           85.0 }
+   if { ! [ info exists conf($prefix,distorsion) ] }      { set conf($prefix,distorsion)       "" }
    if { ! [ info exists conf($prefix,spectrograhLink) ] } { set conf($prefix,spectrograhLink)  "" }
    if { ! [ info exists conf($prefix,mirror,bit) ] }      { set conf($prefix,mirror,bit)       1 }
    if { ! [ info exists conf($prefix,thar,bit) ] }        { set conf($prefix,thar,bit)         2 }

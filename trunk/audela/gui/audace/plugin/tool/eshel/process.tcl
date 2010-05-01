@@ -2,7 +2,7 @@
 # Fichier : process.tcl
 # Description : traitements eShel
 # Auteur : Michel PUJOL
-# Mise a jour $Id: process.tcl,v 1.3 2010-04-29 18:13:01 michelpujol Exp $
+# Mise a jour $Id: process.tcl,v 1.4 2010-05-01 15:31:28 michelpujol Exp $
 #
 
 ################################################################
@@ -683,6 +683,9 @@ proc ::eshel::process::generateScript { } {
    putCommand $hScriptFile "\n#--- Calibration lines  (lambda in angtrom)"
    putCommand $hScriptFile "set lineList { $::conf(eshel,instrument,config,$name,lineList) }"
 
+   putCommand $hScriptFile "set distorsion [list $::conf(eshel,instrument,config,$name,distorsion) ] "
+
+
    foreach processNode [::dom::tcl::node children $roadmapNode] {
       set processType [::dom::tcl::node cget $processNode -nodeName]
       set status [::dom::element getAttribute $processNode "STATUS"]
@@ -1303,7 +1306,7 @@ proc ::eshel::process::putProcessFlat { hfile dirIn fileIn dirOut fileOut } {
    append command {$boxWide $wideOrder $stepOrder $wideSky $threshold }
    append command {$minOrder $maxOrder }
    append command {$refX $refY $refNum $refLambda }
-   append command {$orderDefinition $lineList }
+   append command {$orderDefinition $lineList $distorsion }
    puts $hfile $command
 }
 
