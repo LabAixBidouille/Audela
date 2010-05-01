@@ -2,7 +2,7 @@
 # Fichier : parallelport.tcl
 # Description : Interface de liaison Port Parallele
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: parallelport.tcl,v 1.23 2010-05-01 08:38:21 robertdelmas Exp $
+# Mise à jour $Id: parallelport.tcl,v 1.24 2010-05-01 08:40:15 robertdelmas Exp $
 #
 
 namespace eval parallelport {
