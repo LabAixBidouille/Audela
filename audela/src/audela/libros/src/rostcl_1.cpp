@@ -33,12 +33,14 @@
 #if defined(OS_WIN)
 #include "Bc637pci.h"
 #include <process.h>
-//pour gerer la datation par GPS: d�claration des varaiables globales
+//pour gerer la datation par GPS: declaration des variables globales
 HANDLE EventThreadGps;
 int ThreadGps;
 double DateGps;
-char DateGpst[50];
+char DateGpst[150];
 double date=-1;
+int SortieGps;
+int FirstReadGps;
 #endif
 
 /***************************************************************************/
@@ -419,14 +421,6 @@ ros_gps close symmetricom
    char s[100];
 #if defined OS_WIN
    int mode,modele,i;
-	//ULONG maj,min;
-//	ULONG evt_enable;
-//	struct tm *majtime;
-//	long majc;
-	//OtherData otherdata;
-	HANDLE EventThreadGps;
-	//HANDLE hIntThrd;
-	//DWORD threadID;
 #else
 	char * message;
 #endif
@@ -438,7 +432,6 @@ ros_gps close symmetricom
    } else {
       strcpy(s,"");
 #if defined OS_WIN
-		EventThreadGps = CreateEvent(NULL,false,false,NULL);
       /* --- decodage des arguments ---*/
       mode=0;
       if (strcmp(argv[1],"open")==0) {
@@ -469,27 +462,34 @@ ros_gps close symmetricom
       }
       /* --- open ---*/
       if ((mode==1)&&(modele==1)) {
+			// --- verif que ca marche dans le thread principal
 			if ( bcStartPCI (0) != RC_OK ) {
 				printf(s,"Error opening device %s",argv[2]);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
 				return TCL_ERROR;
 			}
-			bcSetMode(MODE_GPS);
+			// --- arrete pour redemarrer dans un thread separe
+			bcStopPCI();
+			// --- thread gps seprare pour capturer l'evenement pendant que AudeLA fait autre chose
+			EventThreadGps = CreateEvent(NULL,false,false,NULL);
+			ThreadGps = 1;
 			_beginthread(ServeurGps,0,NULL);
+			FirstReadGps=1;
          sprintf(s,"Connection with %s is opened",argv[2]);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_OK;
       }
-      /* --- reset ---*/
+      /* --- reset (inutile ?) ---*/
       if ((mode==2)&&(modele==1)) {
-			//SetEvent(EventThreadGps); //Declenche le thread gps
-			//WaitForSingleObject(EventThreadGps,INFINITE); //Attende de demande d'image
-			//_beginthread(ServeurGps,0,NULL);
-			ThreadGps = 1;
-			SetEvent(EventThreadGps); //Declenche le thread gps
-            i = 0;
-			while (ThreadGps != 0)
-				{//Attendre pour la datation de l'obturateur
+			return TCL_OK;
+	   }
+      /* --- read time ---*/
+      if ((mode==3)&&(modele==1)) {
+			while (1==1) {
+				ThreadGps = 1;
+				SetEvent(EventThreadGps); // Declencheur dans le thread gps
+				i = 0;
+				while (ThreadGps != 0) {//Attendre pour la datation de l'obturateur
 					i++;
 					Sleep(50);//Attendre 10ms
 					if(i>=40) //Attendre 2s
@@ -498,28 +498,29 @@ ros_gps close symmetricom
 						break; //Probleme pour la datation gps
 					}
 				}
-			return TCL_OK;
-	     }
-      /* --- read time ---*/
-      if ((mode==3)&&(modele==1)) {
-		  if (date==0) {
-			 sprintf(s,"Error GPS date");
-			 Tcl_SetResult(interp,s,TCL_VOLATILE);
-			 return TCL_ERROR;
-		  } else {
-			 sprintf(s,"%s",DateGpst);
-			 Tcl_SetResult(interp,s,TCL_VOLATILE);
-			 return TCL_OK;
-		  }
+				if (FirstReadGps==0) {
+					break;
+				} else {
+					FirstReadGps=0;
+				}
+			}
+			if (date==0) {
+				sprintf(s,"Error GPS date");
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+			} else {
+				sprintf(s,"%s",DateGpst);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_OK;
+			}
       }
       /* --- close ---*/
       if ((mode==4)&&(modele==1)) {
-		 _endthread();
-		 CloseHandle(EventThreadGps);
-		 bcStopPCI();
-         sprintf(s,"Connection with %s is closed",argv[2]);
-         Tcl_SetResult(interp,s,TCL_VOLATILE);
-         return TCL_OK;
+			SortieGps=1;
+			CloseHandle(EventThreadGps);
+			sprintf(s,"Connection with %s is closed",argv[2]);
+			Tcl_SetResult(interp,s,TCL_VOLATILE);
+			return TCL_OK;
       }
       /* --- ---*/
       Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -540,25 +541,25 @@ ros_gps close symmetricom
 //***************************************************************************
 void ServeurGps(void *Parametre)
 {
-	// Start Device
 #if defined OS_WIN
+	// Start Device in the detached thread
 	if ( bcStartPCI (0) != RC_OK ){
 		printf ("Error openning device!!!");
 	}
-
+	// Setup of the GPS device
 	bcSetMode( MODE_GPS );
-
-	while(1)
-	{
-		//ThreadGps = 1; //Disponible
-		WaitForSingleObject(EventThreadGps,INFINITE); //Attende de demande d'image
-		ThreadGps = 0; //Traitement
+	// Loop until to stop the thread
+	SortieGps=0; // Signal to stop the GPS communication + thread desctruction
+	while (SortieGps==0) {
+		WaitForSingleObject(EventThreadGps,INFINITE); // Wait for the external event bit change to 1
+		ThreadGps = 0;
 		DateGps = ml_getGpsDate();
-
 	}
 
 	// Stop Device
 	bcStopPCI ();
+	// This function that destroys the thread must be placed inside the Threaded function itself
+	_endthread();
 #endif
 }
 //***************************************************************************
@@ -569,30 +570,28 @@ void ServeurGps(void *Parametre)
 double ml_getGpsDate ()
 {
 #if defined(OS_WIN)
-	double diff;
-    ULONG maj, evtmaj, evtmin, min;
+   ULONG maj, evtmaj, evtmin, min;
 	ULONG evt_enable;
 	int first_reading = 1;
 	struct tm *majtime;
-	SYSTEMTIME Su;
-	double maintenant;
-
+	date=1;
 
 	// Set the HeartBeat Counters and the mode to Sync -> 100 Hz
-	if ( bcSetHbt(1, 100, 100) == RC_ERROR )
+	if ( bcSetHbt(1, 100, 100) == RC_ERROR ) {
 		printf("\nError setting HeartBeat Counters!");
+		date=0;
+		return date;
+	}
 
 	// Enable Event, Rising Edge and Disable Lockout -> See Table 5-3 in manual
 	evt_enable = 0x08;
-	if ( bcSetReg (PCI_OFFSET_CTL, &evt_enable) == RC_ERROR )
+	if ( bcSetReg (PCI_OFFSET_CTL, &evt_enable) == RC_ERROR ) {
 		printf("\nError setting Control Register!");
+		date=0;
+		return date;
+	}
 
 	evtmaj = evtmin = 0;
-
-	Sleep (2000);
-
-	GetLocalTime(&Su);
-	maintenant =Su.wHour*3600.+Su.wMinute*60.+Su.wSecond+Su.wMilliseconds/1000.;
 
 	if ( bcReadEventTime (&maj, &min) == RC_OK){
 
@@ -608,14 +607,8 @@ double ml_getGpsDate ()
 				majtime->tm_year+1900, majtime->tm_mon+1, majtime->tm_mday,
 				majtime->tm_hour, majtime->tm_min, majtime->tm_sec, min);
 
-			date= (majtime->tm_hour)*3600. + (majtime->tm_min)*60. + majtime->tm_sec + min*0.001;
+			date=1;
 
-			//test if the datePc and the dateGps are different (>60 sec)
-			diff = maintenant-date;
-			if (diff>60 || diff<-60) {
-				sprintf(DateGpst,"0000-00-00T00:00:00.000");
-				date=0;
-			}
 		}
 	} else {
 		date = 0;
