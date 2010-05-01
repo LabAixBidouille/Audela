@@ -62,6 +62,7 @@
    char radec_model_coefficients[1024]; \
    int  radec_model_enabled; \
    char radec_model_name[255]; \
+   char radec_model_date[255]; \
    int  radec_model_pressure; \
    char radec_model_symbols[255]; \
    int  radec_model_temperature; \
