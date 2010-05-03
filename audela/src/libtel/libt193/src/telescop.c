@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-// @version  $Id: telescop.c,v 1.27 2010-03-30 12:08:44 ffillion Exp $
+// @version  $Id: telescop.c,v 1.28 2010-05-03 16:45:08 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -851,13 +851,12 @@ int tel_radec_goto(struct telprop *tel) {
       // je traite la reponse
       if ( result == 0 ) {
          int returnCode;
-         char newRa[13];
-         char newDec[13]; 
-         int readValue = sscanf(response,"!RADEC GOTO %d %s %s @", &returnCode, newRa, newDec);
-         result = mytel_checkControlInterfaceResponse(tel, "tel_radec_goto", command, response, returnCode, 3, readValue);
+         int readValue = sscanf(response,"!RADEC GOTO %d @", &returnCode);
+         result = mytel_checkControlInterfaceResponse(tel, "tel_radec_goto", command, response, returnCode, 1, readValue);
          if (result == 0) {
-            //strcpy(tel->ra , newRa);
-            //strcpy(tel->dec , newDec);
+            // rien à faire 
+         } else {
+            // rien a faire. Le message d'erreur est deja dans tel->msg
          }
       } else {
          // rien a faire. Le message d'erreur est deja dans tel->msg
@@ -2126,8 +2125,8 @@ void mytel_processNotification(struct telprop *tel, char * notification) {
                      } 
                      if ( tclResult == TCL_OK) {
                         // je convertis en coordonnes catalogue
-                        //usage: mc_tel2cat {12h 36d} EQUATORIAL now {GPS 5 E 43 1230} 101325 290 { symbols } { values }
-                        sprintf(ligne, "mc_tel2cat { %s %s  } EQUATORIAL %s %s %d %d { %s } { %s } ", 
+                        // usage: mc_tel2cat {12h 36d} EQUATORIAL { dateTu } {GPS 5 E 43 1230} 101325 290 { symbols } { values }
+                        sprintf(ligne, "mc_tel2cat { %s %s  } EQUATORIAL { %s } { %s } %d %d { %s } { %s } ", 
                            raBrut,decBrut, tu, tel->homePosition, 
                            tel->radec_model_pressure, tel->radec_model_temperature, 
                            tel->radec_model_symbols, tel->radec_model_coefficients);
@@ -2194,7 +2193,7 @@ void mytel_processNotification(struct telprop *tel, char * notification) {
                      // je memorise les coordonnees brutes pour la fonction tel_radec_coord
                      strcpy(tel->raBrut, raBrut);
                      strcpy(tel->decBrut, decBrut);
-                     // j'envoie les coordonnes aux clients du serveur de coordonnees
+                     // j'envoie les coordonnes { ra, dec } aux clients du serveur de coordonnees
                      socket_writeCoordServerSocket(tel, returnCode, ra, dec, raBrut, decBrut, raCalage, decCalage);
                      // je notifie les nouvelles coordonnes au thread principal                
                      if ( strcmp(tel->telThreadId,"") == 0 ) {
