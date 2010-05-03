@@ -456,6 +456,7 @@ int mytel_radec_goto(struct telprop *tel)
       sate_move_radec=' ';
       dfm_suivi_marche(tel);
    }
+	sprintf(s,"after 500"); mytel_tcleval(tel,s);
    return 0;
 }
 
@@ -491,6 +492,7 @@ int mytel_hadec_goto(struct telprop *tel)
       sate_move_radec=' ';
 	  dfm_suivi_marche(tel);
    }
+	sprintf(s,"after 500"); mytel_tcleval(tel,s);
    return 0;
 }
 
