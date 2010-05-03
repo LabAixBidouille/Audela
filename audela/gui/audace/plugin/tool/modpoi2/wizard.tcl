@@ -2,7 +2,7 @@
 # Fichier : wizard.tcl
 # Description : pipeline de pointage des etoiles
 # Auteur : Michel Pujol
-# Mise a jour $Id: wizard.tcl,v 1.1 2010-04-29 18:10:32 michelpujol Exp $
+# Mise a jour $Id: wizard.tcl,v 1.2 2010-05-03 16:51:05 michelpujol Exp $
 #
 
 namespace eval ::modpoi2::wizard {
@@ -591,16 +591,17 @@ proc ::modpoi2::wizard::modpoi_wiz2 { } {
       grid  $private(g,base).magnitude.minLabel -in [$private(g,base).magnitude getframe] -row 0 -column 0 -sticky w
       #--- Entry min magnitude
       entry $private(g,base).magnitude.minValue -width 8 -justify center \
-         -textvariable ::modpoi2::wizard::private(minMagnitude) \
-         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double -3.0 20.0 }
+         -textvariable ::modpoi2::wizard::private(minMagnitude)
+      ###   -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double -3.0 20.0 }
+
       grid  $private(g,base).magnitude.minValue -in [$private(g,base).magnitude getframe] -row 0 -column 1 -sticky w
       #--- Label max magnitude
       label $private(g,base).magnitude.maxLabel -text $::caption(modpoi2,wiz2,minMagnitude)
       grid  $private(g,base).magnitude.maxLabel -in [$private(g,base).magnitude getframe] -row 1 -column 0 -sticky w
       #---  Entry max magnitude
       entry $private(g,base).magnitude.maxValue -width 8 -justify center \
-         -textvariable ::modpoi2::wizard::private(maxMagnitude) \
-         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double -3.0 20.0 }
+         -textvariable ::modpoi2::wizard::private(maxMagnitude)
+      ###   -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double -3.0 20.0 }
       grid  $private(g,base).magnitude.maxValue -in [$private(g,base).magnitude getframe] -row 1 -column 1 -sticky w
    pack $private(g,base).magnitude -side top -fill x -expand 0
 
@@ -616,8 +617,11 @@ proc ::modpoi2::wizard::modpoi_wiz2 { } {
          set deDelta  [format "%.3f" $private(star$k,deDelta)]
          set haApp    [mc_angle2hms $private(star$k,haApp) 360 zero 0 auto string]
          set deApp    [mc_angle2dms $private(star$k,deApp) 90  zero 0 + string]
-         set haDeltaTest [format "%.3f" $private(star$k,haDeltaTest)]
-         set deDeltaTest [format "%.3f" $private(star$k,deDeltaTest)]
+         ### modif michel
+         ####set haDeltaTest [format "%.3f" $private(star$k,haDeltaTest)]
+         ####set deDeltaTest [format "%.3f" $private(star$k,deDeltaTest)]
+         set haDeltaTest ""
+         set deDeltaTest ""
          #--- j'incremente le compteur des mesures
          incr nk
       } else {
@@ -735,7 +739,7 @@ proc ::modpoi2::wizard::deleteButton { tkTable row col w } {
 proc ::modpoi2::wizard::onSelectAmer { tkAmerTable } {
 variable private
    #--- je recupere la ligne slectionnee par l'utilisateur
-   set k [$tkAmerTable curselection]
+   set k [lindex [$tkAmerTable curselection]]
    if { $k != "" } {
       #--- je recupere les coordonnees du point d'amer
       set amerAz $private(star$k,amerAz)
@@ -968,7 +972,7 @@ proc ::modpoi2::wizard::modpoi_wiz3 { amerIndex } {
 proc ::modpoi2::wizard::onSelectStar { tkStarTable } {
 variable private
    #--- je recupere la ligne slectionnee par l'utilisateur
-   set rowIndex [$tkStarTable curselection]
+   set rowIndex [lindex [$tkStarTable curselection] 0]
    if { $rowIndex == "" } {
       #--- Pas de reference selectionnee
       set private(selectedHip) ""
@@ -1332,7 +1336,7 @@ proc ::modpoi2::wizard::modpoi_wiz5 { } {
    ####--- Test du calcul direct
    ###set res [::modpoi2::process::testCoefficient $starList $private(home) $private(coefficients) ]
    ###::console::affiche_resultat "$res\n"
-   
+
    #--- je calcule des ecarts en appliquant le modele
    for {set k 0} {$k < $private(stars,nb)} {incr k} {
       if { $private(star$k,starname) != "" } {
@@ -1353,7 +1357,7 @@ proc ::modpoi2::wizard::modpoi_wiz5 { } {
       }
    }
 
-   
+
    #--- Display name
    ###label $private(g,base).lab_name \
    ###   -text "[ file rootname [ file tail $private(filename) ] ]" -borderwidth 2 \
@@ -1560,11 +1564,12 @@ proc ::modpoi2::wizard::checkStarNb { } {
       set private(star$k,haApp)     ""
       set private(star$k,haDelta)   ""
       set private(star$k,deDelta)   ""
-
+      set private(star$k,deDeltaTest) ""
+      set private(star$k,haDeltaTest) ""
    }
 
 
-   if { ( $private(stars,nb) >= "6" ) && ( $private(stars,nb) <= "48" ) } {
+   if { ( $private(stars,nb) >= "6" ) && ( $private(stars,nb) <= "400" ) } {
       set ::conf(modpoi,wizard,haNb) $private(stars,haNb)
       set ::conf(modpoi,wizard,deNb) $private(stars,deNb)
 
@@ -1808,9 +1813,13 @@ proc ::modpoi2::wizard::modpoi_coord { } {
    set private(star$amerIndex,deDelta) [expr 60.0 * $private(star$amerIndex,deDelta)]
 
 
+
    #--- je renseigne le nom dans le tableau.
    #--- ATTENTION: la presence du nom dans de tableau sert de repere pour savoir si la mesure d'ecart est faite
    set private(star$amerIndex,starname) $private(starname,actual)
+
+   #--- j'enregistre la liste des étoiles et le modèle
+   saveModel
 }
 
 #-------------------------------------------------------------------------------
@@ -1830,6 +1839,38 @@ proc ::modpoi2::wizard::closeWindow { visuNo } {
    ::modpoi2::wizard::hideMap $visuNo
    #--- je supprime la fenetre
    destroy $private(g,base)
+
+}
+
+#-------------------------------------------------------------------------------
+# saveModel
+#   enregistre le modele dans un fichier temporaire temp.xml
+#-------------------------------------------------------------------------------
+proc ::modpoi2::wizard::saveModel { } {
+variable private
+
+   set fileName [ file join $::audace(rep_home) modpoi temp.xml ]
+   set date [clock format [clock seconds] -gmt 1 -format "%Y-%m-%dT%H:%M:%S"]
+   set comment "sauvegarde temporaire automatique"
+   set starList ""
+   set refraction 0
+   for {set k 0} {$k < $private(stars,nb)} {incr k} {
+      lappend starList [list \
+         $private(star$k,amerAz) $private(star$k,amerEl) \
+         $private(star$k,starname) \
+         $private(star$k,raCat) $private(star$k,deCat) $private(star$k,eqCat) \
+         $private(star$k,date) $private(star$k,raObs) $private(star$k,deObs) \
+         $private(star$k,pressure) $private(star$k,temperature) \
+      ]
+   }
+
+   ::modpoi2::main::saveModel $fileName \
+      $date  \
+      $comment \
+      $starList \
+      $private(symbols) $private(coefficients) \
+      $private(covar) $private(chisquare) \
+      $refraction
 
 }
 
