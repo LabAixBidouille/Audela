@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=us-ascii" />
+<title>Contr&ocirc;le &agrave; distance</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+ p.c1 {font-weight: bold}
+ ul { line-height: 150%; }
+ td { padding-bottom: 20px;padding-left: 20px;}
+/*]]>*/
+</style>
+</head>
+<body>
+<p class="date">Date de mise &agrave; jour : 3 mai 2010</p>
+<h1>Trigger</h1>
+<p>Trigger est un timer-intervallom&egrave;tre programmable, permettant de commander notamment des APN Canon non reconnus par libgphoto2-canon.</p>
+<p>Il peut aussi commander les interfaces actionn&eacute;es par un front montant ou descendant.</p>
+<h2>Pr&eacute;paration de l'APN</h2>
+<p>Pour tout ce qui concerne les modalit&eacute;s de raccordement de l'appareil photo num&eacute;rique, consulter l'aide disponible sous le menu 'Aud'ACE/Configuration/Cam&eacute;ra/APN'.</p>
+<p>La liaison entre le PC et l'APN se limite au c&acirc;ble se connectant &agrave; la borne du r&eacute;cepteur de t&eacute;l&eacute;commande de l'APN.</p>
+<p>L'APN peut &ecirc;tre positionn&eacute; sur le mode automatique ou sur le mode manuel. Cette interface est limit&eacute;e au d&eacute;clenchement de l'APN, tous les param&egrave;tres &eacute;tant r&eacute;gl&eacute;s sur l'APN.</p>
+<h2>Outil d'acquisition</h2>
+<table>
+<tr>
+<td><img src="trigger.gif" alt="description du panneau Trigger" /></td>
+<td>
+<p>L'outil comporte (du haut en bas) :</p>
+<p>Un bouton d'aide de l'outil.</p>
+<p>Une liste d&eacute;roulante de s&eacute;lection du <b>Port</b>. Les options disponibles sont identiques &agrave; celles propos&eacute;es dans l'onglet Configuration/Cam&eacute;ra/APN.</p>
+<p>Une liste d&eacute;roulante de s&eacute;lection du <b>Bit</b> de commande. Les options disponibles sont modifi&eacute;es par le choix du port qu'il convient de r&eacute;gler en premier. La s&eacute;lection d'un port LPT permet de choisir un bit entre 0 et 7 alors qu'un port COM permet de s&eacute;lectionner une option parmi <b>{ DTR | RTS }</b>.</p>
+<p>Une liste d&eacute;roulante de s&eacute;lection de la commande d'activation <b>Front</b>. Les deux options possibles sont <b>{ 0</b> (front descendant) <b>| 1</b> (front montant) <b>}</b>.</p>
+<p>Une liste d&eacute;roulante de s&eacute;lection du <b>Mode</b> comporte deux options <b>{ Un | S&eacute;rie }</b>.</p>
+<ul>
+<li><b>Un</b> (d&eacute;clenchement) ne donne acc&egrave;s qu'au d&eacute;lai (retard) avant le d&eacute;clenchement.</li>
+<li><b>S&eacute;rie</b> autorise l'entr&eacute;e d'un intervalle entre deux d&eacute;clenchements.</li>
+</ul>
+<p>Une fen&ecirc;tre d'affichage : Vide au repos, elle affiche les principales &eacute;tapes au cours d'une session <b>{ Attente | Acquisition }</b>.</p>
+<p>Une fen&ecirc;tre pour saisir le <b>nombre</b> de d&eacute;clenchements. Le nombre est d&eacute;cr&eacute;ment&eacute; en cours de session. A la fin de la session le nombre est remis &agrave; sa valeur initiale.</p>
+<p>Une case &agrave; cocher <b>Pose</b> : Lorsqu'elle est activ&eacute;e elle autorise la saisie d'une dur&eacute;e de d&eacute;clenchement.</p>
+<p>Une fen&ecirc;tre de saisie de la <b>Dur&eacute;e</b> de l'impulsion. Celle-ci a de de l'importance :<br />
+- en mode <b>Manuel+Bulb</b>, car elle d&eacute;termine la dur&eacute;e d'exposition,<br />
+- en mode <b>Rafale</b>, car elle d&eacute;termine la dur&eacute;e de la rafale.<br />
+Dans tous les autres cas (Automatique, Manuel+Temps d'exposition) c'est le front montant ou descendant qui d&eacute;termine le d&eacute;but du d&eacute;clenchement mais c'est l'APN qui r&eacute;gle la dur&eacute;e. Le fait que la dur&eacute;e diff&egrave;re du temps d'exposition, c'est un peu comme continuer &agrave; appuyer sur le bouton de d&eacute;clenchement alors que la photo est d&eacute;j&agrave; prise !</p>
+<p>Une fen&ecirc;tre de saisie du <b>D&eacute;lai</b> avant le lancement du processus.</p>
+<p>Une fen&ecirc;tre pour saisir la <b>P&eacute;riode</b> de temps entre deux d&eacute;clenchements pour l'option <b>S&eacute;rie</b>.<br />
+Cette entr&eacute;e n'est active que si le nombre de poses est sup&eacute;rieur &agrave; 1.<br/>Son calcul doit tenir compte de la dur&eacute;e, du retard &eacute;ventuellement programm&eacute; sur l'APN et du temps de sauvegarde des images sur la carte m&eacute;moire.</p>
+<p>Un bouton <b>Go</b> lance le processus. Toutes les commandes sont gel&eacute;es durant une session : Aucun changement n'est possible.</p>
+</td>
+</tr>
+</table>
+<h2>Bon &agrave; savoir</h2>
+<ul>
+<li>Chaque entr&eacute;e est accompagn&eacute;e d'un bulle d'aide.</li>
+<li>Les donn&eacute;es &agrave; saisir sont des nombres entiers et sont contr&ocirc;l&eacute;es. Une fen&ecirc;tre rappelle les consignes en cas d'erreur.</li>
+<li>Le lien cr&eacute;&eacute; avec le port n'existe que durant l'activation d'un d&eacute;clenchement.</li>
+</ul>
+</body>
+</html>
