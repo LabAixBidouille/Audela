@@ -1,0 +1,248 @@
+#
+# Fichier : trigger.cap
+# Mise a jour $Id: trigger.cap,v 1.1 2010-05-03 17:55:52 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(trigger,title)                            "Trigger"
+set caption(trigger,help_titre)                       "Help for this Tool"
+set caption(trigger,help_titre1)                      "Help for the Tool:"
+set caption(trigger,action,acq)                       "Acquiring"
+set caption(trigger,action,wait)                      "Waiting"
+set caption(trigger,attention)                        "Warning"
+set caption(trigger,go)                               "GO"
+set caption(trigger,port)                             "Port"
+set caption(trigger,bit)                              "Bit"
+set caption(trigger,mode)                             "Mode"
+set caption(trigger,mode,one)                         "One"
+set caption(trigger,mode,serie)                       "Series"
+set caption(trigger,cde)                              "Front"
+set caption(trigger,helpcde)                          "Beginning :\nfrom low to high=1\nfrom high to low=0"
+set caption(trigger,lp)                               "Pulse"
+set caption(trigger,activtime)                        "Duration"
+set caption(trigger,helpactivtime)                    "Duration must be a positive integer (sec.)."
+set caption(trigger,nb_poses)                         "Number"
+set caption(trigger,helpnb_poses)                     "Enter a number of shoots."
+set caption(trigger,delai)                            "Delay"
+set caption(trigger,helpdelai)                        "Starting delay must be an integer of seconds."
+set caption(trigger,periode)                          "Period"
+set caption(trigger,helpperiode)                      "Interval between each shoot\n must be an integer of seconds\nhihger than duration."
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(trigger,title)                         "Trigger"
+   set caption(trigger,help_titre)                    "Aide de cet outil"
+   set caption(trigger,help_titre1)                   "Aide de l'outil :"
+   set caption(trigger,action,acq)                    "Acquisition"
+   set caption(trigger,action,wait)                   "Attente"
+   set caption(trigger,attention)                     "Attention"
+   set caption(trigger,go)                            "GO"
+   set caption(trigger,port)                          "Port"
+   set caption(trigger,bit)                           "Bit"
+   set caption(trigger,mode)                          "Mode"
+   set caption(trigger,mode,one)                      "Un"
+   set caption(trigger,mode,serie)                    "Série"
+   set caption(trigger,cde)                           "Front"
+   set caption(trigger,helpdriver)                    "Driver de conversion USB/série non installé"
+   set caption(trigger,helpcde)                       "Déclenchement :\nfront montant=1\nfront descendant=0"
+   set caption(trigger,lp)                            "Pose"
+   set caption(trigger,activtime)                     "Durée"
+   set caption(trigger,helpactivtime)                 "La durée doit être\nun nombre entier de secondes."
+   set caption(trigger,nb_poses)                      "Nombre"
+   set caption(trigger,helpnb_poses)                  "Le nombre d'images doit être un entier."
+   set caption(trigger,delai)                         "Délai"
+   set caption(trigger,helpdelai)                     "Le retard au démarrage doit être un nombre entier de secondes."
+   set caption(trigger,periode)                       "Période"
+   set caption(trigger,helpperiode)                   "L'intervalle entre chaque début d'image\ndoit être un nombre entier de secondes,\nsupérieur à la durée."
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(trigger,title)                         "Trigger"
+   set caption(trigger,help_titre)                    "Aiuto per questo tool"
+   set caption(trigger,help_titre1)                   "Aiuto per lo tool:"
+   set caption(trigger,attention)                     "Attenzione"
+   set caption(trigger,action,acq)                    "Acquisizione"
+   set caption(trigger,action,wait)                   "Attesa"
+   set caption(trigger,go)                            "GO"
+
+   set caption(trigger,bracket,one)                   "Una immagine"
+   set caption(trigger,bracket,serie)                 "Una serie"
+
+   set caption(trigger,nb_poses)                      "Numero"
+   set caption(trigger,helpnb_poses)                  "Introdurre un numero di immagini da acquisire."
+   set caption(trigger,helppose)                      "USB < 30 sec.\nLunga posa > 30 sec.\n"
+   set caption(trigger,delai)                         "Intervallo"
+   set caption(trigger,helpdelai)                     "Deve essere un intero positivo (sec.)"
+   set caption(trigger,intervalle)                    "Intervallo"
+   set caption(trigger,helpintervalle)                "Intervallo tra l'inizio di ogni esposizione (sec.)"
+   set caption(trigger,duree)                         "Lung."
+   set caption(trigger,helpduree)                     "Lunghezza della sequenza di scatti (sec.)"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(trigger,title)                         "Trigger"
+   set caption(trigger,help_titre)                    "Ayuda para esta herramienta"
+   set caption(trigger,help_titre1)                   "Ajuda para del herramienta:"
+   set caption(trigger,attention)                     "Aviso"
+   set caption(trigger,action,acq)                    "Adquiriendo"
+   set caption(trigger,action,wait)                   "Esperando"
+   set caption(trigger,go)                            "GO"
+
+   set caption(trigger,bracket,one)                   "Una imagen"
+   set caption(trigger,bracket,serie)                 "Una serie"
+
+   set caption(trigger,nb_poses)                      "Nombre"
+   set caption(trigger,helpnb_poses)                  "Introduzca el número de imágenes a adquirir."
+   set caption(trigger,helppose)                      "USB < 30 seg.\nExposición larga > 30 seg.\n"
+   set caption(trigger,delai)                         "Retraso"
+   set caption(trigger,helpdelai)                     "Debe ser un entero positivo (seg.)"
+   set caption(trigger,intervalle)                    "Intervalo"
+   set caption(trigger,helpintervalle)                "Intervalo entre cada imagen (seg.)"
+   set caption(trigger,duree)                         "Longitud"
+   set caption(trigger,helpduree)                     "Longitud de ráfaga (sec.)"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(trigger,title)                         "Trigger"
+   set caption(trigger,help_titre)                    "Hilfe für dieses Gerät"
+   set caption(trigger,help_titre1)                   "Hilfe für die Gerät:"
+   set caption(trigger,attention)                     "Achtung"
+   set caption(trigger,action,acq)                    "Belichtung"
+   set caption(trigger,action,wait)                   "Warten"
+   set caption(trigger,go)                            "GO"
+
+   set caption(trigger,bracket,one)                   "Ein Bild"
+   set caption(trigger,bracket,serie)                 "Eine Reihe"
+
+   set caption(trigger,nb_poses)                      "Zahl"
+   set caption(trigger,helpnb_poses)                  "Das Bilder Zahl zu anschaffen geben."
+   set caption(trigger,helppose)                      "USB < 30 Sek.\nLange Belichtung > 30 Sek.\n"
+   set caption(trigger,delai)                         "Zeitraum"
+   set caption(trigger,helpdelai)                     "Muss ein positives Ganz sein (Sek.)"
+   set caption(trigger,intervalle)                    "Zwischenzeit"
+   set caption(trigger,helpintervalle)                "Abstand zwischen jedes Bild Anfang (Sek.)"
+   set caption(trigger,duree)                         "Länge"
+   set caption(trigger,helpduree)                     "Burst-Länge (Sek.)"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(trigger,title)                         "Trigger"
+   set caption(trigger,help_titre)                    "Ajuda para esta ferramenta"
+   set caption(trigger,help_titre1)                   "Ajuda para del ferramenta:"
+   set caption(trigger,attention)                     "Atenção"
+   set caption(trigger,action,acq)                    "Aquisição"
+   set caption(trigger,action,wait)                   "Espera"
+   set caption(trigger,go)                            "GO"
+
+   set caption(trigger,bracket,one)                   "Uma imagem"
+   set caption(trigger,bracket,serie)                 "Uma série"
+
+   set caption(trigger,nb_poses)                      "Número"
+   set caption(trigger,helpnb_poses)                  "Seleccione o número de images a adquirir."
+   set caption(trigger,helppose)                      "USB < 30 sec.\nLonga Exposição > 30 sec.\n"
+   set caption(trigger,delai)                         "Atraso"
+   set caption(trigger,helpdelai)                     "Deve ser um inteiro positivo (sec.)"
+   set caption(trigger,intervalle)                    "Intervalo"
+   set caption(trigger,helpintervalle)                "Intervalo entre cada novo início de imagem (sec.)"
+   set caption(trigger,duree)                         "Duração"
+   set caption(trigger,helpduree)                     "Duração de burst (sec.)"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(trigger,title)                         "Trigger"
+   set caption(trigger,help_titre)                    "Help for this Tool"
+   set caption(trigger,help_titre1)                   "Help for the Tool:"
+   set caption(trigger,action,acq)                    "Acquiring"
+   set caption(trigger,action,wait)                   "Waiting"
+   set caption(trigger,attention)                     "Warning"
+   set caption(trigger,go)                            "GO"
+   set caption(trigger,port)                          "Port"
+   set caption(trigger,bit)                           "Bit"
+   set caption(trigger,mode)                          "Mode"
+   set caption(trigger,mode,one)                      "One"
+   set caption(trigger,mode,serie)                    "Series"
+   set caption(trigger,cde)                           "Front"
+   set caption(trigger,helpcde)                       "Beginning :\nfrom low to high=1\nfrom high to low=0"
+   set caption(trigger,lp)                            "Pulse"
+   set caption(trigger,activtime)                     "Duration"
+   set caption(trigger,helpactivtime)                 "Duration must be a positive integer (sec.)."
+   set caption(trigger,nb_poses)                      "Number"
+   set caption(trigger,helpnb_poses)                  "Enter a number of shoots."
+   set caption(trigger,delai)                         "Delay"
+   set caption(trigger,helpdelai)                     "Starting delay must be an integer of seconds."
+   set caption(trigger,periode)                       "Period"
+   set caption(trigger,helpperiode)                   "Interval between each shoot\n must be an integer of seconds\nhihger than duration."
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(trigger,title)                         "Trigger"
+   set caption(trigger,help_titre)                    "Help for this Tool"
+   set caption(trigger,help_titre1)                   "Help for the Tool:"
+   set caption(trigger,action,acq)                    "Acquiring"
+   set caption(trigger,action,wait)                   "Waiting"
+   set caption(trigger,attention)                     "Warning"
+   set caption(trigger,go)                            "GO"
+   set caption(trigger,port)                          "Port"
+   set caption(trigger,bit)                           "Bit"
+   set caption(trigger,mode)                          "Mode"
+   set caption(trigger,mode,one)                      "One"
+   set caption(trigger,mode,serie)                    "Series"
+   set caption(trigger,cde)                           "Front"
+   set caption(trigger,helpcde)                       "Beginning :\nfrom low to high=1\nfrom high to low=0"
+   set caption(trigger,lp)                            "Pulse"
+   set caption(trigger,activtime)                     "Duration"
+   set caption(trigger,helpactivtime)                 "Duration must be a positive integer (sec.)."
+   set caption(trigger,nb_poses)                      "Number"
+   set caption(trigger,helpnb_poses)                  "Enter a number of shoots."
+   set caption(trigger,delai)                         "Delay"
+   set caption(trigger,helpdelai)                     "Starting delay must be an integer of seconds."
+   set caption(trigger,periode)                       "Period"
+   set caption(trigger,helpperiode)                   "Interval between each shoot\n must be an integer of seconds\nhihger than duration."
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(trigger,title)                         "Trigger"
+   set caption(trigger,help_titre)                    "Help for this Tool"
+   set caption(trigger,help_titre1)                   "Help for the Tool:"
+   set caption(trigger,action,acq)                    "Acquiring"
+   set caption(trigger,action,wait)                   "Waiting"
+   set caption(trigger,attention)                     "Warning"
+   set caption(trigger,go)                            "GO"
+   set caption(trigger,port)                          "Port"
+   set caption(trigger,bit)                           "Bit"
+   set caption(trigger,mode)                          "Mode"
+   set caption(trigger,mode,one)                      "One"
+   set caption(trigger,mode,serie)                    "Series"
+   set caption(trigger,cde)                           "Front"
+   set caption(trigger,helpcde)                       "Beginning :\nfrom low to high=1\nfrom high to low=0"
+   set caption(trigger,lp)                            "Pulse"
+   set caption(trigger,activtime)                     "Duration"
+   set caption(trigger,helpactivtime)                 "Duration must be a positive integer (sec.)."
+   set caption(trigger,nb_poses)                      "Number"
+   set caption(trigger,helpnb_poses)                  "Enter a number of shoots."
+   set caption(trigger,delai)                         "Delay"
+   set caption(trigger,helpdelai)                     "Starting delay must be an integer of seconds."
+   set caption(trigger,periode)                       "Period"
+   set caption(trigger,helpperiode)                   "Interval between each shoot\n must be an integer of seconds\nhihger than duration."
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
