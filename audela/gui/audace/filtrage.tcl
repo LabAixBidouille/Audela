@@ -3,7 +3,7 @@
 # @briefScripts pour un usage aise des fonctions d'AudeLA
 # @author Benjamin MAUCLAIRE (bmauclaire@underlands.org)
 #
-# $Id: filtrage.tcl,v 1.9 2009-04-09 18:48:57 jacquesmichelet Exp $
+# $Id: filtrage.tcl,v 1.10 2010-05-05 07:56:33 jacquesmichelet Exp $
 #
 
 #--------------------- Liste des fonctions -----------------------------------#
@@ -210,6 +210,32 @@ proc bm_masque_flou { args } {
 #-----------------------------------------------------------------------------#
 
 ##
+#@brief : Calcul de la taille du noyau de convolution
+#@param noyau : taille demandée pour le noyau
+#@return : taille du noyau
+proc contraint_noyau { noyau_demande } {
+    set naxis1 [ lindex [ buf$::audace(bufNo) getkwd NAXIS1 ] 1 ]
+    set naxis2 [ lindex [ buf$::audace(bufNo) getkwd NAXIS2 ] 1 ]
+    set rapport_max 3
+    if { $naxis1 > $naxis2 } {
+        set taille_max [ expr $naxis2 / $rapport_max ]
+    } else {
+        set taille_max [ expr $naxis1 / $rapport_max ]
+    }
+    set noyau $noyau_demande
+    if { $noyau_demande > $taille_max } {
+        set noyau $taille_max
+        ::console::affiche_erreur "The kernel size is too big and has been clipped to $noyau\n"
+    }
+    if { $noyau < 3 } {
+        set noyau 3
+        ::console::affiche_erreur "The kernel_size is set to 3"
+    }
+    return $noyau
+}
+
+
+##
 #@brief : Filtres passe-bas, passe-haut, median, min, max
 #@param args : liste contenant
 # - le type du filtre
@@ -231,14 +257,9 @@ proc bm_filter { args } {
       set fichier [ lindex $args 1 ]
       set efficacite [ lindex $args 2 ]
 
-      set taille_noyau 3
+      set taille_noyau_demande 3
       if { [llength $args] == 4 } {
-         set taille_noyau [ lindex $args 3 ]
-      }
-
-      if { $taille_noyau < 3 } {
-         set taille_noyau 3
-         ::console::affiche_erreur "kernel_size set to 3"
+         set taille_noyau_demande [ lindex $args 3 ]
       }
 
       if { ($fichier == "") || ($efficacite == "") } {
@@ -274,17 +295,7 @@ proc bm_filter { args } {
             if { [ file exist $filein ] == "1" } {
                ::console::affiche_resultat "$caption(filtrage,chargement) $fichier$conf(extension,defaut)\n\n"
                buf$audace(bufNo) load "$filein"
-               set naxis1 [lindex [buf$audace(bufNo) getkwd NAXIS1] 1]
-               set naxis2 [lindex [buf$audace(bufNo) getkwd NAXIS2] 1]
-               if { $naxis1 > $naxis2 } {
-                  set taille_max [ expr $naxis2 / 10 ]
-               } else {
-                  set taille_max [ expr $naxis1 / 10 ]
-               }
-               if { $taille_noyau > $taille_max } {
-                  set taille_noyau $taille_max
-                  ::console::affiche_erreur "The kernel size is too big and has been clipped to $taille_noyau\n\n"
-               }
+               set taille_noyau [ contraint_noyau $taille_noyau_demande ]
                buf$audace(bufNo) imaseries "FILTER kernel_type=$type_filtre kernel_coef=$efficacite kernel_width=$taille_noyau"
                ::audace::autovisu $audace(visuNo)
                set traiteFilters(avancement) $caption(filtrage,fin_traitement)
@@ -297,10 +308,11 @@ proc bm_filter { args } {
                tk_messageBox -title $caption(filtrage,attention) -type ok -message $caption(filtrage,pas_image_memoire)
                set traiteFilters(avancement) ""
             } else {
-               buf$audace(bufNo) imaseries "FILTER kernel_type=$type_filtre kernel_coef=$efficacite"
+               set taille_noyau [ contraint_noyau $taille_noyau_demande ]
+               buf$audace(bufNo) imaseries "FILTER kernel_type=$type_filtre kernel_coef=$efficacite kernel_width=$taille_noyau"
                ::audace::autovisu $audace(visuNo)
                set traiteFilters(avancement) $caption(filtrage,fin_traitement)
-            }
+            } 
          }
       }
    } else {
@@ -316,7 +328,6 @@ proc bm_filter { args } {
 # - l'efficacite du filtre (0=intense, 1=aucun effet)
 # - la taille du noyau
 proc bm_passe_bas { args } {
-
    if { ( [llength $args] == 2 ) || ( [llength $args] == 3 ) } {
       set fichier [ lindex $args 0 ]
       set efficacite [ lindex $args 1 ]
