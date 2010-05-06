@@ -392,6 +392,33 @@ int cmdTelDFMFocus(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 	return result;
 }
+/*
+ *   Value of tracking (UC units)
+ */
+int cmdTelDFMTracking(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char ligne[2048],s[2048],ss[2048];
+   int result = TCL_OK,res;
+   double tracking_ra,tracking_dec;
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;
+   if (argc>2) {
+      sprintf(ligne,"Usage: %s %s",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_ERROR;
+      return result;
+   }
+   
+	res=dfm_put(tel,"#25;");
+	sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+	res=dfm_read(tel,ss);
+	sprintf(s,"lindex \"%s\" 10",ss); mytel_tcleval(tel,s);
+	tracking_ra=atof(tel->interp->result);
+	sprintf(s,"lindex \"%s\" 11",ss); mytel_tcleval(tel,s);
+	tracking_dec=atof(tel->interp->result);
+	sprintf(ligne,"%.10f %.10f",tracking_ra,tracking_dec);
+	Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+	return result;
+}
 
 /*
  *   Choice for the blocking method for Goto
