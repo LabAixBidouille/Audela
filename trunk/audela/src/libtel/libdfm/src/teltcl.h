@@ -34,6 +34,7 @@ int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 int cmdTelStatus(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelPark(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelDFMFocus(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelDFMTracking(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelBlockingMethod(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #endif

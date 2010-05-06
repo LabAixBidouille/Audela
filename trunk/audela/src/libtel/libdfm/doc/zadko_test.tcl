@@ -107,3 +107,22 @@ expr (23+56./60+4./3600)
 tel1 putread "#24;\r"
 # -0.515792 14.355746 -31.281371 2000.000000 1.006758 13.839954 7.419278 2009.665298
 
+===============================================================================
+
+tel1 speedtrack 0 0 1
+after 1000
+tel1 speedtrack diurnal 0
+tel1 blockingmethod 1
+tel1 radec goto {12h -20} -blocking 1
+
+tel1 speedtrack 0 0 1
+after 1000
+tel1 speedtrack diurnal 0
+tel1 blockingmethod 1
+tel1 radec goto {14h -30} -blocking 1
+
+tel1 speedtrack 0 0
+
+tel1 speedtrack diurnal 0
+
+
