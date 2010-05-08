@@ -47,7 +47,7 @@ FILE *fsignal;
     errorfunc(msg1, msg2);
     }
 /* Debut Ajout Carole Thiebaut */
-if ((fsignal=fopen("signal.sex","w"))!=NULL) { close(fsignal); }
+if ((fsignal=fopen("signal.sex","w"))!=NULL) { fclose(fsignal); }
 /* Fin Ajout Carole Thiebaut */
   exit(num);
   }
