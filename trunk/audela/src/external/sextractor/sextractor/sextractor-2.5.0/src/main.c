@@ -128,7 +128,7 @@ remove("signal.sex");
   NPRINTF(OUTPUT, "> All done (in %.0f s)\n", prefs.time_diff);
 
 /* Debut Ajout Carole Thiebaut */
-if ((fsignal=fopen("signal.sex","w"))!=NULL) { close(fsignal); }
+if ((fsignal=fopen("signal.sex","w"))!=NULL) { fclose(fsignal); }
 /* Fin Ajout Carole Thiebaut */
 
   return EXIT_SUCCESS;
