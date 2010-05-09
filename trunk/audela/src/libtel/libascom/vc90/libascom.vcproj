@@ -316,6 +316,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\include\libtel\libstruc.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\include\libtel\libtel.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\telcmd.h"
 				>
 			</File>
