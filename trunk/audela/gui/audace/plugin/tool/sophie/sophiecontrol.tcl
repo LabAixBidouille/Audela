@@ -2,7 +2,7 @@
 # @file     sophiecontrol.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecontrol.tcl,v 1.39 2010-03-06 19:54:40 michelpujol Exp $
+# @version  $Id: sophiecontrol.tcl,v 1.40 2010-05-09 13:56:00 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -32,7 +32,8 @@ proc ::sophie::control::run { visuNo tkbase } {
    set private(indicateursFwhmX)                ""
    set private(indicateursFwhmY)                ""
    set private(indicateursFondDeCiel)           ""
-   set private(indicateursFluxMax)              ""
+   set private(starFlux)                        ""
+   set private(maxIntensity)                    ""
    set private(positionConsigneX)               ""
    set private(positionConsigneY)               ""
    set private(positionObjetX)                  ""
@@ -125,7 +126,7 @@ proc ::sophie::control::run { visuNo tkbase } {
       }
    }
 
-   #--- j'intialise les courbes Min et Max des ecarts
+   #--- j'intialise les courbes Min et Max des ecarts (droites horizontales)
    ::sophie::control::setMinMaxDiff $::conf(sophie,minMaxDiff)
 
    #--- Initialisation des vecteurs des fenetres Focalisation et Guidage
@@ -271,53 +272,73 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
       label $frm.seeing.labelFWHMX -text $::caption(sophie,FWHMX)
       grid $frm.seeing.labelFWHMX \
          -in [ $frm.seeing getframe ] \
-         -row 0 -column 0 -sticky ew
+         -row 0 -column 0 -sticky w
 
       Entry $frm.seeing.entryFWHMX \
          -width 8 -justify center -editable 0 \
          -textvariable ::sophie::control::private(indicateursFwhmX)
       grid $frm.seeing.entryFWHMX \
          -in [ $frm.seeing getframe ] \
-         -row 0 -column 1 -sticky ens -padx 10
+         -row 0 -column 1 -sticky ew -padx 2
 
       #--- FWHM Y
       label $frm.seeing.labelFWHMY -text $::caption(sophie,FWHMY)
       grid $frm.seeing.labelFWHMY \
          -in [ $frm.seeing getframe ] \
-         -row 1 -column 0 -sticky ew
+         -row 1 -column 0 -sticky w
 
       Entry $frm.seeing.entryFWHMY \
          -width 8 -justify center -editable 0 \
          -textvariable ::sophie::control::private(indicateursFwhmY)
       grid $frm.seeing.entryFWHMY \
          -in [ $frm.seeing getframe ] \
-         -row 1 -column 1 -sticky ens -padx 10
+         -row 1 -column 1 -sticky ew -padx 2
 
       #--- Fond de ciel
       label $frm.seeing.labelfondDeCiel -text $::caption(sophie,fondDeCiel)
       grid $frm.seeing.labelfondDeCiel \
          -in [ $frm.seeing getframe ] \
-         -row 0 -column 2 -sticky ew -padx 10
+         -row 0 -column 2 -sticky e -padx 2
 
       Entry $frm.seeing.entryfondDeCiel \
          -width 8 -justify center -editable 0 \
          -textvariable ::sophie::control::private(indicateursFondDeCiel)
       grid $frm.seeing.entryfondDeCiel \
          -in [ $frm.seeing getframe ] \
-         -row 0 -column 3 -sticky ens
+         -row 0 -column 3 -sticky ew
 
-      #--- Flux maxi
-      label $frm.seeing.labelfluxMax -text $::caption(sophie,fluxMax)
-      grid $frm.seeing.labelfluxMax \
+      #--- Flux étoile
+      label $frm.seeing.labelStarFlux -text $::caption(sophie,starFlux)
+      grid $frm.seeing.labelStarFlux \
          -in [ $frm.seeing getframe ] \
-         -row 1 -column 2 -sticky ew -padx 10
+         -row 1 -column 2 -sticky e -padx 2
 
-      Entry $frm.seeing.entryfluxMax \
+      Entry $frm.seeing.entryStarFlux \
+         -width 10 -justify center -editable 0 \
+         -textvariable ::sophie::control::private(starFlux)
+      grid $frm.seeing.entryStarFlux \
+         -in [ $frm.seeing getframe ] \
+         -row 1 -column 3 -sticky ew
+
+      #--- Intensite maxi
+      label $frm.seeing.labelMaxIntensity -text $::caption(sophie,maxIntensity)
+      grid $frm.seeing.labelMaxIntensity \
+         -in [ $frm.seeing getframe ] \
+         -row 0 -column 4 -sticky e -padx 2
+
+      Entry $frm.seeing.entryMaxIntensity \
          -width 8 -justify center -editable 0 \
-         -textvariable ::sophie::control::private(indicateursFluxMax)
-      grid $frm.seeing.entryfluxMax \
+         -textvariable ::sophie::control::private(maxIntensity)
+      grid $frm.seeing.entryMaxIntensity \
          -in [ $frm.seeing getframe ] \
-         -row 1 -column 3 -sticky ens
+         -row 0 -column 5 -sticky ew
+
+      grid columnconfigure [ $frm.seeing getframe ] 0 -weight 1
+      grid columnconfigure [ $frm.seeing getframe ] 1 -weight 1
+      grid columnconfigure [ $frm.seeing getframe ] 2 -weight 1
+      grid columnconfigure [ $frm.seeing getframe ] 3 -weight 1
+      grid columnconfigure [ $frm.seeing getframe ] 4 -weight 1
+      grid columnconfigure [ $frm.seeing getframe ] 5 -weight 1
 
    #--- Frame pour la position du guidage
    TitleFrame $frm.position -borderwidth 2 -relief ridge \
@@ -625,60 +646,79 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
 
       #--- Frame seeing du guidage
       TitleFrame $frm.guidage.seeing -borderwidth 2 -relief ridge \
-         -text $::caption(sophie,seeing)
+         -text $::caption(sophie,seeingMemorised)
 
          #--- FWHM X
-         label $frm.guidage.seeing.labelFWHMX -text $::caption(sophie,FWHMXMemorise)
+         label $frm.guidage.seeing.labelFWHMX -text $::caption(sophie,FWHMX)
          grid $frm.guidage.seeing.labelFWHMX \
             -in [ $frm.guidage.seeing getframe ] \
-            -row 0 -column 0 -sticky ew
+            -row 0 -column 0 -sticky w
 
-         Entry $frm.guidage.seeing.entryFWHMX \
-            -width 8 -justify center -editable 0 \
+         entry $frm.guidage.seeing.entryFWHMX \
+            -width 8 -justify center -state readonly \
             -textvariable ::sophie::control::private(indicateursFwhmX)
          grid $frm.guidage.seeing.entryFWHMX \
             -in [ $frm.guidage.seeing getframe ] \
-            -row 0 -column 1 -sticky ens -padx 10
+            -row 0 -column 1 -sticky ew -padx 2
 
          #--- FWHM Y
-         label $frm.guidage.seeing.labelFWHMY -text $::caption(sophie,FWHMYMemorise)
+         label $frm.guidage.seeing.labelFWHMY -text $::caption(sophie,FWHMY)
          grid $frm.guidage.seeing.labelFWHMY \
             -in [ $frm.guidage.seeing getframe ] \
-            -row 1 -column 0 -sticky ew
+            -row 1 -column 0 -sticky w
 
-         Entry $frm.guidage.seeing.entryFWHMY \
-            -width 8 -justify center -editable 0 \
+         entry $frm.guidage.seeing.entryFWHMY \
+            -width 8 -justify center -state readonly  \
             -textvariable ::sophie::control::private(indicateursFwhmY)
          grid $frm.guidage.seeing.entryFWHMY \
             -in [ $frm.guidage.seeing getframe ] \
-            -row 1 -column 1 -sticky ens -padx 10
+            -row 1 -column 1 -sticky ew -padx 2
 
          #--- Fond de ciel
-         label $frm.guidage.seeing.labelfondDeCiel -text $::caption(sophie,fondDeCielMemorise)
+         label $frm.guidage.seeing.labelfondDeCiel -text $::caption(sophie,fondDeCiel)
          grid $frm.guidage.seeing.labelfondDeCiel \
             -in [ $frm.guidage.seeing getframe ] \
-           -row 0 -column 2 -sticky ew -padx 10
+           -row 0 -column 2 -sticky w
 
-         Entry $frm.guidage.seeing.entryfondDeCiel \
-            -width 8 -justify center -editable 0 \
+         entry $frm.guidage.seeing.entryfondDeCiel \
+            -width 8 -justify center -state readonly  \
             -textvariable ::sophie::control::private(indicateursFondDeCiel)
          grid $frm.guidage.seeing.entryfondDeCiel \
             -in [ $frm.guidage.seeing getframe ] \
-            -row 0 -column 3 -sticky ens
+            -row 0 -column 3 -sticky ew -padx 2
 
-         #--- Flux maxi
-         label $frm.guidage.seeing.labelfluxMax -text $::caption(sophie,fluxMax)
-         grid $frm.guidage.seeing.labelfluxMax \
+         #--- Flux de l'étoile
+         label $frm.guidage.seeing.labelStarFlux -text $::caption(sophie,starFlux)
+         grid $frm.guidage.seeing.labelStarFlux \
             -in [ $frm.guidage.seeing getframe ] \
-            -row 1 -column 2 -sticky ew -padx 10
+            -row 1 -column 2 -sticky w
 
-         Entry $frm.guidage.seeing.entryfluxMax \
+         entry $frm.guidage.seeing.entryStarFlux \
+            -width 10 -justify center -state readonly  \
+            -textvariable ::sophie::control::private(starFlux)
+         grid $frm.guidage.seeing.entryStarFlux \
+            -in [ $frm.guidage.seeing getframe ] \
+            -row 1 -column 3 -sticky ew -padx 2
+
+         #--- Intensite maxi
+         label $frm.guidage.seeing.labelMaxIntensity -text $::caption(sophie,maxIntensity)
+         grid $frm.guidage.seeing.labelMaxIntensity \
+            -in [ $frm.guidage.seeing getframe ] \
+            -row 0 -column 4 -sticky w
+
+         Entry $frm.guidage.seeing.entryMaxIntensity \
             -width 8 -justify center -editable 0 \
-            -textvariable ::sophie::control::private(indicateursFluxMax)
-         grid $frm.guidage.seeing.entryfluxMax \
+            -textvariable ::sophie::control::private(maxIntensity)
+         grid $frm.guidage.seeing.entryMaxIntensity \
             -in [ $frm.guidage.seeing getframe ] \
-            -row 1 -column 3 -sticky ens
+            -row 0 -column 5 -sticky ew -padx 2
 
+         grid columnconfigure [ $frm.guidage.seeing getframe ] 0 -weight 1
+         grid columnconfigure [ $frm.guidage.seeing getframe ] 1 -weight 1
+         grid columnconfigure [ $frm.guidage.seeing getframe ] 2 -weight 1
+         grid columnconfigure [ $frm.guidage.seeing getframe ] 3 -weight 1
+         grid columnconfigure [ $frm.guidage.seeing getframe ] 4 -weight 1
+         grid columnconfigure [ $frm.guidage.seeing getframe ] 5 -weight 1
       pack $frm.guidage.seeing -side top -anchor nw -fill x -expand 0
 
       #--- Frame des graphes des ecarts et des corrections
@@ -1151,13 +1191,18 @@ proc ::sophie::control::setGuideState { state } {
       $frm.voyant.guidage_color_invariant configure \
          -text $::caption(sophie,guidageSuspendu) \
          -bg   $private(inactiveColor)
-      #--- je purge les vecteurs
+      #--- j'ajoute une trace de l'arret du guidage
+      ::sophie::histogram::writeGuidingStop
 
    } else {
       #--- j'affiche le voyant en vert
       $frm.voyant.guidage_color_invariant configure \
          -text $::caption(sophie,guidageEncours) \
          -bg   $private(activeColor)
+
+      #--- j'ajoute une trace du démarrage du guidage
+      ::sophie::histogram::writeGuidingStart
+
    }
 }
 
@@ -1233,6 +1278,7 @@ proc ::sophie::control::setRealDelay { delay } {
 # @param fwhmY            largeur a mi hauter sur l'axe Y
 # @param background       fond du ciel
 # @param maxIntensity     intensité max
+# @param starFlux         flux de l'etoile
 # @param starDx           ecart de l'abcisse de l'etoile en pixel
 # @param starDy           ecart de l'ordonne de l'etoile en pixel
 # @param alphaDiff        ecart de l'ascension droite de l'etoile en arcseconde
@@ -1242,7 +1288,9 @@ proc ::sophie::control::setRealDelay { delay } {
 #
 # @return rien
 #------------------------------------------------------------
-proc ::sophie::control::setCenterInformation { starDetection fiberStatus originX originY starX starY fwhmX fwhmY background maxIntensity starDx starDy alphaDiff deltaDiff alphaCorrection deltaCorrection } {
+proc ::sophie::control::setCenterInformation { starDetection fiberStatus originX \
+     originY starX starY fwhmX fwhmY background maxIntensity starFlux starDx starDy \
+     alphaDiff deltaDiff alphaCorrection deltaCorrection } {
    variable private
 
    set frm $private(frm)
@@ -1302,16 +1350,17 @@ proc ::sophie::control::setCenterInformation { starDetection fiberStatus originX
    set private(indicateursFwhmX)      [format "%6.1f" $fwhmX]
    set private(indicateursFwhmY)      [format "%6.1f" $fwhmY]
    set private(indicateursFondDeCiel) [format "%6.1f" $background]
-   set private(indicateursFluxMax)    [format "%6.1f" $maxIntensity]
+   set private(starFlux)              [format "%6.1f" $starFlux]
+   set private(maxIntensity)          [format "%6.1f" $maxIntensity]
 
-   if { $private(indicateursFluxMax) < $::conf(sophie,minIntensity) } {
+   if { $private(maxIntensity) < $::conf(sophie,minIntensity) } {
       #--- je mets en rouge le fond du wigdet du flux max, si le flux max est inferieur au minimum requis
-      $frm.seeing.labelfluxMax configure -bg $private(inactiveColor)
-      $frm.seeing.entryfluxMax configure -bg $private(inactiveColor)
+      $frm.seeing.labelMaxIntensity configure -bg $private(inactiveColor)
+      $frm.seeing.entryMaxIntensity configure -bg $private(inactiveColor)
    } else {
       #--- je restaure la couleur du fond par defaut
-      $frm.seeing.labelfluxMax configure -bg $::audace(color,backColor)
-      $frm.seeing.entryfluxMax configure -bg $::audace(color,entryBackColor)
+      $frm.seeing.labelMaxIntensity configure -bg $::audace(color,backColor)
+      $frm.seeing.entryMaxIntensity configure -bg $::audace(color,entryBackColor)
    }
 }
 
@@ -1330,10 +1379,12 @@ proc ::sophie::control::setCenterInformation { starDetection fiberStatus originX
 # @param deltaDiff     ecart de la declinaison de l'etoile en arcseconde
 # @param background    fond du ciel
 # @param maxIntensity  intensité max
+# @param starFlux      flux de l'etoile
 #
 # @return rien
 #------------------------------------------------------------
-proc ::sophie::control::setFocusInformation { starDetection fiberStatus originX originY starX starY fwhmX fwhmY alphaDiff deltaDiff background maxIntensity } {
+proc ::sophie::control::setFocusInformation { starDetection fiberStatus originX originY \
+      starX starY fwhmX fwhmY alphaDiff deltaDiff background maxIntensity starFlux } {
    variable private
 
    set frm $private(frm)
@@ -1388,16 +1439,17 @@ proc ::sophie::control::setFocusInformation { starDetection fiberStatus originX 
    set private(ecartEtoileX)          [format "%6.2f" $alphaDiff]
    set private(ecartEtoileY)          [format "%6.2f" $deltaDiff]
    set private(indicateursFondDeCiel) [format "%6.1f" $background]
-   set private(indicateursFluxMax)    [format "%6.1f" $maxIntensity]
+   set private(starFlux)              [format "%6.1f" $starFlux]
+   set private(maxIntensity)          [format "%6.1f" $maxIntensity]
 
-   if { $private(indicateursFluxMax) < $::conf(sophie,minIntensity) } {
+   if { $private(maxIntensity) < $::conf(sophie,minIntensity) } {
       #--- je mets en rouge le fond du wigdet du flux max, si le flux max est inferieur au minimum requis
-      $frm.seeing.labelfluxMax configure -bg $private(inactiveColor)
-      $frm.seeing.entryfluxMax configure -bg $private(inactiveColor)
+      $frm.seeing.labelMaxIntensity configure -bg $private(inactiveColor)
+      $frm.seeing.entryMaxIntensity configure -bg $private(inactiveColor)
    } else {
       #--- je restaure la couleur du fond par defaut
-      $frm.seeing.labelfluxMax configure -bg $::audace(color,backColor)
-      $frm.seeing.entryfluxMax configure -bg $::audace(color,entryBackColor)
+      $frm.seeing.labelMaxIntensity configure -bg $::audace(color,backColor)
+      $frm.seeing.entryMaxIntensity configure -bg $::audace(color,entryBackColor)
    }
 
    #--- j'ajoute la valeur dans le graphe FwhmX
@@ -1441,7 +1493,7 @@ proc ::sophie::control::setFocusInformation { starDetection fiberStatus originX 
 # @param maxIntensity     intensité max
 # @return null
 #------------------------------------------------------------
-proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX originY starX starY starDx starDy alphaCorrection deltaCorrection originDx originDy maxIntensity} {
+proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX originY starX starY starDx starDy alphaCorrection deltaCorrection originDx originDy maxIntensity } {
    variable private
 
    set frm $private(frm)
@@ -1500,16 +1552,16 @@ proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX 
    set private(ecartEtoileY)       [format "%6.2f" $starDy]
    set private(alphaCorrection)    [format "%6.2f" $alphaCorrection]
    set private(deltaCorrection)    [format "%6.2f" $deltaCorrection]
-   set private(indicateursFluxMax) [format "%6.1f" $maxIntensity]
+   set private(maxIntensity)       [format "%6.1f" $maxIntensity]
 
-   if { $private(indicateursFluxMax) < $::conf(sophie,minIntensity) } {
+   if { $private(maxIntensity) < $::conf(sophie,minIntensity) } {
       #--- je mets en rouge le fond du wigdet du flux max, si le flux max est inferieur au minimum requis
-      $frm.guidage.seeing.labelfluxMax configure -bg $private(inactiveColor)
-      $frm.guidage.seeing.entryfluxMax configure -bg $private(inactiveColor)
+      $frm.guidage.seeing.labelMaxIntensity configure -bg $private(inactiveColor)
+      $frm.guidage.seeing.entryMaxIntensity configure -bg $private(inactiveColor)
    } else {
       #--- je restaure la couleur du fond par defaut
-      $frm.guidage.seeing.labelfluxMax configure -bg $::audace(color,backColor)
-      $frm.guidage.seeing.entryfluxMax configure -bg $::audace(color,entryBackColor)
+      $frm.guidage.seeing.labelMaxIntensity configure -bg $::audace(color,backColor)
+      $frm.guidage.seeing.entryMaxIntensity configure -bg $::audace(color,entryBackColor)
    }
 
    #--- j'ajoute la valeur le graphe sophieEcartConsigneX
@@ -1572,6 +1624,14 @@ proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX 
    set title [format "$::caption(sophie,ecartEtoile)  RMS alpha=%6.2f  RMS Delta=%6.2f %s" $alphaRms $deltaRms $::caption(sophie,arcsec)]
    $frm.guidage.ecarts configure -text $title
 
+
+   #--- je mets a jour les logs des ecarts si le guidage est activé
+   if { [$frm.voyant.guidage_color_invariant cget -bg ] ==  $private(activeColor) } {
+      ::sophie::histogram::writeGuidingInformation \
+         $private(ecartEtoileX) $private(ecartEtoileY)\
+         $private(alphaCorrection) $private(deltaCorrection) \
+         $::audace(telescope,getra) $::audace(telescope,getdec)
+   }
 }
 
 ##------------------------------------------------------------
