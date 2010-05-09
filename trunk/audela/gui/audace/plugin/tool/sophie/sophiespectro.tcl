@@ -2,7 +2,7 @@
 # @file     sophiespectro.tcl
 # @brief    fichier du namespace ::sophie::spectro
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiespectro.tcl,v 1.13 2010-03-14 09:40:05 michelpujol Exp $
+# @version  $Id: sophiespectro.tcl,v 1.14 2010-05-09 13:58:14 michelpujol Exp $
 # UTF8 (à)
 #------------------------------------------------------------
 
@@ -26,6 +26,7 @@ namespace eval ::sophie::spectro {
    set private(xFwhm)     0.0        ; #--- seeing sur l'axe X (en arsec)
    set private(yFwhm)     0.0        ; #--- seeing sur l'axe Y (en arsec)
    set private(skyLevel)  0.0        ; #--- fond du ciel (en ADU)
+   set private(starFlux)  0.0        ; #--- flux de l'étoile (en ADU/s)
 
 }
 
@@ -130,7 +131,7 @@ proc ::sophie::spectro::readSocket { channel } {
             set seeing [expr ($private(xFwhm) + $private(yFwhm)) / 2.0 ]
             #--- j'enregistre l'image integree et je recupere son nom
             #--- S'il n'y a pas d'image integree disponible, la commande retourne NO_FILE
-            set fileName [saveImage [lindex $resultList 0] [lindex $resultList 1] [lindex $resultList 2] [lindex $resultList 3] $seeing $private(skyLevel)]
+            set fileName [saveImage [lindex $resultList 0] [lindex $resultList 1] [lindex $resultList 2] [lindex $resultList 3] $seeing $private(skyLevel) $private(starFlux)]
             #--- j'ajoute un message dans le fichier de log
             set log [ format "%s Ecart : A=%5.2f  Arms=%5.2f  D=%5.2f  Drms=%5.2f  Seeing=%5.2f skyLevel= %5.2f Gain : AP=%s  AI=%s AD=%s DP=%s  DI=%s DD=%s Coord : RA=%s  Dec=%s\n" \
                [ mc_date2iso8601 now ] \
@@ -219,7 +220,7 @@ proc ::sophie::spectro::resetStatistics { } {
 # @return nom du fichier de l'image intégrée ou NO_FILE s'il n'y a pas eu de correction
 #         de guidage ou pas d'image disponible
 #------------------------------------------------------------
-proc ::sophie::spectro::saveImage { alphaMean alphaRms deltaMean deltaRms seeing skyLevel } {
+proc ::sophie::spectro::saveImage { alphaMean alphaRms deltaMean deltaRms seeing skyLevel starFlux } {
    variable private
 
    set shortName ""
@@ -258,6 +259,8 @@ proc ::sophie::spectro::saveImage { alphaMean alphaRms deltaMean deltaRms seeing
                buf$sumBufNo setkwd $keyword
             }
 
+            buf$sumBufNo setkwd  [list "STARFLUX" $starFlux double "Star flux" "ADU/s" ]
+
             #--- Sauvegarde de l'image
             buf$sumBufNo save $fileName
          } else {
@@ -280,13 +283,26 @@ proc ::sophie::spectro::saveImage { alphaMean alphaRms deltaMean deltaRms seeing
 }
 
 ##------------------------------------------------------------
+# setStarFlux
+#   memorise le flux de l'etoile
+#   cette procedure est appelee pa
+# @param starFlux    flux de l'étoile (en ADU/s)
+#------------------------------------------------------------
+proc ::sophie::spectro::setStarFlux { starFlux} {
+   variable private
+
+   set private(starFlux)   $starFlux
+}
+
+
+##------------------------------------------------------------
 # setSeeing
 #   memorise le seeing
 # @param xFwhm       seeing sur l'axe x (en arsec)
 # @param yFwhm       seeing sur l'axe y (en arsec)
-# #param background  fond du ciel (en ADU)
+# @param background  fond du ciel (en ADU)
 #------------------------------------------------------------
-proc ::sophie::spectro::setSeeing { xFwhm yFwhm skyLevel} {
+proc ::sophie::spectro::setSeeing { xFwhm yFwhm skyLevel } {
    variable private
 
    set private(xFwhm)      $xFwhm
