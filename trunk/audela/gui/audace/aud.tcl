@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.129 2010-05-01 08:18:34 robertdelmas Exp $
+# Mise à jour $Id: aud.tcl,v 1.130 2010-05-09 08:05:47 robertdelmas Exp $
 #
 
 #--- Chargement du package BWidget
@@ -86,10 +86,19 @@ namespace eval ::audace {
       set confgene(EditScript,error_aladin) "1"
       #--- On retourne dans le repertoire principal
       cd ..
-      set audace(rep_gui)    [pwd]
-      set audace(rep_audela) [pwd]
+      set audace(rep_gui) [pwd]
+      if { $::tcl_platform(os) == "Linux" } {
+         set audace(rep_travail) [ file join $::env(HOME) audela ]
+      } else {
+         set mesDocuments [ ::registry get "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders" Personal ]
+         set audace(rep_travail) [ file normalize [ file join $mesDocuments audela ] ]
+      }
+      if { ! [ file exists $audace(rep_travail) ] } {
+         file mkdir $::audace(rep_travail)
+      }
+      cd $audace(rep_travail)
       #--- Repertoire d'installation
-      set audace(rep_install) [ file normalize [ file join $audace(rep_audela) .. ] ]
+      set audace(rep_install) [ file normalize [ file join $audace(rep_gui) .. ] ]
       #--- Chargement de la configuration
       loadSetup
       #--- Chargement du repertoire des images
@@ -97,12 +106,12 @@ namespace eval ::audace {
          if { [ file exists "$conf(rep_images)" ] } {
             set audace(rep_images) "$conf(rep_images)"
          } else {
-            set audace(rep_images) [ file join $audace(rep_install) images ]
-            set conf(rep_images)   [ file join $audace(rep_install) images ]
+            set audace(rep_images) [ file join $audace(rep_travail) images ]
+            set conf(rep_images)   [ file join $audace(rep_travail) images ]
          }
       } else {
-         set audace(rep_images) [ file join $audace(rep_install) images ]
-         set conf(rep_images)   [ file join $audace(rep_install) images ]
+         set audace(rep_images) [ file join $audace(rep_travail) images ]
+         set conf(rep_images)   [ file join $audace(rep_travail) images ]
       }
       if { ! [info exists conf(rep_images,mode) ] } {
          set conf(rep_images,mode) "none"
@@ -159,37 +168,37 @@ namespace eval ::audace {
          if { [ file exists "$conf(rep_scripts)" ] } {
             set audace(rep_scripts) "$conf(rep_scripts)"
          } else {
-            set audace(rep_scripts) [ file join $audace(rep_audela) audace scripts ]
-            set conf(rep_scripts)   [ file join $audace(rep_audela) audace scripts ]
+            set audace(rep_scripts) [ file join $audace(rep_travail) scripts ]
+            set conf(rep_scripts)   [ file join $audace(rep_travail) scripts ]
          }
       } else {
-         set audace(rep_scripts) [ file join $audace(rep_audela) audace scripts ]
-         set conf(rep_scripts)   [ file join $audace(rep_audela) audace scripts ]
+         set audace(rep_scripts) [ file join $audace(rep_travail) scripts ]
+         set conf(rep_scripts)   [ file join $audace(rep_travail) scripts ]
       }
       #--- Chargement du repertoire des catalogues
       if { [ info exists conf(rep_catalogues) ] } {
          if { [ file exists "$conf(rep_catalogues)" ] } {
             set audace(rep_catalogues) "$conf(rep_catalogues)"
          } else {
-            set audace(rep_catalogues) [ file join $audace(rep_audela) audace catalogues ]
-            set conf(rep_catalogues)   [ file join $audace(rep_audela) audace catalogues ]
+            set audace(rep_catalogues) [ file join $audace(rep_gui) audace catalogues ]
+            set conf(rep_catalogues)   [ file join $audace(rep_gui) audace catalogues ]
          }
       } else {
-         set audace(rep_catalogues) [ file join $audace(rep_audela) audace catalogues ]
-         set conf(rep_catalogues)   [ file join $audace(rep_audela) audace catalogues ]
+         set audace(rep_catalogues) [ file join $audace(rep_gui) audace catalogues ]
+         set conf(rep_catalogues)   [ file join $audace(rep_gui) audace catalogues ]
       }
 
       #--- Repertoire des plugins
-      set audace(rep_plugin) [ file join $audace(rep_audela) audace plugin ]
+      set audace(rep_plugin) [ file join $audace(rep_gui) audace plugin ]
 
       #--- Repertoire des captions
-      set audace(rep_caption) [ file join $audace(rep_audela) audace caption ]
+      set audace(rep_caption) [ file join $audace(rep_gui) audace caption ]
 
       #--- Repertoire de la documentaion au format html
-      set audace(rep_doc_html) [ file join $audace(rep_audela) audace doc_html ]
+      set audace(rep_doc_html) [ file join $audace(rep_gui) audace doc_html ]
 
       #--- Repertoire de la documentaion au format pdf
-      set audace(rep_doc_pdf) [ file join $audace(rep_audela) audace doc_pdf ]
+      set audace(rep_doc_pdf) [ file join $audace(rep_gui) audace doc_pdf ]
 
       #--- Chargement des legendes et textes pour differentes langues
       source [ file join $audace(rep_caption) caption.cap ]
@@ -215,31 +224,28 @@ namespace eval ::audace {
       ::console::create
 
       #--- Chargement des sources externes
-      uplevel #0 "source \"[ file join $audace(rep_audela) audace confcolor.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_audela) audace conffont.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_audela) audace tkutil.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_audela) audace camera.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_audela) audace telescope.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_audela) audace focus.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_audela) audace crosshair.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_audela) audace carte.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_audela) audace conflink.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_audela) audace confeqt.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_audela) audace confcam.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_audela) audace confcat.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_audela) audace confoptic.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_audela) audace confpad.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_audela) audace conftel.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_audela) audace catagoto.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_audela) audace plotxy.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_audela) audace movie.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_audela) audace confvisu.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_audela) audace sextractor.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_audela) audace fullscreen.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_audela) audace keyword.tcl ]\""
-
-      #---
-      set audace(rep_audela) "[pwd]"
+      uplevel #0 "source \"[ file join $audace(rep_gui) audace confcolor.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_gui) audace conffont.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_gui) audace tkutil.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_gui) audace camera.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_gui) audace telescope.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_gui) audace focus.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_gui) audace crosshair.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_gui) audace carte.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_gui) audace conflink.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_gui) audace confeqt.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_gui) audace confcam.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_gui) audace confcat.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_gui) audace confoptic.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_gui) audace confpad.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_gui) audace conftel.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_gui) audace catagoto.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_gui) audace plotxy.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_gui) audace movie.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_gui) audace confvisu.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_gui) audace sextractor.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_gui) audace fullscreen.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_gui) audace keyword.tcl ]\""
 
       #--- On utilise les valeurs contenues dans le tableau conf pour l'initialisation
       set confgene(posobs,observateur,gps) $conf(posobs,observateur,gps)
