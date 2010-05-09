@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.47 2010-03-30 11:49:48 ffillion Exp $
+# @version  $Id: sophiecommand.tcl,v 1.48 2010-05-09 13:54:21 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -1660,7 +1660,8 @@ proc ::sophie::startAcquisition { visuNo } {
          "originSumCounter"         0 \
          "pixelMinCount"            $::conf(sophie,pixelMinCount) \
          "centerMaxLimit"           $::conf(sophie,centerMaxLimit) \
-         "findFiber"                $private(findFiber)
+         "findFiber"                $private(findFiber) \
+         "fiberDetectionMode"       $::conf(sophie,fiberDetectionMode)
 
       #--- je calcule les coordonnees dans l'image
       set originX [ expr ( [lindex $private(originCoord) 0] - $private(xWindow) + 1 ) / $private(xBinning) ]
@@ -1918,11 +1919,12 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
             # args 8 = measuredFwhmY (en pixel ramené au binning 1x1)
             # args 9 = background
             # args 10= maxIntensity
-            # args 11= diffAlpha        ecart etoile/consigne en alpha (en arcsec)
-            # args 12= diffDelta        ecart etoile/consigne en delta (en arcsec)
-            # args 13= alphaCorrection  correction alpha du telescope (en arcsec)
-            # args 14= deltaCorrection  correction alpha du telescope (en arcsec)
-            # args 15= infoMessage
+            # args 11= starFlux
+            # args 12= diffAlpha        ecart etoile/consigne en alpha (en arcsec)
+            # args 13= diffDelta        ecart etoile/consigne en delta (en arcsec)
+            # args 14= alphaCorrection  correction alpha du telescope (en arcsec)
+            # args 15= deltaCorrection  correction alpha du telescope (en arcsec)
+            # args 16= infoMessage
 
             #--- je recupere les informations
             set starX                [expr [lindex [lindex $args 0] 0] * $private(xBinning)+ $private(xWindow) -1 ]
@@ -1933,17 +1935,16 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
             set fiberStatus          [lindex $args 4]
             set originX              [expr [lindex $args 5] * $private(xBinning) + $private(xWindow) -1 ]
             set originY              [expr [lindex $args 6] * $private(yBinning) + $private(yWindow) -1 ]
-            ###set fwhmX                [expr [lindex $args 7] * $private(xBinning) * $::conf(sophie,pixelScale)]
-            ###set fwhmY                [expr [lindex $args 8] * $private(yBinning) * $::conf(sophie,pixelScale)]
             set fwhmX                [expr [lindex $args 7] * $::conf(sophie,pixelScale)]
             set fwhmY                [expr [lindex $args 8] * $::conf(sophie,pixelScale)]
             set background           [lindex $args 9]
             set maxIntensity         [lindex $args 10]
-            set alphaDiff            [lindex $args 11]
-            set deltaDiff            [lindex $args 12]
-            set alphaCorrection      [lindex $args 13]
-            set deltaCorrection      [lindex $args 14]
-            set infoMessage          [lindex $args 15]
+            set starFlux             [lindex $args 11]
+            set alphaDiff            [lindex $args 12]
+            set deltaDiff            [lindex $args 13]
+            set alphaCorrection      [lindex $args 14]
+            set deltaCorrection      [lindex $args 15]
+            set infoMessage          [lindex $args 16]
             ###::console::disp "::sophie::callbackAcquisition alphaDiff=$alphaDiff deltaDiff=$deltaDiff \n"
 
             #--- je modifie la position du carre de la cible
@@ -1966,15 +1967,20 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                "CENTER" {
                   ::sophie::control::setCenterInformation $starStatus $fiberStatus \
                      [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
-                     $starX $starY $fwhmX $fwhmY $background $maxIntensity \
+                     $starX $starY $fwhmX $fwhmY $background $maxIntensity $starFlux \
                      $starDx $starDy $alphaDiff $deltaDiff $alphaCorrection $deltaCorrection
+                  #--- je memorise le flux de l'etoile pour le mettre dans l'image integree
+                  ::sophie::spectro::setStarFlux $starFlux
                }
                "FOCUS" {
                   ::sophie::control::setFocusInformation $starStatus $fiberStatus \
                      [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
-                     $starX $starY $fwhmX $fwhmY $alphaDiff $deltaDiff $background $maxIntensity
-                  #--- je memorise le seeing
+                     $starX $starY $fwhmX $fwhmY $alphaDiff $deltaDiff $background $maxIntensity $starFlux
+                  #--- je memorise le seeing pour le mettre dans l'image integree et l'envoyer au spectro
                   ::sophie::spectro::setSeeing $fwhmX $fwhmY $background
+                  #--- je memorise le flux de l'etoile pour le mettre dans l'image integree
+                  ::sophie::spectro::setStarFlux $starFlux
+                  #--- je l'affiche dans la fentre de controle
                   ::sophie::control::setSeeing $fwhmX $fwhmY $background
                }
                "GUIDE" {
@@ -2012,6 +2018,7 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                      [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
                      $starX $starY $alphaDiff $deltaDiff $alphaCorrection $deltaCorrection \
                      $originDx $originDy $maxIntensity
+
                }
             }
 
