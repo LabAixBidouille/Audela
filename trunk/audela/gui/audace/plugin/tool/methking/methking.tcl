@@ -2,7 +2,7 @@
 # Fichier : methking.tcl
 # Description : Outil d'aide a la mise en station par la methode de King
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: methking.tcl,v 1.28 2010-01-30 14:18:03 robertdelmas Exp $
+# Mise Ã  jour $Id: methking.tcl,v 1.29 2010-05-09 07:40:21 robertdelmas Exp $
 #
 
 #============================================================
@@ -247,7 +247,7 @@ namespace eval ::methking {
       # (Test est un parametre du fichier methking.ini)
       if {$king_config(test,$panneau(methking,config_active)) != 0} {
          if {[file exists [file join $audace(rep_plugin) tool methking fichiertest.tcl]] == 1} {
-            source [file join $audace(rep_audela) tool methking fichiertest.tcl]
+            source [file join $audace(rep_gui) tool methking fichiertest.tcl]
          } else {
             tk_messageBox -title "$caption(methking,pb)" -type ok \
             -message "Le fichier de test\n[ file join audace plugin tool methking fichiertest.tcl ]\nest introuvable."
@@ -849,7 +849,7 @@ namespace eval ::methking {
       #   (Test est un parametre du fichier methking.ini)
       if {$king_config(test,$panneau(methking,config_active)) != 0} {
          if {[file exists [file join $audace(rep_plugin) tool methking fichiertest.tcl]] == 1} {
-            source [file join $audace(rep_audela) tool methking fichiertest.tcl]
+            source [file join $audace(rep_gui) tool methking fichiertest.tcl]
          } else {
             tk_messageBox -title "$caption(methking,pb)" -type ok \
             -message "Le fichier de test\n[ file join audace plugin tool methking fichiertest.tcl ]\nest introuvable."
@@ -1137,8 +1137,8 @@ namespace eval ::methking {
       variable This
       variable methking_actif
 
-      # Visiblement, stopTool est appelé plusieurs fois lors de la sortie de Audace => plantage
-      # Mécanisme primaire pour empêcher les doubles appels à ArretKing
+      # Visiblement, stopTool est appelÃ© plusieurs fois lors de la sortie de Audace => plantage
+      # MÃ©canisme primaire pour empÃªcher les doubles appels Ã  ArretKing
       if {$methking_actif != 0} {
           ArretKing
           pack forget $This

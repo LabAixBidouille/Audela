@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.36 2009-12-19 17:25:56 robertdelmas Exp $
+# Mise à jour $Id: catagoto.tcl,v 1.37 2010-05-09 07:36:55 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -220,8 +220,8 @@ namespace eval cataGoto {
       set catalogue(planete_elongation)    "-"
       set catalogue(planete_ad)            "-"
       set catalogue(planete_dec)           "-"
-      set catalogue(planete_hauteur_�)     "-"
-      set catalogue(planete_azimut_�)      "-"
+      set catalogue(planete_hauteur_°)     "-"
+      set catalogue(planete_azimut_°)      "-"
       set catalogue(planete_anglehoraire)  "-"
    }
 
@@ -364,11 +364,11 @@ namespace eval cataGoto {
          frame $audace(base).gotoPlanete.frame2.frame6 -borderwidth 0 -relief raised
             label $audace(base).gotoPlanete.frame2.frame6.lab7 -text "$caption(catagoto,hauteur)"
             pack $audace(base).gotoPlanete.frame2.frame6.lab7 -side left -padx 5 -pady 5
-            label $audace(base).gotoPlanete.frame2.frame6.labURLRed7a -textvariable "catalogue(planete_hauteur_�)"
+            label $audace(base).gotoPlanete.frame2.frame6.labURLRed7a -textvariable "catalogue(planete_hauteur_°)"
             pack $audace(base).gotoPlanete.frame2.frame6.labURLRed7a -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame6.lab8 -text "$caption(catagoto,azimut)"
             pack $audace(base).gotoPlanete.frame2.frame6.lab8 -side left -padx 5 -pady 5
-            label $audace(base).gotoPlanete.frame2.frame6.lab8a -textvariable "catalogue(planete_azimut_�)"
+            label $audace(base).gotoPlanete.frame2.frame6.lab8a -textvariable "catalogue(planete_azimut_°)"
             pack $audace(base).gotoPlanete.frame2.frame6.lab8a -side left -padx 5 -pady 5
          pack $audace(base).gotoPlanete.frame2.frame6 -side top -fill both -expand 1
          frame $audace(base).gotoPlanete.frame2.frame7 -borderwidth 0 -relief raised
@@ -605,11 +605,11 @@ namespace eval cataGoto {
          $audace(base).gotoPlanete.frame10.ok configure -state normal
          $audace(base).gotoPlanete.frame10.appliquer configure -state normal
       }
-      set catalogue(planete_hauteur_�) "$catalogue(planete_hauteur)$caption(catagoto,degre)"
+      set catalogue(planete_hauteur_°) "$catalogue(planete_hauteur)$caption(catagoto,degre)"
       $audace(base).gotoPlanete.frame2.frame6.labURLRed7a configure -fg $fg
       #--- Azimut
       set catalogue(planete_azimut)   [format "%05.2f" [lindex $catalogue(planete_altaz) 0]]
-      set catalogue(planete_azimut_�) "$catalogue(planete_azimut)$caption(catagoto,degre)"
+      set catalogue(planete_azimut_°) "$catalogue(planete_azimut)$caption(catagoto,degre)"
       #--- Angle horaire
       set catalogue(planete_anglehoraire)     [lindex $catalogue(planete_altaz) 2]
       set catalogue(planete_anglehoraire)     [mc_angle2hms $catalogue(planete_anglehoraire) 360]
@@ -632,8 +632,8 @@ namespace eval cataGoto {
       set catalogue(asteroide_mag)          "-"
       set catalogue(asteroide_ad)           "-"
       set catalogue(asteroide_dec)          "-"
-      set catalogue(asteroide_hauteur_�)    "-"
-      set catalogue(asteroide_azimut_�)     "-"
+      set catalogue(asteroide_hauteur_°)    "-"
+      set catalogue(asteroide_azimut_°)     "-"
       set catalogue(asteroide_anglehoraire) "-"
    }
 
@@ -715,11 +715,11 @@ namespace eval cataGoto {
          frame $audace(base).cataAsteroide.frame2.frame6 -borderwidth 0 -relief raised
             label $audace(base).cataAsteroide.frame2.frame6.lab7 -text "$caption(catagoto,hauteur)"
             pack $audace(base).cataAsteroide.frame2.frame6.lab7 -side left -padx 5 -pady 5
-            label $audace(base).cataAsteroide.frame2.frame6.labURLRed7a -textvariable "catalogue(asteroide_hauteur_�)"
+            label $audace(base).cataAsteroide.frame2.frame6.labURLRed7a -textvariable "catalogue(asteroide_hauteur_°)"
             pack $audace(base).cataAsteroide.frame2.frame6.labURLRed7a -side left -padx 5 -pady 5
             label $audace(base).cataAsteroide.frame2.frame6.lab8 -text "$caption(catagoto,azimut)"
             pack $audace(base).cataAsteroide.frame2.frame6.lab8 -side left -padx 5 -pady 5
-            label $audace(base).cataAsteroide.frame2.frame6.lab8a -textvariable "catalogue(asteroide_azimut_�)"
+            label $audace(base).cataAsteroide.frame2.frame6.lab8a -textvariable "catalogue(asteroide_azimut_°)"
             pack $audace(base).cataAsteroide.frame2.frame6.lab8a -side left -padx 5 -pady 5
          pack $audace(base).cataAsteroide.frame2.frame6 -side top -fill both -expand 1
          frame $audace(base).cataAsteroide.frame2.frame7 -borderwidth 0 -relief raised
@@ -935,11 +935,11 @@ namespace eval cataGoto {
                $audace(base).cataAsteroide.frame11.ok configure -state normal
                $audace(base).cataAsteroide.frame11.appliquer configure -state normal
             }
-            set catalogue(asteroide_hauteur_�) "$catalogue(asteroide_hauteur)$caption(catagoto,degre)"
+            set catalogue(asteroide_hauteur_°) "$catalogue(asteroide_hauteur)$caption(catagoto,degre)"
             $audace(base).cataAsteroide.frame2.frame6.labURLRed7a configure -fg $fg
             #--- Azimut
             set catalogue(asteroide_azimut) "[format "%05.2f" [lindex $catalogue(asteroide_altaz) 0]]"
-            set catalogue(asteroide_azimut_�) "$catalogue(asteroide_azimut)$caption(catagoto,degre)"
+            set catalogue(asteroide_azimut_°) "$catalogue(asteroide_azimut)$caption(catagoto,degre)"
             #--- Angle horaire
             set catalogue(asteroide_anglehoraire) [lindex $catalogue(asteroide_altaz) 2]
             set catalogue(asteroide_anglehoraire) [mc_angle2hms $catalogue(asteroide_anglehoraire) 360]
@@ -948,9 +948,9 @@ namespace eval cataGoto {
          }
       } else {
          #--- Hauteur
-         set catalogue(asteroide_hauteur_�)    "-"
+         set catalogue(asteroide_hauteur_°)    "-"
          #--- Azimut
-         set catalogue(asteroide_azimut_�)     "-"
+         set catalogue(asteroide_azimut_°)     "-"
          #--- Angle horaire
          set catalogue(asteroide_anglehoraire) "-"
       }
@@ -972,8 +972,8 @@ namespace eval cataGoto {
       set catalogue(objet_ad)              "$catalogue(M-NGC-IC_ad)"
       set catalogue(M-NGC-IC_dec)          "-"
       set catalogue(objet_dec)             "$catalogue(M-NGC-IC_dec)"
-      set catalogue(M-NGC-IC_hauteur_�)    "-"
-      set catalogue(M-NGC-IC_azimut_�)     "-"
+      set catalogue(M-NGC-IC_hauteur_°)    "-"
+      set catalogue(M-NGC-IC_azimut_°)     "-"
       set catalogue(M-NGC-IC_anglehoraire) "-"
    }
 
@@ -1067,11 +1067,11 @@ namespace eval cataGoto {
          frame $audace(base).cataObjet.frame2.frame6 -borderwidth 0 -relief raised
             label $audace(base).cataObjet.frame2.frame6.lab7 -text "$caption(catagoto,hauteur)"
             pack $audace(base).cataObjet.frame2.frame6.lab7 -side left -padx 5 -pady 5
-            label $audace(base).cataObjet.frame2.frame6.labURLRed7a -textvariable "catalogue(M-NGC-IC_hauteur_�)"
+            label $audace(base).cataObjet.frame2.frame6.labURLRed7a -textvariable "catalogue(M-NGC-IC_hauteur_°)"
             pack $audace(base).cataObjet.frame2.frame6.labURLRed7a -side left -padx 5 -pady 5
             label $audace(base).cataObjet.frame2.frame6.lab8 -text "$caption(catagoto,azimut)"
             pack $audace(base).cataObjet.frame2.frame6.lab8 -side left -padx 5 -pady 5
-            label $audace(base).cataObjet.frame2.frame6.lab8a -textvariable "catalogue(M-NGC-IC_azimut_�)"
+            label $audace(base).cataObjet.frame2.frame6.lab8a -textvariable "catalogue(M-NGC-IC_azimut_°)"
             pack $audace(base).cataObjet.frame2.frame6.lab8a -side left -padx 5 -pady 5
          pack $audace(base).cataObjet.frame2.frame6 -side top -fill both -expand 1
          frame $audace(base).cataObjet.frame2.frame7 -borderwidth 0 -relief raised
@@ -1199,7 +1199,7 @@ namespace eval cataGoto {
       set cataGoto(carte,dec) ""
 
       #--- Ouverture du catalogue des objets choisis
-      set f [open [file join $audace(rep_audela) audace etc catagoto $catalogue(objet)] r]
+      set f [open [file join $audace(rep_gui) audace etc catagoto $catalogue(objet)] r]
       #--- Creation d'une liste des objets
       set objet [split [read $f] "\n"]
       #--- Determine le nombre d'elements de la liste
@@ -1265,11 +1265,11 @@ namespace eval cataGoto {
             $audace(base).cataObjet.frame11.ok configure -state normal
             $audace(base).cataObjet.frame11.appliquer configure -state normal
          }
-         set catalogue(M-NGC-IC_hauteur_�) "$catalogue(objet_hauteur)$caption(catagoto,degre)"
+         set catalogue(M-NGC-IC_hauteur_°) "$catalogue(objet_hauteur)$caption(catagoto,degre)"
          $audace(base).cataObjet.frame2.frame6.labURLRed7a configure -fg $fg
          #--- Azimut
          set catalogue(objet_azimut) "[format "%05.2f" [lindex $catalogue(objet_altaz) 0]]"
-         set catalogue(M-NGC-IC_azimut_�) "$catalogue(objet_azimut)$caption(catagoto,degre)"
+         set catalogue(M-NGC-IC_azimut_°) "$catalogue(objet_azimut)$caption(catagoto,degre)"
          #--- Angle horaire
          set catalogue(objet_anglehoraire) [lindex $catalogue(objet_altaz) 2]
          set catalogue(objet_anglehoraire) [mc_angle2hms $catalogue(objet_anglehoraire) 360]
@@ -1278,9 +1278,9 @@ namespace eval cataGoto {
          set catalogue(M-NGC-IC_anglehoraire) "$catalogue(objet_anglehoraire)"
       } else {
          #--- Hauteur
-         set catalogue(M-NGC-IC_hauteur_�) "-"
+         set catalogue(M-NGC-IC_hauteur_°) "-"
          #--- Azimut
-         set catalogue(M-NGC-IC_azimut_�) "-"
+         set catalogue(M-NGC-IC_azimut_°) "-"
          #--- Angle horaire
          set catalogue(M-NGC-IC_anglehoraire) "-"
       }
@@ -1301,8 +1301,8 @@ namespace eval cataGoto {
       set catalogue(etoile_mag)          "-"
       set catalogue(etoile_ad)           "-"
       set catalogue(etoile_dec)          "-"
-      set catalogue(etoile_hauteur_�)    "-"
-      set catalogue(etoile_azimut_�)     "-"
+      set catalogue(etoile_hauteur_°)    "-"
+      set catalogue(etoile_azimut_°)     "-"
       set catalogue(etoile_anglehoraire) "-"
    }
 
@@ -1434,11 +1434,11 @@ namespace eval cataGoto {
          frame $audace(base).cataEtoile.frame2.frame5 -borderwidth 0 -relief raised
             label $audace(base).cataEtoile.frame2.frame5.lab7 -text "$caption(catagoto,hauteur)"
             pack $audace(base).cataEtoile.frame2.frame5.lab7 -side left -padx 5 -pady 5
-            label $audace(base).cataEtoile.frame2.frame5.labURLRed7a -textvariable "catalogue(etoile_hauteur_�)"
+            label $audace(base).cataEtoile.frame2.frame5.labURLRed7a -textvariable "catalogue(etoile_hauteur_°)"
             pack $audace(base).cataEtoile.frame2.frame5.labURLRed7a -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame5.lab8 -text "$caption(catagoto,azimut)"
             pack $audace(base).cataEtoile.frame2.frame5.lab8 -side left -padx 5 -pady 5
-            label $audace(base).cataEtoile.frame2.frame5.lab8a -textvariable "catalogue(etoile_azimut_�)"
+            label $audace(base).cataEtoile.frame2.frame5.lab8a -textvariable "catalogue(etoile_azimut_°)"
             pack $audace(base).cataEtoile.frame2.frame5.lab8a -side left -padx 5 -pady 5
          pack $audace(base).cataEtoile.frame2.frame5 -side top -fill both -expand 1
          frame $audace(base).cataEtoile.frame2.frame6 -borderwidth 0 -relief raised
@@ -1500,11 +1500,11 @@ namespace eval cataGoto {
             $audace(base).cataEtoile.frame10.ok configure -state normal
             $audace(base).cataEtoile.frame10.appliquer configure -state normal
          }
-         set catalogue(etoile_hauteur_�) "$catalogue(etoile_hauteur)$caption(catagoto,degre)"
+         set catalogue(etoile_hauteur_°) "$catalogue(etoile_hauteur)$caption(catagoto,degre)"
          $audace(base).cataEtoile.frame2.frame5.labURLRed7a configure -fg $fg
          #--- Azimut
          set catalogue(etoile_azimut)   "[format "%%05.2f" [lindex $catalogue(etoile_altaz) 0]]"
-         set catalogue(etoile_azimut_�) "$catalogue(etoile_azimut)$caption(catagoto,degre)"
+         set catalogue(etoile_azimut_°) "$catalogue(etoile_azimut)$caption(catagoto,degre)"
          #--- Angle horaire
          set catalogue(etoile_anglehoraire)     [lindex $catalogue(etoile_altaz) 2]
          set catalogue(etoile_anglehoraire)     [mc_angle2hms $catalogue(etoile_anglehoraire) 360]
@@ -1565,7 +1565,7 @@ namespace eval cataGoto {
       global audace etbrillante tableEtBrillante zone
 
       #--- Ouverture du catalogue des etoiles
-      set f [open [file join $audace(rep_audela) audace etc catagoto etoiles_brillantes.txt] r]
+      set f [open [file join $audace(rep_gui) audace etc catagoto etoiles_brillantes.txt] r]
       #--- Creation d'une liste des etoiles
       set etbrillante [split [read $f] "\n"]
       #--- Determine le nombre d'elements de la liste
@@ -1632,8 +1632,8 @@ namespace eval cataGoto {
       set catalogue(objet_utilisateur_ad)     "$catalogue(utilisateur_ad)"
       set catalogue(utilisateur_dec)          "-"
       set catalogue(objet_utilisateur_dec)    "$catalogue(utilisateur_dec)"
-      set catalogue(utilisateur_hauteur_�)    "-"
-      set catalogue(utilisateur_azimut_�)     "-"
+      set catalogue(utilisateur_hauteur_°)    "-"
+      set catalogue(utilisateur_azimut_°)     "-"
       set catalogue(utilisateur_anglehoraire) "-"
    }
 
@@ -1778,11 +1778,11 @@ namespace eval cataGoto {
          frame $audace(base).cataObjetUtilisateur.frame2.frame5 -borderwidth 0 -relief raised
             label $audace(base).cataObjetUtilisateur.frame2.frame5.lab6 -text "$caption(catagoto,hauteur)"
             pack $audace(base).cataObjetUtilisateur.frame2.frame5.lab6 -side left -padx 5 -pady 5
-            label $audace(base).cataObjetUtilisateur.frame2.frame5.labURLRed6a -textvariable "catalogue(utilisateur_hauteur_�)"
+            label $audace(base).cataObjetUtilisateur.frame2.frame5.labURLRed6a -textvariable "catalogue(utilisateur_hauteur_°)"
             pack $audace(base).cataObjetUtilisateur.frame2.frame5.labURLRed6a -side left -padx 5 -pady 5
             label $audace(base).cataObjetUtilisateur.frame2.frame5.lab7 -text "$caption(catagoto,azimut)"
             pack $audace(base).cataObjetUtilisateur.frame2.frame5.lab7 -side left -padx 5 -pady 5
-            label $audace(base).cataObjetUtilisateur.frame2.frame5.lab7a -textvariable "catalogue(utilisateur_azimut_�)"
+            label $audace(base).cataObjetUtilisateur.frame2.frame5.lab7a -textvariable "catalogue(utilisateur_azimut_°)"
             pack $audace(base).cataObjetUtilisateur.frame2.frame5.lab7a -side left -padx 5 -pady 5
          pack $audace(base).cataObjetUtilisateur.frame2.frame5 -side top -fill both -expand 1
          frame $audace(base).cataObjetUtilisateur.frame2.frame6 -borderwidth 0 -relief raised
@@ -1821,8 +1821,8 @@ namespace eval cataGoto {
             set catalogue(utilisateur_dec)       $catalogue(objet_utilisateur_dec)
          }
          if { ($catalogue(objet_utilisateur_ad) == "hm") || ($catalogue(objet_utilisateur_dec) == "dm") } {
-            set catalogue(utilisateur_hauteur_�)    "-"
-            set catalogue(utilisateur_azimut_�)     "-"
+            set catalogue(utilisateur_hauteur_°)    "-"
+            set catalogue(utilisateur_azimut_°)     "-"
             set catalogue(utilisateur_anglehoraire) "-"
             $audace(base).cataObjetUtilisateur.frame8.ok configure -state disabled
             $audace(base).cataObjetUtilisateur.frame8.appliquer configure -state disabled
@@ -1856,11 +1856,11 @@ namespace eval cataGoto {
                $audace(base).cataObjetUtilisateur.frame8.ok configure -state normal
                $audace(base).cataObjetUtilisateur.frame8.appliquer configure -state normal
             }
-            set catalogue(utilisateur_hauteur_�) "$catalogue(objet_utilisateur_hauteur)$caption(catagoto,degre)"
+            set catalogue(utilisateur_hauteur_°) "$catalogue(objet_utilisateur_hauteur)$caption(catagoto,degre)"
             $audace(base).cataObjetUtilisateur.frame2.frame5.labURLRed6a configure -fg $fg
             #--- Azimut
             set catalogue(objet_utilisateur_azimut) "[format "%%05.2f" [lindex $catalogue(objet_utilisateur_altaz) 0]]"
-            set catalogue(utilisateur_azimut_�)     "$catalogue(objet_utilisateur_azimut)$caption(catagoto,degre)"
+            set catalogue(utilisateur_azimut_°)     "$catalogue(objet_utilisateur_azimut)$caption(catagoto,degre)"
             #--- Angle horaire
             set catalogue(objet_utilisateur_anglehoraire)     [lindex $catalogue(objet_utilisateur_altaz) 2]
             set catalogue(objet_utilisateur_anglehoraire)     [mc_angle2hms $catalogue(objet_utilisateur_anglehoraire) 360]

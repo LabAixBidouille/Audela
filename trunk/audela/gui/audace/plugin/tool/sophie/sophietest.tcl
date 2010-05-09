@@ -2,7 +2,7 @@
 # @file     sophietest.tcl
 # @brief    Fichier du namespace ::sophie::test
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietest.tcl,v 1.27 2010-04-29 18:04:33 michelpujol Exp $
+# @version  $Id: sophietest.tcl,v 1.28 2010-05-09 07:41:27 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -722,7 +722,7 @@ proc ::sophie::test::connectTelescopeControl { } {
 
          #--- je charge le programme du simulateur dans un thread dedie
          set private(controlThreadId) [thread::create]
-         set sourceFileName [file join $::audace(rep_audela) [file join $::audace(rep_plugin) tool sophie sophietestcontrol.tcl]]
+         set sourceFileName [file join $::audace(rep_gui) [file join $::audace(rep_plugin) tool sophie sophietestcontrol.tcl]]
          ::thread::send $private(controlThreadId) [list uplevel #0 source \"$sourceFileName\"]
          ::thread::send $private(controlThreadId) [list ::sophie::testcontrol::init [thread::id] $::conf(t193,telescopeCommandPort) $::conf(t193,telescopeNotificationPort) ]
          ::sophie::test::configure

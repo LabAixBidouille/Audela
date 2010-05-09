@@ -5,7 +5,7 @@
 #               pose, choix des outils, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: confgene.tcl,v 1.73 2010-05-01 08:24:41 robertdelmas Exp $
+# Mise à jour $Id: confgene.tcl,v 1.74 2010-05-09 07:37:57 robertdelmas Exp $
 #
 
 #
@@ -843,7 +843,7 @@ namespace eval ::confPosObs {
             ::confPosObs::Erreur
          } else {
          #--- Ouverture du fichier des stations UAI
-         set f [open [file join $audace(rep_audela) audace etc $confgene(posobs,fichier_station_uai)] r]
+         set f [open [file join $audace(rep_gui) audace etc $confgene(posobs,fichier_station_uai)] r]
          #--- Creation d'une liste des stations UAI
          set mpc [split [read $f] "\n"]
          #--- Determine le nombre d'elements de la liste
