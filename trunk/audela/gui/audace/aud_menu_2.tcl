@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_2.tcl
 # Description : Script regroupant les fonctionnalites du menu Affichage
-# Mise à jour $Id: aud_menu_2.tcl,v 1.26 2010-02-20 10:28:28 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_2.tcl,v 1.27 2010-05-09 07:49:51 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -15,10 +15,10 @@ namespace eval ::audace {
 
       #--- On recupere le nom du fichier palette "de base"
       switch $conf(visu_palette,visu$visuNo,mode) {
-         1 { set fichier_palette_in [ file join $audace(rep_audela) audace palette gray ] }
-         2 { set fichier_palette_in [ file join $audace(rep_audela) audace palette inv ] }
-         3 { set fichier_palette_in [ file join $audace(rep_audela) audace palette iris ] }
-         4 { set fichier_palette_in [ file join $audace(rep_audela) audace palette rainbow ] }
+         1 { set fichier_palette_in [ file join $audace(rep_gui) audace palette gray ] }
+         2 { set fichier_palette_in [ file join $audace(rep_gui) audace palette inv ] }
+         3 { set fichier_palette_in [ file join $audace(rep_gui) audace palette iris ] }
+         4 { set fichier_palette_in [ file join $audace(rep_gui) audace palette rainbow ] }
       }
 
       switch $conf(fonction_transfert,visu$visuNo,mode) {
