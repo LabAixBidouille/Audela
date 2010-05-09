@@ -2,10 +2,8 @@
 # Fichier : sextractor.tcl
 # Description : Functions to initialize configuration files for sextractor
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: sextractor.tcl,v 1.10 2009-05-15 22:14:41 alainklotz Exp $
+# Mise à jour $Id: sextractor.tcl,v 1.11 2010-05-09 07:57:03 robertdelmas Exp $
 #
-
-global audace
 
 proc sextractor_default_nnw { {filename default.nnw} } {
    set texte    ""
@@ -265,10 +263,8 @@ proc sextractor_config_sex { {filename config.sex} } {
 }
 
 proc sextractor { args } {
-   global audace
-
    set pathbin .
-   catch { set pathbin [ file join $audace(rep_gui) .. bin ] }
+   catch { set pathbin [ file join $::audace(rep_gui) .. bin ] }
    set exefile [ file join ${pathbin} sextractor.exe ]
    set k [file exists "$exefile"]
    if {$k==0} {
@@ -287,10 +283,10 @@ proc sextractor { args } {
       error "sextractor.exe not found"
    }
    set k1 [string first "-c" $args]
-   set k2 [string first "config.sex" $args]
+   set k2 [string first [ file join . config.sex ] $args]
    set arg_config_sex ""
    if {($k1<0)&&($k2<0)} {
-      set arg_config_sex "-c config.sex"
+      set arg_config_sex "-c [ file join . config.sex ]"
    }
    set ligne "exec \"$exefile\" $args $arg_config_sex"
    set err [ catch {
@@ -300,13 +296,13 @@ proc sextractor { args } {
 }
 
 #--- Creation des fichiers de configuration s'ils n'existent pas deja
-if { [ file exist "[ file join ${audace(rep_gui)} config.param ]" ] == "0" } {
-   sextractor_config_param "[ file join ${audace(rep_gui)} config.param ]"
+if { [ file exist [ file join . config.param ] ] == "0" } {
+   sextractor_config_param [ file join . config.param ]
 }
-if { [ file exist "[ file join ${audace(rep_gui)} config.sex ]" ] == "0" } {
-   sextractor_config_sex "[ file join ${audace(rep_gui)} config.sex ]"
+if { [ file exist [ file join . config.sex ] ] == "0" } {
+   sextractor_config_sex [ file join . config.sex ]
 }
-if { [ file exist "[ file join ${audace(rep_gui)} default.nnw ]" ] == "0" } {
-   sextractor_default_nnw "[ file join ${audace(rep_gui)} default.nnw ]"
+if { [ file exist [ file join . default.nnw ] ] == "0" } {
+   sextractor_default_nnw [ file join . default.nnw ]
 }
 
