@@ -121,6 +121,9 @@ public:
 						   int size_x,int size_y,int gmsize,int border);
    int A_StarList(int x1, int y1, int x2, int y2, double threshin,char *filename, int fileFormat, double fwhm,int radius,
 						int border,double threshold,int after_gauss);
+   int A_filtrGauss2 (TYPE_PIXELS fwhm, int radius, TYPE_PIXELS threshin,
+						   TYPE_PIXELS threshold, TYPE_PIXELS *picture,
+						   int size_x,int size_y,int border, double *xCenter, double *yCenter);
    void Add(char *filename, float offset);
    void AstroFlux(int x1, int y1, int x2, int y2,
                      TYPE_PIXELS* flux, TYPE_PIXELS* maxi, int *xmax, int* ymax,
@@ -138,7 +141,8 @@ public:
                         char *starStatus, double *xc, double *yc,
                         TYPE_PIXELS* maxIntensity, char * message);
    void AstroFiberCentro(int x1, int y1, int x2, int y2,
-                          int starDetectionMode, int integratedImage, int findFiber,
+                          int starDetectionMode, int fiberDetectionMode,
+                          int integratedImage, int findFiber,
                           int maskBufNo, int sumBufNo, int fiberBufNo,
                           int maskRadius, double maskFwhm, double maskPercent,
                           int originSumMinCounter, int originSumCounter,
@@ -148,7 +152,7 @@ public:
                           char *fiberStatus, double *fiberX, double *fiberY,
                           double *measuredFwhmX, double *measuredFwhmY,
                           double *background, double *maxIntensity,
-                          char * message);
+                          double *starFlux, char *message);
    void Autocut(double *phicut,double *plocut,double *pmode);
    void BinX(int x1, int x2, int width);
    void BinY(int y1, int y2, int height);
