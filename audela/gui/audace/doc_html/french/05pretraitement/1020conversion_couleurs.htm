@@ -7,7 +7,7 @@
 <title>Pr&eacute;traitement - Conversions</title>
 </head>
 <body>
-<p class="date">Date de mise &agrave; jour : 04 janvier 2010</p>
+<p class="date">Date de mise &agrave; jour : 09 mai 2010</p>
 <h1>Pr&eacute;traitement - Conversions</h1>
 <h2>1. Fonctions</h2>
 <p>Ce script a pour fonction de convertir des lots d'images en
@@ -76,7 +76,7 @@ Console et le fichier est retir&eacute; de la liste,</li>
 <li>les images en noir et blanc, 1D (spectres) sont
 ignor&eacute;es,</li>
 <li>la premi&egrave;re conversion possible est
-s&eacute;lectionn&eacute;e.</li> 
+s&eacute;lectionn&eacute;e.</li>
 </ul>
 <p>Pour changer de type de conversion, utiliser le bouton de menu.</p>
 <h2>3. Les options</h2>
@@ -95,7 +95,7 @@ g&eacute;n&eacute;rique pour chaque type de conversion. Ce nom
 g&eacute;n&eacute;rique est modifiable : Les caract&egrave;res
 autoris&eacute;s sont exclusivement les caract&egrave;res
 alphanum&eacute;riques et le underscore _ , toutes les autres
-entr&eacute;es &eacute;tant &eacute;limin&eacute;es. 
+entr&eacute;es &eacute;tant &eacute;limin&eacute;es.
 L'entr&eacute;e doit &ecirc;tre valid&eacute;e par la touche
 'Entrer'. Le changement de nom g&eacute;n&eacute;rique ne s'applique
 qu'aux images produites par une s&eacute;lection, pas aux images
@@ -233,6 +233,7 @@ la touche 'Entrer',</li>
 <li>les caract&egrave;res interdits sont &eacute;limin&eacute;s
 automatiquement.</li>
 </ul>
+<p>Les images couleurs g&eacute;n&eacute;r&eacute;es contiennent les seuils couleurs.<p>
 <h3>5.5 Conversion RVB ---&gt; R+V+B</h3>
 <p>Le but de cette fonction est d'obtenir &agrave; partir d'une
 image couleur (RVB) au format FITS (3 axes, NAXIS = 3) les 3 images
@@ -251,6 +252,7 @@ suivre pour d&eacute;finir le nom de l'image de sortie.</p>
 <p><b>index</b> identifie le rang de l'image dans la s&eacute;rie.</p>
 <p><b>r</b>, <b>g</b> et <b>b</b> identifient les 3 images
 composantes dans les bandes de couleur rouge (r), verte (g) et bleue (b).</p>
+<p>Chaque image produite contient tous les seuils couleurs. Les seuils haut et bas sont r&eacute;gl&eacute;s sur les seuils du plan couleurs.<p>
 <h3>5.6 Conversion R+V+B ---&gt; RVB</h3>
 <p>Le but de cette fonction est de reconstituer une image couleur
 (RVB) au format FITS (3 axes, NAXIS = 3) &agrave; partir de 3 images
@@ -271,5 +273,6 @@ composantes dans les bandes de couleur rouge (r), verte (g) et bleue (b).</p>
 suivre pour d&eacute;finir le nom de l'image de sortie.</p>
 <p>Si les trois plans couleurs ne sont pas r&eacute;unis, la
 conversion ne sera pas propos&eacute;e.</p>
+<p>Les seuils couleurs sont calcul&eacute;s et inscrits dans l'en-t&ecirc;te de l'image couleurs.<p>
 </body>
 </html>
