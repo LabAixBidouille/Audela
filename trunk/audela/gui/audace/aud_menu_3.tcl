@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise à jour $Id: aud_menu_3.tcl,v 1.59 2010-02-14 17:41:28 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_3.tcl,v 1.60 2010-05-09 07:28:37 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -3085,21 +3085,48 @@ namespace eval ::conv2 {
          #--- charge, modifie les en-tetes et sauve les trois images
          set private(conv2,to_destroy) ""
          foreach i { r g b } k { 1 2 3 } {
+
             #--- charge chaque image R, G et B
             $buf load ${in}$i$ext
+
             #--- si necessaire change les mots cles
             ::conv2::MajHeader ${in}$i$ext
+
+            #--- au cas ou les seuils n'existeraient pas
+            $buf stat
+
+            #--- construit les en-tetes des seuils couleurs
+            set color [ string toupper $i ]
+            foreach kwd { MIPS-HI MIPS-LO } level [ list "Low" "Hight" ] {
+               set val [ lindex [ $buf getkwd $kwd ] 1 ]
+               switch $color {
+                  R  {  set $kwd$color [ list $kwd$color $val float "Red $level Cut" "adu" ] }
+                  G  {  set $kwd$color [ list $kwd$color $val float "Green $level Cut" "adu" ] }
+                  B  {  set $kwd$color [ list $kwd$color $val float "Blue $level Cut" "adu" ] }
+               }
+            }
+
             #--- memorise les fichiers a detruire
             lappend private(conv2,to_destroy) ${in}$i$ext
-            #-- sauve les images avec un index numerique
+
+            #--- sauve les images avec un index numerique
             $buf save ${in}$k$ext
          }
+
          #--- conversion en une image
          fitsconvert3d $in 3 $ext $out
          $buf load $out$ext
          $buf delkwd "RGBFILTR"
+
+         #--- inscrit les seuils couleurs dans l'en-tête
+         foreach kwd [ list MIPS-LOR MIPS-HIR MIPS-LOG MIPS-HIG MIPS-LOB MIPS-HIB ] {
+            $buf setkwd [ set $kwd ]
+         }
+         $buf stat
+
          #--- sauve l'image couleur
          $buf save $out$ext
+
          #--- supprime les images avec un index numerique
          foreach i { 1 2 3 } { file delete ${in}$i$ext }
       } ]
@@ -3182,20 +3209,79 @@ namespace eval ::conv2 {
       variable private
       global audace caption
 
+      set buf "buf$audace(bufNo)"
       set private(conv2,to_destroy) [ list $in ]
       set err [ catch {
 
          #--- charge l'image
-         buf$audace(bufNo) load $in
+         $buf load $in
 
          #--- si necessaire change les mots cles et sauve l'image
          ::conv2::MajHeader $in
 
          #--- convertit en couleurs
-         buf$audace(bufNo) cfa2rgb 1
+         $buf cfa2rgb 1
+
+         #--- au cas ou les seuils n'existeraient pas
+         $buf stat
 
          #--- sauve l'image
-         buf$audace(bufNo) save $out
+         $buf save $out
+
+         #---
+         set dir [ file dirname $out]
+         set generique [ file rootname $out ]
+         set ext [ file extension $out ]
+
+         #--- je fixe NAXIS a 2
+         set kwdNaxis [ $buf getkwd NAXIS ]
+         $buf setkwd [ lreplace $kwdNaxis 1 1 "2" ]
+
+         foreach indice { 1 2 3 } {
+            $buf setkwd [ list RGBFILTR G string "Color extracted (Green)" "" ]
+            switch $indice {
+                  1  {  set filter [ list RGBFILTR R string "Color extracted (Red)" "" ] }
+                  2  {  set filter [ list RGBFILTR G string "Color extracted (Green)" "" ] }
+                  3  {  set filter [ list RGBFILTR B string "Color extracted (Blue)" "" ] }
+            }
+            $buf setkwd $filter
+            $buf save3d ${generique}$indice$ext 3 $indice $indice
+         }
+
+         set nom [ file tail $generique ]
+         ttscript2 "IMA/SERIES \"$dir\" $nom 1 3 $ext \"$dir\" $nom 1 $ext STAT"
+
+         foreach file [ list ${generique}1 ${generique}2 ${generique}3 ] color { R G B } {
+
+            set kwds_list [ fitsheader $file$ext ]
+
+            foreach kwd [ list "MIPS-LO" "MIPS-HI" ] level [ list "Low" "Hight" ] {
+               set index [ lsearch -index 0 $kwds_list $kwd ]
+               set val [ lindex [ lindex $kwds_list $index ] 1 ]
+               switch $color {
+                  R  {  set $kwd$color [ list $kwd$color $val float "Red $level Cut" "adu" ] }
+                  G  {  set $kwd$color [ list $kwd$color $val float "Green $level Cut" "adu" ] }
+                  B  {  set $kwd$color [ list $kwd$color $val float "Blue $level Cut" "adu" ] }
+               }
+            }
+         }
+
+         #--- efface la mention du plan
+         $buf delkwd RGBFILTR
+
+         #--- retablit naxis=3
+         $buf setkwd $kwdNaxis
+
+         #--- inscrit les seuils couleurs dans l'en-tête
+         foreach kwd [ list MIPS-LOR MIPS-HIR MIPS-LOG MIPS-HIG MIPS-LOB MIPS-HIB ] {
+            $buf setkwd [set $kwd ]
+         }
+
+         #--- sauve l'image
+         $buf save $out
+
+         #--- efface les plans couleurs
+         ttscript2 "IMA/SERIES \"$dir\" $nom 1 3 $ext . . . . DELETE"
 
       } ]
 
