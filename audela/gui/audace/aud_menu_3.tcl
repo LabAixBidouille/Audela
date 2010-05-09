@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise à jour $Id: aud_menu_3.tcl,v 1.60 2010-05-09 07:28:37 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_3.tcl,v 1.61 2010-05-09 14:51:38 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -3118,7 +3118,7 @@ namespace eval ::conv2 {
          $buf load $out$ext
          $buf delkwd "RGBFILTR"
 
-         #--- inscrit les seuils couleurs dans l'en-tête
+         #--- inscrit les seuils couleurs dans l'en-tete
          foreach kwd [ list MIPS-LOR MIPS-HIR MIPS-LOG MIPS-HIG MIPS-LOB MIPS-HIB ] {
             $buf setkwd [ set $kwd ]
          }
@@ -3159,40 +3159,37 @@ namespace eval ::conv2 {
          set kwdNaxis [ lreplace $kwdNaxis 1 1 "2" ]
          $buf setkwd $kwdNaxis
 
-         #--- j'enregistre les 3 plans dans 3 fichiers separes
-         $buf setkwd [ list RGBFILTR R string "Color extracted (Red)" "" ]
-         set seuil [ $buf getkwd MIPS-LOR ]
-         if { [ lindex $seuil 0 ] != "" } {
-            $buf setkwd [list MIPS-LO [ lindex $seuil 1 ] [ lindex $seuil 2 ] [ lindex $seuil 3 ] [ lindex $seuil 4 ] ]
+         #--- extrait les seuils bas et haut une seule fois
+         foreach kwd [ list MIPS-LO MIPS-HI ] {
+            set $kwd [ $buf getkwd $kwd ]
          }
-         set seuil [ $buf getkwd MIPS-HIR ]
-         if { [ lindex $seuil 0 ] != "" } {
-            $buf setkwd [list MIPS-HI [ lindex $seuil 1 ] [ lindex $seuil 2 ] [ lindex $seuil 3 ] [ lindex $seuil 4 ] ]
-         }
-         $buf save3d ${out}r 3 1 1
 
-         $buf setkwd [ list RGBFILTR G string "Color extracted (Green)" "" ]
-         set seuil [ $buf getkwd MIPS-LOG ]
-         if { [ lindex $seuil 0 ] != "" } {
-            $buf setkwd [list MIPS-LO [ lindex $seuil 1 ] [ lindex $seuil 2 ] [ lindex $seuil 3 ] [ lindex $seuil 4 ] ]
-         }
-         set seuil [ $buf getkwd MIPS-HIG ]
-         if { [ lindex $seuil 0 ] != "" } {
-            $buf setkwd [list MIPS-HI [ lindex $seuil 1 ] [ lindex $seuil 2 ] [ lindex $seuil 3 ] [ lindex $seuil 4 ] ]
-         }
-         $buf save3d ${out}g 3 2 2
+         foreach indice { 1 2 3 } c { r g b  } {
 
-         $buf setkwd [ list RGBFILTR B string "Color extracted (Blue)" "" ]
-         set seuil [ $buf getkwd MIPS-LOB ]
-         if { [ lindex $seuil 0 ] != "" } {
-            $buf setkwd [list MIPS-LO [ lindex $seuil 1 ] [ lindex $seuil 2 ] [ lindex $seuil 3 ] [ lindex $seuil 4 ] ]
+            #--- definit le symbole du plan couleur
+            set s [ string toupper $c ]
+            switch $s {
+               R  { set color Red }
+               G  { set color Green }
+               B  { set color Blue }
+            }
+            set filter [ list RGBFILTR $s string "Color extracted ($color)" "" ]
+
+            $buf setkwd $filter
+
+            foreach kwd { MIPS-LO MIPS-HI } {
+               #--- cherche le seuil du plan couleur
+               set seuil [ $buf getkwd $kwd$s ]
+               #--- extrait la valeur
+               set valeur [ lindex $seuil 1 ]
+               #--- la replace dans le MIPS correspondant
+               set $kwd [ lreplace [ set $kwd ] 1 1 $valeur ]
+               #--- sauvegarde le seuil
+               $buf setkwd [ set $kwd ]
+            }
+            #--- sauve le plan couleur
+            $buf save3d ${out}$c 3 $indice $indice
          }
-         set seuil [$buf getkwd MIPS-HIB ]
-         if { [ lindex $seuil 0 ] != "" } {
-            $buf setkwd [list MIPS-HI [ lindex $seuil 1 ] [ lindex $seuil 2 ] [ lindex $seuil 3 ] [ lindex $seuil 4 ] ]
-         }
-         $buf save3d ${out}b 3 3 3
-         $buf delkwd "RGBFILTR"
 
       } ]
 
@@ -3210,7 +3207,12 @@ namespace eval ::conv2 {
       global audace caption
 
       set buf "buf$audace(bufNo)"
+      set ext [ file extension $out ]
+      set dir [ file dirname $out]
+      set generique [ file rootname $out ]
+      set nom [ file tail $generique ]
       set private(conv2,to_destroy) [ list $in ]
+
       set err [ catch {
 
          #--- charge l'image
@@ -3222,42 +3224,44 @@ namespace eval ::conv2 {
          #--- convertit en couleurs
          $buf cfa2rgb 1
 
-         #--- au cas ou les seuils n'existeraient pas
          $buf stat
 
          #--- sauve l'image
          $buf save $out
 
-         #---
-         set dir [ file dirname $out]
-         set generique [ file rootname $out ]
-         set ext [ file extension $out ]
-
-         #--- je fixe NAXIS a 2
+         #--- decompose l'image couleurs en 3 plans pour calculer les seuils
+         #--- memorise NAXIS
          set kwdNaxis [ $buf getkwd NAXIS ]
+         #--- fixe NAXIS a 2
          $buf setkwd [ lreplace $kwdNaxis 1 1 "2" ]
 
          foreach indice { 1 2 3 } {
-            $buf setkwd [ list RGBFILTR G string "Color extracted (Green)" "" ]
+            #--- definit le filtre RGBFILTR de chaque plan
             switch $indice {
                   1  {  set filter [ list RGBFILTR R string "Color extracted (Red)" "" ] }
                   2  {  set filter [ list RGBFILTR G string "Color extracted (Green)" "" ] }
                   3  {  set filter [ list RGBFILTR B string "Color extracted (Blue)" "" ] }
             }
+            #--- change l'en-tete
             $buf setkwd $filter
+            #--- sauve le plan couleur
             $buf save3d ${generique}$indice$ext 3 $indice $indice
          }
 
-         set nom [ file tail $generique ]
+         #--- fait les stat sur les 3 plans couleurs
          ttscript2 "IMA/SERIES \"$dir\" $nom 1 3 $ext \"$dir\" $nom 1 $ext STAT"
 
+         #--- reprend chaque plan couleur
          foreach file [ list ${generique}1 ${generique}2 ${generique}3 ] color { R G B } {
-
+            #--- extrait les kwd
             set kwds_list [ fitsheader $file$ext ]
 
             foreach kwd [ list "MIPS-LO" "MIPS-HI" ] level [ list "Low" "Hight" ] {
+               #--- cherche l'index du mot cle
                set index [ lsearch -index 0 $kwds_list $kwd ]
+               #--- isole la valeur
                set val [ lindex [ lindex $kwds_list $index ] 1 ]
+               #--- memorise le seuil couleur
                switch $color {
                   R  {  set $kwd$color [ list $kwd$color $val float "Red $level Cut" "adu" ] }
                   G  {  set $kwd$color [ list $kwd$color $val float "Green $level Cut" "adu" ] }
@@ -3266,15 +3270,15 @@ namespace eval ::conv2 {
             }
          }
 
-         #--- efface la mention du plan
+         #--- efface la mention du plan couleur
          $buf delkwd RGBFILTR
 
          #--- retablit naxis=3
          $buf setkwd $kwdNaxis
 
-         #--- inscrit les seuils couleurs dans l'en-tête
+         #--- inscrit les seuils couleurs dans l'en-tete
          foreach kwd [ list MIPS-LOR MIPS-HIR MIPS-LOG MIPS-HIG MIPS-LOB MIPS-HIB ] {
-            $buf setkwd [set $kwd ]
+            $buf setkwd [ set $kwd ]
          }
 
          #--- sauve l'image
