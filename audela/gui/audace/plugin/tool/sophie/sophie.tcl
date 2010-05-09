@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.43 2010-02-13 13:20:01 michelpujol Exp $
+# @version   $Id: sophie.tcl,v 1.44 2010-05-09 13:51:41 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -120,7 +120,8 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    source [ file join $::audace(rep_plugin) tool sophie sophiespectro.tcl ]
    source [ file join $::audace(rep_plugin) tool sophie sophieview.tcl ]
    source [ file join $::audace(rep_plugin) tool sophie sophielog.tcl ]
-   source [ file join $::audace(rep_plugin) tool sophie sophietest.tcl ] ;
+   source [ file join $::audace(rep_plugin) tool sophie sophietest.tcl ]
+   source [ file join $::audace(rep_plugin) tool sophie sophiehistogram.tcl ]
 
    if { ! [ info exists ::conf(sophie,exposure) ] }                 { set ::conf(sophie,exposure)                  "0.5" }
    if { ! [ info exists ::conf(sophie,centerBinning) ] }            { set ::conf(sophie,centerBinning)             "2x2" }
@@ -169,7 +170,8 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists ::conf(sophie,maskFwhm)] }                  { set ::conf(sophie,maskFwhm)                  5 }
    if { ! [ info exists ::conf(sophie,maskPercent)] }               { set ::conf(sophie,maskPercent)               0.15 }
    if { ! [ info exists ::conf(sophie,pixelMinCount)] }             { set ::conf(sophie,pixelMinCount)             50 }
-   if { ! [ info exists ::conf(sophie,minIntensity)] }             { set ::conf(sophie,minIntensity)               1000 }
+   if { ! [ info exists ::conf(sophie,minIntensity)] }              { set ::conf(sophie,minIntensity)              1000 }
+   if { ! [ info exists ::conf(sophie,fiberDetectionMode)] }        { set ::conf(sophie,fiberDetectionMode)        2 } ; #-- 1=gaussienne 2=baricentre
 
    if { ! [ info exists ::conf(sophie,socketPort)] }                { set ::conf(sophie,socketPort)                5020 }
 
@@ -462,12 +464,19 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
 #    suppprime l'instance du plugin
 #------------------------------------------------------------
 proc ::sophie::deletePluginInstance { visuNo } {
+   variable private
 
    #--- j'arrete le fichier de log
    ::sophie::log::stopLogFile $visuNo
 
    #--- j'arrete les simulateurs
    ::sophie::test::closeTelescopeControl
+
+   #--- je ferme le panneau
+   destroy $private(frm)
+
+   #--- je supprime les variables
+   array unset private $visuNo,*
 
 }
 
@@ -576,6 +585,9 @@ proc ::sophie::stopTool { visuNo } {
    $private(hCanvas) bind "::sophie"  <ButtonPress-3>     "default"
    #--- je restaure le bind du canvas
    ::confVisu::createBindCanvas $visuNo <Double-Button-1> "default"
+
+   #--- je ferme la fenetre de l'histogramme
+   ::sophie::histogram::closeWindow $visuNo
 
    #--- je ferme la fenetre de controle
    ::sophie::control::closeWindow $visuNo
