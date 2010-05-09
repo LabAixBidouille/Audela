@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise à jour $Id: aud_menu_1.tcl,v 1.34 2010-05-01 08:20:09 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_1.tcl,v 1.35 2010-05-09 07:48:52 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -224,9 +224,9 @@ namespace eval ::audace {
          }
          array set file_conf [ini_getArrayFromFile $filename]
 
-         #--- Suppression des fichiers temporaires 'fonction_transfert.pal' et 'fonction_transfert_x.pal'
+         #--- Suppression des fichiers temporaires 'fonction_transfert.pal'
          if { [ lindex [ decomp $tmp(fichier_palette).pal ] 2 ] != "" } {
-            #--- Cas des fichiers temporaires 'fonction_transfert_x.pal'
+            #--- Cas des fichiers temporaires 'fonction_transfert.pal'
             set index_final [ lindex [ decomp $tmp(fichier_palette).pal ] 2 ]
             for { set index "1" } { $index <= $index_final } { incr index } {
                file delete [ file join [ lindex [ decomp $tmp(fichier_palette).pal ] 0 ] [ lindex [ decomp $tmp(fichier_palette).pal ] 1 ]$index[ lindex [ decomp $tmp(fichier_palette).pal ] 3 ] ]
