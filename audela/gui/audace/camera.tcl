@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: camera.tcl,v 1.39 2010-01-17 18:43:59 robertdelmas Exp $
+# Mise à jour $Id: camera.tcl,v 1.40 2010-05-09 07:34:40 robertdelmas Exp $
 #
 # Procedures utilisees par confCam
 #   ::camera::create : cree une camera
@@ -120,7 +120,7 @@ proc ::camera::create { camItem } {
       #--- j'initialise la file d'evenement  pour la communication entre les deux threads
       set private($camItem,eventList) [list]
       #--- je charge  camerathread.tcl dans l'intepreteur esclave de la camera
-      interp eval $private($camItem,threadNo) [list uplevel #0 source \"[file join $::audace(rep_audela) audace camerathread.tcl]\"]
+      interp eval $private($camItem,threadNo) [list uplevel #0 source \"[file join $::audace(rep_gui) audace camerathread.tcl]\"]
       interp eval $private($camItem,threadNo) ::camerathread::init $camItem $private($camItem,camNo) "0"
    } else {
       #--- cas multi thread
@@ -148,7 +148,7 @@ proc ::camera::create { camItem } {
       set private($camItem,eventList) [list]
 
       #--- je charge camerathread.tcl dans l'intepreteur de la thread de la camera
-      ::thread::send $private($camItem,threadNo) [list uplevel #0 source \"[file join $::audace(rep_audela) audace camerathread.tcl]\"]
+      ::thread::send $private($camItem,threadNo) [list uplevel #0 source \"[file join $::audace(rep_gui) audace camerathread.tcl]\"]
       ::thread::send $private($camItem,threadNo) "::camerathread::init $camItem $private($camItem,camNo) [thread::id]"
       return 0
    }

@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Outil d'acquisition pour APN Nikon CoolPix
 # Auteur : Raymond ZACHANTKE
-# Mise à jour $Id: acqapn.tcl,v 1.43 2010-05-01 08:48:43 robertdelmas Exp $
+# Mise à jour $Id: acqapn.tcl,v 1.44 2010-05-09 07:39:01 robertdelmas Exp $
 #
 
 #============================================================
@@ -732,7 +732,7 @@ namespace eval ::acqapn {
             ::console::affiche_saut "# $caption(acqapn,label,vue) $panneau(acqapn,selection) $panneau(acqapn,imagename) $caption(acqapn,label,chargee)\n\n"
             #--- Affichage
             if { $panneau(acqapn,affichage)=="1" } {
-               cd "$audace(rep_audela)"
+               cd "$audace(rep_gui)"
                loadima [ file join $audace(rep_images) $panneau(acqapn,imagename) ]
             }
          } else {

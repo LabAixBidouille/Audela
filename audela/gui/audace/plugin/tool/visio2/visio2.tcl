@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.52 2010-01-30 14:29:08 robertdelmas Exp $
+# Mise à jour $Id: visio2.tcl,v 1.53 2010-05-09 07:43:48 robertdelmas Exp $
 #
 
 namespace eval ::visio2 {
@@ -39,9 +39,9 @@ proc ::visio2::createPluginInstance { { in "" } { visuNo 1 } } {
     }]
 
    #--- Chargement des autres sources (en attendant de les charger depuis aud.tcl)
-   source [ file join $audace(rep_audela) audace movie.tcl ]
-   source [ file join $audace(rep_audela) audace ftpclient.tcl ]
-   source [ file join $audace(rep_audela) audace image.tcl ]
+   source [ file join $audace(rep_gui) audace movie.tcl ]
+   source [ file join $audace(rep_gui) audace ftpclient.tcl ]
+   source [ file join $audace(rep_gui) audace image.tcl ]
 
    #--- je charge le package Tablelist
    package require Tablelist
