@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="external_sextractor"
 	ProjectGUID="{7F8080A4-14CF-4782-B2A0-74A6134C9765}"
 	TargetFrameworkVersion="0"
@@ -16,7 +16,7 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory=".\Release"
+			OutputDirectory=".\..\..\..\..\bin"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
@@ -43,11 +43,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				InlineFunctionExpansion="1"
+				InlineFunctionExpansion="0"
 				PreprocessorDefinitions="NDEBUG;WIN32;_CONSOLE;__STDC__;_CRT_SECURE_NO_WARNINGS"
-				StringPooling="true"
+				StringPooling="false"
 				RuntimeLibrary="0"
-				EnableFunctionLevelLinking="true"
+				EnableFunctionLevelLinking="false"
 				PrecompiledHeaderFile=".\Release/external_sextractor.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
