@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.26 2010-02-14 16:38:08 michelpujol Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.27 2010-05-09 13:53:35 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -185,20 +185,21 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          # Parameters IN:
          # @param     Argv[2]= [list x1 y1 x2 y2 ] fenetre de detection de l'etoile
          # @param     Argv[3]=starDetectionMode    1=fit de gaussienne  2=barycentre
-         # @param     Argv[4]=integratedImage      0=pas d'image integree, 1=image integree centree la fenetre, 2=image integree centree sur la consigne
-         # @param     Argv[5]=findFiber            1=recherche de l'entrée de fibre , 0= ne pas rechercher
-         # @param     Argv[6]=maskBufNo            numero du buffer du masque
-         # @param     Argv[7]=sumBufNo             numero du buffer de l'image integree
-         # @param     Argv[8]=fiberBufNo           numero du buffer de l'image resultat
-         # @param     Argv[9]=originSumMinCounter  nombre d'acquisition de l'image integree
-         # @param     Argv[10]=originSumCounter    compteur d'integration de l'image de l'origine
-         # @param     Argv[11]=previousFiberX      abcisse du centre de la fibre
-         # @param     Argv[12]=previousFiberY      ordonnee du centre de la fibre
-         # @param     Argv[13]=maskRadius          rayon du masque
-         # @param     Argv[14]=maskFwhm            largeur a mi hauteur de la gaussienne
-         # @param     Argv[15]=pixelMinCount       nombre minimal de pixels pour accepter l'image
-         # @param     Argv[16]=maskPercent         pourcentage du niveau du masque
-         # @param     Argv[17]=biasValue           valeur du bias
+         # @param     Argv[4]=fiberDetectionMode   1=fit de gaussienne  2=barycentre
+         # @param     Argv[5]=integratedImage      0=pas d'image integree, 1=image integree centree la fenetre, 2=image integree centree sur la consigne
+         # @param     Argv[6]=findFiber            1=recherche de l'entrée de fibre , 0= ne pas rechercher
+         # @param     Argv[7]=maskBufNo            numero du buffer du masque
+         # @param     Argv[8]=sumBufNo             numero du buffer de l'image integree
+         # @param     Argv[9]=fiberBufNo           numero du buffer de l'image resultat
+         # @param     Argv[10]=originSumMinCounter  nombre d'acquisition de l'image integree
+         # @param     Argv[11]=originSumCounter    compteur d'integration de l'image de l'origine
+         # @param     Argv[12]=previousFiberX      abcisse du centre de la fibre
+         # @param     Argv[13]=previousFiberY      ordonnee du centre de la fibre
+         # @param     Argv[14]=maskRadius          rayon du masque
+         # @param     Argv[15]=maskFwhm            largeur a mi hauteur de la gaussienne
+         # @param     Argv[16]=pixelMinCount       nombre minimal de pixels pour accepter l'image
+         # @param     Argv[17]=maskPercent         pourcentage du niveau du masque
+         # @param     Argv[18]=biasValue           valeur du bias
          #
          # @return si TCL_OK
          #            list[0] starStatus           resultat de la recherche de la fibre (DETECTED NO_SIGNAL)
@@ -211,13 +212,15 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          #            list[7] measuredFwhmY        gaussienne mesuree (pixel binné)
          #            list[8] background           fond du ciel (ADU)
          #            list[9] maxIntensity         intensite max (ADU)
-         #            list[10] message             message d'information
+         #            list[10] maxIntensity        flux de l'étoile (ADU)
+         #            list[11] message             message d'information
          #
          #         si TCL_ERREUR
          #            message d'erreur
 
          set result [buf$bufNo fibercentro "[list $x1 $y1 $x2 $y2]" \
-            $starDetectionMode $integratedImage  $private(findFiber) \
+            $starDetectionMode $private(fiberDetectionMode) \
+            $integratedImage  $private(findFiber) \
             $private(maskBufNo) $private(sumBufNo) $private(fiberBufNo) \
             $private(originSumMinCounter) $private(originSumCounter) \
             $previousFiberX $previousFiberY \
@@ -238,7 +241,13 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          set measuredFwhmY    [expr [lindex $result 7 ] * $yBinning]
          set background       [lindex $result 8 ]
          set maxIntensity     [lindex $result 9 ]
-         set infoMessage      [lindex $result 10 ]
+         set starFlux         [lindex $result 10 ]
+         set infoMessage      [lindex $result 11 ]
+
+         #--- je calcule le flux en ADU/seconde  (si exptime = 0 , je ne change pas la valeur)
+         if { $private(exptime) != 0 } {
+             set starFlux [expr $starFlux / $private(exptime) ]
+         }
 
          ###::camerathread::disp  "starStatus=$starStatus starX,starY=$starX $starY fiberStatus=$fiberStatus fiberX,fiberY=$fiberX $fiberY infoMessage=$infoMessage\n"
          if { $starStatus == "DETECTED" } {
@@ -412,22 +421,15 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          ::camerathread::notify "targetCoord" \
             $private(targetCoord) $dx $dy $targetDetection $fiberStatus \
             [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
-            $measuredFwhmX $measuredFwhmY $background $maxIntensity  \
+            $measuredFwhmX $measuredFwhmY $background $maxIntensity $starFlux \
             $alphaDiff $deltaDiff $alphaCorrection $deltaCorrection $infoMessage
       }
 
-      ###update
-
-      ###::camerathread::disp  "camerathread: alphaCorrection=$alphaCorrection deltaCorrection=$deltaCorrection \n"
       if { $private(acquisitionState) == "1" } {
 
          #--- je prends en compte les modifications des parametres synchones et assynchones
          ::camerathread::updateParameter
 
-         set alphaDelay 0.0
-         set deltaDelay 0.0
-         set alphaDirection ""
-         set deltaDirection ""
          #--- je deplace le telescope
          if { $private(mountEnabled) == 1 && $private(acquisitionState) == "1"  } {
             #--- je calcule la direction alpha
@@ -444,7 +446,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
                set deltaDirection "s"
             }
 
-            #--- j'envoi un message au thread principal pour afficher les informations concenrnant la correction
+            #--- j'envoi un message au thread principal pour afficher les informations concernant la correction
             ::camerathread::notify "mountInfo" $alphaDirection [expr abs($alphaCorrection)] $deltaDirection [expr abs($deltaCorrection)]
 
             #--- je deplace le telescope
@@ -456,13 +458,12 @@ proc ::camerathread::sophieAcquisitionLoop { } {
                   if { [string first  "tel_radec_goto already moving" $::errorInfo  ] == 0 } {
                      #--- c'est une erreur non bloquante, je continue la boucle
                   } else {
-                      #--- c'est une erreur bloquante, j'interromp la bloucle en tranmettant l'erreur
+                      #--- c'est une erreur bloquante, j'interromp la boucle en tranmettant l'erreur
                       error $::errorInfo
                   }
                }
             }
          }
-         ###::camerathread::disp  "camerathread: dx,dy=[format "%6.1f" $dx],[format "%6.1f" $dy]pixel dAlpha,ddelta=[format "%6.2f" $alphaDiff],[format "%6.2f" $deltaDiff] arsec correction=[format "%6.2f" $alphaCorrection],[format "%6.2f" $deltaCorrection]arsec tel move [format "%s %4.3fs" $alphaDirection $alphaDelay] [format "%s %4.3fs" $deltaDirection $deltaDelay ]\n"
       }
    } catchMessage ]
 
