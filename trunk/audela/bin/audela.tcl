@@ -1,5 +1,5 @@
 #
-# Update $Id: audela.tcl,v 1.18 2010-05-01 10:51:37 jacquesmichelet Exp $
+# Update $Id: audela.tcl,v 1.19 2010-05-09 13:47:03 michelpujol Exp $
 #
 #--- Welcome to the AudeLA-Interfaces Easy Launcher
 #
@@ -20,6 +20,14 @@
 
 #--- Taking into account the coding UTF-8
 encoding system utf-8
+
+#--- Use standard C precision
+#--- New default tcl_precision=0 of TCL 8.5 using 17 digits produces differents and
+#--- less intuitive results than TCl 8.4 which used default tcl_precision=12
+#--- For example  expr -3*0.05 return -0.15000000000000002
+#--- So Audela uses tcl_precision=12 for simpler results and for compatibility with legacy code
+#--- For example  expr -3*0.05 = -0.15
+set tcl_precision 12
 
 #--- Add audela/lib directory to ::auto_path if it doesn't already exist
 set audelaLibPath [file join [file join [file dirname [file dirname [info nameofexecutable]] ] lib]]
