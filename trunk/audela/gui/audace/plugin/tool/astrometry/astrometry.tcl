@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: astrometry.tcl,v 1.6 2010-01-30 14:07:38 robertdelmas Exp $
+# Mise à jour $Id: astrometry.tcl,v 1.7 2010-05-09 07:54:17 robertdelmas Exp $
 #
 
 #============================================================
@@ -655,8 +655,7 @@ namespace eval ::astrometry {
             ttscript2 "IMA/SERIES \"$mypath\" \"$sky0\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" STAT \"objefile=${mypath}/x$sky$ext\" detect_kappa=20"
          } else {
             buf$audace(bufNo) save "${mypath}/${sky}$ext"
-            # exec sex $mypath/$sky0$ext -c [pwd]/config.sex
-            sextractor "$mypath/$sky0$ext" -c config.sex
+            sextractor "$mypath/$sky0$ext" -c "[ file join $mypath config.sex ]"
          }
          $astrom(This).status.lab configure -text "$caption(astrometry,start,2) $cattype : $::astrometry::catvalues(catfolder) ..." ; update
          set erreur [ catch { ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}a.jpg\" " } msg ]
@@ -1167,7 +1166,7 @@ namespace eval ::astrometry {
    }
 
    proc delete_dummy { } {
-      global audace conf
+      global conf
 
       #--- Remplacement de "$audace(rep_images)" par "." dans "mypath" - Cela permet a
       #--- Sextractor de ne pas etre sensible aux noms de repertoire contenant des
