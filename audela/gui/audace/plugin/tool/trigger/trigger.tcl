@@ -2,7 +2,7 @@
 # Fichier : trigger.tcl
 # Description : Outil de declenchement pour APN Canon non reconnu par libgphoto2_canon.dll
 # Auteur : Raymond Zachantke
-# Mise à jour $Id: trigger.tcl,v 1.1 2010-05-03 17:55:52 robertdelmas Exp $
+# Mise à jour $Id: trigger.tcl,v 1.2 2010-05-09 17:24:24 robertdelmas Exp $
 #
 
 #============================================================
@@ -138,120 +138,115 @@ namespace eval ::trigger {
       pack forget $This
    }
 
-#--   fin du namespace
-}
+   #------------------------------------------------------------
+   # triggerBuildIF
+   #    cree la fenetre de l'outil
+   #------------------------------------------------------------
+   proc triggerBuildIF { This } {
+      global audace panneau caption color
+      variable Trigger
 
-#------------------------------------------------------------
-# triggerBuildIF
-#    cree la fenetre de l'outil
-#------------------------------------------------------------
-proc triggerBuildIF { This } {
-   global audace panneau caption color
-   variable Trigger
+      #---
+      frame $This -borderwidth 2 -relief groove
+      pack $This
+         #--- Frame du titre
+         frame $This.fra1 -borderwidth 2 -relief groove
+            #--- Bouton du titre
+            Button $This.fra1.but -borderwidth 1 \
+               -text "$caption(trigger,help_titre1)\n$caption(trigger,title)" \
+               -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::trigger::getPluginType ] ] \
+                  [ ::trigger::getPluginDirectory ] [ ::trigger::getPluginHelp ]"
+            pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
+         DynamicHelp::add $This.fra1.but -text $caption(trigger,help_titre)
+         pack $This.fra1 -side top -fill x
 
-   #---
-   frame $This -borderwidth 2 -relief groove
-   pack $This
-      #--- Frame du titre
-      frame $This.fra1 -borderwidth 2 -relief groove
-         #--- Bouton du titre
-         Button $This.fra1.but -borderwidth 1 \
-            -text "$caption(trigger,help_titre1)\n$caption(trigger,title)" \
-            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::trigger::getPluginType ] ] \
-               [ ::trigger::getPluginDirectory ] [ ::trigger::getPluginHelp ]"
-         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
-      DynamicHelp::add $This.fra1.but -text $caption(trigger,help_titre)
-      pack $This.fra1 -side top -fill x
+         #--   le frame cantonnant les commandes et le bouton GO
+         set Trigger $This.fra2
+         frame $Trigger -borderwidth 1 -relief sunken
+         pack $Trigger -side top -fill x
 
-      #--   le frame cantonnant les commandes et le bouton GO
-      set Trigger $This.fra2
-      frame $Trigger -borderwidth 1 -relief sunken
-      pack $Trigger -side top -fill x
+         #--   initialise les listes pour les combobox
+         set panneau(trigger,portLabels) [ ::confLink::getLinkLabels { "parallelport" "quickremote" "serialport" "external" } ]
+         set panneau(trigger,port) [ lindex $panneau(trigger,portLabels) 0 ]
+         set panneau(trigger,bitLabels) [ ::confLink::getPluginProperty $panneau(trigger,port) bitList ]
+         set panneau(trigger,cdeLabels) { 0 1 }
+         set panneau(trigger,modeLabels) [ list "$caption(trigger,mode,one)" "$caption(trigger,mode,serie)" ]
 
-      #--   initialise les listes pour les combobox
-      set panneau(trigger,portLabels) [ ::confLink::getLinkLabels { "parallelport" "quickremote" "serialport" "external" } ]
-      set panneau(trigger,port) [ lindex $panneau(trigger,portLabels) 0 ]
-      set panneau(trigger,bitLabels) [ ::confLink::getPluginProperty $panneau(trigger,port) bitList ]
-      set panneau(trigger,cdeLabels) { 0 1 }
-      set panneau(trigger,modeLabels) [ list "$caption(trigger,mode,one)" "$caption(trigger,mode,serie)" ]
+         ::blt::table $Trigger
 
-      ::blt::table $Trigger
+         #--   construction des combobox
+         foreach child { port bit cde mode } {
+            set len [ llength $panneau(trigger,${child}Labels) ]
+            label $Trigger.${child}_lab -text $caption(trigger,$child)
+            ComboBox $Trigger.$child -borderwidth 1 -width 5 -height $len \
+               -relief sunken -justify center \
+               -textvariable panneau(trigger,$child) \
+               -values "$panneau(trigger,${child}Labels)"
+         }
+         $Trigger.port configure -modifycmd "::trigger::configBit" -width 10
+         $Trigger.mode configure -modifycmd "::trigger::configPan"
 
-      #--   construction des combobox
-      foreach child { port bit cde mode } {
-         set len [ llength $panneau(trigger,${child}Labels) ]
-         label $Trigger.${child}_lab -text $caption(trigger,$child)
-         ComboBox $Trigger.$child -borderwidth 1 -width 5 -height $len \
-            -relief sunken -justify center \
-            -textvariable panneau(trigger,$child) \
-            -values "$panneau(trigger,${child}Labels)"
-      }
-      $Trigger.port configure -modifycmd "configBit" -width 10
-      $Trigger.mode configure -modifycmd "configPan"
+         #--   construit les entrees de donnees
+         foreach child { nb_poses activtime delai periode } {
+            LabelEntry $Trigger.$child -label $caption(trigger,$child) \
+               -textvariable ::trigger::$child -labelanchor w -labelwidth 8 \
+               -borderwidth 1 -relief flat -padx 2 -justify right \
+               -width 5 -relief sunken
+            bind $Trigger.$child <Leave> [ list  ::trigger::test_$child ]
+         }
 
-      #--   construit les entrees de donnees
-      foreach child { nb_poses activtime delai periode } {
-         LabelEntry $Trigger.$child -label $caption(trigger,$child) \
-            -textvariable ::trigger::$child -labelanchor w -labelwidth 8 \
-            -borderwidth 1 -relief flat -padx 2 -justify right \
-            -width 5 -relief sunken
-         bind $Trigger.$child <Leave> [ list  test_$child ]
-      }
+         #--   label pour afficher les etapes
+         label $Trigger.state -textvariable panneau(trigger,action) \
+            -width 14 -borderwidth 2 -relief sunken
 
-      #--   label pour afficher les etapes
-      label $Trigger.state -textvariable panneau(trigger,action) \
-         -width 14 -borderwidth 2 -relief sunken
+         #-- checkbutton pour la longuepose
+         checkbutton $Trigger.lp -text $caption(trigger,lp) \
+            -indicatoron "1" -offvalue "0" -onvalue "1" \
+            -variable ::trigger::lp -command "::trigger::configTime"
 
-      #-- checkbutton pour la longuepose
-      checkbutton $Trigger.lp -text $caption(trigger,lp) \
-         -indicatoron "1" -offvalue "0" -onvalue "1" \
-         -variable ::trigger::lp -command "configTime"
+         #--   configure le bouton de lancement d'acquisition
+         button $Trigger.but1 -borderwidth 2 -text "$caption(trigger,go)" \
+            -command "::trigger::timer"
 
-      #--   configure le bouton de lancement d'acquisition
-      button $Trigger.but1 -borderwidth 2 -text "$caption(trigger,go)" \
-         -command "timer"
+         ::blt::table $Trigger \
+            $Trigger.port_lab 0,0 \
+            $Trigger.port 0,1 \
+            $Trigger.bit_lab 1,0 \
+            $Trigger.bit 1,1 \
+            $Trigger.cde_lab 2,0 \
+            $Trigger.cde 2,1 \
+            $Trigger.mode_lab 3,0 \
+            $Trigger.mode 3,1 \
+            $Trigger.state 4,0 -cspan 2 \
+            $Trigger.nb_poses 5,0 -cspan 2 \
+            $Trigger.lp 6,0 -cspan 2 \
+            $Trigger.activtime 7,0 -cspan 2 \
+            $Trigger.delai 8,0 -cspan 2 \
+            $Trigger.periode 9,0 -cspan 2 \
+            $Trigger.but1 10,0 -cspan 2 -ipady 3 -fill x
+            ::blt::table configure $Trigger r* -pady 2
 
-      ::blt::table $Trigger \
-         $Trigger.port_lab 0,0 \
-         $Trigger.port 0,1 \
-         $Trigger.bit_lab 1,0 \
-         $Trigger.bit 1,1 \
-         $Trigger.cde_lab 2,0 \
-         $Trigger.cde 2,1 \
-         $Trigger.mode_lab 3,0 \
-         $Trigger.mode 3,1 \
-         $Trigger.state 4,0 -cspan 2 \
-         $Trigger.nb_poses 5,0 -cspan 2 \
-         $Trigger.lp 6,0 -cspan 2 \
-         $Trigger.activtime 7,0 -cspan 2 \
-         $Trigger.delai 8,0 -cspan 2 \
-         $Trigger.periode 9,0 -cspan 2 \
-         $Trigger.but1 10,0 -cspan 2 -ipady 3 -fill x
-         ::blt::table configure $Trigger r* -pady 2
+         #--   ajoute les aides
+         foreach child { cde nb_poses activtime delai periode } {
+            DynamicHelp::add $Trigger.$child -text $caption(trigger,help$child)
+         }
 
-      #--   ajoute les aides
-      foreach child { cde nb_poses activtime delai periode } {
-         DynamicHelp::add $Trigger.$child -text $caption(trigger,help$child)
-      }
+         #--   selectionne les valeurs initiales
+         foreach frm { port bit cde mode } index { 0 0 1 0 } {
+            set panneau(trigger,$frm) [ lindex $panneau(trigger,${frm}Labels) 0 ]
+            $Trigger.$frm setvalue @0
+         }
 
-      #--   selectionne les valeurs initiales
-      foreach frm { port bit cde mode } index { 0 0 1 0 } {
-         set panneau(trigger,$frm) [ lindex $panneau(trigger,${frm}Labels) 0 ]
-         $Trigger.$frm setvalue @0
-      }
+         lassign { "1" " " "0" " " } ::trigger::lp ::trigger::activtime \
+            ::trigger::delai panneau(trigger,action)
 
-      lassign { "1" " " "0" " " } ::trigger::lp ::trigger::activtime \
-         ::trigger::delai panneau(trigger,action)
+         $Trigger.lp invoke
+         configPan
 
-      $Trigger.lp invoke
-      configPan
-
-      #--- Mise ajour dynamique des couleurs
-      ::confColor::applyColor $This
+         #--- Mise ajour dynamique des couleurs
+         ::confColor::applyColor $This
    }
 
-# ==============================================================================================
-# ==============================================================================================
    ######################################################################
    #-- Gere les prises de vue a partir des reglages de l'utilisateur    #
    ######################################################################
@@ -506,6 +501,9 @@ proc triggerBuildIF { This } {
       global caption
 
       tk_messageBox -title $caption(trigger,attention)\
-            -icon error -type ok -message $caption(trigger,help$nom)
+         -icon error -type ok -message $caption(trigger,help$nom)
    }
+
+#--   fin du namespace
+}
 
