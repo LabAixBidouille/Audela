@@ -2220,8 +2220,9 @@ void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2,
  *  @param     x2 fenetre de detection de l'etoile ( coin haud droit )
  *  @param     y2 fenetre de detection de l'etoile
  *  @param     starDetectionMode 1=fit de gaussienne  2=barycentre
+ *  @param     fiberDetectionMode 1=Gaussienne 2=barycentre
  *  @param     integratedImage   0=pas d'image integree, 1=image integree centree la fenetre, 2=image integree centree sur la consigne
- *  @param     findFiber      indicateur de detection de fibre (0=pas de d?tection  1=detection activee)
+ *  @param     findFiber      indicateur de detection de fibre (0=pas de detection  1=detection activee)
  *  @param     maskBufNo      numero du buffer du masque
  *  @param     sumBufNo       numero du buffer de l'image integree
  *  @param     fiberBufNo     numero du buffer de l'image resultat
@@ -2245,6 +2246,7 @@ void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2,
  *  @param     measuredFwhmY  gaussienne mesuree
  *  @param     background     fond du ciel
  *  @param     maxIntensity   intensite max
+ *  @param     starFlux       flux de l'etoile
  *  @param     message        message d'information
  *
  *  Return :   void . Exception en cas d'erreur imprevue
@@ -2252,7 +2254,8 @@ void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2,
  */
 
 void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
-                                int starDetectionMode, int integratedImage, int findFiber,
+                                int starDetectionMode, int fiberDetectionMode,
+                                int integratedImage, int findFiber,
                                 int maskBufNo, int sumBufNo, int fiberBufNo,
                                 int maskRadius, double maskFwhm, double maskPercent,
                                 int originSumMinCounter, int originSumCounter,
@@ -2261,8 +2264,8 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                                 char *starStatus,  double *starX,  double *starY,
                                 char *fiberStatus, double *fiberX, double *fiberY,
                                 double *measuredFwhmX, double *measuredFwhmY,
-                                double *background, double *maxIntensity,
-                                char * message)
+                                double *background, double *maxIntensity, 
+                                double *starFlux,char *message)
 {
    int i, j;
    int naxis1, naxis2;  // taille de l'image
@@ -2339,7 +2342,8 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
          &dlocut,&dhicut,&dmaxi,&dmini,&dmean,&dsigma,&dbgmean,&dbgsigma,&dcontrast);
       if(ttResult) {
          free(imgPix);
-         throw CErrorLibtt(ttResult);
+         //throw CErrorLibtt(ttResult);
+         throw CError("AstroFiberCentro: TT_PTR_STATIMA width=%d height=%d");
       }
       *maxIntensity = dmaxi;
       *background   = dbgmean;
@@ -2351,7 +2355,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
       }
 
       // ----------------------------------------------------
-      // je soustrais le fond de ciel estim?
+      // je soustrais le fond de ciel estimé
       // ----------------------------------------------------
       for(j=0;j<height;j++) {
          imgOffset  = imgPix  + j * width;
@@ -2367,8 +2371,12 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
       // de background et de maxIntensity
       // ----------------------------------------------------
       double px[4], py[4];
-      TYPE_PIXELS pixel;
       double errx, erry;
+      int    pixelCount = 0;
+      flux = 0.;
+      sx = 0.;
+      sy = 0.;
+
 
       // je cree les variables de travail pour l'ajustement de la gaussienne
       iX = (TYPE_PIXELS*)calloc(width,sizeof(TYPE_PIXELS));
@@ -2377,14 +2385,33 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
       dY = (double*)calloc(height,sizeof(double));
 
       for(j=0;j<height;j++) {
+         imgOffset  = imgPix  + j * width;
          for(i=0;i<width;i++) {
-            pixel = *(imgPix+width*j+i);
+            imgPtr  = imgOffset+i;
+         
             // je supprime les pixels negatifs
             //if ( pixel < 0. ) {
             //  pixel = 0.;
             //}
-            *(iX+i) += pixel;
-            *(iY+j) += pixel;
+
+            // je calcule les histogrammes pour la Fwhm
+            *(iX+i) += *imgPtr;
+            *(iY+j) += *imgPtr;
+
+            // j'incremente le compteur des pixels au dessus du seuil
+            if ( (double)*imgPtr > qualityMin ) {
+               pixelCount++;
+            }
+
+            // je calcule le flux de l'étoile
+            flux += *imgPtr  ;
+
+            // je cumule les flux de l'image courante pour le calcul du barycentre
+            if ( starDetectionMode == 2 ) {
+               sx += (i+1) * *imgPtr ;
+               sy += (j+1) * *imgPtr ;
+            }
+
          }
       }
 
@@ -2396,6 +2423,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
 
       *measuredFwhmX = px[2];
       *measuredFwhmY = py[2];
+      *starFlux = flux;
 
       // ----------------------------------------------------
       // j'enregistre l'image courante pour debogage
@@ -2422,32 +2450,10 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
       // je calcule le barycentre (flux, sx, sy)
       // je calcule l'image integree
       // ----------------------------------------------------
-      int    pixelCount = 0;
-      double dist;
+
       *starX=0.;
       *starY=0.;
-      flux = 0.;
-      sx = 0.;
-      sy = 0.;
 
-      for(j=0;j<height;j++) {
-         imgOffset  = imgPix  + j * width;
-         for(i=0;i<width;i++) {
-            imgPtr  = imgOffset+i;
-
-            // j'incremente le compteur des pixels au dessus du seuil
-            if ( (double)*imgPtr > qualityMin ) {
-               pixelCount++;
-            }
-
-            // je cumule les flux de l'image courante
-            if ( starDetectionMode == 2 ) {
-               flux += (float)*imgPtr  ;
-               sx += (i+1) * (float)*imgPtr ;
-               sy += (j+1) * (float)*imgPtr ;
-            }
-         }
-      }
       // je calcule la position de l'etoile
       if ( starDetectionMode == 1 ) {
          // centre de la gaussienne
@@ -2646,16 +2652,14 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                      maskOffset = maskPix + j * width;
                      for(i=0;i<width;i++) {
                         maskPtr = maskOffset+i;
-                        if ( originSumCounter <= 1 ) {
-                           // je calcule le masque
-                           dist = sqrt( ((double)i-previousFiberCgX)*((double)i-previousFiberCgX) + ((double)j-previousFiberCgY)*((double)j-previousFiberCgY));
-                           if ( dist > maskRadius ) {
-                              *maskPtr = 0;
-                              // j'applique le masque sur l'image courante
-                              // *imgPtr  = 0;
-                           } else {
-                              *maskPtr = 1;
-                           }
+                        // je calcule la distance entre le point la position de la fibre 
+                        double dist = sqrt( ((double)i-previousFiberCgX)*((double)i-previousFiberCgX) + ((double)j-previousFiberCgY)*((double)j-previousFiberCgY));
+                        if ( dist > maskRadius ) {
+                           *maskPtr = 0;
+                           // j'applique le masque sur l'image courante
+                           // *imgPtr  = 0;
+                        } else {
+                           *maskPtr = 1;
                         }
                      }
                   }
@@ -2700,7 +2704,8 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                      offset = 0;
                   }
 
-                  fiberPix = (TYPE_PIXELS*) malloc(width * height * sizeof(TYPE_PIXELS));
+                  //fiberPix = (TYPE_PIXELS*) malloc(width * height * sizeof(TYPE_PIXELS));
+                  fiberPix = (TYPE_PIXELS*) calloc(width * height, sizeof(TYPE_PIXELS));
                   if ( fiberPix ==NULL ) {
                      throw CError( "CBuffer::AstroFiberCentro not enough memory for fiberPix");
                   }
@@ -2708,16 +2713,29 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                   double cgx =    *starX - x1;
                   double cgy =    *starY - y1;
 
-                  //
+                  /*
+                  int imin = int(previousFiberCgX) - maskRadius; 
+                  int imax = int(previousFiberCgX) + maskRadius; 
+                  int jmin = int(previousFiberCgY) - maskRadius; 
+                  int jmax = int(previousFiberCgY) + maskRadius;
+                  if ( imin <0 )       { imin = 0;}
+                  if ( imax > width )  { imax = width;}
+                  if ( jmin <0 )       { jmin = 0;}
+                  if ( jmax > height ) { jmax = height;}
+                  */
+
                   for(j=0;j<height;j++) {
+                  //for(j=jmin;j<jmax;j++) {
                      sumOffset  = sumPix  + j * width;
                      maskOffset = maskPix + j * width;
                      fiberOffset = fiberPix + j * width;
                      for(i=0;i<width;i++) {
+                     //for(i=imin;i<imax;i++) {
                         sumPtr   = sumOffset+i;
                         maskPtr  = maskOffset+i;
                         fiberPtr = fiberOffset+i;
-
+                        
+                        // je calcule le valeur theorique de la guaussienne pour ce point 
                         gaussIntensity = (TYPE_PIXELS) ( (1. - offset) * exp( - ((double)i-cgx)*((double)i-cgx)/(0.36*maskFwhm*maskFwhm)  - ((double)j-cgy)*((double)j-cgy) / (0.36*maskFwhm*maskFwhm) ) + offset);
                         if ( gaussIntensity != 0 ) {
                            *fiberPtr = *sumPtr * *maskPtr / gaussIntensity;
@@ -2730,7 +2748,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                         }
 
                         if ( *fiberPtr > fiberMaxIntensity ) {
-                           // je mets ? jour la nouvelle valeur max
+                           // je mets à jour la nouvelle valeur max
                            fiberMaxIntensity = *fiberPtr;
                         }
                      }
@@ -2754,9 +2772,11 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                   sy = 0.;
 
                   for(j=0;j<height;j++) {
+                  //for(j=jmin;j< jmax ;j++) {
                      fiberOffset = fiberPix + j * width;
                      maskOffset =  maskPix  + j * width;
                      for(i=0;i<width;i++) {
+                     //for(i=imin;i< imax ;i++) {
                         fiberPtr = fiberOffset+i;
                         maskPtr = maskOffset+i;
 
@@ -2777,18 +2797,40 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                         sy += *fiberPtr * j ;
                      }
                   }
-                  // je calcule le barycentre
-                  if ( flux == 0 ) {
-                     // si le flux est null, je retourne la position pr?cedente de la fibre
-                     *fiberX = previousFiberX;
-                     *fiberY = previousFiberY;
+
+                  if ( fiberDetectionMode == 1 ) {
+                     // je proméne une gaussienne 
+                     TYPE_PIXELS fwhm = (TYPE_PIXELS) maskRadius;
+                     int radius =  8; 
+                     TYPE_PIXELS threshin = 10;
+                     TYPE_PIXELS threshold = 40; 
+                     int border = 10; 
+                    
+                     int nbPoint = A_filtrGauss2 ( fwhm,  radius,  threshin, threshold, 
+						      fiberPix, width, height,  border, fiberX, fiberY); 
+                     if ( nbPoint == 0 ) {
+                        // si pas d'ajustement de gaussienne, je retourne la position precedente de la fibre
+                        *fiberX = previousFiberX;
+                        *fiberY = previousFiberY;
+                     } else {
+                        *fiberX += x1 ;
+                        *fiberY += y1 ;
+                     }
                   } else {
-                     *fiberX = sx / flux  ;
-                     *fiberY = sy / flux  ;
-                     // je change de repere de coordonnees fenetre => coordonnes image
-                     *fiberX += x1;
-                     *fiberY += y1;
+                     // je calcule le barycentre
+                     if ( flux == 0 ) {
+                        // si le flux est null, je retourne la position precedente de la fibre
+                        *fiberX = previousFiberX;
+                        *fiberY = previousFiberY;
+                     } else {
+                        *fiberX = sx / flux  ;
+                        *fiberY = sy / flux  ;
+                        // je change de repere de coordonnees fenetre => coordonnes image
+                        *fiberX += x1;
+                        *fiberY += y1;
+                     }
                   }
+
 
                   // je copie l'image inversee de la fibre dans le buffer fiberBuf
                   if ( fiberBufNo !=0 ) {
@@ -2807,7 +2849,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                   }
 
                   // ----------------------------------------------------
-                  // je verifie la qualite de l'image inversee ? partir de mean, dsigma
+                  // je verifie la qualite de l'image inversee à partir de mean, dsigma
                   // je calcule dsigma, dmaxi, dmini de la fenetre (x1,y1,x2,y2)
                   //   si dsigma < 10 , je retourne l'erreur LOW_SIGNAL
                   //   si (dmaxi-dmini) < 3*sqrt(dsigma) je retoune l'erreur NO_SIGNAL
@@ -4052,6 +4094,127 @@ int CBuffer::A_filtrGauss (TYPE_PIXELS fwhm, int radius, TYPE_PIXELS threshin,
    return nbStar;  //number of stars
 }
 
+int CBuffer::A_filtrGauss2 (TYPE_PIXELS fwhm, int radius, TYPE_PIXELS threshin,
+						   TYPE_PIXELS threshold, 
+						   TYPE_PIXELS *picture,
+						   int size_x,int size_y,int border, double *xCenter, double *yCenter)
+{
+
+/*
+  Authors: Bogumil and Dorota
+*/
+
+   int x, y, i;
+   int center = radius;
+   double sig = 0.4246*fwhm;
+   double dsig2 = 2*sig*sig;
+   double dpisig2 = 3.14159265358979*dsig2; //=2*pi*sig^2
+   double summ = 0.0;
+   int nbStar = 0; 
+   TYPE_PIXELS *temp_pic;
+   TYPE_PIXELS *gauss_matrix;
+   int gmsize = 2*radius + 1;
+
+   if((temp_pic = (TYPE_PIXELS *)calloc(size_x*size_y,sizeof(TYPE_PIXELS)))==NULL) {
+	   throw CError(ELIBSTD_NO_MEMORY_FOR_KWDS);
+   }
+
+   if((gauss_matrix = (TYPE_PIXELS *)malloc(sizeof(TYPE_PIXELS)*gmsize*gmsize))==NULL) {
+      free(temp_pic);
+      throw CError(ELIBSTD_NO_MEMORY_FOR_KWDS);
+   }
+
+   /* Creation of matrix with Gauss/normal distribution values */
+   for (y=0; y<gmsize; y++)
+   {
+	   for (x=0; x<gmsize; x++)
+	   {
+		   gauss_matrix[x+y*gmsize] = (TYPE_PIXELS)(
+			   exp( -((x-center)*(x-center) + (y-center)*(y-center)) / dsig2)
+			   /dpisig2);
+		   summ += gauss_matrix[x+y*gmsize];
+	   }
+   }
+
+   double summa = 0.0;
+
+   /* Dodatkowa normalizacja wynikajaca z nie nieskonczonej macierzy
+   i sprowadzenie do postaci, w ktorej suma elem. rowna jest zero */
+
+   /* Additional normalization - sum of elements is zero */
+   for (y=0; y<gmsize; y++)
+   {
+	   for (x=0; x<gmsize; x++)
+	   {
+		   gauss_matrix[x+y*gmsize] = (TYPE_PIXELS)(gauss_matrix[x+y*gmsize]/summ
+			   - (1.0 / (gmsize*gmsize)));
+		   summa += gauss_matrix[x+y*gmsize];
+	   }
+   }
+
+   long pixcount=0; //stores 'how many pixel were calculated' information
+
+   /* For each pixel that is above 'threshin' multiply surrounding
+   pixels by corresponding 'gauss_matrix' values and store
+   the summation in 'temp_pic' table (float) */
+
+   for (y=radius; y < (size_y-radius) ; y++) {
+		for (x=radius; x < (size_x-radius) ; x++)
+		{
+			if ( picture[x+y*size_x] > threshin)
+			{
+				for (int j=0; j<gmsize; j++)
+					for (int i=0; i<gmsize; i++)
+					{
+						temp_pic[x+y*size_x] +=
+							picture[x-center+i+(y-center+j)*size_x]*gauss_matrix[i+j*gmsize];
+					}
+					pixcount++;
+			}
+			else temp_pic[x+y*size_x] = (float)0.0;
+		}
+   }
+
+   i = 0;
+   int border1 = border + 1;    // +1 because when searching for maksimum,
+   // we use surrounding pixels
+   TYPE_PIXELS intensity = 0;
+   
+      //looking for stars (max. values), now is not very precise
+      for (y=border1; y < size_y-border1; y++) {
+         for (x=border1; x < size_x-border1; x++)
+         {
+            TYPE_PIXELS temp_p=temp_pic[x+y*size_x];
+            if(
+               (threshold < temp_p)
+               && (temp_pic[x-1+y*size_x] < temp_p)
+               && (temp_pic[x+1+y*size_x] < temp_p)
+               && (temp_pic[x+(y-1)*size_x] < temp_p)
+               && (temp_pic[x+(y+1)*size_x] < temp_p)
+               && (temp_pic[x+1+(y+1)*size_x] < temp_p)
+               && (temp_pic[x-1+(y+1)*size_x] < temp_p)
+               && (temp_pic[x-1+(y-1)*size_x] < temp_p)
+               && (temp_pic[x+1+(y-1)*size_x] < temp_p)
+               )
+            {
+               if(intensity < temp_p) {
+                  intensity = temp_p;
+                  *xCenter = x;
+                  *yCenter = y;
+               }
+               i++;
+            }
+         }
+      }
+
+    
+      nbStar = i;
+ 
+   free(gauss_matrix);
+   free(temp_pic);
+
+   return nbStar;
+}
 
 void CBuffer::Fwhm2d(int x1, int y1, int x2, int y2,
                   double *maxx, double *posx, double *fwhmx, double *fondx, double *errx,
