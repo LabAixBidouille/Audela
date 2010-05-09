@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.135 2010-04-19 14:47:13 robertdelmas Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.136 2010-05-09 13:45:13 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -1574,9 +1574,36 @@ namespace eval ::confVisu {
    }
 
    #------------------------------------------------------------
+   #  deletePluginInstance
+   #     supprime l'instance du plugin
+   #  @param  visuNo  numero de la visu
+   #  @param  toolName  nom de l'outil a supprimer
+   #  @return void
+   #------------------------------------------------------------
+   proc deletePluginInstance { visuNo toolName } {
+      variable private
+
+      #--- j'arrete l'outil si c'est l'outil courant
+      if { $private($visuNo,currentTool) == $toolName } {
+         stopTool $visuNo
+         set private($visuNo,currentTool) ""
+      }
+
+      #--- je supprime l'instance
+      namespace inscope $toolName deletePluginInstance $visuNo
+
+      #--- je supprime l'outil de la liste pluginInstanceList
+      set index [lsearch -exact $private($visuNo,pluginInstanceList) $toolName]
+      if { $index != -1 } {
+          set private($visuNo,pluginInstanceList) [lreplace $private($visuNo,pluginInstanceList) $index $index]
+      }
+      return ""
+   }
+
+   #------------------------------------------------------------
    #  selectTool
    #     arrete l'outil courant si le nouvel outil n'a pas la prop display=window"
-   #     demarre le nouvel outil
+   #     demarrlugin le nouvel outil
    #  parametres :
    #    visuNo: numero de la visu
    #    toolName : nom de l'outil a lancer
@@ -1598,6 +1625,7 @@ namespace eval ::confVisu {
             }
          } else {
             #--- Cela veut dire que l'utilisateur veut arreter l'outil en cours
+            #--- j'arrete l'outil
             set stopResult [stopTool $visuNo]
          }
       }
@@ -1626,10 +1654,13 @@ namespace eval ::confVisu {
          #--- je demarre l'outil
          namespace inscope $toolName startTool $visuNo
 
-         grid $private($visuNo,This).tool -row 0 -column 0 -rowspan 2 -sticky ns
+
 
          #--- je memorise le nom de l'outil en cours d'execution
          if { [$toolName\::getPluginProperty "display" ] != "window" } {
+            #--- j'affiche le panneau de l'outil dans la fentre principale
+            grid $private($visuNo,This).tool -row 0 -column 0 -rowspan 2 -sticky ns
+            #--- je memorise le nom de l'outil
             set private($visuNo,currentTool) $toolName
          }
       } else {
