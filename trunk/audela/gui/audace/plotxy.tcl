@@ -2,7 +2,7 @@
 # Fichier : plotxy.tcl
 # Description : Realisation de graphes a partir de 2 listes de nombres
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: plotxy.tcl,v 1.7 2009-12-02 08:22:05 alainklotz Exp $
+# Mise a jour $Id: plotxy.tcl,v 1.8 2010-05-09 13:46:39 michelpujol Exp $
 #
 # La syntaxe est la plus proche possible de Matlab
 #
@@ -112,7 +112,7 @@ namespace eval ::plotxy {
                #--- Mise a jour dynamique des couleurs
                ::confColor::applyColor $baseplotxy
                ::confColor::applyColor $baseplotxy.xy
-                        }
+            }
          }
       }
       return $plotxy(currentfigure)
