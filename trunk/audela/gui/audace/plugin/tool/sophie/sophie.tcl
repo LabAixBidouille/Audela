@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.44 2010-05-09 13:51:41 michelpujol Exp $
+# @version   $Id: sophie.tcl,v 1.45 2010-05-11 17:57:10 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -159,6 +159,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists ::conf(sophie,fiberHEY)] }                  { set ::conf(sophie,fiberHEY)                  "151" }
    if { ! [ info exists ::conf(sophie,fiberBX)] }                   { set ::conf(sophie,fiberBX)                   "925" }
    if { ! [ info exists ::conf(sophie,fiberBY)] }                   { set ::conf(sophie,fiberBY)                   "566" }
+   if { ! [ info exists ::conf(sophie,angle)] }                     { set ::conf(sophie,angle)                     "0" }
    if { ! [ info exists ::conf(sophie,fiberBRadius)] }              { set ::conf(sophie,fiberBRadius)              "20" }
    if { ! [ info exists ::conf(sophie,targetDetectionThresold)] }   { set ::conf(sophie,targetDetectionThresold)   "10" }
    if { ! [ info exists ::conf(sophie,simulation)] }                { set ::conf(sophie,simulation)                "0" }

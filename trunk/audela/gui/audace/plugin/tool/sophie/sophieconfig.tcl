@@ -2,7 +2,7 @@
 # @file     sophieconfig.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophieconfig.tcl,v 1.28 2009-12-13 16:44:52 robertdelmas Exp $
+# @version  $Id: sophieconfig.tcl,v 1.29 2010-05-11 17:57:56 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -102,6 +102,7 @@ proc ::sophie::config::fillConfigPage { frm visuNo } {
    set widget(fiberHEY)                 $::conf(sophie,fiberHEY)
    set widget(fiberBX)                  $::conf(sophie,fiberBX)
    set widget(fiberBY)                  $::conf(sophie,fiberBY)
+   set widget(angle)                    $::conf(sophie,angle)
 
    set widget(biasFileName,1,slow)      $::conf(sophie,biasFileName,1,slow)
    set widget(biasFileName,1,fast)      $::conf(sophie,biasFileName,1,fast)
@@ -293,6 +294,25 @@ proc ::sophie::config::fillConfigStandardPage { frm visuNo } {
          -padx 2 -pady 2
 
    pack $frm.fibre -side top -anchor w -fill x -expand 0
+
+
+   #--- Frame pour la position des fibres
+   TitleFrame $frm.angle -borderwidth 2 -relief ridge -text $::caption(sophie,angleBonnette)
+
+      #--- Fibre A HR
+      label $frm.angle.labelAngle -text $::caption(sophie,angle)
+      grid $frm.angle.labelAngle  -in [ $frm.angle getframe ] -row 1 -column 0 -sticky w
+
+      Entry $frm.angle.entryAngle \
+         -width 8 -justify center -editable 1 \
+         -textvariable ::sophie::config::widget(angle)
+      grid $frm.angle.entryAngle -in [ $frm.angle getframe ] -row 1 -column 1 -sticky e
+
+     label $frm.angle.angleRemark -text $::caption(sophie,angleRemark)
+      grid $frm.angle.angleRemark  -in [ $frm.angle getframe ] -row 2 -column 0 -columnspan 2 -sticky w
+
+   pack $frm.angle -side top -anchor w -fill x -expand 0
+
 }
 
 #------------------------------------------------------------
@@ -565,13 +585,13 @@ proc ::sophie::config::fillConfigAvanceePage { frm visuNo } {
 
 #----------------------------------------------------------------------------
 # apply
-#    met à jour les variables et les widgets quand on applique les modifications d'une configuration
+#    met ï¿½ jour les variables et les widgets quand on applique les modifications d'une configuration
 #----------------------------------------------------------------------------
 proc ::sophie::config::apply { visuNo } {
    variable widget
 
    #--- je controle les valeurs saisies
-   ### à compléter ...
+   ### ï¿½ complï¿½ter ...
 
    #--- j'initalise les variables des widgets
   ### set ::conf(sophie,exposure)              $widget(poseDefaut)
@@ -599,6 +619,7 @@ proc ::sophie::config::apply { visuNo } {
    set ::conf(sophie,fiberHEY)               $widget(fiberHEY)
    set ::conf(sophie,fiberBX)                $widget(fiberBX)
    set ::conf(sophie,fiberBY)                $widget(fiberBY)
+   set ::conf(sophie,angle)                  $widget(angle)
 
    set ::conf(sophie,biasFileName,1,slow)    $widget(biasFileName,1,slow)
    set ::conf(sophie,biasFileName,1,fast)    $widget(biasFileName,1,fast)

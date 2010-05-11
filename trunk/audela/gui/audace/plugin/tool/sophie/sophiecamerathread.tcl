@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.27 2010-05-09 13:53:35 michelpujol Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.28 2010-05-11 17:57:29 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -298,9 +298,17 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             ###::camerathread::disp  "correction cgx [format "%6.1f" $cgx] => [format "%6.1f" $dx] cgy: [format "%6.1f" $cgy] => [format "%6.1f" $dy (pixel)] \n"
          }
 
-         #--- je calcule l'ecart de position (en arcseconde)
-         set alphaDiff [expr $dx * $private(pixelScale) ]
-         set deltaDiff [expr $dy * $private(pixelScale) ]
+        if { $private(angle) != 0 &&  $private(guidingMode) == "OBJECT" } {
+            set angle [expr $private(angle)* 3.14159265359/180 ]
+            #--- je calcule les delais de deplacement alpha et delta (en millisecondes)
+            set alphaDiff [expr int((cos($angle) * $dx + sin($angle) *$dy) * $private(pixelScale))]
+            set deltaDiff [expr int( - (sin($angle) * $dx + cos($angle) *$dy) * $private(pixelScale))]
+        } else {
+           #--- je calcule l'ecart de position (en arcseconde)
+           set alphaDiff [expr $dx * $private(pixelScale) ]
+           set deltaDiff [expr $dy * $private(pixelScale) ]
+        }
+
 
          #--- je calcule la correction alphaCorrection et deltaCorrection  en arcsec
          if { $private(mountEnabled) == 1 && $starStatus == "DETECTED" } {
@@ -342,8 +350,8 @@ proc ::camerathread::sophieAcquisitionLoop { } {
                set deltaCorrection [expr $deltaDiff * $private(deltaProportionalGain) + $deltaIntegralTerm * $private(deltaIntegralGain) + $deltaDerivativeTerm * $private(deltaDerivativeGain)]
             } else {
                #--- je ne prends que 90% de la valeur car les anciens moteurs vont trop vite surtout pour centrer en delta
-               set alphaCorrection [expr $alphaDiff * 0.9]
-               set deltaCorrection [expr $deltaDiff * 0.9]
+               set alphaCorrection $alphaDiff
+               set deltaCorrection $deltaDiff
                #--- raz du cumul pour le calcul du terme integrateur
                set private(xDiffCumul) "0"
                set private(yDiffCumul) "0"
