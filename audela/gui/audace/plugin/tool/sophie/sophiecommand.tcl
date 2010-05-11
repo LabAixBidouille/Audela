@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.48 2010-05-09 13:54:21 michelpujol Exp $
+# @version  $Id: sophiecommand.tcl,v 1.49 2010-05-11 17:57:45 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -616,6 +616,7 @@ proc ::sophie::setGuidingMode { visuNo } {
             "originCoord" [list $xOriginCoord $yOriginCoord] \
             "fiberCoord" [list $xFiberCoord $yFiberCoord] \
             "findFiber" $private(findFiber) \
+            "angle"     $::conf(sophie,angle) \
             "originSumCounter"   0
    }
 }
@@ -1103,6 +1104,14 @@ proc ::sophie::createOrigin { visuNo } {
    set x2 [lindex $coords 0]
    set y2 [lindex $coords 1]
    $private(hCanvas) create line $x1 $y1 $x2 $y2 -fill red -tags "::sophie origin" -activewidth $activewidth -width 2
+
+   #--- je mets a jour les axes autour de la consigne
+   if { $::conf(sophie,angle) != 0 &&  $::conf(sophie,guidingMode)== "OBJECT" } {
+      ::sophie::createAlphaDeltaAxis $visuNo $::conf(sophie,angle)
+   } else {
+      deleteAlphaDeltaAxis $visuNo
+   }
+
 }
 
 ##------------------------------------------------------------
@@ -1117,6 +1126,7 @@ proc ::sophie::deleteOrigin { visuNo } {
    #--- je supprime l'ffichage de la cible
    $private(hCanvas) delete "origin"
    $private(hCanvas) dtag "origin"
+   deleteAlphaDeltaAxis $visuNo
 }
 
 ###------------------------------------------------------------
@@ -1317,6 +1327,13 @@ proc ::sophie::onMouseReleaseButton1 { visuNo w x y } {
             set yOriginCoord [ expr ( [lindex $private(originCoord) 1] - $private(yWindow) + 1 ) / $private(yBinning)  ]
             ::camera::setParam $private(camItem) "originCoord" [list $xOriginCoord $yOriginCoord]
          }
+         #--- je mets a jour les axes autour de la consigne
+         if { $::conf(sophie,angle) != 0 &&  $::conf(sophie,guidingMode)== "OBJECT" } {
+            ::sophie::createAlphaDeltaAxis $visuNo $::conf(sophie,angle)
+         } else {
+            deleteAlphaDeltaAxis $visuNo
+         }
+
          #--- je mets a jour la fenetre de controle
          ::sophie::control::setOriginCoords [lindex $private(originCoord) 0] [lindex $private(originCoord) 1]
          #--- je libere le mouvement manuel du widget
@@ -1527,6 +1544,148 @@ proc ::sophie::createFiberB { visuNo } {
    $private(hCanvas) create oval $x1 $y1 $x2 $y2 -outline red -offset center -tags "::sophie fiberB" -width 2 -activewidth 4
 }
 
+#------------------------------------------------------------
+# createAlphaDeltaAxis
+#    dessine les axes alpha et delta centres sur l'origine
+#
+# parametres :
+#    visuNo    : numero de la visu courante
+#------------------------------------------------------------
+proc ::sophie::createAlphaDeltaAxis { visuNo angle } {
+   variable private
+
+   #--- je supprime les axes s'ils existent deja
+   deleteAlphaDeltaAxis $visuNo
+   #--- je dessine l'axe alpha
+   drawAxis $visuNo  $angle "Est" "West"
+   #--- je dessine l'axe delta
+   drawAxis $visuNo [expr $angle+90] "South" "North"
+
+}
+
+#------------------------------------------------------------
+# deleteAlphaDeltaAxis
+#    arrete l'affichage des axes alpha et delta
+#
+# parametres :
+#    visuNo    : numero de la visu courante
+#------------------------------------------------------------
+proc ::sophie::deleteAlphaDeltaAxis { visuNo } {
+   variable private
+
+   #--- je supprime les axes
+   $private(hCanvas) delete axis
+}
+
+#------------------------------------------------------------
+# drawAxis
+#    trace un axe avec un libelle a chaque extremite
+#
+# parametres :
+#    visuNo    : numero de la visu courante
+#    angle     : angle d'inclinaison des axes (en degres)
+#    label1    : libelle de l'extremite negative de l'axe
+#    label2    : libelle de l'extremite positive de l'axe
+#------------------------------------------------------------
+proc ::sophie::drawAxis { visuNo angle label1 label2} {
+   variable private
+   global audace
+
+   set bufNo [::confVisu::getBufNo $visuNo ]
+
+   if { [buf$bufNo imageready] == 0 } {
+      return
+   }
+
+   #--- j'inverse le signe de l'angle
+   ###set angle [expr $angle * (-1) ]
+   set margin 8
+   set windowCoords [::confVisu::getWindow $visuNo]
+   set xmin [expr [lindex $windowCoords 0] + $margin]
+   set ymin [expr [lindex $windowCoords 1] + $margin]
+   set xmax [expr [lindex $windowCoords 2] - $margin]
+   set ymax [expr [lindex $windowCoords 3] - $margin]
+
+   ###set x  [lindex $coord 0]
+   ###set y  [lindex $coord 1]
+   #--- je calcule les coordonnees dans l'image
+   set x [ expr ( double([lindex $private(originCoord) 0]) - $private(xWindow) + 1 ) / $private(xBinning)  ]
+   set y [ expr ( double([lindex $private(originCoord) 1]) - $private(yWindow) + 1 ) / $private(yBinning)  ]
+
+   set a  [expr tan($angle*3.14159265359/180)]
+   set b  [expr $y - $a * $x]
+
+   #--- je calcule les coordonnees des extremites de l'axe
+   if { $a > 1000000 || $a < -1000000 } {
+      #--- l'axe est vertical
+      if { [expr sin($angle*3.14159265359/180)] >= 0 } {
+         set y1 $ymin
+         set y2 $ymax
+      } else {
+         set y1 $ymax
+         set y2 $ymin
+      }
+      set x1 $x
+      set x2 $x
+   } elseif { $a > 0.00000001 || $a < -0.00000001 } {
+      #--- l'axe n'est ni vertical ni horizontal
+      if { [expr sin($angle*3.14159265359/180)] >= 0 } {
+         set y1 $ymin
+         set y2 $ymax
+      } else {
+         set y1 $ymax
+         set y2 $ymin
+      }
+      set x1 [expr ($y1 - $b) / $a ]
+      if { $x1 < $xmin } {
+         set x1 $xmin
+         set y1 [expr $a * $x1 + $b]
+      } elseif { $x1 > $xmax } {
+         set x1 $xmax
+         set y1 [expr $a * $x1 + $b]
+      }
+      set x2 [expr ($y2 - $b) / $a ]
+      if { $x2 < $xmin } {
+         set x2 $xmin
+         set y2 [expr $a * $x2 + $b]
+      } elseif { $x2 > $xmax } {
+         set x2 $xmax
+         set y2 [expr $a * $x2 + $b]
+      }
+   } else {
+      #--- l'axe est horizontal
+      if { [expr cos($angle*3.14159265359/180)] >= 0 } {
+         set x1 $xmin
+         set x2 $xmax
+      } else {
+         set x1 $xmax
+         set x2 $xmin
+      }
+      set y1 $y
+      set y2 $y
+   }
+
+
+   #--- je transforme les coordonnees dans le repere canvas
+   set coord1 [::confVisu::picture2Canvas $visuNo [list $x1 $y1]]
+   set coord2 [::confVisu::picture2Canvas $visuNo [list $x2 $y2]]
+
+
+   #--- je trace l'axe et les libelles des extremites
+   $private(hCanvas) create line [lindex $coord1 0] [lindex $coord1 1] [lindex $coord2 0] [lindex $coord2 1] -fill $::audace(color,drag_rectangle) -tag axis -state normal
+   $private(hCanvas) create text [lindex $coord1 0] [lindex $coord1 1] -text $label1 -tag axis  -state normal -fill $::audace(color,drag_rectangle)
+   $private(hCanvas) create text [lindex $coord2 0] [lindex $coord2 1] -text $label2 -tag axis  -state normal -fill $::audace(color,drag_rectangle)
+}
+
+#------------------------------------------------------------
+# setShowAlphaDeltaAxis
+#    affiche/cache les axes alpha et delta centres sur l'origine
+#------------------------------------------------------------
+proc ::sophie::setShowAlphaDeltaAxis { visuNo } {
+   variable private
+
+   createAlphaDeltaAxis $visuNo $::conf(autoguider,originCoord) $::conf(autoguider,angle)
+}
 
 ##------------------------------------------------------------
 #  setMountEnabled

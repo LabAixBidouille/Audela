@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.44 2010-05-09 13:49:26 michelpujol Exp $
+# Mise a jour $Id: sophie.cap,v 1.45 2010-05-11 17:56:51 michelpujol Exp $
 #
 
 #=========================================================================
@@ -84,6 +84,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,replaceSquarePosition)         "Remplacer par la position du carré rouge dans l'image"
    set caption(sophie,HR)                            "HR"
    set caption(sophie,HE)                            "HE"
+   set caption(sophie,angleBonnette)                 "Angle de la bonnette"
+   set caption(sophie,angle)                         "Angle (°)"
+   set caption(sophie,angleRemark)                   "L'angle n'est pris en compte que pour un guidage sur un objet hors fibre"
 
    set caption(sophie,configAvancee)                 "Configuration avancée"
    set caption(sophie,echelle)                       "Echelle"
