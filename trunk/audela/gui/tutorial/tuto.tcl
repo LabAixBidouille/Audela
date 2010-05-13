@@ -1,12 +1,12 @@
 #
-# Mise a jour $Id: tuto.tcl,v 1.13 2010-05-09 07:27:15 robertdelmas Exp $
+# Mise √† jour $Id: tuto.tcl,v 1.14 2010-05-13 17:42:49 robertdelmas Exp $
 #
 
 #!/bin/sh
 # the next line restarts using wish \
 #exec wish "$0" "$@"
 
-proc int {value} {
+proc int { value } {
    set a [expr ceil($value)]
    set point [expr [string first . $a]-1]
    set value [string range $a 0 $point]
@@ -40,34 +40,34 @@ proc caption_def { langage } {
       set texte(tuto_15)   "Focusing on a Globular Cluster."
       set texte(tuto_16)   "Acquisition of Images through Practice."
       set texte(tuto_about0) "Audine Tutorial"
-      set texte(tuto_about1) "Tutorial for the Audine Camera\n\n\Aude (c) 1999\n\nIn order to change the language, you must edit the file langage.tcl and write another language.\n"
+      set texte(tuto_about1) "Tutorial for the Audine Camera\n\n\Aude (c) 1999\n\nIn order to change the language, you must edit the file langage.ini and write another language.\n"
    }
    if {[string compare $langage french] ==0 } {
-      set caption(main_title)  "Tuto : Un tutoriel pour les dÈbutants en CCD"
+      set caption(main_title)  "Tuto : Un tutoriel pour les d√©butants en CCD"
       set caption(tuto_about)  "A propos..."
       set caption(tuto_quit)   "Quitter"
       set caption(tuto_tools)  "Outils"
-      set caption(cam_connect) "CamÈra connectÈe"
-      set texte(tuto_1)    "Initiation ‡ l'imagerie CCD"
-      set texte(tuto_2)    "Ce tutoriel vous permettra de rÈaliser vos premiËres images avec une camÈra CCD. Il a ÈtÈ rÈalisÈ avec le logiciel AudeLA."
-      set texte(tuto_3)    "Brancher et tester la camÈra Audine"
-      set texte(tuto_4)    "Connexion des c‚bles de la camÈra."
-      set texte(tuto_5)    "Tests Èlectroniques pour le kit Audine."
-      set texte(tuto_6)    "PremiËre image dans le noir, camÈra non-refroidie."
-      set texte(tuto_7)    "PremiËre lumiËre, camÈra non-refroidie."
-      set texte(tuto_8)    "Refroidissement de la camÈra."
-      set texte(tuto_9)    "RÈaliser des images dark et bias de rÈfÈrence."
-      set texte(tuto_10_0) "Installer la camÈra CCD sur un tÈlescope"
+      set caption(cam_connect) "Cam√©ra connect√©e"
+      set texte(tuto_1)    "Initiation √† l'imagerie CCD"
+      set texte(tuto_2)    "Ce tutoriel vous permettra de r√©aliser vos premi√®res images avec une cam√©ra CCD. Il a √©t√© r√©alis√© avec le logiciel AudeLA."
+      set texte(tuto_3)    "Brancher et tester la cam√©ra Audine"
+      set texte(tuto_4)    "Connexion des c√¢bles de la cam√©ra."
+      set texte(tuto_5)    "Tests √©lectroniques pour le kit Audine."
+      set texte(tuto_6)    "Premi√®re image dans le noir, cam√©ra non-refroidie."
+      set texte(tuto_7)    "Premi√®re lumi√®re, cam√©ra non-refroidie."
+      set texte(tuto_8)    "Refroidissement de la cam√©ra."
+      set texte(tuto_9)    "R√©aliser des images dark et bias de r√©f√©rence."
+      set texte(tuto_10_0) "Installer la cam√©ra CCD sur un t√©lescope"
       set texte(tuto_10)   "Bague pour adapter Audine sur un porte-oculaire."
-      set texte(tuto_11)   "Adaptation mÈcanique sur le porte-oculaire."
-      set texte(tuto_12)   "Mise en station du tÈlescope."
-      set texte(tuto_13)   "Pointage des objets cÈlestes."
-      set texte(tuto_14_0) "PremiËres images sur le ciel"
-      set texte(tuto_14)   "Focalisation sur une Ètoile brillante."
+      set texte(tuto_11)   "Adaptation m√©canique sur le porte-oculaire."
+      set texte(tuto_12)   "Mise en station du t√©lescope."
+      set texte(tuto_13)   "Pointage des objets c√©lestes."
+      set texte(tuto_14_0) "Premi√®res images sur le ciel"
+      set texte(tuto_14)   "Focalisation sur une √©toile brillante."
       set texte(tuto_15)   "Focalisation sur un amas globulaire."
       set texte(tuto_16)   "L'acquisition par la pratique."
       set texte(tuto_about0) "Tutoriel Audine"
-      set texte(tuto_about1) "Tutoriel pour la camera Audine\n\n\Aude (c) 1999\n\nIn order to change the language, you must edit the file langage.tcl and write another language.\n"
+      set texte(tuto_about1) "Tutoriel pour la camera Audine\n\n\Aude (c) 1999\n\nIn order to change the language, you must edit the file langage.ini and write another language.\n"
    }
 }
 
@@ -314,7 +314,7 @@ if { $erreur == "1" } {
 # Arguments:
 # index - The index of the character that the user clicked on.
 #
-proc invoke {index base} {
+proc invoke { index base } {
    global tk_library
    set tags [$base.t tag names $index]
    set i [lsearch -glob $tags demo-*]
@@ -359,7 +359,7 @@ proc invoke {index base} {
 # Show the name of the demo program in the status bar. This procedure
 # is called when the user moves the cursor over a demo description.
 #
-proc showStatus index {
+proc showStatus { index } {
    global tk_library
    set tags [.main.t tag names $index]
    set i [lsearch -glob $tags demo-*]
@@ -381,7 +381,7 @@ proc showStatus index {
 #
 # Pops up a message box with an "about" message
 #
-proc aboutBox {} {
+proc aboutBox { } {
    global texte
    tk_messageBox -icon info -type ok -title $texte(tuto_about0) -message $texte(tuto_about1)
 }

@@ -5,7 +5,7 @@
 #               pose, choix des outils, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: confgene.tcl,v 1.74 2010-05-09 07:37:57 robertdelmas Exp $
+# Mise à jour $Id: confgene.tcl,v 1.75 2010-05-13 17:41:38 robertdelmas Exp $
 #
 
 #
@@ -2805,7 +2805,7 @@ namespace eval ::confLangue {
       $This.$::langage configure -borderwidth 0
       set ::langage $langue
       $This.$langue configure -borderwidth 3
-      set f [open [ file join $::audace(rep_home) langage.tcl ] w]
+      set f [open [ file join $::audace(rep_home) langage.ini ] w]
       puts $f "set langage \"$langue\""
       close $f
 
