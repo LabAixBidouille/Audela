@@ -2,7 +2,7 @@
 # Fichier : acqdslr.tcl
 # Description : Outil d'acquisition pour APN Canon
 # Auteur : Raymond Zachantke
-# Mise a jour $Id: acqdslr.tcl,v 1.2 2010-05-01 08:03:57 robertdelmas Exp $
+# Mise a jour $Id: acqdslr.tcl,v 1.3 2010-05-13 08:35:26 robertdelmas Exp $
 #
 
 #============================================================
@@ -106,16 +106,36 @@ namespace eval ::acqdslr {
    #    prepare la creation de la fenetre de l'outil
    #------------------------------------------------------------
    proc createPanel { this } {
-      global audace panneau
+      global audace panneau caption color
       variable This
+      variable Dslr
 
       #---
       set This $this
-
       #---
       set panneau(acqdslr,base)  "$this"
 
-      acqdslrBuildIF $This
+      #---
+      frame $This -borderwidth 2 -relief groove
+      pack $This
+      #--- Frame du titre
+      frame $This.fra1 -borderwidth 2 -relief groove
+         #--- Bouton du titre
+         Button $This.fra1.but -borderwidth 1 \
+            -text "$caption(acqdslr,help_titre1)\n$caption(acqdslr,title)" \
+            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::acqdslr::getPluginType ] ] \
+               [ ::acqdslr::getPluginDirectory ] [ ::acqdslr::getPluginHelp ]"
+         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
+      DynamicHelp::add $This.fra1.but -text $caption(acqdslr,help_titre)
+      pack $This.fra1 -side top -fill x
+
+      #--   le nom du frame cantonnant le DSLR et le bouton GO
+      set Dslr $This.dslr
+
+      searchInfoDslr
+
+      #--- Mise ajour dynamique des couleurs
+      ::confColor::applyColor $This
    }
 
    #------------------------------------------------------------
@@ -137,43 +157,6 @@ namespace eval ::acqdslr {
 
       pack forget $This
    }
-
-#--   fin du namespace
-}
-
-#------------------------------------------------------------
-# acqdslrBuildIF
-#    cree la fenetre de l'outil
-#------------------------------------------------------------
-proc acqdslrBuildIF { This } {
-   global audace panneau caption color
-   variable Dslr
-
-   #---
-   frame $This -borderwidth 2 -relief groove
-   pack $This
-      #--- Frame du titre
-     frame $This.fra1 -borderwidth 2 -relief groove
-         #--- Bouton du titre
-         Button $This.fra1.but -borderwidth 1 \
-            -text "$caption(acqdslr,help_titre1)\n$caption(acqdslr,title)" \
-            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::acqdslr::getPluginType ] ] \
-               [ ::acqdslr::getPluginDirectory ] [ ::acqdslr::getPluginHelp ]"
-         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
-      DynamicHelp::add $This.fra1.but -text $caption(acqdslr,help_titre)
-      pack $This.fra1 -side top -fill x
-
-      #--   le frame cantonnant le DSLR et le bouton GO
-      set Dslr $This.dslr
-
-      searchInfoDslr
-
-      #--- Mise ajour dynamique des couleurs
-      ::confColor::applyColor $This
-   }
-
-# ==============================================================================================
-# ==============================================================================================
 
    #########################################################################
    #--   Au lancement collecte les donnees sur la camera et les memorise   #
@@ -226,6 +209,82 @@ proc acqdslrBuildIF { This } {
       apnBuildIF
    }
 
+   ######################################################################
+   #--   Recupere les donnees de la cam                                 #
+   ######################################################################
+   proc setCamProperty { } {
+      global panneau caption
+
+      set panneau(acqdslr,camNo) "0"
+      set cam_list [ ::cam::list ]
+
+      #--   arrete si pas de cam
+      if { $cam_list == "" } {
+         return
+      }
+
+      #--   cherche une cam DSLR
+      foreach camNo $cam_list {
+         if { [ cam$camNo name ] == "DSLR" } {
+            set panneau(acqdslr,camNo) $camNo
+         }
+      }
+
+      #--   arrete si pas de DSLR
+      if { $panneau(acqdslr,camNo) == "0" } {
+         return
+      }
+
+      set camNo $panneau(acqdslr,camNo)
+
+      #--   fixe drivemode a 0
+      cam$camNo drivemode 0
+
+      #--   liste les formats possibles
+      set panneau(acqdslr,qualityLabels) [ cam$camNo quality list ]
+      set panneau(acqdslr,quality) [ cam$camNo quality ]
+
+      #--   si la camera est connectee en mode longue pose
+      if [ cam$camNo longuepose ] {
+
+         #--   complete la liste des types de declenchement
+         lappend panneau(acqdslr,poseLabels) ">30"
+
+         set panneau(acqdslr,linkNo) [ cam$camNo longueposelinkno ]
+         set panneau(acqdslr,bitNo) [ cam$camNo longueposelinkbit ]
+         set panneau(acqdslr,startvalue) [ cam$camNo longueposestartvalue ]
+         set panneau(acqdslr,stopvalue) [ cam$camNo longueposestopvalue ]
+
+         #--   ajoute le mode Rafale si la longuepose existe
+         lappend panneau(acqdslr,bracketLabels) "$caption(acqdslr,bracket,rafale)"
+
+         #--   memorise l'etat
+         set panneau(acqdslr,status) [ lreplace $panneau(acqdslr,status) 0 0 "1" ]
+         lappend panneau(acqdslr,status) "0"
+      }
+   }
+
+   ######################################################################
+   #--   propose de connecter la cam et de reconfigurer le panneau      #
+   ######################################################################
+   proc connectCam  { } {
+      global audace panneau caption
+      variable Dslr
+
+      ::confCam::run
+      ::confCam::selectNotebook A dslr
+      vwait audace(camNo)
+
+      #--   rapatrie les donnes sur la connexion
+      setCamProperty
+
+      if { $panneau(acqdslr,camNo) != "0" } {
+         #--   reconfigure le panneau
+         destroy $Dslr
+         apnBuildIF
+      }
+   }
+
    ###################################################################
    #-- Complete le panneau d'acquisition                             #
    ###################################################################
@@ -252,21 +311,21 @@ proc acqdslrBuildIF { This } {
 
       #--   construit le bouton 'Test'
       button $Dslr.test -relief raised -width 10 -borderwidth 2 \
-         -text $caption(acqdslr,test) -command "testTime"
+         -text $caption(acqdslr,test) -command "::acqdslr::testTime"
 
       #--   construit les entrees de donnees
       foreach var { nom nb_poses delai intervalle } {
          buildLabelEntry $var
       }
       $Dslr.nom configure -labelwidth 6 -width 10
-      bind $Dslr.nom <Leave> { test_bracketing ; test_nom }
+      bind $Dslr.nom <Leave> { ::acqdslr::test_bracketing ; ::acqdslr::test_nom }
 
       #--   la combobox pour le temps de pose
       ComboBox $Dslr.exptime -borderwidth 1 -width 8 -relief sunken \
          -height 10 -justify center \
          -textvariable panneau(acqdslr,time) \
-         -modifycmd "test_bracketing ; test_exptime"
-      bind $Dslr.exptime <Leave> { test_bracketing ; test_exptime }
+         -modifycmd "::acqdslr::test_bracketing ; ::acqdslr::test_exptime"
+      bind $Dslr.exptime <Leave> { ::acqdslr::test_bracketing ; ::acqdslr::test_exptime }
 
       #--   label pour afficher les etapes
       label $Dslr.state -textvariable panneau(acqdslr,action) \
@@ -274,7 +333,7 @@ proc acqdslrBuildIF { This } {
 
       #--   configure le bouton de lancement d'acquisition
       button $Dslr.but1 -borderwidth 2 -text "$caption(acqdslr,go)" \
-         -command "shoot"
+         -command "::acqdslr::shoot"
 
       #--   packaging des widgets
       ::blt::table $Dslr \
@@ -368,34 +427,191 @@ proc acqdslrBuildIF { This } {
          set indice [ lsearch $data $label ]
          switch -exact $var {
           "bracket"     {  switch $indice {
-                              "0"   {  set cmd "configImg" }
-                              "1"   {  set cmd "configSerie" }
-                              "2"   {  set cmd "configContinu" }
-                              "3"   {  set cmd "configRafale" }
+                              "0"   {  set cmd "::acqdslr::configImg" }
+                              "1"   {  set cmd "::acqdslr::configSerie" }
+                              "2"   {  set cmd "::acqdslr::configContinu" }
+                              "3"   {  set cmd "::acqdslr::configRafale" }
                            }
                         }
           "pose"        {  switch $indice {
-                              "0"  {  set cmd "switchExpTime 0" }
-                              "1"  {  set cmd "switchExpTime 1" }
+                              "0"  {  set cmd "::acqdslr::switchExpTime 0" }
+                              "1"  {  set cmd "::acqdslr::switchExpTime 1" }
                            }
                         }
           "quality"     {  if { $panneau(acqdslr,camNo) != "0" } {
-                              set cmd "cam$camNo quality $label ; configFormat"
+                              set cmd "cam$camNo quality $label ; ::acqdslr::configFormat"
                            } else {
-                              set cmd "configFormat"
+                              set cmd "::acqdslr::configFormat"
                            }
                         }
-          "step"        {  set cmd "test_bracketing" }
+          "step"        {  set cmd "::acqdslr::test_bracketing" }
           "stock"       {  switch $indice {
-                              "0"     { set cmd "switchStock 1" }
-                              default { set cmd "switchStock 0" }
+                              "0"     { set cmd "::acqdslr::switchStock 1" }
+                              default { set cmd "::acqdslr::switchStock 0" }
                            }
                         }
          }
 
          $Dslr.$var.m add radiobutton -label $label -indicatoron "1" \
             -value $label -variable panneau(acqdslr,$var) -command $cmd
-         }
+      }
+   }
+
+   ######################################################################
+   #--   Cree une entree avec un label appelee par ApnBuildIF           #
+   #  parametres : nom descendant                                       #
+   ######################################################################
+   proc buildLabelEntry { child } {
+      global caption
+      variable Dslr
+
+      LabelEntry $Dslr.$child -label $caption(acqdslr,$child) \
+         -textvariable ::acqdslr::$child -labelanchor w -labelwidth 8 \
+         -borderwidth 1 -relief flat -padx 2 -justify right \
+         -width 8 -relief sunken
+      bind $Dslr.$child <Leave> "::acqdslr::test_$child"
+   }
+
+   #########################################################################
+   #--   Configure l'entree du temps d'exposition                          #
+   #  parametre : camNo choix ( si USB s =0 sinon s=1 )                    #
+   #########################################################################
+   proc  configTimeScale { s } {
+      global panneau
+      variable Dslr
+
+      switch $s {
+         "0"   {  #--   met en place la liste standard
+                  $Dslr.exptime configure -editable 0 \
+                     -values "$panneau(acqdslr,exptimeLabels)" -height 10
+                  #--   selectionne 1 seconde
+                  $Dslr.exptime setvalue @15
+               }
+         "1"   {  #--   met en place la liste ouverte
+                  $Dslr.exptime configure -editable 1 -values "31" -height 1
+                  #--   selectionne 31
+                  $Dslr.exptime setvalue @0
+               }
+      }
+
+      #--   transfert la valeur
+      set ::acqdslr::exptime $panneau(acqdslr,time)
+      update
+   }
+
+   #########################################################################
+   #--   Configure le bouton Stock                                         #
+   #########################################################################
+   proc configStock {} {
+      global panneau caption
+      variable Dslr
+
+      set l [ llength $panneau(acqdslr,stockLabels) ]
+
+      #--   si carte CF seule ou mode continu ou mode rafale
+      if { $l == "1" \
+         || $panneau(acqdslr,bracket) == "$caption(acqdslr,bracket,continu)" \
+         || $panneau(acqdslr,bracket) == "$caption(acqdslr,bracket,rafale)" } {
+         #--   active usecf 1
+         $Dslr.stock.m invoke 0
+         #--   gele le bouton
+         $Dslr.stock configure -state disabled
+      } else {
+         $Dslr.stock configure -state normal
+      }
+   }
+
+   #########################################################################
+   #--   Configure le panneau pour une image seule                         #
+   #  appelee par le bouton de mode de prise de vue et par setWindowState  #
+   #########################################################################
+   proc configImg { } {
+      global panneau
+      variable Dslr
+
+      configStock
+      configPose
+      configIntervalle "1"
+
+      foreach child { test nom } {
+         $Dslr.$child configure -state normal
+      }
+
+      set ::acqdslr::nb_poses "1"
+      foreach child { step nb_poses } {
+         $Dslr.$child configure -state disabled
+      }
+      set panneau(acqdslr,test) "0"
+   }
+
+   #########################################################################
+   #--   Configure le bouton USB/Longuepose                                #
+   #########################################################################
+   proc configPose {} {
+      global panneau caption
+      variable Dslr
+
+      if { [ llength $panneau(acqdslr,poseLabels) ] == "2" \
+         && $panneau(acqdslr,bracket) != "$caption(acqdslr,bracket,continu)" \
+         && $panneau(acqdslr,bracket) != "$caption(acqdslr,bracket,rafale)" } {
+            set etat "normal"
+      } else {
+         $Dslr.pose.m invoke 0
+         set etat "disabled"
+      }
+      $Dslr.pose configure -state $etat
+   }
+
+   #########################################################################
+   #--   Commute USB/Longuepose                                            #
+   #  parametres : camNo choix ( si USB ul =0 sinon ul=1 )                 #
+   #########################################################################
+   proc switchExpTime { ul } {
+      global panneau
+      variable Dslr
+
+      set etat_anterieur [ lindex $panneau(acqdslr,status) 0 ]
+
+      if { $etat_anterieur != $ul } {
+         set status [ cam$panneau(acqdslr,camNo) longuepose $ul ]
+         #--   memorise le nouvel etat
+         set panneau(acqdslr,status) \
+            [ lreplace $panneau(acqdslr,status) 0 0 "$status" ]
+      }
+
+      #--   adapte l'entree du temps d'exposition
+      if { $etat_anterieur != $ul || [ llength [ $Dslr.exptime cget -values ] ] == "0" } {
+         configTimeScale $ul
+         #--   transfert la valeur
+         set ::acqdslr::exptime $panneau(acqdslr,time)
+         update
+      }
+   }
+
+   ######################################################################
+   #--   Configure l'entree Intervalle                                  #
+   ######################################################################
+   proc configIntervalle { n } {
+      global panneau caption
+      variable Dslr
+
+      set var "intervalle"
+      set state "disabled"
+      set val " "
+
+      if { $n == "4" } {
+         set var "duree"
+         set val "1"
+      }
+      set ::acqdslr::intervalle $val
+
+      if { ( $n == "2" && $panneau(acqdslr,test) == "1" ) || $n == "4" } {
+         set state "normal"
+      }
+
+      $Dslr.intervalle configure -label "$caption(acqdslr,$var)" -state $state
+      DynamicHelp::add $Dslr.intervalle -text $caption(acqdslr,help$var)
+      update
    }
 
    ######################################################################
@@ -423,29 +639,6 @@ proc acqdslrBuildIF { This } {
             "3"   { configRafale }
          }
       }
-   }
-
-   #########################################################################
-   #--   Configure le panneau pour une image seule                         #
-   #  appelee par le bouton de mode de prise de vue et par setWindowState  #
-   #########################################################################
-   proc configImg { } {
-      global panneau
-      variable Dslr
-
-      configStock
-      configPose
-      configIntervalle "1"
-
-      foreach child { test nom } {
-         $Dslr.$child configure -state normal
-      }
-
-      set ::acqdslr::nb_poses "1"
-      foreach child { step nb_poses } {
-         $Dslr.$child configure -state disabled
-      }
-      set panneau(acqdslr,test) "0"
    }
 
    #########################################################################
@@ -510,99 +703,6 @@ proc acqdslrBuildIF { This } {
    }
 
    #########################################################################
-   #--   Configure le bouton Stock                                         #
-   #########################################################################
-   proc configStock {} {
-      global panneau caption
-      variable Dslr
-
-      set l [ llength $panneau(acqdslr,stockLabels) ]
-
-      #--   si carte CF seule ou mode continu ou mode rafale
-      if { $l == "1" \
-         || $panneau(acqdslr,bracket) == "$caption(acqdslr,bracket,continu)" \
-         || $panneau(acqdslr,bracket) == "$caption(acqdslr,bracket,rafale)" } {
-         #--   active usecf 1
-         $Dslr.stock.m invoke 0
-         #--   gele le bouton
-         $Dslr.stock configure -state disabled
-      } else {
-        $Dslr.stock configure -state normal
-      }
-   }
-
-   #########################################################################
-   #--   Configure le bouton USB/Longuepose                                #
-   #########################################################################
-   proc configPose {} {
-      global panneau caption
-      variable Dslr
-
-      if { [ llength $panneau(acqdslr,poseLabels) ] == "2" \
-         && $panneau(acqdslr,bracket) != "$caption(acqdslr,bracket,continu)" \
-         && $panneau(acqdslr,bracket) != "$caption(acqdslr,bracket,rafale)" } {
-            set etat "normal"
-      } else {
-            $Dslr.pose.m invoke 0
-            set etat "disabled"
-      }
-      $Dslr.pose configure -state $etat
-   }
-
-   #########################################################################
-   #--   Commute USB/Longuepose                                            #
-   #  parametres : camNo choix ( si USB ul =0 sinon ul=1 )                 #
-   #########################################################################
-   proc switchExpTime { ul } {
-      global panneau
-      variable Dslr
-
-      set etat_anterieur [ lindex $panneau(acqdslr,status) 0 ]
-
-      if { $etat_anterieur != $ul } {
-         set status [ cam$panneau(acqdslr,camNo) longuepose $ul ]
-         #--   memorise le nouvel etat
-         set panneau(acqdslr,status) \
-            [ lreplace $panneau(acqdslr,status) 0 0 "$status" ]
-      }
-
-      #--   adapte l'entree du temps d'exposition
-      if { $etat_anterieur != $ul || [ llength [ $Dslr.exptime cget -values ] ] == "0" } {
-         configTimeScale $ul
-         #--   transfert la valeur
-         set ::acqdslr::exptime $panneau(acqdslr,time)
-         update
-      }
-   }
-
-   #########################################################################
-   #--   Configure l'entree du temps d'exposition                          #
-   #  parametre : camNo choix ( si USB s =0 sinon s=1 )                    #
-   #########################################################################
-   proc  configTimeScale { s } {
-      global panneau
-      variable Dslr
-
-      switch $s {
-         "0"   {  #--   met en place la liste standard
-                  $Dslr.exptime configure -editable 0 \
-                     -values "$panneau(acqdslr,exptimeLabels)" -height 10
-                  #--   selectionne 1 seconde
-                  $Dslr.exptime setvalue @15
-               }
-         "1"   {  #--   met en place la liste ouverte
-                  $Dslr.exptime configure -editable 1 -values "31" -height 1
-                  #--   selectionne 31
-                  $Dslr.exptime setvalue @0
-               }
-      }
-
-      #--   transfert la valeur
-      set ::acqdslr::exptime $panneau(acqdslr,time)
-      update
-   }
-
-   #########################################################################
    #--   Commute la memoire                                                #
    #  parametres : camNo stockage ( si CF sto =1 sinon sto=0 )             #
    #########################################################################
@@ -651,70 +751,161 @@ proc acqdslrBuildIF { This } {
       }
    }
 
-   ######################################################################
-   #--   Configure l'entree Intervalle                                  #
-   ######################################################################
-   proc configIntervalle { n } {
+   ###################################################################
+   #-- Ote tous les caracteres non alphanumeriques ou non underscore #
+   ###################################################################
+   proc test_nom {} {
+
+      #-- seuls les caracteres alphanumériques et le underscore sont autorises
+      regsub -all {[^\w_]} $::acqdslr::nom {} ::acqdslr::nom
+
+   }
+
+   ###################################################################
+   #-- Si le nombre de poses n'est pas un entier il est fixe a 1     #
+   ###################################################################
+   proc test_nb_poses {} {
+
+      if ![ TestEntier $::acqdslr::nb_poses ] {
+         set ::acqdslr::nb_poses "1"
+      }
+   }
+
+   #######################################################################
+   #-- Si l'intervalle n'est pas un entier ou est < l'intervalle minimum #
+   #-- il est fixe à l'intervalle minimum                                #
+   #######################################################################
+   proc test_intervalle {} {
+      global panneau
+
+      regsub -all {[^0-9]} $::acqdslr::intervalle {} resultat
+      if { $resultat < $panneau(acqdslr,intervalle_mini) } {
+         set resultat $panneau(acqdslr,intervalle_mini)
+      }
+      set ::acqdslr::intervalle $resultat
+   }
+
+   ###################################################################
+   #-- Si le delai n'est pas un entier il est fixe a 0               #
+   ###################################################################
+   proc test_delai {} {
+
+      if ![ TestEntier $::acqdslr::delai ] {
+         set ::acqdslr::delai "0"
+      }
+   }
+
+   #########################################################################
+   #-- Teste si la valeur d'exposition finale est dans la plage            #
+   #-- appelee par le bouton Pas, le nb de poses et le temps d'exposition  #
+   #-- s'applique uniquement a 'Une serie' ou 'En continu'                 #
+   #########################################################################
+   proc test_bracketing {} {
       global panneau caption
-      variable Dslr
 
-      set var "intervalle"
-      set state "disabled"
-      set val " "
+      if { $panneau(acqdslr,pose) == "<30" \
+         &&  ( $panneau(acqdslr,bracket) == $caption(acqdslr,bracket,serie) \
+         || $panneau(acqdslr,bracket) == $caption(acqdslr,bracket,continu))  } {
 
-      if { $n == "4" } {
-         set var "duree"
-         set val "1"
+         #--   recherche l'indice du temps affiche
+         set i_initial [ lsearch $panneau(acqdslr,exptimeLabels) $panneau(acqdslr,time) ]
+
+         #--   calcule l'indice de la valeur finale
+         set i_final [ expr { $i_initial+$panneau(acqdslr,step)*(1-$::acqdslr::nb_poses) } ]
+
+         if { $i_final < 0 || $i_final > [ llength $panneau(acqdslr,exptimeLabels) ] } {
+
+            #--   message d'alerte si hors plage
+            avertiUser "out_of_limits"
+
+            #--   remet pas a 0
+            set panneau(acqdslr,step) 0
+         }
       }
-      set ::acqdslr::intervalle $val
+   }
 
-      if { ( $n == "2" && $panneau(acqdslr,test) == "1" ) || $n == "4" } {
-         set state "normal"
+   ######################################################################
+   #-- Verifie et Formate le temps en décimal                           #
+   ######################################################################
+   proc test_exptime {} {
+      global panneau
+
+      set exptime $panneau(acqdslr,time)
+
+      if { $panneau(acqdslr,pose) == "<30" } {
+
+         #--   en mode USB, cherche l'index de la valeur
+         set i [ lsearch $panneau(acqdslr,exptimeLabels) $exptime ]
+
+         #--   lit le resultat dans la liste de conversion
+         set resultat [ lindex $panneau(acqdslr,exptimeValues) $i ]
+
+      } else {
+
+         #--   en mode Longuepose, teste l'entree
+         #--   ote tout ce qui suit la virgule
+         regsub -all {[^0-9]} $exptime {} resultat
+
+         if { $exptime != $resultat || $exptime <= "30" } {
+            #--   modifie l'affichage
+            set $panneau(acqdslr,time) "31"
+            set resultat "31"
+         }
+      }
+      set ::acqdslr::exptime $resultat
+   }
+
+   ######################################################################
+   #--  Mesure l'intervalle mini dans les conditions de reglages        #
+   ######################################################################
+   proc testTime { } {
+      global audace panneau caption
+
+      if { $panneau(acqdslr,camNo) == "0" } {
+         return
       }
 
-      $Dslr.intervalle configure -label "$caption(acqdslr,$var)" -state $state
-      DynamicHelp::add $Dslr.intervalle -text $caption(acqdslr,help$var)
-      update
-   }
+      #--   annule le delai
+      set ::acqdslr::delai "0"
 
-   ######################################################################
-   #--   Cree une entree avec un label appelee par ApnBuildIF           #
-   #  parametres : nom descendant                                       #
-   ######################################################################
-   proc buildLabelEntry { child } {
-      global caption
-      variable Dslr
+      #--   affiche le nom
+      set ::acqdslr::nom "$caption(acqdslr,test)"
 
-      LabelEntry $Dslr.$child -label $caption(acqdslr,$child) \
-         -textvariable ::acqdslr::$child -labelanchor w -labelwidth 8 \
-         -borderwidth 1 -relief flat -padx 2 -justify right \
-         -width 8 -relief sunken
-      bind $Dslr.$child <Leave> [ list test_$child ]
-   }
+      #--   inhibe les commandes
+      setWindowState disabled
 
-   ######################################################################
-   #--   Ecriture du fichier log                                        #
-   #  parametres :   nom du fichier texte                               #
-   ######################################################################
-   proc writeLog { f m } {
+      #--   fixe le nb de pose a 1
+      set ::acqdslr::nb_poses "1"
 
-      set err [ catch {
-            set fd [ open $f a+ ]
-            puts $fd $m
-            close $fd
-         } msg ]
-      return $err
-   }
+      #--   le temps maintenant
+      set t0 [clock milliseconds]
 
-   ######################################################################
-   #--   Fenetre d'avertissement                                        #
-   #  parametres :   variable de caption                                #
-   ######################################################################
-   proc avertiUser { v } {
-      global caption
+      #--   lance une acquisition
+      shoot
 
-      tk_messageBox -title $caption(acqdslr,attention)\
-         -icon error -type ok -message $caption(acqdslr,$v)
+      #--   calcule la duree de la sequence
+      set duree [ expr { int(([clock milliseconds ]-$t0)/1000.0) } ]
+
+      #--   memorise l'intervalle
+      set panneau(remotecrtl,intervalle_mini) "$duree"
+
+      #--   definit le nom du fichier
+      set file ${::acqdslr::nom}1$panneau(acqdslr,extension)
+
+      #--   supprime le nom affiche
+      set ::acqdslr::nom " "
+
+      #--   supprime le fichier test
+      file delete [ file join $audace(rep_images) $file ]
+
+      #--   memorise le test
+      set panneau(acqdslr,test) "1"
+
+      #--   libere les commandes
+      setWindowState normal
+
+      #--   fixe l'intervalle mini a afficher
+      set ::acqdslr::intervalle "$duree"
    }
 
    ######################################################################
@@ -815,7 +1006,7 @@ proc acqdslrBuildIF { This } {
                infLog "$name"
             }
         } else {
-            avertiUser "cam_pb"
+           avertiUser "cam_pb"
         }
 
          #--  charge et visualise l'image si stockage autre que carte CF
@@ -883,7 +1074,7 @@ proc acqdslrBuildIF { This } {
       catch {  cam$camNo acq -blocking } msg
 
       if [ regexp "Dialog error" $msg ] {
-            avertiUser "cam_pb"
+         avertiUser "cam_pb"
       }
 
       #--   passe en mode longuepose
@@ -937,160 +1128,19 @@ proc acqdslrBuildIF { This } {
    }
 
    ######################################################################
-   #--  Mesure l'intervalle mini dans les conditions de reglages        #
+   #--   Decompteur de secondes                                         #
+   #  parametre : nom de la variable a decompter (delai ou intervalle)  #
    ######################################################################
-   proc testTime { } {
-      global audace panneau caption
+   proc delay { var } {
 
-      if { $panneau(acqdslr,camNo) == "0" } {
-         return
+      upvar 1 ::acqdslr::$var t
+      while { $t > "0" } {
+         after 1000
+         incr t "-1"
+         update
       }
-
-      #--   annule le delai
-      set ::acqdslr::delai "0"
-
-      #--   affiche le nom
-      set ::acqdslr::nom "$caption(acqdslr,test)"
-
-      #--   inhibe les commandes
-      setWindowState disabled
-
-      #--   fixe le nb de pose a 1
-      set ::acqdslr::nb_poses "1"
-
-      #--   le temps maintenant
-      set t0 [clock milliseconds]
-
-      #--   lance une acquisition
-      shoot
-
-      #--   calcule la duree de la sequence
-      set duree [ expr { int(([clock milliseconds ]-$t0)/1000.0) } ]
-
-      #--   memorise l'intervalle
-      set panneau(remotecrtl,intervalle_mini) "$duree"
-
-      #--   definit le nom du fichier
-      set file ${::acqdslr::nom}1$panneau(acqdslr,extension)
-
-      #--   supprime le nom affiche
-      set ::acqdslr::nom " "
-
-      #--   supprime le fichier test
-      file delete [ file join $audace(rep_images) $file ]
-
-      #--   memorise le test
-      set panneau(acqdslr,test) "1"
-
-      #--   libere les commandes
-      setWindowState normal
-
-      #--   fixe l'intervalle mini a afficher
-      set ::acqdslr::intervalle "$duree"
-   }
-
-   ######################################################################
-   #-- Verifie et Formate le temps en décimal                           #
-   ######################################################################
-   proc test_exptime {} {
-      global panneau
-
-      set exptime $panneau(acqdslr,time)
-
-      if { $panneau(acqdslr,pose) == "<30" } {
-
-         #--   en mode USB, cherche l'index de la valeur
-         set i [ lsearch $panneau(acqdslr,exptimeLabels) $exptime ]
-
-         #--   lit le resultat dans la liste de conversion
-         set resultat [ lindex $panneau(acqdslr,exptimeValues) $i ]
-
-      } else {
-
-         #--   en mode Longuepose, teste l'entree
-         #--   ote tout ce qui suit la virgule
-         regsub -all {[^0-9]} $exptime {} resultat
-
-         if { $exptime != $resultat || $exptime <= "30" } {
-            #--   modifie l'affichage
-            set $panneau(acqdslr,time) "31"
-            set resultat "31"
-         }
-      }
-      set ::acqdslr::exptime $resultat
-   }
-
-   ###################################################################
-   #-- Ote tous les caracteres non alphanumeriques ou non underscore #
-   ###################################################################
-   proc test_nom {} {
-
-      #-- seuls les caracteres alphanumériques et le underscore sont autorises
-      regsub -all {[^\w_]} $::acqdslr::nom {} ::acqdslr::nom
-
-   }
-
-   ###################################################################
-   #-- Si le nombre de poses n'est pas un entier il est fixe a 1     #
-   ###################################################################
-   proc test_nb_poses {} {
-
-      if ![ TestEntier $::acqdslr::nb_poses ] {
-         set ::acqdslr::nb_poses "1"
-      }
-   }
-
-   #######################################################################
-   #-- Si l'intervalle n'est pas un entier ou est < l'intervalle minimum #
-   #-- il est fixe à l'intervalle minimum                                #
-   #######################################################################
-   proc test_intervalle {} {
-      global panneau
-
-      regsub -all {[^0-9]} $::acqdslr::intervalle {} resultat
-      if { $resultat < $panneau(acqdslr,intervalle_mini) } {
-         set resultat $panneau(acqdslr,intervalle_mini)
-      }
-      set ::acqdslr::intervalle $resultat
-   }
-
-   ###################################################################
-   #-- Si le delai n'est pas un entier il est fixe a 0               #
-   ###################################################################
-   proc test_delai {} {
-
-      if ![ TestEntier $::acqdslr::delai ] {
-         set ::acqdslr::delai "0"
-      }
-   }
-
-   #########################################################################
-   #-- Teste si la valeur d'exposition finale est dans la plage            #
-   #-- appelee par le bouton Pas, le nb de poses et le temps d'exposition  #
-   #-- s'applique uniquement a 'Une serie' ou 'En continu'                 #
-   #########################################################################
-   proc test_bracketing {} {
-      global panneau caption
-
-      if { $panneau(acqdslr,pose) == "<30" \
-         &&  ( $panneau(acqdslr,bracket) == $caption(acqdslr,bracket,serie) \
-         || $panneau(acqdslr,bracket) == $caption(acqdslr,bracket,continu))  } {
-
-         #--   recherche l'indice du temps affiche
-         set i_initial [ lsearch $panneau(acqdslr,exptimeLabels) $panneau(acqdslr,time) ]
-
-         #--   calcule l'indice de la valeur finale
-         set i_final [ expr { $i_initial+$panneau(acqdslr,step)*(1-$::acqdslr::nb_poses) } ]
-
-         if { $i_final < 0 || $i_final > [ llength $panneau(acqdslr,exptimeLabels) ] } {
-
-            #--   message d'alerte si hors plage
-            avertiUser "out_of_limits"
-
-            #--   remet pas a 0
-            set panneau(acqdslr,step) 0
-         }
-      }
+      set t "0"
+      update
    }
 
    ######################################################################
@@ -1101,104 +1151,39 @@ proc acqdslrBuildIF { This } {
       global panneau
 
       set texte [ list \
-            "$panneau(acqdslr,stock)" \
-            "$panneau(acqdslr,bracket)" \
-            "$panneau(acqdslr,quality)" \
-            $::acqdslr::exptime \
-            "$name" ]
+         "$panneau(acqdslr,stock)" \
+         "$panneau(acqdslr,bracket)" \
+         "$panneau(acqdslr,quality)" \
+         $::acqdslr::exptime \
+         "$name" ]
       writeLog $panneau(acqdslr,log) $texte
    }
 
    ######################################################################
-   #--   Decompteur de secondes                                         #
-   #  parametre : nom de la variable a decompter (delai ou intervalle)  #
+   #--   Ecriture du fichier log                                        #
+   #  parametres :   nom du fichier texte                               #
    ######################################################################
-   proc delay { var } {
+   proc writeLog { f m } {
 
-      upvar 1 ::acqdslr::$var t
-      while { $t > "0" } {
-            after 1000
-            incr t "-1"
-            update
-      }
-      set t "0"
-      update
+      set err [ catch {
+         set fd [ open $f a+ ]
+         puts $fd $m
+         close $fd
+      } msg ]
+      return $err
    }
 
    ######################################################################
-   #--   propose de connecter la cam et de reconfigurer le panneau      #
+   #--   Fenetre d'avertissement                                        #
+   #  parametres :   variable de caption                                #
    ######################################################################
-   proc connectCam  { } {
-      global audace panneau caption
-      variable Dslr
+   proc avertiUser { v } {
+      global caption
 
-      ::confCam::run
-      ::confCam::selectNotebook A dslr
-      vwait audace(camNo)
-
-      #--   rapatrie les donnes sur la connexion
-      setCamProperty
-
-      if { $panneau(acqdslr,camNo) != "0" } {
-      #--   reconfigure le panneau
-         destroy $Dslr
-         apnBuildIF
-
-      }
+      tk_messageBox -title $caption(acqdslr,attention)\
+         -icon error -type ok -message $caption(acqdslr,$v)
    }
 
-   ######################################################################
-   #--   Recupere les donnees de la cam                                 #
-   ######################################################################
-   proc setCamProperty { } {
-      global panneau caption
-
-      set panneau(acqdslr,camNo) "0"
-      set cam_list [ ::cam::list ]
-
-      #--   arrete si pas de cam
-      if { $cam_list == "" } {
-         return
-      }
-
-      #--   cherche une cam DSLR
-      foreach camNo $cam_list {
-         if { [ cam$camNo name ] == "DSLR" } {
-            set panneau(acqdslr,camNo) $camNo
-         }
-      }
-
-      #--   arrete si pas de DSLR
-      if { $panneau(acqdslr,camNo) == "0" } {
-         return
-      }
-
-      set camNo $panneau(acqdslr,camNo)
-
-      #--   fixe drivemode a 0
-      cam$camNo drivemode 0
-
-      #--   liste les formats possibles
-      set panneau(acqdslr,qualityLabels) [ cam$camNo quality list ]
-      set panneau(acqdslr,quality) [ cam$camNo quality ]
-
-      #--   si la camera est connectee en mode longue pose
-      if [ cam$camNo longuepose ] {
-
-         #--   complete la liste des types de declenchement
-         lappend panneau(acqdslr,poseLabels) ">30"
-
-         set panneau(acqdslr,linkNo) [ cam$camNo longueposelinkno ]
-         set panneau(acqdslr,bitNo) [ cam$camNo longueposelinkbit ]
-         set panneau(acqdslr,startvalue) [ cam$camNo longueposestartvalue ]
-         set panneau(acqdslr,stopvalue) [ cam$camNo longueposestopvalue ]
-
-         #--   ajoute le mode Rafale si la longuepose existe
-         lappend panneau(acqdslr,bracketLabels) "$caption(acqdslr,bracket,rafale)"
-
-         #--   memorise l'etat
-         set panneau(acqdslr,status) [ lreplace $panneau(acqdslr,status) 0 0 "1" ]
-         lappend panneau(acqdslr,status) "0"
-      }
-   }
+#--   fin du namespace
+}
 
