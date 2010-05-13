@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise à jour $Id: aud_menu_7.tcl,v 1.24 2010-05-01 08:22:35 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_7.tcl,v 1.25 2010-05-13 17:45:45 robertdelmas Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -922,8 +922,8 @@ namespace eval ::audace {
       set conf(console,wmgeometry)            [ wm geometry $audace(Console) ]
 
       #---
-      set filename [ file join $::audace(rep_home) config.ini ]
-      set filebak  [ file join $::audace(rep_home) config.bak ]
+      set filename [ file join $::audace(rep_home) audace.ini ]
+      set filebak  [ file join $::audace(rep_home) audace.bak ]
       set filename2 $filename
       catch {
          file copy -force $filename $filebak

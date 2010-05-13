@@ -2,7 +2,7 @@
 # Fichier : process.tcl
 # Description : fenertre de configuration instrument eShel
 # Auteur : Michel PUJOL
-# Mise à jour $Id: instrumentgui.tcl,v 1.3 2010-05-01 09:04:13 robertdelmas Exp $
+# Mise à jour $Id: instrumentgui.tcl,v 1.4 2010-05-13 17:49:37 robertdelmas Exp $
 #
 
 ################################################################
@@ -66,7 +66,6 @@ proc ::eshel::instrumentgui::closeWindow { visuNo } {
    #--- j'efface les indicateurs d'erreur
    array unset widget error,*
 
-
    #--- je memoririse la position courante de la fenetre
    set ::conf(eshel,instrumentWindowPosition) [ wm geometry $private($visuNo,This) ]
 }
@@ -79,7 +78,6 @@ proc ::eshel::instrumentgui::showHelp { } {
    ::audace::showHelpPlugin [::audace::getPluginTypeDirectory [::eshel::getPluginType]] \
       [::eshel::getPluginDirectory] [::eshel::getPluginHelp] "instrument"
 }
-
 
 #------------------------------------------------------------
 # ::eshel::instrumentgui::getLabel
@@ -190,7 +188,6 @@ proc ::eshel::instrumentgui::fillConfigPage { frm visuNo } {
 proc ::eshel::instrumentgui::fillSpectrographPage { frm visuNo } {
    variable private
    global caption
-
 
    #--- type de spectro
    checkbutton $frm.spectroType  -justify left \
@@ -437,7 +434,6 @@ proc ::eshel::instrumentgui::fillCameraPage { frm visuNo } {
    grid columnconfig $frm 1 -weight 1
    grid columnconfig $frm 2 -weight 1
 
-
 }
 
 #------------------------------------------------------------
@@ -519,7 +515,6 @@ proc ::eshel::instrumentgui::fillReferencePage { frm visuNo } {
 
    ##pack $frm.button -side left -fill x -expand 1
 
-
    #--- modification des actions d'une sequence de reference
    TitleFrame $frm.edit  -borderwidth 2 -relief ridge -text $caption(eshel,instrument,reference,edit)
       set private(actionTable) $frm.edit.table
@@ -587,7 +582,6 @@ proc ::eshel::instrumentgui::fillReferencePage { frm visuNo } {
          ###pack $frm.edit.action.action -side top -fill x -expand 0 -padx 2
          ###pack $frm.edit.action.expTime -side top -fill x -expand 0 -padx 2
          ###pack $frm.edit.action.expNb  -side top -fill x -expand 0 -padx 2
-
 
          ###grid $frm.edit.action.create  -row 0 -column 0 -columnspan 2 -sticky nwe -padx 20
          ###grid $frm.edit.action.copy    -row 1 -column 0 -columnspan 2 -sticky nwe -padx 20
@@ -670,7 +664,6 @@ proc ::eshel::instrumentgui::fillProcessPage { frm visuNo } {
       pack $frm.reference.refY -in [$frm.reference getframe] -side top  -anchor e -fill none -expand 1
       pack $frm.reference.refLambda -in [$frm.reference getframe] -side top  -anchor w -fill none -expand 1
       pack $frm.reference.findOrder  -in [$frm.reference getframe] -side top -fill none -expand 0 -pady 10
-
 
    grid $frm.reference -in $frm -row 0 -column 0 -sticky nsw
 
@@ -776,12 +769,10 @@ proc ::eshel::instrumentgui::fillObjectProcessPage { frm visuNo } {
    variable private
    global caption
 
-
    #--- flatfield
    checkbutton $frm.flatFieldEnabled  -justify left \
       -text $caption(eshel,instrument,process,flatFieldEnabled) \
       -variable ::eshel::instrumentgui::private(flatFieldEnabled)
-
 
    #--- reponse instrumentale
    TitleFrame $frm.response -borderwidth 2 -relief ridge -text $caption(eshel,instrument,process,response,title)
@@ -968,8 +959,6 @@ proc ::eshel::instrumentgui::onSelectResponseOption { visuNo } {
    }
 
 }
-
-
 
 #----------------------------------------------------------------------------
 # apply
@@ -1176,8 +1165,8 @@ proc ::eshel::instrumentgui::apply { visuNo } {
    }
 
    #--- j'enregistre les modifications sur disque
-   set filename [ file join $::audace(rep_home) config.ini ]
-   set filebak  [ file join $::audace(rep_home) config.bak ]
+   set filename [ file join $::audace(rep_home) audace.ini ]
+   set filebak  [ file join $::audace(rep_home) audace.bak ]
    array set file_conf [ ::audace::ini_getArrayFromFile $filename ]
    set currentConfig    [array get ::conf eshel,instrument,config,* ]
    set currentReference [array get ::conf eshel,instrument,reference,* ]
@@ -1206,9 +1195,7 @@ proc ::eshel::instrumentgui::apply { visuNo } {
    #--- je mets a jour les sequences de reference dans la fenetre principale.
    ::eshel::setSequenceList $visuNo
 
-
 }
-
 
 #------------------------------------------------------------
 # createConfig
@@ -1529,8 +1516,6 @@ proc ::eshel::instrumentgui::exportConfig { visuNo } {
    }
 }
 
-
-
 #------------------------------------------------------------
 # createReference
 #   cree une nouvelle sequence de reference
@@ -1846,7 +1831,6 @@ proc ::eshel::instrumentgui::selectAction { visuNo { actionIndex "" } } {
    #--- j'affiche les parametres de l'action
    onSelectAction $visuNo
 }
-
 
 #----------------------------------------------------------------------------
 # onSelectAction
@@ -2271,7 +2255,6 @@ proc ::eshel::instrumentgui::nameDialog::getLabel { } {
    return "$::caption(eshel,title) - $private(title)"
 }
 
-
 #------------------------------------------------------------
 # config::apply
 #   enregistre la valeur des widgets
@@ -2281,7 +2264,6 @@ proc ::eshel::instrumentgui::nameDialog::apply { visuNo } {
    #--- rien a enregistrer
    #--- cette fonction existe pour faire apparaitre le bouton "OK"
 }
-
 
 #------------------------------------------------------------
 # config::closeWindow
