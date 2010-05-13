@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise à jour $Id: aud_menu_3.tcl,v 1.61 2010-05-09 14:51:38 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_3.tcl,v 1.62 2010-05-13 16:20:15 jacquesmichelet Exp $
 #
 
 namespace eval ::pretraitement {
@@ -2523,12 +2523,20 @@ namespace eval ::conv2 {
       global caption
 
       #--- initialise les listes
-      lassign { "" "" "" "" "" } raw cfa rgb plan_coul ::conv2::maj_header
+      lassign { "" "" "" "" "" "" } fits raw cfa rgb plan_coul ::conv2::maj_header
 
       #--- etape 1 : recherche les fichiers raw convertibles
-      #--- la recherche de l'extension est insensible aux minuscules/majuscules
-      foreach extension { ARW CR2 CRW DNG ERF MRW NEF ORF RAF RW2 SR2 TIFF X3F } {
-         set raw [ concat $raw [ glob -nocomplain -type f -join $private(conv2,rep) *.$extension ] ]
+      if { $::tcl_platform(platform) == "windows" } {
+         #--- la recherche de l'extension est insensible aux minuscules/majuscules ... sous windows uniquement
+         foreach extension { ARW CR2 CRW DNG ERF MRW NEF ORF RAF RW2 SR2 TIFF X3F } {
+            set raw [ concat $raw [ glob -nocomplain -type f -join $private(conv2,rep) *.$extension ] ]
+         }
+      } else {
+         #--- la recherche de l'extension est _sensible_ aux minuscules/majuscules dans tous les autres cas
+         foreach extension { ARW CR2 CRW DNG ERF MRW NEF ORF RAF RW2 SR2 TIFF X3F \
+                             arw cr2 crw dng erf mrw nef orf raf rw2 sr2 tiff x3f } {
+            set raw [ concat $raw [ glob -nocomplain -type f -join $private(conv2,rep) *.$extension ] ]
+         }
       }
 
       #--- remplace le nom par le nom court
@@ -2538,7 +2546,15 @@ namespace eval ::conv2 {
       }
 
       #--- etape 2 : recherche les fichiers d'extensions par defaut
-      set fits [ glob -nocomplain -type f -join $private(conv2,rep) *$private(conv2,extension) ]
+      if { $::tcl_platform(platform) == "windows" } {
+         set fits [ glob -nocomplain -type f -join $private(conv2,rep) *$private(conv2,extension) ]
+      } else {
+          set ext_minu [ string tolower $private(conv2,extension) ]
+          set ext_maju [ string toupper $private(conv2,extension) ]
+          foreach extension [ list $ext_minu $ext_maju ] {
+             set fits [ concat $fits [ glob -nocomplain -type f -join $private(conv2,rep) *$extension ] ]
+          }
+      }
 
       foreach fichier $fits {
          #--- capture les kwds
@@ -2698,7 +2714,7 @@ namespace eval ::conv2 {
       ::blt::table $this
       #--- rappel du repertoire
       Label $this.info -justify left\
-         -text "$caption(pretraitement,repertoire) ./[ file tail $private(conv2,rep) ]"
+          -text "$caption(pretraitement,repertoire) .../[ file tail $private(conv2,rep) ]"
 
       #--- bouton de menu
       menubutton $this.but -relief raised -textvariable conversion \
