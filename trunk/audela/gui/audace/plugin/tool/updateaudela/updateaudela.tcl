@@ -2,7 +2,7 @@
 # Fichier : updateaudela.tcl
 # Description : Outil de fabrication des fichiers Kit et de deploiement des plugins
 # Auteur : Michel Pujol
-# Mise a jour $Id: updateaudela.tcl,v 1.27 2010-04-29 18:13:01 michelpujol Exp $
+# Mise a jour $Id: updateaudela.tcl,v 1.28 2010-05-13 17:50:30 robertdelmas Exp $
 #
 
 namespace eval ::updateaudela {
@@ -1990,6 +1990,8 @@ proc ::updateaudela::makecore::analdir { base } {
             if {(($make=="audela")||($make=="bin"))&&($level==4)} {
                if { $shortname=="config.ini"
                   || $shortname=="config.bak"
+                  || $shortname=="audace.ini"
+                  || $shortname=="audace.bak"
                } {
                   continue
                }
