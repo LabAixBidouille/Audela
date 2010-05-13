@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.130 2010-05-09 08:05:47 robertdelmas Exp $
+# Mise à jour $Id: aud.tcl,v 1.131 2010-05-13 17:45:08 robertdelmas Exp $
 #
 
 #--- Chargement du package BWidget
@@ -523,8 +523,14 @@ namespace eval ::audace {
       #--- Initialisation
       if {[info exists conf]} {unset conf}
 
+      #--- Changement du nom des fichiers de parametres
+      set fichierIni [ file join $::audace(rep_home) config.ini ]
+      if { [ file exists $fichierIni ] } { file rename -force "$fichierIni" [ file join $::audace(rep_home) audace.ini ] }
+      set fichierBak [ file join $::audace(rep_home) config.bak ]
+      if { [ file exists $fichierBak ] } { file rename -force "$fichierBak" [ file join $::audace(rep_home) audace.bak ] }
+
       #--- Ouverture du fichier de parametres
-      set fichier [ file join $::audace(rep_home) config.ini ]
+      set fichier [ file join $::audace(rep_home) audace.ini ]
       if { [ file exists $fichier ] } { uplevel #0 "source \"$fichier\"" }
 
       #--- Initialisation de la liste des binnings si aucune camera n'est connectee
