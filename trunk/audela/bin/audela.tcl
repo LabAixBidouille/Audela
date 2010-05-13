@@ -1,5 +1,5 @@
 #
-# Update $Id: audela.tcl,v 1.19 2010-05-09 13:47:03 michelpujol Exp $
+# Update $Id: audela.tcl,v 1.20 2010-05-13 17:38:05 robertdelmas Exp $
 #
 #--- Welcome to the AudeLA-Interfaces Easy Launcher
 #
@@ -18,7 +18,7 @@
 #---       ...
 #
 
-#--- Taking into account the coding UTF-8
+#--- Taking into account the coding UTF-8 (caractères accentués pris en compte)
 encoding system utf-8
 
 #--- Use standard C precision
@@ -61,7 +61,9 @@ if { $::tcl_platform(platform) == "unix" } {
 
 if { [ file exists [ file join $::audace(rep_home) audace.txt ] ] == 1 } {
    set langage english
-   catch { source [ file join $::audace(rep_home) langage.tcl ] }
+   set fichierLangage [ file join $::audace(rep_home) langage.tcl ]
+   if { [ file exists $fichierLangage ] } { file rename -force "$fichierLangage" [ file join $::audace(rep_home) langage.ini ] }
+   catch { source [ file join $::audace(rep_home) langage.ini ] }
    cd ../gui/audace
    source aud.tcl
    return
@@ -74,7 +76,7 @@ proc selectLangage { langue } {
    $base.fra1.$::langage configure -borderwidth 0
    set ::langage $langue
    $base.fra1.$langue configure -borderwidth 3
-   set f [open [ file join $::audace(rep_home) langage.tcl ] w]
+   set f [open [ file join $::audace(rep_home) langage.ini ] w]
    puts $f "set langage \"$langue\""
    close $f
    basecaption "$langage"
@@ -103,7 +105,7 @@ proc basecaption { {langage ""} } {
    #--- Selection of langage
    if {[string compare $langage ""] ==0 } {
       #--- First time initialisations
-      catch { source [ file join $::audace(rep_home) langage.tcl ] }
+      catch { source [ file join $::audace(rep_home) langage.ini ] }
       if {[info exists langage] == "0"} {
          set langage [lindex $caption(lg) 0]
       }
@@ -111,7 +113,7 @@ proc basecaption { {langage ""} } {
          set langage [lindex $caption(lg) 0]
       }
       catch {
-         set f [ open [ file join $::audace(rep_home) langage.tcl ] w ]
+         set f [ open [ file join $::audace(rep_home) langage.ini ] w ]
          puts $f "set langage \"$langage\""
          close $f
       }
