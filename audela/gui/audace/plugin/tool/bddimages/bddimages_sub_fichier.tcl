@@ -70,6 +70,27 @@ proc globrdk { {dir .} limit } {
     }
  }
 
+proc globrdknr { {dir .} limit } {
+
+  global maliste
+  
+    set liste [glob -nocomplain $dir/*]
+
+    foreach i $liste {
+       if { [llength $maliste]==$limit && $limit!=0 } {
+         break
+         }    
+
+       set result [bddimages_formatfichier $i]
+       set form2  [lindex $result 0]
+       if { ([llength $maliste]<$limit || $limit==0) && ( $form2=="fit" || $form2=="fit.gz" || $form2=="fits" || $form2=="fits.gz" || $form2=="cata.txt" || $form2=="cata.txt.gz" ) } {
+          lappend maliste $i
+          } else {
+          }
+        
+    }
+ }
+
 proc globrd {{dir .}} {
     set res {}
     set liste [glob -nocomplain $dir/*]

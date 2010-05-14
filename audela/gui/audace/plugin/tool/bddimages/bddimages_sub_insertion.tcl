@@ -59,6 +59,61 @@
    }
 
 #--------------------------------------------------  
+#  init_info_non_recursif { }
+#--------------------------------------------------  
+#
+#    fonction  : 
+#       Initialisation de la liste des fichiers 
+#       du repertoire "incoming" dans conf(dirinco)
+#       pour l affichage dans la table.
+#       les fichiers sont extrait de maniere non
+#       recursive
+#     
+#    variables en entree : 
+#
+#    variables en sortie : 
+#   
+#--------------------------------------------------  
+   proc init_info_non_recursif { } {
+   
+      global bddconf
+      global caption
+      global maliste   
+
+      #--- Chargement des captions
+      uplevel #0 "source \"[ file join $bddconf(rep_plug) bddimages_insertion.cap ]\""
+
+      set bddconf(liste) [list "$caption(bddimages_insertion,etat) \
+                                $caption(bddimages_insertion,nom) \
+                                $caption(bddimages_insertion,dateobs) \
+                                $caption(bddimages_insertion,telescope)\
+                                $caption(bddimages_insertion,taille) \
+                                $caption(bddimages_insertion,erreur)" ]
+
+      set listfile {}
+      set maliste {}
+
+
+      globrdknr $bddconf(dirinco) $bddconf(limit)
+
+
+      set err [catch {set list_file [lsort -increasing $maliste]} result]
+
+      if {$err==0} {
+        
+      foreach fichier $list_file {
+        set fic [file tail "$fichier"]
+        lappend listfile [list "?" "$fichier" "NULL" "NULL" "NULL" "NULL"]
+        }
+      } else {
+        bddimages_sauve_fich "init_info: pas de fichier"
+      }
+
+      lappend bddconf(liste) $listfile
+      return
+   }
+
+#--------------------------------------------------  
 #  info_fichier { nomfich dir }
 #--------------------------------------------------  
 #
