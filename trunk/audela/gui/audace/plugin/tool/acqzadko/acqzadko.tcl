@@ -2,7 +2,7 @@
 # Fichier : acqzadko.tcl
 # Description : Outil d'acquisition
 # Auteurs : Francois Cochard et Myrtille Laas
-# Mise à jour $Id: acqzadko.tcl,v 1.21 2010-05-01 08:53:39 robertdelmas Exp $
+# Mise à jour $Id: acqzadko.tcl,v 1.22 2010-05-14 10:40:04 robertdelmas Exp $
 #
 
 #==============================================================
@@ -1868,11 +1868,7 @@ proc ::acqzadko::dernierFichier { visuNo } {
 proc ::acqzadko::SauveUneImage { visuNo } {
    global audace caption panneau
 
-   #--- Recopie de l'extension des fichiers image
-   set ext $panneau(acqzadko,$visuNo,extension)
-
    #--- Tests d'integrite de la requete
-
    #--- Verifier qu'il y a bien un nom de fichier
    if { $panneau(acqzadko,$visuNo,nom_image) == "" } {
       tk_messageBox -title $caption(acqzadko,pb) -type ok \
@@ -1937,7 +1933,7 @@ proc ::acqzadko::SauveUneImage { visuNo } {
    #--- Indique l'heure d'enregistrement dans le fichier log
    set heure $audace(tu,format,hmsint)
    Message $visuNo consolog $caption(acqzadko,demsauv) $heure
-   Message $visuNo consolog $caption(acqzadko,imsauvnom) $nom $panneau(acqzadko,$visuNo,extension)
+   Message $visuNo consolog $caption(acqzadko,imsauvnom) $nom
 }
 #***** Fin de la procedure de sauvegarde de l'image *************
 

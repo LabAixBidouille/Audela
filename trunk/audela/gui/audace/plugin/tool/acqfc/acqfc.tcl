@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise à jour $Id: acqfc.tcl,v 1.103 2010-05-01 08:52:55 robertdelmas Exp $
+# Mise à jour $Id: acqfc.tcl,v 1.104 2010-05-14 10:39:40 robertdelmas Exp $
 #
 
 #==============================================================
@@ -1888,11 +1888,7 @@ proc ::acqfc::dernierFichier { visuNo } {
 proc ::acqfc::SauveUneImage { visuNo } {
    global audace caption panneau
 
-   #--- Recopie de l'extension des fichiers image
-   set ext $panneau(acqfc,$visuNo,extension)
-
    #--- Tests d'integrite de la requete
-
    #--- Verifier qu'il y a bien un nom de fichier
    if { $panneau(acqfc,$visuNo,nom_image) == "" } {
       tk_messageBox -title $caption(acqfc,pb) -type ok \
@@ -1957,7 +1953,7 @@ proc ::acqfc::SauveUneImage { visuNo } {
    #--- Indique l'heure d'enregistrement dans le fichier log
    set heure $audace(tu,format,hmsint)
    Message $visuNo consolog $caption(acqfc,demsauv) $heure
-   Message $visuNo consolog $caption(acqfc,imsauvnom) $nom $panneau(acqfc,$visuNo,extension)
+   Message $visuNo consolog $caption(acqfc,imsauvnom) $nom
 }
 #***** Fin de la procedure de sauvegarde de l'image *************
 
