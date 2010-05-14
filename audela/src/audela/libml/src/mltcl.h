@@ -119,6 +119,7 @@ int Cmd_mltcl_residutycho2usno(ClientData clientData, Tcl_Interp *interp, int ar
 int Cmd_mltcl_geostatreduc2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int Cmd_mltcl_geostatident2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
+int Cmd_mltcl_fitquadratique(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 /***************************************************************************/
 /*      Prototypes des fonctions utiles qui melangent C et Tcl             */
 /***************************************************************************/
