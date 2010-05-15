@@ -302,7 +302,7 @@ void CBuffer::LoadFits(char *filename)
       datatype = TFLOAT;
 
       msg = Libtt_main(TT_PTR_LOADIMA3D,13,filename,&datatype,&iaxis3,&ppix,&naxis1,&naxis2,&naxis3,
-   	   &nb_keys,&keynames,&values,&comments,&units,&datatypes);
+         &nb_keys,&keynames,&values,&comments,&units,&datatypes);
       if(msg) throw CErrorLibtt(msg);
 
       if(naxis3 == 1) {
@@ -317,41 +317,41 @@ void CBuffer::LoadFits(char *filename)
 
          iaxis3 = 1;
          msg = Libtt_main(TT_PTR_LOADIMA3D,13,filename,&datatype,&iaxis3,&ppixR,&naxis1,&naxis2,&naxis3,
-   	      &nb_keys,&keynames,&values,&comments,&units,&datatypes);
-            iaxis3 = 2;
-            msg = Libtt_main(TT_PTR_LOADIMA3D,13,filename,&datatype,&iaxis3,&ppixG,&naxis1,&naxis2,&naxis3,
-   	         &nb_keys,&keynames,&values,&comments,&units,&datatypes);
-                  // je cree le tableau de pixels
+            &nb_keys,&keynames,&values,&comments,&units,&datatypes);
+         iaxis3 = 2;
+         msg = Libtt_main(TT_PTR_LOADIMA3D,13,filename,&datatype,&iaxis3,&ppixG,&naxis1,&naxis2,&naxis3,
+            &nb_keys,&keynames,&values,&comments,&units,&datatypes);
+         // je cree le tableau de pixels
          pix = new CPixelsRgb(naxis1, naxis2, FORMAT_FLOAT, ppixR, ppixG, ppixB);
-                  // je recupere les mots cles
-                  keywords->GetFromArray(nb_keys,&keynames,&values,&comments,&units,&datatypes);
-                  naxis3 = 3;
-                  keywords->Add("NAXIS", &naxis3,TINT,"","");
-                  naxis3 = 3;
-                  keywords->Add("NAXIS3",&naxis3,TINT,"","");
+         // je recupere les mots cles
+         keywords->GetFromArray(nb_keys,&keynames,&values,&comments,&units,&datatypes);
+         naxis3 = 3;
+         keywords->Add("NAXIS", &naxis3,TINT,"","");
+         naxis3 = 3;
+         keywords->Add("NAXIS3",&naxis3,TINT,"","");
 
-            // je sauvegarde les seuils initiaux et je convertis les seuils en float
-            k = keywords->FindKeyword("MIPS-HI");
-            if(k != NULL  ) {
-               if( k->GetDatatype() == TINT ) {
-                  // je convertis le seuil en float
-                  initialMipsHi = (float) k->GetIntValue();
-                  keywords->Add("MIPS-HI",(char *) &initialMipsHi,TFLOAT,"Hight cut","ADU");
-               } else {
-                  initialMipsHi = (float) k->GetFloatValue();
-               }
+         // je sauvegarde les seuils initiaux et je convertis les seuils en float
+         k = keywords->FindKeyword("MIPS-HI");
+         if(k != NULL  ) {
+            if( k->GetDatatype() == TINT ) {
+               // je convertis le seuil en float
+               initialMipsHi = (float) k->GetIntValue();
+               keywords->Add("MIPS-HI",(char *) &initialMipsHi,TFLOAT,"Hight cut","ADU");
+            } else {
+               initialMipsHi = (float) k->GetFloatValue();
             }
+         }
 
-            k = keywords->FindKeyword("MIPS-LO");
-            if(k) {
-               if( k->GetDatatype() == TINT ) {
-                  // je convertis le seuil en float
-                  initialMipsLo = k->GetFloatValue();
-                  keywords->Add("MIPS-LO",&initialMipsLo,TFLOAT,"Low cut","ADU");
-               } else {
-                  initialMipsLo = (float) k->GetFloatValue();
-               }
+         k = keywords->FindKeyword("MIPS-LO");
+         if(k) {
+            if( k->GetDatatype() == TINT ) {
+               // je convertis le seuil en float
+               initialMipsLo = k->GetFloatValue();
+               keywords->Add("MIPS-LO",&initialMipsLo,TFLOAT,"Low cut","ADU");
+            } else {
+               initialMipsLo = (float) k->GetFloatValue();
             }
+         }
       } else {
          throw CError("LoadFits error: plane number is not 1 or 3.");
       }
@@ -1785,6 +1785,17 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
 
    // j'affecte la nouvelle image
    this->pix = pixTemp;
+
+   // j'ajoute les mots cles NAXIS
+   // attention: ne pas utiliser les parametres width et height passés en entrés de la fonctions
+   // car leur valeur dépend de la compression. 
+   int naxis = pix->GetPlanes(); 
+   int naxis1 = pix->GetWidth();
+   int naxis2 = pix->GetHeight();
+   keywords->Add("NAXIS",  &naxis, TINT, "", "");
+   keywords->Add("NAXIS1", &naxis1, TINT, "", "");
+   keywords->Add("NAXIS2", &naxis2, TINT, "", "");
+
    pthread_mutex_unlock(&mutex);
 }
 
