@@ -5,7 +5,7 @@
 #               pose, choix des outils, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: confgene.tcl,v 1.75 2010-05-13 17:41:38 robertdelmas Exp $
+# Mise à jour $Id: confgene.tcl,v 1.76 2010-05-15 07:45:57 robertdelmas Exp $
 #
 
 #
@@ -703,19 +703,21 @@ namespace eval ::confPosObs {
       set posx_maj [ lindex [ split [ wm geometry $audace(base).confPosObs ] "+" ] 1 ]
       set posy_maj [ lindex [ split [ wm geometry $audace(base).confPosObs ] "+" ] 2 ]
       wm geometry $audace(base).maj +[ expr $posx_maj + 10 ]+[ expr $posy_maj + 230 ]
-      wm resizable $audace(base).maj 0 0
+      wm resizable $audace(base).maj 1 1
 
       #--- Cree l'affichage du message
-      label $audace(base).maj.lab1 -text "$caption(confgene,fichier_uai_maj1) '$confgene(posobs,fichier_station_uai)'"
+      label $audace(base).maj.lab1 -text [ format $caption(confgene,fichier_uai_maj1) $confgene(posobs,fichier_station_uai) ]
       pack $audace(base).maj.lab1 -padx 10 -pady 2
       label $audace(base).maj.lab2 -text "$caption(confgene,fichier_uai_maj2)"
       pack $audace(base).maj.lab2 -padx 10 -pady 2
-      label $audace(base).maj.lab3 -text "$caption(confgene,fichier_uai_maj3)"
-      pack $audace(base).maj.lab3 -padx 10 -pady 2
-      label $audace(base).maj.labURL4 -text "$caption(confgene,fichier_uai_maj4)" -fg $color(blue)
-      pack $audace(base).maj.labURL4 -padx 10 -pady 2
-      label $audace(base).maj.lab5 -text "$caption(confgene,fichier_uai_maj5) $confgene(posobs,fichier_station_uai)"
-      pack $audace(base).maj.lab5 -padx 10 -pady 2
+      label $audace(base).maj.labURL3 -text "$caption(confgene,fichier_uai_maj3)" -fg $color(blue)
+      pack $audace(base).maj.labURL3 -padx 10 -pady 2
+      label $audace(base).maj.lab4 -text "$caption(confgene,fichier_uai_maj4)"
+      pack $audace(base).maj.lab4 -padx 10 -pady 2
+      set confgene(ent1) [ file native [ file join $audace(rep_home) $confgene(posobs,fichier_station_uai) ] ]
+      entry $audace(base).maj.ent1 -state readonly -textvariable confgene(ent1) \
+         -width [ string length $confgene(ent1) ] -justify center
+      pack $audace(base).maj.ent1 -padx 10 -pady 2 -fill x -expand 1
 
       #--- La nouvelle fenetre est active
       focus $audace(base).maj
@@ -724,15 +726,15 @@ namespace eval ::confPosObs {
       ::confColor::applyColor $audace(base).maj
 
       #--- Creation du lien avec le navigateur web et changement de sa couleur
-      bind $audace(base).maj.labURL4 <ButtonPress-1> {
+      bind $audace(base).maj.labURL3 <ButtonPress-1> {
          set filename "$caption(confgene,fichier_uai_maj4)"
          ::audace::Lance_Site_htm $filename
       }
-      bind $audace(base).maj.labURL4 <Enter> {
-         $audace(base).maj.labURL4 configure -fg $color(purple)
+      bind $audace(base).maj.labURL3 <Enter> {
+         $audace(base).maj.labURL3 configure -fg $color(purple)
       }
-      bind $audace(base).maj.labURL4 <Leave> {
-         $audace(base).maj.labURL4 configure -fg $color(blue)
+      bind $audace(base).maj.labURL3 <Leave> {
+         $audace(base).maj.labURL3 configure -fg $color(blue)
       }
    }
 
@@ -843,7 +845,7 @@ namespace eval ::confPosObs {
             ::confPosObs::Erreur
          } else {
          #--- Ouverture du fichier des stations UAI
-         set f [open [file join $audace(rep_gui) audace etc $confgene(posobs,fichier_station_uai)] r]
+         set f [open [file join $audace(rep_home) $confgene(posobs,fichier_station_uai)] r]
          #--- Creation d'une liste des stations UAI
          set mpc [split [read $f] "\n"]
          #--- Determine le nombre d'elements de la liste
