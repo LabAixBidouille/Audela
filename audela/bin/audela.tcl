@@ -1,5 +1,5 @@
 #
-# Update $Id: audela.tcl,v 1.20 2010-05-13 17:38:05 robertdelmas Exp $
+# Update $Id: audela.tcl,v 1.21 2010-05-15 07:40:57 robertdelmas Exp $
 #
 #--- Welcome to the AudeLA-Interfaces Easy Launcher
 #
@@ -43,7 +43,12 @@ if {($nameofexecutable!="audela")&&([file exists ../ros]==1)} {
 source version.tcl
 
 #--- Creation du repertoire de configuration d'Aud'ACE
-set ::audace(rep_home) [ file join $::env(HOME) .audela ]
+if { $::tcl_platform(platform) == "unix" } {
+   set ::audace(rep_home) [ file join $::env(HOME) .audela ]
+} else {
+   set applicationData [ ::registry get "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders" AppData ]
+   set ::audace(rep_home) [ file normalize [ file join $applicationData AudeLA ] ]
+}
 if { ! [ file exist $::audace(rep_home) ] } {
    file mkdir $::audace(rep_home)
 }
