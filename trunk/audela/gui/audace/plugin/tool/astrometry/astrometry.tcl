@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: astrometry.tcl,v 1.7 2010-05-09 07:54:17 robertdelmas Exp $
+# Mise à jour $Id: astrometry.tcl,v 1.8 2010-05-15 07:56:51 robertdelmas Exp $
 #
 
 #============================================================
@@ -257,8 +257,13 @@ namespace eval ::astrometry {
       frame $astrom(This).cal.${cal}.fra_1
          label $astrom(This).cal.${cal}.fra_1.lab -text "$caption(astrometry,cal,catfolder)"
          pack $astrom(This).cal.${cal}.fra_1.lab -side left
-         entry $astrom(This).cal.${cal}.fra_1.ent -textvariable ::astrometry::catvalues(catfolder) -width 50
-         pack $astrom(This).cal.${cal}.fra_1.ent -side left -padx 5
+         if { [ string length $::astrometry::catvalues(catfolder) ] < 50 } {
+            set width "50"
+         } else {
+            set width [ string length $::astrometry::catvalues(catfolder) ]
+         }
+         entry $astrom(This).cal.${cal}.fra_1.ent -textvariable ::astrometry::catvalues(catfolder) -width $width
+         pack $astrom(This).cal.${cal}.fra_1.ent -fill x -expand 1 -side left -padx 5
          button $astrom(This).cal.${cal}.fra_1.but -text "$caption(astrometry,cal,parcourir)" \
             -command {
                set d [::astrometry::getdirname]
