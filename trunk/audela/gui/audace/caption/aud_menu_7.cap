@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_7.cap
-# Mise a jour $Id: aud_menu_7.cap,v 1.26 2010-04-18 10:41:59 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.cap,v 1.27 2010-05-15 17:22:17 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -36,6 +36,8 @@ set caption(audace,menu,sauve_config)             "Save Setup"
 
 set caption(cwdWindow,repertoire)                 "Folders"
 set caption(cwdWindow,repertoire_images)          "Image Folder:"
+set caption(cwdWindow,repertoire_travail)         "# Répertoire de travail :"
+set caption(cwdWindow,travail_images)             "# Identique au répertoire des images"
 set caption(cwdWindow,label_sous_rep)             "New Sub-folder"
 set caption(cwdWindow,label_sous_rep,aucun)       "No sub-folders"
 set caption(cwdWindow,label_sous_rep,fixe)        "Sub-folder Name"
@@ -94,6 +96,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cwdWindow,repertoire)              "Répertoires"
    set caption(cwdWindow,repertoire_images)       "Répertoire des images :"
+   set caption(cwdWindow,repertoire_travail)      "Répertoire de travail :"
+   set caption(cwdWindow,travail_images)          "Identique au répertoire des images"
    set caption(cwdWindow,label_sous_rep)          "Nouveau sous-répertoire"
    set caption(cwdWindow,label_sous_rep,aucun)    "Pas de sous-répertoire"
    set caption(cwdWindow,label_sous_rep,fixe)     "Nom du sous-répertoire"
@@ -152,6 +156,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cwdWindow,repertoire)              "Directories"
    set caption(cwdWindow,repertoire_images)       "Directory delle immagini:"
+   set caption(cwdWindow,repertoire_travail)      "# Répertoire de travail :"
+   set caption(cwdWindow,travail_images)          "# Identique au répertoire des images"
    set caption(cwdWindow,label_sous_rep)          "Nuova sotto-cartella"
    set caption(cwdWindow,label_sous_rep,aucun)    "Nessuna sotto-cartella"
    set caption(cwdWindow,label_sous_rep,fixe)     "Nome della sotto-cartella"
@@ -210,6 +216,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cwdWindow,repertoire)              "Directorios"
    set caption(cwdWindow,repertoire_images)       "Directorio de imagenes:"
+   set caption(cwdWindow,repertoire_travail)      "# Répertoire de travail :"
+   set caption(cwdWindow,travail_images)          "# Identique au répertoire des images"
    set caption(cwdWindow,label_sous_rep)          "Nueva subcarpeta"
    set caption(cwdWindow,label_sous_rep,aucun)    "No subcarpeta"
    set caption(cwdWindow,label_sous_rep,fixe)     "Nombre de subcarpeta"
@@ -268,6 +276,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cwdWindow,repertoire)              "Verzeichnis"
    set caption(cwdWindow,repertoire_images)       "Bilder Verzeichnis:"
+   set caption(cwdWindow,repertoire_travail)      "# Répertoire de travail :"
+   set caption(cwdWindow,travail_images)          "# Identique au répertoire des images"
    set caption(cwdWindow,label_sous_rep)          "Neuer Unter-Verzeichnis"
    set caption(cwdWindow,label_sous_rep,aucun)    "Kein Unter-Verzeichnis"
    set caption(cwdWindow,label_sous_rep,fixe)     "Unter-Verzeichnis Namen"
@@ -326,6 +336,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cwdWindow,repertoire)              "Pastas"
    set caption(cwdWindow,repertoire_images)       "Pasta das imagens:"
+   set caption(cwdWindow,repertoire_travail)      "# Répertoire de travail :"
+   set caption(cwdWindow,travail_images)          "# Identique au répertoire des images"
    set caption(cwdWindow,label_sous_rep)          "Nova Sub-Pasta"
    set caption(cwdWindow,label_sous_rep,aucun)    "Nenhuma sub-pasta"
    set caption(cwdWindow,label_sous_rep,fixe)     "Nome da sub-pasta"
@@ -384,6 +396,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cwdWindow,repertoire)              "Mappe"
    set caption(cwdWindow,repertoire_images)       "Billedmappe:"
+   set caption(cwdWindow,repertoire_travail)      "# Répertoire de travail :"
+   set caption(cwdWindow,travail_images)          "# Identique au répertoire des images"
    set caption(cwdWindow,label_sous_rep)          "Ny undermappe"
    set caption(cwdWindow,label_sous_rep,aucun)    "Ingen undermapper"
    set caption(cwdWindow,label_sous_rep,fixe)     "Navn på undermappe"
@@ -442,6 +456,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cwdWindow,repertoire)              "Folders"
    set caption(cwdWindow,repertoire_images)       "Image Folder:"
+   set caption(cwdWindow,repertoire_travail)      "# Répertoire de travail :"
+   set caption(cwdWindow,travail_images)          "# Identique au répertoire des images"
    set caption(cwdWindow,label_sous_rep)          "New Sub-folder"
    set caption(cwdWindow,label_sous_rep,aucun)    "No sub-folders"
    set caption(cwdWindow,label_sous_rep,fixe)     "Sub-folder Name"
@@ -500,6 +516,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cwdWindow,repertoire)              "Folders"
    set caption(cwdWindow,repertoire_images)       "Image Folder:"
+   set caption(cwdWindow,repertoire_travail)      "# Répertoire de travail :"
+   set caption(cwdWindow,travail_images)          "# Identique au répertoire des images"
    set caption(cwdWindow,label_sous_rep)          "New Sub-folder"
    set caption(cwdWindow,label_sous_rep,aucun)    "No sub-folders"
    set caption(cwdWindow,label_sous_rep,fixe)     "Sub-folder Name"
