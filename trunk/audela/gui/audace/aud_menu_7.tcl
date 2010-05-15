@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise à jour $Id: aud_menu_7.tcl,v 1.25 2010-05-13 17:45:45 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_7.tcl,v 1.26 2010-05-15 07:49:56 robertdelmas Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -27,7 +27,7 @@ namespace eval ::cwdWindow {
          set cwdWindow(rep_images,refModeAuto) $::conf(rep_images,refModeAuto)
          set cwdWindow(rep_images,subdir)      $::conf(rep_images,subdir)
          set cwdWindow(dir_scripts)            [file nativename $audace(rep_scripts)]
-         set cwdWindow(dir_catalogues)         [file nativename $audace(rep_catalogues)]
+         set cwdWindow(dir_catalogues)         [file nativename $audace(rep_userCatalog)]
          set cwdWindow(long)                   [string length $cwdWindow(dir_images)]
          if {[string length $cwdWindow(dir_scripts)] > $cwdWindow(long)} {
             set cwdWindow(long) [string length $cwdWindow(dir_scripts)]
@@ -74,9 +74,9 @@ namespace eval ::cwdWindow {
       wm title $This "$caption(cwdWindow,repertoire)"
       wm protocol $This WM_DELETE_WINDOW ::cwdWindow::cmdClose
       #--- Initialisation des variables de changement
-      set cwdWindow(rep_images)     "0"
-      set cwdWindow(rep_scripts)    "0"
-      set cwdWindow(rep_catalogues) "0"
+      set cwdWindow(rep_images)      "0"
+      set cwdWindow(rep_scripts)     "0"
+      set cwdWindow(rep_userCatalog) "0"
       #---
       frame $This.usr -borderwidth 0 -relief raised
          frame $This.usr.1 -borderwidth 1 -relief raised
@@ -159,7 +159,7 @@ namespace eval ::cwdWindow {
             label $This.usr.3.lab3 -text "$caption(cwdWindow,repertoire_catalogues)"
             pack $This.usr.3.lab3 -side left -padx 5 -pady 5
             button $This.usr.3.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
-               -command ::cwdWindow::change_rep_catalogues
+               -command ::cwdWindow::change_rep_userCatalog
             pack $This.usr.3.explore -side right -padx 5 -pady 5 -ipady 5
             entry $This.usr.3.ent3 -textvariable cwdWindow(dir_catalogues) -width $cwdWindow(long)
             pack $This.usr.3.ent3 -side right -padx 5 -pady 5
@@ -261,10 +261,10 @@ namespace eval ::cwdWindow {
    }
 
    #
-   # ::cwdWindow::change_rep_catalogues
+   # ::cwdWindow::change_rep_userCatalog
    # Ouvre le navigateur pour choisir le repertoire des catalogues
    #
-   proc change_rep_catalogues { } {
+   proc change_rep_userCatalog { } {
       variable This
       global audace caption cwdWindow
 
@@ -273,7 +273,7 @@ namespace eval ::cwdWindow {
       #--- Transformation de la police en italique
       set cwdWindow(rep_font_italic) [ lreplace $cwdWindow(rep_font) 2 2 italic ]
       #---
-      set cwdWindow(rep_catalogues) "1"
+      set cwdWindow(rep_userCatalog) "1"
       $This.usr.3.ent3 configure -font $cwdWindow(rep_font_italic) -relief solid
       set initialdir [file normalize $cwdWindow(dir_catalogues)]
       set title $caption(cwdWindow,repertoire_catalogues)
@@ -297,8 +297,8 @@ namespace eval ::cwdWindow {
          set cwdWindow(rep_images) "0"
       } elseif { $cwdWindow(rep_scripts) == "1" } {
          set cwdWindow(rep_scripts) "0"
-      } elseif { $cwdWindow(rep_catalogues) == "1" } {
-         set cwdWindow(rep_catalogues) "0"
+      } elseif { $cwdWindow(rep_userCatalog) == "1" } {
+         set cwdWindow(rep_userCatalog) "0"
       }
       set res [ tk_chooseDirectory -title "$title" -initialdir "$inidir" -parent "$parent" ]
       if {$res==""} {
@@ -386,8 +386,8 @@ namespace eval ::cwdWindow {
       }
 
       if {[file exists $normalized_dir_catalogues] && [file isdirectory $normalized_dir_catalogues]} {
-         set conf(rep_catalogues)   $normalized_dir_catalogues
-         set audace(rep_catalogues) $normalized_dir_catalogues
+         set conf(rep_userCatalog)   $normalized_dir_catalogues
+         set audace(rep_userCatalog) $normalized_dir_catalogues
       } else {
          set m "$cwdWindow(dir_catalogues)"
          append m "$caption(cwdWindow,pas_repertoire)"
