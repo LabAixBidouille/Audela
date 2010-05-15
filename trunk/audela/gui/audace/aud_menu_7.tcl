@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise à jour $Id: aud_menu_7.tcl,v 1.26 2010-05-15 07:49:56 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_7.tcl,v 1.27 2010-05-15 17:24:22 robertdelmas Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -22,20 +22,28 @@ namespace eval ::cwdWindow {
          wm deiconify $This
          focus $This
       } else {
+         if { ! [ info exists ::conf(rep_travail,travail_images) ] } { set ::conf(rep_travail,travail_images) "0" }
          set cwdWindow(dir_images)             [file nativename $::conf(rep_images)]
          set cwdWindow(rep_images,mode)        $::conf(rep_images,mode)
          set cwdWindow(rep_images,refModeAuto) $::conf(rep_images,refModeAuto)
          set cwdWindow(rep_images,subdir)      $::conf(rep_images,subdir)
+         set cwdWindow(dir_travail)            [file nativename $::audace(rep_travail)]
+         set cwdWindow(travail_images)         $::conf(rep_travail,travail_images)
          set cwdWindow(dir_scripts)            [file nativename $audace(rep_scripts)]
          set cwdWindow(dir_catalogues)         [file nativename $audace(rep_userCatalog)]
          set cwdWindow(long)                   [string length $cwdWindow(dir_images)]
+         if {[string length $cwdWindow(dir_images)] > $cwdWindow(long)} {
+            set cwdWindow(long) [string length $cwdWindow(dir_images)]
+         }
+         if {[string length $cwdWindow(dir_travail)] > $cwdWindow(long)} {
+            set cwdWindow(long) [string length $cwdWindow(dir_travail)]
+         }
          if {[string length $cwdWindow(dir_scripts)] > $cwdWindow(long)} {
             set cwdWindow(long) [string length $cwdWindow(dir_scripts)]
          }
          if {[string length $cwdWindow(dir_catalogues)] > $cwdWindow(long)} {
             set cwdWindow(long) [string length $cwdWindow(dir_catalogues)]
          }
-         set cwdWindow(long) [expr $cwdWindow(long) + 10]
 
          #--- je calcule la date du jour (a partir de l'heure TU)
          if { $cwdWindow(rep_images,refModeAuto) == "0" } {
@@ -67,41 +75,35 @@ namespace eval ::cwdWindow {
       #--- Nom du sous-repertoire
       set date [clock format [clock seconds] -format "%y%m%d"]
       set cwdWindow(sous_repertoire) $date
+
       #---
       toplevel $This
       wm geometry $This +180+50
       wm resizable $This 0 0
       wm title $This "$caption(cwdWindow,repertoire)"
       wm protocol $This WM_DELETE_WINDOW ::cwdWindow::cmdClose
+
       #--- Initialisation des variables de changement
       set cwdWindow(rep_images)      "0"
+      set cwdWindow(rep_travail)     "0"
       set cwdWindow(rep_scripts)     "0"
       set cwdWindow(rep_userCatalog) "0"
-      #---
+
+      #--- Frame pour les repertoires
       frame $This.usr -borderwidth 0 -relief raised
+
+         #--- Frame du répertoire images
          frame $This.usr.1 -borderwidth 1 -relief raised
             frame $This.usr.1.a -borderwidth 0 -relief raised
                label $This.usr.1.a.lab1 -text "$caption(cwdWindow,repertoire_images)"
                pack $This.usr.1.a.lab1 -side left -padx 5 -pady 5
                button $This.usr.1.a.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
-                  -command ::cwdWindow::change_rep_images
+                  -command ::cwdWindow::changeRepImages
                pack $This.usr.1.a.explore -side right -padx 5 -pady 5 -ipady 5
                entry $This.usr.1.a.ent1 -textvariable cwdWindow(dir_images) -width $cwdWindow(long)
                pack $This.usr.1.a.ent1 -side right -padx 5 -pady 5
             pack $This.usr.1.a -side top -fill both -expand 1
-           ### frame $This.usr.1.b -borderwidth 0 -relief raised
-           ###    #--- Label nouveau sous-repertoire
-           ###    label $This.usr.1.b.label_sous_rep -text "$caption(cwdWindow,label_sous_rep)"
-           ###    pack $This.usr.1.b.label_sous_rep -side left -padx 5 -pady 5
-           ###    #--- Entry nouveau sous-repertoire
-           ###    entry $This.usr.1.b.ent_sous_rep -textvariable cwdWindow(sous_repertoire) -width 30
-           ###    pack $This.usr.1.b.ent_sous_rep -side left -padx 5 -pady 5
-           ###    #--- Button creation du sous-repertoire
-           ###    button $This.usr.1.b.button_sous_rep -text "$caption(cwdWindow,creation_sous_rep)" -width 7 \
-           ###       -command ::cwdWindow::cmdCreateSubDir
-           ###    pack $This.usr.1.b.button_sous_rep -side left -padx 5 -pady 5 -ipady 5
-           ### pack $This.usr.1.b -side top -fill both -expand 1
-            #--- Frame du titre et de la configuration
+            #---
             frame $This.usr.1.subdir -borderwidth 0 -relief groove
                #--- pas de sous repertoire
                radiobutton $This.usr.1.subdir.noneButton -highlightthickness 0 -state normal \
@@ -109,7 +111,6 @@ namespace eval ::cwdWindow {
                   -value "none" \
                   -variable cwdWindow(rep_images,mode)
                grid $This.usr.1.subdir.noneButton -row 0 -column 0 -sticky wn
-
                #--- sous repertoire manuel
                radiobutton $This.usr.1.subdir.manualButton -highlightthickness 0 -state normal \
                   -text "$::caption(cwdWindow,label_sous_rep,fixe)" \
@@ -119,7 +120,6 @@ namespace eval ::cwdWindow {
                #--- Entry nouveau sous-repertoire
                entry $This.usr.1.subdir.manualEntry -textvariable cwdWindow(sous_repertoire) -width 30
                grid $This.usr.1.subdir.manualEntry -row 1 -column 3 -sticky wn
-
                #--- sous repertoire automatique (date du jour)
                radiobutton $This.usr.1.subdir.dateButton -highlightthickness 0 -state normal \
                   -text "$::caption(cwdWindow,label_sous_rep,date)" \
@@ -142,30 +142,55 @@ namespace eval ::cwdWindow {
                entry $This.usr.1.subdir.dateEntry -textvariable cwdWindow(sous_repertoire_date) -width 12 \
                   -state readonly
                grid $This.usr.1.subdir.dateEntry -row 2 -column 3 -sticky wn
-
             pack $This.usr.1.subdir -side top -fill x -padx 12
-
          pack $This.usr.1 -side top -fill both -expand 1
+
+         #--- Frame du répertoire de travail
+         frame $This.usr.1a -borderwidth 1 -relief raised
+            frame $This.usr.1a.a -borderwidth 0 -relief raised
+               label $This.usr.1a.a.lab1a -text "$caption(cwdWindow,repertoire_travail)"
+               pack $This.usr.1a.a.lab1a -side left -padx 5 -pady 5
+               button $This.usr.1a.a.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
+                  -command ::cwdWindow::changeRepTravail
+               pack $This.usr.1a.a.explore -side right -padx 5 -pady 5 -ipady 5
+               entry $This.usr.1a.a.ent1a -textvariable cwdWindow(dir_travail) -width $cwdWindow(long)
+               pack $This.usr.1a.a.ent1a -side right -padx 5 -pady 5
+            pack $This.usr.1a.a -side top -fill both -expand 1
+            frame $This.usr.1a.b -borderwidth 0 -relief raised
+               checkbutton $This.usr.1a.b.check1 -text "$caption(cwdWindow,travail_images)" \
+                  -highlightthickness 0 -variable cwdWindow(travail_images) \
+                  -command ::cwdWindow::changeState
+               pack $This.usr.1a.b.check1 -anchor w -side left -padx 20 -pady 5
+            pack $This.usr.1a.b -side top -fill both -expand 1
+         pack $This.usr.1a -side top -fill both -expand 1
+         #--- Configuration des widgets du repertoire de travail
+         ::cwdWindow::changeState
+
+         #--- Frame du répertoire des scripts
          frame $This.usr.2 -borderwidth 1 -relief raised
             label $This.usr.2.lab2 -text "$caption(cwdWindow,repertoire_scripts)"
             pack $This.usr.2.lab2 -side left -padx 5 -pady 5
             button $This.usr.2.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
-               -command ::cwdWindow::change_rep_scripts
+               -command ::cwdWindow::changeRepScripts
             pack $This.usr.2.explore -side right -padx 5 -pady 5 -ipady 5
             entry $This.usr.2.ent2 -textvariable cwdWindow(dir_scripts) -width $cwdWindow(long)
             pack $This.usr.2.ent2 -side right -padx 5 -pady 5
          pack $This.usr.2 -side top -fill both -expand 1
+
+         #--- Frame du répertoire des catalogues
          frame $This.usr.3 -borderwidth 1 -relief raised
             label $This.usr.3.lab3 -text "$caption(cwdWindow,repertoire_catalogues)"
             pack $This.usr.3.lab3 -side left -padx 5 -pady 5
             button $This.usr.3.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
-               -command ::cwdWindow::change_rep_userCatalog
+               -command ::cwdWindow::changeRepUserCatalog
             pack $This.usr.3.explore -side right -padx 5 -pady 5 -ipady 5
             entry $This.usr.3.ent3 -textvariable cwdWindow(dir_catalogues) -width $cwdWindow(long)
             pack $This.usr.3.ent3 -side right -padx 5 -pady 5
          pack $This.usr.3 -side top -fill both -expand 1
+
       pack $This.usr -side top -fill both -expand 1
-      #---
+
+      #--- Frame pour les boutons
       frame $This.cmd -borderwidth 1 -relief raised
          button $This.cmd.ok -text "$caption(aud_menu_7,ok)" -width 7 \
             -command ::cwdWindow::cmdOk
@@ -182,13 +207,17 @@ namespace eval ::cwdWindow {
             -command ::cwdWindow::afficheAide
          pack $This.cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
       pack $This.cmd -side top -fill x
+
       #---
       bind $This <Key-Return> {::cwdWindow::cmdOk}
       bind $This <Key-Escape> {::cwdWindow::cmdClose}
+
       #--- La fenetre est active
       focus $This
+
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
       bind $This <Key-F1> { ::console::GiveFocus }
+
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
    }
@@ -215,11 +244,11 @@ namespace eval ::cwdWindow {
    }
 
    #
-   # ::cwdWindow::change_rep_images
+   # ::cwdWindow::changeRepImages
    # Ouvre le navigateur pour choisir le repertoire des images
    #
-   proc change_rep_images { } {
-      variable This
+   proc changeRepImages { } {
+     variable This
       global audace caption cwdWindow
 
       #--- Recuperation de la police par defaut des entry
@@ -238,10 +267,33 @@ namespace eval ::cwdWindow {
    }
 
    #
-   # ::cwdWindow::change_rep_scripts
+   # ::cwdWindow::changeRepTravail
+   # Ouvre le navigateur pour choisir le repertoire de travail
+   #
+   proc changeRepTravail { } {
+      variable This
+      global audace caption cwdWindow
+
+      #--- Recuperation de la police par defaut des entry
+      set cwdWindow(rep_font) $audace(font,Entry)
+      #--- Transformation de la police en italique
+      set cwdWindow(rep_font_italic) [ lreplace $cwdWindow(rep_font) 2 2 italic ]
+      #---
+      set cwdWindow(rep_travail) "1"
+      $This.usr.1a.a.ent1a configure -font $cwdWindow(rep_font_italic) -relief solid
+      set initialdir [file normalize $cwdWindow(dir_travail)]
+      set title $caption(cwdWindow,repertoire_travail)
+      set cwdWindow(dir_travail) [file nativename [::cwdWindow::tkplus_chooseDir $initialdir $title $This ]]
+      $This.usr.1a.a.ent1a configure -textvariable cwdWindow(dir_travail) -width $cwdWindow(long) \
+         -font $cwdWindow(rep_font) -relief sunken
+      focus $This.usr.1a.a
+   }
+
+   #
+   # ::cwdWindow::changeRepScripts
    # Ouvre le navigateur pour choisir le repertoire des scripts
    #
-   proc change_rep_scripts { } {
+   proc changeRepScripts { } {
       variable This
       global audace caption cwdWindow
 
@@ -261,10 +313,10 @@ namespace eval ::cwdWindow {
    }
 
    #
-   # ::cwdWindow::change_rep_userCatalog
+   # ::cwdWindow::changeRepUserCatalog
    # Ouvre le navigateur pour choisir le repertoire des catalogues
    #
-   proc change_rep_userCatalog { } {
+   proc changeRepUserCatalog { } {
       variable This
       global audace caption cwdWindow
 
@@ -284,6 +336,25 @@ namespace eval ::cwdWindow {
    }
 
    #
+   # ::cwdWindow::changeState
+   # Change l'etat du widget : Disabled - Normal
+   #
+   proc changeState { } {
+      variable This
+      global cwdWindow
+
+      if { $cwdWindow(travail_images) == "0" } {
+         $This.usr.1a.a.ent1a configure -state normal
+         $This.usr.1a.a.explore configure -state normal
+         set cwdWindow(dir_travail) [file nativename $::audace(rep_travail)]
+      } elseif { $cwdWindow(travail_images) == "1" } {
+         $This.usr.1a.a.ent1a configure -state disabled
+         $This.usr.1a.a.explore configure -state disabled
+         set cwdWindow(dir_travail) $cwdWindow(dir_images)
+      }
+   }
+
+   #
    # ::cwdWindow::tkplus_chooseDir [inidir] [title] [parent]
    # Navigateur pour le choix des repertoires
    #
@@ -295,6 +366,8 @@ namespace eval ::cwdWindow {
       }
       if { $cwdWindow(rep_images) == "1" } {
          set cwdWindow(rep_images) "0"
+      } elseif { $cwdWindow(rep_travail) == "1" } {
+         set cwdWindow(rep_travail) "0"
       } elseif { $cwdWindow(rep_scripts) == "1" } {
          set cwdWindow(rep_scripts) "0"
       } elseif { $cwdWindow(rep_userCatalog) == "1" } {
@@ -327,6 +400,7 @@ namespace eval ::cwdWindow {
 
       #--- Substituer les \ par des /
       set normalized_dir_images     [file normalize $cwdWindow(dir_images)]
+      set normalized_dir_travail    [file normalize $cwdWindow(dir_travail)]
       set normalized_dir_scripts    [file normalize $cwdWindow(dir_scripts)]
       set normalized_dir_catalogues [file normalize $cwdWindow(dir_catalogues)]
 
@@ -373,6 +447,29 @@ namespace eval ::cwdWindow {
          set ::conf(rep_images,mode)        $cwdWindow(rep_images,mode)
          set ::conf(rep_images,refModeAuto) $cwdWindow(rep_images,refModeAuto)
          set ::audace(rep_images)           $dirName
+      }
+
+      if {[file exists $normalized_dir_travail] && [file isdirectory $normalized_dir_travail]} {
+         set conf(rep_travail)                $normalized_dir_travail
+         set audace(rep_travail)              $normalized_dir_travail
+         set conf(rep_travail,travail_images) $cwdWindow(travail_images)
+         #--- On se place dans le nouveau repertoire de travail
+         cd $audace(rep_travail)
+         #--- On cree les fichiers de configuration de Sextractor s'ils n'existent pas
+         if { [ file exist [ file join . config.param ] ] == "0" } {
+            sextractor_config_param [ file join . config.param ]
+         }
+         if { [ file exist [ file join . config.sex ] ] == "0" } {
+            sextractor_config_sex [ file join . config.sex ]
+         }
+         if { [ file exist [ file join . default.nnw ] ] == "0" } {
+            sextractor_default_nnw [ file join . default.nnw ]
+         }
+      } else {
+         set m "$cwdWindow(dir_travail)"
+         append m "$caption(cwdWindow,pas_repertoire)"
+         tk_messageBox -message $m -title "$caption(cwdWindow,boite_erreur)"
+         return -1
       }
 
       if {[file exists $normalized_dir_scripts] && [file isdirectory $normalized_dir_scripts]} {
@@ -464,7 +561,7 @@ namespace eval ::cwdWindow {
 
 }
 
-########################### Fin du namespace cwdWindow ###########################
+########################### Fin du namespace cwdWindow ############################
 
 namespace eval ::confEditScript {
 
