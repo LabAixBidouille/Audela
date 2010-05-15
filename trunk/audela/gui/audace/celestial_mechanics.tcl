@@ -2,7 +2,7 @@
 # Fichier : celestial_mechanics.tcl
 # Description : Outils pour le calcul de coordonnees celestes
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: celestial_mechanics.tcl,v 1.3 2010-05-09 07:51:16 robertdelmas Exp $
+# Mise à jour $Id: celestial_mechanics.tcl,v 1.4 2010-05-15 07:55:33 robertdelmas Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -39,7 +39,7 @@ proc name2coord { args } {
    set found 0
    # --- star names
    if {$found==0} {
-      set f [open [file join $audace(rep_gui) audace etc catagoto etoiles_brillantes.txt] r]
+      set f [open [file join $audace(rep_gui) audace catalogues catagoto etoiles_brillantes.txt] r]
       set lignes [split [read $f] \n]
       close $f
       set name0 [string tolower $name0]
@@ -66,7 +66,7 @@ proc name2coord { args } {
    }
    # --- Messier
    if {$found==0} {
-      set f [open [file join $audace(rep_gui) audace etc catagoto cat_messier.txt] r]
+      set f [open [file join $audace(rep_gui) audace catalogues catagoto cat_messier.txt] r]
       set lignes [split [read $f] \n]
       close $f
       set name0 [string toupper $name0]
@@ -92,7 +92,7 @@ proc name2coord { args } {
    }
    # --- NGC
    if {$found==0} {
-      set f [open [file join $audace(rep_gui) audace etc catagoto cat_ngc.txt] r]
+      set f [open [file join $audace(rep_gui) audace catalogues catagoto cat_ngc.txt] r]
       set lignes [split [read $f] \n]
       close $f
       set name0 [string toupper $name0]
@@ -117,7 +117,7 @@ proc name2coord { args } {
    }
    # --- IC
    if {$found==0} {
-      set f [open [file join $audace(rep_gui) audace etc catagoto cat_ic.txt] r]
+      set f [open [file join $audace(rep_gui) audace catalogues catagoto cat_ic.txt] r]
       set lignes [split [read $f] \n]
       close $f
       set name0 [string toupper $name0]
