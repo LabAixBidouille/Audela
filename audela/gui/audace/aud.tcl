@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.132 2010-05-15 08:08:06 robertdelmas Exp $
+# Mise à jour $Id: aud.tcl,v 1.133 2010-05-15 17:25:52 robertdelmas Exp $
 #
 
 #--- Chargement du package BWidget
@@ -75,8 +75,10 @@ namespace eval ::audace {
 
       #--- Utilisation de la Console
       set audace(Console) ".console"
+
       #--- Initialisation de la variable de fermeture
       set audace(quitterEnCours) "0"
+
       #--- Initialisation de variables pour la fenetre Editeurs...
       set confgene(EditScript,error_script) "1"
       set confgene(EditScript,error_pdf)    "1"
@@ -84,23 +86,10 @@ namespace eval ::audace {
       set confgene(EditScript,error_viewer) "1"
       set confgene(EditScript,error_java)   "1"
       set confgene(EditScript,error_aladin) "1"
-      #--- On retourne dans le repertoire principal
+
+      #--- On retourne dans le repertoire gui
       cd ..
       set audace(rep_gui) [pwd]
-      if { $::tcl_platform(os) == "Linux" } {
-         set audace(rep_travail) [ file join $::env(HOME) audela ]
-      } else {
-         set mesDocuments [ ::registry get "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders" Personal ]
-         set audace(rep_travail) [ file normalize [ file join $mesDocuments audela ] ]
-      }
-      if { ! [ file exists $audace(rep_travail) ] } {
-         file mkdir $::audace(rep_travail)
-      }
-      cd $audace(rep_travail)
-      #--- Repertoire d'installation
-      set audace(rep_install) [ file normalize [ file join $audace(rep_gui) .. ] ]
-      #--- Chargement de la configuration
-      loadSetup
 
       #--- Repertoire des captions
       set audace(rep_caption) [ file join $audace(rep_gui) audace caption ]
@@ -128,7 +117,35 @@ namespace eval ::audace {
       #--- Creation de la console
       ::console::create
 
-      #--- Chargement du repertoire des images
+      #--- Chargement de la configuration
+      loadSetup
+
+      #--- Creation du repertoire de travail
+      set catchError [ catch {
+         if { ! [ info exists conf(rep_travail) ] } {
+            if { $::tcl_platform(os) == "Linux" } {
+               set conf(rep_travail) [ file join $::env(HOME) audela ]
+            } else {
+               set mesDocuments [ ::registry get "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders" Personal ]
+               set conf(rep_travail) [ file normalize [ file join $mesDocuments audela ] ]
+            }
+         }
+         if { ! [ file exists $conf(rep_travail) ] } {
+            file mkdir $conf(rep_travail)
+         }
+         set audace(rep_travail) $conf(rep_travail)
+      } ]
+      if { $catchError != "0" } {
+         ::console::affiche_erreur "$::errorInfo\n"
+      }
+
+      #--- On retourne dans le repertoire de travail
+      cd $audace(rep_travail)
+
+      #--- Repertoire d'installation
+      set audace(rep_install) [ file normalize [ file join $audace(rep_gui) .. ] ]
+
+      #--- Creation du repertoire des images
       set catchError [ catch {
          if { ! [ info exists conf(rep_images) ] } {
             set conf(rep_images) [ file join $audace(rep_travail) images ]
@@ -197,7 +214,7 @@ namespace eval ::audace {
          }
       }
 
-      #--- Chargement du repertoire des scripts
+      #--- Creation du repertoire des scripts
       set catchError [ catch {
          if { ! [ info exists conf(rep_scripts) ] } {
             set conf(rep_scripts) [ file join $audace(rep_home) scripts ]
@@ -226,7 +243,7 @@ namespace eval ::audace {
       #--- Repertoire des catalogues d'Aud'ACE
       set audace(rep_catalogues) [ file join $audace(rep_gui) audace catalogues ]
 
-      #--- Chargement du repertoire des catalogues
+      #--- Creation du repertoire des catalogues
       set catchError [ catch {
          if { ! [ info exists conf(rep_userCatalog) ] } {
             set conf(rep_userCatalog) [ file join $audace(rep_home) catalog ]
