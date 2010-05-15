@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise à jour $Id: catagoto.tcl,v 1.37 2010-05-09 07:36:55 robertdelmas Exp $
+# Mise à jour $Id: catagoto.tcl,v 1.38 2010-05-15 07:54:42 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -1199,7 +1199,7 @@ namespace eval cataGoto {
       set cataGoto(carte,dec) ""
 
       #--- Ouverture du catalogue des objets choisis
-      set f [open [file join $audace(rep_gui) audace etc catagoto $catalogue(objet)] r]
+      set f [open [file join $audace(rep_gui) audace catalogues catagoto $catalogue(objet)] r]
       #--- Creation d'une liste des objets
       set objet [split [read $f] "\n"]
       #--- Determine le nombre d'elements de la liste
@@ -1565,7 +1565,7 @@ namespace eval cataGoto {
       global audace etbrillante tableEtBrillante zone
 
       #--- Ouverture du catalogue des etoiles
-      set f [open [file join $audace(rep_gui) audace etc catagoto etoiles_brillantes.txt] r]
+      set f [open [file join $audace(rep_gui) audace catalogues catagoto etoiles_brillantes.txt] r]
       #--- Creation d'une liste des etoiles
       set etbrillante [split [read $f] "\n"]
       #--- Determine le nombre d'elements de la liste
@@ -1651,7 +1651,7 @@ namespace eval cataGoto {
       set fenetre "$audace(base)"
 
       #--- Ouvre la fenetre de configuration du choix du catalogue utilisateur
-      set catalogue(utilisateur) [ ::tkutil::box_load $fenetre $audace(rep_catalogues) $audace(bufNo) "5" ]
+      set catalogue(utilisateur) [ ::tkutil::box_load $fenetre $audace(rep_userCatalog) $audace(bufNo) "5" ]
 
       #--- Ouverture de la fenetre de choix des objets
       if { $catalogue(utilisateur) != "" } {
@@ -1923,7 +1923,7 @@ namespace eval cataGoto {
       global audace catalogue objetUtilisateur zone
 
       #--- Ouverture du catalogue des objets utilisateur
-      set f [open [file join $audace(rep_catalogues) $catalogue(utilisateur)] r]
+      set f [open [file join $audace(rep_userCatalog) $catalogue(utilisateur)] r]
       #--- Creation d'une liste des objets utilisateur
       set objetUtilisateur [split [read $f] "\n"]
       #--- Determine le nombre d'elements de la liste
