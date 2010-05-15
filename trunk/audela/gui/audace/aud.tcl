@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.131 2010-05-13 17:45:08 robertdelmas Exp $
+# Mise à jour $Id: aud.tcl,v 1.132 2010-05-15 08:08:06 robertdelmas Exp $
 #
 
 #--- Chargement du package BWidget
@@ -101,18 +101,52 @@ namespace eval ::audace {
       set audace(rep_install) [ file normalize [ file join $audace(rep_gui) .. ] ]
       #--- Chargement de la configuration
       loadSetup
+
+      #--- Repertoire des captions
+      set audace(rep_caption) [ file join $audace(rep_gui) audace caption ]
+
+      #--- Chargement des legendes et textes pour differentes langues
+      source [ file join $audace(rep_caption) caption.cap ]
+      source [ file join $audace(rep_caption) aud_menu_1.cap ]
+      source [ file join $audace(rep_caption) aud_menu_2.cap ]
+      source [ file join $audace(rep_caption) aud_menu_3.cap ]
+      source [ file join $audace(rep_caption) aud_menu_4.cap ]
+      source [ file join $audace(rep_caption) aud_menu_5.cap ]
+      source [ file join $audace(rep_caption) aud_menu_6.cap ]
+      source [ file join $audace(rep_caption) aud_menu_7.cap ]
+      source [ file join $audace(rep_caption) aud_menu_8.cap ]
+      source [ file join $audace(rep_caption) confgene.cap ]
+      source [ file join $audace(rep_caption) confgene_en-tete.cap ]
+      source [ file join $audace(rep_caption) confgene_touche.cap ]
+      source [ file join $audace(rep_caption) bifsconv.cap ]
+      source [ file join $audace(rep_caption) compute_stellaire.cap ]
+      source [ file join $audace(rep_caption) divers.cap ]
+      source [ file join $audace(rep_caption) iris.cap ]
+      source [ file join $audace(rep_caption) filtrage.cap ]
+      source [ file join $audace(rep_caption) poly.cap ]
+
+      #--- Creation de la console
+      ::console::create
+
       #--- Chargement du repertoire des images
-      if { [ info exists conf(rep_images) ] } {
-         if { [ file exists "$conf(rep_images)" ] } {
-            set audace(rep_images) "$conf(rep_images)"
-         } else {
-            set audace(rep_images) [ file join $audace(rep_travail) images ]
-            set conf(rep_images)   [ file join $audace(rep_travail) images ]
+      set catchError [ catch {
+         if { ! [ info exists conf(rep_images) ] } {
+            set conf(rep_images) [ file join $audace(rep_travail) images ]
          }
-      } else {
-         set audace(rep_images) [ file join $audace(rep_travail) images ]
-         set conf(rep_images)   [ file join $audace(rep_travail) images ]
+         if { ! [ file exists $conf(rep_images) ] } {
+            file mkdir $conf(rep_images)
+            set filelist [ glob -nocomplain -type f -join $audace(rep_install) images *.* ]
+            foreach fileName $filelist {
+               file copy $fileName [ file join $conf(rep_images) [ file tail $fileName ] ]
+            }
+         }
+         set audace(rep_images) $conf(rep_images)
+      } ]
+      if { $catchError != "0" } {
+         ::console::affiche_erreur "$::errorInfo\n"
       }
+
+      #--- Initialisation le mode de creation du sous-repertoire des images
       if { ! [info exists conf(rep_images,mode) ] } {
          set conf(rep_images,mode) "none"
       }
@@ -164,64 +198,59 @@ namespace eval ::audace {
       }
 
       #--- Chargement du repertoire des scripts
-      if { [ info exists conf(rep_scripts) ] } {
-         if { [ file exists "$conf(rep_scripts)" ] } {
-            set audace(rep_scripts) "$conf(rep_scripts)"
-         } else {
-            set audace(rep_scripts) [ file join $audace(rep_travail) scripts ]
-            set conf(rep_scripts)   [ file join $audace(rep_travail) scripts ]
+      set catchError [ catch {
+         if { ! [ info exists conf(rep_scripts) ] } {
+            set conf(rep_scripts) [ file join $audace(rep_home) scripts ]
          }
-      } else {
-         set audace(rep_scripts) [ file join $audace(rep_travail) scripts ]
-         set conf(rep_scripts)   [ file join $audace(rep_travail) scripts ]
+         if { ! [ file exists $conf(rep_scripts) ] } {
+            file mkdir $conf(rep_scripts)
+            set filelist [ glob -nocomplain -type f -join $audace(rep_gui) audace scripts *.* ]
+            foreach fileName $filelist {
+               file copy $fileName [ file join $conf(rep_scripts) [ file tail $fileName ] ]
+            }
+            set replist [ glob -nocomplain -type d -join $audace(rep_gui) audace scripts * ]
+            foreach repName $replist {
+               file mkdir [ file join $conf(rep_scripts) [ file tail $repName ] ]
+               set filelist [ glob -nocomplain -type f -join $repName *.* ]
+               foreach fileName $filelist {
+                  file copy $fileName [ file join $conf(rep_scripts) [ file tail $repName ] [ file tail $fileName ] ]
+               }
+            }
+         }
+         set audace(rep_scripts) $conf(rep_scripts)
+      } ]
+      if { $catchError != "0" } {
+         ::console::affiche_erreur "$::errorInfo\n"
       }
+
+      #--- Repertoire des catalogues d'Aud'ACE
+      set audace(rep_catalogues) [ file join $audace(rep_gui) audace catalogues ]
+
       #--- Chargement du repertoire des catalogues
-      if { [ info exists conf(rep_catalogues) ] } {
-         if { [ file exists "$conf(rep_catalogues)" ] } {
-            set audace(rep_catalogues) "$conf(rep_catalogues)"
-         } else {
-            set audace(rep_catalogues) [ file join $audace(rep_gui) audace catalogues ]
-            set conf(rep_catalogues)   [ file join $audace(rep_gui) audace catalogues ]
+      set catchError [ catch {
+         if { ! [ info exists conf(rep_userCatalog) ] } {
+            set conf(rep_userCatalog) [ file join $audace(rep_home) catalog ]
          }
-      } else {
-         set audace(rep_catalogues) [ file join $audace(rep_gui) audace catalogues ]
-         set conf(rep_catalogues)   [ file join $audace(rep_gui) audace catalogues ]
+         if { ! [ file exists $conf(rep_userCatalog) ] } {
+            file mkdir $conf(rep_userCatalog)
+            file copy [ file join $audace(rep_catalogues) readme.txt ] [ file join $conf(rep_userCatalog) readme.txt ]
+            file copy [ file join $audace(rep_catalogues) utilisateur1.txt ] [ file join $conf(rep_userCatalog) utilisateur1.txt ]
+         }
+         file copy -force [ file join $audace(rep_catalogues) obscodes.txt ] [ file join $audace(rep_home) obscodes.txt ]
+         set audace(rep_userCatalog) $conf(rep_userCatalog)
+      } ]
+      if { $catchError != "0" } {
+         ::console::affiche_erreur "$::errorInfo\n"
       }
 
       #--- Repertoire des plugins
       set audace(rep_plugin) [ file join $audace(rep_gui) audace plugin ]
-
-      #--- Repertoire des captions
-      set audace(rep_caption) [ file join $audace(rep_gui) audace caption ]
 
       #--- Repertoire de la documentaion au format html
       set audace(rep_doc_html) [ file join $audace(rep_gui) audace doc_html ]
 
       #--- Repertoire de la documentaion au format pdf
       set audace(rep_doc_pdf) [ file join $audace(rep_gui) audace doc_pdf ]
-
-      #--- Chargement des legendes et textes pour differentes langues
-      source [ file join $audace(rep_caption) caption.cap ]
-      source [ file join $audace(rep_caption) aud_menu_1.cap ]
-      source [ file join $audace(rep_caption) aud_menu_2.cap ]
-      source [ file join $audace(rep_caption) aud_menu_3.cap ]
-      source [ file join $audace(rep_caption) aud_menu_4.cap ]
-      source [ file join $audace(rep_caption) aud_menu_5.cap ]
-      source [ file join $audace(rep_caption) aud_menu_6.cap ]
-      source [ file join $audace(rep_caption) aud_menu_7.cap ]
-      source [ file join $audace(rep_caption) aud_menu_8.cap ]
-      source [ file join $audace(rep_caption) confgene.cap ]
-      source [ file join $audace(rep_caption) confgene_en-tete.cap ]
-      source [ file join $audace(rep_caption) confgene_touche.cap ]
-      source [ file join $audace(rep_caption) bifsconv.cap ]
-      source [ file join $audace(rep_caption) compute_stellaire.cap ]
-      source [ file join $audace(rep_caption) divers.cap ]
-      source [ file join $audace(rep_caption) iris.cap ]
-      source [ file join $audace(rep_caption) filtrage.cap ]
-      source [ file join $audace(rep_caption) poly.cap ]
-
-      #--- Creation de la console
-      ::console::create
 
       #--- Chargement des sources externes
       uplevel #0 "source \"[ file join $audace(rep_gui) audace confcolor.tcl ]\""
