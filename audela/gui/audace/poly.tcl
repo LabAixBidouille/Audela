@@ -1,8 +1,8 @@
 #
 # Fichier : poly.tcl
-# Description : Ce script regroupe des fonctions pour gérer des images FITS polychromes
+# Description : Ce script regroupe des fonctions pour gÃ©rer des images FITS polychromes
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: poly.tcl,v 1.7 2008-06-01 21:40:26 robertdelmas Exp $
+# Mise Ã  jour $Id: poly.tcl,v 1.8 2010-05-16 14:20:43 robertdelmas Exp $
 #
 
 # Documentation : voir le fichier poly.htm dans le dossier doc_html.
@@ -12,14 +12,14 @@ proc seriesApoly {args} {
 
    if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set liste_series [lindex $args 0]
       set nom_poly [lindex $args 1]
 
       # Configuration des options
       set options [lrange $args 2 [expr [llength $args]-1]]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
 
       set rep_index [lsearch -regexp $options_1param "-rep"]
@@ -48,10 +48,10 @@ proc seriesApoly {args} {
          set ext $conf(extension,defaut).gz
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
       if {[compare_index_series $liste_series -rep $in_rep]==1} {
 
-         # Création du buffer temporaire
+         # CrÃ©ation du buffer temporaire
          set num_buf_tmp [buf::create]
          buf$num_buf_tmp extension $conf(extension,defaut)
          set index_serie_max [llength $liste_series]
@@ -76,7 +76,7 @@ proc polyAserie {args} {
 
    if {[syntaxe_args $args 3 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep" "-ex_polyNo"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set nom_poly [lindex $args 0]
       set plan_couleur [lindex $args 1]
       set ex [lindex $args 2]
@@ -84,7 +84,7 @@ proc polyAserie {args} {
       # Configuration des options
       set options [lrange $args 3 [expr [llength $args]-1]]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
 
       set rep_index [lsearch -regexp $options_1param "-rep"]
@@ -119,10 +119,10 @@ proc polyAserie {args} {
          set ex_polyNo 1
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
       if {[poly_nbcouleurs $nom_poly -rep $in_rep -ext $ext]>=$plan_couleur} {
 
-         # Création du buffer temporaire
+         # CrÃ©ation du buffer temporaire
          set num_buf_tmp [buf::create]
          buf$num_buf_tmp extension $conf(extension,defaut)
          foreach index [liste_index $nom_poly -rep $in_rep -ext $ext] {
@@ -142,14 +142,14 @@ proc polyAseries {args} {
 
    if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set nom_poly [lindex $args 0]
       set liste_series [lindex $args 1]
 
       # Configuration des options
       set options [lrange $args 2 [expr [llength $args]-1]]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
 
       set rep_index [lsearch -regexp $options_1param "-rep"]
@@ -178,7 +178,7 @@ proc polyAseries {args} {
          set ext $conf(extension,defaut).gz
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
       if {[poly_nbcouleurs $nom_poly -rep $in_rep -ext $ext]==[llength $liste_series]} {
 
          set index_serie_max [llength $liste_series]
@@ -198,13 +198,13 @@ proc poly_nbcouleurs {args} {
 
    if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set serie [lindex $args 0]
 
       # Configuration des options
       set options [lrange $args 1 [expr [llength $args]-1]]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
 
       set rep_index [lsearch -regexp $options_1param "-rep"]
@@ -223,14 +223,14 @@ proc poly_nbcouleurs {args} {
          set ext $conf(extension,defaut).gz
       }
 
-      # Procédure principale
-      # On sélectionne le fichier que l'on va tester (le dernier de la série)
+      # ProcÃ©dure principale
+      # On sÃ©lectionne le fichier que l'on va tester (le dernier de la sÃ©rie)
       set liste_index [liste_index $serie -rep $rep -ext $ext]
       set index [lindex $liste_index [expr [llength $liste_index]-1]]
       set fichier [file join $rep $serie$index$ext]
       set k 1
       set continuer 1
-      # Création du buffer temporaire
+      # CrÃ©ation du buffer temporaire
       set num_buf_tmp [buf::create]
       buf$num_buf_tmp extension $conf(extension,defaut)
       # Tests
@@ -256,7 +256,7 @@ proc poly_fenetre {args} {
 
    if {[syntaxe_args $args 3 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set in [lindex $args 0]
       set ex [lindex $args 1]
       set coord [lindex $args 2]
@@ -264,7 +264,7 @@ proc poly_fenetre {args} {
       # Configuration des options
       set options [lrange $args 3 [expr [llength $args]-1]]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
 
       set rep_index [lsearch -regexp $options_1param "-rep"]
@@ -293,7 +293,7 @@ proc poly_fenetre {args} {
          set ext $conf(extension,defaut).gz
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
       for {set k 1} {$k<=[poly_nbcouleurs $in -rep $in_rep]} {incr k} {
          serie_fenetre $in $ex $coord -in_rep $in_rep -ex_rep $ex_rep -ext $ext -polyNo $k
       }
@@ -307,14 +307,14 @@ proc poly_souris_fenetre {args} {
 
    if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set in [lindex $args 0]
       set ex [lindex $args 1]
 
       # Configuration des options
       set options [lrange $args 2 [expr [llength $args]-1]]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
 
       set rep_index [lsearch -regexp $options_1param "-rep"]
@@ -343,7 +343,7 @@ proc poly_souris_fenetre {args} {
          set ext $conf(extension,defaut).gz
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
       set rect [ ::confVisu::getBox 1 ]
       poly_fenetre $in $ex $rect -in_rep $in_rep -ex_rep $ex_rep -ext $ext
    } else {
@@ -356,7 +356,7 @@ proc poly_rot {args} {
 
    if {[syntaxe_args $args 5 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set in [lindex $args 0]
       set ex [lindex $args 1]
       set x0 [lindex $args 2]
@@ -366,7 +366,7 @@ proc poly_rot {args} {
       # Configuration des options
       set options [lrange $args 5 [expr [llength $args]-1]]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
 
       set rep_index [lsearch -regexp $options_1param "-rep"]
@@ -395,7 +395,7 @@ proc poly_rot {args} {
          set ext $conf(extension,defaut).gz
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
       for {set k 1} {$k<=[poly_nbcouleurs $in -rep $in_rep]} {incr k} {
          serie_rot $in $ex $x0 $y0 $angle -in_rep $in_rep -ex_rep $ex_rep -ext $ext -polyNo $k
       }
@@ -409,7 +409,7 @@ proc poly_trans {args} {
 
    if {[syntaxe_args $args 4 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set in [lindex $args 0]
       set ex [lindex $args 1]
       set dx [lindex $args 2]
@@ -418,7 +418,7 @@ proc poly_trans {args} {
       # Configuration des options
       set options [lrange $args 4 [expr [llength $args]-1]]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
 
       set rep_index [lsearch -regexp $options_1param "-rep"]
@@ -447,7 +447,7 @@ proc poly_trans {args} {
          set ext $conf(extension,defaut).gz
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
       for {set k 1} {$k<=[poly_nbcouleurs $in -rep $in_rep]} {incr k} {
          serie_trans $in $ex $dx $dy -in_rep $in_rep -ex_rep $ex_rep -ext $ext -polyNo $k
       }
@@ -461,7 +461,7 @@ proc poly_series_traligne {args} {
 
    if {[syntaxe_args $args 3 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set liste_in [lindex $args 0]
       set No_ref [lindex $args 1]
       set ex [lindex $args 2]
@@ -469,7 +469,7 @@ proc poly_series_traligne {args} {
       # Configuration des options
       set options [lrange $args 3 [expr [llength $args]-1]]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
 
       set rep_index [lsearch -regexp $options_1param "-rep"]
@@ -498,35 +498,35 @@ proc poly_series_traligne {args} {
          set ext $conf(extension,defaut).gz
       }
 
-      # Procédure principale
-      # On supprime d'éventuels fichiers déjà présents de la série-cible
+      # ProcÃ©dure principale
+      # On supprime d'Ã©ventuels fichiers dÃ©jÃ  prÃ©sents de la sÃ©rie-cible
       suppr_serie $ex -rep $ex_rep -ext $ext
 
-      # La série de référence est recopiée sans modifications
+      # La sÃ©rie de rÃ©fÃ©rence est recopiÃ©e sans modifications
       set serie_ref [lindex $liste_in 0]
       copie $serie_ref $ex -in_rep $in_rep -ex_rep $ex_rep -ext $ext
-      # Tout au plus on la renumérote.
+      # Tout au plus on la renumÃ©rote.
       renumerote $ex -rep $ex_rep -ext $ext
 
-      # On garde en mémoire le nom du dernier fichier de cette série, qui servira de
-      # référence pour recaler la série suivante
+      # On garde en mÃ©moire le nom du dernier fichier de cette sÃ©rie, qui servira de
+      # rÃ©fÃ©rence pour recaler la sÃ©rie suivante
       set liste_index_ref [lsort -integer [liste_index $ex -rep $ex_rep -ext $ext]]
       set index_ref [lindex $liste_index_ref [expr [llength $liste_index_ref]-1]]
       set fichier_ref [file join $ex_rep "$ex$index_ref$ext;$No_ref"]
 
-      # A présent, on fait les transformations sur les autres séries :
+      # A prÃ©sent, on fait les transformations sur les autres sÃ©ries :
       set series_amodif [lrange $liste_in 1 [expr [llength $liste_in]-1]]
 
-      # Les fichiers temporaires sont stockés dans un répertoire temporaire
+      # Les fichiers temporaires sont stockÃ©s dans un rÃ©pertoire temporaire
       set rep_tmp [cree_sousrep -rep $ex_rep -nom_base "tmp_poly_series_traligne"]
 
       foreach serie $series_amodif {
 
-         # On détermine le cadre de référence ;
+         # On dÃ©termine le cadre de rÃ©fÃ©rence ;
          console::affiche_resultat "$caption(poly,series_trreg_cadre-ref) $serie\n"
          loadima $fichier_ref
 
-         # Création de la fenêtre
+         # CrÃ©ation de la fenÃªtre
          set script(poly_series_traligne,attente) 0
          toplevel .poly_series_traligne
          label .poly_series_traligne.lab -text $caption(poly,tracebox)
@@ -534,56 +534,56 @@ proc poly_series_traligne {args} {
          button .poly_series_traligne.but -command {set script(poly_series_traligne,attente) 0} -text "ok"
          pack .poly_series_traligne.but -expand true
 
-         # On attend que l'utilisateur ait validé
+         # On attend que l'utilisateur ait validÃ©
          vwait script(poly_series_traligne,attente)
 
-         # On supprime la fenêtre
+         # On supprime la fenÃªtre
          destroy .poly_series_traligne
 
-         # On enregistre les coordonnées du cadre
+         # On enregistre les coordonnÃ©es du cadre
          set cadre_ref [ ::confVisu::getBox 1 ]
 
          console::affiche_resultat "$caption(poly,series_trreg_cadre-a-rec) $serie\n"
-         # Chargement du premier fichier de la série courante
+         # Chargement du premier fichier de la sÃ©rie courante
          set liste_index [lsort -integer [liste_index $serie -rep $in_rep -ext $ext]]
          loadima [file join $in_rep "$serie[lindex $liste_index 0]$ext;$No_ref"]
 
-         # Création de la fenêtre
+         # CrÃ©ation de la fenÃªtre
          set script(poly_series_traligne,attente) 0
          toplevel .poly_series_traligne
          label .poly_series_traligne.lab -text $caption(poly,tracebox)
          pack .poly_series_traligne.lab -expand true
          button .poly_series_traligne.but -command {set script(poly_series_traligne,attente) 0} -text "ok"
          pack .poly_series_traligne.but -expand true
-         # On attend que l'utilisateur ait validé
+         # On attend que l'utilisateur ait validÃ©
          vwait script(poly_series_traligne,attente)
-         # On supprime la fenêtre
+         # On supprime la fenÃªtre
          destroy .poly_series_traligne
-         # On enregistre les coordonnées du cadre
+         # On enregistre les coordonnÃ©es du cadre
          set cadre_amodif [ ::confVisu::getBox 1 ]
          # Calcul des modifications de translation / rotation
          set modifs [calcul_trzaligne $cadre_ref $cadre_amodif]
 
-         # Translation (en entiers pour éviter de dégrader la résolution)
+         # Translation (en entiers pour Ã©viter de dÃ©grader la rÃ©solution)
          console::affiche_resultat "$caption(poly,series_trreg_transl) $serie\n"
          poly_trans $serie tmp_trans_$serie [expr round([lindex $modifs 0])] [expr round([lindex $modifs 1])] -in_rep $in_rep -ex_rep $rep_tmp -ext $ext
          # Rotation
          console::affiche_resultat "$caption(poly,series_trreg_rot) $serie\n"
          poly_rot tmp_trans_$serie tmp_rot_$serie [lindex $modifs 2] [lindex $modifs 3] [lindex $modifs 4] -rep $rep_tmp -ext $ext
-         # Suppression de la série temporaire de translation (si on n'avait pas cette série temporaire,
-         # l'auto-écrasement bugge)
+         # Suppression de la sÃ©rie temporaire de translation (si on n'avait pas cette sÃ©rie temporaire,
+         # l'auto-Ã©crasement bugge)
          suppr_serie tmp_trans_$serie -rep $rep_tmp -ext $ext
-         # On renomme vers la série de destination
+         # On renomme vers la sÃ©rie de destination
          renomme tmp_rot_$serie $ex -in_rep $rep_tmp -ex_rep $ex_rep -ext $ext
 
-         # On garde en mémoire le nom du dernier fichier de cette série, qui servira de
-         # référence pour recaler la série suivante
+         # On garde en mÃ©moire le nom du dernier fichier de cette sÃ©rie, qui servira de
+         # rÃ©fÃ©rence pour recaler la sÃ©rie suivante
          set liste_index_ref [lsort -integer [liste_index $ex -rep $ex_rep -ext $ext]]
          set index_ref [lindex $liste_index_ref [expr [llength $liste_index_ref]-1]]
          set fichier_ref [file join $ex_rep "$ex$index_ref$ext;$No_ref"]
       }
 
-      # Suppression du répertoire temporaire
+      # Suppression du rÃ©pertoire temporaire
       file delete $rep_tmp
    } else {
       error $caption(poly,syntax,poly_series_traligne)

@@ -2,7 +2,7 @@
 # Fichier : polydraw.tcl
 # Description : Dessine un polygone
 # Auteur : Michel PUJOL
-# Mise a jour $Id: polydraw.tcl,v 1.8 2009-09-07 20:05:18 michelpujol Exp $
+# Mise Ã  jour $Id: polydraw.tcl,v 1.9 2010-05-16 14:21:06 robertdelmas Exp $
 #
 
 namespace eval ::polydraw {
@@ -283,7 +283,7 @@ proc ::polydraw::delete { visuNo w {all 0}} {
 
 #------------------------------------------------------------
 #  insert
-#     insère un noeud dans un polygone
+#     insere un noeud dans un polygone
 #  return :
 #------------------------------------------------------------
 proc ::polydraw::insert {visuNo w} {

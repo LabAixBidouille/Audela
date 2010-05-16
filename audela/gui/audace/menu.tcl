@@ -2,7 +2,7 @@
 # Fichier : menu.tcl
 # Description : Package pour gerer facilement les menus
 # Auteur : Denis MARCHAIS d'apres B. Welsh, Practical Programming in Tcl and Tk, Ed. 2, p.319-322
-# Mise a jour $Id: menu.tcl,v 1.7 2007-06-16 08:39:34 robertdelmas Exp $
+# Mise Ã  jour $Id: menu.tcl,v 1.8 2010-05-16 14:19:20 robertdelmas Exp $
 #
 
 proc Menu_Setup { visuNo menubar } {
@@ -133,9 +133,9 @@ proc Menu_Configure { visuNo menuName label optionName optionValue } {
 #     visuNo : numero de la visu
 #     menuName : nom du menu
 #     index : numero d'entree ou "items" "all"
-#        numera d'entree : supprime l'entee correspondant à l'index
-#        "entries" : supprime toutes les entrées
-#        "all" :  supprime toutes les entrées et le menu
+#        numero d'entree : supprime l'entree correspondant a l'index
+#        "entries" : supprime toutes les entrees
+#        "all" : supprime toutes les entrees et le menu
 #------------------------------------------------------------
 proc Menu_Delete { visuNo menuName index } {
    global menu
