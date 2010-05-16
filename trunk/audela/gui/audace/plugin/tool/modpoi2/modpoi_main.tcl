@@ -2,7 +2,7 @@
 # Fichier : modpoi_main.tcl
 # Description : fenetre principale
 # Auteur : Michel Pujol
-# Mise à jour $Id: modpoi_main.tcl,v 1.2 2010-05-01 09:11:11 robertdelmas Exp $
+# Mise à jour $Id: modpoi_main.tcl,v 1.3 2010-05-16 20:29:21 michelpujol Exp $
 #
 
 namespace eval ::modpoi2::main {
@@ -18,7 +18,7 @@ proc ::modpoi2::main::run { visuNo {tkbase ""} } {
    variable private
 
    #--- Creation des variables si elles n'existaient pas
-   if { ! [ info exists ::conf(modpoi2,position) ] }  { set ::conf(modpoi2,position) "300x200+250+75" }
+   if { ! [ info exists ::conf(modpoi2,position) ] }  { set ::conf(modpoi2,position) "440x500+250+75" }
 
    set private($visuNo,this)   ".audace.modpoi2_$visuNo"
    set private($visuNo,model,fileName)     ""
@@ -55,7 +55,6 @@ proc ::modpoi2::main::run { visuNo {tkbase ""} } {
 #  retourne le nom de la fenetre de configuration
 #------------------------------------------------------------
 proc ::modpoi2::main::getLabel { } {
-   global caption
 
    return $::caption(modpoi2,title)
 }
@@ -117,14 +116,13 @@ proc ::modpoi2::main::closeWindow { visuNo } {
       }
    }
 
-
    ::confTel::removeMountListener "::modpoi2::main::onChangeMount $visuNo"
 
    #--- je sauve la taille et la position de la fenetre
    set ::conf(modpoi2,position) [winfo geometry [winfo toplevel $private($visuNo,frm) ]]
 
    #--- je supprime le menubar et toutes ses entrees
-   Menubar_Delete "${visuNo}bis"
+   Menubar_Delete "modpoiMenu${visuNo}"
 
 }
 
@@ -141,7 +139,7 @@ proc ::modpoi2::main::fillConfigPage { frm visuNo } {
 
    #--- je cree le menu
    set private($visuNo,menu) "$private($visuNo,this).menubar"
-   set menuNo "${visuNo}bis"
+   set menuNo "modpoiMenu${visuNo}"
    Menu_Setup $menuNo $private($visuNo,menu)
       Menu           $menuNo "$::caption(audace,menu,file)"
       Menu_Command   $menuNo "$::caption(audace,menu,file)" "$::caption(modpoi2,menu,create)..." \
@@ -645,6 +643,14 @@ proc ::modpoi2::main::displayStar { visuNo starList} {
          set azApp [lindex $coords 3]
          set elApp [lindex $coords 4]
          #--- je calcule l'ecart en arcmin
+         ###set haObs [lindex [mc_radec2altaz [mc_angle2deg $raObs] [mc_angle2deg $deObs] $::conf(posobs,observateur,gps) [lindex $starLine 6]  ] 2]
+         ####---mc_hadec2altaz Angle_HA Angle_dec Home  => az , el, parallactic
+         ###set altaz [mc_hadec2altaz [lindex $coords 2] [lindex $coords 1] $::conf(posobs,observateur,gps)]
+         ####---mc_altaz2radec Angle_az Angle_alt Home Date
+         ###set radec [mc_altaz2radec [lindex $altaz 0] [lindex *$altaz 1] $::conf(posobs,observateur,gps)  [lindex $starLine 6] ]
+         ###set raApp [lindex $radec 0]
+
+         #---- attention
          set raDelta [format "%8.3f" [expr 60.0 * [mc_anglescomp $raObs  - $raApp ]]]
          set deDelta [format "%8.3f" [expr 60.0 * [mc_anglescomp $deObs  - $deApp ]]]
       } else {
