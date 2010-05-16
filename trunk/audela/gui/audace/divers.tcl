@@ -2,7 +2,7 @@
 # Fichier divers.tcl
 # Description : Ce script regroupe diverses petites fonctions
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: divers.tcl,v 1.14 2009-11-20 15:28:11 robertdelmas Exp $
+# Mise Ã  jour $Id: divers.tcl,v 1.15 2010-05-16 10:47:32 robertdelmas Exp $
 #
 
 # Documentation : voir le fichier divers.htm dans le dossier doc_html
@@ -19,7 +19,7 @@ proc charge {args} {
       # Configuration des options
       set range_options [range_options $args]
 
-      # Configuration des paramètres optionnels
+      # Configuration des paramÃ¨tres optionnels
       set params_optionnels [lindex $range_options 0]
       if {[llength $params_optionnels] == "0"} {
          set fichier "?"
@@ -27,7 +27,7 @@ proc charge {args} {
          set fichier [lindex $params_optionnels 0]
       }
 
-      # Configuration des options sans paramètre
+      # Configuration des options sans paramÃ¨tre
       set options_0param [lindex $range_options 1]
       set novisu_index [lsearch $options_0param "-novisu"]
       if {$novisu_index>=0} {
@@ -36,7 +36,7 @@ proc charge {args} {
          set novisu "-dovisu"
       }
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex $range_options 2]
 
       set buf_index [lsearch -regexp $options_1param "-buf"]
@@ -69,15 +69,15 @@ proc charge {args} {
          set ex_polyNo 1
       }
 
-      # Procédure principale
-      # 1er cas : pas de nom de fichier donné, on doit donc afficher une boîte de dialogue
+      # ProcÃ©dure principale
+      # 1er cas : pas de nom de fichier donnÃ©, on doit donc afficher une boÃ®te de dialogue
       if {$fichier == "?"} {
          #--- Fenetre parent
          set fenetre "$audace(base)"
          #--- Ouvre la boite de choix des images
          set nom_complet [ ::tkutil::box_load $fenetre $rep $audace(bufNo) "1" ]
        # 2nd cas : selon $fichier, on rajoute ou pas les infos de nom de
-       # répertoire et d'extension pour former le nom complet.
+       # rÃ©pertoire et d'extension pour former le nom complet.
       } else {
          # Nom relatif ou absolu...
          if {[file pathtype $fichier] == "absolute"} {
@@ -91,22 +91,22 @@ proc charge {args} {
          }
       }
 
-      # On n'ajoute le n° de plan couleur à ouvrir que si celui-ci est distinct du 1er
+      # On n'ajoute le nÂ° de plan couleur Ã  ouvrir que si celui-ci est distinct du 1er
       if {$in_polyNo != "1"} {
          set nom_complet "$nom_complet;$in_polyNo"
       }
 
       if {[string compare $nom_complet ""] != 0 } {
 
-         # Si le fichier est compressé par bzip2, on le copie dans le répertoire
-         # temporaire pour le décompresser
+         # Si le fichier est compressÃ© par bzip2, on le copie dans le rÃ©pertoire
+         # temporaire pour le dÃ©compresser
 
          if {[file extension $nom_complet] == ".bz2"} {
 
             switch $::tcl_platform(os) {
                "Linux" {
-                  # Sous Linux, on copie le fichier dans un sous-répertoire de /tmp/.audela
-                  # on le décompresse et on essaie de le recharger à partir de là
+                  # Sous Linux, on copie le fichier dans un sous-rÃ©pertoire de /tmp/.audela
+                  # on le dÃ©compresse et on essaie de le recharger Ã  partir de lÃ 
                   set dossier_tmp [cree_sousrep -nom_base [suppr_accents [file tail $fichier]] -rep "/tmp/.audela"]
                   set fichier_tmp [file join $dossier_tmp [file tail $nom_complet]]
                   file copy $nom_complet $fichier_tmp
@@ -117,7 +117,7 @@ proc charge {args} {
                   file delete [file rootname [file rootname $fichier_tmp]]$conf(extension,defaut)
                   file delete $dossier_tmp
                   # Si chargement dans le buffer Aud'ACE :
-                  # on rafraîchit (éventuellement) l'affichage du bandeau
+                  # on rafraÃ®chit (Ã©ventuellement) l'affichage du bandeau
                   if {[string compare $buf $audace(bufNo)] == 0} {
                      if {$novisu != "-novisu"} {
                         wm title $audace(base) "$caption(divers,audace) - $nom_complet"
@@ -127,8 +127,8 @@ proc charge {args} {
                }
                "Darwin" {
                   # Sous MacOS : idem Linux, on copie le fichier
-                  # dans un sous-répertoire de /tmp/.audela
-                  # on le décompresse et on essaie de le recharger à partir de là.
+                  # dans un sous-rÃ©pertoire de /tmp/.audela
+                  # on le dÃ©compresse et on essaie de le recharger Ã  partir de lÃ .
                   set dossier_tmp [cree_sousrep -nom_base [suppr_accents [file tail $fichier]] -rep "/tmp/.audela"]
                   set fichier_tmp [file join $dossier_tmp [file tail $nom_complet]]
                   file copy $nom_complet $fichier_tmp
@@ -139,7 +139,7 @@ proc charge {args} {
                   file delete [file rootname [file rootname $fichier_tmp]]$conf(extension,defaut)
                   file delete $dossier_tmp
                   # Si chargement dans le buffer Aud'ACE :
-                  # on rafraîchit (éventuellement) l'affichage du bandeau
+                  # on rafraÃ®chit (Ã©ventuellement) l'affichage du bandeau
                   if {[string compare $buf $audace(bufNo)] == 0} {
                      if {$novisu != "-novisu"} {
                         wm title $audace(base) "$caption(divers,audace) - $nom_complet"
@@ -148,14 +148,14 @@ proc charge {args} {
                   }
                }
                default {
-                  # Sous les autres systèmes d'exploitation (dont Windows)
+                  # Sous les autres systÃ¨mes d'exploitation (dont Windows)
                   # les fichiers .fit.bz2 ne sont pas pris en charge.
                }
             }
 
          } else {
 
-            # On vérifie que le nom de fichier est valide, ie ne comporte
+            # On vÃ©rifie que le nom de fichier est valide, ie ne comporte
             # pas d'accents, sinon la librairie fitsio sera incapable de
             # de le charger.
 
@@ -169,19 +169,19 @@ proc charge {args} {
 
             } else {
 
-               # Le nom complet de fichier comporte des caractères accentués.
+               # Le nom complet de fichier comporte des caractÃ¨res accentuÃ©s.
                switch $::tcl_platform(os) {
                   "Linux" {
                      # Sous Linux, on copie le fichier dans /tmp/.audela
-                     # en supprimant les caractères accentués et on essaie
-                     # de le recharger à partir de là.
+                     # en supprimant les caractÃ¨res accentuÃ©s et on essaie
+                     # de le recharger Ã  partir de lÃ .
                      set fichier_tmp [cree_fichier -nom_base [suppr_accents [file tail $fichier]] -rep "/tmp/.audela"]
                      file delete $fichier_tmp
                      file copy $fichier $fichier_tmp
                      charge $fichier_tmp -buf $buf -novisu
                      file delete $fichier_tmp
                      # Si chargement dans le buffer Aud'ACE :
-                     # on rafraîchit (éventuellement) l'affichage du bandeau
+                     # on rafraÃ®chit (Ã©ventuellement) l'affichage du bandeau
                      if {[string compare $buf $audace(bufNo)] == 0} {
                         if {$novisu != "-novisu"} {
                            wm title $audace(base) "$caption(divers,audace) - $nom_complet"
@@ -190,9 +190,9 @@ proc charge {args} {
                      }
                   }
                   default {
-                     # Sous les autres systèmes d'exploitation (dont Windows)
-                     # faute d'un dossier temporaire bien défini, on signale
-                     # le problème sans y remédier.
+                     # Sous les autres systÃ¨mes d'exploitation (dont Windows)
+                     # faute d'un dossier temporaire bien dÃ©fini, on signale
+                     # le problÃ¨me sans y remÃ©dier.
                      console::affiche_resultat "${caption(divers,nom_invalide)}\n $nom_complet\n"
                   }
                }
@@ -212,7 +212,7 @@ proc sauve {args} {
       # Configuration des options
       set range_options [range_options $args]
 
-      # Configuration des paramètres optionnels
+      # Configuration des paramÃ¨tres optionnels
       set params_optionnels [lindex $range_options 0]
       if {[llength $params_optionnels] == "0"} {
          set fichier "?"
@@ -220,7 +220,7 @@ proc sauve {args} {
          set fichier [lindex $params_optionnels 0]
       }
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex $range_options 2]
 
       set buf_index [lsearch -regexp $options_1param "-buf"]
@@ -256,8 +256,8 @@ proc sauve {args} {
       buf$buf setkwd [ list NAXIS1 [ buf$buf getpixelswidth ] int "" "" ]
       buf$buf setkwd [ list NAXIS2 [ buf$buf getpixelsheight ] int "" "" ]
 
-      # Procédure principale
-      # 1er cas : pas de nom de fichier donné, on doit donc afficher une boîte de dialogue
+      # ProcÃ©dure principale
+      # 1er cas : pas de nom de fichier donnÃ©, on doit donc afficher une boÃ®te de dialogue
       if {$fichier == "?"} {
          #--- Fenetre parent
          set fenetre "$audace(base)"
@@ -265,7 +265,7 @@ proc sauve {args} {
          set nom_complet [ ::tkutil::box_save $fenetre $rep $audace(bufNo) "1" ]
 
          # 2nd cas : selon $fichier, on rajoute ou pas les infos de nom de
-         # répertoire et d'extension pour former le nom complet.
+         # rÃ©pertoire et d'extension pour former le nom complet.
       } else {
          # Nom relatif ou absolu...
          if {[file pathtype $fichier] == "absolute"} {
@@ -281,14 +281,14 @@ proc sauve {args} {
 
       if {[string compare $nom_complet ""] != 0 } {
          if { [ buf$buf imageready ] == "1" } {
-            # Si le fichier de destination n'existe pas, on ne tient pas compte du n° de buffer dans lequel sauvegarder
+            # Si le fichier de destination n'existe pas, on ne tient pas compte du nÂ° de buffer dans lequel sauvegarder
             if {[file exist $nom_complet] == "0"} {
                set result [buf$buf save "$nom_complet"]
             } else {
-               # Fichier existant avec éventuellement plusieurs plans couleurs :
+               # Fichier existant avec Ã©ventuellement plusieurs plans couleurs :
 
-               # 1er cas : on veut sauvegarder sur un numéro de plan couleur
-               # supérieur à tous ceux existants : pas de problèmes.
+               # 1er cas : on veut sauvegarder sur un numÃ©ro de plan couleur
+               # supÃ©rieur Ã  tous ceux existants : pas de problÃ¨mes.
                set dern_num_buf [buf::create]
                buf$dern_num_buf extension $conf(extension,defaut)
                if [catch {charge $nom_complet -buf $dern_num_buf -polyNo $polyNo}] {
@@ -299,8 +299,8 @@ proc sauve {args} {
                   buf::delete $dern_num_buf
 
                   # Second cas : on veut enregistrer sur un plan couleur
-                  # déjà existant, por éviter un bug on doit charger tous les plans couleurs,
-                  # effacer le fichier existant et tout réenregistrer dans l'ordre.
+                  # dÃ©jÃ  existant, por Ã©viter un bug on doit charger tous les plans couleurs,
+                  # effacer le fichier existant et tout rÃ©enregistrer dans l'ordre.
 
                   # Chargement des plans couleurs dans des buffers temporaires
                   set continuer "1"
@@ -320,10 +320,10 @@ proc sauve {args} {
 
                   # Effacement du fichier
                   file delete $nom_complet
-                  # Enregistrement des plans couleurs successifs et libération des
+                  # Enregistrement des plans couleurs successifs et libÃ©ration des
                   # tampons images correspondant
 
-                  # On fait le premier plan à part...
+                  # On fait le premier plan Ã  part...
                   if {"1" == $polyNo} {
                      set result [buf$buf save "$nom_complet"]
                   } else {
@@ -362,7 +362,7 @@ proc sauve_jpeg {args} {
       # Configuration des options
       set range_options [range_options $args]
 
-      # Configuration des paramètres optionnels
+      # Configuration des paramÃ¨tres optionnels
       set params_optionnels [lindex $range_options 0]
       if {[llength $params_optionnels] == "0"} {
          set fichier "?"
@@ -370,7 +370,7 @@ proc sauve_jpeg {args} {
          set fichier [lindex $params_optionnels 0]
       }
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex $range_options 2]
 
       set rep_index [lsearch -regexp $options_1param "-rep"]
@@ -387,8 +387,8 @@ proc sauve_jpeg {args} {
          set ext ".jpg"
       }
 
-      # Procédure principale
-      # 1er cas : pas de nom de fichier donné, on doit donc afficher une boîte de dialogue
+      # ProcÃ©dure principale
+      # 1er cas : pas de nom de fichier donnÃ©, on doit donc afficher une boÃ®te de dialogue
       if {$fichier == "?"} {
          #--- Fenetre parent
          set fenetre "$audace(base)"
@@ -408,7 +408,7 @@ proc sauve_jpeg {args} {
             if {$conf(visu_palette,visu$audace(visuNo),mode)<=2} {
                # Sauvegarde en jpeg monochrome
 
-               # On récupère la fonction de transfert
+               # On rÃ©cupÃ¨re la fonction de transfert
                set palette [file join [visu$audace(visuNo) paldir] [visu$audace(visuNo) pal].pal]
                set fileId [open $palette r]
                set palette_R ""
@@ -418,7 +418,7 @@ proc sauve_jpeg {args} {
                }
                close $fileId
 
-               # Création du buffer temporaire
+               # CrÃ©ation du buffer temporaire
                set num_buf_tmp [buf::create]
                buf$num_buf_tmp extension $conf(extension,defaut)
                buf$audace(bufNo) copyto $num_buf_tmp
@@ -439,7 +439,7 @@ proc sauve_jpeg {args} {
 
             } else {
 
-               # On récupère la fonction de transfert
+               # On rÃ©cupÃ¨re la fonction de transfert
                set palette [file join [visu$audace(visuNo) paldir] [visu$audace(visuNo) pal].pal]
                set fileId [open $palette r]
                set palette_R ""
@@ -453,11 +453,11 @@ proc sauve_jpeg {args} {
                }
                close $fileId
 
-               # Création du buffer temporaire
+               # CrÃ©ation du buffer temporaire
                set num_buf_tmp [buf::create]
                buf$num_buf_tmp extension $conf(extension,defaut)
 
-               # Création d'un répertoire temporaire
+               # CrÃ©ation d'un rÃ©pertoire temporaire
                set rep_tmp [cree_sousrep -nom_base "tmp_sauve_jpeg"]
 
                # Enregistrement des plans R, V et B
@@ -469,7 +469,7 @@ proc sauve_jpeg {args} {
                   ::tkutil::displayErrorInfo "$caption(divers,copyjpeg)" "$caption(divers,libgsl)"
                   # Suppression du buffer temporaire
                   buf::delete $num_buf_tmp
-                  # Suppression du répertoire temporaire
+                  # Suppression du rÃ©pertoire temporaire
                   file delete $rep_tmp
                   # Sortie de la procedure
                   return
@@ -509,14 +509,14 @@ proc soustrait {args} {
 
    if {[syntaxe_args $args 1 0 [list "" [list "-buf" "-rep" "-ext" "-polyNo"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set fichier_aux [lindex $args 0]
 
       # Configuration des options
       set options [lrange $args 1 [expr [llength $args]-1]]
       set range_options [range_options $options]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex $range_options 2]
 
       set buf_index [lsearch -regexp $options_1param "-buf"]
@@ -547,10 +547,10 @@ proc soustrait {args} {
          set aux_polyNo 1
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
       buf$buf sub [file join "$rep" "$fichier_aux$ext;$aux_polyNo"] 0
 
-      # Si le buffer de travail est le buffer Aud'ACE, on refraîchit l'affichage
+      # Si le buffer de travail est le buffer Aud'ACE, on refraÃ®chit l'affichage
       if {$audace(bufNo) == $buf} {
          audace::autovisu $audace(visuNo)
       }
@@ -565,14 +565,14 @@ proc normalise {args} {
 
    if {[syntaxe_args $args 1 0 [list "" [list "-buf" "-rep" "-ext" "-polyNo"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set fichier_aux [lindex $args 0]
 
       # Configuration des options
       set options [lrange $args 1 [expr [llength $args]-1]]
       set range_options [range_options $options]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex $range_options 2]
 
       set buf_index [lsearch -regexp $options_1param "-buf"]
@@ -603,11 +603,11 @@ proc normalise {args} {
          set aux_polyNo 1
       }
 
-      # Procédure principale
-      # Création d'un tampon image temporaire
+      # ProcÃ©dure principale
+      # CrÃ©ation d'un tampon image temporaire
       set num_buf_tmp [buf::create]
       buf$num_buf_tmp extension $conf(extension,defaut)
-      # On charge l'image auxiliaire pour déterminer la moyenne de son fond de ciel
+      # On charge l'image auxiliaire pour dÃ©terminer la moyenne de son fond de ciel
       charge $fichier_aux -buf $num_buf_tmp -rep "$rep" -ext $ext -polyNo $aux_polyNo
       set moy [lindex [buf$num_buf_tmp stat] 6]
       # Suppression du buffer temporaire
@@ -616,7 +616,7 @@ proc normalise {args} {
       # Normalisation
       buf$buf div [file join "$rep" "$fichier_aux$ext;$aux_polyNo"] $moy
 
-      # Si le buffer de travail est le buffer Aud'ACE, on rafraîchit l'affichage
+      # Si le buffer de travail est le buffer Aud'ACE, on rafraÃ®chit l'affichage
       if {$audace(bufNo) == $buf} {
          audace::autovisu $audace(visuNo)
       }
@@ -627,7 +627,7 @@ proc normalise {args} {
 }
 
 ######################################################
-###############   Fonctions de séries  ###############
+###############   Fonctions de sÃ©ries  ###############
 ######################################################
 
 proc suppr_serie {args} {
@@ -635,13 +635,13 @@ proc suppr_serie {args} {
 
    if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set nom_generique [lindex $args 0]
 
       # Configuration des options
       set options [lrange $args 1 [expr [llength $args]-1]]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
       set rep_index [lsearch -regexp $options_1param "-rep"]
       set ext_index [lsearch -regexp $options_1param "-ext"]
@@ -658,7 +658,7 @@ proc suppr_serie {args} {
          set ext $conf(extension,defaut).gz
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
       set index_corbeille [liste_index $nom_generique -rep "$rep" -ext $ext]
       foreach index $index_corbeille {file delete [file join "$rep" $nom_generique$index$ext]}
    } else {
@@ -671,14 +671,14 @@ proc suppr_fin_serie {args} {
 
    if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set nom_generique [lindex $args 0]
       set index_fin [lindex $args 1]
 
       # Configuration des options
       set options [lrange $args 2 [expr [llength $args]-1]]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
       set rep_index [lsearch -regexp $options_1param "-rep"]
       set ext_index [lsearch -regexp $options_1param "-ext"]
@@ -695,7 +695,7 @@ proc suppr_fin_serie {args} {
          set ext $conf(extension,defaut).gz
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
       set index_cibles [lsort [liste_index $nom_generique -rep "$rep" -ext $ext]]
       catch {set index_cibles [lsort -integer $index_cibles]}
       set index_fin [lsearch -regexp -exact $index_cibles $index_fin]
@@ -715,14 +715,14 @@ proc suppr_debut_serie {args} {
 
    if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set nom_generique [lindex $args 0]
       set index_debut [lindex $args 1]
 
       # Configuration des options
       set options [lrange $args 2 [expr [llength $args]-1]]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
       set rep_index [lsearch -regexp $options_1param "-rep"]
       set ext_index [lsearch -regexp $options_1param "-ext"]
@@ -739,7 +739,7 @@ proc suppr_debut_serie {args} {
          set ext $conf(extension,defaut).gz
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
       set index_cibles [lsort [liste_index $nom_generique -rep "$rep" -ext $ext]]
       catch {set index_cibles [lsort -integer $index_cibles]}
       set index_debut [lsearch -exact $index_cibles $index_debut]
@@ -758,13 +758,13 @@ proc renumerote {args} {
 
    if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set nom_generique [lindex $args 0]
 
       # Configuration des options
       set options [lrange $args 1 [expr [llength $args]-1]]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
       set rep_index [lsearch -regexp $options_1param "-rep"]
       set ext_index [lsearch -regexp $options_1param "-ext"]
@@ -781,7 +781,7 @@ proc renumerote {args} {
          set ext $conf(extension,defaut).gz
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
       set index_serie [lsort [liste_index $nom_generique -rep "$rep" -ext $ext]]
       # Si possible on trie par ordre croissant (sauf dans le cas d'indexation 01, 02 .... par ex.)
       set error [ catch { set index_serie [ lsort -integer $index_serie ] } msg ]
@@ -809,14 +809,14 @@ proc renomme {args} {
 
    if {[syntaxe_args $args 1 1 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep" "-in_ext" "-ex_ext"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set ancien_nom_generique [lindex $args 0]
 
       # Configuration des options
       set options [lrange $args 1 [expr [llength $args]-1]]
       set range_options [range_options $options]
 
-      # Configuration des paramètres optionnels
+      # Configuration des paramÃ¨tres optionnels
       set params_optionnels [lindex $range_options 0]
       if {[llength $params_optionnels] >= 1} {
          set nouveau_nom_generique [lindex $params_optionnels 0]
@@ -824,7 +824,7 @@ proc renomme {args} {
          set nouveau_nom_generique [lindex $args 0]
       }
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
       set rep_index [lsearch -regexp $options_1param "-rep"]
       set in_rep_index [lsearch -regexp $options_1param "-in_rep"]
@@ -862,30 +862,30 @@ proc renomme {args} {
          set ex_ext [lindex [lindex $options_1param $ex_ext_index] 1]
       }
 
-      # Procédure principale
-      # On ne continue que si l'on n'écrase pas la série...
+      # ProcÃ©dure principale
+      # On ne continue que si l'on n'Ã©crase pas la sÃ©rie...
       if {[string compare $in_rep$ancien_nom_generique$in_ext $ex_rep$nouveau_nom_generique$ex_ext] != 0} {
 
-         # On cherche si le nom de la série courante existe déjà.
+         # On cherche si le nom de la sÃ©rie courante existe dÃ©jÃ .
          set index_newserie [liste_index $nouveau_nom_generique -rep "$ex_rep" -ext $ex_ext]
          set index_oldserie [lsort [liste_index $ancien_nom_generique -rep "$in_rep" -ext $in_ext]]
          catch {set index_oldserie [lsort -integer $index_oldserie]}
-         # 1er cas : le nom de la série courante n'existe pas. On renomme sans se poser de questions
+         # 1er cas : le nom de la sÃ©rie courante n'existe pas. On renomme sans se poser de questions
          if {[llength $index_newserie]==0} {
-            # Deux cas sont possibles : 1) les deux séries ont le même type de compression, et alors pas de problème. 2) les deux séries n'ont pas le même type de compression, et alors il faut passer par un répertoire temporaire pour gérer les compressions / décompressions.
+            # Deux cas sont possibles : 1) les deux sÃ©ries ont le mÃªme type de compression, et alors pas de problÃ¨me. 2) les deux sÃ©ries n'ont pas le mÃªme type de compression, et alors il faut passer par un rÃ©pertoire temporaire pour gÃ©rer les compressions / dÃ©compressions.
 
             if {[lindex [decomp $in_ext] 4] == [lindex [decomp $ex_ext] 4]} {
                foreach index $index_oldserie {
                   file rename [file join $in_rep $ancien_nom_generique$index$in_ext] [file join $ex_rep $nouveau_nom_generique$index$ex_ext]
                }
             } else {
-               # Création d'un répertoire temporaire
+               # CrÃ©ation d'un rÃ©pertoire temporaire
                set rep_tmp [cree_sousrep -nom_base "tmp_renomme" -rep $ex_rep]
 
                renomme $ancien_nom_generique $nouveau_nom_generique -in_rep $in_rep -ex_rep $rep_tmp -ext $in_ext
                switch [lindex [decomp $in_ext] 4] {
                   "" {
-                     # Rien à faire (...)
+                     # Rien Ã  faire (...)
                   }
                   ".gz" {
                      foreach index [liste_index $nouveau_nom_generique -rep "$rep_tmp" -ext $in_ext] {
@@ -901,7 +901,7 @@ proc renomme {args} {
 
                switch [lindex [decomp $ex_ext] 4] {
                   "" {
-                     # Rien à faire (...)
+                     # Rien Ã  faire (...)
                   }
                   ".gz" {
                      foreach index [liste_index $nouveau_nom_generique -rep "$rep_tmp" -ext [lindex [decomp $in_ext] 3]] {
@@ -917,18 +917,18 @@ proc renomme {args} {
 
                renomme $nouveau_nom_generique -in_rep $rep_tmp -ex_rep $ex_rep -in_ext [lindex [decomp $in_ext] 3][lindex [decomp $ex_ext] 4] -ex_rep $ex_rep
 
-               # Suppression du répertoire temporaire (qui est vide car on vient d'en déplacer les fichiers qui y étaient temporairement).
+               # Suppression du rÃ©pertoire temporaire (qui est vide car on vient d'en dÃ©placer les fichiers qui y Ã©taient temporairement).
                file delete [file join $rep_tmp]
 
             }
          } else {
-            # 2nd cas : le nom de la série courante existe déjà. Il va donc falloir réindexer
-            # les deux séries et les concaténer
+            # 2nd cas : le nom de la sÃ©rie courante existe dÃ©jÃ . Il va donc falloir rÃ©indexer
+            # les deux sÃ©ries et les concatÃ©ner
 
-            # On réindexe la série cible :
+            # On rÃ©indexe la sÃ©rie cible :
             renumerote $nouveau_nom_generique -rep "$ex_rep" -ext $ex_ext
 
-            # On détermine à quel index on continue la copie
+            # On dÃ©termine Ã  quel index on continue la copie
             set index [expr [llength $index_newserie]+1]
 
             # Si possible on trie par ordre croissant (sauf dans le cas d'indexation 01, 02 .... par ex.)
@@ -941,8 +941,8 @@ proc renomme {args} {
             }
          }
 
-         # Si la série de destination est en lecture seule, on autorise l'utilisateur
-         # en écriture
+         # Si la sÃ©rie de destination est en lecture seule, on autorise l'utilisateur
+         # en Ã©criture
          switch $::tcl_platform(os) {
             "Linux" {
                foreach index [liste_index $nouveau_nom_generique -rep "$ex_rep" -ext $ex_ext] {
@@ -965,14 +965,14 @@ proc copie {args} {
 
    if {[syntaxe_args $args 1 1 [list "" [list "-rep" "-in_rep" "-ex_rep" "-ext" "-in_ext" "-ex_ext"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set ancien_nom_generique [lindex $args 0]
 
       # Configuration des options
       set options [lrange $args 1 [expr [llength $args]-1]]
       set range_options [range_options $options]
 
-      # Configuration des paramètres optionnels
+      # Configuration des paramÃ¨tres optionnels
       set params_optionnels [lindex $range_options 0]
       if {[llength $params_optionnels] >= 1} {
          set nouveau_nom_generique [lindex $params_optionnels 0]
@@ -980,7 +980,7 @@ proc copie {args} {
          set nouveau_nom_generique [lindex $args 0]
       }
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex $range_options 2]
       set rep_index [lsearch -regexp $options_1param "-rep"]
       set in_rep_index [lsearch -regexp $options_1param "-in_rep"]
@@ -1019,30 +1019,30 @@ proc copie {args} {
       }
 
 
-      # Procédure principale
-      # On ne continue que si l'on n'écrase pas la série...
+      # ProcÃ©dure principale
+      # On ne continue que si l'on n'Ã©crase pas la sÃ©rie...
       if {[string compare $in_rep$ancien_nom_generique$in_ext $ex_rep$nouveau_nom_generique$ex_ext] != 0} {
 
-         # On cherche si le nom de la série courante existe déjà.
+         # On cherche si le nom de la sÃ©rie courante existe dÃ©jÃ .
          set index_newserie [liste_index $nouveau_nom_generique -rep "$ex_rep" -ext $ex_ext]
          set index_oldserie [lsort [liste_index $ancien_nom_generique -rep "$in_rep" -ext $in_ext]]
          catch {set index_oldserie [lsort -integer $index_oldserie]}
-         # 1er cas : le nom de la série courante n'existe pas. On renomme sans se poser de questions
+         # 1er cas : le nom de la sÃ©rie courante n'existe pas. On renomme sans se poser de questions
          if {[llength $index_newserie]==0} {
-            # Deux cas sont possibles : 1) les deux séries ont le même type de compression, et alors pas de problème. 2) les deux séries n'ont pas le même type de compression, et alors il faut passer par un répertoire temporaire pour gérer les compressions / décompressions.
+            # Deux cas sont possibles : 1) les deux sÃ©ries ont le mÃªme type de compression, et alors pas de problÃ¨me. 2) les deux sÃ©ries n'ont pas le mÃªme type de compression, et alors il faut passer par un rÃ©pertoire temporaire pour gÃ©rer les compressions / dÃ©compressions.
 
             if {[lindex [decomp $in_ext] 4] == [lindex [decomp $ex_ext] 4]} {
                foreach index $index_oldserie {
                   file copy [file join $in_rep $ancien_nom_generique$index$in_ext] [file join $ex_rep $nouveau_nom_generique$index$ex_ext]
                }
             } else {
-               # Création d'un répertoire temporaire
+               # CrÃ©ation d'un rÃ©pertoire temporaire
                set rep_tmp [cree_sousrep -nom_base "tmp_renomme" -rep $ex_rep]
 
                copie $ancien_nom_generique $nouveau_nom_generique -in_rep $in_rep -ex_rep $rep_tmp -ext $in_ext
                switch [lindex [decomp $in_ext] 4] {
                   "" {
-                     # Rien à faire (...)
+                     # Rien Ã  faire (...)
                   }
                   ".gz" {
                      foreach index [liste_index $nouveau_nom_generique -rep "$rep_tmp" -ext $in_ext] {
@@ -1058,7 +1058,7 @@ proc copie {args} {
 
                switch [lindex [decomp $ex_ext] 4] {
                   "" {
-                     # Rien à faire (...)
+                     # Rien Ã  faire (...)
                   }
                   ".gz" {
                      foreach index [liste_index $nouveau_nom_generique -rep "$rep_tmp" -ext [lindex [decomp $in_ext] 3]] {
@@ -1074,18 +1074,18 @@ proc copie {args} {
 
                renomme $nouveau_nom_generique -in_rep $rep_tmp -ex_rep $ex_rep -in_ext [lindex [decomp $in_ext] 3][lindex [decomp $ex_ext] 4] -ex_ext $ex_ext
 
-               # Suppression du répertoire temporaire (qui est vide car on vient d'en déplacer les fichiers qui y étaient temporairement).
+               # Suppression du rÃ©pertoire temporaire (qui est vide car on vient d'en dÃ©placer les fichiers qui y Ã©taient temporairement).
                file delete [file join $rep_tmp]
 
             }
          } else {
-            # 2nd cas : le nom de la série courante existe déjà. Il va donc falloir réindexer
-            # les deux séries et les concaténer
+            # 2nd cas : le nom de la sÃ©rie courante existe dÃ©jÃ . Il va donc falloir rÃ©indexer
+            # les deux sÃ©ries et les concatÃ©ner
 
-            # On réindexe la série cible :
+            # On rÃ©indexe la sÃ©rie cible :
             renumerote $nouveau_nom_generique -rep "$ex_rep" -ext $ex_ext
 
-            # On détermine à quel index on continue la copie
+            # On dÃ©termine Ã  quel index on continue la copie
             set index [expr [llength $index_newserie]+1]
 
            # Si possible on trie par ordre croissant (sauf dans le cas d'indexation 01, 02 .... par ex.)
@@ -1098,8 +1098,8 @@ proc copie {args} {
             }
          }
 
-         # Si la série de destination est en lecture seule, on autorise l'utilisateur
-         # en écriture
+         # Si la sÃ©rie de destination est en lecture seule, on autorise l'utilisateur
+         # en Ã©criture
          switch $::tcl_platform(os) {
             "Linux" {
                foreach index [liste_index $nouveau_nom_generique -rep "$ex_rep" -ext $ex_ext] {
@@ -1123,7 +1123,7 @@ proc copie_partielle {args} {
 
    if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-in_rep" "-ex_rep" "-ext" "-in_ext" "-ex_ext"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set ancien_nom_generique [lindex $args 0]
       set nouveau_nom_generique [lindex $args 1]
       set debut [lindex $args 2]
@@ -1133,7 +1133,7 @@ proc copie_partielle {args} {
       set options [lrange $args 4 [expr [llength $args]-1]]
       set range_options [range_options $options]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex $range_options 2]
       set rep_index [lsearch -regexp $options_1param "-rep"]
       set in_rep_index [lsearch -regexp $options_1param "-in_rep"]
@@ -1172,28 +1172,28 @@ proc copie_partielle {args} {
          set ex_ext [lindex [lindex $options_1param $ex_ext_index] 1]
       }
 
-      # Procédure principale
-      # On ne continue que si le vieux nom générique et le nouveau sont différents
+      # ProcÃ©dure principale
+      # On ne continue que si le vieux nom gÃ©nÃ©rique et le nouveau sont diffÃ©rents
       if {$ancien_nom_generique!=$nouveau_nom_generique} {
-         # On cherche si le nom de la série courante existe déjà.
+         # On cherche si le nom de la sÃ©rie courante existe dÃ©jÃ .
          set index_newserie [liste_index $nouveau_nom_generique -rep "$ex_rep" -ext $ex_ext]
          set index_oldserie [lsort [liste_index $ancien_nom_generique -rep "$in_rep" -ext $ex_ext]]
          catch {set index_oldserie [lsort -integer $index_oldserie]}
-         # On ne garde de la vieille série que les index que l'on veut copier
+         # On ne garde de la vieille sÃ©rie que les index que l'on veut copier
          set index_oldserie [lrange $index_oldserie [expr $debut-1] [expr $fin-1]]
 
-         # Création d'un répertoire temporaire
+         # CrÃ©ation d'un rÃ©pertoire temporaire
          set rep_tmp [cree_sousrep -nom_base "tmp_renomme"]
 
-         # On copie la sous-série vers ce répertoire temporaire
+         # On copie la sous-sÃ©rie vers ce rÃ©pertoire temporaire
          foreach index $index_oldserie {
             file copy [file join $in_rep $ancien_nom_generique$index$in_ext] [file join $rep_tmp $ancien_nom_generique$index$in_ext]
          }
 
-         # On copie la sous-série
+         # On copie la sous-sÃ©rie
          renomme $ancien_nom_generique $nouveau_nom_generique -in_rep $rep_tmp -ex_rep $ex_rep -in_ext $in_ext -ex_ext $ex_ext
 
-         # Suppression du répertoire temporaire (qui est vide car on vient d'en déplacer les fichiers qui y étaient temporairement).
+         # Suppression du rÃ©pertoire temporaire (qui est vide car on vient d'en dÃ©placer les fichiers qui y Ã©taient temporairement).
          file delete [file join $rep_tmp]
 
       }
@@ -1207,13 +1207,13 @@ proc serie_charge {args} {
 
    if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set nom_generique [lindex $args 0]
 
       # Configuration des options
       set options [lrange $args 1 [expr [llength $args]-1]]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
       set rep_index [lsearch -regexp $options_1param "-rep"]
       set ext_index [lsearch -regexp $options_1param "-ext"]
@@ -1230,7 +1230,7 @@ proc serie_charge {args} {
          set ext $conf(extension,defaut).gz
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
       set index_serie [liste_index $nom_generique -rep "$rep" -ext $ext]
       set index_buffers ""
       foreach index $index_serie {
@@ -1250,7 +1250,7 @@ proc serie_fenetre {args} {
 
    if {[syntaxe_args $args 3 0 [list "" [list "-rep" "-ext" "-in_ext" "-ex_ext" "-in_rep" "-ex_rep" "-polyNo" "-in_polyNo" "-ex_polyNo"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set in [lindex $args 0]
       set ex [lindex $args 1]
       set coord [lindex $args 2]
@@ -1258,7 +1258,7 @@ proc serie_fenetre {args} {
       # Configuration des options
       set options [lrange $args 3 [expr [llength $args]-1]]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
 
       set rep_index [lsearch -regexp $options_1param "-rep"]
@@ -1314,15 +1314,15 @@ proc serie_fenetre {args} {
          set ex_polyNo [lindex [lindex $options_1param $ex_polyNo_index] 1]
       }
 
-      # Procédure principale
-      # On récupère la liste des index de la série initiale...
+      # ProcÃ©dure principale
+      # On rÃ©cupÃ¨re la liste des index de la sÃ©rie initiale...
       set liste_index [liste_index $in -rep "$in_rep" -ext $in_ext]
 
-      # Création du buffer temporaire
+      # CrÃ©ation du buffer temporaire
       set num_buf_tmp [buf::create]
       buf$num_buf_tmp extension $conf(extension,defaut)
 
-      # Fenêtrage des fichiers
+      # FenÃªtrage des fichiers
       foreach index $liste_index {
          charge $in$index -buf $num_buf_tmp -rep "$in_rep" -ext $in_ext -polyNo $in_polyNo
          buf$num_buf_tmp window $coord
@@ -1341,14 +1341,14 @@ proc souris_fenetre {args} {
 
    if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep" "-polyNo" "-in_polyNo" "-ex_polyNo"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set in [lindex $args 0]
       set ex [lindex $args 1]
 
       # Configuration des options
       set options [lrange $args 2 [expr [llength $args]-1]]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
 
       set rep_index [lsearch -regexp $options_1param "-rep"]
@@ -1403,7 +1403,7 @@ proc souris_fenetre {args} {
          set ex_polyNo [lindex [lindex $options_1param $ex_polyNo_index] 1]
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
       set rect [ ::confVisu::getBox 1 ]
       serie_fenetre $in $ex $rect -in_rep $in_rep -ex_rep $ex_rep -in_ext $in_ext -ex_ext $ex_ext -in_polyNo $in_polyNo -ex_polyNo $ex_polyNo
    } else {
@@ -1416,7 +1416,7 @@ proc serie_rot {args} {
 
    if {[syntaxe_args $args 5 0 [list "" [list "-rep" "-in_rep" "-ex_rep" "-ext" "-in_ext" "-ex_ext" "-polyNo" "-in_polyNo" "-ex_polyNo"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set in [lindex $args 0]
       set ex [lindex $args 1]
       set x0 [lindex $args 2]
@@ -1426,7 +1426,7 @@ proc serie_rot {args} {
       # Configuration des options
       set options [lrange $args 5 [expr [llength $args]-1]]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
 
       set rep_index [lsearch -regexp $options_1param "-rep"]
@@ -1482,11 +1482,11 @@ proc serie_rot {args} {
          set ex_polyNo [lindex [lindex $options_1param $ex_polyNo_index] 1]
       }
 
-      # Procédure principale
-      # On récupère la liste des index de la série initiale...
+      # ProcÃ©dure principale
+      # On rÃ©cupÃ¨re la liste des index de la sÃ©rie initiale...
       set liste_index [liste_index $in -rep "$in_rep" -ext $in_ext]
 
-      # Création du buffer temporaire
+      # CrÃ©ation du buffer temporaire
       set num_buf_tmp [buf::create]
       buf$num_buf_tmp extension $conf(extension,defaut)
 
@@ -1509,7 +1509,7 @@ proc serie_trans {args} {
 
    if {[syntaxe_args $args 4 0 [list "" [list "-rep" "-in_rep" "-ex_rep" "-ext" "-in_ext" "-ex_ext" "-polyNo" "-in_polyNo" "-ex_polyNo"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set in [lindex $args 0]
       set ex [lindex $args 1]
       set dx [lindex $args 2]
@@ -1518,7 +1518,7 @@ proc serie_trans {args} {
       # Configuration des options
       set options [lrange $args 4 [expr [llength $args]-1]]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
 
       set rep_index [lsearch -regexp $options_1param "-rep"]
@@ -1574,11 +1574,11 @@ proc serie_trans {args} {
          set ex_polyNo [lindex [lindex $options_1param $ex_polyNo_index] 1]
       }
 
-      # Procédure principale
-      # On récupère la liste des index de la série initiale...
+      # ProcÃ©dure principale
+      # On rÃ©cupÃ¨re la liste des index de la sÃ©rie initiale...
       set liste_index [liste_index $in -rep "$in_rep" -ext $in_ext]
 
-      # Création du buffer temporaire
+      # CrÃ©ation du buffer temporaire
       set num_buf_tmp [buf::create]
       buf$num_buf_tmp extension $conf(extension,defaut)
 
@@ -1601,14 +1601,14 @@ proc series_traligne {args} {
 
    if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep" "-in_polyNo"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set liste_in [lindex $args 0]
       set ex [lindex $args 1]
 
       # Configuration des options
       set options [lrange $args 2 [expr [llength $args]-1]]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
 
       set rep_index [lsearch -regexp $options_1param "-rep"]
@@ -1643,36 +1643,36 @@ proc series_traligne {args} {
          set in_polyNo 1
       }
 
-      # Procédure principale
-      # On supprime d'éventuels fichiers déjà présents de la série-cible
+      # ProcÃ©dure principale
+      # On supprime d'Ã©ventuels fichiers dÃ©jÃ  prÃ©sents de la sÃ©rie-cible
       suppr_serie $ex -rep "$ex_rep" -ext $ext
 
-      # La série de référence est recopiée sans modifications
+      # La sÃ©rie de rÃ©fÃ©rence est recopiÃ©e sans modifications
       set serie_ref [lindex $liste_in 0]
       poly2serie $serie_ref $in_polyNo $ex -in_rep $in_rep -ex_rep $ex_rep -ext $ext
-      # Tex au plus on la renumérote.
+      # Tex au plus on la renumÃ©rote.
       renumerote $ex -rep "$ex_rep" -ext $ext
 
-      # On garde en mémoire le nom du dernier fichier de cette série, qui servira de
-      # référence pour recaler la série suivante
+      # On garde en mÃ©moire le nom du dernier fichier de cette sÃ©rie, qui servira de
+      # rÃ©fÃ©rence pour recaler la sÃ©rie suivante
       set liste_index_ref [lsort [liste_index $ex -rep "$ex_rep" -ext $ext]]
       catch {set liste_index_ref [lsort -integer $liste_index_ref]}
       set index_ref [lindex $liste_index_ref [expr [llength $liste_index_ref]-1]]
       set fichier_ref [file join $ex_rep $ex$index_ref$ext]
 
-      # A présent, on fait les transformations sur les autres séries :
+      # A prÃ©sent, on fait les transformations sur les autres sÃ©ries :
       set series_amodif [lrange $liste_in 1 [expr [llength $liste_in]-1]]
 
-      # Les fichiers temporaires sont stockés dans un répertoire temporaire
+      # Les fichiers temporaires sont stockÃ©s dans un rÃ©pertoire temporaire
       set rep_tmp [cree_sousrep -rep "$ex_rep" -nom_base "tmp_poly_series_traligne"]
 
       foreach serie $series_amodif {
 
-         # On détermine le cadre de référence ;
+         # On dÃ©termine le cadre de rÃ©fÃ©rence ;
          console::affiche_resultat "$caption(divers,series_trreg_cadre-ref) $serie\n"
          loadima "$fichier_ref"
 
-         # Création de la fenêtre
+         # CrÃ©ation de la fenÃªtre
          set script(series_traligne,attente) 0
          toplevel .series_traligne
          label .series_traligne.lab -text $caption(divers,tracebox)
@@ -1680,58 +1680,58 @@ proc series_traligne {args} {
          button .series_traligne.but -command {set script(series_traligne,attente) 0} -text "ok"
          pack .series_traligne.but -expand true
 
-         # On attend que l'utilisateur ait validé
+         # On attend que l'utilisateur ait validÃ©
          vwait script(series_traligne,attente)
 
-         # On supprime la fenêtre
+         # On supprime la fenÃªtre
          destroy .series_traligne
 
-         # On enregistre les coordonnées du cadre
+         # On enregistre les coordonnÃ©es du cadre
          set cadre_ref [ ::confVisu::getBox 1 ]
 
          console::affiche_resultat "$caption(divers,series_trreg_cadre-a-rec) $serie\n"
-         # Chargement du premier fichier de la série courante
+         # Chargement du premier fichier de la sÃ©rie courante
          set liste_index [liste_index $serie -rep $in_rep -ext $ext]
          catch {set liste_index [lsort -integer $liste_index]}
          loadima [file join $in_rep "$serie[lindex $liste_index 0]$ext;$in_polyNo"]
 
-         # Création de la fenêtre
+         # CrÃ©ation de la fenÃªtre
          set script(series_traligne,attente) 0
          toplevel .series_traligne
          label .series_traligne.lab -text $caption(divers,tracebox)
          pack .series_traligne.lab -expand true
          button .series_traligne.but -command {set script(series_traligne,attente) 0} -text "ok"
          pack .series_traligne.but -expand true
-         # On attend que l'utilisateur ait validé
+         # On attend que l'utilisateur ait validÃ©
          vwait script(series_traligne,attente)
-         # On supprime la fenêtre
+         # On supprime la fenÃªtre
          destroy .series_traligne
-         # On enregistre les coordonnées du cadre
+         # On enregistre les coordonnÃ©es du cadre
          set cadre_amodif [ ::confVisu::getBox 1 ]
          # Calcul des modifications de translation / rotation
          set modifs [calcul_trzaligne $cadre_ref $cadre_amodif]
 
-         # Translation (en entiers pour éviter de dégrader la résolution)
+         # Translation (en entiers pour Ã©viter de dÃ©grader la rÃ©solution)
          console::affiche_resultat "$caption(divers,series_trreg_transl) $serie\n"
          serie_trans $serie tmp_trans_$serie [expr round([lindex $modifs 0])] [expr round([lindex $modifs 1])] -in_rep $in_rep -ex_rep $rep_tmp -ext $ext -in_polyNo $in_polyNo
          # Rotation
          console::affiche_resultat "$caption(divers,series_trreg_rot) $serie\n"
          serie_rot tmp_trans_$serie tmp_rot_$serie [lindex $modifs 2] [lindex $modifs 3] [lindex $modifs 4] -rep "$rep_tmp" -ext $ext
-         # Suppression de la série temporaire de translation (si on n'avait pas cette série temporaire,
-         # l'auto-écrasement bugge)
+         # Suppression de la sÃ©rie temporaire de translation (si on n'avait pas cette sÃ©rie temporaire,
+         # l'auto-Ã©crasement bugge)
          suppr_serie tmp_trans_$serie -rep "$rep_tmp" -ext $ext
-         # On renomme vers la série de destination
+         # On renomme vers la sÃ©rie de destination
          renomme tmp_rot_$serie $ex -in_rep $rep_tmp -ex_rep $ex_rep -ext $ext
 
-         # On garde en mémoire le nom du dernier fichier de cette série, qui servira de
-         # référence pour recaler la série suivante
+         # On garde en mÃ©moire le nom du dernier fichier de cette sÃ©rie, qui servira de
+         # rÃ©fÃ©rence pour recaler la sÃ©rie suivante
          set liste_index_ref [lsort [liste_index $ex -rep "$ex_rep" -ext $ext]]
          catch {set liste_index_ref [lsort -integer $liste_index_ref]}
          set index_ref [lindex $liste_index_ref [expr [llength $liste_index_ref]-1]]
          set fichier_ref [file join $ex_rep $ex$index_ref$ext]
       }
 
-      # Suppression du répertoire temporaire
+      # Suppression du rÃ©pertoire temporaire
       file delete $rep_tmp
    } else {
       error $caption(divers,syntax,series_traligne)
@@ -1743,14 +1743,14 @@ proc serie_sauvejpeg {args} {
 
    if {[syntaxe_args $args 1 0 [list "" [list "-ex_name" "-qualitejpeg" "-seuils_type" "-rep" "-in_rep" "-ex_rep" "-in_ext" "-ex_ext" "-in_polyNo"] [list "-seuils_haut_bas" "-histo_haut_bas"]]] =="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set in [lindex $args 0]
 
       # Configuration des options
       set options [lrange $args 1 [expr [llength $args]-1]]
       set range_options [range_options $options]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex $range_options 2]
 
       set ex_name_index [lsearch -regexp $options_1param "-ex_name"]
@@ -1809,7 +1809,7 @@ proc serie_sauvejpeg {args} {
          set in_polyNo 1
       }
 
-      # Configuration des options à 2 paramètres
+      # Configuration des options Ã  2 paramÃ¨tres
       set options_2param [lindex $range_options 3]
 
       set seuils_haut_bas_index [lsearch -regexp $options_2param "-seuils_haut_bas"]
@@ -1826,18 +1826,18 @@ proc serie_sauvejpeg {args} {
          set histo_bas [lindex [lindex $options_2param $histo_haut_bas_index] 2]
       }
 
-      # Procédure principale
-      # On récupère la liste des index de la série initiale...
+      # ProcÃ©dure principale
+      # On rÃ©cupÃ¨re la liste des index de la sÃ©rie initiale...
       set liste_index [liste_index $in -rep "$in_rep" -ext $in_ext]
 
-      # Création du buffer temporaire
+      # CrÃ©ation du buffer temporaire
       set num_buf_tmp [buf::create]
       buf$num_buf_tmp extension $conf(extension,defaut)
 
       # Sauvegarde des fichiers
       foreach index $liste_index {
          buf$num_buf_tmp load [file join $in_rep "$in$index$in_ext;$in_polyNo"]
-         # Si on n'est pas en seuillage fixe, il faut calculer les seuils adaptés.
+         # Si on n'est pas en seuillage fixe, il faut calculer les seuils adaptÃ©s.
          if {$seuils_type!="fixe"} {
             switch -exact -- $seuils_type {
                loadima {
@@ -1874,14 +1874,14 @@ proc mediane {args} {
 
    if {[syntaxe_args $args 1 0 [list "" [list "-buf" "-rep" "-ext" "-polyNo"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set serie [lindex $args 0]
 
       # Configuration des options
       set options [lrange $args 1 [expr [llength $args]-1]]
       set range_options [range_options $options]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex $range_options 2]
 
       set buf_index [lsearch -regexp $options_1param "-buf"]
@@ -1912,21 +1912,21 @@ proc mediane {args} {
          set aux_polyNo 1
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
 
-      # On vérifie que la série de départ existe bien
+      # On vÃ©rifie que la sÃ©rie de dÃ©part existe bien
       if {[serie_existe $serie -rep "$rep" -ext $ext] == 0} {
          return
       }
 
-      # Création d'un répertoire temporaire
+      # CrÃ©ation d'un rÃ©pertoire temporaire
       set rep_tmp [cree_sousrep -nom_base "tmp_mediane" -rep $rep]
 
-      # Création sur le disque de l'image médiane
+      # CrÃ©ation sur le disque de l'image mÃ©diane
       set nb_images [llength [liste_index $serie -rep "$rep" -ext $ext]]
-      # Série "bien" numérotée
+      # SÃ©rie "bien" numÃ©rotÃ©e
       if {[numerotation_usuelle $serie -rep "$rep" -ext $ext] == 1} {
-         # Cas d'une série compressée .bz2
+         # Cas d'une sÃ©rie compressÃ©e .bz2
          if {[file extension $ext] == ".bz2"} {
             copie $serie $serie -in_rep "$rep" -ex_rep $rep_tmp -ext $ext
             foreach fichier [glob [file join $rep_tmp ${serie}*$ext]] {
@@ -1938,10 +1938,10 @@ proc mediane {args} {
          } else {
             ttscript2 "IMA/STACK \"$rep\" $serie 1 $nb_images $ext \"$rep_tmp\" mediane . $conf(extension,defaut) MED"
          }
-         # Série "mal" numérotée
+         # SÃ©rie "mal" numÃ©rotÃ©e
       } else {
          copie $serie $serie -in_rep "$rep" -ex_rep $rep_tmp -ext $ext
-         # Cas d'une série compressée .bz2
+         # Cas d'une sÃ©rie compressÃ©e .bz2
          if {[file extension $ext] == ".bz2"} {
             foreach fichier [glob [file join $rep_tmp ${serie}*$ext]] {
                exec chmod a+w $fichier
@@ -1960,10 +1960,10 @@ proc mediane {args} {
          }
       }
 
-      # Chargement de l'image dans le buffer désiré
+      # Chargement de l'image dans le buffer dÃ©sirÃ©
       charge mediane -rep "$rep_tmp" -ext $conf(extension,defaut) -buf $buf
 
-      # Suppression de fichier / répertoire temporaire
+      # Suppression de fichier / rÃ©pertoire temporaire
       file delete [file join $rep_tmp mediane$conf(extension,defaut)]
       file delete [file join $rep_tmp]
 
@@ -1978,7 +1978,7 @@ proc serie_soustrait {args} {
 
    if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep" "-in_ext" "-ex_ext" "-polyNo" "-in_polyNo" "-ex_polyNo" "-buf"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set in_serie [lindex $args 0]
       set ex_serie [lindex $args 1]
 
@@ -1986,7 +1986,7 @@ proc serie_soustrait {args} {
       set options [lrange $args 2 [expr [llength $args]-1]]
       set range_options [range_options $options]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex $range_options 2]
 
       set rep_index [lsearch -regexp $options_1param "-rep"]
@@ -2048,23 +2048,23 @@ proc serie_soustrait {args} {
          set buf $audace(bufNo)
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
 
-      # On vérifie que la série de départ existe bien
+      # On vÃ©rifie que la sÃ©rie de dÃ©part existe bien
       if {[serie_existe $in_serie -rep "$in_rep" -ext $in_ext] == 0} {
          return
       }
 
-      # Création d'un répertoire temporaire
+      # CrÃ©ation d'un rÃ©pertoire temporaire
       set rep_tmp [cree_sousrep -nom_base "tmp_serie_soustrait"]
 
-      # On enregistre sur le disque l'image à soustraire
+      # On enregistre sur le disque l'image Ã  soustraire
       sauve soustrait -buf $buf -rep "$rep_tmp" -ext [lindex [decomp $ex_ext] 3]
 
-      # On récupère la liste des index de la série initiale...
+      # On rÃ©cupÃ¨re la liste des index de la sÃ©rie initiale...
       set liste_index [liste_index $in_serie -rep "$in_rep" -ext $in_ext]
 
-      # Création du buffer temporaire
+      # CrÃ©ation du buffer temporaire
       set num_buf_tmp [buf::create]
       buf$num_buf_tmp extension $conf(extension,defaut)
 
@@ -2078,7 +2078,7 @@ proc serie_soustrait {args} {
       # Suppression du buffer temporaire
       buf::delete $num_buf_tmp
 
-      # Suppression de fichier / répertoire temporaire
+      # Suppression de fichier / rÃ©pertoire temporaire
       file delete [file join $rep_tmp soustrait$ex_ext]
       file delete [file join $rep_tmp]
 
@@ -2093,7 +2093,7 @@ proc serie_normalise {args} {
 
    if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep" "-in_ext" "-ex_ext" "-polyNo" "-in_polyNo" "-ex_polyNo" "-buf"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set in_serie [lindex $args 0]
       set ex_serie [lindex $args 1]
 
@@ -2101,7 +2101,7 @@ proc serie_normalise {args} {
       set options [lrange $args 2 [expr [llength $args]-1]]
       set range_options [range_options $options]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex $range_options 2]
 
       set rep_index [lsearch -regexp $options_1param "-rep"]
@@ -2163,23 +2163,23 @@ proc serie_normalise {args} {
          set buf $audace(bufNo)
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
 
-      # On vérifie que la série de départ existe bien
+      # On vÃ©rifie que la sÃ©rie de dÃ©part existe bien
       if {[serie_existe $in_serie -rep "$in_rep" -ext $in_ext] == 0} {
          return
       }
 
-      # Création d'un répertoire temporaire
+      # CrÃ©ation d'un rÃ©pertoire temporaire
       set rep_tmp [cree_sousrep -nom_base "tmp_serie_soustrait"]
 
-      # On enregistre sur le disque l'image à soustrairepar laquelle normaliser
+      # On enregistre sur le disque l'image Ã  soustrairepar laquelle normaliser
       sauve normalise -buf $buf -rep "$rep_tmp" -ext [lindex [decomp $ex_ext] 3]
 
-      # On récupère la liste des index de la série initiale...
+      # On rÃ©cupÃ¨re la liste des index de la sÃ©rie initiale...
       set liste_index [liste_index $in_serie -rep "$in_rep" -ext $in_ext]
 
-      # Création du buffer temporaire
+      # CrÃ©ation du buffer temporaire
       set num_buf_tmp [buf::create]
       buf$num_buf_tmp extension $conf(extension,defaut)
 
@@ -2193,7 +2193,7 @@ proc serie_normalise {args} {
       # Suppression du buffer temporaire
       buf::delete $num_buf_tmp
 
-      # Suppression de fichier / répertoire temporaire
+      # Suppression de fichier / rÃ©pertoire temporaire
       file delete [file join $rep_tmp normalise$ex_ext]
       file delete [file join $rep_tmp]
 
@@ -2208,7 +2208,7 @@ proc normalise_gain {args} {
 
    if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep" "-in_ext" "-ex_ext" "-polyNo" "-in_polyNo" "-ex_polyNo"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set in_serie [lindex $args 0]
       set ex_serie [lindex $args 1]
 
@@ -2216,7 +2216,7 @@ proc normalise_gain {args} {
       set options [lrange $args 2 [expr [llength $args]-1]]
       set range_options [range_options $options]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex $range_options 2]
 
       set rep_index [lsearch -regexp $options_1param "-rep"]
@@ -2272,28 +2272,28 @@ proc normalise_gain {args} {
          set ex_polyNo [lindex [lindex $options_1param $ex_polyNo_index] 1]
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
 
-      # On vérifie que la série de départ existe bien
+      # On vÃ©rifie que la sÃ©rie de dÃ©part existe bien
       if {[serie_existe $in_serie -rep "$in_rep" -ext $in_ext] == 0} {
          return
       }
 
-      # On récupère la liste des index de la série initiale...
+      # On rÃ©cupÃ¨re la liste des index de la sÃ©rie initiale...
       set liste_index [liste_index $in_serie -rep "$in_rep" -ext $in_ext]
 
-      # Création du buffer temporaire
+      # CrÃ©ation du buffer temporaire
       set num_buf_tmp [buf::create]
       buf$num_buf_tmp extension $conf(extension,defaut)
 
-      # On enregistre le niveau de fond de ciel de la première image
+      # On enregistre le niveau de fond de ciel de la premiÃ¨re image
       set premier_index [lindex $liste_index 0]
       charge $in_serie$premier_index -rep "$in_rep" -ext $in_ext -polyNo $in_polyNo -buf $num_buf_tmp
       set stats [buf$num_buf_tmp stat]
       set gain_ref [lindex $stats 6]
       sauve $ex_serie$premier_index -rep "$ex_rep" -ext $ex_ext -polyNo $ex_polyNo -buf $num_buf_tmp
 
-      # Normalisation du gain de chaque image en se calant sur la première
+      # Normalisation du gain de chaque image en se calant sur la premiÃ¨re
       foreach index [lrange $liste_index 1 [expr [llength $liste_index]-1]] {
          charge $in_serie$index -rep "$in_rep" -ext $in_ext -polyNo $in_polyNo -buf $num_buf_tmp
          set stats [buf$num_buf_tmp stat]
@@ -2316,7 +2316,7 @@ proc aligne {args} {
 
    if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_ext" "-ex_ext" "-in_rep" "-ex_rep" "-polyNo" "-in_polyNo" "-ex_polyNo"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set in_serie [lindex $args 0]
       set ex_serie [lindex $args 1]
 
@@ -2324,7 +2324,7 @@ proc aligne {args} {
       set options [lrange $args 2 [expr [llength $args]-1]]
       set range_options [range_options $options]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex $range_options 2]
 
       set rep_index [lsearch -regexp $options_1param "-rep"]
@@ -2380,36 +2380,36 @@ proc aligne {args} {
          set ex_polyNo [lindex [lindex $options_1param $ex_polyNo_index] 1]
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
 
-      # On vérifie que la série de départ existe bien
+      # On vÃ©rifie que la sÃ©rie de dÃ©part existe bien
       if {[serie_existe $in_serie -rep "$in_rep" -ext $in_ext] == 0} {
          return
       }
 
-      # On récupère la liste des index de la série initiale...
+      # On rÃ©cupÃ¨re la liste des index de la sÃ©rie initiale...
       set liste_index [liste_index $in_serie -rep "$in_rep" -ext $in_ext]
 
-      # Création d'un répertoire temporaire
+      # CrÃ©ation d'un rÃ©pertoire temporaire
       set rep_tmp [cree_sousrep -nom_base "tmp_aligne" -rep "$in_rep"]
 
-      # En cas de compression .bz2 : on décompresse dans le répertoire temporaire
+      # En cas de compression .bz2 : on dÃ©compresse dans le rÃ©pertoire temporaire
       if {[lindex [decomp $in_ext] 4] ==".bz2" } {
          copie $in_serie tmp_ima_ -in_rep $in_rep -ex_rep $rep_tmp -in_ext $in_ext -ex_ext [lindex [decomp $in_ext] 3]
-         # On sauve dans le répertoire temporaire les images associées chacune à un catalogue d'objet qu'elles contiennent
+         # On sauve dans le rÃ©pertoire temporaire les images associÃ©es chacune Ã  un catalogue d'objet qu'elles contiennent
          foreach index $liste_index {
            # ttscript2 "IMA/SERIES \"$rep_tmp\" tmp_ima_ $index $index [lindex [decomp $in_ext] 3] \"$rep_tmp\" tmp_ima_ $index [lindex [decomp $in_ext] 3] STAT objefile"
             ttscript2 "IMA/SERIES \"$rep_tmp\" tmp_ima_$index . . [lindex [decomp $in_ext] 3] \"$rep_tmp\" tmp_ima_$index . [lindex [decomp $in_ext] 3] STAT objefile"
          }
       } else {
-         # On sauve dans le répertoire temporaire les images associées chacune à un catalogue d'objet qu'elles contiennent
+         # On sauve dans le rÃ©pertoire temporaire les images associÃ©es chacune Ã  un catalogue d'objet qu'elles contiennent
          foreach index $liste_index {
            # ttscript2 "IMA/SERIES \"$in_rep\" $in_serie $index $index $in_ext \"$rep_tmp\" tmp_ima_ $index [lindex [decomp $in_ext] 3] STAT objefile"
             ttscript2 "IMA/SERIES \"$in_rep\" $in_serie$index . . $in_ext \"$rep_tmp\" tmp_ima_$index . [lindex [decomp $in_ext] 3] STAT objefile"
          }
       }
 
-      # Création du buffer temporaire
+      # CrÃ©ation du buffer temporaire
       set num_buf_tmp [buf::create]
       buf$num_buf_tmp extension $conf(extension,defaut)
 
@@ -2417,7 +2417,7 @@ proc aligne {args} {
          # Registration
          ttscript2 "IMA/SERIES \"$rep_tmp\" tmp_ima_ 1 [llength $liste_index] [lindex [decomp $in_ext] 3] \"$rep_tmp\" tmp_ima2_ 1 [lindex [decomp $ex_ext] 3] REGISTER translate=only"
 
-         # Fenêtrage des images
+         # FenÃªtrage des images
          set depl_x ""
          set depl_y ""
          foreach index $liste_index {
@@ -2433,7 +2433,7 @@ proc aligne {args} {
          set naxis2 [lindex [buf$num_buf_tmp getkwd NAXIS2] 1]
          serie_fenetre tmp_ima2_ tmp_ima2_ [list [expr -round([lmin $depl_x])] [expr -round([lmin $depl_y])] [expr $naxis1 - round([lmax $depl_x])] [expr $naxis2 - round([lmax $depl_y])]] -ext [lindex [decomp $ex_ext] 3] -rep "$rep_tmp"
 
-         # Déplacement des fichiers
+         # DÃ©placement des fichiers
          renomme tmp_ima2_ $ex_serie -in_rep $rep_tmp -ex_rep $ex_rep -in_ext [lindex [decomp $in_ext] 3] -ex_ext $ex_ext
 
       } else {
@@ -2443,7 +2443,7 @@ proc aligne {args} {
          # Registration
          ttscript2 "IMA/SERIES \"$rep_tmp\" tmp_ima_ 1 [llength $liste_index] [lindex [decomp $in_ext] 3] \"$rep_tmp\" tmp_ima2_ 1 [lindex [decomp $in_ext] 3] REGISTER translate=only"
 
-         # Fenêtrage des images
+         # FenÃªtrage des images
          set depl_x ""
          set depl_y ""
          for {set index 1} {$index <= [llength $liste_index]} {incr index} {
@@ -2459,14 +2459,14 @@ proc aligne {args} {
          set naxis2 [lindex [buf$num_buf_tmp getkwd NAXIS2] 1]
          serie_fenetre tmp_ima2_ tmp_ima2_ [list [expr -round([lmin $depl_x])] [expr -round([lmin $depl_y])] [expr $naxis1 - round([lmax $depl_x])] [expr $naxis2 - round([lmax $depl_y])]] -ext [lindex [decomp $ex_ext] 3] -rep "$rep_tmp"
 
-         # Déplacement des fichiers
+         # DÃ©placement des fichiers
          renomme tmp_ima2_ $ex_serie -in_rep $rep_tmp -ex_rep $ex_rep -in_ext [lindex [decomp $in_ext] 3] -ex_ext $ex_ext
       }
 
       # Suppression du buffer temporaire
       buf::delete $num_buf_tmp
 
-      # Suppression de fichier / répertoire temporaire
+      # Suppression de fichier / rÃ©pertoire temporaire
       suppr_serie tmp_ima_ -rep "$rep_tmp" -ext [lindex [decomp $in_ext] 3]
       file delete $rep_tmp
 
@@ -2477,7 +2477,7 @@ proc aligne {args} {
 }
 
 ######################################################
-###############   Fonctions avancées   ###############
+###############   Fonctions avancÃ©es   ###############
 ######################################################
 
 proc TestEntier {args} {
@@ -2485,10 +2485,10 @@ proc TestEntier {args} {
 
    if {[syntaxe_args $args 1 0 ""]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set valeur [lindex $args 0]
 
-      # Procédure principale
+      # ProcÃ©dure principale
       set test 1
       for {set i 0} {$i < [string length $valeur]} {incr i} {
          set a [string index $valeur $i]
@@ -2507,10 +2507,10 @@ proc TestReel {args} {
    global caption
 
    if {[syntaxe_args $args 1 0 ""]=="1"} {
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set valeur [lindex $args 0]
 
-      # Procédure principale
+      # ProcÃ©dure principale
       set test 1
       for { set i 0 } { $i < [string length $valeur] } { incr i } {
          set a [string index $valeur $i]
@@ -2529,11 +2529,11 @@ proc dernier_est_chiffre {args} {
 
    if {[syntaxe_args $args 1 0 ""]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set chaine [lindex $args 0]
 
-      # Procédure principale
-      # La procédure retourne "1" si le dernier caractère du mot est un chiffre, "0" sinon.
+      # ProcÃ©dure principale
+      # La procÃ©dure retourne "1" si le dernier caractÃ¨re du mot est un chiffre, "0" sinon.
       set caractere [string index $chaine [expr [string length $chaine]-1]]
       switch -exact -- $caractere {
          0 {return 1}
@@ -2558,46 +2558,46 @@ proc nom_valide {args} {
 
    if {[syntaxe_args $args 1 0 ""]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set chaine [lindex $args 0]
 
-      # Procédure principale
-      # La procédure retourne "0" si le mot comporte des caractères invalides, "1" sinon.
+      # ProcÃ©dure principale
+      # La procÃ©dure retourne "0" si le mot comporte des caractÃ¨res invalides, "1" sinon.
       set valide "1"
       set k 0
       set kmax [string length $chaine]
       while {$k<$kmax} {
          set caractere [string index $chaine $k]
          switch -exact -- $caractere {
-            à {
+            Ã  {
                return 0
                break
             }
-            â {
+            Ã¢ {
                return 0
                break
             }
-            é {
+            Ã© {
                return 0
                break
             }
-            è {
+            Ã¨ {
                return 0
                break
             }
-            ê {
+            Ãª {
                return 0
                break
             }
-            î {
+            Ã® {
                return 0
                break
             }
-            ô {
+            Ã´ {
                return 0
                break
             }
-            ù {
+            Ã¹ {
                return 0
                break
             }
@@ -2617,41 +2617,41 @@ proc suppr_accents {args} {
 
    if {[syntaxe_args $args 1 0 ""]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set chaine [lindex $args 0]
 
-      # Procédure principale
-      # La procédure retourne la liste de caractères nettoyée de tout accentuation.
+      # ProcÃ©dure principale
+      # La procÃ©dure retourne la liste de caractÃ¨res nettoyÃ©e de tout accentuation.
 
-      if {[string first "à" $chaine]>=0} {
-         set index [string first "à" $chaine]
+      if {[string first "Ã " $chaine]>=0} {
+         set index [string first "Ã " $chaine]
          return [suppr_accents [string replace $chaine $index $index "a"]]
-      } elseif {[string first "â" $chaine]>=0} {
-         set index [string first "â" $chaine]
+      } elseif {[string first "Ã¢" $chaine]>=0} {
+         set index [string first "Ã¢" $chaine]
          return [suppr_accents [string replace $chaine $index $index "a"]]
-      } elseif {[string first "ç" $chaine]>=0} {
-         set index [string first "ç" $chaine]
+      } elseif {[string first "Ã§" $chaine]>=0} {
+         set index [string first "Ã§" $chaine]
          return [suppr_accents [string replace $chaine $index $index "c"]]
-      } elseif {[string first "é" $chaine]>=0} {
-         set index [string first "é" $chaine]
+      } elseif {[string first "Ã©" $chaine]>=0} {
+         set index [string first "Ã©" $chaine]
          return [suppr_accents [string replace $chaine $index $index "e"]]
-      } elseif {[string first "è" $chaine]>=0} {
-         set index [string first "è" $chaine]
+      } elseif {[string first "Ã¨" $chaine]>=0} {
+         set index [string first "Ã¨" $chaine]
          return [suppr_accents [string replace $chaine $index $index "e"]]
-      } elseif {[string first "ê" $chaine]>=0} {
-         set index [string first "ê" $chaine]
+      } elseif {[string first "Ãª" $chaine]>=0} {
+         set index [string first "Ãª" $chaine]
          return [suppr_accents [string replace $chaine $index $index "e"]]
-      } elseif {[string first "î" $chaine]>=0} {
-         set index [string first "î" $chaine]
+      } elseif {[string first "Ã®" $chaine]>=0} {
+         set index [string first "Ã®" $chaine]
          return [suppr_accents [string replace $chaine $index $index "i"]]
-      } elseif {[string first "ï" $chaine]>=0} {
-         set index [string first "ï" $chaine]
+      } elseif {[string first "Ã¯" $chaine]>=0} {
+         set index [string first "Ã¯" $chaine]
          return [suppr_accents [string replace $chaine $index $index "i"]]
-      } elseif {[string first "ô" $chaine]>=0} {
-         set index [string first "ô" $chaine]
+      } elseif {[string first "Ã´" $chaine]>=0} {
+         set index [string first "Ã´" $chaine]
          return [suppr_accents [string replace $chaine $index $index "o"]]
-      } elseif {[string first "ù" $chaine]>=0} {
-         set index [string first "ù" $chaine]
+      } elseif {[string first "Ã¹" $chaine]>=0} {
+         set index [string first "Ã¹" $chaine]
          return [suppr_accents [string replace $chaine $index $index "u"]]
       } else {
          return $chaine
@@ -2666,19 +2666,19 @@ proc decomp {args} {
 
    if {[syntaxe_args $args 1 0 ""]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set filename [lindex $args 0]
 
-      # Procédure principale
-      # A tout nom de fichier (avec ou sans le chemin) cette procédure renvoie [dossier nom_generique index extension compression]
+      # ProcÃ©dure principale
+      # A tout nom de fichier (avec ou sans le chemin) cette procÃ©dure renvoie [dossier nom_generique index extension compression]
       set dossier [file dirname $filename]
       # On ne garde que le nom du fichier
       set filename [file tail $filename]
-      # On détermine quelle est l'extension du fichier
+      # On dÃ©termine quelle est l'extension du fichier
       set ext [file extension $filename]
       switch $ext {
          ".gz" {
-            # Cas où le fichier est compressé
+            # Cas oÃ¹ le fichier est compressÃ©
             set gz ".gz"
             # On tronque de l'extension .gz
             set filename [file rootname $filename]
@@ -2686,7 +2686,7 @@ proc decomp {args} {
             set extension [file extension $filename]
          }
          ".bz2" {
-            # Cas où le fichier est compressé
+            # Cas oÃ¹ le fichier est compressÃ©
             set gz ".bz2"
             # On tronque de l'extension .bz2
             set filename [file rootname $filename]
@@ -2694,14 +2694,14 @@ proc decomp {args} {
             set extension [file extension $filename]
          }
          default {
-            # Cas où le fichier n'est pas compressé
+            # Cas oÃ¹ le fichier n'est pas compressÃ©
             set gz ""
             set extension $ext
          }
       }
 
       set nom_fichier [file rootname $filename]
-      # On sépare à présent le nom générique et l'index
+      # On sÃ©pare Ã  prÃ©sent le nom gÃ©nÃ©rique et l'index
       set index ""
       set continue [dernier_est_chiffre $nom_fichier]
       while {$continue==1} {
@@ -2720,13 +2720,13 @@ proc liste_index {args} {
 
    if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set nom_generique [lindex $args 0]
 
       # Configuration des options
       set options [lrange $args 1 [expr [llength $args]-1]]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
 
       set rep_index [lsearch -regexp $options_1param "-rep"]
@@ -2745,20 +2745,20 @@ proc liste_index {args} {
          set ext $conf(extension,defaut).gz
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
 
-      # NB : On renvoie les index des fichiers dont le nom générique correspond à {nom_generique}
-      # Sous-entendu : on s'occupe d'une série indexée...
-      # On fait une première sélection
+      # NB : On renvoie les index des fichiers dont le nom gÃ©nÃ©rique correspond Ã  {nom_generique}
+      # Sous-entendu : on s'occupe d'une sÃ©rie indexÃ©e...
+      # On fait une premiÃ¨re sÃ©lection
       set panier [glob -nocomplain [file join "$rep" $nom_generique*$ext]]
-      # Attention ! Dans la liste référencée "panier" on a trop de fichiers ! En effet on a en plus :
-      # 1) Un éventuel fichier nom_generique$ext (non indexé)
-      # 2) Les fichiers dont le nom générique commence pareil mais est plus long
-      # 3) Et même : des fichiers dont le nom générique commence pareil mais comprend des majuscules !!!!!!!!!!!!
+      # Attention ! Dans la liste rÃ©fÃ©rencÃ©e "panier" on a trop de fichiers ! En effet on a en plus :
+      # 1) Un Ã©ventuel fichier nom_generique$ext (non indexÃ©)
+      # 2) Les fichiers dont le nom gÃ©nÃ©rique commence pareil mais est plus long
+      # 3) Et mÃªme : des fichiers dont le nom gÃ©nÃ©rique commence pareil mais comprend des majuscules !!!!!!!!!!!!
 
-      # On solutionne le point n°1 :
-      # Pour que la fonction lsearch ne se mélange pas les crayons entre les extensions .FIT et .fit (par exemple)
-      # on créée une nouvelle liste où les noms de fichiers sont tronqués de l'extension
+      # On solutionne le point nÂ°1 :
+      # Pour que la fonction lsearch ne se mÃ©lange pas les crayons entre les extensions .FIT et .fit (par exemple)
+      # on crÃ©Ã©e une nouvelle liste oÃ¹ les noms de fichiers sont tronquÃ©s de l'extension
 
       set new_panier ""
       foreach name $panier {
@@ -2769,7 +2769,7 @@ proc liste_index {args} {
          set panier [concat [lrange $panier 0 [expr $no_index-1]] [lrange $panier [expr $no_index+1] [expr [llength $panier]-1]]]
       }
 
-      # Pour éviter des problèmes dans les cas où le nom générique se termine par un chiffre, on rajoute dans ce cas
+      # Pour Ã©viter des problÃ¨mes dans les cas oÃ¹ le nom gÃ©nÃ©rique se termine par un chiffre, on rajoute dans ce cas
       # un "_" dans tous les noms de fichiers
       if {[dernier_est_chiffre $nom_generique]=="1"} {
          set new_panier ""
@@ -2781,7 +2781,7 @@ proc liste_index {args} {
          set nom_generique ${nom_generique}_
       }
 
-      # On termine en résolvant les points 2 et 3 :
+      # On termine en rÃ©solvant les points 2 et 3 :
       set index_list ""
       foreach fichier $panier {
          set decomp [decomp $fichier]
@@ -2800,12 +2800,12 @@ proc liste_series {args} {
 
    if {[syntaxe_args $args 0 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
 
       # Configuration des options
       set options $args
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
 
       set rep_index [lsearch -regexp $options_1param "-rep"]
@@ -2824,12 +2824,12 @@ proc liste_series {args} {
          set ext $conf(extension,defaut).gz
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
 
-      # On récupère la liste des fichiers du répertoire courant
+      # On rÃ©cupÃ¨re la liste des fichiers du rÃ©pertoire courant
       set panier [glob -nocomplain [file join "$rep" *$ext]]
 
-      # On parcours cette liste en enregistrant chaque nouvelle série
+      # On parcours cette liste en enregistrant chaque nouvelle sÃ©rie
       set liste_series ""
 
       foreach fichier $panier {
@@ -2849,12 +2849,12 @@ proc liste_sousreps {args} {
 
    if {[syntaxe_args $args 0 0 [list "" [list "-rep"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
 
       # Configuration des options
       set options $args
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
 
       set rep_index [lsearch -regexp $options_1param "-rep"]
@@ -2865,12 +2865,12 @@ proc liste_sousreps {args} {
          set rep $audace(rep_images)
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
 
-      # On récupère la liste des fichiers du répertoire courant
+      # On rÃ©cupÃ¨re la liste des fichiers du rÃ©pertoire courant
       set panier [glob -nocomplain [file join "$rep" *]]
 
-      # On parcours cette liste en enregistrant chaque nouvelle série
+      # On parcours cette liste en enregistrant chaque nouvelle sÃ©rie
       set liste_repertoires ""
 
       foreach entree $panier {
@@ -2889,13 +2889,13 @@ proc serie_existe {args} {
 
    if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set nom_generique [lindex $args 0]
 
       # Configuration des options
       set options [lrange $args 1 [expr [llength $args]-1]]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
 
       set rep_index [lsearch -regexp $options_1param "-rep"]
@@ -2914,7 +2914,7 @@ proc serie_existe {args} {
          set ext $conf(extension,defaut).gz
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
       if {[liste_index $nom_generique -rep "$rep" -ext $ext] == ""} {
          console::affiche_resultat "$caption(divers,erreur,serie_existe) [file join $rep $nom_generique*$ext]\n"
          return "0"
@@ -2931,13 +2931,13 @@ proc numerotation_usuelle {args} {
 
    if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set nom_generique [lindex $args 0]
 
       # Configuration des options
       set options [lrange $args 1 [expr [llength $args]-1]]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
 
       set rep_index [lsearch -regexp $options_1param "-rep"]
@@ -2956,8 +2956,8 @@ proc numerotation_usuelle {args} {
          set ext $conf(extension,defaut).gz
       }
 
-      # Procédure principale
-      # On récupère les index
+      # ProcÃ©dure principale
+      # On rÃ©cupÃ¨re les index
       set liste [liste_index $nom_generique -rep "$rep" -ext $ext]
       # On essaie de les ranger par ordre croissant
       set error [ catch { set liste [lsort -integer $liste] } msg ]
@@ -2985,13 +2985,13 @@ proc compare_index_series {args} {
 
    if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set liste_series [lindex $args 0]
 
       # Configuration des options
       set options [lrange $args 1 [expr [llength $args]-1]]
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
 
       set rep_index [lsearch -regexp $options_1param "-rep"]
@@ -3010,9 +3010,9 @@ proc compare_index_series {args} {
          set ext $conf(extension,defaut).gz
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
       set nb_series [llength $liste_series]
-      # On ne continue que si au moins deux noms de séries ont été indiqués
+      # On ne continue que si au moins deux noms de sÃ©ries ont Ã©tÃ© indiquÃ©s
       if {$nb_series<2} {
          return 0
       } else {
@@ -3036,12 +3036,12 @@ proc cree_sousrep {args} {
 
    if {[syntaxe_args $args 0 0 [list "" [list "-nom_base" "-rep"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
 
       # Configuration des options
       set options $args
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
 
       set nom_base_index [lsearch -regexp $options_1param "-nom_base"]
@@ -3058,15 +3058,15 @@ proc cree_sousrep {args} {
          set rep $audace(rep_images)
       }
 
-      # Si le répertoire indiqué est protégé en écriture :
+      # Si le rÃ©pertoire indiquÃ© est protÃ©gÃ© en Ã©criture :
       if {[file writable $rep] == 0} {
          switch $::tcl_platform(os) {
             "Linux" {
-               # Pour linux : le sous-répertoire est créé dans /tmp/.audela
+               # Pour linux : le sous-rÃ©pertoire est crÃ©Ã© dans /tmp/.audela
                set rep [file join /tmp .audela]
             }
             "Darwin" {
-               # Pour MacOS : le sous-répertoire est créé dans /tmp/.audela
+               # Pour MacOS : le sous-rÃ©pertoire est crÃ©Ã© dans /tmp/.audela
                set rep [file join /tmp .audela]
             }
             default {
@@ -3075,7 +3075,7 @@ proc cree_sousrep {args} {
          }
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
       set subdir [file join "$rep" $nom_base]
       set k 0
       while {[file exist $subdir]=="1"} {
@@ -3094,12 +3094,12 @@ proc cree_fichier {args} {
 
    if {[syntaxe_args $args 0 0 [list "" [list "-nom_base" "-rep" "-ext"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
 
       # Configuration des options
       set options $args
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex [range_options $options] 2]
 
       set nom_base_index [lsearch -regexp $options_1param "-nom_base"]
@@ -3122,16 +3122,16 @@ proc cree_fichier {args} {
          set ext ""
       }
 
-      # Si le répertoire de destination n'existe pas, on le crée.
+      # Si le rÃ©pertoire de destination n'existe pas, on le crÃ©e.
       if {[file exist $rep]=="0"} {
          file mkdir $rep
       }
 
-      # Cas où le répertoire indiqué est protégé en écriture :
+      # Cas oÃ¹ le rÃ©pertoire indiquÃ© est protÃ©gÃ© en Ã©criture :
       if {[file writable $rep] == 0} {
          switch $::tcl_platform(os) {
             "Linux" {
-               # Pour linux : le fichier est créé dans /tmp/.audela
+               # Pour linux : le fichier est crÃ©Ã© dans /tmp/.audela
                if {[file exist [file join /tmp .audela]]=="0"} {
                   file mkdir [file join /tmp .audela]
                   exec "chmod a+w [file join /tmp .audela]"
@@ -3144,7 +3144,7 @@ proc cree_fichier {args} {
          }
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
       set fichier [file join "$rep" $nom_base$ext]
       set k 0
       while {[file exist $fichier]=="1"} {
@@ -3164,18 +3164,18 @@ proc syntaxe_args {args} {
 
    if {[llength $args]==4} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set list_args_averifier [lindex $args 0]
       set nb_args_obligatoires [lindex $args 1]
       set nb_args_optionnels [lindex $args 2]
       set list_options_valides [lindex $args 3]
 
-      # Procédure principale
-      # On vérifie que l'on a suffisamment d'arguments à se mettre sous la dent
+      # ProcÃ©dure principale
+      # On vÃ©rifie que l'on a suffisamment d'arguments Ã  se mettre sous la dent
       if {[llength $list_args_averifier]<$nb_args_obligatoires} {
          return 0
       }
-      # On détermine le nombre d'arguments optionnels
+      # On dÃ©termine le nombre d'arguments optionnels
       set args_optionnels_en_cours 0
       while {$args_optionnels_en_cours<$nb_args_optionnels} {
          if {[string index [lindex $list_args_averifier [expr $nb_args_obligatoires+$args_optionnels_en_cours]] 0]=="-"} {
@@ -3184,24 +3184,24 @@ proc syntaxe_args {args} {
             incr args_optionnels_en_cours
          }
       }
-      # On passe à présent aux options
+      # On passe Ã  prÃ©sent aux options
       set list_opts_averifier [lrange $list_args_averifier [expr $nb_args_obligatoires+$args_optionnels_en_cours] [expr [llength $list_args_averifier]-1]]
       set index 0
       set ind_max [expr [llength $list_opts_averifier]-1]
       while {$index<=$ind_max} {
-         # On vérifie que l'on pointe sur une option qui existe bien
+         # On vÃ©rifie que l'on pointe sur une option qui existe bien
          set ou_est_loption [lsearch -regexp $list_options_valides [lindex $list_opts_averifier $index]]
          if {$ou_est_loption == "-1"} {
             console::affiche_resultat "$caption(divers,invalide_opt)[lindex $list_opts_averifier $index]\n"
             return 0
          } else {
             # Donc l'option existe.
-            # On vérifie que :
-            # 1) la liste des options à vérifier est assez longue pour contenir tous les paramètres de l'option
+            # On vÃ©rifie que :
+            # 1) la liste des options Ã  vÃ©rifier est assez longue pour contenir tous les paramÃ¨tres de l'option
             if {[expr $index+$ou_est_loption]>$ind_max} {
                console::affiche_resultat "$caption(divers,oubli_param_opt)[lindex $list_opts_averifier $index]\n"
                return 0
-               # 2) parmi les paramètres de l'option, il n'y a pas un truc qui commence par un "-" et qui serait donc une option
+               # 2) parmi les paramÃ¨tres de l'option, il n'y a pas un truc qui commence par un "-" et qui serait donc une option
             } else {
                set k 0
                while {$k<$ou_est_loption} {
@@ -3211,12 +3211,12 @@ proc syntaxe_args {args} {
                   }
                   incr k
                }
-               # Si on en est là, c'est que c'est bon. On incrémente l'index en conséquence.
+               # Si on en est lÃ , c'est que c'est bon. On incrÃ©mente l'index en consÃ©quence.
                incr index [expr $ou_est_loption+1]
             }
          }
       }
-      # Tout s'est bien passé !
+      # Tout s'est bien passÃ© !
       return 1
    } else {
       error $caption(divers,syntax,syntaxe_args)
@@ -3228,13 +3228,13 @@ proc range_options {args} {
 
    if {[syntaxe_args $args 1 0 ""]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set list_opts [lindex $args 0]
 
-      # Procédure principale
+      # ProcÃ©dure principale
       set index 0
       set ind_max [expr [llength $list_opts]-1]
-      # On commence par mettre dans une liste "list_args_opt" les arguments optionnels qui peuvent être présents en début de liste
+      # On commence par mettre dans une liste "list_args_opt" les arguments optionnels qui peuvent Ãªtre prÃ©sents en dÃ©but de liste
       while {$index<=$ind_max} {
          if {[string index [lindex $list_opts $index] 0]=="-"} {
             break
@@ -3244,20 +3244,20 @@ proc range_options {args} {
       set list_args_opt [lrange $list_opts 0 [expr $index-1]]
 
       set option_en_cours ""
-      # Une option et ses arguments consitue une sous-liste que l'on enregistre dans la liste list_X, où X est le nombre
-      # d'entrées pour l'option
+      # Une option et ses arguments consitue une sous-liste que l'on enregistre dans la liste list_X, oÃ¹ X est le nombre
+      # d'entrÃ©es pour l'option
 
-      # On garde en mémoire dans la variable X le Xmax atteint.
+      # On garde en mÃ©moire dans la variable X le Xmax atteint.
       set X "-1"
 
       while {$index<=$ind_max} {
          set option_en_cours [lappend option_en_cours [lindex $list_opts $index]]
 
-         # Si l'élément en position index+1 commence par "-", ou si l'on est dans la dernière boucle :
+         # Si l'Ã©lÃ©ment en position index+1 commence par "-", ou si l'on est dans la derniÃ¨re boucle :
          # on enregistre l'option en cours dans la liste list_X qui lui convient.
          if {([string index [lindex $list_opts [expr $index+1]] 0]=="-")||($index==$ind_max)} {
             set type_option [expr [llength $option_en_cours]-1]
-            # Si besoin on initialise la liste list_X, et les sous-listes list_Y où Y < X
+            # Si besoin on initialise la liste list_X, et les sous-listes list_Y oÃ¹ Y < X
             if {[info exist list_$type_option]==0} {
                for {set k [expr $X+1]} {$k<=$type_option} {incr k} {
                   set list_$k ""
@@ -3269,13 +3269,13 @@ proc range_options {args} {
          }
          # Sinon, on poursuit.
 
-         # Dans tous les cas on incrémente l'index.
+         # Dans tous les cas on incrÃ©mente l'index.
          incr index
       }
 
-      # On retourne une liste dont les éléments sont les listes list_X
+      # On retourne une liste dont les Ã©lÃ©ments sont les listes list_X
       if {$X>10} {
-         console::affiche_resultat "Option avec trop d'arguments, contacter B. Maugis pour mettre à jour la fontion range_options.\n"
+         console::affiche_resultat "Option avec trop d'arguments, contacter B. Maugis pour mettre Ã  jour la fontion range_options.\n"
       }
       switch -exact -- $X {
          "-1" {return [list $list_args_opt]}
@@ -3303,14 +3303,14 @@ proc calcul_trzaligne {args} {
 
    if {[syntaxe_args $args 2 0 ""]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set liste_coord1 [lindex $args 0]
       set liste_coord2 [lindex $args 1]
 
-      # Procédure principale
-      # On appelle (x1,y1) les coordonnées du 1er point de la 1ère liste,
-      # (x2,y2) les coordonnées du 2nd point de la 1ère liste, (x'1,y'1) les
-      # coordonnées du 1er point de la seconde liste, (x'2,y'2) les coordonnées
+      # ProcÃ©dure principale
+      # On appelle (x1,y1) les coordonnÃ©es du 1er point de la 1Ã¨re liste,
+      # (x2,y2) les coordonnÃ©es du 2nd point de la 1Ã¨re liste, (x'1,y'1) les
+      # coordonnÃ©es du 1er point de la seconde liste, (x'2,y'2) les coordonnÃ©es
       # du 2nd point de la seconde liste.
       set x1 [lindex $liste_coord1 0]
       set y1 [lindex $liste_coord1 1]
@@ -3321,15 +3321,15 @@ proc calcul_trzaligne {args} {
       set x'2 [lindex $liste_coord2 2]
       set y'2 [lindex $liste_coord2 3]
 
-      # Soient (xI,yI) les coordonnées du milieu du segment (x1,y1), (x2,y2)
+      # Soient (xI,yI) les coordonnÃ©es du milieu du segment (x1,y1), (x2,y2)
       set xI [expr 0.5*($x1+$x2)]
       set yI [expr 0.5*($y1+$y2)]
 
-      # Soient (x'I,y'I) les coordonnées du milieu du segment (x'1,y'1), (x'2,y'2)
+      # Soient (x'I,y'I) les coordonnÃ©es du milieu du segment (x'1,y'1), (x'2,y'2)
       set x'I [expr 0.5*(${x'1}+${x'2})]
       set y'I [expr 0.5*(${y'1}+${y'2})]
 
-      # Soient (v1,v2) les coordonnées d'un vecteur directeur de la médiatrice du 1er segment,
+      # Soient (v1,v2) les coordonnÃ©es d'un vecteur directeur de la mÃ©diatrice du 1er segment,
       set v1 [expr $y2-$y1]
       set v2 [expr $x1-$x2]
       # On norme ce vecteur.
@@ -3337,7 +3337,7 @@ proc calcul_trzaligne {args} {
       set v1 [expr 1.0 * $v1 / $N]
       set v2 [expr 1.0 * $v2 / $N]
 
-      # Soient (v'1,v'2) les coordonnées d'un vecteur directeur de la médiatrice du 1er segment,
+      # Soient (v'1,v'2) les coordonnÃ©es d'un vecteur directeur de la mÃ©diatrice du 1er segment,
       # que l'on norme
       set v'1 [expr ${y'2}-${y'1}]
       set v'2 [expr ${x'1}-${x'2}]
@@ -3346,29 +3346,29 @@ proc calcul_trzaligne {args} {
       set v'1 [expr 1.0 * ${v'1} / $N]
       set v'2 [expr 1.0 * ${v'2} / $N]
 
-      # Alors la correction de translation consiste à déplacer (x'I,y'I) sur (xI,yI) :
+      # Alors la correction de translation consiste Ã  dÃ©placer (x'I,y'I) sur (xI,yI) :
       set translx [expr $xI - ${x'I}]
       set transly [expr $yI - ${y'I}]
 
       # L'angle de rotation theta s'obtient par le produit scalaire de (v1,v2) et (v'1,v'2) qui vaut
-      # cos(theta) puisque les vecteurs sont normés. On convertit directement theta en degrés décimaux.
+      # cos(theta) puisque les vecteurs sont normÃ©s. On convertit directement theta en degrÃ©s dÃ©cimaux.
       set theta [expr 180*acos( $v1 * ${v'1} + $v2 * ${v'2} ) / 3.14159265359]
 
-      # On a obtenu pour theta la solution comprise entre 0 et 180 degrés. Pour traiter le cas d'un
-      # theta négatif, on calcule le produit vectoriel de (v1,v2) et (v'1,v'2) qui est un vecteur
-      # orthogonal de norme 1. Sa composante orthogonale vaut donc -1 (theta entre 0 et 180 degrés) ou +1
-      # (theta entre -180 et 0 degrés).
+      # On a obtenu pour theta la solution comprise entre 0 et 180 degrÃ©s. Pour traiter le cas d'un
+      # theta nÃ©gatif, on calcule le produit vectoriel de (v1,v2) et (v'1,v'2) qui est un vecteur
+      # orthogonal de norme 1. Sa composante orthogonale vaut donc -1 (theta entre 0 et 180 degrÃ©s) ou +1
+      # (theta entre -180 et 0 degrÃ©s).
       set prodvect [expr $v1 * ${v'2} - $v2 * ${v'1}]
 
-      # On corrige theta en conséquence
+      # On corrige theta en consÃ©quence
       if {$prodvect>0} {
          set theta [expr -1.0*$theta]
       }
 
-      # Calcul du facteur de zoom : c'est la norme du 1er segment divisée par la norme du 2nd.
+      # Calcul du facteur de zoom : c'est la norme du 1er segment divisÃ©e par la norme du 2nd.
       set zoom [expr sqrt( 1.0 *  ( pow( $x2 - $x1 , 2) + pow( $y2 - $y1 , 2) ) / ( pow( ${x'2} - ${x'1} , 2) + pow( ${y'2} - ${y'1} , 2) ) ) ]
 
-      # On renvoie le résultat des corrections à apporter.
+      # On renvoie le rÃ©sultat des corrections Ã  apporter.
       return [list $translx $transly $xI $yI $theta $zoom]
 
    } else {
@@ -3381,10 +3381,10 @@ proc date_chiffresAlettres {args} {
 
    if {[syntaxe_args $args 1 0 ""]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set date_chiffres [lindex $args 0]
 
-      # Procédure principale
+      # ProcÃ©dure principale
       set annee [lindex ${date_chiffres} 0]
       set mois_chiffre [lindex ${date_chiffres} 1]
       set jour [lindex ${date_chiffres} 2]
@@ -3394,7 +3394,7 @@ proc date_chiffresAlettres {args} {
             set mois_lettres "janvier"
          }
          "2" {
-            set mois_lettres "février"
+            set mois_lettres "fÃ©vrier"
          }
          "3" {
             set mois_lettres "mars"
@@ -3412,7 +3412,7 @@ proc date_chiffresAlettres {args} {
             set mois_lettres "juillet"
          }
          "8" {
-            set mois_lettres "août"
+            set mois_lettres "aoÃ»t"
          }
          "9" {
             set mois_lettres "septembre"
@@ -3424,7 +3424,7 @@ proc date_chiffresAlettres {args} {
             set mois_lettres "novembre"
          }
          "12" {
-            set mois_lettres "décembre"
+            set mois_lettres "dÃ©cembre"
          }
       }
 

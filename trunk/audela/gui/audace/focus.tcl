@@ -2,7 +2,7 @@
 # Fichier : focus.tcl
 # Description : Centralise les commandes du focus du telescope
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focus.tcl,v 1.6 2007-02-12 12:29:01 robertdelmas Exp $
+# Mise à jour $Id: focus.tcl,v 1.7 2010-05-16 10:47:58 robertdelmas Exp $
 #
 
 namespace eval ::focus {
