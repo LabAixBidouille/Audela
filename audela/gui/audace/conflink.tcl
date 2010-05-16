@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.34 2009-03-13 23:43:57 michelpujol Exp $
+# Mise Ã  jour $Id: conflink.tcl,v 1.35 2010-05-16 10:27:20 robertdelmas Exp $
 #
 
 namespace eval ::confLink {
@@ -407,7 +407,7 @@ proc ::confLink::findPlugin { } {
       }
    }
 
-   #--- je trie les plugins par ordre alphabétique des libelles
+   #--- je trie les plugins par ordre alphabetique des libelles
    set pluginList ""
    for { set i 0} {$i< [llength $private(pluginLabelList)] } {incr i } {
       lappend pluginList [list [lindex $private(pluginLabelList) $i] [lindex $private(pluginNamespaceList) $i] ]
@@ -466,7 +466,7 @@ proc ::confLink::getLinkLabels { namespaces } {
 #
 #    Exemple :
 #    getNamespaceLabel "parallelport"
-#      { "Port parallèle" }
+#      { "Port parallele" }
 #------------------------------------------------------------
 proc ::confLink::getNamespaceLabel { namespace } {
    variable private
@@ -518,7 +518,7 @@ proc ::confLink::getLinkNo { linkLabel } {
 
    #--- je recupere les linkNo ouverts avec une librairie dynamique
    ##set linkNoList [link::list]
-   #--- je recherche les commandes de la forme link£linkno
+   #--- je recherche les commandes de la forme link$linkno
    set linkList [info command {link*[0-9]} ]
 
    set linkNamespace [::confLink::getLinkNamespace $linkLabel]

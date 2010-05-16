@@ -2,7 +2,7 @@
 # Fichier : confcat.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'chart'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confcat.tcl,v 1.28 2009-03-13 23:42:50 michelpujol Exp $
+# Mise à jour $Id: confcat.tcl,v 1.29 2010-05-16 10:26:38 robertdelmas Exp $
 #
 
 namespace eval ::confCat {

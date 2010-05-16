@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'equipment'
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.37 2009-03-13 23:43:10 michelpujol Exp $
+# Mise à jour $Id: confeqt.tcl,v 1.38 2010-05-16 10:27:00 robertdelmas Exp $
 #
 
 namespace eval ::confEqt {

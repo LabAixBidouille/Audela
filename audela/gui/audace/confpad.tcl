@@ -2,7 +2,7 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'pad'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confpad.tcl,v 1.32 2009-03-13 23:44:59 michelpujol Exp $
+# Mise à jour $Id: confpad.tcl,v 1.33 2010-05-16 10:28:04 robertdelmas Exp $
 #
 
 namespace eval ::confPad {
