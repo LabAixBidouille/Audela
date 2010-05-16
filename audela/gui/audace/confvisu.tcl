@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.136 2010-05-09 13:45:13 michelpujol Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.137 2010-05-16 08:00:16 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -1888,10 +1888,6 @@ namespace eval ::confVisu {
       #--- bind du label des intensites
       bind $This.fra1.labI <ButtonPress-1> "::confVisu::changeDisplayIntensity $visuNo"
 
-      #--- Raccourci pour affichage du reticule
-      bind $This <Key-C> "::confVisu::toggleCrosshair $visuNo"
-      bind $This <Key-c> "::confVisu::toggleCrosshair $visuNo"
-
       #--- bind des glissieres
       $This.fra1.sca1 configure -command "::confVisu::onHiCutCommand $visuNo"
       $This.fra1.sca2 configure -command "::confVisu::onLoCutCommand $visuNo"
@@ -1910,7 +1906,6 @@ namespace eval ::confVisu {
       $private($visuNo,hCanvas) bind display <ButtonRelease-1> "::confVisu::onReleaseButton1 $visuNo %x %y"
       $private($visuNo,hCanvas) bind display <B1-Motion>       "::confVisu::onMotionButton1 $visuNo %x %y"
       $private($visuNo,hCanvas) bind display <Motion>          "::confVisu::onMotionMouse $visuNo %x %y"
-      $private($visuNo,hCanvas) bind display <Button-3>        "::confVisu::showPopupMenu $visuNo %X %Y"
 
       #--- bind pour l'ouverture de la boite de configuration des cameras
       bind $This.fra1.labCam_labURL <ButtonPress-1> {
@@ -2045,6 +2040,9 @@ namespace eval ::confVisu {
 
       set This $private($visuNo,This)
       set bufNo [ visu$visuNo buf ]
+
+      #--- Creation du menu contextuel
+      ::confVisu::createPopupMenuButton3 $visuNo
 
       set private($visuNo,menu) "$This.menubar"
 
@@ -2408,20 +2406,67 @@ namespace eval ::confVisu {
       }
    }
 
-   proc showPopupMenu { visuNo X Y } {
+   #------------------------------------------------------------------------------
+   # createPopupMenuButton3
+   #   creation du menu en popup
+   #------------------------------------------------------------------------------
+   proc createPopupMenuButton3 { visuNo } {
       variable private
-      global audace caption
+      global caption
 
-      set menuName "$caption(audace,menu,analysis)"
-      if { [string compare $::confVisu::private($visuNo,MouseState) rien] == 0 } {
-         [MenuGet $visuNo $menuName] post $X $Y
-         set ::confVisu::private($visuNo,MouseState) context
-      } else {
-         if { [string compare $::confVisu::private($visuNo,MouseState) context] == 0 } {
-            [MenuGet $visuNo $menuName] unpost
-            set ::confVisu::private($visuNo,MouseState) rien
-         }
-      }
+      set private($visuNo,toplevel) [ winfo toplevel $private($visuNo,hCanvas) ]
+
+      set menu $private($visuNo,toplevel).menuButton3
+      set private($visuNo,popupmenuButton3) "$menu"
+
+      menu $menu -tearoff no
+
+      $menu add command -label $caption(audace,menu,histo) \
+         -command "::audace::Histo $visuNo"
+      $menu add command -label $caption(audace,menu,coupe) \
+         -command "::sectiongraph::init $visuNo"
+      $menu add command -label $caption(audace,menu,statwin) \
+         -command "statwin $visuNo"
+      $menu add command -label $caption(audace,menu,fwhm) \
+         -command "fwhm $visuNo"
+      $menu add command -label $caption(audace,menu,fitgauss) \
+         -command "fitgauss $visuNo"
+      $menu add command -label $caption(audace,menu,centro) \
+         -command "center $visuNo"
+      $menu add command -label $caption(audace,menu,phot) \
+         -command "photom $visuNo"
+      $menu add command -label $caption(audace,menu,subfitgauss) \
+         -command "subfitgauss $visuNo"
+      $menu add command -label $caption(audace,menu,scar) \
+         -command "scar $visuNo"
+
+      $menu add separator
+      $menu add checkbutton -label $caption(confVisu,reticule) \
+         -variable ::Crosshair::widget($visuNo,currentstate) \
+         -command "::confVisu::toggleCrosshair $visuNo"
+
+      $menu add separator
+      $menu add command -label $caption(confVisu,fermer1) \
+         -command "::confVisu::closePopupMenuButton3 $visuNo"
+
+      bind $private($visuNo,hCanvas) <ButtonPress-1> ""
+      bind $private($visuNo,hCanvas) <ButtonPress-3> [list tk_popup $menu %X %Y]
+
+      bind $private($visuNo,toplevel) <Key-Escape> "::confVisu::closePopupMenuButton3 $visuNo"
+   }
+
+   #------------------------------------------------------------------------------
+   # closePopupMenuButton3
+   #   fermeture du menu en popup
+   #------------------------------------------------------------------------------
+   proc closePopupMenuButton3 { visuNo } {
+      variable private
+      global caption
+
+      #--- je desactive les binds
+      bind $private($visuNo,hCanvas) <ButtonPress-3>
+
+      bind $private($visuNo,toplevel) <Key-Escape>
    }
 
    #------------------------------------------------------------
@@ -3655,7 +3700,6 @@ proc ::confVisu::onSelectHdu { visuNo { hduNo "" } } {
    ###set hFile ""
    ###::blt::busy hold $private($visuNo,This)
    ###update
-   ###
    ###
    ###set catchResult [catch {
    ###   #--- j'ouvre le fichier en mode lecture
