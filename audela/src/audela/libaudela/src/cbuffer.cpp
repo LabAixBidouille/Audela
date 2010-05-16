@@ -1788,13 +1788,24 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
 
    // j'ajoute les mots cles NAXIS
    // attention: ne pas utiliser les parametres width et height passés en entrés de la fonctions
-   // car leur valeur dépend de la compression. 
-   int naxis = pix->GetPlanes(); 
-   int naxis1 = pix->GetWidth();
-   int naxis2 = pix->GetHeight();
-   keywords->Add("NAXIS",  &naxis, TINT, "", "");
-   keywords->Add("NAXIS1", &naxis1, TINT, "", "");
-   keywords->Add("NAXIS2", &naxis2, TINT, "", "");
+   // car leur valeur dépend de la compression.
+   if ( pix->getPixelClass() == CLASS_GRAY ) {
+      int naxis = 2; 
+      int naxis1 = pix->GetWidth();
+      int naxis2 = pix->GetHeight();
+      keywords->Add("NAXIS",  &naxis, TINT, "", "");
+      keywords->Add("NAXIS1", &naxis1, TINT, "", "");
+      keywords->Add("NAXIS2", &naxis2, TINT, "", "");
+   } else {
+      int naxis = 3; 
+      int naxis1 = pix->GetWidth();
+      int naxis2 = pix->GetHeight();
+      int naxis3 = 3;
+      keywords->Add("NAXIS",  &naxis, TINT, "", "");
+      keywords->Add("NAXIS1", &naxis1, TINT, "", "");
+      keywords->Add("NAXIS2", &naxis2, TINT, "", "");
+      keywords->Add("NAXIS3", &naxis3, TINT, "", "");
+   }
 
    pthread_mutex_unlock(&mutex);
 }
@@ -2330,7 +2341,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
       // ----------------------------------------------------
       // je soustrais la valeur arbitraire du bias
       // ----------------------------------------------------
-      if ( biasBuf == NULL ) {
+      if ( biasBuf == NULL && biasValue != 0 ) {
          for(j=0;j<height;j++) {
             imgOffset  = imgPix  + j * width;
             for(i=0;i<width;i++) {
@@ -2352,8 +2363,6 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
       ttResult = Libtt_main(TT_PTR_STATIMA,13,imgPix,&datatype,&width,&height,
          &dlocut,&dhicut,&dmaxi,&dmini,&dmean,&dsigma,&dbgmean,&dbgsigma,&dcontrast);
       if(ttResult) {
-         free(imgPix);
-         //throw CErrorLibtt(ttResult);
          throw CError("AstroFiberCentro: TT_PTR_STATIMA width=%d height=%d");
       }
       *maxIntensity = dmaxi;
@@ -2366,14 +2375,16 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
       }
 
       // ----------------------------------------------------
-      // je soustrais le fond de ciel estimé
+      // je soustrais le fond de ciel estimé si le bias n'a pas été déjà soustrait
       // ----------------------------------------------------
-      for(j=0;j<height;j++) {
-         imgOffset  = imgPix  + j * width;
-         for(i=0;i<width;i++) {
-            imgPtr  = imgOffset  +i;
-            // je soutrait le fond de ciel
-            *imgPtr -= (float)dbgmean;
+      if ( biasBuf == NULL && biasValue == 0 ) {
+         for(j=0;j<height;j++) {
+            imgOffset  = imgPix  + j * width;
+            for(i=0;i<width;i++) {
+               imgPtr  = imgOffset  +i;
+               // je soutrait le fond de ciel
+               *imgPtr -= (float)dbgmean;
+            }
          }
       }
 
@@ -2544,24 +2555,22 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
          }
 
          if ( integratedImage == 2 ) {
-            // je recupere l'image courante de la fibre si ce n'est pas la meme que celle de l'etoile
-            int xmin = (int) (previousFiberX - (width / 2));
-            int xmax = xmin + width - 1;
-            int ymin = (int) (previousFiberY - (height / 2));
-            int ymax = ymin + height - 1;
+            //// je recupere l'image courante centree sur la fibre
+            //int xmin = (int) (previousFiberX - (width / 2));
+            //int xmax = xmin + width - 1;
+            //int ymin = (int) (previousFiberY - (height / 2));
+            //int ymax = ymin + height - 1;
 
-            // je verifie qu'on ne sort pas de l'image courante
-            if (xmin<0) {xmin=0;}
-            if (xmin>naxis1-1) {xmin=naxis1-1;}
-            if (xmax>naxis1-1) {xmax=naxis1-1;}
-            if (ymin<0) {ymin=0;}
-            if (ymin>naxis2-1) {ymin=naxis2-1;}
-            if (ymax>naxis2-1) {ymax=naxis2-1;}
+            //// je verifie qu'on ne sort pas de l'image courante
+            //if (xmin<0) {xmin=0;}
+            //if (xmin>naxis1-1) {xmin=naxis1-1;}
+            //if (xmax>naxis1-1) {xmax=naxis1-1;}
+            //if (ymin<0) {ymin=0;}
+            //if (ymin>naxis2-1) {ymin=naxis2-1;}
+            //if (ymax>naxis2-1) {ymax=naxis2-1;}
 
-
-            // je recupere les pixels de la fenetre autour de la fibre
-            pix->GetPixels(xmin, ymin, xmax, ymax, FORMAT_FLOAT, PLANE_GREY, (void*) imgPix);
-
+            //// je recupere les pixels de la fenetre autour de la fibre
+            //pix->GetPixels(xmin, ymin, xmax, ymax, FORMAT_FLOAT, PLANE_GREY, (void*) imgPix);
 
             for(j=0;j<height;j++) {
                imgOffset  = imgPix  + j * width;
@@ -2571,7 +2580,9 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                   sumPtr  = sumOffset+i;
 
                   // je soustrais le bias et le fond du ciel
-                  TYPE_PIXELS pixelValue = *imgPtr - (TYPE_PIXELS) biasValue - (TYPE_PIXELS) dbgmean;
+                  //TYPE_PIXELS pixelValue = *imgPtr - (TYPE_PIXELS) biasValue - (TYPE_PIXELS) dbgmean;
+                  // TYPE_PIXELS pixelValue = *imgPtr - (TYPE_PIXELS) biasValue;
+                  TYPE_PIXELS pixelValue = *imgPtr;
 
                   if ( originSumCounter == 1 ) {
                      // je copie la premiere image dans l'image integree
@@ -2592,6 +2603,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
             }
 
          } else {
+            // je copie l'image centree
             for(j=0;j<height;j++) {
                imgOffset  = imgPix  + j * width;
                sumOffset  = sumPix +  j * width;
@@ -2617,6 +2629,21 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                }
             }
          }
+
+         // ----------------------------------------------------
+         // je calcule le fond du ciel  sur l'image integree
+         // ----------------------------------------------------
+         int ttResult;
+         int datatype = TFLOAT;
+         double dlocut, dhicut, dmaxi, dmini, dmean, dsigma, dbgmean,dbgsigma,dcontrast;
+
+         ttResult = Libtt_main(TT_PTR_STATIMA,13,sumPix,&datatype,&width,&height,
+            &dlocut,&dhicut,&dmaxi,&dmini,&dmean,&dsigma,&dbgmean,&dbgsigma,&dcontrast);
+         if(ttResult) {
+            throw CError("AstroFiberCentro skylevel: TT_PTR_STATIMA width=%d height=%d");
+         }
+         *background   = dbgmean;
+
          // je copie la nouvelle image integree et les mots cles dans le buffer sumBuf
          sumBuf->SetPixels(PLANE_GREY, width, height, FORMAT_FLOAT, COMPRESS_NONE, sumPix, 0,0,0) ;
          sumBuf->GetKeywords()->Add("MIPS-LO", &sumMinIntensity, TFLOAT, "","");
