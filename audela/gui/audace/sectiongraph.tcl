@@ -2,7 +2,7 @@
 # Fichier : sectiongraph.tcl
 # Description : Affiche une coupe de l'image
 # Auteur : Michel PUJOL
-# Mise a jour $Id: sectiongraph.tcl,v 1.15 2009-12-29 15:08:08 michelpujol Exp $
+# Mise à jour $Id: sectiongraph.tcl,v 1.16 2010-05-16 08:05:50 robertdelmas Exp $
 #
 
 namespace eval ::sectiongraph {
@@ -22,8 +22,8 @@ proc ::sectiongraph::init { visuNo } {
    }
 
    #--- Initialisation de variables
-   if { ! [ info exists conf(sectiongraph,position) ] }    { set conf(sectiongraph,position)    "+350+75" }
-   if { ! [ info exists conf(sectiongraph,modeRefresh) ] } { set conf(sectiongraph,modeRefresh) "0" }
+   if { ! [ info exists conf(sectiongraph,$visuNo,position) ] }    { set conf(sectiongraph,$visuNo,position)    "+350+75" }
+   if { ! [ info exists conf(sectiongraph,$visuNo,modeRefresh) ] } { set conf(sectiongraph,$visuNo,modeRefresh) "0" }
 
    #--- je verifie si la variable existe
    if { [info exists private($visuNo,This)] } {
@@ -64,7 +64,7 @@ proc ::sectiongraph::configureSectionGraph { visuNo args } {
    global conf
 
    #--- Configure le bouton pour le rafraichissement
-   if { $conf(sectiongraph,modeRefresh) == "0" } {
+   if { $conf(sectiongraph,$visuNo,modeRefresh) == "0" } {
       $private($visuNo,This).frame2.butRefresh configure -state normal
       #--- J'arrete le rafraichissement automatique
       ::confVisu::removeFileNameListener $visuNo "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
@@ -215,7 +215,7 @@ proc ::sectiongraph::createToplevel { visuNo } {
    wm transient $This $base
    wm resizable $This 0 0
    wm title $This "$caption(sectiongraph,title) (visu$visuNo)"
-   wm geometry $This $conf(sectiongraph,position)
+   wm geometry $This $conf(sectiongraph,$visuNo,position)
    wm protocol $This WM_DELETE_WINDOW "::sectiongraph::closeToplevel $visuNo"
 
    #--- Creation d'une frame
@@ -264,7 +264,7 @@ proc ::sectiongraph::createToplevel { visuNo } {
 
       #--- Cree le checkbutton pour choisir le mode de rafraichissement
       checkbutton $private($visuNo,This).frame2.modeRefresh -text "$caption(sectiongraph,refreshAuto)" \
-         -variable conf(sectiongraph,modeRefresh) -command "::sectiongraph::configureSectionGraph $visuNo"
+         -variable conf(sectiongraph,$visuNo,modeRefresh) -command "::sectiongraph::configureSectionGraph $visuNo"
       pack $private($visuNo,This).frame2.modeRefresh -anchor w -side top -padx 3 -pady 3
 
       #--- Cree le bouton pour rafraichir la coupe
@@ -313,7 +313,7 @@ proc ::sectiongraph::closeToplevel { visuNo } {
       set geometry [ wm geometry $private($visuNo,This) ]
       set deb [ expr 1 + [ string first + $geometry ] ]
       set fin [ string length $geometry ]
-      set conf(sectiongraph,position) "+[ string range $geometry $deb $fin ]"
+      set conf(sectiongraph,$visuNo,position) "+[ string range $geometry $deb $fin ]"
 
       #--- je supprime la fenetre
       destroy $private($visuNo,This)
