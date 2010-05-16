@@ -2,7 +2,7 @@
 # Fichier : fullscreen.tcl
 # Description : Fenetre plein ecran pour afficher des images ou des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: fullscreen.tcl,v 1.18 2008-12-07 22:19:37 michelpujol Exp $
+# Mise à jour $Id: fullscreen.tcl,v 1.19 2010-05-16 10:49:43 robertdelmas Exp $
 #
 
 ##############################################################################

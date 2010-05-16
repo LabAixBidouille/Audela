@@ -3,7 +3,7 @@
 # Description : Scripts pour un usage aise des fonctions d'Aud'ACE
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
 #
-# Mise a jour $Id: mauclaire.tcl,v 1.30 2010-04-21 15:30:24 robertdelmas Exp $
+# Mise Ã  jour $Id: mauclaire.tcl,v 1.31 2010-05-16 10:50:48 robertdelmas Exp $
 #
 
 #
@@ -25,7 +25,7 @@
 # bm_fwhm                : Calcule la largeur equivalente d'une etoile en secondes d'arc
 # bm_goodrep             : Se met dans le repertoire de travail d'Aud'ACE pour eviter de
 #                          mettre le chemin des images devant chaque image
-# bm_ls                  : Liste les fichiers FITS du répertoire de travail
+# bm_ls                  : Liste les fichiers FITS du rÃ©pertoire de travail
 # bm_maximext            : Renumerote les fichiers ayant une numerotation facon MaxIm DL
 # bm_mv                  : Renome un fichier du repertoire courant
 # bm_ovakwd              : Ajoute et initialise un mot clef et sa valeur pour les spectres LHIRES
@@ -71,7 +71,7 @@ proc bm_plot { args } {
        ::plotxy::plotbackground #FFFFFF
        ::plotxy::xlabel "x"
        ::plotxy::ylabel "y"
-       ::plotxy::title "Représentation graphique des données"
+       ::plotxy::title "ReprÃ©sentation graphique des donnÃ©es"
        #return ${spectre}_off
     } else {
        ::console::affiche_erreur "Usage : bm_plot liste_abscisses liste_ordonnees\n\n"
@@ -95,7 +95,7 @@ proc bm_mkdir { args } {
    if { [ llength $args ] == 1 } {
       set lerep [ lindex $args 0 ]
       file mkdir "$audace(rep_images)/$lerep"
-      ::console::affiche_resultat "Répertoire $audace(rep_images)/$lerep créé.\n"
+      ::console::affiche_resultat "RÃ©pertoire $audace(rep_images)/$lerep crÃ©Ã©.\n"
    } else {
      ::console::affiche_erreur "Usage: bm_mkdir nom_repertoire\n"
    }
@@ -129,18 +129,18 @@ proc bm_maximext { args } {
       foreach fichier $fliste {
         # regexp {.+\-0+([0-9]+)} $fichier match numero_file
          if { [ regexp {.+00([0-9])} $fichier match numero_file ] } {
-            console::affiche_resultat "n° : $numero_file\n"
+            console::affiche_resultat "nÂ° : $numero_file\n"
             file rename "$audace(rep_images)/$fichier" "$audace(rep_images)/$prefixe$numero_file$conf(extension,defaut)"
          } elseif { [ regexp {.+0([0-9]{2})} $fichier match numero_file ] } {
-            console::affiche_resultat "n° : $numero_file\n"
+            console::affiche_resultat "nÂ° : $numero_file\n"
             file rename "$audace(rep_images)/$fichier" "$audace(rep_images)/$prefixe$numero_file$conf(extension,defaut)"
          } elseif { [ regexp {.+([0-9]{3})} $fichier match numero_file ] } {
             #-- Pas de renumerotation necessaire :
-            console::affiche_resultat "n° : $numero_file inchangé\n"
+            console::affiche_resultat "nÂ° : $numero_file inchangÃ©\n"
          }
       incr i
       }
-      console::affiche_resultat "$i fichier(s) traité(s).\n"
+      console::affiche_resultat "$i fichier(s) traitÃ©(s).\n"
    } else {
       console::affiche_erreur "Usage: bm_maximext generic_filename\n"
    }
@@ -178,9 +178,9 @@ proc bm_cleanfit { args } {
                set unit [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 4 ]
 
                #-- Remplace les caracteres :
-               regsub -all {[éèêë]} $lemot "e" lemot
-               regsub -all {[àâ]} $lemot "a" lemot
-               regsub -all "ç" $lemot "c" lemot
+               regsub -all {[Ã©Ã¨ÃªÃ«]} $lemot "e" lemot
+               regsub -all {[Ã Ã¢]} $lemot "a" lemot
+               regsub -all "Ã§" $lemot "c" lemot
                regsub -all "'" $lemot " " lemot
 
                #-- Met a jour :
@@ -234,7 +234,7 @@ proc bm_cleanfit { args } {
          } else {
             buf$audace(bufNo) bitpix float
          }
-         ::console::affiche_resultat "Fichier sauvé sous $filename.\n\n"
+         ::console::affiche_resultat "Fichier sauvÃ© sous $filename.\n\n"
       } elseif { $nbargs == 0 } {
          set fliste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails *$conf(extension,defaut) ] ]
 
@@ -254,9 +254,9 @@ proc bm_cleanfit { args } {
                   set unit [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 4 ]
 
                   #-- Remplace les caracteres :
-                  regsub -all {[éèê]} $lemot "e" lemot
-                  regsub -all {[àâ]} $lemot "a" lemot
-                  regsub -all "ç" $lemot "c" lemot
+                  regsub -all {[Ã©Ã¨Ãª]} $lemot "e" lemot
+                  regsub -all {[Ã Ã¢]} $lemot "a" lemot
+                  regsub -all "Ã§" $lemot "c" lemot
                   regsub -all "'" $lemot " " lemot
 
                   #-- Met a jour :
@@ -307,7 +307,7 @@ proc bm_cleanfit { args } {
             }
             incr k
          }
-         ::console::affiche_resultat "$k fichier(s) mis en conformité.\n\n"
+         ::console::affiche_resultat "$k fichier(s) mis en conformitÃ©.\n\n"
       } else {
          console::affiche_erreur "Usage: bm_cleanfit ?fichier_fits?\n"
          return ""
@@ -367,12 +367,12 @@ proc bm_rm { args } {
    } elseif { $nbargs == 1 } {
       set fichier [ file rootname [ lindex $args 0 ] ]
       file delete -force "$audace(rep_images)/$fichier$conf(extension,defaut)"
-      ::console::affiche_resultat "$fichier effacé.\n"
+      ::console::affiche_resultat "$fichier effacÃ©.\n"
    } else {
       foreach nom $args {
          set fichier [ file rootname $nom ]
          file delete -force "$audace(rep_images)/$fichier$conf(extension,defaut)"
-         ::console::affiche_resultat "$fichier effacé.\n"
+         ::console::affiche_resultat "$fichier effacÃ©.\n"
       }
    }
 }
@@ -395,7 +395,7 @@ proc bm_mv { args } {
       set newname [ file rootname [ lindex $args 1 ] ]
       if { "$newname" != "$oldname" } {
          file rename -force "$audace(rep_images)/$oldname$conf(extension,defaut)" "$audace(rep_images)/$newname$conf(extension,defaut)"
-         ::console::affiche_resultat "$oldname renomé en $newname.\n"
+         ::console::affiche_resultat "$oldname renomÃ© en $newname.\n"
       }
    } else {
       console::affiche_erreur "Usage: bm_mv ancien_nom nouveau_nom\n"
@@ -442,7 +442,7 @@ proc bm_cp { args } {
       #--- Copie :
       # ::console::affiche_resultat "${depart_rep}\n${arrivee_rep}\n\n"
       file copy -force "${depart_rep}/$depart_file" "${arrivee_rep}/$arrivee_file"
-      ::console::affiche_resultat "$depart_file copié dans $arrivee_rep/$arrivee_file.\n"
+      ::console::affiche_resultat "$depart_file copiÃ© dans $arrivee_rep/$arrivee_file.\n"
    } else {
       console::affiche_erreur "Usage: bm_cp chemin/fichier_dep.extension chemin/fichier_dest.extension\n"
    }
@@ -500,7 +500,7 @@ proc bm_sphot { args } {
          wm title .benji "Get zone"
          wm transient .benji .audace
          #-- Textes d'avertissement
-         label .benji.lab -text "Sélectionnez l'objet à suivre (boîte petite)"
+         label .benji.lab -text "SÃ©lectionnez l'objet Ã  suivre (boÃ®te petite)"
          pack .benji.lab -expand true -expand true -fill both
          #-- Sous-trame pour boutons
          frame .benji.but
@@ -568,16 +568,16 @@ proc bm_sphot { args } {
          #--- Trace du graphique png :
          if { $tcl_platform(os)=="Linux" } {
             set answer [ catch { exec gnuplot $audace(rep_images)/${fileout}.gp } ]
-            ::console::affiche_resultat "gnuplot résultat : $answer\n"
+            ::console::affiche_resultat "gnuplot rÃ©sultat : $answer\n"
          } else {
             set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/${fileout}.gp } ]
-            ::console::affiche_resultat "gnuplot résultat : $answer\n"
+            ::console::affiche_resultat "gnuplot rÃ©sultat : $answer\n"
          }
       }
 
       #--- Message de fin :
       file delete -force "$audace(rep_images)/${fileout}.gp"
-      ::console::affiche_resultat "Données enregistrées dans le fichier $audace(rep_images)/${fileout}.dat et graphique sauvé sous ${fileout}.png\n"
+      ::console::affiche_resultat "DonnÃ©es enregistrÃ©es dans le fichier $audace(rep_images)/${fileout}.dat et graphique sauvÃ© sous ${fileout}.png\n"
       return ${fileout}.dat
    } else {
       ::console::affiche_erreur "Usage: bm_sphot nom_generique_fichiers ?[[?graphique_png (o/n)?] ?{x1 y1 x2 y2}?] ?\n"
@@ -651,7 +651,7 @@ proc bm_addmotcleftxt { args } {
          set legende [ lindex $args 3 ]
          set type_data [ lindex $args 4 ]
       } else {
-         ::console::affiche_erreur "Usage: bm_addmotcleftxt fichier_fits nom_motclef_a_jouter \"valeur_mot\" ?[[?\" description mot clef\" ?] ?type_données (float/short)?]?\n\n"
+         ::console::affiche_erreur "Usage: bm_addmotcleftxt fichier_fits nom_motclef_a_jouter \"valeur_mot\" ?[[?\" description mot clef\" ?] ?type_donnÃ©es (float/short)?]?\n\n"
          return 0
       }
 
@@ -669,7 +669,7 @@ proc bm_addmotcleftxt { args } {
       buf$audace(bufNo) save "$audace(rep_images)/$fichier"
       buf$audace(bufNo) bitpix short
    } else {
-      ::console::affiche_erreur "Usage: bm_addmotcleftxt fichier_fits nom_motclef_a_jouter \"valeur_mot\" ?[[?\" description mot clef\" ?] ?type_données_image (float/short)?]?\n\n"
+      ::console::affiche_erreur "Usage: bm_addmotcleftxt fichier_fits nom_motclef_a_jouter \"valeur_mot\" ?[[?\" description mot clef\" ?] ?type_donnÃ©es_image (float/short)?]?\n\n"
    }
 }
 #-----------------------------------------------------------------------------#
@@ -693,24 +693,24 @@ proc bm_autoflat { args } {
       set binning [ lindex $args 3 ]
 
       #--- Conseil d'utilisation :
-      console::affiche_resultat "\n*** Durant la procédure, il est nécessire de maintenir constant l'éclairement du télescope. ***\n\n"
+      console::affiche_resultat "\n*** Durant la procÃ©dure, il est nÃ©cessire de maintenir constant l'Ã©clairement du tÃ©lescope. ***\n\n"
 
       #-- Premiere acquisition :
-      console::affiche_resultat "Première pose : ${dureeini}s...\n"
+      console::affiche_resultat "PremiÃ¨re pose : ${dureeini}s...\n"
       cam$audace(camNo) bin [ list $binning $binning ]
       cam$audace(camNo) exptime $dureeini
       cam$audace(camNo) acq
       vwait status_cam$audace(camNo)
       set moymes [ lindex [ buf$audace(bufNo) stat ] 6 ]
       set testval [ expr $valmoy-$moymes ]
-      console::affiche_resultat "Première valeur moyenne : $moymes\n"
+      console::affiche_resultat "PremiÃ¨re valeur moyenne : $moymes\n"
       set duree $dureeini
 
       #--- Boucle de recherche du temps par division ou multiplication par 2 du temps de pose
       #bind all <Key-Escape> "::autoguider::stopSuivi  $visuNo"
       while { [expr abs($testval) ]!=0 } {
          if { $testval==0 || [expr abs($testval)]<=$tolerance } {
-            console::affiche_resultat "\n\nLa pose idéale pour un flat de $moymes ADU vaut $duree\n"
+            console::affiche_resultat "\n\nLa pose idÃ©ale pour un flat de $moymes ADU vaut $duree\n"
             return $duree
          } elseif { [expr abs($testval)]>$tolerance && $testval>0 } {
             #set duree [ expr $duree*(1+pow(0.5,$i)) ]
@@ -721,7 +721,7 @@ proc bm_autoflat { args } {
             vwait status_cam$audace(camNo)
             set moymes [ lindex [ buf$audace(bufNo) stat ] 6 ]
             set testval [ expr $valmoy-$moymes ]
-            console::affiche_resultat "Valeur moyenne : $moymes ; Durée : $duree\n"
+            console::affiche_resultat "Valeur moyenne : $moymes ; DurÃ©e : $duree\n"
          } elseif { [expr abs($testval)]>$tolerance && $testval<0 } {
             #-- Good 1 :
             #set duree [ expr $duree*(1-pow(0.5,$j)) ]
@@ -733,7 +733,7 @@ proc bm_autoflat { args } {
             vwait status_cam$audace(camNo)
             set moymes [ lindex [ buf$audace(bufNo) stat ] 6 ]
             set testval [ expr $valmoy-$moymes ]
-            console::affiche_resultat "Valeur moyenne : $moymes ; Durée : $duree\n"
+            console::affiche_resultat "Valeur moyenne : $moymes ; DurÃ©e : $duree\n"
          }
       }
    } else {
@@ -780,7 +780,7 @@ proc bm_extractkwd { args } {
       close $file_id
 
       #--- Message de fin :
-      ::console::affiche_resultat "Données enregistrées dans le fichier $audace(rep_images)/$fileout.txt\n"
+      ::console::affiche_resultat "DonnÃ©es enregistrÃ©es dans le fichier $audace(rep_images)/$fileout.txt\n"
    } else {
       ::console::affiche_erreur "Usage: bm_extractkwd nom_generique_fichiers fichier_ascii_de_sortie mot_header_fits.\n"
    }
@@ -911,7 +911,7 @@ proc bm_correctprism { args } {
       ::console::affiche_resultat "Renomage de $nbimg fichiers...\n"
       foreach fichier $liste_fichiers {
          set prefixe_nom [ file rootname $fichier ]
-         #::console::affiche_resultat "${fichier} renomé en ${prefixe_nom}_c$conf(extension,defaut)\n"
+         #::console::affiche_resultat "${fichier} renomÃ© en ${prefixe_nom}_c$conf(extension,defaut)\n"
          file rename -force $audace(rep_images)/$fichier $audace(rep_images)/${prefixe_nom}_c$ext
       }
 
@@ -927,7 +927,7 @@ proc bm_correctprism { args } {
       }
 
       #--- Fin script
-      ::console::affiche_resultat "Fin de mise en conformité des fichiers FITS de Prims.\n"
+      ::console::affiche_resultat "Fin de mise en conformitÃ© des fichiers FITS de Prims.\n"
    } else {
       ::console::affiche_erreur "Usage: bm_correctprism nom_generique_fichiers_FITS_a_cooriger.\n"
    }
@@ -1006,12 +1006,12 @@ proc bm_renumfile { args } {
       foreach fichier $liste_images {
           # regexp {.+([0-9]{1,2})} $fichier match numero
           regexp {.+[a-zA-Z]([0-9]+)} $fichier match numero
-          ::console::affiche_resultat "Copie de $fichier de numéro $numero vers sortie/${pref_nom_generique}-$numero$conf(extension,defaut)\n"
+          ::console::affiche_resultat "Copie de $fichier de numÃ©ro $numero vers sortie/${pref_nom_generique}-$numero$conf(extension,defaut)\n"
           file copy ${fichier} sortie/${pref_nom_generique}-$numero$conf(extension,defaut)
       }
-      ::console::affiche_resultat "Fichiers renomés dans le répertoire sortie.\n"
+      ::console::affiche_resultat "Fichiers renomÃ©s dans le rÃ©pertoire sortie.\n"
    } else {
-      ::console::affiche_erreur "Usage: bm_renumfile nom_generique de fichier à la numérotation collée.\n"
+      ::console::affiche_erreur "Usage: bm_renumfile nom_generique de fichier Ã  la numÃ©rotation collÃ©e.\n"
    }
 }
 #-----------------------------------------------------------------------------#
@@ -1044,12 +1044,12 @@ proc bm_renameext { args } {
       cd $repertoire
       set liste_fichiers [ lsort -dictionary [glob -dir $repertoire *$old_extension] ]
       set nbimg [ llength $liste_fichiers ]
-      ::console::affiche_resultat "$nbimg fichiers à renomer.\n"
+      ::console::affiche_resultat "$nbimg fichiers Ã  renomer.\n"
 
       foreach fichier $liste_fichiers {
          #regexp {(.+)\.$old_extension} $fichier match prefixe_nom
          set prefixe_nom [ file rootname $fichier ]
-         ::console::affiche_resultat "${fichier} renomé en ${prefixe_nom}_c$conf(extension,defaut)\n"
+         ::console::affiche_resultat "${fichier} renomÃ© en ${prefixe_nom}_c$conf(extension,defaut)\n"
          file copy -force $fichier ${prefixe_nom}_c$conf(extension,defaut)
       }
       cd $repdflt
@@ -1079,12 +1079,12 @@ proc bm_renameext2 { args } {
       set repertoire $audace(rep_images)
       set liste_fichiers [ lsort -dictionary [ glob -dir $repertoire *$old_extension ] ]
       set nbimg [ llength $liste_fichiers ]
-      ::console::affiche_resultat "$nbimg fichiers à renomer.\n"
+      ::console::affiche_resultat "$nbimg fichiers Ã  renomer.\n"
 
       foreach fichier $liste_fichiers {
          #regexp {(.+)\.$old_extension} $fichier match prefixe_nom
          set prefixe_nom [ file rootname $fichier ]
-         ::console::affiche_resultat "Fichier renomé en ${prefixe_nom}.$new_extension\n"
+         ::console::affiche_resultat "Fichier renomÃ© en ${prefixe_nom}.$new_extension\n"
          file copy -force $fichier ${prefixe_nom}.$new_extension
          file delete -force $fichier
       }
@@ -1102,7 +1102,7 @@ proc bm_renameext2 { args } {
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 16-12-2005
 # Date de mise a jour : 16-12-2005/19-03-2008
-# Argument : nom_generique_fichier (sans extension) effacement fichiers appariés (o/n)
+# Argument : nom_generique_fichier (sans extension) effacement fichiers appariÃ©s (o/n)
 ###############################################################################
 
 proc bm_registerplin { args } {
@@ -1118,7 +1118,7 @@ proc bm_registerplin { args } {
          set nom_generique [ lindex $args 0 ]
          set flag_erase "o"
       } else {
-         ::console::affiche_erreur "Usage : bm_registerplin nom_generique_images ?effacement fichiers appariés (o/n)?\n\n"
+         ::console::affiche_erreur "Usage : bm_registerplin nom_generique_images ?effacement fichiers appariÃ©s (o/n)?\n\n"
       }
       set repdflt [bm_goodrep]
 
@@ -1141,7 +1141,7 @@ proc bm_registerplin { args } {
       wm title .benji "Get zone"
       wm transient .benji .audace
       #-- Textes d'avertissement
-      label .benji.lab -text "Sélectionnez l'objet à suivre (boîte petite)"
+      label .benji.lab -text "SÃ©lectionnez l'objet Ã  suivre (boÃ®te petite)"
       pack .benji.lab -expand true -expand true -fill both
       #-- Sous-trame pour boutons
       frame .benji.but
@@ -1183,7 +1183,7 @@ proc bm_registerplin { args } {
       wm title .benji "Get zone"
       wm transient .benji .audace
       #-- Textes d'avertissement
-      label .benji.lab -text "Selectionnez l'objet à suivre (boîte petite)"
+      label .benji.lab -text "Selectionnez l'objet Ã  suivre (boÃ®te petite)"
       pack .benji.lab -expand true -expand true -fill both
       #-- Sous-trame pour boutons
       frame .benji.but
@@ -1235,9 +1235,9 @@ proc bm_registerplin { args } {
       ::console::affiche_resultat "Ecart total en x : $ecart_x ; Ecart total en y : $ecart_y\n"
       set deplacement_x [ expr -1.0*$ecart_x/$nbimg ]
       set deplacement_y [ expr -1.0*$ecart_y/$nbimg ]
-      ::console::affiche_resultat "Déplacement moyen entre chaque image : $deplacement_x ; $deplacement_y\n"
+      ::console::affiche_resultat "DÃ©placement moyen entre chaque image : $deplacement_x ; $deplacement_y\n"
 
-      #--- Recalage de chaque image (sauf n°1)
+      #--- Recalage de chaque image (sauf nÂ°1)
       #-- le deplacement de l'objet est suppose lineaire
       #-- Isole le prefixe des noms de fichiers
       regexp {(.+)\-} $nom_generique match pref_nom_generique
@@ -1255,10 +1255,10 @@ proc bm_registerplin { args } {
       }
       file delete ${pref_nom_generique}_reg-1$conf(extension,defaut)
       file copy ${pref_nom_generique}-1$conf(extension,defaut) ${pref_nom_generique}_reg-1$conf(extension,defaut)
-      ::console::affiche_resultat "Images recalées sauvées sous ${pref_nom_generique}_reg-n°$conf(extension,defaut)\n"
+      ::console::affiche_resultat "Images recalÃ©es sauvÃ©es sous ${pref_nom_generique}_reg-nÂ°$conf(extension,defaut)\n"
 
       #--- Somme des images :
-      ::console::affiche_resultat "Somme de $nbimg images... sauvées sous ${pref_nom_generique}_s$nbimg\n"
+      ::console::affiche_resultat "Somme de $nbimg images... sauvÃ©es sous ${pref_nom_generique}_s$nbimg\n"
       sadd ${pref_nom_generique}_reg- ${pref_nom_generique}_s$nbimg $nbimg
       loadima ${pref_nom_generique}_s$nbimg
       if { $flag_erase == "o" } {
@@ -1266,7 +1266,7 @@ proc bm_registerplin { args } {
       }
       cd $repdflt
    } else {
-      ::console::affiche_erreur "Usage : bm_registerplin nom_generique_images ?effacement fichiers appariés (o/n)?\n\n"
+      ::console::affiche_erreur "Usage : bm_registerplin nom_generique_images ?effacement fichiers appariÃ©s (o/n)?\n\n"
    }
 }
 #-----------------------------------------------------------------------------#
@@ -1278,7 +1278,7 @@ proc bm_registerplin { args } {
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 16-12-2005
 # Date de mise a jour : 19-03-2008
-# Argument : nom_generique_fichier (sans extension) effacement fichiers appariés (o/n)
+# Argument : nom_generique_fichier (sans extension) effacement fichiers appariÃ©s (o/n)
 ###############################################################################
 
 proc bm_registerhplin { args } {
@@ -1294,7 +1294,7 @@ proc bm_registerhplin { args } {
          set nom_generique [ lindex $args 0 ]
          set flag_erase "o"
       } else {
-         ::console::affiche_erreur "Usage : bm_registerplin nom_generique_images ?effacement fichiers appariés (o/n)?\n\n"
+         ::console::affiche_erreur "Usage : bm_registerplin nom_generique_images ?effacement fichiers appariÃ©s (o/n)?\n\n"
       }
       set repdflt [bm_goodrep]
 
@@ -1317,7 +1317,7 @@ proc bm_registerhplin { args } {
       wm title .benji "Get zone"
       wm transient .benji .audace
       #-- Textes d'avertissement
-      label .benji.lab -text "Sélectionnez l'objet à suivre (boîte petite)"
+      label .benji.lab -text "SÃ©lectionnez l'objet Ã  suivre (boÃ®te petite)"
       pack .benji.lab -expand true -expand true -fill both
       #-- Sous-trame pour boutons
       frame .benji.but
@@ -1359,7 +1359,7 @@ proc bm_registerhplin { args } {
       wm title .benji "Get zone"
       wm transient .benji .audace
       #-- Textes d'avertissement
-      label .benji.lab -text "Selectionnez l'objet à suivre (boîte petite)"
+      label .benji.lab -text "Selectionnez l'objet Ã  suivre (boÃ®te petite)"
       pack .benji.lab -expand true -expand true -fill both
       #-- Sous-trame pour boutons
       frame .benji.but
@@ -1411,9 +1411,9 @@ proc bm_registerhplin { args } {
       ::console::affiche_resultat "Ecart total en x : $ecart_x ; Ecart total en y : $ecart_y\n"
       set deplacement_x [ expr -1.0*$ecart_x/$nbimg ]
       set deplacement_y [ expr -1.0*$ecart_y/$nbimg ]
-      ::console::affiche_resultat "Déplacement moyen entre chaque image : $deplacement_x ; $deplacement_y\n"
+      ::console::affiche_resultat "DÃ©placement moyen entre chaque image : $deplacement_x ; $deplacement_y\n"
 
-      #--- Recalage de chaque image (sauf n°1)
+      #--- Recalage de chaque image (sauf nÂ°1)
       #-- le deplacement de l'objet est suppose lineaire
       #-- Isole le prefixe des noms de fichiers
       regexp {(.+)\-} $nom_generique match pref_nom_generique
@@ -1431,10 +1431,10 @@ proc bm_registerhplin { args } {
       }
       file delete ${pref_nom_generique}_reg-1$conf(extension,defaut)
       file copy ${pref_nom_generique}-1$conf(extension,defaut) ${pref_nom_generique}_reg-1$conf(extension,defaut)
-      ::console::affiche_resultat "Images recalées sauvées sous ${pref_nom_generique}_reg-n°$conf(extension,defaut)\n"
+      ::console::affiche_resultat "Images recalÃ©es sauvÃ©es sous ${pref_nom_generique}_reg-nÂ°$conf(extension,defaut)\n"
 
       #--- Somme des images :
-      ::console::affiche_resultat "Somme de $nbimg images... sauvées sous ${pref_nom_generique}_s$nbimg\n"
+      ::console::affiche_resultat "Somme de $nbimg images... sauvÃ©es sous ${pref_nom_generique}_s$nbimg\n"
       sadd ${pref_nom_generique}_reg- ${pref_nom_generique}_s$nbimg $nbimg
       loadima ${pref_nom_generique}_s$nbimg
       if { $flag_erase == "o" } {
@@ -1442,7 +1442,7 @@ proc bm_registerhplin { args } {
       }
       cd $repdflt
    } else {
-      ::console::affiche_erreur "Usage : bm_registerhplin nom_generique_images ?effacement fichiers appariés (o/n)?\n\n"
+      ::console::affiche_erreur "Usage : bm_registerhplin nom_generique_images ?effacement fichiers appariÃ©s (o/n)?\n\n"
    }
 }
 #-----------------------------------------------------------------------------#
@@ -1484,10 +1484,10 @@ proc bm_sflat { args } {
       buf$audace(bufNo) setkwd [ list BIN1 1 int "" "" ]
       buf$audace(bufNo) setkwd [ list BIN2 1 int "" "" ]
       buf$audace(bufNo) save "$audace(rep_images)/$nom_flat"
-      ::console::affiche_resultat "Flat artificiel sauvé sous $nom_flat\n"
+      ::console::affiche_resultat "Flat artificiel sauvÃ© sous $nom_flat\n"
       return $nom_flat
    } else {
-      ::console::affiche_erreur "Usage: bm_sflat nom_flat_sortie largeur hauteur valeur(ADU) durée_pose(s)\n"
+      ::console::affiche_erreur "Usage: bm_sflat nom_flat_sortie largeur hauteur valeur(ADU) durÃ©e_pose(s)\n"
    }
 }
 #-----------------------------------------------------------------------------#
@@ -1534,7 +1534,7 @@ proc bm_pretraittot { args } {
       }
 
       #--- Pretraite les images brutes
-      ::console::affiche_resultat "**** Prétraitement des images ****...\n"
+      ::console::affiche_resultat "**** PrÃ©traitement des images ****...\n"
       set nom_pretrait [ bm_pretrait $nom_stellaire $nom_dark $nom_flat $nom_darkflat $offset $rmmasters ]
 
       #--- Effectue l'appariement des images pretraitees
@@ -1544,7 +1544,7 @@ proc bm_pretraittot { args } {
       delete2 $nom_pretrait $nbimg
 
       #--- Calcul la somme, somme moyenne, somme mediane et la somme Kappa-Sigma
-      ::console::affiche_resultat "\n**** Sommes des images prétraitées ****...\n"
+      ::console::affiche_resultat "\n**** Sommes des images prÃ©traitÃ©es ****...\n"
       bm_somes ${nom_stellaire}tr-
       delete2 ${nom_stellaire}tr- $nbimg
 
@@ -1557,13 +1557,13 @@ proc bm_pretraittot { args } {
 
 
 ###############################################################################
-# Descirption : effectue le prétraitement d'une série d'images brutes
+# Descirption : effectue le prÃ©traitement d'une sÃ©rie d'images brutes
 #
 # Auteur : Benjamin MAUCLAIRE
-# Date création : 27-08-2005
-# Date de mise à jour : 21-12-2005/2007-01-03/2007-07-10
+# Date crÃ©ation : 27-08-2005
+# Date de mise Ã  jour : 21-12-2005/2007-01-03/2007-07-10
 # Arguments : nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu effacement des masters (O/n)
-# Méthode : par soustraction du noir et sans offset.
+# MÃ©thode : par soustraction du noir et sans offset.
 # Bug : Il faut travailler dans le rep parametre d'Audela, donc revoir toutes les operations !!
 ###############################################################################
 
@@ -1574,7 +1574,7 @@ proc bm_pretrait { args } {
 
    if {[llength $args] <= 6} {
       if {[llength $args] == 4} {
-         #--- On se place dans le répertoire d'images configuré dans Audace
+         #--- On se place dans le rÃ©pertoire d'images configurÃ© dans Audace
          set repdflt [ spc_goodrep ]
          set nom_stellaire [ file rootname [ file tail [ lindex $args 0 ] ] ]
          set nom_dark [ file rootname [ file tail [ lindex $args 1 ] ] ]
@@ -1583,7 +1583,7 @@ proc bm_pretrait { args } {
          set nom_offset "none"
          set flag_rmmaster "o"
       } elseif {[llength $args] == 5} {
-         #--- On se place dans le répertoire d'images configuré dans Audace
+         #--- On se place dans le rÃ©pertoire d'images configurÃ© dans Audace
          set repdflt [ spc_goodrep ]
          set nom_stellaire [ file rootname [ file tail [ lindex $args 0 ] ] ]
          set nom_dark [ file rootname [ file tail [ lindex $args 1 ] ] ]
@@ -1592,7 +1592,7 @@ proc bm_pretrait { args } {
          set nom_offset [ file rootname [ file tail [ lindex $args 4 ] ] ]
          set flag_rmmaster "o"
       } elseif {[llength $args] == 6} {
-         #--- On se place dans le répertoire d'images configuré dans Audace
+         #--- On se place dans le rÃ©pertoire d'images configurÃ© dans Audace
          set repdflt [ spc_goodrep ]
          set nom_stellaire [ file rootname [ file tail [ lindex $args 0 ] ] ]
          set nom_dark [ file rootname [ file tail [ lindex $args 1 ] ] ]
@@ -1607,13 +1607,13 @@ proc bm_pretrait { args } {
 
 
       #--- Compte les images :
-      ## Renumerote chaque série de fichier
+      ## Renumerote chaque sÃ©rie de fichier
       #renumerote $nom_stellaire
       #renumerote $nom_dark
       #renumerote $nom_flat
       #renumerote $nom_darkflat
 
-      ## Détermine les listes de fichiers de chasue série
+      ## DÃ©termine les listes de fichiers de chasue sÃ©rie
       #set dark_liste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_dark}\[0-9\]*$conf(extension,defaut) ] ]
       #set nb_dark [ llength $dark_liste ]
       #set flat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_flat}\[0-9\]*$conf(extension,defaut) ] ]
@@ -1624,7 +1624,7 @@ proc bm_pretrait { args } {
       if { 1==0 } {
       set stellaire_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
       set nb_stellaire [ llength $stellaire_liste ]
-      #-- Gestion du cas des masters au lieu d'une série de fichier :
+      #-- Gestion du cas des masters au lieu d'une sÃ©rie de fichier :
       if { [ catch { glob -dir $audace(rep_images) ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) } ] } {
          set dark_list [ list $nom_dark ]
          set nb_dark 1
@@ -1709,7 +1709,7 @@ proc bm_pretrait { args } {
       }
 
 
-      #--- Isole le préfixe des noms de fichiers dans le cas ou ils possedent un "-" avant le n° :
+      #--- Isole le prÃ©fixe des noms de fichiers dans le cas ou ils possedent un "-" avant le nÂ° :
       set pref_stellaire ""
       set pref_dark ""
       set pref_flat ""
@@ -1747,14 +1747,14 @@ proc bm_pretrait { args } {
       # ::console::affiche_resultat "Corr : b=$pref_stellaire, d=$pref_dark, f=$pref_flat, df=$pref_darkflat\n"
 
 
-      #--- Prétraitement des flats :
-      #-- Somme médiane des dark, dark_flat et offset :
+      #--- PrÃ©traitement des flats :
+      #-- Somme mÃ©diane des dark, dark_flat et offset :
       if { $nb_dark == 1 } {
          ::console::affiche_resultat "L'image de dark est $nom_dark$conf(extension,defaut)\n"
          set pref_dark $nom_dark
          file copy -force $nom_dark$conf(extension,defaut) ${pref_dark}-smd$nb_dark$conf(extension,defaut)
       } else {
-         ::console::affiche_resultat "Somme médiane de $nb_dark dark(s)...\n"
+         ::console::affiche_resultat "Somme mÃ©diane de $nb_dark dark(s)...\n"
          smedian "$nom_dark" "${pref_dark}-smd$nb_dark" $nb_dark
       }
       if { $nb_darkflat == 1 } {
@@ -1762,7 +1762,7 @@ proc bm_pretrait { args } {
          set pref_darkflat "$nom_darkflat"
          file copy -force $nom_darkflat$conf(extension,defaut) ${pref_darkflat}-smd$nb_darkflat$conf(extension,defaut)
       } else {
-         ::console::affiche_resultat "Somme médiane de $nb_darkflat dark(s) associé(s) aux flat(s)...\n"
+         ::console::affiche_resultat "Somme mÃ©diane de $nb_darkflat dark(s) associÃ©(s) aux flat(s)...\n"
          smedian "$nom_darkflat" "${pref_darkflat}-smd$nb_darkflat" $nb_darkflat
       }
       if { $nom_offset!="none" } {
@@ -1771,14 +1771,14 @@ proc bm_pretrait { args } {
             set pref_offset $nom_offset
             file copy -force $nom_offset$conf(extension,defaut) ${pref_offset}-smd$nb_offset$conf(extension,defaut)
          } else {
-            ::console::affiche_resultat "Somme médiane de $nb_offset offset(s)...\n"
+            ::console::affiche_resultat "Somme mÃ©diane de $nb_offset offset(s)...\n"
             smedian "$nom_offset" "${pref_offset}-smd$nb_offset" $nb_offset
          }
       }
 
       #-- Soustraction du master_dark aux images de flat :
       if { $nom_offset=="none" } {
-         ::console::affiche_resultat "Soustraction des noirs associés aux plus...\n"
+         ::console::affiche_resultat "Soustraction des noirs associÃ©s aux plus...\n"
          if { $nb_flat == 1 } {
             set pref_flat $nom_flat
             buf$audace(bufNo) load "$nom_flat"
@@ -1790,7 +1790,7 @@ proc bm_pretrait { args } {
             #set flat_traite_1 [ lindex [ glob ${pref_flat}_moinsnoir-*$conf(extension,defaut) ] 0 ]
          }
       } else {
-         ::console::affiche_resultat "Optimisation des noirs associés aux plus...\n"
+         ::console::affiche_resultat "Optimisation des noirs associÃ©s aux plus...\n"
          if { $nb_flat == 1 } {
             set pref_flat $nom_flat
             buf$audace(bufNo) load "$nom_flat"
@@ -1802,25 +1802,25 @@ proc bm_pretrait { args } {
          }
       }
 
-      #-- Harmonisation des flats et somme médiane :
+      #-- Harmonisation des flats et somme mÃ©diane :
       if { $nb_flat == 1 } {
-         # Calcul du niveau moyen de la première image
+         # Calcul du niveau moyen de la premiÃ¨re image
          #buf$audace(bufNo) load "${pref_flat}_moinsnoir-1"
          #set intensite_moyenne [lindex [stat] 4]
-         ## Mise au même niveau de toutes les images de PLU
-         #::console::affiche_resultat "Mise au même niveau de l'image de PLU...\n"
+         ## Mise au mÃªme niveau de toutes les images de PLU
+         #::console::affiche_resultat "Mise au mÃªme niveau de l'image de PLU...\n"
          #ngain $intensite_moyenne
          #buf$audace(bufNo) save "${pref_flat}-smd$nb_flat"
          #file copy ${pref_flat}_moinsnoir-$nb_flat$conf(extension,defaut) ${pref_flat}-smd$nb_flat$conf(extension,defaut)
-         ::console::affiche_resultat "Le flat prétraité est ${pref_flat}-smd$nb_flat\n"
+         ::console::affiche_resultat "Le flat prÃ©traitÃ© est ${pref_flat}-smd$nb_flat\n"
       } else {
-         # Calcul du niveau moyen de la première image
+         # Calcul du niveau moyen de la premiÃ¨re image
          buf$audace(bufNo) load "$flat_moinsnoir_1"
          set intensite_moyenne [lindex [stat] 4]
-         # Mise au même niveau de toutes les images de PLU
-         ::console::affiche_resultat "Mise au même niveau de toutes les images de PLU...\n"
+         # Mise au mÃªme niveau de toutes les images de PLU
+         ::console::affiche_resultat "Mise au mÃªme niveau de toutes les images de PLU...\n"
          ngain2 "${pref_flat}_moinsnoir-" "${pref_flat}_auniveau-" $intensite_moyenne $nb_flat
-         ::console::affiche_resultat "Somme médiane des flat prétraités...\n"
+         ::console::affiche_resultat "Somme mÃ©diane des flat prÃ©traitÃ©s...\n"
          smedian "${pref_flat}_auniveau-" "${pref_flat}-smd$nb_flat" $nb_flat
          #file delete [ file join [ file rootname ${pref_flat}_auniveau-]$conf(extension,defaut) ]
          delete2 "${pref_flat}_auniveau-" $nb_flat
@@ -1828,11 +1828,11 @@ proc bm_pretrait { args } {
       }
 
 
-      #--- Prétraitement des images stellaires :
+      #--- PrÃ©traitement des images stellaires :
       #-- Soustraction du noir des images stellaires :
       ::console::affiche_resultat "Soustraction du noir des images stellaires...\n"
       if { $nom_offset=="none" } {
-         ::console::affiche_resultat "Soustraction des noirs associés aux images stellaires...\n"
+         ::console::affiche_resultat "Soustraction des noirs associÃ©s aux images stellaires...\n"
          if { $nb_stellaire==1 } {
             set pref_stellaire "$nom_stellaire"
             buf$audace(bufNo) load "$nom_stellaire"
@@ -1842,7 +1842,7 @@ proc bm_pretrait { args } {
             sub2 "$nom_stellaire" "${pref_dark}-smd$nb_dark" "${pref_stellaire}_moinsnoir-" 0 $nb_stellaire
          }
       } else {
-         ::console::affiche_resultat "Optimisation des noirs associés aux images stellaires...\n"
+         ::console::affiche_resultat "Optimisation des noirs associÃ©s aux images stellaires...\n"
          if { $nb_stellaire==1 } {
             set pref_stellaire "$nom_stellaire"
             buf$audace(bufNo) load "$nom_stellaire"
@@ -1853,7 +1853,7 @@ proc bm_pretrait { args } {
          }
       }
 
-      #-- Calcul du niveau moyen de la PLU traitée :
+      #-- Calcul du niveau moyen de la PLU traitÃ©e :
       buf$audace(bufNo) load "${pref_flat}-smd$nb_flat"
       set intensite_moyenne [lindex [stat] 4]
 
@@ -1865,7 +1865,7 @@ proc bm_pretrait { args } {
 
       #--- Affichage et netoyage :
       loadima "$image_traite_1"
-      ::console::affiche_resultat "Affichage de la première image prétraitée\n"
+      ::console::affiche_resultat "Affichage de la premiÃ¨re image prÃ©traitÃ©e\n"
       delete2 "${pref_stellaire}_moinsnoir-" $nb_stellaire
       if { $flag_rmmaster == "o" } {
          # Le 06/02/19 :
@@ -1886,7 +1886,7 @@ proc bm_pretrait { args } {
       }
 
 
-      #--- Retour dans le répertoire de départ avnt le script
+      #--- Retour dans le rÃ©pertoire de dÃ©part avnt le script
       return ${pref_stellaire}-t-
    } else {
       ::console::affiche_erreur "Usage: bm_pretrait nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu ?nom_offset (none)? ?effacement des masters (o/n)?\n\n"
@@ -1914,7 +1914,7 @@ proc bm_register { args } {
        set liste_fichiers [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_generique}\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
        set nbimg [ llength $liste_fichiers ]
 
-       ::console::affiche_resultat "$nbimg fichiers à apparier...\n"
+       ::console::affiche_resultat "$nbimg fichiers Ã  apparier...\n"
        register $nom_generique ${nom_generique}-r- $nbimg
        return ${nom_generique}-r-
    } else {
@@ -1942,7 +1942,7 @@ proc bm_sadd { args } {
       set liste_fichiers [ glob -dir $audace(rep_images) ${nom_generique}\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ]
       set nb_file [ llength $liste_fichiers ]
 
-      #--- Gestion de la durée totale d'exposition :
+      #--- Gestion de la durÃ©e totale d'exposition :
       buf$audace(bufNo) load [ lindex $liste_fichiers 0 ]
       set listemotsclef [ buf$audace(bufNo) getkwds ]
       if { [ lsearch $listemotsclef "EXPOSURE" ] !=-1 } {
@@ -1967,7 +1967,7 @@ proc bm_sadd { args } {
       buf$audace(bufNo) save "$audace(rep_images)/${nom_generique}-s$nb_file"
 
       #--- Traitement du resultat :
-      ::console::affiche_resultat "Somme sauvées sous ${nom_generique}-s$nb_file\n"
+      ::console::affiche_resultat "Somme sauvÃ©es sous ${nom_generique}-s$nb_file\n"
       return "${nom_generique}-s$nb_file"
    } else {
       ::console::affiche_erreur "Usage: bm_sadd nom_generique_fichier\n\n"
@@ -1993,7 +1993,7 @@ proc bm_smean { args } {
        set liste_fichiers [ glob -dir $audace(rep_images) ${nom_generique}\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ]
        set nb_file [ llength $liste_fichiers ]
 
-      #--- Gestion de la durée totale d'exposition :
+      #--- Gestion de la durÃ©e totale d'exposition :
       buf$audace(bufNo) load [ lindex $liste_fichiers 0 ]
       #- Bug ici : pas de EXPOSURE dans certains fits
       #set unit_exposure [ lindex [ buf$audace(bufNo) getkwd "EXPOSURE" ] 1 ]
@@ -2005,7 +2005,7 @@ proc bm_smean { args } {
       smean "$nom_generique" "${nom_generique}-sm$nb_file" $nb_file
 
       #--- Traitement du resultat :
-      ::console::affiche_resultat "Somme moyenne sauvées sous ${nom_generique}-sm$nb_file\n"
+      ::console::affiche_resultat "Somme moyenne sauvÃ©es sous ${nom_generique}-sm$nb_file\n"
       return "${nom_generique}-sm$nb_file"
    } else {
       ::console::affiche_erreur "Usage: bm_smean nom_generique_fichier\n\n"
@@ -2032,10 +2032,10 @@ proc bm_smed { args } {
       set nom_generique [ file rootname [ lindex $args 0 ] ]
       set nb_file [ llength [ glob -dir $audace(rep_images) ${nom_generique}\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
 
-      ::console::affiche_resultat "Somme médiane de $nb_file images...\n"
+      ::console::affiche_resultat "Somme mÃ©diane de $nb_file images...\n"
       renumerote "$nom_generique"
       smedian "$nom_generique" "${nom_generique}-smd$nb_file" $nb_file
-      ::console::affiche_resultat "Somme médiane sauvée sous ${nom_generique}-smd$nb_file\n"
+      ::console::affiche_resultat "Somme mÃ©diane sauvÃ©e sous ${nom_generique}-smd$nb_file\n"
       #cd $repdflt
       return "${nom_generique}-smd$nb_file"
    } else {
@@ -2103,7 +2103,7 @@ proc bm_fwhm { args } {
       set focale [ lindex $args 2 ]
 
       set sfwhm [ expr atan($tpixel*$fwhm*1E-6/($focale/1000))*(180/acos(-1))*3600 ]
-      ::console::affiche_resultat "FWHM étoile : $sfwhm secondes d'arc\n"
+      ::console::affiche_resultat "FWHM Ã©toile : $sfwhm secondes d'arc\n"
    } else {
       ::console::affiche_erreur "Usage: bm_fwhm fwhm-etoile taille-pixel(um) distance-focale(mm)\n\n"
    }
@@ -2218,17 +2218,17 @@ proc bm_exptime { args } {
       set exptime [ expr ($dfrac_fin-$dfrac_deb)*86400.0+$duree ]
 
       #--- Traitement du resultat :
-      ::console::affiche_resultat "Durée totale d'acquisition : $exptime s\n"
+      ::console::affiche_resultat "DurÃ©e totale d'acquisition : $exptime s\n"
       return $exptime
    } else {
-      ::console::affiche_erreur "Usage: bm_exptime nom_generique_série\n\n"
+      ::console::affiche_erreur "Usage: bm_exptime nom_generique_sÃ©rie\n\n"
    }
 }
 #*****************************************************************************#
 
 
 #=============================================================================#
-#                    Anciennes implémentations                                #
+#                    Anciennes implÃ©mentations                                #
 #=============================================================================#
 
 proc bm_sadd_20060806 { args } {
@@ -2241,7 +2241,7 @@ proc bm_sadd_20060806 { args } {
       set nb_file [ llength [  glob -dir $audace(rep_images) ${nom_generique}*$conf(extension,defaut) ] ]
       regexp {(.+)\-} $nom_generique match pref_nom
 
-      ::console::affiche_resultat "Somme de $nb_file images... sauvées sous ${pref_nom}_s$nb_file\n"
+      ::console::affiche_resultat "Somme de $nb_file images... sauvÃ©es sous ${pref_nom}_s$nb_file\n"
       sadd $nom_generique ${pref_nom}_s$nb_file $nb_file
       cd $repdflt
       return ${pref_nom}_s$nb_file
@@ -2254,7 +2254,7 @@ proc bm_sadd_20060806 { args } {
 
 
 ####################################################################################
-#                  Anciennes implémentations                                       #
+#                  Anciennes implÃ©mentations                                       #
 ####################################################################################
 
 
@@ -2310,7 +2310,7 @@ proc bm_pretrait_070103 { args } {
       set darkflat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_darkflat}\[0-9\]*$conf(extension,defaut) ] ]
       set nb_darkflat [ llength $darkflat_liste ]
 
-      ## Isole le prefixe des noms de fichiers dans le cas ou ils possedent un "-" avant le n°
+      ## Isole le prefixe des noms de fichiers dans le cas ou ils possedent un "-" avant le nÂ°
       set pref_stellaire ""
       set pref_dark ""
       set pref_flat ""
@@ -2319,7 +2319,7 @@ proc bm_pretrait_070103 { args } {
       regexp {(.+)\-?[0-9]+} $nom_dark match pref_dark
       regexp {(.+)\-?[0-9]+} $nom_flat match pref_flat
       regexp {(.+)\-?[0-9]+} $nom_darkflat match pref_darkflat
-      #-- En attendant de gerer le cas des fichiers avec - aavnt n°
+      #-- En attendant de gerer le cas des fichiers avec - aavnt nÂ°
       set pref_stellaire $nom_stellaire
       set pref_dark $nom_dark
       set pref_flat $nom_flat
@@ -2347,7 +2347,7 @@ proc bm_pretrait_070103 { args } {
          set pref_dark $nom_dark
          file copy $nom_dark$conf(extension,defaut) ${pref_dark}_smd$nb_dark$conf(extension,defaut)
       } else {
-         ::console::affiche_resultat "Somme médiane de $nb_dark dark(s)...\n"
+         ::console::affiche_resultat "Somme mÃ©diane de $nb_dark dark(s)...\n"
          smedian "$nom_dark" "${pref_dark}_smd$nb_dark" $nb_dark
       }
       if { $nb_darkflat == 1 } {
@@ -2355,7 +2355,7 @@ proc bm_pretrait_070103 { args } {
          set pref_darkflat "$nom_darkflat"
          file copy $nom_darkflat$conf(extension,defaut) ${pref_darkflat}_smd$nb_darkflat$conf(extension,defaut)
       } else {
-         ::console::affiche_resultat "Somme médiane de $nb_darkflat dark(s) associé(s) aux flat(s)...\n"
+         ::console::affiche_resultat "Somme mÃ©diane de $nb_darkflat dark(s) associÃ©(s) aux flat(s)...\n"
          smedian "$nom_darkflat" "${pref_darkflat}_smd$nb_darkflat" $nb_darkflat
       }
       if { $nb_flat == 1 } {
@@ -2374,19 +2374,19 @@ proc bm_pretrait_070103 { args } {
          #buf$audace(bufNo) load "${pref_flat}_moinsnoir-1"
          #set intensite_moyenne [lindex [stat] 4]
          ## Mise au meme niveau de toutes les images de PLU
-         #::console::affiche_resultat "Mise au même niveau de l'image de PLU...\n"
+         #::console::affiche_resultat "Mise au mÃªme niveau de l'image de PLU...\n"
          #ngain $intensite_moyenne
          #buf$audace(bufNo) save "${pref_flat}_smd$nb_flat"
          #file copy ${pref_flat}_moinsnoir-$nb_flat$conf(extension,defaut) ${pref_flat}_smd$nb_flat$conf(extension,defaut)
-         ::console::affiche_resultat "Le flat prétraité est ${pref_flat}_smd$nb_flat\n"
+         ::console::affiche_resultat "Le flat prÃ©traitÃ© est ${pref_flat}_smd$nb_flat\n"
       } else {
          # Calcul du niveau moyen de la premiere image
          buf$audace(bufNo) load "$flat_moinsnoir_1"
          set intensite_moyenne [lindex [stat] 4]
          # Mise au meme niveau de toutes les images de PLU
-         ::console::affiche_resultat "Mise au même niveau de toutes les images de PLU...\n"
+         ::console::affiche_resultat "Mise au mÃªme niveau de toutes les images de PLU...\n"
          ngain2 "${pref_flat}_moinsnoir-" "${pref_flat}_auniveau-" $intensite_moyenne $nb_flat
-         ::console::affiche_resultat "Somme médiane des flat prétraités...\n"
+         ::console::affiche_resultat "Somme mÃ©diane des flat prÃ©traitÃ©s...\n"
          smedian "${pref_flat}_auniveau-" "${pref_flat}_smd$nb_flat" $nb_flat
          #file delete [ file join [ file rootname ${pref_flat}_auniveau-]$conf(extension,defaut) ]
          delete2 "${pref_flat}_auniveau-" $nb_flat
@@ -2407,7 +2407,7 @@ proc bm_pretrait_070103 { args } {
 
       #--- Affichage et netoyage
       loadima "$image_traite_1"
-      ::console::affiche_resultat "Affichage de la première image prétraitée\n"
+      ::console::affiche_resultat "Affichage de la premiÃ¨re image prÃ©traitÃ©e\n"
       delete2 "${pref_stellaire}_moinsnoir-" $nb_stellaire
       if { $flag_rmmaster == "o" } {
          # Le 06/02/19 :
@@ -2495,7 +2495,7 @@ proc bm_pretrait_21-12-2005 { args } {
          set pref_dark $nom_dark
          file copy $nom_dark$conf(extension,defaut) ${pref_dark}_smd$nb_dark$conf(extension,defaut)
       } else {
-         ::console::affiche_resultat "Somme médiane de $nb_dark dark(s)...\n"
+         ::console::affiche_resultat "Somme mÃ©diane de $nb_dark dark(s)...\n"
          smedian "$nom_dark" "${pref_dark}_smd$nb_dark" $nb_dark
       }
       if { $nb_darkflat == 1 } {
@@ -2503,7 +2503,7 @@ proc bm_pretrait_21-12-2005 { args } {
          set pref_darkflat "$nom_darkflat"
          file copy $nom_darkflat$conf(extension,defaut) ${pref_darkflat}_smd$nb_darkflat$conf(extension,defaut)
       } else {
-         ::console::affiche_resultat "Somme médiane de $nb_darkflat dark(s) associé(s) aux flat(s)...\n"
+         ::console::affiche_resultat "Somme mÃ©diane de $nb_darkflat dark(s) associÃ©(s) aux flat(s)...\n"
          smedian "$nom_darkflat" "${pref_darkflat}_smd$nb_darkflat" $nb_darkflat
       }
       if { $nb_flat == 1 } {
@@ -2522,19 +2522,19 @@ proc bm_pretrait_21-12-2005 { args } {
          #buf$audace(bufNo) load "${pref_flat}_moinsnoir-1"
          #set intensite_moyenne [lindex [stat] 4]
          ## Mise au meme niveau de toutes les images de PLU
-         #::console::affiche_resultat "Mise au même niveau de l'image de PLU...\n"
+         #::console::affiche_resultat "Mise au mÃªme niveau de l'image de PLU...\n"
          #ngain $intensite_moyenne
          #buf$audace(bufNo) save "${pref_flat}_smd$nb_flat"
          #file copy ${pref_flat}_moinsnoir-$nb_flat$conf(extension,defaut) ${pref_flat}_smd$nb_flat$conf(extension,defaut)
-         ::console::affiche_resultat "Le flat prétraité est ${pref_flat}_smd$nb_flat\n"
+         ::console::affiche_resultat "Le flat prÃ©traitÃ© est ${pref_flat}_smd$nb_flat\n"
       } else {
          # Calcul du niveau moyen de la premiere image
          buf$audace(bufNo) load "$flat_moinsnoir_1"
          set intensite_moyenne [lindex [stat] 4]
          # Mise au meme niveau de toutes les images de PLU
-         ::console::affiche_resultat "Mise au même niveau de toutes les images de PLU...\n"
+         ::console::affiche_resultat "Mise au mÃªme niveau de toutes les images de PLU...\n"
          ngain2 "${pref_flat}_moinsnoir-" "${pref_flat}_auniveau-" $intensite_moyenne $nb_flat
-         ::console::affiche_resultat "Somme médiane des flat prétraités...\n"
+         ::console::affiche_resultat "Somme mÃ©diane des flat prÃ©traitÃ©s...\n"
          smedian "${pref_flat}_auniveau-" "${pref_flat}_smd$nb_flat" $nb_flat
          #file delete [ file join [ file rootname ${pref_flat}_auniveau-]$conf(extension,defaut) ]
          delete2 "${pref_flat}_auniveau-" $nb_flat
@@ -2555,7 +2555,7 @@ proc bm_pretrait_21-12-2005 { args } {
 
       #--- Affichage et netoyage
       loadima "$image_traite_1"
-      ::console::affiche_resultat "Affichage de la première image prétraitée\n"
+      ::console::affiche_resultat "Affichage de la premiÃ¨re image prÃ©traitÃ©e\n"
       delete2 "${pref_stellaire}_moinsnoir-" $nb_stellaire
       # Le 06/02/19 :
       file delete "${pref_dark}_smd$nb_dark$conf(extension,defaut)"

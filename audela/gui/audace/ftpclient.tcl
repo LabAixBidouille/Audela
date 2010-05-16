@@ -2,7 +2,7 @@
 # Fichier : ftpclient.tcl
 # Description : Connexion a un serveur FTP
 # Auteur : Michel PUJOL
-# Mise a jour $Id: ftpclient.tcl,v 1.13 2009-09-20 14:45:45 robertdelmas Exp $
+# Mise Ã  jour $Id: ftpclient.tcl,v 1.14 2010-05-16 10:49:23 robertdelmas Exp $
 #
 
 ##############################################################################
@@ -442,7 +442,7 @@ namespace eval ::ftpclient {
       #--- autre widget sauvegarde dans conf()
       set widget(timeout)  $conf(ftpclient,timeout)
 
-      #--- valeur non sauvegardée dans conf()
+      #--- valeur non sauvegardee dans conf()
       set widget(password) $private(password)
    }
 

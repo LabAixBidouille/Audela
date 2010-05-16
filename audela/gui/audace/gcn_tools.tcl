@@ -8,7 +8,7 @@
 # Connected sites are found in http://gcn.gsfc.nasa.gov/sites_cfg.html
 # To create a new connected site http://gcn.gsfc.nasa.gov/gcn/config_builder.html
 #
-# Mise a jour $Id: gcn_tools.tcl,v 1.37 2010-02-14 10:50:54 robertdelmas Exp $
+# Mise Ã  jour $Id: gcn_tools.tcl,v 1.38 2010-05-16 10:50:05 robertdelmas Exp $
 #
 
 # ==========================================================================================
@@ -990,11 +990,11 @@ proc grb_man {} {
    ::console::affiche_resultat " ======================================================\n"
    ::console::affiche_resultat " AudeLA Menu -> Configuration -> Repertoires -> Images\n"
    ::console::affiche_resultat " ======================================================\n"
-   ::console::affiche_resultat " Vérifier que c'est un vrai GRB (This is a GRB)\n"
-   ::console::affiche_resultat " Vérifier la présentce d'un afterglow sur image somme\n"
-   ::console::affiche_resultat " Vérifier la valeur de l'extinction interstellaire galactique.\n"
-   ::console::affiche_resultat " Vérifier l'image traînée et la télécharger\n"
-   ::console::affiche_resultat " Vérifier la présence d'un afterglow sur premières images et les télécharger\n"
+   ::console::affiche_resultat " VÃ©rifier que c'est un vrai GRB (This is a GRB)\n"
+   ::console::affiche_resultat " VÃ©rifier la prÃ©sence d'un afterglow sur image somme\n"
+   ::console::affiche_resultat " VÃ©rifier la valeur de l'extinction interstellaire galactique.\n"
+   ::console::affiche_resultat " VÃ©rifier l'image traÃ®nÃ©e et la tÃ©lÃ©charger\n"
+   ::console::affiche_resultat " VÃ©rifier la prÃ©sence d'un afterglow sur premiÃ¨res images et les tÃ©lÃ©charger\n"
    ::console::affiche_resultat " ======================================================\n"
    ::console::affiche_resultat " Renommer les images : grb_copy\n"
    ::console::affiche_resultat " Renommer les images : grb_sum ic\n"
@@ -1119,9 +1119,9 @@ proc grb_copy { {first 1} {date_trigger ""} } {
                incr kki
                set kk $kki
             }
-            #::console::affiche_resultat "[file tail $fichier] [expr 86400.*([mc_date2jd $date_obs]-$jdgrb)+$exposure/2] secs $date_obs $exposure $nbstars ${tempccd}°C\n"
-            ::console::affiche_resultat "[file tail $fichier] [expr 1440.*([mc_date2jd $date_obs]-$jdgrb)+$exposure/2/60] mins $date_obs $exposure $nbstars ${tempccd}°C\n"
-            #::console::affiche_resultat "[file tail $fichier] [expr 24.*([mc_date2jd $date_obs]-$jdgrb)+$exposure/2/3600.] hours $date_obs $exposure $nbstars ${tempccd}°C\n"
+            #::console::affiche_resultat "[file tail $fichier] [expr 86400.*([mc_date2jd $date_obs]-$jdgrb)+$exposure/2] secs $date_obs $exposure $nbstars ${tempccd}Â°C\n"
+            ::console::affiche_resultat "[file tail $fichier] [expr 1440.*([mc_date2jd $date_obs]-$jdgrb)+$exposure/2/60] mins $date_obs $exposure $nbstars ${tempccd}Â°C\n"
+            #::console::affiche_resultat "[file tail $fichier] [expr 24.*([mc_date2jd $date_obs]-$jdgrb)+$exposure/2/3600.] hours $date_obs $exposure $nbstars ${tempccd}Â°C\n"
             buf$bufno window $box
             buf$bufno save ${path}/i${series}${kk}
             set naxis1 [lindex [buf$bufno getkwd NAXIS1] 1]

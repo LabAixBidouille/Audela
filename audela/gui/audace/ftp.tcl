@@ -2,7 +2,7 @@
 # Fichier : ftp.tcl
 # Description : Tool functions for an FTP Client access
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: ftp.tcl,v 1.2 2006-06-20 17:30:14 robertdelmas Exp $
+# Mise à jour $Id: ftp.tcl,v 1.3 2010-05-16 10:49:03 robertdelmas Exp $
 #
 
 # ==============================================================
