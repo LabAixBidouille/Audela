@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.49 2010-05-11 17:57:45 michelpujol Exp $
+# @version  $Id: sophiecommand.tcl,v 1.50 2010-05-16 20:40:59 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -485,6 +485,10 @@ proc ::sophie::setMode { { mode "" } } {
          #--- je change la taille de d'analyse de la cible
          set private(targetBoxSize) $::conf(sophie,centerWindowSize)
          set zoom 4
+         #--- j'intialise la liste des valeurs de FWHM
+         set private(xFwhmList)  ""
+         set private(yFwhmList)  ""
+
          #--- je mets le thread de la camera en mode centrage et je desactive la detection de la fibre
          ###::camera::setAsynchroneParameter $private(camItem) \
          ###   "mode" "FOCUS" \
@@ -539,8 +543,27 @@ proc ::sophie::setMode { { mode "" } } {
          ::camera::setAsynchroneParameter $private(camItem) \
             "originSumCounter"   0
 
+         #--- je calcule la moyenne de xFwhm sur les 3 derniere images
+         set xFwhmMean 0.0
+            if { $private(xFwhmList) != "" } {
+            foreach val $private(xFwhmList) {
+                set xFwhmMean [expr $xFwhmMean +  $val]
+            }
+            set xFwhmMean [expr $xFwhmMean / [llength $private(xFwhmList)] ]
+         }
+         #--- je calcule la moyenne de yFwhm sur les 3 derniere images
+         set yFwhmMean 0.0
+         if { $private(yFwhmList) != "" } {
+            foreach val $private(yFwhmList) {
+                set yFwhmMean [expr $yFwhmMean +  $val]
+            }
+            set yFwhmMean [expr $yFwhmMean / [llength $private(yFwhmList)] ]
+         }
+         ::sophie::control::setSeeing $xFwhmMean $yFwhmMean
+
       }
    }
+
    ::sophie::setGuidingMode $private(visuNo)
    #--- je mets a jour la fenetre de controle
    ::sophie::control::setMode $private(mode)
@@ -1982,6 +2005,8 @@ proc ::sophie::startGuide { } {
 
    #--- je mets a jour le voyant dans la fenetre de controle
    ::sophie::control::setGuideState $private(guideEnabled)
+
+   #--- j'affiche la moyenne de la Fwhm
 }
 
 ##------------------------------------------------------------
@@ -2076,7 +2101,7 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
             # args 6 = fiberY
             # args 7 = measuredFwhmX (en pixel ramené au binning 1x1)
             # args 8 = measuredFwhmY (en pixel ramené au binning 1x1)
-            # args 9 = background
+            # args 9 = skyLevel (ADU/s)
             # args 10= maxIntensity
             # args 11= starFlux
             # args 12= diffAlpha        ecart etoile/consigne en alpha (en arcsec)
@@ -2096,7 +2121,7 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
             set originY              [expr [lindex $args 6] * $private(yBinning) + $private(yWindow) -1 ]
             set fwhmX                [expr [lindex $args 7] * $::conf(sophie,pixelScale)]
             set fwhmY                [expr [lindex $args 8] * $::conf(sophie,pixelScale)]
-            set background           [lindex $args 9]
+            set skyLevel             [lindex $args 9]
             set maxIntensity         [lindex $args 10]
             set starFlux             [lindex $args 11]
             set alphaDiff            [lindex $args 12]
@@ -2126,21 +2151,49 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                "CENTER" {
                   ::sophie::control::setCenterInformation $starStatus $fiberStatus \
                      [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
-                     $starX $starY $fwhmX $fwhmY $background $maxIntensity $starFlux \
+                     $starX $starY $fwhmX $fwhmY $skyLevel $maxIntensity $starFlux \
                      $starDx $starDy $alphaDiff $deltaDiff $alphaCorrection $deltaCorrection
                   #--- je memorise le flux de l'etoile pour le mettre dans l'image integree
                   ::sophie::spectro::setStarFlux $starFlux
                }
                "FOCUS" {
+                  #--- je calcule la moyenne de xFwhm sur les 3 derniere images
+                  lappend private(xFwhmList) $fwhmX
+                  if { [llength $private(xFwhmList) ] > 3}  {
+                      #--- s'il ya plus de 3 valeurs , je supprime la plus ancienne
+                      set private(xFwhmList) [lreplace $private(xFwhmList) 0 0]
+                  }
+                  set xFwhmMean 0.0
+                     if { $private(xFwhmList) != "" } {
+                     foreach val $private(xFwhmList) {
+                         set xFwhmMean [expr $xFwhmMean +  $val]
+                     }
+                     set xFwhmMean [expr $xFwhmMean / [llength $private(xFwhmList)] ]
+                  }
+
+                  #--- je calcule la moyenne de yFwhm sur les 3 derniere images
+                  lappend private(yFwhmList) $fwhmY
+                  if { [llength $private(yFwhmList)] > 3  }  {
+                      #--- s'il ya plus de 3 valeurs , je supprime la plus ancienne
+                      set private(yFwhmList) [lreplace $private(yFwhmList) 0 0]
+                  }
+                  set yFwhmMean 0.0
+                  if { $private(yFwhmList) != "" } {
+                     foreach val $private(yFwhmList) {
+                         set yFwhmMean [expr $yFwhmMean +  $val]
+                     }
+                     set yFwhmMean [expr $yFwhmMean / [llength $private(yFwhmList)] ]
+                  }
+
                   ::sophie::control::setFocusInformation $starStatus $fiberStatus \
                      [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
-                     $starX $starY $fwhmX $fwhmY $alphaDiff $deltaDiff $background $maxIntensity $starFlux
+                     $starX $starY $fwhmX $fwhmY $alphaDiff $deltaDiff $skyLevel $maxIntensity $starFlux
                   #--- je memorise le seeing pour le mettre dans l'image integree et l'envoyer au spectro
-                  ::sophie::spectro::setSeeing $fwhmX $fwhmY $background
+                  ::sophie::spectro::setSeeing $xFwhmMean $yFwhmMean
+                  ####--- je l'affiche dans la fenetre de controle
+                  ###::sophie::control::setSeeing $fwhmX $fwhmY $skyLevel
                   #--- je memorise le flux de l'etoile pour le mettre dans l'image integree
                   ::sophie::spectro::setStarFlux $starFlux
-                  #--- je l'affiche dans la fentre de controle
-                  ::sophie::control::setSeeing $fwhmX $fwhmY $background
                }
                "GUIDE" {
                   #--- je mets a jour les statistiques pour le PC Sophie
@@ -2176,8 +2229,9 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                   ::sophie::control::setGuideInformation $starStatus $fiberStatus \
                      [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
                      $starX $starY $alphaDiff $deltaDiff $alphaCorrection $deltaCorrection \
-                     $originDx $originDy $maxIntensity
-
+                     $originDx $originDy $skyLevel $maxIntensity
+                  #--- je memorise le fond de ciel pour le mettre dans l'image integree
+                  ::sophie::spectro::setSkyLevel $skyLevel
                }
             }
 
