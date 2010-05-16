@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.133 2010-05-15 17:25:52 robertdelmas Exp $
+# Mise à jour $Id: aud.tcl,v 1.134 2010-05-16 07:52:29 robertdelmas Exp $
 #
 
 #--- Chargement du package BWidget
@@ -697,6 +697,9 @@ namespace eval ::audace {
       set visuNo $audace(visuNo)
       set bufNo [ visu$visuNo buf ]
       Menu_Setup $visuNo $This.menubar
+
+      #--- Creation du menu contextuel
+      ::confVisu::createPopupMenuButton3 $visuNo
 
       set ::confVisu::private($visuNo,menu) "$This.menubar"
 
