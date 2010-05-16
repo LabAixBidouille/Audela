@@ -3,14 +3,14 @@
 # @briefScripts pour un usage aise des fonctions d'AudeLA
 # @author Benjamin MAUCLAIRE (bmauclaire@underlands.org)
 #
-# $Id: filtrage.tcl,v 1.10 2010-05-05 07:56:33 jacquesmichelet Exp $
+# $Id: filtrage.tcl,v 1.11 2010-05-16 09:56:23 robertdelmas Exp $
 #
 
 #--------------------- Liste des fonctions -----------------------------------#
 #
 # bm_masque_flou     : Convolution par un filtre passe-bas effectuant un masque flou d'une image
-# bm_passe_bas       : Convolution par un filtre passe-bas "eliminant le bruit"
-# bm_passe_haut      : Convolution par un filtre passe-haut "eliminant les formes"
+# bm_passe_bas       : Convolution par un filtre passe-bas "éliminant le bruit"
+# bm_passe_haut      : Convolution par un filtre passe-haut "éliminant les formes"
 # bm_filtre_median   : Convolution par un filtre median effectuant un genre de "moyenne"
 # bm_filtre_min      : Convolution par un filtre minimum
 # bm_filtre_max      : Convolution par un filtre maximum
@@ -211,7 +211,7 @@ proc bm_masque_flou { args } {
 
 ##
 #@brief : Calcul de la taille du noyau de convolution
-#@param noyau : taille demandée pour le noyau
+#@param noyau : taille demandÃ©e pour le noyau
 #@return : taille du noyau
 proc contraint_noyau { noyau_demande } {
     set naxis1 [ lindex [ buf$::audace(bufNo) getkwd NAXIS1 ] 1 ]
@@ -312,7 +312,7 @@ proc bm_filter { args } {
                buf$audace(bufNo) imaseries "FILTER kernel_type=$type_filtre kernel_coef=$efficacite kernel_width=$taille_noyau"
                ::audace::autovisu $audace(visuNo)
                set traiteFilters(avancement) $caption(filtrage,fin_traitement)
-            } 
+            }
          }
       }
    } else {
