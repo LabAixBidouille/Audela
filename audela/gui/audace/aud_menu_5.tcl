@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_5.tcl
 # Description : Script regroupant les fonctionnalites du menu Analyse
-# Mise a jour $Id: aud_menu_5.tcl,v 1.12 2009-11-22 12:58:25 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_5.tcl,v 1.13 2010-05-16 08:08:01 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -20,7 +20,7 @@ proc ::audace::Histo { visuNo } {
       set mini [ lindex [ buf$bufNo getkwd SB ] 1 ]
       set maxi [ lindex [ buf$bufNo getkwd SH ] 1 ]
       set r    [ buf$bufNo histo 50 $mini $maxi ]
-      ::plotxy::figure 1
+      ::plotxy::figure $visuNo
       ::plotxy::title  "$caption(audace,histo_titre) (visu$visuNo)"
       ::plotxy::xlabel "$caption(audace,histo_adu)"
       ::plotxy::ylabel "$caption(audace,histo_nbpix)"
@@ -42,15 +42,15 @@ proc statwin { visuNo } {
    set base [ ::confVisu::getBase $visuNo ]
 
    #---
-   set private(statwin,frm) "$base.statwin"
-   set frm $private(statwin,frm)
+   set private(statwin,$visuNo,frm) "$base.statwin$visuNo"
+   set frm $private(statwin,$visuNo,frm)
    if [ winfo exists $frm ] {
       ferme_fenetre_analyse $visuNo $frm statwin
    }
 
    #--- Initialisation de variables
-   if { ! [ info exists conf(statwin,position) ] }    { set conf(statwin,position)    "+350+75" }
-   if { ! [ info exists conf(statwin,modeRefresh) ] } { set conf(statwin,modeRefresh) "0" }
+   if { ! [ info exists conf(statwin,$visuNo,position) ] }    { set conf(statwin,$visuNo,position)    "+350+75" }
+   if { ! [ info exists conf(statwin,$visuNo,modeRefresh) ] } { set conf(statwin,$visuNo,modeRefresh) "0" }
 
    #--- Capture de la fenetre d'analyse
    set private(statwin,box) [ ::confVisu::getBox $visuNo ]
@@ -63,7 +63,7 @@ proc statwin { visuNo } {
    wm transient $frm $base
    wm resizable $frm 0 0
    wm title $frm "$caption(audace,menu,statwin)"
-   wm geometry $frm $conf(statwin,position)
+   wm geometry $frm $conf(statwin,$visuNo,position)
    wm protocol $frm WM_DELETE_WINDOW "ferme_fenetre_analyse $visuNo $frm statwin"
 
    #--- Creation d'une frame
@@ -92,7 +92,7 @@ proc statwin { visuNo } {
 
       #--- Cree le checkbutton pour choisir le mode de rafraichissement
       checkbutton $frm.frame2.modeRefresh -text "$caption(audace,refreshAuto)" \
-         -variable conf(statwin,modeRefresh) -command "::confStatwin $visuNo"
+         -variable conf(statwin,$visuNo,modeRefresh) -command "::confStatwin $visuNo"
       pack $frm.frame2.modeRefresh -anchor w -side top -padx 3 -pady 3
 
       #--- Cree le bouton pour rafraichir les statistiques
@@ -144,12 +144,12 @@ proc refreshStatwin { visuNo args } {
    set private(statwin,ecart_type_fond_ciel) "$caption(audace,ecart_type_fond_ciel) [ lindex $private(statwin,valeurs) 7 ]"
 
    #--- Mise a jour des labels
-   $private(statwin,frm).frame1.lab1 configure -text "$private(statwin,maxi)"
-   $private(statwin,frm).frame1.lab2 configure -text "$private(statwin,mini)"
-   $private(statwin,frm).frame1.lab3 configure -text "$private(statwin,moyenne)"
-   $private(statwin,frm).frame1.lab4 configure -text "$private(statwin,ecart_type)"
-   $private(statwin,frm).frame1.lab5 configure -text "$private(statwin,moyenne_fond_ciel)"
-   $private(statwin,frm).frame1.lab6 configure -text "$private(statwin,ecart_type_fond_ciel)"
+   $private(statwin,$visuNo,frm).frame1.lab1 configure -text "$private(statwin,maxi)"
+   $private(statwin,$visuNo,frm).frame1.lab2 configure -text "$private(statwin,mini)"
+   $private(statwin,$visuNo,frm).frame1.lab3 configure -text "$private(statwin,moyenne)"
+   $private(statwin,$visuNo,frm).frame1.lab4 configure -text "$private(statwin,ecart_type)"
+   $private(statwin,$visuNo,frm).frame1.lab5 configure -text "$private(statwin,moyenne_fond_ciel)"
+   $private(statwin,$visuNo,frm).frame1.lab6 configure -text "$private(statwin,ecart_type_fond_ciel)"
 }
 
 #
@@ -161,12 +161,12 @@ proc confStatwin { visuNo args } {
    global conf
 
    #--- Configure le bouton pour le rafraichissement
-   if { $conf(statwin,modeRefresh) == "0" } {
-      $private(statwin,frm).frame2.butRefresh configure -state normal
+   if { $conf(statwin,$visuNo,modeRefresh) == "0" } {
+      $private(statwin,$visuNo,frm).frame2.butRefresh configure -state normal
       #--- J'arrete le rafraichissement automatique des valeurs si on charge une image
       ::confVisu::removeFileNameListener $visuNo "::refreshStatwin $visuNo"
    } else {
-      $private(statwin,frm).frame2.butRefresh configure -state disabled
+      $private(statwin,$visuNo,frm).frame2.butRefresh configure -state disabled
       #--- Je declare le rafraichissement automatique des valeurs si on charge une image
       ::confVisu::addFileNameListener $visuNo "::refreshStatwin $visuNo"
    }
@@ -186,8 +186,8 @@ proc fwhm { visuNo } {
    set base [ ::confVisu::getBase $visuNo ]
 
    #---
-   set private(fwhm,frm) "$base.fwhm"
-   set frm $private(fwhm,frm)
+   set private(fwhm,$visuNo,frm) "$base.fwhm$visuNo"
+   set frm $private(fwhm,$visuNo,frm)
    if [ winfo exists $frm ] {
       ferme_fenetre_analyse $visuNo $frm fwhm
    }
@@ -199,15 +199,15 @@ proc fwhm { visuNo } {
    }
 
    #--- Initialisation de la position de la fenetre
-   if { ! [ info exists conf(fwhm,position) ] }    { set conf(fwhm,position)    "+350+75" }
-   if { ! [ info exists conf(fwhm,modeRefresh) ] } { set conf(fwhm,modeRefresh) "0" }
+   if { ! [ info exists conf(fwhm,$visuNo,position) ] }    { set conf(fwhm,$visuNo,position)    "+350+75" }
+   if { ! [ info exists conf(fwhm,$visuNo,modeRefresh) ] } { set conf(fwhm,$visuNo,modeRefresh) "0" }
 
    #--- Creation de la fenetre
    toplevel $frm
    wm transient $frm $base
    wm resizable $frm 0 0
    wm title $frm "$caption(audace,menu,fwhm)"
-   wm geometry $frm $conf(fwhm,position)
+   wm geometry $frm $conf(fwhm,$visuNo,position)
    wm protocol $frm WM_DELETE_WINDOW "ferme_fenetre_analyse $visuNo $frm fwhm"
 
    #--- Creation d'une frame
@@ -228,7 +228,7 @@ proc fwhm { visuNo } {
 
       #--- Cree le checkbutton pour choisir le mode de rafraichissement
       checkbutton $frm.frame2.modeRefresh -text "$caption(audace,refreshAuto)" \
-         -variable conf(fwhm,modeRefresh) -command "::confFwhm $visuNo"
+         -variable conf(fwhm,$visuNo,modeRefresh) -command "::confFwhm $visuNo"
       pack $frm.frame2.modeRefresh -anchor w -side top -padx 3 -pady 3
 
       #--- Cree le bouton pour rafraichir les fwhm
@@ -276,8 +276,8 @@ proc refreshFwhm { visuNo args } {
    set private(fwhm,y) "$caption(audace,fwhm_y) [ lindex $private(fwhm,valeurs) 1 ]"
 
    #--- Mise a jour des labels
-   $private(fwhm,frm).frame1.lab1 configure -text "$private(fwhm,x)"
-   $private(fwhm,frm).frame1.lab2 configure -text "$private(fwhm,y)"
+   $private(fwhm,$visuNo,frm).frame1.lab1 configure -text "$private(fwhm,x)"
+   $private(fwhm,$visuNo,frm).frame1.lab2 configure -text "$private(fwhm,y)"
 }
 
 #
@@ -289,12 +289,12 @@ proc confFwhm { visuNo args } {
    global conf
 
    #--- Configure le bouton pour le rafraichissement
-   if { $conf(fwhm,modeRefresh) == "0" } {
-      $private(fwhm,frm).frame2.butRefresh configure -state normal
+   if { $conf(fwhm,$visuNo,modeRefresh) == "0" } {
+      $private(fwhm,$visuNo,frm).frame2.butRefresh configure -state normal
       #--- J'arrete le rafraichissement automatique des valeurs si on charge une image
       ::confVisu::removeFileNameListener $visuNo "::refreshFwhm $visuNo"
    } else {
-      $private(fwhm,frm).frame2.butRefresh configure -state disabled
+      $private(fwhm,$visuNo,frm).frame2.butRefresh configure -state disabled
       #--- Je declare le rafraichissement automatique des valeurs si on charge une image
       ::confVisu::addFileNameListener $visuNo "::refreshFwhm $visuNo"
    }
@@ -314,8 +314,8 @@ proc fitgauss { visuNo } {
    set base [ ::confVisu::getBase $visuNo ]
 
    #---
-   set private(fitgauss,frm) "$base.fitgauss"
-   set frm $private(fitgauss,frm)
+   set private(fitgauss,$visuNo,frm) "$base.fitgauss$visuNo"
+   set frm $private(fitgauss,$visuNo,frm)
    if [ winfo exists $frm ] {
       ferme_fenetre_analyse $visuNo $frm fitgauss
    }
@@ -327,15 +327,15 @@ proc fitgauss { visuNo } {
    }
 
    #--- Initialisation de la position de la fenetre
-   if { ! [ info exists conf(fitgauss,position) ] }    { set conf(fitgauss,position)    "+350+75" }
-   if { ! [ info exists conf(fitgauss,modeRefresh) ] } { set conf(fitgauss,modeRefresh) "0" }
+   if { ! [ info exists conf(fitgauss,$visuNo,position) ] }    { set conf(fitgauss,$visuNo,position)    "+350+75" }
+   if { ! [ info exists conf(fitgauss,$visuNo,modeRefresh) ] } { set conf(fitgauss,$visuNo,modeRefresh) "0" }
 
    #--- Creation de la fenetre
    toplevel $frm
    wm transient $frm $base
    wm resizable $frm 0 0
    wm title $frm "$caption(audace,menu,fitgauss)"
-   wm geometry $frm $conf(fitgauss,position)
+   wm geometry $frm $conf(fitgauss,$visuNo,position)
    wm protocol $frm WM_DELETE_WINDOW "ferme_fenetre_analyse $visuNo $frm fitgauss"
 
    #--- Creation d'une frame
@@ -369,7 +369,7 @@ proc fitgauss { visuNo } {
 
       #--- Cree le checkbutton pour choisir le mode de rafraichissement
       checkbutton $frm.frame2.modeRefresh -text "$caption(audace,refreshAuto)" \
-         -variable conf(fitgauss,modeRefresh) -command "::confFitgauss $visuNo"
+         -variable conf(fitgauss,$visuNo,modeRefresh) -command "::confFitgauss $visuNo"
       pack $frm.frame2.modeRefresh -anchor w -side top -padx 3 -pady 3
 
       #--- Cree le bouton pour rafraichir l'ajustement de la gaussienne
@@ -460,7 +460,7 @@ proc refreshFitgauss { visuNo args } {
       append texte "[ format "%.2f" $yc ]"
    }
    ::console::affiche_resultat "$texte\n"
-   $private(fitgauss,frm).frame1.lab1 configure -text "$texte"
+   $private(fitgauss,$visuNo,frm).frame1.lab1 configure -text "$texte"
    set texte "$caption(audace,fwhm_xy) : "
    if {($naxis1>1)&&($naxis2>1)} {
       append texte "[ format "%.3f" $fwhmx ] / [ format "%.3f" $fwhmy ]"
@@ -470,7 +470,7 @@ proc refreshFitgauss { visuNo args } {
       append texte "[ format "%.3f" $fwhmy ]"
    }
    ::console::affiche_resultat "$texte\n"
-   $private(fitgauss,frm).frame1.lab2 configure -text "$texte"
+   $private(fitgauss,$visuNo,frm).frame1.lab2 configure -text "$texte"
    set texte "$caption(audace,intens_xy) : "
    if {($naxis1>1)&&($naxis2>1)} {
       append texte "[ format "%f" $intx ] / [ format "%f" $inty ]"
@@ -480,7 +480,7 @@ proc refreshFitgauss { visuNo args } {
       append texte "[ format "%f" $inty ]"
    }
    ::console::affiche_resultat "$texte\n"
-   $private(fitgauss,frm).frame1.lab3 configure -text "$texte"
+   $private(fitgauss,$visuNo,frm).frame1.lab3 configure -text "$texte"
    set texte "$caption(audace,back_xy) : "
    if {($naxis1>1)&&($naxis2>1)} {
       append texte "[ format "%f" $bgx ] / [ format "%f" $bgy ]"
@@ -490,19 +490,19 @@ proc refreshFitgauss { visuNo args } {
       append texte "[ format "%f" $bgy ]"
    }
    ::console::affiche_resultat "$texte\n"
-   $private(fitgauss,frm).frame1.lab4 configure -text "$texte"
+   $private(fitgauss,$visuNo,frm).frame1.lab4 configure -text "$texte"
    set texte "$caption(audace,integflux) : $if0 "
    if {($naxis1>1)&&($naxis2>1)} {
       append texte "+/- $dif"
    }
    ::console::affiche_resultat "$texte\n"
-   $private(fitgauss,frm).frame1.lab5 configure -text "$texte"
+   $private(fitgauss,$visuNo,frm).frame1.lab5 configure -text "$texte"
 
    #---
    if {($naxis1==1)||($naxis2==1)} {
       set texte "$caption(audace,largeurequiv) : [ format "%f" $leq ] pixels"
       ::console::affiche_resultat "$texte\n"
-      $private(fitgauss,frm).frame1.lab6 configure -text "$texte"
+      $private(fitgauss,$visuNo,frm).frame1.lab6 configure -text "$texte"
    }
 
    #---
@@ -604,12 +604,12 @@ proc confFitgauss { visuNo args } {
    global conf
 
    #--- Configure le bouton pour le rafraichissement
-   if { $conf(fitgauss,modeRefresh) == "0" } {
-      $private(fitgauss,frm).frame2.butRefresh configure -state normal
+   if { $conf(fitgauss,$visuNo,modeRefresh) == "0" } {
+      $private(fitgauss,$visuNo,frm).frame2.butRefresh configure -state normal
       #--- J'arrete le rafraichissement automatique des valeurs si on charge une image
       ::confVisu::removeFileNameListener $visuNo "::refreshFitgauss $visuNo"
    } else {
-      $private(fitgauss,frm).frame2.butRefresh configure -state disabled
+      $private(fitgauss,$visuNo,frm).frame2.butRefresh configure -state disabled
       #--- Je declare le rafraichissement automatique des valeurs si on charge une image
       ::confVisu::addFileNameListener $visuNo "::refreshFitgauss $visuNo"
    }
@@ -629,8 +629,8 @@ proc center { visuNo } {
    set base [ ::confVisu::getBase $visuNo ]
 
    #---
-   set private(center,frm) "$base.center"
-   set frm $private(center,frm)
+   set private(center,$visuNo,frm) "$base.center$visuNo"
+   set frm $private(center,$visuNo,frm)
    if [ winfo exists $frm ] {
       ferme_fenetre_analyse $visuNo $frm center
    }
@@ -642,15 +642,15 @@ proc center { visuNo } {
    }
 
    #--- Initialisation de la position de la fenetre
-   if { ! [ info exists conf(center,position) ] }    { set conf(center,position)    "+350+75" }
-   if { ! [ info exists conf(center,modeRefresh) ] } { set conf(center,modeRefresh) "0" }
+   if { ! [ info exists conf(center,$visuNo,position) ] }    { set conf(center,$visuNo,position)    "+350+75" }
+   if { ! [ info exists conf(center,$visuNo,modeRefresh) ] } { set conf(center,$visuNo,modeRefresh) "0" }
 
    #--- Creation de la fenetre
    toplevel $frm
    wm transient $frm $base
    wm resizable $frm 0 0
    wm title $frm "$caption(audace,menu,centro)"
-   wm geometry $frm $conf(center,position)
+   wm geometry $frm $conf(center,$visuNo,position)
    wm protocol $frm WM_DELETE_WINDOW "ferme_fenetre_analyse $visuNo $frm center"
 
    #--- Creation d'une frame
@@ -669,7 +669,7 @@ proc center { visuNo } {
 
       #--- Cree le checkbutton pour choisir le mode de rafraichissement
       checkbutton $frm.frame2.modeRefresh -text "$caption(audace,refreshAuto)" \
-         -variable conf(center,modeRefresh) -command "::confCenter $visuNo"
+         -variable conf(center,$visuNo,modeRefresh) -command "::confCenter $visuNo"
       pack $frm.frame2.modeRefresh -anchor w -side top -padx 3 -pady 3
 
       #--- Cree le bouton pour rafraichir le photocentre
@@ -716,7 +716,7 @@ proc refreshCenter { visuNo args } {
    set private(center,centro) "$caption(audace,center_xy) : ( [ format "%.2f" [ lindex $private(center,valeurs) 0 ] ] / [ format "%.2f" [ lindex $private(center,valeurs) 1 ] ] )"
 
    #--- Mise a jour des labels
-   $private(center,frm).frame1.lab1 configure -text "$private(center,centro)"
+   $private(center,$visuNo,frm).frame1.lab1 configure -text "$private(center,centro)"
 }
 
 #
@@ -728,12 +728,12 @@ proc confCenter { visuNo args } {
    global conf
 
    #--- Configure le bouton pour le rafraichissement
-   if { $conf(center,modeRefresh) == "0" } {
-      $private(center,frm).frame2.butRefresh configure -state normal
+   if { $conf(center,$visuNo,modeRefresh) == "0" } {
+      $private(center,$visuNo,frm).frame2.butRefresh configure -state normal
       #--- J'arrete le rafraichissement automatique des valeurs si on charge une image
       ::confVisu::removeFileNameListener $visuNo "::refreshCenter $visuNo"
    } else {
-      $private(center,frm).frame2.butRefresh configure -state disabled
+      $private(center,$visuNo,frm).frame2.butRefresh configure -state disabled
       #--- Je declare le rafraichissement automatique des valeurs si on charge une image
       ::confVisu::addFileNameListener $visuNo "::refreshCenter $visuNo"
    }
@@ -753,8 +753,8 @@ proc photom { visuNo } {
    set base [ ::confVisu::getBase $visuNo ]
 
    #---
-   set private(photom,frm) "$base.photom"
-   set frm $private(photom,frm)
+   set private(photom,$visuNo,frm) "$base.photom$visuNo"
+   set frm $private(photom,$visuNo,frm)
    if [ winfo exists $frm ] {
       ferme_fenetre_analyse $visuNo $frm photom
    }
@@ -766,15 +766,15 @@ proc photom { visuNo } {
    }
 
    #--- Initialisation de la position de la fenetre
-   if { ! [ info exists conf(photom,position) ] }    { set conf(photom,position)    "+350+75" }
-   if { ! [ info exists conf(photom,modeRefresh) ] } { set conf(photom,modeRefresh) "0" }
+   if { ! [ info exists conf(photom,$visuNo,position) ] }    { set conf(photom,$visuNo,position)    "+350+75" }
+   if { ! [ info exists conf(photom,$visuNo,modeRefresh) ] } { set conf(photom,$visuNo,modeRefresh) "0" }
 
    #--- Creation de la fenetre
    toplevel $frm
    wm transient $frm $base
    wm resizable $frm 0 0
    wm title $frm "$caption(audace,menu,phot)"
-   wm geometry $frm $conf(photom,position)
+   wm geometry $frm $conf(photom,$visuNo,position)
    wm protocol $frm WM_DELETE_WINDOW "ferme_fenetre_analyse $visuNo $frm photom"
 
    #--- Creation d'une frame
@@ -793,7 +793,7 @@ proc photom { visuNo } {
 
       #--- Cree le checkbutton pour choisir le mode de rafraichissement
       checkbutton $frm.frame2.modeRefresh -text "$caption(audace,refreshAuto)" \
-         -variable conf(photom,modeRefresh) -command "::confPhotom $visuNo"
+         -variable conf(photom,$visuNo,modeRefresh) -command "::confPhotom $visuNo"
       pack $frm.frame2.modeRefresh -anchor w -side top -padx 3 -pady 3
 
       #--- Cree le bouton pour rafraichir la photometrie integrale
@@ -840,7 +840,7 @@ proc refreshPhotom { visuNo args } {
    set private(photom,integflux) "$caption(audace,integflux) : [ lindex $private(photom,valeurs) 0 ]"
 
    #--- Mise a jour des labels
-   $private(photom,frm).frame1.lab1 configure -text "$private(photom,integflux)"
+   $private(photom,$visuNo,frm).frame1.lab1 configure -text "$private(photom,integflux)"
 }
 
 #
@@ -852,12 +852,12 @@ proc confPhotom { visuNo args } {
    global conf
 
    #--- Configure le bouton pour le rafraichissement
-   if { $conf(photom,modeRefresh) == "0" } {
-      $private(photom,frm).frame2.butRefresh configure -state normal
+   if { $conf(photom,$visuNo,modeRefresh) == "0" } {
+      $private(photom,$visuNo,frm).frame2.butRefresh configure -state normal
       #--- J'arrete le rafraichissement automatique des valeurs si on charge une image
       ::confVisu::removeFileNameListener $visuNo "::refreshPhotom $visuNo"
    } else {
-      $private(photom,frm).frame2.butRefresh configure -state disabled
+      $private(photom,$visuNo,frm).frame2.butRefresh configure -state disabled
       #--- Je declare le rafraichissement automatique des valeurs si on charge une image
       ::confVisu::addFileNameListener $visuNo "::refreshPhotom $visuNo"
    }
@@ -924,7 +924,7 @@ proc ferme_fenetre_analyse { visuNo frm nom_conf } {
    set geometry [ wm geometry $frm ]
    set deb [ expr 1 + [ string first + $geometry ] ]
    set fin [ string length $geometry ]
-   set conf($nom_conf,position) "+[ string range $geometry $deb $fin ]"
+   set conf($nom_conf,$visuNo,position) "+[ string range $geometry $deb $fin ]"
 
    #--- Fermeture de la fenetre
    destroy $frm
