@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_4.tcl
 # Description : Script regroupant les fonctionnalites du menu Traitement
-# Mise a jour $Id: aud_menu_4.tcl,v 1.15 2009-04-08 15:21:25 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_4.tcl,v 1.16 2010-05-16 10:13:00 robertdelmas Exp $
 #
 
 namespace eval ::traiteFilters {
