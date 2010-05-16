@@ -2,7 +2,7 @@
 # Fichier : crosshair.tcl
 # Description : Affiche un reticule sur l'image
 # Auteur : Michel PUJOL
-# Mise à jour $Id: crosshair.tcl,v 1.13 2010-02-20 10:28:49 robertdelmas Exp $
+# Mise à jour $Id: crosshair.tcl,v 1.14 2010-05-16 08:02:33 robertdelmas Exp $
 #
 
 namespace eval ::Crosshair {
@@ -65,7 +65,7 @@ namespace eval ::Crosshair {
       set conf(crosshair,color)        $widget(color)
       set conf(crosshair,defaultstate) $widget(defaultstate)
 
-      ::confVisu::setCrosshair $visuNo $widget(currentstate)
+      ::confVisu::setCrosshair $visuNo $widget($visuNo,currentstate)
    }
 
    #------------------------------------------------------------
@@ -85,9 +85,9 @@ namespace eval ::Crosshair {
       #--- j'initialise les valeurs
       global conf
 
-      set widget(color)        $conf(crosshair,color)
-      set widget(defaultstate) $conf(crosshair,defaultstate)
-      set widget(currentstate) [::confVisu::getCrosshair $visuNo]
+      set widget(color)                $conf(crosshair,color)
+      set widget(defaultstate)         $conf(crosshair,defaultstate)
+      set widget($visuNo,currentstate) [::confVisu::getCrosshair $visuNo]
 
       #--- creation des differents frames
       frame $frm.frameState -borderwidth 1 -relief raised
@@ -98,7 +98,7 @@ namespace eval ::Crosshair {
 
       #--- current state
       checkbutton $frm.frameState.currentstate -text "$caption(crosshair,current_state_label)" \
-         -highlightthickness 0 -variable Crosshair::widget(currentstate)
+         -highlightthickness 0 -variable ::Crosshair::widget($visuNo,currentstate)
       pack $frm.frameState.currentstate -in $frm.frameState -anchor center -side left -padx 10 -pady 5
 
       #--- default state
