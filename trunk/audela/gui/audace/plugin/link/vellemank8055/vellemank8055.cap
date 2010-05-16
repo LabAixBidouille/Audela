@@ -1,6 +1,6 @@
 #
 # Fichier : vellemank8055.cap
-# Mise a jour $Id: vellemank8055.cap,v 1.6 2009-12-19 09:22:05 robertdelmas Exp $
+# Mise a jour $Id: vellemank8055.cap,v 1.7 2010-05-16 17:47:55 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -80,7 +80,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vellemank8055,test8sorties)     "Testear las 8 salidas digitales"
    set caption(vellemank8055,test5entrees)     "Testear las 5 entradas digitales"
    set caption(vellemank8055,tous)             "Todas"
-   set caption(vellemank8055,chenillard)       "Test auto
+   set caption(vellemank8055,chenillard)       "Test auto"
    set caption(vellemank8055,raz)              "Resetear"
    set caption(vellemank8055,lire)             "Leer las entradas"
    set caption(vellemank8055,stop)             "Parar"
