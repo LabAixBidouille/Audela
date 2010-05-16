@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.45 2010-05-11 17:57:10 michelpujol Exp $
+# @version   $Id: sophie.tcl,v 1.46 2010-05-16 20:33:27 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -195,6 +195,8 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(updateFilterSate)  0                 ; #--- 0=pas de modificationde l'atténuation en cour, 1= modification de l'attennuation en cours
    set private(targetBoxSize)     100
    set private(cameraCells)       [list 1536 1024 ] ; #--- dimensions par defaut du capteur de la camera . cette valeur est mise a jour par ::sophie::adaptPanel
+   set private(xFwhmList)         ""                ; #--- liste des mesures de xFwhm
+   set private(yFwhmList)         ""                ; #--- liste des mesures de yFwhm
 
    set private(bufNo)             [::confVisu::getBufNo $visuNo]
    set private(hCanvas)           [::confVisu::getCanvas $visuNo]
