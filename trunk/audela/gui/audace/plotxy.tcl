@@ -2,7 +2,7 @@
 # Fichier : plotxy.tcl
 # Description : Realisation de graphes a partir de 2 listes de nombres
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: plotxy.tcl,v 1.8 2010-05-09 13:46:39 michelpujol Exp $
+# Mise à jour $Id: plotxy.tcl,v 1.9 2010-05-16 14:20:22 robertdelmas Exp $
 #
 # La syntaxe est la plus proche possible de Matlab
 #

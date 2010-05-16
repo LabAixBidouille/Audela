@@ -2,7 +2,7 @@
 # Fichier : ros.tcl
 # Description : Function to launch Robotic Observatory Software installation
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: ros.tcl,v 1.15 2010-02-14 10:51:41 robertdelmas Exp $
+# Mise Ã  jour $Id: ros.tcl,v 1.16 2010-05-16 14:21:28 robertdelmas Exp $
 #
 
 proc ros { args } {
@@ -503,10 +503,10 @@ proc ros { args } {
       set ros(rosmodpoi,mount) "equatorial"
       if {$ros(rosmodpoi,mount)=="altaz"} {
          set ros(rosmodpoi,modpoi,coefs,symbs)     {IA                      IE                     NPAE                       CA                               AN                        AW                        ACEC                    ECEC                               ACES                     ECES NRX NRY ACEC2 ACES2 ACEC3 ACES3 AN2 AW2 AN3 AW3 ACEC4 ACES4 AN4 AW4 ACEC5 ACES5 AN5 AW5 ACEC6 ACES6 AN6 AW6}
-         set ros(rosmodpoi,modpoi,coefs,intitules) {"Décalage du codeur A" "Décalage du codeur E" "Non perpendicularité A/E" "Non perpendicularité A/optique" "Décalage N-S de l'axe A" "Décalage E-W de l'axe A" "Décentrement A en cos" "Décentrement E en cos (flexion)"  "Décentrement A en sin"  "Décentrement E en sin" "Déplacement vertical du Nasmyth" "Déplacement vertical du Nasmyth" "Décentrement 2A en cos" "Décentrement 2A en sin" "Décentrement 3A en cos" "Décentrement 3A en sin" "décalage N-S de l'axe 2A" "Décalage E-W de l'axe 2A" "décalage N-S de l'axe 3A" "Décalage E-W de l'axe 3A" "Décentrement 4A en cos" "Décentrement 4A en sin" "décalage N-S de l'axe 4A" "Décalage E-W de l'axe 4A" "Décentrement 5A en cos" "Décentrement 5A en sin" "décalage N-S de l'axe 5A" "Décalage E-W de l'axe 5A" "Décentrement 6A en cos" "Décentrement 6A en sin" "décalage N-S de l'axe 6A" "Décalage E-W de l'axe 6A"}
+         set ros(rosmodpoi,modpoi,coefs,intitules) {"DÃ©calage du codeur A" "DÃ©calage du codeur E" "Non perpendicularitÃ© A/E" "Non perpendicularitÃ© A/optique" "DÃ©calage N-S de l'axe A" "DÃ©calage E-W de l'axe A" "DÃ©centrement A en cos" "DÃ©centrement E en cos (flexion)"  "DÃ©centrement A en sin"  "DÃ©centrement E en sin" "DÃ©placement vertical du Nasmyth" "DÃ©placement vertical du Nasmyth" "DÃ©centrement 2A en cos" "DÃ©centrement 2A en sin" "DÃ©centrement 3A en cos" "DÃ©centrement 3A en sin" "dÃ©calage N-S de l'axe 2A" "DÃ©calage E-W de l'axe 2A" "dÃ©calage N-S de l'axe 3A" "DÃ©calage E-W de l'axe 3A" "DÃ©centrement 4A en cos" "DÃ©centrement 4A en sin" "dÃ©calage N-S de l'axe 4A" "DÃ©calage E-W de l'axe 4A" "DÃ©centrement 5A en cos" "DÃ©centrement 5A en sin" "dÃ©calage N-S de l'axe 5A" "DÃ©calage E-W de l'axe 5A" "DÃ©centrement 6A en cos" "DÃ©centrement 6A en sin" "dÃ©calage N-S de l'axe 6A" "DÃ©calage E-W de l'axe 6A"}
       } else {
          set ros(rosmodpoi,modpoi,coefs,symbs)     {IH                      ID                     NP                         CH                               ME                              MA                              TF                          FO                    DAF                 HF                        TX                          DNP                              FARHC         FARHS         FARDC         FARDS         FARHC2         FARHS2         FARHC3         FARHS3         FARDC2         FARDS2         IHDEG               IHATAN         FARHCATAN           FARHSATAN           X1HS                    X1HC}
-         set ros(rosmodpoi,modpoi,coefs,intitules) {"Décalage du codeur H" "Décalage du codeur D" "Non perpendicularité H/D" "Non perpendicularité D/optique" "Décalage N-S de l'axe polaire" "Décalage E-W de l'axe polaire" "Flexion de tube en sin(z)" "Flexion de fourche"  "Flexion de l'axe D" "Flexion du fer a cheval" "Flexion de tube en tan(z)" "Non perpendicularite dynamique" "FARO H cosh" "FARO H sinh" "FARO D cosh" "FARO D sinh" "FARO H cos2h" "FARO H sin2h" "FARO H cos3h" "FARO H sin3h" "FARO D cos2h" "FARO D sin2h" "FARO H drift/Hdeg" "FARO IH*atan" "FARO cos(ha)*atan" "FARO sin(ha)*atan" "effet sin(H) sur E-W" "effet cos(H) sur E-W"}
+         set ros(rosmodpoi,modpoi,coefs,intitules) {"DÃ©calage du codeur H" "DÃ©calage du codeur D" "Non perpendicularitÃ© H/D" "Non perpendicularitÃ© D/optique" "DÃ©calage N-S de l'axe polaire" "DÃ©calage E-W de l'axe polaire" "Flexion de tube en sin(z)" "Flexion de fourche"  "Flexion de l'axe D" "Flexion du fer a cheval" "Flexion de tube en tan(z)" "Non perpendicularite dynamique" "FARO H cosh" "FARO H sinh" "FARO D cosh" "FARO D sinh" "FARO H cos2h" "FARO H sin2h" "FARO H cos3h" "FARO H sin3h" "FARO D cos2h" "FARO D sin2h" "FARO H drift/Hdeg" "FARO IH*atan" "FARO cos(ha)*atan" "FARO sin(ha)*atan" "effet sin(H) sur E-W" "effet cos(H) sur E-W"}
       }
       set ros(rosmodpoi,pi) [expr 4.*atan(1)]
       set argus [lrange $args 2 end]
@@ -901,12 +901,12 @@ proc rosmodpoi_make_doc { {fichier_doc ""} } {
    puts -nonewline $f "\n"
    puts -nonewline $f "\n"
    puts -nonewline $f "-----------------------------------------------------\n"
-   puts -nonewline $f " Generer le fichier d'ecarts pour calculer un modèle de pointage.\n"
+   puts -nonewline $f " Generer le fichier d'ecarts pour calculer un modÃ¨le de pointage.\n"
    puts -nonewline $f "-----------------------------------------------------\n"
    puts -nonewline $f "\n"
-   puts -nonewline $f "set ngisements 6 ; # nombre de gisements à pointer\n"
-   puts -nonewline $f "set nsites 3 ; # nombre d'elevations a pointer pour un gisement donné\n"
-   puts -nonewline $f "set nstars \[expr \$ngisements*\$nsites\] ; # nombre d'etoiles de réference à pointer\n"
+   puts -nonewline $f "set ngisements 6 ; # nombre de gisements Ã  pointer\n"
+   puts -nonewline $f "set nsites 3 ; # nombre d'elevations a pointer pour un gisement donnÃ©\n"
+   puts -nonewline $f "set nstars \[expr \$ngisements*\$nsites\] ; # nombre d'etoiles de rÃ©ference Ã  pointer\n"
    puts -nonewline $f "set fichier_ecarts \"c:/d/meo/ecarts.txt\"\n"
    puts -nonewline $f "rosmodpoi_modpoi_reset_stars \"\$fichier_ecarts\" ; # efface le fichier d'ecarts actuel\n"
    puts -nonewline $f "\n"
@@ -925,7 +925,7 @@ proc rosmodpoi_make_doc { {fichier_doc ""} } {
    puts -nonewline $f "\n"
    puts -nonewline $f "\n"
    puts -nonewline $f "-----------------------------------------------------\n"
-   puts -nonewline $f " Calculer le modèle de pointage.\n"
+   puts -nonewline $f " Calculer le modÃ¨le de pointage.\n"
    puts -nonewline $f "-----------------------------------------------------\n"
    puts -nonewline $f "\n"
    puts -nonewline $f "set fichier_ecarts \"c:/d/meo/ecarts.txt\"\n"
@@ -934,7 +934,7 @@ proc rosmodpoi_make_doc { {fichier_doc ""} } {
    puts -nonewline $f "\n"
    puts -nonewline $f "\n"
    puts -nonewline $f "-----------------------------------------------------\n"
-   puts -nonewline $f " Verifier le modèle de pointage.\n"
+   puts -nonewline $f " Verifier le modÃ¨le de pointage.\n"
    puts -nonewline $f "-----------------------------------------------------\n"
    puts -nonewline $f "\n"
    puts -nonewline $f "set fichier_ecarts \"c:/d/meo/ecarts.txt\"\n"
@@ -1004,7 +1004,7 @@ proc rosmodpoi_make_doc { {fichier_doc ""} } {
 #
 # INPUTS : ra,dec en coordonnees locales
 #          date   en UTC
-#          altmin en degrés (hauteur a laquelle on considere les levers/couchers)
+#          altmin en degrÃ©s (hauteur a laquelle on considere les levers/couchers)
 #
 # OUTPUTS : [jn1 jmer jn2] : JDs du lever/meridien/coucher
 #                            avec JD du prochain meridien
@@ -1083,7 +1083,7 @@ proc rosmodpoi_nextlevercoucher {ra dec date {altmin 0} } {
 # BUT : Caclule les heures de lever/coucher de la Lune et du Soleil
 #
 # INPUTS : date   en UTC
-#          altmin en degrés (hauteur a laquelle on considere les levers/couchers du Soleil)
+#          altmin en degrÃ©s (hauteur a laquelle on considere les levers/couchers du Soleil)
 #
 # OUTPUTS : lev mer cou : JDs des lever/meridien/coucher
 #                         on a toujours cou<lev.
@@ -1226,7 +1226,7 @@ proc rosmodpoi_sunmoon {date {altmin 0} } {
 #          date en UTC
 #          jd_sunset en UTC (debut de nuit)
 #          jd_sunrise en UTC (fin de nuit)
-#          altmin en degrés (hauteur a laquelle on considere les levers/couchers de l'astre)
+#          altmin en degrÃ©s (hauteur a laquelle on considere les levers/couchers de l'astre)
 #
 # OUTPUTS : lev mer cou : JDs des lever/meridien/coucher
 #                         lev mer et cou a l'interieur du domaine [sunset:sunrise]
@@ -1405,9 +1405,9 @@ proc rosmodpoi_radeclevercoucher { ra dec date jd_sunset jd_sunrise {altmin 0} }
 # PROC : rosmodpoi_modpoi_load
 # ------------------------------------------------------------------------------------
 #
-# BUT : Charge un fichier de modèle de pointage en mémoire
+# BUT : Charge un fichier de modÃ¨le de pointage en mÃ©moire
 #
-# INPUTS : PointingModelFile généré avec rosmodpoi_modpoi_compute_model
+# INPUTS : PointingModelFile gÃ©nÃ©rÃ© avec rosmodpoi_modpoi_compute_model
 #
 # OUTPUTS : Liste complexe: rosmodpoi_modpoi(modpoi,vec), rosmodpoi_modpoi(modpoi,chisq), rosmodpoi_modpoi(modpoi,covar)
 #
@@ -1426,7 +1426,7 @@ proc rosmodpoi_modpoi_load { PointingModelFile } {
 # PROC : rosmodpoi_modpoi_obs2tel
 # ------------------------------------------------------------------------------------
 #
-# BUT : Corrige les coordonnées observee par le modèle de pointage
+# BUT : Corrige les coordonnÃ©es observee par le modÃ¨le de pointage
 #
 # INPUTS : azimut et elevation observees
 #
@@ -1454,13 +1454,13 @@ proc rosmodpoi_modpoi_obs2tel { azimo elevo {rao ""} } {
 # PROC : rosmodpoi_modpoi_passage
 # ------------------------------------------------------------------------------------
 #
-# BUT : Calcule les corrections des coordonnées horaires dues au modèle de pointage
+# BUT : Calcule les corrections des coordonnÃ©es horaires dues au modÃ¨le de pointage
 #
 # INPUTS : Liste (Azim,Elev), sens (cat2tel ou tel2cat)
 #
 # OUTPUTS : Liste de dazim et delev
 #
-# Il faut avoir préalablement chargé un modele avec rosmodpoi_modpoi_load
+# Il faut avoir prÃ©alablement chargÃ© un modele avec rosmodpoi_modpoi_load
 #
 # ------------------------------------------------------------------------------------
 proc rosmodpoi_modpoi_passage { azim elev sens } {
@@ -1476,7 +1476,7 @@ proc rosmodpoi_modpoi_passage { azim elev sens } {
    set dazim 0
    set azim0 $azim
    set elev0 $elev
-   # --- ajoute deux lignes à la matrice
+   # --- ajoute deux lignes Ã  la matrice
    set vecY ""
    set matX ""
    set vecW ""
@@ -1493,7 +1493,7 @@ proc rosmodpoi_modpoi_passage { azim elev sens } {
    if {$sens=="tel2cat"} {
       # On itere dans le sens inverse pour gagner la precision de
       # la derive lors de la difference tel/cat.
-      # --- ajoute deux lignes à la matrice
+      # --- ajoute deux lignes Ã  la matrice
       set vecY ""
       set matX ""
       set vecW ""
@@ -1517,7 +1517,7 @@ proc rosmodpoi_modpoi_passage { azim elev sens } {
 # PROC : rosmodpoi_modpoi_symbols
 # ------------------------------------------------------------------------------------
 #
-# BUT : Affiche les intitulés des symboles des coefficients disponibles pour le modèle de pointage
+# BUT : Affiche les intitulÃ©s des symboles des coefficients disponibles pour le modÃ¨le de pointage
 #
 # INPUTS : -
 #
@@ -1538,7 +1538,7 @@ proc rosmodpoi_modpoi_symbols { } {
 # PROC : rosmodpoi_modpoi_compute_model
 # ------------------------------------------------------------------------------------
 #
-# BUT : Calcul des coefficients du modèle de pointage
+# BUT : Calcul des coefficients du modÃ¨le de pointage
 #
 # INPUTS :
 #    FileObs : fichier des observations avec chaque ligne qui contient une etoile definie par:
@@ -1550,10 +1550,10 @@ proc rosmodpoi_modpoi_symbols { } {
 #     dgiseo : giseo-gise (arcmin)
 #     pressure : pression reelle (Pascal)
 #     temperature : temperature (Kelvin)
-#     dsitec : sitec-site calculé par cette fonction (residus du modele en arcmin)
-#     dgisec : gisec-gise calculé par cette fonction (residus du modele en arcmin)
+#     dsitec : sitec-site calculÃ© par cette fonction (residus du modele en arcmin)
+#     dgisec : gisec-gise calculÃ© par cette fonction (residus du modele en arcmin)
 #    FileModel : fichier du model
-#    symbos : Liste des coefficients du modele à calculer
+#    symbos : Liste des coefficients du modele Ã  calculer
 #
 # OUTPUTS : Un texte explicatif
 #
@@ -1578,7 +1578,7 @@ proc rosmodpoi_modpoi_compute_model { FileObs FileModel {symbos ""} } {
       set ros(rosmodpoi,modpoi,coefs,symbos) $symbos
    }
    set textes ""
-   # --- Mise en forme des commentaires en clair du modèle
+   # --- Mise en forme des commentaires en clair du modÃ¨le
    append textes "# POINTING MODEL $FileModel\n"
    append textes "#\n"
    append textes "# DATE [mc_date2iso8601 now]\n"
@@ -1793,7 +1793,7 @@ proc rosmodpoi_modpoi_compute_model { FileObs FileModel {symbos ""} } {
 # PROC : rosmodpoi_modpoi_addobs
 # ------------------------------------------------------------------------------------
 #
-# BUT : Ajoute une observation a une série pour préparer le calcul des coefficients du modèle de pointage
+# BUT : Ajoute une observation a une sÃ©rie pour prÃ©parer le calcul des coefficients du modÃ¨le de pointage
 #
 # INPUTS : vecY matX vecW dazim delev elev azim
 #
@@ -2004,16 +2004,16 @@ proc rosmodpoi_modpoi_addobs { vecY matX vecW dazim delev azim elev} {
 # PROC : rosmodpoi_modpoi_catalogmean2apparent
 # ------------------------------------------------------------------------------------
 #
-# BUT : Transforme des coordonnées moyennes en coordonnées apparentes (=corrections abberations, precession, nutation)
+# BUT : Transforme des coordonnÃ©es moyennes en coordonnÃ©es apparentes (=corrections abberations, precession, nutation)
 #
 # INPUTS : RA, DEC, Equinox, Date, Home, ?epoch mura mudec parallax?
 #
-# OUTPUTS : Liste de coordonnées apparentes
+# OUTPUTS : Liste de coordonnÃ©es apparentes
 #            rav,decv : true coordinates (degrees)
 #            Hv : true hour angle (degrees)
 #            hv : true altitude altaz coordinate (degrees)
 #            azv : true azimut altaz coodinate (degrees)
-#           Il reste à appliquer rosmodpoi_modpoi_apparent2observed
+#           Il reste Ã  appliquer rosmodpoi_modpoi_apparent2observed
 #
 # ------------------------------------------------------------------------------------
 proc rosmodpoi_modpoi_catalogmean2apparent { rae dece equinox date home {epoch ""} {mura ""} {mudec ""} {parallax ""} } {
@@ -2054,16 +2054,16 @@ proc rosmodpoi_modpoi_catalogmean2apparent { rae dece equinox date home {epoch "
 # PROC : rosmodpoi_modpoi_apparent2observed
 # ------------------------------------------------------------------------------------
 #
-# BUT : Transforme des coordonnées apparentes en coordonnées observées (=correction de la refraction)
+# BUT : Transforme des coordonnÃ©es apparentes en coordonnÃ©es observÃ©es (=correction de la refraction)
 #
-# INPUTS : Liste de coordonnées apparentes issues de rosmodpoi_modpoi_catalogmean2apparent
+# INPUTS : Liste de coordonnÃ©es apparentes issues de rosmodpoi_modpoi_catalogmean2apparent
 #
-# OUTPUTS : Liste de coordonnées observées
+# OUTPUTS : Liste de coordonnÃ©es observÃ©es
 #            raadt,decadt : observed coordinates (degrees)
 #            Hadt : observed hour angle (degrees)
 #            hadt : observed altitude altaz coordinate (degrees)
 #            azadt : observed azimut altaz coordinate (degrees)
-#           Il ne reste plus qu'à appliquer le modèle de pointage
+#           Il ne reste plus qu'Ã  appliquer le modÃ¨le de pointage
 #
 # ------------------------------------------------------------------------------------
 proc rosmodpoi_modpoi_apparent2observed { listvdt {temperature 290} {pressure 101325} {date now} home } {
@@ -2206,8 +2206,8 @@ proc rosmodpoi_convcat_hip { {fichier_in ""} {fichier_out ""} {method 1} {params
 #
 # BUT : Calcul des points d'amer pour le modele de pointage
 #
-# INPUTS : nsite = nombre de points à pointer en site
-#          ngise = nombre de points à pointer en gisement
+# INPUTS : nsite = nombre de points Ã  pointer en site
+#          ngise = nombre de points Ã  pointer en gisement
 #
 # OUTPUTS : Liste Tcl { site gisement }
 #
@@ -2263,7 +2263,7 @@ proc rosmodpoi_modpoi_liste_amers { {nsite 3} {ngise 4} } {
 #
 # BUT : Recherche l'etoile du catalogue Hipparcos simplifie la plus proche d'un point d'amer
 #
-# INPUTS : Fichier Hipparcos simplifie, Liste d'amers (coordonnées site gisement), Index de l'amer, Nombre d'etoiles max, Separation max, Date
+# INPUTS : Fichier Hipparcos simplifie, Liste d'amers (coordonnÃ©es site gisement), Index de l'amer, Nombre d'etoiles max, Separation max, Date
 #
 # OUTPUTS : Ligne ASCII de type "ID magV RA(Deg) DEC(Deg) Equinox(JDTT) Epoch(JDTT) mu_alpha.cos(delta)(mas/yr) mu_delta(mas/yr) Plx(mas)\n"
 #
@@ -2278,7 +2278,7 @@ proc rosmodpoi_amer_hip { {fichier_in ""} {amers {{45 180}}} {kamer 0} {nstars 1
 
    rosmodpoi_log "rosmodpoi_amer_hip : fichier_in=\"$fichier_in\" amers=$amers kamer=$kamer nstars=$nstars sepmax=$sepmax date=$date"
    set date [mc_date2jd $date]
-   # --- on ramene le point d'amer en coordonnées RA,DEC J2000.0
+   # --- on ramene le point d'amer en coordonnÃ©es RA,DEC J2000.0
    set amer [lindex $amers $kamer]
    set site [lindex $amer 0]
    set gise [lindex $amer 1]
@@ -2387,9 +2387,9 @@ proc rosmodpoi_id_hip { {fichier_in ""} {id0 ""} } {
 #
 # INPUTS : Date
 #
-# OUTPUTS : Lignes ASCII de type "Motclé Valeur Unité\n"
+# OUTPUTS : Lignes ASCII de type "MotclÃ© Valeur UnitÃ©\n"
 #
-# La liste des mots clé est:
+# La liste des mots clÃ© est:
 #  DATE
 #  SKYLIGHT
 #  SUN_SET
@@ -2473,9 +2473,9 @@ proc rosmodpoi_modpoi_reset_stars { {fichier_stars ""} } {
 # PROC : rosmodpoi_modpoi_choose_star
 # ------------------------------------------------------------------------------------
 #
-# BUT : Recherche l'etoile du catalogue Hipparcos la plus proche du point d'amer indicé
+# BUT : Recherche l'etoile du catalogue Hipparcos la plus proche du point d'amer indicÃ©
 #
-# INPUTS : Index de l'etoile, nombre d'etoiles à pointer en site, nombre d'etoile à pointer en gisement, Fichier Hipparcos simplifie, Date
+# INPUTS : Index de l'etoile, nombre d'etoiles Ã  pointer en site, nombre d'etoile Ã  pointer en gisement, Fichier Hipparcos simplifie, Date
 #
 # OUTPUTS : Ligne ASCII de type "ID magV RA(Deg) DEC(Deg) Equinox(JDTT) Epoch(JDTT) mu_alpha.cos(delta)(mas/yr) mu_delta(mas/yr) Plx(mas)\n"
 #
@@ -2522,7 +2522,7 @@ proc rosmodpoi_modpoi_choose_star { starindex {nsite 3} {ngise 4} {fichier_in ""
 #         following lines are:
 #         "RA DEC"
 #
-# OUTPUTS : Nombre de positions calculées dans OutputFile
+# OUTPUTS : Nombre de positions calculÃ©es dans OutputFile
 #
 # OutputFile : rempli de lignes ASCII de type "SOD Site Gisement Distance Rotation Valid\n"
 #   Entete de trois lignes
@@ -2530,7 +2530,7 @@ proc rosmodpoi_modpoi_choose_star { starindex {nsite 3} {ngise 4} {fichier_in ""
 #   Valid=0 si l'on est procedure d'evitement du Soleil ou de fin de courses
 #
 # EXAMPLES :
-#   rosmodpoi_corrected_positions "c:/d/meo/positions.txt" [list 2008 05 30 12 34 50] [list 2008 05 30 12 34 51] STAR_COORD [list 12h45m15.34s +34°56'23.3 J2000.0 J2000.0 0.01 -0.03 34] 290 101325 c:/d/meo/model.txt
+#   rosmodpoi_corrected_positions "c:/d/meo/positions.txt" [list 2008 05 30 12 34 50] [list 2008 05 30 12 34 51] STAR_COORD [list 12h45m15.34s +34Â°56'23.3 J2000.0 J2000.0 0.01 -0.03 34] 290 101325 c:/d/meo/model.txt
 #
 #   set etoile [rosmodpoi_modpoi_choose_star 1 3 4]
 #   rosmodpoi_corrected_positions "c:/d/meo/positions.txt" [mc_date2jd now] [mc_datescomp now + [expr 1/86400.]] STAR_COORD [lrange $etoile 2 end]
@@ -2606,14 +2606,14 @@ proc rosmodpoi_corrected_positions { OutputFile DateDeb DateFin InputType InputD
       for {set kl 0} {$kl<$nlignes} {incr kl} {
          set djd [expr $dt*$kl/86400.]
          set jd [mc_datescomp $jddeb + $djd]
-         # --- Transforme les coordonnées moyennes en coordonnees observées
+         # --- Transforme les coordonnÃ©es moyennes en coordonnees observÃ©es
          set listv [rosmodpoi_modpoi_catalogmean2apparent $ra $dec $equinox $jd $ros(rosmodpoi,home) $epoch $mura $mudec $parallax]
          set listo [rosmodpoi_modpoi_apparent2observed $listv $temperature $pressure $jd $ros(rosmodpoi,home)]
          set rao [lindex $listo 0]
          set deco [lindex $listo 1]
          set altaz [mc_radec2altaz $rao $deco $ros(rosmodpoi,home) $jd]
          set star_rotateur [lindex $altaz 3]
-         # --- Calcule la sépration avec le Soleil
+         # --- Calcule la sÃ©pration avec le Soleil
          set res [rosmodpoi_azimelev2sitegise [lindex $altaz 0] [lindex $altaz 1]]
          set star_site [lindex $res 0]
          set star_gise [lindex $res 1]
@@ -2623,7 +2623,7 @@ proc rosmodpoi_corrected_positions { OutputFile DateDeb DateFin InputType InputD
          if {$sep<10} {
             set valid 0
          }
-         # --- Transforme les coordonnees observées en coordonnées télescope
+         # --- Transforme les coordonnees observÃ©es en coordonnÃ©es tÃ©lescope
          if {$PointingModelFile!=""} {
             set azim [lindex $altaz 0]
             set elev [lindex $altaz 1]
@@ -2668,7 +2668,7 @@ proc rosmodpoi_corrected_positions { OutputFile DateDeb DateFin InputType InputD
       for {set kl 0} {$kl<$nlignes} {incr kl} {
          set djd [expr $dt*$kl/86400.]
          set jd [mc_datescomp $jddeb + $djd]
-         # --- Transforme les coordonnées moyennes en coordonnees observées
+         # --- Transforme les coordonnÃ©es moyennes en coordonnees observÃ©es
          set listv [rosmodpoi_modpoi_catalogmean2apparent $ra $dec $equinox $jd $ros(rosmodpoi,home) $epoch $mura $mudec $parallax]
          set listo [rosmodpoi_modpoi_apparent2observed $listv $temperature $pressure $jd $ros(rosmodpoi,home)]
          set rao [lindex $listo 0]
@@ -2676,7 +2676,7 @@ proc rosmodpoi_corrected_positions { OutputFile DateDeb DateFin InputType InputD
          set hao [lindex $listo 2]
          set altaz [mc_radec2altaz $rao $deco $ros(rosmodpoi,home) $jd]
          set star_rotateur [lindex $altaz 3]
-         # --- Calcule la sépration avec le Soleil
+         # --- Calcule la sÃ©pration avec le Soleil
          set res [rosmodpoi_azimelev2sitegise [lindex $altaz 0] [lindex $altaz 1]]
          set star_site [lindex $res 0]
          set star_gise [lindex $res 1]
@@ -2686,7 +2686,7 @@ proc rosmodpoi_corrected_positions { OutputFile DateDeb DateFin InputType InputD
          if {$sep<10} {
             set valid 0
          }
-         # --- Transforme les coordonnees observées en coordonnées télescope
+         # --- Transforme les coordonnees observÃ©es en coordonnÃ©es tÃ©lescope
          set res [rosmodpoi_azimelev2sitegise [lindex $altaz 0] [lindex $altaz 1]]
          set star_site [lindex $res 0]
          set star_gise [lindex $res 1]
@@ -2762,7 +2762,7 @@ proc rosmodpoi_corrected_positions { OutputFile DateDeb DateFin InputType InputD
          set radec [mc_altaz2radec $azim $elev $ros(rosmodpoi,home) $jd]
          set altaz [mc_radec2altaz [lindex $radec 0] [lindex $radec 1] $ros(rosmodpoi,home) $jd]
          set star_rotateur [lindex $altaz 3]
-         # --- Calcule la sépration avec le Soleil
+         # --- Calcule la sÃ©pration avec le Soleil
          set res [list $site $gise]
          set star_site [lindex $res 0]
          set star_gise [lindex $res 1]
@@ -2772,7 +2772,7 @@ proc rosmodpoi_corrected_positions { OutputFile DateDeb DateFin InputType InputD
          if {$sep<10} {
             set valid 0
          }
-         # --- Transforme les coordonnees observées en coordonnées télescope
+         # --- Transforme les coordonnees observÃ©es en coordonnÃ©es tÃ©lescope
          if {$PointingModelFile!=""} {
             set azim [lindex $altaz 0]
             set elev [lindex $altaz 1]
@@ -2799,7 +2799,7 @@ proc rosmodpoi_corrected_positions { OutputFile DateDeb DateFin InputType InputD
 # PROC : rosmodpoi_modpoi_add_star
 # ------------------------------------------------------------------------------------
 #
-# BUT : Recherche l'etoile du catalogue Hipparcos la plus proche du point d'amer indicé
+# BUT : Recherche l'etoile du catalogue Hipparcos la plus proche du point d'amer indicÃ©
 #
 # INPUTS : Ligne ASCII de type "ID magV RA(Deg) DEC(Deg) Equinox(JDTT) Epoch(JDTT) mu_alpha.cos(delta)(mas/yr) mu_delta(mas/yr) Plx(mas)\n"
 #          dsiteo dgiseo les ecarts observes (arcmin)
@@ -2821,7 +2821,7 @@ proc rosmodpoi_corrected_positions { OutputFile DateDeb DateFin InputType InputD
 #  => Boule dsite et dgise
 #  rosmodpoi_modpoi_add_star $etoile 1.42 0.28 "c:/d/meo/modpoistars.txt" [mc_date2jd now] 300 101325
 #  ...
-#  continuer jusqu'à set etoile [rosmodpoi_modpoi_choose_star 11 3 4]
+#  continuer jusqu'Ã  set etoile [rosmodpoi_modpoi_choose_star 11 3 4]
 #
 # ------------------------------------------------------------------------------------
 proc rosmodpoi_modpoi_add_star { star dsiteo dgiseo fichier_stars {date now} {temperature 273} {pressure 101325} } {
@@ -2841,7 +2841,7 @@ proc rosmodpoi_modpoi_add_star { star dsiteo dgiseo fichier_stars {date now} {te
    set mura [expr [lindex $InputData 4]*1e-3/86400/$cosdec]
    set mudec [expr [lindex $InputData 5]*1e-3/86400]
    set parallax [lindex $InputData 6]
-   # --- Transforme les coordonnées moyennes en coordonnees observées
+   # --- Transforme les coordonnÃ©es moyennes en coordonnees observÃ©es
    set listv [rosmodpoi_modpoi_catalogmean2apparent $ra $dec $equinox $jd $ros(rosmodpoi,home) $epoch $mura $mudec $parallax]
    set listo [rosmodpoi_modpoi_apparent2observed $listv $temperature $pressure $jd $ros(rosmodpoi,home)]
    set rao [lindex $listo 0]
@@ -2867,9 +2867,9 @@ proc rosmodpoi_modpoi_add_star { star dsiteo dgiseo fichier_stars {date now} {te
 # PROC : rosmodpoi_close_star
 # ------------------------------------------------------------------------------------
 #
-# BUT : Recherche les etoiles du catalogue Hipparcos les plus proches du point site,gisement indiqué
+# BUT : Recherche les etoiles du catalogue Hipparcos les plus proches du point site,gisement indiquÃ©
 #
-# INPUTS : site, gisement, Fichier Hipparcos simplifie, Nombre d'étoile max, Séparation max (en degres), Date
+# INPUTS : site, gisement, Fichier Hipparcos simplifie, Nombre d'Ã©toile max, SÃ©paration max (en degres), Date
 #
 # OUTPUTS : Ligne ASCII de type "ID magV RA(Deg) DEC(Deg) Equinox(JDTT) Epoch(JDTT) mu_alpha.cos(delta)(mas/yr) mu_delta(mas/yr) Plx(mas)\n"
 #
@@ -2900,10 +2900,10 @@ proc rosmodpoi_close_star { site gisement {fichier_in ""} {nstars 1} {sepmax 360
 #     dgiseo : giseo-gise (arcmin)
 #     pressure : pression reelle (Pascal)
 #     temperature : temperature (Kelvin)
-#     dsitec : sitec-site calculé par cette fonction (residus du modele en arcmin)
-#     dgisec : gisec-gise calculé par cette fonction (residus du modele en arcmin)
+#     dsitec : sitec-site calculÃ© par cette fonction (residus du modele en arcmin)
+#     dgisec : gisec-gise calculÃ© par cette fonction (residus du modele en arcmin)
 #    FileModel : fichier du model
-#    symbos : Liste des coefficients du modele à calculer
+#    symbos : Liste des coefficients du modele Ã  calculer
 #
 # OUTPUTS : Un texte explicatif
 #

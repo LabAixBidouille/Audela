@@ -2,7 +2,7 @@
 # Fichier : planetography.tcl
 # Description : Script dedie a la planetographie
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: planetography.tcl,v 1.2 2006-06-20 17:34:45 robertdelmas Exp $
+# Mise à jour $Id: planetography.tcl,v 1.3 2010-05-16 14:20:01 robertdelmas Exp $
 #
 
 proc lonlat2radec { planet lon lat {date now} {home {GPS 0 E 42 150}} } {
