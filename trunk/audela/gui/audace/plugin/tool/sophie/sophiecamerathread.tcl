@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.28 2010-05-11 17:57:29 michelpujol Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.29 2010-05-16 20:39:51 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -203,8 +203,8 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          #
          # @return si TCL_OK
          #            list[0] starStatus           resultat de la recherche de la fibre (DETECTED NO_SIGNAL)
-         #            list[1] starX                abcisse du centre de la fibre   (pixel binné)
-         #            list[2] starY                ordonnee du centre de la fibre  (pixel binné
+         #            list[1] starX                abcisse du centre de l'etoile (pixel binné)
+         #            list[2] starY                ordonnee du centre de l'etoile  (pixel binné
          #            list[3] fiberStatus          resultat de la recherche de la fibre (DETECTED NO_SIGNAL)
          #            list[4] fiberX               abcisse du centre de la fibre  (pixel binné)
          #            list[5] fiberY               ordonnee du centre de la fibre (pixel binné)
@@ -247,6 +247,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          #--- je calcule le flux en ADU/seconde  (si exptime = 0 , je ne change pas la valeur)
          if { $private(exptime) != 0 } {
              set starFlux [expr $starFlux / $private(exptime) ]
+             set skyLevel [expr $background / $private(exptime)]
          }
 
          ###::camerathread::disp  "starStatus=$starStatus starX,starY=$starX $starY fiberStatus=$fiberStatus fiberX,fiberY=$fiberX $fiberY infoMessage=$infoMessage\n"
@@ -282,33 +283,28 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          #--- je calcule l'ecart de position entre la cible et la consigne (en pixels ramene au binning 1x1)
          set dx [expr (double([lindex $private(targetCoord) 0]) - [lindex $private(originCoord) 0]) * $xBinning ]
          set dy [expr (double([lindex $private(targetCoord) 1]) - [lindex $private(originCoord) 1]) * $yBinning ]
-         ###::camerathread::disp  "camerathread: etoile dx=[format "%6.1f" $dx] dy=[format "%6.1f" $dy] \n"
 
         #--- je pondere la position si on est en mode GUIDE avec detection de la fibre
-         if { $private(mode) == "GUIDE" && $private(findFiber) == 1 } {
-            set cgx $dx
+         if { $private(mode) == "GUIDE"  } {
             if { [expr abs($dx) * $xBinning ] < 16 } {
                #--- le denominateur est toujours non nul parce que dx > 1.7/0.04)
                set dx [expr $dx / (1.7 - abs($dx) * 0.04)]
             }
-            set cgy $dy
             if { [expr abs($dy) * $yBinning ] < 16 } {
                set dy [expr $dy / (1.7 - abs($dy) * 0.04)]
             }
-            ###::camerathread::disp  "correction cgx [format "%6.1f" $cgx] => [format "%6.1f" $dx] cgy: [format "%6.1f" $cgy] => [format "%6.1f" $dy (pixel)] \n"
          }
 
-        if { $private(angle) != 0 &&  $private(guidingMode) == "OBJECT" } {
-            set angle [expr $private(angle)* 3.14159265359/180 ]
-            #--- je calcule les delais de deplacement alpha et delta (en millisecondes)
-            set alphaDiff [expr int((cos($angle) * $dx + sin($angle) *$dy) * $private(pixelScale))]
-            set deltaDiff [expr int( - (sin($angle) * $dx + cos($angle) *$dy) * $private(pixelScale))]
-        } else {
-           #--- je calcule l'ecart de position (en arcseconde)
-           set alphaDiff [expr $dx * $private(pixelScale) ]
-           set deltaDiff [expr $dy * $private(pixelScale) ]
-        }
-
+         if { $private(angle) != 0 &&  $private(guidingMode) == "OBJECT" } {
+             set angle [expr $private(angle)* 3.14159265359/180 ]
+             #--- je calcule les delais de deplacement alpha et delta (en millisecondes)
+             set alphaDiff [expr int((cos($angle) * $dx + sin($angle) *$dy) * $private(pixelScale))]
+             set deltaDiff [expr int( - (sin($angle) * $dx + cos($angle) *$dy) * $private(pixelScale))]
+         } else {
+            #--- je calcule l'ecart de position (en arcseconde)
+            set alphaDiff [expr $dx * $private(pixelScale) ]
+            set deltaDiff [expr $dy * $private(pixelScale) ]
+         }
 
          #--- je calcule la correction alphaCorrection et deltaCorrection  en arcsec
          if { $private(mountEnabled) == 1 && $starStatus == "DETECTED" } {
@@ -395,7 +391,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             }
 
             #--- je prends en compte la declinaison dans le calcul de la correction de alpha
-            set alphaCorrection [expr $alphaCorrection / (cos($private(targetDec) * 3.14159265359/180)) ]
+            #### set alphaCorrection [expr $alphaCorrection / (cos($private(targetDec) * 3.14159265359/180)) ]
 
             #--- j'ecrete l'ampleur du deplacement en alpha
             set maxAlpha [expr $private(targetBoxSize) * $xBinning * $private(pixelScale) ]
@@ -429,7 +425,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          ::camerathread::notify "targetCoord" \
             $private(targetCoord) $dx $dy $targetDetection $fiberStatus \
             [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
-            $measuredFwhmX $measuredFwhmY $background $maxIntensity $starFlux \
+            $measuredFwhmX $measuredFwhmY $skyLevel $maxIntensity $starFlux \
             $alphaDiff $deltaDiff $alphaCorrection $deltaCorrection $infoMessage
       }
 
