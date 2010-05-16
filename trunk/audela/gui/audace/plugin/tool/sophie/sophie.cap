@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.45 2010-05-11 17:56:51 michelpujol Exp $
+# Mise a jour $Id: sophie.cap,v 1.46 2010-05-16 20:30:43 michelpujol Exp $
 #
 
 #=========================================================================
@@ -140,12 +140,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,seeingMemorised)               "Seeing mémorisé"
    set caption(sophie,FWHMX)                         "FWHM X (arcsec)"
    set caption(sophie,FWHMY)                         "FWHM Y (arcsec)"
-   set caption(sophie,fondDeCiel)                    "Fond de ciel (ADU)"
+   set caption(sophie,skyLevel)                      "Fond de ciel (ADU/s)"
    set caption(sophie,starFlux)                      "Flux étoile (ADU/s)"
    set caption(sophie,maxIntensity)                  "Intensité maxi (ADU)"
    set caption(sophie,FWHMXMemorise)                 "FWHM X mémorisée (arcsec)"
    set caption(sophie,FWHMYMemorise)                 "FWHM Y mémorisée (arcsec)"
-   set caption(sophie,fondDeCielMemorise)            "Fond de ciel mémorisé (ADU)"
+   set caption(sophie,fondDeCielMemorise)            "Fond de ciel mémorisé (ADU/s)"
    set caption(sophie,starFluxMemorise)              "Flux étoile mémorisé (ADU/s)"
    set caption(sophie,indicateurCentrage)            "Indicateurs de centrage"
    set caption(sophie,centrageArrete)                "Centrage arrêté"
