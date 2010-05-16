@@ -2,7 +2,7 @@
 # @file     sophiespectro.tcl
 # @brief    fichier du namespace ::sophie::spectro
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiespectro.tcl,v 1.14 2010-05-09 13:58:14 michelpujol Exp $
+# @version  $Id: sophiespectro.tcl,v 1.15 2010-05-16 20:41:25 michelpujol Exp $
 # UTF8 (à)
 #------------------------------------------------------------
 
@@ -205,7 +205,7 @@ proc ::sophie::spectro::resetStatistics { } {
 #   - DEC_MEAN moyenne l'ecart etoile/consigne sur l'axe delta
 #   - DEC_RMS  ecart type de l'ecart etoile/consigne sur l'axe delta
 #   - SEEING   seeing moyenne (en arcsec)
-#   - BACKGROUND fond du ciel (en ADU)
+#   - SKYLEVEL fond du ciel (en ADU)
 #   - DETNAM   nom de la camera
 #   - TELESCOP nom du telescope
 #   - SWCREATE nom du logiciel d'acquisition
@@ -248,7 +248,6 @@ proc ::sophie::spectro::saveImage { alphaMean alphaRms deltaMean deltaRms seeing
             ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "DEC_MEAN" $deltaMean
             ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "DEC_RMS"  $deltaRms
             ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "SEEING"   $seeing
-            ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "SKYLEVEL" $skyLevel
             ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "DETNAM"   [::confCam::getPluginProperty $camItem "name"]
             ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "TELESCOP" $::conf(telescope)
             ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "SWCREATE" "[::audela::getPluginTitle] $::audela(version)"
@@ -260,6 +259,7 @@ proc ::sophie::spectro::saveImage { alphaMean alphaRms deltaMean deltaRms seeing
             }
 
             buf$sumBufNo setkwd  [list "STARFLUX" $starFlux double "Star flux" "ADU/s" ]
+            buf$sumBufNo setkwd  [list "SKYLEVEL" $skyLevel double "sky level" "ADU/s" ]
 
             #--- Sauvegarde de l'image
             buf$sumBufNo save $fileName
@@ -294,20 +294,29 @@ proc ::sophie::spectro::setStarFlux { starFlux} {
    set private(starFlux)   $starFlux
 }
 
+##------------------------------------------------------------
+# setSkyLevel
+#   memorise le fond de ciel
+# @param skyLevel  fond du ciel (en ADU/s)
+#------------------------------------------------------------
+proc ::sophie::spectro::setSkyLevel { skyLevel } {
+   variable private
+
+   set private(skyLevel)   $skyLevel
+}
+
 
 ##------------------------------------------------------------
 # setSeeing
 #   memorise le seeing
 # @param xFwhm       seeing sur l'axe x (en arsec)
 # @param yFwhm       seeing sur l'axe y (en arsec)
-# @param background  fond du ciel (en ADU)
 #------------------------------------------------------------
-proc ::sophie::spectro::setSeeing { xFwhm yFwhm skyLevel } {
+proc ::sophie::spectro::setSeeing { xFwhm yFwhm } {
    variable private
 
    set private(xFwhm)      $xFwhm
    set private(yFwhm)      $yFwhm
-   set private(skyLevel)   $skyLevel
 }
 
 ##------------------------------------------------------------

@@ -2,7 +2,7 @@
 # @file     sophiecontrol.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecontrol.tcl,v 1.40 2010-05-09 13:56:00 michelpujol Exp $
+# @version  $Id: sophiecontrol.tcl,v 1.41 2010-05-16 20:41:14 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -31,7 +31,7 @@ proc ::sophie::control::run { visuNo tkbase } {
    set private(positionEtoileY)                 ""
    set private(indicateursFwhmX)                ""
    set private(indicateursFwhmY)                ""
-   set private(indicateursFondDeCiel)           ""
+   set private(skyLevel)                        ""
    set private(starFlux)                        ""
    set private(maxIntensity)                    ""
    set private(positionConsigneX)               ""
@@ -295,14 +295,14 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -row 1 -column 1 -sticky ew -padx 2
 
       #--- Fond de ciel
-      label $frm.seeing.labelfondDeCiel -text $::caption(sophie,fondDeCiel)
+      label $frm.seeing.labelfondDeCiel -text $::caption(sophie,skyLevel)
       grid $frm.seeing.labelfondDeCiel \
          -in [ $frm.seeing getframe ] \
          -row 0 -column 2 -sticky e -padx 2
 
       Entry $frm.seeing.entryfondDeCiel \
          -width 8 -justify center -editable 0 \
-         -textvariable ::sophie::control::private(indicateursFondDeCiel)
+         -textvariable ::sophie::control::private(skyLevel)
       grid $frm.seeing.entryfondDeCiel \
          -in [ $frm.seeing getframe ] \
          -row 0 -column 3 -sticky ew
@@ -675,14 +675,14 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             -row 1 -column 1 -sticky ew -padx 2
 
          #--- Fond de ciel
-         label $frm.guidage.seeing.labelfondDeCiel -text $::caption(sophie,fondDeCiel)
+         label $frm.guidage.seeing.labelfondDeCiel -text $::caption(sophie,skyLevel)
          grid $frm.guidage.seeing.labelfondDeCiel \
             -in [ $frm.guidage.seeing getframe ] \
            -row 0 -column 2 -sticky w
 
          entry $frm.guidage.seeing.entryfondDeCiel \
             -width 8 -justify center -state readonly  \
-            -textvariable ::sophie::control::private(indicateursFondDeCiel)
+            -textvariable ::sophie::control::private(skyLevel)
          grid $frm.guidage.seeing.entryfondDeCiel \
             -in [ $frm.guidage.seeing getframe ] \
             -row 0 -column 3 -sticky ew -padx 2
@@ -1276,7 +1276,7 @@ proc ::sophie::control::setRealDelay { delay } {
 # @param starY            ordonnee de l'etoile en pixel
 # @param fwhmX            largeur a mi hauter sur l'axe X
 # @param fwhmY            largeur a mi hauter sur l'axe Y
-# @param background       fond du ciel
+# @param skyLevel         fond du ciel (ADU/s)
 # @param maxIntensity     intensité max
 # @param starFlux         flux de l'etoile
 # @param starDx           ecart de l'abcisse de l'etoile en pixel
@@ -1289,7 +1289,7 @@ proc ::sophie::control::setRealDelay { delay } {
 # @return rien
 #------------------------------------------------------------
 proc ::sophie::control::setCenterInformation { starDetection fiberStatus originX \
-     originY starX starY fwhmX fwhmY background maxIntensity starFlux starDx starDy \
+     originY starX starY fwhmX fwhmY skyLevel maxIntensity starFlux starDx starDy \
      alphaDiff deltaDiff alphaCorrection deltaCorrection } {
    variable private
 
@@ -1349,7 +1349,7 @@ proc ::sophie::control::setCenterInformation { starDetection fiberStatus originX
 
    set private(indicateursFwhmX)      [format "%6.1f" $fwhmX]
    set private(indicateursFwhmY)      [format "%6.1f" $fwhmY]
-   set private(indicateursFondDeCiel) [format "%6.1f" $background]
+   set private(skyLevel)              [format "%6.1f" $skyLevel]
    set private(starFlux)              [format "%6.1f" $starFlux]
    set private(maxIntensity)          [format "%6.1f" $maxIntensity]
 
@@ -1377,14 +1377,14 @@ proc ::sophie::control::setCenterInformation { starDetection fiberStatus originX
 # @param fwhmY         largeur a mi hauteur sur l'axe Y (arcsec)
 # @param alphaDiff     ecart de l'ascension droite de l'etoile en arcseconde
 # @param deltaDiff     ecart de la declinaison de l'etoile en arcseconde
-# @param background    fond du ciel
+# @param skyLevel      fond du ciel (ADU/s)
 # @param maxIntensity  intensité max
 # @param starFlux      flux de l'etoile
 #
 # @return rien
 #------------------------------------------------------------
 proc ::sophie::control::setFocusInformation { starDetection fiberStatus originX originY \
-      starX starY fwhmX fwhmY alphaDiff deltaDiff background maxIntensity starFlux } {
+      starX starY fwhmX fwhmY alphaDiff deltaDiff skyLevel maxIntensity starFlux } {
    variable private
 
    set frm $private(frm)
@@ -1438,7 +1438,7 @@ proc ::sophie::control::setFocusInformation { starDetection fiberStatus originX 
    set private(indicateursFwhmY)      [format "%6.2f" $fwhmY]
    set private(ecartEtoileX)          [format "%6.2f" $alphaDiff]
    set private(ecartEtoileY)          [format "%6.2f" $deltaDiff]
-   set private(indicateursFondDeCiel) [format "%6.1f" $background]
+   set private(skyLevel)              [format "%6.1f" $skyLevel]
    set private(starFlux)              [format "%6.1f" $starFlux]
    set private(maxIntensity)          [format "%6.1f" $maxIntensity]
 
@@ -1490,10 +1490,11 @@ proc ::sophie::control::setFocusInformation { starDetection fiberStatus originX 
 # @param deltaCorrection  correction en delta (en arcsec)
 # @param originDx         correction de la consigne en X  (en pixel)
 # @param originDy         correction de la consigne en Y  (en pixel)
+# @param skyLevel         fond du ciel (ADU/s)
 # @param maxIntensity     intensité max
 # @return null
 #------------------------------------------------------------
-proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX originY starX starY starDx starDy alphaCorrection deltaCorrection originDx originDy maxIntensity } {
+proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX originY starX starY starDx starDy alphaCorrection deltaCorrection originDx originDy skyLevel maxIntensity } {
    variable private
 
    set frm $private(frm)
@@ -1552,6 +1553,7 @@ proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX 
    set private(ecartEtoileY)       [format "%6.2f" $starDy]
    set private(alphaCorrection)    [format "%6.2f" $alphaCorrection]
    set private(deltaCorrection)    [format "%6.2f" $deltaCorrection]
+   set private(skyLevel)           [format "%6.1f" $skyLevel]
    set private(maxIntensity)       [format "%6.1f" $maxIntensity]
 
    if { $private(maxIntensity) < $::conf(sophie,minIntensity) } {
@@ -1637,16 +1639,15 @@ proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX 
 ##------------------------------------------------------------
 # setSeeing
 #   memorise le seeing
-# @param xFwhm     seeing sur l'axe x (en arsec)
-# @param yFwhm     seeing sur l'axe y (en arsec)
-# #param skyLevel  fond du ciel (en ADU)
+# @param xFwhm     seeing sur l'axe x (en arcsec)
+# @param yFwhm     seeing sur l'axe y (en arcsec)
 #------------------------------------------------------------
-proc ::sophie::control::setSeeing { xFwhm yFwhm skyLevel} {
+proc ::sophie::control::setSeeing { xFwhm yFwhm } {
    variable private
 
    set private(indicateursFwhmX)      [format "%6.2f" $xFwhm]
    set private(indicateursFwhmY)      [format "%6.2f" $yFwhm]
-   set private(indicateursFondDeCiel) [format "%6.1f" $skyLevel]
+   ###set private(skyLevel)              [format "%6.1f" $skyLevel]
 
 }
 
