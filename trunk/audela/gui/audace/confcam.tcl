@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.132 2010-01-30 13:56:02 robertdelmas Exp $
+# Mise Ã  jour $Id: confcam.tcl,v 1.133 2010-05-16 10:26:17 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -653,7 +653,7 @@ proc ::confCam::isReady { camItem } {
 # hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
 # hasFormat :        Retourne l'existence d'un format ou d'une qualite d'image (1 : Oui, 0 : Non)
 # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
-# hasQuality :       Retourne l'existence d'une qualité (1 : Oui, 0 : Non)
+# hasQuality :       Retourne l'existence d'une qualite (1 : Oui, 0 : Non)
 # hasScan :          Retourne l'existence du mode scan (1 : Oui, 0 : Non)
 # hasShutter :       Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
 # hasTempSensor :    Retourne l'existence du capteur de temperature (1 : Oui, 0 : Non)
@@ -999,7 +999,7 @@ proc ::confCam::findPlugin { } {
       }
    }
 
-   #--- je trie les plugins par ordre alphabétique des libelles
+   #--- je trie les plugins par ordre alphabetique des libelles
    set pluginList ""
    for { set i 0} {$i< [llength $private(pluginLabelList)] } {incr i } {
       lappend pluginList [list [lindex $private(pluginLabelList) $i] [lindex $private(pluginNamespaceList) $i] ]
