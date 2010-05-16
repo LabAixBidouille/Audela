@@ -1,28 +1,28 @@
 #
 # Fichier : compute_stellaire.tcl
-# Description : Fonction de prétraitement automatique
+# Description : Fonction de prÃ©traitement automatique
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: compute_stellaire.tcl,v 1.7 2008-06-01 16:13:21 robertdelmas Exp $
+# Mise Ã  jour $Id: compute_stellaire.tcl,v 1.8 2010-05-16 10:15:29 robertdelmas Exp $
 #
 
 # Documentation : Voir le fichier compute_stellaire.htm dans le dossier doc_html
 
 
-# Procédure
+# ProcÃ©dure
 
 proc compute_stellaire {args} {
    global audace caption conf
 
    if {[syntaxe_args $args 1 3 [list [list "-altaz"] [list "-buf" "-rep" "-ext" "-polyNo" "-tri"]]]=="1"} {
 
-      # Configuration des paramètres obligatoires
+      # Configuration des paramÃ¨tres obligatoires
       set brutes [lindex $args 0]
 
       # Configuration des options
       set options [lrange $args 1 [expr [llength $args]-1]]
       set range_options [range_options $options]
 
-      # Configuration des paramètres optionnels
+      # Configuration des paramÃ¨tres optionnels
       set params_optionnels [lindex $range_options 0]
       if {[llength $params_optionnels] >= 1} {
          set noirs [lindex $params_optionnels 0]
@@ -40,7 +40,7 @@ proc compute_stellaire {args} {
          set noirsdePLUs "pas_de_noirsdePLUs"
       }
 
-      # Configuration des options sans paramètre
+      # Configuration des options sans paramÃ¨tre
       set options_0param [lindex $range_options 1]
 
       set altaz_index [lsearch -regexp $options_0param "-altaz"]
@@ -51,7 +51,7 @@ proc compute_stellaire {args} {
          set altaz 0
       }
 
-      # Configuration des options à 1 paramètre
+      # Configuration des options Ã  1 paramÃ¨tre
       set options_1param [lindex $range_options 2]
 
       set buf_index [lsearch -regexp $options_1param "-buf"]
@@ -90,10 +90,10 @@ proc compute_stellaire {args} {
          set tri 80
       }
 
-      # Procédure principale
+      # ProcÃ©dure principale
       console::affiche_resultat "$caption(compute,debut)"
 
-      # On vérifie que la série d'images brutes existe bien
+      # On vÃ©rifie que la sÃ©rie d'images brutes existe bien
       set index_brutes [lsort [liste_index $brutes -rep "$rep" -ext $ext]]
       # Si possible on trie par ordre croissant (sauf dans le cas d'indexation XXX par ex.)
       if [catch {set index_brutes [lsort -integer $index_brutes]}] {}
@@ -105,7 +105,7 @@ proc compute_stellaire {args} {
          console::affiche_resultat "$caption(compute,brutesok) [llength $index_brutes]\n"
       }
 
-      # On vérifie que la série d'images de noir existe bien
+      # On vÃ©rifie que la sÃ©rie d'images de noir existe bien
       if {$noirs!="pas_de_noirs"} {
          set index_noirs [lsort [liste_index $noirs -rep "$rep" -ext $ext]]
          # Si possible on trie par ordre croissant (sauf dans le cas d'indexation XXX par ex.)
@@ -119,7 +119,7 @@ proc compute_stellaire {args} {
          }
       }
 
-      # On vérifie que la série d'images de PLU existe bien
+      # On vÃ©rifie que la sÃ©rie d'images de PLU existe bien
       if {$PLUs!="pas_de_PLUs"} {
          set index_PLUs [lsort [liste_index $PLUs -rep "$rep" -ext $ext]]
          # Si possible on trie par ordre croissant (sauf dans le cas d'indexation XXX par ex.)
@@ -133,7 +133,7 @@ proc compute_stellaire {args} {
          }
       }
 
-      # On vérifie que la série d'images de noirs de PLUs existe bien
+      # On vÃ©rifie que la sÃ©rie d'images de noirs de PLUs existe bien
       if {$noirsdePLUs!="pas_de_noirsdePLUs"} {
          set index_noirsdePLUs [lsort [liste_index $noirsdePLUs -rep "$rep" -ext $ext]]
          # Si possible on trie par ordre croissant (sauf dans le cas d'indexation XXX par ex.)
@@ -147,8 +147,8 @@ proc compute_stellaire {args} {
          }
       }
 
-      # On vérifie que le pourcentage d'images à conserver pour le compositage est cohérent
-      # (réel strictement positif inférieur à 100)
+      # On vÃ©rifie que le pourcentage d'images Ã  conserver pour le compositage est cohÃ©rent
+      # (rÃ©el strictement positif infÃ©rieur Ã  100)
       if {[TestReel $tri] == 0} {
          tk_messageBox -title $caption(compute,pb) -type ok -message $caption(compute,pbpourcentage)
          console::affiche_resultat "$caption(compute,fin)"
@@ -165,15 +165,15 @@ proc compute_stellaire {args} {
          return
       }
 
-      # Création du répertoire temporaire
+      # CrÃ©ation du rÃ©pertoire temporaire
       set rep_tmp [cree_sousrep -nom_base tmp_compute_stellaire -rep $rep]
 
-      # Création du buffer temporaire
+      # CrÃ©ation du buffer temporaire
       set num_buf_tmp [buf::create]
       buf$num_buf_tmp extension $conf(extension,defaut)
 
       if {$noirs!="pas_de_noirs"} {
-         # Création de l'image de noir (par médiane) dans le buffer temporaire
+         # CrÃ©ation de l'image de noir (par mÃ©diane) dans le buffer temporaire
          console::affiche_resultat "$caption(compute,tmp_noir)"
          mediane $noirs -rep "$rep" -ext $ext -buf $num_buf_tmp -polyNo $in_polyNo
 
@@ -184,10 +184,10 @@ proc compute_stellaire {args} {
          if {$PLUs!="pas_de_PLUs"} {
 
             if {$noirsdePLUs!="pas_de_noirsdePLUs"} {
-               # Création de l'image de noir de PLUs (par médiane)
+               # CrÃ©ation de l'image de noir de PLUs (par mÃ©diane)
                console::affiche_resultat "$caption(compute,tmp_noirdePLUs)"
-               # NB : on ne refait explicitement le calcul de médiane que si les noirs de PLUs sont différents des noirs,
-               # sinon le noir a déjà été calculé précédemment et figure toujours dans le buffer temporaire
+               # NB : on ne refait explicitement le calcul de mÃ©diane que si les noirs de PLUs sont diffÃ©rents des noirs,
+               # sinon le noir a dÃ©jÃ  Ã©tÃ© calculÃ© prÃ©cÃ©demment et figure toujours dans le buffer temporaire
                if {$noirs != $noirsdePLUs } {
                   mediane $noirsdePLUs -rep "$rep" -ext $ext -buf $num_buf_tmp -polyNo $in_polyNo
                }
@@ -200,7 +200,7 @@ proc compute_stellaire {args} {
                console::affiche_resultat "$caption(compute,tmp_PLUnorm_X)"
                normalise_gain tmp_PLU-noir_ tmp_PLUnorm_ -rep $rep_tmp -ext [lindex [decomp $ext] 3]
 
-               # Suppression de la série temporaire de PLUs nettoyées du noir
+               # Suppression de la sÃ©rie temporaire de PLUs nettoyÃ©es du noir
                suppr_serie tmp_PLU-noir_ -rep $rep_tmp -ext [lindex [decomp $ext] 3]
 
             } else {
@@ -209,62 +209,62 @@ proc compute_stellaire {args} {
                normalise_gain $PLUs tmp_PLUnorm_ -in_rep $rep -ex_rep $rep_tmp -in_ext $ext -ex_ext [lindex [decomp $ext] 3] -in_polyNo $in_polyNo
             }
 
-            # Création de l'image de PLUs (par médiane)
+            # CrÃ©ation de l'image de PLUs (par mÃ©diane)
             console::affiche_resultat "$caption(compute,tmp_PLU)"
             mediane tmp_PLUnorm_ -rep "$rep_tmp" -ext [lindex [decomp $ext] 3] -buf $num_buf_tmp
 
-            # Suppression de la série temporaire de PLUs normalisées
+            # Suppression de la sÃ©rie temporaire de PLUs normalisÃ©es
             suppr_serie tmp_PLUnorm_ -rep $rep_tmp -ext [lindex [decomp $ext] 3]
 
             # Normalisation par PLU
             console::affiche_resultat "$caption(compute,tmp_pret_X)"
             serie_normalise tmp_brute-noir_ tmp_pret_ -buf $num_buf_tmp -rep $rep_tmp -ext [lindex [decomp $ext] 3]
 
-            # Suppression des images temporaires nettoyées du noir
+            # Suppression des images temporaires nettoyÃ©es du noir
             suppr_serie tmp_brute-noir_ -rep $rep_tmp -ext [lindex [decomp $ext] 3]
 
             # On indique dans la variable serie_a_recaler le nom de la
-            # série sur laquelle il faut faire le recalage stellaire
+            # sÃ©rie sur laquelle il faut faire le recalage stellaire
             set serie_a_trier "tmp_pret_"
             set ext_serie_a_trier [lindex [decomp $ext] 3]
             set rep_serie_a_trier $rep_tmp
             # On indique dans la variable suppr_apres_recalage s'il faut
-            # supprimer ou pas cette série après avoir effectué l'alignement
+            # supprimer ou pas cette sÃ©rie aprÃ¨s avoir effectuÃ© l'alignement
             set suppr_apres_tri 1
 
             # Registration
             #console::affiche_resultat "$caption(compute,tmp_registr_X)"
             #aligne tmp_pret_ tmp_registr_ -rep $rep_tmp -ext [lindex [decomp $ext] 3]
-            # Suppression des images prétraitées
+            # Suppression des images prÃ©traitÃ©es
             #suppr_serie tmp_pret_ -rep $rep_tmp -ext [lindex [decomp $ext] 3]
 
          } else {
 
             # On indique dans la variable serie_a_recaler le nom de la
-            # série sur laquelle il faut faire le recalage stellaire
+            # sÃ©rie sur laquelle il faut faire le recalage stellaire
             set serie_a_trier "tmp_brute-noir_"
             set ext_serie_a_trier [lindex [decomp $ext] 3]
             set rep_serie_trier $rep_tmp
             # On indique dans la variable suppr_apres_recalage s'il faut
-            # supprimer ou pas cette série après avoir effectué l'alignement
+            # supprimer ou pas cette sÃ©rie aprÃ¨s avoir effectuÃ© l'alignement
             set suppr_apres_tri 1
 
-            # En l'absence de PLUs : on fait l'alignement sur les images nettoyées du noir
+            # En l'absence de PLUs : on fait l'alignement sur les images nettoyÃ©es du noir
             #aligne tmp_brute-noir_ tmp_registr_ -rep $rep_tmp -ext [lindex [decomp $ext] 3]
 
-            # Suppression des images prétraitées
+            # Suppression des images prÃ©traitÃ©es
             #suppr_serie tmp_brute-noir_ -rep $rep_tmp -ext [lindex [decomp $ext] 3]
          }
 
       } else {
 
          # On indique dans la variable serie_a_recaler le nom de la
-         # série sur laquelle il faut faire le recalage stellaire
+         # sÃ©rie sur laquelle il faut faire le recalage stellaire
          set serie_a_trier $brutes
          set ext_serie_a_trier $ext
          set rep_serie_a_trier $rep
          # On indique dans la variable suppr_apres_recalage s'il faut
-         # supprimer ou pas cette série après avoir effectué l'alignement
+         # supprimer ou pas cette sÃ©rie aprÃ¨s avoir effectuÃ© l'alignement
          set suppr_apres_tri 0
 
          # En l'absence d'images de noir : on fait la registration sur les images brutes.
@@ -304,7 +304,7 @@ proc compute_stellaire {args} {
                }
             }
          }
-         # Suppression éventuelle de fichiers intermédiaires
+         # Suppression Ã©ventuelle de fichiers intermÃ©diaires
          if {$suppr_apres_tri == 1} {
             suppr_serie $serie_a_trier -rep $rep_serie_a_trier -ext $ext_serie_a_trier
          }
@@ -312,41 +312,41 @@ proc compute_stellaire {args} {
 
       # Recalage des images
       console::affiche_resultat "$caption(compute,tmp_registr_X)"
-      # Si les images ont été prises par un instrument équatorial :
+      # Si les images ont Ã©tÃ© prises par un instrument Ã©quatorial :
       # pas besoin de corriger la rotation de champ
       if {$altaz == 0} {
          aligne tmp_tri_ tmp_registr_ -rep $rep_tmp -ext [lindex [decomp $ext] 3] -in_polyNo $in_polyNo
 
-         # Suppression des images prétraitées
+         # Suppression des images prÃ©traitÃ©es
          suppr_serie tmp_tri_ -rep $rep_tmp -ext [lindex [decomp $ext] 3]
 
       } else {
-         # Si les images ont été prises par un instrument altazimultal :
+         # Si les images ont Ã©tÃ© prises par un instrument altazimultal :
          # on corrige ici la rotation de champ
 
          # Position de l'observateur
-         # ATTENTION IL VAUDRAIT MIEUX RÉCUPÉRER CETTE INFO DANS LES EN-TÊTES DES IMAGES !!!
+         # ATTENTION IL VAUDRAIT MIEUX RÃ‰CUPÃ‰RER CETTE INFO DANS LES EN-TÃŠTES DES IMAGES !!!
          set posit_obs $audace(posobs,observateur,gps)
          set latit_obs [lindex $posit_obs 3]
 
          # Date/Heure moyenne de l'observation
-         # ATTENTION MÉTHODE UN PEU BRUTE POUR L'INSTANT, ON SE CONTENTE DE
-         # RÉCUPÉRER L'INFO POUR LA PREMIÈRE IMAGE QUI TOMBE SOUS LA MAIN
+         # ATTENTION MÃ‰THODE UN PEU BRUTE POUR L'INSTANT, ON SE CONTENTE DE
+         # RÃ‰CUPÃ‰RER L'INFO POUR LA PREMIÃˆRE IMAGE QUI TOMBE SOUS LA MAIN
          charge $brutes[lindex $index_brutes 0] -rep $rep -ext $ext -polyNo $in_polyNo -buf $num_buf_tmp
          set date_obs [buf$num_buf_tmp getkwd "DATE-OBS"]
 
-         # On récupère les infos utiles dans l'en-tête de la première image concernant
+         # On rÃ©cupÃ¨re les infos utiles dans l'en-tÃªte de la premiÃ¨re image concernant
          # la localisation de l'objet
          charge $brutes[lindex $index_brutes 0] -rep $rep -ext $ext -polyNo $in_polyNo -buf $num_buf_tmp
          set ascdr [lindex [buf$num_buf_tmp getkwd "CRVAL1"] 1]
          set decli [lindex [buf$num_buf_tmp getkwd "CRVAL2"] 1]
 
-         # On calcule ainsi l'azimut et la hauteur de l'objet observé
+         # On calcule ainsi l'azimut et la hauteur de l'objet observÃ©
          set coord_altaz [mc_radec2altaz $ascdr $decli $posit_obs $date_obs]
          set az_obj [lindex $coord_altaz 0]
          set hau_obj [lindex $coord_altaz 1]
 
-         # On en déduit la vitesse angulaire de rotation du champ
+         # On en dÃ©duit la vitesse angulaire de rotation du champ
          set vit_rotation [expr 15.04 * cos($latit_obs) * cos($az_obj) / cos($hau_obj)]
 
          # Rotation des images
@@ -358,39 +358,39 @@ proc compute_stellaire {args} {
             sauve tmp_altaz_$index -rep $rep_tmp -ext [lindex [decomp $ext] 3] -buf $num_buf_tmp
          }
 
-         # Suppression des images prétraitées
+         # Suppression des images prÃ©traitÃ©es
          suppr_serie tmp_tri_ -rep $rep_tmp -ext [lindex [decomp $ext] 3]
 
-         # Alignement des images corrigées de la rotation de champ
+         # Alignement des images corrigÃ©es de la rotation de champ
          aligne tmp_altaz_ tmp_registr_ -rep $rep_tmp -ext [lindex [decomp $ext] 3]
 
-         # Suppression des images prétraitées
+         # Suppression des images prÃ©traitÃ©es
          suppr_serie tmp_altaz_ -rep $rep_tmp -ext [lindex [decomp $ext] 3]
       }
 
       # Suppression du buffer temporaire
       buf::delete $num_buf_tmp
 
-      # Renumérotation des images sélectionnées
+      # RenumÃ©rotation des images sÃ©lectionnÃ©es
       renumerote tmp_registr_ -rep $rep_tmp -ext [lindex [decomp $ext] 3]
 
       # Compositage Sigma-Kappa
       console::affiche_resultat "$caption(compute,compositage)"
       ttscript2 "IMA/STACK \"$rep_tmp\" tmp_registr_ 1 [llength [liste_index tmp_registr_ -rep $rep_tmp -ext [lindex [decomp $ext] 3]]] [lindex [decomp $ext] 3] \"$rep_tmp\" tmp_finale . [lindex [decomp $ext] 3] SK kappa=3 bitpix=-32"
 
-      # Suppression des images triées temporaires
+      # Suppression des images triÃ©es temporaires
       suppr_serie tmp_registr_ -rep $rep_tmp -ext [lindex [decomp $ext] 3]
 
       # Chargement de l'image finale
       charge tmp_finale -rep $rep_tmp -ext [lindex [decomp $ext] 3]
 
-      # MAJ en-tête audace
+      # MAJ en-tÃªte audace
       wm title $audace(base) "$caption(compute,audace) - $caption(compute,imafinale)"
 
-      # Suppression de l'image finale sauvée sur le disque
+      # Suppression de l'image finale sauvÃ©e sur le disque
       file delete [file join $rep_tmp tmp_finale[lindex [decomp $ext] 3]]
 
-      # Suppression du répertoire temporaire
+      # Suppression du rÃ©pertoire temporaire
       file delete $rep_tmp
 
       console::affiche_resultat "$caption(compute,fin)"

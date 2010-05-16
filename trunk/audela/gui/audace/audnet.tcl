@@ -2,7 +2,7 @@
 # Fichier : audnet.tcl
 # Description : Network functions using RPC or simple TCP sockets
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: audnet.tcl,v 1.7 2010-02-05 18:36:37 robertdelmas Exp $
+# Mise Ã  jour $Id: audnet.tcl,v 1.8 2010-05-16 10:14:06 robertdelmas Exp $
 #
 
 # ====================================================================
@@ -71,7 +71,7 @@ proc sock_create_server { {port 5000} } {
    return $rpcid(serveur)
 }
 
-# --- proc qui est appellée pour l'écoute du socket serveur
+# --- proc qui est appellee pour l'ecoute du socket serveur
 proc sock_accept {fidsockc ip port} {
    global caption
    ::console::affiche_saut "\n"
@@ -81,7 +81,7 @@ proc sock_accept {fidsockc ip port} {
    fileevent $fidsockc readable [list sock_respons $fidsockc]
 }
 
-# --- proc qui est appelée lorsque le socket serveur a reçu un message terminé par \n
+# --- proc qui est appelee lorsque le socket serveur a reÃ§u un message termine par \n
 proc sock_respons {fidsockc} {
    if {[eof $fidsockc] || [catch {gets $fidsockc line}]} {
       close $fidsockc

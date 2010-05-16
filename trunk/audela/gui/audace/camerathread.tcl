@@ -3,7 +3,7 @@
 # Description : procedures d'acquisition et de traitement avec
 #         plusieurs cameras simultanees exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise a jour $Id: camerathread.tcl,v 1.21 2010-02-13 13:13:59 michelpujol Exp $
+# Mise à jour $Id: camerathread.tcl,v 1.22 2010-05-16 10:14:47 robertdelmas Exp $
 #
 
 namespace eval ::camerathread {
@@ -345,10 +345,10 @@ proc ::camerathread::processAcquisitionLoop { } {
          } elseif { $private(detection)=="SLIT" } {
             #--- SLIT : je cherche l'etoile dans la zone cible proche de la fente
             if { $private(dynamicDectection) == "SLIT" } {
-                #--- l'etoile était proche de la fente dans l'image précédente
+                #--- l'etoile etait proche de la fente dans l'image precedente
                 set starDetectionMode 2
             } else {
-                #--- l'etoile était loin de la fente dans l'image précédente
+                #--- l'etoile etait loin de la fente dans l'image precedente
                 set starDetectionMode 1
             }
              #--- je calcule les coordonnees de la cible autour de l'etoile
@@ -426,7 +426,7 @@ proc ::camerathread::processAcquisitionLoop { } {
                 append message " No star found in catalogue."
              }
 
-            #--- je charge la liste des etoiles appariées
+            #--- je charge la liste des etoiles appariees
             if { $matchedStarNb > 0 } {
                set fcom [open "com.lst" r]
                set astar ""

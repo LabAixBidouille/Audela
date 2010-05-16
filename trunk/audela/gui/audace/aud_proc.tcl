@@ -1,7 +1,7 @@
 #
 # Fichier : aud_proc.tcl
 # Description : Fonctions de chargement, sauvegarde et traitement d'images
-# Mise a jour $Id: aud_proc.tcl,v 1.20 2010-04-19 14:49:00 robertdelmas Exp $
+# Mise à jour $Id: aud_proc.tcl,v 1.21 2010-05-16 10:13:31 robertdelmas Exp $
 #
 
 #
