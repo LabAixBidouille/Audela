@@ -2,7 +2,7 @@
 # Fichier : lx200pad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: lx200pad.tcl,v 1.17 2010-02-13 13:23:45 michelpujol Exp $
+# Mise à jour $Id: lx200pad.tcl,v 1.18 2010-05-17 15:55:49 robertdelmas Exp $
 #
 
 namespace eval ::lx200pad {

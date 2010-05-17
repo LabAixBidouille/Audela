@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: zadkopad.tcl,v 1.46 2010-04-11 13:54:30 michelpujol Exp $
+# Mise Ã  jour $Id: zadkopad.tcl,v 1.47 2010-05-17 15:57:50 robertdelmas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -865,7 +865,7 @@ namespace eval ::zadkopad {
             set m [format "%02d" [lindex $res 1]]
             set s [format "%02d" [expr int(floor([lindex $res 2]))]]
             $base.f.lab_ha configure -text "Hour Angle: ${h}h ${m}mn ${s}s"
-            $base.f.lab_altaz configure -text "Azimuth: ${az}° - Elevation: ${alt}°"
+            $base.f.lab_altaz configure -text "Azimuth: ${az}Â° - Elevation: ${alt}Â°"
             if { $alt >= "0" } {
                  set distanceZenithale [ expr 90.0 - $alt ]
                  set distanceZenithale [ mc_angle2rad $distanceZenithale ]
@@ -988,7 +988,7 @@ namespace eval ::zadkopad {
               .zadkopad.frame4.frame1.f2.ent3 configure -state normal
               .zadkopad.frame4.frame1.f2.but1 configure -state normal
         } else {
-        # message de pb sur les coordonnées
+        # message de pb sur les coordonnees
               zadko_info "Problem with $name"
               tk_messageBox -icon error -message "The name: $name is not correct" -type ok
         }
@@ -1262,7 +1262,7 @@ namespace eval ::zadkopad {
            pack $base.f.ra.ent1 -side left -fill none
         pack $base.f.ra -fill none -pady 2
         frame $base.f.dec -bg $colorlx200(backpad)
-          label $base.f.dec.lab1 -text "Declination (+/- ° ' ''):" -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
+          label $base.f.dec.lab1 -text "Declination (+/- Â° ' ''):" -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
           entry $base.f.dec.ent1 -textvariable paramhorloge(dec) -width $geomlx200(10pixels)  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
              -bg $colorlx200(backpad) -fg $colorlx200(textkey) -relief flat
           pack $base.f.dec.lab1 -side left -fill none
@@ -1307,7 +1307,7 @@ namespace eval ::zadkopad {
           pack $base2.f.ra.ent1 -side left -fill none
         pack $base2.f.ra -fill none -pady 2
         frame $base2.f.dec -bg $colorlx200(backpad)
-          label $base2.f.dec.lab1 -text "Declination (+/- ° ' ''):" -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
+          label $base2.f.dec.lab1 -text "Declination (+/- Â° ' ''):" -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
           entry $base2.f.dec.ent1 -textvariable paramhorloge(new,dec) -width 15  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
              -bg $colorlx200(backtour)  -fg $colorlx200(backpad) -relief flat
           pack $base2.f.dec.lab1 -side left -fill none
