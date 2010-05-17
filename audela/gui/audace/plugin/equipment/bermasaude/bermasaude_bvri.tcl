@@ -2,7 +2,7 @@
 # Fichier : bermasaude_bvri.tcl
 # Description : Configuration des filtres de la roue pour une combinaison BVRI
 # Auteur : Robert DELMAS
-# Mise a jour $Id: bermasaude_bvri.tcl,v 1.3 2006-06-20 19:21:40 robertdelmas Exp $
+# Mise à jour $Id: bermasaude_bvri.tcl,v 1.4 2010-05-17 16:23:57 robertdelmas Exp $
 #
 
 global color
