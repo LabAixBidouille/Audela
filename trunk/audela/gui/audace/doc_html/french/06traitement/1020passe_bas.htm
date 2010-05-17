@@ -10,6 +10,9 @@
 <p class="date">Date de mise &agrave; jour : 17 mai 2010</p>
 <h1>Filtre passe-bas </h1>
 
+Ce filtrage passe-bas est de type <b>linéaire</b>, et consiste à attribuer à chaque pixel de l'image résultat la somme pondérée de quelques pixels du voisinage. Les coefficients sont regroupés en un <b>noyau</b> dont la taille définit celle du voisinage. Cette opération s'appelle une <b>convolution</b>.<br>
+Les coefficients de ce filtre permettent d'<b>atténuer les hautes fréquences spatiales</b> de l'image (détails fins se traduisant par une variation brusque de luminosité de l'image), et d'en conserver les basses fréquences. L'atténuation des hautes fréquences croit avec la taille du noyau.<br>
+
 Les coefficients des noyaux suivants sont fournis pour une valeur du coefficient d'efficacité valant 0 ( efficacité maximale )
 
 <h2>Coefficients du noyau 3x3 </h2>
