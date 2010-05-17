@@ -1,6 +1,6 @@
 #
 # Fichier : telshift.cap
-# Mise a jour $Id: telshift.cap,v 1.10 2009-12-09 16:58:19 robertdelmas Exp $
+# Mise a jour $Id: telshift.cap,v 1.11 2010-05-17 15:35:56 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -110,7 +110,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telshift,mosaique9)     "Mosaico di 9 immagini"
    set caption(telshift,nbposesmosa)   "Numero di pose per immagine del mosaico: "
    set caption(telshift,aideutil)      "Aiuto in linea"
-   set caption(telshift,erreuraide)    "File telshift_it.txt introvabile. Per visualizzare l'help, occorre avere questo file nella directory 'aide_telshift'."
+   set caption(telshift,erreuraide)    "File telshift_it.txt introvabile. Per visualizzare l'help, occorre avere questo file nella cartella 'aide_telshift'."
    set caption(telshift,pointevers)    "Puntamento verso"
    set caption(telshift,pointesur)     "Puntamento su"
    set caption(telshift,lancepose)     "Esecuzione della posa n."

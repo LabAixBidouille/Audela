@@ -1,6 +1,6 @@
 #
 # Fichier : smedianrvb.cap
-# Mise a jour $Id: smedianrvb.cap,v 1.9 2009-11-23 19:54:17 robertdelmas Exp $
+# Mise a jour $Id: smedianrvb.cap,v 1.10 2010-05-17 15:36:43 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -45,7 +45,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(smedianrvb,titre)       "Esegui la mediana di una pila di immagini"
    set caption(smedianrvb,comment1)    "Genera i tre file finali (rosso, verde, blu)"
    set caption(smedianrvb,comment2)    "Cancella i file intermedi"
-   set caption(smedianrvb,rep_images)  "Directory delle immagini"
+   set caption(smedianrvb,rep_images)  "Cartella delle immagini"
    set caption(smedianrvb,parcourir)   "..."
    set caption(smedianrvb,nom_images)  "Nomi generici delle immagini RGB"
    set caption(smedianrvb,nbre_images) "Numero immagini"
