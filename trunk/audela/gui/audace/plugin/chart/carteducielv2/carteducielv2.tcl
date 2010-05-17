@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows uniquement
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv2.tcl,v 1.24 2010-02-13 13:27:39 michelpujol Exp $
+# Mise Ã  jour $Id: carteducielv2.tcl,v 1.25 2010-05-17 15:28:03 robertdelmas Exp $
 #
 
 namespace eval carteducielv2 {
@@ -364,7 +364,7 @@ proc ::carteducielv2::moveCoord { ra dec } {
       #--- j'utilise le champ fixe
       set fov $conf(carteducielv2,fixedfovvalue)
       #--- je remplace les unites
-      set fov  [string map { "d" "\°" "m" "\'" "s" "\"" } $fov ]
+      set fov  [string map { "d" "\Â°" "m" "\'" "s" "\"" } $fov ]
    }
 
    #--- je supprime les diziemes de secondes apres le point decimal
@@ -372,8 +372,8 @@ proc ::carteducielv2::moveCoord { ra dec } {
    #--- je rajoute le "s" des secondes
    append ra "s"
 
-   set dec [string map { "d" "\°" "m" "\'" "s" "\"" } $dec ]
-   set fov [string map { "d" "\°" "m" "\'" "s" "\"" } $fov ]
+   set dec [string map { "d" "\Â°" "m" "\'" "s" "\"" } $dec ]
+   set fov [string map { "d" "\Â°" "m" "\'" "s" "\"" } $fov ]
 
    set command "MOVE RA: $ra DEC:$dec FOV:$fov"
    set result [sendDDECommand $command]
@@ -459,8 +459,8 @@ proc ::carteducielv2::selectObject { objectName } {
       #--- j'utilise le champ fixe
       set fov $conf(carteducielv2,fixedfovvalue)
       #--- je remplace les unites
-      set dec [string map { "d" "\°" "m" "\'" "s" "\"" } $dec ]
-      set fov [string map { "d" "\°" "m" "\'" "s" "\"" } $fov ]
+      set dec [string map { "d" "\Â°" "m" "\'" "s" "\"" } $dec ]
+      set fov [string map { "d" "\Â°" "m" "\'" "s" "\"" } $fov ]
       if { $fov == "" } {
          #--- rien a faire, j'abandonne
          return 1
@@ -500,8 +500,8 @@ proc ::carteducielv2::selectObject { objectName } {
 #
 #  exemple de reponse :
 #     ligne 0 ==> 22/12/2001 23:50:57
-#     ligne 1 ==> RA: 13h40m13.00s DEC:+30°59'55.0" FOV:+90°00'00"
-#     ligne 2 ==> 14h15m39.70s +19°10'57.0"   * HR 5340 HD124897 Fl: 16 Ba:Alp  const:Boo mV:-0.04 b-v: 1.23 sp:  K1.5IIIFe-0.5      pm:-1.093 -1.998 ;ARCTURUS; Haris-el-sema
+#     ligne 1 ==> RA: 13h40m13.00s DEC:+30Â°59'55.0" FOV:+90Â°00'00"
+#     ligne 2 ==> 14h15m39.70s +19Â°10'57.0"   * HR 5340 HD124897 Fl: 16 Ba:Alp  const:Boo mV:-0.04 b-v: 1.23 sp:  K1.5IIIFe-0.5      pm:-1.093 -1.998 ;ARCTURUS; Haris-el-sema
 #     ligne 3 ==> 2001-12-22T23:50:58
 #     ligne 4 ==> LAT:+43d37m00s LON:-01d27m00s ALT:200m OBS:Toulouse
 #
@@ -511,7 +511,7 @@ proc ::carteducielv2::selectObject { objectName } {
 #     Format de la ligne 2 : "$ra $dec $objType $detail"
 #     avec
 #       $ra      = right ascension  ex: "16h41m42.00s"
-#       $dec     = declinaison      ex: "+36°28'00.0""
+#       $dec     = declinaison      ex: "+36Â°28'00.0""
 #       $objType = object type      ex: "M "
 #       $detail  = object detail    ex :"13 NGC 6205 const: HER Dim: 23.2'x 23.2'  m: 5.90 sbr:12.00 desc: !!eB,vRi,vgeCM,*11...;Hercules cluster;Messier said round nebula contains no star"
 #
@@ -521,7 +521,7 @@ proc ::carteducielv2::selectObject { objectName } {
 #       supprimer les fractions de secondes dans $ra
 #
 #  2)Mise en forme de la declinaison $dec
-#       remplacer "°" par "d"
+#       remplacer "Â°" par "d"
 #       remplacer "'" par "m"
 #       remplacer """ par "s"
 #       supprimer les fractions de secondes
@@ -668,7 +668,7 @@ proc ::carteducielv2::getSelectedObject { } {
 
    #--- Mise en forme de dec
    #--- je remplace les unites par d, m, s
-   set dec  [string map { "\°" d "ß" d "\'" m "\"" s } $dec ]
+   set dec  [string map { "\Â°" d "ÃŸ" d "\'" m "\"" s } $dec ]
    #--- je remplace le quatrieme caractere par "d"
    set dec  [string replace $dec 3 3 "d" ]
    #--- je supprime les diziemes de secondes apres le point decimal
@@ -902,7 +902,7 @@ proc ::carteducielv2::getRaDecFov { } {
 
    #--- Mise en forme de dec
    #--- je remplace les unites par dms
-   set dec [string map { "\°" "d" "ß" "d" "\'" "m" "\"" "s" } $dec ]
+   set dec [string map { "\Â°" "d" "ÃŸ" "d" "\'" "m" "\"" "s" } $dec ]
    #--- je remplace le quatrieme caractere par un "d"
    set dec [string replace $dec 3 3 "d" ]
    #--- je supprime les diziemes de secondes apres le point decimal
@@ -912,7 +912,7 @@ proc ::carteducielv2::getRaDecFov { } {
 
    #--- Mise en forme de fov
    #--- je remplace les unites par des espaces
-   set fov [string map { "\°" "d" "ß" "d" "\'" "m" "\"" "s" } $fov ]
+   set fov [string map { "\Â°" "d" "ÃŸ" "d" "\'" "m" "\"" "s" } $fov ]
    #--- je remplace le quatrieme caractere par un "d"
    set fov [string replace $fov 3 3 "d" ]
    #--- je supprime le signe "+" au debut
