@@ -2,7 +2,7 @@
 # Fichier : t193pad.tcl
 # Description : Raquette specifique au T193 de l'OHP
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: t193pad.tcl,v 1.10 2010-03-06 19:55:56 michelpujol Exp $
+# Mise à jour $Id: t193pad.tcl,v 1.11 2010-05-17 15:56:48 robertdelmas Exp $
 #
 
 namespace eval ::t193pad {
@@ -312,7 +312,7 @@ proc ::t193pad::createDialog { } {
       -relief ridge
    grid $This.frame2.sud -row 2 -column 1 -padx 10 -pady 0
 
-   #--- activation / desactivation mode impulsion des déplacements radec (monocoup)
+   #--- activation / desactivation mode impulsion des deplacements radec (monocoup)
    frame $This.frame2.pulseMode  -borderwidth 0 -bg $color(blue_pad)
       checkbutton $This.frame2.pulseMode.enabled \
          -font [ list {Arial} 12 bold ] \
@@ -562,7 +562,7 @@ proc ::t193pad::stopRadec { direction } {
       #--- fin de mouvement
       ::telescope::stop $direction
    } else {
-      #--- rien a faire car le mouvement a été arrete automatiquement à la fin de l'impulsion.
+      #--- rien a faire car le mouvement a ete arrete automatiquement a la fin de l'impulsion
    }
 }
 
@@ -669,7 +669,4 @@ proc ::t193pad::gotoFocus {  } {
       ::tkutil::displayErrorInfo $::caption(t193pad,titre)
    }
 }
-
-
-
 

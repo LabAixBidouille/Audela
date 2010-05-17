@@ -1,7 +1,7 @@
 #
 # Fichier : pkgIndex.tcl
 # Description : Definition du point d'entree du plugin
-# Mise a jour $Id: pkgIndex.tcl,v 1.3 2007-04-11 17:32:42 michelpujol Exp $
+# Mise à jour $Id: pkgIndex.tcl,v 1.4 2010-05-17 15:56:03 robertdelmas Exp $
 #
 
 package ifneeded lx200pad 1.0 [ list source [ file join $dir lx200pad.tcl ] ]
