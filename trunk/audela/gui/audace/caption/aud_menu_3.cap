@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.48 2010-01-30 14:31:18 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.49 2010-05-17 15:37:45 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -424,7 +424,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,image_flat-field)          "Immagine di flat field:"
    set caption(pretraitement,aucune)                    "Nessuna"
    set caption(pretraitement,auto)                      "Auto"
-   set caption(pretraitement,rep-images)                "Le immagini devono provenire dalla cartella immagini\n(Configurazione --> Directories)."
+   set caption(pretraitement,rep-images)                "Le immagini devono provenire dalla cartella immagini\n(Configurazione --> Cartelle)."
    set caption(pretraitement,non_valide)                "Il pretrattamento e` impossibile senza bias, dark e flat-field."
 
    set caption(pretraitement,liste_serie)               "Elenco indici:"

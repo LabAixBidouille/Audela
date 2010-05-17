@@ -1,6 +1,6 @@
 #
 # Fichier : updateaudela.cap
-# Mise a jour $Id: updateaudela.cap,v 1.19 2009-12-19 09:21:41 robertdelmas Exp $
+# Mise a jour $Id: updateaudela.cap,v 1.20 2010-05-17 15:35:23 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -110,7 +110,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(updateaudela,title)              "Aggiornamento AudeLA"
    set caption(updateaudela,pluginFrame)        "Elenco dei plug-in"
    set caption(updateaudela,kitFrame)           "Elenco dei kit"
-   set caption(updateaudela,rep_plugin)         "Directory"
+   set caption(updateaudela,rep_plugin)         "Cartella"
    set caption(updateaudela,refresh)            "Aggiorna"
    set caption(updateaudela,delete)             "Eliminare"
    set caption(updateaudela,download)           "Scaricare"
