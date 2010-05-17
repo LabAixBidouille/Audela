@@ -11,7 +11,7 @@
 <h1>Low Pass Filter </h1>
 
 This low-pass filtering operation is a <b>linear</b> one. This operation ( named as <b>convolution</b>) sets every pixel of the final image a weighted sum of some pixels of its local neighborhood. The weights (or coefficients) are contained in a <b>kernel</b>, which size is the actual size of the neighborhood.<br>
-This filter aims in <b>attenuating the higher spatial frequencies</b> of the image (finer details), and in keeping inchanged the low frequencies. The high frequencies attenuation increases with the kernel size.<br>
+This filter aims in smoothing the image by <b>attenuating the higher spatial frequencies</b> of the image (finer details), and by keeping inchanged the lowest frequencies. The high frequencies attenuation increases with the kernel size.<br>
 
 The following kernel coefficients are valid when the efficiency coefficient is null (i.e. maximum efficiency).
 
