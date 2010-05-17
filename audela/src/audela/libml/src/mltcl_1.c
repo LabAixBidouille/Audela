@@ -29,7 +29,8 @@
 /* Le include mltcl.h ne contient des infos concernant Tcl.                */
 /***************************************************************************/
 #include "mltcl.h"
-
+#include <stdio.h>
+#include <ctype.h>
 
 //***************************************************************************
 //					log 
@@ -2827,100 +2828,129 @@ int Cmd_mltcl_fitquadratique(ClientData clientData, Tcl_Interp *interp, int argc
 /*  data2 est l'axe des abscisses => e.g valeur focus ADU 		    */
 /****************************************************************************/
 {
-	float maxi_courbe, result;
-	char texte[50];
-	float *x, *y;
-	int xlenght, ylenght,k;
-	float a, b, c, d, p, q, r, s, t, u, v;
-	FILE *fic;
+	float maxi_courbe;
+	char texte[400];
+	char * pEnd;
+	double *x, *y;
+	int xlenght, ylenght,k, kx, ky, kkx, result;
+	double a, b, c, d, p, q, r, s, t, u, v;
+	//FILE *fic;
 	Tcl_DString dsptr;
 	
 	if(argc<2) {
       		sprintf(texte,"Usage: %s data_y data_x", argv[0]);
       		Tcl_SetResult(interp,texte,TCL_VOLATILE);
       		result = TCL_ERROR;
-  	} else if ((argv[0]=="")||(argv[1]=="")) {
-  		sprintf(texte,"Usage: %s data_y data_x, data_y et data_x ne doivent pas etre vides", argv[0]);
+  	} else if ((strlen(argv[1])==0)||(strlen(argv[2])==0)) {
+  		sprintf(texte,"Attention: %s data_y data_x, data_y et data_x ne doivent pas etre vides", argv[0]);
       		Tcl_SetResult(interp,texte,TCL_VOLATILE);
       		result = TCL_ERROR;
   	} else {
-		xlenght=sizeof(argv[1]) / sizeof(float);
-		ylenght=sizeof(argv[2]) / sizeof(float);
-		/* --- ouvre le fichier en ecriture ---*/
-		fic=fopen("log_libml.txt","wt");
-		fprintf(fic,"%s, %s, %s, longueur %d, %d \n", argv[0], argv[1], argv[2], xlenght+1, ylenght+1);	
-		fclose(fic);
-		if (xlenght!=ylenght ) {
-			sprintf(texte,"Usage: %s data_y data_x, data_y et data_x doivent avoir le meme nombre d elements", argv[0]);
+		xlenght=strlen(argv[1]);
+		ylenght=strlen(argv[2]);
+		/*fic=fopen("log_libml.txt","a");
+		fprintf(fic,"%s, %s, %s, %d, %d \n", argv[0], argv[1], argv[2], xlenght, ylenght);	
+		fclose(fic);*/
+		kx=0; k=0;
+		for (k=1; k<xlenght; k++) {
+			if (isspace(argv[1][k])) kx++;
+		}
+		ky=0; k=0;
+		for (k=1; k<ylenght; k++) {
+			if (isspace(argv[2][k])) ky++;
+		}
+		// kx et ky sont les nombre d'espace donc kx+1 et ky+1 sont les nombres d'objects dans le liste
+		kx++;
+		ky++;
+		/*fic=fopen("log_libml.txt","a");
+		fprintf(fic,"kx %d, ky %d \n", kx, ky);	
+		fclose(fic);*/	
+		if (kx!=ky ) {
+			sprintf(texte,"Attention: %s, data_y et data_x doivent avoir le meme nombre d elements", argv[0]);
       			Tcl_SetResult(interp,texte,TCL_VOLATILE);
       			result = TCL_ERROR;
-		} else {
-			x=(float*)calloc(xlenght,sizeof(float));
-			y=(float*)calloc(ylenght,sizeof(float));
-			for (k=0;k<xlenght;k++) {
-				x[k]=(float)argv[1][k];
-				y[k]=(float)argv[2][k];
-			} 
-			fic=fopen("log_libml.txt","a");
-			fprintf(fic,"allocation de x et y \n");	
-			fclose(fic);
-			p=0; q=0; r=0; s=0; t=0; u=0; v=0;
-			for (k=0; k<xlenght;k++) {
-				p +=y[k];
-				q +=y[k]*y[k];
-				r +=y[k]*y[k]*y[k];
-				s +=y[k]*y[k]*y[k]*y[k];
-				t +=x[k];
-				u +=y[k]*x[k];
-				v +=y[k]*y[k]*x[k];
+		} else if ((kx==1)||(ky==1 )) {
+			sprintf(texte,"Attention: %s, data_y et data_x doivent avoir plus d elements", argv[0]);
+      			Tcl_SetResult(interp,texte,TCL_VOLATILE);
+      			result = TCL_ERROR;
+      		} else {
+			kkx=0;
+			x=(double*)calloc(kx,sizeof(double));
+			if (x==NULL) {
+				sprintf(texte,"error : x pointer out of memory (%d elements)",kx);
+				Tcl_SetResult(interp,texte,TCL_VOLATILE);
+				free(x);
+				return TCL_ERROR;
+      			}
+			y=(double*)calloc(kx,sizeof(double));
+			if (y==NULL) {
+				sprintf(texte,"error : y pointer out of memory (%d elements)",kx);
+				Tcl_SetResult(interp,texte,TCL_VOLATILE);
+				free(y);
+				free(x);
+				return TCL_ERROR;
 			}
-			fic=fopen("log_libml.txt","a");
-			fprintf(fic,"calcul des parametres p=%f, q=%f, r=%f, s=%f, t=%f, u=%f, v=%f \n", p,q,r,s,t,u,v);	
-			fclose(fic);
+			// remplissage de x
+			x[0] = strtod (argv[1],&pEnd);
+			for (k=1; k<kx-1; k++) {
+				x[k] = strtod (pEnd,&pEnd);
+			}
+			x[kx-1] = strtod (pEnd,NULL);
+			
+			// remplissage de y
+			y[0] = strtod (argv[2],&pEnd);
+			for (k=1; k<kx-1; k++) {
+				y[k] = strtod (pEnd,&pEnd);
+			}
+			y[kx-1] = strtod (pEnd,NULL);
+		
+			p=0; q=0; r=0; s=0; t=0; u=0; v=0;
+			for (k=0; k<kx;k++) {
+				p +=x[k];
+				q +=x[k]*x[k];
+				r +=x[k]*x[k]*x[k];
+				s +=x[k]*x[k]*x[k]*x[k];
+				t +=y[k];
+				u +=x[k]*y[k];
+				v +=x[k]*x[k]*y[k];
+			}
 			/* ---  calcul des parametre de la courbe y = ax2 + bx + c  --- */
 			d=0; a=0; b=0; c=0;maxi_courbe=0;
-			d=xlenght*q*s+2*p*q*r-q*q*q-p*p*s-xlenght*r*r;
-			fic=fopen("log_libml.txt","a");
-			fprintf(fic,"calcul de d=%f \n", d);	
-			fclose(fic);
+			d=kx*q*s+2*p*q*r-q*q*q-p*p*s-kx*r*r;
+			/*fic=fopen("log_libml.txt","a");
+			fprintf(fic,"calcul des parametres p=%f, q=%f, r=%f, s=%f, t=%f, u=%f, v=%f , d=%f \n", p,q,r,s,t,u,v,d);	
+			fclose(fic);*/
 			if (d!=0) {
-				a=(xlenght*q*v+p*r*t+p*q*u-q*q*t-p*p*v-xlenght*r*u)/d;
-				b=(xlenght*s*u+p*q*v+q*r*t-q*q*u-p*s*t-xlenght*r*v)/d;
+				a=(kx*q*v+p*r*t+p*q*u-q*q*t-p*p*v-kx*r*u)/d;
+				b=(kx*s*u+p*q*v+q*r*t-q*q*u-p*s*t-kx*r*v)/d;
 				//c=(q*s*t+q*r*u+p*r*v-q*q*v-p*s*u-r*r*t)/d;
 				/* --- calcul du maximun de la courbe maxi_x=-b/(2*a) --- */
 				maxi_courbe=-b/(2*a);
-				fic=fopen("log_libml.txt","a");
+				/*fic=fopen("log_libml.txt","a");
 				fprintf(fic,"calcul de a=%f, b=%f, maxi=%f \n", a, b, maxi_courbe);	
-				fclose(fic);
-				result = maxi_courbe;
+				fclose(fic);*/
+				/*--- initialise la dynamic string ---*/
+				Tcl_DStringInit(&dsptr);
+				/* --- met en forme le resultat dans une chaine de caracteres ---*/
+				sprintf(texte,"%f",maxi_courbe);
+				/* --- on ajoute cette chaine a la dynamic string ---*/
+				Tcl_DStringAppend(&dsptr,texte,-1);
+				/* --- a la fin, on envoie le contenu de la dynamic string dans */
+				/* --- le Result qui sera retourne a l'utilisateur. */
+				Tcl_DStringResult(interp,&dsptr);
+				/* --- desaloue la dynamic string. */
+				Tcl_DStringFree(&dsptr);
+				
+				result = TCL_OK;
 			} else {
 				sprintf(texte,"Probleme: %s le denominateur est nul", argv[0]);
 	      			Tcl_SetResult(interp,texte,TCL_VOLATILE);
 	      			result = TCL_ERROR;
 			}
 			free(x);
-			free(y);
-			
-			result = TCL_OK;
-      
-			/*--- initialise la dynamic string ---*/
-			Tcl_DStringInit(&dsptr);
-			/* --- met en forme le resultat dans une chaine de caracteres ---*/
-			sprintf(texte,"%f",maxi_courbe);
-			/* --- on ajoute cette chaine a la dynamic string ---*/
-			Tcl_DStringAppend(&dsptr,texte,-1);
-			/* --- a la fin, on envoie le contenu de la dynamic string dans */
-			/* --- le Result qui sera retourne a l'utilisateur. */
-			Tcl_DStringResult(interp,&dsptr);
-			/* --- desaloue la dynamic string. */
-			Tcl_DStringFree(&dsptr);
-			
+			free(y);	
 		}
-  	
    	}
-	fic=fopen("log_libml.txt","a");
-	fprintf(fic,"return maxi=%f \n", result);	
-	fclose(fic);
 	return result;
 }
 
