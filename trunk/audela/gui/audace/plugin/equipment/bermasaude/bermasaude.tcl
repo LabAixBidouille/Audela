@@ -2,7 +2,7 @@
 # Fichier : bermasaude.tcl
 # Description : Gere la roue a filtres de Laurent BERNASCONI et Robert DELMAS
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: bermasaude.tcl,v 1.26 2009-11-08 15:02:43 robertdelmas Exp $
+# Mise Ã  jour $Id: bermasaude.tcl,v 1.27 2010-05-17 16:23:42 robertdelmas Exp $
 #
 
 #
@@ -26,11 +26,11 @@
 #     choixCouleur               : Choix des couleurs des filtres
 #     filtreInit                 : Initialisation de la roue a filtres
 #     cmdRoueFiltres             : Commande la roue a filtres
-#     filtre_1                   : Positionne le filtre n°1 sur le chemin optique
-#     filtre_2                   : Positionne le filtre n°2 sur le chemin optique
-#     filtre_3                   : Positionne le filtre n°3 sur le chemin optique
-#     filtre_4                   : Positionne le filtre n°4 sur le chemin optique
-#     filtre_5                   : Positionne le filtre n°5 sur le chemin optique
+#     filtre_1                   : Positionne le filtre nÂ°1 sur le chemin optique
+#     filtre_2                   : Positionne le filtre nÂ°2 sur le chemin optique
+#     filtre_3                   : Positionne le filtre nÂ°3 sur le chemin optique
+#     filtre_4                   : Positionne le filtre nÂ°4 sur le chemin optique
+#     filtre_5                   : Positionne le filtre nÂ°5 sur le chemin optique
 #     connectBerMasAude          : Permet de rendre actifs ou inactifs les boutons
 #     configureEtatBoutons       : Configure l'etat des boutons de commande des filtres
 #     bermasaude_create          : Creation de la liaison serie
@@ -262,7 +262,7 @@ namespace eval bermasaude {
                -command { ::bermasaude::deletePlugin }
             pack $frm.frame3.start.stop -side left -padx 10 -pady 3 -ipadx 10 -expand 1
 
-            #--- Checkbutton démarrage automatique
+            #--- Checkbutton demarrage automatique
             checkbutton $frm.frame3.start.chk -text "$caption(bermasaude,creer_au_demarrage)" \
                -highlightthickness 0 -variable conf(bermasaude,start)
             pack $frm.frame3.start.chk -side top -padx 10 -pady 3 -expand 1
@@ -544,7 +544,7 @@ namespace eval bermasaude {
 
    #------------------------------------------------------------
    # filtre_1
-   #    Positionne le filtre n°1 sur le chemin optique
+   #    Positionne le filtre nÂ°1 sur le chemin optique
    #------------------------------------------------------------
    proc filtre_1 { } {
       global bermasaude
@@ -559,7 +559,7 @@ namespace eval bermasaude {
 
    #------------------------------------------------------------
    # filtre_2
-   #    Positionne le filtre n°2 sur le chemin optique
+   #    Positionne le filtre nÂ°2 sur le chemin optique
    #------------------------------------------------------------
    proc filtre_2 { } {
       global bermasaude
@@ -574,7 +574,7 @@ namespace eval bermasaude {
 
    #------------------------------------------------------------
    # filtre_3
-   #    Positionne le filtre n°3 sur le chemin optique
+   #    Positionne le filtre nÂ°3 sur le chemin optique
    #------------------------------------------------------------
    proc filtre_3 { } {
       global bermasaude
@@ -589,7 +589,7 @@ namespace eval bermasaude {
 
    #------------------------------------------------------------
    # filtre_4
-   #    Positionne le filtre n°4 sur le chemin optique
+   #    Positionne le filtre nÂ°4 sur le chemin optique
    #------------------------------------------------------------
    proc filtre_4 { } {
       global bermasaude
@@ -604,7 +604,7 @@ namespace eval bermasaude {
 
    #------------------------------------------------------------
    # filtre_5
-   #    Positionne le filtre n°5 sur le chemin optique
+   #    Positionne le filtre nÂ°5 sur le chemin optique
    #------------------------------------------------------------
    proc filtre_5 { } {
       global bermasaude

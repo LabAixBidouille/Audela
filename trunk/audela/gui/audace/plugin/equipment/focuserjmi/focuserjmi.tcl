@@ -2,7 +2,7 @@
 # Fichier : focuserjmi.tcl
 # Description : Gere un focuser sur port parallele ou quickremote
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserjmi.tcl,v 1.15 2009-06-15 16:18:52 robertdelmas Exp $
+# Mise Ã  jour $Id: focuserjmi.tcl,v 1.16 2010-05-17 16:25:15 robertdelmas Exp $
 #
 
 #
@@ -252,7 +252,7 @@ proc ::focuserjmi::fillConfigPage { frm } {
          -command { ::focuserjmi::deletePlugin }
       pack $frm.start.stop -side left -padx 10 -pady 3 -ipadx 10 -expand 1
 
-      #--- Checkbutton démarrage automatique
+      #--- Checkbutton demarrage automatique
       checkbutton $frm.start.chk -text "$caption(focuserjmi,creer_au_demarrage)" \
          -highlightthickness 0 -variable conf(focuserjmi,start)
       pack $frm.start.chk -side top -padx 3 -pady 3 -fill x
@@ -267,7 +267,7 @@ proc ::focuserjmi::fillConfigPage { frm } {
 
 #------------------------------------------------------------
 #  ::focuserjmi::onChangeLink
-#     met a jour les donnees affichées quand on change de liaison
+#     met a jour les donnees affichees quand on change de liaison
 #
 #  return nothing
 #------------------------------------------------------------
@@ -475,5 +475,4 @@ proc ::focuserjmi::possedeControleEtendu { } {
       set result "0"
    }
 }
-
 

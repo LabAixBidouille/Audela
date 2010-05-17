@@ -2,7 +2,7 @@
 # Fichier : focuserlx200.tcl
 # Description : Gere le focuser associe a la monture LX200
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserlx200.tcl,v 1.16 2009-12-31 08:48:01 robertdelmas Exp $
+# Mise à jour $Id: focuserlx200.tcl,v 1.17 2010-05-17 16:25:47 robertdelmas Exp $
 #
 
 #
