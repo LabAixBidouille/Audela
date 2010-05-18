@@ -916,12 +916,40 @@ proc move_unlinked { } {
     set errnum [catch {file rename -force $bddconf(dirbase)/unlinked $bddconf(dirinco)/} msg]
     # -- le fichier existe dans $dirpb -> on efface $filename
     if {$errnum!=0} {
-        #bddimages_sauve_fich "move_unlinked: ERREUR : deplacement du repertoire unlinked impossible <err=$errnum> <msg=$msg>"
+        bddimages_sauve_fich "move_unlinked: ERREUR : deplacement du repertoire unlinked impossible <err=$errnum> <msg=$msg>"
         return 320
         } else {
-        #bddimages_sauve_fich "move_unlinked: le repertoire unlinked est deplace"
+        bddimages_sauve_fich "move_unlinked: le repertoire unlinked est deplace"
         }
 
-      return
-   }
+    return
+}
+
+#--------------------------------------------------  
+#  move_unlinked_non_recursif { }
+#--------------------------------------------------  
+#
+#    fonction  : 
+#       deplace les donnees du repertoire unlinked 
+#       dans le repertoire incoming
+#        
+#    procedure externe :
+#     
+#    variables en entree : 
+#
+#    variables en sortie : 
+#   
+#--------------------------------------------------  
+proc move_unlinked_non_recursif { } {
+   
+    global bddconf
+    set files [lsort [glob [file join $bddconf(dirbase) unlinked {*.*}]]]
+    #set files [glob $bddconf(dirbase)/unlinked/*.*]
+    foreach cata $files {
+         #bddimages_sauve_fich "rename '$cata' to '$bddconf(dirinco)/.'"
+         file rename -force -- $cata $bddconf(dirinco)/.   ;# ! overwrites existing files !
+    }
+
+    return
+}
 
