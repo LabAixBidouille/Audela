@@ -2925,7 +2925,7 @@ int Cmd_mltcl_fitquadratique(ClientData clientData, Tcl_Interp *interp, int argc
 				b=(kx*s*u+p*q*v+q*r*t-q*q*u-p*s*t-kx*r*v)/d;
 				//c=(q*s*t+q*r*u+p*r*v-q*q*v-p*s*u-r*r*t)/d;
 				/* --- calcul du maximun de la courbe maxi_x=-b/(2*a) --- */
-				maxi_courbe=-b/(2*a);
+				maxi_courbe=-(float)(b/(2*a));
 				/*fic=fopen("log_libml.txt","a");
 				fprintf(fic,"calcul de a=%f, b=%f, maxi=%f \n", a, b, maxi_courbe);	
 				fclose(fic);*/
