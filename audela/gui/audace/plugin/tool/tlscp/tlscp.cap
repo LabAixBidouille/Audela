@@ -1,6 +1,6 @@
 #
 # Fichier : tlscp.cap
-# Mise a jour $Id: tlscp.cap,v 1.19 2010-05-17 15:35:40 robertdelmas Exp $
+# Mise a jour $Id: tlscp.cap,v 1.20 2010-05-18 21:57:08 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -369,8 +369,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,catalogue)          "Catálogo"
    set caption(tlscp,matching)           "Comparación"
    set caption(tlscp,detection)          "Método de detección de estrellas"
-   set caption(tlscp,cataloguePath)      "Directorio"
-   set caption(tlscp,selectPath)         "Seleccione el directorio del catálogo"
+   set caption(tlscp,cataloguePath)      "Carpeta"
+   set caption(tlscp,selectPath)         "Seleccione el carpeta del catálogo"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {

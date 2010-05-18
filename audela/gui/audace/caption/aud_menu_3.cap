@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.49 2010-05-17 15:37:45 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.50 2010-05-18 21:54:43 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -570,7 +570,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,image_flat-field)          "Imagen de campo plano:"
    set caption(pretraitement,aucune)                    "Ninguno"
    set caption(pretraitement,auto)                      "Auto"
-   set caption(pretraitement,rep-images)                "Las imágenes deben provenir de la carpeta de imágenes\n(Configuración --> Directorios)."
+   set caption(pretraitement,rep-images)                "Las imágenes deben provenir de la carpeta de imágenes\n(Configuración --> Carpetas)."
    set caption(pretraitement,non_valide)                "Preprocesando imosible sin unas tomas de bias, toma oscura y toma de campo plano."
 
    set caption(pretraitement,liste_serie)               "Lista de índices:"

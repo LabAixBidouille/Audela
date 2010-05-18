@@ -1,6 +1,6 @@
 #
 # Fichier : visio.cap
-# Mise a jour $Id: visio.cap,v 1.17 2010-05-17 15:34:39 robertdelmas Exp $
+# Mise a jour $Id: visio.cap,v 1.18 2010-05-18 21:57:40 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -216,7 +216,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio,feninidisket)        "Guardair zip a disquete"
    set caption(visio,fenfulldisket)       "Completada la copia al disquete número %s"
    set caption(visio,saveserie_toA)       "Guardar la serie actual a A:"
-   set caption(visio,saverep_toA)         "Guardar directorio actual a A:"
+   set caption(visio,saverep_toA)         "Guardar carpeta actual a A:"
    set caption(visio,save_continue)       "Ir a"
    set caption(visio,save_stop)           "Parar"
    set caption(visio,init1)               "Por favor, inserte un disquete en A:."

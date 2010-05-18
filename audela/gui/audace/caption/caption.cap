@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.74 2010-05-16 07:50:50 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.75 2010-05-18 21:55:15 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -247,7 +247,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,porttalk_titre)                 "PortTalk:"
    set caption(audace,porttalk_erreur)                "Error de ¿¿¿ Porttalk ????"
-   set caption(audace,porttalk_msg_erreur)            "Ejecutar uninstallporttalk.exe desde bin, borrar porttalk.sys del directorio system32/drivers y ejecutar AudeLA otra vez."
+   set caption(audace,porttalk_msg_erreur)            "Ejecutar uninstallporttalk.exe desde bin, borrar porttalk.sys de carpeta system32/drivers y ejecutar AudeLA otra vez."
    set caption(audace,porttalk_message)               "No mostrar este mensaje otra vez."
 
    set caption(audace,port_com_dispo)                 "Puertos Serie (COM) disponibles:"

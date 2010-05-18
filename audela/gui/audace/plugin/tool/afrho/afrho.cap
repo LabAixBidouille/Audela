@@ -1,6 +1,6 @@
 #
 # Fichier : afrho.cap
-# Mise a jour $Id: afrho.cap,v 1.4 2010-05-17 15:38:16 robertdelmas Exp $
+# Mise a jour $Id: afrho.cap,v 1.5 2010-05-18 21:54:09 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -177,7 +177,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(afrho,site_web_ref)           "http://pagesperso-orange.fr/fkometes/pages/AfRho.html"
 
    set caption(afrho,attention)              "Aviso"
-   set caption(afrho,rep-images)             "Las imágenes deben provenir de la carpeta de imágenes\n(Configuración --> Directorios)."
+   set caption(afrho,rep-images)             "Las imágenes deben provenir de la carpeta de imágenes\n(Configuración --> Carpetas)."
 
    set caption(afrho,ok)                     "OK"
    set caption(afrho,appliquer)              "Aplicar"

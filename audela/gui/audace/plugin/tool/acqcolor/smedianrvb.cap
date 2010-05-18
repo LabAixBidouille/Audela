@@ -1,6 +1,6 @@
 #
 # Fichier : smedianrvb.cap
-# Mise a jour $Id: smedianrvb.cap,v 1.10 2010-05-17 15:36:43 robertdelmas Exp $
+# Mise a jour $Id: smedianrvb.cap,v 1.11 2010-05-18 21:56:05 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -60,7 +60,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(smedianrvb,titre)       "Calcular la mediana de un conjunto de imágenes"
    set caption(smedianrvb,comment1)    "Generar 3 ficheros finales (rojo, verde, azul)"
    set caption(smedianrvb,comment2)    "Borra ficheros temporales"
-   set caption(smedianrvb,rep_images)  "Directorio de imágenes"
+   set caption(smedianrvb,rep_images)  "Carpeta de imágenes"
    set caption(smedianrvb,parcourir)   "..."
    set caption(smedianrvb,nom_images)  "Nombre genérico de las imágenes RVA"
    set caption(smedianrvb,nbre_images) "Numero imágenes"
