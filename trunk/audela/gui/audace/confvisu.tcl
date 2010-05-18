@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.137 2010-05-16 08:00:16 robertdelmas Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.138 2010-05-18 18:19:19 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -755,7 +755,7 @@ namespace eval ::confVisu {
                set abcisses ""
                for { set i 1 } { $i <= $size } { incr i } {
                   #--- je calcule les abcisses
-                  lappend abcisses [expr $cdelt1 * $i + $crval1 ]
+                  lappend abcisses [expr $cdelt1 * ($i - $crpix1) + $crval1 ]
                   #--- je controle les ordonnees
                   ###set y [lindex $ydata $i]
                   set y [lindex [ buf$bufNo getpix [ list $i 1 ] ] 1]
