@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_7.cap
-# Mise a jour $Id: aud_menu_7.cap,v 1.28 2010-05-17 15:37:29 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.cap,v 1.29 2010-05-18 21:54:59 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -37,7 +37,7 @@ set caption(audace,menu,sauve_config)             "Save Setup"
 set caption(cwdWindow,repertoire)                 "Folders"
 set caption(cwdWindow,repertoire_images)          "Image Folder:"
 set caption(cwdWindow,repertoire_travail)         "Working Folder:"
-set caption(cwdWindow,travail_images)             "# Identique au répertoire des images"
+set caption(cwdWindow,travail_images)             "Same As Image Folder"
 set caption(cwdWindow,label_sous_rep)             "New Sub-folder"
 set caption(cwdWindow,label_sous_rep,aucun)       "No sub-folders"
 set caption(cwdWindow,label_sous_rep,fixe)        "Sub-folder Name"
@@ -193,7 +193,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,setup)                 "Configuración"
    set caption(audace,menu,langue)                "Idioma"
-   set caption(audace,menu,repertoire)            "Directorios"
+   set caption(audace,menu,repertoire)            "Carpetas"
    set caption(audace,menu,logiciels_externes)    "Programas externos"
    set caption(audace,menu,temps)                 "Tiempos"
    set caption(audace,menu,position)              "Posición del observador"
@@ -214,10 +214,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,choix_outils)          "Selcción de herramienta"
    set caption(audace,menu,sauve_config)          "Guardar preferencias"
 
-   set caption(cwdWindow,repertoire)              "Directorios"
-   set caption(cwdWindow,repertoire_images)       "Directorio de imagenes:"
-   set caption(cwdWindow,repertoire_travail)      "# Répertoire de travail :"
-   set caption(cwdWindow,travail_images)          "# Identique au répertoire des images"
+   set caption(cwdWindow,repertoire)              "Carpetas"
+   set caption(cwdWindow,repertoire_images)       "Carpeta de imagenes:"
+   set caption(cwdWindow,repertoire_travail)      "Carpeta de trabajo:"
+   set caption(cwdWindow,travail_images)          "Misma carpeta que la de imagenes"
    set caption(cwdWindow,label_sous_rep)          "Nueva subcarpeta"
    set caption(cwdWindow,label_sous_rep,aucun)    "No subcarpeta"
    set caption(cwdWindow,label_sous_rep,fixe)     "Nombre de subcarpeta"
@@ -225,10 +225,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cwdWindow,changement_0h)           "0 h"
    set caption(cwdWindow,changement_12h)          "12 h"
    set caption(cwdWindow,creation_sous_rep)       "Crear"
-   set caption(cwdWindow,repertoire_scripts)      "Directorio de scripts:"
-   set caption(cwdWindow,repertoire_catalogues)   "Directorio de catalogos:"
+   set caption(cwdWindow,repertoire_scripts)      "Carpeta de scripts:"
+   set caption(cwdWindow,repertoire_catalogues)   "Carpeta de catalogos:"
    set caption(cwdWindow,boite_erreur)            "Error"
-   set caption(cwdWindow,pas_repertoire)          " no es un directorio."
+   set caption(cwdWindow,pas_repertoire)          " no es una carpeta."
 
    set caption(confeditscript,logiciels_externes) "Programas externos"
    set caption(confeditscript,edit_script)        "Editor de scripts:"
@@ -276,8 +276,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cwdWindow,repertoire)              "Verzeichnis"
    set caption(cwdWindow,repertoire_images)       "Bilder Verzeichnis:"
-   set caption(cwdWindow,repertoire_travail)      "# Répertoire de travail :"
-   set caption(cwdWindow,travail_images)          "# Identique au répertoire des images"
+   set caption(cwdWindow,repertoire_travail)      "Arbeits Verzeichnis:"
+   set caption(cwdWindow,travail_images)          "Dasselbe wie das Bilder Verzeichnis"
    set caption(cwdWindow,label_sous_rep)          "Neuer Unter-Verzeichnis"
    set caption(cwdWindow,label_sous_rep,aucun)    "Kein Unter-Verzeichnis"
    set caption(cwdWindow,label_sous_rep,fixe)     "Unter-Verzeichnis Namen"
@@ -395,9 +395,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,sauve_config)          "Gem opsætning"
 
    set caption(cwdWindow,repertoire)              "Mappe"
-   set caption(cwdWindow,repertoire_images)       "Billedmappe:"
-   set caption(cwdWindow,repertoire_travail)      "# Répertoire de travail :"
-   set caption(cwdWindow,travail_images)          "# Identique au répertoire des images"
+   set caption(cwdWindow,repertoire_images)       "Billed-mappe:"
+   set caption(cwdWindow,repertoire_travail)      "Arbejds-mappe:"
+   set caption(cwdWindow,travail_images)          "Identisk med Billed-mappen"
    set caption(cwdWindow,label_sous_rep)          "Ny undermappe"
    set caption(cwdWindow,label_sous_rep,aucun)    "Ingen undermapper"
    set caption(cwdWindow,label_sous_rep,fixe)     "Navn på undermappe"

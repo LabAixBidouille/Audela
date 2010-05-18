@@ -1,6 +1,6 @@
 #
 # Fichier : snvisu.cap
-# Mise a jour $Id: snvisu.cap,v 1.20 2010-05-17 15:36:12 robertdelmas Exp $
+# Mise a jour $Id: snvisu.cap,v 1.21 2010-05-18 21:56:37 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -234,7 +234,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(snvisu,main_title)      "Sn Ver"
-   set caption(snvisu,rep1)            "Directorio noche"
+   set caption(snvisu,rep1)            "Carpeta noche"
    set caption(snvisu,prev)            "Previo"
    set caption(snvisu,next)            "Siguiente\n(F1)"
    set caption(snvisu,background)      "Fondo de cielo\n(F2)"
@@ -247,7 +247,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snvisu,carte)           "Mapa"
    set caption(snvisu,configuration)   "Configuración"
    set caption(snvisu,raccourcis)      "Ayuda"
-   set caption(snvisu,rep2)            "Cartella di riferimento"
+   set caption(snvisu,rep2)            "Carpeta di riferimento"
    set caption(snvisu,perso)           "Personal"
    set caption(snvisu,dss)             "DSS"
 

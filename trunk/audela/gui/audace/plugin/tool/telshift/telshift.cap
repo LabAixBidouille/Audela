@@ -1,6 +1,6 @@
 #
 # Fichier : telshift.cap
-# Mise a jour $Id: telshift.cap,v 1.11 2010-05-17 15:35:56 robertdelmas Exp $
+# Mise a jour $Id: telshift.cap,v 1.12 2010-05-18 21:56:52 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -148,7 +148,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telshift,mosaique9)     "Mosaico de 9 imágenes"
    set caption(telshift,nbposesmosa)   "Nº de tomas por imagen del mosaico: "
    set caption(telshift,aideutil)      "Ayuda al usuario"
-   set caption(telshift,erreuraide)    "El fichero telshift_sp.txt no se encuentra. Para leer el fichero de ayuda, éste debe encontrarse en el directorio 'aide_telshift'."
+   set caption(telshift,erreuraide)    "El fichero telshift_sp.txt no se encuentra. Para leer el fichero de ayuda, éste debe encontrarse en el carpeta 'aide_telshift'."
    set caption(telshift,pointevers)    "Apuntado a"
    set caption(telshift,pointesur)     "Apuntado sobre"
    set caption(telshift,lancepose)     "Lanzar la exposición nº"

@@ -1,6 +1,6 @@
 #
 # Fichier : cmanimate.cap
-# Mise a jour $Id: cmanimate.cap,v 1.12 2010-05-17 15:37:13 robertdelmas Exp $
+# Mise a jour $Id: cmanimate.cap,v 1.13 2010-05-18 21:55:35 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -240,7 +240,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmanimate,erreur1)               "El numero de imágenes solicitadas excede el número de imágenes disponibles."
    set caption(cmanimate,erreur2)               "Esta es la ultima imágen de la serie."
    set caption(cmanimate,erreur3)               "Esta es la primera imagen de la serie."
-   set caption(cmanimate,rep-images)            "Las imágenes deben provenir de la carpeta de imágenes\n(Configuración --> Directorios)."
+   set caption(cmanimate,rep-images)            "Las imágenes deben provenir de la carpeta de imágenes\n(Configuración --> Carpetas)."
    set caption(cmanimate,nb_images1)            "Numero imagenes:"
    set caption(cmanimate,delai)                 "Retraso:"
    set caption(cmanimate,nb_boucles1)           "Numero repeticiones:"

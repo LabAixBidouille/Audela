@@ -1,6 +1,6 @@
 #
 # Fichier : animate.cap
-# Mise a jour $Id: animate.cap,v 1.15 2010-05-17 15:38:00 robertdelmas Exp $
+# Mise a jour $Id: animate.cap,v 1.16 2010-05-18 21:54:24 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -82,7 +82,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(animate,go_animation)      "Animar"
    set caption(animate,attention)         "!Cuidado¡"
    set caption(animate,erreur)            "El numero de imágenes solicitadas excede el número de imágenes disponibles."
-   set caption(animate,rep-images)        "Las imágenes deben provenir de la carpeta de imágenes\n(Configuración --> Directorios)."
+   set caption(animate,rep-images)        "Las imágenes deben provenir de la carpeta de imágenes\n(Configuración --> Carpetas)."
    set caption(animate,nb_images1)        "Numero imagenes:"
    set caption(animate,delai)             "Retraso:"
    set caption(animate,nb_boucles1)       "Numero repeticiones:"

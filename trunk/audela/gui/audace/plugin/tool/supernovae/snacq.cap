@@ -1,6 +1,6 @@
 #
 # Fichier : snacq.cap
-# Mise a jour $Id: snacq.cap,v 1.17 2010-05-17 15:36:28 robertdelmas Exp $
+# Mise a jour $Id: snacq.cap,v 1.18 2010-05-18 21:56:21 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -190,7 +190,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,typecam)                "Cámara "
    set caption(snacq,notel)                  "No hay telescopio"
    set caption(snacq,typetel)                "Telescopio "
-   set caption(snacq,dossier)                "Directorio de imágenes"
+   set caption(snacq,dossier)                "Carpeta de imágenes"
    set caption(snacq,localite)               "Situación"
    set caption(snacq,haurore)                "Altura del sol para empezar la observación"
    set caption(snacq,houest)                 "Angulo horario límite oeste"
