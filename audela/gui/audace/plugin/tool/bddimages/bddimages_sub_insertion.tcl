@@ -943,13 +943,15 @@ proc move_unlinked { } {
 proc move_unlinked_non_recursif { } {
    
     global bddconf
-    set files [lsort [glob [file join $bddconf(dirbase) unlinked {*.*}]]]
-    #set files [glob $bddconf(dirbase)/unlinked/*.*]
-    foreach cata $files {
-         #bddimages_sauve_fich "rename '$cata' to '$bddconf(dirinco)/.'"
-         file rename -force -- $cata $bddconf(dirinco)/.   ;# ! overwrites existing files !
+    set errnum [catch {set files [lsort [glob [file join $bddconf(dirbase) unlinked {*.*}]]]} msg]
+    if {$errnum!=0} {
+        } else {
+        foreach cata $files {
+             #bddimages_sauve_fich "rename '$cata' to '$bddconf(dirinco)/.'"
+             file rename -force -- $cata $bddconf(dirinco)/.   ;# ! overwrites existing files !
+        }
     }
-
+    
     return
 }
 
