@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: tuto.tcl,v 1.14 2010-05-13 17:42:49 robertdelmas Exp $
+# Mise à jour $Id: tuto.tcl,v 1.15 2010-05-18 17:53:26 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -68,6 +68,111 @@ proc caption_def { langage } {
       set texte(tuto_16)   "L'acquisition par la pratique."
       set texte(tuto_about0) "Tutoriel Audine"
       set texte(tuto_about1) "Tutoriel pour la camera Audine\n\n\Aude (c) 1999\n\nIn order to change the language, you must edit the file langage.ini and write another language.\n"
+   }
+}
+
+# invoke --
+# This procedure is called when the user clicks on a demo description.
+# It is responsible for invoking the demonstration.
+#
+# Arguments:
+# index - The index of the character that the user clicked on.
+#
+proc invoke { index base } {
+   global tk_library
+   set tags [$base.t tag names $index]
+   set i [lsearch -glob $tags demo-*]
+   if {$i < 0} {
+      return
+   }
+   set cursor [$base.t cget -cursor]
+   $base.t configure -cursor watch
+   update
+   set demo [string range [lindex $tags $i] 5 end]
+
+   #uplevel [list source [file join $tk_library demos $demo.tcl]]
+   #--- nettoie la zone
+   #.main.t insert end \n {} "tutu\n" title
+   #destroy .main
+   #foreach w [winfo children .main] {
+   #   .main.t insert end \n {} "$w\n" title
+   #   pack forget $w
+   #   destroy $w
+   #}
+   #.main.t configure -state disabled
+   if {$base == ".second" } {
+      wm deiconify .main
+      destroy .second
+   }
+   if {[string compare $demo "exit"] == 0 } {
+      #uplevel [list source tuto.tcl]
+      focus -force .main
+   } else {
+      uplevel [list source tuto.$demo.tcl]
+      focus -force .second
+   }
+   update
+   if {$base == ".main" } {
+      $base.t configure -cursor $cursor
+      $base.t tag add visited "$index linestart +1 chars" "$index lineend -1 chars"
+   }
+}
+
+# showStatus --
+#
+# Show the name of the demo program in the status bar. This procedure
+# is called when the user moves the cursor over a demo description.
+#
+proc showStatus { index } {
+   global tk_library
+   set tags [.main.t tag names $index]
+   set i [lsearch -glob $tags demo-*]
+   set cursor [.main.t cget -cursor]
+   if {$i < 0} {
+      .main.statusBar.lab config -text " "
+      set newcursor xterm
+   } else {
+      set demo [string range [lindex $tags $i] 5 end]
+      .main.statusBar.lab config -text "Run the \"$demo\" sample program"
+      set newcursor hand2
+   }
+   if [string compare $cursor $newcursor] {
+      .main.t config -cursor $newcursor
+   }
+}
+
+# aboutBox --
+#
+# Pops up a message box with an "about" message
+#
+proc aboutBox { } {
+   global texte
+   tk_messageBox -icon info -type ok -title $texte(tuto_about0) -message $texte(tuto_about1)
+}
+
+proc tuto_exit { } {
+   global audace num
+   ::buf::delete $num(buf1)
+   ::visu::delete $num(visu1)
+   if { [ info exists num(cam1) ] == "1" } {
+      ::cam::delete $num(cam1)
+      unset num(cam1)
+   }
+   catch {
+      image delete image11
+      image delete image100
+      unset texte
+   }
+   if { [ info exists audace ] == "1" } {
+      if { [ winfo exists .main ] } {
+         if { [ winfo exists .second ] } {
+            destroy .second
+         }
+         destroy .main
+      }
+   } else {
+      destroy .
+      exit
    }
 }
 
@@ -291,7 +396,7 @@ set lastLine ""
 .main.t configure -state disabled
 focus .main.s
 
-#--- declare a Audine Kaf-0400 camera
+#--- declare an Audine Kaf-0400 camera
 porttalk open all
 set lpt "LPT1:"
 set erreur [ catch { cam::create audine $lpt -name Audine -ccd kaf401 } msg ]
@@ -305,110 +410,5 @@ if { $erreur == "1" } {
    cam$num(cam1) shutter synchro
    cam$num(cam1) interrupt 0
    tk_messageBox -message "$caption(cam_connect)" -icon info
-}
-
-# invoke --
-# This procedure is called when the user clicks on a demo description.
-# It is responsible for invoking the demonstration.
-#
-# Arguments:
-# index - The index of the character that the user clicked on.
-#
-proc invoke { index base } {
-   global tk_library
-   set tags [$base.t tag names $index]
-   set i [lsearch -glob $tags demo-*]
-   if {$i < 0} {
-      return
-   }
-   set cursor [$base.t cget -cursor]
-   $base.t configure -cursor watch
-   update
-   set demo [string range [lindex $tags $i] 5 end]
-
-   #uplevel [list source [file join $tk_library demos $demo.tcl]]
-   #--- nettoie la zone
-   #.main.t insert end \n {} "tutu\n" title
-   #destroy .main
-   #foreach w [winfo children .main] {
-   #   .main.t insert end \n {} "$w\n" title
-   #   pack forget $w
-   #   destroy $w
-   #}
-   #.main.t configure -state disabled
-   if {$base == ".second" } {
-      wm deiconify .main
-      destroy .second
-   }
-   if {[string compare $demo "exit"] == 0 } {
-      #uplevel [list source tuto.tcl]
-      focus -force .main
-   } else {
-      uplevel [list source tuto.$demo.tcl]
-      focus -force .second
-   }
-   update
-   if {$base == ".main" } {
-      $base.t configure -cursor $cursor
-      $base.t tag add visited "$index linestart +1 chars" "$index lineend -1 chars"
-   }
-}
-
-# showStatus --
-#
-# Show the name of the demo program in the status bar. This procedure
-# is called when the user moves the cursor over a demo description.
-#
-proc showStatus { index } {
-   global tk_library
-   set tags [.main.t tag names $index]
-   set i [lsearch -glob $tags demo-*]
-   set cursor [.main.t cget -cursor]
-   if {$i < 0} {
-      .main.statusBar.lab config -text " "
-      set newcursor xterm
-   } else {
-      set demo [string range [lindex $tags $i] 5 end]
-      .main.statusBar.lab config -text "Run the \"$demo\" sample program"
-      set newcursor hand2
-   }
-   if [string compare $cursor $newcursor] {
-      .main.t config -cursor $newcursor
-   }
-}
-
-# aboutBox --
-#
-# Pops up a message box with an "about" message
-#
-proc aboutBox { } {
-   global texte
-   tk_messageBox -icon info -type ok -title $texte(tuto_about0) -message $texte(tuto_about1)
-}
-
-proc tuto_exit { } {
-   global audace num
-   ::buf::delete $num(buf1)
-   ::visu::delete $num(visu1)
-   if { [ info exists num(cam1) ] == "1" } {
-      ::cam::delete $num(cam1)
-      unset num(cam1)
-   }
-   catch {
-      image delete image11
-      image delete image100
-      unset texte
-   }
-   if { [ info exists audace ] == "1" } {
-      if { [ winfo exists .main ] } {
-         if { [ winfo exists .second ] } {
-            destroy .second
-         }
-         destroy .main
-      }
-   } else {
-      destroy .
-      exit
-   }
 }
 
