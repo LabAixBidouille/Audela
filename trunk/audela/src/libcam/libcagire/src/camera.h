@@ -48,6 +48,7 @@ int mycam_tcleval(struct camprop *cam,char *ligne);
 int cagire_put(struct camprop *cam,char *cmd);
 int cagire_read(struct camprop *cam,char *res);
 int cagire_initialize(struct camprop *cam);
+int cagire_lastimage(struct camprop *cam, char *lastimage);
 
 #endif
 
