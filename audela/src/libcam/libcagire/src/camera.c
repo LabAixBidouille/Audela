@@ -225,7 +225,7 @@ void cam_stop_exp(struct camprop *cam)
 void cam_read_ccd(struct camprop *cam, unsigned short *p)
 {
 	int res;
-	char ligne[1000],s[2048];
+	char ligne[1000],s[2048],im[2048];
    int h,w,sortie;
    short *pix;
    long size;
@@ -257,12 +257,12 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
    } while (sortie==0);
    /* --- importation de l'image --- */
 	if (sortie==1) {
-		sprintf(s,"lindex [lsort [glob \"%s/*.fits\"]] end",cam->pathimraw);
-		if (mycam_tcleval(cam,s)==1) {
+		cagire_lastimage(cam,im);
+		if (strcmp(im,"")==0) {
 			size=(long)(w)*(long)(h);
 			for (k=0;k<size;k++) { pix[k]=(short)2; }
 		} else {
-			sprintf(s,"buf%d load \"%s\"",cam->bufno,cam->interp->result);
+			sprintf(s,"buf%d load \"%s\"",cam->bufno,im);
 			if (mycam_tcleval(cam,s)==0) {
 				/* Recupere l'adresse du pointeur buffer */ 
 				sprintf(s,"buf%d getpixelswidth",cam->bufno);
@@ -283,6 +283,8 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 					pix[k]=(unsigned short)val;
 					//*(pix+k)=(unsigned short)*((float*)(pp+k));
 				}
+				sprintf(s,"catch {file delete \"%s\"}",im);
+				mycam_tcleval(cam,s);
 			} else {
 				size=(long)(w)*(long)(h);
 				for (k=0;k<size;k++) { pix[k]=(short)3; }
@@ -474,4 +476,40 @@ int cagire_initialize(struct camprop *cam)
 	strcpy(cam->msg,"Done: Initialize2 ResetASIC DownloadMCD");
 	return 0;
 
+}
+
+int cagire_lastimage(struct camprop *cam, char *lastimage)
+{
+   char s[2048];
+	/* --- search for the most recent FITS file ---*/
+	strcpy(s,"\
+	proc cagire_analdir { base {filefilter *} } {\
+		global libgagire_listdatefiles;\
+		set listfiles \"\";\
+		set a [catch {set listfiles [glob -nocomplain ${base}/${filefilter}]} msg];\
+		if {$a==0} {\
+			foreach thisfile $listfiles {\
+				set extension [file extension $thisfile];\
+				if {([file isfile $thisfile]==1)&&($extension==\".fits\")} { lappend libgagire_listdatefiles [list [file mtime $thisfile] $thisfile] }\
+			};\
+			foreach thisfile $listfiles {\
+				if {[file isdirectory $thisfile]==1} { cagire_analdir $thisfile $filefilter}\
+			};\
+		};\
+	};\
+	proc cagire_files_in_dir { base {filefilter *} } {\
+		global libgagire_listdatefiles;\
+		set libgagire_listdatefiles \"\";\
+		cagire_analdir $base $filefilter;\
+		if {$libgagire_listdatefiles!=\"\"} {\
+			set libgagire_listdatefiles [lsort -decreasing $libgagire_listdatefiles];\
+		};\
+		return [lindex [lindex $libgagire_listdatefiles 0] 1];\
+	}\
+	");
+	mycam_tcleval(cam,s);
+	sprintf(s,"cagire_files_in_dir \"%s\"",cam->pathimraw);
+	mycam_tcleval(cam,s);
+	strcpy(lastimage,cam->interp->result);
+   return 0;
 }
