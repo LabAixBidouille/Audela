@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.138 2010-05-18 18:19:19 michelpujol Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.139 2010-05-20 17:31:04 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -2735,8 +2735,14 @@ namespace eval ::confVisu {
    #    visuNo: numero de la visu
    #------------------------------------------------------------
    proc deleteImage { { visuNo "1" } } {
+      variable private
+
       set bufNo [ visu$visuNo buf ]
       if { [ buf$bufNo imageready ] == "1" } {
+         if { $private($visuNo,window) == "1" } {
+            set private($visuNo,window) "0"
+            visu$visuNo window full
+         }
          loadima "" $visuNo
       }
    }
