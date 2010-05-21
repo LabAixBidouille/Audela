@@ -280,10 +280,12 @@ int mc_sheduler_corccoords(mc_OBJECTDESCR *objectdescr) {
 			/* --- calcul de mouvement propre ---*/
 			ra+=(jd-objectdescr->axe_epoch)/365.25*mura;
 			dec+=(jd-objectdescr->axe_epoch)/365.25*mudec;
+			objectdescr->axe_epoch=jd;
 			/* --- calcul de la precession ---*/
 			mc_precad(objectdescr->axe_equinox,ra,dec,jd,&asd2,&dec2);
 			ra=asd2;
 			dec=dec2;
+			objectdescr->axe_equinox=jd;
 			/* --- correction de parallaxe stellaire*/
 			if (parallax>0) {
 				mc_parallaxe_stellaire(jd,ra,dec,&asd2,&dec2,parallax);
@@ -304,6 +306,30 @@ int mc_sheduler_corccoords(mc_OBJECTDESCR *objectdescr) {
 			objectdescr->axe_pos2[k]=dec/(DR);
 		}
 	}
+	return 0;
+}
+
+/*****************************************************************************/
+/*****************************************************************************/
+/* Conversion of apparent coordinates to J2000                               */
+/* Outputs : objectdescr                                                     */
+/*****************************************************************************/
+int mc_sheduler_coord_app2cat(double jd,double ra,double dec,double equinox,double *racat,double *deccat) {
+	double asd2,dec2;
+	/* --- aberration annuelle ---*/
+	mc_aberration_annuelle(jd,ra,dec,&asd2,&dec2,-1);
+	ra=asd2;
+	dec=dec2;
+	/* --- calcul de la precession ---*/
+	mc_precad(jd,ra,dec,equinox,&asd2,&dec2);
+	ra=asd2;
+	dec=dec2;
+	/* --- correction de nutation */
+	mc_nutradec(jd,ra,dec,&asd2,&dec2,-1);
+	ra=asd2;
+	dec=dec2;
+	*racat=ra;
+	*deccat=dec;
 	return 0;
 }
 
@@ -2532,7 +2558,7 @@ int mc_obsconditions1(double jd_now, double longmpc, double rhocosphip, double r
 /************************************************************************/
 int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,mc_HORIZON_ALTAZ *horizon_altaz,mc_HORIZON_HADEC *horizon_hadec,int nobj,mc_OBJECTDESCR *objectdescr,int output_type, char *output_file, char *log_file) {
 
-	double jd_prevmidsun,jd_nextmidsun,djd;
+	double jd_prevmidsun,jd_nextmidsun,djd,racat,deccat;
 	int njd,ko,nobjloc,kjd,flag,kp,kpp,kppp,k,kpl,npl,np,ku,k1,k2,k3,kk,kd,kk1,kk2,kr;
 	mc_SUNMOON *sunmoon=NULL;
 	mc_OBJECTLOCAL *objectlocal0=NULL,*objectlocal=NULL,**objectlocals=NULL;
@@ -3230,35 +3256,39 @@ try_a_gap:
 			planis[1][k1].percent_quota_used=users[ku].duration_total_used/total_duration_obs*100;
 			kk1=(int)((jd1-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd);
 			if (compute_mode==0) {
+				mc_sheduler_coord_app2cat(jd1,objectlocal0[kk1].ra*(DR),objectlocal0[kk1].dec*(DR),J2000,&racat,&deccat);
 				planis[1][k1].az_acq_start=objectlocal0[kk1].az;
 				planis[1][k1].elev_acq_start=objectlocal0[kk1].elev;
-				planis[1][k1].ra_acq_start=objectlocal0[kk1].ra;
+				planis[1][k1].ra_acq_start=racat/(DR);
 				planis[1][k1].ha_acq_start=objectlocal0[kk1].ha;
-				planis[1][k1].dec_acq_start=objectlocal0[kk1].dec;
+				planis[1][k1].dec_acq_start=deccat/(DR);
 			}
 			if (compute_mode==1) {
 				mc_scheduler_local1(kk1,longmpc,rhocosphip,rhosinphip,latrad,luminance_ciel_bleus,&objectdescr[kd],njd,sunmoon,horizon_altaz,horizon_hadec,&jd_loc,&ha_loc,&elev_loc,&az_loc,&dec_loc,&moon_dist_loc,&sun_dist_loc,&brillance_totale_loc,&ra_loc);
+				mc_sheduler_coord_app2cat(jd1,ra_loc*(DR),dec_loc*(DR),J2000,&racat,&deccat);
 				planis[1][k1].az_acq_start=az_loc;
 				planis[1][k1].elev_acq_start=elev_loc;
-				planis[1][k1].ra_acq_start=ra_loc;
+				planis[1][k1].ra_acq_start=racat/(DR);
 				planis[1][k1].ha_acq_start=ha_loc;
-				planis[1][k1].dec_acq_start=dec_loc;
+				planis[1][k1].dec_acq_start=deccat/(DR);
 			}
 			kk2=(int)((jd2-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd);
 			if (compute_mode==0) {
+				mc_sheduler_coord_app2cat(jd2,objectlocal0[kk2].ra*(DR),objectlocal0[kk2].dec*(DR),J2000,&racat,&deccat);
 				planis[1][k1].az_acq_end=objectlocal0[kk2].az;
 				planis[1][k1].elev_acq_end=objectlocal0[kk2].elev;
-				planis[1][k1].ra_acq_end=objectlocal0[kk2].ra;
+				planis[1][k1].ra_acq_end=racat/(DR);
 				planis[1][k1].ha_acq_end=objectlocal0[kk2].ha;
-				planis[1][k1].dec_acq_end=objectlocal0[kk2].dec;
+				planis[1][k1].dec_acq_end=deccat/(DR);
 			}
 			if (compute_mode==1) {
 				mc_scheduler_local1(kk2,longmpc,rhocosphip,rhosinphip,latrad,luminance_ciel_bleus,&objectdescr[kd],njd,sunmoon,horizon_altaz,horizon_hadec,&jd_loc,&ha_loc,&elev_loc,&az_loc,&dec_loc,&moon_dist_loc,&sun_dist_loc,&brillance_totale_loc,&ra_loc);
+				mc_sheduler_coord_app2cat(jd2,ra_loc*(DR),dec_loc*(DR),J2000,&racat,&deccat);
 				planis[1][k1].az_acq_end=az_loc;
 				planis[1][k1].elev_acq_end=elev_loc;
-				planis[1][k1].ra_acq_end=ra_loc;
+				planis[1][k1].ra_acq_end=racat/(DR);
 				planis[1][k1].ha_acq_end=ha_loc;
-				planis[1][k1].dec_acq_end=dec_loc;
+				planis[1][k1].dec_acq_end=deccat/(DR);
 			}
 			// --- on termine en copiant les sequences planifiées suivantes.
 			for (k=k1+1;k<=npl;k++) {
@@ -3332,16 +3362,16 @@ try_a_gap:
 				fprintf(fid,"%15.6f ",planis[0][k].jd_elev_max);
 				fprintf(fid,"%5d ",planis[0][k].order);
 				fprintf(fid,"%7.4f ",planis[0][k].percent_quota_used);
-				fprintf(fid,"%7.2f ",planis[0][k].az_acq_start);
-				fprintf(fid,"%7.2f ",planis[0][k].elev_acq_start);
-				fprintf(fid,"%7.2f ",planis[0][k].ha_acq_start);
-				fprintf(fid,"%7.2f ",planis[0][k].ra_acq_start);
-				fprintf(fid,"%+7.2f ",planis[0][k].dec_acq_start);
-				fprintf(fid,"%7.2f ",planis[0][k].az_acq_end);
-				fprintf(fid,"%7.2f ",planis[0][k].elev_acq_end);
-				fprintf(fid,"%7.2f ",planis[0][k].ha_acq_end);
-				fprintf(fid,"%7.2f ",planis[0][k].ra_acq_end);
-				fprintf(fid,"%+7.2f ",planis[0][k].dec_acq_end);
+				fprintf(fid,"%10.5f ",planis[0][k].az_acq_start);
+				fprintf(fid,"%10.5f ",planis[0][k].elev_acq_start);
+				fprintf(fid,"%10.5f ",planis[0][k].ha_acq_start);
+				fprintf(fid,"%10.5f ",planis[0][k].ra_acq_start);
+				fprintf(fid,"%+10.5f ",planis[0][k].dec_acq_start);
+				fprintf(fid,"%10.5f ",planis[0][k].az_acq_end);
+				fprintf(fid,"%10.5f ",planis[0][k].elev_acq_end);
+				fprintf(fid,"%10.5f ",planis[0][k].ha_acq_end);
+				fprintf(fid,"%10.5f ",planis[0][k].ra_acq_end);
+				fprintf(fid,"%+10.5f ",planis[0][k].dec_acq_end);
 				fprintf(fid,"\n");
 			}
 			fclose(fid);
@@ -3397,16 +3427,16 @@ int mc_printplani(int npl,mc_PLANI **planis) {
 		fprintf(f,"%15.6f ",planis[0][k].jd_elev_max);
 		fprintf(f,"%5d ",planis[0][k].order);
 		fprintf(f,"%7.4f ",planis[0][k].percent_quota_used);
-		fprintf(f,"%7.2f ",planis[0][k].az_acq_start);
-		fprintf(f,"%7.2f ",planis[0][k].elev_acq_start);
-		fprintf(f,"%7.2f ",planis[0][k].ha_acq_start);
-		fprintf(f,"%7.2f ",planis[0][k].ra_acq_start);
-		fprintf(f,"%+7.2f ",planis[0][k].dec_acq_start);
-		fprintf(f,"%7.2f ",planis[0][k].az_acq_end);
-		fprintf(f,"%7.2f ",planis[0][k].elev_acq_end);
-		fprintf(f,"%7.2f ",planis[0][k].ha_acq_end);
-		fprintf(f,"%7.2f ",planis[0][k].ra_acq_end);
-		fprintf(f,"%+7.2f ",planis[0][k].dec_acq_end);
+		fprintf(f,"%10.5f ",planis[0][k].az_acq_start);
+		fprintf(f,"%10.5f ",planis[0][k].elev_acq_start);
+		fprintf(f,"%10.5f ",planis[0][k].ha_acq_start);
+		fprintf(f,"%10.5f ",planis[0][k].ra_acq_start);
+		fprintf(f,"%+10.5f ",planis[0][k].dec_acq_start);
+		fprintf(f,"%10.5f ",planis[0][k].az_acq_end);
+		fprintf(f,"%10.5f ",planis[0][k].elev_acq_end);
+		fprintf(f,"%10.5f ",planis[0][k].ha_acq_end);
+		fprintf(f,"%10.5f ",planis[0][k].ra_acq_end);
+		fprintf(f,"%+10.5f ",planis[0][k].dec_acq_end);
 		fprintf(f,"\n");
 	}
 	fclose(f);
