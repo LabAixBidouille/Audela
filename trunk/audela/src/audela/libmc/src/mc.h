@@ -1021,6 +1021,7 @@ int mc_sheduler_corccoords(mc_OBJECTDESCR *objectdescr);
 int mc_obsconditions1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,mc_HORIZON_ALTAZ *horizon_altaz,mc_HORIZON_HADEC *horizon_hadec,int nobj,mc_OBJECTDESCR *objectdescr,double djd,char *fullfilename);
 int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,mc_HORIZON_ALTAZ *horizon_altaz,mc_HORIZON_HADEC *horizon_hadec,int nobj,mc_OBJECTDESCR *objectdescr,int output_type, char *output_file, char *log_file);
 int mc_nextnight1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,double elev_set,double elev_twilight, double *jdprev, double *jdset,double *jddusk,double *jddawn,double *jdrise,double *jdnext,double *jdriseprev2,double *jdmer2,double *jdset2,double *jddusk2,double *jddawn2,double *jdrisenext2);
+int mc_sheduler_coord_app2cat(double jd,double ra,double dec,double equinox,double *racat,double *deccat);
 
 /***************************************************************************/
 /* Integration numerique pour le mouvement des n corps.                    */
