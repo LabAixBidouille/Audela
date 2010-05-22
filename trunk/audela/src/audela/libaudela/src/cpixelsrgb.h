@@ -79,6 +79,7 @@ public:
 
 protected:
 	CPixelsRgb();
+private:
    TYPE_PIXELS_RGB *pix;
    int naxis1;
    int naxis2;
