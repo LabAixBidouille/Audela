@@ -41,6 +41,9 @@
 CPixelsRgb::CPixelsRgb()
 {
    pix = NULL;
+   naxis1 = 0;
+   naxis2 = 0;
+   naxis  = 2;
 }
 
 CPixelsRgb::~CPixelsRgb()
