@@ -1,7 +1,7 @@
 
 # Procédures d'exploitation astrophysique des spectres
 
-# Mise a jour $Id: spc_astrophys.tcl,v 1.12 2010-05-01 10:18:49 bmauclaire Exp $
+# Mise a jour $Id: spc_astrophys.tcl,v 1.13 2010-05-22 23:38:40 bmauclaire Exp $
 
 
 
@@ -70,7 +70,7 @@ proc spc_vdoppler { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 08-02-2007
-# Date de mise à jour : 08-02-2007
+# Date de mise à jour : 08-02-2007 ; 16/05/2010
 # Arguments : profil_raies_étalonné lambda_raie_approché lambda_réf ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?
 # Explication : la correciton héliocentrique possède déjà le bon signe tandis que la vitesse héliocentrique non.
 #  La mesure de vitesse radiale nécessite d'être corrigée de la vitesse héliocentrique même si la calibration a été faite sur les raies telluriques car le centre du référentiel n'est pas la Terre mais le barycentre du Système Solaire.
@@ -120,26 +120,34 @@ proc spc_vhelio { args } {
        if { [llength $args] == 1 } {
 	   # OBJCTRA = '00 16 42.089'
 	   if { [ lsearch $listemotsclef "OBJCTRA" ] !=-1 } {
-	       set ra [ lindex [buf$audace(bufNo) getkwd "OBJCTRA"] 1 ]
+	       set ra [ lindex [buf$audace(bufNo) getkwd "OBJCTRA" ] 1 ]
 	       set ra_h [ lindex $ra 0 ]
 	       set ra_m [ lindex $ra 0 ]
 	       set ra_s [ lindex $ra 0 ]
 	       set raf [ list "${ra_h}h${ra_m}m${ra_s}s" ]
+           } elseif { [ lsearch $listemotsclef "RA" ] !=-1 } {
+               set raf [ lindex [buf$audace(bufNo) getkwd "RA" ] 1 ]
+               if { [ regexp {\s+} $raf match resul ] } { 
+                 ::console::affiche_erreur "Aucune coordonnée trouvée.\n"
+                 return ""
+               }
 	   } else {
-	       ::console::affiche_resultat "Aucune corrdonnées trouvée.\n"
+	       ::console::affiche_erreur "Aucune coordonnée trouvée.\n"
 	       return ""
 	   }
 	   # OBJCTDEC= '-05 23 52.444'
 	   if { [ lsearch $listemotsclef "OBJCTDEC" ] !=-1 } {
-	       set dec [ lindex [buf$audace(bufNo) getkwd "OBJCTDEC"] 1 ]
+	       set dec [ lindex [buf$audace(bufNo) getkwd "OBJCTDEC" ] 1 ]
 	       set dec_d [ lindex $dec 0 ]
 	       set dec_m [ lindex $dec 0 ]
 	       set dec_s [ lindex $dec 0 ]
 	       set decf [ list "${dec_d}d${dec_m}m${dec_s}s" ]
+           } elseif { [ lsearch $listemotsclef "DEC" ] !=-1 } {
+               set decf [ lindex [buf$audace(bufNo) getkwd "DEC" ] 1 ]
 	   }
 	   # DATE-OBS : 2005-11-26T20:47:04
 	   if { [ lsearch $listemotsclef "DATE-OBS" ] !=-1 } {
-	       set ladate [ lindex [buf$audace(bufNo) getkwd "DATE-OBS"] 1 ]
+	       set ladate [ lindex [buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
 	       set ldate [ mc_date2ymdhms $ladate ]
 	       set y [ lindex $ldate 0 ]
 	       set mo [ lindex $ldate 1 ]
@@ -149,7 +157,7 @@ proc spc_vhelio { args } {
        } elseif { [llength $args] == 7 } {
 	   # DATE-OBS : 2005-11-26T20:47:04
 	   if { [ lsearch $listemotsclef "DATE-OBS" ] !=-1 } {
-	       set ladate [ lindex [buf$audace(bufNo) getkwd "DATE-OBS"] 1 ]
+	       set ladate [ lindex [buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
 	       set ldate [ mc_date2ymdhms $ladate ]
 	       set y [ lindex $ldate 0 ]
 	       set mo [ lindex $ldate 1 ]
@@ -171,6 +179,7 @@ proc spc_vhelio { args } {
        if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
 	   set dispersion [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
 	   set erreurv [ expr round($precision*$dispersion*299792.458/$lambda_ref)/$precision ]
+           # Delta v=2*v/c*Delta(lmabda)
        } else {
 	   set erreurv 0.
        }
@@ -178,7 +187,7 @@ proc spc_vhelio { args } {
 
        #--- Formatage du résultat :
        #::console::affiche_resultat "La vitesse héliocentrique pour l'objet $raf ; $decf à la date du $datef vaut :\n$vhelio±$erreurv km/s=$deltal±$dispersion A\n"
-       ::console::affiche_resultat "La vitesse héliocentrique pour l'objet $raf ; $decf à la date du $datef vaut :\n$vhelio km/s <-> $deltal A +-$erreurv km/s\n"
+       ::console::affiche_resultat "La vitesse héliocentrique pour l'objet $raf ; $decf à la date du $datef vaut :\n$vhelio km/s +/- $erreurv km/s <-> $deltal A\n"
        return $vhelio
    } else {
 	   ::console::affiche_erreur "Usage: spc_vhelio profil_raies_étalonné ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"

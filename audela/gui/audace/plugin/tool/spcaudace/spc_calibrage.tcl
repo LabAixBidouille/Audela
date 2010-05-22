@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.19 2010-03-20 21:21:44 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.20 2010-05-22 23:38:40 bmauclaire Exp $
 
 
 
@@ -1240,7 +1240,8 @@ proc spc_linearcal { args } {
          buf$audace(bufNo) bitpix float
          buf$audace(bufNo) save "$audace(rep_images)/${filename}_linear"
          buf$audace(bufNo) bitpix short
-         ::console::affiche_resultat "\nLe profil rééchantillonné linéairement (pas=$pas A/pixel)\nest sauvé sous ${filename}_linear\n"
+         ::console::affiche_prompt "\nLoi de calibration linéaisée : $crval1+$pas*(x-$crpix1)\n"
+         ::console::affiche_resultat "Le profil rééchantillonné linéairement sauvé sous ${filename}_linear\n"
          return "${filename}_linear"
       } else {
          ::console::affiche_resultat "Profil déjà linéarisé mais sauvé sous ${filename}_linear\n"
@@ -2225,6 +2226,21 @@ proc spc_calibretelluric { args } {
       file delete -force "$audace(rep_images)/${filename}_conti$conf(extension,defaut)"
 
 
+      #--- Ajout de la methode 4 pour les KAF400+Lhires3 2400 g/mm :
+      buf$audace(bufNo) load "$audace(rep_images)/$filename"
+      set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+      set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+      set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+      set lambda_fin [ spc_calpoly $naxis1 $crpix1 $crval1 $cdelt1 0 0 ]
+      set bande [ expr $lambda_fin-$crval1 ]
+      if { $bande<=100. && $cdelt1<=.2 } {
+         set flag_kaf400 1
+         set nbmeths [ llength $spcaudace(calo_meths) ]
+         set spcaudace(calo_meths) [ linsert $spcaudace(calo_meths) $nbmeths 4 ]
+      } else {
+         set flag_kaf400 0
+      }
+
       
       #--- Methode 1 : spectre initial linéaire :
       ::console::affiche_resultat "============ 1) spectre initial linéaire ================\n"
@@ -2591,6 +2607,11 @@ proc spc_calibretelluric { args } {
            file delete -force "$audace(rep_images)/${filename}_rmsdec$conf(extension,defaut)"
            file delete -force "$audace(rep_images)/${filename}_drmsdec$conf(extension,defaut)"
            file delete -force "$audace(rep_images)/${filename}_iterdec$conf(extension,defaut)"
+        }
+
+        #--- Dans le cas d'un KAF400+Lhires3 24000, remet la liste des methodes comme avant :
+        if { $flag_kaf400 } {
+           set spcaudace(calo_meths) [ lrange $spcaudace(calo_meths) 0 [ expr $nbmeths-1 ] ]
         }
         return "${filename}-ocal"
    } else {
@@ -3559,11 +3580,11 @@ proc spc_corrvhelio { args } {
 
    if { [llength $args] == 2 || [llength $args] == 8 || [llength $args] == 11 } {
        if { [llength $args] == 2 } {
-           set spectre [ lindex $args 0 ]
+           set spectre [ file rootname [ lindex $args 0 ] ]
            set lambda_cal [ lindex $args 1 ]
            set vhelio [ spc_vhelio $spectre ]
        } elseif { [llength $args] == 8 } {
-           set spectre [ lindex $args 0 ]
+           set spectre [ file rootname [ lindex $args 0 ] ]
            set lambda_cal [ lindex $args 1 ]
            set ra_h [ lindex $args 2 ]
            set ra_m [ lindex $args 3 ]
@@ -3573,7 +3594,7 @@ proc spc_corrvhelio { args } {
            set dec_s [ lindex $args 7 ]
            set vhelio [ spc_vhelio $spectre $ra_h $ra_m $ra_s $dec_d $dec_m $dec_s ]
        } elseif { [llength $args] == 11 } {
-           set spectre [ lindex $args 0 ]
+           set spectre [ file rootname [ lindex $args 0 ] ]
            set lambda_cal [ lindex $args 1 ]
            set ra_h [ lindex $args 2 ]
            set ra_m [ lindex $args 3 ]
