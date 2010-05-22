@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: astrometry.tcl,v 1.8 2010-05-15 07:56:51 robertdelmas Exp $
+# Mise à jour $Id: astrometry.tcl,v 1.9 2010-05-22 12:37:11 robertdelmas Exp $
 #
 
 #============================================================
@@ -341,6 +341,8 @@ namespace eval ::astrometry {
 
       #--- Supprime la procedure appelee si on charge une image
       ::confVisu::removeFileNameListener $visuNo "::astrometry::updatewcs"
+      #--- Supprime les fichiers de configuration necessaire à Sextractor
+      deleteFileConfigSextractor
       #---
       ::astrometry::recup_position
       destroy $astrom(This)
@@ -659,6 +661,7 @@ namespace eval ::astrometry {
          if {$sextractor=="no"} {
             ttscript2 "IMA/SERIES \"$mypath\" \"$sky0\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" STAT \"objefile=${mypath}/x$sky$ext\" detect_kappa=20"
          } else {
+            createFileConfigSextractor
             buf$audace(bufNo) save "${mypath}/${sky}$ext"
             sextractor "$mypath/$sky0$ext" -c "[ file join $mypath config.sex ]"
          }
