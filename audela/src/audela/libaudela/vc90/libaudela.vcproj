@@ -142,7 +142,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="4"
+				Optimization="0"
 				AdditionalIncludeDirectories="..\src,..\..\..\include,..\..\..\external\include\win,..\..\..\external\porttalk,..\..\..\external\include"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;USE_TCL_STUBS;USE_COMPAT_CONST;LIBAUDELA_EXPORTS;TCL_THREADS;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="1"
