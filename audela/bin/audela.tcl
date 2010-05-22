@@ -1,5 +1,5 @@
 #
-# Update $Id: audela.tcl,v 1.22 2010-05-18 18:07:52 michelpujol Exp $
+# Update $Id: audela.tcl,v 1.23 2010-05-22 17:10:07 robertdelmas Exp $
 #
 #--- Welcome to the AudeLA-Interfaces Easy Launcher
 #
@@ -47,8 +47,8 @@ if { $::tcl_platform(platform) == "unix" } {
    set ::audace(rep_home) [ file join $::env(HOME) .audela ]
 } else {
    #--- ajout de la commande "package require registry" pour Vista et Win7
-   #--- car la cette librairie n'est pas chargee automatiquement au démarrage
-   #--- bien qu'elle fasse partie du coeur de TCL
+   #--- car cette librairie n'est pas chargee automatiquement au demarrage
+   #--- bien qu'elle fasse partie du coeur du TCL
    package require registry
    set applicationData [ ::registry get "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders" AppData ]
    set ::audace(rep_home) [ file normalize [ file join $applicationData AudeLA ] ]
