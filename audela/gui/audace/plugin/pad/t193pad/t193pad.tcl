@@ -2,7 +2,7 @@
 # Fichier : t193pad.tcl
 # Description : Raquette specifique au T193 de l'OHP
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: t193pad.tcl,v 1.11 2010-05-17 15:56:48 robertdelmas Exp $
+# Mise à jour $Id: t193pad.tcl,v 1.12 2010-05-22 12:24:15 michelpujol Exp $
 #
 
 namespace eval ::t193pad {
@@ -338,15 +338,6 @@ proc ::t193pad::createDialog { } {
    grid columnconfigure $This.frame2 1 -weight 1
    grid columnconfigure $This.frame2 2 -weight 1
 
-   #--- Bind des boutons 'N', 'E', 'O' et 'S'
-   bind $This.frame2.est <ButtonPress-1>     { ::t193pad::moveRadec e }
-   bind $This.frame2.est <ButtonRelease-1>   { ::t193pad::stopRadec e }
-   bind $This.frame2.ouest <ButtonPress-1>   { ::t193pad::moveRadec w }
-   bind $This.frame2.ouest <ButtonRelease-1> { ::t193pad::stopRadec w }
-   bind $This.frame2.sud <ButtonPress-1>     { ::t193pad::moveRadec s }
-   bind $This.frame2.sud <ButtonRelease-1>   { ::t193pad::stopRadec s }
-   bind $This.frame2.nord <ButtonPress-1>    { ::t193pad::moveRadec n }
-   bind $This.frame2.nord <ButtonRelease-1>  { ::t193pad::stopRadec n }
    #--- Bind de la vitesse de la monture
    bind $This.frame2.vitesseMonture <ButtonPress-1> { ::telescope::incrementSpeed }
    #--- Bind valeur impulsion monocoup
@@ -430,7 +421,7 @@ proc ::t193pad::createDialog { } {
          ###   -width 2 -borderwidth 0 -relief flat
          ###pack $This.focus.vitesseFocus -anchor center -fill none -pady 2
 
-      #--- Bind de la vitesse du moteur de focalisation
+         #--- Bind de la vitesse du moteur de focalisation
          ###bind $This.focus.vitesseFocus <ButtonPress-1> { ::focus::incrementSpeed $::conf(t193pad,focuserLabel) pad }
 
       pack $This.focus.pm -side top -fill x
@@ -512,10 +503,9 @@ proc ::t193pad::createDialog { } {
 
    #--- active ou descative le choix de l'impulsion
    setRadecPulseEnabled
+
    #--- La fenetre est active
    focus $This
-
-
 
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
    bind $This <Key-F1> { ::console::GiveFocus }
@@ -523,16 +513,47 @@ proc ::t193pad::createDialog { } {
 
 #------------------------------------------------------------
 # moveRadec
-#
+#   demarre un mouvement
 # @param direction  direction du deplacement e w n s
 # @return void
 #------------------------------------------------------------
 proc ::t193pad::moveRadec { direction } {
+   variable This
 
-   if { $::conf(t193pad,radecPulse,enabled) == 0 } {
+   set catchError [catch {
       #--- debut de mouvement
       ::telescope::move $direction
-   } else {
+   }]
+
+   if { $catchError != 0 } {
+      #--- je fais un beep sonore pour signaler que la commande n'est prise en compte
+      bell
+   }
+
+}
+
+#------------------------------------------------------------
+# stopRadec
+#   arrete le mouvement dans une direction
+#
+# @param direction  direction du deplacement e w n s
+# @return void
+#------------------------------------------------------------
+proc ::t193pad::stopRadec { direction } {
+   #--- fin de mouvement
+   ::telescope::stop $direction
+}
+
+#------------------------------------------------------------
+# moveRadecPulse
+#
+# @param direction  direction du deplacement e w n s
+# @return void
+#------------------------------------------------------------
+proc ::t193pad::moveRadecPulse { direction } {
+   variable This
+
+   set catchError [catch {
       #--- mouvement d'amplitude limite
       switch  $direction {
          "e" -
@@ -547,22 +568,12 @@ proc ::t193pad::moveRadec { direction } {
 
          }
       }
-   }
-}
+   }]
 
-#------------------------------------------------------------
-# stopRadec
-#   arrete le deplacement dans une direction
-#
-# @param direction  direction du deplacement e w n s
-# @return void
-#------------------------------------------------------------
-proc ::t193pad::stopRadec { direction } {
-   if { $::conf(t193pad,radecPulse,enabled) == 0 } {
-      #--- fin de mouvement
-      ::telescope::stop $direction
-   } else {
-      #--- rien a faire car le mouvement a ete arrete automatiquement a la fin de l'impulsion
+   if { $catchError != 0 } {
+      #--- je fais un beep sonore pour signaler que la commande n'est prise en compte
+      #--- quand le telescope est deja en mouvement
+      bell
    }
 }
 
@@ -575,14 +586,52 @@ proc ::t193pad::setRadecPulseEnabled {  } {
    variable This
 
    if { $::conf(t193pad,radecPulse,enabled) == 0 } {
+      #--- je descative acces au choix de la duree de l'impulsion
       $This.frame2.pulseMode.value configure -state disabled
       $This.frame2.pulseMode.unit  configure -state disabled
+
+      #--- Bind des boutons 'N', 'E', 'O' et 'S'
+      bind $This.frame2.est <ButtonPress-1>     { ::t193pad::moveRadec e }
+      bind $This.frame2.est <ButtonRelease-1>   { ::t193pad::stopRadec e }
+      bind $This.frame2.ouest <ButtonPress-1>   { ::t193pad::moveRadec w }
+      bind $This.frame2.ouest <ButtonRelease-1> { ::t193pad::stopRadec w }
+      bind $This.frame2.sud <ButtonPress-1>     { ::t193pad::moveRadec s }
+      bind $This.frame2.sud <ButtonRelease-1>   { ::t193pad::stopRadec s }
+      bind $This.frame2.nord <ButtonPress-1>    { ::t193pad::moveRadec n }
+      bind $This.frame2.nord <ButtonRelease-1>  { ::t193pad::stopRadec n }
+
+      $This.frame2.est   configure -command ""
+      $This.frame2.ouest configure -command ""
+      $This.frame2.sud   configure -command ""
+      $This.frame2.nord  configure -command ""
+
    } else {
+      #--- je donne acces au choix de la duree de l'impulsion
       $This.frame2.pulseMode.value configure -state normal
       $This.frame2.pulseMode.unit  configure -state normal
-   }
 
+      #--- Bind des boutons 'N', 'E', 'O' et 'S'
+      #--- Il ne faut pas utiliser les evenements ButtonPress-1 et ButtonRelease-1
+      #--- car la couleur des boutons n'est pas correctement gérée quand on
+      #--- relache le bouton après très courte commande.
+      #--- Il vaut mieux utiliser l'option "-command" qui gère bien la restauration
+      #--- de la couleur du bouton.
+      bind $This.frame2.est <ButtonPress-1>     ""
+      bind $This.frame2.est <ButtonRelease-1>   ""
+      bind $This.frame2.ouest <ButtonPress-1>   ""
+      bind $This.frame2.ouest <ButtonRelease-1> ""
+      bind $This.frame2.sud <ButtonPress-1>     ""
+      bind $This.frame2.sud <ButtonRelease-1>   ""
+      bind $This.frame2.nord <ButtonPress-1>    ""
+      bind $This.frame2.nord <ButtonRelease-1>  ""
+
+      $This.frame2.est   configure -command "::t193pad::moveRadecPulse e"
+      $This.frame2.ouest configure -command "::t193pad::moveRadecPulse w"
+      $This.frame2.sud   configure -command "::t193pad::moveRadecPulse s"
+      $This.frame2.nord  configure -command "::t193pad::moveRadecPulse n"
+   }
 }
+
 #------------------------------------------------------------
 #  incrementRadecPulse
 #     change la velur de l'impulsion radec
