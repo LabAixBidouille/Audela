@@ -2,7 +2,7 @@
 # Fichier : quickremote.tcl
 # Description : Interface de liaison QuickRemote
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickremote.tcl,v 1.22 2010-01-17 17:59:46 robertdelmas Exp $
+# Mise à jour $Id: quickremote.tcl,v 1.23 2010-05-22 16:59:44 robertdelmas Exp $
 #
 
 namespace eval quickremote {

@@ -2,7 +2,7 @@
 # Fichier : gphoto2.tcl
 # Description : Interface de liaison GPhoto2
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: gphoto2.tcl,v 1.16 2010-02-13 13:23:14 michelpujol Exp $
+# Mise à jour $Id: gphoto2.tcl,v 1.17 2010-05-22 16:52:28 robertdelmas Exp $
 #
 
 namespace eval gphoto2 {

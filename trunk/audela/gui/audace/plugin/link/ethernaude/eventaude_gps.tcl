@@ -2,7 +2,7 @@
 # Fichier : eventaude_gps.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: eventaude_gps.tcl,v 1.14 2009-12-30 14:28:47 robertdelmas Exp $
+# Mise Ã  jour $Id: eventaude_gps.tcl,v 1.15 2010-05-22 16:51:07 robertdelmas Exp $
 #
 
 namespace eval ::eventAudeGPS {
@@ -290,9 +290,9 @@ proc ::eventAudeGPS::coordGPS { } {
          } elseif { $longi_est_ouest == "E" } {
             set longi_est_ouest "$caption(eventaude_gps,est)"
          }
-         set private(longi_GPS_Observateur) "$longi_est_ouest [ format "%2d° %2d' %4.2f''" [ lindex $private(long_GPS_Observateur) 0 ] [ lindex $private(long_GPS_Observateur) 1 ] [ lindex $private(long_GPS_Observateur) 2 ] ]"
+         set private(longi_GPS_Observateur) "$longi_est_ouest [ format "%2dÂ° %2d' %4.2f''" [ lindex $private(long_GPS_Observateur) 0 ] [ lindex $private(long_GPS_Observateur) 1 ] [ lindex $private(long_GPS_Observateur) 2 ] ]"
          set private(lat_GPS_Observateur) [ mc_angle2dms [ lindex $private(coord_GPS_Observateur) 3 ] 90 ]
-         set private(lati_GPS_Observateur) [ format "%2d° %2d' %4.2f''" [ lindex $private(lat_GPS_Observateur) 0 ] [ lindex $private(lat_GPS_Observateur) 1 ] [ lindex $private(lat_GPS_Observateur) 2 ] ]
+         set private(lati_GPS_Observateur) [ format "%2dÂ° %2d' %4.2f''" [ lindex $private(lat_GPS_Observateur) 0 ] [ lindex $private(lat_GPS_Observateur) 1 ] [ lindex $private(lat_GPS_Observateur) 2 ] ]
          set private(alt_GPS_Observateur) [ lindex $private(coord_GPS_Observateur) 4 ]
          set private(alti_GPS_Observateur) [ format "%5.0f m" $private(alt_GPS_Observateur) ]
       }

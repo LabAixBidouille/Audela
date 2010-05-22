@@ -2,7 +2,7 @@
 # Fichier : ethernaude.tcl
 # Description : Interface de liaison EthernAude
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: ethernaude.tcl,v 1.32 2010-02-13 13:28:48 michelpujol Exp $
+# Mise à jour $Id: ethernaude.tcl,v 1.33 2010-05-22 16:50:08 robertdelmas Exp $
 #
 
 namespace eval ::ethernaude {
