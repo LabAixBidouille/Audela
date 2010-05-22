@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.31 2010-05-22 12:29:32 michelpujol Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.32 2010-05-22 14:16:25 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -299,11 +299,11 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             }
          }
 
-         if { $private(angle) != 0 &&  $private(guidingMode) == "OBJECT" } {
+         if { $private(angle) != 0 } {
              set angle [expr $private(angle)* 3.14159265359/180 ]
              #--- je calcule les delais de deplacement alpha et delta (en millisecondes)
-             set alphaDiff [expr int((cos($angle) * $dx + sin($angle) *$dy) * $private(pixelScale))]
-             set deltaDiff [expr int( - (sin($angle) * $dx + cos($angle) *$dy) * $private(pixelScale))]
+             set alphaDiff [expr (   cos($angle) * $dx + sin($angle) *$dy) * $private(pixelScale)]
+             set deltaDiff [expr (-  sin($angle) * $dx + cos($angle) *$dy) * $private(pixelScale)]
          } else {
             #--- je calcule l'ecart de position (en arcseconde)
             set alphaDiff [expr $dx * $private(pixelScale) ]
