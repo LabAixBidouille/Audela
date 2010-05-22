@@ -73,7 +73,7 @@ public:
 protected:
 	CPixelsGray();
 	CPixelsGray(int width, int height, TYPE_PIXELS *ppix);
-
+private:
    TYPE_PIXELS *pix;
    int naxis1;
    int naxis2;
