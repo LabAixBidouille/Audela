@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.38 2009-11-08 14:27:29 robertdelmas Exp $
+# Mise Ã  jour $Id: fingerlakes.tcl,v 1.39 2010-05-22 17:28:43 robertdelmas Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -234,7 +234,7 @@ proc ::fingerlakes::fillConfigPage { frm camItem } {
          label $frm.frame1.readSpeed.label -text "$caption(fingerlakes,readSpeed)"
          pack $frm.frame1.readSpeed.label -anchor nw -side left -padx 10 -pady 5
 
-         #--- Cette liste est vide au démarrage. Elle sera remplie apres la connexion de la camera
+         #--- Cette liste est vide au demarrage. Elle sera remplie apres la connexion de la camera
          set list_combobox ""
          ComboBox $frm.frame1.readSpeed.list \
             -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
