@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.51 2010-05-22 09:02:12 michelpujol Exp $
+# @version  $Id: sophiecommand.tcl,v 1.52 2010-05-22 12:33:23 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -456,6 +456,8 @@ proc ::sophie::setMode { { mode "" } } {
          #--- je change la taille de la cible
          set private(targetBoxSize) $::conf(sophie,centerWindowSize)
          set zoom 1
+         #--- je selectionne la vitesse du telescope "centrage2"
+         set private(mountRate) 0.66
 
          #--- je mets le thread de la camera en mode centrage et je desactive la detection de la fibre
          ###::camera::setAsynchroneParameter $private(camItem) \
@@ -488,6 +490,8 @@ proc ::sophie::setMode { { mode "" } } {
          #--- j'intialise la liste des valeurs de FWHM
          set private(xFwhmList)  ""
          set private(yFwhmList)  ""
+         #--- je selectionne la vitesse du telescope centrage2
+         set private(mountRate) 0.0
 
          #--- je mets le thread de la camera en mode centrage et je desactive la detection de la fibre
          ###::camera::setAsynchroneParameter $private(camItem) \
@@ -523,12 +527,7 @@ proc ::sophie::setMode { { mode "" } } {
          set private(originCoordGuide) $private(originCoord)
          #--- je change la taille de d'analyse de la cible
          set private(targetBoxSize) $::conf(sophie,guidingWindowSize)
-         #--- je mets le thread de la camera en mode centrage
-         ###::camera::setAsynchroneParameter $private(camItem) \
-         ###   "mode"               "GUIDE"    \
-         ###   "findFiber"          $private(findFiber) \
-         ###   "originSumCounter"   0 \
-         ###   "zoom"               8
+         #--- je change le zoom de l'affichage
          set zoom 8
          #--- je change le binning
          if { $::conf(sophie,guidingMode) != "OBJECT" } {
@@ -540,6 +539,11 @@ proc ::sophie::setMode { { mode "" } } {
             #--- j'affiche la fenetre d'affichage de la fibre
             ::sophie::fiberview::run $private(visuNo)
          }
+
+         #--- je selectionne la vitesse du telescope "guidage"
+         set private(mountRate) 0.0
+
+         #--- j'initilise a zero le compteur de l'image integree
          ::camera::setAsynchroneParameter $private(camItem) \
             "originSumCounter"   0
 
@@ -1729,14 +1733,15 @@ proc ::sophie::setMountEnabled { visuNo state } {
    }
 
    #--- j'active l'envoi des commandes a la monture si c'est demande
-   if { $private(mountEnabled) == 1 } {
-      #--- je configure la monture avec la vitesse la plus lente
-      ::telescope::setSpeed 1
-   }
+   ###if { $private(mountEnabled) == 1 } {
+   ###   #--- je configure la monture avec la vitesse la plus lente
+   ###  ::telescope::setSpeed 1
+   ###}
 
    #--- je notifie l'interperteur de la camera
-   ###set private(AsynchroneParameter) 1
-   ::camera::setAsynchroneParameter  $private(camItem) "mountEnabled" $private(mountEnabled)
+   ::camera::setAsynchroneParameter  $private(camItem) \
+      "mountEnabled" $private(mountEnabled) \
+      "mountRate"  $private(mountRate)
 }
 
 ##------------------------------------------------------------
@@ -1795,9 +1800,9 @@ proc ::sophie::startAcquisition { visuNo } {
       setMode $private(mode)
 
       #--- je positionne la vitesse "guidage" de la monture si l'envoi des rappels est actif
-      if { $private(mountEnabled) == 1 } {
-         ::telescope::setSpeed 1
-      }
+      ###if { $private(mountEnabled) == 1 } {
+      ###   ::telescope::setSpeed 1
+      ###}
 
       if { $::conf(sophie,simulation) == 1 } {
          ::camera::setParam $private(camItem) "simulation" 1
@@ -1806,15 +1811,11 @@ proc ::sophie::startAcquisition { visuNo } {
          ::camera::setParam $private(camItem) "simulation" 0
       }
 
-      set guidingSpeed  [::confTel::getPluginProperty "guidingSpeed"]
-
       #--- j'ouvre l'obturateur de la camera
       ##cam$private(camNo) shutter opened
 
       set intervalle 0.0  ; #--- intervalle de temps entre de 2 acquisitions
       set cameraAngle 0.0                       ; #--- angle de la camera
-      set alphaSpeed [lindex $guidingSpeed 1 ]
-      set deltaSpeed [lindex $guidingSpeed 1 ]
 
       ###set private(AsynchroneParameter) 1
       ::camera::setAsynchroneParameter $private(camItem) \
@@ -1860,9 +1861,7 @@ proc ::sophie::startAcquisition { visuNo } {
          $cameraAngle                       \
          $targetBoxSize                     \
          $private(mountEnabled)             \
-         [::confTel::getPluginProperty hasMotionWhile] \
-         $alphaSpeed                        \
-         $deltaSpeed                        \
+         $private(mountRate)                \
          $::conf(sophie,alphaReverse)       \
          $::conf(sophie,deltaReverse)       \
          $intervalle
@@ -1935,8 +1934,10 @@ proc ::sophie::startCenter { } {
    }
 
    #--- je configure le telescope avec la vitesse de guidage
-   ::telescope::setSpeed 1
-   #--- je signale au telescope que je demarre une session de centrage
+   ###::telescope::setSpeed 3
+   #--- je signale au telescope que je demarre une session de guidage automatique
+   #--- avec l'outil sophie. cela permet d'ignorer les corrections manuelle
+   #--- avec la raquette t193Pad
    tel$::audace(telNo) radec guiding 1
 
    set private(centerEnabled) 1
@@ -1945,7 +1946,9 @@ proc ::sophie::startCenter { } {
    ::camera::setAsynchroneParameter $private(camItem) \
          "centerMaxLimit" $::conf(sophie,centerMaxLimit) \
          "mode" "CENTER" \
-         "mountEnabled"   $private(centerEnabled)
+         "mountEnabled"   $private(centerEnabled) \
+         "mountRate"      $private(mountRate)
+
 
    #--- je mets a jour le voyant dans la fenetre de controle
    ::sophie::control::setCenterState $private(centerEnabled)
@@ -1993,7 +1996,7 @@ proc ::sophie::startGuide { } {
 
       set private(guideEnabled) 1
       #--- je configure le telescope avec la vitesse de guidage
-      ::telescope::setSpeed 1
+      ###::telescope::setSpeed 1
       #--- je signale au telescope que je demarre une session de guidage
       tel$::audace(telNo) radec guiding 1
 
@@ -2002,7 +2005,8 @@ proc ::sophie::startGuide { } {
       ###set private(AsynchroneParameter) 1
       ::camera::setAsynchroneParameter $private(camItem) \
             "mode" "GUIDE" \
-            "mountEnabled" $private(guideEnabled)
+            "mountEnabled" $private(guideEnabled) \
+            "mountRate"    $private(mountRate)
 
       #--- je mets a jour le voyant dans la fenetre de controle
       ::sophie::control::setGuideState $private(guideEnabled)
@@ -2315,19 +2319,17 @@ proc ::sophie::removeAcquisitionListener { visuNo cmd } {
 # @param cameraAngle angle de la camera
 # @param targetBoxSize taille de la zone de recherche de l'etoile
 # @param mountEnabled  1=envoyer les corrections a la monture. 0=ne pas envoyer les corrections
-# @param mountCorrection  0=commandes move/stop 1=commande move avec duree 2=commande correct avec distance en arsec
-# @param alphaSpeed    vitesse de correction alpha de la monture en arcsec/seconde de temps
-# @param deltaSpeed    vitesse de correction delta de la monture en arcsec/seconde de temps
+# @param mountRate     taux de vitesse de la monture (entre 0.0 et 1.0)
 # @param alphaReverse  1=inverser le sens des correction en alpha. 0=ne pas inverser le sens des corrections
 # @param deltaReverse  1=inverser le sens des correction en delta. 0=ne pas inverser le sens des corrections
 # @param intervalle    intervalle de temps d'attente entre 2 poses (en seconde)
 # @return rien
 #------------------------------------------------------------
-proc ::camera::guideSophie { camItem callback exptime originCoord targetCoord cameraAngle targetBoxSize mountEnabled mountCorrection alphaSpeed deltaSpeed alphaReverse deltaReverse intervalle } {
+proc ::camera::guideSophie { camItem callback exptime originCoord targetCoord cameraAngle targetBoxSize mountEnabled mountRate alphaReverse deltaReverse intervalle } {
    variable private
 
    set private($camItem,callback) $callback
    set camThreadNo $private($camItem,threadNo)
-   ::thread::send -async $camThreadNo [list ::camerathread::guideSophie $exptime $originCoord $targetCoord $cameraAngle $targetBoxSize $mountEnabled $mountCorrection $alphaSpeed $deltaSpeed $alphaReverse $deltaReverse $intervalle ]
+   ::thread::send -async $camThreadNo [list ::camerathread::guideSophie $exptime $originCoord $targetCoord $cameraAngle $targetBoxSize $mountEnabled $mountRate $alphaReverse $deltaReverse $intervalle ]
 }
 
