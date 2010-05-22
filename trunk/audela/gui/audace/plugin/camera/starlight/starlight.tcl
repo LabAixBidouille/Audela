@@ -2,7 +2,7 @@
 # Fichier : starlight.tcl
 # Description : Configuration de la camera Starlight
 # Auteur : Robert DELMAS
-# Mise a jour $Id: starlight.tcl,v 1.17 2008-12-20 14:53:53 robertdelmas Exp $
+# Mise à jour $Id: starlight.tcl,v 1.18 2010-05-22 17:47:33 robertdelmas Exp $
 #
 
 namespace eval ::starlight {

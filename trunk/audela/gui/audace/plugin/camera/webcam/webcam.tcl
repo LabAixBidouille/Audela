@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.54 2009-05-14 09:34:30 robertdelmas Exp $
+# Mise Ã  jour $Id: webcam.tcl,v 1.55 2010-05-22 17:51:59 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -594,7 +594,7 @@ proc ::webcam::configureCamera { camItem bufNo } {
    if { $catchResult == "1" } {
       #--- en cas d'erreur, je libere toutes les ressources allouees
       ::webcam::stop $camItem
-      #--- je transmets l'erreur à la procedure appelante
+      #--- je transmets l'erreur a la procedure appelante
       return -code error -errorcode $::errorCode -errorinfo $::errorInfo
    }
 
