@@ -2,7 +2,7 @@
 # @file     sophieconfig.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophieconfig.tcl,v 1.29 2010-05-11 17:57:56 michelpujol Exp $
+# @version  $Id: sophieconfig.tcl,v 1.30 2010-05-22 14:19:56 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -590,11 +590,8 @@ proc ::sophie::config::fillConfigAvanceePage { frm visuNo } {
 proc ::sophie::config::apply { visuNo } {
    variable widget
 
-   #--- je controle les valeurs saisies
-   ### � compl�ter ...
-
    #--- j'initalise les variables des widgets
-  ### set ::conf(sophie,exposure)              $widget(poseDefaut)
+   ### set ::conf(sophie,exposure)              $widget(poseDefaut)
    set ::conf(sophie,centerBinning)         $widget(binCentrageDefaut)
    set ::conf(sophie,focuseBinning)         $widget(binFocalisationDefaut)
    set ::conf(sophie,guideBinning)          $widget(binGuidageDefaut)
@@ -651,6 +648,12 @@ proc ::sophie::config::apply { visuNo } {
 
    #---  je re-positionne la consigne
    ::sophie::setGuidingMode $visuNo
+   #--- j'affiche ou je supprime les axes visalisant la rotation de la bonette
+   if { $::conf(sophie,angle) != 0 } {
+      ::sophie::createAlphaDeltaAxis $visuNo $::conf(sophie,angle)
+   } else {
+      ::sophie::deleteAlphaDeltaAxis $visuNo
+   }
    #--- j'applique le mode courant pour prendre en compte les nouvelles valeurs des parametres
    ::sophie::setMode
    #--- je met a jour la fenetre de controle
