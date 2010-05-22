@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.29 2010-05-16 20:39:51 michelpujol Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.30 2010-05-22 08:58:19 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -162,8 +162,10 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             set x  [lindex $private(targetCoord) 0]
             set y  [lindex $private(targetCoord) 1]
             set x1 [expr round($x - $private(targetBoxSize))]
+            if { $x1 < 1 } { set x1 1 }
             set x2 [expr $x1 + 2 * $private(targetBoxSize)]
             set y1 [expr round($y - $private(targetBoxSize))]
+            if { $y1 < 1 } { set y1 1 }
             set y2 [expr $y1 + 2 * $private(targetBoxSize)]
             set starDetectionMode 1
             set integratedImage 0
@@ -244,11 +246,14 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          set starFlux         [lindex $result 10 ]
          set infoMessage      [lindex $result 11 ]
 
+
          #--- je calcule le flux en ADU/seconde  (si exptime = 0 , je ne change pas la valeur)
          if { $private(exptime) != 0 } {
              set starFlux [expr $starFlux / $private(exptime) ]
              set skyLevel [expr $background / $private(exptime)]
          }
+
+###::camerathread::disp  "background=$background skyLevel=$skyLevel \n"
 
          ###::camerathread::disp  "starStatus=$starStatus starX,starY=$starX $starY fiberStatus=$fiberStatus fiberX,fiberY=$fiberX $fiberY infoMessage=$infoMessage\n"
          if { $starStatus == "DETECTED" } {
@@ -391,7 +396,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             }
 
             #--- je prends en compte la declinaison dans le calcul de la correction de alpha
-            #### set alphaCorrection [expr $alphaCorrection / (cos($private(targetDec) * 3.14159265359/180)) ]
+            set alphaCorrection [expr $alphaCorrection / (cos($private(targetDec) * 3.14159265359/180)) ]
 
             #--- j'ecrete l'ampleur du deplacement en alpha
             set maxAlpha [expr $private(targetBoxSize) * $xBinning * $private(pixelScale) ]
