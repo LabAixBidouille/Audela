@@ -43,6 +43,8 @@
 CPixelsGray::CPixelsGray()
 {
    pix = NULL;
+   naxis1 = 0;
+   naxis2 = 0;
 
 
 }
