@@ -2,7 +2,7 @@
 # Fichier : sextractor.tcl
 # Description : Functions to initialize configuration files for sextractor
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: sextractor.tcl,v 1.11 2010-05-09 07:57:03 robertdelmas Exp $
+# Mise à jour $Id: sextractor.tcl,v 1.12 2010-05-22 12:34:48 robertdelmas Exp $
 #
 
 proc sextractor_default_nnw { {filename default.nnw} } {
@@ -295,14 +295,29 @@ proc sextractor { args } {
    return "$msg"
 }
 
-#--- Creation des fichiers de configuration s'ils n'existent pas deja
-if { [ file exist [ file join . config.param ] ] == "0" } {
-   sextractor_config_param [ file join . config.param ]
+proc createFileConfigSextractor { args } {
+   #--- Creation des fichiers de configuration s'ils n'existent pas deja
+   if { [ file exist [ file join . config.param ] ] == "0" } {
+      sextractor_config_param [ file join . config.param ]
+   }
+   if { [ file exist [ file join . config.sex ] ] == "0" } {
+      sextractor_config_sex [ file join . config.sex ]
+   }
+   if { [ file exist [ file join . default.nnw ] ] == "0" } {
+      sextractor_default_nnw [ file join . default.nnw ]
+   }
 }
-if { [ file exist [ file join . config.sex ] ] == "0" } {
-   sextractor_config_sex [ file join . config.sex ]
-}
-if { [ file exist [ file join . default.nnw ] ] == "0" } {
-   sextractor_default_nnw [ file join . default.nnw ]
+
+proc deleteFileConfigSextractor { args } {
+   #--- Suppression des fichiers de configuration s'ils existent deja
+   if { [ file exist [ file join . config.param ] ] == "1" } {
+      file delete [ file join . config.param ]
+   }
+   if { [ file exist [ file join . config.sex ] ] == "1" } {
+      file delete [ file join . config.sex ]
+   }
+   if { [ file exist [ file join . default.nnw ] ] == "1" } {
+      file delete [ file join . default.nnw ]
+   }
 }
 
