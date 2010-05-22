@@ -2,7 +2,7 @@
 # Fichier : vellemank8056.tcl
 # Description : Interface pour carte Velleman K8056
 # Auteurs : Michel PUJOL
-# Mise a jour $Id: vellemank8056.tcl,v 1.2 2009-03-13 23:51:36 michelpujol Exp $
+# Mise Ã  jour $Id: vellemank8056.tcl,v 1.3 2010-05-22 17:07:40 robertdelmas Exp $
 #
 
 namespace eval vellemank8056 {
@@ -154,7 +154,6 @@ proc ::vellemank8056::createPluginInstance { linkLabel deviceId usage comment ar
    variable private
    global audace
 
-
    #--- je recupere l'index
    set linkIndex [getLinkIndex $linkLabel]
    #---
@@ -273,7 +272,6 @@ proc ::vellemank8056::fillConfigPage { frm } {
       #--- Si la liste est vide, on continue quand meme
    }
 
-
    #--- J'affiche la liste des links exclus
    frame $frm.port -borderwidth 0 -relief ridge
 
@@ -315,7 +313,6 @@ proc ::vellemank8056::fillConfigPage { frm } {
          grid columnconfigure [$frm.test getframe]  $bitNo -minsize 40 -weight 0
       #pack $frm.test.bit1 -in [$frm.test getframe] -side left -fill none
       }
-
 
    pack $frm.test -side top -anchor w -fill none
 
@@ -395,7 +392,6 @@ proc ::vellemank8056::refreshSerialPortList {  } {
    }
 }
 
-
 #------------------------------------------------------------
 #  setBit
 #     change un bit
@@ -436,7 +432,6 @@ proc ::vellemank8056::setBit { bitNo { bitValue "" } } {
       $private(frm).test.bit$bitNo configure -text $widget(bit,$bitNo)
    }
 
-
 }
 
 #------------------------------------------------------------
@@ -446,18 +441,18 @@ proc ::vellemank8056::setBit { bitNo { bitValue "" } } {
 # Parameters:
 #  adresse : adresse du K8056 en binaire (1 ... 255)
 #  command : commande S = set , C = clear, ... ( nombre en ASCII)
-#  value   : valeurs associee à la commande en ASCII pour les commandes S,C,T  et en binaire pour les autres commandes
+#  value   : valeurs associee a la commande en ASCII pour les commandes S,C,T et en binaire pour les autres commandes
 #
 # Return:
 #    rien
 #
 # Commande de la carte Velleman K8056 http://www.velleman.be/fr/en/home/
 #
-#  Format de la commande ( 5 octets)
+#  Format de la commande (5 octets)
 #     Byte 1 : chr$(13)
-#        début de paquet
-#     Byte 2 : adresse (0 à 255)
-#         numero du périphérique . Indispensable si plusieurs K8056 sont connectés sur le même port
+#        debut de paquet
+#     Byte 2 : adresse (0 a 255)
+#         numero du peripherique. Indispensable si plusieurs K8056 sont connectes sur le meme port
 #     Byte 3 : commande
 #        E : Emergency stop all cards, regardless of address. Carefull, relays turned on by open collector inputs will not be turned off by this command.
 #        D : Display address. All cards show their current address in a binary fashion. (LD1 : MSB, LD8 : LSB)
@@ -467,10 +462,10 @@ proc ::vellemank8056::setBit { bitNo { bitValue "" } } {
 #        A : Change the current address of a card. A instruction should be followes by the new address (1...255)
 #        F : Force all cards to address 1 default.
 #        B : Send a byte. Allows to control the status of all relays in one instruction, by sending abyte containing the relay status for each relay (MSB: realy1, LSB: relay8 )
-#     Byte 4 : paramètre
-#        parmètre de la commande (voir ci-dessus)
-#     Byte 5 : somme de contrôle
-#       Complément à deux de la somme des 4 bytes précédents
+#     Byte 4 : parametre
+#        parametre de la commande (voir ci-dessus)
+#     Byte 5 : somme de contrÃ´le
+#       Complement a deux de la somme des 4 bytes precedents
 #       256 - (Byte1+ Byte2 + Byte3 + Byte4) MOD 256
 #------------------------------------------------------------
 proc ::vellemank8056::sendCommandK8056 { adresse command { value " " } } {
@@ -583,7 +578,6 @@ proc ::vellemank8056::selectConfigLink { linkLabel } {
 
 }
 
-
 #------------------------------------------------------------
 #  simulCreateLink
 #     cree une liaison purement TCL (sans libriairie dynamique)
@@ -648,7 +642,4 @@ proc ::vellemank8056::simulLibraryUseLink { libraryName linkNo  args } {
       }
    }
 }
-
-
-
 
