@@ -2,7 +2,7 @@
 # Fichier : cagire.tcl
 # Description : Configuration de la camera Cagire
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cagire.tcl,v 1.2 2010-05-19 22:20:58 alainklotz Exp $
+# Mise à jour $Id: cagire.tcl,v 1.3 2010-05-22 17:23:15 robertdelmas Exp $
 #
 
 namespace eval ::cagire {

@@ -1,7 +1,7 @@
 #
 # Fichier : pkgIndex.tcl
 # Description : Definition du point d'entree du plugin
-# Mise a jour $Id: pkgIndex.tcl,v 1.1 2007-06-16 10:57:35 robertdelmas Exp $
+# Mise à jour $Id: pkgIndex.tcl,v 1.2 2010-05-22 17:30:08 robertdelmas Exp $
 #
 
 package ifneeded cemes 1.0 [ list source [ file join $dir cemes.tcl ] ]
