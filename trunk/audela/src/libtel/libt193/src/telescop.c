@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-// @version  $Id: telescop.c,v 1.28 2010-05-03 16:45:08 michelpujol Exp $
+// @version  $Id: telescop.c,v 1.29 2010-05-22 12:04:50 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -809,8 +809,14 @@ int tel_radec_goto(struct telprop *tel) {
       char response[NOTIFICATION_MAX_SIZE];
       result = 0; 
 
+      // je retourne un message d'erreur si le guidage automatique en cours
+      if ( tel->radecGuidingState == 1 && result == 0) {
+         sprintf(tel->msg, "GOTO ignoré car le guidage automatique est en cours.");
+         result = 1; 
+      }
+
       // je verifie s'il n'y a pas deja un mouvement en cours
-      if ( tel->radecIsMoving != 0 ) {
+      if ( tel->radecIsMoving != 0 && result == 0 ) {
          sprintf(tel->msg, "tel_radec_goto already moving");
          result = 1;          
       }
@@ -924,9 +930,15 @@ int tel_radec_move(struct telprop *tel,char *direction)
    } else if (tel->telescopeCommandSocket != NULL) {
       char direction2;
 
+      // je retourne un message d'erreur si le guidage automatique en cours
+      if ( tel->radecGuidingState == 1 && result == 0 ) {
+         sprintf(tel->msg, "Mouvement manuel ignoré car le guidage automatique est en cours.");
+         result = 1; 
+      }
+
       // je verifie s'il n'y a pas deja un mouvement en cours
-      if ( tel->radecIsMoving != 0 ) {
-         sprintf(tel->msg, "tel_radec_goto already moving");
+      if ( tel->radecIsMoving != 0 && result == 0 ) {
+         sprintf(tel->msg, "tel_radec_move already moving");
          result = 1;          
       }
 
