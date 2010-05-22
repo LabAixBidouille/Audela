@@ -2,7 +2,7 @@
 # Fichier : th7852a.tcl
 # Description : Configuration de la camera TH7852A
 # Auteur : Robert DELMAS
-# Mise a jour $Id: th7852a.tcl,v 1.27 2008-12-20 14:54:04 robertdelmas Exp $
+# Mise à jour $Id: th7852a.tcl,v 1.28 2010-05-22 17:48:11 robertdelmas Exp $
 #
 
 namespace eval ::th7852a {

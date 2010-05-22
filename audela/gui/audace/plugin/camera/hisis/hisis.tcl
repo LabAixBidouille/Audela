@@ -2,7 +2,7 @@
 # Fichier : hisis.tcl
 # Description : Configuration de la camera Hi-SIS
 # Auteur : Robert DELMAS
-# Mise a jour $Id: hisis.tcl,v 1.19 2009-11-15 15:48:21 robertdelmas Exp $
+# Mise à jour $Id: hisis.tcl,v 1.20 2010-05-22 17:44:14 robertdelmas Exp $
 #
 
 namespace eval ::hisis {

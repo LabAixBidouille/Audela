@@ -2,7 +2,7 @@
 # Fichier : kitty.tcl
 # Description : Configuration de la camera Kitty
 # Auteur : Robert DELMAS
-# Mise a jour $Id: kitty.tcl,v 1.23 2008-12-20 14:53:17 robertdelmas Exp $
+# Mise à jour $Id: kitty.tcl,v 1.24 2010-05-22 17:44:54 robertdelmas Exp $
 #
 
 namespace eval ::kitty {

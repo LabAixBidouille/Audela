@@ -2,7 +2,7 @@
 # Fichier : sbig.tcl
 # Description : Configuration de la camera SBIG
 # Auteur : Robert DELMAS
-# Mise a jour $Id: sbig.tcl,v 1.27 2010-04-24 07:18:38 robertdelmas Exp $
+# Mise à jour $Id: sbig.tcl,v 1.28 2010-05-22 17:46:22 robertdelmas Exp $
 #
 
 namespace eval ::sbig {
