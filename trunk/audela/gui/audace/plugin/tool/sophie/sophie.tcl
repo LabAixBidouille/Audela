@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.46 2010-05-16 20:33:27 michelpujol Exp $
+# @version   $Id: sophie.tcl,v 1.47 2010-05-22 12:29:59 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -229,6 +229,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(centerEnabled)       0
    set private(guideEnabled)        0
    set private(mountEnabled)        0
+   set private(mountRate)           0.0      ; #--- taux de deplacement du telescope (Pour le T193: 0.0=guidage 0.33=centrage 0.66=centrage2)
    set private(acquisitionState)    0        ; #--- etat de l'acquisition continue 0=arrete  1=en cours
    set private(targetRa)            "00h00m00s"    ; #--- ascension droite de la cible en HMS
    set private(targetDec)           "+00d00m00s"   ; #--- declinaison de la cible en DMS

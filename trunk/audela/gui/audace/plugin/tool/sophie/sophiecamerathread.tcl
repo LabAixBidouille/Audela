@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.30 2010-05-22 08:58:19 michelpujol Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.31 2010-05-22 12:29:32 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -17,7 +17,7 @@ namespace eval ::camerathread {
 # guideSophie lance la boucle d'acquisition continue
 #
 #------------------------------------------------------------
-proc ::camerathread::guideSophie { exptime originCoord targetCoord cameraAngle targetBoxSize mountEnabled mountMotionWhile alphaSpeed deltaSpeed alphaReverse deltaReverse intervalle } {
+proc ::camerathread::guideSophie { exptime originCoord targetCoord cameraAngle targetBoxSize mountEnabled mountRate alphaReverse deltaReverse intervalle } {
    variable private
 
    if { $private(acquisitionState) == 1 } {
@@ -32,9 +32,7 @@ proc ::camerathread::guideSophie { exptime originCoord targetCoord cameraAngle t
    set private(targetBoxSize)        $targetBoxSize
    set private(cameraAngle)          $cameraAngle
    set private(mountEnabled)         $mountEnabled
-   set private(mountMotionWhile)     $mountMotionWhile
-   set private(alphaSpeed)           $alphaSpeed
-   set private(deltaSpeed)           $deltaSpeed
+   set private(mountRate)            $mountRate
    set private(alphaReverse)         $alphaReverse
    set private(deltaReverse)         $deltaReverse
    set private(intervalle)           $intervalle
@@ -55,6 +53,7 @@ proc ::camerathread::guideSophie { exptime originCoord targetCoord cameraAngle t
    lappend  private(centerDeltaList) [list $private(targetBoxSize) $private(targetBoxSize)]
    lappend  private(centerDeltaList) [list $private(targetBoxSize) $private(targetBoxSize)]
    lappend  private(centerDeltaList) [list $private(targetBoxSize) $private(targetBoxSize)]
+
 
    ###::camerathread::disp "::camerathread::processAcquisition \n"
    #--- je parametre la camera
@@ -461,7 +460,13 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             #--- je deplace le telescope
             if { $alphaCorrection != 0 || $deltaCorrection != 0 } {
                set correctError [ catch {
-                  tel1 radec correct $alphaDirection [expr abs($alphaCorrection)] $deltaDirection [expr abs($deltaCorrection)] 0.1
+                  #--- j'envoie la commande au telescope
+                  #  alphaDirection : direction alpha ( e ou w)
+                  #  alphaCorrection : distance en ascension droite en arcsec
+                  #  deltaDirection :  direction delta ( n ou s)
+                  #  deltaCorrection : distance declinaison en arcsec
+                  #  vitessse :  Pour le T193 0.0 = guidage   0.33 = centrage  0.66 = centrage2
+                  tel1 radec correct $alphaDirection [expr abs($alphaCorrection)] $deltaDirection [expr abs($deltaCorrection)] $private(mountRate)
                }]
                if { $correctError != 0 } {
                   if { [string first  "tel_radec_goto already moving" $::errorInfo  ] == 0 } {
