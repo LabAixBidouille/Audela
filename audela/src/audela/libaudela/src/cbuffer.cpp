@@ -2055,7 +2055,7 @@ void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2,
    imgPix = (TYPE_PIXELS *) malloc(width * height * sizeof(float));
    pix->GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (void*) imgPix);
 
-         // ----------------------------------------------------
+   // ----------------------------------------------------
    // je calcule la qualite qualityMin ?= dbgmean + 6.0 * dbgsigma
    // ----------------------------------------------------
    int ttResult;
@@ -2572,6 +2572,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
             //// je recupere les pixels de la fenetre autour de la fibre
             //pix->GetPixels(xmin, ymin, xmax, ymax, FORMAT_FLOAT, PLANE_GREY, (void*) imgPix);
 
+            //--- j'ajoute l'image courante dans l'image integree
             for(j=0;j<height;j++) {
                imgOffset  = imgPix  + j * width;
                sumOffset  = sumPix +  j * width;
@@ -3424,71 +3425,76 @@ void CBuffer::Stat( int x1,int y1,int x2,int y2,
    int i,naxis11,naxis22;
    TYPE_PIXELS *ppix= NULL;
 
-
-   if ( pix->IsPixelsReady() == 0 ) {
-      // je retourne une erreur si le buffer est vide
-      throw CError("buffer is empty");
-   }
-   naxis1=GetWidth();
-   naxis2=GetHeight();
-
-   datatype = TFLOAT;
-   if ((x1==-1)&&(y1==-1)&&(x2==-1)&&(y2==-1)) {
-      // x1=y1=x2=y2=-1 si l'on souhaite traiter toute l'image
+   try {
       pthread_mutex_lock(&mutex);
-      ppix = (TYPE_PIXELS*)malloc(naxis1*naxis2 * sizeof(TYPE_PIXELS));
-      if (ppix==NULL) throw CError(ELIBSTD_NO_MEMORY_FOR_PIXELS);
-      pix->GetPixels(0, 0, naxis1-1, naxis2-1 , FORMAT_FLOAT, PLANE_GREY, (void*) ppix);
-      msg = Libtt_main(TT_PTR_STATIMA,13,ppix,&datatype,&naxis1,&naxis2,
-                  &dlocut,&dhicut,&dmaxi,&dmini,&dmean,&dsigma,&dbgmean,&dbgsigma,&dcontrast);
-      free(ppix);
+
+      if ( pix->IsPixelsReady() == 0 ) {
+         // je retourne une erreur si le buffer est vide
+         throw CError("buffer is empty");
+      }
+      naxis1=GetWidth();
+      naxis2=GetHeight();
+
+      datatype = TFLOAT;
+      if ((x1==-1)&&(y1==-1)&&(x2==-1)&&(y2==-1)) {
+         // x1=y1=x2=y2=-1 si l'on souhaite traiter toute l'image
+         ppix = (TYPE_PIXELS*)malloc(naxis1*naxis2 * sizeof(TYPE_PIXELS));
+         if (ppix==NULL) throw CError(ELIBSTD_NO_MEMORY_FOR_PIXELS);
+         pix->GetPixels(0, 0, naxis1-1, naxis2-1 , FORMAT_FLOAT, PLANE_GREY, (void*) ppix);
+         msg = Libtt_main(TT_PTR_STATIMA,13,ppix,&datatype,&naxis1,&naxis2,
+            &dlocut,&dhicut,&dmaxi,&dmini,&dmean,&dsigma,&dbgmean,&dbgsigma,&dcontrast);
+         free(ppix);
+         if(msg) throw CErrorLibtt(msg);
+      } else {
+         // traite une fenetre dans l'image
+         if((x1<0)||(x2<0)||(x1>naxis1-1)||(x2>naxis1-1)) {throw CError(ELIBSTD_X1X2_NOT_IN_1NAXIS1);}
+         if((y1<0)||(y2<0)||(y1>naxis2-1)||(y2>naxis2-1)) {throw CError(ELIBSTD_Y1Y2_NOT_IN_1NAXIS2);}
+         if(x1>x2) {i = x2; x2 = x1; x1 = i;}
+         if(y1>y2) {i = y2; y2 = y1; y1 = i;}
+         naxis11 = x2-x1+1;
+         naxis22 = y2-y1+1;
+         ppix = (TYPE_PIXELS*)malloc(naxis11*naxis22 * sizeof(TYPE_PIXELS));
+         if (ppix==NULL) throw CError(ELIBSTD_NO_MEMORY_FOR_PIXELS);
+         pix->GetPixels(x1, y1, x2, y2 , FORMAT_FLOAT, PLANE_GREY, (void*) ppix);
+         msg = Libtt_main(TT_PTR_STATIMA,13,ppix,&datatype,&naxis11,&naxis22,
+            &dlocut,&dhicut,&dmaxi,&dmini,&dmean,&dsigma,&dbgmean,&dbgsigma,&dcontrast);
+         free(ppix);
+         if(msg) throw CErrorLibtt(msg);
+      }
+
+      *locut = (float)dlocut; 
+      *hicut = (float)dhicut;
+      *maxi = (float)dmaxi; 
+      *mini = (float)dmini;
+      *mean = (float)dmean; 
+      *sigma = (float)dsigma;
+      *bgmean = (float)dbgmean; 
+      *bgsigma = (float)dbgsigma;
+      *contrast = (float)dcontrast;
+
+      // si la statistique porte sur l'image entière, je mets a jour les mots cls de l'image
+      if ((x1==-1)&&(y1==-1)&&(x2==-1)&&(y2==-1)) {
+         fLo = (float) dlocut;
+         fHi = (float) dhicut;
+         iMin = (int)dmini;
+         iMax = (int)dmaxi;
+         keywords->Add("MIPS-HI",(void*)&fHi,TFLOAT,"High cut","ADU");
+         keywords->Add("MIPS-LO",(void*)&fLo,TFLOAT,"Low cut","ADU");
+         keywords->Add("CONTRAST",(void*)contrast,TFLOAT,"Pixel contrast","ADU");
+         keywords->Add("MEAN",(void*)mean,TFLOAT,"Mean value","ADU");
+         keywords->Add("SIGMA",(void*)sigma,TFLOAT,"Standard deviation","ADU");
+         keywords->Add("DATAMAX",(void*)&iMax,TINT,"Maximum value","ADU");
+         keywords->Add("DATAMIN",(void*)&iMin,TINT,"Minimum value","ADU");
+         keywords->Add("BGMEAN",(void*)bgmean,TFLOAT,"Background mean value","ADU");
+         keywords->Add("BGSIGMA",(void*)bgsigma,TFLOAT,"Background standard deviation","ADU");
+      }
       pthread_mutex_unlock(&mutex);
-      if(msg) throw CErrorLibtt(msg);
-   } else {
-      // traite une fenetre dans l'image
-      if((x1<0)||(x2<0)||(x1>naxis1-1)||(x2>naxis1-1)) {throw CError(ELIBSTD_X1X2_NOT_IN_1NAXIS1);}
-      if((y1<0)||(y2<0)||(y1>naxis2-1)||(y2>naxis2-1)) {throw CError(ELIBSTD_Y1Y2_NOT_IN_1NAXIS2);}
-      if(x1>x2) {i = x2; x2 = x1; x1 = i;}
-      if(y1>y2) {i = y2; y2 = y1; y1 = i;}
-      naxis11 = x2-x1+1;
-      naxis22 = y2-y1+1;
-      pthread_mutex_lock(&mutex);
-      ppix = (TYPE_PIXELS*)malloc(naxis11*naxis22 * sizeof(TYPE_PIXELS));
-      if (ppix==NULL) throw CError(ELIBSTD_NO_MEMORY_FOR_PIXELS);
-      pix->GetPixels(x1, y1, x2, y2 , FORMAT_FLOAT, PLANE_GREY, (void*) ppix);
-      msg = Libtt_main(TT_PTR_STATIMA,13,ppix,&datatype,&naxis11,&naxis22,
-                  &dlocut,&dhicut,&dmaxi,&dmini,&dmean,&dsigma,&dbgmean,&dbgsigma,&dcontrast);
-      free(ppix);
+
+   } catch (const CError& e) {
       pthread_mutex_unlock(&mutex);
-      if(msg) throw CErrorLibtt(msg);
+      throw e;
    }
 
-   *locut = (float)dlocut; 
-   *hicut = (float)dhicut;
-   *maxi = (float)dmaxi; 
-   *mini = (float)dmini;
-   *mean = (float)dmean; 
-   *sigma = (float)dsigma;
-   *bgmean = (float)dbgmean; 
-   *bgsigma = (float)dbgsigma;
-   *contrast = (float)dcontrast;
-
-   // si la statistique porte sur l'image entière, je mets a jour les mots cls de l'image
-   if ((x1==-1)&&(y1==-1)&&(x2==-1)&&(y2==-1)) {
-      fLo = (float) dlocut;
-      fHi = (float) dhicut;
-      iMin = (int)dmini;
-      iMax = (int)dmaxi;
-      keywords->Add("MIPS-HI",(void*)&fHi,TFLOAT,"High cut","ADU");
-      keywords->Add("MIPS-LO",(void*)&fLo,TFLOAT,"Low cut","ADU");
-      keywords->Add("CONTRAST",(void*)contrast,TFLOAT,"Pixel contrast","ADU");
-      keywords->Add("MEAN",(void*)mean,TFLOAT,"Mean value","ADU");
-      keywords->Add("SIGMA",(void*)sigma,TFLOAT,"Standard deviation","ADU");
-      keywords->Add("DATAMAX",(void*)&iMax,TINT,"Maximum value","ADU");
-      keywords->Add("DATAMIN",(void*)&iMin,TINT,"Minimum value","ADU");
-      keywords->Add("BGMEAN",(void*)bgmean,TFLOAT,"Background mean value","ADU");
-      keywords->Add("BGSIGMA",(void*)bgsigma,TFLOAT,"Background standard deviation","ADU");
-   }
 
 }
 
