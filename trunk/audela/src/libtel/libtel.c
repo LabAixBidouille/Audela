@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libtel.c,v 1.24 2010-05-01 15:38:06 michelpujol Exp $
+// $Id: libtel.c,v 1.25 2010-05-22 12:01:39 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -1132,9 +1132,13 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             if (argc>=5) {
                tel->radec_move_rate=atof(argv[4]);
             }
-            tel_radec_move(tel,argv[3]);
-            Tcl_SetResult(interp,"",TCL_VOLATILE);
-             
+            if ( tel_radec_move(tel,argv[3]) == 0 ) {
+               Tcl_SetResult(interp,"",TCL_VOLATILE);
+               result = TCL_OK;
+            } else {
+               Tcl_SetResult(interp,tel->msg,TCL_VOLATILE);
+               result = TCL_ERROR;
+            }
          }
          
       } else if (strcmp(argv[2],"correct")==0) {
