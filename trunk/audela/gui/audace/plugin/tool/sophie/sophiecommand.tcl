@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.50 2010-05-16 20:40:59 michelpujol Exp $
+# @version  $Id: sophiecommand.tcl,v 1.51 2010-05-22 09:02:12 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -1985,28 +1985,32 @@ proc ::sophie::stopCenter { } {
 proc ::sophie::startGuide { } {
    variable private
 
-   #--- je lance l'acquisition continue si elle n'est pas deja lancee
-   if { $private(acquisitionState) == 0 } {
-      startAcquisition $::audace(visuNo)
+   if { $::audace(telNo) != 0 } {
+      #--- je lance l'acquisition continue si elle n'est pas deja lancee
+      if { $private(acquisitionState) == 0 } {
+         startAcquisition $::audace(visuNo)
+      }
+
+      set private(guideEnabled) 1
+      #--- je configure le telescope avec la vitesse de guidage
+      ::telescope::setSpeed 1
+      #--- je signale au telescope que je demarre une session de guidage
+      tel$::audace(telNo) radec guiding 1
+
+
+      #--- j'active le guidage dans le thread de la camera
+      ###set private(AsynchroneParameter) 1
+      ::camera::setAsynchroneParameter $private(camItem) \
+            "mode" "GUIDE" \
+            "mountEnabled" $private(guideEnabled)
+
+      #--- je mets a jour le voyant dans la fenetre de controle
+      ::sophie::control::setGuideState $private(guideEnabled)
+   } else {
+      set private(guideEnabled) 0
+      ::confTel::run
    }
 
-   set private(guideEnabled) 1
-   #--- je configure le telescope avec la vitesse de guidage
-   ::telescope::setSpeed 1
-   #--- je signale au telescope que je demarre une session de guidage
-   tel$::audace(telNo) radec guiding 1
-
-
-   #--- j'active le guidage dans le thread de la camera
-   ###set private(AsynchroneParameter) 1
-   ::camera::setAsynchroneParameter $private(camItem) \
-         "mode" "GUIDE" \
-         "mountEnabled" $private(guideEnabled)
-
-   #--- je mets a jour le voyant dans la fenetre de controle
-   ::sophie::control::setGuideState $private(guideEnabled)
-
-   #--- j'affiche la moyenne de la Fwhm
 }
 
 ##------------------------------------------------------------
