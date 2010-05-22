@@ -2,7 +2,7 @@
 # Fichier : alaudine_nt.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: alaudine_nt.tcl,v 1.22 2009-12-30 14:28:08 robertdelmas Exp $
+# Mise Ã  jour $Id: alaudine_nt.tcl,v 1.23 2010-05-22 16:48:38 robertdelmas Exp $
 #
 
 namespace eval ::AlAudineNT {
@@ -198,7 +198,7 @@ proc ::AlAudineNT::createDialog { } {
    set tmp_ccd_max $private(evaluation)
    set tmp_ccd_min [ expr $private(evaluation) - $private(delta_t_max) ]
 
-   #--- Temperature du CCD souhaitée avec la glissière de reglage
+   #--- Temperature du CCD souhaitee avec la glissiere de reglage
    label $This.lab5 -text "$caption(alaudine_nt,temp_ccd_souhaite)"
    pack $This.lab5 -in $This.frame5 -anchor center -side left -padx 5 -pady 5
 
@@ -215,7 +215,7 @@ proc ::AlAudineNT::createDialog { } {
    label $This.lab6 -text "$caption(alaudine_nt,degres)"
    pack $This.lab6 -in $This.frame6 -anchor center -side left -padx 5 -pady 0
 
-   #--- Temperature du CCD mesurée
+   #--- Temperature du CCD mesuree
    label $This.lab7 -textvariable ::AlAudineNT::private(temp_ccd_mesure)
    pack $This.lab7 -in $This.frame7 -anchor center -side left -padx 5 -pady 5
 

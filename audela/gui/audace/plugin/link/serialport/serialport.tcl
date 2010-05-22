@@ -2,7 +2,7 @@
 # Fichier : serialport.tcl
 # Description : Interface de liaison Port Serie
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: serialport.tcl,v 1.23 2009-06-14 06:59:08 robertdelmas Exp $
+# Mise Ã  jour $Id: serialport.tcl,v 1.24 2010-05-22 17:01:16 robertdelmas Exp $
 #
 
 namespace eval serialport {
@@ -198,7 +198,7 @@ proc ::serialport::fillConfigPage { frm } {
 
    pack $frm.port_exclus -side top -fill x
 
-   #--- J'affiche la liste des links disponibles et utilisés
+   #--- J'affiche la liste des links disponibles et utilises
    TitleFrame $frm.available -borderwidth 2 -relief ridge -text $caption(serialport,available)
 
       listbox $frm.available.list

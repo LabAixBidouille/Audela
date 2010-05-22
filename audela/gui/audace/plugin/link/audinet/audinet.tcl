@@ -2,7 +2,7 @@
 # Fichier : audinet.tcl
 # Description : Interface de liaison AudiNet
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: audinet.tcl,v 1.18 2009-11-16 23:15:20 robertdelmas Exp $
+# Mise à jour $Id: audinet.tcl,v 1.19 2010-05-22 16:49:20 robertdelmas Exp $
 #
 
 namespace eval audinet {
