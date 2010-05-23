@@ -2,7 +2,7 @@
 # Fichier : acqvideo.tcl
 # Description : Outil d'acquisition video
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: acqvideo.tcl,v 1.20 2010-05-01 08:53:15 robertdelmas Exp $
+# Mise à jour $Id: acqvideo.tcl,v 1.21 2010-05-23 16:14:57 robertdelmas Exp $
 #
 
 #==============================================================
@@ -298,7 +298,6 @@ namespace eval ::acqvideo {
       } elseif { [ winfo exists $panneau(acqvideo,$visuNo,base).status_video ] } {
          destroy $panneau(acqvideo,$visuNo,base).status_video
       }
-
 
    }
 #***** Fin de la procedure adaptOutilAcqVideo ******************
