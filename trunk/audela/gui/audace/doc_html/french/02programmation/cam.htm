@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 27 janvier 2010</p>
+<p class="date">Date de mise &agrave; jour : 22 mai 2010</p>
 <h1>Cam&eacute;ra </h1>
 <p>Ces commandes permettent de contr&ocirc;ler l'acquisition d'images avec des cam&eacute;ras reconnues par AudeLA : Audine, Hi-SIS, ST7, CookBook 245, Starlight, Kitty, WebCam (port USB Windows uniquement), AudiNet (liaison Ethernet), EthernAude (liaison Ethernet), etc. Les commandes qui permettent de contr&ocirc;ler une cam&eacute;ra s'&eacute;crivent "<code>cam</code>" suivi d'un num&eacute;ro. Ces commandes n'existent pas au d&eacute;marrage de AudeLA, mais sont cr&eacute;&eacute;es par la commande "<code>::cam::create ...</code>". Ainsi il est possible de piloter plusieurs cam&eacute;ras, mais il est laiss&eacute; &agrave; l'utilisateur le soin de ne pas ex&eacute;cuter des commandes simultan&eacute;ment. Lors d'une acquisition, l'image est stock&eacute;e dans un buffer (&agrave; renseigner avec la fonction <a href="#buf">cam1 buf</a>). En plus, si on pr&eacute;cise &agrave; quel t&eacute;lescope (automatique) est reli&eacute;e la cam&eacute;ra (&agrave; renseigner avec <a href="#tel">cam1 tel</a>), elle r&eacute;cup&egrave;re automatiquement ses coordonn&eacute;es, et les inscrit dans le header FITS si l'option <a href="#fromtel">cam1 radecfromtel</a> vaut 1. </p>
 <p>Il est important de savoir que les auteurs ne disposent pas personnellement de ces cam&eacute;ras, et donc qu'il peut y avoir des probl&egrave;mes avec certaines cam&eacute;ras. </p>
@@ -19,17 +19,17 @@
 <h1> 1. Commandes communes</h1>
 <h2> 1.1. Commandes d'acquisition</h2>
 <h3> <a name="acq" id="acq"></a>cam1 acq <i>?-blocking?</i></h3>
-<p>Cette commande d&eacute;clenche l'acquisition d'une image avec les param&egrave;tres 
-  de vue courants (voir plus loin). Cette commande rend la main tout de suite, 
-  alors que la num&eacute;risation de l'image sera effectu&eacute;e &agrave; la 
-  fin de la pose. Pour d&eacute;tecter le moment o&ugrave; la pose est termin&eacute;e, 
-  cette commande modifie la variable globale status_cam1 (pour la cam&eacute;ra 
-  1, status_cam5 pour la cam&eacute;ra 5). En fin de pose la valeur &quot;stand&quot; 
-  est r&eacute;-&eacute;crite dans la variable status_cam1. Ainsi il est possible 
-  gr&acirc;ce &agrave; un vwait d'attendre la fin de la pose pour continuer un 
-  script, mais il est &eacute;galement possible de faire autre chose pendant la 
+<p>Cette commande d&eacute;clenche l'acquisition d'une image avec les param&egrave;tres
+  de vue courants (voir plus loin). Cette commande rend la main tout de suite,
+  alors que la num&eacute;risation de l'image sera effectu&eacute;e &agrave; la
+  fin de la pose. Pour d&eacute;tecter le moment o&ugrave; la pose est termin&eacute;e,
+  cette commande modifie la variable globale status_cam1 (pour la cam&eacute;ra
+  1, status_cam5 pour la cam&eacute;ra 5). En fin de pose la valeur &quot;stand&quot;
+  est r&eacute;-&eacute;crite dans la variable status_cam1. Ainsi il est possible
+  gr&acirc;ce &agrave; un vwait d'attendre la fin de la pose pour continuer un
+  script, mais il est &eacute;galement possible de faire autre chose pendant la
   prise de vue. </p>
-<p>Remarque : Les valeurs &quot;read&quot; et &quot;exp&quot; ne sont plus &eacute;crites 
+<p>Remarque : Les valeurs &quot;read&quot; et &quot;exp&quot; ne sont plus &eacute;crites
   dans la variable status_cam1. </p>
 <p><code>cam1 exptime 10</code> <br />
   <code>cam1 acq</code> <br />
@@ -38,9 +38,9 @@
   <code>vwait status_cam1</code> <br />
   <code># la pose est termin&eacute;e</code> <br>
   <code>...</code> </p>
-<p>Si <b>-blocking</b> est pr&eacute;sente, la commande d&eacute;clenche l'acquisition 
-  d'une image et rend la main seulement apr&egrave;s la fin de l'acquisition car 
-  l'interp&eacute;teur TCL est bloqu&eacute; pendant toute la dur&eacute;e de 
+<p>Si <b>-blocking</b> est pr&eacute;sente, la commande d&eacute;clenche l'acquisition
+  d'une image et rend la main seulement apr&egrave;s la fin de l'acquisition car
+  l'interp&eacute;teur TCL est bloqu&eacute; pendant toute la dur&eacute;e de
   l'acquisition.</p>
 <p><code>cam1 exptime 10</code> <br />
   <code>cam1 acq</code> -blocking<br />
@@ -205,22 +205,22 @@
 <p>Retourne l'&eacute;tat actuel du microcontr&ocirc;leur (Hi-SIS 24/33/44). Les valeurs retourn&eacute;es sont l'une da liste suivante : idle, pause, clean ccd, exposure, digitize, cmd1, cmd2, cmd3, Bad status value.</p>
 <h3> <a name="gainampli" id="gainampli"></a>cam1 gainampli <em>?g?</em></h3>
 <p>R&eacute;glage du gain de l'amplificateur de la cha&icirc;ne analogique (Hi-SIS 24/33/44). <em>g</em> est la valeur du gain. Sans param&egrave;tre, la fonction renvoie la valeur actuelle.</p>
-<h2> 5. Commandes sp&eacute;cifiques &agrave; ST7</h2>
-<h3> <a name="temp" id="temp"></a>cam1 temp ?<em>param</em>?</h3>
+<h2> 5. Commandes sp&eacute;cifiques &agrave; SBIG</h2>
+<h3> <a name="infotemp" id="infotemp"></a>cam1 infotemp ?<em>param</em>?</h3>
 <p>Cette commande permet de piloter le syst&egrave;me de refroidissement. Si le param&egrave;tre optionnel vaut <em>off</em> alors la r&eacute;gulation est arr&ecirc;t&eacute;e. Si c'est une valeur num&eacute;rique, alors c'est la consigne en temp&eacute;rature. S'il n'y a pas de param&egrave;tre optionnel, elle retourne une liste compos&eacute;e des &eacute;l&eacute;ments suivants :</p>
 <ul>
-  <li>R&eacute;gulation en marche ? 0=non, 1=oui, </li>
-  <li>Puissance appliqu&eacute;e par le r&eacute;gulateur de la ST7 au r&eacute;gulateur Peltier pour atteindre la consigne (varie entre 0=off et 255=puissance maximale), </li>
   <li>Consigne en temp&eacute;rature, </li>
   <li>Temp&eacute;rature du CCD, </li>
   <li>Temp&eacute;rature ambiante.</li>
+  <li>R&eacute;gulation en marche ? 0=non, 1=oui, </li>
+  <li>Puissance appliqu&eacute;e au r&eacute;gulateur Peltier pour atteindre la consigne (varie entre 0=off et 255=puissance maximale), </li>
 </ul>
 <p>Il est recommand&eacute; par SBIG de couper la r&eacute;gulation et d'attendre quelques minutes avant d'&eacute;teindre l'alimentation de la cam&eacute;ra.</p>
-<h3> <a name="relay" id="relay"></a>cam1 relay <em>param</em></h3>
-<p>Cette commande active les relais de la ST7. Le param&egrave;tre est une liste de 4 entiers qui repr&eacute;sentent la dur&eacute;e de l'impulsion appliqu&eacute;e dans chaque direction : x+, x-, y+, y-. La dur&eacute;e est exprim&eacute;e en centi&egrave;mes de seconde (cs). </p>
+<h3> <a name="activaterelay" id="activaterelay"></a>cam1 activaterelay <em>param</em></h3>
+<p>Cette commande active les relais. Le param&egrave;tre est une liste de 4 entiers qui repr&eacute;sentent la dur&eacute;e de l'impulsion appliqu&eacute;e dans chaque direction : x+, x-, y+, y-. La dur&eacute;e est exprim&eacute;e en centi&egrave;mes de seconde (cs). </p>
 <p>Exemple : <em>cam1 relay [list 100 0 0 0]</em> </p>
 <p>active le relais x+ pendant 1 seconde.</p>
-<h3> <a name="tiptilt" id="tiptilt"></a>cam1 tiptilt <em>d&eacute;viation</em></h3>
+<h3> <a name="aotiptilt" id="aotiptilt"></a>cam1 aotiptilt <em>d&eacute;viation</em></h3>
 <p>Le param&egrave;tre d&eacute;viation est une liste &agrave; deux entiers (entre 0 et 4095) qui indique la d&eacute;viation du tiptilt. La valeur 2048 correspond au centrage du miroir.</p>
 <h2> 6. Commandes sp&eacute;cifiques aux WebCams</h2>
 <h3> <a name="videosource" id="videosource"></a>cam1 videosource</h3>
