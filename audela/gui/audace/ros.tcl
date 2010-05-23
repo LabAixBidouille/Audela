@@ -2,7 +2,7 @@
 # Fichier : ros.tcl
 # Description : Function to launch Robotic Observatory Software installation
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: ros.tcl,v 1.16 2010-05-16 14:21:28 robertdelmas Exp $
+# Mise à jour $Id: ros.tcl,v 1.17 2010-05-23 08:11:49 robertdelmas Exp $
 #
 
 proc ros { args } {
@@ -2490,7 +2490,6 @@ proc rosmodpoi_modpoi_choose_star { starindex {nsite 3} {ngise 4} {fichier_in ""
    set res [mc_meo amer_hip $fichier_in [rosmodpoi_modpoi_liste_amers $nsite $ngise] $starindex 1 180 $date]
    return $res
 }
-
 
 # ------------------------------------------------------------------------------------
 # PROC : rosmodpoi_corrected_positions

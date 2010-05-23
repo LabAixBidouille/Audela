@@ -2,7 +2,7 @@
 # Fichier divers.tcl
 # Description : Ce script regroupe diverses petites fonctions
 # Auteur : Benoit MAUGIS
-# Mise à jour $Id: divers.tcl,v 1.15 2010-05-16 10:47:32 robertdelmas Exp $
+# Mise à jour $Id: divers.tcl,v 1.16 2010-05-23 08:06:43 robertdelmas Exp $
 #
 
 # Documentation : voir le fichier divers.htm dans le dossier doc_html
@@ -1017,7 +1017,6 @@ proc copie {args} {
       if {$ex_ext_index>=0} {
          set ex_ext [lindex [lindex $options_1param $ex_ext_index] 1]
       }
-
 
       # Procédure principale
       # On ne continue que si l'on n'écrase pas la série...

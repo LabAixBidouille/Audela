@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: camera.tcl,v 1.40 2010-05-09 07:34:40 robertdelmas Exp $
+# Mise à jour $Id: camera.tcl,v 1.41 2010-05-23 08:03:20 robertdelmas Exp $
 #
 # Procedures utilisees par confCam
 #   ::camera::create : cree une camera
@@ -579,7 +579,6 @@ proc ::camera::setAsynchroneParameter { camItem  args } {
       ###::thread::send $camThreadNo [list ::camerathread::setAsynchroneParameter $args]
    }
 }
-
 
 #------------------------------------------------------------
 # stopAcquisition

@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: zadkopad.tcl,v 1.47 2010-05-17 15:57:50 robertdelmas Exp $
+# Mise à jour $Id: zadkopad.tcl,v 1.48 2010-05-23 08:09:12 robertdelmas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -161,7 +161,6 @@ namespace eval ::zadkopad {
     proc initPlugin { } {
         global port modetelescope stopcalcul paramhorloge telnum ros textloadfile
 
-
         set textloadfile ""
         set err [catch {source "[pwd]/../ros/root.tcl"}]
         if {$err==1} {
@@ -197,7 +196,6 @@ namespace eval ::zadkopad {
             set paramhorloge(dra) 0;            # offset (deg) for hour angle
             set paramhorloge(ddec) 0;           # offset (deg) for declination
        }
-
 
        #--- Cree les variables dans conf(...) si elles n'existent pas
        initConf
@@ -1166,13 +1164,11 @@ namespace eval ::zadkopad {
          -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
         pack .zadkopad.func.dome -in .zadkopad.func -side left
 
-
         button .zadkopad.func.opendome -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text OPEN \
          -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::roscommande {gardien DO roof_open}}
         button .zadkopad.func.closedome -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text CLOSE \
          -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::roscommande {gardien DO roof_close}}
         pack  .zadkopad.func.closedome .zadkopad.func.opendome -in .zadkopad.func -padx [ expr int(11*$zoom) ] -side right
-
 
         #--- Create a frame for the mirror door button
         frame .zadkopad.petal -height $geomlx200(haut) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
@@ -1268,7 +1264,6 @@ namespace eval ::zadkopad {
           pack $base.f.dec.lab1 -side left -fill none
           pack $base.f.dec.ent1 -side left -fill none
         pack $base.f.dec -fill none -pady 2
-
 
         #---
         label $base.f.lab_ha -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
@@ -1459,7 +1454,6 @@ namespace eval ::zadkopad {
         # === It is the end of the script run ===
         # =======================================
     }
-
 
 # proc met_a_jour { } {
 #    global paramhorloge

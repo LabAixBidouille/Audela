@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: fingerlakes.tcl,v 1.39 2010-05-22 17:28:43 robertdelmas Exp $
+# Mise à jour $Id: fingerlakes.tcl,v 1.40 2010-05-23 08:07:58 robertdelmas Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -444,7 +444,6 @@ proc ::fingerlakes::setTempCCD { } {
 proc ::fingerlakes::getReadSpeed { } {
    return $::conf(fingerlakes,readSpeed)
 }
-
 
 #
 # ::fingerlakes::setShutter
