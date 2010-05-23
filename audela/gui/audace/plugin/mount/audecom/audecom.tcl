@@ -2,7 +2,7 @@
 # Fichier : audecom.tcl
 # Description : Parametrage et pilotage de la carte AudeCom (Ex-Kauffmann)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audecom.tcl,v 1.24 2009-03-14 00:01:42 michelpujol Exp $
+# Mise Ã  jour $Id: audecom.tcl,v 1.25 2010-05-23 15:41:25 robertdelmas Exp $
 #
 
 namespace eval ::audecom {
@@ -700,7 +700,7 @@ proc ::audecom::stop { } {
 
 #
 # confAudeCom
-# Permet d'activer ou de désactiver le bouton 'Controle de la vitesse de King'
+# Permet d'activer ou de desactiver le bouton 'Controle de la vitesse de King'
 #
 proc ::audecom::confAudeCom { } {
    variable private
@@ -725,7 +725,7 @@ proc ::audecom::confAudeCom { } {
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $frm
    }
-   #--- Fonctionnalités d'une monture equatoriale allemande pilotee par AudeCom
+   #--- Fonctionnalites d'une monture equatoriale allemande pilotee par AudeCom
    ::audecom::configEquatorialAudeCom
 }
 

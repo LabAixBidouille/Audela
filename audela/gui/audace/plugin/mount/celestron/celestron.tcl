@@ -2,7 +2,7 @@
 # Fichier : celestron.tcl
 # Description : Configuration de la monture Celestron
 # Auteur : Robert DELMAS
-# Mise a jour $Id: celestron.tcl,v 1.14 2009-03-14 00:01:42 michelpujol Exp $
+# Mise Ã  jour $Id: celestron.tcl,v 1.15 2010-05-23 15:45:17 robertdelmas Exp $
 #
 
 namespace eval ::celestron {
@@ -306,7 +306,7 @@ proc ::celestron::stop { } {
 
 #
 # confCelestron
-# Permet d'activer ou de désactiver le bouton
+# Permet d'activer ou de desactiver le bouton
 #
 proc ::celestron::confCelestron { } {
    variable private
