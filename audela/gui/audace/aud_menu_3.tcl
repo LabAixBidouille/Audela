@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise à jour $Id: aud_menu_3.tcl,v 1.62 2010-05-13 16:20:15 jacquesmichelet Exp $
+# Mise à jour $Id: aud_menu_3.tcl,v 1.63 2010-05-23 15:49:29 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -2714,7 +2714,7 @@ namespace eval ::conv2 {
       ::blt::table $this
       #--- rappel du repertoire
       Label $this.info -justify left\
-          -text "$caption(pretraitement,repertoire) .../[ file tail $private(conv2,rep) ]"
+          -text "$caption(pretraitement,repertoire) ../[ file tail $private(conv2,rep) ]"
 
       #--- bouton de menu
       menubutton $this.but -relief raised -textvariable conversion \
