@@ -2,7 +2,7 @@
 # Fichier : autoguiderconfig.tcl
 # Description : Fenetre de configuration de l'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguiderconfig.tcl,v 1.18 2010-01-07 09:55:53 robertdelmas Exp $
+# Mise à jour $Id: autoguiderconfig.tcl,v 1.19 2010-05-23 16:22:47 robertdelmas Exp $
 #
 
 ################################################################
@@ -95,7 +95,6 @@ proc ::autoguider::config::apply { visuNo } {
    ::camera::setParam [::confVisu::getCamItem $visuNo] "searchFwhm"   $::conf(autoguider,searchFwhm)
    ::camera::setParam [::confVisu::getCamItem $visuNo] "searchRadius"   $::conf(autoguider,searchRadius)
    ::camera::setParam [::confVisu::getCamItem $visuNo] "searchThreshold"   $::conf(autoguider,searchThreshold)
-
 
    #--- je redessine la cible si le mode de detection a change
    if { $pendingUpdateTarget } {
@@ -335,7 +334,6 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
       pack $frm.search.threshold -in [$frm.search getframe] -anchor w -side top -fill x -expand 0
    grid $frm.search -row 4 -column 0 -columnspan 1 -rowspan 1 -sticky ewns
 
-
    grid columnconfigure  $frm 0 -weight 1
    grid columnconfigure  $frm 1 -weight 1
 
@@ -346,7 +344,6 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
 
    pack $frm  -side top -fill x
 }
-
 
 #------------------------------------------------------------
 # ::autoguider::config::getLabel
@@ -512,7 +509,6 @@ proc ::autoguider::config::setDeclinaison { visuNo } {
       $private($visuNo,frm).delta.reverse configure -state disabled
    }
 }
-
 
 #------------------------------------------------------------
 # ::autoguider::config::setDetection

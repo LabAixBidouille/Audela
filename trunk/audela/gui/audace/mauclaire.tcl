@@ -3,7 +3,7 @@
 # Description : Scripts pour un usage aise des fonctions d'Aud'ACE
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
 #
-# Mise à jour $Id: mauclaire.tcl,v 1.31 2010-05-16 10:50:48 robertdelmas Exp $
+# Mise à jour $Id: mauclaire.tcl,v 1.32 2010-05-23 16:30:48 robertdelmas Exp $
 #
 
 #
@@ -47,7 +47,6 @@
 # bm_zoomima             : Zoom de l'image ou d'une partie selectionnee a la souris de l'image chargee
 #-----------------------------------------------------------------------------#
 
-
 ####################################################################
 # Cree une presentation graphique a partir de 2 listes abscisses eet ordonnees
 #
@@ -79,7 +78,6 @@ proc bm_plot { args } {
 }
 #*****************************************************************#
 
-
 ####################################################################
 # Compresse le repertoire image de la nuit et l'envoie par ftp sur Atlantis
 #
@@ -101,7 +99,6 @@ proc bm_mkdir { args } {
    }
 }
 #**********************************************************************************#
-
 
 ###############################################################################
 # Description : renumerote les fichiers ayant une numerotation facon MaxIm DL
@@ -146,7 +143,6 @@ proc bm_maximext { args } {
    }
 }
 #*****************************************************************************#
-
 
 ###############################################################################
 # Description : remet en conformite les caracteres des mots clefs du header
@@ -218,7 +214,6 @@ proc bm_cleanfit { args } {
                }
             }
          }
-
 
          #--- Sauvegarde :
          set ftype [ lindex [ buf$audace(bufNo) getkwd "BITPIX" ] 1 ]
@@ -876,7 +871,6 @@ proc bm_datefile { args } {
          set mo "0$mo"
       }
 
-
       #--- Concatenation :
       set madate "$y$mo$d"
 
@@ -1040,7 +1034,6 @@ proc bm_renameext { args } {
          ::console::affiche_erreur "Usage: bm_renameext ?repertoire? extension_actuelle.\n"
       }
 
-
       cd $repertoire
       set liste_fichiers [ lsort -dictionary [glob -dir $repertoire *$old_extension] ]
       set nbimg [ llength $liste_fichiers ]
@@ -1058,7 +1051,6 @@ proc bm_renameext { args } {
    }
 }
 #-----------------------------------------------------------------------------#
-
 
 ###############################################################################
 # Description : Renome l'extension de fichiers en extension par defaut d'Aud'ACE
@@ -1093,9 +1085,6 @@ proc bm_renameext2 { args } {
    }
 }
 #-----------------------------------------------------------------------------#
-
-
-
 
 ###############################################################################
 # Description : Registration planetaire sur un point initial et final : translation lineaire
@@ -1271,8 +1260,6 @@ proc bm_registerplin { args } {
 }
 #-----------------------------------------------------------------------------#
 
-
-
 ###############################################################################
 # Description : Registration planetaire horizontale sur un point initial et final : translation horizontale lineaire
 # Auteur : Benjamin MAUCLAIRE
@@ -1447,9 +1434,6 @@ proc bm_registerhplin { args } {
 }
 #-----------------------------------------------------------------------------#
 
-
-
-
 ###############################################################################
 # Description : Cree un flat synthetique (image d'intensite uniforme) de nxp pixels
 # Auteur : Benjamin MAUCLAIRE
@@ -1555,7 +1539,6 @@ proc bm_pretraittot { args } {
 }
 #-----------------------------------------------------------------------------#
 
-
 ###############################################################################
 # Descirption : effectue le prétraitement d'une série d'images brutes
 #
@@ -1604,7 +1587,6 @@ proc bm_pretrait { args } {
          ::console::affiche_erreur "Usage: bm_pretrait nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu ?nom_offset (none)? ?effacement des masters (o/n)?\n\n"
          return ""
       }
-
 
       #--- Compte les images :
       ## Renumerote chaque série de fichier
@@ -1708,7 +1690,6 @@ proc bm_pretrait { args } {
          }
       }
 
-
       #--- Isole le préfixe des noms de fichiers dans le cas ou ils possedent un "-" avant le n° :
       set pref_stellaire ""
       set pref_dark ""
@@ -1745,7 +1726,6 @@ proc bm_pretrait { args } {
          set pref_offset $nom_offset
       }
       # ::console::affiche_resultat "Corr : b=$pref_stellaire, d=$pref_dark, f=$pref_flat, df=$pref_darkflat\n"
-
 
       #--- Prétraitement des flats :
       #-- Somme médiane des dark, dark_flat et offset :
@@ -1827,7 +1807,6 @@ proc bm_pretrait { args } {
          delete2 "${pref_flat}_moinsnoir-" $nb_flat
       }
 
-
       #--- Prétraitement des images stellaires :
       #-- Soustraction du noir des images stellaires :
       ::console::affiche_resultat "Soustraction du noir des images stellaires...\n"
@@ -1862,7 +1841,6 @@ proc bm_pretrait { args } {
       div2 "${pref_stellaire}_moinsnoir-" "${pref_flat}-smd$nb_flat" "${pref_stellaire}-t-" $intensite_moyenne $nb_stellaire
       set image_traite_1 [ lindex [ lsort -dictionary [ glob ${pref_stellaire}-t-\[0-9\]*$conf(extension,defaut) ] ] 0 ]
 
-
       #--- Affichage et netoyage :
       loadima "$image_traite_1"
       ::console::affiche_resultat "Affichage de la première image prétraitée\n"
@@ -1885,7 +1863,6 @@ proc bm_pretrait { args } {
          file delete -force "${pref_darkflat}-smd$nb_darkflat$conf(extension,defaut)"
       }
 
-
       #--- Retour dans le répertoire de départ avnt le script
       return ${pref_stellaire}-t-
    } else {
@@ -1893,9 +1870,6 @@ proc bm_pretrait { args } {
    }
 }
 #****************************************************************************#
-
-
-
 
 ###############################################################
 # Description : Effectue la registration d'une serie d'images brutes
@@ -1922,8 +1896,6 @@ proc bm_register { args } {
    }
 }
 #-----------------------------------------------------------------------------#
-
-
 
 ###############################################################################
 # Description : Effectue la somme d'une serie d'images appariees
@@ -1975,7 +1947,6 @@ proc bm_sadd { args } {
 }
 #-----------------------------------------------------------------------------#
 
-
 ###############################################################################
 # Description : Effectue la somme moyenne d'une serie d'images appariees
 # Auteur : Benjamin MAUCLAIRE
@@ -2012,8 +1983,6 @@ proc bm_smean { args } {
    }
 }
 #-----------------------------------------------------------------------------#
-
-
 
 ###############################################################################
 # Description : Effectue la somme mediane d'une serie d'images appariees
@@ -2226,7 +2195,6 @@ proc bm_exptime { args } {
 }
 #*****************************************************************************#
 
-
 #=============================================================================#
 #                    Anciennes implémentations                                #
 #=============================================================================#
@@ -2250,13 +2218,9 @@ proc bm_sadd_20060806 { args } {
    }
 }
 
-
-
-
 ####################################################################################
 #                  Anciennes implémentations                                       #
 ####################################################################################
-
 
 if { 1== 0} {
 ###############################################################################

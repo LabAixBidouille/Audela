@@ -2,7 +2,7 @@
 # Fichier : acqzadko.tcl
 # Description : Outil d'acquisition
 # Auteurs : Francois Cochard et Myrtille Laas
-# Mise à jour $Id: acqzadko.tcl,v 1.22 2010-05-14 10:40:04 robertdelmas Exp $
+# Mise à jour $Id: acqzadko.tcl,v 1.23 2010-05-23 16:26:59 robertdelmas Exp $
 #
 
 #==============================================================
@@ -1223,7 +1223,6 @@ proc ::acqzadko::Go { visuNo } {
             break
          }
 
-
          #--- Chargement de l'image precedente (si telecharge_mode = 3 et si mode = serie, continu, continu 1 ou continu 2)
          if { $loadMode == "3" && $panneau(acqzadko,$visuNo,mode) >= "1" && $panneau(acqzadko,$visuNo,mode) <= "5" } {
             after 10 ::acqzadko::loadLastImage $visuNo $camNo
@@ -2305,7 +2304,6 @@ proc ::acqzadko::acqzadkoBuildIF { visuNo } {
         -command "::acqzadko::camConfigure $visuNo"
       pack $panneau(acqzadko,$visuNo,This).camera.but -side top -fill x -in $panneau(acqzadko,$visuNo,This).camera -ipadx 5 -ipady 4
    pack $panneau(acqzadko,$visuNo,This).camera -side top -fill x
-
 
    #--- Trame du bouton affichage de la raquette
    frame $panneau(acqzadko,$visuNo,This).raquette -borderwidth 2 -relief groove

@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.43 2010-01-30 14:08:12 robertdelmas Exp $
+# Mise Ã  jour $Id: autoguider.tcl,v 1.44 2010-05-23 16:21:57 robertdelmas Exp $
 #
 
 package provide autoguider 1.3
@@ -292,7 +292,6 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
 proc ::autoguider::deletePluginInstance { visuNo } {
    variable private
 
-
    ::autoguider::stopAcquisition $visuNo
 
    #--- je detruis le panel
@@ -437,7 +436,7 @@ proc ::autoguider::stopTool { visuNo } {
 
 #------------------------------------------------------------
 #  startSearch
-#     cherche l'étoile la plus brillante
+#     cherche l'etoile la plus brillante
 #  parametres
 #     visuNo : numero de visu
 #  return :
@@ -502,7 +501,7 @@ proc ::autoguider::startSearch { visuNo } {
          $hCanvas create oval [expr $x-5] [expr $y-5] [expr $x+5] [expr $y+5] -fill {} -outline blue -width 2 -activewidth 3 -tag autoguiderstar
       }
 
-      #--- je cree un deuxième cercle autour de l'étoile la plus brillante
+      #--- je cree un deuxieme cercle autour de l'etoile la plus brillante
       set brigthestStarCoord [lrange [lindex $private($visuNo,acquisitionResult) 0 ] 1 2]
       set coord [::confVisu::picture2Canvas $visuNo $brigthestStarCoord ]
       set x  [lindex $coord 0]
@@ -522,7 +521,7 @@ proc ::autoguider::startSearch { visuNo } {
 
 #------------------------------------------------------------
 #  clearSearchStar
-#     efface les marques des étoiles
+#     efface les marques des etoiles
 #  parametres
 #     visuNo : numero de visu
 #  return :
@@ -536,7 +535,7 @@ proc ::autoguider::clearSearchStar { visuNo } {
 
 #------------------------------------------------------------
 #  startCenter
-#     centre l'étoile
+#     centre l'etoile
 #  parametres
 #     visuNo : numero de visu
 #  return :
@@ -1139,7 +1138,7 @@ proc ::autoguider::setShowAlphaDeltaAxis { visuNo } {
    createAlphaDeltaAxis $visuNo $::conf(autoguider,originCoord) $::conf(autoguider,angle)
 
    ###if { $::conf(autoguider,showAlphaDeltaAxis) == "1" } {
-   ###   #--- je cree les axes, au cas ou il n'auraient pas été crees par startTool faute d'image dans la visu
+   ###   #--- je cree les axes, au cas ou il n'auraient pas ete crees par startTool faute d'image dans la visu
    ###   if {  [$private($visuNo,hCanvas) gettags axis ] == "" } {
    ###      createAlphaDeltaAxis $visuNo $::conf(autoguider,originCoord) $::conf(autoguider,angle)
    ###   }
@@ -1257,8 +1256,8 @@ proc ::autoguider::onChangeSubWindow { visuNo args } {
 #     si state = "" , l'envoi depend du checkbutton "montEnabled"
 #
 # @param visuNo       numero de la visu courante
-# @param state       state = 1 envoie les commandes à la monture
-#                    state = 0 n'envoie pas les commandes à la monture
+# @param state       state = 1 envoie les commandes a la monture
+#                    state = 0 n'envoie pas les commandes a la monture
 # @return  null
 #------------------------------------------------------------
 proc ::autoguider::setMountEnabled { visuNo { state "" } } {
@@ -1284,7 +1283,7 @@ proc ::autoguider::setMountEnabled { visuNo { state "" } } {
 # selectBinning
 #    change le binning de la camera
 # @param visuNo       numero de la visu courante
-# @param state       activation/desactivation de l'envoi des commandes à la monture
+# @param state       activation/desactivation de l'envoi des commandes a la monture
 # @return  null
 #------------------------------------------------------------
 proc ::autoguider::selectBinning { visuNo } {
