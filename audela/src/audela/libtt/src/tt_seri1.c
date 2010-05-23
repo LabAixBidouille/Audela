@@ -1134,7 +1134,7 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    nombre=1;
    taille=sizeof(TT_IMA);
    if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&pseries->p_in,&nombre,&taille,"pseries->p_in"))!=0) {
-      tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_series_builder (pointer p_in)");
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_series_builder (pointer p_in) nombre=%d taille=%d",nombre,taille);
       tt_ima_series_destroyer(pseries);
       return(TT_ERR_PB_MALLOC);
    }
