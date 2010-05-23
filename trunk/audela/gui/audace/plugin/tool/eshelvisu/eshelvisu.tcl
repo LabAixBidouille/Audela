@@ -2,7 +2,7 @@
 # Fichier : eshelvisu.tcl
 # Description : Visionneuse d'images eShel
 # Auteurs : Michel Pujol
-# Mise a jour $Id: eshelvisu.tcl,v 1.7 2010-04-29 18:13:01 michelpujol Exp $
+# Mise a jour $Id: eshelvisu.tcl,v 1.8 2010-05-23 06:47:03 robertdelmas Exp $
 #
 
 namespace eval ::eshelvisu {
@@ -232,8 +232,6 @@ proc ::eshelvisu::startTool { visuNo } {
    $hCanvas bind balloonline  <Enter> [list ::eshelvisu::showBalloon $visuNo %W %x %y %T ]
    ##$hCanvas bind balloonline  <Leave> [list after 1000 $hCanvas delete cballoon]
 
-
-
    #--- je lance la surveillance du chargement des fichiers
    ::confVisu::addFileNameListener $visuNo "::eshelvisu::onLoadFile $visuNo"
    #--- je lance la surveillance de la selection de HDU
@@ -295,8 +293,6 @@ proc ::eshelvisu::configure { visuNo } {
    localTable::refresh $visuNo
 }
 
-
-
 #------------------------------------------------------------
 #  getLabel
 #  retourne le nom de la fenetre de configuration
@@ -317,7 +313,7 @@ proc ::eshelvisu::onLoadFile { visuNo args } {
    variable private
 
    set private($visuNo,fileName) [::confVisu::getFileName $visuNo]
-   if { $private($visuNo,fileName) == "" || $private($visuNo,fileName) == "?" } {
+   if { $private($visuNo,fileName) == "" } {
       #--- j'interromp le traitement s'il n'y a pas de fichier dans la visu
       return
    }
@@ -351,13 +347,12 @@ proc ::eshelvisu::onSelectHdu { visuNo args } {
    variable private
 
    set private($visuNo,fileName) [::confVisu::getFileName $visuNo]
-   if { $private($visuNo,fileName) == "" || $private($visuNo,fileName) == "?" } {
+   if { $private($visuNo,fileName) == "" } {
       #--- j'interromp le traitement s'il n'y a pas de fichier dans la visu
       return
    }
    set hduNo [::confVisu::getHduNo $visuNo]
    set hduList [::confVisu::getHduList $visuNo]
-
 
    if { [llength $hduList] > 0 } {
       set private($visuNo,hduName) [lindex [ lindex $hduList [expr $hduNo -1] 0 ]]
@@ -377,7 +372,6 @@ proc ::eshelvisu::onSelectHdu { visuNo args } {
 #------------------------------------------------------------
 proc ::eshelvisu::showBalloon {visuNo w x y type } {
    variable private
-
 
    ###console::disp "showBalloon current: [$w find withtag current]\n"
 
@@ -553,7 +547,6 @@ proc ::eshelvisu::showCalibrationLine { visuNo } {
    set hCanvas [confVisu::getCanvas $visuNo]
    $hCanvas delete calibrationLine
 
-
    #--- je verifie que la table des ordres est presente
    if { $private($visuNo,orderHduNum) == 0 } {
       ##console::affiche_erreur "::eshelvisu::showCalibrationLine ORDERS table missing in $private($visuNo,fileName)\n"
@@ -563,7 +556,6 @@ proc ::eshelvisu::showCalibrationLine { visuNo } {
       ##console::affiche_erreur "::eshelvisu::showCalibrationLine LINEGAP table missing in $private($visuNo,fileName)\n"
       return
    }
-
 
    if { ($private($visuNo,showCalculatedLines) == 0 && $private($visuNo,showObservatedLines)== 0) || $private($visuNo,hduName) != "PRIMARY" } {
       return
@@ -598,7 +590,6 @@ proc ::eshelvisu::showCalibrationLine { visuNo } {
          set alpha   [expr $alpha*$PI/180.0]
          set gamma   [expr $gamma*$PI/180.0]
          set xc      [expr $width / 2 ]
-
 
          #--- je recupere la taille de la boite de rechercher wide_x , wide_y
          $hFile move $private($visuNo,orderHduNum)
@@ -710,7 +701,6 @@ proc ::eshelvisu::showHeader { visuNo } {
   #--- j'affiche la fenetre des mots clefs
   ::headergui::run $private($profileNo,This) $visuNo $keywords
 }
-
 
 ################################################################
 # namespace localTable
@@ -824,7 +814,7 @@ proc ::eshelvisu::localTable::exportBess { visuNo } {
    variable private
 
    set fileName [::confVisu::getFileName $visuNo]
-   if { $fileName == "?" } {
+   if { $fileName == "" } {
       set message "$::caption(eshelvisu,table,selectFileError)"
       tk_messageBox -title $::caption(eshelvisu,title) -type ok -message "$message" -icon error
       return
@@ -832,7 +822,6 @@ proc ::eshelvisu::localTable::exportBess { visuNo } {
 
    ::eshel::exportbess::run $visuNo $fileName 1
 }
-
 
 #------------------------------------------------------------------------------
 # localTable::getDirectory
@@ -944,7 +933,6 @@ proc ::eshelvisu::localTable::fillTable { visuNo } {
                || [regexp (.png)$                [string tolower $name]] && $enableExtension(png)==1
                } {
 
-
          #--- cas d'une image : ajoute une ligne dans la table avec le nom, type, serie et date du fichier
          #--- colonne name
          set name $name
@@ -1055,7 +1043,6 @@ proc ::eshelvisu::localTable::fillTable { visuNo } {
       $tbl cellconfigure end,0 -image $private(folderIcon)
    }
 }
-
 
 #------------------------------------------------------------------------------
 # getFileList
@@ -1193,7 +1180,6 @@ proc ::eshelvisu::localTable::loadItem { visuNo index { doubleClick 0 } { hduNam
          set name ""
       }
 
-
       #--- j'affiche le widget dans le canvas
       set private($visuNo,previousType)     "$type"
       set private($visuNo,previousFileName) "$filename"
@@ -1246,7 +1232,7 @@ proc ::eshelvisu::localTable::refresh { visuNo { fileName "" } { hduName "" }  }
 
    #--- je nettoie la visu si le fichier courant a ete efface
    set currentFileName [::confVisu::getFileName $visuNo ]
-   if { $currentFileName != "" && $currentFileName !="?" } {
+   if { $currentFileName != "" } {
       if { [file exists $currentFileName] == 0 } {
          ::confVisu::clear $visuNo
       }
@@ -1634,7 +1620,6 @@ proc ::eshelvisu::localTable::createTbl { visuNo frame } {
    bind [$tbl bodypath] <Control-Key-a>    [list ::eshelvisu::localTable::selectAll $visuNo]
    bind [$tbl bodypath] <Key-F5>    [list ::eshelvisu::localTable::refresh $visuNo]
 
-
    #--- choix de l'ordre aphabetique en fonction de l'OS ( pour ne pas depayser les habitues)
    if { $::tcl_platform(os) == "Linux" } {
       #--- je classe les fichiers par ordre alphabetique, en tenant compte des majuscules/minuscules
@@ -1689,7 +1674,6 @@ proc ::eshelvisu::localTable::createTbl { visuNo frame } {
       -variable conf(eshelvisu,show_column_size)       \
       -command "::eshelvisu::localTable::showColumn $visuNo $::eshelvisu::localTable::private($visuNo,tbl) size"
 
-
 }
 
 #------------------------------------------------------------------------------
@@ -1717,7 +1701,6 @@ proc ::eshelvisu::localTable::configureLabelDirectory { visuNo label } {
       $label configure -text .$tt
    }
 }
-
 
 ################################################################
 # namespace ::eshelvisu::config
@@ -1981,8 +1964,6 @@ proc ::eshelvisu::config::fillConfigPage { frm visuNo } {
        -highlightthickness 0 -variable ::eshelvisu::config::widget(showAllFiles)
    pack $frm.display.show_all_afiles -anchor w -side top -padx 5 -pady 0
 }
-
-
 
 #------------------------------------------------------------
 # ========== Namespace de la fenetre de renommage des fichiers ========
