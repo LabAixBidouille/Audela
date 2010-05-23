@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.139 2010-05-20 17:31:04 robertdelmas Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.140 2010-05-23 06:48:34 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -88,7 +88,7 @@ namespace eval ::confVisu {
       set private($visuNo,picture_w)       "0"
       set private($visuNo,picture_h)       "0"
       set private($visuNo,applyThickness)  "0"
-      set private($visuNo,lastFileName)    "?"
+      set private($visuNo,lastFileName)    ""
       set private($visuNo,autovisuEnCours) "0"
       set private($visuNo,fitsHduList)     ""
       set private($visuNo,currentHduNo)    1
@@ -311,7 +311,7 @@ namespace eval ::confVisu {
                   set hduNo 1
                }
                if { $fileName != [getFileName $visuNo] } {
-                  #--- c'est un nouveau fichier,
+                  #--- c'est un nouveau fichier
                   if { $hduName == "" } {
                      #--- je recupere le nom du HDU du fichier precedent
                      if { [llength $private($visuNo,fitsHduList) ] > 1 } {
@@ -337,7 +337,9 @@ namespace eval ::confVisu {
                               set hduNo   [expr $hduIndex + 1]
                               if { $hduType == "Image" } {
                                  #--- je charge le hdu
-                                 buf$bufNo load "$fileName;$hduNo"
+                                 if { $hduNo != "1" } {
+                                    buf$bufNo load "$fileName;$hduNo"
+                                 }
                               } else {
                                  #--- si c'est une table, je charge la table dans les variables columnNames et columnValues
                                  #--- j'utilise commande "fits open" car la commande "buf$bufno load" ne focntionne pas que pour les images
@@ -411,7 +413,7 @@ namespace eval ::confVisu {
                         #--- en cas d'erreur de chargement du fichier
                         #--- je nettoie l'affichage
                         set private($visuNo,fitsHduList) ""
-                        ::confVisu::setFileName $visuNo "?"
+                        set fileName ""
                         buf$bufNo clear
                         visu$visuNo clear
                         #--- j'affiche l'erreur
@@ -442,7 +444,7 @@ namespace eval ::confVisu {
                         #--- en cas d'erreur de chargement du fichier
                         #--- je nettoie l'affichage
                         set private($visuNo,fitsHduList) ""
-                        ::confVisu::setFileName $visuNo "?"
+                        set fileName ""
                         buf$bufNo clear
                         visu$visuNo clear
                         #--- j'affiche l'erreur
@@ -474,20 +476,18 @@ namespace eval ::confVisu {
                }
                set private($visuNo,picture_w) [buf$bufNo getpixelswidth]
                set private($visuNo,picture_h) [buf$bufNo getpixelsheight]
-               ::confVisu::setFileName $visuNo $fileName
-               set private($visuNo,currentHduNo) $hduNo
             } else {
                #--- je mets à jour le nom du fichier meme quand l'image ne
                #--- provient pas d'un fichier, mais d'une camera
                #--- afin de permettre le rafraichissement des outils
                #--- qui sont abonnes au listener addFilenameListener
+               set hduNo $private($visuNo,currentHduNo)
                set private($visuNo,fitsHduList) ""
-               ::confVisu::setFileName $visuNo "?"
             }
          } else {
             #--- si force=-clear , j'efface l'image affichee
             set private($visuNo,fitsHduList) ""
-            ::confVisu::setFileName $visuNo "?"
+            ::confVisu::setFileName $visuNo ""
             buf$bufNo clear
             visu$visuNo clear
          }
@@ -500,7 +500,7 @@ namespace eval ::confVisu {
             #---  si type=table   alors mode=table
             if { $private($visuNo,fitsHduList) != "" } {
                #---
-               set hduInfo [lindex $private($visuNo,fitsHduList) [expr $private($visuNo,currentHduNo) -1]]
+               set hduInfo [lindex $private($visuNo,fitsHduList) [expr $hduNo -1]]
                set hduName [lindex $hduInfo 0]
                set hduType [lindex $hduInfo 1]
                set hduNaxes [lindex $hduInfo 2]
@@ -815,7 +815,11 @@ namespace eval ::confVisu {
          #--- j'affiche le nom du fichier
          #--- cette procedure declenche les procedures qui sont a l'ecoute du changement
          #--- de nom de fichier avec addFileNameListener
-         ::confVisu::setFileName $visuNo $fileName
+         if { $fileName != "" } {
+            ::confVisu::setFileName $visuNo $fileName
+         } else {
+            ::confVisu::setFileName $visuNo [ getFileName $visuNo ]
+         }
 
          #--- je met a jour le numero du hdu
          #--- cette procedure declenche les procedures qui sont a l'ecoute du changement
@@ -1653,8 +1657,6 @@ namespace eval ::confVisu {
          }
          #--- je demarre l'outil
          namespace inscope $toolName startTool $visuNo
-
-
 
          #--- je memorise le nom de l'outil en cours d'execution
          if { [$toolName\::getPluginProperty "display" ] != "window" } {
@@ -3685,7 +3687,6 @@ proc ::confVisu::onChangeHdu { visuNo increment  } {
 proc ::confVisu::onSelectHdu { visuNo { hduNo "" } } {
    variable private
 
-
    if { $hduNo == "" } {
       #--- je recupere l'index du HDU dans la combo (index commence a 0)
       set index [$private($visuNo,This).bar.toolbar.combo getvalue]
@@ -3957,8 +3958,6 @@ namespace eval ::colorRGB {
          set mini_maxi_$color [ list $mini $maxi ]
 
       }
-
-
 
       #--- calcule la nouvelle dynamique de deplacement des curseurs a ressort
       if { $::conf(seuils,auto_manuel) == 1 } {
