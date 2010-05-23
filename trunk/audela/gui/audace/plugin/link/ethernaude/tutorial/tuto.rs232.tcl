@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.rs232.tcl,v 1.8 2009-06-01 09:52:12 robertdelmas Exp $
+# Mise √† jour $Id: tuto.rs232.tcl,v 1.9 2010-05-23 08:31:48 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -11,19 +11,19 @@ proc caption_def_plugcam { langage } {
 #--- definition of captions
 if {[string compare $langage french] ==0 } {
    set texte(firstdark_1) "Tutoriel pour les utilisateurs de l'EthernAude"
-   set texte(firstdark_2) "C‚blage RS232."
+   set texte(firstdark_2) "C√¢blage RS232."
    set texte(firstdark_3) "\
 Attention, le brochage de la prise DB9 n'est pas compatible\
 avec une prise RS232 standard. Seules les broches 2, 3 et 5\
-doivent Ítre c‚blÈes. Ces broches correspondent respectivement\
-aux signaux RxD (rÈception), TxD (transmission) et GND (masse).\n\
+doivent √™tre c√¢bl√©es. Ces broches correspondent respectivement\
+aux signaux RxD (r√©ception), TxD (transmission) et GND (masse).\n\
 \n\
-Il ne faut jamais brancher un c‚ble RS232 commercial sur\
-la prise DB9 au risque de dÈtruire l'appareil ‡ piloter !\
-Il faut fabriquer un c‚ble qui comporte uniquement les\
-fils reliÈs aux broches dÈcrites dans le paragraphe prÈcÈdent.\
+Il ne faut jamais brancher un c√¢ble RS232 commercial sur\
+la prise DB9 au risque de d√©truire l'appareil √† piloter !\
+Il faut fabriquer un c√¢ble qui comporte uniquement les\
+fils reli√©s aux broches d√©crites dans le paragraphe pr√©c√©dent.\
 "
-   set texte(firstdark_exit) " Retour ‡ la page principale."
+   set texte(firstdark_exit) " Retour √† la page principale."
 } else {
    set texte(firstdark_1) "Tutorial for EthernAude Users"
    set texte(firstdark_2) "RS232 Wiring"
@@ -165,7 +165,6 @@ pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 #
 .second.t tag configure demospace -lmargin1 1c -lmargin2 1c
 
-
 if {[winfo depth .second] == 1} {
    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
       -underline 1
@@ -210,7 +209,6 @@ set lastLine ""
 }
 
 # Create the text for the text widget.
-
 
 # ====================
 # === Setting text ===

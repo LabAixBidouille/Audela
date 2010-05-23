@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.plug1.tcl,v 1.8 2009-06-01 09:50:57 robertdelmas Exp $
+# Mise √† jour $Id: tuto.plug1.tcl,v 1.9 2010-05-23 08:27:45 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -11,16 +11,16 @@ proc caption_def_plugcam { langage } {
 #--- definition of captions
 if {[string compare $langage french] ==0 } {
    set texte(firstdark_1) "Tutoriel pour les utilisateurs de l'EthernAude"
-   set texte(firstdark_2) "Connexions entre le boÓtier et la camÈra."
+   set texte(firstdark_2) "Connexions entre le bo√Ætier et la cam√©ra."
    set texte(firstdark_3) "\
-Sur cette photo, ‡ gauche, le boÓtier d'alimentation\
-stabilisÈe 9 ou 12V (1A) extÈrieur est connectÈ au boÓtier EthernAude.\
-La camÈra est reliÈe au boÓtier EthernAude par son c‚ble en nappe\
-multicolore. Enfin, la camÈra est alimentÈe normalement (‡ droite sur la photo).\n\
+Sur cette photo, √† gauche, le bo√Ætier d'alimentation\
+stabilis√©e 9 ou 12V (1A) ext√©rieur est connect√© au bo√Ætier EthernAude.\
+La cam√©ra est reli√©e au bo√Ætier EthernAude par son c√¢ble en nappe\
+multicolore. Enfin, la cam√©ra est aliment√©e normalement (√† droite sur la photo).\n\
 \n\
 A ce stade, ne pas mettre les appareils sous tension.\
 "
-   set texte(firstdark_exit) " Retour ‡ la page principale."
+   set texte(firstdark_exit) " Retour √† la page principale."
 } else {
    set texte(firstdark_1) "Tutorial for EthernAude Users"
    set texte(firstdark_2) "Device - Camera Connections"
@@ -160,7 +160,6 @@ pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 #
 .second.t tag configure demospace -lmargin1 1c -lmargin2 1c
 
-
 if {[winfo depth .second] == 1} {
    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
       -underline 1
@@ -205,7 +204,6 @@ set lastLine ""
 }
 
 # Create the text for the text widget.
-
 
 # ====================
 # === Setting text ===

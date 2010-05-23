@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.i2c.tcl,v 1.8 2009-06-01 09:49:55 robertdelmas Exp $
+# Mise √† jour $Id: tuto.i2c.tcl,v 1.9 2010-05-23 08:25:10 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -11,18 +11,18 @@ proc caption_def_plugcam { langage } {
 #--- definition of captions
 if {[string compare $langage french] ==0 } {
    set texte(firstdark_1) "Tutoriel pour les utilisateurs de l'EthernAude"
-   set texte(firstdark_2) "C‚blage I2C."
+   set texte(firstdark_2) "C√¢blage I2C."
    set texte(firstdark_3) "\
 La broche 4 sert au signal d'horloge (SCL = Serial CLock line),\
-la broche 9 au signal de donnÈes (SDA = Serial DAta line)\
+la broche 9 au signal de donn√©es (SDA = Serial DAta line)\
 et la broche 5 pour la masse.\n\
 \n\
-Il ne faut jamais brancher un c‚ble commercial sur\
-la prise DB9 au risque de dÈtruire l'appareil ‡ piloter !\
-Il faut fabriquer un c‚ble qui comporte uniquement les\
-fils reliÈs aux broches dÈcrites dans le paragraphe prÈcÈdent.\
+Il ne faut jamais brancher un c√¢ble commercial sur\
+la prise DB9 au risque de d√©truire l'appareil √† piloter !\
+Il faut fabriquer un c√¢ble qui comporte uniquement les\
+fils reli√©s aux broches d√©crites dans le paragraphe pr√©c√©dent.\
 "
-   set texte(firstdark_exit) " Retour ‡ la page principale."
+   set texte(firstdark_exit) " Retour √† la page principale."
 } else {
    set texte(firstdark_1) "Tutorial for EthernAude Users"
    set texte(firstdark_2) "I2C Wiring"
@@ -163,7 +163,6 @@ pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 #
 .second.t tag configure demospace -lmargin1 1c -lmargin2 1c
 
-
 if {[winfo depth .second] == 1} {
    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
       -underline 1
@@ -208,7 +207,6 @@ set lastLine ""
 }
 
 # Create the text for the text widget.
-
 
 # ====================
 # === Setting text ===

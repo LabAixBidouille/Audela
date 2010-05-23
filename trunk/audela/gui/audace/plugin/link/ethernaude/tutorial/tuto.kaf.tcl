@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.kaf.tcl,v 1.8 2009-06-01 09:50:27 robertdelmas Exp $
+# Mise Ã  jour $Id: tuto.kaf.tcl,v 1.9 2010-05-23 08:26:29 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -13,12 +13,12 @@ if {[string compare $langage french] ==0 } {
    set texte(firstdark_1) "Tutoriel pour les utilisateurs de l'EthernAude"
    set texte(firstdark_2) "Choisir le CCD Kaf-0401E ou Kaf-1602E."
    set texte(firstdark_3) "\
-Sur la photo, un cavalier est entouré par un cercle rouge.\
+Sur la photo, un cavalier est entourÃ© par un cercle rouge.\
 Si le cavalier relie les deux broches, le programme interne\
 de l'EthernAude fonctionne pour un Kaf-0401E. Si le cavalier\
-est retiré, l'EthernAude fonctionne pour un Kaf-1602E.\n\
+est retirÃ©, l'EthernAude fonctionne pour un Kaf-1602E.\n\
 "
-   set texte(firstdark_exit) " Retour à la page principale."
+   set texte(firstdark_exit) " Retour Ã  la page principale."
 } else {
    set texte(firstdark_1) "Tutorial for EthernAude Users"
    set texte(firstdark_2) "Choosing the Kaf-0401E or Kaf-1602E CCD."
@@ -155,7 +155,6 @@ pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 #
 .second.t tag configure demospace -lmargin1 1c -lmargin2 1c
 
-
 if {[winfo depth .second] == 1} {
    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
       -underline 1
@@ -200,7 +199,6 @@ set lastLine ""
 }
 
 # Create the text for the text widget.
-
 
 # ====================
 # === Setting text ===

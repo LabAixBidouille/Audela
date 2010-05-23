@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.db9.tcl,v 1.8 2009-06-01 09:49:22 robertdelmas Exp $
+# Mise √† jour $Id: tuto.db9.tcl,v 1.9 2010-05-23 08:23:29 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -13,22 +13,22 @@ if {[string compare $langage french] ==0 } {
    set texte(firstdark_1) "Tutoriel pour les utilisateurs de l'EthernAude"
    set texte(firstdark_2) "Brochage de la prise DB9."
    set texte(firstdark_3) "\
-Broche 1 : Non connectÈe\n\
+Broche 1 : Non connect√©e\n\
 Broche 2 : RxD (RS232)\n\
 Broche 3 : TxD (RS232)\n\
 Broche 4 : SCL (I2C)\n\
 Broche 5 : Masse\n\
 Broche 6 : 5V\n\
 Broche 7 : Tension de l'alimentation externe (9 ou 12V)\n\
-Broche 8 : Bit de commande en entrÈe\n\
+Broche 8 : Bit de commande en entr√©e\n\
 Broche 9 : SDA (I2C)\n\
 \n\
-Il ne faut jamais brancher un c‚ble commercial sur\
-la prise DB9 au risque de dÈtruire l'appareil ‡ piloter !\
-Il faut fabriquer un c‚ble qui comporte uniquement les\
-fils reliÈs aux broches dÈcrites dans le paragraphe prÈcÈdent.\
+Il ne faut jamais brancher un c√¢ble commercial sur\
+la prise DB9 au risque de d√©truire l'appareil √† piloter !\
+Il faut fabriquer un c√¢ble qui comporte uniquement les\
+fils reli√©s aux broches d√©crites dans le paragraphe pr√©c√©dent.\
 "
-   set texte(firstdark_exit) " Retour ‡ la page principale."
+   set texte(firstdark_exit) " Retour √† la page principale."
 } else {
    set texte(firstdark_1) "Tutorial for EthernAude Users"
    set texte(firstdark_2) "DB9 Socket Pins"
@@ -175,7 +175,6 @@ pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 #
 .second.t tag configure demospace -lmargin1 1c -lmargin2 1c
 
-
 if {[winfo depth .second] == 1} {
    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
       -underline 1
@@ -220,7 +219,6 @@ set lastLine ""
 }
 
 # Create the text for the text widget.
-
 
 # ====================
 # === Setting text ===

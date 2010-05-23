@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.sxkey.tcl,v 1.8 2009-06-01 09:52:41 robertdelmas Exp $
+# Mise Ã  jour $Id: tuto.sxkey.tcl,v 1.9 2010-05-23 08:33:01 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -11,29 +11,29 @@ proc caption_def_plugcam { langage } {
 #--- definition of captions
 if {[string compare $langage french] ==0 } {
    set texte(firstdark_1) "Tutoriel pour les utilisateurs de l'EthernAude"
-   set texte(firstdark_2) "Reprogrammer le microcontrôleur caméra."
+   set texte(firstdark_2) "Reprogrammer le microcontrÃ´leur camÃ©ra."
    set texte(firstdark_3) "\
-Dans le boîtier EthernAude, la carte électronique inférieure\
-contient le logiciel interne de pilotage de la caméra. Il\
-est possible de télécharger les mises à jour de ce logiciel\
+Dans le boÃ®tier EthernAude, la carte Ã©lectronique infÃ©rieure\
+contient le logiciel interne de pilotage de la camÃ©ra. Il\
+est possible de tÃ©lÃ©charger les mises Ã  jour de ce logiciel\
 (http://www.astrosurf.com/ethernaude). Pour charger le logiciel\
-dans la carte EthernAude, il faut relier la sortie série de l'ordinateur\
-à une carte de programmation SX-Blitz ou clé SX\
+dans la carte EthernAude, il faut relier la sortie sÃ©rie de l'ordinateur\
+Ã  une carte de programmation SX-Blitz ou clÃ© SX\
 (http://www.parallax.com/sx/programming_kits.asp).\n\
 \n\
-Sur la photo du haut, deux cavaliers sont entourés par un cercle rouge.\
-Pour reprogrammer le microcontrôleur, il faut enlever ces deux\
-cavaliers. Introduire, ensuite, la clé SX dans les broches\
-entourées d'un cercle orange.\n\
+Sur la photo du haut, deux cavaliers sont entourÃ©s par un cercle rouge.\
+Pour reprogrammer le microcontrÃ´leur, il faut enlever ces deux\
+cavaliers. Introduire, ensuite, la clÃ© SX dans les broches\
+entourÃ©es d'un cercle orange.\n\
 \n\
-Sur la photo du bas, on voit la clé SX enfichée dans le connecteur.\n\
+Sur la photo du bas, on voit la clÃ© SX enfichÃ©e dans le connecteur.\n\
 \n\
-Ne pas oublier de replacer les cavaliers après l'opération de
-mise à jour du logiciel. Attention de respecter le sens de montage
-des cavaliers. Ils doivent être placés parallalèlement au grand axe
-du boîtier EthernAude.\
+Ne pas oublier de replacer les cavaliers aprÃ¨s l'opÃ©ration de
+mise Ã  jour du logiciel. Attention de respecter le sens de montage
+des cavaliers. Ils doivent Ãªtre placÃ©s parallalÃ¨lement au grand axe
+du boÃ®tier EthernAude.\
 "
-   set texte(firstdark_exit) " Retour à la page principale."
+   set texte(firstdark_exit) " Retour Ã  la page principale."
 } else {
    set texte(firstdark_1) "Tutorial for EthernAude Users"
    set texte(firstdark_2) "Updating the Microcontroller Software for the Camera."
@@ -184,7 +184,6 @@ pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 #
 .second.t tag configure demospace -lmargin1 1c -lmargin2 1c
 
-
 if {[winfo depth .second] == 1} {
    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
       -underline 1
@@ -229,7 +228,6 @@ set lastLine ""
 }
 
 # Create the text for the text widget.
-
 
 # ====================
 # === Setting text ===

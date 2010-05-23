@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.pres1.tcl,v 1.8 2009-06-01 09:51:43 robertdelmas Exp $
+# Mise √† jour $Id: tuto.pres1.tcl,v 1.9 2010-05-23 08:29:38 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -11,36 +11,36 @@ proc caption_def_plugcam { langage } {
 #--- definition of captions
 if {[string compare $langage french] ==0 } {
    set texte(firstdark_1) "Tutoriel pour les utilisateurs de l'EthernAude"
-   set texte(firstdark_2) "PrÈsentation gÈnÈrale"
+   set texte(firstdark_2) "Pr√©sentation g√©n√©rale"
    set texte(firstdark_3) "\
-Le boÓtier EthernAude permet d'utiliser une camÈra CCD\
-sur un rÈseau informatique. Ceci permet de :\n\
+Le bo√Ætier EthernAude permet d'utiliser une cam√©ra CCD\
+sur un r√©seau informatique. Ceci permet de :\n\
 \n\
-1. Piloter une camÈra situÈe ‡ une grande distance de l'ordinateur.\n\
-2. Raccourcir le temps de lecture par rapport ‡ l'utilisation\
-du port parallËle.\n\
-3. Piloter une camÈra ‡ partir d'un systËme Windows XP, NT ou 2000.\n\
+1. Piloter une cam√©ra situ√©e √† une grande distance de l'ordinateur.\n\
+2. Raccourcir le temps de lecture par rapport √† l'utilisation\
+du port parall√®le.\n\
+3. Piloter une cam√©ra √† partir d'un syst√®me Windows XP, NT ou 2000.\n\
 4. Piloter des instruments auxiliaires via une sortie RS232 et I2C.\n\
 \n\
-Actuellement, le boÓtier EthernAude pilote des camÈras Audine\
-ou Genesis ÈquipÈes de capteurs Kaf-401E ou Kaf-1602E.\n\
+Actuellement, le bo√Ætier EthernAude pilote des cam√©ras Audine\
+ou Genesis √©quip√©es de capteurs Kaf-401E ou Kaf-1602E.\n\
 \n\
-La photo montre le boÓtier EthernAude. Dimensions 15x8x6 (cm).\
-Poids 300g. Il suffit de connecter le c‚ble parallËle sur\
-le boÓtier EthernAude, au lieu du PC, et de connecter un c‚ble\
-rÈseau entre le PC et l'EthernAude (cf. photo du haut).\
-Sur l'autre face du boÓtier, une prise DB9 permet de dialoguer\
+La photo montre le bo√Ætier EthernAude. Dimensions 15x8x6 (cm).\
+Poids 300g. Il suffit de connecter le c√¢ble parall√®le sur\
+le bo√Ætier EthernAude, au lieu du PC, et de connecter un c√¢ble\
+r√©seau entre le PC et l'EthernAude (cf. photo du haut).\
+Sur l'autre face du bo√Ætier, une prise DB9 permet de dialoguer\
 par RS232 ou par protocole I2C (cf. photo du bas).\
 \n\
 \n\
-Le boÓtier EthernAude fonctionne sur une alimentation extÈrieure\
-stabilisÈe 9 ‡ 12 volts pouvant dÈlivrer 1 ampËre maximum.\
+Le bo√Ætier EthernAude fonctionne sur une alimentation ext√©rieure\
+stabilis√©e 9 √† 12 volts pouvant d√©livrer 1 amp√®re maximum.\
 \n\
 \n\
-Le boÓtier EthernAude est vendu par la sociÈtÈ mÈcASTROnic :\n\
+Le bo√Ætier EthernAude est vendu par la soci√©t√© m√©cASTROnic :\n\
 http://www.mecastronic.com\
 "
-   set texte(firstdark_exit) " Retour ‡ la page principale."
+   set texte(firstdark_exit) " Retour √† la page principale."
 } else {
    set texte(firstdark_1) "Tutorial for EthernAude Users"
    set texte(firstdark_2) "Overview."
@@ -68,7 +68,7 @@ The EthernAude device works with any external power supply box\
 producing a stabilizated 9 or 12V with 1 A maximum.\
 \n\
 \n\
-The EthernAude device is sold by mÈcASTROnic:\n\
+The EthernAude device is sold by m√©cASTROnic:\n\
 http://www.mecastronic.com\
 "
    set texte(firstdark_exit) " Return to the Main Page."
@@ -198,7 +198,6 @@ pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 #
 .second.t tag configure demospace -lmargin1 1c -lmargin2 1c
 
-
 if {[winfo depth .second] == 1} {
    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
       -underline 1
@@ -243,7 +242,6 @@ set lastLine ""
 }
 
 # Create the text for the text widget.
-
 
 # ====================
 # === Setting text ===

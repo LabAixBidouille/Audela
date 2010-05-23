@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.rj45.tcl,v 1.8 2009-06-01 09:51:58 robertdelmas Exp $
+# Mise Ã  jour $Id: tuto.rj45.tcl,v 1.9 2010-05-23 08:30:51 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -11,32 +11,32 @@ proc caption_def_plugcam { langage } {
 #--- definition of captions
 if {[string compare $langage french] ==0 } {
    set texte(firstdark_1) "Tutoriel pour les utilisateurs de l'EthernAude"
-   set texte(firstdark_2) "Présentation du câble réseau."
+   set texte(firstdark_2) "PrÃ©sentation du cÃ¢ble rÃ©seau."
    set texte(firstdark_3) "\
-La photo du haut montre une prise de type RJ45 mâle. On utilisera un câble\
-muni d'une telle prise mâle aux deux bouts pour relier l'EthernAude\
-à un réseau informatique.\n\
+La photo du haut montre une prise de type RJ45 mÃ¢le. On utilisera un cÃ¢ble\
+muni d'une telle prise mÃ¢le aux deux bouts pour relier l'EthernAude\
+Ã  un rÃ©seau informatique.\n\
 \n\
-Il faut noter qu'il existe deux types de câbles. Si l'on désire relier\
-directement le boîtier EthernAude à la prise réseau de l'ordinateur,\
-on devra utiliser un câble croisé. Si l'on désire relier le boîtier\
-EthernAude à un boîtier de distribution (Hub ou Switch), il faudra\
-utiliser un câble droit. Ces câbles sont vendus dans les magasins\
-d'informatique. Attention à bien préciser si le câble doit être droit ou croisé.\n\
+Il faut noter qu'il existe deux types de cÃ¢bles. Si l'on dÃ©sire relier\
+directement le boÃ®tier EthernAude Ã  la prise rÃ©seau de l'ordinateur,\
+on devra utiliser un cÃ¢ble croisÃ©. Si l'on dÃ©sire relier le boÃ®tier\
+EthernAude Ã  un boÃ®tier de distribution (Hub ou Switch), il faudra\
+utiliser un cÃ¢ble droit. Ces cÃ¢bles sont vendus dans les magasins\
+d'informatique. Attention Ã  bien prÃ©ciser si le cÃ¢ble doit Ãªtre droit ou croisÃ©.\n\
 \n\
-La photo du bas montre un Hub. C'est un boîtier muni de plusieurs prises RJ45 femelles qui\
-permet de faire communiquer plusieurs appareils reliés dessus.\
-Ainsi, le Hub devra être relié à l'EthernAude et à l'ordinateur\
-pour réaliser des images avec la caméra.\n\
+La photo du bas montre un Hub. C'est un boÃ®tier muni de plusieurs prises RJ45 femelles qui\
+permet de faire communiquer plusieurs appareils reliÃ©s dessus.\
+Ainsi, le Hub devra Ãªtre reliÃ© Ã  l'EthernAude et Ã  l'ordinateur\
+pour rÃ©aliser des images avec la camÃ©ra.\n\
 \n\
 Un Switch est un Hub intelligent. Le Switch permet une communication\
-plus directe entre deux appareils branchés dessus.\n\
+plus directe entre deux appareils branchÃ©s dessus.\n\
 \n\
-Il est très fortement recommandé de choisir un Switch plutôt\
-qu'un Hub. Cela permet de minimiser les collisions réseaux qui\
+Il est trÃ¨s fortement recommandÃ© de choisir un Switch plutÃ´t\
+qu'un Hub. Cela permet de minimiser les collisions rÃ©seaux qui\
 peuvent engendrer des parasites sur les images.\
 "
-   set texte(firstdark_exit) " Retour à la page principale."
+   set texte(firstdark_exit) " Retour Ã  la page principale."
 } else {
    set texte(firstdark_1) "Tutorial for EthernAude Users"
    set texte(firstdark_2) "What is a Network Cable?"
@@ -190,7 +190,6 @@ pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 #
 .second.t tag configure demospace -lmargin1 1c -lmargin2 1c
 
-
 if {[winfo depth .second] == 1} {
    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
       -underline 1
@@ -235,7 +234,6 @@ set lastLine ""
 }
 
 # Create the text for the text widget.
-
 
 # ====================
 # === Setting text ===

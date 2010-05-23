@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.capot.tcl,v 1.8 2009-06-01 09:49:04 robertdelmas Exp $
+# Mise Ã  jour $Id: tuto.capot.tcl,v 1.9 2010-05-23 08:22:50 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -11,12 +11,12 @@ proc caption_def_plugcam { langage } {
 #--- definition of captions
 if {[string compare $langage french] ==0 } {
    set texte(firstdark_1) "Tutoriel pour les utilisateurs de l'EthernAude"
-   set texte(firstdark_2) "Démontage du capot."
+   set texte(firstdark_2) "DÃ©montage du capot."
    set texte(firstdark_3) "\
-Le capot se démonte très facilement en dévissant les\
-quatre vis situées sous le boîtier.\n\
+Le capot se dÃ©monte trÃ¨s facilement en dÃ©vissant les\
+quatre vis situÃ©es sous le boÃ®tier.\n\
 "
-   set texte(firstdark_exit) " Retour à la page principale."
+   set texte(firstdark_exit) " Retour Ã  la page principale."
 } else {
    set texte(firstdark_1) "Tutorial for EthernAude Users"
    set texte(firstdark_2) "Removing the Cover."
@@ -151,7 +151,6 @@ pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 #
 .second.t tag configure demospace -lmargin1 1c -lmargin2 1c
 
-
 if {[winfo depth .second] == 1} {
    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
       -underline 1
@@ -196,7 +195,6 @@ set lastLine ""
 }
 
 # Create the text for the text widget.
-
 
 # ====================
 # === Setting text ===
