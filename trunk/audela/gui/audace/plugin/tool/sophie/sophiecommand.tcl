@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.53 2010-05-22 14:17:41 michelpujol Exp $
+# @version  $Id: sophiecommand.tcl,v 1.54 2010-05-23 16:14:40 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -2102,7 +2102,7 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
             set alphaCorrection      [lindex $args 14]
             set deltaCorrection      [lindex $args 15]
             set infoMessage          [lindex $args 16]
-            ###::console::disp "::sophie::callbackAcquisition alphaDiff=$alphaDiff deltaDiff=$deltaDiff \n"
+            ###::console::disp "::sophie::callbackAcquisition infoMessage=$infoMessage \n"
 
             #--- je modifie la position du carre de la cible
             if { $private(targetMove) == "AUTO" } {
@@ -2127,7 +2127,7 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                      $starX $starY $fwhmX $fwhmY $skyLevel $maxIntensity $starFlux \
                      $starDx $starDy $alphaDiff $deltaDiff $alphaCorrection $deltaCorrection
                   #--- je memorise le flux de l'etoile pour le mettre dans l'image integree
-                  ::sophie::spectro::setStarFlux $starFlux
+                  #--- ::sophie::spectro::setStarFlux $starFlux
                }
                "FOCUS" {
                   #--- je met a jour la liste des 3 dernières valeurs du fond du ciel
