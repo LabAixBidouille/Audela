@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: keyword.tcl,v 1.43 2010-03-27 14:21:25 michelpujol Exp $
+# Mise à jour $Id: keyword.tcl,v 1.44 2010-05-23 06:44:05 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -73,7 +73,7 @@ proc ::keyword::header { visuNo args } {
       }
    } else {
       set fileName [ ::confVisu::getFileName $visuNo ]
-      if { $fileName != "?"  &&  $::confVisu::private($visuNo,mode) == "table" } {
+      if { $fileName != "" && $::confVisu::private($visuNo,mode) == "table" } {
          #--- je charge les mots cles du HDU de la table
          set catchResult [ catch {
              #--- j'ouvre le fichier d'entree
