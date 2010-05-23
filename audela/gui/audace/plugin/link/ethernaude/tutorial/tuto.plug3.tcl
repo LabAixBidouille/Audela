@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.plug3.tcl,v 1.8 2009-06-01 09:51:28 robertdelmas Exp $
+# Mise Ã  jour $Id: tuto.plug3.tcl,v 1.9 2010-05-23 08:28:58 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -13,19 +13,19 @@ if {[string compare $langage french] ==0 } {
    set texte(firstdark_1) "Tutoriel pour les utilisateurs de l'EthernAude"
    set texte(firstdark_2) "Connexion par un Hub ou par un Switch."
    set texte(firstdark_3) "\
-Sur cette photo, l'ordinateur est connecté à un Hub par un câble réseau droit.\
-Le boîtier EthernAude est relié à une autre entrée du Hub\
-par un autre câble réseau droit. Le\
-boîtier EthernAude est alimenté par une alimentation stabilisée\
-de 9 ou 12 V (1 A). Le câble en nappe multicolore est connecté\
-entre le boîtier EthernAude et la caméra Audine. La caméra Audine\
-est connectée à son boîtier d'alimentation.\n\
+Sur cette photo, l'ordinateur est connectÃ© Ã  un Hub par un cÃ¢ble rÃ©seau droit.\
+Le boÃ®tier EthernAude est reliÃ© Ã  une autre entrÃ©e du Hub\
+par un autre cÃ¢ble rÃ©seau droit. Le\
+boÃ®tier EthernAude est alimentÃ© par une alimentation stabilisÃ©e\
+de 9 ou 12 V (1 A). Le cÃ¢ble en nappe multicolore est connectÃ©\
+entre le boÃ®tier EthernAude et la camÃ©ra Audine. La camÃ©ra Audine\
+est connectÃ©e Ã  son boÃ®tier d'alimentation.\n\
 \n\
-Il est très fortement recommandé de choisir un Switch plutôt\
-qu'un Hub. Cela permet de minimiser les collisions réseaux qui\
+Il est trÃ¨s fortement recommandÃ© de choisir un Switch plutÃ´t\
+qu'un Hub. Cela permet de minimiser les collisions rÃ©seaux qui\
 peuvent engendrer des parasites sur les images.\
 "
-   set texte(firstdark_exit) " Retour à la page principale."
+   set texte(firstdark_exit) " Retour Ã  la page principale."
 } else {
    set texte(firstdark_1) "Tutorial for EthernAude Users"
    set texte(firstdark_2) "Connection through a Hub or a Switch."
@@ -170,7 +170,6 @@ pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 #
 .second.t tag configure demospace -lmargin1 1c -lmargin2 1c
 
-
 if {[winfo depth .second] == 1} {
    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
       -underline 1
@@ -215,7 +214,6 @@ set lastLine ""
 }
 
 # Create the text for the text widget.
-
 
 # ====================
 # === Setting text ===

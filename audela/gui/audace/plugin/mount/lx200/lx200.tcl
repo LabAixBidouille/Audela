@@ -2,7 +2,7 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise a jour $Id: lx200.tcl,v 1.28 2009-07-17 17:03:37 michelpujol Exp $
+# Mise à jour $Id: lx200.tcl,v 1.29 2010-05-23 08:37:19 robertdelmas Exp $
 #
 
 namespace eval ::lx200 {
@@ -172,7 +172,6 @@ proc ::lx200::fillConfigPage { frm } {
    set private(frm)          $frm
    set private(ite-lente_A0) "0"
    set private(ite-lente_A1) "0"
-
 
    #--- confToWidget
    ::lx200::confToWidget

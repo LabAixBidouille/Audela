@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.tcl,v 1.15 2010-01-09 18:33:23 robertdelmas Exp $
+# Mise √† jour $Id: tuto.tcl,v 1.16 2010-05-23 08:34:20 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -21,30 +21,30 @@ proc caption_def { langage } {
       set caption(tuto_quit)  "Quitter"
       set caption(tuto_tools) "Outils"
       set texte(tuto_1)    "Tutoriel pour les utilisateurs de l'EthernAude"
-      set texte(tuto_2)    "Ce tutoriel vous permettra de rÈaliser vos premiËres images avec votre camÈra CCD connectÈe avec un boÓtier EthernAude. Pour toute information complÈmentaire, consulter le site web http://www.astrosurf.com/ethernaude"
-      set texte(tuto_0)    "PrÈsentation gÈnÈrale de l'EthernAude."
-      set texte(tuto_3)    "Brancher l'EthernAude avec une camÈra Audine"
-      set texte(tuto_4)    "Connexions entre le boÓtier et la camÈra."
-      set texte(tuto_5)    "PrÈsentation du c‚ble rÈseau."
-      set texte(tuto_6)    "Connexion directe par un c‚ble rÈseau croisÈ."
+      set texte(tuto_2)    "Ce tutoriel vous permettra de r√©aliser vos premi√®res images avec votre cam√©ra CCD connect√©e avec un bo√Ætier EthernAude. Pour toute information compl√©mentaire, consulter le site web http://www.astrosurf.com/ethernaude"
+      set texte(tuto_0)    "Pr√©sentation g√©n√©rale de l'EthernAude."
+      set texte(tuto_3)    "Brancher l'EthernAude avec une cam√©ra Audine"
+      set texte(tuto_4)    "Connexions entre le bo√Ætier et la cam√©ra."
+      set texte(tuto_5)    "Pr√©sentation du c√¢ble r√©seau."
+      set texte(tuto_6)    "Connexion directe par un c√¢ble r√©seau crois√©."
       set texte(tuto_7)    "Connexion par un Hub ou par un Switch."
-      set texte(tuto_8)    "Mise en marche Èlectrique."
+      set texte(tuto_8)    "Mise en marche √©lectrique."
       set texte(tuto_10_0) "Tests de fonctionnement"
       set texte(tuto_10)   "Connexion logicielle entre l'ordinateur et l'EthernAude."
-      set texte(tuto_11)   "PremiËres images."
+      set texte(tuto_11)   "Premi√®res images."
       set texte(tuto_12)   "Pour aller plus loin."
-      set texte(tuto_20_0) "C‚blage pour utiliser la prise DB9"
-      set texte(tuto_20)   "C‚blage RS232."
-      set texte(tuto_21)   "C‚blage I2C."
+      set texte(tuto_20_0) "C√¢blage pour utiliser la prise DB9"
+      set texte(tuto_20)   "C√¢blage RS232."
+      set texte(tuto_21)   "C√¢blage I2C."
       set texte(tuto_22)   "Brochage de la prise DB9."
-      set texte(tuto_30_0) "Visite ‡ l'intÈrieur du boÓtier"
-      set texte(tuto_30)   "DÈmontage du capot."
+      set texte(tuto_30_0) "Visite √† l'int√©rieur du bo√Ætier"
+      set texte(tuto_30)   "D√©montage du capot."
       set texte(tuto_31)   "Choisir le CCD Kaf-0401E ou Kaf-1602E."
-      set texte(tuto_32)   "Reprogrammer le microcontrÙleur camÈra."
-      set texte(tuto_33)   "Reprogrammer le microcontrÙleur Ethernet."
+      set texte(tuto_32)   "Reprogrammer le microcontr√¥leur cam√©ra."
+      set texte(tuto_33)   "Reprogrammer le microcontr√¥leur Ethernet."
       set texte(tuto_about0) "Tutoriel EthernAude"
-      set texte(tuto_about1) "Tutoriel pour le boÓtier EthernAude\n\n\Aude (c) 2002\n"
-      set texte(tuto_update) "Mise ‡ jour du"
+      set texte(tuto_about1) "Tutoriel pour le bo√Ætier EthernAude\n\n\Aude (c) 2002\n"
+      set texte(tuto_update) "Mise √† jour du"
       set texte(next_topic)  "Page suivante :"
    } else {
       set caption(main_title) "Tutorial for EthernAude Users"
@@ -133,7 +133,6 @@ wm minsize .main ${screenwidth} ${screenheight}
 wm resizable .main 1 1
 wm protocol .main WM_DELETE_WINDOW tuto_exit
 set widgetDemo 1
-
 
 #----------------------------------------------------------------
 # The code below create the main window, consisting of a menu bar

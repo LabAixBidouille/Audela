@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.27 2010-01-25 21:46:01 michelpujol Exp $
+# Mise à jour $Id: t193.tcl,v 1.28 2010-05-23 08:38:42 robertdelmas Exp $
 #
 
 namespace eval ::t193 {
@@ -930,8 +930,4 @@ proc ::t193::onSelectModel { tkCombo } {
       set widget(model,date) $::conf(confTel,model,$modelId,date)
    }
 }
-
-
-
-
 

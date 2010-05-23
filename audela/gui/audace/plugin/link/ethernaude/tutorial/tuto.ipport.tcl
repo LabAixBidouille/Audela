@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.ipport.tcl,v 1.14 2010-01-12 16:30:41 robertdelmas Exp $
+# Mise Ã  jour $Id: tuto.ipport.tcl,v 1.15 2010-05-23 08:25:52 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -31,49 +31,49 @@ proc caption_def_plugcam { langage } {
 if {[string compare $langage french] ==0 } {
    set caption(ethernaude)   "EthernAude"
    set caption(connect)      "Connecter"
-   set caption(cam_connect)  "Caméra connectée"
-   set caption(cam_connect1) "Caméra déjà connectée"
+   set caption(cam_connect)  "CamÃ©ra connectÃ©e"
+   set caption(cam_connect1) "CamÃ©ra dÃ©jÃ  connectÃ©e"
    set texte(firstdark_1) "Tutoriel pour les utilisateurs de l'EthernAude"
    set texte(firstdark_2) "Connexion logicielle entre l'ordinateur et l'EthernAude."
    set texte(firstdark_3) "\
-Pour communiquer sur un réseau informatique, l'ordinateur et\
-le boîtier EthernAude possèdent un numéro IP (Internet Protocol).\
-La connexion de l'ordinateur sur l'EthernAude est réalisée sur\
-le port numéro 192. Ce numéro est fixe et vient en complément du\
-numéro IP. Avant de continuer, assurez-vous qu'un seul boîtier\
-EthernAude est connecté sur votre réseau (cette restriction ne vaut\
+Pour communiquer sur un rÃ©seau informatique, l'ordinateur et\
+le boÃ®tier EthernAude possÃ¨dent un numÃ©ro IP (Internet Protocol).\
+La connexion de l'ordinateur sur l'EthernAude est rÃ©alisÃ©e sur\
+le port numÃ©ro 192. Ce numÃ©ro est fixe et vient en complÃ©ment du\
+numÃ©ro IP. Avant de continuer, assurez-vous qu'un seul boÃ®tier\
+EthernAude est connectÃ© sur votre rÃ©seau (cette restriction ne vaut\
 que pour ce test de connexion)."
    if {$ipeth(ipon)=="yes"} {
       if {$ipeth(ipnumethernaudeping)==1} {
-         set textip "Un appareil, qui a ce numéro, a été détecté sur le réseau. Vérifier qu'il s'agisse bien de l'EthernAude."
+         set textip "Un appareil, qui a ce numÃ©ro, a Ã©tÃ© dÃ©tectÃ© sur le rÃ©seau. VÃ©rifier qu'il s'agisse bien de l'EthernAude."
       } else {
-         set textip "Ce numéro n'est pas encore utilisé."
+         set textip "Ce numÃ©ro n'est pas encore utilisÃ©."
       }
       set texte(firstdark_4) "\
-Actuellement, votre ordinateur possède le numéro IP $ipeth(ipnum).\
-Le boîtier EthernAude doit être configuré pour avoir un\
-numéro IP dont les trois premiers nombres sont $ipeth(ipnumeth).\
-Le dernier numéro doit être différent de $ipeth(ipnumpc) (celui\
+Actuellement, votre ordinateur possÃ¨de le numÃ©ro IP $ipeth(ipnum).\
+Le boÃ®tier EthernAude doit Ãªtre configurÃ© pour avoir un\
+numÃ©ro IP dont les trois premiers nombres sont $ipeth(ipnumeth).\
+Le dernier numÃ©ro doit Ãªtre diffÃ©rent de $ipeth(ipnumpc) (celui\
 de votre ordinateur). Par exemple, $ipeth(ipnumethernaude).\
-$textip. Vérifier\
-que ce numéro est différent de ceux des autres appareils\
-branchés sur le réseau.\n\
+$textip. VÃ©rifier\
+que ce numÃ©ro est diffÃ©rent de ceux des autres appareils\
+branchÃ©s sur le rÃ©seau.\n\
 \n\
-Dans le panneau de droite, indiquer le numéro IP de l'EthernAude\
-et appuyer sur le bouton Connecter pour établir\
+Dans le panneau de droite, indiquer le numÃ©ro IP de l'EthernAude\
+et appuyer sur le bouton Connecter pour Ã©tablir\
 la connexion avec l'ordinateur.\
-Dans une première étape, le numéro IP de l'EthernAude est mis à\
-jour par le programme IPSetting (système Windows seulement). La seconde étape établit la connexion\
-entre l'ordinateur et le boîtier.\
-Si la connexion s'est bien passée alors le message\
-\"Camera connected\" doit apparaître."
+Dans une premiÃ¨re Ã©tape, le numÃ©ro IP de l'EthernAude est mis Ã \
+jour par le programme IPSetting (systÃ¨me Windows seulement). La seconde Ã©tape Ã©tablit la connexion\
+entre l'ordinateur et le boÃ®tier.\
+Si la connexion s'est bien passÃ©e alors le message\
+\"Camera connected\" doit apparaÃ®tre."
    } else {
       set texte(firstdark_4) "\
-Actuellement, votre ordinateur n'est pas configuré pour une utilisation\
-en réseau. Consulter l'aide de votre système d'exploitation.\n\n\
+Actuellement, votre ordinateur n'est pas configurÃ© pour une utilisation\
+en rÃ©seau. Consulter l'aide de votre systÃ¨me d'exploitation.\n\n\
 "
    }
-   set texte(firstdark_exit) " Retour à la page principale."
+   set texte(firstdark_exit) " Retour Ã  la page principale."
 } else {
    set caption(ethernaude)   "EthernAude"
    set caption(connect)      "Connect"

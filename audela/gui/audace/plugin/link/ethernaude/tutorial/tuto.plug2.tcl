@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.plug2.tcl,v 1.8 2009-06-01 09:51:13 robertdelmas Exp $
+# Mise √† jour $Id: tuto.plug2.tcl,v 1.9 2010-05-23 08:28:21 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -11,15 +11,15 @@ proc caption_def_plugcam { langage } {
 #--- definition of captions
 if {[string compare $langage french] ==0 } {
    set texte(firstdark_1) "Tutoriel pour les utilisateurs de l'EthernAude"
-   set texte(firstdark_2) "Connexion directe par un c‚ble croisÈ"
+   set texte(firstdark_2) "Connexion directe par un c√¢ble crois√©"
    set texte(firstdark_3) "\
-Sur cette photo, l'ordinateur est connectÈ directement au\
-boÓtier EthernAude par un c‚ble rÈseau de type RJ45 croisÈ. Le\
-boÓtier EthernAude est alimentÈ par une alimentation stabilisÈe\
-de 9 ou 12 V (1 A). Le c‚ble en nappe multicolore est connectÈ\
-entre le boÓtier EthernAude et la camÈra Audine. La camÈra Audine\
-est connectÈe ‡ son boÓtier d'alimentation."
-   set texte(firstdark_exit) " Retour ‡ la page principale."
+Sur cette photo, l'ordinateur est connect√© directement au\
+bo√Ætier EthernAude par un c√¢ble r√©seau de type RJ45 crois√©. Le\
+bo√Ætier EthernAude est aliment√© par une alimentation stabilis√©e\
+de 9 ou 12 V (1 A). Le c√¢ble en nappe multicolore est connect√©\
+entre le bo√Ætier EthernAude et la cam√©ra Audine. La cam√©ra Audine\
+est connect√©e √† son bo√Ætier d'alimentation."
+   set texte(firstdark_exit) " Retour √† la page principale."
 } else {
    set texte(firstdark_1) "Tutorial for EthernAude Users"
    set texte(firstdark_2) "Crossover Cable Direct Connection."
@@ -159,7 +159,6 @@ pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 #
 .second.t tag configure demospace -lmargin1 1c -lmargin2 1c
 
-
 if {[winfo depth .second] == 1} {
    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
       -underline 1
@@ -204,7 +203,6 @@ set lastLine ""
 }
 
 # Create the text for the text widget.
-
 
 # ====================
 # === Setting text ===

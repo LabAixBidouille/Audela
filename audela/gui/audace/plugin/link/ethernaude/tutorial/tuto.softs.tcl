@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.softs.tcl,v 1.9 2009-06-01 09:52:27 robertdelmas Exp $
+# Mise Ã  jour $Id: tuto.softs.tcl,v 1.10 2010-05-23 08:32:26 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -13,21 +13,21 @@ if {[string compare $langage french] ==0 } {
    set texte(firstdark_1) "Tutoriel pour les utilisateurs de l'EthernAude"
    set texte(firstdark_2) "Pour aller plus loin."
    set texte(firstdark_3) "\
-Le boîtier EthernAude est piloté par les logiciels suivants :\n\
+Le boÃ®tier EthernAude est pilotÃ© par les logiciels suivants :\n\
 \n\
 Prism    : http://www.astrosurf.com/prism\n\
 AudeLA   : http://www.audela.org\n\
 TeleAuto : http://www.astrosurf.com/teleauto\n\
 \n\
-Ces logiciels vous permettront de profiter d'un véritable\
-environnement logiciel dédié à la prise d'images et à leur\
+Ces logiciels vous permettront de profiter d'un vÃ©ritable\
+environnement logiciel dÃ©diÃ© Ã  la prise d'images et Ã  leur\
 traitement. Ces logiciels communiquent avec l'EthernAude par\
 le fichier CCD_Driver[info sharedlibextension]\
 (ou EthernAude_CCD[info sharedlibextension]). Les mises\
-à jour de ce fichier peuvent être téléchargées sur le site\
+Ã  jour de ce fichier peuvent Ãªtre tÃ©lÃ©chargÃ©es sur le site\
 http://www.astrosurf.com/ethernaude\
 "
-   set texte(firstdark_exit) " Retour à la page principale."
+   set texte(firstdark_exit) " Retour Ã  la page principale."
 } else {
    set texte(firstdark_1) "Tutorial for EthernAude Users"
    set texte(firstdark_2) "Beyond Basics."
@@ -172,7 +172,6 @@ pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 #
 .second.t tag configure demospace -lmargin1 1c -lmargin2 1c
 
-
 if {[winfo depth .second] == 1} {
    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
       -underline 1
@@ -217,7 +216,6 @@ set lastLine ""
 }
 
 # Create the text for the text widget.
-
 
 # ====================
 # === Setting text ===

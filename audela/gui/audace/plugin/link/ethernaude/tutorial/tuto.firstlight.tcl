@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.firstlight.tcl,v 1.12 2010-01-07 09:31:10 robertdelmas Exp $
+# Mise Ã  jour $Id: tuto.firstlight.tcl,v 1.13 2010-05-23 08:24:33 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -17,17 +17,17 @@ if {[string compare $langage french] ==0 } {
    set caption(compute) "Analyse..."
    set caption(exit) "Quitter"
    set caption(thermlevel) "Niveau thermique ="
-   set caption(max_zero) "Problème de connexion"
-   set caption(satured) "Des pixels sont saturés"
+   set caption(max_zero) "ProblÃ¨me de connexion"
+   set caption(satured) "Des pixels sont saturÃ©s"
    set caption(maxlight) "Valeur maximum ="
    set caption(lowlevel) "Niveau bas ="
    set caption(highlevel) "Niveau haut ="
 
    set texte(firstlight_1) "Tutoriel pour les utilisateurs de l'EthernAude"
-   set texte(firstlight_2) "Premières images."
-   set texte(firstlight_3) "Installer votre matériel d'acquisition CCD (caméra branchée sur EthernAude) dans une pièce faiblement éclairée. Le mieux est de procéder pendant la nuit dans une pièce éclairée par l'écran de l'ordinateur.\n\n\
-Cliquer sur le bouton rouge $caption(go) pour faire une image en binning 2x2. L'image doit être grise parsemée de nombreux pixels blancs"
-   set texte(firstlight_exit) " Retour à la page principale."
+   set texte(firstlight_2) "PremiÃ¨res images."
+   set texte(firstlight_3) "Installer votre matÃ©riel d'acquisition CCD (camÃ©ra branchÃ©e sur EthernAude) dans une piÃ¨ce faiblement Ã©clairÃ©e. Le mieux est de procÃ©der pendant la nuit dans une piÃ¨ce Ã©clairÃ©e par l'Ã©cran de l'ordinateur.\n\n\
+Cliquer sur le bouton rouge $caption(go) pour faire une image en binning 2x2. L'image doit Ãªtre grise parsemÃ©e de nombreux pixels blancs"
+   set texte(firstlight_exit) " Retour Ã  la page principale."
 } else {
    set caption(main_title) "Snapshot:  First Steps in the CCD World"
    set caption(description) "Push the red button to shoot an image of"
@@ -68,7 +68,6 @@ global caption   # texts of captions
 global texte     # texts of text aeras
 global zone      # window name of usefull screen parts
 
-
 caption_def_firstlight $langage
 
 #--- definition of colors
@@ -76,7 +75,6 @@ set color(back)       #FF9000
 set color(go)         #FF0000
 set color(text)       #0000FF
 set color(back_image) #000000
-
 
 #----------------------------------------------------------------
 # The code below creates the main window, consisting of a menu bar
@@ -224,7 +222,6 @@ pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 #
 .second.t tag configure demospace -lmargin1 1c -lmargin2 1c
 
-
 if {[winfo depth .second] == 1} {
    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
       -underline 1
@@ -270,11 +267,9 @@ set lastLine ""
 
 # Create the text for the text widget.
 
-
 # ====================
 # === Setting text ===
 # ====================
-
 
 .second.t insert end "$texte(firstlight_1)\n" title
 .second.t insert end "$texte(firstlight_2)\n\n" title

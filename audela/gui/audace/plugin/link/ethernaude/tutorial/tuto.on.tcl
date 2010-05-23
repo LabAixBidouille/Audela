@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.on.tcl,v 1.8 2009-06-01 09:50:42 robertdelmas Exp $
+# Mise Ã  jour $Id: tuto.on.tcl,v 1.9 2010-05-23 08:27:06 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -11,17 +11,17 @@ proc caption_def_plugcam { langage } {
 #--- definition of captions
 if {[string compare $langage french] ==0 } {
    set texte(firstdark_1) "Tutoriel pour les utilisateurs de l'EthernAude"
-   set texte(firstdark_2) "Mise en marche électrique."
+   set texte(firstdark_2) "Mise en marche Ã©lectrique."
    set texte(firstdark_3) "\
-Allumer d'abord le boîtier EthernAude en appuyant sur le bouton\
-situé à droite sur la photo. La led rouge du bouton doit s'allumer.\
+Allumer d'abord le boÃ®tier EthernAude en appuyant sur le bouton\
+situÃ© Ã  droite sur la photo. La led rouge du bouton doit s'allumer.\
 Ensuite, mettre en route\
-l'alimentation de la caméra CCD (et son refroidissement éventuellement).\n\
+l'alimentation de la camÃ©ra CCD (et son refroidissement Ã©ventuellement).\n\
 \n\
-Pour arrêter le système, commencer par arrêter l'alimentation\
-de la caméra puis celle de l'EthernAude.\
+Pour arrÃªter le systÃ¨me, commencer par arrÃªter l'alimentation\
+de la camÃ©ra puis celle de l'EthernAude.\
 "
-   set texte(firstdark_exit) " Retour à la page principale."
+   set texte(firstdark_exit) " Retour Ã  la page principale."
 } else {
    set texte(firstdark_1) "Tutorial for EthernAude Users"
    set texte(firstdark_2) "Switching on"
@@ -161,7 +161,6 @@ pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 #
 .second.t tag configure demospace -lmargin1 1c -lmargin2 1c
 
-
 if {[winfo depth .second] == 1} {
    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
       -underline 1
@@ -206,7 +205,6 @@ set lastLine ""
 }
 
 # Create the text for the text widget.
-
 
 # ====================
 # === Setting text ===

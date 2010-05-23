@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.sxkeyio.tcl,v 1.8 2009-06-01 09:52:57 robertdelmas Exp $
+# Mise Ã  jour $Id: tuto.sxkeyio.tcl,v 1.9 2010-05-23 08:33:38 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -11,24 +11,24 @@ proc caption_def_plugcam { langage } {
 #--- definition of captions
 if {[string compare $langage french] ==0 } {
    set texte(firstdark_1) "Tutoriel pour les utilisateurs de l'EthernAude"
-   set texte(firstdark_2) "Reprogrammer le microcontrôleur Ethernet."
+   set texte(firstdark_2) "Reprogrammer le microcontrÃ´leur Ethernet."
    set texte(firstdark_3) "\
-Dans le boîtier EthernAude, la carte électronique supérieure\
+Dans le boÃ®tier EthernAude, la carte Ã©lectronique supÃ©rieure\
 contient le logiciel interne de transmission Ethernet. Il\
-est possible de télécharger les mises à jour de ce logiciel\
+est possible de tÃ©lÃ©charger les mises Ã  jour de ce logiciel\
 (http://www.astrosurf.com/ethernaude). Pour charger le logiciel\
-dans la carte EthernAude, il faut relier la sortie série de l'ordinateur\
-à une carte de programmation SX-Blitz ou clé SX\
+dans la carte EthernAude, il faut relier la sortie sÃ©rie de l'ordinateur\
+Ã  une carte de programmation SX-Blitz ou clÃ© SX\
 (http://www.parallax.com/sx/programming_kits.asp).\n\
 \n\
-Sur la photo du haut, deux cavaliers sont entourés par un rectangle rouge.\
-Pour reprogrammer le microcontrôleur, il faut enlever ces deux\
-cavaliers. Introduire, ensuite, la clé SX dans les broches\
-entourées d'un rectangle orange.\n\
+Sur la photo du haut, deux cavaliers sont entourÃ©s par un rectangle rouge.\
+Pour reprogrammer le microcontrÃ´leur, il faut enlever ces deux\
+cavaliers. Introduire, ensuite, la clÃ© SX dans les broches\
+entourÃ©es d'un rectangle orange.\n\
 \n\
-Sur la photo du bas, on voit la clé SX enfichée dans le connecteur.\
+Sur la photo du bas, on voit la clÃ© SX enfichÃ©e dans le connecteur.\
 "
-   set texte(firstdark_exit) " Retour à la page principale."
+   set texte(firstdark_exit) " Retour Ã  la page principale."
 } else {
    set texte(firstdark_1) "Tutorial for EthernAude Users"
    set texte(firstdark_2) "Updating the Microcontroller Software for Ethernet."
@@ -174,7 +174,6 @@ pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 #
 .second.t tag configure demospace -lmargin1 1c -lmargin2 1c
 
-
 if {[winfo depth .second] == 1} {
    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
       -underline 1
@@ -219,7 +218,6 @@ set lastLine ""
 }
 
 # Create the text for the text widget.
-
 
 # ====================
 # === Setting text ===
