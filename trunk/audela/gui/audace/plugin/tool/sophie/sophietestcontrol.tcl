@@ -2,7 +2,7 @@
 # @file     sophiesimulcontrol.tcl
 # @brief    Fichier du namespace ::sophie::testcontrol
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietestcontrol.tcl,v 1.12 2010-05-03 16:51:37 michelpujol Exp $
+# @version  $Id: sophietestcontrol.tcl,v 1.13 2010-05-23 16:20:53 michelpujol Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -263,7 +263,7 @@ proc ::sophie::testcontrol::readTelescopeCommandSocket { channel } {
                   GOTO {
                      set returnCode [startRadecGoto [lindex $commandArray 2] [lindex $commandArray 3]]
                      #--- j'envoie le code retour
-                     set response [format "!RADEC GOTO %d %@" $returnCode ]
+                     set response [format "!RADEC GOTO %d @" $returnCode ]
                      writeTelescopeCommandSocket $channel $response
                   }
                    GUIDING {
