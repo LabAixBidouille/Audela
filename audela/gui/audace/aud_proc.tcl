@@ -1,20 +1,26 @@
 #
 # Fichier : aud_proc.tcl
 # Description : Fonctions de chargement, sauvegarde et traitement d'images
-# Mise à jour $Id: aud_proc.tcl,v 1.21 2010-05-16 10:13:31 robertdelmas Exp $
+# Mise à jour $Id: aud_proc.tcl,v 1.22 2010-05-23 07:14:39 robertdelmas Exp $
 #
 
 #
 # loadima [filename] [visuNo] [affichage]
-# Chargement d'une image : Sans argument, ou avec "?" comme nom de fichier,
-# ouvre une fenetre de selection pour demander le nom de fichier,
-# avec l'option "-novisu" l'image n'est pas affichee
+# Chargement d'une image
+# [filename] : Egal a "" pour effacer l'image et ne pas charger de fichier,
+# ou egal a "?" pour ouvrir une fenetre de selection et demander le nom du fichier a charger,
+# ou egal a un nom de fichier, si le nom du fichier est relatif, le fichier est recherche dans
+# le repertoire audace(rep_image), si le nom du fichier est absolu, il est charge directement
+# [visuNo] : Numero de la visu
+# [affichage] : Si egal a "-novisu" l'image n'est pas affichee
 #
 # return
 #   nom du fichier si le chargement est OK
-#   ""  si le chargement n'est pas fait
-# Exemple :
+#   "" si le chargement n'est pas fait
+#
+# Exemples :
 # loadima                      #--- Ouvre une fenetre de selection, et affiche l'image dans la visu numero 1
+# loadima ?                    #--- Ouvre une fenetre de selection, et affiche l'image dans la visu numero 1
 # loadima m57                  #--- Charge l'image m57.fit (extension par defaut) et affiche l'image dans la visu numero 1
 # loadima n4565.fits           #--- Charge l'image n4565.fits et affiche l'image dans la visu numero 1
 # loadima n4565.fits 2         #--- Charge l'image n4565.fits et affiche l'image dans la visu numero 2
@@ -62,12 +68,16 @@ proc loadima { { filename "?" } { visuNo 1 } { affichage "-dovisu" } } {
 
 #
 # saveima [filename] [visuNo]
-# Enregistrement d'une image : Sans argument, ou avec "?" comme nom de fichier,
-# ouvre une fenetre de selection pour demander le nom de fichier
+# Sauvegarde d'une image
+# [filename] : Sans argument ou egal a "?" comme nom de fichier, ouvre une fenetre de selection
+# pour demander le nom de fichier, ou egal a un nom de fichier, si le nom du fichier est relatif,
+# le fichier est enregistre dans le repertoire audace(rep_image), si le nom du fichier est absolu,
+# il est enregistre dans le repertoire designe
+# [visuNo] : Numero de la visu
 #
-# Exemple :
-# saveima             #--- Ouvre une fenetre de selection, et affiche l'image
-# saveima ?           #--- Idem precedent
+# Exemples :
+# saveima             #--- Ouvre une fenetre de selection
+# saveima ?           #--- Ouvre une fenetre de selection
 # saveima m57         #--- Enregistre l'image sous le nom m57.fit (extension par defaut)
 # saveima n4565.fits  #--- Enregistre l'image sous le nom n4565.fits
 #
@@ -145,13 +155,16 @@ proc saveima { { filename "?" } { visuNo 1 } } {
 
 #
 # savejpeg [filename]
-# Enregistrement d'une image : Sans argument, ou avec "?" comme nom de fichier,
-# ouvre une fenetre de selection pour demander le nom de fichier
+# Sauvegarde d'une image
+# [filename] : Sans argument ou egal a "?" comme nom de fichier, ouvre une fenetre de selection
+# pour demander le nom de fichier, ou egal a un nom de fichier, si le nom du fichier est relatif,
+# le fichier est enregistre dans le repertoire audace(rep_image), si le nom du fichier est absolu,
+# il est enregistre dans le repertoire designe
 #
-# Exemple :
-# saveima             #--- Ouvre une fenetre de selection, et affiche l'image
-# saveima ?           #--- Idem precedent
-# saveima m57         #--- Enregistre l'image sous le nom m57.jpg (extension par defaut)
+# Exemples :
+# savejpeg             #--- Ouvre une fenetre de selection
+# savejpeg ?           #--- Ouvre une fenetre de selection
+# savejpeg m57         #--- Enregistre l'image sous le nom m57.jpg
 #
 proc savejpeg { { filename "?" } } {
    global audace caption conf
