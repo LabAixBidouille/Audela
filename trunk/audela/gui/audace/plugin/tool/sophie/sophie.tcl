@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.48 2010-05-22 14:20:32 michelpujol Exp $
+# @version   $Id: sophie.tcl,v 1.49 2010-05-23 16:28:51 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -173,7 +173,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists ::conf(sophie,pixelMinCount)] }             { set ::conf(sophie,pixelMinCount)             50 }
    if { ! [ info exists ::conf(sophie,minIntensity)] }              { set ::conf(sophie,minIntensity)              1000 }
    if { ! [ info exists ::conf(sophie,fiberDetectionMode)] }        { set ::conf(sophie,fiberDetectionMode)        2 } ; #-- 1=gaussienne 2=baricentre
-
+   if { ! [ info exists ::conf(sophie,starFluxMaxRadecShift)] }     { set ::conf(sophie,starFluxMaxRadecShift)     0.05 } ; # ecart ardec maximum sans remesurer starFlux (en degres) 3 acrmin=0.05 degres
    if { ! [ info exists ::conf(sophie,socketPort)] }                { set ::conf(sophie,socketPort)                5020 }
 
    #--- Initialisation de variables
@@ -197,7 +197,6 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(cameraCells)       [list 1536 1024 ] ; #--- dimensions par defaut du capteur de la camera . cette valeur est mise a jour par ::sophie::adaptPanel
    set private(skyLevelList)      ""                ; #--- liste des mesures du fond du ciel
    set private(starFluxList)      ""                ; #--- liste des mesures du flux de l'etoile
-
 
    set private(bufNo)             [::confVisu::getBufNo $visuNo]
    set private(hCanvas)           [::confVisu::getCanvas $visuNo]
