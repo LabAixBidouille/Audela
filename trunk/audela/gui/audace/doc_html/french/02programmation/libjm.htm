@@ -1,129 +1,129 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Fonctions de la librairie libjm</title></head>
 
 
 <body>
 
-<p>Date de mise à jour : 23 mai 2010</p>
+<p>Date de mise Ã  jour : 23 mai 2010</p>
 <h1>Fonctions de la librairie libjm </h1>
 <p><strong>Liste des fonctions utilisables :</strong></p>
 
 <h3> <a name="jm_versionlib" id="jm_versionlib"></a>jm_versionlib </h3>
-<p>Retourne le numéro de version de la librairie au format <code>major.minor</code></p>
+<p>Retourne le numÃ©ro de version de la librairie au format <code>major.minor</code></p>
 
-<h3> <a name="jm_heurepc" id="jm_heurepc"></a>jm_heurepc <em>[{année mois quantième heure minute seconde milliseconde}]</em></h3>
-<p>En l'absence de paramètres, lit l'heure système d'un PC. Retourne la liste {<code>année mois quantième heure minute seconde milliseconde</code>}. Si la liste {<code>année mois quantième heure minute seconde milliseconde</code>} est donnée en argument , fixe l'heure système d'un PC avec les valeurs de la liste. Retourne la liste {<code>année mois quantième heure minute seconde milliseconde</code>} après la mise à l'heure. <strong>ATTENTION</strong>
+<h3> <a name="jm_heurepc" id="jm_heurepc"></a>jm_heurepc <em>[{annÃ©e mois quantiÃ¨me heure minute seconde milliseconde}]</em></h3>
+<p>En l'absence de paramÃ¨tres, lit l'heure systÃ¨me d'un PC. Retourne la liste {<code>annÃ©e mois quantiÃ¨me heure minute seconde milliseconde</code>}. Si la liste {<code>annÃ©e mois quantiÃ¨me heure minute seconde milliseconde</code>} est donnÃ©e en argument , fixe l'heure systÃ¨me d'un PC avec les valeurs de la liste. Retourne la liste {<code>annÃ©e mois quantiÃ¨me heure minute seconde milliseconde</code>} aprÃ¨s la mise Ã  l'heure. <strong>ATTENTION</strong>
 : Dans ce cas, l'utilisation de cette commande requiert que le
 processus qui la lance ait les droits d'administrateur sur la machine.</p>
 
 <h3> <a name="jm_reglageheurepc" id="jm_reglageheurepc"></a>jm_reglageheurepc <em>decalage en ms</em></h3>
-<p>Décale l'heure système d'un PC de la valeur numérique du paramètre <code>decalage_en_ms</code>. Ce paramètre peut être positif (avance dans le temps) ou négatif (retard). <strong>ATTENTION</strong> : L'utilisation de cette commande requiert que le processus qui la lance ait les droits d'administrateur sur la machine.</p>
+<p>DÃ©cale l'heure systÃ¨me d'un PC de la valeur numÃ©rique du paramÃ¨tre <code>decalage_en_ms</code>. Ce paramÃ¨tre peut Ãªtre positif (avance dans le temps) ou nÃ©gatif (retard). <strong>ATTENTION</strong> : L'utilisation de cette commande requiert que le processus qui la lance ait les droits d'administrateur sur la machine.</p>
 
 <h3> <a name="calaphot_fluxellipse" id="calaphot_fluxellipse"></a>calaphot_fluxellipse <em>b x0 y0 r1x r1y ro r2 r3 [n]</em></h3>
-<p>Dans l'image contenue dans le buffer <code>b</code>, calcule le flux d'une étoile contenue dans une ellipse de centre (x0, y0) d'axe principaux <code>r1x</code> et <code>r1y</code> et de facteur d'allongement <code>ro</code>. Les paramètres <code>r2</code> et <code>r3</code>
-définissent les rayons des cercles (couronne) autour de cette ellipse
-dans lesquels sera calculé le flux du fond de ciel. Le paramètre <code>n</code> définit des sous-pixels artificiels, afin d'augmenter la précision des calculs. Les pixels sont découpés en <i>n²</i> sous-pixels, mais le temps de calcul sera multiplié par la même valeur...</p>
-<p>L'ellipse a pour équation centrée : <code>(x-x0)²/r1x² + (y-y0)²/r1y² - 2.0*ro*(x-x0)*(y-y0)/(r1x*r1y) = 1</code>, avec <code>|ro| &lt; 1</code>.</p>
+<p>Dans l'image contenue dans le buffer <code>b</code>, calcule le flux d'une Ã©toile contenue dans une ellipse de centre (x0, y0) d'axe principaux <code>r1x</code> et <code>r1y</code> et de facteur d'allongement <code>ro</code>. Les paramÃ¨tres <code>r2</code> et <code>r3</code>
+dÃ©finissent les rayons des cercles (couronne) autour de cette ellipse
+dans lesquels sera calculÃ© le flux du fond de ciel. Le paramÃ¨tre <code>n</code> dÃ©finit des sous-pixels artificiels, afin d'augmenter la prÃ©cision des calculs. Les pixels sont dÃ©coupÃ©s en <i>nÂ²</i> sous-pixels, mais le temps de calcul sera multipliÃ© par la mÃªme valeur...</p>
+<p>L'ellipse a pour Ã©quation centrÃ©e : <code>(x-x0)Â²/r1xÂ² + (y-y0)Â²/r1yÂ² - 2.0*ro*(x-x0)*(y-y0)/(r1x*r1y) = 1</code>, avec <code>|ro| &lt; 1</code>.</p>
 <p>Cette fonction retourne la liste <code>{flux_etoile nb_pixels_etoile flux_fond nb_pixels_fond sigma_fond}</code>.</p>
-<p><code>flux_etoile</code> est le flux apporté par l'étoile, c'est à dire le flux contenu dans l'ellipse de taille <code>nb_pixels</code>, flux auquel on a soustrait la quantité <code>flux_fond*nb_pixels</code>.</p>
-<p><code>flux_fond</code> est le flux moyen par pixel du fond de ciel calculé sur les <code>nb_pixels_fond</code> de la couronne délimitée par <code>r2</code> et <code>r3</code>. <code>sigma_fond</code> est l'écart-type du flux de fond de ciel.</p>
+<p><code>flux_etoile</code> est le flux apportÃ© par l'Ã©toile, c'est Ã  dire le flux contenu dans l'ellipse de taille <code>nb_pixels</code>, flux auquel on a soustrait la quantitÃ© <code>flux_fond*nb_pixels</code>.</p>
+<p><code>flux_fond</code> est le flux moyen par pixel du fond de ciel calculÃ© sur les <code>nb_pixels_fond</code> de la couronne dÃ©limitÃ©e par <code>r2</code> et <code>r3</code>. <code>sigma_fond</code> est l'Ã©cart-type du flux de fond de ciel.</p>
 
 <h3> <a name="calaphot_fitgauss2d" id="calaphot_fitgauss2d"></a>calaphot_fitgauss2d <em>b {x1 y1 x2 y2} [-sub]</em></h3>
-<p>Dans un carré définit par la liste <code>{x1 y1 x2 y2}</code> dans l'image contenue dans le buffer <code>b</code>,
-modélise une nappe gaussienne représentant les valeurs de niveaux de
-gris d'une étoile. Cette nappe est optimale au sens des moindres
-carrés. La modélisation cherche à déterminer les paramètres <code>x0, y0, r1x, r1y et ro</code> d'une nappe donnée par <code>z=A*[(x-x0)²/r1x² + (y-y0)²/r1y² - 2.0*ro*(x-x0)*(y-y0)/(r1x*r1y)] + B</code>, où <code>(x0, y0)</code> sont les coordonnées du centroïde de l'étoile, <code>r1x et r2x</code> les grands axes de l'ellipse, <code>ro</code> son facteur d'allongement, <code>A</code> le niveau de gris maximum de l'étoile et <code>B</code> le niveau de gris du fond de ciel. Le mot-clé <code>-sub</code> va soustraire l'étoile modélisée à celle encadrée dans le rectangle <code>{x1 y1 x2 y2}</code>. Cette fonction retourne une liste de 24 paramètres {p0 p1 p2 ... p23}
+<p>Dans un carrÃ© dÃ©finit par la liste <code>{x1 y1 x2 y2}</code> dans l'image contenue dans le buffer <code>b</code>,
+modÃ©lise une nappe gaussienne reprÃ©sentant les valeurs de niveaux de
+gris d'une Ã©toile. Cette nappe est optimale au sens des moindres
+carrÃ©s. La modÃ©lisation cherche Ã  dÃ©terminer les paramÃ¨tres <code>x0, y0, r1x, r1y et ro</code> d'une nappe donnÃ©e par <code>z=A*[(x-x0)Â²/r1xÂ² + (y-y0)Â²/r1yÂ² - 2.0*ro*(x-x0)*(y-y0)/(r1x*r1y)] + B</code>, oÃ¹ <code>(x0, y0)</code> sont les coordonnÃ©es du centroÃ¯de de l'Ã©toile, <code>r1x et r2x</code> les grands axes de l'ellipse, <code>ro</code> son facteur d'allongement, <code>A</code> le niveau de gris maximum de l'Ã©toile et <code>B</code> le niveau de gris du fond de ciel. Le mot-clÃ© <code>-sub</code> va soustraire l'Ã©toile modÃ©lisÃ©e Ã  celle encadrÃ©e dans le rectangle <code>{x1 y1 x2 y2}</code>. Cette fonction retourne une liste de 24 paramÃ¨tres {p0 p1 p2 ... p23}
   </p><ul>
     <li>p0
-correspond à l'erreur générale de modélisation, et est égale à la
-racine carré du quotient du chi2 par le nombre de degrés de libertés.</li>
+correspond Ã  l'erreur gÃ©nÃ©rale de modÃ©lisation, et est Ã©gale Ã  la
+racine carrÃ© du quotient du chi2 par le nombre de degrÃ©s de libertÃ©s.</li>
     <li>p1
-indique le nombre d'itérations nécessaires pour faire la modélisation.
-La valeur 0 indique que la modélisation a échoué, auquel cas tous les
-autres paramètres sont sans signification.</li>
-    <li>(p2, p3) sont les coordonnées du centroïde de l'étoile (<code>x0</code> et <code>y0</code>), (p13, p14) sont les incertitudes sur ces 2 coordonnées.</li>
-    <li>p4 est le niveau de gris maximum de l'étoile (<i>A</i>), p15 l'incertitude sur cette valeur.</li>
+indique le nombre d'itÃ©rations nÃ©cessaires pour faire la modÃ©lisation.
+La valeur 0 indique que la modÃ©lisation a Ã©chouÃ©, auquel cas tous les
+autres paramÃ¨tres sont sans signification.</li>
+    <li>(p2, p3) sont les coordonnÃ©es du centroÃ¯de de l'Ã©toile (<code>x0</code> et <code>y0</code>), (p13, p14) sont les incertitudes sur ces 2 coordonnÃ©es.</li>
+    <li>p4 est le niveau de gris maximum de l'Ã©toile (<i>A</i>), p15 l'incertitude sur cette valeur.</li>
     <li>p5 est le niveau de gris du fond de ciel (<i>B</i>), p16 l'incertitude sur cette valeur.</li>
     <li>(p6, p7) sont les valeurs des grand axe et petit axe de l'ellipse (<i>r1x</i> et <i>r1y</i>), (p17, p18) sont les incertitudes sur ces 2 valeurs.</li>
     <li>p8 est le facteur <i>ro</i> d'allongement de l'ellipse, p19 l'incertitude sur cette valeur.</li>
   </ul>
-<p>Les valeurs suivantes sont des valeurs déduites des précédentes :</p>
+<p>Les valeurs suivantes sont des valeurs dÃ©duites des prÃ©cÃ©dentes :</p>
   <ul>
     <li>p9
-est l'angle exprimé en degrés décimaux que font les axes principaux de
+est l'angle exprimÃ© en degrÃ©s dÃ©cimaux que font les axes principaux de
 l'ellipse par rapport aux axes de l'image, p20 l'incertitude sur cette
 valeur. p9 et p20 n'ont pas de sens si r1x et r1y sont identiques ou si
 ro vaut 0.</li>
-    <li>(p10, p11) sont les FWHMs de l'étoile modélisée sur ses axes principaux, (p21, p22) sont les incertitudes sur ces 2 valeurs.</li>
-    <li>p12 est le flux intégré de l'étoile (hors fond de ciel), p23 l'incertitude sur cette valeur.</li>
+    <li>(p10, p11) sont les FWHMs de l'Ã©toile modÃ©lisÃ©e sur ses axes principaux, (p21, p22) sont les incertitudes sur ces 2 valeurs.</li>
+    <li>p12 est le flux intÃ©grÃ© de l'Ã©toile (hors fond de ciel), p23 l'incertitude sur cette valeur.</li>
   </ul>
 
 <h3> <a name="dft2d" id="dft2d"></a>dft2d <em>image_source image_dest_1 image_dest_2 [ type [ centrage ] ]</em></h3>
-<p>Effectue une <b>Transformée de Fourier Discrète (TFD)</b> sur le fichier <code>image_source</code> et stocke le résultat dans les fichiers <code>image_dest_1</code> et <code>image_dest_2</code>.</p>
-<p>Le paramètre optionnel <code>type</code> définit le contenu des fichiers <code>image_dest_1</code> et <code>image_dest_2</code>. Si <code>type</code> vaut :</p>
+<p>Effectue une <b>TransformÃ©e de Fourier DiscrÃ¨te (TFD)</b> sur le fichier <code>image_source</code> et stocke le rÃ©sultat dans les fichiers <code>image_dest_1</code> et <code>image_dest_2</code>.</p>
+<p>Le paramÃ¨tre optionnel <code>type</code> dÃ©finit le contenu des fichiers <code>image_dest_1</code> et <code>image_dest_2</code>. Si <code>type</code> vaut :</p>
 <p><ul>
-    <li><em>cartesian</em> : <code>image_dest_1</code> contiendra la partie réelle de la TFD, et <code>image_dest_2</code> sa partie imaginaire. L'entête FITS de <code>image_dest_1</code> va contenir le mot_clé <em>DFT_TYPE</em> avec pour valeur la chaine de caractère (string) <em>REAL</em>, celle de <code>image_dest_2</code> le même mot-clé <em>DFT_TYPE</em> avec la valeur <em>IMAG</em>.</li>
-    <li><em>polar</em> : <code>image_dest_1</code>  contiendra le module de la TFD, et <code>image_dest_2</code> son argument. L'entête FITS de <code>image_dest_1</code> va contenir le mot_clé <em>DFT_TYPE</em> avec pour valeur la chaine de caractère (string) <em>SPECTRUM</em>, celle de <code>image_dest_2</code> le même mot-clé <em>DFT_TYPE</em> avec la valeur <em>PHASE</em>.</li>
+    <li><em>cartesian</em> : <code>image_dest_1</code> contiendra la partie rÃ©elle de la TFD, et <code>image_dest_2</code> sa partie imaginaire. L'entÃªte FITS de <code>image_dest_1</code> va contenir le mot_clÃ© <em>DFT_TYPE</em> avec pour valeur la chaine de caractÃ¨re (string) <em>REAL</em>, celle de <code>image_dest_2</code> le mÃªme mot-clÃ© <em>DFT_TYPE</em> avec la valeur <em>IMAG</em>.</li>
+    <li><em>polar</em> : <code>image_dest_1</code>  contiendra le module de la TFD, et <code>image_dest_2</code> son argument. L'entÃªte FITS de <code>image_dest_1</code> va contenir le mot_clÃ© <em>DFT_TYPE</em> avec pour valeur la chaine de caractÃ¨re (string) <em>SPECTRUM</em>, celle de <code>image_dest_2</code> le mÃªme mot-clÃ© <em>DFT_TYPE</em> avec la valeur <em>PHASE</em>.</li>
 </ul></p>
-<p><b>NB:</b> S'il n'est pas spécifié, <code>type</code> vaut <em>polar</em> (valeur par défaut).</p>
-<p>Le paramètre optionnel <code>centrage</code> indique la façon dont seront rangées les informations dans les fichiers <code>image_dest_1</code> et <code>image_dest_2</code>. Si <code>centrage</code> vaut :</p>
+<p><b>NB:</b> S'il n'est pas spÃ©cifiÃ©, <code>type</code> vaut <em>polar</em> (valeur par dÃ©faut).</p>
+<p>Le paramÃ¨tre optionnel <code>centrage</code> indique la faÃ§on dont seront rangÃ©es les informations dans les fichiers <code>image_dest_1</code> et <code>image_dest_2</code>. Si <code>centrage</code> vaut :</p>
 <p><ul>
-    <li><em>centered</em> : Les fréquences basses de la TFD seront regroupées au centre des images <code>image_dest_1</code> et <code>image_dest_2</code>. L'entête FITS des deux images va contenir le mot-clé DFT_ORD avec pour valeur la chaine de caractère (string) <em>CENTERED</em>.</li>
-    <li><em>regular</em> : Les fréquences hautes de la TFD seront regroupées au centre des images <code>image_dest_1</code> et <code>image_dest_2</code>. L'entête FITS des deux images va contenir le mot-clé DFT_ORD avec pour valeur la chaine de caractère (string) <em>REGULAR</em>.</li>
+    <li><em>centered</em> : Les frÃ©quences basses de la TFD seront regroupÃ©es au centre des images <code>image_dest_1</code> et <code>image_dest_2</code>. L'entÃªte FITS des deux images va contenir le mot-clÃ© DFT_ORD avec pour valeur la chaine de caractÃ¨re (string) <em>CENTERED</em>.</li>
+    <li><em>regular</em> : Les frÃ©quences hautes de la TFD seront regroupÃ©es au centre des images <code>image_dest_1</code> et <code>image_dest_2</code>. L'entÃªte FITS des deux images va contenir le mot-clÃ© DFT_ORD avec pour valeur la chaine de caractÃ¨re (string) <em>REGULAR</em>.</li>
 </ul></p>
-<p><b>NB:</b> S'il n'est pas spécifié, <code>centrage</code> vaut <em>centered</em> (valeur par défaut).</p>
-<p>Les <code>image_dest_1</code> et <code>image_dest_2</code> sont codés sur 16 bits non signés. Le résultat d'une TFD étant signé, les valeur des pixels sont décalées et normalisées dans l'intervalle [0-32767]. Les mots-clés <em>DFT_OFFS</em> et <em>DFT_NORM</em> définissent les valeurs du décalage et du facteur de normalisation.
+<p><b>NB:</b> S'il n'est pas spÃ©cifiÃ©, <code>centrage</code> vaut <em>centered</em> (valeur par dÃ©faut).</p>
+<p>Les <code>image_dest_1</code> et <code>image_dest_2</code> sont codÃ©s sur 16 bits non signÃ©s. Le rÃ©sultat d'une TFD Ã©tant signÃ©, les valeur des pixels sont dÃ©calÃ©es et normalisÃ©es dans l'intervalle [0-32767]. Les mots-clÃ©s <em>DFT_OFFS</em> et <em>DFT_NORM</em> dÃ©finissent les valeurs du dÃ©calage et du facteur de normalisation.
 
 <h3> <a name="idft2d" id="idft2d"></a>idft2d <em>image_source_1 image_source_2 image_destination</em></h3>
-<p>Effectue la <b>Transformée de Fourier Discrète Inverse</b> des fichiers <code>image_source_1</code> et <code>image_source_2</code> pour générer l'image réelle <code>image_destination</code>. Il s'agit de la fonction inverse de celle décrite par la commande <a href=#dft2d>dftd2</a>.</p>
+<p>Effectue la <b>TransformÃ©e de Fourier DiscrÃ¨te Inverse</b> des fichiers <code>image_source_1</code> et <code>image_source_2</code> pour gÃ©nÃ©rer l'image rÃ©elle <code>image_destination</code>. Il s'agit de la fonction inverse de celle dÃ©crite par la commande <a href=#dft2d>dftd2</a>.</p>
 <p>Les fichiers <code>image_source_1</code> et <code>image_source_2</code> doivent :
 <ul>
-    <li>avoir les mêmes largeur et hauteur.</li>
-    <li>contenir le mots-clé <em>DFT_ORD</em> avec la même valeur (<em>CENTERED</em> ou <em>REGULAR</em>).</li>
-    <li>contenir le mot_clé <em>DFT_TYPE</em> avec des valeurs appariées : <em>REAL</em> et <em>IMAG</em>, ou bien <em>SPECTRUM</em> et <em>PHASE</em>.</li>
+    <li>avoir les mÃªmes largeur et hauteur.</li>
+    <li>contenir le mots-clÃ© <em>DFT_ORD</em> avec la mÃªme valeur (<em>CENTERED</em> ou <em>REGULAR</em>).</li>
+    <li>contenir le mot_clÃ© <em>DFT_TYPE</em> avec des valeurs appariÃ©es : <em>REAL</em> et <em>IMAG</em>, ou bien <em>SPECTRUM</em> et <em>PHASE</em>.</li>
 </ul>
 </p>
-<p>Le fichier <code>image_destination</code> est codé sur 16 bits non signés.</p>
+<p>Le fichier <code>image_destination</code> est codÃ© sur 16 bits non signÃ©s.</p>
 
 <h3> <a name="acorr2d" id="acorr2d"></a>acorr2d <em>image_source image_destination [ centrage [ normalisation ] ]</em></h3>
-Effectue l'<b>auto-correlation</b> de l'image contenue dans <code>image_source</code> et stocke le résultat dans <code>image_destination.</code>
-<p>Le paramètre optionnel <code>centrage</code> indique la façon dont seront rangées les informations dans le fichier <code>image_destination</code>. Si <code>centrage</code> vaut :</p>
+Effectue l'<b>auto-correlation</b> de l'image contenue dans <code>image_source</code> et stocke le rÃ©sultat dans <code>image_destination.</code>
+<p>Le paramÃ¨tre optionnel <code>centrage</code> indique la faÃ§on dont seront rangÃ©es les informations dans le fichier <code>image_destination</code>. Si <code>centrage</code> vaut :</p>
 <p><ul>
-    <li><em>centered</em> : Le maximum de la fonction d'auto-correlation sera localisé au centre de l'image <code>image_destination</code>. L'entête FITS de cette image va contenir le mot-clé DFT_ORD avec pour valeur la chaine de caractère (string) <em>CENTERED</em>.</li>
-    <li><em>regular</em> : Le maximum de la fonction d'auto-correlation sera localisé dans le pixels de coordonnées (1,1) de l'image <code>image_destination</code>. L'entête FITS de cette image va contenir le mot-clé DFT_ORD avec pour valeur la chaine de caractère (string) <em>REGULAR</em>.</li>
+    <li><em>centered</em> : Le maximum de la fonction d'auto-correlation sera localisÃ© au centre de l'image <code>image_destination</code>. L'entÃªte FITS de cette image va contenir le mot-clÃ© DFT_ORD avec pour valeur la chaine de caractÃ¨re (string) <em>CENTERED</em>.</li>
+    <li><em>regular</em> : Le maximum de la fonction d'auto-correlation sera localisÃ© dans le pixels de coordonnÃ©es (1,1) de l'image <code>image_destination</code>. L'entÃªte FITS de cette image va contenir le mot-clÃ© DFT_ORD avec pour valeur la chaine de caractÃ¨re (string) <em>REGULAR</em>.</li>
 </ul></p>
-<p><b>NB:</b> S'il n'est pas spécifié, <code>centrage</code> vaut <em>centered</em> (valeur par défaut).</p>
-<p>Le paramètre optionnel <code>normalisation</code> précise la dynamique de l'image <code>image_destination</code>. Il peut prendre les valeurs :
+<p><b>NB:</b> S'il n'est pas spÃ©cifiÃ©, <code>centrage</code> vaut <em>centered</em> (valeur par dÃ©faut).</p>
+<p>Le paramÃ¨tre optionnel <code>normalisation</code> prÃ©cise la dynamique de l'image <code>image_destination</code>. Il peut prendre les valeurs :
 <ul>
-    <li><em>norm</em> : Dans ce cas l'image <code>image_destination</code> aura la même dynamique celle l'image <code>image_source</code>, c'est à dire que les valeurs extrêmales des pixels seront identiques.</li>
+    <li><em>norm</em> : Dans ce cas l'image <code>image_destination</code> aura la mÃªme dynamique celle l'image <code>image_source</code>, c'est Ã  dire que les valeurs extrÃªmales des pixels seront identiques.</li>
     <li><em>denorm</em> : l'image <code>image_destination</code> aura la dynamique fournie par le calcul classique d'une fonction d'auto-correlation.</li>
 </ul></p>
-<p><b>NB:</b> S'il n'est pas spécifié, <code>normalisation</code> vaut <em>norm</em> (valeur par défaut).</p>
-<p>Le fichier <code>image_destination</code> est codé en virgule flottante.</p>
+<p><b>NB:</b> S'il n'est pas spÃ©cifiÃ©, <code>normalisation</code> vaut <em>norm</em> (valeur par dÃ©faut).</p>
+<p>Le fichier <code>image_destination</code> est codÃ© en virgule flottante.</p>
 
 <h3> <a name="icorr2d" id="icorr2d"></a>icorr2d <em>image_source_1 image_source_2 image_destination [ normalisation ]</em></h3>
-Effectue l'<b>inter-correlation</b> des images contenues dans <code>image_source_1</code> et <code>image_source_2</code> et stocke le résultat dans <code>image_destination.</code>
-<p>Si les images <code>image_source_1</code> et <code>image_source_2</code> n'ont pas la même taille, la plus petite doit pouvoir être complètement contenue dans la plus grande, c'est à dire que les <b>deux</b> dimensions de la petite doivent être inférieures à celles de la plus grande.</p>
-<p>Le paramètre optionnel <code>normalisation</code> précise la dynamique de l'image <code>image_destination</code>. Il peut prendre les valeurs :
+Effectue l'<b>inter-correlation</b> des images contenues dans <code>image_source_1</code> et <code>image_source_2</code> et stocke le rÃ©sultat dans <code>image_destination.</code>
+<p>Si les images <code>image_source_1</code> et <code>image_source_2</code> n'ont pas la mÃªme taille, la plus petite doit pouvoir Ãªtre complÃ¨tement contenue dans la plus grande, c'est Ã  dire que les <b>deux</b> dimensions de la petite doivent Ãªtre infÃ©rieures Ã  celles de la plus grande.</p>
+<p>Le paramÃ¨tre optionnel <code>normalisation</code> prÃ©cise la dynamique de l'image <code>image_destination</code>. Il peut prendre les valeurs :
 <ul>
-    <li><em>norm</em> : Dans ce cas l'image <code>image_destination</code> aura la même dynamique celle l'image <code>image_source_1</code>, c'est à dire que les valeurs extrêmales des pixels seront identiques.</li>
+    <li><em>norm</em> : Dans ce cas l'image <code>image_destination</code> aura la mÃªme dynamique celle l'image <code>image_source_1</code>, c'est Ã  dire que les valeurs extrÃªmales des pixels seront identiques.</li>
     <li><em>denorm</em> : l'image <code>image_destination</code> aura la dynamique fournie par le calcul classique d'une fonction d'auto-correlation.</li>
 </ul></p>
-<p><b>NB:</b> S'il n'est pas spécifié, <code>normalisation</code> vaut <em>norm</em> (valeur par défaut).</p>
-<p>Le fichier <code>image_destination</code> est codé en virgule flottante.</p>
+<p><b>NB:</b> S'il n'est pas spÃ©cifiÃ©, <code>normalisation</code> vaut <em>norm</em> (valeur par dÃ©faut).</p>
+<p>Le fichier <code>image_destination</code> est codÃ© en virgule flottante.</p>
 
 <h3> <a name="conv2d" id="conv2d"></a>conv2d <em>image_source_1 image_source_2 image_destination [ normalisation ]</em></h3>
-Effectue le <b>produit de convolution</b> des images contenues dans <code>image_source_1</code> et <code>image_source_2</code> et stocke le résultat dans <code>image_destination.</code>
-<p>L'image <code>image_source_2</code> joue le rôle de noyau de convolution, c'est à dire que le produit de convolution est décalé d'un nombre de pixels égal à la moitié de la largeur et de la hauteur de l'image <code>image_source_2</code>.</p>
-<p>Si les images <code>image_source_1</code> et <code>image_source_2</code> n'ont pas la même taille, la plus petite doit pouvoir être complètement contenue dans la plus grande, c'est à dire que les <b>deux</b> dimensions de la petite doivent être inférieures à celles de la plus grande.</p>
-<p>Le paramètre optionnel <code>normalisation</code> précise la dynamique de l'image <code>image_destination</code>. Il peut prendre les valeurs :
+Effectue le <b>produit de convolution</b> des images contenues dans <code>image_source_1</code> et <code>image_source_2</code> et stocke le rÃ©sultat dans <code>image_destination.</code>
+<p>L'image <code>image_source_2</code> joue le rÃ´le de noyau de convolution, c'est Ã  dire que le produit de convolution est dÃ©calÃ© d'un nombre de pixels Ã©gal Ã  la moitiÃ© de la largeur et de la hauteur de l'image <code>image_source_2</code>.</p>
+<p>Si les images <code>image_source_1</code> et <code>image_source_2</code> n'ont pas la mÃªme taille, la plus petite doit pouvoir Ãªtre complÃ¨tement contenue dans la plus grande, c'est Ã  dire que les <b>deux</b> dimensions de la petite doivent Ãªtre infÃ©rieures Ã  celles de la plus grande.</p>
+<p>Le paramÃ¨tre optionnel <code>normalisation</code> prÃ©cise la dynamique de l'image <code>image_destination</code>. Il peut prendre les valeurs :
 <ul>
-    <li><em>norm</em> : Dans ce cas l'image <code>image_destination</code> aura la même dynamique celle l'image <code>image_source_1</code>, c'est à dire que les valeurs extrêmales des pixels seront identiques.</li>
+    <li><em>norm</em> : Dans ce cas l'image <code>image_destination</code> aura la mÃªme dynamique celle l'image <code>image_source_1</code>, c'est Ã  dire que les valeurs extrÃªmales des pixels seront identiques.</li>
     <li><em>denorm</em> : l'image <code>image_destination</code> aura la dynamique fournie par le calcul classique d'une fonction de convolution.</li>
 </ul></p>
-<p><b>NB:</b> S'il n'est pas spécifié, <code>normalisation</code> vaut <em>norm</em> (valeur par défaut).</p>
-<p>Le fichier <code>image_destination</code> est codé en virgule flottante.</p>
+<p><b>NB:</b> S'il n'est pas spÃ©cifiÃ©, <code>normalisation</code> vaut <em>norm</em> (valeur par dÃ©faut).</p>
+<p>Le fichier <code>image_destination</code> est codÃ© en virgule flottante.</p>
 
 </body></html>
