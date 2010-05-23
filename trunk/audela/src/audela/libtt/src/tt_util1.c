@@ -114,7 +114,7 @@ int tt_errmessage2(int numerreur,char *message)
    return(OK_DLL);
 }
 
-int tt_errlog(int numerreur,char *commande)
+int tt_errlog(int numerreur,char *messageFormat,...)
 /**************************************************************************/
 /* Ecrit le fichier tt.err qui contient l'erreur trouve au cours de l'exec*/
 /**************************************************************************/
@@ -125,8 +125,20 @@ int tt_errlog(int numerreur,char *commande)
    char car;
    char message_log[TT_MAXLIGNE];
    char message[TT_MAXLIGNE];
+   char commande[TT_MAXLIGNE];
    char mode[5];
    time_t ltime;
+   va_list mkr;
+   
+   // je formate le message 
+   if ( messageFormat != NULL) {
+      va_start(mkr, messageFormat);
+      vsprintf(commande, messageFormat, mkr);
+	   va_end (mkr);
+   } else {
+      strcpy(commande,"");
+   }
+
    if ((fichier_err=fopen(nom_fichier_err, "r") ) == NULL) {
       strcpy(mode,"w");
    } else {
