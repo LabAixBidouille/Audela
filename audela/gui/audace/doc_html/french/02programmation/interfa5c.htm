@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 29 janvier 2010</p>
+<p class="date">Date de mise &agrave; jour : 22 mai 2010</p>
 <h1>Liste de toutes les fonctions </h1>
 <p>Nous donnons la liste de toutes les fonctions disponibles dans AudeLA, plus quelques unes de Tcl et Tk qui sont tr&egrave;s utiles. En ce qui concerne les fonctions associ&eacute;es &agrave; des objets de AudeLA, elles sont pr&eacute;sent&eacute;es en fonction de l'objet num&eacute;ro 1. Les fonctions ont &eacute;t&eacute; rassembl&eacute;es par th&egrave;me et sont suivies de leur origine: </p>
 <ul>
@@ -77,9 +77,6 @@ file : [TC] jeu de fonctions puissantes de gestion de fichiers <br />
 <a href="cam.htm#tel">cam1 tel</a> : [DC] sp&eacute;cifie le num&eacute;ro de t&eacute;lescope sur lequel seront lues les coordonn&eacute;es point&eacute;es pour remplir l'en-t&ecirc;te FITS <br />
 <a href="cam.htm#shutter">cam1 shutter</a> : [DC] sp&eacute;cifie le status de l'obturateur <br />
 <a href="cam.htm#bell">cam1 bell</a> : [DC] sp&eacute;cifie le status de la sonnerie pour les cam&eacute;ras Hi-SIS 24 <br />
-<a href="cam.htm#temp">cam1 temp</a> : [DC] r&eacute;gulation en temp&eacute;rature (ST7) <br />
-<a href="cam.htm#tiptilt">cam1 tiptilt</a> : [DC] tiptilt AO7 (ST7) <br />
-<a href="cam.htm#relay">cam1 relay</a> : [DC] commande d'une bo&icirc;te &agrave; relais (ST7) <br />
 vwait cam_acq1 : [TC] attend la fin de la pose <br />
 <a href="cam.htm#ccd">cam1 ccd</a> : [DC] retourne le nom du capteur CCD qui &eacute;quipe la cam&eacute;ra <br />
 <a href="cam.htm#name">cam1 name</a> : [DC] retourne le nom de la cam&eacute;ra CCD <br />
@@ -94,6 +91,9 @@ vwait cam_acq1 : [TC] attend la fin de la pose <br />
 <a href="cam.htm#readnoise">cam1 readnoise</a> : [AL] retourne la valeur du bruit de lecture th&eacute;orique (&eacute;lectrons) <br />
 <a href="cam.htm#gain">cam1 gain</a> : [AL] retourne la valeur du gain th&eacute;orique (&eacute;lectrons / adu) <br />
 <a href="cam.htm#temperature">cam1 temperature</a> : [DC] retourne la temp&eacute;rature du CCD (degr&eacute;s Celsius) <br />
+<a href="cam.htm#infotemp">cam1 infotemp</a> : [DC] informations sur la r&eacute;gulation en temp&eacute;rature (SBIG) <br />
+<a href="cam.htm#aotiptilt">cam1 aotiptilt</a> : [DC] tiptilt AO7/AO8 (SBIG) <br />
+<a href="cam.htm#activaterelay">cam1 activaterelay</a> : [DC] commande d'une bo&icirc;te &agrave; relais (SBIG) <br />
 <a href="cam.htm#shutter">cam1 shutter</a> : [DC] fixe le mode de fonctionnement de l'obturateur <br />
 <a href="cam.htm#foclen">cam1 foclen</a> : [DC] fixe la valeur de la focale de l'objectif plac&eacute; devant le CCD (en m&egrave;tres) <br />
 <a href="cam.htm#overscan">cam1 overscan</a> : [DC] d&eacute;termine si l'on tient compte des pixels d'overscan pour lire l'image <br />
@@ -288,9 +288,9 @@ vwait cam_acq1 : [TC] attend la fin de la pose <br />
 <a href="aud3.htm#smean">smean</a> : [surcharge AC] pile moyenne d'un lot d'images <br />
 <a href="audus1_fr.htm#smedian">smedian</a> : [AL] pile m&eacute;diane d'un lot d'images <br />
 <a href="aud3.htm#smedian">smedian</a> : [surcharge AC] pile m&eacute;diane d'un lot d'images <br />
-<a href="aud3.htm#scale2">scale2</a> : [surcharge AC] r&eacute;-&eacute;chantillonnage 
+<a href="aud3.htm#scale2">scale2</a> : [surcharge AC] r&eacute;-&eacute;chantillonnage
 d'un lot d'images<br />
-<a href="audus1_fr.htm#trans2"></a><a href="audus1_fr.htm#sub2">sub2</a> : [AL] 
+<a href="audus1_fr.htm#trans2"></a><a href="audus1_fr.htm#sub2">sub2</a> : [AL]
 soustraction d'une image &agrave; un lot d'images <br />
 <a href="aud3.htm#sub2">sub2</a> : [surcharge AC] soustraction d'une image &agrave; un lot d'images <br />
 <a href="audus1_fr.htm#trans2">trans2</a> : [AL] translation d'un lot d'images <br />
