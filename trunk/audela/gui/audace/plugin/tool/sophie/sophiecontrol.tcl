@@ -2,7 +2,7 @@
 # @file     sophiecontrol.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecontrol.tcl,v 1.41 2010-05-16 20:41:14 michelpujol Exp $
+# @version  $Id: sophiecontrol.tcl,v 1.42 2010-05-23 16:19:59 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -27,12 +27,16 @@ proc ::sophie::control::run { visuNo tkbase } {
    if { ! [ info exists ::conf(sophie,controlWindowPosition) ] } { set ::conf(sophie,controlWindowPosition) "430x540+580+160" }
 
    #--- Initialisation de variables locales
+   set private(visuNo)                          $visuNo
    set private(positionEtoileX)                 ""
    set private(positionEtoileY)                 ""
    set private(indicateursFwhmX)                ""
    set private(indicateursFwhmY)                ""
    set private(skyLevel)                        ""
    set private(starFlux)                        ""
+   set private(focRa)                           0
+   set private(focDec)                          0
+   set private(focState)                        "TODO"     ; #--- etat du seeing TODO=a faire DONE=fait
    set private(maxIntensity)                    ""
    set private(positionConsigneX)               ""
    set private(positionConsigneY)               ""
@@ -199,24 +203,26 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
    TitleFrame $frm.voyant -borderwidth 2 -relief ridge \
       -text $::caption(sophie,indicateurInterface)
 
-      label $frm.voyant.acquisition_color_invariant \
+      Label $frm.voyant.acquisition_color_invariant \
          -bg $private(inactiveColor) -borderwidth 1 -relief groove \
-         -text $::caption(sophie,acquisitionArretee)
+         -text $::caption(sophie,acquisitionArretee) \
+         -helptext $::caption(sophie,message,guidingAcquisition)
 
       grid $frm.voyant.acquisition_color_invariant \
          -in [ $frm.voyant getframe ] \
          -row 0 -column 0 -columnspan 2 -sticky ns -pady 4 -ipadx 20 -ipady 4
 
       #--- Indicateur etoile selectionnee ou non
-      label $frm.voyant.etoile_color_invariant \
+      Label $frm.voyant.etoile_color_invariant \
          -bg $private(inactiveColor) -borderwidth 1 -relief groove \
-         -text $::caption(sophie,etoileNonDetecte)
+         -text $::caption(sophie,etoileNonDetecte) \
+         -helptext $::caption(sophie,message,starDetection)
       grid $frm.voyant.etoile_color_invariant \
          -in [ $frm.voyant getframe ] \
          -row 1 -column 0 -sticky ns -padx 4 -pady 4 -ipadx 10 -ipady 4
 
       #--- Indicateur trou detecte ou non
-      label $frm.voyant.trou_color_invariant \
+      Label $frm.voyant.trou_color_invariant \
          -bg $private(inactiveColor) -borderwidth 1 -relief groove \
          -text $::caption(sophie,trouNonDetecte)
       grid $frm.voyant.trou_color_invariant \
@@ -224,17 +230,19 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -row 1 -column 1 -sticky ns -padx 4 -pady 4 -ipadx 10 -ipady 4
 
       #--- Indicateur guidage en cours ou arrete
-      label $frm.voyant.guidage_color_invariant \
+      Label $frm.voyant.guidage_color_invariant \
          -bg $private(inactiveColor) -borderwidth 1 -relief groove \
-         -text $::caption(sophie,guidageSuspendu)
+         -text $::caption(sophie,guidageSuspendu) \
+         -helptext $::caption(sophie,message,guideState)
       grid $frm.voyant.guidage_color_invariant \
          -in [ $frm.voyant getframe ] \
          -row 2 -column 0 -columnspan 2 -sticky ns -pady 4 -ipadx 20 -ipady 4
 
       #--- Indicateur pose Sophie en cours ou arretee
-      label $frm.voyant.sophie_color_invariant \
+      Label $frm.voyant.sophie_color_invariant \
          -bg $private(inactiveColor) -borderwidth 1 -relief groove \
-         -text $::caption(sophie,sophieArretee)
+         -text $::caption(sophie,sophieArretee) \
+         -helptext $::caption(sophie,message,acquisitionState)
       grid $frm.voyant.sophie_color_invariant \
          -in [ $frm.voyant getframe ] \
          -row 3 -column 0 -columnspan 2 -sticky ns -pady 4 -ipadx 20 -ipady 4
@@ -261,6 +269,13 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -in [ $frm.voyant getframe ] \
          -row 5 -column 0 -columnspan 2 -sticky w -padx 2 -pady 2
 
+      #--- Nom de l'image Bias utilisée
+      Button $frm.voyant.histogram -text "Histogram" \
+         -command "::sophie::control::showHistogram  $visuNo"
+      grid $frm.voyant.histogram \
+         -in [ $frm.voyant getframe ] \
+         -row 5 -column 1 -columnspan 2 -sticky e -padx 2 -pady 2
+
       grid columnconfigure [ $frm.voyant getframe ] 0 -weight 1
       grid columnconfigure [ $frm.voyant getframe ] 1 -weight 1
 
@@ -269,7 +284,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
       -text $::caption(sophie,seeing)
 
       #--- FWHM X
-      label $frm.seeing.labelFWHMX -text $::caption(sophie,FWHMX)
+      Label $frm.seeing.labelFWHMX -text $::caption(sophie,FWHMX)
       grid $frm.seeing.labelFWHMX \
          -in [ $frm.seeing getframe ] \
          -row 0 -column 0 -sticky w
@@ -282,7 +297,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -row 0 -column 1 -sticky ew -padx 2
 
       #--- FWHM Y
-      label $frm.seeing.labelFWHMY -text $::caption(sophie,FWHMY)
+      Label $frm.seeing.labelFWHMY -text $::caption(sophie,FWHMY)
       grid $frm.seeing.labelFWHMY \
          -in [ $frm.seeing getframe ] \
          -row 1 -column 0 -sticky w
@@ -308,7 +323,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -row 0 -column 3 -sticky ew
 
       #--- Flux étoile
-      label $frm.seeing.labelStarFlux -text $::caption(sophie,starFlux)
+      Label $frm.seeing.labelStarFlux -text $::caption(sophie,starFlux)
       grid $frm.seeing.labelStarFlux \
          -in [ $frm.seeing getframe ] \
          -row 1 -column 2 -sticky e -padx 2
@@ -321,7 +336,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -row 1 -column 3 -sticky ew
 
       #--- Intensite maxi
-      label $frm.seeing.labelMaxIntensity -text $::caption(sophie,maxIntensity)
+      Label $frm.seeing.labelMaxIntensity -text $::caption(sophie,maxIntensity)
       grid $frm.seeing.labelMaxIntensity \
          -in [ $frm.seeing getframe ] \
          -row 0 -column 4 -sticky e -padx 2
@@ -649,59 +664,59 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -text $::caption(sophie,seeingMemorised)
 
          #--- FWHM X
-         label $frm.guidage.seeing.labelFWHMX -text $::caption(sophie,FWHMX)
+         Label $frm.guidage.seeing.labelFWHMX -text $::caption(sophie,FWHMX)
          grid $frm.guidage.seeing.labelFWHMX \
             -in [ $frm.guidage.seeing getframe ] \
             -row 0 -column 0 -sticky w
 
-         entry $frm.guidage.seeing.entryFWHMX \
-            -width 8 -justify center -state readonly \
+         Entry $frm.guidage.seeing.entryFWHMX \
+            -width 8 -justify center -editable 0 \
             -textvariable ::sophie::control::private(indicateursFwhmX)
          grid $frm.guidage.seeing.entryFWHMX \
             -in [ $frm.guidage.seeing getframe ] \
             -row 0 -column 1 -sticky ew -padx 2
 
          #--- FWHM Y
-         label $frm.guidage.seeing.labelFWHMY -text $::caption(sophie,FWHMY)
+         Label $frm.guidage.seeing.labelFWHMY -text $::caption(sophie,FWHMY)
          grid $frm.guidage.seeing.labelFWHMY \
             -in [ $frm.guidage.seeing getframe ] \
             -row 1 -column 0 -sticky w
 
-         entry $frm.guidage.seeing.entryFWHMY \
-            -width 8 -justify center -state readonly  \
+         Entry $frm.guidage.seeing.entryFWHMY \
+            -width 8 -justify center -editable 0  \
             -textvariable ::sophie::control::private(indicateursFwhmY)
          grid $frm.guidage.seeing.entryFWHMY \
             -in [ $frm.guidage.seeing getframe ] \
             -row 1 -column 1 -sticky ew -padx 2
 
          #--- Fond de ciel
-         label $frm.guidage.seeing.labelfondDeCiel -text $::caption(sophie,skyLevel)
+         Label $frm.guidage.seeing.labelfondDeCiel -text $::caption(sophie,skyLevel)
          grid $frm.guidage.seeing.labelfondDeCiel \
             -in [ $frm.guidage.seeing getframe ] \
            -row 0 -column 2 -sticky w
 
-         entry $frm.guidage.seeing.entryfondDeCiel \
-            -width 8 -justify center -state readonly  \
+         Entry $frm.guidage.seeing.entryfondDeCiel \
+            -width 8 -justify center -editable 0 \
             -textvariable ::sophie::control::private(skyLevel)
          grid $frm.guidage.seeing.entryfondDeCiel \
             -in [ $frm.guidage.seeing getframe ] \
             -row 0 -column 3 -sticky ew -padx 2
 
          #--- Flux de l'étoile
-         label $frm.guidage.seeing.labelStarFlux -text $::caption(sophie,starFlux)
+         Label $frm.guidage.seeing.labelStarFlux -text $::caption(sophie,starFlux)
          grid $frm.guidage.seeing.labelStarFlux \
             -in [ $frm.guidage.seeing getframe ] \
             -row 1 -column 2 -sticky w
 
-         entry $frm.guidage.seeing.entryStarFlux \
-            -width 10 -justify center -state readonly  \
+         Entry $frm.guidage.seeing.entryStarFlux \
+            -width 10 -justify center -editable 0  \
             -textvariable ::sophie::control::private(starFlux)
          grid $frm.guidage.seeing.entryStarFlux \
             -in [ $frm.guidage.seeing getframe ] \
             -row 1 -column 3 -sticky ew -padx 2
 
          #--- Intensite maxi
-         label $frm.guidage.seeing.labelMaxIntensity -text $::caption(sophie,maxIntensity)
+         Label $frm.guidage.seeing.labelMaxIntensity -text $::caption(sophie,maxIntensity)
          grid $frm.guidage.seeing.labelMaxIntensity \
             -in [ $frm.guidage.seeing getframe ] \
             -row 0 -column 4 -sticky w
@@ -1130,20 +1145,27 @@ proc ::sophie::control::setAcquisitionState { state } {
 
    set frm $private(frm)
    if { $state == 0 } {
+      ###set helpText "Lancer les acquisitions avec le bouton \'GO Acq\' \ndans la fenêtre principale"
       #--- j'affiche l'indicateur d'acquisition en rouge
       $frm.voyant.acquisition_color_invariant configure \
          -text $::caption(sophie,acquisitionArretee) \
-         -bg   $private(inactiveColor)
+         -bg   $private(inactiveColor) \
+         -helptext $::caption(sophie,message,guidingAcquisition)
 
       #--- je desactive le bouton de centrage
-      $frm.centrage.centrageConsigne.start configure -state disabled
+      $frm.centrage.centrageConsigne.start configure \
+         -state disabled
+
    } else {
       #--- j'affiche l'indicateur d'acquisition en vert
       $frm.voyant.acquisition_color_invariant configure \
          -text $::caption(sophie,acquisitionEncours) \
-         -bg   $private(activeColor)
+         -bg   $private(activeColor) \
+         -helptext ""
+
       #--- j'active le bouton de centrage
-      $frm.centrage.centrageConsigne.start configure -state normal
+      $frm.centrage.centrageConsigne.start configure \
+         -state normal
    }
 }
 
@@ -1159,19 +1181,22 @@ proc ::sophie::control::setCenterState { state } {
 
    set frm $private(frm)
    if { $state == 0 } {
+      ###set helpText "Lancer le centrage en cochant \'Center sur la consigne\' \ndans la fenêtre principale"
       #--- j'affiche le voyant en rouge
       $frm.centrage.centrageConsigne.indicateur configure \
          -text $::caption(sophie,centrageArrete) \
          -bg   $private(inactiveColor)
       #--- je change le libelle du bouton de commande
-      $frm.centrage.centrageConsigne.start configure -text $::caption(sophie,lancerCentrage)
+      $frm.centrage.centrageConsigne.start configure \
+         -text $::caption(sophie,lancerCentrage)
    } else {
       #--- j'affiche le voyant en vert
       $frm.centrage.centrageConsigne.indicateur configure \
          -text $::caption(sophie,centrageReussi) \
          -bg   $private(activeColor)
       #--- je change le libelle du bouton de commande
-      $frm.centrage.centrageConsigne.start configure -text $::caption(sophie,arreterCentrage)
+      $frm.centrage.centrageConsigne.start configure \
+         -text $::caption(sophie,arreterCentrage)
    }
 }
 
@@ -1190,7 +1215,7 @@ proc ::sophie::control::setGuideState { state } {
       #--- j'affiche le voyant en rouge
       $frm.voyant.guidage_color_invariant configure \
          -text $::caption(sophie,guidageSuspendu) \
-         -bg   $private(inactiveColor)
+         -bg   $private(inactiveColor) -helptext $::caption(sophie,message,guideState)
       #--- j'ajoute une trace de l'arret du guidage
       ::sophie::histogram::writeGuidingStop
 
@@ -1198,7 +1223,7 @@ proc ::sophie::control::setGuideState { state } {
       #--- j'affiche le voyant en vert
       $frm.voyant.guidage_color_invariant configure \
          -text $::caption(sophie,guidageEncours) \
-         -bg   $private(activeColor)
+         -bg   $private(activeColor) -helptext ""
 
       #--- j'ajoute une trace du démarrage du guidage
       ::sophie::histogram::writeGuidingStart
@@ -1221,14 +1246,14 @@ proc ::sophie::control::setAcquisitionSophie { state } {
       #--- j'affiche le voyant en rouge
       $frm.voyant.sophie_color_invariant configure \
          -text $::caption(sophie,sophieArretee) \
-         -bg   $private(inactiveColor)
+         -bg   $private(inactiveColor) -helptext $::caption(sophie,message,acquisitionState)
       #--- je purge les vecteurs
 
    } else {
       #--- j'affiche le voyant en vert
       $frm.voyant.sophie_color_invariant configure \
          -text $::caption(sophie,sophieEncours) \
-         -bg   $private(activeColor)
+         -bg   $private(activeColor) -helptext ""
    }
 }
 
@@ -1299,11 +1324,11 @@ proc ::sophie::control::setCenterInformation { starDetection fiberStatus originX
    if { $starDetection == 0 } {
       $frm.voyant.etoile_color_invariant configure \
          -text $::caption(sophie,etoileNonDetecte) \
-         -bg   $private(inactiveColor)
+         -bg   $private(inactiveColor) -helptext $::caption(sophie,message,starDetection)
    } else {
       $frm.voyant.etoile_color_invariant configure \
          -text $::caption(sophie,etoileDetecte) \
-         -bg   $private(activeColor)
+         -bg   $private(activeColor) -helptext ""
    }
 
    #--- je mets a jour le voyant "trouDetecte"
@@ -1312,29 +1337,49 @@ proc ::sophie::control::setCenterInformation { starDetection fiberStatus originX
          #--- le trou est détecte
          $frm.voyant.trou_color_invariant configure \
             -text $::caption(sophie,trouDetecte) \
-            -bg   $private(activeColor)
+            -bg   $private(activeColor) -helptext ""
       }
       "DISABLED" {
          #--- la detection du trou est desactivee
          $frm.voyant.trou_color_invariant configure \
             -text $::caption(sophie,tourNonRecherche) \
-            -bg   "SystemButtonFace"
+            -bg   "SystemButtonFace"  -helptext ""
       }
       "INTEGRATING" {
          #--- l'integration des premieres images est en cours
          $frm.voyant.trou_color_invariant configure \
             -text $::caption(sophie,integrationEncours) \
-            -bg   "SystemButtonFace"
+            -bg   "SystemButtonFace"  -helptext ""
       }
-      "LOW_SIGNAL" -
-      "TOO_FAR" -
-      "OUTSIDE" -
-      "NO_SIGNAL" -
+      "LOW_SIGNAL" {
+         #--- le trou n'est pas détecte
+         $frm.voyant.trou_color_invariant configure \
+            -text "$::caption(sophie,trouNonDetecte) ($fiberStatus)" \
+            -bg   $private(inactiveColor)  -helptext $::caption(sophie,message,fiberLowSignal)
+      }
+      "TOO_FAR" {
+         #--- le trou n'est pas détecte
+         $frm.voyant.trou_color_invariant configure \
+            -text "$::caption(sophie,trouNonDetecte) ($fiberStatus)" \
+            -bg   $private(inactiveColor)  -helptext $::caption(sophie,message,fiberTooFar)
+      }
+      "OUTSIDE" {
+         #--- le trou n'est pas détecte
+         $frm.voyant.trou_color_invariant configure \
+            -text "$::caption(sophie,trouNonDetecte) ($fiberStatus)" \
+            -bg   $private(inactiveColor)  -helptext $::caption(sophie,message,fiberOutside)
+      }
+      "NO_SIGNAL" {
+         #--- le trou n'est pas détecte
+         $frm.voyant.trou_color_invariant configure \
+            -text "$::caption(sophie,trouNonDetecte) ($fiberStatus)" \
+            -bg   $private(inactiveColor)  -helptext $::caption(sophie,message,fiberNoSignal)
+      }
       default {
          #--- le trou n'est pas détecte
          $frm.voyant.trou_color_invariant configure \
             -text "$::caption(sophie,trouNonDetecte) ($fiberStatus)" \
-            -bg   $private(inactiveColor)
+            -bg   $private(inactiveColor)  -helptext $::caption(sophie,message,fiberDefault)
       }
    }
 
@@ -1350,18 +1395,46 @@ proc ::sophie::control::setCenterInformation { starDetection fiberStatus originX
    set private(indicateursFwhmX)      [format "%6.1f" $fwhmX]
    set private(indicateursFwhmY)      [format "%6.1f" $fwhmY]
    set private(skyLevel)              [format "%6.1f" $skyLevel]
-   set private(starFlux)              [format "%6.1f" $starFlux]
+   set private(starFlux)              [format "%6.4e" $starFlux]
    set private(maxIntensity)          [format "%6.1f" $maxIntensity]
 
    if { $private(maxIntensity) < $::conf(sophie,minIntensity) } {
-      #--- je mets en rouge le fond du wigdet du flux max, si le flux max est inferieur au minimum requis
-      $frm.seeing.labelMaxIntensity configure -bg $private(inactiveColor)
-      $frm.seeing.entryMaxIntensity configure -bg $private(inactiveColor)
+      #--- je mets en rouge le fond du wigdet du flux max, si l'intensité max est inferieur au minimum requis
+      $frm.seeing.labelMaxIntensity configure \
+         -bg $private(inactiveColor) \
+         -helptext [format $::caption(sophie,message,minIntensity) $::conf(sophie,minIntensity)]
+      $frm.seeing.entryMaxIntensity configure \
+         -bg $private(inactiveColor) \
+         -helptext [format $::caption(sophie,message,minIntensity) $::conf(sophie,minIntensity)]
    } else {
       #--- je restaure la couleur du fond par defaut
-      $frm.seeing.labelMaxIntensity configure -bg $::audace(color,backColor)
-      $frm.seeing.entryMaxIntensity configure -bg $::audace(color,entryBackColor)
+      $frm.seeing.labelMaxIntensity configure -bg $::audace(color,backColor)  -helptext ""
+      $frm.seeing.entryMaxIntensity configure -bg $::audace(color,entryBackColor) -helptext ""
    }
+
+   #--- je mets en rouge le flux de l'étoile s'il n'a pas ete mesuré
+   if { [expr abs($private(focRa) - [mc_angle2deg $::audace(telescope,getra)])] > $::conf(sophie,starFluxMaxRadecShift)
+        || [expr abs($private(focDec) - [mc_angle2deg $::audace(telescope,getdec)])] > $::conf(sophie,starFluxMaxRadecShift)} {
+      $frm.seeing.labelStarFlux configure -bg $private(inactiveColor) -helptext $::caption(sophie,message,starFluxTodo)
+      $frm.seeing.entryStarFlux configure -bg $private(inactiveColor) -helptext $::caption(sophie,message,starFluxTodo)
+   } else {
+      $frm.seeing.labelStarFlux configure -bg $::audace(color,backColor) -helptext ""
+      $frm.seeing.entryStarFlux configure -bg $::audace(color,backColor) -helptext ""
+   }
+
+   #--- je mets en rouge le seeing s'il n'a pas ete initialisé
+   if { $private(focState) == "TODO" } {
+      $frm.seeing.labelFWHMX  configure -bg $private(inactiveColor) -helptext $::caption(sophie,message,focTodo)
+      $frm.seeing.entryFWHMX  configure -bg $private(inactiveColor) -helptext $::caption(sophie,message,focTodo)
+      $frm.seeing.labelFWHMY  configure -bg $private(inactiveColor) -helptext $::caption(sophie,message,focTodo)
+      $frm.seeing.entryFWHMY  configure -bg $private(inactiveColor) -helptext $::caption(sophie,message,focTodo)
+   } else {
+      $frm.seeing.labelFWHMX configure -bg $::audace(color,backColor) -helptext ""
+      $frm.seeing.entryFWHMX configure -bg $::audace(color,entryBackColor) -helptext ""
+      $frm.seeing.labelFWHMY configure -bg $::audace(color,backColor) -helptext ""
+      $frm.seeing.entryFWHMY configure -bg $::audace(color,entryBackColor) -helptext ""
+   }
+
 }
 
 ##------------------------------------------------------------
@@ -1393,11 +1466,11 @@ proc ::sophie::control::setFocusInformation { starDetection fiberStatus originX 
    if { $starDetection == 0 } {
       $frm.voyant.etoile_color_invariant configure \
          -text $::caption(sophie,etoileNonDetecte) \
-         -bg   $private(inactiveColor)
+         -bg   $private(inactiveColor) -helptext $::caption(sophie,message,starDetection)
    } else {
       $frm.voyant.etoile_color_invariant configure \
          -text $::caption(sophie,etoileDetecte) \
-         -bg   $private(activeColor)
+         -bg   $private(activeColor) -helptext ""
    }
 
    #--- je mets a jour le voyant "trouDetecte"
@@ -1406,29 +1479,49 @@ proc ::sophie::control::setFocusInformation { starDetection fiberStatus originX 
          #--- le trou est détecte
          $frm.voyant.trou_color_invariant configure \
             -text $::caption(sophie,trouDetecte) \
-            -bg   $private(activeColor)
+            -bg   $private(activeColor) -helptext ""
       }
       "DISABLED" {
          #--- la detection du trou est desactivee
          $frm.voyant.trou_color_invariant configure \
             -text $::caption(sophie,tourNonRecherche) \
-            -bg   "SystemButtonFace"
+            -bg   "SystemButtonFace" -helptext ""
       }
       "INTEGRATING" {
          #--- l'integration des premieres images est en cours
          $frm.voyant.trou_color_invariant configure \
             -text $::caption(sophie,integrationEncours) \
-            -bg   "SystemButtonFace"
+            -bg   "SystemButtonFace" -helptext ""
       }
-      "LOW_SIGNAL" -
-      "TOO_FAR" -
-      "OUTSIDE" -
-      "NO_SIGNAL" -
+      "LOW_SIGNAL" {
+         #--- le trou n'est pas détecte
+         $frm.voyant.trou_color_invariant configure \
+            -text "$::caption(sophie,trouNonDetecte) ($fiberStatus)" \
+            -bg   $private(inactiveColor)  -helptext $::caption(sophie,message,fiberLowSignal)
+      }
+      "TOO_FAR" {
+         #--- le trou n'est pas détecte
+         $frm.voyant.trou_color_invariant configure \
+            -text "$::caption(sophie,trouNonDetecte) ($fiberStatus)" \
+            -bg   $private(inactiveColor)  -helptext $::caption(sophie,message,fiberTooFar)
+      }
+      "OUTSIDE" {
+         #--- le trou n'est pas détecte
+         $frm.voyant.trou_color_invariant configure \
+            -text "$::caption(sophie,trouNonDetecte) ($fiberStatus)" \
+            -bg   $private(inactiveColor)  -helptext $::caption(sophie,message,fiberOutside)
+      }
+      "NO_SIGNAL" {
+         #--- le trou n'est pas détecte
+         $frm.voyant.trou_color_invariant configure \
+            -text "$::caption(sophie,trouNonDetecte) ($fiberStatus)" \
+            -bg   $private(inactiveColor)  -helptext $::caption(sophie,message,fiberNoSignal)
+      }
       default {
          #--- le trou n'est pas détecte
          $frm.voyant.trou_color_invariant configure \
             -text "$::caption(sophie,trouNonDetecte) ($fiberStatus)" \
-            -bg   $private(inactiveColor)
+            -bg   $private(inactiveColor)  -helptext $::caption(sophie,message,fiberDefault)
       }
    }
 
@@ -1439,13 +1532,26 @@ proc ::sophie::control::setFocusInformation { starDetection fiberStatus originX 
    set private(ecartEtoileX)          [format "%6.2f" $alphaDiff]
    set private(ecartEtoileY)          [format "%6.2f" $deltaDiff]
    set private(skyLevel)              [format "%6.1f" $skyLevel]
-   set private(starFlux)              [format "%6.1f" $starFlux]
+   set private(starFlux)              [format "%6.4e" $starFlux]
    set private(maxIntensity)          [format "%6.1f" $maxIntensity]
 
+   #--- je mets les widgets du seeing en couleur normale
+   set private(focState)  "DONE"
+   $frm.seeing.labelFWHMX configure -bg $::audace(color,backColor)
+   $frm.seeing.entryFWHMX configure -bg $::audace(color,entryBackColor)
+   $frm.seeing.labelFWHMY configure -bg $::audace(color,backColor)
+   $frm.seeing.entryFWHMY configure -bg $::audace(color,entryBackColor)
+
+   #--- je memorise les coordonnées du télescope
+   set private(focRa) [mc_angle2deg $::audace(telescope,getra)]
+   set private(focDec) [mc_angle2deg $::audace(telescope,getdec)]
+   $frm.seeing.labelStarFlux configure -bg $::audace(color,backColor) -helptext ""
+   $frm.seeing.entryStarFlux configure -bg $::audace(color,backColor) -helptext ""
+
+   #--- je mets en rouge le fond du wigdet d' lintensite max, si l'intensité max est inferieure au minimum requis
    if { $private(maxIntensity) < $::conf(sophie,minIntensity) } {
-      #--- je mets en rouge le fond du wigdet du flux max, si le flux max est inferieur au minimum requis
-      $frm.seeing.labelMaxIntensity configure -bg $private(inactiveColor)
-      $frm.seeing.entryMaxIntensity configure -bg $private(inactiveColor)
+      $frm.seeing.labelMaxIntensity configure -bg $private(inactiveColor) -helptext $::caption(sophie,message,minIntensity)
+      $frm.seeing.entryMaxIntensity configure -bg $private(inactiveColor) -helptext $::caption(sophie,message,minIntensity)
    } else {
       #--- je restaure la couleur du fond par defaut
       $frm.seeing.labelMaxIntensity configure -bg $::audace(color,backColor)
@@ -1503,11 +1609,11 @@ proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX 
    if { $starDetection == 0 } {
       $frm.voyant.etoile_color_invariant configure \
          -text $::caption(sophie,etoileNonDetecte) \
-         -bg   $private(inactiveColor)
+         -bg   $private(inactiveColor) -helptext $::caption(sophie,message,starDetection)
    } else {
       $frm.voyant.etoile_color_invariant configure \
          -text $::caption(sophie,etoileDetecte) \
-         -bg   $private(activeColor)
+         -bg   $private(activeColor) -helptext ""
    }
 
    #--- je mets a jour le voyant "trouDetecte"
@@ -1530,16 +1636,35 @@ proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX 
             -text $::caption(sophie,integrationEncours) \
             -bg   "SystemButtonFace"
       }
-      "LOW_SIGNAL" -
-      "TOO_FAR" -
-      "OUTSIDE" -
-      "NO_SIGNAL" -
-      "OUTSIDE" -
+      "LOW_SIGNAL" {
+         #--- le trou n'est pas détecte
+         $frm.voyant.trou_color_invariant configure \
+            -text "$::caption(sophie,trouNonDetecte) ($fiberStatus)" \
+            -bg   $private(inactiveColor)  -helptext $::caption(sophie,message,fiberLowSignal)
+      }
+      "TOO_FAR" {
+         #--- le trou n'est pas détecte
+         $frm.voyant.trou_color_invariant configure \
+            -text "$::caption(sophie,trouNonDetecte) ($fiberStatus)" \
+            -bg   $private(inactiveColor)  -helptext $::caption(sophie,message,fiberTooFar)
+      }
+      "OUTSIDE" {
+         #--- le trou n'est pas détecte
+         $frm.voyant.trou_color_invariant configure \
+            -text "$::caption(sophie,trouNonDetecte) ($fiberStatus)" \
+            -bg   $private(inactiveColor)  -helptext $::caption(sophie,message,fiberOutside)
+      }
+      "NO_SIGNAL" {
+         #--- le trou n'est pas détecte
+         $frm.voyant.trou_color_invariant configure \
+            -text "$::caption(sophie,trouNonDetecte) ($fiberStatus)" \
+            -bg   $private(inactiveColor)  -helptext $::caption(sophie,message,fiberNoSignal)
+      }
       default {
          #--- le trou n'est pas détecte
          $frm.voyant.trou_color_invariant configure \
             -text "$::caption(sophie,trouNonDetecte) ($fiberStatus)" \
-            -bg   $private(inactiveColor)
+            -bg   $private(inactiveColor)  -helptext $::caption(sophie,message,fiberDefault)
       }
    }
 
@@ -1558,12 +1683,38 @@ proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX 
 
    if { $private(maxIntensity) < $::conf(sophie,minIntensity) } {
       #--- je mets en rouge le fond du wigdet du flux max, si le flux max est inferieur au minimum requis
-      $frm.guidage.seeing.labelMaxIntensity configure -bg $private(inactiveColor)
-      $frm.guidage.seeing.entryMaxIntensity configure -bg $private(inactiveColor)
+      $frm.guidage.seeing.labelMaxIntensity configure \
+         -bg $private(inactiveColor) \
+         -helptext [format $::caption(sophie,message,minIntensity) $::conf(sophie,minIntensity)]
+      $frm.guidage.seeing.entryMaxIntensity configure \
+         -bg $private(inactiveColor) \
+         -helptext [format $::caption(sophie,message,minIntensity) $::conf(sophie,minIntensity)]
    } else {
       #--- je restaure la couleur du fond par defaut
-      $frm.guidage.seeing.labelMaxIntensity configure -bg $::audace(color,backColor)
-      $frm.guidage.seeing.entryMaxIntensity configure -bg $::audace(color,entryBackColor)
+      $frm.guidage.seeing.labelMaxIntensity configure -bg $::audace(color,backColor) -helptext ""
+      $frm.guidage.seeing.entryMaxIntensity configure -bg $::audace(color,entryBackColor) -helptext ""
+   }
+
+   #--- je mets en rouge le seeing s'il n'a pas ete initialisé
+   if { [expr abs($private(focRa) - [mc_angle2deg $::audace(telescope,getra)])] > $::conf(sophie,starFluxMaxRadecShift)
+        || [expr abs($private(focDec) - [mc_angle2deg $::audace(telescope,getdec)])] > $::conf(sophie,starFluxMaxRadecShift) } {
+      $frm.guidage.seeing.labelStarFlux configure -bg $private(inactiveColor) -helptext $::caption(sophie,message,starFluxTodo)
+      $frm.guidage.seeing.entryStarFlux configure -bg $private(inactiveColor) -helptext $::caption(sophie,message,starFluxTodo)
+   } else {
+      $frm.guidage.seeing.labelStarFlux configure -bg $::audace(color,backColor) -helptext ""
+      $frm.guidage.seeing.entryStarFlux configure -bg $::audace(color,backColor) -helptext ""
+   }
+
+   if { $private(focState) == "TODO" } {
+      $frm.guidage.seeing.labelFWHMX  configure -bg $private(inactiveColor) -helptext $::caption(sophie,message,focTodo)
+      $frm.guidage.seeing.entryFWHMX  configure -bg $private(inactiveColor) -helptext $::caption(sophie,message,focTodo)
+      $frm.guidage.seeing.labelFWHMY  configure -bg $private(inactiveColor) -helptext $::caption(sophie,message,focTodo)
+      $frm.guidage.seeing.entryFWHMY  configure -bg $private(inactiveColor) -helptext $::caption(sophie,message,focTodo)
+   } else {
+      $frm.guidage.seeing.labelFWHMX configure -bg $::audace(color,backColor) -helptext ""
+      $frm.guidage.seeing.entryFWHMX configure -bg $::audace(color,backColor) -helptext ""
+      $frm.guidage.seeing.labelFWHMY configure -bg $::audace(color,backColor) -helptext ""
+      $frm.guidage.seeing.entryFWHMY configure -bg $::audace(color,backColor) -helptext ""
    }
 
    #--- j'ajoute la valeur le graphe sophieEcartConsigneX
@@ -1629,7 +1780,7 @@ proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX 
 
    #--- je mets a jour les logs des ecarts si le guidage est activé
    if { [$frm.voyant.guidage_color_invariant cget -bg ] ==  $private(activeColor) } {
-      ::sophie::histogram::writeGuidingInformation \
+      ::sophie::histogram::writeGuidingInformation $private(visuNo) \
          $private(ecartEtoileX) $private(ecartEtoileY)\
          $private(alphaCorrection) $private(deltaCorrection) \
          $::audace(telescope,getra) $::audace(telescope,getdec)
@@ -1904,4 +2055,21 @@ proc ::sophie::control::onGraphUnzoom { graph  } {
 
    $graph axis configure x y -min {} -max {}
 }
+
+#------------------------------------------------------------
+# showHistogram
+#  affiche l'histogramme des corrections
+#
+# Parameters
+#
+#  @return void
+#------------------------------------------------------------
+proc ::sophie::control::showHistogram { visuNo } {
+   variable private
+
+   ::sophie::histogram::run $visuNo
+   ::sophie::histogram::displayData  $visuNo
+
+}
+
 
