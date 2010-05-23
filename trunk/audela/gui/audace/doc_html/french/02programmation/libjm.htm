@@ -115,7 +115,7 @@ Effectue l'<b>inter-correlation</b> des images contenues dans <code>image_source
 <p>Le fichier <code>image_destination</code> est codé en virgule flottante.</p>
 
 <h3> <a name="conv2d" id="conv2d"></a>conv2d <em>image_source_1 image_source_2 image_destination [ normalisation ]</em></h3>
-Effectue le<b>produit de convolution</b> des images contenues dans <code>image_source_1</code> et <code>image_source_2</code> et stocke le résultat dans <code>image_destination.</code>
+Effectue le <b>produit de convolution</b> des images contenues dans <code>image_source_1</code> et <code>image_source_2</code> et stocke le résultat dans <code>image_destination.</code>
 <p>L'image <code>image_source_2</code> joue le rôle de noyau de convolution, c'est à dire que le produit de convolution est décalé d'un nombre de pixels égal à la moitié de la largeur et de la hauteur de l'image <code>image_source_2</code>.</p>
 <p>Si les images <code>image_source_1</code> et <code>image_source_2</code> n'ont pas la même taille, la plus petite doit pouvoir être complètement contenue dans la plus grande, c'est à dire que les <b>deux</b> dimensions de la petite doivent être inférieures à celles de la plus grande.</p>
 <p>Le paramètre optionnel <code>normalisation</code> précise la dynamique de l'image <code>image_destination</code>. Il peut prendre les valeurs :
