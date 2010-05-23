@@ -2,7 +2,7 @@
 # Fichier : audecomconfig.tcl
 # Description : Configuration et pilotage de la monture AudeCom (Ex-Kauffmann)
 # Auteurs : Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: audecomconfig.tcl,v 1.5 2009-12-28 16:20:13 robertdelmas Exp $
+# Mise Ã  jour $Id: audecomconfig.tcl,v 1.6 2010-05-23 15:43:55 robertdelmas Exp $
 #
 
 #
@@ -342,7 +342,7 @@ proc ::confAudecomMot::confToWidget { } {
 proc ::confAudecomMot::widgetToConf { } {
    variable private
 
-   #--- Recherche des virgules dans les nombres décimaux et remplacement par des points
+   #--- Recherche des virgules dans les nombres decimaux et remplacement par des points
    set private(audecom,rat_ad)     [ ::confAudecomMot::remplaceVirguleParPoint $private(audecom,rat_ad) ]
    set private(audecom,rat_dec)    [ ::confAudecomMot::remplaceVirguleParPoint $private(audecom,rat_dec) ]
    #--- Sauvegarde des variables
@@ -355,7 +355,7 @@ proc ::confAudecomMot::widgetToConf { } {
 
 #
 # ::confAudecomMot::remplaceVirguleParPoint
-# Recherche du caractere virgule et remplacement par le caractere point dans un nombre décimal
+# Recherche du caractere virgule et remplacement par le caractere point dans un nombre decimal
 #
 proc ::confAudecomMot::remplaceVirguleParPoint { chaine } {
    if { [ string first "," $chaine ] >= 0 } {
@@ -1423,10 +1423,10 @@ proc ::confAudecomKing::Clock_et_King { } {
    if { [ winfo exists $This ] } {
       #--- Cree le label de la longitude
       set confgene(posobs,long1) [ lindex [ mc_angle2dms $confgene(posobs,long) 180 ] 0 ]
-      $This.lab3 configure -text "$confgene(posobs,estouest) [ expr int($confgene(posobs,long1)) ]° [ lindex [ mc_angle2dms $confgene(posobs,long) 180 ] 1 ]' [ format "%03.1f" [ lindex [ mc_angle2dms $confgene(posobs,long) 180 ] 2 ] ]''"
+      $This.lab3 configure -text "$confgene(posobs,estouest) [ expr int($confgene(posobs,long1)) ]Â° [ lindex [ mc_angle2dms $confgene(posobs,long) 180 ] 1 ]' [ format "%03.1f" [ lindex [ mc_angle2dms $confgene(posobs,long) 180 ] 2 ] ]''"
       #--- Cree le label de la latitude
       set confgene(posobs,lat1) [lindex [ mc_angle2dms $confgene(posobs,lat) 90 ] 0]
-      $This.lab5 configure -text "$confgene(posobs,nordsud) [ expr int($confgene(posobs,lat1)) ]° [ lindex [ mc_angle2dms $confgene(posobs,lat) 90 ] 1 ]' [ format "%03.1f" [ lindex [ mc_angle2dms $confgene(posobs,lat) 90 ] 2 ] ]''"
+      $This.lab5 configure -text "$confgene(posobs,nordsud) [ expr int($confgene(posobs,lat1)) ]Â° [ lindex [ mc_angle2dms $confgene(posobs,lat) 90 ] 1 ]' [ format "%03.1f" [ lindex [ mc_angle2dms $confgene(posobs,lat) 90 ] 2 ] ]''"
       #--- Cree le label de l'altitude
       $This.lab7 configure -text "$confgene(posobs,altitude) $caption(audecomconfig,metre)"
       #--- Affichage heure tu et heure tsl
@@ -1445,10 +1445,10 @@ proc ::confAudecomKing::Clock_et_King { } {
       #--- Declinaison
       set declinaison [ lindex $addec 1 ]
       if { $declinaison == "" } {
-         set private(declinaison1) "00° 00' 00''"
+         set private(declinaison1) "00Â° 00' 00''"
          set declinaison2 "00d00m00s"
       } else {
-         set private(declinaison1) "[ string range $declinaison 0 2 ]° [ string range $declinaison 4 5 ]' [ string range $declinaison 7 8 ]''"
+         set private(declinaison1) "[ string range $declinaison 0 2 ]Â° [ string range $declinaison 4 5 ]' [ string range $declinaison 7 8 ]''"
          set declinaison2 $declinaison
       }
       #--- Preparation affichage azimut, hauteur et angle horaire
@@ -1731,3 +1731,4 @@ proc ::confAudecomMobile::widgetToConf { } {
 #--- Chargements au demarrage
 ::confAudecomMot::init
 ::confAudecomMobile::init
+

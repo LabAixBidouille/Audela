@@ -2,7 +2,7 @@
 # Fichier : ascom.tcl
 # Description : Configuration de la monture ASCOM
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ascom.tcl,v 1.18 2010-02-05 18:37:37 robertdelmas Exp $
+# Mise à jour $Id: ascom.tcl,v 1.19 2010-05-23 15:39:32 robertdelmas Exp $
 #
 
 namespace eval ::ascom {
