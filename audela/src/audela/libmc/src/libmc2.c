@@ -2303,11 +2303,6 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
    char name[524];
    struct elemorb elem;
    double jj;
-   /*
-   double jj0,a,n=0.0,k_gauss;
-   char ss[524];
-   int k;
-   */
    double longmpc,rhocosphip,rhosinphip;
    double diamapp_equ,diamapp_pol,long1,long2,long3,lati,posangle_sun,posangle_north;
    double long1_sun=0.,lati_sun=0.;
@@ -2389,6 +2384,7 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
       while (feof(ftle)==0) {
 			k++;
          mc_tle_decnext1(ftle,&elem,name,&valid);
+			valid=0;
          if (valid==1) {
             /* --- on lance le calcul ---*/
             mc_adelemap_sgp(sgp_method,jdtt,jj,equinoxe,astrometric,elem,longmpc,rhocosphip,rhosinphip,0,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun,&sunfraction,&zlong,&zlat,&azimuth,&elevation,&parallactic,&hour_angle);
@@ -2440,6 +2436,7 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
       Tcl_DStringFree(&dsptr);
    }
    return result;
+
 }
 
 int Cmd_mctcl_tle2xyz(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
