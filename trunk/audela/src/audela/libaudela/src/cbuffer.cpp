@@ -2315,8 +2315,8 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
 
       // debut de protection acces concurrent au buffer
       pthread_mutex_lock(&mutex);
-      naxis1 = this->GetWidth();
-      naxis2 = this->GetHeight();
+      naxis1 = pix->GetWidth();
+      naxis2 = pix->GetHeight();
       if (x1<0) {x1=0;}
       if (x2<0) {x2=0;}
       if (y1<0) {y1=0;}
@@ -2329,13 +2329,20 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
       width =  x2-x1+1;
       height = y2-y1+1;
 
+      int savedWidth = width; 
+      int savedHeight = height; 
+
       imgPix = (TYPE_PIXELS *) malloc(width * height * sizeof(TYPE_PIXELS));
       if ( imgPix ==NULL ) {
          throw CError( "CBuffer::AstroFiberCentro not enough memory for imgPix");
       }
       pix->GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (void*) imgPix);
 
-      // fin de protection acces concurrent au buffer
+      // Fin de protection acces concurrent au buffer
+      // Mais il semblerait qu'il y ait un problème d'accès concurrent à Libtt_main(TT_PTR_STATIMA)
+      // quand le thread principal fait en meme temps une statistique
+      // donc je je libere le mutex à la fin de cette procedure pour limiter la 
+      // probabilté d'acces concurrent
       pthread_mutex_unlock(&mutex);
 
       // ----------------------------------------------------
@@ -2353,18 +2360,26 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
       }
 
       // ----------------------------------------------------
-      // je calcule la qualite qualityMin ? partir de mean, dsigma
+      // je calcule la qualite qualityMin à partir de mean, dsigma
       //  et je recupere dbgmean pour le soustraire de l'image si le bias n'est pas fourni
       // ----------------------------------------------------
       int ttResult;
       int datatype = TFLOAT;
       double dlocut, dhicut, dmaxi, dmini, dmean, dsigma, dbgmean,dbgsigma,dcontrast;
-
+      
+      pthread_mutex_lock(&mutex);
       ttResult = Libtt_main(TT_PTR_STATIMA,13,imgPix,&datatype,&width,&height,
          &dlocut,&dhicut,&dmaxi,&dmini,&dmean,&dsigma,&dbgmean,&dbgsigma,&dcontrast);
       if(ttResult) {
-         throw CError("AstroFiberCentro: TT_PTR_STATIMA width=%d height=%d");
+         //throw CErrorLibtt(ttResult);
+         char errorName[1024];
+         char errorDetail[1024];
+         Libtt_main(TT_ERROR_MESSAGE,2,&ttResult,errorName);
+         Libtt_main(TT_LAST_ERROR_MESSAGE,1,errorDetail); 
+         throw CError("AstroFiberCentro qualityMin: TT_PTR_STATIMA Libtt error #%d:%s Detail=%s width=%d height=%d imgPix=%p", 
+            ttResult, errorName,errorDetail, width, height, imgPix );
       }
+      pthread_mutex_unlock(&mutex);
       *maxIntensity = dmaxi;
       *background   = dbgmean;
 
@@ -2433,7 +2448,6 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                sx += (i+1) * *imgPtr ;
                sy += (j+1) * *imgPtr ;
             }
-
          }
       }
 
@@ -2445,7 +2459,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
 
       *measuredFwhmX = px[2];
       *measuredFwhmY = py[2];
-      *starFlux = flux;
+
 
       // ----------------------------------------------------
       // j'enregistre l'image courante pour debogage
@@ -2478,11 +2492,11 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
 
       // je calcule la position de l'etoile
       if ( starDetectionMode == 1 ) {
-         // centre de la gaussienne
+         // calcul avec centre de la gaussienne
          *starX = px[1];
          *starY = py[1];
       } else {
-         // barycentre
+         // calcul avec le barycentre
          if ( flux != 0 ) {
             *starX = (sx / flux) -1 ;
             *starY = (sy / flux) -1;
@@ -2502,7 +2516,54 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
          }
       }
 
-      // je change de repere de coordonnees
+      // je calcule le flux de l'etoile dans une ellipse
+      // centrée sur starX,starY et demi grand axe  xFmhw yFwhm
+      {
+         double a = *measuredFwhmX /2.0;  // demi grand axe de l'ellipse
+         double b = *measuredFwhmY /2.0;  // demi petit axe de l'ellipse 
+         double a2 = a*a;                 // demi grand axe de l'ellipse au carré 
+         double b2 = b*b;                 // demi petit axe de l'ellipse au carré
+         double x0 = *starX;              // x0 , y0 : centre de l'ellipse
+         double y0 = *starY;
+
+         // je definis les  bornes de balaye des pixels (en valeur entière) 
+         int imin = (int) (*starX  - a + 0.5);
+         int imax = (int) (*starX  + a + 0.5);
+         int jmin = (int) (*starY  - b + 0.5);
+         int jmax = (int) (*starY  + b + 0.5);
+
+         // je conserve la valeur précédente pour la mettre dans message de retour à titre d'information
+         double flux0 = flux ;
+         
+         if ( (imax - imin) <= 0 || (jmax - jmin) <= 0 ) {
+            // la fwhm est trop petite sur un des axes 
+            flux = 0;
+         } else {
+            // je verifie que l'ellipse ne deborde pas de l'image
+            if ( imin < 0 )         { imin = 0; }
+            if ( imax > width -1 )  { imax = width -1; }
+            if ( jmin < 0 )         { jmin = 0; }
+            if ( jmax > height -1 ) { jmax = height -1; }
+            flux = 0.;
+            for(int j=jmin;j<=jmax;j++) {
+               imgOffset  = imgPix  + j * width;
+               for(int i=imin;i<=imax;i++) {
+                  // je verifie si le pixel est à l'intérieur de l'ellipse 
+                  if ( ( ((double)i-x0)*((double)i-x0)/ a2 + ((double)j-y0)*((double)j-y0)/b2 ) <= 1.0 ) {
+                     imgPtr  = imgOffset+i;
+                     // j'ajoute le flux du pixel au flux 
+                     flux += *imgPtr  ;
+                  }               
+               }
+            }
+         }
+
+         sprintf(message, "flux0= %f  flux=%f", flux0, flux);
+      }
+      // je copie le flux dans la variable de sortie
+      *starFlux = flux;
+
+      // je change de repere de coordonnees Fentre -> buffer
       *starX += x1;
       *starY += y1;
 
@@ -2526,6 +2587,12 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
       }
 
       strcpy(starStatus, "DETECTED");
+
+      // je traque le bug fantome
+      if ( savedWidth != width || savedHeight != height ) {
+         throw CError( "starStatus : la taille a changé. (%d %d) => (%d %d) ", savedWidth, savedHeight, width, height);  
+      }
+ 
 
       // ----------------------------------------------------
       // calcul de  l'image integree
@@ -2555,23 +2622,6 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
          }
 
          if ( integratedImage == 2 ) {
-            //// je recupere l'image courante centree sur la fibre
-            //int xmin = (int) (previousFiberX - (width / 2));
-            //int xmax = xmin + width - 1;
-            //int ymin = (int) (previousFiberY - (height / 2));
-            //int ymax = ymin + height - 1;
-
-            //// je verifie qu'on ne sort pas de l'image courante
-            //if (xmin<0) {xmin=0;}
-            //if (xmin>naxis1-1) {xmin=naxis1-1;}
-            //if (xmax>naxis1-1) {xmax=naxis1-1;}
-            //if (ymin<0) {ymin=0;}
-            //if (ymin>naxis2-1) {ymin=naxis2-1;}
-            //if (ymax>naxis2-1) {ymax=naxis2-1;}
-
-            //// je recupere les pixels de la fenetre autour de la fibre
-            //pix->GetPixels(xmin, ymin, xmax, ymax, FORMAT_FLOAT, PLANE_GREY, (void*) imgPix);
-
             //--- j'ajoute l'image courante dans l'image integree
             for(j=0;j<height;j++) {
                imgOffset  = imgPix  + j * width;
@@ -2579,10 +2629,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                for(i=0;i<width;i++) {
                   imgPtr  = imgOffset+i;
                   sumPtr  = sumOffset+i;
-
-                  // je soustrais le bias et le fond du ciel
-                  //TYPE_PIXELS pixelValue = *imgPtr - (TYPE_PIXELS) biasValue - (TYPE_PIXELS) dbgmean;
-                  // TYPE_PIXELS pixelValue = *imgPtr - (TYPE_PIXELS) biasValue;
+                  // je recupere l'intensité du pixel
                   TYPE_PIXELS pixelValue = *imgPtr;
 
                   if ( originSumCounter == 1 ) {
@@ -2602,9 +2649,8 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                   }
                }
             }
-
          } else {
-            // je copie l'image centree
+            // j'ajoute l'image courante dans l'image intégrée
             for(j=0;j<height;j++) {
                imgOffset  = imgPix  + j * width;
                sumOffset  = sumPix +  j * width;
@@ -2631,18 +2677,30 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
             }
          }
 
+         // je traque le bug fantome
+         if ( savedWidth != width || savedHeight != height ) {
+            throw CError( "integrated : la taille a changé. (%d %d) => (%d %d) ", savedWidth, savedHeight, width, height);  
+         }
+    
          // ----------------------------------------------------
          // je calcule le fond du ciel  sur l'image integree
          // ----------------------------------------------------
          int ttResult;
          int datatype = TFLOAT;
          double dlocut, dhicut, dmaxi, dmini, dmean, dsigma, dbgmean,dbgsigma,dcontrast;
-
+         
+         pthread_mutex_lock(&mutex);
          ttResult = Libtt_main(TT_PTR_STATIMA,13,sumPix,&datatype,&width,&height,
             &dlocut,&dhicut,&dmaxi,&dmini,&dmean,&dsigma,&dbgmean,&dbgsigma,&dcontrast);
          if(ttResult) {
-            throw CError("AstroFiberCentro skylevel: TT_PTR_STATIMA width=%d height=%d");
+            char errorName[1024];
+            char errorDetail[1024];
+            Libtt_main(TT_ERROR_MESSAGE,2,&ttResult,errorName);
+            Libtt_main(TT_LAST_ERROR_MESSAGE,1,errorDetail); 
+            throw CError("AstroFiberCentro skylevel: TT_PTR_STATIMA Libtt error #%d:%s Detail=%s width=%d height=%d sumPix=%p", 
+               ttResult, errorName,errorDetail, width, height, sumPix );
          }
+         pthread_mutex_unlock(&mutex);
          *background   = dbgmean;
 
          // je copie la nouvelle image integree et les mots cles dans le buffer sumBuf
@@ -2722,6 +2780,11 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                   maskBuf->GetPixels(0, 0, width -1, height -1, FORMAT_FLOAT, PLANE_GREY, (long) maskPix);
                }
 
+               // je traque le bug fantome
+               if ( savedWidth != width || savedHeight != height ) {
+                  throw CError( "sum : la taille a changé. (%d %d) => (%d %d) ", savedWidth, savedHeight, width, height);  
+               }
+    
                // je calcule la position de la fibre si l'image integree a integree suffisamment d'images
                if ( originSumCounter >= originSumMinCounter ) {
 
@@ -2887,6 +2950,11 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                      fiberBuf->initialMipsHi = fiberMaxIntensity;
                   }
 
+                  // je traque le bug fantome
+                  if ( savedWidth != width || savedHeight != height ) {
+                     throw CError( "findfiber : la taille a changé. (%d %d) => (%d %d) ", savedWidth, savedHeight, width, height);  
+                  }
+
                   // ----------------------------------------------------
                   // je verifie la qualite de l'image inversee à partir de mean, dsigma
                   // je calcule dsigma, dmaxi, dmini de la fenetre (x1,y1,x2,y2)
@@ -2897,12 +2965,20 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                   int ttResult;
                   int datatype = TFLOAT;
                   double dlocut, dhicut, dmaxi, dmini, dmean, dsigma, dbgmean,dbgsigma,dcontrast;
-
+                  
+                  pthread_mutex_lock(&mutex);
                   ttResult = Libtt_main(TT_PTR_STATIMA,13,fiberPix,&datatype,&width,&height,
                      &dlocut,&dhicut,&dmaxi,&dmini,&dmean,&dsigma,&dbgmean,&dbgsigma,&dcontrast);
                   if(ttResult) {
-                     throw CErrorLibtt(ttResult);
+                     //throw CErrorLibtt(ttResult);
+                     char errorName[1024];
+                     char errorDetail[1024];
+                     Libtt_main(TT_ERROR_MESSAGE,2,&ttResult,errorName);
+                     Libtt_main(TT_LAST_ERROR_MESSAGE,1,errorDetail); 
+                     throw CError("AstroFiberCentro inversed image: TT_PTR_STATIMA Libtt error #%d:%s Detail=%s width=%d height=%d fiberPix=%p", 
+                        ttResult, errorName,errorDetail, width, height, fiberPix );                     
                   }
+                  pthread_mutex_unlock(&mutex);
 
                   if ( dmaxi < 10 ) {
                      // je retourne "LOW_SIGNAL" si le niveau maxi de l'image est < 10
@@ -2912,7 +2988,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                      sprintf(tempMessage, "Low fiber signal: %6.2f < 10", dmaxi);
                      strcat(message,tempMessage);
                   } else if ( (dmaxi-dmini) < 3*sqrt(dsigma) ) {
-                     // je retourne "NO_SIGNAL" si le niveau moyen de l'image est trop proche du foncud ciel
+                     // je retourne "NO_SIGNAL" si le niveau moyen de l'image est trop proche du fond du ciel
                      strcpy(fiberStatus, "NO_SIGNAL");
                      sprintf(tempMessage, "No fiber signal:(%6.2f -%6.2f) < 3*sqrt(%6.2f) ", dmaxi, dmini,dsigma);
                      strcat(message,tempMessage);
@@ -2949,8 +3025,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
             strcpy(fiberStatus, "DISABLED");
          }
       }
-      sprintf(message, "%5.2f %5.2f", *fiberX, *fiberY);
-
+      
       if (imgPix!=NULL)    free(imgPix);
       if (maskPix!=NULL)   free(maskPix);
       if (sumPix!=NULL)    free(sumPix);
@@ -2960,7 +3035,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
       if (dX!=NULL)  free(dX);
       if (iY!=NULL)  free(iY);
       if (dY!=NULL)  free(dY);
-
+      pthread_mutex_unlock(&mutex);
    } catch(const CError& e) {
       if (imgPix!=NULL)    free(imgPix);
       if (maskPix!=NULL)   free(maskPix);
@@ -2971,7 +3046,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
       if (dX!=NULL)  free(dX);
       if (iY!=NULL)  free(iY);
       if (dY!=NULL)  free(dY);
-
+      pthread_mutex_lock(&mutex);
       throw e;
    }
 
