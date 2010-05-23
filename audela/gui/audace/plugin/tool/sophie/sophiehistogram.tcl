@@ -1,13 +1,13 @@
 #
 # Fichier : sophiehistogram.tcl
 # Description : Fenetre affcihat l'histogramme des ecarts étoile/consigne
-# Mise a jour $Id: sophiehistogram.tcl,v 1.1 2010-05-09 13:59:19 michelpujol Exp $
+# Mise a jour $Id: sophiehistogram.tcl,v 1.2 2010-05-23 16:22:01 michelpujol Exp $
 #
 
 namespace eval ::sophie::histogram {
    variable private
    set private(fileName) ""
-   set private(step)     0.05
+   set private(newValue) ""
 }
 
 # ------------------------------------------------------------
@@ -16,7 +16,7 @@ namespace eval ::sophie::histogram {
 # @param visuNo numero de la visu de la fenetre de l'outil eShel
 # @public
 #------------------------------------------------------------
-proc ::sophie::histogram::run { visuNo } {
+proc ::sophie::histogram::run { visuNo { realTime 0}  } {
    variable private
 
    set ::caption(sophie,histogram,title) "Histogramme"
@@ -25,11 +25,16 @@ proc ::sophie::histogram::run { visuNo } {
    set ::caption(sophie,histogram,startDate) "Heure début"
    set ::caption(sophie,histogram,endDate)   "Heure fin"
 
+   set private($visuNo,realTime)        $realTime
    set private($visuNo,alphaDiff,show)     1
    set private($visuNo,deltaDiff,show)     1
    set private($visuNo,startDate)        ""
    set private($visuNo,endDate)          ""
 
+   #--- nom du fichier qui est affiche
+   set private($visuNo,fileName) ""
+   #--- pas des abcisses de l'histogramme
+   set private(step)     0.05
 
    #--- Creation des variables si elles n'existaient pas
    if { ! [ info exists ::conf(sophie,histogram,position) ] }  { set ::conf(sophie,histogram,position) "300x200+250+75" }
@@ -84,6 +89,7 @@ proc ::sophie::histogram::closeWindow { visuNo } {
 
    if { [info  exists private($visuNo,frm)] } {
       if { [winfo exists $private($visuNo,frm)] } {
+
          console::disp "destroy ::sophie::histogram::abcisse\n"
          ::blt::vector destroy ::sophie::histogram::abcisse
          ::blt::vector destroy ::sophie::histogram::alphaDiff
@@ -112,10 +118,12 @@ proc ::sophie::histogram::fillConfigPage { frm visuNo } {
    set private($visuNo,menu) "$private($visuNo,this).menubar"
    set menuNo "sohpieHistogram${visuNo}"
    Menu_Setup $menuNo $private($visuNo,menu)
-      Menu           $menuNo "$::caption(audace,menu,file)"
-      Menu_Command   $menuNo "$::caption(audace,menu,file)" "$::caption(audace,menu,charger)..." \
-         "::sophie::histogram::onLoadFile $visuNo"
-      Menu_Separator $menuNo "$::caption(audace,menu,file)"
+      if { $private($visuNo,realTime) == 0 } {
+         Menu           $menuNo "$::caption(audace,menu,file)"
+         Menu_Command   $menuNo "$::caption(audace,menu,file)" "$::caption(audace,menu,charger)..." \
+            "::sophie::histogram::onLoadFile $visuNo"
+         Menu_Separator $menuNo "$::caption(audace,menu,file)"
+      }
       Menu_Command   $menuNo "$::caption(audace,menu,file)" "$::caption(audace,menu,quitter)" \
         "::confGenerique::closeWindow $visuNo [namespace current] $private($visuNo,this)"
 
@@ -160,8 +168,8 @@ proc ::sophie::histogram::fillConfigPage { frm visuNo } {
 
 
 #------------------------------------------------------------
-# fillConfigPage { }
-#  fenetre de configuration
+# configureGraph { }
+#  configure l'histogramme
 #------------------------------------------------------------
 proc ::sophie::histogram::configureGraph { visuNo } {
    variable private
@@ -249,24 +257,28 @@ proc ::sophie::histogram::onDisplayLine { visuNo } {
 
 #------------------------------------------------------------
 # displayData { }
-#  affiche les courbes dans l'histogramme
+#  affiche l'histogramme du fichier du jour
 #------------------------------------------------------------
 proc ::sophie::histogram::displayData { visuNo } {
    variable private
 
-   set data [loadData $private(fileName)]
-   ::sophie::histogram::abcisse set [lindex $data 0]
-   ::sophie::histogram::alphaDiff set [lindex $data 1]
-   ::sophie::histogram::deltaDiff set [lindex $data 2]
+   set fileName [getFileName]
 
-   wm title $private($visuNo,this) "$::caption(sophie,histogram,title) [file tail $private(fileName)]"
+   if { [file exists $fileName] } {
+      set private($visuNo,fileName) $fileName
+      set data [loadData $fileName]
+      ::sophie::histogram::abcisse set [lindex $data 0]
+      ::sophie::histogram::alphaDiff set [lindex $data 1]
+      ::sophie::histogram::deltaDiff set [lindex $data 2]
 
+      wm title $private($visuNo,this) "$::caption(sophie,histogram,title) [file tail $fileName]"
+   }
 }
 
 # ------------------------------------------------------------
 # loadData
 #   lit un fichier de log
-# @param fileName nom du fichier XML
+# @param fileName nom du fichier de log
 # @public
 #------------------------------------------------------------
 proc ::sophie::histogram::loadData { fileName } {
@@ -405,7 +417,7 @@ proc ::sophie::histogram::loadData { fileName } {
 proc ::sophie::histogram::writeGuidingStart { } {
    variable private
 
-   set fileName [getFileName]
+   set fileName [getFileName 1]
    set date [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]
    catch {
       set hFile [open $fileName  a]
@@ -445,7 +457,7 @@ proc ::sophie::histogram::writeGuidingStop { } {
 # @retunr void
 # @public
 #------------------------------------------------------------
-proc ::sophie::histogram::writeGuidingInformation { alphaDiff deltaDiff alphaCorrection deltaCorrection ra dec } {
+proc ::sophie::histogram::writeGuidingInformation { visuNo alphaDiff deltaDiff alphaCorrection deltaCorrection ra dec } {
    variable private
 
    set fileName [getFileName]
@@ -454,6 +466,54 @@ proc ::sophie::histogram::writeGuidingInformation { alphaDiff deltaDiff alphaCor
       set hFile [open $fileName  a]
       puts $hFile "$date DATA  $alphaDiff $deltaDiff $alphaCorrection $deltaCorrection $ra $dec"
       close $hFile
+   }
+
+   return
+   #--- j'ajoute la nouvelle valeur dans l'histogramme
+   if { $private($visuNo,realTime) != 0 } {
+      ####--- j'ajoute la valeur dans le graphe FwhmX
+
+      set minAbcisse ::sophie::histogram::abcisse(min)
+      set maxAbcisse ::sophie::histogram::abcisse(max)
+
+      #--- je met a jour la courbe alphaDiff
+      set abcisse [expr round($alphaDiff/$step)*$step]
+      set abcisse [expr round(($abcisse - $minAbcisse) /  $step)]
+
+      if { $abcisse < $minAbcisse } {
+         #--- j'ajoute des points à gauche de la courbe
+         set abcisseList ""
+         set alphaList   ""
+         set deltaList   ""
+         for { set a $abcisse } { $a < $minAbcisse } {set a [expr $a + $step] } {
+             lappend abcisseList $a
+             lappend alphaList 0
+             lappend deltaList 0
+         }
+         ::sophie::histogram::abcisse   set [concat $abcisseList [::sophie::histogram::abcisse range 0 end]]
+         ::sophie::histogram::alphaDiff set [concat $alphaList [::sophie::histogram::alphaDiff range 0 end]]
+         ::sophie::histogram::deltaDiff set [concat $deltaList [::sophie::histogram::deltaDiff range 0 end]]
+
+      } elseif { $abcisse > $maxAbcisse } {
+         #--- j'ajoute des points à droite de la courbe
+         for { set a [expr $maxAbcisse + $step]  } { $a <= $abcisse } {set a [expr $a + $step] } {
+            ::sophie::histogram::abcisse append $a
+            ::sophie::histogram::alphaDiff append 0
+            ::sophie::histogram::deltaDiff append 0
+         }
+      }
+
+
+
+
+
+      ###lset xHisto $abcisse [incr [lindex $xHisto $abcisse]]
+      ###set abcisse [expr round([lindex $point 1]/$step)*$step ]
+      ###set abcisse [expr round(($abcisse - $minAbcisse) /  $step)]
+      ####--- j'incremente
+      ###lset yHisto $abcisse [incr [lindex $yHisto $abcisse]]
+
+
    }
 }
 
@@ -492,10 +552,9 @@ proc ::sophie::histogram::getFileName { {update 0 } } {
          set formatdate [ clock format [ clock seconds ] -format "%Y-%m-%d" ]
       }
       append fileName $nom_generique $formatdate ".log"
-      set private(fileName) [ file join $::audace(rep_images) $fileName ]
 
       set catchResult [ catch {
-         set hFile [ open $private(fileName) a ]
+         set hFile [ open $fileName a ]
          puts  $hFile "# debut de session "
          close $hFile
       }]
@@ -508,23 +567,10 @@ proc ::sophie::histogram::getFileName { {update 0 } } {
           error $::errorInfo
       }
 
-      return $private(fileName)
+      return $fileName
    }
 }
 
-#------------------------------------------------------------
-# setFileName
-#
-#    Si le parametre update=1 , le nom du fichier est mis a jour en fcontion de la date courante.
-#
-# @param update 0=pas de mise a jour du nom du fichier
-# @return  nom complet du fichier (avec le repertoire
-#------------------------------------------------------------
-proc ::sophie::histogram::setFileName { fileName } {
-   variable private
 
-   set private(fileName) $fileName
-
-}
 
 
