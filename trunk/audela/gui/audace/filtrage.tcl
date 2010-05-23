@@ -3,7 +3,7 @@
 # @briefScripts pour un usage aise des fonctions d'AudeLA
 # @author Benjamin MAUCLAIRE (bmauclaire@underlands.org)
 #
-# $Id: filtrage.tcl,v 1.11 2010-05-16 09:56:23 robertdelmas Exp $
+# $Id: filtrage.tcl,v 1.12 2010-05-23 08:07:22 robertdelmas Exp $
 #
 
 #--------------------- Liste des fonctions -----------------------------------#
@@ -31,7 +31,6 @@
 #--- Cette variable "audace(artifice)" est definie dans le script "aud_menu_4.tcl"
 #
 #-----------------------------------------------------------------------------#
-
 
 ##
 # @brief calcul du gradient
@@ -63,7 +62,6 @@ proc gradient_nose { args } {
             set filetmp2 "${fichier}_tmp2$conf(extension,defaut)"
             set filetmp3 "${fichier}_tmp3$conf(extension,defaut)"
             set filetmp4 "${fichier}_tmp4$conf(extension,defaut)"
-
 
             #--- Algo
             if { ( ![info exists audace(artifice)] ) || ( $fichier != "$audace(artifice)" ) } {
@@ -233,7 +231,6 @@ proc contraint_noyau { noyau_demande } {
     }
     return $noyau
 }
-
 
 ##
 #@brief : Filtres passe-bas, passe-haut, median, min, max

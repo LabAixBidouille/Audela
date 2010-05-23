@@ -2,7 +2,7 @@
 # Fichier : qsi.tcl
 # Description : Configuration de la camera QSI
 # Auteur : Michel Pujol
-# Mise à jour $Id: qsi.tcl,v 1.12 2010-05-22 17:45:40 robertdelmas Exp $
+# Mise à jour $Id: qsi.tcl,v 1.13 2010-05-23 08:11:09 robertdelmas Exp $
 #
 
 namespace eval ::qsi {
@@ -25,7 +25,6 @@ proc ::qsi::install { } {
       ::audace::appendUpdateMessage [ format $::caption(qsi,installNewVersion) $sourceFileName [package version qsi] ]
    }
 }
-
 
 #
 # getPluginTitle
@@ -502,7 +501,6 @@ proc ::qsi::setTempCCD { } {
 
    return $::conf(qsi,setTemperature)
 }
-
 
 #
 # displayTemperature

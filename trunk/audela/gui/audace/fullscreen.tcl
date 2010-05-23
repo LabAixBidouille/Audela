@@ -2,7 +2,7 @@
 # Fichier : fullscreen.tcl
 # Description : Fenetre plein ecran pour afficher des images ou des films
 # Auteur : Michel PUJOL
-# Mise à jour $Id: fullscreen.tcl,v 1.19 2010-05-16 10:49:43 robertdelmas Exp $
+# Mise à jour $Id: fullscreen.tcl,v 1.20 2010-05-23 08:09:49 robertdelmas Exp $
 #
 
 ##############################################################################
@@ -25,7 +25,6 @@
 namespace eval ::FullScreen {
    global audace
 
-
    #--- Chargement des captions
    source [ file join $audace(rep_caption) fullscreen.cap ]
 
@@ -42,7 +41,6 @@ namespace eval ::FullScreen {
       if { ! [ info exists conf(FullScreen,slideShowDelay) ] } { set conf(FullScreen,slideShowDelay) "2" }
       if { ! [ info exists conf(FullScreen,autoStartAnim) ] }  { set conf(FullScreen,autoStartAnim)  "0" }
       if { ! [ info exists conf(FullScreen,color) ] }          { set conf(FullScreen,color)          "#000000" }
-
 
       #--- je recupere le nom de la toplevel
       set private($visuNo,toplevel) [winfo toplevel $hCanvas]
@@ -171,7 +169,6 @@ namespace eval ::FullScreen {
       #--- j'affiche l'image ou le film contenu dans le premier fichier
       loadItem $visuNo
    }
-
 
    #------------------------------------------------------------------------------
    # loadItem

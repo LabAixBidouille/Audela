@@ -3,7 +3,7 @@
 # Description : procedures d'acquisition et de traitement avec
 #         plusieurs cameras simultanees exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise à jour $Id: camerathread.tcl,v 1.22 2010-05-16 10:14:47 robertdelmas Exp $
+# Mise à jour $Id: camerathread.tcl,v 1.23 2010-05-23 08:04:06 robertdelmas Exp $
 #
 
 namespace eval ::camerathread {
@@ -23,7 +23,6 @@ proc ::camerathread::init { camItem camNo mainThreadNo} {
    set private(asynchroneParameter) ""
 }
 
-
 #------------------------------------------------------------
 # stopAcquisition
 #    arrete l'acquisition en cours
@@ -38,7 +37,6 @@ proc ::camerathread::stopAcquisition { } {
       cam$private(camNo) stop
    ###}
 }
-
 
 #------------------------------------------------------------
 # acquisition
@@ -232,7 +230,6 @@ proc ::camerathread::guide { exptime detection originCoord targetCoord angle tar
    ::camerathread::processAcquisition
 }
 
-
 #------------------------------------------------------------
 proc ::camerathread::searchBrightestStar { exptime originCoord targetBoxSize threshin fwhm radius threshold } {
    variable private
@@ -261,7 +258,6 @@ proc ::camerathread::searchBrightestStar { exptime originCoord targetBoxSize thr
    set private(centerDeltaList)           ""
    set private(acquisitionState) "1"
    set private(previousClock)    "0"
-
 
    #--- je lance une recherche
    ::camerathread::processAcquisition
@@ -301,7 +297,6 @@ proc ::camerathread::processAcquisitionLoop { } {
          set statusVariableName "::status_cam$private(camNo)"
          set $statusVariableName "stand"
       }
-
 
       set bufNo $private(bufNo)
       #--- je calcule le temps ecoule entre deux fins de pose
@@ -653,7 +648,6 @@ proc ::camerathread::searchStar { searchBox threshin fwhm radius threshold } {
    #threshold - ?optional?, default 40.0, best betwen 30.0 and 50.0, is used after gauss filter
    #           when procerure is looking for stars, pixels below threshold are not taken
 
-
    #--- je cherche les etoiles
    set resultFile "[pwd]/searchStar.txt"
    set searchBorder [expr $radius + 2]
@@ -777,7 +771,6 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName c
    buf$bufNo setkwd [list "CUNIT2"     "deg"       string "Angles are degrees always" "" ]
    buf$bufNo setkwd [list "EQUINOX"    "2000.0"    float  "System of equatorial coordinates" "" ]
 
-
    #---- recherche des etoiles dans l'image
    #  input :
    #     dummy0.fit
@@ -825,7 +818,6 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName c
    }
    close $fcom
 
-
    #---- appariement du catalogue
    #  input :
    #     dummy.fit
@@ -851,8 +843,6 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName c
 
    return [list $imageStarNb $catalogueStarNb $matchedStarNb]
 }
-
-
 
 #------------------------------------------------------------
 # notify

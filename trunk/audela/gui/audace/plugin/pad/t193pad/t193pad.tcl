@@ -2,7 +2,7 @@
 # Fichier : t193pad.tcl
 # Description : Raquette specifique au T193 de l'OHP
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: t193pad.tcl,v 1.12 2010-05-22 12:24:15 michelpujol Exp $
+# Mise à jour $Id: t193pad.tcl,v 1.13 2010-05-23 08:12:47 robertdelmas Exp $
 #
 
 namespace eval ::t193pad {
@@ -414,7 +414,6 @@ proc ::t193pad::createDialog { } {
          bind $This.focus.pm.buttonPlus  <ButtonPress-1>   { ::t193pad::startFocus "+" }
          bind $This.focus.pm.buttonPlus  <ButtonRelease-1> { ::t193pad::stopFocus }
 
-
          #--- Label de la vitesse du moteur de focalisation
          ###label $This.focus.vitesseFocus -font [ list {Arial} 12 bold ] \
          ###   -textvariable audace(focus,labelspeed) -bg $color(blue_pad) -fg $color(white) \
@@ -653,7 +652,6 @@ proc ::t193pad::incrementRadecPulse {  } {
       }
    }
 }
-
 
 #------------------------------------------------------------
 #  cmdStartGoto

@@ -2,7 +2,7 @@
 # Fichier : focuserjmi.tcl
 # Description : Gere un focuser sur port parallele ou quickremote
 # Auteur : Michel PUJOL
-# Mise à jour $Id: focuserjmi.tcl,v 1.16 2010-05-17 16:25:15 robertdelmas Exp $
+# Mise à jour $Id: focuserjmi.tcl,v 1.17 2010-05-23 08:08:32 robertdelmas Exp $
 #
 
 #
@@ -229,7 +229,6 @@ proc ::focuserjmi::fillConfigPage { frm } {
 
    pack $frm.frame1 -side top -fill x
 
-
    TitleFrame $frm.test -borderwidth 2 -text $caption(focuserjmi,test)
       button $frm.test.decrease -text "-" -relief raised -width "12"
       bind $frm.test.decrease <ButtonPress-1>      { ::focuserjmi::testMove "-" }
@@ -242,7 +241,6 @@ proc ::focuserjmi::fillConfigPage { frm } {
       pack $frm.test.increase -in [$frm.test getframe] -side left -padx 3 -pady 3 -fill none
 
    pack $frm.test -side top -fill x
-
 
    #--- Frame du bouton Arreter et du checkbutton creer au demarrage
    frame $frm.start -borderwidth 0 -relief flat
@@ -434,8 +432,6 @@ proc ::focuserjmi::testMove { command } {
       }
    }
 }
-
-
 
 #------------------------------------------------------------
 #  ::focuserjmi::goto

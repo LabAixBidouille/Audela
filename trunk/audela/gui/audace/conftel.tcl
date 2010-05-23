@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise à jour $Id: conftel.tcl,v 1.63 2010-05-16 10:28:24 robertdelmas Exp $
+# Mise à jour $Id: conftel.tcl,v 1.64 2010-05-23 08:05:57 robertdelmas Exp $
 #
 
 namespace eval ::confTel {
@@ -465,7 +465,6 @@ proc ::confTel::configureMonture { } {
           tel$private(telNo) radec model -enabled 0
        }
 
-
       #--- Mise a jour de la variable audace
       set audace(telNo) $private(telNo)
 
@@ -520,7 +519,6 @@ proc ::confTel::configureMonture { } {
    }
 }
 
-
 #------------------------------------------------------------
 # setModelEnabled
 #    active/descative le modele de pointage du telescope
@@ -547,7 +545,6 @@ proc ::confTel::setModelEnabled { modelEnabled } {
    }
 }
 
-
 #------------------------------------------------------------
 # setModelFileName
 #    configure le modele de pointage du telescope
@@ -558,7 +555,6 @@ proc ::confTel::setModelEnabled { modelEnabled } {
 proc ::confTel::setModelFileName { modelFileName } {
    variable private
    variable widget
-
 
    set loadModelError [catch {
       tel$private(telNo) home $::audace(posobs,observateur,gps)
@@ -601,7 +597,6 @@ proc ::confTel::setModelFileName { modelFileName } {
        }
     }
 
-
 }
 
 #------------------------------------------------------------
@@ -622,7 +617,6 @@ proc ::confTel::configureModel { modelEnabled modelName modelDate modelSymbols m
 
    set modelPressure 101325
    set modelTemperature 290
-
 
    if { $modelEnabled == 1 } {
       #--- j'active le modele de pointage
@@ -652,8 +646,6 @@ proc ::confTel::configureModel { modelEnabled modelName modelDate modelSymbols m
       }
    }
 }
-
-
 
 #------------------------------------------------------------
 # widgetToConf
@@ -1071,7 +1063,6 @@ proc ::confTel::addMountListener { cmd } {
 proc ::confTel::removeMountListener { cmd } {
    trace remove variable "::audace(telNo)" write $cmd
 }
-
 
 #--- Connexion au demarrage de la monture selectionnee par defaut
 ::confTel::init
