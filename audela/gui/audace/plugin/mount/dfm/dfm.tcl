@@ -2,7 +2,7 @@
 # Fichier : dfm.tcl
 # Description : Configuration de la monture DFM
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dfm.tcl,v 1.4 2009-03-14 00:01:42 michelpujol Exp $
+# Mise à jour $Id: dfm.tcl,v 1.5 2010-05-23 16:00:05 robertdelmas Exp $
 #
 
 namespace eval ::dfm {

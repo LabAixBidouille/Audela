@@ -2,7 +2,7 @@
 # Fichier : eqmod.tcl
 # Description : Configuration de la monture EQMOD
 # Auteur : Robert DELMAS
-# Mise a jour $Id: eqmod.tcl,v 1.8 2010-02-14 10:52:44 robertdelmas Exp $
+# Mise à jour $Id: eqmod.tcl,v 1.9 2010-05-23 16:00:49 robertdelmas Exp $
 #
 
 namespace eval ::eqmod {

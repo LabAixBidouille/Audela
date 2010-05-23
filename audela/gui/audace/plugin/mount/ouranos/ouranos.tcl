@@ -2,7 +2,7 @@
 # Fichier : ouranos.tcl
 # Description : Configuration de la monture Ouranos
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ouranos.tcl,v 1.16 2009-03-14 00:01:43 michelpujol Exp $
+# Mise Ã  jour $Id: ouranos.tcl,v 1.17 2010-05-23 16:04:09 robertdelmas Exp $
 #
 
 namespace eval ::ouranos {
@@ -268,7 +268,7 @@ proc ::ouranos::fillConfigPage { frm } {
       -command { ::ouranos::tjrsVisible }
    pack $frm.visible -in $frm.frame1 -anchor center -side right -padx 13 -pady 5
 
-   #--- Definition des unités de l'affichage (pas encodeurs ou coordonnées)
+   #--- Definition des unites de l'affichage (pas encodeurs ou coordonnees)
    checkbutton $frm.unites -text "$caption(ouranos,unites)" -highlightthickness 0 \
       -variable ::ouranos::private(show_coord) -onvalue 1 -offvalue 0 \
       -command { ::ouranos::show1 }
@@ -287,11 +287,11 @@ proc ::ouranos::fillConfigPage { frm } {
       -variable ::ouranos::private(inv_ra) -onvalue -1 -offvalue 1
    pack $frm.invra -in $frm.frame14 -anchor center -side left -padx 10 -pady 5
 
-   #--- Label pour les coordonnées RA
+   #--- Label pour les coordonnees RA
    label  $frm.encRA -text "$caption(ouranos,ra)"
    pack $frm.encRA -in $frm.frame14 -anchor center -side right -padx 10 -pady 5
 
-   #--- Fenêtre de lecture de RA
+   #--- Fenetre de lecture de RA
    label $frm.coordRA -textvariable ::ouranos::private(coord_ra) -justify left -width 12
    pack $frm.coordRA -in $frm.frame9 -anchor center -side top -padx 10 -pady 5
 
@@ -308,11 +308,11 @@ proc ::ouranos::fillConfigPage { frm } {
       -variable ::ouranos::private(inv_dec) -onvalue -1 -offvalue 1
    pack $frm.invdec -in $frm.frame15 -anchor center -side left -padx 10 -pady 5
 
-   #--- Label pour les coordonnées DEC
+   #--- Label pour les coordonnees DEC
    label $frm.encDEC -text "$caption(ouranos,dec)"
    pack $frm.encDEC -in $frm.frame15 -anchor center -side right -padx 10 -pady 5
 
-   #--- Fenêtre de lecture de DEC
+   #--- Fenetre de lecture de DEC
    label $frm.coordDEC -textvariable ::ouranos::private(coord_dec) -justify left -width 12
    pack $frm.coordDEC -in $frm.frame9 -anchor center -side bottom -padx 10 -pady 5
 
@@ -349,7 +349,7 @@ proc ::ouranos::fillConfigPage { frm } {
       pack $frm.but_read -in $frm.frame11 -anchor center -side left -padx 15 -pady 5 -ipady 5
    }
 
-   #--- Definition de la fréquence de lecture
+   #--- Definition de la frequence de lecture
    label  $frm.title1 -text "$caption(ouranos,seconde)"
    pack $frm.title1 -in $frm.frame11 -anchor center -side right -padx 5 -pady 5
 
@@ -522,7 +522,7 @@ proc ::ouranos::find_res { } {
    #--- I 0 0
    tel$private(telNo) adjust
 
-   #--- Lecture et affichage des coordonnées
+   #--- Lecture et affichage des coordonnees
    ::ouranos::read_coord
 }
 
@@ -581,7 +581,7 @@ proc ::ouranos::go_ouranos { } {
    #--- Traitement graphique des boutons 'Lire' et 'Regler'
    $frm.but_read configure -relief groove -state disabled
    $frm.but_init configure -state disabled
-   #--- Lecture et affichage des coordonnées
+   #--- Lecture et affichage des coordonnees
    ::ouranos::read_coord
 }
 
@@ -820,7 +820,7 @@ proc ::ouranos::tjrsVisibleX10 { } {
 }
 #
 # confOuranos
-# Permet d'activer ou de désactiver les boutons 'Regler', 'Stopper' et 'Lire'
+# Permet d'activer ou de desactiver les boutons 'Regler', 'Stopper' et 'Lire'
 #
 proc ::ouranos::confOuranos { } {
    variable private
