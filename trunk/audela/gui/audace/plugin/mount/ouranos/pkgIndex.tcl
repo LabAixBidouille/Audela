@@ -1,7 +1,7 @@
 #
 # Fichier : pkgIndex.tcl
 # Description : Definition du point d'entree du plugin
-# Mise a jour $Id: pkgIndex.tcl,v 1.2 2008-02-02 11:36:38 robertdelmas Exp $
+# Mise à jour $Id: pkgIndex.tcl,v 1.3 2010-05-23 16:07:46 robertdelmas Exp $
 #
 
 package ifneeded ouranos 2.0 [ list source [ file join $dir ouranos.tcl ] ]

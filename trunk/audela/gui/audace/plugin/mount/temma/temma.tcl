@@ -2,7 +2,7 @@
 # Fichier : temma.tcl
 # Description : Fenetre de configuration pour le parametrage du suivi d'objets mobiles pour la monture Temma
 # Auteur : Robert DELMAS
-# Mise a jour $Id: temma.tcl,v 1.22 2009-03-14 00:01:43 michelpujol Exp $
+# Mise Ã  jour $Id: temma.tcl,v 1.23 2010-05-23 16:05:33 robertdelmas Exp $
 #
 
 namespace eval ::temma {
@@ -398,7 +398,7 @@ proc ::temma::configureMonture { } {
       set lat_min [ lindex [ mc_angle2dms $latitude_temma 90 zero ] 1 ]
       set lat_min_deci [ format "%.1f" [ expr [ lindex [ mc_angle2dms $latitude_temma 90 zero ] 2 ] / 60.0 ] ]
       set lat_min_deci [ string range $lat_min_deci 2 2 ]
-      set latitude_temma "$signe_lat $lat_deg° $lat_min.$lat_min_deci'"
+      set latitude_temma "$signe_lat $lat_degÂ° $lat_min.$lat_min_deci'"
       #--- Affichage de la latitude
       ::console::affiche_entete "$caption(temma,init_module)\n"
       ::console::affiche_entete "$caption(temma,latitude) $latitude_temma\n\n"
@@ -473,7 +473,7 @@ proc ::temma::stop { } {
 
 #
 # confTemma
-# Permet d'activer ou de désactiver les boutons
+# Permet d'activer ou de desactiver les boutons
 #
 proc ::temma::confTemma { } {
    variable private
