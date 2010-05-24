@@ -2,7 +2,7 @@
 # Fichier : dlgshiftvideo.tcl
 # Description : Fenetre de dialogue pour saisir les parametres de deplacement entre 2 images
 # Auteur : Michel PUJOL
-# Mise a jour $Id: dlgshiftvideo.tcl,v 1.2 2008-12-16 19:21:57 robertdelmas Exp $
+# Mise Ã  jour $Id: dlgshiftvideo.tcl,v 1.3 2010-05-24 15:24:17 robertdelmas Exp $
 #
 
 namespace eval ::DlgShiftVideo {
@@ -12,27 +12,60 @@ namespace eval ::DlgShiftVideo {
    #      load configuration file
    #------------------------------------------------------------
    proc init { } {
-      global audace fileName
+      global audace
 
       #--- Chargement des captions
       source [ file join $audace(rep_plugin) tool acqvideo dlgshiftvideo.cap ]
+   }
 
-      #--- set fileName
-      set fileName [ file join $audace(rep_plugin) tool acqvideo dlgshiftvideo_ini.tcl ]
+   #------------------------------------------------------------
+   #  initToConf
+   #------------------------------------------------------------
+   proc initToConf { visuNo } {
+      variable parametres
 
-      #--- Variables will be ready to use, so load data now
-      loadDataFile
+      #--- Creation des variables si elles n'existent pas
+      if { ! [ info exists ::acqvideo::parametres(acqvideo,$visuNo,buttonShift) ] }      { set ::acqvideo::parametres(acqvideo,$visuNo,buttonShift)      "0" }
+      if { ! [ info exists ::acqvideo::parametres(acqvideo,$visuNo,geometry) ] }         { set ::acqvideo::parametres(acqvideo,$visuNo,geometry)         "278x182+657+251" }
+      if { ! [ info exists ::acqvideo::parametres(acqvideo,$visuNo,position) ] }         { set ::acqvideo::parametres(acqvideo,$visuNo,position)         "+657+251" }
+      if { ! [ info exists ::acqvideo::parametres(acqvideo,$visuNo,shiftSpeed) ] }       { set ::acqvideo::parametres(acqvideo,$visuNo,shiftSpeed)       "x5" }
+      if { ! [ info exists ::acqvideo::parametres(acqvideo,$visuNo,xShiftDirection) ] }  { set ::acqvideo::parametres(acqvideo,$visuNo,xShiftDirection)  "O" }
+      if { ! [ info exists ::acqvideo::parametres(acqvideo,$visuNo,xShiftDirection1) ] } { set ::acqvideo::parametres(acqvideo,$visuNo,xShiftDirection1) "w" }
+      if { ! [ info exists ::acqvideo::parametres(acqvideo,$visuNo,xShiftTime) ] }       { set ::acqvideo::parametres(acqvideo,$visuNo,xShiftTime)       "2" }
+      if { ! [ info exists ::acqvideo::parametres(acqvideo,$visuNo,yShiftDirection) ] }  { set ::acqvideo::parametres(acqvideo,$visuNo,yShiftDirection)  "N" }
+      if { ! [ info exists ::acqvideo::parametres(acqvideo,$visuNo,yShiftDirection1) ] } { set ::acqvideo::parametres(acqvideo,$visuNo,yShiftDirection1) "n" }
+      if { ! [ info exists ::acqvideo::parametres(acqvideo,$visuNo,yShiftTime) ] }       { set ::acqvideo::parametres(acqvideo,$visuNo,yShiftTime)       "2" }
+   }
+
+   #------------------------------------------------------------
+   #  confToWidget
+   #------------------------------------------------------------
+   proc confToWidget { visuNo } {
+      variable parametres
+      global panneau
+
+      #--- confToWidget
+      set panneau(DlgShiftVideo,buttonShift)      $::acqvideo::parametres(acqvideo,$visuNo,buttonShift)
+      set panneau(DlgShiftVideo,geometry)         $::acqvideo::parametres(acqvideo,$visuNo,geometry)
+      set panneau(DlgShiftVideo,position)         $::acqvideo::parametres(acqvideo,$visuNo,position)
+      set panneau(DlgShiftVideo,shiftSpeed)       $::acqvideo::parametres(acqvideo,$visuNo,shiftSpeed)
+      set panneau(DlgShiftVideo,xShiftDirection)  $::acqvideo::parametres(acqvideo,$visuNo,xShiftDirection)
+      set panneau(DlgShiftVideo,xShiftDirection1) $::acqvideo::parametres(acqvideo,$visuNo,xShiftDirection1)
+      set panneau(DlgShiftVideo,xShiftTime)       $::acqvideo::parametres(acqvideo,$visuNo,xShiftTime)
+      set panneau(DlgShiftVideo,yShiftDirection)  $::acqvideo::parametres(acqvideo,$visuNo,yShiftDirection)
+      set panneau(DlgShiftVideo,yShiftDirection1) $::acqvideo::parametres(acqvideo,$visuNo,yShiftDirection1)
+      set panneau(DlgShiftVideo,yShiftTime)       $::acqvideo::parametres(acqvideo,$visuNo,yShiftTime)
    }
 
    #------------------------------------------------------------
    #  run
    #      display dialog
    #------------------------------------------------------------
-   proc run { this } {
+   proc run { visuNo this } {
       variable This
 
       set This $this
-      createDialog
+      ::DlgShiftVideo::createDialog $visuNo
       tkwait window $This
       return
    }
@@ -40,26 +73,27 @@ namespace eval ::DlgShiftVideo {
    #------------------------------------------------------------
    #  cmdSave
    #------------------------------------------------------------
-   proc cmdSave { } {
-      global fileName panneau
+   proc cmdSave { visuNo } {
+      variable parametres
+      global panneau
 
       #---
-      ::DlgShiftVideo::recup_position
+      ::DlgShiftVideo::recupPosition
 
-      set arrayName "panneau"
-      set namePattern "DlgShiftVideo*"
-
-      #--- save new values into the file
-      set fid [open [file join $fileName] w]
-      puts $fid "global $arrayName"
-
-      foreach a [lsort [array names $arrayName $namePattern ]] {
-         puts $fid "set panneau($a) \"[lindex [array get $arrayName $a] 1]\""
-      }
-      close $fid
+      #---
+      set ::acqvideo::parametres(acqvideo,$visuNo,buttonShift)      $panneau(DlgShiftVideo,buttonShift)
+      set ::acqvideo::parametres(acqvideo,$visuNo,geometry)         $panneau(DlgShiftVideo,geometry)
+      set ::acqvideo::parametres(acqvideo,$visuNo,position)         $panneau(DlgShiftVideo,position)
+      set ::acqvideo::parametres(acqvideo,$visuNo,shiftSpeed)       $panneau(DlgShiftVideo,shiftSpeed)
+      set ::acqvideo::parametres(acqvideo,$visuNo,xShiftDirection)  $panneau(DlgShiftVideo,xShiftDirection)
+      set ::acqvideo::parametres(acqvideo,$visuNo,xShiftDirection1) $panneau(DlgShiftVideo,xShiftDirection1)
+      set ::acqvideo::parametres(acqvideo,$visuNo,xShiftTime)       $panneau(DlgShiftVideo,xShiftTime)
+      set ::acqvideo::parametres(acqvideo,$visuNo,yShiftDirection)  $panneau(DlgShiftVideo,yShiftDirection)
+      set ::acqvideo::parametres(acqvideo,$visuNo,yShiftDirection1) $panneau(DlgShiftVideo,yShiftDirection1)
+      set ::acqvideo::parametres(acqvideo,$visuNo,yShiftTime)       $panneau(DlgShiftVideo,yShiftTime)
 
       #--- close the dialog window
-      closeDialog
+      ::DlgShiftVideo::closeDialog
    }
 
    #------------------------------------------------------------
@@ -67,27 +101,8 @@ namespace eval ::DlgShiftVideo {
    #      close dialog without saving
    #------------------------------------------------------------
    proc cmdCancel { } {
-      #--- reload old values
-      loadDataFile
       #--- close the dialog window
-      closeDialog
-   }
-
-   #------------------------------------------------------------
-   #  loadDataFile
-   #      read file
-   #      display fields values in the grid
-   #------------------------------------------------------------
-   proc loadDataFile { } {
-      global fileName panneau
-
-      set arrayName "panneau"
-      set tempinterp [interp create]
-      interp eval $tempinterp "source \"$fileName\""
-      array set $arrayName [interp eval $tempinterp "array get $arrayName"]
-      interp delete $tempinterp
-
-      return [array get $arrayName]
+      ::DlgShiftVideo::closeDialog
    }
 
    #------------------------------------------------------------
@@ -100,23 +115,22 @@ namespace eval ::DlgShiftVideo {
       #--- close and destroy the dialog window
       destroy $This
       unset This
-
    }
 
    #------------------------------------------------------------
-   #  Decalage_Telescope
+   #  decalageTelescope
    #      decalage du telescope pendant une serie d'images
    #------------------------------------------------------------
-   proc Decalage_Telescope { } {
+   proc decalageTelescope { } {
       global caption panneau
 
-      #--- Déplacement du télescope
+      #--- Deplacement du telescope
       if { $panneau(DlgShiftVideo,buttonShift) == "1" } {
          if { ( $panneau(DlgShiftVideo,xShiftDirection) != "" ) || ( $panneau(DlgShiftVideo,yShiftDirection) != "" ) } {
             ::console::affiche_resultat "$caption(dlgshiftvideo,labelTelescope)\n"
          }
 
-         console::affiche_erreur "::telescope::setSpeed $panneau(DlgShiftVideo,shiftSpeed) \n"
+         ::console::affiche_prompt "::telescope::setSpeed $panneau(DlgShiftVideo,shiftSpeed) \n"
          ::telescope::decodeSpeedDlgShiftVideo
 
          #--- Sur l'axe est/ouest
@@ -148,10 +162,10 @@ namespace eval ::DlgShiftVideo {
    }
 
    #------------------------------------------------------------
-   #  recup_position
+   #  recupPosition
    #      give position window
    #------------------------------------------------------------
-   proc recup_position { } {
+   proc recupPosition { } {
       variable This
       global panneau
 
@@ -165,7 +179,7 @@ namespace eval ::DlgShiftVideo {
    #  createDialog
    #      display dialog window
    #------------------------------------------------------------
-   proc createDialog { } {
+   proc createDialog { visuNo } {
       variable This
       global caption conf panneau
 
@@ -176,6 +190,10 @@ namespace eval ::DlgShiftVideo {
          return
       }
 
+      #--- confToWidget
+      ::DlgShiftVideo::confToWidget $visuNo
+
+      #---
       if { [ info exists panneau(DlgShiftVideo,geometry) ] } {
          set deb [ expr 1 + [ string first + $panneau(DlgShiftVideo,geometry) ] ]
          set fin [ string length $panneau(DlgShiftVideo,geometry) ]
@@ -188,7 +206,7 @@ namespace eval ::DlgShiftVideo {
       wm title $This $caption(dlgshiftvideo,title)
 
       #--- redirect WM_DELETE_WINDOW message
-      wm protocol $This WM_DELETE_WINDOW {::DlgShiftVideo::cmdCancel}
+      wm protocol $This WM_DELETE_WINDOW "::DlgShiftVideo::cmdCancel"
 
       #--- create frame to display parameters
       frame $This.frameConfig -borderwidth 1 -relief raised
@@ -215,7 +233,8 @@ namespace eval ::DlgShiftVideo {
 
       #--- entry xShiftTime
       entry $This.frameConfig.xShiftTime -width 5 -borderwidth 2 -justify center \
-         -textvariable panneau(DlgShiftVideo,xShiftTime)
+         -textvariable panneau(DlgShiftVideo,xShiftTime) \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
       grid configure $This.frameConfig.xShiftTime -column 1 -row 0 -sticky we -in $This.frameConfig -ipady 5
 
       menubutton $This.frameConfig.xShiftDirection -textvariable panneau(DlgShiftVideo,xShiftDirection) \
@@ -232,7 +251,8 @@ namespace eval ::DlgShiftVideo {
 
       #--- entry yShiftTime
       entry $This.frameConfig.yShiftTime -width 5 -borderwidth 2 -justify center \
-         -textvariable panneau(DlgShiftVideo,yShiftTime)
+         -textvariable panneau(DlgShiftVideo,yShiftTime) \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
       grid configure $This.frameConfig.yShiftTime -column 1 -row 2 -sticky we -in $This.frameConfig -ipady 5
 
       menubutton $This.frameConfig.yShiftDirection -textvariable panneau(DlgShiftVideo,yShiftDirection) \
@@ -280,7 +300,7 @@ namespace eval ::DlgShiftVideo {
 
       #--- button SAVE
       button $This.frameButton.buttonSave -text $caption(dlgshiftvideo,buttonSave) \
-         -borderwidth 2  -command "::DlgShiftVideo::cmdSave"
+         -borderwidth 2  -command "::DlgShiftVideo::cmdSave $visuNo"
       pack   $This.frameButton.buttonSave -in $This.frameButton -anchor e -fill none \
          -padx 3 -pady 3 -ipadx 5 -ipady 3
 
