@@ -2,7 +2,7 @@
 # Fichier : acqzadko.tcl
 # Description : Outil d'acquisition
 # Auteurs : Francois Cochard et Myrtille Laas
-# Mise à jour $Id: acqzadko.tcl,v 1.23 2010-05-23 16:26:59 robertdelmas Exp $
+# Mise à jour $Id: acqzadko.tcl,v 1.24 2010-05-24 08:05:36 robertdelmas Exp $
 #
 
 #==============================================================
@@ -24,7 +24,7 @@ proc ::acqzadko::createPluginInstance { { in "" } { visuNo 1 } } {
 
    #--- Chargement des fichiers auxiliaires
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqzadko acqzadkoSetup.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqzadko dlgshift.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqzadko dlgshiftzadko.tcl ]\""
 
    #---
    set panneau(acqzadko,$visuNo,base) "$in"
@@ -38,6 +38,9 @@ proc ::acqzadko::createPluginInstance { { in "" } { visuNo 1 } } {
 
    #--- Initialisation des variables de la boite de configuration
    ::acqzadkoSetup::confToWidget $visuNo
+
+   #--- Initialisation des variables de la boite de decalage du telescope
+   ::DlgShiftZadko::confToWidget
 
    #--- Initialisation de la variable conf()
    if { ! [info exists conf(acqzadko,avancement,position)] } { set conf(acqzadko,avancement,position) "+120+315" }
@@ -481,6 +484,9 @@ proc ::acqzadko::chargerVariable { visuNo } {
 
    #--- Creation des variables de la boite de configuration si elles n'existent pas
    ::acqzadkoSetup::initToConf $visuNo
+
+   #--- Creation des variables de la boite de decalage du telescope si elles n'existent pas
+   ::DlgShiftZadko::initToConf
 }
 #***** Fin de la procedure chargerVariable *********************
 
@@ -668,7 +674,7 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
                }
             }
             #--- Pas de decalage du telescope
-            set panneau(DlgShift,buttonShift) "0"
+            set panneau(DlgShiftZadko,buttonShift) "0"
          }
          2  {
             #--- Mode serie
@@ -708,7 +714,7 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
                }
             }
             #--- Tester si un telescope est bien selectionnee si l'option decalage est selectionnee
-            if { $panneau(DlgShift,buttonShift) == "1" } {
+            if { $panneau(DlgShiftZadko,buttonShift) == "1" } {
                if { [ ::tel::list ] == "" } {
                   ::audace::menustate disabled
                   set choix [ tk_messageBox -title $caption(acqzadko,pb) -type ok \
@@ -754,7 +760,7 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
                }
             }
             #--- Tester si un telescope est bien selectionnee si l'option decalage est selectionnee
-            if { $panneau(DlgShift,buttonShift) == "1" } {
+            if { $panneau(DlgShiftZadko,buttonShift) == "1" } {
                if { [ ::tel::list ] == "" } {
                   ::audace::menustate disabled
                   set choix [ tk_messageBox -title $caption(acqzadko,pb) -type ok \
@@ -815,7 +821,7 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
                   set integre non
             }
             #--- Tester si un telescope est bien selectionnee si l'option decalage est selectionnee
-            if { $panneau(DlgShift,buttonShift) == "1" } {
+            if { $panneau(DlgShiftZadko,buttonShift) == "1" } {
                if { [ ::tel::list ] == "" } {
                   ::audace::menustate disabled
                   set choix [ tk_messageBox -title $caption(acqzadko,pb) -type ok \
@@ -886,7 +892,7 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
                }
             }
             #--- Tester si un telescope est bien selectionnee si l'option decalage est selectionnee
-            if { $panneau(DlgShift,buttonShift) == "1" } {
+            if { $panneau(DlgShiftZadko,buttonShift) == "1" } {
                if { [ ::tel::list ] == "" } {
                   ::audace::menustate disabled
                   set choix [ tk_messageBox -title $caption(acqzadko,pb) -type ok \
@@ -1285,7 +1291,7 @@ proc ::acqzadko::Go { visuNo } {
                   }
                }
                #--- Deplacement du telescope
-               ::DlgShift::Decalage_Telescope
+               ::DlgShiftZadko::Decalage_Telescope
                #--- j'incremente le nombre d'images de la serie
                incr compteurImageSerie
             }
@@ -1323,7 +1329,7 @@ proc ::acqzadko::Go { visuNo } {
                   }
                }
                #--- Deplacement du telescope
-               ::DlgShift::Decalage_Telescope
+               ::DlgShiftZadko::Decalage_Telescope
             }
             4  {
                #--- Je sauvegarde l'image
@@ -1359,7 +1365,7 @@ proc ::acqzadko::Go { visuNo } {
                #---
                if { $panneau(acqzadko,$visuNo,demande_arret) == "0" } {
                   #--- Deplacement du telescope
-                  ::DlgShift::Decalage_Telescope
+                  ::DlgShiftZadko::Decalage_Telescope
                   if { $compteurImageSerie < $nbImages } {
                      #--- j'incremente le compteur d'image
                      incr compteurImageSerie
@@ -1420,7 +1426,7 @@ proc ::acqzadko::Go { visuNo } {
                #---
                if { $panneau(acqzadko,$visuNo,demande_arret) == "0" } {
                   #--- Deplacement du telescope
-                  ::DlgShift::Decalage_Telescope
+                  ::DlgShiftZadko::Decalage_Telescope
                   set panneau(acqzadko,$visuNo,attente_pose) "1"
                   set panneau(acqzadko,$visuNo,fin_im) [ clock second ]
                   set panneau(acqzadko,$visuNo,intervalle_im_2) [ expr $panneau(acqzadko,$visuNo,fin_im) - $panneau(acqzadko,$visuNo,deb_im) ]
@@ -1986,7 +1992,7 @@ proc ::acqzadko::Message { visuNo niveau args } {
 proc ::acqzadko::cmdShiftConfig { visuNo } {
    global audace
 
-   set shiftConfig [ ::DlgShift::run "$audace(base).dlgShift" ]
+   set shiftConfig [ ::DlgShiftZadko::run "$audace(base).dlgShiftZadko" ]
    return
 }
 #***** Fin du bouton pour le decalage du telescope *****************
@@ -2643,7 +2649,7 @@ proc ::acqzadko::acqzadkoBuildIF { visuNo } {
       frame $panneau(acqzadko,$visuNo,This).shift -borderwidth 2 -relief ridge
          #--- Checkbutton petit deplacement
          checkbutton $panneau(acqzadko,$visuNo,This).shift.buttonShift -highlightthickness 0 \
-            -variable panneau(DlgShift,buttonShift)
+            -variable panneau(DlgShiftZadko,buttonShift)
          pack $panneau(acqzadko,$visuNo,This).shift.buttonShift -side left -fill x
          #--- Bouton configuration petit deplacement
          button $panneau(acqzadko,$visuNo,This).shift.buttonShiftConfig -text "$caption(acqzadko,buttonShiftConfig)" \
