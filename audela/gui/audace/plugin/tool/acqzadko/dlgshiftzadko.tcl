@@ -2,7 +2,7 @@
 # Fichier : dlgshiftzadko.tcl
 # Description : Fenetre de dialogue pour saisir les parametres de deplacement entre 2 images
 # Auteur : Michel PUJOL
-# Mise à jour $Id: dlgshiftzadko.tcl,v 1.1 2010-05-24 08:03:43 robertdelmas Exp $
+# Mise à jour $Id: dlgshiftzadko.tcl,v 1.2 2010-05-24 09:16:32 robertdelmas Exp $
 #
 
 namespace eval ::DlgShiftZadko {
@@ -156,7 +156,7 @@ namespace eval ::DlgShiftZadko {
    proc Decalage_Telescope { } {
       global caption panneau
 
-      #--- Déplacement du télescope
+      #--- Deplacement du télescope
       if { $panneau(DlgShiftZadko,buttonShift) == "1" } {
          if { ( $panneau(DlgShiftZadko,xShiftDirection) != "" ) || ( $panneau(DlgShiftZadko,yShiftDirection) != "" ) } {
             ::console::affiche_saut "\n"
