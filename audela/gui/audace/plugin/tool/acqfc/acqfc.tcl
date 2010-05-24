@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise à jour $Id: acqfc.tcl,v 1.104 2010-05-14 10:39:40 robertdelmas Exp $
+# Mise à jour $Id: acqfc.tcl,v 1.105 2010-05-24 11:02:29 robertdelmas Exp $
 #
 
 #==============================================================
@@ -38,6 +38,9 @@ proc ::acqfc::createPluginInstance { { in "" } { visuNo 1 } } {
 
    #--- Initialisation des variables de la boite de configuration
    ::acqfcSetup::confToWidget $visuNo
+
+   #--- Initialisation des variables de la boite de decalage du telescope
+   ::DlgShift::confToWidget $visuNo
 
    #--- Initialisation de la variable conf()
    if { ! [info exists conf(acqfc,avancement,position)] } { set conf(acqfc,avancement,position) "+120+315" }
@@ -473,6 +476,9 @@ proc ::acqfc::chargerVariable { visuNo } {
 
    #--- Creation des variables de la boite de configuration si elles n'existent pas
    ::acqfcSetup::initToConf $visuNo
+
+   #--- Creation des variables de la boite de decalage du telescope si elles n'existent pas
+   ::DlgShift::initToConf $visuNo
 }
 #***** Fin de la procedure chargerVariable *********************
 
@@ -1274,7 +1280,7 @@ proc ::acqfc::Go { visuNo } {
                   }
                }
                #--- Deplacement du telescope
-               ::DlgShift::Decalage_Telescope
+               ::DlgShift::decalageTelescope
                #--- j'incremente le nombre d'images de la serie
                incr compteurImageSerie
             }
@@ -1312,7 +1318,7 @@ proc ::acqfc::Go { visuNo } {
                   }
                }
                #--- Deplacement du telescope
-               ::DlgShift::Decalage_Telescope
+               ::DlgShift::decalageTelescope
             }
             4  {
                #--- Je sauvegarde l'image
@@ -1348,7 +1354,7 @@ proc ::acqfc::Go { visuNo } {
                #---
                if { $panneau(acqfc,$visuNo,demande_arret) == "0" } {
                   #--- Deplacement du telescope
-                  ::DlgShift::Decalage_Telescope
+                  ::DlgShift::decalageTelescope
                   if { $compteurImageSerie < $nbImages } {
                      #--- j'incremente le compteur d'image
                      incr compteurImageSerie
@@ -1409,7 +1415,7 @@ proc ::acqfc::Go { visuNo } {
                #---
                if { $panneau(acqfc,$visuNo,demande_arret) == "0" } {
                   #--- Deplacement du telescope
-                  ::DlgShift::Decalage_Telescope
+                  ::DlgShift::decalageTelescope
                   set panneau(acqfc,$visuNo,attente_pose) "1"
                   set panneau(acqfc,$visuNo,fin_im) [ clock second ]
                   set panneau(acqfc,$visuNo,intervalle_im_2) [ expr $panneau(acqfc,$visuNo,fin_im) - $panneau(acqfc,$visuNo,deb_im) ]
@@ -2007,7 +2013,7 @@ proc ::acqfc::Message { visuNo niveau args } {
 proc ::acqfc::cmdShiftConfig { visuNo } {
    global audace
 
-   set shiftConfig [ ::DlgShift::run "$audace(base).dlgShift" ]
+   set shiftConfig [ ::DlgShift::run $visuNo $audace(base).dlgShift ]
    return
 }
 #***** Fin du bouton pour le decalage du telescope *****************
