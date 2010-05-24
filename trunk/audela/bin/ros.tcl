@@ -19,7 +19,8 @@ if {$k>0} {
    set k end
 }
 set name [string range $name 0 $k]
-set ros(ros_install,audelabin) [pwd]
+#set ros(ros_install,audelabin) [pwd]
+set ros(ros_install,audelabin) $::audela_start_dir
 if {$name=="audela"} {
    cd ../ros
    set errno [catch {source ros_install.tcl} msg]
