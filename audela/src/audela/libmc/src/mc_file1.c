@@ -873,6 +873,15 @@ void mc_tle_decnext1(FILE *ftle,struct elemorb *elem,char *name,int *valid)
 				for (k=0;k<n;k++) {
 					if (elem->designation[k]==13) {
 						elem->designation[k]='\0';
+						break;
+					}
+				}
+				n=k-1;
+				for (k=n;k>=0;k--) {
+					if (elem->designation[k]==32) {
+						elem->designation[k]='\0';
+					} else {
+						break;
 					}
 				}
 			   *valid=0;
