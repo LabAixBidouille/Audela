@@ -2,7 +2,7 @@
 # Fichier : acqzadko.tcl
 # Description : Outil d'acquisition
 # Auteurs : Francois Cochard et Myrtille Laas
-# Mise à jour $Id: acqzadko.tcl,v 1.24 2010-05-24 08:05:36 robertdelmas Exp $
+# Mise à jour $Id: acqzadko.tcl,v 1.25 2010-05-24 14:09:51 robertdelmas Exp $
 #
 
 #==============================================================
@@ -40,7 +40,7 @@ proc ::acqzadko::createPluginInstance { { in "" } { visuNo 1 } } {
    ::acqzadkoSetup::confToWidget $visuNo
 
    #--- Initialisation des variables de la boite de decalage du telescope
-   ::DlgShiftZadko::confToWidget
+   ::DlgShiftZadko::confToWidget $visuNo
 
    #--- Initialisation de la variable conf()
    if { ! [info exists conf(acqzadko,avancement,position)] } { set conf(acqzadko,avancement,position) "+120+315" }
@@ -486,7 +486,7 @@ proc ::acqzadko::chargerVariable { visuNo } {
    ::acqzadkoSetup::initToConf $visuNo
 
    #--- Creation des variables de la boite de decalage du telescope si elles n'existent pas
-   ::DlgShiftZadko::initToConf
+   ::DlgShiftZadko::initToConf $visuNo
 }
 #***** Fin de la procedure chargerVariable *********************
 
@@ -1291,7 +1291,7 @@ proc ::acqzadko::Go { visuNo } {
                   }
                }
                #--- Deplacement du telescope
-               ::DlgShiftZadko::Decalage_Telescope
+               ::DlgShiftZadko::decalageTelescope
                #--- j'incremente le nombre d'images de la serie
                incr compteurImageSerie
             }
@@ -1329,7 +1329,7 @@ proc ::acqzadko::Go { visuNo } {
                   }
                }
                #--- Deplacement du telescope
-               ::DlgShiftZadko::Decalage_Telescope
+               ::DlgShiftZadko::decalageTelescope
             }
             4  {
                #--- Je sauvegarde l'image
@@ -1365,7 +1365,7 @@ proc ::acqzadko::Go { visuNo } {
                #---
                if { $panneau(acqzadko,$visuNo,demande_arret) == "0" } {
                   #--- Deplacement du telescope
-                  ::DlgShiftZadko::Decalage_Telescope
+                  ::DlgShiftZadko::decalageTelescope
                   if { $compteurImageSerie < $nbImages } {
                      #--- j'incremente le compteur d'image
                      incr compteurImageSerie
@@ -1426,7 +1426,7 @@ proc ::acqzadko::Go { visuNo } {
                #---
                if { $panneau(acqzadko,$visuNo,demande_arret) == "0" } {
                   #--- Deplacement du telescope
-                  ::DlgShiftZadko::Decalage_Telescope
+                  ::DlgShiftZadko::decalageTelescope
                   set panneau(acqzadko,$visuNo,attente_pose) "1"
                   set panneau(acqzadko,$visuNo,fin_im) [ clock second ]
                   set panneau(acqzadko,$visuNo,intervalle_im_2) [ expr $panneau(acqzadko,$visuNo,fin_im) - $panneau(acqzadko,$visuNo,deb_im) ]
@@ -1992,7 +1992,7 @@ proc ::acqzadko::Message { visuNo niveau args } {
 proc ::acqzadko::cmdShiftConfig { visuNo } {
    global audace
 
-   set shiftConfig [ ::DlgShiftZadko::run "$audace(base).dlgShiftZadko" ]
+   set shiftConfig [ ::DlgShiftZadko::run $visuNo $audace(base).dlgShiftZadko ]
    return
 }
 #***** Fin du bouton pour le decalage du telescope *****************
