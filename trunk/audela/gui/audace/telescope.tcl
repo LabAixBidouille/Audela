@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise à jour $Id: telescope.tcl,v 1.54 2010-02-06 22:15:59 robertdelmas Exp $
+# Mise à jour $Id: telescope.tcl,v 1.55 2010-05-24 07:56:11 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -486,7 +486,7 @@ proc ::telescope::decodeSpeedDlgShiftVideo { } {
             setSpeed "2"
          }
       } elseif { $conf(telescope) == "eqmod" } {
-         switch $panneau(DlgShift,shiftSpeed) {
+         switch $panneau(DlgShiftVideo,shiftSpeed) {
             "1" { setSpeed "1" }
             "2" { setSpeed "2" }
             "3" { setSpeed "3" }
@@ -494,6 +494,64 @@ proc ::telescope::decodeSpeedDlgShiftVideo { } {
             "5" { setSpeed "5" }
             "6" { setSpeed "6" }
             "7" { setSpeed "7" }
+         }
+      } else {
+         #--- Inactif pour autres telescopes
+         setSpeed "0"
+      }
+   } else {
+      ::confTel::run
+      tkwait window $audace(base).confTel
+      set audace(telescope,rate) "0"
+   }
+}
+
+#------------------------------------------------------------
+# decodeSpeedDlgShiftZadko
+#    Decode la vitesse de la monture pour les decalages de l'outil Acquisition ZADKO
+#
+# Parametres :
+#    Aucun
+# Return :
+#    Rien
+#------------------------------------------------------------
+proc ::telescope::decodeSpeedDlgShiftZadko { } {
+   global audace caption conf panneau
+
+   if { [ ::tel::list ] != "" } {
+      if { $conf(telescope) == "audecom" } {
+         if { $panneau(DlgShiftZadko,shiftSpeed) == "$caption(telescope,x1)" } {
+            setSpeed "1"
+         } elseif { $panneau(DlgShiftZadko,shiftSpeed) == "$caption(telescope,x5)" } {
+            setSpeed "2"
+         } elseif { $panneau(DlgShiftZadko,shiftSpeed) == "$caption(telescope,200)" } {
+            setSpeed "3"
+         }
+      } elseif { $conf(telescope) == "lx200" } {
+         if { $panneau(DlgShiftZadko,shiftSpeed) == "1" } {
+            setSpeed "1"
+         } elseif { $panneau(DlgShiftZadko,shiftSpeed) == "2" } {
+            setSpeed "2"
+         } elseif { $panneau(DlgShiftZadko,shiftSpeed) == "3" } {
+            setSpeed "3"
+         } elseif { $panneau(DlgShiftZadko,shiftSpeed) == "4" } {
+            setSpeed "4"
+        }
+      } elseif { $conf(telescope) == "eqmod" } {
+         switch $panneau(DlgShiftZadko,shiftSpeed) {
+            "1" { setSpeed "1" }
+            "2" { setSpeed "2" }
+            "3" { setSpeed "3" }
+            "4" { setSpeed "4" }
+            "5" { setSpeed "5" }
+            "6" { setSpeed "6" }
+            "7" { setSpeed "7" }
+         }
+      } elseif { $conf(telescope) == "temma" } {
+         if { $panneau(DlgShiftZadko,shiftSpeed) == "$caption(telescope,NS)" } {
+            setSpeed "1"
+         } elseif { $panneau(DlgShiftZadko,shiftSpeed) == "$caption(telescope,HS)" } {
+            setSpeed "2"
          }
       } else {
          #--- Inactif pour autres telescopes
