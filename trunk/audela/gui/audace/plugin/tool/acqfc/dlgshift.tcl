@@ -2,7 +2,7 @@
 # Fichier : dlgshift.tcl
 # Description : Fenetre de dialogue pour saisir les parametres de deplacement entre 2 images
 # Auteur : Michel PUJOL
-# Mise a jour $Id: dlgshift.tcl,v 1.6 2008-12-16 19:21:29 robertdelmas Exp $
+# Mise Ã  jour $Id: dlgshift.tcl,v 1.7 2010-05-24 11:01:43 robertdelmas Exp $
 #
 
 namespace eval ::DlgShift {
@@ -12,27 +12,60 @@ namespace eval ::DlgShift {
    #      load configuration file
    #------------------------------------------------------------
    proc init { } {
-      global audace fileName
+      global audace
 
       #--- Chargement des captions
       source [ file join $audace(rep_plugin) tool acqfc dlgshift.cap ]
+   }
 
-      #--- set fileName
-      set fileName [ file join $audace(rep_plugin) tool acqfc dlgshift_ini.tcl ]
+   #------------------------------------------------------------
+   #  initToConf
+   #------------------------------------------------------------
+   proc initToConf { visuNo } {
+      variable parametres
 
-      #--- Variables will be ready to use, so load data now
-      loadDataFile
+      #--- Creation des variables si elles n'existent pas
+      if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,buttonShift) ] }      { set ::acqfc::parametres(acqfc,$visuNo,buttonShift)      "0" }
+      if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,geometry) ] }         { set ::acqfc::parametres(acqfc,$visuNo,geometry)         "278x182+657+251" }
+      if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,position) ] }         { set ::acqfc::parametres(acqfc,$visuNo,position)         "+657+251" }
+      if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,shiftSpeed) ] }       { set ::acqfc::parametres(acqfc,$visuNo,shiftSpeed)       "x5" }
+      if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,xShiftDirection) ] }  { set ::acqfc::parametres(acqfc,$visuNo,xShiftDirection)  "O" }
+      if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,xShiftDirection1) ] } { set ::acqfc::parametres(acqfc,$visuNo,xShiftDirection1) "w" }
+      if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,xShiftTime) ] }       { set ::acqfc::parametres(acqfc,$visuNo,xShiftTime)       "2" }
+      if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,yShiftDirection) ] }  { set ::acqfc::parametres(acqfc,$visuNo,yShiftDirection)  "N" }
+      if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,yShiftDirection1) ] } { set ::acqfc::parametres(acqfc,$visuNo,yShiftDirection1) "n" }
+      if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,yShiftTime) ] }       { set ::acqfc::parametres(acqfc,$visuNo,yShiftTime)       "2" }
+   }
+
+   #------------------------------------------------------------
+   #  confToWidget
+   #------------------------------------------------------------
+   proc confToWidget { visuNo } {
+      variable parametres
+      global panneau
+
+      #--- confToWidget
+      set panneau(DlgShift,buttonShift)      $::acqfc::parametres(acqfc,$visuNo,buttonShift)
+      set panneau(DlgShift,geometry)         $::acqfc::parametres(acqfc,$visuNo,geometry)
+      set panneau(DlgShift,position)         $::acqfc::parametres(acqfc,$visuNo,position)
+      set panneau(DlgShift,shiftSpeed)       $::acqfc::parametres(acqfc,$visuNo,shiftSpeed)
+      set panneau(DlgShift,xShiftDirection)  $::acqfc::parametres(acqfc,$visuNo,xShiftDirection)
+      set panneau(DlgShift,xShiftDirection1) $::acqfc::parametres(acqfc,$visuNo,xShiftDirection1)
+      set panneau(DlgShift,xShiftTime)       $::acqfc::parametres(acqfc,$visuNo,xShiftTime)
+      set panneau(DlgShift,yShiftDirection)  $::acqfc::parametres(acqfc,$visuNo,yShiftDirection)
+      set panneau(DlgShift,yShiftDirection1) $::acqfc::parametres(acqfc,$visuNo,yShiftDirection1)
+      set panneau(DlgShift,yShiftTime)       $::acqfc::parametres(acqfc,$visuNo,yShiftTime)
    }
 
    #------------------------------------------------------------
    #  run
    #      display dialog
    #------------------------------------------------------------
-   proc run { this } {
+   proc run { visuNo this } {
       variable This
 
       set This $this
-      createDialog
+      ::DlgShift::createDialog $visuNo
       tkwait window $This
       return
    }
@@ -40,26 +73,27 @@ namespace eval ::DlgShift {
    #------------------------------------------------------------
    #  cmdSave
    #------------------------------------------------------------
-   proc cmdSave { } {
-      global fileName panneau
+   proc cmdSave { visuNo } {
+      variable parametres
+      global panneau
 
       #---
-      ::DlgShift::recup_position
+      ::DlgShift::recupPosition
 
-      set arrayName "panneau"
-      set namePattern "DlgShift*"
-
-      #--- save new values into the file
-      set fid [open [file join $fileName] w]
-      puts $fid "global $arrayName"
-
-      foreach a [lsort [array names $arrayName $namePattern ]] {
-         puts $fid "set panneau($a) \"[lindex [array get $arrayName $a] 1]\""
-      }
-      close $fid
+      #---
+      set ::acqfc::parametres(acqfc,$visuNo,buttonShift)      $panneau(DlgShift,buttonShift)
+      set ::acqfc::parametres(acqfc,$visuNo,geometry)         $panneau(DlgShift,geometry)
+      set ::acqfc::parametres(acqfc,$visuNo,position)         $panneau(DlgShift,position)
+      set ::acqfc::parametres(acqfc,$visuNo,shiftSpeed)       $panneau(DlgShift,shiftSpeed)
+      set ::acqfc::parametres(acqfc,$visuNo,xShiftDirection)  $panneau(DlgShift,xShiftDirection)
+      set ::acqfc::parametres(acqfc,$visuNo,xShiftDirection1) $panneau(DlgShift,xShiftDirection1)
+      set ::acqfc::parametres(acqfc,$visuNo,xShiftTime)       $panneau(DlgShift,xShiftTime)
+      set ::acqfc::parametres(acqfc,$visuNo,yShiftDirection)  $panneau(DlgShift,yShiftDirection)
+      set ::acqfc::parametres(acqfc,$visuNo,yShiftDirection1) $panneau(DlgShift,yShiftDirection1)
+      set ::acqfc::parametres(acqfc,$visuNo,yShiftTime)       $panneau(DlgShift,yShiftTime)
 
       #--- close the dialog window
-      closeDialog
+      ::DlgShift::closeDialog
    }
 
    #------------------------------------------------------------
@@ -67,27 +101,8 @@ namespace eval ::DlgShift {
    #      close dialog without saving
    #------------------------------------------------------------
    proc cmdCancel { } {
-      #--- reload old values
-      loadDataFile
       #--- close the dialog window
-      closeDialog
-   }
-
-   #------------------------------------------------------------
-   #  loadDataFile
-   #      read file
-   #      display fields values in the grid
-   #------------------------------------------------------------
-   proc loadDataFile { } {
-      global fileName panneau
-
-      set arrayName "panneau"
-      set tempinterp [interp create]
-      interp eval $tempinterp "source \"$fileName\""
-      array set $arrayName [interp eval $tempinterp "array get $arrayName"]
-      interp delete $tempinterp
-
-      return [array get $arrayName]
+      ::DlgShift::closeDialog
    }
 
    #------------------------------------------------------------
@@ -100,24 +115,23 @@ namespace eval ::DlgShift {
       #--- close and destroy the dialog window
       destroy $This
       unset This
-
    }
 
    #------------------------------------------------------------
-   #  Decalage_Telescope
+   #  decalageTelescope
    #      decalage du telescope pendant une serie d'images
    #------------------------------------------------------------
-   proc Decalage_Telescope { } {
+   proc decalageTelescope { } {
       global caption panneau
 
-      #--- Déplacement du télescope
+      #--- Deplacement du tÃ©lescope
       if { $panneau(DlgShift,buttonShift) == "1" } {
          if { ( $panneau(DlgShift,xShiftDirection) != "" ) || ( $panneau(DlgShift,yShiftDirection) != "" ) } {
-            console::affiche_saut "\n"
+            ::console::affiche_saut "\n"
             ::console::affiche_resultat "$caption(dlgshift,labelTelescope)\n"
          }
 
-         console::affiche_erreur "::telescope::setSpeed $panneau(DlgShift,shiftSpeed) \n"
+         ::console::affiche_prompt "::telescope::setSpeed $panneau(DlgShift,shiftSpeed) \n"
          ::telescope::decodeSpeedDlgShift
 
          #--- Sur l'axe est/ouest
@@ -149,10 +163,10 @@ namespace eval ::DlgShift {
    }
 
    #------------------------------------------------------------
-   #  recup_position
+   #  recupPosition
    #      give position window
    #------------------------------------------------------------
-   proc recup_position { } {
+   proc recupPosition { } {
       variable This
       global panneau
 
@@ -166,7 +180,7 @@ namespace eval ::DlgShift {
    #  createDialog
    #      display dialog window
    #------------------------------------------------------------
-   proc createDialog { } {
+   proc createDialog { visuNo } {
       variable This
       global caption conf panneau
 
@@ -177,6 +191,10 @@ namespace eval ::DlgShift {
          return
       }
 
+      #--- confToWidget
+      ::DlgShift::confToWidget $visuNo
+
+      #---
       if { [ info exists panneau(DlgShift,geometry) ] } {
          set deb [ expr 1 + [ string first + $panneau(DlgShift,geometry) ] ]
          set fin [ string length $panneau(DlgShift,geometry) ]
@@ -189,7 +207,7 @@ namespace eval ::DlgShift {
       wm title $This $caption(dlgshift,title)
 
       #--- redirect WM_DELETE_WINDOW message
-      wm protocol $This WM_DELETE_WINDOW {::DlgShift::cmdCancel}
+      wm protocol $This WM_DELETE_WINDOW "::DlgShift::cmdCancel"
 
       #--- create frame to display parameters -------------------------------------
       frame $This.frameConfig -borderwidth 1 -relief raised
@@ -281,7 +299,7 @@ namespace eval ::DlgShift {
 
       #--- button SAVE
       button $This.frameButton.buttonSave -text $caption(dlgshift,buttonSave) \
-         -borderwidth 2  -command "::DlgShift::cmdSave"
+         -borderwidth 2  -command "::DlgShift::cmdSave $visuNo"
       pack   $This.frameButton.buttonSave -in $This.frameButton -anchor e -fill none \
          -padx 3 -pady 3 -ipadx 5 -ipady 3
 
