@@ -2,7 +2,7 @@
 # Fichier : dlgshiftzadko.tcl
 # Description : Fenetre de dialogue pour saisir les parametres de deplacement entre 2 images
 # Auteur : Michel PUJOL
-# Mise à jour $Id: dlgshiftzadko.tcl,v 1.2 2010-05-24 09:16:32 robertdelmas Exp $
+# Mise à jour $Id: dlgshiftzadko.tcl,v 1.3 2010-05-24 14:09:12 robertdelmas Exp $
 #
 
 namespace eval ::DlgShiftZadko {
@@ -16,59 +16,56 @@ namespace eval ::DlgShiftZadko {
 
       #--- Chargement des captions
       source [ file join $audace(rep_plugin) tool acqzadko dlgshiftzadko.cap ]
-
-      #--- Variables will be ready to use, so load data now
-      loadDataFile
    }
 
    #------------------------------------------------------------
    #  initToConf
    #------------------------------------------------------------
-   proc initToConf { } {
+   proc initToConf { visuNo } {
       variable parametres
 
       #--- Creation des variables si elles n'existent pas
-      if { ! [ info exists parametres(DlgShiftZadko,buttonShift) ] }      { set parametres(DlgShiftZadko,buttonShift)      "0" }
-      if { ! [ info exists parametres(DlgShiftZadko,geometry) ] }         { set parametres(DlgShiftZadko,geometry)         "278x182+657+251" }
-      if { ! [ info exists parametres(DlgShiftZadko,position) ] }         { set parametres(DlgShiftZadko,position)         "+657+251" }
-      if { ! [ info exists parametres(DlgShiftZadko,shiftSpeed) ] }       { set parametres(DlgShiftZadko,shiftSpeed)       "x5" }
-      if { ! [ info exists parametres(DlgShiftZadko,xShiftDirection) ] }  { set parametres(DlgShiftZadko,xShiftDirection)  "O" }
-      if { ! [ info exists parametres(DlgShiftZadko,xShiftDirection1) ] } { set parametres(DlgShiftZadko,xShiftDirection1) "w" }
-      if { ! [ info exists parametres(DlgShiftZadko,xShiftTime) ] }       { set parametres(DlgShiftZadko,xShiftTime)       "2" }
-      if { ! [ info exists parametres(DlgShiftZadko,yShiftDirection) ] }  { set parametres(DlgShiftZadko,yShiftDirection)  "N" }
-      if { ! [ info exists parametres(DlgShiftZadko,yShiftDirection1) ] } { set parametres(DlgShiftZadko,yShiftDirection1) "n" }
-      if { ! [ info exists parametres(DlgShiftZadko,yShiftTime) ] }       { set parametres(DlgShiftZadko,yShiftTime)       "2" }
+      if { ! [ info exists ::acqzadko::parametres(acqzadko,$visuNo,buttonShift) ] }      { set ::acqzadko::parametres(acqzadko,$visuNo,buttonShift)      "0" }
+      if { ! [ info exists ::acqzadko::parametres(acqzadko,$visuNo,geometry) ] }         { set ::acqzadko::parametres(acqzadko,$visuNo,geometry)         "278x182+657+251" }
+      if { ! [ info exists ::acqzadko::parametres(acqzadko,$visuNo,position) ] }         { set ::acqzadko::parametres(acqzadko,$visuNo,position)         "+657+251" }
+      if { ! [ info exists ::acqzadko::parametres(acqzadko,$visuNo,shiftSpeed) ] }       { set ::acqzadko::parametres(acqzadko,$visuNo,shiftSpeed)       "x5" }
+      if { ! [ info exists ::acqzadko::parametres(acqzadko,$visuNo,xShiftDirection) ] }  { set ::acqzadko::parametres(acqzadko,$visuNo,xShiftDirection)  "O" }
+      if { ! [ info exists ::acqzadko::parametres(acqzadko,$visuNo,xShiftDirection1) ] } { set ::acqzadko::parametres(acqzadko,$visuNo,xShiftDirection1) "w" }
+      if { ! [ info exists ::acqzadko::parametres(acqzadko,$visuNo,xShiftTime) ] }       { set ::acqzadko::parametres(acqzadko,$visuNo,xShiftTime)       "2" }
+      if { ! [ info exists ::acqzadko::parametres(acqzadko,$visuNo,yShiftDirection) ] }  { set ::acqzadko::parametres(acqzadko,$visuNo,yShiftDirection)  "N" }
+      if { ! [ info exists ::acqzadko::parametres(acqzadko,$visuNo,yShiftDirection1) ] } { set ::acqzadko::parametres(acqzadko,$visuNo,yShiftDirection1) "n" }
+      if { ! [ info exists ::acqzadko::parametres(acqzadko,$visuNo,yShiftTime) ] }       { set ::acqzadko::parametres(acqzadko,$visuNo,yShiftTime)       "2" }
    }
 
    #------------------------------------------------------------
    #  confToWidget
    #------------------------------------------------------------
-   proc confToWidget { } {
+   proc confToWidget { visuNo } {
       variable parametres
       global panneau
 
       #--- confToWidget
-      set panneau(DlgShiftZadko,buttonShift)      $parametres(DlgShiftZadko,buttonShift)
-      set panneau(DlgShiftZadko,geometry)         $parametres(DlgShiftZadko,geometry)
-      set panneau(DlgShiftZadko,position)         $parametres(DlgShiftZadko,position)
-      set panneau(DlgShiftZadko,shiftSpeed)       $parametres(DlgShiftZadko,shiftSpeed)
-      set panneau(DlgShiftZadko,xShiftDirection)  $parametres(DlgShiftZadko,xShiftDirection)
-      set panneau(DlgShiftZadko,xShiftDirection1) $parametres(DlgShiftZadko,xShiftDirection1)
-      set panneau(DlgShiftZadko,xShiftTime)       $parametres(DlgShiftZadko,xShiftTime)
-      set panneau(DlgShiftZadko,yShiftDirection)  $parametres(DlgShiftZadko,yShiftDirection)
-      set panneau(DlgShiftZadko,yShiftDirection1) $parametres(DlgShiftZadko,yShiftDirection1)
-      set panneau(DlgShiftZadko,yShiftTime)       $parametres(DlgShiftZadko,yShiftTime)
+      set panneau(DlgShiftZadko,buttonShift)      $::acqzadko::parametres(acqzadko,$visuNo,buttonShift)
+      set panneau(DlgShiftZadko,geometry)         $::acqzadko::parametres(acqzadko,$visuNo,geometry)
+      set panneau(DlgShiftZadko,position)         $::acqzadko::parametres(acqzadko,$visuNo,position)
+      set panneau(DlgShiftZadko,shiftSpeed)       $::acqzadko::parametres(acqzadko,$visuNo,shiftSpeed)
+      set panneau(DlgShiftZadko,xShiftDirection)  $::acqzadko::parametres(acqzadko,$visuNo,xShiftDirection)
+      set panneau(DlgShiftZadko,xShiftDirection1) $::acqzadko::parametres(acqzadko,$visuNo,xShiftDirection1)
+      set panneau(DlgShiftZadko,xShiftTime)       $::acqzadko::parametres(acqzadko,$visuNo,xShiftTime)
+      set panneau(DlgShiftZadko,yShiftDirection)  $::acqzadko::parametres(acqzadko,$visuNo,yShiftDirection)
+      set panneau(DlgShiftZadko,yShiftDirection1) $::acqzadko::parametres(acqzadko,$visuNo,yShiftDirection1)
+      set panneau(DlgShiftZadko,yShiftTime)       $::acqzadko::parametres(acqzadko,$visuNo,yShiftTime)
    }
 
    #------------------------------------------------------------
    #  run
    #      display dialog
    #------------------------------------------------------------
-   proc run { this } {
+   proc run { visuNo this } {
       variable This
 
       set This $this
-      createDialog
+      ::DlgShiftZadko::createDialog $visuNo
       tkwait window $This
       return
    }
@@ -76,40 +73,27 @@ namespace eval ::DlgShiftZadko {
    #------------------------------------------------------------
    #  cmdSave
    #------------------------------------------------------------
-   proc cmdSave { } {
+   proc cmdSave { visuNo } {
       variable parametres
       global panneau
 
       #---
-      ::DlgShiftZadko::recup_position
+      ::DlgShiftZadko::recupPosition
 
       #---
-      set parametres(DlgShiftZadko,buttonShift)      $panneau(DlgShiftZadko,buttonShift)
-      set parametres(DlgShiftZadko,geometry)         $panneau(DlgShiftZadko,geometry)
-      set parametres(DlgShiftZadko,position)         $panneau(DlgShiftZadko,position)
-      set parametres(DlgShiftZadko,shiftSpeed)       $panneau(DlgShiftZadko,shiftSpeed)
-      set parametres(DlgShiftZadko,xShiftDirection)  $panneau(DlgShiftZadko,xShiftDirection)
-      set parametres(DlgShiftZadko,xShiftDirection1) $panneau(DlgShiftZadko,xShiftDirection1)
-      set parametres(DlgShiftZadko,xShiftTime)       $panneau(DlgShiftZadko,xShiftTime)
-      set parametres(DlgShiftZadko,yShiftDirection)  $panneau(DlgShiftZadko,yShiftDirection)
-      set parametres(DlgShiftZadko,yShiftDirection1) $panneau(DlgShiftZadko,yShiftDirection1)
-      set parametres(DlgShiftZadko,yShiftTime)       $panneau(DlgShiftZadko,yShiftTime)
-
-      #--- Sauvegarde des parametres
-      catch {
-        set nom_fichier [ file join $::audace(rep_home) dlgshiftzadko.ini ]
-        if [ catch { open $nom_fichier w } fichier ] {
-           #---
-        } else {
-           foreach { a b } [ array get parametres ] {
-              puts $fichier "set parametres($a) \"$b\""
-           }
-           close $fichier
-        }
-      }
+      set ::acqzadko::parametres(acqzadko,$visuNo,buttonShift)      $panneau(DlgShiftZadko,buttonShift)
+      set ::acqzadko::parametres(acqzadko,$visuNo,geometry)         $panneau(DlgShiftZadko,geometry)
+      set ::acqzadko::parametres(acqzadko,$visuNo,position)         $panneau(DlgShiftZadko,position)
+      set ::acqzadko::parametres(acqzadko,$visuNo,shiftSpeed)       $panneau(DlgShiftZadko,shiftSpeed)
+      set ::acqzadko::parametres(acqzadko,$visuNo,xShiftDirection)  $panneau(DlgShiftZadko,xShiftDirection)
+      set ::acqzadko::parametres(acqzadko,$visuNo,xShiftDirection1) $panneau(DlgShiftZadko,xShiftDirection1)
+      set ::acqzadko::parametres(acqzadko,$visuNo,xShiftTime)       $panneau(DlgShiftZadko,xShiftTime)
+      set ::acqzadko::parametres(acqzadko,$visuNo,yShiftDirection)  $panneau(DlgShiftZadko,yShiftDirection)
+      set ::acqzadko::parametres(acqzadko,$visuNo,yShiftDirection1) $panneau(DlgShiftZadko,yShiftDirection1)
+      set ::acqzadko::parametres(acqzadko,$visuNo,yShiftTime)       $panneau(DlgShiftZadko,yShiftTime)
 
       #--- close the dialog window
-      closeDialog
+      ::DlgShiftZadko::closeDialog
    }
 
    #------------------------------------------------------------
@@ -117,23 +101,8 @@ namespace eval ::DlgShiftZadko {
    #      close dialog without saving
    #------------------------------------------------------------
    proc cmdCancel { } {
-      #--- reload old values
-      loadDataFile
       #--- close the dialog window
-      closeDialog
-   }
-
-   #------------------------------------------------------------
-   #  loadDataFile
-   #      read file
-   #      display fields values in the grid
-   #------------------------------------------------------------
-   proc loadDataFile { } {
-      #--- Ouverture du fichier de parametres
-      set fichier [ file join $::audace(rep_home) dlgshiftzadko.ini ]
-      if { [ file exists $fichier ] } {
-         source $fichier
-      }
+      ::DlgShiftZadko::closeDialog
    }
 
    #------------------------------------------------------------
@@ -146,20 +115,18 @@ namespace eval ::DlgShiftZadko {
       #--- close and destroy the dialog window
       destroy $This
       unset This
-
    }
 
    #------------------------------------------------------------
-   #  Decalage_Telescope
+   #  decalageTelescope
    #      decalage du telescope pendant une serie d'images
    #------------------------------------------------------------
-   proc Decalage_Telescope { } {
+   proc decalageTelescope { } {
       global caption panneau
 
       #--- Deplacement du télescope
       if { $panneau(DlgShiftZadko,buttonShift) == "1" } {
          if { ( $panneau(DlgShiftZadko,xShiftDirection) != "" ) || ( $panneau(DlgShiftZadko,yShiftDirection) != "" ) } {
-            ::console::affiche_saut "\n"
             ::console::affiche_resultat "$caption(dlgshiftzadko,labelTelescope)\n"
          }
 
@@ -195,10 +162,10 @@ namespace eval ::DlgShiftZadko {
    }
 
    #------------------------------------------------------------
-   #  recup_position
+   #  recupPosition
    #      give position window
    #------------------------------------------------------------
-   proc recup_position { } {
+   proc recupPosition { } {
       variable This
       global panneau
 
@@ -212,9 +179,8 @@ namespace eval ::DlgShiftZadko {
    #  createDialog
    #      display dialog window
    #------------------------------------------------------------
-   proc createDialog { } {
+   proc createDialog { visuNo } {
       variable This
-      variable parametres
       global caption conf panneau
 
       if { [winfo exists $This] } {
@@ -225,7 +191,7 @@ namespace eval ::DlgShiftZadko {
       }
 
       #--- confToWidget
-      ::DlgShiftZadko::confToWidget
+      ::DlgShiftZadko::confToWidget $visuNo
 
       #---
       if { [ info exists panneau(DlgShiftZadko,geometry) ] } {
@@ -240,7 +206,7 @@ namespace eval ::DlgShiftZadko {
       wm title $This $caption(dlgshiftzadko,title)
 
       #--- redirect WM_DELETE_WINDOW message
-      wm protocol $This WM_DELETE_WINDOW {::DlgShiftZadko::cmdCancel}
+      wm protocol $This WM_DELETE_WINDOW "::DlgShiftZadko::cmdCancel"
 
       #--- create frame to display parameters -------------------------------------
       frame $This.frameConfig -borderwidth 1 -relief raised
@@ -267,7 +233,8 @@ namespace eval ::DlgShiftZadko {
 
       #--- entry xShiftTime
       entry $This.frameConfig.xShiftTime -width 5 -borderwidth 2 -justify center \
-         -textvariable panneau(DlgShiftZadko,xShiftTime)
+         -textvariable panneau(DlgShiftZadko,xShiftTime) \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
       grid configure $This.frameConfig.xShiftTime -column 1 -row 0 -sticky we -in $This.frameConfig -ipady 5
 
       menubutton $This.frameConfig.xShiftDirection -textvariable panneau(DlgShiftZadko,xShiftDirection) \
@@ -284,7 +251,8 @@ namespace eval ::DlgShiftZadko {
 
       #--- entry yShiftTime
       entry $This.frameConfig.yShiftTime -width 5 -borderwidth 2 -justify center \
-         -textvariable panneau(DlgShiftZadko,yShiftTime)
+         -textvariable panneau(DlgShiftZadko,yShiftTime) \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
       grid configure $This.frameConfig.yShiftTime -column 1 -row 2 -sticky we -in $This.frameConfig -ipady 5
 
       menubutton $This.frameConfig.yShiftDirection -textvariable panneau(DlgShiftZadko,yShiftDirection) \
@@ -332,7 +300,7 @@ namespace eval ::DlgShiftZadko {
 
       #--- button SAVE
       button $This.frameButton.buttonSave -text $caption(dlgshiftzadko,buttonSave) \
-         -borderwidth 2  -command "::DlgShiftZadko::cmdSave"
+         -borderwidth 2  -command "::DlgShiftZadko::cmdSave $visuNo"
       pack   $This.frameButton.buttonSave -in $This.frameButton -anchor e -fill none \
          -padx 3 -pady 3 -ipadx 5 -ipady 3
 
