@@ -2,7 +2,7 @@
 # Fichier : acqvideo.tcl
 # Description : Outil d'acquisition video
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: acqvideo.tcl,v 1.21 2010-05-23 16:14:57 robertdelmas Exp $
+# Mise à jour $Id: acqvideo.tcl,v 1.22 2010-05-24 15:24:57 robertdelmas Exp $
 #
 
 #==============================================================
@@ -38,6 +38,9 @@ namespace eval ::acqvideo {
 
       #--- Initialisation des variables de la boite de configuration
       ::acqvideoSetup::confToWidget $visuNo
+
+      #--- Initialisation des variables de la boite de decalage du telescope
+      ::DlgShiftVideo::confToWidget $visuNo
 
       #--- Initialisation de la variable conf()
       if { ! [info exists conf(acqvideo,avancement,position)] } { set conf(acqvideo,avancement,position) "+120+315" }
@@ -330,6 +333,9 @@ namespace eval ::acqvideo {
 
       #--- Creation des variables de la boite de configuration si elles n'existent pas
       ::acqvideoSetup::initToConf $visuNo
+
+      #--- Creation des variables de la boite de decalage du telescope si elles n'existent pas
+      ::DlgShiftVideo::initToConf $visuNo
    }
 #***** Fin de la procedure chargerVariable *********************
 
@@ -718,7 +724,7 @@ namespace eval ::acqvideo {
                         set heure $audace(tu,format,hmsint)
                         Message $visuNo consolog $caption(acqvideo,enrim_video1) $heure $nom
                         #--- Deplacement du telescope entre chaque acquisition
-                        ::DlgShiftVideo::Decalage_Telescope
+                        ::DlgShiftVideo::decalageTelescope
                         set panneau(acqvideo,$visuNo,fin_video) [ clock second ]
                         set panneau(acqvideo,$visuNo,intervalle_film) [ expr $panneau(acqvideo,$visuNo,fin_video) - $panneau(acqvideo,$visuNo,deb_video) ]
                         while { ( $panneau(acqvideo,$visuNo,demande_arret) == "0" ) && ( $panneau(acqvideo,$visuNo,intervalle_film) <= $panneau(acqvideo,$visuNo,intervalle_video) ) } {
@@ -997,7 +1003,7 @@ namespace eval ::acqvideo {
    proc cmdShiftConfig { visuNo } {
       global audace
 
-      set shiftConfig [ ::DlgShiftVideo::run "$audace(base).dlgShiftVideo" ]
+      set shiftConfig [ ::DlgShiftVideo::run $visuNo $audace(base).dlgShiftVideo ]
       return
    }
 #***** Fin du bouton pour le decalage du telescope *****************
