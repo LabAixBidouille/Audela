@@ -1083,7 +1083,7 @@ int tt_script_3(void *arg1);
 int tt_test(void *arg1);
 
 int tt_writelog(char *message);
-int tt_errlog(int numerreur,char *commande);
+int tt_errlog(int numerreur,char *messageFormat,...);
 int tt_errmessage(void *args);
 int tt_errmessage2(int numerreur,char *message);
 int tt_lasterrmessage(void *args);
