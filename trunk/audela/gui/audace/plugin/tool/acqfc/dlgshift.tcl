@@ -2,7 +2,7 @@
 # Fichier : dlgshift.tcl
 # Description : Fenetre de dialogue pour saisir les parametres de deplacement entre 2 images
 # Auteur : Michel PUJOL
-# Mise à jour $Id: dlgshift.tcl,v 1.7 2010-05-24 11:01:43 robertdelmas Exp $
+# Mise à jour $Id: dlgshift.tcl,v 1.8 2010-05-24 14:08:20 robertdelmas Exp $
 #
 
 namespace eval ::DlgShift {
@@ -127,7 +127,6 @@ namespace eval ::DlgShift {
       #--- Deplacement du télescope
       if { $panneau(DlgShift,buttonShift) == "1" } {
          if { ( $panneau(DlgShift,xShiftDirection) != "" ) || ( $panneau(DlgShift,yShiftDirection) != "" ) } {
-            ::console::affiche_saut "\n"
             ::console::affiche_resultat "$caption(dlgshift,labelTelescope)\n"
          }
 
@@ -234,7 +233,8 @@ namespace eval ::DlgShift {
 
       #--- entry xShiftTime
       entry $This.frameConfig.xShiftTime -width 5 -borderwidth 2 -justify center \
-         -textvariable panneau(DlgShift,xShiftTime)
+         -textvariable panneau(DlgShift,xShiftTime) \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
       grid configure $This.frameConfig.xShiftTime -column 1 -row 0 -sticky we -in $This.frameConfig -ipady 5
 
       menubutton $This.frameConfig.xShiftDirection -textvariable panneau(DlgShift,xShiftDirection) \
@@ -251,7 +251,8 @@ namespace eval ::DlgShift {
 
       #--- entry yShiftTime
       entry $This.frameConfig.yShiftTime -width 5 -borderwidth 2 -justify center \
-         -textvariable panneau(DlgShift,yShiftTime)
+         -textvariable panneau(DlgShift,yShiftTime) \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
       grid configure $This.frameConfig.yShiftTime -column 1 -row 2 -sticky we -in $This.frameConfig -ipady 5
 
       menubutton $This.frameConfig.yShiftDirection -textvariable panneau(DlgShift,yShiftDirection) \
