@@ -2384,7 +2384,6 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
       while (feof(ftle)==0) {
 			k++;
          mc_tle_decnext1(ftle,&elem,name,&valid);
-			valid=0;
          if (valid==1) {
             /* --- on lance le calcul ---*/
             mc_adelemap_sgp(sgp_method,jdtt,jj,equinoxe,astrometric,elem,longmpc,rhocosphip,rhosinphip,0,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun,&sunfraction,&zlong,&zlat,&azimuth,&elevation,&parallactic,&hour_angle);
