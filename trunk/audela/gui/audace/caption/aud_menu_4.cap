@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_4.cap
-# Mise a jour $Id: aud_menu_4.cap,v 1.12 2009-12-09 16:48:25 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_4.cap,v 1.13 2010-05-25 19:04:21 jacquesmichelet Exp $
 #
 
 #=========================================================================
@@ -22,6 +22,11 @@ set caption(audace,menu,filtre_gaussien)                "Gaussian Filter"
 set caption(audace,menu,ond_morlet)                     "Morlet Type Wavelet"
 set caption(audace,menu,ond_mexicain)                   "Mexican Hat Type Wavelet"
 set caption(audace,menu,log)                            "Logarithm"
+set caption(audace,menu,tfd)                            "Discrete Fourier Transform"
+set caption(audace,menu,tfdi)                           "Inverse Discrete Fourier Transform"
+set caption(audace,menu,acorr)                          "Auto-correlation"
+set caption(audace,menu,icorr)                          "Cross-correlation"
+set caption(audace,menu,convolution)                    "Convolution"
 
 set caption(traiteFilters,image_affichee)               "On Image Displayed"
 set caption(traiteFilters,_image_affichee_)             "(On Image Displayed)"
@@ -54,6 +59,20 @@ set caption(traiteFilters,coef_manquant)                "Define the missing coef
 set caption(traiteFilters,coef_invalide)                "Invalid Coefficient."
 set caption(traiteFilters,coef_invalides)               "Invalid Coefficients."
 
+set caption(traiteFilters,tfd_sortie1)                  "Output Image (modulus or real) :"
+set caption(traiteFilters,tfd_sortie2)                  "Output Image (arg. or imag.) :"
+set caption(traiteFilters,tfd_entree1)                  "Input Image (modulus or real) :"
+set caption(traiteFilters,tfd_entree2)                  "Input Image (arg. or imag.) :"
+set caption(traiteFilters,icorr_entree1)                "Input Image # 1 :"
+set caption(traiteFilters,icorr_entree2)                "Input Image # 2 :"
+set caption(traiteFilters,tfd_ordre)                    "Order"
+set caption(traiteFilters,tfd_centre)                   "Centered"
+set caption(traiteFilters,tfd_normal)                   "Regular"
+set caption(traiteFilters,tfd_format)                   "Format"
+set caption(traiteFilters,tfd_polaire)                  "Polar (modulus + arg)"
+set caption(traiteFilters,tfd_cartesien)                "Cartesian (real + imag.)"
+set caption(traiteFilters,tfd_images_differentes)       "The output files must have different names"
+
 set caption(traiteFilters,traitement_en_cours)          "Processing in progress..."
 
 # *************** Version française ***************************
@@ -70,6 +89,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,ond_morlet)                  "Ondelette de type Morlet"
    set caption(audace,menu,ond_mexicain)                "Ondelette de type chapeau mexicain"
    set caption(audace,menu,log)                         "Logarithme"
+   set caption(audace,menu,tfd)                         "Transformée de Fourier Discrète"
+   set caption(audace,menu,tfdi)                        "Transformée de Fourier Discrète inverse"
+   set caption(audace,menu,acorr)                       "Auto-correlation"
+   set caption(audace,menu,icorr)                       "Inter-correlation"
+   set caption(audace,menu,convolution)                 "Convolution"
 
    set caption(traiteFilters,image_affichee)            "Sur l'image affichée"
    set caption(traiteFilters,_image_affichee_)          "(sur l'image affichée)"
@@ -102,7 +126,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,coef_invalide)             "Coefficient invalide."
    set caption(traiteFilters,coef_invalides)            "Coefficients invalides."
 
+   set caption(traiteFilters,tfd_sortie1)               "Image de sortie (module ou p. réelle) :"
+   set caption(traiteFilters,tfd_sortie2)               "Image de sortie (arg. ou p. imag. :"
+   set caption(traiteFilters,tfd_entree1)               "Image d'entrée (module ou p. réelle) :"
+   set caption(traiteFilters,tfd_entree2)               "Image d'entrée (arg. ou p. imag.) :"
+   set caption(traiteFilters,icorr_entree1)             "Image d'entrée 1 :"
+   set caption(traiteFilters,icorr_entree2)             "Image d'entrée 2 :"
    set caption(traiteFilters,traitement_en_cours)       "Traitement en cours..."
+   set caption(traiteFilters,tfd_ordre)                 "Ordre"
+   set caption(traiteFilters,tfd_centre)                "Centré"
+   set caption(traiteFilters,tfd_normal)                "Normal"
+   set caption(traiteFilters,tfd_format)                "Format"
+   set caption(traiteFilters,tfd_polaire)               "Polaire (module + arg.)"
+   set caption(traiteFilters,tfd_cartesien)             "Cartésien (réel + imag.)"
+   set caption(traiteFilters,tfd_images_differentes)    "Les fichiers résultats doivent être différents"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -118,6 +155,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,ond_morlet)                  "Filtro di Morlet"
    set caption(audace,menu,ond_mexicain)                "Filtro a 'sombrero'"
    set caption(audace,menu,log)                         "Logaritmo"
+## <To be translated>
+   set caption(audace,menu,tfd)                         "Discrete Fourier Transform"
+   set caption(audace,menu,tfdi)                        "Inverse Discrete Fourier Transform"
+   set caption(audace,menu,acorr)                       "Auto-correlation"
+   set caption(audace,menu,icorr)                       "Cross-correlation"
+   set caption(audace,menu,convolution)                 "Convolution"
+## </To be translated>
 
    set caption(traiteFilters,image_affichee)            "Sull'immagine visualizzata"
    set caption(traiteFilters,_image_affichee_)          "(sull'immagine visualizzata)"
@@ -150,6 +194,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,coef_invalide)             "Coefficiente non valido."
    set caption(traiteFilters,coef_invalides)            "Coefficienti non validi."
 
+## <To be translated>
+   set caption(traiteFilters,tfd_sortie1)               "Output Image (modulus or real) :"
+   set caption(traiteFilters,tfd_sortie2)               "Output Image (arg. or imag.) :"
+   set caption(traiteFilters,tfd_entree1)               "Input Image (modulus or real) :"
+   set caption(traiteFilters,tfd_entree2)               "Input Image (arg. or imag.) :"
+   set caption(traiteFilters,icorr_entree1)             "Input Image # 1 :"
+   set caption(traiteFilters,icorr_entree2)             "Input Image # 2 :"
+   set caption(traiteFilters,tfd_ordre)                 "Order"
+   set caption(traiteFilters,tfd_centre)                "Centered"
+   set caption(traiteFilters,tfd_normal)                "Regular"
+   set caption(traiteFilters,tfd_format)                "Format"
+   set caption(traiteFilters,tfd_polaire)               "Polar (modulus + arg)"
+   set caption(traiteFilters,tfd_cartesien)             "Cartesian (real + imag.)"
+   set caption(traiteFilters,tfd_images_differentes)    "The output files must have different names"
+## </To be translated>
+
    set caption(traiteFilters,traitement_en_cours)       "Elaborazione in corso..."
 
 # *************** Version espagnole ***************************
@@ -166,6 +226,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,ond_morlet)                  "Wavelet de tipo Morlet"
    set caption(audace,menu,ond_mexicain)                "Wavelte de tipo sombrero mejicano"
    set caption(audace,menu,log)                         "Logaritmo"
+## <To be translated>
+   set caption(audace,menu,tfd)                         "Discrete Fourier Transform"
+   set caption(audace,menu,tfdi)                        "Inverse Discrete Fourier Transform"
+   set caption(audace,menu,acorr)                       "Auto-correlation"
+   set caption(audace,menu,icorr)                       "Cross-correlation"
+   set caption(audace,menu,convolution)                 "Convolution"
+## </To be translated>
 
    set caption(traiteFilters,image_affichee)            "En la imagen mostrada"
    set caption(traiteFilters,_image_affichee_)          "(en la imagen mostrada)"
@@ -198,6 +265,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,coef_invalide)             "Coeficiente inválido."
    set caption(traiteFilters,coef_invalides)            "Coeficientes inválidos."
 
+## <To be translated>
+   set caption(traiteFilters,tfd_sortie1)               "Output Image (modulus or real) :"
+   set caption(traiteFilters,tfd_sortie2)               "Output Image (arg. or imag.) :"
+   set caption(traiteFilters,tfd_entree1)               "Input Image (modulus or real) :"
+   set caption(traiteFilters,tfd_entree2)               "Input Image (arg. or imag.) :"
+   set caption(traiteFilters,icorr_entree1)             "Input Image # 1 :"
+   set caption(traiteFilters,icorr_entree2)             "Input Image # 2 :"
+   set caption(traiteFilters,tfd_ordre)                 "Order"
+   set caption(traiteFilters,tfd_centre)                "Centered"
+   set caption(traiteFilters,tfd_normal)                "Regular"
+   set caption(traiteFilters,tfd_format)                "Format"
+   set caption(traiteFilters,tfd_polaire)               "Polar (modulus + arg)"
+   set caption(traiteFilters,tfd_cartesien)             "Cartesian (real + imag.)"
+   set caption(traiteFilters,tfd_images_differentes)    "The output files must have different names"
+## </To be translated>
+
    set caption(traiteFilters,traitement_en_cours)       "Procesando..."
 
 # *************** Version allemande ***************************
@@ -214,6 +297,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,ond_morlet)                  "Morlet Typ Wellche"
    set caption(audace,menu,ond_mexicain)                "Mexican Hut Typ Wellche"
    set caption(audace,menu,log)                         "Logarithmus"
+## <To be translated>
+   set caption(audace,menu,tfd)                         "Discrete Fourier Transform"
+   set caption(audace,menu,tfdi)                        "Inverse Discrete Fourier Transform"
+   set caption(audace,menu,acorr)                       "Auto-correlation"
+   set caption(audace,menu,icorr)                       "Cross-correlation"
+   set caption(audace,menu,convolution)                 "Convolution"
+## </To be translated>
 
    set caption(traiteFilters,image_affichee)            "In ezeigtes Bild"
    set caption(traiteFilters,_image_affichee_)          "(in ezeigtes Bild)"
@@ -246,6 +336,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,coef_invalide)             "Ungültigen Koeffizient."
    set caption(traiteFilters,coef_invalides)            "Ungültigen Koeffizienten."
 
+## <To be translated>
+   set caption(traiteFilters,tfd_sortie1)               "Output Image (modulus or real) :"
+   set caption(traiteFilters,tfd_sortie2)               "Output Image (arg. or imag.) :"
+   set caption(traiteFilters,tfd_entree1)               "Input Image (modulus or real) :"
+   set caption(traiteFilters,tfd_entree2)               "Input Image (arg. or imag.) :"
+   set caption(traiteFilters,icorr_entree1)             "Input Image # 1 :"
+   set caption(traiteFilters,icorr_entree2)             "Input Image # 2 :"
+   set caption(traiteFilters,tfd_ordre)                 "Order"
+   set caption(traiteFilters,tfd_centre)                "Centered"
+   set caption(traiteFilters,tfd_normal)                "Regular"
+   set caption(traiteFilters,tfd_format)                "Format"
+   set caption(traiteFilters,tfd_polaire)               "Polar (modulus + arg)"
+   set caption(traiteFilters,tfd_cartesien)             "Cartesian (real + imag.)"
+   set caption(traiteFilters,tfd_images_differentes)    "The output files must have different names"
+## </To be translated>
+
    set caption(traiteFilters,traitement_en_cours)       "Aufbereitung im Gange..."
 
 # *************** Version portugaise **************************
@@ -262,6 +368,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,ond_morlet)                  "Wavelet do tipo Morlet"
    set caption(audace,menu,ond_mexicain)                "Wavelet do tipo chapéu mexicano"
    set caption(audace,menu,log)                         "Logaritmo"
+## <To be translated>
+   set caption(audace,menu,tfd)                         "Discrete Fourier Transform"
+   set caption(audace,menu,tfdi)                        "Inverse Discrete Fourier Transform"
+   set caption(audace,menu,acorr)                       "Auto-correlation"
+   set caption(audace,menu,icorr)                       "Cross-correlation"
+   set caption(audace,menu,convolution)                 "Convolution"
+## </To be translated>
 
    set caption(traiteFilters,image_affichee)            "Na imagem apresentada"
    set caption(traiteFilters,_image_affichee_)          "(na imagem apresentada)"
@@ -294,6 +407,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,coef_invalide)             "Coeficiente Inválido."
    set caption(traiteFilters,coef_invalides)            "Coeficientes Inválidos."
 
+## <To be translated>
+   set caption(traiteFilters,tfd_sortie1)               "Output Image (modulus or real) :"
+   set caption(traiteFilters,tfd_sortie2)               "Output Image (arg. or imag.) :"
+   set caption(traiteFilters,tfd_entree1)               "Input Image (modulus or real) :"
+   set caption(traiteFilters,tfd_entree2)               "Input Image (arg. or imag.) :"
+   set caption(traiteFilters,icorr_entree1)             "Input Image # 1 :"
+   set caption(traiteFilters,icorr_entree2)             "Input Image # 2 :"
+   set caption(traiteFilters,tfd_ordre)                 "Order"
+   set caption(traiteFilters,tfd_centre)                "Centered"
+   set caption(traiteFilters,tfd_normal)                "Regular"
+   set caption(traiteFilters,tfd_format)                "Format"
+   set caption(traiteFilters,tfd_polaire)               "Polar (modulus + arg)"
+   set caption(traiteFilters,tfd_cartesien)             "Cartesian (real + imag.)"
+   set caption(traiteFilters,tfd_images_differentes)    "The output files must have different names"
+## </To be translated>
+
    set caption(traiteFilters,traitement_en_cours)       "Tratamento em curso..."
 
 # *************** Version danoise *****************************
@@ -310,6 +439,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,ond_morlet)                  "Bølge af type Morlet"
    set caption(audace,menu,ond_mexicain)                "Mexicansk hat bølgetype"
    set caption(audace,menu,log)                         "Logaritme"
+## <To be translated>
+   set caption(audace,menu,tfd)                         "Discrete Fourier Transform"
+   set caption(audace,menu,tfdi)                        "Inverse Discrete Fourier Transform"
+   set caption(audace,menu,acorr)                       "Auto-correlation"
+   set caption(audace,menu,icorr)                       "Cross-correlation"
+   set caption(audace,menu,convolution)                 "Convolution"
+## </To be translated>
 
    set caption(traiteFilters,image_affichee)            "På det viste billede"
    set caption(traiteFilters,_image_affichee_)          "(på det viste billede)"
@@ -342,6 +478,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,coef_invalide)             "Ugyldig koefficient."
    set caption(traiteFilters,coef_invalides)            "Ugyldige koefficienter."
 
+## <To be translated>
+   set caption(traiteFilters,tfd_sortie1)               "Output Image (modulus or real) :"
+   set caption(traiteFilters,tfd_sortie2)               "Output Image (arg. or imag.) :"
+   set caption(traiteFilters,tfd_entree1)               "Input Image (modulus or real) :"
+   set caption(traiteFilters,tfd_entree2)               "Input Image (arg. or imag.) :"
+   set caption(traiteFilters,icorr_entree1)             "Input Image # 1 :"
+   set caption(traiteFilters,icorr_entree2)             "Input Image # 2 :"
+   set caption(traiteFilters,tfd_ordre)                 "Order"
+   set caption(traiteFilters,tfd_centre)                "Centered"
+   set caption(traiteFilters,tfd_normal)                "Regular"
+   set caption(traiteFilters,tfd_format)                "Format"
+   set caption(traiteFilters,tfd_polaire)               "Polar (modulus + arg)"
+   set caption(traiteFilters,tfd_cartesien)             "Cartesian (real + imag.)"
+   set caption(traiteFilters,tfd_images_differentes)    "The output files must have different names"
+## </To be translated>
+
    set caption(traiteFilters,traitement_en_cours)       "Processing er aktiv"
 
 # *************** Version ukrainienne *************************
@@ -358,6 +510,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,ond_morlet)                  "Morlet Type Wavelet"
    set caption(audace,menu,ond_mexicain)                "Mexican Hat Type Wavelet"
    set caption(audace,menu,log)                         "Logarithm"
+   set caption(audace,menu,tfd)                         "Discrete Fourier Transform"
+   set caption(audace,menu,tfdi)                        "Inverse Discrete Fourier Transform"
+   set caption(audace,menu,acorr)                       "Auto-correlation"
+   set caption(audace,menu,icorr)                       "Cross-correlation"
+   set caption(audace,menu,convolution)                 "Convolution"
 
    set caption(traiteFilters,image_affichee)            "On Image Displayed"
    set caption(traiteFilters,_image_affichee_)          "(On Image Displayed)"
@@ -389,6 +546,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,coef_manquant)             "Define the missing coefficient."
    set caption(traiteFilters,coef_invalide)             "Invalid Coefficient."
    set caption(traiteFilters,coef_invalides)            "Invalid Coefficients."
+
+   set caption(traiteFilters,tfd_sortie1)               "Output Image (modulus or real) :"
+   set caption(traiteFilters,tfd_sortie2)               "Output Image (arg. or imag.) :"
+   set caption(traiteFilters,tfd_entree1)               "Input Image (modulus or real) :"
+   set caption(traiteFilters,tfd_entree2)               "Input Image (arg. or imag.) :"
+   set caption(traiteFilters,icorr_entree1)             "Input Image # 1 :"
+   set caption(traiteFilters,icorr_entree2)             "Input Image # 2 :"
+   set caption(traiteFilters,tfd_ordre)                 "Order"
+   set caption(traiteFilters,tfd_centre)                "Centered"
+   set caption(traiteFilters,tfd_normal)                "Regular"
+   set caption(traiteFilters,tfd_format)                "Format"
+   set caption(traiteFilters,tfd_polaire)               "Polar (modulus + arg)"
+   set caption(traiteFilters,tfd_cartesien)             "Cartesian (real + imag.)"
+   set caption(traiteFilters,tfd_images_differentes)    "The output files must have different names"
 
    set caption(traiteFilters,traitement_en_cours)       "Processing in progress..."
 
@@ -406,6 +577,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,ond_morlet)                  "Morlet Type Wavelet"
    set caption(audace,menu,ond_mexicain)                "Mexican Hat Type Wavelet"
    set caption(audace,menu,log)                         "Logarithm"
+   set caption(audace,menu,tfd)                         "Discrete Fourier Transform"
+   set caption(audace,menu,tfdi)                        "Inverse Discrete Fourier Transform"
+   set caption(audace,menu,acorr)                       "Auto-correlation"
+   set caption(audace,menu,icorr)                       "Cross-correlation"
+   set caption(audace,menu,convolution)                 "Convolution"
 
    set caption(traiteFilters,image_affichee)            "On Image Displayed"
    set caption(traiteFilters,_image_affichee_)          "(On Image Displayed)"
@@ -437,6 +613,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,coef_manquant)             "Define the missing coefficient."
    set caption(traiteFilters,coef_invalide)             "Invalid Coefficient."
    set caption(traiteFilters,coef_invalides)            "Invalid Coefficients."
+
+   set caption(traiteFilters,tfd_sortie1)               "Output Image (modulus or real) :"
+   set caption(traiteFilters,tfd_sortie2)               "Output Image (arg. or imag.) :"
+   set caption(traiteFilters,tfd_entree1)               "Input Image (modulus or real) :"
+   set caption(traiteFilters,tfd_entree2)               "Input Image (arg. or imag.) :"
+   set caption(traiteFilters,icorr_entree1)             "Input Image # 1 :"
+   set caption(traiteFilters,icorr_entree2)             "Input Image # 2 :"
+   set caption(traiteFilters,tfd_ordre)                 "Order"
+   set caption(traiteFilters,tfd_centre)                "Centered"
+   set caption(traiteFilters,tfd_normal)                "Regular"
+   set caption(traiteFilters,tfd_format)                "Format"
+   set caption(traiteFilters,tfd_polaire)               "Polar (modulus + arg)"
+   set caption(traiteFilters,tfd_cartesien)             "Cartesian (real + imag.)"
+   set caption(traiteFilters,tfd_images_differentes)    "The output files must have different names"
 
    set caption(traiteFilters,traitement_en_cours)       "Processing in progress..."
 
