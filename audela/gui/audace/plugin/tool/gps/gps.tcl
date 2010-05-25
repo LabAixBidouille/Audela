@@ -2,7 +2,7 @@
 # Fichier : gps.tcl
 # Description : Outil de synchronisation GPS
 # Auteur : Jacques MICHELET
-# Mise à jour $Id: gps.tcl,v 1.23 2010-05-01 09:07:01 robertdelmas Exp $
+# Mise à jour $Id: gps.tcl,v 1.24 2010-05-25 17:17:45 robertdelmas Exp $
 #
 
 namespace eval ::gps {
@@ -397,7 +397,6 @@ namespace eval ::gps {
         variable couleur
         variable position
         variable base
-
 
         #  Affichage de la fenetre, et des champs de saisie avec les valeurs par   #
         #   defaut.                                                             #
@@ -1014,7 +1013,6 @@ namespace eval ::gps {
         foreach intervalle $parametres(choix_synchro) {
             $This.fparametre.mb.menu.sm2 add radio -label $intervalle -variable ::gps::parametres(intervalle_synchro) -value $intervalle
         }
-
 
         Message consolog "---------- %s %s ----------\n" $caption(gps,bienvenue) [ package version gps ]
         Message consolog "%s\n" $caption(gps,copyright)
