@@ -2,7 +2,7 @@
 # Fichier : methking.tcl
 # Description : Outil d'aide a la mise en station par la methode de King
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise à jour $Id: methking.tcl,v 1.29 2010-05-09 07:40:21 robertdelmas Exp $
+# Mise à jour $Id: methking.tcl,v 1.30 2010-05-25 17:18:11 robertdelmas Exp $
 #
 
 #============================================================
@@ -906,7 +906,6 @@ namespace eval ::methking {
          set decal_x [expr [lindex $decal_2 0] - [lindex $decal_1 0]]
          set decal_y [expr [lindex $decal_2 1] - [lindex $decal_1 1]]
          Message consolog "\t\tDx=%5.2f / Dy=%5.2f\n" $decal_x $decal_y
-
 
          # Calcul du temps ecoule entre les deux images
          set dt [expr $mesure(im_$k,date) - $mesure(im_$i,date)]
@@ -1850,7 +1849,6 @@ namespace eval ::methking {
       wm transient $audace(base).fenreglages $audace(base)
       wm protocol $audace(base).fenreglages WM_DELETE_WINDOW ::methking::Suppression
 
-
       # Explications et conseils
       label $audace(base).fenreglages.explication -height 1 -justify left
       label $audace(base).fenreglages.conseil -height 1 -justify left
@@ -1996,7 +1994,6 @@ namespace eval ::methking {
       bind $audace(base).fenreglages.image1 <Motion> {::methking::TraceCurseur %x %y}
       bind $audace(base).fenreglages.image1 <ButtonRelease-1> {::methking::MemoriseCurseur %x %y}
    }
-
 
    #--------------------------------------------------------------------------#
    proc CreeDeuxiemeFenetreReglages {num_buf num_visu binning} {
@@ -2250,7 +2247,6 @@ namespace eval ::methking {
    }
 }
 #-----Fin du namespace methking--------------------------------------------#
-
 
 #--------------------------------------------------------------------------#
 proc methkingBuildIF {This tableau} {

@@ -2,7 +2,7 @@
 # Fichier : fieldchart.tcl
 # Description : Interfaces graphiques pour les fonctions carte de champ
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: fieldchart.tcl,v 1.4 2010-01-30 14:13:41 robertdelmas Exp $
+# Mise à jour $Id: fieldchart.tcl,v 1.5 2010-05-25 17:10:09 robertdelmas Exp $
 #
 
 #============================================================
