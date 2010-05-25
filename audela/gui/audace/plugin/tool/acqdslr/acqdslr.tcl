@@ -2,7 +2,7 @@
 # Fichier : acqdslr.tcl
 # Description : Outil d'acquisition pour APN Canon
 # Auteur : Raymond Zachantke
-# Mise a jour $Id: acqdslr.tcl,v 1.3 2010-05-13 08:35:26 robertdelmas Exp $
+# Mise Ã  jour $Id: acqdslr.tcl,v 1.4 2010-05-25 16:40:11 robertdelmas Exp $
 #
 
 #============================================================
@@ -756,7 +756,7 @@ namespace eval ::acqdslr {
    ###################################################################
    proc test_nom {} {
 
-      #-- seuls les caracteres alphanumériques et le underscore sont autorises
+      #-- seuls les caracteres alphanumeriques et le underscore sont autorises
       regsub -all {[^\w_]} $::acqdslr::nom {} ::acqdslr::nom
 
    }
@@ -773,7 +773,7 @@ namespace eval ::acqdslr {
 
    #######################################################################
    #-- Si l'intervalle n'est pas un entier ou est < l'intervalle minimum #
-   #-- il est fixe à l'intervalle minimum                                #
+   #-- il est fixe a l'intervalle minimum                                #
    #######################################################################
    proc test_intervalle {} {
       global panneau
@@ -825,7 +825,7 @@ namespace eval ::acqdslr {
    }
 
    ######################################################################
-   #-- Verifie et Formate le temps en décimal                           #
+   #-- Verifie et Formate le temps en decimal                           #
    ######################################################################
    proc test_exptime {} {
       global panneau

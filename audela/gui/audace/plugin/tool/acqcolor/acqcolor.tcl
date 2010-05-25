@@ -2,7 +2,7 @@
 # Fichier : acqcolor.tcl
 # Description : Outil pour l'acquisition d'images en couleur
 # Auteurs : Alain KLOTZ et Pierre THIERRY
-# Mise a jour $Id: acqcolor.tcl,v 1.19 2010-01-24 12:08:14 robertdelmas Exp $
+# Mise Ã  jour $Id: acqcolor.tcl,v 1.20 2010-05-25 16:35:13 robertdelmas Exp $
 #
 
 proc testexit { } {
@@ -540,7 +540,7 @@ pack $audace(base).test.frame2b \
 #--- Detruit la fenetre principale avec la croix en haut a droite
 bind $audace(base).test <Destroy> { testexit }
 
-#--- Declare un buffer pour placer les images en mémoire
+#--- Declare un buffer pour placer les images en memoire
 global conf
 
 #--- Creation du buffer 1000
@@ -1461,7 +1461,7 @@ proc testboxEnd { coord } {
 
 #
 # Transforme des coordonnees ecran en coordonnees canvas. L'argument est une
-# liste de deux entiers, et retourne également une liste de deux entiers
+# liste de deux entiers, et retourne egalement une liste de deux entiers
 #
 proc testscreen2Canvas { coord } {
    global zone
@@ -1473,7 +1473,7 @@ proc testscreen2Canvas { coord } {
 
 #
 # Transforme des coordonnees canvas en coordonnees image. L'argument est une
-# liste de deux entiers, et retourne également une liste de deux entiers
+# liste de deux entiers, et retourne egalement une liste de deux entiers
 #
 proc testcanvas2Picture { coord } {
    global zone
