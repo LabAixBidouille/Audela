@@ -2,7 +2,7 @@
 # Fichier : obj_lune_1.tcl
 # Description : Programme de calcul (ephemerides, etc.)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune_1.tcl,v 1.9 2009-12-19 16:37:05 robertdelmas Exp $
+# Mise à jour $Id: obj_lune_1.tcl,v 1.10 2010-05-25 17:47:57 robertdelmas Exp $
 #
 
 namespace eval ::obj_lune {
