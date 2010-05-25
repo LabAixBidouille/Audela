@@ -2,7 +2,7 @@
 # Fichier : apncode.tcl
 # Description : Transcodage des variables de commande des APN
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: apncode.tcl,v 1.10 2009-01-17 17:52:36 robertdelmas Exp $
+# Mise à jour $Id: apncode.tcl,v 1.11 2010-05-25 16:32:49 robertdelmas Exp $
 #
 
 #============================================================

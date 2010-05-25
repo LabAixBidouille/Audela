@@ -2,7 +2,7 @@
 # Fichier : satel.tcl
 # Description : Outil pour calculer les positions precises de satellites avec les TLE
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: satel.tcl,v 1.2 2010-05-25 07:40:12 robertdelmas Exp $
+# Mise à jour $Id: satel.tcl,v 1.3 2010-05-25 16:40:52 robertdelmas Exp $
 #
 # source satel.tcl
 # utiliser le temps UTC
@@ -10,7 +10,7 @@
 #
 # --- Pour telecharger les TLEs
 # satel_update
-# --- Pour cacluler une position d'un satellite
+# --- Pour calculer une position d'un satellite
 # satel_coords "jason 2" 2010-05-23T20:12:31
 # --- Pour rechercher un satellite au voisinage d'une position
 # satel_nearest_radec 22h07m34s25 +60d17m33s0 2010-05-23T20:12:31
