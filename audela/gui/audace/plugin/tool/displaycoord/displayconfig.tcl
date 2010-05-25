@@ -2,7 +2,7 @@
 # Fichier : session.tcl
 # Description : Configuration des parametres de session
 # Auteur : Michel PUJOL
-# Mise à jour $Id: displayconfig.tcl,v 1.3 2010-02-16 14:10:08 robertdelmas Exp $
+# Mise à jour $Id: displayconfig.tcl,v 1.4 2010-05-25 16:46:51 robertdelmas Exp $
 #
 
 ################################################################
@@ -53,7 +53,7 @@ proc ::displaycoord::config::closeWindow { visuNo } {
 ##------------------------------------------------------------
 # affiche l'aide de cet outil
 #
-# Cette procedure est appelée par ::confGenerique::showHelp
+# Cette procedure est appelee par ::confGenerique::showHelp
 # @return rien
 # @private
 #------------------------------------------------------------
@@ -65,7 +65,7 @@ proc ::displaycoord::config::showHelp { } {
 ##------------------------------------------------------------
 # enregistre les modifications
 #
-# Cette procedure est appelée par ::confGenerique::apply
+# Cette procedure est appelee par ::confGenerique::apply
 # @param visuNo  numero de la visu parent
 # @return rien
 # @private
@@ -83,9 +83,9 @@ proc ::displaycoord::config::apply { visuNo } {
 }
 
 ##------------------------------------------------------------
-# Crée les widgets de la fenetre de configuration de la session
+# Cree les widgets de la fenetre de configuration de la session
 #
-# Cette procedure est appelée par ::confGenerique::fillConfigPage a la creation de la fenetre
+# Cette procedure est appelee par ::confGenerique::fillConfigPage a la creation de la fenetre
 # @param frm nom tk de la frame cree par ::confgene::fillConfigPage
 # @param visuNo numero de la visu
 # @return  rien
@@ -121,7 +121,7 @@ proc ::displaycoord::config::fillConfigPage { frm visuNo } {
 ##------------------------------------------------------------
 # retourne le titre de la fenetre
 #
-# Cette procedure est appelée par ::confGenerique::getLabel
+# Cette procedure est appelee par ::confGenerique::getLabel
 # @return  titre de la fenêtre
 # @private
 #------------------------------------------------------------

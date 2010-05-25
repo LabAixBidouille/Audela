@@ -2,7 +2,7 @@
 # Fichier : convert.tcl
 # Description : Conversion d'images FITS au format PS ou PDF
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: convert.tcl,v 1.5 2010-01-30 14:11:16 robertdelmas Exp $
+# Mise à jour $Id: convert.tcl,v 1.6 2010-05-25 16:50:48 robertdelmas Exp $
 #
 
 #============================================================

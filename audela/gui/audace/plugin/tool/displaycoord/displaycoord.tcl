@@ -2,7 +2,7 @@
 # Fichier : displaycoord.tcl
 # Description : Affichage des coordonnees du telescope
 # Auteur : Michel PUJOL
-# Mise à jour $Id: displaycoord.tcl,v 1.6 2010-02-23 20:20:30 michelpujol Exp $
+# Mise à jour $Id: displaycoord.tcl,v 1.7 2010-05-25 16:47:37 robertdelmas Exp $
 #
 
 #============================================================
@@ -442,8 +442,8 @@ proc ::displaycoord::startConnectionLoop { } {
    variable private
 
    #--- je connecte au serveur de coordonnees
-   #--- avec un délai de 5 secondes pour ne pas retarder le demarrage d'Audela
-   #--- si cet outil est lancé au démarrage d'audela
+   #--- avec un delai de 5 secondes pour ne pas retarder le demarrage d'Audela
+   #--- si cet outil est lance au demarrage d'audela
    set private(connexionTimerId) [after 5000 ::displaycoord::openSocketCoord ]
 }
 
@@ -500,7 +500,7 @@ proc ::displaycoord::closeSocketCoord { } {
       readSocketCoord
    }
 
-   #--- j'arrete le timer de reconnexion s'il etait lancé
+   #--- j'arrete le timer de reconnexion s'il etait lance
    if { $private(connexionTimerId) != "" } {
       after cancel $private(connexionTimerId)
       set private(connexionTimerId) ""
@@ -553,7 +553,7 @@ proc ::displaycoord::readSocketCoord {  } {
             # Code retour
             #     0   OK
             #     5   Probleme moteur
-            #     6   Butées atteintes
+            #     6   Butees atteintes
             # TU  (format ISO 8601)
             #     Format= "%04d-%02d-%02dT%02d:%02d:%02d"
             # TS
@@ -632,8 +632,6 @@ proc ::displaycoord::readSocketCoord {  } {
          }
       }
 
-
-
       #--- je mets en forme l'heure tu et ts
       scan $tu "%d-%d-%dT%d:%d:%ds" tuy tumo tud tuh tum tus
       set tuHms [format "%02dh %02dm %02ds" $tuh $tum $tus ]
@@ -682,7 +680,6 @@ proc ::displaycoord::readSocketCoord {  } {
       if { $decCalage != "C" && $decCalage != "D" && $decCalage != "A" } {
          set decCalage "A"
       }
-
 
       #--- Affichage temps (TU, TSL) et coordonnees (ALPHA, DELTA, ANGLE HORAIRE, Azimut, hauteur du telescope)
       $private(base).f.lab_tu configure    -text "$::caption(displaycoord,tu) $tuHms"
