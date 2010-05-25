@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 23 mai 2010</p>
+<p class="date">Date de mise &agrave; jour : 25 mai 2010</p>
 <h1>Liste de toutes les fonctions </h1>
 <p>Nous donnons la liste de toutes les fonctions disponibles dans AudeLA, plus quelques unes de Tcl et Tk qui sont tr&egrave;s utiles. En ce qui concerne les fonctions associ&eacute;es &agrave; des objets de AudeLA, elles sont pr&eacute;sent&eacute;es en fonction de l'objet num&eacute;ro 1. Les fonctions ont &eacute;t&eacute; rassembl&eacute;es par th&egrave;me et sont suivies de leur origine: </p>
 <ul>
@@ -518,13 +518,13 @@ close : [TC] d&eacute;connecte un serveur ou un client <br />
 <a href="libbm.htm#bm_Dyy">bm_Dyy</a> : [BM] calcule la d&eacute;riv&eacute;e seconde de l'image suivant l'axe des ordonn&eacute;es<br />
 <a href="libbm.htm#bm_mediane">bm_mediane</a> : [BM] calcul de l'image m&eacute;diane d'une liste de tampons images<br />
 <h1> Fonctions de la librairie libjm</h1>
-<a href="libjm.htm#jm_versionlib">jm_versionlib</a> : [JM] retourne le num&eacute;ro de la version de la bibliothèque libjm<br />
+<a href="libjm.htm#jm_versionlib">jm_versionlib</a> : [JM] retourne le num&eacute;ro de la version de la biblioth&egrave;que libjm<br />
 <a href="libjm.htm#jm_heurepc">jm_heurepc</a> : [JM] lit ou &eacute;crit l'heure syst&egrave;me d'un PC<br />
 <a href="libjm.htm#jm_reglageheurepc">jm_reglageheurepc</a> : [JM] retarde ou avance l'heure syst&egrave;me d'un PC<br />
 <a href="libjm.htm#calaphot_fluxellipse">calaphot_fluxellipse</a> : [JM] calcule le flux dans une ellipse<br />
 <a href="libjm.htm#calaphot_fitgauss2d">calaphot_fitgauss2d</a> : [JM] retourne les param&egrave;tres d'ajustement d'une gaussienne dans une fen&ecirc;tre (analogue &agrave; fitgauss, mais en 2 dimensions)<br />
-<a href="libjm.htm#tfd2d">tfd2d</a> : [JM] calcule la Transformée de Fourier Discrète d'une image<br />
-<a href="libjm.htm#tfdi2d">tfdi2d</a> : [JM] calcule la Transformée de Fourier Discrète Inverse de deux images appariées<br />
+<a href="libjm.htm#tfd2d">tfd2d</a> : [JM] calcule la Transform&eacute;e de Fourier Discr&egrave;te d'une image<br />
+<a href="libjm.htm#tfdi2d">tfdi2d</a> : [JM] calcule la Transform&eacute;e de Fourier Discr&egrave;te Inverse de deux images appari&eacute;es<br />
 <a href="libjm.htm#acorr2d">acorr2d</a> : [JM] calcule la fonction d'auto-correlation d'une image<br />
 <a href="libjm.htm#icorr2d">icorr2d</a> : [JM] calcule la fonction d'inter-correlation de deux images<br />
 <a href="libjm.htm#tfd2d">conv2d</a> : [JM] calcule le produit de convolution de deux images<br />
@@ -541,40 +541,131 @@ close : [TC] d&eacute;connecte un serveur ou un client <br />
 <h1> Divers</h1>
 <a href="audus1_fr.htm#historik">historik</a> : [AL] gestion d'une liste contenant l'historique de commandes <br />
 <a href="audus1_fr.htm#libstd_id">libstd_id</a> : [AL] retourne la date de compilation de LibAudeLA
-<h1> Variables utiles</h1>
-<h2> En lecture seulement</h2>
-tcl_platform(os) : [TC] type du syst&egrave;me d'exploitation (Windows 95, Windows NT, Linux, etc.) <br />
-audace(mindyn) : [AC] valeur minimale de la barre des seuils de visualisation <br />
-audace(maxdyn) : [AC] valeur minimale de la barre des seuils de visualisation <br />
-rpcid(state) : [AC] &eacute;tat actuel de la communication RPC <br />
-audace(rep_install) : [AC] r&eacute;pertoire d'installation <br />
-audace(rep_audela) : [AC] r&eacute;pertoire 'gui' (variable obsol&egrave;te, &agrave; ne plus utiliser) <br />
-audace(rep_gui) : [AC] r&eacute;pertoire 'gui' (remplace la variable audace(rep_audela)) <br />
+<h1> Variables utiles </h1>
+<h2> Variables audace en lecture seulement </h2>
+audace(bufNo) : [AC] num&eacute;ro du buffer 'objet' actif <br />
+audace(camNo) : [AC] num&eacute;ro de la cam&eacute;ra 'objet' active <br />
+audace(imageNo) : [AC] num&eacute;ro de l'image 'objet' active <br />
+audace(telNo) : [AC] num&eacute;ro du t&eacute;lescope 'objet' actif <br />
+audace(visuNo) : [AC] num&eacute;ro de l'objet de visualisation actif <br />
+<p></p>
 audace(rep_caption) : [AC] r&eacute;pertoire d&eacute;di&eacute; aux captions (fichiers pour les traductions) <br />
-audace(rep_plugin) : [AC] r&eacute;pertoire d&eacute;di&eacute; aux plugins <br />
+audace(rep_catalogues) : [AC] r&eacute;pertoire d&eacute;di&eacute; aux catalogues du syst&egrave;me <br />
 audace(rep_doc_html) : [AC] r&eacute;pertoire d&eacute;di&eacute; &agrave; la documentation html <br />
 audace(rep_doc_pdf) : [AC] r&eacute;pertoire d&eacute;di&eacute; &agrave; la documentation pdf <br />
-panneau(visio,repertoire) : [AC] r&eacute;pertoire courant sur lequel pointe l'outil Visionneuse <br />
-audace(tu,format,hmsint) : [AC] heure TU du moment au format "HHh MMm SSs" (par exemple : 22h 57m 14s) <br />
+audace(rep_gui) : [AC] r&eacute;pertoire 'gui' <br />
+audace(rep_home) : [AC] r&eacute;pertoire de configuration d'Aud'ACE <br />
+audace(rep_install) : [AC] r&eacute;pertoire d'installation <br />
+audace(rep_log) : [AC] r&eacute;pertoire d&eacute;di&eacute; aux fichiers de d&eacute;buggage <br />
+audace(rep_plugin) : [AC] r&eacute;pertoire d&eacute;di&eacute; aux plugins <br />
+audace(rep_temp) : [AC] r&eacute;pertoire d&eacute;di&eacute; aux fichiers temporaires <br />
+<p></p>
+audace(hl,format,hmsint) : [AC] heure locale du moment au format "HHh MMm SSs" (par exemple : 23h 57m 14s) <br />
 audace(tu,format,dmyhmsint) : [AC] heure TU du moment au format "JJ/MM/AA HH:MM:SS TU" (par exemple : 06/01/02 22:57:55 TU) <br />
+audace(tu,format,hmsint) : [AC] heure TU du moment au format "HHh MMm SSs" (par exemple : 22h 57m 14s) <br />
+audace(tu_date,format,dmy) : [AC] date TU du moment au format "JJ/MM/AAAA" (par exemple : 25/05/2010) <br />
 audace(tsl) : [AC] heure TSL du moment au format "HH MM SS.SSSSSS" (par exemple : 6 9 22.310192) <br />
 audace(tsl,format,hmsint) : [AC] heure TSL du moment au format "HHh MMm SSs" (par exemple : 06h 09m 44s) <br />
+audace(tsl,format,zenith) : [AC] Ascension Droite du z&eacute;nith <br />
+<p></p>
+audace(telescope,controle) : [AC] &eacute;tat de surveillance du suivi sid&eacute;ral ('Suivi On' en fonctionnement, 'Suivi Off' &agrave; l'arr&ecirc;t) <br />
+audace(telescope,currentFocus) : [AC] position actuelle du dispositif de mise au point (focuser) <br />
+audace(telescope,getdec) : [AC] position actuelle de la monture en D&eacute;clinaison <br />
+audace(telescope,getra) : [AC] position actuelle de la monture en Ascension Droite <br />
+audace(telescope,goto) : [AC] &eacute;tat de surveillance du GOTO ('1' va vers l'objet, '0' est arriv&eacute; &agrave; destination) <br />
+audace(telescope,inittel) : initialisation de la monture AudeCom [AC] <br />
+audace(telescope,labelspeed) : [AC] vitesse (suivi, guidage, pointage) actuelle de la monture <br />
+audace(telescope,rate) : [AC] <br />
+audace(telescope,speed) : [AC] <br />
+audace(telescope,targetDec) : [AC] D&eacute;clinaison de l'objet cible <br />
+audace(telescope,targetEquinox) : [AC] équinoxe de l'objet cible <br />
+audace(telescope,targetname) : [AC] nom de l'objet cible <br />
+audace(telescope,targetRa) : [AC] Ascension Droite de l'objet cible <br />
+<p></p>
+audace(aladin) : r&eacute;pertoire d&eacute;di&eacute; au programme Aladin [AC] <br />
+audace(base) : [AC] vaut '.audace' <br />
+audace(Console) : [AC] vat '.console' <br />
+audace(extensionList) : [AC] liste des extensions disponibles pour une cam&eacute;ra <br />
+audace(hCanvas) : [AC] <br />
+audace(list_binning) : [AC] liste des binnings disponibles pour une cam&eacute;ra <br />
+audace(list_com) : [AC] liste des ports de communication disponibles <br />
 audace(posobs,observateur,gps) : [AC] position GPS de l'observateur (par exemple : GPS 1.377972 E 43.660917 142) <br />
-audace(camNo) : [AC] num&eacute;ro de la cam&eacute;ra 'objet' active <br />
-audace(telNo) : [AC] num&eacute;ro du t&eacute;lescope 'objet' actif <br />
-audace(bufNo) : [AC] num&eacute;ro du buffer 'objet' actif <br />
-audace(visuNo) : [AC] num&eacute;ro de l'objet de visualisation actif <br />
-audace(namespace_current_tool) : [AC] nom du namespace de l'outil affich&eacute; <br />
-env : [TC] liste des variables d'environnement du syst&egrave;me d'exploitation, relatif au compte courant
-<h2> En lecture/&eacute;criture</h2>
-audace(rep_images) : [AC] r&eacute;pertoire d&eacute;di&eacute; aux images <br />
-audace(rep_scripts) : [AC] r&eacute;pertoire d&eacute;di&eacute; aux scripts <br />
-audace(rep_catalogues) : [AC] r&eacute;pertoire d&eacute;di&eacute; aux catalogues <br />
+audace(quitterEnCours) : [AC] <br />
+<p></p>
+audace(color,cursor_blue) : [AC] couleur d&eacute;di&eacute;e aux glissi&egrave;res (&eacute;tat passif) pour les images N&B <br />
+audace(color,cursor_blue_actif) : [AC] couleur d&eacute;di&eacute;e aux glissi&egrave;res (&eacute;tat actif) pour les images N&B <br />
+audace(color,cursor_rgb_blue) : [AC] couleur d&eacute;di&eacute;e aux glissi&egrave;res (&eacute;tat passif) pour les images couleurs (bleue) <br />
+audace(color,cursor_rgb_green) : [AC] couleur d&eacute;di&eacute;e aux glissi&egrave;res (&eacute;tat passif) pour les images couleurs (verte) <br />
+audace(color,cursor_rgb_red) : [AC] couleur d&eacute;di&eacute;e aux glissi&egrave;res (&eacute;tat passif) pour les images couleurs (rouge) <br />
+audace(color,cursor_rgb_actif) : [AC] couleur d&eacute;di&eacute;e aux glissi&egrave;res (&eacute;tat actif) pour les images couleurs <br />
+<p></p>
+audace(font,arial_6_n) : [AC] police de caract&egrave;res, taille et fonte d&eacute;di&eacute;es uniquement &agrave; l'outil 'Base de donn&eacute;es d'images' <br />
+audace(font,arial_10_b) : [AC] police de caract&egrave;res, taille et fonte d&eacute;di&eacute;es uniquement &agrave; l'outil 'Base de donn&eacute;es d'images' <br />
+audace(font,en_tete_1) : [AC] police de caract&egrave;res, taille et fonte d&eacute;di&eacute;es uniquement &agrave; l'outil 'Base de donn&eacute;es d'images' <br />
+audace(font,en_tete_2) : [AC] police de caract&egrave;res, taille et fonte d&eacute;di&eacute;es uniquement &agrave; l'outil 'Base de donn&eacute;es d'images' <br />
+<p></p>
+env : [TC] liste des variables d'environnement du syst&egrave;me d'exploitation, relatif au compte courant <br />
+tcl_platform(os) : [TC] type du syst&egrave;me d'exploitation (Windows 95, Windows NT, Linux, etc.) <br />
+rpcid(state) : [AC] &eacute;tat actuel de la communication RPC <br />
+<h2> Variables audace en lecture/&eacute;criture </h2>
+audace(rep_images) : [AC] r&eacute;pertoire d&eacute;di&eacute; aux images utilisateurs <br />
+audace(rep_scripts) : [AC] r&eacute;pertoire d&eacute;di&eacute; aux scripts utilisateurs <br />
+audace(rep_travail) : [AC] r&eacute;pertoire de travail d'Aud'ACE <br />
+audace(rep_userCatalog) : [AC] r&eacute;pertoire d&eacute;di&eacute; aux catalogues utilisateurs <br />
+<p></p>
+audace(color,activeBackColor) : [AC] couleur d&eacute;di&eacute;e &agrave; des widgets, utiliser le menu 'Configuration' --> 'Apparence' pour identifier les widgets concern&eacute;s et changer la couleur <br />
+audace(color,activeTextColor) : [AC] couleur d&eacute;di&eacute;e &agrave; des widgets, utiliser le menu 'Configuration' --> 'Apparence' pour identifier les widgets concern&eacute;s et changer la couleur <br />
+audace(color,backColor) : [AC] couleur d&eacute;di&eacute;e &agrave; des widgets, utiliser le menu 'Configuration' --> 'Apparence' pour identifier les widgets concern&eacute;s et changer la couleur <br />
+audace(color,backColor2) : [AC] couleur d&eacute;di&eacute;e &agrave; des widgets, utiliser le menu 'Configuration' --> 'Apparence' pour identifier les widgets concern&eacute;s et changer la couleur <br />
+audace(color,canvas) : [AC] couleur d&eacute;di&eacute;e &agrave; des widgets, utiliser le menu 'Configuration' --> 'Apparence' pour identifier les widgets concern&eacute;s et changer la couleur <br />
+audace(color,disabledTextColor) : [AC] couleur d&eacute;di&eacute;e &agrave; des widgets, utiliser le menu 'Configuration' --> 'Apparence' pour identifier les widgets concern&eacute;s et changer la couleur <br />
+audace(color,drag_rectangle) : [AC] couleur d&eacute;di&eacute;e au rectangle de s&eacute;lection dessin&eacute; avec la souris, utiliser le menu 'Configuration' --> 'Apparence' pour changer la couleur <br />
+audace(color,entryBackColor) : [AC] couleur d&eacute;di&eacute;e &agrave; des widgets, utiliser le menu 'Configuration' --> 'Apparence' pour identifier les widgets concern&eacute;s et changer la couleur <br />
+audace(color,entryBackColor2) : [AC] couleur d&eacute;di&eacute;e &agrave; des widgets, utiliser le menu 'Configuration' --> 'Apparence' pour identifier les widgets concern&eacute;s et changer la couleur <br />
+audace(color,entryTextColor) : [AC] couleur d&eacute;di&eacute;e &agrave; des widgets, utiliser le menu 'Configuration' --> 'Apparence' pour identifier les widgets concern&eacute;s et changer la couleur <br />
+audace(color,listBox) : [AC] couleur d&eacute;di&eacute;e &agrave; des widgets, utiliser le menu 'Configuration' --> 'Apparence' pour identifier les widgets concern&eacute;s et changer la couleur <br />
+audace(color,textColor) : [AC] couleur d&eacute;di&eacute;e &agrave; des widgets, utiliser le menu 'Configuration' --> 'Apparence' pour identifier les widgets concern&eacute;s et changer la couleur <br />
+audace(color,textConsoleCmd) : [AC] couleur d&eacute;di&eacute;e aux textes affich&eacute;s dans la Console, utiliser le menu 'Configuration' --> 'Apparence' pour identifier les widgets concern&eacute;s et changer la couleur <br />
+audace(color,textConsoleEntete) : [AC] couleur d&eacute;di&eacute;e aux textes affich&eacute;s dans la Console, utiliser le menu 'Configuration' --> 'Apparence' pour identifier les widgets concern&eacute;s et changer la couleur <br />
+audace(color,textConsoleErreur) : [AC] couleur d&eacute;di&eacute;e aux textes affich&eacute;s dans la Console, utiliser le menu 'Configuration' --> 'Apparence' pour identifier les widgets concern&eacute;s et changer la couleur <br />
+audace(color,textConsolePrompt) : [AC] couleur d&eacute;di&eacute;e aux textes affich&eacute;s dans la Console, utiliser le menu 'Configuration' --> 'Apparence' pour identifier les widgets concern&eacute;s et changer la couleur <br />
+audace(color,textConsoleResultat) : [AC] couleur d&eacute;di&eacute;e aux textes affich&eacute;s dans la Console, utiliser le menu 'Configuration' --> 'Apparence' pour identifier les widgets concern&eacute;s et changer la couleur <br />
+<p></p>
+audace(font,Button) : [AC] police de caract&egrave;res, taille et fonte d&eacute;di&eacute;es aux widgets de la classe 'Button', utiliser le menu 'Configuration' --> 'Police de caract&egrave;res' pour changer l'apparence <br />
+audace(font,Checkbutton) : [AC] police de caract&egrave;res, taille et fonte d&eacute;di&eacute;es aux widgets de la classe 'Checkbutton', utiliser le menu 'Configuration' --> 'Police de caract&egrave;res' pour changer l'apparence <br />
+audace(font,ComboBox) : [AC] police de caract&egrave;res, taille et fonte d&eacute;di&eacute;es aux widgets de la classe 'ComboBox', utiliser le menu 'Configuration' --> 'Police de caract&egrave;res' pour changer l'apparence <br />
+audace(font,Entry) : [AC] police de caract&egrave;res, taille et fonte d&eacute;di&eacute;es aux widgets de la classe 'Entry', utiliser le menu 'Configuration' --> 'Police de caract&egrave;res' pour changer l'apparence <br />
+audace(font,Graph) : [AC] police de caract&egrave;res, taille et fonte d&eacute;di&eacute;es aux widgets de la classe 'Graph', utiliser le menu 'Configuration' --> 'Police de caract&egrave;res' pour changer l'apparence <br />
+audace(font,Label) : [AC] police de caract&egrave;res, taille et fonte d&eacute;di&eacute;es aux widgets de la classe 'Label', utiliser le menu 'Configuration' --> 'Police de caract&egrave;res' pour changer l'apparence <br />
+audace(font,LabelFrame) : [AC] police de caract&egrave;res, taille et fonte d&eacute;di&eacute;es aux widgets de la classe 'LabelFrame', utiliser le menu 'Configuration' --> 'Police de caract&egrave;res' pour changer l'apparence <br />
+audace(font,ListBox) : [AC] police de caract&egrave;res, taille et fonte d&eacute;di&eacute;es aux widgets de la classe 'ListBox', utiliser le menu 'Configuration' --> 'Police de caract&egrave;res' pour changer l'apparence <br />
+audace(font,Listbox) : [AC] police de caract&egrave;res, taille et fonte d&eacute;di&eacute;es aux widgets de la classe 'Listbox', utiliser le menu 'Configuration' --> 'Police de caract&egrave;res' pour changer l'apparence <br />
+audace(font,Menu) : [AC] police de caract&egrave;res, taille et fonte d&eacute;di&eacute;es aux widgets de la classe 'Menu', utiliser le menu 'Configuration' --> 'Police de caract&egrave;res' pour changer l'apparence <br />
+audace(font,Menubutton) : police de caract&egrave;res, taille et fonte d&eacute;di&eacute;es aux widgets de la classe 'Menubutton', utiliser le menu 'Configuration' --> 'Police de caract&egrave;res' pour changer l'apparence [AC] <br />
+audace(font,Message) : [AC] police de caract&egrave;res, taille et fonte d&eacute;di&eacute;es aux widgets de la classe 'Message', utiliser le menu 'Configuration' --> 'Police de caract&egrave;res' pour changer l'apparence <br />
+audace(font,Radiobutton) : [AC] police de caract&egrave;res, taille et fonte d&eacute;di&eacute;es aux widgets de la classe 'Radiobutton', utiliser le menu 'Configuration' --> 'Police de caract&egrave;res' pour changer l'apparence <br />
+audace(font,Scale) : [AC] police de caract&egrave;res, taille et fonte d&eacute;di&eacute;es aux widgets de la classe 'Scale', utiliser le menu 'Configuration' --> 'Police de caract&egrave;res' pour changer l'apparence <br />
+audace(font,Spinbox) : [AC] police de caract&egrave;res, taille et fonte d&eacute;di&eacute;es aux widgets de la classe 'Spinbox', utiliser le menu 'Configuration' --> 'Police de caract&egrave;res' pour changer l'apparence <br />
+audace(font,Tablelist) : [AC] police de caract&egrave;res, taille et fonte d&eacute;di&eacute;es aux widgets de la classe 'Tablelist', utiliser le menu 'Configuration' --> 'Police de caract&egrave;res' pour changer l'apparence <br />
+audace(font,Text) : [AC] police de caract&egrave;res, taille et fonte d&eacute;di&eacute;es aux widgets de la classe 'Text', utiliser le menu 'Configuration' --> 'Police de caract&egrave;res' pour changer l'apparence <br />
+<h2> Variables conf </h2>
 conf(editnotice_pdf) : [AC] nom complet du programme de visualisation des documents au format PDF <br />
 conf(editscript) : [AC] nom complet du programme de visualisation des documents au format Tcl (texte) <br />
 conf(editsite_htm) : [AC] nom complet du programme de visualisation des documents au format HTML <br />
 conf(edit_viewer) : [AC] nom complet du programme de visualisation d'images (viewer) <br />
+conf(exec_aladin) : [AC]
+conf(exec_java) : [AC]
 conf(extension,defaut) : [AC] extension par d&eacute;faut ajout&eacute;e aux noms des fichiers image
+<h2> Variables audela </h2>
+audela(version) : [AL] version du logiciel (par exemple : 1.5.20100505) <br />
+audela(major) : [AL] vaut '1' pour notre exemple de version ci-dessus <br />
+audela(minor) : [AL] vaut '5' pour notre exemple de version ci-dessus <br />
+audela(patch) : [AL] vaut '20100505' pour notre exemple de version ci-dessus <br />
+audela(extra) : [AL] <br />
+audela(date) : [AL] vaut 05/05/2010 pour notre exemple de version ci-dessus <br />
+audela(img_filename) : [AL] <br />
+audela(hInstance) : [AL] <br />
+audela_start_dir : [AL] r&eacute;pertoire o&ugrave; sont install&eacute;s les binaires <br />
 </body>
 
 </html>
