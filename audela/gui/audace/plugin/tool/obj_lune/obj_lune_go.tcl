@@ -2,7 +2,7 @@
 # Fichier : obj_lune_go.tcl
 # Description : Outil pour le lancement d'Objectif Lune
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune_go.tcl,v 1.15 2010-01-30 14:19:16 robertdelmas Exp $
+# Mise à jour $Id: obj_lune_go.tcl,v 1.16 2010-05-25 17:49:06 robertdelmas Exp $
 #
 
 #============================================================
