@@ -2,7 +2,7 @@
 # Fichier : snmacros.tcl
 # Description : Macros des scripts pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snmacros.tcl,v 1.16 2010-01-24 11:36:33 robertdelmas Exp $
+# Mise Ã  jour $Id: snmacros.tcl,v 1.17 2010-05-25 21:38:56 robertdelmas Exp $
 #
 
 proc searchGalaxySn { files } {
@@ -390,11 +390,11 @@ proc makeBias { } {
       #--- Commentaire
       snInfo ""
       snInfo "$caption(snmacros,synthesebias)\n"
-      #--- Synthèse de l'offset final
+      #--- Synthese de l'offset final
       smedian d$expt- d${expt}b${bin} $nbdarks
-      #--- Ménage
+      #--- Menage
       delete2 d$expt- $nbdarks
-      #--- Calcule les stats sur l'offset médian (stockées dans l'entête)
+      #--- Calcule les stats sur l'offset median (stockees dans l'en-tete)
       set extname $conf(extension,defaut)
       ttscript2 "IMA/STAT \"$snconf(dossier)\" \"d${expt}b${bin}\" . . \"$extname\" \"$snconf(dossier)\" \"d${expt}b${bin}\" . \"$extname\" STAT"
       loadima d${expt}b${bin}
@@ -402,7 +402,7 @@ proc makeBias { } {
       after 2500
       snInfo "$caption(snmacros,synthesebiasfini)\n"
    } elseif { $sn(stop) == "1" } {
-      #--- Ménage
+      #--- Menage
       delete2 d$expt- $k
       #--- Commentaire
       snInfo ""
@@ -486,11 +486,11 @@ proc makeDark { } {
       #--- Commentaire
       snInfo ""
       snInfo "$caption(snmacros,synthesedark)\n"
-      #--- Synthèse du noir final
+      #--- Synthese du noir final
       smedian d$expt- d${expt}b${bin} $nbdarks
-      #--- Ménage
+      #--- Menage
       delete2 d$expt- $nbdarks
-      #--- Calcule les stats sur le noir médian (stockées dans l'entête)
+      #--- Calcule les stats sur le noir median (stockees dans l'en-tete)
       set extname $conf(extension,defaut)
       ttscript2 "IMA/STAT \"$snconf(dossier)\" \"d${expt}b${bin}\" . . \"$extname\" \"$snconf(dossier)\" \"d${expt}b${bin}\" . \"$extname\" STAT"
       loadima d${expt}b${bin}
@@ -498,7 +498,7 @@ proc makeDark { } {
       after 2500
       snInfo "$caption(snmacros,synthesedarkfini)\n"
    } elseif { $sn(stop) == "1" } {
-      #--- Ménage
+      #--- Menage
       delete2 d$expt- $k
       #--- Commentaire
       snInfo ""

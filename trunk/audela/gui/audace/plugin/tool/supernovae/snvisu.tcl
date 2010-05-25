@@ -2,12 +2,12 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.42 2010-01-24 14:03:45 robertdelmas Exp $
+# Mise Ã  jour $Id: snvisu.tcl,v 1.43 2010-05-25 21:41:50 robertdelmas Exp $
 #
 
 #--- Conventions pour ce script :
-#--- Les indices 1 se rapportent à l'image de gauche
-#--- Les indices 2 se rapportent à l'image de droite
+#--- Les indices 1 se rapportent a l'image de gauche
+#--- Les indices 2 se rapportent a l'image de droite
 
 global audace snvisu snconfvisu
 
