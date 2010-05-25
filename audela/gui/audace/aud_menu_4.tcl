@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_4.tcl
 # Description : Script regroupant les fonctionnalites du menu Traitement
-# Mise à jour $Id: aud_menu_4.tcl,v 1.17 2010-05-25 19:04:38 jacquesmichelet Exp $
+# Mise à jour $Id: aud_menu_4.tcl,v 1.18 2010-05-25 21:04:03 robertdelmas Exp $
 #
 
 namespace eval ::traiteFilters {
@@ -172,7 +172,6 @@ namespace eval ::traiteFilters {
                     pack $This.usr.1.radiobutton.rad1 -anchor w -side top -padx 10 -pady 5
                 #pack $This.usr.1.radiobutton -side left -padx 10 -pady 5
 
-
                 #---
                 menubutton $This.usr.1.but1 -textvariable traiteFilters(operation) -menu $This.usr.1.but1.menu -relief raised
                 pack $This.usr.1.but1 -side right -padx 10 -pady 5 -ipady 5
@@ -262,7 +261,6 @@ namespace eval ::traiteFilters {
                   pack $This.usr.7.1.lab7 -side right -padx 5 -pady 5
                pack $This.usr.7.1 -side top -fill both
            # pack $This.usr.7 -side top -fill both
-
 
          frame $This.usr.8 -borderwidth 1 -relief raised
             frame $This.usr.8.1 -borderwidth 0 -relief flat
@@ -853,7 +851,7 @@ namespace eval ::traiteFilters {
         } elseif { $traiteFilters(operation) == $caption(audace,menu,tfd) } {
             set traiteFilters(page_web) "1110TFD"
         } elseif { $traiteFilters(operation) == $caption(audace,menu,tfdi) } {
-            set traiteFilters(page_web) "1120TFDI"
+            set traiteFilters(page_web) "1120TFDInverse"
         } elseif { $traiteFilters(operation) == $caption(audace,menu,acorr) } {
             set traiteFilters(page_web) "1130autocorrelation"
         } elseif { $traiteFilters(operation) == $caption(audace,menu,icorr) } {
