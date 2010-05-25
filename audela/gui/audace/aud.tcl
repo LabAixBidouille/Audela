@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.135 2010-05-24 22:49:12 alainklotz Exp $
+# Mise à jour $Id: aud.tcl,v 1.136 2010-05-25 19:04:54 jacquesmichelet Exp $
 #
 
 #--- Chargement du package BWidget
@@ -910,6 +910,16 @@ namespace eval ::audace {
          { ::traiteFilters::run "$caption(audace,menu,ond_mexicain)" "$audace(base).traiteFilters" }
       Menu_Command   $visuNo "$caption(audace,menu,traitement)" "$caption(audace,menu,log)..." \
          { ::traiteFilters::run "$caption(audace,menu,log)" "$audace(base).traiteFilters" }
+      Menu_Command   $visuNo "$caption(audace,menu,traitement)" "$caption(audace,menu,tfd)..." \
+         { ::traiteFilters::run "$caption(audace,menu,tfd)" "$audace(base).traiteFilters" }
+      Menu_Command   $visuNo "$caption(audace,menu,traitement)" "$caption(audace,menu,tfdi)..." \
+         { ::traiteFilters::run "$caption(audace,menu,tfdi)" "$audace(base).traiteFilters" }
+      Menu_Command   $visuNo "$caption(audace,menu,traitement)" "$caption(audace,menu,acorr)..." \
+         { ::traiteFilters::run "$caption(audace,menu,acorr)" "$audace(base).traiteFilters" }
+      Menu_Command   $visuNo "$caption(audace,menu,traitement)" "$caption(audace,menu,icorr)..." \
+         { ::traiteFilters::run "$caption(audace,menu,icorr)" "$audace(base).traiteFilters" }
+      Menu_Command   $visuNo "$caption(audace,menu,traitement)" "$caption(audace,menu,convolution)..." \
+         { ::traiteFilters::run "$caption(audace,menu,convolution)" "$audace(base).traiteFilters" }
 
       Menu           $visuNo "$caption(audace,menu,analysis)"
       Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,histo)" "::audace::Histo $visuNo"
