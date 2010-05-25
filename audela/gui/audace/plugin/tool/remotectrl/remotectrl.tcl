@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: remotectrl.tcl,v 1.38 2010-05-01 09:18:34 robertdelmas Exp $
+# Mise à jour $Id: remotectrl.tcl,v 1.39 2010-05-25 18:01:49 robertdelmas Exp $
 #
 
 #============================================================
@@ -739,3 +739,4 @@ proc remotectrlBuildIF { This } {
 
       return $camName
    }
+

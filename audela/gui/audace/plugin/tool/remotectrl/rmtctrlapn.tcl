@@ -2,7 +2,7 @@
 # Fichier : rmtctrlapn.tcl
 # Description : Script pour le controle de l'APN
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: rmtctrlapn.tcl,v 1.4 2010-02-21 18:51:55 robertdelmas Exp $
+# Mise Ã  jour $Id: rmtctrlapn.tcl,v 1.5 2010-05-25 18:03:50 robertdelmas Exp $
 #
 
    ######################################################################
@@ -212,7 +212,7 @@
       #---  donne un index et une extension a l'image
       append name $k $panneau(remotectrl,extension)
 
-      #--   demande le N° du buffer
+      #--   demande le NÂ° du buffer
       set bufNo [ send "set bufNo [ visu1 buf ]" ]
 
       #--   attend que le buffer du Jardin soit pret pour fixer les seuils
@@ -344,7 +344,7 @@
    }
 
    ######################################################################
-   #-- Verifie et Formate le temps en décimal                           #
+   #-- Verifie et Formate le temps en decimal                           #
    ######################################################################
    proc test_exptime {} {
       global panneau
@@ -379,7 +379,7 @@
    ###################################################################
    proc test_nom {} {
 
-      #-- seuls les caracteres alphanumériques et le underscore sont autorises
+      #-- seuls les caracteres alphanumeriques et le underscore sont autorises
       regsub -all {[^\w_]} $::remotectrl::nom {} ::remotectrl::nom
 
    }
@@ -396,7 +396,7 @@
 
    #######################################################################
    #-- Si l'intervalle n'est pas un entier ou est < l'intervalle minimum #
-   #-- il est fixe à l'intervalle minimum                                #
+   #-- il est fixe a l'intervalle minimum                                #
    #######################################################################
    proc test_intervalle {} {
       global panneau
@@ -479,3 +479,4 @@
       set t "0"
       update
    }
+
