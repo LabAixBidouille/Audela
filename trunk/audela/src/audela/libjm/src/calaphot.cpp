@@ -44,8 +44,9 @@ namespace LibJM {
     Calaphot::Calaphot()
     {
     	log_stream.open(CALAPHOT_LOG_FILE_NAME, std::ios::trunc);
-    	if( !log_stream ) {
-    		std::cerr << "Error opening input stream" << std::endl;
+    	if( !log_stream )
+    	{
+    		std::cerr << "Error opening the log file " << CALAPHOT_LOG_FILE_NAME << std::endl;
     	}
     }
 
@@ -1096,7 +1097,7 @@ int Calaphot::SoustractionGaussienne(int *carre, ajustement *p)
                 double hxy = exp(2.0 * p->Ro * dx * dy);
                 double fxy = gx * gy * hxy;
                 /* On calcule la gaussienne, mais on ne tient pas compte du fond de ciel ! */
-                int gaussienne = p->Signal * fxy;
+                int gaussienne = (int)(p->Signal * fxy);
 
                 LecturePixel(x, y, &valeur_pixel);
                 valeur_pixel -= gaussienne;

@@ -43,35 +43,35 @@ struct data {
 # define __CALAPHOT_STRINGIFY(y) __CALAPHOT_TSTRHELPER(y)
 #endif /* __CALAPHOT_STRINGIFY  */
 
-#  define sdsp_log(level,__s) \
-    if (level >= Calaphot::_log_verbosity) { sdsp_log_on_stream(log_stream,__CALAPHOT_STRINGIFY(level),__s) }
+#  define calaphot_log(level,__s) \
+    if (level >= Calaphot::_log_verbosity) { calaphot_log_on_stream(log_stream,__CALAPHOT_STRINGIFY(level),__s) }
 
-#  define sdsp_verbose_log(level,__s) \
-    if (level >= Calaphot::_log_verbosity) { sdsp_verbose_log_on_stream(log_stream,__CALAPHOT_STRINGIFY(level),__s) }
+#  define calaphot_verbose_log(level,__s) \
+    if (level >= Calaphot::_log_verbosity) { calaphot_verbose_log_on_stream(log_stream,__CALAPHOT_STRINGIFY(level),__s) }
 
 #  if defined(__GNUC__)
-#   define sdsp_log_on_stream(__stream,level,str) \
+#   define calaphot_log_on_stream(__stream,level,str) \
                  (__stream) << str << "\n"; \
                  (__stream).flush();
-#   define sdsp_verbose_log_on_stream(__stream,level,str) \
+#   define calaphot_verbose_log_on_stream(__stream,level,str) \
                  (__stream) << "[" << level << "] " <<__FILE__ << ":" << __LINE__ << " ("<<__PRETTY_FUNCTION__<<") -" << "- " << str << "\n"; \
                  (__stream).flush();
-#  else /* !__GNUC__ */
-#   define sdsp_log_on_stream(__stream,level,str) \
+#   else /* !__GNUC__ */
+#   define calaphot_log_on_stream(__stream,level,str) \
                  (__stream) << str << "\n"; \
                  (__stream).flush();
-#   define sdsp_verbose_log_on_stream(__stream,level,str) \
+#   define calaphot_verbose_log_on_stream(__stream,level,str) \
                  (__stream) << "[" << level << "] " << __FILE__ << ":" << __LINE__ << " -" << str << "\n"; \
                  (__stream).flush();
 #  endif /* !__GNUC__*/
 
-# define calaphot_error(__s)    sdsp_log(Calaphot::Error_Level,__s)
-# define calaphot_warning(__s)  sdsp_log(Calaphot::Warning_Level,__s)
-# define calaphot_notice(__s)   sdsp_log(Calaphot::Notice_Level,__s)
-# define calaphot_info1(__s)    sdsp_verbose_log(Calaphot::Info1_Level,__s)
-# define calaphot_info2(__s)    sdsp_verbose_log(Calaphot::Info2_Level,__s)
-# define calaphot_info3(__s)    sdsp_verbose_log(Calaphot::Info3_Level,__s)
-# define calaphot_debug(__s)    sdsp_verbose_log(Calaphot::Debug_Level,__s)
+# define calaphot_error(__s)    calaphot_log(Calaphot::Error_Level,__s)
+# define calaphot_warning(__s)  calaphot_log(Calaphot::Warning_Level,__s)
+# define calaphot_notice(__s)   calaphot_log(Calaphot::Notice_Level,__s)
+# define calaphot_info1(__s)    calaphot_verbose_log(Calaphot::Info1_Level,__s)
+# define calaphot_info2(__s)    calaphot_verbose_log(Calaphot::Info2_Level,__s)
+# define calaphot_info3(__s)    calaphot_verbose_log(Calaphot::Info3_Level,__s)
+# define calaphot_debug(__s)    calaphot_verbose_log(Calaphot::Debug_Level,__s)
 
 class Calaphot
 {

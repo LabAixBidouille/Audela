@@ -4,8 +4,9 @@ OUTPUT = libjm.so
 SRC = $(SRCDIR)/libjm.cpp \
       $(SRCDIR)/calaphot_tcl.cpp $(SRCDIR)/calaphot.cpp \
       $(SRCDIR)/horloge.cpp $(SRCDIR)/horloge_tcl.cpp \
-      $(SRCDIR)/divers.cpp $(SRCDIR)/divers_tcl.cpp 
-###      $(SRCDIR)/fourier.cpp $(SRCDIR)/fourier_tcl.cpp \
+      $(SRCDIR)/divers.cpp $(SRCDIR)/divers_tcl.cpp \
+      $(SRCDIR)/fourier_services.cpp $(SRCDIR)/fourier_calculs.cpp \
+      $(SRCDIR)/fourier_images.cpp $(SRCDIR)/fourier_tcl.cpp
 
 OBJ = $(patsubst $(SRCDIR)/%.cpp, %.o, $(filter $(SRCDIR)/%.cpp, $(SRC)))
 

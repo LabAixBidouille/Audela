@@ -21,8 +21,8 @@
 
 /*
  * Projet      : AudeLA
- * Librairie   : LIBJM
- * Fichier     : LIBJM.H
+ * Librairie   : LibJM
+ * Fichier     : libjm.h
  * Description : Point d'entrée de la librairie
  * ============================================
 */
@@ -62,7 +62,7 @@ namespace LibJM
 #if defined(WIN32) && defined(_MSC_VER) &&( _MSC_VER < 1500)
 // Les versions VisualC++ anterieures a VC90 ne suportent pas l'initialisation des variables statiques
         enum{OK = 1, PB = 1, PB2 = 2};
-#else 
+#else
         static const int OK = 0;
         static const int PB = 1;
         static const int PB2 = 2;

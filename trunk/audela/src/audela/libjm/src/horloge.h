@@ -21,8 +21,8 @@
 
 /*
  * Projet      : AudeLA
- * Librairie   : LIBJM
- * Fichier     : JM_C_TCL.H
+ * Librairie   : LibJM
+ * Fichier     : horloge.h
  * Description : Prototype des fonctions interfaces Tcl et le C
  * ============================================================
 */
@@ -34,21 +34,21 @@ namespace LibJM {
 class Horloge
 {
 public :
-	static int LitHeurePC (int *annee, int *mois, int *jour, int *heure, int *minute, int *seconde, int *milli);
-	static int EcritHeurePC (int annee, int mois, int jour, int heure, int minute, int seconde, int milli);
-	static int ReglageHeurePC (long *decalage_reel, long decalage);
-	static int Magnitude (double flux_etoile, double flux_ref, double mag_ref, double *mag_etoile);
-	static int jd(int annee,int mois,double jour,double *jj);
-	static int jd2 (int annee,int mois,int jour,int heure,int minute,int seconde,int milli,double *jj);
-	static int jc (int *annee, int *mois, double *jour, double jj);
-	static int jc2(int *annee, int *mois, int *jour, int *heure, int *minute, int *seconde, int *milli, double jj);
+    static int LitHeurePC (int *annee, int *mois, int *jour, int *heure, int *minute, int *seconde, int *milli);
+    static int EcritHeurePC (int annee, int mois, int jour, int heure, int minute, int seconde, int milli);
+    static int ReglageHeurePC (long *decalage_reel, long decalage);
+    static int Magnitude (double flux_etoile, double flux_ref, double mag_ref, double *mag_etoile);
+    static int jd(int annee,int mois,double jour,double *jj);
+    static int jd2 (int annee,int mois,int jour,int heure,int minute,int seconde,int milli,double *jj);
+    static int jc (int *annee, int *mois, double *jour, double jj);
+    static int jc2(int *annee, int *mois, int *jour, int *heure, int *minute, int *seconde, int *milli, double jj);
 
-	static int CmdHeurePC(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-	static int CmdReglageHeurePC(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-	static int CmdJd(ClientData clientData,Tcl_Interp *interp, int argc,char *argv[]);
-	static int CmdJd2(ClientData clientData,Tcl_Interp *interp, int argc,char *argv[]);
-	static int CmdJc(ClientData clientData,Tcl_Interp *interp, int argc,char *argv[]);
-	static int CmdJc2(ClientData clientData,Tcl_Interp *interp, int argc,char *argv[]);
+    static int CmdHeurePC(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+    static int CmdReglageHeurePC(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+    static int CmdJd(ClientData clientData,Tcl_Interp *interp, int argc,char *argv[]);
+    static int CmdJd2(ClientData clientData,Tcl_Interp *interp, int argc,char *argv[]);
+    static int CmdJc(ClientData clientData,Tcl_Interp *interp, int argc,char *argv[]);
+    static int CmdJc2(ClientData clientData,Tcl_Interp *interp, int argc,char *argv[]);
 };
 }
 
