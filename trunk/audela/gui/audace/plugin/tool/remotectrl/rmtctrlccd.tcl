@@ -2,7 +2,7 @@
 # Fichier : rmtctrlccd.tcl
 # Description : Script pour le controle de la camera CCD
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: rmtctrlccd.tcl,v 1.2 2010-02-07 18:51:20 robertdelmas Exp $
+# Mise Ã  jour $Id: rmtctrlccd.tcl,v 1.3 2010-05-25 18:06:39 robertdelmas Exp $
 #
 
    proc fillCCDPanel {} {
@@ -105,7 +105,7 @@
             transferFTP "$audace(rep_images)/temp$ext"
 
          } else {
-            #--- Tranfert par fichier dans un dossier partagé
+            #--- Tranfert par fichier dans un dossier partage
             set message "send \{saveima \"\$panneau(remotectrl,path_img)/temp$ext\" \}"
             eval $message
             loadima "$panneau(remotectrl,path_img)/temp$ext"

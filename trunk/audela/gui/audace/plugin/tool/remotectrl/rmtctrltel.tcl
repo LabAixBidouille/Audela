@@ -2,7 +2,7 @@
 # Fichier : rmtctrltel.tcl
 # Description : Script pour le controle de la monture
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: rmtctrltel.tcl,v 1.2 2010-02-07 18:51:37 robertdelmas Exp $
+# Mise Ã  jour $Id: rmtctrltel.tcl,v 1.3 2010-05-25 18:07:31 robertdelmas Exp $
 #
 
    proc fillTelPanel { } {
@@ -243,10 +243,10 @@
       if {[eval "send \{::tel::list\}"]!=""} {
          #--- Fin modif reseau
 
-         #--- Incremente la valeur et met à jour les raquettes et les outils locaux
+         #--- Incremente la valeur et met a jour les raquettes et les outils locaux
          ::remotectrl::incrementSpeed
 
-         #--- Met à jour les raquettes et les outils distants
+         #--- Met a jour les raquettes et les outils distants
          set message "send \{::remotectrl::setSpeed $audace(telescope,speed)\}"
          eval $message
 
@@ -264,10 +264,10 @@
       if {[eval "send \{::tel::list\}"]!=""} {
          #--- Fin modif reseau
 
-         #--- Incremente la valeur et met à jour les raquettes et les outils locaux
+         #--- Incremente la valeur et met a jour les raquettes et les outils locaux
          ::remotectrl::incrementFocusSpeed
 
-         #--- Met à jour les raquettes et les outils distants
+         #--- Met a jour les raquettes et les outils distants
          set message "send \{::remotectrl::setFocusSpeed $audace(focus,speed)\}"
          eval $message
 

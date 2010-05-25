@@ -2,7 +2,7 @@
 # Fichier : rmtctrlutil.tcl
 # Description : Script pour la configuration de l'outil
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: rmtctrlutil.tcl,v 1.4 2010-02-21 18:51:40 robertdelmas Exp $
+# Mise Ã  jour $Id: rmtctrlutil.tcl,v 1.5 2010-05-25 18:08:16 robertdelmas Exp $
 #
 
    #########################################################################
@@ -38,7 +38,7 @@
          set panneau(remotectrl,status) [ list "1" ]
       }
 
-      #-- ajoute la carte CF à la liste des stockages
+      #-- ajoute la carte CF a la liste des stockages
       set panneau(remotectrl,stockLabels) \
          [ list "$caption(remotectrl,stock,cf)" ]
 

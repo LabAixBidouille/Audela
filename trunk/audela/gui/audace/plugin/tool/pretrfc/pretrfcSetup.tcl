@@ -2,7 +2,7 @@
 # Fichier : pretrfcSetup.tcl
 # Description : Configuration de certains parametres de l'outil Pretraitement
 # Auteur : Robert DELMAS
-# Mise a jour $Id: pretrfcSetup.tcl,v 1.12 2008-12-15 22:24:25 robertdelmas Exp $
+# Mise à jour $Id: pretrfcSetup.tcl,v 1.13 2010-05-25 18:01:05 robertdelmas Exp $
 #
 
 namespace eval ::pretrfcSetup {
