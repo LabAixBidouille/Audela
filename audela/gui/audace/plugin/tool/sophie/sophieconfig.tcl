@@ -2,7 +2,7 @@
 # @file     sophieconfig.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophieconfig.tcl,v 1.30 2010-05-22 14:19:56 michelpujol Exp $
+# @version  $Id: sophieconfig.tcl,v 1.31 2010-05-25 21:28:35 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -15,7 +15,7 @@ namespace eval ::sophie::config {
 
 #------------------------------------------------------------
 # run
-#    affiche la fenetre du configuration
+#    affiche la fenêtre de configuration
 #------------------------------------------------------------
 proc ::sophie::config::run { visuNo tkbase  } {
    variable private
@@ -585,7 +585,7 @@ proc ::sophie::config::fillConfigAvanceePage { frm visuNo } {
 
 #----------------------------------------------------------------------------
 # apply
-#    met � jour les variables et les widgets quand on applique les modifications d'une configuration
+#    met a jour les variables et les widgets quand on applique les modifications d'une configuration
 #----------------------------------------------------------------------------
 proc ::sophie::config::apply { visuNo } {
    variable widget

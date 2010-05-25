@@ -2,11 +2,11 @@
 # @file     sophielog.tcl
 # @brief    Fichier du namespace ::sophie::log
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophielog.tcl,v 1.2 2010-04-23 17:02:33 robertdelmas Exp $
+# @version  $Id: sophielog.tcl,v 1.3 2010-05-25 21:29:16 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
-# @brief   ecriture de messages de log
+# @brief   écriture de messages de log
 #
 #------------------------------------------------------------
 namespace eval ::sophie::log {

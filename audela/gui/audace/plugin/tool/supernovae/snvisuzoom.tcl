@@ -2,12 +2,12 @@
 # Fichier : snvisuzoom.tcl
 # Description : Creation d'une loupe de visualisation en association avec Sn Visu
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisuzoom.tcl,v 1.9 2008-11-15 16:46:14 robertdelmas Exp $
+# Mise Ã  jour $Id: snvisuzoom.tcl,v 1.10 2010-05-25 21:43:03 robertdelmas Exp $
 #
 
 #--- Conventions pour ce script :
-#--- Les indices 1 se rapportent à l'image de gauche
-#--- Les indices 2 se rapportent à l'image de droite
+#--- Les indices 1 se rapportent a l'image de gauche
+#--- Les indices 2 se rapportent a l'image de droite
 
 #--- Chargement des captions
 global audace
