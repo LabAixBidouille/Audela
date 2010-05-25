@@ -21,8 +21,8 @@
 
 /*
  * Projet      : AudeLA
- * Librairie   : LIBJM
- * Fichier     : JM_C_TCL.CPP
+ * Librairie   : LibJM
+ * Fichier     : calaphot_tcl.h
  * Auteur      : Jacques Michelet
  * Description : Fonctions interfaces entre TCL et C
  * =================================================

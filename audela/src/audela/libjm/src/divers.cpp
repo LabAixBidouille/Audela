@@ -20,8 +20,8 @@
  */
 
 /* Projet      : AudeLA
- * Librairie   : LIBJM
- * Fichier     : JM_UTIL.C
+ * Librairie   : LibJM
+ * Fichier     : divers.cpp
  * Description : Fonctions utilitaires
  */
 #include <sysexp.h>

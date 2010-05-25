@@ -50,7 +50,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\..\..\include;..\..\include;..\..\..\external\include\win"
-				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;USE_TCL_STUBS;USE_TK_STUBS;_CRT_SECURE_NO_WARNINGS"
+				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;USE_TCL_STUBS;USE_TK_STUBS;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -146,7 +146,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\..\include;..\..\include;..\..\..\external\include\win"
-				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;USE_TCL_STUBS;USE_TK_STUBS;_CRT_SECURE_NO_WARNINGS"
+				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;USE_TCL_STUBS;USE_TK_STUBS;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
 				PrecompiledHeaderFile=".\Debug/libjm.pch"
@@ -234,6 +234,22 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\fourier_calculs.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\fourier_images.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\fourier_services.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\fourier_tcl.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\horloge.cpp"
 				>
 			</File>
@@ -260,6 +276,10 @@
 			</File>
 			<File
 				RelativePath="..\src\divers.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\fourier.h"
 				>
 			</File>
 			<File

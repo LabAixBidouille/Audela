@@ -21,14 +21,14 @@
 
 /*
  * Projet      : AudeLA
- * Librairie   : LIBJM
- * Fichier     : JM_C_TCL.CPP
+ * Librairie   : LibJM
+ * Fichier     : horloge_tcl.cpp
  * Auteur      : Jacques Michelet
  * Description : Fonctions interfaces entre TCL et C
  * =================================================
 */
 #include <string.h>
-#include <stdlib.h> 	/*atoi, atof*/
+#include <stdlib.h>     /*atoi, atof*/
 #include "cerror.h"
 #include "libjm.h"
 #include "horloge.h"

@@ -21,8 +21,8 @@
 
 /*
  * Projet      : AudeLA
- * Librairie   : LIBJM
- * Fichier     : JM_C_TCL.H
+ * Librairie   : LibJM
+ * Fichier     : divers.h
  * Description : Prototype des fonctions interfaces Tcl et le C
  * ============================================================
 */
@@ -36,15 +36,15 @@ namespace LibJM
 class Divers
 {
 public :
-	static int CmdDms2deg(ClientData clientData,Tcl_Interp *interp, int argc,char *argv[]);
+    static int CmdDms2deg(ClientData clientData,Tcl_Interp *interp, int argc,char *argv[]);
 
-	static int DecodeListeInt(Tcl_Interp *interp, char *list, int *valeurs, int *n);
-	static int DecodeListeDouble(Tcl_Interp *interp, char *list, double *valeurs, int *n);
-	static int CmdInitTamponImage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-	static int CmdInfoImage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-	static int dms2deg(int d,int m,double s,double *angle);
+    static int DecodeListeInt(Tcl_Interp *interp, char *list, int *valeurs, int *n);
+    static int DecodeListeDouble(Tcl_Interp *interp, char *list, double *valeurs, int *n);
+    static int CmdInitTamponImage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+    static int CmdInfoImage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+    static int dms2deg(int d,int m,double s,double *angle);
 };
 
 }
 
-#endif //__LIBJM_DIVERS_H__ 
+#endif //__LIBJM_DIVERS_H__
