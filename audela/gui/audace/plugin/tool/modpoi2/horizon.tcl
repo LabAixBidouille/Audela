@@ -2,11 +2,10 @@
 # Fichier : horizon.tcl
 # Description : fabrication de la ligne d'horizon
 # Auteur : Michel Pujol
-# Mise a jour $Id: horizon.tcl,v 1.1 2010-04-29 18:10:32 michelpujol Exp $
+# Mise a jour $Id: horizon.tcl,v 1.2 2010-05-26 06:19:57 robertdelmas Exp $
 #
 
 namespace eval ::horizon {
-
 
 }
 
@@ -39,17 +38,13 @@ proc ::horizon::run { visuNo {tkbase ""} } {
    set caption(horizon,azimut)                       "Azimut"
    set caption(horizon,elevation)                    "Hauteur"
 
-
-
-
    #--- Creation des variables si elles n'existaient pas
-   if { ! [ info exists ::conf(horizon,position) ] }  { set ::conf(horizon,position) "450x200+250+75" }
-   if { ! [ info exists ::conf(horizon,currentHorizon) ] }  { set ::conf(horizon,currentHorizon) "default" }
+   if { ! [ info exists ::conf(horizon,position) ] }             { set ::conf(horizon,position)            "450x200+250+75" }
+   if { ! [ info exists ::conf(horizon,currentHorizon) ] }       { set ::conf(horizon,currentHorizon)      "default" }
 
-   if { ! [ info exists ::conf(horizon,default,name) ] }  { set ::conf(horizon,default,name) "default" }
-   if { ! [ info exists ::conf(horizon,default,type) ] }  { set ::conf(horizon,default,type) "ALTAZ" }
+   if { ! [ info exists ::conf(horizon,default,name) ] }         { set ::conf(horizon,default,name)        "default" }
+   if { ! [ info exists ::conf(horizon,default,type) ] }         { set ::conf(horizon,default,type)        "ALTAZ" }
    if { ! [ info exists ::conf(horizon,default,coordinates) ] }  { set ::conf(horizon,default,coordinates) {{0 0}} }
-
 
    set coordinates ""
    lappend coordinates [list  90 [mc_angle2deg 23h00] [mc_angle2deg 13h00]]
@@ -67,10 +62,9 @@ proc ::horizon::run { visuNo {tkbase ""} } {
    lappend coordinates [list -30 [mc_angle2deg 22h00] [mc_angle2deg  3h10]]
    lappend coordinates [list -40 [mc_angle2deg 23h00] [mc_angle2deg  2h30]]
 
-   if { ! [ info exists ::conf(horizon,OHP_T193,name) ] }  { set ::conf(horizon,OHP_T193,name) "OHP T193" }
-   if { ! [ info exists ::conf(horizon,OHP_T193,type) ] }  { set ::conf(horizon,OHP_T193,type) "HADEC" }
+   if { ! [ info exists ::conf(horizon,OHP_T193,name) ] }         { set ::conf(horizon,OHP_T193,name)        "OHP T193" }
+   if { ! [ info exists ::conf(horizon,OHP_T193,type) ] }         { set ::conf(horizon,OHP_T193,type)        "HADEC" }
    if { ! [ info exists ::conf(horizon,OHP_T193,coordinates) ] }  { set ::conf(horizon,OHP_T193,coordinates) $coordinates }
-
 
    set private($visuNo,this)   ".audace.horizon_$visuNo"
 
@@ -104,7 +98,6 @@ proc ::horizon::showHelp { } {
    ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::horizon::getPluginType ] ] \
       [ ::horizon::getPluginDirectory ] [ ::horizon::getPluginHelp ]
 }
-
 
 #------------------------------------------------------------
 # closeWindow
@@ -176,7 +169,6 @@ proc ::horizon::fillConfigPage { frm visuNo } {
 
    pack $frm.config -side top -fill x -expand 0
 
-
    frame $frm.type  -borderwidth 2 -relief ridge
       label $frm.type.label -text type
       pack $frm.type.label -side left -fill none -expand 0 -padx 2
@@ -186,7 +178,6 @@ proc ::horizon::fillConfigPage { frm visuNo } {
 
    ###set private($visuNo,coordTable) $frm.coord.table
    set private($visuNo,coordText) $frm.coord.text
-
 
    TitleFrame $frm.coord  -borderwidth 2 -relief ridge -text $::caption(horizon,coordinate)
       scrollbar $frm.coord.ysb -command "$private($visuNo,coordText) yview"
@@ -257,7 +248,6 @@ proc ::horizon::apply { visuNo } {
   ::horizon::displayHorizon $visuNo
 }
 
-
 proc ::horizon::onSelectHorizon { visuNo } {
    variable private
    set tkCombo $private($visuNo,frm).config.combo
@@ -309,8 +299,6 @@ proc ::horizon::getHorizonList { } {
    #--- je trie par ordre alphabetique (l'option -dictionary est equivalente a nocase)
    return [lsort -dictionary $horizonList ]
 }
-
-
 
 proc ::horizon::createHorizon { visuNo } {
    variable private
@@ -417,12 +405,10 @@ proc ::horizon::displayHorizon { visuNo } {
    set coordinates $::conf(horizon,$horizonId,coordinates)
    set horizons [mc_horizon $::conf(posobs,observateur,gps) $type $coordinates]
 
-
    #--- Visualise la carte des points d'amer
    ###set figureNo [expr $visuNo + 10]
    set figureNo [::plotxy::figure $visuNo]
    ::plotxy::clf $figureNo
-
 
    #--- visualisation de l'horizon
    set x [lindex $horizons 0]
@@ -461,7 +447,6 @@ proc ::horizon::getHorizonIdentifiant { name } {
    return $horizonId
 }
 
-
 #------------------------------------------------------------
 # getHorizon
 #
@@ -497,8 +482,6 @@ proc ::horizon::getHorizonName { } {
    set horizonId $::conf(horizon,currentHorizon)
    return $::conf(horizon,$horizonId,name)
 }
-
-
 
 ################################################################################
 
@@ -541,7 +524,6 @@ proc ::horizon::nameDialog::getLabel { } {
    return "$::caption(horizon,title) - $private(title)"
 }
 
-
 #------------------------------------------------------------
 # config::apply
 #   enregistre la valeur des widgets
@@ -551,7 +533,6 @@ proc ::horizon::nameDialog::apply { visuNo } {
    #--- rien a enregistrer
    #--- cette fonction existe pour faire apparaitre le bouton "OK"
 }
-
 
 #------------------------------------------------------------
 # config::closeWindow
@@ -584,7 +565,6 @@ proc ::horizon::nameDialog::fillConfigPage { frm visuNo } {
       -validate all -validatecommand { ::horizon::nameDialog::validateConfigName %W %V %P %s }
    pack $frm.name  -side left -fill x -expand 1 -padx 2
 
-
    radiobutton $frm.altaz -highlightthickness 0 -padx 0 -pady 0 -state normal \
       -text "ALTAZ" \
       -value "ALTAZ" \
@@ -594,8 +574,6 @@ proc ::horizon::nameDialog::fillConfigPage { frm visuNo } {
       -text "HADEC" \
       -value "HADEC" \
       -variable ::horizon::nameDialog::private(type)
-
-
 
 }
 
