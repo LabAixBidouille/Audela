@@ -1,10 +1,10 @@
 #
 # Fichier : telshift.tcl
-# Description : Script de prise d'images avec déplacement du télescope entre les poses
+# Description : Script de prise d'images avec deplacement du telescope entre les poses
 # Auteur : Christian JASINSKI (e-mail : chris.jasinski@wanadoo.fr)
-# Avec l'aide d'Alain KLOTZ pour la partie la plus difficile (grande boucle interne aux procédures)
-# Avec l'aide de Robert DELMAS qui a apporté de nombreuses modifications, notamment en matière de traitement des erreurs
-# Mise a jour $Id: telshift.tcl,v 1.10 2010-01-17 18:12:27 robertdelmas Exp $
+# Avec l'aide d'Alain KLOTZ pour la partie la plus difficile (grande boucle interne aux procedures)
+# Avec l'aide de Robert DELMAS qui a apporte de nombreuses modifications, notamment en matiere de traitement des erreurs
+# Mise Ã  jour $Id: telshift.tcl,v 1.11 2010-05-26 05:36:52 robertdelmas Exp $
 #
 
 #!/logiciels/public/Tcl/bin/wish
