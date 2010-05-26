@@ -1,7 +1,7 @@
 #
 # Fichier : pkgIndex.tcl
 # Description : Definition du point d'entree du plugin
-# Mise a jour $Id: pkgIndex.tcl,v 1.1 2009-04-21 19:58:50 jacquesmichelet Exp $
+# Mise à jour $Id: pkgIndex.tcl,v 1.2 2010-05-26 17:22:18 robertdelmas Exp $
 #
 
 package ifneeded calaphot 5.0 [ list source [ file join $dir calaphot.tcl ] ]
