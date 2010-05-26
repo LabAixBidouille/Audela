@@ -1,10 +1,10 @@
 #
 # Fichier : viseur_polaire_go.tcl
 # Description : Outil proposant 2 types de viseur polaire
-# Type Takahashi : Viseur polaire à niveau
-# Type EQ6 : Viseur polaire à constellations
+# Type Takahashi : Viseur polaire a niveau
+# Type EQ6 : Viseur polaire a constellations
 # Auteur : Robert DELMAS
-# Mise à jour $Id: viseur_polaire_go.tcl,v 1.13 2010-05-26 05:46:02 robertdelmas Exp $
+# Mise à jour $Id: viseur_polaire_go.tcl,v 1.14 2010-05-26 05:49:12 robertdelmas Exp $
 #
 
 #============================================================

@@ -2,9 +2,8 @@
 # Fichier : vo_samp.tcl
 # Description : SAMP protocol functions
 # Auteur : Stephane VAILLANT
-# Mise a jour $Id: vo_samp.tcl,v 1.4 2009-10-23 12:52:35 svaillant Exp $
+# Mise à jour $Id: vo_samp.tcl,v 1.5 2010-05-26 06:02:22 robertdelmas Exp $
 #
-
 
 namespace eval Samp {
 
@@ -101,7 +100,6 @@ proc ::Samp::build { nsp } {
             -params { arg1 string arg2 imageLoadFitsWrapper } \
             -name "samp.hub.notifyAll"
 
-
  proc ${nsp}::register {} {
   variable params
   variable key
@@ -128,7 +126,6 @@ proc ::Samp::build { nsp } {
   } else {
   }
  }
-
 
  proc ${nsp}::chanread {chan} {
   variable buf
@@ -229,8 +226,6 @@ proc ::Samp::build { nsp } {
    ::console::disp "#vo_tools::samp received samp.hub.event.shutdown\n"
  }
 
-
-
  namespace eval $nsp {
   variable key
   variable port sockserver msg initialized
@@ -248,7 +243,6 @@ proc ::Samp::build { nsp } {
 
  return 1
 }
-
 
 ###########################################################################
 
