@@ -2,7 +2,7 @@
 # Fichier : visio.tcl
 # Description : Outil de visionnage d'images fits + gestion des series d'images
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: visio.tcl,v 1.22 2010-01-30 14:28:25 robertdelmas Exp $
+# Mise Ã  jour $Id: visio.tcl,v 1.23 2010-05-26 05:51:44 robertdelmas Exp $
 #
 
 # ========================================================
@@ -121,7 +121,7 @@ namespace eval ::visio {
       #--- (pour une disquette, 1457664 octets)
       set panneau(visio,capacite_lecteur_amovible) 1457664
 
-      #--- Mise à jour de variables
+      #--- Mise a jour de variables
       set panneau(visio,repertoire)        $audace(rep_images)
       set panneau(visio,nb_repertoires)    0
       set panneau(visio,nom_generique)     ""

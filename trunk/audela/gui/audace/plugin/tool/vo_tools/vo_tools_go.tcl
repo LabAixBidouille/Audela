@@ -2,7 +2,7 @@
 # Fichier : vo_tools_go.tcl
 # Description : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur : Robert DELMAS
-# Mise a jour $Id: vo_tools_go.tcl,v 1.20 2010-01-30 14:29:42 robertdelmas Exp $
+# Mise à jour $Id: vo_tools_go.tcl,v 1.21 2010-05-26 06:03:09 robertdelmas Exp $
 #
 
 #============================================================

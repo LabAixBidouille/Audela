@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER
-# Mise a jour $Id: skybot_search.tcl,v 1.27 2009-11-17 17:03:49 robertdelmas Exp $
+# Mise Ã  jour $Id: skybot_search.tcl,v 1.28 2010-05-26 06:00:54 robertdelmas Exp $
 #
 
 namespace eval skybot_Search {
@@ -485,7 +485,7 @@ namespace eval skybot_Search {
       #--- Calcul de la date exacte
       set jd [ JourJulienImage ]
       if { $voconf(origine_pose) == "1" } {
-         #--- Cas du début de pose (on rajoute le 1/2 temps de pose converti en Jour Julien)
+         #--- Cas du debut de pose (on rajoute le 1/2 temps de pose converti en Jour Julien)
          set voconf(date_image) [ expr $jd + ( $exposure / 172800.0 ) ]
       } else {
          #--- Cas du milieu de pose
@@ -504,7 +504,7 @@ namespace eval skybot_Search {
    #                 EXPOSURE = le temps d'exposition en secondes
    # 2/ PRISM v4   : DATE-OBS = date et heure de debut de pose
    #                 (format ISO 8601 : 'aaaa-mm-jjThh:mm:ss.sss')
-   #                 UT-START & UT-END sont valides mais non utilisé
+   #                 UT-START & UT-END sont valides mais non utilise
    #                 EXPOSURE = le temps d'exposition en minutes
    #
    proc JourJulienImage { } {
