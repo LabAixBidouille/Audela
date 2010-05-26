@@ -2,7 +2,7 @@
 # Fichier : session.tcl
 # Description : configuration des parametres de session
 # Auteur : Michel PUJOL
-# Mise a jour $Id: session.tcl,v 1.2 2009-12-13 16:42:42 robertdelmas Exp $
+# Mise Ã  jour $Id: session.tcl,v 1.3 2010-05-26 17:49:46 robertdelmas Exp $
 #
 
 ################################################################
@@ -18,7 +18,7 @@ namespace eval ::eshel::session {
 # affiche la fenetre du traitement
 #
 # Utilise les fonctions de la classe parent ::confGenerique
-# @param tkbase nom tk de la fenêtre parent
+# @param tkbase nom tk de la fenetre parent
 # @param visuNo  numero de la visu parent
 # @return rien
 # @public
@@ -47,8 +47,8 @@ proc ::eshel::session::run { tkbase visuNo } {
 #
 # @param visuNo  numero de la visu
 # @return
-#   - 0  s'il ne faut pas fermer la fenêtre
-#   - 1  s'il faut fermer la fenêtre
+#   - 0  s'il ne faut pas fermer la fenetre
+#   - 1  s'il faut fermer la fenetre
 # @public
 #------------------------------------------------------------
 proc ::eshel::session::closeWindow { visuNo } {
@@ -67,7 +67,7 @@ proc ::eshel::session::closeWindow { visuNo } {
 ##------------------------------------------------------------
 # affiche l'aide de cet outil
 #
-# Cette procedure est appelée par ::confGenerique::showHelp
+# Cette procedure est appelee par ::confGenerique::showHelp
 # @return rien
 # @private
 #------------------------------------------------------------
@@ -79,7 +79,7 @@ proc ::eshel::session::showHelp { } {
 ##------------------------------------------------------------
 # enregistre les modifications
 #
-# Cette procedure est appelée par ::confGenerique::apply
+# Cette procedure est appelee par ::confGenerique::apply
 # @param visuNo  numero de la visu parent
 # @return rien
 # @private
@@ -126,7 +126,7 @@ proc ::eshel::session::apply { visuNo } {
          file mkdir "$referenceDirectory"
          file mkdir "$processedDirectory"
 
-         #--- je memorise les noms des sous répertoires
+         #--- je memorise les noms des sous repertoires
          set ::conf(eshel,mainDirectory)        $mainDirectory
          set ::conf(eshel,rawDirectory)         $rawDirectory
          set ::conf(eshel,referenceDirectory)   $referenceDirectory
@@ -159,9 +159,9 @@ proc ::eshel::session::apply { visuNo } {
 }
 
 ##------------------------------------------------------------
-# Crée les widgets de la fenetre de configuration de la session
+# Cree les widgets de la fenetre de configuration de la session
 #
-# Cette procedure est appelée par ::confGenerique::fillConfigPage a la creation de la fenetre
+# Cette procedure est appelee par ::confGenerique::fillConfigPage a la creation de la fenetre
 # @param frm nom tk de la frame cree par ::confgene::fillConfigPage
 # @param visuNo numero de la visu
 # @return  rien
@@ -269,8 +269,8 @@ proc ::eshel::session::fillConfigPage { frm visuNo } {
 ##------------------------------------------------------------
 # retourne le titre de la fenetre
 #
-# Cette procedure est appelée par ::confGenerique::getLabel
-# @return  titre de la fenêtre
+# Cette procedure est appelee par ::confGenerique::getLabel
+# @return  titre de la fenetre
 # @private
 #------------------------------------------------------------
 proc ::eshel::session::getLabel { } {
@@ -313,7 +313,7 @@ proc ::eshel::session::selectParentDirectory { visuNo } {
 
 ##------------------------------------------------------------
 # createSubDirectory
-# cree un sous répertoire et le selectionne comme repertoire principal
+# cree un sous repertoire et le selectionne comme repertoire principal
 #
 # @param visuNo : numero de la visu
 # @return rien

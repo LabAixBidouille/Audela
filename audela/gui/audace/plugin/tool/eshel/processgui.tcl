@@ -2,7 +2,7 @@
 # @file processgui.tcl
 # Description : Fentre de configuration des traitements eShel
 # Auteur : Michel PUJOL
-# Mise a jour $Id: processgui.tcl,v 1.1 2009-11-07 08:13:07 michelpujol Exp $
+# Mise Ã  jour $Id: processgui.tcl,v 1.2 2010-05-26 17:47:00 robertdelmas Exp $
 #
 
 ##------------------------------------------------------------
@@ -41,7 +41,6 @@ proc ::eshel::processgui::run { tkbase visuNo } {
 
    #--- Creation des variables si elles n'existaient pas
    if { ! [ info exists ::conf(eshel,processWindowPosition) ] } { set ::conf(eshel,processWindowPosition)     "650x240+350+15" }
-
 
    #--- j'affiche la fenetre
    set private(This) "$tkbase.process"
@@ -108,7 +107,6 @@ proc ::eshel::processgui::fillConfigPage { frm visuNo } {
       ###pack  $frm.stop  -in [$frm.button getframe] -side left -fill none -expand 1 -pady 4
    pack $frm.button -side top -fill x -expand 0
 
-
    #--- Creation des onglets
    set notebook [ NoteBook $frm.notebook ]
    ###$notebook insert end "main"  -text $::caption(eshel,process,title)
@@ -141,7 +139,6 @@ proc ::eshel::processgui::fillConfigPage { frm visuNo } {
    ::eshel::processgui::copyRoadmapToTable
 
 }
-
 
 ##------------------------------------------------------------
 # Cree les widgets dans l'onglet des images brutes
@@ -327,7 +324,6 @@ proc ::eshel::processgui::fillReferencePage { frm visuNo } {
    pack $frm.reference -side top -fill both -expand 1
 }
 
-
 ##------------------------------------------------------------
 #   cree les widgets dans l'onglet des traitements
 # @param frm nom tk de la frame cree par ::eshel::processgui::fillConfigPage
@@ -386,19 +382,15 @@ proc ::eshel::processgui::fillRoadmapPage { frm visuNo } {
    pack $frm.roadmap -side top -fill both -expand 1
 }
 
-
-
-
 ##----------------------------------------------------------------------------
-#   - desactive les boutons manuels si le mode automatique est sélectionne
-#   - active les boutons manuels si le mode manuel est sélectionne
+#   - desactive les boutons manuels si le mode automatique est selectionne
+#   - active les boutons manuels si le mode manuel est selectionne
 # @return  rien
 # @public
 #----------------------------------------------------------------------------
 proc ::eshel::processgui::setProcessAuto {  } {
    setFrameState
 }
-
 
 ##------------------------------------------------------------------------------
 #   trie les lignes par ordre alphabetique de la colonne
@@ -447,22 +439,21 @@ proc ::eshel::processgui::copyRawToTable { } {
    #--- je vide la table des series identifiees
    $private(serieTable)  delete 0 end
 
-
    #--- je remplis les tables des fichiers bruts
    set filesNode [::eshel::process::getFilesNode]
    foreach fileNode [::dom::tcl::node children $filesNode] {
       if { [::dom::tcl::node cget $fileNode -nodeName] == "FILE" } {
          set fileName [::dom::element getAttribute $fileNode "FILENAME"]
-         #--- j'insere la nouvelle ligne à la fin de la table
+         #--- j'insere la nouvelle ligne a la fin de la table
          $private(fileTable) insert end $fileName
          foreach keywordName [::eshel::process::getFileAttributeNames] {
             set keywordValue [ ::dom::element getAttribute $fileNode $keywordName]
-            #--- je copie l'attribut dans la colonne du mot clef
+            #--- je copie l'attribut dans la colonne du mot cle
             $private(fileTable) cellconfigure end,$keywordName -text $keywordValue -editable 1
          }
       } else {
          if { [::dom::element getAttribute $fileNode "RAW"] == 1 } {
-            #--- j'insere une ligne vide à la fin de la table
+            #--- j'insere une ligne vide a la fin de la table
             $private(serieTable) insert end " "
             #--- je renseigne les cellules de la ligne vide
             foreach keywordName [::eshel::process::getSerieAttributeNames] {
@@ -490,7 +481,7 @@ proc ::eshel::processgui::copyRawToTable { } {
 }
 
 ##------------------------------------------------------------
-#   affiche les images de référence
+#   affiche les images de reference
 # @return  rien
 # @private
 #------------------------------------------------------------
@@ -508,11 +499,11 @@ proc ::eshel::processgui::copyReferenceToTable { } {
    foreach fileNode [::dom::tcl::node children $filesNode] {
       if { [::dom::element getAttribute $fileNode "RAW"] == 0 } {
          set fileName [::dom::element getAttribute $fileNode "FILENAME"]
-         #--- j'insere la nouvelle ligne à la fin de la table
+         #--- j'insere la nouvelle ligne a la fin de la table
          $private(referenceTable) insert end $fileName
          foreach keywordName [::eshel::process::getReferenceAttributeNames] {
             set keywordValue [ ::dom::element getAttribute $fileNode $keywordName]
-            #--- je copie l'attribut dans la colonne du mot clef
+            #--- je copie l'attribut dans la colonne du mot cle
             $private(referenceTable) cellconfigure end,$keywordName -text $keywordValue -editable 0
          }
          set nodeName [::dom::tcl::node cget $fileNode -nodeName]
@@ -554,14 +545,14 @@ proc ::eshel::processgui::copyRoadmapToTable { } {
 }
 
 ##----------------------------------------------------------------------------
-# met à jour l'état de traitement d'un fichier
-#   - todo    : traitement à faire
+# met a jour l'etat de traitement d'un fichier
+#   - todo    : traitement a faire
 #   - running : traitement en cours
 #   - done    : traitement termine correctement.
 #   - error   :  erreur pendant le traitement
 #
 # @param fileName nom du fichier
-# @param status   état du fichier
+# @param status   etat du fichier
 # @return  rien
 # @public
 #----------------------------------------------------------------------------
@@ -591,8 +582,6 @@ proc ::eshel::processgui::setProcessStatus { fileName status } {
    }
 }
 
-
-
 ##------------------------------------------------------------
 # copyTableToNightlog
 #   enregistre les modifications des fichiers ignores faites par l'utilsateur
@@ -602,7 +591,7 @@ proc ::eshel::processgui::setProcessStatus { fileName status } {
 proc ::eshel::processgui::copyTableToNightlog { } {
    variable private
 
-   #--- je copie les données de la table dans attributeList
+   #--- je copie les donnees de la table dans attributeList
    for { set rowIndex 0 } { $rowIndex < [$private(fileTable) size] } { incr rowIndex } {
       set attributeList ""
       set fileName  [$private(fileTable) cellcget $rowIndex,FILENAME -text]
@@ -645,7 +634,6 @@ proc ::eshel::processgui::resetTables { } {
 
 }
 
-
 ##------------------------------------------------------------
 # onEditStartTable
 #   affiche le details de fichiers dans la colonne FILES
@@ -665,7 +653,7 @@ proc ::eshel::processgui::onEditStartTable { tktable row col value } {
       FILES {
          #--- petite astuce pour toujours afficher le nombre de fichier dans l'entry de la combobox
          $w configure -modifycmd "$w.e configure -text [$w get]" -editable 0
-         #--- je recupere l'indentifant de la série
+         #--- je recupere l'indentifant de la serie
          set serieId [$tktable cellcget $row,SERIESID -text]
          #--- j'affiche la liste des fichiers de la serie
          set filesNode [::eshel::process::getFilesNode]
@@ -685,7 +673,7 @@ proc ::eshel::processgui::onEditStartTable { tktable row col value } {
 
 ##------------------------------------------------------------
 # onEditEndTable
-#   positionne le flag quand la table des fichiers non identifiés
+#   positionne le flag quand la table des fichiers non identifies
 #    est modifiee
 # @param tktable nom tk de la table
 # @param row      numero de ligne
@@ -737,7 +725,7 @@ proc ::eshel::processgui::makeSeries { visuNo } {
       return
    }
 
-   #--- j'affiche la fenetre de mise a jour des mots clefs
+   #--- j'affiche la fenetre de mise a jour des mots cles
    set result [::eshel::makeseries::run $private(This) $visuNo $private(fileTable) $fileIndexes]
 
    if { $result == 0 } {
@@ -745,7 +733,7 @@ proc ::eshel::processgui::makeSeries { visuNo } {
       return
    }
 
-   #--- j'enregistre les mots clefs modifiés
+   #--- j'enregistre les mots cles modifies
    ::eshel::processgui::copyTableToNightlog
 
    #--- je recupere les noms de fichiers
@@ -760,7 +748,7 @@ proc ::eshel::processgui::makeSeries { visuNo } {
       ::eshel::process::makeSerie $fileNames
       #--- je refraichis le contenu des tables
       copyRawToTable
-      #--- j'enregistre les modifications des mots clés dans les images.
+      #--- j'enregistre les modifications des mots cles dans les images
       ::eshel::process::updateFileKeywords
       #--- je supprime la roadmap (actualiser la raodmap prendrait trop de temps)
       ::eshel::process::deleteRoadmap
@@ -772,7 +760,7 @@ proc ::eshel::processgui::makeSeries { visuNo } {
 }
 
 ##------------------------------------------------------------
-# modifie les mots clefs
+# modifie les mots cles
 #
 # @param visuNo  numero de la visu
 # @return  rien
@@ -790,7 +778,7 @@ proc ::eshel::processgui::editKeyword { visuNo } {
       return
    }
 
-   #--- j'affiche la fenetre de mise a jour des mots clefs
+   #--- j'affiche la fenetre de mise a jour des mots cles
    set result [::eshel::makeseries::run $private(This) $visuNo $private(fileTable) $fileIndexes]
 
    if { $result == 0 } {
@@ -798,7 +786,7 @@ proc ::eshel::processgui::editKeyword { visuNo } {
       return
    }
 
-   #--- j'enregistre les mots clefs modifiés
+   #--- j'enregistre les mots cles modifies
    ::eshel::processgui::copyTableToNightlog
 
    #--- je recupere les noms de fichiers
@@ -813,14 +801,13 @@ proc ::eshel::processgui::editKeyword { visuNo } {
       ::eshel::process::makeSerie $fileNames
       #--- je refraichis le contenu des tables
       copyRawToTable
-      #--- je demande la confirmation de l'enregistrement des mots clefs dans les images
+      #--- je demande la confirmation de l'enregistrement des mots cles dans les images
       ::eshel::process::updateFileKeywords
    }]
    if { $catchResult !=0 } {
       ::tkutil::displayErrorInfo $::caption(eshel,title)
    }
 }
-
 
 ##------------------------------------------------------------
 # Supprime une serie
