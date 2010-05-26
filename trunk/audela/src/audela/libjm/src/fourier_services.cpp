@@ -1,7 +1,9 @@
 /***
  * @file : fourier_services.cpp
- * @brief : Méthodes de l'objet Fourier
+ * @brief : Méthodes de l'objet Fourier : gestion des objets
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
+ *
+ * Mise à jour $Id: fourier_services.cpp,v 1.2 2010-05-26 12:12:15 jacquesmichelet Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
