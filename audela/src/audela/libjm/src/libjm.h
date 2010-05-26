@@ -1,9 +1,11 @@
-/* libjm.h
+/***
+ * @file : libjm.cpp
+ * @brief : objets génériques de lq libJM
+ * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * This file is part of the libjm library for AudeLA project.
+ * Mise à jour $Id: libjm.h,v 1.7 2010-05-26 12:17:41 jacquesmichelet Exp $
  *
- * Initial author : Jacques MICHELET <jacques.michelet@laposte.net>
- *
+ * <pre>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
@@ -17,17 +19,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * </pre>
  */
-
-/*
- * Projet      : AudeLA
- * Librairie   : LibJM
- * Fichier     : libjm.h
- * Description : Point d'entrée de la librairie
- * ============================================
-*/
-
-
 
 
 #ifndef __LIBJM_H__

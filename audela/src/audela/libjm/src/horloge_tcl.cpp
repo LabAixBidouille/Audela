@@ -1,9 +1,11 @@
-/* jm_c_tcl.c
+/***
+ * @file : horloge_tcl.cpp
+ * @brief : interface TCL<->C pour la gestion de l'horloge système
+ * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * This file is part of the libjm libfrary for AudeLA project.
+ * Mise à jour $Id: horloge_tcl.cpp,v 1.3 2010-05-26 12:17:41 jacquesmichelet Exp $
  *
- * Initial author : Jacques MICHELET <jacques.michelet@laposte.net>
- *
+ * <pre>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
@@ -17,16 +19,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * </pre>
  */
-
-/*
- * Projet      : AudeLA
- * Librairie   : LibJM
- * Fichier     : horloge_tcl.cpp
- * Auteur      : Jacques Michelet
- * Description : Fonctions interfaces entre TCL et C
- * =================================================
-*/
 #include <string.h>
 #include <stdlib.h>     /*atoi, atof*/
 #include "cerror.h"
