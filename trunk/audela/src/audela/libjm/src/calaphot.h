@@ -1,9 +1,11 @@
-/* calaphot.h
+/***
+ * @file : calaphot.h
+ * @brief : définition des macros et des objets se rapportant à la photométrie et à la modélisation
+ * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * This file is part of the libjm library for AudeLA project.
+ * Mise à jour $Id: calaphot.h,v 1.6 2010-05-26 11:55:47 jacquesmichelet Exp $
  *
- * Initial author : Jacques MICHELET <jacques.michelet@laposte.net>
- *
+ * <pre>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
@@ -17,6 +19,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * </pre>
  */
 
 #ifndef __LIBJM_CALAPHOT_H__

@@ -1,9 +1,11 @@
-/* jm_c_tcl.c
+/***
+ * @file : calaphot_tcl.cpp
+ * @brief : interface TCL pour les routines de photométrie et de modélisation
+ * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * This file is part of the libjm libfrary for AudeLA project.
+ * Mise à jour $Id: calaphot_tcl.cpp,v 1.4 2010-05-26 11:56:00 jacquesmichelet Exp $
  *
- * Initial author : Jacques MICHELET <jacques.michelet@laposte.net>
- *
+ * <pre>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
@@ -17,16 +19,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * </pre>
  */
 
-/*
- * Projet      : AudeLA
- * Librairie   : LibJM
- * Fichier     : calaphot_tcl.h
- * Auteur      : Jacques Michelet
- * Description : Fonctions interfaces entre TCL et C
- * =================================================
-*/
 #include <iostream>
 #include <fstream>
 #include <string.h>
