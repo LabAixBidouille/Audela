@@ -56,6 +56,8 @@ int tt_ima_series_catchart_1(TT_IMA_SERIES *pseries)
    unsigned char *pjpeg;
    time_t ltime;
    int taille,nombre;
+   char * retour_char;
+   int retour_int;
 
    /* --- intialisations ---*/
    p_in=pseries->p_in;
@@ -143,10 +145,10 @@ int tt_ima_series_catchart_1(TT_IMA_SERIES *pseries)
 	       return(TT_ERR_FILE_NOT_FOUND);
 	    }
 	    for (kk=0;kk<num_ligne[k]-1;kk++) {
-	       fgets(message,TT_MAXLIGNE,fichier);
+	       retour_char = fgets(message,TT_MAXLIGNE,fichier);
 	    }
 	    strcpy(message,"");
-	    fgets(message,TT_MAXLIGNE,fichier);
+	    retour_char = fgets(message,TT_MAXLIGNE,fichier);
 #ifdef OS_LINUX_GCC_SO
 	    sscanf(message,"%lf %d %d",&dvalue,&offset,&nbstars);
 #else
@@ -170,7 +172,7 @@ int tt_ima_series_catchart_1(TT_IMA_SERIES *pseries)
 	    }
 	    for (kkk=0;kkk<nbstars;kkk++) {
 	       if (typecat==TT_USNO) {
-		  fread(&etoile_usno,sizeof(etoile_usno),1,fichier);
+		  retour_int = fread(&etoile_usno,sizeof(etoile_usno),1,fichier);
 		  tt_util_uswapbytes(&etoile_usno.ra,1);
 		  tt_util_uswapbytes(&etoile_usno.dec,1);
 		  tt_util_uswapbytes(&etoile_usno.divers,1);
@@ -184,7 +186,7 @@ int tt_ima_series_catchart_1(TT_IMA_SERIES *pseries)
 		  magb=(iy-ix)/10.;
 	       } else {
 		  /*fread(&etoile_usnocomp,sizeof(usnocomptype),1,fichier);*/
-		  fread(&etoile_usnocomp,10,1,fichier);
+		  retour_int = fread(&etoile_usnocomp,10,1,fichier);
 		  ra=(double)(etoile_usnocomp.ra)/(3600.*100);
 		  dec=(double)(etoile_usnocomp.dec)/(3600.*100)-90.;
 		  magr=(double)(etoile_usnocomp.magr)/10.-3.;
@@ -1097,7 +1099,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
       } while (feof(out_file)==0);
       fclose(out_file);
    }
-   
+
    /* --- calcul de l'image de sortie ---*/
    for (kkk=0;kkk<(int)(nelem);kkk++) {
       dvalue=p_in->p[kkk];
@@ -1441,6 +1443,7 @@ int tt_ima_series_headerfits_1(TT_IMA_SERIES *pseries)
    int dataint;
    float datafloat;
    double datadouble;
+   char * retour_char;
 
    /* --- intialisations ---*/
    p_in=pseries->p_in;
@@ -1469,7 +1472,7 @@ int tt_ima_series_headerfits_1(TT_IMA_SERIES *pseries)
       if (compteur>=TT_MAXKEYS) { break; }
       strcpy(keyname,"");
       strcpy(message,"");
-      fgets(message,(TT_MAXLIGNE),fichier);
+      retour_char = fgets(message,(TT_MAXLIGNE),fichier);
       tt_util_dellastchar(message);
       sscanf(message,"%s",keyname);
       keyname[(FLEN_KEYWORD-1)]='\0';
@@ -1479,7 +1482,7 @@ int tt_ima_series_headerfits_1(TT_IMA_SERIES *pseries)
 	 tt_strupr(keyname);
         strcpy(value_char,"");
         strcpy(message,"");
-        fgets(message,(TT_MAXLIGNE),fichier);
+        retour_char = fgets(message,(TT_MAXLIGNE),fichier);
         tt_util_dellastchar(message);
         strcpy(value_char,message);
         value_char[(FLEN_VALUE-1)]='\0';
@@ -1487,16 +1490,16 @@ int tt_ima_series_headerfits_1(TT_IMA_SERIES *pseries)
 	    break;
 	 } else {
 	    strcpy(message,"");
-           strcpy(typedata,"");
-	    fgets(message,TT_MAXLIGNE,fichier);
+        strcpy(typedata,"");
+        retour_char = fgets(message,TT_MAXLIGNE,fichier);
 	    tt_util_dellastchar(message);
-           sscanf(message,"%s",typedata);
+        sscanf(message,"%s",typedata);
 	    strcpy(comment,"");
-	    fgets(comment,FLEN_COMMENT,fichier);
+	    retour_char = fgets(comment,FLEN_COMMENT,fichier);
 	    tt_util_dellastchar(comment);
 	    if (strcmp(comment,"")==0) {pcomment=NULL;} else {pcomment=comment;}
 	    strcpy(unit,"");
-	    fgets(unit,FLEN_COMMENT,fichier);
+	    retour_char = fgets(unit,FLEN_COMMENT,fichier);
 	    tt_util_dellastchar(unit);
 	    if (strcmp(unit,"")==0) {punit=NULL;} else {punit=unit;}
 	    if (strcmp(message,"short")==0) {
