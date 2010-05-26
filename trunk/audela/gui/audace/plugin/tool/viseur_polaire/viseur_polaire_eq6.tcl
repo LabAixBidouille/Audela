@@ -2,7 +2,7 @@
 # Fichier : viseur_polaire_eq6.tcl
 # Description : Positionne l'etoile polaire dans un viseau polaire de type EQ6 ou a constellations
 # Auteur : Robert DELMAS
-# Mise a jour $Id: viseur_polaire_eq6.tcl,v 1.12 2009-12-19 16:18:15 robertdelmas Exp $
+# Mise à jour $Id: viseur_polaire_eq6.tcl,v 1.13 2010-05-26 05:45:40 robertdelmas Exp $
 #
 
 namespace eval ::viseurPolaireEQ6 {
