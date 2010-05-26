@@ -2,7 +2,7 @@
 # Fichier : wizard.tcl
 # Description : pipeline de pointage des etoiles
 # Auteur : Michel Pujol
-# Mise a jour $Id: wizard.tcl,v 1.3 2010-05-16 20:29:51 michelpujol Exp $
+# Mise à jour $Id: wizard.tcl,v 1.4 2010-05-26 06:34:39 robertdelmas Exp $
 #
 
 namespace eval ::modpoi2::wizard {
@@ -29,11 +29,11 @@ proc ::modpoi2::wizard::modpoi_wiz { visuNo { starList "" } } {
 
    load libgsltcl[info sharedlibextension]
 
-   if { ! [ info exists ::conf(modpoi,wizard,position) ] }  { set ::conf(modpoi,wizard,position) "+250+75" }
-   if { ! [ info exists ::conf(modpoi,wizard,haNb) ] }      { set ::conf(modpoi,wizard,haNb) "4" }
-   if { ! [ info exists ::conf(modpoi,wizard,deNb) ] }      { set ::conf(modpoi,wizard,deNb) "3" }
-   if { ! [ info exists ::conf(modpoi,wizard,minMagnitude) ] }      { set ::conf(modpoi,wizard,minMagnitude) "0" }
-   if { ! [ info exists ::conf(modpoi,wizard,maxMagnitude) ] }      { set ::conf(modpoi,wizard,maxMagnitude) "7" }
+   if { ! [ info exists ::conf(modpoi,wizard,position) ] }           { set ::conf(modpoi,wizard,position)           "+250+75" }
+   if { ! [ info exists ::conf(modpoi,wizard,haNb) ] }               { set ::conf(modpoi,wizard,haNb)               "4" }
+   if { ! [ info exists ::conf(modpoi,wizard,deNb) ] }               { set ::conf(modpoi,wizard,deNb)               "3" }
+   if { ! [ info exists ::conf(modpoi,wizard,minMagnitude) ] }       { set ::conf(modpoi,wizard,minMagnitude)       "0" }
+   if { ! [ info exists ::conf(modpoi,wizard,maxMagnitude) ] }       { set ::conf(modpoi,wizard,maxMagnitude)       "7" }
 
    if { ! [ info exists ::conf(modpoi,wizard,centering,xc) ] }       { set ::conf(modpoi,wizard,centering,xc)       "0" }
    if { ! [ info exists ::conf(modpoi,wizard,centering,yc) ] }       { set ::conf(modpoi,wizard,centering,yc)       "0" }
@@ -48,16 +48,16 @@ proc ::modpoi2::wizard::modpoi_wiz { visuNo { starList "" } } {
    set private(stars,deNb)   $::conf(modpoi,wizard,deNb)
    set private(minMagnitude) $::conf(modpoi,wizard,minMagnitude)
    set private(maxMagnitude) $::conf(modpoi,wizard,maxMagnitude)
-   set private(symbols)       "IH ID NP CH ME MA FO HF DAF TF"
+   set private(symbols)      "IH ID NP CH ME MA FO HF DAF TF"
    set private(home)         $::conf(posobs,observateur,gps)
    set private(horizons)     [::horizon::getHorizon $private(home)]
-   set private(amerIndex)  "0"
+   set private(amerIndex)    "0"
    #--- Mode de centrage (automatique ou manuel)
-   set private(centering,check) 0
+   set private(centering,check)      0
    set private(centering,star_index) 0
-   set private(centering,accuracy) $::conf(modpoi,wizard,centering,accuracy)
+   set private(centering,accuracy)   $::conf(modpoi,wizard,centering,accuracy)
    #--- Initial delay of slew for calibration
-   set private(centering,t0) $::conf(modpoi,wizard,centering,t0)
+   set private(centering,t0)     $::conf(modpoi,wizard,centering,t0)
    set private(centering,nbmean) "$::conf(modpoi,wizard,centering,nbmean)"
 
    if {$private(centering,check)==0} {
@@ -65,7 +65,6 @@ proc ::modpoi2::wizard::modpoi_wiz { visuNo { starList "" } } {
     } else {
        set private(centering,mode) auto
     }
-
 
    set private(g,base) $::audace(base).modpoi_fntr
    set private(wm_geometry) $::conf(modpoi,wizard,position)
@@ -94,7 +93,6 @@ proc ::modpoi2::wizard::modpoi_wiz { visuNo { starList "" } } {
       set hip_catalog ""
    }
 
-
    if { $starList == "" } {
       #--- cas d'un nouveau modele
       set private(stars,nb) 0
@@ -106,16 +104,16 @@ proc ::modpoi2::wizard::modpoi_wiz { visuNo { starList "" } } {
       foreach star $starList {
          #--- je charge les 11 valeurs associées au point d'amer.
          ###  ( amerAz amerEl name raCat deCat equinoxCat date raObs deObs pressure temperature )
-         set private(star$k,amerAz)    [lindex $star 0]
-         set private(star$k,amerEl)    [lindex $star 1]
-         set private(star$k,starname)  [lindex $star 2]
-         set private(star$k,raCat)     [lindex $star 3]
-         set private(star$k,deCat)     [lindex $star 4]
-         set private(star$k,eqCat)     [lindex $star 5]
-         set private(star$k,date)      [lindex $star 6]
-         set private(star$k,raObs)     [lindex $star 7]
-         set private(star$k,deObs)     [lindex $star 8]
-         set private(star$k,pressure)  [lindex $star 9]
+         set private(star$k,amerAz)      [lindex $star 0]
+         set private(star$k,amerEl)      [lindex $star 1]
+         set private(star$k,starname)    [lindex $star 2]
+         set private(star$k,raCat)       [lindex $star 3]
+         set private(star$k,deCat)       [lindex $star 4]
+         set private(star$k,eqCat)       [lindex $star 5]
+         set private(star$k,date)        [lindex $star 6]
+         set private(star$k,raObs)       [lindex $star 7]
+         set private(star$k,deObs)       [lindex $star 8]
+         set private(star$k,pressure)    [lindex $star 9]
          set private(star$k,temperature) [lindex $star 10]
 
          #--- si le nom de l'etoile est renseigné), je calcule les ecarts raDelta et deDelta
@@ -127,14 +125,14 @@ proc ::modpoi2::wizard::modpoi_wiz { visuNo { starList "" } } {
                $private(star$k,eqCat) 0 0 0 0 \
             ]
             set coords [mc_hip2tel $hipRecord $private(star$k,date) $private(home) $private(star$k,pressure) $private(star$k,temperature) ]
-            set private(star$k,raApp) [lindex $coords 0]
-            set private(star$k,deApp) [lindex $coords 1]
-            set private(star$k,haApp) [lindex $coords 2]
-            set private(star$k,azApp) [lindex $coords 3]
-            set private(star$k,elApp) [lindex $coords 4]
+            set private(star$k,raApp)   [lindex $coords 0]
+            set private(star$k,deApp)   [lindex $coords 1]
+            set private(star$k,haApp)   [lindex $coords 2]
+            set private(star$k,azApp)   [lindex $coords 3]
+            set private(star$k,elApp)   [lindex $coords 4]
             set private(star$k,raDelta) [expr 60.0 * [mc_anglescomp [mc_angle2deg $private(star$k,raObs)] - [mc_angle2deg $private(star$k,raApp)] ]]
             set private(star$k,deDelta) [expr 60.0 * [mc_anglescomp [mc_angle2deg $private(star$k,deObs)] - [mc_angle2deg $private(star$k,deApp)] ]]
-            set private(star$k,state)       1
+            set private(star$k,state)   1
          } else {
             set private(star$k,raApp)     ""
             set private(star$k,deApp)     ""
@@ -148,7 +146,6 @@ proc ::modpoi2::wizard::modpoi_wiz { visuNo { starList "" } } {
          incr k
       }
       set private(stars,nb) $k
-
 
       #--- je prepare la liste des données pour mc_compute_matrix_modpoi
       set starList ""
@@ -168,7 +165,6 @@ proc ::modpoi2::wizard::modpoi_wiz { visuNo { starList "" } } {
       set private(coefficients) [lindex $result 0]
       set private(chisquare) [lindex $result 1]
       set private(covar) [lindex $result 2]
-
 
       #--- je calcule des ecarts (obs- calculé) en appliquant le modele
       for {set k 0} {$k < $private(stars,nb)} {incr k} {
@@ -406,7 +402,6 @@ proc ::modpoi2::wizard::modpoi_wiz1c { } {
          -side top -anchor center \
          -padx 5 -pady 0 -expand 0
 
-
    #--- Accuracy of automatic centering
    frame $private(g,base).fra_a
    #--- Label accuraccy
@@ -524,7 +519,6 @@ proc ::modpoi2::wizard::modpoi_wiz1c { } {
    ::confColor::applyColor $private(g,base)
 }
 
-
 #-------------------------------------------------------------------------------
 # modpoi_wiz2
 #   affiche la liste des points d'amer
@@ -633,21 +627,21 @@ proc ::modpoi2::wizard::modpoi_wiz2 { } {
 
       if { $private(star$k,starname)!="" } {
          #--- Si un ecart a deja ete mesure , j'affiche l'ecart
-         set starName $private(star$k,starname)
-         set raDelta  [format "%.3f" $private(star$k,raDelta)]
-         set deDelta  [format "%.3f" $private(star$k,deDelta)]
-         set haApp    [mc_angle2hms $private(star$k,haApp) 360 zero 0 auto string]
-         set deApp    [mc_angle2dms $private(star$k,deApp) 90  zero 0 + string]
+         set starName    $private(star$k,starname)
+         set raDelta     [format "%.3f" $private(star$k,raDelta)]
+         set deDelta     [format "%.3f" $private(star$k,deDelta)]
+         set haApp       [mc_angle2hms $private(star$k,haApp) 360 zero 0 auto string]
+         set deApp       [mc_angle2dms $private(star$k,deApp) 90  zero 0 + string]
          set raDeltaTest [format "%.3f" $private(star$k,raDeltaTest)]
          set deDeltaTest [format "%.3f" $private(star$k,deDeltaTest)]
          #--- j'incremente le compteur des mesures
          incr nk
       } else {
-         set starName ""
-         set raDelta ""
-         set deDelta ""
-         set haApp ""
-         set deApp ""
+         set starName    ""
+         set raDelta     ""
+         set deDelta     ""
+         set haApp       ""
+         set deApp       ""
          set raDeltaTest ""
          set deDeltaTest ""
       }
@@ -790,7 +784,6 @@ proc ::modpoi2::wizard::deleteCheckbutton { tkTable row col w } {
 
    #--- je supprime le checkbutton et sa variable
    destroy $w
-
 
 }
 
@@ -1332,9 +1325,8 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
    set private(star$amerIndex,azApp) $azApp
    set private(star$amerIndex,elApp) $elApp
    #--- je memorie les conditions d'observation
-   set private(star$amerIndex,pressure) $pressure
+   set private(star$amerIndex,pressure)    $pressure
    set private(star$amerIndex,temperature) $temperature
-
 
    #--- pointage de l'étoile
    ::modpoi2::wizard::modpoi_goto
@@ -1453,7 +1445,6 @@ proc ::modpoi2::wizard::modpoi_wiz5 { } {
          set private(star$k,deDeltaTest) ""
       }
    }
-
 
    #--- Display name
    ###label $private(g,base).lab_name \
@@ -1628,8 +1619,6 @@ proc ::modpoi2::wizard::checkCamera {  } {
    }
 }
 
-
-
 #------------------------------------------------------------
 # checkStarNb
 #    recherche les points d'amer
@@ -1648,30 +1637,29 @@ proc ::modpoi2::wizard::checkStarNb { } {
    set private(stars,nb) [llength $amerList]
 
    for { set k 0 } { $k < $private(stars,nb) } { incr k } {
-      set private(star$k,amerAz)    [lindex [lindex $amerList $k] 3]
-      set private(star$k,amerEl)    [lindex [lindex $amerList $k] 4]
-      set private(star$k,starname)  ""
-      set private(star$k,raCat)     ""
-      set private(star$k,deCat)     ""
-      set private(star$k,eqCat)     ""
-      set private(star$k,date)      ""
-      set private(star$k,raObs)     ""
-      set private(star$k,deObs)     ""
-      set private(star$k,pressure)  ""
-      set private(star$k,temperature)  ""
+      set private(star$k,amerAz)      [lindex [lindex $amerList $k] 3]
+      set private(star$k,amerEl)      [lindex [lindex $amerList $k] 4]
+      set private(star$k,starname)    ""
+      set private(star$k,raCat)       ""
+      set private(star$k,deCat)       ""
+      set private(star$k,eqCat)       ""
+      set private(star$k,date)        ""
+      set private(star$k,raObs)       ""
+      set private(star$k,deObs)       ""
+      set private(star$k,pressure)    ""
+      set private(star$k,temperature) ""
 
-      set private(star$k,raApp)     ""
-      set private(star$k,deApp)     ""
-      set private(star$k,azApp)     ""
-      set private(star$k,elApp)     ""
-      set private(star$k,haApp)     ""
-      set private(star$k,raDelta)   ""
-      set private(star$k,deDelta)   ""
+      set private(star$k,raApp)       ""
+      set private(star$k,deApp)       ""
+      set private(star$k,azApp)       ""
+      set private(star$k,elApp)       ""
+      set private(star$k,haApp)       ""
+      set private(star$k,raDelta)     ""
+      set private(star$k,deDelta)     ""
       set private(star$k,raDeltaTest) ""
       set private(star$k,deDeltaTest) ""
-      set private(star$k,state)     0
+      set private(star$k,state)       0
    }
-
 
    if { ( $private(stars,nb) >= "6" ) && ( $private(stars,nb) <= "400" ) } {
       set ::conf(modpoi,wizard,haNb) $private(stars,haNb)
@@ -1782,7 +1770,6 @@ proc ::modpoi2::wizard::hideSelectedAmer { } {
       $::audace(base).plotxy1.xy element  delete selectedStar
    }
 }
-
 
 ################################################################################
 #  Commandes du telescope
@@ -1939,8 +1926,6 @@ proc ::modpoi2::wizard::modpoi_coord { } {
       set private(star$k,deDeltaTest) ""
    }
 
-
-
    #--- j'enregistre la liste des étoiles et le modèle
    saveModel
 }
@@ -1996,5 +1981,4 @@ variable private
       $refraction
 
 }
-
 
