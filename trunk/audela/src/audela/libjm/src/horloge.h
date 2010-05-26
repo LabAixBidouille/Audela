@@ -1,9 +1,11 @@
-/* jm_c_tcl.h
- *
- * This file is part of the libjm libfrary for AudeLA project.
- *
- * Initial author : Jacques MICHELET <jacques.michelet@laposte.net>
- *
+/***
+ * @file : horloge.h
+ * @brief : gestion de l'horloge système
+ * @author : Jacques MICHELET <jacques.michelet@laposte.net>
+  *
+ * Mise à jour $Id: horloge.h,v 1.3 2010-05-26 12:17:41 jacquesmichelet Exp $
+*
+ * <pre>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
@@ -17,16 +19,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * </pre>
  */
-
-/*
- * Projet      : AudeLA
- * Librairie   : LibJM
- * Fichier     : horloge.h
- * Description : Prototype des fonctions interfaces Tcl et le C
- * ============================================================
-*/
-
 #ifndef __LIBJM_HORLOGE_H__
 #define __LIBJM_HORLOGE_H__
 

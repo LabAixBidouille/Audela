@@ -3,6 +3,8 @@
  * @brief : point d'entrée dans la bibliothèque
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
+ * Mise à jour $Id: libjm.cpp,v 1.5 2010-05-26 12:17:41 jacquesmichelet Exp $
+ *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
