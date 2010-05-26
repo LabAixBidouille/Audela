@@ -1,7 +1,9 @@
 /***
  * @file : calaphot.cpp
- * @brief : point d'entrée dans la bibliothèque
+ * @brief : routines de photométrie et de modélisation
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
+ *
+ * Mise à jour $Id: calaphot.cpp,v 1.5 2010-05-26 11:55:07 jacquesmichelet Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
