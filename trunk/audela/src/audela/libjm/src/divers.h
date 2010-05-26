@@ -1,9 +1,10 @@
-/* jm_c_tcl.h
+/***
+ * @file : divers.h
+ * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * This file is part of the libjm libfrary for AudeLA project.
+ * Mise à jour $Id: divers.h,v 1.3 2010-05-26 12:00:17 jacquesmichelet Exp $
  *
- * Initial author : Jacques MICHELET <jacques.michelet@laposte.net>
- *
+ * <pre>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
@@ -17,15 +18,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * </pre>
  */
-
-/*
- * Projet      : AudeLA
- * Librairie   : LibJM
- * Fichier     : divers.h
- * Description : Prototype des fonctions interfaces Tcl et le C
- * ============================================================
-*/
 
 #ifndef __LIBJM_DIVERS_H__
 #define __LIBJM_DIVERS_H__

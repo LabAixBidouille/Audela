@@ -1,9 +1,11 @@
-/* jm_util.cpp
+/***
+ * @file : divers.cpp
+ * @brief : routines d'usage général
+ * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * This file is part of the libjm libfrary for AudeLA project.
+ * Mise à jour $Id: divers.cpp,v 1.3 2010-05-26 12:00:17 jacquesmichelet Exp $
  *
- * Initial author : Jacques MICHELET <jacques.michelet@laposte.net>
- *
+ * <pre>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
@@ -17,12 +19,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- */
-
-/* Projet      : AudeLA
- * Librairie   : LibJM
- * Fichier     : divers.cpp
- * Description : Fonctions utilitaires
+ * </pre>
  */
 #include <sysexp.h>
 #include <stdlib.h>
