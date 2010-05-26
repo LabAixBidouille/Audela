@@ -2,7 +2,7 @@
 # Fichier : modpoithread.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: modpoithread.tcl,v 1.3 2010-02-06 22:17:40 robertdelmas Exp $
+# Mise à jour $Id: modpoithread.tcl,v 1.4 2010-05-26 06:39:47 robertdelmas Exp $
 #
 # 3) Pour charger un modele de pointage existant
 #    source modpoi.tcl
@@ -286,5 +286,4 @@ proc modpoi_addobs { vecY matX vecW deltah deltad dec h phi } {
    #---
    return [list $vecY $matX $vecW]
 }
-
 
