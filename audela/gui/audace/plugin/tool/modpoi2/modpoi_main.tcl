@@ -2,13 +2,12 @@
 # Fichier : modpoi_main.tcl
 # Description : fenetre principale
 # Auteur : Michel Pujol
-# Mise à jour $Id: modpoi_main.tcl,v 1.3 2010-05-16 20:29:21 michelpujol Exp $
+# Mise à jour $Id: modpoi_main.tcl,v 1.4 2010-05-26 06:25:33 robertdelmas Exp $
 #
 
 namespace eval ::modpoi2::main {
 
 }
-
 
 #------------------------------------------------------------
 # fillConfigPage { }
@@ -29,14 +28,14 @@ proc ::modpoi2::main::run { visuNo {tkbase ""} } {
    set private($visuNo,model,symbols)      ""
    set private($visuNo,model,coefficients) ""
    set private($visuNo,model,covars)       ""
-   set private($visuNo,model,refraction)    0
-   set private($visuNo,model,amer,raNb)     0
-   set private($visuNo,model,amer,deNb)     0
-   set private($visuNo,modified)      0
+   set private($visuNo,model,refraction)   0
+   set private($visuNo,model,amer,raNb)    0
+   set private($visuNo,model,amer,deNb)    0
+   set private($visuNo,modified)           0
 
-   set private($visuNo,mount,name) ""
-   set private($visuNo,mount,modelName) ""
-   set private($visuNo,mount,modelDate) ""
+   set private($visuNo,mount,name)         ""
+   set private($visuNo,mount,modelName)    ""
+   set private($visuNo,mount,modelDate)    ""
 
    if { [winfo exists $private($visuNo,this) ] == 0 } {
       #--- j'affiche la fenetre
@@ -69,7 +68,6 @@ proc ::modpoi2::main::showHelp { } {
    ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::modpoi2::getPluginType ] ] \
       [ ::modpoi2::getPluginDirectory ] [ ::modpoi2::getPluginHelp ]
 }
-
 
 #------------------------------------------------------------
 # closeWindow
@@ -135,7 +133,6 @@ proc ::modpoi2::main::fillConfigPage { frm visuNo } {
 
    #--- Je memorise la reference de la frame
    set private($visuNo,frm)      $frm
-
 
    #--- je cree le menu
    set private($visuNo,menu) "$private($visuNo,this).menubar"
@@ -313,8 +310,6 @@ proc ::modpoi2::main::fillConfigPage { frm visuNo } {
 
    ###pack $frm.paned -side top -fill both -expand 1
 
-
-
    #--- je recupere les informations de la monture
    ::modpoi2::main::onChangeMount $visuNo
 }
@@ -380,7 +375,6 @@ proc ::modpoi2::main::onLoadModel { visuNo } {
       }
    }
 }
-
 
 #------------------------------------------------------------
 # saveModel
@@ -470,17 +464,17 @@ proc ::modpoi2::main::saveModel { fileName date comment starList symbols coeffic
       foreach star $starList {
          #--- j'ajoute une etoile
          set starNode  [::dom::document createElement $startsNode "STAR" ]
-         ::dom::element setAttribute $starNode "AMER_AZ"   [lindex $star 0]
-         ::dom::element setAttribute $starNode "AMER_EL"   [lindex $star 1]
-         ::dom::element setAttribute $starNode "NAME"      [lindex $star 2]
-         ::dom::element setAttribute $starNode "CAT_RA"    [lindex $star 3]
-         ::dom::element setAttribute $starNode "CAT_DE"    [lindex $star 4]
-         ::dom::element setAttribute $starNode "CAT_EQUINOX"    [lindex $star 5]
-         ::dom::element setAttribute $starNode "OBS_DATE"  [lindex $star 6]
-         ::dom::element setAttribute $starNode "OBS_RA"    [lindex $star 7]
-         ::dom::element setAttribute $starNode "OBS_DE"    [lindex $star 8]
-         ::dom::element setAttribute $starNode "PRESSURE"  [lindex $star 9]
-         ::dom::element setAttribute $starNode "TEMPERATURE"  [lindex $star 10]
+         ::dom::element setAttribute $starNode "AMER_AZ"     [lindex $star 0]
+         ::dom::element setAttribute $starNode "AMER_EL"     [lindex $star 1]
+         ::dom::element setAttribute $starNode "NAME"        [lindex $star 2]
+         ::dom::element setAttribute $starNode "CAT_RA"      [lindex $star 3]
+         ::dom::element setAttribute $starNode "CAT_DE"      [lindex $star 4]
+         ::dom::element setAttribute $starNode "CAT_EQUINOX" [lindex $star 5]
+         ::dom::element setAttribute $starNode "OBS_DATE"    [lindex $star 6]
+         ::dom::element setAttribute $starNode "OBS_RA"      [lindex $star 7]
+         ::dom::element setAttribute $starNode "OBS_DE"      [lindex $star 8]
+         ::dom::element setAttribute $starNode "PRESSURE"    [lindex $star 9]
+         ::dom::element setAttribute $starNode "TEMPERATURE" [lindex $star 10]
       }
 
       #--- j'ajoute les coefficients
@@ -539,9 +533,7 @@ proc ::modpoi2::main::onChangeMount { visuNo args } {
    ###   }
    ###}
 
-
 }
-
 
 #------------------------------------------------------------
 # onApplyModel
@@ -625,13 +617,13 @@ proc ::modpoi2::main::displayStar { visuNo starList} {
 
       set starName     [lindex $starLine 2]
       if { $starName != "" } {
-         set raCat    [lindex $starLine 3]
-         set deCat    [lindex $starLine 4]
-         set eqCat    [lindex $starLine 5]
-         set date     [ string map { T " " } [lindex $starLine 6]]
-         set raObs    [mc_angle2deg [lindex $starLine 7]]
-         set deObs    [mc_angle2deg [lindex $starLine 8]]
-         set pressure [lindex $starLine 9]
+         set raCat       [lindex $starLine 3]
+         set deCat       [lindex $starLine 4]
+         set eqCat       [lindex $starLine 5]
+         set date        [ string map { T " " } [lindex $starLine 6]]
+         set raObs       [mc_angle2deg [lindex $starLine 7]]
+         set deObs       [mc_angle2deg [lindex $starLine 8]]
+         set pressure    [lindex $starLine 9]
          set temperature [lindex $starLine 10]
 
          #--- je recupere les coordonnees apparentes à la date de l'observation
@@ -746,7 +738,6 @@ proc ::modpoi2::main::displayCoefficient { visuNo symbols coefficients covars } 
 
 }
 
-
 #------------------------------------------------------------
 # modifyModel
 #   affiche les coefficents du modele
@@ -768,13 +759,4 @@ proc ::modpoi2::main::modifyModel { visuNo starList symbols coefficients covars 
    #--- je positionne le flag de modification du modele
    set private($visuNo,modified) 1
 }
-
-
-
-
-
-
-
-
-
 

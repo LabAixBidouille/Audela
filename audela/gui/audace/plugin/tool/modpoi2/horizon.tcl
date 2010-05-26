@@ -2,7 +2,7 @@
 # Fichier : horizon.tcl
 # Description : fabrication de la ligne d'horizon
 # Auteur : Michel Pujol
-# Mise a jour $Id: horizon.tcl,v 1.2 2010-05-26 06:19:57 robertdelmas Exp $
+# Mise à jour $Id: horizon.tcl,v 1.3 2010-05-26 06:21:33 robertdelmas Exp $
 #
 
 namespace eval ::horizon {

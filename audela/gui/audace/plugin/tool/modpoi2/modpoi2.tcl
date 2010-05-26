@@ -2,7 +2,7 @@
 # Fichier : modpoi2.tcl
 # Description : Outil de fabrication des fichiers Kit et de deploiement des plugins
 # Auteur : Michel Pujol
-# Mise a jour $Id: modpoi2.tcl,v 1.1 2010-04-29 18:10:32 michelpujol Exp $
+# Mise à jour $Id: modpoi2.tcl,v 1.2 2010-05-26 06:22:01 robertdelmas Exp $
 #
 
 namespace eval ::modpoi2 {
@@ -80,7 +80,6 @@ proc ::modpoi2::getPluginProperty { propertyName } {
    }
 }
 
-
 #------------------------------------------------------------
 # createPluginInstance
 #     cree une instance l'outil
@@ -130,5 +129,4 @@ proc ::modpoi2::stopTool { visuNo } {
 
    #--- rien à faire car ce n'est pas un panneau
 }
-
 
