@@ -2,7 +2,9 @@
  * @file : fourier_tcl.cpp
  * @brief : interface TCL<->C pour les transformations d'images basées sur la TFD
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
- *
+  *
+ * Mise à jour $Id: fourier_tcl.cpp,v 1.2 2010-05-26 12:12:15 jacquesmichelet Exp $
+*
  * <pre>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

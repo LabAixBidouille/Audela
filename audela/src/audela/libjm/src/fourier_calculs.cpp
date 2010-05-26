@@ -1,7 +1,9 @@
 /***
  * @file : fourier_calculs.cpp
- * @brief : Méthodes de l'objet Fourier
+ * @brief : Méthodes de l'objet Fourier : calculs mathématiques
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
+ *
+ * Mise à jour $Id: fourier_calculs.cpp,v 1.2 2010-05-26 12:11:38 jacquesmichelet Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
