@@ -914,6 +914,7 @@ int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *com
    vsprintf(command, commandFormat, mkr);
 	va_end (mkr);
 
+	mytel_flush(tel);
    // j'envoie la commande
    sprintf(s,"puts -nonewline %s %s",tel->channel,command); mytel_tcleval(tel,s);
    // je temporise avant de lire la reponse
@@ -964,7 +965,8 @@ int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *com
             strcpy(tel->msg, tel->interp->result);
          }
 
-      } while ( strcmp(s,"#")!= 0  &&  k++ < 10000 && cr==0 );
+      } while (   k++ < 10000 && cr==0 );
+	  // strcmp(s,"#")!= 0  &&
    }
 
    if ( tel->consoleLog == 1 ) {
