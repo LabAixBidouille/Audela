@@ -2,7 +2,7 @@
 # Fichier : eshel.tcl
 # Description : outil de fabrication des fichier Kit et de deploiement des plugin
 # Auteurs : Michel Pujol
-# Mise a jour $Id: eshel.tcl,v 1.6 2010-05-01 15:30:58 michelpujol Exp $
+# Mise à jour $Id: eshel.tcl,v 1.7 2010-05-26 17:38:43 robertdelmas Exp $
 #
 
 ##------------------------------------------------------------
@@ -407,7 +407,7 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
    #--- si ce n'est pas le cas, je cree la variable avec la valeur de la configuration "defaut"
    foreach configPath [array names ::conf eshel,instrument,config,*,orderDefinition] {
       set configId [lindex [split $configPath "," ] 3]
-      #--- je verifie que tous les parametres existent ( necessaires pour les parametres qui seront ajout�s dans les futures versions
+      #--- je verifie que tous les parametres existent (necessaires pour les parametres qui seront ajoutes dans les futures versions)
       foreach paramFullName  [array names ::conf eshel,instrument,config,default,*] {
          set paramName [string range $paramFullName [string length "eshel,instrument,config,default,"] end]
          if { [ info exists ::conf(eshel,instrument,config,$configId,$paramName) ] == 0 } {
@@ -600,7 +600,7 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
    pack $frm.process -side top -fill x -padx 2
 
    TitleFrame $frm.config -borderwidth 2 -relief groove -text "Administration"
-      #--- Param�tres instrument
+      #--- Parametres instrument
       button $frm.config.instrument -text "$caption(eshel,instrument)" -height 1 \
         -borderwidth 1 -padx 2 -pady 2 -command "::eshel::instrumentgui::run [winfo toplevel $private($visuNo,frm)] $visuNo"
       pack $frm.config.instrument -in [$frm.config getframe] -fill x -padx 2 -pady 2 -expand true
@@ -791,7 +791,7 @@ proc ::eshel::adaptPanel { visuNo args } {
 
          #--- je verifie que le binning preselectionne existe dans la liste
          if { [lsearch $binningList $::conf(eshel,binning)] == -1 } {
-            #--- si le binning n'existe pas je selectionne la premi�re valeur par defaut
+            #--- si le binning n'existe pas je selectionne la premiere valeur par defaut
             set  ::conf(eshel,binning) [lindex $binningList 0]
          }
          #--- j'affiche la frame du binning
@@ -866,7 +866,7 @@ proc ::eshel::onStartAcquisition { visuNo args } {
    set comment    ""
    switch $sequenceType {
       objectSequence {
-         #--- je v�rifie que le nom de l'objet est renseigne
+         #--- je verifie que le nom de l'objet est renseigne
          #if {  $private($visuNo,objname) == "" } {
          #    console::affiche_erreur "$::caption(eshel,acquisition,errorObject) \n"
          #   tk_messageBox -message "$::caption(eshel,acquisition,errorObject)" -icon error -title $::caption(eshel,title)
@@ -1151,7 +1151,7 @@ proc ::eshel::setProcessAuto { } {
 #------------------------------------------------------------
 proc ::eshel::checkDirectory { } {
 
-   #--- je v�rifie que le repertoire des fichiers bruts existe
+   #--- je verifie que le repertoire des fichiers bruts existe
    if {  [file exists $::conf(eshel,rawDirectory)] == 0 } {
       error [format $::caption(eshel,directoryNotFound) $::conf(eshel,rawDirectory)]
    }
@@ -1175,7 +1175,7 @@ proc ::eshel::checkDirectory { } {
 
 #------------------------------------------------------------
 # showRawDirectory
-#   affiche le r�pertoire des images brutes
+#   affiche le repertoire des images brutes
 #------------------------------------------------------------
 proc ::eshel::showRawDirectory { } {
 
@@ -1187,7 +1187,7 @@ proc ::eshel::showRawDirectory { } {
    confVisu::selectTool $visuDir ::eshelvisu
    #--- je pointe le repertoire des images brutes
    set ::eshelvisu::localTable::private($visuDir,directory)  $::conf(eshel,rawDirectory)
-   #--- j'affiche le contenu du r�pertoire
+   #--- j'affiche le contenu du repertoire
    ::eshelvisu::localTable::fillTable $visuDir
 }
 
@@ -1203,9 +1203,9 @@ proc ::eshel::showProfile { } {
    #confVisu::selectTool $visuDir ::visio2
    #--- je selectionne l'outil eShel Visu
    confVisu::selectTool $visuDir ::eshelvisu
-   #--- je pointe le r�pertoire des images brutes
+   #--- je pointe le repertoire des images brutes
    set ::eshelvisu::localTable::private($visuDir,directory) $::conf(eshel,mainDirectory)
-   #--- j'affiche le contenu du r�pertoire
+   #--- j'affiche le contenu du repertoire
    ::eshelvisu::localTable::fillTable $visuDir
 }
 
@@ -1213,7 +1213,7 @@ proc ::eshel::showProfile { } {
 # showObjectProfile
 # affiche le profil P_FULL d'un objet dans une nouvelle visu
 #
-# Le fichier est recherch� dans le r�pertoire des profils trait�s.
+# Le fichier est recherche dans le repertoire des profils traites.
 #
 # @param fileName nom du fichier
 # @return rien
@@ -1226,7 +1226,7 @@ proc ::eshel::showObjectProfile { fileName } {
    #confVisu::selectTool $profileVisu ::visio2
    #--- je selectionne l'outil eShel Visu
    confVisu::selectTool $profileVisu ::eshelvisu
-   #--- je pointe le r�pertoire des images brutes
+   #--- je pointe le repertoire des images brutes
    set ::eshelvisu::localTable::private($profileVisu,directory) $::conf(eshel,processedDirectory)
    #--- j'affiche le contenu du fichier
    :::eshelvisu::localTable::refresh $profileVisu $fileName "P_1C_FULL"

@@ -2,7 +2,7 @@
 # Fichier : instrument.tcl
 # Description : commande des instruments de l'outil eShel
 # Auteur : Michel PUJOL
-# Mise a jour $Id: instrument.tcl,v 1.2 2010-04-11 13:24:25 michelpujol Exp $
+# Mise à jour $Id: instrument.tcl,v 1.3 2010-05-26 17:40:35 robertdelmas Exp $
 #
 
 namespace eval ::eshel::instrument {
@@ -28,7 +28,6 @@ proc ::eshel::instrument::getConfigurationList { } {
    #--- je trie par ordre alphabetique (l'option -dictionary est equivalente a nocase)
    return [lsort -dictionary $configList ]
 }
-
 
 #------------------------------------------------------------
 # getCurrentConfig
@@ -62,13 +61,10 @@ proc ::eshel::instrument::setCurrentConfig { } {
       error $caption(eshel,instrument,errorBusyConfig)
    }
 
-
    #--- je verifie qu'il n'y a pas de traitement en cours
-
 
    return $::conf(eshel,currentInstrument)
 }
-
 
 ##------------------------------------------------------------
 #  retourne une propriete de la configuration courante
@@ -164,7 +160,6 @@ proc ::eshel::instrument::setConfigurationProperty { propertyName propertyValue}
    set configId $::conf(eshel,currentInstrument)
    set ::conf(eshel,instrument,config,$configId,$propertyName) $propertyValue
 }
-
 
 #------------------------------------------------------------
 # getConfigIdentifiant
@@ -327,7 +322,6 @@ proc ::eshel::instrument::importCalibrationConfig { fileName } {
       set linelist   [$hFile get table lambda_obs ]
       set param(lineList) [lsort -unique $linelist]
 
-
       #---- fenetrage par defaut
       set param(x1)        1
       set param(y1)        1
@@ -381,7 +375,7 @@ proc ::eshel::instrument::getKeyword { hFile keywordName} {
       set keywords [$hFile get keyword $keywordName]
    }]
    if { $catchResult !=0 } {
-      #--- je transmets l'erreur en ajoutant le nom du mot cl�
+      #--- je transmets l'erreur en ajoutant le nom du mot cle
       error "keyword $keywordName not found\n$::errorInfo"
    }
 
@@ -401,7 +395,6 @@ proc ::eshel::instrument::getKeyword { hFile keywordName} {
    }
    return $value
 }
-
 
 ## exportConfig ------------------------------------------------------------
 # export une configuration dans un fichier XML
@@ -545,5 +538,4 @@ proc ::eshel::instrument::getCameraBinningList { visuNo } {
 
    return
 }
-
 
