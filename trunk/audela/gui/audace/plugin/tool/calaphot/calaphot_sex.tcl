@@ -5,11 +5,11 @@
 #
 # @brief Routines d'appel et de configuration de sextractor pour Calaphot
 #
-# Mise a jour $Id: calaphot_sex.tcl,v 1.3 2010-03-28 16:34:38 jacquesmichelet Exp $
-
+# Mise à jour $Id: calaphot_sex.tcl,v 1.4 2010-05-26 17:21:56 robertdelmas Exp $
+#
 
 proc FichierNeuronalSex { {filename default.nnw} } {
-        Message debug "%s\n" [info level [info level]]
+   Message debug "%s\n" [info level [info level]]
 
    set texte    ""
    append texte "NNW\n"
@@ -47,7 +47,7 @@ proc FichierNeuronalSex { {filename default.nnw} } {
 }
 
 proc FichierParametresSex { {filename calaphot.param} } {
-        Message debug "%s\n" [info level [info level]]
+   Message debug "%s\n" [info level [info level]]
 
    set texte    ""
    append texte "NUMBER\n"
@@ -75,11 +75,11 @@ proc FichierParametresSex { {filename calaphot.param} } {
 }
 
 proc FichierConfigurationSex { {filename calaphot.sex} } {
-        global audace
-        variable calaphot
-        variable parametres
+   global audace
+   variable calaphot
+   variable parametres
 
-        Message debug "%s\n" [info level [info level]]
+   Message debug "%s\n" [info level [info level]]
 
    set texte    ""
    append texte "\n"
@@ -175,89 +175,90 @@ proc FichierConfigurationSex { {filename calaphot.sex} } {
    FermetureFichier $f
 }
 
-    proc Sextractor { args } {
-        global audace
-        variable calaphot
-        variable data_script
+proc Sextractor { args } {
+   global audace
+   variable calaphot
+   variable data_script
 
-        Message debug "%s\n" [info level [info level]]
+   Message debug "%s\n" [info level [info level]]
 
-        set pathbin .
-        catch { set pathbin [ file join $audace(rep_gui) .. bin ] }
-        set exefile [ file join ${pathbin} sextractor.exe ]
-        set k [file exists "$exefile"]
-        if {$k==0} {
-            set exefile [ file join ${pathbin} sex.exe ]
-            set k [file exists "$exefile"]
-        }
-        if {$k==0} {
-            set exefile [ file join ${pathbin} sex ]
-            set k [file exists "$exefile"]
-        }
-        if {$k==0} {
-            set exefile [ file join ${pathbin} sextractor ]
-            set k [file exists "$exefile"]
-        }
-        if {$k==0} {
-            Message erreur "sextractor.exe not found\n"
-            return 1
-        }
+   set pathbin .
+   catch { set pathbin [ file join $audace(rep_gui) .. bin ] }
+   set exefile [ file join ${pathbin} sextractor.exe ]
+   set k [file exists "$exefile"]
+   if {$k==0} {
+       set exefile [ file join ${pathbin} sex.exe ]
+       set k [file exists "$exefile"]
+   }
+   if {$k==0} {
+       set exefile [ file join ${pathbin} sex ]
+       set k [file exists "$exefile"]
+   }
+   if {$k==0} {
+       set exefile [ file join ${pathbin} sextractor ]
+       set k [file exists "$exefile"]
+   }
+   if {$k==0} {
+       Message erreur "sextractor.exe not found\n"
+       return 1
+   }
 
-        set ligne "exec \"$exefile\" $args -c $calaphot(sextractor,config)"
-        Message debug "ligne=%s\n" $ligne
-        catch {file delete $calaphot(sextractor,catalog)}
-        set err [ catch {
-            eval $ligne
-        } msg ]
-        if { [file exists $calaphot(sextractor,catalog)] } {
-            return 0
-        } else {
-            Message erreur "%s\n" $msg
-            return 1
-        }
-    }
+   set ligne "exec \"$exefile\" $args -c $calaphot(sextractor,config)"
+   Message debug "ligne=%s\n" $ligne
+   catch {file delete $calaphot(sextractor,catalog)}
+   set err [ catch {
+       eval $ligne
+   } msg ]
+   if { [file exists $calaphot(sextractor,catalog)] } {
+       return 0
+   } else {
+       Message erreur "%s\n" $msg
+       return 1
+   }
+}
 
-    proc CreationFichiersSextractor { } {
-        global audace
-        variable calaphot
+proc CreationFichiersSextractor { } {
+   global audace
+   variable calaphot
 
-        Message debug "%s\n" [ info level [ info level ] ]
+   Message debug "%s\n" [ info level [ info level ] ]
 
-        FichierParametresSex $calaphot(sextractor,param)
-        FichierConfigurationSex $calaphot(sextractor,config)
-        FichierNeuronalSex $calaphot(sextractor,neurone)
-    }
+   FichierParametresSex $calaphot(sextractor,param)
+   FichierConfigurationSex $calaphot(sextractor,config)
+   FichierNeuronalSex $calaphot(sextractor,neurone)
+}
 
-    proc RechercheCatalogue { image type etoile } {
-        variable calaphot
-        variable pos_reel
+proc RechercheCatalogue { image type etoile } {
+   variable calaphot
+   variable pos_reel
 
-        Message debug "%s\n" [info level [info level]]
+   Message debug "%s\n" [info level [info level]]
 
-        set r [list]
-        set catalog [OuvertureFichier $calaphot(sextractor,catalog) r]
-        if {($catalog != "")} {
-            Message debug "catalog=%s\n" $catalog
+   set r [list]
+   set catalog [OuvertureFichier $calaphot(sextractor,catalog) r]
+   if {($catalog != "")} {
+       Message debug "catalog=%s\n" $catalog
 
-            set x [lindex $pos_reel($image,$type,$etoile) 0]
-            set y [lindex $pos_reel($image,$type,$etoile) 1]
+       set x [lindex $pos_reel($image,$type,$etoile) 0]
+       set y [lindex $pos_reel($image,$type,$etoile) 1]
 
-            set min 1e9
-            foreach ligne [split [read $catalog] \n] {
-                set xc [lindex $ligne 6]
-                set yc [lindex $ligne 7]
-                set dx [expr abs($xc - $x)]
-                set dy [expr abs($yc - $y)]
-                if {($dx < 3.0) && ($dy < 3.0)} {
-                    set dist [expr hypot($dx,$dy)]
-                    if {($dist < $min)} {
-                        set min $dist
-                        set r $ligne
-                    }
-                }
-            }
-            Message debug "Ligne =%s\n" $r
-            FermetureFichier $catalog
-        }
-        return $r
-    }
+       set min 1e9
+       foreach ligne [split [read $catalog] \n] {
+           set xc [lindex $ligne 6]
+           set yc [lindex $ligne 7]
+           set dx [expr abs($xc - $x)]
+           set dy [expr abs($yc - $y)]
+           if {($dx < 3.0) && ($dy < 3.0)} {
+               set dist [expr hypot($dx,$dy)]
+               if {($dist < $min)} {
+                   set min $dist
+                   set r $ligne
+               }
+           }
+       }
+       Message debug "Ligne =%s\n" $r
+       FermetureFichier $catalog
+   }
+   return $r
+}
+

@@ -3,10 +3,11 @@
 #
 # @author Olivier Thizy (thizy@free.fr) & Jacques Michelet (jacques.michelet@laposte.net)
 #
-# @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
+# @brief Script pour la photométrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot.tcl,v 1.3 2010-02-14 10:53:24 robertdelmas Exp $
+# $Id: calaphot.tcl,v 1.4 2010-05-26 17:18:47 robertdelmas Exp $
 #
+
 namespace eval ::CalaPhot {
    package provide calaphot 5.0
    package require audela 1.5.0
@@ -17,7 +18,6 @@ namespace eval ::CalaPhot {
    source [ file join [file dirname [info script]] calaphot_calcul.tcl ]
    source [ file join [file dirname [info script]] calaphot_sex.tcl ]
    source [ file join [file dirname [info script]] calaphot_principal.tcl ]
-
 
    #------------------------------------------------------------
    # getPluginTitle
