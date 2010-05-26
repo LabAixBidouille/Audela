@@ -2,13 +2,12 @@
 # Fichier : modpoi_process.tcl
 # Description : pipeline de pointage des etoiles
 # Auteur : Michel Pujol
-# Mise a jour $Id: modpoi_process.tcl,v 1.1 2010-04-29 18:10:32 michelpujol Exp $
+# Mise à jour $Id: modpoi_process.tcl,v 1.2 2010-05-26 06:28:45 robertdelmas Exp $
 #
 
 namespace eval ::modpoi2::process {
 
 }
-
 
 #-------------------------------------------------------------------------------
 # computeCoefficient
@@ -110,11 +109,11 @@ proc ::modpoi2::process::testCoefficient { starList home vec { fileName ""} } {
       set matX ""
       set vecW ""
       #--- Ajoute deux lignes à la matrice
-      set res [::modpoi2::process::addObs "$vecY" "$matX" "$vecW" $deltaha $deltade $decadt $haadt $phi]
+      set res  [::modpoi2::process::addObs "$vecY" "$matX" "$vecW" $deltaha $deltade $decadt $haadt $phi]
       set matX [lindex $res 1]
       #--- Calcul direct
-      set res [gsl_mmult $matX $vec]
-      set dra_c [lindex $res 0]
+      set res    [gsl_mmult $matX $vec]
+      set dra_c  [lindex $res 0]
       set ddec_c [lindex $res 1]
       #--- Dans un fichier
       append texte "$haadt [mc_angle2deg $decadt 90] $deltaha $deltade $dra_c $ddec_c\n"
@@ -128,18 +127,17 @@ proc ::modpoi2::process::testCoefficient { starList home vec { fileName ""} } {
    return $texte
 }
 
-
 #------------------------------------------------------------
 # addObs
 #
 #------------------------------------------------------------
 proc ::modpoi2::process::addObs { vecY matX vecW deltah deltad dec h phi } {
-   set tand [expr tan([mc_angle2rad $dec]) ]
-   set cosh [expr cos([mc_angle2rad $h]) ]
-   set sinh [expr sin([mc_angle2rad $h]) ]
-   set cosd [expr cos([mc_angle2rad $dec]) ]
-   set sind [expr sin([mc_angle2rad $dec]) ]
-   set secd [expr 1./cos([mc_angle2rad $dec]) ]
+   set tand   [expr tan([mc_angle2rad $dec]) ]
+   set cosh   [expr cos([mc_angle2rad $h]) ]
+   set sinh   [expr sin([mc_angle2rad $h]) ]
+   set cosd   [expr cos([mc_angle2rad $dec]) ]
+   set sind   [expr sin([mc_angle2rad $dec]) ]
+   set secd   [expr 1./cos([mc_angle2rad $dec]) ]
    set sinphi [expr sin([mc_angle2rad $phi]) ]
    set cosphi [expr cos([mc_angle2rad $phi]) ]
    #---
@@ -207,12 +205,12 @@ proc ::modpoi2::process::modpoi_catalogmean2apparent { ra_cat de_cat equinox dat
    #--- Aberration de l'aberration diurne
    set radec [mc_aberrationradec diurnal $radec $date $private(home)]
    #--- Calcul de l'angle horaire et de la hauteur vraie
-   set rav [lindex $radec 0]
-   set decv [lindex $radec 1]
+   set rav   [lindex $radec 0]
+   set decv  [lindex $radec 1]
    set dummy [mc_radec2altaz ${rav} ${decv} $private(home) $date]
-   set azv  lindex $dummy 0]
-   set hv [lindex $dummy 1]
-   set Hv [lindex $dummy 2]
+   set azv   [lindex $dummy 0]
+   set hv    [lindex $dummy 1]
+   set Hv    [lindex $dummy 2]
    #--- Return
    return [list $rav $decv $Hv $hv $azv]
 }
@@ -235,11 +233,11 @@ proc ::modpoi2::process::modpoi_apparent2observed { listvdt { pressure 101325 } 
    set deg2rad $private(deg2rad)
    set rad2deg $private(rad2deg)
    #--- Extract angles from the listvd
-   set ravdt [lindex $listvdt 0]
+   set ravdt  [lindex $listvdt 0]
    set decvdt [lindex $listvdt 1]
-   set Hvdt [lindex $listvdt 2]
-   set hvdt [lindex $listvdt 3]
-   set azvdt [lindex $listvdt 4]
+   set Hvdt   [lindex $listvdt 2]
+   set hvdt   [lindex $listvdt 3]
+   set azvdt  [lindex $listvdt 4]
    #--- Refraction correction
    set azadt $azvdt
    if {$hvdt>-1.} {
@@ -247,15 +245,12 @@ proc ::modpoi2::process::modpoi_apparent2observed { listvdt { pressure 101325 } 
    } else {
       set refraction 0.
    }
-   set hadt [expr $hvdt+$refraction]
-   set res [mc_altaz2radec $azvdt $hadt $private(home) $date]
-   set raadt [lindex $res 0]
+   set hadt   [expr $hvdt+$refraction]
+   set res    [mc_altaz2radec $azvdt $hadt $private(home) $date]
+   set raadt  [lindex $res 0]
    set decadt [lindex $res 1]
-   set res [mc_altaz2hadec $azvdt $hadt $private(home) $date]
-   set Hadt [lindex $res 0]
+   set res    [mc_altaz2hadec $azvdt $hadt $private(home) $date]
+   set Hadt   [lindex $res 0]
    return [list $raadt $decadt $Hadt $hadt $azadt]
 }
-
-
-
 
