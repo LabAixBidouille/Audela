@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: tuto.station.tcl,v 1.9 2010-05-27 06:34:07 robertdelmas Exp $
+# Mise à jour $Id: tuto.station.tcl,v 1.10 2010-05-27 10:40:06 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -159,7 +159,7 @@ pack .second.statusBar -side bottom -fill x -pady 2
 
 catch {image delete image$num(image1)}
 image create photo image$num(image1)
-image$num(image1) configure -file a7.gif -format gif
+image$num(image1) configure -file a5.gif -format gif
 image create photo image11
 set width [image width image$num(image1)]
 set height [image height image$num(image1)]
