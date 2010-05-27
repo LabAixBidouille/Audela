@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.amasglo.tcl,v 1.9 2010-01-12 16:10:26 robertdelmas Exp $
+# Mise Ã  jour $Id: tuto.amasglo.tcl,v 1.10 2010-05-27 06:28:57 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -37,17 +37,17 @@ When focusing is over you are ready to shoot wonderful images of the sky.\n"
      set caption(compute) "Analyse..."
      set caption(exit) "Quitter"
      set caption(thermlevel) "Niveau thermique ="
-     set caption(max_zero) "Problème de connexion"
-     set caption(satured) "Des pixels sont saturés"
+     set caption(max_zero) "ProblÃ¨me de connexion"
+     set caption(satured) "Des pixels sont saturÃ©s"
      set caption(maxdark) "Valeur maximum ="
 
-     set texte(firstdark_1) "Initiation à l'imagerie CCD"
+     set texte(firstdark_1) "Initiation Ã  l'imagerie CCD"
      set texte(firstdark_2) "Focalisation sur un amas globulaire"
-     set texte(firstdark_3) "Pointer votre télescope vers un amas globulaire. Vous avez préalablement dégrossi la mise au point avec une étoile brillante.\
-La première image de l'amas doit être assez belle mais les étoiles ne sont sûrement pas encore très fines.\
-Faites des images CCD en cliquant sur le bouton rouge, en bougeant la molette de mise au point entre chaque pose, jusqu'à obtenir des images fines.\
-Lorsque la focalisation est terminée, vous pouvez enfin commencer à prendre de belles images du ciel.\n"
-     set texte(firstdark_exit) " Retour à la page principale."
+     set texte(firstdark_3) "Pointer votre tÃ©lescope vers un amas globulaire. Vous avez prÃ©alablement dÃ©grossi la mise au point avec une Ã©toile brillante.\
+La premiÃ¨re image de l'amas doit Ãªtre assez belle mais les Ã©toiles ne sont sÃ»rement pas encore trÃ¨s fines.\
+Faites des images CCD en cliquant sur le bouton rouge, en bougeant la molette de mise au point entre chaque pose, jusqu'Ã  obtenir des images fines.\
+Lorsque la focalisation est terminÃ©e, vous pouvez enfin commencer Ã  prendre de belles images du ciel.\n"
+     set texte(firstdark_exit) " Retour Ã  la page principale."
    }
 }
 

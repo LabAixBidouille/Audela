@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.firstlight.tcl,v 1.9 2010-01-12 16:12:49 robertdelmas Exp $
+# Mise Ã  jour $Id: tuto.firstlight.tcl,v 1.10 2010-05-27 06:32:43 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -36,17 +36,17 @@ Click on the red button $caption(go) to shoot an image.\n"
       set caption(compute) "Analyse..."
       set caption(exit) "Quitter"
       set caption(thermlevel) "Niveau thermique ="
-      set caption(max_zero) "Problème de connexion"
-      set caption(satured) "Des pixels sont saturés"
+      set caption(max_zero) "ProblÃ¨me de connexion"
+      set caption(satured) "Des pixels sont saturÃ©s"
       set caption(maxlight) "Valeur maximum ="
       set caption(lowlevel) "Niveau bas ="
       set caption(highlevel) "Niveau haut ="
 
-      set texte(firstlight_1) "Initiation à l'imagerie CCD"
-      set texte(firstlight_2) "Première lumière, caméra non-refroidie"
-      set texte(firstlight_3) "Installer votre matériel d'acquisition CCD (caméra branchée sur l'ordinateur) dans une pièce faiblement éclairée. Le mieux est de procéder pendant la nuit dans une pièce éclairée par l'écran de l'ordinateur. La caméra n'est pas refroidie.\n
+      set texte(firstlight_1) "Initiation Ã  l'imagerie CCD"
+      set texte(firstlight_2) "PremiÃ¨re lumiÃ¨re, camÃ©ra non-refroidie"
+      set texte(firstlight_3) "Installer votre matÃ©riel d'acquisition CCD (camÃ©ra branchÃ©e sur l'ordinateur) dans une piÃ¨ce faiblement Ã©clairÃ©e. Le mieux est de procÃ©der pendant la nuit dans une piÃ¨ce Ã©clairÃ©e par l'Ã©cran de l'ordinateur. La camÃ©ra n'est pas refroidie.\n
 Cliquer sur le bouton rouge $caption(go) pour faire une image.\n"
-      set texte(firstlight_exit) " Retour à la page principale."
+      set texte(firstlight_exit) " Retour Ã  la page principale."
    }
 }
 

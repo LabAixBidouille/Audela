@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.bague.tcl,v 1.8 2010-01-12 16:11:10 robertdelmas Exp $
+# Mise Ã  jour $Id: tuto.bague.tcl,v 1.9 2010-05-27 06:30:38 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -37,17 +37,17 @@ As a result, you just have to position the Audine camera in the eyepiece holder 
       set caption(compute) "Analyse..."
       set caption(exit) "Quitter"
       set caption(thermlevel) "Niveau thermique ="
-      set caption(max_zero) "Problème de connexion"
-      set caption(satured) "Des pixels sont saturés"
+      set caption(max_zero) "ProblÃ¨me de connexion"
+      set caption(satured) "Des pixels sont saturÃ©s"
       set caption(maxdark) "Valeur maximum ="
 
-      set texte(firstdark_1) "Initiation à l'imagerie CCD"
+      set texte(firstdark_1) "Initiation Ã  l'imagerie CCD"
       set texte(firstdark_2) "Bague pour adapter Audine sur un porte-oculaire"
-      set texte(firstdark_3) "Sur cette photo, on va visser une bague sur la face avant de la caméra Audine. Cette bague\
-(disponible chez le revendeur de la caméra) permet de transformer la sortie de Audine (taraudage de diamètre 42 mm avec un pas de 1 mm)\
-sous la forme d'un tube au coulant standard des oculaires (diamètre lisse de 31,75 mm).\n
-Ainsi, il suffit de placer la caméra Audine dans le porte-oculaire de votre instrument pour être opérationnel.\n"
-      set texte(firstdark_exit) " Retour à la page principale."
+      set texte(firstdark_3) "Sur cette photo, on va visser une bague sur la face avant de la camÃ©ra Audine. Cette bague\
+(disponible chez le revendeur de la camÃ©ra) permet de transformer la sortie de Audine (taraudage de diamÃ¨tre 42 mm avec un pas de 1 mm)\
+sous la forme d'un tube au coulant standard des oculaires (diamÃ¨tre lisse de 31,75 mm).\n
+Ainsi, il suffit de placer la camÃ©ra Audine dans le porte-oculaire de votre instrument pour Ãªtre opÃ©rationnel.\n"
+      set texte(firstdark_exit) " Retour Ã  la page principale."
    }
 }
 

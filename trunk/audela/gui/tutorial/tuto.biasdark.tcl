@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.biasdark.tcl,v 1.9 2010-01-12 16:11:28 robertdelmas Exp $
+# Mise Ã  jour $Id: tuto.biasdark.tcl,v 1.10 2010-05-27 06:31:00 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -39,21 +39,21 @@ Ten images of bias and dark frames will actually be shot. You then have to wait 
       set caption(wait) "En cours..."
       set caption(compute) "Analyse..."
       set caption(exit) "Quitter"
-      set caption(end) "Réalisation des images terminée"
+      set caption(end) "RÃ©alisation des images terminÃ©e"
       set caption(thermlevel) "Niveau thermique ="
-      set caption(max_zero) "Problème de connexion"
-      set caption(satured) "Des pixels sont saturés"
+      set caption(max_zero) "ProblÃ¨me de connexion"
+      set caption(satured) "Des pixels sont saturÃ©s"
       set caption(maxdark) "Valeur maximum ="
-      set caption(godarks) "Réalisation des darks..."
-      set caption(gobias) "Réalisation des bias..."
+      set caption(godarks) "RÃ©alisation des darks..."
+      set caption(gobias) "RÃ©alisation des bias..."
 
-      set texte(biasdark_1) "Initiation à l'imagerie CCD"
-      set texte(biasdark_2) "Réaliser des images dark et bias de référence"
-      set texte(biasdark_3) "Installer votre matériel d'acquisition CCD (caméra branchée sur l'ordinateur) dans le noir complet. Le mieux est de procéder pendant la nuit dans une pièce noire. La caméra est refroidie.\n
-Un dark est une image qui correspond au signal délivré par la caméra en l'absence de lumière. Ce signal est composé du bias (signal de lecture de la caméra) et du thermique (signal généré par la température du capteur CCD pendant le temps de pose). Le bias correspond donc à un dark de temps de pose infiniment court.\n
-Cliquer sur le bouton rouge $caption(go) pour réaliser automatiquement des images de dark et de bias.\n
-En pratique, une dizaine d'images de bias et de dark vont être réalisées. Compter donc une dizaine de minutes d'attente. Après celà, une image synthétique de bias sera réalisée à partir des dix images. Cette image synthétique sera la médiane des dix images et a l'avantage de minimiser les bruits. Le même traitement est appliqué aux darks.\n"
-      set texte(biasdark_exit) " Retour à la page principale."
+      set texte(biasdark_1) "Initiation Ã  l'imagerie CCD"
+      set texte(biasdark_2) "RÃ©aliser des images dark et bias de rÃ©fÃ©rence"
+      set texte(biasdark_3) "Installer votre matÃ©riel d'acquisition CCD (camÃ©ra branchÃ©e sur l'ordinateur) dans le noir complet. Le mieux est de procÃ©der pendant la nuit dans une piÃ¨ce noire. La camÃ©ra est refroidie.\n
+Un dark est une image qui correspond au signal dÃ©livrÃ© par la camÃ©ra en l'absence de lumiÃ¨re. Ce signal est composÃ© du bias (signal de lecture de la camÃ©ra) et du thermique (signal gÃ©nÃ©rÃ© par la tempÃ©rature du capteur CCD pendant le temps de pose). Le bias correspond donc Ã  un dark de temps de pose infiniment court.\n
+Cliquer sur le bouton rouge $caption(go) pour rÃ©aliser automatiquement des images de dark et de bias.\n
+En pratique, une dizaine d'images de bias et de dark vont Ãªtre rÃ©alisÃ©es. Compter donc une dizaine de minutes d'attente. AprÃ¨s celÃ , une image synthÃ©tique de bias sera rÃ©alisÃ©e Ã  partir des dix images. Cette image synthÃ©tique sera la mÃ©diane des dix images et a l'avantage de minimiser les bruits. Le mÃªme traitement est appliquÃ© aux darks.\n"
+      set texte(biasdark_exit) " Retour Ã  la page principale."
    }
 }
 

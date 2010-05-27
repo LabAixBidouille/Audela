@@ -1,6 +1,6 @@
 #--- Sun altitude under that the aquisition is on (degrees)
 set cmconf(haurore) -10
-#--- End of the astronomical twilight and begining of the "real" night (-18°)
+#--- End of the astronomical twilight and begining of the "real" night (-18Â°)
 set cmconf(hastwilight) -18
 #--- Altitude under which the Moon is considered as non-disturbing
 set cmconf(hmooncritic) 7

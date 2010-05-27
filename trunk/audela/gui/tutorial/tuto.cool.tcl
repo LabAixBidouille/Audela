@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.cool.tcl,v 1.8 2010-01-12 16:11:52 robertdelmas Exp $
+# Mise Ã  jour $Id: tuto.cool.tcl,v 1.9 2010-05-27 06:31:20 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -44,24 +44,24 @@ the fan.  This is to avoid frost on the CCD chip.\n"
       set caption(compute) "Analyse..."
       set caption(exit) "Quitter"
       set caption(thermlevel) "Niveau thermique ="
-      set caption(max_zero) "Problème de connexion"
-      set caption(satured) "Des pixels sont saturés"
+      set caption(max_zero) "ProblÃ¨me de connexion"
+      set caption(satured) "Des pixels sont saturÃ©s"
       set caption(maxdark) "Valeur maximum ="
 
-      set texte(firstdark_1) "Refroidissement de la caméra"
-      set texte(firstdark_2) "Afin d'augmenter la qualité des images, il est conseillé de refroidir la caméra CCD"
-      set texte(firstdark_3) "Pour refroidir la caméra, commencer par mettre le ventilateur en fonctionnement puis\
-le bouton du Peltier en marche. Attendre quelques minutes que la caméra se soit refroidie. Vérifier aussi qu'il n'y a pas \
-de givre qui se dépose sur le CCD.\n
-La photo montre la face avant du boîtier d'alimentation de la caméra Audine sur laquelle se trouvent les boutons\
-à actionner.\n
-Le refroidissement est obligatoire si l'on veut obtenir des images CCD de qualité. En effet, plus le CCD est \"chaud\"\
-plus il génère de signal thermique qui masque les détails de l'image. Avec le refroidissement Peltier, la caméra Audine\
-génère peu de signal thermique et il est possible de le soustraire de l'image brute en soustrayant une pose\
-appelée \"dark\".\n
-Lorsque vous voulez arrêter la caméra, commencez par couper le Peltier puis attendre au moins 15 minutes avant d'arrêter\
-le ventilateur afin d'éviter de provoquer l'apparition de givre sur le CCD.\n"
-      set texte(firstdark_exit) " Retour à la page principale."
+      set texte(firstdark_1) "Refroidissement de la camÃ©ra"
+      set texte(firstdark_2) "Afin d'augmenter la qualitÃ© des images, il est conseillÃ© de refroidir la camÃ©ra CCD"
+      set texte(firstdark_3) "Pour refroidir la camÃ©ra, commencer par mettre le ventilateur en fonctionnement puis\
+le bouton du Peltier en marche. Attendre quelques minutes que la camÃ©ra se soit refroidie. VÃ©rifier aussi qu'il n'y a pas \
+de givre qui se dÃ©pose sur le CCD.\n
+La photo montre la face avant du boÃ®tier d'alimentation de la camÃ©ra Audine sur laquelle se trouvent les boutons\
+Ã  actionner.\n
+Le refroidissement est obligatoire si l'on veut obtenir des images CCD de qualitÃ©. En effet, plus le CCD est \"chaud\"\
+plus il gÃ©nÃ¨re de signal thermique qui masque les dÃ©tails de l'image. Avec le refroidissement Peltier, la camÃ©ra Audine\
+gÃ©nÃ¨re peu de signal thermique et il est possible de le soustraire de l'image brute en soustrayant une pose\
+appelÃ©e \"dark\".\n
+Lorsque vous voulez arrÃªter la camÃ©ra, commencez par couper le Peltier puis attendre au moins 15 minutes avant d'arrÃªter\
+le ventilateur afin d'Ã©viter de provoquer l'apparition de givre sur le CCD.\n"
+      set texte(firstdark_exit) " Retour Ã  la page principale."
    }
 }
 

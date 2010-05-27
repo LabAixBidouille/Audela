@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.portoc.tcl,v 1.8 2010-01-12 16:13:43 robertdelmas Exp $
+# Mise Ã  jour $Id: tuto.portoc.tcl,v 1.9 2010-05-27 06:33:46 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -44,24 +44,24 @@ you can subscribe to the Aude or the Audine mailing lists.\n"
       set caption(compute) "Analyse..."
       set caption(exit) "Quitter"
       set caption(thermlevel) "Niveau thermique ="
-      set caption(max_zero) "Problème de connexion"
-      set caption(satured) "Des pixels sont saturés"
+      set caption(max_zero) "ProblÃ¨me de connexion"
+      set caption(satured) "Des pixels sont saturÃ©s"
       set caption(maxdark) "Valeur maximum ="
 
-      set texte(firstdark_1) "Initiation à l'imagerie CCD"
-      set texte(firstdark_2) "Adaptation mécanique sur le porte-oculaire"
-      set texte(firstdark_3) "Sur cette photo, la caméra Audine est placée dans le porte-oculaire du télescope.\
-Ce montage simpliste permet de réaliser facilement les premières images puisqu'il suffit de pointer\
-avec un oculaire puis, une fois centré à l'oeil, de remplacer l'oculaire par la caméra.\n
-On notera, toutefois, que ce montage présente deux inconvénients. Le premier est que la mise au point\
-(la focalisation) est différente entre l'oculaire et la caméra. On s'arrangera pour régler la focalisation\
-de façon à avoir une image nette sur la caméra (cf. plus loin) puis de placer l'oculaire pour avoir une image\
-nette sans bouger la mise au point (il faut parfois ajouter une bague mécanique).\n
-Le deuxième inconvénient est que l'on perd le \"flat\" entre chaque image. Nous considérons que ce problème\
-est mineur lorsque l'on réalise ses premières images. Il faudra ensuite penser à modifier le montage pour\
-garder la caméra en place pendant toute la durée de l'observation. Nous vous rappelons que de nombreux\
-conseils peuvent vous être donnés en vous inscrivant à la liste Aude ou Audine sur Internet.\n"
-      set texte(firstdark_exit) " Retour à la page principale."
+      set texte(firstdark_1) "Initiation Ã  l'imagerie CCD"
+      set texte(firstdark_2) "Adaptation mÃ©canique sur le porte-oculaire"
+      set texte(firstdark_3) "Sur cette photo, la camÃ©ra Audine est placÃ©e dans le porte-oculaire du tÃ©lescope.\
+Ce montage simpliste permet de rÃ©aliser facilement les premiÃ¨res images puisqu'il suffit de pointer\
+avec un oculaire puis, une fois centrÃ© Ã  l'oeil, de remplacer l'oculaire par la camÃ©ra.\n
+On notera, toutefois, que ce montage prÃ©sente deux inconvÃ©nients. Le premier est que la mise au point\
+(la focalisation) est diffÃ©rente entre l'oculaire et la camÃ©ra. On s'arrangera pour rÃ©gler la focalisation\
+de faÃ§on Ã  avoir une image nette sur la camÃ©ra (cf. plus loin) puis de placer l'oculaire pour avoir une image\
+nette sans bouger la mise au point (il faut parfois ajouter une bague mÃ©canique).\n
+Le deuxiÃ¨me inconvÃ©nient est que l'on perd le \"flat\" entre chaque image. Nous considÃ©rons que ce problÃ¨me\
+est mineur lorsque l'on rÃ©alise ses premiÃ¨res images. Il faudra ensuite penser Ã  modifier le montage pour\
+garder la camÃ©ra en place pendant toute la durÃ©e de l'observation. Nous vous rappelons que de nombreux\
+conseils peuvent vous Ãªtre donnÃ©s en vous inscrivant Ã  la liste Aude ou Audine sur Internet.\n"
+      set texte(firstdark_exit) " Retour Ã  la page principale."
    }
 }
 
