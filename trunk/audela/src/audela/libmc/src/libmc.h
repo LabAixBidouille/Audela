@@ -167,6 +167,8 @@
  int Cmd_mctcl_compute_matrix_modpoi(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
  int Cmd_mctcl_nextnight(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
+ int Cmd_mctcl_cosmology_calculator(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+
 /*--- Point d'entree de la DLL */
 #ifdef LIBRARY_DLL
    __declspec(dllexport) int __cdecl Mc_Init(Tcl_Interp *interp);

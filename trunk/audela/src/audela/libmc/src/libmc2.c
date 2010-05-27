@@ -7061,3 +7061,235 @@ mc_astrology 1967-08-23T18:00:00 {GPS 2 E 48 120}
    }
    return TCL_OK;
 }
+
+int Cmd_mctcl_cosmology_calculator(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+/****************************************************************************/
+/* Computation of cosmological parameters                                   */
+/****************************************************************************/
+/* inspired from the public javascript Ned Wright calculator                */
+/* Entrees :                                                                */
+/* z, the redshift                                                          */
+/* HO, Hubble constant (71 km/s/Mpc)                                        */
+/* WM, Omega_matter (default .27)                                           */
+/* WV, Omega_vacuum (1 - Omega_matter for a flat Universe)                  */
+/*                                                                          */
+/****************************************************************************/
+   char s[1000];
+   Tcl_DString dsptr;
+	double H0t=71.,WMt=.27,WVt=.73,zt;
+	int i;
+	double wd_i,wd_n,wd_nda,wd_WR,wd_WK,wd_c,wd_Tyr,wd_DTT,wd_DTT_Gyr;
+	double wd_ltt,wd_age,wd_age_Gyr,wd_zage,wd_zage_Gyr,wd_DCMR;
+	double wd_DCMR_Mpc,wd_DCMR_Gyr,wd_DA,wd_DA_Mpc,wd_DA_Gyr,wd_kpc_DA;
+	double wd_DL,wd_DL_Mpc,wd_DL_Gyr,wd_V_Gpc,wd_a,wd_az;
+	double wd_H0,wd_WM,wd_WV,wd_z;
+	double wd_h;
+	double adot,wd_lpz,wd_dzage,wd_adot,ratio,x,y;
+	double wright_DCMT,wright_VCM,pi;
+
+   if(argc<=1) {
+      sprintf(s,"Usage: %s redshift ?Hubble_constant_km/s/Mpc? ?Omega_matter? ?Omega_vecuum?", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+ 	   return TCL_ERROR;
+   } else {
+      /* --- entries ---*/
+		zt=atof(argv[1]);
+      if (argc>=3) { H0t=atof(argv[2]); }
+      if (argc>=4) { WMt=atof(argv[3]); }
+      if (argc>=5) { WVt=atof(argv[4]); }
+		/* ---- calculation ---*/
+		pi=PI;
+		wd_i=0;	//%% index
+		wd_n=1000;	//%% number of points in integrals
+		wd_nda = 1;	//%% number of digits in angular size distance
+		wd_WR = 0;	//%% Omega(radiation)
+		wd_WK = 0;	//%% Omega curvaturve = 1-Omega(total)
+		wd_c = 299792.458; //%% velocity of light in km/sec
+		wd_Tyr = 977.8; //%% coefficent for converting 1/H into Gyr
+		wd_DTT = 0.5;	//%% time from z to now in units of 1/H0
+		wd_DTT_Gyr = 0.0;	//%% value of DTT in Gyr
+		wd_ltt = 0.66077; //%% light travel time in units of 1/H0
+		wd_age = 0.5;	//%% age of Universe in units of 1/H0
+		wd_age_Gyr = 0.0;	//%% value of age in Gyr
+		wd_zage = 0.5;	//%% age of Universe at redshift z in units of 1/H0
+		wd_zage_Gyr = 0.0;	//%% value of zage in Gyr
+		wd_DCMR = 0.0;	//%% comoving radial distance in units of c/H0
+		wd_DCMR_Mpc = 0.0;
+		wd_DCMR_Gyr = 0.0;
+		wd_DA = 0.0;	//%% angular size distance
+		wd_DA_Mpc = 0.0;
+		wd_DA_Gyr = 0.0;
+		wd_kpc_DA = 0.0;
+		wd_DL = 0.0;	//%% luminosity distance
+		wd_DL_Mpc = 0.0;
+		wd_DL_Gyr = 0.0;	//%% DL in units of billions of light years
+		wd_V_Gpc = 0.0;
+		wd_a = 1.0;	//%% 1/(1+z), the scale factor of the Universe
+		wd_az = 0.5;	//%% 1/(1+z(object))
+		//%%%%%%%%%%%%%%%%%%%%%%%%%%% INPUT DATA
+		wd_H0 = H0t;
+		wd_WM = WMt;
+		wd_WV = WVt;
+		wd_z = zt;
+		//%%%%%%%%%%%%%%%%%%%%%%%%%%% PREPARE THE CALCULATION
+		wd_h = wd_H0/100;
+		wd_WR = 4.165E-5/(wd_h*wd_h);	//%% includes 3 massless neutrino species, T0 = 2.72528
+		wd_WK = 1-wd_WM-wd_WR-wd_WV;
+		//%%%%%%%%%%%%%%%%%%%%%%%%%%% CALCULATION
+		wd_h = wd_H0/100;
+		wd_WR = 4.165E-5/(wd_h*wd_h);	//%% includes 3 massless neutrino species, T0 = 2.72528
+		wd_WK = 1-wd_WM-wd_WR-wd_WV;
+		wd_az = 1.0/(1+1.0*wd_z);
+		wd_age = 0;
+		for (i=0;i<=wd_n;i++) {
+		 wd_a = wd_az*(i+0.5)/wd_n;
+		 adot = sqrt(wd_WK+(wd_WM/wd_a)+(wd_WR/(wd_a*wd_a))+(wd_WV*wd_a*wd_a));
+		 wd_age = wd_age + 1/adot;
+		}
+		wd_zage = wd_az*wd_age/wd_n;
+		//%% correction for annihilations of particles not present now like e+/e-
+		//%% added 13-Aug-03 based on T_vs_t.f
+		wd_lpz = log((1+1.0*wd_z))/log(10.0);
+		wd_dzage = 0;
+		if (wd_lpz >  7.500) {
+			wd_dzage = 0.002 * (wd_lpz -  7.500);
+		}
+		if (wd_lpz >  8.000) {
+			wd_dzage = 0.014 * (wd_lpz -  8.000) +  0.001;
+		}
+		if (wd_lpz >  8.500) {
+			wd_dzage = 0.040 * (wd_lpz -  8.500) +  0.008;
+		}
+		if (wd_lpz >  9.000) {
+			wd_dzage = 0.020 * (wd_lpz -  9.000) +  0.028;
+		}
+		if (wd_lpz >  9.500) {
+			wd_dzage = 0.019 * (wd_lpz -  9.500) +  0.039;
+		}
+		if (wd_lpz > 10.000) {
+			wd_dzage = 0.048;
+		}
+		if (wd_lpz > 10.775) {
+			wd_dzage = 0.035 * (wd_lpz - 10.775) +  0.048;
+		}
+		if (wd_lpz > 11.851) {
+			wd_dzage = 0.069 * (wd_lpz - 11.851) +  0.086;
+		}
+		if (wd_lpz > 12.258) {
+			wd_dzage = 0.461 * (wd_lpz - 12.258) +  0.114;
+		}
+		if (wd_lpz > 12.382) {
+			wd_dzage = 0.024 * (wd_lpz - 12.382) +  0.171;
+		}
+		if (wd_lpz > 13.055) {
+			wd_dzage = 0.013 * (wd_lpz - 13.055) +  0.188;
+		}
+		if (wd_lpz > 14.081) {
+			wd_dzage = 0.013 * (wd_lpz - 14.081) +  0.201;
+		}
+		if (wd_lpz > 15.107) {
+			wd_dzage = 0.214;
+		}
+		wd_zage = wd_zage*pow(10.0,wd_dzage);
+		//%%
+		wd_zage_Gyr = (wd_Tyr/wd_H0)*wd_zage;
+		wd_DTT = 0.0;
+		wd_DCMR = 0.0;
+		//%% do integral over a=1/(1+z) from az to 1 in n steps, midpoint rule
+		for (i=0;i<=wd_n;i++) {
+		 wd_a = wd_az+(1-wd_az)*(i+0.5)/wd_n;
+		 wd_adot = sqrt(wd_WK+(wd_WM/wd_a)+(wd_WR/(wd_a*wd_a))+(wd_WV*wd_a*wd_a));
+		 wd_DTT = wd_DTT + 1/wd_adot;
+		 wd_DCMR = wd_DCMR + 1/(wd_a*wd_adot);
+		}
+		wd_DTT = (1-wd_az)*wd_DTT/wd_n;
+		wd_DCMR = (1-wd_az)*wd_DCMR/wd_n;
+		wd_age = wd_DTT+wd_zage;
+		wd_age_Gyr = wd_age*(wd_Tyr/wd_H0);
+		wd_DTT_Gyr = (wd_Tyr/wd_H0)*wd_DTT;
+		wd_DCMR_Gyr = (wd_Tyr/wd_H0)*wd_DCMR;
+		wd_DCMR_Mpc = (wd_c/wd_H0)*wd_DCMR;
+		//%% tangential comoving distance  
+		  ratio = 1.00;
+		  x = sqrt(fabs(wd_WK))*wd_DCMR;
+		  if (x > 0.1) {
+			  if (wd_WK > 0) {
+  				ratio = 0.5*(exp(x)-exp(-x))/x ;
+			  } else {
+    			ratio = sin(x)/x;
+			  }
+			y = ratio*wd_DCMR;
+		  } else {
+			  y = x*x;
+			  //%% statement below fixed 13-Aug-03 to correct sign error in expansion
+			  if (wd_WK < 0) {
+	  			y = -y;
+			  }
+			  ratio = 1 + y/6 + y*y/120;
+			  y= ratio*wd_DCMR;
+		  }
+		  wright_DCMT=y;
+
+		wd_DA = wd_az*wright_DCMT;
+		wd_DA_Mpc = (wd_c/wd_H0)*wd_DA;
+		wd_kpc_DA = wd_DA_Mpc/206.264806;
+		wd_DA_Gyr = (wd_Tyr/wd_H0)*wd_DA;
+		wd_DL = wd_DA/(wd_az*wd_az);
+		wd_DL_Mpc = (wd_c/wd_H0)*wd_DL;
+		wd_DL_Gyr = (wd_Tyr/wd_H0)*wd_DL;
+
+		//%% comoving volume computation
+		  ratio = 1.00;
+		  x = sqrt(fabs(wd_WK))*wd_DCMR;
+		  if (x > 0.1) {
+			  if (wd_WK > 0) {
+    			ratio = (0.125*(exp(2*x)-exp(-2*x))-x/2)/(x*x*x/3);
+			  } else {
+				ratio = (x/2 - sin(2*x)/4)/(x*x*x/3) ;
+			  }
+			 y = ratio*wd_DCMR*wd_DCMR*wd_DCMR/3;
+		  } else {
+			  y = x*x;
+			  //%% statement below fixed 13-Aug-03 to correct sign error in expansion
+			  if (wd_WK < 0) {
+	  			y = -y;
+			  }
+			  ratio = 1 + y/5 + (2/105)*y*y;
+			  y= ratio*wd_DCMR*wd_DCMR*wd_DCMR/3;
+		  }
+			wright_VCM=y;			
+		wd_V_Gpc = 4*pi*pow(0.001*wd_c/wd_H0,3)*wright_VCM;
+		//%%%%%%%%%%%%%%%%%%%%%%%%%%% DISPLAY RESULTS
+      Tcl_DStringInit(&dsptr);
+		sprintf(s,"{H0 %f {current Hubble constant km/s/Mpc}} ",wd_H0);
+      Tcl_DStringAppend(&dsptr,s,-1);
+		sprintf(s,"{Omega_M %f {Omega_matter}} ",wd_WM);
+      Tcl_DStringAppend(&dsptr,s,-1);
+		sprintf(s,"{Omega_vac %f {Omega_vac = 1-Omega_M gives a flat Universe}} ",wd_WV);
+      Tcl_DStringAppend(&dsptr,s,-1);
+		sprintf(s,"{z %f redshift} ",wd_z);
+      Tcl_DStringAppend(&dsptr,s,-1);
+		sprintf(s,"{cz %f {non relativistic velocity km/s}} ",wd_z*wd_c);
+      Tcl_DStringAppend(&dsptr,s,-1);
+		sprintf(s,"{DTT_Gyr %f {time from z to now in Gyr}} ",wd_DTT_Gyr);
+      Tcl_DStringAppend(&dsptr,s,-1);
+		sprintf(s,"{age_Gyr %f {age of Universe in Gyr}} ",wd_age_Gyr);
+      Tcl_DStringAppend(&dsptr,s,-1);
+		sprintf(s,"{zage_Gyr %f {age of Universe at redshift z in Gyr}} ",wd_zage_Gyr);
+      Tcl_DStringAppend(&dsptr,s,-1);
+		sprintf(s,"{DCMR_Mpc %f {comoving radial distance in Mpc}} ",wd_DCMR_Mpc);
+      Tcl_DStringAppend(&dsptr,s,-1);
+		sprintf(s,"{V_Gpc %f {comoving volume within redshift z in Gpc3}} ",wd_V_Gpc);
+      Tcl_DStringAppend(&dsptr,s,-1);
+		sprintf(s,"{DA_Mpc %f {angular size distance in Mpc}} ",wd_DA_Mpc);
+      Tcl_DStringAppend(&dsptr,s,-1);
+		sprintf(s,"{kpc_DA %f {angular scale in kpc/arcsec}} ",wd_kpc_DA);
+      Tcl_DStringAppend(&dsptr,s,-1);
+		sprintf(s,"{DL_Mpc %f {luminosity distance in Mpc}} ",wd_DL_Mpc);
+      Tcl_DStringAppend(&dsptr,s,-1);
+      /* --- sorties ---*/
+      Tcl_DStringResult(interp,&dsptr);
+      Tcl_DStringFree(&dsptr);
+   }
+   return TCL_OK;
+}
