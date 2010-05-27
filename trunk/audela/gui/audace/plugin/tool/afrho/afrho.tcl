@@ -3,7 +3,7 @@
 # Description : Calcule le parametre Af[Rho] pour une comete
 #               Caracterise le taux de production de poussieres des cometes
 # Auteurs : Alain KLOTZ, Laurent JORDA et Jean-Francois COLIAC
-# Mise à jour $Id: afrho.tcl,v 1.4 2010-05-24 15:19:11 robertdelmas Exp $
+# Mise à jour $Id: afrho.tcl,v 1.5 2010-05-27 11:58:23 robertdelmas Exp $
 #
 
 #============================================================
@@ -917,6 +917,8 @@ proc ::afrho::appliquer { } {
    set lignes [split [read $f] \n]
    close $f
 
+   set fileoutname [ file tail $fileout ]
+
    #--- Suppression des fichiers temporaires
    if { [ file exists [ file join "$pathpwd" cal_afr.cfg ] ] } {
       file delete [ file join "$pathpwd" cal_afr.cfg ]
@@ -950,7 +952,8 @@ proc ::afrho::appliquer { } {
    set y3 [lindex $res 3]
 
    #--- Graphique
-   ::plotxy::figure 1
+   ::plotxy::figure AfRho
+   ::plotxy::title "$fileoutname"
    ::plotxy::plotbackground #FFFFFF
    ::plotxy::plot $x $y1 r- 0
    ::plotxy::hold on
@@ -959,7 +962,6 @@ proc ::afrho::appliquer { } {
    ::plotxy::position {40 40 600 600}
    ::plotxy::xlabel "Radial distance (in pixels)"
    ::plotxy::ylabel "Profile (in E-20 W/m^2/A)"
-   ::plotxy::title "$fileout"
 
    #--- Recupere la position de la fenetre
    ::afrho::recupPosition
