@@ -1,9 +1,10 @@
 # source audace/plugin/tool/bddimages/bddimages_sub_fichier.tcl
+# Mise à jour $Id: bddimages_sub_fichier.tcl,v 1.3 2010-05-27 06:57:44 robertdelmas Exp $
 
 proc bddimages_sauve_fich {texte} {
 
-   global bddconf   
-   global entetelog   
+   global bddconf
+   global entetelog
 
      if {[info exists entetelog]==1} {
         set texte "$entetelog:$texte"
@@ -14,13 +15,13 @@ proc bddimages_sauve_fich {texte} {
      set fichlog "$bddconf(dirlog)/lastlog.txt"
      set sizelog 0
      catch { set sizelog [file size $fichlog]}
-      
+
      if {$sizelog > 1000000} {
        set listlog [glob -nocomplain $bddconf(dirlog)/*]
        set listlog [lsort -ascii $listlog]
-       set last [file tail [lindex $listlog end]]       
+       set last [file tail [lindex $listlog end]]
        set last [string range $last 3 7]
-       
+
        set err [catch {set new [expr $last + 1]} msg]
        if {$err} {set new ""}
        set new "0000000$new"
@@ -46,13 +47,13 @@ proc bddimages_sauve_fich {texte} {
 proc globrdk { {dir .} limit } {
 
   global maliste
-  
+
     set liste [glob -nocomplain $dir/*]
 
     foreach i $liste {
        if { [llength $maliste]==$limit && $limit!=0 } {
          break
-         }    
+         }
        if {[file type $i]=="directory"} {
                  if {[llength $maliste]<$limit || $limit==0} {
                    globrdk $i $limit
@@ -73,13 +74,13 @@ proc globrdk { {dir .} limit } {
 proc globrdknr { {dir .} limit } {
 
   global maliste
-  
+
     set liste [glob -nocomplain $dir/*]
 
     foreach i $liste {
        if { [llength $maliste]==$limit && $limit!=0 } {
          break
-         }    
+         }
 
        set result [bddimages_formatfichier $i]
        set form2  [lindex $result 0]
@@ -87,7 +88,7 @@ proc globrdknr { {dir .} limit } {
           lappend maliste $i
           } else {
           }
-        
+
     }
  }
 
@@ -103,14 +104,14 @@ proc globrd {{dir .}} {
     }
     return $res
  }
- 
- 
+
+
 proc globr {{dir .}} {
     set res {}
 
     set errnum [catch {set cur [glob $dir]} msg]
     if {$errnum} {
-    
+
     } else {
     foreach i $cur {
         if {[file type $i]=="directory"} {
@@ -118,7 +119,7 @@ proc globr {{dir .}} {
                 lappend res $i
         }
     }
-        
+
     eval lappend res [globrd $dir]
     }
     return $res
@@ -134,7 +135,7 @@ proc numberoffile { dir } {
       set err [catch {set list_file [globr $dir/*]} result]
       if {$err==0} {
         set nbfile [llength $list_file]
-      } else { 
+      } else {
         set nbfile "Failed <ERR:$err> <RESULT:$result>"
       }
     return $nbfile
@@ -232,3 +233,4 @@ proc createdir_ifnot_exist {dirfilename} {
     }
 
 }
+
