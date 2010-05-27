@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: tuto.tcl,v 1.15 2010-05-18 17:53:26 robertdelmas Exp $
+# Mise à jour $Id: tuto.tcl,v 1.16 2010-05-27 10:42:58 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -79,7 +79,7 @@ proc caption_def { langage } {
 # index - The index of the character that the user clicked on.
 #
 proc invoke { index base } {
-   global tk_library
+   global num tk_library
    set tags [$base.t tag names $index]
    set i [lsearch -glob $tags demo-*]
    if {$i < 0} {
@@ -108,8 +108,12 @@ proc invoke { index base } {
       #uplevel [list source tuto.tcl]
       focus -force .main
    } else {
+      #--- go in worker folder
+      cd $num(rep_pwd)
       uplevel [list source tuto.$demo.tcl]
       focus -force .second
+      #--- go in worker folder
+      cd $num(rep_travail)
    }
    update
    if {$base == ".main" } {
@@ -395,6 +399,45 @@ set lastLine ""
 
 .main.t configure -state disabled
 focus .main.s
+
+#--- images folder creation
+set catchError [ catch {
+   if { ! [ info exists num(rep_images) ] } {
+      if { $::tcl_platform(os) == "Linux" } {
+         set num(rep_images) [ file join $::env(HOME) audela images ]
+      } else {
+         set mesDocuments [ ::registry get "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders" Personal ]
+         set num(rep_images) [ file normalize [ file join $mesDocuments audela images ] ]
+      }
+   }
+   if { ! [ file exists $num(rep_images) ] } {
+      file mkdir $num(rep_images)
+   }
+} ]
+if { $catchError != "0" } {
+   tk_messageBox -message "$::errorInfo\n" -icon info
+}
+
+#--- worker folder creation
+set catchError [ catch {
+   if { ! [ info exists num(rep_travail) ] } {
+      if { $::tcl_platform(os) == "Linux" } {
+         set num(rep_travail) [ file join $::env(HOME) audela ]
+      } else {
+         set mesDocuments [ ::registry get "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders" Personal ]
+         set num(rep_travail) [ file normalize [ file join $mesDocuments audela ] ]
+      }
+   }
+   if { ! [ file exists $num(rep_travail) ] } {
+      file mkdir $num(rep_travail)
+   }
+} ]
+if { $catchError != "0" } {
+   tk_messageBox -message "$::errorInfo\n" -icon info
+}
+
+#--- declare pwd folder
+set num(rep_pwd) [pwd]
 
 #--- declare an Audine Kaf-0400 camera
 porttalk open all
