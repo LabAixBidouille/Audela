@@ -1,4 +1,4 @@
-# Permet d'afficher sur la console la date et l'heure systeme
+# Permet d'afficher sur la console la date et l'heure systême
 # date_ordi.tcl
 
    set date [mc_date2ymdhms now]

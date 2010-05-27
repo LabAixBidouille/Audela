@@ -2,7 +2,7 @@
 # Fichier : ohp.tcl
 # Auteur : Alain KLOTZ
 # Lancement du script : source audace/scripts/ohp.tcl
-# Mise a jour $Id: ohp.tcl,v 1.7 2009-11-17 17:27:48 robertdelmas Exp $
+# Mise Ã  jour $Id: ohp.tcl,v 1.8 2010-05-27 06:15:13 robertdelmas Exp $
 #
 
 namespace eval ::ohp {
@@ -21,14 +21,14 @@ namespace eval ::ohp {
       set caption(ohp,titre2)                           "OHP image processing"
       set caption(ohp,namerawfits)                      "Fichiers images avant bifsconv"
       set caption(ohp,nameraw)                          "Fichiers images brutes"
-      set caption(ohp,telescope)                        "Télescope"
-      set caption(ohp,ra)                               "R.A. (seulement pour astrométrie t80)"
-      set caption(ohp,dec)                              "DEC. (seulement pour astrométrie t80)"
+      set caption(ohp,telescope)                        "TÃ©lescope"
+      set caption(ohp,ra)                               "R.A. (seulement pour astromÃ©trie t80)"
+      set caption(ohp,dec)                              "DEC. (seulement pour astromÃ©trie t80)"
       set caption(ohp,pathcat)                          "Dossier catalogue"
       set caption(ohp,dark)                             "Fichier image dark"
       set caption(ohp,flat)                             "Fichier image flat"
-      set caption(ohp,box)                              "Boîte registerwin"
-      set caption(ohp,namein)                           "Nom d'entrée spectro"
+      set caption(ohp,box)                              "BoÃ®te registerwin"
+      set caption(ohp,namein)                           "Nom d'entrÃ©e spectro"
       set caption(ohp,nameout)                          "Nom de sortie Spectro"
       set caption(ohp,load_button)                      "Load conf."
       set caption(ohp,save_button)                      "Save conf."
@@ -36,7 +36,7 @@ namespace eval ::ohp {
       set caption(ohp,files_button)                     "See files"
       set caption(ohp,purge_button)                     "Delete files"
       set caption(ohp,getbox_button)                    "Get box coord."
-      set caption(ohp,folder)                           "Répertoire"
+      set caption(ohp,folder)                           "RÃ©pertoire"
 
       set caption(ohp,save)                             "Enregistre la configuration actuelle"
       set caption(ohp,load)                             "Charge une configuration"
@@ -46,16 +46,16 @@ namespace eval ::ohp {
       set caption(ohp,methode,bifsconv)                 "bifsconv : format FITS (*.fits -> *-#.fit)"
       set caption(ohp,methode,convert)                  "convert : entete FITS (*-#.fit -> *-#.fit)"
       set caption(ohp,methode,copy)                     "copy : renome (*-#.fit -> tempa#.fit)"
-      set caption(ohp,methode,makedark)                 "makedark : synthèse superdark (*.fit -> .fit)"
-      set caption(ohp,methode,makeflat)                 "makeflat : synthèse superflat (*.fit -> .fit)"
+      set caption(ohp,methode,makedark)                 "makedark : synthÃ¨se superdark (*.fit -> .fit)"
+      set caption(ohp,methode,makeflat)                 "makeflat : synthÃ¨se superflat (*.fit -> .fit)"
       set caption(ohp,methode,cordark)                  "cordark : pretraitement (tempa#.fit -> tempi#.fit)"
       set caption(ohp,methode,corflat)                  "corflat : pretraitement (tempi#.fit -> tempj#.fit)"
       set caption(ohp,methode,noffset)                  "noffset : fond de ciel (tempj#.fit -> tempj#.fit)"
       set caption(ohp,methode,cosmetic)                 "cosmetic : cosmiques (tempj#.fit -> tempj#.fit)"
       set caption(ohp,methode,astrometry)               "astrometry : entete FITS (tempj#.fit -> tempj#.fit)"
       set caption(ohp,methode,register)                 "register : recentrage auto (tempj#.fit -> tempk#.fit)"
-      set caption(ohp,methode,registerwin)              "registerwin : recentrage fenêtre (tempj#.fit -> tempk#.fit)"
-      set caption(ohp,methode,makeflat_spectro)         "makeflat_spectro : synthèse superflat (*.fit -> .fit)"
+      set caption(ohp,methode,registerwin)              "registerwin : recentrage fenÃªtre (tempj#.fit -> tempk#.fit)"
+      set caption(ohp,methode,makeflat_spectro)         "makeflat_spectro : synthÃ¨se superflat (*.fit -> .fit)"
       set caption(ohp,methode,pretraite_stack_spectro)  "pretraite_stack_spectro : (tempa#.fit -> tempj.fit)"
       set caption(ohp,methode,pretraite_serie_spectro)  "pretraite_serie_spectro : (tempa#.fit -> tempj#.fit)"
       set caption(ohp,methode,extraction_spectro)       "extraction_spectro : (tempj.fit -> .txt)"
@@ -348,7 +348,6 @@ namespace eval ::ohp {
          pack  .ohp.nameout.entry -in .ohp.nameout -side left -fill none
       pack .ohp.nameout -in .ohp -fill none -pady 1 -padx 12
 
-
       ohp::parameters
       while {1==1} {
          vwait audace
@@ -377,12 +376,12 @@ namespace eval ::ohp {
 
    proc go {} {
       global audace
-      # --- initialisations générales
+      # --- initialisations gÃ©nÃ©rales
       set path $audace(rep_images)/
       set astromcat MICROCAT
       set namein j
       set nameout $namein
-      # --- initialisations particulières
+      # --- initialisations particuliÃ¨res
       set namerawfits $audace(ohp,namerawfits)
       set nameraw $audace(ohp,nameraw)
       set telescope $audace(ohp,telescope)
@@ -394,7 +393,7 @@ namespace eval ::ohp {
       set box $audace(ohp,box)
       set namein $audace(ohp,namein)
       set nameout $audace(ohp,nameout)
-      # ---- La liste methodes contient, dans l'ordre, les etapes à effectuer.
+      # ---- La liste methodes contient, dans l'ordre, les etapes Ã  effectuer.
       set methodes ""
       foreach allmethode $audace(ohp,allmethodes) {
          if {$audace(ohp,methode,$allmethode)==1} {
@@ -405,7 +404,7 @@ namespace eval ::ohp {
       ::console::affiche_resultat "Methodes : $methodes \n"
       foreach methode $methodes {
 
-         ::console::affiche_resultat "Début étape $methode \n"
+         ::console::affiche_resultat "DÃ©but Ã©tape $methode \n"
 
          # --- convertion *.fit(s) -> *.fit de fichiers
          # --- pour corriger les entetes hors norme FITS
@@ -415,7 +414,7 @@ namespace eval ::ohp {
             set fics [lsort [glob -nocomplain $gene]]
             set n [llength $fics]
             if {$n==0} {
-               ::console::affiche_resultat " Pas de fichiers répondant au critère $gene\n"
+               ::console::affiche_resultat " Pas de fichiers rÃ©pondant au critÃ¨re $gene\n"
             } else {
                set k 0
                foreach fic $fics {
@@ -444,7 +443,7 @@ namespace eval ::ohp {
          }
 
          # --- convertion *.fit(s) -> *.fit de fichiers
-         # --- + completion de l'entete FITS pour l'astrométrie
+         # --- + completion de l'entete FITS pour l'astromÃ©trie
          if {$methode=="convert"} {
             if {$telescope=="t80"} {
                set fics [glob "${path}${nameraw}*.fit"]
@@ -713,7 +712,7 @@ namespace eval ::ohp {
             }
          }
 
-         ::console::affiche_resultat "Fin étape $methode \n"
+         ::console::affiche_resultat "Fin Ã©tape $methode \n"
 
       }
       ::console::affiche_resultat "==================== TERMINE ====================\n"
@@ -1376,7 +1375,7 @@ proc ohp_spectro_extract { path namein nameout telescope} {
    }
    # --- fonction de conversion (ergs/s/cm2/A)=>(mag) -> convmags
    set convmags [ohp_convmag $lambdas]
-   # --- flux calibré (ergs/s/cm2/A) & (mag)
+   # --- flux calibrÃ© (ergs/s/cm2/A) & (mag)
    set fcals ""
    set k 0
    foreach lambda $lambdas {

@@ -1,18 +1,18 @@
 #########################################################################
 #
-# Récupération d'images du DSS (Digital Sky Survey)
+# RÃ©cupÃ©ration d'images du DSS (Digital Sky Survey)
 #
 #     par Guillaume Spitzer
 #
-# Créer    en  Aout 2005
+# CrÃ©er    en  Aout 2005
 #
-# Modifier en Décembre 2005
+# Modifier en DÃ©cembre 2005
 #   - Ajout d'une fenetre de dialogue
-#   - Ajout d'un fichier log des objets non téléchargés
-#   - Possibilité de charger/enregistrer des fichiers de paramètres
+#   - Ajout d'un fichier log des objets non tÃ©lÃ©chargÃ©s
+#   - PossibilitÃ© de charger/enregistrer des fichiers de paramÃ¨tres
 #
 # Modifier en Juillet 2007
-#   - Ajout d'une listebox pour selectionné le catalogue de survey.
+#   - Ajout d'une listebox pour selectionnÃ© le catalogue de survey.
 #
 #########################################################################
 
@@ -21,18 +21,18 @@ package require http
 package require base64
 
 #
-# --- Début des paramètres du script ---
-#  (paramètres par défaut)
+# --- DÃ©but des paramÃ¨tres du script ---
+#  (paramÃ¨tres par dÃ©faut)
 #  (Il y a maintenant une boite de dialogue)
 
 set param(hauteur) 20.0
 set param(largeur) 30.0
 set param(rep) D:/@@IMAGES-DSS
 
-# Si la connexion internet passe par un proxy, mettre à yes sinon à no.
+# Si la connexion internet passe par un proxy, mettre Ã  yes sinon Ã  no.
 set param(proxy) no
 
-# Parametres du Proxy (uniquement s'il y a un proxy, sinon mettre 'no' à la ligne ci-dessus
+# Parametres du Proxy (uniquement s'il y a un proxy, sinon mettre 'no' Ã  la ligne ci-dessus
 # -------------------
 set proxy NomServeurProxy_ou_IP
 set port 8080
@@ -40,14 +40,11 @@ set user user_du_proxy
 set password password_du_proxy
 
 #
-# --- Fin des paramètres par défaut du script
+# --- Fin des paramÃ¨tres par dÃ©faut du script
 #
 
-
-
-
 #
-# --- Génére la ligne d'authentification qui sera renvoyée au proxy.
+# --- GÃ©nÃ©re la ligne d'authentification qui sera renvoyÃ©e au proxy.
 #
 proc buildProxyHeaders {u p} {
   global param
@@ -61,9 +58,9 @@ proc buildProxyHeaders {u p} {
 }
 
 #
-# --- Procédure de récupération d'une image dont les coordonnées sont obtenues par SIMBAD
+# --- ProcÃ©dure de rÃ©cupÃ©ration d'une image dont les coordonnÃ©es sont obtenues par SIMBAD
 #
-# ex: objet peut être M27 IC434 NGC15
+# ex: objet peut Ãªtre M27 IC434 NGC15
 #
 
 proc Charge_Objet_SIMBAD {objet} {
@@ -81,12 +78,12 @@ proc Charge_Objet_SIMBAD {objet} {
     ::http::ProxyRequired ""
   }
 
-  # URL de la requète CGI 1 permettant de transformer le nom en coordonnées.
+  # URL de la requÃ¨te CGI 1 permettant de transformer le nom en coordonnÃ©es.
   set BASE_URL http://stdatu.stsci.edu/cgi-bin/dss_form/
 
-  # Création de la requète CGI 1
-  # format : nom_du_champs   valeur_du_champ, etc ... (répété n fois)
-  # On a besoin que du champs 'target' dont on précise la valeur $objet.
+  # CrÃ©ation de la requÃ¨te CGI 1
+  # format : nom_du_champs   valeur_du_champ, etc ... (rÃ©pÃ©tÃ© n fois)
+  # On a besoin que du champs 'target' dont on prÃ©cise la valeur $objet.
   set query [::http::formatQuery target $objet]
 
   # Lance la requete 1
@@ -96,33 +93,32 @@ proc Charge_Objet_SIMBAD {objet} {
     set token1 [::http::geturl $BASE_URL -query $query]
   }
 
-
   set data1  [::http::data $token1]
 
   ::http::cleanup $token1
 
   update
 
-  # Recherche les chaines qui contiennent les coordonnées retournées par la requete
+  # Recherche les chaines qui contiennent les coordonnÃ©es retournÃ©es par la requete
   # set res [regexp -inline {(<a href="/dss/dss_help.html#coordinates">RA</a>  <input name=r value=")([0-9]+ [0-9]+ [0-9]+[[:punct:]][0-9]+)(" >)} $data1 ]
   # syntaxe de regexp :
-  #  - entre {} l'ensemble de la chaine non ambigue à repérer
-  #  - entre () les différentes parties à isoler pour être mis dans des variables distinct.
-  #    Le plus dur est de trouver une manière sans ambiguité pour identifier le champs
-  #    que l'on désire isoler.
+  #  - entre {} l'ensemble de la chaine non ambigue Ã  repÃ©rer
+  #  - entre () les diffÃ©rentes parties Ã  isoler pour Ãªtre mis dans des variables distinct.
+  #    Le plus dur est de trouver une maniÃ¨re sans ambiguitÃ© pour identifier le champs
+  #    que l'on dÃ©sire isoler.
   set ra ""
   set dec ""
   regexp -all {([0-9]+ [0-9]+ [0-9]+[[:punct:]][0-9]+)(" >)} $data1 match ra filler2
   regexp -all {([+-][0-9]+ [0-9]+ [[:punct:]]?[0-9]+[[:punct:]][0-9])(">)} $data1 match dec filler2
 
-  # Ici, $ra et $dec contienne les coordonnées de l'objet
+  # Ici, $ra et $dec contienne les coordonnÃ©es de l'objet
 
   # Format de la ligne de la 2eme requete html :
   # http://stdatu.stsci.edu/cgi-bin/dss_search?v=poss2ukstu&r=16+41+41.44&d=%2B36+27+36.9&e=J2000&h=15.0&w=15.0&f=gif&c=none&fov=NONE&v3=
   # Incident du 13/07/2007 :
   # Origine :
-  #   Plantage à cause d'un changement du nom de catalogue codé en dur dans le programme
-  # Résolution :
+  #   Plantage Ã  cause d'un changement du nom de catalogue codÃ© en dur dans le programme
+  # RÃ©solution :
   # Ajout d'une boite de dialogue permettant le choix du catalogue parmis :
   #  <option value="poss2ukstu_red" selected>   POSS2/UKSTU Red</option>
   #  <option value="poss2ukstu_blue" >          POSS2/UKSTU Blue</option>
@@ -133,11 +129,11 @@ proc Charge_Objet_SIMBAD {objet} {
   #  <option value="phase2_gsc2" >              HST Phase 2 (GSC2)</option>
   #  <option value="phase2_gsc1" >              HST Phase 2 (GSC1)</option>
 
-  # URL de la requète CGI 2
+  # URL de la requÃ¨te CGI 2
   set BASE_URL http://stdatu.stsci.edu/cgi-bin/dss_search/
 
-  # Création de la requète 2 (Obtention de l'image)
-  # Ici, plusieurs paramètres composent la requète CGI donc le paramètre de ::http::formatQuery
+  # CrÃ©ation de la requÃ¨te 2 (Obtention de l'image)
+  # Ici, plusieurs paramÃ¨tres composent la requÃ¨te CGI donc le paramÃ¨tre de ::http::formatQuery
   # comporte plusieurs couple champs - valeur_du_champs
   # Ici, les champs sont : v, r, d, e, h, w, f, c, fov, v3
   # v=poss2ukstu_red&r=00+31+45.00&d=-05+09+11.0&e=J2000&h=15.0&w=15.0&f=gif&c=none&fov=NONE&v3=
@@ -161,7 +157,6 @@ proc Charge_Objet_SIMBAD {objet} {
       default { set catal poss2ukstu_red }
     }
 
-
     set query [::http::formatQuery v $catal r $ra d $dec e J2000 h $param(hauteur) w $param(largeur) f fits c none fov NONE v3 ""]
 
     # Lance la requete 2
@@ -171,22 +166,21 @@ proc Charge_Objet_SIMBAD {objet} {
       set token2 [::http::geturl ${BASE_URL} -query $query]
     }
 
-
-    # Récupération dans $html de l'image proprement dite.
+    # RÃ©cupÃ©ration dans $html de l'image proprement dite.
     set html  [::http::data $token2]
     ::http::cleanup $token2
 
     update
 
-    # Enregistrement de l'image (en mémoire) dans un fichier
+    # Enregistrement de l'image (en mÃ©moire) dans un fichier
     set fichier_objet ${objet}.fit
     set fp [open $fichier_objet w]
     fconfigure $fp -translation binary
     puts -nonewline $fp $html
     close $fp
 
-    # Si on demande un format .gz, alors on charge l'image en mémoire et on sauve avec l'option .gz
-    # Les catch permettent de trapper certaines erreurs dûes au serveur d'images
+    # Si on demande un format .gz, alors on charge l'image en mÃ©moire et on sauve avec l'option .gz
+    # Les catch permettent de trapper certaines erreurs dÃ»es au serveur d'images
     # (pas bien compris pourquoi) afin de ne pas planter le script et permettre de charger les images suivantes.
     if { $param(compresse) == "yes" } {
       catch {buf1 load $fichier_objet}
@@ -204,21 +198,19 @@ proc Affiche_Objet {objet} {
   return
 }
 
-
-
-# Procédure principale à compléter pour pouvoir récupérer n'importe quoi !!!
+# ProcÃ©dure principale Ã  complÃ©ter pour pouvoir rÃ©cupÃ©rer n'importe quoi !!!
 # Quelques exemples ...
-# En fait, on passe en paramètre à la fonction Charge_Objet_SIMBAD le nom que l'on met normalement
+# En fait, on passe en paramÃ¨tre Ã  la fonction Charge_Objet_SIMBAD le nom que l'on met normalement
 # sur la page WEB
 
 proc recuperation {} {
   global param old_rep ferreur
 
-  # Création du répertoire si inexistant et si creat vaut 'y'
+  # CrÃ©ation du rÃ©pertoire si inexistant et si creat vaut 'y'
   if { $param(rep) != "" } {
     if { ! [file isdirectory $param(rep)] } {
-      set chx [tk_messageBox -type yesno -title "Répertoire $param(rep) inexistant" \
-            -message "Voulez-vous créer ce répertoire ?"]
+      set chx [tk_messageBox -type yesno -title "RÃ©pertoire $param(rep) inexistant" \
+            -message "Voulez-vous crÃ©er ce rÃ©pertoire ?"]
       if { $chx == "yes" } {
         file mkdir $param(rep)
       }
@@ -226,7 +218,7 @@ proc recuperation {} {
   }
 
   if { [file isdirectory $param(rep)] } {
-    # sauvegarde le répertoire de base
+    # sauvegarde le rÃ©pertoire de base
     set old_rep [pwd]
     cd $param(rep)
 
@@ -234,8 +226,8 @@ proc recuperation {} {
     set ferreur [open notloaded.txt a]
 
     set ligne "[clock format [clock seconds] -format "20%y %m %d - %X"] - "
-    append ligne "Lors du chargement des objets $param(NomObjet)$param(debut) à $param(NomObjet)$param(fin) "
-    append ligne "les objets suivants étaient manquant :"
+    append ligne "Lors du chargement des objets $param(NomObjet)$param(debut) Ã  $param(NomObjet)$param(fin) "
+    append ligne "les objets suivants Ã©taient manquant :"
     puts $ferreur $ligne
     flush $ferreur
 
@@ -262,7 +254,7 @@ proc recuperation {} {
     puts $ferreur "-------------------------------------------------"
     close $ferreur
 
-    # restaure le répertoire de base
+    # restaure le rÃ©pertoire de base
     cd $old_rep
 
     tk_messageBox -message "FIN DU TRAITEMENT"
@@ -270,7 +262,6 @@ proc recuperation {} {
 
   focus -force .pre.f10.b2
 }
-
 
 proc active_proxy {} {
   global param
@@ -292,13 +283,13 @@ proc active_objet {} {
   global param
 
   if { $param(NomObjet) == "M" } {
-    .pre.f02.l1 configure -text "Objets : Messier $param(debut) à Messier $param(fin)"
+    .pre.f02.l1 configure -text "Objets : Messier $param(debut) Ã  Messier $param(fin)"
    }
   if { $param(NomObjet) == "NGC" } {
-    .pre.f02.l1 configure -text "Objets : NGC$param(debut) à NGC$param(fin)"
+    .pre.f02.l1 configure -text "Objets : NGC$param(debut) Ã  NGC$param(fin)"
    }
   if { $param(NomObjet) == "IC" } {
-    .pre.f02.l1 configure -text "Objets : IC$param(debut) à IC$param(fin)"
+    .pre.f02.l1 configure -text "Objets : IC$param(debut) Ã  IC$param(fin)"
    }
 
   return 1
@@ -316,23 +307,23 @@ proc ajout_ini {fic} {
 proc ouvrir {} {
   global param
 
-  set fichier [tk_getOpenFile -title "Ouvrir un fichier de paramètres" \
-    -filetypes {{{Fichier paramètres} {.ini}} } \
+  set fichier [tk_getOpenFile -title "Ouvrir un fichier de paramÃ¨tres" \
+    -filetypes {{{Fichier paramÃ¨tres} {.ini}} } \
     -initialdir "c:/" ]
 
-  # crée un interpréteur
+  # crÃ©e un interprÃ©teur
   set tmpinterp [interp create]
 
-  # interprète le fichier de paramètres
+  # interprÃ¨te le fichier de paramÃ¨tres
   catch {interp eval $tmpinterp "source \"$fichier\""}
 
-  # charge dans le tableau param_temp les données de l'interpréteur temporaire
+  # charge dans le tableau param_temp les donnÃ©es de l'interprÃ©teur temporaire
   array set param_temp [interp eval $tmpinterp "array get param"]
 
   # supprime l'interpreteur temporaire
   interp delete $tmpinterp
 
-  # charge dans param de l'interpréteur courant les valeur du param_temp
+  # charge dans param de l'interprÃ©teur courant les valeur du param_temp
   array set param [array get param_temp]
 
   active_proxy
@@ -341,8 +332,8 @@ proc ouvrir {} {
 proc enregistrer {} {
   global param
 
-  set fichier [tk_getSaveFile -title "Sauvegarder un fichier de paramètres" \
-    -filetypes {{{Fichier paramètres} {.ini}} } \
+  set fichier [tk_getSaveFile -title "Sauvegarder un fichier de paramÃ¨tres" \
+    -filetypes {{{Fichier paramÃ¨tres} {.ini}} } \
     -initialdir "c:/" ]
 
   set fp [open [ajout_ini ${fichier}] w]
@@ -358,7 +349,7 @@ proc getdirname { {titre  "Selectionnez un repertoire"} { repinit "C:/" } { crea
     -initialdir $repinit]
   set len [ string length $dirname ]
   set folder "$dirname"
-  # Ajoute un / à la fin s'il n'y en a pas
+  # Ajoute un / Ã  la fin s'il n'y en a pas
   if { $len > "0" } {
     set car [ string index "$dirname" [ expr $len-1 ] ]
     if { $car != "/" } {
@@ -367,7 +358,7 @@ proc getdirname { {titre  "Selectionnez un repertoire"} { repinit "C:/" } { crea
     set dirname $folder
   }
 
-  # Création du répertoire si inexistant et si creat vaut 'y'
+  # CrÃ©ation du rÃ©pertoire si inexistant et si creat vaut 'y'
   if { $dirname != "" } {
     if { $creat == "y" } {
       if { ! [file isdirectory $dirname] } {
@@ -392,13 +383,12 @@ proc getdir {} {
 proc quitter {} {
   global ferreur old_rep
 
-  # Restaure le répertoire initial
+  # Restaure le rÃ©pertoire initial
   catch {cd $old_rep}
 
   destroy .dialog
   destroy .pre
 }
-
 
 ####################################################################
 #  routine principale                                              #
@@ -406,15 +396,14 @@ proc quitter {} {
 
 toplevel .pre
 wm geometry  .pre +50+50
-wm title .pre "Récupération d'images du DSS"
+wm title .pre "RÃ©cupÃ©ration d'images du DSS"
 wm protocol .pre WM_DELETE_WINDOW quitter
 
-
 #
-# Lecture du fichier de paramètres
+# Lecture du fichier de paramÃ¨tres
 #
 
-# Crée une frame par champs de saisie (+ simple pour utiliser le packer)
+# CrÃ©e une frame par champs de saisie (+ simple pour utiliser le packer)
 
 frame .pre.f00 -borderwidth 5
 pack configure .pre.f00 -side top -fill x
@@ -438,12 +427,11 @@ pack .pre.f0.but3 -side left
 .pre.f0.but2 configure -command {active_objet}
 .pre.f0.but3 configure -command {active_objet}
 
-
-# indice début/fin
+# indice dÃ©but/fin
 frame .pre.f01 -borderwidth 5
 pack configure .pre.f01 -side top -fill x
 
-label .pre.f01.l1 -text {Indice début :}
+label .pre.f01.l1 -text {Indice dÃ©but :}
 pack configure .pre.f01.l1 -side left
 entry .pre.f01.e1 -textvariable param(debut)
 pack configure .pre.f01.e1 -side left -fill x
@@ -463,10 +451,6 @@ pack configure .pre.f02 -side top -fill x
 
 label .pre.f02.l1
 pack configure .pre.f02.l1 -side left
-
-
-
-
 
 # Choix du catalogue dans lequel prendre l'image
 #frame .pre.frl borderwidth 5
@@ -501,7 +485,6 @@ pack        .pre.lb.scrollbar -side left -fill y
 .pre.lb.lb1 insert end "HST Phase 2 (GSC2)"
 .pre.lb.lb1 insert end "HST Phase 2 (GSC1)"
 
-
 # largeur image
 frame .pre.f1 -borderwidth 5
 pack configure .pre.f1 -side top -fill x
@@ -520,11 +503,11 @@ pack configure .pre.f2.l2 -side left
 entry .pre.f2.e2 -textvariable param(hauteur)
 pack configure .pre.f2.e2 -side left
 
-# répertoire
+# rÃ©pertoire
 frame .pre.f3 -borderwidth 5
 pack configure .pre.f3 -side top -fill x
 
-label .pre.f3.l3 -text {Répertoire de destination :}
+label .pre.f3.l3 -text {RÃ©pertoire de destination :}
 pack configure .pre.f3.l3 -side left
 entry .pre.f3.e3 -textvariable param(rep) -width 40
 pack configure .pre.f3.e3 -side left
@@ -535,7 +518,7 @@ pack .pre.f3.b3 -side left
 frame .pre.f4 -borderwidth 5
 pack configure .pre.f4 -side top -fill x
 
-label .pre.f4.l4 -text {Compressé image :}
+label .pre.f4.l4 -text {CompressÃ© image :}
 pack configure .pre.f4.l4 -side left
 checkbutton .pre.f4.cbcompresse -variable param(compresse) -onvalue yes -offvalue no
 pack configure .pre.f4.cbcompresse -side left
@@ -598,7 +581,7 @@ pack .pre.f10.b2 -side left -padx 10
 
 bind .pre <Key-Escape> {quitter}
 
-# Définie la fenetre qui servira à l'affichage des messages d'attente.
+# DÃ©finie la fenetre qui servira Ã  l'affichage des messages d'attente.
 toplevel .dialog
 label .dialog.l1 -text "" -width 50
 pack .dialog.l1 -side top
@@ -617,7 +600,7 @@ wm protocol  .dialog WM_DELETE_WINDOW quitter
 
 active_proxy
 
-# Cache la fenetre wish par défaut
+# Cache la fenetre wish par dÃ©faut
 wm withdraw .
 # Mets le focus sur le bouton 'lancer'
 focus -force .pre.f10.b2

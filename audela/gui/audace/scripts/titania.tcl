@@ -4,7 +4,7 @@
 # Observation en automatique
 # Camera : Script optimise pour une Audine Kaf-0400 pilotee par un port parallele
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: titania.tcl,v 1.5 2007-12-28 11:21:35 robertdelmas Exp $
+# Mise Ã  jour $Id: titania.tcl,v 1.6 2010-05-27 06:17:39 robertdelmas Exp $
 #
 
 global audace
@@ -29,7 +29,7 @@ set biny 1
 set dt 200.
 
 #--- Indice du premier photosite de la largeur de l'image
-set firstpix 270 ; #--- Valeur à adapter en temps réel
+set firstpix 270 ; #--- Valeur a adapter en temps reel
 
 #--- Nombre de boucles apres les calibrations avec l'outil Scan rapide
 set speed 20429
@@ -39,7 +39,7 @@ set datejd [mc_date2jd $debut]
 while {[mc_date2jd now]<$datejd} {
    after 1000
    ::console::affiche_resultat "\n"
-   ::console::affiche_resultat "Attente du début de l'observation.\n"
+   ::console::affiche_resultat "Attente du dÃ©but de l'observation.\n"
    ::console::affiche_resultat "Il est actuellement : [mc_date2ymdhms now] \n"
 }
 set name [mc_date2ymdhms now]
@@ -61,7 +61,7 @@ catch {cam$audace(camNo) shutter synchro}
 buf$audace(bufNo) save "titania_$name"
 buf$audace(bufNo) save "i0_$name"
 ::console::affiche_resultat "\n"
-::console::affiche_resultat "Scan terminé.\n"
+::console::affiche_resultat "Scan terminÃ©.\n"
 ::console::affiche_resultat "\n"
 
 #--- Fin du fichier script
