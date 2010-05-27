@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmaude.tcl,v 1.29 2010-01-30 14:10:16 robertdelmas Exp $
+# Mise à jour $Id: cmaude.tcl,v 1.30 2010-05-27 06:38:04 robertdelmas Exp $
 #
 # Remarks :
 # The definition of some variables (binning, exp. time, rythm, etc.)
@@ -242,11 +242,11 @@ namespace eval ::cmaude {
          ::console::affiche_erreur "$caption(cmaude,il_est) $datheur $caption(cmaude,TU)\n"
          ::console::affiche_erreur "$caption(cmaude,jour_julien) $ladate\n"
          ::console::affiche_erreur "$caption(cmaude,position_soleil)\n"
-         ::console::affiche_erreur "$caption(cmaude,hauteur) [string range $hautsol 0 5]�\n"
-         ::console::affiche_erreur "$caption(cmaude,azimut) [string range $azimsol 0 5]�\n"
+         ::console::affiche_erreur "$caption(cmaude,hauteur) [string range $hautsol 0 5]°\n"
+         ::console::affiche_erreur "$caption(cmaude,azimut) [string range $azimsol 0 5]°\n"
          set phaslun [lindex [mc_ephem moon [list [mc_date2tt $ladate]] {phase} -topo $localite] 0]
          set cmconf(phaslun) $phaslun
-         ::console::affiche_erreur "$caption(cmaude,phase_lune) [string range $phaslun 0 5]�\n"
+         ::console::affiche_erreur "$caption(cmaude,phase_lune) [string range $phaslun 0 5]°\n"
          set illufrac [expr 100 * (0.5 + 0.5 * cos ($phaslun / 180. * 3.1415))]
          set cmconf(illufrac) $illufrac
          ::console::affiche_erreur "$caption(cmaude,illumine_lune) ~[expr int($illufrac)]%\n"
@@ -283,7 +283,7 @@ namespace eval ::cmaude {
             set jd_deb "$jj"
             set resultb "$caption(cmaude,debut_nuit) [mc_date2iso8601 $jd_deb] $caption(cmaude,TU)\n"
             set cmconf(resultb) $resultb
-            ::console::affiche_erreur "$caption(cmaude,hauteur_soleil_debut_nuit) < $cmconf(haurore)�\n"
+            ::console::affiche_erreur "$caption(cmaude,hauteur_soleil_debut_nuit) < $cmconf(haurore)°\n"
             ::console::affiche_erreur "$resultb"
             ::console::affiche_erreur "$caption(cmaude,jour_julien) = $jd_deb\n"
 
@@ -354,7 +354,7 @@ namespace eval ::cmaude {
                catch {
                   set fileId [open $cmconf(folder)/$namelog.log a]
                   set textlog "$caption(cmaude,observation_log) [string range [mc_date2jd $now] 0 6] $caption(cmaude,ou) [string range [mc_date2iso8601 $actuel] 0 9]\n\n"
-                  append textlog "$caption(cmaude,hauteur_soleil_debut_nuit) < $haurore�\n\n"
+                  append textlog "$caption(cmaude,hauteur_soleil_debut_nuit) < $haurore°\n\n"
                   append textlog $resultb
                   append textlog $resulte
                   puts $fileId $textlog
@@ -490,12 +490,12 @@ namespace eval ::cmaude {
       set highmoon [lindex [mc_ephem moon [list [mc_date2tt $actuel]] {altitude} -topo $localite] 0]
       ::console::affiche_erreur "\n"
       if { $highsun > $cmconf(hastwilight) } {
-         ::console::affiche_erreur "$caption(cmaude,hauteur_soleil) = [string range $highsun 0 4]� $caption(cmaude,au-dessus) $cmconf(hastwilight)�\n"
+         ::console::affiche_erreur "$caption(cmaude,hauteur_soleil) = [string range $highsun 0 4]° $caption(cmaude,au-dessus) $cmconf(hastwilight)°\n"
          ::console::affiche_erreur "$caption(cmaude,hauteur_limite_soleil)\n"
          set panneau(cmaude,time) "$cmconf(exptime2)"
       }
       if { $highmoon > $cmconf(hmooncritic) } {
-         ::console::affiche_erreur "$caption(cmaude,hauteur_lune) = [string range $highmoon 0 4]� $caption(cmaude,au-dessus) $cmconf(hmooncritic)�\n"
+         ::console::affiche_erreur "$caption(cmaude,hauteur_lune) = [string range $highmoon 0 4]° $caption(cmaude,au-dessus) $cmconf(hmooncritic)°\n"
          ::console::affiche_erreur "$caption(cmaude,hauteur_critique_lune)\n"
          set panneau(cmaude,time) "$cmconf(exptime2)"
       }
@@ -652,14 +652,14 @@ namespace eval ::cmaude {
       ::console::affiche_prompt "$caption(cmaude,temps_sideral) $sidetime\n"
       ::console::affiche_prompt "########### $caption(cmaude,soleil) ##########\n"
       ::console::affiche_prompt "$caption(cmaude,position_soleil)\n"
-      ::console::affiche_prompt "$caption(cmaude,hauteur) [string range $hautsol 0 5]�\n"
-      ::console::affiche_prompt "$caption(cmaude,azimut) [string range $azimsol 0 5]�\n"
+      ::console::affiche_prompt "$caption(cmaude,hauteur) [string range $hautsol 0 5]°\n"
+      ::console::affiche_prompt "$caption(cmaude,azimut) [string range $azimsol 0 5]°\n"
       ::console::affiche_prompt "########### $caption(cmaude,lune) ##########\n"
       ::console::affiche_prompt "$caption(cmaude,position_lune)\n"
-      ::console::affiche_prompt "$caption(cmaude,hauteur) [string range $hautmoo 0 5]�\n"
-      ::console::affiche_prompt "$caption(cmaude,azimut) [string range $azimmoo 0 5]�\n"
-      ::console::affiche_prompt "$caption(cmaude,elongation_lune) [string range $elongmoo 0 4]�\n"
-      ::console::affiche_prompt "$caption(cmaude,phase_lune) [string range $phaslun 0 4]�\n"
+      ::console::affiche_prompt "$caption(cmaude,hauteur) [string range $hautmoo 0 5]°\n"
+      ::console::affiche_prompt "$caption(cmaude,azimut) [string range $azimmoo 0 5]°\n"
+      ::console::affiche_prompt "$caption(cmaude,elongation_lune) [string range $elongmoo 0 4]°\n"
+      ::console::affiche_prompt "$caption(cmaude,phase_lune) [string range $phaslun 0 4]°\n"
       ::console::affiche_prompt "$caption(cmaude,illumine_lune) [string range $illufrac 0 4]%\n"
       ::console::affiche_prompt "#########################\n\n"
    }

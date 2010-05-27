@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.etoile.tcl,v 1.9 2010-01-12 16:12:11 robertdelmas Exp $
+# Mise Ã  jour $Id: tuto.etoile.tcl,v 1.10 2010-05-27 06:32:01 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -39,19 +39,19 @@ focusing method using a globular cluster.\n"
       set caption(compute) "Analyse..."
       set caption(exit) "Quitter"
       set caption(thermlevel) "Niveau thermique ="
-      set caption(max_zero) "Problème de connexion"
-      set caption(satured) "Des pixels sont saturés"
+      set caption(max_zero) "ProblÃ¨me de connexion"
+      set caption(satured) "Des pixels sont saturÃ©s"
       set caption(maxdark) "Valeur maximum ="
 
-      set texte(firstdark_1) "Initiation à l'imagerie CCD"
-      set texte(firstdark_2) "Focalisation sur une étoile brillante"
-      set texte(firstdark_3) "Pointer votre télescope vers une étoile brillante et centrer-la en faisant des images CCD en cliquant sur le bouton rouge.\
-L'image est sans doute trés défocalisée et l'étoile ressemble à un gros rond avec un trou noir au centre. C'est normal.\n
-La focalisation consiste à tourner la molette de mise au point du télescope jusqu'à obtenir une étoile la plus fine possible.\
-Bien sûr, l'étoile que vous avez pointée est tellement brillante qu'à un moment donné elle va saturer et va provoquer un effet d'éblouissement\
-caractérisé par une grosse ligne blanche verticale centrée sur l'étoile.\ Quand vous en êtes à ce point, avec le temps de pose le plus court, il faut passer à la\
-méthode de focalisation avec un amas globulaire.\n"
-      set texte(firstdark_exit) " Retour à la page principale."
+      set texte(firstdark_1) "Initiation Ã  l'imagerie CCD"
+      set texte(firstdark_2) "Focalisation sur une Ã©toile brillante"
+      set texte(firstdark_3) "Pointer votre tÃ©lescope vers une Ã©toile brillante et centrer-la en faisant des images CCD en cliquant sur le bouton rouge.\
+L'image est sans doute trÃ©s dÃ©focalisÃ©e et l'Ã©toile ressemble Ã  un gros rond avec un trou noir au centre. C'est normal.\n
+La focalisation consiste Ã  tourner la molette de mise au point du tÃ©lescope jusqu'Ã  obtenir une Ã©toile la plus fine possible.\
+Bien sÃ»r, l'Ã©toile que vous avez pointÃ©e est tellement brillante qu'Ã  un moment donnÃ© elle va saturer et va provoquer un effet d'Ã©blouissement\
+caractÃ©risÃ© par une grosse ligne blanche verticale centrÃ©e sur l'Ã©toile.\ Quand vous en Ãªtes Ã  ce point, avec le temps de pose le plus court, il faut passer Ã  la\
+mÃ©thode de focalisation avec un amas globulaire.\n"
+      set texte(firstdark_exit) " Retour Ã  la page principale."
    }
 }
 

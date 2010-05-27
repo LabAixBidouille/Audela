@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.plugcam.tcl,v 1.8 2010-01-12 16:13:07 robertdelmas Exp $
+# Mise √† jour $Id: tuto.plugcam.tcl,v 1.9 2010-05-27 06:33:05 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -39,17 +39,17 @@ You are ready...\n"
       set caption(compute) "Analyse..."
       set caption(exit) "Quitter"
       set caption(thermlevel) "Niveau thermique ="
-      set caption(max_zero) "ProblËme de connexion"
-      set caption(satured) "Des pixels sont saturÈs"
+      set caption(max_zero) "Probl√®me de connexion"
+      set caption(satured) "Des pixels sont satur√©s"
       set caption(maxdark) "Valeur maximum ="
 
-      set texte(firstdark_1) "Initiation ‡ l'imagerie CCD"
-      set texte(firstdark_2) "Connexion des c‚bles de la camÈra"
-      set texte(firstdark_3) "Sur cette photo, la camÈra Audine est posÈe sur son boÓtier d'alimentation (vue face arriËre).\
-L'ordinateur (en-dessous) est connectÈ ‡ la camÈra via le c‚ble en nappe multicolore sur le port imprimante (sortie parallËle LPT).\
-La camÈra est reliÈe ‡ son boÓtier d'alimentation via un c‚ble rond (prises jaune et rouge).\
-Enfin, le boÓtier d'alimentation est branchÈ sur le secteur (220V 50Hz).\n"
-      set texte(firstdark_exit) " Retour ‡ la page principale."
+      set texte(firstdark_1) "Initiation √† l'imagerie CCD"
+      set texte(firstdark_2) "Connexion des c√¢bles de la cam√©ra"
+      set texte(firstdark_3) "Sur cette photo, la cam√©ra Audine est pos√©e sur son bo√Ætier d'alimentation (vue face arri√®re).\
+L'ordinateur (en-dessous) est connect√© √† la cam√©ra via le c√¢ble en nappe multicolore sur le port imprimante (sortie parall√®le LPT).\
+La cam√©ra est reli√©e √† son bo√Ætier d'alimentation via un c√¢ble rond (prises jaune et rouge).\
+Enfin, le bo√Ætier d'alimentation est branch√© sur le secteur (220V 50Hz).\n"
+      set texte(firstdark_exit) " Retour √† la page principale."
    }
 }
 

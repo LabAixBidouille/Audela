@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.station.tcl,v 1.8 2010-01-12 16:14:02 robertdelmas Exp $
+# Mise Ã  jour $Id: tuto.station.tcl,v 1.9 2010-05-27 06:34:07 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -45,25 +45,25 @@ with automatic aiming capabilities (LX200, AudeCom, etc.).\n"
       set caption(compute) "Analyse..."
       set caption(exit) "Quitter"
       set caption(thermlevel) "Niveau thermique ="
-      set caption(max_zero) "Problème de connexion"
-      set caption(satured) "Des pixels sont saturés"
+      set caption(max_zero) "ProblÃ¨me de connexion"
+      set caption(satured) "Des pixels sont saturÃ©s"
       set caption(maxdark) "Valeur maximum ="
 
-      set texte(firstdark_1) "Initiation à l'imagerie CCD"
-      set texte(firstdark_2) "Mise en station du télescope"
-      set texte(firstdark_3) "Sur cette photo, la flèche rouge indique la direction mécanique de l'axe de l'angle horaire de\
-la monture équatoriale. Cet axe doit pointer exactement vers le pôle céleste pour que le télescope soit mis en station.\
-La mise en station permet de pointer facilement les objets du ciel avec leurs coordonnées et de réaliser des images CCD\
+      set texte(firstdark_1) "Initiation Ã  l'imagerie CCD"
+      set texte(firstdark_2) "Mise en station du tÃ©lescope"
+      set texte(firstdark_3) "Sur cette photo, la flÃ¨che rouge indique la direction mÃ©canique de l'axe de l'angle horaire de\
+la monture Ã©quatoriale. Cet axe doit pointer exactement vers le pÃ´le cÃ©leste pour que le tÃ©lescope soit mis en station.\
+La mise en station permet de pointer facilement les objets du ciel avec leurs coordonnÃ©es et de rÃ©aliser des images CCD\
 en actionnant le moteur d'angle horaire.\n
-Dans l'hémisphère nord, la direction du nord céleste coïncide à moins d'un degré prés avec l'étoile Polaire. On commencera\
-donc à pointer l'étoile Polaire avec la monture placée sur la déclinaison 90 degrés. En fonction du type de votre monture,\
+Dans l'hÃ©misphÃ¨re nord, la direction du nord cÃ©leste coÃ¯ncide Ã  moins d'un degrÃ© prÃ©s avec l'Ã©toile Polaire. On commencera\
+donc Ã  pointer l'Ã©toile Polaire avec la monture placÃ©e sur la dÃ©clinaison 90 degrÃ©s. En fonction du type de votre monture,\
 il est possible d'affiner la mise en station. Se renseigner...\n
-Si le télescope est parfaitement mis en station, il n'est plus nécessaire de remplacer la caméra par l'oculaire entre chaque\
-pointage puisque l'on peut pointer les objets uniquement grâce aux cercles de coordonnées du télescope. Certains télescopes sont\
-automatisés de sorte que l'on indique les coordonnées sur la raquette de pilotage et le télescope pointe tout seul au bon endroit\
-(dans la mesure où le télescope est bien mis en station). Le logiciel AudeLA peut piloter lui-même un certain nombre de montures\
-à pointage automatique (LX200, AudeCom, etc.).\n"
-      set texte(firstdark_exit) " Retour à la page principale."
+Si le tÃ©lescope est parfaitement mis en station, il n'est plus nÃ©cessaire de remplacer la camÃ©ra par l'oculaire entre chaque\
+pointage puisque l'on peut pointer les objets uniquement grÃ¢ce aux cercles de coordonnÃ©es du tÃ©lescope. Certains tÃ©lescopes sont\
+automatisÃ©s de sorte que l'on indique les coordonnÃ©es sur la raquette de pilotage et le tÃ©lescope pointe tout seul au bon endroit\
+(dans la mesure oÃ¹ le tÃ©lescope est bien mis en station). Le logiciel AudeLA peut piloter lui-mÃªme un certain nombre de montures\
+Ã  pointage automatique (LX200, AudeCom, etc.).\n"
+      set texte(firstdark_exit) " Retour Ã  la page principale."
    }
 }
 

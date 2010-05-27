@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.firstdark.tcl,v 1.9 2010-01-12 16:12:30 robertdelmas Exp $
+# Mise Ã  jour $Id: tuto.firstdark.tcl,v 1.10 2010-05-27 06:32:23 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -37,17 +37,17 @@ if the exposure time is greater than a few seconds, the image seems have a dark 
       set caption(compute) "Analyse..."
       set caption(exit) "Quitter"
       set caption(thermlevel) "Niveau thermique ="
-      set caption(max_zero) "Problème de connexion"
-      set caption(satured) "Des pixels sont saturés"
+      set caption(max_zero) "ProblÃ¨me de connexion"
+      set caption(satured) "Des pixels sont saturÃ©s"
       set caption(maxdark) "Valeur maximum ="
 
-      set texte(firstdark_1) "Initiation à l'imagerie CCD"
-      set texte(firstdark_2) "Première image dans le noir, caméra non-refroidie"
-      set texte(firstdark_3) "Installer votre matériel d'acquisition CCD (caméra branchée sur l'ordinateur) dans le noir complet. Le mieux est de procéder pendant la nuit dans une pièce noire. La caméra n'est pas refroidie.\n
-Cliquer sur le bouton rouge $caption(go) pour faire une image d'une seconde. Un gradient vertical (la partie la plus brillante en haut) et plusieurs lignes verticales doivent apparaître. Si l'image est complètement blanche, quelque chose ne va pas : Peut-être que le CCD n'est pas dans un noir suffisant ou bien vérifier les connexions électriques.\n
-Si la caméra est à une température proche de 20 degrés Celsius, vous pouvez vérifier que le niveau thermique est d'environ 30 pas codeurs par seconde (cette valeur s'affiche automatiquement à la fin de la pose).\n
-Quand le temps d'exposition est supérieur à quelques secondes, l'image semble avoir un fond sombre et plein de pixels brillants. C'est normal (n'oubliez pas que votre caméra n'est pas refroidie).\n"
-      set texte(firstdark_exit) " Retour à la page principale."
+      set texte(firstdark_1) "Initiation Ã  l'imagerie CCD"
+      set texte(firstdark_2) "PremiÃ¨re image dans le noir, camÃ©ra non-refroidie"
+      set texte(firstdark_3) "Installer votre matÃ©riel d'acquisition CCD (camÃ©ra branchÃ©e sur l'ordinateur) dans le noir complet. Le mieux est de procÃ©der pendant la nuit dans une piÃ¨ce noire. La camÃ©ra n'est pas refroidie.\n
+Cliquer sur le bouton rouge $caption(go) pour faire une image d'une seconde. Un gradient vertical (la partie la plus brillante en haut) et plusieurs lignes verticales doivent apparaÃ®tre. Si l'image est complÃ¨tement blanche, quelque chose ne va pas : Peut-Ãªtre que le CCD n'est pas dans un noir suffisant ou bien vÃ©rifier les connexions Ã©lectriques.\n
+Si la camÃ©ra est Ã  une tempÃ©rature proche de 20 degrÃ©s Celsius, vous pouvez vÃ©rifier que le niveau thermique est d'environ 30 pas codeurs par seconde (cette valeur s'affiche automatiquement Ã  la fin de la pose).\n
+Quand le temps d'exposition est supÃ©rieur Ã  quelques secondes, l'image semble avoir un fond sombre et plein de pixels brillants. C'est normal (n'oubliez pas que votre camÃ©ra n'est pas refroidie).\n"
+      set texte(firstdark_exit) " Retour Ã  la page principale."
    }
 }
 

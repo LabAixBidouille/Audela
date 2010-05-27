@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.audace.tcl,v 1.9 2010-01-12 16:10:50 robertdelmas Exp $
+# Mise Ã  jour $Id: tuto.audace.tcl,v 1.10 2010-05-27 06:29:19 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -37,17 +37,17 @@ Let's take the plunge now!\n"
       set caption(compute) "Analyse..."
       set caption(exit) "Quitter"
       set caption(thermlevel) "Niveau thermique ="
-      set caption(max_zero) "Problème de connexion"
-      set caption(satured) "Des pixels sont saturés"
+      set caption(max_zero) "ProblÃ¨me de connexion"
+      set caption(satured) "Des pixels sont saturÃ©s"
       set caption(maxdark) "Valeur maximum ="
 
-      set texte(firstdark_1) "Initiation à l'imagerie CCD"
+      set texte(firstdark_1) "Initiation Ã  l'imagerie CCD"
       set texte(firstdark_2) "L'acquisition par la pratique"
-      set texte(firstdark_3) "Ca y est, vous êtes maintenant capables d'obtenir des images du ciel grâce à cette petite interface.\
-Vous pouvez maintenant passer à l'interface Aud'ACE qui est plus élaborée (mais aussi plus complexe). Aud'ACE vous permettra de prétraiter\
+      set texte(firstdark_3) "Ca y est, vous Ãªtes maintenant capables d'obtenir des images du ciel grÃ¢ce Ã  cette petite interface.\
+Vous pouvez maintenant passer Ã  l'interface Aud'ACE qui est plus Ã©laborÃ©e (mais aussi plus complexe). Aud'ACE vous permettra de prÃ©traiter\
 vos images, de modifier leurs seuils de visualisation, etc. \n\n
 En route pour l'aventure !\n"
-      set texte(firstdark_exit) " Retour à la page principale."
+      set texte(firstdark_exit) " Retour Ã  la page principale."
    }
 }
 
