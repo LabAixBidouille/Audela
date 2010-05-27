@@ -1,9 +1,12 @@
-
-#--------------------------------------------------  
-#  lecture_info { This }
-#--------------------------------------------------  
 #
-#    fonction  : 
+# Mise à jour $Id: bddimages_insertion_applet.tcl,v 1.2 2010-05-27 07:04:08 robertdelmas Exp $
+#
+
+#--------------------------------------------------
+#  lecture_info { This }
+#--------------------------------------------------
+#
+#    fonction  :
 #       Obtention de la liste des champs du
 #       header pour les images de la liste
 #
@@ -13,14 +16,14 @@
 #       this = chemin de la fenetre
 #
 #    variables en sortie :
-#  
-#--------------------------------------------------  
+#
+#--------------------------------------------------
    proc lecture_info { This } {
 
    global conf
    global bddconf
    global caption
-   global entetelog   
+   global entetelog
 
       set listeentiere [ $::bddimages_insertion::This.frame7.tbl get 0 end ]
       set nbimg [ llength $listeentiere ]
@@ -64,7 +67,7 @@
                  } else {
                  bddimages_sauve_fich "lecture_info: Fichier $nomfich supprime"
                  }
-               }               
+               }
              set erreur "Erreur <$erreur> : $caption(bddimages_insertion,err$erreur)"
              }
            set ligne [list $etat $nomfich $dateiso $site $sizefich $erreur]
@@ -76,7 +79,7 @@
            update
            }
          }
- 
+
    set bddconf(nbimg)    $nbimg
    set bddconf(nbimgins) $nbimgins
    set bddconf(nbimgerr) $nbimgerr
@@ -85,25 +88,25 @@
    }
 
 
-#--------------------------------------------------  
+#--------------------------------------------------
 #  insertion { This }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
+#    fonction  :
 #       Insertion des images en 3 modes :
 #         - selection d images
 #         - tout inserer
-#         - insertion automatique attente d images 
-#             dans le repertoire incoming 
-#        
+#         - insertion automatique attente d images
+#             dans le repertoire incoming
+#
 #    procedure externe :
-#     
-#    variables en entree : 
+#
+#    variables en entree :
 #       this = chemin de la fenetre
 #
-#    variables en sortie : 
-#  
-#--------------------------------------------------  
+#    variables en sortie :
+#
+#--------------------------------------------------
    proc insertion { This } {
 
    global conf
@@ -120,7 +123,7 @@
       }
 
 
-# Autre Mode d insertion  
+# Autre Mode d insertion
    ::console::affiche_resultat "Insertion ... \n"
 
    for { set i 0 } { $i <= [ expr [llength $bddconf(listetotale)] - 1 ] } { incr i } {
@@ -175,32 +178,32 @@
      }
 
 
- 
+
    }
 
 
-#--------------------------------------------------  
+#--------------------------------------------------
 #  insertion_auto {  }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
+#    fonction  :
 #       Insertion des images en mode automatique :
-#       attente d images dans le repertoire incoming 
-#        
+#       attente d images dans le repertoire incoming
+#
 #    procedure externe :
-#     
-#    variables en entree : 
+#
+#    variables en entree :
 #       this = chemin de la fenetre
 #
-#    variables en sortie : 
-#  
-#--------------------------------------------------  
+#    variables en sortie :
+#
+#--------------------------------------------------
   proc insertion_auto { } {
 
   global conf
   global bddconf
   global caption
-  global entetelog   
+  global entetelog
 
   set nbimg             0
   set nbimgins          0
@@ -212,13 +215,13 @@
   ::console::affiche_resultat "Insertion Automatique \n"
 
   set fichlock "$conf(bddimages,dirinco)/lock"
-     
+
   while { 0 < 1 } {
     # RAZ de la Table
 
     if {[file exists $fichlock]==1} {
        update
-       after 60000      
+       after 60000
        } else {
 
         set bddconf(liste) {}
@@ -239,13 +242,13 @@
         ::bddimages_insertion::Affiche_Results
 
         set nbcol        [ $::bddimages_insertion::This.frame7.tbl columncount ]
-        set listeentiere [ $::bddimages_insertion::This.frame7.tbl get 0 end ]      
+        set listeentiere [ $::bddimages_insertion::This.frame7.tbl get 0 end ]
 
         set nbimg        [ llength $listeentiere ]
         if {$nbimg == 0} {
           update
           after 10000
-          } 
+          }
 
 
         set bddconf(listetotale) {}
@@ -295,7 +298,7 @@
                     } else {
                     bddimages_sauve_fich "insertion_auto: Fichier $nomfich supprime"
                     }
-                  }               
+                  }
                 set erreur "Erreur <$erreur> : $caption(bddimages_insertion,err$erreur)"
                 }
               set ligne [list $etat $nomfich $dateiso $site $sizefich $erreur $tabkey]
@@ -342,3 +345,4 @@
    # Fin: while
 }
 # Fin: proc
+
