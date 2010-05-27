@@ -2,7 +2,7 @@
 # Fichier : fullscreen.tcl
 # Description : Fenetre plein ecran pour afficher des images ou des films
 # Auteur : Michel PUJOL
-# Mise à jour $Id: fullscreen.tcl,v 1.20 2010-05-23 08:09:49 robertdelmas Exp $
+# Mise à jour $Id: fullscreen.tcl,v 1.21 2010-05-27 22:22:41 robertdelmas Exp $
 #
 
 ##############################################################################
@@ -247,11 +247,16 @@ namespace eval ::FullScreen {
          #--- je deconifie la fenetre Console
          wm deiconify $audace(Console)
 
-         #--- je place l'image dans le coin en haut a gauche et je restitue la couleur du canvas de la fenetre principale
+         #--- je place l'image dans le coin en haut a gauche et je restitue la couleur
+         #--- du canvas de la fenetre principale
          $private($visuNo,hCanvas) itemconfigure display -anchor nw
          $private($visuNo,hCanvas) configure -bg $private($visuNo,bgcolor)
          set coords [$private($visuNo,hCanvas) coord display]
          $private($visuNo,hCanvas) move display -[lindex $coords 0] -[lindex $coords 1]
+
+         #--- je restaure le reticule
+         set ::confVisu::private($visuNo,crosshairstate) $::confVisu::private($visuNo,tempCrosshairState)
+         ::confVisu::redrawCrosshair $visuNo
 
          #--- je restaure le menu avant de restaurer la taille pour conserver celle d'origine
          $private($visuNo,toplevel) configure -menu $private($visuNo,menu)
@@ -272,8 +277,10 @@ namespace eval ::FullScreen {
             eval $a_exec
          }
 
-         #--- je desactive les binds
+         #--- je desactive le bind du clic droit sur la fenetre plein ecran
          bind $private($visuNo,hCanvas) <ButtonPress-3>
+
+         #--- je desactive les autres binds
          bind $private($visuNo,hCanvas) <Key-S>
          bind $private($visuNo,hCanvas) <Key-s>
          bind $private($visuNo,hCanvas) <Key-Down>
@@ -286,9 +293,14 @@ namespace eval ::FullScreen {
          bind $private($visuNo,hCanvas) <Key-Escape>
          bind $private($visuNo,hCanvas) <Key-space>
 
+         #--- je detruis la fenetre
          destroy $private($visuNo,popupmenu)
 
+         #--- je positionne l'indicateur de plein ecran a 0
          set ::confVisu::private($visuNo,fullscreen) "0"
+
+         #--- je restaure le bind du clic droit sur une image
+         bind $private($visuNo,hCanvas) <ButtonPress-3> [list tk_popup $::confVisu::private($visuNo,popupmenuButton3) %X %Y]
 
          #--- je restaure les binds par defaut
          ::confVisu::createBindDialog $visuNo

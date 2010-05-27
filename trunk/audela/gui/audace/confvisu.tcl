@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.140 2010-05-23 06:48:34 robertdelmas Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.141 2010-05-27 22:21:34 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -417,7 +417,7 @@ namespace eval ::confVisu {
                         buf$bufNo clear
                         visu$visuNo clear
                         #--- j'affiche l'erreur
-                        console::affiche_erreur "$::errorInfo\n"
+                        ::console::affiche_erreur "$::errorInfo\n"
                      }
                   }
                } else {
@@ -448,7 +448,7 @@ namespace eval ::confVisu {
                         buf$bufNo clear
                         visu$visuNo clear
                         #--- j'affiche l'erreur
-                        console::affiche_erreur "$::errorInfo\n"
+                        ::console::affiche_erreur "$::errorInfo\n"
                      }
                   } else {
                      #--- si c'est une table, je charge la table dans les variables columnNames et columnValues
@@ -850,7 +850,7 @@ namespace eval ::confVisu {
            # set cuts [ list [getHiCutDisplay $visuNo] [getLoCutDisplay $visuNo] ]
            # visu$visuNo cut $cuts
          } else {
-            console::affiche_erreur "confVisu::visu inexptected value cuts = $cuts \n"
+            ::console::affiche_erreur "confVisu::visu inexptected value cuts = $cuts \n"
          }
       } elseif { [llength $cuts] >= 2 } {
          visu$visuNo cut $cuts
@@ -876,7 +876,7 @@ namespace eval ::confVisu {
                 set private($visuNo,zoom) [expr int($private($visuNo,zoom))]
             }
             visu$visuNo zoom $private($visuNo,zoom)
-            console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY, visuNo=$visuNo zoom=$private($visuNo,zoom)\n"
+            ::console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY, visuNo=$visuNo zoom=$private($visuNo,zoom)\n"
          } else {
             break
          }
@@ -1043,7 +1043,7 @@ namespace eval ::confVisu {
                 set private($visuNo,zoom) [expr int($private($visuNo,zoom))]
             }
             visu$visuNo zoom $private($visuNo,zoom)
-            console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY, visuNo=$visuNo set zoom=$private($visuNo,zoom)\n"
+            ::console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY, visuNo=$visuNo set zoom=$private($visuNo,zoom)\n"
          } else {
             break
          }
@@ -1286,10 +1286,14 @@ namespace eval ::confVisu {
             ##   ::FullScreen::showFiles $visuNo $private($visuNo,hCanvas) $directory [ list [ list $filename "Image" ] ]
             ##} else {
             ##}
+            set private($visuNo,tempCrosshairState) $private($visuNo,crosshairstate)
+            set private($visuNo,crosshairstate) "0"
             ::FullScreen::showBuffer $visuNo $private($visuNo,hCanvas)
          } else {
+            set private($visuNo,crosshairstate) $private($visuNo,tempCrosshairState)
             ::FullScreen::closeWindow $visuNo
          }
+         redrawCrosshair $visuNo
       } else {
          set private($visuNo,fullscreen) "0"
       }
@@ -2447,28 +2451,8 @@ namespace eval ::confVisu {
          -variable ::Crosshair::widget($visuNo,currentstate) \
          -command "::confVisu::toggleCrosshair $visuNo"
 
-      $menu add separator
-      $menu add command -label $caption(confVisu,fermer1) \
-         -command "::confVisu::closePopupMenuButton3 $visuNo"
-
       bind $private($visuNo,hCanvas) <ButtonPress-1> ""
       bind $private($visuNo,hCanvas) <ButtonPress-3> [list tk_popup $menu %X %Y]
-
-      bind $private($visuNo,toplevel) <Key-Escape> "::confVisu::closePopupMenuButton3 $visuNo"
-   }
-
-   #------------------------------------------------------------------------------
-   # closePopupMenuButton3
-   #   fermeture du menu en popup
-   #------------------------------------------------------------------------------
-   proc closePopupMenuButton3 { visuNo } {
-      variable private
-      global caption
-
-      #--- je desactive les binds
-      bind $private($visuNo,hCanvas) <ButtonPress-3>
-
-      bind $private($visuNo,toplevel) <Key-Escape>
    }
 
    #------------------------------------------------------------
@@ -2856,7 +2840,7 @@ namespace eval ::confVisu {
                    set private($visuNo,zoom) [expr int($private($visuNo,zoom))]
                }
                visu$visuNo zoom $private($visuNo,zoom)
-               console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY, visuNo=$visuNo set zoom=$private($visuNo,zoom)\n"
+               ::console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY, visuNo=$visuNo set zoom=$private($visuNo,zoom)\n"
             } else {
                break
             }
@@ -2941,7 +2925,7 @@ namespace eval ::confVisu {
    proc toggleCrosshair { visuNo } {
       variable private
 
-      if { "$private($visuNo,crosshairstate)"=="0"} {
+      if { $private($visuNo,crosshairstate) =="0"} {
          set private($visuNo,crosshairstate) "1"
       } else {
          set private($visuNo,crosshairstate) "0"
@@ -3097,8 +3081,7 @@ proc ::confVisu::loadIma { visuNo fileName { hduName "" } } {
    }]
 
    if { $catchResult == 1 } {
-      console::affiche_erreur "$::errorInfo\n"
-
+      ::console::affiche_erreur "$::errorInfo\n"
    }
 }
 
