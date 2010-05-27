@@ -1,183 +1,184 @@
-#--------------------------------------------------  
+#--------------------------------------------------
 # source audace/plugin/tool/bddimages/bddimages_liste.tcl
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-# Fichier     : bddimages_liste.tcl
-# Description : Environnement de recherche des images
-#               dans la base de donnees
-# Auteur      : Frédéric Vachier
+# Fichier        : bddimages_liste.tcl
+# Description    : Environnement de recherche des images
+#                  dans la base de donnees
+# Auteur         : FrÃ©dÃ©ric Vachier
+# Mise Ã  jour $Id: bddimages_liste.tcl,v 1.2 2010-05-27 07:02:40 robertdelmas Exp $
 #
-#--------------------------------------------------  
+#--------------------------------------------------
 #
 # - namespace bddimages_liste
 #
-#--------------------------------------------------  
+#--------------------------------------------------
 #
 #   -- Fichiers source externe :
 #
 #  bddimages_liste.cap
 #
-#--------------------------------------------------  
+#--------------------------------------------------
 #
 #   -- Procedures du namespace
 #
-#--------------------------------------------------  
+#--------------------------------------------------
 # run { this }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
+#    fonction  :
 #        Creation de la fenetre
 #
 #    procedure externe :
-#     
-#    variables en entree : 
+#
+#    variables en entree :
 #        this = chemin de la fenetre
 #
-#    variables en sortie : 
+#    variables en sortie :
 #
-#--------------------------------------------------  
+#--------------------------------------------------
 # fermer { }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
-#        Fonction appellee lors de l'appui 
+#    fonction  :
+#        Fonction appellee lors de l'appui
 #        sur le bouton 'Fermer'
-#	
+#
 #    procedure externe :
-#     
-#    variables en entree : 
 #
-#    variables en sortie : 
-# 
-#--------------------------------------------------  
+#    variables en entree :
+#
+#    variables en sortie :
+#
+#--------------------------------------------------
 #  init_info { }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
-#       Initialisation de la liste des fichiers 
+#    fonction  :
+#       Initialisation de la liste des fichiers
 #       du repertoire "incoming" dans conf(dirinco)
 #       pour l affichage dans la table.
-#	
+#
 #    procedure externe :
-#     
-#    variables en entree : 
 #
-#    variables en sortie : 
-#   
-#--------------------------------------------------  
+#    variables en entree :
+#
+#    variables en sortie :
+#
+#--------------------------------------------------
 #  recup_position { }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
+#    fonction  :
 #       Permet de recuperer et de sauvegarder
 #       la position de la fenetre
-#	
-#    procedure externe :
-#     
-#    variables en entree : 
 #
-#    variables en sortie : 
-#  
-#--------------------------------------------------  
+#    procedure externe :
+#
+#    variables en entree :
+#
+#    variables en sortie :
+#
+#--------------------------------------------------
 #  affiche_entete { }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
-#       Permet d afficher l entete d un fichier 
-#       selectionné
-#	
+#    fonction  :
+#       Permet d afficher l entete d un fichier
+#       selectionnÃ©
+#
 #    procedure externe :
-#     
-#    variables en entree : 
 #
-#    variables en sortie : 
-#  
-#--------------------------------------------------  
+#    variables en entree :
+#
+#    variables en sortie :
+#
+#--------------------------------------------------
 #  affiche_image { }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
-#       Permet d afficher l image d un fichier 
-#       selectionné
-#	
+#    fonction  :
+#       Permet d afficher l image d un fichier
+#       selectionnÃ©
+#
 #    procedure externe :
-#     
-#    variables en entree : 
 #
-#    variables en sortie : 
-#  
-#--------------------------------------------------  
+#    variables en entree :
+#
+#    variables en sortie :
+#
+#--------------------------------------------------
 #  createDialog { }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
+#    fonction  :
 #       Creation de l'interface graphique
-#	
+#
 #    procedure externe :
-#     
-#    variables en entree : 
 #
-#    variables en sortie : 
+#    variables en entree :
 #
-#--------------------------------------------------  
+#    variables en sortie :
+#
+#--------------------------------------------------
 #  cmdFormatColumn { column_name }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
+#    fonction  :
 #       Definit la largeur, la traduction du titre
 #	et la justification des colonnes
-#	
+#
 #    procedure externe :
-#     
-#    variables en entree : 
-#        column_name = 
 #
-#    variables en sortie : 
+#    variables en entree :
+#        column_name =
 #
-#--------------------------------------------------  
+#    variables en sortie :
+#
+#--------------------------------------------------
 #  cmdButton1Click { frame }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
-#	
+#    fonction  :
+#
 #    procedure externe :
-#     
-#    variables en entree : 
+#
+#    variables en entree :
 #        frame = Fenetre ou s affiche la table
 #
-#    variables en sortie : 
+#    variables en sortie :
 #
-#--------------------------------------------------  
+#--------------------------------------------------
 #  cmdSortColumn { tbl col }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
-#	Trie les lignes par ordre alphabetique de 
-#	la colonne (est appele quand on clique sur 
+#    fonction  :
+#	Trie les lignes par ordre alphabetique de
+#	la colonne (est appele quand on clique sur
 #	le titre de la colonne)
-#	
+#
 #    procedure externe :
-#     
-#    variables en entree : 
-#        tbl = 
-#        col = 
 #
-#    variables en sortie : 
+#    variables en entree :
+#        tbl =
+#        col =
 #
-#--------------------------------------------------  
+#    variables en sortie :
+#
+#--------------------------------------------------
 #  Affiche_Results
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
+#    fonction  :
 #	Affiche la liste des objets de l'image
-#	
+#
 #    procedure externe :
-#     
-#    variables en entree : 
 #
-#    variables en sortie : 
+#    variables en entree :
 #
-#--------------------------------------------------  
+#    variables en sortie :
+#
+#--------------------------------------------------
 
 namespace eval bddimages_liste {
 
@@ -191,25 +192,25 @@ namespace eval bddimages_liste {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_liste_creation.tcl ]\""
 
 
-#--------------------------------------------------  
+#--------------------------------------------------
 # run { this }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
+#    fonction  :
 #        Creation de la fenetre
 #
 #    procedure externe :
-#     
-#    variables en entree : 
+#
+#    variables en entree :
 #        this = chemin de la fenetre
 #
-#    variables en sortie : 
+#    variables en sortie :
 #
-#--------------------------------------------------  
+#--------------------------------------------------
 
    proc run { this {listname ?} } {
       variable This
-      global entetelog   
+      global entetelog
 
       set entetelog "liste"
       set This $this
@@ -217,21 +218,21 @@ namespace eval bddimages_liste {
       return
    }
 
-#--------------------------------------------------  
+#--------------------------------------------------
 # fermer { }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
-#        Fonction appellee lors de l'appui 
+#    fonction  :
+#        Fonction appellee lors de l'appui
 #        sur le bouton 'Fermer'
-#	
-#    procedure externe :
-#     
-#    variables en entree : 
 #
-#    variables en sortie : 
-# 
-#--------------------------------------------------  
+#    procedure externe :
+#
+#    variables en entree :
+#
+#    variables en sortie :
+#
+#--------------------------------------------------
    proc fermer { } {
       variable This
 
@@ -242,21 +243,21 @@ namespace eval bddimages_liste {
 
 
 
-#--------------------------------------------------  
+#--------------------------------------------------
 #  recup_position { }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
+#    fonction  :
 #       Permet de recuperer et de sauvegarder
 #       la position de la fenetre
-#	
-#    procedure externe :
-#     
-#    variables en entree : 
 #
-#    variables en sortie : 
-#  
-#--------------------------------------------------  
+#    procedure externe :
+#
+#    variables en entree :
+#
+#    variables en sortie :
+#
+#--------------------------------------------------
    proc recup_position { } {
       variable This
       global audace
@@ -287,26 +288,26 @@ proc remove_requete { } {
       }
     }
 
- 
-  set list_req($i,valide) "no"   
+
+  set list_req($i,valide) "no"
   destroy $This.framereq.$i
 
 }
 
-#--------------------------------------------------  
+#--------------------------------------------------
 #  get_list_box_champs { }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
+#    fonction  :
 #       fournit la liste des champs
-#	
+#
 #    procedure externe :
-#     
+#
 #    variables en entree : none
 #
 #    variables en sortie : liste
 #
-#--------------------------------------------------  
+#--------------------------------------------------
 proc get_list_box_champs { } {
 
   global list_key_to_var
@@ -322,7 +323,7 @@ proc get_list_box_champs { } {
     set list_key_to_var($key) $var
     if {$nbl1<[string length $key]} {
       set nbl1 [string length $key]
-      } 
+      }
     lappend list_box_champs $key
     }
     set nbl1 [expr $nbl1 + 3]
@@ -332,20 +333,20 @@ proc get_list_box_champs { } {
 return [list $nbl1 $list_box_champs]
 }
 
-#--------------------------------------------------  
+#--------------------------------------------------
 #  get_list_combobox { }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
+#    fonction  :
 #       fournit la liste des conditions de la requete
-#	
+#
 #    procedure externe :
-#     
+#
 #    variables en entree : none
 #
 #    variables en sortie : liste
 #
-#--------------------------------------------------  
+#--------------------------------------------------
 proc get_list_combobox { } {
 
    global caption
@@ -353,20 +354,20 @@ proc get_list_combobox { } {
 return [list "=" ">" "<" ">=" "<=" "!=" $caption(bddimages_liste,contient) $caption(bddimages_liste,notcontient)]
 }
 
-#--------------------------------------------------  
+#--------------------------------------------------
 #  affich_form_req { }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
+#    fonction  :
 #       fournit la liste des conditions de la requete
-#	
+#
 #    procedure externe :
-#     
+#
 #    variables en entree : none
 #
 #    variables en sortie : liste
 #
-#--------------------------------------------------  
+#--------------------------------------------------
 proc affich_form_req { } {
 
   ::console::affiche_resultat "-- affich_form_req"
@@ -380,20 +381,20 @@ proc affich_form_req { } {
 
 }
 
-#--------------------------------------------------  
+#--------------------------------------------------
 #  calcul_nbimg { }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
+#    fonction  :
 #       fournit la liste des conditions de la requete
-#	
+#
 #    procedure externe :
-#     
+#
 #    variables en entree : none
 #
 #    variables en sortie : liste
 #
-#--------------------------------------------------  
+#--------------------------------------------------
 proc get_intellilist_by_name { name } {
   global nbintellilist
   global intellilisttotal
@@ -421,7 +422,7 @@ proc build_intellilist { name } {
 
   set intellilist ""
   lappend intellilist [list "name" "$name"]
- 
+
   lappend intellilist [list "type_req_check"	$form_req(type_req_check)]
   lappend intellilist [list "type_requ"  	$form_req(type_requ)]
   lappend intellilist [list "choix_limit_result" $form_req(choix_limit_result)]
@@ -503,20 +504,20 @@ proc accept { } {
    ::bddimages_liste::fermer
 }
 
-#--------------------------------------------------  
+#--------------------------------------------------
 #  calcul_nbimg { }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
+#    fonction  :
 #       fournit la liste des conditions de la requete
-#	
+#
 #    procedure externe :
-#     
+#
 #    variables en entree : none
 #
 #    variables en sortie : liste
 #
-#--------------------------------------------------  
+#--------------------------------------------------
 proc calcul_nbimg { } {
 
    global indicereq
@@ -541,8 +542,8 @@ proc calcul_nbimg { } {
   set intellilist(type_requ)	      form_req(type_requ)
   set intellilist(choix_limit_result) form_req(choix_limit_result)
   set intellilist(limit_result)	      form_req(limit_result)
-  set intellilist(type_result) 	      form_req(type_result) 
-  set intellilist(type_select) 	      form_req(type_select) 
+  set intellilist(type_result) 	      form_req(type_result)
+  set intellilist(type_select) 	      form_req(type_select)
   set intellilist(nbimg) 	      form_req(nbimg)
 
   for {set x 1} {$x<=$indicereq} {incr x} {
@@ -582,14 +583,14 @@ proc calcul_nbimg { } {
    ::console::affiche_resultat "$intellilist($x,champ) $intellilist($x,condition) $intellilist($x,valeur)\n"
     }
 
-  
+
 
 
   if { $intellilist(type_req_check)==0} {
     set intellilist(nbimg) "?"
     return
     }
-  
+
   if { $intellilist(type_requ)==$caption(bddimages_liste,toutes)} {
     set cond "AND"
     }
@@ -619,7 +620,7 @@ proc calcul_nbimg { } {
      }
 
   set intellilist(nbimg) 0
-  
+
   foreach line $resultsql {
     set idhd [lindex $line 0]
     ::console::affiche_resultat "**+++ $idhd \n"
@@ -634,7 +635,7 @@ proc calcul_nbimg { } {
 	  bddimages_sauve_fich "	sqlcmd = $sqlcmd"
 	  bddimages_sauve_fich "	err = $err"
 	  bddimages_sauve_fich "	msg = $msg"
-	  set intellilist(nbimg) "Error"     
+	  set intellilist(nbimg) "Error"
 	  return
 	  }
        set intellilist(nbimg) [expr $intellilist(nbimg) + [lindex $resultcount 0]]
@@ -645,20 +646,20 @@ proc calcul_nbimg { } {
     }
 set form_req(nbimg) $intellilist(nbimg)
 }
-#--------------------------------------------------  
+#--------------------------------------------------
 #  add_requete { }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
+#    fonction  :
 #       ajout d'une requete
-#	
+#
 #    procedure externe :
-#     
+#
 #    variables en entree : none
 #
 #    variables en sortie : none
 #
-#--------------------------------------------------  
+#--------------------------------------------------
 
 proc add_requete { } {
 
@@ -683,8 +684,8 @@ proc add_requete { } {
   set indicereq [expr $indicereq + 1]
 
   if { [ info exists list_req($indicereq,champ) ] } {
-#  set list_req($indicereq,champ)     
-#  set list_req($indicereq,condition) 
+#  set list_req($indicereq,champ)
+#  set list_req($indicereq,condition)
 #  set list_req($indicereq,valeur) ""
   set list_req($indicereq,valide) "ok"
    if { $list_req($indicereq,condition) eq "LIKE" } {
@@ -701,7 +702,7 @@ proc add_requete { } {
   set list_req($indicereq,valide) "ok"
   }
 
-  
+
   #--- frame pour afficher les requetes
   set frch $This.framereq
 
@@ -741,30 +742,30 @@ proc add_requete { } {
 
 return
 }
-#--------------------------------------------------  
+#--------------------------------------------------
 #  createDialog { }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
+#    fonction  :
 #       Creation de l'interface graphique
-#	
+#
 #    procedure externe :
-#     
-#    variables en entree : 
 #
-#    variables en sortie : 
+#    variables en entree :
 #
-#--------------------------------------------------  
+#    variables en sortie :
+#
+#--------------------------------------------------
 
 
 # |-------------------------------------------|
 # |                                           |
 # | |-frame0-------------------------------|  |
-# | |                                      |  | 
+# | |                                      |  |
 # | |--------------------------------------|  |
 # |                                           |
 # | |-framereq-----------------------------|  |
-# | |                                      |  | 
+# | |                                      |  |
 # | | |---------| |----------------------| |  |
 # | | |	        | |			 | |  |
 # | | |	        | |			 | |  |
@@ -774,13 +775,13 @@ return
 # | | |         | |			 | |  |
 # | | |	        | |			 | |  |
 # | | |---------| |----------------------| |  |
-# | |                                      |  | 
+# | |                                      |  |
 # | |--------------------------------------|  |
 # |					      |
 # | |--------------------------------------|  |
 # | |					   |  |
 # | |--------------------------------------|  |
-# |					      | 
+# |					      |
 # |-------------------------------------------|
 
 
@@ -820,7 +821,7 @@ return
       set form_req(nbimg) "?"
 
       set edit 0
-      if { ! ($listname eq "?") } { 
+      if { ! ($listname eq "?") } {
         set edit 1
         set editname $listname
         set editid [get_intellilist_by_name $listname]
@@ -875,7 +876,7 @@ return
          set fin [ string length $bddconf(list_geom_stat) ]
          set bddconf(list_geom_stat) "+[ string range $bddconf(list_geom_stat) $deb $fin ]"
       }
-      
+
          #---
          toplevel $This -class Toplevel
          wm geometry $This $bddconf(list_pos_stat)
@@ -921,26 +922,26 @@ return
          frame $framecurrent -borderwidth 0 -cursor arrow
          pack $framecurrent -in $This -anchor s -side top -expand 0 -fill x
 
-             #--- Bouton check 
+             #--- Bouton check
 #             radiobutton $framecurrent.check -highlightthickness 0 -state normal -value 0 -variable form_req(type_req_check) -command {  }
              checkbutton $framecurrent.check -highlightthickness 0 -state normal -variable form_req(type_req_check) -command {  }
              pack $framecurrent.check \
                -in $framecurrent -side left -anchor center -padx 3
-	    #--- Cree un label 
+	    #--- Cree un label
 	    label $framecurrent.txt1 -font $audace(font,arial_6_n) \
-    		  -text "Répondre à"
+    		  -text "RÃ©pondre Ã "
 	    pack $framecurrent.txt1 \
     		 -in $framecurrent -side left -anchor w -padx 1
-	    #--- Cree un combox pour le choix 
+	    #--- Cree un combox pour le choix
 	    ComboBox $framecurrent.combo1 \
 	       -width 20 -height 2  -font $audace(font,arial_6_n)\
 	       -relief raised -borderwidth 1 -editable 0 \
 	       -textvariable form_req(type_requ) \
 	       -values $list_comb1
 	    pack $framecurrent.combo1 -anchor center -side left -fill x -expand 0
-	    #--- Cree un label 
+	    #--- Cree un label
 	    label $framecurrent.txt2 -font $audace(font,arial_6_n) \
-    		  -text "règles suivantes :"
+    		  -text "rÃ¨gles suivantes :"
 	    pack $framecurrent.txt2 \
     		 -in $framecurrent -side left -anchor w -padx 1
 
@@ -1014,27 +1015,27 @@ return
                -command {  }
              pack $framecurrent.check \
                -in $framecurrent -side left -anchor center -padx 3
-	    #--- Cree un label 
+	    #--- Cree un label
 	    label $framecurrent.txt1 -font $audace(font,arial_6_n) \
-    		  -text "Limiter à"
+    		  -text "Limiter Ã "
 	    pack $framecurrent.txt1 \
     		 -in $framecurrent -side left -anchor w -padx 1
 	    #--- Cree une ligne d'entree pour la variable
 	    entry $framecurrent.dat -textvariable form_req(limit_result) -borderwidth 1 -relief groove -width 8 -justify center
 	    pack $framecurrent.dat -in $framecurrent -side left -anchor w -padx 1
-	    #--- Cree un combox pour le choix 
+	    #--- Cree un combox pour le choix
 	    ComboBox $framecurrent.combo \
 	       -width 10 -height 1 \
 	       -relief sunken -borderwidth 1 -editable 0 \
 	       -textvariable form_req(type_result) \
 	       -values $list_comb2
 	    pack $framecurrent.combo -anchor center -side left -fill x -expand 0
-	    #--- Cree un label 
+	    #--- Cree un label
 	    label $framecurrent.txt2 -font $audace(font,arial_6_n) \
-    		  -text "sélectionnés par"
+    		  -text "sÃ©lectionnÃ©s par"
 	    pack $framecurrent.txt2 \
     		 -in $framecurrent -side left -anchor w -padx 1
-	    #--- Cree un combox pour le choix 
+	    #--- Cree un combox pour le choix
 	    ComboBox $framecurrent.combo2 \
 	       -width 27 -height 7 \
 	       -relief sunken -borderwidth 1 -editable 0 \
@@ -1052,9 +1053,9 @@ return
          pack $framecurrent -in $This -anchor s -side top -expand 0 -fill x -padx 3 -pady 3
 
 
-	    #--- Cree un label 
+	    #--- Cree un label
 	    label $framecurrent.txt1 -font $audace(font,arial_6_n) \
-    		  -text "Nombre d'images résultant de cette requête : "
+    		  -text "Nombre d'images rÃ©sultant de cette requÃªte : "
 	    pack $framecurrent.txt1 \
     		 -in $framecurrent -side left -anchor w -padx 1
 	    #--- Cree une ligne d'entree pour la variable
@@ -1116,7 +1117,7 @@ return
 
 
 
- 
+
       #--- Lecture des info des images
 
       #--- Gestion du bouton

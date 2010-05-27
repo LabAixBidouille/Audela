@@ -1,98 +1,99 @@
-#--------------------------------------------------  
+#--------------------------------------------------
 # source audace/plugin/tool/bddimages/bddimages_config.tcl
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-# Fichier     : bddimages_config.tcl
-# Description : Configuration des variables globales bddconf
-#               necessaires au service
-# Auteur      : Frédéric Vachier
+# Fichier        : bddimages_config.tcl
+# Description    : Configuration des variables globales bddconf
+#                  necessaires au service
+# Auteur         : FrÃ©dÃ©ric Vachier
+# Mise Ã  jour $Id: bddimages_config.tcl,v 1.2 2010-05-27 07:08:42 robertdelmas Exp $
 #
-#--------------------------------------------------  
+#--------------------------------------------------
 #
 # - namespace bddimages_config
 #
-#--------------------------------------------------  
+#--------------------------------------------------
 #
 #   -- Fichiers source externe :
 #
 #  bddimages_config.cap
 #
-#--------------------------------------------------  
+#--------------------------------------------------
 #
 #   -- Procedures du namespace
 #
-#--------------------------------------------------  
+#--------------------------------------------------
 # run { this }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
+#    fonction  :
 #        Cree la fenetre de tests
 #
 #    procedure externe :
-#     
-#    variables en entree : 
+#
+#    variables en entree :
 #        this = chemin de la fenetre
 #
-#    variables en sortie : 
+#    variables en sortie :
 #
 #
-#--------------------------------------------------  
+#--------------------------------------------------
 # fermer { }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
-#        Fonction appellee lors de l'appui 
+#    fonction  :
+#        Fonction appellee lors de l'appui
 #        sur le bouton 'Fermer'
-#	
-#    procedure externe :
-#     
-#    variables en entree : 
 #
-#    variables en sortie : 
-# 
-#--------------------------------------------------  
+#    procedure externe :
+#
+#    variables en entree :
+#
+#    variables en sortie :
+#
+#--------------------------------------------------
 #  save { }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
-#       Fonction appellee lors de l'appui 
+#    fonction  :
+#       Fonction appellee lors de l'appui
 #       sur le bouton 'Sauver'
-#	
+#
 #    procedure externe :
-#     
-#    variables en entree : 
 #
-#    variables en sortie : 
-#   
-#--------------------------------------------------  
+#    variables en entree :
+#
+#    variables en sortie :
+#
+#--------------------------------------------------
 #  recup_position { }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
+#    fonction  :
 #       Permet de recuperer et de sauvegarder
 #       la position de la fenetre
-#	
-#    procedure externe :
-#     
-#    variables en entree : 
 #
-#    variables en sortie : 
-#  
-#--------------------------------------------------  
+#    procedure externe :
+#
+#    variables en entree :
+#
+#    variables en sortie :
+#
+#--------------------------------------------------
 #  createDialog { }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
+#    fonction  :
 #       Creation de l'interface graphique
-#	
+#
 #    procedure externe :
-#     
-#    variables en entree : 
 #
-#    variables en sortie : 
+#    variables en entree :
 #
-#--------------------------------------------------  
-  
+#    variables en sortie :
+#
+#--------------------------------------------------
+
 namespace eval bddimages_config {
    global audace
    global bddconf
@@ -112,7 +113,7 @@ namespace eval bddimages_config {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
    }
 
    #
@@ -203,7 +204,7 @@ namespace eval bddimages_config {
          set bddconf(position_status) "+[ string range $bddconf(geometry_status) $deb $fin ]"
       }
 
-      
+
          #---
          toplevel $This -class Toplevel
          wm geometry $This $bddconf(position_status)
@@ -217,7 +218,7 @@ namespace eval bddimages_config {
         frame $This.bdd -borderwidth 1 -relief solid
         pack $This.bdd -in $This -anchor w -side top -expand 0 -fill x -padx 10
 
-          #--- Cree un label pour le titre 
+          #--- Cree un label pour le titre
           label $This.bdd.titre -text "$caption(bddimages_config,access)" -borderwidth 0 -relief flat
           pack $This.bdd.titre -in $This.bdd -side top -anchor w -padx 3 -pady 3
 
@@ -244,7 +245,7 @@ namespace eval bddimages_config {
             label $This.bdd.pass.lab -text "$caption(bddimages_config,pass)" -width 30 -anchor w -borderwidth 0 -relief flat
             pack $This.bdd.pass.lab -in $This.bdd.pass -side left -anchor w -padx 1
             #--- Cree une ligne d'entree pour la variable
-            entry $This.bdd.pass.dat -textvariable bddconf(pass) -borderwidth 1 -relief groove -width 25 -justify left -show "*" 
+            entry $This.bdd.pass.dat -textvariable bddconf(pass) -borderwidth 1 -relief groove -width 25 -justify left -show "*"
             pack $This.bdd.pass.dat -in $This.bdd.pass -side left -anchor w -padx 1
             #--- Cree un bouton info
             button $This.bdd.pass.help -state active -borderwidth 0 -relief flat -anchor c -height 1 \
@@ -270,7 +271,7 @@ namespace eval bddimages_config {
         frame $This.dir -borderwidth 1 -relief solid
         pack $This.dir -in $This -anchor w -side top -expand 0 -fill x -padx 10
 
-          #--- Cree un label pour le titre 
+          #--- Cree un label pour le titre
           label $This.dir.titre -text "$caption(bddimages_config,dir)" -borderwidth 0 -relief flat
           pack $This.dir.titre -in $This.dir -side top -anchor w -padx 3 -pady 3
 
@@ -368,7 +369,7 @@ namespace eval bddimages_config {
         frame $This.var -borderwidth 1 -relief solid
         pack $This.var -in $This -anchor w -side top -expand 0 -fill x -padx 10
 
-          #--- Cree un label pour le titre 
+          #--- Cree un label pour le titre
           label $This.var.titre -text "$caption(bddimages_config,variables)" -borderwidth 0 -relief flat
           pack $This.var.titre -in $This.var -side top -anchor w -padx 3 -pady 3
 

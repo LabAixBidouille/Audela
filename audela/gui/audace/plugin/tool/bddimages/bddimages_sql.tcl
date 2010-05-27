@@ -1,9 +1,10 @@
 # source audace/plugin/tool/bddimages/bddimages_sql.tcl
 
 #
-# Fichier     : bddimages_sql.tcl
-# Description : Routines sql
-# Auteur      : Frédéric Vachier
+# Fichier        : bddimages_sql.tcl
+# Description    : Routines sql
+# Auteur         : FrÃ©dÃ©ric Vachier
+# Mise Ã  jour $Id: bddimages_sql.tcl,v 1.2 2010-05-27 06:59:45 robertdelmas Exp $
 #
 
 
@@ -12,7 +13,7 @@ global bddconf
 # ==========================================================================================
 proc sql { args } {
    global sql
-      
+
    set cmd [lindex $args 0]
    if {$cmd=="connect"} {
       set ipdb [lindex $args 1]
@@ -36,7 +37,7 @@ proc sql { args } {
 
         } elseif {$cmd=="getcolname"} {
            ::mysql::col $sql(h) -current name
-		   
+
         } elseif {$cmd=="select"} {
            set texte [lindex $args 1]
            set row ""
@@ -78,39 +79,39 @@ proc connect { } {
 
 global bddconf
 
-set status "Connecté" 
+set status "ConnectÃ©"
 
 # -- Connexion a bddimages --
 set err [catch {sql query "use bddimages;"} msg]
 
-if {$err} { 
+if {$err} {
 
   # -- Connexion a MySql --
   set err [catch {sql connect $bddconf(serv) $bddconf(login) $bddconf(pass)} msg]
 
-  if {$err} { 
+  if {$err} {
       gren_info "Erreur de connexion a MySql <$err> <$msg>\n"
 #      ::console::affiche_resultat "Erreur de connexion a MySql <$err> <$msg>\n"
       set status "Erreur de connexion a MySql <$err> <$msg>"
     } else {
-      gren_info "Connecté à MySql <$msg>\n"      
-#      ::console::affiche_resultat "Connecté à MySql <$msg>\n"      
+      gren_info "ConnectÃ© Ã  MySql <$msg>\n"
+#      ::console::affiche_resultat "ConnectÃ© Ã  MySql <$msg>\n"
       # -- Connexion a bddimages --
       set err [catch {sql query "use bddimages;"} msg]
-      if {$err} { 
-         gren_info "Erreur de connexion à bddimages <$err> <$msg>\n"        
-#        ::console::affiche_resultat "Erreur de connexion à bddimages <$err> <$msg>\n"      
-        set status "Erreur de connexion à bddimages <$err> <$msg>"
+      if {$err} {
+         gren_info "Erreur de connexion Ã  bddimages <$err> <$msg>\n"
+#        ::console::affiche_resultat "Erreur de connexion Ã  bddimages <$err> <$msg>\n"
+        set status "Erreur de connexion Ã  bddimages <$err> <$msg>"
         } else {
-         gren_info "Connecté à bddimages\n"            
-#        ::console::affiche_resultat "Connecté à bddimages\n"          
+         gren_info "ConnectÃ© Ã  bddimages\n"
+#        ::console::affiche_resultat "ConnectÃ© Ã  bddimages\n"
         }
       }
     } else {
-         gren_info "Connecté à bddimages\n"          
-#    ::console::affiche_resultat "Connecté à bddimages\n"          
+         gren_info "ConnectÃ© Ã  bddimages\n"
+#    ::console::affiche_resultat "ConnectÃ© Ã  bddimages\n"
     }
- 
+
   return $status
   }
 
@@ -122,12 +123,12 @@ global sql
 #--- extension MySQL
 set err [catch {load "/usr/local/src/audela/bin/libmysqltcl[info sharedlibextension]"} msg]
 if {$err==1} {
-   set err [catch {package require mysqltcl} msg]   
+   set err [catch {package require mysqltcl} msg]
 }
 #load libyd[info sharedlibextension]
 
 set err [catch {connect} msg]
-if {$err} { 
+if {$err} {
 #       gren_info "Erreur connexion Mysql\n"
 #       gren_info "ERR:$err\n"
 #       gren_info "MSG:$msg\n"
@@ -136,3 +137,4 @@ if {$err} {
 #  ::console::affiche_resultat "MSG:$msg\n"
   }
 }
+

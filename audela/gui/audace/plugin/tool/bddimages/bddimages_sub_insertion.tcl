@@ -1,29 +1,29 @@
 # source audace/plugin/tool/bddimages/bddimages_subroutines.tcl
 
+# Mise à jour $Id: bddimages_sub_insertion.tcl,v 1.8 2010-05-27 06:55:56 robertdelmas Exp $
 
-
-#--------------------------------------------------  
+#--------------------------------------------------
 #  init_info { }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
-#       Initialisation de la liste des fichiers 
+#    fonction  :
+#       Initialisation de la liste des fichiers
 #       du repertoire "incoming" dans conf(dirinco)
 #       pour l affichage dans la table.
-#        
+#
 #    procedure externe :
 #             globrdk
-#     
-#    variables en entree : 
 #
-#    variables en sortie : 
-#   
-#--------------------------------------------------  
+#    variables en entree :
+#
+#    variables en sortie :
+#
+#--------------------------------------------------
    proc init_info { } {
-   
+
       global bddconf
       global caption
-      global maliste   
+      global maliste
 
       #--- Chargement des captions
       uplevel #0 "source \"[ file join $bddconf(rep_plug) bddimages_insertion.cap ]\""
@@ -45,7 +45,7 @@
       set err [catch {set list_file [lsort -increasing $maliste]} result]
 
       if {$err==0} {
-        
+
       foreach fichier $list_file {
         set fic [file tail "$fichier"]
         lappend listfile [list "?" "$fichier" "NULL" "NULL" "NULL" "NULL"]
@@ -58,27 +58,27 @@
       return
    }
 
-#--------------------------------------------------  
+#--------------------------------------------------
 #  init_info_non_recursif { }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
-#       Initialisation de la liste des fichiers 
+#    fonction  :
+#       Initialisation de la liste des fichiers
 #       du repertoire "incoming" dans conf(dirinco)
 #       pour l affichage dans la table.
 #       les fichiers sont extrait de maniere non
 #       recursive
-#     
-#    variables en entree : 
 #
-#    variables en sortie : 
-#   
-#--------------------------------------------------  
+#    variables en entree :
+#
+#    variables en sortie :
+#
+#--------------------------------------------------
    proc init_info_non_recursif { } {
-   
+
       global bddconf
       global caption
-      global maliste   
+      global maliste
 
       #--- Chargement des captions
       uplevel #0 "source \"[ file join $bddconf(rep_plug) bddimages_insertion.cap ]\""
@@ -100,7 +100,7 @@
       set err [catch {set list_file [lsort -increasing $maliste]} result]
 
       if {$err==0} {
-        
+
       foreach fichier $list_file {
         set fic [file tail "$fichier"]
         lappend listfile [list "?" "$fichier" "NULL" "NULL" "NULL" "NULL"]
@@ -113,31 +113,31 @@
       return
    }
 
-#--------------------------------------------------  
+#--------------------------------------------------
 #  info_fichier { nomfich dir }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
+#    fonction  :
 #       Lecture de la taille du fichier et de la
 #       liste des Champs du header.
 #       On charge l image en memoire ici
-#        
+#
 #    procedure externe :
 #       buf1 : fonction audela de lecture de l'image
-#     
+#
 #       bddimages_entete_preminforecon : reconnaissance
 #              des champs necessaires a l'insertion de
 #              l'image dans la base
 #
-#     
-#    variables en entree : 
+#
+#    variables en entree :
 #       nomfich = Nom de l image
 #       dir     = repertoire de l image
 #
-#    variables en sortie : 
+#    variables en sortie :
 #       list = $erreur $sizefich $list_keys
-#  
-#--------------------------------------------------  
+#
+#--------------------------------------------------
 
    proc info_fichier { nomfich } {
 
@@ -163,7 +163,7 @@
      set racinefich [lindex $result 1]
      set form3      [lindex $result 2]
 
-     # --- renomme le fichier pour que l'extension soit en minuscule 
+     # --- renomme le fichier pour que l'extension soit en minuscule
      if {$form3=="img"} {
         set errnum [catch {file rename $nomfich "$racinefich.$form2"} msg]
         }
@@ -173,13 +173,13 @@
      if {$errnum!=0} {
        if {[string last "file already exists" $msg]<=1} {
          bddimages_sauve_fich "info_fichier: ERREUR 9 : Renommage du fichier $nomfich impossible <err:$errnum> <msg:$msg>"
-         return [list "9" $etat $nomfich $dateiso $site $sizefich $tabkey] 
+         return [list "9" $etat $nomfich $dateiso $site $sizefich $tabkey]
          }
        } else {
        set nomfich "$racinefich.$form2"
        }
 
-     # --- dezippe le fichier s il est zipp�
+     # --- dezippe le fichier s il est zippé
      if {$form2=="fit.gz"||$form2=="fits.gz"||$form2=="cata.txt.gz"} {
        set fileformat zipped
        set errnum [catch {file mkdir "$bddconf(dirfits)"} msg]
@@ -187,22 +187,22 @@
           ::console::affiche_resultat "msg=$msg\n"
           ::console::affiche_resultat "array names bddconf=[array names bddconf]\n"
        }
-       
+
        set tmpfile [ file join $bddconf(dirfits) tmpbddimage.fits ]
        set nomfichdata $tmpfile
 
        file delete -force -- $tmpfile
-       if { $::tcl_platform(os) == "Linux" } {       
+       if { $::tcl_platform(os) == "Linux" } {
           set errnum [catch {exec gunzip -c $nomfich > $tmpfile} msgzip ]
        } else {
           set errnum [catch {file copy "$nomfich" "${tmpfile}.gz" ; gunzip "$tmpfile"} msgzip ]
        }
        if {$errnum==0} {
-         set nomfichfits [string range $nomfich 0 [expr [string last .gz $nomfich] -1]]     
+         set nomfichfits [string range $nomfich 0 [expr [string last .gz $nomfich] -1]]
         } else {
          file delete -force -- $tmpfile
          bddimages_sauve_fich "info_fichier: ERREUR 8 : Archive invalide <err:$errnum> <msg:$msgzip>"
-         return [list "8" $etat $nomfich $dateiso $site $sizefich $tabkey] 
+         return [list "8" $etat $nomfich $dateiso $site $sizefich $tabkey]
         }
        } else {
        set fileformat unzipped
@@ -223,10 +223,10 @@
      if {$fileformat == "unzipped"} {
        set nomfich "$nomfichfits.gz"
        set errnum [catch {exec gzip -c $nomfichdata > $nomfich} msg ]
-       if {$errnum!=0} { 
+       if {$errnum!=0} {
            file delete -force -- $nomfich
            bddimages_sauve_fich "info_fichier: ERREUR 2 : Erreur lors de la recompression de l'image $nomfichfits  <err:$errnum> <msg:$msg>"
-           return [list "2" $etat $nomfichfits $dateiso $site $sizefich $tabkey] 
+           return [list "2" $etat $nomfichfits $dateiso $site $sizefich $tabkey]
          }
        file delete -force -- $nomfichdata
      }
@@ -238,11 +238,11 @@
      # --- Recuperation des champs du header FITS
      if {$form3=="img"} {
         set errnum [catch {set list_keys [buf$bufno getkwds]} msg ]
-        if {$errnum!=0} { 
+        if {$errnum!=0} {
            bddimages_sauve_fich "info_fichier: ERREUR 4 : Erreur lors de la lecture du header de l'image <err:$errnum> <msg:$msg>"
-           return [list 4 $etat $nomfich $dateiso $site $sizefich $tabkey] 
+           return [list 4 $etat $nomfich $dateiso $site $sizefich $tabkey]
            }
-       
+
         # Creation de la liste des champs et valeurs
         set tabkey {}
         foreach key $list_keys {
@@ -305,7 +305,7 @@ proc bddimages_insertion_unfich { ligne } {
 
   # --- Recupere la taille de l'image pour verifier si elle n est pas en cours de transfert
   set errnum [catch {set sizefichcurrent [file size $nomfich]} msg ]
-  if {$errnum!=0} { 
+  if {$errnum!=0} {
     bddimages_sauve_fich "bddimages_insertion_unfich: Erreur taille de l image courante <$errnum> <$sizefichcurrent> <$msg>"
     if {$sizefichcurrent!=$sizefich} {
       return [list -1 $nomfich]
@@ -396,7 +396,7 @@ proc bddimages_insertion_unfich { ligne } {
 # bddimages_images_datainsert
 
 # Insere nouvelle image dans la BDD
-# 
+#
 
 # ---------------------------------------
 proc bddimages_images_datainsert { tabkey idheader filename site dateobs sizefich } {
@@ -410,7 +410,7 @@ proc bddimages_images_datainsert { tabkey idheader filename site dateobs sizefic
   set annee [string range $dateobs 0 3]
   set mois  [string range $dateobs 5 6]
   set jour  [string range $dateobs 8 9]
-  
+
   set dirfilename "fits/$site/$annee/$mois/$jour"
 
   # Insere nouvelle image dans la table images
@@ -458,10 +458,10 @@ proc bddimages_images_datainsert { tabkey idheader filename site dateobs sizefic
            }
         }
         # Fin switch
-    } 
+    }
     set err [catch {::bddimages_sql::sql insertid} insert_idbddimg]
    # bddimages_sauve_fich "bddimages_images_datainsert: Insertion nouvel element dans la table images <$insert_idbddimg>"
-   
+
   # -- Insere nouvelle image dans la table commun
    set datejj  [ mc_date2jd $dateobs ]
    set sqlcmd "INSERT INTO commun (idbddimg, datejj) VALUES "
@@ -505,18 +505,18 @@ proc bddimages_images_datainsert { tabkey idheader filename site dateobs sizefic
            }
         }
         # Fin switch
-    } 
-  
-  
-  
+    }
+
+
+
   # -- Insere nouvelle image dans la table images_$idheader
 
     # -- Creation ligne sql
 
   set sqlcmd  "`idbddimg`,"
-  set sqlcmd2 "'$insert_idbddimg'," 
+  set sqlcmd2 "'$insert_idbddimg',"
 
-  foreach info $tabkey {    
+  foreach info $tabkey {
     set tmp [bddimages_keywd_to_variable [lindex $info 0]]
     append sqlcmd "`$tmp`,"
     set tmp [lindex [lindex $info 1] 1]
@@ -534,7 +534,7 @@ proc bddimages_images_datainsert { tabkey idheader filename site dateobs sizefic
   if {$err} {
     bddimages_sauve_fich "bddimages_images_datainsert: ERREUR XXX : Ne peut inserer une nouvelle image dans la table images_$idheader <$err> <$msg>"
 
-    set sqlcmd "DELETE FROM images WHERE idbddimg = $insert_idbddimg" 
+    set sqlcmd "DELETE FROM images WHERE idbddimg = $insert_idbddimg"
     set err [catch {::bddimages_sql::sql query $sqlcmd} msg]
     if {$err} {
       bddimages_sauve_fich "bddimages_images_datainsert: ERREUR 107 : Impossible de supprimer l'image de la table images <idbddimg=$insert_idbddimg> <err=$err> <msg=$msg>"
@@ -563,18 +563,18 @@ proc bddimages_images_datainsert { tabkey idheader filename site dateobs sizefic
     set dirfilename "$dirfilename/$jour"
     createdir_ifnot_exist $dirfilename
 
-    # -- 
+    # --
     set errnum [catch {file rename $filename $dirfilename/} msgcp]
 
       if {$errnum!=0} {
 
         bddimages_sauve_fich "bddimages_images_datainsert: Le fichier $filename existe dans $dirfilename"
 
-        # -- Le fichier existe dans $dirfilename 
+        # -- Le fichier existe dans $dirfilename
         set etat 1
-	
+
         # -- -> on efface les enregistrements de la base
-        set sqlcmd "DELETE FROM images WHERE idbddimg = $insert_idbddimg" 
+        set sqlcmd "DELETE FROM images WHERE idbddimg = $insert_idbddimg"
         set err [catch {::bddimages_sql::sql query $sqlcmd} msg]
         if {$err} {
            bddimages_sauve_fich "bddimages_images_datainsert: ERREUR 108 : Impossible de supprimer l image de images <idbddimg=$insert_idbddimg> <err=$err> <msg=$msg>"
@@ -583,14 +583,14 @@ proc bddimages_images_datainsert { tabkey idheader filename site dateobs sizefic
         bddimages_sauve_fich "bddimages_images_datainsert: Suppression de l'enregistrement dans images"
 
         # -- -> on efface les enregistrements de la base
-        set sqlcmd "DELETE FROM commun WHERE idbddimg = $insert_idbddimg" 
+        set sqlcmd "DELETE FROM commun WHERE idbddimg = $insert_idbddimg"
         set err [catch {::bddimages_sql::sql query $sqlcmd} msg]
         if {$err} {
            bddimages_sauve_fich "bddimages_images_datainsert: ERREUR 109 : Impossible de supprimer l image de commun <idbddimg=$insert_idbddimg> <err=$err> <msg=$msg>"
            return 109
            }
         bddimages_sauve_fich "bddimages_images_datainsert: Suppression de l enregistrement dans commun"
-        set sqlcmd "DELETE FROM images_$idheader WHERE idbddimg = $insert_idbddimg" 
+        set sqlcmd "DELETE FROM images_$idheader WHERE idbddimg = $insert_idbddimg"
         set err [catch {::bddimages_sql::sql query $sqlcmd} msg]
         if {$err} {
            bddimages_sauve_fich "bddimages_images_datainsert: ERREUR 110 : Impossible de supprimer l image de images_$idheader <idbddimg=$insert_idbddimg> <err=$err> <msg=$msg>"
@@ -608,19 +608,19 @@ proc bddimages_images_datainsert { tabkey idheader filename site dateobs sizefic
           set dirpb "$bddconf(direrr)/filexist"
           set err [catch {set sizefichexist [file size $dirfilename/$fic]} msg ]
           if {!$err} {
-            if {$sizefichexist<$sizefich} { 
-              set dirpb "$bddconf(direrr)/filexistsizebigger" 
-              bddimages_sauve_fich "bddimages_images_datainsert: Fichier $dirfilename/$fic dans la base ($sizefichexist octets) dans incoming $filename ($sizefich octets)"	      
+            if {$sizefichexist<$sizefich} {
+              set dirpb "$bddconf(direrr)/filexistsizebigger"
+              bddimages_sauve_fich "bddimages_images_datainsert: Fichier $dirfilename/$fic dans la base ($sizefichexist octets) dans incoming $filename ($sizefich octets)"
               }
-            if {$sizefichexist>$sizefich} { 
-              set dirpb "$bddconf(direrr)/filexistsizelower" 
-              bddimages_sauve_fich "bddimages_images_datainsert: Fichier $dirfilename/$fic dans la base ($sizefichexist octets) dans incoming $filename ($sizefich octets)"	      
+            if {$sizefichexist>$sizefich} {
+              set dirpb "$bddconf(direrr)/filexistsizelower"
+              bddimages_sauve_fich "bddimages_images_datainsert: Fichier $dirfilename/$fic dans la base ($sizefichexist octets) dans incoming $filename ($sizefich octets)"
               }
             }
 
           createdir_ifnot_exist $dirpb
 
-          bddimages_sauve_fich "bddimages_images_datainsert: Copie du fichier $filename dans $dirpb"	      
+          bddimages_sauve_fich "bddimages_images_datainsert: Copie du fichier $filename dans $dirpb"
           set errnum [catch {file rename $filename $dirpb/} msg]
 
           # -- le fichier existe dans $dirpb -> on efface $filename
@@ -639,16 +639,16 @@ proc bddimages_images_datainsert { tabkey idheader filename site dateobs sizefic
             # Fin Le fichier existe dans $dirpb
           } else {
               bddimages_sauve_fich "bddimages_images_datainsert: ERREUR 112"
-              bddimages_sauve_fich "bddimages_images_datainsert: 	NUM : <$errcp>" 
+              bddimages_sauve_fich "bddimages_images_datainsert: 	NUM : <$errcp>"
               bddimages_sauve_fich "bddimages_images_datainsert: 	MSG : <$msgcp>"
               bddimages_sauve_fich "bddimages_images_datainsert:    Copie de $filename vers $dirfilename/ impossible"
-              bddimages_sauve_fich "bddimages_images_datainsert: 	NUM : <$errnum>" 
+              bddimages_sauve_fich "bddimages_images_datainsert: 	NUM : <$errnum>"
               bddimages_sauve_fich "bddimages_images_datainsert: 	MSG : <$msg>"
               return 112
             }
-            # Fin if {$errcp>0} ... string first "file already exists" 
+            # Fin if {$errcp>0} ... string first "file already exists"
 
-        } 
+        }
         # Fin if {$errnum!=0} ... else ... file copy $filename $dirfilename/
 return $etat
 }
@@ -659,7 +659,7 @@ return $etat
 # bddimages_catas_datainsert
 
 # Insere nouveau cata dans la BDD
-# 
+#
 
 # ---------------------------------------
 proc bddimages_catas_datainsert { filename sizefich } {
@@ -680,7 +680,7 @@ proc bddimages_catas_datainsert { filename sizefich } {
   set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
   if {$err} {
      bddimages_sauve_fich "bddimages_images_datainsert: ERREUR 301"
-     bddimages_sauve_fich "bddimages_images_datainsert:        NUM : <$err>" 
+     bddimages_sauve_fich "bddimages_images_datainsert:        NUM : <$err>"
      bddimages_sauve_fich "bddimages_images_datainsert:        MSG : <$msg>"
      return 301
      }
@@ -715,7 +715,7 @@ proc bddimages_catas_datainsert { filename sizefich } {
   set racinecata  [file tail $bddconf(dircata)]
   set racinecatafilename $racinecata/[string range $dirfilename 5 999]
   set dirfilename $bddconf(dircata)/[string range $dirfilename 5 999]
- 
+
 
 
 
@@ -822,11 +822,11 @@ proc bddimages_catas_datainsert { filename sizefich } {
 
      bddimages_sauve_fich "bddimages_catas_datainsert: Le fichier $filename existe dans $dirfilename"
 
-     # -- Le fichier existe dans $dirfilename 
+     # -- Le fichier existe dans $dirfilename
      set etat 320
 
      # -- -> on efface les enregistrements de la table cata
-     set sqlcmd "DELETE FROM catas WHERE idbddcata = $idbddcata" 
+     set sqlcmd "DELETE FROM catas WHERE idbddcata = $idbddcata"
      set err [catch {::bddimages_sql::sql query $sqlcmd} msg]
      if {$err} {
         bddimages_sauve_fich "bddimages_catas_datainsert: ERREUR 309 : Impossible de supprimer le fichier cata de la table catas <idbddcata=$idbddcata> <err=$err> <msg=$msg>"
@@ -853,12 +853,12 @@ proc bddimages_catas_datainsert { filename sizefich } {
        set dirpb "$bddconf(direrr)/filexist"
        set err [catch {set sizefichexist [file size $dirfilename/$fic]} msg ]
        if {!$err} {
-         if {$sizefichexist<$sizefich} { 
-           set dirpb "$bddconf(direrr)/filexistsizebigger" 
+         if {$sizefichexist<$sizefich} {
+           set dirpb "$bddconf(direrr)/filexistsizebigger"
            bddimages_sauve_fich "bddimages_catas_datainsert: Fichier $dirfilename/$fic dans la base ($sizefichexist octets) dans incoming $filename ($sizefich octets)"
            }
-         if {$sizefichexist>$sizefich} { 
-           set dirpb "$bddconf(direrr)/filexistsizelower" 
+         if {$sizefichexist>$sizefich} {
+           set dirpb "$bddconf(direrr)/filexistsizelower"
            bddimages_sauve_fich "bddimages_catas_datainsert: Fichier $dirfilename/$fic dans la base ($sizefichexist octets) dans incoming $filename ($sizefich octets)"
            }
          }
@@ -882,10 +882,10 @@ proc bddimages_catas_datainsert { filename sizefich } {
          }
        } else {
            bddimages_sauve_fich "bddimages_images_datainsert: ERREUR 312"
-           bddimages_sauve_fich "bddimages_images_datainsert: 	NUM : <$errcp>" 
+           bddimages_sauve_fich "bddimages_images_datainsert: 	NUM : <$errcp>"
            bddimages_sauve_fich "bddimages_images_datainsert: 	MSG : <$msgcp>"
            bddimages_sauve_fich "bddimages_images_datainsert:    Copie de $filename vers $dirfilename/ impossible"
-           bddimages_sauve_fich "bddimages_images_datainsert: 	NUM : <$errnum>" 
+           bddimages_sauve_fich "bddimages_images_datainsert: 	NUM : <$errnum>"
            bddimages_sauve_fich "bddimages_images_datainsert: 	MSG : <$msg>"
            return 312
          }
@@ -895,22 +895,22 @@ proc bddimages_catas_datainsert { filename sizefich } {
 return $etat
 }
 
-#--------------------------------------------------  
+#--------------------------------------------------
 #  move_unlinked { }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
+#    fonction  :
 #       deplace le repertoire unlinked dans le repertoire incoming
-#        
-#    procedure externe :
-#     
-#    variables en entree : 
 #
-#    variables en sortie : 
-#   
-#--------------------------------------------------  
+#    procedure externe :
+#
+#    variables en entree :
+#
+#    variables en sortie :
+#
+#--------------------------------------------------
 proc move_unlinked { } {
-   
+
     global bddconf
 
     set errnum [catch {file rename -force $bddconf(dirbase)/unlinked $bddconf(dirinco)/} msg]
@@ -925,23 +925,23 @@ proc move_unlinked { } {
     return
 }
 
-#--------------------------------------------------  
+#--------------------------------------------------
 #  move_unlinked_non_recursif { }
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-#    fonction  : 
-#       deplace les donnees du repertoire unlinked 
+#    fonction  :
+#       deplace les donnees du repertoire unlinked
 #       dans le repertoire incoming
-#        
-#    procedure externe :
-#     
-#    variables en entree : 
 #
-#    variables en sortie : 
-#   
-#--------------------------------------------------  
+#    procedure externe :
+#
+#    variables en entree :
+#
+#    variables en sortie :
+#
+#--------------------------------------------------
 proc move_unlinked_non_recursif { } {
-   
+
     global bddconf
     set errnum [catch {set files [lsort [glob [file join $bddconf(dirbase) unlinked {*.*}]]]} msg]
     if {$errnum!=0} {
@@ -951,7 +951,7 @@ proc move_unlinked_non_recursif { } {
              file rename -force -- $cata $bddconf(dirinco)/.   ;# ! overwrites existing files !
         }
     }
-    
+
     return
 }
 

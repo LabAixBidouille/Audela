@@ -1,8 +1,9 @@
 # source audace/plugin/tool/bddimages/bddimages_go.tcl
 #
-# Fichier : bddimages_go.tcl
-# Description : Outil d'appel des fonctionnalites de l'observatoire virtuel
-# Auteur : Frédéric Vachier
+# Fichier        : bddimages_go.tcl
+# Description    : Outil d'appel des fonctionnalites de l'observatoire virtuel
+# Auteur         : FrÃ©dÃ©ric Vachier
+# Mise Ã  jour $Id: bddimages_go.tcl,v 1.4 2010-05-27 07:07:01 robertdelmas Exp $
 #
 
 

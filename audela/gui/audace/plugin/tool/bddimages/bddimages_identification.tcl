@@ -1,12 +1,13 @@
-#--------------------------------------------------  
+#--------------------------------------------------
 # source audace/plugin/tool/bddimages/bddimages_identification.tcl
-#--------------------------------------------------  
+#--------------------------------------------------
 #
-# Fichier     : bddimages_identification.tcl
-# Description :
-# Auteur      : 
+# Fichier        : bddimages_identification.tcl
+# Description    :
+# Auteur         :
+# Mise à jour $Id: bddimages_identification.tcl,v 1.2 2010-05-27 07:05:53 robertdelmas Exp $
 #
-#--------------------------------------------------  
+#--------------------------------------------------
 
 namespace eval bddimages_identification {
    global audace
@@ -19,7 +20,7 @@ proc ::bddimages_identification::run { this } {
 
    set entetelog "identification"
    set This $this
-   createDialog 
+   createDialog
    return
 }
 
@@ -39,7 +40,7 @@ proc ::bddimages_identification::createDialog { } {
       global color
       global conf
       global bddconf
-      
+
       #---
       if { [ winfo exists $This ] } {
          wm withdraw $This

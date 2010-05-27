@@ -1,4 +1,5 @@
 # ----------------------------------------
+# Mise Ã  jour $Id: bddimages_sub_header.tcl,v 1.2 2010-05-27 06:56:48 robertdelmas Exp $
 
 # bddimages_keywd_to_variable
 
@@ -10,7 +11,7 @@ proc bddimages_keywd_to_variable { key } {
 
 #  set tmp [string map {"-" "_"} [string tolower $key]]
   set tmp [string map {" " "_"} [string tolower $key]]
-  return $tmp 
+  return $tmp
 
 }
 
@@ -20,7 +21,7 @@ proc bddimages_keywd_to_variable { key } {
 # bddimages_header_id
 
 # Determine le type de header de l image
-# créé les structures de table si besoin
+# crÃ©Ã© les structures de table si besoin
 
 # ---------------------------------------
 proc bddimages_header_id { tabkey } {
@@ -29,7 +30,7 @@ proc bddimages_header_id { tabkey } {
   set sqlcmd ""
   append sqlcmd "SELECT idheader,keyname FROM header;"
   set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
-  
+
   if {$err} {
     bddimages_sauve_fich "bddimages_header_id: ERREUR : <$err> <$msg>"
     switch $msg {
@@ -42,7 +43,7 @@ proc bddimages_header_id { tabkey } {
         append sqlcmd "variable VARCHAR(20) NOT NULL,"
         append sqlcmd "unit VARCHAR(20) NULL,"
         append sqlcmd "comment VARCHAR(256) NULL"
-        append sqlcmd ") TYPE = MYISAM ;"    
+        append sqlcmd ") TYPE = MYISAM ;"
         set err [catch {::bddimages_sql::sql query $sqlcmd} msg]
         if {$err} {
           bddimages_sauve_fich "bddimages_header_id: ERREUR 201 : Creation table header <$err> <$msg>"
@@ -50,7 +51,7 @@ proc bddimages_header_id { tabkey } {
           } else {
           bddimages_sauve_fich "bddimages_header_id: Creation table header..."
 	  set resultsql ""
-          # --- 
+          # ---
 	  }
 	}
 
@@ -69,13 +70,13 @@ proc bddimages_header_id { tabkey } {
         }
       }
 
-    } 
+    }
 
   # -- Construction de chaque liste de mot-cles des header de la base
   foreach line $resultsql {
     set idheader [lindex $line 0]
     set key [lindex $line 1]
-    lappend header($idheader) $key       
+    lappend header($idheader) $key
     }
 
   # -- Comparaison des mot-cles des header de la base avec le header de l image
@@ -88,13 +89,13 @@ proc bddimages_header_id { tabkey } {
     set list_keys [list ]
     foreach key $tabkey {
       lappend list_keys [lindex $key 0]
-      } 
-    set list_keys [lsort -ascii $list_keys]      
+      }
+    set list_keys [lsort -ascii $list_keys]
     if {[llength $list_keys]==[llength $listbase]} {
       foreach key $listbase {
 	if {[lsearch -exact $list_keys $key]<0} {
 	  set listidentique "no"
-	  }   
+	  }
         }
 	if {$listidentique=="yes"} {
 	  set idheader $idhd
@@ -120,11 +121,11 @@ proc bddimages_header_id { tabkey } {
         }
       }
 
-#    bddimages_sauve_fich "bddimages_header_id: idheader = $idheader"	
+#    bddimages_sauve_fich "bddimages_header_id: idheader = $idheader"
     if {$idheader==0} {
       set idhdder [expr $idhdder + 1]
       set idheader $idhdder
-#      bddimages_sauve_fich "bddimages_header_id: Ajoute un nouveau header en fin de liste <IDHD=$idheader>"	
+#      bddimages_sauve_fich "bddimages_header_id: Ajoute un nouveau header en fin de liste <IDHD=$idheader>"
       }
 
     # -- Creation de la ligne sql pour l insertion du nouvel header
@@ -159,11 +160,11 @@ proc bddimages_header_id { tabkey } {
 	  set type INT
 	  }
         "" {
-           bddimages_sauve_fich "bddimages_header_id: ERREUR 203 : type de champ du header vide"	
+           bddimages_sauve_fich "bddimages_header_id: ERREUR 203 : type de champ du header vide"
            return  [list 203 0]
 	  }
         default {
-           bddimages_sauve_fich "bddimages_header_id: ERREUR 204 : type de champ du header inconnu <$type>"	
+           bddimages_sauve_fich "bddimages_header_id: ERREUR 204 : type de champ du header inconnu <$type>"
            return [list 204 0]
 	  }
 	}
@@ -185,43 +186,43 @@ proc bddimages_header_id { tabkey } {
 	  }
       append sqlcmd "($idheader, '$key', '$type','$var', $unit, $comment),\n"
 
-      } 
-      #-- fin de foreach keyval $tabkey 
-      
+      }
+      #-- fin de foreach keyval $tabkey
+
       set sqlcmd "$sqlcmd"
       set sqlcmd [string trimright $sqlcmd ",\n"]
 
       set sqlcmd2 [string trimright $sqlcmd2 ",\n"]
-      append sqlcmd2 ") TYPE = MYISAM ;"   
+      append sqlcmd2 ") TYPE = MYISAM ;"
 
-     #  bddimages_sauve_fich "bddimages_header_id: sqlcmd <$sqlcmd>"	
-     #  bddimages_sauve_fich "bddimages_header_id: sqlcmd2 <$sqlcmd2>"	
+     #  bddimages_sauve_fich "bddimages_header_id: sqlcmd <$sqlcmd>"
+     #  bddimages_sauve_fich "bddimages_header_id: sqlcmd2 <$sqlcmd2>"
 
   # -- Acces a la base
 
       # --Insertion d un nouvel enregistrement de la table header
       set err [catch {::bddimages_sql::sql query $sqlcmd} msg]
       if {$err} {
-          bddimages_sauve_fich "bddimages_header_id: ERREUR 205 : Insertion table header <$err> <$msg>"	
+          bddimages_sauve_fich "bddimages_header_id: ERREUR 205 : Insertion table header <$err> <$msg>"
           return [list 205 0]
           } else {
-#          bddimages_sauve_fich "bddimages_header_id: Insertion d un nouveau type de header dans la base <IDHD=$idheader>"	
+#          bddimages_sauve_fich "bddimages_header_id: Insertion d un nouveau type de header dans la base <IDHD=$idheader>"
 	  }
       # -- Creation d une nouvelle table header
       set err [catch {::bddimages_sql::sql query $sqlcmd2} msg]
       if {$err} {
-        bddimages_sauve_fich "bddimages_header_id: ERREUR 206 : Creation table images_$idheader <$err> <$msg> <$sqlcmd2> "	
+        bddimages_sauve_fich "bddimages_header_id: ERREUR 206 : Creation table images_$idheader <$err> <$msg> <$sqlcmd2> "
         set sqlcmd "DELETE FROM header WHERE idheader=$idheader"
         set err [catch {::bddimages_sql::sql query $sqlcmd} msg]
         if {$err} {
-          bddimages_sauve_fich "bddimages_header_id: ERREUR 207 : Effacement impossible dans la table header pour l id = $idheader  <$err> <$msg> "	
+          bddimages_sauve_fich "bddimages_header_id: ERREUR 207 : Effacement impossible dans la table header pour l id = $idheader  <$err> <$msg> "
           return [list 207 0]
           } else {
-          bddimages_sauve_fich "bddimages_header_id: Effacement dans la table header pour IDHD=$idheader "	
+          bddimages_sauve_fich "bddimages_header_id: Effacement dans la table header pour IDHD=$idheader "
 	  }
         return [list 206 0]
         } else {
-#          bddimages_sauve_fich "bddimages_header_id: Insertion d un nouveau type de header dans la base <IDHD=$idheader> "	
+#          bddimages_sauve_fich "bddimages_header_id: Insertion d un nouveau type de header dans la base <IDHD=$idheader> "
 	  }
 
 
@@ -230,3 +231,4 @@ proc bddimages_header_id { tabkey } {
 
 return [list 0 $idheader]
 }
+

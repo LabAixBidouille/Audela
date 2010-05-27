@@ -1,9 +1,10 @@
 # source audace/plugin/tool/bddimages/bddimages_status.tcl
 
 #
-# Fichier     : bddimages_status.tcl
-# Description : Affiche le status de la base de donnees
-# Auteur      : Frédéric Vachier
+# Fichier        : bddimages_status.tcl
+# Description    : Affiche le status de la base de donnees
+# Auteur         : FrÃ©dÃ©ric Vachier
+# Mise Ã  jour $Id: bddimages_status.tcl,v 1.2 2010-05-27 06:58:41 robertdelmas Exp $
 #
 
 namespace eval bddimages_status {
@@ -23,7 +24,7 @@ namespace eval bddimages_status {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
    }
 
    #
@@ -47,15 +48,15 @@ namespace eval bddimages_status {
    append sqlcmd "SELECT count(*) FROM images;"
    set err [catch {set status [::bddimages_sql::sql query $sqlcmd]} msg]
    if {$err} {
-      ::console::affiche_resultat "ERREUR sql_nbimg\n"      
-      ::console::affiche_resultat "  SQL : <$sqlcmd>\n"      
-      ::console::affiche_resultat "  ERR : <$err>\n"      
-      ::console::affiche_resultat "  MSG : <$msg>\n"      
+      ::console::affiche_resultat "ERREUR sql_nbimg\n"
+      ::console::affiche_resultat "  SQL : <$sqlcmd>\n"
+      ::console::affiche_resultat "  ERR : <$err>\n"
+      ::console::affiche_resultat "  MSG : <$msg>\n"
       set status "Table 'images' inexistantes"
    }
    return $status
    }
-   
+
    #
    # bddimages_status::sql_nbimg
    # Permet de recuperer le nombre d images
@@ -66,10 +67,10 @@ namespace eval bddimages_status {
    append sqlcmd "SELECT distinct idheader FROM header;"
    set err [catch {set status [::bddimages_sql::sql query $sqlcmd]} msg]
    if {$err} {
-      ::console::affiche_resultat "ERREUR sql_nbimg\n"      
-      ::console::affiche_resultat "  SQL : <$sqlcmd>\n"      
-      ::console::affiche_resultat "  ERR : <$err>\n"      
-      ::console::affiche_resultat "  MSG : <$msg>\n"      
+      ::console::affiche_resultat "ERREUR sql_nbimg\n"
+      ::console::affiche_resultat "  SQL : <$sqlcmd>\n"
+      ::console::affiche_resultat "  ERR : <$err>\n"
+      ::console::affiche_resultat "  MSG : <$msg>\n"
       set status "Table 'header' inexistantes"
       return $status
    } else {
@@ -77,7 +78,7 @@ namespace eval bddimages_status {
       return $nb
    }
  }
-   
+
 
    #
    # bddimages_status::recup_position
@@ -99,52 +100,52 @@ namespace eval bddimages_status {
 
 
 
-    proc GetPassword { msg } { 
-    global getPassword 
-    # getPassword est un tableau qui va contenir 3 entrées: 
-    # name qui va contenir le nom de l'utilisateur 
-    # passwd qui va contenir son mot de passe 
-    # result qui va contenir 1 si et seulement si l'utilisateur a cliqué sur Ok 
-    set getPassword(result) 0 
-    set getPassword(passwd) "" 
-    toplevel .passwd 
-    wm title .passwd "Password" 
-    wm maxsize .passwd 300 100 
-    wm minsize .passwd 200 100 
+    proc GetPassword { msg } {
+    global getPassword
+    # getPassword est un tableau qui va contenir 3 entrÃ©es:
+    # name qui va contenir le nom de l'utilisateur
+    # passwd qui va contenir son mot de passe
+    # result qui va contenir 1 si et seulement si l'utilisateur a cliquÃ© sur Ok
+    set getPassword(result) 0
+    set getPassword(passwd) ""
+    toplevel .passwd
+    wm title .passwd "Password"
+    wm maxsize .passwd 300 100
+    wm minsize .passwd 200 100
 
-    wm positionfrom .passwd user 
-    wm sizefrom .passwd user 
-    frame .passwd.f 
-    pack configure .passwd.f -side top -fill both -expand 1 
+    wm positionfrom .passwd user
+    wm sizefrom .passwd user
+    frame .passwd.f
+    pack configure .passwd.f -side top -fill both -expand 1
 
 
-    frame .passwd.f.pass 
-    pack configure .passwd.f.pass -side top -fill x 
-    # Frame qui va contenir le label "Type your password:" et une entrée pour le rentrer 
+    frame .passwd.f.pass
+    pack configure .passwd.f.pass -side top -fill x
+    # Frame qui va contenir le label "Type your password:" et une entrÃ©e pour le rentrer
     label .passwd.f.pass.e -text $msg
     pack configure .passwd.f.pass.e -side left -anchor e
 
     frame .passwd.f.gpass
-    pack configure .passwd.f.gpass -side top -fill x 
-    entry .passwd.f.gpass.v -textvariable getPassword(passwd) -show "*" 
+    pack configure .passwd.f.gpass -side top -fill x
+    entry .passwd.f.gpass.v -textvariable getPassword(passwd) -show "*"
     pack configure .passwd.f.gpass.v -side bottom -anchor e
-    # L'option -show permet de masquer la véritable entrée, et de mettre une étoile à la place des 
-    # caractères entrés
+    # L'option -show permet de masquer la vÃ©ritable entrÃ©e, et de mettre une Ã©toile Ã  la place des
+    # caractÃ¨res entrÃ©s
 
     frame .passwd.f.buttons
-    pack configure .passwd.f.buttons -side top -fill x 
-    # Frame qui va contenir les boutons Cancel et Ok 
-    button .passwd.f.buttons.cancel -text Cancel -command {destroy .passwd} 
-    pack configure .passwd.f.buttons.cancel -side left 
-    button .passwd.f.buttons.ok -text Ok -command {set getPassword(result) 1;destroy .passwd} 
-    pack configure .passwd.f.buttons.ok -side right 
+    pack configure .passwd.f.buttons -side top -fill x
+    # Frame qui va contenir les boutons Cancel et Ok
+    button .passwd.f.buttons.cancel -text Cancel -command {destroy .passwd}
+    pack configure .passwd.f.buttons.cancel -side left
+    button .passwd.f.buttons.ok -text Ok -command {set getPassword(result) 1;destroy .passwd}
+    pack configure .passwd.f.buttons.ok -side right
     grab set .passwd
-    tkwait window .passwd 
-    if {$getPassword(result)} { 
-    return $getPassword(passwd) 
-    } else { 
-    return "" 
-    } 
+    tkwait window .passwd
+    if {$getPassword(result)} {
+    return $getPassword(passwd)
+    } else {
+    return ""
+    }
     }
 
 
@@ -156,7 +157,7 @@ namespace eval bddimages_status {
    proc razbdd { } {
       global caption
       global conf
-  
+
 
          set answer [tk_messageBox -title $caption(bddimages_status,msg_prevent) -message $caption(bddimages_status,msg_prevent2) \
                  -icon question -type okcancel ]
@@ -166,26 +167,26 @@ namespace eval bddimages_status {
                   set status "ok"
                   set dblink [::mysql::connect -host $conf(bddimages,serv) -user root -password $passwd]
 
-                  if {$status=="ok"} { 
+                  if {$status=="ok"} {
                      set sqlcmd "DROP DATABASE IF EXISTS bddimages;"
                      set err [catch {::mysql::query $dblink $sqlcmd} msg]
                      if {$err} {
                        set status "Failed : \n <$sqlcmd> \n <$err> \n <$msg>"
-                       } 
+                       }
                      }
-                  if {$status=="ok"} { 
+                  if {$status=="ok"} {
                      set sqlcmd "CREATE DATABASE IF NOT EXISTS bddimages;"
                      set err [catch {::mysql::query $dblink $sqlcmd} msg]
                      if {$err} {
                         set status "Failed : \n <$sqlcmd> \n <$err> \n <$msg>"
-                        } 
+                        }
                      }
-#                  if {$status=="ok"} { 
+#                  if {$status=="ok"} {
 #                     set sqlcmd "GRANT ALL PRIVILEGES ON `bddimages` . * TO '$conf(login)'@'$conf(serv)' WITH GRANT OPTION ;"
 #                     set err [catch {::mysql::query $dblink $sqlcmd} msg]
 #                     if {$err} {
 #                        set status "Failed : \n <$sqlcmd> \n <$err> \n <$msg>"
-#                        } 
+#                        }
 #                     }
 
                   ::mysql::close $dblink
@@ -196,10 +197,10 @@ namespace eval bddimages_status {
                   # Supprime le repertoire fits
                   set errnum [catch {file delete -force $conf(bddimages,dirfits)} msg]
                   if {$errnum==0} {
-                    ::console::affiche_resultat "Effacement du repertoire : $conf(bddimages,dirfits) \n" 
+                    ::console::affiche_resultat "Effacement du repertoire : $conf(bddimages,dirfits) \n"
                     set errnum [catch {file mkdir  $conf(bddimages,dirfits)} msg]
                     if {$errnum==0} {
-                      ::console::affiche_resultat "Creation du repertoire : $conf(bddimages,dirfits) \n" 
+                      ::console::affiche_resultat "Creation du repertoire : $conf(bddimages,dirfits) \n"
                       } else {
                         ::console::affiche_resultat "ERREUR: Creation du repertoire : $conf(bddimages,dirfits) impossible <$errnum>\n"
                         }
@@ -210,37 +211,37 @@ namespace eval bddimages_status {
                   # Supprime le repertoire logs
                   set errnum [catch {file delete -force $conf(bddimages,dirlog)} msg]
                   if {$errnum==0} {
-                    ::console::affiche_resultat "Effacement du repertoire : $conf(bddimages,dirlog) \n" 
+                    ::console::affiche_resultat "Effacement du repertoire : $conf(bddimages,dirlog) \n"
                     set errnum [catch {file mkdir  $conf(bddimages,dirlog)} msg]
                     if {$errnum==0} {
-                      ::console::affiche_resultat "Creation du repertoire : $conf(bddimages,dirlog) \n" 
+                      ::console::affiche_resultat "Creation du repertoire : $conf(bddimages,dirlog) \n"
                       } else {
                         ::console::affiche_resultat "ERREUR: Creation du repertoire : $conf(bddimages,dirlog) impossible <$errnum>\n"
                         }
                     } else {
                       ::console::affiche_resultat "ERREUR: Effacement du repertoire : $conf(bddimages,dirlog) impossible <$errnum>\n"
                       }
-                  
+
                   # Supprime le repertoire probleme
                   set errnum [catch {file delete -force $conf(bddimages,direrr)} msg]
                   if {$errnum==0} {
-                    ::console::affiche_resultat "Effacement du repertoire : $conf(bddimages,direrr) \n" 
+                    ::console::affiche_resultat "Effacement du repertoire : $conf(bddimages,direrr) \n"
                     set errnum [catch {file mkdir  $conf(bddimages,direrr)} msg]
                     if {$errnum==0} {
-                      ::console::affiche_resultat "Creation du repertoire : $conf(bddimages,direrr) \n" 
+                      ::console::affiche_resultat "Creation du repertoire : $conf(bddimages,direrr) \n"
                       } else {
                         ::console::affiche_resultat "ERREUR: Creation du repertoire : $conf(bddimages,direrr) impossible <$errnum>\n"
                         }
                     } else {
                       ::console::affiche_resultat "ERREUR: Effacement du repertoire : $conf(bddimages,direrr) impossible <$errnum>\n"
                       }
-                  
+
                }
              }
 
 
    }
-  
+
    #
    # bddimages_status::createDialog
    # Creation de l'interface graphique
@@ -279,15 +280,15 @@ namespace eval bddimages_status {
       #--- Interrogation de la base de donnees
       #set erreur [ catch { bddimages_status_sql } msg ]
 
-      
+
       #--- Mise en forme du resultat
       set status    [::bddimages_sql::connect]
-      set nbimg     [sql_nbimg] 
+      set nbimg     [sql_nbimg]
       set nbheader  [sql_header]
       set nbfichbdd [numberoffile $conf(bddimages,dirfits)]
       set nbfichinc [numberoffile $conf(bddimages,dirinco)]
       set nbficherr [numberoffile $conf(bddimages,direrr)]
-      
+
       set erreur 0
        #--- Gestion des erreurs
       if { $erreur == "0"} {
@@ -346,7 +347,7 @@ namespace eval bddimages_status {
                #--- Cree un label pour le status
                label $inparam.ok \
                      -text $status -fg $color(green)
-               if {$status != "Connecté"} { $inparam.ok configure -fg $color(red) }
+               if {$status != "ConnectÃ©"} { $inparam.ok configure -fg $color(red) }
                pack $inparam.ok -in $inparam -side top -pady 1 -anchor w
                #--- Cree un label pour le nb image
                label $inparam.nbimg   \
@@ -470,24 +471,24 @@ namespace eval bddimages_status {
 
 
 proc list_diff_shift { ref test }  {
-# retourne la liste test epurée de l intersection des deux listes
+# retourne la liste test epurÃ©e de l intersection des deux listes
   foreach elemref $ref {
     set new_test ""
     foreach elemtest $test {
-      if {$elemref!=$elemtest} {lappend new_test $elemtest} 
+      if {$elemref!=$elemtest} {lappend new_test $elemtest}
       }
     set test $new_test
     }
 
 return $test
-} 
+}
 
 
 proc verif { } {
 
-   global maliste   
-   global conf   
-   global entetelog   
+   global maliste
+   global conf
+   global entetelog
 
   set entetelog "verif"
   bddimages_sauve_fich ""
@@ -508,7 +509,7 @@ proc verif { } {
   set list_file_dir $maliste
 
   if {$err} {bddimages_sauve_fich "Erreur de tri de la liste"}
-       
+
   bddimages_sauve_fich "Obtention de la liste des fichiers sur le serveur sql"
   set sqlcmd "SELECT dirfilename,filename FROM images;"
   set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
@@ -523,7 +524,7 @@ proc verif { } {
 
   set new_list_sql [list_diff_shift $list_file_dir $list_file_sql]
   set new_list_dir [list_diff_shift $list_file_sql $list_file_dir]
-  
+
   bddimages_sauve_fich ""
   bddimages_sauve_fich "-- Nombre d'images absentes sur le serveur SQL : [llength $new_list_sql]"
   bddimages_sauve_fich ""
@@ -533,9 +534,9 @@ proc verif { } {
   bddimages_sauve_fich ""
   foreach elemdir $new_list_sql { bddimages_sauve_fich $elemdir }
   bddimages_sauve_fich ""
-  
+
  # verification des donnees sur le serveur SQL
- 
+
   set sqlcmd "SELECT DISTINCT idheader FROM header;"
   set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
   if {$err} {bddimages_sauve_fich "Erreur de lecture de la liste par SQL"}
@@ -570,11 +571,11 @@ proc verif { } {
       bddimages_sauve_fich "  Nombre d'images absentes dans la table images : [llength $list_img_hd]"
       bddimages_sauve_fich ""
       foreach elem $list_img_hd { bddimages_sauve_fich $elem }
-      bddimages_sauve_fich ""      
+      bddimages_sauve_fich ""
       }
     }
 
-    
+
 }
 
 

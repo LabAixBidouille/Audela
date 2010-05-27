@@ -1,9 +1,10 @@
 # source audace/plugin/tool/bddimages/test.tcl
 #
-# Fichier : test.tcl
-# Description : Test de fonctionnement de procedures
-# Auteur : Frédéric Vachier
-# 
+# Fichier        : test.tcl
+# Description    : Test de fonctionnement de procedures
+# Auteur         : FrÃ©dÃ©ric Vachier
+# Mise Ã  jour $Id: test.tcl,v 1.2 2010-05-27 06:53:51 robertdelmas Exp $
+#
 
 namespace eval testprocedure {
    global audace
@@ -50,7 +51,7 @@ proc notebook {w args} {
            default {eval [linsert $args 0 _$w $cmd]}
        }
    }
-   
+
    return $w
 }
 
@@ -68,9 +69,9 @@ tk_setPalette gray60
 source [ file join $audace(rep_plugin) tool bddimages rnotebook.tcl ]
 
     toplevel .fix
-    wm title .fix "Password" 
-    wm maxsize .fix 300 100 
-    wm minsize .fix 200 100 
+    wm title .fix "Password"
+    wm maxsize .fix 300 100
+    wm minsize .fix 200 100
     wm geometry .fix 400x220
 
 #destroy .fix.un
@@ -80,7 +81,7 @@ set un .fix.un
 set deux .fix.deux
 
 frame $un -borderwidth 2 -relief raised
-frame $deux -borderwidth 2 -relief raised 
+frame $deux -borderwidth 2 -relief raised
 
 pack $un -side top -fill both -expand 1
 pack $deux -side top -fill x
@@ -90,22 +91,22 @@ button $deux.conf -text "reconfigure" -command reconf
 
 pack $deux.xit $deux.conf -side left -padx 10 -pady 5
 
-set nn $un.n 
+set nn $un.n
 
 Rnotebook:create $nn -tabs {on two three} -borderwidth 2
 
 pack $nn -in $un -fill both -expand 1 -padx 10 -pady 10
 
 set frm [Rnotebook:frame $nn 1]
-label $frm.l1 -text "Welcome frame 1 !" 
+label $frm.l1 -text "Welcome frame 1 !"
 pack $frm.l1 -fill both -expand 1
 
 set frm [Rnotebook:frame $nn 2]
-label $frm.l2 -text "Good Morning frame 2 !" 
+label $frm.l2 -text "Good Morning frame 2 !"
 pack $frm.l2 -fill both -expand 1
 
 set frm [Rnotebook:frame $nn 3]
-label $frm.l3 -text "Hello frame 3 !" 
+label $frm.l3 -text "Hello frame 3 !"
 pack $frm.l3 -fill both -expand 1
 
 proc reconf {} {
@@ -122,14 +123,14 @@ proc test1 { } {
    global conf
 
 set list_file [globr $conf(bddimages,dirbase)/*]
-::console::affiche_resultat "dirlis : $list_file\n"      
+::console::affiche_resultat "dirlis : $list_file\n"
 set nbfile [llength $list_file]
-::console::affiche_resultat "nb fichiers : $nbfile\n"      
+::console::affiche_resultat "nb fichiers : $nbfile\n"
 
-::console::affiche_resultat "-----------------\n"      
+::console::affiche_resultat "-----------------\n"
 set nbfichbdd [numberoffile $conf(bddimages,dirfits)]
-::console::affiche_resultat "nb fichiers : $nbfichbdd\n"      
-::console::affiche_resultat "-----------------\n"      
+::console::affiche_resultat "nb fichiers : $nbfichbdd\n"
+::console::affiche_resultat "-----------------\n"
 
 
 }
@@ -137,27 +138,27 @@ set nbfichbdd [numberoffile $conf(bddimages,dirfits)]
 proc test3 { } {
    global conf
    set err [catch {set list_file [globr $conf(bddimages,dirfits)/*]} result]
-   ::console::affiche_resultat "--liste fichiers :\n $list_file\n"      
+   ::console::affiche_resultat "--liste fichiers :\n $list_file\n"
 
    set sqlcmd ""
    append sqlcmd "SELECT dirfilename,filename FROM images;"
    set err [catch {set status [::bddimages_sql::sql query $sqlcmd]} msg]
    if {$err} {
-      ::console::affiche_resultat "ERREUR sql_nbimg\n"      
-      ::console::affiche_resultat "  SQL : <$sqlcmd>\n"      
-      ::console::affiche_resultat "  ERR : <$err>\n"      
-      ::console::affiche_resultat "  MSG : <$msg>\n"      
+      ::console::affiche_resultat "ERREUR sql_nbimg\n"
+      ::console::affiche_resultat "  SQL : <$sqlcmd>\n"
+      ::console::affiche_resultat "  ERR : <$err>\n"
+      ::console::affiche_resultat "  MSG : <$msg>\n"
       set status "Table 'header' inexistantes"
    }
     set res {}
     foreach i $status {
       set dir [lindex $i 0]
-      set file [lindex $i 1]     
+      set file [lindex $i 1]
       eval lappend res "$conf(bddimages,dirbase)/$dir/$file"
     }
-   ::console::affiche_resultat "--liste mysql :\n $res\n"      
+   ::console::affiche_resultat "--liste mysql :\n $res\n"
 
-   ::console::affiche_resultat "-- verif 1 \n"      
+   ::console::affiche_resultat "-- verif 1 \n"
 
     foreach i $res {
       set exist 0
@@ -167,12 +168,12 @@ proc test3 { } {
 	}
       }
       if {$exist==0} {
-        ::console::affiche_resultat "$i n existe pas sur le disque \n"      
+        ::console::affiche_resultat "$i n existe pas sur le disque \n"
       }
-      
+
     }
 
-   ::console::affiche_resultat "-- verif 2 \n"      
+   ::console::affiche_resultat "-- verif 2 \n"
 
     foreach i $list_file {
       set exist 0
@@ -182,9 +183,9 @@ proc test3 { } {
 	}
       }
       if {$exist==0} {
-        ::console::affiche_resultat "$i n existe pas dans la base \n"      
+        ::console::affiche_resultat "$i n existe pas dans la base \n"
       }
-      
+
     }
 
 }
@@ -195,46 +196,46 @@ proc test4 { } {
 
  #set list_file [globrd $conf(bddimages,dirinco)/*]
 # set nbfile [llength $list_file]
-#::console::affiche_resultat "nb fichiers : $nbfile\n"      
+#::console::affiche_resultat "nb fichiers : $nbfile\n"
 
-#::console::affiche_resultat "-----------------\n"      
+#::console::affiche_resultat "-----------------\n"
 
 # set list_file [globrlimit $conf(bddimages,dirinco)/*]
-#::console::affiche_resultat "dirlis : $list_file\n"      
+#::console::affiche_resultat "dirlis : $list_file\n"
 # set nbfile [llength $list_file]
-#::console::affiche_resultat "nb fichiers  : $nbfile\n"      
+#::console::affiche_resultat "nb fichiers  : $nbfile\n"
 
-#::console::affiche_resultat "-----------------\n"      
+#::console::affiche_resultat "-----------------\n"
 
  set maliste {}
  set list_file [globrdk $conf(bddimages,dirinco)/*]
  set nbfile [llength $maliste]
- ::console::affiche_resultat "dirlis : $maliste \n"      
- ::console::affiche_resultat "---------------------------\n"      
- ::console::affiche_resultat "nb fichiers k: $nbfile \n"      
- ::console::affiche_resultat "---------------------------\n"      
+ ::console::affiche_resultat "dirlis : $maliste \n"
+ ::console::affiche_resultat "---------------------------\n"
+ ::console::affiche_resultat "nb fichiers k: $nbfile \n"
+ ::console::affiche_resultat "---------------------------\n"
 
 }
 
 
 proc list_diff_shift { ref test }  {
-# retourne la liste test epurée de l intersection des deux listes
+# retourne la liste test epurÃ©e de l intersection des deux listes
   foreach elemref $ref {
     set new_test ""
     foreach elemtest $test {
-      if {$elemref!=$elemtest} {lappend new_test $elemtest} 
+      if {$elemref!=$elemtest} {lappend new_test $elemtest}
       }
     set test $new_test
     }
 
 return $test
-} 
+}
 
 
 proc test5 { } {
 
-   global maliste   
-   global conf   
+   global maliste
+   global conf
 
   set list_file_dir ""
   set list_file_sql ""
@@ -248,7 +249,7 @@ proc test5 { } {
   set list_file_dir $maliste
 
   if {$err} {bddimages_sauve_fich "Erreur de tri de la liste"}
-       
+
   set sqlcmd "SELECT dirfilename,filename FROM images;"
   set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
   if {$err} {bddimages_sauve_fich "Erreur de lecture de la liste par SQL"}
@@ -262,9 +263,9 @@ proc test5 { } {
 
   set new_list_sql [list_diff_shift $list_file_dir $list_file_sql]
   set new_list_dir [list_diff_shift $list_file_sql $list_file_dir]
-  
+
   bddimages_sauve_fich ""
-  bddimages_sauve_fich "*** Verification des données *** "
+  bddimages_sauve_fich "*** Verification des donnÃ©es *** "
   bddimages_sauve_fich ""
   bddimages_sauve_fich "  Nombre d'images absentes sur le serveur SQL : [llength $new_list_sql]"
   bddimages_sauve_fich ""
@@ -274,9 +275,9 @@ proc test5 { } {
   bddimages_sauve_fich ""
   foreach elemdir $new_list_sql { bddimages_sauve_fich $elemdir }
   bddimages_sauve_fich ""
-  
+
  # verification des donnees sur le serveur SQL
- 
+
   set sqlcmd "SELECT DISTINCT idheader FROM header;"
   set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
   if {$err} {bddimages_sauve_fich "Erreur de lecture de la liste par SQL"}
@@ -310,17 +311,17 @@ proc test5 { } {
       bddimages_sauve_fich "  Nombre d'images absentes dans la table images : [llength $list_img_hd]"
       bddimages_sauve_fich ""
       foreach elem $list_img_hd { bddimages_sauve_fich $elem }
-      bddimages_sauve_fich ""      
+      bddimages_sauve_fich ""
       }
     }
 
-    
+
 }
 
 proc test6 { } {
 
-   global maliste   
-   global conf   
+   global maliste
+   global conf
 
   set limit 0
   set maliste {}
@@ -333,3 +334,4 @@ proc test6 { } {
 
 }
 # fin du namespace
+

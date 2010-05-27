@@ -1,11 +1,12 @@
 
 # source audace/plugin/tool/bddimages/bddimages_entete_preminforecon.tcl
+# Mise à jour $Id: bddimages_entete_preminforecon.tcl,v 1.2 2010-05-27 07:07:49 robertdelmas Exp $
 
 # ---------------------------------------
 # bddimages_entete_preminforecon {}
 # ---------------------------------------
 
-# Reconnaissance des champs DATE-OBS & 
+# Reconnaissance des champs DATE-OBS &
 # TELESCOP
 
 # ---------------------------------------
@@ -18,7 +19,7 @@ proc bddimages_entete_preminforecon {tabkey} {
 
     set key [lindex $keyval 0]
     set val [lindex [lindex $keyval 1] 1]
-    
+
       switch $key {
           "TELESCOP" {
             set site [string trim $val]
@@ -57,18 +58,18 @@ proc bddimages_entete_preminforecon {tabkey} {
     source [ file join $dir default.tcl ]
 #    bddimages_sauve_fich "bddimages_entete_preminforecon: lecture de default.tcl"
     }
-        
+
   set result [dateobs $tabkey]
   set err [lindex $result 0]
-  if {$err!=0} { 
-    return [list 1 "-" $site] 
+  if {$err!=0} {
+    return [list 1 "-" $site]
     } else {
     set dateiso [lindex $result 1]
     }
-  
+
   set datejd [ mc_date2jd $dateiso ]
   if {$datejd > 2268932. && $datejd < 2634166.} {
-    set err 0 
+    set err 0
     } else {
     set err 2
     }
@@ -76,5 +77,4 @@ proc bddimages_entete_preminforecon {tabkey} {
 
 return [list $err $dateiso $site]
 }
-
 
