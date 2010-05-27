@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: tuto.firstdark.tcl,v 1.10 2010-05-27 06:32:23 robertdelmas Exp $
+# Mise à jour $Id: tuto.firstdark.tcl,v 1.11 2010-05-27 10:43:33 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -315,7 +315,7 @@ proc acquisition_firstdark {exposure} {
    vwait status_cam$num(cam1)
 
    #--- save the bias image
-   buf$num(buf1) save testbias.fit
+   buf$num(buf1) save [ file join $num(rep_images) testbias.fit ]
 
    #--- configure the acquisition
    set expos [lindex $exposure 0]
@@ -349,7 +349,7 @@ proc acquisition_firstdark {exposure} {
    visu$num(visu1) disp
 
    #--- correction for bias
-   buf$num(buf1) sub testbias.fit 0
+   buf$num(buf1) sub [ file join $num(rep_images) testbias.fit ] 0
 
    #--- get statistics from the acquired image
    set myStatistics [buf$num(buf1) stat]

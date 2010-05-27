@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: tuto.biasdark.tcl,v 1.10 2010-05-27 06:31:00 robertdelmas Exp $
+# Mise à jour $Id: tuto.biasdark.tcl,v 1.11 2010-05-27 10:44:13 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -351,12 +351,12 @@ proc acquisition_biasdark {exposure} {
 
       visu$num(visu1) cut [list $hc $lc]
       visu$num(visu1) disp
-      buf$num(buf1) save "d$expos-$k"
+      buf$num(buf1) save [ file join $num(rep_images) d$expos-$k ]
 
    }
-   ttscript2 "IMA/STACK . d$expos- 1 $nbi .fit . d$expos . .fit MED"
-   ttscript2 "IMA/SERIES . d$expos- 1 $nbi .fit . d$expos . .fit DELETE"
-   ttscript2 "IMA/STAT . d$expos . . .fit . d$expos . .fit STAT"
+   ttscript2 "IMA/STACK \"$num(rep_images)\" d$expos- 1 $nbi .fit \"$num(rep_images)\" d$expos . .fit MED"
+   ttscript2 "IMA/SERIES \"$num(rep_images)\" d$expos- 1 $nbi .fit \"$num(rep_images)\" d$expos . .fit DELETE"
+   ttscript2 "IMA/STAT \"$num(rep_images)\" d$expos . . .fit \"$num(rep_images)\" d$expos . .fit STAT"
 
    set expos [lindex $exposure 0]
    for {set k 1} {$k<=$nbi} {incr k} {
@@ -400,12 +400,12 @@ proc acquisition_biasdark {exposure} {
 
       visu$num(visu1) cut [list $hc $lc]
       visu$num(visu1) disp
-      buf$num(buf1) save "d$expos-$k"
+      buf$num(buf1) save [ file join $num(rep_images) d$expos-$k ]
 
    }
-   ttscript2 "IMA/STACK . d$expos- 1 $nbi .fit . d$expos . .fit MED"
-   ttscript2 "IMA/SERIES . d$expos- 1 $nbi .fit . d$expos . .fit DELETE"
-   ttscript2 "IMA/STAT . d$expos . . .fit . d$expos . .fit STAT"
+   ttscript2 "IMA/STACK \"$num(rep_images)\" d$expos- 1 $nbi .fit \"$num(rep_images)\" d$expos . .fit MED"
+   ttscript2 "IMA/SERIES \"$num(rep_images)\" d$expos- 1 $nbi .fit \"$num(rep_images)\" d$expos . .fit DELETE"
+   ttscript2 "IMA/STAT \"$num(rep_images)\" d$expos . . .fit \"$num(rep_images)\" d$expos . .fit STAT"
 
    .second.snap.frame1.label1 configure -text "$caption(end)"
    update
