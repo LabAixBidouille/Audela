@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.76 2010-05-27 17:32:56 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.77 2010-05-27 22:18:54 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -52,7 +52,6 @@ set caption(audace,enregistrer_config4)               "Setup saving not required
 set caption(audace,enregistrer_config5)               "Saving aborted."
 
 set caption(confVisu,fermer)                          "Close"
-set caption(confVisu,fermer1)                         "Close (Esc)"
 set caption(confVisu,reticule)                        "Crosshair"
 set caption(confVisu,seuil_haut)                      "H.T."
 set caption(confVisu,seuil_bas)                       "L.T."
@@ -130,7 +129,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,enregistrer_config5)            "Enregistrement abandonné."
 
    set caption(confVisu,fermer)                       "Fermer"
-   set caption(confVisu,fermer1)                      "Fermer (Echap)"
    set caption(confVisu,reticule)                     "Réticule"
    set caption(confVisu,seuil_haut)                   "S.h."
    set caption(confVisu,seuil_bas)                    "S.b."
@@ -208,7 +206,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,enregistrer_config5)            "Salvataggio abbandonato."
 
    set caption(confVisu,fermer)                       "Chiudere"
-   set caption(confVisu,fermer1)                      "Chiudere (Esc)"
    set caption(confVisu,reticule)                     "Reticolo"
    set caption(confVisu,seuil_haut)                   "S.mas."
    set caption(confVisu,seuil_bas)                    "S.min."
@@ -286,7 +283,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,enregistrer_config5)            "Operación de guardar abortada."
 
    set caption(confVisu,fermer)                       "Cerrar"
-   set caption(confVisu,fermer1)                      "Cerrar (Esc)"
    set caption(confVisu,reticule)                     "Retículo"
    set caption(confVisu,seuil_haut)                   "U.a."
    set caption(confVisu,seuil_bas)                    "U.b."
@@ -364,7 +360,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,enregistrer_config5)            "Speichern annulliert."
 
    set caption(confVisu,fermer)                       "Schließen"
-   set caption(confVisu,fermer1)                      "Schließen (Esc)"
    set caption(confVisu,reticule)                     "Fadenkreuzes"
    set caption(confVisu,seuil_haut)                   "H.H."
    set caption(confVisu,seuil_bas)                    "H.T."
@@ -442,7 +437,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,enregistrer_config5)            "Operação \"guardar\" abortada."
 
    set caption(confVisu,fermer)                       "Fechar"
-   set caption(confVisu,fermer1)                      "Fechar (Esc)"
    set caption(confVisu,reticule)                     "Retículo"
    set caption(confVisu,seuil_haut)                   "H.T."
    set caption(confVisu,seuil_bas)                    "L.T."
@@ -520,7 +514,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,enregistrer_config5)            "Gem - Annulleret."
 
    set caption(confVisu,fermer)                       "Luk"
-   set caption(confVisu,fermer1)                      "Luk (Esc)"
    set caption(confVisu,reticule)                     "Trådkors"
    set caption(confVisu,seuil_haut)                   "H.t."
    set caption(confVisu,seuil_bas)                    "L.t."
@@ -598,7 +591,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,enregistrer_config5)            "Saving aborted."
 
    set caption(confVisu,fermer)                       "Close"
-   set caption(confVisu,fermer1)                      "Close (Esc)"
    set caption(confVisu,reticule)                     "Crosshair"
    set caption(confVisu,seuil_haut)                   "H.T."
    set caption(confVisu,seuil_bas)                    "L.T."
@@ -676,7 +668,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,enregistrer_config5)            "Saving aborted."
 
    set caption(confVisu,fermer)                       "Close"
-   set caption(confVisu,fermer1)                      "Close (Esc)"
    set caption(confVisu,reticule)                     "Crosshair"
    set caption(confVisu,seuil_haut)                   "H.T."
    set caption(confVisu,seuil_bas)                    "L.T."
