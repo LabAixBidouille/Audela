@@ -1,6 +1,6 @@
 #
 # Fichier : displaycoord.cap
-# Mise à jour $Id: displaycoord.cap,v 1.7 2010-02-24 18:08:10 robertdelmas Exp $
+# Mise à jour $Id: displaycoord.cap,v 1.8 2010-05-27 17:34:46 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -166,9 +166,9 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(displaycoord,title)          "# Coordonnées du télescope"
+   set caption(displaycoord,title)          "Coordenadas do telescópio"
    set caption(displaycoord,observatoire)   "Observatório:"
-   set caption(displaycoord,nonConnecte)    "# Non connecté\nau serveur de coordonnées"
+   set caption(displaycoord,nonConnecte)    "Não conectado\nao servidor de coordenadas"
    set caption(displaycoord,connecte)       "Conectado"
    set caption(displaycoord,tu)             "TU:"
    set caption(displaycoord,tsl)            "TS:"

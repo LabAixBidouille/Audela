@@ -1,6 +1,6 @@
 #
 # Fichier : quickremote.cap
-# Mise a jour $Id: quickremote.cap,v 1.15 2010-01-20 19:03:23 robertdelmas Exp $
+# Mise a jour $Id: quickremote.cap,v 1.16 2010-05-27 17:34:25 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -60,7 +60,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(quickremote,available)     "QuickRemote disponível"
    set caption(quickremote,refresh)       "Actualizar"
    set caption(quickremote,error)         "Mensagem de erro:"
-   set caption(quickremote,msg)           "# Utilisateurs de QuickRemote : Vous devez installer le driver FTDI (suivre la procédure décrite dans l'aide)."
+   set caption(quickremote,msg)           "Utilizadores de QuickRemote devem instalar o driver FTDI (seguir o procedimento descrito em Ajuda)."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_2.cap
-# Mise à jour $Id: aud_menu_2.cap,v 1.23 2010-02-23 23:04:49 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_2.cap,v 1.24 2010-05-27 17:31:45 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -383,8 +383,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,affichage)                 "Ver"
    set caption(audace,menu,nouvelle_visu)             "Novo 'visu'"
-   set caption(audace,menu,pas_outil)                 "# Masquer le panneau"
-   set caption(audace,menu,efface_image)              "# Effacer l'image"
+   set caption(audace,menu,pas_outil)                 "Esconder painel"
+   set caption(audace,menu,efface_image)              "Apagar imagem"
    set caption(audace,menu,palette_grise)             "Paleta de cinzentos"
    set caption(audace,menu,palette_inverse)           "Paleta inversa"
    set caption(audace,menu,palette_iris)              "Paleta de íris"

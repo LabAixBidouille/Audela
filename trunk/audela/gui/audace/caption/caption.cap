@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.75 2010-05-18 21:55:15 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.76 2010-05-27 17:32:56 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -465,10 +465,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,fitsHduList)                  "HDU"
    set caption(confVisu,fermeture_impossible)         "Impossível parar Aud'ACE devido a uma operação em curso na ferramenta: %s"
    set caption(confVisu,fermeture_outil_impossible)   "Impossível parar %s porque uma operação está em curso."
-   set caption(confVisu,label_1)                      "# Seuils RVB"
-   set caption(confVisu,label_2)                      "# Seuils bas"
-   set caption(confVisu,label_3)                      "# Seuils hauts"
-   set caption(confVisu,msg)                          "# L'en-tête FITS ne contient pas les mots clés nécessaires."
+   set caption(confVisu,label_1)                      "Limiares RGB"
+   set caption(confVisu,label_2)                      "Limiares inferiores"
+   set caption(confVisu,label_3)                      "Limiares superiores"
+   set caption(confVisu,msg)                          "O cabeçalho FITS não contém as palavras-chave necessárias."
 
    set caption(plotxy,figure)                         "Figura"
 

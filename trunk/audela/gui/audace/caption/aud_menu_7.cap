@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_7.cap
-# Mise a jour $Id: aud_menu_7.cap,v 1.29 2010-05-18 21:54:59 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.cap,v 1.30 2010-05-27 17:32:32 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -336,8 +336,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cwdWindow,repertoire)              "Pastas"
    set caption(cwdWindow,repertoire_images)       "Pasta das imagens:"
-   set caption(cwdWindow,repertoire_travail)      "# Répertoire de travail :"
-   set caption(cwdWindow,travail_images)          "# Identique au répertoire des images"
+   set caption(cwdWindow,repertoire_travail)      "Pasta de trabalho:"
+   set caption(cwdWindow,travail_images)          "Idêntico à pasta de imagens"
    set caption(cwdWindow,label_sous_rep)          "Nova Sub-Pasta"
    set caption(cwdWindow,label_sous_rep,aucun)    "Nenhuma sub-pasta"
    set caption(cwdWindow,label_sous_rep,fixe)     "Nome da sub-pasta"

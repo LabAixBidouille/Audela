@@ -1,6 +1,6 @@
 #
 # Fichier : keyword.cap
-# Mise a jour $Id: keyword.cap,v 1.30 2010-01-20 18:58:50 robertdelmas Exp $
+# Mise a jour $Id: keyword.cap,v 1.31 2010-05-27 17:33:17 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -441,16 +441,16 @@ if { [ string compare $langage "french" ] == "0" } {
 
    #--- Choix de la configuration
    set caption(keyword,nom_config)                     "Nome da configuração"
-   set caption(keyword,nom_nouvelle_config)            "# Nom de la nouvelle configuration"
-   set caption(keyword,ajouter_config)                 "Adicionar configuração"
+   set caption(keyword,nom_nouvelle_config)            "Nome da nova configuração"
+   set caption(keyword,ajouter_config)                 "Adicionar uma configuração"
    set caption(keyword,supprimer_config)               "Eliminar configuração"
    set caption(keyword,copier_config)                  "Copiar configuração"
    set caption(keyword,config_a_ajouter)               "Nome da configuração a adicionar"
-   set caption(keyword,errorEmptyName)                 "# Le nom de la configuration est vide."
-   set caption(keyword,errorExistingName)              "# Le nom de la configuration est déjà utilisé."
-   set caption(keyword,errorDefaultName)               "# Cette configuration ne peut pas être supprimée."
-   set caption(keyword,confirmDeleteConfig)            "# Suppression de la configuration :"
-   set caption(keyword,selectDeselectAll)              "# Sélectionner / Désélectionner\ntous les mots clés"
+   set caption(keyword,errorEmptyName)                 "O nome da configuração está vazio."
+   set caption(keyword,errorExistingName)              "O nome da configuração já está a ser utilizado."
+   set caption(keyword,errorDefaultName)               "Esta configuração não pode ser eliminada."
+   set caption(keyword,confirmDeleteConfig)            "Remover configuração:"
+   set caption(keyword,selectDeselectAll)              "Seleccionar / Anular selecção\nde todas as palavras-chave"
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "Palavras-chave FITS"
