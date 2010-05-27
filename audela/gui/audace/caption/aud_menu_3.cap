@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.50 2010-05-18 21:54:43 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.51 2010-05-27 17:32:09 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -768,21 +768,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,faire_flat_field)            "Executar flat-field"
 
    set caption(pretraitement,conversion)                "Conversão"
-   set caption(pretraitement,all)                       "# Convertir tous les fichiers"
-   set caption(pretraitement,renum)                     "# Renuméroter les images en sortie"
-   set caption(pretraitement,chg)                       "# Changer le nom générique de sortie en"
-   set caption(pretraitement,destroy_src)               "# Détruire les sources"
-   set caption(pretraitement,src)                       "# Fichier source"
-   set caption(pretraitement,output)                    "# Fichier produit"
-   set caption(pretraitement,done)                      "# Remarque"
-   set caption(pretraitement,echec)                     "# Echec de conversion de %s : %s"
-   set caption(pretraitement,err_analyse)               "# Erreur d'analyse :"
-   set caption(pretraitement,err_entete)                "# Erreur dans l'en-tête FITS :"
-   set caption(pretraitement,nb_select)                 "# Fichiers sélectionnés"
-   set caption(pretraitement,no_selection)              "# Aucune sélection."
-   set caption(pretraitement,no_file)                   "# Aucun fichier convertible dans ce répertoire"
-   set caption(pretraitement,options)                   "# Options"
-   set caption(pretraitement,repertoire)                "# Répertoire sélectionné :"
+   set caption(pretraitement,all)                       "Converter todos os ficheiros"
+   set caption(pretraitement,renum)                     "Renumerar imagens de saída"
+   set caption(pretraitement,chg)                       "Modificar o nome genérico de saída para"
+   set caption(pretraitement,destroy_src)               "Eliminar ficheiros de entrada"
+   set caption(pretraitement,src)                       "Ficheiro de entrada"
+   set caption(pretraitement,output)                    "Ficheiro de saída"
+   set caption(pretraitement,done)                      "Nota"
+   set caption(pretraitement,echec)                     "Falha de conversão de %s: %s"
+   set caption(pretraitement,err_analyse)               "Erro de análise:"
+   set caption(pretraitement,err_entete)                "Erro no cabeçalho FITS:"
+   set caption(pretraitement,nb_select)                 "Ficheiros seleccionados"
+   set caption(pretraitement,no_selection)              "Nenhuma selecção."
+   set caption(pretraitement,no_file)                   "Nenhum ficheiro nesta pasta pode ser convertido"
+   set caption(pretraitement,options)                   "Opções"
+   set caption(pretraitement,repertoire)                "Pasta seleccionada:"
 
    set caption(pretraitement,image_gene_entree_r+v+b)   "Nome genérico das imagens R, G e B de entrada:"
    set caption(pretraitement,image_sortie_rvb)          "Nome da imagem RGB de saída:"

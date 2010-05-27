@@ -1,6 +1,6 @@
 #
 # Fichier : tkutil.cap
-# Mise a jour $Id: tkutil.cap,v 1.21 2010-01-20 19:00:11 robertdelmas Exp $
+# Mise a jour $Id: tkutil.cap,v 1.22 2010-05-27 17:33:41 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -249,11 +249,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_html)       "Ficheiros HTML"
    set caption(tkutil,fichier_jar)        "Ficheiros JAR"
 
-   set caption(tkutil,badCharacter)       "# %s contient un caractère interdit %s"
-   set caption(tkutil,stringTooShort)     "# %s a moins de %s caractère(s)"
-   set caption(tkutil,stringTooLarge)     "# %s a plus de %s caractère(s)"
-   set caption(tkutil,numberTooSmall)     "# %s est inférieur à %s"
-   set caption(tkutil,numberTooGreat)     "# %s est supérieur à %s"
+   set caption(tkutil,badCharacter)       "%s contém um caracter inválido %s"
+   set caption(tkutil,stringTooShort)     "%s tem menos de %s caracter(es)"
+   set caption(tkutil,stringTooLarge)     "%s tem mais de %s caracter(es)"
+   set caption(tkutil,numberTooSmall)     "%s é inferior a %s"
+   set caption(tkutil,numberTooGreat)     "%s é superior a %s"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

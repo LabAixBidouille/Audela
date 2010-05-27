@@ -1,6 +1,6 @@
 #
 # Fichier : gps.cap
-# Mise à jour $Id: gps.cap,v 1.18 2010-02-23 23:05:33 robertdelmas Exp $
+# Mise à jour $Id: gps.cap,v 1.19 2010-05-27 17:35:09 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -321,8 +321,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(gps,titre)                    "# Heure et position avec un GPS"
-   set caption(gps,titre1)                   "# Heure et position\navec un GPS"
+   set caption(gps,titre)                    "Hora e posição usando GPS"
+   set caption(gps,titre1)                   "Hora e posição\nusando GPS"
    set caption(gps,parametre)                "Parâmetros"
    set caption(gps,port)                     "Porta série"
    set caption(gps,lancement_gps)            "Com. GPS"
