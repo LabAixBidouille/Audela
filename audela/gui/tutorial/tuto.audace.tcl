@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: tuto.audace.tcl,v 1.10 2010-05-27 06:29:19 robertdelmas Exp $
+# Mise à jour $Id: tuto.audace.tcl,v 1.11 2010-05-27 10:41:47 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -330,12 +330,12 @@ proc acquisition_firstdark {exposure} {
    set max_dark [lrange $myStatistics 2 2]
 
    #--- and display it with the right thresholds
-  set lc [lrange $myStatistics 1 1]
+   set lc [lrange $myStatistics 1 1]
    if {$lc < 0} { set lc 0 }
    if {$lc > 32767} { set lc 0 }
    set hc [lrange $myStatistics 0 0]
    if {$hc < 0} { set hc 32767 }
-  if {$hc > 32767} { set hc 32767 }
+   if {$hc > 32767} { set hc 32767 }
 
    visu$num(visu1) cut [list $hc $lc]
    visu$num(visu1) disp

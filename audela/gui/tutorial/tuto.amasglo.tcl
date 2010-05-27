@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: tuto.amasglo.tcl,v 1.10 2010-05-27 06:28:57 robertdelmas Exp $
+# Mise à jour $Id: tuto.amasglo.tcl,v 1.11 2010-05-27 10:39:01 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -331,7 +331,7 @@ proc acquisition_firstdark {exposure} {
 
    #--- and display it with the right thresholds
    set lc [lrange $myStatistics 1 1]
-  if {$lc < 0} { set lc 0 }
+   if {$lc < 0} { set lc 0 }
    if {$lc > 32767} { set lc 0 }
    set hc [lrange $myStatistics 0 0]
    if {$hc < 0} { set hc 32767 }

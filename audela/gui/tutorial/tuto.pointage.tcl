@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: tuto.pointage.tcl,v 1.10 2010-05-27 06:33:25 robertdelmas Exp $
+# Mise à jour $Id: tuto.pointage.tcl,v 1.11 2010-05-27 10:40:38 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -334,7 +334,7 @@ proc acquisition_firstdark {exposure} {
    if {$lc < 0} { set lc 0 }
    if {$lc > 32767} { set lc 0 }
    set hc [lrange $myStatistics 0 0]
-  if {$hc < 0} { set hc 32767 }
+   if {$hc < 0} { set hc 32767 }
    if {$hc > 32767} { set hc 32767 }
 
    visu$num(visu1) cut [list $hc $lc]
