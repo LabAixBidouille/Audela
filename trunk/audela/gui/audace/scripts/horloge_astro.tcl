@@ -2,7 +2,7 @@
 # Fichier : horloge_asro.tcl
 # Description : Horloge de l'astronome
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: horloge_astro.tcl,v 1.5 2010-01-17 18:08:23 robertdelmas Exp $
+# Mise Ã  jour $Id: horloge_astro.tcl,v 1.6 2010-05-27 06:13:41 robertdelmas Exp $
 #
 
 #---
@@ -77,7 +77,7 @@ proc calcul { } {
       set m [format "%02d" [lindex $res 1]]
       set s [format "%02d" [expr int(floor([lindex $res 2]))]]
       $base.f.lab_ha configure -text "$caption(horloge_astro,angle_horaire) ${h}h ${m}mn ${s}s"
-      $base.f.lab_altaz configure -text "$caption(horloge_astro,azimut) ${az}° - $caption(horloge_astro,hauteur) ${alt}°"
+      $base.f.lab_altaz configure -text "$caption(horloge_astro,azimut) ${az}Â° - $caption(horloge_astro,hauteur) ${alt}Â°"
       if { $alt >= "0" } {
          set distanceZenithale [ expr 90.0 - $alt ]
          set distanceZenithale [ mc_angle2rad $distanceZenithale ]

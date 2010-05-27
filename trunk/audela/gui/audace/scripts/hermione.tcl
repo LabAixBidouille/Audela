@@ -3,7 +3,7 @@
 # Description : Observation d'une occultation en automatique
 # Camera : Script optimise pour une Audine Kaf-0400 pilotee par un port parallele
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: hermione.tcl,v 1.5 2007-06-08 14:58:41 robertdelmas Exp $
+# Mise Ã  jour $Id: hermione.tcl,v 1.6 2010-05-27 06:12:50 robertdelmas Exp $
 #
 
 global audace
@@ -53,7 +53,7 @@ if { $simulation == "yes" } {
 while { [ mc_date2jd [ ::audace::date_sys2ut now ] ] < $datejd } {
    after 1000
    ::console::affiche_resultat "\n"
-   ::console::affiche_resultat "Attente du début de l'observation.\n"
+   ::console::affiche_resultat "Attente du dÃ©but de l'observation.\n"
    ::console::affiche_resultat "Il est actuellement : [ mc_date2ymdhms [ ::audace::date_sys2ut now ] ] \n"
 }
 set name [ mc_date2ymdhms [ ::audace::date_sys2ut ] ]
@@ -75,7 +75,7 @@ catch { $camera shutter synchro }
 #--- Enregistrement du fichier FITS
 $buffer save "${astername}_$name"
 ::console::affiche_resultat "\n"
-::console::affiche_resultat "Scan terminé.\n"
+::console::affiche_resultat "Scan terminÃ©.\n"
 ::console::affiche_resultat "\n"
 
 #--- Fin du fichier script

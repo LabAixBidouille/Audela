@@ -1,6 +1,6 @@
 #
 # Fichier : obscgi.tcl
-# Mise à jour $Id: obscgi.tcl,v 1.4 2010-02-06 22:18:07 robertdelmas Exp $
+# Mise à jour $Id: obscgi.tcl,v 1.5 2010-05-27 06:14:24 robertdelmas Exp $
 #
 
 # - variables communes a tous les scripts
@@ -78,3 +78,4 @@ if {[info exists audace]==0} {
    ::buf::delete 1
    ::cam::delete 1
 }
+

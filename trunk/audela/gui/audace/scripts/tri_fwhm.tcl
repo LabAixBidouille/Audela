@@ -2,7 +2,7 @@
 # Fichier : tri_fwmh.tcl
 # Description : Script pour le tri d'images par le critere de fwhm
 # Auteurs : Francois Cochard et Jacques Michelet
-# Mise a jour $Id: tri_fwhm.tcl,v 1.8 2010-01-24 11:19:29 robertdelmas Exp $
+# Mise Ã  jour $Id: tri_fwhm.tcl,v 1.9 2010-05-27 06:18:21 robertdelmas Exp $
 #
 
 namespace eval ::TriFWHM {
@@ -12,18 +12,18 @@ namespace eval ::TriFWHM {
     #--------------------------------------------------------------------------#
     #  Message                                                                 #
     #--------------------------------------------------------------------------#
-    #  Permet l'affichage de messages formatés dans la console                 #
+    #  Permet l'affichage de messages formatÃ©s dans la console                 #
     #                                                                          #
-    #  Paramètres d'entrée :                                                   #
+    #  ParamÃ¨tres d'entrÃ©e :                                                   #
     #  - niveau :                                                              #
     #     console : affichage dans la console                                  #
     #     test : mode debug                                                    #
     #                                                                          #
-    # Paramètres de sortie : Aucun                                             #
+    # ParamÃ¨tres de sortie : Aucun                                             #
     #                                                                          #
     # Algorithme :                                                             #
-    #  si niveau console, affichage, puis attente que toutes les tâches soient #
-    #   éxécutées                                                              #
+    #  si niveau console, affichage, puis attente que toutes les tÃ¢ches soient #
+    #   Ã©xÃ©cutÃ©es                                                              #
     #--------------------------------------------------------------------------#
     proc Message {niveau args} {
         switch -exact -- $niveau {
@@ -39,26 +39,26 @@ namespace eval ::TriFWHM {
     #--------------------------------------------------------------------------#
     #  RecuperationParametres                                                  #
     #--------------------------------------------------------------------------#
-    #  Effectue la récupération des paramètres stockés dans tri_fwhm.ini       #
+    #  Effectue la rÃ©cupÃ©ration des paramÃ¨tres stockÃ©s dans tri_fwhm.ini       #
     #                                                                          #
-    #  Paramètres d'entrée :                                                   #
+    #  ParamÃ¨tres d'entrÃ©e :                                                   #
     #  - aucun                                                                 #
     #                                                                          #
-    # Paramètres de sortie :                                                   #
-    #  - parametres : tableau contenant tous les paramètres utiles             #
+    # ParamÃ¨tres de sortie :                                                   #
+    #  - parametres : tableau contenant tous les paramÃ¨tres utiles             #
     #     --extension : extension des noms de fichier                          #
-    #     --source : nom générique des fichiers à trier                        #
-    #     --nombre : nombre de fichiers à trier                                #
-    #     --indice_source : indice du premier fichier à trier                  #
-    #     --destination : nom générique des fichiers triés                     #
-    #     --indice destination : indice du premier fichier trié                #
+    #     --source : nom gÃ©nÃ©rique des fichiers Ã  trier                        #
+    #     --nombre : nombre de fichiers Ã  trier                                #
+    #     --indice_source : indice du premier fichier Ã  trier                  #
+    #     --destination : nom gÃ©nÃ©rique des fichiers triÃ©s                     #
+    #     --indice destination : indice du premier fichier triÃ©                #
     #     --mode : automatique ou manuel                                       #
     #                                                                          #
     # Algorithme :                                                             #
     #  RAZ du tableau parametres                                               #
-    #  Pour tous les champs stockés                                            #
+    #  Pour tous les champs stockÃ©s                                            #
     #    -s 'il existent, lecture de leur valeur                               #
-    #    - sinon, initialisation à une valeur standard                         #
+    #    - sinon, initialisation Ã  une valeur standard                         #
     #--------------------------------------------------------------------------#
     proc RecuperationParametres {} {
         global audace conf
@@ -67,7 +67,7 @@ namespace eval ::TriFWHM {
         # Initialisation
         if {[info exists parametres]} {unset parametres}
 
-        # Ouverture du fichier de paramètres
+        # Ouverture du fichier de paramÃ¨tres
         set fichier [file join $audace(rep_scripts) tri_fwhm tri_fwhm.ini]
 
         if {[file exists $fichier]} {source $fichier}
@@ -99,31 +99,30 @@ namespace eval ::TriFWHM {
     }
     # Fin de SauvegardeParametres
 
-
     #--------------------------------------------------------------------------#
     #  SaisieParametres                                                        #
     #--------------------------------------------------------------------------#
-    #  Effectue la saisie de paramètres                                        #
-    #  Paramètres d'entrée :                                                   #
-    #  - parametres : tableau contenant tous les paramètres stockés lors d'une #
-    #    session précédente                                                    #
+    #  Effectue la saisie de paramÃ¨tres                                        #
+    #  ParamÃ¨tres d'entrÃ©e :                                                   #
+    #  - parametres : tableau contenant tous les paramÃ¨tres stockÃ©s lors d'une #
+    #    session prÃ©cÃ©dente                                                    #
     #                                                                          #
-    #  Paramètres de sortie :                                                  #
-    #  - parametres : tableau contenant tous les paramètres utiles             #
+    #  ParamÃ¨tres de sortie :                                                  #
+    #  - parametres : tableau contenant tous les paramÃ¨tres utiles             #
     #     --extension : extension des noms de fichier                          #
-    #     --source : nom générique des fichiers à trier                        #
-    #     --nombre : nombre de fichiers à trier                                #
-    #     --indice_source : indice du premier fichier à trier                  #
-    #     --destination : nom générique des fichiers triés                     #
-    #     --indice destination : indice du premier fichier trié                #
+    #     --source : nom gÃ©nÃ©rique des fichiers Ã  trier                        #
+    #     --nombre : nombre de fichiers Ã  trier                                #
+    #     --indice_source : indice du premier fichier Ã  trier                  #
+    #     --destination : nom gÃ©nÃ©rique des fichiers triÃ©s                     #
+    #     --indice destination : indice du premier fichier triÃ©                #
     #     --mode : automatique ou manuel                                       #
     #                                                                          #
     # Algorithme :                                                             #
-    #  Affichage de la fenêtre, et des champs de saisie avec les valeurs par   #
-    #   défaut.                                                                #
-    #  Création des boutons de validation et d'annulation, et des procédures   #
+    #  Affichage de la fenÃªtre, et des champs de saisie avec les valeurs par   #
+    #   dÃ©faut.                                                                #
+    #  CrÃ©ation des boutons de validation et d'annulation, et des procÃ©dures   #
     #   correspondantes (bindings)                                             #
-    #  Attente que cette fenêtre soit supprimée (proc ValideSaisie et          #
+    #  Attente que cette fenÃªtre soit supprimÃ©e (proc ValideSaisie et          #
     #   AnnuleSaisie)                                                          #
     #--------------------------------------------------------------------------#
     proc SaisieParametres {} {
@@ -131,8 +130,8 @@ namespace eval ::TriFWHM {
         variable parametres
         variable cap_tri
 
-        #  Affichage de la fenêtre, et des champs de saisie avec les valeurs par   #
-        #   défaut.
+        #  Affichage de la fenÃªtre, et des champs de saisie avec les valeurs par   #
+        #   dÃ©faut.
         catch {destroy $audace(base).saisie_tri}
         toplevel $audace(base).saisie_tri -borderwidth 2 -relief groove
         wm geometry $audace(base).saisie_tri +638+0
@@ -158,7 +157,7 @@ namespace eval ::TriFWHM {
         pack $audace(base).saisie_tri.trame2.b2 -in $audace(base).saisie_tri.trame2 -side right -fill x
         pack $audace(base).saisie_tri.trame2.b1 -in $audace(base).saisie_tri.trame2 -side right -fill x
 
-        #  Création des boutons de validation et d'annulation, et des procédures   #
+        #  CrÃ©ation des boutons de validation et d'annulation, et des procÃ©dures   #
         #   correspondantes (bindings)                                             #
         frame $audace(base).saisie_tri.trame3 -borderwidth 2 -relief groove
         button $audace(base).saisie_tri.trame3.b1 -text $cap_tri(valider) -command {::TriFWHM::ValideSaisie}
@@ -171,7 +170,7 @@ namespace eval ::TriFWHM {
         #--- Mise a jour dynamique des couleurs
         ::confColor::applyColor $audace(base).saisie_tri
 
-        #  Attente que cette fenêtre soit supprimée (proc ValideSaisie et          #
+        #  Attente que cette fenÃªtre soit supprimÃ©e (proc ValideSaisie et          #
         #   AnnuleSaisie                                                           #
         tkwait window $audace(base).saisie_tri
     }
@@ -180,15 +179,15 @@ namespace eval ::TriFWHM {
     #--------------------------------------------------------------------------#
     #  ValideSaisie                                                            #
     #--------------------------------------------------------------------------#
-    #  Valide la saisie des paramètres et permet ainsi la suite du programme   #
+    #  Valide la saisie des paramÃ¨tres et permet ainsi la suite du programme   #
     #                                                                          #
-    #  Paramètres d'entrée :                                                   #
-    #  - .saisie : fenêtre de saisie                                           #
+    #  ParamÃ¨tres d'entrÃ©e :                                                   #
+    #  - .saisie : fenÃªtre de saisie                                           #
     #                                                                          #
-    # Paramètres de sortie : Aucun                                             #
+    # ParamÃ¨tres de sortie : Aucun                                             #
     #                                                                          #
     # Algorithme :                                                             #
-    #  Efface la fenêtre de saisie                                             #
+    #  Efface la fenÃªtre de saisie                                             #
     #--------------------------------------------------------------------------#
     proc ValideSaisie {} {
         global audace
@@ -199,17 +198,17 @@ namespace eval ::TriFWHM {
     #--------------------------------------------------------------------------#
     #  AnnuleSaisie                                                            #
     #--------------------------------------------------------------------------#
-    #  Annule la saisie des paramètres et permet ainsi l'arrêt du programme    #
+    #  Annule la saisie des paramÃ¨tres et permet ainsi l'arrÃªt du programme    #
     #                                                                          #
-    #  Paramètres d'entrée :                                                   #
-    #  - .saisie : fenêtre de saisie                                           #
+    #  ParamÃ¨tres d'entrÃ©e :                                                   #
+    #  - .saisie : fenÃªtre de saisie                                           #
     #                                                                          #
-    # Paramètres de sortie :                                                   #
-    #  - demande_arrêt : variable d'état                                       #
+    # ParamÃ¨tres de sortie :                                                   #
+    #  - demande_arrÃªt : variable d'Ã©tat                                       #
     #                                                                          #
     # Algorithme :                                                             #
-    #  Effectue la demande d'arrêt                                             #
-    #  Efface la fenêtre de saisie                                             #
+    #  Effectue la demande d'arrÃªt                                             #
+    #  Efface la fenÃªtre de saisie                                             #
     #--------------------------------------------------------------------------#
     proc AnnuleSaisie {} {
         global audace
@@ -223,37 +222,37 @@ namespace eval ::TriFWHM {
     #--------------------------------------------------------------------------#
     #  Verification                                                            #
     #--------------------------------------------------------------------------#
-    #  Vérifications sur les fichiers                                          #
+    #  VÃ©rifications sur les fichiers                                          #
     #                                                                          #
-    #  Paramètres d'entrée :                                                   #
-    #  - parametres : paramètres saisis (proc SaisieParametres)                #
+    #  ParamÃ¨tres d'entrÃ©e :                                                   #
+    #  - parametres : paramÃ¨tres saisis (proc SaisieParametres)                #
     #                                                                          #
-    # Paramètres de sortie :                                                   #
-    #  - mot d'erreur mis à 1 si une erreur est détectée                       #
+    # ParamÃ¨tres de sortie :                                                   #
+    #  - mot d'erreur mis Ã  1 si une erreur est dÃ©tectÃ©e                       #
     #                                                                          #
     # Algorithme :                                                             #
-    #  Vérification que les fichiers à trier existent vraiment.                #
-    #  Si problème, sortie                                                     #
-    #  Vérification que les noms des fichiers à trier et triés different       #
-    #  Si problème, sortie                                                     #
+    #  VÃ©rification que les fichiers Ã  trier existent vraiment.                #
+    #  Si problÃ¨me, sortie                                                     #
+    #  VÃ©rification que les noms des fichiers Ã  trier et triÃ©s different       #
+    #  Si problÃ¨me, sortie                                                     #
     #--------------------------------------------------------------------------#
     proc Verification {} {
         global audace
         variable parametres
         variable cap_tri
 
-        # Pour alléger l'écriture
+        # Pour allÃ©ger l'Ã©criture
         set nom $parametres(source)
         set nom_reg ${nom}r
         set nombre_image $parametres(nombre)
 
-        #  Vérification que les fichiers à trier existent vraiment.                #
-        #  Si problème, sortie                                                     #
+        #  VÃ©rification que les fichiers Ã  trier existent vraiment.                #
+        #  Si problÃ¨me, sortie                                                     #
         Message console "%s %s\[%d...%d\]\n" $cap_tri(verification) $nom $parametres(indice_source) [expr $parametres(indice_source) + $nombre_image - 1]
         for {set image $parametres(indice_source)} {$image < [expr $parametres(indice_source) + $nombre_image]} {incr image} {
             set nom_fichier [file join $audace(rep_images) $nom$image$parametres(extension)]
             if {![file exists $nom_fichier]} {
-                    # Recherche si le fichier existe en compressé
+                    # Recherche si le fichier existe en compressÃ©
             append nom_fichier ".gz"
                         if {![file exists $nom_fichier]} {
                                 Message console "%s %s %s\n" $cap_tri(erreur_verif_1) $nom$image $cap_tri(erreur_verif_2)
@@ -262,8 +261,8 @@ namespace eval ::TriFWHM {
             }
         }
 
-        #  Vérification que les noms des fichiers à trier et triés different       #
-        #  Si problème, sortie                                                     #
+        #  VÃ©rification que les noms des fichiers Ã  trier et triÃ©s different       #
+        #  Si problÃ¨me, sortie                                                     #
         Message console "%s\n" $cap_tri(verification_nom)
         if {$parametres(source) == $parametres(destination)} {
             Message console "%s %s\n" $cap_tri(erreur_verification) $parametres(source)
@@ -276,23 +275,23 @@ namespace eval ::TriFWHM {
     #--------------------------------------------------------------------------#
     #  Recalage                                                                #
     #--------------------------------------------------------------------------#
-    #  Recale les images pour pouvoir faciliter le calcul de décalage et pour  #
-    #   pouvoir tracer le cadre de sélection (mode manuel)                     #
+    #  Recale les images pour pouvoir faciliter le calcul de dÃ©calage et pour  #
+    #   pouvoir tracer le cadre de sÃ©lection (mode manuel)                     #
     #                                                                          #
-    #  Paramètres d'entrée :                                                   #
-    #  - parametres : paramètres saisis (proc SaisieParametres)                #
+    #  ParamÃ¨tres d'entrÃ©e :                                                   #
+    #  - parametres : paramÃ¨tres saisis (proc SaisieParametres)                #
     #                                                                          #
-    # Paramètres de sortie :                                                   #
-    #  - cadre : rectangle délimitant la zone dans laquelle seront sélection-  #
-    #   nées les étoiles                                                       #
+    # ParamÃ¨tres de sortie :                                                   #
+    #  - cadre : rectangle dÃ©limitant la zone dans laquelle seront sÃ©lection-  #
+    #   nÃ©es les Ã©toiles                                                       #
     #                                                                          #
     # Algorithme :                                                             #
-    #  Recalage de toutes les images à trier (pour mettre à jour le champ      #
+    #  Recalage de toutes les images Ã  trier (pour mettre Ã  jour le champ      #
     #    REGISTER)                                                             #
-    #  Recherche du décalage entre la première et la dernière image à trier    #
+    #  Recherche du dÃ©calage entre la premiÃ¨re et la derniÃ¨re image Ã  trier    #
     #  Recherche de la taille de l'image                                       #
     #  Determination de la zone commune (rectangle) aux 2 images               #
-    #  Mémorisation du rectangle                                               #
+    #  MÃ©morisation du rectangle                                               #
     #  Dessin du rectangle sur l'image                                         #
     #--------------------------------------------------------------------------#
     proc Recalage {} {
@@ -301,17 +300,17 @@ namespace eval ::TriFWHM {
         variable parametres
         variable cap_tri
 
-        # Pour alléger l'écriture
+        # Pour allÃ©ger l'Ã©criture
         set nom $parametres(source)
         set nom_reg ${nom}__
         set nombre_image $parametres(nombre)
 
-        #  Recalage de toutes les images à trier (pour mettre à jour le champ      #
+        #  Recalage de toutes les images Ã  trier (pour mettre Ã  jour le champ      #
         #    REGISTER)                                                             #
         Message console "%s %d %s %s %s %s\n" $cap_tri(recalage_1) $nombre_image $cap_tri(recalage_2) $nom $cap_tri(recalage_3) $nom_reg
         register $nom $nom_reg $nombre_image
 
-        #  Recherche du décalage entre la première et la dernière image à trier    #
+        #  Recherche du dÃ©calage entre la premiÃ¨re et la derniÃ¨re image Ã  trier    #
         Message console "%s\n" $cap_tri(recherche_decalage)
         buf$audace(bufNo) load [file join $audace(rep_images) $nom_reg$nombre_image]
         visu$audace(visuNo) disp [lrange [buf$audace(bufNo) stat] 0 1 ]
@@ -345,7 +344,7 @@ namespace eval ::TriFWHM {
             set cadre_y2 [expr $taille_image_y - 10]
         }
 
-        #  Mémorisation du rectangle                                               #
+        #  MÃ©morisation du rectangle                                               #
         set cadre(x1) $cadre_x1
         set cadre(y1) $cadre_y1
         set cadre(x2) $cadre_x2
@@ -362,18 +361,18 @@ namespace eval ::TriFWHM {
     #--------------------------------------------------------------------------#
     #  AffichesBoutons                                                         #
     #--------------------------------------------------------------------------#
-    #  Affiche les boutons qui vont permettre de sélectionner les étoiles et   #
+    #  Affiche les boutons qui vont permettre de sÃ©lectionner les Ã©toiles et   #
     #   poursuivre le calcul (mode manuel)                                     #
     #                                                                          #
-    #  Paramètres d'entrée :                                                   #
+    #  ParamÃ¨tres d'entrÃ©e :                                                   #
     #  - audace (couleurs)                                                     #
     #                                                                          #
-    # Paramètres de sortie :                                                   #
-    #  - nombre_boite : initialisation à 0 de cette variable                   #
+    # ParamÃ¨tres de sortie :                                                   #
+    #  - nombre_boite : initialisation Ã  0 de cette variable                   #
     #                                                                          #
     # Algorithme :                                                             #
-    #  Tracé des 3 boutons et définition de leur bindings                      #
-    #  Attente que cette fenêtre soit supprimée (proc ValideSelection,         #
+    #  TracÃ© des 3 boutons et dÃ©finition de leur bindings                      #
+    #  Attente que cette fenÃªtre soit supprimÃ©e (proc ValideSelection,         #
     #   et AnnuleSelection)                                                    #
     #--------------------------------------------------------------------------#
     proc AfficheBoutons {} {
@@ -415,29 +414,29 @@ namespace eval ::TriFWHM {
     #--------------------------------------------------------------------------#
     #  SelectionneEtoiles                                                      #
     #--------------------------------------------------------------------------#
-    #  Binding. Vérifie que l'objet sélectionné est une étoile, et le cas      #
-    #   échéant, met ses coordonnées en mémoire (mode manuel)                  #
+    #  Binding. VÃ©rifie que l'objet sÃ©lectionnÃ© est une Ã©toile, et le cas      #
+    #   Ã©chÃ©ant, met ses coordonnÃ©es en mÃ©moire (mode manuel)                  #
     #                                                                          #
-    #  Paramètres d'entrée :                                                   #
-    #  - [ ::confVisu::getBox $audace(visuNo) ] coordonnées de la boite tracée #
+    #  ParamÃ¨tres d'entrÃ©e :                                                   #
+    #  - [ ::confVisu::getBox $audace(visuNo) ] coordonnÃ©es de la boite tracÃ©e #
     #    par l'utilisateur.                                                    #
     #                                                                          #
-    # Paramètres de sortie :                                                   #
-    #  - nombre_boite : nombre de boites et donc d'étoiles valides             #
-    #  - boite : tableau des coordonées des boites                             #
+    # ParamÃ¨tres de sortie :                                                   #
+    #  - nombre_boite : nombre de boites et donc d'Ã©toiles valides             #
+    #  - boite : tableau des coordonÃ©es des boites                             #
     #                                                                          #
     # Algorithme :                                                             #
-    #  Détection de ce que l'utilisateur a bien tracé une boite                #
-    #  Récupération des coordonnées (boite) retournée par la souris            #
-    #  Vérification de ce que cette boite est bien dans le cadre général       #
+    #  DÃ©tection de ce que l'utilisateur a bien tracÃ© une boite                #
+    #  RÃ©cupÃ©ration des coordonnÃ©es (boite) retournÃ©e par la souris            #
+    #  VÃ©rification de ce que cette boite est bien dans le cadre gÃ©nÃ©ral       #
     #  Si ce n'est pas le cas                                                  #
     #  Alors message d'erreur et sortie                                        #
-    #  Mise en mémoire de la boite                                             #
-    #  Teste la validité de l'étoile                                           #
-    #  Si c'est une étoile valide                                              #
+    #  Mise en mÃ©moire de la boite                                             #
+    #  Teste la validitÃ© de l'Ã©toile                                           #
+    #  Si c'est une Ã©toile valide                                              #
     #  Alors                                                                   #
-    #     -incrément du nombre d'étoiles valides                               #
-    #     -dessin d'un rectangle jaune autour de l'étoile                      #
+    #     -incrÃ©ment du nombre d'Ã©toiles valides                               #
+    #     -dessin d'un rectangle jaune autour de l'Ã©toile                      #
     #     -sortie                                                              #
     #  Sinon affichage d'un message d'erreur et sortie                         #
     #--------------------------------------------------------------------------#
@@ -448,10 +447,10 @@ namespace eval ::TriFWHM {
         variable boite
         variable cap_tri
 
-        #  Détection de ce que l'utilisateur a bien tracé une boite                #
+        #  DÃ©tection de ce que l'utilisateur a bien tracÃ© une boite                #
         set rect [ ::confVisu::getBox $audace(visuNo) ]
         if { $rect != "" } {
-            #  Récupération des coordonnées (boite) retournée par la souris            #
+            #  RÃ©cupÃ©ration des coordonnÃ©es (boite) retournÃ©e par la souris            #
             set x1 [lindex $rect 0]
             set y1 [lindex $rect 1]
             set x2 [lindex $rect 2]
@@ -465,7 +464,7 @@ namespace eval ::TriFWHM {
             set y2 [expr round([lindex $xy 1] + 10)]
             set rect [list $x1 $y1 $x2 $y2]
 
-            #  Vérification de ce que cette boite est bien dans le cadre général       #
+            #  VÃ©rification de ce que cette boite est bien dans le cadre gÃ©nÃ©ral       #
             set hors_cadre 0
             if {$x1 < $cadre(x1)} {set hors_cadre 1}
             if {$x2 < $cadre(x1)} {set hors_cadre 1}
@@ -480,18 +479,18 @@ namespace eval ::TriFWHM {
                 #  Alors message d'erreur et sortie                                        #
                 tk_messageBox -message $cap_tri(etoile_hors_cadre) -icon error -title $cap_tri(probleme)
             } else {
-                #  Mise en mémoire de la boite                                             #
+                #  Mise en mÃ©moire de la boite                                             #
                 incr nombre_boite
                 set i $nombre_boite
                 set boite($i) $rect
-                #  Teste la validité de l'étoile                                           #
+                #  Teste la validitÃ© de l'Ã©toile                                           #
                 set valide [Centroide $x1 $y1 $x2 $y2]
                 set code_erreur [lindex $valide 2]
-                #  Si c'est une étoile valide                                              #
+                #  Si c'est une Ã©toile valide                                              #
                 if {$code_erreur == 1} {
                     #  Alors                                                                   #
-                    #     -incrément du nombre d'étoiles valides                               #
-                    #     -dessin d'un rectangle jaune autour de l'étoile                      #
+                    #     -incrÃ©ment du nombre d'Ã©toiles valides                               #
+                    #     -dessin d'un rectangle jaune autour de l'Ã©toile                      #
                     #     -sortie                                                              #
                     DessineRectangle $rect yellow
                     Message console "  %s  %s: %s %s\n" $cap_tri(etoile) $i [format "%4.2f" [lindex $valide 0]] [format "%4.2f" [lindex $valide 1]]
@@ -511,15 +510,15 @@ namespace eval ::TriFWHM {
     #--------------------------------------------------------------------------#
     #  ValideSelection                                                         #
     #--------------------------------------------------------------------------#
-    #  Binding. Sert à valider la selection des étoiles (mode manuel)          #
+    #  Binding. Sert Ã  valider la selection des Ã©toiles (mode manuel)          #
     #                                                                          #
-    #  Paramètres d'entrée :                                                   #
-    #  - nombre_boite : nombre d'étoiles encadrées.                            #
+    #  ParamÃ¨tres d'entrÃ©e :                                                   #
+    #  - nombre_boite : nombre d'Ã©toiles encadrÃ©es.                            #
     #                                                                          #
-    # Paramètres de sortie : aucun                                             #
+    # ParamÃ¨tres de sortie : aucun                                             #
     #                                                                          #
     # Algorithme :                                                             #
-    #  Si aucune étoile n'a été encadrée                                       #
+    #  Si aucune Ã©toile n'a Ã©tÃ© encadrÃ©e                                       #
     #  Alors affichage d'un message d'erreur et sortie                         #
     #  Sinon effacement de la fenetre de selection                             #
     #--------------------------------------------------------------------------#
@@ -541,29 +540,29 @@ namespace eval ::TriFWHM {
     #--------------------------------------------------------------------------#
     #  AnnuleSelection                                                         #
     #--------------------------------------------------------------------------#
-    #  Binding. Permet d'arrêter le process de selection et le programme       #
+    #  Binding. Permet d'arrÃªter le process de selection et le programme       #
     #   (mode manuel)                                                          #
     #                                                                          #
-    #  Paramètres d'entrée :                                                   #
+    #  ParamÃ¨tres d'entrÃ©e :                                                   #
     #   audace(hCanvas) : canevas de l'image sous Audace                       #
     #                                                                          #
-    # Paramètres de sortie :                                                   #
-    #  demande_arret : variable d'état qui permet de signaler une demande      #
-    #   d'arrêt                                                                #
+    # ParamÃ¨tres de sortie :                                                   #
+    #  demande_arret : variable d'Ã©tat qui permet de signaler une demande      #
+    #   d'arrÃªt                                                                #
     #                                                                          #
     # Algorithme :                                                             #
-    #  Effacement des cadres affichés                                          #
-    #  Valide la demande d'arrêt                                               #
+    #  Effacement des cadres affichÃ©s                                          #
+    #  Valide la demande d'arrÃªt                                               #
     #  Effacement de la fenetre de selection                                   #
     #--------------------------------------------------------------------------#
     proc AnnuleSelection {} {
         global audace
         variable demande_arret
 
-        #  Effacement des cadres affichés                                          #
+        #  Effacement des cadres affichÃ©s                                          #
         $audace(hCanvas) delete cadres
 
-        #  Valide la demande d'arrêt                                               #
+        #  Valide la demande d'arrÃªt                                               #
         set demande_arret 1
 
         #  Effacement de la fenetre de selection                                   #
@@ -574,34 +573,34 @@ namespace eval ::TriFWHM {
     #--------------------------------------------------------------------------#
     #  CalculeFWHMManuel                                                       #
     #--------------------------------------------------------------------------#
-    #  Attribue à chaque image un FWHM en fonction de ceux des étoiles         #
-    #   sélectionnées (mode manuel)                                            #
+    #  Attribue Ã  chaque image un FWHM en fonction de ceux des Ã©toiles         #
+    #   sÃ©lectionnÃ©es (mode manuel)                                            #
     #                                                                          #
-    #  Paramètres d'entrée :                                                   #
+    #  ParamÃ¨tres d'entrÃ©e :                                                   #
     #   parametres : parametres des images                                     #
-    #   nombre_boite : nombre d'étoiles sélectionnées                          #
-    #   boite : tableau de coordonnées des cadres entourant les étoiles selec- #
-    #    tionnéees.                                                            #
+    #   nombre_boite : nombre d'Ã©toiles sÃ©lectionnÃ©es                          #
+    #   boite : tableau de coordonnÃ©es des cadres entourant les Ã©toiles selec- #
+    #    tionnÃ©ees.                                                            #
     #   audace(hCanvas) : canevas de l'image sous Audace                       #
     #                                                                          #
-    # Paramètres de sortie :                                                   #
-    #   fwhm_image : tableau contenant les FWHM calculés pour toutes les       #
-    #    images à trier                                                        #
-    #   liste_fwhm : liste de tous les FWHM calculés (sert au tri)             #
+    # ParamÃ¨tres de sortie :                                                   #
+    #   fwhm_image : tableau contenant les FWHM calculÃ©s pour toutes les       #
+    #    images Ã  trier                                                        #
+    #   liste_fwhm : liste de tous les FWHM calculÃ©s (sert au tri)             #
     #                                                                          #
     # Algorithme :                                                             #
-    #  Effacement des cadres affichés                                          #
-    #  Pour toutes les images à trier                                          #
-    #    - Chargement de l'image "registrée" pour lire le décalage dans son    #
-    #       entête FITS                                                        #
-    #    - Effacement de l'image "registrée"                                   #
+    #  Effacement des cadres affichÃ©s                                          #
+    #  Pour toutes les images Ã  trier                                          #
+    #    - Chargement de l'image "registrÃ©e" pour lire le dÃ©calage dans son    #
+    #       entÃªte FITS                                                        #
+    #    - Effacement de l'image "registrÃ©e"                                   #
     #    - Chargement de l'image source pour les calculs de FWHM               #
-    #    - Pour chacune des étoiles sélectionnées                              #
-    #       - création d'un nouveau cadre par décalage de sa boite de sélection#
-    #       - calcul du FWHM en x et y de l'étoile dans ce nouveau cadre       #
-    #    - Calcul des moyennes en x et y de tous les FWHM des étoiles)         #
+    #    - Pour chacune des Ã©toiles sÃ©lectionnÃ©es                              #
+    #       - crÃ©ation d'un nouveau cadre par dÃ©calage de sa boite de sÃ©lection#
+    #       - calcul du FWHM en x et y de l'Ã©toile dans ce nouveau cadre       #
+    #    - Calcul des moyennes en x et y de tous les FWHM des Ã©toiles)         #
     #    - Calcul du FWHM de l'image (maximum des valeurs moyennes en x et y)  #
-    #    - Création d'une liste qui va servir au calcul de l'histogramme       #
+    #    - CrÃ©ation d'une liste qui va servir au calcul de l'histogramme       #
     #--------------------------------------------------------------------------#
     proc CalculeFWHMManuel {} {
         global audace color
@@ -612,7 +611,7 @@ namespace eval ::TriFWHM {
         variable fwhm_image
         variable cap_tri
 
-        # Pour améliorer la lisibilité...
+        # Pour amÃ©liorer la lisibilitÃ©...
         set nom $parametres(source)
         set nombre_image $parametres(nombre)
 
@@ -621,19 +620,19 @@ namespace eval ::TriFWHM {
         set nombre_etoile $nombre_boite
         set liste_fwhm [list]
 
-        #  Effacement des cadres affichés                                          #
+        #  Effacement des cadres affichÃ©s                                          #
         $audace(hCanvas) delete cadres
 
         Message console "%s %s\n" $nombre_etoile $cap_tri(etoiles_select)
         Message console "%s\n" $cap_tri(analyse)
 
-        #  Pour toutes les images à trier                                          #
+        #  Pour toutes les images Ã  trier                                          #
         for {set image 1} {$image <= $nombre_image} {incr image} {
             set fwhm_x 0.0
             set fwhm_y 0.0
 
-            #    - Chargement de l'image "registrée" pour lire le décalage dans son    #
-            #       entête FITS                                                        #
+            #    - Chargement de l'image "registrÃ©e" pour lire le dÃ©calage dans son    #
+            #       entÃªte FITS                                                        #
             loadima $nom_reg$image
             visu$audace(visuNo) disp [lrange [buf$audace(bufNo) stat] 0 1 ]
 
@@ -642,7 +641,7 @@ namespace eval ::TriFWHM {
             set dec_im_x [lindex $dec 0]
             set dec_im_y [lindex $dec 1]
 
-            #    - Effacement de l'image "registrée"                                   #
+            #    - Effacement de l'image "registrÃ©e"                                   #
             file delete $nom_reg$image$parametres(extension)
 
             #    - Chargement de l'image source pour les calculs de FWHM               #
@@ -650,11 +649,11 @@ namespace eval ::TriFWHM {
             visu$audace(visuNo) disp [lrange [buf$audace(bufNo) stat] 0 1 ]
             update idletasks
 
-            #    - Pour chacune des étoiles sélectionnées                              #
+            #    - Pour chacune des Ã©toiles sÃ©lectionnÃ©es                              #
             for {set etoile 1} {$etoile <= $nombre_etoile} {incr etoile} {
                 set uneetoile $boite($etoile)
 
-                #       - création d'un nouveau cadre par décalage de sa boite de sélection#
+                #       - crÃ©ation d'un nouveau cadre par dÃ©calage de sa boite de sÃ©lection#
                 set x1 [expr int([lindex $uneetoile 0] + $dec_im_x)]
                 set y1 [expr int([lindex $uneetoile 1] + $dec_im_y)]
                 set x2 [expr int([lindex $uneetoile 2] + $dec_im_x)]
@@ -663,13 +662,13 @@ namespace eval ::TriFWHM {
                 #       - dessin du rectangle
                 DessineRectangle [list $x1 $y1 $x2 $y2] $color(red)
 
-                #       - calcul du FWHM en x et y de l'étoile dans ce nouveau cadre       #
+                #       - calcul du FWHM en x et y de l'Ã©toile dans ce nouveau cadre       #
                 set fwhm_etoile [buf$audace(bufNo) fwhm [list $x1 $y1 $x2 $y2]]
                 set fwhm_x [expr $fwhm_x + [lindex $fwhm_etoile 0]]
                 set fwhm_y [expr $fwhm_y + [lindex $fwhm_etoile 1]]
 
             }
-            #    - Calcul des moyennes en x et y de tous les FWHM des étoiles)         #
+            #    - Calcul des moyennes en x et y de tous les FWHM des Ã©toiles)         #
             set fwhm_x [expr $fwhm_x / $nombre_etoile]
             set fwhm_y [expr $fwhm_y / $nombre_etoile]
 
@@ -684,7 +683,7 @@ namespace eval ::TriFWHM {
             #    - Constitution d'une liste qui va servir au calcul de l'histogramme   #
             lappend liste_fwhm $fwhm_image($image)
 
-        #    - effacement des cadres affichés                                      #
+        #    - effacement des cadres affichÃ©s                                      #
         $audace(hCanvas) delete cadres
         update idletasks
         }
@@ -694,23 +693,23 @@ namespace eval ::TriFWHM {
     #--------------------------------------------------------------------------#
     #  CalculeFWHMAutomatique                                                  #
     #--------------------------------------------------------------------------#
-    #  Attribue à chaque image un FWHM en fonction de ceux des étoiles         #
-    #   sélectionnées (mode manuel)                                            #
+    #  Attribue Ã  chaque image un FWHM en fonction de ceux des Ã©toiles         #
+    #   sÃ©lectionnÃ©es (mode manuel)                                            #
     #                                                                          #
-    #  Paramètres d'entrée :                                                   #
+    #  ParamÃ¨tres d'entrÃ©e :                                                   #
     #   parametres : parametres des images                                     #
     #                                                                          #
-    # Paramètres de sortie :                                                   #
-    #   fwhm_image : tableau contenant les FWHM calculés pour toutes les       #
-    #    images à trier                                                        #
-    #   liste_fwhm : liste de tous les FWHM calculés (sert au tri)             #
+    # ParamÃ¨tres de sortie :                                                   #
+    #   fwhm_image : tableau contenant les FWHM calculÃ©s pour toutes les       #
+    #    images Ã  trier                                                        #
+    #   liste_fwhm : liste de tous les FWHM calculÃ©s (sert au tri)             #
     #                                                                          #
     # Algorithme :                                                             #
     #  Calcul des FWHM de toutes les images (librairie LibTT)                  #
-    #  Pour toutes les images temporaires (créés par LibTT)                    #
+    #  Pour toutes les images temporaires (crÃ©Ã©s par LibTT)                    #
     #    - Chargement de l'image                                               #
-    #    - Lecture du FWHM dans son entête FITS                                #
-    #    - Création d'une liste qui va servir au calcul de l'histogramme       #
+    #    - Lecture du FWHM dans son entÃªte FITS                                #
+    #    - CrÃ©ation d'une liste qui va servir au calcul de l'histogramme       #
     #    - Effacement de l'image temporaire                                    #
     #--------------------------------------------------------------------------#
     proc CalculeFWHMAutomatique {} {
@@ -720,7 +719,7 @@ namespace eval ::TriFWHM {
         variable fwhm_image
         variable cap_tri
 
-        # Pour améliorer la lisibilité...
+        # Pour amÃ©liorer la lisibilitÃ©...
         set nom $parametres(source)
         set nombre_image $parametres(nombre)
         set indice_source $parametres(indice_source)
@@ -733,16 +732,16 @@ namespace eval ::TriFWHM {
         set ext $conf(extension,defaut)
         ttscript2 "IMA/SERIES $audace(rep_images) $nom $indice_source [expr $indice_source + $nombre_image -1] $ext $audace(rep_images) $nom_temp 1 $ext STAT fwhm"
 
-        #  Pour toutes les images temporaires (créés par LibTT)                    #
+        #  Pour toutes les images temporaires (crÃ©Ã©s par LibTT)                    #
         Message console "%s\n" $cap_tri(analyse)
         for {set image 1} {$image <= $nombre_image} {incr image} {
         #    - Chargement de l'image                                               #
                 buf$audace(bufNo) load [file join $audace(rep_images) $nom_temp$image]
                 visu$audace(visuNo) disp [lrange [buf$audace(bufNo) stat] 0 1 ]
-            #    - Lecture du FWHM dans son entête FITS                                #
+            #    - Lecture du FWHM dans son entÃªte FITS                                #
                 set fwhm_image($image) [lindex [buf$audace(bufNo) getkwd FWHM] 1]
                 Message console "%s %d : %4.2f\n" $cap_tri(fwhm_image) $image $fwhm_image($image)
-            #    - Création d'une liste qui va servir au calcul de l'histogramme       #
+            #    - CrÃ©ation d'une liste qui va servir au calcul de l'histogramme       #
                 lappend liste_fwhm $fwhm_image($image)
             #    - Effacement de l'image temporaire                                    #
 #                file delete [file join $audace(rep_images) $nom_temp$image$parametres(extension)]
@@ -753,34 +752,34 @@ namespace eval ::TriFWHM {
     #--------------------------------------------------------------------------#
     #  Decalage                                                                #
     #--------------------------------------------------------------------------#
-    #  Récupére dans l'entête FITS de l'image affichée les informations        #
-    #   de recadrage générées par la commande register                         #
+    #  RÃ©cupÃ©re dans l'entÃªte FITS de l'image affichÃ©e les informations        #
+    #   de recadrage gÃ©nÃ©rÃ©es par la commande register                         #
     #                                                                          #
-    #  Paramètres d'entrée :                                                   #
-    #   une image doit avoir été chargée préalablement dans buf$audace(bufNo)  #
+    #  ParamÃ¨tres d'entrÃ©e :                                                   #
+    #   une image doit avoir Ã©tÃ© chargÃ©e prÃ©alablement dans buf$audace(bufNo)  #
     #                                                                          #
-    # Paramètres de sortie :                                                   #
-    #   une liste de 2 éléments : le décalage en x et celui en y               #
-    #    images à trier                                                        #
+    # ParamÃ¨tres de sortie :                                                   #
+    #   une liste de 2 Ã©lÃ©ments : le dÃ©calage en x et celui en y               #
+    #    images Ã  trier                                                        #
     #                                                                          #
     # Algorithme :                                                             #
-    #  A écrire                                                                #
+    #  A Ã©crire                                                                #
     #--------------------------------------------------------------------------#
     proc Decalage {} {
             global audace
 
-                # --- recupere la liste des mots clés de l'image FITS
+                # --- recupere la liste des mots clÃ©s de l'image FITS
                 set listkey [buf$audace(bufNo) getkwds]
-                # --- on evalue chaque (each) mot clé
+                # --- on evalue chaque (each) mot clÃ©
                 foreach key $listkey {
                 # --- on extrait les infos de la ligne FITS
-                # --- qui correspond au mot clé
+                # --- qui correspond au mot clÃ©
                 set listligne [buf$audace(bufNo) getkwd $key]
-                # --- on évalue la valeur de la ligne FITS
+                # --- on Ã©value la valeur de la ligne FITS
                 set value [lindex $listligne 1]
                 # --- si la valeur vaut IMA/SERIES REGISTER ...
                 if {$value=="IMA/SERIES REGISTER"} {
-                                # --- alors on extrait l'indice du mot clé TT*
+                                # --- alors on extrait l'indice du mot clÃ© TT*
                                 set keyname [lindex $listligne 0]
                                 set lenkeyname [string length $keyname]
                                 set indice [string range $keyname 2 [expr $lenkeyname] ]
@@ -788,7 +787,7 @@ namespace eval ::TriFWHM {
                 }
 
                 # On a maintenant repere la fonction TT qui pointe sur la derniere registration.
-                # Recherche de la ligne FITS contenant le mot clé indice+1
+                # Recherche de la ligne FITS contenant le mot clÃ© indice+1
                 incr indice
                 set listligne [buf$audace(bufNo) getkwd "TT$indice"]
 
@@ -796,7 +795,7 @@ namespace eval ::TriFWHM {
                 set param1 [lindex $listligne 1]
                 set dx [lindex [split $param1] 3]
 
-                # Recherche de la ligne FITS contenant le mot clé indice+2
+                # Recherche de la ligne FITS contenant le mot clÃ© indice+2
                 incr indice
                 set listligne [buf$audace(bufNo) getkwd "TT$indice"]
 
@@ -807,34 +806,34 @@ namespace eval ::TriFWHM {
                 # Fin de la lecture du decalage
                 return [list $dx $dy]
     }
-    #---Fin de Décalage--------------------------------------------------------#
+    #---Fin de DÃ©calage--------------------------------------------------------#
 
     #--------------------------------------------------------------------------#
     #  DessineRectangle                                                        #
     #--------------------------------------------------------------------------#
     #  Trace un rectangle sur une image                                        #
     #                                                                          #
-    #  Paramètres d'entrée :                                                   #
-    #   une image doit avoir été chargée préalablement dans buf$audace(bufNo)  #
-    #   rect : une liste des coordonnées des 4 coins de l'image                #
+    #  ParamÃ¨tres d'entrÃ©e :                                                   #
+    #   une image doit avoir Ã©tÃ© chargÃ©e prÃ©alablement dans buf$audace(bufNo)  #
+    #   rect : une liste des coordonnÃ©es des 4 coins de l'image                #
     #   couleur : la couleur du rectangle                                      #
-    #   (logiquement, le tag devrait être un paramètre)                        #
+    #   (logiquement, le tag devrait Ãªtre un paramÃ¨tre)                        #
     #                                                                          #
-    # Paramètres de sortie : aucun                                             #
+    # ParamÃ¨tres de sortie : aucun                                             #
     #                                                                          #
     # Algorithme :                                                             #
-    #  Transformation des coordonnées images en coordonnées canvas et tracé    #
+    #  Transformation des coordonnÃ©es images en coordonnÃ©es canvas et tracÃ©    #
     #  Rafraichissement de l'image                                             #
     #--------------------------------------------------------------------------#
     proc DessineRectangle {rect couleur} {
         global audace
-        # Recupère les 4 coordonnées du rectangle
+        # RecupÃ¨re les 4 coordonnÃ©es du rectangle
         set x1 [lindex $rect 0]
         set y1 [lindex $rect 1]
         set x2 [lindex $rect 2]
         set y2 [lindex $rect 3]
 
-        #  Transformation des coordonnées images en coordonnées canvas et tracé    #
+        #  Transformation des coordonnÃ©es images en coordonnÃ©es canvas et tracÃ©    #
         set naxis2 [lindex [buf$audace(bufNo) getkwd NAXIS2] 1]
         $audace(hCanvas) create rectangle [expr $x1-1] [expr $naxis2-$y1] [expr $x2-1] [expr $naxis2-$y2] -outline $couleur -tags cadres
         #  Rafraichissement de l'image                                             #
@@ -846,28 +845,28 @@ namespace eval ::TriFWHM {
     #--------------------------------------------------------------------------#
     #  Centroide                                                               #
     #--------------------------------------------------------------------------#
-    #  Calcul ls coordonnées du centre d'un objet ponctuel                     #
+    #  Calcul ls coordonnÃ©es du centre d'un objet ponctuel                     #
     #                                                                          #
-    #  Paramètres d'entrée :                                                   #
-    #   une image doit avoir été chargée préalablement dans buf$audace(bufNo)  #
-    #   x1, y1, x2 et y2 : les 4 coordonnés des coins d'une fenêtre encadrant  #
+    #  ParamÃ¨tres d'entrÃ©e :                                                   #
+    #   une image doit avoir Ã©tÃ© chargÃ©e prÃ©alablement dans buf$audace(bufNo)  #
+    #   x1, y1, x2 et y2 : les 4 coordonnÃ©s des coins d'une fenÃªtre encadrant  #
     #    l'objet                                                               #
     #                                                                          #
-    # Paramètres de sortie :                                                   #
+    # ParamÃ¨tres de sortie :                                                   #
     #  Une liste contenant                                                     #
-    #   - les coordonnées en x et y du centre de l'objet                       #
+    #   - les coordonnÃ©es en x et y du centre de l'objet                       #
     #   - un mot d'erreur valant :                                             #
-    #      1 si le résultat est valide                                         #
+    #      1 si le rÃ©sultat est valide                                         #
     #      -1 si le rapport signal / bruit est trop faible                     #
-    #      -2 si l'objet est trop étalé (non isolable dans un carré de 21 x21) #
+    #      -2 si l'objet est trop Ã©talÃ© (non isolable dans un carrÃ© de 21 x21) #
     #      -3 si l'objet est trop ponctuel (pixel chaud)                       #
     #                                                                          #
     # Algorithme :                                                             #
-    #  A écrire ...                                                            #
+    #  A Ã©crire ...                                                            #
     #--------------------------------------------------------------------------#
     proc Centroide {x1 y1 x2 y2} {
             global audace
-        # La fonction retourne les coordonnées du centre, et un code d'erreur
+        # La fonction retourne les coordonnÃ©es du centre, et un code d'erreur
         # Le code d'erreur peut prendre les valeurs suivantes:
         #  > 1 si le resultat est valide.
         #  > -1 si le rapport signal / bruit est insuffisant
@@ -1053,14 +1052,14 @@ namespace eval ::TriFWHM {
     #--------------------------------------------------------------------------#
     # Calcule l'histogramme des FWHM                                           #
     #                                                                          #
-    # Paramètres d'entrée :                                                    #
+    # ParamÃ¨tres d'entrÃ©e :                                                    #
     #  - fwhm image : tableau des fwhm des images                              #
     #  - liste_fwhm : liste des fwhm des images                                #
-    #  - parametres : tableau des paramètres du logiciel                       #
+    #  - parametres : tableau des paramÃ¨tres du logiciel                       #
     #                                                                          #
-    # Paramètres de sortie :                                                   #
-    #  - histo_fwhm : tableau contenant toutes les valeurs de fwhm triées par  #
-    #    classe. Le dernier élément de ce tableau contient le maximum de       #
+    # ParamÃ¨tres de sortie :                                                   #
+    #  - histo_fwhm : tableau contenant toutes les valeurs de fwhm triÃ©es par  #
+    #    classe. Le dernier Ã©lÃ©ment de ce tableau contient le maximum de       #
     #    l'histogramme.                                                        #
     #  - taille_histo : le nombre de classes de l'histogramme                  #
     #  - extrema : une liste contenant le minimum et le maximum des fwhm des   #
@@ -1068,9 +1067,9 @@ namespace eval ::TriFWHM {
     #                                                                          #
     # Algorithme :                                                             #
     #  - Tri de la liste liste_fwhm, et recherche des extrema                  #
-    #  - Détermination du nombre de classes (fixé arbitrairement au nombre     #
-    #   d'images à trier.                                                      #
-    #  - Calcul des bornes des classes (règle de trois)                        #
+    #  - DÃ©termination du nombre de classes (fixÃ© arbitrairement au nombre     #
+    #   d'images Ã  trier.                                                      #
+    #  - Calcul des bornes des classes (rÃ¨gle de trois)                        #
     #  - Calcul de l'histogramme et recherche de son maximum                   #
     #--------------------------------------------------------------------------#
     proc Histogramme {} {
@@ -1087,13 +1086,13 @@ namespace eval ::TriFWHM {
                 set maximum [lindex $tri_fwhm end]
                 set extrema [list $minimum $maximum]
 
-                #  - Détermination du nombre de classes (fixé arbitrairement au nombre     #
-                #   d'images à trier.                                                      #
+                #  - DÃ©termination du nombre de classes (fixÃ© arbitrairement au nombre     #
+                #   d'images Ã  trier.                                                      #
 #       set nombre_classe $parametres(nombre)
                 # Changement : le nombre de classes est fonction du log du nombre d'images
                 set nombre_classe [expr round(10 * log10($parametres(nombre)))]
 
-                #  - Calcul des bornes des classes (règle de trois)                        #
+                #  - Calcul des bornes des classes (rÃ¨gle de trois)                        #
                 for {set i 0} {$i < $nombre_classe} {incr i} {
                 set classe($i) [expr $minimum + ([expr $i + 1] * ($maximum - $minimum) / $nombre_classe)]
                 set histo_fwhm($i) 0
@@ -1120,31 +1119,31 @@ namespace eval ::TriFWHM {
     #--------------------------------------------------------------------------#
     #  Graphique                                                               #
     #--------------------------------------------------------------------------#
-    #  Dessine l'histogramme des FWHM sous forme normale et cumulée            #
+    #  Dessine l'histogramme des FWHM sous forme normale et cumulÃ©e            #
     #                                                                          #
-    #  Paramètres d'entrée :                                                   #
-    #  - parametres : paramètres des images                                    #
-    #  - histo_fwhm : tableau contenant toutes les valeurs de fwhm triées par  #
-    #    classe. Le dernier élément de ce tableau contient le maximum de       #
+    #  ParamÃ¨tres d'entrÃ©e :                                                   #
+    #  - parametres : paramÃ¨tres des images                                    #
+    #  - histo_fwhm : tableau contenant toutes les valeurs de fwhm triÃ©es par  #
+    #    classe. Le dernier Ã©lÃ©ment de ce tableau contient le maximum de       #
     #    l'histogramme.                                                        #
     #  - taille_histo : le nombre de classes de l'histogramme                  #
     #  - extrema : une liste contenant le minimum et le maximum des fwhm des   #
     #    images                                                                #
     #  - audace(color): tableau des couleurs sous Audace                       #
     #                                                                          #
-    #  Paramètres de sortie :                                                  #
-    #  - graphe : coordonnées du graphe                                        #
-    #  - curseur_x : position du curseur de sélection du FWHM                  #
+    #  ParamÃ¨tres de sortie :                                                  #
+    #  - graphe : coordonnÃ©es du graphe                                        #
+    #  - curseur_x : position du curseur de sÃ©lection du FWHM                  #
     #                                                                          #
     # Algorithme :                                                             #
-    #  - Dessin de la fenêtre                                                  #
-    #  - Détermination de constantes utiles au graphique                       #
-    #  - Initialisations nécessaires au curseur                                #
+    #  - Dessin de la fenÃªtre                                                  #
+    #  - DÃ©termination de constantes utiles au graphique                       #
+    #  - Initialisations nÃ©cessaires au curseur                                #
     #  - Dessin des histogrammmes                                              #
     #  - Dessin des axes                                                       #
-    #  - Ecriture des légendes                                                 #
-    #  - Tracé du curseur                                                      #
-    #  - Attente que la fenêtre soit détruite (procédure FixeFWHM)             #
+    #  - Ecriture des lÃ©gendes                                                 #
+    #  - TracÃ© du curseur                                                      #
+    #  - Attente que la fenÃªtre soit dÃ©truite (procÃ©dure FixeFWHM)             #
     #--------------------------------------------------------------------------#
     proc Graphique {} {
         global audace color
@@ -1156,11 +1155,11 @@ namespace eval ::TriFWHM {
         variable parametres
         variable cap_tri
 
-        # Simplification d'écriture
+        # Simplification d'Ã©criture
         set minimum [lindex $extrema 0]
         set maximum [lindex $extrema 1]
 
-        #  - Dessin de la fenêtre                                                  #
+        #  - Dessin de la fenÃªtre                                                  #
         toplevel $audace(base).graphe_fwhm -borderwidth 2 -relief groove -cursor crosshair -class Toplevel
         wm geometry $audace(base).graphe_fwhm +140+0
         wm minsize $audace(base).graphe_fwhm 320 280
@@ -1170,7 +1169,7 @@ namespace eval ::TriFWHM {
         canvas $audace(base).graphe_fwhm.fond -width 450 -height 350
         pack $audace(base).graphe_fwhm.fond -in $audace(base).graphe_fwhm -expand 1 -side top -anchor center -fill both
 
-        #  - Détermination de constantes utiles au graphique                       #
+        #  - DÃ©termination de constantes utiles au graphique                       #
         tkwait visibility $audace(base).graphe_fwhm
         set largeur_graphe [winfo reqwidth $audace(base).graphe_fwhm.fond]
         set hauteur_graphe [winfo reqheight $audace(base).graphe_fwhm.fond]
@@ -1179,7 +1178,7 @@ namespace eval ::TriFWHM {
         set origine_x [expr round($largeur_graphe * 0.05)]
         set origine_y [expr round($hauteur_graphe * 0.95)]
 
-        #  - Initialisations nécessaires au curseur                                #
+        #  - Initialisations nÃ©cessaires au curseur                                #
         set graphe(x1) $origine_x
         set graphe(x2) [expr $origine_x + $largeur]
         set graphe(y1) $origine_y
@@ -1204,7 +1203,7 @@ namespace eval ::TriFWHM {
         $audace(base).graphe_fwhm.fond create line $origine_x [expr $origine_y - ($hauteur + 2)] [expr $origine_x + $largeur + 1] [expr $origine_y - ($hauteur + 2)] -fill $color(red) -tag axe
         $audace(base).graphe_fwhm.fond create line $origine_x $origine_y $origine_x [expr $origine_y - $hauteur -2] -fill yellow -tag axe
 
-        #  - Ecriture des légendes                                                 #
+        #  - Ecriture des lÃ©gendes                                                 #
         $audace(base).graphe_fwhm.fond create text [expr $origine_x + ($largeur / 2)] [expr $hauteur_graphe - 2] -text "FWHM" -anchor s -fill $color(blue)
         $audace(base).graphe_fwhm.fond create text 0 [expr $origine_y - ($hauteur / 2)] -text " $cap_tri(nombre_graphe)\n $cap_tri(images)" -anchor w -fill $color(blue)
         $audace(base).graphe_fwhm.fond create text $origine_x [expr $hauteur_graphe - 2] -text [format "%4.2f" [lindex $extrema 0]] -anchor s -fill $color(blue)
@@ -1216,7 +1215,7 @@ namespace eval ::TriFWHM {
         $audace(base).graphe_fwhm.fond create text $largeur_graphe [expr round($origine_y - (0.75 * ($hauteur + 2)))] -text "75% " -fill $color(red) -anchor e
         $audace(base).graphe_fwhm.fond create text $largeur_graphe [expr round($origine_y - (1.00 * ($hauteur + 2)))] -text "100%" -fill $color(red) -anchor e
 
-        #  - Tracé du curseur                                                      #
+        #  - TracÃ© du curseur                                                      #
         set curseur_x $largeur
         $audace(base).graphe_fwhm.fond create line $curseur_x $hauteur_graphe $curseur_x 0 -fill $color(green) -tag curseur
         set rapport [expr 1.00 * ($curseur_x - $graphe(x1)) / ($graphe(x2) - $graphe(x1))]
@@ -1229,7 +1228,7 @@ namespace eval ::TriFWHM {
         #--- Mise a jour dynamique des couleurs
         ::confColor::applyColor $audace(base).graphe_fwhm
 
-        #  - Attente que la fenêtre soit détruite (procédure FixeFWHM)             #
+        #  - Attente que la fenÃªtre soit dÃ©truite (procÃ©dure FixeFWHM)             #
         tkwait window $audace(base).graphe_fwhm
     }
     #---Fin de Graphique-------------------------------------------------------#
@@ -1237,25 +1236,25 @@ namespace eval ::TriFWHM {
     #--------------------------------------------------------------------------#
     #  TraceCurseur                                                            #
     #--------------------------------------------------------------------------#
-    #  Binding . Gère l'animation du curseur de sélection du FWHM sur les      #
+    #  Binding . GÃ¨re l'animation du curseur de sÃ©lection du FWHM sur les      #
     #   histogrammes                                                           #
     #                                                                          #
-    #  Paramètres d'entrée :                                                   #
-    #  - graphe : coordonnées du graphe                                        #
-    #  - curseur_x : position du curseur de sélection du FWHM                  #
+    #  ParamÃ¨tres d'entrÃ©e :                                                   #
+    #  - graphe : coordonnÃ©es du graphe                                        #
+    #  - curseur_x : position du curseur de sÃ©lection du FWHM                  #
     #  - extrema : une liste contenant le minimum et le maximum des fwhm des   #
     #    images                                                                #
     #  - cx : position du curseur dans le graphe                               #
     #                                                                          #
-    #  Paramètres de sortie :                                                  #
-    #  - valeur_fwhm : valeur du FWHM corresponadant à la position du curseur  #
-    #  - curseur_x : position du curseur de sélection du FWHM                  #
-    #  Nota : curseur_x est à la fois en paramètre d'entrée et de sortie       #
+    #  ParamÃ¨tres de sortie :                                                  #
+    #  - valeur_fwhm : valeur du FWHM corresponadant Ã  la position du curseur  #
+    #  - curseur_x : position du curseur de sÃ©lection du FWHM                  #
+    #  Nota : curseur_x est Ã  la fois en paramÃ¨tre d'entrÃ©e et de sortie       #
     #                                                                          #
     # Algorithme :                                                             #
     #  - Blocage de bout de course : si la souris sort du graphe, le curseur   #
     #   est contraint d'y rester.                                              #
-    #  - Déplacement du curseur                                                #
+    #  - DÃ©placement du curseur                                                #
     #  - Calcul et affichage de la valeur de FWHM correspondante               #
     #--------------------------------------------------------------------------#
     proc TraceCurseur {cx} {
@@ -1265,7 +1264,7 @@ namespace eval ::TriFWHM {
         variable extrema
         variable valeur_fwhm
 
-        # Simplification d'écriture
+        # Simplification d'Ã©criture
         set minimum [lindex $extrema 0]
         set maximum [lindex $extrema 1]
 
@@ -1274,7 +1273,7 @@ namespace eval ::TriFWHM {
         if {$cx < $graphe(x1)} {set cx $graphe(x1)}
         if {$cx > $graphe(x2)} {set cx $graphe(x2)}
 
-        #  - Déplacement du curseur                                                #
+        #  - DÃ©placement du curseur                                                #
         set dx [expr $cx - $curseur_x]
         $audace(base).graphe_fwhm.fond move curseur $dx 0
         set curseur_x $cx
@@ -1293,16 +1292,16 @@ namespace eval ::TriFWHM {
     #--------------------------------------------------------------------------#
     #  Binding . Valide le choix de la valeur du FWHM seuil                    #
     #                                                                          #
-    #  Paramètres d'entrée :                                                   #
-    #  - valeur_fwhm : valeur du FWHM correspondant à la position du curseur   #
+    #  ParamÃ¨tres d'entrÃ©e :                                                   #
+    #  - valeur_fwhm : valeur du FWHM correspondant Ã  la position du curseur   #
     #                                                                          #
-    #  Paramètres de sortie : aucun                                            #
+    #  ParamÃ¨tres de sortie : aucun                                            #
     #                                                                          #
     # Algorithme :                                                             #
     #  - Blocage de toute animation                                            #
     #  - Demande de confirmation du choix du seuil                             #
-    #  - Si la réponse est positive, effacement du graphe et sortie            #
-    #  - Sinon rétablissemnt de l'animation et sortie                          #
+    #  - Si la rÃ©ponse est positive, effacement du graphe et sortie            #
+    #  - Sinon rÃ©tablissemnt de l'animation et sortie                          #
     #--------------------------------------------------------------------------#
     proc FixeFWHM {} {
         global audace
@@ -1316,12 +1315,12 @@ namespace eval ::TriFWHM {
         set texte_message [concat $cap_tri(validation_seuil) [format "%4.2f" $valeur_fwhm] "?"]
         set choix [tk_messageBox -type yesno -default yes -message $texte_message -icon question -title $cap_tri(validation_fwhm) -parent $audace(base)]
 
-        #  - Si la réponse est positive, effacement du graphe et sortie            #
+        #  - Si la rÃ©ponse est positive, effacement du graphe et sortie            #
         if {$choix == "yes"} {
             destroy $audace(base).graphe_fwhm
             update
         } else {
-            #  - Sinon rétablissemnt de l'animation et sortie                          #
+            #  - Sinon rÃ©tablissemnt de l'animation et sortie                          #
             bind $audace(base).graphe_fwhm.fond <Motion> {::TriFWHM::TraceCurseur %x}
         }
     }
@@ -1330,17 +1329,17 @@ namespace eval ::TriFWHM {
     #--------------------------------------------------------------------------#
     #  RecopieImages                                                           #
     #--------------------------------------------------------------------------#
-    #  Recopie les images dont le FWHM est inférieur ou égal au FWHM seuil     #
+    #  Recopie les images dont le FWHM est infÃ©rieur ou Ã©gal au FWHM seuil     #
     #                                                                          #
-    #  Paramètres d'entrée :                                                   #
-    #  - parametres : paramètres des images                                    #
+    #  ParamÃ¨tres d'entrÃ©e :                                                   #
+    #  - parametres : paramÃ¨tres des images                                    #
     #  - fwhm image : tableau des fwhm des images                              #
-    #  - valeur_fwhm : valeur du FWHM correspondant à la position du curseur   #
+    #  - valeur_fwhm : valeur du FWHM correspondant Ã  la position du curseur   #
     #                                                                          #
-    #  Paramètres de sortie : aucun                                            #
+    #  ParamÃ¨tres de sortie : aucun                                            #
     #                                                                          #
     # Algorithme :                                                             #
-    #  - Copie les images dont le FWHM est inférieur ou égal à la valeur seuil #
+    #  - Copie les images dont le FWHM est infÃ©rieur ou Ã©gal Ã  la valeur seuil #
     #--------------------------------------------------------------------------#
     proc RecopieImages {} {
         global audace
@@ -1351,7 +1350,7 @@ namespace eval ::TriFWHM {
 
         Message console "%s %s %s %4.2f %s %s\n" $cap_tri(recopie_1) $parametres(source) $cap_tri(recopie_2) $valeur_fwhm $cap_tri(recopie_3) $parametres(destination)
 
-        #  - Copie les images dont le FWHM est inférieur ou égal à la valeur seuil #
+        #  - Copie les images dont le FWHM est infÃ©rieur ou Ã©gal Ã  la valeur seuil #
         set indice_destination $parametres(indice_destination)
         for {set image 1} {$image <= $parametres(nombre)} {incr image} {
             set source [file join $audace(rep_images) $parametres(source)[expr $image + $parametres(indice_source) - 1]$parametres(extension)]
@@ -1376,37 +1375,37 @@ namespace eval ::TriFWHM {
     #--------------------------------------------------------------------------#
     #  Programme principal                                                     #
     #                                                                          #
-    #  Paramètres d'entrée : aucun                                             #
+    #  ParamÃ¨tres d'entrÃ©e : aucun                                             #
     #                                                                          #
-    #  Paramètres de sortie : aucun                                            #
+    #  ParamÃ¨tres de sortie : aucun                                            #
     #                                                                          #
     # Algorithme :                                                             #
-    #  Effectue la saisie de paramètres                                        #
+    #  Effectue la saisie de paramÃ¨tres                                        #
     #  Si l'utilisateur lance le calcul                                        #
     #  Alors                                                                   #
-    #    Vérifications sur les fichiers                                        #
-    #    Si aucune erreur n'est trouvée                                        #
+    #    VÃ©rifications sur les fichiers                                        #
+    #    Si aucune erreur n'est trouvÃ©e                                        #
     #    Alors                                                                 #
-    #      Si l'utilisateur a sélectionné le mode manuel                       #
+    #      Si l'utilisateur a sÃ©lectionnÃ© le mode manuel                       #
     #      Alors                                                               #
-    #        Recale les images pour pouvoir faciliter le calcul de décalage    #
-    #         et pour pouvoir tracer le cadre de sélection (mode manuel)       #
-    #        Affiche les boutons qui vont permettre de sélectionner les étoiles#
+    #        Recale les images pour pouvoir faciliter le calcul de dÃ©calage    #
+    #         et pour pouvoir tracer le cadre de sÃ©lection (mode manuel)       #
+    #        Affiche les boutons qui vont permettre de sÃ©lectionner les Ã©toiles#
     #         et poursuivre le calcul (mode manuel)                            #
-    #        Si l'utilisateur valide ses sélections                            #
+    #        Si l'utilisateur valide ses sÃ©lections                            #
     #        Alors                                                             #
-    #          Attribue à chaque image un FWHM en fonction de ceux des étoiles #
-    #           sélectionnées (mode manuel)                                    #
+    #          Attribue Ã  chaque image un FWHM en fonction de ceux des Ã©toiles #
+    #           sÃ©lectionnÃ©es (mode manuel)                                    #
     #        Fin                                                               #
     #      Sinon                                                               #
-    #        Attribue à chaque image un FWHM en fonction de ceux des étoiles   #
-    #         sélectionnées (mode automatique)                                 #
+    #        Attribue Ã  chaque image un FWHM en fonction de ceux des Ã©toiles   #
+    #         sÃ©lectionnÃ©es (mode automatique)                                 #
     #      Fin                                                                 #
-    #      Si l'utilisateur avait bien validé ses sélections                   #
+    #      Si l'utilisateur avait bien validÃ© ses sÃ©lections                   #
     #      Alors                                                               #
     #        Calcule l'histogramme des FWHM                                    #
-    #        Dessine l'histogramme des FWHM sous forme normale et cumulée      #
-    #        Recopie les images dont le FWHM est inférieur ou égal au FWHM     #
+    #        Dessine l'histogramme des FWHM sous forme normale et cumulÃ©e      #
+    #        Recopie les images dont le FWHM est infÃ©rieur ou Ã©gal au FWHM     #
     #         seuil                                                            #
     #      Fin                                                                 #
     #  Fin                                                                     #
@@ -1421,7 +1420,7 @@ namespace eval ::TriFWHM {
         Message console "%s %s\n" $cap_tri(titre) $numero_version
         Message console "%s\n" $cap_tri(copyright)
 
-        #  Effectue la récupération et la saisie de paramètres                     #
+        #  Effectue la rÃ©cupÃ©ration et la saisie de paramÃ¨tres                     #
         set demande_arret 0
         RecuperationParametres
         SaisieParametres
@@ -1432,39 +1431,39 @@ namespace eval ::TriFWHM {
 
             Message console "%s %s\n" $cap_tri(selection_mode) $parametres(mode)
 
-            #  Vérifications sur les fichiers                                          #
+            #  VÃ©rifications sur les fichiers                                          #
             set erreur [Verification]
             if {$erreur == 0} {
-                #    Si aucune erreur n'est trouvée                                        #
+                #    Si aucune erreur n'est trouvÃ©e                                        #
                 if {$parametres(mode) == "manuel"} {
-                    #      Si l'utilisateur a sélectionné le mode manuel                       #
-                    #  Recale les images pour pouvoir faciliter le calcul de décalage et pour  #
-                    #   pouvoir tracer le cadre de sélection (mode manuel)                     #
+                    #      Si l'utilisateur a sÃ©lectionnÃ© le mode manuel                       #
+                    #  Recale les images pour pouvoir faciliter le calcul de dÃ©calage et pour  #
+                    #   pouvoir tracer le cadre de sÃ©lection (mode manuel)                     #
                     Recalage
-                    #  Affiche les boutons qui vont permettre de sélectionner les étoiles et   #
+                    #  Affiche les boutons qui vont permettre de sÃ©lectionner les Ã©toiles et   #
                     #   poursuivre le calcul (mode manuel)                                     #
                     AfficheBoutons
                     if {$demande_arret == 0} {
-                        #        Si l'utilisateur valide ses sélections                            #
-                        #  Attribue à chaque image un FWHM en fonction de ceux des étoiles         #
-                        #   sélectionnées (mode manuel)                                            #
+                        #        Si l'utilisateur valide ses sÃ©lections                            #
+                        #  Attribue Ã  chaque image un FWHM en fonction de ceux des Ã©toiles         #
+                        #   sÃ©lectionnÃ©es (mode manuel)                                            #
                         CalculeFWHMManuel
                     } else {
                         Message console "%s\n" $cap_tri(arret_procedure)
                     }
                 } else {
-                    #        Attribue à chaque image un FWHM en fonction de ceux des étoiles   #
-                    #         sélectionnées (mode automatique)                                 #
+                    #        Attribue Ã  chaque image un FWHM en fonction de ceux des Ã©toiles   #
+                    #         sÃ©lectionnÃ©es (mode automatique)                                 #
                     CalculeFWHMAutomatique
                 }
 
                 if {$demande_arret == 0} {
-                    #      Si l'utilisateur avait bien validé ses sélections                   #
+                    #      Si l'utilisateur avait bien validÃ© ses sÃ©lections                   #
                     # Calcule l'histogramme des FWHM                                           #
                     Histogramme
-                    #  Dessine l'histogramme des FWHM sous forme normale et cumulée            #
+                    #  Dessine l'histogramme des FWHM sous forme normale et cumulÃ©e            #
                     Graphique
-                    #  Recopie les images dont le FWHM est inférieur ou égal au FWHM seuil     #
+                    #  Recopie les images dont le FWHM est infÃ©rieur ou Ã©gal au FWHM seuil     #
                     RecopieImages
                 }
             } else {

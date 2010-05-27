@@ -1,6 +1,6 @@
 #
 # Fichier : cfgcgi.tcl
-# Mise a jour $Id: cfgcgi.tcl,v 1.3 2007-12-28 11:20:41 robertdelmas Exp $
+# Mise à jour $Id: cfgcgi.tcl,v 1.4 2010-05-27 06:08:42 robertdelmas Exp $
 #
 
 # --- repertoire de depot des requetes
@@ -21,3 +21,4 @@ if {[info exists audace]==0} {
 # --- liste des utilisateurs autorises
 set req(users) {robert alain}
 set req(passwords) {audela audace}
+

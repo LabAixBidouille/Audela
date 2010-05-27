@@ -2,20 +2,20 @@
 # Fichier origine : ohp_t193.tcl
 # Description : Interface de pilotage du T193 de l'OHP
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: ohp_t193.tcl,v 1.4 2010-01-17 18:07:38 robertdelmas Exp $
+# Mise Ã  jour $Id: ohp_t193.tcl,v 1.5 2010-05-27 06:16:21 robertdelmas Exp $
 #--------------------------------------------------------------------------------
-# Modifications pour le télescope T193 :
+# Modifications pour le tÃ©lescope T193 :
 #-------------------------------------
 # juin 2009 : F.FILLION (OHP/CNRS)
-#           - utilisation du script comme système des coordonnées du
-#             télescope T193 de l'OHP
+#           - utilisation du script comme systÃ¨me des coordonnÃ©es du
+#             tÃ©lescope T193 de l'OHP
 #           - permettra la comparaison avec le programme sous LabWindows
-#           - pourra être utilisé en urgence si problème avec le HP1000
+#           - pourra Ãªtre utilisÃ© en urgence si problÃ¨me avec le HP1000
 #
-# !WARNING!   un bug subsiste: plantage de AudeLA après 15-20 mn le lancement
-#                              du script, fuite mémoire ?
+# !WARNING!   un bug subsiste: plantage de AudeLA aprÃ¨s 15-20 mn le lancement
+#                              du script, fuite mÃ©moire ?
 #________________________________________________________________________________
-# Remarque: exemple de connexion à l'automate du télescope 193 de l'OHP :
+# Remarque: exemple de connexion Ã  l'automate du tÃ©lescope 193 de l'OHP :
 # --------  commande TCL = "::tel::create deltatau tcp -ip 192.168.128.155"       (provisoire : "set audace(telNo) 1")
 #           avec ici l'IP de PMAC (fixe) = 192.168.128.155
 #--------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ global ippmac
 global comm193_name
 
 ##------------------------------------------------------------
-# @brief   namespace client d'affichage des coordonnées
+# @brief   namespace client d'affichage des coordonnÃ©es
 #
 #------------------------------------------------------------
 namespace eval ::clientCoord {
@@ -51,7 +51,7 @@ proc ::clientCoord::run {} {
     #              close $ma_socket
     #              binary scan $reponse ? ??
     #
-    # Si connexion coupée =>  if {[tel$audace(telNo) putread "#5P"] != "0"} { reconnexion... }
+    # Si connexion coupÃ©e =>  if {[tel$audace(telNo) putread "#5P"] != "0"} { reconnexion... }
     ###
     global audace
 
@@ -84,14 +84,14 @@ proc ::clientCoord::run {} {
 
     set audace(posobs,observateur,gps) "GPS 5.7157 E 43.931892 633.9"
     set ohp_name "OHP"
-    set pos_obs  " Latitude: 43°55'54.8''  Longitude: 05°42'56.5''  Altitude: 633.9 m"
+    set pos_obs  " Latitude: 43Â°55'54.8''  Longitude: 05Â°42'56.5''  Altitude: 633.9 m"
     set ippmac "192.168.128.155"
     set comm193_name "DeltaTau-PMAC-T193"
 
-    #--- déconnexion des clients AudeLA de la PMAC
+    #--- dÃ©connexion des clients AudeLA de la PMAC
     ::clientCoord::deconnecterServeurCoordonnees
 
-    #--- connexion à la PMAC
+    #--- connexion Ã  la PMAC
     ::clientCoord::connecterServeurCoordonnees
 
     #--- Create the toplevel window
@@ -115,7 +115,7 @@ proc ::clientCoord::run {} {
     set paramt193(ohp_t193,adinit)  ""
     set paramt193(ohp_t193,decinit) ""
     #set paramt193(ohp_t193,adinit)  00h00m00s
-    #set paramt193(ohp_t193,decinit) +00°00'00\"
+    #set paramt193(ohp_t193,decinit) +00Â°00'00\"
     set paramt193(ohp_t193,fichierlog) codeurs_t193.log
 
     #--- titre "T193"
@@ -125,7 +125,7 @@ proc ::clientCoord::run {} {
       -font $paramt193(fonttitle) -text "$caption(ohp_t193,titre)"
     pack $base.f.lab_titre -anchor c
 
-    #--- données GPS OHP - Latitude - Longitude - Altitude
+    #--- donnÃ©es GPS OHP - Latitude - Longitude - Altitude
     label $base.f.lab_ohp \
       -bg $paramt193(color,back) -fg $paramt193(color,text) \
       -font $paramt193(font4) \
@@ -152,7 +152,7 @@ proc ::clientCoord::run {} {
     pack $base.f.lab_tu -fill none -pady 2 -anchor w
     pack $base.f.lab_tsl -fill none -pady 2 -anchor w
 
-    #--- coordonnées equatoriales : Alpha et Delta
+    #--- coordonnÃ©es equatoriales : Alpha et Delta
     label $base.f.lab_ad \
       -bg $paramt193(color,back) -fg $paramt193(color,text) \
       -font $paramt193(font)
@@ -206,7 +206,7 @@ proc ::clientCoord::run {} {
 
     pack $base.f -fill both
 
-    #--- lancement de la boucle de calcul des coordonnées
+    #--- lancement de la boucle de calcul des coordonnÃ©es
     ::clientCoord::ohp_t193_calcul
 }
 
@@ -219,7 +219,7 @@ proc ::clientCoord::log_coord { message } {
     close $f
 }
 
-### Procédures client du serveur de coordonnées :
+### ProcÃ©dures client du serveur de coordonnÃ©es :
 
 proc ::clientCoord::deconnecterServeurCoordonnees {} {
     global audace
@@ -227,8 +227,8 @@ proc ::clientCoord::deconnecterServeurCoordonnees {} {
     global telPMAC193 comm193_name
 
     if { [ ::tel::list ] != "" } {
-       #on delete toutes les connexions à la PMAC DeltaTau
-       ::console::affiche_resultat "\nsupression de toutes les connexions à la PMAC du télescope T193\n"
+       #on delete toutes les connexions Ã  la PMAC DeltaTau
+       ::console::affiche_resultat "\nsupression de toutes les connexions Ã  la PMAC du tÃ©lescope T193\n"
        #log_coord "supression de toutes les connexions"
        foreach telNo [ ::tel::list ] {
           set tel_name [tel$telNo name]
@@ -247,8 +247,8 @@ proc ::clientCoord::connecterServeurCoordonnees {} {
     global ippmac
     global telPMAC193
 
-    ::console::affiche_resultat "\nconnexion à la PMAC du télescope T193\n"
-    #log_coord "connexion à la PMAC du télescope T193"
+    ::console::affiche_resultat "\nconnexion Ã  la PMAC du tÃ©lescope T193\n"
+    #log_coord "connexion Ã  la PMAC du tÃ©lescope T193"
     set telPMAC193 [::tel::create deltatau tcp -ip $ippmac]
     set audace(telNo) $telPMAC193
 }
@@ -286,14 +286,14 @@ proc ::clientCoord::ohp_t193_calcul { } {
 
     #--- test de communication
     if {[tel$audace(telNo) testcom] == 1 } {
-       #log_coord "échec connexion"
+       #log_coord "Ã©chec connexion"
        $base.f.lab_ad configure -text   "$caption(ohp_t193,ad)   -"
        $base.f.lab_dec configure -text "$caption(ohp_t193,dec)   -"
        $base.f.lab_tu configure    -text "$caption(ohp_t193,tu)   -"
        $base.f.lab_tsl configure   -text "$caption(ohp_t193,tsl)   -"
        $base.f.lab_ha configure    -text "$caption(ohp_t193,angle_horaire)   -"
        $base.f.lab_altaz configure -text "$pos_obs\t\t$caption(ohp_t193,azimut) -\t$caption(ohp_t193,hauteur) -"
-       tk_messageBox -message "Erreur de connexion à la PMAC." -title "PMAC error" -icon question -type ok
+       tk_messageBox -message "Erreur de connexion Ã  la PMAC." -title "PMAC error" -icon question -type ok
        return
     }
 
@@ -306,10 +306,10 @@ proc ::clientCoord::ohp_t193_calcul { } {
     set paramt193(ra)  [mc_angle2hms [lindex $res 0] 360 zero 2 auto string]
     set paramt193(dec) [mc_angle2dms [lindex $res 1] 90 zero 1 + string]
 
-    #--- coordonnées brutes (sans correction du modèle de pointage)
+    #--- coordonnÃ©es brutes (sans correction du modÃ¨le de pointage)
     $base.f.lab_coord0 configure -text "$caption(ohp_t193,ad0) $paramt193(ra0)\t$caption(ohp_t193,dec0) $paramt193(dec0)"
 
-    #--- coordonnées corrigées avec le modèle de pointage
+    #--- coordonnÃ©es corrigÃ©es avec le modÃ¨le de pointage
     if {[llength $modele]==0} {
        set alpha "n.c."
        set delta "n.c."
@@ -317,7 +317,7 @@ proc ::clientCoord::ohp_t193_calcul { } {
        $base.f.lab_dec configure -text "$caption(ohp_t193,dec)   n.c."
     } else {
        set alpha "[string range $paramt193(ra) 0 2] [string range $paramt193(ra) 3 5] [string range $paramt193(ra) 6 7].[string range $paramt193(ra) 9 10]s"
-       set delta "[string range $paramt193(dec) 0 2]°  [string range $paramt193(dec) 4 5]'   [string range $paramt193(dec) 7 8].[string range $paramt193(dec) 10 10]0''"
+       set delta "[string range $paramt193(dec) 0 2]Â°  [string range $paramt193(dec) 4 5]'   [string range $paramt193(dec) 7 8].[string range $paramt193(dec) 10 10]0''"
        $base.f.lab_ad configure -text "$caption(ohp_t193,ad)   $alpha"
        $base.f.lab_dec configure -text "$caption(ohp_t193,dec) $delta"
     }
@@ -329,13 +329,13 @@ proc ::clientCoord::ohp_t193_calcul { } {
     set tum [format "%02d" [lindex $tu 4]]
     set tus [format "%05.2f" [lindex $tu 5]]
 
-    #--- Temps TS (temps sidéral local)
+    #--- Temps TS (temps sidÃ©ral local)
     set tsl  [mc_date2lst $now $paramt193(home)]
     set tslh [format "%02d" [lindex $tsl 0]]
     set tslm [format "%02d" [lindex $tsl 1]]
     set tsls [format "%05.2f" [lindex $tsl 2]]
 
-    #--- Angle horaire, Azimut et Hauteur du télescope
+    #--- Angle horaire, Azimut et Hauteur du tÃ©lescope
     set res [mc_radec2altaz "$paramt193(ra)" "$paramt193(dec)" "$paramt193(home)" $tu]
     set az  [format "%06.2f" [lindex $res 0]]
     set alt [format "%+06.2f" [lindex $res 1]]
@@ -346,11 +346,11 @@ proc ::clientCoord::ohp_t193_calcul { } {
     set angle_h [mc_angle2hms $ha 360 zero 2 auto string]
     set angle_h "[string range $angle_h 0 2] [string range $angle_h 3 5] [string range $angle_h 6 7].[string range $angle_h 9 10]s"
 
-    #--- Affichage temps (TU, TSL) et coordonnées (ALPHA, DELTA, ANGLE HORAIRE, Azimut, hauteur du télescope)
+    #--- Affichage temps (TU, TSL) et coordonnÃ©es (ALPHA, DELTA, ANGLE HORAIRE, Azimut, hauteur du tÃ©lescope)
     $base.f.lab_tu configure    -text "$caption(ohp_t193,tu)   ${tuh}h ${tum}m ${tus}s"
     $base.f.lab_tsl configure   -text "$caption(ohp_t193,tsl)   ${tslh}h ${tslm}m ${tsls}s"
     $base.f.lab_ha configure    -text "$caption(ohp_t193,angle_horaire)   $angle_h"
-    $base.f.lab_altaz configure -text "$pos_obs\t\t$caption(ohp_t193,azimut) ${az}°\t$caption(ohp_t193,hauteur) ${alt}°"
+    $base.f.lab_altaz configure -text "$pos_obs\t\t$caption(ohp_t193,azimut) ${az}Â°\t$caption(ohp_t193,hauteur) ${alt}Â°"
 
     #--- An infinite loop to change the language interactively
     after 250 ::ohp_t193_calcul
@@ -360,3 +360,4 @@ proc ::clientCoord::ohp_t193_calcul { } {
 }
 
 ::clientCoord::run
+

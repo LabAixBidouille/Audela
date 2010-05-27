@@ -2,7 +2,7 @@
 # Fichier : correctionfc.tcl
 # Description : Fonction pour nettoyer mes images (portions de lignes verticales mauvaises)
 # Auteur : Francois COCHARD
-# Mise a jour $Id: correctionfc.tcl,v 1.3 2006-08-12 21:00:28 robertdelmas Exp $
+# Mise Ã  jour $Id: correctionfc.tcl,v 1.4 2010-05-27 06:09:44 robertdelmas Exp $
 #
 
 proc corrigefc { } {
@@ -18,7 +18,7 @@ set taille_Y [ lindex [ buf$audace(bufNo) getkwd NAXIS2 ] 1 ]
 if { $NAXIS == "2" } {
    tk_messageBox -title "Type d'image" -type ok -message "C'est une image Noir & Blanc."
 } elseif { $NAXIS == "3" } {
-   tk_messageBox -title "Type d'image" -type ok -message "Correction cosmétique impossible : C'est une image Couleur."
+   tk_messageBox -title "Type d'image" -type ok -message "Correction cosmÃ©tique impossible : C'est une image Couleur."
    return
 }
 
@@ -32,15 +32,15 @@ if { $taille_X == "384" && $taille_Y == "256" } {
    tk_messageBox -title "Recherche du binning" -type ok -message "On est en binning 1x1."
 }
 if { $bin == "0" } {
-   tk_messageBox -title "Attention" -type ok -message "Correction cosmétique impossible : Format inconnu.\n"
+   tk_messageBox -title "Attention" -type ok -message "Correction cosmÃ©tique impossible : Format inconnu.\n"
    return
 }
 
 # Il y a trois defauts a corriger sur mon Kaf-0400
 # Valable uniquement si les images sont faites avec AudeLA et sans aucun miroir
-# La colonne de gauche (bin 1 : X=97, y=231 à 512 - bin2 : X=50, y=116 à 256)
-# La colonne du milieu (bin 1 : X=310, y=453 à 512 - bin2 : X=156, y=227 à 256)
-# La colonne de droite (bin 1 : X=480, y=387 à 512 - bin2 : X=241, y=193 à 256)
+# La colonne de gauche (bin 1 : X=97, y=231 Ã  512 - bin2 : X=50, y=116 Ã  256)
+# La colonne du milieu (bin 1 : X=310, y=453 Ã  512 - bin2 : X=156, y=227 Ã  256)
+# La colonne de droite (bin 1 : X=480, y=387 Ã  512 - bin2 : X=241, y=193 Ã  256)
 
 #--- Image en binning 1x1
 if { $bin == "1" } {
@@ -64,7 +64,7 @@ if { $bin == "1" } {
    }
    #--- Correction terminee
    ::console::affiche_resultat "\n"
-   ::console::affiche_resultat "Correction cosmétique terminée. \n"
+   ::console::affiche_resultat "Correction cosmÃ©tique terminÃ©e. \n"
    ::console::affiche_resultat "\n"
 #--- Image en binning 2x2
 } elseif { $bin == "2" } {
@@ -88,7 +88,7 @@ if { $bin == "1" } {
    }
    #--- Correction terminee
    ::console::affiche_resultat "\n"
-   ::console::affiche_resultat "Correction cosmétique terminée. \n"
+   ::console::affiche_resultat "Correction cosmÃ©tique terminÃ©e. \n"
    ::console::affiche_resultat "\n"
 }
 

@@ -1,27 +1,27 @@
 #
-# Détection
+# DÃ©tection
 #
-# Date de mise à jour : 23 juin 2008
+# Date de mise Ã  jour : 23 juin 2008
 #
 # Pour contacter l'auteur : vincentcotrez@yahoo.fr
 #
-# Enchaîne une série d'acquisitions sur les champs définis dans le fichier obj_detection.txt
-# Les images sont enregistrées dans le répertoire images
-# Le fichier obj_detection.txt doit se trouver dans le répertoire scripts/detection
+# EnchaÃ®ne une sÃ©rie d'acquisitions sur les champs dÃ©finis dans le fichier obj_detection.txt
+# Les images sont enregistrÃ©es dans le rÃ©pertoire images
+# Le fichier obj_detection.txt doit se trouver dans le rÃ©pertoire scripts/detection
 
 # Il contient les lignes :
 
-# binning 1                : indiquez 1,2,... pour définir le binning d'acquisition des images
+# binning 1                : indiquez 1,2,... pour dÃ©finir le binning d'acquisition des images
 # waitbeforeexposure 10    : indiquez le temps d'attente en secondes avant chaque acquisition
 # timeexposure 30          : indiquez le temps d'exposition des images en secondes
-# numberexposure 2         : indiquez le nombre d'acquisition à réaliser sur chaque champ pointé
-# iteration 2              : indiquez le nombre de séries de pointage des champs, si vous indiquez 2 par exemple, le télescope pointera les champs A,B,C puis de nouveau A,B,C une seconde fois
-# waitbeforeserie 10       : indiquez le temps d'attente en secondes entre chaque série
-# headingname detect031010 : indiquez l'en-tête des noms des fichiers images, si vous indiquez "detect031010" par exemple, le premier fichier image portera le nom detect031010_1231_N0530_1_1.xxx : detect031010 est l'en-tête, 1231 est la coordonnées en alpha (12h31m) N0530 est la coordonnées en delta (+05°30') _1 est le numéro de la série, _1 et le numéro de la pose dans la série
+# numberexposure 2         : indiquez le nombre d'acquisition Ã  rÃ©aliser sur chaque champ pointÃ©
+# iteration 2              : indiquez le nombre de sÃ©ries de pointage des champs, si vous indiquez 2 par exemple, le tÃ©lescope pointera les champs A,B,C puis de nouveau A,B,C une seconde fois
+# waitbeforeserie 10       : indiquez le temps d'attente en secondes entre chaque sÃ©rie
+# headingname detect031010 : indiquez l'en-tÃªte des noms des fichiers images, si vous indiquez "detect031010" par exemple, le premier fichier image portera le nom detect031010_1231_N0530_1_1.xxx : detect031010 est l'en-tÃªte, 1231 est la coordonnÃ©es en alpha (12h31m) N0530 est la coordonnÃ©es en delta (+05Â°30') _1 est le numÃ©ro de la sÃ©rie, _1 et le numÃ©ro de la pose dans la sÃ©rie
 
-# Les lignes suivantes renseignent les coordonnées des champs à pointer, par exemple : 12 31 +05 30 pour 12h31' 05°30' Nord (indiquez + pour Nord et - pour Sud)
-# Une ligne de coordonnées précédée d'un caractère '*' sera pointée mais aucune acquisition ne sera réalisée sur ce champ (exemple : * 21 41 +05 10)
-# Une ligne de coordonnées peut comporter des champs supplémentaires : binning, time exposure, number exposures et heading name. Dans ce cas, pour ce champ, ce sont ces paramètres qui sont pris en compte à la place des paramètres par défaut décrits ci-dessus (exemple : 01 49 +67 39 1 10 2 SAO12000, pointe champ 01h49 +67°39 binning=1 timeexposure=10 numberexposure=2 headingname=SAO12000)
+# Les lignes suivantes renseignent les coordonnÃ©es des champs Ã  pointer, par exemple : 12 31 +05 30 pour 12h31' 05Â°30' Nord (indiquez + pour Nord et - pour Sud)
+# Une ligne de coordonnÃ©es prÃ©cÃ©dÃ©e d'un caractÃ¨re '*' sera pointÃ©e mais aucune acquisition ne sera rÃ©alisÃ©e sur ce champ (exemple : * 21 41 +05 10)
+# Une ligne de coordonnÃ©es peut comporter des champs supplÃ©mentaires : binning, time exposure, number exposures et heading name. Dans ce cas, pour ce champ, ce sont ces paramÃ¨tres qui sont pris en compte Ã  la place des paramÃ¨tres par dÃ©faut dÃ©crits ci-dessus (exemple : 01 49 +67 39 1 10 2 SAO12000, pointe champ 01h49 +67Â°39 binning=1 timeexposure=10 numberexposure=2 headingname=SAO12000)
 
 # Consultez le fichier 'obj_detection.txt' pour un exemple de programmation
 
@@ -33,7 +33,7 @@ global audace
 
 source [file join $audace(rep_scripts) detection detection.cap]
 
-# Lignes en-tête
+# Lignes en-tÃªte
 set numligne_binning 1
 set numligne_waitbeforeexposure 2
 set numligne_timeexposure 3
@@ -42,7 +42,7 @@ set numligne_iteration 5
 set numligne_waitbeforeserie 6
 set numligne_headingname 7
 
-# Première ligne contenant des coordonnées
+# PremiÃ¨re ligne contenant des coordonnÃ©es
 set numligne_coord1 8
 
 set entete_ligne_console "# "
@@ -50,18 +50,18 @@ set entete_ligne_console "# "
 #--------------------------------------------------------------------------#
 #  Message                                                                 #
 #--------------------------------------------------------------------------#
-#  Permet l'affichage de messages formatés dans la Console                 #
+#  Permet l'affichage de messages formatÃ©s dans la Console                 #
 #                                                                          #
-#  Paramètres d'entrée :                                                   #
+#  ParamÃ¨tres d'entrÃ©e :                                                   #
 #  - niveau :                                                              #
 #     console : affichage dans la Console                                  #
 #     test : mode debug                                                    #
 #                                                                          #
-# Paramètres de sortie : Aucun                                             #
+# ParamÃ¨tres de sortie : Aucun                                             #
 #                                                                          #
 # Algorithme :                                                             #
-#  si niveau Console, affichage, puis attente que toutes les tâches soient #
-#  éxécutées                                                               #
+#  si niveau Console, affichage, puis attente que toutes les tÃ¢ches soient #
+#  Ã©xÃ©cutÃ©es                                                               #
 #--------------------------------------------------------------------------#
 proc Message {niveau args} {
    switch -exact -- $niveau {
@@ -81,7 +81,7 @@ set input [ open "[ file join $audace(rep_scripts) detection obj_detection.txt ]
 set contents [split [read $input] \n]
 close $input
 
-# Lecture des paramètres d'acquisition (les premières lignes du fichier)
+# Lecture des paramÃ¨tres d'acquisition (les premiÃ¨res lignes du fichier)
 
 set numligne 0
 foreach obj $contents {
@@ -137,7 +137,7 @@ foreach obj $contents {
 # Pointage et acquisition
 
 for {set i 1} {$i<=$iterationdef} {incr i} {
-   #waitbeforeserie (pas de wait before serie avant la première série)
+   #waitbeforeserie (pas de wait before serie avant la premiÃ¨re sÃ©rie)
    if {$i>1 & $waitbeforeseriedef!=0} {
       Message console "${entete_ligne_console}$caption(detection,wait_before_serie) ${waitbeforeseriedef} $caption(detection,seconds)...\n"
       after [expr $waitbeforeseriedef*1000]
@@ -154,18 +154,18 @@ for {set i 1} {$i<=$iterationdef} {incr i} {
             set ram [lindex $obj 1]
             set decd [lindex $obj 2]
             set decm [lindex $obj 3]
-            # Les champs suivants ne sont peut être pas renseignés (prise en compte des paramètres de l'en-tête)
+            # Les champs suivants ne sont peut Ãªtre pas renseignÃ©s (prise en compte des paramÃ¨tres de l'en-tÃªte)
             set binningspec [lindex $obj 4]
             set timeexposurespec [lindex $obj 5]
             set numberexposurespec [lindex $obj 6]
             set headingnamespec [lindex $obj 7]
          } else {
-            # Ligne précédée d'un caractère "*"
+            # Ligne prÃ©cÃ©dÃ©e d'un caractÃ¨re "*"
             set rah [lindex $obj 1]
             set ram [lindex $obj 2]
             set decd [lindex $obj 3]
             set decm [lindex $obj 4]
-            # Les champs suivants ne sont peut être pas renseignés (prise en compte des paramètres de l'en-tête)
+            # Les champs suivants ne sont peut Ãªtre pas renseignÃ©s (prise en compte des paramÃ¨tres de l'en-tÃªte)
             set binningspec [lindex $obj 5]
             set timeexposurespec [lindex $obj 6]
             set numberexposurespec [lindex $obj 7]
@@ -176,13 +176,13 @@ for {set i 1} {$i<=$iterationdef} {incr i} {
          set dec "${decd}d${decm}m"
 
          if {($binningspec!="") & ($timeexposurespec!="") & ($numberexposurespec!="") & ($headingnamespec!="")} {
-            # On prend les paramètres spécifiques à la ligne
+            # On prend les paramÃ¨tres spÃ©cifiques Ã  la ligne
             set binning $binningspec;
             set timeexposure $timeexposurespec;
             set numberexposure $numberexposurespec;
             set headingname $headingnamespec;
          } else {
-            # On prend les paramètres de la ligne
+            # On prend les paramÃ¨tres de la ligne
             set binning $binningdef;
             set timeexposure $timeexposuredef;
             set numberexposure $numberexposuredef;
@@ -199,7 +199,7 @@ for {set i 1} {$i<=$iterationdef} {incr i} {
             Message console "${entete_ligne_console}$caption(detection,goto_position) : ${ra} ${dec} ($caption(detection,serie) ${i})\n"
             tel$audace(telNo) radec goto [list $ra $dec]
 
-            # La ligne n'est pas précédée d'un caractère "*", on lance les acquisitions
+            # La ligne n'est pas prÃ©cÃ©dÃ©e d'un caractÃ¨re "*", on lance les acquisitions
             if {[lindex $obj 0]!="*"} {
                for {set j 1} {$j<=$numberexposure} {incr j} {
                   if {$waitbeforeexposuredef!=0} {
