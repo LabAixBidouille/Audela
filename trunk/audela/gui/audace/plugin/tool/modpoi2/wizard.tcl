@@ -2,7 +2,7 @@
 # Fichier : wizard.tcl
 # Description : pipeline de pointage des etoiles
 # Auteur : Michel Pujol
-# Mise à jour $Id: wizard.tcl,v 1.4 2010-05-26 06:34:39 robertdelmas Exp $
+# Mise à jour $Id: wizard.tcl,v 1.5 2010-05-28 22:48:57 robertdelmas Exp $
 #
 
 namespace eval ::modpoi2::wizard {
@@ -606,8 +606,8 @@ proc ::modpoi2::wizard::modpoi_wiz2 { } {
       grid  $private(g,base).magnitude.minLabel -in [$private(g,base).magnitude getframe] -row 0 -column 0 -sticky w
       #--- Entry min magnitude
       entry $private(g,base).magnitude.minValue -width 8 -justify center \
-         -textvariable ::modpoi2::wizard::private(minMagnitude)
-      ###   -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double -3.0 20.0 }
+         -textvariable ::modpoi2::wizard::private(minMagnitude) \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double -3.0 20.0 }
 
       grid  $private(g,base).magnitude.minValue -in [$private(g,base).magnitude getframe] -row 0 -column 1 -sticky w
       #--- Label max magnitude
@@ -615,8 +615,8 @@ proc ::modpoi2::wizard::modpoi_wiz2 { } {
       grid  $private(g,base).magnitude.maxLabel -in [$private(g,base).magnitude getframe] -row 1 -column 0 -sticky w
       #---  Entry max magnitude
       entry $private(g,base).magnitude.maxValue -width 8 -justify center \
-         -textvariable ::modpoi2::wizard::private(maxMagnitude)
-      ###   -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double -3.0 20.0 }
+         -textvariable ::modpoi2::wizard::private(maxMagnitude) \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double -3.0 20.0 }
       grid  $private(g,base).magnitude.maxValue -in [$private(g,base).magnitude getframe] -row 1 -column 1 -sticky w
    pack $private(g,base).magnitude -side top -fill x -expand 0
 
