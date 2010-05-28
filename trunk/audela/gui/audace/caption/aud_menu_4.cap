@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_4.cap
-# Mise a jour $Id: aud_menu_4.cap,v 1.14 2010-05-28 07:02:25 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_4.cap,v 1.15 2010-05-28 07:04:26 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -24,7 +24,7 @@ set caption(audace,menu,ond_mexicain)                   "Mexican Hat Type Wavele
 set caption(audace,menu,log)                            "Logarithm"
 set caption(audace,menu,tfd)                            "Discrete Fourier Transform"
 set caption(audace,menu,tfdi)                           "Inverse Discrete Fourier Transform"
-set caption(audace,menu,acorr)                          "Auto-corrélation"
+set caption(audace,menu,acorr)                          "Auto-correlation"
 set caption(audace,menu,icorr)                          "Cross-correlation"
 set caption(audace,menu,convolution)                    "Convolution"
 
