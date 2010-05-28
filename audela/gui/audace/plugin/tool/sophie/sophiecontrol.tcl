@@ -2,7 +2,7 @@
 # @file     sophiecontrol.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecontrol.tcl,v 1.42 2010-05-23 16:19:59 michelpujol Exp $
+# @version  $Id: sophiecontrol.tcl,v 1.43 2010-05-28 23:12:53 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -27,7 +27,6 @@ proc ::sophie::control::run { visuNo tkbase } {
    if { ! [ info exists ::conf(sophie,controlWindowPosition) ] } { set ::conf(sophie,controlWindowPosition) "430x540+580+160" }
 
    #--- Initialisation de variables locales
-   set private(visuNo)                          $visuNo
    set private(positionEtoileX)                 ""
    set private(positionEtoileY)                 ""
    set private(indicateursFwhmX)                ""
@@ -1733,20 +1732,23 @@ proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX 
 
    #--- j'ajoute la valeur le graphe sophieEcartEtoileX
    if { [::sophieEcartEtoileX length] >= $private(vectorLength) } {
-      set private(alphaQuadraticSum) [expr $private(alphaQuadraticSum) - [::sophieEcartEtoileX index 0] * [::sophieEcartEtoileX index 0]]
       #--- je supprime le point le plus ancien
+      set private(alphaSum) [expr $private(alphaSum) - [::sophieEcartEtoileX index 0]]
+      set private(alphaQuadraticSum) [expr $private(alphaQuadraticSum) - [::sophieEcartEtoileX index 0] * [::sophieEcartEtoileX index 0]]
       ::sophieEcartEtoileX delete 0
    }
    ::sophieEcartEtoileX append $starDx
+   set private(alphaSum) [expr $private(alphaSum) + $starDx]
    set private(alphaQuadraticSum) [expr $private(alphaQuadraticSum) + $starDx * $starDx]
 
    #--- j'ajoute la valeur le graphe sophieEcartEtoileY
    if { [::sophieEcartEtoileY length] >= $private(vectorLength) } {
-      set private(deltaQuadraticSum) [expr $private(deltaQuadraticSum) - [::sophieEcartEtoileY index 0] * [::sophieEcartEtoileY index 0] ]
       #--- je supprime le point le plus ancien
+      set private(deltaSum) [expr $private(deltaSum) - [::sophieEcartEtoileY index 0] ]
       ::sophieEcartEtoileY delete 0
    }
    ::sophieEcartEtoileY append $starDy
+   set private(deltaSum) [expr $private(deltaSum) + $starDy]
    set private(deltaQuadraticSum) [expr $private(deltaQuadraticSum) + $starDy * $starDy]
 
    #--- j'ajoute la valeur le graphe alphaCorrection
@@ -1765,22 +1767,26 @@ proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX 
 
    #--- j'affiche le RMS dans le titre de la frame "ecart etoile/consigne"
    if { [::sophieEcartEtoileX length] != 0 } {
+      set alphaMoy [expr $private(alphaSum)/[::sophieEcartEtoileX length] ]
       set alphaRms [expr sqrt($private(alphaQuadraticSum)/[::sophieEcartEtoileX length]) ]
    } else {
+      set alphaMoy 0
       set alphaRms 0
    }
    if { [::sophieEcartEtoileY length] != 0 } {
+      set deltaMoy [expr $private(deltaSum)/[::sophieEcartEtoileY length] ]
       set deltaRms [expr sqrt($private(deltaQuadraticSum)/[::sophieEcartEtoileY length]) ]
    } else {
+      set deltaMoy 0
       set deltaRms 0
    }
-   set title [format "$::caption(sophie,ecartEtoile)  RMS alpha=%6.2f  RMS Delta=%6.2f %s" $alphaRms $deltaRms $::caption(sophie,arcsec)]
+   set title [format "$::caption(sophie,ecartEtoile) Alpha MOY/RMS=%6.2f/%6.2f  Delta MOY/RMS=%6.2f/%6.2f %s" $alphaMoy $alphaRms $deltaMoy $deltaRms $::caption(sophie,arcsec)]
    $frm.guidage.ecarts configure -text $title
 
 
    #--- je mets a jour les logs des ecarts si le guidage est activé
    if { [$frm.voyant.guidage_color_invariant cget -bg ] ==  $private(activeColor) } {
-      ::sophie::histogram::writeGuidingInformation $private(visuNo) \
+      ::sophie::histogram::writeGuidingInformation \
          $private(ecartEtoileX) $private(ecartEtoileY)\
          $private(alphaCorrection) $private(deltaCorrection) \
          $::audace(telescope,getra) $::audace(telescope,getdec)
@@ -1918,6 +1924,9 @@ proc ::sophie::control::resetGuideVector {  } {
       ::sophieCorrectionDelta delete 0:end
    }
 
+   set private(alphaSum) 0
+   set private(deltaSum) 0
+   set private(deltaQuadraticSum) 0
    set private(alphaQuadraticSum) 0
    set private(deltaQuadraticSum) 0
 
@@ -2068,7 +2077,7 @@ proc ::sophie::control::showHistogram { visuNo } {
    variable private
 
    ::sophie::histogram::run $visuNo
-   ::sophie::histogram::displayData  $visuNo
+   ::sophie::histogram::displayData $visuNo [::sophie::histogram::getFileName]
 
 }
 
