@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_4.cap
-# Mise a jour $Id: aud_menu_4.cap,v 1.13 2010-05-25 19:04:21 jacquesmichelet Exp $
+# Mise a jour $Id: aud_menu_4.cap,v 1.14 2010-05-28 07:02:25 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -24,7 +24,7 @@ set caption(audace,menu,ond_mexicain)                   "Mexican Hat Type Wavele
 set caption(audace,menu,log)                            "Logarithm"
 set caption(audace,menu,tfd)                            "Discrete Fourier Transform"
 set caption(audace,menu,tfdi)                           "Inverse Discrete Fourier Transform"
-set caption(audace,menu,acorr)                          "Auto-correlation"
+set caption(audace,menu,acorr)                          "Auto-corrélation"
 set caption(audace,menu,icorr)                          "Cross-correlation"
 set caption(audace,menu,convolution)                    "Convolution"
 
@@ -91,8 +91,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,log)                         "Logarithme"
    set caption(audace,menu,tfd)                         "Transformée de Fourier Discrète"
    set caption(audace,menu,tfdi)                        "Transformée de Fourier Discrète inverse"
-   set caption(audace,menu,acorr)                       "Auto-correlation"
-   set caption(audace,menu,icorr)                       "Inter-correlation"
+   set caption(audace,menu,acorr)                       "Auto-corrélation"
+   set caption(audace,menu,icorr)                       "Inter-corrélation"
    set caption(audace,menu,convolution)                 "Convolution"
 
    set caption(traiteFilters,image_affichee)            "Sur l'image affichée"
@@ -127,7 +127,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,coef_invalides)            "Coefficients invalides."
 
    set caption(traiteFilters,tfd_sortie1)               "Image de sortie (module ou p. réelle) :"
-   set caption(traiteFilters,tfd_sortie2)               "Image de sortie (arg. ou p. imag. :"
+   set caption(traiteFilters,tfd_sortie2)               "Image de sortie (arg. ou p. imag.) :"
    set caption(traiteFilters,tfd_entree1)               "Image d'entrée (module ou p. réelle) :"
    set caption(traiteFilters,tfd_entree2)               "Image d'entrée (arg. ou p. imag.) :"
    set caption(traiteFilters,icorr_entree1)             "Image d'entrée 1 :"
