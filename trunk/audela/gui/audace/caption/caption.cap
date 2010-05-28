@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.77 2010-05-27 22:18:54 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.78 2010-05-28 15:32:14 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -20,6 +20,7 @@ set caption(audace,port_com_dispo)                    "Available COM Ports:"
 set caption(audace,pas_port_com)                      "No Port"
 
 set caption(audace,titre)                             "Aud'ACE"
+set caption(audace,tool)                              "Tool:"
 
 set caption(console,titre)                            "Terminal"
 set caption(console,debug)                            "Debug"
@@ -97,6 +98,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,pas_port_com)                   "Pas de port"
 
    set caption(audace,titre)                          "Aud'ACE"
+   set caption(audace,tool)                           "Outil :"
 
    set caption(console,titre)                         "Console"
    set caption(console,debug)                         "Débug"
@@ -174,6 +176,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,pas_port_com)                   "Nessuna porta"
 
    set caption(audace,titre)                          "Aud'ACE"
+   set caption(audace,tool)                           "Accessorio:"
 
    set caption(console,titre)                         "Console"
    set caption(console,debug)                         "Debug"
@@ -251,6 +254,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,pas_port_com)                   "No hay puerto"
 
    set caption(audace,titre)                          "Aud'ACE"
+   set caption(audace,tool)                           "Herramienta:"
 
    set caption(console,titre)                         "Consola"
    set caption(console,debug)                         "Depurar"
@@ -328,6 +332,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,pas_port_com)                   "Kein Port"
 
    set caption(audace,titre)                          "Aud'ACE"
+   set caption(audace,tool)                           "Gerät:"
 
    set caption(console,titre)                         "Konsole"
    set caption(console,debug)                         "Debug"
@@ -405,6 +410,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,pas_port_com)                   "Sem porta"
 
    set caption(audace,titre)                          "Aud'ACE"
+   set caption(audace,tool)                           "Ferramenta:"
 
    set caption(console,titre)                         "Consola"
    set caption(console,debug)                         "Debug"
@@ -460,7 +466,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,fermeture_impossible)         "Impossível parar Aud'ACE devido a uma operação em curso na ferramenta: %s"
    set caption(confVisu,fermeture_outil_impossible)   "Impossível parar %s porque uma operação está em curso."
    set caption(confVisu,label_1)                      "Limiares RGB"
-   set caption(confVisu,label_2)                      "Limiares inferiores"
+  set caption(confVisu,label_2)                      "Limiares inferiores"
    set caption(confVisu,label_3)                      "Limiares superiores"
    set caption(confVisu,msg)                          "O cabeçalho FITS não contém as palavras-chave necessárias."
 
@@ -482,6 +488,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,pas_port_com)                   "Ingen port!"
 
    set caption(audace,titre)                          "Aud'ACE"
+   set caption(audace,tool)                           "Værktøj:"
 
    set caption(console,titre)                         "Konsol"
    set caption(console,debug)                         "Debug"
@@ -559,6 +566,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,pas_port_com)                   "No Port"
 
    set caption(audace,titre)                          "Aud'ACE"
+   set caption(audace,tool)                           "Tool:"
 
    set caption(console,titre)                         "Terminal"
    set caption(console,debug)                         "Debug"
@@ -636,6 +644,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,pas_port_com)                   "No Port"
 
    set caption(audace,titre)                          "Aud'ACE"
+   set caption(audace,tool)                           "Tool:"
 
    set caption(console,titre)                         "Terminal"
    set caption(console,debug)                         "Debug"
