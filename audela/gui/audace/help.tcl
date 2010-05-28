@@ -2,7 +2,7 @@
 # Fichier : help.tcl
 # Description : Aide d'Aud'ACE
 # Auteur : Michel PUJOL
-# Mise à jour $Id: help.tcl,v 1.7 2010-02-20 15:20:26 robertdelmas Exp $
+# Mise à jour $Id: help.tcl,v 1.8 2010-05-28 08:06:05 robertdelmas Exp $
 #
 
 ###########################################################################################
@@ -26,16 +26,18 @@ set help(dir,affichage)     "04view"
 set help(dir,pretrait)      "05preprocessing"
 set help(dir,trait)         "06processing"
 set help(dir,analyse)       "07analysis"
-set help(dir,config)        "09setup/01audace"
-set help(dir,camera)        "09setup/02camera"
-set help(dir,telescope)     "09setup/03mount"
-set help(dir,optic)         "09setup/04optic"
-set help(dir,equipment)     "09setup/05equipment"
-set help(dir,pad)           "09setup/06pad"
-set help(dir,chart)         "09setup/07chart"
-set help(dir,config+)       "09setup"
-set help(dir,aide)          "10help"
-set help(dir,divers)        "11misc"
+set help(dir,cameras)       "08camera"
+set help(dir,telescopes)    "09telescope"
+set help(dir,config)        "10setup/01audace"
+set help(dir,camera)        "10setup/02camera"
+set help(dir,mount)         "10setup/03mount"
+set help(dir,optic)         "10setup/04optic"
+set help(dir,equipment)     "10setup/05equipment"
+set help(dir,pad)           "10setup/06pad"
+set help(dir,chart)         "10setup/07chart"
+set help(dir,config+)       "10setup"
+set help(dir,aide)          "11help"
+set help(dir,divers)        "12misc"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -46,16 +48,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set help(dir,pretrait)   "05pretraitement"
    set help(dir,trait)      "06traitement"
    set help(dir,analyse)    "07analyse"
-   set help(dir,config)     "09configuration/01audace"
-   set help(dir,camera)     "09configuration/02camera"
-   set help(dir,telescope)  "09configuration/03monture"
-   set help(dir,optic)      "09configuration/04optique"
-   set help(dir,equipment)  "09configuration/05equipement"
-   set help(dir,pad)        "09configuration/06raquette"
-   set help(dir,chart)      "09configuration/07carte"
-   set help(dir,config+)    "09configuration"
-   set help(dir,aide)       "10aide"
-   set help(dir,divers)     "11divers"
+   set help(dir,cameras)    "08camera"
+   set help(dir,telescopes) "09telescope"
+   set help(dir,config)     "10configuration/01audace"
+   set help(dir,camera)     "10configuration/02camera"
+   set help(dir,mount)      "10configuration/03monture"
+   set help(dir,optic)      "10configuration/04optique"
+   set help(dir,equipment)  "10configuration/05equipement"
+   set help(dir,pad)        "10configuration/06raquette"
+   set help(dir,chart)      "10configuration/07carte"
+   set help(dir,config+)    "10configuration"
+   set help(dir,aide)       "11aide"
+   set help(dir,divers)     "12divers"
 }
 
 namespace eval ::audace {
