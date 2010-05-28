@@ -2,11 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise à jour $Id: cmaude.tcl,v 1.30 2010-05-27 06:38:04 robertdelmas Exp $
-#
-# Remarks :
-# The definition of some variables (binning, exp. time, rythm, etc.)
-# is available in file cmaude_ini.tcl to be easily modified
+# Mise à jour $Id: cmaude.tcl,v 1.31 2010-05-28 15:58:35 robertdelmas Exp $
 #
 
 #============================================================
@@ -116,17 +112,32 @@ namespace eval ::cmaude {
 
       #--- Initialisation de l'heure TU ou TL
       set now [::audace::date_sys2ut now]
-      #--- Chargement des variables de configuration
-      set fichier_cmaude [ file join $audace(rep_plugin) tool cmaude cmaude_ini.tcl ]
-      if { [ file exists $fichier_cmaude ] } {
-         source $fichier_cmaude
-      }
       #--- Recuperation du repertoire dedie aux images et de l'extension des images
       set cmconf(folder)    "$audace(rep_images)"
       set cmconf(extension) "$conf(extension,defaut)"
       set This $this
       #--- Initialisation du compteur des images
       set compteur "1"
+      #--- Hauteur du Soleil pour lancer les acquisitions (en degres)
+      set cmconf(haurore) -10
+      #--- Fin du crépuscule astronomique ou debut de la 'vraie' nuit (en degres)
+      set cmconf(hastwilight) -18
+      #--- Hauteur de la Lune pour laquelle elle ne gene pas l'observation (en degres)
+      set cmconf(hmooncritic) 7
+      #--- Mot cle FITS
+      set cmconf(fits,OPTICS) "180 Degrees Fisheye Lens"
+      #--- Fenetrage en binning 1x1 - La dimension de l'image doit rester de 580x512
+      set cmconf(win11) {106 0 685 512}
+      #--- Fenetrage en binning 2x2
+      set cmconf(win22) {53 0 343 256}
+      #--- Initialisation du binning
+      set cmconf(binning) 1x1
+      #--- Initialisation de l'intervalle entre images (en secondes)
+      set cmconf(rythm) 10
+      #--- Initialisation du temps de pose sans la Lune (en secondes)
+      set cmconf(exptime1) 120
+      #--- Initialisation du temps de pose avec la Lune ou pendant le crépuscule (secondes)
+      set cmconf(exptime2) 15
       #--- Initialisation des variables panneau
       set panneau(cmaude,titre)           "$caption(cmaude,titre_mascot)"
       set panneau(cmaude,aide)            "$caption(cmaude,help_titre)"
@@ -158,6 +169,7 @@ namespace eval ::cmaude {
       set panneau(cmaude,status2)         "$caption(cmaude,status2)"
       set panneau(cmaude,status3)         "$caption(cmaude,status2)"
       set panneau(cmaude,acquisition)     "0"
+      #--- Construction de l'interface
       cmaudeBuildIF $This
    }
 
