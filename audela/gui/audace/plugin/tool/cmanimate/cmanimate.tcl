@@ -2,7 +2,7 @@
 # Fichier : cmanimate.tcl
 # Description : Animation/slides control panel for Cloud Monitor
 # Auteur : Sylvain RONDI
-# Mise à jour $Id: cmanimate.tcl,v 1.22 2010-05-01 08:55:07 robertdelmas Exp $
+# Mise à jour $Id: cmanimate.tcl,v 1.23 2010-05-28 15:59:06 robertdelmas Exp $
 #
 
 #****************************************************************
@@ -118,7 +118,8 @@ namespace eval ::cmanimate {
    #------------------------------------------------------------
    proc createPanel { this } {
       variable This
-      global caption cmconf panneau
+      variable cmconf
+      global caption panneau
 
       #--- Initialisation du nom de la fenetre
       set This $this
@@ -148,6 +149,10 @@ namespace eval ::cmanimate {
       set panneau(cmanimate,nblast) "10"
       set panneau(cmanimate,numimg) "1"
       set panneau(cmanimate,numero) "-1"
+      #--- Initialisation le la position du zenith en binning 1x1
+      set cmconf(zenith11) {290 250}
+      #--- Initialisation le la position du zenith en binning 2x2
+      set cmconf(zenith22) {145 125}
       #--- Construction de l'interface
       cmanimateBuildIF $This
    }
@@ -227,28 +232,22 @@ namespace eval ::cmanimate {
    proc startTool { visuNo } {
       variable This
       variable parametres
-      global audace caption panneau
-
-      #--- Chargement des variables de configuration de cmaude
-      set fichier_cmaude [ file join $audace(rep_plugin) tool cmaude cmaude_ini.tcl ]
-      if { [ file exists $fichier_cmaude ] } {
-         source $fichier_cmaude
-      }
+      global caption panneau
 
       trace add variable ::panneau(cmanimate,position) write ::cmanimate::adaptOutilcmanimate
       ::cmanimate::chargementVar
       set panneau(cmanimate,position) "$parametres(cmanimate,position)"
       pack $This -side left -fill y
-      console::affiche_prompt "$caption(cmanimate,en_tete_1)"
-      console::affiche_prompt "$caption(cmanimate,en_tete_2)"
-      console::affiche_prompt "$caption(cmanimate,en_tete_3)"
-      console::affiche_prompt "$caption(cmanimate,en_tete_4)"
-      console::affiche_prompt "$caption(cmanimate,en_tete_5)"
-      console::affiche_prompt "$caption(cmanimate,en_tete_6)"
-      console::affiche_prompt "$caption(cmanimate,en_tete_7)"
-      console::affiche_prompt "$caption(cmanimate,en_tete_8)"
-      console::affiche_prompt "$caption(cmanimate,en_tete_9)"
-      console::affiche_prompt "$caption(cmanimate,en_tete_10)"
+      ::console::affiche_prompt "$caption(cmanimate,en_tete_1)"
+      ::console::affiche_prompt "$caption(cmanimate,en_tete_2)"
+      ::console::affiche_prompt "$caption(cmanimate,en_tete_3)"
+      ::console::affiche_prompt "$caption(cmanimate,en_tete_4)"
+      ::console::affiche_prompt "$caption(cmanimate,en_tete_5)"
+      ::console::affiche_prompt "$caption(cmanimate,en_tete_6)"
+      ::console::affiche_prompt "$caption(cmanimate,en_tete_7)"
+      ::console::affiche_prompt "$caption(cmanimate,en_tete_8)"
+      ::console::affiche_prompt "$caption(cmanimate,en_tete_9)"
+      ::console::affiche_prompt "$caption(cmanimate,en_tete_10)"
    }
 
    #------------------------------------------------------------
@@ -740,16 +739,17 @@ namespace eval ::cmanimate {
       global audace caption panneau
 
       if { $panneau(cmanimate,drawgrid) == "1" } {
-         console::affiche_erreur "$caption(cmanimate,dessine_grille)"
+         ::console::affiche_erreur "$caption(cmanimate,dessine_grille)"
          cmdGrid
       } else {
-         console::affiche_erreur "$caption(cmanimate,efface_grille)"
+         ::console::affiche_erreur "$caption(cmanimate,efface_grille)"
          $audace(hCanvas) delete thegrid
       }
    }
 
    proc cmdGrid { } {
-      global audace caption cmconf color panneau
+      variable cmconf
+      global audace caption color panneau
 
       if { $panneau(cmanimate,position) == "2" } {
       #--- Grille pour l'option Paranal avec des images en binning 1x1
@@ -786,7 +786,8 @@ namespace eval ::cmanimate {
    }
 
    proc altaz2oval { altut aziut utID color_cmanimate width radius tag } {
-      global audace caption cmconf
+      variable cmconf
+      global audace caption
 
       set centerx [lindex $cmconf(zenith11) 0]
       set centery [lindex $cmconf(zenith11) 1]
@@ -810,16 +811,16 @@ namespace eval ::cmanimate {
       if { $panneau(cmanimate,drawposuts) == "1" } {
          $audace(hCanvas) delete uts
          if { $panneau(cmanimate,position) == "1" } {
-            console::affiche_erreur "$caption(cmanimate,dessine_position)"
+            ::console::affiche_erreur "$caption(cmanimate,dessine_position)"
          } else {
-            console::affiche_erreur "$caption(cmanimate,dessine_positions)"
+            ::console::affiche_erreur "$caption(cmanimate,dessine_positions)"
          }
          catch { cmdDrawuts }
       } else {
          if { $panneau(cmanimate,position) == "1" } {
-            console::affiche_erreur "$caption(cmanimate,efface_position)"
+            ::console::affiche_erreur "$caption(cmanimate,efface_position)"
          } else {
-            console::affiche_erreur "$caption(cmanimate,efface_positions)"
+            ::console::affiche_erreur "$caption(cmanimate,efface_positions)"
          }
          $audace(hCanvas) delete uts
       }
