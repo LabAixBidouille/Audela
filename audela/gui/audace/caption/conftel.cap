@@ -1,6 +1,6 @@
 #
 # Fichier : conftel.cap
-# Mise a jour $Id: conftel.cap,v 1.33 2010-02-21 18:31:35 michelpujol Exp $
+# Mise a jour $Id: conftel.cap,v 1.34 2010-05-28 15:33:41 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -25,11 +25,10 @@ set caption(conftel,connexion_texte2)                 "Please wait a few seconds
 set caption(conftel,cannotcreatecam)                  "The link with the mount can not be created."
 set caption(conftel,seeconsole)                       "See details in the Terminal screen."
 
-set caption(conftel,mount)                            "Mount"
-
-   set caption(conftel,model,title)                   "Pointing model"
-   set caption(conftel,model,enabled)                 "Model On"
-   set caption(conftel,configurer)                    "Set up"
+set caption(conftel,mount)                            "Mount:"
+set caption(conftel,model,title)                      "Pointing model"
+set caption(conftel,model,enabled)                    "Model On"
+set caption(conftel,configurer)                       "Set up"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -48,8 +47,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,cannotcreatecam)               "La monture ne peut pas être créée."
    set caption(conftel,seeconsole)                    "Détails dans la Console."
 
-   set caption(conftel,mount)                         "Monture"
-
+   set caption(conftel,mount)                         "Monture :"
    set caption(conftel,model,title)                   "Modèle de pointage"
    set caption(conftel,model,enabled)                 "Modèle actif"
    set caption(conftel,configurer)                    "Configurer"
@@ -71,8 +69,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,cannotcreatecam)               "La montatura non e' stata creata."
    set caption(conftel,seeconsole)                    "Vedere i dettagli sul Console."
 
-   set caption(conftel,mount)                         "Montatura"
-
+   set caption(conftel,mount)                         "Montatura:"
    set caption(conftel,model,title)                   "Modello di puntamento"
    set caption(conftel,model,enabled)                 "Modello On"
    set caption(conftel,configurer)                    "Configurare"
@@ -94,7 +91,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,cannotcreatecam)               "La montura no puede ser creada."
    set caption(conftel,seeconsole)                    "Ver detalles en la Consola."
 
-   set caption(conftel,mount)                         "Montura"
+   set caption(conftel,mount)                         "Montura:"
    set caption(conftel,model,title)                   "Modelo de apuntado"
    set caption(conftel,model,enabled)                 "Modelo On"
    set caption(conftel,configurer)                    "Configurar"
@@ -116,7 +113,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,cannotcreatecam)               "Das Montierung kann nicht hergestellt werden."
    set caption(conftel,seeconsole)                    "Siehe Details auf der Konsole."
 
-   set caption(conftel,mount)                         "Montierung"
+   set caption(conftel,mount)                         "Montierung:"
    set caption(conftel,model,title)                   "Richtung Modell"
    set caption(conftel,model,enabled)                 "Modell On"
    set caption(conftel,configurer)                    "Konfigurieren"
@@ -138,7 +135,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,cannotcreatecam)               "Da montagem não pode ser criada."
    set caption(conftel,seeconsole)                    "Ver detalhes na Consola."
 
-   set caption(conftel,mount)                         "Montagem"
+   set caption(conftel,mount)                         "Montagem:"
    set caption(conftel,model,title)                   "Modelo de apontamento"
    set caption(conftel,model,enabled)                 "Modell activo"
    set caption(conftel,configurer)                    "Configurar"
@@ -160,7 +157,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,cannotcreatecam)               "The link with the mount can not be created."
    set caption(conftel,seeconsole)                    "See details in the Terminal screen."
 
-   set caption(conftel,mount)                         "Mount"
+   set caption(conftel,mount)                         "Mount:"
    set caption(conftel,model,title)                   "Pointing Model"
    set caption(conftel,model,enabled)                 "Model On"
    set caption(conftel,configurer)                    "Set up"
@@ -182,7 +179,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,cannotcreatecam)               "The link with the mount can not be created."
    set caption(conftel,seeconsole)                    "See details in the Terminal screen."
 
-   set caption(conftel,mount)                         "Mount"
+   set caption(conftel,mount)                         "Mount:"
    set caption(conftel,model,title)                   "Pointing Model"
    set caption(conftel,model,enabled)                 "Modell On"
    set caption(conftel,configurer)                    "Set up"
@@ -204,7 +201,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,cannotcreatecam)               "The link with the mount can not be created."
    set caption(conftel,seeconsole)                    "See details in the Terminal screen."
 
-   set caption(conftel,mount)                         "Mount"
+   set caption(conftel,mount)                         "Mount:"
    set caption(conftel,model,title)                   "Pointing Model"
    set caption(conftel,model,enabled)                 "Modell On"
    set caption(conftel,configurer)                    "Set up"
