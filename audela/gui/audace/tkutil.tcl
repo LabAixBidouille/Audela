@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise à jour $Id: tkutil.tcl,v 1.34 2010-04-11 13:22:03 michelpujol Exp $
+# Mise à jour $Id: tkutil.tcl,v 1.35 2010-05-28 22:50:22 robertdelmas Exp $
 #
 
 namespace eval tkutil:: {
@@ -336,10 +336,6 @@ proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxVa
          if { $newValue == "" } {
             set textVariable [$win cget -textvariable]
             set newValue $minValue
-            if { $textVariable != "" } {
-               #---
-               set $textVariable $newValue
-            }
          }
          if { $newValue < $minValue } {
             if { $errorVariable != "" } {
