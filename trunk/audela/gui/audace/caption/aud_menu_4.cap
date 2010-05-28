@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_4.cap
-# Mise a jour $Id: aud_menu_4.cap,v 1.15 2010-05-28 07:04:26 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_4.cap,v 1.16 2010-05-28 07:16:46 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -90,7 +90,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,ond_mexicain)                "Ondelette de type chapeau mexicain"
    set caption(audace,menu,log)                         "Logarithme"
    set caption(audace,menu,tfd)                         "Transformée de Fourier Discrète"
-   set caption(audace,menu,tfdi)                        "Transformée de Fourier Discrète inverse"
+   set caption(audace,menu,tfdi)                        "Transformée de Fourier Discrète Inverse"
    set caption(audace,menu,acorr)                       "Auto-corrélation"
    set caption(audace,menu,icorr)                       "Inter-corrélation"
    set caption(audace,menu,convolution)                 "Convolution"
