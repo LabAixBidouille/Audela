@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.136 2010-05-25 19:04:54 jacquesmichelet Exp $
+# Mise à jour $Id: aud.tcl,v 1.137 2010-05-28 15:34:18 robertdelmas Exp $
 #
 
 #--- Chargement du package BWidget
@@ -677,7 +677,7 @@ namespace eval ::audace {
                         $pluginInfo(namespace)::initPlugin $audace(base)
                      }
                      set ::panneau(menu_name,[ string trimleft $pluginInfo(namespace) "::" ]) $pluginInfo(title)
-                     ::console::affiche_prompt "#Outil : $pluginInfo(title) v$pluginInfo(version)\n"
+                     ::console::affiche_prompt "#$caption(audace,tool) $pluginInfo(title) v$pluginInfo(version)\n"
                   }
                }
             }
