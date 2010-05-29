@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_4.tcl
 # Description : Script regroupant les fonctionnalites du menu Traitement
-# Mise à jour $Id: aud_menu_4.tcl,v 1.18 2010-05-25 21:04:03 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_4.tcl,v 1.19 2010-05-29 06:41:07 jacquesmichelet Exp $
 #
 
 namespace eval ::traiteFilters {
@@ -133,6 +133,7 @@ namespace eval ::traiteFilters {
          $caption(audace,menu,tfdi) \
          $caption(audace,menu,acorr) \
          $caption(audace,menu,icorr) \
+         $caption(audace,menu,convolution) \
         ]
         #---
         toplevel $This
