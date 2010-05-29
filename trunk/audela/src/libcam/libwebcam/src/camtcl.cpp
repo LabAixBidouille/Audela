@@ -732,16 +732,16 @@ int cmdCamStartVideoView(ClientData clientData, Tcl_Interp * interp,
       imgno = (int) atoi(argv[2]);
       /*
       // je verifie que l'image est du type "video"
-      sprintf(ligne, "image type image%d", imgno);
+      sprintf(ligne, "image type imagevisu%d", imgno);
       if( Tcl_Eval(interp, ligne) == TCL_ERROR) {
          // l'image n'existe pas
-         sprintf(ligne, "Error connect webcam to image%d : %s", imgno, Tcl_GetStringResult(interp) );
+         sprintf(ligne, "Error connect webcam to imagevisu%d : %s", imgno, Tcl_GetStringResult(interp) );
          Tcl_SetResult(interp, ligne, TCL_VOLATILE);
          return TCL_ERROR;
       } else {
          if ( strcmp(Tcl_GetStringResult(interp), "video") != 0 ) {
             // l'image n'est du type video
-            sprintf(ligne, "Error connect webcam to image%d : %s wrong image type, must be video", imgno, Tcl_GetStringResult(interp) );
+            sprintf(ligne, "Error connect webcam to imagevisu%d : %s wrong image type, must be video", imgno, Tcl_GetStringResult(interp) );
             Tcl_SetResult(interp, ligne, TCL_VOLATILE);
             return TCL_ERROR;
          }
@@ -751,16 +751,16 @@ int cmdCamStartVideoView(ClientData clientData, Tcl_Interp * interp,
 
    /*
    // je recupere le handle de la fenetre d'afficher de la video
-   sprintf(ligne, "image%d cget -owner", imgno);
+   sprintf(ligne, "imagevisu%d cget -owner", imgno);
    if( Tcl_Eval(interp, ligne) == TCL_ERROR) {
       // je retourne le message d'erreur fourni par l'interpreteur
-      sprintf(ligne, "Error image%d cget -owner: %s", imgno, Tcl_GetStringResult(interp) );
+      sprintf(ligne, "Error imagevisu%d cget -owner: %s", imgno, Tcl_GetStringResult(interp) );
       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
       return TCL_ERROR;
    } else {
       int owner ;
       if(Tcl_GetInt(interp,Tcl_GetStringResult(interp),&owner)!=TCL_OK) {
-         sprintf(ligne, "Error image%d cget -owner: %s", imgno, Tcl_GetStringResult(interp) );
+         sprintf(ligne, "Error imagevisu%d cget -owner: %s", imgno, Tcl_GetStringResult(interp) );
          Tcl_SetResult(interp, ligne, TCL_VOLATILE);
          return TCL_ERROR;
       } else {
@@ -777,7 +777,7 @@ int cmdCamStartVideoView(ClientData clientData, Tcl_Interp * interp,
    */
 
       if(Tcl_GetInt(interp,argv[3],&owner)!=TCL_OK) {
-         sprintf(ligne, "Error image%d cget -owner: %s", imgno, argv[2] );
+         sprintf(ligne, "Error imagevisu%d cget -owner: %s", imgno, argv[2] );
          Tcl_SetResult(interp, ligne, TCL_VOLATILE);
          return TCL_ERROR;
       } else {
@@ -810,7 +810,7 @@ int cmdCamStopVideoView(ClientData clientData, Tcl_Interp * interp, int argc,
 
    stopVideoPreview(cam);
    // je deconnecte la fenetre de visualisation de l'image TK
-   sprintf(ligne, "image%d configure -source %ld", cam->videonum, 0);
+   sprintf(ligne, "imagevisu%d configure -source %ld", cam->videonum, 0);
    Tcl_Eval(interp, ligne);
    return TCL_OK;
 }
