@@ -78,14 +78,14 @@ int CVisu::ClearImage()
 
    ligne = new char[40];
    if ( mode == 1 ) {
-      sprintf(ligne,"image%d",imgnum);
+      sprintf(ligne,"imagevisu%d",imgnum);
       ph = Tk_FindPhoto(interp,ligne);
       if(ph!=NULL) {
-         sprintf(ligne,"image delete image%d",imgnum);
+         sprintf(ligne,"image delete imagevisu%d",imgnum);
          Tcl_Eval(interp,ligne);
-         sprintf(ligne,"image create photo image%d",imgnum);
+         sprintf(ligne,"image create photo imagevisu%d",imgnum);
          Tcl_Eval(interp,ligne);
-         sprintf(ligne,"image%d",imgnum);
+         sprintf(ligne,"imagevisu%d",imgnum);
          ph = Tk_FindPhoto(interp,ligne);
          if(ph==NULL) {
             delete ligne;
@@ -123,12 +123,12 @@ int CVisu::CreateImage(int num)
    char *ligne;
 
    ligne = new char[40];
-   sprintf(ligne,"image%d",num);
+   sprintf(ligne,"imagevisu%d",num);
    ph = Tk_FindPhoto(interp,ligne);
    if(ph==NULL) {
-      sprintf(ligne,"image create photo image%d",num);
+      sprintf(ligne,"image create photo imagevisu%d",num);
       Tcl_Eval(interp,ligne);
-      sprintf(ligne,"image%d",num);
+      sprintf(ligne,"imagevisu%d",num);
       ph = Tk_FindPhoto(interp,ligne);
       if(ph==NULL) {
          delete ligne;
@@ -496,19 +496,19 @@ void CVisu::SetMode(int mode)
    switch(mode) {
    case 1 :
       // je cree une image "photo"
-      sprintf(ligne,"image delete image%d",imgnum);
+      sprintf(ligne,"image delete imagevisu%d",imgnum);
       result = Tcl_Eval(interp,ligne);
       if ( result == TCL_OK) {
-         sprintf(ligne,"image create photo image%d",imgnum);
+         sprintf(ligne,"image create photo imagevisu%d",imgnum);
          result = Tcl_Eval(interp,ligne);
       }
       break;
    case 2 :
       // je cree une image video
-      sprintf(ligne,"image delete image%d",imgnum);
+      sprintf(ligne,"image delete imagevisu%d",imgnum);
       result = Tcl_Eval(interp,ligne);
       if ( result == TCL_OK) {
-         sprintf(ligne,"image create video image%d",imgnum);
+         sprintf(ligne,"image create video imagevisu%d",imgnum);
          result = Tcl_Eval(interp,ligne);
       }
       break;
@@ -613,7 +613,7 @@ int CVisu::UpdateDisplay()
    if ( mode == 2 ) {
       char ligne[256];
       // je change le zoom de la video
-      sprintf(ligne,"image%d configure -zoom %f",imgnum, this->zoom);
+      sprintf(ligne,"imagevisu%d configure -zoom %f",imgnum, this->zoom);
       Tcl_Eval(interp,ligne);
       return 0;
    }
@@ -701,7 +701,7 @@ int CVisu::UpdateDisplay()
    pib.offset[3] = 0;
 
    // Affichage de l'image dans 'image$imgnum'.
-   sprintf(imageName,"image%d",imgnum);
+   sprintf(imageName,"imagevisu%d",imgnum);
    ph = Tk_FindPhoto(interp,imageName);
 
    if(ph==NULL) {

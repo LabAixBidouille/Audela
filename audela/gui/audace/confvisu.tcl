@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.141 2010-05-27 22:21:34 robertdelmas Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.142 2010-05-29 10:15:35 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -158,10 +158,10 @@ namespace eval ::confVisu {
 
       #--- Creation de l'image associee a la visu dans le tag "display"
       $private($visuNo,hCanvas) create image 0 0 -anchor nw -tag display
-      image create photo image$visuNo
-      $private($visuNo,hCanvas) itemconfigure display -image image$visuNo
+      image create photo imagevisu$visuNo
+      $private($visuNo,hCanvas) itemconfigure display -image imagevisu$visuNo
 
-      #--- je cree la visu associee au buffer bufNo et a l'image image$visuNo
+      #--- je cree la visu associee au buffer bufNo et a l'image imagevisu$visuNo
       set visuNo [::visu::create $bufNo $visuNo]
 
       #--- je cree le menu
@@ -240,7 +240,7 @@ namespace eval ::confVisu {
          }
 
          #--- je supprime l'image associee a la visu
-         image delete image[visu$visuNo image]
+         image delete imagevisu[visu$visuNo image]
 
          #--- je recupere le numero de buffer avant de suprimer la visu
          set bufNo [visu$visuNo buf]
@@ -285,7 +285,7 @@ namespace eval ::confVisu {
       #--- petit raccourci pour la suite
       set bufNo [visu$visuNo buf]
       set hduNo 1
-      if { [ image type image[visu$visuNo image] ] == "video" } {
+      if { [ image type imagevisu[visu$visuNo image] ] == "video" } {
          #--- je recupere la largeur et la hauteur de la video
          set camNo [::confCam::getCamNo $private($visuNo,camItem)]
          set videoSize [cam$camNo nbpix ]
@@ -1384,15 +1384,15 @@ namespace eval ::confVisu {
 
          #--- je connecte la sortie de la camera a l'image
          set result [ catch {
-            if { [image type image$visuNo ] == "video" } {
+            if { [image type imagevisu$visuNo ] == "video" } {
                #--- je recupere le handle de l'image de la visu
-               set windowHandle [image$visuNo  cget -owner]
+               set windowHandle [imagevisu$visuNo  cget -owner]
                #--- je connecte le flux de la camera avec le handle l'image de la visu
                cam$camNo startvideoview  $visuNo $windowHandle
                #--- je configure le zoom de l'image video
-               image$visuNo configure -zoom $private($visuNo,zoom)
+               imagevisu$visuNo configure -zoom $private($visuNo,zoom)
             } else {
-               error "Error connect webcam to image$visuNo : [image type image$visuNo ] wrong image type, must be video"
+               error "Error connect webcam to imagevisu$visuNo : [image type imagevisu$visuNo ] wrong image type, must be video"
             }
          } ]
          if { $result == 1 } {

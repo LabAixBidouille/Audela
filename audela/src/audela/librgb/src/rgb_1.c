@@ -184,7 +184,7 @@ int CVisu::UpdateDisplay()
 
    // Affichage de l'image dans 'image$imgnum'.
    ligne = new char[32];
-   sprintf(ligne,"image%d",imgnum);
+   sprintf(ligne,"imagevisu%d",imgnum);
    ph = tk->FindPhoto(interp,ligne);
    delete ligne;
 

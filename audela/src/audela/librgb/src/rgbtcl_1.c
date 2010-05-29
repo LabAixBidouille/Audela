@@ -674,11 +674,11 @@ int Cmd_rgbtcl_visu(ClientData clientData, Tcl_Interp *interp, int argc, char *a
    pib.offset[2] = 2;
 
    /* Affichage de l'image dans 'image1000' */
-   sprintf(s,"catch {image delete image%d}",numimage);
+   sprintf(s,"catch {image delete imagevisu%d}",numimage);
    Tcl_Eval(interp,s);
-   sprintf(s,"image create photo image%d",numimage);
+   sprintf(s,"image create photo imagevisu%d",numimage);
    Tcl_Eval(interp,s);
-   sprintf(s,"image%d",numimage);
+   sprintf(s,"imagevisu%d",numimage);
    ph = Tk_FindPhoto(interp,s);
 
    if(ph==NULL) {
