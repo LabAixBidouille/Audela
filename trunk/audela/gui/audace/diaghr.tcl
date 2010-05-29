@@ -1,14 +1,14 @@
 #
 # Fichier : diaghr.tcl
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: diaghr.tcl,v 1.3 2010-05-16 10:47:06 robertdelmas Exp $
+# Mise à jour $Id: diaghr.tcl,v 1.4 2010-05-29 13:51:56 robertdelmas Exp $
 #
-# Utilitaire pour mesurer des diagrammes HR a aprtir de deux images filtrees.
+# Utilitaire pour mesurer des diagrammes HR a partir de deux images filtrees
 # Les images doivent etre calibrees en WCS
 #
 # On utilise d'abord la fonction diaghr_extract pour extraire un fichier d'etoiles
 # communes aux deux images et puis on utilise diaghr_plot pour visualiser le
-# diagramme couleur/magnitude avec une courbe d'isochrones superposee eventuellement.
+# diagramme couleur/magnitude avec une courbe d'isochrones superposee eventuellement
 #
 # exemple sur Messier 35:
 # source audace/diaghr.tcl ; diaghr_extract m35v2 m35r2 6h9m9s +24d20m 15. V R
@@ -342,7 +342,7 @@ proc diaghr_extract { file_image_1 file_image_2 ra_center dec_center radius_arcm
 }
 
 # -------------------------------------------------------------------------------------------------
-# proc diaghr_plot pour dessiner un diagramme couleur/magnitude et superposer un isochrone.
+# proc diaghr_plot pour dessiner un diagramme couleur/magnitude et superposer un isochrone
 #
 # Entrees :
 # * fic_hr : nom du fichier ([pwd]/hr.txt par defaut) genere prealablement par la fonction diaghr_extract
