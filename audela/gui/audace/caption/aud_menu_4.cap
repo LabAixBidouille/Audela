@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_4.cap
-# Mise a jour $Id: aud_menu_4.cap,v 1.16 2010-05-28 07:16:46 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_4.cap,v 1.17 2010-05-29 06:43:02 jacquesmichelet Exp $
 #
 
 #=========================================================================
@@ -59,18 +59,18 @@ set caption(traiteFilters,coef_manquant)                "Define the missing coef
 set caption(traiteFilters,coef_invalide)                "Invalid Coefficient."
 set caption(traiteFilters,coef_invalides)               "Invalid Coefficients."
 
-set caption(traiteFilters,tfd_sortie1)                  "Output Image (modulus or real) :"
-set caption(traiteFilters,tfd_sortie2)                  "Output Image (arg. or imag.) :"
-set caption(traiteFilters,tfd_entree1)                  "Input Image (modulus or real) :"
-set caption(traiteFilters,tfd_entree2)                  "Input Image (arg. or imag.) :"
+set caption(traiteFilters,tfd_sortie1)                  "Output Image \n (modulus or real part) :"
+set caption(traiteFilters,tfd_sortie2)                  "Output Image (argument \n or imaginary part) :"
+set caption(traiteFilters,tfd_entree1)                  "Input Image \n (modulus or real part) :"
+set caption(traiteFilters,tfd_entree2)                  "Input Image (argument \n or imaginary part) :"
 set caption(traiteFilters,icorr_entree1)                "Input Image # 1 :"
 set caption(traiteFilters,icorr_entree2)                "Input Image # 2 :"
 set caption(traiteFilters,tfd_ordre)                    "Order"
 set caption(traiteFilters,tfd_centre)                   "Centered"
 set caption(traiteFilters,tfd_normal)                   "Regular"
 set caption(traiteFilters,tfd_format)                   "Format"
-set caption(traiteFilters,tfd_polaire)                  "Polar (modulus + arg)"
-set caption(traiteFilters,tfd_cartesien)                "Cartesian (real + imag.)"
+set caption(traiteFilters,tfd_polaire)                  "Polar (modulus + argument)"
+set caption(traiteFilters,tfd_cartesien)                "Cartesian (real + imaginary)"
 set caption(traiteFilters,tfd_images_differentes)       "The output files must have different names"
 
 set caption(traiteFilters,traitement_en_cours)          "Processing in progress..."
@@ -126,10 +126,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,coef_invalide)             "Coefficient invalide."
    set caption(traiteFilters,coef_invalides)            "Coefficients invalides."
 
-   set caption(traiteFilters,tfd_sortie1)               "Image de sortie (module ou p. réelle) :"
-   set caption(traiteFilters,tfd_sortie2)               "Image de sortie (arg. ou p. imag.) :"
-   set caption(traiteFilters,tfd_entree1)               "Image d'entrée (module ou p. réelle) :"
-   set caption(traiteFilters,tfd_entree2)               "Image d'entrée (arg. ou p. imag.) :"
+   set caption(traiteFilters,tfd_sortie1)               "Image de sortie \n (module ou partie réelle) :"
+   set caption(traiteFilters,tfd_sortie2)               "Image de sortie (argument \n ou partie imaginaire) :"
+   set caption(traiteFilters,tfd_entree1)               "Image d'entrée \n (module ou partie réelle) :"
+   set caption(traiteFilters,tfd_entree2)               "Image d'entrée (argument \n ou partie imaginaire) :"
    set caption(traiteFilters,icorr_entree1)             "Image d'entrée 1 :"
    set caption(traiteFilters,icorr_entree2)             "Image d'entrée 2 :"
    set caption(traiteFilters,traitement_en_cours)       "Traitement en cours..."
@@ -137,8 +137,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,tfd_centre)                "Centré"
    set caption(traiteFilters,tfd_normal)                "Normal"
    set caption(traiteFilters,tfd_format)                "Format"
-   set caption(traiteFilters,tfd_polaire)               "Polaire (module + arg.)"
-   set caption(traiteFilters,tfd_cartesien)             "Cartésien (réel + imag.)"
+   set caption(traiteFilters,tfd_polaire)               "Polaire (module + argument)"
+   set caption(traiteFilters,tfd_cartesien)             "Cartésien (réel + imaginaire)"
    set caption(traiteFilters,tfd_images_differentes)    "Les fichiers résultats doivent être différents"
 
 # *************** Version italienne ***************************
@@ -195,26 +195,24 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,coef_invalides)            "Coefficienti non validi."
 
 ## <To be translated>
-   set caption(traiteFilters,tfd_sortie1)               "Output Image (modulus or real) :"
-   set caption(traiteFilters,tfd_sortie2)               "Output Image (arg. or imag.) :"
-   set caption(traiteFilters,tfd_entree1)               "Input Image (modulus or real) :"
-   set caption(traiteFilters,tfd_entree2)               "Input Image (arg. or imag.) :"
+   set caption(traiteFilters,tfd_sortie1)               "Output Image \n (modulus or real part) :"
+   set caption(traiteFilters,tfd_sortie2)               "Output Image (argument \n or imaginary part) :"
+   set caption(traiteFilters,tfd_entree1)               "Input Image \n (modulus or real part) :"
+   set caption(traiteFilters,tfd_entree2)               "Input Image (argument \n or imaginary part) :"
    set caption(traiteFilters,icorr_entree1)             "Input Image # 1 :"
    set caption(traiteFilters,icorr_entree2)             "Input Image # 2 :"
    set caption(traiteFilters,tfd_ordre)                 "Order"
    set caption(traiteFilters,tfd_centre)                "Centered"
    set caption(traiteFilters,tfd_normal)                "Regular"
    set caption(traiteFilters,tfd_format)                "Format"
-   set caption(traiteFilters,tfd_polaire)               "Polar (modulus + arg)"
-   set caption(traiteFilters,tfd_cartesien)             "Cartesian (real + imag.)"
-   set caption(traiteFilters,tfd_images_differentes)    "The output files must have different names"
+   set caption(traiteFilters,tfd_polaire)               "Polar (modulus + argument)"
+   set caption(traiteFilters,tfd_cartesien)             "Cartesian (real + imaginary)"
 ## </To be translated>
 
    set caption(traiteFilters,traitement_en_cours)       "Elaborazione in corso..."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
-
    set caption(audace,menu,traitement)                  "Procesando"
    set caption(audace,menu,masque_flou)                 "Máscara desenfocada"
    set caption(audace,menu,filtre_passe-bas)            "Filtro paso bajo"
@@ -266,19 +264,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,coef_invalides)            "Coeficientes inválidos."
 
 ## <To be translated>
-   set caption(traiteFilters,tfd_sortie1)               "Output Image (modulus or real) :"
-   set caption(traiteFilters,tfd_sortie2)               "Output Image (arg. or imag.) :"
-   set caption(traiteFilters,tfd_entree1)               "Input Image (modulus or real) :"
-   set caption(traiteFilters,tfd_entree2)               "Input Image (arg. or imag.) :"
+   set caption(traiteFilters,tfd_sortie1)               "Output Image \n (modulus or real part) :"
+   set caption(traiteFilters,tfd_sortie2)               "Output Image (argument \n or imaginary part) :"
+   set caption(traiteFilters,tfd_entree1)               "Input Image \n (modulus or real part) :"
+   set caption(traiteFilters,tfd_entree2)               "Input Image (argument \n or imaginary part) :"
    set caption(traiteFilters,icorr_entree1)             "Input Image # 1 :"
    set caption(traiteFilters,icorr_entree2)             "Input Image # 2 :"
    set caption(traiteFilters,tfd_ordre)                 "Order"
    set caption(traiteFilters,tfd_centre)                "Centered"
    set caption(traiteFilters,tfd_normal)                "Regular"
    set caption(traiteFilters,tfd_format)                "Format"
-   set caption(traiteFilters,tfd_polaire)               "Polar (modulus + arg)"
-   set caption(traiteFilters,tfd_cartesien)             "Cartesian (real + imag.)"
-   set caption(traiteFilters,tfd_images_differentes)    "The output files must have different names"
+   set caption(traiteFilters,tfd_polaire)               "Polar (modulus + argument)"
+   set caption(traiteFilters,tfd_cartesien)             "Cartesian (real + imaginary)"
 ## </To be translated>
 
    set caption(traiteFilters,traitement_en_cours)       "Procesando..."
@@ -337,19 +334,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,coef_invalides)            "Ungültigen Koeffizienten."
 
 ## <To be translated>
-   set caption(traiteFilters,tfd_sortie1)               "Output Image (modulus or real) :"
-   set caption(traiteFilters,tfd_sortie2)               "Output Image (arg. or imag.) :"
-   set caption(traiteFilters,tfd_entree1)               "Input Image (modulus or real) :"
-   set caption(traiteFilters,tfd_entree2)               "Input Image (arg. or imag.) :"
+   set caption(traiteFilters,tfd_sortie1)               "Output Image \n (modulus or real part) :"
+   set caption(traiteFilters,tfd_sortie2)               "Output Image (argument \n or imaginary part) :"
+   set caption(traiteFilters,tfd_entree1)               "Input Image \n (modulus or real part) :"
+   set caption(traiteFilters,tfd_entree2)               "Input Image (argument \n or imaginary part) :"
    set caption(traiteFilters,icorr_entree1)             "Input Image # 1 :"
    set caption(traiteFilters,icorr_entree2)             "Input Image # 2 :"
    set caption(traiteFilters,tfd_ordre)                 "Order"
    set caption(traiteFilters,tfd_centre)                "Centered"
    set caption(traiteFilters,tfd_normal)                "Regular"
    set caption(traiteFilters,tfd_format)                "Format"
-   set caption(traiteFilters,tfd_polaire)               "Polar (modulus + arg)"
-   set caption(traiteFilters,tfd_cartesien)             "Cartesian (real + imag.)"
-   set caption(traiteFilters,tfd_images_differentes)    "The output files must have different names"
+   set caption(traiteFilters,tfd_polaire)               "Polar (modulus + argument)"
+   set caption(traiteFilters,tfd_cartesien)             "Cartesian (real + imaginary)"
 ## </To be translated>
 
    set caption(traiteFilters,traitement_en_cours)       "Aufbereitung im Gange..."
@@ -408,19 +404,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,coef_invalides)            "Coeficientes Inválidos."
 
 ## <To be translated>
-   set caption(traiteFilters,tfd_sortie1)               "Output Image (modulus or real) :"
-   set caption(traiteFilters,tfd_sortie2)               "Output Image (arg. or imag.) :"
-   set caption(traiteFilters,tfd_entree1)               "Input Image (modulus or real) :"
-   set caption(traiteFilters,tfd_entree2)               "Input Image (arg. or imag.) :"
+   set caption(traiteFilters,tfd_sortie1)               "Output Image \n (modulus or real part) :"
+   set caption(traiteFilters,tfd_sortie2)               "Output Image (argument \n or imaginary part) :"
+   set caption(traiteFilters,tfd_entree1)               "Input Image \n (modulus or real part) :"
+   set caption(traiteFilters,tfd_entree2)               "Input Image (argument \n or imaginary part) :"
    set caption(traiteFilters,icorr_entree1)             "Input Image # 1 :"
    set caption(traiteFilters,icorr_entree2)             "Input Image # 2 :"
    set caption(traiteFilters,tfd_ordre)                 "Order"
    set caption(traiteFilters,tfd_centre)                "Centered"
    set caption(traiteFilters,tfd_normal)                "Regular"
    set caption(traiteFilters,tfd_format)                "Format"
-   set caption(traiteFilters,tfd_polaire)               "Polar (modulus + arg)"
-   set caption(traiteFilters,tfd_cartesien)             "Cartesian (real + imag.)"
-   set caption(traiteFilters,tfd_images_differentes)    "The output files must have different names"
+   set caption(traiteFilters,tfd_polaire)               "Polar (modulus + argument)"
+   set caption(traiteFilters,tfd_cartesien)             "Cartesian (real + imaginary)"
 ## </To be translated>
 
    set caption(traiteFilters,traitement_en_cours)       "Tratamento em curso..."
@@ -479,19 +474,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,coef_invalides)            "Ugyldige koefficienter."
 
 ## <To be translated>
-   set caption(traiteFilters,tfd_sortie1)               "Output Image (modulus or real) :"
-   set caption(traiteFilters,tfd_sortie2)               "Output Image (arg. or imag.) :"
-   set caption(traiteFilters,tfd_entree1)               "Input Image (modulus or real) :"
-   set caption(traiteFilters,tfd_entree2)               "Input Image (arg. or imag.) :"
+   set caption(traiteFilters,tfd_sortie1)               "Output Image \n (modulus or real part) :"
+   set caption(traiteFilters,tfd_sortie2)               "Output Image (argument \n or imaginary part) :"
+   set caption(traiteFilters,tfd_entree1)               "Input Image \n (modulus or real part) :"
+   set caption(traiteFilters,tfd_entree2)               "Input Image (argument \n or imaginary part) :"
    set caption(traiteFilters,icorr_entree1)             "Input Image # 1 :"
    set caption(traiteFilters,icorr_entree2)             "Input Image # 2 :"
    set caption(traiteFilters,tfd_ordre)                 "Order"
    set caption(traiteFilters,tfd_centre)                "Centered"
    set caption(traiteFilters,tfd_normal)                "Regular"
    set caption(traiteFilters,tfd_format)                "Format"
-   set caption(traiteFilters,tfd_polaire)               "Polar (modulus + arg)"
-   set caption(traiteFilters,tfd_cartesien)             "Cartesian (real + imag.)"
-   set caption(traiteFilters,tfd_images_differentes)    "The output files must have different names"
+   set caption(traiteFilters,tfd_polaire)               "Polar (modulus + argument)"
+   set caption(traiteFilters,tfd_cartesien)             "Cartesian (real + imaginary)"
 ## </To be translated>
 
    set caption(traiteFilters,traitement_en_cours)       "Processing er aktiv"
@@ -547,18 +541,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,coef_invalide)             "Invalid Coefficient."
    set caption(traiteFilters,coef_invalides)            "Invalid Coefficients."
 
-   set caption(traiteFilters,tfd_sortie1)               "Output Image (modulus or real) :"
-   set caption(traiteFilters,tfd_sortie2)               "Output Image (arg. or imag.) :"
-   set caption(traiteFilters,tfd_entree1)               "Input Image (modulus or real) :"
-   set caption(traiteFilters,tfd_entree2)               "Input Image (arg. or imag.) :"
+   set caption(traiteFilters,tfd_sortie1)               "Output Image \n (modulus or real part) :"
+   set caption(traiteFilters,tfd_sortie2)               "Output Image (argument \n or imaginary part) :"
+   set caption(traiteFilters,tfd_entree1)               "Input Image \n (modulus or real part) :"
+   set caption(traiteFilters,tfd_entree2)               "Input Image (argument \n or imaginary part) :"
    set caption(traiteFilters,icorr_entree1)             "Input Image # 1 :"
    set caption(traiteFilters,icorr_entree2)             "Input Image # 2 :"
    set caption(traiteFilters,tfd_ordre)                 "Order"
    set caption(traiteFilters,tfd_centre)                "Centered"
    set caption(traiteFilters,tfd_normal)                "Regular"
    set caption(traiteFilters,tfd_format)                "Format"
-   set caption(traiteFilters,tfd_polaire)               "Polar (modulus + arg)"
-   set caption(traiteFilters,tfd_cartesien)             "Cartesian (real + imag.)"
+   set caption(traiteFilters,tfd_polaire)               "Polar (modulus + argument)"
+   set caption(traiteFilters,tfd_cartesien)             "Cartesian (real + imaginary)"
    set caption(traiteFilters,tfd_images_differentes)    "The output files must have different names"
 
    set caption(traiteFilters,traitement_en_cours)       "Processing in progress..."
@@ -614,18 +608,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,coef_invalide)             "Invalid Coefficient."
    set caption(traiteFilters,coef_invalides)            "Invalid Coefficients."
 
-   set caption(traiteFilters,tfd_sortie1)               "Output Image (modulus or real) :"
-   set caption(traiteFilters,tfd_sortie2)               "Output Image (arg. or imag.) :"
-   set caption(traiteFilters,tfd_entree1)               "Input Image (modulus or real) :"
-   set caption(traiteFilters,tfd_entree2)               "Input Image (arg. or imag.) :"
+   set caption(traiteFilters,tfd_sortie1)               "Output Image \n (modulus or real part) :"
+   set caption(traiteFilters,tfd_sortie2)               "Output Image (argument \n or imaginary part) :"
+   set caption(traiteFilters,tfd_entree1)               "Input Image \n (modulus or real part) :"
+   set caption(traiteFilters,tfd_entree2)               "Input Image (argument \n or imaginary part) :"
    set caption(traiteFilters,icorr_entree1)             "Input Image # 1 :"
    set caption(traiteFilters,icorr_entree2)             "Input Image # 2 :"
    set caption(traiteFilters,tfd_ordre)                 "Order"
    set caption(traiteFilters,tfd_centre)                "Centered"
    set caption(traiteFilters,tfd_normal)                "Regular"
    set caption(traiteFilters,tfd_format)                "Format"
-   set caption(traiteFilters,tfd_polaire)               "Polar (modulus + arg)"
-   set caption(traiteFilters,tfd_cartesien)             "Cartesian (real + imag.)"
+   set caption(traiteFilters,tfd_polaire)               "Polar (modulus + argument)"
+   set caption(traiteFilters,tfd_cartesien)             "Cartesian (real + imaginary)"
    set caption(traiteFilters,tfd_images_differentes)    "The output files must have different names"
 
    set caption(traiteFilters,traitement_en_cours)       "Processing in progress..."
