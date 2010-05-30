@@ -423,7 +423,7 @@ int cagire_read(struct camprop *cam,char *res)
    char s[2048];
 	long clk_tck = CLOCKS_PER_SEC;
    clock_t clock0;
-	double dt;
+	double dt = 0;
 	if (cam->simulation==0) {
 		strcpy(res,"");
 		clock0 = clock();
