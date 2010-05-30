@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.142 2010-05-29 10:15:35 michelpujol Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.143 2010-05-30 17:41:57 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -2830,7 +2830,7 @@ namespace eval ::confVisu {
       variable private
 
       ComputeScaleRange $visuNo
-      if { [ image type image[visu$visuNo image] ] == "photo" } {
+      if { [ image type imagevisu[visu$visuNo image] ] == "photo" } {
          while { 1 } {
             set catchResult [catch { visu$visuNo disp } msg ]
             if { $catchResult == 1 && $msg == "NO MEMORY FOR DISPLAY" } {
