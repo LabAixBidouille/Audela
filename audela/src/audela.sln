@@ -195,10 +195,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libyd", "audela\libyd\vc90\libyd.vcproj", "{112387A7-3557-487F-BC3C-F4AF03E33FB5}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libt193", "libtel\libt193\vc90\libt193.vcproj", "{E71812D0-9F52-4F29-95A0-959993A2E8EF}"
-	ProjectSection(ProjectDependencies) = postProject
-		{2402B30E-01AD-4F43-B42F-55C9D699880A} = {2402B30E-01AD-4F43-B42F-55C9D699880A}
-		{52EDD44E-0846-471C-9B7E-FD55B9CB8707} = {52EDD44E-0846-471C-9B7E-FD55B9CB8707}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "temma", "libtel\libtemma\vc90\temma.vcproj", "{A7F66B9B-7398-4222-9CA5-4542F4F98E02}"
 EndProject
@@ -243,6 +239,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libqsi", "libcam\libqsi\vc9
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_etel", "external\etel\vc90\external_etel.vcproj", "{8653FD7B-CCB6-49BD-B454-C8B951F8B757}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libcagire", "libcam\libcagire\vc90\libcagire.vcproj", "{4117BC2F-CAEC-4073-99FD-902CEAB7A44D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -574,6 +572,10 @@ Global
 		{8653FD7B-CCB6-49BD-B454-C8B951F8B757}.Debug|Win32.Build.0 = Debug|Win32
 		{8653FD7B-CCB6-49BD-B454-C8B951F8B757}.Release|Win32.ActiveCfg = Release|Win32
 		{8653FD7B-CCB6-49BD-B454-C8B951F8B757}.Release|Win32.Build.0 = Release|Win32
+		{4117BC2F-CAEC-4073-99FD-902CEAB7A44D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4117BC2F-CAEC-4073-99FD-902CEAB7A44D}.Debug|Win32.Build.0 = Debug|Win32
+		{4117BC2F-CAEC-4073-99FD-902CEAB7A44D}.Release|Win32.ActiveCfg = Release|Win32
+		{4117BC2F-CAEC-4073-99FD-902CEAB7A44D}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
