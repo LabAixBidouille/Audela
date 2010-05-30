@@ -114,6 +114,7 @@ struct cam_drv_t CAM_DRV = {
 struct _PrivateParams {
    QSICameraLib::ICameraEx * pCam;                // parametres internes de la camera
    //QSICameraLib::IFilterWheelEx * pFilterWheel;
+   int abort;
    int debug;
 };
 
@@ -258,6 +259,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    {
       cam_log(LOG_DEBUG,"cam_init avant connexion");
       cam->params->pCam->Connected = true;
+      cam->params->abort = 0; 
       cam_log(LOG_DEBUG,"cam_init avant GetCameraXSize");
       cam->nb_photox  = cam->params->pCam->CameraXSize;
       cam->nb_photoy  = cam->params->pCam->CameraYSize;
@@ -430,6 +432,8 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
             sprintf(cam->msg, "cam_start_exp error StartExposure hr=%X",hr);
             return;
          }
+         cam->params->abort = 0; 
+
          return;
       } catch (_com_error &e) {
          cam_log(LOG_ERROR,"cam_start_exp  error=%s",e.ErrorMessage());
@@ -461,6 +465,7 @@ void cam_stop_exp(struct camprop *cam)
          return;
       }
       cam_log(LOG_DEBUG,"cam_stop_exp fin OK");
+      cam->params->abort = 1;
       return;
    } catch (...) {
       cam_log(LOG_ERROR,"cam_stop_exp error StopExposure exception");
@@ -480,7 +485,14 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
    if (p == NULL)
       return;
 
-   if (cam->authorized == 1) {
+   if (cam->params->abort ==1 ) {
+      cam->params->abort = 0;
+      sprintf(cam->msg, "acq stopped by usr");
+      return;
+   }
+
+
+   if (cam->authorized == 1 ) {
       try {
          SAFEARRAY *safeValues;
 
