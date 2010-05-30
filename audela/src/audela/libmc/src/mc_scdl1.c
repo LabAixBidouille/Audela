@@ -2598,7 +2598,7 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 	}
 
 	// --- compute mc_SUNMOON vector for the observing range.
-	djd=1./86400.;
+	djd=5./86400.;
 	mc_scheduler_sunmoon1(longmpc,rhocosphip,rhosinphip,jd_prevmidsun,jd_nextmidsun,djd,&njd,&sunmoon);
 
 	// --- brillance du ciel
@@ -3488,7 +3488,7 @@ int mc_nextnight1(double jd_now, double longmpc, double rhocosphip, double rhosi
 	mc_scheduler_windowdates1(jd_now,longmpc,rhocosphip,rhosinphip,&jd_prevmidsun,&jd_nextmidsun);
 
 	// --- compute mc_SUNMOON vector for the observing range.
-	djd=600./86400.;
+	djd=1./86400.;
 	mc_scheduler_sunmoon1(longmpc,rhocosphip,rhosinphip,jd_prevmidsun,jd_nextmidsun,djd,&njd,&sunmoon);
 
 	*jdprev=jd_prevmidsun;
@@ -3529,7 +3529,7 @@ int mc_nextnight1(double jd_now, double longmpc, double rhocosphip, double rhosi
 		mc_scheduler_windowdates1(jd_now,longmpc,rhocosphip,rhosinphip,&jd_prevmidsun,&jd_nextmidsun);
 
 		// --- compute mc_SUNMOON vector for the observing range.
-		djd=600./86400.;
+		djd=1./86400.;
 		mc_scheduler_sunmoon1(longmpc,rhocosphip,rhosinphip,jd_prevmidsun,jd_nextmidsun,djd,&njd,&sunmoon);
 
 		for (kjd=1;kjd<njd;kjd++) {
@@ -3552,7 +3552,7 @@ int mc_nextnight1(double jd_now, double longmpc, double rhocosphip, double rhosi
 		mc_scheduler_windowdates1(jd_now,longmpc,rhocosphip,rhosinphip,&jd_prevmidsun,&jd_nextmidsun);
 
 		// --- compute mc_SUNMOON vector for the observing range.
-		djd=600./86400.;
+		djd=1./86400.;
 		mc_scheduler_sunmoon1(longmpc,rhocosphip,rhosinphip,jd_prevmidsun,jd_nextmidsun,djd,&njd,&sunmoon);
 
 		for (kjd=1;kjd<njd;kjd++) {
