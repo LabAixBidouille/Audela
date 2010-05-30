@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise à jour $Id: visio2.tcl,v 1.53 2010-05-09 07:43:48 robertdelmas Exp $
+# Mise à jour $Id: visio2.tcl,v 1.54 2010-05-30 17:41:26 michelpujol Exp $
 #
 
 namespace eval ::visio2 {
@@ -1460,7 +1460,7 @@ proc ::visio2::localTable::startAnimation { visuNo } {
    set name [string trimleft  [$private($visuNo,tbl) cellcget $index,0 -text]]
    set filename [file join "$private($visuNo,directory)" "$name"]
    if { "$private($visuNo,previousType)" == "$private(fileImage)" } {
-      ::Image::startGifAnimation image[visu$visuNo image] $::confVisu::private($visuNo,zoom) $filename
+      ::Image::startGifAnimation imagevisu[visu$visuNo image] $::confVisu::private($visuNo,zoom) $filename
    } elseif { "$private($visuNo,previousType)" == "$private(fileMovie)" } {
       ::Movie::start $visuNo
    }
