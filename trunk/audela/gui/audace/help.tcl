@@ -2,7 +2,7 @@
 # Fichier : help.tcl
 # Description : Aide d'Aud'ACE
 # Auteur : Michel PUJOL
-# Mise à jour $Id: help.tcl,v 1.8 2010-05-28 08:06:05 robertdelmas Exp $
+# Mise à jour $Id: help.tcl,v 1.9 2010-05-31 22:25:15 robertdelmas Exp $
 #
 
 ###########################################################################################
@@ -160,7 +160,7 @@ namespace eval ::audace {
    #     relativeFileName : nom du fichier d'aide
    #     tag             : balise anchor dans la page HTML (optionel)
    #
-   #  exemple : ::audace::showHelpScript $audace(rep_script) testaudela.htm
+   #  exemple : ::audace::showHelpScript $audace(rep_scripts) testaudela.htm
    #----------------------------------------------------------------------------------------
    proc ::audace::showHelpScript { scriptDirectory  { relativeFileName "" } { tag "" } } {
       global audace help
