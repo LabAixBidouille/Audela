@@ -8,7 +8,7 @@
 # Connected sites are found in http://gcn.gsfc.nasa.gov/sites_cfg.html
 # To create a new connected site http://gcn.gsfc.nasa.gov/gcn/config_builder.html
 #
-# Mise à jour $Id: gcn_tools.tcl,v 1.38 2010-05-16 10:50:05 robertdelmas Exp $
+# Mise à jour $Id: gcn_tools.tcl,v 1.39 2010-06-01 09:48:48 myrtillelaas Exp $
 #
 
 # ==========================================================================================
@@ -645,6 +645,14 @@ proc gcn_decode { longs sockname } {
          set gcn($sockname,descr,grb_error) [expr 0.0001*$gcn($sockname,long,burst_error)*60.]; # boite d'erreur en arcmin
          set gcn($sockname,descr,burst_flue) $gcn($sockname,long,9)
          set gcn($sockname,descr,integ_time) [expr $gcn($sockname,long,14)*4e-3]
+         set gcn($sockname,descr,burst_ra_2) [expr $gcn($sockname,long,10)*0.0001]
+         set gcn($sockname,descr,burst_dec_2) [expr $gcn($sockname,long,11)*0.0001]
+         set gcn($sockname,descr,burst_ra_3) [expr $gcn($sockname,long,12)*0.0001]
+         set gcn($sockname,descr,burst_dec_3) [expr $gcn($sockname,long,13)*0.0001]
+         set gcn($sockname,descr,burst_ra_4) [expr $gcn($sockname,long,14)*0.0001]
+         set gcn($sockname,descr,burst_dec_4) [expr $gcn($sockname,long,15)*0.0001]
+         set gcn($sockname,descr,burst_ra_5) [expr $gcn($sockname,long,16)*0.0001]
+         set gcn($sockname,descr,burst_dec_5) [expr $gcn($sockname,long,17)*0.0001]
          if {($pkt_type=="905")||($pkt_type=="907")} {
             set gcn($sockname,descr,def_not_grb) 0
          }
