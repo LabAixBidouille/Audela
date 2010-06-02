@@ -1,7 +1,7 @@
 #
 # Fichier : diaghr.tcl
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: diaghr.tcl,v 1.4 2010-05-29 13:51:56 robertdelmas Exp $
+# Mise à jour $Id: diaghr.tcl,v 1.5 2010-06-02 19:42:54 alainklotz Exp $
 #
 # Utilitaire pour mesurer des diagrammes HR a partir de deux images filtrees
 # Les images doivent etre calibrees en WCS
@@ -342,7 +342,7 @@ proc diaghr_extract { file_image_1 file_image_2 ra_center dec_center radius_arcm
 }
 
 # -------------------------------------------------------------------------------------------------
-# proc diaghr_plot pour dessiner un diagramme couleur/magnitude et superposer un isochrone
+# proc diaghr_plot pour dessiner un diagramme couleur/magnitude et superposer un isochrone.
 #
 # Entrees :
 # * fic_hr : nom du fichier ([pwd]/hr.txt par defaut) genere prealablement par la fonction diaghr_extract
@@ -361,7 +361,7 @@ proc diaghr_extract { file_image_1 file_image_2 ra_center dec_center radius_arcm
 # * v_extinction : Extinction dans la bande V pour superposer un isochrone
 # * fic_isochrones : fichier qui contient les isochrones.
 # -------------------------------------------------------------------------------------------------
-proc diaghr_plot { {fic_hr ""} {offmag1 0} {offmag2 0} {xaxis 0.95} {color1 V} {color2 R} {age ""} {dist_modulus 7} {v_extinction 0} {fic_isochrones "audace/catalogues/isochrones1.dat"} } {
+proc diaghr_plot { {fic_hr ""} {offmag1 0} {offmag2 0} {xaxis 0.95} {color1 V} {color2 R} {age ""} {dist_modulus 7} {v_extinction 0} {fic_isochrones ""} } {
    global audace
 
    set filters {B V R J H K}
@@ -465,6 +465,9 @@ proc diaghr_plot { {fic_hr ""} {offmag1 0} {offmag2 0} {xaxis 0.95} {color1 V} {
       return ""
    }
    set logage [expr log10($age)]
+   if {$fic_isochrones==""} {
+      set fic_isochrones "$audace(rep_install)/gui/audace/catalogues/isochrones1.dat"
+   }
    if {[file exists $fic_isochrones]==0} {
       ::console::affiche_resultat "File $fic_isochrones not found !!!\n"
       return ""
