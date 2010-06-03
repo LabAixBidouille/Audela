@@ -65,6 +65,8 @@ struct telprop {
    int slew_axis;                     // variable qui indique que est l'axe en cours de slew 0: aucun, 1: RA, 2: DEC, 3: RA+DEC.
    int tubepos;                       // 0: tube a l'ouest ; 1: tube a l'est
    int ha_pointing;
+	int gotodead_ms;
+	int gotoread_ms;
 };
 
 int tel_init(struct telprop *tel, int argc, char **argv);
