@@ -602,11 +602,12 @@ double ml_getGpsDate ()
 
 			//pour la precision au millime de seconde et pas plus
 			min=(unsigned long int)(min*0.001);
+			if (min>999) { min=999; }
 
 			//sprintf(DateGpst,"%.2d-%.2d-%.2dT%.2d:%.2d:%.2d.%.2i",
-			sprintf(DateGpst,"%04d-%02d-%02dT%02d:%02d:%02d.%.3f",
+			sprintf(DateGpst,"%04d-%02d-%02dT%02d:%02d:%02d.%03d",
 				majtime->tm_year+1900, majtime->tm_mon+1, majtime->tm_mday,
-				majtime->tm_hour, majtime->tm_min, majtime->tm_sec, min*1e-3);
+				majtime->tm_hour, majtime->tm_min, majtime->tm_sec, min);
 
 			date=1;
 
