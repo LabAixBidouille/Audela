@@ -245,7 +245,7 @@ int cmdTelLst(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 }
 
 /*
- *   Pointage en coordonnï¿½es horaires
+ *   Pointage en coordonnees horaires
  */
 int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    char ligne[2256],texte[256];
@@ -383,6 +383,18 @@ int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 
 /*
  *   Limites pour retournements (deg)
+ Exemple :
+#init avec tube à l'ouest et pole nord => hadec = {18h 90d}
+tel1 limits 23h20m 00h40 ; # default
+tel1 hadec goto {02h30m 40d} -blocking 1 ; # tube à l'est (à l'endroit)
+#Si le tube est à l'est et que le HA à pointer (22h30) est < à la limite East alors on retourne le tube à l'ouest
+tel1 hadec goto {22h30m 40d} -blocking 1 ; # tube à l'ouest (à l'endroit)
+#Si le tube est à l'ouest et que le HA à pointer (02h30m) est > à la limite West alors on retourne le tube à l'est
+tel1 hadec goto {02h30m 40d} -blocking 1 ; # tube à l'est (à l'endroit)
+#
+tel1 limits 18h 00h40 ; Eastern limit=18h Western limit=0h40m
+tel1 hadec goto {02h30m 40d} -blocking 1 ; # tube à l'est (à l'endroit)
+tel1 hadec goto {22h30m 40d} -blocking 1 ; # tube à l'est (à l'envers)
  */
 int cmdTelLimits(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    char ligne[2048],s[2048],le[30],lw[30];
@@ -428,7 +440,7 @@ int cmdTelLimits(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
 
 
 /*
- *  Orientation du tube
+ *  Orientation initiale du tube
  */
 int cmdTelOrientation(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 	char s[100];
@@ -474,5 +486,27 @@ int cmdTelTempo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 	return TCL_OK;
 }
 
+/*
+ *  Temporisation pour les appels aux goto bloquants
+ */
+int cmdTelTempoGoto(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+	char s[100];
+	struct telprop *tel;
+	char comment[]="Usage: %s %s ?dead_ms read_ms?";
+	
+	if (argc>4) {
+		sprintf(s,comment,argv[0],argv[1]);
+		Tcl_SetResult(interp,s,TCL_VOLATILE);
+		return TCL_ERROR;
+	}
+	tel = (struct telprop*)clientData;
+	if ((argc>=3)&&(argc<=4)) {
+		tel->gotodead_ms=atoi(argv[2]);
+		tel->gotoread_ms=atoi(argv[3]);
+	}
+	sprintf(s,"%d %d",tel->gotodead_ms,tel->gotoread_ms);
+	Tcl_SetResult(interp,s,TCL_VOLATILE);
+	return TCL_OK;
+}
 
 

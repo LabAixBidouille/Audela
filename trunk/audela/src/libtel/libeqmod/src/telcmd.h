@@ -37,5 +37,6 @@ static struct cmditem cmdlist[] = {
    {"limits",(Tcl_CmdProc *)cmdTelLimits},\
    {"orientation",(Tcl_CmdProc *)cmdTelOrientation},\
    {"tempo",(Tcl_CmdProc *)cmdTelTempo},\
+   {"tempogoto",(Tcl_CmdProc *)cmdTelTempoGoto},\
    {NULL, NULL}
 };

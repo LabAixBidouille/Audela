@@ -370,6 +370,8 @@ int tel_init(struct telprop *tel, int argc, char **argv)
       eqmod2_action_motor(tel);
 
    eqmod_radec_coord(tel,NULL);
+	tel->gotodead_ms=900;
+	tel->gotoread_ms=350;
 
    return 0;
 }
@@ -1139,7 +1141,7 @@ int eqmod2_waitgoto(struct telprop *tel)
       tol=(tel->radec_position_conversion)/3600.*10; // tolerance +/- 10 arcsec
       while (1==1) {
          time_in++;
-         sprintf(s,"after 900"); mytel_tcleval(tel,s);
+         sprintf(s,"after %d",tel->gotodead_ms); mytel_tcleval(tel,s);
          eqmod_positions12(tel,&p1,&p2);
          PRINTF("  wait: %d %d\n",p10,p20);
          if ((fabs(p1-p10)<tol)&&(fabs(p2-p20)<tol)) {break;}
@@ -1154,7 +1156,7 @@ int eqmod2_waitgoto(struct telprop *tel)
          PRINTF("  wait: %d %d\n",p10,p20);
          while (1==1) {
             time_in++;
-            sprintf(s,"after 350"); mytel_tcleval(tel,s);
+            sprintf(s,"after %d",tel->gotoread_ms); mytel_tcleval(tel,s);
             eqmod_positions12(tel,&p1,&p2);
             PRINTF("  wait: %d %d\n",p10,p20);
             if ((fabs(p1-p10)<tol)&&(fabs(p2-p20)<tol)) {
