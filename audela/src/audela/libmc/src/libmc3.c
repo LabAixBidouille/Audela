@@ -621,12 +621,12 @@ List_ModelValues
             mc_hd2ah(ha,dec,latrad,&az,&h);
             mc_hd2ad(jd,longmpc,ha,&ra);
             daz=az-azt;
-            if (daz<-PI) { daz+=2*(PI); }
-            if (daz>PI)  { daz-=2*(PI); }
+            if (daz<-PI) { daz+=2*(PI)/(DR)*60; }
+            else if (daz>PI)  { daz-=2*(PI)/(DR)*60; }
             dh=h-ht;
             dra=ra-rat;
-            if (dra<-PI) { dra+=2*(PI); }
-            if (dra>PI)  { dra-=2*(PI); }
+            if (dra<-PI) { dra+=2*(PI)/(DR)*60; }
+            else if (dra>PI)  { dra-=2*(PI)/(DR)*60; }
          }
          /* --- corrections pure ALTAZ of coordinates ---*/
          if (((daz!=0)||(dh!=0))&&(dha==0)&&(ddec==0)) {
@@ -638,12 +638,12 @@ List_ModelValues
             mc_ah2hd(az,h,latrad,&ha,&dec);
             mc_hd2ad(jd,longmpc,ha,&ra);
             dha=ha-hat;
-            if (dha<-PI) { dha+=2*(PI); }
-            if (dha>PI)  { dha-=2*(PI); }
+            if (dha<-PI) { dha+=2*(PI)/(DR)*60; }
+            else if (dha>PI)  { dha-=2*(PI)/(DR)*60; }
             ddec=dec-dect;
             dra=ra-rat;
-            if (dra<-PI) { dra+=2*(PI); }
-            if (dra>PI)  { dra-=2*(PI); }
+            if (dra<-PI) { dra+=2*(PI)/(DR)*60; }
+            else if (dra>PI)  { dra-=2*(PI)/(DR)*60; }
          }
          /* --- free pointers ---*/
          if (matx!=NULL) { free(matx); }
