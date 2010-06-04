@@ -2,7 +2,7 @@
 # Fichier : wizard.tcl
 # Description : pipeline de pointage des etoiles
 # Auteur : Michel Pujol
-# Mise à jour $Id: wizard.tcl,v 1.5 2010-05-28 22:48:57 robertdelmas Exp $
+# Mise à jour $Id: wizard.tcl,v 1.6 2010-06-04 06:51:53 michelpujol Exp $
 #
 
 namespace eval ::modpoi2::wizard {
@@ -116,14 +116,14 @@ proc ::modpoi2::wizard::modpoi_wiz { visuNo { starList "" } } {
          set private(star$k,pressure)    [lindex $star 9]
          set private(star$k,temperature) [lindex $star 10]
 
-         #--- si le nom de l'etoile est renseigné), je calcule les ecarts raDelta et deDelta
+         #--- si le nom de l'etoile est renseigné, je calcule les ecarts raDelta et deDelta
          if { $private(star$k,starname) != "" } {
-            #--- je calcule l'ecart en arcmin a la date d'observation
             set hipRecord [list $private(star$k,starname) "0" \
                [mc_angle2deg $private(star$k,raCat)] \
                [mc_angle2deg $private(star$k,deCat)] \
                $private(star$k,eqCat) 0 0 0 0 \
             ]
+            #--- je calcule l'ecart en arcmin a la date d'observation sans le modèle de pointage
             set coords [mc_hip2tel $hipRecord $private(star$k,date) $private(home) $private(star$k,pressure) $private(star$k,temperature) ]
             set private(star$k,raApp)   [lindex $coords 0]
             set private(star$k,deApp)   [lindex $coords 1]
@@ -178,10 +178,9 @@ proc ::modpoi2::wizard::modpoi_wiz { visuNo { starList "" } } {
                $private(star$k,pressure) $private(star$k,temperature) \
                $private(symbols) $private(coefficients) \
             ]
-            ###set private(star$k,haDeltaTest) [expr 60.0 * [mc_anglescomp [mc_angle2deg $private(star$k,raObs)]  - [lindex $coords 10] ]]
-            ###set haObs [lindex [mc_radec2altaz $private(star$k,raObs) $private(star$k,deObs) $private(home) $private(star$k,date)  ] 2]
-            set private(star$k,raDeltaTest) [expr 60.0 * [mc_anglescomp [mc_angle2deg $private(star$k,raObs)]  - [lindex $coords 12] ]]
-            set private(star$k,deDeltaTest) [expr 60.0 * [mc_anglescomp [mc_angle2deg $private(star$k,deObs)]  - [lindex $coords 11] ]]
+            #--- je recupere l'ecart en arcmin
+            set private(star$k,raDeltaTest) [lindex $coords 5] ; #--- dra
+            set private(star$k,deDeltaTest) [lindex $coords 6] ; #--- ddec
          } else {
             set private(star$k,raDeltaTest) ""
             set private(star$k,deDeltaTest) ""
@@ -632,8 +631,8 @@ proc ::modpoi2::wizard::modpoi_wiz2 { } {
          set deDelta     [format "%.3f" $private(star$k,deDelta)]
          set haApp       [mc_angle2hms $private(star$k,haApp) 360 zero 0 auto string]
          set deApp       [mc_angle2dms $private(star$k,deApp) 90  zero 0 + string]
-         set raDeltaTest [format "%.3f" $private(star$k,raDeltaTest)]
-         set deDeltaTest [format "%.3f" $private(star$k,deDeltaTest)]
+         set raDeltaTest [format "%.6f" $private(star$k,raDeltaTest)]
+         set deDeltaTest [format "%.6f" $private(star$k,deDeltaTest)]
          #--- j'incremente le compteur des mesures
          incr nk
       } else {
@@ -668,6 +667,7 @@ proc ::modpoi2::wizard::modpoi_wiz2 { } {
    focus $private(g,base)
 
    #--- je selectionne le premier point d'amer
+   $private(g,base).amer.table selection clear 0 end
    $tkAmerTable selection set $private(amerIndex)
    onSelectAmer $tkAmerTable
 
@@ -815,7 +815,7 @@ proc ::modpoi2::wizard::setCheckbutton { tkTable lineName columnName value } {
 proc ::modpoi2::wizard::onSelectAmer { tkAmerTable } {
 variable private
    #--- je recupere la ligne slectionnee par l'utilisateur
-   set k [lindex [$tkAmerTable curselection]]
+   set k [lindex [$tkAmerTable curselection] 0]
    if { $k != "" } {
       #--- je recupere les coordonnees du point d'amer
       set amerAz $private(star$k,amerAz)
@@ -1363,6 +1363,7 @@ proc ::modpoi2::wizard::modpoi_wiz5 { } {
    set starList ""
    for {set k 0} {$k < $private(stars,nb)} {incr k} {
       if { $private(star$k,starname) != "" && $private(star$k,state) == 1 } {
+         #--- je cree la liste  HA DEC dHA dDEC ( attention : dHA = -dRA )
          lappend starList [list $private(star$k,haApp) $private(star$k,deApp) \
          [expr - $private(star$k,raDelta)] $private(star$k,deDelta) ]
       }
@@ -1404,22 +1405,6 @@ proc ::modpoi2::wizard::modpoi_wiz5 { } {
    ($caption(modpoi2,wiz5,TF))\n\n\
    chisquare=$private(chisquare)\n\n"
 
-   ###set starList ""
-   ###for {set k 0} {$k < $private(stars,nb)} {incr k} {
-   ###   if { $private(star$k,starname) != "" } {
-   ###      set haDelta [expr $private(star$k,haDelta) / 60. ]
-   ###      set deDelta [expr $private(star$k,deDelta) / 60. ]
-   ###      lappend starList [list $private(star$k,starname) $private(star$k,date) \
-   ###         $private(star$k,raApp) $private(star$k,deApp) \
-   ###         $haDelta $deDelta $private(star$k,haApp) ]
-   ###   }
-   ###}
-   ###
-   ###
-   ####--- Test du calcul direct
-   ###set res [::modpoi2::process::testCoefficient $starList $private(home) $private(coefficients) ]
-   ###::console::affiche_resultat "$res\n"
-
    #--- je calcule des ecarts en appliquant le modele
    for {set k 0} {$k < $private(stars,nb)} {incr k} {
       if { $private(star$k,starname) != "" && $private(star$k,state) == 1 } {
@@ -1432,14 +1417,8 @@ proc ::modpoi2::wizard::modpoi_wiz5 { } {
             $private(star$k,pressure) $private(star$k,temperature) \
             $private(symbols) $private(coefficients) \
          ]
-         ###set private(star$k,deDeltaTest) [expr 60.0 * [lindex $coords 6]]
-         ###set private(star$k,haDeltaTest) [expr 60.0 * [lindex $coords 7]]
-         ###set private(star$k,haDeltaTest) [expr 60.0 * [mc_anglescomp [mc_angle2deg $private(star$k,raObs)]  - [lindex $coords 10] ]]
-         ###set haObs [lindex [mc_radec2altaz $private(star$k,raObs) $private(star$k,deObs) $private(home) $private(star$k,date)  ] 2]
-         ###set haApp [lindex [mc_radec2altaz [lindex $coords 10] [lindex $coords 11] $private(home) $private(star$k,date)  ] 2]
-         ###set private(star$k,haDeltaTest) [expr 60.0 * [mc_anglescomp $haObs  - [lindex $coords 12] ]]
-         set private(star$k,raDeltaTest) [expr 60.0 * [mc_anglescomp [mc_angle2deg $private(star$k,raObs)] - [lindex $coords 10 ] ]]
-         set private(star$k,deDeltaTest) [expr 60.0 * [mc_anglescomp [mc_angle2deg $private(star$k,deObs)] - [lindex $coords 11 ] ]]
+         set private(star$k,raDeltaTest) [lindex $coords 5] ; #--- dra
+         set private(star$k,deDeltaTest) [lindex $coords 6] ; #--- ddec
       } else {
          set private(star$k,raDeltaTest) ""
          set private(star$k,deDeltaTest) ""
@@ -1698,15 +1677,28 @@ proc ::modpoi2::wizard::displayMap { visuNo } {
    set figureNo [::plotxy::figure $visuNo]
    ::plotxy::clf $figureNo
 
+   set num 0
    for {set k 0} {$k < $private(stars,nb)} {incr k} {
-      #--- Visualise les etoiles deja pointees
       if { $private(star$k,starname) != "" } {
+         #--- Visualise les etoiles pointees si elle existe
          ::plotxy::plot $private(star$k,azApp) $private(star$k,elApp) g* 8
          ::plotxy::hold on
+         #--- j'ajoute le numero du point d'amer dans le label
+         $::plotxy(fig$figureNo,parent).xy element configure line_fig${figureNo}_${num} -label $k
+         #--- bind de l'evenement  <ButtonPress-1>
+         $::plotxy(fig$figureNo,parent).xy element bind line_fig${figureNo}_${num} <ButtonPress-1> { ::modpoi2::wizard::onButtonPressMap %x %y   }
+         incr num
       }
       #--- Visualise le point d'amer
       ::plotxy::plot $private(star$k,amerAz) $private(star$k,amerEl) ro- 8
       ::plotxy::hold on
+
+      #--- j'ajoute le numero du point d'amer dans le label
+      $::plotxy(fig$figureNo,parent).xy element configure line_fig${figureNo}_${num} -label $k
+      #--- bind de l'evenement  <ButtonPress-1>
+      $::plotxy(fig$figureNo,parent).xy element bind line_fig${figureNo}_${num} <ButtonPress-1> { ::modpoi2::wizard::onButtonPressMap %x %y   }
+      incr num
+
    }
 
    #--- visualisation de l'horizon
@@ -1727,6 +1719,41 @@ proc ::modpoi2::wizard::hideMap { visuNo } {
    ::plotxy::clf $visuNo
 
 }
+
+proc ::modpoi2::wizard::onButtonPressMap { x y } {
+   variable private
+
+
+   if { [winfo exists $private(g,base).amer.table ] } {
+      #--- je cherche l'element qui est pres du curseur de la souris
+      if {[$::audace(base).plotxy1.xy element closest $x $y click]} {
+          #--- je recupere le numero point d'amer qui est dans le lable de l'element
+          set k [$::audace(base).plotxy1.xy element cget $click(name) -label]
+          if { $k != "" } {
+             #--- je recupere les coordonnees du point d'amer
+             set amerAz $private(star$k,amerAz)
+             set amerEl $private(star$k,amerEl)
+             if { $private(star$k,starname)!="" } {
+                set starAz $private(star$k,azApp)
+                set starEl $private(star$k,elApp)
+             } else {
+                set starAz ""
+                set starEl ""
+             }
+
+             #--- je selectionne le point d'amer dans la table
+             $private(g,base).amer.table selection clear 0 end
+             $private(g,base).amer.table selection set $k
+             onSelectAmer $private(g,base).amer.table
+             $private(g,base).amer.table see $k
+
+             #--- j'affiche un cercle autour du point d'amer dans le graphe
+             showSelectedAmer $amerAz $amerEl $starAz $starEl
+         }
+      }
+   }
+}
+
 
 #------------------------------------------------------------
 # showSelectedAmer
@@ -1816,7 +1843,7 @@ proc ::modpoi2::wizard::modpoi_goto { } {
 
    ::telescope::afficheCoord
 
-   #--- j'affiche l'ecart
+   #--- j'affiche l'ecart en arcminute
    set private(deltah) [format "%.3f" [expr 60.0 * [mc_anglescomp $::audace(telescope,getra)  - $private(star$amerIndex,raApp) ]]]
    set private(deltad) [format "%.3f" [expr 60.0 * [mc_anglescomp $::audace(telescope,getdec) - $private(star$amerIndex,deApp)]]]
 
@@ -1843,7 +1870,7 @@ proc ::modpoi2::wizard::modpoi_stopGoto {  } {
    $private(g,base).fra_bottom.but_prev configure -state normal
    $private(g,base).fra_bottom.but_next configure -state normal
 
-   #--- j'affiche l'ecart
+   #--- j'affiche l'ecart en arcminute
    set private(deltah) [format "%.3f" [expr 60.0 * [mc_anglescomp $::audace(telescope,getra)  - $private(star$private(amerIndex),raApp) ]]]
    set private(deltad) [format "%.3f" [expr 60.0 * [mc_anglescomp $::audace(telescope,getdec) - $private(star$private(amerIndex),deApp)]]]
 
@@ -1897,18 +1924,16 @@ proc ::modpoi2::wizard::modpoi_coord { } {
       set private(star$k,deObs) [lindex $radecObs 1]
    }
 
-   set private(star$k,raDelta) [mc_anglescomp $private(star$k,raObs)  - $private(star$k,raApp) ]
-   set private(star$k,deDelta) [mc_anglescomp $private(star$k,deObs)  - $private(star$k,deApp) ]
-   #--- je convertis l'ecart en arcmin
-   set private(star$k,raDelta) [expr 60.0 * $private(star$k,raDelta)]
-   set private(star$k,deDelta) [expr 60.0 * $private(star$k,deDelta)]
+   #--- je calcule l'ecart en arcmin
+   set private(star$k,raDelta) [expr 60.0 * [mc_anglescomp $private(star$k,raObs)  - $private(star$k,raApp) ]]
+   set private(star$k,deDelta) [expr 60.0 * [mc_anglescomp $private(star$k,deObs)  - $private(star$k,deApp) ]]
 
    #--- je renseigne le nom dans le tableau.
    #--- ATTENTION: la presence du nom dans de tableau sert de repere pour savoir si la mesure d'ecart est faite
    set private(star$k,starname) $private(starname,actual)
    set private(star$k,state) 1
 
-   #--- je calcule  radec de test
+   #--- je calcule l'ecart de test
    if { $private(coefficients) != "" } {
       set hipRecord [list $private(star$k,starname) "0" \
                         [mc_angle2deg $private(star$k,raCat)] \
@@ -1919,14 +1944,15 @@ proc ::modpoi2::wizard::modpoi_coord { } {
          $private(star$k,pressure) $private(star$k,temperature) \
          $private(symbols) $private(coefficients) \
       ]
-      set private(star$k,raDeltaTest) [expr 60.0 * [mc_anglescomp [mc_angle2deg $private(star$k,raObs)] - [lindex $coords 10] ]]
-      set private(star$k,deDeltaTest) [expr 60.0 * [mc_anglescomp [mc_angle2deg $private(star$k,deObs)] - [lindex $coords 11] ]]
+      #--- je recupere l'ecart en arcmin
+      set private(star$k,raDeltaTest) [lindex $coords 5] ; #--- dra
+      set private(star$k,deDeltaTest) [lindex $coords 6] ; #--- ddec
    } else {
       set private(star$k,raDeltaTest) ""
       set private(star$k,deDeltaTest) ""
    }
 
-   #--- j'enregistre la liste des étoiles et le modèle
+   #--- j'enregistre la liste des étoiles et le modèle dans un fichier temporaire
    saveModel
 }
 
