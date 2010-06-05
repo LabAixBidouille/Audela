@@ -2,12 +2,13 @@
 # Fichier : ros.tcl
 # Description : Function to launch Robotic Observatory Software installation
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: ros.tcl,v 1.17 2010-05-23 08:11:49 robertdelmas Exp $
+# Mise à jour $Id: ros.tcl,v 1.18 2010-06-05 11:30:45 alainklotz Exp $
 #
 
 proc ros { args } {
    global ros
    global meo
+   global audace
 
    set ros(withtk) 1
    set err [catch {wm withdraw .} msg]
@@ -19,7 +20,7 @@ proc ros { args } {
    set syntax "ros Software Keyword Action ?parameters?"
 
    if {$action=="install"} {
-      source [pwd]/../ros/ros_install.tcl
+      source $audace(rep_install)/ros/ros_install.tcl
 
    } elseif {$action=="gardien"} {
       # source ../gui/audace/ros.tcl
@@ -28,13 +29,13 @@ proc ros { args } {
       #set syntax "ros gardien send SET init|roof_open|roof_close|flatfield_on|flatfield_off|dark_on|dark_off|native ?params?"
       set action2 [lindex $args 1]
       set params [lrange $args 2 end]
-      set err [catch {source "[pwd]/../ros/root.tcl"}] ; if {$err==1} { source "$ros(root,ros)/../ros/root.tcl" }
+      set err [catch {source "$audace(rep_install)/ros/root.tcl"}] ; if {$err==1} { source "$ros(root,ros)/../ros/root.tcl" }
       set ros(falsenameofexecutable) majordome
       source "$ros(root,ros)/src/common/variables_globales.tcl"
       unset ros(falsenameofexecutable)
       set ros(req,gardien,gar,host) $ros(req,majordome,gar,host)
       set ros(req,gardien,gar,port) $ros(req,majordome,gar,port)
-      set err [catch {source "[pwd]/../gui/audace/socket_tools.tcl"}] ; if {$err==1} { source "$ros(root,audela)/gui/audace/socket_tools.tcl" }
+      set err [catch {source "$audace(rep_install)/gui/audace/socket_tools.tcl"}] ; if {$err==1} { source "$ros(root,audela)/gui/audace/socket_tools.tcl" }
       set err [catch {socket_client_open clientgar2 $ros(req,gardien,gar,host) [expr $ros(req,gardien,gar,port)+1]} msg]
       if {$err==1} {
          set texte $msg
@@ -79,13 +80,13 @@ proc ros { args } {
       # case of native : ros telescope send SET native #j-
       set action2 [lindex $args 1]
       set params [lrange $args 2 end]
-      set err [catch {source "[pwd]/../ros/root.tcl"}] ; if {$err==1} { source "$ros(root,ros)/../ros/root.tcl" }
+      set err [catch {source "$audace(rep_install)/ros/root.tcl"}] ; if {$err==1} { source "$ros(root,ros)/../ros/root.tcl" }
       set ros(falsenameofexecutable) majordome
       source "$ros(root,ros)/src/common/variables_globales.tcl"
       unset ros(falsenameofexecutable)
       set ros(req,telescope,tel,host) $ros(req,majordome,tel,host)
       set ros(req,telescope,tel,port) $ros(req,majordome,tel,port)
-      set err [catch {source "[pwd]/../gui/audace/socket_tools.tcl"}] ; if {$err==1} { source "$ros(root,audela)/gui/audace/socket_tools.tcl" }
+      set err [catch {source "$audace(rep_install)/gui/audace/socket_tools.tcl"}] ; if {$err==1} { source "$ros(root,audela)/gui/audace/socket_tools.tcl" }
       set err [catch {socket_client_open clienttel2 $ros(req,telescope,tel,host) [expr $ros(req,telescope,tel,port)+1]} msg]
       if {$err==1} {
          set texte $msg
@@ -131,13 +132,13 @@ proc ros { args } {
       # case of native : ros telescope send SET native #j-
       set action2 [lindex $args 1]
       set params [lrange $args 2 end]
-      set err [catch {source "[pwd]/../ros/root.tcl"}] ; if {$err==1} { source "$ros(root,ros)/../ros/root.tcl" }
+      set err [catch {source "$audace(rep_install)/ros/root.tcl"}] ; if {$err==1} { source "$ros(root,ros)/../ros/root.tcl" }
       set ros(falsenameofexecutable) majordome
       source "$ros(root,ros)/src/common/variables_globales.tcl"
       unset ros(falsenameofexecutable)
       set ros(req,camera,cam,host) $ros(req,majordome,cam,host)
       set ros(req,camera,cam,port) $ros(req,majordome,cam,port)
-      set err [catch {source "[pwd]/../gui/audace/socket_tools.tcl"}] ; if {$err==1} { source "$ros(root,audela)/gui/audace/socket_tools.tcl" }
+      set err [catch {source "$audace(rep_install)/gui/audace/socket_tools.tcl"}] ; if {$err==1} { source "$ros(root,audela)/gui/audace/socket_tools.tcl" }
       set err [catch {socket_client_open clientcam2 $ros(req,camera,cam,host) [expr $ros(req,camera,cam,port)+1]} msg]
       if {$err==1} {
          set texte $msg
@@ -181,13 +182,13 @@ proc ros { args } {
       # ros majordome send DO ...
       set action2 [lindex $args 1]
       set params [lrange $args 2 end]
-      set err [catch {source "[pwd]/../ros/root.tcl"}] ; if {$err==1} { source "$ros(root,ros)/../ros/root.tcl" }
+      set err [catch {source "$audace(rep_install)/ros/root.tcl"}] ; if {$err==1} { source "$ros(root,ros)/../ros/root.tcl" }
       set ros(falsenameofexecutable) majordome
       source "$ros(root,ros)/src/common/variables_globales.tcl"
       unset ros(falsenameofexecutable)
       set ros(req,majordome,maj,host) $ros(req,majordome,maj,host)
       set ros(req,majordome,maj,port) $ros(req,majordome,maj,port)
-      set err [catch {source "[pwd]/../gui/audace/socket_tools.tcl"}] ; if {$err==1} { source "$ros(root,audela)/gui/audace/socket_tools.tcl" }
+      set err [catch {source "$audace(rep_install)/gui/audace/socket_tools.tcl"}] ; if {$err==1} { source "$ros(root,audela)/gui/audace/socket_tools.tcl" }
       set err [catch {socket_client_open clientmaj2 $ros(req,majordome,maj,host) [expr $ros(req,majordome,maj,port)+1]} msg]
       if {$err==1} {
          set texte $msg
@@ -230,7 +231,7 @@ proc ros { args } {
    } elseif {$action=="var"} {
       set action2 [lindex $args 1]
       set params [lrange $args 2 end]
-      set err [catch {source "[pwd]/../ros/root.tcl"}] ; if {$err==1} { source "$ros(root,ros)/../ros/root.tcl" }
+      set err [catch {source "$audace(rep_install)/ros/root.tcl"}] ; if {$err==1} { source "$ros(root,ros)/../ros/root.tcl" }
       if {$action2=="files"} {
          set fout [lindex $params 0]
          global result
@@ -485,7 +486,7 @@ proc ros { args } {
       # ros modpoi make_doc
       set action2 [lindex $args 1]
       set params [lrange $args 2 end]
-      set err [catch {source "[pwd]/../ros/root.tcl"}] ; if {$err==1} { source "$ros(root,ros)/../ros/root.tcl" }
+      set err [catch {source "$audace(rep_install)/ros/root.tcl"}] ; if {$err==1} { source "$ros(root,ros)/../ros/root.tcl" }
       set ros(falsenameofexecutable) trireq
       source "$ros(root,ros)/src/common/variables_globales.tcl"
       unset ros(falsenameofexecutable)
@@ -496,7 +497,7 @@ proc ros { args } {
       set ros(rosmodpoi,cathipmain) hip_main.dat ; # catalogue Hipparcos original
       set ros(rosmodpoi,cathipshort) hip.txt ; # catalogue Hipparcos simplifie pour MEO
       set ros(rosmodpoi,path) "[pwd]"
-      set ros(rosmodpoi,source) "[pwd]/../gui/audace/ros.tcl"
+      set ros(rosmodpoi,source) "$audace(rep_install)/gui/audace/ros.tcl"
       catch {load "$ros(rosmodpoi,path)/libmc[info sharedlibextension]"}
       catch {load "$ros(rosmodpoi,path)/libgsltcl[info sharedlibextension]"}
       set ros(rosmodpoi,file,log) "$ros(rosmodpoi,path)/rosmodpoi_log.txt"

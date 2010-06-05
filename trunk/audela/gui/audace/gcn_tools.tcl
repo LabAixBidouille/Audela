@@ -8,7 +8,7 @@
 # Connected sites are found in http://gcn.gsfc.nasa.gov/sites_cfg.html
 # To create a new connected site http://gcn.gsfc.nasa.gov/gcn/config_builder.html
 #
-# Mise à jour $Id: gcn_tools.tcl,v 1.39 2010-06-01 09:48:48 myrtillelaas Exp $
+# Mise à jour $Id: gcn_tools.tcl,v 1.40 2010-06-05 11:30:45 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -631,6 +631,7 @@ proc gcn_decode { longs sockname } {
          set gcn($sockname,descr,grb_error) [expr 0.0001*$gcn($sockname,long,burst_error)*60.]; # boite d'erreur en arcmin
          set gcn($sockname,descr,burst_flue) $gcn($sockname,long,9)
          set gcn($sockname,descr,integ_time) [expr $gcn($sockname,long,14)*4e-3]
+         set gcn($sockname,descr,follow_up) $gcn($sockname,long,18) ; # =1 pour follow-up
          if {($pkt_type=="901")||($pkt_type=="903")} {
             set gcn($sockname,descr,def_not_grb) 0
          }
