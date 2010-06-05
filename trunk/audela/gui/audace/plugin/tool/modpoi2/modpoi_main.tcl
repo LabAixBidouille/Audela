@@ -2,7 +2,7 @@
 # Fichier : modpoi_main.tcl
 # Description : fenetre principale
 # Auteur : Michel Pujol
-# Mise à jour $Id: modpoi_main.tcl,v 1.4 2010-05-26 06:25:33 robertdelmas Exp $
+# Mise à jour $Id: modpoi_main.tcl,v 1.5 2010-06-05 11:40:07 michelpujol Exp $
 #
 
 namespace eval ::modpoi2::main {
@@ -10,8 +10,8 @@ namespace eval ::modpoi2::main {
 }
 
 #------------------------------------------------------------
-# fillConfigPage { }
-#  fenetre de configuration
+# run { }
+#    cree une fentre principale avec ::confGenerique::run
 #------------------------------------------------------------
 proc ::modpoi2::main::run { visuNo {tkbase ""} } {
    variable private
