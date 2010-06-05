@@ -5,7 +5,7 @@
 #               pose, choix des outils, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: confgene.tcl,v 1.76 2010-05-15 07:45:57 robertdelmas Exp $
+# Mise à jour $Id: confgene.tcl,v 1.77 2010-06-05 11:43:44 michelpujol Exp $
 #
 
 #
@@ -3028,6 +3028,7 @@ proc ::confGenerique::run { args } {
    set private($visuNo,$NameSpace,geometry)  "+180+50"
    set private($visuNo,$NameSpace,resizable) "0"
    set private($visuNo,$NameSpace,close)     "1"
+   set private($visuNo,$NameSpace,this)      $This
 
    #--- je traite les options
    while {[llength $options] > 0} {
@@ -3049,12 +3050,12 @@ proc ::confGenerique::run { args } {
       set options [lrange $options 2 end]
    }
 
-   createDialog $visuNo $NameSpace $This
+   createDialog $visuNo $NameSpace
 
    set private($visuNo,$NameSpace,modalResult) "0"
    if { $private($visuNo,$NameSpace,modal) == "1" } {
       #--- j'attends la fermeture de la fenetre avant de terminer
-      tkwait window $This
+      tkwait window $private($visuNo,$NameSpace,this)
       return $private($visuNo,$NameSpace,modalResult)
    } else {
       return "0"
@@ -3066,12 +3067,12 @@ proc ::confGenerique::run { args } {
 # Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer la configuration
 # et fermer la fenetre de configuration generique
 #
-proc ::confGenerique::ok { visuNo NameSpace This } {
+proc ::confGenerique::ok { visuNo NameSpace } {
    variable private
 
    set private($visuNo,$NameSpace,modalResult) "1"
    ::confGenerique::apply $visuNo $NameSpace
-   ::confGenerique::closeWindow $visuNo $NameSpace $This
+   ::confGenerique::closeWindow $visuNo $NameSpace
 }
 
 #
@@ -3102,40 +3103,44 @@ proc ::confGenerique::showHelp { visuNo NameSpace } {
 # Ferme la fenetre si la procedure namepace::closeWindow retourne une valeur
 # differente de "0"
 #
-proc ::confGenerique::closeWindow { visuNo NameSpace This } {
+proc ::confGenerique::closeWindow { visuNo NameSpace  } {
    variable private
 
    if { $private($visuNo,$NameSpace,close) == "1" } {
-      if { [info procs $NameSpace\:\:closeWindow ] != "" } {
-         #--- appelle la procedure "closeWindow"
-         set result [$NameSpace\:\:closeWindow $visuNo]
-         if { $result == "0" } {
-            return
+      if { [winfo exists $private($visuNo,$NameSpace,this)] } {
+         if { [info procs $NameSpace\:\:closeWindow ] != "" } {
+            #--- appelle la procedure "closeWindow"
+            set result [$NameSpace\:\:closeWindow $visuNo]
+            if { $result == "0" } {
+               return
+            }
          }
+         #--- supprime la fenetre
+         destroy $private($visuNo,$NameSpace,this)
       }
-      #--- supprime la fenetre
-      destroy $This
+      ###array unset private $visuNo,$NameSpace,*
    }
    return
 }
 
-proc ::confGenerique::createDialog { visuNo NameSpace This} {
+proc ::confGenerique::createDialog { visuNo NameSpace } {
    variable private
    global caption conf
 
-   if { [winfo exists $This] } {
-      wm withdraw $This
-      wm deiconify $This
-      focus $This
+   if { [winfo exists $private($visuNo,$NameSpace,this)] } {
+      wm withdraw $private($visuNo,$NameSpace,this)
+      wm deiconify $private($visuNo,$NameSpace,this)
+      focus $private($visuNo,$NameSpace,this)
       return
    }
 
-   #--- Cree la fenetre $This de niveau le plus haut
+   #--- Cree la fenetre private($visuNo,$NameSpace,this) de niveau le plus haut
+   set This $private($visuNo,$NameSpace,this)
    toplevel $This -class Toplevel
    wm geometry $This $private($visuNo,$NameSpace,geometry)
    wm resizable $This $private($visuNo,$NameSpace,resizable) $private($visuNo,$NameSpace,resizable)
    wm title $This "[$NameSpace\:\:getLabel] (visu$visuNo)"
-   wm protocol $This WM_DELETE_WINDOW "::confGenerique::closeWindow $visuNo $NameSpace $This"
+   wm protocol $This WM_DELETE_WINDOW "::confGenerique::closeWindow $visuNo $NameSpace"
 
    #--- Frame des boutons OK, Appliquer et Fermer
    frame $This.frame2 -borderwidth 1 -relief raised
@@ -3149,7 +3154,7 @@ proc ::confGenerique::createDialog { visuNo NameSpace This} {
    if { [info commands "$NameSpace\::apply"] !=  "" } {
       #--- Cree le bouton 'OK' si la procedure NameSpace::apply existe
       button $This.but_ok -text "$caption(confgene,ok)" -width 7 -borderwidth 2 \
-         -command "::confGenerique::ok $visuNo $NameSpace $This"
+         -command "::confGenerique::ok $visuNo $NameSpace"
       if { $conf(ok+appliquer) == "1" } {
          pack $This.but_ok -in $This.frame2 -side left -anchor w -padx 3 -pady 3  -ipady 5
       }
@@ -3168,11 +3173,11 @@ proc ::confGenerique::createDialog { visuNo NameSpace This} {
    #--- Cree le bouton 'Fermer'
    if { [info commands "$NameSpace\::closeWindow"] !=  "" } {
       button $This.but_fermer -text "$caption(confgene,fermer)" -width 7 -borderwidth 2 \
-         -command "::confGenerique::closeWindow $visuNo $NameSpace $This"
+         -command "::confGenerique::closeWindow $visuNo $NameSpace"
       pack $This.but_fermer -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- Raccourci qui ferme la fenetre avec la touche ESCAPE
-      bind $This <Key-Escape> "::confGenerique::closeWindow $visuNo $NameSpace $This"
+      bind $This <Key-Escape> "::confGenerique::closeWindow $visuNo $NameSpace"
    }
 
    #--- Cree le bouton 'Aide'
