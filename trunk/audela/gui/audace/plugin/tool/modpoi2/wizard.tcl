@@ -2,7 +2,7 @@
 # Fichier : wizard.tcl
 # Description : pipeline de pointage des etoiles
 # Auteur : Michel Pujol
-# Mise à jour $Id: wizard.tcl,v 1.6 2010-06-04 06:51:53 michelpujol Exp $
+# Mise à jour $Id: wizard.tcl,v 1.7 2010-06-05 11:37:35 michelpujol Exp $
 #
 
 namespace eval ::modpoi2::wizard {
@@ -132,6 +132,12 @@ proc ::modpoi2::wizard::modpoi_wiz { visuNo { starList "" } } {
             set private(star$k,elApp)   [lindex $coords 4]
             set private(star$k,raDelta) [expr 60.0 * [mc_anglescomp [mc_angle2deg $private(star$k,raObs)] - [mc_angle2deg $private(star$k,raApp)] ]]
             set private(star$k,deDelta) [expr 60.0 * [mc_anglescomp [mc_angle2deg $private(star$k,deObs)] - [mc_angle2deg $private(star$k,deApp)] ]]
+            ###if { $k < 6} {
+            ###console::disp "mc_hip2tel { $hipRecord } $private(star$k,date) { $private(home) } $private(star$k,pressure) $private(star$k,temperature)\n"
+            ###console::disp "coords=$coords \n"
+            ###console::disp "ra=[lindex $coords 0] dec=[lindex $coords 1] ha=[lindex $coords 2] az=[lindex $coords 3] el=[lindex $coords 4]\n"
+            ###}
+
             set private(star$k,state)   1
          } else {
             set private(star$k,raApp)     ""
@@ -178,9 +184,14 @@ proc ::modpoi2::wizard::modpoi_wiz { visuNo { starList "" } } {
                $private(star$k,pressure) $private(star$k,temperature) \
                $private(symbols) $private(coefficients) \
             ]
+            ###if { $k < 6} {
+            ###console::disp "mc_hip2tel { $hipRecord } $private(star$k,date) { $private(home) } $private(star$k,pressure) $private(star$k,temperature) { $private(symbols) } { $private(coefficients) }\n"
+            ###console::disp "coords=$coords \n"
+            ###console::disp "dra=[expr  60.0 * [lindex $coords 5]] ddec=[expr  60.0 * [lindex $coords 6]] dha=[expr  60.0 * [lindex $coords 7]] daz=[expr  60.0 * [lindex $coords 8]] del=[expr  60.0 * [lindex $coords 9]]\n"
+            ###}
             #--- je recupere l'ecart en arcmin
-            set private(star$k,raDeltaTest) [lindex $coords 5] ; #--- dra
-            set private(star$k,deDeltaTest) [lindex $coords 6] ; #--- ddec
+            set private(star$k,raDeltaTest) [expr  60.0 * [lindex $coords 5]] ; #--- dra
+            set private(star$k,deDeltaTest) [expr  60.0 * [lindex $coords 6]] ; #--- ddec
          } else {
             set private(star$k,raDeltaTest) ""
             set private(star$k,deDeltaTest) ""
@@ -1417,8 +1428,8 @@ proc ::modpoi2::wizard::modpoi_wiz5 { } {
             $private(star$k,pressure) $private(star$k,temperature) \
             $private(symbols) $private(coefficients) \
          ]
-         set private(star$k,raDeltaTest) [lindex $coords 5] ; #--- dra
-         set private(star$k,deDeltaTest) [lindex $coords 6] ; #--- ddec
+         set private(star$k,raDeltaTest) [expr  60.0 * [lindex $coords 5]] ; #--- dra
+         set private(star$k,deDeltaTest) [expr  60.0 * [lindex $coords 6]] ; #--- ddec
       } else {
          set private(star$k,raDeltaTest) ""
          set private(star$k,deDeltaTest) ""
@@ -1825,7 +1836,7 @@ proc ::modpoi2::wizard::modpoi_goto { } {
       #--- je recupere les coordonnees apparentes
       set raApp $private(star$amerIndex,raApp)
       set deApp $private(star$amerIndex,deApp)
-      ####tel$::audace(telNo) radec goto [list $raadt $deadt]
+      #--- je lance la commande goto en mode non bloquant
       ::telescope::goto [list $raApp $deApp] 0
    }
 
@@ -1945,8 +1956,8 @@ proc ::modpoi2::wizard::modpoi_coord { } {
          $private(symbols) $private(coefficients) \
       ]
       #--- je recupere l'ecart en arcmin
-      set private(star$k,raDeltaTest) [lindex $coords 5] ; #--- dra
-      set private(star$k,deDeltaTest) [lindex $coords 6] ; #--- ddec
+      set private(star$k,raDeltaTest) [expr  60.0 * [lindex $coords 5]] ; #--- dra
+      set private(star$k,deDeltaTest) [expr  60.0 * [lindex $coords 6]] ; #--- ddec
    } else {
       set private(star$k,raDeltaTest) ""
       set private(star$k,deDeltaTest) ""
