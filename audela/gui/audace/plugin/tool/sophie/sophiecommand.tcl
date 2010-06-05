@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.54 2010-05-23 16:14:40 michelpujol Exp $
+# @version  $Id: sophiecommand.tcl,v 1.55 2010-06-05 11:39:16 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -482,6 +482,8 @@ proc ::sophie::setMode { { mode "" } } {
          set private(targetBoxSize) $::conf(sophie,centerWindowSize)
          set zoom 4
          #--- j'intialise la liste des valeurs du fond du ciel
+         set private(fwhmXList) ""
+         set private(FwhmYList) ""
          set private(skyLevelList)  ""
          set private(starFluxList) ""
          #--- je selectionne la vitesse du telescope centrage2
@@ -2130,6 +2132,33 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                   #--- ::sophie::spectro::setStarFlux $starFlux
                }
                "FOCUS" {
+                  #--- je met a jour la liste des 3 dernières valeurs de fwhmX
+                  lappend private(fwhmXList) $fwhmX
+                  if { [llength $private(fwhmXList) ] > 3}  {
+                      #--- s'il ya plus de 3 valeurs , je supprime la plus ancienne
+                      set private(fwhmXList) [lreplace $private(fwhmXList) 0 0]
+                  }
+                  #--- je calcule la moyenne fwhmX sur les 3 derniere images
+                  set fwhmXMean 0.0
+                  foreach val $private(fwhmXList) {
+                      set skyLevelMean [expr $fwhmXMean + $val]
+                  }
+                  set fwhmXMean [expr $fwhmXMean / [llength $private(fwhmXList)] ]
+
+                  #--- je met a jour la liste des 3 dernières valeurs de fwhmY
+                  lappend private(fwhmYList) $fwhmY
+                  if { [llength $private(fwhmYList) ] > 3}  {
+                      #--- s'il ya plus de 3 valeurs , je supprime la plus ancienne
+                      set private(fwhmYList) [lreplace $private(fwhmYList) 0 0]
+                  }
+                  #--- je calcule la moyenne fwhmY sur les 3 derniere images
+                  set fwhmYMean 0.0
+                  foreach val $private(fwhmYList) {
+                      set skyLevelMean [expr $fwhmYMean + $val]
+                  }
+                  set fwhmYMean [expr $fwhmYMean / [llength $private(fwhmYList)] ]
+
+
                   #--- je met a jour la liste des 3 dernières valeurs du fond du ciel
                   lappend private(skyLevelList) $skyLevel
                   if { [llength $private(skyLevelList) ] > 3}  {
@@ -2143,7 +2172,7 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                   }
                   set skyLevelMean [expr $skyLevelMean / [llength $private(skyLevelList)] ]
 
-                  #--- je met a jour la liste des 3 dernières valeurs du fond du ciel
+                  #--- je met a jour la liste des 3 dernières valeurs du flux de l'etoile
                   lappend private(starFluxList) $starFlux
                   if { [llength $private(starFluxList) ] > 3}  {
                       #--- s'il y a plus de 3 valeurs , je supprime la plus ancienne
@@ -2159,9 +2188,9 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                   #--- j'affiche les valeurs dans la fenêtre de contrôle
                   ::sophie::control::setFocusInformation $starStatus $fiberStatus \
                      [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
-                     $starX $starY $fwhmX $fwhmY $alphaDiff $deltaDiff $skyLevelMean $maxIntensity $starFluxMean
+                     $starX $starY $fwhmXMean $fwhmYMean $alphaDiff $deltaDiff $skyLevelMean $maxIntensity $starFluxMean
                   #--- je memorise le seeing pour le mettre dans l'image integree et l'envoyer au spectro
-                  ::sophie::spectro::setSeeing $fwhmX $fwhmX
+                  ::sophie::spectro::setSeeing $fwhmXMean $fwhmYMean
                   ::sophie::spectro::setSkyLevel $skyLevelMean
                   ::sophie::spectro::setStarFlux $starFluxMean
                }
