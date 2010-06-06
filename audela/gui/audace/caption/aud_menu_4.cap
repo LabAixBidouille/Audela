@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_4.cap
-# Mise a jour $Id: aud_menu_4.cap,v 1.18 2010-06-06 11:18:28 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_4.cap,v 1.19 2010-06-06 13:55:59 jacquesmichelet Exp $
 #
 
 #=========================================================================
@@ -138,7 +138,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,tfd_format)                "Format"
    set caption(traiteFilters,tfd_polaire)               "Polaire (module + argument)"
    set caption(traiteFilters,tfd_cartesien)             "Cartésien (réel + imaginaire)"
-   set caption(traiteFilters,tfd_images_differentes)    "Les fichiers résultats doivent être différents"
+   set caption(traiteFilters,tfd_images_differentes)    "Les noms des fichiers résultats doivent être différents"
 
    set caption(traiteFilters,traitement_en_cours)       "Traitement en cours..."
 
