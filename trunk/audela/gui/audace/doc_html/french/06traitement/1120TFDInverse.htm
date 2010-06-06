@@ -1,40 +1,43 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>Transform&eacute;e de Fourier Discr&egrave;te Inverse</title>
-  <meta http-equiv="content-type"
- content="text/html; charset=ISO-8859-1">
+  <title>Transformée de Fourier Discrète Inverse</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="generator" content="Geany 0.18">
 </head>
 <body>
-<p class="date">Date de mise &agrave; jour : 29 mai 2010</p>
-<h1>Transform&eacute;e de Fourier Discr&egrave;te Inverse</h1>
-<p>La <b>Transform&eacute;e de Fourier Discr&egrave;te Inverse (TFDI)</b>
-convertit deux images dans le domaine fr&eacute;quentiel (ou domaine de
+<p class="date">Date de mise à jour : 6 juin 2010</p>
+<h1>Transformée de Fourier Discrète Inverse</h1>
+<p>La <b>Transformée de Fourier Discrète Inverse (TFDI)</b>
+convertit deux images dans le domaine fréquentiel (ou domaine de
 Fourier) en une image dans le domaine spatial. Il s'agit d'une
-transformation complexe au sens math&eacute;matique du terme. Les deux
-images d'entr&eacute;e repr&eacute;sentent donc soit la partie
-r&eacute;elle et la partie imaginaire, soit le module et l'argument (ou
+transformation complexe au sens mathématique du terme. Les deux
+images d'entrée représentent donc soit la partie
+réelle et la partie imaginaire, soit le module et l'argument (ou
 phase)
-d'une TFD. Tout autre couple d'image donnera un r&eacute;sultat
-impr&eacute;visible.</p>
-<p>En cons&eacute;quence, les 2 images d'entr&eacute;e doivent
-imp&eacute;rativement :
+d'une TFD. Tout autre couple d'image donnera un résultat
+imprévisible.</p>
+<p>En conséquence, les 2 images d'entrée doivent
+impérativement :
 </p>
 <ul>
-  <li>avoir les m&ecirc;mes largeur et hauteur.</li>
-  <li>contenir le mots-cl&eacute; <em>DFT_ORD</em> avec la m&ecirc;me
+  <li>avoir les mêmes largeur et hauteur.</li>
+  <li>contenir le mots-clé <em>DFT_ORD</em> avec la même
 valeur (<em>CENTERED</em> ou <em>REGULAR</em>).</li>
-  <li>contenir le mot_cl&eacute; <em>DFT_TYPE</em> avec des valeurs
-appari&eacute;es : <em>REAL</em> et <em>IMAG</em>, ou bien <em>SPECTRUM</em>
+  <li>contenir le mot_clé <em>DFT_TYPE</em> avec des valeurs
+appariées : <em>REAL</em> et <em>IMAG</em>, ou bien <em>SPECTRUM</em>
 et <em>PHASE</em>.</li>
 </ul>
-<p>Pour la signification des mots-cl&eacute;s <em>DFT_ORD</em> et <em>DFT_TYPE</em>,
+<p>Pour la signification des mots-clés <em>DFT_ORD</em> et <em>DFT_TYPE</em>,
 voir
-la commande <a href="1110TFD.html">Transform&eacute;e de Fourier
-Discr&egrave;te</a> </p>
-<p>L'image r&eacute;sultat est cod&eacute;e sur 16 bits non
-sign&eacute;s.
+la
+commande <a href="1110TFD.html">Transformée de Fourier
+Discrète</a> .<br>
+A l'issue du calcul, l'image affichée est systématiquement sauvegardée
+ans le répertoire image courant sous le nom de "<span
+ style="font-style: italic;">image.fit</span>". L'image résultat est
+codée sur 16 bits non
+signés.
 </p>
 </body>
 </html>
