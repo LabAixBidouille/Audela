@@ -3,7 +3,7 @@
  * @brief : Méthodes de l'objet Fourier : traitement des fichiers image
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: fourier_images.cpp,v 1.2 2010-05-26 12:12:15 jacquesmichelet Exp $
+ * Mise à jour $Id: fourier_images.cpp,v 1.3 2010-06-06 18:28:06 jacquesmichelet Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
@@ -95,29 +95,38 @@ void Fourier::ouverture_image( const char * nom, Fourier::Parametres * param )
 
         /* Vérification du nombre de dimensions de l'image */
         CFitsKeyword *kwd = kwds_source->FindKeyword("NAXIS");
-        if( kwd == 0 )
+        if ( kwd == 0 )
             throw CError( "%s does not contain a valid header", nom );
 
         if ( kwd->GetIntValue() != 2 )
             throw CError( "%s must be a 2-dimension image", nom );
 
+        /* Elimination des images couleurs */
+        kwd = kwds_source->FindKeyword("RAWCOLOR");
+        if ( kwd )
+        {
+            if ( kwd->GetIntValue() != 1 )
+            {
+                throw CError( "%s must be a one colour (B&W) channel image", nom );
+            }
+        }
 
         /* Récupération des largeur et hauteur de l'image */
         kwd = kwds_source->FindKeyword("NAXIS1");
-        if( kwd == 0 )
+        if ( kwd == 0 )
             throw CError( "%s does not contain a NAXIS1 keyword", nom );
 
         param->largeur = kwd->GetIntValue() ;
 
         kwd = kwds_source->FindKeyword("NAXIS2");
-        if( kwd == 0 )
+        if ( kwd == 0 )
             throw CError( "%s does not contain a NAXIS2 keyword", nom );
 
         param->hauteur = kwd->GetIntValue() ;
 
         /* Vérification des paramètres TFD de l'image */
         kwd = kwds_source->FindKeyword("DFT_TYPE");
-        if( kwd != 0 )
+        if ( kwd != 0 )
             param->type = Fourier::analyse_dft_type( kwd->GetStringValue() );
 
         kwd = kwds_source->FindKeyword("DFT_ORD");
