@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_4.tcl
 # Description : Script regroupant les fonctionnalites du menu Traitement
-# Mise à jour $Id: aud_menu_4.tcl,v 1.19 2010-05-29 06:41:07 jacquesmichelet Exp $
+# Mise à jour $Id: aud_menu_4.tcl,v 1.20 2010-06-06 17:58:09 jacquesmichelet Exp $
 #
 
 namespace eval ::traiteFilters {
@@ -320,14 +320,14 @@ namespace eval ::traiteFilters {
         pack ${g}.l -side left -padx 5 -pady 5
         entry ${g}.e -textvariable traiteFilters(image_out1)
         pack ${g}.e -side left -padx 10 -pady 5 -fill x -expand 1
-        button ${g}.explore -text "$caption(traiteFilters,parcourir)" -width 1 -command { ::traiteFilters::parcourir 3 }
+        button ${g}.explore -text "$caption(traiteFilters,parcourir)" -width 1 -command { ::traiteFilters::choix_nom_sauvegarde 3 }
         pack ${g}.explore -side left -padx 10 -pady 5 -ipady 5
         set h [ frame ${f}.2 -borderwidth 0 -relief flat ]
         label ${h}.l -text "$caption(traiteFilters,tfd_sortie2)"
         pack ${h}.l -side left -padx 5 -pady 5
         entry ${h}.e -textvariable traiteFilters(image_out2)
         pack ${h}.e -side left -padx 10 -pady 5 -fill x -expand 1
-        button ${h}.explore -text "$caption(traiteFilters,parcourir)" -width 1 -command { ::traiteFilters::parcourir 4 }
+        button ${h}.explore -text "$caption(traiteFilters,parcourir)" -width 1 -command { ::traiteFilters::choix_nom_sauvegarde 4 }
         pack ${h}.explore -side left -padx 10 -pady 5 -ipady 5
         pack $g $h -side top -fill both
 
@@ -452,7 +452,6 @@ namespace eval ::traiteFilters {
         set conf(taille_noyau) $traiteFilters(taille_noyau)
         set conf(tfd_ordre)    $traiteFilters(tfd_ordre)
         set conf(tfd_format)   $traiteFilters(tfd_format)
-        #--- Il faut saisir la constante
         if { ( $traiteFilters(operation) == $caption(audace,menu,tfdi) )
          || ( $traiteFilters(operation) == $caption(audace,menu,icorr) )
          || ( $traiteFilters(operation) == $caption(audace,menu,convolution) ) } {
@@ -463,6 +462,7 @@ namespace eval ::traiteFilters {
                 return
             }
         } else {
+            #--- Il faut saisir la constante
             if { $traiteFilters(choix_mode) == "0" } {
                 if { [ buf$audace(bufNo) imageready ] == "0" } {
                     tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,header_noimage)
@@ -748,74 +748,90 @@ namespace eval ::traiteFilters {
             if { $tfd_format == "tfd_cartesien" } { set dft_format "cartesian" }
             set dft_order "centered"
             if { $tfd_ordre == "tfd_normal" } { set dft_order "regular" }
-            if { $image_out1 == $image_out2 } {
+            if { ( $image_out1 == $image_out2 ) && ( $traiteFilters(choix_mode) == "1" ) } {
                 tk_messageBox -title $caption(traiteFilters,attention) -icon error \
                 -message $caption(traiteFilters,tfd_images_differentes)
                 set traiteFilters(avancement) ""
                 return
             }
             if { $traiteFilters(choix_mode) == "1" } {
-                dft2d $image_in.fit $image_out1.fit $image_out2.fit $dft_format $dft_order
-                buf$audace(bufNo) load ${image_out1}.fit
-                visu$audace(visuNo) disp
-                ::audace::autovisu
+                if { [ catch { dft2d $image_in.fit $image_out1.fit $image_out2.fit $dft_format $dft_order } message_erreur ] } {
+                    tk_messageBox -title $caption(traiteFilters,attention) -icon error -message $message_erreur
+                } else {
+                    buf$audace(bufNo) load $image_out1.fit
+                    ::confVisu::autovisu $::audace(visuNo) "-dovisu" $image_out1.fit
+                }
             } else  {
-                # Génération d'un nom aléatoire
+                if { $dft_format == "polar" } {
+                    set nom_1 [ file join $::audace(rep_images) modulus.fit ]
+                    set nom_2 [ file join $::audace(rep_images) argument.fit ]
+                } else {
+                    set nom_1 [ file join $::audace(rep_images) real.fit ]
+                    set nom_2 [ file join $::audace(rep_images) imaginary.fit ]
+                }
                 set nom [ file join $audace(rep_images) [ clock milliseconds ] ]
-                buf$audace(bufNo) save ${nom}.fit
-                dft2d ${nom}.fit ${nom}_1.fit ${nom}_2.fit $dft_format $dft_order
-                buf$audace(bufNo) load ${nom}_1.fit
-                visu$audace(visuNo) disp
-                ::audace::autovisu
-                file delete -force ${nom}.fit
-                file delete -force ${nom}_1.fit
-                file delete -force ${nom}_2.fit
+                append nom ".fit"
+                buf$audace(bufNo) save $nom
+                if { [ catch { dft2d $nom $nom_1 $nom_2 $dft_format $dft_order } message_erreur ] } {
+                    tk_messageBox -title $caption(traiteFilters,attention) -icon error -message $message_erreur
+                } else {
+                    buf$audace(bufNo) load $nom_1
+                    ::confVisu::autovisu $::audace(visuNo) "-dovisu" $nom_1
+                }
+                file delete $nom
             }
         } \
         "$caption(audace,menu,tfdi)" {
             # Génération d'un nom aléatoire
-            set dest [ file join $audace(rep_images) [ clock milliseconds ] ]
-            idft2d ${image_in1}.fit ${image_in2}.fit ${dest}.fit
-            buf$audace(bufNo) load ${dest}.fit
-            visu$audace(visuNo) disp
-            ::audace::autovisu
-            file delete -force $dest
+            set dest [ file join $audace(rep_images) image.fit ]
+            if { [ catch { idft2d $image_in1.fit $image_in2.fit $dest } message_erreur ] } {
+                tk_messageBox -title $caption(traiteFilters,attention) -icon error -message $message_erreur
+            } else {
+                buf$audace(bufNo) load $dest
+                ::confVisu::autovisu $::audace(visuNo) "-dovisu" $dest
+            }
         } \
         "$caption(audace,menu,acorr)" {
             if { $traiteFilters(choix_mode) == "1" } {
-                set dest [ file join $audace(rep_images) [ clock milliseconds ] ]
-                acorr2d ${image_in}.fit $dest
-                buf$audace(bufNo) load $dest
-                visu$audace(visuNo) disp
-                ::audace::autovisu
-                file delete -force $dest
+                set dest [ file join $audace(rep_images) autocorrelation.fit ]
+                if { [ catch { acorr2d ${image_in}.fit $dest } message_erreur ] } {
+                    tk_messageBox -title $caption(traiteFilters,attention) -icon error -message $message_erreur
+                } else {
+                    buf$audace(bufNo) load $dest
+                    ::confVisu::autovisu $::audace(visuNo) "-dovisu" $dest
+                }
             } else  {
                 # Génération d'un nom aléatoire
-                set nom [ file join $audace(rep_images) [ clock milliseconds ] ]
-                buf$audace(bufNo) save ${nom}_s.fit
-                acorr2d ${nom}_s.fit ${nom}_d.fit
-                buf$audace(bufNo) load ${nom}_d.fit
-                visu$audace(visuNo) disp
-                ::audace::autovisu
-                file delete -force ${nom}_s.fit
-                file delete -force ${nom}_d.fit
+                set nom_s [ file join $audace(rep_images) [ clock milliseconds ] ]
+                append nom_s ".fit"
+                set nom_d [ file join $audace(rep_images) autocorrelation.fit ]
+                buf$audace(bufNo) save $nom_s
+                if { [ catch { acorr2d $nom_s $nom_d } message_erreur ] } {
+                    tk_messageBox -title $caption(traiteFilters,attention) -icon error -message $message_erreur
+                } else {
+                    buf$audace(bufNo) load $nom_d
+                    ::confVisu::autovisu $::audace(visuNo) "-dovisu" $nom_d
+                }
+                file delete $nom_s
             }
         } \
         "$caption(audace,menu,icorr)" {
-             set dest [ file join $audace(rep_images) [ clock milliseconds ] ]
-             icorr2d ${image_in1}.fit ${image_in2}.fit $dest
-             buf$audace(bufNo) load $dest
-             visu$audace(visuNo) disp
-             ::audace::autovisu
-             file delete -force $dest
+            set dest [ file join $audace(rep_images) crosscorrelation.fit ]
+            if { [ catch { icorr2d ${image_in1}.fit ${image_in2}.fit $dest } message_erreur ] } {
+                tk_messageBox -title $caption(traiteFilters,attention) -icon error -message $message_erreur
+            } else {
+                buf$audace(bufNo) load $dest
+                ::confVisu::autovisu $::audace(visuNo) "-dovisu" $dest
+            }
         } \
         "$caption(audace,menu,convolution)" {
-             set dest [ file join $audace(rep_images) [ clock milliseconds ] ]
-             conv2d ${image_in1}.fit ${image_in2}.fit $dest denorm
-             buf$audace(bufNo) load $dest
-             visu$audace(visuNo) disp
-             ::audace::autovisu
-             file delete -force $dest
+            set dest [ file join $audace(rep_images) convolution.fit ]
+            if { [ catch { conv2d ${image_in1}.fit ${image_in2}.fit $dest denorm } message_erreur ] } {
+                tk_messageBox -title $caption(traiteFilters,attention) -icon error -message $message_erreur
+            } else {
+                buf$audace(bufNo) load $dest
+                ::confVisu::autovisu $::audace(visuNo) "-dovisu" $dest
+            }
         }
         ::traiteFilters::recup_position
     }
@@ -1413,6 +1429,33 @@ namespace eval ::traiteFilters {
         set fenetre "$audace(base).traiteFilters"
         #--- Ouvre la fenetre de choix des images
         set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
+        #--- Nom du fichier avec le chemin et sans son extension
+        if { $In_Out == "1" } {
+            set traiteFilters(image_in)  [ file rootname $filename ]
+        } elseif { $In_Out == "2" } {
+            set traiteFilters(image_out) [ file rootname $filename ]
+        } elseif { $In_Out == "3" } {
+            set traiteFilters(image_out1) [ file rootname $filename ]
+        } elseif { $In_Out == "4" } {
+            set traiteFilters(image_out2) [ file rootname $filename ]
+        } elseif { $In_Out == "5" } {
+            set traiteFilters(image_in1) [ file rootname $filename ]
+        } elseif { $In_Out == "6" } {
+            set traiteFilters(image_in2) [ file rootname $filename ]
+        }
+    }
+
+   #
+   # ::traiteFilters::choix_nom_sauvegarde
+   # Ouvre un explorateur pour choisir un nom de fichier
+   #
+   proc choix_nom_sauvegarde { In_Out } {
+        global audace traiteFilters
+
+        #--- Fenetre parent
+        set fenetre "$audace(base).traiteFilters"
+        #--- Ouvre la fenetre de choix des images
+        set filename [ ::tkutil::box_save $fenetre $audace(rep_images) $audace(bufNo) "1" ]
         #--- Nom du fichier avec le chemin et sans son extension
         if { $In_Out == "1" } {
             set traiteFilters(image_in)  [ file rootname $filename ]
