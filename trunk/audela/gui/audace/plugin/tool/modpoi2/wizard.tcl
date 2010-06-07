@@ -2,7 +2,7 @@
 # Fichier : wizard.tcl
 # Description : pipeline de pointage des etoiles
 # Auteur : Michel Pujol
-# Mise à jour $Id: wizard.tcl,v 1.7 2010-06-05 11:37:35 michelpujol Exp $
+# Mise à jour $Id: wizard.tcl,v 1.8 2010-06-07 12:56:56 michelpujol Exp $
 #
 
 namespace eval ::modpoi2::wizard {
@@ -116,7 +116,7 @@ proc ::modpoi2::wizard::modpoi_wiz { visuNo { starList "" } } {
          set private(star$k,pressure)    [lindex $star 9]
          set private(star$k,temperature) [lindex $star 10]
 
-         #--- si le nom de l'etoile est renseigné, je calcule les ecarts raDelta et deDelta
+         #--- si le nom de l'etoile est renseigné, je calcule les ecarts raShift et deShift
          if { $private(star$k,starname) != "" } {
             set hipRecord [list $private(star$k,starname) "0" \
                [mc_angle2deg $private(star$k,raCat)] \
@@ -130,24 +130,24 @@ proc ::modpoi2::wizard::modpoi_wiz { visuNo { starList "" } } {
             set private(star$k,haApp)   [lindex $coords 2]
             set private(star$k,azApp)   [lindex $coords 3]
             set private(star$k,elApp)   [lindex $coords 4]
-            set private(star$k,raDelta) [expr 60.0 * [mc_anglescomp [mc_angle2deg $private(star$k,raObs)] - [mc_angle2deg $private(star$k,raApp)] ]]
-            set private(star$k,deDelta) [expr 60.0 * [mc_anglescomp [mc_angle2deg $private(star$k,deObs)] - [mc_angle2deg $private(star$k,deApp)] ]]
+            set private(star$k,raShift) [expr 60.0 * [mc_anglescomp [mc_angle2deg $private(star$k,raObs)] - [mc_angle2deg $private(star$k,raApp)] ]]
+            set private(star$k,deShift) [expr 60.0 * [mc_anglescomp [mc_angle2deg $private(star$k,deObs)] - [mc_angle2deg $private(star$k,deApp)] ]]
             ###if { $k < 6} {
             ###console::disp "mc_hip2tel { $hipRecord } $private(star$k,date) { $private(home) } $private(star$k,pressure) $private(star$k,temperature)\n"
             ###console::disp "coords=$coords \n"
             ###console::disp "ra=[lindex $coords 0] dec=[lindex $coords 1] ha=[lindex $coords 2] az=[lindex $coords 3] el=[lindex $coords 4]\n"
             ###}
 
-            set private(star$k,state)   1
+            set private(star$k,selected)   1
          } else {
             set private(star$k,raApp)     ""
             set private(star$k,deApp)     ""
             set private(star$k,haApp)     ""
             set private(star$k,azApp)     ""
             set private(star$k,elApp)     ""
-            set private(star$k,raDelta)   ""
-            set private(star$k,deDelta)   ""
-            set private(star$k,state)     0
+            set private(star$k,raShift)   ""
+            set private(star$k,deShift)   ""
+            set private(star$k,selected)     0
          }
          incr k
       }
@@ -158,7 +158,7 @@ proc ::modpoi2::wizard::modpoi_wiz { visuNo { starList "" } } {
       for {set k 0} {$k < $private(stars,nb)} {incr k} {
          if { $private(star$k,starname) != "" } {
             lappend starList [list $private(star$k,haApp) $private(star$k,deApp) \
-            [expr - $private(star$k,raDelta)] $private(star$k,deDelta) ]
+            [expr - $private(star$k,raShift)] $private(star$k,deShift) ]
          }
       }
       #--- je calcule les coefficients du modele de pointage
@@ -190,11 +190,11 @@ proc ::modpoi2::wizard::modpoi_wiz { visuNo { starList "" } } {
             ###console::disp "dra=[expr  60.0 * [lindex $coords 5]] ddec=[expr  60.0 * [lindex $coords 6]] dha=[expr  60.0 * [lindex $coords 7]] daz=[expr  60.0 * [lindex $coords 8]] del=[expr  60.0 * [lindex $coords 9]]\n"
             ###}
             #--- je recupere l'ecart en arcmin
-            set private(star$k,raDeltaTest) [expr  60.0 * [lindex $coords 5]] ; #--- dra
-            set private(star$k,deDeltaTest) [expr  60.0 * [lindex $coords 6]] ; #--- ddec
+            set private(star$k,raShiftTest) [expr  60.0 * [lindex $coords 5]] ; #--- dra
+            set private(star$k,deShiftTest) [expr  60.0 * [lindex $coords 6]] ; #--- ddec
          } else {
-            set private(star$k,raDeltaTest) ""
-            set private(star$k,deDeltaTest) ""
+            set private(star$k,raShiftTest) ""
+            set private(star$k,deShiftTest) ""
          }
       }
 
@@ -557,7 +557,8 @@ proc ::modpoi2::wizard::modpoi_wiz2 { } {
       -padx 5 -pady 3 -expand 0
    #--- Buttons
    set colonne 0
-   set nk 0
+   set private(nbMesured) 0
+   set private(nbSelected) 0
 
    #--- liste des points d'amer
    TitleFrame $private(g,base).amer  -borderwidth 2 -relief ridge -text $::caption(modpoi2,starList)
@@ -572,13 +573,13 @@ proc ::modpoi2::wizard::modpoi_wiz2 { } {
             0 "AZ"  right \
             0 "ELEV" right \
             0 $::caption(modpoi2,star,name) center \
-            0 $::caption(modpoi2,star,deltaRa)  right \
-            0 $::caption(modpoi2,star,deltaDe) right \
+            0 $::caption(modpoi2,star,raShift) right \
+            0 $::caption(modpoi2,star,deShift) right \
             0 $::caption(modpoi2,star,haApp)  right \
             0 $::caption(modpoi2,star,deApp)  right \
             0 "Select" center \
-            0 "test $::caption(modpoi2,star,deltaRa)"  right \
-            0 "test $::caption(modpoi2,star,deltaDe)" right \
+            0 $::caption(modpoi2,star,raShiftOC)  right \
+            0 $::caption(modpoi2,star,deShiftOC)  right \
           ] \
          -xscrollcommand [list $private(g,base).amer.xsb set] \
          -yscrollcommand [list $private(g,base).amer.ysb set] \
@@ -592,13 +593,13 @@ proc ::modpoi2::wizard::modpoi_wiz2 { } {
       $tkAmerTable columnconfigure 1 -name amerAz
       $tkAmerTable columnconfigure 2 -name amerEl
       $tkAmerTable columnconfigure 3 -name starName
-      $tkAmerTable columnconfigure 4 -name deltaRa
-      $tkAmerTable columnconfigure 5 -name deltaDe
+      $tkAmerTable columnconfigure 4 -name raShift
+      $tkAmerTable columnconfigure 5 -name deShift
       $tkAmerTable columnconfigure 6 -name haApp
       $tkAmerTable columnconfigure 7 -name deApp
       $tkAmerTable columnconfigure 8 -name state -editwindow checkbutton
-      $tkAmerTable columnconfigure 9 -name raDeltaTest
-      $tkAmerTable columnconfigure 10 -name deDeltaTest
+      $tkAmerTable columnconfigure 9 -name raShiftTest
+      $tkAmerTable columnconfigure 10 -name deShiftTest
 
       bind $tkAmerTable <<ListboxSelect>>  [list ::modpoi2::wizard::onSelectAmer $tkAmerTable]
 
@@ -628,6 +629,28 @@ proc ::modpoi2::wizard::modpoi_wiz2 { } {
          -textvariable ::modpoi2::wizard::private(maxMagnitude) \
          -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double -3.0 20.0 }
       grid  $private(g,base).magnitude.maxValue -in [$private(g,base).magnitude getframe] -row 1 -column 1 -sticky w
+
+      #--- nb amer
+      label $private(g,base).magnitude.amerLabel -text "Nb points d'amer"
+      grid  $private(g,base).magnitude.amerLabel -in [$private(g,base).magnitude getframe] -row 0 -column 3 -sticky w
+      entry $private(g,base).magnitude.amerValue -width 8 -justify center -state readonly \
+        -textvariable ::modpoi2::wizard::private(stars,nb)
+      grid  $private(g,base).magnitude.maxValue -in [$private(g,base).magnitude getframe] -row 0 -column 4 -sticky w
+
+      #--- nb mesured
+      label $private(g,base).magnitude.mesuredLabel -text "Nb étoiles mesurées"
+      grid  $private(g,base).magnitude.mesuredLabel -in [$private(g,base).magnitude getframe] -row 1 -column 3 -sticky w
+      entry $private(g,base).magnitude.mesuredValue -width 8 -justify center -state readonly \
+        -textvariable ::modpoi2::wizard::private(nbMesured)
+      grid  $private(g,base).magnitude.mesuredValue -in [$private(g,base).magnitude getframe] -row 1 -column 4 -sticky w
+
+      #--- nb selected
+      label $private(g,base).magnitude.selectedLabel -text "Nb étoiles sélectionnées"
+      grid  $private(g,base).magnitude.selectedLabel -in [$private(g,base).magnitude getframe] -row 2 -column 3 -sticky w
+      entry $private(g,base).magnitude.selectedValue -width 8 -justify center -state readonly \
+        -textvariable ::modpoi2::wizard::private(nbSelected)
+      grid  $private(g,base).magnitude.selectedValue -in [$private(g,base).magnitude getframe] -row 2 -column 4 -sticky w
+
    pack $private(g,base).magnitude -side top -fill x -expand 0
 
    #--- je remplis la liste des points d'amer et l'etoiles
@@ -638,25 +661,31 @@ proc ::modpoi2::wizard::modpoi_wiz2 { } {
       if { $private(star$k,starname)!="" } {
          #--- Si un ecart a deja ete mesure , j'affiche l'ecart
          set starName    $private(star$k,starname)
-         set raDelta     [format "%.3f" $private(star$k,raDelta)]
-         set deDelta     [format "%.3f" $private(star$k,deDelta)]
+         set raShift     [format "%.3f" $private(star$k,raShift)]
+         set deShift     [format "%.3f" $private(star$k,deShift)]
          set haApp       [mc_angle2hms $private(star$k,haApp) 360 zero 0 auto string]
          set deApp       [mc_angle2dms $private(star$k,deApp) 90  zero 0 + string]
-         set raDeltaTest [format "%.6f" $private(star$k,raDeltaTest)]
-         set deDeltaTest [format "%.6f" $private(star$k,deDeltaTest)]
+         set raShiftTest [format "%.3f" [expr $private(star$k,raShiftTest) - $private(star$k,raShift)] ]
+         set deShiftTest [format "%.3f" [expr $private(star$k,deShiftTest) - $private(star$k,deShift)] ]
          #--- j'incremente le compteur des mesures
-         incr nk
+         incr private(nbMesured)
+         if { $private(star$k,selected) == 1 } {
+           incr private(nbSelected)
+         }
+         set checkButtonState "normal"
+
       } else {
          set starName    ""
-         set raDelta     ""
-         set deDelta     ""
+         set raShift     ""
+         set deShift     ""
          set haApp       ""
          set deApp       ""
-         set raDeltaTest ""
-         set deDeltaTest ""
+         set raShiftTest ""
+         set deShiftTest ""
+         set checkButtonState "disabled"
       }
       $tkAmerTable insert end [list [expr $k+1] $amerAz $amerEl "" \
-         $raDelta $deDelta $haApp $deApp "" $raDeltaTest $deDeltaTest ]
+         $raShift $deShift $haApp $deApp "" $raShiftTest $deShiftTest ]
 
       #--- je donne un nom a la ligne (numero de la ligne, avec l'origine a 0)
       $tkAmerTable rowconfigure end -name $k
@@ -666,10 +695,10 @@ proc ::modpoi2::wizard::modpoi_wiz2 { } {
          -windowdestroy [ list ::modpoi2::wizard::deleteButton ]
       #--- je configure la colonne contenant le chekbutton
       $tkAmerTable cellconfigure end,state \
-            -window [ list ::modpoi2::wizard::createCheckbutton ] \
+            -window [ list ::modpoi2::wizard::createCheckbutton $checkButtonState ] \
             -windowdestroy [ list ::modpoi2::wizard::deleteCheckbutton ]
       #--- je coche le checkButton
-      setCheckbutton $tkAmerTable end "state" $private(star$k,state)
+      setCheckbutton $tkAmerTable end "state" $private(star$k,selected)
    }
 
    #--- j'affiche la carte des points d'amer
@@ -693,7 +722,7 @@ proc ::modpoi2::wizard::modpoi_wiz2 { } {
       ###   -side left -anchor se \
       ###   -padx 5 -pady 5 -expand 0
       #--- NEXT button
-      if {$nk >= 6} {
+      if {$private(nbMesured) >= 6} {
          button $private(g,base).fra_bottom.but_next \
             -text $caption(modpoi2,wiz2,next) -borderwidth 2 \
             -padx 20 -pady 10 -command { ::modpoi2::wizard::modpoi_wiz5 }
@@ -747,7 +776,7 @@ proc ::modpoi2::wizard::createButton { tkTable row col w } {
 }
 
 #------------------------------------------------------------------------------
-# deleteCheckbutton
+# deleteButton
 #    supprime un checkbutton dans la table
 #
 # Parametres :
@@ -766,6 +795,7 @@ proc ::modpoi2::wizard::deleteButton { tkTable row col w } {
 #------------------------------------------------------------------------------
 # createCheckbutton
 #    cree un checkbutton dans la table
+#    le
 #
 # Parametres :
 #    tkTable      : nom Tk de la table
@@ -773,12 +803,45 @@ proc ::modpoi2::wizard::deleteButton { tkTable row col w } {
 #    col          : numero de colonne
 #    w            : nom Tk du bouton
 #------------------------------------------------------------------------------
-proc ::modpoi2::wizard::createCheckbutton { tkTable row col w } {
+proc ::modpoi2::wizard::createCheckbutton { state tkTable row col w } {
    variable private
    set k [$tkTable rowcget $row -name ]
    #--- je cree le checkbutton avec une variable qui porte le nom du checkbutton
-   checkbutton $w -highlightthickness 0 -takefocus 0 -variable ::modpoi2::wizard::private(star$k,state)
+   checkbutton $w -highlightthickness 0 -takefocus 0 \
+      -state $state \
+      -variable ::modpoi2::wizard::private(star$k,selected) \
+      -command "::modpoi2::wizard::onSelectCheckButton $w $k"
+   if { $state == "normal" && $private(star$k,selected) == 0 } {
+      $w configure -background red
+   }
 }
+
+#------------------------------------------------------------------------------
+# onSelectCheckButton
+#   configure la couleur d'un ChekButton dans il est coché ou décoché
+#   et met à jour le compteur d'étoiles cochées.
+#
+# Parametres :
+#    w            : nom Tk du bouton
+#    lineNo       : numero de la ligne
+#------------------------------------------------------------------------------
+proc ::modpoi2::wizard::onSelectCheckButton { w k} {
+   variable private
+
+   #--- je recipere le nom de la varible qui contient l'etat du bouton
+   set variableName [ $w cget -variable]
+   set selected [set $variableName]
+
+   if { $selected == 1 } {
+      incr private(nbSelected) +1
+      $w configure -background SystemButtonFace
+   } else {
+      incr private(nbSelected) -1
+      $w configure -background ::color(lightred)
+   }
+
+}
+
 
 #------------------------------------------------------------------------------
 # deleteCheckbutton
@@ -806,15 +869,18 @@ proc ::modpoi2::wizard::deleteCheckbutton { tkTable row col w } {
 #    tkTable      : nom Tk de la table
 #    lineName     : nom de ligne
 #    columnName   : nom de la colonne
-#    value        : 0 ou 1
+#    value        : 0 ou 1 ou -1 (inactif)
 #------------------------------------------------------------------------------
 proc ::modpoi2::wizard::setCheckbutton { tkTable lineName columnName value } {
    variable private
    set w [ $tkTable windowpath $lineName,$columnName]
-   if { $value == 1 } {
-      $w select
-   } else {
-      $w deselect
+   switch $value {
+       1 {
+         $w select
+       }
+       0 {
+          $w deselect
+       }
    }
 }
 
@@ -897,8 +963,8 @@ proc ::modpoi2::wizard::modpoi_wiz3 { amerIndex } {
             0 "Mag" left \
             0 "RA" left \
             0 "DEC" left \
-            0 $::caption(modpoi2,star,deltaRa)  left \
-            0 $::caption(modpoi2,star,deltaDe) left \
+            0 $::caption(modpoi2,star,raShift)  left \
+            0 $::caption(modpoi2,star,deShift) left \
           ] \
          -xscrollcommand [list $private(g,base).star.xsb set] \
          -yscrollcommand [list $private(g,base).star.ysb set] \
@@ -912,8 +978,8 @@ proc ::modpoi2::wizard::modpoi_wiz3 { amerIndex } {
       $tkStarTable columnconfigure 1 -name magnitude
       $tkStarTable columnconfigure 2 -name ra
       $tkStarTable columnconfigure 3 -name dec
-      $tkStarTable columnconfigure 4 -name starDeltaRa
-      $tkStarTable columnconfigure 5 -name starDeltaDe
+      $tkStarTable columnconfigure 4 -name starRaShift
+      $tkStarTable columnconfigure 5 -name starDeShift
 
       bind $tkStarTable <<ListboxSelect>>  [list ::modpoi2::wizard::onSelectStar $tkStarTable]
 
@@ -1029,16 +1095,16 @@ proc ::modpoi2::wizard::modpoi_wiz3 { amerIndex } {
       set ra_cat [mc_angle2hms [lindex $hipRecord 2] 360 zero 0 auto string]
       set de_cat [mc_angle2dms [lindex $hipRecord 3] 90  zero 0 + string]
       if { $private(star$amerIndex,starname) == $name} {
-           set raDelta $private(star$amerIndex,raDelta)
-           set deDelta $private(star$amerIndex,deDelta)
+           set raShift $private(star$amerIndex,raShift)
+           set deShift $private(star$amerIndex,deShift)
            set private(selectedHip) $k
       } else {
-         set raDelta ""
-         set deDelta ""
+         set raShift ""
+         set deShift ""
       }
 
       #--- j'ajoute l'etoile dans la table des étoiles
-      $tkStarTable insert $k [list $name $magnitude $ra_cat $de_cat $raDelta $deDelta]
+      $tkStarTable insert $k [list $name $magnitude $ra_cat $de_cat $raShift $deShift]
    }
 
    if { [llength $private(hipList)] > 0 } {
@@ -1373,10 +1439,10 @@ proc ::modpoi2::wizard::modpoi_wiz5 { } {
 
    set starList ""
    for {set k 0} {$k < $private(stars,nb)} {incr k} {
-      if { $private(star$k,starname) != "" && $private(star$k,state) == 1 } {
+      if { $private(star$k,starname) != "" && $private(star$k,selected) == 1 } {
          #--- je cree la liste  HA DEC dHA dDEC ( attention : dHA = -dRA )
          lappend starList [list $private(star$k,haApp) $private(star$k,deApp) \
-         [expr - $private(star$k,raDelta)] $private(star$k,deDelta) ]
+         [expr - $private(star$k,raShift)] $private(star$k,deShift) ]
       }
    }
 
@@ -1418,7 +1484,7 @@ proc ::modpoi2::wizard::modpoi_wiz5 { } {
 
    #--- je calcule des ecarts en appliquant le modele
    for {set k 0} {$k < $private(stars,nb)} {incr k} {
-      if { $private(star$k,starname) != "" && $private(star$k,state) == 1 } {
+      if { $private(star$k,starname) != "" && $private(star$k,selected) == 1 } {
          set hipRecord [list $private(star$k,starname) "0" \
             [mc_angle2deg $private(star$k,raCat)] \
             [mc_angle2deg $private(star$k,deCat)] \
@@ -1428,11 +1494,11 @@ proc ::modpoi2::wizard::modpoi_wiz5 { } {
             $private(star$k,pressure) $private(star$k,temperature) \
             $private(symbols) $private(coefficients) \
          ]
-         set private(star$k,raDeltaTest) [expr  60.0 * [lindex $coords 5]] ; #--- dra
-         set private(star$k,deDeltaTest) [expr  60.0 * [lindex $coords 6]] ; #--- ddec
+         set private(star$k,raShiftTest) [expr  60.0 * [lindex $coords 5]] ; #--- dra
+         set private(star$k,deShiftTest) [expr  60.0 * [lindex $coords 6]] ; #--- ddec
       } else {
-         set private(star$k,raDeltaTest) ""
-         set private(star$k,deDeltaTest) ""
+         set private(star$k,raShiftTest) ""
+         set private(star$k,deShiftTest) ""
       }
    }
 
@@ -1644,11 +1710,11 @@ proc ::modpoi2::wizard::checkStarNb { } {
       set private(star$k,azApp)       ""
       set private(star$k,elApp)       ""
       set private(star$k,haApp)       ""
-      set private(star$k,raDelta)     ""
-      set private(star$k,deDelta)     ""
-      set private(star$k,raDeltaTest) ""
-      set private(star$k,deDeltaTest) ""
-      set private(star$k,state)       0
+      set private(star$k,raShift)     ""
+      set private(star$k,deShift)     ""
+      set private(star$k,raShiftTest) ""
+      set private(star$k,deShiftTest) ""
+      set private(star$k,selected)       0
    }
 
    if { ( $private(stars,nb) >= "6" ) && ( $private(stars,nb) <= "400" ) } {
@@ -1936,13 +2002,13 @@ proc ::modpoi2::wizard::modpoi_coord { } {
    }
 
    #--- je calcule l'ecart en arcmin
-   set private(star$k,raDelta) [expr 60.0 * [mc_anglescomp $private(star$k,raObs)  - $private(star$k,raApp) ]]
-   set private(star$k,deDelta) [expr 60.0 * [mc_anglescomp $private(star$k,deObs)  - $private(star$k,deApp) ]]
+   set private(star$k,raShift) [expr 60.0 * [mc_anglescomp $private(star$k,raObs)  - $private(star$k,raApp) ]]
+   set private(star$k,deShift) [expr 60.0 * [mc_anglescomp $private(star$k,deObs)  - $private(star$k,deApp) ]]
 
    #--- je renseigne le nom dans le tableau.
    #--- ATTENTION: la presence du nom dans de tableau sert de repere pour savoir si la mesure d'ecart est faite
    set private(star$k,starname) $private(starname,actual)
-   set private(star$k,state) 1
+   set private(star$k,selected) 1
 
    #--- je calcule l'ecart de test
    if { $private(coefficients) != "" } {
@@ -1956,11 +2022,11 @@ proc ::modpoi2::wizard::modpoi_coord { } {
          $private(symbols) $private(coefficients) \
       ]
       #--- je recupere l'ecart en arcmin
-      set private(star$k,raDeltaTest) [expr  60.0 * [lindex $coords 5]] ; #--- dra
-      set private(star$k,deDeltaTest) [expr  60.0 * [lindex $coords 6]] ; #--- ddec
+      set private(star$k,raShiftTest) [expr  60.0 * [lindex $coords 5]] ; #--- dra
+      set private(star$k,deShiftTest) [expr  60.0 * [lindex $coords 6]] ; #--- ddec
    } else {
-      set private(star$k,raDeltaTest) ""
-      set private(star$k,deDeltaTest) ""
+      set private(star$k,raShiftTest) ""
+      set private(star$k,deShiftTest) ""
    }
 
    #--- j'enregistre la liste des étoiles et le modèle dans un fichier temporaire
