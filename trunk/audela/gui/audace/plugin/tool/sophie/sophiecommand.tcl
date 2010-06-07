@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.55 2010-06-05 11:39:16 michelpujol Exp $
+# @version  $Id: sophiecommand.tcl,v 1.56 2010-06-07 12:58:01 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -483,7 +483,7 @@ proc ::sophie::setMode { { mode "" } } {
          set zoom 4
          #--- j'intialise la liste des valeurs du fond du ciel
          set private(fwhmXList) ""
-         set private(FwhmYList) ""
+         set private(fwhmYList) ""
          set private(skyLevelList)  ""
          set private(starFluxList) ""
          #--- je selectionne la vitesse du telescope centrage2
@@ -2106,6 +2106,7 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
             set infoMessage          [lindex $args 16]
             ###::console::disp "::sophie::callbackAcquisition infoMessage=$infoMessage \n"
 
+
             #--- je modifie la position du carre de la cible
             if { $private(targetMove) == "AUTO" } {
                set private(targetCoord) [list $starX $starY]
@@ -2141,7 +2142,7 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                   #--- je calcule la moyenne fwhmX sur les 3 derniere images
                   set fwhmXMean 0.0
                   foreach val $private(fwhmXList) {
-                      set skyLevelMean [expr $fwhmXMean + $val]
+                      set fwhmXMean [expr $fwhmXMean + $val]
                   }
                   set fwhmXMean [expr $fwhmXMean / [llength $private(fwhmXList)] ]
 
@@ -2154,10 +2155,9 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                   #--- je calcule la moyenne fwhmY sur les 3 derniere images
                   set fwhmYMean 0.0
                   foreach val $private(fwhmYList) {
-                      set skyLevelMean [expr $fwhmYMean + $val]
+                      set fwhmYMean [expr $fwhmYMean + $val]
                   }
                   set fwhmYMean [expr $fwhmYMean / [llength $private(fwhmYList)] ]
-
 
                   #--- je met a jour la liste des 3 dernières valeurs du fond du ciel
                   lappend private(skyLevelList) $skyLevel
