@@ -196,6 +196,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libyd", "audela\libyd\vc90\libyd.vcproj", "{112387A7-3557-487F-BC3C-F4AF03E33FB5}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libt193", "libtel\libt193\vc90\libt193.vcproj", "{E71812D0-9F52-4F29-95A0-959993A2E8EF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{52EDD44E-0846-471C-9B7E-FD55B9CB8707} = {52EDD44E-0846-471C-9B7E-FD55B9CB8707}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "temma", "libtel\libtemma\vc90\temma.vcproj", "{A7F66B9B-7398-4222-9CA5-4542F4F98E02}"
 EndProject
