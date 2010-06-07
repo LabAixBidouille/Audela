@@ -1,6 +1,6 @@
 #
 # Fichier : modpoi2.Hcap
-# Mise a jour $Id: modpoi2.cap,v 1.2 2010-05-26 06:15:17 robertdelmas Exp $
+# Mise a jour $Id: modpoi2.cap,v 1.3 2010-06-07 12:59:52 michelpujol Exp $
 #
 
 #=========================================================================
@@ -208,8 +208,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(modpoi2,star,date)             "Date TU"
    set caption(modpoi2,star,ra)               "RA\nJ2000"
    set caption(modpoi2,star,de)               "DEC\nJ2000"
-   set caption(modpoi2,star,deltaRa)          "Delta RA\n(arcmin)"
-   set caption(modpoi2,star,deltaDe)          "Delta DEC\n(arcmin)"
+   set caption(modpoi2,star,raShift)          "Décal. RA\n(arcmin)"
+   set caption(modpoi2,star,deShift)          "Décal. DEC\n(arcmin)"
+   set caption(modpoi2,star,raShiftOC)        "O-C RA\n(arcmin)"
+   set caption(modpoi2,star,deShiftOC)        "O-C DEC\n(arcmin)"
    set caption(modpoi2,star,haApp)            "Angle\nhoraire"
    set caption(modpoi2,star,deApp)            "DEC"
 
