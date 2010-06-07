@@ -2,7 +2,7 @@
 # Fichier : wizard.tcl
 # Description : pipeline de pointage des etoiles
 # Auteur : Michel Pujol
-# Mise à jour $Id: wizard.tcl,v 1.8 2010-06-07 12:56:56 michelpujol Exp $
+# Mise à jour $Id: wizard.tcl,v 1.9 2010-06-07 20:23:17 michelpujol Exp $
 #
 
 namespace eval ::modpoi2::wizard {
@@ -703,7 +703,7 @@ proc ::modpoi2::wizard::modpoi_wiz2 { } {
 
    #--- j'affiche la carte des points d'amer
    displayMap $private(visuNo)
-   #--- je redeonne le focus a la fentre du wizard
+   #--- je redonne le focus a la fentre du wizard
    focus $private(g,base)
 
    #--- je selectionne le premier point d'amer
@@ -837,7 +837,7 @@ proc ::modpoi2::wizard::onSelectCheckButton { w k} {
       $w configure -background SystemButtonFace
    } else {
       incr private(nbSelected) -1
-      $w configure -background ::color(lightred)
+      $w configure -background $::color(lightred)
    }
 
 }
