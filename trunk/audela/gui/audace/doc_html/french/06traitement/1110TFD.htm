@@ -7,7 +7,7 @@
  name="author">
 </head>
 <body>
-<p class="date">Date de mise à jour : 6 juin 2010</p>
+<p class="date">Date de mise à jour : 7 juin 2010</p>
 <h1>Transformée de Fourier Discrète</h1>
 <p>La <b>Transformée de Fourier Discrète (TFD)</b>
 convertit une
@@ -56,13 +56,19 @@ FITS des deux
 images contient le mot-clé DFT_ORD avec pour valeur la chaine de
 caractère (string) <em>REGULAR</em>.</li>
 </ul>
-L'utilisateur peut choisir de calculer la TFD de l'image affichée.
-Auquel cas seront créées dans le répertoire d'image courant deux images
+L'utilisateur peut choisir de calculer la TFD de l'image préalablement
+affichée ou celle d'un fichier sur le disque dur. <br>
+Dans le cas d'un calcul sur l'image affichée, seront créées dans le
+répertoire d'image courant deux images
 nommées "<span style="font-style: italic;">modulus.fit</span>" et "<span
  style="font-style: italic;">argument.fit</span>", ou "<span
  style="font-style: italic;">real.fit</span>" et "<span
  style="font-style: italic;">imaginary.fit</span>" suivant le choix du
-format. A l'issue du calcul, l'image affichée est toujours celle
+format (<span style="font-style: italic;">cartésien</span> ou <span
+ style="font-style: italic;">polaire</span>). <span
+ style="text-decoration: underline;">Si des fichiers du disque dur
+portaient ces mêmes noms, leur contenu sera écrasé</span>. A l'issue du
+calcul, l'image affichée est toujours celle
 contenant la partie réelle ou le module de la TFD.<br>
 Si l'utilisateur préfère travailler directement sur des fichiers
 images, il peut choisir librement le répertoire et le nom des fichiers
