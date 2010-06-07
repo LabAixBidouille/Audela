@@ -2,7 +2,7 @@
 # Fichier : modpoi_main.tcl
 # Description : fenetre principale
 # Auteur : Michel Pujol
-# Mise à jour $Id: modpoi_main.tcl,v 1.5 2010-06-05 11:40:07 michelpujol Exp $
+# Mise à jour $Id: modpoi_main.tcl,v 1.6 2010-06-07 12:59:21 michelpujol Exp $
 #
 
 namespace eval ::modpoi2::main {
@@ -232,8 +232,8 @@ proc ::modpoi2::main::fillConfigPage { frm visuNo } {
             0 $::caption(modpoi2,star,amerNum) right \
             0 $::caption(modpoi2,star,amerAz) right \
             0 $::caption(modpoi2,star,amerEl) right \
-            0 $::caption(modpoi2,star,deltaRa)  right \
-            0 $::caption(modpoi2,star,deltaDe) right \
+            0 $::caption(modpoi2,star,raShift)  right \
+            0 $::caption(modpoi2,star,deShift) right \
             0 $::caption(modpoi2,star,name) center \
             0 $::caption(modpoi2,star,ra) center \
             0 $::caption(modpoi2,star,de) center \
