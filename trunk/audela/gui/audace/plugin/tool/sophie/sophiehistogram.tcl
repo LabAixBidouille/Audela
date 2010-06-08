@@ -1,7 +1,7 @@
 #
 # Fichier : sophiehistogram.tcl
 # Description : Fenetre affcihat l'histogramme des ecarts étoile/consigne
-# Mise a jour $Id: sophiehistogram.tcl,v 1.4 2010-06-08 15:38:25 michelpujol Exp $
+# Mise a jour $Id: sophiehistogram.tcl,v 1.5 2010-06-08 15:56:30 michelpujol Exp $
 #
 
 namespace eval ::sophie::histogram {
@@ -28,6 +28,7 @@ proc ::sophie::histogram::run { visuNo } {
    set ::caption(sophie,histogram,startDate) "Heure début"
    set ::caption(sophie,histogram,endDate)   "Heure fin"
    set ::caption(sophie,histogram,clipboard) "Copie vers presse papier"
+   set ::caption(sophie,histogram,clear) "Raz affichage"
 
    set private($visuNo,alphaDiff,show)  1
    set private($visuNo,deltaDiff,show)  1
@@ -137,7 +138,10 @@ proc ::sophie::histogram::fillConfigPage { frm visuNo } {
       "::sophie::histogram::private($visuNo,alphaDiff,show)" "::sophie::histogram::onDisplayLine $visuNo"
       Menu_Check     $menuNo "$::caption(audace,menu,affichage)" "$::caption(sophie,deltaDiff)" \
       "::sophie::histogram::private($visuNo,deltaDiff,show)" "::sophie::histogram::onDisplayLine $visuNo"
+      Menu_Separator $menuNo "$::caption(audace,menu,affichage)"
 
+      Menu_Command   $menuNo "$::caption(audace,menu,affichage)" "$::caption(sophie,histogram,clear)" \
+      "::sophie::histogram::onClearDisplay $visuNo"
       Menu_Command   $menuNo "$::caption(audace,menu,affichage)" "$::caption(sophie,histogram,clipboard)" \
       "::sophie::histogram::onCopyClipboard $visuNo"
       Menu_Bind $menuNo $private($visuNo,this) <Control-c> "$::caption(audace,menu,affichage)" "$::caption(sophie,histogram,clipboard)" \
@@ -275,6 +279,25 @@ proc ::sophie::histogram::onCopyClipboard { visuNo } {
    clipboard clear
    clipboard append -type STRING $data
 }
+
+
+#------------------------------------------------------------
+# onClearDisplay
+#    efface les données affichées
+#
+# @param visuNo numero de la visu
+#
+#------------------------------------------------------------
+proc ::sophie::histogram::onClearDisplay { visuNo } {
+   variable private
+
+   ::sophieHistogramAbcisse set ""
+   ::sophieHistogramAlphaDiff set ""
+   ::sophieHistogramDeltaDiff set ""
+   set private($visuNo,startDate) [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]
+   set private($visuNo,endDate)   ""
+}
+
 
 #------------------------------------------------------------
 # displayData { }
