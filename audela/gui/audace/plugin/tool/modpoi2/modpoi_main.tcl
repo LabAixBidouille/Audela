@@ -2,7 +2,7 @@
 # Fichier : modpoi_main.tcl
 # Description : fenetre principale
 # Auteur : Michel Pujol
-# Mise à jour $Id: modpoi_main.tcl,v 1.6 2010-06-07 12:59:21 michelpujol Exp $
+# Mise à jour $Id: modpoi_main.tcl,v 1.7 2010-06-08 16:00:48 michelpujol Exp $
 #
 
 namespace eval ::modpoi2::main {
@@ -149,7 +149,7 @@ proc ::modpoi2::main::fillConfigPage { frm visuNo } {
          [list ::modpoi2::main::onSaveAs $visuNo]
       Menu_Separator $menuNo "$::caption(audace,menu,file)"
       Menu_Command   $menuNo "$::caption(audace,menu,file)" "$::caption(audace,menu,quitter)" \
-        "::confGenerique::closeWindow $visuNo [namespace current] $private($visuNo,this)"
+        "::confGenerique::closeWindow $visuNo [namespace current]"
 
       Menu           $menuNo "$::caption(modpoi2,menu,edition)"
       Menu_Command   $menuNo "$::caption(modpoi2,menu,edition)" "$::caption(modpoi2,menu,editModel)..." \

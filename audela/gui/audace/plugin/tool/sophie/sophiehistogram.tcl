@@ -1,7 +1,7 @@
 #
 # Fichier : sophiehistogram.tcl
 # Description : Fenetre affcihat l'histogramme des ecarts étoile/consigne
-# Mise a jour $Id: sophiehistogram.tcl,v 1.5 2010-06-08 15:56:30 michelpujol Exp $
+# Mise a jour $Id: sophiehistogram.tcl,v 1.6 2010-06-08 16:01:16 michelpujol Exp $
 #
 
 namespace eval ::sophie::histogram {
@@ -131,7 +131,7 @@ proc ::sophie::histogram::fillConfigPage { frm visuNo } {
          "::sophie::histogram::onLoadFile $visuNo"
       Menu_Separator $menuNo "$::caption(audace,menu,file)"
       Menu_Command   $menuNo "$::caption(audace,menu,file)" "$::caption(audace,menu,quitter)" \
-        "::confGenerique::closeWindow $visuNo [namespace current] $private($visuNo,this)"
+        "::confGenerique::closeWindow $visuNo [namespace current]"
 
       Menu           $menuNo "$::caption(audace,menu,affichage)"
       Menu_Check     $menuNo "$::caption(audace,menu,affichage)" "$::caption(sophie,alphaDiff)" \
