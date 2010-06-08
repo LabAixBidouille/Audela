@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.32 2010-05-22 14:16:25 michelpujol Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.33 2010-06-08 15:31:49 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -151,7 +151,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
                set y1 1
                set x2 [buf$bufNo getpixelswidth]
                set y2 [buf$bufNo getpixelsheight]
-               set starDetectionMode 1
+               set starDetectionMode 2
                set integratedImage 1
                set previousFiberX [lindex $private(originCoord) 0]
                set previousFiberY [lindex $private(originCoord) 1]
@@ -166,7 +166,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             set y1 [expr round($y - $private(targetBoxSize))]
             if { $y1 < 1 } { set y1 1 }
             set y2 [expr $y1 + 2 * $private(targetBoxSize)]
-            set starDetectionMode 1
+            set starDetectionMode 2
             set integratedImage 0
             set previousFiberX [lindex $private(originCoord) 0]
             set previousFiberY [lindex $private(originCoord) 1]
@@ -252,8 +252,6 @@ proc ::camerathread::sophieAcquisitionLoop { } {
              set skyLevel [expr $background / $private(exptime)]
          }
 
-###::camerathread::disp  "background=$background skyLevel=$skyLevel \n"
-
          ###::camerathread::disp  "starStatus=$starStatus starX,starY=$starX $starY fiberStatus=$fiberStatus fiberX,fiberY=$fiberX $fiberY infoMessage=$infoMessage\n"
          if { $starStatus == "DETECTED" } {
             #--- l'etoile est detectee
@@ -281,15 +279,12 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             }
          }
 
-          ###::camerathread::disp  "camerathread: private(targetCoord)=$private(targetCoord) private(originCoord)=$private(originCoord)\n"
-         ###::camerathread::disp  "camerathread: FIBER= y1=$y1 y2=$y2 fiberStatus=$fiberStatus\n"
-
          #--- je calcule l'ecart de position entre la cible et la consigne (en pixels ramene au binning 1x1)
          set dx [expr (double([lindex $private(targetCoord) 0]) - [lindex $private(originCoord) 0]) * $xBinning ]
          set dy [expr (double([lindex $private(targetCoord) 1]) - [lindex $private(originCoord) 1]) * $yBinning ]
 
         #--- je pondere la position si on est en mode GUIDE avec detection de la fibre
-         if { $private(mode) == "GUIDE"  } {
+         if { $private(mode) == "GUIDE"  && $private(guidingMode) != "OBJECT" } {
             if { [expr abs($dx) * $xBinning ] < 16 } {
                #--- le denominateur est toujours non nul parce que dx > 1.7/0.04)
                set dx [expr $dx / (1.7 - abs($dx) * 0.04)]
