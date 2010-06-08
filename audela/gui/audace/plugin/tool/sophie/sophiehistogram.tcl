@@ -1,7 +1,7 @@
 #
 # Fichier : sophiehistogram.tcl
 # Description : Fenetre affcihat l'histogramme des ecarts étoile/consigne
-# Mise a jour $Id: sophiehistogram.tcl,v 1.3 2010-05-28 23:13:54 michelpujol Exp $
+# Mise a jour $Id: sophiehistogram.tcl,v 1.4 2010-06-08 15:38:25 michelpujol Exp $
 #
 
 namespace eval ::sophie::histogram {
@@ -34,7 +34,7 @@ proc ::sophie::histogram::run { visuNo } {
    set private($visuNo,startDate)       ""
    set private($visuNo,endDate)         ""
    #--- pas des abcisses de l'histogramme
-   set private($visuNo,step)     0.05
+   set private($visuNo,step)     0.2
 
    #--- nom du fichier qui est affiche
    set private($visuNo,fileName) ""
