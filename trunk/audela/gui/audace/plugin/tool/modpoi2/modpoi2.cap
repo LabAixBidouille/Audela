@@ -1,6 +1,6 @@
 #
 # Fichier : modpoi2.Hcap
-# Mise a jour $Id: modpoi2.cap,v 1.3 2010-06-07 12:59:52 michelpujol Exp $
+# Mise a jour $Id: modpoi2.cap,v 1.4 2010-06-08 08:04:15 michelpujol Exp $
 #
 
 #=========================================================================
@@ -322,6 +322,7 @@ d'aberration et de nutation."
    set caption(modpoi2,wiz3,cannot)           "Si un obstacle ne permet pas de pointer cette étoile,\ncliquer sur ce bouton pour en choisir une autre."
    set caption(modpoi2,wiz3,prev)             "<< Précédent"
    set caption(modpoi2,wiz3,pas_etoile)       "Il n'y a plus d'étoile. Vous devez\nfermer l'outil 'Modèle de pointage'."
+   set caption(modpoi2,wiz3,catalogNotFound)  "Fichier catalogue absent : \n%s"
 
    set caption(modpoi2,wiz4,title)            "Modèle de pointage : Centrage de l'étoile numéro "
    set caption(modpoi2,wiz4,title2)           "Centrage de l'étoile numéro "
