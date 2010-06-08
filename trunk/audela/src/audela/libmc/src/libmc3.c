@@ -481,6 +481,7 @@ List_ModelValues
    double dh=0.,daz=0.;
    double rat,dect,hat,ht,azt,dra;
    int model_only = 0; 
+	int type_list = 0;
 
    if(argc<4) {
       sprintf(s,"Usage: %s List_coords Date_UTC Home Pressure Temperature ?List_ModelSymbols List_ModelValues? ?model_only?", argv[0]);
@@ -491,18 +492,27 @@ List_ModelValues
       code=Tcl_SplitList(interp,argv[1],&argcc,&argvv);
       if (argcc>8) {
          hips.id  = atoi(argvv[0]);
-         hips.mag = atof(argvv[1]);
-         hips.ra  = atof(argvv[2]);
-         hips.dec = atof(argvv[3]);
-         mctcl_decode_date(interp,argvv[4],&equinox);
-         mctcl_decode_date(interp,argvv[5],&epoch);
-         hips.mura = atoi(argvv[6]);
-         hips.mudec = atoi(argvv[7]);
-         hips.plx = atoi(argvv[8]);
-         if (argvv!=NULL) { Tcl_Free((char *) argvv); }
+			if (hips.id>0) {
+				hips.mag = atof(argvv[1]);
+				hips.ra  = atof(argvv[2]);
+				hips.dec = atof(argvv[3]);
+				mctcl_decode_date(interp,argvv[4],&equinox);
+				mctcl_decode_date(interp,argvv[5],&epoch);
+				hips.mura = atoi(argvv[6]);
+				hips.mudec = atoi(argvv[7]);
+				hips.plx = atoi(argvv[8]);
+				if (argvv!=NULL) { Tcl_Free((char *) argvv); }
+				type_list = 0;
+			} else {
+				ha = atoi(argvv[1])*(DR);
+				dec = atof(argvv[2])*(DR);
+				type_list = 1;
+			}
       } else {
          // traite l'erreur
-         return TCL_ERROR;
+			sprintf(s,"Error: List_coords must be {id mag ra dec equinox epoch mura mudec plx} or {-1 ha dec 0 0 0 0 0 0}", argv[0]);
+			Tcl_SetResult(interp,s,TCL_VOLATILE);
+			return TCL_ERROR;
       }
       /* --- decode la Date ---*/
       mctcl_decode_date(interp,argv[2],&jd);
@@ -549,52 +559,56 @@ List_ModelValues
       }
 
       /* === CALCULS === */
-      ra=hips.ra*(DR);
-      dec=hips.dec*(DR);
-      cosdec=cos(dec);
-      mura=hips.mura*1e-3/86400/cosdec;
-      mudec=hips.mudec*1e-3/86400;
-      parallax=hips.plx;
-      if (model_only == 1 ) {
-         /* --- coordonnees horizontales---*/
-         mc_ad2hd(jd,longmpc,ra,&ha);
-         mc_hd2ah(ha,dec,latrad,&az,&h);
-      } else {
-         /* --- aberration annuelle ---*/
-         mc_aberration_annuelle(jd,ra,dec,&asd2,&dec2,1);
-         ra=asd2;
-         dec=dec2;
-         /* --- calcul de mouvement propre ---*/
-         ra+=(jd-epoch)/365.25*mura;
-         dec+=(jd-epoch)/365.25*mudec;
-         /* --- calcul de la precession ---*/
-         mc_precad(equinox,ra,dec,jd,&asd2,&dec2);
-         ra=asd2;
-         dec=dec2;
-         /* --- correction de parallaxe stellaire*/
-         if (parallax>0) {
-            mc_parallaxe_stellaire(jd,ra,dec,&asd2,&dec2,parallax);
-            ra=asd2;
-            dec=dec2;
-         }
-         /* --- correction de nutation */
-         mc_nutradec(jd,ra,dec,&asd2,&dec2,1);
-         ra=asd2;
-         dec=dec2;
-         /* --- aberration de l'aberration diurne*/
-         mc_aberration_diurne(jd,ra,dec,longmpc,rhocosphip,rhosinphip,&asd2,&dec2,1);
-         ra=asd2;
-         dec=dec2;
+		if (type_list==0) {
+			ra=hips.ra*(DR);
+			dec=hips.dec*(DR);
+			cosdec=cos(dec);
+			mura=hips.mura*1e-3/86400/cosdec;
+			mudec=hips.mudec*1e-3/86400;
+			parallax=hips.plx;
+			if (model_only == 1 ) {
+				/* --- coordonnees horizontales---*/
+				mc_ad2hd(jd,longmpc,ra,&ha);
+				mc_hd2ah(ha,dec,latrad,&az,&h);
+			} else {
+				/* --- aberration annuelle ---*/
+				mc_aberration_annuelle(jd,ra,dec,&asd2,&dec2,1);
+				ra=asd2;
+				dec=dec2;
+				/* --- calcul de mouvement propre ---*/
+				ra+=(jd-epoch)/365.25*mura;
+				dec+=(jd-epoch)/365.25*mudec;
+				/* --- calcul de la precession ---*/
+				mc_precad(equinox,ra,dec,jd,&asd2,&dec2);
+				ra=asd2;
+				dec=dec2;
+				/* --- correction de parallaxe stellaire*/
+				if (parallax>0) {
+					mc_parallaxe_stellaire(jd,ra,dec,&asd2,&dec2,parallax);
+					ra=asd2;
+					dec=dec2;
+				}
+				/* --- correction de nutation */
+				mc_nutradec(jd,ra,dec,&asd2,&dec2,1);
+				ra=asd2;
+				dec=dec2;
+				/* --- aberration de l'aberration diurne*/
+				mc_aberration_diurne(jd,ra,dec,longmpc,rhocosphip,rhosinphip,&asd2,&dec2,1);
+				ra=asd2;
+				dec=dec2;
 
-         /* --- coordonnees horizontales---*/
-         mc_ad2hd(jd,longmpc,ra,&ha);
-         mc_hd2ah(ha,dec,latrad,&az,&h);
-         /* --- refraction ---*/
-         mc_refraction(h,1,temperature,pressure,&refraction);
-         h+=refraction;
-      } 
+				/* --- coordonnees horizontales---*/
+				mc_ad2hd(jd,longmpc,ra,&ha);
+				mc_hd2ah(ha,dec,latrad,&az,&h);
+				/* --- refraction ---*/
+				mc_refraction(h,1,temperature,pressure,&refraction);
+				h+=refraction;
+			} 
+	      mc_ah2hd(az,h,latrad,&ha,&dec);
+		} else {
+	      mc_hd2ah(ha,dec,latrad,&az,&h);
+		}
 
-      mc_ah2hd(az,h,latrad,&ha,&dec);
       mc_hd2ad(jd,longmpc,ha,&ra);
       rat=ra;
       dect=dec;

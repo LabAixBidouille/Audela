@@ -12,7 +12,7 @@
 <center><b><font size="+3">LIB MC</font></b> <br>
 Cr&eacute;ation et utilisation d'un mod&egrave;le de pointage avec
 la&nbsp; librairie de calculs de m&eacute;canique c&eacute;leste <br>
-version 20100102<br>
+version 20100608<br>
 Alain KLOTZ
 <p><b><font size="+3">Manuel de l'utilisateur</font></b></p>
 </center>
@@ -27,7 +27,7 @@ compte les imperfections &eacute;lectro-m&eacute;caniques du
 t&eacute;lescope. Le mod&egrave;le de pointage, stricto sensus ne
 concerne que le passage des coodonn&eacute;es apparente vers les
 coordonn&eacute;es t&eacute;lescope. AudeLA propose la fonction
-mc_coords2tel qui calcul les coordonn&eacute;es apparentes et
+mc_hip2tel qui calcul les coordonn&eacute;es apparentes et
 t&eacute;lescope &agrave; partir des coordonn&eacute;es catalogue.</p>
 <p>Les coordonn&eacute;es telescope exigent un apprentissage des
 imperfections &eacute;lectro-m&eacute;caniques. Pour cela, on effectue
@@ -181,10 +181,10 @@ envoyer au t&eacute;lescope.</li>
 </ul>
 <p>D&eacute;finition :</p>
 <p>mc_hip2tel List_coords Date_UTC Home Pressure Temperature
-?List_ModelSymbols List_ModelValues?<br>
+?List_ModelSymbols List_ModelValues? ?model_only?<br>
 <br>
 List_coords : Liste de type Hipparcos {id mag ra dec equinox epoch mura
-mudec plx}<br>
+mudec plx} ou {-1 ha dec 0 0 0 0 0 0}<br>
 Date : Date UTC du pointage<br>
 Home : Localisation du t&eacute;lescope<br>
 Pressure : Pression atmosph&eacute;rique (Pa). Utiliser 101325 Pa par
@@ -194,7 +194,8 @@ d&eacute;faut.<br>
 List_ModelSymbols : Symbols des coeffcicients du mod&egrave;le de
 pointage<br>
 List_ModelValues : Valeurs des coeffcients du mod&egrave;le de pointage.<br>
-</p>
+model_only : pour signaler de ne pas appliquer la transformation
+catalogue-&gt;vraie sur les les coordonn&eacute;es de type Hipparcos.</p>
 <p>Sorties :&nbsp;</p>
 <p>Liste de 15 &eacute;l&eacute;ments :</p>
 <p>RA : Acsension droite apparente sans mod&egrave;le (deg)<br>
