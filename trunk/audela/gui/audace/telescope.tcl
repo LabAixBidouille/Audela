@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise à jour $Id: telescope.tcl,v 1.55 2010-05-24 07:56:11 robertdelmas Exp $
+# Mise à jour $Id: telescope.tcl,v 1.56 2010-06-08 09:18:37 michelpujol Exp $
 #
 
 namespace eval ::telescope {
@@ -225,7 +225,7 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
       set catchError [catch {
          if { $audace(telescope,stopgoto) == "0" } {
             tel$audace(telNo) radec goto $list_radec -blocking $blocking
-            if { $blocking == 0 } {
+            if { $blocking == 0 && $::conf(telescope) != "t193" } {
                #--- Boucle tant que la monture n'est pas arretee (si on n'utilise pas le mode bloquant du goto)
                set audace(telescope,goto) "1"
                set radec0 [ tel$audace(telNo) radec coord ]
