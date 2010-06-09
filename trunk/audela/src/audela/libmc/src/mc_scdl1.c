@@ -2860,7 +2860,7 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 		for (kp=0;kp<=np;kp++) {
 			kk=ksame_priority[kp]; // kk index in objectlocal ou objectlocalranges
 			kd=objectlinks[kk]; ///// kd index in objectdescr
-			kr=(int)objectlocalranges[kk].nbrange; // indice du dernier coucher
+			kr=(int)objectlocalranges[kk].nbrange-1; // indice du dernier coucher
 			jdsets[kp]=objectlocalranges[kk].jd2[kr];
 			kjdsets[kp]=kp;
 		}
