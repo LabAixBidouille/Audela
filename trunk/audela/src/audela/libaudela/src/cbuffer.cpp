@@ -2516,11 +2516,11 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
          }
       }
 
-      // je calcule le flux de l'etoile dans une ellipse
-      // centrée sur starX,starY et demi grand axe  xFmhw yFwhm
+      // je calcule le flux de l'etoile centrée sur starX,starY 
+      // et dans une ellipse de demi axe  a=3*FwmhX et b=3*FwhmY
       {
-         double a = *measuredFwhmX /2.0;  // demi grand axe de l'ellipse
-         double b = *measuredFwhmY /2.0;  // demi petit axe de l'ellipse 
+         double a = *measuredFwhmX *3.0;  // demi grand axe de l'ellipse
+         double b = *measuredFwhmY *3.0;  // demi petit axe de l'ellipse 
          double a2 = a*a;                 // demi grand axe de l'ellipse au carré 
          double b2 = b*b;                 // demi petit axe de l'ellipse au carré
          double x0 = *starX;              // x0 , y0 : centre de l'ellipse
@@ -2557,8 +2557,6 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                }
             }
          }
-
-         sprintf(message, "flux0= %f  flux=%f", flux0, flux);
       }
       // je copie le flux dans la variable de sortie
       *starFlux = flux;
