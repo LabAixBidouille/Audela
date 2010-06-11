@@ -2,7 +2,7 @@
 # Fichier : acquisition.tcl
 # Description : acquisition eShel
 # Auteur : Michel PUJOL
-# Mise a jour $Id: acquisition.tcl,v 1.3 2010-04-11 13:24:25 michelpujol Exp $
+# Mise a jour $Id: acquisition.tcl,v 1.4 2010-06-11 12:46:27 michelpujol Exp $
 #
 
 namespace eval ::eshel::acquisition {
@@ -199,6 +199,11 @@ proc ::eshel::acquisition::startSequence { visuNo actionList { sequenceName "" }
                wait {
                   set statusLabel "wait"
                }
+               readOut {
+                  set statusLabel "ReadOut"
+                  #--- je ferme l'obturateur de la camera
+                  ::confCam::setShutter $camItem 1 set
+               }
                default {
                   error "unknown action type: $actionType in action : $action\n"
                }
@@ -250,105 +255,109 @@ proc ::eshel::acquisition::startSequence { visuNo actionList { sequenceName "" }
                      set private(currentSeriesId) [lindex [buf$bufNo getkwd "DATE-OBS" ] 1]
                   }
 
-                  set fileName ""
-                  #--- je prepare le nom du fichier et le type d'image
-                 switch $actionType {
-                     objectSerie  {
-                        #--- Mode Object
-                        append fileName "[string map { " " "" } $actionParams(objectName)]-$actionParams(expTime)s"
-                        set imageType "OBJECT"
-                     }
-                     darkSerie {
-                        #--- Mode Dark
-                        append fileName "DARK-$actionParams(expTime)s"
-                        set imageType "DARK"
-                     }
-                     flatfield  {
-                         #--- Mode Dark
-                         append fileName "FLATFIELD-$actionParams(expTime)s"
-                         set imageType "FLATFIELD"
-                     }
-                     flatSerie {
-                        #--- Mode Flat
-                        append fileName "FLAT-$actionParams(expTime)s"
-                        set imageType "FLAT"
-                     }
-                     tharSerie {
-                        #--- Mode Thar
-                        append fileName "THAR-$actionParams(expTime)s"
-                        set imageType "CALIB"
-                     }
-                     neonSerie {
-                       #--- Mode Neon
-                        append fileName "NEON-$actionParams(expTime)s"
-                        set imageType "FLAT"
-                     }
-                     biasSerie  {
-                        #--- Mode bias
-                        append fileName "BIAS"
-                        set imageType "BIAS"
-                     }
-                  }
+                  if { $actionType != "readOut" } {
+                     #--- j'enregistre l'image dans un fichier
 
-                  #--- J'ajoute l'indice et l'extension
-                  append fileName "-$imageCount$::conf(extension,defaut)"
-
-                  if { [file exists $::conf(eshel,mainDirectory)/simulation]  == 1 }  {
-                     #--- Simulation : je recupere le fichier dans le repertoire simulation
-                     set searchedName [file join $::conf(eshel,mainDirectory) simulation "*$fileName"]
-                     set simulName [lindex [glob -nocomplain $searchedName] 0]
-                     if { $simulName != "" } {
-                        set dateObs  [lindex [buf$bufNo getkwd "DATE-OBS" ] 1]
-                        ###set exposure [lindex [buf$bufNo getkwd "EXPOSURE" ] 1]
-                        set exposure $actionParams(expTime)
-                        set dateEnd  [mc_date2jd $dateObs ]
-                        set dateEnd  [expr $dateEnd + double($exposure)/86400.0]
-                        set dateEnd  [mc_date2iso8601 $dateEnd ]
-                        loadima $simulName
-                        ##logInfo "$sequenceName: $actionType copy $fileName\n"
-                        buf$bufNo setkwd [list  "DATE-OBS" $dateObs string "" "" ]
-                        buf$bufNo setkwd [list  "DATE-END" $dateEnd string "" "" ]
-                        buf$bufNo setkwd [list  "EXPOSURE" $exposure float "" "" ]
-                        if { [lindex [buf$bufNo getkwd "UT-START" ] 1] != "" } {
-                           #--- j'enleve les mots clefs du logiciel IRIS
-                           buf$bufNo delkwd "UT-START"
+                     set fileName ""
+                     #--- je prepare le nom du fichier et le type d'image
+                     switch $actionType {
+                        objectSerie  {
+                           #--- Mode Object
+                           append fileName "[string map { " " "" } $actionParams(objectName)]-$actionParams(expTime)s"
+                           set imageType "OBJECT"
                         }
-                     } else {
-                        logError "$sequenceName: Simulation: $searchedName not found\n"
+                        darkSerie {
+                           #--- Mode Dark
+                           append fileName "DARK-$actionParams(expTime)s"
+                           set imageType "DARK"
+                        }
+                        flatfield  {
+                            #--- Mode Dark
+                            append fileName "FLATFIELD-$actionParams(expTime)s"
+                            set imageType "FLATFIELD"
+                        }
+                        flatSerie {
+                           #--- Mode Flat
+                           append fileName "FLAT-$actionParams(expTime)s"
+                           set imageType "FLAT"
+                        }
+                        tharSerie {
+                           #--- Mode Thar
+                           append fileName "THAR-$actionParams(expTime)s"
+                           set imageType "CALIB"
+                        }
+                        neonSerie {
+                          #--- Mode Neon
+                           append fileName "NEON-$actionParams(expTime)s"
+                           set imageType "FLAT"
+                        }
+                        biasSerie  {
+                           #--- Mode bias
+                           append fileName "BIAS"
+                           set imageType "BIAS"
+                        }
                      }
-                  }
 
-                  #--- je donne les valeurs des mots clefs optionnels
-                  set configId $::conf(eshel,currentInstrument)
-                  ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "IMAGETYP" $imageType
-                  ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "OBJNAME"  $actionParams(objectName)
-                  ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "SERIESID" $private(currentSeriesId)
-                  ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "DETNAM"   $::conf(eshel,instrument,config,$configId,cameraName)
-                  ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "INSTRUME" $::conf(eshel,instrument,config,$configId,spectroName)
-                  ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "TELESCOP" $::conf(eshel,instrument,config,$configId,telescopeName)
-                  ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "CONFNAME" $::conf(eshel,instrument,config,$configId,configName)
-                  ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "OBSERVER" $::conf(posobs,nom_observateur)
-                  ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "SWCREATE" "eShel-[package present eshel]"
-                  #--- j'ajoute des mots clefs dans l'en-tete FITS de l'image
-                  foreach keyword [ ::keyword::getKeywords $visuNo $::conf(eshel,keywordConfigName) ] {
-                     #--- j'ajoute tous les mots cles qui ne sont pas vide
-                     buf$bufNo setkwd $keyword
-                  }
-                  #--- j'ajoute le mot cle COMMENT1 s'il n'est pas vide
-                  if { $sequenceComment != "" } {
-                     buf$bufNo setkwd [list "COMMENT1" $sequenceComment string "" "" ]
-                  }
+                     #--- J'ajoute l'indice et l'extension
+                     append fileName "-$imageCount$::conf(extension,defaut)"
 
-                  if { $actionParams(saveFile) == 1} {
-                     set dateObs  [mc_date2ymdhms [lindex [buf$bufNo getkwd "DATE-OBS" ] 1]]
-                     set fileDate [format "%04d%02d%02d-%02d%02d%02d" [lindex $dateObs 0] [lindex $dateObs 1] [lindex $dateObs 2] [lindex $dateObs 3] [lindex $dateObs 4] [expr int([lindex $dateObs 5])] ]
-                     #--- j'ajoute le repertoire et la date a l'avant du nom
-                     set shortName "$fileDate-$fileName"
-                     set fileName [file join $::conf(eshel,rawDirectory) $shortName]
-                     #--- Sauvegarde de l'image
-                     saveima $fileName $visuNo
-                     logInfo "$sequenceName: $actionType $shortName\n"
-                  }
+                     if { [file exists $::conf(eshel,mainDirectory)/simulation]  == 1 }  {
+                        #--- Simulation : je recupere le fichier dans le repertoire simulation
+                        set searchedName [file join $::conf(eshel,mainDirectory) simulation "$fileName"]
+                        set simulName [lindex [glob -nocomplain $searchedName] 0]
+                        if { $simulName != "" } {
+                           set dateObs  [lindex [buf$bufNo getkwd "DATE-OBS" ] 1]
+                           ###set exposure [lindex [buf$bufNo getkwd "EXPOSURE" ] 1]
+                           set exposure $actionParams(expTime)
+                           set dateEnd  [mc_date2jd $dateObs ]
+                           set dateEnd  [expr $dateEnd + double($exposure)/86400.0]
+                           set dateEnd  [mc_date2iso8601 $dateEnd ]
+                           loadima $simulName
+                           ##logInfo "$sequenceName: $actionType copy $fileName\n"
+                           buf$bufNo setkwd [list  "DATE-OBS" $dateObs string "" "" ]
+                           buf$bufNo setkwd [list  "DATE-END" $dateEnd string "" "" ]
+                           buf$bufNo setkwd [list  "EXPOSURE" $exposure float "" "" ]
+                           if { [lindex [buf$bufNo getkwd "UT-START" ] 1] != "" } {
+                              #--- j'enleve les mots clefs du logiciel IRIS
+                              buf$bufNo delkwd "UT-START"
+                           }
+                        } else {
+                           logError "$sequenceName: Simulation: $searchedName not found\n"
+                        }
+                     }
+
+                     #--- je donne les valeurs des mots clefs optionnels
+                     set configId $::conf(eshel,currentInstrument)
+                     ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "IMAGETYP" $imageType
+                     ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "OBJNAME"  $actionParams(objectName)
+                     ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "SERIESID" $private(currentSeriesId)
+                     ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "DETNAM"   $::conf(eshel,instrument,config,$configId,cameraName)
+                     ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "INSTRUME" $::conf(eshel,instrument,config,$configId,spectroName)
+                     ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "TELESCOP" $::conf(eshel,instrument,config,$configId,telescopeName)
+                     ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "CONFNAME" $::conf(eshel,instrument,config,$configId,configName)
+                     ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "OBSERVER" $::conf(posobs,nom_observateur)
+                     ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "SWCREATE" "eShel-[package present eshel]"
+                     #--- j'ajoute des mots clefs dans l'en-tete FITS de l'image
+                     foreach keyword [ ::keyword::getKeywords $visuNo $::conf(eshel,keywordConfigName) ] {
+                        #--- j'ajoute tous les mots cles qui ne sont pas vide
+                        buf$bufNo setkwd $keyword
+                     }
+                     #--- j'ajoute le mot cle COMMENT1 s'il n'est pas vide
+                     if { $sequenceComment != "" } {
+                        buf$bufNo setkwd [list "COMMENT1" $sequenceComment string "" "" ]
+                     }
+
+                     if { $actionParams(saveFile) == 1} {
+                        set dateObs  [mc_date2ymdhms [lindex [buf$bufNo getkwd "DATE-OBS" ] 1]]
+                        set fileDate [format "%04d%02d%02d-%02d%02d%02d" [lindex $dateObs 0] [lindex $dateObs 1] [lindex $dateObs 2] [lindex $dateObs 3] [lindex $dateObs 4] [expr int([lindex $dateObs 5])] ]
+                        #--- j'ajoute le repertoire et la date a l'avant du nom
+                        set shortName "$fileDate-$fileName"
+                        set fileName [file join $::conf(eshel,rawDirectory) $shortName]
+                        #--- Sauvegarde de l'image
+                        saveima $fileName $visuNo
+                        logInfo "$sequenceName: $actionType $shortName\n"
+                     }
+                  } ; #--- fin si actionType != readOut
                } ] ; #--- fin du catch de l'enregistrement de l'image
 
                if { $catchResult != 0 } {
@@ -401,6 +410,10 @@ proc ::eshel::acquisition::startSequence { visuNo actionList { sequenceName "" }
                      }
                   }
                   biasSerie  {
+                     #--- je remets l'obturateur de la camera en mode synchro
+                     ::confCam::setShutter $camItem 2 set
+                  }
+                  readOut  {
                      #--- je remets l'obturateur de la camera en mode synchro
                      ::confCam::setShutter $camItem 2 set
                   }

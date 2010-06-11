@@ -2,7 +2,7 @@
 # Fichier : process.tcl
 # Description : fenertre de configuration instrument eShel
 # Auteur : Michel PUJOL
-# Mise à jour $Id: instrumentgui.tcl,v 1.4 2010-05-13 17:49:37 robertdelmas Exp $
+# Mise à jour $Id: instrumentgui.tcl,v 1.5 2010-06-11 12:46:39 michelpujol Exp $
 #
 
 ################################################################
@@ -25,7 +25,7 @@ proc ::eshel::instrumentgui::run { tkbase visuNo } {
    variable private
 
    set private(configList)  [list]
-   set private(actionTypeList)  [ list biasSerie darkSerie flatfieldSerie flatSerie tharSerie neonSerie wait ]
+   set private(actionTypeList)  [ list biasSerie darkSerie flatfieldSerie flatSerie tharSerie neonSerie wait readOut]
    #--- liste des paraemtres des actions
    set private(actionParamNames) [ list expTime expNb ]
    set private(action,biasSerie,paramNames) [ list expNb ]
@@ -35,6 +35,7 @@ proc ::eshel::instrumentgui::run { tkbase visuNo } {
    set private(action,tharSerie,paramNames) [ list expTime expNb ]
    set private(action,neonSerie,paramNames) [ list expTime expNb ]
    set private(action,wait,paramNames)      [ list expTime ]
+   set private(action,readOut,paramNames)   [ list expNb ]
    set private(action,expTime) 1
    set private(action,expNb) 1
    set private(closeWindow) 1
