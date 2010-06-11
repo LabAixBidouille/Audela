@@ -1,4 +1,7 @@
+#
 # Robotic Observatory Control
+# Mise à jour $Id: ros.tcl,v 1.8 2010-06-11 17:38:46 robertdelmas Exp $
+#
 
 #--- Add audela/lib directory to ::auto_path if it doesn't already exist
 set audelaLibPath [file join [file join [file dirname [file dirname [info nameofexecutable]] ] lib]]
