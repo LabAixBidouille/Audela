@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.33 2010-06-08 15:31:49 michelpujol Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.34 2010-06-11 11:56:34 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -283,20 +283,30 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          set dx [expr (double([lindex $private(targetCoord) 0]) - [lindex $private(originCoord) 0]) * $xBinning ]
          set dy [expr (double([lindex $private(targetCoord) 1]) - [lindex $private(originCoord) 1]) * $yBinning ]
 
-        #--- je pondere la position si on est en mode GUIDE avec detection de la fibre
+        #--- je pondere la position si on est en mode GUIDE sur la fibre
          if { $private(mode) == "GUIDE"  && $private(guidingMode) != "OBJECT" } {
-            if { [expr abs($dx) * $xBinning ] < 16 } {
-               #--- le denominateur est toujours non nul parce que dx > 1.7/0.04)
-               set dx [expr $dx / (1.7 - abs($dx) * 0.04)]
-            }
-            if { [expr abs($dy) * $yBinning ] < 16 } {
-               set dy [expr $dy / (1.7 - abs($dy) * 0.04)]
+            ###if { [expr abs($dx) * $xBinning ] < 16 } {
+            ###   #--- le denominateur est toujours non nul parce que dx > 1.7/0.04)
+            ###   set dx [expr $dx / (1.7 - abs($dx) * 0.04)]
+            ###}
+            ###if { [expr abs($dy) * $yBinning ] < 16 } {
+            ###   set dy [expr $dy / (1.7 - abs($dy) * 0.04)]
+            ###}
+
+            set distance [expr sqrt($dx * $dx + $dy * $dy ) ]
+            if { $distance < 16 && $distance > 0 } {
+               #--- j'utilise atan2() a la place de atan() car atan2() permet de déterminer l'angle theta sur l'intervalle [-pi,pi]
+               set theta [expr atan2($dy,$dx)]
+               #--- le denominateur est toujours non nul parce que distance != 1.7/0.04 (=42.5)  car distance < 16
+               set distance2 [expr $distance / (1.7 - abs($distance) * 0.04)]
+               set dx [expr $distance2 * cos($theta)]
+               set dy [expr $distance2 * sin($theta)]
             }
          }
 
          if { $private(angle) != 0 } {
              set angle [expr $private(angle)* 3.14159265359/180 ]
-             #--- je calcule les delais de deplacement alpha et delta (en millisecondes)
+             #--- je calcule l'ecart de position en arcseconde avec projection sur les axes de l'ascensiond droite et de la delinaison
              set alphaDiff [expr (   cos($angle) * $dx + sin($angle) *$dy) * $private(pixelScale)]
              set deltaDiff [expr (-  sin($angle) * $dx + cos($angle) *$dy) * $private(pixelScale)]
          } else {
@@ -305,7 +315,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             set deltaDiff [expr $dy * $private(pixelScale) ]
          }
 
-         #--- je calcule la correction alphaCorrection et deltaCorrection  en arcsec
+         #--- j'applique le PID sur les corrections
          if { $private(mountEnabled) == 1 && $starStatus == "DETECTED" } {
             if { $private(mode) == "GUIDE" } {
                #--- j'applique le PID pour le guidage si on est en mode GUIDE
@@ -374,14 +384,14 @@ proc ::camerathread::sophieAcquisitionLoop { } {
 
                #--- je vérifie si la moyenne est inferieure au seuil
                if { $xmean < $private(centerMaxLimit)  && $ymean < $private(centerMaxLimit) } {
+                  #--- j'envoie une notification au thread principal pour arreter le centrage
                   ::camerathread::notify "acquisitionResult" "CENTER" $private(targetCoord)
-                  ###::camerathread::disp  "camerathread: Le centrage est terminé ([format "%6.1f" $xmean]<$private(centerMaxLimit))  ([format "%6.1f" $ymean]<$private(centerMaxLimit) arsec) \n"
                } else {
-                  ###::camerathread::disp  "camerathread: Le centrage continue : ([format "%6.1f" $xmean]>$private(centerMaxLimit)) ([format "%6.1f" $ymean]>$private(centerMaxLimit) arsec) \n"
+                  #--- rien a faire, on continue la boucle de centrage
                }
             }
 
-            #--- j'inverse le sens des deplacements si necessaire
+            #--- j'inverse le sens des deplacements (voir l'option dans la configuration de la monture)
             if { $private(alphaReverse) == "1" } {
                set alphaCorrection [expr -$alphaCorrection]
             }
@@ -420,7 +430,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             set alphaCorrection 0.0
             set deltaCorrection 0.0
          }
-         #--- j'envoi une notification au thread princpal pour mettre a jour l'affichage de la fenetre principale
+         #--- j'envoi une notification au thread principal pour mettre a jour l'affichage de la fenetre principale
          ::camerathread::notify "targetCoord" \
             $private(targetCoord) $dx $dy $targetDetection $fiberStatus \
             [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
