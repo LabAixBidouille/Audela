@@ -201,7 +201,7 @@ struct mcvar {
 /* Structure des observations astrometriques de position                   */
 /***************************************************************************/
 struct observ {
-   char designation[14]; /* designation de l'objet */
+   char designation[82]; /* designation de l'objet */
    double jjtu;          /* instant TU d'observation en jour julien */
    double jjtd;          /* instant TD d'observation en jour julien */
    double asd;           /* ascension droite en radian */

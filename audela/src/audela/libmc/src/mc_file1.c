@@ -808,6 +808,7 @@ void mc_tle_decnext1(FILE *ftle,struct elemorb *elem,char *name,int *valid)
    }
    while (feof(ftle)==0) {
       fgets(s,255,ftle);
+		k=(int)strlen(s);
       *valid=0;
       if (s!=NULL) {
          if (s[0]=='1') {
