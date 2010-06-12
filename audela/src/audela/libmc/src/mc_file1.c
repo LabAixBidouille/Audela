@@ -807,8 +807,9 @@ void mc_tle_decnext1(FILE *ftle,struct elemorb *elem,char *name,int *valid)
       return;
    }
    while (feof(ftle)==0) {
-      fgets(s,255,ftle);
-		k=(int)strlen(s);
+      if (fgets(s,255,ftle)==NULL) {
+			break;
+		}
       *valid=0;
       if (s!=NULL) {
          if (s[0]=='1') {
@@ -878,7 +879,7 @@ void mc_tle_decnext1(FILE *ftle,struct elemorb *elem,char *name,int *valid)
 					}
 				}
 				n=k-1;
-				for (k=n;k>=0;k--) {
+				for (k=(int)n;k>=0;k--) {
 					if (elem->designation[k]==32) {
 						elem->designation[k]='\0';
 					} else {
