@@ -3,7 +3,7 @@
 #
 ####################################################################
 
-# Mise a jour $Id: spc_var.tcl,v 1.22 2010-05-22 23:38:40 bmauclaire Exp $
+# Mise a jour $Id: spc_var.tcl,v 1.23 2010-06-13 12:54:02 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -118,7 +118,7 @@ set spcaudace(cosmics_imin) 0.15
 set spcaudace(cosmics_nbsigma) 2.5
 #-- Valeur du parametre Kappa servant dans la somme type Kappa-Sigma :
 set spcaudace(ssk_kappa) 0.8
-#-- Degré du polynome pour l'extraction du continuum :
+#-- Degré du polynome pour l'extraction du continuum (5->2) :
 set spcaudace(degpoly_cont) 5
 #-- Fraction des bords ignorés dans certains calculs (spc_divri...) pour la détermination du Imax du profil :
 set spcaudace(pourcent_bord) 0.15

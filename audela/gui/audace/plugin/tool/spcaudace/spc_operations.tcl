@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.30 2010-05-01 10:19:47 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.31 2010-06-13 12:54:02 bmauclaire Exp $
 
 
 
@@ -27,7 +27,7 @@ proc spc_anim { args } {
    set nbargs [ llength $args ] 
    if { $nbargs==1 } {
       set nom_astre [ lindex $args 0 ]
-      set delay_images 40
+      set delay_images 60
    } elseif { $nbargs==2 } {
       set nom_astre [ lindex $args 0 ]
       set delay_images [ lindex $args 1 ]
@@ -112,7 +112,7 @@ proc spc_anim { args } {
    #--- Export au format PNG :
    ::console::affiche_prompt "\nExport au format PNG...\n"
    foreach fichier $listefichiers {
-      spc_autofit2png "$fichier" "$nom_astre" * * $ymin $ymax
+      spc_autofit2png "$fichier" "$nom_astre" $lambda_min $lambda_max $ymin $ymax
    }
    set listefichiers [ lsort -dictionary [ glob -dir $audace(rep_images) -tail *_norm$conf(extension,defaut) ] ]
    foreach fichier $listefichiers {
@@ -428,10 +428,10 @@ proc spc_scar { args } {
 
        #--- Enregistrement :
        buf$audace(bufNo) bitpix float
-       buf$audace(bufNo) save "$audace(rep_images)/${spectre}-cic"
+       buf$audace(bufNo) save1d "$audace(rep_images)/${spectre}_cic"
        buf$audace(bufNo) bitpix short
-       ::console::affiche_resultat "Profil de raies sauvée sous ${spectre}-cic.\n"
-       return ${spectre}-cic
+       ::console::affiche_resultat "Profil de raies sauvée sous ${spectre}_cic.\n"
+       return ${spectre}_cic
 }
 #*****************************************************************#
 
