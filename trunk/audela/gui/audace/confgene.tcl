@@ -5,7 +5,7 @@
 #               pose, choix des outils, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: confgene.tcl,v 1.77 2010-06-05 11:43:44 michelpujol Exp $
+# Mise à jour $Id: confgene.tcl,v 1.78 2010-06-13 08:40:29 michelpujol Exp $
 #
 
 #
@@ -3150,6 +3150,12 @@ proc ::confGenerique::createDialog { visuNo NameSpace } {
    frame $This.frame1 -borderwidth 1 -relief raised
    $NameSpace\:\:fillConfigPage $This.frame1 $visuNo
    pack $This.frame1 -side top -fill both -expand 1
+
+   #--- Si elle est modale, je fais apparaitre la fenetre toujours au dessus de
+   #--- la fenetre parent
+   if { $private($visuNo,$NameSpace,modal) == 1 } {
+      wm transient $This [winfo parent $This]
+   }
 
    if { [info commands "$NameSpace\::apply"] !=  "" } {
       #--- Cree le bouton 'OK' si la procedure NameSpace::apply existe
