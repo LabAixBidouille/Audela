@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise à jour $Id: tkutil.tcl,v 1.35 2010-05-28 22:50:22 robertdelmas Exp $
+# Mise à jour $Id: tkutil.tcl,v 1.36 2010-06-13 08:50:17 michelpujol Exp $
 #
 
 namespace eval tkutil:: {
@@ -304,13 +304,14 @@ proc ::tkutil::displayErrorInfo { title { messageOptionnel "" } } {
 #
 # @return
 #   - 1 si OK
-#   - 0 si erreur
+#   - 0 si erreur (la saisie du caractere est annulée)
 # @public
 #----------------------------------------------------------------------------
 proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxValue { errorVariable "" } } {
    variable widget
 
    set result 0
+   set warning 0
    if { $event == "key" || $event == "focusout"  } {
       #--- cas des nombres negatifs
       if { $minValue < 0 } {
@@ -338,34 +339,47 @@ proc ::tkutil::validateNumber { win event newValue oldValue class minValue maxVa
             set newValue $minValue
          }
          if { $newValue < $minValue } {
+            #--- je signale une erreur , mais result=1 pour permettre la saisie du caractere
             if { $errorVariable != "" } {
                set $errorVariable [format $::caption(tkutil,numberTooSmall) $newValue $minValue ]
             }
-            set result 0
+            set warning 1
+            set result  1
          } elseif { $newValue > $maxValue } {
+            #--- je signale une erreur , mais result=1 pour permettre la saisie du caractere
             if { $errorVariable != "" } {
                set $errorVariable [format $::caption(tkutil,numberTooGreat) $newValue $maxValue ]
             }
-            set result 0
+            set warning 1
+            set result 1
          } else {
+            set result 1
+            set warning 0
+         }
+      }
+      if { $result == 0 } {
+         #--- Je retourne 0 pour que la saisie du carctere est annulée
+         #--- J'emet un beep pour avertir l'utilisateur
+         bell
+      } else {
+         if { $warning == 1 } {
+            #--- Je retourne 1 pour conserver le caractere saisi et permettre a l'utilsateur de corriger.
+            #--- en particulier quand la valeur min  n'est pas nulle.
+            #--- Mais j'affiche en inverse video pour signaler que la valeur du widget n'est pas entre les valeurs min et max
+            $win configure -bg $::color(lightred) -fg $::audace(color,entryTextColor)
+         } else {
+            #--- Il n'y a pas d'erreur . Je supprime la variable d'erreur si elle existe.
             if { $errorVariable != "" } {
                if { [info exists $errorVariable] } {
                   unset $errorVariable
                }
             }
-            set result 1
+            #--- j'affiche normalement
+            $win configure -bg $::audace(color,entryBackColor) -fg $::audace(color,entryTextColor)
          }
       }
-      if { $result == 0 } {
-         #--- j'affiche en inverse video
-        ### $win configure -bg $::color(lightred) -fg $::audace(color,entryTextColor)
-         bell
-      } else {
-         #--- j'affiche normalement
-        ### $win configure -bg $::audace(color,entryBackColor) -fg $::audace(color,entryTextColor)
-      }
    } else {
-      #--- je ne traite pas l'evenement
+      #--- je ne traite pas les evenements autres que key et focusout
       set result 1
    }
    return $result
