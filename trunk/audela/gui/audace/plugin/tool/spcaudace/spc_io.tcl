@@ -10,7 +10,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_io.tcl,v 1.15 2010-04-20 16:57:26 bmauclaire Exp $
+# Mise a jour $Id: spc_io.tcl,v 1.16 2010-06-13 12:54:02 bmauclaire Exp $
 
 
 
@@ -1154,7 +1154,7 @@ proc spc_fits2data { args } {
      }
 
      #--- Valeur minimale de l'abscisse : =0 si profil non étalonné
-     ::console::affiche_resultat "spc_fits2data: $naxis1 intensités à traiter...\n"
+     #::console::affiche_resultat "spc_fits2data: $naxis1 intensités à traiter...\n"
 
      #---- Pour Audela
      if { [regexp {1.3.0} $audela(version) match resu ] } {

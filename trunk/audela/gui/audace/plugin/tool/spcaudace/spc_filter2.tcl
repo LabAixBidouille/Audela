@@ -1,6 +1,6 @@
 
 
-# Mise a jour $Id: spc_filter2.tcl,v 1.8 2009-12-19 09:53:39 bmauclaire Exp $
+# Mise a jour $Id: spc_filter2.tcl,v 1.9 2010-06-13 12:54:02 bmauclaire Exp $
 # Mise a jour Patrick Lailly 29 mai 2009
 
 
@@ -1065,7 +1065,7 @@ proc spc_extractcont { args } {
 	set intens_moy [ expr $intens_moy/($nmilieu0*1.) ]
 	set intens_moy_2 [ expr $intens_moy*.5 ]
 	# intens_moy est la valeur moyenne de l'intensite
-	::console::affiche_resultat "intensite moyenne : $intens_moy \n"
+	# ::console::affiche_resultat "intensite moyenne : $intens_moy \n"
 	
 	#calcul matrice B
 	set B [ list ]
@@ -1093,8 +1093,8 @@ proc spc_extractcont { args } {
 	set resid [ gsl_msub $ordonnees $riliss1 ]
 	
 	#-- evaluation et analyse des residus
-	#::console::affiche_resultat "longueur B : [llength $B]\n"
-        #::console::affiche_resultat "longueur riliss : [llength $riliss1]\n"
+	# ::console::affiche_resultat "longueur B : [llength $B]\n"
+        # ::console::affiche_resultat "longueur riliss : [llength $riliss1]\n"
 	set residtransp [ gsl_mtranspose $resid ]
 	set rms_pat1  [ gsl_mmult $residtransp $resid ]
 	set rms_pat [ lindex $rms_pat1 0 ]
@@ -1118,8 +1118,8 @@ proc spc_extractcont { args } {
 	for {set i 0} {$i<$nmilieu0} {incr i} {
 		set som_poids [ expr $som_poids + [ lindex $poids $i ] ]  
         }
-	::console::affiche_resultat " $som_poids\n"
-	::console::affiche_resultat "residu moyen (RMS) apres premiere etape : $rms_pat\n"
+	# ::console::affiche_resultat " $som_poids\n"
+	# ::console::affiche_resultat "residu moyen (RMS) apres premiere etape : $rms_pat\n"
 	
 	if { $nb_args<=6 } {
 		for { set niter 1 } { $niter<=$nbiter } { incr niter } {
@@ -1136,7 +1136,7 @@ proc spc_extractcont { args } {
 			#doit pouvoir etre simplifie : on ne veut que le dernier terme de R
 			for {set nn 0} {$nn<=$elim} {incr nn} {
 				set n1 [ expr int($nn*$nmilieu0*.001)]
-				#::console::affiche_resultat " $n1\n"
+				# ::console::affiche_resultat " $n1\n"
 				lappend nnn $nn
 				lappend R [ expr [ lindex $residtri $n1 ]*100./$rms_pat ]	
                         }
@@ -1147,7 +1147,7 @@ proc spc_extractcont { args } {
                    if { $nb_args < 6 } {
 			set tauxRMS [ lindex $R $elim ]
                    }
-			#::console::affiche_resultat " $tauxRMS\n"
+			# ::console::affiche_resultat " $tauxRMS\n"
 			#--calcul des nouveaux poids censes eliminer les residus de raies
 			set seuilres [ expr $rms_pat*$tauxRMS*.01 ]
 			#set poids [ list ]
@@ -1161,7 +1161,7 @@ proc spc_extractcont { args } {
                                 }
 				set som_poids [ expr $som_poids + [ lindex $poids $i ] ]  
                         }
-			#::console::affiche_resultat " $som_poids\n"
+			# ::console::affiche_resultat " $som_poids\n"
 			set result [ gsl_mfitmultilin $ordonnees $B $poids ]
         		#-- extrait le resultat
         		set coeffs [ lindex $result 0 ]
@@ -1203,7 +1203,7 @@ proc spc_extractcont { args } {
         }
 	#calcul matrice B
 	set B [ list ]
-	::console::affiche_resultat "\n"
+	# ::console::affiche_resultat "\n"
 		
 	for { set i 0 } { $i<$nmilieu0 } { incr i } {
 		set Bi [ list ]
@@ -1222,8 +1222,8 @@ proc spc_extractcont { args } {
 		
 	#-- evaluation et analyse des residus
 	set resid [ gsl_msub $ordonnees $riliss ]
-	#::console::affiche_resultat "longueur B : [llength $B]\n"
-        #::console::affiche_resultat "longueur riliss : [llength $riliss]\n"
+	# ::console::affiche_resultat "longueur B : [llength $B]\n"
+        # ::console::affiche_resultat "longueur riliss : [llength $riliss]\n"
 	set residtransp [ gsl_mtranspose $resid]
 	
 	for { set i 0 } { $i<$nmilieu0 } { incr i } {
@@ -1237,7 +1237,7 @@ proc spc_extractcont { args } {
 	set rms_pat [ lindex $rms_pat1 0 ]
 	set rms_pat [ expr ($rms_pat/($som_poids)) ]
 	set rms_pat [expr sqrt($rms_pat)]
-	::console::affiche_resultat "residu moyen (RMS) apres deuxieme etape : $rms_pat\n"
+	# ::console::affiche_resultat "Residu moyen (RMS) apres deuxieme etape : $rms_pat\n"
 	
 	#normalisation des poids pour la visu
 	for { set i 0 } { $i<$nmilieu0 } { incr i } {
@@ -1269,7 +1269,7 @@ proc spc_extractcont { args } {
 	    	#set nouvpoids1 [ linsert $nouvpoids1 0 0.0 ]
         }
 	
-	::console::affiche_resultat "Nombre d'éléments traités : [ llength $riliss ]\n"
+	# ::console::affiche_resultat "Nombre d'éléments traités : [ llength $riliss ]\n"
 	
 	
 
@@ -1287,7 +1287,7 @@ proc spc_extractcont { args } {
         buf$audace(bufNo) bitpix float
         buf$audace(bufNo) save "$audace(rep_images)/${filename}_conti$conf(extension,defaut)"
         buf$audace(bufNo) bitpix short
-        ::console::affiche_resultat "Fichier fits sauvé sous ${filename}_conti$conf(extension,defaut)\n"
+        ::console::affiche_resultat "Fichier fits sauvé sous ${filename}_conti$conf(extension,defaut)\n"
 
 	
       #--- Affichage du resultat :
