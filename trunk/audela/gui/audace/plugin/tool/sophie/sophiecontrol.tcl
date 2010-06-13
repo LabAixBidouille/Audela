@@ -2,7 +2,7 @@
 # @file     sophiecontrol.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecontrol.tcl,v 1.43 2010-05-28 23:12:53 michelpujol Exp $
+# @version  $Id: sophiecontrol.tcl,v 1.44 2010-06-13 08:37:15 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -1225,7 +1225,7 @@ proc ::sophie::control::setGuideState { state } {
          -bg   $private(activeColor) -helptext ""
 
       #--- j'ajoute une trace du démarrage du guidage
-      ::sophie::histogram::writeGuidingStart
+      ::sophie::histogram::writeGuidingStart  $::audace(telescope,getra) $::audace(telescope,getdec)
 
    }
 }
