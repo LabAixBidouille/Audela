@@ -8,7 +8,7 @@
 # Connected sites are found in http://gcn.gsfc.nasa.gov/sites_cfg.html
 # To create a new connected site http://gcn.gsfc.nasa.gov/gcn/config_builder.html
 #
-# Mise à jour $Id: gcn_tools.tcl,v 1.40 2010-06-05 11:30:45 alainklotz Exp $
+# Mise à jour $Id: gcn_tools.tcl,v 1.41 2010-06-14 01:19:03 myrtillelaas Exp $
 #
 
 # ==========================================================================================
@@ -654,6 +654,7 @@ proc gcn_decode { longs sockname } {
          set gcn($sockname,descr,burst_dec_4) [expr $gcn($sockname,long,15)*0.0001]
          set gcn($sockname,descr,burst_ra_5) [expr $gcn($sockname,long,16)*0.0001]
          set gcn($sockname,descr,burst_dec_5) [expr $gcn($sockname,long,17)*0.0001]
+         set gcn($sockname,descr,time_burst) [expr int($gcn($sockname,long,18))]
          if {($pkt_type=="905")||($pkt_type=="907")} {
             set gcn($sockname,descr,def_not_grb) 0
          }
