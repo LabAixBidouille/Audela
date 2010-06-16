@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise à jour $Id: aud_menu_7.tcl,v 1.27 2010-05-15 17:24:22 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_7.tcl,v 1.28 2010-06-16 21:38:17 robertdelmas Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -455,16 +455,6 @@ namespace eval ::cwdWindow {
          set conf(rep_travail,travail_images) $cwdWindow(travail_images)
          #--- On se place dans le nouveau repertoire de travail
          cd $audace(rep_travail)
-         #--- On cree les fichiers de configuration de Sextractor s'ils n'existent pas
-         if { [ file exist [ file join . config.param ] ] == "0" } {
-            sextractor_config_param [ file join . config.param ]
-         }
-         if { [ file exist [ file join . config.sex ] ] == "0" } {
-            sextractor_config_sex [ file join . config.sex ]
-         }
-         if { [ file exist [ file join . default.nnw ] ] == "0" } {
-            sextractor_default_nnw [ file join . default.nnw ]
-         }
       } else {
          set m "$cwdWindow(dir_travail)"
          append m "$caption(cwdWindow,pas_repertoire)"
