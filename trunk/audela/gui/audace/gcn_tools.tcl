@@ -8,7 +8,7 @@
 # Connected sites are found in http://gcn.gsfc.nasa.gov/sites_cfg.html
 # To create a new connected site http://gcn.gsfc.nasa.gov/gcn/config_builder.html
 #
-# Mise à jour $Id: gcn_tools.tcl,v 1.41 2010-06-14 01:19:03 myrtillelaas Exp $
+# Mise à jour $Id: gcn_tools.tcl,v 1.42 2010-06-16 04:06:39 myrtillelaas Exp $
 #
 
 # ==========================================================================================
@@ -632,6 +632,7 @@ proc gcn_decode { longs sockname } {
          set gcn($sockname,descr,burst_flue) $gcn($sockname,long,9)
          set gcn($sockname,descr,integ_time) [expr $gcn($sockname,long,14)*4e-3]
          set gcn($sockname,descr,follow_up) $gcn($sockname,long,18) ; # =1 pour follow-up
+         set gcn($sockname,descr,def_not_grb) 1
          if {($pkt_type=="901")||($pkt_type=="903")} {
             set gcn($sockname,descr,def_not_grb) 0
          }
@@ -655,6 +656,7 @@ proc gcn_decode { longs sockname } {
          set gcn($sockname,descr,burst_ra_5) [expr $gcn($sockname,long,16)*0.0001]
          set gcn($sockname,descr,burst_dec_5) [expr $gcn($sockname,long,17)*0.0001]
          set gcn($sockname,descr,time_burst) [expr int($gcn($sockname,long,18))]
+         set gcn($sockname,descr,def_not_grb) 1
          if {($pkt_type=="905")||($pkt_type=="907")} {
             set gcn($sockname,descr,def_not_grb) 0
          }
