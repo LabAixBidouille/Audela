@@ -1,7 +1,7 @@
 #
 # Fichier : aud_proc.tcl
 # Description : Fonctions de chargement, sauvegarde et traitement d'images
-# Mise à jour $Id: aud_proc.tcl,v 1.23 2010-06-16 21:38:48 robertdelmas Exp $
+# Mise à jour $Id: aud_proc.tcl,v 1.24 2010-06-16 21:41:12 robertdelmas Exp $
 #
 
 #
@@ -167,7 +167,7 @@ proc savejpeg { { filename "?" } } {
    set fenetre "$audace(base)"
 
    if { $filename == "?" } {
-     #--- Ouvre la fenetre de choix des images
+      #--- Ouvre la fenetre de choix des images
       set filename [ ::tkutil::box_save $fenetre $audace(rep_images) $audace(bufNo) "2" ]
    } else {
       if { [ file pathtype $filename ] == "relative" } {
