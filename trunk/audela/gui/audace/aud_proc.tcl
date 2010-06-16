@@ -1,7 +1,7 @@
 #
 # Fichier : aud_proc.tcl
 # Description : Fonctions de chargement, sauvegarde et traitement d'images
-# Mise à jour $Id: aud_proc.tcl,v 1.22 2010-05-23 07:14:39 robertdelmas Exp $
+# Mise à jour $Id: aud_proc.tcl,v 1.23 2010-06-16 21:38:48 robertdelmas Exp $
 #
 
 #
@@ -31,7 +31,6 @@ proc loadima { { filename "?" } { visuNo 1 } { affichage "-dovisu" } } {
 
    #---
    set bufNo [ visu$visuNo buf ]
-   set result ""
 
    #--- Recuperation de l'extension par defaut
    buf$bufNo extension $conf(extension,defaut)
@@ -137,17 +136,12 @@ proc saveima { { filename "?" } { visuNo 1 } } {
       if { [ buf$bufNo imageready ] == "1" } {
          if { [file extension $filename] == ".jpg" || [file extension $filename] == ".jpeg" } {
             #--- j'ajoute l'option -quality pour les images jpg
-            set result [ buf$bufNo save $filename -quality $conf(jpegquality,defaut)]
+            buf$bufNo save $filename -quality $conf(jpegquality,defaut)
          } else {
             #--- pas d'option pour les autres types d'images
-            set result [ buf$bufNo save $filename ]
-         }
-         if { $result == "" } {
-            wm title $fenetre "$caption(audace,titre) (visu$visuNo) - $filename"
+            buf$bufNo save $filename
          }
       }
-      #--- je met a jour le nom du fichier dans confvisu
-      ::confVisu::setFileName $visuNo "$filename"
    }
 
    return
@@ -173,7 +167,7 @@ proc savejpeg { { filename "?" } } {
    set fenetre "$audace(base)"
 
    if { $filename == "?" } {
-      #--- Ouvre la fenetre de choix des images
+     #--- Ouvre la fenetre de choix des images
       set filename [ ::tkutil::box_save $fenetre $audace(rep_images) $audace(bufNo) "2" ]
    } else {
       if { [ file pathtype $filename ] == "relative" } {
@@ -183,17 +177,14 @@ proc savejpeg { { filename "?" } } {
    if { [ string compare $filename "" ] != 0 } {
       if { [ buf$audace(bufNo) imageready ] == "1" } {
          if { [ info exists conf(jpegquality,defaut) ] == "0" } {
-            set result [ buf$audace(bufNo) savejpeg $filename ]
+            buf$audace(bufNo) savejpeg $filename
          } else {
             set quality "$conf(jpegquality,defaut)"
             set err [ catch { set quality [ expr $quality ] } ]
             if { $err == "1" } {
                set quality 80
             }
-            set result [ buf$audace(bufNo) savejpeg $filename $quality ]
-         }
-         if { $result == "" } {
-            wm title $audace(base) "$caption(audace,titre) (visu1) - $filename"
+            buf$audace(bufNo) savejpeg $filename $quality
          }
       }
    }
