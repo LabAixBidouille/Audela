@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise à jour $Id: aud_menu_7.tcl,v 1.28 2010-06-16 21:38:17 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_7.tcl,v 1.29 2010-06-17 16:47:59 robertdelmas Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -264,6 +264,9 @@ namespace eval ::cwdWindow {
       $This.usr.1.a.ent1 configure -textvariable cwdWindow(dir_images) -width $cwdWindow(long) \
          -font $cwdWindow(rep_font) -relief sunken
       focus $This.usr.1
+      if { $cwdWindow(travail_images) == "1" } {
+         set cwdWindow(dir_travail) $cwdWindow(dir_images)
+      }
    }
 
    #
@@ -404,6 +407,8 @@ namespace eval ::cwdWindow {
       set normalized_dir_scripts    [file normalize $cwdWindow(dir_scripts)]
       set normalized_dir_catalogues [file normalize $cwdWindow(dir_catalogues)]
 
+      set conf(rep_travail,travail_images) $cwdWindow(travail_images)
+
       if { ![file exists $normalized_dir_images] || ![file isdirectory $normalized_dir_images]} {
          set message "$cwdWindow(dir_images)"
          append message "$caption(cwdWindow,pas_repertoire)"
@@ -443,16 +448,21 @@ namespace eval ::cwdWindow {
                }
             }
          }
-         set ::conf(rep_images)             $normalized_dir_images
-         set ::conf(rep_images,mode)        $cwdWindow(rep_images,mode)
-         set ::conf(rep_images,refModeAuto) $cwdWindow(rep_images,refModeAuto)
-         set ::audace(rep_images)           $dirName
+         set conf(rep_images)             $normalized_dir_images
+         set conf(rep_images,mode)        $cwdWindow(rep_images,mode)
+         set conf(rep_images,refModeAuto) $cwdWindow(rep_images,refModeAuto)
+         set audace(rep_images)           $dirName
+         if { $conf(rep_travail,travail_images) == "1" } {
+            set conf(rep_travail)         $audace(rep_images)
+            set audace(rep_travail)       $audace(rep_images)
+            #--- On se place dans le nouveau repertoire de travail
+            cd $audace(rep_travail)
+         }
       }
 
       if {[file exists $normalized_dir_travail] && [file isdirectory $normalized_dir_travail]} {
-         set conf(rep_travail)                $normalized_dir_travail
-         set audace(rep_travail)              $normalized_dir_travail
-         set conf(rep_travail,travail_images) $cwdWindow(travail_images)
+         set conf(rep_travail)   $normalized_dir_travail
+         set audace(rep_travail) $normalized_dir_travail
          #--- On se place dans le nouveau repertoire de travail
          cd $audace(rep_travail)
       } else {
