@@ -2,7 +2,7 @@
 # Fichier : snvisuzoom.tcl
 # Description : Creation d'une loupe de visualisation en association avec Sn Visu
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: snvisuzoom.tcl,v 1.10 2010-05-25 21:43:03 robertdelmas Exp $
+# Mise à jour $Id: snvisuzoom.tcl,v 1.11 2010-06-18 17:16:47 robertdelmas Exp $
 #
 
 #--- Conventions pour ce script :
@@ -64,7 +64,7 @@ proc snZoom1 { { zoom 3 } } {
    }
 
    #--- Cree un widget image dans un canvas pour afficher l'objet de visualisation
-   $zone(image1_zoom) create image 0 0 -image image$num(visuZoom1) -anchor nw -tag img4
+   $zone(image1_zoom) create image 0 0 -image imagevisu$num(visuZoom1) -anchor nw -tag img4
 
    #--- Applique le zoom
    visu$num(visuZoom1) zoom $zoom
@@ -169,7 +169,7 @@ proc snZoom2 { { zoom 3 } } {
       ::visu::create $num(buffer2b) $num(visuZoom2) $num(visuZoom2)
    }
    #--- Cree un widget image dans un canvas pour afficher l'objet de visualisation
-   $zone(image2_zoom) create image 0 0 -image image$num(visuZoom2) -anchor nw -tag img5
+   $zone(image2_zoom) create image 0 0 -image imagevisu$num(visuZoom2) -anchor nw -tag img5
 
    #--- Applique le zoom
    visu$num(visuZoom2) zoom $zoom
