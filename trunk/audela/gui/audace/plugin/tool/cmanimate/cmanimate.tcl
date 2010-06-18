@@ -2,7 +2,7 @@
 # Fichier : cmanimate.tcl
 # Description : Animation/slides control panel for Cloud Monitor
 # Auteur : Sylvain RONDI
-# Mise à jour $Id: cmanimate.tcl,v 1.23 2010-05-28 15:59:06 robertdelmas Exp $
+# Mise à jour $Id: cmanimate.tcl,v 1.24 2010-06-18 17:42:43 robertdelmas Exp $
 #
 
 #****************************************************************
@@ -392,7 +392,7 @@ namespace eval ::cmanimate {
                      #--- A developper, recuperation des coordonnees de pointage (lx200, audecom, ouranos, etc.)
                   }
                }
-               $basecanvas itemconfigure display -image image$kk
+               $basecanvas itemconfigure display -image imagevisu$kk
                #--- Chargement de l'image associee a la visu
                visu$audace(visuNo) image $kk
                update
@@ -405,10 +405,10 @@ namespace eval ::cmanimate {
       #--- Destruction des Tk_photoimage
       for { set k 1 } { $k <= $nb } { incr k } {
          set kk [expr $k+$off]
-         image delete image$kk
+         image delete imagevisu$kk
       }
       #--- Reconfiguration pour Aud'ACE normal
-      $basecanvas itemconfigure display -image image$imageNo
+      $basecanvas itemconfigure display -image imagevisu$imageNo
       update
       #--- Restauration du numero de l'image associe a la visu
       visu$audace(visuNo) image $imageNo
@@ -562,7 +562,7 @@ namespace eval ::cmanimate {
                      #--- A developper, recuperation des coordonnees de pointage (lx200, audecom, ouranos, etc.)
                   }
                }
-               $basecanvas itemconfigure display -image image$kk
+               $basecanvas itemconfigure display -image imagevisu$kk
                #--- Chargement de l'image associee a la visu
                visu$audace(visuNo) image $kk
                update
@@ -575,10 +575,10 @@ namespace eval ::cmanimate {
       #--- Destruction des Tk_photoimage
       for { set k $indexlistestart } { $k <= $indexlisteend } { incr k } {
          set kk [expr $k+$off]
-         image delete image$kk
+         image delete imagevisu$kk
       }
       #--- Reconfiguration pour Aud'ACE normal
-      $basecanvas itemconfigure display -image image$imageNo
+      $basecanvas itemconfigure display -image imagevisu$imageNo
       update
       #--- Restauration du numero de l'image associe a la visu
       visu$audace(visuNo) image $imageNo

@@ -1,7 +1,7 @@
 #
 # Fichier : aud_proc.tcl
 # Description : Fonctions de chargement, sauvegarde et traitement d'images
-# Mise à jour $Id: aud_proc.tcl,v 1.24 2010-06-16 21:41:12 robertdelmas Exp $
+# Mise à jour $Id: aud_proc.tcl,v 1.25 2010-06-18 17:42:14 robertdelmas Exp $
 #
 
 #
@@ -669,7 +669,7 @@ proc animate { filename nb {millisecondes 200} {nbtours 10} {liste_index ""} } {
       for {set t 1} {$t<=$nbtours} {incr t} {
          for {set k 1} {$k<=$nb} {incr k} {
             set kk [expr $k+$off]
-            $basecanvas itemconfigure display -image image$kk
+            $basecanvas itemconfigure display -image imagevisu$kk
             #--- Chargement de l'image associee a la visu
             visu$audace(visuNo) image $kk
             update
@@ -681,11 +681,11 @@ proc animate { filename nb {millisecondes 200} {nbtours 10} {liste_index ""} } {
    #--- Destruction des Tk_photoimage
    for {set k 1} {$k<=$nb} {incr k} {
       set kk [expr $k+$off]
-      image delete image$kk
+      image delete imagevisu$kk
    }
 
    #--- Reconfiguration pour Aud'ACE normal
-   $basecanvas itemconfigure display -image image$imageNo
+   $basecanvas itemconfigure display -image imagevisu$imageNo
    update
 
    #--- Restauration du numero de l'image associe a la visu
