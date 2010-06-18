@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: tuto.firstlight.tcl,v 1.10 2010-05-27 06:32:43 robertdelmas Exp $
+# Mise à jour $Id: tuto.firstlight.tcl,v 1.11 2010-06-18 17:29:06 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -93,7 +93,7 @@ if { [winfo exists .second] } {
    return
 }
 
-catch {image100 blank}
+catch {imagevisu100 blank}
 
 toplevel .second -class Toplevel
 wm title .second $texte(tuto_1)
@@ -208,7 +208,7 @@ pack .second.snap.frame2 -in .second.snap -expand 1 -fill x -side top -anchor ce
 # === Setting the astronomical devices ===
 # ========================================
 #--- create a widget image in a canvas to display that of the visu space
-$zone(image1) create image 1 1 -image image100 -anchor nw -tag img1
+$zone(image1) create image 1 1 -image imagevisu100 -anchor nw -tag img1
 
 #
 
