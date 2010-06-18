@@ -27,6 +27,7 @@ AudeLA est capable de piloter les cameras CCD suivantes :
 - APN (Appareil Photo Numerique, CANON et NIKON),
 - Cameras compatibles ASCOM,
 - Audine (Kaf series 400, 401, 401E, 1600, 1602, 1602E et 3200E),
+- Cagire,
 - CB245,
 - Cemes,
 - Finger Lakes Instruments,
