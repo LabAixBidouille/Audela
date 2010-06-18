@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.143 2010-05-30 17:41:57 michelpujol Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.144 2010-06-18 20:11:01 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -377,47 +377,52 @@ namespace eval ::confVisu {
                      #--- en cas d'erreur de chargement du fichier avec buf load
                      #--- je verifie si le fichier contient un deuxième HDU non vide
                      #--- je recupere la liste des HDU du fichier
-                     set private($visuNo,fitsHduList) [initHduList $visuNo $fileName ]
-                     if { [llength $private($visuNo,fitsHduList) ] > 1 } {
-                        set hduIndex 1
-                        set hduInfo [lindex $private($visuNo,fitsHduList) $hduIndex ]
-                        set hduType [lindex $hduInfo 1]
-                        set hduNo   [expr $hduIndex + 1]
-                        if { $hduType == "Image" } {
-                           #--- je charge le hdu
-                           buf$bufNo load "$fileName;$hduNo"
+                     if { [string first "#302:column number < 1 or > tfields" $::errorInfo] != -1 } {
+                        set private($visuNo,fitsHduList) [initHduList $visuNo $fileName ]
+                        if { [llength $private($visuNo,fitsHduList) ] > 1 } {
+                           set hduIndex 1
+                           set hduInfo [lindex $private($visuNo,fitsHduList) $hduIndex ]
+                           set hduType [lindex $hduInfo 1]
+                           set hduNo   [expr $hduIndex + 1]
+                           if { $hduType == "Image" } {
+                              #--- je charge le hdu
+                              buf$bufNo load "$fileName;$hduNo"
+                           } else {
+                              #--- si c'est une table, je charge la table dans les variables columnNames et columnValues
+                              #--- j'utilise commande "fits open" car la commande "buf$bufno load" ne focntionne pas que pour les images
+                              set hFile ""
+                              set catchResult [catch {
+                                  #--- je nettoie le buffer pour gagner de la place en memoire car il n'est pas utilise dans ce cas
+                                  buf$bufNo clear
+                                  #--- j'ouvre le fichier en mode lecture
+                                  set hFile [fits open $fileName 0]
+                                  $hFile move $hduNo
+                                  #--- je charge le titre des colonnes
+                                  set columnNames  [$hFile info column ]
+                                  #--- je charge les valeurs de colonnes
+                                  set columnValues [$hFile get table]
+                              } ]
+                              if { $hFile != "" } {
+                                 $hFile close
+                              }
+                              if { $catchResult == 1 } {
+                                 #--- je transmets l'erreur
+                                 error $::errorInfo
+                              }
+                           }
                         } else {
-                           #--- si c'est une table, je charge la table dans les variables columnNames et columnValues
-                           #--- j'utilise commande "fits open" car la commande "buf$bufno load" ne focntionne pas que pour les images
-                           set hFile ""
-                           set catchResult [catch {
-                               #--- je nettoie le buffer pour gagner de la place en memoire car il n'est pas utilise dans ce cas
-                               buf$bufNo clear
-                               #--- j'ouvre le fichier en mode lecture
-                               set hFile [fits open $fileName 0]
-                               $hFile move $hduNo
-                               #--- je charge le titre des colonnes
-                               set columnNames  [$hFile info column ]
-                               #--- je charge les valeurs de colonnes
-                               set columnValues [$hFile get table]
-                           } ]
-                           if { $hFile != "" } {
-                              $hFile close
-                           }
-                           if { $catchResult == 1 } {
-                              #--- je transmets l'erreur
-                              error $::errorInfo
-                           }
+                           #--- en cas d'erreur de chargement du fichier
+                           #--- je nettoie l'affichage
+                           set private($visuNo,fitsHduList) ""
+                           set fileName ""
+                           buf$bufNo clear
+                           visu$visuNo clear
+                           #--- j'affiche l'erreur
+                           ::console::affiche_erreur "$::errorInfo\n"
                         }
                      } else {
-                        #--- en cas d'erreur de chargement du fichier
-                        #--- je nettoie l'affichage
-                        set private($visuNo,fitsHduList) ""
-                        set fileName ""
-                        buf$bufNo clear
-                        visu$visuNo clear
-                        #--- j'affiche l'erreur
-                        ::console::affiche_erreur "$::errorInfo\n"
+                        #--- je transmets l'erreur
+                        error $::errorInfo
                      }
                   }
                } else {
