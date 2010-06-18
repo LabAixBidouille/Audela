@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: tuto.testcam.tcl,v 1.8 2010-05-27 06:34:30 robertdelmas Exp $
+# Mise à jour $Id: tuto.testcam.tcl,v 1.9 2010-06-18 17:29:36 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -118,7 +118,7 @@ if { [winfo exists .second] } {
    return
 }
 
-catch {image100 blank}
+catch {imagevisu100 blank}
 
 toplevel .second -class Toplevel
 wm title .second $texte(tuto_1)
