@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: snvisu.tcl,v 1.43 2010-05-25 21:41:50 robertdelmas Exp $
+# Mise à jour $Id: snvisu.tcl,v 1.44 2010-06-18 17:16:29 robertdelmas Exp $
 #
 
 #--- Conventions pour ce script :
@@ -613,7 +613,7 @@ if { $conf(format_fichier_image) == "0" } {
    buf$num(buffer2b) bitpix float
 }
 
-#--- Image 100 et 200
+#--- Image visu100 et visu200
 set num(visu1) [::visu::create $num(buffer1) 100 ]
 set num(visu2) [::visu::create $num(buffer2) 200 ]
 
@@ -621,8 +621,8 @@ visu$num(visu1) zoom $snconfvisu(zoom_normal)
 visu$num(visu2) zoom $snconfvisu(zoom_normal)
 
 #--- Create a widget image in a canvas to display that of the visu space
-$zone(image1) create image 0 0 -image image100 -anchor nw -tag display
-$zone(image2) create image 0 0 -image image200 -anchor nw -tag display
+$zone(image1) create image 0 0 -image imagevisu100 -anchor nw -tag display
+$zone(image2) create image 0 0 -image imagevisu200 -anchor nw -tag display
 
 # ===================================
 # === It is the end of the script ===
@@ -643,18 +643,18 @@ proc snDelete { } {
    snconfvisuSave
    #--- Supprime les images et les visu
    if { [ info exists num(visuZoom1) ] } {
-      image delete image$num(visuZoom1)
+      image delete imagevisu$num(visuZoom1)
       ::visu::delete $num(visuZoom1)
       unset num(visuZoom1)
    }
    if { [ info exists num(visuZoom2) ] } {
-      image delete image$num(visuZoom2)
+      image delete imagevisu$num(visuZoom2)
       ::visu::delete $num(visuZoom2)
       unset num(visuZoom2)
    }
    #--- Supprime les images
-   image delete image100
-   image delete image200
+   image delete imagevisu100
+   image delete imagevisu200
    #--- Supprime les visu
    ::visu::delete $num(visu1)
    ::visu::delete $num(visu2)
@@ -2252,19 +2252,19 @@ proc snBlinkImage { } {
    update
 
    #--- Creation de la Tk_photoimage pour le blink
-   catch { image delete image101 }
+   catch { image delete imagevisu101 }
    ::visu::create $b 101 101
-   image create photo image101
+   image create photo imagevisu101
    visu101 zoom $snconfvisu(zoom_normal)
    visu101 disp [ list $snvisu(seuil_d_haut) $snvisu(seuil_d_bas) ]
 
    #--- Animation
    for { set t 1 } { $t <= $snconfvisu(nb_blink) } { incr t } {
       catch {
-         $zone(image1) itemconfigure display -image image100
+         $zone(image1) itemconfigure display -image imagevisu100
          update
          after $snconfvisu(delai_blink)
-         $zone(image1) itemconfigure display -image image101
+         $zone(image1) itemconfigure display -image imagevisu101
          update
          after $snconfvisu(delai_blink)
       }
@@ -2275,7 +2275,7 @@ proc snBlinkImage { } {
 
    #--- Detruit les visu et les Tk_photoimage
    ::visu::delete 101
-   catch { image delete image101 }
+   catch { image delete imagevisu101 }
    ::buf::delete $b
 
    #--- Detruit les fichiers intermediaires
@@ -2291,7 +2291,7 @@ proc snBlinkImage { } {
    file delete [ file join [pwd] xy.lst ]
 
    #--- Reconfigure pour Aud'ACE normal
-   catch {$zone(image1) itemconfigure display -image image100}
+   catch {$zone(image1) itemconfigure display -image imagevisu100}
    update
 
    #--- Gestion du bouton 'blink'

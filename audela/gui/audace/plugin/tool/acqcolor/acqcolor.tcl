@@ -2,7 +2,7 @@
 # Fichier : acqcolor.tcl
 # Description : Outil pour l'acquisition d'images en couleur
 # Auteurs : Alain KLOTZ et Pierre THIERRY
-# Mise à jour $Id: acqcolor.tcl,v 1.20 2010-05-25 16:35:13 robertdelmas Exp $
+# Mise à jour $Id: acqcolor.tcl,v 1.21 2010-06-18 17:16:11 robertdelmas Exp $
 #
 
 proc testexit { } {
@@ -724,14 +724,14 @@ if {$audace(acqvisu,ccd)=="kac1310"} {
 
 #--- Cree un widget image dans un canvas pour afficher l'objet de visualisation
 catch {
-   $zone(image1) create image 0 0 -image image1000 -anchor nw -tag img1
-   image delete image1000
+   $zone(image1) create image 0 0 -image imagevisu1000 -anchor nw -tag img1
+   image delete imagevisu1000
 }
 
 #--- Cree un widget image dans un canvas pour afficher l'objet de visualisation
 catch {
-   $zone(image2) create image 0 0 -image image1001 -anchor nw -tag img1
-   image delete image1001
+   $zone(image2) create image 0 0 -image imagevisu1001 -anchor nw -tag img1
+   image delete imagevisu1001
 }
 
 proc testcopy1to2 { } {
@@ -739,7 +739,7 @@ proc testcopy1to2 { } {
    global infos
 
    #--- Initialisation de l'ecran zone(image2)
-   image create photo image1001
+   image create photo imagevisu1001
 
    if { $infos(type_image) == "couleur" } {
       catch {
@@ -980,7 +980,7 @@ proc testvisu { } {
    global infos
 
    #--- Initialisation de l'ecran zone(image1)
-   image create photo image1000
+   image create photo imagevisu1000
 
    if { $infos(type_image) == "couleur" } {
       set zone(image1,naxis1) [ lindex [ buf1000 getkwd NAXIS1 ] 1 ]
