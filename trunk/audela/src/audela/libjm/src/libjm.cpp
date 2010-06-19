@@ -3,7 +3,7 @@
  * @brief : point d'entrée dans la bibliothèque
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: libjm.cpp,v 1.6 2010-06-19 16:58:42 jacquesmichelet Exp $
+ * Mise à jour $Id: libjm.cpp,v 1.7 2010-06-19 17:11:50 jacquesmichelet Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
@@ -111,7 +111,6 @@ namespace LibJM
             if ( repertoire_log == 0 )
             {
                 repertoire_log =  strdup( argv[1] );
-                printf( "replog= %p %s\n", repertoire_log, repertoire_log );
                 return TCL_OK;
             }
             else {
