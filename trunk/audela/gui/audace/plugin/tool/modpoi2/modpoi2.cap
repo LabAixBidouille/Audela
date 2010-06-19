@@ -1,6 +1,6 @@
 #
 # Fichier : modpoi2.cap
-# Mise a jour $Id: modpoi2.cap,v 1.6 2010-06-19 16:35:30 robertdelmas Exp $
+# Mise a jour $Id: modpoi2.cap,v 1.7 2010-06-19 16:56:10 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -104,6 +104,7 @@ set caption(modpoi2,wiz2,prev)                       "<< Back"
 set caption(modpoi2,wiz3,title)                      "Aiming Model: Aiming at Star Number "
 set caption(modpoi2,wiz3,pas_etoile)                 "No more stars. Close the 'Aiming Model' tool."
 set caption(modpoi2,wiz3,catalogNotFound)            "# Fichier catalogue absent : \n%s"
+set caption(modpoi2,wiz3,cannot)                     "If something is blocking your line of sight,\nclick on this button to choose another star."
 
 set caption(modpoi2,wiz4,title)                      "Aiming Model: Center Star Number "
 set caption(modpoi2,wiz4,title2)                     "Center Star Number "
@@ -259,6 +260,7 @@ Aud'ACE se charge de ce calcul pour lui."
    set caption(modpoi2,wiz3,title)                   "Modèle de pointage : Pointage de l'étoile numéro "
    set caption(modpoi2,wiz3,pas_etoile)              "Il n'y a plus d'étoile. Vous devez\nfermer l'outil 'Modèle de pointage'."
    set caption(modpoi2,wiz3,catalogNotFound)         "Fichier catalogue absent : \n%s"
+   set caption(modpoi2,wiz3,cannot)                  "Si un obstacle ne permet pas de pointer cette étoile,\ncliquer sur ce bouton pour en choisir une autre."
 
    set caption(modpoi2,wiz4,title)                   "Modèle de pointage : Centrage de l'étoile numéro "
    set caption(modpoi2,wiz4,title2)                  "Centrage de l'étoile numéro "
