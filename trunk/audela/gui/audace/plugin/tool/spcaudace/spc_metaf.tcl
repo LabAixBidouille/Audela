@@ -2,7 +2,7 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spcaudace spc_metaf.tcl ]
 
-# Mise a jour $Id: spc_metaf.tcl,v 1.12 2010-04-09 20:13:06 bmauclaire Exp $
+# Mise a jour $Id: spc_metaf.tcl,v 1.13 2010-06-19 14:38:21 bmauclaire Exp $
 
 
 
@@ -1200,7 +1200,7 @@ proc spc_traite2rinstrum { args } {
            file delete -force "$audace(rep_images)/$fricorr1$conf(extension,defaut)"
            file copy -force "$audace(rep_images)/$fricorr$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1c$conf(extension,defaut)"
        } elseif { [ file exists "$audace(rep_images)/${rep_instrum}br$conf(extension,defaut)" ] } {
-	   #- set fricorr [ spc_divri "$fcalo" ${rep_instrum}br ]
+	   #- set fricorr1 [ spc_divri "$fcalo" ${rep_instrum}br ]
            set fricorr1 [ spc_divbrut "$fcalo" ${rep_instrum}br ]
            set fricorr [ spc_linearcal $fricorr1 ]
            file delete -force "$audace(rep_images)/$fricorr1$conf(extension,defaut)"
