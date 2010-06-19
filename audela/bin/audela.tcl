@@ -1,5 +1,5 @@
 #
-# Update $Id: audela.tcl,v 1.23 2010-05-22 17:10:07 robertdelmas Exp $
+# Update $Id: audela.tcl,v 1.24 2010-06-19 17:02:58 jacquesmichelet Exp $
 #
 #--- Welcome to the AudeLA-Interfaces Easy Launcher
 #
@@ -61,6 +61,11 @@ set ::audace(rep_log) [ file join $::audace(rep_home) log ]
 if { ! [ file exist $::audace(rep_log) ] } {
    file mkdir $::audace(rep_log)
 }
+
+#--- Indication aux bibliothèques de l'emplacement des fichiers logs
+jm_repertoire_log $::audace(rep_log)
+
+
 #--- Creation du repertoire des fichiers temporaires
 if { $::tcl_platform(platform) == "unix" } {
    set ::audace(rep_temp) [ file join /tmp .audace ]
