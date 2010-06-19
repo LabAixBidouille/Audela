@@ -3,7 +3,7 @@
  * @brief : Méthodes de l'objet Fourier : gestion des objets
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: fourier_services.cpp,v 1.2 2010-05-26 12:12:15 jacquesmichelet Exp $
+ * Mise à jour $Id: fourier_services.cpp,v 1.3 2010-06-19 16:58:42 jacquesmichelet Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
@@ -43,18 +43,32 @@
 
 namespace LibJM {
 Fourier * Fourier::_unique_instance = 0;
-int Fourier::_log_verbosity = Fourier::Info2_Level;
+int Fourier::_log_verbosity = Fourier::Info1_Level;
 std::ofstream Fourier::log_stream;
+std::string Fourier::fourier_log_file_name("libjm_fourier.log");
 
 /***************************************************************************************/
 /***************************************************************************************/
 /***************************************************************************************/
 Fourier::Fourier()
 {
-    log_stream.open( FOURIER_LOG_FILE_NAME, std::ios::trunc );
+    std::string nom_fichier_log;
+    if ( LibJM::Generique::repertoire_log )
+    {
+        nom_fichier_log = LibJM::Generique::repertoire_log;
+#if defined(WIN32)
+        nom_fichier_log = nom_fichier_log + "\\";
+#else
+        nom_fichier_log = nom_fichier_log + "/";
+#endif
+    }
+    nom_fichier_log = nom_fichier_log + fourier_log_file_name;
+    printf( "nom_fichier_log=%s\n", nom_fichier_log.c_str() );
+
+    log_stream.open( nom_fichier_log.c_str(), std::ios::trunc );
     if( !log_stream )
     {
-        std::cerr << "Error opening the log file " << FOURIER_LOG_FILE_NAME << std::endl;
+        std::cerr << "Error opening the log file " << nom_fichier_log << std::endl;
     }
 }
 

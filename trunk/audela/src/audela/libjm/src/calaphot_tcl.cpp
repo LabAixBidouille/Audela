@@ -3,7 +3,7 @@
  * @brief : interface TCL pour les routines de photométrie et de modélisation
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: calaphot_tcl.cpp,v 1.4 2010-05-26 11:56:00 jacquesmichelet Exp $
+ * Mise à jour $Id: calaphot_tcl.cpp,v 1.5 2010-06-19 16:58:42 jacquesmichelet Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
@@ -36,6 +36,21 @@
 #include "calaphot.h"
 
 namespace LibJM {
+
+
+int Calaphot::CmdNiveauTraces( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] )
+{
+    char s[200];
+    if ( argc < 2 )
+    {
+        sprintf( s, "Usage: %s niveau (0=deaf, ..., 9=very verbose)", argv[0] );
+        Tcl_SetResult( interp, s, TCL_VOLATILE );
+        return TCL_ERROR;
+    }
+    Calaphot::instance()->niveau_traces( atoi( argv[1] ) );
+    return TCL_OK;
+}
+
 /******************************************/
 /* Calcul du flux dans une ellipse        */
 /******************************************/

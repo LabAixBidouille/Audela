@@ -3,7 +3,7 @@
  * @brief : point d'entrée dans la bibliothèque
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: libjm.cpp,v 1.5 2010-05-26 12:17:41 jacquesmichelet Exp $
+ * Mise à jour $Id: libjm.cpp,v 1.6 2010-06-19 16:58:42 jacquesmichelet Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
@@ -59,6 +59,7 @@ extern "C" int Jm_Init( Tcl_Interp *interp )
     }
 
     Tcl_CreateCommand( interp, "jm_versionlib", (Tcl_CmdProc *)LibJM::Generique::CmdVersionLib, (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL );
+    Tcl_CreateCommand( interp, "jm_repertoire_log", (Tcl_CmdProc *)LibJM::Generique::CmdRepertoireLog, (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL );
 
     Tcl_CreateCommand( interp,"jm_dms2deg", (Tcl_CmdProc *)LibJM::Divers::CmdDms2deg, (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL );
     Tcl_CreateCommand( interp,"jm_inittamponimage", (Tcl_CmdProc *)LibJM::Divers::CmdInitTamponImage, (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL );
@@ -71,8 +72,9 @@ extern "C" int Jm_Init( Tcl_Interp *interp )
     Tcl_CreateCommand( interp,"jm_heurepc",(Tcl_CmdProc *)LibJM::Horloge::CmdHeurePC,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
     Tcl_CreateCommand( interp,"jm_reglageheurepc",(Tcl_CmdProc *)LibJM::Horloge::CmdReglageHeurePC,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
 
-    Tcl_CreateCommand( interp,"calaphot_fluxellipse",(Tcl_CmdProc *)LibJM::Calaphot::CmdFluxEllipse,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
-    Tcl_CreateCommand( interp,"calaphot_fitgauss2d",(Tcl_CmdProc *)LibJM::Calaphot::CmdAjustementGaussien,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+    Tcl_CreateCommand( interp, "calaphot_fluxellipse",(Tcl_CmdProc *)LibJM::Calaphot::CmdFluxEllipse,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+    Tcl_CreateCommand( interp, "calaphot_fitgauss2d",(Tcl_CmdProc *)LibJM::Calaphot::CmdAjustementGaussien,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+    Tcl_CreateCommand( interp, "calaphot_niveau_traces", (Tcl_CmdProc *)LibJM::Calaphot::CmdNiveauTraces, NULL, NULL );
 
     Tcl_CreateCommand( interp, "dft2d", (Tcl_CmdProc *)LibJM::Fourier::CmdFourierDirect, NULL, NULL );
     Tcl_CreateCommand( interp, "idft2d", (Tcl_CmdProc *)LibJM::Fourier::CmdFourierInverse, NULL, NULL );
@@ -87,14 +89,38 @@ extern "C" int Jm_Init( Tcl_Interp *interp )
 namespace LibJM
 {
     const std::string Generique::NUMERO_VERSION("4.0");
+    const char * Generique::repertoire_log = 0;
 
-    int Generique::CmdVersionLib(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+    int Generique::CmdVersionLib( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] )
     {
         char * s = strdup( NUMERO_VERSION.c_str() );
         Tcl_SetResult( interp, s, TCL_VOLATILE );
         return TCL_OK;
     }
 
+    int Generique::CmdRepertoireLog( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] )
+    {
+        char s[256];
+
+        if ( argc < 2 ) {
+            sprintf( s, "Usage: %s log directory name", argv[0] );
+            Tcl_SetResult( interp, s, TCL_VOLATILE );
+            return TCL_ERROR;
+        }
+        else {
+            if ( repertoire_log == 0 )
+            {
+                repertoire_log =  strdup( argv[1] );
+                printf( "replog= %p %s\n", repertoire_log, repertoire_log );
+                return TCL_OK;
+            }
+            else {
+                sprintf( s, "%s : log directory already set to %s", argv[0], repertoire_log );
+                Tcl_SetResult( interp, s, TCL_VOLATILE );
+                return TCL_ERROR;
+            }
+        }
+    }
 }
 
 

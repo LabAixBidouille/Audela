@@ -26,8 +26,6 @@
 namespace LibJM
 {
 
-#define FOURIER_LOG_FILE_NAME "libjm_fourier.log"
-
 /* --- Macros pour générer des traces --- */
 #ifndef __FOURIER_STRINGIFY
 # define __FOURIER_TSTRHELPER(x) #x
@@ -103,6 +101,7 @@ public :
 
     static int _log_verbosity;
     static std::ofstream log_stream;
+    static std::string fourier_log_file_name;
 
     struct TableauPixels {
     public :
