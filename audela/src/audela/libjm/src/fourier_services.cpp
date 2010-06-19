@@ -3,7 +3,7 @@
  * @brief : Méthodes de l'objet Fourier : gestion des objets
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: fourier_services.cpp,v 1.3 2010-06-19 16:58:42 jacquesmichelet Exp $
+ * Mise à jour $Id: fourier_services.cpp,v 1.4 2010-06-19 17:11:50 jacquesmichelet Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
@@ -63,7 +63,6 @@ Fourier::Fourier()
 #endif
     }
     nom_fichier_log = nom_fichier_log + fourier_log_file_name;
-    printf( "nom_fichier_log=%s\n", nom_fichier_log.c_str() );
 
     log_stream.open( nom_fichier_log.c_str(), std::ios::trunc );
     if( !log_stream )
