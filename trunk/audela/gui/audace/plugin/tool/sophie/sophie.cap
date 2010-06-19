@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.48 2010-06-19 09:52:45 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.49 2010-06-19 16:46:06 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -69,8 +69,8 @@ set caption(sophie,configAvancee)                    "# Configuration avancée"
 set caption(sophie,echelle)                          "Scale"
 set caption(sophie,echelleArcSec)                    "Scale (arcsec/pixel)"
 set caption(sophie,binning)                          "Binning"
-set caption(sophie,binningFocalisation)              "# Binning du mode focalisation"
-set caption(sophie,parametreAlgo)                    "# Paramètres de l'algorithme de calculs"
+set caption(sophie,binningFocalisation)              "# Binning du mode Focalisation"
+set caption(sophie,parametreAlgo)                    "# Paramètres de l'algorithme de calcul"
 set caption(sophie,valeurBias,bin1Slow)              "# Valeur du Bias - Bin 1 - Mode Slow"
 set caption(sophie,valeurBias,bin1Fast)              "# Valeur du Bias - Bin 1 - Mode Fast"
 set caption(sophie,valeurBias,bin2Slow)              "# Valeur du Bias - Bin 2 - Mode Slow"
@@ -137,14 +137,14 @@ set caption(sophie,sumNotReady)                      "# Image intégrée non dis
 set caption(sophie,message,guidingAcquisition)       "# Lancer les acquisitions avec le bouton \'GO Acq\' \ndans la fenêtre principale"
 set caption(sophie,message,starDetection)            "# Vérifier si l'étoile est présente dans le carré rouge \nsur l'image de la fenêtre principale."
 set caption(sophie,message,guideState)               "# Lancer le guidage en cochant \'Activer le guidage\' \ndans la fenêtre principale"
-set caption(sophie,message,acquisitionState)         "# La pose sera démarrée automatiquement par PC Sophie."
+set caption(sophie,message,acquisitionState)         "# La pose sera démarrée automatiquement par le PC Sophie."
 set caption(sophie,message,fiberLowSignal)           "# Vérifier les atténuateurs, le temps de pose ou le centrage de l'étoile\ncar il n'y a pas assez de signal pour détecter le trou."
 set caption(sophie,message,fiberTooFar)              "# Vérifier la position de la consigne\ncar le trou semble s'être déplacé d'une distance de 20 pixels."
 set caption(sophie,message,fiberOutside)             "# Vérifier la position de la consigne\ncar elle semble être hors de l'image."
 set caption(sophie,message,fiberNoSignal)            "# Vérifier les atténuateurs, le temps de pose ou le centrage de l'étoile\ncar le niveau moyen de l'image est trop proche du fond du ciel."
-set caption(sophie,message,fiberDefault)             "# Vérifier s'il n'y a pas des messages d'erreur dans la console car Le trou n'est pas détecte\n"
-set caption(sophie,message,minIntensity)             "# Vérifier les atténuateurs, le temps de pose ou le centrage de l'étoile\ncar l'intensité maximale de l'étoile est inférieure à %s ADU"
-set caption(sophie,message,starFluxTodo)             "# Faire la mesure de flux\ncar le télecope a été déplacé de plus de 3 arcmin et l'étoile a changé."
+set caption(sophie,message,fiberDefault)             "# Vérifier s'il n'y a pas des messages d'erreur dans la Console car le trou n'est pas détecté\n"
+set caption(sophie,message,minIntensity)             "# Vérifier les atténuateurs, le temps de pose ou le centrage de l'étoile\ncar l'intensité maximale de l'étoile est inférieure à %s ADU."
+set caption(sophie,message,starFluxTodo)             "# Faire la mesure de flux\ncar le télescope a été déplacé de plus de 3 arcmin et l'étoile a changé."
 set caption(sophie,message,focTodo)                  "# Faire la focalisation"
 
 set caption(sophie,masque)                           "# Masque"
@@ -251,8 +251,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,echelle)                       "Echelle"
    set caption(sophie,echelleArcSec)                 "Echelle (arcsec/pixel)"
    set caption(sophie,binning)                       "Binning"
-   set caption(sophie,binningFocalisation)           "Binning du mode focalisation"
-   set caption(sophie,parametreAlgo)                 "Paramètres de l'algorithme de calculs"
+   set caption(sophie,binningFocalisation)           "Binning du mode Focalisation"
+   set caption(sophie,parametreAlgo)                 "Paramètres de l'algorithme de calcul"
    set caption(sophie,valeurBias,bin1Slow)           "Valeur du Bias - Bin 1 - Mode Slow"
    set caption(sophie,valeurBias,bin1Fast)           "Valeur du Bias - Bin 1 - Mode Fast"
    set caption(sophie,valeurBias,bin2Slow)           "Valeur du Bias - Bin 2 - Mode Slow"
@@ -319,14 +319,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,message,guidingAcquisition)    "Lancer les acquisitions avec le bouton \'GO Acq\' \ndans la fenêtre principale"
    set caption(sophie,message,starDetection)         "Vérifier si l'étoile est présente dans le carré rouge \nsur l'image de la fenêtre principale."
    set caption(sophie,message,guideState)            "Lancer le guidage en cochant \'Activer le guidage\' \ndans la fenêtre principale"
-   set caption(sophie,message,acquisitionState)      "La pose sera démarrée automatiquement par PC Sophie."
+   set caption(sophie,message,acquisitionState)      "La pose sera démarrée automatiquement par le PC Sophie."
    set caption(sophie,message,fiberLowSignal)        "Vérifier les atténuateurs, le temps de pose ou le centrage de l'étoile\ncar il n'y a pas assez de signal pour détecter le trou."
    set caption(sophie,message,fiberTooFar)           "Vérifier la position de la consigne\ncar le trou semble s'être déplacé d'une distance de 20 pixels."
    set caption(sophie,message,fiberOutside)          "Vérifier la position de la consigne\ncar elle semble être hors de l'image."
    set caption(sophie,message,fiberNoSignal)         "Vérifier les atténuateurs, le temps de pose ou le centrage de l'étoile\ncar le niveau moyen de l'image est trop proche du fond du ciel."
-   set caption(sophie,message,fiberDefault)          "Vérifier s'il n'y a pas des messages d'erreur dans la console car Le trou n'est pas détecte\n"
-   set caption(sophie,message,minIntensity)          "Vérifier les atténuateurs, le temps de pose ou le centrage de l'étoile\ncar l'intensité maximale de l'étoile est inférieure à %s ADU"
-   set caption(sophie,message,starFluxTodo)          "Faire la mesure de flux\ncar le télecope a été déplacé de plus de 3 arcmin et l'étoile a changé."
+   set caption(sophie,message,fiberDefault)          "Vérifier s'il n'y a pas des messages d'erreur dans la Console car le trou n'est pas détecté\n"
+   set caption(sophie,message,minIntensity)          "Vérifier les atténuateurs, le temps de pose ou le centrage de l'étoile\ncar l'intensité maximale de l'étoile est inférieure à %s ADU."
+   set caption(sophie,message,starFluxTodo)          "Faire la mesure de flux\ncar le télescope a été déplacé de plus de 3 arcmin et l'étoile a changé."
    set caption(sophie,message,focTodo)               "Faire la focalisation"
 
    set caption(sophie,masque)                        "Masque"
