@@ -3,7 +3,7 @@
  * @brief : définition des macros et des objets se rapportant à la photométrie et à la modélisation
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: calaphot.h,v 1.6 2010-05-26 11:55:47 jacquesmichelet Exp $
+ * Mise à jour $Id: calaphot.h,v 1.7 2010-06-19 16:58:42 jacquesmichelet Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
@@ -30,15 +30,13 @@ namespace LibJM {
 
 
 struct data {
-	int nxy;
-	int x1;
-	int y1;
-	int x2;
-	int y2;
-	double * pixels;
+    int nxy;
+    int x1;
+    int y1;
+    int x2;
+    int y2;
+    double * pixels;
 };
-
-#define CALAPHOT_LOG_FILE_NAME "libjm_calaphot.log"
 
 /* --- Macros pour générer des traces --- */
 #ifndef __CALAPHOT_STRINGIFY
@@ -114,18 +112,22 @@ public :
         Debug_Level = 1
     };
     static Calaphot * instance();
-    static int CmdFluxEllipse (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-    static int CmdAjustementGaussien (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-    static int CmdVersionLib (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-    int CmdMagnitude(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-    int CmdIncertitude(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+    static int CmdFluxEllipse( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] );
+    static int CmdAjustementGaussien(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] );
+    static int CmdNiveauTraces(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] );
 
-    int AjustementGaussien (int *carre, double *fgauss, double *stat, Calaphot::ajustement *valeur, Calaphot::ajustement *incertitude, int *iter, double *chi2, double*erreur);
-    int SoustractionGaussienne (int *carre, Calaphot::ajustement *p);
-    int Magnitude(double flux_etoile, double flux_ref, double mag_ref, double *mag_etoile);
+    int CmdMagnitude( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] );
+    int CmdIncertitude( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] );
+
+    int AjustementGaussien( int *, double *, double *, Calaphot::ajustement *, Calaphot::ajustement *, int *, double *, double * );
+    int SoustractionGaussienne( int *, Calaphot::ajustement * );
+    int Magnitude( double, double, double, double * );
+    void niveau_traces( int );
+
     CBuffer * set_buffer (int);
     static int _log_verbosity;
     static std::ofstream log_stream;
+    static std::string calaphot_log_file_name;
 
 private :
     Calaphot();

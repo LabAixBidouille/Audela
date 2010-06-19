@@ -3,7 +3,7 @@
  * @brief : objets génériques de lq libJM
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: libjm.h,v 1.8 2010-05-26 12:18:53 jacquesmichelet Exp $
+ * Mise à jour $Id: libjm.h,v 1.9 2010-06-19 16:58:42 jacquesmichelet Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
@@ -61,8 +61,11 @@ namespace LibJM
         static const int PB2 = 2;
 #endif
         static const std::string NUMERO_VERSION;
+        static const char * repertoire_log;
 
-        static int CmdVersionLib(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+        static int CmdVersionLib( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] );
+        static int CmdRepertoireLog( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] );
+
     };
 }
 

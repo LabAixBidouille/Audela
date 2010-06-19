@@ -3,7 +3,7 @@
  * @brief : routines de photométrie et de modélisation
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: calaphot.cpp,v 1.5 2010-05-26 11:55:07 jacquesmichelet Exp $
+ * Mise à jour $Id: calaphot.cpp,v 1.6 2010-06-19 16:58:42 jacquesmichelet Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
@@ -42,28 +42,58 @@ namespace LibJM {
     Calaphot * Calaphot::_unique_instance = 0;
     int Calaphot::_log_verbosity = Calaphot::Notice_Level;
     std::ofstream Calaphot::log_stream;
+    std::string Calaphot::calaphot_log_file_name("libjm_calaphot.log");
 
+
+/***************************************************************************************/
+/***************************************************************************************/
+/***************************************************************************************/
     Calaphot::Calaphot()
     {
-    	log_stream.open(CALAPHOT_LOG_FILE_NAME, std::ios::trunc);
-    	if( !log_stream )
-    	{
-    		std::cerr << "Error opening the log file " << CALAPHOT_LOG_FILE_NAME << std::endl;
-    	}
+        std::string nom_fichier_log;
+        if ( LibJM::Generique::repertoire_log )
+        {
+            nom_fichier_log = LibJM::Generique::repertoire_log;
+#if defined(WIN32)
+            nom_fichier_log = nom_fichier_log + "\\";
+#else
+            nom_fichier_log = nom_fichier_log + "/";
+#endif
+        }
+        nom_fichier_log = nom_fichier_log + calaphot_log_file_name;
+
+        log_stream.open( nom_fichier_log.c_str(), std::ios::trunc );
+        if( !log_stream )
+        {
+            std::cerr << "Error opening the log file " << nom_fichier_log << std::endl;
+        }
     }
 
+/***************************************************************************************/
+/***************************************************************************************/
+/***************************************************************************************/
     Calaphot::~Calaphot()
     {
-    	log_stream.close();
+        log_stream.close();
     }
 
+/***************************************************************************************/
+/***************************************************************************************/
+/***************************************************************************************/
     Calaphot * Calaphot::instance ()
     {
-        if (_unique_instance == 0)
+        if ( _unique_instance == 0 )
             _unique_instance = new Calaphot();
         return _unique_instance;
     }
 
+/***************************************************************************************/
+/***************************************************************************************/
+/***************************************************************************************/
+void Calaphot::niveau_traces( int niveau )
+{
+    _log_verbosity = niveau;
+}
 
 
     /*** Pour la mise au point de la modélisation
@@ -85,6 +115,9 @@ namespace LibJM {
 #define GSL_NON_LINEAIRE
      */
 
+/***************************************************************************************/
+/***************************************************************************************/
+/***************************************************************************************/
     CBuffer * Calaphot::set_buffer (int tampon)
     {
         _buffer = CBuffer::Chercher (tampon);
@@ -97,10 +130,10 @@ namespace LibJM {
 
 
     /*
-	 ***************** LecturePixel ************
-	 *
-	 * Retourne la valeur d'un pixel
-	 *******************************************
+     ***************** LecturePixel ************
+     *
+     * Retourne la valeur d'un pixel
+     *******************************************
 */
     int Calaphot::LecturePixel(int x, int y, TYPE_PIXELS *pixel)
     {
@@ -119,10 +152,10 @@ namespace LibJM {
     }
 
 /*
-	 ***************** EcriturePixel ************
-	 *
-	 * Ecrit la valeur d'un pixel
-	 ********************************************
+     ***************** EcriturePixel ************
+     *
+     * Ecrit la valeur d'un pixel
+     ********************************************
 */
     int Calaphot::EcriturePixel(int x, int y, TYPE_PIXELS pixel)
     {
@@ -131,10 +164,10 @@ namespace LibJM {
     }
 
 /*
-	 ***************** FluxEllipse ****************
-	 *
-	 *Calcul le flux dans une ellipse
-	 **********************************************
+     ***************** FluxEllipse ****************
+     *
+     *Calcul le flux dans une ellipse
+     **********************************************
 */
     void Calaphot::FluxEllipse(double x0, double y0, double r1x, double r1y, double ro, double r2, double r3, int c, double *flux, double *nb_pixel, double *fond, double *nb_pixel_fond, double *sigma_fond)
     {
@@ -238,23 +271,23 @@ namespace LibJM {
             /* Calcul du flux dans l'ellipse (r1x, r1y) */
 
 
-/*	for (y = (y0 - r1y); y <= (y0 + r1y); y += cinv)
-		{
-			x2 = 1.0 - ((y - y0) * (y - y0) / r1y / r1y);
-			if (x2 < 0.0)
-	x2 = 0.0;
-			x3 = r1x * sqrt(x2);
-			yi = (int)floor(y + 0.5);
+/*  for (y = (y0 - r1y); y <= (y0 + r1y); y += cinv)
+        {
+            x2 = 1.0 - ((y - y0) * (y - y0) / r1y / r1y);
+            if (x2 < 0.0)
+    x2 = 0.0;
+            x3 = r1x * sqrt(x2);
+            yi = (int)floor(y + 0.5);
 
 
-			for (x = (x0 - x3); x <= (x0 + x3); x += cinv)
-	{
-		xi = (int)floor(x + 0.5);
-		LecturePixel (xi, yi, &pixel);
-		flux_etoile += pixel * cinv2;
-		(*nb_pixel) += cinv2;
-	}
-		}
+            for (x = (x0 - x3); x <= (x0 + x3); x += cinv)
+    {
+        xi = (int)floor(x + 0.5);
+        LecturePixel (xi, yi, &pixel);
+        flux_etoile += pixel * cinv2;
+        (*nb_pixel) += cinv2;
+    }
+        }
 */
 
             /* Calcul du flux dans l'ellipse (r1x, r1y, ro) */
@@ -290,26 +323,26 @@ namespace LibJM {
 
 int Calaphot::Magnitude(double flux_etoile, double flux_ref, double mag_ref, double *mag_etoile)
 {
-	if ((flux_etoile > 0.0) && (flux_ref > 0.0))
-		*mag_etoile = mag_ref - 2.5 * log10(flux_etoile / flux_ref);
-	else
-		*mag_etoile = 99.99;
+    if ((flux_etoile > 0.0) && (flux_ref > 0.0))
+        *mag_etoile = mag_ref - 2.5 * log10(flux_etoile / flux_ref);
+    else
+        *mag_etoile = 99.99;
 
-	return 0;
+    return 0;
 }
 
 int Calaphot::Incertitude (double flux_etoile, double flux_fond, double nb_pixel, double nb_pixel_fond, double gain, double sigma, double *signal_bruit, double *incertitude, double *bruit_flux)
 {
-	double q1, q2, q3;
+    double q1, q2, q3;
 
-	q1 = (flux_fond + sigma * sigma) / flux_etoile;
-	q2 = 1.0 + 1.0 / nb_pixel_fond;
-	q3 = (nb_pixel * q1 * q2) + (1.0 / gain);
-	*signal_bruit = flux_etoile / q3;
-	*incertitude = 1.085 / *signal_bruit;
-	*bruit_flux = flux_etoile / *signal_bruit;
+    q1 = (flux_fond + sigma * sigma) / flux_etoile;
+    q2 = 1.0 + 1.0 / nb_pixel_fond;
+    q3 = (nb_pixel * q1 * q2) + (1.0 / gain);
+    *signal_bruit = flux_etoile / q3;
+    *incertitude = 1.085 / *signal_bruit;
+    *bruit_flux = flux_etoile / *signal_bruit;
 
-	return 0;
+    return 0;
 }
 
 
@@ -339,280 +372,280 @@ int Calaphot::LectureRectangle (rectangle * rect, gsl_vector *vect_s)
 
 #ifdef GSL_NON_LINEAIRE
 /* voir commantaire en t�te de fichier */
-int fonction_minimale (const gsl_vector * param_gauss, void	* data, gsl_vector * f) {
-	int x1, y1, x2, y2, nxy;
-	double * pixels;
-	double x0, y0;
-	double sx, sy;
-	double signal, fond;
-	double ro;
-	int x, y, i;
-	double dy, dy2, gy, dx, dx2, gx, hxy, fxy;
+int fonction_minimale (const gsl_vector * param_gauss, void * data, gsl_vector * f) {
+    int x1, y1, x2, y2, nxy;
+    double * pixels;
+    double x0, y0;
+    double sx, sy;
+    double signal, fond;
+    double ro;
+    int x, y, i;
+    double dy, dy2, gy, dx, dx2, gx, hxy, fxy;
 
 #ifdef TRACE_FONCTION
-	FILE * trace;
-	trace = fopen("trace_fonction2.txt", "a");
-	fprintf (trace, "------------------------------------\n");
+    FILE * trace;
+    trace = fopen("trace_fonction2.txt", "a");
+    fprintf (trace, "------------------------------------\n");
 #endif
 
-	nxy = ((struct data *)data)->nxy;
-	x1 = ((struct data *)data)->x1;
-	y1 = ((struct data *)data)->y1;
-	x2 = ((struct data *)data)->x2;
-	y2 = ((struct data *)data)->y2;
-	pixels = ((struct data *)data)->pixels;
+    nxy = ((struct data *)data)->nxy;
+    x1 = ((struct data *)data)->x1;
+    y1 = ((struct data *)data)->y1;
+    x2 = ((struct data *)data)->x2;
+    y2 = ((struct data *)data)->y2;
+    pixels = ((struct data *)data)->pixels;
 
-	x0 = gsl_vector_get (param_gauss, 0);
-	y0 = gsl_vector_get (param_gauss, 1);
-	signal = gsl_vector_get (param_gauss, 2);
-	fond = gsl_vector_get (param_gauss, 3);
-	sx = gsl_vector_get (param_gauss, 4);
-	sy = gsl_vector_get (param_gauss, 5);
-	ro = gsl_vector_get (param_gauss, 6);
+    x0 = gsl_vector_get (param_gauss, 0);
+    y0 = gsl_vector_get (param_gauss, 1);
+    signal = gsl_vector_get (param_gauss, 2);
+    fond = gsl_vector_get (param_gauss, 3);
+    sx = gsl_vector_get (param_gauss, 4);
+    sy = gsl_vector_get (param_gauss, 5);
+    ro = gsl_vector_get (param_gauss, 6);
 
 #ifdef TRACE_FONCTION
-	fprintf (trace, "X0=%g|Y0=%g|S=%g|B=%g|Sx=%g|Sy=%g|Ro=%g\n", x0, y0, signal, fond, sx, sy, ro);
+    fprintf (trace, "X0=%g|Y0=%g|S=%g|B=%g|Sx=%g|Sy=%g|Ro=%g\n", x0, y0, signal, fond, sx, sy, ro);
 #endif
 
-	i = 0;
-	for (y = y1; y <= y2; y++) {
-		dy = ((double)y - y0) / sy;
-		dy2 = dy * dy;
-		gy = exp (-dy2);
+    i = 0;
+    for (y = y1; y <= y2; y++) {
+        dy = ((double)y - y0) / sy;
+        dy2 = dy * dy;
+        gy = exp (-dy2);
 #ifdef TRACE_FONCTION
-		fprintf (trace, "y=%d	", y);
+        fprintf (trace, "y=%d   ", y);
 #endif
-		for (x = x1; x <= x2; x++) {
-			dx = ((double)x - x0) / sx;
-			dx2 = dx * dx;
-			gx = exp (-dx2);
-			hxy = exp (2.0 * ro * dx * dy);
-			fxy = gx * gy * hxy;
-			/* Vecteur � minimiser */
-			gsl_vector_set (f, i, (pixels[i] - (signal * fxy + fond)));
+        for (x = x1; x <= x2; x++) {
+            dx = ((double)x - x0) / sx;
+            dx2 = dx * dx;
+            gx = exp (-dx2);
+            hxy = exp (2.0 * ro * dx * dy);
+            fxy = gx * gy * hxy;
+            /* Vecteur � minimiser */
+            gsl_vector_set (f, i, (pixels[i] - (signal * fxy + fond)));
 #ifdef TRACE_FONCTION
-			fprintf (trace, "%f / %f / %f	", pixels[i], signal * fxy + fond, (pixels[i] - (signal * fxy + fond)));
+            fprintf (trace, "%f / %f / %f   ", pixels[i], signal * fxy + fond, (pixels[i] - (signal * fxy + fond)));
 #endif
-			i++;
-		}
-		fprintf (trace, "\n");
-	}
+            i++;
+        }
+        fprintf (trace, "\n");
+    }
 #ifdef TRACE_FONCTION
-	fclose (trace);
+    fclose (trace);
 #endif
-	return GSL_SUCCESS;
+    return GSL_SUCCESS;
 }
 
-int jacobien (const gsl_vector * param_gauss, void	* data, gsl_matrix * J) {
-	int x1, y1, x2, y2, nxy;
-	double x0, y0;
-	double sx, sy;
-	double signal, fond;
-	double ro;
-	int x, y, i;
-	double dy, dy2, gy, dx, dx2, gx, hxy, fxy;
+int jacobien (const gsl_vector * param_gauss, void  * data, gsl_matrix * J) {
+    int x1, y1, x2, y2, nxy;
+    double x0, y0;
+    double sx, sy;
+    double signal, fond;
+    double ro;
+    int x, y, i;
+    double dy, dy2, gy, dx, dx2, gx, hxy, fxy;
 
 #ifdef TRACE_JACOBIEN
-	FILE * trace;
-	int j;
-	trace = fopen("trace_jacobien2.txt", "a");
-	fprintf (trace, "------------------------------------\n");
+    FILE * trace;
+    int j;
+    trace = fopen("trace_jacobien2.txt", "a");
+    fprintf (trace, "------------------------------------\n");
 #endif
 
-	nxy = ((struct data *)data)->nxy;
-	x1 = ((struct data *)data)->x1;
-	y1 = ((struct data *)data)->y1;
-	x2 = ((struct data *)data)->x2;
-	y2 = ((struct data *)data)->y2;
+    nxy = ((struct data *)data)->nxy;
+    x1 = ((struct data *)data)->x1;
+    y1 = ((struct data *)data)->y1;
+    x2 = ((struct data *)data)->x2;
+    y2 = ((struct data *)data)->y2;
 
-	x0 = gsl_vector_get (param_gauss, 0);
-	y0 = gsl_vector_get (param_gauss, 1);
-	signal = gsl_vector_get (param_gauss, 2);
-	fond = gsl_vector_get (param_gauss, 3);
-	sx = gsl_vector_get (param_gauss, 4);
-	sy = gsl_vector_get (param_gauss, 5);
-	ro = gsl_vector_get (param_gauss, 6);
+    x0 = gsl_vector_get (param_gauss, 0);
+    y0 = gsl_vector_get (param_gauss, 1);
+    signal = gsl_vector_get (param_gauss, 2);
+    fond = gsl_vector_get (param_gauss, 3);
+    sx = gsl_vector_get (param_gauss, 4);
+    sy = gsl_vector_get (param_gauss, 5);
+    ro = gsl_vector_get (param_gauss, 6);
 
-	i = 0;
-	for (y = y1; y <= y2; y++) {
-		dy = ((double)y - y0) / sy;
-		dy2 = dy * dy;
-		gy = exp (-dy2);
-		for (x = x1; x <= x2; x++) {
-			dx = ((double)x - x0) / sx;
-			dx2 = dx * dx;
-			gx = exp (-dx2);
-			hxy = exp (2.0 * ro * dx * dy);
-			fxy = gx * gy * hxy;
+    i = 0;
+    for (y = y1; y <= y2; y++) {
+        dy = ((double)y - y0) / sy;
+        dy2 = dy * dy;
+        gy = exp (-dy2);
+        for (x = x1; x <= x2; x++) {
+            dx = ((double)x - x0) / sx;
+            dx2 = dx * dx;
+            gx = exp (-dx2);
+            hxy = exp (2.0 * ro * dx * dy);
+            fxy = gx * gy * hxy;
 
-			/* dF/dX0 */
-			gsl_matrix_set (J, i, 0, (2.0 * signal * fxy * ((dx - ro * dy) / sx)));
-			/* dF/dY0 */
-			gsl_matrix_set (J, i, 1, (2.0 * signal * fxy * ((dy - ro * dx) / sy)));
-			/* dF/dS0 */
-			gsl_matrix_set (J, i, 2, fxy);
-			/* dF/dB */
-			gsl_matrix_set (J, i, 3, 1.0);
-			/* dF/dFwhmX */
-			gsl_matrix_set (J, i, 4, (2.0 * signal * fxy * ((dx2 / sx) - (ro * dx * dy / sx))));
-			/* dF/dFwhmY */
-			gsl_matrix_set (J, i, 5, (2.0 * signal * fxy * ((dy2 / sy) - (ro * dx * dy / sy))));
-			/* dF/dRo */
-			gsl_matrix_set (J, i, 6, (2.0 * signal * fxy * dx * dy));
+            /* dF/dX0 */
+            gsl_matrix_set (J, i, 0, (2.0 * signal * fxy * ((dx - ro * dy) / sx)));
+            /* dF/dY0 */
+            gsl_matrix_set (J, i, 1, (2.0 * signal * fxy * ((dy - ro * dx) / sy)));
+            /* dF/dS0 */
+            gsl_matrix_set (J, i, 2, fxy);
+            /* dF/dB */
+            gsl_matrix_set (J, i, 3, 1.0);
+            /* dF/dFwhmX */
+            gsl_matrix_set (J, i, 4, (2.0 * signal * fxy * ((dx2 / sx) - (ro * dx * dy / sx))));
+            /* dF/dFwhmY */
+            gsl_matrix_set (J, i, 5, (2.0 * signal * fxy * ((dy2 / sy) - (ro * dx * dy / sy))));
+            /* dF/dRo */
+            gsl_matrix_set (J, i, 6, (2.0 * signal * fxy * dx * dy));
 
 #ifdef TRACE_JACOBIEN
-			fprintf (trace, "y=%d x=%d ", y, x);
-			for (j=0; j<NB_PARAM_GAUSS; j++) {
-				fprintf (trace, "%f ", gsl_matrix_get (J, i, j));
-			}
-			fprintf (trace, "\n");
+            fprintf (trace, "y=%d x=%d ", y, x);
+            for (j=0; j<NB_PARAM_GAUSS; j++) {
+                fprintf (trace, "%f ", gsl_matrix_get (J, i, j));
+            }
+            fprintf (trace, "\n");
 #endif
-			i++;
-		}
-	}
+            i++;
+        }
+    }
 #ifdef TRACE_JACOBIEN
-	fclose (trace);
+    fclose (trace);
 #endif
-	return GSL_SUCCESS;
+    return GSL_SUCCESS;
 }
 
 int nappe_gaussienne (const gsl_vector * param_gauss, void * data, gsl_vector * f, gsl_matrix * J) {
-	fonction_minimale (param_gauss, data, f);
-	jacobien (param_gauss, data, J);
+    fonction_minimale (param_gauss, data, f);
+    jacobien (param_gauss, data, J);
 
-	return GSL_SUCCESS;
+    return GSL_SUCCESS;
 }
 
 void print_state (FILE *trace, int iter, gsl_multifit_fdfsolver * s) {
-	fprintf(trace, "iter=%d X0=%f|Y0=%f|S=%f|B=%f|Sx=%f|Sy=%f|Ro=%f|chi2=%f\n",
-		iter,
-		gsl_vector_get (s->x, 0),
-		gsl_vector_get (s->x, 1),
-		gsl_vector_get (s->x, 2),
-		gsl_vector_get (s->x, 3),
-		gsl_vector_get (s->x, 4),
-		gsl_vector_get (s->x, 5),
-		gsl_vector_get (s->x, 6),
-		gsl_blas_dnrm2 (s->f)
-		);
-	fprintf(trace, "iter=%d dX0=%f|dY0=%f|dS=%f|dB=%f|dSx=%f|dSy=%f|dRo=%f|chi2=%f\n",
-		iter,
-		gsl_vector_get (s->dx, 0),
-		gsl_vector_get (s->dx, 1),
-		gsl_vector_get (s->dx, 2),
-		gsl_vector_get (s->dx, 3),
-		gsl_vector_get (s->dx, 4),
-		gsl_vector_get (s->dx, 5),
-		gsl_vector_get (s->dx, 6),
-		gsl_blas_dnrm2 (s->f));
+    fprintf(trace, "iter=%d X0=%f|Y0=%f|S=%f|B=%f|Sx=%f|Sy=%f|Ro=%f|chi2=%f\n",
+        iter,
+        gsl_vector_get (s->x, 0),
+        gsl_vector_get (s->x, 1),
+        gsl_vector_get (s->x, 2),
+        gsl_vector_get (s->x, 3),
+        gsl_vector_get (s->x, 4),
+        gsl_vector_get (s->x, 5),
+        gsl_vector_get (s->x, 6),
+        gsl_blas_dnrm2 (s->f)
+        );
+    fprintf(trace, "iter=%d dX0=%f|dY0=%f|dS=%f|dB=%f|dSx=%f|dSy=%f|dRo=%f|chi2=%f\n",
+        iter,
+        gsl_vector_get (s->dx, 0),
+        gsl_vector_get (s->dx, 1),
+        gsl_vector_get (s->dx, 2),
+        gsl_vector_get (s->dx, 3),
+        gsl_vector_get (s->dx, 4),
+        gsl_vector_get (s->dx, 5),
+        gsl_vector_get (s->dx, 6),
+        gsl_blas_dnrm2 (s->f));
 }
 
-/* Algorithme de modelisation par		 */
-/* S(x,y) = S0 * f(x,y) + B0, o�			*/
+/* Algorithme de modelisation par        */
+/* S(x,y) = S0 * f(x,y) + B0, o�            */
 /* f(x,y) = exp(-X^2 - Y^2 + 2*Ro*X*Y) */
-/* avec X = (x-x0)/sx								 */
-/*			Y = (y-y0)/sy								 */
-/*			(x0,y0) centroide						 */
-/*			sx et sy ecart-types					*/
-/*			|Ro| < 1											*/
+/* avec X = (x-x0)/sx                                */
+/*          Y = (y-y0)/sy                                */
+/*          (x0,y0) centroide                        */
+/*          sx et sy ecart-types                    */
+/*          |Ro| < 1                                            */
 void Gauss2(int x1, int y1, int x2, int y2, gsl_vector *vect_s, gsl_vector *vect_w, gsl_matrix *mat_x, gsl_vector *vect_c, gsl_matrix *covar, double *chi2, double *me1, struct ajustement *p, struct ajustement *incert, int *iter, int *convergence)
 {
-	const gsl_multifit_fdfsolver_type *T;
-	gsl_multifit_fdfsolver *s;
-	int nxy;
-	gsl_multifit_function_fdf f;
-	gsl_vector *param_gauss;
-	struct data d;
-	int status;
+    const gsl_multifit_fdfsolver_type *T;
+    gsl_multifit_fdfsolver *s;
+    int nxy;
+    gsl_multifit_function_fdf f;
+    gsl_vector *param_gauss;
+    struct data d;
+    int status;
 
 #ifdef TRACE_FONCTION
-	FILE * trace_fonction;
-	trace_fonction = fopen("trace_fonction2.txt", "w");
-	fclose (trace_fonction);
+    FILE * trace_fonction;
+    trace_fonction = fopen("trace_fonction2.txt", "w");
+    fclose (trace_fonction);
 #endif
 
 #ifdef TRACE_JACOBIEN
-	FILE * trace_jacobien;
-	trace_jacobien = fopen("trace_jacobien2.txt", "w");
-	fclose (trace_jacobien);
+    FILE * trace_jacobien;
+    trace_jacobien = fopen("trace_jacobien2.txt", "w");
+    fclose (trace_jacobien);
 #endif
 
-	FILE * trace;
-	trace = fopen("trace_gauss2.txt", "w");
+    FILE * trace;
+    trace = fopen("trace_gauss2.txt", "w");
 
-	param_gauss = gsl_vector_alloc(NB_PARAM_GAUSS);
-	gsl_vector_set (param_gauss, 0, p->X0);
-	gsl_vector_set (param_gauss, 1, p->Y0);
-	gsl_vector_set (param_gauss, 2, p->Signal);
-	gsl_vector_set (param_gauss, 3, p->Fond);
-	gsl_vector_set (param_gauss, 4, p->Sigma_X);
-	gsl_vector_set (param_gauss, 5, p->Sigma_Y);
-	gsl_vector_set (param_gauss, 6, p->Ro);
+    param_gauss = gsl_vector_alloc(NB_PARAM_GAUSS);
+    gsl_vector_set (param_gauss, 0, p->X0);
+    gsl_vector_set (param_gauss, 1, p->Y0);
+    gsl_vector_set (param_gauss, 2, p->Signal);
+    gsl_vector_set (param_gauss, 3, p->Fond);
+    gsl_vector_set (param_gauss, 4, p->Sigma_X);
+    gsl_vector_set (param_gauss, 5, p->Sigma_Y);
+    gsl_vector_set (param_gauss, 6, p->Ro);
 
-	fprintf (trace, "---------param_gauss :---------\n");
-	gsl_vector_fprintf (trace, param_gauss, "%f");
+    fprintf (trace, "---------param_gauss :---------\n");
+    gsl_vector_fprintf (trace, param_gauss, "%f");
 
-	nxy = (size_t)(x2 - x1 + 1) * (size_t)(y2 - y1 + 1);
-	d.nxy = nxy;
-	d.x1 = x1;
-	d.x2 = x2;
-	d.y1 = y1;
-	d.y2 = y2;
-	d.pixels = vect_s->data;
+    nxy = (size_t)(x2 - x1 + 1) * (size_t)(y2 - y1 + 1);
+    d.nxy = nxy;
+    d.x1 = x1;
+    d.x2 = x2;
+    d.y1 = y1;
+    d.y2 = y2;
+    d.pixels = vect_s->data;
 
-	f.f = &fonction_minimale;
-	f.df = &jacobien;
-	f.fdf = &nappe_gaussienne;
-	f.n = nxy;
-	f.p = NB_PARAM_GAUSS;
-	f.params = &d;
+    f.f = &fonction_minimale;
+    f.df = &jacobien;
+    f.fdf = &nappe_gaussienne;
+    f.n = nxy;
+    f.p = NB_PARAM_GAUSS;
+    f.params = &d;
 
-	T = gsl_multifit_fdfsolver_lmsder;
-	s = gsl_multifit_fdfsolver_alloc (T, nxy, NB_PARAM_GAUSS);
-	if (s == 0) {
-		fprintf (trace, "Mauvaise alloc\n");
-		return;
-	}
-	status = gsl_multifit_fdfsolver_set (s, &f, param_gauss);
-	fprintf (trace, "status=%d : %s\n", status, gsl_strerror (status));
-	fprintf (trace, "s est un resolveur de type %s\n", gsl_multifit_fdfsolver_name (s));
+    T = gsl_multifit_fdfsolver_lmsder;
+    s = gsl_multifit_fdfsolver_alloc (T, nxy, NB_PARAM_GAUSS);
+    if (s == 0) {
+        fprintf (trace, "Mauvaise alloc\n");
+        return;
+    }
+    status = gsl_multifit_fdfsolver_set (s, &f, param_gauss);
+    fprintf (trace, "status=%d : %s\n", status, gsl_strerror (status));
+    fprintf (trace, "s est un resolveur de type %s\n", gsl_multifit_fdfsolver_name (s));
 
-	*iter = 0;
-	print_state (trace, *iter, s);
+    *iter = 0;
+    print_state (trace, *iter, s);
 
-	do {
-		(*iter) ++;
+    do {
+        (*iter) ++;
 
-		status = gsl_multifit_fdfsolver_iterate (s);
-		fprintf (trace, "status=%d : %s\n", status, gsl_strerror (status));
+        status = gsl_multifit_fdfsolver_iterate (s);
+        fprintf (trace, "status=%d : %s\n", status, gsl_strerror (status));
 
-		print_state (trace, (*iter), s);
-		if (status) {
-			break;
-		}
+        print_state (trace, (*iter), s);
+        if (status) {
+            break;
+        }
 
-		status = gsl_multifit_test_delta (s->dx, s->x, 0.0, 1e-6);
+        status = gsl_multifit_test_delta (s->dx, s->x, 0.0, 1e-6);
 
-	} while (status == GSL_CONTINUE && (*iter) < 50);
+    } while (status == GSL_CONTINUE && (*iter) < 50);
 
-	gsl_multifit_covar (s->J, 0.0, covar);
+    gsl_multifit_covar (s->J, 0.0, covar);
 
-	gsl_multifit_fdfsolver_free (s);
+    gsl_multifit_fdfsolver_free (s);
 
-	fclose(trace);
+    fclose(trace);
 }
 
 #endif /* GSL_NON_LINEAIRE */
 
 
-/* Algorithme de modelisation par		 */
-/* S(x,y) = S0 * f(x,y) + B0, ou			*/
+/* Algorithme de modelisation par        */
+/* S(x,y) = S0 * f(x,y) + B0, ou            */
 /* f(x,y) = exp(-X^2 - Y^2 + 2*Ro*X*Y) */
-/* avec X = (x-x0)/sx								 */
-/*			Y = (y-y0)/sy								 */
-/*			(x0,y0) centroide						 */
-/*			sx et sy ecart-types					*/
-/*			|Ro| < 1											*/
+/* avec X = (x-x0)/sx                                */
+/*          Y = (y-y0)/sy                                */
+/*          (x0,y0) centroide                        */
+/*          sx et sy ecart-types                    */
+/*          |Ro| < 1                                            */
 void Calaphot::Gauss (rectangle * rect, gsl_vector *vect_s, gsl_vector *vect_w, gsl_matrix *mat_x, gsl_vector *vect_c, gsl_matrix *mat_cov, double *chi2, double *me1, struct ajustement *p, struct ajustement *incert, int *iter)
 {
     int x, y;
@@ -770,14 +803,14 @@ void Calaphot::Gauss (rectangle * rect, gsl_vector *vect_s, gsl_vector *vect_w, 
         else {
             ancienne_norme = norme;
 
-            if ((t.X0 < rect->x1)				 /* la modelisation sort du cadre entourant l'image */
+            if ((t.X0 < rect->x1)                /* la modelisation sort du cadre entourant l'image */
                     || (t.X0 > rect->x2)
                     || (t.Y0 < rect->y1)
                     || (t.Y0 > rect->y2)
-                    || (t.Sigma_X < 0.25)		/* l'ecart-type ne peut pas etre trop petit (et encore moins negatif) */
+                    || (t.Sigma_X < 0.25)       /* l'ecart-type ne peut pas etre trop petit (et encore moins negatif) */
                     || (t.Sigma_Y < 0.25)
-                    || (fabs(t.Ro) >= 0.985)	/* |ro| est forcement < 1 */
-                    || (*iter > NOMBRE_MAX_ITERATION)			 /* Convergence qui prendrait un temps "infini" */
+                    || (fabs(t.Ro) >= 0.985)    /* |ro| est forcement < 1 */
+                    || (*iter > NOMBRE_MAX_ITERATION)            /* Convergence qui prendrait un temps "infini" */
                     || ((t.Sigma_X / t.Sigma_Y) >= 50.0)
                     || ((t.Sigma_Y / t.Sigma_X) >= 50.0))
             {
@@ -824,57 +857,57 @@ sortie :
 
 void Calaphot::InitRectangle (int * cadre, rectangle * rect) {
 
-	/* Tri des x1, x2 et y1, y2 */
-	if (cadre[0] > cadre[2]) {
-		rect->x1 = cadre[2];
-		rect->x2 = cadre[0];
+    /* Tri des x1, x2 et y1, y2 */
+    if (cadre[0] > cadre[2]) {
+        rect->x1 = cadre[2];
+        rect->x2 = cadre[0];
 
-	} else {
-		rect->x2 = cadre[2];
-		rect->x1 = cadre[0];
-	}
+    } else {
+        rect->x2 = cadre[2];
+        rect->x1 = cadre[0];
+    }
 
-	if (cadre[1] > cadre[3]) {
-		rect->y1 = cadre[3];
-		rect->y2 = cadre[1];
-	} else {
-		rect->y2 = cadre[3];
-		rect->y1 = cadre[1];
-	}
+    if (cadre[1] > cadre[3]) {
+        rect->y1 = cadre[3];
+        rect->y2 = cadre[1];
+    } else {
+        rect->y2 = cadre[3];
+        rect->y1 = cadre[1];
+    }
 
-	rect->nx = rect->x2 - rect->x1 + 1;
-	rect->ny = rect->y2 - rect->y1 + 1;
-	rect->nxy = (size_t) (rect->nx * rect->ny);
+    rect->nx = rect->x2 - rect->x1 + 1;
+    rect->ny = rect->y2 - rect->y1 + 1;
+    rect->nxy = (size_t) (rect->nx * rect->ny);
  }
 
 /**************************************************************/
 /* Ajustement d'un morceau d'image par une surface gaussienne */
-/* Calcul du flux donne par le modele												 */
+/* Calcul du flux donne par le modele                                                */
 /**************************************************************/
 int Calaphot::AjustementGaussien(int *carre, double *fgauss, double *stat, ajustement *valeurs, ajustement *incertitudes, int *iter, double *chi2, double *erreur)
 {
-	rectangle rect;
-	double sx, sx2, sy, sy2, alpha2, alpha, p, q, sxp, syp, ro;
-	double dro, dsx, dsy, a, b, c, da, db, dc, temp_a, dalpha_da, dalpha_db, dalpha_dc, dalpha;
-	gsl_vector *vect_w, *vect_s, *vect_c;
-	gsl_matrix *mat_x, *mat_cov;
+    rectangle rect;
+    double sx, sx2, sy, sy2, alpha2, alpha, p, q, sxp, syp, ro;
+    double dro, dsx, dsy, a, b, c, da, db, dc, temp_a, dalpha_da, dalpha_db, dalpha_dc, dalpha;
+    gsl_vector *vect_w, *vect_s, *vect_c;
+    gsl_matrix *mat_x, *mat_cov;
 
 #ifdef TRACE_AJUSTEMENT
-	FILE * trace;
-	trace = fopen("ajustement_gaussien.txt", "a");
+    FILE * trace;
+    trace = fopen("ajustement_gaussien.txt", "a");
 #endif
 
-	InitRectangle (carre, &rect);
+    InitRectangle (carre, &rect);
 
 #ifdef TRACE_AJUSTEMENT
-	fprintf (trace, "**********************************************************\n");
-	fprintf (trace, "[%d-%d]-[%d-%d]\n", rect.x1, rect.y1, rect.x2, rect.y2);
+    fprintf (trace, "**********************************************************\n");
+    fprintf (trace, "[%d-%d]-[%d-%d]\n", rect.x1, rect.y1, rect.x2, rect.y2);
 #endif
 
     if (rect.nxy <= 7)
     {
         /*
-		Par définition, le nombre d'échantillons doit être au moins égal au nombre de paramètres du modèle (7 en l'occurence)
+        Par définition, le nombre d'échantillons doit être au moins égal au nombre de paramètres du modèle (7 en l'occurence)
          */
         *iter = 0;
         return 0;
@@ -906,161 +939,161 @@ int Calaphot::AjustementGaussien(int *carre, double *fgauss, double *stat, ajust
     }
 
 #ifdef TRACE_AJUSTEMENT
-	fprintf (trace, "fitgauss : Axe X S=%f X0=%f fwhm=%f fond=%f\n",
-		fgauss[0], fgauss[1], fgauss[2], fgauss[3]);
+    fprintf (trace, "fitgauss : Axe X S=%f X0=%f fwhm=%f fond=%f\n",
+        fgauss[0], fgauss[1], fgauss[2], fgauss[3]);
 
-	fprintf (trace, "fitgauss : Axe Y S=%f Y0=%f fwhm=%f fond=%f\n",
-		fgauss[4], fgauss[5], fgauss[6], fgauss[7]);
+    fprintf (trace, "fitgauss : Axe Y S=%f Y0=%f fwhm=%f fond=%f\n",
+        fgauss[4], fgauss[5], fgauss[6], fgauss[7]);
 #endif
 
-	/* Valeurs pour l'initialisation de la boucle de calcul */
-	/* Fond = fond */
-	valeurs->Fond = (fgauss[3] + fgauss[7]) / 2.0;
-	/* Signal = max - fond */
-	valeurs->Signal = (double)(fgauss[0] + fgauss[4]) / 2.0;
-	/* Centroide potentiel */
-	/*
-	* Si fitgauss retourne un centroide trop desaxé par rapport à la fenêtre
-	* (dans le 1er ou le dernier quart), la valeur de départ sera le bête centre de la fenêtre
-	*/
+    /* Valeurs pour l'initialisation de la boucle de calcul */
+    /* Fond = fond */
+    valeurs->Fond = (fgauss[3] + fgauss[7]) / 2.0;
+    /* Signal = max - fond */
+    valeurs->Signal = (double)(fgauss[0] + fgauss[4]) / 2.0;
+    /* Centroide potentiel */
+    /*
+    * Si fitgauss retourne un centroide trop desaxé par rapport à la fenêtre
+    * (dans le 1er ou le dernier quart), la valeur de départ sera le bête centre de la fenêtre
+    */
 
-	if ((fgauss[1] < (3*rect.x1 + rect.x2) /4) || (fgauss[1] > (rect.x1 + 3*rect.x2)/4)) {
-		valeurs->X0 = (rect.x1 + rect.x2) / 2;
-	}
-	else {
-		valeurs->X0 = fgauss[1];
-	}
+    if ((fgauss[1] < (3*rect.x1 + rect.x2) /4) || (fgauss[1] > (rect.x1 + 3*rect.x2)/4)) {
+        valeurs->X0 = (rect.x1 + rect.x2) / 2;
+    }
+    else {
+        valeurs->X0 = fgauss[1];
+    }
 
-	if ((fgauss[5] < (3*rect.y1 + rect.y2) /4) || (fgauss[5] > (rect.y1 + 3*rect.y2)/4)) {
-		valeurs->Y0 = (rect.y1 + rect.y2) / 2;
-	}
-	else {
-		valeurs->Y0 = fgauss[5];
-	}
+    if ((fgauss[5] < (3*rect.y1 + rect.y2) /4) || (fgauss[5] > (rect.y1 + 3*rect.y2)/4)) {
+        valeurs->Y0 = (rect.y1 + rect.y2) / 2;
+    }
+    else {
+        valeurs->Y0 = fgauss[5];
+    }
 
-	/* Les FWHM doivent �tre convertis en sigma*/
-	valeurs->Sigma_X = fgauss[2] / 1.66511;
-	valeurs->Sigma_Y = fgauss[6] / 1.66511;
-	/* Au hasard */
-	valeurs->Ro = 0.0;
+    /* Les FWHM doivent �tre convertis en sigma*/
+    valeurs->Sigma_X = fgauss[2] / 1.66511;
+    valeurs->Sigma_Y = fgauss[6] / 1.66511;
+    /* Au hasard */
+    valeurs->Ro = 0.0;
 
-	*chi2 = 0.0;
+    *chi2 = 0.0;
 
 #ifdef TRACE_AJUSTEMENT
-	fprintf (trace, "Avant : X0=%f Y0=%f Ampl=%f Fond=%f Sx=%f Sy=%f Ro=%f\n",
-		valeurs->X0,
-		valeurs->Y0,
-		valeurs->Signal,
-		valeurs->Fond,
-		valeurs->Sigma_X,
-		valeurs->Sigma_Y,
-		valeurs->Ro);
+    fprintf (trace, "Avant : X0=%f Y0=%f Ampl=%f Fond=%f Sx=%f Sy=%f Ro=%f\n",
+        valeurs->X0,
+        valeurs->Y0,
+        valeurs->Signal,
+        valeurs->Fond,
+        valeurs->Sigma_X,
+        valeurs->Sigma_Y,
+        valeurs->Ro);
 #endif
 
-	/* Initialisations du vecteur de ponderation */
-	if (stat[7] != 0.0)
-		gsl_vector_set_all(vect_w, 1.0 / stat[7] / stat[7]);
-	else
-		gsl_vector_set_all(vect_w, 1.0);
+    /* Initialisations du vecteur de ponderation */
+    if (stat[7] != 0.0)
+        gsl_vector_set_all(vect_w, 1.0 / stat[7] / stat[7]);
+    else
+        gsl_vector_set_all(vect_w, 1.0);
 
-	/* Cas d'une image constante : on sort tout de suite, la modelisation n'a pas de sens */
-	if (valeurs->Signal == 0) {
-		*iter = 0;
-		gsl_matrix_free(mat_cov);
-		gsl_matrix_free(mat_x);
-		gsl_vector_free(vect_c);
-		gsl_vector_free(vect_s);
-		gsl_vector_free(vect_w);
-		return 0;
-	}
+    /* Cas d'une image constante : on sort tout de suite, la modelisation n'a pas de sens */
+    if (valeurs->Signal == 0) {
+        *iter = 0;
+        gsl_matrix_free(mat_cov);
+        gsl_matrix_free(mat_x);
+        gsl_vector_free(vect_c);
+        gsl_vector_free(vect_s);
+        gsl_vector_free(vect_w);
+        return 0;
+    }
 
-	Gauss (&rect, vect_s, vect_w, mat_x, vect_c, mat_cov, chi2, erreur, valeurs, incertitudes, iter);
+    Gauss (&rect, vect_s, vect_w, mat_x, vect_c, mat_cov, chi2, erreur, valeurs, incertitudes, iter);
 
 /*
-	Gauss2 (x1, y1, x2, y2, vect_s, vect_w, mat_x, vect_c, mat_cov, chi2, &me1, valeurs, incertitudes, iter, convergence);
+    Gauss2 (x1, y1, x2, y2, vect_s, vect_w, mat_x, vect_c, mat_cov, chi2, &me1, valeurs, incertitudes, iter, convergence);
 */
 
 #ifdef TRACE_AJUSTEMENT
-	fprintf (trace, "%d iterrations, erreur = %f\n", *iter, *erreur);
+    fprintf (trace, "%d iterrations, erreur = %f\n", *iter, *erreur);
 
-	fprintf (trace, "Apr�s : X0=%f Y0=%f Ampl=%f Fond=%f Sx=%f Sy=%f Ro=%f\n",
-		valeurs->X0,
-		valeurs->Y0,
-		valeurs->Signal,
-		valeurs->Fond,
-		valeurs->Sigma_X,
-		valeurs->Sigma_Y,
-		valeurs->Ro);
+    fprintf (trace, "Apr�s : X0=%f Y0=%f Ampl=%f Fond=%f Sx=%f Sy=%f Ro=%f\n",
+        valeurs->X0,
+        valeurs->Y0,
+        valeurs->Signal,
+        valeurs->Fond,
+        valeurs->Sigma_X,
+        valeurs->Sigma_Y,
+        valeurs->Ro);
 #endif
 
-		/* Calcul du flux */
-		valeurs->Flux = M_PI * valeurs->Signal * valeurs->Sigma_X * valeurs->Sigma_Y / sqrt(1.0 - (valeurs->Ro * valeurs->Ro));
+        /* Calcul du flux */
+        valeurs->Flux = M_PI * valeurs->Signal * valeurs->Sigma_X * valeurs->Sigma_Y / sqrt(1.0 - (valeurs->Ro * valeurs->Ro));
 
-	/* Manips pour simplifier les calculs et les ecritures */
-	sx = valeurs->Sigma_X;
-	sy = valeurs->Sigma_Y;
-	ro = valeurs->Ro;
-	sx2 = sx * sx;
-	sy2 = sy * sy;
-	a = 1.0 / sx2;
-	c = 1.0 / sy2;
-	b = -ro / sx / sy;
-	dsx = incertitudes->Sigma_X;
-	dsy = incertitudes->Sigma_Y;
-	dro = incertitudes->Ro;
-	da = fabs(-2.0 * dsx / sx / sx / sx);
-	dc = fabs(-2.0 * dsy / sy / sy / sy);
-	db = fabs((- dro / sx / sy) + (dsx * ro / sx2 / sy) + (dsy * ro / sx / sy2));
+    /* Manips pour simplifier les calculs et les ecritures */
+    sx = valeurs->Sigma_X;
+    sy = valeurs->Sigma_Y;
+    ro = valeurs->Ro;
+    sx2 = sx * sx;
+    sy2 = sy * sy;
+    a = 1.0 / sx2;
+    c = 1.0 / sy2;
+    b = -ro / sx / sy;
+    dsx = incertitudes->Sigma_X;
+    dsy = incertitudes->Sigma_Y;
+    dro = incertitudes->Ro;
+    da = fabs(-2.0 * dsx / sx / sx / sx);
+    dc = fabs(-2.0 * dsy / sy / sy / sy);
+    db = fabs((- dro / sx / sy) + (dsx * ro / sx2 / sy) + (dsy * ro / sx / sy2));
 
-	/* Calcul des valeurs principales et de leur incertitudes*/
-	if (sx != sy) {
-		alpha2 = atan2((2.0 * ro * sx * sy), (sx2 - sy2));
-		p = a + c;
-		q = (a - c) * cos(alpha2) + (2.0 * b * sin(alpha2));
-		/* Valeur principale */
-		alpha = alpha2 / 2.0;
-		sxp = 1.0 / sqrt((p + q) / 2.0);
-		syp = 1.0 / sqrt((p - q) / 2.0);
-		/* Pour alpha */
-		temp_a = (a - c) * (a - c) + (4 * b * b);
-		dalpha_da = fabs(-b / temp_a);
-		dalpha_dc = dalpha_da;
-		dalpha_db = fabs((a - c) / temp_a);
-		dalpha = (dalpha_da * da) + (dalpha_dc * dc) + (dalpha_db) * db;
-	}
-	else {
-		/* Valeur principale */
-		alpha = 0; /* en fait alpha n'a pas de sens, puisqu'il s'agit d'un cercle parfait */
-		sxp = sx;
-		syp = sy;
-		/* Pour alpha */
-		dalpha = 0;
-	}
-	/* Pour le flux */
-	incertitudes->Flux = (valeurs->Flux / valeurs->Signal) * incertitudes->Signal +
-	(valeurs->Flux / valeurs->Sigma_X) * incertitudes->Sigma_X +
-	(valeurs->Flux / valeurs->Sigma_Y) * incertitudes->Sigma_Y +
-	(valeurs->Flux * valeurs->Ro / (1.0 - valeurs->Ro * valeurs->Ro)) * incertitudes->Ro;
-	valeurs->Sigma_1 = sxp;
-	valeurs->Sigma_2 = syp;
-	incertitudes->Sigma_1 = incertitudes->Sigma_X * valeurs->Sigma_1 / valeurs->Sigma_X;
-	incertitudes->Sigma_2 = incertitudes->Sigma_Y * valeurs->Sigma_2 / valeurs->Sigma_Y;
+    /* Calcul des valeurs principales et de leur incertitudes*/
+    if (sx != sy) {
+        alpha2 = atan2((2.0 * ro * sx * sy), (sx2 - sy2));
+        p = a + c;
+        q = (a - c) * cos(alpha2) + (2.0 * b * sin(alpha2));
+        /* Valeur principale */
+        alpha = alpha2 / 2.0;
+        sxp = 1.0 / sqrt((p + q) / 2.0);
+        syp = 1.0 / sqrt((p - q) / 2.0);
+        /* Pour alpha */
+        temp_a = (a - c) * (a - c) + (4 * b * b);
+        dalpha_da = fabs(-b / temp_a);
+        dalpha_dc = dalpha_da;
+        dalpha_db = fabs((a - c) / temp_a);
+        dalpha = (dalpha_da * da) + (dalpha_dc * dc) + (dalpha_db) * db;
+    }
+    else {
+        /* Valeur principale */
+        alpha = 0; /* en fait alpha n'a pas de sens, puisqu'il s'agit d'un cercle parfait */
+        sxp = sx;
+        syp = sy;
+        /* Pour alpha */
+        dalpha = 0;
+    }
+    /* Pour le flux */
+    incertitudes->Flux = (valeurs->Flux / valeurs->Signal) * incertitudes->Signal +
+    (valeurs->Flux / valeurs->Sigma_X) * incertitudes->Sigma_X +
+    (valeurs->Flux / valeurs->Sigma_Y) * incertitudes->Sigma_Y +
+    (valeurs->Flux * valeurs->Ro / (1.0 - valeurs->Ro * valeurs->Ro)) * incertitudes->Ro;
+    valeurs->Sigma_1 = sxp;
+    valeurs->Sigma_2 = syp;
+    incertitudes->Sigma_1 = incertitudes->Sigma_X * valeurs->Sigma_1 / valeurs->Sigma_X;
+    incertitudes->Sigma_2 = incertitudes->Sigma_Y * valeurs->Sigma_2 / valeurs->Sigma_Y;
 
-	/* Conversion en degres */
-	valeurs->Alpha = 57.29578 * alpha;
-	incertitudes->Alpha = 57.29578 * dalpha;
+    /* Conversion en degres */
+    valeurs->Alpha = 57.29578 * alpha;
+    incertitudes->Alpha = 57.29578 * dalpha;
 
-	gsl_matrix_free(mat_cov);
-	gsl_matrix_free(mat_x);
-	gsl_vector_free(vect_c);
-	gsl_vector_free(vect_s);
-	gsl_vector_free(vect_w);
+    gsl_matrix_free(mat_cov);
+    gsl_matrix_free(mat_x);
+    gsl_vector_free(vect_c);
+    gsl_vector_free(vect_s);
+    gsl_vector_free(vect_w);
 
 #ifdef TRACE_AJUSTEMENT
-	fclose (trace);
+    fclose (trace);
 #endif
 
-	return 0;
+    return 0;
 }
 
 

@@ -3,7 +3,7 @@
  * @brief : Méthodes de l'objet Fourier : traitement des fichiers image
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: fourier_images.cpp,v 1.3 2010-06-06 18:28:06 jacquesmichelet Exp $
+ * Mise à jour $Id: fourier_images.cpp,v 1.4 2010-06-19 16:58:42 jacquesmichelet Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
@@ -81,7 +81,7 @@ void Fourier::ouverture_image( const char * nom, Fourier::Parametres * param )
         CFileFormat format_source = CFile::loadFile( (char *)nom, TFLOAT, &pix_source, &kwds_source );
 
         if (pix_source->getPixelClass() != CLASS_GRAY)
-            throw CError("%s is not a monochromatic image", nom);
+            throw CError("%s is not a one-colour plane image", nom);
         TYPE_PIXELS * tab_pix_ptr = 0;
         pix_source->GetPixelsPointer( &tab_pix_ptr );
         TableauPixels * tab_pix = new TableauPixels( tab_pix_ptr );
@@ -102,13 +102,10 @@ void Fourier::ouverture_image( const char * nom, Fourier::Parametres * param )
             throw CError( "%s must be a 2-dimension image", nom );
 
         /* Elimination des images couleurs */
-        kwd = kwds_source->FindKeyword("RAWCOLOR");
+        kwd = kwds_source->FindKeyword("NAXIS3");
         if ( kwd )
         {
-            if ( kwd->GetIntValue() != 1 )
-            {
-                throw CError( "%s must be a one colour (B&W) channel image", nom );
-            }
+            throw CError( "%s is not a one-colour plane image", nom );
         }
 
         /* Récupération des largeur et hauteur de l'image */
