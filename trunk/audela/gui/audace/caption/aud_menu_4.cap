@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_4.cap
-# Mise a jour $Id: aud_menu_4.cap,v 1.19 2010-06-06 13:55:59 jacquesmichelet Exp $
+# Mise a jour $Id: aud_menu_4.cap,v 1.20 2010-06-19 08:32:47 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -423,11 +423,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,ond_morlet)                  "Bølge af type Morlet"
    set caption(audace,menu,ond_mexicain)                "Mexicansk hat bølgetype"
    set caption(audace,menu,log)                         "Logaritme"
-   set caption(audace,menu,tfd)                         "# Discrete Fourier Transform"
-   set caption(audace,menu,tfdi)                        "# Inverse Discrete Fourier Transform"
-   set caption(audace,menu,acorr)                       "# Autocorrelation"
-   set caption(audace,menu,icorr)                       "# Cross-correlation"
-   set caption(audace,menu,convolution)                 "# Convolution"
+   set caption(audace,menu,tfd)                         "Diskret Fourier tranformation"
+   set caption(audace,menu,tfdi)                        "Invers diskret Fourier tranformation"
+   set caption(audace,menu,acorr)                       "Autokorrelation"
+   set caption(audace,menu,icorr)                       "Kryds-korrelation"
+   set caption(audace,menu,convolution)                 "Convolution"
 
    set caption(traiteFilters,image_affichee)            "På det viste billede"
    set caption(traiteFilters,_image_affichee_)          "(på det viste billede)"
@@ -460,19 +460,19 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,coef_invalide)             "Ugyldig koefficient."
    set caption(traiteFilters,coef_invalides)            "Ugyldige koefficienter."
 
-   set caption(traiteFilters,tfd_sortie1)               "# Output Image \n (modulus or real part):"
-   set caption(traiteFilters,tfd_sortie2)               "# Output Image (argument \n or imaginary part):"
-   set caption(traiteFilters,tfd_entree1)               "# Input Image \n (modulus or real part):"
-   set caption(traiteFilters,tfd_entree2)               "# Input Image (argument \n or imaginary part):"
-   set caption(traiteFilters,icorr_entree1)             "# Input Image #1:"
-   set caption(traiteFilters,icorr_entree2)             "# Input Image #2:"
-   set caption(traiteFilters,tfd_ordre)                 "# Order"
-   set caption(traiteFilters,tfd_centre)                "# Centered"
-   set caption(traiteFilters,tfd_normal)                "# Regular"
-   set caption(traiteFilters,tfd_format)                "# Format"
-   set caption(traiteFilters,tfd_polaire)               "# Polar (modulus + argument)"
-   set caption(traiteFilters,tfd_cartesien)             "# Cartesian (real + imaginary)"
-   set caption(traiteFilters,tfd_images_differentes)    "# The output files must have different names"
+   set caption(traiteFilters,tfd_sortie1)               "Output billede \n (modulus eller reel del):"
+   set caption(traiteFilters,tfd_sortie2)               "Output billede (argument \n eller imaginær del):"
+   set caption(traiteFilters,tfd_entree1)               "Input billede \n (modulus eller reel del):"
+   set caption(traiteFilters,tfd_entree2)               "Input billede(argument \n eller imaginær del):"
+   set caption(traiteFilters,icorr_entree1)             "Input billede # 1:"
+   set caption(traiteFilters,icorr_entree2)             "Input billede # 2:"
+   set caption(traiteFilters,tfd_ordre)                 "Rækkefølge"
+   set caption(traiteFilters,tfd_centre)                "Centreret"
+   set caption(traiteFilters,tfd_normal)                "Normal"
+   set caption(traiteFilters,tfd_format)                "Format"
+   set caption(traiteFilters,tfd_polaire)               "Polær (modulus + argument)"
+   set caption(traiteFilters,tfd_cartesien)             "Kartesisk (reel + imaginær)"
+   set caption(traiteFilters,tfd_images_differentes)    "Output-filer skal have forskellige navne"
 
    set caption(traiteFilters,traitement_en_cours)       "Processing er aktiv"
 
