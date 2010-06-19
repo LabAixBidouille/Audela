@@ -2,7 +2,7 @@
 # Fichier : modpoi_main.tcl
 # Description : fenetre principale
 # Auteur : Michel Pujol
-# Mise à jour $Id: modpoi_main.tcl,v 1.7 2010-06-08 16:00:48 michelpujol Exp $
+# Mise à jour $Id: modpoi_main.tcl,v 1.8 2010-06-19 10:40:06 robertdelmas Exp $
 #
 
 namespace eval ::modpoi2::main {
@@ -162,7 +162,7 @@ proc ::modpoi2::main::fillConfigPage { frm visuNo } {
 
    TitleFrame $frm.mount  -borderwidth 2 -relief ridge -text $::caption(modpoi2,currrentModel)
       #--- monture
-      label $frm.mount.mountLabel -text "Monture"
+      label $frm.mount.mountLabel -text $::caption(modpoi2,monture)
       pack $frm.mount.mountLabel  -in [$frm.mount getframe] -anchor w -side left -padx 0
 
       entry $frm.mount.mountName -state readonly \
@@ -170,7 +170,7 @@ proc ::modpoi2::main::fillConfigPage { frm visuNo } {
       pack $frm.mount.mountName  -in [$frm.mount getframe] -anchor w -side left -padx 0
 
       #--- modele appliqué à la monture
-      label $frm.mount.modelLabel -text "Modèle"
+      label $frm.mount.modelLabel -text $::caption(modpoi2,modele)
       pack $frm.mount.modelLabel  -in [$frm.mount getframe] -anchor w -side left -padx 0
 
       entry $frm.mount.modelName -state readonly \

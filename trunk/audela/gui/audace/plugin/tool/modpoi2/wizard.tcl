@@ -2,7 +2,7 @@
 # Fichier : wizard.tcl
 # Description : pipeline de pointage des etoiles
 # Auteur : Michel Pujol
-# Mise à jour $Id: wizard.tcl,v 1.10 2010-06-08 08:03:42 michelpujol Exp $
+# Mise à jour $Id: wizard.tcl,v 1.11 2010-06-19 10:40:23 robertdelmas Exp $
 #
 
 namespace eval ::modpoi2::wizard {
@@ -44,21 +44,21 @@ proc ::modpoi2::wizard::modpoi_wiz { visuNo { starList "" } } {
    if { ! [ info exists ::conf(modpoi,wizard,centering,nbmean) ] }   { set ::conf(modpoi,wizard,centering,nbmean)   "1" }
 
    #--- Initialisation des variables
-   set private(stars,haNb)   $::conf(modpoi,wizard,haNb)
-   set private(stars,deNb)   $::conf(modpoi,wizard,deNb)
-   set private(minMagnitude) $::conf(modpoi,wizard,minMagnitude)
-   set private(maxMagnitude) $::conf(modpoi,wizard,maxMagnitude)
-   set private(symbols)      "IH ID NP CH ME MA FO HF DAF TF"
-   set private(home)         $::conf(posobs,observateur,gps)
-   set private(horizons)     [::horizon::getHorizon $private(home)]
-   set private(amerIndex)    "0"
+   set private(stars,haNb)           $::conf(modpoi,wizard,haNb)
+   set private(stars,deNb)           $::conf(modpoi,wizard,deNb)
+   set private(minMagnitude)         $::conf(modpoi,wizard,minMagnitude)
+   set private(maxMagnitude)         $::conf(modpoi,wizard,maxMagnitude)
+   set private(symbols)              "IH ID NP CH ME MA FO HF DAF TF"
+   set private(home)                 $::conf(posobs,observateur,gps)
+   set private(horizons)             [::horizon::getHorizon $private(home)]
+   set private(amerIndex)            "0"
    #--- Mode de centrage (automatique ou manuel)
    set private(centering,check)      0
    set private(centering,star_index) 0
    set private(centering,accuracy)   $::conf(modpoi,wizard,centering,accuracy)
    #--- Initial delay of slew for calibration
-   set private(centering,t0)     $::conf(modpoi,wizard,centering,t0)
-   set private(centering,nbmean) "$::conf(modpoi,wizard,centering,nbmean)"
+   set private(centering,t0)         $::conf(modpoi,wizard,centering,t0)
+   set private(centering,nbmean)     "$::conf(modpoi,wizard,centering,nbmean)"
 
    if {$private(centering,check)==0} {
        set private(centering,mode) manu
@@ -307,7 +307,7 @@ proc ::modpoi2::wizard::modpoi_wiz1b { } {
 
    #--- Check if centering will be auto or not
    frame $private(g,base).fra_auto
-      checkbutton $private(g,base).fra_auto.chk -text "$caption(modpoi2,wiz1b,acqauto)" \
+      checkbutton $private(g,base).fra_auto.chk -text $caption(modpoi2,wiz1b,acqauto) \
          -highlightthickness 0 -variable ::modpoi2::wizard::private(centering,check) \
          -command { ::modpoi2::wizard::checkCamera }
       pack $private(g,base).fra_auto.chk -side left -padx 0 -pady 3 -fill x -anchor center
@@ -561,7 +561,7 @@ proc ::modpoi2::wizard::modpoi_wiz2 { } {
    set private(nbSelected) 0
 
    #--- liste des points d'amer
-   TitleFrame $private(g,base).amer  -borderwidth 2 -relief ridge -text $::caption(modpoi2,starList)
+   TitleFrame $private(g,base).amer -borderwidth 2 -relief ridge -text $::caption(modpoi2,starList)
       set tkAmerTable $private(g,base).amer.table
       scrollbar $private(g,base).amer.xsb -command "$tkAmerTable xview" -orient horizontal
       scrollbar $private(g,base).amer.ysb -command "$tkAmerTable yview"
@@ -631,21 +631,21 @@ proc ::modpoi2::wizard::modpoi_wiz2 { } {
       grid  $private(g,base).magnitude.maxValue -in [$private(g,base).magnitude getframe] -row 1 -column 1 -sticky w
 
       #--- nb amer
-      label $private(g,base).magnitude.amerLabel -text "Nb points d'amer"
+      label $private(g,base).magnitude.amerLabel -text $::caption(modpoi2,wiz2,nbrePointAmer)
       grid  $private(g,base).magnitude.amerLabel -in [$private(g,base).magnitude getframe] -row 0 -column 3 -sticky w
       entry $private(g,base).magnitude.amerValue -width 8 -justify center -state readonly \
         -textvariable ::modpoi2::wizard::private(stars,nb)
       grid  $private(g,base).magnitude.maxValue -in [$private(g,base).magnitude getframe] -row 0 -column 4 -sticky w
 
       #--- nb mesured
-      label $private(g,base).magnitude.mesuredLabel -text "Nb étoiles mesurées"
+      label $private(g,base).magnitude.mesuredLabel -text $::caption(modpoi2,wiz2,nbreEtoileMes)
       grid  $private(g,base).magnitude.mesuredLabel -in [$private(g,base).magnitude getframe] -row 1 -column 3 -sticky w
       entry $private(g,base).magnitude.mesuredValue -width 8 -justify center -state readonly \
         -textvariable ::modpoi2::wizard::private(nbMesured)
       grid  $private(g,base).magnitude.mesuredValue -in [$private(g,base).magnitude getframe] -row 1 -column 4 -sticky w
 
       #--- nb selected
-      label $private(g,base).magnitude.selectedLabel -text "Nb étoiles sélectionnées"
+      label $private(g,base).magnitude.selectedLabel -text $::caption(modpoi2,wiz2,nbreEtoileSelect)
       grid  $private(g,base).magnitude.selectedLabel -in [$private(g,base).magnitude getframe] -row 2 -column 3 -sticky w
       entry $private(g,base).magnitude.selectedValue -width 8 -justify center -state readonly \
         -textvariable ::modpoi2::wizard::private(nbSelected)
@@ -842,7 +842,6 @@ proc ::modpoi2::wizard::onSelectCheckButton { w k} {
 
 }
 
-
 #------------------------------------------------------------------------------
 # deleteCheckbutton
 #    supprime un checkbutton dans la table
@@ -944,7 +943,7 @@ proc ::modpoi2::wizard::modpoi_wiz3 { amerIndex } {
    wm title $private(g,base) "$caption(modpoi2,$wiz,title) [expr $amerIndex +1]"
    #--- Title
    label $private(g,base).lab_title2 \
-      -text "$caption(modpoi2,$wiz,title2) [expr $amerIndex +1]: Az=$amerAz  Elev=$amerEl" \
+      -text "$caption(modpoi2,$wiz,title2) [expr $amerIndex +1] : $caption(modpoi2,azimut) $amerAz - $caption(modpoi2,elevation) $amerEl" \
       -borderwidth 2 -padx 20 -pady 10
    pack $private(g,base).lab_title2 \
       -side top -anchor center \
@@ -1068,7 +1067,6 @@ proc ::modpoi2::wizard::modpoi_wiz3 { amerIndex } {
          return
       }
 
-
       #--- je charge le catalogue hip_main.dat
       set hip_catalog [mc_readhip $fileName -double_stars 0 -plx_max 100 -mu_max 100 \
          -mag_min $::conf(modpoi,wizard,minMagnitude) \
@@ -1183,7 +1181,7 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
    wm title $private(g,base) "$caption(modpoi2,wiz4,title) $amerIndex: $starname"
    #--- Title
    label $private(g,base).lab_title2 \
-      -text "$caption(modpoi2,wiz4,title2) [expr $amerIndex +1]: HIP $starname" \
+      -text "$caption(modpoi2,wiz4,title2) [expr $amerIndex +1] : HIP $starname" \
       -borderwidth 2 -padx 20 -pady 10
    pack $private(g,base).lab_title2 \
       -side top -anchor center \
@@ -1195,7 +1193,7 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
       label $private(g,base).coord.correctedLabel -text $::caption(modpoi2,wiz4,coordTelescope)
       label $private(g,base).coord.diffLabel      -text $::caption(modpoi2,wiz4,diff)
 
-      label $private(g,base).coord.raLabel      -width  4 -text "RA"
+      label $private(g,base).coord.raLabel      -width  4 -text $::caption(modpoi2,wiz4,RA)
       entry $private(g,base).coord.catalogueRa  -width 12 -state readonly -justify center \
          -textvariable ::modpoi2::wizard::private(star$amerIndex,raCat)
       entry $private(g,base).coord.telescopeRa  -width 12 -state readonly -justify center \
@@ -1205,7 +1203,7 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
       entry $private(g,base).coord.diffRa       -width  8 -state readonly -justify center \
          -textvariable ::modpoi2::wizard::private(deltah)
 
-      label $private(g,base).coord.decLabel     -width  4 -text "DEC"
+      label $private(g,base).coord.decLabel     -width  4 -text $::caption(modpoi2,wiz4,Dec)
       entry $private(g,base).coord.catalogueDec -width 12 -state readonly -justify center \
          -textvariable ::modpoi2::wizard::private(star$amerIndex,deCat)
       entry $private(g,base).coord.telescopeDec -width 12 -state readonly -justify center \
@@ -1240,7 +1238,7 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
 
    #--- bouton GOTO / STOP_GOTO
    button $private(g,base).goto -borderwidth 2 -anchor center \
-     -text caption(modpoi2,wiz4,goto)
+     -text $caption(modpoi2,wiz4,goto)
    pack $private(g,base).goto -side top -anchor center -padx 5 -pady 3 -ipadx 4 -ipady 4 -expand 0
 
    #--- Label for the comment
@@ -1265,7 +1263,7 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
       pack $private(g,base).fra.n -side top -fill x
       #--- Button-design 'N'
       button $private(g,base).fra.n.canv1PoliceInvariant -borderwidth 4 \
-         -text "$caption(modpoi2,north)" \
+         -text $caption(modpoi2,north) \
          -width 2 \
          -anchor center \
          -relief ridge
@@ -1275,7 +1273,7 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
       pack $private(g,base).fra.we -in $private(g,base).fra -side top -fill x
       #--- Button-design 'E'
       button $private(g,base).fra.we.canv1PoliceInvariant -borderwidth 4 \
-         -text "$caption(modpoi2,east)" \
+         -text $caption(modpoi2,east) \
          -width 2 \
          -anchor center \
          -relief ridge
@@ -1286,7 +1284,7 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
       pack $private(g,base).fra.we.labPoliceInvariant -in $private(g,base).fra.we -expand 1 -side left
       #--- Button-design 'W'
       button $private(g,base).fra.we.canv2PoliceInvariant -borderwidth 4 \
-         -text "$caption(modpoi2,west)" \
+         -text $caption(modpoi2,west) \
          -width 2 \
          -anchor center \
          -relief ridge
@@ -1296,7 +1294,7 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
       pack $private(g,base).fra.s -in $private(g,base).fra -side top -fill x
       #--- Button-design 'S'
       button $private(g,base).fra.s.canv1PoliceInvariant -borderwidth 4 \
-         -text "$caption(modpoi2,south)" \
+         -text $caption(modpoi2,south) \
          -width 2 \
          -anchor center \
          -relief ridge
@@ -1792,8 +1790,8 @@ proc ::modpoi2::wizard::displayMap { visuNo } {
    set x [lindex $private(horizons) 0]
    set y [lindex $private(horizons) 1]
    ::plotxy::plot $x $y r
-   ::plotxy::xlabel "azimuth (degrees)"
-   ::plotxy::ylabel "elevation (degrees)"
+   ::plotxy::xlabel "$::caption(modpoi2,azimutDeg)"
+   ::plotxy::ylabel "$::caption(modpoi2,elevationDeg)"
    ::plotxy::position {20 20 800 400}
 
    $::plotxy(fig$figureNo,parent).xy axis configure x -stepsize 30
@@ -1809,7 +1807,6 @@ proc ::modpoi2::wizard::hideMap { visuNo } {
 
 proc ::modpoi2::wizard::onButtonPressMap { x y } {
    variable private
-
 
    if { [winfo exists $private(g,base).amer.table ] } {
       #--- je cherche l'element qui est pres du curseur de la souris
@@ -1840,7 +1837,6 @@ proc ::modpoi2::wizard::onButtonPressMap { x y } {
       }
    }
 }
-
 
 #------------------------------------------------------------
 # showSelectedAmer
