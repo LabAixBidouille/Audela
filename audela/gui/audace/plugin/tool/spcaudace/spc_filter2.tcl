@@ -1,6 +1,6 @@
 
 
-# Mise a jour $Id: spc_filter2.tcl,v 1.9 2010-06-13 12:54:02 bmauclaire Exp $
+# Mise a jour $Id: spc_filter2.tcl,v 1.10 2010-06-19 14:40:19 bmauclaire Exp $
 # Mise a jour Patrick Lailly 29 mai 2009
 
 
@@ -932,10 +932,10 @@ proc spc_piecewiselinearfilter { args } {
       buf$audace(bufNo) save "$audace(rep_images)/${filename}_lin$conf(extension,defaut)"
       buf$audace(bufNo) bitpix short
       ::console::affiche_resultat "Fichier fits sauvé sous ${filename}_lin$conf(extension,defaut)\n"
-      spc_passebas ${filename}_lin$conf(extension,defaut) 3
+      set file_result [ spc_passebas ${filename}_lin$conf(extension,defaut) 3 ]
       file delete -force "$audace(rep_images)/${filename}_lin$conf(extension,defaut)"
-      return ${filename}_lin_pbas$conf(extension,defaut)
-		
+      # return ${filename}_lin_pbas$conf(extension,defaut)
+      return $file_result
    } else {
       ::console::affiche_erreur "Usage: spc_piecewiselinearfilter fichier_profil.fit ? coef_extension ? poids regularisation ? forgetlambda.dat ? nechant ? liste_regul ? visualisation (o/n)? \n\n"
    }
