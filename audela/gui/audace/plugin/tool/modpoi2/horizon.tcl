@@ -2,7 +2,7 @@
 # Fichier : horizon.tcl
 # Description : fabrication de la ligne d'horizon
 # Auteur : Michel Pujol
-# Mise à jour $Id: horizon.tcl,v 1.3 2010-05-26 06:21:33 robertdelmas Exp $
+# Mise à jour $Id: horizon.tcl,v 1.4 2010-06-19 10:39:47 robertdelmas Exp $
 #
 
 namespace eval ::horizon {
@@ -15,36 +15,14 @@ namespace eval ::horizon {
 #------------------------------------------------------------
 proc ::horizon::run { visuNo {tkbase ""} } {
    variable private
-   global caption
-
-   set caption(horizon,title) "Horizon"
-   set caption(horizon,selectHorizon)                "Choix de l'horizon"
-   set caption(horizon,createHorizon)                "Nouvel l'horizon"
-   set caption(horizon,copyHorizon)                  "Copier"
-   set caption(horizon,deleteHorizon)                "Supprimer"
-   set caption(horizon,importHorizon)                "Importer"
-   set caption(horizon,exportHorizon)                "Exporter"
-   set caption(horizon,horizonName)                  "Nom"
-   set caption(horizon,errorEmptyName)               "Le nom est vide"
-   set caption(horizon,errorInvalidName)             "Le nom contient un caractère interdit"
-   set caption(horizon,errorExistingName)            "Le nom est déjà utilisé"
-   set caption(horizon,errorDefaultName)             "Cette horizon ne peut pas être supprimée"
-   set caption(horizon,confirmDeleteHorizon)         "Suppression de la horizon"
-   set caption(horizon,errorBusyHorizon)             "Cette horizon est en cours d'utilisation par un traitement."
-   set caption(horizon,importHorizonTitle)           "Importer une horizon"
-   set caption(horizon,configAlreadyExist)           "L'horizon \"%s\" existe déjà.\n Voulez-vous la remplacer ?"
-   set caption(horizon,exportHorizonTitle)           "Exporter un horizon"
-   set caption(horizon,coordinate)                   "Coordonnées"
-   set caption(horizon,azimut)                       "Azimut"
-   set caption(horizon,elevation)                    "Hauteur"
 
    #--- Creation des variables si elles n'existaient pas
-   if { ! [ info exists ::conf(horizon,position) ] }             { set ::conf(horizon,position)            "450x200+250+75" }
-   if { ! [ info exists ::conf(horizon,currentHorizon) ] }       { set ::conf(horizon,currentHorizon)      "default" }
+   if { ! [ info exists ::conf(horizon,position) ] }            { set ::conf(horizon,position)            "450x200+250+75" }
+   if { ! [ info exists ::conf(horizon,currentHorizon) ] }      { set ::conf(horizon,currentHorizon)      "default" }
 
-   if { ! [ info exists ::conf(horizon,default,name) ] }         { set ::conf(horizon,default,name)        "default" }
-   if { ! [ info exists ::conf(horizon,default,type) ] }         { set ::conf(horizon,default,type)        "ALTAZ" }
-   if { ! [ info exists ::conf(horizon,default,coordinates) ] }  { set ::conf(horizon,default,coordinates) {{0 0}} }
+   if { ! [ info exists ::conf(horizon,default,name) ] }        { set ::conf(horizon,default,name)        "default" }
+   if { ! [ info exists ::conf(horizon,default,type) ] }        { set ::conf(horizon,default,type)        "ALTAZ" }
+   if { ! [ info exists ::conf(horizon,default,coordinates) ] } { set ::conf(horizon,default,coordinates) {{0 0}} }
 
    set coordinates ""
    lappend coordinates [list  90 [mc_angle2deg 23h00] [mc_angle2deg 13h00]]
@@ -62,9 +40,9 @@ proc ::horizon::run { visuNo {tkbase ""} } {
    lappend coordinates [list -30 [mc_angle2deg 22h00] [mc_angle2deg  3h10]]
    lappend coordinates [list -40 [mc_angle2deg 23h00] [mc_angle2deg  2h30]]
 
-   if { ! [ info exists ::conf(horizon,OHP_T193,name) ] }         { set ::conf(horizon,OHP_T193,name)        "OHP T193" }
-   if { ! [ info exists ::conf(horizon,OHP_T193,type) ] }         { set ::conf(horizon,OHP_T193,type)        "HADEC" }
-   if { ! [ info exists ::conf(horizon,OHP_T193,coordinates) ] }  { set ::conf(horizon,OHP_T193,coordinates) $coordinates }
+   if { ! [ info exists ::conf(horizon,OHP_T193,name) ] }        { set ::conf(horizon,OHP_T193,name)        "OHP T193" }
+   if { ! [ info exists ::conf(horizon,OHP_T193,type) ] }        { set ::conf(horizon,OHP_T193,type)        "HADEC" }
+   if { ! [ info exists ::conf(horizon,OHP_T193,coordinates) ] } { set ::conf(horizon,OHP_T193,coordinates) $coordinates }
 
    set private($visuNo,this)   ".audace.horizon_$visuNo"
 
@@ -85,7 +63,7 @@ proc ::horizon::run { visuNo {tkbase ""} } {
 proc ::horizon::getLabel { } {
    global caption
 
-   return $::caption(horizon,title)
+   return $::caption(modpoi2,horizon,title)
 }
 
 #------------------------------------------------------------
@@ -122,12 +100,12 @@ proc ::horizon::fillConfigPage { frm visuNo } {
    set private($visuNo,frm)      $frm
 
    #--- Frame select config
-   TitleFrame $frm.config  -borderwidth 2 -relief ridge -text "$::caption(horizon,selectHorizon)"
+   TitleFrame $frm.config -borderwidth 2 -relief ridge -text $::caption(modpoi2,horizon,selectHorizon)
       #--- Liste des horizons
       set horizonList [::horizon::getHorizonList]
 
       #--- Bouton create new horizon
-      Button $frm.config.create -text "$::caption(horizon,createHorizon)" -command "::horizon::createHorizon $visuNo"
+      Button $frm.config.create -text $::caption(modpoi2,horizon,createHorizon) -command "::horizon::createHorizon $visuNo"
       pack $frm.config.create -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
 
       #--- j'affiche la liste des horizons
@@ -152,24 +130,24 @@ proc ::horizon::fillConfigPage { frm visuNo } {
       $frm.config.combo setvalue "@$index"
 
       #--- Bouton copy horizon
-      Button $frm.config.copy -text "$::caption(horizon,copyHorizon)" -command "::horizon::copyHorizon $visuNo"
+      Button $frm.config.copy -text $::caption(modpoi2,horizon,copyHorizon) -command "::horizon::copyHorizon $visuNo"
       pack $frm.config.copy -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
 
       #--- Bouton delete horizon
-      Button $frm.config.delete -text "$::caption(horizon,deleteHorizon)" -command "::horizon::deleteHorizon $visuNo"
+      Button $frm.config.delete -text $::caption(modpoi2,horizon,deleteHorizon) -command "::horizon::deleteHorizon $visuNo"
       pack $frm.config.delete -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
 
       #--- Bouton import horizon
-      Button $frm.config.import -text "$::caption(horizon,importHorizon)" -command "::horizon::importHorizon $visuNo" -state disabled
+      Button $frm.config.import -text $::caption(modpoi2,horizon,importHorizon) -command "::horizon::importHorizon $visuNo" -state disabled
       pack $frm.config.import -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
 
       #--- Bouton export horizon
-      Button $frm.config.export -text "$::caption(horizon,exportHorizon)" -command "::horizon::exportHorizon $visuNo" -state disabled
+      Button $frm.config.export -text $::caption(modpoi2,horizon,exportHorizon) -command "::horizon::exportHorizon $visuNo" -state disabled
       pack $frm.config.export -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
 
    pack $frm.config -side top -fill x -expand 0
 
-   frame $frm.type  -borderwidth 2 -relief ridge
+   frame $frm.type -borderwidth 2 -relief ridge
       label $frm.type.label -text type
       pack $frm.type.label -side left -fill none -expand 0 -padx 2
       entry $frm.type.value -textvariable ::horizon::private(type) -state readonly
@@ -179,7 +157,7 @@ proc ::horizon::fillConfigPage { frm visuNo } {
    ###set private($visuNo,coordTable) $frm.coord.table
    set private($visuNo,coordText) $frm.coord.text
 
-   TitleFrame $frm.coord  -borderwidth 2 -relief ridge -text $::caption(horizon,coordinate)
+   TitleFrame $frm.coord  -borderwidth 2 -relief ridge -text $::caption(modpoi2,horizon,coordinate)
       scrollbar $frm.coord.ysb -command "$private($visuNo,coordText) yview"
       scrollbar $frm.coord.xsb -command "$private($visuNo,coordText) xview" -orient horizontal
 
@@ -189,8 +167,8 @@ proc ::horizon::fillConfigPage { frm visuNo } {
       ####--- Table des reference
       ###::tablelist::tablelist $private($visuNo,coordTable) \
       ###   -columns [list \
-      ###       0 $::caption(horizon,azimut) left \
-      ###       0 $::caption(horizon,elevation) left] \
+      ###       0 $::caption(modpoi2,horizon,azimut) left \
+      ###       0 $::caption(modpoi2,horizon,elevation) left] \
       ###   -xscrollcommand [list $frm.coord.xsb set] \
       ###   -yscrollcommand [list $frm.coord.ysb set] \
       ###   -exportselection 0 \
@@ -304,7 +282,7 @@ proc ::horizon::createHorizon { visuNo } {
    variable private
 
    set parent [winfo toplevel $private($visuNo,frm)]
-   set result [::horizon::nameDialog::run $parent $visuNo $::caption(horizon,createHorizon)]
+   set result [::horizon::nameDialog::run $parent $visuNo $::caption(modpoi2,horizon,createHorizon)]
    if { $result == 0 } {
       #--- j'abandonne la creation
       return
@@ -314,7 +292,7 @@ proc ::horizon::createHorizon { visuNo } {
 
    #--- je verifie que le nom n'est pas vide
    if { $horizonName== "" } {
-      tk_messageBox -message  $::caption(horizon,errorEmptyName) -icon error -title $::caption(horizon,title)
+      tk_messageBox -message  $::caption(modpoi2,horizon,errorEmptyName) -icon error -title $::caption(modpoi2,horizon,title)
       return
    }
 
@@ -323,7 +301,7 @@ proc ::horizon::createHorizon { visuNo } {
 
    #--- je verifie que cet horizon n'existe pas deja
    if { [info exists ::conf(horizon,$horizonId,name)] == 1 } {
-      tk_messageBox -message  $::caption(horizon,errorExistingName) -icon error -title $::caption(horizon,title)
+      tk_messageBox -message  $::caption(modpoi2,horizon,errorExistingName) -icon error -title $::caption(modpoi2,horizon,title)
      return
    }
 
@@ -359,14 +337,14 @@ proc ::horizon::deleteHorizon { visuNo } {
    #--- je verifie que ce n'est pas la configuration par defaut
    if { $horizonId == "default" } {
       #--- j'abandonne la suppression s'il s'agit de la configuration par defaut
-      tk_messageBox -message  $::caption(horizon,errorDefaultName) \
-         -icon error -title $::caption(horizon,title)
+      tk_messageBox -message  $::caption(modpoi2,horizon,errorDefaultName) \
+         -icon error -title $::caption(modpoi2,horizon,title)
       return
    }
 
    #--- je demande la confirmation de la suppression
-   set result [tk_messageBox -message "$::caption(horizon,confirmDeleteConfig): $::conf(horizon,$horizonId,name)" \
-       -type okcancel -icon question -title $::caption(horizon,title)]
+   set result [tk_messageBox -message "$::caption(modpoi2,horizon,confirmDeleteConfig): $::conf(horizon,$horizonId,name)" \
+       -type okcancel -icon question -title $::caption(modpoi2,horizon,title)]
 
    if { $result == "ok" } {
       #--- je supprime le nom de la configuration dans la combo
@@ -521,7 +499,7 @@ proc ::horizon::nameDialog::run { tkbase visuNo title } {
 proc ::horizon::nameDialog::getLabel { } {
    variable private
 
-   return "$::caption(horizon,title) - $private(title)"
+   return "$::caption(modpoi2,horizon,title) - $private(title)"
 }
 
 #------------------------------------------------------------
@@ -566,12 +544,12 @@ proc ::horizon::nameDialog::fillConfigPage { frm visuNo } {
    pack $frm.name  -side left -fill x -expand 1 -padx 2
 
    radiobutton $frm.altaz -highlightthickness 0 -padx 0 -pady 0 -state normal \
-      -text "ALTAZ" \
+      -text $::caption(modpoi2,horizon,ALTAZ) \
       -value "ALTAZ" \
       -variable ::horizon::nameDialog::private(type)
 
    radiobutton $frm.hadec -highlightthickness 0 -padx 0 -pady 0 -state normal \
-      -text "HADEC" \
+      -text $::caption(modpoi2,horizon,HADEC) \
       -value "HADEC" \
       -variable ::horizon::nameDialog::private(type)
 

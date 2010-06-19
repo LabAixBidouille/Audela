@@ -1,6 +1,6 @@
 #
 # Fichier : modpoi2.Hcap
-# Mise a jour $Id: modpoi2.cap,v 1.4 2010-06-08 08:04:15 michelpujol Exp $
+# Mise a jour $Id: modpoi2.cap,v 1.5 2010-06-19 10:40:39 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -238,6 +238,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(modpoi2,closeWindow,message)   "Voulez-vous enregistrer le modèle de pointage ?"
    set caption(modpoi2,modele_appliquer)      "Appliquer ce modèle à la monture"
    set caption(modpoi2,currrentModel)         "Modèle en cours d'utilsation par la monture"
+   set caption(modpoi2,monture)               "Monture"
+   set caption(modpoi2,modele)                "Modèle"
 
    set caption(modpoi2,modele,editer)         "Pour éditer un modèle de pointage, il faut d'abord l'ouvrir."
 
@@ -296,6 +298,9 @@ Aud'ACE se charge de ce calcul pour lui."
    set caption(modpoi2,wiz2,title2)           "Séquence de mesure des écarts entre la position\npointée et la position observée"
    set caption(modpoi2,wiz2,minMagnitude)     "Magnitude min"
    set caption(modpoi2,wiz2,maxMagnitude)     "Magnitude max"
+   set caption(modpoi2,wiz2,nbrePointAmer)    "Nombre de points d'amer"
+   set caption(modpoi2,wiz2,nbreEtoileMes)    "Nombre d'étoiles mesurées"
+   set caption(modpoi2,wiz2,nbreEtoileSelect) "Nombre d'étoiles sélectionnées"
    set caption(modpoi2,wiz2,star)             "Etoile"
    set caption(modpoi2,wiz2,next)             "Calcul >>"
    set caption(modpoi2,wiz2,prev)             "<< Précédent"
@@ -340,6 +345,8 @@ des directions :"
    set caption(modpoi2,wiz4,CoordNow)         "Coord. étoile\nactuelle"
    set caption(modpoi2,wiz4,coordTelescope)   "Coord. telescope\nactuelle"
    set caption(modpoi2,wiz4,diff)             "Ecart (arcmin)\ntelescope - étoile"
+   set caption(modpoi2,wiz4,RA)               "AD"
+   set caption(modpoi2,wiz4,Dec)              "Déc."
 
    set caption(modpoi2,wiz5,title)            "Modèle de pointage : Résultat des calculs"
    set caption(modpoi2,wiz5,title1)           "Modèle de pointage : Edition du modèle en cours"
@@ -356,6 +363,11 @@ des directions :"
    set caption(modpoi2,wiz5,TF)               "flexion du tube"
    set caption(modpoi2,wiz5,next)             "Terminer >>"
    set caption(modpoi2,wiz5,prev)             "<< Précédent"
+
+   set caption(modpoi2,azimutDeg)             "Azimut (degrés)"
+   set caption(modpoi2,elevationDeg)          "Hauteur (degrés)"
+   set caption(modpoi2,azimut)                "Azimut ="
+   set caption(modpoi2,elevation)             "Hauteur ="
 
    set caption(modpoi2,north)                 "N"
    set caption(modpoi2,east)                  "E"
@@ -375,6 +387,29 @@ des directions :"
    set caption(modpoi2,parcourir)             "..."
    set caption(modpoi2,name_modpoi)           "Nom du modèle de pointage"
    set caption(modpoi2,ok)                    "OK"
+
+   set caption(modpoi2,horizon,title)                "Horizon"
+   set caption(modpoi2,horizon,selectHorizon)        "Choix de l'horizon"
+   set caption(modpoi2,horizon,createHorizon)        "Nouvel l'horizon"
+   set caption(modpoi2,horizon,copyHorizon)          "Copier"
+   set caption(modpoi2,horizon,deleteHorizon)        "Supprimer"
+   set caption(modpoi2,horizon,importHorizon)        "Importer"
+   set caption(modpoi2,horizon,exportHorizon)        "Exporter"
+   set caption(modpoi2,horizon,horizonName)          "Nom"
+   set caption(modpoi2,horizon,errorEmptyName)       "Le nom est vide"
+   set caption(modpoi2,horizon,errorInvalidName)     "Le nom contient un caractère interdit"
+   set caption(modpoi2,horizon,errorExistingName)    "Le nom est déjà utilisé"
+   set caption(modpoi2,horizon,errorDefaultName)     "Cette horizon ne peut pas être supprimée"
+   set caption(modpoi2,horizon,confirmDeleteHorizon) "Suppression de la horizon"
+   set caption(modpoi2,horizon,errorBusyHorizon)     "Cette horizon est en cours d'utilisation par un traitement."
+   set caption(modpoi2,horizon,importHorizonTitle)   "Importer une horizon"
+   set caption(modpoi2,horizon,configAlreadyExist)   "L'horizon \"%s\" existe déjà.\n Voulez-vous la remplacer ?"
+   set caption(modpoi2,horizon,exportHorizonTitle)   "Exporter un horizon"
+   set caption(modpoi2,horizon,coordinate)           "Coordonnées"
+   set caption(modpoi2,horizon,azimut)               "Azimut"
+   set caption(modpoi2,horizon,elevation)            "Hauteur"
+   set caption(modpoi2,horizon,ALTAZ)                "ALTAZ"
+   set caption(modpoi2,horizon,HADEC)                "HADEC"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
