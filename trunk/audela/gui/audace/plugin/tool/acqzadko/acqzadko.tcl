@@ -2,7 +2,7 @@
 # Fichier : acqzadko.tcl
 # Description : Outil d'acquisition
 # Auteurs : Francois Cochard et Myrtille Laas
-# Mise à jour $Id: acqzadko.tcl,v 1.25 2010-05-24 14:09:51 robertdelmas Exp $
+# Mise à jour $Id: acqzadko.tcl,v 1.26 2010-06-20 13:52:50 robertdelmas Exp $
 #
 
 #==============================================================
@@ -106,6 +106,7 @@ proc ::acqzadko::createPluginInstance { { in "" } { visuNo 1 } } {
    set panneau(acqzadko,$visuNo,nom_image)            ""
    set panneau(acqzadko,$visuNo,extension)            "$conf(extension,defaut)"
    set panneau(acqzadko,$visuNo,indexer)              "0"
+   set panneau(acqzadko,$visuNo,indexerContinue)      "1"
    set panneau(acqzadko,$visuNo,nb_images)            "5"
    set panneau(acqzadko,$visuNo,session_ouverture)    "1"
    set panneau(acqzadko,$visuNo,avancement_acq)       "$parametres(acqzadko,$visuNo,avancement_acq)"
@@ -745,17 +746,21 @@ proc ::acqzadko::testParametreAcquisition { visuNo } {
                   set integre non
                }
                #--- Verifier que l'index existe
-               if { $panneau(acqzadko,$visuNo,index) == "" } {
-                  tk_messageBox -title $caption(acqzadko,pb) -type ok \
-                      -message $caption(acqzadko,saisind)
-                  set integre non
+               if { $panneau(acqzadko,$visuNo,indexerContinue) == "1" } {
+                  if { $panneau(acqzadko,$visuNo,index) == "" } {
+                     tk_messageBox -title $caption(acqzadko,pb) -type ok \
+                         -message $caption(acqzadko,saisind)
+                     set integre non
+                  }
                }
                #--- Envoyer un warning si l'index n'est pas a 1
-               if { $panneau(acqzadko,$visuNo,index) != "1" } {
-                  set confirmation [tk_messageBox -title $caption(acqzadko,conf) -type yesno \
-                     -message $caption(acqzadko,indpasun)]
-                  if { $confirmation == "no" } {
-                     set integre non
+               if { $panneau(acqzadko,$visuNo,indexerContinue) == "1" } {
+                  if { $panneau(acqzadko,$visuNo,index) != "1" } {
+                     set confirmation [tk_messageBox -title $caption(acqzadko,conf) -type yesno \
+                        -message $caption(acqzadko,indpasun)]
+                     if { $confirmation == "no" } {
+                        set integre non
+                     }
                   }
                }
             }
@@ -1115,14 +1120,20 @@ proc ::acqzadko::Go { visuNo } {
             #--- Verrouille les boutons du mode "continu"
             $panneau(acqzadko,$visuNo,This).mode.continu.sauve.case configure -state disabled
             $panneau(acqzadko,$visuNo,This).mode.continu.nom.entr configure -state disabled
+            $panneau(acqzadko,$visuNo,This).mode.continu.index.case configure -state disabled
             $panneau(acqzadko,$visuNo,This).mode.continu.index.entr configure -state disabled
             $panneau(acqzadko,$visuNo,This).mode.continu.index.but configure -state disabled
             set heure $audace(tu,format,hmsint)
             Message $visuNo consolog $caption(acqzadko,lancecont) $panneau(acqzadko,$visuNo,pose) \
                $binningMessage $heure
             if { $panneau(acqzadko,$visuNo,enregistrer) == "1" } {
-               Message $visuNo consolog $caption(acqzadko,enregen) \
-                 $panneau(acqzadko,$visuNo,nom_image)
+               if { $panneau(acqzadko,$visuNo,indexerContinue) == "1" } {
+                  Message $visuNo consolog $caption(acqzadko,enregen) \
+                    $panneau(acqzadko,$visuNo,nom_image)
+               } else {
+                  Message $visuNo consolog $caption(acqzadko,enrenongen) \
+                    $panneau(acqzadko,$visuNo,nom_image)
+               }
             } else {
                Message $visuNo consolog $caption(acqzadko,sansenr)
             }
@@ -1304,28 +1315,36 @@ proc ::acqzadko::Go { visuNo } {
                   #--- Pour eviter un nom de fichier qui commence par un blanc
                   set nom [lindex $nom 0]
                   #--- Verifie que le nom du fichier n'existe pas
-                  set nom1 "$nom"
-                  append nom1 $panneau(acqzadko,$visuNo,index) $panneau(acqzadko,$visuNo,extension)
                   set sauvegardeValidee "1"
-                  if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" &&  $panneau(acqzadko,$visuNo,verifier_ecraser_fichier) == 1} {
-                     #--- Dans ce cas, le fichier existe deja...
-                     set lastFile [ ::acqzadko::dernierFichier $visuNo ]
-                     set confirmation [tk_messageBox -title $caption(acqzadko,conf) -type yesno \
-                        -message "$caption(acqzadko,fichdeja_1) $lastFile $caption(acqzadko,fichdeja_2)"]
-                     if { $confirmation == "no" } {
-                        #--- je ne sauvegarde pas l'image et j'arrete les acquisitions
-                        set sauvegardeValidee "0"
-                        set panneau(acqzadko,$visuNo,demande_arret) "1"
+                  if { $panneau(acqzadko,$visuNo,indexerContinue) == "1" } {
+                     set nom1 "$nom"
+                     append nom1 $panneau(acqzadko,$visuNo,index) $panneau(acqzadko,$visuNo,extension)
+                     if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" &&  $panneau(acqzadko,$visuNo,verifier_ecraser_fichier) == 1} {
+                        #--- Dans ce cas, le fichier existe deja...
+                        set lastFile [ ::acqzadko::dernierFichier $visuNo ]
+                        set confirmation [tk_messageBox -title $caption(acqzadko,conf) -type yesno \
+                           -message "$caption(acqzadko,fichdeja_1) $lastFile $caption(acqzadko,fichdeja_2)"]
+                        if { $confirmation == "no" } {
+                           #--- je ne sauvegarde pas l'image et j'arrete les acquisitions
+                           set sauvegardeValidee "0"
+                           set panneau(acqzadko,$visuNo,demande_arret) "1"
+                        }
                      }
                   }
                   #--- Sauvegarde de l'image
                   if { $sauvegardeValidee == "1" && $panneau(acqzadko,$visuNo,sauve_img_interrompue) == "0" } {
                      #--- Sauvegarde de l'image
-                     saveima [append nom $panneau(acqzadko,$visuNo,index) $panneau(acqzadko,$visuNo,extension)] $visuNo
+                     if { $panneau(acqzadko,$visuNo,indexerContinue) == "1" } {
+                        saveima [append nom $panneau(acqzadko,$visuNo,index) $panneau(acqzadko,$visuNo,extension)] $visuNo
+                     } else {
+                        saveima [append nom $panneau(acqzadko,$visuNo,extension)] $visuNo
+                     }
                      #--- Indique l'heure d'enregistrement dans le fichier log
                      set heure $audace(tu,format,hmsint)
                      Message $visuNo consolog $caption(acqzadko,enrim) $heure $nom
-                     incr panneau(acqzadko,$visuNo,index)
+                     if { $panneau(acqzadko,$visuNo,indexerContinue) == "1" } {
+                        incr panneau(acqzadko,$visuNo,index)
+                     }
                   }
                }
                #--- Deplacement du telescope
@@ -1531,6 +1550,7 @@ proc ::acqzadko::Go { visuNo } {
                #--- Deverrouille les boutons du mode "continu"
                $panneau(acqzadko,$visuNo,This).mode.continu.sauve.case configure -state normal
                $panneau(acqzadko,$visuNo,This).mode.continu.nom.entr configure -state normal
+               $panneau(acqzadko,$visuNo,This).mode.continu.index.case configure -state normal
                $panneau(acqzadko,$visuNo,This).mode.continu.index.entr configure -state normal
                $panneau(acqzadko,$visuNo,This).mode.continu.index.but configure -state normal
             }
@@ -1627,15 +1647,15 @@ proc ::acqzadko::Stop { visuNo } {
 
    #--- Je desactive le bouton "STOP"
    $panneau(acqzadko,$visuNo,This).go_stop.but configure -state disabled
-   #--- On annule la sonnerie
-   catch { after cancel $audace(after,bell,id) }
-   #--- Annulation de l'alarme de fin de pose
-   catch { after cancel bell }
 
-   #--- Je positionne l'indicateur d'interruption de pose
-   set panneau(acqzadko,$visuNo,demande_arret) "1"
    #--- j'interromps la pose
    if { $panneau(acqzadko,$visuNo,mode) == "1" } {
+      #--- Je positionne l'indicateur d'interruption de pose
+      set panneau(acqzadko,$visuNo,demande_arret) "1"
+      #--- On annule la sonnerie
+      catch { after cancel $audace(after,bell,id) }
+      #--- Annulation de l'alarme de fin de pose
+      catch { after cancel bell }
       #--- J'arrete la capture de l'image
       ::camera::stopAcquisition [::confVisu::getCamItem $visuNo]
    } else {
@@ -1646,28 +1666,60 @@ proc ::acqzadko::Stop { visuNo } {
                  -message $caption(acqzadko,arret_serie) \
              ]
             if { $choix == "no" } {
+               #--- Je positionne l'indicateur d'interruption de pose
+               set panneau(acqzadko,$visuNo,demande_arret) "1"
                #--- Je positionne l'indicateur d'enregistrement d'image interrompue
                set panneau(acqzadko,$visuNo,sauve_img_interrompue) "1"
+               #--- On annule la sonnerie
+               catch { after cancel $audace(after,bell,id) }
+               #--- Annulation de l'alarme de fin de pose
+               catch { after cancel bell }
                #--- J'arrete l'acquisition courante
                ::camera::stopAcquisition [::confVisu::getCamItem $visuNo]
             } else {
+               #--- Je positionne l'indicateur d'interruption de pose a 1 s de la fin de la pose
+               ::acqzadko::stopSerie $visuNo
                #--- Je positionne l'indicateur d'enregistrement d'image interrompue
                set panneau(acqzadko,$visuNo,sauve_img_interrompue) "0"
             }
          } else {
+            #--- Je positionne l'indicateur d'interruption de pose a 1 s de la fin de la pose
+            ::acqzadko::stopSerie $visuNo
             #--- s'il reste moins de 10 secondes, je ne pose pas de question a l'utilisateur
             #--- la serie s'arretera a la fin de l'image en cours
             set panneau(acqzadko,$visuNo,sauve_img_interrompue) "0"
          }
       } else {
+         #--- Je positionne l'indicateur d'interruption de pose
+         set panneau(acqzadko,$visuNo,demande_arret) "1"
          #--- Je positionne l'indicateur d'enregistrement d'image interrompue
          set panneau(acqzadko,$visuNo,sauve_img_interrompue) "1"
+         #--- On annule la sonnerie
+         catch { after cancel $audace(after,bell,id) }
+         #--- Annulation de l'alarme de fin de pose
+         catch { after cancel bell }
          #--- J'arrete l'acquisition courante
          ::camera::stopAcquisition [::confVisu::getCamItem $visuNo]
       }
    }
 }
 #***** Fin de la procedure Go/Stop *****************************
+
+#***** Procedure arret de la serie *****************************
+proc ::acqzadko::stopSerie { visuNo } {
+   global panneau
+
+   set t [cam$panneau(acqzadko,$visuNo,camNo) timer -1 ]
+   if { $t > 1 } {
+      #--- je lance l'iteration suivante avec un delai de 1000 millisecondes
+      #--- (mode asynchone pour eviter l'empilement des appels recursifs)
+      set valeur [after 1000 ::acqzadko::stopSerie $visuNo]
+   } else {
+      #--- je ne relance pas le timer et j'arrete la pose
+      set panneau(acqzadko,$visuNo,demande_arret) "1"
+   }
+}
+#***** Fin de la procedure arret de la serie *******************
 
 #***** Procedure chargement differe d'image ****
 proc ::acqzadko::loadLastImage { visuNo camNo } {
@@ -2537,8 +2589,9 @@ proc ::acqzadko::acqzadkoBuildIF { visuNo } {
             }
          pack $panneau(acqzadko,$visuNo,This).mode.continu.nom -side top -fill x
          frame $panneau(acqzadko,$visuNo,This).mode.continu.index -relief ridge -borderwidth 2
-            label $panneau(acqzadko,$visuNo,This).mode.continu.index.lab -text $caption(acqzadko,index) -pady 0
-            pack $panneau(acqzadko,$visuNo,This).mode.continu.index.lab -side top -fill x
+            checkbutton $panneau(acqzadko,$visuNo,This).mode.continu.index.case -pady 0 -text $caption(acqzadko,index) \
+               -variable panneau(acqzadko,$visuNo,indexerContinue)
+            pack $panneau(acqzadko,$visuNo,This).mode.continu.index.case -side top -fill x
             entry $panneau(acqzadko,$visuNo,This).mode.continu.index.entr -width 3 -textvariable panneau(acqzadko,$visuNo,index) \
                -relief groove -justify center \
                -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
