@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise à jour $Id: acqfc.tcl,v 1.105 2010-05-24 11:02:29 robertdelmas Exp $
+# Mise à jour $Id: acqfc.tcl,v 1.106 2010-06-20 13:52:29 robertdelmas Exp $
 #
 
 #==============================================================
@@ -106,6 +106,7 @@ proc ::acqfc::createPluginInstance { { in "" } { visuNo 1 } } {
    set panneau(acqfc,$visuNo,nom_image)            ""
    set panneau(acqfc,$visuNo,extension)            "$conf(extension,defaut)"
    set panneau(acqfc,$visuNo,indexer)              "0"
+   set panneau(acqfc,$visuNo,indexerContinue)      "1"
    set panneau(acqfc,$visuNo,nb_images)            "5"
    set panneau(acqfc,$visuNo,session_ouverture)    "1"
    set panneau(acqfc,$visuNo,avancement_acq)       "$parametres(acqfc,$visuNo,avancement_acq)"
@@ -737,17 +738,21 @@ proc ::acqfc::testParametreAcquisition { visuNo } {
                   set integre non
                }
                #--- Verifier que l'index existe
-               if { $panneau(acqfc,$visuNo,index) == "" } {
-                  tk_messageBox -title $caption(acqfc,pb) -type ok \
-                      -message $caption(acqfc,saisind)
-                  set integre non
+               if { $panneau(acqfc,$visuNo,indexerContinue) == "1" } {
+                  if { $panneau(acqfc,$visuNo,index) == "" } {
+                     tk_messageBox -title $caption(acqfc,pb) -type ok \
+                         -message $caption(acqfc,saisind)
+                     set integre non
+                  }
                }
                #--- Envoyer un warning si l'index n'est pas a 1
-               if { $panneau(acqfc,$visuNo,index) != "1" } {
-                  set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
-                     -message $caption(acqfc,indpasun)]
-                  if { $confirmation == "no" } {
-                     set integre non
+               if { $panneau(acqfc,$visuNo,indexerContinue) == "1" } {
+                  if { $panneau(acqfc,$visuNo,index) != "1" } {
+                     set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
+                        -message $caption(acqfc,indpasun)]
+                     if { $confirmation == "no" } {
+                        set integre non
+                     }
                   }
                }
             }
@@ -1103,14 +1108,20 @@ proc ::acqfc::Go { visuNo } {
             #--- Verrouille les boutons du mode "continu"
             $panneau(acqfc,$visuNo,This).mode.continu.sauve.case configure -state disabled
             $panneau(acqfc,$visuNo,This).mode.continu.nom.entr configure -state disabled
+            $panneau(acqfc,$visuNo,This).mode.continu.index.case configure -state disabled
             $panneau(acqfc,$visuNo,This).mode.continu.index.entr configure -state disabled
             $panneau(acqfc,$visuNo,This).mode.continu.index.but configure -state disabled
             set heure $audace(tu,format,hmsint)
             Message $visuNo consolog $caption(acqfc,lancecont) $panneau(acqfc,$visuNo,pose) \
                $binningMessage $heure
             if { $panneau(acqfc,$visuNo,enregistrer) == "1" } {
-               Message $visuNo consolog $caption(acqfc,enregen) \
-                 $panneau(acqfc,$visuNo,nom_image)
+               if { $panneau(acqfc,$visuNo,indexerContinue) == "1" } {
+                  Message $visuNo consolog $caption(acqfc,enregen) \
+                    $panneau(acqfc,$visuNo,nom_image)
+               } else {
+                  Message $visuNo consolog $caption(acqfc,enrenongen) \
+                    $panneau(acqfc,$visuNo,nom_image)
+               }
             } else {
                Message $visuNo consolog $caption(acqfc,sansenr)
             }
@@ -1292,29 +1303,37 @@ proc ::acqfc::Go { visuNo } {
                   set nom $panneau(acqfc,$visuNo,nom_image)
                   #--- Pour eviter un nom de fichier qui commence par un blanc
                   set nom [lindex $nom 0]
-                  #--- Verifie que le nom du fichier n'existe pas
-                  set nom1 "$nom"
-                  append nom1 $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)
+                  #--- Verifie que le nom du fichier n'existe pas si on utilise l'index
                   set sauvegardeValidee "1"
-                  if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" &&  $panneau(acqfc,$visuNo,verifier_ecraser_fichier) == 1} {
-                     #--- Dans ce cas, le fichier existe deja...
-                     set lastFile [ ::acqfc::dernierFichier $visuNo ]
-                     set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
-                        -message "$caption(acqfc,fichdeja_1) $lastFile $caption(acqfc,fichdeja_2)"]
-                     if { $confirmation == "no" } {
-                        #--- je ne sauvegarde pas l'image et j'arrete les acquisitions
-                        set sauvegardeValidee "0"
-                        set panneau(acqfc,$visuNo,demande_arret) "1"
+                  if { $panneau(acqfc,$visuNo,indexerContinue) == "1" } {
+                     set nom1 "$nom"
+                     append nom1 $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)
+                     if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" &&  $panneau(acqfc,$visuNo,verifier_ecraser_fichier) == 1} {
+                        #--- Dans ce cas, le fichier existe deja...
+                        set lastFile [ ::acqfc::dernierFichier $visuNo ]
+                        set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
+                           -message "$caption(acqfc,fichdeja_1) $lastFile $caption(acqfc,fichdeja_2)"]
+                        if { $confirmation == "no" } {
+                           #--- je ne sauvegarde pas l'image et j'arrete les acquisitions
+                           set sauvegardeValidee "0"
+                           set panneau(acqfc,$visuNo,demande_arret) "1"
+                        }
                      }
                   }
                   #--- Sauvegarde de l'image
                   if { $sauvegardeValidee == "1" && $panneau(acqfc,$visuNo,sauve_img_interrompue) == "0" } {
                      #--- Sauvegarde de l'image
-                     saveima [append nom $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)] $visuNo
+                     if { $panneau(acqfc,$visuNo,indexerContinue) == "1" } {
+                        saveima [append nom $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)] $visuNo
+                     } else {
+                        saveima [append nom $panneau(acqfc,$visuNo,extension)] $visuNo
+                     }
                      #--- Indique l'heure d'enregistrement dans le fichier log
                      set heure $audace(tu,format,hmsint)
                      Message $visuNo consolog $caption(acqfc,enrim) $heure $nom
-                     incr panneau(acqfc,$visuNo,index)
+                     if { $panneau(acqfc,$visuNo,indexerContinue) == "1" } {
+                        incr panneau(acqfc,$visuNo,index)
+                     }
                   }
                }
                #--- Deplacement du telescope
@@ -1520,6 +1539,7 @@ proc ::acqfc::Go { visuNo } {
                #--- Deverrouille les boutons du mode "continu"
                $panneau(acqfc,$visuNo,This).mode.continu.sauve.case configure -state normal
                $panneau(acqfc,$visuNo,This).mode.continu.nom.entr configure -state normal
+               $panneau(acqfc,$visuNo,This).mode.continu.index.case configure -state normal
                $panneau(acqfc,$visuNo,This).mode.continu.index.entr configure -state normal
                $panneau(acqfc,$visuNo,This).mode.continu.index.but configure -state normal
             }
@@ -2549,8 +2569,9 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
             }
          pack $panneau(acqfc,$visuNo,This).mode.continu.nom -side top -fill x
          frame $panneau(acqfc,$visuNo,This).mode.continu.index -relief ridge -borderwidth 2
-            label $panneau(acqfc,$visuNo,This).mode.continu.index.lab -text $caption(acqfc,index) -pady 0
-            pack $panneau(acqfc,$visuNo,This).mode.continu.index.lab -side top -fill x
+            checkbutton $panneau(acqfc,$visuNo,This).mode.continu.index.case -pady 0 -text $caption(acqfc,index) \
+               -variable panneau(acqfc,$visuNo,indexerContinue)
+            pack $panneau(acqfc,$visuNo,This).mode.continu.index.case -side top -fill x
             entry $panneau(acqfc,$visuNo,This).mode.continu.index.entr -width 3 -textvariable panneau(acqfc,$visuNo,index) \
                -relief groove -justify center \
                -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
