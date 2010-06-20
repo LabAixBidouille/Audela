@@ -2,7 +2,7 @@
 # @file     sophietest.tcl
 # @brief    Fichier du namespace ::sophie::test
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietest.tcl,v 1.28 2010-05-09 07:41:27 robertdelmas Exp $
+# @version  $Id: sophietest.tcl,v 1.29 2010-06-20 14:17:42 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -282,7 +282,7 @@ proc ::sophie::test::fermer { } {
 proc ::sophie::test::createDialogSimul { } {
    variable private
 
-   if { ! [ info exists ::conf(sophie,simulation,geometry) ] } { set ::conf(sophie,simulation,geometry) "540x820+30+30" }
+   if { ! [ info exists ::conf(sophie,simulation,geometry) ] } { set ::conf(sophie,simulation,geometry) "540x650+30+30" }
 
    #--- j'initialise les variables
    set private(host) "localhost"
@@ -488,7 +488,7 @@ proc ::sophie::test::createDialogSimul { } {
       entry $frm.pccontrol.entryFocusPosition -textvariable ::sophie::test::private(telescopeControl,focusPosition)
       grid $frm.pccontrol.entryFocusPosition -in [$frm.pccontrol getframe] -row 8 -column 1 -sticky w -padx 2
 
-      label $frm.pccontrol.labelFocusSpeed -text "vitesse (%/s)" -justify left
+      label $frm.pccontrol.labelFocusSpeed -text "Vitesse (%/s)" -justify left
       grid $frm.pccontrol.labelFocusSpeed -in [$frm.pccontrol getframe] -row 8 -column 2 -sticky w -padx 0
       entry $frm.pccontrol.entryFocusSpeed -textvariable ::sophie::test::private(telescopeControl,focusSpeed)
       grid $frm.pccontrol.entryFocusSpeed -in [$frm.pccontrol getframe] -row 8 -column 3 -sticky w -padx 2
