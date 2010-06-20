@@ -2,7 +2,7 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spcaudace spc_metaf.tcl ]
 
-# Mise a jour $Id: spc_metaf.tcl,v 1.14 2010-06-20 05:07:20 bmauclaire Exp $
+# Mise a jour $Id: spc_metaf.tcl,v 1.15 2010-06-20 20:15:58 bmauclaire Exp $
 
 
 
@@ -1361,20 +1361,6 @@ proc spc_traite2srinstrum { args } {
        }
 
 
-       #--- Correction du l'inclinaison (tilt) :
-       if { $flag_nonstellaire==1 } {
-	   #- Pas de correction de l'inclinaison pour les spectres non stellaires :
-	   ::console::affiche_erreur "\n\nPAS DE CORRECTION DE L'INCLINAISON POUR LES SPECTRES NON STELLAIRES\n\n"
-	   set ftilt "$fpretrait"
-       } else {
-	   ::console::affiche_resultat "\n\n**** Correction du l'inclinaison (tilt) ****\n\n"
-	   if { $methejtilt == "o" } {
-	       set ftilt [ spc_tiltautoimgs $fpretrait o ]
-	   } else {
-	       set ftilt [ spc_tiltautoimgs $fpretrait n ]
-	   }
-       }
-
 
        #--- Corrections géométriques des raies (smile selon l'axe x ou slant) :
        ::console::affiche_resultat "\n\n**** Corrections géométriques du spectre 2D ****\n\n"
@@ -1384,15 +1370,31 @@ proc spc_traite2srinstrum { args } {
 	   set spc_ycenter [ lindex [ buf$audace(bufNo) getkwd "SPC_SLX1" ] 1 ]
 	   set spc_cdeg2 [ lindex [ buf$audace(bufNo) getkwd "SPC_SLX2" ] 1 ]
 	   ::console::affiche_resultat "\n** Correction de la courbure des raies (smile selon l'axe x)... **\n"
-	   set fgeom [ spc_smileximgs $ftilt $spc_ycenter $spc_cdeg2 ]
+	   set fgeom [ spc_smileximgs $fpretrait $spc_ycenter $spc_cdeg2 ]
        } elseif { [ lsearch $listemotsclef "SPC_SLA" ] !=-1 } {
 	   set pente [ lindex [ buf$audace(bufNo) getkwd "SPC_SLA" ] 1 ]
 	   ::console::affiche_resultat "\n** Correction de l'inclinaison des raies (slant)... **\n"
 	   set fgeom [ spc_slant2imgs $fpretrait $pente ]
        } else {
 	   ::console::affiche_resultat "\n** Aucune correction géométrique nécessaire. **\n"
-	   set fgeom "$ftilt"
+	   set fgeom "$fpretrait"
        }
+
+
+       #--- Correction du l'inclinaison (tilt) :
+       if { $flag_nonstellaire==1 } {
+	   #- Pas de correction de l'inclinaison pour les spectres non stellaires :
+	   ::console::affiche_erreur "\n\nPAS DE CORRECTION DE L'INCLINAISON POUR LES SPECTRES NON STELLAIRES\n\n"
+	   set ftilt "$fgeom"
+       } else {
+	   ::console::affiche_resultat "\n\n**** Correction du l'inclinaison (tilt) ****\n\n"
+	   if { $methejtilt == "o" } {
+	       set ftilt [ spc_tiltautoimgs $fgeom o ]
+	   } else {
+	       set ftilt [ spc_tiltautoimgs $fgeom n ]
+	   }
+       }
+
 
 
        #--- Effacement des images prétraitées :
