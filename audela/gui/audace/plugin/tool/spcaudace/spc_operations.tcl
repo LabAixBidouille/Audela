@@ -7,8 +7,107 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.31 2010-06-13 12:54:02 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.32 2010-06-20 05:34:22 bmauclaire Exp $
 
+
+
+
+####################################################################
+# Met a zero des valerues negative de l'intensite :
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 2010-06-19
+# Date modification : 2010-06-19
+# Arguments : nom_spectre_a_traiter
+####################################################################
+
+proc spc_rmneg { args } {
+   global audace conf spcaudace
+
+   set nbargs [ llength $args ] 
+   if { $nbargs==1 } {
+      set fichier [ file rootname [ lindex $args 0 ] ]
+
+      #--- Recuperation des infos :
+      buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+      set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
+
+      #--- Met a zero les valeurs negatives :
+      set nb_zeros 0
+      for {set k 1} {$k<=$naxis1} {incr k} {
+         set intensity [ lindex [ buf$audace(bufNo) getpix [ list $k 1 ] ] 1 ]
+         #::console::affiche_resultat "I=$intensity ;"
+         if { $intensity<0 } {
+            buf$audace(bufNo) setpix [ list $k 1 ] 0
+            incr nb_zeros
+         }
+      }
+      ::console::affiche_resultat "$nb_zeros mises à zéro effectuées.\n"
+
+      #--- Sauvegarde du resultat :
+      buf$audace(bufNo) bitpix float
+      buf$audace(bufNo) save "$audace(rep_images)/${fichier}_rm0"
+      buf$audace(bufNo) bitpix short    
+      return "${fichier}_rm0"
+   } else {
+      ::console::affiche_erreur "Usage: spc_rmneg nom_spectre\n"
+   }
+}
+#**********************************************************************************#
+
+
+####################################################################
+# Met a zero les valerues delirantes de l'intensite :
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 2010-06-19
+# Date modification : 2010-06-19
+# Arguments : nom_spectre_a_traiter
+####################################################################
+
+proc spc_rmextrema { args } {
+   global audace conf spcaudace
+   set facteur_imax 10.
+
+   set nbargs [ llength $args ] 
+   if { $nbargs==1 } {
+      set fichier [ file rootname [ lindex $args 0 ] ]
+
+      #--- Infos du spectre avec extrema effaces :
+      set spectre_sansmax [ spc_smooth2 "$fichier" ]
+      buf$audace(bufNo) load "$audace(rep_images)/$spectre_sansmax"
+      #- set stats_mes [ buf$audace(bufNo) stat [ list [ expr round($naxis1/2-0.2*$naxis1) ] 1 [ expr round($naxis1/2+0.2*$naxis1) ] 1 ] ]
+      set stats_mes [ buf$audace(bufNo) stat ]
+      set imax_smooth [ lindex $stats_mes 2 ]
+      set ifond_mean_smooth [ lindex $stats_mes 6 ]
+      file delete -force "$audace(rep_images)/$spectre_sansmax$conf(extension,defaut)"
+
+      #--- Recuperation des infos :
+      buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+      set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
+
+      #--- Met a zero les valeurs delirantes :
+      ::console::affiche_resultat "Imax pris en compte : [ expr $imax_smooth*$facteur_imax ].\n"
+      set nb_zeros 0
+      for {set k 1} {$k<=$naxis1} {incr k} {
+         set intensity [ lindex [ buf$audace(bufNo) getpix [ list $k 1 ] ] 1 ]
+         if { [ expr abs($intensity) ]>=[ expr $imax_smooth*$facteur_imax ] || $intensity<0 } {
+            buf$audace(bufNo) setpix [ list $k 1 ] 0
+            incr nb_zeros
+         }
+      }
+      ::console::affiche_resultat "$nb_zeros mises à zéro effectuées.\n"
+
+      #--- Sauvegarde du resultat :
+      buf$audace(bufNo) bitpix float
+      buf$audace(bufNo) save "$audace(rep_images)/${fichier}_rm0"
+      buf$audace(bufNo) bitpix short    
+      return "${fichier}_rm0"
+   } else {
+      ::console::affiche_erreur "Usage: spc_rmextrema nom_spectre\n"
+   }
+}
+#**********************************************************************************#
 
 
 
@@ -2836,17 +2935,23 @@ proc spc_divbrut { args } {
       set i 1
       set nbdivz 0
       foreach ordo1 $ordonnees1 ordo2 $ordonnees2 {
-         if { $ordo2 == 0.0 } {
-            buf$audace(bufNo) setpix [list $i 1] 0.0
-            incr i
+         if { $ordo2==0.0 } {
+            set result_div 0.0
             incr nbdivz
          } else {
-            buf$audace(bufNo) setpix [list $i 1] [ expr 1.0*$ordo1/$ordo2 ]
+            set result_div [ expr 1.0*$ordo1/$ordo2 ]
+         }
+
+         if { $result_div<0.0 } {
+            buf$audace(bufNo) setpix [list $i 1] 0.0
+            incr nbdivz
+            incr i
+         } else {
+            buf$audace(bufNo) setpix [list $i 1] $result_div
             incr i
          }
       }
       ::console::affiche_resultat "Fin de la division : $nbdivz divisions par 0.\n"
-      
       
       #--- Fin du script :
       buf$audace(bufNo) bitpix float
@@ -2901,11 +3006,16 @@ proc spc_divri { args } {
             set lresult_div [ list ]
             buf$audace(bufNo) load "$audace(rep_images)/$numerateur"
             foreach ordo1 $ordonnees1 ordo2 $ordonnees2 {
-                if { $ordo2 <= 0.0 } {
-                    lappend lresult_div 0.0
-                } else {
-                    lappend lresult_div [ expr 1.0*$ordo1/$ordo2 ]
-                }
+               if { $ordo2==0.0 } {
+                  set result_div 0.0
+               } else {
+                  set result_div [ expr 1.0*$ordo1/$ordo2 ]
+               }
+               if { $result_div<0.0 } {
+                  lappend lresult_div 0.0
+               } else {
+                  lappend lresult_div $result_div
+               }
             }
 
             #-- Détermination de Imax sur la zone découpée des bords à 15% :
@@ -2929,23 +3039,24 @@ proc spc_divri { args } {
             set nbdivz 0
             foreach ordo1 $ordonnees1 ordo2 $ordonnees2 {
                 if { $ordo2 <= 0.0 } {
-                    buf$audace(bufNo) setpix [list $i 1] 0.0
-                    incr nbdivz
+                   buf$audace(bufNo) setpix [list $i 1] 0.0
+                   incr nbdivz
                 } else {
-                    set resultat_div [ expr 1.0*$ordo1/$ordo2 ]
-                    if { $cdelt1>=0.7 } {
-                        if { $i<=$xdeb || $i>=$xfin } {
-                           if { $resultat_div >= [ expr $i_max*$spcaudace(imax_tolerence) ] } {
-                                buf$audace(bufNo) setpix [list $i 1] 0.
-                            } else {
-                                buf$audace(bufNo) setpix [list $i 1] $resultat_div
-                            }
-                        } else {
+                   set resultat_div [ expr 1.0*$ordo1/$ordo2 ]
+                   #-- Met a zero les valeurs delirantes=arctefacts de division :
+                   if { $cdelt1>=0.7 } {
+                      if { $i<=$xdeb || $i>=$xfin } {
+                         if { $resultat_div >= [ expr $i_max*$spcaudace(imax_tolerence) ] } {
+                            buf$audace(bufNo) setpix [list $i 1] 0.
+                         } else {
                             buf$audace(bufNo) setpix [list $i 1] $resultat_div
-                        }
-                    } else {
-                        buf$audace(bufNo) setpix [list $i 1] $resultat_div
-                    }
+                         }
+                      } else {
+                         buf$audace(bufNo) setpix [list $i 1] $resultat_div
+                      }
+                   } else {
+                      buf$audace(bufNo) setpix [list $i 1] $resultat_div
+                   }
                 }
                 incr i
             }

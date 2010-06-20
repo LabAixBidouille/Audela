@@ -1,6 +1,6 @@
 
 
-# Mise a jour $Id: spc_filter2.tcl,v 1.11 2010-06-20 05:30:09 bmauclaire Exp $
+# Mise a jour $Id: spc_filter2.tcl,v 1.12 2010-06-20 05:34:22 bmauclaire Exp $
 # Mise a jour Patrick Lailly 29 mai 2009
 
 
@@ -314,7 +314,7 @@ proc spc_lowresfilterfile { args } {
         }
       }
       set resultat1 [ spc_piecewiselinearfilter $profile $ext_coef $regul_weight "auto" $catalog_file $nechant $regul_list $visu ]
-      set filename [ spc_rmzeros "$resultat1" ]
+      set filename [ spc_rmneg "$resultat1" ]
       file delete -force "$audace(rep_images)/$resultat1$conf(extension,defaut)"
       return $filename
    } else { 
