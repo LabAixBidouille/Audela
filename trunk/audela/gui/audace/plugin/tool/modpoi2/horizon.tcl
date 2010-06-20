@@ -2,7 +2,7 @@
 # Fichier : horizon.tcl
 # Description : fabrication de la ligne d'horizon
 # Auteur : Michel Pujol
-# Mise à jour $Id: horizon.tcl,v 1.5 2010-06-20 15:07:29 robertdelmas Exp $
+# Mise à jour $Id: horizon.tcl,v 1.6 2010-06-20 21:11:16 robertdelmas Exp $
 #
 
 namespace eval ::horizon {
@@ -148,7 +148,7 @@ proc ::horizon::fillConfigPage { frm visuNo } {
    pack $frm.config -side top -fill x -expand 0
 
    frame $frm.type -borderwidth 2 -relief ridge
-      label $frm.type.label -text type
+      label $frm.type.label -text $::caption(modpoi2,horizon,type)
       pack $frm.type.label -side left -fill none -expand 0 -padx 2
       entry $frm.type.value -textvariable ::horizon::private(type) -state readonly
       pack $frm.type.value -side left -fill none -expand 0 -padx 2

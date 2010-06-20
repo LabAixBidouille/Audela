@@ -1,6 +1,6 @@
 #
 # Fichier : modpoi2.cap
-# Mise a jour $Id: modpoi2.cap,v 1.8 2010-06-20 15:10:53 robertdelmas Exp $
+# Mise a jour $Id: modpoi2.cap,v 1.9 2010-06-20 21:10:59 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -180,6 +180,7 @@ set caption(modpoi2,horizon,copyHorizon)             "Copy"
 set caption(modpoi2,horizon,deleteHorizon)           "Delete"
 set caption(modpoi2,horizon,importHorizon)           "# Importer"
 set caption(modpoi2,horizon,exportHorizon)           "# Exporter"
+set caption(modpoi2,horizon,type)                    "Type"
 set caption(modpoi2,horizon,errorEmptyName)          "Name is empty"
 set caption(modpoi2,horizon,errorExistingName)       "Name already used"
 set caption(modpoi2,horizon,errorDefaultName)        "# Cet horizon ne peut pas être supprimé"
@@ -362,6 +363,7 @@ des directions :"
    set caption(modpoi2,horizon,deleteHorizon)        "Supprimer"
    set caption(modpoi2,horizon,importHorizon)        "Importer"
    set caption(modpoi2,horizon,exportHorizon)        "Exporter"
+   set caption(modpoi2,horizon,type)                 "Type"
    set caption(modpoi2,horizon,errorEmptyName)       "Le nom est vide"
    set caption(modpoi2,horizon,errorExistingName)    "Le nom est déjà utilisé"
    set caption(modpoi2,horizon,errorDefaultName)     "Cet horizon ne peut pas être supprimé"
