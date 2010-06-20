@@ -1,15 +1,13 @@
 
-package require Tcl 8.3
-package require Tk 8.3
-#package require Tk 8.3
+package require Tcl 8.5
+package require Tk 8.5
 
 # to auto load from GiD
 catch {
-    auto_load msgcat:mc
+    auto_load msgcat::mc
     msgcat::mc ""
 }
 package require msgcat
-#package require supergrid
 package require snit
 
 namespace eval ::dialogwinmsgs {
@@ -17,29 +15,29 @@ namespace eval ::dialogwinmsgs {
 
 }
 
-if { [info command _] eq "" } {
+if { [info commands _] eq "" } {
     proc _ { args } {
-	if { [regexp {(.*)\#C\#(.*)} [lindex $args 0] {} str comm] } {
+	if { [regexp {(.*)\#C\#.*} [lindex $args 0] {} str] } {
 	    set args [lreplace $args 0 0 $str]
 	}
 	return [uplevel 1 ::msgcat::mc $args]
     }
 }
 
-if { [info command tkTabToWindow] == "" } {
+if { [info commands tkTabToWindow] == "" } {
     interp alias "" tkTabToWindow "" tk::TabToWindow
     #::tk::unsupported::ExposePrivateCommand tkTabToWindow
 }
-if { [info command tkButtonInvoke] == "" } {
+if { [info commands tkButtonInvoke] == "" } {
     interp alias "" tkButtonInvoke "" tk::ButtonInvoke
     #::tk::unsupported::ExposePrivateCommand tkButtonInvoke
 }
 
-package provide dialogwin 1.1
+package provide dialogwin 1.8
 
 ################################################################################
-#  This software is copyrighted by Ramon Rib� (RAMSAN) ramsan@cimne.upc.es.
-#  (http://gid.cimne.upc.es/ramsan) The following terms apply to all files 
+#  This software is copyrighted by Ramon Ribó (RAMSAN) ramsan@cimne.upc.es.
+#  (http://gid.cimne.upc.es/ramsan) The following terms apply to all files
 #  associated with the software unless explicitly disclaimed in individual files.
 
 #  The authors hereby grant permission to use, copy, modify, distribute,
@@ -66,35 +64,39 @@ package provide dialogwin 1.1
 #  MODIFICATIONS.
 ################################################################################
 
-proc CCGetRGB { w color} {
-    set ret $color
-    set n [ scan $color \#%2x%2x%2x r g b]
-    if { $n != 3} {
-	set rgb [ winfo rgb $w $color]
-	set r [ expr int( 0.5 + [ lindex $rgb 0]/256.0)]
-	set g [ expr int( 0.5 + [ lindex $rgb 1]/256.0)]
-	set b [ expr int( 0.5 + [ lindex $rgb 2]/256.0)]
-	set ret [ format \#%2x%2x%2x $r $g $b]
+if { [info commands CCGetRGB] eq "" } {
+    proc CCGetRGB { w color} {
+	set ret $color
+	set n [ scan $color \#%2x%2x%2x r g b]
+	if { $n != 3} {
+	    set rgb [ winfo rgb $w $color]
+	    set r [ expr int( [ lindex $rgb 0]/256.0)]
+	    set g [ expr int( [ lindex $rgb 1]/256.0)]
+	    set b [ expr int( [ lindex $rgb 2]/256.0)]
+	    set ret [ format \#%02x%02x%02x $r $g $b]
+	}
+	return $ret
     }
-    return $ret
 }
 
-proc CCColorActivo { color_usuario { factor 17} } {
-    set ret ""
-    set color_nuevo [ CCGetRGB . $color_usuario]
-    set n [ scan $color_nuevo \#%2x%2x%2x r g b]
-    if { $n == 3} {
-	set r [ expr $r + $factor]
-	if { $r > 255} { set r 255}
-	set g [ expr $g + $factor]
-	if { $g > 255} { set g 255}
-	set b [ expr $b + $factor]
-	if { $b > 255} { set b 255}
-	set ret [ format \#%2x%2x%2x $r $g $b]
-    }
-    return $ret
-}
 
+if { [info commands CCColorActivo] eq "" } {
+    proc CCColorActivo { color_usuario { factor 17} } {
+	set ret ""
+	set color_nuevo [ CCGetRGB . $color_usuario]
+	set n [ scan $color_nuevo \#%2x%2x%2x r g b]
+	if { $n == 3} {
+	    set r [ expr $r + $factor]
+	    if { $r > 255} { set r 255}
+	    set g [ expr $g + $factor]
+	    if { $g > 255} { set g 255}
+	    set b [ expr $b + $factor]
+	    if { $b > 255} { set b 255}
+	    set ret [ format \#%2x%2x%2x $r $g $b]
+	}
+	return $ret
+    }
+}
 
 namespace eval DialogWin {
     variable w
@@ -105,7 +107,7 @@ namespace eval DialogWin {
     variable grab
 }
 
-#current styles are: 
+#current styles are:
 #        ridgeframe
 #        separator
 #
@@ -137,7 +139,7 @@ proc DialogWin::Init { winparent title style { morebuttons "" } { OKname "" } { 
 	    frame $w.buts
 	    grid $w.f -sticky ewns -padx 2 -pady 2
 	    grid $w.buts -sticky ew
-
+	    if { $::tcl_version >= 8.5 } { grid anchor $w.buts center }
 	}
 	separator - separator_nograb {
 	    frame $w.f -bd 0
@@ -146,7 +148,7 @@ proc DialogWin::Init { winparent title style { morebuttons "" } { OKname "" } { 
 	    grid $w.f -sticky ewns -padx 2 -pady 2
 	    grid $w.sep -sticky ew
 	    grid $w.buts -sticky ew
-	    catch { grid anchor $w.buts center }
+	    if { $::tcl_version >= 8.5 } { grid anchor $w.buts center }
 	}
 	default {
 	    error "error: only accepted styles ridgeframe, separator_nograb and separator"
@@ -156,7 +158,7 @@ proc DialogWin::Init { winparent title style { morebuttons "" } { OKname "" } { 
 
     if { $OKname == "" } {
 	set OKname [_ OK]
-    } 
+    }
     if { $Cancelname != "" } {
 	set CancelName $Cancelname
     } elseif { $OKname == "-" } {
@@ -456,7 +458,7 @@ proc DialogWinTop::Init { winparent title style commands { morebuttons "" } { OK
 	    frame $w.buts
 	    grid $w.f -sticky ewns -padx 2 -pady 2
 	    grid $w.buts -sticky ew
-
+	    if { $::tcl_version >= 8.5 } { grid anchor $w.buts center }
 	}
 	separator {
 	    frame $w.f -bd 0
@@ -465,7 +467,7 @@ proc DialogWinTop::Init { winparent title style commands { morebuttons "" } { OK
 	    grid $w.f -sticky ewns -padx 2 -pady 2
 	    grid $w.sep -sticky ew
 	    grid $w.buts -sticky ew
-	    catch { grid anchor $w.buts center }
+	    if { $::tcl_version >= 8.5 } { grid anchor $w.buts center }
 	}
 	default {
 	    error "error: only accepted styles ridgeframe and separator"
@@ -575,7 +577,7 @@ proc DialogWinTop::Init { winparent title style commands { morebuttons "" } { OK
 	bind $w <Escape> "tkButtonInvoke $w.buts.b0"
 	wm protocol $w WM_DELETE_WINDOW "tkButtonInvoke $w.buts.b0"
     }
-    
+
      bind $w <Destroy> {
 	 if { [winfo class %W] == "Toplevel" } {
 	      DialogWinTop::DestroyWindow %W
@@ -624,7 +626,7 @@ proc DialogWinTop::TabOrderPrevNext { w what } {
     set ipos [lsearch $tabo $w]
     set tabo [concat [lrange $tabo [expr {$ipos+1}] end] [lrange $tabo 0 [expr {$ipos-1}]]]
     if { $what eq "prev" } { set tabo [lreverse $tabo] }
-    
+
     foreach w $tabo {
 	if { [tk::FocusOK $w] } {
 	    tk::TabToWindow $w
@@ -636,7 +638,7 @@ proc DialogWinTop::TabOrderPrevNext { w what } {
 
 proc DialogWinTop::SetTabOrder { winlist } {
     variable taborder
-    
+
     set top [winfo toplevel [lindex $winlist 0]]
     set taborder($top) $winlist
 
@@ -862,17 +864,13 @@ proc DialogWinTop::messageBox { args } {
     return [eval snit_messageBox $args]
 }
 
-namespace eval ::dialogwinmsgs {
-    namespace export *
-
-
-proc WarnWin { text { parent .} } {
+proc MessageWin { text title {image dialogwinquestionhead} {parent .} } {
     if { $parent eq "." } { set parent "" }
-    set w [dialogwin_snit $parent.%AUTO% -title [_ Warning] -okname \
-	       [_ OK] -cancelname "-"]
+    set w [dialogwin_snit $parent.%AUTO% -title $title -okname \
+	       [_ "Ok"] -cancelname "-"]
     set f [$w giveframe]
 
-    label $f.l1 -image dialogwinquestionhead
+    label $f.l1 -image $image
     label $f.msg -justify left -text $text -wraplength 3i
 
     grid $f.l1 $f.msg -sticky nw
@@ -880,6 +878,10 @@ proc WarnWin { text { parent .} } {
 
     set action [$w createwindow]
     destroy $w
+}
+
+proc WarnWin { text {parent .} } {
+    MessageWin $text [_ "Warning"] dialogwinquestionhead $parent
 }
 
 proc WarnWin_hideerror { text errordata { parent .} } {
@@ -903,7 +905,7 @@ proc WarnWin_hideerror { text errordata { parent .} } {
 proc snit_messageBox { args } {
 
     array set opts [list -default "" -icon info -message "" -parent . -title "" \
-	-type ok]
+	    -type ok -do_not_ask_again 0 -do_not_ask_again_key ""]
 
     for { set i 0 } { $i < [llength $args] } { incr i } {
 	set opt [lindex $args $i]
@@ -912,6 +914,19 @@ proc snit_messageBox { args } {
 	}
 	incr i
 	set opts($opt) [lindex $args $i]
+    }
+
+    if { $opts(-do_not_ask_again) } {
+	if { $opts(-type) ni "ok okcancel yesno yesnocancel" } {
+	    error "error. option -do_not_ask_again can only be used for types 'ok','okcancel','yesno' and 'yesnocancel'"
+	}
+	set d [dialogwin_snit give_typeuservar_value do_not_ask_again ""]
+	if { $opts(-do_not_ask_again_key) eq "" } {
+	    set opts(-do_not_ask_again_key) $opts(-message)
+	}
+	if { [dict exists $d $opts(-do_not_ask_again_key)] } {
+	    return [dict get $d $opts(-do_not_ask_again_key)]
+	}
     }
     switch -- $opts(-type) {
 	abortretryignore {
@@ -957,39 +972,112 @@ proc snit_messageBox { args } {
 	set w $opts(-parent).%AUTO%
     }
     set w [dialogwin_snit $w -title $opts(-title) -morebuttons $buts \
-	       -okname - -cancelname -]
+	       -okname - -cancelname - -transient 1]
     set f [$w giveframe]
 
-    if { $opts(-icon) == "info" || [lsearch [image names] $opts(-icon)] == -1 } {
+    if { $opts(-icon) == "info" || [lsearch -exact [image names] $opts(-icon)] == -1 } {
 	set opts(-icon) dialogwinquestionhead
     }
 
-    label $f.l1 -image $opts(-icon)
-    label $f.msg -justify left -text $opts(-message) -wraplength 3i
+    ttk::label $f.l1 -image $opts(-icon)
+    if { [winfo screenwidth .] < 300 } {
+	set wraplength 1.5i
+    } else {
+	set wraplength 3i
+    }
+    ttk::label $f.msg -justify left -text $opts(-message) -wraplength $wraplength
 
     grid $f.l1 $f.msg -sticky nw
     grid configure $f.msg -padx 5 -pady 5
 
+    if { $opts(-do_not_ask_again) } {
+	ttk::checkbutton $f.cb1 -text [_ "Do not show again for this session"] -variable \
+	    [$w give_uservar do_not_ask_again 0]
+	grid $f.cb1 - -sticky w
+    }
+
     $w focusbutton [expr $opts(-defaultpos)+2]
+    set action [$w createwindow]
+
+    if { $opts(-do_not_ask_again) && [$w give_uservar_value do_not_ask_again] } {
+	set do_not_ask_again 1
+    } else {
+	set do_not_ask_again 0
+    }
+    destroy $w
+
+    switch -- $action {
+	-1 - 0 {
+	    if { [lsearch -exact $buts [_ Cancel]] != -1 } {
+		return cancel
+	    }
+	    return [lindex $retbuts end]
+	}
+	default {
+	    set ipos [expr {$action-2}]
+	    if { [lindex $retbuts $ipos] ne "cancel" && $do_not_ask_again } {
+		set d [dialogwin_snit give_typeuservar_value do_not_ask_again ""]
+		if { $opts(-do_not_ask_again_key) eq "" } {
+		    set opts(-do_not_ask_again_key) $opts(-message)
+		}
+		dict set d $opts(-do_not_ask_again_key) [lindex $retbuts $ipos]
+		dialogwin_snit set_typeuservar_value do_not_ask_again $d
+	    }
+	    return [lindex $retbuts $ipos]
+	}
+    }
+}
+
+proc tk_dialog_snit {w title text textsmall bitmap image default args} {
+    if { $w == "" } {
+	set parent "."
+    } else { regsub {[.][^.]*$} $w {} parent }
+    if {$parent == ""} {
+	set parent "."
+    }
+    return [eval [list tk_dialog_snit1 $parent $title $text $textsmall $image $default] \
+		$args]
+}
+
+proc tk_dialog_snit1 { parent title text textsmall image default args} {
+
+    if { $parent eq "." } {
+	set w .%AUTO%
+    } else {
+	set w $parent.%AUTO%
+    }
+    set w [dialogwin_snit $w -title $title -morebuttons $args \
+	       -okname - -cancelname -]
+    set f [$w giveframe]
+
+    label $f.l1 -image $image
+    label $f.msg -justify left -text $text -wraplength 3i
+
+    grid $f.l1 $f.msg -sticky nw
+    grid configure $f.msg -padx 5 -pady 5
+
+    if { $textsmall ne "" } {
+	set size [expr {[font actual [$f.msg cget -font] -size]-2}]
+	label $f.ts -text $textsmall -font "-size $size"
+	grid $f.ts - sticky nw
+    }
+
+    $w focusbutton [expr $default+2]
     set action [$w createwindow]
 
     destroy $w
 
     switch -- $action {
 	-1 - 0 {
-	    if { [lsearch $buts [_ Cancel]] != -1 } {
-		return cancel
-	    }
-	    if { [lsearch $buts [_ OK]] != -1 } {
-		return ok
-	    }
+	    return -1
 	}
 	default {
-	    set ipos [expr {$action-2}]
-	    return [lindex $retbuts $ipos]
+	    return [expr {$action-2}]
 	}
     }
 }
+
+
 
 #--------------------------------------------------------------------------------
 #     dialogwin_snit
@@ -998,23 +1086,31 @@ proc snit_messageBox { args } {
 # NOTE: examples at the end
 
 # style: ridgeframe or separator
-# entrytype: entry or password
+# entrytype: entry or noneditable_entry or password
+# -callback: calls function when user presses a button. Adds argument $w
 
 snit::widget dialogwin_snit {
     option -title ""
     option -style separator
     option -grab 1
+    option -transient 0
+    option -callback ""
     option -morebuttons ""
     option -okname ""
     option -cancelname ""
     option -geometry ""
     option -minwidth ""
     option -minheight ""
-    option -entrytype ""
+
+    option -entrytype "" ;# entry,password,noneditable_entry
     option -entrytext ""
     option -entrylabel ""
     option -entrydefault ""
     option -entryvalues ""
+
+    option -repeat_answer_check 0
+    option -frame_grid_cmd ""
+    option -frame_toplevel toplevel
 
     hulltype toplevel
 
@@ -1025,42 +1121,78 @@ snit::widget dialogwin_snit {
     variable oldGrab ""
     variable grabStatus
     variable entryvalue
+    variable repeat_my_answer 0
     variable uservar
+    variable typeuservar
     variable traces ""
+    variable destroy_handlers ""
 
     constructor args {
+	#wm manage $win
+	
 	$self configurelist $args
 
-	wm title $win $options(-title)
 	wm withdraw $win
-
+	
+	if {0&& [info commands ttk::button] eq "" } {
+	    set button_cmd button
+	    set label_cmd label
+	    set entry_cmd entry
+	    set combo_cmd ComboBox
+	    set frame_cmd frame
+	    set checkbutton_cmd checkbutton
+	    set radiobutton_cmd radiobutton
+	} else {
+	    set button_cmd ttk::button
+	    set label_cmd ttk::label
+	    set entry_cmd ttk::entry
+	    set combo_cmd ttk::combobox
+	    set frame_cmd ttk::frame
+	    set checkbutton_cmd ttk::checkbutton
+	    set radiobutton_cmd ttk::radiobutton
+	}
+	set current_row -1
+	if { $options(-frame_grid_cmd) ne "" } {
+	    frame $win.f0 -bg #880000 -bd 1 -relief solid -height 4 \
+		-cursor hand2
+	    grid $win.f0 -sticky ew -padx 2 -pady 2
+	    incr current_row
+	    bind $win.f0 <1> [mymethod toogle_frame_toplevel]
+	}
 	switch $options(-style) {
 	    ridgeframe {
-		frame $win.f -relief ridge -bd 2
+		$frame_cmd $win.f
+		catch { $win.f configure -relief ridge -bd 2 }
 		frame $win.buts
 		grid $win.f -sticky ewns -padx 2 -pady 2
+		incr current_row
 		grid $win.buts -sticky ew
-
+		catch { grid anchor $win.buts center }
 	    }
-	    separator {
-		frame $win.f -bd 0
+	    separator - separator_right {
+		$frame_cmd $win.f
+		catch { $win.f configure -bd 0 }
 		frame $win.sep -bd 2 -relief raised -height 2
 		frame $win.buts
 		grid $win.f -sticky ewns -padx 2 -pady 2
+		incr current_row
 		grid $win.sep -sticky ew
 		grid $win.buts -sticky ew
 		catch { grid anchor $win.buts center }
 	    }
 	    default {
-		error "error: only accepted styles ridgeframe, separator_nograb and separator"
+		error "error: only accepted styles ridgeframe and separator"
 	    }
 	}
 	$win.buts conf -bg [CCColorActivo [$win cget -bg]]
+	
+	grid columnconfigure $win 0 -weight 1
+	grid rowconfigure $win $current_row -weight 1
 
 	if { $options(-okname) eq "" } { set options(-okname) [_ "Ok"] }
 	if { $options(-cancelname) eq "" } {
 	    set options(-cancelname) [_ "Cancel"]
-	    
+	
 	    if { $options(-okname) eq "-" && $options(-morebuttons) eq "" } {
 		set options(-cancelname) [_ "Close"]
 	    }
@@ -1075,7 +1207,9 @@ snit::widget dialogwin_snit {
 	foreach i $options(-morebuttons) {
 	    if { [string length $i] > $butwidth } { set butwidth [string length $i] }
 	}
-
+	if { [catch { package present tile }] == 0 } {
+	    set butwidth [expr {-1*$butwidth}]
+	}
 	set usedletters ""
 	if { $options(-okname) != "-" } {
 	    for { set ipos 0 } { $ipos < [string length $options(-okname)] } { incr ipos } {
@@ -1085,15 +1219,15 @@ snit::widget dialogwin_snit {
 		}
 	    }
 	    if { $ipos < [string length $options(-okname)] } {
-		button $win.buts.ok -text $options(-okname) -width $butwidth -und $ipos -command \
-		    [list set [varname action] 1]
-		bind $win <Alt-$letter> "tkButtonInvoke $win.buts.ok"
-		bind $win.buts.ok <Return> "tkButtonInvoke $win.buts.ok"
+		$button_cmd $win.buts.ok -text $options(-okname) -width $butwidth -und $ipos -command \
+		        [mymethod _applyaction 1]
+		bind $win <Alt-$letter> [mymethod _button_invoke $win.buts.ok]
+		bind $win.buts.ok <Return> [mymethod _button_invoke $win.buts.ok]
 		lappend usedletters $letter
 		set widget($letter) $win.buts.ok
 	    } else {
-		button $win.buts.ok -text $options(-okname) -width $butwidth -command \
-		    [list set [varname action] 1]
+		$button_cmd $win.buts.ok -text $options(-okname) -width $butwidth -command \
+		        [mymethod _applyaction 1]
 	    }
 	}
 	if { $options(-cancelname) ne "-" } {
@@ -1119,30 +1253,30 @@ snit::widget dialogwin_snit {
 		}
 	    }
 	    if { $ipos < [string length $i] } {
-		button $win.buts.b$iaction -text $i -width $butwidth -und $ipos \
-		    -command [list set [varname action] $iaction]
-		bind $win <Alt-$letter> "tkButtonInvoke $win.buts.b$iaction"
-		bind $win.buts.b$iaction <Return> "tkButtonInvoke $win.buts.b$iaction"
+		$button_cmd $win.buts.b$iaction -text $i -width $butwidth -und $ipos \
+		    -command [mymethod _applyaction $iaction]
+		bind $win <Alt-$letter> [mymethod _button_invoke $win.buts.b$iaction]
+		bind $win.buts.b$iaction <Return> [mymethod _button_invoke $win.buts.b$iaction]
 		lappend usedletters $letter
 		set widget($letter) $win.buts.b$iaction
 	    } else {
-		button $win.buts.b$iaction -text $i -width $butwidth  \
-		    -command [list set [varname action] $iaction]
+		$button_cmd $win.buts.b$iaction -text $i -width $butwidth  \
+		    -command [mymethod _applyaction $iaction]
 	    }
 	    lappend togrid $win.buts.b$iaction
 	    incr iaction
 	}
 	if { $options(-cancelname) ne "-" } {
 	    if { $underlinecancel != "" } {
-		button $win.buts.cancel -text $options(-cancelname) -width $butwidth \
-		    -und $underlinecancel -command [list set [varname action] 0]
+		$button_cmd $win.buts.cancel -text $options(-cancelname) -width $butwidth \
+		    -und $underlinecancel -command [mymethod _applyaction 0]
 		set letter [string tolower [string index $options(-cancelname) $underlinecancel]]
-		bind $win <Alt-$letter> "tkButtonInvoke $win.buts.cancel"
-		bind $win.buts.cancel <Return> "tkButtonInvoke $win.buts.cancel"
+		bind $win <Alt-$letter> [mymethod _button_invoke $win.buts.cancel]
+		bind $win.buts.cancel <Return> [mymethod _button_invoke $win.buts.cancel]
 		set widget($letter) $win.buts.cancel
 	    } else {
-		button $win.buts.cancel -text $options(-cancelname) -width $butwidth \
-		    -command [list set [varname action] 0]
+		$button_cmd $win.buts.cancel -text $options(-cancelname) -width $butwidth \
+		    -command [mymethod _applyaction 0]
 	    }
 	}
 
@@ -1152,8 +1286,29 @@ snit::widget dialogwin_snit {
 	if { $options(-cancelname) ne  "-" } {
 	    set togrid "$togrid $win.buts.cancel"
 	}
-	eval grid $togrid -padx 2 -pady 4
+	
+	if { $options(-repeat_answer_check) } {
+	    checkbutton $win.buts.repeat -text [_ "Repeat my answer"] \
+		-variable [myvar repeat_my_answer]
+	    $win.buts.repeat configure -background [CCColorActivo [$win cget -bg]]
+	}
 
+	grid {*}$togrid -padx 2 -pady 4
+	if { $options(-repeat_answer_check) } {
+	    grid {*}$togrid -row 1
+	    grid $win.buts.repeat {*}[lrepeat [expr {[llength $togrid]-1}] -] \
+		-sticky w -padx 2 -pady 2 -row 0
+	
+#            grid $win.buts.repeat -row 0 -column [llength $togrid] -sticky w -padx 2
+#             grid $win.buts.repeat {*}[lrepeat [expr {[llength $togrid]-1}] -] \
+#                 -sticky w -padx 2 -pady 2
+	}
+	switch -- $options(-style) {
+	    "separator_right" {
+		grid configure {*}$togrid -sticky e
+		grid columnconfigure $win.buts 0 -weight 1
+	    }
+	}
 	if { $options(-okname) != "-" } {
 	    focus $win.buts.ok
 	} elseif { $options(-cancelname) != "-" } {
@@ -1162,47 +1317,69 @@ snit::widget dialogwin_snit {
 
 	foreach i $togrid {
 	    foreach letter $usedletters {
-		bind $i <Key-$letter> [list tkButtonInvoke $widget($letter)]
+		bind $i <Key-$letter> [mymethod _button_invoke $widget($letter)]
 	    }
 	}
 	if { $options(-cancelname) ne "-" } {
-	    bind $win <Escape> "tkButtonInvoke $win.buts.cancel"
-	    bind $win.buts.cancel <Return> "tkButtonInvoke $win.buts.cancel"
-	    wm protocol $win WM_DELETE_WINDOW "tkButtonInvoke $win.buts.cancel"
+	    bind $win <Escape> [mymethod _button_invoke $win.buts.cancel]
+	    bind $win.buts.cancel <Return> [mymethod _button_invoke $win.buts.cancel]
+	    wm protocol $win WM_DELETE_WINDOW [mymethod _button_invoke $win.buts.cancel]
 	} else {
-	    bind $win <Escape> [list set [varname action] -1]
-	    wm protocol $win WM_DELETE_WINDOW [list set [varname action] -1]
+	    bind $win <Escape> [mymethod _applyaction -1]
+	    wm protocol $win WM_DELETE_WINDOW [mymethod _applyaction -1]
 	}
 
-	grid columnconf $win 0 -weight 1
-	grid rowconf $win 0 -weight 1
-
 	if { $options(-entrytext) ne "" } {
-	    label $win.f.l0 -text $options(-entrytext) -wraplength 200 -justify left
+	    if { [winfo screenwidth .] < 300 } {
+		set wraplength 100
+	    } else {
+		set wraplength 200
+	    }
+	    $label_cmd $win.f.l0 -text $options(-entrytext) -wraplength $wraplength \
+		-justify left
 	    grid $win.f.l0 - -sticky w -pady "2 5"
 	}
 	if { $options(-entrytype) ne "" } {
-	    label $win.f.l -text $options(-entrylabel)
+	    $label_cmd $win.f.l -text $options(-entrylabel)
 	    switch $options(-entrytype) {
 		entry {
 		    if { $options(-entryvalues) eq "" } {
-		        entry $win.f.e -textvariable [varname entryvalue] -width 40
+		        $entry_cmd $win.f.e -textvariable [varname entryvalue] -width 40
 		    } else {
-		        ComboBox $win.f.e -textvariable [varname entryvalue] -width 40 \
+		        $combo_cmd $win.f.e -textvariable [varname entryvalue] -width 40 \
 		            -values $options(-entryvalues)
 		    }
 		}
 		password {
-		    entry $win.f.e -textvariable [varname entryvalue] -width 40 -show *
+		    $entry_cmd $win.f.e -textvariable [varname entryvalue] -width 40 -show *
+		}
+		noneditable_entry {
+		    if { [llength $options(-entryvalues)] <= 5 } {
+		        set fr [$frame_cmd $win.f.e]
+		        set idx 0
+		        foreach i $options(-entryvalues) {
+		            $radiobutton_cmd $fr.r$idx -text $i -variable [varname entryvalue] \
+		                -value $i
+		            grid $fr.r$idx -sticky w -padx 2 -pady 2
+		            incr idx
+		        }
+		    } else {
+		        $combo_cmd $win.f.e -textvariable [varname entryvalue] -width 40 \
+		        -values $options(-entryvalues) -state readonly
+		    }
 		}
 	    }
 	    set entryvalue $options(-entrydefault)
-	    
+	
 	    grid $win.f.l $win.f.e -sticky w -padx 3 -pady 3
 	    grid configure $win.f.e -sticky ew
 	    grid columnconfigure $win.f 1 -weight 1
 
-	    tkTabToWindow $win.f.e
+	    if { [winfo exists $win.f.l0] } {
+		update idletasks
+		$win.f.l0 configure -wraplength [expr {[winfo reqwidth $win.f]-5}]
+	    }
+	    tk::TabToWindow $win.f.e
 	    bind $win <Return> [mymethod invokeok]
 	}
     }
@@ -1210,7 +1387,7 @@ snit::widget dialogwin_snit {
 	set action -1
 
 	if { $oldGrab ne "" }  {
-	    if { $grabStatus ne "global" } {
+	    if { [info exists grabStatus] && $grabStatus ne "global" } {
 		if { [winfo exists $oldGrab] && [winfo ismapped $oldGrab] } { grab $oldGrab }
 	    } else {
 		if { [winfo exists $oldGrab] && [winfo ismapped $oldGrab] } { grab -global $oldGrab }
@@ -1219,15 +1396,32 @@ snit::widget dialogwin_snit {
 	foreach i $traces {
 	    eval trace remove variable $i
 	}
+	foreach i $destroy_handlers {
+	    uplevel #0 $i
+	}
+    }
+    onconfigure -title {value} {
+	set options(-title) $value
+	wm title $win $options(-title)
     }
     method giveframe {} {
 	return $win.f
+    }
+    method giveframe_background {} {
+	set err [catch { $win.f cget -bg } bg]
+	if { $err } {
+	    set style [$win.f cget -style]
+	    if { $style eq "" } { set style [winfo class $win.f] }
+	    set err [catch { ttk::style lookup $style -background } bg]
+	    if { $err } { set bg white }
+	}
+	return $bg
     }
     method invokeok { { visible 1 } } {
 	if { ![winfo exists $win.buts.ok] } { return }
 	
 	if { $visible } {
-	    tkButtonInvoke $win.buts.ok
+	    $self _button_invoke $win.buts.ok
 	} else {
 	    $win.buts.ok invoke
 	}
@@ -1236,7 +1430,7 @@ snit::widget dialogwin_snit {
 	if { ![winfo exists $win.buts.cancel] } { return }
 	
 	if { $visible } {
-	    tkButtonInvoke $win.buts.cancel
+	    $self _button_invoke $win.buts.cancel
 	} else {
 	    $win.buts.cancel invoke
 	}
@@ -1245,19 +1439,19 @@ snit::widget dialogwin_snit {
 	if { ![winfo exists $win.buts] } { return }
 
 	if { $num < 2 } {
-	    error "DialogWin::InvokeButton num>2"
+	    error "error in dialogwin_snit invokebutton num>2"
 	}
 	foreach i [winfo children $win.buts] {
 	    if { [regexp "\\m$num\\M" [$i cget -command]] } {
 		if { $visible } {
-		    tkButtonInvoke $i
+		    $self _button_invoke $i
 		} else {
 		    $i invoke
 		}
 		return
 	    }
 	}
-	error "DialogWin::InvokeButton num bad"
+	error "error in dialogwin_snit invokebutton num bad"
     }
     method focusok {} {
 	if { ![winfo exists $win.buts.ok] } { return }
@@ -1270,7 +1464,7 @@ snit::widget dialogwin_snit {
     method focusbutton { num } {
 	
 	if { $num < 2 } {
-	    error "DialogWin::FocusButton num>2"
+	    error "error in dialogwin_snit focusbutton num must be > 2"
 	}
 	foreach i [winfo children $win.buts] {
 	    if { [regexp "\\m$num\\M" [$i cget -command]] } {
@@ -1278,54 +1472,290 @@ snit::widget dialogwin_snit {
 		return
 	    }
 	}
-	error "DialogWin::FocusButton num bad"
+	error "error in dialogwin_snit focusbutton num bad"
+    }
+    method enableok {} {
+	if { ![winfo exists $win.buts.ok] } { return }
+	$win.buts.ok configure -state normal
+    }
+    method enablecancel {} {
+	if { ![winfo exists $win.buts.cancel] } { return }
+	$win.buts.cancel configure -state normal
+    }
+    method enablebutton { num } {
+	
+	if { $num < 2 } {
+	    error "error in dialogwin_snit enablebutton num must be > 2"
+	}
+	foreach i [winfo children $win.buts] {
+	    if { [regexp "\\m$num\\M" [$i cget -command]] } {
+		$i configure -state normal
+		return
+	    }
+	}
+	error "error in dialogwin_snit enablebutton num bad"
+    }
+    method disableok {} {
+	if { ![winfo exists $win.buts.ok] } { return }
+	$win.buts.ok configure -state disabled
+    }
+    method disablecancel {} {
+	if { ![winfo exists $win.buts.cancel] } { return }
+	$win.buts.cancel configure -state disabled
+    }
+    method disablebutton { num } {
+	
+	if { $num < 2 } {
+	    error "error in dialogwin_snit disablebutton num must be > 2"
+	}
+	foreach i [winfo children $win.buts] {
+	    if { [regexp "\\m$num\\M" [$i cget -command]] } {
+		$i configure -state disabled
+		return
+	    }
+	}
+	error "error in dialogwin_snit disablebutton num bad"
+    }
+    method _button_invoke { w } {
+	if { [winfo class $w] eq "TButton" } {
+	    $w instate !disabled {
+		$w state pressed
+		update idletasks
+		after 100
+		$w state !pressed
+		update idletasks
+		uplevel #0 [list $w invoke]
+	    }
+	} else {
+	    if {[$w cget -state] ne "disabled"} {
+		set oldRelief [$w cget -relief]
+		set oldState [$w cget -state]
+		$w configure -state active -relief sunken
+		update idletasks
+		after 100
+		$w configure -state $oldState -relief $oldRelief
+		uplevel #0 [list $w invoke]
+	    }
+	}
+    }
+
+    method changebuttonoptions { num args } {
+	if { $num == 0 } {
+	    eval [list $win.buts.cancel configure] $args
+	} elseif { $num == 1 } {
+	    eval [list $win.buts.ok configure] $args
+	} else {
+	    foreach i [winfo children $win.buts] {
+		if { [regexp "\\m$num\\M" [$i cget -command]] } {
+		    eval [list $i configure] $args
+		    return
+		}
+	    }
+	    error "error in dialogwin_snit changebuttonoptions num bad"
+	}
+    }
+    method changebuttongridoptions { num args } {
+	if { $num == 0 } {
+	    eval [list grid configure $win.buts.cancel] $args
+	} elseif { $num == 1 } {
+	    eval [list grid configure $win.buts.ok] $args
+	} else {
+	    foreach i [winfo children $win.buts] {
+		if { [regexp "\\m$num\\M" [$i cget -command]] } {
+		    eval [list grid configure $i] $args
+		    return
+		}
+	    }
+	    error "error in dialogwin_snit changebuttongridoptions num bad"
+	}
+    }
+    method showhidebutton { num what } {
+	if { $num == 0 } {
+	    set  b $win.buts.cancel
+	} elseif { $num == 1 } {
+	    set b $win.buts.ok
+	} else {
+	    foreach i [winfo children $win.buts] {
+		if { [regexp "\\m$num\\M" [$i cget -command]] } {
+		    set b $i
+		    break
+		}
+	    }
+	}
+	switch $what {
+	    show { grid $b }
+	    hide {
+		set i [grid info $b]
+		if { $i eq "" } { return }
+		grid columnconfigure $win.buts [dict get $i -column] \
+		    -minsize [winfo width $b]
+		grid remove $b
+	    }
+	}
+    }
+    method tooltip_button { num args } {
+	
+	package require tooltip
+	if { $num == 0 } {
+	    set  b $win.buts.cancel
+	} elseif { $num == 1 } {
+	    set b $win.buts.ok
+	} else {
+	    foreach i [winfo children $win.buts] {
+		if { [regexp "\\m$num\\M" [$i cget -command]] } {
+		    set b $i
+		    break
+		}
+	    }
+	}
+	if { [llength $args] == 1 } {
+	    tooltip::tooltip $b [lindex $args 0]
+	} elseif { [llength $args] > 1 } {
+	    error "error in tooltip_button arguments"
+	}
+	return [tooltip::tooltip $b]
     }
     method createwindow {} {
 	$self createwindownowait
 	return [$self waitforwindow 0]
     }
+    method toogle_frame_toplevel {} {
+	switch $options(-frame_toplevel) {
+	    toplevel { set options(-frame_toplevel) frame }
+	    frame { set options(-frame_toplevel) toplevel }
+	}
+	$self createwindow
+    }
     method createwindownowait {} {
+	if { $options(-frame_toplevel) eq "toplevel" } {
+	    $self createwindownowait_as_toplevel
+	} else {
+	    $self createwindownowait_as_frame
+	}
+    }
+    method createwindownowait_as_frame {} {
+	$win configure -bd 1 -relief ridge
+	update idletasks
+	wm forget $win
+	focus $win
+	uplevel #0 $options(-frame_grid_cmd)
+    }
+    method createwindownowait_as_toplevel {} {
+	
+	set parent [winfo parent $win]
+	set top [winfo toplevel $parent]
 
-	set top [winfo toplevel [winfo parent $win]]
-
+	if { $::tcl_platform(os) ne "Darwin" } {
+	    wm manage $win
+	}
+	if { $::tcl_platform(os) eq "Windows CE" } {
+	    bind $win <ConfigureRequest> { if { "%W" eq [winfo toplevel %W] } { etcl::autofit %W }}
+	    bind $win <Expose> { if { "%W" eq [winfo toplevel %W] } { etcl::autofit %W }}
+	}
 	wm withdraw $win
 	update idletasks
 
-	if { $options(-geometry) ne "" } {
-	    wm geometry $win $options(-geometry)
+	lassign "" width height x y
+	if { [catch { package present twapi }] == 0 } {
+	    lassign [twapi::get_desktop_workarea] scr_x scr_y scr_w scr_h
+	    set scr_w [expr {$scr_w-$scr_x}]
+	    set scr_h [expr {$scr_h-$scr_y}]
 	} else {
+	    lassign [list 0 0 [winfo screenwidth $top] [winfo screenheight $top]] \
+		scr_x scr_y scr_w scr_h
+	}
+	if { $options(-geometry) ne "" } {
+	    if { ![regexp {(\d+)x(\d+)(?:\+([-\d]+)\+([-\d]+))?} \
+		$options(-geometry) {} width height x y] } {
+		regexp {^\+([-\d]+)\+([-\d]+)$} \
+		    $options(-geometry) {} x y
+	    }
+	}
+	if { $width eq "" || $height eq "" } {
 	    if { $options(-minwidth) != "" && [winfo reqwidth $win] < $options(-minwidth) } {
 		set width $minwidth
 	    } else { set width [winfo reqwidth $win] }
 	    if { $options(-minheight) != "" && [winfo reqheight $win] < $options(-minheight) } {
 		set height $minheight
 	    } else { set height [winfo reqheight $win] }
-	    
-	    if { [wm state $top] == "withdrawn" } {
-		set x [expr [winfo screenwidth $top]/2-$width/2]
-		set y [expr [winfo screenheight $top]/2-$height/2]
+
+	    if { $width > $scr_w } { set width $scr_w }
+	    if { $height > $scr_h } { set height $scr_h }
+	}
+	if { $x eq "" || $y eq "" } {
+	    set big 0
+	    if { $width > .8*$scr_w } { set big 1 }
+	    if { $height > .8*$scr_h } { set big 1 }
+	
+	    if { $big || [wm state $top] == "withdrawn" } {
+		set x [expr {$scr_x+$scr_w/2-$width/2}]
+		set y [expr {$scr_y+$scr_h/2-$height/2}]
 	    } else {
-		set x [expr [winfo x $top]+[winfo width $top]/2-$width/2]
-		set y [expr [winfo y $top]+[winfo height $top]/2-$height/2]
+		set x [expr [winfo rootx $parent]+[winfo width $parent]/2-$width/2]
+		set y [expr [winfo rooty $parent]+[winfo height $parent]/2-$height/2]
+	    }
+	    if { $x+$width > $scr_w+$scr_x } {
+		set x [expr {$scr_x+$scr_w-$width}]
+	    }
+	    if { $y+$height > $scr_h+$scr_y } {
+		set y [expr {$scr_y+$scr_h-$height}]
 	    }
 	    if { $x < 0 } { set x 0 }
-	    if { $y < 0 } { set y 0 }
+	    if { $width > $scr_w } { set width $scr_w }
 
-	    wm geometry $win ${width}x${height}+${x}+$y
+	    set err [catch { package present wce }]
+	    if { !$err } {
+		foreach "x0 y0 x1 y1" [wce sipinfo] break
+		if { $y < $y0 } { set y $y0 }
+		if { $height > $y1-$y0 } {
+		    set height [expr {$y1-$y0}]
+		}
+	    }  else {
+		if { $y < 0 } { set y 0 }
+		if { $height > $scr_h } {
+		    set height $scr_h
+		}
+	    }
 	}
-	update idletasks
+
+	wm geometry $win ${width}x${height}+${x}+$y
+	
+	if { $options(-transient) } {
+	    if { [wm state $top] ne "withdrawn" } {
+		wm transient $win $parent
+	    }
+	}
+	update
 	wm deiconify $win
 	update idletasks
 	wm geometry $win [wm geometry $win]
 	focus $win
-	set oldGrab [grab current .]
-	if { $oldGrab ne "" } {
-	    set grabStatus [grab status $oldGrab]
-	    grab release $oldGrab
+	if { $options(-grab) } {
+	    set oldGrab [grab current $win]
+	    if { $oldGrab ne "" && [winfo exists $oldGrab] } {
+		set grabStatus [grab status $oldGrab]
+		grab release $oldGrab
+	    }
+	    catch { grab $win }
+	} else {
+	    set oldGrab ""
 	}
-	if { $options(-grab) } { grab $win }
+	update
+	set focus [focus -lastfor $win]
+	if { $focus ne "" } { tk::TabToWindow $focus }
+	if { $focus eq "" } { set focus $win }
+	focus -force $focus
     }
-    method waitforwindow { { raise "" } } {
+    method _applyaction { value } {
+	set action $value
+	if { $options(-callback) ne "" } {
+	    uplevel #0 $options(-callback) $win
+	}
+    }
+    method giveaction {} {
+	return $action
+    }
+    method waitforwindow { { raise 0 } } {
 
 	if { $raise == "" } {
 	    # this is to avoid the 2 second problem in KDE 2
@@ -1336,12 +1766,57 @@ snit::widget dialogwin_snit {
 	if { $raise } {
 	    raise [winfo toplevel $win]
 	}
+	if { $options(-callback) ne "" } {
+	    return
+	}
+	set action -2
 	vwait [varname action]
 	if { ![info exists action] } { return -1 }
 	return $action
     }
+    method withdrawwindow {} {
+	if { $options(-grab) } {
+	    grab release $win
+	    if { $oldGrab ne "" }  {
+		if { [info exists grabStatus] && $grabStatus ne "global" } {
+		    if { [winfo exists $oldGrab] && [winfo ismapped $oldGrab] } {
+		        grab $oldGrab
+		    }
+		} else {
+		    if { [winfo exists $oldGrab] && [winfo ismapped $oldGrab] } {
+		        grab -global $oldGrab
+		    }
+		}
+	    }
+	    set oldGrab ""
+	}
+	wm withdraw $win
+    }
+    method deiconifywindow {} {
+	if { $options(-grab) } {
+	    set oldGrab [grab current $win]
+	    if { $oldGrab ne "" && [winfo exists $oldGrab] } {
+		set grabStatus [grab status $oldGrab]
+		grab release $oldGrab
+	    }
+	    catch { grab $win }
+	} else {
+	    set oldGrab ""
+	}
+	wm deiconify $win
+    }
+    method iswaiting {} {
+	if { [info exists action] && $action == -2 } { return 1 }
+	return 0
+    }
     method giveentryvalue {} {
 	return $entryvalue
+    }
+    method give_repeat_my_answer {} {
+	return $repeat_my_answer
+    }
+    method exists_uservar { key } {
+	return [info exists uservar($key)]
     }
     method give_uservar { args } {
 	switch -- [llength $args] {
@@ -1349,7 +1824,7 @@ snit::widget dialogwin_snit {
 		#nothing
 	    }
 	    2 {
-		set  uservar([lindex $args 0]) [lindex $args 1]
+		set uservar([lindex $args 0]) [lindex $args 1]
 	    }
 	    default {
 		error "error in give_uservar"
@@ -1360,16 +1835,220 @@ snit::widget dialogwin_snit {
     method set_uservar_value { key newvalue } {
 	set uservar($key) $newvalue
     }
-    method give_uservar_value { key } {
-	return $uservar($key)
+    method give_uservar_value { args } {
+	set key [lindex $args 0]
+	switch -- [llength $args] {
+	    1 {
+		return $uservar($key)
+	    }
+	    2 {
+		if { [info exists uservar($key)] } {
+		    return $uservar($key)
+		} else {
+		    return [lindex $args 1]
+		}
+	    }
+	    default {
+		error "error in give_uservar_value"
+	    }
+	}
+    }
+    method unset_uservar { key } {
+	unset uservar($key)
+    }
+    typemethod exists_typeuservar { key } {
+	return [info exists typeuservar($key)]
+    }
+    typemethod set_typeuservar_value { key newvalue } {
+	set typeuservar($key) $newvalue
+    }
+    typemethod give_typeuservar_value { args } {
+	set key [lindex $args 0]
+	switch -- [llength $args] {
+	    1 {
+		return $typeuservar($key)
+	    }
+	    2 {
+		if { [info exists typeuservar($key)] } {
+		    return $typeuservar($key)
+		} else {
+		    return [lindex $args 1]
+		}
+	    }
+	    default {
+		error "error in give_typeuservar_value"
+	    }
+	}
+    }
+    typemethod unset_typeuservar { key} {
+	unset typeuservar($key)
+    }
+    typemethod clear_do_not_ask_again { message } {
+	if { ![info exists typeuservar(do_not_ask_again)] } { return }
+	set d $typeuservar(do_not_ask_again)
+	dict unset d $message
+	set typeuservar(do_not_ask_again) $d
     }
     method add_trace_to_uservar { key cmd } {
 	trace add variable [varname uservar($key)] write "$cmd;#"
 	lappend traces [list [varname uservar($key)] write "$cmd;#"]
     }
+    method add_traceN_to_uservar { key cmd } {
+	append cmd " \[[list $self give_uservar_value $key]\]"
+	trace add variable [varname uservar($key)] write "$cmd;#"
+	lappend traces [list [varname uservar($key)] write "$cmd;#"]
+    }
+    method eval_uservar_traces { key } {
+	set uservar($key) $uservar($key)
+    }
+    # dict contains values and active widgets for these values
+    # example: if dict contains:
+    #    value1 "w1 w2" value2 "w3 w4"
+    # when value of key is changed to 'value1', widgets w1 w2 will be enabled
+    # and widgets w3 w4 will be disabled
+    # if widget is a number, it refers to a button
+    method enable_disable_on_key { args } {
+	set optional {
+	    { -clear "" 0 }
+	}
+	set compulsory "key dict"
+	parse_args $optional $compulsory $args
+
+	if { $clear } {
+	    $self remove_traces_to_uservar $key [mymethod _enable_disable_on_key_helper]*
+	}
+	$self add_trace_to_uservar $key [mymethod _enable_disable_on_key_helper \
+		$key $dict]
+	catch { $self _enable_disable_on_key_helper $key $dict }
+    }
+    method _enable_disable_on_key_helper { key dict args } {
+	dict for "n v" $dict {
+	    if { $n ne $uservar($key) } {
+		foreach w $v {
+		    if { [string is integer $w] } {
+		        switch $w {
+		            1 { $self disableok }
+		            0 { $self disablecancel }
+		            default { $self disablebutton $w }
+		        }
+		    } else {
+		        set i_action disable
+		        if { [regexp {^([-+])(.*)} $w {} sign w] } {
+		            if { $sign eq "-" } {
+		                set i_action enable
+		            } else {
+		                continue
+		            }
+		        }
+		        $self _enable_disable_widget $w $i_action
+		    }
+		}
+	    }
+	}
+	set n $uservar($key)
+	if { [dict exists $dict $n] } {
+	    set v [dict get $dict $n]
+	} elseif { [dict exists $dict ""] } {
+	    set v [dict get $dict ""]
+	} else { set v "" }
+	
+	foreach w $v {
+	    if { [string is integer $w] } {
+		switch $w {
+		    1 { $self enableok }
+		    0 { $self enablecancel }
+		    default { $self enablebutton $w }
+		}
+	    } else {
+		set i_action enable
+		if { [regexp {^([-+])(.*)} $w {} sign w] } {
+		    if { $sign eq "-" } { set i_action disable }
+		}
+		$self _enable_disable_widget $w $i_action
+	    }
+	}
+    }
+    method _enable_disable_widget { w enable_disable } {
+	switch [winfo class $w] {
+	    Canvas {
+		switch $enable_disable {
+		    enable { $w itemconfigure all -fill black }
+		    disable { $w itemconfigure all -fill grey }
+		}
+	    }
+	    default {
+		switch $enable_disable {
+		    enable {
+		        set err [catch { $w state !disabled }]
+		        if { $err } { catch { $w configure -state normal } }
+		    }
+		    disable {
+		        set err [catch { $w state disabled }]
+		        if { $err } { catch { $w configure -state disabled } }
+		    }
+		}
+	    }
+	}
+	foreach i [winfo children $w] {
+	    $self _enable_disable_widget $i $enable_disable
+	}
+    }
+    # dict contains values and "key2 newvalue" pairs for these values
+    # example: if dict contains:
+    #    value1 "key2 1" value2 "key2 0 key3 v" default "key4 1"
+    # when value of key is changed to 'value1', the value of key "key2" is
+    # changed to "1". when value of key is changed to 'value2', the value
+    # of key "key2" is changed t0 "0" and the value of "key3" is changed to "v"
+    # for any other value, key4 is changed to 1
+    # there can be a "default" value that is applied if none of the other values apply
+    # if a value for a variable is not given, it is just updated to raise traces
+    method change_key_on_key { args } {
+	set optional {
+	    { -clear "" 0 }
+	}
+	set compulsory "key dict"
+	parse_args $optional $compulsory $args
+	
+	if { $clear } {
+	    $self remove_traces_to_uservar $key [mymethod _change_key_on_key_helper]*
+	}
+	$self add_trace_to_uservar $key [mymethod _change_key_on_key_helper \
+		$key $dict]
+	catch { $self _change_key_on_key_helper $key $dict }
+    }
+    method _change_key_on_key_helper { key dict args } {
+	set n $uservar($key)
+	if { [dict exists $dict $n] } {
+	    set v [dict get $dict $n]
+	    if { [llength $v]%2 == 1 } {
+		lappend v $uservar([lindex $v end])
+	    }
+	    foreach "k v" $v {
+		set uservar($k) $v
+	    }
+	} elseif { [dict exists $dict default] } {
+	    set v [dict get $dict default]
+	    if { [llength $v]%2 == 1 } {
+		lappend v $uservar([lindex $v end])
+	    }
+	    foreach "k v" $v {
+		set uservar($k) $v
+	    }
+	}
+    }
+    method remove_traces_to_uservar { key { cmd_pattern "" } } {
+	foreach i $traces {
+	    if { [lindex $i 0] eq [varname uservar($key)] } {
+		if { $cmd_pattern eq "" || [string match $cmd_pattern [lindex $i 2]] } {
+		    eval trace remove variable $i
+		}
+	    }
+	}
+    }
+    method add_destroy_handler { cmd } {
+	lappend destroy_handlers $cmd
+    }
 }
-}
-namespace import -force ::dialogwinmsgs::*
 
 image create photo dialogwinquestionhead -data {
     R0lGODlhKAAoAKUAAPHY8+y9+dmX1bxLt7EMprATqsIXtsE0tdaGz+bK2s94yt4UxeUNzNgK
@@ -1400,7 +2079,7 @@ image create photo dialogwinquestionhead -data {
 
 if 0 {
     dialogwin_snit $win._ask -title [_ "Action"] -okname [_ "New password"] \
-	-morebuttons [list [_ "Uncrypt"]] -entrytext [_ "Choose action to perform:"]
+	-morebuttons [list [_ "Uncrypt"]] -entrytext [_ "Choose action to perform"]:
     set action [$win._ask createwindow]
     destroy $win._ask
     if { $action <= 0 } {  return }
@@ -1414,10 +2093,10 @@ if 0 {
 
 if 0 {
     dialogwin_snit $win._ask -title [_ "Enter password"] -entrytype password \
-	-entrylabel [_ "Password:"] -entrytext [_ "Enter password to encrypt:"]
+	-entrylabel [_ "Password"]: -entrytext [_ "Enter password to encrypt"]:
     set action [$win._ask createwindow]
     while 1 {
-	if { $action <= 0 } { 
+	if { $action <= 0 } {
 	    destroy $win._ask
 	    return
 	}
@@ -1432,24 +2111,384 @@ if 0 {
 #     COMPLEX: user defined widgets
 
 if 0 {
-    dialogwin_snit $win._ask -title [_ "Change page type"] -entrytext \
-	[_ "Choose a new page type for page '%s'" $page]
-    set f [$win._ask giveframe]
+    set w [dialogwin_snit $win._ask -title [_ "Change page type"] -entrytext \
+	    [_ "Choose a new page type for page '%s'" $page] \
+	    -morebuttons [list [_ "Yes to all"] [_ "No to all"] [_ No]]]
+#-grab 0 -callback [mymethod preferences_win_apply] -okname -
+    set f [$w giveframe]
     if { $type eq "" } { set type Normal }
     label $f.l1 -text [_ "Current type: %s" $type]
     label $f.l2 -text [_ "New type:"]
-    ComboBox $f.cb1 -textvariable [$win._ask give_uservar newtype $type] -values \
+    ComboBox $f.cb1 -textvariable [$w give_uservar newtype $type] -values \
 	[list Normal Home] -editable 0
     tk::TabToWindow $f.cb1
-    bind $f.cb1 <Return> [list $win._ask invokeok]
+    bind $f.cb1 <Return> [list $w invokeok]
     grid $f.l1 - -sticky w -pady 2
     grid $f.l2 $f.cb1 -sticky w -padx 2 -pady "2 4"
     grid configure $f.cb1 -sticky ew
     grid columnconfigure $f 1 -weight 1
 
-    set action [$win._ask createwindow]
-    set newtype [$win._ask give_uservar_value newtype]
-    destroy $win._ask
+    set action [$w createwindow]
+    set newtype [$w give_uservar_value newtype]
+    destroy $w
     if { $action <= 0 } {  return }
     if { $newtype eq "Normal" } { set newtype "" }
+
+#     switch -- [$w giveaction] {
+#         -1 - 0 { destroy $w }
+#         1 - 2 {
+#
+#             if { [$w giveaction] == 1 } { destroy $w }
+#         }
+#     }
 }
+
+
+snit::widgetadaptor wizard_snit {
+    option -image ""
+    option -on_exit_callback ""
+
+    delegate method * to hull
+    delegate option * to hull
+
+    # every element is composed of: title build_callback check_callback has_finish_button
+    # is_labelframe is_hidden previous_page
+    # check_callback can be void on all pages except the last
+    variable dataList ""
+
+    variable curr_callback
+    variable frame
+
+    constructor {args} {
+	installhull using dialogwin_snit -callback [mymethod _callback] \
+	    -morebuttons [list [_ Previous] [_ Next] [_ Finish] [_ Cancel]] \
+	    -okname - -cancelname - -geometry 500x300 -transient 1
+
+	$self configurelist $args
+	
+	set f [$win giveframe]
+	
+	ttk::label $f.l1
+	if { $options(-image) ne "" } {
+	    $f.l1 configure -image $options(-image)
+	}
+	set frame [ttk::labelframe $f.f1]
+	
+	grid $f.l1 $frame -sticky nsew
+	grid configure $frame -padx 5 -pady 5
+	grid columnconfigure $f 1 -weight 1
+	grid rowconfigure $f 0 -weight 1
+	
+	set curr_callback 0
+	
+	$win changebuttongridoptions 5 -padx "20 0"
+	$win createwindow
+    }
+    method create_page { args } {
+	
+	set optional {
+	    { -check_callback callback "" }
+	    { -has_finish_button boolean 0 }
+	    { -is_labelframe boolean 1 }
+	    { -is_hidden boolean 0 }
+	    { -previous_page number|title "" }
+	}
+	set compulsory "title build_callback"
+	parse_args $optional $compulsory $args
+	
+	if { $previous_page ne "" && ![string is integer -strict $previous_page] } {
+	    set ipos [lsearch -exact -index 0 $dataList $previous_page]
+	    if { $ipos == -1 } {
+		error "error in create_page. previous_page not existant"
+	    }
+	    set previous_page [expr {$ipos+1}]
+	}
+	
+	set elm [list $title $build_callback $check_callback $has_finish_button \
+		$is_labelframe $is_hidden $previous_page]
+
+	lappend dataList $elm
+	return [llength $dataList]
+    }
+    method edit_page { num args } {
+	
+	incr num -1
+	
+	set optional {
+	    { -title title "" }
+	    { -build_callback callback "" }
+	    { -check_callback callback "" }
+	    { -has_finish_button boolean -1 }
+	    { -is_labelframe boolean -1 }
+	    { -is_hidden boolean -1 }
+	    { -previous_page number|title "" }
+	}
+	set compulsory ""
+	parse_args $optional $compulsory $args
+	
+	if { $previous_page ne "" && ![string is integer -strict $previous_page] } {
+	    set ipos [lsearch -exact -index 0 $dataList $previous_page]
+	    if { $ipos == -1 } {
+		error "error in edit_page. previous_page not existant"
+	    }
+	    set previous_page [expr {$ipos+1}]
+	}
+	
+	set idx 0
+	foreach i $optional {
+	    foreach "opt type def" $i break
+	    set opt [string trimleft $opt -]
+	    if { [set $opt] ne $def } {
+		lset dataList $num $idx [set $opt]
+	    }
+	    incr idx
+	}
+    }
+    method open_page { num } {
+	set curr_callback [expr {$num-1}]
+	$self _open_window ahead
+    }
+    method _open_window { direction } {
+
+	while 1 {
+	    set elm [lindex $dataList $curr_callback]
+	    if { $elm eq "" } { return }
+	    foreach [list title build_callback check_callback has_finish_button \
+		    is_labelframe is_hidden previous_page] $elm break
+	    if { !$is_hidden } { break }
+	    switch $direction {
+		ahead { incr curr_callback }
+		behind { incr curr_callback -1 }
+	    }
+	}
+	eval destroy [winfo children $frame]
+	set i [grid info $frame]
+	destroy $frame
+	if { $is_labelframe } {
+	    ttk::labelframe $frame -text $title
+	} else {
+	    ttk::frame $frame
+	}
+	eval grid $frame $i
+
+	lappend build_callback $win $frame
+	uplevel #0 $build_callback
+	
+	$win configure -title $title
+	
+	if { $curr_callback == 0 } {
+	    $win disablebutton 2
+	} else {
+	    $win enablebutton 2
+	}
+	if { $curr_callback == [llength $dataList]-1 } {
+	    $win disablebutton 3
+	    $win showhidebutton 4 show
+	} else {
+	    $win enablebutton 3
+	    if { $has_finish_button == 1 } {
+		$win showhidebutton 4 show
+	    } else {
+		$win showhidebutton 4 hide
+	    }
+	}
+	if { [wm state $win] ne "normal" } {
+	    $self deiconifywindow
+	}
+    }
+    method _callback { f } {
+	switch -- [$win giveaction] {
+	    -1 - 0 - 5 {
+		return [$self withdraw]
+	    }
+	    2 {
+		set previous_page [lindex $dataList $curr_callback 6]
+		if { $previous_page ne "" } {
+		    set curr_callback [expr {$previous_page-1}]
+		} else {
+		    incr curr_callback -1
+		}
+		$self _open_window behind
+	    }
+	    3 - 4 {
+		set check_callback [lindex $dataList $curr_callback 2]
+		set ret ""
+		if { $check_callback ne "" } {
+		    lappend check_callback $win $frame
+		    if { [$win giveaction] == 4 } {
+		        lappend check_callback finish
+		    } else {
+		        lappend check_callback next
+		    }
+		    set err [catch { uplevel #0 $check_callback } ret]
+		    if { $err } {
+		        if { $ret ne "" } {
+		            snit_messageBox -parent $win -message $ret
+		        }
+		        return
+		    }
+		}
+		if { $ret eq "finish" || [$win giveaction] == 4 } {
+		    return [$self withdraw]
+		} elseif { [string is integer -strict $ret] } {
+		    set curr_callback [expr {$ret-1}]
+		} elseif { $ret ne "" } {
+		    set ipos [lsearch -exact -index 0 $dataList $ret]
+		    if { $ipos == -1 } {
+		        error "error in check_callback return value. page not existant"
+		    }
+		    set curr_callback $ipos
+		} else {
+		    incr curr_callback
+		}
+		$self _open_window ahead
+	    }
+	}
+    }
+    method withdraw {} {
+	if { $options(-on_exit_callback) ne "" } {
+	    uplevel #0 $options(-on_exit_callback) $win
+	}
+	$self withdrawwindow
+	#destroy $win
+	return ""
+    }
+}
+
+################################################################################
+#    parse args
+#
+# example:
+#  proc myproc { args } {
+#     set optional {
+#         { -view_binding binding "" }
+#         { -file file "" }
+#         { -restart_file boolean 0 }
+#         { -flag1 "" 0 }
+#     }
+#     set compulsory "levels"
+#     parse_args $optional $compulsory $args
+#
+#     if { $view_binding ne "" } { puts hohoho }
+#     if { $flag1 } { puts "activated flag" }
+#  }
+#
+################################################################################
+
+
+# ramsan: i perquè toqueu això?
+if { [catch { package require compass_utils }] } {
+    proc ::parse_args { args } {
+	
+	set optional {
+	    { -raise_compulsory_error boolean 1 }
+	    { -compulsory_min min_number "" }
+	}
+	set compulsory "optional compulsory arguments"
+	
+	set cmdname [lindex [info level [expr {[info level]-1}]] 0]
+	
+	if { [string match -* [lindex $args 0]] } {
+	    parse_args $optional $compulsory $args
+	} else {
+	    set raise_compulsory_error 1
+	    set compulsory_min ""
+	    if { [llength $args] != [llength $compulsory] } {
+		uplevel 1 [list error [_parse_args_string $cmdname $optional \
+		            $compulsory $args]]
+		return ""
+	    }
+	    foreach $compulsory $args break
+	}
+	
+	foreach i $optional {
+	    foreach "name namevalue default" $i break
+	    set opts_value($name) $namevalue
+	    if { [llength $i] > 2 } {
+		set opts($name) $default
+	    }
+	}
+	while { [string match -* [lindex $arguments 0]] } {
+	    if { [lindex $arguments 0] eq "--" } {
+		set arguments [lrange $arguments 1 end]
+		break
+	    }
+	    foreach "name value" [lrange $arguments 0 1] break
+	    if { [regexp {(.*)=(.*)} $name {} name value] } {
+		set has_att_value 1
+	    } else {
+		set has_att_value 0
+	    }
+	    if { [info exists opts_value($name)] } {
+		if { $has_att_value } {
+		    set opts($name) $value
+		    set arguments [lrange $arguments 1 end]
+		} elseif { $opts_value($name) eq "" } {
+		    set opts($name) 1
+		    set arguments [lrange $arguments 1 end]
+		} else {
+		    set opts($name) $value
+		    set arguments [lrange $arguments 2 end]
+		}
+	    } else {
+		uplevel 1 [list error [_parse_args_string $cmdname $optional \
+		            $compulsory $args]]
+		return ""
+	    }
+	}
+	if { $raise_compulsory_error } {
+	    if { $compulsory_min ne "" } {
+		if { [llength $arguments] < $compulsory_min || \
+		    [llength $arguments] > [llength $compulsory] } {
+		    uplevel 1 [list error [_parse_args_string $cmdname $optional $compulsory]]
+		    return ""
+		}
+	    } elseif { [llength $arguments] != [llength $compulsory] } {
+		uplevel 1 [list error [_parse_args_string $cmdname $optional \
+		            $compulsory $args]]
+		return ""
+	    }
+	
+	}
+	foreach name [array names opts] {
+	    uplevel 1 [list set [string trimleft $name -] $opts($name)]
+	}
+	set inum 0
+	foreach i $compulsory {
+	    uplevel 1 [list set $i [lindex $arguments $inum]]
+	    incr inum
+	}
+	return [lrange $arguments $inum end]
+    }
+
+    proc ::_parse_args_string { cmd optional compulsory arguments } {
+	
+	set str "error. usage: $cmd "
+	foreach i $optional {
+	    foreach "name namevalue default" $i break
+	    append str "?$name $namevalue? "
+	}
+	append str $compulsory
+	append str "\n\targs: $arguments"
+	return $str
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
