@@ -1,6 +1,6 @@
 #
 # Fichier : acqfc.cap
-# Mise a jour $Id: acqfc.cap,v 1.48 2010-05-14 10:39:40 robertdelmas Exp $
+# Mise a jour $Id: acqfc.cap,v 1.49 2010-06-20 13:35:53 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -85,6 +85,7 @@ set caption(acqfc,arret_serie)               "Wait for the end of the current ex
 set caption(acqfc,lancecont)                 "Start continuous acquisition (exposure time %ss, binning %s) at %s UT "
 set caption(acqfc,lancecont_int)             "Continuously perform an acquisition at regular intervals (%s sec.) (exposure time %ss, binning %s) at %s UT "
 set caption(acqfc,enregen)                   "(Recorded with the generic name: %s).\n"
+set caption(acqfc,enrenongen)                "(Recorded with the name: %s).\n"
 set caption(acqfc,sansenr)                   "(not recorded).\n"
 set caption(acqfc,enrim)                     "At %s UT, recording of image %s.\n"
 set caption(acqfc,lect)                      "Read CCD"
@@ -178,6 +179,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,lancecont)              "Lancement d'acquisitions en continue (pose de %ss, binning %s) à %s TU "
    set caption(acqfc,lancecont_int)          "Lancement d'acquisitions à intervalle régulier (%s sec.) en continu (pose de %ss, binning %s) à %s TU "
    set caption(acqfc,enregen)                "(avec enregistrement sous le nom générique : %s).\n"
+   set caption(acqfc,enrenongen)             "(avec enregistrement sous le nom : %s).\n"
    set caption(acqfc,sansenr)                "(sans enregistrement).\n"
    set caption(acqfc,enrim)                  "A %s TU, enregistrement de l'image %s.\n"
    set caption(acqfc,lect)                   "Lecture CCD"
@@ -271,6 +273,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,lancecont)              "Lancio di una acquisizione continua (posa di %ss, binning %s) a %s TU "
    set caption(acqfc,lancecont_int)          "Lancio di una acquisizione a intervalli regolari (%s sec.) continua (posa di %ss, binning %s) a %s TU "
    set caption(acqfc,enregen)                "(con salvataggio con il nomegenerico: %s).\n"
+   set caption(acqfc,enrenongen)             "(con salvataggio con il nome: %s).\n"
    set caption(acqfc,sansenr)                "(senza salvataggio).\n"
    set caption(acqfc,enrim)                  "A %s TU, salvataggio dell'immagine %s.\n"
    set caption(acqfc,lect)                   "Lettura CCD"
@@ -364,6 +367,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,lancecont)              "Lanzar una adquisición continua (expo. de %ss, binning %s) a %s TU "
    set caption(acqfc,lancecont_int)          "Realizar una secuencia contínua a intervalos regulares (%s seg.) (expo. de %ss, binning %s) a %s TU "
    set caption(acqfc,enregen)                "(guardando con el nombre genérico: %s).\n"
+   set caption(acqfc,enrenongen)             "(guardando con el nombre: %s).\n"
    set caption(acqfc,sansenr)                "(sin guardar).\n"
    set caption(acqfc,enrim)                  "A %s TU, guardando la imagen %s.\n"
    set caption(acqfc,lect)                   "Leer CCD"
@@ -457,6 +461,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,lancecont)              "Eine laufende Belichtung anlassen (Belichtung von %ss, binning %s) zum %s WZ "
    set caption(acqfc,lancecont_int)          "Eine Reihe von fortdauernde Belichtungen mit gleichmäßigen Zwischenzeit (%s sek.) starten (Belichtung von %ss, binning %s) zum %s WZ "
    set caption(acqfc,enregen)                "(mit Gattungsnamen: %s speichern).\n"
+   set caption(acqfc,enrenongen)             "(mit Namen: %s speichern).\n"
    set caption(acqfc,sansenr)                "(ohne Speicherung).\n"
    set caption(acqfc,enrim)                  "Bei %s WZ, %s Bild Speicherung.\n"
    set caption(acqfc,lect)                   "CCD Lesen"
@@ -550,6 +555,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,lancecont)              "Lançamento de aquisições em contínuo (exposição de %ss, binning %s) às %s TU "
    set caption(acqfc,lancecont_int)          "Lançamento de aquisições em contínuo de intervalo regular (%s seg.) (exposição de %ss, binning %s) às %s TU "
    set caption(acqfc,enregen)                "(com salvaguarda sob o nome genérico: %s).\n"
+   set caption(acqfc,enrenongen)             "(com salvaguarda sob o nome: %s).\n"
    set caption(acqfc,sansenr)                "(sem salvaguarda).\n"
    set caption(acqfc,enrim)                  "Às %s TU, salvaguarda da imagem %s.\n"
    set caption(acqfc,lect)                   "Ler CCD"
@@ -642,6 +648,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,lancecont)              "Start continuous acquisition (exposure time %ss, binning %s) at %s UT "
    set caption(acqfc,lancecont_int)          "Continuously perform an acquisition at regular intervals (%s sec.) (exposure time %ss, binning %s) at %s UT "
    set caption(acqfc,enregen)                "(Recorded with the generic name: %s).\n"
+   set caption(acqfc,enrenongen)             "(Recorded with the name: %s).\n"
    set caption(acqfc,sansenr)                "(not recorded).\n"
    set caption(acqfc,enrim)                  "At %s UT, recording of image %s.\n"
    set caption(acqfc,lect)                   "Read CCD"
@@ -734,6 +741,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,lancecont)              "Start continuous acquisition (exposure time %ss, binning %s) at %s UT "
    set caption(acqfc,lancecont_int)          "Continuously perform an acquisition at regular intervals (%s sec.) (exposure time %ss, binning %s) at %s UT "
    set caption(acqfc,enregen)                "(Recorded with the generic name: %s).\n"
+   set caption(acqfc,enrenongen)             "(Recorded with the name: %s).\n"
    set caption(acqfc,sansenr)                "(not recorded).\n"
    set caption(acqfc,enrim)                  "At %s UT, recording of image %s.\n"
    set caption(acqfc,lect)                   "Read CCD"
@@ -826,6 +834,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,lancecont)              "Start continuous acquisition (exposure time %ss, binning %s) at %s UT "
    set caption(acqfc,lancecont_int)          "Continuously perform an acquisition at regular intervals (%s sec.) (exposure time %ss, binning %s) at %s UT "
    set caption(acqfc,enregen)                "(Recorded with the generic name: %s).\n"
+   set caption(acqfc,enrenongen)             "(Recorded with the name: %s).\n"
    set caption(acqfc,sansenr)                "(not recorded).\n"
    set caption(acqfc,enrim)                  "At %s UT, recording of image %s.\n"
    set caption(acqfc,lect)                   "Read CCD"
