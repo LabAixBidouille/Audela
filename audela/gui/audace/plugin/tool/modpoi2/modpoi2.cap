@@ -1,6 +1,6 @@
 #
 # Fichier : modpoi2.cap
-# Mise a jour $Id: modpoi2.cap,v 1.7 2010-06-19 16:56:10 robertdelmas Exp $
+# Mise a jour $Id: modpoi2.cap,v 1.8 2010-06-20 15:10:53 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,6 +12,11 @@ global caption langage
 # *************** Version anglaise ****************************
 
 set caption(modpoi2,title)                           "Aiming Model V 2"
+
+set caption(modpoi2,menu,create)                     "New"
+set caption(modpoi2,menu,edition)                    "# Edition"
+set caption(modpoi2,menu,editModel)                  "# Modifier le modèle de pointage"
+set caption(modpoi2,menu,editHorizon)                "# Modifier l'horizon"
 
 set caption(modpoi2,model,name)                      "Name"
 set caption(modpoi2,model,comment)                   "Comments"
@@ -80,9 +85,15 @@ set caption(modpoi2,wiz1b,refraction_1)              "Note: This mount computes 
 In this case, Aud'ACE does not calculate this correction."
 set caption(modpoi2,wiz1b,refraction_2)              "Note: This mount does not compute\nthe refraction correction for GOTO\n\
 movements. In this case, Aud'ACE performs this calculation."
+set caption(modpoi2,wiz1b,haNb)                      "# Nombre d'angles horaires."
+set caption(modpoi2,wiz1b,deNb)                      "# Nombre de déclinaisons."
+set caption(modpoi2,wiz1b,prev)                      "<< Back"
+set caption(modpoi2,wiz1b,next)                      "Next >>"
 
 set caption(modpoi2,wiz1c,title)                     "Aiming Model: Self-centering"
 set caption(modpoi2,wiz1c,title2)                    "Self-centering"
+set caption(modpoi2,wiz1c,prev)                      "<< Back"
+set caption(modpoi2,wiz1c,next)                      "Next >>"
 set caption(modpoi2,wiz1c,xyc)                       "Put the star on coordinates:"
 set caption(modpoi2,wiz1c,xc)                        "x ="
 set caption(modpoi2,wiz1c,yc)                        "y ="
@@ -102,9 +113,23 @@ set caption(modpoi2,wiz2,next)                       "Compute >>"
 set caption(modpoi2,wiz2,prev)                       "<< Back"
 
 set caption(modpoi2,wiz3,title)                      "Aiming Model: Aiming at Star Number "
+set caption(modpoi2,wiz3,title2)                     "Aiming at Star Number "
 set caption(modpoi2,wiz3,pas_etoile)                 "No more stars. Close the 'Aiming Model' tool."
 set caption(modpoi2,wiz3,catalogNotFound)            "# Fichier catalogue absent : \n%s"
 set caption(modpoi2,wiz3,cannot)                     "If something is blocking your line of sight,\nclick on this button to choose another star."
+set caption(modpoi2,wiz3,comment_1)                  "\
+The coordinates\n\
+sent to the telescope include\n\
+precession, aberration,\n\
+nutation and refraction\n\
+corrections."
+set caption(modpoi2,wiz3,comment_2)                  "\
+The coordinates\n\
+sent to the telescope include\n\
+precession, aberration\n\
+and nutation corrections."
+set caption(modpoi2,wiz3,next)                       "Go to Star >>"
+set caption(modpoi2,wiz3,prev)                       "<< Back"
 
 set caption(modpoi2,wiz4,title)                      "Aiming Model: Center Star Number "
 set caption(modpoi2,wiz4,title2)                     "Center Star Number "
@@ -168,6 +193,11 @@ set caption(modpoi2,horizon,HADEC)                   "HADEC"
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(modpoi2,title)                        "Modèle de pointage V2"
+
+   set caption(modpoi2,menu,create)                  "Nouveau"
+   set caption(modpoi2,menu,edition)                 "Edition"
+   set caption(modpoi2,menu,editModel)               "Modifier le modèle de pointage"
+   set caption(modpoi2,menu,editHorizon)             "Modifier l'horizon"
 
    set caption(modpoi2,model,name)                   "Nom"
    set caption(modpoi2,model,comment)                "Commentaire"
@@ -236,9 +266,15 @@ part et d'autre du méridien."
 Aud'ACE ne calcule pas cette correction pour lui."
    set caption(modpoi2,wiz1b,refraction_2)           "Nota : Cette monture ne tient pas compte de\nla correction de la réfraction pour les GOTO.\n\
 Aud'ACE se charge de ce calcul pour lui."
+   set caption(modpoi2,wiz1b,haNb)                   "Nombre d'angles horaires."
+   set caption(modpoi2,wiz1b,deNb)                   "Nombre de déclinaisons."
+   set caption(modpoi2,wiz1b,prev)                   "<< Précédent"
+   set caption(modpoi2,wiz1b,next)                   "Suivant >>"
 
    set caption(modpoi2,wiz1c,title)                  "Modèle de pointage : Centrage automatique"
    set caption(modpoi2,wiz1c,title2)                 "Centrage automatique"
+   set caption(modpoi2,wiz1c,prev)                   "<< Précédent"
+   set caption(modpoi2,wiz1c,next)                   "Suivant >>"
    set caption(modpoi2,wiz1c,xyc)                    "Positionner l'étoile sur les coordonnées :"
    set caption(modpoi2,wiz1c,xc)                     "x ="
    set caption(modpoi2,wiz1c,yc)                     "y ="
@@ -258,9 +294,23 @@ Aud'ACE se charge de ce calcul pour lui."
    set caption(modpoi2,wiz2,prev)                    "<< Précédent"
 
    set caption(modpoi2,wiz3,title)                   "Modèle de pointage : Pointage de l'étoile numéro "
+   set caption(modpoi2,wiz3,title2)                  "Pointage de l'étoile numéro "
    set caption(modpoi2,wiz3,pas_etoile)              "Il n'y a plus d'étoile. Vous devez\nfermer l'outil 'Modèle de pointage'."
    set caption(modpoi2,wiz3,catalogNotFound)         "Fichier catalogue absent : \n%s"
    set caption(modpoi2,wiz3,cannot)                  "Si un obstacle ne permet pas de pointer cette étoile,\ncliquer sur ce bouton pour en choisir une autre."
+   set caption(modpoi2,wiz3,comment_1)               "\
+   Les coordonnées\n\
+   envoyées au télescope incluent\n\
+   les corrections de précession,\n\
+   d'aberration, de nutation\n\
+   et de réfraction."
+   set caption(modpoi2,wiz3,comment_2)               "\
+   Les coordonnées\n\
+   envoyées au télescope incluent\n\
+   les corrections de précession,\n\
+   d'aberration et de nutation."
+   set caption(modpoi2,wiz3,next)                    "Pointer >>"
+   set caption(modpoi2,wiz3,prev)                    "<< Précédent"
 
    set caption(modpoi2,wiz4,title)                   "Modèle de pointage : Centrage de l'étoile numéro "
    set caption(modpoi2,wiz4,title2)                  "Centrage de l'étoile numéro "
