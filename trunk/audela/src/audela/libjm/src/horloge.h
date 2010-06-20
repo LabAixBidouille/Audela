@@ -3,7 +3,7 @@
  * @brief : gestion de l'horloge système
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
   *
- * Mise à jour $Id: horloge.h,v 1.3 2010-05-26 12:17:41 jacquesmichelet Exp $
+ * Mise à jour $Id: horloge.h,v 1.4 2010-06-20 12:18:20 jacquesmichelet Exp $
 *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
@@ -32,17 +32,12 @@ public :
     static int EcritHeurePC (int annee, int mois, int jour, int heure, int minute, int seconde, int milli);
     static int ReglageHeurePC (long *decalage_reel, long decalage);
     static int Magnitude (double flux_etoile, double flux_ref, double mag_ref, double *mag_etoile);
-    static int jd(int annee,int mois,double jour,double *jj);
-    static int jd2 (int annee,int mois,int jour,int heure,int minute,int seconde,int milli,double *jj);
-    static int jc (int *annee, int *mois, double *jour, double jj);
-    static int jc2(int *annee, int *mois, int *jour, int *heure, int *minute, int *seconde, int *milli, double jj);
 
     static int CmdHeurePC(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
     static int CmdReglageHeurePC(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-    static int CmdJd(ClientData clientData,Tcl_Interp *interp, int argc,char *argv[]);
-    static int CmdJd2(ClientData clientData,Tcl_Interp *interp, int argc,char *argv[]);
-    static int CmdJc(ClientData clientData,Tcl_Interp *interp, int argc,char *argv[]);
-    static int CmdJc2(ClientData clientData,Tcl_Interp *interp, int argc,char *argv[]);
+    static int jd( int annee,int mois,double jour,double *jj );
+    static int jc (int *annee, int *mois, double *jour, double jj);
+
 };
 }
 

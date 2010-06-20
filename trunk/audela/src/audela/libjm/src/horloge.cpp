@@ -3,7 +3,7 @@
  * @brief : interface TCL<->C pour la gestion de l'horloge système
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: horloge.cpp,v 1.3 2010-05-26 12:17:41 jacquesmichelet Exp $
+ * Mise à jour $Id: horloge.cpp,v 1.4 2010-06-20 12:18:20 jacquesmichelet Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
@@ -46,135 +46,58 @@ namespace LibJM {
  * jour  : valeur du jour decimal correspondant
  * *jj   : valeur du jour julien converti
  * ********************************************/
-int Horloge::jd(int annee,int mois,double jour,double *jj)
+int Horloge::jd( int annee,int mois,double jour,double *jj )
 {
-    double a,m,j,aa,bb;
+    double a, m, j, aa, bb;
 
-    a=(double)annee;
-    m=(double)mois;
-    j=jour;
+    a = (double)annee;
+    m = (double)mois;
+    j = jour;
 
-    if (m<=2)
+    if ( m <= 2 )
     {
-        a=a-1;
-        m=m+12;
+        a = a - 1;
+        m = m + 12;
     }
 
-    aa=floor(a/100);
-    bb=2-aa+floor(aa/4);
-    *jj=floor(365.25*(a+4716))+floor(30.6001*(m+1))+j+bb-1524.5;
+    aa = floor( a / 100 );
+    bb = 2 - aa + floor( aa / 4 );
+    *jj = floor( 365.25 * ( a + 4716 ) ) + floor( 30.6001 * ( m + 1 ) ) + j + bb - 1524.5;
     return Generique::OK;
 }
 
-/* ******************* jd2 *********************
- * Donne le jour julien correspondant a la date
- * annee   : valeur de l'annee correspondante
- * mois    : valeur du mois correspondant
- * jour    : valeur du jour correspondant
- * heure   : valeur des heures correspondantes
- * minute  : valeur des minutes correspondantes
- * minute  : valeur des secondes correspondantes
- * seconde : valeur des milli-secondes correspondantes
- * *jj   : valeur du jour julien converti
- * ********************************************/
-int Horloge::jd2 (int annee,int mois,int jour,int heure,int minute,int seconde,int milli,double *jj)
-{
-    double jour_decimal;
-    jour_decimal = jour + (heure / 24.0) + (minute / 1440.0)
-        + (seconde / 86400.0) + (milli / 86400000.0);
-    return jd(annee, mois, jour_decimal, jj);
-}
-
-int jc (int *annee, int *mois, double *jour, double jj)
+int Horloge::jc( int *annee, int *mois, double *jour, double jj )
 {
     double jjj, z, f, a, alpha, b, c, d, e;
 
     jjj = jj + 0.5;
-    z = floor(jjj);
+    z = floor( jjj );
     f = jjj - z;
 
-    if (z < 2299161.0)
+    if ( z < 2299161.0 )
         a = z;
     else
     {
-        alpha = floor((z - 1867216.25)/36524.25);
-        a = z + 1 + alpha - floor(alpha / 4);
+        alpha = floor( ( z - 1867216.25 ) / 36524.25 );
+        a = z + 1 + alpha - floor( alpha / 4 );
     }
 
     b = a + 1524;
-    c = floor((b - 121.1) / 365.25);
-    d = floor(365.25 * c);
-    e = floor((b - d) / 30.6001);
+    c = floor( ( b - 121.1 ) / 365.25 );
+    d = floor( 365.25 * c );
+    e = floor( ( b - d ) / 30.6001 );
 
-    *jour = b - d - floor(30.6001 * e) + f;
-    if (e < 14)
-        *mois = (int)(e - 1);
+    *jour = b - d - floor( 30.6001 * e ) + f;
+    if ( e < 14 )
+        *mois = (int)( e - 1 );
     else
-        *mois = (int)(e - 13);
-    if (*mois > 2)
-        *annee = (int)(c - 4716);
+        *mois = (int)( e - 13 );
+    if ( *mois > 2 )
+        *annee = (int)( c - 4716 );
     else
-        *annee = (int)(c - 4715);
+        *annee = (int)( c - 4715 );
 
     return Generique::OK;
-}
-
-
-int Horloge::jc (int *annee, int *mois, double *jour, double jj)
-{
-    double jjj, z, f, a, alpha, b, c, d, e;
-
-    jjj = jj + 0.5;
-    z = floor(jjj);
-    f = jjj - z;
-
-    if (z < 2299161.0)
-        a = z;
-    else
-    {
-        alpha = floor((z - 1867216.25)/36524.25);
-        a = z + 1 + alpha - floor(alpha / 4);
-    }
-
-    b = a + 1524;
-    c = floor((b - 121.1) / 365.25);
-    d = floor(365.25 * c);
-    e = floor((b - d) / 30.6001);
-
-    *jour = b - d - floor(30.6001 * e) + f;
-    if (e < 14)
-        *mois = (int)(e - 1);
-    else
-        *mois = (int)(e - 13);
-    if (*mois > 2)
-        *annee = (int)(c - 4716);
-    else
-        *annee = (int)(c - 4715);
-
-    return Generique::OK;
-}
-
-
-/* ***************** jc2 ****************************
- * Conversion d'un jour julien en jour calendaire
- * **************************************************/
-int Horloge::jc2(int *annee, int *mois, int *jour, int *heure, int *minute, int *seconde, int *milli, double jj)
-{
-  double jour_decimal, t;
-
-
-  /* Conversion en date calendaire */
-  jc(annee, mois, &jour_decimal, jj);
-  *jour = (int)floor(jour_decimal);
-  t = 24.0 * (jour_decimal - (double)(*jour));
-  *heure = (int)floor(t);
-  t = 60.0 * (t - (double)(*heure));
-  *minute = (int)floor(t);
-  t = 60.0 * (t - (double)(*minute));
-  *seconde = (int)floor(t);
-  t = 1000.0 * (t - (double)(*seconde));
-  *milli = (int)floor(t);
-  return Generique::OK;
 }
 
 

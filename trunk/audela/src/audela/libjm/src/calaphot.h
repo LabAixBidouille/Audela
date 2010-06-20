@@ -3,7 +3,7 @@
  * @brief : définition des macros et des objets se rapportant à la photométrie et à la modélisation
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: calaphot.h,v 1.7 2010-06-19 16:58:42 jacquesmichelet Exp $
+ * Mise à jour $Id: calaphot.h,v 1.8 2010-06-20 12:18:20 jacquesmichelet Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
@@ -116,15 +116,6 @@ public :
     static int CmdAjustementGaussien(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] );
     static int CmdNiveauTraces(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] );
 
-    int CmdMagnitude( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] );
-    int CmdIncertitude( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] );
-
-    int AjustementGaussien( int *, double *, double *, Calaphot::ajustement *, Calaphot::ajustement *, int *, double *, double * );
-    int SoustractionGaussienne( int *, Calaphot::ajustement * );
-    int Magnitude( double, double, double, double * );
-    void niveau_traces( int );
-
-    CBuffer * set_buffer (int);
     static int _log_verbosity;
     static std::ofstream log_stream;
     static std::string calaphot_log_file_name;
@@ -141,6 +132,15 @@ private :
     int LectureRectangle (struct rectangle * rect, gsl_vector *vect_s);
     int Incertitude (double flux_etoile, double flux_fond, double nb_pixel, double nb_pixel_fond, double gain, double sigma, double *signal_bruit, double *incertitude, double *bruit_flux);
     void InitRectangle (int * cadre, rectangle * rect);
+    int CmdMagnitude( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] );
+    int CmdIncertitude( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] );
+
+    int AjustementGaussien( int *, double *, double *, Calaphot::ajustement *, Calaphot::ajustement *, int *, double *, double * );
+    int SoustractionGaussienne( int *, Calaphot::ajustement * );
+    int Magnitude( double, double, double, double * );
+    void niveau_traces( int );
+
+    CBuffer * set_buffer (int);
 };
 
 }

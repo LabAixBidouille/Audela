@@ -2,7 +2,7 @@
  * @file : divers_tcl.cpp
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: divers_tcl.cpp,v 1.3 2010-05-26 12:00:17 jacquesmichelet Exp $
+ * Mise à jour $Id: divers_tcl.cpp,v 1.4 2010-06-20 12:18:20 jacquesmichelet Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
@@ -29,43 +29,6 @@
 
 
 namespace LibJM {
-/*************** CmdDms2deg **************/
-/* Conversion des degres/minutes/secondes*/
-/* en degres decimaux                    */
-/*****************************************/
-int Divers::CmdDms2deg(ClientData clientData,Tcl_Interp *interp,int argc,char *argv[])
-{
-  char s[256];
-  double angle;
-
-  /* Verifie que la commande a le bon nombre d'argument
-   * --------------------------------------------------
-   */
-  if (argc!=4)
-    {
-      sprintf(s,"Usage: %s d m s", argv[0]);
-      Tcl_SetResult(interp,s,TCL_VOLATILE);
-      return TCL_ERROR;
-    }
-
-  /* Calcul de la convertion
-   * -----------------------
-   */
-  if (dms2deg(atoi(argv[1]),atoi(argv[2]),atof(argv[3]),&angle) == Generique::PB)
-    {
-      strcpy(s,"Erreur dans la fonction dms2deg");
-      Tcl_SetResult(interp,s,TCL_VOLATILE);
-      return TCL_ERROR;
-    }
-
-  /* Sortie du résultat sur la console
-   * ---------------------------------
-   */
-  sprintf(s,"%f",angle);
-  Tcl_SetResult(interp,s,TCL_VOLATILE);
-  return TCL_OK;
-}
-
 /************************************************************/
 /* Initialisation des parametres d'un tampon d'image        */
 /************************************************************/

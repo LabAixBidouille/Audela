@@ -3,7 +3,7 @@
  * @brief : interface TCL<->C pour la gestion de l'horloge système
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: horloge_tcl.cpp,v 1.3 2010-05-26 12:17:41 jacquesmichelet Exp $
+ * Mise à jour $Id: horloge_tcl.cpp,v 1.4 2010-06-20 12:18:20 jacquesmichelet Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
@@ -28,130 +28,7 @@
 #include "horloge.h"
 
 namespace LibJM {
-/****************** CmdJd *****************/
-/* Calcul du jour Julien                  */
-/******************************************/
-int Horloge::CmdJd(ClientData clientData,Tcl_Interp *interp,int argc,char *argv[])
-{
-  char s[256];
-  double jj;
 
-  /* Vérifie que la commande a le bon nombre d'argument
-   * --------------------------------------------------
-   */
-  if (argc!=4)
-    {
-      sprintf(s,"Usage: %s annee mois jour", argv[0]);
-      Tcl_SetResult(interp,s,TCL_VOLATILE);
-      return TCL_ERROR;
-    }
-
-  /* Calcul de la conversion
-   * -----------------------
-   */
-  if (jd(atoi(argv[1]),atoi(argv[2]),atof(argv[3]),&jj) == Generique::PB)
-    {
-      strcpy(s,"Erreur dans la fonction jd");
-      Tcl_SetResult(interp,s,TCL_VOLATILE);
-      return TCL_ERROR;
-    }
-
-  /* Sortie du résultat sur la console
-   * ---------------------------------
-   */
-  sprintf(s,"%f",jj);
-  Tcl_SetResult(interp,s,TCL_VOLATILE);
-  return TCL_OK;
-}
-
-/***************** CmdJd2 *****************/
-/* Calcul du jour Julien                  */
-/******************************************/
-int Horloge::CmdJd2(ClientData clientData,Tcl_Interp *interp,int argc,char *argv[])
-{
-  char s[256];
-  double jj;
-
-  /* Vérifie que la commande a le bon nombre d'argument
-   * --------------------------------------------------
-   */
-  if (argc!=8)
-    {
-      sprintf(s,"Usage: %s ann�e mois jour heure minute seconde milliseconde", argv[0]);
-      Tcl_SetResult(interp,s,TCL_VOLATILE);
-      return TCL_ERROR;
-    }
-
-  /* Calcul de la conversion
-   * -----------------------
-   */
-  if (jd2(atoi(argv[1]),atoi(argv[2]),atoi(argv[3]),atoi(argv[4]),
-          atoi(argv[5]),atoi(argv[6]),atoi(argv[7]),&jj) == Generique::PB)
-    {
-      strcpy(s,"Erreur dans la fonction jd2");
-      Tcl_SetResult(interp,s,TCL_VOLATILE);
-      return TCL_ERROR;
-    }
-
-  /* Sortie du resultat sur la console
-   * ---------------------------------
-   */
-  sprintf(s,"%f",jj);
-  Tcl_SetResult(interp,s,TCL_VOLATILE);
-  return TCL_OK;
-}
-
-/******************************************/
-/* Conversion en jour calendaire          */
-/******************************************/
-int Horloge::CmdJc(ClientData clienData, Tcl_Interp *interp, int argc, char *argv[])
-{
-  char s[256];
-  int annee, mois;
-  double jour;
-
-  if (argc != 2)
-    {
-      sprintf(s, "Usage: %s jour_julien", argv[0]);
-      Tcl_SetResult(interp,s,TCL_VOLATILE);
-      return TCL_ERROR;
-    }
-  if (jc(&annee, &mois, &jour, atof(argv[1])) == Generique::PB)
-    {
-      strcpy(s,"Erreur dans la fonction jc");
-      Tcl_SetResult(interp,s,TCL_VOLATILE);
-      return TCL_ERROR;
-    }
-  sprintf(s,"%04d %02d %09.7f", annee, mois, jour);
-  Tcl_SetResult(interp,s,TCL_VOLATILE);
-  return TCL_OK;
-}
-
-
-/******************************************/
-/* Conversion en jour calendaire          */
-/******************************************/
-int Horloge::CmdJc2(ClientData clienData, Tcl_Interp *interp, int argc, char *argv[])
-{
-  char s[256];
-  int annee, mois, jour, heure, minute, seconde, milli;
-
-  if (argc != 2)
-    {
-      sprintf(s, "Usage: %s jour_julien", argv[0]);
-      Tcl_SetResult(interp,s,TCL_VOLATILE);
-      return TCL_ERROR;
-    }
-  if (jc2(&annee, &mois, &jour, &heure, &minute, &seconde, &milli, atof(argv[1])) == Generique::PB)
-    {
-      strcpy(s,"Erreur dans la fonction jc2");
-      Tcl_SetResult(interp,s,TCL_VOLATILE);
-      return TCL_ERROR;
-    }
-  sprintf(s,"%04d %02d %02d %02d %02d %02d %03d", annee, mois, jour, heure, minute, seconde, milli);
-  Tcl_SetResult(interp,s,TCL_VOLATILE);
-  return TCL_OK;
-}
 /******************************************/
 /* Gestion de l'heure PC                  */
 /******************************************/

@@ -3,7 +3,7 @@
  * @brief : point d'entrée dans la bibliothèque
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: libjm.cpp,v 1.7 2010-06-19 17:11:50 jacquesmichelet Exp $
+ * Mise à jour $Id: libjm.cpp,v 1.8 2010-06-20 12:18:20 jacquesmichelet Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
@@ -61,14 +61,9 @@ extern "C" int Jm_Init( Tcl_Interp *interp )
     Tcl_CreateCommand( interp, "jm_versionlib", (Tcl_CmdProc *)LibJM::Generique::CmdVersionLib, (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL );
     Tcl_CreateCommand( interp, "jm_repertoire_log", (Tcl_CmdProc *)LibJM::Generique::CmdRepertoireLog, (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL );
 
-    Tcl_CreateCommand( interp,"jm_dms2deg", (Tcl_CmdProc *)LibJM::Divers::CmdDms2deg, (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL );
     Tcl_CreateCommand( interp,"jm_inittamponimage", (Tcl_CmdProc *)LibJM::Divers::CmdInitTamponImage, (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL );
     Tcl_CreateCommand( interp,"jm_infoimage", (Tcl_CmdProc *)LibJM::Divers::CmdInfoImage, (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL );
 
-    Tcl_CreateCommand( interp,"jm_jd",(Tcl_CmdProc *)LibJM::Horloge::CmdJd,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
-    Tcl_CreateCommand( interp,"jm_jd2",(Tcl_CmdProc *)LibJM::Horloge::CmdJd2,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
-    Tcl_CreateCommand( interp,"jm_jc",(Tcl_CmdProc *)LibJM::Horloge::CmdJc,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
-    Tcl_CreateCommand( interp,"jm_jc2",(Tcl_CmdProc *)LibJM::Horloge::CmdJc2,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
     Tcl_CreateCommand( interp,"jm_heurepc",(Tcl_CmdProc *)LibJM::Horloge::CmdHeurePC,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
     Tcl_CreateCommand( interp,"jm_reglageheurepc",(Tcl_CmdProc *)LibJM::Horloge::CmdReglageHeurePC,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
 

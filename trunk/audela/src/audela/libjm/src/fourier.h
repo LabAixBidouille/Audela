@@ -148,9 +148,6 @@ public :
         void init( int, int, Fourier::ordre, Fourier::type );
         void copie( Fourier::Parametres & );
     };
-    Fourier( );
-    ~Fourier( );
-    static Fourier * _unique_instance;
     static Fourier * instance( );
 
 
@@ -170,6 +167,10 @@ public :
     void niveau_traces( int );
 
 private :
+    Fourier( );
+    ~Fourier( );
+    static Fourier * _unique_instance;
+
     /* Algorithmes sur les images */
     void tfd_directe_image( const char *, const char *, const char *, Fourier::format, Fourier::ordre );
     void tfd_inverse_image( const char * src_1, const char * src_2, const char * dest );
