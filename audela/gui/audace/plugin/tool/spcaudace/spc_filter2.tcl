@@ -1,6 +1,6 @@
 
 
-# Mise a jour $Id: spc_filter2.tcl,v 1.10 2010-06-19 14:40:19 bmauclaire Exp $
+# Mise a jour $Id: spc_filter2.tcl,v 1.11 2010-06-20 05:30:09 bmauclaire Exp $
 # Mise a jour Patrick Lailly 29 mai 2009
 
 
@@ -313,8 +313,10 @@ proc spc_lowresfilterfile { args } {
            set nechant [ lindex $args 6 ]
         }
       }
-      set filename [ spc_piecewiselinearfilter $profile $ext_coef $regul_weight "auto" $catalog_file $nechant $regul_list $visu ] 
-      return [ file rootname $filename ]
+      set resultat1 [ spc_piecewiselinearfilter $profile $ext_coef $regul_weight "auto" $catalog_file $nechant $regul_list $visu ]
+      set filename [ spc_rmzeros "$resultat1" ]
+      file delete -force "$audace(rep_images)/$resultat1$conf(extension,defaut)"
+      return $filename
    } else { 
       ::console::affiche_erreur "Usage: spc_lowresfilterfile profile ? fichier_catalogue ? ext_coef ? regul_weight ?  options : regul_list ? visu ? nechant ?\n\n"
       return 0
