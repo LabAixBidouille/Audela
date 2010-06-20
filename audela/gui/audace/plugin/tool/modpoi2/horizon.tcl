@@ -2,7 +2,7 @@
 # Fichier : horizon.tcl
 # Description : fabrication de la ligne d'horizon
 # Auteur : Michel Pujol
-# Mise à jour $Id: horizon.tcl,v 1.4 2010-06-19 10:39:47 robertdelmas Exp $
+# Mise à jour $Id: horizon.tcl,v 1.5 2010-06-20 15:07:29 robertdelmas Exp $
 #
 
 namespace eval ::horizon {
@@ -392,8 +392,9 @@ proc ::horizon::displayHorizon { visuNo } {
    set x [lindex $horizons 0]
    set y [lindex $horizons 1]
    ::plotxy::plot $x $y r
-   ::plotxy::xlabel "azimuth (degrees)"
-   ::plotxy::ylabel "elevation (degrees)"
+   ::plotxy::title  "$::caption(modpoi2,horizon,title)"
+   ::plotxy::xlabel "$::caption(modpoi2,azimutDeg)"
+   ::plotxy::ylabel "$::caption(modpoi2,elevationDeg)"
    ::plotxy::position {20 20 800 400}
    ::plotxy::hold on
 
