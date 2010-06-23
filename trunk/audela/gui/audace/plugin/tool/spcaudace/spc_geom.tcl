@@ -2,7 +2,7 @@
 # Procedures des traitements géométriques
 # Lancement en console : source $audace(rep_scripts)/spcaudace/spc_geom.tcl
 
-# Mise a jour $Id: spc_geom.tcl,v 1.6 2010-03-20 21:21:49 bmauclaire Exp $
+# Mise a jour $Id: spc_geom.tcl,v 1.7 2010-06-23 04:45:03 bmauclaire Exp $
 
 
 
@@ -948,7 +948,7 @@ proc spc_smileximgs { args } {
     set pourcentimg 0.01
 
     if { [llength $args] == 3 } {
-	set filename [ lindex $args 0 ]
+       set filename [ file rootname [ lindex $args 0 ] ]
 	set ycenter [ lindex $args 1 ]
 	set a [ lindex $args 2 ]
 
