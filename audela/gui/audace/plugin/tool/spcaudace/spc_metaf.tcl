@@ -2,7 +2,7 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spcaudace spc_metaf.tcl ]
 
-# Mise a jour $Id: spc_metaf.tcl,v 1.15 2010-06-20 20:15:58 bmauclaire Exp $
+# Mise a jour $Id: spc_metaf.tcl,v 1.16 2010-06-23 04:48:42 bmauclaire Exp $
 
 
 
@@ -779,10 +779,51 @@ proc spc_lampe2calibre { args } {
 
 
        #--- Correction du l'inclinaison (tilt) :
-       #::console::affiche_resultat "\n\n**** Correction du l'inclinaison (tilt) du 1ier spectre ****\n\n"
-       #set ftilt [ spc_tiltautoimgs ${img}-t n ]
-       #file delete -force "$audace(rep_images)/${img}-t"
+       #
+       # ::console::affiche_resultat "\n\n**** Correction du l'inclinaison (tilt) du 1ier spectre ****\n\n"
+       # set ftilt [ spc_tiltautoimgs ${img}-t n ]
+       # file delete -force "$audace(rep_images)/${img}-t"
        set ftilt ${img}-t
+
+        if { 1==0 } {
+	    #-- Cas de plusieurs fichiers :
+	    set liste_images [ lsort -dictionary [ glob -dir "$audace(rep_images)" -tails "${filename}\[0-9\]$conf(extension,defaut)" "${filename}\[0-9\]\[0-9\]$conf(extension,defaut)" "${filename}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut)" ] ]
+	    set nbsp [ llength $liste_images ]
+	    #--- Détermination de l'angle de tilt :
+	    ::console::affiche_resultat "Régistration verticale prélimiaire et somme de $nbsp spectres...\n"
+	    set freg [ spc_register "$filename" ]
+	    #- 070908 : sadd -> smean :
+            #- 091214 : smean -> sadd :
+	    set fsomme [ bm_sadd "$freg" ]
+	    delete2 $freg $nbsp
+	    set results [ spc_findtilt "$fsomme" ]
+	    file delete -force "$audace(rep_images)/$fsomme$conf(extension,defaut)"
+	    set angle [ lindex $results 0 ]
+	    set xrot [ lindex $results 1 ]
+	    set pente [ lindex $results 3 ]
+
+	    #-- Test la valeur de l'angle :
+	    if { abs($angle)>$spcaudace(tilt_limit) } {
+		set angle 0.0
+		set pente 0.0
+		::console::affiche_erreur "Attention : angle limite de tilt $spcaudace(tilt_limit) dépassé : mise à 0°\n"
+	    }
+
+	    #--- Tilt de la série d'images :
+	    set i 1
+	    ::console::affiche_resultat "$nbsp spectres à pivoter...\n\n"
+	    foreach lefichier $liste_images {
+		set fichier [ file rootname $lefichier ]
+		# set yrot [ lindex [ spc_detect $fichier ] 0 ]
+		# set spectre_tilte [ spc_tilt2 $fichier $angle $xrot $yrot ]
+		set spectre_tilte [ spc_tilt3 $fichier $pente ]
+		file rename -force "$audace(rep_images)/$spectre_tilte$conf(extension,defaut)" "$audace(rep_images)/${filename}tilt-$i$conf(extension,defaut)"
+		::console::affiche_resultat "Spectre corrigé sauvé sous ${filename}tilt-$i$conf(extension,defaut).\n\n"
+		incr i
+	    }
+         }
+
+
 
        #--- Retrait des cosmics :
        if { $methcos == "o" } {
@@ -1361,6 +1402,21 @@ proc spc_traite2srinstrum { args } {
        }
 
 
+       #--- Correction du l'inclinaison (tilt) :
+       if { $flag_nonstellaire==1 } {
+	   #- Pas de correction de l'inclinaison pour les spectres non stellaires :
+	   ::console::affiche_erreur "\n\nPAS DE CORRECTION DE L'INCLINAISON POUR LES SPECTRES NON STELLAIRES\n\n"
+	   set ftilt "$fpretrait"
+       } else {
+	   ::console::affiche_resultat "\n\n**** Correction du l'inclinaison (tilt) ****\n\n"
+	   if { $methejtilt == "o" } {
+	       set ftilt [ spc_tiltautoimgs $fpretrait o ]
+	   } else {
+	       set ftilt [ spc_tiltautoimgs $fpretrait n ]
+	   }
+       }
+
+
 
        #--- Corrections géométriques des raies (smile selon l'axe x ou slant) :
        ::console::affiche_resultat "\n\n**** Corrections géométriques du spectre 2D ****\n\n"
@@ -1370,29 +1426,14 @@ proc spc_traite2srinstrum { args } {
 	   set spc_ycenter [ lindex [ buf$audace(bufNo) getkwd "SPC_SLX1" ] 1 ]
 	   set spc_cdeg2 [ lindex [ buf$audace(bufNo) getkwd "SPC_SLX2" ] 1 ]
 	   ::console::affiche_resultat "\n** Correction de la courbure des raies (smile selon l'axe x)... **\n"
-	   set fgeom [ spc_smileximgs $fpretrait $spc_ycenter $spc_cdeg2 ]
+	   set fgeom [ spc_smileximgs $ftilt $spc_ycenter $spc_cdeg2 ]
        } elseif { [ lsearch $listemotsclef "SPC_SLA" ] !=-1 } {
 	   set pente [ lindex [ buf$audace(bufNo) getkwd "SPC_SLA" ] 1 ]
 	   ::console::affiche_resultat "\n** Correction de l'inclinaison des raies (slant)... **\n"
-	   set fgeom [ spc_slant2imgs $fpretrait $pente ]
+	   set fgeom [ spc_slant2imgs $ftilt $pente ]
        } else {
 	   ::console::affiche_resultat "\n** Aucune correction géométrique nécessaire. **\n"
-	   set fgeom "$fpretrait"
-       }
-
-
-       #--- Correction du l'inclinaison (tilt) :
-       if { $flag_nonstellaire==1 } {
-	   #- Pas de correction de l'inclinaison pour les spectres non stellaires :
-	   ::console::affiche_erreur "\n\nPAS DE CORRECTION DE L'INCLINAISON POUR LES SPECTRES NON STELLAIRES\n\n"
-	   set ftilt "$fgeom"
-       } else {
-	   ::console::affiche_resultat "\n\n**** Correction du l'inclinaison (tilt) ****\n\n"
-	   if { $methejtilt == "o" } {
-	       set ftilt [ spc_tiltautoimgs $fgeom o ]
-	   } else {
-	       set ftilt [ spc_tiltautoimgs $fgeom n ]
-	   }
+	   set fgeom "$ftilt"
        }
 
 
@@ -1768,12 +1809,12 @@ proc spc_traitestellaire { args } {
 	   if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
 	       set dispersion [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
 	       if { $dispersion <= $spcaudace(dmax) } {
-		   ::console::affiche_resultat "\n\n**** Calibration avec les raies telluriques ****\n\n"
-                   #if { $spcaudace(rm_edges)=="o" } 
-                   #   set spectre_calo1 [ spc_calibretelluric "$spectre_traite" ]
-                   #   set spectre_calo [ spc_rmedges "$spectre_calo1" ]
-                   #   file delete -force "$audace(rep_images)/$spectre_calo1$conf(extension,defaut)"
-                      set spectre_calo [ spc_calibretelluric "$spectre_traite" ]
+                  ::console::affiche_resultat "\n\n**** Calibration avec les raies telluriques ****\n\n"
+                  #if { $spcaudace(rm_edges)=="o" } 
+                  #   set spectre_calo1 [ spc_calibretelluric "$spectre_traite" ]
+                  #   set spectre_calo [ spc_rmedges "$spectre_calo1" ]
+                  #   file delete -force "$audace(rep_images)/$spectre_calo1$conf(extension,defaut)"
+                  set spectre_calo [ spc_calibretelluric "$spectre_traite" ]
 	       } else {
 		   ::console::affiche_erreur "\n\n**** Calibration avec les raies telluriques non réalisée car dispersion insuffisante ****\n\n"
 		   set spectre_calo "$spectre_traite"
