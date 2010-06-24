@@ -2,7 +2,7 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spcaudace spc_metaf.tcl ]
 
-# Mise a jour $Id: spc_metaf.tcl,v 1.16 2010-06-23 04:48:42 bmauclaire Exp $
+# Mise a jour $Id: spc_metaf.tcl,v 1.17 2010-06-24 20:48:12 bmauclaire Exp $
 
 
 
@@ -1070,6 +1070,7 @@ proc spc_traite2rinstrum { args } {
 	   #- 04012007 :
 	   file rename -force "$audace(rep_images)/$lampecalibree$conf(extension,defaut)" "$audace(rep_images)/lampe_redressee_calibree-$nomimg$conf(extension,defaut)"
 	   set lampecalibree "lampe_redressee_calibree-$nomimg"
+           spc_loadfit "$lampecalibree"
        } elseif { $flag_calibration == 1 } {
 	   set lampecalibree "$lampe"
        }
@@ -1402,6 +1403,7 @@ proc spc_traite2srinstrum { args } {
        }
 
 
+
        #--- Correction du l'inclinaison (tilt) :
        if { $flag_nonstellaire==1 } {
 	   #- Pas de correction de l'inclinaison pour les spectres non stellaires :
@@ -1415,8 +1417,6 @@ proc spc_traite2srinstrum { args } {
 	       set ftilt [ spc_tiltautoimgs $fpretrait n ]
 	   }
        }
-
-
 
        #--- Corrections géométriques des raies (smile selon l'axe x ou slant) :
        ::console::affiche_resultat "\n\n**** Corrections géométriques du spectre 2D ****\n\n"
@@ -1438,14 +1438,7 @@ proc spc_traite2srinstrum { args } {
 
 
 
-       #--- Effacement des images prétraitées :
-       if { $rmfpretrait=="o" } {
-	   delete2 $fpretrait $nbimg
-       }
        #if { $rmfpretrait=="o" && [ file exists $audace(rep_images)/${fgeom}-1$conf(extension,defaut) ] }
-       set nbimg [ llength [ glob -dir $audace(rep_images) ${ftilt}\[0-9\]$conf(extension,defaut) ${ftilt}\[0-9\]\[0-9\]$conf(extension,defaut) ${ftilt}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
-
-
        #--- Appariement horizontal :
        ::console::affiche_resultat "\n\n**** Appariement horizontal de $nbimg images ****\n\n"
        if { $flag_2lamps == "o" } {
@@ -1453,6 +1446,14 @@ proc spc_traite2srinstrum { args } {
        } else {
           set fhreg "$fgeom"
        }
+
+
+       #--- Effacement des images prétraitées :
+       set nbimg [ llength [ glob -dir $audace(rep_images) ${ftilt}\[0-9\]$conf(extension,defaut) ${ftilt}\[0-9\]\[0-9\]$conf(extension,defaut) ${ftilt}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+       if { $rmfpretrait=="o" } {
+	   delete2 $fpretrait $nbimg
+       }
+
 
        #--- Appariement vertical de $nbimg images :
        ::console::affiche_resultat "\n\n**** Appariement vertical de $nbimg images ****\n\n"

@@ -2,7 +2,7 @@
 # Procedures des traitements géométriques
 # Lancement en console : source $audace(rep_scripts)/spcaudace/spc_geom.tcl
 
-# Mise a jour $Id: spc_geom.tcl,v 1.7 2010-06-23 04:45:03 bmauclaire Exp $
+# Mise a jour $Id: spc_geom.tcl,v 1.8 2010-06-24 20:48:12 bmauclaire Exp $
 
 
 
@@ -873,7 +873,7 @@ proc spc_smilex { args } {
 
 	    #-- Calcul du polynome d'ajustement de degré 2 sur la raie courbee cx^2+bx+a :
 	    set coefssmilex [ lindex [ spc_ajustdeg2 $ycoords $xcoords 1 ] 0 ]
-	    set c [ lindex $coefssmilex 2 ]
+	    set c [ expr $spcaudace(smilex_inv)*[ lindex $coefssmilex 2 ] ]
 	    set b [ lindex $coefssmilex 1 ]
 
 	    #-- Pour l'instant (061220), evite de faire un slant :
@@ -904,8 +904,8 @@ proc spc_smilex { args } {
 		}
 	    } else {
 		set deltay [ expr 0.5*($naxis2i-$naxis2) ]
-		set ycenter [ expr -$b/(2*$c)+$deltay ]
-		::console::affiche_resultat "Correction du smilex (ycenter=$ycenter, deg2=$c)...\n"
+		set ycenter [ expr -$spcaudace(smilex_inv)*$b/(2*$c)+$deltay ]
+                ::console::affiche_resultat "Correction du smilex (ycenter=$ycenter, deg2=$c)...\n"
 		buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
 		buf$audace(bufNo) imaseries "SMILEX ycenter=$ycenter coef_smile2=$c"
 		#--- Sauvegarde
@@ -943,14 +943,13 @@ proc spc_smilex { args } {
 
 proc spc_smileximgs { args } {
 
-    global audace
-    global conf
+    global conf audace spcaudace
     set pourcentimg 0.01
 
     if { [llength $args] == 3 } {
        set filename [ file rootname [ lindex $args 0 ] ]
-	set ycenter [ lindex $args 1 ]
-	set a [ lindex $args 2 ]
+       set ycenter [ lindex $args 1 ]
+       set a [ lindex $args 2 ]
 
 	::console::affiche_resultat "Coéfficients du smilex : ycenter=$ycenter, a=$a\n"
 	#--- Applique le smile au(x) spectre(s) incriminé(s)
@@ -1451,10 +1450,17 @@ proc spc_findtilt { args } {
        }
 
        #--- Elimination des bords gauche et droit :
+      set results_y [ spc_detect "$spectre_name" ]
+      set ycentre [ lindex $results_y 0 ]
+      set largeur_y [ expr 2*[ lindex $results_y 1 ] ]
+      set ydeb [ expr round($ycentre-$largeur_y) ]
+      set yfin [ expr round($ycentre+$largeur_y) ]
        buf$audace(bufNo) load "$audace(rep_images)/$spectre_name"
        set naxis2 [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
        set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
-       set windowcoords [ list [ expr round($spcaudace(pourcent_bordt)*$naxis1) ] 1 [ expr round($naxis1*(1-$spcaudace(pourcent_bordt))) ] $naxis2 ]
+       
+       # set windowcoords [ list [ expr round($spcaudace(pourcent_bordt)*$naxis1) ] 1 [ expr round($naxis1*(1-$spcaudace(pourcent_bordt))) ] $naxis2 ]
+       set windowcoords [ list [ expr round($spcaudace(pourcent_bordt)*$naxis1) ] $ydeb [ expr round($naxis1*(1-$spcaudace(pourcent_bordt))) ] $yfin ]
        buf$audace(bufNo) window $windowcoords
        buf$audace(bufNo) save "$audace(rep_images)/${spectre_name}_vcrop"
        set filename "${spectre_name}_vcrop"

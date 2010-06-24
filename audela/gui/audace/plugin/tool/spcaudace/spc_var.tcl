@@ -3,7 +3,7 @@
 #
 ####################################################################
 
-# Mise a jour $Id: spc_var.tcl,v 1.23 2010-06-13 12:54:02 bmauclaire Exp $
+# Mise a jour $Id: spc_var.tcl,v 1.24 2010-06-24 20:48:12 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -12,7 +12,7 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(version) "1.6.1 - 23/05/2010"
+set spcaudace(version) "1.6.2 - 24/06/2010"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
 
@@ -64,6 +64,9 @@ set spcaudace(binned_flat) "n"
 
 #-- Utilisation d'abord de la methode 1 de detection de l'angle de tilt. Par defaut, utilise que la methode 2 (valeur=n) :
 set spcaudace(tilt_normal) "n"
+
+#-- Inversion du sens de coubure de la correction du smilex (1, -1) :
+set spcaudace(smilex_inv) 1
 
 #-- Répertoire de la bibliothèque spectrale :
 set spcaudace(rep_spcbib) [ file join $spcaudace(rep_spc) data bibliotheque_spectrale ]
