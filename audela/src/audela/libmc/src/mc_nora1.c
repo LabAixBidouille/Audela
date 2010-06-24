@@ -124,6 +124,9 @@ void mc_norad_sgdp48(double jj,int sgp, struct elemorb *elem,double *xgeo,double
    omegao=elem->w;
    xmo=elem->m0;
    xincl=elem->i;
+	if (xincl==0) {
+		xincl=1e-12; /* added by AK to avoid NaN */
+	}
 	temp=twopi/xmnpda/xmnpda;
 	xno=xno*temp*xmnpda;
 	xndt2o=xndt2o*temp;
