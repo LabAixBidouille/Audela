@@ -2,7 +2,7 @@
 # Fichier : modpoi_main.tcl
 # Description : fenetre principale
 # Auteur : Michel Pujol
-# Mise à jour $Id: modpoi_main.tcl,v 1.8 2010-06-19 10:40:06 robertdelmas Exp $
+# Mise à jour $Id: modpoi_main.tcl,v 1.9 2010-06-25 17:15:09 robertdelmas Exp $
 #
 
 namespace eval ::modpoi2::main {
@@ -230,15 +230,15 @@ proc ::modpoi2::main::fillConfigPage { frm visuNo } {
       ::tablelist::tablelist $private($visuNo,starTable) \
          -columns [list \
             0 $::caption(modpoi2,star,amerNum) right \
-            0 $::caption(modpoi2,star,amerAz) right \
-            0 $::caption(modpoi2,star,amerEl) right \
-            0 $::caption(modpoi2,star,raShift)  right \
+            0 $::caption(modpoi2,star,amerAz)  right \
+            0 $::caption(modpoi2,star,amerEl)  right \
+            0 $::caption(modpoi2,star,raShift) right \
             0 $::caption(modpoi2,star,deShift) right \
-            0 $::caption(modpoi2,star,name) center \
-            0 $::caption(modpoi2,star,ra) center \
-            0 $::caption(modpoi2,star,de) center \
-            0 $::caption(modpoi2,star,date) center \
-            0 $::caption(modpoi2,star,haApp) center \
+            0 $::caption(modpoi2,star,name)    center \
+            0 $::caption(modpoi2,star,ra)      center \
+            0 $::caption(modpoi2,star,de)      center \
+            0 $::caption(modpoi2,star,date)    center \
+            0 $::caption(modpoi2,star,haApp)   center \
           ] \
          -xscrollcommand [list $paned1.star.xsb set] \
          -yscrollcommand [list $paned1.star.ysb set] \
@@ -552,7 +552,7 @@ proc ::modpoi2::main::onApplyModel { visuNo } {
             $::caption(modpoi2,modele_appliquer) \
             $::caption(modpoi2,modele_appliquer2) \
             question \
-            1  \
+            1 \
             "$::caption(audace,menu,enregistrer)" \
             "$::caption(audace,menu,enregistrer_sous)..." \
             "$::caption(modpoi2,choix,cancel)" \
