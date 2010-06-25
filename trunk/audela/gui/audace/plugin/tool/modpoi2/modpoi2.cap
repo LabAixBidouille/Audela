@@ -1,6 +1,6 @@
 #
 # Fichier : modpoi2.cap
-# Mise a jour $Id: modpoi2.cap,v 1.10 2010-06-23 17:37:02 robertdelmas Exp $
+# Mise a jour $Id: modpoi2.cap,v 1.11 2010-06-25 17:13:50 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -29,18 +29,24 @@ set caption(modpoi2,covarColumn)                     "# Covar."
 
 set caption(modpoi2,starList)                        "List of stars"
 set caption(modpoi2,star,amerNum)                    "Num"
+set caption(modpoi2,azimutEtoile)                    "Azimuth"
+set caption(modpoi2,elevationEtoile)                 "Elevation"
 set caption(modpoi2,star,amerAz)                     "Amer\nAzimuth"
 set caption(modpoi2,star,amerEl)                     "Amer\nElevation"
 set caption(modpoi2,star,name)                       "#HIP"
 set caption(modpoi2,star,date)                       "UT Date"
 set caption(modpoi2,star,ra)                         "RA\nJ2000"
 set caption(modpoi2,star,de)                         "DEC\nJ2000"
+set caption(modpoi2,star,RA)                         "RA"
+set caption(modpoi2,star,Dec)                        "Dec."
+set caption(modpoi2,star,magnitude)                  "Mag."
 set caption(modpoi2,star,raShift)                    "RA Shift\n(arcmin.)"
 set caption(modpoi2,star,deShift)                    "Dec. Shift\n(arcmin.)"
 set caption(modpoi2,star,raShiftOC)                  "RA O-C\n(arcmin.)"
 set caption(modpoi2,star,deShiftOC)                  "DEC O-C\n(arcmin.)"
 set caption(modpoi2,star,haApp)                      "Hour\nAngle"
 set caption(modpoi2,star,deApp)                      "DEC"
+set caption(modpoi2,star,select)                     "Select"
 
 set caption(modpoi2,chisquare)                       "Chisquare"
 
@@ -60,20 +66,14 @@ set caption(modpoi2,wiz1,title)                      "Pointing Model"
 set caption(modpoi2,wiz1,title2)                     "Establishing the Pointing Model"
 set caption(modpoi2,wiz1,next)                       "Next >>"
 set caption(modpoi2,wiz1,desc)                       "\
-This method consists in measuring\n\
-the pointing errors of your mount\n\
-and in computing the processing\n\
-formula between the J2000.0 coordinates\n\
-and the ones to send to the motors of\n\
-your mount.\n\n\
-This model is based on TPOINT.\n\
-It takes various errors into account:\n\
-encoder offset, lack of squareness non-perpendicularity\n\
-of axes (polar, declination, optical axes),\n\
-polar alignment and mechanical deflections\n\
-of the fork mount.\n\n\
-Model parameters are determined\n\
-by pointing stars on\n\
+This method consists in measuring the pointing errors of your mount\n\
+and in computing the processing formula between the J2000.0 coordinates\n\
+and the ones to send to the motors of your mount.\n\n\
+This model is based on TPOINT. It takes various errors into account:\n\
+encoder offset, lack of squareness non-perpendicularity of axes\n\
+(polar, declination, optical axes), polar alignment and\n\
+mechanical deflections of the fork mount.\n\n\
+Model parameters are determined by pointing stars on\n\
 both sides of the meridian."
 
 set caption(modpoi2,wiz1b,title)                     "Pointing Model: Pointing Parameters"
@@ -106,41 +106,39 @@ set caption(modpoi2,wiz1c,compositage)               "Number of Images to be Ave
 set caption(modpoi2,wiz2,title)                      "Pointing Model: Measurement of Pointing Deviations"
 set caption(modpoi2,wiz2,title2)                     "Measurement sequence of deviations between the aimed\nposition and the actual observed position"
 set caption(modpoi2,wiz2,minMagnitude)               "Min. Magnitude"
+set caption(modpoi2,wiz2,maxMagnitude)               "Max. Magnitude"
 set caption(modpoi2,wiz2,nbrePointAmer)              "Number of landmarks"
 set caption(modpoi2,wiz2,nbreEtoileMes)              "Number of measured stars"
 set caption(modpoi2,wiz2,nbreEtoileSelect)           "Number of selected stars"
 set caption(modpoi2,wiz2,next)                       "Compute >>"
 set caption(modpoi2,wiz2,prev)                       "<< Back"
 
-set caption(modpoi2,wiz3,title)                      "Pointing Model: Pointing at Star Number "
-set caption(modpoi2,wiz3,title2)                     "Pointing at Star Number "
+set caption(modpoi2,wiz3,title)                      "Pointing Model: Pointing at Star Number"
+set caption(modpoi2,wiz3,title2)                     "Pointing at Star Number"
 set caption(modpoi2,wiz3,pas_etoile)                 "No more stars. Close the 'Pointing Model' tool."
 set caption(modpoi2,wiz3,catalogNotFound)            "Catalog File not found: \n%s"
 set caption(modpoi2,wiz3,cannot)                     "If something is blocking your line of sight,\nclick on this button to choose another star."
 set caption(modpoi2,wiz3,comment_1)                  "\
-The coordinates\n\
-sent to the telescope include\n\
-precession, aberration,\n\
-nutation and refraction\n\
-corrections."
+The coordinates sent to the telescope include\n\
+precession, aberration, nutation\n\
+and refraction corrections."
 set caption(modpoi2,wiz3,comment_2)                  "\
-The coordinates\n\
-sent to the telescope include\n\
-precession, aberration\n\
-and nutation corrections."
+The coordinates sent to the telescope include\n\
+precession, aberration and nutation corrections."
 set caption(modpoi2,wiz3,next)                       "Go to Star >>"
 set caption(modpoi2,wiz3,prev)                       "<< Back"
 
-set caption(modpoi2,wiz4,title)                      "Pointing Model: Center Star Number "
-set caption(modpoi2,wiz4,title2)                     "Center Star Number "
+set caption(modpoi2,wiz4,title)                      "Pointing Model: Center Star Number"
+set caption(modpoi2,wiz4,title2)                     "Center Star Number"
 set caption(modpoi2,wiz4,comment)                    "\
-Center the star in the field (if possible, check\n\
-with a CCD image) using the\n\
-telescope hand controller buttons:"
+Center the star in the field (if possible, check with a\n\
+CCD image) using the telescope hand controller buttons:"
 set caption(modpoi2,wiz4,next)                       "Star Centered >>"
 set caption(modpoi2,wiz4,prev)                       "<< Back"
 set caption(modpoi2,wiz4,cannot)                     "$caption(modpoi2,wiz3,cannot)"
 set caption(modpoi2,wiz4,comment_auto)               "Automatic centering in progress..."
+set caption(modpoi2,wiz4,goto)                       "GOTO"
+set caption(modpoi2,wiz4,stopGoto)                   "STOP GOTO"
 set caption(modpoi2,wiz4,CoordJ2000)                 "J2000 Star\nCoordinates"
 set caption(modpoi2,wiz4,CoordNow)                   "Current Star\nCoordinates"
 set caption(modpoi2,wiz4,coordTelescope)             "Current Telescope\nCoordinates"
@@ -211,18 +209,24 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(modpoi2,starList)                     "Liste des étoiles"
    set caption(modpoi2,star,amerNum)                 "Num"
-   set caption(modpoi2,star,amerAz)                  "Amer\nAzimut"
-   set caption(modpoi2,star,amerEl)                  "Amer\nHauteur"
+   set caption(modpoi2,azimutEtoile)                 "Azimut  "
+   set caption(modpoi2,elevationEtoile)              "Hauteur"
+   set caption(modpoi2,star,amerAz)                  "Amer \nAzimut"
+   set caption(modpoi2,star,amerEl)                  "Amer  \nHauteur"
    set caption(modpoi2,star,name)                    "#HIP"
    set caption(modpoi2,star,date)                    "Date TU"
-   set caption(modpoi2,star,ra)                      "RA\nJ2000"
-   set caption(modpoi2,star,de)                      "DEC\nJ2000"
-   set caption(modpoi2,star,raShift)                 "Décal. RA\n(arcmin)"
-   set caption(modpoi2,star,deShift)                 "Décal. DEC\n(arcmin)"
-   set caption(modpoi2,star,raShiftOC)               "O-C RA\n(arcmin)"
-   set caption(modpoi2,star,deShiftOC)               "O-C DEC\n(arcmin)"
-   set caption(modpoi2,star,haApp)                   "Angle\nhoraire"
-   set caption(modpoi2,star,deApp)                   "DEC"
+   set caption(modpoi2,star,ra)                      "AD\nJ2000"
+   set caption(modpoi2,star,de)                      "Déc.\nJ2000"
+   set caption(modpoi2,star,RA)                      "     AD"
+   set caption(modpoi2,star,Dec)                     "    Déc."
+   set caption(modpoi2,star,magnitude)               "Mag."
+   set caption(modpoi2,star,raShift)                 "Décal. AD\n  (arcmin)  "
+   set caption(modpoi2,star,deShift)                 "Décal. Déc.\n   (arcmin)   "
+   set caption(modpoi2,star,raShiftOC)               "O-C AD\n(arcmin)"
+   set caption(modpoi2,star,deShiftOC)               "O-C Déc.\n(arcmin) "
+   set caption(modpoi2,star,haApp)                   "Angle \nhoraire"
+   set caption(modpoi2,star,deApp)                   "Déc."
+   set caption(modpoi2,star,select)                  "Sélection"
 
    set caption(modpoi2,chisquare)                    "Chisquare"
 
@@ -242,21 +246,15 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(modpoi2,wiz1,title2)                  "Détermination du modèle de pointage"
    set caption(modpoi2,wiz1,next)                    "Suivant >>"
    set caption(modpoi2,wiz1,desc)                    "\
-Procédure de mesure des défauts\n\
-de pointage de votre monture et\n\
-calcul de la fonction de passage\n\
-entre les coordonnées J2000.0 et \n\
-les coordonnées à pointer.\n\n\
-Ce modèle est adapté de TPOINT.\n\
-Il prend en compte les défauts\n\
-d'initialisation des codeurs,\n\
-de perpendicularité des axes\n\
-(horaire, de déclinaison et optique),\n\
-de la mise en station\n\
-et de la flexion mécanique de la fourche.\n\n\
-La détermination des paramètres du modèle\n\
-se réalise en pointant des étoiles de\n\
-part et d'autre du méridien."
+   Procédure de mesure des défauts de pointage de votre monture et\n\
+   calcul de la fonction de passage entre les coordonnées J2000.0 et\n\
+   les coordonnées à pointer.\n\n\
+   Ce modèle est adapté de TPOINT. Il prend en compte les défauts\n\
+   d'initialisation des codeurs, de perpendicularité des axes\n\
+   (horaire, de déclinaison et optique), de la mise en station\n\
+   et de la flexion mécanique de la fourche.\n\n\
+   La détermination des paramètres du modèle se réalise en pointant\n\
+   des étoiles de part et d'autre du méridien."
 
    set caption(modpoi2,wiz1b,title)                  "Modèle de pointage : Paramètres des pointages"
    set caption(modpoi2,wiz1b,title2)                 "Paramètres des pointages"
@@ -264,9 +262,9 @@ part et d'autre du méridien."
    set caption(modpoi2,wiz1b,nstars1)                "Nombre d'étoiles invalide."
    set caption(modpoi2,wiz1b,acqauto)                "Centrage automatique"
    set caption(modpoi2,wiz1b,refraction_1)           "Nota : Cette monture tient compte de la\ncorrection de la réfraction pour les GOTO.\n\
-Aud'ACE ne calcule pas cette correction pour lui."
+   Aud'ACE ne calcule pas cette correction pour elle."
    set caption(modpoi2,wiz1b,refraction_2)           "Nota : Cette monture ne tient pas compte de\nla correction de la réfraction pour les GOTO.\n\
-Aud'ACE se charge de ce calcul pour lui."
+   Aud'ACE se charge de ce calcul pour elle."
    set caption(modpoi2,wiz1b,haNb)                   "Nombre de zones en angle horaire"
    set caption(modpoi2,wiz1b,deNb)                   "Nombre de zones en déclinaison"
    set caption(modpoi2,wiz1b,prev)                   "<< Précédent"
@@ -288,42 +286,41 @@ Aud'ACE se charge de ce calcul pour lui."
    set caption(modpoi2,wiz2,title)                   "Modèle de pointage : Mesure des écarts de pointage"
    set caption(modpoi2,wiz2,title2)                  "Séquence de mesure des écarts entre la position\npointée et la position observée"
    set caption(modpoi2,wiz2,minMagnitude)            "Magnitude mini"
+   set caption(modpoi2,wiz2,maxMagnitude)            "Magnitude maxi"
    set caption(modpoi2,wiz2,nbrePointAmer)           "Nombre de points d'amer"
    set caption(modpoi2,wiz2,nbreEtoileMes)           "Nombre d'étoiles mesurées"
    set caption(modpoi2,wiz2,nbreEtoileSelect)        "Nombre d'étoiles sélectionnées"
    set caption(modpoi2,wiz2,next)                    "Calcul >>"
    set caption(modpoi2,wiz2,prev)                    "<< Précédent"
 
-   set caption(modpoi2,wiz3,title)                   "Modèle de pointage : Pointage de l'étoile numéro "
-   set caption(modpoi2,wiz3,title2)                  "Pointage de l'étoile numéro "
+   set caption(modpoi2,wiz3,title)                   "Modèle de pointage : Pointage de l'étoile numéro"
+   set caption(modpoi2,wiz3,title2)                  "Pointage de l'étoile numéro"
    set caption(modpoi2,wiz3,pas_etoile)              "Il n'y a plus d'étoile. Vous devez\nfermer l'outil 'Modèle de pointage'."
    set caption(modpoi2,wiz3,catalogNotFound)         "Fichier catalogue absent : \n%s"
    set caption(modpoi2,wiz3,cannot)                  "Si un obstacle ne permet pas de pointer cette étoile,\ncliquer sur ce bouton pour en choisir une autre."
    set caption(modpoi2,wiz3,comment_1)               "\
-   Les coordonnées\n\
-   envoyées au télescope incluent\n\
-   les corrections de précession,\n\
-   d'aberration, de nutation\n\
-   et de réfraction."
+   Les coordonnées envoyées au télescope incluent\n\
+   les corrections de précession, d'aberration,\n\
+   de nutation et de réfraction."
    set caption(modpoi2,wiz3,comment_2)               "\
-   Les coordonnées\n\
-   envoyées au télescope incluent\n\
-   les corrections de précession,\n\
-   d'aberration et de nutation."
+   Les coordonnées envoyées au télescope incluent\n\
+   les corrections de précession, d'aberration\n\
+   et de nutation."
    set caption(modpoi2,wiz3,next)                    "Pointer >>"
    set caption(modpoi2,wiz3,prev)                    "<< Précédent"
 
-   set caption(modpoi2,wiz4,title)                   "Modèle de pointage : Centrage de l'étoile numéro "
-   set caption(modpoi2,wiz4,title2)                  "Centrage de l'étoile numéro "
+   set caption(modpoi2,wiz4,title)                   "Modèle de pointage : Centrage de l'étoile numéro"
+   set caption(modpoi2,wiz4,title2)                  "Centrage de l'étoile numéro"
    set caption(modpoi2,wiz4,comment)                 "\
-Placer l'étoile au centre du champ (vérifier\n\
- éventuellement avec une image CCD) en agissant\n\
-sur les boutons de la raquette de commande\n\
-des directions :"
+   Placer l'étoile au centre du champ (vérifier éventuellement\n\
+   avec une image CCD) en agissant sur les boutons de la\n\
+   raquette de commande des directions :"
    set caption(modpoi2,wiz4,next)                    "Etoile centrée >>"
    set caption(modpoi2,wiz4,prev)                    "<< Précédent"
    set caption(modpoi2,wiz4,cannot)                  "$caption(modpoi2,wiz3,cannot)"
    set caption(modpoi2,wiz4,comment_auto)            "Centrage automatique en cours..."
+   set caption(modpoi2,wiz4,goto)                    "GOTO"
+   set caption(modpoi2,wiz4,stopGoto)                "STOP GOTO"
    set caption(modpoi2,wiz4,CoordJ2000)              "Coord. J2000\nétoile"
    set caption(modpoi2,wiz4,CoordNow)                "Coord. actuelles\nétoile"
    set caption(modpoi2,wiz4,coordTelescope)          "Coord. actuelles\ntélescope"
