@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise à jour $Id: telescope.tcl,v 1.56 2010-06-08 09:18:37 michelpujol Exp $
+# Mise à jour $Id: telescope.tcl,v 1.57 2010-06-25 17:16:35 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -421,6 +421,12 @@ proc ::telescope::decodeSpeedDlgShift { } {
          } elseif { $panneau(DlgShift,shiftSpeed) == "4" } {
             setSpeed "4"
          }
+      } elseif { $conf(telescope) == "temma" } {
+         if { $panneau(DlgShift,shiftSpeed) == "$caption(telescope,NS)" } {
+            setSpeed "1"
+         } elseif { $panneau(DlgShift,shiftSpeed) == "$caption(telescope,HS)" } {
+            setSpeed "2"
+         }
       } elseif { $conf(telescope) == "eqmod" } {
          switch $panneau(DlgShift,shiftSpeed) {
             "1" { setSpeed "1" }
@@ -430,12 +436,6 @@ proc ::telescope::decodeSpeedDlgShift { } {
             "5" { setSpeed "5" }
             "6" { setSpeed "6" }
             "7" { setSpeed "7" }
-         }
-      } elseif { $conf(telescope) == "temma" } {
-         if { $panneau(DlgShift,shiftSpeed) == "$caption(telescope,NS)" } {
-            setSpeed "1"
-         } elseif { $panneau(DlgShift,shiftSpeed) == "$caption(telescope,HS)" } {
-            setSpeed "2"
          }
       } else {
          #--- Inactif pour autres telescopes
@@ -537,6 +537,12 @@ proc ::telescope::decodeSpeedDlgShiftZadko { } {
          } elseif { $panneau(DlgShiftZadko,shiftSpeed) == "4" } {
             setSpeed "4"
         }
+      } elseif { $conf(telescope) == "temma" } {
+         if { $panneau(DlgShiftZadko,shiftSpeed) == "$caption(telescope,NS)" } {
+            setSpeed "1"
+         } elseif { $panneau(DlgShiftZadko,shiftSpeed) == "$caption(telescope,HS)" } {
+            setSpeed "2"
+         }
       } elseif { $conf(telescope) == "eqmod" } {
          switch $panneau(DlgShiftZadko,shiftSpeed) {
             "1" { setSpeed "1" }
@@ -546,12 +552,6 @@ proc ::telescope::decodeSpeedDlgShiftZadko { } {
             "5" { setSpeed "5" }
             "6" { setSpeed "6" }
             "7" { setSpeed "7" }
-         }
-      } elseif { $conf(telescope) == "temma" } {
-         if { $panneau(DlgShiftZadko,shiftSpeed) == "$caption(telescope,NS)" } {
-            setSpeed "1"
-         } elseif { $panneau(DlgShiftZadko,shiftSpeed) == "$caption(telescope,HS)" } {
-            setSpeed "2"
          }
       } else {
          #--- Inactif pour autres telescopes
