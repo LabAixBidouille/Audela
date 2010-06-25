@@ -951,7 +951,11 @@ int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *com
             // je copie le message d'erreur 
             strcpy(tel->msg, tel->interp->result);
          }
-      } while ( k++ < 100000 && cr==0 );
+      } while ( k++ < 1000000 && cr==0 );
+      if ( k >= 1000000 ) {
+         sprintf(tel->msg, "No response for %s",command);
+         mytel_logConsole(tel, "No # reponse for %s",command);
+      }
    }  else if ( returnType == RETURN_STRING ) {
       int k = 0;
       cr = 0;
@@ -971,8 +975,11 @@ int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *com
             strcpy(tel->msg, tel->interp->result);
          }
 
-      } while (   k++ < 10000 && cr==0 );
-	  // strcmp(s,"#")!= 0  &&
+      } while ( strcmp(s,"#")!= 0  &&  k++ < 1000000 && cr==0 );
+      if ( k >= 1000000 ) {
+         sprintf(tel->msg, "No # reponse for %s",command);
+         mytel_logConsole(tel, "No # reponse for %s",command);
+      }
    }
 
    if ( tel->consoleLog == 1 ) {
