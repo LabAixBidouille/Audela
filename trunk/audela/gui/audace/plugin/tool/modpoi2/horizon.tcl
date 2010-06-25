@@ -2,7 +2,7 @@
 # Fichier : horizon.tcl
 # Description : fabrication de la ligne d'horizon
 # Auteur : Michel Pujol
-# Mise à jour $Id: horizon.tcl,v 1.6 2010-06-20 21:11:16 robertdelmas Exp $
+# Mise à jour $Id: horizon.tcl,v 1.7 2010-06-25 16:49:39 robertdelmas Exp $
 #
 
 namespace eval ::horizon {
@@ -292,7 +292,7 @@ proc ::horizon::createHorizon { visuNo } {
 
    #--- je verifie que le nom n'est pas vide
    if { $horizonName== "" } {
-      tk_messageBox -message  $::caption(modpoi2,horizon,errorEmptyName) -icon error -title $::caption(modpoi2,horizon,title)
+      tk_messageBox -message $::caption(modpoi2,horizon,errorEmptyName) -icon error -title $::caption(modpoi2,horizon,title)
       return
    }
 
@@ -301,7 +301,7 @@ proc ::horizon::createHorizon { visuNo } {
 
    #--- je verifie que cet horizon n'existe pas deja
    if { [info exists ::conf(horizon,$horizonId,name)] == 1 } {
-      tk_messageBox -message  $::caption(modpoi2,horizon,errorExistingName) -icon error -title $::caption(modpoi2,horizon,title)
+      tk_messageBox -message $::caption(modpoi2,horizon,errorExistingName) -icon error -title $::caption(modpoi2,horizon,title)
      return
    }
 
@@ -337,7 +337,7 @@ proc ::horizon::deleteHorizon { visuNo } {
    #--- je verifie que ce n'est pas la configuration par defaut
    if { $horizonId == "default" } {
       #--- j'abandonne la suppression s'il s'agit de la configuration par defaut
-      tk_messageBox -message  $::caption(modpoi2,horizon,errorDefaultName) \
+      tk_messageBox -message $::caption(modpoi2,horizon,errorDefaultName) \
          -icon error -title $::caption(modpoi2,horizon,title)
       return
    }
