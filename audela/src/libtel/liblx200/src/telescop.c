@@ -439,9 +439,15 @@ int mytel_radec_goto(struct telprop *tel)
 
    // Send MS 
    mytel_sendLX(tel, RETURN_CHAR, ss, "#:MS#");
-   if ((strcmp(ss,"1")==0)||(strcmp(ss,"2")==0)) {
+   if (ss[0]=='1' ) {
       /* The telescope can not complete the slew and tells something*/
       strcpy(tel->msg, "Object Below Horizon");
+      mytel_flush(tel);
+      return 1;
+   }
+   if (ss[0]=='2') {
+      /* The telescope can not complete the slew and tells something*/
+      strcpy(tel->msg, "Object Below Higher");
       mytel_flush(tel);
       return 1;
    }
