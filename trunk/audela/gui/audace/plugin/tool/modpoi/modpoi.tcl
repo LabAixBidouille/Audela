@@ -2,7 +2,7 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: modpoi.tcl,v 1.29 2010-05-01 09:08:26 robertdelmas Exp $
+# Mise à jour $Id: modpoi.tcl,v 1.30 2010-06-25 16:48:34 robertdelmas Exp $
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
@@ -1248,7 +1248,7 @@ proc modpoi_wiz5 { } {
    ($caption(modpoi,wiz5,DAF))\n\n\
    TF = [format "%.2f" [lindex $modpoi(vec) 9]] arcmin ([format "%.2f" [expr pow([gsl_mindex $modpoi(covar) 10 10],2)]])\n\
    ($caption(modpoi,wiz5,TF))\n\n\
-   chisquare=$modpoi(chisq)\n\n"
+   Chisquare = $modpoi(chisq)\n\n"
    #--- Test du calcul direct
    set res [modpoi_testcoef $modpoi(vec) $modpoi(chisq) $modpoi(covar)]
    ::console::affiche_resultat "$res\n"
@@ -1345,7 +1345,7 @@ proc modpoi_wiz5b { } {
       ($caption(modpoi,wiz5,DAF))\n\n\
       TF = [format "%.2f" [lindex $modpoi(vec) 9]] arcmin ([format "%.2f" [expr pow([gsl_mindex $modpoi(covar) 10 10],2)]])\n\
       ($caption(modpoi,wiz5,TF))\n\n\
-      chisquare=$modpoi(chisq)\n\n"
+      Chisquare = $modpoi(chisq)\n\n"
    } msg]
    if { $num!="1"} {
       #--- Display name
@@ -1454,6 +1454,7 @@ proc modpoi_goto { { numstar 1 } } {
    global audace modpoi
 
    if { [ ::tel::list ] == "" } {
+      ::confTel::run
    } else {
       set raadt $modpoi(star$numstar,raadt)
       set decadt $modpoi(star$numstar,decadt)
