@@ -2,7 +2,7 @@
 # Fichier : wizard.tcl
 # Description : pipeline de pointage des etoiles
 # Auteur : Michel Pujol
-# Mise à jour $Id: wizard.tcl,v 1.11 2010-06-19 10:40:23 robertdelmas Exp $
+# Mise à jour $Id: wizard.tcl,v 1.12 2010-06-25 17:22:02 robertdelmas Exp $
 #
 
 namespace eval ::modpoi2::wizard {
@@ -147,7 +147,7 @@ proc ::modpoi2::wizard::modpoi_wiz { visuNo { starList "" } } {
             set private(star$k,elApp)     ""
             set private(star$k,raShift)   ""
             set private(star$k,deShift)   ""
-            set private(star$k,selected)     0
+            set private(star$k,selected)  0
          }
          incr k
       }
@@ -569,15 +569,15 @@ proc ::modpoi2::wizard::modpoi_wiz2 { } {
       #--- Table des reference
       ::tablelist::tablelist $tkAmerTable \
          -columns [list \
-            0 "Num" center \
-            0 "AZ"  right \
-            0 "ELEV" right \
-            0 $::caption(modpoi2,star,name) center \
-            0 $::caption(modpoi2,star,raShift) right \
-            0 $::caption(modpoi2,star,deShift) right \
-            0 $::caption(modpoi2,star,haApp)  right \
-            0 $::caption(modpoi2,star,deApp)  right \
-            0 "Select" center \
+            0 $::caption(modpoi2,star,amerNum)    center \
+            0 $::caption(modpoi2,azimutEtoile)    right \
+            0 $::caption(modpoi2,elevationEtoile) right \
+            0 $::caption(modpoi2,star,name)       center \
+            0 $::caption(modpoi2,star,raShift)    right \
+            0 $::caption(modpoi2,star,deShift)    right \
+            0 $::caption(modpoi2,star,haApp)      right \
+            0 $::caption(modpoi2,star,deApp)      right \
+            0 $::caption(modpoi2,star,select)     center \
             0 $::caption(modpoi2,star,raShiftOC)  right \
             0 $::caption(modpoi2,star,deShiftOC)  right \
           ] \
@@ -605,13 +605,14 @@ proc ::modpoi2::wizard::modpoi_wiz2 { } {
 
       #--- je place la table et les scrollbars dans la frame
       grid $tkAmerTable -in [$private(g,base).amer getframe] -row 0 -column 0 -sticky ewns
-      grid $private(g,base).amer.ysb  -in [$private(g,base).amer getframe] -row 0 -column 1 -sticky nsew
-      grid $private(g,base).amer.xsb  -in [$private(g,base).amer getframe] -row 1 -column 0 -sticky ew
+      grid $private(g,base).amer.ysb -in [$private(g,base).amer getframe] -row 0 -column 1 -sticky nsew
+      grid $private(g,base).amer.xsb -in [$private(g,base).amer getframe] -row 1 -column 0 -sticky ew
       grid rowconfig    [$private(g,base).amer getframe] 0 -weight 1
       grid columnconfig [$private(g,base).amer getframe] 0 -weight 1
    pack $private(g,base).amer -side top -fill both -expand 1
 
    TitleFrame $private(g,base).magnitude  -borderwidth 2 -relief ridge
+
       #--- Label min magnitude
       label $private(g,base).magnitude.minLabel -text $::caption(modpoi2,wiz2,minMagnitude)
       grid  $private(g,base).magnitude.minLabel -in [$private(g,base).magnitude getframe] -row 0 -column 0 -sticky w
@@ -619,10 +620,10 @@ proc ::modpoi2::wizard::modpoi_wiz2 { } {
       entry $private(g,base).magnitude.minValue -width 8 -justify center \
          -textvariable ::modpoi2::wizard::private(minMagnitude) \
          -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double -3.0 20.0 }
-
       grid  $private(g,base).magnitude.minValue -in [$private(g,base).magnitude getframe] -row 0 -column 1 -sticky w
+
       #--- Label max magnitude
-      label $private(g,base).magnitude.maxLabel -text $::caption(modpoi2,wiz2,minMagnitude)
+      label $private(g,base).magnitude.maxLabel -text $::caption(modpoi2,wiz2,maxMagnitude)
       grid  $private(g,base).magnitude.maxLabel -in [$private(g,base).magnitude getframe] -row 1 -column 0 -sticky w
       #---  Entry max magnitude
       entry $private(g,base).magnitude.maxValue -width 8 -justify center \
@@ -635,7 +636,7 @@ proc ::modpoi2::wizard::modpoi_wiz2 { } {
       grid  $private(g,base).magnitude.amerLabel -in [$private(g,base).magnitude getframe] -row 0 -column 3 -sticky w
       entry $private(g,base).magnitude.amerValue -width 8 -justify center -state readonly \
         -textvariable ::modpoi2::wizard::private(stars,nb)
-      grid  $private(g,base).magnitude.maxValue -in [$private(g,base).magnitude getframe] -row 0 -column 4 -sticky w
+      grid  $private(g,base).magnitude.amerValue -in [$private(g,base).magnitude getframe] -row 0 -column 4 -sticky w
 
       #--- nb mesured
       label $private(g,base).magnitude.mesuredLabel -text $::caption(modpoi2,wiz2,nbreEtoileMes)
@@ -673,15 +674,14 @@ proc ::modpoi2::wizard::modpoi_wiz2 { } {
            incr private(nbSelected)
          }
          set checkButtonState "normal"
-
       } else {
-         set starName    ""
-         set raShift     ""
-         set deShift     ""
-         set haApp       ""
-         set deApp       ""
-         set raShiftTest ""
-         set deShiftTest ""
+         set starName         ""
+         set raShift          ""
+         set deShift          ""
+         set haApp            ""
+         set deApp            ""
+         set raShiftTest      ""
+         set deShiftTest      ""
          set checkButtonState "disabled"
       }
       $tkAmerTable insert end [list [expr $k+1] $amerAz $amerEl "" \
@@ -950,7 +950,7 @@ proc ::modpoi2::wizard::modpoi_wiz3 { amerIndex } {
       -padx 5 -pady 3 -expand 0
 
    #--- liste 5 etoiles les plus proches du point d'amer
-   TitleFrame $private(g,base).star  -borderwidth 2 -relief ridge -text $::caption(modpoi2,starList)
+   TitleFrame $private(g,base).star -borderwidth 2 -relief ridge -text $::caption(modpoi2,starList)
       set tkStarTable $private(g,base).star.table
       scrollbar $private(g,base).star.xsb -command "$tkStarTable xview" -orient horizontal
       scrollbar $private(g,base).star.ysb -command "$tkStarTable yview"
@@ -958,12 +958,12 @@ proc ::modpoi2::wizard::modpoi_wiz3 { amerIndex } {
       #--- Table des 5 etoiles
       ::tablelist::tablelist $tkStarTable \
          -columns [list \
-            0 "#HIP" left \
-            0 "Mag" left \
-            0 "RA" left \
-            0 "DEC" left \
-            0 $::caption(modpoi2,star,raShift)  left \
-            0 $::caption(modpoi2,star,deShift) left \
+            0 $::caption(modpoi2,star,name)      left \
+            0 $::caption(modpoi2,star,magnitude) left \
+            0 $::caption(modpoi2,star,RA)        left \
+            0 $::caption(modpoi2,star,Dec)       left \
+            0 $::caption(modpoi2,star,raShift)   left \
+            0 $::caption(modpoi2,star,deShift)   left \
           ] \
          -xscrollcommand [list $private(g,base).star.xsb set] \
          -yscrollcommand [list $private(g,base).star.ysb set] \
@@ -1178,7 +1178,7 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
    set private(deltah) 0
    set private(deltad) 0
 
-   wm title $private(g,base) "$caption(modpoi2,wiz4,title) $amerIndex: $starname"
+   wm title $private(g,base) "$caption(modpoi2,wiz4,title) [expr $amerIndex +1] : $starname"
    #--- Title
    label $private(g,base).lab_title2 \
       -text "$caption(modpoi2,wiz4,title2) [expr $amerIndex +1] : HIP $starname" \
@@ -1488,7 +1488,7 @@ proc ::modpoi2::wizard::modpoi_wiz5 { } {
    ($caption(modpoi2,wiz5,DAF))\n\n\
    [lindex $private(symbols) 9] = [format "%.2f" [lindex $private(coefficients) 9]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 10 10],2)]])\n\
    ($caption(modpoi2,wiz5,TF))\n\n\
-   chisquare=$private(chisquare)\n\n"
+   Chisquare = $private(chisquare)\n\n"
 
    #--- je calcule des ecarts en appliquant le modele
    for {set k 0} {$k < $private(stars,nb)} {incr k} {
@@ -1591,7 +1591,7 @@ proc ::modpoi2::wizard::modpoi_wiz5b { } {
        ($caption(modpoi2,wiz5,DAF))\n\n\
        TF = [format "%.2f" [lindex $private(coefficients) 9]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 10 10],2)]])\n\
        ($caption(modpoi2,wiz5,TF))\n\n\
-       chisquare=$private(chisquare)\n\n"
+       Chisquare = $private(chisquare)\n\n"
     } msg]
    if { $num!="1"} {
       #--- Display name
@@ -1722,8 +1722,12 @@ proc ::modpoi2::wizard::checkStarNb { } {
       set private(star$k,deShift)     ""
       set private(star$k,raShiftTest) ""
       set private(star$k,deShiftTest) ""
-      set private(star$k,selected)       0
+      set private(star$k,selected)    0
    }
+
+   set private(coefficients)          ""
+   set private(chisquare)             ""
+   set private(covar)                 ""
 
    if { ( $private(stars,nb) >= "6" ) && ( $private(stars,nb) <= "400" ) } {
       set ::conf(modpoi,wizard,haNb) $private(stars,haNb)
@@ -1790,6 +1794,7 @@ proc ::modpoi2::wizard::displayMap { visuNo } {
    set x [lindex $private(horizons) 0]
    set y [lindex $private(horizons) 1]
    ::plotxy::plot $x $y r
+   ::plotxy::title  "$::caption(modpoi2,horizon,title)"
    ::plotxy::xlabel "$::caption(modpoi2,azimutDeg)"
    ::plotxy::ylabel "$::caption(modpoi2,elevationDeg)"
    ::plotxy::position {20 20 800 400}
@@ -1900,8 +1905,8 @@ proc ::modpoi2::wizard::modpoi_goto { } {
    $private(g,base).fra.we.canv2PoliceInvariant configure -state disabled
    $private(g,base).fra.s.canv1PoliceInvariant  configure -state disabled
    $private(g,base).fra.we.labPoliceInvariant   configure -state disabled
-   $private(g,base).fra_bottom.but_prev configure -state disabled
-   $private(g,base).fra_bottom.but_next configure -state disabled
+   $private(g,base).fra_bottom.but_prev         configure -state disabled
+   $private(g,base).fra_bottom.but_next         configure -state disabled
 
    set amerIndex $private(amerIndex)
    if { $::audace(telNo) != 0} {
@@ -1910,6 +1915,8 @@ proc ::modpoi2::wizard::modpoi_goto { } {
       set deApp $private(star$amerIndex,deApp)
       #--- je lance la commande goto en mode non bloquant
       ::telescope::goto [list $raApp $deApp] 0
+   } else {
+      ::confTel::run
    }
 
    #--- je transforme le bouton STOP GOTO en bouton GOTO
@@ -1921,8 +1928,8 @@ proc ::modpoi2::wizard::modpoi_goto { } {
    $private(g,base).fra.we.canv2PoliceInvariant configure -state normal
    $private(g,base).fra.s.canv1PoliceInvariant  configure -state normal
    $private(g,base).fra.we.labPoliceInvariant   configure -state normal
-   $private(g,base).fra_bottom.but_prev configure -state normal
-   $private(g,base).fra_bottom.but_next configure -state normal
+   $private(g,base).fra_bottom.but_prev         configure -state normal
+   $private(g,base).fra_bottom.but_next         configure -state normal
 
    ::telescope::afficheCoord
 
@@ -1950,8 +1957,8 @@ proc ::modpoi2::wizard::modpoi_stopGoto {  } {
    $private(g,base).fra.we.canv2PoliceInvariant configure -state normal
    $private(g,base).fra.s.canv1PoliceInvariant  configure -state normal
    $private(g,base).fra.we.labPoliceInvariant   configure -state normal
-   $private(g,base).fra_bottom.but_prev configure -state normal
-   $private(g,base).fra_bottom.but_next configure -state normal
+   $private(g,base).fra_bottom.but_prev         configure -state normal
+   $private(g,base).fra_bottom.but_next         configure -state normal
 
    #--- j'affiche l'ecart en arcminute
    set private(deltah) [format "%.3f" [expr 60.0 * [mc_anglescomp $::audace(telescope,getra)  - $private(star$private(amerIndex),raApp) ]]]
