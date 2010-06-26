@@ -729,6 +729,10 @@ int mytel_date_set(struct telprop *tel,int y,int m,int d,int h, int min,double s
    sec=(int)(s);   
    mytel_sendLX(tel, RETURN_CHAR, ligne, "#:SL%02d:%02d:%02d#", h,min,sec);
 
+   // Set the number of hours added to local time to yield UTC
+   // We chose local time = UTC
+   mytel_sendLX(tel, RETURN_CHAR, ligne, "#:SGs00.0#");
+
    /* Set the date */
    if (y<1992) {y=1992;}
    if (y>2091) {y=2091;}
@@ -738,7 +742,8 @@ int mytel_date_set(struct telprop *tel,int y,int m,int d,int h, int min,double s
       y=y-2000;
    }
    mytel_sendLX(tel, RETURN_CHAR, ligne, "#:SC%02d/%02d/%02d#", m,d,y);
-   // normalement si ligne=1 , il faudrait lire la suite
+   // si ligne=1 il faut lire la chaine supplémentaire "Updating Planetary Data#"  
+   // je lis la suite en faisant un flush
    mytel_flush(tel); 
    return 0;
 }
@@ -946,13 +951,17 @@ int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *com
             if ( strlen(tel->interp->result) > 0 ) {
                strcpy(response,tel->interp->result);
                cr = 1;
+            } else {
+               // si pas de caractere recu , j'attends 1 milliseconde
+               // (insdispensable pour les ordinateurs rapides)
+               libtel_sleep(1) ;
             }
          } else {
             // je copie le message d'erreur 
             strcpy(tel->msg, tel->interp->result);
          }
-      } while ( k++ < 1000000 && cr==0 );
-      if ( k >= 1000000 ) {
+      } while ( k++ < 5000 && cr==0 );
+      if ( k >= 5000 ) {
          sprintf(tel->msg, "No response for %s",command);
          mytel_logConsole(tel, "No # reponse for %s",command);
       }
@@ -963,22 +972,26 @@ int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *com
       do {
          sprintf(s,"read %s 1",tel->channel); 
          if ( mytel_tcleval(tel,s) == TCL_OK ) {
-            if ( strcmp(tel->interp->result,"#") != 0 ) {
-               // j'ajoute le caractere lu si ce n'est pas un diese
-               strcat(response,tel->interp->result);
-            } else {
+            if (strcmp(tel->interp->result,"") == 0 ) {
+               // si pas de caractere recu , j'attends 1 milliseconde
+               // (insdispensable pour les ordinateurs rapides)
+               libtel_sleep(1) ;
+            } else if ( strcmp(tel->interp->result,"#") == 0 ) {
                // c'est un diese
                cr =1;
+            } else {
+               // si ce n'est pas un diese j'ajoute le caractere lu dans le resultat
+               strcat(response,tel->interp->result);
             }
          } else {
-            // je copie le message d'erreur 
+            // erreur, je copie le message d'erreur dans la variable tel->msg
             strcpy(tel->msg, tel->interp->result);
          }
 
-      } while ( strcmp(s,"#")!= 0  &&  k++ < 1000000 && cr==0 );
-      if ( k >= 1000000 ) {
-         sprintf(tel->msg, "No # reponse for %s",command);
-         mytel_logConsole(tel, "No # reponse for %s",command);
+      } while ( strcmp(s,"#")!= 0  &&  k++ < 5000 && cr==0 );
+      if ( k >= 5000 ) {
+         sprintf(tel->msg, "No # reponse for %s after 5000 ms",command);
+         mytel_logConsole(tel, "No # reponse for %s after 5000 ms",command);
       }
    }
 
