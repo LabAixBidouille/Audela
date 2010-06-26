@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise à jour $Id: webcam.tcl,v 1.55 2010-05-22 17:51:59 robertdelmas Exp $
+# Mise à jour $Id: webcam.tcl,v 1.56 2010-06-26 16:00:19 michelpujol Exp $
 #
 
 namespace eval ::webcam {
@@ -83,10 +83,11 @@ proc ::webcam::initPlugin { } {
    global conf
 
    #--- Initialise les variable generales
-   if { ! [ info exists conf(webcam,switchedConnexion) ] }             { set conf(webcam,switchedConnexion)             "0" }
+   if { ! [ info exists conf(webcam,switchedConnexion) ] }                 { set conf(webcam,switchedConnexion)             "0" }
 
    #--- Initialise les variables de chaque item
    foreach camItem { A B C } {
+      if { ! [ info exists conf(webcam,$camItem,select) ] }                { set conf(webcam,$camItem,select)               "0" }
       if { ! [ info exists conf(webcam,$camItem,longuepose) ] }            { set conf(webcam,$camItem,longuepose)           "0" }
       if { ! [ info exists conf(webcam,$camItem,longueposeport) ] }        { set conf(webcam,$camItem,longueposeport)       "LPT1:" }
       if { ! [ info exists conf(webcam,$camItem,longueposelinkbit) ] }     { set conf(webcam,$camItem,longueposelinkbit)    "0" }
@@ -94,9 +95,12 @@ proc ::webcam::initPlugin { } {
       if { ! [ info exists conf(webcam,$camItem,mirv) ] }                  { set conf(webcam,$camItem,mirv)                 "0" }
       if { ! [ info exists conf(webcam,$camItem,mirh) ] }                  { set conf(webcam,$camItem,mirh)                 "0" }
       if { ! [ info exists conf(webcam,$camItem,channel) ] }               { set conf(webcam,$camItem,channel)              "0" }
-      if { ! [ info exists conf(webcam,$camItem,ccd_N_B) ] }               { set conf(webcam,$camItem,ccd_N_B)              "0" }
+      if { ! [ info exists conf(webcam,$camItem,webcamCcd_N_B) ] }         { set conf(webcam,$camItem,webcamCcd_N_B)        "0" }
       if { ! [ info exists conf(webcam,$camItem,dim_ccd_N_B) ] }           { set conf(webcam,$camItem,dim_ccd_N_B)          "1/4''" }
-      if { ! [ info exists conf(webcam,$camItem,ccd) ] }                   { set conf(webcam,$camItem,ccd)                  "" }
+      if { ! [ info exists conf(webcam,$camItem,ccd_N_B) ] }               { set conf(webcam,$camItem,ccd_N_B)              "0" }
+      if { ! [ info exists conf(webcam,$camItem,dimPixX) ] }               { set conf(webcam,$camItem,dimPixX)              "8.6" }
+      if { ! [ info exists conf(webcam,$camItem,dimPixY) ] }               { set conf(webcam,$camItem,dimPixY)              "8.3" }
+      if { ! [ info exists conf(webcam,$camItem,ccd) ] }                   { set conf(webcam,$camItem,ccd)                  "ICX098BL-6" }
       if { ! [ info exists conf(webcam,$camItem,videoformat) ] }           { set conf(webcam,$camItem,videoformat)          "QCIF" }
       if { ! [ info exists conf(webcam,$camItem,port) ] }                  { set conf(webcam,$camItem,port)                 "/dev/video0" }
       if { ! [ info exists conf(webcam,$camItem,videomode) ] }             { set conf(webcam,$camItem,videomode)            "vfw" }
@@ -179,6 +183,7 @@ proc ::webcam::confToWidget { } {
 
    #--- Recupere la configuration de la WebCam dans le tableau private($camItem,...)
    foreach camItem { A B C } {
+      set private($camItem,select)               $conf(webcam,$camItem,select)
       set private($camItem,longuepose)           $conf(webcam,$camItem,longuepose)
       set private($camItem,longueposeport)       $conf(webcam,$camItem,longueposeport)
       set private($camItem,longueposelinkbit)    $conf(webcam,$camItem,longueposelinkbit)
@@ -187,8 +192,11 @@ proc ::webcam::confToWidget { } {
       set private($camItem,mirh)                 $conf(webcam,$camItem,mirh)
       set private($camItem,mirv)                 $conf(webcam,$camItem,mirv)
       set private($camItem,channel)              $conf(webcam,$camItem,channel)
-      set private($camItem,ccd_N_B)              $conf(webcam,$camItem,ccd_N_B)
+      set private($camItem,webcamCcd_N_B)        $conf(webcam,$camItem,webcamCcd_N_B)
       set private($camItem,dim_ccd_N_B)          $conf(webcam,$camItem,dim_ccd_N_B)
+      set private($camItem,ccd_N_B)              $conf(webcam,$camItem,ccd_N_B)
+      set private($camItem,dimPixX)              $conf(webcam,$camItem,dimPixX)
+      set private($camItem,dimPixY)              $conf(webcam,$camItem,dimPixY)
       set private($camItem,ccd)                  $conf(webcam,$camItem,ccd)
       set private($camItem,videomode)            $conf(webcam,$camItem,videomode)
       set private($camItem,port)                 $conf(webcam,$camItem,port)
@@ -212,6 +220,7 @@ proc ::webcam::widgetToConf { camItem } {
    global conf
 
    #--- Memorise la configuration de la WebCam dans le tableau conf(webcam,$camItem,...)
+   set conf(webcam,$camItem,select)               $private($camItem,select)
    set conf(webcam,$camItem,longuepose)           $private($camItem,longuepose)
    set conf(webcam,$camItem,longueposeport)       $private($camItem,longueposeport)
    set conf(webcam,$camItem,longueposelinkbit)    $private($camItem,longueposelinkbit)
@@ -220,8 +229,11 @@ proc ::webcam::widgetToConf { camItem } {
    set conf(webcam,$camItem,mirh)                 $private($camItem,mirh)
    set conf(webcam,$camItem,mirv)                 $private($camItem,mirv)
    set conf(webcam,$camItem,channel)              $private($camItem,channel)
-   set conf(webcam,$camItem,ccd_N_B)              $private($camItem,ccd_N_B)
+   set conf(webcam,$camItem,webcamCcd_N_B)        $private($camItem,webcamCcd_N_B)
    set conf(webcam,$camItem,dim_ccd_N_B)          $private($camItem,dim_ccd_N_B)
+   set conf(webcam,$camItem,ccd_N_B)              $private($camItem,ccd_N_B)
+   set conf(webcam,$camItem,dimPixX)              $private($camItem,dimPixX)
+   set conf(webcam,$camItem,dimPixY)              $private($camItem,dimPixY)
    set conf(webcam,$camItem,ccd)                  $private($camItem,ccd)
    set conf(webcam,$camItem,videomode)            $private($camItem,videomode)
    set conf(webcam,$camItem,port)                 $private($camItem,port)
@@ -261,11 +273,14 @@ proc ::webcam::fillConfigPage { frm camItem } {
    frame $frm.frame3 -borderwidth 0 -relief raised
    pack $frm.frame3 -in $frm.frame1 -side left -fill x -expand 1 -anchor nw
 
-   frame $frm.frame4 -borderwidth 0 -relief raised
-   pack $frm.frame4 -in $frm.frame1 -side left -fill none -anchor ne
+   TitleFrame $frm.frame4 -borderwidth 2 -relief ridge -text "$caption(webcam,select)"
+   pack $frm.frame4 -in $frm.frame1 -side left -fill x -anchor ne
 
-   frame $frm.frame5 -borderwidth 1 -relief solid
-   pack $frm.frame5 -in $frm.frame4 -side top -fill none -anchor e
+   frame $frm.frame20 -borderwidth 0 -relief raised
+   pack $frm.frame20 -in [ $frm.frame4 getframe ] -side left -fill y
+
+   frame $frm.frame5 -borderwidth 1 -relief ridge
+   pack $frm.frame5 -in [ $frm.frame4 getframe ] -side top -fill x -anchor e
 
    frame $frm.frame6 -borderwidth 0 -relief raised
    pack $frm.frame6 -in $frm.frame3 -side bottom -fill x -pady 5
@@ -274,28 +289,40 @@ proc ::webcam::fillConfigPage { frm camItem } {
    pack $frm.frame7 -in $frm.frame3 -side bottom -fill x -pady 5
 
    frame $frm.frame8 -borderwidth 0 -relief raised
-   pack $frm.frame8 -in $frm.frame3 -side left -fill x -pady 5
+   pack $frm.frame8 -in $frm.frame3 -side top -fill x -pady 5
 
    frame $frm.frame9 -borderwidth 0 -relief raised
-   pack $frm.frame9 -in $frm.frame3 -side left -fill x -padx 20
+   pack $frm.frame9 -in $frm.frame3 -side top -fill x -padx 20
 
    frame $frm.frame10 -borderwidth 0 -relief raised
-   pack $frm.frame10 -in $frm.frame5 -side top -fill x -pady 5
+   pack $frm.frame10 -in $frm.frame5 -side top -fill x
 
    frame $frm.frame11 -borderwidth 0 -relief raised
-   pack $frm.frame11 -in $frm.frame5 -side top -fill x -pady 5
+   pack $frm.frame11 -in $frm.frame5 -side top -fill x
 
    frame $frm.frame12 -borderwidth 0 -relief raised
-   pack $frm.frame12 -in $frm.frame5 -side top -fill x -pady 5
+   pack $frm.frame12 -in $frm.frame5 -side top -fill x
 
    frame $frm.frame13 -borderwidth 0 -relief raised
-   pack $frm.frame13 -in $frm.frame5 -side top -fill x -pady 5
+   pack $frm.frame13 -in $frm.frame5 -side top -fill x
 
-   frame $frm.frame14 -borderwidth 0 -relief raised
-   pack $frm.frame14 -in $frm.frame4 -side bottom -fill x -pady 5
+   frame $frm.frame14 -borderwidth 1 -relief ridge
+   pack $frm.frame14 -in [ $frm.frame4 getframe ] -side top -fill x -anchor ne
 
    frame $frm.frame15 -borderwidth 0 -relief raised
    pack $frm.frame15 -in $frm.frame14 -side right -fill x -pady 5
+
+   frame $frm.frame16 -borderwidth 1 -relief ridge
+   pack $frm.frame16 -in [ $frm.frame4 getframe ] -side bottom -fill x -anchor ne
+
+   frame $frm.frame17 -borderwidth 0 -relief raised
+   pack $frm.frame17 -in $frm.frame16 -side right -fill x -expand 1
+
+   frame $frm.frame18 -borderwidth 0 -relief raised
+   pack $frm.frame18 -in $frm.frame17 -side top -fill x
+
+   frame $frm.frame19 -borderwidth 0 -relief raised
+   pack $frm.frame19 -in $frm.frame17 -side top -fill x
 
    #--- Definition du canal USB
    label $frm.lab1 -text "$caption(webcam,canal_usb)"
@@ -373,6 +400,18 @@ proc ::webcam::fillConfigPage { frm camItem } {
       button $frm.frame6.format_webcam -text "$caption(webcam,format_video)"
       pack $frm.frame6.format_webcam -in $frm.frame6 -anchor center -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
    }
+
+   #--- Selection WebCam
+   radiobutton $frm.radioWebCam -anchor w -highlightthickness 0 \
+      -text "$caption(webcam,camera)" -value 0 \
+      -variable ::webcam::private($camItem,select) -command "::webcam::selectCameraType $camItem"
+   pack $frm.radioWebCam -in $frm.frame20 -anchor nw -side top -pady 10
+
+   #--- Selection Autres cameras video
+   radiobutton $frm.radioGrabber -anchor w -highlightthickness 0 \
+      -text "$caption(webcam,grabber)" -value 1 \
+      -variable ::webcam::private($camItem,select) -command "::webcam::selectCameraType $camItem"
+   pack $frm.radioGrabber -in $frm.frame20 -anchor nw -side top -pady 10
 
    #--- Option longue pose avec lien au site web de Steve Chambers
    checkbutton $frm.longuepose -highlightthickness 0 -variable ::webcam::private($camItem,longuepose) \
@@ -479,9 +518,9 @@ proc ::webcam::fillConfigPage { frm camItem } {
    }
 
    #--- WebCam modifiee avec un capteur Noir et Blanc
-   checkbutton $frm.ccd_N_B -text "$caption(webcam,ccd_N_B)" -highlightthickness 0 \
-      -variable ::webcam::private($camItem,ccd_N_B) -command "::webcam::checkConfigCCDN&B $camItem"
-   pack $frm.ccd_N_B -in $frm.frame14 -anchor center -side left -pady 3 -pady 8
+   checkbutton $frm.webcamCcd_N_B -text "$caption(webcam,webcamCcd_N_B)" -highlightthickness 0 \
+      -variable ::webcam::private($camItem,webcamCcd_N_B) -command "::webcam::checkConfigCCDN&B $camItem"
+   pack $frm.webcamCcd_N_B -in $frm.frame14 -anchor center -side left -pady 3 -pady 8
 
    set list_combobox [ list 1/4'' 1/3'' 1/2'' ]
    ComboBox $frm.dim_ccd_N_B \
@@ -490,10 +529,29 @@ proc ::webcam::fillConfigPage { frm camItem } {
       -relief sunken         \
       -borderwidth 1         \
       -editable 0            \
-      -textvariable ::webcam::private($camItem,dim_ccd_N_B) \
+     -textvariable ::webcam::private($camItem,dim_ccd_N_B) \
       -modifycmd "::webcam::checkConfigCCDN&B $camItem" \
       -values $list_combobox
    pack $frm.dim_ccd_N_B -in $frm.frame15 -anchor center -side right -padx 10 -pady 5
+
+   #--- CCD N&B
+   checkbutton $frm.ccd_N_B -text "$caption(webcam,ccd_N_B)" -highlightthickness 0 \
+      -variable ::webcam::private($camItem,ccd_N_B)
+   pack $frm.ccd_N_B -in $frm.frame16 -anchor center -side left -pady 3 -pady 5
+
+   #--- Dimension des pixels sur l'axe X
+   label $frm.labelDimPixX -text "$caption(webcam,dimPixelX)"
+   pack $frm.labelDimPixX -in $frm.frame18 -anchor center -side left -padx 10 -pady 5
+
+   entry $frm.entryDimPixX -textvariable ::webcam::private($camItem,dimPixX) -width 7 -justify center
+   pack $frm.entryDimPixX -in $frm.frame18 -anchor center -side left -pady 5
+
+   #--- Dimension des pixels sur l'axe Y
+   label $frm.labelDimPixY -text "$caption(webcam,dimPixelY)"
+   pack $frm.labelDimPixY -in $frm.frame19 -anchor center -side left -padx 10 -pady 5
+
+   entry $frm.entryDimPixY -textvariable ::webcam::private($camItem,dimPixY) -width 7 -justify center
+   pack $frm.entryDimPixY -in $frm.frame19 -anchor center -side left -pady 5
 
    #--- Frame du site web web officiel des WebCams
    frame $frm.frame2 -borderwidth 0 -relief raised
@@ -544,6 +602,13 @@ proc ::webcam::configureCamera { camItem bufNo } {
          set linkNo 0
       }
 
+      #--- Changement de variable pour les CCD N&B
+      if { $conf(webcam,$camItem,select) == "0" } {
+         set ccdNB $conf(webcam,$camItem,webcamCcd_N_B)
+      } else {
+         set ccdNB $conf(webcam,$camItem,ccd_N_B)
+      }
+
       #--- Je cree la camera
       set camNo [ cam::create webcam "$conf(webcam,$camItem,port)" \
          -channel $conf(webcam,$camItem,channel) \
@@ -551,23 +616,43 @@ proc ::webcam::configureCamera { camItem bufNo } {
          -name WEBCAM \
          -ccd $conf(webcam,$camItem,ccd) \
          -videomode $conf(webcam,$camItem,videomode) \
-         -sensorcolor [expr $conf(webcam,$camItem,ccd_N_B)==0 ] \
+         -sensorcolor [expr $ccdNB==0 ] \
          -longuepose $conf(webcam,$camItem,longuepose) \
          -longueposelinkno $linkNo \
          -longueposelinkbit $conf(webcam,$camItem,longueposelinkbit) \
          -longueposestart $conf(webcam,$camItem,longueposestartvalue) \
       ]
-      if { $::tcl_platform(os) == "Linux" } {
-         #--- j'affiche le canal et le port
-         console::affiche_entete "$caption(webcam,camera) $conf(webcam,$camItem,port)\n"
-      } else {
-         #--- j'affiche la connexion de la camera
-         console::affiche_entete "$caption(webcam,camera) - $caption(webcam,mode_video) $caption(webcam,2points)\
-         $conf(webcam,$camItem,videomode)\n"
+
+      #--- J'envoie les dimensions des pixels a la librairie
+      if { $conf(webcam,$camItem,select) == "1" } {
+         cam$camNo celldim [ expr $conf(webcam,$camItem,dimPixX) / 1000000 ] [ expr $conf(webcam,$camItem,dimPixY) / 1000000 ]
       }
-      console::affiche_entete "$caption(webcam,longuepose) $caption(webcam,2points)\
-         $conf(webcam,$camItem,longuepose)\n"
-      console::affiche_saut "\n"
+
+      #--- Affichage dans la Console
+      if { $conf(webcam,$camItem,select) == "0" } {
+         if { $::tcl_platform(os) == "Linux" } {
+            #--- j'affiche le canal et le port
+            console::affiche_entete "$caption(webcam,camera) $conf(webcam,$camItem,port)\n"
+         } else {
+            #--- j'affiche la connexion de la camera
+            console::affiche_entete "$caption(webcam,camera) - $caption(webcam,mode_video) $caption(webcam,2points)\
+            $conf(webcam,$camItem,videomode)\n"
+         }
+         console::affiche_entete "$caption(webcam,longuepose) $caption(webcam,2points)\
+            $conf(webcam,$camItem,longuepose)\n"
+         console::affiche_saut "\n"
+       } else {
+         if { $::tcl_platform(os) == "Linux" } {
+            #--- j'affiche le canal et le port
+            console::affiche_entete "$caption(webcam,grabber) $conf(webcam,$camItem,port)\n"
+         } else {
+            #--- j'affiche la connexion de la camera
+            console::affiche_entete "$caption(webcam,grabber) - $caption(webcam,mode_video) $caption(webcam,2points)\
+            $conf(webcam,$camItem,videomode)\n"
+         }
+         console::affiche_saut "\n"
+      }
+
       #--- Je change de variable
       set private($camItem,camNo) $camNo
       #--- J'associe le buffer de la visu
@@ -675,12 +760,14 @@ proc ::webcam::configWebCam { camItem } {
          #--- je mets a jour camItem dans la commande des widgets
          $frm.longuepose configure -command "::webcam::checkConfigLonguePose $camItem"
          $frm.lpport configure -modifycmd "::webcam::configureLinkLonguePose $camItem"
-         $frm.ccd_N_B configure -command "::webcam::checkConfigCCDN&B $camItem"
+         $frm.webcamCcd_N_B configure -command "::webcam::checkConfigCCDN&B $camItem"
          $frm.dim_ccd_N_B configure -modifycmd "::webcam::checkConfigCCDN&B $camItem"
 
+         #--- Configure les widgets associes a la selection d'une camera
+         ::webcam::selectCameraType $camItem
          #--- Configure les widgets associes a la longue pose
          ::webcam::checkConfigLonguePose $camItem
-         #--- Configure les widgets associes au choix du CCD
+         #--- Configure les widgets associes au choix du CCD pour la WebCam
          ::webcam::checkConfigCCDN&B $camItem
 
          #--- actualise la liste des ports
@@ -753,7 +840,7 @@ proc ::webcam::checkConfigCCDN&B { camItem } {
    variable private
 
    set frm $private(frm)
-   if { $::webcam::private($camItem,ccd_N_B) == "1" } {
+   if { $::webcam::private($camItem,webcamCcd_N_B) == "1" } {
       if { $::webcam::private($camItem,dim_ccd_N_B) == "1/4''" } {
          set ::webcam::private($camItem,ccd) "ICX098BL-6"
       } elseif { $::webcam::private($camItem,dim_ccd_N_B) == "1/3''" } {
@@ -765,6 +852,29 @@ proc ::webcam::checkConfigCCDN&B { camItem } {
    } else {
       set ::webcam::private($camItem,ccd) "ICX098BQ-A"
       pack forget $frm.frame15
+   }
+}
+
+#
+# ::webcam::selectCameraType
+#    Configure les widgets de configuration du choix du CCD
+#
+proc ::webcam::selectCameraType { camItem } {
+   variable private
+
+   set frm $private(frm)
+   if { $::webcam::private($camItem,select) == "1" } {
+      $frm.ccd_N_B configure -state normal
+      $frm.entryDimPixX configure -state normal
+      $frm.entryDimPixY configure -state normal
+      $frm.longuepose configure -state disabled
+      $frm.webcamCcd_N_B configure -state disabled
+   } else {
+      $frm.ccd_N_B configure -state disabled
+      $frm.entryDimPixX configure -state disabled
+      $frm.entryDimPixY configure -state disabled
+      $frm.longuepose configure -state normal
+      $frm.webcamCcd_N_B configure -state normal
    }
 }
 
