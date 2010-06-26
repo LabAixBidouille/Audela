@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_5.tcl
 # Description : Script regroupant les fonctionnalites du menu Analyse
-# Mise à jour $Id: aud_menu_5.tcl,v 1.13 2010-05-16 08:08:01 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_5.tcl,v 1.14 2010-06-26 19:16:29 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -20,7 +20,8 @@ proc ::audace::Histo { visuNo } {
       set mini [ lindex [ buf$bufNo getkwd SB ] 1 ]
       set maxi [ lindex [ buf$bufNo getkwd SH ] 1 ]
       set r    [ buf$bufNo histo 50 $mini $maxi ]
-      ::plotxy::figure $visuNo
+      set figureNo [ ::plotxy::figure $visuNo ]
+      ::plotxy::clf $figureNo
       ::plotxy::title  "$caption(audace,histo_titre) (visu$visuNo)"
       ::plotxy::xlabel "$caption(audace,histo_adu)"
       ::plotxy::ylabel "$caption(audace,histo_nbpix)"
