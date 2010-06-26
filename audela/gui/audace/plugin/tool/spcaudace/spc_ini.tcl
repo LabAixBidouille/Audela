@@ -1,6 +1,6 @@
 
 
-# Mise à jour $Id: spc_ini.tcl,v 1.6 2010-05-26 06:07:34 robertdelmas Exp $
+# Mise à jour $Id: spc_ini.tcl,v 1.7 2010-06-26 00:23:35 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -48,14 +48,14 @@ proc spc_bessmodule {} {
 
 #--- Amorcage d'initialisation de vecteurs pour la fonction BLT::spline qui bug :
 proc spc_vectorini {} {
-   blt::vector x(10) y(10) sy(10)
+   blt::vector spc_vx(10) spc_vy(10) spc_vsy(10)
    for {set i 10} {$i>0} {incr i -1} {
-      set x($i-1) [expr $i*$i]
-      set y($i-1) [expr sin($i*$i*$i)]
+      set spc_vx($i-1) [expr $i*$i]
+      set spc_vy($i-1) [expr sin($i*$i*$i)]
    }
-   x sort y
-   x populate sx 10
-   blt::spline natural x y sx sy
+   spc_vx sort spc_vy
+   spc_vx populate spc_vsx 10
+   blt::spline natural spc_vx spc_vy spc_vsx spc_vsy
 }
 
 spc_vectorini
