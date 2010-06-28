@@ -8,7 +8,7 @@
 # Connected sites are found in http://gcn.gsfc.nasa.gov/sites_cfg.html
 # To create a new connected site http://gcn.gsfc.nasa.gov/gcn/config_builder.html
 #
-# Mise à jour $Id: gcn_tools.tcl,v 1.43 2010-06-16 14:35:27 myrtillelaas Exp $
+# Mise à jour $Id: gcn_tools.tcl,v 1.44 2010-06-28 23:53:04 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -1017,7 +1017,7 @@ proc grb_man {} {
    ::console::affiche_resultat " ======================================================\n"
 }
 
-proc grb_copy { {first 1} {date_trigger ""} } {
+proc grb_copy { {first 1} {date_trigger ""} {fov_arcmin ""} } {
 
    global audace
 
@@ -1071,6 +1071,7 @@ proc grb_copy { {first 1} {date_trigger ""} } {
          buf$bufno load "$fichier"
          set naxis1 [lindex [buf$bufno getkwd NAXIS1] 1]
          set naxis2 [lindex [buf$bufno getkwd NAXIS2] 1]
+         set cdelt  [expr abs([lindex [buf$bufno getkwd CDELT1] 1])]
          if {$naxis1>1000} {
             set ra [lindex [buf$bufno getkwd RA] 1]
             set dec [lindex [buf$bufno getkwd DEC] 1]
@@ -1080,13 +1081,27 @@ proc grb_copy { {first 1} {date_trigger ""} } {
             set xc [lindex $xy 0]
             set yc [lindex $xy 1]
             set fen 300
+            if {$fov_arcmin==""} {
+               set fov 7.
+            } else {
+               set fov $fov_arcmin
+            }
+            set fen [expr int($fov/60./$cdelt)]
          } else {
-            set fen 125
-            set xc [expr 129./2]
-            set yc [expr 129./2]
+            if {$fov_arcmin==""} {
+               set fov 7.
+            } else {
+               set fov $fov_arcmin
+            }
+            set fen [expr int($fov/60./$cdelt)]
+            set xc [expr $naxis1/2]
+            set yc [expr $naxis2/2]
          }
-         #set naxis12 105
-         set box [list [expr int($xc-$fen)] [expr int($yc-$fen)] [expr int($xc+$fen)] [expr int($yc+$fen)]]
+         set x1 [expr int($xc-$fen)] ; if {$x1<1} {set x1 1}
+         set y1 [expr int($yc-$fen)] ; if {$y1<1} {set y1 1}
+         set x2 [expr int($xc+$fen)] ; if {$x2>$naxis1} {set x2 $naxis1}
+         set y2 [expr int($yc+$fen)] ; if {$y2>$naxis2} {set y2 $naxis2}
+         set box [list $x1 $y1 $x2 $y2]
          set n [llength $fichiers]
          set kkc 0
          set kkv 0
