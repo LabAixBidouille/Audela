@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: snvisu.tcl,v 1.44 2010-06-18 17:16:29 robertdelmas Exp $
+# Mise à jour $Id: snvisu.tcl,v 1.45 2010-06-29 07:52:33 robertdelmas Exp $
 #
 
 #--- Conventions pour ce script :
@@ -885,9 +885,11 @@ proc changeDir { numbuf } {
    global num
 
    #--- Initialisation des variables a 2 (0 et 1 reservees a Configuration --> Repertoires)
-   set cwdWindow(rep_images)     "2"
-   set cwdWindow(rep_scripts)    "2"
-   set cwdWindow(rep_catalogues) "2"
+   set cwdWindow(rep_images)      "2"
+   set cwdWindow(rep_travail)     "2"
+   set cwdWindow(rep_scripts)     "2"
+   set cwdWindow(rep_catalogues)  "2"
+   set cwdWindow(rep_userCatalog) "2"
 
    #--- Initialisation du titre de la fenetre de navigation des repertoires
    if { $numbuf == "1" } {
