@@ -81,12 +81,12 @@ namespace LibJM
 
 class Fourier {
 public :
-    enum ordre { REGULAR, CENTERED, NO_ORDER };
-    enum type { REAL, IMAG, SPECTRUM, PHASE, NO_TYPE };
-    enum format { POLAR, POLAR2, CARTESIAN, NO_FORMAT };
-    enum operateur { CORRELATION, CONVOLUTION };
-    enum multiply { STANDARD, CONJUGATE };
-    enum log_level
+        enum Ordre { REGULAR, CENTERED, NO_ORDER } ;
+        enum Type { REAL, IMAG, SPECTRUM, PHASE, NO_TYPE } ;
+        enum format { POLAR, POLAR2, CARTESIAN, NO_FORMAT } ;
+        enum operateur { CORRELATION, CONVOLUTION } ;
+        enum multiply { STANDARD, CONJUGATE }  ;
+    typedef enum 
     {
         Deaf_Level = 0,
         Critical_Level = 1,
@@ -97,7 +97,7 @@ public :
         Info2_Level = 6,
         Info3_Level = 7,
         Debug_Level = 9
-    };
+    } log_level;
 
     static int _log_verbosity;
     static std::ofstream log_stream;
@@ -132,8 +132,8 @@ public :
         int hauteur;
         float norm;
         float talon;
-        Fourier::ordre ordre;
-        Fourier::type type;
+        Ordre ordre;
+        Type type;
     private :
         int numero;
         TableauPixels * _tab_pixels;
@@ -143,10 +143,10 @@ public :
         TableauPixels * get_tab_pixels() { return _tab_pixels; };
         TYPE_PIXELS * get_tab_pixels_ptr( );
         Parametres( );
-        Parametres( int, int, Fourier::ordre, Fourier::type );
+        Parametres( int, int, Ordre, Type );
         ~Parametres( );
-        void init( int, int, Fourier::ordre, Fourier::type );
-        void copie( Fourier::Parametres & );
+        void init( int, int, Ordre, Type );
+        void copie( Parametres & );
     };
     static Fourier * instance( );
 
@@ -172,9 +172,9 @@ private :
     static Fourier * _unique_instance;
 
     /* Algorithmes sur les images */
-    void tfd_directe_image( const char *, const char *, const char *, Fourier::format, Fourier::ordre );
+    void tfd_directe_image( const char *, const char *, const char *, Fourier::format, Fourier::Ordre );
     void tfd_inverse_image( const char * src_1, const char * src_2, const char * dest );
-    void correl_convol_image ( const char * src_1, const char * src_2, const char * dest, Fourier::operateur op, Fourier::ordre, bool );
+    void correl_convol_image ( const char * src_1, const char * src_2, const char * dest, Fourier::operateur op, Fourier::Ordre, bool );
     void coherence_images_tfd( Fourier::Parametres * param_1, Fourier::Parametres * param_2 );
     void ouverture_image(const char * nom, Fourier::Parametres * param );
 
@@ -185,13 +185,13 @@ private :
     int tfd_2d_directe_simple( Fourier::Parametres *, Fourier::Parametres *, Fourier::Parametres * ) ;
     int tfd_2d_inverse_simple( Fourier::Parametres *, Fourier::Parametres *, Fourier::Parametres * ) ;
     void produit_complexe( Fourier::Parametres *, Fourier::Parametres *, Fourier::Parametres *, Fourier::Parametres *, Fourier::Parametres *, Fourier::Parametres *, Fourier::multiply );
-    void normalisation( Fourier::Parametres *, TYPE_PIXELS, TYPE_PIXELS, Fourier::ordre );
+    void normalisation( Fourier::Parametres *, TYPE_PIXELS, TYPE_PIXELS, Fourier::Ordre );
     void extrema( Fourier::Parametres *, TYPE_PIXELS *, TYPE_PIXELS * );
     Fourier::Parametres * inclusion( Fourier::Parametres * p1, Fourier::Parametres * p2 );
 
     /* Autres routines */
-    Fourier::type analyse_dft_type( const char * );
-    Fourier::ordre analyse_dft_ordre( const char * );
+    Fourier::Type analyse_dft_type( const char * );
+    Fourier::Ordre analyse_dft_ordre( const char * );
 
 };
 

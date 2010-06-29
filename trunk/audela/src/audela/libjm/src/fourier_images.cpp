@@ -3,7 +3,7 @@
  * @brief : Méthodes de l'objet Fourier : traitement des fichiers image
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: fourier_images.cpp,v 1.4 2010-06-19 16:58:42 jacquesmichelet Exp $
+ * Mise à jour $Id: fourier_images.cpp,v 1.5 2010-06-29 18:34:49 michelpujol Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
@@ -149,7 +149,7 @@ void Fourier::ouverture_image( const char * nom, Fourier::Parametres * param )
 /***************************************************************************************/
 /***************************************************************************************/
 /***************************************************************************************/
-void Fourier::tfd_directe_image ( const char * src, const char * dest_1, const char * dest_2, Fourier::format format, Fourier::ordre ordre)
+void Fourier::tfd_directe_image ( const char * src, const char * dest_1, const char * dest_2, Fourier::format format, Fourier::Ordre ordre)
 {
     fourier_info1( "src=" << src << " dest_1=" << dest_1 << " dest_2=" << dest_2 << " format=" << format << " ordre=" << ordre );
     try
@@ -279,7 +279,7 @@ void Fourier::tfd_inverse_image( const char * src_1, const char * src_2, const c
 /*********************************************************************************/
 /*********************************************************************************/
 /*********************************************************************************/
-void Fourier::correl_convol_image ( const char * src_1, const char * src_2, const char * dest, Fourier::operateur op, Fourier::ordre ordre, bool normalisation )
+void Fourier::correl_convol_image ( const char * src_1, const char * src_2, const char * dest, Fourier::operateur op, Fourier::Ordre ordre, bool normalisation )
 {
     if (src_2 != 0)
     {
