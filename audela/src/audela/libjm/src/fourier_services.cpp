@@ -3,7 +3,7 @@
  * @brief : Méthodes de l'objet Fourier : gestion des objets
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: fourier_services.cpp,v 1.4 2010-06-19 17:11:50 jacquesmichelet Exp $
+ * Mise à jour $Id: fourier_services.cpp,v 1.5 2010-06-29 18:34:49 michelpujol Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
@@ -100,7 +100,7 @@ void Fourier::niveau_traces( int niveau )
 /***************************************************************************************/
 /***************************************************************************************/
 /***************************************************************************************/
-Fourier::type Fourier::analyse_dft_type( const char * type ) {
+Fourier::Type Fourier::analyse_dft_type( const char * type ) {
     if ( strncmp( type, "REAL" , 4 ) == 0 )
         return Fourier::REAL;
     else if ( strncmp( type, "IMAG", 4 ) == 0 )
@@ -115,7 +115,7 @@ Fourier::type Fourier::analyse_dft_type( const char * type ) {
 /***************************************************************************************/
 /***************************************************************************************/
 /***************************************************************************************/
-Fourier::ordre Fourier::analyse_dft_ordre( const char * type ) {
+Fourier::Ordre Fourier::analyse_dft_ordre( const char * type ) {
     if ( strncmp( type, "CENTERED", 8 ) == 0 )
         return Fourier::CENTERED;
     else if ( strncmp( type, "REGULAR", 7 ) == 0 )
@@ -162,7 +162,7 @@ void Fourier::Parametres::copie( Fourier::Parametres & origine )
 /***************************************************************************************/
 /***************************************************************************************/
 /***************************************************************************************/
-Fourier::Parametres::Parametres( int l, int h, Fourier::ordre o, Fourier::type t ) :
+Fourier::Parametres::Parametres( int l, int h, Fourier::Ordre o, Fourier::Type t ) :
     largeur(l),
     hauteur(h),
     norm(1.0),
@@ -179,7 +179,7 @@ Fourier::Parametres::Parametres( int l, int h, Fourier::ordre o, Fourier::type t
 /***************************************************************************************/
 /***************************************************************************************/
 /***************************************************************************************/
-void Fourier::Parametres::init( int l, int h, Fourier::ordre o, Fourier::type t )
+void Fourier::Parametres::init( int l, int h, Fourier::Ordre o, Fourier::Type t )
 {
     largeur = l;
     hauteur = h;

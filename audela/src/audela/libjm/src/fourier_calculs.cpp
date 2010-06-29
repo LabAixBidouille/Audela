@@ -3,7 +3,7 @@
  * @brief : Méthodes de l'objet Fourier : calculs mathématiques
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: fourier_calculs.cpp,v 1.2 2010-05-26 12:11:38 jacquesmichelet Exp $
+ * Mise à jour $Id: fourier_calculs.cpp,v 1.3 2010-06-29 18:34:49 michelpujol Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,6 +86,7 @@ int Fourier::tfd_2d_directe_simple( Fourier::Parametres * param_src, Fourier::Pa
     int largeur = param_1->largeur;
     int hauteur = param_1->hauteur;
     int surface = largeur * hauteur;
+    int ligne;
 
     double * data = (double *) malloc( 2 * surface * sizeof(double) );
 
@@ -93,7 +94,7 @@ int Fourier::tfd_2d_directe_simple( Fourier::Parametres * param_src, Fourier::Pa
 
     /* Lecture et rangement des valeurs */
     fourier_debug( "image d'entree" );
-    for ( int ligne = 0; ligne < hauteur ; ligne++ ) {
+    for ( ligne = 0; ligne < hauteur ; ligne++ ) {
         fourier_debug2( "l=" << ligne );
         for ( int colonne = 0; colonne < largeur; colonne++ ) {
             int i = ligne * largeur + colonne;
@@ -110,7 +111,7 @@ int Fourier::tfd_2d_directe_simple( Fourier::Parametres * param_src, Fourier::Pa
     TYPE_PIXELS * ptr2 = param_2->get_tab_pixels_ptr();
 
     fourier_debug( "image de sortie" );
-    for ( int ligne = 0; ligne < hauteur; ligne++ ) {
+    for ( ligne = 0; ligne < hauteur; ligne++ ) {
         fourier_debug2( "l=" << ligne );
         for ( int colonne = 0; colonne < largeur; colonne++ ) {
             ptr1[ ligne * largeur + colonne ] = (TYPE_PIXELS)REAL( data, ( ligne * largeur + colonne ) );
@@ -263,6 +264,7 @@ int Fourier::tfd_2d_inverse_simple( Fourier::Parametres * s1, Fourier::Parametre
     int hauteur = s1->hauteur;
     int surface = largeur * hauteur;
     double ponderation = (double)surface;
+    int ligne;
 
     double * data = (double *) malloc( 2 * surface * sizeof(double) );
 
@@ -270,7 +272,7 @@ int Fourier::tfd_2d_inverse_simple( Fourier::Parametres * s1, Fourier::Parametre
     TYPE_PIXELS * s2_ptr = s2->get_tab_pixels_ptr();
 
     fourier_debug( "image d'entrée" );
-    for ( int ligne = 0; ligne < hauteur ; ligne++ )
+    for (  ligne = 0; ligne < hauteur ; ligne++ )
     {
         fourier_debug2( "l=" << ligne );
         for ( int colonne = 0; colonne < largeur; colonne++ )
@@ -287,7 +289,7 @@ int Fourier::tfd_2d_inverse_simple( Fourier::Parametres * s1, Fourier::Parametre
 
     TYPE_PIXELS * d_ptr = d->get_tab_pixels_ptr();
     fourier_debug( "image de sortie" );
-    for ( int ligne = 0; ligne < hauteur ; ligne++ )
+    for ( ligne = 0; ligne < hauteur ; ligne++ )
     {
         fourier_debug2( "l=" << ligne );
         for ( int colonne = 0; colonne < largeur; colonne++ )
@@ -541,7 +543,7 @@ void Fourier::produit_complexe( Fourier::Parametres *r1, Fourier::Parametres *i1
 /***************************************************************************************/
 /***************************************************************************************/
 /***************************************************************************************/
-void Fourier::normalisation( Fourier::Parametres * p, TYPE_PIXELS norm_basse, TYPE_PIXELS norm_haute, Fourier::ordre ordre )
+void Fourier::normalisation( Fourier::Parametres * p, TYPE_PIXELS norm_basse, TYPE_PIXELS norm_haute, Fourier::Ordre ordre )
 {
     fourier_info2( "parametres=" << p << " norm basse=" << norm_basse << " norm_haute=" << norm_haute << " ordre=" << ordre );
 

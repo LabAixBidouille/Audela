@@ -3,7 +3,7 @@
  * @brief : interface TCL<->C pour les transformations d'images basées sur la TFD
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: fourier_tcl.cpp,v 1.3 2010-05-26 12:17:41 jacquesmichelet Exp $
+ * Mise à jour $Id: fourier_tcl.cpp,v 1.4 2010-06-29 18:34:49 michelpujol Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
@@ -60,7 +60,7 @@ int Fourier::CmdFourierDirect( ClientData clientData, Tcl_Interp *interp, int ar
 {
     char s[200];
     Fourier::format fourier_format = Fourier::POLAR;
-    Fourier::ordre fourier_ordre = Fourier::CENTERED;
+    Fourier::Ordre fourier_ordre = Fourier::CENTERED;
 
     for ( int i = 0; i < argc; i++ )
         fourier_notice( "argv[" << i << "]=" << argv[i]);
@@ -111,7 +111,11 @@ int Fourier::CmdFourierDirect( ClientData clientData, Tcl_Interp *interp, int ar
     }
     catch(...)
     {
-        sprintf(s, "Non catched exception in file %s, function %s at line %d", __FILE__, __FUNCTION__, __LINE__);
+        
+#ifndef __FUNCTION__
+#define __FUNCTION__ "unknown"
+#endif
+         sprintf(s, "Non catched exception in file %s, function %s at line %d", __FILE__, __FUNCTION__, __LINE__);
         Tcl_SetResult(interp, s, TCL_VOLATILE);
         return TCL_ERROR;
     }
@@ -158,7 +162,7 @@ int Fourier::CmdAutoCorrelation( ClientData clientData, Tcl_Interp *interp, int 
 /********************************************************************************/
 {
     char s[200];
-    Fourier::ordre fourier_ordre = Fourier::CENTERED;
+    Fourier::Ordre fourier_ordre = Fourier::CENTERED;
     bool normalisation = true;
 
     for ( int i = 0; i < argc; i++ )
@@ -223,7 +227,7 @@ int Fourier::CmdAutoCorrelation( ClientData clientData, Tcl_Interp *interp, int 
 int Fourier::CmdInterCorrelation( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] )
 {
     char s[200];
-    Fourier::ordre fourier_ordre = Fourier::CENTERED;
+    Fourier::Ordre fourier_ordre = Fourier::CENTERED;
     bool normalisation = true;
 
     for ( int i = 0; i < argc; i++ )

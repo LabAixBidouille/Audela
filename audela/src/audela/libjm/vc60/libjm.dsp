@@ -113,6 +113,22 @@ SOURCE=..\src\divers_tcl.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\fourier_calculs.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\fourier_images.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\fourier_services.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\fourier_tcl.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\horloge.cpp
 # End Source File
 # Begin Source File
@@ -131,6 +147,26 @@ SOURCE=.\libjm.def
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl;fi;fd"
+# Begin Source File
+
+SOURCE=..\src\calaphot.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\divers.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\fourier.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\horloge.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\libjm.h
+# End Source File
 # End Group
 # Begin Group "Resource Files"
 
