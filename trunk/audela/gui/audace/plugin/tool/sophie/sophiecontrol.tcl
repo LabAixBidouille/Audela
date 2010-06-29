@@ -2,7 +2,7 @@
 # @file     sophiecontrol.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecontrol.tcl,v 1.44 2010-06-13 08:37:15 michelpujol Exp $
+# @version  $Id: sophiecontrol.tcl,v 1.45 2010-06-29 19:29:57 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -1745,6 +1745,7 @@ proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX 
    if { [::sophieEcartEtoileY length] >= $private(vectorLength) } {
       #--- je supprime le point le plus ancien
       set private(deltaSum) [expr $private(deltaSum) - [::sophieEcartEtoileY index 0] ]
+      set private(deltaQuadraticSum) [expr $private(deltaQuadraticSum) - [::sophieEcartEtoileY index 0] * [::sophieEcartEtoileY index 0]]
       ::sophieEcartEtoileY delete 0
    }
    ::sophieEcartEtoileY append $starDy
