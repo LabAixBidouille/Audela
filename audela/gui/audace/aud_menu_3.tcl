@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise à jour $Id: aud_menu_3.tcl,v 1.63 2010-05-23 15:49:29 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_3.tcl,v 1.64 2010-06-29 07:56:24 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -2590,18 +2590,17 @@ namespace eval ::conv2 {
                set data [ list [ lindex [array get kwds "NAXIS" ] 1 ] \
                   [ lindex [ array get kwds "NAXIS3" ] 1 ] \
                   [ lindex [ array get kwds "RGBFILTR" ] 1 ] \
-                  [ lindex [ array get kwds "RAWCOLOR" ] 1 ] \
-                  [ lindex [ array get kwds "RAW_COLORS" ] 1 ] ]
-               lassign $data naxis naxis3 rgbfiltr rawcolor raw_colors
-
+                  [ lindex [ array get kwds "RAWFILTE" ] 1 ] \
+                  [ lindex [ array get kwds "RAW_FILTER" ] 1 ] ]
+               lassign $data naxis naxis3 rgbfiltr rawfilte raw_filter
                set file [file tail $fichier ]
 
                #--- classe les fichiers en fonction de leur nature
-               if { $naxis3 == "3" } {
+               if { $naxis == "3" && $naxis3 == "3" } {
                   lappend rgb "$file"
-               } elseif { $naxis == "2" && $rgbfiltr =="" && ( $rawcolor != "" || $raw_colors != "" ) } {
+               } elseif { $naxis == "2" && $rgbfiltr =="" && ( $rawfilte != "" || $raw_filter != "" ) } {
                   lappend cfa "$file"
-               } elseif { $naxis == "2" && ($rgbfiltr =="R" || $rgbfiltr =="G" || $rgbfiltr =="B") } {
+               } elseif { $naxis == "2" && $rgbfiltr !="" } {
                   #--- enleve l'extension
                   set file [ file rootname $file ]
                   #--- isole la racine du nom (index compris)
@@ -3320,6 +3319,7 @@ namespace eval ::conv2 {
 
       set err [ catch {
          buf$audace(bufNo) load $in
+         #buf$audace(bufNo) stat
          buf$audace(bufNo) save $out
       } ]
 
