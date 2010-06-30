@@ -145,6 +145,19 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 			tel->tempo=800;
 		}
 	}
+
+   // je recupere le mode d'alignement (altaz ou polaire) 
+   // j'envoie la chaine 0x06  et j'attend la réponse A=Altaz mode P=Polar mode L=land mode
+   mytel_sendLX(tel, RETURN_CHAR, s, "%c",6);
+   switch(s[0]) {
+      case 'A' : 
+         strcpy(tel->alignmentMode,"ALTAZ");
+         break;
+      case 'P' : 
+         strcpy(tel->alignmentMode,"POLAR");
+         break;
+   }
+
    return 0;
 }
 
@@ -808,7 +821,7 @@ int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude
    strcpy(ligne2,tel->interp->result);
    sprintf(ligne,"string range \"[string range [lindex {%s} 0] 0 0][string range [lindex {%s} 0] 1 2]\xDF[string range [lindex {%s} 1] 0 1]\" 0 6",ligne2,ligne2,ligne2); mytel_tcleval(tel,ligne);
    strcpy(ligne2,tel->interp->result);
-   mytel_sendLX(tel, RETURN_CHAR, ligne, "#:St%s%s#", ligne2);
+   mytel_sendLX(tel, RETURN_CHAR, ligne, "#:St%s#", ligne2);
    return 0;
 }
 /* ================================================================ */
