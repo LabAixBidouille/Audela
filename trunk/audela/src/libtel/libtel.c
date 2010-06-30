@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libtel.c,v 1.25 2010-05-22 12:01:39 michelpujol Exp $
+// $Id: libtel.c,v 1.26 2010-06-30 17:43:45 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -704,6 +704,14 @@ int cmdTelMatch(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 /* === Official functions === */
 /* ========================== */
 
+int cmdTelAlignmentMode(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;
+   Tcl_SetResult(interp,tel->alignmentMode,TCL_VOLATILE);
+   return TCL_OK;
+}
+
+
 int cmdTelDrivername(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    char ligne[256];
    sprintf(ligne,"%s {%s}",TEL_LIBNAME,__DATE__);
@@ -1089,6 +1097,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                      }
                   }
                } else {
+                  // erreur de libtel_Getradec()
                   // rien a faire car la fonction libtel_Getradec a deja renseigne les message d'erreur
                }
 
@@ -1105,9 +1114,60 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                /* - end of pointing model-*/
 
             } else {
-               // je n'applique pas de modele de pointage
-               // =======================================
+               // je convertis les coordonnees a la date du jour, sans appliquer de modele de pointage
+               // =====================================================================================
                libtel_Getradec(interp,argv[3],&tel->ra0,&tel->dec0);
+               if ( result == TCL_OK) {
+                  /*
+                  char tu[20];
+                  char home[255];
+                  // je recupere la date courante TU
+                  result = Tcl_Eval(interp,"clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC");
+                  if ( result == TCL_OK) {
+                     strcpy(tu, interp->result);
+                     tel_home_get(tel,home);
+                     // usage mc_hip2tel $hip $date $home $pressure $temperature $modpoi_symbols $modpoi_coefs
+                     // avec hipRecord = 
+                     //   identifiant hypparcos de l'etoile (nombre entier), si non utilisé =0  
+                     //   mag  : magnitude , si non utilisé = 0.0  (nombre décimal)
+                     //   ra   : ascension droite (en degrés décimaux)
+                     //   dec  : declinaison (en degrés décimaux)
+                     //   equinox : date de l'equinoxe , date du jour=now, ou foramt ISO8601
+                     //   epoch   : date de l'epoque d'origine des mouvements propres , inutilise si mura et mudec sont nuls
+                     //   mura : mouvement propre ra (en degré par an) 
+                     //   mudec : mouvement propre dec (en degré par an)
+                     //   plx   : parallaxe , =0 si inconnu (en mas=milliseconde d'arc)s
+                     
+                     //  mc_hip2tel hipRecord dateTu home pressure temperature
+                     sprintf(ligne, "mc_hip2tel { 0 0 %f %f J2000 0 0 0 0 } { %s } { %s } %d %d ", 
+                        tel->ra0, tel->dec0, tu, home, 
+                        tel->radec_model_pressure, tel->radec_model_temperature);
+                     if ( tel->consoleLog >= 1 ) {
+                        logConsole(tel, "goto %s\n", ligne);
+                     }
+                     result = Tcl_Eval(interp,ligne);
+                     if (result == TCL_OK) {
+                        char **listArgv;
+                        int listArgc;
+                        
+                        //  je recupere les coordonnees corrigees a partir des index 0 et 1 de la liste retournee par mc_hip2tel
+                        result = Tcl_SplitList(tel->interp,tel->interp->result,&listArgc,&listArgv) ;
+                        if(result == TCL_OK) {
+                           if ( listArgc > 2 ) {
+                              tel->ra0 = atof ( listArgv[0] ); 
+                              tel->dec0 = atof ( listArgv[1] ); 
+                           } else { 
+                              // rien a faire car la fonction Tcl_SplitList a deja renseigne les message d'erreur
+                           }
+                        } 
+                        Tcl_Free((char*)listArgv);
+                     }
+                  }
+                  */
+               } else {
+                  // erreur de libtel_Getradec()
+                  // rien a faire car la fonction libtel_Getradec a deja renseigne les message d'erreur
+               }
             }
             if ( result == TCL_OK)  {
                if ( tel_radec_goto(tel) == 0 ) {
@@ -1816,6 +1876,7 @@ int tel_init_common(struct telprop *tel, int argc, char **argv)
       strcpy(tel->portname,argv[2]);
    }
    /* --- init of general variables for the telescope --- */
+   strcpy(tel->alignmentMode,"POLAR");
    tel->foclen=tel_ini[tel->index_tel].foclen;
    tel->ra0=0.;
    tel->dec0=0.;

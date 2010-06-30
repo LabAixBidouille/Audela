@@ -40,6 +40,7 @@ struct cmditem {
 };
 
 #define COMMON_CMDLIST \
+   {"alignmentmode", (Tcl_CmdProc *)cmdTelAlignmentMode},\
    {"drivername", (Tcl_CmdProc *)cmdTelDrivername},\
    {"name", (Tcl_CmdProc *)cmdTelName},\
    {"protocol", (Tcl_CmdProc *)cmdTelProtocol},\
@@ -70,6 +71,7 @@ struct cmditem {
    */
 
 /* --- Information commands ---*/
+int cmdTelAlignmentMode(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelDrivername(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelPort(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelChannel(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
