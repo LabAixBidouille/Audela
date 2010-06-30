@@ -23,7 +23,15 @@ struct libdcraw_DataInfo {
   int maximum;             // niveau maximum
 
   // autres informations
-  long long timestamp;     // date en nombre de secondes depuis le 01/01/1970
+#if defined(_MSC_VER)   // Microsoft Visual C++ 
+#if (_MSC_VER < 1300)   // versions earlier than V7.0 do not have 'long long' 
+    __int64 timestamp; // date en nombre de secondes depuis le 01/01/1970
+#else                   // newer versions do support 'long long'
+    long long timestamp; // date en nombre de secondes depuis le 01/01/1970
+#endif
+#else                   // linux support 'long long'
+    long long timestamp; // date en nombre de secondes depuis le 01/01/1970
+#endif
   char make[64];           // fabriquant de la camera
   char model[72];          // modele de la camera
   float flash_used;        // flash utilisé
