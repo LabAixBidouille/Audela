@@ -312,6 +312,34 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;fi;fd"
 			>
+			<File
+				RelativePath="..\src\libname.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\include\libtel\libstruc.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\include\libtel\libtel.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\telcmd.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\telescop.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\teltcl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\include\libtel\util.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
