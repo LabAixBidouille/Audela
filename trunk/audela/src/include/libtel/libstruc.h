@@ -75,6 +75,7 @@
    int            timeDone; \
    int            minRadecDelay;  \
    int            consoleLog; \
+   char alignmentMode[10]; \
    struct telprop *next;
 
 //Tcl_TimerToken timerToken; \
