@@ -1,5 +1,5 @@
 #
-# Update $Id: audela.tcl,v 1.24 2010-06-19 17:02:58 jacquesmichelet Exp $
+# Update $Id: audela.tcl,v 1.25 2010-06-30 06:46:49 michelpujol Exp $
 #
 #--- Welcome to the AudeLA-Interfaces Easy Launcher
 #
@@ -63,7 +63,10 @@ if { ! [ file exist $::audace(rep_log) ] } {
 }
 
 #--- Indication aux bibliothèques de l'emplacement des fichiers logs
-jm_repertoire_log $::audace(rep_log)
+#---  si la blibliotheque est presente
+if { [info command jm_repertoire_log ] != "" } {
+   jm_repertoire_log $::audace(rep_log)
+}
 
 
 #--- Creation du repertoire des fichiers temporaires
