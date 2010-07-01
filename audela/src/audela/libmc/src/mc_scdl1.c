@@ -2355,7 +2355,6 @@ int mc_scheduler_objectlocal1(double longmpc, double rhocosphip, double rhosinph
 
 	// --- prepare sous-ech vectors
 	njdm=24*60+1;
-	njdm=86400;
 	sousech=(int)floor(1.*njd/njdm);
 	if (sousech<1) { sousech=1; }
 	njdm=(int)ceil(1.*njd/sousech);
@@ -2400,19 +2399,25 @@ int mc_scheduler_objectlocal1(double longmpc, double rhocosphip, double rhosinph
 
 	if (objectlocalranges!=NULL) {
 		// --- remplissage des ranges
-		const_jd2=objectdescr->const_jd2+2./86400.;
+		const_jd2=objectdescr->const_jd2+1./njdm+2./86400;
 		for (kjd=1,kr=0,started=0;(kjd<=njdm)||(kr==NB_OBJECTLOCALRANGES_MAX-1);kjd++) {
 			elev=dummy3s[kjd];
-			drangesec=(objectdescr->const_jd2-objectdescr->const_jd1)*86400;
+			drangesec=(objectdescr->const_jd2-objectdescr->const_jd1)*njdm;
 			if ((dummy1s[kjd]>=objectdescr->const_jd1)&&(started==0)) {
 				elev+=0;
 			}
 			if ((dummy8s[kjd]>=objectdescr->const_skylightlevel)&&(dummy1s[kjd]>=objectdescr->const_jd1)&&(dummy1s[kjd]<=const_jd2)&&(started==0)) {
 				// --- range start
 				maxelev=elev;
-				objectlocalranges->jd1[kr]=dummy1s[kjd];
-				objectlocalranges->jd2[kr]=dummy1s[kjd];
-				objectlocalranges->jdelevmax[kr]=dummy1s[kjd];
+				if (drangesec<=1) {
+					objectlocalranges->jd1[kr]=objectdescr->const_jd1;
+					objectlocalranges->jd2[kr]=objectdescr->const_jd1;
+					objectlocalranges->jdelevmax[kr]=objectdescr->const_jd1;
+				} else {
+					objectlocalranges->jd1[kr]=dummy1s[kjd];
+					objectlocalranges->jd2[kr]=dummy1s[kjd];
+					objectlocalranges->jdelevmax[kr]=dummy1s[kjd];
+				}
 				objectlocalranges->elev1[kr]=maxelev;
 				objectlocalranges->elev2[kr]=maxelev;
 				objectlocalranges->elevmax[kr]=maxelev;
@@ -2715,6 +2720,8 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 		}
 		objectdescr[ko].private_elevmaxi=-90.;
 		objectdescr[ko].private_jdelevmaxi=0.;
+		jdobsmin=jd_nextmidsun;
+		jdobsmax=jd_prevmidsun;
 		if (compute_mode==0) {
 			for (kjd=0;kjd<=njd;kjd++) {
 				if (objectlocals[nobjloc][kjd].flagobs==1) {
