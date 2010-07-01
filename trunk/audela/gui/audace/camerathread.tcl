@@ -3,7 +3,7 @@
 # Description : procedures d'acquisition et de traitement avec
 #         plusieurs cameras simultanees exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise à jour $Id: camerathread.tcl,v 1.23 2010-05-23 08:04:06 robertdelmas Exp $
+# Mise à jour $Id: camerathread.tcl,v 1.24 2010-07-01 17:49:07 michelpujol Exp $
 #
 
 namespace eval ::camerathread {
@@ -113,6 +113,7 @@ proc ::camerathread::centerBrightestStar { exptime originCoord targetCoord angle
    set private(deltaReverse)  $deltaReverse
    set private(seuilx)        $seuilx
    set private(seuily)        $seuily
+   set private(slitWidth)     0
    set private(intervalle)    0.3
    set private(declinaisonEnabled) 1
 
@@ -158,6 +159,7 @@ proc ::camerathread::centerRadec { exptime originCoord radec angle targetBoxSize
    set private(deltaReverse)  $deltaReverse
    set private(seuilx)        $seuilx
    set private(seuily)        $seuily
+   set private(slitWidth)     0
    set private(intervalle)    0
    set private(declinaisonEnabled) 1
 
@@ -745,6 +747,9 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName c
    file delete -force "${tempPath}/$fileName$ext"
    file delete -force "${tempPath}/i$fileName$ext"
    file delete -force "${tempPath}/c$fileName$ext"
+   file delete -force "${tempPath}/usno.lst"
+   file delete -force "${tempPath}/com.lst"
+   file delete -force "${tempPath}/obs.lst"
 
    set imageStarNb   0
    set catalogueStarNb 0
@@ -752,10 +757,22 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName c
 
    #--- je verifie la presence d'une image dans le buffer
    set naxis [lindex [buf$bufNo getkwd NAXIS] 1]
-   if { $naxis != 2 && $naxis != 3} {
+   if { $naxis != 2 } {
       error "no 2D or 3D image "
    }
+set foclen [format "%f" $foclen]
 
+::camerathread::disp "crval1=$crval1  crval2=$crval2 pixsize1=$pixsize1 pixsize2=$pixsize2 crpix1=$crpix1 crpix2=$crpix2 foclen=$foclen crota2=$crota2\n"
+###crval1=  229.644583 crval2=    2.077778 pixsize1=8.6 pixsize2=8.3 crpix1=360 crpix2=288 foclen=0.138 crota2=0
+###set crval1   229.644583
+###set crval2   2.077778
+set pixsize1 8.6
+set pixsize2 8.3
+###set crpix1   360
+##set crpix2   288
+###set foclen   0.138
+###set crota2   0.0
+::camerathread::disp "crval1=$crval1  crval2=$crval2 pixsize1=$pixsize1 pixsize2=$pixsize2 crpix1=$crpix1 crpix2=$crpix2 foclen=$foclen crota2=$crota2\n"
    #--- je cree les mots cles necessaires a la calibration
    buf$bufNo setkwd [list "PIXSIZE1"   $pixsize1   float {[um] Pixel size along naxis1} "um" ]
    buf$bufNo setkwd [list "PIXSIZE2"   $pixsize2   float {[um] Pixel size along naxis2} "um" ]
@@ -769,7 +786,8 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName c
    buf$bufNo setkwd [list "CTYPE2"     "DEC--TAN"  string "Gnomonic projection" "" ]
    buf$bufNo setkwd [list "CUNIT1"     "deg"       string "Angles are degrees always" "" ]
    buf$bufNo setkwd [list "CUNIT2"     "deg"       string "Angles are degrees always" "" ]
-   buf$bufNo setkwd [list "EQUINOX"    "2000.0"    float  "System of equatorial coordinates" "" ]
+   ###buf$bufNo setkwd [list "EQUINOX"    "2000.0"    float  "System of equatorial coordinates" "" ]
+   buf$bufNo setkwd [list "EQUINOX"    "2000" string "System of equatorial coordinates" "" ]
 
    #---- recherche des etoiles dans l'image
    #  input :
@@ -794,6 +812,7 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName c
       buf$bufNo setkwd [list "OBJEFILE" "$resultFile" string "" "" ]
       buf$bufNo setkwd [list "OBJEKEY" "test" string "" "" ]
       buf$bufNo setkwd [list "TTNAME" "OBJELIST" string "Table name" "" ]
+      ::camerathread::disp "calibre1 buf$bufNo A_starlist $threshin $resultFile n $fwhm $radius $searchBorder $threshold $searchBox 2 \n"
       set imageStarNb [buf$bufNo A_starlist $threshin $resultFile n $fwhm $radius $searchBorder $threshold $searchBox 2]
       buf$bufNo save "${tempPath}/${fileName}$ext"
    } else {
@@ -809,7 +828,8 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName c
    #     cdummy.jpg   superposition des etoiles du catalogue sur l'image de depart
    #     usno.lst
    ttscript2 "IMA/SERIES \"$tempPath\" \"$fileName\" . . \"$ext\" \"$tempPath\" \"$fileName\" . \"$ext\" CATCHART \"path_astromcatalog=$cataloguePath\" astromcatalog=$catalogueName \"catafile=${tempPath}/c$fileName$ext\" \"magrlim=$maxMagnitude\" \"magblim=$maxMagnitude\""
-   #--- je compte les etoiles trouvees dans le catalogue
+   ::camerathread::disp "calibre 2 IMA/SERIES \"$tempPath\" \"$fileName\" . . \"$ext\" \"$tempPath\" \"$fileName\" . \"$ext\" CATCHART \"path_astromcatalog=$cataloguePath\" astromcatalog=$catalogueName \"catafile=${tempPath}/c$fileName$ext\" \"magrlim=$maxMagnitude\" \"magblim=$maxMagnitude\"\n"
+      #--- je compte les etoiles trouvees dans le catalogue
    set fcom [open "usno.lst" r]
    set catalogueStarNb 0
    # je traite le fichier de coordonnes
@@ -830,8 +850,9 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName c
    #     pointzero.lst
    #     usno.lst
    #     xy.lst
-   if { $imageStarNb != 0 && $catalogueStarNb !=  0 } {
+   if { $imageStarNb >=0 && $catalogueStarNb >=  0 } {
       ttscript2 "IMA/SERIES \"$tempPath\" \"$fileName\" . . \"$ext\" \"$tempPath\" \"$fileName\" . \"$ext\" ASTROMETRY delta=$delta epsilon=$epsilon"
+      ::camerathread::disp "calibre 3 IMA/SERIES \"$tempPath\" \"$fileName\" . . \"$ext\" \"$tempPath\" \"$fileName\" . \"$ext\" ASTROMETRY delta=$delta epsilon=$epsilon \n"
       set fcom [open "com.lst" r]
       set matchedStarNb 0
       while {-1 != [gets $fcom line1]} {
