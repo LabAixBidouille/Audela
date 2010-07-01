@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise à jour $Id: conftel.tcl,v 1.64 2010-05-23 08:05:57 robertdelmas Exp $
+# Mise à jour $Id: conftel.tcl,v 1.65 2010-07-01 17:05:17 robertdelmas Exp $
 #
 
 namespace eval ::confTel {
@@ -17,10 +17,10 @@ proc ::confTel::init { } {
    global audace conf
 
    #--- initConf
-   if { ! [ info exists conf(raquette) ] }           { set conf(raquette)           "1" }
-   if { ! [ info exists conf(telescope) ] }          { set conf(telescope)          "lx200" }
-   if { ! [ info exists conf(telescope,start) ] }    { set conf(telescope,start)    "0" }
-   if { ! [ info exists conf(telescope,geometry) ] } { set conf(telescope,geometry) "540x500+15+0" }
+   if { ! [ info exists conf(raquette) ] }                 { set conf(raquette)                 "1" }
+   if { ! [ info exists conf(telescope) ] }                { set conf(telescope)                "lx200" }
+   if { ! [ info exists conf(telescope,start) ] }          { set conf(telescope,start)          "0" }
+   if { ! [ info exists conf(telescope,geometry) ] }       { set conf(telescope,geometry)       "540x500+15+0" }
    if { ! [ info exists conf(telescope,model,fileName) ] } { set conf(telescope,model,fileName) "" }
    if { ! [ info exists conf(telescope,model,enabled) ]  } { set conf(telescope,model,enabled)  "" }
 
@@ -680,6 +680,7 @@ proc ::confTel::widgetToConf { } {
 proc ::confTel::getPluginProperty { propertyName } {
    variable private
 
+   # alignmentMode           Retourne le mode de fonctionnement de la monture (ALTAZ ou POLAR)
    # backlash                Retourne la possibilite de faire un rattrapage des jeux
    # guidingSpeed            Retourne les vitesses de guidage en arcseconde de degre par seconde de temps
    # hasCoordinates          Retourne la possibilite d'afficher les coordonnees
@@ -700,6 +701,7 @@ proc ::confTel::getPluginProperty { propertyName } {
    #--- je recherche la valeur par defaut de la propriete
    #--- si la valeur par defaut de la propriete n'existe pas, je retourne une chaine vide
    switch $propertyName {
+      alignmentMode           { set defaultResult POLAR }
       backlash                { set defaultResult 0 }
       guidingSpeed            { set defaultResult [list 1.0 1.0] }
       hasCoordinates          { set defaultResult 1 }
@@ -725,11 +727,15 @@ proc ::confTel::getPluginProperty { propertyName } {
    }
 
    #--- si une monture est selectionnee, je recherche la valeur propre a la monture
-   set result [ ::$private(mountName)::getPluginProperty $propertyName ]
-   if { $result != "" } {
-      return $result
+   if { $propertyName == "alignmentMode" } {
+      return [ tel$private(telNo) alignmentmode ]
    } else {
-      return $defaultResult
+      set result [ ::$private(mountName)::getPluginProperty $propertyName ]
+      if { $result != "" } {
+         return $result
+      } else {
+         return $defaultResult
+      }
    }
 }
 
