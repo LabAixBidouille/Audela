@@ -2334,7 +2334,7 @@ int mc_scheduler_objectlocal1(double longmpc, double rhocosphip, double rhosinph
 	mc_OBJECTLOCAL *objectlocal=NULL;
 	double latrad;
 	double *luminance_ciel_bleus=NULL; // -90 -89.9 -89.8 ... +89.9 +90.0
-	double maxelev=0,da,elev;
+	double maxelev=0,da,elev,drangesec,const_jd2;
 	int started;
 
 	// --- cd/m2
@@ -2355,6 +2355,7 @@ int mc_scheduler_objectlocal1(double longmpc, double rhocosphip, double rhosinph
 
 	// --- prepare sous-ech vectors
 	njdm=24*60+1;
+	njdm=86400;
 	sousech=(int)floor(1.*njd/njdm);
 	if (sousech<1) { sousech=1; }
 	njdm=(int)ceil(1.*njd/sousech);
@@ -2399,9 +2400,14 @@ int mc_scheduler_objectlocal1(double longmpc, double rhocosphip, double rhosinph
 
 	if (objectlocalranges!=NULL) {
 		// --- remplissage des ranges
+		const_jd2=objectdescr->const_jd2+2./86400.;
 		for (kjd=1,kr=0,started=0;(kjd<=njdm)||(kr==NB_OBJECTLOCALRANGES_MAX-1);kjd++) {
 			elev=dummy3s[kjd];
-			if ((dummy8s[kjd]>=objectdescr->const_skylightlevel)&&(started==0)) {
+			drangesec=(objectdescr->const_jd2-objectdescr->const_jd1)*86400;
+			if ((dummy1s[kjd]>=objectdescr->const_jd1)&&(started==0)) {
+				elev+=0;
+			}
+			if ((dummy8s[kjd]>=objectdescr->const_skylightlevel)&&(dummy1s[kjd]>=objectdescr->const_jd1)&&(dummy1s[kjd]<=const_jd2)&&(started==0)) {
 				// --- range start
 				maxelev=elev;
 				objectlocalranges->jd1[kr]=dummy1s[kjd];
@@ -2418,7 +2424,8 @@ int mc_scheduler_objectlocal1(double longmpc, double rhocosphip, double rhosinph
 					objectlocalranges->jdelevmax[kr]=dummy1s[kjd];
 					objectlocalranges->elevmax[kr]=maxelev;
 				}
-			} else if ((dummy8s[kjd]<objectdescr->const_skylightlevel)&&(started==1)) {
+			}
+			if (((dummy8s[kjd]<objectdescr->const_skylightlevel)||(dummy1s[kjd-1]>=const_jd2))&&(started==1)) {
 				// --- range end
 				objectlocalranges->jd2[kr]=dummy1s[kjd-1];
 				objectlocalranges->elev2[kr]=dummy3s[kjd-1];
@@ -2666,6 +2673,9 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 			}
 		}
 		if (compute_mode==1) {
+			if (ko==136) {
+				ko+=0;
+			}
 			err=mc_scheduler_objectlocal1(longmpc,rhocosphip,rhosinphip,&objectdescr[ko],njd,sunmoon,horizon_altaz,horizon_hadec,NULL,&objectlocalranges[nobjloc]);
 		}
 		if (err>0) {
