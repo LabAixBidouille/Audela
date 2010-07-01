@@ -2434,6 +2434,9 @@ int mc_scheduler_objectlocal1(double longmpc, double rhocosphip, double rhosinph
 				// --- range end
 				objectlocalranges->jd2[kr]=dummy1s[kjd-1];
 				objectlocalranges->elev2[kr]=dummy3s[kjd-1];
+				if (objectlocalranges->jdelevmax[kr]>objectlocalranges->jd2[kr]) {
+					objectlocalranges->jdelevmax[kr]=objectlocalranges->jd1[kr];
+				}
 				kr++;
 				started=0;
 			}
@@ -2807,6 +2810,8 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 	users[0].percent_quota_authorized=objectdescr[objectlinks[kdummys[0]]].user_quota;
 	users[0].percent_quota_used=0.;
 	users[0].duration_total_used=0.;
+	nu=0;
+	fprintf(fidlog," %d : user_id=%d quota=%f\n",nu,users[nu].iduser,users[nu].percent_quota_authorized);
 	for (ko=1,nu=1;ko<nobjloc;ko++) {
 		id=dummys[ko];
 		if (id!=id0) {
@@ -2937,6 +2942,14 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 					continue;
 				}
 			}
+			// --- compute the maximum duration of this sequence, including slewing
+			duration=objectdescr[kd].delay_slew+objectdescr[kd].delay_instrum+objectdescr[kd].delay_exposures;
+			angle=180;
+			d1=angle/objectdescr[kd].axe_slew1;
+			angle=fabs(dec1-dec2);
+			d2=angle/objectdescr[kd].axe_slew2;
+			d12b=(d1>d2)?d1:d2;
+			duration+=d12b;
 			// --- initialize the flagobs vector with ever known sequence constraints
 			if (compute_mode==0) {
 				for (kjd=0;kjd<njd;kjd++) {
@@ -2946,6 +2959,12 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 			if (compute_mode==1) {
 				for (kjd=0;kjd<njd;kjd++) {
 					objectlocal0[kjd].flagobs=0;
+				}
+				for (kr=0;kr<objectlocalranges[kk].nbrange;kr++) {
+					// --- add a delay if the jd1-jd2 constraint is < than the duration ! 
+					if ((objectlocalranges[kk].jd2[kr]-objectlocalranges[kk].jd1[kr])<(duration/86400.)) {
+						objectlocalranges[kk].jd2[kr]=objectlocalranges[kk].jd2[kr]+duration/86400.-(objectlocalranges[kk].jd2[kr]-objectlocalranges[kk].jd1[kr]);
+					}
 				}
 				for (kr=0;kr<objectlocalranges[kk].nbrange;kr++) {
 					k1=(int)((objectlocalranges[kk].jd1[kr]-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)/djd);
@@ -2967,7 +2986,6 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 			// planis[0][].jd_acq_end=jd2;
 			//
 			// --- switch to zero the flagobs to take account for the sequence duration
-			duration=objectdescr[kd].delay_slew+objectdescr[kd].delay_instrum+objectdescr[kd].delay_exposures;
 			for (kjd=njd;kjd>0;kjd--) {
 				if ( (kjd==njd) || ((objectlocal0[kjd].flagobs==0)&&(objectlocal0[kjd-1].flagobs==1)) ) {
 					k1=kjd-1;
