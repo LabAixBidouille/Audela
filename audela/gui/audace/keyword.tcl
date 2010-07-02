@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: keyword.tcl,v 1.44 2010-05-23 06:44:05 robertdelmas Exp $
+# Mise à jour $Id: keyword.tcl,v 1.45 2010-07-02 20:42:22 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -465,7 +465,7 @@ proc ::keyword::onChangeObjname { visuNo } {
    variable private
 
    if { $::conf(keyword,GotoManuelAuto) == "$::caption(keyword,automatic)" } {
-      set private(objName) $::audace(telescope,targetname)
+      set private(objName) $::audace(telescope,targetName)
    }
 }
 
@@ -544,7 +544,7 @@ proc ::keyword::onChangeValueComboBox { visuNo } {
       #--- Je configure l'etat de l'entry
       $wOBJNAME configure -state disabled
       #--- Je recupere OBJNAME
-      set private(objName) $::audace(telescope,targetname)
+      set private(objName) $::audace(telescope,targetName)
    } elseif { $::conf(keyword,GotoManuelAuto) == "$::caption(keyword,manuel)" } {
       #--- Je recupere le nomTK de l'entry
       set wOBJNAME [$::keyword::private($visuNo,table) windowpath OBJNAME,valeur ]

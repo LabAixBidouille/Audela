@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise à jour $Id: telescope.tcl,v 1.57 2010-06-25 17:16:35 robertdelmas Exp $
+# Mise à jour $Id: telescope.tcl,v 1.58 2010-07-02 20:42:42 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -29,7 +29,7 @@ proc ::telescope::init { } {
    set audace(telescope,getdec)        "+00d00m00"
    set audace(telescope,targetRa)      "00h00m00"
    set audace(telescope,targetDec)     "+00d00m00"
-   set audace(telescope,targetname)    ""
+   set audace(telescope,targetName)    ""
    set audace(telescope,targetEquinox) "J2000.0"
    set audace(telescope,rate)          "1"
    set audace(telescope,labelspeed)    "$caption(telescope,interro)"
@@ -184,7 +184,7 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
    if { [ ::tel::list ] != "" } {
       set audace(telescope,targetRa)      [lindex $list_radec 0]
       set audace(telescope,targetDec)     [lindex $list_radec 1]
-      set audace(telescope,targetname)    $objectName
+      set audace(telescope,targetName)    $objectName
       set audace(telescope,targetEquinox) $radecEquinox
       #---
       setTrackSpeed
@@ -1235,7 +1235,7 @@ proc ::telescope::getTargetDec { } {
 proc ::telescope::getTargetName { } {
    global audace
 
-   return $audace(telescope,targetname)
+   return $audace(telescope,targetName)
 }
 
 #------------------------------------------------------------
