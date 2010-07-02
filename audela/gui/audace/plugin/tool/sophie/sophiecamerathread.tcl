@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.34 2010-06-11 11:56:34 michelpujol Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.35 2010-07-02 06:08:30 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -134,24 +134,30 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          #--- je calcule les coordonnees de la fenetre d'analyse
          if {  $private(mode) == "GUIDE" } {
             if { $private(guidingMode) == "OBJECT" } {
-               #--- la fenetre est centree sur la consigne
+               #--- je calcule la position de la fenetre est centree sur la consigne
+               #--- car la camera fait une acquition de toute l'image pour avoir l'étoile+consigne et la fibre
                set x  [lindex $private(originCoord) 0]
                set y  [lindex $private(originCoord) 1]
                set x1 [expr round($x - $private(targetBoxSize))]
                set x2 [expr $x1 + 2 * $private(targetBoxSize)]
                set y1 [expr round($y - $private(targetBoxSize))]
                set y2 [expr $y1 + 2 * $private(targetBoxSize)]
+               #--- je choisis la detection de l'étoile par calcul du barycentre
                set starDetectionMode 2
+               #--- j'active l'intégration de l'image
                set integratedImage 2
                set previousFiberX [lindex $private(fiberCoord) 0]
                set previousFiberY [lindex $private(fiberCoord) 1]
             } else {
                #--- la fenetre correspond à toute l'image qui est centree sur la consigne
+               #--- car l'image est déjà fenetree au niveau de l'acquisition de la camera
                set x1 1
                set y1 1
                set x2 [buf$bufNo getpixelswidth]
                set y2 [buf$bufNo getpixelsheight]
+               #--- je choisis la detection de l'étoile par calcul du barycentre
                set starDetectionMode 2
+               #--- j'active l'intégration de l'image
                set integratedImage 1
                set previousFiberX [lindex $private(originCoord) 0]
                set previousFiberY [lindex $private(originCoord) 1]
@@ -166,11 +172,12 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             set y1 [expr round($y - $private(targetBoxSize))]
             if { $y1 < 1 } { set y1 1 }
             set y2 [expr $y1 + 2 * $private(targetBoxSize)]
-            set starDetectionMode 2
+            #--- je choisis la detection de l'étoile par ajustement de gaussiennne pour le cetrage
+            set starDetectionMode 1
+            #--- je desactive l'intégration de l'image
             set integratedImage 0
             set previousFiberX [lindex $private(originCoord) 0]
             set previousFiberY [lindex $private(originCoord) 1]
-            ###::camerathread::disp  "targetCoord=[format "%.2f" [lindex $private(targetCoord) 0]]  x=$x  x1=$x1 x2=$x2\n"
          }
 
          #--- j'affiche l'image et je transmets le temps ecoule entre 2 debuts de pose
