@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise à jour $Id: webcam.tcl,v 1.56 2010-06-26 16:00:19 michelpujol Exp $
+# Mise à jour $Id: webcam.tcl,v 1.57 2010-07-02 17:08:28 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -403,7 +403,7 @@ proc ::webcam::fillConfigPage { frm camItem } {
 
    #--- Selection WebCam
    radiobutton $frm.radioWebCam -anchor w -highlightthickness 0 \
-      -text "$caption(webcam,camera)" -value 0 \
+      -text "$caption(webcam,webcam)" -value 0 \
       -variable ::webcam::private($camItem,select) -command "::webcam::selectCameraType $camItem"
    pack $frm.radioWebCam -in $frm.frame20 -anchor nw -side top -pady 10
 
@@ -428,7 +428,7 @@ proc ::webcam::fillConfigPage { frm camItem } {
    button $frm.configure -text "$caption(webcam,configurer)" -relief raised \
       -command "::webcam::configureLinkLonguePose $camItem ; \
          ::confLink::run ::webcam::private($camItem,longueposeport) \
-         { parallelport quickremote serialport } \"- $caption(webcam,longuepose1) - $caption(webcam,camera)\""
+         { parallelport quickremote serialport } \"- $caption(webcam,longuepose1) - $caption(webcam,webcam)\""
    pack $frm.configure -in $frm.frame11 -side left -pady 0 -ipadx 10 -ipady 1
 
    #--- Je constitue la liste des liaisons pour la longuepose
@@ -632,10 +632,10 @@ proc ::webcam::configureCamera { camItem bufNo } {
       if { $conf(webcam,$camItem,select) == "0" } {
          if { $::tcl_platform(os) == "Linux" } {
             #--- j'affiche le canal et le port
-            console::affiche_entete "$caption(webcam,camera) $conf(webcam,$camItem,port)\n"
+            console::affiche_entete "$caption(webcam,webcam) $conf(webcam,$camItem,port)\n"
          } else {
             #--- j'affiche la connexion de la camera
-            console::affiche_entete "$caption(webcam,camera) - $caption(webcam,mode_video) $caption(webcam,2points)\
+            console::affiche_entete "$caption(webcam,webcam) - $caption(webcam,mode_video) $caption(webcam,2points)\
             $conf(webcam,$camItem,videomode)\n"
          }
          console::affiche_entete "$caption(webcam,longuepose) $caption(webcam,2points)\
@@ -864,17 +864,25 @@ proc ::webcam::selectCameraType { camItem } {
 
    set frm $private(frm)
    if { $::webcam::private($camItem,select) == "1" } {
+      $frm.frame10.labURL configure -state disabled
+      $frm.lab2 configure -state disabled
+      $frm.lab3 configure -state disabled
+      $frm.lab4 configure -state disabled
+      $frm.longuepose configure -state disabled
+      $frm.webcamCcd_N_B configure -state disabled
       $frm.ccd_N_B configure -state normal
       $frm.entryDimPixX configure -state normal
       $frm.entryDimPixY configure -state normal
-      $frm.longuepose configure -state disabled
-      $frm.webcamCcd_N_B configure -state disabled
    } else {
+      $frm.frame10.labURL configure -state normal
+      $frm.lab2 configure -state normal
+      $frm.lab3 configure -state normal
+      $frm.lab4 configure -state normal
+      $frm.longuepose configure -state normal
+      $frm.webcamCcd_N_B configure -state normal
       $frm.ccd_N_B configure -state disabled
       $frm.entryDimPixX configure -state disabled
       $frm.entryDimPixY configure -state disabled
-      $frm.longuepose configure -state normal
-      $frm.webcamCcd_N_B configure -state normal
    }
 }
 
