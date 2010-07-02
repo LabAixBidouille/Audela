@@ -1,6 +1,6 @@
 #
 # Fichier : webcam.cap
-# Mise a jour $Id: webcam.cap,v 1.16 2010-06-27 08:51:07 robertdelmas Exp $
+# Mise a jour $Id: webcam.cap,v 1.17 2010-07-02 17:06:49 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -11,13 +11,14 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(webcam,camera)                      "WebCam"
+set caption(webcam,camera)                      "WebCam - Grabber"
 
 set caption(webcam,canal_usb)                   "USB Video Channel"
 set caption(webcam,mode_video)                  "Video Mode"
 set caption(webcam,miroir_x)                    "Horizontal Mirror"
 set caption(webcam,miroir_y)                    "Vertical Mirror"
 set caption(webcam,select)                      "Select"
+set caption(webcam,webcam)                      "WebCam"
 set caption(webcam,grabber)                     "Grabber"
 set caption(webcam,longuepose)                  "S. Chambers Long Exposure Option"
 set caption(webcam,longuepose1)                 "Long Exposure"
@@ -48,13 +49,14 @@ set caption(webcam,site_web_chambers)           "http://www.pmdo.com/wintro.htm"
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(webcam,camera)                   "WebCam"
+   set caption(webcam,camera)                   "WebCam - Grabber"
 
    set caption(webcam,canal_usb)                "Canal vidéo USB"
    set caption(webcam,mode_video)               "Mode vidéo"
    set caption(webcam,miroir_x)                 "Miroir horizontal"
    set caption(webcam,miroir_y)                 "Miroir vertical"
    set caption(webcam,select)                   "Sélection"
+   set caption(webcam,webcam)                   "WebCam"
    set caption(webcam,grabber)                  "Grabber"
    set caption(webcam,longuepose)               "Option longue pose (S. Chambers)"
    set caption(webcam,longuepose1)              "Longue pose"
@@ -85,13 +87,14 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(webcam,camera)                   "WebCam"
+   set caption(webcam,camera)                   "WebCam - Grabber"
 
    set caption(webcam,canal_usb)                "Canale video USB"
    set caption(webcam,mode_video)               "Modalita` video"
    set caption(webcam,miroir_x)                 "Specchio orizzontale"
    set caption(webcam,miroir_y)                 "Specchio verticale"
    set caption(webcam,select)                   "Scelta"
+   set caption(webcam,webcam)                   "WebCam"
    set caption(webcam,grabber)                  "Grabber"
    set caption(webcam,longuepose)               "Opzione lunga posa (S. Chambers)"
    set caption(webcam,longuepose1)              "Lunga posa"
@@ -122,13 +125,14 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(webcam,camera)                   "WebCam"
+   set caption(webcam,camera)                   "WebCam - Grabber"
 
    set caption(webcam,canal_usb)                "Canal vídeo USB"
    set caption(webcam,mode_video)               "Modo vídeo"
    set caption(webcam,miroir_x)                 "Espejo horizontal"
    set caption(webcam,miroir_y)                 "Espejo vertical"
    set caption(webcam,select)                   "Selecció"
+   set caption(webcam,webcam)                   "WebCam"
    set caption(webcam,grabber)                  "Grabber"
    set caption(webcam,longuepose)               "Opcion de exposición larga (S. Chambers)"
    set caption(webcam,longuepose1)              "Exposición larga"
@@ -159,13 +163,14 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(webcam,camera)                   "WebCam"
+   set caption(webcam,camera)                   "WebCam - Grabber"
 
    set caption(webcam,canal_usb)                "USB Video Kanal"
    set caption(webcam,mode_video)               "Video Modus"
    set caption(webcam,miroir_x)                 "Horizontale Spiegel"
    set caption(webcam,miroir_y)                 "Verticale Spiegel"
    set caption(webcam,select)                   "Wahl"
+   set caption(webcam,webcam)                   "WebCam"
    set caption(webcam,grabber)                  "Grabber"
    set caption(webcam,longuepose)               "Lange Belichtung Option (S. Chambers)"
    set caption(webcam,longuepose1)              "Lange Belichtung"
@@ -196,13 +201,14 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(webcam,camera)                   "WebCam"
+   set caption(webcam,camera)                   "WebCam - Grabber"
 
    set caption(webcam,canal_usb)                "Canal Video USB"
    set caption(webcam,mode_video)               "Modo video"
    set caption(webcam,miroir_x)                 "Espelho Horizontal"
    set caption(webcam,miroir_y)                 "Espelho Vertical"
    set caption(webcam,select)                   "Selecção"
+   set caption(webcam,webcam)                   "WebCam"
    set caption(webcam,grabber)                  "Grabber"
    set caption(webcam,longuepose)               "Opção de Longa Exposição S. Chambers"
    set caption(webcam,longuepose1)              "Longa Exposição"
@@ -233,13 +239,14 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(webcam,camera)                   "WebCam"
+   set caption(webcam,camera)                   "WebCam - Grabber"
 
    set caption(webcam,canal_usb)                "USB Video Channel"
    set caption(webcam,mode_video)               "Video måde"
    set caption(webcam,miroir_x)                 "Horisontal spejl"
    set caption(webcam,miroir_y)                 "Vertikal spejl"
    set caption(webcam,select)                   "Valg"
+   set caption(webcam,webcam)                   "WebCam"
    set caption(webcam,grabber)                  "Grabber"
    set caption(webcam,longuepose)               "S. Chambers Long Exposure Option"
    set caption(webcam,longuepose1)              "Long Exposure"
@@ -270,13 +277,14 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
-   set caption(webcam,camera)                   "WebCam"
+   set caption(webcam,camera)                   "WebCam - Grabber"
 
    set caption(webcam,canal_usb)                "USB Video Channel"
    set caption(webcam,mode_video)               "Video Mode"
    set caption(webcam,miroir_x)                 "Horizontal Mirror"
    set caption(webcam,miroir_y)                 "Vertical Mirror"
    set caption(webcam,select)                   "Select"
+   set caption(webcam,webcam)                   "WebCam"
    set caption(webcam,grabber)                  "Grabber"
    set caption(webcam,longuepose)               "S. Chambers Long Exposure Option"
    set caption(webcam,longuepose1)              "Long Exposure"
@@ -307,13 +315,14 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
-   set caption(webcam,camera)                   "WebCam"
+   set caption(webcam,camera)                   "WebCam - Grabber"
 
    set caption(webcam,canal_usb)                "USB Video Channel"
    set caption(webcam,mode_video)               "Video Mode"
    set caption(webcam,miroir_x)                 "Horizontal Mirror"
    set caption(webcam,miroir_y)                 "Vertical Mirror"
    set caption(webcam,select)                   "Select"
+   set caption(webcam,webcam)                   "WebCam"
    set caption(webcam,grabber)                  "Grabber"
    set caption(webcam,longuepose)               "S. Chambers Long Exposure Option"
    set caption(webcam,longuepose1)              "Long Exposure"
