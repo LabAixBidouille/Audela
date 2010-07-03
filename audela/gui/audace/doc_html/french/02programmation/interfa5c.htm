@@ -6,7 +6,7 @@
   <title>Liste de toutes les fonctions</title>
 </head>
 <body>
-<p class="date">Date de mise &agrave; jour : 25 mai 2010</p>
+<p class="date">Date de mise &agrave; jour : 03 juillet 2010</p>
 <h1>Liste de toutes les fonctions </h1>
 <p>Nous donnons la liste de toutes les fonctions disponibles dans
 AudeLA, plus quelques unes de Tcl et Tk qui sont tr&egrave;s utiles. En
@@ -129,9 +129,10 @@ acquise <br>
 <a href="cam.htm#tel">cam1 tel</a> : [DC] sp&eacute;cifie le
 num&eacute;ro de t&eacute;lescope sur lequel seront lues les
 coordonn&eacute;es point&eacute;es pour remplir l'en-t&ecirc;te FITS <br>
-<a href="cam.htm#shutter">cam1 shutter</a> : [DC] sp&eacute;cifie le
-status de l'obturateur <br>
-<a href="cam.htm#bell">cam1 bell</a> : [DC] sp&eacute;cifie le status
+<a href="cam.htm#shutter">cam1 shutter</a> : [DC] sp&eacute;cifie
+l'&eacute;tat de l'obturateur <br>
+<a href="cam.htm#bell">cam1 bell</a> : [DC] sp&eacute;cifie
+l'&eacute;tat
 de la sonnerie pour les cam&eacute;ras Hi-SIS 24 <br>
 vwait cam_acq1 : [TC] attend la fin de la pose <br>
 <a href="cam.htm#ccd">cam1 ccd</a> : [DC] retourne le nom du capteur
@@ -157,7 +158,7 @@ secondes &eacute;coul&eacute;es depuis le d&eacute;but de pose <br>
 <a href="cam.htm#readnoise">cam1 readnoise</a> : [AL] retourne la
 valeur du bruit de lecture th&eacute;orique (&eacute;lectrons) <br>
 <a href="cam.htm#gain">cam1 gain</a> : [AL] retourne la valeur du gain
-th&eacute;orique (&eacute;lectrons / adu) <br>
+th&eacute;orique (&eacute;lectrons / ADU) <br>
 <a href="cam.htm#temperature">cam1 temperature</a> : [DC] retourne la
 temp&eacute;rature du CCD (degr&eacute;s Celsius) <br>
 <a href="cam.htm#infotemp">cam1 infotemp</a> : [DC] informations sur la
@@ -745,7 +746,7 @@ coordonn&eacute;es courantes ra,dec <br>
 <a href="tel.htm#radec">tel1 radec init</a> : [DT] initialise les
 coordonn&eacute;es &agrave; la position ra,dec <br>
 <a href="file:///D:/audela/doc_html/tel.htm#radec">tel1 radec state</a>
-: [DT] retourne le status des moteurs ra,dec <br>
+: [DT] retourne l'&eacute;tat des moteurs ra,dec <br>
 <a href="tel.htm#coord">tel1 coord</a> : [DT] &eacute;quivalent
 &agrave; tel1 radec coord <br>
 <a href="tel.htm#goto">tel1 goto</a> : [DT] &eacute;quivalent &agrave;
@@ -771,7 +772,7 @@ courante du codeur de focalisation <br>
 <a href="tel.htm#">tel1 focus init</a> : [DT] initialise la valeur du
 codeur du moteur de focalisation <br>
 <a href="file:///D:/audela/doc_html/tel.htm#">tel1 focus state</a> :
-[DT] retourne le status du moteur de focalisation <br>
+[DT] retourne l'&eacute;tat du moteur de focalisation <br>
 <a href="tel.htm#date">tel1 date</a> : [DT] mise &agrave; jour de
 l'horloge du microcontr&ocirc;leur du t&eacute;lescope (LX200) <br>
 <a href="tel.htm#home">tel1 home</a> : [DT] mise &agrave; jour de
@@ -868,7 +869,7 @@ addition sigma-kappa des meilleures et affichage<br>
 <a href="poly.htm#seriesApoly">seriesApoly</a> : [AC] cr&eacute;ation
 d'une s&eacute;rie d'images polychromes &agrave; partir de plusieurs
 s&eacute;ries monochromes<br>
-<a href="poly.htm#polyAserie">polyAserie</a> : [AC] extration d'une
+<a href="poly.htm#polyAserie">polyAserie</a> : [AC] extraction d'une
 s&eacute;rie monochrome &agrave; partir d'une s&eacute;rie d'images
 polychromes<br>
 <a href="poly.htm#polyAseries">polyAseries</a> : [AC] conversion d'une
@@ -1052,9 +1053,9 @@ Transform&eacute;e de Fourier Discr&egrave;te d'une image<br>
 Transform&eacute;e de Fourier Discr&egrave;te Inverse de deux images
 appari&eacute;es<br>
 <a href="libjm.htm#acorr2d">acorr2d</a> : [JM] calcule la fonction
-d'auto-correlation d'une image<br>
+d'auto-corr&eacute;lation d'une image<br>
 <a href="libjm.htm#icorr2d">icorr2d</a> : [JM] calcule la fonction
-d'inter-correlation de deux images<br>
+d'inter-corr&eacute;lation de deux images<br>
 <a href="libjm.htm#tfd2d">conv2d</a> : [JM] calcule le produit de
 convolution de deux images<br>
 <h1> Fonctions de la librairie libgs</h1>
@@ -1090,14 +1091,16 @@ audace(imageNo) : [AC] num&eacute;ro de l'image TK de la visu principale<br>
 audace(telNo) : [AC] num&eacute;ro du t&eacute;lescope<br>
 audace(visuNo) : [AC] num&eacute;ro de la visu principale<br>
 <p></p>
+audace(aladin) : [AC]&nbsp; r&eacute;pertoire d&eacute;di&eacute; au
+programme Aladin<br>
 audace(rep_caption) : [AC] r&eacute;pertoire d&eacute;di&eacute; aux
-captions (fichiers pour les traductions) <br>
+captions (fichiers pour les traductions)<br>
 audace(rep_catalogues) : [AC] r&eacute;pertoire d&eacute;di&eacute; aux
 catalogues install&eacute;s avec AudeLA<br>
 audace(rep_doc_html) : [AC] r&eacute;pertoire d&eacute;di&eacute;
-&agrave; la documentation html <br>
+&agrave; la documentation html<br>
 audace(rep_doc_pdf) : [AC] r&eacute;pertoire d&eacute;di&eacute;
-&agrave; la documentation pdf <br>
+&agrave; la documentation pdf<br>
 audace(rep_gui) : [AC] r&eacute;pertoire des&nbsp; programmes IHM
 (Interface Homme Machine) ou GUI (Graphic User Interface)<br>
 audace(rep_home) : [AC] r&eacute;pertoire d&eacute;di&eacute; aux
@@ -1106,9 +1109,9 @@ audace(rep_images) : [AC] r&eacute;pertoire d&eacute;di&eacute; aux
 images<br>
 audace(rep_install) : [AC] r&eacute;pertoire d'installation d'AudeLA<br>
 audace(rep_log) : [AC] r&eacute;pertoire d&eacute;di&eacute; aux
-fichiers de traces <br>
+fichiers de traces<br>
 audace(rep_plugin) : [AC] r&eacute;pertoire d&eacute;di&eacute; aux
-plugins <br>
+plugins<br>
 audace(rep_scripts) : [AC] r&eacute;pertoire d&eacute;di&eacute; aux
 scripts<br>
 audace(rep_temp) : [AC] r&eacute;pertoire d&eacute;di&eacute; aux
@@ -1119,79 +1122,73 @@ audace(rep_userCatalog) : [AC] r&eacute;pertoire d&eacute;di&eacute;
 aux catalogues utilisateurs<br>
 <p></p>
 audace(hl,format,hmsint) : [AC] heure locale du moment au format "HHh
-MMm SSs" (par exemple : 23h 57m 14s) <br>
-audace(tu,format,dmyhmsint) : [AC] heure TU du moment au format
-"JJ/MM/AA HH:MM:SS TU" (par exemple : 06/01/02 22:57:55 TU) <br>
+MMm SSs" (par exemple : 23h 57m 14s)<br>
+audace(tu,format,dmyhmsint) : [AC] date et heure TU du moment au format
+"JJ/MM/AA HH:MM:SS TU" (par exemple : 06/01/02 22:57:55 TU)<br>
 audace(tu,format,hmsint) : [AC] heure TU du moment au format "HHh MMm
-SSs" (par exemple : 22h 57m 14s) <br>
+SSs" (par exemple : 22h 57m 14s)<br>
 audace(tu_date,format,dmy) : [AC] date TU du moment au format
-"JJ/MM/AAAA" (par exemple : 25/05/2010) <br>
+"JJ/MM/AAAA" (par exemple : 25/05/2010)<br>
 audace(tsl) : [AC] heure TSL du moment au format "HH MM SS.SSSSSS" (par
-exemple : 6 9 22.310192) <br>
+exemple : 6 9 22.310192)<br>
 audace(tsl,format,hmsint) : [AC] heure TSL du moment au format "HHh MMm
-SSs" (par exemple : 06h 09m 44s) <br>
-audace(tsl,format,zenith) : [AC] Ascension Droite du z&eacute;nith <br>
+SSs" (par exemple : 06h 09m 44s)<br>
+audace(tsl,format,zenith) : [AC] Ascension Droite du z&eacute;nith<br>
 <p></p>
 audace(telescope,controle) : [AC] &eacute;tat de surveillance du suivi
 sid&eacute;ral ('Suivi On' en fonctionnement, 'Suivi Off' &agrave;
-l'arr&ecirc;t) <br>
+l'arr&ecirc;t)<br>
 audace(telescope,currentFocus) : [AC] position actuelle du dispositif
-de mise au point (focuser) <br>
+de mise au point (focuser)<br>
 audace(telescope,getdec) : [AC] position actuelle de la monture en
-D&eacute;clinaison <br>
+D&eacute;clinaison<br>
 audace(telescope,getra) : [AC] position actuelle de la monture en
-Ascension Droite <br>
+Ascension Droite<br>
 audace(telescope,goto) : [AC] &eacute;tat de surveillance du GOTO ('1'
-va vers l'objet, '0' est arriv&eacute; &agrave; destination) <br>
+va vers l'objet, '0' est arriv&eacute; &agrave; destination)<br>
 audace(telescope,inittel) : [AC]&nbsp; initialisation de la monture
 AudeCom<br>
 audace(telescope,labelspeed) : [AC] vitesse (suivi, guidage, pointage)
-actuelle de la monture <br>
-audace(telescope,rate) : [AC] pourcentage de la vitesse du
-t&eacute;lescope (0% : Vitesse la plus lente, 100% : Vitesse la plus
+de la monture<br>
+audace(telescope,rate) : [AC] pourcentage de la vitesse de la monture
+(0% : Vitesse la plus lente, 100% : Vitesse la plus
 rapide)<br>
-audace(telescope,speed) : [AC] num&eacute;ro de la vitesse du
-t&eacute;lescope (1 : Vitesse la plus lente, n : Vitesse la plus rapide)<br>
-audace(telescope,targetDec) : [AC] D&eacute;clinaison de l'objet cible <br>
-audace(telescope,targetEquinox) : [AC] &eacute;quinoxe de l'objet cible
-<br>
-audace(telescope,targetName) : [AC] nom de l'objet cible <br>
-audace(telescope,targetRa) : [AC] Ascension Droite de l'objet cible <br>
+audace(telescope,speed) : [AC] num&eacute;ro de la vitesse de la
+monture (1 : Vitesse la plus lente, n : Vitesse la plus rapide)<br>
+audace(telescope,targetDec) : [AC] D&eacute;clinaison de l'objet cible<br>
+audace(telescope,targetEquinox) : [AC] &eacute;quinoxe de l'objet cible<br>
+audace(telescope,targetName) : [AC] nom de l'objet cible<br>
+audace(telescope,targetRa) : [AC] Ascension Droite de l'objet cible<br>
 <p></p>
-audace(aladin) : [AC]&nbsp; r&eacute;pertoire d&eacute;di&eacute; au
-programme Aladin<br>
-audace(base) : [AC] vaut '.audace' <br>
-audace(Console) : [AC] vat '.console' <br>
+audace(base) : [AC] vaut '.audace'<br>
+audace(Console) : [AC] vaut '.console'<br>
 audace(extensionList) : [AC] liste des extensions des images
 associ&eacute;es &agrave; la cam&eacute;ra en cours d'utilisation<br>
 audace(hCanvas) : [AC] nom TK du canvas de la visu principale<br>
 audace(list_binning) : [AC] liste des binnings associ&eacute;es
 &agrave; la cam&eacute;ra en cours d'utilisation<br>
-audace(list_com) : [AC] liste des ports de communication disponibles <br>
+audace(list_com) : [AC] liste des ports de communication disponibles<br>
 audace(posobs,observateur,gps) : [AC] position GPS de l'observateur
-(par exemple : GPS 1.377972 E 43.660917 142) <br>
+(par exemple : GPS 1.377972 E 43.660917 142)<br>
 audace(quitterEnCours) : [AC] indicateur d'arr&ecirc;t d'AudeLA<br>
 <p></p>
 audace(color,cursor_blue) : [AC] couleur d&eacute;di&eacute;e aux
-glissi&egrave;res (&eacute;tat passif) pour les images N&amp;B <br>
+glissi&egrave;res (&eacute;tat passif) pour les images N&amp;B<br>
 audace(color,cursor_blue_actif) : [AC] couleur d&eacute;di&eacute;e aux
-glissi&egrave;res (&eacute;tat actif) pour les images N&amp;B <br>
+glissi&egrave;res (&eacute;tat actif) pour les images N&amp;B<br>
 audace(color,cursor_rgb_blue) : [AC] couleur d&eacute;di&eacute;e aux
-glissi&egrave;res (&eacute;tat passif) pour les images couleurs (bleue)
-<br>
+glissi&egrave;res (&eacute;tat passif) pour les images couleurs (bleue)<br>
 audace(color,cursor_rgb_green) : [AC] couleur d&eacute;di&eacute;e aux
-glissi&egrave;res (&eacute;tat passif) pour les images couleurs (verte)
-<br>
+glissi&egrave;res (&eacute;tat passif) pour les images couleurs (verte)<br>
 audace(color,cursor_rgb_red) : [AC] couleur d&eacute;di&eacute;e aux
-glissi&egrave;res (&eacute;tat passif) pour les images couleurs (rouge)
-<br>
+glissi&egrave;res (&eacute;tat passif) pour les images couleurs (rouge)<br>
 audace(color,cursor_rgb_actif) : [AC] couleur d&eacute;di&eacute;e aux
-glissi&egrave;res (&eacute;tat actif) pour les images couleurs <br>
+glissi&egrave;res (&eacute;tat actif) pour les images couleurs<br>
 <p></p>
 [AC] couleur d&eacute;di&eacute;e &agrave; des widgets, utiliser le
 menu 'Configuration'
 --&gt; 'Apparence' pour identifier les widgets concern&eacute;s et
-changer la
+pour changer la
 couleur :<br>
 audace(color,activeBackColor)<br>
 audace(color,activeTextColor)<br>
@@ -1213,20 +1210,20 @@ audace(color,textConsoleResultat)<br>
 <br>
 audace(font,arial_6_n) : [AC] police de caract&egrave;res, taille et
 fonte d&eacute;di&eacute;es uniquement &agrave; l'outil 'Base de
-donn&eacute;es d'images' <br>
+donn&eacute;es d'images'<br>
 audace(font,arial_10_b) : [AC] police de caract&egrave;res, taille et
 fonte d&eacute;di&eacute;es uniquement &agrave; l'outil 'Base de
-donn&eacute;es d'images' <br>
+donn&eacute;es d'images'<br>
 audace(font,en_tete_1) : [AC] police de caract&egrave;res, taille et
 fonte d&eacute;di&eacute;es uniquement &agrave; l'outil 'Base de
-donn&eacute;es d'images' <br>
+donn&eacute;es d'images'<br>
 audace(font,en_tete_2) : [AC] police de caract&egrave;res, taille et
 fonte d&eacute;di&eacute;es uniquement &agrave; l'outil 'Base de
-donn&eacute;es d'images' <span style="font-weight: bold;"></span><br>
+donn&eacute;es d'images'<br>
 <p></p>
 [AC] police de caract&egrave;res, taille et fonte d&eacute;di&eacute;es
-aux widgets de la
-classe 'Button', utiliser le menu 'Configuration' --&gt; 'Police de
+aux widgets d&eacute;finis par leur classe, utiliser le menu
+'Configuration' --&gt; 'Police de
 caract&egrave;res' pour changer l'apparence :<br>
 audace(font,Button)<br>
 audace(font,Checkbutton)<br>
@@ -1249,27 +1246,26 @@ audace(font,Text)<br>
 conf(editnotice_pdf) : [AC] nom complet du programme de visualisation
 des documents au format PDF<br>
 conf(editscript) : [AC] nom complet du programme d'&eacute;dition des
-documents au format Tcl (texte)<br>
+documents au format Tcl<br>
 conf(editsite_htm) : [AC] nom complet du programme de visualisation des
 documents au format HTML<br>
 conf(edit_viewer) : [AC] nom complet du programme de visualisation
 d'images (viewer)<br>
 conf(exec_aladin) : [AC] nom complet du programme du client Aladin<br>
-conf(exec_java) : [AC] nom complet de l'interpr&egrave;teur Java<br>
+conf(exec_java) : [AC] nom complet de l'interpr&eacute;teur Java<br>
 conf(extension,defaut) : [AC] extension par d&eacute;faut
 ajout&eacute;e aux noms des fichiers image
 <h2> Variables audela </h2>
-audela(version) : [AL] version du logiciel (par exemple : 1.5.20100505)
-<br>
-audela(major) : [AL] vaut '1' pour notre exemple de version ci-dessus <br>
-audela(minor) : [AL] vaut '5' pour notre exemple de version ci-dessus <br>
+audela(version) : [AL] version du logiciel (par exemple : 1.5.20100505)<br>
+audela(major) : [AL] vaut '1' pour notre exemple de version ci-dessus<br>
+audela(minor) : [AL] vaut '5' pour notre exemple de version ci-dessus<br>
 audela(patch) : [AL] vaut '20100505' pour notre exemple de version
-ci-dessus <br>
+ci-dessus<br>
 audela(date) : [AL] date de la version (par exemple 05/05/2010)<br>
 audela(img_filename) : [AL] nom complet de l'image &agrave; ouvrir au
 lancement d'AudeLA<br>
 audela(hInstance) : [AL] num&eacute;ro d'instance d'AudeLA dans Windows<br>
 audela_start_dir : [AL] r&eacute;pertoire o&ugrave; sont
-install&eacute;s les binaires <br>
+install&eacute;s les binaires<br>
 </body>
 </html>
