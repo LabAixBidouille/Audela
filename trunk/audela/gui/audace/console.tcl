@@ -1,7 +1,7 @@
 #
 # Fichier : console.tcl
 # Description : Creation de la Console
-# Mise à jour $Id: console.tcl,v 1.16 2010-05-16 10:28:44 robertdelmas Exp $
+# Mise à jour $Id: console.tcl,v 1.17 2010-07-03 09:48:36 robertdelmas Exp $
 #
 
 namespace eval ::console {
@@ -196,7 +196,7 @@ namespace eval ::console {
    proc onTxt1KeyReturn {w} {
       set ligneCmd [$w get "insert linestart" "insert lineend"]
       $w mark set insert "insert lineend"
-      $w insert insert "\n"
+      $w insert end "\n"
       execute "$ligneCmd"
       $w see insert
    }
@@ -246,13 +246,13 @@ namespace eval ::console {
       save_cursor
       all_cursor watch
       if { [catch {uplevel #0 $cmd} res] != 0} {
-         $This.txt1 insert insert "# $res\n" style_erreur
+         $This.txt1 insert end "# $res\n" style_erreur
       } else {
          if { [string compare $res ""] != 0} {
-            $This.txt1 insert insert "# $res\n" style_resultat
+            $This.txt1 insert end "# $res\n" style_resultat
          }
       }
-      $This.txt1 insert insert "\n"
+      $This.txt1 insert end "\n"
       restore_cursor
    }
 
