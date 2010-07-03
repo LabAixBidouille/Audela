@@ -10,7 +10,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_io.tcl,v 1.16 2010-06-13 12:54:02 bmauclaire Exp $
+# Mise a jour $Id: spc_io.tcl,v 1.17 2010-07-03 19:38:27 bmauclaire Exp $
 
 
 
@@ -2807,7 +2807,7 @@ proc spc_fit2colors { args } {
 proc spc_export2png { args } {
 
    global audace spcaudace
-   global conf
+   global conf tcl_platform
    global caption
 
    #- nomprofilpng : nom de la variable retournee par la gui param_spc_audace_export2png
@@ -2882,17 +2882,16 @@ proc spc_export2png { args } {
            ::console::affiche_erreur "$msg\n"
        }
 
+       set nom_profil [ file tail $nomprofilpng ]
        #--- Affichage du graphe PNG :
        if { $nomprofilpng!="" } {
-           if { $conf(edit_viewer)!="" } {
-               set answer [ catch { exec $conf(edit_viewer) "$audace(rep_images)/$nomprofilpng" & } ]
-           } else {
-               ::console::affiche_resultat "Configurer \"Editeurs/Visualisateur d'images\" pour permettre l'affichage du graphique\n"
-           }
+          loadima "$nom_profil"
+          visu1 zoom 1
+          visu1 disp {251 -15}
        }
 
        #--- Traitement du résultat :
-       set nom_profil [ file rootname $nomprofilpng ]
+       set nom_profil  [ file rootname $nom_profil ]
        return "$nom_profil"
    } else {
        ::console::affiche_erreur "Usage: spc_export2png ?profil_de_raies_fits?\n\n"

@@ -2,7 +2,7 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spcaudace spc_metaf.tcl ]
 
-# Mise a jour $Id: spc_metaf.tcl,v 1.17 2010-06-24 20:48:12 bmauclaire Exp $
+# Mise a jour $Id: spc_metaf.tcl,v 1.18 2010-07-03 19:38:27 bmauclaire Exp $
 
 
 
@@ -852,7 +852,7 @@ proc spc_lampe2calibre { args } {
        file delete "$audace(rep_images)/${darkmaster}t$conf(extension,defaut)"
        }
        buf$audace(bufNo) load "$audace(rep_images)/$lampe"
-       buf$audace(bufNo) setkwd [ list SPC_LNM "$lampe" string "Initial name of calibration lampe file" "" ]
+       buf$audace(bufNo) setkwd [ list "SPC_LNM" "$lampe" string "Initial name of calibration lampe file" "" ]
        buf$audace(bufNo) bitpix short
        buf$audace(bufNo) save "$audace(rep_images)/$lampe"
        file copy -force "$audace(rep_images)/$lampe$conf(extension,defaut)" "$audace(rep_images)/${lampe}-t$conf(extension,defaut)"
@@ -992,6 +992,9 @@ proc spc_traite2rinstrum { args } {
        set rmfpretrait [ lindex $args 18 ]
        set flag_calibration [ lindex $args 19 ]
        set methcalo [ lindex $args 20 ]
+
+       #--- Debut du pipeline de calcul de la RI :
+       ::console::affiche_prompt "\n\n**** PIPELINE DE CALCUL DE LA REPONSE INSTRUMENTALE ****\n\n"
 
 
        #--- Elimination des mauvaise images :
@@ -1306,7 +1309,7 @@ proc spc_traite2rinstrum { args } {
           ::console::affiche_resultat "\n\n**** Spectre traité, corrigé et calibré sauvé sous ****\n${img}-profil-1c-ocal\n\n"
        } else {
           spc_loadfit "${img}-profil-1c"
-          ::console::affiche_resultat "\n\n**** Spectre traité, corrigé et calibré sauvé sous ****\n${img}-profil-1c\n\n"
+          ::console::affiche_prompt "\n\n**** Spectre traité, corrigé et calibré sauvé sous ****\n${img}-profil-1c\n\n"
        }
        loadima "$audace(rep_images)/${img}-spectre2D-traite"
        return "${img}-profil-1c"
@@ -1406,16 +1409,27 @@ proc spc_traite2srinstrum { args } {
 
        #--- Correction du l'inclinaison (tilt) :
        if { $flag_nonstellaire==1 } {
-	   #- Pas de correction de l'inclinaison pour les spectres non stellaires :
-	   ::console::affiche_erreur "\n\nPAS DE CORRECTION DE L'INCLINAISON POUR LES SPECTRES NON STELLAIRES\n\n"
-	   set ftilt "$fpretrait"
+          #-- Temporaire : si le spectre de lampe donné est deja corrige geometriquement, utilise ses parametres :
+          ::console::affiche_resultat "\n\n**** Correction du l'inclinaison (tilt) ****\n\n"
+          buf$audace(bufNo) load "$audace(rep_images)/$lampe"
+          set listemotsclef [ buf$audace(bufNo) getkwds ]
+          if { [ lsearch $listemotsclef "SPC_TILT" ]!=-1 && [ lsearch $listemotsclef "SPC_TILTX" ]!=-1 } {
+             set spc_angletilt [ lindex [ buf$audace(bufNo) getkwd "SPC_TILT" ] 1 ]
+             set spc_tiltx [ lindex [ buf$audace(bufNo) getkwd "SPC_TILTX" ] 1 ]
+             set spc_tilty [ lindex [ buf$audace(bufNo) getkwd "SPC_TILTY" ] 1 ]
+             set ftilt [ spc_tilt2imgs $fpretrait $spc_angletilt $spc_tiltx $spc_tilty ]
+          } else {
+             #-- Pas de correction de l'inclinaison pour les spectres non stellaires :
+             ::console::affiche_erreur "\n\nPAS DE CORRECTION DE L'INCLINAISON POUR LES SPECTRES NON STELLAIRES\n\n"
+             set ftilt "$fpretrait"
+          }
        } else {
-	   ::console::affiche_resultat "\n\n**** Correction du l'inclinaison (tilt) ****\n\n"
-	   if { $methejtilt == "o" } {
-	       set ftilt [ spc_tiltautoimgs $fpretrait o ]
-	   } else {
-	       set ftilt [ spc_tiltautoimgs $fpretrait n ]
-	   }
+          ::console::affiche_resultat "\n\n**** Correction du l'inclinaison (tilt) ****\n\n"
+          if { $methejtilt == "o" } {
+             set ftilt [ spc_tiltautoimgs $fpretrait o ]
+          } else {
+             set ftilt [ spc_tiltautoimgs $fpretrait n ]
+          }
        }
 
        #--- Corrections géométriques des raies (smile selon l'axe x ou slant) :
@@ -1769,6 +1783,9 @@ proc spc_traitestellaire { args } {
        #set ejtilt "n"
        #set rmfpretrait "o"
 
+       #--- Debut du pipeline stellaire :
+       ::console::affiche_prompt "\n\n**** PIPELINE DE TRAITEMENT DE SPECTRES STELLAIRES ****\n\n"
+
 
        #--- Profil et calibration du spectre de la lampe et calibration :
        if { $flag_calibration==1 } {
@@ -1882,7 +1899,7 @@ proc spc_traitestellaire { args } {
        }
        file delete -force "$audace(rep_images)/${brut}-profil-final$conf(extension,defaut)"
        spc_load "$profil_final"
-       ::console::affiche_resultat "\n\n**** Spectre final traité, corrigé et calibré sauvé sous ****\n$profil_final\n\n"
+       ::console::affiche_prompt "\n\n**** Spectre final traité, corrigé et calibré sauvé sous ****\n$profil_final\n\n"
        return "$profil_final"
    } else {
        ::console::affiche_erreur "Usage: spc_traitestellaire nom_lampe nom_générique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_offset spectre_réponse_instrumentale sélection_manuelle_raies uncosmic (o/n) mirrorx (o/n) normalisation (o/n) calibration_raies_telluriques (o/n) export_png (o/n) export_bess (o/n) méthode_appariement (reg, spc, n) méthode_détection_spectre (large, serre) méthode_sub_sky (moy, moy2, med, inf, sup, back, none)méthode_binning (add, rober, horne) adoucissement (o/n) rejet_mauvais_spectres (o/n) rejet_rotation_importante (o/n) efface_pretraitement (o/n) 2_lampes_calibration (o/n) lampe_calibrée (1/0)\n\n"
@@ -1943,8 +1960,11 @@ proc spc_traitenebula { args } {
        #set methbin "rober"
        #set methsmo "n"
        #set rmfpretrait "o"
+       set flag_geom_interne 0
 
 
+       #--- Debut du pipeline nebulaire :
+       ::console::affiche_prompt "\n\n**** PIPELINE DE TRAITEMENT DE SPECTRES NON STELLAIRES ****\n\n"
 
        #--- Recherche des masters dark, flat et darkflat :
        #-- Noirs :
@@ -1971,22 +1991,58 @@ proc spc_traitenebula { args } {
        set fsmea [ bm_smean "$brut" ]
        buf$audace(bufNo) load "$audace(rep_images)/$fsmea"
        buf$audace(bufNo) sub "$audace(rep_images)/$noir_master" 0
+       set spc_nebnaxis2 [ lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1 ]
        buf$audace(bufNo) save "$audace(rep_images)/${fsmea}-t"
 
+      #-- Tilt du spectre pour une selection de zone optimale si le spectre donné comme lampe contient SPC_TILT :
+      if { $flag_calibration==1 } {
+         buf$audace(bufNo) load "$audace(rep_images)/$lampe"
+         set listemotsclef [ buf$audace(bufNo) getkwds ]
+         if { [ lsearch $listemotsclef "SPC_TILT" ]!=-1 } {
+            set spc_ycenter [ expr round(0.5*$spc_nebnaxis2) ]
+            set spc_xcenter 1
+            buf$audace(bufNo) load "$audace(rep_images)/$lampe"
+            set spc_angletilt [ lindex [ buf$audace(bufNo) getkwd "SPC_TILT" ] 1 ]
+            set fsmea_tilt [ spc_tilt2 "${fsmea}-t" $spc_angletilt $spc_xcenter $spc_ycenter ]
+            set flag_geom_interne 1
+         }
+      }
+
        set err [ catch {
-	   ::param_spc_audace_selectzone::run "${fsmea}-t"
-	   tkwait window .param_spc_audace_selectzone
+          if { $flag_geom_interne==1 } {
+             ::param_spc_audace_selectzone::run "$fsmea_tilt"
+          } else {
+             ::param_spc_audace_selectzone::run "${fsmea}-t"
+          }
+          tkwait window .param_spc_audace_selectzone
        } msg ]
        if {$err==1} {
 	   ::console::affiche_erreur "$msg\n"
        }
        file delete "$audace(rep_images)/$fsmea$conf(extension,defaut)"
        file delete "$audace(rep_images)/${fsmea}-t$conf(extension,defaut)"
+       if { $flag_geom_interne==1 } {
+          file delete "$audace(rep_images)/$fsmea_tilt$conf(extension,defaut)"
+       }
 
 
        #--- Profil du spectre de la lampe et calibration :
        if { $flag_calibration==1 } {
-	   set lampe_traitee "$lampe"
+          buf$audace(bufNo) load "$audace(rep_images)/$lampe"
+          set listemotsclef [ buf$audace(bufNo) getkwds ]
+          if { [ lsearch $listemotsclef "SPC_TILT" ]!=-1 } {
+             set spc_xcenter 1
+             # set spc_xcenter [ expr round(0.5*([ lindex $spc_windowcoords 2 ]+[ lindex $spc_windowcoords 2 ])) ]
+             set spc_y1 [ lindex $spc_windowcoords 1 ]
+             set spc_y2 [ lindex $spc_windowcoords 3 ]
+             set spc_ycenter [ expr round(0.5*($spc_y2+$spc_y1)) ]
+             buf$audace(bufNo) setkwd [ list "SPC_TILTX" $spc_xcenter int "Tilt X center" "" ]
+             buf$audace(bufNo) setkwd [ list "SPC_TILTY" $spc_ycenter int "Tilt Y center" "" ]
+             buf$audace(bufNo) save "$audace(rep_images)/$lampe"
+             set lampe_traitee "$lampe"
+          } else {
+             set lampe_traitee "$lampe"
+          }
        } else {
 	   set lampe_traitee [ spc_lampe2calibre "$lampe" "$brut" "$noir" $methcos $methsel $methinv $methbin $methraie $spc_windowcoords ]
        }
@@ -2011,7 +2067,7 @@ proc spc_traitenebula { args } {
        #--- Résultat des traitements :
        # file copy -force "$audace(rep_images)/$spectre_traite$conf(extension,defaut)" "$audace(rep_images)/${brut}-profil-traite-final$conf(extension,defaut)"
        # file delete -force "$audace(rep_images)/$spectre_traite$conf(extension,defaut)"
-       ::console::affiche_resultat "\n\n**** Spectre traité, corrigé et calibré sauvé sous ****\n${brut}-profil-final\n\n"
+       ::console::affiche_prompt "\n\n**** Spectre traité, corrigé et calibré sauvé sous ****\n${brut}-profil-final\n\n"
        return "${brut}-profil-final"
    } else {
        ::console::affiche_erreur "Usage: spc_traitenebula nom_lampe nom_générique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_offset spectre_réponse_instrumentale sélection_manuelle_raies uncosmic (o/n) mirrorx (o/n) normalisation (o/n) calibration_raies_telluriques (o/n) export_png (o/n) export_bess (o/n) méthode_appariement (reg, spc, n) méthode_détection_spectre (large, serre) méthode_sub_sky (moy, moy2, med, inf, sup, back, none)méthode_binning (add, rober, horne) adoucissement (o/n) rejet_mauvais_spectres (o/n) rejet_rotation_importante (o/n) efface_pretraitements (o/n) 2_lampes_calibration (o/n) lampe_calibrée (1/0)\n\n"

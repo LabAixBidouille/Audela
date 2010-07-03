@@ -2,7 +2,7 @@
 # Procedures des traitements géométriques
 # Lancement en console : source $audace(rep_scripts)/spcaudace/spc_geom.tcl
 
-# Mise a jour $Id: spc_geom.tcl,v 1.8 2010-06-24 20:48:12 bmauclaire Exp $
+# Mise a jour $Id: spc_geom.tcl,v 1.9 2010-07-03 19:38:26 bmauclaire Exp $
 
 
 
@@ -142,6 +142,8 @@ proc spc_tilt { args } {
     #--- Modification du nom du fichier de sortie
     set filespc [ file rootname $filenamespc ]
     buf$audace(bufNo) setkwd [ list "SPC_TILT" $angle float "Tilt angle" "" ]
+    buf$audace(bufNo) setkwd [ list "SPC_TILTX" $xinf int "Tilt X center" "" ]
+    buf$audace(bufNo) setkwd [ list "SPC_TILTY" $yinf int "Tilt Y center" "" ]
     buf$audace(bufNo) save "$audace(rep_images)/${filespc}_tilt$conf(extension,defaut)"
     #loadima ${filespc}_tilt$conf(extension,defaut)
     ::console::affiche_resultat "Image sauvée sous ${filespc}_tilt$conf(extension,defaut).\n"
@@ -497,7 +499,7 @@ proc spc_tiltauto { args } {
 
        #-- Effectue la rotation d'angle "angle" et de centre=centre moyen de l'epaisseur du spectre :
        #- Angles>0 vers le haut de l'image
-       set pente [ expr ($y2-$y1)/($x2-$x1) ]
+       set pente [ expr -($y2-$y1)/($x2-$x1) ]
        set angle [ expr 180/$pi*atan($pente) ]
        ## Si l'angle est supérieur a 6°, l'angle calculé ne correspond pas à la réalité de l'inclinaison du spectre
        if { [ expr abs($angle) ] < $spcaudace(tilt_limit) } {
@@ -510,6 +512,8 @@ proc spc_tiltauto { args } {
            #- imaseries TILT se charge de compenser le sens de la pente : nul besoin d'inverser son signe :
 	   buf$audace(bufNo) imaseries "TILT trans_x=0 trans_y=$pente"
            buf$audace(bufNo) setkwd [ list "SPC_TILT" $angle float "Tilt angle" "" ]
+           buf$audace(bufNo) setkwd [ list "SPC_TILTX" $xinf int "Tilt X center" "" ]
+           buf$audace(bufNo) setkwd [ list "SPC_TILTY" $yinf int "Tilt Y center" "" ]
 	   ::console::affiche_resultat "Rotation d'angle ${angle}° autour de ($xinf,$yinf).\n"
 	   buf$audace(bufNo) save "$audace(rep_images)/${filename}_tilt$conf(extension,defaut)"
 	   ::console::affiche_resultat "Image sauvée sous ${filename}_tilt$conf(extension,defaut).\n"
@@ -1578,6 +1582,8 @@ proc spc_tilt2 { args } {
        buf$audace(bufNo) load "$audace(rep_images)/$filename"
        buf$audace(bufNo) imaseries "TILT trans_x=0 trans_y=$pente"
        buf$audace(bufNo) setkwd [ list "SPC_TILT" $angle float "Tilt angle" "" ]
+       buf$audace(bufNo) setkwd [ list "SPC_TILTX" $xrot int "Tilt X center" "" ]
+       buf$audace(bufNo) setkwd [ list "SPC_TILTY" $yrot int "Tilt Y center" "" ]
        buf$audace(bufNo) save "$audace(rep_images)/${filename}_tilt$conf(extension,defaut)"
        ::console::affiche_resultat "Rotation d'angle ${angle}° autour de ($xrot,$yrot) sauvé sous ${filename}_tilt$conf(extension,defaut).\n"
        return ${filename}_tilt
@@ -1610,8 +1616,13 @@ proc spc_tilt3 { args } {
 
        #--- Rotation de l'image :
        buf$audace(bufNo) load "$audace(rep_images)/$filename"
+       # set xrot [ expr round(0.5*[ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]) ]
+       set xrot 1
+       set yrot [ expr round(0.5*[ lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1 ]) ]
        buf$audace(bufNo) imaseries "TILT trans_x=0 trans_y=$pente"
        buf$audace(bufNo) setkwd [ list "SPC_TILT" $angle float "Tilt angle" "" ]
+       buf$audace(bufNo) setkwd [ list "SPC_TILTX" $xrot int "Tilt X center" "" ]
+       buf$audace(bufNo) setkwd [ list "SPC_TILTY" $yrot int "Tilt Y center" "" ]
        buf$audace(bufNo) save "$audace(rep_images)/${filename}_tilt$conf(extension,defaut)"
        ::console::affiche_resultat "Rotation sauvé sous ${filename}_tilt$conf(extension,defaut).\n"
        return ${filename}_tilt
@@ -1710,6 +1721,78 @@ proc spc_tiltautoimgs { args } {
 	}
     } else {
 	::console::affiche_erreur "Usage: spc_tiltautoimgs nom_générique_spectre_2D ?flag_reject (o/n)?\n\n"
+    }
+}
+#********************************************************************************#
+
+
+####################################################################
+# Procédure de correction de l'inclinaison du spectre pour une série d'images
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 03-07-2010
+# Date modification : 03-07-2010
+# Arguments : nom générique des spectres à traiter
+# Algo : applique la rotation aux fichiers
+####################################################################
+
+proc spc_tilt2imgs { args } {
+
+    global audace spcaudace
+    global conf
+
+    if { [llength $args] <= 4 } {
+       set filename [ file rootname [ lindex $args 0 ] ]
+       set angle [ lindex $args 1 ]
+       set xrot [ lindex $args 2 ]
+       set yrot [ lindex $args 3 ]
+
+       #--- Applique le tilt au(x) spectre(s) incriminé(s)
+       #-- Cas d'un seul fichier :
+       if { [ file exists "$filename$conf(extension,defaut)" ] } {
+          if { abs($angle)>$spcaudace(tilt_limit) } {
+             ::console::affiche_erreur "Attention : angle limite de tilt $spcaudace(tilt_limit) dépassé : mise à 0°\n"
+             file copy -force "$audace(rep_images)/$filename$conf(extension,defaut)" "$audace(rep_images)/${filename}_tilt$conf(extension,defaut)"
+             set spectre_tilte "${filename}_tilt"
+             return "$spectre_tilte"
+          } else {
+             set spectre_tilte [ spc_tilt2 $filename $angle $xrot $yrot ]
+             ::console::affiche_resultat "Spectre corrigé sauvé sous $spectre_tilte\n"
+             return "$spectre_tilte"
+          }
+	} else {
+           #-- Cas de plusieurs fichiers :
+           set liste_images [ lsort -dictionary [ glob -dir "$audace(rep_images)" -tails "${filename}\[0-9\]$conf(extension,defaut)" "${filename}\[0-9\]\[0-9\]$conf(extension,defaut)" "${filename}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut)" ] ]
+           set nbsp [ llength $liste_images ]
+           #--- Détermination de l'angle de tilt :
+           # set pente [ expr tan($angle*acos(-1.0)/180) ]
+
+           #-- Test la valeur de l'angle :
+           if { abs($angle)>$spcaudace(tilt_limit) } {
+              set angle 0.0
+              set pente 0.0
+              ::console::affiche_erreur "Attention : angle limite de tilt $spcaudace(tilt_limit) dépassé : mise à 0°\n"
+           }
+
+           #--- Tilt de la série d'images :
+           set i 1
+           ::console::affiche_resultat "$nbsp spectres à pivoter...\n\n"
+           foreach lefichier $liste_images {
+              set fichier [ file rootname $lefichier ]
+              # set yrot [ lindex [ spc_detect $fichier ] 0 ]
+              set spectre_tilte [ spc_tilt2 $fichier $angle $xrot $yrot ]
+              # set spectre_tilte [ spc_tilt3 $fichier $pente ]
+              file rename -force "$audace(rep_images)/$spectre_tilte$conf(extension,defaut)" "$audace(rep_images)/${filename}tilt-$i$conf(extension,defaut)"
+              ::console::affiche_resultat "Spectre corrigé sauvé sous ${filename}tilt-$i$conf(extension,defaut).\n\n"
+              incr i
+           }
+
+           #--- Messages d'information
+           #::console::affiche_resultat "Spectre corrigés sauvés sous ${filename}tilt-\*$conf(extension,defaut).\n"
+           return "${filename}tilt-"
+	}
+    } else {
+       ::console::affiche_erreur "Usage: spc_tilt2imgs nom_générique_spectre_2D angle(°) x_centre y_centre\n\n"
     }
 }
 #********************************************************************************#
