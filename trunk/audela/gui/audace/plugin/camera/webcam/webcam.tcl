@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise à jour $Id: webcam.tcl,v 1.57 2010-07-02 17:08:28 robertdelmas Exp $
+# Mise à jour $Id: webcam.tcl,v 1.58 2010-07-03 12:14:36 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -157,7 +157,7 @@ proc ::webcam::setConnection { camItem state }  {
    if { [::webcam::isReady $camItem] != 1 }               return
    if { [cam$private($camItem,camNo) connect ] == 1 }     return
 
-   ###console::disp "::webcam::setConnection $state \n"
+  ### console::disp "::webcam::setConnection $state \n"
    if { $state == 1 } {
       #--- Je deconnecte d'abord les autres cameras
       foreach camItem2 { A B C } {
@@ -344,7 +344,7 @@ proc ::webcam::fillConfigPage { frm camItem } {
 
    #--- Choix du mode video
    if { $::tcl_platform(platform) == "windows" } {
-      ###set list_combobox [ list "vfw" "directx" ]
+     ### set list_combobox [ list "vfw" "directx" ]
       set list_combobox [ list "vfw" ]
       #--- video mode
       ComboBox $frm.videomode \
@@ -368,9 +368,9 @@ proc ::webcam::fillConfigPage { frm camItem } {
    pack $frm.miry -in $frm.frame9 -anchor w -side top -padx 20 -pady 10
 
    #--- Connexion alternee
-   ###checkbutton $frm.switchedConnexion -text "$caption(webcam,switchedConnexion)" -highlightthickness 0 \
-   ###   -variable ::webcam::private($camItem,switchedConnexion)
-   ###pack $frm.switchedConnexion -in $frm.frame7 -anchor w -side top -padx 20 -pady 10
+  ### checkbutton $frm.switchedConnexion -text "$caption(webcam,switchedConnexion)" -highlightthickness 0 \
+  ###    -variable ::webcam::private($camItem,switchedConnexion)
+  ### pack $frm.switchedConnexion -in $frm.frame7 -anchor w -side top -padx 20 -pady 10
 
    #--- Boutons de configuration de la source
    if { $::tcl_platform(os) == "Linux" } {
@@ -485,7 +485,7 @@ proc ::webcam::fillConfigPage { frm camItem } {
    label $frm.lab4 -text "$caption(webcam,longueposestart)"
    pack $frm.lab4 -in $frm.frame13 -anchor center -side left -padx 3 -pady 5
 
-   #entry $frm.longueposestartvalue -width 4 -textvariable ::webcam::private($camItem,longueposestartvalue) -justify center
+  ### entry $frm.longueposestartvalue -width 4 -textvariable ::webcam::private($camItem,longueposestartvalue) -justify center
    set longuePoseStartList [list "0" "1"]
    ComboBox $frm.longueposestartvalue \
       -width [ ::tkutil::lgEntryComboBox $longuePoseStartList ] \
@@ -519,7 +519,7 @@ proc ::webcam::fillConfigPage { frm camItem } {
 
    #--- WebCam modifiee avec un capteur Noir et Blanc
    checkbutton $frm.webcamCcd_N_B -text "$caption(webcam,webcamCcd_N_B)" -highlightthickness 0 \
-      -variable ::webcam::private($camItem,webcamCcd_N_B) -command "::webcam::checkConfigCCDN&B $camItem"
+      -variable ::webcam::private($camItem,webcamCcd_N_B) -command "::webcam::checkConfigCCDNB $camItem"
    pack $frm.webcamCcd_N_B -in $frm.frame14 -anchor center -side left -pady 3 -pady 8
 
    set list_combobox [ list 1/4'' 1/3'' 1/2'' ]
@@ -530,7 +530,7 @@ proc ::webcam::fillConfigPage { frm camItem } {
       -borderwidth 1         \
       -editable 0            \
      -textvariable ::webcam::private($camItem,dim_ccd_N_B) \
-      -modifycmd "::webcam::checkConfigCCDN&B $camItem" \
+      -modifycmd "::webcam::checkConfigCCDNB $camItem" \
       -values $list_combobox
    pack $frm.dim_ccd_N_B -in $frm.frame15 -anchor center -side right -padx 10 -pady 5
 
@@ -582,16 +582,16 @@ proc ::webcam::configureCamera { camItem bufNo } {
 
    set catchResult [ catch {
 
-      ###if { $conf(webcam,switchedConnexion) == 1 } {
-      ###  #--- je deconnecte les autres cameras
-      ###  foreach camItem2 { A B C } {
-      ###      if { $camItem2 != $camItem && $private($camItem2,camNo)!= 0 && $conf(webcam,$camItem2,videomode) == "directx" != 0 } {
-      ###         if { [cam$private($camItem2,camNo) connect ] == 1 } {
-      ###            cam$private($camItem2,camNo) connect 0
-      ###         }
-      ###      }
-      ###   }
-      ###}
+     ### if { $conf(webcam,switchedConnexion) == 1 } {
+     ###   #--- je deconnecte les autres cameras
+     ###   foreach camItem2 { A B C } {
+     ###       if { $camItem2 != $camItem && $private($camItem2,camNo)!= 0 && $conf(webcam,$camItem2,videomode) == "directx" != 0 } {
+     ###          if { [cam$private($camItem2,camNo) connect ] == 1 } {
+     ###             cam$private($camItem2,camNo) connect 0
+     ###          }
+     ###       }
+     ###    }
+     ### }
 
       if { $conf(webcam,$camItem,longuepose) == "1" } {
          #--- Je cree la liaison longue pose
@@ -760,15 +760,15 @@ proc ::webcam::configWebCam { camItem } {
          #--- je mets a jour camItem dans la commande des widgets
          $frm.longuepose configure -command "::webcam::checkConfigLonguePose $camItem"
          $frm.lpport configure -modifycmd "::webcam::configureLinkLonguePose $camItem"
-         $frm.webcamCcd_N_B configure -command "::webcam::checkConfigCCDN&B $camItem"
-         $frm.dim_ccd_N_B configure -modifycmd "::webcam::checkConfigCCDN&B $camItem"
+         $frm.webcamCcd_N_B configure -command "::webcam::checkConfigCCDNB $camItem"
+         $frm.dim_ccd_N_B configure -modifycmd "::webcam::checkConfigCCDNB $camItem"
 
          #--- Configure les widgets associes a la selection d'une camera
          ::webcam::selectCameraType $camItem
          #--- Configure les widgets associes a la longue pose
          ::webcam::checkConfigLonguePose $camItem
          #--- Configure les widgets associes au choix du CCD pour la WebCam
-         ::webcam::checkConfigCCDN&B $camItem
+         ::webcam::checkConfigCCDNB $camItem
 
          #--- actualise la liste des ports
          if { $::tcl_platform(os) == "Linux" } {
@@ -833,10 +833,10 @@ proc ::webcam::checkConfigLonguePose { camItem } {
 }
 
 #
-# ::webcam::checkConfigCCDN&B
+# ::webcam::checkConfigCCDNB
 #    Configure les widgets de configuration du choix du CCD
 #
-proc ::webcam::checkConfigCCDN&B { camItem } {
+proc ::webcam::checkConfigCCDNB { camItem } {
    variable private
 
    set frm $private(frm)
@@ -864,24 +864,37 @@ proc ::webcam::selectCameraType { camItem } {
 
    set frm $private(frm)
    if { $::webcam::private($camItem,select) == "1" } {
+      #--- Cas du Grabber
       $frm.frame10.labURL configure -state disabled
       $frm.lab2 configure -state disabled
       $frm.lab3 configure -state disabled
       $frm.lab4 configure -state disabled
       $frm.longuepose configure -state disabled
       $frm.webcamCcd_N_B configure -state disabled
+      $frm.lpport configure -state disabled
+      $frm.configure configure -state disabled
+      $frm.longueposelinkbit configure -state disabled
+      $frm.longueposestartvalue configure -state disabled
+      pack forget $frm.frame15
       $frm.ccd_N_B configure -state normal
+      $frm.labelDimPixX configure -state normal
       $frm.entryDimPixX configure -state normal
+      $frm.labelDimPixY configure -state normal
       $frm.entryDimPixY configure -state normal
    } else {
+      #--- Cas de la WebCam
       $frm.frame10.labURL configure -state normal
       $frm.lab2 configure -state normal
       $frm.lab3 configure -state normal
       $frm.lab4 configure -state normal
       $frm.longuepose configure -state normal
       $frm.webcamCcd_N_B configure -state normal
+      ::webcam::checkConfigLonguePose $camItem
+      ::webcam::checkConfigCCDNB $camItem
       $frm.ccd_N_B configure -state disabled
+      $frm.labelDimPixX configure -state disabled
       $frm.entryDimPixX configure -state disabled
+      $frm.labelDimPixY configure -state disabled
       $frm.entryDimPixY configure -state disabled
    }
 }
