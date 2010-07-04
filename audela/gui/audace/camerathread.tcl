@@ -3,7 +3,7 @@
 # Description : procedures d'acquisition et de traitement avec
 #         plusieurs cameras simultanees exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise à jour $Id: camerathread.tcl,v 1.24 2010-07-01 17:49:07 michelpujol Exp $
+# Mise à jour $Id: camerathread.tcl,v 1.25 2010-07-04 19:37:12 michelpujol Exp $
 #
 
 namespace eval ::camerathread {
@@ -760,19 +760,10 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName c
    if { $naxis != 2 } {
       error "no 2D or 3D image "
    }
-set foclen [format "%f" $foclen]
+   set foclen [format "%f" $foclen]
 
-::camerathread::disp "crval1=$crval1  crval2=$crval2 pixsize1=$pixsize1 pixsize2=$pixsize2 crpix1=$crpix1 crpix2=$crpix2 foclen=$foclen crota2=$crota2\n"
-###crval1=  229.644583 crval2=    2.077778 pixsize1=8.6 pixsize2=8.3 crpix1=360 crpix2=288 foclen=0.138 crota2=0
-###set crval1   229.644583
-###set crval2   2.077778
-set pixsize1 8.6
-set pixsize2 8.3
-###set crpix1   360
-##set crpix2   288
-###set foclen   0.138
-###set crota2   0.0
-::camerathread::disp "crval1=$crval1  crval2=$crval2 pixsize1=$pixsize1 pixsize2=$pixsize2 crpix1=$crpix1 crpix2=$crpix2 foclen=$foclen crota2=$crota2\n"
+##::camerathread::disp "crval1=$crval1  crval2=$crval2 pixsize1=$pixsize1 pixsize2=$pixsize2 crpix1=$crpix1 crpix2=$crpix2 foclen=$foclen crota2=$crota2\n"
+#::camerathread::disp "crval1=$crval1  crval2=$crval2 pixsize1=$pixsize1 pixsize2=$pixsize2 crpix1=$crpix1 crpix2=$crpix2 foclen=$foclen crota2=$crota2\n"
    #--- je cree les mots cles necessaires a la calibration
    buf$bufNo setkwd [list "PIXSIZE1"   $pixsize1   float {[um] Pixel size along naxis1} "um" ]
    buf$bufNo setkwd [list "PIXSIZE2"   $pixsize2   float {[um] Pixel size along naxis2} "um" ]
