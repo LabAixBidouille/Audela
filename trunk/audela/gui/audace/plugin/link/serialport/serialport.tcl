@@ -2,7 +2,7 @@
 # Fichier : serialport.tcl
 # Description : Interface de liaison Port Serie
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: serialport.tcl,v 1.24 2010-05-22 17:01:16 robertdelmas Exp $
+# Mise à jour $Id: serialport.tcl,v 1.25 2010-07-05 21:21:18 robertdelmas Exp $
 #
 
 namespace eval serialport {
@@ -227,7 +227,7 @@ proc ::serialport::fillConfigPage { frm } {
 proc ::serialport::initConf { } {
    global conf
 
-   if { ! [ info exists conf(serial,port_exclus) ] } { set conf(serial,port_exclus) "COM3" }
+   if { ! [ info exists conf(serial,port_exclus) ] } { set conf(serial,port_exclus) "" }
 
    return
 }
