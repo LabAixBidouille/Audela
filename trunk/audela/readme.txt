@@ -1,32 +1,32 @@
-AudeLA-1.5.0 (20090401)
+AudeLA-1.6.0 (20100705)
 
 
 1. Introduction
 ===============
 
 AudeLA est un logiciel de pilotage d'instruments astronomiques amateurs, et
-de traitement d'images. Sa particularite est de proposer une modularite unique
-dans son domaine grace a un puissant langage de script. C'est le fruit du
-travail d'astronomes amateurs, realise pendant leur temps libre, dans le but
-d'ameliorer leurs conditions d'observations. Leur souhait est de partager cet
+de traitement d'images. Sa particularité est de proposer une modularité unique
+dans son domaine grâce à un puissant langage de script. C'est le fruit du
+travail d'astronomes amateurs, réalisé pendant leur temps libre, dans le but
+d'améliorer leurs conditions d'observations. Leur souhait est de partager cet
 outil avec d'autres personnes, autant astronomes amateurs, qu'informaticiens
-amateurs, afin de le faire progresser : N'hesitez pas a nous contacter si vous
+amateurs, afin de le faire progresser : N'hésitez pas à nous contacter si vous
 souhaitez apporter votre contribution.
 
-Ce logiciel est libre, reportez vous au paragraphe 4 pour plus de details.
+Ce logiciel est libre, reportez-vous au paragraphe 4 pour plus de détails.
 
-Pour tout support, veuillez vous inscrire a la mailing list audela-dev:
+Pour tout support, veuillez vous inscrire à la mailing list audela-dev :
 http://fr.groups.yahoo.com/group/audeladev/
 
 
-2. Materiel supporte
+2. Matériel supporté
 ====================
 
-AudeLA est capable de piloter les cameras CCD suivantes :
+AudeLA est capable de piloter les caméras CCD suivantes :
 - AndorTech,
-- APN (Appareil Photo Numerique, CANON et NIKON),
-- Cameras compatibles ASCOM,
-- Audine (Kaf series 400, 401, 401E, 1600, 1602, 1602E et 3200E),
+- APN (Appareil Photo Numérique, CANON et NIKON),
+- Caméras compatibles ASCOM,
+- Audine (Kaf séries 400, 401, 401E, 1600, 1602, 1602E et 3200E),
 - Cagire,
 - CB245,
 - Cemes,
@@ -42,15 +42,15 @@ AudeLA est capable de piloter les cameras CCD suivantes :
 - Hi-SIS 44,
 - Hi-SIS 48,
 - Kitty 2,
-- QSI (tous les modeles),
-- SBIG (tous les modeles),
+- QSI (tous les modèles),
+- SBIG (tous les modèles),
 - SCR1300XTC,
 - MX516,
 - MX916,
 - HX516,
 - TH7852A,
-- WebCam,
-- Nikon CoolPix (port serie) : Uniquement creee par l'outil Acquisition APN CoolPix.
+- WebCam et caméra vidéo par l'intermédiaire d'un grabber,
+- Nikon CoolPix (port série) : Uniquement créée par l'outil Acquisition APN CoolPix.
 
 AudeLA est capable de piloter les montures suivantes :
 - Montures compatibles ASCOM,
@@ -60,187 +60,186 @@ AudeLA est capable de piloter les montures suivantes :
 - DFM,
 - EQMOD,
 - Etel,
-- LX200 ou n'importe quelle monture repondant au protocole LX200,
+- LX200 ou n'importe quelle monture répondant au protocole LX200,
 - Ouranos (codeurs absolus),
 - T193 de l'OHP,
 - Temma (monture Takahashi avec module Temma).
 
 AudeLA est capable de piloter les interfaces de communication suivantes :
-- AudiNet (interface Ethernet pour cameras Audine et telescopes LX200 : PicoWeb),
-- EthernAude (interface Ethernet pour cameras CCD),
+- AudiNet (interface Ethernet pour caméras Audine et télescopes LX200 : PicoWeb),
+- EthernAude (interface Ethernet pour caméras CCD),
 - GPhoto2,
 - Manuel,
-- Port parallele,
-- Port serie,
-- QuickAudine (interface USB pour cameras Audine),
-- QuickRemote (interface USB pour APN, WebCam longue pose, raquette de telescope,
+- Port parallèle,
+- Port série,
+- QuickAudine (interface USB pour caméras Audine),
+- QuickRemote (interface USB pour APN, WebCam longue pose, raquette de télescope,
   mise au point, etc.),
 - Velleman K8055,
 - Velleman K8056.
 
-AudeLA est capable de piloter les equipements suivants :
+AudeLA est capable de piloter les équipements suivants :
 - Focaliseur AudeCom,
 - Focaliseur JMI,
 - Focaliseur LX200,
 - Lhires 3,
-- Roue a filtres developpee dans le cadre de l'association Aude.
+- Roue à filtres développée dans le cadre de l'Association Aude.
 
-Bien entendu les auteurs ne disposent pas de tout ce materiel cite. Ils les ont
-integres en fonction des moyens et des connaissances disponibles, n'etant pas a
-l'abris de quelques specificites de ce materiel se traduisant soit par un
+Bien entendu les auteurs ne disposent pas de tout ce matériel cité. Ils les ont
+intégrés en fonction des moyens et des connaissances disponibles, n'étant pas à
+l'abris de quelques spécificités de ce matériel se traduisant soit par un
 dysfonctionnement, soit par une baisse de performance, soit par une absence de
-fonctionnalite.
+fonctionnalité.
 
 AudeLA fonctionne avec :
 Ordinateur PC,
 Pentium 75 minimum
 16 Mo Ram
-Windows 95, 98, ME, NT, 2000, XP,
+Windows 95, 98, ME, NT, 2000, XP, Vista, Windows 7,
 Linux.
 
-* Particularite windows :
-La plupart des cameras supportees exigent l'utilisation du port parallele.
-L'utilisation du port parallele ne cause pas de difficulte sous Win95, 98, ME
-ou Linux (root). En revanche, pour utiliser le port parallele sous winNT, XP,
-2000, l'utilitaire "allowio" s'installe automatiquement au premier demarrage
-pour donner acces aux ports. Si une version anterieure d'allowio est detectee
-il sera propose de la desinstaller et de la remplacer par la version fournie
+* Particularité Windows :
+La plupart des caméras supportées exigent l'utilisation du port parallèle.
+L'utilisation du port parallèle ne cause pas de difficulté sous Win95, 98, ME
+ou Linux (root). En revanche, pour utiliser le port parallèle sous WinNT, XP,
+2000, etc., l'utilitaire "allowio" s'installe automatiquement au premier démarrage
+pour donner accès aux ports. Si une version antérieure d'allowio est détectée
+il sera proposé de la désinstaller et de la remplacer par la version fournie
 avec AudeLA.
 
-* Particularite linux :
-AudeLA n'utilise pas de kernel driver pour communiquer avec les cameras, mais
-utilise les acces directs au port parallele. Il faut donc avoir les droits de
-superviseur pour pouvoir realiser des acquisitions.
+* Particularité Linux :
+AudeLA n'utilise pas de kernel driver pour communiquer avec les caméras, mais
+utilise les accès directs au port parallèle. Il faut donc avoir les droits de
+superviseur pour pouvoir réaliser des acquisitions.
 
 
-3. Quelle est la difference entre AudeLA et Aud'ACE ?
+3. Quelle est la différence entre AudeLA et Aud'ACE ?
 =====================================================
 
-"AudeLA" est une executable qui ne fait que charger un ensemble de librairies
-(traitement d'images, mecanique celeste, acquisition, pilotage, autres), et
-demarre ensuite un interpreteur TCL/TK. Ces librairies ont ete ecrites soit
-par les auteurs, soit par des contributeurs, et reposent egalement sur des
-librairies externes (TCL, FITSIO, GZIP, JPEG, et certains drivers de cameras).
+"AudeLA" est un exécutable qui ne fait que charger un ensemble de librairies
+(traitement d'images, mécanique céleste, acquisition, pilotage, autres), et
+démarre ensuite un interpréteur TCL/TK. Ces librairies ont été écrites soit
+par les auteurs, soit par des contributeurs, et reposent également sur des
+librairies externes (TCL, FITSIO, GZIP, JPEG, et certains drivers de caméras).
 
-Par la suite on entend par "modules propres a AudeLA" ceux qui ont reellement
-ete ecrits par les auteurs ou contributeurs directs. Cela correspond aux
-repertoires audela, libak, libaudela, libcam, libgsl, libgzip, libjm, libmc,
+Par la suite on entend par "modules propres à AudeLA" ceux qui ont réellement
+été écrits par les auteurs ou contributeurs directs. Cela correspond aux
+répertoires audela, libak, libaudela, libcam, libgsl, libgzip, libjm, libmc,
 librgb, libtel, libtt.
 
-"Aud'ACE" est une interface graphique qui exploite les possibilites de
-"AudeLA". "Aud'ACE" a ete ecrit en TCL/TK par les auteurs, et utilise bon
-nombre de librairies externes (affichage, widgets, formats d'image, etc).
+"Aud'ACE" est une interface graphique qui exploite les possibilités de
+"AudeLA". "Aud'ACE" a été écrit en TCL/TK par les auteurs, et utilise bon
+nombre de librairies externes (affichage, widgets, formats d'image, etc.).
 
 
-4. License
+4. Licence
 ==========
 
-Les modules propres a AudeLA et Aud'ACE sont distribues sous la license
+Les modules propres à AudeLA et Aud'ACE sont distribués sous la licence
 GPL (GNU Public Licence). En quelques mots, cela veut dire que c'est un
-logiciel libre : Vous etes libres de le copier, le distribuer, et le
+logiciel libre : Vous êtes libres de le copier, le distribuer, et le
 modifier. La GPL impose que si vous distribuez ce programme, alors vous
-devez donner les meme droits au recipiendaire que ceux que vous avez recus.
+devez donner les mêmes droits au récipiendaire que ceux que vous avez reçus.
 En particulier vous devez rendre les sources accessibles, y-compris les
-modifications que vous auriez eventuellement pu apporter au programme.
+modifications que vous auriez éventuellement pu apporter au programme.
 
-La license GPL est faite pour developper le logiciel libre. Elle impose donc
-que si vous ecrivez un logiciel utilisant tout ou partie de "AudeLA", alors
-celui-ci devra etre GPL, a l'image de "Aud'ACE".
+La licence GPL est faite pour développer le logiciel libre. Elle impose donc
+que si vous écrivez un logiciel utilisant tout ou partie de "AudeLA", alors
+celui-ci devra être GPL, à l'image de "Aud'ACE".
 
 Ce programme ne comporte aucune garantie de fonctionnement (on essaye
-quand meme de faire quelque chose qui marche :-)), et est livre "en l'etat".
-En particulier, les auteurs ne s'engagent en aucune maniere a devoir
-corriger des bugs, s'il y en avait ; Et ils ne peuvent en aucun cas etre
-tenus responsables d'une quelconque degradation du fait d'un evenement
-ayant une relation avec AudeLA. Le disclaimer suivant resume la situation :
+quand même de faire quelque chose qui marche :-)), et est livré "en l'état".
+En particulier, les auteurs ne s'engagent en aucune manière à devoir
+corriger des bugs, s'il y en avait ; Et ils ne peuvent en aucun cas être
+tenus responsables d'une quelconque dégradation du fait d'un événement
+ayant une relation avec AudeLA. Le disclaimer suivant résume la situation :
 
 <<<
-   This program is free software ; You can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation ; Either version 2 of the License, or (at
+   This program is free software; You can redistribute it and/or modify
+   it under the terms of the GNU General Public Licence as published by
+   the Free Software Foundation; Either version 2 of the Licence, or (at
    your option) any later version.
 
    This program is distributed in the hope that it will be useful, but
-   WITHOUT ANY WARRANTY ; Without even the implied warranty of
+   WITHOUT ANY WARRANTY; Without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-   General Public License for more details.
+   General Public Licence for more details.
 >>>
 
 Consultez le site http://www.gnu.org pour plus de renseignements sur le
 monde des logiciels libres.
 
-AudeLA et Aud'ACE utilisent des librairies externes. Ces modules ont ete
-ecrits par des gens que nous ne connaissons meme pas (mais que nous remercions
-au passage), et sont distribuees avec des licenses diverses. Qu'il soit bien
-clair que nous n'appliquons pas la license GPL a ces modules.
+AudeLA et Aud'ACE utilisent des librairies externes. Ces modules ont été
+écrits par des gens que nous ne connaissons même pas (mais que nous remercions
+au passage), et sont distribuées avec des licences diverses. Qu'il soit bien
+clair que nous n'appliquons pas la licence GPL à ces modules.
 
-Nous avons autant que possible respecte la volonte des auteurs, lorsque
-celle-ci est stipulee, concernant la redistribution de leur travail. Nous
-vous invitons a naviguer dans l'arborescence de AudeLA afin de consulter les
-differents fichiers de license. Pour information, seuls les sources de
-gzip ont legerement ete modifies afin de pouvoir generer une librairie partagee.
+Nous avons autant que possible respecté la volonté des auteurs, lorsque
+celle-ci est stipulée, concernant la redistribution de leur travail. Nous
+vous invitons à naviguer dans l'arborescence de AudeLA afin de consulter les
+différents fichiers de licence. Pour information, seuls les sources de
+gzip ont légèrement été modifiés afin de pouvoir générer une librairie partagée.
 
-Enfin, certaines librairies sont distribuees sans license, voire meme sans
-code source. Nous les redistribuons avec l'intention de rendre service a
-l'utilisateur, et avec l'espoir de ne pas aller a l'encontre de la volonte
-de leurs auteurs. Si tel etait le cas, qu'ils veuillent bien nous contacter.
+Enfin, certaines librairies sont distribuées sans licence, voire même sans
+code source. Nous les redistribuons avec l'intention de rendre service à
+l'utilisateur, et avec l'espoir de ne pas aller à l'encontre de la volonté
+de leurs auteurs. Si tel était le cas, qu'ils veuillent bien nous contacter.
 
-Si les ayatollah du logiciel libre le veulent, ils peuvent supprimer ces fichiers
-apres leur installation afin de ne pas teinter leur machine.
+Si les ayatollahs du logiciel libre le veulent, ils peuvent supprimer ces fichiers
+après leur installation afin de ne pas teinter leur machine.
 
 
-
-5. Installation et demarrage
+5. Installation et démarrage
 ============================
 
 5.1 Windows
 -----------
 
-Vous aurez probablement telecharge un executable d'installation.
+Vous aurez probablement téléchargé un exécutable d'installation.
 
-Dans ce cas, executez-le. A l'issue de l'installation, il y aura un menu AudeLA
-dans votre "Menu Demarrer", et aussi une icone sur votre bureau. C'est ce qui vous
+Dans ce cas, exécutez-le. A l'issue de l'installation, il y aura un menu AudeLA
+dans votre "Menu Démarrer", et aussi une icône sur votre bureau. C'est ce qui vous
 permet de lancer AudeLA.
 
-Note aux utilisateurs de cameras SBIG : Installez le driver systeme pour la camera
-avec le logiciel propose par SBIG: "SetupDriverChecker.exe", disponible gratuitement
-a l'adresse suivante: ftp://ftp.sbig.com/pub/SetupDriverChecker.exe
+Note aux utilisateurs de caméras SBIG : Installez le driver système pour la caméra
+avec le logiciel proposé par SBIG: "SetupDriverChecker.exe", disponible gratuitement
+à l'adresse suivante: ftp://ftp.sbig.com/pub/SetupDriverChecker.exe
 
-Note aux utilisateurs d'APN (Appareil Photo Numerique) :
+Note aux utilisateurs d'APN (Appareil Photo Numérique) :
    La liaison USB entre AudeLA et les APN requiert libusb-win32 qui est disponible
    sur le site  http://libusb-win32.sourceforge.net
-   Telecharger le fichier libusb-win32-filter-bin-0.1.10.1.exe
-   Puis installer libusb-win32 en executant ce fichier.
+   Télécharger le fichier libusb-win32-filter-bin-0.1.10.1.exe
+   Puis installer libusb-win32 en exécutant ce fichier.
 
-Note aux utilisateurs de Quickaudine et de Quickremote :
-   La liaison USB entre AudeLA et Quickaudine ou Quickremote necessite le driver FTDI
+Note aux utilisateurs de QuickAudine et de QuickRemote :
+   La liaison USB entre AudeLA et QuickAudine ou QuickRemote nécessite le driver FTDI
    qui est disponible sur le site http://www.ftdichip.com/
    (menu Drivers->D2XX)
 
-   Pour Windows XP 64 bits , telecharger le fichier
+   Pour Windows XP 64 bits, télécharger le fichier
         http://www.ftdichip.com/Drivers/CDM/WinXPx64/CDM%202.00.00%20x64.zip
-   Pour Windows XP 32 bits , telecharger le fichier
+   Pour Windows XP 32 bits, télécharger le fichier
         http://www.ftdichip.com/Drivers/CDM/Win2000/CDM%202.00.00.zip
-   Pour Windows 98 ou Me , telecharger le fichier
+   Pour Windows 98 ou Me, télécharger le fichier
         http://www.ftdichip.com/Drivers/D2XX/Win98/D30104.zip
 
-   Puis dezipper le fichier dans un repertoire temporaire et lancer l'installation
-   en suivant la procedure decrite dans
+   Puis dézipper le fichier dans un répertoire temporaire et lancer l'installation
+   en suivant la procédure décrite dans
    http://www.ftdichip.com/Documents/InstallGuides.htm
 
 5.2 Linux
 ---------
 
-5.2.1 Prerequis
+5.2.1 Prérequis
 ---------------
 
-AudeLA exploite la philosophie linux, basee sur le partage et la mise en commun
-d'elements de base: outre un noyau consistant de fonctions propres, AudeLA utilise
+AudeLA exploite la philosophie linux, basée sur le partage et la mise en commun
+d'éléments de base: Outre un noyau consistant de fonctions propres, AudeLA utilise
 de nombreux autres morceaux de logiciels. Mais pour limiter la taille des sources
-a diffuser, les autres modules sont a telecharger et installer suivant les pratiques
-de chaque plateforme (paquets Debian, archives RPM, etc).
+à diffuser, les autres modules sont à télécharger et installer suivant les pratiques
+de chaque plateforme (paquets Debian, archives RPM, etc.).
 
-Les briques suivantes sont requises. Le paquet Debian correspondant est mentionne.
+Les briques suivantes sont requises. Le paquet Debian correspondant est mentionné.
   Tcl (the Tool Command Language) v8.4 - run-time files         (tcl8.4)
   Tk toolkit for Tcl and X11, v8.4 - run-time files             (tk8.4)
   Extended image format support for Tcl/Tk                      (libtk-img)
@@ -248,43 +247,43 @@ Les briques suivantes sont requises. Le paquet Debian correspondant est mentionn
   The BLT extension library for Tcl/Tk - run-time package       (blt)
   Userspace USB programming library                             (libusb-0.1-4)
 
-Les outils pour compiler/developper:
+Les outils pour compiler/développer :
   Automatic configure script builder                            (autoconf)
   File comparison utilities                                     (diff)
   The GNU version of the "make" utility                         (make)
   The GNU C compiler                                            (gcc  >4.1)
   The GNU C++ compiler                                          (g++  >4.1)
-  GNU Scientific Library (GSL) -- development package           (libgsl0-dev)
+  GNU Scientific Library (GSL) -- Development package           (libgsl0-dev)
   Userspace USB programming library development files           (libusb-dev)
   Linux Kernel Headers for development                          (linux-kernel-headers)
   Apply a diff file to an original                              (patch)
-  Tcl (the Tool Command Language) v8.4 - development files      (tcl8.4-dev)
-  Tk toolkit for Tcl and X11, v8.4 - development files          (tk8.4-dev)
+  Tcl (the Tool Command Language) v8.4 - Development files      (tcl8.4-dev)
+  Tk toolkit for Tcl and X11, v8.4 - Development files          (tk8.4-dev)
 
 5.2.2 Lancer AudeLA
 -------------------
 
-Aller dans le repertoire bin, et executer ./audela.sh
+Aller dans le répertoire bin, et exécuter ./audela.sh
 
-5.2.3 Utilisation de quickremote ou quickaudine
+5.2.3 Utilisation de QuickRemote ou QuickAudine
 -----------------------------------------------
 
-Cette action peut etre necessaire seulement pour les liaisons avec
-quickremote et quickaudine.
+Cette action peut être nécessaire seulement pour les liaisons avec
+QuickRemote et QuickAudine.
 
 Il se peut que les services hotplug qui surveillent le branchement des
-equipements prenne la main de maniere exclusive sur les peripheriques
-a base de FTDI, tels que quickremote et quickaudine.
+équipements prennent la main de manière exclusive sur les périphériques
+à base de FTDI, tels que QuickRemote et QuickAudine.
 
-Pour savoir si tel est le cas, brancher un des deux equipements et lancer
-la commande shell lsmod pour lister les drivers utilises par le kernel.
-Generalement celui correspondant a l'identifiant USB de quickremote
+Pour savoir si tel est le cas, brancher un des deux équipements et lancer
+la commande shell lsmod pour lister les drivers utilisés par le kernel.
+Généralement celui correspondant à l'identifiant USB de QuickRemote
 s'appelle ftdi_sio. Si ce service existe, le supprimer.
 
 Pour lister les services, utiliser la commande lsmod.
-Pour arreter un service, utiliser la commande rmmod.
+Pour arrêter un service, utiliser la commande rmmod.
 
-Attention, ces commandes sont a executer en ayant les privileges root.
+Attention, ces commandes sont à exécuter en ayant les privilèges root.
 
 Exemple :
   # su root
@@ -297,22 +296,20 @@ Exemple :
   #
 
 Remarques :
-  - le service est relance automatiquement chaque fois que quickremote est
-    rebranche. Je n'ai pas trouve la commande qui desactive definitivement
-    le hotplug pour cet equipement.
+  - Le service est relancé automatiquement chaque fois que QuickRemote est
+    rebranché. Je n'ai pas trouvé la commande qui désactive définitivement
+    le hotplug pour cet équipement.
   - Pour relancer le service hotplug manuellement, taper la commande
     "modprobe ftdi_sio" sous root.
 
-5.3 Organisation des repertoires
+5.3 Organisation des répertoires
 --------------------------------
-bin : Repertoire ou sont stockes tous les binaires apres compilation.
-      C'est egalement depuis ce repertoire qu'on execute AudeLA.
-gui : Contient les differentes interfaces graphiques, en particulier
-      Aud'ACE dans le repertoire gui/audace.
-src : Repertoire des sources.
+bin : Répertoire où sont stockés tous les binaires après compilation.
+      C'est également depuis ce répertoire qu'on exécute AudeLA.
+gui : Contient les différentes interfaces graphiques, en particulier
+      Aud'ACE dans le répertoire gui/audace.
+src : Répertoire des sources.
 lib : Contient les librairies TCL additionnelles.
-
-
 
 
 6. Auteurs
@@ -322,53 +319,53 @@ Les auteurs initiaux de AudeLA sont :
  - Alain KLOTZ <alain.klotz@free.fr> et
  - Denis MARCHAIS <denis.marchais@free.fr>.
 
-Par la suite, ils ont ete rejoints par :
+Par la suite, ils ont été rejoints par :
  - Robert DELMAS <delmas.robert@wanadoo.fr>,
  - Christian JASINSKI <christian.jasinski@gmail.com>,
  - Michel PUJOL <michel-pujol@orange.fr>.
 
-Ils forment "The AudeLA Core Team" (TACT), nom employe pour le copyright dans
+Ils forment "The AudeLA Core Team" (TACT), nom employé pour le copyright dans
 les sources.
 
 
 7. Contributions
 ================
 
-Un bon nombre de personnes ont contribue a AudeLA ou Aud'ACE. Citons dans le desordre :
+Un bon nombre de personnes ont contribué à AudeLA ou Aud'ACE. Citons dans le désordre :
  - Jacques MICHELET <jacques.michelet@laposte.net> : Librairie libjm et
-   outils GPS et King, scripts de photometrie (calaphot) et de tri par
+   outils GPS et King, scripts de photométrie (calaphot) et de tri par
    fwhm (tri_fwhm).
- - Francois COCHARD <francois.cochard@wanadoo.fr> : Outils Acquisition et
-   Pretraitement.
- - Olivier THIZY <thizy@free.fr> : Script de photometrie (calaphot).
+ - François COCHARD <francois.cochard@wanadoo.fr> : Outils Acquisition et
+   Prétraitement.
+ - Olivier THIZY <thizy@free.fr> : Script de photométrie (calaphot).
  - Raymond ZACHANTKE <zachantk@club-internet.fr> : Outil APN, monture
    Ouranos et divers scripts pour le traitement d'images d'APN.
  - Philippe KAUFFMANN <philippe.kauffmann@free.fr> : Monture AudeCom.
  - Guillaume SPITZER <gspitzer@free.fr> : Librairie libgs pour
-   l'interfacage avec "Guide".
+   l'interfaçage avec "Guide".
  - Benoit MAUGIS <benoit.maugis@laposte.net> : Librairie libbm, traitement
-   de series d'images, gestion d'images FITS polychromes (poly), traitement
+   de séries d'images, gestion d'images FITS polychromes (poly), traitement
    d'images stellaires, utilisation conjointe d'AudeLA et d'Iris, outils
-   Visionneuse et Acquisition fenetree.
+   Visionneuse et Acquisition fenêtrée.
  - Pierre THIERRY : Imagerie couleur et obturateur "thierry".
  - Patrick CHEVALLEY <pchev@gmx.ch> : Driver WebCam longue pose.
  - Arkadius KALICKI : Driver WebCam.
  - Michel MEUNIER <michel.meunier100@wanadoo.fr> : Driver Ethernaude.
- - Vincent COTREZ <vincentcotrez@yahoo.fr> : Script de detection (detection).
+ - Vincent COTREZ <vincentcotrez@yahoo.fr> : Script de détection (detection).
  - Benjamin MAUCLAIRE <bmauclaire@underlands.org> : Filtres pour traitements
    d'images et scripts pour la spectroscopie (spcaudace).
  - Harald RISCHBIETER : Traitement d'images matriciel.
- - Xavier REY-ROBERT <xrr@altern.org> : Utilitaire scriptis pour executer
+ - Xavier REY-ROBERT <xrr@altern.org> : Utilitaire scriptis pour exécuter
    des scripts de commande Iris.
  - Raoul BEHREND <raoul.behrend@obs.unige.ch> : Utilitaires pour la
    conversion d'images au format FITS.
- - Jerome BERTHIER <berthier@imcce.fr> : Outil pour l'Observatoire Virtuel.
- - Frederic VACHIER <vachier@imcce.fr> : Outil pour l'Observatoire Virtuel.
- - Stephane VAILLANT <vaillant@imcce.fr> : Outil pour l'Observatoire Virtuel.
- - Sylvain GIRARD <zesly@wanadoo.fr> : Driver libk2 de la camera Kitty2.
- - Jim CADIEN <jcadien1@gmail.com> : Support pour la camera Cookbook et SBIG (Linux).
- - Laurent JORDA : Traitement d'images de cometes (AfRho).
- - Jean-Fran�ois COLIAC : Traitement d'images de cometes (AfRho).
+ - Jérôme BERTHIER <berthier@imcce.fr> : Outil pour l'Observatoire Virtuel.
+ - Frédéric VACHIER <vachier@imcce.fr> : Outil pour l'Observatoire Virtuel.
+ - Stéphane VAILLANT <vaillant@imcce.fr> : Outil pour l'Observatoire Virtuel.
+ - Sylvain GIRARD <zesly@wanadoo.fr> : Driver libk2 de la caméra Kitty2.
+ - Jim CADIEN <jcadien1@gmail.com> : Support pour la caméra Cookbook et SBIG (Linux).
+ - Laurent JORDA : Traitement d'images de comètes (AfRho).
+ - Jean-François COLIAC : Traitement d'images de comètes (AfRho).
  - Dark VADOR <vador@darkstar.com> : Inspiration permanente.
  - Christian JASINSKI, Dez FUTAK, Dan HOLLER : Traduction anglaise.
  - Fausto MANENTI : Traduction italienne.
@@ -379,24 +376,24 @@ Un bon nombre de personnes ont contribue a AudeLA ou Aud'ACE. Citons dans le des
  - Oleg MALIY : Traduction ukrainienne.
  - Oleg MALIY : Traduction russe.
 
-Que ceux qui ont ete oublies nous excusent, et se manifestent aupres des auteurs
+Que ceux qui ont été oubliés nous excusent, et se manifestent auprès des auteurs
 pour rectifier l'injustice qu'ils subissent.
 
 
 8. Librairies et logiciels externes
 ===================================
  - BLT : Trace des courbes sous TK (histogramme, plotxy).
- - BWidget : Definition de nouveaux widgets TK.
- - DialogWin : tk_messageBox evolue.
+ - BWidget : Définition de nouveaux widgets TK.
+ - DialogWin : tk_messageBox évolué.
  - Dp : Communication sur protocole IP de bas niveau (TCP, RCP, UDP, SMTP, etc.).
  - HelpViewer : Affichage d'une aide.
  - Img : Librairie de chargement de formats d'images standards (jpg, bmp, etc.).
- - Math : Librairie pour les calculs mathematiques.
- - Memchan : Librairie pour l'outil "Mise a jour d'AudeLA".
- - Mk4tcl : Librairie pour l'outil "Mise a jour d'AudeLA".
- - MySqlTcl : Librairie pour la gestion de bases de donnees.
+ - Math : Librairie pour les calculs mathématiques.
+ - Memchan : Librairie pour l'outil "Mise à jour d'AudeLA".
+ - Mk4tcl : Librairie pour l'outil "Mise à jour d'AudeLA".
+ - MySqlTcl : Librairie pour la gestion de bases de données.
  - SuperGrid : Positionne automatiquement les widgets dans une grille.
- - TableList : Affichage d'une liste avec parametrage des colonnes (outil Visionneuse bis).
+ - TableList : Affichage d'une liste avec paramétrage des colonnes (outil Visionneuse bis).
  - TclDOM : Extension DOM pour skybot/virtual observatory. http://tclxml.sourceforge.net
  - Tcllib : Outils divers (ftp, http, irc, ntp, etc.).
  - TclSoap : Extension SOAP pour skybot/virtual observatory. http://tclsoap.sourceforge.net
@@ -405,11 +402,11 @@ pour rectifier l'injustice qu'ils subissent.
  - Thread : Multi-thread.
  - TkHtml : Widget permettant d'afficher une page HTML.
  - Tls : Communication par https.
- - TMCI : Gestion du format video avi.
- - Trf : Librairie pour l'outil "Mise a jour d'AudeLA".
- - Twapi : Extension qui donne acces a des fonctions de l'API de Windows via Tcl (Tcl Windows API).
- - Vfs : Librairie pour l'outil "Mise a jour d'AudeLA".
- - Zlibtcl : Librairie pour l'outil "Mise a jour d'AudeLA".
+ - TMCI : Gestion du format vidéo avi.
+ - Trf : Librairie pour l'outil "Mise à jour d'AudeLA".
+ - Twapi : Extension qui donne accès à des fonctions de l'API de Windows via Tcl (Tcl Windows API).
+ - Vfs : Librairie pour l'outil "Mise à jour d'AudeLA".
+ - Zlibtcl : Librairie pour l'outil "Mise à jour d'AudeLA".
  - CFITSIO.
  - Sextractor.
  - jpeg6b.
