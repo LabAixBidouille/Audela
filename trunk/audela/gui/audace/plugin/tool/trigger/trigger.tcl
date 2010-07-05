@@ -2,7 +2,7 @@
 # Fichier : trigger.tcl
 # Description : Outil de declenchement pour APN Canon non reconnu par libgphoto2_canon.dll
 # Auteur : Raymond Zachantke
-# Mise à jour $Id: trigger.tcl,v 1.2 2010-05-09 17:24:24 robertdelmas Exp $
+# Mise à jour $Id: trigger.tcl,v 1.3 2010-07-05 20:46:49 robertdelmas Exp $
 #
 
 #============================================================
@@ -192,7 +192,7 @@ namespace eval ::trigger {
                -textvariable ::trigger::$child -labelanchor w -labelwidth 8 \
                -borderwidth 1 -relief flat -padx 2 -justify right \
                -width 5 -relief sunken
-            bind $Trigger.$child <Leave> [ list  ::trigger::test_$child ]
+            bind $Trigger.$child <Leave> [ list ::trigger::test $Trigger $child ]
          }
 
          #--   label pour afficher les etapes
@@ -237,8 +237,9 @@ namespace eval ::trigger {
             $Trigger.$frm setvalue @0
          }
 
-         lassign { "1" " " "0" " " } ::trigger::lp ::trigger::activtime \
-            ::trigger::delai panneau(trigger,action)
+         lassign { "1" " " "0" "1" " " "0" } ::trigger::lp ::trigger::activtime \
+            ::trigger::delai ::trigger::periode panneau(trigger,action) \
+            panneau(trigger,serieNo)
 
          $Trigger.lp invoke
          configPan
@@ -252,19 +253,24 @@ namespace eval ::trigger {
    ######################################################################
    proc timer {} {
       global panneau caption
+      variable Trigger
+
+      foreach var [ list nb_poses periode activtime delai ] {
+         ::trigger::test $Trigger $var
+      }
 
       #--   gele les commandes
       setWindowState disabled
 
-      #--   teste les variables
-      foreach var [ list nb_poses activtime delai periode ] {
-         test_$var
-      }
+      #--   affiche 'Attente'
+      set panneau(trigger,action) $caption(trigger,action,wait)
 
       #--   memorise les valeurs initiales
-      lassign [ list $caption(trigger,action,wait) $::trigger::nb_poses \
-         $::trigger::activtime $::trigger::periode ] \
-         panneau(trigger,action) nb_poses activtime periode
+      set panneau(trigger,settings) [ list $::trigger::nb_poses \
+         $::trigger::periode $::trigger::activtime ]
+
+      #--   raccourcis
+      lassign $panneau(trigger,settings) nb_poses periode activtime
 
       #--   cherche l'index de Une Image/Une série
       set mode [ lsearch $panneau(trigger,modeLabels) $panneau(trigger,mode) ]
@@ -274,17 +280,31 @@ namespace eval ::trigger {
          delay delai
       }
 
+      #--   compteur de shoot
+      incr panneau(trigger,serieNo) "1"
+      ::console::affiche_resultat "\n[ format $caption(trigger,prisedevue) $panneau(trigger,serieNo) ]\n"
+
       #--   compte les declenchements
-      set count 0
+      set count 1
 
       while { $::trigger::nb_poses > 0 } {
 
-         #--   capture le temps et affiche 'Acquisition'
-         lassign [ list [ clock seconds ] $caption(trigger,action,acq) ] \
-            time_now panneau(trigger,action)
+         #--   affiche 'Acquisition'
+         set panneau(trigger,action) "$caption(trigger,action,acq)"
+
+         #--   capture le temps
+         set time_now [ clock seconds ]
+         set time [ clock format $time_now -format "%Y %m %d %H %M %S" -timezone :UTC ]
 
          #--   declenche
          shoot "$activtime"
+
+         #--   message sur la console
+         set msg "$time N°$count"
+         if { $activtime != " " } {
+            append msg "  $activtime sec."
+         }
+         ::console::affiche_resultat "$msg\n"
 
          #--   incremente le nombre de shoot
          incr count
@@ -296,25 +316,26 @@ namespace eval ::trigger {
          set ::trigger::activtime $activtime
 
          #--   si c'est Une serie et si ce n'est pas la derniere image
-         if { $mode == "1" && $count < $nb_poses } {
+         if { $mode == "1" && $count <= $nb_poses } {
+
             #--   met a jour la periode pour Une serie
-            set i [ expr { $time_now+$periode-[ clock seconds ] } ]
+            set i [ expr { $time_now + $periode - [ clock seconds ] } ]
 
             if { $i > 1 } {
                #--   met a jour le timer
                set ::trigger::periode $i
                #--   decompte les secondes
-               delay periode
+              delay periode
             }
          }
       }
 
-      #--   retablit les valeurs initiales
-      lassign [ list $nb_poses $periode " " ] ::trigger::nb_poses \
-          ::trigger::periode panneau(trigger,action)
-
       #--   degele les commandes
       setWindowState normal
+
+      #--   retablit les valeurs initiales
+      lassign $panneau(trigger,settings) ::trigger::nb_poses \
+         ::trigger::periode ::trigger::activtime
    }
 
    ######################################################################
@@ -338,7 +359,7 @@ namespace eval ::trigger {
          return
       }
 
-      if [ TestEntier $t ] {
+      if { $t != " " } {
          #--   decremente le compteur de largeur d'impulsion
          delay activtime
       } else {
@@ -351,22 +372,6 @@ namespace eval ::trigger {
 
       #--- ferme la liaison
       ::confLink::delete "$port" "camera inconnue" "pose"
-   }
-
-   ######################################################################
-   #--   Decompteur de secondes                                         #
-   #  parametre : nom de la variable a decompter (delai ou periode)     #
-   ######################################################################
-   proc delay { var } {
-
-      upvar 1 ::trigger::$var t
-      while { $t > "0" } {
-            after 1000
-            incr t "-1"
-            update
-      }
-      set t "0"
-      update
    }
 
    ######################################################################
@@ -403,11 +408,8 @@ namespace eval ::trigger {
                      $Trigger.$child configure -state disabled
                   }
                }
-         "1"   {  set periode "1"
-                  if { $::trigger::periode != " " } {
-                     set periode $::trigger::periode
-                  }
-                  lassign [ list "2" "$periode" ] ::trigger::nb_poses ::trigger::periode
+         "1"   {  lassign [ list "2" "1" " " ] ::trigger::nb_poses \
+                     ::trigger::periode panneau(trigger,action)
                   foreach child { nb_poses periode } {
                      $Trigger.$child configure -state normal
                   }
@@ -449,59 +451,59 @@ namespace eval ::trigger {
       $Trigger.activtime configure -state $state
    }
 
-   proc test_nb_poses {} {
-      global panneau
+   ######################################################################
+   #--   Teste si les valeurs entrees dans les fenetres actives         #
+   #--   sont des entiers ; teste si la periode > duree                 #
+   #     parametre : fenetre et entree                                  #
+   ######################################################################
+   proc test { w child } {
 
-      #--   pour Une Serie
-      if { [ lsearch $panneau(trigger,modeLabels) $panneau(trigger,mode) ] != "0" } {
-         if ![ TestEntier $::trigger::nb_poses ] {
-            avertiUser "nb_poses"
-            set ::trigger::nb_poses "2"
+      #--   arrete si l'entree est disabled
+      if { [ $w.$child cget -state ] == "disabled" } {
+         return
+      }
+
+      set nom_var [ LabelEntry::cget $w.$child -textvariable ]
+
+      if ![ TestEntier [ set $nom_var ] ] {
+         avertiUser $child
+         if { $child == "nb_poses" || $child == "activtime" || $child == "periode"  } {
+            set $nom_var "1"
+         } elseif { $child == "delai" } {
+            set $nom_var "0"
          }
+      }
+      if { $child == "periode" &&  ( [ set $nom_var ] <= "$::trigger::activtime" ) } {
+         avertiUser "periode"
+         set $nom_var [ expr { $::trigger::activtime+1 } ]
       }
    }
 
-   proc test_activtime {} {
-
-      #--   pour la longuepose
-      if { $::trigger::lp == "1" } {
-         if ![ TestEntier $::trigger::activtime ] {
-            avertiUser "activtime"
-            set ::trigger::activtime "1"
-         }
-      }
-   }
-
-   proc test_delai {} {
-
-      if ![ TestEntier $::trigger::delai ] {
-         avertiUser "delai"
-         set ::trigger::delai "0"
-      }
-   }
-
-   proc test_periode {} {
-      global panneau
-
-      #--   pour Une série
-      set index [ lsearch $panneau(trigger,modeLabels) $panneau(trigger,mode) ]
-      if { [ lsearch $panneau(trigger,modeLabels) $panneau(trigger,mode) ] != "0" } {
-         if ![ TestEntier $::trigger::periode ] {
-            avertiUser "periode"
-            set ::trigger::periode "1"
-         }
-         if { $::trigger::activtime != " " &&  ( "$::trigger::periode" <= "$::trigger::activtime" ) } {
-            avertiUser "periode"
-            set ::trigger::periode [ expr { $::trigger::activtime+1 } ]
-         }
-      }
-   }
-
+   ######################################################################
+   #--   Fenetre d'avertissement                                        #
+   #     parametre : variable de caption                                #
+   ######################################################################
    proc avertiUser { nom } {
       global caption
 
       tk_messageBox -title $caption(trigger,attention)\
          -icon error -type ok -message $caption(trigger,help$nom)
+   }
+
+   ######################################################################
+   #--   Decompteur de secondes                                         #
+   #  parametre : nom de la variable a decompter (delai ou periode)     #
+   ######################################################################
+   proc delay { var } {
+
+      upvar 1 ::trigger::$var t
+      while { $t > "0" } {
+            after 1000
+            incr t "-1"
+            update
+      }
+      set t "0"
+      update
    }
 
 #--   fin du namespace
