@@ -1,6 +1,6 @@
 #
 # Fichier : trigger.cap
-# Mise a jour $Id: trigger.cap,v 1.2 2010-05-04 18:12:50 robertdelmas Exp $
+# Mise a jour $Id: trigger.cap,v 1.3 2010-07-05 20:46:33 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -24,9 +24,8 @@ set caption(trigger,mode)                             "Mode"
 set caption(trigger,mode,one)                         "One"
 set caption(trigger,mode,serie)                       "Series"
 set caption(trigger,lp)                               "Long pose"
-set caption(trigger,helpdriver)                       "USB/serial driver not installed"
 set caption(trigger,cde)                              "Front"
-set caption(trigger,helpcde)                          "Trigger: \nfront amount = 1\nfront descendant = 0"
+set caption(trigger,helpcde)                          "Trigger: \nraising front amount = 1\nfalling front = 0."
 set caption(trigger,activtime)                        "Duration"
 set caption(trigger,helpactivtime)                    "Duration must be a positive integer (sec.)."
 set caption(trigger,nb_poses)                         "Number"
@@ -35,6 +34,7 @@ set caption(trigger,delai)                            "Delay"
 set caption(trigger,helpdelai)                        "Starting delay must be an integer of seconds."
 set caption(trigger,periode)                          "Period"
 set caption(trigger,helpperiode)                      "Interval between each shoot\n must be an integer of seconds\nhihger than duration."
+set caption(trigger,prisedevue)                       "No. shooting %s"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -52,17 +52,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(trigger,mode,one)                      "Un"
    set caption(trigger,mode,serie)                    "Série"
    set caption(trigger,lp)                            "Longue pose"
-   set caption(trigger,helpdriver)                    "Driver USB/série non installé"
    set caption(trigger,cde)                           "Front"
    set caption(trigger,helpcde)                       "Déclenchement :\nfront montant = 1\nfront descendant = 0"
    set caption(trigger,activtime)                     "Durée"
-   set caption(trigger,helpactivtime)                 "La durée doit être\nun nombre entier de secondes."
+   set caption(trigger,helpactivtime)                 "La durée doit être un nombre entier de secondes."
    set caption(trigger,nb_poses)                      "Nombre"
    set caption(trigger,helpnb_poses)                  "Le nombre d'images doit être un entier."
    set caption(trigger,delai)                         "Délai"
-   set caption(trigger,helpdelai)                     "Le retard au démarrage doit être un nombre entier de secondes."
+   set caption(trigger,helpdelai)                     "Le délai doit être >=0."
    set caption(trigger,periode)                       "Période"
    set caption(trigger,helpperiode)                   "L'intervalle entre chaque début d'image\ndoit être un nombre entier de secondes,\nsupérieur à la durée."
+   set caption(trigger,prisedevue)                    "Prise de vue N° %s"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -80,7 +80,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(trigger,mode,one)                      "Una immagine"
    set caption(trigger,mode,serie)                    "Una serie"
    set caption(trigger,lp)                            "Tempo di posa"
-   set caption(trigger,helpdriver)                    "Non installato il driver USB/seriale"
    set caption(trigger,cde)                           "Front"
    set caption(trigger,helpcde)                       "Importo di trigger: \nfront = discendente 1\nfront = 0"
    set caption(trigger,activtime)                     "Durata"
@@ -91,6 +90,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(trigger,helpdelai)                     "Ritardo deve essere un numero intero di secondi."
    set caption(trigger,periode)                       "Intervallo"
    set caption(trigger,helpperiode)                   "L'intervallo tra ogni inizio di image\ndoit essere un numero intero di secondi."
+   set caption(trigger,prisedevue)                    "N. di ripresa %s"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -108,7 +108,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(trigger,mode,one)                      "Una imagen"
    set caption(trigger,mode,serie)                    "Una serie"
    set caption(trigger,lp)                            "Pose largo"
-   set caption(trigger,helpdriver)                    "Controlador no instalado USB/serial"
    set caption(trigger,cde)                           "Front"
    set caption(trigger,helpcde)                       "Cantidad de desencadenador: \nfront = 1\nfront descendiente = 0"
    set caption(trigger,activtime)                     "Duración"
@@ -119,6 +118,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(trigger,helpdelai)                     "Retraso debe ser un número entero de segundos."
    set caption(trigger,periode)                       "Intervalo"
    set caption(trigger,helpperiodee)                  "El intervalo entre cada principio de image\ndoit ser un número entero de segundos."
+   set caption(trigger,prisedevue)                    "Nº de tiro %s"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -136,7 +136,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(trigger,mode,one)                      "Ein Bild"
    set caption(trigger,mode,serie)                    "Eine Reihe"
    set caption(trigger,lp)                            "Lange darstellen"
-   set caption(trigger,helpdriver)                    "Treiber installiert keine USB/Seriell"
    set caption(trigger,cde)                           "Front"
    set caption(trigger,helpcde)                       "Trigger: \nfront Betrag = 1\nfront abhängiges Element = 0"
    set caption(trigger,activtime)                     "Dauer"
@@ -147,6 +146,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(trigger,helpdelai)                     "Verzögerung muss eine ganze Zahl Sekunden sein."
    set caption(trigger,periode)                       "Intervall"
    set caption(trigger,helpperiode)                   "Das Intervall zwischen den einzelnen Anfang des Image\nwerden eine ganze Anzahl von Sekunden."
+   set caption(trigger,prisedevue)                    "Nr. schießen %s"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -164,7 +164,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(trigger,mode,one)                      "Uma imagem"
    set caption(trigger,mode,serie)                    "Uma série"
    set caption(trigger,lp)                            "Pose longo"
-   set caption(trigger,helpdriver)                    "Não instalar o controlador USB/serial"
    set caption(trigger,cde)                           "Front"
    set caption(trigger,helpcde)                       "Acionamento: \nfront valor = descendente de 1\nfront = 0"
    set caption(trigger,activtime)                     "Duração"
@@ -175,34 +174,35 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(trigger,helpdelai)                     "Atraso deve ser um número inteiro de segundos."
    set caption(trigger,periode)                       "Intervalo"
    set caption(trigger,periode)                       "O intervalo entre cada início de image\ndoit ser um número inteiro de segundos."
+   set caption(trigger,prisedevue)                    "N. º tiro %s"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(trigger,title)                         "Trigger"
-   set caption(trigger,help_titre)                    "Help for this Tool"
-   set caption(trigger,help_titre1)                   "Help for the Tool:"
-   set caption(trigger,action,acq)                    "Acquiring"
-   set caption(trigger,action,wait)                   "Waiting"
-   set caption(trigger,attention)                     "Warning"
-   set caption(trigger,go)                            "GO"
+   set caption(trigger,help_titre)                    "Hjælp til dette værktøj"
+   set caption(trigger,help_titre1)                   "Hjælp til værktøjet:"
+   set caption(trigger,action,acq)                    "Erhverver"
+   set caption(trigger,action,wait)                   "Venter"
+   set caption(trigger,attention)                     "Advarsel"
+   set caption(trigger,go)                            "GÅ"
    set caption(trigger,port)                          "Port"
    set caption(trigger,bit)                           "Bit"
-   set caption(trigger,mode)                          "Mode"
-   set caption(trigger,mode,one)                      "One"
-   set caption(trigger,mode,serie)                    "Series"
-   set caption(trigger,lp)                            "Long pose"
-   set caption(trigger,helpdriver)                    "USB/serial driver not installed"
-   set caption(trigger,cde)                           "Front"
-   set caption(trigger,helpcde)                       "Trigger: \nfront amount = 1\nfront descendant = 0"
-   set caption(trigger,activtime)                     "Duration"
-   set caption(trigger,helpactivtime)                 "Duration must be a positive integer (sec.)."
-   set caption(trigger,nb_poses)                      "Number"
-   set caption(trigger,helpnb_poses)                  "Number of shoots must be a positive integer."
-   set caption(trigger,delai)                         "Delay"
-   set caption(trigger,helpdelai)                     "Starting delay must be an integer of seconds."
-   set caption(trigger,periode)                       "Period"
-   set caption(trigger,helpperiode)                   "Interval between each shoot\n must be an integer of seconds\nhihger than duration."
+   set caption(trigger,mode)                          "Tilstand"
+   set caption(trigger,mode,one)                      "En"
+   set caption(trigger,mode,serie)                    "Serien"
+   set caption(trigger,lp)                            "Lang udgøre"
+   set caption(trigger,cde)                           "Forsiden"
+   set caption(trigger,helpcde)                       "Udløser: \nraising front beløb = 1\nfalling front = 0."
+   set caption(trigger,activtime)                     "Varighed"
+   set caption(trigger,helpactivtime)                 "Varighed skal være et positivt heltal (SEK.)."
+   set caption(trigger,nb_poses)                      "Nummer "
+   set caption(trigger,helpnb_poses)                  "Antal skud skal være et positivt heltal."
+   set caption(trigger,delai)                         "Forsinkelse "
+   set caption(trigger,helpdelai)                     "Starter forsinkelse skal være et heltal af sekunder."
+   set caption(trigger,periode)                       "Periode"
+   set caption(trigger,helpperiode)                   "Intervallet mellem hver shoot\n skal være et heltal af seconds\nhihger end varighed."
+   set caption(trigger,prisedevue)                    "Nr. skydning %s"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -220,9 +220,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(trigger,mode,one)                      "One"
    set caption(trigger,mode,serie)                    "Series"
    set caption(trigger,lp)                            "Long pose"
-   set caption(trigger,helpdriver)                    "USB/serial driver not installed"
    set caption(trigger,cde)                           "Front"
-   set caption(trigger,helpcde)                       "Trigger: \nfront amount = 1\nfront descendant = 0"
+   set caption(trigger,helpcde)                       "Trigger: \nraising front amount = 1\nfalling front = 0."
    set caption(trigger,activtime)                     "Duration"
    set caption(trigger,helpactivtime)                 "Duration must be a positive integer (sec.)."
    set caption(trigger,nb_poses)                      "Number"
@@ -231,6 +230,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(trigger,helpdelai)                     "Starting delay must be an integer of seconds."
    set caption(trigger,periode)                       "Period"
    set caption(trigger,helpperiode)                   "Interval between each shoot\n must be an integer of seconds\nhihger than duration."
+   set caption(trigger,prisedevue)                    "No. shooting %s"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -248,9 +248,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(trigger,mode,one)                      "One"
    set caption(trigger,mode,serie)                    "Series"
    set caption(trigger,lp)                            "Long pose"
-   set caption(trigger,helpdriver)                    "USB/serial driver not installed"
    set caption(trigger,cde)                           "Front"
-   set caption(trigger,helpcde)                       "Trigger: \nfront amount = 1\nfront descendant = 0"
+   set caption(trigger,helpcde)                       "Trigger: \nraising front amount = 1\nfalling front = 0."
    set caption(trigger,activtime)                     "Duration"
    set caption(trigger,helpactivtime)                 "Duration must be a positive integer (sec.)."
    set caption(trigger,nb_poses)                      "Number"
@@ -259,6 +258,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(trigger,helpdelai)                     "Starting delay must be an integer of seconds."
    set caption(trigger,periode)                       "Period"
    set caption(trigger,helpperiode)                   "Interval between each shoot\n must be an integer of seconds\nhihger than duration."
+   set caption(trigger,prisedevue)                    "No. shooting %s"
 }
 
 #=========================================================================
