@@ -2,7 +2,7 @@
 # File : version.tcl
 #
 # This file is part of the AudeLA project : <http://software.audela.free.fr>
-# Copyright (C) 1999-2008 The AudeLA Core Team
+# Copyright (C) 1999-2010 The AudeLA Core Team
 #
 # Initial author : Denis MARCHAIS <denis.marchais@free.fr>
 #
@@ -26,9 +26,8 @@ global audela
 set audela(major) "@MAJOR@"
 set audela(minor) "@MINOR@"
 set audela(patch) "@PATCH@"
-set audela(extra) "@EXTRA@"
 
-set audela(version) "@MAJOR@.@MINOR@.@PATCH@@EXTRA@"
+set audela(version) "@MAJOR@.@MINOR@.@PATCH@"
 
 set audela(date) "@REL_DATE@"
 
