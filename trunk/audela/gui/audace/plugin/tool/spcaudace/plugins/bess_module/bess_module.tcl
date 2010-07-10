@@ -5,12 +5,12 @@
 # Auteurs     : François Cochard (francois.cochard@wanadoo.fr)
 #               Sur la forme, je suis parti du script calaphot de Jacques Michelet (jacques.michelet@laposte.net)
 #               Par ailleurs, je m'appuie sur les routines spc_audace de Benjamin Mauclaire
-# Mise à jour $Id: bess_module.tcl,v 1.11 2010-05-01 13:19:17 robertdelmas Exp $
-# Dernière mise à jour: 24 mars 2007 - 11h00
+# Mise à jour $Id: bess_module.tcl,v 1.12 2010-07-10 07:05:55 robertdelmas Exp $
+# Dernière mise à jour : 24 mars 2007 - 11h00
 #
 #####################################################################
 
-# Bugs à corriger
+# Bugs à corriger :
 # - Permettre l'accès à la routine aussi bien en standalone (script) que par une ligne de cde avec nom de fichier en argument
 # - Virer les appels à consolog: pas besoin de générer un fichier de log !
 # - Le message "fin normale du script arrive trop tôt dans la console
@@ -25,10 +25,10 @@
 # Définition d'un espace réservé à ce script
 catch {namespace delete ::bess}
 namespace eval ::bess {
-
    variable police
-   set fich_in ""
+   global audace audela
 
+   set fich_in ""
    set numero_version v0.2
 
    if {$tcl_platform(os)!="Linux"} {
@@ -43,8 +43,6 @@ namespace eval ::bess {
       set police(titre)    {helvetica 11 bold}
    }
 
-   global audace audela
-
    if { [regexp {1.3.0} $audela(version) match resu ] } {
       set repspc [ file join $audace(rep_scripts) spcaudace ]
       source [file join $repspc plugins bess_module bess_module.cap]
@@ -58,6 +56,7 @@ namespace eval ::bess {
    #*************************************************************************#
    #*************  Principal  ***********************************************#
    #*************************************************************************#
+   # Lancement de l'interface
    proc Principal { fich_in } {
       LitFichesBeSSPredefinies
       ChargeFichier $fich_in
@@ -117,10 +116,11 @@ namespace eval ::bess {
    #*************************************************************************#
    # Lit les noms prédéfinis pour les sites, les instruments et les observateurs
    proc LitFichesBeSSPredefinies { } {
-      global audace
+      variable parametres
       variable liste_instrument
       variable liste_site
       variable liste_observer
+      global audace
 
       set motcle ""
       set valeur ""
@@ -134,59 +134,59 @@ namespace eval ::bess {
       set fichier [file join $::audace(rep_home) BeSSParam.ini]
 
       if {[file exists $fichier]} {
-# On ouvre le fichier
+         # On ouvre le fichier
          set fileID [open $fichier r]
-# Et on lit chaqueligne
+         # Et on lit chaqueligne
          while {[eof $fileID] == 0} {
             gets $fileID ligne
-#           Message console "%s - eof %s\n" $ligne [eof $fileID]
+           # Message console "%s - eof %s\n" $ligne [eof $fileID]
             if {[BalayageLigne $ligne] == 0} {
                lappend liste_$motcle $valeur
             }
          }
          close $fileID
          if {[info exists liste_instrument] == 0} { set liste_instrument [ list "" ] }
-         if {[info exists liste_site] == 0} { set liste_site [ list "" ] }
-         if {[info exists liste_observer] == 0} { set liste_observer [ list "" ] }
-       } else {
-          set liste_instrument [ list "" ]
-          set liste_site [ list ""]
-          set liste_observer [ list ""]
-       }
+         if {[info exists liste_site] == 0}       { set liste_site       [ list "" ] }
+         if {[info exists liste_observer] == 0}   { set liste_observer   [ list "" ] }
+      } else {
+         set liste_instrument [ list "" ]
+         set liste_site       [ list ""]
+         set liste_observer   [ list ""]
+      }
 
-}
+   }
 
 #*******************************************************************************
 
-   proc BalayageLigne {ligne} {
-    # Passage des parametres de retour (motcle et valeur)
-    upvar motcle motcle
-    upvar valeur valeur
+   proc BalayageLigne { ligne } {
+      # Passage des parametres de retour (motcle et valeur)
+      upvar motcle motcle
+      upvar valeur valeur
 
-    # Nettoyage des characteres <espace> en trop
-    set ligne [string trim $ligne]
+      # Nettoyage des characteres <espace> en trop
+      set ligne [string trim $ligne]
 
-    # Cas de la ligne de commentaires (ignorée)
-    if {[string first \# $ligne] == 0} {
-        return -2
-    }
+      # Cas de la ligne de commentaires (ignorée)
+      if {[string first \# $ligne] == 0} {
+         return -2
+      }
 
-    # Isolement du mot cle
-    set cg [string first \[ $ligne]
-    set cd [string first \] $ligne]
-    # Erreurs de syntaxe
-    if {($cg<0 && $cd>=0) || ($cg>=0 && $cd<0)} {
-        return -1
-    }
-    set motcle [string tolower [string range $ligne [expr $cg+1] [expr $cd-1]]]
+      # Isolement du mot cle
+      set cg [string first \[ $ligne]
+      set cd [string first \] $ligne]
+      # Erreurs de syntaxe
+      if {($cg<0 && $cd>=0) || ($cg>=0 && $cd<0)} {
+         return -1
+      }
+      set motcle [string tolower [string range $ligne [expr $cg+1] [expr $cd-1]]]
 
-    # Isolement de la valeur associée, et nettoyage des caractères <espace> résiduels
-    set valeur [string trim [string range $ligne [expr $cd+1] end]]
-    if {[string length $valeur] == 0} {
-        return -3
-    }
-    return 0
-    }
+      # Isolement de la valeur associée, et nettoyage des caractères <espace> résiduels
+      set valeur [string trim [string range $ligne [expr $cd+1] end]]
+      if {[string length $valeur] == 0} {
+         return -3
+      }
+      return 0
+   }
 
    #*************************************************************************#
    #*************  ChargeFichier  ********************************************#
@@ -197,64 +197,66 @@ namespace eval ::bess {
       # - On regarde le format du fichier, et on convertit si besoin
       # - On lit le header pour initialiser les variables
       # - On duplique les données du header pour en garder trace
-      global audace
       variable parametres
       variable parametresOld
       variable fich_out
+      global audace
 
       if { $fich_in == ""} {
+
          foreach motcle { OBJNAME BSS_RA BSS_DEC OBSERVER BSS_INST BSS_SITE DATE-OBS EXPTIME BSS_VHEL BSS_NORM BSS_TELL BSS_COSM obs1 obs2 obs3 datedeb heuredeb} {
             set parametres($motcle) ""
          }
-#        return
+        # return
+
       } else {
 
-      #  - On regarde le format du fichier, et on convertit si besoin
-            set racine [file tail [file rootname $fich_in]]
-            set ::bess::fich_in $racine
-            set fich_out "bess_$racine"
+         # On regarde le format du fichier et on le convertit si besoin
+         set racine [file tail [file rootname $fich_in]]
+         set ::bess::fich_in $racine
+         set fich_out "bess_$racine"
 
-            switch [file extension $fich_in] {
-               ".dat" {
-                  spc_dat2fits $racine.dat
-                  buf$audace(bufNo) load [file join $audace(rep_images) $racine ]
-               }
-               ".spc" {
-                  spc_spc2fits $racine.spc
-                  buf$audace(bufNo) load [file join $audace(rep_images) $racine]
-                  # Corriger: virer l'extension _spc à la création du fichier (cf Benjamin)
-               }
-               ".fit" {
-                  # On se contente de charger le fichier
-                  buf$audace(bufNo) load [file join $audace(rep_images) $fich_in]
-      #                    Message console "Je charge %s - Ok\n" [file join $audace(rep_images) $fich_in]
-               }
-               "" {
-                  # On se contente de charger le fichier
-                  buf$audace(bufNo) load [file join $audace(rep_images) $fich_in]
-      #                    Message console "Je charge en FIT %s - Ok\n" [file join $audace(rep_images) $fich_in]
+         switch [file extension $fich_in] {
+            ".dat" {
+               spc_dat2fits $racine.dat
+               buf$audace(bufNo) load [file join $audace(rep_images) $racine ]
+            }
+            ".spc" {
+               spc_spc2fits $racine.spc
+               buf$audace(bufNo) load [file join $audace(rep_images) $racine]
+               # Corriger: virer l'extension _spc à la création du fichier (cf Benjamin)
+            }
+            ".fit" {
+               # On se contente de charger le fichier
+               buf$audace(bufNo) load [file join $audace(rep_images) $fich_in]
+              # Message console "Je charge %s - Ok\n" [file join $audace(rep_images) $fich_in]
+            }
+            "" {
+               # On se contente de charger le fichier
+               buf$audace(bufNo) load [file join $audace(rep_images) $fich_in]
+              # Message console "Je charge en FIT %s - Ok\n" [file join $audace(rep_images) $fich_in]
+            }
+            default {
+              # break
+            }
          }
-         default {
-#            break
+
+         # On liste les mots-clé BeSS
+         foreach motcle { OBJNAME BSS_RA BSS_DEC OBSERVER BSS_INST BSS_SITE DATE-OBS EXPTIME BSS_VHEL BSS_NORM BSS_TELL BSS_COSM} {
+            set ligne [buf$audace(bufNo) getkwd $motcle]
+           # Message console "mot cle - %s - %s\n" $motcle [lindex $ligne 1]
+             set parametres($motcle) [lindex $ligne 1]
          }
-      }
+         # Sépare le champ DATE-OBS
+         set parametres(datedeb)  [lindex [split $parametres(DATE-OBS) T] 0]
+         set parametres(heuredeb) [lindex [split $parametres(DATE-OBS) T] 1]
 
-# On liste les mots-clé BeSS
-      foreach motcle { OBJNAME BSS_RA BSS_DEC OBSERVER BSS_INST BSS_SITE DATE-OBS EXPTIME BSS_VHEL BSS_NORM BSS_TELL BSS_COSM} {
-         set ligne [buf$audace(bufNo) getkwd $motcle]
-#           Message console "mot cle - %s - %s\n" $motcle [lindex $ligne 1]
-          set parametres($motcle) [lindex $ligne 1]
-      }
-# Sépare le champ DATE-OBS
-      set parametres(datedeb) [lindex [split $parametres(DATE-OBS) T] 0]
-      set parametres(heuredeb) [lindex [split $parametres(DATE-OBS) T] 1]
+         # Sépare le champ Observer en 3 noms
+         set parametres(obs1) [string trim [lindex [split $parametres(OBSERVER) ,] 0]]
+         set parametres(obs2) [string trim [lindex [split $parametres(OBSERVER) ,] 1]]
+         set parametres(obs3) [string trim [lindex [split $parametres(OBSERVER) ,] 2]]
 
-# Sépare le champ Observer en 3 noms
-      set parametres(obs1) [string trim [lindex [split $parametres(OBSERVER) ,] 0]]
-      set parametres(obs2) [string trim [lindex [split $parametres(OBSERVER) ,] 1]]
-      set parametres(obs3) [string trim [lindex [split $parametres(OBSERVER) ,] 2]]
-
-# On garde trace des éléments du header - on n'enregistrera que ceux qui sont modifiés
+      # On garde trace des éléments du header - On n'enregistrera que ceux qui sont modifiés
       }
       if {[info exists parametresOld]} {unset parametresOld}
       foreach indice [array names parametres] {
@@ -279,13 +281,13 @@ namespace eval ::bess {
    #*************  EditeParametres  ****************************************#
    #*************************************************************************#
    proc EditeParametres { fich_in } {
-      global audace color
       variable parametres
       variable text_bess
       variable police
       variable liste_instrument
       variable liste_site
       variable liste_observer
+      global audace color
 
       variable bess_export_fg
       set bess_export_fg #ECE9D8
@@ -298,16 +300,16 @@ namespace eval ::bess {
          ::bess::AnnuleSaisie
       }
 
-#       Provisioire (debug)
-#       Message console "fichier - %s - Ok (editeur)\n" $fich_in
+      # Provisioire (debug)
+     # Message console "fichier - %s - Ok (editeur)\n" $fich_in
 
       # Construction de la fenêtre des paramètres
       toplevel $audace(base).saisie -borderwidth 2 -relief groove -bg $bess_export_fg
-      #wm geometry $audace(base).saisie 560x550+120+50
+     # wm geometry $audace(base).saisie 560x550+120+50
       wm geometry $audace(base).saisie 605x570+120+50
       wm title $audace(base).saisie $text_bess(titre_saisie)
       wm protocol $audace(base).saisie
-#       WM_DELETE_WINDOW ::bess::Suppression
+     # WM_DELETE_WINDOW ::bess::Suppression
 
       # Construction du canevas qui va contenir toutes les trames et des ascenseurs
       set c [canvas $audace(base).saisie.canevas]
@@ -317,16 +319,16 @@ namespace eval ::bess {
       $c create window 0 0 -anchor nw -window $t
 
       # Trame du titre
-  if { 1==0 } {
-      frame $t.trame0 -borderwidth 5 -relief groove -bg $bess_export_fg
-      label $t.trame0.titre \
-         -font [ list {Arial} 16 bold ] -text $text_bess(titrePanneau) \
-         -borderwidth 0 -relief flat -bg $bess_export_fg  \
-         -fg $color(blue_pad)
-#label $t.trame0.titre -text $text_bess(titrePanneau) -font {helvetica 16 bold} -justify center -fg $color(blue_pad) -bg $bess_export_fg
-      pack $t.trame0.titre -in $t -fill x -side top -pady 15
-      #pack $t.trame0.titre -side top -fill both -expand true
-  }
+      if { 1==0 } {
+         frame $t.trame0 -borderwidth 5 -relief groove -bg $bess_export_fg
+         label $t.trame0.titre \
+            -font [ list {Arial} 16 bold ] -text $text_bess(titrePanneau) \
+            -borderwidth 0 -relief flat -bg $bess_export_fg  \
+            -fg $color(blue_pad)
+        # label $t.trame0.titre -text $text_bess(titrePanneau) -font {helvetica 16 bold} -justify center -fg $color(blue_pad) -bg $bess_export_fg
+         pack $t.trame0.titre -in $t -fill x -side top -pady 15
+        # pack $t.trame0.titre -side top -fill both -expand true
+      }
 
       #--------------------------------------------------------------------------------
       # Trame du nom des fichier à éditer et de sortie
@@ -350,7 +352,7 @@ namespace eval ::bess {
       #--------------------------------------------------------------------------------
       # Trame des renseignements généraux
       frame $t.trame2 -borderwidth 5 -relief groove -bg $bess_export_fg
-#       label $t.trame2.titre -text $text_bess(param_generaux) -font $police(titre) -fg $color(blue_pad) -bg $bess_export_fg
+     # label $t.trame2.titre -text $text_bess(param_generaux) -font $police(titre) -fg $color(blue_pad) -bg $bess_export_fg
       label $t.trame2.opt -text $text_bess(optionnel) -font $police(gras) -fg $color(blue_pad) -bg $bess_export_fg
       grid $t.trame2.opt -in $t.trame2 -columnspan 3 -sticky e
 
@@ -395,7 +397,7 @@ namespace eval ::bess {
 
       tkwait window $audace(base).saisie
       if { "$::bess::fich_out"!="" } {
-      return "$::bess::fich_out"
+         return "$::bess::fich_out"
       }
    }
 
@@ -403,16 +405,16 @@ namespace eval ::bess {
    #*************  WebBeSS  ************************************#
    #*************************************************************************#
    proc WebBeSS { } {
-      global conf spcaudace
       variable text_bess
+      global conf spcaudace
 
-     if { $conf(editsite_htm)!="" } {
+      if { $conf(editsite_htm)!="" } {
          set answer [ catch { exec $conf(editsite_htm) "$spcaudace(sitebess)" &
          } ]
       } else {
          set message_erreur $text_bess(pb_editweb)
          tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
-    }
+      }
    }
 
    #*************************************************************************#
@@ -433,150 +435,161 @@ namespace eval ::bess {
    #*************************************************************************#
    #*************  valideMotCle  ********************************************#
    #*************************************************************************#
-# Cette procédure teste la validité d'un mote-clé BeSS
+   # Cette procédure teste la validité d'un mote-clé BeSS
    proc valideMotCle { motcle valeurmotle } {
       variable parametres
       variable text_bess
 
       switch $motcle {
 
-        "OBJNAME" {
-#          Verifier le longueur du champ
-# Verifier les caractères utilisés
-          set result 1        }
-
-          "BSS_RA" {
-#            Verifier que DEC est aussi présent
-             if {!([string is double $parametres(BSS_RA)])} {
-                set message_erreur $text_bess(pb_ra)
-                tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
-                set result -2
-             } else {
-                set result 1
-             }
-          }
-
-          "BSS_DEC" {
-#                  Verifier que RA est aussi présent
-             if {!([string is double $parametres(BSS_DEC)])} {
-                set message_erreur $text_bess(pb_dec)
-                tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
-                set result -2
-             } else {
-                set result 1
-             }
-           }
-
-          "OBSERVER" {
-#            Verifier que pas plus de trois observateurs
-# Verifier la longueur du champ
+         "OBJNAME" {
+            # Verifier le longueur du champ
+            # Verifier les caractères utilisés
             set result 1
-          }
+         }
 
-          "BSS_INST" {
-             # Verifier la longueur du champ
-            set result 1        }
+         "BSS_RA" {
+            # Verifier que DEC est aussi présent
+            if {!([string is double $parametres(BSS_RA)])} {
+               set message_erreur $text_bess(pb_ra)
+               tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
+               set result -2
+            } else {
+               set result 1
+            }
+         }
 
-          "BSS_SITE" {
-             # Verifier la longueur du champ
-            set result 1        }
+         "BSS_DEC" {
+            # Verifier que RA est aussi présent
+            if {!([string is double $parametres(BSS_DEC)])} {
+               set message_erreur $text_bess(pb_dec)
+               tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
+               set result -2
+            } else {
+               set result 1
+            }
+         }
 
-          "DATE-OBS" {
-#            Vérifier le format
-            set result 1        }
+         "OBSERVER" {
+            # Verifier que pas plus de trois observateurs
+            # Verifier la longueur du champ
+            set result 1
+         }
 
-          "EXPTIME" {
+         "BSS_INST" {
+            # Verifier la longueur du champ
+            set result 1
+         }
+
+         "BSS_SITE" {
+            # Verifier la longueur du champ
+            set result 1
+         }
+
+         "DATE-OBS" {
+            # Vérifier le format
+            set result 1
+         }
+
+         "EXPTIME" {
             if {!([string is double $parametres(EXPTIME)])} {
                 set message_erreur $text_bess(pb_exptime)
                 tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
                 set result -2
-               } else {
-                set result 1            }
+             } else {
+                set result 1
+             }
           }
 
-          "BSS_VHEL" {
+         "BSS_VHEL" {
             if {!([string is double $parametres(BSS_VHEL)])} {
-                set message_erreur $text_bess(pb_vhel)
-                tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
-                set result -2
-               } else {
-                set result 1            }
-          }
+               set message_erreur $text_bess(pb_vhel)
+               tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
+               set result -2
+            } else {
+               set result 1
+            }
+         }
 
-          "BSS_NORM" {
-             # Verifier la longueur du champ
-            set result 1        }
+         "BSS_NORM" {
+            # Verifier la longueur du champ
+            set result 1
+         }
 
-          "BSS_TELL" {
-             # Verifier la longueur du champ
-            set result 1        }
+         "BSS_TELL" {
+            # Verifier la longueur du champ
+            set result 1
+         }
 
-          "BSS_COSM" {
-             # Verifier la longueur du champ
-            set result 1        }
+         "BSS_COSM" {
+            # Verifier la longueur du champ
+            set result 1
+         }
 
          default {
-            set result -1      }
-        }
-        return $result
-}
+            set result -1
+         }
+
+      }
+      return $result
+   }
 
    #*************************************************************************#
    #*************  EnregistreSaisie  ****************************************#
    #*************************************************************************#
    proc EnregistreSaisie { fich_out } {
-      global audace
       variable text_bess
       variable parametres
       variable parametresOld
+      global audace
 
-#       Dans un premier temps, on commence par regarder si les mots-cle modifiés sont valides.
-# La variable motCleAModifier contiendra la liste des mots-clé modifiés
+      # Dans un premier temps, on commence par regarder si les mots-cle modifiés sont valides.
+      # La variable motCleAModifier contiendra la liste des mots-clé modifiés
       if {[info exists motCleAModifier]} {unset motCleAModifier}
-# La variable pas_glop est à 0 tant que les champs sont corrects. Le processus est interrompu sinon
+      # La variable pas_glop est à 0 tant que les champs sont corrects. Le processus est interrompu sinon
       set pas_glop 0
-#       Message console "fichier %s\n" $fich_out
+     # Message console "fichier %s\n" $fich_out
 
-#       On traite le cas à part du mot-clé OBSERVER (séparé en 3 dans le panneau)
+      # On traite le cas à part du mot-clé OBSERVER (séparé en 3 dans le panneau)
       if { $parametres(obs1) != $parametresOld(obs1) ||
-          $parametres(obs2) != $parametresOld(obs2) ||
-          $parametres(obs3) != $parametresOld(obs3) } {
-             set parametres(OBSERVER) $parametres(obs1)
-             append parametres(OBSERVER) ","
-             append parametres(OBSERVER) $parametres(obs2)
-             append parametres(OBSERVER) ","
-             append parametres(OBSERVER) $parametres(obs3)
+           $parametres(obs2) != $parametresOld(obs2) ||
+           $parametres(obs3) != $parametresOld(obs3) } {
+         set parametres(OBSERVER) $parametres(obs1)
+         append parametres(OBSERVER) ","
+         append parametres(OBSERVER) $parametres(obs2)
+         append parametres(OBSERVER) ","
+         append parametres(OBSERVER) $parametres(obs3)
       } else {
          set parametres(OBSERVER) $parametresOld(OBSERVER)
       }
 
-#       On traite le cas à part du mot-clé DATE-OBS (séparé en 2 dans le panneau)
+      # On traite le cas à part du mot-clé DATE-OBS (séparé en 2 dans le panneau)
       if {$parametres(datedeb) != $parametresOld(datedeb) ||
           $parametres(heuredeb) != $parametresOld(heuredeb) } {
-             set parametres(DATE-OBS) $parametres(datedeb)
-             append parametres(DATE-OBS) T
-             append parametres(DATE-OBS) $parametres(heuredeb)
+         set parametres(DATE-OBS) $parametres(datedeb)
+         append parametres(DATE-OBS) T
+         append parametres(DATE-OBS) $parametres(heuredeb)
       } else {
          set parametres(DATE-OBS) $parametresOld(DATE-OBS)
       }
 
-#       On traite maintenant en bloc tous le smots-clé
+      # On traite maintenant en bloc tous le smots-clé
       foreach motcle { OBJNAME BSS_RA BSS_DEC OBSERVER BSS_INST BSS_SITE DATE-OBS EXPTIME BSS_VHEL BSS_NORM BSS_TELL BSS_NORM} {
          if { $parametres($motcle) != $parametresOld($motcle)} {
-#           Le mot-cle a été modifié
-              if { [valideMotCle $motcle $parametres($motcle)] != 1 } {
-                 set pas_glop 1
-#                Message console "Erreur:  %s - %s\n" $motcle $parametres($motcle)
-#                break
-              } else {
-#                   Message console "A MODIFIER ! - %s - %s\n" $motcle $parametres($motcle)
-                 lappend motCleAModifier $motcle
-              }
+            # Le mot-cle a été modifié
+            if { [valideMotCle $motcle $parametres($motcle)] != 1 } {
+               set pas_glop 1
+              # Message console "Erreur:  %s - %s\n" $motcle $parametres($motcle)
+              # break
+            } else {
+              # Message console "A MODIFIER ! - %s - %s\n" $motcle $parametres($motcle)
+               lappend motCleAModifier $motcle
+            }
          }
       }
       if {$pas_glop == 0} {
-   #     On peut maintenant enregistrer les mots-cé...
-   #       J'initialise les valeurs qui seront mises dans le header
+         # On peut maintenant enregistrer les mots-clés
+         # J'initialise les valeurs qui seront mises dans le header
          set formatmotcle(OBJNAME)  "string"
          set formatmotcle(BSS_RA)   "float"
          set formatmotcle(BSS_DEC)  "float"
@@ -604,9 +617,9 @@ namespace eval ::bess {
          set commentaire(BSS_COSM) "Updated by Audela BeSS module"
 
          if {[info exists motCleAModifier]} {
-             foreach motcle $motCleAModifier {
-                 buf$audace(bufNo) setkwd [list $motcle $parametres($motcle) $formatmotcle($motcle) $commentaire($motcle) ""]
-             }
+            foreach motcle $motCleAModifier {
+               buf$audace(bufNo) setkwd [list $motcle $parametres($motcle) $formatmotcle($motcle) $commentaire($motcle) ""]
+            }
 
             #--- Gestion de certains mots clefs :
             set listemotsclef [ buf$audace(bufNo) getkwds ]
@@ -638,16 +651,16 @@ namespace eval ::bess {
                buf$audace(bufNo) delkwd "RADECSYS"
             }
 
-        #-- Complete les mots clefs vides :
-        if { [ lsearch $listemotsclef "BSS_VHEL" ] ==-1 } {
-       buf$audace(bufNo) setkwd [ list BSS_VHEL 0.0 float "Heliocentric velocity at data date" "km/s" ]
-        }
-        if { [ lsearch $listemotsclef "BSS_NORM" ] ==-1 } {
-       buf$audace(bufNo) setkwd [ list BSS_NORM "no" string "Yes or no if normalisation has been done" "" ]
-        }
-        if { [ lsearch $listemotsclef "BSS_COSM" ] ==-1 } {
-       buf$audace(bufNo) setkwd [ list BSS_COSM "no" string "Yes or no if cosmics correction has been done" "" ]
-        }
+            #-- Complete les mots clefs vides :
+            if { [ lsearch $listemotsclef "BSS_VHEL" ] ==-1 } {
+               buf$audace(bufNo) setkwd [ list BSS_VHEL 0.0 float "Heliocentric velocity at data date" "km/s" ]
+            }
+            if { [ lsearch $listemotsclef "BSS_NORM" ] ==-1 } {
+               buf$audace(bufNo) setkwd [ list BSS_NORM "no" string "Yes or no if normalisation has been done" "" ]
+            }
+            if { [ lsearch $listemotsclef "BSS_COSM" ] ==-1 } {
+               buf$audace(bufNo) setkwd [ list BSS_COSM "no" string "Yes or no if cosmics correction has been done" "" ]
+            }
             if { [ lsearch $listemotsclef "SPC_RESP" ] !=-1 } {
                set spc_resp [ lindex [ buf$audace(bufNo) getkwd "SPC_RESP" ] 1 ]
                set spc_resl [ lindex [ buf$audace(bufNo) getkwd "SPC_RESL" ] 1 ]
@@ -673,22 +686,22 @@ namespace eval ::bess {
                   set okpoursauver 1
                }
                if { $okpoursauver == 1 } {
-              buf$audace(bufNo) bitpix float
-                   buf$audace(bufNo) save [file join $audace(rep_images) $fich_out]
-                   buf$audace(bufNo) bitpix short
-                   ChargeFichier $fich_out
+                  buf$audace(bufNo) bitpix float
+                  buf$audace(bufNo) save [file join $audace(rep_images) $fich_out]
+                  buf$audace(bufNo) bitpix short
+                  ChargeFichier $fich_out
                }
-             } else {
-                set message_erreur $text_bess(FichOutVide)
-                tk_messageBox -message $message_erreur -icon warning -type ok -title $text_bess(probleme)
-             }
-          } else {
-#            Message console "Pas besoin de sauver: pas de changements \n"
-          }
+            } else {
+               set message_erreur $text_bess(FichOutVide)
+               tk_messageBox -message $message_erreur -icon warning -type ok -title $text_bess(probleme)
+            }
+         } else {
+          # Message console "Pas besoin de sauver: pas de changements \n"
+         }
       } else {
-#       Message console "Je ne sauve pas: bugs ! \n"
+       # Message console "Je ne sauve pas: bugs ! \n"
       }
-  }
+   }
 }
 # Fin du namespace bess
 
