@@ -153,8 +153,11 @@ int tel_init(struct telprop *tel, int argc, char **argv)
       case 'A' : 
          strcpy(tel->alignmentMode,"ALTAZ");
          break;
+      case 'L' : 
+         strcpy(tel->alignmentMode,"EQUATORIAL");
+         break;
       case 'P' : 
-         strcpy(tel->alignmentMode,"POLAR");
+         strcpy(tel->alignmentMode,"EQUATORIAL");
          break;
    }
 
