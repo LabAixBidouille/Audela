@@ -2,7 +2,7 @@
 # Fichier : acqdslr.tcl
 # Description : Outil d'acquisition pour APN Canon
 # Auteur : Raymond Zachantke
-# Mise à jour $Id: acqdslr.tcl,v 1.6 2010-07-05 21:02:07 robertdelmas Exp $
+# Mise à jour $Id: acqdslr.tcl,v 1.7 2010-07-10 07:10:03 robertdelmas Exp $
 #
 
 #============================================================
@@ -726,7 +726,7 @@ namespace eval ::acqdslr {
       configPose
       configIntervalle "4"
 
-	   $Dslr.but1  configure -state normal
+      $Dslr.but1  configure -state normal
 
       foreach child { step test nb_poses } {
          $Dslr.$child configure -state disabled
@@ -1016,7 +1016,7 @@ namespace eval ::acqdslr {
    ######################################################################
    proc shootImg { } {
       global panneau caption
-	   variable Dslr
+      variable Dslr
 
       #--   raccourcis
       set camNo $panneau(acqdslr,camNo)
