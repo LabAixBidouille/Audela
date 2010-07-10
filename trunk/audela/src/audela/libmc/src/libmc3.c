@@ -814,7 +814,8 @@ List_ModelValues
       }
 
 		if (type==0) {
-			mc_ad2hd(jd,longmpc,ra0,&ha0);         
+           mc_ad2hd(jd,longmpc,ra0,&ha0);
+           mc_ad2ah(jd,longmpc,latrad,ra0,dec0,&az0,&h0);
 		}
 		ha=ha0; az=az0; hauteur=h0; dec=dec0; ra=ra0;
 		/* --- Modele de pointage ---*/
