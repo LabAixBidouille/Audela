@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.39 2010-02-12 21:29:32 michelpujol Exp $
+ * $Id: libcam.c,v 1.40 2010-07-11 12:24:02 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -1458,10 +1458,40 @@ static int cmdCamNbpix(ClientData clientData, Tcl_Interp * interp, int argc, cha
 
 static int cmdCamCelldim(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
+   int retour;
    char ligne[256];
    struct camprop *cam;
    cam = (struct camprop *) clientData;
-   sprintf(ligne, "%g %g", cam->celldimx, cam->celldimy);
+   
+   if ((argc != 2) && (argc != 4)) {
+      sprintf(ligne, "Usage: %s %s ?celldimx? ?celldimy?", argv[0], argv[1]);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      retour = TCL_ERROR;
+   } else if (argc == 2) {
+      sprintf(ligne, "%g %g", cam->celldimx, cam->celldimy);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      retour = TCL_OK;
+   } else {
+      double celldimx, celldimy;
+      if (Tcl_GetDouble(interp, argv[2], &celldimx) != TCL_OK) {
+         sprintf(ligne, "Usage: %s %s ?num?\ncelldimx must be a float > 0", argv[0], argv[1]);
+         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         retour = TCL_ERROR;
+      } else if (Tcl_GetDouble(interp, argv[3], &celldimy) != TCL_OK) {
+         sprintf(ligne, "Usage: %s %s ?num?\ncelldimy must be a float > 0", argv[0], argv[1]);
+         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         retour = TCL_ERROR;
+      } else {
+         cam->celldimx = celldimx;
+         cam->celldimy = celldimy;
+         sprintf(ligne, "%g %g", cam->celldimx, cam->celldimy);
+         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         retour = TCL_OK;
+      }
+   }
+   return retour;
+
+
    Tcl_SetResult(interp, ligne, TCL_VOLATILE);
    return TCL_OK;
 }
