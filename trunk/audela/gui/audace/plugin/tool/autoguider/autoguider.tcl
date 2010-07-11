@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise à jour $Id: autoguider.tcl,v 1.44 2010-05-23 16:21:57 robertdelmas Exp $
+# Mise à jour $Id: autoguider.tcl,v 1.45 2010-07-11 12:45:50 michelpujol Exp $
 #
 
 package provide autoguider 1.3
@@ -113,6 +113,7 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists conf(autoguider,showImage)] }            { set conf(autoguider,showImage)            "1" }
    if { ! [ info exists conf(autoguider,showTarget)] }           { set conf(autoguider,showTarget)           "1" }
    if { ! [ info exists conf(autoguider,targetBoxSize)] }        { set conf(autoguider,targetBoxSize)        "16" }
+   if { ! [ info exists conf(autoguider,detectionThreshold)] }   { set conf(autoguider,detectionThreshold)   "10" }
    if { ! [ info exists conf(autoguider,originCoord)] }          { set conf(autoguider,originCoord)          [list 320 240 ] }
    if { ! [ info exists conf(autoguider,configWindowPosition)] } { set conf(autoguider,configWindowPosition) "+0+0" }
    if { ! [ info exists conf(autoguider,declinaisonEnabled)] }   { set conf(autoguider,declinaisonEnabled)   "1" }
@@ -248,8 +249,8 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
       button $This.suivi.center -text "$caption(autoguider,centrer)" -height 1 \
         -borderwidth 1 -pady 2 -command "::autoguider::startCenter $visuNo"
 
-      label $This.suivi.fluxLabel    -text $caption(autoguider,intensiteMax)
-      label $This.suivi.fluxValue    -textvariable ::autoguider::private($visuNo,flux) -width 5 -justify right
+      Label $This.suivi.fluxLabel    -text $caption(autoguider,intensiteMax)
+      Label $This.suivi.fluxValue    -textvariable ::autoguider::private($visuNo,flux) -width 5 -justify right
       label $This.suivi.label_d      -text "$caption(autoguider,ecart_origine_etoile)"
       label $This.suivi.dx           -textvariable ::autoguider::private($visuNo,dx) -width 5
       label $This.suivi.dy           -textvariable ::autoguider::private($visuNo,dy) -width 5
@@ -348,12 +349,17 @@ proc ::autoguider::adaptPanel { visuNo args } {
         || [lindex $::conf(autoguider,originCoord) 1 ] >=  [lindex $camSize 1] } {
          set ::conf(autoguider,originCoord) [list [expr [lindex $camSize 0]/2] [expr [lindex $camSize 1]/2] ]
       }
+
+      #--- je configure le thread de la camera
+      ::camera::setParam $camItem "detectionThreshold" $::conf(autoguider,detectionThreshold)
+
    }
 
    #--- si la cible n'est pas deja fixee, je prends les coordonnees de l'origine
    if { [llength $private($visuNo,targetCoord)] != 2 } {
       set private($visuNo,targetCoord) $::conf(autoguider,originCoord)
    }
+
 
 }
 
@@ -1168,12 +1174,20 @@ proc ::autoguider::setFlux { visuNo starStatus } {
 
    if { $starStatus == "NO_SIGNAL" } {
       #--- j'affiche le voyant en rouge
-      $private($visuNo,This).suivi.fluxLabel configure -bg   $private($visuNo,redColor)
-      $private($visuNo,This).suivi.fluxValue configure -bg   $private($visuNo,redColor)
+      $private($visuNo,This).suivi.fluxLabel configure \
+         -bg   $private($visuNo,redColor) \
+         -helptext $::caption(autoguider,noSignal)
+      $private($visuNo,This).suivi.fluxValue configure \
+         -bg   $private($visuNo,redColor) \
+         -helptext $::caption(autoguider,noSignal)
    } else {
       #--- j'affiche le voyant avec la couleur par defaut
-      $private($visuNo,This).suivi.fluxLabel configure -bg   $::audace(color,backColor)
-      $private($visuNo,This).suivi.fluxValue configure -bg   $::audace(color,backColor)
+      $private($visuNo,This).suivi.fluxLabel configure \
+         -bg $::audace(color,backColor) \
+         -helptext ""
+      $private($visuNo,This).suivi.fluxValue configure \
+         -bg $::audace(color,backColor) \
+         -helptext ""
    }
 }
 
