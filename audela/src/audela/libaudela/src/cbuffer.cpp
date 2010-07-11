@@ -3953,10 +3953,18 @@ int CBuffer::A_StarList(int x1, int y1, int x2, int y2, double threshin,char *fi
 
    if(after_gauss!=0 && retour>=0) {
       CPixelsGray * newpix;
+      // j'enregistre les nouveaux pix en niveau de gris
       newpix = new CPixelsGray(naxis1, naxis2, FORMAT_SHORT, temp_pic, 0, 0);
 
       delete pix;
       pix = newpix;
+
+      // Si l'image etait RBG , je met a jour les mots cles
+      if ( GetNaxis() == 3 ) {
+         int naxis = 2;
+         keywords->Add("NAXIS",  &naxis, TINT, "", "");
+         keywords->Delete("NAXIS3");
+      }
 
    }
 
