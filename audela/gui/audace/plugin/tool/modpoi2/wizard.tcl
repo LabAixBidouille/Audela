@@ -2,7 +2,7 @@
 # Fichier : wizard.tcl
 # Description : pipeline de pointage des etoiles
 # Auteur : Michel Pujol
-# Mise à jour $Id: wizard.tcl,v 1.12 2010-06-25 17:22:02 robertdelmas Exp $
+# Mise à jour $Id: wizard.tcl,v 1.13 2010-07-11 12:36:24 michelpujol Exp $
 #
 
 namespace eval ::modpoi2::wizard {
@@ -754,7 +754,7 @@ proc ::modpoi2::wizard::modpoi_wiz2 { } {
 
 #------------------------------------------------------------------------------
 # createButton
-#    cree un checkbutton dans la table
+#    cree un checkbutton dans la table des points d'amer
 #
 # Parametres :
 #    tkTable      : nom Tk de la table
@@ -777,7 +777,7 @@ proc ::modpoi2::wizard::createButton { tkTable row col w } {
 
 #------------------------------------------------------------------------------
 # deleteButton
-#    supprime un checkbutton dans la table
+#    supprime un checkbutton dans la table des points d'amer
 #
 # Parametres :
 #    tkTable      : nom Tk de la table
@@ -912,7 +912,7 @@ variable private
 #-------------------------------------------------------------------------------
 # modpoi_wiz3
 #   selection d'une etoile proche du point d'amer
-#   et lancement du pointage
+#   et affiche les boutons faire un centrage
 #
 #-------------------------------------------------------------------------------
 proc ::modpoi2::wizard::modpoi_wiz3 { amerIndex } {
@@ -1188,17 +1188,14 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
       -padx 5 -pady 3 -expand 0
 
    frame $private(g,base).coord -borderwidth 1 -relief ridge
-      label $private(g,base).coord.catalogueLabel -text $::caption(modpoi2,wiz4,CoordJ2000)
-      label $private(g,base).coord.telescopeLabel -text $::caption(modpoi2,wiz4,CoordNow)
-      label $private(g,base).coord.correctedLabel -text $::caption(modpoi2,wiz4,coordTelescope)
+      label $private(g,base).coord.catalogueLabel -text $::caption(modpoi2,wiz4,catalogCoord)
+      label $private(g,base).coord.telescopeLabel -text $::caption(modpoi2,wiz4,telescopeCoord)
       label $private(g,base).coord.diffLabel      -text $::caption(modpoi2,wiz4,diff)
 
       label $private(g,base).coord.raLabel      -width  4 -text $::caption(modpoi2,wiz4,RA)
       entry $private(g,base).coord.catalogueRa  -width 12 -state readonly -justify center \
          -textvariable ::modpoi2::wizard::private(star$amerIndex,raCat)
       entry $private(g,base).coord.telescopeRa  -width 12 -state readonly -justify center \
-         -textvariable ::modpoi2::wizard::private(star$amerIndex,raApp)
-      entry $private(g,base).coord.correctedRa  -width 12 -state readonly -justify center \
          -textvariable ::audace(telescope,getra)
       entry $private(g,base).coord.diffRa       -width  8 -state readonly -justify center \
          -textvariable ::modpoi2::wizard::private(deltah)
@@ -1207,33 +1204,27 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
       entry $private(g,base).coord.catalogueDec -width 12 -state readonly -justify center \
          -textvariable ::modpoi2::wizard::private(star$amerIndex,deCat)
       entry $private(g,base).coord.telescopeDec -width 12 -state readonly -justify center \
-         -textvariable ::modpoi2::wizard::private(star$amerIndex,deApp)
-      entry $private(g,base).coord.correctedDec -width 12 -state readonly -justify center \
          -textvariable ::audace(telescope,getdec)
       entry $private(g,base).coord.diffDec      -width  8 -state readonly -justify center \
          -textvariable ::modpoi2::wizard::private(deltad)
 
       grid $private(g,base).coord.catalogueLabel -row 0 -column 1 -sticky ew
       grid $private(g,base).coord.telescopeLabel -row 0 -column 2 -sticky ew
-      grid $private(g,base).coord.correctedLabel -row 0 -column 3 -sticky ew
-      grid $private(g,base).coord.diffLabel      -row 0 -column 4 -sticky ew
+      grid $private(g,base).coord.diffLabel      -row 0 -column 3 -sticky ew
 
       grid $private(g,base).coord.raLabel     -row 1 -column 0 -sticky ew
       grid $private(g,base).coord.catalogueRa -row 1 -column 1 -sticky ew
       grid $private(g,base).coord.telescopeRa -row 1 -column 2 -sticky ew
-      grid $private(g,base).coord.correctedRa -row 1 -column 3 -sticky ew
-      grid $private(g,base).coord.diffRa      -row 1 -column 4 -sticky ew
+      grid $private(g,base).coord.diffRa      -row 1 -column 3 -sticky ew
 
       grid $private(g,base).coord.decLabel     -row 2 -column 0 -sticky ew
       grid $private(g,base).coord.catalogueDec -row 2 -column 1 -sticky ew
       grid $private(g,base).coord.telescopeDec -row 2 -column 2 -sticky ew
-      grid $private(g,base).coord.correctedDec -row 2 -column 3 -sticky ew
-      grid $private(g,base).coord.diffDec      -row 2 -column 4 -sticky ew
+      grid $private(g,base).coord.diffDec      -row 2 -column 3 -sticky ew
 
       grid columnconfig $private(g,base).coord 1 -weight 1
       grid columnconfig $private(g,base).coord 2 -weight 1
       grid columnconfig $private(g,base).coord 3 -weight 1
-      grid columnconfig $private(g,base).coord 4 -weight 1
    pack $private(g,base).coord -side top -anchor center -padx 5 -pady 3 -expand 0
 
    #--- bouton GOTO / STOP_GOTO
@@ -1891,7 +1882,7 @@ proc ::modpoi2::wizard::hideSelectedAmer { } {
 ################################################################################
 
 #-------------------------------------------------------------------------------
-# modpoi_stopGoto
+# modpoi_goto
 #   demarre un GOTO du telescope
 #-------------------------------------------------------------------------------
 proc ::modpoi2::wizard::modpoi_goto { } {
@@ -1910,11 +1901,12 @@ proc ::modpoi2::wizard::modpoi_goto { } {
 
    set amerIndex $private(amerIndex)
    if { $::audace(telNo) != 0} {
-      #--- je recupere les coordonnees apparentes
-      set raApp $private(star$amerIndex,raApp)
-      set deApp $private(star$amerIndex,deApp)
+      #--- je recupere les coordonnees catlogue
+      set raCat $private(star$amerIndex,raCat)
+      set deCat $private(star$amerIndex,deCat)
+      set blocking 0
       #--- je lance la commande goto en mode non bloquant
-      ::telescope::goto [list $raApp $deApp] 0
+      ::telescope::goto [list $raCat $deCat] $blocking
    } else {
       ::confTel::run
    }
@@ -1933,9 +1925,10 @@ proc ::modpoi2::wizard::modpoi_goto { } {
 
    ::telescope::afficheCoord
 
-   #--- j'affiche l'ecart en arcminute
-   set private(deltah) [format "%.3f" [expr 60.0 * [mc_anglescomp $::audace(telescope,getra)  - $private(star$amerIndex,raApp) ]]]
-   set private(deltad) [format "%.3f" [expr 60.0 * [mc_anglescomp $::audace(telescope,getdec) - $private(star$amerIndex,deApp)]]]
+   #--- j'affiche l'ecart en arcminute (ecart enre les coordonnees J2000 du catalogue et du telescope pour avoir un apercu)
+   set radecObs [tel$::audace(telNo) radec coord -equinox NOW]
+   set private(deltah) [format "%.3f" [expr 60.0 * [mc_anglescomp [lindex $radecObs 0] - $private(star$amerIndex,raApp)]]]
+   set private(deltad) [format "%.3f" [expr 60.0 * [mc_anglescomp [lindex $radecObs 1] - $private(star$amerIndex,deApp)]]]
 
 }
 
@@ -1960,10 +1953,10 @@ proc ::modpoi2::wizard::modpoi_stopGoto {  } {
    $private(g,base).fra_bottom.but_prev         configure -state normal
    $private(g,base).fra_bottom.but_next         configure -state normal
 
-   #--- j'affiche l'ecart en arcminute
-   set private(deltah) [format "%.3f" [expr 60.0 * [mc_anglescomp $::audace(telescope,getra)  - $private(star$private(amerIndex),raApp) ]]]
-   set private(deltad) [format "%.3f" [expr 60.0 * [mc_anglescomp $::audace(telescope,getdec) - $private(star$private(amerIndex),deApp)]]]
-
+   #--- j'affiche l'ecart en arcminute (ecart enre les coordonnees J2000 du catalogue et du telescope pour avoir un apercu)
+   set radecObs [tel$::audace(telNo) radec coord -equinox NOW]
+   set private(deltah) [format "%.3f" [expr 60.0 * [mc_anglescomp [lindex $radecObs 0] - $private(star$amerIndex,raApp)]]]
+   set private(deltad) [format "%.3f" [expr 60.0 * [mc_anglescomp [lindex $radecObs 1] - $private(star$amerIndex,deApp)]]]
 }
 
 #-------------------------------------------------------------------------------
@@ -1983,10 +1976,12 @@ proc ::modpoi2::wizard::modpoi_stop { { direction "" } } {
 
    ::telescope::stop $direction
 
-   #--- je met a jour l'affichage de l'ecart
+   #--- j'affichage l'ecart (ecart entre les coordonnees apparentes du catalogue et du telescope pour avoir un apercu)
    set amerIndex $private(amerIndex)
-   set private(deltah) [format "%.3f" [expr 60.0 * [mc_anglescomp $::audace(telescope,getra) -  $private(star$amerIndex,raApp) ]]]
-   set private(deltad) [format "%.3f" [expr 60.0 * [mc_anglescomp $::audace(telescope,getdec) - $private(star$amerIndex,deApp)]]]
+   set radecObs [tel$::audace(telNo) radec coord -equinox NOW]
+   set private(deltah) [format "%.3f" [expr 60.0 * [mc_anglescomp [lindex $radecObs 0] - $private(star$amerIndex,raApp)]]]
+   set private(deltad) [format "%.3f" [expr 60.0 * [mc_anglescomp [lindex $radecObs 1] - $private(star$amerIndex,deApp)]]]
+
 }
 
 #-------------------------------------------------------------------------------
@@ -1999,6 +1994,7 @@ proc ::modpoi2::wizard::modpoi_speed { } {
 
 #-------------------------------------------------------------------------------
 # modpoi_coord
+#   recupere les coordonnées observees (sans modele de pointage actif)
 #   calcule les ecarts des coordonnees
 #-------------------------------------------------------------------------------
 proc ::modpoi2::wizard::modpoi_coord { } {
@@ -2006,15 +2002,16 @@ proc ::modpoi2::wizard::modpoi_coord { } {
 
    set k $private(amerIndex)
    if { [ ::tel::list ] == "" } {
+      #--- le telescope n'est pas connecte, je recupere les coordonnees apparentes
       set private(star$k,raObs)  $private(star$k,raApp)
       set private(star$k,deObs) $private(star$k,deApp)
    } else {
-      set radecObs [tel$::audace(telNo) radec coord]
+      set radecObs [tel$::audace(telNo) radec coord -equinox NOW]
       set private(star$k,raObs) [lindex $radecObs 0]
       set private(star$k,deObs) [lindex $radecObs 1]
    }
 
-   #--- je calcule l'ecart en arcmin
+   #--- je calcule l'ecart en arcmin entre les coordonnees apparentes de l'etoile et du télescope
    set private(star$k,raShift) [expr 60.0 * [mc_anglescomp $private(star$k,raObs)  - $private(star$k,raApp) ]]
    set private(star$k,deShift) [expr 60.0 * [mc_anglescomp $private(star$k,deObs)  - $private(star$k,deApp) ]]
 
