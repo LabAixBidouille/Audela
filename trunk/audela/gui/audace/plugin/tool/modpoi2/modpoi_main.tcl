@@ -2,7 +2,7 @@
 # Fichier : modpoi_main.tcl
 # Description : fenetre principale
 # Auteur : Michel Pujol
-# Mise à jour $Id: modpoi_main.tcl,v 1.9 2010-06-25 17:15:09 robertdelmas Exp $
+# Mise à jour $Id: modpoi_main.tcl,v 1.10 2010-07-11 12:36:24 michelpujol Exp $
 #
 
 namespace eval ::modpoi2::main {
@@ -730,8 +730,13 @@ proc ::modpoi2::main::displayCoefficient { visuNo symbols coefficients covars } 
       } else {
          set symbolName  ""
       }
-      set coefficient [format "%.2f" [lindex $coefficients $rowIndex]]
-      set covar [format "%.2f" [expr pow([gsl_mindex $covars [expr $rowIndex +1] [expr $rowIndex +1]],2)]]
+      if { [lindex $coefficients $rowIndex] != "" }  {
+         set coefficient [format "%.2f" [lindex $coefficients $rowIndex]]
+         set covar [format "%.2f" [expr pow([gsl_mindex $covars [expr $rowIndex +1] [expr $rowIndex +1]],2)]]
+      } else {
+         set coefficient 0.0
+         set covar 0.0
+      }
       $private($visuNo,coefficientTable) insert $rowIndex [list $symbol $symbolName $coefficient $covar ]
    }
    $private($visuNo,coefficientTable)  configure -height [llength $symbols ]

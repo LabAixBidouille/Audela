@@ -2,7 +2,7 @@
 # Fichier : modpoi_process.tcl
 # Description : pipeline de pointage des etoiles
 # Auteur : Michel Pujol
-# Mise à jour $Id: modpoi_process.tcl,v 1.2 2010-05-26 06:28:45 robertdelmas Exp $
+# Mise à jour $Id: modpoi_process.tcl,v 1.3 2010-07-11 12:36:24 michelpujol Exp $
 #
 
 namespace eval ::modpoi2::process {
@@ -215,42 +215,42 @@ proc ::modpoi2::process::modpoi_catalogmean2apparent { ra_cat de_cat equinox dat
    return [list $rav $decv $Hv $hv $azv]
 }
 
-#------------------------------------------------------------
-# modpoi_apparent2observed
-#
-#------------------------------------------------------------
-proc ::modpoi2::process::modpoi_apparent2observed { listvdt { pressure 101325 } { temperature 290 } { date now } } {
-#--- Input
-#--- listvdt : true coodinates list from modpoi_catalogmean2apparent (degrees)
-#--- Output
-#--- raadt,decadt : observed coordinates (degrees)
-#--- Hadt : observed hour angle (degrees)
-#--- hadt : observed altitude altaz coordinate (degrees)
-#--- azadt : observed azimut altaz coordinate (degrees)
-   variable private
-
-   set pi $private(pi)
-   set deg2rad $private(deg2rad)
-   set rad2deg $private(rad2deg)
-   #--- Extract angles from the listvd
-   set ravdt  [lindex $listvdt 0]
-   set decvdt [lindex $listvdt 1]
-   set Hvdt   [lindex $listvdt 2]
-   set hvdt   [lindex $listvdt 3]
-   set azvdt  [lindex $listvdt 4]
-   #--- Refraction correction
-   set azadt $azvdt
-   if {$hvdt>-1.} {
-      set refraction [mc_refraction $hvdt out2in $temperature $pressure]
-   } else {
-      set refraction 0.
-   }
-   set hadt   [expr $hvdt+$refraction]
-   set res    [mc_altaz2radec $azvdt $hadt $private(home) $date]
-   set raadt  [lindex $res 0]
-   set decadt [lindex $res 1]
-   set res    [mc_altaz2hadec $azvdt $hadt $private(home) $date]
-   set Hadt   [lindex $res 0]
-   return [list $raadt $decadt $Hadt $hadt $azadt]
-}
+####------------------------------------------------------------
+#### modpoi_apparent2observed
+####
+####------------------------------------------------------------
+###proc ::modpoi2::process::modpoi_apparent2observed { listvdt { pressure 101325 } { temperature 290 } { date now } } {
+####--- Input
+####--- listvdt : true coodinates list from modpoi_catalogmean2apparent (degrees)
+####--- Output
+####--- raadt,decadt : observed coordinates (degrees)
+####--- Hadt : observed hour angle (degrees)
+####--- hadt : observed altitude altaz coordinate (degrees)
+####--- azadt : observed azimut altaz coordinate (degrees)
+###   variable private
+###
+###   set pi $private(pi)
+###   set deg2rad $private(deg2rad)
+###   set rad2deg $private(rad2deg)
+###   #--- Extract angles from the listvd
+###   set ravdt  [lindex $listvdt 0]
+###   set decvdt [lindex $listvdt 1]
+###   set Hvdt   [lindex $listvdt 2]
+###   set hvdt   [lindex $listvdt 3]
+###   set azvdt  [lindex $listvdt 4]
+###   #--- Refraction correction
+###   set azadt $azvdt
+###   if {$hvdt>-1.} {
+###      set refraction [mc_refraction $hvdt out2in $temperature $pressure]
+###   } else {
+###      set refraction 0.
+###   }
+###   set hadt   [expr $hvdt+$refraction]
+###   set res    [mc_altaz2radec $azvdt $hadt $private(home) $date]
+###   set raadt  [lindex $res 0]
+###   set decadt [lindex $res 1]
+###   set res    [mc_altaz2hadec $azvdt $hadt $private(home) $date]
+###   set Hadt   [lindex $res 0]
+###   return [list $raadt $decadt $Hadt $hadt $azadt]
+###}
 
