@@ -1579,7 +1579,7 @@ int cmdSetPix(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
    int naxis1, naxis2, x, y; // Dimensions et coordonnees.
    char *ligne;              // Ligne affectee dans le resultat de la commande TCL.
    int retour = TCL_OK;               // Code d'erreur de retour.
-   double val;
+   double val=0;
    double valred, valgreen, valblue;
 
    ligne = (char*)calloc(1000,sizeof(char));
@@ -2199,7 +2199,7 @@ int cmdPhotom(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
    char **listArgv;                   // Liste des argulents passes a getpix.
    int listArgc;                      // Nombre d'elements dans la liste des coordonnees.
    int method=0;
-   int x1,x2,y1,y2, xx1, yy1;
+   int x1=0,x2=0,y1=0,y2=0, xx1, yy1;
    int n1;
    //int n23,n,xxx1,xxx2,yyy1,yyy2,n23d,n23f;
    double r1,r2,r3;
@@ -2314,7 +2314,7 @@ int cmdBarycenter(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
    int listArgc;                      // Nombre d'elements dans la liste des coordonnees.
    double xc, yc;
    //double flux_pix,flux,sx,sy;
-   int x1,x2,y1,y2;
+   int x1=0,x2=0,y1=0,y2=0;
 
    // On recupere les parametres (et eventuellement on en met par defaut).
    if (argc<3) {
@@ -2770,7 +2770,7 @@ int cmdTtStat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
    float locut, hicut, maxi, mini, mean, sigma, bgmean, bgsigma, contrast;
    char **listArgv;          // Liste des argulents passes a getpix.
    int listArgc;             // Nombre d'elements dans la liste des coordonnees.
-   int x1, y1, x2, y2;      // Coordonnees de la fenetre.
+   int x1=0, y1=0, x2=0, y2=0;      // Coordonnees de la fenetre.
    int naxis1,naxis2,temp;
 
    ligne = new char[1000];
@@ -4757,8 +4757,8 @@ int cmdRegion(ClientData , Tcl_Interp *interp, int argc, char *argv[])
 //   Fonction de calcul du centroide sur une fente.
 //
 //  Parameters IN:
-//  @param     Argv[2]=[list x1 y1 x2 y2] coordonn�es de la fenetre de detection de l'etoile (pixels)
-//  @param     Argv[3]=starDetectionMode  Algorithme de d�tection 1=ajustement de gaussienne  2=fente
+//  @param     Argv[2]=[list x1 y1 x2 y2] coordonnees de la fenetre de detection de l'etoile (pixels)
+//  @param     Argv[3]=starDetectionMode  Algorithme de detection 1=ajustement de gaussienne  2=fente
 //  @param     Argv[4]=pixelMinCount      nombre minimal de pixels (nombre entier)
 //  @param     Argv[5]=slitWidth          largeur de la fente (nombre entier de pixels)
 //  @param     Argv[6]=slitRatio          pourcentage pour convertir le rapport de flux en nombre de pixels
@@ -4774,7 +4774,7 @@ int cmdRegion(ClientData , Tcl_Interp *interp, int argc, char *argv[])
 int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
    enum {CMD_CENTRO=1,CMD_FLUX,CMD_PHOT};
-   int x1, y1, x2, y2, temp;
+   int x1=0, y1=0, x2=0, y2=0, temp;
    int slitWidth = 0;
    int starDetectionMode;
    double slitRatio = 0;
@@ -4952,7 +4952,7 @@ int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
       char **listArgv;                   // Liste des argulents passes a getpix.
       int listArgc;                      // Nombre d'elements dans la liste des coordonnees.
 
-      int x1, y1, x2, y2;                // Position de la fenetre
+      int x1=0, y1=0, x2=0, y2=0;                // Position de la fenetre
       int starDetectionMode;
       int fiberDetectionMode;
       int integratedImage;
@@ -5237,7 +5237,7 @@ int cmdTtFitellip(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
    int retour = TCL_OK;
    char **listArgv;          // Liste des argulents passes a getpix.
    int listArgc;             // Nombre d'elements dans la liste des coordonnees.
-   int x1, y1, x2, y2;      // Coordonnees de la fenetre.
+   int x1=0, y1=0, x2=0, y2=0;      // Coordonnees de la fenetre.
    int naxis1,naxis2,temp;
    double threshold=0.,background=0.,xc=-1.,yc=-1.;
 
