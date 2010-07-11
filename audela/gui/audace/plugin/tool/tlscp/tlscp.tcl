@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise à jour $Id: tlscp.tcl,v 1.40 2010-05-26 05:38:39 robertdelmas Exp $
+# Mise à jour $Id: tlscp.tcl,v 1.41 2010-07-11 12:39:23 michelpujol Exp $
 #
 
 #============================================================
@@ -741,24 +741,6 @@ proc ::tlscp::cmdGoto { visuNo } {
       set private($visuNo,list_radec) [list $private($visuNo,raObjet) $private($visuNo,decObjet)]
    }
 
-   #--- Prise en compte des corrections de precession, de nutation et d'aberrations (annuelle et diurne)
-   if { $private($visuNo,equinoxObjet) != "now" } {
-      #--- Calcul des corrections et affichage dans la Console
-      set ad_objet_cata  [ lindex $private($visuNo,list_radec) 0 ]
-      set dec_objet_cata [ lindex $private($visuNo,list_radec) 1 ]
-      ::console::disp "$caption(tlscp,coord_catalogue) \n"
-      ::console::disp "$caption(tlscp,ad) $ad_objet_cata \n"
-      ::console::disp "$caption(tlscp,dec) $dec_objet_cata \n"
-      set now            [ ::audace::date_sys2ut "now" ]
-      set ad_dec_vrai    [ ::telescope::coord_eph_vrai $ad_objet_cata $dec_objet_cata J2000.0 $now ]
-      set ad_objet_vrai  [ lindex $ad_dec_vrai 0 ]
-      set dec_objet_vrai [ lindex $ad_dec_vrai 1 ]
-      ::console::disp "$caption(tlscp,coord_corrigees) \n"
-      ::console::disp "$caption(tlscp,ad) $ad_objet_vrai \n"
-      ::console::disp "$caption(tlscp,dec) $dec_objet_vrai \n"
-      set private($visuNo,list_radec) "$ad_objet_vrai $dec_objet_vrai"
-   }
-
    #--- Goto
    ::telescope::goto $private($visuNo,list_radec) "0" \
       $private($visuNo,This).fra2.fra2a.but1 \
@@ -1035,8 +1017,12 @@ proc ::tlscp::startCenter { visuNo { methode "" } } {
       set dec [string trim [mc_angle2deg $dec ]]
    } else {
       #--- je calcule les coordonnees J2000.0
-      set dateNow   [::audace::date_sys2ut now]
-      set listRaDec [::telescope::apparent2catalogmean $private($visuNo,raObjet) $private($visuNo,decObjet) $dateNow J2000.0 ]
+      # mc_tel2cat Usage: Coords TypeObs Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues? ?model_only?
+      set dateUtc   [::audace::date_sys2ut now]
+      set home  $conf(posobs,observateur,gps)
+      set pressure 101325
+      set temperature 290
+      set listRaDec [mc_tel2cat $radec EQUATORIAL $dateUtc $home $pressure $temperature]
       set ra        [lindex $listRaDec 0]
       set dec       [lindex $listRaDec 1]
    }
@@ -1164,8 +1150,8 @@ proc ::tlscp::startSearchStar { visuNo } {
 #------------------------------------------------------------
 proc ::tlscp::clearSearchStar { visuNo } {
    variable private
-
-   [::confVisu::getCanvas $visuNo] delete tlscpstar
+   set hCanvas [::confVisu::getCanvas $visuNo]
+   $hCanvas delete tlscpstar
 }
 
 #------------------------------------------------------------
