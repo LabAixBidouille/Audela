@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise à jour $Id: telescope.tcl,v 1.59 2010-07-11 12:41:38 michelpujol Exp $
+# Mise à jour $Id: telescope.tcl,v 1.60 2010-07-11 12:42:06 michelpujol Exp $
 #
 
 namespace eval ::telescope {
@@ -1273,7 +1273,7 @@ proc ::telescope::moveTelescope { alphaDirection alphaDiff deltaDirection deltaD
    #--- je calcule le delai de rattrapage
    set alphaDelay    [expr int(1000.0 * ($alphaDiff / [lindex $guidingSpeed 0 ])) ]
    set deltaDelay    [expr int(1000.0 * ($deltaDiff / [lindex $guidingSpeed 1 ])) ]
-console::disp "alphaDelay=$alphaDelay deltaDelay=$deltaDelay\n "
+
    set private(tescopeIsMoving) 1
 
    if { [ ::confTel::getPluginProperty hasMotionWhile ] == "0" } {
