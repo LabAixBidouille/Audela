@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise à jour $Id: telescope.tcl,v 1.58 2010-07-02 20:42:42 robertdelmas Exp $
+# Mise à jour $Id: telescope.tcl,v 1.59 2010-07-11 12:41:38 michelpujol Exp $
 #
 
 namespace eval ::telescope {
@@ -206,13 +206,13 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
       set audace(telescope,stopgoto) "0"
       if { [ ::confTel::getPluginProperty backlash ] == "1" } {
          #--- Goto
-         tel$audace(telNo) radec goto $list_radec -blocking $blocking -backlash 1
+         tel$audace(telNo) radec goto $list_radec -blocking $blocking -backlash 1 -equinox $radecEquinox
          if { $blocking == 0 } {
             #--- Boucle tant que la monture n'est pas arretee (si on n'utilise pas le mode bloquant du goto)
             set audace(telescope,goto) "1"
-            set radec0 [ tel$audace(telNo) radec coord ]
-            set surveilleResultat [ ::telescope::surveille_goto [ list $radec0 ]]
-            if { $surveilleResultat == 1 } {
+            set radec0 [ tel$audace(telNo) radec coord -equinox $radecEquinox]
+            set derniereBoucle [ ::telescope::surveille_goto [ list $radec0 ] $radecEquinox]
+            if { $derniereBoucle == 1 } {
                #--- j'attends que la variable soit remise a zero
                vwait ::audace(telescope,goto)
             }
@@ -224,13 +224,13 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
       #--- Goto
       set catchError [catch {
          if { $audace(telescope,stopgoto) == "0" } {
-            tel$audace(telNo) radec goto $list_radec -blocking $blocking
+            tel$audace(telNo) radec goto $list_radec -blocking $blocking -equinox $radecEquinox
             if { $blocking == 0 && $::conf(telescope) != "t193" } {
                #--- Boucle tant que la monture n'est pas arretee (si on n'utilise pas le mode bloquant du goto)
                set audace(telescope,goto) "1"
-               set radec0 [ tel$audace(telNo) radec coord ]
-               set surveilleResultat [ ::telescope::surveille_goto [ list $radec0 ] ]
-               if { $surveilleResultat == 1 } {
+               set radec0 [ tel$audace(telNo) radec coord -equinox $radecEquinox ]
+               set derniereBoucle [ ::telescope::surveille_goto [ list $radec0 ] $radecEquinox ]
+               if { $derniereBoucle == 1 } {
                   #--- j'attends que la variable soit remise a zero
                   vwait ::audace(telescope,goto)
                }
@@ -269,25 +269,24 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
 #
 # Parametres :
 #    radec0    : Liste des coordonnees AD et Dec de l'objet
-#    But_Goto  : Widget du bouton Goto (optionnel)
-#    But_Match : Widget du bouton Match (optionnel)
+#    radecEquinox  : equinoxe des coordonnees
 # Return :
 #    0 si derniere boucle
 #    1 si nouvelle boucle est lancee
 #------------------------------------------------------------
-proc ::telescope::surveille_goto { radec0 } {
+proc ::telescope::surveille_goto { radec0 radecEquinox } {
    global audace
 
    if { $audace(telNo) != 0 } {
-      set radec1 [ tel$audace(telNo) radec coord ]
+      set radec1 [ tel$audace(telNo) radec coord -equinox $radecEquinox]
       afficheCoord
       set ra0 [ mc_angle2deg [ lindex $radec0 0 ] 360 ]
       set dec0 [ mc_angle2deg [ lindex $radec0 1 ] 90 ]
-      set ra1 [ mc_angle2deg [ lindex $radec1 0 ] 360 ]
+      set ra1 [ mc_angle2deg [ lindex $radec1 0 ] 360 ]s
       set dec1 [ mc_angle2deg [ lindex $radec1 1 ] 90 ]
       set sepangle [ mc_anglesep [ list $ra0 $dec0 $ra1 $dec1 ] ]
       if { [ lindex $sepangle 0 ] > 0.1 } {
-         after 1000 ::telescope::surveille_goto [ list $radec1 ]
+         after 1000 ::telescope::surveille_goto [ list $radec1 ] $radecEquinox
          return 1
       } else {
          #--- j'arrete la surveillance car le GOTO est termine
@@ -1012,13 +1011,13 @@ proc ::telescope::Boucle { } {
    global audace
 
    #--- Boucle tant que la monture n'est pas arretee
-   set radecB0 [ tel$audace(telNo) radec coord ]
+   set radecB0 [ tel$audace(telNo) radec coord -equinox J2000]
    after 300
-   set radecB1 [ tel$audace(telNo) radec coord ]
+   set radecB1 [ tel$audace(telNo) radec coord -equinox J2000]
    while { $radecB0 != $radecB1 } {
       set radecB0 $radecB1
       after 200
-      set radecB1 [ tel$audace(telNo) radec coord ]
+      set radecB1 [ tel$audace(telNo) radec coord -equinox J2000]
    }
 }
 
@@ -1040,7 +1039,7 @@ proc ::telescope::afficheCoord { } {
 
    if { [ ::tel::list ] != "" } {
       if { [ ::confTel::getPluginProperty hasCoordinates ] == "1" } {
-         set radec [ tel$audace(telNo) radec coord ]
+         set radec [ tel$audace(telNo) radec coord -equinox J2000 ]
          #--- Traitement des coordonnees
          if { $radec == " +" } {
             #--- Cas du cable AudeCom non connecte
@@ -1274,7 +1273,7 @@ proc ::telescope::moveTelescope { alphaDirection alphaDiff deltaDirection deltaD
    #--- je calcule le delai de rattrapage
    set alphaDelay    [expr int(1000.0 * ($alphaDiff / [lindex $guidingSpeed 0 ])) ]
    set deltaDelay    [expr int(1000.0 * ($deltaDiff / [lindex $guidingSpeed 1 ])) ]
-
+console::disp "alphaDelay=$alphaDelay deltaDelay=$deltaDelay\n "
    set private(tescopeIsMoving) 1
 
    if { [ ::confTel::getPluginProperty hasMotionWhile ] == "0" } {
@@ -1421,64 +1420,64 @@ proc ::telescope::apparent2catalogmean { ra dec date equinox } {
 #    hadt         : observed altitude altaz coordinate (degrees)
 #    azadt        : observed azimut altaz coordinate (degrees)
 #------------------------------------------------------------
-proc ::telescope::apparent2observed { listvdt { date now } { pressure 101325 } { temperature 290 } } {
-   #--- Position de l'observateur
-   set gpsPosition $::audace(posobs,observateur,gps)
-   #--- Extract angles from the listvd
-   set ravdt  [lindex $listvdt 0]
-   set decvdt [lindex $listvdt 1]
-   set Hvdt   [lindex $listvdt 2]
-   set hvdt   [lindex $listvdt 3]
-   set azvdt  [lindex $listvdt 4]
-   #--- Refraction correction
-   set azadt $azvdt
-   if {$hvdt>-1.} {
-      set refraction [mc_refraction $hvdt out2in $temperature $pressure]
-   } else {
-      set refraction 0.
-   }
-   #---
-   set hadt   [expr $hvdt+$refraction]
-   set res    [mc_altaz2radec $azvdt $hadt $gpsPosition $date]
-   set raadt  [lindex $res 0]
-   set decadt [lindex $res 1]
-   set res    [mc_altaz2hadec $azvdt $hadt $gpsPosition $date]
-   set Hadt   [lindex $res 0]
-   #--- Return
-   return [list $raadt $decadt $Hadt $hadt $azadt]
-}
+###proc ::telescope::apparent2observed { listvdt { date now } { pressure 101325 } { temperature 290 } } {
+###   #--- Position de l'observateur
+###   set gpsPosition $::audace(posobs,observateur,gps)
+###   #--- Extract angles from the listvd
+###   set ravdt  [lindex $listvdt 0]
+###   set decvdt [lindex $listvdt 1]
+###   set Hvdt   [lindex $listvdt 2]
+###   set hvdt   [lindex $listvdt 3]
+###   set azvdt  [lindex $listvdt 4]
+###   #--- Refraction correction
+###   set azadt $azvdt
+###   if {$hvdt>-1.} {
+###      set refraction [mc_refraction $hvdt out2in $temperature $pressure]
+###   } else {
+###      set refraction 0.
+###   }
+###   #---
+###   set hadt   [expr $hvdt+$refraction]
+###   set res    [mc_altaz2radec $azvdt $hadt $gpsPosition $date]
+###   set raadt  [lindex $res 0]
+###   set decadt [lindex $res 1]
+###   set res    [mc_altaz2hadec $azvdt $hadt $gpsPosition $date]
+###   set Hadt   [lindex $res 0]
+###   #--- Return
+###   return [list $raadt $decadt $Hadt $hadt $azadt]
+###}
 
-#------------------------------------------------------------
-# coord_eph_vrai
-#    Transforme les coordonnees equatoriales des ephemerides pour une equinoxe donnee en coordonnees
-#    vraies en prenant en compte les corrections d'aberration, de precession et de nutation
-#
-# Parametres :
-#    ad_eph,dec_eph : coordonnees des ephemerides
-#    equinox        : equinox
-#    date           : date
-# Return
-#   ad_vrai,dec_vrai : coordinates J2000.0 (degrees)
-#------------------------------------------------------------
-proc ::telescope::coord_eph_vrai { ad_eph dec_eph equinox date } {
-   #--- Position de l'observateur
-   set gpsPosition $::audace(posobs,observateur,gps)
-   #--- Correction de l'aberration annuelle
-   set radec [ mc_aberrationradec annual [ list $ad_eph $dec_eph ] $date ]
-   #--- Correction de la precession
-   set radec [ mc_precessradec $radec $equinox $date ]
-   #--- Correction de la nutation
-   set radec [ mc_nutationradec $radec $date ]
-   #--- Correction de l'aberration diurne
-   set radec [ mc_aberrationradec diurnal $radec $date $gpsPosition ]
-   #--- Calcul de l'angle horaire vraie
-   set ad_vrai  [ lindex $radec 0 ]
-   set ad_vrai  [ mc_angle2hms $ad_vrai 360 nozero 1 auto string ]
-   set dec_vrai [ lindex $radec 1 ]
-   set dec_vrai [ mc_angle2dms $dec_vrai 90 nozero 0 + string ]
-   #--- Return
-   return [ list $ad_vrai $dec_vrai ]
-}
+####------------------------------------------------------------
+#### coord_eph_vrai
+####    Transforme les coordonnees equatoriales des ephemerides pour une equinoxe donnee en coordonnees
+####    vraies en prenant en compte les corrections d'aberration, de precession et de nutation
+####
+#### Parametres :
+####    ad_eph,dec_eph : coordonnees des ephemerides
+####    equinox        : equinox
+####    date           : date
+#### Return
+####   ad_vrai,dec_vrai : coordinates J2000.0 (degrees)
+####------------------------------------------------------------
+###proc ::telescope::coord_eph_vrai { ad_eph dec_eph equinox date } {
+###   #--- Position de l'observateur
+###   set gpsPosition $::audace(posobs,observateur,gps)
+###   #--- Correction de l'aberration annuelle
+###   set radec [ mc_aberrationradec annual [ list $ad_eph $dec_eph ] $date ]
+###   #--- Correction de la precession
+###   set radec [ mc_precessradec $radec $equinox $date ]
+###   #--- Correction de la nutation
+###   set radec [ mc_nutationradec $radec $date ]
+###   #--- Correction de l'aberration diurne
+###   set radec [ mc_aberrationradec diurnal $radec $date $gpsPosition ]
+###   #--- Calcul de l'angle horaire vraie
+###   set ad_vrai  [ lindex $radec 0 ]
+###   set ad_vrai  [ mc_angle2hms $ad_vrai 360 nozero 1 auto string ]
+###   set dec_vrai [ lindex $radec 1 ]
+###   set dec_vrai [ mc_angle2dms $dec_vrai 90 nozero 0 + string ]
+###   #--- Return
+###   return [ list $ad_vrai $dec_vrai ]
+###}
 
 ::telescope::init
 
