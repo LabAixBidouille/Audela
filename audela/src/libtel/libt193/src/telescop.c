@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-// @version  $Id: telescop.c,v 1.29 2010-05-22 12:04:50 michelpujol Exp $
+// @version  $Id: telescop.c,v 1.30 2010-07-11 12:32:57 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -2121,84 +2121,49 @@ void mytel_processNotification(struct telprop *tel, char * notification) {
                if ( returnCode == 0) {
                   char ligne[1024];      
                   int tclResult; 
+                  char tu[20];
+                  char radec[30];
+
                   // je memorise le code du mouvement
                   tel->radecIsMoving = moveCode;
 
-                  // j'applique le modele de mointage
-                  if (tel->radec_model_enabled == 1 ) {
-                     char tu[20];
-                     char radec[30];
-                     // j'applique le modele de pointage avec la fonction mc_tel2cat de LIBMC
-                     // je recupere la date courante TU
-                     strcpy(ligne, "clock format [ clock seconds ] -format %Y-%m-%dT%H:%M:%S -timezone :UTC "); 
-                     tclResult = Tcl_Eval(tel->interp,ligne);
-                     if ( tclResult == TCL_OK) {
-                        strcpy(tu, tel->interp->result);
-                     } 
-                     if ( tclResult == TCL_OK) {
-                        // je convertis en coordonnes catalogue
-                        // usage: mc_tel2cat {12h 36d} EQUATORIAL { dateTu } {GPS 5 E 43 1230} 101325 290 { symbols } { values }
-                        sprintf(ligne, "mc_tel2cat { %s %s  } EQUATORIAL { %s } { %s } %d %d { %s } { %s } ", 
+                  // je recupere la date courante TU
+                  strcpy(ligne, "clock format [ clock seconds ] -format %Y-%m-%dT%H:%M:%S -timezone :UTC "); 
+                  tclResult = Tcl_Eval(tel->interp,ligne);
+                  if ( tclResult == TCL_OK) {
+                     strcpy(tu, tel->interp->result);
+                  } 
+                  if ( tclResult == TCL_OK) {
+                     // j'applique le modele de pointage avec la fonction mc_tel2cat de LIBMC et je convertis en coordonnes J2000
+                     // usage: mc_tel2cat {12h 36d} EQUATORIAL { dateTu } {GPS 5 E 43 1230} 101325 290 { symbols } { values }
+                     if (tel->radec_model_enabled == 1 ) {
+                        sprintf(ligne, "mc_tel2cat { %s %s  } EQUATORIAL { %s } { %s } %d %d { %s } { %s }", 
                            raBrut,decBrut, tu, tel->homePosition, 
                            tel->radec_model_pressure, tel->radec_model_temperature, 
                            tel->radec_model_symbols, tel->radec_model_coefficients);
-                        tclResult = Tcl_Eval(tel->interp,ligne);
-                        strcpy(radec,tel->interp->result);
-                        // je convertis les angles en HMS et DMS
-                        sprintf(ligne,"mc_angle2hms [lindex {%s} 0] 360 zero 2 auto string",radec);
-                        tclResult = Tcl_Eval(tel->interp,ligne);
-                        if ( tclResult == TCL_ERROR) {
-                           mytel_sendNotificationError(tel, 12, tel->interp->result);
-                        } else {
-                           strcpy(ra,tel->interp->result);
-                           ra[8]  = '.';
-                           ra[11] = 's';
-                           ra[12] = 0;
-                        } 
-                        sprintf(ligne,"mc_angle2dms [lindex {%s} 1] 90 zero 2 + string",radec); 
-                        tclResult = Tcl_Eval(tel->interp,ligne);
-                        if ( tclResult == TCL_ERROR) {
-                           mytel_sendNotificationError(tel, 13, tel->interp->result);
-                        } else {
-                           strcpy(dec,tel->interp->result);
-                           dec[9]  = '.';
-                           dec[12] = 's';
-                           dec[13] = '\0';
-                        } 
-                        
-                     }
-                  } else if ( strcmp(tel->model_tel2cat,"") != 0 ) {
-                     // j'applique le modele de pointage avec la procedure modpoi_tel2cat du TCL
-                     // ========================================================================
-                     sprintf(ligne,"set libtel(radec) [%s {%s %s}]",tel->model_tel2cat,raBrut,decBrut);
-                     tclResult = Tcl_Eval(tel->interp,ligne);
-                     if ( tclResult == TCL_OK) {
-                        char **listArgv;
-                        int listArgc;
-                        if(Tcl_SplitList(tel->interp,tel->interp->result,&listArgc,&listArgv)!=TCL_OK) {
-                           sprintf(ligne,"Angle struct not valid: must be {angle_ra angle_dec}");
-                           mytel_sendNotificationError(tel, BACKCMD_CAT2TEL_ERROR, ligne);
-                           tclResult = TCL_ERROR;
-                        } else if(listArgc!=2) {
-                           sprintf(ligne,"Angle struct not valid: must be {angle_ra angle_dec}");
-                           mytel_sendNotificationError(tel, BACKCMD_CAT2TEL_ERROR, ligne);
-                           tclResult = TCL_ERROR;
-                        }
-                        if (tclResult == TCL_OK) {
-                           strcpy(ra, listArgv[0]);
-                           strcpy(dec, listArgv[1]);
-                           tclResult = TCL_OK;
-                        }
                      } else {
-                        mytel_sendNotificationError(tel, BACKCMD_CAT2TEL_ERROR, tel->interp->result);
+                        sprintf(ligne, "mc_tel2cat { %s %s  } EQUATORIAL { %s } { %s } %d %d", 
+                           raBrut,decBrut, tu, tel->homePosition, 
+                           tel->radec_model_pressure, tel->radec_model_temperature);
                      }
-                  } else {
-                     // je n'applique pas de modele de pointage
-                     // =======================================
-                     strcpy(ra,raBrut);
-                     strcpy(dec,decBrut);
-                     tclResult = TCL_OK;
-                  }
+                     tclResult = Tcl_Eval(tel->interp,ligne);
+                     strcpy(radec,tel->interp->result);
+                     // je convertis les angles en HMS et DMS
+                     sprintf(ligne,"mc_angle2hms [lindex {%s} 0] 360 zero 0 auto string",radec);
+                     tclResult = Tcl_Eval(tel->interp,ligne);
+                     if ( tclResult == TCL_ERROR) {
+                        mytel_sendNotificationError(tel, 12, tel->interp->result);
+                     } else {
+                        strcpy(ra,tel->interp->result);                           
+                     } 
+                     sprintf(ligne,"mc_angle2dms [lindex {%s} 1] 90 zero 0 + string",radec); 
+                     tclResult = Tcl_Eval(tel->interp,ligne);
+                     if ( tclResult == TCL_ERROR) {
+                        mytel_sendNotificationError(tel, 13, tel->interp->result);
+                     } else {
+                        strcpy(dec,tel->interp->result);
+                     }                      
+                  }                  
                   
                   // j'affiche les coordonnees 
                   if (tclResult == TCL_OK) {
