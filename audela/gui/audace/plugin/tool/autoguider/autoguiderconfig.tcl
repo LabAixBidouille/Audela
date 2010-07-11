@@ -2,7 +2,7 @@
 # Fichier : autoguiderconfig.tcl
 # Description : Fenetre de configuration de l'autoguidage
 # Auteur : Michel PUJOL
-# Mise à jour $Id: autoguiderconfig.tcl,v 1.19 2010-05-23 16:22:47 robertdelmas Exp $
+# Mise à jour $Id: autoguiderconfig.tcl,v 1.20 2010-07-11 12:45:50 michelpujol Exp $
 #
 
 ################################################################
@@ -65,6 +65,7 @@ proc ::autoguider::config::apply { visuNo } {
    set conf(autoguider,deltaReverse)      $widget($visuNo,deltaReverse)
    set conf(autoguider,angle)             $widget($visuNo,angle)
    set conf(autoguider,targetBoxSize)     $widget($visuNo,targetBoxSize)
+   set conf(autoguider,detectionThreshold) $widget($visuNo,detectionThreshold)
    set conf(autoguider,cumulEnabled)      $widget($visuNo,cumulEnabled)
    set conf(autoguider,cumulNb)           $widget($visuNo,cumulNb)
    set conf(autoguider,darkEnabled)       $widget($visuNo,darkEnabled)
@@ -88,6 +89,7 @@ proc ::autoguider::config::apply { visuNo } {
    ::camera::setParam [::confVisu::getCamItem $visuNo] "deltaReverse" $::conf(autoguider,deltaReverse)
    ::camera::setParam [::confVisu::getCamItem $visuNo] "angle" $::conf(autoguider,angle)
    ::camera::setParam [::confVisu::getCamItem $visuNo] "targetBoxSize" $::conf(autoguider,targetBoxSize)
+   ::camera::setParam [::confVisu::getCamItem $visuNo] "detectionThreshold" $::conf(autoguider,detectionThreshold)
    ::camera::setParam [::confVisu::getCamItem $visuNo] "slitWidth"   $::conf(autoguider,slitWidth)
    ::camera::setParam [::confVisu::getCamItem $visuNo] "slitRatio"   $::conf(autoguider,slitRatio)
 
@@ -173,6 +175,7 @@ proc ::autoguider::config::confToWidget { visuNo } {
    set widget($visuNo,angle)             $conf(autoguider,angle)
    set widget($visuNo,declinaisonEnabled) $conf(autoguider,declinaisonEnabled)
    set widget($visuNo,targetBoxSize)     $conf(autoguider,targetBoxSize)
+   set widget($visuNo,detectionThreshold) $conf(autoguider,detectionThreshold)
    set widget($visuNo,cumulEnabled)      $conf(autoguider,cumulEnabled)
    set widget($visuNo,cumulNb)           $conf(autoguider,cumulNb)
    set widget($visuNo,darkEnabled)       $conf(autoguider,darkEnabled)
@@ -212,20 +215,26 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
          -command "::autoguider::config::setDetection $visuNo" \
          -variable ::autoguider::config::widget($visuNo,detection)
       grid $frm.detection.slit -in [$frm.detection getframe]  -row 0 -column 1 -columnspan 1 -sticky ewns
+
       LabelEntry $frm.detection.targetBox -label "$caption(autoguider,targetBoxSize) (pixels)" \
          -labeljustify left -labelwidth 22 -width 3 -justify right \
          -textvariable ::autoguider::config::widget($visuNo,targetBoxSize)
       grid $frm.detection.targetBox -in [$frm.detection getframe] -row 1 -column 0 -columnspan 2 -sticky ewns
+      LabelEntry $frm.detection.detectionThreshold -label "$caption(autoguider,detectionThreshold) (pixels)" \
+         -labeljustify left -labelwidth 22 -width 3 -justify right \
+         -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s 1 999} \
+         -textvariable ::autoguider::config::widget($visuNo,detectionThreshold)
+      grid $frm.detection.detectionThreshold -in [$frm.detection getframe] -row 2 -column 0 -columnspan 2 -sticky ewns
       LabelEntry $frm.detection.slitWidth -label "$caption(autoguider,slitWidth)" \
          -labeljustify left -labelwidth 22 -width 3 -justify right \
          -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s 1 999} \
          -textvariable ::autoguider::config::widget($visuNo,slitWidth)
-      grid $frm.detection.slitWidth -in [$frm.detection getframe] -row 2 -column 0 -columnspan 2 -sticky ewns
+      grid $frm.detection.slitWidth -in [$frm.detection getframe] -row 3 -column 0 -columnspan 2 -sticky ewns
       LabelEntry $frm.detection.slitRatio -label "$caption(autoguider,slitRatio)" \
          -labeljustify left -labelwidth 22 -width 5 -justify right \
          -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s 1 9999} \
          -textvariable ::autoguider::config::widget($visuNo,slitRatio)
-      grid $frm.detection.slitRatio -in [$frm.detection getframe] -row 3 -column 0 -columnspan 2 -sticky ewns
+      grid $frm.detection.slitRatio -in [$frm.detection getframe] -row 4 -column 0 -columnspan 2 -sticky ewns
    grid $frm.detection -row 0 -column 0 -columnspan 1 -sticky ewns
 
    #--- Frame apprentissage

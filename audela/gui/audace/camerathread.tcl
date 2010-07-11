@@ -3,7 +3,7 @@
 # Description : procedures d'acquisition et de traitement avec
 #         plusieurs cameras simultanees exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise à jour $Id: camerathread.tcl,v 1.25 2010-07-04 19:37:12 michelpujol Exp $
+# Mise à jour $Id: camerathread.tcl,v 1.26 2010-07-11 12:44:27 michelpujol Exp $
 #
 
 namespace eval ::camerathread {
@@ -19,6 +19,8 @@ proc ::camerathread::init { camItem camNo mainThreadNo} {
    set private(bufNo)         [cam$camNo buf]
    set private(acquisitionState)  0
    set private(test)          0
+
+   set private(detectionThreshold) 10
 
    set private(asynchroneParameter) ""
 }
@@ -114,6 +116,7 @@ proc ::camerathread::centerBrightestStar { exptime originCoord targetCoord angle
    set private(seuilx)        $seuilx
    set private(seuily)        $seuily
    set private(slitWidth)     0
+   set private(slitRatio)     0
    set private(intervalle)    0.3
    set private(declinaisonEnabled) 1
 
@@ -133,7 +136,7 @@ proc ::camerathread::centerBrightestStar { exptime originCoord targetCoord angle
 }
 
 #------------------------------------------------------------
-proc ::camerathread::centerRadec { exptime originCoord radec angle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse seuilx seuily foclen detection catalogue kappa threshin fwhm radius threshold maxMagnitude delta epsilon catalogueName cataloguePath } {
+proc ::camerathread::centerRadec { exptime originCoord radec angle targetBoxSize  mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse seuilx seuily foclen detection catalogue kappa threshin fwhm radius threshold maxMagnitude delta epsilon catalogueName cataloguePath } {
    variable private
 
    if { $private(acquisitionState) == 1 } {
@@ -318,7 +321,6 @@ proc ::camerathread::processAcquisitionLoop { } {
       set istar ""
       set cstar ""
       set astar ""
-      set pixelMinCount 50
       #--- je calcule l'ecart dx,dy entre la cible et l'origine
       if { ($private(mode) == "guide" || $private(mode) == "center")  } {
          if { $private(detection) == "PSF" } {
@@ -330,7 +332,7 @@ proc ::camerathread::processAcquisitionLoop { } {
              set x2 [expr int($x) + $private(targetBoxSize)]
              set y1 [expr int($y) - $private(targetBoxSize)]
              set y2 [expr int($y) + $private(targetBoxSize)]
-             set centro [buf$bufNo slitcentro "[list $x1 $y1 $x2 $y2]" $starDetectionMode $pixelMinCount $private(slitWidth) $private(slitRatio)]
+             set centro [buf$bufNo slitcentro "[list $x1 $y1 $x2 $y2]" $starDetectionMode $private(detectionThreshold) $private(slitWidth) $private(slitRatio)]
              set starStatus [lindex $centro 0]
              set starX      [lindex $centro 1]
              set starY      [lindex $centro 2]
@@ -355,7 +357,7 @@ proc ::camerathread::processAcquisitionLoop { } {
              set x2 [expr int($x) + $private(targetBoxSize)]
              set y1 [expr int($y) - $private(targetBoxSize)]
              set y2 [expr int($y) + $private(targetBoxSize)]
-             set centro [buf$bufNo slitcentro "[list $x1 $y1 $x2 $y2]" $starDetectionMode $pixelMinCount $private(slitWidth) $private(slitRatio)]
+             set centro [buf$bufNo slitcentro "[list $x1 $y1 $x2 $y2]" $starDetectionMode $private(detectionThreshold) $private(slitWidth) $private(slitRatio)]
              set starStatus [lindex $centro 0]
              set starX      [lindex $centro 1]
              set starY      [lindex $centro 2]

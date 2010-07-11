@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.35 2009-12-09 16:49:16 robertdelmas Exp $
+# Mise a jour $Id: autoguider.cap,v 1.36 2010-07-11 12:45:50 michelpujol Exp $
 #
 
 #=========================================================================
@@ -50,6 +50,7 @@ set caption(autoguider,stop)                     "STOP"
 set caption(autoguider,running)                  "Learning in progress"
 set caption(autoguider,delay)                    "Delay (s)"
 set caption(autoguider,targetBoxSize)            "Area Size"
+set caption(autoguider,detectionThreshold)       "Detection Threshold"
 set caption(autoguider,AD)                       "Right Ascension"
 set caption(autoguider,declinaison)              "Declination"
 set caption(autoguider,aller_vers)               "Go to"
@@ -71,6 +72,8 @@ set caption(autoguider,searchThreshin)           "Min. Luminosity (1)"
 set caption(autoguider,searchFwhm)               "Min. Fwhm"
 set caption(autoguider,searchRadius)             "Search Radius (pixel)"
 set caption(autoguider,searchThreshold)          "Min. Luminosity (2)"
+
+set caption(autoguider,noSignal)                 "Signal is under detection threshold"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -114,6 +117,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,running)               "Apprentissage en cours"
    set caption(autoguider,delay)                 "Délai (s)"
    set caption(autoguider,targetBoxSize)         "Taille de la zone"
+   set caption(autoguider,detectionThreshold)    "Seuil de détection"
    set caption(autoguider,AD)                    "Ascension Droite"
    set caption(autoguider,declinaison)           "Déclinaison"
    set caption(autoguider,aller_vers)            "Aller vers"
@@ -135,6 +139,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,searchFwhm)            "Fwhm mini"
    set caption(autoguider,searchRadius)          "Rayon de recherche (pixel)"
    set caption(autoguider,searchThreshold)       "Intensité mini (2)"
+
+   set caption(autoguider,noSignal)              "L'étoile est en dessous du seuil de détection"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -178,6 +184,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,running)               "Apprendimento in corso"
    set caption(autoguider,delay)                 "Intervallo (s)"
    set caption(autoguider,targetBoxSize)         "Dimensioni della zona"
+   set caption(autoguider,detectionThreshold)    "#Detection Threshold"
    set caption(autoguider,AD)                    "Ascensione Retta"
    set caption(autoguider,declinaison)           "Declinazione"
    set caption(autoguider,aller_vers)            "Andare verso"
@@ -242,6 +249,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,running)               "Aprendizaje en proceso"
    set caption(autoguider,delay)                 "Retraso (s)"
    set caption(autoguider,targetBoxSize)         "Tamaño zona"
+   set caption(autoguider,detectionThreshold)    "#Detection Threshold"
    set caption(autoguider,AD)                    "Ascensión Recta"
    set caption(autoguider,declinaison)           "Declinación"
    set caption(autoguider,aller_vers)            "Ir a"
@@ -306,6 +314,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,running)               "Lernen laufend"
    set caption(autoguider,delay)                 "Zeitraum (s)"
    set caption(autoguider,targetBoxSize)         "Größe der Zone"
+   set caption(autoguider,detectionThreshold)    "#Detection Threshold"
    set caption(autoguider,AD)                    "Rektaszension"
    set caption(autoguider,declinaison)           "Deklination"
    set caption(autoguider,aller_vers)            "zu gehen"
@@ -370,6 +379,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,running)               "Aprendizagem em curso"
    set caption(autoguider,delay)                 "Atraso (s)"
    set caption(autoguider,targetBoxSize)         "Tamanho da zona"
+   set caption(autoguider,detectionThreshold)    "#Detection Threshold"
    set caption(autoguider,AD)                    "Ascenção Recta"
    set caption(autoguider,declinaison)           "Declinação"
    set caption(autoguider,aller_vers)            "Ir para"
@@ -434,6 +444,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,running)               "Learning in progress"
    set caption(autoguider,delay)                 "Delay (s)"
    set caption(autoguider,targetBoxSize)         "Area Size"
+   set caption(autoguider,detectionThreshold)    "Detection Threshold"
    set caption(autoguider,AD)                    "Right Ascension"
    set caption(autoguider,declinaison)           "Declination"
    set caption(autoguider,aller_vers)            "Go to"
@@ -498,6 +509,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,running)               "Learning in progress"
    set caption(autoguider,delay)                 "Delay (s)"
    set caption(autoguider,targetBoxSize)         "Area Size"
+   set caption(autoguider,detectionThreshold)    "Detection Threshold"
    set caption(autoguider,AD)                    "Right Ascension"
    set caption(autoguider,declinaison)           "Declination"
    set caption(autoguider,aller_vers)            "Go to"
@@ -562,6 +574,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,running)               "Learning in progress"
    set caption(autoguider,delay)                 "Delay (s)"
    set caption(autoguider,targetBoxSize)         "Area Size"
+   set caption(autoguider,detectionThreshold)    "Detection Threshold"
    set caption(autoguider,AD)                    "Right Ascension"
    set caption(autoguider,declinaison)           "Declination"
    set caption(autoguider,aller_vers)            "Go to"
