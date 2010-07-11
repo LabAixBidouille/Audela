@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise à jour $Id: conftel.tcl,v 1.65 2010-07-01 17:05:17 robertdelmas Exp $
+# Mise à jour $Id: conftel.tcl,v 1.66 2010-07-11 12:43:12 michelpujol Exp $
 #
 
 namespace eval ::confTel {
@@ -680,7 +680,7 @@ proc ::confTel::widgetToConf { } {
 proc ::confTel::getPluginProperty { propertyName } {
    variable private
 
-   # alignmentMode           Retourne le mode de fonctionnement de la monture (ALTAZ ou POLAR)
+   # alignmentMode           Retourne le mode de fonctionnement de la monture (ALTAZ ou EQUATORIAL)
    # backlash                Retourne la possibilite de faire un rattrapage des jeux
    # guidingSpeed            Retourne les vitesses de guidage en arcseconde de degre par seconde de temps
    # hasCoordinates          Retourne la possibilite d'afficher les coordonnees
@@ -701,7 +701,7 @@ proc ::confTel::getPluginProperty { propertyName } {
    #--- je recherche la valeur par defaut de la propriete
    #--- si la valeur par defaut de la propriete n'existe pas, je retourne une chaine vide
    switch $propertyName {
-      alignmentMode           { set defaultResult POLAR }
+      alignmentMode           { set defaultResult EQUATORIAL }
       backlash                { set defaultResult 0 }
       guidingSpeed            { set defaultResult [list 1.0 1.0] }
       hasCoordinates          { set defaultResult 1 }
