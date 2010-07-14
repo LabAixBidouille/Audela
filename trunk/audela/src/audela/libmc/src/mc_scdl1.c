@@ -2334,7 +2334,7 @@ int mc_scheduler_objectlocal1(double longmpc, double rhocosphip, double rhosinph
 	mc_OBJECTLOCAL *objectlocal=NULL;
 	double latrad;
 	double *luminance_ciel_bleus=NULL; // -90 -89.9 -89.8 ... +89.9 +90.0
-	double maxelev=0,da,elev,drangesec,const_jd2;
+	double maxelev=0,da,elev,drangeindex;
 	int started;
 
 	// --- cd/m2
@@ -2399,46 +2399,51 @@ int mc_scheduler_objectlocal1(double longmpc, double rhocosphip, double rhosinph
 
 	if (objectlocalranges!=NULL) {
 		// --- remplissage des ranges
-		const_jd2=objectdescr->const_jd2+1./njdm+2./86400;
+		drangeindex=(objectdescr->const_jd2-objectdescr->const_jd1)*njdm;
 		for (kjd=1,kr=0,started=0;(kjd<=njdm)||(kr==NB_OBJECTLOCALRANGES_MAX-1);kjd++) {
 			elev=dummy3s[kjd];
-			drangesec=(objectdescr->const_jd2-objectdescr->const_jd1)*njdm;
-			if ((dummy1s[kjd]>=objectdescr->const_jd1)&&(started==0)) {
-				elev+=0;
-			}
-			if ((dummy8s[kjd]>=objectdescr->const_skylightlevel)&&(dummy1s[kjd]>=objectdescr->const_jd1)&&(dummy1s[kjd]<=const_jd2)&&(started==0)) {
-				// --- range start
-				maxelev=elev;
-				if (drangesec<=1) {
+			if (drangeindex<=2) {
+				if ((dummy8s[kjd]>=objectdescr->const_skylightlevel)&&(dummy1s[kjd]>=objectdescr->const_jd1)&&(started==0)) {
+					// --- range start
+					maxelev=elev;
 					objectlocalranges->jd1[kr]=objectdescr->const_jd1;
-					objectlocalranges->jd2[kr]=objectdescr->const_jd1;
+					objectlocalranges->jd2[kr]=objectdescr->const_jd2;
 					objectlocalranges->jdelevmax[kr]=objectdescr->const_jd1;
-				} else {
+					objectlocalranges->elev1[kr]=maxelev;
+					objectlocalranges->elev2[kr]=maxelev;
+					objectlocalranges->elevmax[kr]=maxelev;
+					kr++;
+					started=1;
+				}
+			} else {
+				if ((dummy8s[kjd]>=objectdescr->const_skylightlevel)&&(dummy1s[kjd]>=objectdescr->const_jd1)&&(dummy1s[kjd]<=objectdescr->const_jd2)&&(started==0)) {
+					// --- range start
+					maxelev=elev;
 					objectlocalranges->jd1[kr]=dummy1s[kjd];
 					objectlocalranges->jd2[kr]=dummy1s[kjd];
 					objectlocalranges->jdelevmax[kr]=dummy1s[kjd];
-				}
-				objectlocalranges->elev1[kr]=maxelev;
-				objectlocalranges->elev2[kr]=maxelev;
-				objectlocalranges->elevmax[kr]=maxelev;
-				started=1;
-			} else if ((dummy8s[kjd]>=objectdescr->const_skylightlevel)&&(started==1)) {
-				// --- range in
-				if (dummy3s[kjd]>maxelev) {
-					maxelev=elev;
-					objectlocalranges->jdelevmax[kr]=dummy1s[kjd];
+					objectlocalranges->elev1[kr]=maxelev;
+					objectlocalranges->elev2[kr]=maxelev;
 					objectlocalranges->elevmax[kr]=maxelev;
+					started=1;
+				} else if ((dummy8s[kjd]>=objectdescr->const_skylightlevel)&&(started==1)) {
+					// --- range in
+					if (dummy3s[kjd]>maxelev) {
+						maxelev=elev;
+						objectlocalranges->jdelevmax[kr]=dummy1s[kjd];
+						objectlocalranges->elevmax[kr]=maxelev;
+					}
 				}
-			}
-			if (((dummy8s[kjd]<objectdescr->const_skylightlevel)||(dummy1s[kjd-1]>=const_jd2))&&(started==1)) {
-				// --- range end
-				objectlocalranges->jd2[kr]=dummy1s[kjd-1];
-				objectlocalranges->elev2[kr]=dummy3s[kjd-1];
-				if (objectlocalranges->jdelevmax[kr]>objectlocalranges->jd2[kr]) {
-					objectlocalranges->jdelevmax[kr]=objectlocalranges->jd1[kr];
+				if (((dummy8s[kjd]<objectdescr->const_skylightlevel)||(dummy1s[kjd-1]>=objectdescr->const_jd2))&&(started==1)) {
+					// --- range end
+					objectlocalranges->jd2[kr]=dummy1s[kjd-1];
+					objectlocalranges->elev2[kr]=dummy3s[kjd-1];
+					if (objectlocalranges->jdelevmax[kr]>objectlocalranges->jd2[kr]) {
+						objectlocalranges->jdelevmax[kr]=objectlocalranges->jd1[kr];
+					}
+					kr++;
+					started=0;
 				}
-				kr++;
-				started=0;
 			}
 		}
 		objectlocalranges->nbrange=kr;
@@ -2596,7 +2601,7 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 	double jd_loc,ha_loc,elev_loc,az_loc,dec_loc,moon_dist_loc,sun_dist_loc,brillance_totale_loc,ra_loc;
 	double latitude,altitude,latrad,j1,j2,jdseq_prev0,jdseq_next0,dd0,durationtot;
 	double *jdsets=NULL;
-	int *kjdsets=NULL,user,user0,prio_order;
+	int *kjdsets=NULL,user,user0,prio_order,k4;
 	FILE *fid=NULL,*fidlog=NULL;
 	char s[300];
 
@@ -2681,9 +2686,6 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 			}
 		}
 		if (compute_mode==1) {
-			if (ko==136) {
-				ko+=0;
-			}
 			err=mc_scheduler_objectlocal1(longmpc,rhocosphip,rhosinphip,&objectdescr[ko],njd,sunmoon,horizon_altaz,horizon_hadec,NULL,&objectlocalranges[nobjloc]);
 		}
 		if (err>0) {
@@ -2856,7 +2858,9 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 	npl0=npl=0;
 
 	if (fidlog!=NULL) {
+		fprintf(fidlog,"====================================================================\n");
 		fprintf(fidlog,"=== Enter in the great loop for %d sequences potentially observable:\n",nobjloc);
+		fprintf(fidlog,"====================================================================\n");
 	}
 	clock0 = clock();
 	// --- planification in-quotas
@@ -2905,7 +2909,9 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 			}
 		}
 		if (fidlog!=NULL) {
-			fprintf(fidlog,"--- mode_quota=%d current_priority=%f np=%d\n",mode_quota,current_priority,np);
+			fprintf(fidlog," ====================================================================\n");
+			fprintf(fidlog," --- mode_quota=%d current_priority=%f np=%d (=nombre de sequences concurrentes)\n",mode_quota,current_priority,np);
+			fprintf(fidlog," ====================================================================\n");
 		}
 		// --- on place les kp=[0..np] sequences de meme priorite dans la planif
 		for (kp=0;kp<=np;kp++) {
@@ -2928,6 +2934,9 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 					break;
 				}
 			}
+			if (fidlog!=NULL) {
+				fprintf(fidlog,"  ---- BEGIN SEQUENCE %4d/%4d user=%3d prio_order=%d kd=%d (kd=indice de sequence)\n",kp,np,ku,prio_order,kd);
+			}
 			// --- si le user a dépasse son quota alors on passe a la sequence suivante
 			if ((total_duration_sequenced>0)&&(mode_quota==1)) {
 				if (users[ku].percent_quota_used>users[ku].percent_quota_authorized) {
@@ -2937,7 +2946,8 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 						strncpy(objectdescr[kd].comments,s,OBJECTDESCR_MAXCOM-1);
 					}
 					if (fidlog!=NULL) {
-						fprintf(fidlog," kd=%4d (%4d/%4d:%3d). prio_order=%d. Over_quota : %s\n",kd,kp,np,ku,prio_order,s);
+						fprintf(fidlog,"   --- kd=%4d (seq=%4d/%4d user=%3d). prio_order=%d. Over_quota : %s PASSE A LA SEQUENCE SUIVANTE \n",kd,kp,np,ku,prio_order,s);
+						fprintf(fidlog,"  ---- END SEQUENCE %4d/%4d\n",kp,np);
 					}
 					continue;
 				}
@@ -2949,7 +2959,8 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 			angle=fabs(dec1-dec2);
 			d2=angle/objectdescr[kd].axe_slew2;
 			d12b=(d1>d2)?d1:d2;
-			duration+=d12b;
+			durationtot=duration+d12b;
+			fprintf(fidlog,"   --- duration=%f d12b=%f durationtot=%f\n",duration,d12b,durationtot);
 			// --- initialize the flagobs vector with ever known sequence constraints
 			if (compute_mode==0) {
 				for (kjd=0;kjd<njd;kjd++) {
@@ -2960,17 +2971,22 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 				for (kjd=0;kjd<njd;kjd++) {
 					objectlocal0[kjd].flagobs=0;
 				}
+				// --- (STEP_4)
 				for (kr=0;kr<objectlocalranges[kk].nbrange;kr++) {
-					// --- add a delay if the jd1-jd2 constraint is < than the duration ! 
-					if ((objectlocalranges[kk].jd2[kr]-objectlocalranges[kk].jd1[kr])<(duration/86400.)) {
-						objectlocalranges[kk].jd2[kr]=objectlocalranges[kk].jd2[kr]+duration/86400.-(objectlocalranges[kk].jd2[kr]-objectlocalranges[kk].jd1[kr]);
+					k1=(int)floor((objectlocalranges[kk].jd1[kr]-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)/djd);
+					if (k1<0) {
+						k1=0;
 					}
-				}
-				for (kr=0;kr<objectlocalranges[kk].nbrange;kr++) {
-					k1=(int)((objectlocalranges[kk].jd1[kr]-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)/djd);
-					k2=(int)((objectlocalranges[kk].jd2[kr]-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)/djd);
+					k2=(int)ceil((objectlocalranges[kk].jd2[kr]-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)/djd);
+					if (k2>=njd) {
+						k2=njd-1;
+					}
 					for (kjd=k1;kjd<=k2;kjd++) {
 						objectlocal0[kjd].flagobs=1;
+					}
+					if (fidlog!=NULL) {
+						fprintf(fidlog,"   --- STEP_4 =1 kr=%d j1=%f k1=%d\n",kr,objectlocalranges[kk].jd1[kr],k1);
+						fprintf(fidlog,"   --- STEP_4 =1 kr=%d j2=%f k2=%d\n",kr,objectlocalranges[kk].jd1[kr],k2);
 					}
 				}
 			}
@@ -2985,30 +3001,36 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 			//  <objectdescr[].delay_instrum+objectdescr[].delay_exposures>
 			// planis[0][].jd_acq_end=jd2;
 			//
-			// --- switch to zero the flagobs to take account for the sequence duration
-			for (kjd=njd;kjd>0;kjd--) {
-				if ( (kjd==njd) || ((objectlocal0[kjd].flagobs==0)&&(objectlocal0[kjd-1].flagobs==1)) ) {
-					k1=kjd-1;
-					if (k1<0) { k1=0; }
-					k2=k1-(int)(duration/86400./djd);
-					if (k2<0) { k2=0; }
-					for (k=k1;k>=k2;k--) {
-						objectlocal0[k].flagobs=0;
-					}
-					kjd=k2;
-				}
+			// --- switch to zero the flagobs to take account for the sequence duration (STEP_5)
+			//     Now, only the end of the night is concerned because STEP_4 put 1 only for the start range jd1.
+			k2=njd-1;
+			k1=k2-(int)(duration/86400./djd);
+			if (k1<0) { k1=0; }
+			if (fidlog!=NULL) {
+				fprintf(fidlog,"   --- STEP_5a =0 k1=%d k2=%d\n",k1,k2);
+			}
+			for (k=k1;k<=k2;k++) {
+				objectlocal0[k].flagobs=0;
 			}
 			// --- switch to zero the flagobs to take account for sequences already planified
 			for (k=0;k<npl;k++) {
-				k1=(int)floor((planis[0][k].jd_slew_start_without_slew-duration/86400.-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd);
+				k1=(int)ceil((planis[0][k].jd_slew_start_without_slew-duration/86400.-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd);
 				if (k1<0) { k1=0; }
-				k2=(int)ceil((planis[0][k].jd_acq_end-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd);
+				if (k1>=njd) { k1=njd-1; }
+				k2=(int)floor((planis[0][k].jd_acq_end-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd);
+				if (k2<0) { k2=0; }
 				if (k2>=njd) { k2=njd-1; }
+				if (fidlog!=NULL) {
+					fprintf(fidlog,"   --- STEP_5b =0 k1=%d k2=%d\n",k1,k2);
+				}
 				for (kjd=k1;kjd<=k2;kjd++) {
 					objectlocal0[kjd].flagobs=0;
 				}
 			}
 try_a_gap:
+			if (fidlog!=NULL) {
+				fprintf(fidlog,"   --- Try a gap\n");
+			}
 			//mc_printobject(njd,sunmoon,objectlocal0);
 			// ------------------------------------------------------------
 			// ------- Reference date for the sequence is jd00 ------------
@@ -3016,13 +3038,14 @@ try_a_gap:
 			// --- search for the best start without slew (jd00)
 			// --- jd0(slew_start_with_slew) jd00(slew_start_without_slew) jd1(acq_start) jd2(acq_end)
 			// int const_startexposures; // =0 best elevation, =1 start exposure as soon as possible, =2 start in the middle of the [start stop] sequence
-			jd00=0;
+			jd1=0;
+			k4=-1;
 			if (objectdescr[kd].const_startexposures==1) {
 				// --- il faut demarrer le plus vite possible
-				for (kjd=0,k=-1;kjd<njd;kjd++) {
+				for (kjd=0;kjd<njd;kjd++) {
 					if (objectlocal0[kjd].flagobs==1) {
 						k=kjd;
-						jd00=sunmoon[kjd].jd;
+						jd1=sunmoon[kjd].jd;
 						break;
 					}
 				}
@@ -3032,86 +3055,108 @@ try_a_gap:
 				if (k1>=njd) { k1=njd-1; }
 				k3=njd-k1;
 				if (k3>k1) { k2=k3; } else { k2=k1; }
-				for (k3=0,k=-1;k3<=k2;k3++) {
+				for (k3=0;k3<=k2;k3++) {
 					kjd=k1+k3;
 					if (kjd<njd) {
 						if (objectlocal0[kjd].flagobs==1) {
-							k=kjd;
-							jd00=sunmoon[kjd].jd;
+							k4=kjd;
+							jd1=sunmoon[kjd].jd;
 							break;
 						}
 					}
 					kjd=k1-k3;
 					if (kjd>=0) {
 						if (objectlocal0[kjd].flagobs==1) {
-							k=kjd;
-							jd00=sunmoon[kjd].jd;
+							k4=kjd;
+							jd1=sunmoon[kjd].jd;
 							break;
 						}
 					}
 				}
 			} else if (objectdescr[kd].const_startexposures==2) {
 				// --- on observe au milieu du creneau d'observation en explorant de part et d'autre
-				if ((objectdescr[kd].const_jd1<jd_prevmidsun)||(objectdescr[kd].const_jd2>jd_nextmidsun)) {
+				j1=objectdescr[kd].const_jd1;
+				j2=objectdescr[kd].const_jd2;
+				if (j1<jd_prevmidsun) {
 					j1=jd_prevmidsun;
-					j2=jd_nextmidsun;
-				} else {
-					j1=objectdescr[kd].const_jd1;
-					j2=objectdescr[kd].const_jd2;
 				}
+				if (j2>jd_nextmidsun) {
+					j2=jd_nextmidsun;
+				}
+				// k1 est l'indice du milieu du creneau des contraintes
 				k1=(int)(((j1+j2)/2-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd);
 				if (k1>=njd) { k1=njd-1; }
+				// k3 est le nombre maximal de cases à parcourir de part et d'autre de k1
 				k3=njd-k1;
 				if (k3>k1) { k2=k3; } else { k2=k1; }
-				for (k3=0,k=-1;k3<=k2;k3++) {
+				for (k3=0;k3<=k2;k3++) {
+					// kjd est l'indice de la case au dela du milieu
 					kjd=k1+k3;
 					if (kjd<njd) {
 						if (objectlocal0[kjd].flagobs==1) {
-							k=kjd;
-							jd00=sunmoon[kjd].jd;
+							k4=kjd;
+							jd1=sunmoon[kjd].jd;
 							break;
 						}
 					}
+					// kjd est l'indice de la case en deca du milieu
 					kjd=k1-k3;
 					if (kjd>=0) {
 						if (objectlocal0[kjd].flagobs==1) {
-							k=kjd;
-							jd00=sunmoon[kjd].jd;
+							k4=kjd;
+							jd1=sunmoon[kjd].jd;
 							break;
 						}
 					}
 				}
-				if ((jd00<j1)||(jd00>j2)) {
+				if (fidlog!=NULL) {
+					fprintf(fidlog,"   --- STEP_6  k4=%d, jd1=%f < j1=%f || jd1=%f > j2=%f\n",k4,jd1,j1,jd1,j2);
+				}
+				if ((jd1<j1)||(jd1>j2)) {
 					// --- trou trouve en dehors des limites d'observations
+					if (fidlog!=NULL) {
+						fprintf(fidlog,"   --- STEP_6  milieu\n");
+					}
+					jd1=(j1+j2)/2.;
 				}
 			}
-			if (k==-1) {
+			if (fidlog!=NULL) {
+				fprintf(fidlog,"   --- STEP_6a jd1=%f\n",jd1);
+			}
+			if (k4==-1) {
 				// --- There is no gap large enough to insert the current sequence.
 				// --- At these step, the slewing time is not taken into account.
 				if (fidlog!=NULL) {
-					fprintf(fidlog," kd=%4d (%4d/%4d:%3d). There is no gap large enough to insert the current sequence\n",kd,kp,np,ku);
+					fprintf(fidlog,"   --- kd=%4d (%4d/%4d:%3d). There is no gap large enough to insert the current sequence\n",kd,kp,np,ku);
+					fprintf(fidlog,"  ---- END SEQUENCE %4d/%4d\n",kp,np);
 				}
 				continue;
 			}
-			jd0=jd00;
+			jd0=jd00=jd1;
+			if (fidlog!=NULL) {
+				fprintf(fidlog,"   --- STEP_6b jd00=%f\n",jd00);
+			}
 			//mc_printobject(njd,sunmoon,objectlocal0);
 			// =============================================================================================
 			// ================= DEBUT de la partie qui tient compte des durees de slew ====================
 			// =============================================================================================
-			// --- kk1 : indice dans objectlocal0 pour slew_start_without_slew
+			// --- kk1 : indice dans objectlocal0 pour mc_scheduler_local1
 			kk1=(int)floor((jd00-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd);
 			// --- jd0(debut_slew) jd1(debut_acq) jd2(fin_acq)
 			// --- recherche la sequence deja planifiee precedente
-			if (npl>=116) {
-				npl+=0;
-			}
 			for (k=0,k3=-1;k<npl;k++) {
-				if (planis[0][k].jd_acq_end<jd00) {
+				if (planis[0][k].jd_acq_end<jd1) {
 					k3=k;
 				} else {
 					break;
 				}
 			}
+			if (fidlog!=NULL) {
+				fprintf(fidlog,"   --- PRECEDENTE : k3=%d\n",k3);
+			}
+			// --- if k3!=-1, k3 is the previous ever planified sequence (planis[0][k3]).
+			// --- if k3==-1, there is no previous ever planified sequence.
+			// ---
 			// --- calcule d12, le temps de raliement de la fin de la sequence precedente et celle-ci
 			if (k3>=0) {
 				ha1=planis[0][k3].ha_acq_end; if (ha1>180) { ha1-=360; }
@@ -3122,13 +3167,14 @@ try_a_gap:
 				}
 				if (compute_mode==1) {
 					mc_scheduler_local1(kk1,longmpc,rhocosphip,rhosinphip,latrad,luminance_ciel_bleus,&objectdescr[kd],njd,sunmoon,horizon_altaz,horizon_hadec,&jd_loc,&ha_loc,&elev_loc,&az_loc,&dec_loc,&moon_dist_loc,&sun_dist_loc,&brillance_totale_loc,&ra_loc);
-					ha2=ha_loc;
+					ha2=ha_loc; if (ha2>180) { ha2-=360; }
 					dec2=dec_loc;
 				}
 				angle=fabs(ha1-ha2);
 				d1=angle/objectdescr[kd].axe_slew1;
 				angle=fabs(dec1-dec2);
 				d2=angle/objectdescr[kd].axe_slew2;
+				fprintf(fidlog,"   --- ha1=%f ha2=%f d1=%f dec1=%f dec2=%f d2=%f\n",ha1,ha2,d1,dec1,dec2,d2);
 				d12=(d1>d2)?d1:d2;
 				k1=k3;
 			} else {
@@ -3140,9 +3186,14 @@ try_a_gap:
 				k1=0;
 			}
 			// --- decalage pour tenir compte du temps de pointage avec la sequence precedente
-			jdseq_prev0=jdseq_prev=jd_prevmidsun;
+			jd00=jd1-objectdescr[kd].delay_slew/86400.;
 			jd0=jd00-d12/86400.;
 			dd=0;
+			if (fidlog!=NULL) {
+				fprintf(fidlog,"   --- jd0=%f d12=%f\n",jd0,d12);
+			}
+			// --- if k3>=0, k3 is the previous ever planified sequence (planis[0][k3]).
+			jdseq_prev0=jdseq_prev=jd_prevmidsun;
 			if (k3>=0) {
 				jdseq_prev0=jdseq_prev=planis[0][k3].jd_acq_end;
 				// -- on traite le cas où l'on colle deja a la sequence precedente
@@ -3150,9 +3201,15 @@ try_a_gap:
 				if (dd<0) {
 					jd0=jdseq_prev;
 					jd00=jd0+d12/86400;
+					jd1=jd00+objectdescr[kd].delay_slew/86400.;
 				}
 			}
-			// --- kk2 : indice dans objectlocal0 pour acq_end
+			if (fidlog!=NULL) {
+				fprintf(fidlog,"   --- jdseq_prev=%f\n",jdseq_prev);
+			}
+			// --- compute jd2 knowing a valid jd00 and the duration
+			jd2=jd00+duration/86400.;
+			// --- kk2 : indice dans objectlocal0 pour mc_scheduler_local1
 			jd2=jd00+duration/86400.;
 			kk2=(int)ceil((jd2-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd); if (kk2>njd) { kk2=njd-1; }
 			// --- recherche la sequence deja planifiee suivante
@@ -3169,6 +3226,11 @@ try_a_gap:
 					}
 				}
 			}
+			if (fidlog!=NULL) {
+				fprintf(fidlog,"   --- SUIVANTE : k3=%d\n",k3);
+			}
+			// --- if k3>=0,  k3 is the next ever planified sequence (planis[0][k3]).
+			// --- if k3==-1, there is no next ever planified sequence.
 			// --- calcule d12b, le temps de raliement de la sequence choisie et du debut de la sequence suivante
 			d12b=0;
 			jdseq_next0=jdseq_next=jd_nextmidsun;
@@ -3181,13 +3243,14 @@ try_a_gap:
 				}
 				if (compute_mode==1) {
 					mc_scheduler_local1(kk2,longmpc,rhocosphip,rhosinphip,latrad,luminance_ciel_bleus,&objectdescr[kd],njd,sunmoon,horizon_altaz,horizon_hadec,&jd_loc,&ha_loc,&elev_loc,&az_loc,&dec_loc,&moon_dist_loc,&sun_dist_loc,&brillance_totale_loc,&ra_loc);
-					ha2=ha_loc;
+					ha2=ha_loc; if (ha2>180) { ha2-=360; }
 					dec2=dec_loc;
 				}
 				angle=fabs(ha1-ha2);
 				d1=angle/objectdescr[kd].axe_slew1;
 				angle=fabs(dec1-dec2);
 				d2=angle/objectdescr[kd].axe_slew2;
+				fprintf(fidlog,"   --- ha1=%f ha2=%f d1=%f dec1=%f dec2=%f d2=%f\n",ha1,ha2,d1,dec1,dec2,d2);
 				d12b=(d1>d2)?d1:d2;
 				// -- dd est la correction sur jd_slew_start_with_slew de la sequence suivante deja programmee
 				dd=(planis[0][k3].jd_slew_start_without_slew-planis[0][k3].jd_slew_start_with_slew)-d12b/86400.;
@@ -3196,23 +3259,35 @@ try_a_gap:
 			}
 			// --- on compare la duree de la sequence avec la largeur du gap dans lequel l'inserer en tenant compte des temps de pointage
 			durationtot=jd2-jd0;
+			if (fidlog!=NULL) {
+				fprintf(fidlog,"   --- jdseq_next=%f d12b=%f\n",jdseq_next,d12b);
+				fprintf(fidlog,"   --- durationtot=%f sec\n",durationtot*86400);
+			}
 			if (durationtot>(jdseq_next-jdseq_prev)) {
 				// --- The gap is not large enough to insert the current sequence.
 				kk1=(int)floor((jdseq_prev0-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd); if (kk1<0) { kk1=0; }
 				kk2=(int)ceil((jdseq_next0-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd); if (kk2>=njd) { kk2=njd-1; }
 				// --- we fill the gap with zeros to avoid to retry the same gap the next time
+				k1=0;
 				for (kjd=kk1;kjd<=kk2;kjd++) {
+					if (objectlocal0[kjd].flagobs==1) {
+						k1++;
+					}
 					objectlocal0[kjd].flagobs=0;
 				}
 				if (fidlog!=NULL) {
-					fprintf(fidlog," kd=%4d (%4d/%4d:%3d). The gap is not large enough to insert the current sequence. Go to try another gap.\n",kd,kp,np,ku);
+					fprintf(fidlog,"   --- kd=%4d (%4d/%4d:%3d %3d). The gap is not large enough to insert the current sequence. Go to try another gap.\n",kd,kp,np,ku,k1);
 				}
-				goto try_a_gap; // try another gap
+				if (k1>0) {
+					if (fidlog!=NULL) {
+						fprintf(fidlog,"   --- TRY ANOTHER GAP b\n");
+					}
+					goto try_a_gap; // try another gap
+				}
 			} 
 			if (jd2>jdseq_next) {
 				if (fidlog!=NULL) {
-					fprintf(fidlog," kd=%4d (%4d/%4d:%3d). The gap must be shifted to be just aside the beginning of the next sequence.\n",kd,kp,np,ku);
-					//fprintf(fidlog," kd=%4d (%4d/%4d). A jdseq_prev=%f jd0=%f jd00=%f jd2=%f jdseq_next=%f.\n",kd,kp,np,jdseq_prev,jd0,jd00,jd2,jdseq_next);
+					fprintf(fidlog,"   --- kd=%4d (%4d/%4d:%3d). The gap must be shifted to be just aside the beginning of the next sequence.\n",kd,kp,np,ku);
 				}
 				// --- The gap must be shifted to be just aside the beginning of the next sequence
 				dd0=jd2-jdseq_next;
@@ -3227,13 +3302,22 @@ try_a_gap:
 					kk1=(int)floor((jdseq_prev0-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd); if (kk1<0) { kk1=0; }
 					kk2=(int)ceil((jdseq_next0-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd); if (kk2>=njd) { kk2=njd-1; }
 					// --- we fill the gap with zeros to avoid to retry the same gap the next time
+					k1=0;
 					for (kjd=kk1;kjd<=kk2;kjd++) {
+						if (objectlocal0[kjd].flagobs==1) {
+							k1++;
+						}
 						objectlocal0[kjd].flagobs=0;
 					}
 					if (fidlog!=NULL) {
-						fprintf(fidlog," kd=%4d (%4d/%4d:%3d). The gap is definitively to small. Go to try another gap.\n",kd,kp,np,ku);
+						fprintf(fidlog,"   --- kd=%4d (%4d/%4d:%3d). The gap is definitively to small. Go to try another gap.\n",kd,kp,np,ku);
 					}
-					goto try_a_gap; // try another gap
+					if (k1>0) {
+						if (fidlog!=NULL) {
+							fprintf(fidlog,"   --- TRY ANOTHER GAP b\n");
+						}
+						goto try_a_gap; // try another gap
+					}
 				}
 			}
 			// --- the insertion implies to change the pointing duration of the next sequence ever planified
@@ -3257,6 +3341,9 @@ try_a_gap:
 			//
 			jd1=jd00+objectdescr[kd].delay_slew/86400.;
 			jd2=jd1+(objectdescr[kd].delay_instrum+objectdescr[kd].delay_exposures)/86400.;
+			if (fidlog!=NULL) {
+				fprintf(fidlog,"   === PLANIFICATION-OK : jd0=%f jd00=%f jd1=%f jd2=%f\n",jd0,jd00,jd1,jd2);
+			}
 			// --- the sequence will be inserted in the gap.
 			// --- on remplit la planif d'indice npl (0 pour la premiere planif)
 			// --- a noter que planis[0][*] est la plani officielle et planis[1][*] est un swap utilise lors de l'insertion de la sequence
@@ -3271,7 +3358,7 @@ try_a_gap:
 					if (planis[1][k1].jd_slew_start_with_slew<planis[1][k].jd_acq_end) {
 						// --- probleme dans le calcul
 						if (fidlog!=NULL) {
-							fprintf(fidlog," kd=%4d (%4d/%4d:%3d). PROBLEM 1.\n",kd,kp,np,ku);
+							fprintf(fidlog,"   --- kd=%4d (%4d/%4d:%3d). PROBLEM 1.\n",kd,kp,np,ku);
 						}
 					}
 					break;
@@ -3332,7 +3419,7 @@ try_a_gap:
 					// --- probleme dans le calcul
 					k+=0;
 					if (fidlog!=NULL) {
-						fprintf(fidlog," kd=%4d (%4d/%4d:%3d). PROBLEM 0.\n",kd,kp,np,ku);
+						fprintf(fidlog,"   --- kd=%4d (%4d/%4d:%3d). PROBLEM 0.\n",kd,kp,np,ku);
 					}
 				}
 			}
@@ -3347,11 +3434,16 @@ try_a_gap:
 				objectdescr[kd].status_plani=STATUS_PLANI_PLANIFIED;
 			}
 			if (fidlog!=NULL) {
-				fprintf(fidlog," kd=%4d (%4d/%4d:%3d). Planified %s (%d)\n",kd,kp,np,ku,s,objectdescr[kd].status_plani);
+				fprintf(fidlog,"   --- kd=%4d (%4d/%4d:%3d). Planified %s (%d)\n",kd,kp,np,ku,s,objectdescr[kd].status_plani);
 			}
 			// --- on met a jour la planification.
 			for (k=0;k<=npl;k++) {
 				planis[0][k]=planis[1][k];
+				fprintf(fidlog,"   *** k=%d %f %f %f %f\n",k,planis[1][k].jd_slew_start_with_slew,planis[1][k].jd_slew_start_without_slew,planis[1][k].jd_acq_start,planis[1][k].jd_acq_end);
+			}
+			if (fidlog!=NULL) {
+				fprintf(fidlog,"   --- kd=%4d (%4d/%4d:%3d). planified\n",kd,kp,np,ku);
+				fprintf(fidlog,"  ---- END SEQUENCE %4d/%4d\n",kp,np);
 			}
 			npl++;
 			//mc_printplani(npl,planis);
