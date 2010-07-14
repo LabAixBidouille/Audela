@@ -2,7 +2,7 @@
 # Fichier : audnet.tcl
 # Description : Network functions using RPC or simple TCP sockets
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: audnet.tcl,v 1.8 2010-05-16 10:14:06 robertdelmas Exp $
+# Mise à jour $Id: audnet.tcl,v 1.9 2010-07-14 07:49:03 robertdelmas Exp $
 #
 
 # ====================================================================
@@ -241,7 +241,7 @@ proc rpc_send { arg } {
    # --- Fonction pour renvoyer des messages a executer
    global rpcid
    global caption
-   dp_RPC $rpcid(client) console::affiche_resultat "$caption(audace,reseau_execute) $arg \n"
+   dp_RPC $rpcid(client) ::console::affiche_resultat "$caption(audace,reseau_execute) $arg \n"
    set message "dp_RPC $rpcid(client) rpc_eval_serveur \{ $arg \}"
    eval $message
 }
@@ -286,7 +286,7 @@ proc rpc_create_client { {ip_serveur 192.168.0.1} {port_serveur 5000} {ip_client
    }
    set rpcid(client) [dp_MakeRPCClient $ip_serveur $port_serveur]
    # --- Envoi un message de connexion a afficher sur la console du serveur
-   dp_RPC $rpcid(client) console::affiche_resultat "$caption(audace,reseau_connecte) $rpcid(client)\n"
+   dp_RPC $rpcid(client) ::console::affiche_resultat "$caption(audace,reseau_connecte) $rpcid(client)\n"
    if {$ip_client!="?"} {
       # --- Cree un serveur sur le client pour recuperer les appels en retour
       rpc_create_server $port_client
@@ -342,17 +342,17 @@ proc rpc_delete_client { {id "?"} } {
 
 proc lan_goto { radec } {
    global audace
-   send "tel$audace(telNo) radec goto $radec ; tel$audace(telNo) radec coord"
+   send "tel$audace(telNo) radec goto $radec -equinox J2000 ; tel$audace(telNo) radec coord -equinox J2000"
 }
 
 proc lan_match { radec } {
    global audace
-   send "tel$audace(telNo) radec init $radec ; tel$audace(telNo) radec coord"
+   send "tel$audace(telNo) radec init $radec ; tel$audace(telNo) radec coord -equinox J2000"
 }
 
 proc lan_move { way ms } {
    global audace
-   send "tel$audace(telNo) radec move $way 0.33 ; after $ms ; tel$audace(telNo) radec stop ; tel$audace(telNo) radec coord"
+   send "tel$audace(telNo) radec move $way 0.33 ; after $ms ; tel$audace(telNo) radec stop ; tel$audace(telNo) radec coord -equinox J2000"
 }
 
 proc lan_acq { exptime bin fullname } {
