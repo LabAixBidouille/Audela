@@ -1,6 +1,6 @@
 #
 # Fichier : lx200.cap
-# Mise a jour $Id: lx200.cap,v 1.16 2009-11-09 16:35:04 robertdelmas Exp $
+# Mise a jour $Id: lx200.cap,v 1.17 2010-07-14 17:23:13 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -25,6 +25,7 @@ set caption(lx200,modele_gemini)                 "Losmandy Gemini"
 set caption(lx200,modele_ite-lente)              "Ite-lente"
 set caption(lx200,modele_mel_bartels)            "Mel BARTELS"
 set caption(lx200,modele_astro_physics)          "Astro-Physics"
+set caption(lx200,modele_fs2)                    "FS2"
 set caption(lx200,format)                        "Format"
 set caption(lx200,maj_lx200)                     "Update time, longitude, latitude and altitude of LX200"
 set caption(lx200,rappelAD)                      "R.A. Guide Speed (arcsec/sec.)"
@@ -68,6 +69,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,modele_ite-lente)           "Ite-lente"
    set caption(lx200,modele_mel_bartels)         "Mel BARTELS"
    set caption(lx200,modele_astro_physics)       "Astro-Physics"
+   set caption(lx200,modele_fs2)                 "FS2"
    set caption(lx200,format)                     "Format"
    set caption(lx200,maj_lx200)                  "Mise à jour heure, longitude, latitude et altitude du LX200"
    set caption(lx200,rappelAD)                   "Vitesse de rappel en A.D. (arcsec/sec.)"
@@ -111,6 +113,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,modele_ite-lente)           "Ite-lente"
    set caption(lx200,modele_mel_bartels)         "Mel BARTELS"
    set caption(lx200,modele_astro_physics)       "Astro-Physics"
+   set caption(lx200,modele_fs2)                 "FS2"
    set caption(lx200,format)                     "Formato"
    set caption(lx200,maj_lx200)                  "Aggiornamento di ora, longitudine, latitudine ed altitudine dell' LX200"
    set caption(lx200,rappelAD)                   "Velocità guida in A.R. (arcsec/sec.)"
@@ -154,6 +157,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,modele_ite-lente)           "Ite-lente"
    set caption(lx200,modele_mel_bartels)         "Mel BARTELS"
    set caption(lx200,modele_astro_physics)       "Astro-Physics"
+   set caption(lx200,modele_fs2)                 "FS2"
    set caption(lx200,format)                     "Formato"
    set caption(lx200,maj_lx200)                  "Actualizar hora, longitud, latitud y altitud del LX200"
    set caption(lx200,rappelAD)                   "Velocidad de guiado A.R. (arcsec/sec.)"
@@ -197,6 +201,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,modele_ite-lente)           "Ite-lente"
    set caption(lx200,modele_mel_bartels)         "Mel BARTELS"
    set caption(lx200,modele_astro_physics)       "Astro-Physics"
+   set caption(lx200,modele_fs2)                 "FS2"
    set caption(lx200,format)                     "Format"
    set caption(lx200,maj_lx200)                  "Zeit, Länge, Breite, Höhe des LX200 Aktualisierung"
    set caption(lx200,rappelAD)                   "R.A. Rückruf Geschwindigkeit (arcsek/Sek.)"
@@ -240,6 +245,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,modele_ite-lente)           "Ite-lente"
    set caption(lx200,modele_mel_bartels)         "Mel BARTELS"
    set caption(lx200,modele_astro_physics)       "Astro-Physics"
+   set caption(lx200,modele_fs2)                 "FS2"
    set caption(lx200,format)                     "Formato"
    set caption(lx200,maj_lx200)                  "Actualizar tempo, longitude, latitude e altitude do LX200"
    set caption(lx200,rappelAD)                   "Velocidade de guia A.R. (arcsec/sec.)"
@@ -283,6 +289,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,modele_ite-lente)           "Ite-lente"
    set caption(lx200,modele_mel_bartels)         "Mel BARTELS"
    set caption(lx200,modele_astro_physics)       "Astro-Physics"
+   set caption(lx200,modele_fs2)                 "FS2"
    set caption(lx200,format)                     "Format"
    set caption(lx200,maj_lx200)                  "Update time, longitude, latitude and altitude of LX200"
    set caption(lx200,rappelAD)                   "R.A. Guide Speed (arcsec/sec.)"
@@ -326,6 +333,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,modele_ite-lente)           "Ite-lente"
    set caption(lx200,modele_mel_bartels)         "Mel BARTELS"
    set caption(lx200,modele_astro_physics)       "Astro-Physics"
+   set caption(lx200,modele_fs2)                 "FS2"
    set caption(lx200,format)                     "Format"
    set caption(lx200,maj_lx200)                  "Update time, longitude, latitude and altitude of LX200"
    set caption(lx200,rappelAD)                   "R.A. Guide Speed (arcsec/sec.)"
@@ -369,6 +377,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,modele_ite-lente)           "Ite-lente"
    set caption(lx200,modele_mel_bartels)         "Mel BARTELS"
    set caption(lx200,modele_astro_physics)       "Astro-Physics"
+   set caption(lx200,modele_fs2)                 "FS2"
    set caption(lx200,format)                     "Format"
    set caption(lx200,maj_lx200)                  "Update time, longitude, latitude and altitude of LX200"
    set caption(lx200,rappelAD)                   "R.A. Guide Speed (arcsec/sec.)"
