@@ -2,7 +2,7 @@
 # Fichier : t193pad.tcl
 # Description : Raquette specifique au T193 de l'OHP
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: t193pad.tcl,v 1.14 2010-07-14 12:26:40 robertdelmas Exp $
+# Mise à jour $Id: t193pad.tcl,v 1.15 2010-07-14 17:38:30 robertdelmas Exp $
 #
 
 namespace eval ::t193pad {
@@ -78,18 +78,17 @@ proc ::t193pad::getPluginOS { } {
 #------------------------------------------------------------
 proc ::t193pad::initConf { } {
    variable private
-   global caption conf
+   global conf
 
-   if { ! [ info exists conf(t193pad,wmgeometry) ] }   { set conf(t193pad,wmgeometry)   "240x520+643+180" }
-   if { ! [ info exists conf(t193pad,focuserLabel) ] } { set conf(t193pad,focuserLabel) "" }
-   if { ! [ info exists conf(t193pad,radecPulse,enabled)]} { set conf(t193pad,radecPulse,enabled) 0 }
-   if { ! [ info exists conf(t193pad,radecPulse,value)] }  { set conf(t193pad,radecPulse,value) 1 }
+   if { ! [ info exists conf(t193pad,wmgeometry) ] }         { set conf(t193pad,wmgeometry)         "240x520+643+180" }
+   if { ! [ info exists conf(t193pad,focuserLabel) ] }       { set conf(t193pad,focuserLabel)       "" }
+   if { ! [ info exists conf(t193pad,radecPulse,enabled) ] } { set conf(t193pad,radecPulse,enabled) 0 }
+   if { ! [ info exists conf(t193pad,radecPulse,value) ] }   { set conf(t193pad,radecPulse,value)   1 }
 
-   set private(targetRa)      "00h00m00.00s"
-   set private(targetDec)     "+00d00m00.00s"
-   set private(positionDome)  "0"
-   set private(synchro)       "1"
-   set private(gotoFocus)     0
+   set private(targetRa)     "00h00m00.00s"
+   set private(targetDec)    "+00d00m00.00s"
+   set private(positionDome) "0"
+   set private(synchro)      "1"
 
    return
 }
@@ -392,7 +391,7 @@ proc ::t193pad::createDialog { } {
          pack $This.focus.pm.buttonMoins -expand 0 -side left -padx 10 -pady 4
 
          #--- Label pour la position de la focalisation courante
-         label $This.focus.pm.positionFoc -textvariable ::audace(telescope,currentFocus) \
+         label $This.focus.pm.positionFoc -textvariable ::audace(focus,currentFocus) \
             -bg $color(blue_pad) -fg $color(white) -font [ list {Arial} 12 bold ] -width 10 \
             -borderwidth 0 -relief flat
          pack $This.focus.pm.positionFoc -expand 1 -side left
@@ -434,7 +433,7 @@ proc ::t193pad::createDialog { } {
          pack $This.focus.goto.buttonGotoFoc -anchor center -fill x -side left -padx 4 -pady 2 -expand 1
 
          #--- Entry pour la position du GOTO de la focalisation
-         Entry $This.focus.goto.positionGotoFoc -textvariable ::t193pad::private(gotoFocus) \
+         Entry $This.focus.goto.positionGotoFoc -textvariable ::audace(focus,targetFocus) \
             -width 6 -bg $color(gray_pad) -justify center -font [ list {Arial} 12 bold ]
          pack $This.focus.goto.positionGotoFoc -anchor center -fill x -side left -padx 4 -pady 2 -expand 1
 
@@ -447,6 +446,9 @@ proc ::t193pad::createDialog { } {
       pack $This.focus.goto -side top -fill x -expand 1
 
    pack $This.focus -side top -fill x -expand 0 -pady 4
+
+   #--- Recuperation de la position courante du focuser
+   ::focus::displayCurrentPosition $conf(t193pad,focuserLabel)
 
    #--- Frame du DOME
    frame $This.dome -borderwidth 1 -relief groove -bg $color(blue_pad)
@@ -517,15 +519,13 @@ proc ::t193pad::createDialog { } {
 # @return void
 #------------------------------------------------------------
 proc ::t193pad::moveRadec { direction } {
-   variable This
-
    set catchError [catch {
       #--- debut de mouvement
       ::telescope::move $direction
    }]
 
    if { $catchError != 0 } {
-      #--- je fais un beep sonore pour signaler que la commande n'est prise en compte
+      #--- je fais un beep sonore pour signaler que la commande n'est pas prise en compte
       bell
    }
 
@@ -550,8 +550,6 @@ proc ::t193pad::stopRadec { direction } {
 # @return void
 #------------------------------------------------------------
 proc ::t193pad::moveRadecPulse { direction } {
-   variable This
-
    set catchError [catch {
       #--- mouvement d'amplitude limite
       switch  $direction {
@@ -564,13 +562,12 @@ proc ::t193pad::moveRadecPulse { direction } {
          "s" {
             #--- en delta
             tel$::audace(telNo) radec correct "e" 0 $direction $::conf(t193pad,radecPulse,value) $::audace(telescope,rate)
-
          }
       }
    }]
 
    if { $catchError != 0 } {
-      #--- je fais un beep sonore pour signaler que la commande n'est prise en compte
+      #--- je fais un beep sonore pour signaler que la commande n'est pas prise en compte
       #--- quand le telescope est deja en mouvement
       bell
    }
@@ -581,7 +578,6 @@ proc ::t193pad::moveRadecPulse { direction } {
 #     active le choix de la valeur de l'impulsion
 #------------------------------------------------------------
 proc ::t193pad::setRadecPulseEnabled {  } {
-   variable private
    variable This
 
    if { $::conf(t193pad,radecPulse,enabled) == 0 } {
@@ -636,8 +632,6 @@ proc ::t193pad::setRadecPulseEnabled {  } {
 #     change la velur de l'impulsion radec
 #------------------------------------------------------------
 proc ::t193pad::incrementRadecPulse {  } {
-   variable private
-
    if { $::conf(t193pad,radecPulse,enabled) == 1 } {
       switch $::conf(t193pad,radecPulse,value) {
          "0.1" {
@@ -660,9 +654,11 @@ proc ::t193pad::incrementRadecPulse {  } {
 proc ::t193pad::cmdStartGoto { } {
    variable This
    variable private
+
    set catchError [catch {
       ::telescope::goto [ list $private(targetRa) $private(targetDec) ] 0 $This.frame3.buttonGoto
    }]
+
    if { $catchError != 0 } {
       ::tkutil::displayErrorInfo $::caption(t193pad,titre)
    }
@@ -673,10 +669,9 @@ proc ::t193pad::cmdStartGoto { } {
 #     demarre le mouvement du focus du T193
 #------------------------------------------------------------
 proc ::t193pad::startFocus { direction } {
-   variable private
-
    set catchError [catch {
-      tel$::audace(telNo) focus move $direction
+     ### tel$::audace(telNo) focus move $direction
+      ::focus::move $::conf(t193pad,focuserLabel) $direction
    }]
 
    if { $catchError != 0 } {
@@ -689,10 +684,9 @@ proc ::t193pad::startFocus { direction } {
 #     arrete le mouvement du focus du T193
 #------------------------------------------------------------
 proc ::t193pad::stopFocus {  } {
-   variable private
-
    set catchError [catch {
-      tel$::audace(telNo) focus stop
+     ### tel$::audace(telNo) focus stop
+      ::focus::move $::conf(t193pad,focuserLabel) stop
    }]
 
    if { $catchError != 0 } {
@@ -705,11 +699,10 @@ proc ::t193pad::stopFocus {  } {
 #     lance un goto du focus
 #------------------------------------------------------------
 proc ::t193pad::gotoFocus {  } {
-   variable private
-
    set catchError [catch {
-      #--- format de la commande : tel1 focus goto number ?-rate value? ?-blocking boolean?
-      tel$::audace(telNo) focus goto $private(gotoFocus) -blocking 0
+     ### #--- format de la commande : tel1 focus goto number ?-rate value? ?-blocking boolean?
+     ### tel$::audace(telNo) focus goto $::audace(focus,targetFocus) -blocking 0
+      ::focus::goto $::conf(t193pad,focuserLabel)
    }]
 
    if { $catchError != 0 } {
