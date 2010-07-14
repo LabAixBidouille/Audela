@@ -2,7 +2,7 @@
 # Fichier : audecomconfig.tcl
 # Description : Configuration et pilotage de la monture AudeCom (Ex-Kauffmann)
 # Auteurs : Robert DELMAS et Philippe KAUFFMANN
-# Mise à jour $Id: audecomconfig.tcl,v 1.6 2010-05-23 15:43:55 robertdelmas Exp $
+# Mise à jour $Id: audecomconfig.tcl,v 1.7 2010-07-14 08:10:31 robertdelmas Exp $
 #
 
 #
@@ -1432,7 +1432,7 @@ proc ::confAudecomKing::Clock_et_King { } {
       #--- Affichage heure tu et heure tsl
       #--- Preparation et affichage ascension droite et declinaison
       #--- Lecture de la position du telescope
-      set addec [ tel$audace(telNo) radec coord ]
+      set addec [ tel$audace(telNo) radec coord -equinox J2000 ]
       #--- Ascension droite
       set ascension [ lindex $addec 0 ]
       if { $ascension == "+" } {
