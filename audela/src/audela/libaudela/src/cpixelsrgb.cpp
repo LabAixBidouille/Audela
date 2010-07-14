@@ -1680,13 +1680,14 @@ void CPixelsRgb::Offset(float offset)
 
    throw CError(ELIBSTD_NOT_IMPLEMENTED);
 
-   //datatype = TFLOAT;
+   /*
    datatype = TSHORT;
 
    s = new char[512];
    sprintf(s,"OFFSET offset=%f",offset);
 
    delete s;
+   */
 }
 
 void CPixelsRgb::Opt(char *dark, char *offset)
@@ -1816,6 +1817,27 @@ void CPixelsRgb::Sub(char *filename, float offset)
       throw e;
    }
 }
+
+void CPixelsRgb::Sub(CPixels * subPixels, float offset) {
+
+   if ( this->GetWidth() !=  subPixels->GetWidth() && this->GetHeight() != subPixels->GetHeight() ) {
+      throw CError( "Image size (%d,%d) is different from current image size (%d,%d)",
+         subPixels->GetWidth(), subPixels->GetHeight(), this->GetWidth(), this->GetHeight() );
+   }
+
+   if ( subPixels->GetPlanes() != this->GetPlanes() ) {
+      throw CError( "Image planes (%d) is different from current image plane(%d)",
+         subPixels->GetPlanes(), this->GetPlanes());
+   }
+
+   TYPE_PIXELS_RGB  * pixPtr = this->pix;
+   TYPE_PIXELS_RGB  * subPrt = NULL;
+   subPixels->GetPixelsPointer((TYPE_PIXELS**)&subPrt);
+   for(int k = 0 ; k <this->naxis1*this->naxis2*this->GetPlanes() ; k++ ) {
+      *(pixPtr++) += (TYPE_PIXELS_RGB)offset - *(subPrt++) ;
+   }
+}
+
 
 //***************************************************
 // unifybg

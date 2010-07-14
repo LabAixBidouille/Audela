@@ -193,7 +193,7 @@ void CPixelsGray::GetPix(int *plane, TYPE_PIXELS *val1,TYPE_PIXELS *val2,TYPE_PI
  *    - '-2' si pas de mot-cle 'NAXIS1'
  *
  */
-void CPixelsGray::SetPix(TColorPlane plane, TYPE_PIXELS val,int x, int y)
+void CPixelsGray::SetPix(TColorPlane , TYPE_PIXELS val,int x, int y)
 {
 
    if((x<0)||(x>=naxis1)) {
@@ -399,7 +399,7 @@ void CPixelsGray::GetPixelsPointer(TYPE_PIXELS **pixels) {
   retourne le tableau de pixels correspondant à la fenetre (x1,y1)-(x2,y2)
   en incluant les valeur limites x=x1, x=x2, y=y1 , y=y2
 **/
-void CPixelsGray::GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, void* pixels) {
+void CPixelsGray::GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane , void* pixels) {
    int width  = x2-x1+1;
    int x, y;
 
@@ -701,7 +701,7 @@ void CPixelsGray::Log(float coef, float offset)
    if(msg) throw CErrorLibtt(msg);
 }
 
-void CPixelsGray::MergePixels(TColorPlane plane, int pixels)
+void CPixelsGray::MergePixels(TColorPlane , int )
 {
    throw CError(ELIBSTD_NOT_IMPLEMENTED);
 }
@@ -815,6 +815,26 @@ void CPixelsGray::Sub(char *filename, float offset)
    msg = Libtt_main(TT_PTR_IMASERIES,7,&pix,&datatype,&naxis1,&naxis2,&pix,&datatype,s);
    delete[] s;
    if(msg) throw CErrorLibtt(msg);
+}
+
+void CPixelsGray::Sub(CPixels * subPixels, float offset) {
+
+   if ( this->GetWidth() !=  subPixels->GetWidth() && this->GetHeight() != subPixels->GetHeight() ) {
+      throw CError( "Image size (%d,%d) is different from current image size (%d,%d)",
+         subPixels->GetWidth(), subPixels->GetHeight(), this->GetWidth(), this->GetHeight() );
+   }
+
+   if ( subPixels->GetPlanes() != this->GetPlanes() ) {
+      throw CError( "Image planes (%d) is different from current image plane(%d)",
+         subPixels->GetPlanes(), this->GetPlanes());
+   }
+
+   TYPE_PIXELS  * pixPtr = this->pix;
+   TYPE_PIXELS  * subPrt = NULL;
+   subPixels->GetPixelsPointer(&subPrt);
+   for(int k = 0 ; k <this->naxis1*this->naxis2 ; k++ ) {
+      *(pixPtr++) += (TYPE_PIXELS)offset - *(subPrt++) ;
+   }
 }
 
 //***************************************************
