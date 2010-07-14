@@ -44,6 +44,7 @@ struct cmditem {
    {"name", (Tcl_CmdProc *)cmdCamName},\
    {"product", (Tcl_CmdProc *)cmdCamProduct},\
    {"ccd", (Tcl_CmdProc *)cmdCamCcd},\
+   {"dark", (Tcl_CmdProc *)cmdCamDark},\
    {"nbcells", (Tcl_CmdProc *)cmdCamNbcells},\
    {"nbpix", (Tcl_CmdProc *)cmdCamNbpix},\
    {"celldim", (Tcl_CmdProc *)cmdCamCelldim},\

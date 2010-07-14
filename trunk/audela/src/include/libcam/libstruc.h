@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libstruc.h,v 1.16 2010-02-12 21:41:12 michelpujol Exp $
+ * $Id: libstruc.h,v 1.17 2010-07-14 14:36:05 michelpujol Exp $
  */
 
 #ifndef __LIBSTRUC_H__
@@ -51,9 +51,9 @@ struct TimerExpirationStruct {
 
 
 struct Capabilities {
-   int expTimeCommand;     // existance de la commande de choix du temps de pose 
-   int expTimeList;        // existance d'une liste prédefinie des temps de pose
-   int videoMode;          // existance du mode video
+   int expTimeCommand;     // existence de la commande de choix du temps de pose 
+   int expTimeList;        // existence d'une liste prédefinie des temps de pose
+   int videoMode;          // existence du mode video
 };
 
 
@@ -113,6 +113,8 @@ struct Capabilities {
    struct Capabilities capabilities; \
    int  blockingAcquisition; \
    int  acquisitionInProgress; \
+   int darkBufNo; \
+   char *darkFileName; \
    struct camprop *next
 
 
