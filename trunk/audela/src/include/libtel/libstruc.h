@@ -34,6 +34,7 @@
 #define COMMON_TELSTRUCT \
    char msg[2048];\
    Tcl_Interp *interp;\
+   char name[128];\
    int authorized;\
    double foclen;\
    int telno;\
@@ -76,6 +77,7 @@
    int            minRadecDelay;  \
    int            consoleLog; \
    char alignmentMode[10]; \
+   int refractionCorrection; \
    struct telprop *next;
 
 //Tcl_TimerToken timerToken; \

@@ -41,6 +41,7 @@ struct cmditem {
 
 #define COMMON_CMDLIST \
    {"alignmentmode", (Tcl_CmdProc *)cmdTelAlignmentMode},\
+   {"refraction", (Tcl_CmdProc *)cmdTelRefraction},\
    {"drivername", (Tcl_CmdProc *)cmdTelDrivername},\
    {"name", (Tcl_CmdProc *)cmdTelName},\
    {"protocol", (Tcl_CmdProc *)cmdTelProtocol},\
@@ -77,6 +78,7 @@ int cmdTelPort(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
 int cmdTelChannel(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelTestCom(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelClose(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelRefraction(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelThreadId(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 
 /* --- Obsolete compatible old version commands ---*/
