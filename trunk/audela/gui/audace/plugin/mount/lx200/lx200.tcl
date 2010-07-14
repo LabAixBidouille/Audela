@@ -2,7 +2,7 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise à jour $Id: lx200.tcl,v 1.30 2010-07-14 08:05:41 robertdelmas Exp $
+# Mise à jour $Id: lx200.tcl,v 1.31 2010-07-14 17:23:35 robertdelmas Exp $
 #
 
 namespace eval ::lx200 {
@@ -274,7 +274,7 @@ proc ::lx200::fillConfigPage { frm } {
    set list_combobox [ list $caption(lx200,modele_lx200) $caption(lx200,modele_astro_physics) \
       $caption(lx200,modele_audecom) $caption(lx200,modele_skysensor) \
       $caption(lx200,modele_gemini) $caption(lx200,modele_ite-lente) \
-      $caption(lx200,modele_mel_bartels) ]
+      $caption(lx200,modele_mel_bartels) $caption(lx200,modele_fs2) ]
    ComboBox $frm.modele \
       -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
       -height [ llength $list_combobox ] \
