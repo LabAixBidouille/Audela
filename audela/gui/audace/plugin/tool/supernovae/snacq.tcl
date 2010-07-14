@@ -2,7 +2,7 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: snacq.tcl,v 1.29 2010-05-25 21:35:31 robertdelmas Exp $
+# Mise à jour $Id: snacq.tcl,v 1.30 2010-07-14 08:16:18 robertdelmas Exp $
 #
 
 # ===================================================================
@@ -638,8 +638,7 @@ bind $audace(base).snacq.frame9.labURL_chemin_rep <ButtonPress-1> {
 bind $audace(base).snacq.frame10.labURL_position_localite <ButtonPress-1> {
    ::confPosObs::run "$audace(base).confPosObs"
    tkwait window $audace(base).confPosObs
-   set snconf(localite) $conf(posobs,observateur,gps)
-   set audace(posobs,observateur,gps) $conf(posobs,observateur,gps)
+   set snconf(localite) $audace(posobs,observateur,gps)
    catch { $audace(base).snacq.frame10.labURL_position_localite configure -text $snconf(localite) }
    update
 }
@@ -989,7 +988,7 @@ proc goSnAcq { {sndebug 0} } {
          if {$sndebug==0} {
             #--- Pointe le telescope
             if {$indice_image==1} {
-               ::telescope::goto [ list $ra $dec ] "1" "" "" [lindex $ligne 0]
+               ::telescope::goto [ list $ra $dec ] 1 "" "" [lindex $ligne 0]
             }
 
             #--- Delai d'attente a la demande de Robin

@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise à jour $Id: tlscp.tcl,v 1.41 2010-07-11 12:39:23 michelpujol Exp $
+# Mise à jour $Id: tlscp.tcl,v 1.42 2010-07-14 08:19:16 robertdelmas Exp $
 #
 
 #============================================================
@@ -158,7 +158,7 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
    set private($visuNo,pose_en_cours)     "0"
 
    #--- Coordonnees J2000.0 de M104
-   setRaDec $visuNo [list "12h40m0s" "-11d37m22"]  "M104" "J2000.0" ""
+   setRaDec $visuNo [list "12h40m0s" "-11d37m22"] "M104" "J2000.0" ""
 
    #--- Frame principal
    frame $private($visuNo,This) -borderwidth 2 -relief groove
@@ -742,7 +742,7 @@ proc ::tlscp::cmdGoto { visuNo } {
    }
 
    #--- Goto
-   ::telescope::goto $private($visuNo,list_radec) "0" \
+   ::telescope::goto $private($visuNo,list_radec) 0 \
       $private($visuNo,This).fra2.fra2a.but1 \
       $private($visuNo,This).fra2.fra1a.match \
       $private($visuNo,nomObjet) \
@@ -1018,13 +1018,13 @@ proc ::tlscp::startCenter { visuNo { methode "" } } {
    } else {
       #--- je calcule les coordonnees J2000.0
       # mc_tel2cat Usage: Coords TypeObs Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues? ?model_only?
-      set dateUtc   [::audace::date_sys2ut now]
-      set home  $conf(posobs,observateur,gps)
-      set pressure 101325
+      set dateUtc     [::audace::date_sys2ut now]
+      set home        $::audace(posobs,observateur,gps)
+      set pressure    101325
       set temperature 290
-      set listRaDec [mc_tel2cat $radec EQUATORIAL $dateUtc $home $pressure $temperature]
-      set ra        [lindex $listRaDec 0]
-      set dec       [lindex $listRaDec 1]
+      set listRaDec   [mc_tel2cat $radec EQUATORIAL $dateUtc $home $pressure $temperature]
+      set ra          [lindex $listRaDec 0]
+      set dec         [lindex $listRaDec 1]
    }
 
    if { $methode == "BRIGHTEST" } {
