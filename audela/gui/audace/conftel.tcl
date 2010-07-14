@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise à jour $Id: conftel.tcl,v 1.66 2010-07-11 12:43:12 michelpujol Exp $
+# Mise à jour $Id: conftel.tcl,v 1.67 2010-07-14 07:55:48 robertdelmas Exp $
 #
 
 namespace eval ::confTel {
@@ -685,7 +685,7 @@ proc ::confTel::getPluginProperty { propertyName } {
    # guidingSpeed            Retourne les vitesses de guidage en arcseconde de degre par seconde de temps
    # hasCoordinates          Retourne la possibilite d'afficher les coordonnees
    # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
-   # hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
+   # hasRefractionCorrection Retourne la possibilite de calculer les corrections de refraction
    # hasGoto                 Retourne la possibilite de faire un Goto
    # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
    # hasMatch                Retourne la possibilite de faire un Match
@@ -706,7 +706,6 @@ proc ::confTel::getPluginProperty { propertyName } {
       guidingSpeed            { set defaultResult [list 1.0 1.0] }
       hasCoordinates          { set defaultResult 1 }
       hasControlSuivi         { set defaultResult 0 }
-      hasCorrectionRefraction { set defaultResult 0 }
       hasGoto                 { set defaultResult 1 }
       hasManualMotion         { set defaultResult 1 }
       hasMatch                { set defaultResult 1 }
@@ -727,14 +726,20 @@ proc ::confTel::getPluginProperty { propertyName } {
    }
 
    #--- si une monture est selectionnee, je recherche la valeur propre a la monture
-   if { $propertyName == "alignmentMode" } {
-      return [ tel$private(telNo) alignmentmode ]
-   } else {
-      set result [ ::$private(mountName)::getPluginProperty $propertyName ]
-      if { $result != "" } {
-         return $result
-      } else {
-         return $defaultResult
+   switch $propertyName {
+      alignmentMode           {
+         return [ tel$private(telNo) alignmentmode ]
+      }
+      hasRefractionCorrection {
+         return [ tel$private(telNo) refraction ]
+      }
+      default                 {
+         set result [ ::$private(mountName)::getPluginProperty $propertyName ]
+         if { $result != "" } {
+            return $result
+         } else {
+            return $defaultResult
+         }
       }
    }
 }
