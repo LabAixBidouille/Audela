@@ -1435,7 +1435,6 @@ int cmdCopyTo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
    return retour;
 }
 
-
 //==============================================================================
 // buf$i clear --
 //   Fonction permettant de supprimer le contenu du buffer, sans pour autant
@@ -2418,53 +2417,71 @@ int cmdTtOffset(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 
 //==============================================================================
 // buf$i sub filename offset --
+// buf$i sub $bufNo
 //   Soustrait une image du buffer, avec une constante de decalage.
 //   Equivelent de QMiPS : SUB
 //
 int cmdTtSub(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
    CBuffer *buffer;
-   double offset;
+   double offset = 0;
    char *ligne;
    int retour = TCL_OK;
 
    ligne = new char[1000];
-   if(argc!=4) { // Usage
-      sprintf(ligne,"Usage: %s %s filename offs",argv[0],argv[1]);
+   if(argc!=3 && argc!=4) { // Usage
+      sprintf(ligne,"Usage: %s %s filename|bufNo ?offset?",argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       retour = TCL_ERROR;
-   } else if(Tcl_GetDouble(interp,argv[3],&offset)!=TCL_OK) { // Decadage des arguments
-      sprintf(ligne,"Usage: %s %s filename offs\noffs = must be a numerical value",argv[0],argv[1]);
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-      retour = TCL_ERROR;
-   } else {
-      // Appel a la methode du buffer
-      buffer = (CBuffer*)clientData;
-      try {
-         char fileName[1024];
-
-         // "encoding convertfrom identity" sert a traiter correctement les caracteres accentues
-         sprintf(ligne,"encoding convertfrom identity {%s}",argv[2]);
-         Tcl_Eval(interp,ligne);
-         strcpy(fileName,interp->result);
-
-         // j'ajoute l'extension par defaut si necessaire
-         sprintf(ligne,"file extension \"%s\"",fileName);
-         Tcl_Eval(interp,ligne);
-         if(strcmp(interp->result, "")==0) {
-            strcat(fileName,buffer->GetExtension());
-         }
-
-         buffer->Sub(fileName,(float)offset);
-         Tcl_SetResult(interp,(char*)"",TCL_VOLATILE);
-         retour = TCL_OK;
-      } catch(const CError& e) {
-         sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
+   } else if (argc==4) {
+      if(Tcl_GetDouble(interp,argv[3],&offset)!=TCL_OK) {
+         sprintf(ligne,"Usage: %s %s filename offs\noffs = must be a numerical value",argv[0],argv[1]);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          retour = TCL_ERROR;
       }
    }
 
+   if (retour== TCL_OK) {
+      int subBufNo = 0;
+      if(Tcl_GetInt(interp,argv[2],&subBufNo)==TCL_OK) {
+         // argv[2] contient un numero de buffer
+         try {
+            buffer = (CBuffer*)clientData;
+            buffer->Sub(subBufNo,(float) offset);
+            retour = TCL_OK;
+         } catch(const CError& e) {
+            sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
+         }
+      } else {
+         // argv[2] contient un nom de fichier
+         buffer = (CBuffer*)clientData;
+         try {
+            char fileName[1024];
+
+            // "encoding convertfrom identity" sert a traiter correctement les caracteres accentues
+            sprintf(ligne,"encoding convertfrom identity {%s}",argv[2]);
+            Tcl_Eval(interp,ligne);
+            strcpy(fileName,interp->result);
+
+            // j'ajoute l'extension par defaut si necessaire
+            sprintf(ligne,"file extension \"%s\"",fileName);
+            Tcl_Eval(interp,ligne);
+            if(strcmp(interp->result, "")==0) {
+               strcat(fileName,buffer->GetExtension());
+            }
+
+            buffer->Sub(fileName,(float)offset);
+            Tcl_SetResult(interp,(char*)"",TCL_VOLATILE);
+            retour = TCL_OK;
+         } catch(const CError& e) {
+            sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
+         }
+      }
+   }
    delete[] ligne;
    return retour;
 }

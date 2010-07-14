@@ -71,6 +71,7 @@ public:
    void Rot(float x0, float y0, float angle);
    void SetPix(TColorPlane plane,TYPE_PIXELS val,int x, int y);
    void Sub(char *filename, float offset);
+   void Sub(CPixels * subPixels, float offset);
    void Unsmear(float coef);
    void Window(int x1, int y1, int x2, int y2);
    void UnifyBg();

@@ -230,6 +230,7 @@ public:
    void SetPixels(int width, int height, int pixelSize, int offset[4], int pitch, unsigned char * pixels);
    void SetSavingType(int st);
    void Sub(char *filename, float offset);
+   void Sub(int bufNo, float offset);
    void TtImaSeries(char *s);
    void Stat(int x1,int y1,int x2,int y2,
             float *locut, float *hicut,  float *maxi,    float *mini,   float *mean,

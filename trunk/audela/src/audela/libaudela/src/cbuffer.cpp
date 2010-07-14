@@ -2532,9 +2532,6 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
          int jmin = (int) (*starY  - b + 0.5);
          int jmax = (int) (*starY  + b + 0.5);
 
-         // je conserve la valeur précédente pour la mettre dans message de retour à titre d'information
-         double flux0 = flux ;
-         
          if ( (imax - imin) <= 0 || (jmax - jmin) <= 0 ) {
             // la fwhm est trop petite sur un des axes 
             flux = 0;
@@ -3283,6 +3280,16 @@ void CBuffer::Rot(float x0, float y0, float angle)
 void CBuffer::Sub(char *filename, float offset)
 {
    pix->Sub(filename, offset);
+}
+
+void CBuffer::Sub(int bufNo, float offset)
+{
+   CBuffer* subBuffer = CBuffer::Chercher(bufNo);
+   if (subBuffer == NULL ) {
+      throw CError( "Buffer %d not found",bufNo);
+   }
+
+   pix->Sub(subBuffer->pix, offset);
 }
 
 void CBuffer::Unsmear(float coef)
