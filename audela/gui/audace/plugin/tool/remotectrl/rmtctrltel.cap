@@ -1,6 +1,6 @@
 #
 # Fichier : remotectrl.cap
-# Mise a jour $Id: rmtctrltel.cap,v 1.1 2010-01-30 14:48:20 robertdelmas Exp $
+# Mise a jour $Id: rmtctrltel.cap,v 1.2 2010-07-14 08:09:35 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -16,6 +16,7 @@ set caption(remotectrl,ms)                                "ms"
 set caption(remotectrl,coord)                             "Coord."
 set caption(remotectrl,match)                             "MATCH"
 set caption(remotectrl,match_confirm)                     "Continue?"
+set caption(remotectrl,equinoxe)                          "Equinox"
 set caption(remotectrl,goto)                              "GOTO"
 set caption(remotectrl,tel)                               "Mount"
 set caption(remotectrl,non_connecte)                      "not connected"
@@ -42,6 +43,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(remotectrl,coord)                          "Coord."
    set caption(remotectrl,match)                          "MATCH"
    set caption(remotectrl,match_confirm)                  "Voulez-vous poursuivre ?"
+   set caption(remotectrl,equinoxe)                       "Equinoxe"
    set caption(remotectrl,goto)                           "GOTO"
    set caption(remotectrl,tel)                            "Monture"
    set caption(remotectrl,non_connecte)                   "non connectée"
@@ -68,6 +70,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(remotectrl,coord)                          "Coord."
    set caption(remotectrl,match)                          "MATCH"
    set caption(remotectrl,match_confirm)                  "Volete continuare?"
+   set caption(remotectrl,equinoxe)                       "Epoca"
    set caption(remotectrl,goto)                           "GOTO"
    set caption(remotectrl,tel)                            "Montatura"
    set caption(remotectrl,non_connecte)                   "non connessa"
@@ -94,6 +97,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(remotectrl,coord)                          "Coord."
    set caption(remotectrl,match)                          "MATCH"
    set caption(remotectrl,match_confirm)                  "Continuar?"
+   set caption(remotectrl,equinoxe)                       "Equinoccio"
    set caption(remotectrl,goto)                           "GOTO"
    set caption(remotectrl,tel)                            "Montura"
    set caption(remotectrl,non_connecte)                   "no conectado"
@@ -120,6 +124,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(remotectrl,coord)                          "Koord."
    set caption(remotectrl,match)                          "MATCH"
    set caption(remotectrl,match_confirm)                  "Vollen sie weiterführen ?"
+   set caption(remotectrl,equinoxe)                       "Equinox"
    set caption(remotectrl,goto)                           "GOTO"
    set caption(remotectrl,tel)                            "Montierung"
    set caption(remotectrl,non_connecte)                   "nicht verbun."
@@ -146,6 +151,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(remotectrl,coord)                          "Coord."
    set caption(remotectrl,match)                          "MATCH"
    set caption(remotectrl,match_confirm)                  "Pretende prosseguir ?"
+   set caption(remotectrl,equinoxe)                       "Equinócio"
    set caption(remotectrl,goto)                           "GOTO"
    set caption(remotectrl,tel)                            "Montagem"
    set caption(remotectrl,non_connecte)                   "não ligado"
@@ -172,6 +178,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(remotectrl,coord)                          "Coord."
    set caption(remotectrl,match)                          "MATCH"
    set caption(remotectrl,match_confirm)                  "Continue?"
+   set caption(remotectrl,equinoxe)                       "Equinox"
    set caption(remotectrl,goto)                           "GOTO"
    set caption(remotectrl,tel)                            "Mount"
    set caption(remotectrl,non_connecte)                   "not connected"
@@ -198,6 +205,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(remotectrl,coord)                          "Coord."
    set caption(remotectrl,match)                          "MATCH"
    set caption(remotectrl,match_confirm)                  "Continue?"
+   set caption(remotectrl,equinoxe)                       "Equinox"
    set caption(remotectrl,goto)                           "GOTO"
    set caption(remotectrl,tel)                            "Mount"
    set caption(remotectrl,non_connecte)                   "not connected"
@@ -224,6 +232,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(remotectrl,coord)                          "Coord."
    set caption(remotectrl,match)                          "MATCH"
    set caption(remotectrl,match_confirm)                  "Continue?"
+   set caption(remotectrl,equinoxe)                       "Equinox"
    set caption(remotectrl,goto)                           "GOTO"
    set caption(remotectrl,tel)                            "Mount"
    set caption(remotectrl,non_connecte)                   "not connected"
