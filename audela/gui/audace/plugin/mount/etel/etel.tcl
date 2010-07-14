@@ -2,7 +2,7 @@
 # Fichier : etel.tcl
 # Description : Configuration de la monture Etel
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: etel.tcl,v 1.13 2010-05-23 16:01:28 robertdelmas Exp $
+# Mise à jour $Id: etel.tcl,v 1.14 2010-07-14 08:04:25 robertdelmas Exp $
 #
 
 namespace eval ::etel {
@@ -214,7 +214,6 @@ proc ::etel::stop { } {
 # hasMatch                Retourne la possibilite de faire un Match
 # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
 # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
-# hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
 # hasModel                Retourne la possibilite d'avoir plusieurs modeles pour le meme product
 # hasPark                 Retourne la possibilite de parquer la monture
 # hasUnpark               Retourne la possibilite de de-parquer la monture
@@ -245,7 +244,6 @@ proc ::etel::getPluginProperty { propertyName } {
       hasMatch                { return 1 }
       hasManualMotion         { return 1 }
       hasControlSuivi         { return 0 }
-      hasCorrectionRefraction { return 0 }
       hasModel                { return 0 }
       hasPark                 { return 0 }
       hasUnpark               { return 0 }

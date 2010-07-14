@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise à jour $Id: t193.tcl,v 1.28 2010-05-23 08:38:42 robertdelmas Exp $
+# Mise à jour $Id: t193.tcl,v 1.29 2010-07-14 08:08:25 robertdelmas Exp $
 #
 
 namespace eval ::t193 {
@@ -779,7 +779,6 @@ proc ::t193::stopFilter { } {
 # hasMatch                Retourne la possibilite de faire un Match
 # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
 # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
-# hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
 # hasModel                Retourne la possibilite d'avoir plusieurs modeles pour le meme product
 # hasPark                 Retourne la possibilite de parquer la monture
 # hasUnpark               Retourne la possibilite de de-parquer la monture
@@ -810,7 +809,6 @@ proc ::t193::getPluginProperty { propertyName } {
       hasMatch                { return 0 }
       hasManualMotion         { return 1 }
       hasControlSuivi         { return 1 }
-      hasCorrectionRefraction { return 0 }
       hasMotionWhile          {
          if {$::conf(t193,mode) == "ETHERNET"} {
             #--- les corrections sont demandees avec une distance en arseconde
@@ -842,7 +840,7 @@ proc ::t193::readRadec { } {
       set data [read -nonewline $private(radecHandle)]
       set data [split $data "\n" ]
       if { $data != "" } {
-         ###console::disp "::t193::readRadec data=$data \n"
+        ### ::console::disp "::t193::readRadec data=$data \n"
          #--- je recupere le dernier message (au cas ou il en aurait plusieurs qui se seraient accumul?s)
          set data [lindex $data end]
          set ah ""
@@ -857,8 +855,8 @@ proc ::t193::readRadec { } {
             set ::audace(telescope,getra)  [format "%02dh%02dm%05.2fs" $ah $am $as]
             set ::audace(telescope,getdec) [format "%02dd%02d\'%02d\"" $dd $dm $ds]
          } else {
-            ###console::affiche_erreur " ::t193::readRadec nombre de valeurs lues=$nbVar different de 7. Data=$data\n"
-            ###console::affiche_erreur " ::t193::readRadec alpha=$ah m=$am s=$as delta=$dd m=$dm s=$ds angle=$ba\n"
+           ### ::console::affiche_erreur " ::t193::readRadec nombre de valeurs lues=$nbVar different de 7. Data=$data\n"
+           ### ::console::affiche_erreur " ::t193::readRadec alpha=$ah m=$am s=$as delta=$dd m=$dm s=$ds angle=$ba\n"
          }
      }
       after 2000 ::t193::readRadec

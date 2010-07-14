@@ -2,7 +2,7 @@
 # Fichier : temma.tcl
 # Description : Fenetre de configuration pour le parametrage du suivi d'objets mobiles pour la monture Temma
 # Auteur : Robert DELMAS
-# Mise à jour $Id: temma.tcl,v 1.23 2010-05-23 16:05:33 robertdelmas Exp $
+# Mise à jour $Id: temma.tcl,v 1.24 2010-07-14 08:08:59 robertdelmas Exp $
 #
 
 namespace eval ::temma {
@@ -617,7 +617,6 @@ proc ::temma::configCorrectionTemma { } {
 # hasMatch                Retourne la possibilite de faire un Match
 # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
 # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
-# hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
 # hasModel                Retourne la possibilite d'avoir plusieurs modeles pour le meme product
 # hasPark                 Retourne la possibilite de parquer la monture
 # hasUnpark               Retourne la possibilite de de-parquer la monture
@@ -654,7 +653,6 @@ proc ::temma::getPluginProperty { propertyName } {
             return 0
          }
       }
-      hasCorrectionRefraction { return 0 }
       hasModel                { return 1 }
       hasPark                 { return 0 }
       hasUnpark               { return 0 }

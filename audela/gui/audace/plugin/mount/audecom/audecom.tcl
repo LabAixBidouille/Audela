@@ -2,7 +2,7 @@
 # Fichier : audecom.tcl
 # Description : Parametrage et pilotage de la carte AudeCom (Ex-Kauffmann)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: audecom.tcl,v 1.25 2010-05-23 15:41:25 robertdelmas Exp $
+# Mise à jour $Id: audecom.tcl,v 1.26 2010-07-14 08:02:05 robertdelmas Exp $
 #
 
 namespace eval ::audecom {
@@ -818,7 +818,6 @@ proc ::audecom::configEquatorialAudeCom { } {
 # hasMatch                Retourne la possibilite de faire un Match
 # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
 # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
-# hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
 # hasModel                Retourne la possibilite d'avoir plusieurs modeles pour le meme product
 # hasPark                 Retourne la possibilite de parquer la monture
 # hasUnpark               Retourne la possibilite de de-parquer la monture
@@ -849,7 +848,6 @@ proc ::audecom::getPluginProperty { propertyName } {
       hasMatch                { return 1 }
       hasManualMotion         { return 1 }
       hasControlSuivi         { return 1 }
-      hasCorrectionRefraction { return 0 }
       hasModel                { return 0 }
       hasPark                 { return 0 }
       hasUnpark               { return 0 }
