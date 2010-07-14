@@ -199,6 +199,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 	tel->raoff=0.;
 	tel->decoff=0.;
    mytel_flush(tel);
+   tel->refractionCorrection = 1; // la monture assure la correction de la refraction
    return 0;
 }
 
