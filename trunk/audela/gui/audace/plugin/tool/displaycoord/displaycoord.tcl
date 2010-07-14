@@ -2,7 +2,7 @@
 # Fichier : displaycoord.tcl
 # Description : Affichage des coordonnees du telescope
 # Auteur : Michel PUJOL
-# Mise à jour $Id: displaycoord.tcl,v 1.7 2010-05-25 16:47:37 robertdelmas Exp $
+# Mise à jour $Id: displaycoord.tcl,v 1.8 2010-07-14 08:12:09 robertdelmas Exp $
 #
 
 #============================================================
@@ -473,13 +473,13 @@ proc ::displaycoord::openSocketCoord { } {
       #--- j'affiche l'affichage (je fais comme si on avais recu une notification)
       readSocketCoord
       set private(connexionTimerId) ""
-      ###console::disp "::displaycoord::openSocketCoord $private(etat)\n"
+      ###::console::disp "::displaycoord::openSocketCoord $private(etat)\n"
    } ]
 
    if { $catchError != 0 } {
       #--- j'affiche l'etat
       readSocketCoord
-      console::disp "::displaycoord::openSocketCoord $private(etat)\n"
+      ::console::disp "::displaycoord::openSocketCoord $private(etat)\n"
       #--- je fais une nouvelle tentative dans 10s
       set private(connexionTimerId) [after 10000 ::displaycoord::openSocketCoord ]
    }
@@ -596,26 +596,26 @@ proc ::displaycoord::readSocketCoord {  } {
                if { $returnCode == 0 } {
                   #--- pas d'erreur a signaler
                } else {
-                  console::affiche_erreur "::displaycoord::readSocketCoord warning returnCode=$returnCode notification=$notification\n"
-                   set tu              "0000-00-00T00:00:00"
-                   set ts              "0000-00-00T00:00:00"
-                   set ra              "00h00m00s00"
-                   set dec             "00d00m00s00"
-                   set ra0             "00h00m00s00"
-                   set dec0            "00d00m00s00"
-                   set raCalage        "A"
-                   set decCalage       "A"
-                   set longitude       "000.0"
-                   set estouest        "E"
-                   set latitude        "+00.0"
-                   set altitude        "0000.0"
-                   set nomObservatoire ""
-                   set nomModelePointage ""
-                   set etatModelePointage 0
+                  ::console::affiche_erreur "::displaycoord::readSocketCoord warning returnCode=$returnCode notification=$notification\n"
+                  set tu                 "0000-00-00T00:00:00"
+                  set ts                 "0000-00-00T00:00:00"
+                  set ra                 "00h00m00s00"
+                  set dec                "00d00m00s00"
+                  set ra0                "00h00m00s00"
+                  set dec0               "00d00m00s00"
+                  set raCalage           "A"
+                  set decCalage          "A"
+                  set longitude          "000.0"
+                  set estouest           "E"
+                  set latitude           "+00.0"
+                  set altitude           "0000.0"
+                  set nomObservatoire    ""
+                  set nomModelePointage  ""
+                  set etatModelePointage 0
                }
             } else {
                #--- le message n'a pas le format attendu
-               console::affiche_erreur "::displaycoord::readSocketCoord error nbVar=$nbVar notification=$notification\n"
+               ::console::affiche_erreur "::displaycoord::readSocketCoord error nbVar=$nbVar notification=$notification\n"
             }
          }
       }
@@ -707,7 +707,7 @@ proc ::displaycoord::readSocketCoord {  } {
 
    }]
    if { $catchError != 0 } {
-      console::affiche_erreur ":$::errorInfo\n"
+      ::console::affiche_erreur ":$::errorInfo\n"
    }
 
 }
