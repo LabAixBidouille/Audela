@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise à jour $Id: telescope.tcl,v 1.60 2010-07-11 12:42:06 michelpujol Exp $
+# Mise à jour $Id: telescope.tcl,v 1.61 2010-07-14 07:58:23 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -99,7 +99,7 @@ proc ::telescope::initTel { this visuNo } {
       $Button_Init configure -relief raised -state normal
    }
    #--- Les coordonnees AD et Dec sont mises a jour
-   afficheCoord
+   ::telescope::afficheCoord
 }
 
 #------------------------------------------------------------
@@ -158,7 +158,7 @@ proc ::telescope::match { radec { radecEquinox "J2000.0" } } {
       ::confTel::run
       tkwait window $audace(base).confTel
    }
-   afficheCoord
+   ::telescope::afficheCoord
 }
 
 #------------------------------------------------------------
@@ -210,7 +210,7 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
          if { $blocking == 0 } {
             #--- Boucle tant que la monture n'est pas arretee (si on n'utilise pas le mode bloquant du goto)
             set audace(telescope,goto) "1"
-            set radec0 [ tel$audace(telNo) radec coord -equinox $radecEquinox]
+            set radec0 [ tel$audace(telNo) radec coord -equinox $radecEquinox ]
             set derniereBoucle [ ::telescope::surveille_goto [ list $radec0 ] $radecEquinox]
             if { $derniereBoucle == 1 } {
                #--- j'attends que la variable soit remise a zero
@@ -235,7 +235,7 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
                   vwait ::audace(telescope,goto)
                }
             } else {
-               afficheCoord
+               ::telescope::afficheCoord
             }
          }
       }]
@@ -278,8 +278,8 @@ proc ::telescope::surveille_goto { radec0 radecEquinox } {
    global audace
 
    if { $audace(telNo) != 0 } {
-      set radec1 [ tel$audace(telNo) radec coord -equinox $radecEquinox]
-      afficheCoord
+      set radec1 [ tel$audace(telNo) radec coord -equinox $radecEquinox ]
+      ::telescope::afficheCoord
       set ra0 [ mc_angle2deg [ lindex $radec0 0 ] 360 ]
       set dec0 [ mc_angle2deg [ lindex $radec0 1 ] 90 ]
       set ra1 [ mc_angle2deg [ lindex $radec1 0 ] 360 ]s
@@ -338,7 +338,7 @@ proc ::telescope::stopGoto { { But_Stop "" } } {
          update
       }
    }
-   afficheCoord
+   ::telescope::afficheCoord
 }
 
 #------------------------------------------------------------
@@ -900,7 +900,7 @@ proc ::telescope::controleSuivi { { value " " } } {
       ::confTel::run
       tkwait window $audace(base).confTel
    }
-   afficheCoord
+   ::telescope::afficheCoord
 }
 
 #------------------------------------------------------------
@@ -975,7 +975,7 @@ proc ::telescope::stop { direction } {
          if { $audace(telescope,speed) == "3" } {
             after 3700
          } else {
-            Boucle
+            ::telescope::Boucle
          }
       } elseif { $conf(telescope) == "lx200" } {
          tel$audace(telNo) radec stop $direction
@@ -995,7 +995,7 @@ proc ::telescope::stop { direction } {
       ::confTel::run
       tkwait window $audace(base).confTel
    }
-   afficheCoord
+   ::telescope::afficheCoord
 }
 
 #------------------------------------------------------------
@@ -1011,13 +1011,13 @@ proc ::telescope::Boucle { } {
    global audace
 
    #--- Boucle tant que la monture n'est pas arretee
-   set radecB0 [ tel$audace(telNo) radec coord -equinox J2000]
+   set radecB0 [ tel$audace(telNo) radec coord -equinox J2000 ]
    after 300
-   set radecB1 [ tel$audace(telNo) radec coord -equinox J2000]
+   set radecB1 [ tel$audace(telNo) radec coord -equinox J2000 ]
    while { $radecB0 != $radecB1 } {
       set radecB0 $radecB1
       after 200
-      set radecB1 [ tel$audace(telNo) radec coord -equinox J2000]
+      set radecB1 [ tel$audace(telNo) radec coord -equinox J2000 ]
    }
 }
 
