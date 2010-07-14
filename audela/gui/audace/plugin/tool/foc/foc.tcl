@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise à jour $Id: foc.tcl,v 1.34 2010-05-01 09:05:26 robertdelmas Exp $
+# Mise à jour $Id: foc.tcl,v 1.35 2010-07-14 17:34:28 robertdelmas Exp $
 #
 
 set ::graphik(compteur) {}
@@ -621,10 +621,10 @@ namespace eval ::foc {
          update
          #--- Met le compteur de foc a zero et rafraichit les affichages
          tel$audace(telNo) focus init 0
-         set audace(focus,nbpas1) "00000"
-         $This.fra5.fra1.lab1 configure -textvariable audace(focus,nbpas1)
-         set audace(focus,nbpas2) ""
-         $This.fra5.fra2.ent3 configure -textvariable audace(focus,nbpas2)
+         set audace(focus,currentFocus) "0"
+         $This.fra5.fra1.lab1 configure -textvariable audace(focus,currentFocus)
+         set audace(focus,targetFocus) ""
+         $This.fra5.fra2.ent3 configure -textvariable audace(focus,targetFocus)
          update
          #--- Gestion graphique du bouton
          $This.fra5.but3 configure -relief raised -text $panneau(foc,initialise)
@@ -645,8 +645,11 @@ namespace eval ::foc {
          #--- Lit et affiche la position du compteur de foc
          set nbpas1 [ tel$audace(telNo) focus coord ]
          split $nbpas1 "\n"
-         set audace(focus,nbpas1) [ lindex $nbpas1 0 ]
-         $This.fra5.fra1.lab1 configure -textvariable audace(focus,nbpas1)
+         set audace(focus,currentFocus) [ string trimleft [ lindex $nbpas1 0 ] 0 ]
+         if { $audace(focus,currentFocus) == "" } {
+            set audace(focus,currentFocus) "0"
+         }
+         $This.fra5.fra1.lab1 configure -textvariable audace(focus,currentFocus)
          update
          #--- Gestion graphique du bouton
          $This.fra5.but1 configure -relief raised -text $panneau(foc,trouve)
@@ -661,33 +664,33 @@ namespace eval ::foc {
       global audace panneau
 
       if { [ ::tel::list ] != "" } {
-         if { $audace(focus,nbpas2) != "" } {
+         if { $audace(focus,targetFocus) != "" } {
             #--- Gestion graphique des boutons
             $This.fra5.but3 configure -relief groove -state disabled
             $This.fra5.but2 configure -relief groove -text $panneau(foc,deplace)
             update
             #--- Gestion des limites
-            if { $audace(focus,nbpas2) > "32767" } {
+            if { $audace(focus,targetFocus) > "32767" } {
                #--- Message au-dela de la limite superieure
                ::foc::limiteFoc
-               set audace(focus,nbpas2) ""
-               $This.fra5.fra2.ent3 configure -textvariable audace(focus,nbpas2)
+               set audace(focus,targetFocus) ""
+               $This.fra5.fra2.ent3 configure -textvariable audace(focus,targetFocus)
                update
-            } elseif { $audace(focus,nbpas2) < "-32767" } {
+            } elseif { $audace(focus,targetFocus) < "-32767" } {
                #--- Message au-dela de la limite inferieure
                ::foc::limiteFoc
-               set audace(focus,nbpas2) ""
-               $This.fra5.fra2.ent3 configure -textvariable audace(focus,nbpas2)
+               set audace(focus,targetFocus) ""
+               $This.fra5.fra2.ent3 configure -textvariable audace(focus,targetFocus)
                update
             } else {
                #--- Lit la position de depart du compteur de foc
                set nbpas1 [ tel$audace(telNo) focus coord ]
                split $nbpas1 "\n"
-               set audace(focus,nbpas1) [ lindex $nbpas1 0 ]
+               set audace(focus,currentFocus) [ lindex $nbpas1 0 ]
                #--- Lance le goto du focaliseur
                ::focus::goto $::panneau(foc,focuser)
                #--- Affiche la position d'arrivee
-               $This.fra5.fra1.lab1 configure -textvariable audace(focus,nbpas1)
+               $This.fra5.fra1.lab1 configure -textvariable audace(focus,currentFocus)
             }
             #--- Gestion graphique des boutons
             $This.fra5.but2 configure -relief raised -text $panneau(foc,deplace)
@@ -743,7 +746,7 @@ namespace eval ::foc {
       #--- Cree l'affichage du message
       label $audace(base).limitefoc.lab1 -text "$caption(foc,limitefoc1)"
       pack $audace(base).limitefoc.lab1 -padx 10 -pady 2
-      if { $audace(focus,nbpas2) > "32767" } {
+      if { $audace(focus,targetFocus) > "32767" } {
          label $audace(base).limitefoc.lab2 -text "$caption(foc,limitefoc2)"
          pack $audace(base).limitefoc.lab2 -padx 10 -pady 2
       } else {
@@ -1020,7 +1023,7 @@ proc focBuildIF { This } {
          frame $This.fra5.fra1 -borderwidth 1 -relief flat
 
             #--- Label pour nbpas1
-            entry $This.fra5.fra1.lab1 -textvariable audace(focus,nbpas1) \
+            entry $This.fra5.fra1.lab1 -textvariable audace(focus,currentFocus) \
                -relief groove -width 6 -state disabled
             pack $This.fra5.fra1.lab1 -in $This.fra5.fra1 -side left -fill none -padx 4 -pady 2
 
@@ -1038,7 +1041,7 @@ proc focBuildIF { This } {
          frame $This.fra5.fra2 -borderwidth 1 -relief flat
 
             #--- Entry pour nbpas2
-            entry $This.fra5.fra2.ent3 -textvariable audace(focus,nbpas2) \
+            entry $This.fra5.fra2.ent3 -textvariable audace(focus,targetFocus) \
                -relief groove -width 6 -justify center \
                -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer -32767 32767 }
             pack $This.fra5.fra2.ent3 -in $This.fra5.fra2 -side left -fill none -padx 4 -pady 2
