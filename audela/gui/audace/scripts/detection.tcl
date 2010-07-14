@@ -197,7 +197,7 @@ for {set i 1} {$i<=$iterationdef} {incr i} {
                tkwait window $base.confTel
             }
             Message console "${entete_ligne_console}$caption(detection,goto_position) : ${ra} ${dec} ($caption(detection,serie) ${i})\n"
-            tel$audace(telNo) radec goto [list $ra $dec]
+            tel$audace(telNo) radec goto [list $ra $dec] -equinox J2000
 
             # La ligne n'est pas précédée d'un caractère "*", on lance les acquisitions
             if {[lindex $obj 0]!="*"} {
