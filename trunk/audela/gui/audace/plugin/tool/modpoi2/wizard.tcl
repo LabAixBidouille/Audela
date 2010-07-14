@@ -2,7 +2,7 @@
 # Fichier : wizard.tcl
 # Description : pipeline de pointage des etoiles
 # Auteur : Michel Pujol
-# Mise à jour $Id: wizard.tcl,v 1.13 2010-07-11 12:36:24 michelpujol Exp $
+# Mise à jour $Id: wizard.tcl,v 1.14 2010-07-14 08:13:17 robertdelmas Exp $
 #
 
 namespace eval ::modpoi2::wizard {
@@ -49,7 +49,7 @@ proc ::modpoi2::wizard::modpoi_wiz { visuNo { starList "" } } {
    set private(minMagnitude)         $::conf(modpoi,wizard,minMagnitude)
    set private(maxMagnitude)         $::conf(modpoi,wizard,maxMagnitude)
    set private(symbols)              "IH ID NP CH ME MA FO HF DAF TF"
-   set private(home)                 $::conf(posobs,observateur,gps)
+   set private(home)                 $::audace(posobs,observateur,gps)
    set private(horizons)             [::horizon::getHorizon $private(home)]
    set private(amerIndex)            "0"
    #--- Mode de centrage (automatique ou manuel)
@@ -286,7 +286,7 @@ proc ::modpoi2::wizard::modpoi_wiz1b { } {
 
    #--- Check if mount take refraction correction into account
    frame $private(g,base).fra_refr
-      if { [ ::confTel::getPluginProperty hasCorrectionRefraction ] == "1" } {
+      if { [ ::confTel::getPluginProperty hasRefractionCorrection ] == "1" } {
          label $private(g,base).fra_refr.lab_refraction_1 \
             -text $caption(modpoi2,wiz1b,refraction_1) -borderwidth 2 \
             -padx 0 -pady 3
@@ -991,7 +991,7 @@ proc ::modpoi2::wizard::modpoi_wiz3 { amerIndex } {
    pack $private(g,base).star -side top -fill both -expand 1
 
    #--- Label for the comment
-   if { [ ::confTel::getPluginProperty hasCorrectionRefraction ] == "0" } {
+   if { [ ::confTel::getPluginProperty hasRefractionCorrection ] == "0" } {
       label $private(g,base).lab_comment_1 \
          -text $caption(modpoi2,$wiz,comment_1) -borderwidth 2 \
          -padx 20 -pady 10
