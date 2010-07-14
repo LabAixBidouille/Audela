@@ -2,7 +2,7 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise à jour $Id: lx200.tcl,v 1.29 2010-05-23 08:37:19 robertdelmas Exp $
+# Mise à jour $Id: lx200.tcl,v 1.30 2010-07-14 08:05:41 robertdelmas Exp $
 #
 
 namespace eval ::lx200 {
@@ -438,7 +438,7 @@ proc ::lx200::configureMonture { } {
          }
          serialport {
             #--- Je cree la monture
-            set telNo [ tel::create lx200 $conf(lx200,port) ]
+            set telNo [ tel::create lx200 $conf(lx200,port) -name $conf(lx200,modele) ]
             #--- J'affiche un message d'information dans la Console
             ::console::affiche_entete "$caption(lx200,port_lx200) ($conf(lx200,modele))\
                $caption(lx200,2points) $conf(lx200,port)\n"
@@ -707,7 +707,6 @@ proc ::lx200::tracesConsole { } {
 # hasMatch                Retourne la possibilite de faire un Match
 # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
 # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
-# hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
 # hasModel                Retourne la possibilite d'avoir plusieurs modeles pour le meme product
 # hasMotionWhile          Retourne la possibilite d'avoir des deplacements cardinaux pendant une duree
 # hasPark                 Retourne la possibilite de parquer la monture
@@ -745,15 +744,6 @@ proc ::lx200::getPluginProperty { propertyName } {
       hasMatch                { return 1 }
       hasManualMotion         { return 1 }
       hasControlSuivi         { return 0 }
-      hasCorrectionRefraction {
-         if { $::conf(lx200,modele) == "$::caption(lx200,modele_audecom)" } {
-            return 0
-         } elseif { $::conf(lx200,modele) == "$::caption(lx200,modele_ite-lente)" } {
-            return 0
-         } else {
-            return 1
-         }
-      }
       hasModel                { return 1 }
       hasMotionWhile          {
          if { $::conf(lx200,modele) == "$::caption(lx200,modele_ite-lente)" } {
