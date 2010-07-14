@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.36 2010-07-11 12:45:50 michelpujol Exp $
+# Mise a jour $Id: autoguider.cap,v 1.37 2010-07-14 07:57:20 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -184,7 +184,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,running)               "Apprendimento in corso"
    set caption(autoguider,delay)                 "Intervallo (s)"
    set caption(autoguider,targetBoxSize)         "Dimensioni della zona"
-   set caption(autoguider,detectionThreshold)    "#Detection Threshold"
+   set caption(autoguider,detectionThreshold)    "Soglia di detezione"
    set caption(autoguider,AD)                    "Ascensione Retta"
    set caption(autoguider,declinaison)           "Declinazione"
    set caption(autoguider,aller_vers)            "Andare verso"
@@ -206,6 +206,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,searchFwhm)            "Fwhm minima"
    set caption(autoguider,searchRadius)          "Raggio di ricerca (pixel)"
    set caption(autoguider,searchThreshold)       "Intensita` minima (2)"
+
+   set caption(autoguider,noSignal)              "L'oggetto è sotto la soglia di detezione"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -249,7 +251,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,running)               "Aprendizaje en proceso"
    set caption(autoguider,delay)                 "Retraso (s)"
    set caption(autoguider,targetBoxSize)         "Tamaño zona"
-   set caption(autoguider,detectionThreshold)    "#Detection Threshold"
+   set caption(autoguider,detectionThreshold)    "# Detection Threshold"
    set caption(autoguider,AD)                    "Ascensión Recta"
    set caption(autoguider,declinaison)           "Declinación"
    set caption(autoguider,aller_vers)            "Ir a"
@@ -271,6 +273,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,searchFwhm)            "Fwhm minimo"
    set caption(autoguider,searchRadius)          "Radio de búsqueda (pixel)"
    set caption(autoguider,searchThreshold)       "Mínima luminosidad (2)"
+
+   set caption(autoguider,noSignal)              "# L'étoile est en dessous du seuil de détection"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -314,7 +318,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,running)               "Lernen laufend"
    set caption(autoguider,delay)                 "Zeitraum (s)"
    set caption(autoguider,targetBoxSize)         "Größe der Zone"
-   set caption(autoguider,detectionThreshold)    "#Detection Threshold"
+   set caption(autoguider,detectionThreshold)    "# Detection Threshold"
    set caption(autoguider,AD)                    "Rektaszension"
    set caption(autoguider,declinaison)           "Deklination"
    set caption(autoguider,aller_vers)            "zu gehen"
@@ -336,6 +340,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,searchFwhm)            "Min. Fwhm"
    set caption(autoguider,searchRadius)          "Radius Durchsuchung (Pixel)"
    set caption(autoguider,searchThreshold)       "Min. Licht (2)"
+
+   set caption(autoguider,noSignal)              "# L'étoile est en dessous du seuil de détection"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -379,7 +385,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,running)               "Aprendizagem em curso"
    set caption(autoguider,delay)                 "Atraso (s)"
    set caption(autoguider,targetBoxSize)         "Tamanho da zona"
-   set caption(autoguider,detectionThreshold)    "#Detection Threshold"
+   set caption(autoguider,detectionThreshold)    "# Detection Threshold"
    set caption(autoguider,AD)                    "Ascenção Recta"
    set caption(autoguider,declinaison)           "Declinação"
    set caption(autoguider,aller_vers)            "Ir para"
@@ -401,6 +407,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,searchFwhm)            "Fwhm min."
    set caption(autoguider,searchRadius)          "Raio de pesquisa (pixel)"
    set caption(autoguider,searchThreshold)       "Luminosidade min. (2)"
+
+   set caption(autoguider,noSignal)              "# L'étoile est en dessous du seuil de détection"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -467,6 +475,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,searchRadius)          "Search Radius (pixel)"
    set caption(autoguider,searchThreshold)       "Min. Luminosity (2)"
 
+   set caption(autoguider,noSignal)              "Signal is under detection threshold"
+
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
@@ -532,6 +542,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,searchRadius)          "Search Radius (pixel)"
    set caption(autoguider,searchThreshold)       "Min. Luminosity (2)"
 
+   set caption(autoguider,noSignal)              "Signal is under detection threshold"
+
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
@@ -596,6 +608,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,searchFwhm)            "Min. Fwhm"
    set caption(autoguider,searchRadius)          "Search Radius (pixel)"
    set caption(autoguider,searchThreshold)       "Min. Luminosity (2)"
+
+   set caption(autoguider,noSignal)              "Signal is under detection threshold"
 
 }
 
