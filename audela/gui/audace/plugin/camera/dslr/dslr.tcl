@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: dslr.tcl,v 1.41 2010-02-14 16:13:47 robertdelmas Exp $
+# Mise à jour $Id: dslr.tcl,v 1.42 2010-07-14 07:59:49 robertdelmas Exp $
 #
 
 namespace eval ::dslr {
@@ -386,8 +386,8 @@ proc ::dslr::configureCamera { camItem bufNo } {
       #--- Je mets audela_start_dir entre guillemets pour le cas ou le nom du repertoire contient des espaces
       #--- Je cree la camera
       set camNo [ cam::create digicam USB -name DSLR -debug_cam $conf(dslr,debug) -gphoto2_win_dll_dir \"$::audela_start_dir\" ]
-      console::affiche_entete "$caption(dslr,name) $caption(dslr,2points) [ cam$camNo name ]\n"
-      console::affiche_saut "\n"
+      ::console::affiche_entete "$caption(dslr,name) $caption(dslr,2points) [ cam$camNo name ]\n"
+      ::console::affiche_saut "\n"
       #--- Je change de variable
       set private($camItem,camNo) $camNo
       #--- J'associe le buffer de la visu
@@ -430,7 +430,7 @@ proc ::dslr::configureCamera { camItem bufNo } {
       if { $resultUsecf == 1 } {
          #--- Si l'appareil n'a pas de carte memoire,
          #--- je desactive l'utilisation de la carte memoire de l'appareil
-         console::affiche_entete "$messageUseCf.\nUnset use memory card."
+         ::console::affiche_entete "$messageUseCf.\nMemory card has been unset.\n\n"
          set conf(dslr,utiliser_cf) 0
          cam$camNo usecf $conf(dslr,utiliser_cf)
       }
@@ -735,8 +735,8 @@ proc ::dslr::changerSelectionTelechargementAPN { camItem } {
          cam$private($camItem,camNo)  autoload 0
       }
    }
+   ::console::disp "conf(dslr,telecharge_mode) = $conf(dslr,telecharge_mode) --> cam$private($camItem,camNo) autoload = [ cam$private($camItem,camNo)  autoload ] \n"
    ::console::affiche_saut "\n"
-   ::console::disp "conf(dslr,telecharge_mode) = $conf(dslr,telecharge_mode) cam$private($camItem,camNo)   autoload=[ cam$private($camItem,camNo)  autoload ] \n"
 }
 
 #
@@ -826,7 +826,7 @@ proc ::dslr::getPluginProperty { camItem propertyName } {
 proc ::dslr::setFormat { camItem format } {
    variable private
 
-### console::disp "::dslr::setFormat stack\n"
+### ::console::disp "::dslr::setFormat stack\n"
    cam$private($camItem,camNo) quality $format
 }
 
