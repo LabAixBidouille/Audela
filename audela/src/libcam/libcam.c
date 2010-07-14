@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.40 2010-07-11 12:24:02 michelpujol Exp $
+ * $Id: libcam.c,v 1.41 2010-07-14 14:36:05 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -133,6 +133,7 @@ static int cmdCamName(ClientData clientData, Tcl_Interp * interp, int argc, char
 static int cmdCamProduct(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamCcd(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamBin(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+static int cmdCamDark(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamExptime(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamBuf(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamWindow(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
@@ -343,6 +344,12 @@ static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, ch
                   Tcl_SetResult(interp, s, TCL_VOLATILE);
                   return TCL_ERROR;
                }
+               // je duplique la commande de creation de buffer
+               sprintf(s,"thread::copycommand %s buf::create ",camThreadId);
+               Tcl_Eval(interp, s);
+               // je duplique la commande de suppression de buffer
+               sprintf(s,"thread::copycommand %s buf::delete ",camThreadId);
+               Tcl_Eval(interp, s);
 
                // je prepare la commande de creation de la camera dans la thread de la camera :
                // thread::send $threadId { {argv0} {argv1} ... {argvn} mainThreadId $mainThreadId }
@@ -367,6 +374,13 @@ static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, ch
                strcpy(mainThreadId, interp->result);
                Tcl_Eval(interp, "thread::create");
                strcpy(camThreadId, interp->result);
+               // je duplique la commande de creation de buffer
+               sprintf(s,"thread::copycommand %s buf::create ",camThreadId);
+               Tcl_Eval(interp, s);
+               // je duplique la commande de suppression de buffer
+               sprintf(s,"thread::copycommand %s buf::delete ",camThreadId);
+               Tcl_Eval(interp, s);
+
             }
          } else {
             // Cas de l'environnement mono-thread
@@ -975,6 +989,7 @@ static int cmdCamThreadId(ClientData clientData, Tcl_Interp * interp, int argc, 
  */
 static void AcqRead(ClientData clientData )
 {
+   char errorMessage[1024];
    char s[30000];
    unsigned short *p;		/* cameras de 1 a 16 bits non signes */
    double exptime=0.;
@@ -985,6 +1000,7 @@ static void AcqRead(ClientData clientData )
 
    cam = (struct camprop *) clientData;
    interp = cam->interpCam;
+   strcpy(errorMessage,"");
 
    // Information par defaut concernant l'image
    // ATTENTION : la camera peut mettre a jour ces valeurs pendant l'execution de read_ccd()
@@ -1078,8 +1094,9 @@ static void AcqRead(ClientData clientData )
          (int)(void *) p, cam->pixel_size, cam->pixels_reverse_x, cam->pixels_reverse_y);
       */
       libcam_log(LOG_DEBUG, s);
-      if (Tcl_Eval(interp, s) == TCL_ERROR) {
+      if (Tcl_Eval(interp, s) == TCL_ERROR) {         
          libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+         sprintf(errorMessage,"Errors setpixels: %s", interp->result);
       }
 
       //--- get height after decompression .
@@ -1091,6 +1108,7 @@ static void AcqRead(ClientData clientData )
          Tcl_GetIntFromObj(interp, Tcl_GetObjResult(interp), &cam->h);
       } else {
          libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+         sprintf(errorMessage,"Errors getpixelsheight: %s", interp->result);
       }
 
       //--- get width after decompression
@@ -1144,6 +1162,7 @@ static void AcqRead(ClientData clientData )
             libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
          }
       }
+
 
 
       sprintf(s, "buf%d setkwd {BIN1 %d int \"\" \"\"}", cam->bufno, cam->binx);
@@ -1203,6 +1222,17 @@ static void AcqRead(ClientData clientData )
          }
       }
 
+      // je soustrais le dark 
+      if ( cam->darkBufNo != 0 ) {
+         sprintf(s, "buf%d sub %d", cam->bufno, cam->darkBufNo );
+         if (Tcl_Eval(interp, s) == TCL_ERROR) {
+            libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+            sprintf(errorMessage,"Error substract dark: %s", interp->result);
+         }
+      }
+
+
+
       /* - call the header proc to add additional informations -*/
       if ( cam->headerproc[0] != 0 ) {
          sprintf(s,"set libcam(header) [%s]",cam->headerproc);
@@ -1243,14 +1273,6 @@ static void AcqRead(ClientData clientData )
    free(p);
 
    if (cam->timerExpiration != NULL) {
-      //sprintf(s, "status_cam%d", cam->camno);
-      //Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
-      //if ( cam->camThreadId[0] != 0 ) {
-      //   // cas du mutltithread
-      //   // je change l'etat de la variable dans la thread principale
-      //   sprintf(s, "thread::send -async %s { set ::status_cam%d stand }", cam->mainThreadId, cam->camno);
-      //   Tcl_Eval(interp, s);
-      //}
       setCameraStatus(cam,interp,"stand");
    }
    cam->clockbegin = 0;
@@ -1260,6 +1282,12 @@ static void AcqRead(ClientData clientData )
       free(cam->timerExpiration);
       cam->timerExpiration = NULL;
    }
+   
+   if ( cam->blockingAcquisition == 1 ) {
+      // je prepare le message d'erreur qui sera retourne par cmdCamAcq
+      strcpy(cam->msg,errorMessage);
+   }
+   // je signale a cmdCamAcq que l'acquisition est terminée
    cam->acquisitionInProgress = 0;
 }
 
@@ -1341,6 +1369,14 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
                      free(cam->timerExpiration);
                      cam->timerExpiration = NULL;
                   }
+               }
+               if ( cam->msg[0] != 0 ) {
+                  // je transmet le message d'erreure au scipt TCL
+                  Tcl_SetResult(interp, cam->msg, TCL_VOLATILE);
+                  result = TCL_ERROR;
+               } else {
+                  Tcl_SetResult(interp, "", TCL_VOLATILE);
+                  result = TCL_OK;
                }
             }
          }
@@ -1954,6 +1990,16 @@ static int cmdCamClose(ClientData clientData, Tcl_Interp * interp, int argc, cha
       }
    }
 
+   // je supprime le buffer du dark
+   if ( cam->darkBufNo != 0 ) {
+       sprintf(s, "buf::delete %d", cam->darkBufNo);
+       Tcl_Eval(interp, s);
+   }
+   // je supprime le nom du fichier du dark
+   if ( cam->darkFileName != NULL ) {
+      free(cam->darkFileName);
+      cam->darkFileName = NULL;
+   }
    Tcl_ResetResult(interp);
    return TCL_OK;
 }
@@ -2089,11 +2135,13 @@ static int cam_init_common(struct camprop *cam, int argc, char **argv)
    strcpy(cam->headerproc,"");
    cam->blockingAcquisition = 0;
    //---  valeurs par defaut des capacites offertes par la camera
-   cam->capabilities.expTimeCommand = 1;  // existance du choix du temps de pose
-   cam->capabilities.expTimeList    = 0;  // existance de la liste des temps de pose predefini
-   cam->capabilities.videoMode      = 0;  // existance du mode video
+   cam->capabilities.expTimeCommand = 1;  // existence  du choix du temps de pose
+   cam->capabilities.expTimeList    = 0;  // existence  de la liste des temps de pose predefini
+   cam->capabilities.videoMode      = 0;  // existence  du mode video
    cam->acquisitionInProgress = 0;
    cam->gps_date = 0;
+   cam->darkBufNo = 0;                // buffer contenant l'image du dark a soustraire apres chaque acquisition  
+   cam->darkFileName = NULL;
    return 0;
 }
 
@@ -2153,3 +2201,80 @@ void setScanResult(struct camprop *cam, Tcl_Interp * interp, char * status)
       Tcl_Eval(interp, s);
    }
 }
+
+static int cmdCamDark(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+   char ligne[1024];
+   int result = TCL_OK;   
+
+   if ((argc != 2) && (argc != 3)) {
+      sprintf(ligne, "Usage: %s %s ?filename? ", argv[0], argv[1]);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else if (argc == 2) {
+      // je retourne le nom du fichier
+      struct camprop *cam = (struct camprop *) clientData;
+      if ( cam->darkFileName == NULL) {
+         Tcl_SetResult(interp, "", TCL_VOLATILE);;
+      } else {
+         Tcl_SetResult(interp, cam->darkFileName, TCL_VOLATILE);
+      }      
+      result = TCL_OK;
+   } else {
+      struct camprop *cam = (struct camprop *) clientData;
+
+      // je supprime le buffer
+      if ( cam->darkBufNo != 0 ) {
+          sprintf(ligne, "buf::delete %d", cam->darkBufNo);
+          if (Tcl_Eval(interp, ligne) == TCL_ERROR) {
+            sprintf(ligne, "%s %s %s : %s", argv[0], argv[1], argv[2], interp->result );
+            Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+            result = TCL_ERROR;
+         } else {
+            cam->darkBufNo = 0;
+            Tcl_SetResult(interp, "", TCL_VOLATILE);
+            result = TCL_OK;
+         }
+      }
+      // je supprime le nom du fichier
+      if ( cam->darkFileName != NULL ) {
+         free(cam->darkFileName);
+         cam->darkFileName = NULL;
+      }
+
+      if ( strcmp(argv[2],"") != 0) {
+         // je cree le buffer
+         if ( cam->darkBufNo == 0 ) {
+            sprintf(ligne, "buf::create");
+            if (Tcl_Eval(interp, ligne) == TCL_ERROR) {
+               sprintf(ligne, "%s %s %s : %s", argv[0], argv[1], argv[2], interp->result );
+               Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+               result = TCL_ERROR;
+            } else {
+               cam->darkBufNo = atoi(interp->result);
+            }
+         } 
+         // je charge l'image
+         if ( result==TCL_OK) {
+            sprintf(ligne, "buf%d load {%s}", cam->darkBufNo,argv[2]);
+            if (Tcl_Eval(interp, ligne) == TCL_ERROR) {
+               sprintf(ligne, "%s %s %s : %s", argv[0], argv[1], argv[2], interp->result );
+               Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+               result = TCL_ERROR;
+            } else {
+               // je memorise le nom du fichier
+               if ( cam->darkFileName != NULL ) {
+                  free(cam->darkFileName);
+                  cam->darkFileName = NULL;
+               }
+               cam->darkFileName = (char*) malloc(strlen(argv[2])+1);
+               strcpy(cam->darkFileName, argv[2]);
+               Tcl_SetResult(interp, "", TCL_VOLATILE);
+               result = TCL_OK;
+            }
+         }
+      } 
+   }
+   return result;
+}
+
