@@ -2,7 +2,7 @@
 # Fichier : rmtctrltel.tcl
 # Description : Script pour le controle de la monture
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: rmtctrltel.tcl,v 1.3 2010-05-25 18:07:31 robertdelmas Exp $
+# Mise à jour $Id: rmtctrltel.tcl,v 1.4 2010-07-14 08:15:36 robertdelmas Exp $
 #
 
    proc fillTelPanel { } {
@@ -14,7 +14,7 @@
       set panneau(remotectrl,nomObjet)  ""
       set panneau(remotectrl,equinox)   ""
       #--- Coordonnees J2000.0 de M104
-      set panneau(remotectrl,getobj)    "12h40m0 -11d37m22"
+      setRaDec 1 [list "12h40m0s" "-11d37m22"] "M104" "J2000.0" ""
       #---
       set panneau(remotectrl,goto)      "$caption(remotectrl,goto)"
       set panneau(remotectrl,match)     "$caption(remotectrl,match)"
@@ -35,6 +35,12 @@
          #--- Entry pour l'objet a entrer
          entry $This.fra2.ent1 -textvariable panneau(remotectrl,getobj) -width 14 -relief groove
          pack $This.fra2.ent1 -in $This.fra2 -anchor center -pady 2
+
+         #--- LabelEntry pour l'equinoxe des coordonnees
+         LabelEntry $This.fra2.equinox -label "$caption(remotectrl,equinoxe)" \
+            -labeljustify left -labelwidth 10 -width 5 -justify center -editable 0 \
+            -textvariable panneau(remotectrl,equinoxObjet)
+         pack $This.fra2.equinox -in $This.fra2 -anchor w -side top -fill x -expand 0
 
          #--- Bouton GOTO
          button $This.fra2.but1 -borderwidth 2 -text $panneau(remotectrl,goto) -command { ::remotectrl::cmdGoto }
@@ -212,15 +218,15 @@
             set panneau(remotectrl,list_radec) $panneau(remotectrl,getobj)
          }
          #--- Debut modif reseau
-         set message "send \{tel\$audace(telNo) radec goto \{[ list [lindex $panneau(remotectrl,list_radec) 0] [lindex $panneau(remotectrl,list_radec) 1] ]\}\}"
+         set message "send \{tel\$audace(telNo) radec goto \{[ list [lindex $panneau(remotectrl,list_radec) 0] [lindex $panneau(remotectrl,list_radec) 1] ] -equinox $panneau(remotectrl,equinoxObjet)\}\}"
          eval $message
          #--- Fin modif reseau
          $This.fra2.but1 configure -relief raised -state normal
          update
       } else {
          #--- Affiche un message de non connexion du telescope
-         set panneau(remotectrl,getra)  "$caption(remotectrl,tel)"
-         set panneau(remotectrl,getdec) "$caption(remotectrl,non_connecte)"
+         set panneau(remotectrl,getra)   "$caption(remotectrl,tel)"
+         set panneau(remotectrl,getdec)  "$caption(remotectrl,non_connecte)"
          $This.fra3.ent1 configure -text $panneau(remotectrl,getra)
          $This.fra3.ent2 configure -text $panneau(remotectrl,getdec)
          update
@@ -251,7 +257,7 @@
          eval $message
 
       } else {
-         console::affiche_erreur "cmdSpeed erreur"
+         ::console::affiche_erreur "cmdSpeed erreur"
       }
       update
       return
@@ -272,7 +278,7 @@
          eval $message
 
       } else {
-         console::affiche_erreur "cmdSpeed erreur"
+         ::console::affiche_erreur "cmdSpeed erreur"
       }
       update
       return
@@ -569,19 +575,19 @@
 
       #--- Boucle tant que le telescope n'est pas arrete
       #--- Debut modif reseau
-      set message "send \{tel\$audace(telNo) radec coord\}"
+      set message "send \{tel\$audace(telNo) radec coord -equinox J2000\}"
       set radecB0 [eval $message]
       #--- Fin modif reseau
       after 300
       #--- Debut modif reseau
-      set message "send \{tel\$audace(telNo) radec coord\}"
+      set message "send \{tel\$audace(telNo) radec coord -equinox J2000\}"
       set radecB1 [eval $message]
       #--- Fin modif reseau
       while { $radecB0 != $radecB1 } {
          set radecB0 $radecB1
          after 200
          #--- Debut modif reseau
-         set message "send \{tel\$audace(telNo) radec coord\}"
+         set message "send \{tel\$audace(telNo) radec coord -equinox J2000\}"
          set radecB1 [eval $message]
          #--- Fin modif reseau
       }
@@ -651,12 +657,12 @@
       if {[eval "send \{::tel::list\}"]!=""} {
       #--- Fin modif reseau
          #--- Debut modif reseau
-         set message "send \{tel\$audace(telNo) radec coord\}"
+         set message "send \{tel\$audace(telNo) radec coord -equinox J2000\}"
          set radec [eval $message]
          ::console::affiche_resultat "<radec=$radec>\n"
          #--- Fin modif reseau
          #--- Debut modif reseau
-         set message [eval "send \{tel\$audace(telNo) radec coord\}"]
+         set message [eval "send \{tel\$audace(telNo) radec coord -equinox J2000\}"]
          if {[lindex $radec 0]=="$message"} {
             set panneau(remotectrl,getra)  "$caption(remotectrl,astre_est)"
             set panneau(remotectrl,getdec) "$caption(remotectrl,pas_leve)"
