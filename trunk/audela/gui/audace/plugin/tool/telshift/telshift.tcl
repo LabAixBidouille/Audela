@@ -4,7 +4,7 @@
 # Auteur : Christian JASINSKI (e-mail : chris.jasinski@wanadoo.fr)
 # Avec l'aide d'Alain KLOTZ pour la partie la plus difficile (grande boucle interne aux procedures)
 # Avec l'aide de Robert DELMAS qui a apporte de nombreuses modifications, notamment en matiere de traitement des erreurs
-# Mise à jour $Id: telshift.tcl,v 1.11 2010-05-26 05:36:52 robertdelmas Exp $
+# Mise à jour $Id: telshift.tcl,v 1.12 2010-07-14 08:17:06 robertdelmas Exp $
 #
 
 #!/logiciels/public/Tcl/bin/wish
@@ -318,7 +318,7 @@ namespace eval ::telshift {
          if { [::cam::list]!="" } {
 
             #--- get scope position
-            set radec [tel$audace(telNo) radec coord]
+            set radec [tel$audace(telNo) radec coord -equinox J2000]
 
             #--- get ra
             set ra0 [lindex $radec 0]
@@ -404,7 +404,7 @@ namespace eval ::telshift {
                   ::console::affiche_resultat "$caption(telshift,pointevers) $ra $dec\n"
                   if {$k>0} {
                      #--- only if we are not on the first field
-                     ::telescope::goto [list $ra $dec] "1"
+                     ::telescope::goto [list $ra $dec] 1
                   }
                   #--- shoot an image
                   ::console::affiche_resultat "$caption(telshift,lancepose) $kk\n\n"
@@ -472,7 +472,7 @@ namespace eval ::telshift {
          if { [::cam::list]!="" } {
 
             #--- get scope position
-            set radec [tel$audace(telNo) radec coord]
+            set radec [tel$audace(telNo) radec coord -equinox J2000]
 
             #--- get ra
             set ra0 [lindex $radec 0]
@@ -555,7 +555,7 @@ namespace eval ::telshift {
                   if {$k>0} {
                      #--- only if we are not on the first field
                      catch {
-                        ::telescope::goto [list $ra $dec] "1"
+                        ::telescope::goto [list $ra $dec] 1
                      }
                   }
                   #--- shoot an image
@@ -630,7 +630,7 @@ namespace eval ::telshift {
          if { [::cam::list]!="" } {
 
             #--- get scope position
-            set radec [tel$audace(telNo) radec coord]
+            set radec [tel$audace(telNo) radec coord -equinox J2000]
 
             #--- get ra
             set ra0 [lindex $radec 0]
@@ -729,7 +729,7 @@ namespace eval ::telshift {
                   #--- aiming scope to new field
                   ::console::affiche_resultat "$caption(telshift,pointevers) $ra $dec\n"
                   catch {
-                     ::telescope::goto [list $ra $dec] "1"
+                     ::telescope::goto [list $ra $dec] 1
                      ::console::affiche_resultat "$caption(telshift,pointesur) $ra $dec\n"
                   }
 
@@ -809,7 +809,7 @@ namespace eval ::telshift {
          if { [::cam::list]!="" } {
 
             #--- get scope position
-            set radec [tel$audace(telNo) radec coord]
+            set radec [tel$audace(telNo) radec coord -equinox J2000]
 
             #--- get ra
             set ra0 [lindex $radec 0]
@@ -898,7 +898,7 @@ namespace eval ::telshift {
                   ::console::affiche_resultat "$caption(telshift,pointevers) $ra $dec\n"
                   if {$k>0} {
                      #--- only if we are not on the first field
-                     ::telescope::goto [list $ra $dec] "1"
+                     ::telescope::goto [list $ra $dec] 1
                      ::console::affiche_resultat "$caption(telshift,pointesur) $ra $dec\n"
                   }
 
