@@ -2,7 +2,7 @@
 # @file     sophiespectro.tcl
 # @brief    fichier du namespace ::sophie::spectro
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiespectro.tcl,v 1.15 2010-05-16 20:41:25 michelpujol Exp $
+# @version  $Id: sophiespectro.tcl,v 1.16 2010-07-14 08:40:22 michelpujol Exp $
 # UTF8 (à)
 #------------------------------------------------------------
 
@@ -130,7 +130,9 @@ proc ::sophie::spectro::readSocket { channel } {
             #--- je calcule le seeing en faisant la moyenne de xFwhm et yFwhm
             set seeing [expr ($private(xFwhm) + $private(yFwhm)) / 2.0 ]
             #--- j'enregistre l'image integree et je recupere son nom
-            #--- S'il n'y a pas d'image integree disponible, la commande retourne NO_FILE
+            #--- S'il n'y a pas d'image integree disponible, la commande saveImage
+            #--- retourne un nom de fichier factice afin d'envoyer un message
+            #--- de longueur fixe au PC Sphie
             set fileName [saveImage [lindex $resultList 0] [lindex $resultList 1] [lindex $resultList 2] [lindex $resultList 3] $seeing $private(skyLevel) $private(starFlux)]
             #--- j'ajoute un message dans le fichier de log
             set log [ format "%s Ecart : A=%5.2f  Arms=%5.2f  D=%5.2f  Drms=%5.2f  Seeing=%5.2f skyLevel= %5.2f Gain : AP=%s  AI=%s AD=%s DP=%s  DI=%s DD=%s Coord : RA=%s  Dec=%s\n" \
@@ -189,7 +191,7 @@ proc ::sophie::spectro::resetStatistics { } {
 #  Exemple : guidage-2009-05-13T18:51:30.250.fit
 #
 #  S'il n'y a pas d'image integree disponible, la commande n'enregistre pas d'image
-#  et retourne NO_FILE
+#  et retourne guidage-0000-00-00T00-00-00.000.fit
 #
 #  Mots cles enregistre dans l'image integree :
 #   - BIN1     binning horizontal
@@ -217,7 +219,7 @@ proc ::sophie::spectro::resetStatistics { } {
 # @param xFwhm
 # @param yFwhm
 #
-# @return nom du fichier de l'image intégrée ou NO_FILE s'il n'y a pas eu de correction
+# @return nom du fichier de l'image intégrée ou guidage-0000-00-00T00-00-00.000.fit s'il n'y a pas eu de correction
 #         de guidage ou pas d'image disponible
 #------------------------------------------------------------
 proc ::sophie::spectro::saveImage { alphaMean alphaRms deltaMean deltaRms seeing skyLevel starFlux } {
@@ -238,7 +240,7 @@ proc ::sophie::spectro::saveImage { alphaMean alphaRms deltaMean deltaRms seeing
 
             #--- je recupere la date UT
             set shortName "$::conf(sophie,guidingFileNameprefix)-[mc_date2iso8601 [::audace::date_sys2ut now]]$::conf(extension,defaut)"
-            #--- je remplace ":" par "-" car ce n'est pas un caractere autorise dasn le nom d'un fichier.
+            #--- je remplace ":" par "-" car ce n'est pas un caractere autorise dans le nom d'un fichier.
             set shortName [string map { ":" "-" } $shortName]
             #--- j'ajoute le repertoire dans le nom du fichier
             set fileName [file join $::audace(rep_images) $shortName]
@@ -265,7 +267,7 @@ proc ::sophie::spectro::saveImage { alphaMean alphaRms deltaMean deltaRms seeing
             buf$sumBufNo save $fileName
          } else {
             #--- il n'y a pas de eu de correction
-             set shortName "NO_FILE"
+             set shortName "$::conf(sophie,guidingFileNameprefix)-0000-00-00T00:00:00.000$::conf(extension,defaut)"
          }
       } ]
 
@@ -276,7 +278,7 @@ proc ::sophie::spectro::saveImage { alphaMean alphaRms deltaMean deltaRms seeing
    } else {
       #--- il n'y a pas d'image disponible
       ::console::affiche_erreur $::caption(sophie,sumNotReady)
-      set shortName "NO_FILE"
+      set shortName "$::conf(sophie,guidingFileNameprefix)-0000-00-00T00:00:00.000$::conf(extension,defaut)"
    }
 
    return $shortName
