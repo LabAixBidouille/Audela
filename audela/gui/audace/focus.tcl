@@ -2,11 +2,28 @@
 # Fichier : focus.tcl
 # Description : Centralise les commandes du focus du telescope
 # Auteur : Michel PUJOL
-# Mise à jour $Id: focus.tcl,v 1.7 2010-05-16 10:47:58 robertdelmas Exp $
+# Mise à jour $Id: focus.tcl,v 1.8 2010-07-14 17:26:51 robertdelmas Exp $
 #
 
 namespace eval ::focus {
 
+}
+
+#------------------------------------------------------------
+# init
+#    Initialisation de variables
+#
+# Parametres :
+#    Aucun
+# Return :
+#    Rien
+#------------------------------------------------------------
+proc ::focus::init { } {
+   global audace
+
+   #--- Initialisation
+   set audace(focus,currentFocus) "0"
+   set audace(focus,targetFocus)  ""
 }
 
 #------------------------------------------------------------
@@ -58,6 +75,18 @@ proc ::focus::goto { focuserLabel } {
 }
 
 #------------------------------------------------------------
+#  ::focus::displayCurrentPosition
+#     affiche la position du moteur pas a pas si elle existe (AudeCom)
+#------------------------------------------------------------
+proc ::focus::displayCurrentPosition { focuserLabel } {
+   if { "$focuserLabel" != "" } {
+      if { [ info command ::$focuserLabel\::displayCurrentPosition ] != "" } {
+         ::$focuserLabel\::displayCurrentPosition
+      }
+   }
+}
+
+#------------------------------------------------------------
 #  ::focus::possedeControleEtendu
 #     retourne 1 si le telescope possede un controle etendu du focus (AudeCom)
 #     retourne 0 sinon
@@ -67,4 +96,6 @@ proc ::focus::possedeControleEtendu { focuserLabel } {
       ::$focuserLabel\::possedeControleEtendu
    }
 }
+
+::focus::init
 
