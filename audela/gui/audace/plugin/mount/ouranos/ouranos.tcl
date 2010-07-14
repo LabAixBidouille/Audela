@@ -2,7 +2,7 @@
 # Fichier : ouranos.tcl
 # Description : Configuration de la monture Ouranos
 # Auteur : Robert DELMAS
-# Mise à jour $Id: ouranos.tcl,v 1.17 2010-05-23 16:04:09 robertdelmas Exp $
+# Mise à jour $Id: ouranos.tcl,v 1.18 2010-07-14 08:07:03 robertdelmas Exp $
 #
 
 namespace eval ::ouranos {
@@ -653,7 +653,7 @@ proc ::ouranos::show1 { } {
          set private(coord_dec) $audace(telescope,getdec)
       } else {
          #--- Affichage en mode coordonnees pour la monture secondaire
-         set radec [ tel$private(telNo) radec coord ]
+         set radec [ tel$private(telNo) radec coord -equinox J2000 ]
          set private(coord_ra)  [ lindex $radec 0 ]
          set private(coord_dec) [ lindex $radec 1 ]
       }
@@ -879,7 +879,6 @@ proc ::ouranos::confOuranosInactif { } {
 # hasMatch                Retourne la possibilite de faire un Match
 # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
 # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
-# hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
 # hasModel                Retourne la possibilite d'avoir plusieurs modeles pour le meme product
 # hasPark                 Retourne la possibilite de parquer la monture
 # hasUnpark               Retourne la possibilite de de-parquer la monture
@@ -910,7 +909,6 @@ proc ::ouranos::getPluginProperty { propertyName } {
       hasMatch                { return 1 }
       hasManualMotion         { return 0 }
       hasControlSuivi         { return 0 }
-      hasCorrectionRefraction { return 0 }
       hasModel                { return 0 }
       hasPark                 { return 0 }
       hasUnpark               { return 0 }
