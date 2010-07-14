@@ -2,7 +2,7 @@
 # Fichier : focuseraudecom.tcl
 # Description : Gere le focuser associe a la monture AudeCom
 # Auteur : Robert DELMAS
-# Mise à jour $Id: focuseraudecom.tcl,v 1.14 2010-05-17 16:24:44 robertdelmas Exp $
+# Mise à jour $Id: focuseraudecom.tcl,v 1.15 2010-07-14 17:29:55 robertdelmas Exp $
 #
 
 #
@@ -189,6 +189,7 @@ proc ::focuseraudecom::move { command } {
               tel$audace(telNo) focus move + $audace(focus,speed)
             } elseif { $command == "stop" } {
               tel$audace(telNo) focus stop
+              ::focuseraudecom::displayCurrentPosition
             }
          } else {
             if { $command == "-" } {
@@ -197,6 +198,7 @@ proc ::focuseraudecom::move { command } {
               tel$audace(telNo) focus move - $audace(focus,speed)
             } elseif { $command == "stop" } {
               tel$audace(telNo) focus stop
+              ::focuseraudecom::displayCurrentPosition
             }
          }
       }
@@ -209,45 +211,56 @@ proc ::focuseraudecom::move { command } {
 
 #------------------------------------------------------------
 #  ::focuseraudecom::goto
-#     envoie le focus a la position audace(focus,nbpas2)
-#     et met la nouvelle valeur de la position dans la variable audace(focus,nbpas1)
+#     envoie le focus a la position audace(focus,targetFocus)
+#     et met la nouvelle valeur de la position dans la variable audace(focus,currentFocus)
 #------------------------------------------------------------
 proc ::focuseraudecom::goto { } {
    global audace conf
 
    #--- Direction de focalisation prioritaire : Extrafocale
    if { $conf(audecom,intra_extra) == "1" } {
-      if { $audace(focus,nbpas2) > "$audace(focus,nbpas1)" } {
+      if { $audace(focus,targetFocus) > "$audace(focus,currentFocus)" } {
          #--- Envoie la foc a la consigne
-         tel$audace(telNo) focus goto $audace(focus,nbpas2)
+         tel$audace(telNo) focus goto $audace(focus,targetFocus)
       } else {
          #--- Depasse la consigne de $conf(audecom,dep_val) pas pour le rattrapage des jeux
          #--- 250 pas correspondent a 1/2 tour du moteur de focalisation
-         set nbpas3 [ expr $audace(focus,nbpas2)-$conf(audecom,dep_val) ]
+         set nbpas3 [ expr $audace(focus,targetFocus)-$conf(audecom,dep_val) ]
          if { $nbpas3 < "-32767" } {
             set nbpas3 "-32767"
          }
          tel$audace(telNo) focus goto $nbpas3
          #--- Envoie la foc a la consigne
-         tel$audace(telNo) focus goto $audace(focus,nbpas2)
+         tel$audace(telNo) focus goto $audace(focus,targetFocus)
       }
    #--- Direction de focalisation prioritaire : Intrafocale
    } else {
-      if { $audace(focus,nbpas2) < "$audace(focus,nbpas1)" } {
+      if { $audace(focus,targetFocus) < "$audace(focus,currentFocus)" } {
          #--- Envoie la foc a la consigne
-         tel$audace(telNo) focus goto $audace(focus,nbpas2)
+         tel$audace(telNo) focus goto $audace(focus,targetFocus)
       } else {
          #--- Depasse la consigne de $conf(audecom,dep_val) pas pour le rattrapage des jeux
          #--- 250 pas correspondent a 1/2 tour du moteur de focalisation
-         set nbpas3 [ expr $audace(focus,nbpas2) + $conf(audecom,dep_val) ]
+         set nbpas3 [ expr $audace(focus,targetFocus) + $conf(audecom,dep_val) ]
          if { $nbpas3 > "32767" } {
             set nbpas3 "32767"
          }
          tel$audace(telNo) focus goto $nbpas3
          #--- Envoie la foc a la consigne
-         tel$audace(telNo) focus goto $audace(focus,nbpas2)
+         tel$audace(telNo) focus goto $audace(focus,targetFocus)
       }
    }
+   #--- Boucle tant que la foc n'est pas arretee
+   ::focuseraudecom::displayCurrentPosition
+}
+
+#------------------------------------------------------------
+#  ::focuseraudecom::displayCurrentPosition
+#     affiche la position courante du focaliseur a moteur pas a pas audace(focus,currentFocus)
+#------------------------------------------------------------
+proc ::focuseraudecom::displayCurrentPosition { } {
+   global audace
+
    #--- Boucle tant que la foc n'est pas arretee
    set foc0 [ tel$audace(telNo) focus coord ]
    after 500
@@ -257,9 +270,12 @@ proc ::focuseraudecom::goto { } {
       after 500
       set foc1 [ tel$audace(telNo) focus coord ]
    }
-   set audace(focus,nbpas1) $foc1
-   split $audace(focus,nbpas1) "\n"
-   set audace(focus,nbpas1) [ lindex $audace(focus,nbpas1) 0 ]
+   set currentPosition $foc1
+   split $currentPosition "\n"
+   set audace(focus,currentFocus) [ string trimleft [ lindex $currentPosition 0 ] 0 ]
+   if { $audace(focus,currentFocus) == "" } {
+      set audace(focus,currentFocus) "0"
+   }
 }
 
 #------------------------------------------------------------
