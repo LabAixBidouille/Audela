@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise à jour $Id: telescope.tcl,v 1.61 2010-07-14 07:58:23 robertdelmas Exp $
+# Mise à jour $Id: telescope.tcl,v 1.62 2010-07-14 14:12:47 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -24,7 +24,7 @@ proc ::telescope::init { } {
    #--- Chargement des captions
    source [ file join $audace(rep_caption) telescope.cap ]
 
-   #--- Initialisation
+   #--- Initialisation de variables audace
    set audace(telescope,getra)         "00h00m00"
    set audace(telescope,getdec)        "+00d00m00"
    set audace(telescope,targetRa)      "00h00m00"
@@ -37,8 +37,8 @@ proc ::telescope::init { } {
    set audace(telescope,goto)          "0"
    set audace(telescope,inittel)       "$caption(telescope,init)"
    set audace(telescope,controle)      "$caption(telescope,suivi_marche)"
-   set audace(telescope,currentFocus)  "0.0"
 
+   #--- Initialisation de variables private
    set private(tescopeIsMoving)        "0"
 }
 
