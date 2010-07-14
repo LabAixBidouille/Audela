@@ -2,7 +2,7 @@
 # Fichier : ros.tcl
 # Description : Function to launch Robotic Observatory Software installation
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: ros.tcl,v 1.18 2010-06-05 11:30:45 alainklotz Exp $
+# Mise à jour $Id: ros.tcl,v 1.19 2010-07-14 07:56:43 robertdelmas Exp $
 #
 
 proc ros { args } {
@@ -2189,7 +2189,7 @@ proc rosmodpoi_convcat_hip { {fichier_in ""} {fichier_out ""} {method 1} {params
       set DEdeg [lindex $ligne 9]
       set equinox [mc_date2jd J2000.0]
       set epoch 2448349.0625 ; # J1991.25 TT
-      #console::affiche_resultat "| $id | $Vmag | $RAdeg | $DEdeg | $equinox | $epoch | $pmRA | $pmDE | $plx |"
+      #::console::affiche_resultat "| $id | $Vmag | $RAdeg | $DEdeg | $equinox | $epoch | $pmRA | $pmDE | $plx |"
       set texte "[format %10s $id] [format %+5.1f $Vmag] [format %12.8f $RAdeg] [format %+12.8f $DEdeg] [format %13.5f $equinox] [format %13.5f $epoch] [format %8.2f $pmRA] [format %8.2f $pmDE] [format %7.2f $plx]"
       append textes "$texte\n"
       incr k
@@ -2324,17 +2324,17 @@ proc rosmodpoi_amer_hip { {fichier_in ""} {amers {{45 180}}} {kamer 0} {nstars 1
          set star $ligne
       }
       lappend stars [list $sep $k]
-      #console::affiche_resultat "$ligne => $ra $dec => $sep (k=$k)\n"
+      #::console::affiche_resultat "$ligne => $ra $dec => $sep (k=$k)\n"
    }
    set stars [lsort -increasing $stars]
    set stars [lrange $stars 0 [expr $nstars-1]]
-   #console::affiche_resultat "[lrange $stars 0 0]\n"
+   #::console::affiche_resultat "[lrange $stars 0 0]\n"
    set res ""
    foreach star $stars {
       set k [lindex $star 1]
       set ligne [lindex $lignes $k]
       lappend res $ligne
-      #console::affiche_resultat "star=star k=$k ligne=$ligne\n"
+      #::console::affiche_resultat "star=star k=$k ligne=$ligne\n"
    }
    return $res
 }
