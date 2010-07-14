@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise à jour $Id: catagoto.tcl,v 1.38 2010-05-15 07:54:42 robertdelmas Exp $
+# Mise à jour $Id: catagoto.tcl,v 1.39 2010-07-14 07:52:00 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -189,7 +189,7 @@ namespace eval cataGoto {
          set lat_zenith [ mc_angle2dms [ lindex $conf(posobs,observateur,gps) 3 ] 90 nozero 0 auto string ]
          set catalogue($visuNo,list_radec) "$audace(tsl,format,zenith) $lat_zenith"
          set catalogue($visuNo,nom_objet)  "$caption(catagoto,zenith)"
-         set catalogue($visuNo,equinoxe)   "now"
+         set catalogue($visuNo,equinoxe)   "J2000.0"
          set catalogue($visuNo,magnitude)  ""
          #--- Mise a jour des coordonnees pour les outils Telescope et Controle a distance
          $catalogue($visuNo,nameSpaceCaller)::setRaDec $visuNo $catalogue($visuNo,list_radec) $catalogue($visuNo,nom_objet) $catalogue($visuNo,equinoxe) $catalogue($visuNo,magnitude)
@@ -446,7 +446,7 @@ namespace eval cataGoto {
       #--- Recopie les donnees
       set catalogue($visuNo,list_radec) "$catalogue(planete_ad) $catalogue(planete_dec)"
       set catalogue($visuNo,nom_objet)  "$catalogue(planete_choisie)"
-      set catalogue($visuNo,equinoxe)   "now"
+      set catalogue($visuNo,equinoxe)   "J2000.0"
       set catalogue($visuNo,magnitude)  ""
       #--- Mise a jour des coordonnees pour les outils Telescope et Controle a distance
       $catalogue($visuNo,nameSpaceCaller)::setRaDec $visuNo $catalogue($visuNo,list_radec) $catalogue($visuNo,nom_objet) $catalogue($visuNo,equinoxe) $catalogue($visuNo,magnitude)
@@ -813,7 +813,7 @@ namespace eval cataGoto {
       #--- Recopie les donnees
       set catalogue($visuNo,list_radec) "$catalogue(asteroide_ad) $catalogue(asteroide_dec)"
       set catalogue($visuNo,nom_objet)  "$catalogue(asteroide_choisie)"
-      set catalogue($visuNo,equinoxe)   "now"
+      set catalogue($visuNo,equinoxe)   "J2000.0"
       set catalogue($visuNo,magnitude)  ""
       #--- Mise a jour des coordonnees pour les outils Telescope et Controle a distance
       $catalogue($visuNo,nameSpaceCaller)::setRaDec $visuNo $catalogue($visuNo,list_radec) $catalogue($visuNo,nom_objet) $catalogue($visuNo,equinoxe) $catalogue($visuNo,magnitude)
