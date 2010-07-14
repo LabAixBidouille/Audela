@@ -2,7 +2,7 @@
 # Fichier : t193pad.tcl
 # Description : Raquette specifique au T193 de l'OHP
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: t193pad.tcl,v 1.13 2010-05-23 08:12:47 robertdelmas Exp $
+# Mise à jour $Id: t193pad.tcl,v 1.14 2010-07-14 12:26:40 robertdelmas Exp $
 #
 
 namespace eval ::t193pad {
@@ -435,7 +435,7 @@ proc ::t193pad::createDialog { } {
 
          #--- Entry pour la position du GOTO de la focalisation
          Entry $This.focus.goto.positionGotoFoc -textvariable ::t193pad::private(gotoFocus) \
-            -width 4 -bg $color(gray_pad) -justify center -font [ list {Arial} 12 bold ]
+            -width 6 -bg $color(gray_pad) -justify center -font [ list {Arial} 12 bold ]
          pack $This.focus.goto.positionGotoFoc -anchor center -fill x -side left -padx 4 -pady 2 -expand 1
 
          #--- Bouton FOCUS STOP
