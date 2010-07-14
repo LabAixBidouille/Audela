@@ -2,7 +2,7 @@
 # Fichier : eqmod.tcl
 # Description : Configuration de la monture EQMOD
 # Auteur : Robert DELMAS
-# Mise à jour $Id: eqmod.tcl,v 1.9 2010-05-23 16:00:49 robertdelmas Exp $
+# Mise à jour $Id: eqmod.tcl,v 1.10 2010-07-14 08:07:38 robertdelmas Exp $
 #
 
 namespace eval ::eqmod {
@@ -369,7 +369,7 @@ proc ::eqmod::dispCoord { } {
    if { ! [ winfo exists $private(frm) ] || ! [ ::eqmod::isReady ] } {
       return
    }
-   set radec [ tel$private(telNo) radec coord ]
+   set radec [ tel$private(telNo) radec coord -equinox J2000 ]
    set hadec [ tel$private(telNo) hadec coord ]
 
    $private(frm).lab_coordHA configure -text "$caption(eqmod,angle_horaire) [ lindex $hadec 0 ]"
@@ -398,7 +398,6 @@ proc ::eqmod::dispCoord { } {
 # hasMatch                Retourne la possibilite de faire un Match
 # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
 # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
-# hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
 # hasModel                Retourne la possibilite d'avoir plusieurs modeles pour le meme product
 # hasPark                 Retourne la possibilite de parquer la monture
 # hasUnpark               Retourne la possibilite de de-parquer la monture
@@ -429,7 +428,6 @@ proc ::eqmod::getPluginProperty { propertyName } {
       hasMatch                { return 1 }
       hasManualMotion         { return 1 }
       hasControlSuivi         { return 1 }
-      hasCorrectionRefraction { return 0 }
       hasModel                { return 0 }
       hasPark                 { return 1 }
       hasUnpark               { return 1 }
