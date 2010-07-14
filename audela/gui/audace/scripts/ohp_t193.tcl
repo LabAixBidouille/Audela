@@ -2,7 +2,7 @@
 # Fichier origine : ohp_t193.tcl
 # Description : Interface de pilotage du T193 de l'OHP
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: ohp_t193.tcl,v 1.5 2010-05-27 06:16:21 robertdelmas Exp $
+# Mise à jour $Id: ohp_t193.tcl,v 1.6 2010-07-14 08:17:41 robertdelmas Exp $
 #--------------------------------------------------------------------------------
 # Modifications pour le télescope T193 :
 #-------------------------------------
@@ -298,11 +298,11 @@ proc ::clientCoord::ohp_t193_calcul { } {
     }
 
     #---
-    set res [tel$audace(telNo) radec coord]
+    set res [tel$audace(telNo) radec coord -equinox J2000]
     set paramt193(ra0)  [mc_angle2hms [lindex $res 0] 360 zero 2 auto string]
     set paramt193(dec0) [mc_angle2dms [lindex $res 1] 90 zero 1 + string]
     #---
-    set res [tel$audace(telNo) radec coord]
+    set res [tel$audace(telNo) radec coord -equinox J2000]
     set paramt193(ra)  [mc_angle2hms [lindex $res 0] 360 zero 2 auto string]
     set paramt193(dec) [mc_angle2dms [lindex $res 1] 90 zero 1 + string]
 
