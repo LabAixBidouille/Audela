@@ -2,7 +2,7 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise à jour $Id: superpad.tcl,v 1.30 2010-02-06 22:17:01 robertdelmas Exp $
+# Mise à jour $Id: superpad.tcl,v 1.31 2010-07-14 08:11:23 robertdelmas Exp $
 #
 
 package provide superpad 1.0
@@ -364,7 +364,7 @@ namespace eval ::telescopePad {
       }
 
       if {[::tel::list]!=""} {
-         set radec [ tel$audace(telNo) radec coord ]
+         set radec [ tel$audace(telNo) radec coord -equinox J2000 ]
          #--- affiche les coordonnees
          set private(telescopeRa)  [lindex $radec 0]
          set private(telescopeDec) [lindex $radec 1]
@@ -620,11 +620,11 @@ namespace eval ::AlignManager {
            || (([expr $deltax] <0 ) && ($mirx==1) && ($private(mountSide)=="e" ))
            || (([expr $deltax] <0 ) && ($mirx==0) && ($private(mountSide)=="w" ))
            || (([expr $deltax] >0 ) && ($mirx==1) && ($private(mountSide)=="w" ))} {
-          console::disp "move $moveTime ms\nto est \n"
+          ::console::disp "move $moveTime ms\nto est \n"
           set direction "e"
       } else {
-         console::disp "move $moveTime ms\nto west \n"
-          set direction "w"
+         ::console::disp "move $moveTime ms\nto west \n"
+         set direction "w"
       }
 
       #--- if necessary use medium speed
@@ -660,10 +660,10 @@ namespace eval ::AlignManager {
            || (([expr $deltay ]<0) && ($miry==1) && ($private(mountSide)=="e" ))
            || (([expr $deltay ]<0) && ($miry==0) && ($private(mountSide)=="w" ))
            || (([expr $deltay ]>0) && ($miry==1) && ($private(mountSide)=="w" )) } {
-          console::disp "move $moveTime ms\nto north \n"
+          ::console::disp "move $moveTime ms\nto north \n"
           set direction "n"
       } else {
-          console::disp "move $moveTime ms\nto south \n"
+          ::console::disp "move $moveTime ms\nto south \n"
           set direction "s"
       }
 
@@ -716,7 +716,7 @@ namespace eval ::AlignManager {
       variable This
       variable private
 
-      ::telescope::goto [list $private(targetRa) $private(targetDec)] "0" $This.frameGoto.buttonStartGoto
+      ::telescope::goto [list $private(targetRa) $private(targetDec)] 0 $This.frameGoto.buttonStartGoto
    }
 
    #------------------------------------------------------------
