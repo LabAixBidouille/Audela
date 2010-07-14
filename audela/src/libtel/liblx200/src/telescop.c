@@ -129,9 +129,29 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    # 1 : 1 bits de stop
    */
    sprintf(s,"fconfigure %s -mode \"9600,n,8,1\" -buffering none -translation {binary binary} -blocking 0",tel->channel); mytel_tcleval(tel,s);
-   /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
    mytel_flush(tel);
    
+   // je recupere le mode d'alignement (altaz ou polaire) 
+   // j'envoie la chaine 0x06  et j'attend la réponse A=Altaz mode P=Polar mode L=land mode
+   if ( mytel_sendLX(tel, RETURN_CHAR, s, "%c",6) == 1 ) {
+      switch(s[0]) {
+         case 'A' : 
+            strcpy(tel->alignmentMode,"ALTAZ");
+            break;
+         case 'L' : 
+            strcpy(tel->alignmentMode,"EQUATORIAL");
+            break;
+         case 'P' : 
+            strcpy(tel->alignmentMode,"EQUATORIAL");
+            break;
+      }
+   } else {
+      // le telescope ne repond pas 
+      tel_close(tel);
+      strcpy(tel->msg,"No response for alignment mode request");
+      return 1;
+   }
+
    tel->tempo=50;
 	strcpy(tel->autostar_char," ");
    mytel_set_format(tel,0);
@@ -146,19 +166,10 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		}
 	}
 
-   // je recupere le mode d'alignement (altaz ou polaire) 
-   // j'envoie la chaine 0x06  et j'attend la réponse A=Altaz mode P=Polar mode L=land mode
-   mytel_sendLX(tel, RETURN_CHAR, s, "%c",6);
-   switch(s[0]) {
-      case 'A' : 
-         strcpy(tel->alignmentMode,"ALTAZ");
-         break;
-      case 'L' : 
-         strcpy(tel->alignmentMode,"EQUATORIAL");
-         break;
-      case 'P' : 
-         strcpy(tel->alignmentMode,"EQUATORIAL");
-         break;
+   if ( strcmp(tel->name,"AudeCom") == 0 || strcmp(tel->name,"Ite-lente") == 0 ) {
+      tel->refractionCorrection = 0; // la monture n'a assure pas la correction de la refraction
+   } else {
+      tel->refractionCorrection = 1; // la monture assure la correction de la refraction
    }
 
    return 0;
@@ -348,38 +359,16 @@ int mytel_radec_init(struct telprop *tel)
       nbcar_1=8;
       nbcar_2=7;
    }
+   // Send Sr
    sprintf(s,"mc_angle2lx200ra %f %s",tel->ra0,ls); mytel_tcleval(tel,s);
 	strcpy(ss,tel->interp->result);
-   /* Send Sr */
-   //sprintf(s,"read -nonewline %s",tel->channel); mytel_tcleval(tel,s);
-   //sprintf(s,"puts -nonewline %s \"#:Sr%s%s#\"",tel->channel,tel->autostar_char,ss); mytel_tcleval(tel,s);
-   //sprintf(s,"after 50"); mytel_tcleval(tel,s);
-   /* Receive 1 if it is OK */
-   //sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
-   //sprintf(s,"after 50"); mytel_tcleval(tel,s);
    mytel_sendLX(tel, RETURN_CHAR, s, "#:Sr%s#",ss);
-
+   // Send Sd 
    sprintf(s,"mc_angle2lx200dec %f %s",tel->dec0,ls); mytel_tcleval(tel,s);
 	strcpy(ss,tel->interp->result);
-
-   /* Send Sd */
-   //sprintf(s,"read -nonewline %s",tel->channel); mytel_tcleval(tel,s);
-   //sprintf(s,"puts -nonewline %s \"#:Sd%s%s#\"",tel->channel,tel->autostar_char,ss); mytel_tcleval(tel,s);
-   //sprintf(s,"after 50"); mytel_tcleval(tel,s);
-   /* Receive 1 if it is OK */
-   //sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
-   //sprintf(s,"after 50"); mytel_tcleval(tel,s);
-
    mytel_sendLX(tel, RETURN_CHAR, s, "#:Sd%s#", ss);
-
-
-   /* tel->radec_goto_rate is not used for the LX200 protocol (always slew) */
-   //sprintf(s,"read -nonewline %s",tel->channel); mytel_tcleval(tel,s);
-   //sprintf(s,"puts -nonewline %s \"#:CM#\"",tel->channel); mytel_tcleval(tel,s);
-   //sprintf(s,"after 200"); mytel_tcleval(tel,s);
-   
+   // match
    mytel_sendLX(tel, RETURN_STRING, s, "#:CM#");
-
    return 0;
 }
 
@@ -922,7 +911,6 @@ int mytel_correct(struct telprop *tel,char *direction, int duration)
  *   exemple "xxxxx#" 
  *
  * return :
- *  
  *		1= OK
  *       if returnType = 0  response = ""
  *       if returnType = 1  response = "0" or "1"
@@ -947,7 +935,7 @@ int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *com
    // je temporise avant de lire la reponse
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
 
-   // je purge la vairable de la reponse
+   // je purge la variable de la reponse
    if ( response != NULL) {
       strcpy(response,"");
       strcpy(tel->msg, "");
@@ -982,9 +970,9 @@ int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *com
          mytel_logConsole(tel, "No # reponse for %s",command);
       }
    }  else if ( returnType == RETURN_STRING ) {
+      // j'attend une chaine qui se termine par diese
       int k = 0;
       cr = 0;
-      // j'attend une chaine qui se termine par diese
       do {
          sprintf(s,"read %s 1",tel->channel); 
          if ( mytel_tcleval(tel,s) == TCL_OK ) {
@@ -1034,8 +1022,6 @@ void mytel_logConsole(struct telprop *tel, char *messageFormat, ...) {
    } else {
       sprintf(ligne,"::thread::send -async %s { ::console::disp \"liblx200: %s \n\" } " , tel->mainThreadId, message); 
    }
-   result = Tcl_Eval(tel->interp,ligne);
-
-   
+   result = Tcl_Eval(tel->interp,ligne);   
 }
 
