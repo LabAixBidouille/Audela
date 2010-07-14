@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: remotectrl.tcl,v 1.39 2010-05-25 18:01:49 robertdelmas Exp $
+# Mise à jour $Id: remotectrl.tcl,v 1.40 2010-07-14 08:35:19 robertdelmas Exp $
 #
 
 #============================================================
@@ -252,7 +252,7 @@ proc remotectrlBuildIF { This } {
 
       #--- Frame du mask
       frame $This.fram -borderwidth 1 -relief flat
-      place $This.fram -x 3 -y 87 -width 200 -height 600 -anchor nw \
+      place $This.fram -x 3 -y 92 -width 200 -height 700 -anchor nw \
          -bordermode ignore
 
       #--- Mise a jour dynamique des couleurs
@@ -516,7 +516,7 @@ proc remotectrlBuildIF { This } {
          $This.fraconf.but1 configure -text $caption(remotectrl,unconnect)
 
          #--- Le client demasque les commandes
-         place $This.fram -x 3 -y 87 -width 200 -height 1 -anchor nw \
+         place $This.fram -x 3 -y 92 -width 200 -height 1 -anchor nw \
             -bordermode ignore
          ::remotectrl::cmdAfficheCoord
       }
@@ -600,7 +600,7 @@ proc remotectrlBuildIF { This } {
                $This.fraconf.but1 configure -text $caption(remotectrl,unconnect)
 
                #--- Le serveur masque les commandes
-               place $This.fram -x 3 -y 87 -width 200 -height 600 -anchor nw \
+               place $This.fram -x 3 -y 92 -width 200 -height 700 -anchor nw \
                   -bordermode ignore
             }
       }
@@ -679,7 +679,7 @@ proc remotectrlBuildIF { This } {
       $This.fraconf.but1 configure -text $caption(remotectrl,connect)
 
       #--- Masque les commandes
-      place $This.fram -x 3 -y 87 -width 200 -height 700 -anchor nw \
+      place $This.fram -x 3 -y 92 -width 200 -height 700 -anchor nw \
          -bordermode ignore
    }
 
