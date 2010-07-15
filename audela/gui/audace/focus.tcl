@@ -2,7 +2,7 @@
 # Fichier : focus.tcl
 # Description : Centralise les commandes du focus du telescope
 # Auteur : Michel PUJOL
-# Mise à jour $Id: focus.tcl,v 1.8 2010-07-14 17:26:51 robertdelmas Exp $
+# Mise à jour $Id: focus.tcl,v 1.9 2010-07-15 15:44:30 robertdelmas Exp $
 #
 
 namespace eval ::focus {
@@ -83,6 +83,16 @@ proc ::focus::displayCurrentPosition { focuserLabel } {
       if { [ info command ::$focuserLabel\::displayCurrentPosition ] != "" } {
          ::$focuserLabel\::displayCurrentPosition
       }
+   }
+}
+
+#------------------------------------------------------------
+#  ::focus::initPosition
+#     initialise la position du focuser a 0
+#------------------------------------------------------------
+proc ::focus::initPosition { focuserLabel } {
+   if { "$focuserLabel" != "" } {
+      ::$focuserLabel\::initPosition
    }
 }
 
