@@ -2,7 +2,7 @@
 # Fichier : t193pad.tcl
 # Description : Raquette specifique au T193 de l'OHP
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: t193pad.tcl,v 1.15 2010-07-14 17:38:30 robertdelmas Exp $
+# Mise à jour $Id: t193pad.tcl,v 1.16 2010-07-15 15:50:12 robertdelmas Exp $
 #
 
 namespace eval ::t193pad {
@@ -77,7 +77,6 @@ proc ::t193pad::getPluginOS { } {
 #  return rien
 #------------------------------------------------------------
 proc ::t193pad::initConf { } {
-   variable private
    global conf
 
    if { ! [ info exists conf(t193pad,wmgeometry) ] }         { set conf(t193pad,wmgeometry)         "240x520+643+180" }
@@ -424,20 +423,21 @@ proc ::t193pad::createDialog { } {
 
       pack $This.focus.pm -side top -fill x
 
-      #--- Frame pour FOCUS GOTO
+      #--- Frame pour le GOTO du focuser
       frame $This.focus.goto -width 27 -borderwidth 0 -relief flat -bg $color(blue_pad)
-         #--- Bouton FOCUS GOTO
+
+         #--- Bouton du GOTO du focuser
          button $This.focus.goto.buttonGotoFoc -borderwidth 1 -width 8 \
             -font [ list {Arial} 12 bold ] -text $caption(t193pad,gotoFoc) -relief ridge \
             -fg $color(white) -bg $color(gray_pad) -command "::t193pad::gotoFocus"
          pack $This.focus.goto.buttonGotoFoc -anchor center -fill x -side left -padx 4 -pady 2 -expand 1
 
-         #--- Entry pour la position du GOTO de la focalisation
+         #--- Entry pour la position du GOTO du focuser
          Entry $This.focus.goto.positionGotoFoc -textvariable ::audace(focus,targetFocus) \
             -width 6 -bg $color(gray_pad) -justify center -font [ list {Arial} 12 bold ]
          pack $This.focus.goto.positionGotoFoc -anchor center -fill x -side left -padx 4 -pady 2 -expand 1
 
-         #--- Bouton FOCUS STOP
+         #--- Bouton du STOP GOTO du focuser
          button $This.focus.goto.buttonStopFoc -borderwidth 1 -width 8 \
          -font [ list {Arial} 12 bold ] -text $caption(t193pad,stopFoc) -relief ridge \
          -fg $color(white) -bg $color(gray_pad) -command ::t193pad::stopFocus
