@@ -2,7 +2,7 @@
 # Fichier : focuseraudecom.tcl
 # Description : Gere le focuser associe a la monture AudeCom
 # Auteur : Robert DELMAS
-# Mise à jour $Id: focuseraudecom.tcl,v 1.15 2010-07-14 17:29:55 robertdelmas Exp $
+# Mise à jour $Id: focuseraudecom.tcl,v 1.16 2010-07-15 15:47:39 robertdelmas Exp $
 #
 
 #
@@ -221,33 +221,34 @@ proc ::focuseraudecom::goto { } {
    if { $conf(audecom,intra_extra) == "1" } {
       if { $audace(focus,targetFocus) > "$audace(focus,currentFocus)" } {
          #--- Envoie la foc a la consigne
-         tel$audace(telNo) focus goto $audace(focus,targetFocus)
+         #--- format de la commande : tel1 focus goto number ?-rate value? ?-blocking boolean?
+         tel$audace(telNo) focus goto $audace(focus,targetFocus) -blocking 0
       } else {
          #--- Depasse la consigne de $conf(audecom,dep_val) pas pour le rattrapage des jeux
          #--- 250 pas correspondent a 1/2 tour du moteur de focalisation
-         set nbpas3 [ expr $audace(focus,targetFocus)-$conf(audecom,dep_val) ]
-         if { $nbpas3 < "-32767" } {
-            set nbpas3 "-32767"
+         set nbpas [ expr $audace(focus,targetFocus)-$conf(audecom,dep_val) ]
+         if { $nbpas < "-32767" } {
+            set nbpas "-32767"
          }
-         tel$audace(telNo) focus goto $nbpas3
+         tel$audace(telNo) focus goto $nbpas -blocking 0
          #--- Envoie la foc a la consigne
-         tel$audace(telNo) focus goto $audace(focus,targetFocus)
+         tel$audace(telNo) focus goto $audace(focus,targetFocus) -blocking 0
       }
    #--- Direction de focalisation prioritaire : Intrafocale
    } else {
       if { $audace(focus,targetFocus) < "$audace(focus,currentFocus)" } {
          #--- Envoie la foc a la consigne
-         tel$audace(telNo) focus goto $audace(focus,targetFocus)
+         tel$audace(telNo) focus goto $audace(focus,targetFocus) -blocking 0
       } else {
          #--- Depasse la consigne de $conf(audecom,dep_val) pas pour le rattrapage des jeux
          #--- 250 pas correspondent a 1/2 tour du moteur de focalisation
-         set nbpas3 [ expr $audace(focus,targetFocus) + $conf(audecom,dep_val) ]
-         if { $nbpas3 > "32767" } {
-            set nbpas3 "32767"
+         set nbpas [ expr $audace(focus,targetFocus) + $conf(audecom,dep_val) ]
+         if { $nbpas > "32767" } {
+            set nbpas "32767"
          }
-         tel$audace(telNo) focus goto $nbpas3
+         tel$audace(telNo) focus goto $nbpas -blocking 0
          #--- Envoie la foc a la consigne
-         tel$audace(telNo) focus goto $audace(focus,targetFocus)
+         tel$audace(telNo) focus goto $audace(focus,targetFocus) -blocking 0
       }
    }
    #--- Boucle tant que la foc n'est pas arretee
@@ -275,6 +276,20 @@ proc ::focuseraudecom::displayCurrentPosition { } {
    set audace(focus,currentFocus) [ string trimleft [ lindex $currentPosition 0 ] 0 ]
    if { $audace(focus,currentFocus) == "" } {
       set audace(focus,currentFocus) "0"
+   }
+}
+
+#------------------------------------------------------------
+#  ::focuseraudecom::initPosition
+#     initialise la position du focaliseur a moteur pas a pas a 0
+#------------------------------------------------------------
+proc ::focuseraudecom::initPosition { } {
+   global audace
+
+   if { [ ::tel::list ] != "" } {
+      tel$audace(telNo) focus init 0
+   } else {
+      ::confTel::run
    }
 }
 
