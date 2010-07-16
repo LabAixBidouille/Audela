@@ -2590,6 +2590,7 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 	mc_USERS *users;
 	double angle,duration,d1,d2,d12,total_duration_sequenced,d12b,dd;
 	double jdobsmin,jdobsmax,total_duration_obs,jdseq_prev,jdseq_next;
+	double jdobsminmin,jdobsmaxmax,total_duration_obsobs;
 	double ha1,ha2,dec1,dec2;
 	long clk_tck = CLOCKS_PER_SEC;
    clock_t clock0;
@@ -2599,7 +2600,7 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 	mc_OBJECTLOCALRANGES *objectlocalranges=NULL;
 	double *luminance_ciel_bleus=NULL;
 	double jd_loc,ha_loc,elev_loc,az_loc,dec_loc,moon_dist_loc,sun_dist_loc,brillance_totale_loc,ra_loc;
-	double latitude,altitude,latrad,j1,j2,jdseq_prev0,jdseq_next0,dd0,durationtot;
+	double latitude,altitude,latrad,j1,j2,jdseq_prev0,jdseq_next0,dd0,dd1,durationtot;
 	double *jdsets=NULL;
 	int *kjdsets=NULL,user,user0,prio_order,k4;
 	FILE *fid=NULL,*fidlog=NULL;
@@ -2646,6 +2647,8 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 	nobjloc=0;
 	jdobsmin=jd_nextmidsun;
 	jdobsmax=jd_prevmidsun;
+	jdobsminmin=0.5*(jd_nextmidsun+jd_prevmidsun)-0.01*(jd_nextmidsun-jd_prevmidsun);
+	jdobsmaxmax=0.5*(jd_nextmidsun+jd_prevmidsun)+0.01*(jd_nextmidsun-jd_prevmidsun);
 	if (fidlog!=NULL) {
 		fprintf(fidlog,"=== First loop to compute observing conditions of %d sequences:\n",nobj);
 	}
@@ -2740,6 +2743,12 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 						objectdescr[ko].private_elevmaxi=objectlocals[nobjloc][kjd].elev;
 						objectdescr[ko].private_jdelevmaxi=sunmoon[kjd].jd;
 					}
+					if (sunmoon[kjd].jd<jdobsminmin) {
+						jdobsminmin=sunmoon[kjd].jd;
+					}
+					if (sunmoon[kjd].jd>jdobsmaxmax) {
+						jdobsmaxmax=sunmoon[kjd].jd;
+					}
 				}
 			}
 		}
@@ -2755,6 +2764,12 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 					objectdescr[ko].private_elevmaxi=objectlocalranges[nobjloc].elevmax[kr];
 					objectdescr[ko].private_jdelevmaxi=objectlocalranges[nobjloc].jdelevmax[kr];
 				}
+				if (objectlocalranges[nobjloc].jd1[kr]<jdobsminmin) {
+					jdobsminmin=objectlocalranges[nobjloc].jd1[kr];
+				}
+				if (objectlocalranges[nobjloc].jd2[kr]>jdobsmaxmax) {
+					jdobsmaxmax=objectlocalranges[nobjloc].jd2[kr];
+				}
 			}
 			if (fidlog!=NULL) {
 				fprintf(fidlog," Sequence %d: observable %.0f times (jdobsmin=%f jdobsmax=%f elevmax=%f jdelevmax=%f) %s\n",ko,objectlocalranges[nobjloc].nbrange,jdobsmin,jdobsmax,objectdescr[ko].private_elevmaxi,objectdescr[ko].private_jdelevmaxi,objectdescr[ko].comments);
@@ -2764,7 +2779,12 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 		nobjloc++;
 	}
 	total_duration_obs=(jdobsmax-jdobsmin);
+	total_duration_obsobs=(jdobsmaxmax-jdobsminmin);
 	total_duration_sequenced=0.;
+	if (fidlog!=NULL) {
+		fprintf(fidlog,"=== Total sequence limits\n");
+		fprintf(fidlog," jdobsminmin=%f jdobsmaxmax=%f\n",jdobsminmin,jdobsmaxmax);
+	}
 
 	// ---
 	if (nobjloc==0) {
@@ -2925,7 +2945,7 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 			// --- calcule les quotas absolus utilises 
 			if (total_duration_sequenced>0) {
 				for (ku=0;ku<nu;ku++) {
-					users[ku].percent_quota_used=(users[ku].duration_total_used/total_duration_obs*100);
+					users[ku].percent_quota_used=(users[ku].duration_total_used/total_duration_obsobs*100);
 				}
 			}
 			// --- recherche l'indice ku du user dans mc_USERS
@@ -2938,6 +2958,7 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 				fprintf(fidlog,"  ---- BEGIN SEQUENCE %4d/%4d user=%3d prio_order=%d kd=%d (kd=indice de sequence)\n",kp,np,ku,prio_order,kd);
 			}
 			// --- si le user a dépasse son quota alors on passe a la sequence suivante
+			fprintf(fidlog,"   --- user=%3d quota=%f / %f\n",ku,users[ku].percent_quota_used,users[ku].percent_quota_authorized);
 			if ((total_duration_sequenced>0)&&(mode_quota==1)) {
 				if (users[ku].percent_quota_used>users[ku].percent_quota_authorized) {
 					if (objectdescr[kd].status_plani<STATUS_PLANI_PLANIFIED) {
@@ -3033,9 +3054,9 @@ try_a_gap:
 			}
 			//mc_printobject(njd,sunmoon,objectlocal0);
 			// ------------------------------------------------------------
-			// ------- Reference date for the sequence is jd00 ------------
+			// ------- Reference date for the sequence is jd1  ------------
 			// ------------------------------------------------------------
-			// --- search for the best start without slew (jd00)
+			// --- search for the best start after slew (jd1)
 			// --- jd0(slew_start_with_slew) jd00(slew_start_without_slew) jd1(acq_start) jd2(acq_end)
 			// int const_startexposures; // =0 best elevation, =1 start exposure as soon as possible, =2 start in the middle of the [start stop] sequence
 			jd1=0;
@@ -3210,7 +3231,6 @@ try_a_gap:
 			// --- compute jd2 knowing a valid jd00 and the duration
 			jd2=jd00+duration/86400.;
 			// --- kk2 : indice dans objectlocal0 pour mc_scheduler_local1
-			jd2=jd00+duration/86400.;
 			kk2=(int)ceil((jd2-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd); if (kk2>njd) { kk2=njd-1; }
 			// --- recherche la sequence deja planifiee suivante
 			if (k3>=0) {
@@ -3287,11 +3307,12 @@ try_a_gap:
 			} 
 			if (jd2>jdseq_next) {
 				if (fidlog!=NULL) {
-					fprintf(fidlog,"   --- kd=%4d (%4d/%4d:%3d). The gap must be shifted to be just aside the beginning of the next sequence.\n",kd,kp,np,ku);
+					fprintf(fidlog,"   --- kd=%4d (%4d/%4d:%3d). The gap must be shifted backward to be just aside the beginning of the next sequence.\n",kd,kp,np,ku);
 				}
-				// --- The gap must be shifted to be just aside the beginning of the next sequence
+				// --- The gap must be shifted backward to be just aside the beginning of the next sequence
 				dd0=jd2-jdseq_next;
 				jd2-=dd0;
+				jd1-=dd0;
 				jd00-=dd0;
 				jd0-=dd0;
 				if (fidlog!=NULL) {
@@ -3319,7 +3340,28 @@ try_a_gap:
 						goto try_a_gap; // try another gap
 					}
 				}
-			}
+			} 
+			if (jd2>jdseq_next-(objectdescr[kd].delay_slew+objectdescr[kd].delay_instrum+objectdescr[kd].delay_exposures)/86400.) {
+				// --- This is the case corresponding to a gap between the end of the
+				//     sequence and the start of the next sequence which is too small
+				//     to insert another future sequence. We pussh the sequence to the
+				//     next ever planified sequence if possible by constraints.
+				dd0=jdseq_next-jd2;
+				dd1=j2-jd1;
+				if (dd1<dd0) {
+					dd0=dd1;
+				}
+				if (dd0>0) {
+					if (fidlog!=NULL) {
+						fprintf(fidlog,"   --- kd=%4d (%4d/%4d:%3d). The gap must be shifted forward to be just aside the beginning of the next sequence.\n",kd,kp,np,ku);
+					}
+					// --- The gap must be shifted forward to be just aside the beginning of the next sequence
+					jd2+=dd0;
+					jd1+=dd0;
+					jd00+=dd0;
+					jd0+=dd0;
+				}
+			} 
 			// --- the insertion implies to change the pointing duration of the next sequence ever planified
 			if (k3>=0) {
 				planis[0][k3].jd_slew_start_with_slew+=dd;
@@ -3375,7 +3417,7 @@ try_a_gap:
 			planis[1][k1].jd_acq_end=jd2;
 			planis[1][k1].jd_elev_max=0.;
 			planis[1][k1].order=npl;
-			planis[1][k1].percent_quota_used=users[ku].duration_total_used/total_duration_obs*100;
+			planis[1][k1].percent_quota_used=users[ku].duration_total_used/total_duration_obsobs*100;
 			kk1=(int)((jd1-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd);
 			if (compute_mode==0) {
 				mc_sheduler_coord_app2cat(jd1,objectlocal0[kk1].ra*(DR),objectlocal0[kk1].dec*(DR),J2000,&racat,&deccat);
