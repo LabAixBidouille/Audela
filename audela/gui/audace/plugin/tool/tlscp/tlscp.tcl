@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise à jour $Id: tlscp.tcl,v 1.42 2010-07-14 08:19:16 robertdelmas Exp $
+# Mise à jour $Id: tlscp.tcl,v 1.43 2010-07-16 21:21:45 robertdelmas Exp $
 #
 
 #============================================================
@@ -923,16 +923,17 @@ proc ::tlscp::startAcquisition { visuNo  } {
 
    #--- j'affiche le bouton STOP CCD
    $private($visuNo,This).camera.goccd configure -text "$::caption(tlscp,stopccd) (ESC)" -command "::tlscp::stopAcquisition $visuNo $private($visuNo,This).camera.goccd "
+
    #--- J'associe la touche ESCAPE a la commande d'arret
    bind all <Key-Escape> "::tlscp::stopAcquisition $visuNo $private($visuNo,This).camera.goccd "
 
    #--- je lance l'acquisition
    ::camera::acquisition $private($visuNo,camItem) "::tlscp::callbackAcquisition $visuNo" $::conf(tlscp,expTime)
 
-   #--- j'attend la fin de l'acquisition
+   #--- j'attends la fin de l'acquisition
    vwait ::tlscp::private($visuNo,acquisitionState)
 
-   #--- Rajoute des mots cles dans l'en-tete FITS
+   #--- j'ajoute les mots cles dans l'en-tete FITS
    set bufNo [ ::confVisu::getBufNo $visuNo ]
    foreach keyword [ ::keyword::getKeywords $visuNo $::conf(tlscp,keywordConfigName) ] {
       buf$bufNo setkwd $keyword
@@ -1046,7 +1047,7 @@ proc ::tlscp::startCenter { visuNo { methode "" } } {
    vwait ::tlscp::private($visuNo,acquisitionState)
 
    #--- j'ajoute les mots cles dans l'en-tete FITS
-   set bufNo [::confVisu::getBufNo $visuNo]
+   set bufNo [ ::confVisu::getBufNo $visuNo ]
    foreach keyword [ ::keyword::getKeywords $visuNo $::conf(tlscp,keywordConfigName) ] {
       buf$bufNo setkwd $keyword
    }
@@ -1090,7 +1091,7 @@ proc ::tlscp::startSearchStar { visuNo } {
    }
 
    #--- j'efface les traces precedentes
-   clearSearchStar  $visuNo
+   clearSearchStar $visuNo
 
    #--- je configure le type d'acquisition
    set private($visuNo,acquisitionState)  "search"
@@ -1098,6 +1099,7 @@ proc ::tlscp::startSearchStar { visuNo } {
 
    #--- j'affiche le bouton STOP SEARCH
    $private($visuNo,This).camera.search configure -text "$::caption(tlscp,stop_rechercher) (ESC)" -command "::tlscp::stopAcquisition $visuNo $private($visuNo,This).camera.search"
+
    #--- J'associe la commande d'arret a la touche ESCAPE
    bind all <Key-Escape> "::tlscp::stopAcquisition $visuNo $private($visuNo,This).camera.search"
 
@@ -1106,6 +1108,12 @@ proc ::tlscp::startSearchStar { visuNo } {
 
    #--- j'attends la fin de le recherche
    vwait ::tlscp::private($visuNo,acquisitionState)
+
+   #--- j'ajoute les mots cles dans l'en-tete FITS
+   set bufNo [ ::confVisu::getBufNo $visuNo ]
+   foreach keyword [ ::keyword::getKeywords $visuNo $::conf(tlscp,keywordConfigName) ] {
+      buf$bufNo setkwd $keyword
+   }
 
    #--- j'affiche les etoiles
    if { $private($visuNo,acquisitionResult) != "" } {
@@ -1150,6 +1158,7 @@ proc ::tlscp::startSearchStar { visuNo } {
 #------------------------------------------------------------
 proc ::tlscp::clearSearchStar { visuNo } {
    variable private
+
    set hCanvas [::confVisu::getCanvas $visuNo]
    $hCanvas delete tlscpstar
 }
@@ -2089,6 +2098,7 @@ proc ::tlscp::config::onSelectCatalogue { visuNo } {
 proc ::tlscp::config::onChooseDirectory  { visuNo } {
    variable private
    variable widget
+
    set res [ tk_chooseDirectory -title $::caption(tlscp,selectPath) -initialdir $widget($visuNo,cataloguePath) -parent $private($visuNo,frm)  ]
    if {$res!=""} {
       set widget($visuNo,cataloguePath) $res
