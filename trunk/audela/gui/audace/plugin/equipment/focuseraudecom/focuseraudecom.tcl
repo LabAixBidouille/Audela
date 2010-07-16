@@ -2,7 +2,7 @@
 # Fichier : focuseraudecom.tcl
 # Description : Gere le focuser associe a la monture AudeCom
 # Auteur : Robert DELMAS
-# Mise à jour $Id: focuseraudecom.tcl,v 1.16 2010-07-15 15:47:39 robertdelmas Exp $
+# Mise à jour $Id: focuseraudecom.tcl,v 1.17 2010-07-16 16:20:55 robertdelmas Exp $
 #
 
 #
@@ -221,7 +221,7 @@ proc ::focuseraudecom::goto { } {
    if { $conf(audecom,intra_extra) == "1" } {
       if { $audace(focus,targetFocus) > "$audace(focus,currentFocus)" } {
          #--- Envoie la foc a la consigne
-         #--- format de la commande : tel1 focus goto number ?-rate value? ?-blocking boolean?
+         #--- Format de la commande : tel1 focus goto number ?-rate value? ?-blocking boolean?
          tel$audace(telNo) focus goto $audace(focus,targetFocus) -blocking 0
       } else {
          #--- Depasse la consigne de $conf(audecom,dep_val) pas pour le rattrapage des jeux
