@@ -146,10 +146,8 @@ int tel_init(struct telprop *tel, int argc, char **argv)
             break;
       }
    } else {
-      // le telescope ne repond pas 
-      tel_close(tel);
-      strcpy(tel->msg,"No response for alignment mode request");
-      return 1;
+      // le telescope ne repond pas , on suppose qu'il est en mode equatorial
+      strcpy(tel->alignmentMode,"EQUATORIAL");
    }
 
    tel->tempo=50;
@@ -463,7 +461,7 @@ int mytel_radec_goto(struct telprop *tel)
       while (1==1) {
    	   time_in++;
 			if ((strcmp(tel->autostar_char,"")==0)&&(time_in==1)) {
-				sprintf(s,"after 5000"); mytel_tcleval(tel,s);
+				sprintf(s,"after 3000"); mytel_tcleval(tel,s);
 			} else {
 				sprintf(s,"after 350"); mytel_tcleval(tel,s);
 			}
@@ -964,8 +962,8 @@ int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *com
             // je copie le message d'erreur 
             strcpy(tel->msg, tel->interp->result);
          }
-      } while ( k++ < 5000 && cr==0 );
-      if ( k >= 5000 ) {
+      } while ( k++ < 3000 && cr==0 );
+      if ( k >= 3000 ) {
          sprintf(tel->msg, "No response for %s",command);
          mytel_logConsole(tel, "No # reponse for %s",command);
       }
@@ -992,10 +990,10 @@ int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *com
             strcpy(tel->msg, tel->interp->result);
          }
 
-      } while ( strcmp(s,"#")!= 0  &&  k++ < 5000 && cr==0 );
-      if ( k >= 5000 ) {
-         sprintf(tel->msg, "No # reponse for %s after 5000 ms",command);
-         mytel_logConsole(tel, "No # reponse for %s after 5000 ms",command);
+      } while ( strcmp(s,"#")!= 0  &&  k++ < 3000 && cr==0 );
+      if ( k >= 3000 ) {
+         sprintf(tel->msg, "No # reponse for %s after 3000 ms",command);
+         mytel_logConsole(tel, "No # reponse for %s after 3000 ms",command);
       }
    }
 
