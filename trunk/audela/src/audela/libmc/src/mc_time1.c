@@ -36,51 +36,77 @@ void mc_equinoxe_jd(char *chaine,double *jj)
 /* *jj    : valeur du jour julien converti                                 */
 /***************************************************************************/
 {
-   char chaine0[80];
+	int k,n,kp=-1;
+   char chaine0[80],*stmp;
    double a;
    *jj=J2000;
    if (chaine[0]=='J') {
+		n=(int)strlen(chaine);
+		for (k=0;k<n;k++) {
+			if (chaine[k]==',') {
+				chaine[k]='.';
+			}
+		}
       strcpy(chaine0,chaine+1);
       a=atof(chaine0);
       *jj=2451545.0+(a-2000.0)*365.25;
    }
-   if (strcmp(chaine,"B1850.0")==0) {
+	strcpy(chaine0,chaine);
+	n=(int)strlen(chaine0);
+	for (k=0;k<n;k++) {
+		if (chaine0[k]==',') {
+			chaine0[k]='.';
+		}
+		if (chaine0[k]=='.') {
+			kp=k;
+		}
+	}
+	stmp=strstr(chaine0,".0");
+	if (stmp!=NULL) {
+		if (strcmp(stmp,".0")==0) {
+			kp=0;
+		}
+	}
+	if (kp<=-1) {
+		strcat(chaine0,".0");
+	}
+   if (strcmp(chaine0,"B1850.0")==0) {
       *jj=B1850;
    }
-   if (strcmp(chaine,"B1900.0")==0) {
+   if (strcmp(chaine0,"B1900.0")==0) {
       *jj=B1900;
    }
-   if (strcmp(chaine,"B1950.0")==0) {
+   if (strcmp(chaine0,"B1950.0")==0) {
       *jj=B1950;
    }
-   if (strcmp(chaine,"B1975.0")==0) {
+   if (strcmp(chaine0,"B1975.0")==0) {
       *jj=B1975;
    }
-   if (strcmp(chaine,"B2000.0")==0) {
+   if (strcmp(chaine0,"B2000.0")==0) {
       *jj=B2000;
    }
-   if (strcmp(chaine,"B2025.0")==0) {
+   if (strcmp(chaine0,"B2025.0")==0) {
       *jj=B2025;
    }
-   if (strcmp(chaine,"B2050.0")==0) {
+   if (strcmp(chaine0,"B2050.0")==0) {
       *jj=B2050;
    }
-   if (strcmp(chaine,"B2100.0")==0) {
+   if (strcmp(chaine0,"B2100.0")==0) {
       *jj=B2100;
    }
-   if (strcmp(chaine,"J1900.0")==0) {
+   if (strcmp(chaine0,"J1900.0")==0) {
       *jj=J1900;
    }
-   if (strcmp(chaine,"J1950.0")==0) {
+   if (strcmp(chaine0,"J1950.0")==0) {
       *jj=J1950;
    }
-   if (strcmp(chaine,"J2000.0")==0) {
+   if (strcmp(chaine0,"J2000.0")==0) {
       *jj=J2000;
    }
-   if (strcmp(chaine,"J2050.0")==0) {
+   if (strcmp(chaine0,"J2050.0")==0) {
       *jj=J2050;
    }
-   if (strcmp(chaine,"J2100.0")==0) {
+   if (strcmp(chaine0,"J2100.0")==0) {
       *jj=J2100;
    }
 }
