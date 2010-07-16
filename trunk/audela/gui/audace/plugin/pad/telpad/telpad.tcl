@@ -2,7 +2,7 @@
 # Fichier : telpad.tcl
 # Description : Raquette simplifiee a l'usage des telescopes
 # Auteur : Robert DELMAS
-# Mise à jour $Id: telpad.tcl,v 1.23 2010-05-17 15:57:20 robertdelmas Exp $
+# Mise à jour $Id: telpad.tcl,v 1.24 2010-07-16 16:22:26 robertdelmas Exp $
 #
 
 namespace eval telpad {
@@ -144,8 +144,8 @@ namespace eval telpad {
       global conf
 
       #--- Creation du focuser
-      if { $conf(superpad,focuserLabel) != "" } {
-         ::$conf(superpad,focuserLabel)::createPlugin
+      if { $conf(telpad,focuserLabel) != "" } {
+         ::$conf(telpad,focuserLabel)::createPlugin
       }
 
       #--- Affiche la raquette
@@ -388,7 +388,7 @@ namespace eval telpad {
       bind $zone(plus)  <ButtonRelease-1> { ::focus::move $::conf(telpad,focuserLabel) stop }
 
       #--- Initialise et affiche la vitesse du focuser
-      ::focus::setSpeed "$conf(superpad,focuserLabel)" "0"
+      ::focus::setSpeed "$conf(telpad,focuserLabel)" "0"
 
       #--- La fenetre est active
       focus $This
