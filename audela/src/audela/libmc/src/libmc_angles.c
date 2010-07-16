@@ -2508,9 +2508,24 @@ int Cmd_mctcl_angle2dms(ClientData clientData, Tcl_Interp *interp, int argc, cha
             sprintf(s,"%s%dd%dm%fs",charsigne,dd,mm,ss);
 			}
 		} else {
-			s1=(int)floor(ss);
 			if (subsecdigits<0) {subsecdigits=0;}
 			if (subsecdigits>10) {subsecdigits=10;}
+         if ( subsecdigits == 0 ) {
+            // j'arrondis a l'entier le plus proche 
+            s1=(int)floor(ss+0.5);
+            if (s1 >= 60 ) {
+               s1 -= 60;
+               mm += 1;
+               if (mm >= 60 ) {
+                  mm -= 60;
+                  dd += 1;                     
+               }
+            }
+         } else {
+            // je recupere l'entier immediatement inferieur en valeur absolue
+     			s1=(int)floor(ss);
+         }
+
 			s2=(int)floor(pow(10,subsecdigits)*(ss-(double)s1));
 			if ((plus==0)&&(strcmp(charsigne,"+")==0)) {strcpy(charsigne,"");}
 			if (zero==1) {
@@ -2645,9 +2660,24 @@ int Cmd_mctcl_angle2hms(ClientData clientData, Tcl_Interp *interp, int argc, cha
             sprintf(s,"%dh%dm%fs",hh,mm,ss);
 			}
 		} else {
-			s1=(int)floor(ss);
 			if (subsecdigits<0) {subsecdigits=0;}
 			if (subsecdigits>10) {subsecdigits=10;}
+         if ( subsecdigits == 0 ) {
+            // j'arrondis a l'entier le plus proche 
+            s1=(int)floor(ss+0.5);
+            if (s1 >= 60 ) {
+               s1 -= 60;
+               mm += 1;
+               if (mm >= 60 ) {
+                  mm -= 60;
+                  hh += 1;
+               }
+            }
+         } else {
+            // je recupere l'entier immediatement inferieur
+     			s1=(int)floor(ss);
+         }
+
 			s2=(int)floor(pow(10,subsecdigits)*(ss-(double)s1));
 			if ((plus==0)&&(strcmp(charsigne,"+")==0)) {strcpy(charsigne,"");}
 			if (zero==1) {
