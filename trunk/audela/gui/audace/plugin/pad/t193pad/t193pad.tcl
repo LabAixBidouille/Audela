@@ -2,7 +2,7 @@
 # Fichier : t193pad.tcl
 # Description : Raquette specifique au T193 de l'OHP
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: t193pad.tcl,v 1.16 2010-07-15 15:50:12 robertdelmas Exp $
+# Mise à jour $Id: t193pad.tcl,v 1.17 2010-07-16 16:23:33 robertdelmas Exp $
 #
 
 namespace eval ::t193pad {
@@ -152,8 +152,8 @@ proc ::t193pad::createPluginInstance { } {
    global conf
 
    #--- Creation du focuser
-   if { $conf(superpad,focuserLabel) != "" } {
-      ::$conf(superpad,focuserLabel)::createPlugin
+   if { $conf(t193pad,focuserLabel) != "" } {
+      ::$conf(t193pad,focuserLabel)::createPlugin
    }
 
    #--- Affiche la raquette
@@ -500,7 +500,7 @@ proc ::t193pad::createDialog { } {
    pack $This.dome -side top -fill x -expand 0
 
    #--- Initialise et affiche la vitesse du focuser
-   ::focus::setSpeed "$conf(superpad,focuserLabel)" "0"
+   ::focus::setSpeed "$conf(t193pad,focuserLabel)" "0"
 
    #--- active ou descative le choix de l'impulsion
    setRadecPulseEnabled
@@ -577,7 +577,7 @@ proc ::t193pad::moveRadecPulse { direction } {
 #  setRadecPulseEnabled
 #     active le choix de la valeur de l'impulsion
 #------------------------------------------------------------
-proc ::t193pad::setRadecPulseEnabled {  } {
+proc ::t193pad::setRadecPulseEnabled { } {
    variable This
 
    if { $::conf(t193pad,radecPulse,enabled) == 0 } {
@@ -631,7 +631,7 @@ proc ::t193pad::setRadecPulseEnabled {  } {
 #  incrementRadecPulse
 #     change la velur de l'impulsion radec
 #------------------------------------------------------------
-proc ::t193pad::incrementRadecPulse {  } {
+proc ::t193pad::incrementRadecPulse { } {
    if { $::conf(t193pad,radecPulse,enabled) == 1 } {
       switch $::conf(t193pad,radecPulse,value) {
          "0.1" {
@@ -670,7 +670,6 @@ proc ::t193pad::cmdStartGoto { } {
 #------------------------------------------------------------
 proc ::t193pad::startFocus { direction } {
    set catchError [catch {
-     ### tel$::audace(telNo) focus move $direction
       ::focus::move $::conf(t193pad,focuserLabel) $direction
    }]
 
@@ -683,9 +682,8 @@ proc ::t193pad::startFocus { direction } {
 #  stopFocus
 #     arrete le mouvement du focus du T193
 #------------------------------------------------------------
-proc ::t193pad::stopFocus {  } {
+proc ::t193pad::stopFocus { } {
    set catchError [catch {
-     ### tel$::audace(telNo) focus stop
       ::focus::move $::conf(t193pad,focuserLabel) stop
    }]
 
@@ -698,10 +696,8 @@ proc ::t193pad::stopFocus {  } {
 #  gotoFocus
 #     lance un goto du focus
 #------------------------------------------------------------
-proc ::t193pad::gotoFocus {  } {
+proc ::t193pad::gotoFocus { } {
    set catchError [catch {
-     ### #--- format de la commande : tel1 focus goto number ?-rate value? ?-blocking boolean?
-     ### tel$::audace(telNo) focus goto $::audace(focus,targetFocus) -blocking 0
       ::focus::goto $::conf(t193pad,focuserLabel)
    }]
 
