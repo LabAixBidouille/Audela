@@ -2,7 +2,7 @@
 # Fichier : trigger.tcl
 # Description : Outil de declenchement pour APN Canon non reconnu par libgphoto2_canon.dll
 # Auteur : Raymond Zachantke
-# Mise à jour $Id: trigger.tcl,v 1.3 2010-07-05 20:46:49 robertdelmas Exp $
+# Mise à jour $Id: trigger.tcl,v 1.4 2010-07-17 14:37:15 robertdelmas Exp $
 #
 
 #============================================================
@@ -69,7 +69,7 @@ namespace eval ::trigger {
    proc getPluginProperty { propertyName } {
       switch $propertyName {
          function     { return "acquisition" }
-         subfunction  { return "trigger" }
+         subfunction  { return "dslr" }
          display      { return "panel" }
       }
    }
@@ -87,8 +87,6 @@ namespace eval ::trigger {
    #    cree une nouvelle instance de l'outil
    #------------------------------------------------------------
    proc createPluginInstance { { in "" } { visuNo 1 } } {
-      global panneau
-
       #--- Mise en place de l'interface graphique
       createPanel $in.trigger
    }
