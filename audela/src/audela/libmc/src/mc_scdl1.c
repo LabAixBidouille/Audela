@@ -2977,7 +2977,7 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 			duration=objectdescr[kd].delay_slew+objectdescr[kd].delay_instrum+objectdescr[kd].delay_exposures;
 			angle=180;
 			d1=angle/objectdescr[kd].axe_slew1;
-			angle=fabs(dec1-dec2);
+			angle=130;
 			d2=angle/objectdescr[kd].axe_slew2;
 			d12b=(d1>d2)?d1:d2;
 			durationtot=duration+d12b;
@@ -3007,7 +3007,7 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 					}
 					if (fidlog!=NULL) {
 						fprintf(fidlog,"   --- STEP_4 =1 kr=%d j1=%f k1=%d\n",kr,objectlocalranges[kk].jd1[kr],k1);
-						fprintf(fidlog,"   --- STEP_4 =1 kr=%d j2=%f k2=%d\n",kr,objectlocalranges[kk].jd1[kr],k2);
+						//fprintf(fidlog,"   --- STEP_4 =1 kr=%d j2=%f k2=%d\n",kr,objectlocalranges[kk].jd1[kr],k2);
 					}
 				}
 			}
@@ -3341,10 +3341,10 @@ try_a_gap:
 					}
 				}
 			} 
-			if (jd2>jdseq_next-(objectdescr[kd].delay_slew+objectdescr[kd].delay_instrum+objectdescr[kd].delay_exposures)/86400.) {
+			if (jd2>jdseq_next-(objectdescr[kd].delay_slew+objectdescr[kd].delay_instrum)/86400.) {
 				// --- This is the case corresponding to a gap between the end of the
 				//     sequence and the start of the next sequence which is too small
-				//     to insert another future sequence. We pussh the sequence to the
+				//     to insert another future sequence. We push the sequence to the
 				//     next ever planified sequence if possible by constraints.
 				dd0=jdseq_next-jd2;
 				dd1=j2-jd1;
