@@ -1,11 +1,12 @@
+#--------------------------------------------------
 # source audace/plugin/tool/bddimages/bddimages_go.tcl
+#--------------------------------------------------
 #
 # Fichier        : bddimages_go.tcl
 # Description    : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_go.tcl,v 1.4 2010-05-27 07:07:01 robertdelmas Exp $
+# Mise à jour $Id: bddimages_go.tcl,v 1.5 2010-07-17 14:00:57 robertdelmas Exp $
 #
-
 
 #============================================================
 # Declaration du namespace bddimages
@@ -63,18 +64,17 @@ proc ::bddimages::initPlugin { tkbase } {
    global conf
    global bddconf
 
-   set audace(font,en_tete_1) [ list {Arial} 14 bold ]
-   set audace(font,en_tete_2) [ list {Arial} 12 bold ]
-   set audace(font,arial_10_b) [ list {Arial} 10 bold ]
-   set audace(font,arial_6_n) [ list {Arial} 10 bold ]
+   set bddconf(font,arial_10_b) [ list {Arial} 10 bold ]
+   set bddconf(font,arial_12_b) [ list {Arial} 12 bold ]
+   set bddconf(font,arial_14_b) [ list {Arial} 14 bold ]
 
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_config.tcl    ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_config.tcl ]\""
 
-   foreach param $::bddimages_config::allparams  {
+   foreach param $::bddimages_config::allparams {
      if {[info exists conf(bddimages,$param)]} then { set bddconf($param) $conf(bddimages,$param) }
    }
 
-   set bddconf(bufno)   $audace(bufNo)
+   set bddconf(bufno)    $audace(bufNo)
    set bddconf(rep_plug) [file join $audace(rep_plugin) tool bddimages ]
 
 }
@@ -275,11 +275,9 @@ proc ::bddimages::bddimagesBuildIF { This } {
 
       pack $This.ressource -side top -fill x
 
-
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
 }
-
 
 proc gren_info { msg } { ::console::affiche_resultat "$msg" }
 

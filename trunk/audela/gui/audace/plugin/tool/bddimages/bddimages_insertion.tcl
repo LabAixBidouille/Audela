@@ -6,7 +6,7 @@
 # Description    : Environnement d'inssertion des images
 #                  dans la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_insertion.tcl,v 1.2 2010-05-27 07:05:04 robertdelmas Exp $
+# Mise à jour $Id: bddimages_insertion.tcl,v 1.3 2010-07-17 14:01:16 robertdelmas Exp $
 #
 #--------------------------------------------------
 #
@@ -494,17 +494,17 @@ proc affiche_image { } {
               -text "$caption(bddimages_insertion,refresh)" -borderwidth 2 \
               -command {
                         ::bddimages_insertion::getFormatColumn
-		       $::bddimages_insertion::This.frame7.tbl delete 0 end
-		       $::bddimages_insertion::This.frame7.tbl deletecolumns 0 end
-			init_info
-			::bddimages_insertion::Affiche_Results
+                        $::bddimages_insertion::This.frame7.tbl delete 0 end
+                        $::bddimages_insertion::This.frame7.tbl deletecolumns 0 end
+                        init_info
+                        ::bddimages_insertion::Affiche_Results
                        }
            pack $This.frame11.but_refresh \
               -in $This.frame11 -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
            #--- Cree un label pour le nb image
-           label $This.frame11.nbimg -font $audace(font,en_tete_2) \
+           label $This.frame11.nbimg -font $bddconf(font,arial_12_b) \
                -textvariable bddconf(inserinfo)
            pack $This.frame11.nbimg -in $This.frame11 -side left -padx 3 -pady 1 -anchor w
 

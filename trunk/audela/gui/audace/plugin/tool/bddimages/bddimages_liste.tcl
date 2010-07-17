@@ -6,7 +6,7 @@
 # Description    : Environnement de recherche des images
 #                  dans la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_liste.tcl,v 1.2 2010-05-27 07:02:40 robertdelmas Exp $
+# Mise à jour $Id: bddimages_liste.tcl,v 1.3 2010-07-17 14:01:32 robertdelmas Exp $
 #
 #--------------------------------------------------
 #
@@ -126,7 +126,7 @@
 #
 #    fonction  :
 #       Definit la largeur, la traduction du titre
-#	et la justification des colonnes
+#       et la justification des colonnes
 #
 #    procedure externe :
 #
@@ -153,9 +153,9 @@
 #--------------------------------------------------
 #
 #    fonction  :
-#	Trie les lignes par ordre alphabetique de
-#	la colonne (est appele quand on clique sur
-#	le titre de la colonne)
+#       Trie les lignes par ordre alphabetique de
+#       la colonne (est appele quand on clique sur
+#       le titre de la colonne)
 #
 #    procedure externe :
 #
@@ -170,7 +170,7 @@
 #--------------------------------------------------
 #
 #    fonction  :
-#	Affiche la liste des objets de l'image
+#       Affiche la liste des objets de l'image
 #
 #    procedure externe :
 #
@@ -436,12 +436,12 @@ proc build_intellilist { name } {
       incr y
       if {$list_req($x,condition)== $caption(bddimages_liste,contient)} {
          lappend intellilist [list $y $list_req($x,champ) "LIKE" "%$list_req($x,valeur)%"]
-	 continue
-	 }
+         continue
+         }
       if {$list_req($x,condition)== $caption(bddimages_liste,notcontient)} {
          lappend intellilist [list $y $list_req($x,champ) "NOT LIKE" "%$list_req($x,valeur)%"]
-	 continue
-	 }
+         continue
+         }
       lappend intellilist [list $y $list_req($x,champ) $list_req($x,condition) $list_req($x,valeur)]
       }
     }
@@ -563,15 +563,15 @@ proc calcul_nbimg { } {
          set intellilist($y,champ)     $list_req($x,champ)
          set intellilist($y,condition) "LIKE"
          set intellilist($y,valeur)    "%$list_req($x,valeur)%"
-	 continue
-	 }
+         continue
+         }
       if {$list_req($x,condition)== $caption(bddimages_liste,notcontient)} {
          ::console::affiche_resultat "** yes $caption(bddimages_liste,notcontient)\n"
          set intellilist($y,champ)     $list_req($x,champ)
          set intellilist($y,condition) "NOT LIKE"
          set intellilist($y,valeur) "%$list_req($x,valeur)%"
-	 continue
-	 }
+         continue
+         }
       set intellilist($y,champ)     $list_req($x,champ)
       set intellilist($y,condition) $list_req($x,condition)
       set intellilist($y,valeur)    $list_req($x,valeur)
@@ -631,13 +631,13 @@ proc calcul_nbimg { } {
     ::console::affiche_resultat "** $msg \n"
     if {[string first "Unknown column" $msg]==-1} {
        if {$err} {
-	  bddimages_sauve_fich "Erreur de lecture de la liste des header par SQL"
-	  bddimages_sauve_fich "	sqlcmd = $sqlcmd"
-	  bddimages_sauve_fich "	err = $err"
-	  bddimages_sauve_fich "	msg = $msg"
-	  set intellilist(nbimg) "Error"
-	  return
-	  }
+         bddimages_sauve_fich "Erreur de lecture de la liste des header par SQL"
+         bddimages_sauve_fich "	sqlcmd = $sqlcmd"
+         bddimages_sauve_fich "	err = $err"
+         bddimages_sauve_fich "	msg = $msg"
+         set intellilist(nbimg) "Error"
+         return
+         }
        set intellilist(nbimg) [expr $intellilist(nbimg) + [lindex $resultcount 0]]
        ::console::affiche_resultat "** idhd= $idhd nb=[lindex $resultcount 0] total=$intellilist(nbimg) \n"
        } else {
@@ -732,12 +732,12 @@ proc add_requete { } {
     pack $frchch.dat -in $frchch -side left -anchor w -padx 1
     #--- Cree un bouton supprime requete
     button $frchch.sup -state normal -borderwidth 1 -relief groove -anchor c -height 1 \
-	    -text "-" -command { ::bddimages_liste::remove_requete }
+       -text "-" -command { ::bddimages_liste::remove_requete }
 
     pack $frchch.sup -in $frchch -side left -anchor w -padx 1
     #--- Cree un bouton ajout requete
     button $frchch.add -state active -borderwidth 1 -relief groove -anchor c -height 1 \
-	    -text "+" -command { ::bddimages_liste::add_requete }
+       -text "+" -command { ::bddimages_liste::add_requete }
     pack $frchch.add -in $frchch -side left -anchor w -padx 1
 
 return
@@ -806,10 +806,10 @@ return
       set list_comb3 [list $caption(bddimages_liste,alea) \
                            $caption(bddimages_liste,dateobs) \
                            $caption(bddimages_liste,telescope) \
-			   $caption(bddimages_liste,plrecmod) \
-			   $caption(bddimages_liste,morecmod) \
-			   $caption(bddimages_liste,plrecajo) \
-			   $caption(bddimages_liste,morecajo) ]
+                           $caption(bddimages_liste,plrecmod) \
+                           $caption(bddimages_liste,morecmod) \
+                           $caption(bddimages_liste,plrecajo) \
+                           $caption(bddimages_liste,morecajo) ]
 
       set form_req(name) "Newlist[ expr $::nbintellilist + 1 ]"
       set form_req(type_req_check) ""
@@ -909,7 +909,7 @@ return
          pack $framecurrent -in $This -anchor s -side top -expand 0 -fill x -padx 3 -pady 3
 
            #--- Cree un label pour faire un saut
-           label $framecurrent.titre -font $audace(font,arial_10_b) \
+           label $framecurrent.titre -font $bddconf(font,arial_10_b) \
                  -text " "
            pack $framecurrent.titre \
                 -in $framecurrent -side top -padx 3 -pady 3
@@ -926,24 +926,24 @@ return
 #             radiobutton $framecurrent.check -highlightthickness 0 -state normal -value 0 -variable form_req(type_req_check) -command {  }
              checkbutton $framecurrent.check -highlightthickness 0 -state normal -variable form_req(type_req_check) -command {  }
              pack $framecurrent.check \
-               -in $framecurrent -side left -anchor center -padx 3
-	    #--- Cree un label
-	    label $framecurrent.txt1 -font $audace(font,arial_6_n) \
-    		  -text "Répondre à"
-	    pack $framecurrent.txt1 \
-    		 -in $framecurrent -side left -anchor w -padx 1
-	    #--- Cree un combox pour le choix
-	    ComboBox $framecurrent.combo1 \
-	       -width 20 -height 2  -font $audace(font,arial_6_n)\
-	       -relief raised -borderwidth 1 -editable 0 \
-	       -textvariable form_req(type_requ) \
-	       -values $list_comb1
-	    pack $framecurrent.combo1 -anchor center -side left -fill x -expand 0
-	    #--- Cree un label
-	    label $framecurrent.txt2 -font $audace(font,arial_6_n) \
-    		  -text "règles suivantes :"
-	    pack $framecurrent.txt2 \
-    		 -in $framecurrent -side left -anchor w -padx 1
+                -in $framecurrent -side left -anchor center -padx 3
+             #--- Cree un label
+             label $framecurrent.txt1 -font $bddconf(font,arial_10_b) \
+                -text "Répondre à"
+             pack $framecurrent.txt1 \
+                -in $framecurrent -side left -anchor w -padx 1
+             #--- Cree un combox pour le choix
+             ComboBox $framecurrent.combo1 \
+                -width 20 -height 2 -font $bddconf(font,arial_10_b)\
+                -relief raised -borderwidth 1 -editable 0 \
+                -textvariable form_req(type_requ) \
+                -values $list_comb1
+             pack $framecurrent.combo1 -anchor center -side left -fill x -expand 0
+             #--- Cree un label
+             label $framecurrent.txt2 -font $bddconf(font,arial_10_b) \
+                -text "règles suivantes :"
+             pack $framecurrent.txt2 \
+                -in $framecurrent -side left -anchor w -padx 1
 
 
 
@@ -954,7 +954,7 @@ return
          pack $framecurrent -in $This -anchor s -side top -expand 0 -fill x -padx 3 -pady 3
 
            #--- Cree un label pour faire un saut
-           label $framecurrent.titre -font $audace(font,arial_10_b) \
+           label $framecurrent.titre -font $bddconf(font,arial_10_b) \
                  -text " "
            pack $framecurrent.titre \
                 -in $framecurrent -side top -padx 3 -pady 3
@@ -971,7 +971,7 @@ return
 
          #--- Cree un bouton ajout requete
 #         button $frch.add -state active -borderwidth 1 -relief groove -anchor c -height 1 \
-#	    -text "+" -command { ::bddimages_liste::add_requete }
+#            -text "+" -command { ::bddimages_liste::add_requete }
 #         pack $frch.add -in $frch -side top -anchor s -padx 1 -expand 0 -fill x
 
 #--
@@ -994,7 +994,7 @@ return
          pack $framecurrent -in $This -anchor s -side top -expand 0 -fill x -padx 3 -pady 3
 
            #--- Cree un label pour faire un saut
-           label $framecurrent.titre -font $audace(font,arial_10_b) \
+           label $framecurrent.titre -font $bddconf(font,arial_10_b) \
                  -text " "
            pack $framecurrent.titre \
                 -in $framecurrent -side top -padx 3 -pady 3
@@ -1015,33 +1015,33 @@ return
                -command {  }
              pack $framecurrent.check \
                -in $framecurrent -side left -anchor center -padx 3
-	    #--- Cree un label
-	    label $framecurrent.txt1 -font $audace(font,arial_6_n) \
-    		  -text "Limiter à"
-	    pack $framecurrent.txt1 \
-    		 -in $framecurrent -side left -anchor w -padx 1
-	    #--- Cree une ligne d'entree pour la variable
-	    entry $framecurrent.dat -textvariable form_req(limit_result) -borderwidth 1 -relief groove -width 8 -justify center
-	    pack $framecurrent.dat -in $framecurrent -side left -anchor w -padx 1
-	    #--- Cree un combox pour le choix
-	    ComboBox $framecurrent.combo \
-	       -width 10 -height 1 \
-	       -relief sunken -borderwidth 1 -editable 0 \
-	       -textvariable form_req(type_result) \
-	       -values $list_comb2
-	    pack $framecurrent.combo -anchor center -side left -fill x -expand 0
-	    #--- Cree un label
-	    label $framecurrent.txt2 -font $audace(font,arial_6_n) \
-    		  -text "sélectionnés par"
-	    pack $framecurrent.txt2 \
-    		 -in $framecurrent -side left -anchor w -padx 1
-	    #--- Cree un combox pour le choix
-	    ComboBox $framecurrent.combo2 \
-	       -width 27 -height 7 \
-	       -relief sunken -borderwidth 1 -editable 0 \
-	       -textvariable form_req(type_select) \
-	       -values $list_comb3
-	    pack $framecurrent.combo2 -anchor center -side left -fill x -expand 0
+             #--- Cree un label
+             label $framecurrent.txt1 -font $bddconf(font,arial_10_b) \
+                -text "Limiter à"
+             pack $framecurrent.txt1 \
+                -in $framecurrent -side left -anchor w -padx 1
+             #--- Cree une ligne d'entree pour la variable
+             entry $framecurrent.dat -textvariable form_req(limit_result) -borderwidth 1 -relief groove -width 8 -justify center
+             pack $framecurrent.dat -in $framecurrent -side left -anchor w -padx 1
+             #--- Cree un combox pour le choix
+             ComboBox $framecurrent.combo \
+                -width 10 -height 1 \
+                -relief sunken -borderwidth 1 -editable 0 \
+                -textvariable form_req(type_result) \
+                -values $list_comb2
+             pack $framecurrent.combo -anchor center -side left -fill x -expand 0
+             #--- Cree un label
+             label $framecurrent.txt2 -font $bddconf(font,arial_10_b) \
+                -text "sélectionnés par"
+             pack $framecurrent.txt2 \
+                -in $framecurrent -side left -anchor w -padx 1
+             #--- Cree un combox pour le choix
+             ComboBox $framecurrent.combo2 \
+                -width 27 -height 7 \
+                -relief sunken -borderwidth 1 -editable 0 \
+                -textvariable form_req(type_select) \
+                -values $list_comb3
+             pack $framecurrent.combo2 -anchor center -side left -fill x -expand 0
 
 
 
@@ -1053,18 +1053,18 @@ return
          pack $framecurrent -in $This -anchor s -side top -expand 0 -fill x -padx 3 -pady 3
 
 
-	    #--- Cree un label
-	    label $framecurrent.txt1 -font $audace(font,arial_6_n) \
-    		  -text "Nombre d'images résultant de cette requête : "
-	    pack $framecurrent.txt1 \
-    		 -in $framecurrent -side left -anchor w -padx 1
-	    #--- Cree une ligne d'entree pour la variable
-	    entry $framecurrent.dat -textvariable form_req(nbimg) -state readonly -borderwidth 1 -relief groove -width 8 -justify center
-	    pack $framecurrent.dat -in $framecurrent -side left -anchor w -padx 1
-	    #--- Cree un bouton ajout requete
-	    button $framecurrent.calc -state active -borderwidth 1 -relief groove -anchor c -height 1 \
-		    -text "Calcul" -command { ::bddimages_liste::calcul_nbimg }
-	    pack $framecurrent.calc -in $framecurrent -side left -anchor w -padx 1
+         #--- Cree un label
+         label $framecurrent.txt1 -font $bddconf(font,arial_10_b) \
+            -text "Nombre d'images résultant de cette requête : "
+         pack $framecurrent.txt1 \
+            -in $framecurrent -side left -anchor w -padx 1
+         #--- Cree une ligne d'entree pour la variable
+         entry $framecurrent.dat -textvariable form_req(nbimg) -state readonly -borderwidth 1 -relief groove -width 8 -justify center
+         pack $framecurrent.dat -in $framecurrent -side left -anchor w -padx 1
+         #--- Cree un bouton ajout requete
+         button $framecurrent.calc -state active -borderwidth 1 -relief groove -anchor c -height 1 \
+            -text "Calcul" -command { ::bddimages_liste::calcul_nbimg }
+         pack $framecurrent.calc -in $framecurrent -side left -anchor w -padx 1
 
 
 
@@ -1076,7 +1076,7 @@ return
          pack $framecurrent -in $This -anchor s -side top -expand 0 -fill x -padx 3 -pady 3
 
            #--- Cree un label pour faire un saut
-           label $framecurrent.titre -font $audace(font,arial_10_b) \
+           label $framecurrent.titre -font $bddconf(font,arial_10_b) \
                  -text " "
            pack $framecurrent.titre \
                 -in $framecurrent -side top -padx 3 -pady 3
