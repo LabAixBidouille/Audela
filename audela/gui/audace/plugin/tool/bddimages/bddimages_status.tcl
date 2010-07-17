@@ -1,10 +1,11 @@
+#--------------------------------------------------
 # source audace/plugin/tool/bddimages/bddimages_status.tcl
-
+#--------------------------------------------------
 #
 # Fichier        : bddimages_status.tcl
 # Description    : Affiche le status de la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_status.tcl,v 1.2 2010-05-27 06:58:41 robertdelmas Exp $
+# Mise à jour $Id: bddimages_status.tcl,v 1.3 2010-07-17 14:02:04 robertdelmas Exp $
 #
 
 namespace eval bddimages_status {
@@ -319,7 +320,7 @@ namespace eval bddimages_status {
                 -in $This.frame1 -side top -expand 0 -fill x -padx 1 -pady 1
 
            #--- Cree un label pour le status
-           label $This.frame1.statusbdd -font $audace(font,en_tete_2) \
+           label $This.frame1.statusbdd -font $bddconf(font,arial_12_b) \
                 -text "$caption(bddimages_status,label_bdd)"
            pack $This.frame1.statusbdd -in $This.frame1.status -side top -padx 3 -pady 1 -anchor w
 
@@ -328,15 +329,15 @@ namespace eval bddimages_status {
              pack $intitle -in $This.frame1.status -side left
 
                #--- Cree un label pour le status
-               label $intitle.ok -font $audace(font,en_tete_1) -padx 3 \
+               label $intitle.ok -font $bddconf(font,arial_14_b) -padx 3 \
                      -text "$caption(bddimages_status,label_connect)"
                pack $intitle.ok -in $intitle -side top -padx 3 -pady 1 -anchor w
                #--- Cree un label pour le nb d image
-               label $intitle.nbimg -font $audace(font,en_tete_1) \
+               label $intitle.nbimg -font $bddconf(font,arial_14_b) \
                      -text "$caption(bddimages_status,label_nbimg)"
                pack $intitle.nbimg -in $intitle -side top -padx 3 -pady 1 -anchor w
                #--- Cree un label pour le nb de header
-               label $intitle.header -font $audace(font,en_tete_1) \
+               label $intitle.header -font $bddconf(font,arial_14_b) \
                      -text "$caption(bddimages_status,label_nbheader)"
                pack $intitle.header -in $intitle -side top -padx 3 -pady 1 -anchor w
 
@@ -366,7 +367,7 @@ namespace eval bddimages_status {
                 -in $This.frame1 -side top -expand 0 -fill x -padx 1 -pady 1
 
            #--- Cree un label pour le status des repertoires
-           label $This.frame1.statusrep -font $audace(font,en_tete_2) \
+           label $This.frame1.statusrep -font $bddconf(font,arial_12_b) \
                 -text "$caption(bddimages_status,label_rep)"
            pack $This.frame1.statusrep -in $This.frame1.rep -side top -padx 3 -pady 1 -anchor w
 
@@ -375,15 +376,15 @@ namespace eval bddimages_status {
              pack $intitle -in $This.frame1.rep -side left
 
                #--- Cree un label pour le status
-               label $intitle.nbimgrep -font $audace(font,en_tete_1) \
+               label $intitle.nbimgrep -font $bddconf(font,arial_14_b) \
                      -text "$caption(bddimages_status,label_nbimgrep)" -anchor center
                pack $intitle.nbimgrep -in $intitle -side top -padx 3 -pady 1 -anchor center
 
-               label $intitle.nbimginco -font $audace(font,en_tete_1) \
+               label $intitle.nbimginco -font $bddconf(font,arial_14_b) \
                      -text "$caption(bddimages_status,label_nbimginc)" -anchor center
                pack $intitle.nbimginco -in $intitle -side top -padx 3 -pady 1 -anchor center
 
-               label $intitle.nbimgerr -font $audace(font,en_tete_1) \
+               label $intitle.nbimgerr -font $bddconf(font,arial_14_b) \
                      -text "$caption(bddimages_status,label_nbimgerr)" -anchor center
                pack $intitle.nbimgerr -in $intitle -side top -padx 3 -pady 1 -anchor center
 

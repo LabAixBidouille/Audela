@@ -6,7 +6,7 @@
 # Description    : Environnement de recherche des images
 #                  dans la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_recherche.tcl,v 1.3 2010-05-27 07:00:54 robertdelmas Exp $
+# Mise à jour $Id: bddimages_recherche.tcl,v 1.4 2010-07-17 14:01:48 robertdelmas Exp $
 #
 #--------------------------------------------------
 #
@@ -497,7 +497,7 @@ namespace eval bddimages_recherche {
            menu $This.frame0.aide.menu
              $This.frame0.aide.menu add command -label "$caption(search,aide)" -command { }
              $This.frame0.aide.menu add command -label "$caption(search,aide_skybot)" -command {  }
-	     $This.frame0.aide.menu add separator
+             $This.frame0.aide.menu add separator
              $This.frame0.aide.menu add command -label "$caption(search,code_uai)" -command {  }
              # $This.frame0.aide.menu add separator
              # $This.frame0.aide.menu add command -label "$caption(search,apropos)" -command { ::skybot_Search::apropos }
@@ -511,7 +511,7 @@ namespace eval bddimages_recherche {
          pack $This.frame1 -in $This -anchor s -side top -expand 0 -fill x
 
            #--- Cree un label pour le titre
-           label $This.frame1.titre -font $audace(font,arial_10_b) \
+           label $This.frame1.titre -font $bddconf(font,arial_10_b) \
                  -text "$caption(bddimages_recherche,titre)"
            pack $This.frame1.titre \
                 -in $This.frame1 -side top -padx 3 -pady 3
@@ -615,7 +615,7 @@ namespace eval bddimages_recherche {
 #              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
            #--- Cree un label pour le nb image
-           label $This.frame11.nbimg -font $audace(font,en_tete_2) \
+           label $This.frame11.nbimg -font $bddconf(font,arial_12_b) \
                -textvariable bddconf(inserinfo)
            pack $This.frame11.nbimg -in $This.frame11 -side left -padx 3 -pady 1 -anchor w
 
