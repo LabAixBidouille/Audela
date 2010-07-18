@@ -444,8 +444,8 @@ int Cmd_mctcl_home_cep(ClientData clientData, Tcl_Interp *interp, int argc, char
 /****************************************************************************/
 /* Corrrige les coordonnees du pole vrai                                    */
 /****************************************************************************/
-/*
-/* O. Zarrouati, "Trajectoires Spatiales" CNES, ed. Cepadues, p 244-245
+/* 
+O. Zarrouati, "Trajectoires Spatiales" CNES, ed. Cepadues, p 244-245
 mc_homecep { GPS 0 E 40 1000 } 0.03703 0.19683
 */
 /****************************************************************************/
@@ -828,7 +828,7 @@ int mctcl_decode_sequences(Tcl_Interp *interp, char *argv[],int *nobjects, mc_OB
 	char **argvvvv=NULL;
 	int argcc,argccc,argcccc,ko,kjd,nobjs,code,ka,kjdmax;
 	double val;
-	mc_OBJECTDESCR *objectdescr;
+	mc_OBJECTDESCR *objectdescr=NULL;
    code=Tcl_SplitList(interp,argv[0],&argcc,&argvv);
 	nobjs=argcc;
 	*nobjects=nobjs;
@@ -973,8 +973,8 @@ int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,cha
 	double *decs,*ha_rises,*ha_sets;
 	double *hdecs,*hha_rises,*hha_sets;
 	double ha_set_lim,ha_rise_lim;
-	mc_HORIZON_ALTAZ *horizon_altaz;
-	mc_HORIZON_HADEC *horizon_hadec;
+	mc_HORIZON_ALTAZ *horizon_altaz=NULL;
+	mc_HORIZON_HADEC *horizon_hadec=NULL;
 	int nh_altaz=361,nh_hadec=181;
 
 	if (pdsptr!=NULL) {
