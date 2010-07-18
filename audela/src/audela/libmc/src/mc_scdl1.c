@@ -343,7 +343,7 @@ int mc_scheduler_local1(int k,double longmpc, double rhocosphip, double rhosinph
 	//double *dummy1s=NULL,*dummy2s=NULL,*dummy3s=NULL,*dummy4s=NULL,*dummy5s=NULL,*dummy6s=NULL,*dummy7s=NULL,*dummy8s=NULL,*dummy9s=NULL;
 	//double *dummy01s=NULL,*dummy02s=NULL;
 	int kk,kh;
-	double ra,dec,ha,elev=0,az,c,moon_dist_phase,dh;
+	double ra=0,dec=0,ha=0,elev=0,az=0,c,moon_dist_phase,dh;
 	//mc_OBJECTLOCAL *objectlocal=NULL;
 	double h,moon_az,moon_elev,sun_az,sun_elev,moon_dist,sun_dist,helev;
 	double luminance_diffusion_lune;
@@ -371,8 +371,7 @@ int mc_scheduler_local1(int k,double longmpc, double rhocosphip, double rhosinph
 		elev=h;
 		//dummy4s[kjd]=az/(DR); // az
 		//dummy5s[kjd]=dec;
-	}
-	if (objectdescr->axe_type==1) {
+	} else if (objectdescr->axe_type==1) {
 		// --- type = HADEC
 		mc_sheduler_interpcoords(objectdescr,jd,&ha,&dec);
 		ra=sunmoon[k].lst-ha;
@@ -387,8 +386,7 @@ int mc_scheduler_local1(int k,double longmpc, double rhocosphip, double rhosinph
 		elev=h;
 		//dummy4s[kjd]=az/(DR); // az
 		//dummy5s[kjd]=dec;
-	}
-	if (objectdescr->axe_type==2) {
+	} else if (objectdescr->axe_type==2) {
 		// --- type = ALTAZ
 		mc_sheduler_interpcoords(objectdescr,jd,&az,&h);
 		mc_ah2hd(az*(DR),h*(DR),latrad,&ha,&dec);
@@ -2678,6 +2676,7 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 		}
 		mc_sheduler_corccoords(&objectdescr[ko]);
 		clock0 = clock();
+		err=0;
 		if (compute_mode==0) {
 			objectlocals[nobjloc]=NULL;
 			err=mc_scheduler_objectlocal1(longmpc,rhocosphip,rhosinphip,&objectdescr[ko],njd,sunmoon,horizon_altaz,horizon_hadec,&objectlocals[nobjloc],NULL);
@@ -2983,6 +2982,8 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 			durationtot=duration+d12b;
 			fprintf(fidlog,"   --- duration=%f d12b=%f durationtot=%f\n",duration,d12b,durationtot);
 			// --- initialize the flagobs vector with ever known sequence constraints
+			j1=jdobsminmin;
+			j2=jdobsmaxmax;
 			if (compute_mode==0) {
 				for (kjd=0;kjd<njd;kjd++) {
 					objectlocal0[kjd]=objectlocals[kk][kjd];
@@ -2993,6 +2994,10 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 					objectlocal0[kjd].flagobs=0;
 				}
 				// --- (STEP_4)
+				kr=0;
+				j1=objectlocalranges[kk].jd1[kr];
+				kr=(int)objectlocalranges[kk].nbrange-1;
+				j2=objectlocalranges[kk].jd2[kr];
 				for (kr=0;kr<objectlocalranges[kk].nbrange;kr++) {
 					k1=(int)floor((objectlocalranges[kk].jd1[kr]-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)/djd);
 					if (k1<0) {
@@ -3007,7 +3012,7 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 					}
 					if (fidlog!=NULL) {
 						fprintf(fidlog,"   --- STEP_4 =1 kr=%d j1=%f k1=%d\n",kr,objectlocalranges[kk].jd1[kr],k1);
-						//fprintf(fidlog,"   --- STEP_4 =1 kr=%d j2=%f k2=%d\n",kr,objectlocalranges[kk].jd1[kr],k2);
+						fprintf(fidlog,"   --- STEP_4 =1 kr=%d j2=%f k2=%d\n",kr,objectlocalranges[kk].jd2[kr],k2);
 					}
 				}
 			}
@@ -3182,6 +3187,8 @@ try_a_gap:
 			if (k3>=0) {
 				ha1=planis[0][k3].ha_acq_end; if (ha1>180) { ha1-=360; }
 				dec1=planis[0][k3].dec_acq_end;
+				ha2=ha1;
+				dec2=dec1;
 				if (compute_mode==0) {
 					ha2=objectlocal0[kk1].ha; if (ha2>180) { ha2-=360; }
 					dec2=objectlocal0[kk1].dec;
@@ -3257,6 +3264,8 @@ try_a_gap:
 			if (k3>=0) {
 				ha1=planis[0][k3].ha_acq_start; if (ha1>180) { ha1-=360; }
 				dec1=planis[0][k3].dec_acq_start;
+				ha2=ha1;
+				dec2=dec1;
 				if (compute_mode==0) {
 					ha2=objectlocal0[kk2].ha; if (ha2>180) { ha2-=360; }
 					dec2=objectlocal0[kk2].dec;
