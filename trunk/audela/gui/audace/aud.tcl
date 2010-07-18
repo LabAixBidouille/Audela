@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.138 2010-05-30 08:20:47 robertdelmas Exp $
+# Mise à jour $Id: aud.tcl,v 1.139 2010-07-18 09:56:53 robertdelmas Exp $
 #
 
 #--- Chargement du package BWidget
@@ -141,7 +141,7 @@ namespace eval ::audace {
          ::console::affiche_erreur "$::errorInfo\n"
       }
 
-      #--- On retourne dans le repertoire de travail
+      #--- On se place dans le repertoire de travail
       cd $audace(rep_travail)
 
       #--- Repertoire d'installation
@@ -165,7 +165,7 @@ namespace eval ::audace {
          ::console::affiche_erreur "$::errorInfo\n"
       }
 
-      #--- Initialisation le mode de creation du sous-repertoire des images
+      #--- Initialisation du mode de creation du sous-repertoire des images
       if { ! [info exists conf(rep_images,mode) ] } {
          set conf(rep_images,mode) "none"
       }
@@ -198,7 +198,6 @@ namespace eval ::audace {
                #--- Sinon, je prends la date du jour
                set subdir [ clock format $dateCourante -format "%Y%m%d" ]
             }
-
             set dirName [file join $::conf(rep_images) $subdir ]
             if { ![file exists $dirName] } {
                #--- je cree le repertoire
@@ -214,6 +213,17 @@ namespace eval ::audace {
               set audace(rep_images) $dirName
             }
          }
+      }
+
+      #--- Si le repertoire de travail est egal au repertoire des images
+      if { ! [info exists conf(rep_travail,travail_images) ] } {
+         set conf(rep_travail,travail_images) "0"
+      }
+      if { $conf(rep_travail,travail_images) == "1" } {
+         set conf(rep_travail)   $audace(rep_images)
+         set audace(rep_travail) $audace(rep_images)
+         #--- On se place dans le nouveau repertoire de travail
+         cd $audace(rep_travail)
       }
 
       #--- Creation du repertoire des scripts
@@ -1681,7 +1691,7 @@ proc stackTrace { {procedureFullName "" } } {
             set procedureFullName "::audace::$procedureName"
          }
 
-        ### console::disp "stackTrace level=$i lvl=$lvl procedureName=$procedureName procedureFullName=$procedureFullName\n"
+        ### ::console::disp "stackTrace level=$i lvl=$lvl procedureName=$procedureName procedureFullName=$procedureFullName\n"
 
          append stack [string repeat " " $i]$procedureFullName
          foreach value $argNo arg [info args $procedureFullName] {
@@ -1693,7 +1703,7 @@ proc stackTrace { {procedureFullName "" } } {
          }
          append stack "\n"
       }
-      console::disp "$stack\n"
+      ::console::disp "$stack\n"
    } ]
    #--- je traite les erreur imprevues
    if { $catchError != 0 } {
