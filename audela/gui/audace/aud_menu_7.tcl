@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise à jour $Id: aud_menu_7.tcl,v 1.29 2010-06-17 16:47:59 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_7.tcl,v 1.30 2010-07-18 09:57:09 robertdelmas Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -109,13 +109,15 @@ namespace eval ::cwdWindow {
                radiobutton $This.usr.1.subdir.noneButton -highlightthickness 0 -state normal \
                   -text "$::caption(cwdWindow,label_sous_rep,aucun)" \
                   -value "none" \
-                  -variable cwdWindow(rep_images,mode)
+                  -variable cwdWindow(rep_images,mode) \
+                  -command ::cwdWindow::changeState
                grid $This.usr.1.subdir.noneButton -row 0 -column 0 -sticky wn
                #--- sous repertoire manuel
                radiobutton $This.usr.1.subdir.manualButton -highlightthickness 0 -state normal \
                   -text "$::caption(cwdWindow,label_sous_rep,fixe)" \
                   -value "manual" \
-                  -variable cwdWindow(rep_images,mode)
+                  -variable cwdWindow(rep_images,mode) \
+                  -command ::cwdWindow::changeState
                grid $This.usr.1.subdir.manualButton -row 1 -column 0 -sticky wn
                #--- Entry nouveau sous-repertoire
                entry $This.usr.1.subdir.manualEntry -textvariable cwdWindow(sous_repertoire) -width 30
@@ -124,7 +126,8 @@ namespace eval ::cwdWindow {
                radiobutton $This.usr.1.subdir.dateButton -highlightthickness 0 -state normal \
                   -text "$::caption(cwdWindow,label_sous_rep,date)" \
                   -value "date" \
-                  -variable cwdWindow(rep_images,mode)
+                  -variable cwdWindow(rep_images,mode) \
+                  -command ::cwdWindow::changeState
                grid $This.usr.1.subdir.dateButton -row 2 -column 0 -sticky wn
                radiobutton $This.usr.1.subdir.changeDateButton0h -highlightthickness 0 -state normal \
                   -text "$::caption(cwdWindow,changement_0h)" \
@@ -349,11 +352,22 @@ namespace eval ::cwdWindow {
       if { $cwdWindow(travail_images) == "0" } {
          $This.usr.1a.a.ent1a configure -state normal
          $This.usr.1a.a.explore configure -state normal
-         set cwdWindow(dir_travail) [file nativename $::audace(rep_travail)]
+         set cwdWindow(dir_travail) [ file nativename $::audace(rep_travail) ]
       } elseif { $cwdWindow(travail_images) == "1" } {
          $This.usr.1a.a.ent1a configure -state disabled
          $This.usr.1a.a.explore configure -state disabled
-         set cwdWindow(dir_travail) $cwdWindow(dir_images)
+         switch $cwdWindow(rep_images,mode) {
+            "none" {
+               set dirName $cwdWindow(dir_images)
+            }
+            "manual" {
+               set dirName [ file join $cwdWindow(dir_images) $cwdWindow(sous_repertoire) ]
+            }
+            "date" {
+               set dirName [ file join $cwdWindow(dir_images) $cwdWindow(sous_repertoire_date) ]
+            }
+         }
+         set cwdWindow(dir_travail) [ file nativename $dirName ]
       }
    }
 
