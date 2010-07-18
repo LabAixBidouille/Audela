@@ -197,9 +197,9 @@ mc_nearesthip 120.45 -60.23 $List_hip -max_nbstars 10
 			if (argccc>=2) { hips[ks].mag = atof(argvvv[1]); }
 			if (argccc>=3) { hips[ks].ra  = atof(argvvv[2]); }
 			if (argccc>=4) { hips[ks].dec = atof(argvvv[3]); }
-			if (argccc>=7) { hips[ks].mura = atoi(argvvv[6]); }
-			if (argccc>=8) { hips[ks].mudec = atoi(argvvv[7]); }
-			if (argccc>=9) { hips[ks].plx = atoi(argvvv[8]); }
+			if (argccc>=7) { hips[ks].mura = atof(argvvv[6]); }
+			if (argccc>=8) { hips[ks].mudec = atof(argvvv[7]); }
+			if (argccc>=9) { hips[ks].plx = atof(argvvv[8]); }
 			if (argvvv!=NULL) { Tcl_Free((char *) argvvv); }
 			karr[ks]=ks;
 	      /* --- sepangle ---*/
@@ -280,7 +280,7 @@ mc_hip2tel [lindex $hip 0] now {GPS 5 E 43 1230} 101325 290
    double rhocosphip=0.,rhosinphip=0.,longmpc=0.;
    double latitude,altitude,latrad,jd,ra,dec,ha,az,h;
    Tcl_DString dsptr;
-	double *hazs,*helevs,*hdecs,*hha_rises,*hha_sets;
+	double *hazs=NULL,*helevs=NULL,*hdecs=NULL,*hha_rises=NULL,*hha_sets=NULL;
 	int hnaz,hndec,valid;
 	char **argvv=NULL,**argvvv=NULL;
 	int argcc,argccc,code;
@@ -490,6 +490,12 @@ List_ModelValues
    } else {
       /* --- decode les coordonnees catalogue ---*/
       code=Tcl_SplitList(interp,argv[1],&argcc,&argvv);
+		hips.mag = 0;
+		hips.ra  = 0;
+		hips.dec = 0;
+		hips.mura = 0;
+		hips.mudec = 0;
+		hips.plx = 0;
       if (argcc>8) {
          hips.id  = atoi(argvv[0]);
 			if (hips.id>0) {
@@ -498,9 +504,9 @@ List_ModelValues
 				hips.dec = atof(argvv[3]);
 				mctcl_decode_date(interp,argvv[4],&equinox);
 				mctcl_decode_date(interp,argvv[5],&epoch);
-				hips.mura = atoi(argvv[6]);
-				hips.mudec = atoi(argvv[7]);
-				hips.plx = atoi(argvv[8]);
+				hips.mura = atof(argvv[6]);
+				hips.mudec = atof(argvv[7]);
+				hips.plx = atof(argvv[8]);
 				if (argvv!=NULL) { Tcl_Free((char *) argvv); }
 				type_list = 0;
 			} else {
@@ -510,7 +516,7 @@ List_ModelValues
 			}
       } else {
          // traite l'erreur
-			sprintf(s,"Error: List_coords must be {id mag ra dec equinox epoch mura mudec plx} or {-1 ha dec 0 0 0 0 0 0}", argv[0]);
+			strcpy(s,"Error: List_coords must be {id mag ra dec equinox epoch mura mudec plx} or {-1 ha dec 0 0 0 0 0 0}");
 			Tcl_SetResult(interp,s,TCL_VOLATILE);
 			return TCL_ERROR;
       }
