@@ -3406,12 +3406,6 @@ try_a_gap:
 				if (planis[0][k].jd_acq_end<=jd0) {
 					planis[1][k]=planis[0][k];
 				} else {
-					if (planis[1][k1].jd_slew_start_with_slew<planis[1][k].jd_acq_end) {
-						// --- probleme dans le calcul
-						if (fidlog!=NULL) {
-							fprintf(fidlog,"   --- kd=%4d (%4d/%4d:%3d). PROBLEM 1.\n",kd,kp,np,ku);
-						}
-					}
 					break;
 				}
 			}
@@ -3428,6 +3422,12 @@ try_a_gap:
 			planis[1][k1].order=npl;
 			planis[1][k1].percent_quota_used=users[ku].duration_total_used/total_duration_obsobs*100;
 			kk1=(int)((jd1-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd);
+			if (kk1>=njd) { 
+				if (fidlog!=NULL) {
+					fprintf(fidlog,"   --- kd=%4d (%4d/%4d:%3d). PROBLEM kk1=%d jd1=%f.\n",kd,kp,np,ku,kk1,jd1);
+				}
+				kk1=njd-1; 
+			}
 			if (compute_mode==0) {
 				mc_sheduler_coord_app2cat(jd1,objectlocal0[kk1].ra*(DR),objectlocal0[kk1].dec*(DR),J2000,&racat,&deccat);
 				planis[1][k1].az_acq_start=objectlocal0[kk1].az;
@@ -3446,6 +3446,12 @@ try_a_gap:
 				planis[1][k1].dec_acq_start=deccat/(DR);
 			}
 			kk2=(int)((jd2-jd_prevmidsun)/(jd_nextmidsun-jd_prevmidsun)*njd);
+			if (kk2>=njd) { 
+				if (fidlog!=NULL) {
+					fprintf(fidlog,"   --- kd=%4d (%4d/%4d:%3d). PROBLEM kk2=%d jd2=%f.\n",kd,kp,np,ku,kk2,jd2);
+				}
+				kk2=njd-1; 
+			}
 			if (compute_mode==0) {
 				mc_sheduler_coord_app2cat(jd2,objectlocal0[kk2].ra*(DR),objectlocal0[kk2].dec*(DR),J2000,&racat,&deccat);
 				planis[1][k1].az_acq_end=objectlocal0[kk2].az;
@@ -3466,11 +3472,12 @@ try_a_gap:
 			// --- on termine en copiant les sequences planifiées suivantes.
 			for (k=k1+1;k<=npl;k++) {
 				planis[1][k]=planis[0][k-1];
-				if (planis[1][k1].jd_acq_end>planis[1][k].jd_slew_start_with_slew) {
+			}
+			if (k1+1<=npl) {
+				if (planis[1][k1].jd_acq_end>planis[1][k1+1].jd_slew_start_with_slew) {
 					// --- probleme dans le calcul
-					k+=0;
 					if (fidlog!=NULL) {
-						fprintf(fidlog,"   --- kd=%4d (%4d/%4d:%3d). PROBLEM 0.\n",kd,kp,np,ku);
+						fprintf(fidlog,"   --- kd=%4d (%4d/%4d:%3d). PROBLEM 0 %f > %f\n",kd,kp,np,ku,planis[1][k1].jd_acq_end,planis[1][k1+1].jd_slew_start_with_slew);
 					}
 				}
 			}
@@ -3488,11 +3495,19 @@ try_a_gap:
 				fprintf(fidlog,"   --- kd=%4d (%4d/%4d:%3d). Planified %s (%d)\n",kd,kp,np,ku,s,objectdescr[kd].status_plani);
 			}
 			// --- on met a jour la planification.
-			for (k=0;k<=npl;k++) {
+			for (k4=0,k=0;k<=npl;k++) {
 				planis[0][k]=planis[1][k];
-				fprintf(fidlog,"   *** k=%d %f %f %f %f\n",k,planis[1][k].jd_slew_start_with_slew,planis[1][k].jd_slew_start_without_slew,planis[1][k].jd_acq_start,planis[1][k].jd_acq_end);
+				if (k>0) {
+					if (planis[1][k].jd_slew_start_without_slew<planis[1][k-1].jd_acq_end) {
+						k4++;
+					}
+				}
+				fprintf(fidlog,"   *** k=%d %f %f %f %f (%d)\n",k,planis[1][k].jd_slew_start_with_slew,planis[1][k].jd_slew_start_without_slew,planis[1][k].jd_acq_start,planis[1][k].jd_acq_end,k4);
 			}
 			if (fidlog!=NULL) {
+				if (k4>0) {
+					fprintf(fidlog,"   --- Problem 1 k4=%d\n",k4);
+				}
 				fprintf(fidlog,"   --- kd=%4d (%4d/%4d:%3d). planified\n",kd,kp,np,ku);
 				fprintf(fidlog,"  ---- END SEQUENCE %4d/%4d\n",kp,np);
 			}
