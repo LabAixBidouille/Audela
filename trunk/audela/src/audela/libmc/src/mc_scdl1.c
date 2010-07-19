@@ -3313,6 +3313,9 @@ try_a_gap:
 					}
 					goto try_a_gap; // try another gap
 				} else {
+					if (fidlog!=NULL) {
+						fprintf(fidlog,"  ---- END SEQUENCE %4d/%4d\n",kp,np);
+					}
 					continue; // next sequence
 				}
 			} 
@@ -3350,6 +3353,9 @@ try_a_gap:
 						}
 						goto try_a_gap; // try another gap
 					} else {
+						if (fidlog!=NULL) {
+							fprintf(fidlog,"  ---- END SEQUENCE %4d/%4d\n",kp,np);
+						}
 						continue; // next sequence
 					}
 				}
@@ -3510,7 +3516,7 @@ try_a_gap:
 			}
 			if (fidlog!=NULL) {
 				if (k4>0) {
-					fprintf(fidlog,"   --- Problem 1 k4=%d\n",k4);
+					fprintf(fidlog,"   --- PROBLEM k4=%d\n",k4);
 				}
 				fprintf(fidlog,"   --- kd=%4d (%4d/%4d:%3d). planified\n",kd,kp,np,ku);
 				fprintf(fidlog,"  ---- END SEQUENCE %4d/%4d\n",kp,np);
