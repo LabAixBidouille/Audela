@@ -636,8 +636,8 @@ typedef struct {
    double jd_acq_end;
    double percent_quota_used;
    double jd_elev_max;
-	double az;
-	double elev;
+	//double az;
+	//double elev;
 	double az_acq_start;
 	double elev_acq_start;
 	double ra_acq_start;
