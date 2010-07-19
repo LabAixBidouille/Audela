@@ -456,12 +456,14 @@ int Cmd_mctcl_hip2tel(ClientData clientData, Tcl_Interp *interp, int argc, char 
 mc_hip2tel {0 2.5 10 40 J2000 J2000 0 0 0} now {GPS 5 E 43 1230} 101325 290
 
 List_coords = {id mag ra dec equinox epoch mura mudec plx}
-Date
+Date              // date de l'equinoxe des coordonnees du telescope
 Home
 Pressure 101325
 Temperature 290
 List_ModelSymbols
 List_ModelValues
+-model_only 0|1 // 1=calculer impact modele seulement 0=calculer impact modele et changement equinoxe (valeur par defaut)  
+-refraction 0|1  // 1=corriger la refraction (valeur par defaut) , 0= ne pas corriger la refraction.
 */
 {
    char s[1024];
@@ -480,11 +482,12 @@ List_ModelValues
    double ha,az,h,ddec=0.,dha=0.,refraction=0.;
    double dh=0.,daz=0.;
    double rat,dect,hat,ht,azt,dra;
-   int model_only = 0; 
+   int model_only = 0;     // 1=calculer impact modele seulement, 0=calculer impact modele et changement equinoxe
 	int type_list = 0;
+   int refractionFlag = 1;  
 
    if(argc<4) {
-      sprintf(s,"Usage: %s List_coords Date_UTC Home Pressure Temperature ?List_ModelSymbols List_ModelValues? ?model_only?", argv[0]);
+      sprintf(s,"Usage: %s List_coords Date_UTC Home Pressure Temperature ?List_ModelSymbols List_ModelValues? ?-model_only 0|1? ?-refraction 0|1? ", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       return TCL_ERROR;
    } else {
@@ -558,9 +561,14 @@ List_ModelValues
             if (argvv!=NULL) { Tcl_Free((char *) argvv); }
          }
       }
-      if (argc>=9) {
-         if ( strcmp( argv[8],"model_only") == 0 ) {
-            model_only = 1;
+      // je lis les autres parametres optionels 
+      for (k = 6; k < argc - 1; k++) {
+         if (strcmp(argv[k], "-refraction") == 0) {
+            refractionFlag = atoi(argv[k + 1]);
+         }
+
+         if ( strcmp( argv[k],"-model_only") == 0 ) {
+            model_only = atoi(argv[k + 1]);
          }
       }
 
@@ -572,11 +580,7 @@ List_ModelValues
 			mura=hips.mura*1e-3/86400/cosdec;
 			mudec=hips.mudec*1e-3/86400;
 			parallax=hips.plx;
-			if (model_only == 1 ) {
-				/* --- coordonnees horizontales---*/
-				mc_ad2hd(jd,longmpc,ra,&ha);
-				mc_hd2ah(ha,dec,latrad,&az,&h);
-			} else {
+			if (model_only == 0 ) {
 				/* --- aberration annuelle ---*/
 				mc_aberration_annuelle(jd,ra,dec,&asd2,&dec2,1);
 				ra=asd2;
@@ -602,15 +606,16 @@ List_ModelValues
 				mc_aberration_diurne(jd,ra,dec,longmpc,rhocosphip,rhosinphip,&asd2,&dec2,1);
 				ra=asd2;
 				dec=dec2;
-
-				/* --- coordonnees horizontales---*/
-				mc_ad2hd(jd,longmpc,ra,&ha);
-				mc_hd2ah(ha,dec,latrad,&az,&h);
-				/* --- refraction ---*/
-				mc_refraction(h,1,temperature,pressure,&refraction);
-				h+=refraction;
-			} 
-	      mc_ah2hd(az,h,latrad,&ha,&dec);
+         } 			
+         /* --- coordonnees horizontales---*/
+         mc_ad2hd(jd,longmpc,ra,&ha);
+         mc_hd2ah(ha,dec,latrad,&az,&h);
+         /* --- refraction ---*/
+         if ( refractionFlag == 1 ) {
+            mc_refraction(h,1,temperature,pressure,&refraction);
+            h+=refraction;
+         }
+         mc_ah2hd(az,h,latrad,&ha,&dec);
 		} else {
 	      mc_hd2ah(ha,dec,latrad,&az,&h);
 		}
@@ -725,6 +730,8 @@ Pressure 101325
 Temperature 290
 List_ModelSymbols
 List_ModelValues
+-model_only  0|1 // 1=calculer impact modele seulement 0=calculer impact modele et changement equinoxe (valeur par defaut)  
+-refraction 0|1  // 1=corriger la refraction (valeur par defaut) , 0= ne pas corriger la refraction.
 */
 {
 	char s[1024];
@@ -744,9 +751,10 @@ List_ModelValues
 	int type=0;
 	double az0,ra0,dec0,h0,ha0;
    int model_only = 0; 
+   int refractionFlag = 1;  
 
    if(argc<5) {
-      sprintf(s,"Usage: %s Coords TypeObs Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues? ?model_only?", argv[0]);
+      sprintf(s,"Usage: %s Coords TypeObs Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues? ?-model_only 0|1?  ?-refraction 0|1?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
  	   return TCL_ERROR;
    } else {
@@ -813,9 +821,13 @@ List_ModelValues
 				if (argvv!=NULL) { Tcl_Free((char *) argvv); }
 			}
 		}
- 		if (argc>=10) {
-         if ( strcmp( argv[9],"model_only") == 0 ) {
-            model_only = 1;
+      for (k = 7; k < argc - 1; k++) {
+         if (strcmp(argv[k], "-refraction") == 0) {
+            refractionFlag = atoi(argv[k + 1]);
+         }
+
+         if ( strcmp( argv[k],"-model_only") == 0 ) {
+            model_only = atoi(argv[k + 1]);
          }
       }
 
@@ -865,14 +877,16 @@ List_ModelValues
 			if (vecy!=NULL) { free(vecy); }
 		}
 		/* === CALCULS === */
-      if ( model_only == 0 ) {
-         /* --- refraction ---*/
+      /* --- refraction ---*/
+      if ( refractionFlag == 1 ) {
          mc_refraction(hauteur,-1,temperature,pressure,&refraction);
          hauteur-=refraction;
          mc_ah2hd(az,hauteur,latrad,&ha,&dec2);
          mc_hd2ad(jd,longmpc,ha,&asd2);
          ra=asd2;
          dec=dec2;
+      }
+      if ( model_only == 0 ) {
          /* --- correction de nutation */
          mc_nutradec(jd,ra,dec,&asd2,&dec2,-1);
          ra=asd2;
