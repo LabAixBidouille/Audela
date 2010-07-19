@@ -3312,6 +3312,8 @@ try_a_gap:
 						fprintf(fidlog,"   --- TRY ANOTHER GAP b\n");
 					}
 					goto try_a_gap; // try another gap
+				} else {
+					continue; // next sequence
 				}
 			} 
 			if (jd2>jdseq_next) {
@@ -3347,6 +3349,8 @@ try_a_gap:
 							fprintf(fidlog,"   --- TRY ANOTHER GAP b\n");
 						}
 						goto try_a_gap; // try another gap
+					} else {
+						continue; // next sequence
 					}
 				}
 			} 
