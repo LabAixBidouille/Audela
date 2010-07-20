@@ -3,7 +3,7 @@
 #
 ####################################################################
 
-# Mise a jour $Id: spc_var.tcl,v 1.25 2010-07-03 19:45:06 bmauclaire Exp $
+# Mise a jour $Id: spc_var.tcl,v 1.26 2010-07-20 20:56:14 robertdelmas Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -175,7 +175,7 @@ set spcaudace(largeur_raie_detect) 8
 
 
 #----------------------------------------------------------------------------------#
-# Couleurs et répertoires : (pris dans spc_cap.tcl et toujours présent -> migration à terminer)
+# Couleurs et répertoires : (pris dans spc_menu.cap et toujours présent -> migration à terminer)
 #--- Liste des couleurs disponibles pour les graphes :
 set spcaudace(lgcolors) [ list "darkblue" "green" "lightblue" "red" "blue" "yellow" ]
 #-- Indice de la couleur par defaut (darkblue) :
