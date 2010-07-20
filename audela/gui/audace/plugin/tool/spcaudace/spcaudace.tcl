@@ -1,4 +1,4 @@
-# Mise a jour $Id: spcaudace.tcl,v 1.22 2010-07-03 19:45:06 bmauclaire Exp $
+# Mise a jour $Id: spcaudace.tcl,v 1.23 2010-07-20 20:56:30 robertdelmas Exp $
 
 
 ####################################################################################
@@ -70,7 +70,7 @@ proc ::spcaudace::initPlugin { tkbase } {
    #--- Définition du repertoire d'SpcAudAce (spc_var pas encore charge) :
    if { [regexp {1.3.0} $audela(version) match resu ] } {
        set spcaudace(rep_spc) [ file join $audace(rep_scripts) spcaudace ]
-       #source [ file join $repspc spc_cap.tcl ]
+       #source [ file join $repspc spc_menu.cap ]
        source [ file join $spcaudace(rep_spc) spc_gui.tcl ]
    } else {
        set spcaudace(rep_spc) [ file join $audace(rep_plugin) tool spcaudace ]
@@ -91,7 +91,7 @@ proc ::spcaudace::initPlugin { tkbase } {
    #--- car les fichiers contiennent des procedures globales (qui ne sont pas dans le namespace)
    uplevel #0 "source \"[ file join $spcaudace(rep_spc) spc_ini.tcl ]\""
    uplevel #0 "source \"[ file join $spcaudace(rep_spc) spc_var.tcl ]\""
-   uplevel #0 "source \"[ file join $spcaudace(rep_spc) spc_cap.tcl ]\""
+   uplevel #0 "source \"[ file join $spcaudace(rep_spc) spc_menu.cap ]\""
    uplevel #0 "source \"[ file join $spcaudace(rep_spc) spc_io.tcl ]\""
    uplevel #0 "source \"[ file join $spcaudace(rep_spc) spc_profil.tcl ]\""
    uplevel #0 "source \"[ file join $spcaudace(rep_spc) spc_calibrage.tcl ]\""
