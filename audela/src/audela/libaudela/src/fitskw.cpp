@@ -250,13 +250,13 @@ void CFitsKeyword::GetFromArray(
 CFitsKeywords::CFitsKeywords()
 {
    kw = NULL;
+   _reference = 0;
 }
 
 CFitsKeywords::~CFitsKeywords()
 {
-	DeleteAll();
+    DeleteAll();
 }
-
 
 //------------------------------------------------------------------------------
 // CFitsKeywords::FindKeyword renvoie le pointeur du mot-cle s'il existe deja
