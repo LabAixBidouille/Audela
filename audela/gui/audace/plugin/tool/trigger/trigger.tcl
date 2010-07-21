@@ -2,7 +2,7 @@
 # Fichier : trigger.tcl
 # Description : Outil de declenchement pour APN Canon non reconnu par libgphoto2_canon.dll
 # Auteur : Raymond Zachantke
-# Mise à jour $Id: trigger.tcl,v 1.4 2010-07-17 14:37:15 robertdelmas Exp $
+# Mise à jour $Id: trigger.tcl,v 1.5 2010-07-21 18:24:06 robertdelmas Exp $
 #
 
 #============================================================
@@ -87,6 +87,8 @@ namespace eval ::trigger {
    #    cree une nouvelle instance de l'outil
    #------------------------------------------------------------
    proc createPluginInstance { { in "" } { visuNo 1 } } {
+      global panneau
+
       #--- Mise en place de l'interface graphique
       createPanel $in.trigger
    }
@@ -235,9 +237,9 @@ namespace eval ::trigger {
             $Trigger.$frm setvalue @0
          }
 
-         lassign { "1" " " "0" "1" " " "0" } ::trigger::lp ::trigger::activtime \
+         lassign { "1" " " "0" "1" " " "0" "" } ::trigger::lp ::trigger::activtime \
             ::trigger::delai ::trigger::periode panneau(trigger,action) \
-            panneau(trigger,serieNo)
+            panneau(trigger,serieNo) panneau(trigger,msgbox)
 
          $Trigger.lp invoke
          configPan
@@ -282,6 +284,9 @@ namespace eval ::trigger {
       incr panneau(trigger,serieNo) "1"
       ::console::affiche_resultat "\n[ format $caption(trigger,prisedevue) $panneau(trigger,serieNo) ]\n"
 
+      #--   cree une liaison avec le port
+      set linkNo [ ::confLink::create "$panneau(trigger,port)" "camera inconnue" "pose" "" ]
+
       #--   compte les declenchements
       set count 1
 
@@ -290,22 +295,16 @@ namespace eval ::trigger {
          #--   affiche 'Acquisition'
          set panneau(trigger,action) "$caption(trigger,action,acq)"
 
-         #--   capture le temps
-         set time_now [ clock seconds ]
-         set time [ clock format $time_now -format "%Y %m %d %H %M %S" -timezone :UTC ]
-
-         #--   declenche
-         shoot "$activtime"
+         #--   declenche ; t = temps au debut du shoot en secondes,millisecondes
+         set time_start [ shoot $linkNo "$activtime" ]
 
          #--   message sur la console
+         set time [ clock format $time_start -format "%Y/%m/%d %H:%M:%S" -timezone :UTC ]
          set msg "$time N°$count"
          if { $activtime != " " } {
             append msg "  $activtime sec."
          }
          ::console::affiche_resultat "$msg\n"
-
-         #--   incremente le nombre de shoot
-         incr count
 
          #--   decremente et affiche le nombre de poses qui reste a prendre
          incr ::trigger::nb_poses "-1"
@@ -313,20 +312,24 @@ namespace eval ::trigger {
          #--   recharge la duree
          set ::trigger::activtime $activtime
 
-         #--   si c'est Une serie et si ce n'est pas la derniere image
-         if { $mode == "1" && $count <= $nb_poses } {
-
-            #--   met a jour la periode pour Une serie
-            set i [ expr { $time_now + $periode - [ clock seconds ] } ]
-
-            if { $i > 1 } {
-               #--   met a jour le timer
-               set ::trigger::periode $i
-               #--   decompte les secondes
-              delay periode
+         #--   si c'est Une serie
+         if { $mode == "1" } {
+            if { $count == "1" } {
+               set time_first $time_start
+            }
+            #--   si ce n'etait pas la derniere image
+            if { $count < $nb_poses } {
+               set ::trigger::periode [ expr { $time_first + $periode*$count - [ clock seconds ] } ]
+               delay periode
             }
          }
+
+         #--   incremente le nombre de shoot
+         incr count
       }
+
+      #--- ferme la liaison
+      ::confLink::delete "$panneau(trigger,port)" "camera inconnue" "pose"
 
       #--   degele les commandes
       setWindowState normal
@@ -340,22 +343,17 @@ namespace eval ::trigger {
    #--   Declenche un shoot                                             #
    #  parametre : duree                                                 #
    ######################################################################
-   proc shoot { t } {
+   proc shoot { linkNo t } {
       global panneau
 
       #--   definit les variables locales
-      lassign [ list $panneau(trigger,port) $panneau(trigger,bit) $panneau(trigger,cde) ] \
-         port bit start
+      set start $panneau(trigger,cde)
       set stop  [ expr { 1-$start } ]
 
-      #--   cree une liaison avec le port
-      set linkNo [ ::confLink::create "$port" "camera inconnue" "pose" "" ]
-
       #--- demarre une pose
-      if { [ catch { link$linkNo bit "$bit" $start } ] == "1" } {
-         avertiUser driver
-         return
-      }
+      link$linkNo bit $panneau(trigger,bit) $start
+
+      set time_start [ clock seconds ]
 
       if { $t != " " } {
          #--   decremente le compteur de largeur d'impulsion
@@ -366,10 +364,9 @@ namespace eval ::trigger {
       }
 
       #--- arrete la pose
-      link$linkNo bit "$bit" $stop
+      link$linkNo bit $panneau(trigger,bit) $stop
 
-      #--- ferme la liaison
-      ::confLink::delete "$port" "camera inconnue" "pose"
+      return $time_start
    }
 
    ######################################################################
@@ -482,10 +479,20 @@ namespace eval ::trigger {
    #     parametre : variable de caption                                #
    ######################################################################
    proc avertiUser { nom } {
-      global caption
+      global panneau caption
 
-      tk_messageBox -title $caption(trigger,attention)\
-         -icon error -type ok -message $caption(trigger,help$nom)
+      #--   pour eviter les ouvertures multiples
+      if { $panneau(trigger,msgbox) != "$nom" } {
+
+         #--   memorise l'affichage de l'erreur
+         set panneau(trigger,msgbox) $nom
+
+         tk_messageBox -title $caption(acqdslr,attention)\
+            -icon error -type ok -message $caption(trigger,help$nom)
+
+         #--   au retour annule la memoire
+         set panneau(trigger,msgbox) ""
+     }
    }
 
    ######################################################################
@@ -494,11 +501,11 @@ namespace eval ::trigger {
    ######################################################################
    proc delay { var } {
 
-      upvar 1 ::trigger::$var t
+      upvar ::trigger::$var t
       while { $t > "0" } {
-            after 1000
-            incr t "-1"
-            update
+         after 1000
+         incr t "-1"
+         update
       }
       set t "0"
       update
