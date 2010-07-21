@@ -77,24 +77,30 @@ class LIBAUDELA_API CFitsKeyword {
 };
 
 class LIBAUDELA_API CFitsKeywords {
-      protected:
-   CFitsKeyword *kw;
+    private :
+    int _reference;
 
-      public:
-   CFitsKeywords();
-   ~CFitsKeywords();
-   CFitsKeyword* FindKeyword(const char* kw_name);
-   std::list<CFitsKeyword *> FindMultipleKeyword(const char * kw_name);
-   CFitsKeyword* AddKeyword(const char* name);
-   int Delete(char*kw_name);
-	int DeleteAll();
-   void Add(const char*a_nom,void*a_data,int a_datatype,const char*a_comment,const char*a_unit);
-   void Add(const char *nom, const char *data, const char *datatype, const char *comment, const char *unit);
-   void AddFromArray(int,char***,char***,char***,char***,int**);
-   void GetFromArray(int,char***,char***,char***,char***,int**);
-   void SetToArray(char***,char***,char***,char***,int**);
-   int GetKeywordNb();
-   CFitsKeyword* GetFirstKeyword() { return kw; };
+    protected:
+    CFitsKeyword *kw;
+
+    public:
+    CFitsKeywords();
+    ~CFitsKeywords();
+    void Reference() { ++_reference; };
+    void Unreference() { --_reference; };
+    int GetReference() { return _reference; };
+    CFitsKeyword* FindKeyword(const char* kw_name);
+    std::list<CFitsKeyword *> FindMultipleKeyword(const char * kw_name);
+    CFitsKeyword* AddKeyword(const char* name);
+    int Delete(char*kw_name);
+    int DeleteAll();
+    void Add(const char*a_nom,void*a_data,int a_datatype,const char*a_comment,const char*a_unit);
+    void Add(const char *nom, const char *data, const char *datatype, const char *comment, const char *unit);
+    void AddFromArray(int,char***,char***,char***,char***,int**);
+    void GetFromArray(int,char***,char***,char***,char***,int**);
+    void SetToArray(char***,char***,char***,char***,int**);
+    int GetKeywordNb();
+    CFitsKeyword* GetFirstKeyword() { return kw; };
 };
 
 #endif
