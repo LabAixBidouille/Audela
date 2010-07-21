@@ -2,7 +2,7 @@
 # Fichier : acqdslr.tcl
 # Description : Outil d'acquisition pour APN Canon
 # Auteur : Raymond Zachantke
-# Mise à jour $Id: acqdslr.tcl,v 1.7 2010-07-10 07:10:03 robertdelmas Exp $
+# Mise à jour $Id: acqdslr.tcl,v 1.8 2010-07-21 18:24:25 robertdelmas Exp $
 #
 
 #============================================================
@@ -373,9 +373,9 @@ namespace eval ::acqdslr {
    proc initPar {} {
       global audace panneau caption
 
-      lassign { "" "0" "0" "1" "0" " " "" } ::acqdslr::nom ::acqdslr::delai \
+      lassign { "" "0" "0" "1" "0" " " "" "0" } ::acqdslr::nom ::acqdslr::delai \
          panneau(acqdslr,intervalle_mini) ::acqdslr::iter panneau(acqdslr,test) \
-         panneau(acqdslr,action) panneau(acqdslr,msgbox)
+         panneau(acqdslr,action) panneau(acqdslr,msgbox) panneau(acqdslr,serieNo)
 
       #--   selectionne le mode de stockage de niveau le plus eleve
       set panneau(acqdslr,stock) [ lindex $panneau(acqdslr,stockLabels) end ]
@@ -406,7 +406,7 @@ namespace eval ::acqdslr {
       set date [clock format [clock seconds] -format "%A %d %B %Y"]
       append nom $date ".log"
       set panneau(acqdslr,log) [ file join $rep $nom ]
-     writeLog $panneau(acqdslr,log) "$caption(acqdslr,ouvsess)"
+      #writeLog $panneau(acqdslr,log) "$caption(acqdslr,ouvsess)"
    }
 
    ######################################################################
@@ -978,6 +978,10 @@ namespace eval ::acqdslr {
             delay "delai"
       }
 
+      #--   compteur de shoot
+      incr panneau(acqdslr,serieNo) "1"
+      ::console::affiche_resultat "\n[ format $caption(acqdslr,prisedevue) $panneau(acqdslr,serieNo) ]\n"
+
       set k 1
       set iter $::acqdslr::iter
       while { $k <= $iter } {
@@ -1009,6 +1013,11 @@ namespace eval ::acqdslr {
 
       #--   degele les commandes
       setWindowState normal
+
+      #--   retablit les parametres affiches initiaux après WindowState
+      lassign $panneau(acqdslr,param) ::acqdslr::nom ::acqdslr::nb_poses \
+         panneau(acqdslr,time) ::acqdslr::intervalle \
+         panneau(acqdslr,step) panneau(acqdslr,action)
    }
 
    ######################################################################
@@ -1043,7 +1052,7 @@ namespace eval ::acqdslr {
 
          #--- le temps maintenant
          set time_now [ clock seconds ]
-         set time [ clock format [ clock seconds ] -format "%Y %m %d %H %M %S" -timezone :UTC ]
+         set time [ clock format [ clock seconds ] -format "%Y/%m/%d %H:%M:%S" -timezone :UTC ]
 
          #--- Alarme sonore de fin de pose
          #::camera::alarmeSonore $exptime
@@ -1053,7 +1062,6 @@ namespace eval ::acqdslr {
 
             #--  regle le temps d'exposition
             cam$camNo exptime $exptime
-
             #--   En Continu : retard pour valider le changement de temps d'exposition
             if { $delta != "0" } {
                after 1500
@@ -1064,7 +1072,6 @@ namespace eval ::acqdslr {
 
             #--  regle le temps d'exposition
             cam$camNo exptime $exptime
-
             #--   Une image ou Une serie
             catch {  cam$camNo acq
                      vwait status_cam$camNo } msg
@@ -1096,11 +1103,8 @@ namespace eval ::acqdslr {
          #--- decremente et affiche le nombre de poses qui reste a prendre
          incr ::acqdslr::nb_poses "-1"
 
-         #-- incremente l'index de l'image
-         incr i
-
          #--   si ce n'est pas la derniere image
-         if { $nb_poses >= $i && $type != 0 } {
+         if { $nb_poses > $i && $type != 0 } {
 
             #--   recalcule et affiche exptime pour serie et rafale
             if { $delta != "0" } {
@@ -1118,17 +1122,21 @@ namespace eval ::acqdslr {
 
             #--   met a jour l'intervalle pour Une serie
             if { $type == 1 } {
-               set d [ expr { $time_now + $timer -[ clock seconds ] } ]
-               if { $d > 1 } {
 
-                  #--   met a jour le timer
-                  set ::acqdslr::intervalle $d
-
-                  #--   decompte les secondes
-                  delay "intervalle"
+               if { $i == "1" } {
+                  set time_first $time_now
                }
-           }
+
+               #--   si ce n'etait pas la derniere image
+               if { $i < $nb_poses } {
+                  set ::acqdslr::intervalle [ expr { $time_first + $timer*$i -[ clock seconds ] } ]
+                  delay intervalle
+               }
+            }
          }
+
+         #-- incremente l'index de l'image
+         incr i
       }
    }
 
@@ -1172,7 +1180,7 @@ namespace eval ::acqdslr {
       #--   affiche le status 'Acquisition'
       set panneau(acqdslr,action) $caption(acqdslr,action,acq)
 
-      set time [ clock format [ clock seconds ] -format "%Y %m %d %H %M %S" -timezone :UTC ]
+      set time [ clock format [ clock seconds ] -format "%Y/%m/%d/%H:%M:%S" -timezone :UTC ]
 
       #--  regle le temps d'exposition
       cam$camNo exptime $::acqdslr::exptime
@@ -1285,7 +1293,7 @@ namespace eval ::acqdslr {
    }
 
    ######################################################################
-  #--   Ecriture du fichier log                                        #
+   #--   Ecriture du fichier log                                        #
    #     parametre : nom du fichier texte                               #
    ######################################################################
    proc writeLog { f m } {
