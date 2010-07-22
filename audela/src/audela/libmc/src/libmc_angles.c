@@ -221,7 +221,7 @@ int Cmd_mctcl_rvcor(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 	   }
       /* --- ---*/
       mc_strupr(argv[3],s);
-      strcpy(s,"KLSR");
+      //strcpy(s,"KLSR");
       method=-1;
       if (strcmp(s,"KLSR")==0) { method=RV_KLSR; }
       else if (strcmp(s,"DLSR")==0) { method=RV_DLSR; }
