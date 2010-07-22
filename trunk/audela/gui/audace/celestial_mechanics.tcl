@@ -2,7 +2,7 @@
 # Fichier : celestial_mechanics.tcl
 # Description : Outils pour le calcul de coordonnees celestes
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: celestial_mechanics.tcl,v 1.4 2010-05-15 07:55:33 robertdelmas Exp $
+# Mise à jour $Id: celestial_mechanics.tcl,v 1.5 2010-07-22 20:23:34 alainklotz Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -151,6 +151,16 @@ proc name2coord { args } {
          set dec [string trim [mc_angle2dms [lindex $res 1]  90 zero 1 + string]]
          set found 1
      }
+   }
+   # --- else satellite
+   if {$found==0} {
+      set err [catch {satel_coords "$name0" $date} res]
+      if {$err==0} {
+         #::console::affiche_resultat "res=$res\n"
+         set ra  [string trim [mc_angle2hms [lindex $res 1] 360 zero 2 auto string]]
+         set dec [string trim [mc_angle2dms [lindex $res 2]  90 zero 1 + string]]
+         set found 1
+      }
    }
    # --- final
    if {$found==1} {
