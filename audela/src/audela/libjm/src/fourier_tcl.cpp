@@ -3,7 +3,7 @@
  * @brief : interface TCL<->C pour les transformations d'images basées sur la TFD
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: fourier_tcl.cpp,v 1.4 2010-06-29 18:34:49 michelpujol Exp $
+ * Mise à jour $Id: fourier_tcl.cpp,v 1.5 2010-07-22 18:54:35 jacquesmichelet Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
@@ -111,7 +111,7 @@ int Fourier::CmdFourierDirect( ClientData clientData, Tcl_Interp *interp, int ar
     }
     catch(...)
     {
-        
+
 #ifndef __FUNCTION__
 #define __FUNCTION__ "unknown"
 #endif
@@ -203,7 +203,8 @@ int Fourier::CmdAutoCorrelation( ClientData clientData, Tcl_Interp *interp, int 
         }
     }
 
-    try {
+    try
+    {
         Fourier::instance()->correl_convol_image( argv[1], 0, argv[2], Fourier::CORRELATION, fourier_ordre, normalisation);
     }
     catch ( const CError& e )
@@ -268,10 +269,12 @@ int Fourier::CmdInterCorrelation( ClientData clientData, Tcl_Interp *interp, int
         }
     }
 
-    try {
+    try
+    {
         Fourier::instance()->correl_convol_image( argv[1], argv[2], argv[3], Fourier::CORRELATION, fourier_ordre, normalisation);
     }
-    catch ( const CError& e ) {
+    catch ( const CError& e )
+    {
         Tcl_SetResult( interp, e.gets(), TCL_VOLATILE );
         return TCL_ERROR;
     }
@@ -316,10 +319,12 @@ int Fourier::CmdConvolution( ClientData clientData, Tcl_Interp *interp, int argc
         }
     }
 
-    try {
+    try
+    {
         Fourier::instance()->correl_convol_image( argv[1], argv[2], argv[3], Fourier::CONVOLUTION, Fourier::REGULAR, normalisation );
     }
-    catch ( const CError& e ) {
+    catch ( const CError& e )
+    {
         Tcl_SetResult( interp, e.gets(), TCL_VOLATILE );
         return TCL_ERROR;
     }

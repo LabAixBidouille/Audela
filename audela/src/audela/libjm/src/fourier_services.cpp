@@ -3,7 +3,7 @@
  * @brief : Méthodes de l'objet Fourier : gestion des objets
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: fourier_services.cpp,v 1.5 2010-06-29 18:34:49 michelpujol Exp $
+ * Mise à jour $Id: fourier_services.cpp,v 1.6 2010-07-22 18:54:35 jacquesmichelet Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@
 
 namespace LibJM {
 Fourier * Fourier::_unique_instance = 0;
-int Fourier::_log_verbosity = Fourier::Info1_Level;
+int Fourier::_log_verbosity = Fourier::Notice_Level;
 std::ofstream Fourier::log_stream;
 std::string Fourier::fourier_log_file_name("libjm_fourier.log");
 
@@ -136,11 +136,12 @@ Fourier::Parametres::Parametres() :
         norm(1.0),
         talon(0.0),
         ordre(Fourier::NO_ORDER),
-        type(Fourier::NO_TYPE)
+        type(Fourier::NO_TYPE),
+        _pixels(0),
+        _keywords(0)
 {
-    numero = ++compteur;
-    set_tab_pixels(0);
-    fourier_info3( "constructeur de Fourier::Parametre no " << numero );
+    _numero = ++compteur;
+    fourier_info3( "constructeur de Fourier::Parametre no " << _numero << " _pixels = 0");
 }
 
 /***************************************************************************************/
@@ -148,15 +149,18 @@ Fourier::Parametres::Parametres() :
 /***************************************************************************************/
 void Fourier::Parametres::copie( Fourier::Parametres & origine )
 {
-    cfitskeywords = origine.cfitskeywords;
+    _keywords = origine.keywords();
+    if ( _keywords )
+        _keywords->Reference();
     largeur = origine.largeur;
     hauteur = origine.hauteur;
     norm = origine.norm;
     talon = origine.talon;
     ordre = origine.ordre;
     type = origine.type;
-    set_tab_pixels( origine.get_tab_pixels() );
-    fourier_info3( "copie de Fourier::Parametre no " << origine.numero << " vers " << numero );
+    _pixels =  new TableauPixels( largeur, hauteur );
+    memcpy( _pixels->pointeur(), origine.pixels()->pointeur(), origine.pixels()->taille() );
+    fourier_info3( "copie de Fourier::Parametre no " << origine._numero << " vers " << _numero );
 }
 
 /***************************************************************************************/
@@ -168,12 +172,12 @@ Fourier::Parametres::Parametres( int l, int h, Fourier::Ordre o, Fourier::Type t
     norm(1.0),
     talon(0.0),
     ordre(o),
-    type(t)
+    type(t),
+    _keywords(0)
 {
-    TableauPixels * tp = new TableauPixels( largeur * hauteur * sizeof(TYPE_PIXELS) );
-    set_tab_pixels( tp );
-    numero = ++compteur;
-    fourier_info3( "constructeur de Fourier::Parametre no " << numero );
+    _pixels = new TableauPixels( largeur, hauteur );
+    _numero = ++compteur;
+    fourier_info3( "constructeur de Fourier::Parametre no " << _numero << " _pixels = " << _pixels << " zone = " << _pixels->pointeur() << " taille = " << _pixels->taille() );
 }
 
 /***************************************************************************************/
@@ -187,151 +191,88 @@ void Fourier::Parametres::init( int l, int h, Fourier::Ordre o, Fourier::Type t 
     talon = 0.0;
     ordre = o;
     type = t;
-    if (get_tab_pixels() )
-        delete get_tab_pixels();
-    TableauPixels * tp = new TableauPixels( largeur * hauteur * sizeof(TYPE_PIXELS) );
-    set_tab_pixels( tp );
-    fourier_info3( "Init de Fourier::Parametre no " << numero );
+    if ( _pixels )
+        delete _pixels ;
+    _pixels = new TableauPixels( largeur, hauteur );
+    fourier_info3( "init de Fourier::Parametre no " << _numero << " _pixels = " << _pixels << " zone = " << _pixels->pointeur() << " taille = " << _pixels->taille() );
 }
-
-/***************************************************************************************/
-/***************************************************************************************/
-/***************************************************************************************/
-void Fourier::Parametres::set_tab_pixels( TableauPixels * tp )
-{
-    _tab_pixels = tp ;
-    if ( tp )
-    {
-        tp->incr_ref(1);
-        fourier_info3( "Fourier::Parametres no " << numero << " a le Fourier::TableauPixels no " << _tab_pixels->get_num() );
-    }
-}
-
-/***************************************************************************************/
-/***************************************************************************************/
-/***************************************************************************************/
-void Fourier::Parametres::set_tab_pixels( TableauPixels * tp, bool do_not_free )
-{
-    _tab_pixels = tp ;
-    if ( tp )
-    {
-        tp->incr_ref( 1 );
-        tp->set_free( do_not_free );
-        fourier_info3( "Fourier::Parametres no " << numero << " a le Fourier::TableauPixels no " << _tab_pixels->get_num() );
-    }
-}
-
-/***************************************************************************************/
-/***************************************************************************************/
-/***************************************************************************************/
-TYPE_PIXELS * Fourier::Parametres::get_tab_pixels_ptr( )
-{
-    return _tab_pixels->get_ptr();
-}
-
 
 /***************************************************************************************/
 /***************************************************************************************/
 /***************************************************************************************/
 Fourier::Parametres::~Parametres() {
-    fourier_info3( "destructeur de Fourier::Parametre no " << numero );
-    if ( _tab_pixels )
+    fourier_info3( "destructeur de Fourier::Parametre no " << _numero );
+
+    if ( _keywords )
     {
-        _tab_pixels->decr_ref(1);
-        if (_tab_pixels->get_ref() == 0)
-            delete _tab_pixels;
+        _keywords->Unreference();
+        if ( _keywords->GetReference() == 0 )
+        {
+            fourier_debug( "Fourier::Parametre no " << _numero << " : destruction de keywords = " << _keywords );
+            delete _keywords;
+            _keywords = 0;
+        }
+    }
+
+    if ( _pixels )
+    {
+        fourier_debug( "Fourier::Parametre no " << _numero << " : libération de _pixels = " << _pixels << " zone = " << _pixels->pointeur() << " taille = " << _pixels->taille() );
+        delete _pixels;
     }
 };
 
 /***************************************************************************************/
 /***************************************************************************************/
 /***************************************************************************************/
-int Fourier::TableauPixels::compteur = 0;
-/***************************************************************************************/
-/***************************************************************************************/
-/***************************************************************************************/
-Fourier::TableauPixels::TableauPixels( )
+void Fourier::Parametres::pixels( TableauPixels * tp )
 {
-    numero = ++compteur;
-    reference = 0;
-    pointeur = 0;
-    do_not_free = false;
-    fourier_info3( "constructeur de Fourier::TableauPixels no " << numero );
+    _pixels = tp;
+    fourier_info3( "Fourier::Parametre no " << _numero << " : affectation de _pixels = " << _pixels << " zone = " << _pixels->pointeur() << " taille = " << _pixels->taille() );
 }
 
 /***************************************************************************************/
 /***************************************************************************************/
 /***************************************************************************************/
-Fourier::TableauPixels::TableauPixels( unsigned int taille )
+void Fourier::Parametres::keywords ( CFitsKeywords * k )
 {
-    numero = ++compteur;
-    pointeur = (TYPE_PIXELS *)malloc( taille );
-    reference = 0;
-    do_not_free = false;
-    fourier_info3( "constructeur de Fourier::TableauPixels no " << numero );
+    if (_keywords ) {
+        fourier_debug( "Fourier::Parametre no " << _numero << " : suppression de la ref sur keywords = " << _keywords << " ref = " << _keywords->GetReference() );
+        _keywords->Unreference();
+        if ( _keywords->GetReference() == 0 )
+            delete _keywords;
+    }
+    _keywords = k;
+    if ( _keywords )
+        _keywords->Reference();
+    fourier_info3( "Fourier::Parametre no " << _numero << " : keywords = " << _keywords << " ref = " << _keywords->GetReference() );
 }
 
 /***************************************************************************************/
 /***************************************************************************************/
 /***************************************************************************************/
-Fourier::TableauPixels::TableauPixels( unsigned int taille, int valeur )
+Fourier::TableauPixels::TableauPixels ( unsigned int largeur, unsigned int hauteur )
 {
-    numero = ++compteur;
-    pointeur = (TYPE_PIXELS *)malloc( taille );
-    memset( pointeur, valeur, taille );
-    reference = 0;
-    do_not_free = false;
-    fourier_info3( "constructeur de Fourier::TableauPixels no " << numero );
+    _taille = largeur * hauteur * sizeof( TYPE_PIXELS );
+    _pointeur = (TYPE_PIXELS *) calloc ( largeur * hauteur, sizeof( TYPE_PIXELS ) );
+    fourier_debug( "Fourier::TableauPixels allocation de " << _taille << " octets pointés par " << _pointeur );
 }
 
 /***************************************************************************************/
 /***************************************************************************************/
 /***************************************************************************************/
-Fourier::TableauPixels::TableauPixels( TYPE_PIXELS * ptr )
+Fourier::TableauPixels::~TableauPixels ( )
 {
-    numero = ++compteur;
-    pointeur = ptr;
-    reference = 0;
-    do_not_free = false;
-    fourier_info3( "constructeur de Fourier::TableauPixels no " << numero );
-}
-/***************************************************************************************/
-/***************************************************************************************/
-/***************************************************************************************/
-Fourier::TableauPixels::~TableauPixels( )
-{
-    fourier_info3( "destructeur de Fourier::TableauPixels no " << numero << " ref " << reference);
-    if ( ( do_not_free == false ) && ( pointeur != 0 ) )
+    if ( _pointeur )
     {
-        fourier_info3( "libération mémoire Fourier::TableauPixels no " << numero );
-        free( pointeur );
-        pointeur = 0;
+        fourier_debug( "Fourier::TableauPixels libération d'une zone de " << _taille << " octets pointée par " << _pointeur );
+        free( _pointeur );
+        _pointeur = 0;
+        _taille = 0;
     }
     else
-        fourier_info3( "Pas de libération mémoire Fourier::TableauPixels no " << numero << " ref=" << reference << " dnf=" << do_not_free );
-}
-/***************************************************************************************/
-/***************************************************************************************/
-/***************************************************************************************/
-void Fourier::TableauPixels::incr_ref( int increment )
-{
-    if ( pointeur )
-        reference += increment;
-}
-/***************************************************************************************/
-/***************************************************************************************/
-/***************************************************************************************/
-void Fourier::TableauPixels::decr_ref( int increment )
-{
-    if ( pointeur )
-        reference -= increment;
-}
-/***************************************************************************************/
-/***************************************************************************************/
-/***************************************************************************************/
-void Fourier::TableauPixels::set_free( bool f )
-{
-    do_not_free = f;
+    {
+        fourier_debug( "Fourier::TableauPixels ANOMALIE taille = " << _taille << " _pointeur = " << _pointeur );
+    }
 }
 
 }

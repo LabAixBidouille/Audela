@@ -3,7 +3,7 @@
  * @brief : Méthodes de l'objet Fourier : calculs mathématiques
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: fourier_calculs.cpp,v 1.3 2010-06-29 18:34:49 michelpujol Exp $
+ * Mise à jour $Id: fourier_calculs.cpp,v 1.4 2010-07-22 18:54:35 jacquesmichelet Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,7 +90,7 @@ int Fourier::tfd_2d_directe_simple( Fourier::Parametres * param_src, Fourier::Pa
 
     double * data = (double *) malloc( 2 * surface * sizeof(double) );
 
-    TYPE_PIXELS * tab_src = param_src->get_tab_pixels_ptr();
+    TYPE_PIXELS * tab_src = param_src->pixels()->pointeur();
 
     /* Lecture et rangement des valeurs */
     fourier_debug( "image d'entree" );
@@ -107,8 +107,8 @@ int Fourier::tfd_2d_directe_simple( Fourier::Parametres * param_src, Fourier::Pa
 
     data = tfd_2d( data, largeur, hauteur, forward );
 
-    TYPE_PIXELS * ptr1 = param_1->get_tab_pixels_ptr();
-    TYPE_PIXELS * ptr2 = param_2->get_tab_pixels_ptr();
+    TYPE_PIXELS * ptr1 = param_1->pixels()->pointeur();
+    TYPE_PIXELS * ptr2 = param_2->pixels()->pointeur();
 
     fourier_debug( "image de sortie" );
     for ( ligne = 0; ligne < hauteur; ligne++ ) {
@@ -153,7 +153,7 @@ int Fourier::tfd_2d_directe_complete( Fourier::Parametres * param_src, Fourier::
 
     fourier_info2( "entree dft directe" );
 
-    TYPE_PIXELS * tab_src = param_src->get_tab_pixels_ptr();
+    TYPE_PIXELS * tab_src = param_src->pixels()->pointeur();
 
     /* Lecture et rangement des valeurs */
     for ( int ligne = 0; ligne < hauteur ; ligne++ ) {
@@ -169,8 +169,8 @@ int Fourier::tfd_2d_directe_complete( Fourier::Parametres * param_src, Fourier::
     float dest_max = 0.0;
     float dest_min = (float)surface * (float)val_max;
 
-    TYPE_PIXELS * ptr1 = param_1->get_tab_pixels_ptr();
-    TYPE_PIXELS * ptr2 = param_2->get_tab_pixels_ptr();
+    TYPE_PIXELS * ptr1 = param_1->pixels()->pointeur();
+    TYPE_PIXELS * ptr2 = param_2->pixels()->pointeur();
 
     if ( format == Fourier::POLAR ) {
         for ( int pixel = 0; pixel < surface; pixel++ ) {
@@ -255,7 +255,7 @@ int Fourier::tfd_2d_directe_complete( Fourier::Parametres * param_src, Fourier::
 /***************************************************************************************/
 int Fourier::tfd_2d_inverse_simple( Fourier::Parametres * s1, Fourier::Parametres *s2, Fourier::Parametres * d )
 {
-    fourier_info2( "s1=" << s1 << " s2=" << s2 << " d=" << d );
+    fourier_info2( "s1=" << s1->numero() << " (" << s1 << ") s2=" << s2->numero() << " (" << s2 << ") d=" << d->numero() << " (" << d << ")" );
 
     /* Contrairement à la TFD directe, il y a une pondération dans ce sens */
 
@@ -268,8 +268,8 @@ int Fourier::tfd_2d_inverse_simple( Fourier::Parametres * s1, Fourier::Parametre
 
     double * data = (double *) malloc( 2 * surface * sizeof(double) );
 
-    TYPE_PIXELS * s1_ptr = s1->get_tab_pixels_ptr();
-    TYPE_PIXELS * s2_ptr = s2->get_tab_pixels_ptr();
+    TYPE_PIXELS * s1_ptr = s1->pixels()->pointeur();
+    TYPE_PIXELS * s2_ptr = s2->pixels()->pointeur();
 
     fourier_debug( "image d'entrée" );
     for (  ligne = 0; ligne < hauteur ; ligne++ )
@@ -287,7 +287,7 @@ int Fourier::tfd_2d_inverse_simple( Fourier::Parametres * s1, Fourier::Parametre
 
     data = tfd_2d( data, largeur, hauteur, backward );
 
-    TYPE_PIXELS * d_ptr = d->get_tab_pixels_ptr();
+    TYPE_PIXELS * d_ptr = d->pixels()->pointeur();
     fourier_debug( "image de sortie" );
     for ( ligne = 0; ligne < hauteur ; ligne++ )
     {
@@ -300,7 +300,6 @@ int Fourier::tfd_2d_inverse_simple( Fourier::Parametres * s1, Fourier::Parametre
         }
         fourier_debug2( "\n" );
     }
-
 
     free( data );
 
@@ -334,8 +333,8 @@ int Fourier::tfd_2d_inverse_complete( Fourier::Parametres * param_1, Fourier::Pa
             || ( param_1->type == Fourier::SPECTRUM )
             || ( param_1->type == Fourier::NO_TYPE ) )
     {
-        tab_src_1 = param_1->get_tab_pixels_ptr();
-        tab_src_2 = param_2->get_tab_pixels_ptr();
+        tab_src_1 = param_1->pixels()->pointeur();
+        tab_src_2 = param_2->pixels()->pointeur();
         norm_1 = param_1->norm;
         norm_2 = param_2->norm;
         talon_1 = param_1->talon;
@@ -343,8 +342,8 @@ int Fourier::tfd_2d_inverse_complete( Fourier::Parametres * param_1, Fourier::Pa
     }
     else
     {
-        tab_src_1 = param_2->get_tab_pixels_ptr();
-        tab_src_2 = param_1->get_tab_pixels_ptr();
+        tab_src_1 = param_2->pixels()->pointeur();
+        tab_src_2 = param_1->pixels()->pointeur();
         norm_1 = param_2->norm;
         norm_2 = param_1->norm;
         talon_1 = param_2->talon;
@@ -448,9 +447,9 @@ int Fourier::tfd_2d_inverse_complete( Fourier::Parametres * param_1, Fourier::Pa
 /***************************************************************************************/
 Fourier::Parametres * Fourier::inclusion( Fourier::Parametres * p1, Fourier::Parametres * p2 )
 {
-    Fourier::TableauPixels * s;
+    TYPE_PIXELS * s;
     Fourier::Parametres * p;
-    int l1, l2, c1, c2;
+    unsigned int l1, l2, c1, c2;
     CFitsKeywords *kwds;
 
     if ( ( p1->largeur == p2->largeur ) && ( p1->hauteur == p2->hauteur ) )
@@ -459,22 +458,22 @@ Fourier::Parametres * Fourier::inclusion( Fourier::Parametres * p1, Fourier::Par
     }
     else if ( ( p1->largeur > p2->largeur ) && ( p1->hauteur > p2->hauteur ) )
     {
-        s = p2->get_tab_pixels();
+        s = p2->pixels()->pointeur();
         l1 = p1->hauteur;
         c1 = p1->largeur;
         l2 = p2->hauteur;
         c2 = p2->largeur;
-        kwds = p1->cfitskeywords;
+        kwds = p1->keywords();
         p = p2;
     }
     else if ( ( p1->largeur < p2->largeur ) && ( p1->hauteur < p2->hauteur ) )
     {
-        s = p1->get_tab_pixels();
+        s = p1->pixels()->pointeur();
         l1 = p2->hauteur;
         c1 = p2->largeur;
         l2 = p1->hauteur;
         c2 = p1->largeur;
-        kwds = p2->cfitskeywords;
+        kwds = p2->keywords();
         p = p1;
     }
     else
@@ -484,29 +483,32 @@ Fourier::Parametres * Fourier::inclusion( Fourier::Parametres * p1, Fourier::Par
 
     fourier_info3( "l1=" << l1 << " c1=" << c1 );
     /* Place vide pour l'image agrandie , et nettoyage */
-    Fourier::TableauPixels * d = new TableauPixels( l1 * c1 * sizeof( TYPE_PIXELS ), 0 );
+    TableauPixels * tp = new TableauPixels( c1, l1 );
+    TYPE_PIXELS * d = tp->pointeur();
 
-    TYPE_PIXELS * sptr = s->get_ptr();
-    TYPE_PIXELS * dptr = d->get_ptr();
     /* Recopie des pixels de tel façon que le pixel central se retrouve en (0,0) */
     /* Cela permet que l'image corrélée ou convoluée ne se décale pas */
-    for ( int ls = 0; ls < l2; ls++ )
+    for ( unsigned int ls = 0; ls < l2; ls++ )
     {
         int ld = ( ls - ( l2 / 2) + l1 ) % l1;
-        for ( int cs = 0; cs < c2; cs++ )
+        for ( unsigned int cs = 0; cs < c2; cs++ )
         {
             int cd = ( cs - ( c2 / 2 ) + c1 ) % c1;
-            dptr[ ld * c1 + cd ] = sptr[ ls * c2 + cs ];
-            fourier_debug2( "d[" << cd << "," << ld << "]=s[" << cs << "," << ls << "]=" <<  sptr[ ls * c2 + cs ] << " / " );
+            d[ ld * c1 + cd ] = s[ ls * c2 + cs ];
+            fourier_debug2( "d[" << cd << "," << ld << "]=s[" << cs << "," << ls << "]=" <<  s[ ls * c2 + cs ] << " / " );
         }
         fourier_debug2("\n");
     }
-    /* transfert de pointeur */
-    delete p->get_tab_pixels();
-    p->set_tab_pixels(d);
+
+    /* transfert du pointeur mémoire */
+    delete p->pixels();
+    p->pixels( tp );
     p->largeur = c1;
     p->hauteur = l1;
-    p->cfitskeywords = kwds;
+
+    /* transfert du pointeur de keywords */
+    p->keywords( kwds );
+
     return p;
 }
 
@@ -515,16 +517,19 @@ Fourier::Parametres * Fourier::inclusion( Fourier::Parametres * p1, Fourier::Par
 /***************************************************************************************/
 void Fourier::produit_complexe( Fourier::Parametres *r1, Fourier::Parametres *i1, Fourier::Parametres *r2, Fourier::Parametres *i2, Fourier::Parametres *r0, Fourier::Parametres *i0, Fourier::multiply m )
 {
-    TYPE_PIXELS * tr1 = r1->get_tab_pixels_ptr();
-    TYPE_PIXELS * ti1 = i1->get_tab_pixels_ptr();
-    TYPE_PIXELS * tr2 = r2->get_tab_pixels_ptr();
-    TYPE_PIXELS * ti2 = i2->get_tab_pixels_ptr();
-    TYPE_PIXELS * tr0 = r0->get_tab_pixels_ptr();
-    TYPE_PIXELS * ti0 = i0->get_tab_pixels_ptr();
+    fourier_info2( "r1=" << r1->numero() << " (" << r1 << ") i1=" << i1->numero() << " (" << i1 << ")"
+        << "r2=" << r2->numero() << " (" << r2 << ") i2=" << i2->numero() << " (" << i2 << ")"
+        << "r0=" << r0->numero() << " (" << r0 << ") i0=" << i0->numero() << " (" << i0 << ")" );
+    TYPE_PIXELS * tr1 = r1->pixels()->pointeur();
+    TYPE_PIXELS * ti1 = i1->pixels()->pointeur();
+    TYPE_PIXELS * tr2 = r2->pixels()->pointeur();
+    TYPE_PIXELS * ti2 = i2->pixels()->pointeur();
+    TYPE_PIXELS * tr0 = r0->pixels()->pointeur();
+    TYPE_PIXELS * ti0 = i0->pixels()->pointeur();
 
     if ( m == Fourier::CONJUGATE )
     {
-        for ( int i = 0; i < ( r1-> largeur * r1->hauteur ); i++ )
+        for ( unsigned int i = 0; i < ( r1-> largeur * r1->hauteur ); i++ )
         {
             tr0[i] = tr1[i] * tr2[i] + ti1[i] * ti2[i];
             ti0[i] = ti1[i] * tr2[i] - tr1[i] * ti2[i];
@@ -532,7 +537,7 @@ void Fourier::produit_complexe( Fourier::Parametres *r1, Fourier::Parametres *i1
     }
     else // m == Fourier::STANDARD
     {
-        for ( int i = 0; i < ( r1-> largeur * r1->hauteur ); i++ )
+        for ( unsigned int i = 0; i < ( r1-> largeur * r1->hauteur ); i++ )
         {
             tr0[i] = tr1[i] * tr2[i] - ti1[i] * ti2[i];
             ti0[i] = ti1[i] * tr2[i] + tr1[i] * ti2[i];
@@ -545,13 +550,15 @@ void Fourier::produit_complexe( Fourier::Parametres *r1, Fourier::Parametres *i1
 /***************************************************************************************/
 void Fourier::normalisation( Fourier::Parametres * p, TYPE_PIXELS norm_basse, TYPE_PIXELS norm_haute, Fourier::Ordre ordre )
 {
-    fourier_info2( "parametres=" << p << " norm basse=" << norm_basse << " norm_haute=" << norm_haute << " ordre=" << ordre );
+    fourier_info2( "parametres=" << p->numero() << " (" << p << ") norm basse=" << norm_basse << " norm_haute=" << norm_haute << " ordre=" << ordre );
 
-    TYPE_PIXELS * s = p->get_tab_pixels_ptr();
-    TableauPixels * dtp = new TableauPixels( p->largeur * p->hauteur * sizeof( TYPE_PIXELS ) );
-    TYPE_PIXELS * d = dtp->get_ptr();
+    TYPE_PIXELS * s = p->pixels()->pointeur();
+    TableauPixels * tp = new TableauPixels( p->largeur, p->hauteur);
+    TYPE_PIXELS * d = tp->pointeur();
 
-    float pente, x0, y0;
+    float pente = 0.0;
+    float x0 = 0.0;
+    float y0 = 0.0;
 
     if ( ( norm_basse != 0 ) || ( norm_haute != 0 ) )
     {
@@ -559,7 +566,7 @@ void Fourier::normalisation( Fourier::Parametres * p, TYPE_PIXELS norm_basse, TY
         float minimum = FLT_MAX;
         float maximum = - FLT_MAX;
 
-        for ( int i = 0; i < ( p-> largeur * p->hauteur ); i++ )
+        for ( unsigned int i = 0; i < ( p-> largeur * p->hauteur ); i++ )
         {
             if ( s[i] > maximum )
                 maximum = s[i];
@@ -587,26 +594,26 @@ void Fourier::normalisation( Fourier::Parametres * p, TYPE_PIXELS norm_basse, TY
     if ( ordre == Fourier::REGULAR )
     {
         /* Normalisation simple */
-        for ( int i = 0; i < ( p-> largeur * p->hauteur ); i++ )
+        for ( unsigned int i = 0; i < ( p-> largeur * p->hauteur ); i++ )
         {
             d[i] = ( ( s[i] - x0 ) * pente ) + y0 ;
         }
     }
     else // ordre == Fourier::CENTERED
     {
-        for ( int ls = 0; ls < p->hauteur; ls++ )
+        for ( unsigned int ls = 0; ls < p->hauteur; ls++ )
         {
             int ld = ( ls + p->hauteur / 2 ) % p->hauteur;
-            for ( int cs = 0; cs < p->largeur; cs++ )
+            for ( unsigned int cs = 0; cs < p->largeur; cs++ )
             {
                 int cd = ( cs + p->largeur / 2 ) % p->largeur;
-                d[ ld * p->largeur + cd ] = ( ( s[ ls * p->largeur + cs ] - x0 ) * pente ) + y0 ;
+                d[ld * p->largeur + cd] = ( ( s[ls * p->largeur + cs] - x0 ) * pente ) + y0 ;
             }
         }
     }
     /* Changement de pointeurs */
-    delete p->get_tab_pixels();
-    p->set_tab_pixels(dtp);
+    delete p->pixels();
+    p->pixels( tp );
 }
 
 /***************************************************************************************/
@@ -616,9 +623,9 @@ void Fourier::extrema( Fourier::Parametres * p, TYPE_PIXELS * minimum, TYPE_PIXE
 {
     * minimum = FLT_MAX;
     * maximum = -FLT_MAX;
-    TYPE_PIXELS *s = p->get_tab_pixels_ptr();
+    TYPE_PIXELS *s = ( p->pixels() )->pointeur();
 
-    for ( int i = 0; i < ( p->largeur * p->hauteur ); i++ )
+    for ( unsigned int i = 0; i < ( p->largeur * p->hauteur ); i++ )
     {
         if ( s[i] > * maximum )
             * maximum = s[i];

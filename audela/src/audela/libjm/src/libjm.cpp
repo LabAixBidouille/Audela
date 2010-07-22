@@ -3,7 +3,7 @@
  * @brief : point d'entrée dans la bibliothèque
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: libjm.cpp,v 1.8 2010-06-20 12:18:20 jacquesmichelet Exp $
+ * Mise à jour $Id: libjm.cpp,v 1.9 2010-07-22 18:54:35 jacquesmichelet Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,7 @@
 #include "gsl/gsl_fft.h"
 
 #include "cbuffer.h"
+#include "cpixelsgray.h"
 #include "libjm.h"
 #include "divers.h"
 #include "calaphot.h"
@@ -90,6 +91,7 @@ namespace LibJM
     {
         char * s = strdup( NUMERO_VERSION.c_str() );
         Tcl_SetResult( interp, s, TCL_VOLATILE );
+        free( s );
         return TCL_OK;
     }
 

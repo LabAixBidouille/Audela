@@ -86,7 +86,7 @@ public :
         enum format { POLAR, POLAR2, CARTESIAN, NO_FORMAT } ;
         enum operateur { CORRELATION, CONVOLUTION } ;
         enum multiply { STANDARD, CONJUGATE }  ;
-    typedef enum 
+    typedef enum
     {
         Deaf_Level = 0,
         Critical_Level = 1,
@@ -103,50 +103,41 @@ public :
     static std::ofstream log_stream;
     static std::string fourier_log_file_name;
 
-    struct TableauPixels {
-    public :
-        static int compteur;
-        TYPE_PIXELS * get_ptr() { return pointeur; };
-        int get_ref() { return reference; };
-        unsigned int get_num() { return numero; };
-        void incr_ref( int );
-        void decr_ref( int );
-        void set_free( bool );
-        TableauPixels( );
-        TableauPixels( unsigned int );
-        TableauPixels( unsigned int, int );
-        TableauPixels( TYPE_PIXELS * );
-        ~TableauPixels( );
-    private :
-        TYPE_PIXELS* pointeur;
-        unsigned int reference;
-        bool do_not_free;
-        unsigned int numero;
+    class TableauPixels {
+        private :
+            TYPE_PIXELS * _pointeur;
+            unsigned int _taille;
+        public :
+            TYPE_PIXELS * pointeur() { return _pointeur; };
+            unsigned int taille() { return _taille; };
+            TableauPixels( unsigned int, unsigned int );
+            ~TableauPixels();
     };
 
     class Parametres {
     public :
         static int compteur;
-        CFitsKeywords * cfitskeywords;
-        int largeur;
-        int hauteur;
+        unsigned int largeur;
+        unsigned int hauteur;
         float norm;
         float talon;
         Ordre ordre;
         Type type;
     private :
-        int numero;
-        TableauPixels * _tab_pixels;
+        int _numero;
+        TableauPixels * _pixels;
+        CFitsKeywords * _keywords;
     public :
-        void set_tab_pixels( TableauPixels * );
-        void set_tab_pixels( TableauPixels *, bool );
-        TableauPixels * get_tab_pixels() { return _tab_pixels; };
-        TYPE_PIXELS * get_tab_pixels_ptr( );
         Parametres( );
         Parametres( int, int, Ordre, Type );
         ~Parametres( );
+        int numero() { return _numero; };
         void init( int, int, Ordre, Type );
         void copie( Parametres & );
+        void keywords ( CFitsKeywords * k );
+        CFitsKeywords * keywords() { return _keywords; };
+        void pixels( TableauPixels * );
+        TableauPixels * pixels() { return _pixels; };
     };
     static Fourier * instance( );
 
@@ -176,7 +167,8 @@ private :
     void tfd_inverse_image( const char * src_1, const char * src_2, const char * dest );
     void correl_convol_image ( const char * src_1, const char * src_2, const char * dest, Fourier::operateur op, Fourier::Ordre, bool );
     void coherence_images_tfd( Fourier::Parametres * param_1, Fourier::Parametres * param_2 );
-    void ouverture_image(const char * nom, Fourier::Parametres * param );
+    void lecture_image( const char * nom, Fourier::Parametres * param );
+    void ecriture_image( const char * nom, Fourier::Parametres * param );
 
     /* Calculs de TFD et autres */
     double * tfd_2d( double *, int, int, gsl_fft_direction );
