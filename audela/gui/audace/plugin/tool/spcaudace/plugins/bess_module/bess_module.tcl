@@ -5,7 +5,7 @@
 # Auteurs     : François Cochard (francois.cochard@wanadoo.fr)
 #               Sur la forme, je suis parti du script calaphot de Jacques Michelet (jacques.michelet@laposte.net)
 #               Par ailleurs, je m'appuie sur les routines spc_audace de Benjamin Mauclaire
-# Mise à jour $Id: bess_module.tcl,v 1.12 2010-07-10 07:05:55 robertdelmas Exp $
+# Mise à jour $Id: bess_module.tcl,v 1.13 2010-07-22 21:24:51 robertdelmas Exp $
 # Dernière mise à jour : 24 mars 2007 - 11h00
 #
 #####################################################################
@@ -102,7 +102,7 @@ namespace eval ::bess {
 
       if {[info exists test]} {
          if {[catch {open [file join $audace(rep_images) debug.log] a} filetest]} {
-            Message console $filetest
+            message console $filetest
             return
          } else {
             puts -nonewline $filetest [eval [concat {format} $args]]
@@ -127,39 +127,54 @@ namespace eval ::bess {
 
       # Initialisation
       if {[info exists liste_instrument]} {unset liste_instrument}
-      if {[info exists liste_site]} {unset liste_site}
-      if {[info exists liste_observer]} {unset liste_observer}
+      if {[info exists liste_site]}       {unset liste_site}
+      if {[info exists liste_observer]}   {unset liste_observer}
 
       # Ouverture du fichier de paramètres
       set fichier [file join $::audace(rep_home) BeSSParam.ini]
 
-      if {[file exists $fichier]} {
-         # On ouvre le fichier
-         set fileID [open $fichier r]
-         # Et on lit chaqueligne
-         while {[eof $fileID] == 0} {
-            gets $fileID ligne
-           # Message console "%s - eof %s\n" $ligne [eof $fileID]
-            if {[BalayageLigne $ligne] == 0} {
-               lappend liste_$motcle $valeur
-            }
+      if { ! [file exists $fichier] } {
+         # Creation du fichier s'il n'existe pas
+         if [ catch { open $fichier w } file ] {
+         } else {
+            puts $file "# Fichier de configuration pour le panneau Spectres BeSS."
+            puts $file "#"
+            puts $file "# Syntaxe : Chaque ligne débute par un mot clé, encadré par des crochets."
+            puts $file "# Ce mot clé est suivi par un champ de données (valeur ou texte) correspondant à ce mot clé."
+            puts $file "# Tout ce qui suit le symbole # dans une ligne est ignoré.\n\n"
+            puts $file "\[observer\] Benjamin MAUCLAIRE"
+            puts $file "\[observer\] Votre nom"
+            puts $file "\[observer\] Un autre nom"
+            puts $file "\[site\] O.V.A. (Observatoire du Val de l'Arc)"
+            puts $file "\[site\] Chez vous"
+            puts $file "\[site\] Ailleurs..."
+            puts $file "\[instrument\] LHIRES3#073-2400-SCT0.3m-AudineKAF1602E"
+            puts $file "\[instrument\] Votre instrument"
+            puts $file "\[instrument\] Un autre instrument"
+            close $file
          }
-         close $fileID
-         if {[info exists liste_instrument] == 0} { set liste_instrument [ list "" ] }
-         if {[info exists liste_site] == 0}       { set liste_site       [ list "" ] }
-         if {[info exists liste_observer] == 0}   { set liste_observer   [ list "" ] }
-      } else {
-         set liste_instrument [ list "" ]
-         set liste_site       [ list ""]
-         set liste_observer   [ list ""]
       }
+      # On ouvre le fichier BeSSParam.ini
+      set fileID [open $fichier r]
+      # Et on lit chaque ligne
+      while {[eof $fileID] == 0} {
+         gets $fileID ligne
+        # Message console "%s - eof %s\n" $ligne [eof $fileID]
+         if {[BalayageLigne $ligne] == 0} {
+            lappend liste_$motcle $valeur
+         }
+      }
+      close $fileID
 
+      if { ! [info exists liste_instrument] } { set liste_instrument [ list "" ] }
+      if { ! [info exists liste_site] }       { set liste_site       [ list "" ] }
+      if { ! [info exists liste_observer] }   { set liste_observer   [ list "" ] }
    }
 
 #*******************************************************************************
 
    proc BalayageLigne { ligne } {
-      # Passage des parametres de retour (motcle et valeur)
+      # Passage des parametres de retour (mot cle et valeur)
       upvar motcle motcle
       upvar valeur valeur
 
@@ -282,12 +297,11 @@ namespace eval ::bess {
    #*************************************************************************#
    proc EditeParametres { fich_in } {
       variable parametres
-      variable text_bess
       variable police
       variable liste_instrument
       variable liste_site
       variable liste_observer
-      global audace color
+      global audace caption color
 
       variable bess_export_fg
       set bess_export_fg #ECE9D8
@@ -295,7 +309,7 @@ namespace eval ::bess {
       variable bess_entry_fg
       set bess_entry_fg $color(white)
 
-      # Ferme la fentre si elle est deja ouverte
+      # Ferme la fenetre si elle est deja ouverte
       if [ winfo exists $audace(base).saisie ] {
          ::bess::AnnuleSaisie
       }
@@ -307,9 +321,8 @@ namespace eval ::bess {
       toplevel $audace(base).saisie -borderwidth 2 -relief groove -bg $bess_export_fg
      # wm geometry $audace(base).saisie 560x550+120+50
       wm geometry $audace(base).saisie 605x570+120+50
-      wm title $audace(base).saisie $text_bess(titre_saisie)
-      wm protocol $audace(base).saisie
-     # WM_DELETE_WINDOW ::bess::Suppression
+      wm title $audace(base).saisie $caption(titre_saisie)
+      wm protocol $audace(base).saisie WM_DELETE_WINDOW ::bess::AnnuleSaisie
 
       # Construction du canevas qui va contenir toutes les trames et des ascenseurs
       set c [canvas $audace(base).saisie.canevas]
@@ -322,10 +335,10 @@ namespace eval ::bess {
       if { 1==0 } {
          frame $t.trame0 -borderwidth 5 -relief groove -bg $bess_export_fg
          label $t.trame0.titre \
-            -font [ list {Arial} 16 bold ] -text $text_bess(titrePanneau) \
+            -font [ list {Arial} 16 bold ] -text $caption(titrePanneau) \
             -borderwidth 0 -relief flat -bg $bess_export_fg  \
             -fg $color(blue_pad)
-        # label $t.trame0.titre -text $text_bess(titrePanneau) -font {helvetica 16 bold} -justify center -fg $color(blue_pad) -bg $bess_export_fg
+        # label $t.trame0.titre -text $caption(titrePanneau) -font {helvetica 16 bold} -justify center -fg $color(blue_pad) -bg $bess_export_fg
          pack $t.trame0.titre -in $t -fill x -side top -pady 15
         # pack $t.trame0.titre -side top -fill both -expand true
       }
@@ -334,16 +347,16 @@ namespace eval ::bess {
       # Trame du nom des fichier à éditer et de sortie
       frame $t.trame1 -borderwidth 5 -relief groove -bg $bess_export_fg
 
-      label $t.trame1.titre -text $text_bess(titrePanneau) -font {helvetica 16 bold} -justify center -fg $color(blue_pad) -bg $bess_export_fg
+      label $t.trame1.titre -text $caption(titrePanneau) -font {helvetica 16 bold} -justify center -fg $color(blue_pad) -bg $bess_export_fg
       grid $t.trame1.titre -in $t.trame1 -columnspan 2 -sticky w
 
-      label $t.trame1.l1 -text $text_bess(fich_in) -font $police(gras) -fg $color(blue_pad) -bg $bess_export_fg
+      label $t.trame1.l1 -text $caption(fich_in) -font $police(gras) -fg $color(blue_pad) -bg $bess_export_fg
       entry $t.trame1.e1 -textvariable ::bess::fich_in -font $police(normal) -relief sunken -bg $bess_entry_fg
-      button $t.trame1.b1 -text $text_bess(SelecFile) -command {::bess::SelectFile} -font $police(titre) -bg $bess_export_fg
-      button $t.trame1.b2 -text $text_bess(ChargeFichier) -command {::bess::ChargeFichier $::bess::fich_in} -font $police(titre) -fg $color(blue_pad) -bg $bess_export_fg
+      button $t.trame1.b1 -text $caption(SelecFile) -command {::bess::SelectFile} -font $police(titre) -bg $bess_export_fg
+      button $t.trame1.b2 -text $caption(ChargeFichier) -command {::bess::ChargeFichier $::bess::fich_in} -font $police(titre) -fg $color(blue_pad) -bg $bess_export_fg
       grid $t.trame1.l1 $t.trame1.e1 $t.trame1.b1 $t.trame1.b2
 
-      label $t.trame1.l2 -text $text_bess(fich_out) -font $police(gras) -fg $color(blue_pad) -bg $bess_export_fg
+      label $t.trame1.l2 -text $caption(fich_out) -font $police(gras) -fg $color(blue_pad) -bg $bess_export_fg
       entry $t.trame1.e2 -textvariable ::bess::fich_out -font $police(normal) -relief sunken -bg $bess_entry_fg
       grid $t.trame1.l2 $t.trame1.e2
 
@@ -352,14 +365,14 @@ namespace eval ::bess {
       #--------------------------------------------------------------------------------
       # Trame des renseignements généraux
       frame $t.trame2 -borderwidth 5 -relief groove -bg $bess_export_fg
-     # label $t.trame2.titre -text $text_bess(param_generaux) -font $police(titre) -fg $color(blue_pad) -bg $bess_export_fg
-      label $t.trame2.opt -text $text_bess(optionnel) -font $police(gras) -fg $color(blue_pad) -bg $bess_export_fg
+     # label $t.trame2.titre -text $caption(param_generaux) -font $police(titre) -fg $color(blue_pad) -bg $bess_export_fg
+      label $t.trame2.opt -text $caption(optionnel) -font $police(gras) -fg $color(blue_pad) -bg $bess_export_fg
       grid $t.trame2.opt -in $t.trame2 -columnspan 3 -sticky e
 
       foreach champ {OBJNAME BSS_RA BSS_DEC datedeb heuredeb EXPTIME BSS_VHEL BSS_NORM BSS_TELL BSS_COSM} {
-         label $t.trame2.l$champ -text $text_bess($champ) -font $police(gras) -fg $color(blue_pad) -bg $bess_export_fg
+         label $t.trame2.l$champ -text $caption($champ) -font $police(gras) -fg $color(blue_pad) -bg $bess_export_fg
          entry $t.trame2.e$champ -textvariable ::bess::parametres($champ) -font $police(normal) -relief sunken -bg $bess_entry_fg
-         label $t.trame2.lb$champ -text $text_bess(u_$champ) -font $police(gras) -fg $color(blue_pad) -bg $bess_export_fg
+         label $t.trame2.lb$champ -text $caption(u_$champ) -font $police(gras) -fg $color(blue_pad) -bg $bess_export_fg
          grid $t.trame2.l$champ $t.trame2.e$champ $t.trame2.lb$champ
       }
 
@@ -371,9 +384,9 @@ namespace eval ::bess {
 
       foreach champ {BSS_INST BSS_SITE obs1 obs2 obs3} {
          set liste [set liste_$champ]
-         label $t.trame2.l$champ -text $text_bess($champ) -font $police(gras) -fg $color(blue_pad) -bg $bess_export_fg
+         label $t.trame2.l$champ -text $caption($champ) -font $police(gras) -fg $color(blue_pad) -bg $bess_export_fg
          ComboBox $t.trame2.e$champ -textvariable ::bess::parametres($champ) -font $police(normal) -relief sunken -values $liste
-         label $t.trame2.lb$champ -text $text_bess(u_$champ) -font $police(gras) -fg $color(blue_pad) -bg $bess_export_fg
+         label $t.trame2.lb$champ -text $caption(u_$champ) -font $police(gras) -fg $color(blue_pad) -bg $bess_export_fg
          grid $t.trame2.l$champ $t.trame2.e$champ $t.trame2.lb$champ
       }
       pack $t.trame2 -side top -fill both -expand true
@@ -382,10 +395,10 @@ namespace eval ::bess {
       # Trame des boutons. Ceux-ci sont fixes (pas d'ascenseur).
       frame $t.trame3 -borderwidth 5 -relief groove -bg $bess_export_fg
 
-      button $t.trame3.b1 -text $text_bess(enregistrer) -command {::bess::EnregistreSaisie $::bess::fich_out} -font $police(titre) -fg $color(blue_pad) -bg $bess_export_fg
-      button $t.trame3.b2 -text $text_bess(editer) -command {::bess::EditeConfigs} -font $police(titre) -fg $color(blue_pad) -bg $bess_export_fg
-      button $t.trame3.b3 -text $text_bess(annuler) -command {::bess::AnnuleSaisie} -font $police(titre) -fg $color(blue_pad) -bg $bess_export_fg
-      button $t.trame3.b4 -text $text_bess(webess) -command {::bess::WebBeSS} -font $police(titre) -fg $color(blue_pad) -bg $bess_export_fg
+      button $t.trame3.b1 -text $caption(enregistrer) -command {::bess::EnregistreSaisie $::bess::fich_out} -font $police(titre) -fg $color(blue_pad) -bg $bess_export_fg
+      button $t.trame3.b2 -text $caption(editer) -command {::bess::EditeConfigs} -font $police(titre) -fg $color(blue_pad) -bg $bess_export_fg
+      button $t.trame3.b3 -text $caption(annuler) -command {::bess::AnnuleSaisie} -font $police(titre) -fg $color(blue_pad) -bg $bess_export_fg
+      button $t.trame3.b4 -text $caption(webess) -command {::bess::WebBeSS} -font $police(titre) -fg $color(blue_pad) -bg $bess_export_fg
       pack $t.trame3.b1 -side left -padx 10 -pady 10
       pack $t.trame3.b2 -side left -padx 10 -pady 10
       pack $t.trame3.b3 -side right -padx 10 -pady 10
@@ -405,15 +418,14 @@ namespace eval ::bess {
    #*************  WebBeSS  ************************************#
    #*************************************************************************#
    proc WebBeSS { } {
-      variable text_bess
-      global conf spcaudace
+      global caption conf spcaudace
 
       if { $conf(editsite_htm)!="" } {
          set answer [ catch { exec $conf(editsite_htm) "$spcaudace(sitebess)" &
          } ]
       } else {
-         set message_erreur $text_bess(pb_editweb)
-         tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
+         set message_erreur $caption(pb_editweb)
+         tk_messageBox -message $message_erreur -icon error -title $caption(probleme)
       }
    }
 
@@ -438,7 +450,7 @@ namespace eval ::bess {
    # Cette procédure teste la validité d'un mote-clé BeSS
    proc valideMotCle { motcle valeurmotle } {
       variable parametres
-      variable text_bess
+      global caption
 
       switch $motcle {
 
@@ -451,8 +463,8 @@ namespace eval ::bess {
          "BSS_RA" {
             # Verifier que DEC est aussi présent
             if {!([string is double $parametres(BSS_RA)])} {
-               set message_erreur $text_bess(pb_ra)
-               tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
+               set message_erreur $caption(pb_ra)
+               tk_messageBox -message $message_erreur -icon error -title $caption(probleme)
                set result -2
             } else {
                set result 1
@@ -462,8 +474,8 @@ namespace eval ::bess {
          "BSS_DEC" {
             # Verifier que RA est aussi présent
             if {!([string is double $parametres(BSS_DEC)])} {
-               set message_erreur $text_bess(pb_dec)
-               tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
+               set message_erreur $caption(pb_dec)
+               tk_messageBox -message $message_erreur -icon error -title $caption(probleme)
                set result -2
             } else {
                set result 1
@@ -493,8 +505,8 @@ namespace eval ::bess {
 
          "EXPTIME" {
             if {!([string is double $parametres(EXPTIME)])} {
-                set message_erreur $text_bess(pb_exptime)
-                tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
+                set message_erreur $caption(pb_exptime)
+                tk_messageBox -message $message_erreur -icon error -title $caption(probleme)
                 set result -2
              } else {
                 set result 1
@@ -503,8 +515,8 @@ namespace eval ::bess {
 
          "BSS_VHEL" {
             if {!([string is double $parametres(BSS_VHEL)])} {
-               set message_erreur $text_bess(pb_vhel)
-               tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
+               set message_erreur $caption(pb_vhel)
+               tk_messageBox -message $message_erreur -icon error -title $caption(probleme)
                set result -2
             } else {
                set result 1
@@ -538,10 +550,9 @@ namespace eval ::bess {
    #*************  EnregistreSaisie  ****************************************#
    #*************************************************************************#
    proc EnregistreSaisie { fich_out } {
-      variable text_bess
       variable parametres
       variable parametresOld
-      global audace
+      global audace caption
 
       # Dans un premier temps, on commence par regarder si les mots-cle modifiés sont valides.
       # La variable motCleAModifier contiendra la liste des mots-clé modifiés
@@ -678,8 +689,8 @@ namespace eval ::bess {
                append fichier ".fit"
                set okpoursauver 0
                if {[file exists [file join $audace(rep_images) $fichier]]} {
-                  set message_erreur $text_bess(FichExiste)
-                  if {[tk_messageBox -message $message_erreur -icon warning -type yesno -title $text_bess(probleme)] == "yes"} {
+                  set message_erreur $caption(FichExiste)
+                  if {[tk_messageBox -message $message_erreur -icon warning -type yesno -title $caption(probleme)] == "yes"} {
                      set okpoursauver 1
                   }
                } else {
@@ -692,8 +703,8 @@ namespace eval ::bess {
                   ChargeFichier $fich_out
                }
             } else {
-               set message_erreur $text_bess(FichOutVide)
-               tk_messageBox -message $message_erreur -icon warning -type ok -title $text_bess(probleme)
+               set message_erreur $caption(FichOutVide)
+               tk_messageBox -message $message_erreur -icon warning -type ok -title $caption(probleme)
             }
          } else {
           # Message console "Pas besoin de sauver: pas de changements \n"
