@@ -481,7 +481,7 @@ List_ModelValues
    double dec,asd2,dec2;
    double ha,az,h,ddec=0.,dha=0.,refraction=0.;
    double dh=0.,daz=0.;
-   double rat,dect,hat,ht,azt,dra;
+   double rat,dect,hat,ht,azt,dra=0;
    int model_only = 0;     // 1=calculer impact modele seulement, 0=calculer impact modele et changement equinoxe
 	int type_list = 0;
    int refractionFlag = 1;  

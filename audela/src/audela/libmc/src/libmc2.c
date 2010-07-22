@@ -903,6 +903,9 @@ int mctcl_decode_planet(Tcl_Interp *interp, char *argv0,int *planetnum, char *pl
    int argcc;
    char name[100];
 
+	strcpy(planetname,"DUMMY");
+	strcpy(orbitformat,"");
+	*planetnum=OTHERPLANET;
    code=Tcl_SplitList(interp,argv0,&argcc,&argvv);
    if (code==TCL_OK) {
 	  /* decode le premier element */
@@ -1590,7 +1593,9 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 			         sprintf(objename,elem.designation);
 			         mc_adasaap(jj,equinoxe,astrometric,longmpc,rhocosphip,rhosinphip,elem,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
 			         ok4compute=OK;
-			      }
+					} else {
+                  kp++;
+					}
 			   }
 
 			/* ------------------------*/
