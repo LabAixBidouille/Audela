@@ -3,7 +3,7 @@
  * @brief : Méthodes de l'objet Fourier : traitement des fichiers image
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: fourier_images.cpp,v 1.5 2010-06-29 18:34:49 michelpujol Exp $
+ * Mise à jour $Id: fourier_images.cpp,v 1.6 2010-07-22 18:54:35 jacquesmichelet Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
@@ -71,30 +71,24 @@ void Fourier::coherence_images_tfd( Fourier::Parametres * param_1, Fourier::Para
 /* Ouverture et analyse des mots-clés d'un fichier résultat d'une DFT       */
 /****************************************************************************/
 /****************************************************************************/
-void Fourier::ouverture_image( const char * nom, Fourier::Parametres * param )
+void Fourier::lecture_image( const char * nom, Fourier::Parametres * param )
 {
     fourier_info2( "nom=" << nom << " param=" << (void*)param );
     try
     {
-        CPixels * pix_source = 0;
-        CFitsKeywords * kwds_source = 0;
-        CFileFormat format_source = CFile::loadFile( (char *)nom, TFLOAT, &pix_source, &kwds_source );
+        CPixels * image = 0;
+        CFitsKeywords * keywords = 0;
 
-        if (pix_source->getPixelClass() != CLASS_GRAY)
-            throw CError("%s is not a one-colour plane image", nom);
-        TYPE_PIXELS * tab_pix_ptr = 0;
-        pix_source->GetPixelsPointer( &tab_pix_ptr );
-        TableauPixels * tab_pix = new TableauPixels( tab_pix_ptr );
-        /* Ce tableau ne doit pas libéré par le destructeur de param */
-        param->set_tab_pixels( tab_pix, true );
+        CFileFormat format_source = CFile::loadFile( (char *)nom, TFLOAT, &image, &keywords );
 
-        param->cfitskeywords = kwds_source;
+        if ( image->getPixelClass() != CLASS_GRAY )
+            throw CError( "%s is not a one-colour plane image", nom );
 
         if ( format_source != CFILE_FITS )
             throw CError( "%s is not a FITS-compliant file", nom );
 
         /* Vérification du nombre de dimensions de l'image */
-        CFitsKeyword *kwd = kwds_source->FindKeyword("NAXIS");
+        CFitsKeyword *kwd = keywords->FindKeyword( "NAXIS" );
         if ( kwd == 0 )
             throw CError( "%s does not contain a valid header", nom );
 
@@ -102,42 +96,53 @@ void Fourier::ouverture_image( const char * nom, Fourier::Parametres * param )
             throw CError( "%s must be a 2-dimension image", nom );
 
         /* Elimination des images couleurs */
-        kwd = kwds_source->FindKeyword("NAXIS3");
+        kwd = keywords->FindKeyword( "NAXIS3" );
         if ( kwd )
         {
             throw CError( "%s is not a one-colour plane image", nom );
         }
 
         /* Récupération des largeur et hauteur de l'image */
-        kwd = kwds_source->FindKeyword("NAXIS1");
+        kwd = keywords->FindKeyword( "NAXIS1" );
         if ( kwd == 0 )
             throw CError( "%s does not contain a NAXIS1 keyword", nom );
 
         param->largeur = kwd->GetIntValue() ;
 
-        kwd = kwds_source->FindKeyword("NAXIS2");
+        kwd = keywords->FindKeyword( "NAXIS2" );
         if ( kwd == 0 )
             throw CError( "%s does not contain a NAXIS2 keyword", nom );
 
         param->hauteur = kwd->GetIntValue() ;
 
         /* Vérification des paramètres TFD de l'image */
-        kwd = kwds_source->FindKeyword("DFT_TYPE");
+        kwd = keywords->FindKeyword( "DFT_TYPE" );
         if ( kwd != 0 )
             param->type = Fourier::analyse_dft_type( kwd->GetStringValue() );
 
-        kwd = kwds_source->FindKeyword("DFT_ORD");
+        kwd = keywords->FindKeyword( "DFT_ORD" );
         if( kwd != 0 )
             param->ordre = Fourier::analyse_dft_ordre( kwd->GetStringValue() );
 
-        kwd = kwds_source->FindKeyword("DFT_NORM");
+        kwd = keywords->FindKeyword( "DFT_NORM" );
         if( kwd != 0 )
             param->norm = kwd->GetFloatValue();
 
-        kwd = kwds_source->FindKeyword("DFT_OFFS");
+        kwd = keywords->FindKeyword( "DFT_OFFS" );
         if( kwd != 0 )
             param->talon = kwd->GetFloatValue();
 
+        /* Récupération des pixels */
+        TYPE_PIXELS * s_pix = 0;
+        image->GetPixelsPointer( &s_pix );
+        TableauPixels * tp = new TableauPixels( param->largeur, param->hauteur );
+        memcpy( tp->pointeur(), s_pix, tp->taille() );
+        param->pixels( tp );
+
+        /* Pointeurs stockés pour pouvoir détruire les objets plus tard */
+        param->keywords( keywords );
+
+        delete image;
     }
     catch( const CError& e )
     {
@@ -146,16 +151,40 @@ void Fourier::ouverture_image( const char * nom, Fourier::Parametres * param )
 
 }
 
+/****************************************************************************/
+/* Ecriture d'une image en virgule flottantte                               */
+/****************************************************************************/
+/****************************************************************************/
+void Fourier::ecriture_image( const char * nom, Fourier::Parametres * param )
+{
+    fourier_info2 ( nom << " taille " << param->largeur << "x" << param->hauteur );
+
+    int format_stockage = FLOAT_IMG;    /* Format en virgule flottante */
+    param->keywords()->Add( "BITPIX", &format_stockage, TINT, "", "" );
+
+    /* Utilisation d'une zone mémoire à part */
+    /* est-ce utile ? */
+    TYPE_PIXELS * d = (TYPE_PIXELS *)malloc( param->pixels()->taille() );
+    memcpy( d, param->pixels()->pointeur(), param->pixels()->taille() );
+
+    CPixelsGray * pix_dest = new CPixelsGray( param->largeur, param->hauteur, FORMAT_FLOAT, d, 0, 0 );
+    CFile::saveFits( (char *)nom, 0, pix_dest, param->keywords() );
+
+    /* Nettoyage */
+    delete pix_dest;
+    free( d );
+ }
+
 /***************************************************************************************/
 /***************************************************************************************/
 /***************************************************************************************/
-void Fourier::tfd_directe_image ( const char * src, const char * dest_1, const char * dest_2, Fourier::format format, Fourier::Ordre ordre)
+void Fourier::tfd_directe_image ( const char * src, const char * dest_1, const char * dest_2, Fourier::format format, Fourier::Ordre ordre )
 {
     fourier_info1( "src=" << src << " dest_1=" << dest_1 << " dest_2=" << dest_2 << " format=" << format << " ordre=" << ordre );
     try
     {
         Fourier::Parametres param_src;
-        ouverture_image( src, &param_src );
+        lecture_image( src, &param_src );
         fourier_info1( "largeur=" << param_src.largeur
                 << " hauteur=" << param_src.hauteur );
         fourier_info1( "type=" << param_src.type
@@ -168,12 +197,12 @@ void Fourier::tfd_directe_image ( const char * src, const char * dest_1, const c
         Fourier::Parametres param_2;
 
         if ( format == Fourier::CARTESIAN ) {
-            param_1.init(param_src.largeur, param_src.hauteur, ordre, Fourier::REAL);
-            param_2.init(param_src.largeur, param_src.hauteur, ordre, Fourier::IMAG);
+            param_1.init( param_src.largeur, param_src.hauteur, ordre, Fourier::REAL );
+            param_2.init( param_src.largeur, param_src.hauteur, ordre, Fourier::IMAG );
         }
         else {
-            param_1.init(param_src.largeur, param_src.hauteur, ordre, Fourier::SPECTRUM);
-            param_2.init(param_src.largeur, param_src.hauteur, ordre, Fourier::PHASE);
+            param_1.init( param_src.largeur, param_src.hauteur, ordre, Fourier::SPECTRUM );
+            param_2.init( param_src.largeur, param_src.hauteur, ordre, Fourier::PHASE );
         }
 
         /* Valeur (arbitraire) de normalisation */
@@ -184,29 +213,29 @@ void Fourier::tfd_directe_image ( const char * src, const char * dest_1, const c
 
         /* Sauvegardes avec les entêtes spécifiques */
         if ( format == Fourier::CARTESIAN )
-            param_src.cfitskeywords->Add( "DFT_TYPE", (void*)"REAL", TSTRING, "Real part of a Discrete Fourier Transform", "" );
+            param_src.keywords()->Add( "DFT_TYPE", (void*)"REAL", TSTRING, "Real part of a Discrete Fourier Transform", "" );
         else
-            param_src.cfitskeywords->Add( "DFT_TYPE", (void*)"SPECTRUM", TSTRING, "Module of a Discrete Fourier Transform", "" );
+            param_src.keywords()->Add( "DFT_TYPE", (void*)"SPECTRUM", TSTRING, "Module of a Discrete Fourier Transform", "" );
 
         if ( ordre == Fourier::CENTERED )
-            param_src.cfitskeywords->Add( "DFT_ORD", (void*)"CENTERED", TSTRING, "Low spatial frequencies are located at image center", "" );
+            param_src.keywords()->Add( "DFT_ORD", (void*)"CENTERED", TSTRING, "Low spatial frequencies are located at image center", "" );
         else
-            param_src.cfitskeywords->Add( "DFT_ORD", (void*)"REGULAR", TSTRING, "High spatial frequencies are located at image center", "" );
+            param_src.keywords()->Add( "DFT_ORD", (void*)"REGULAR", TSTRING, "High spatial frequencies are located at image center", "" );
 
-        param_src.cfitskeywords->Add( "DFT_NORM", &param_1.norm, TFLOAT, "Normalisation value", "adu" );
-        param_src.cfitskeywords->Add( "DFT_OFFS", &param_1.talon, TFLOAT, "Normalisation value", "adu" );
-        CPixelsGray * pix_dest_1 = new CPixelsGray( param_src.largeur, param_src.hauteur, FORMAT_FLOAT, param_1.get_tab_pixels_ptr(), 0, 0 );
-        CFile::saveFits( (char *)dest_1, 0, pix_dest_1, param_src.cfitskeywords );
+        param_src.keywords()->Add( "DFT_NORM", &param_1.norm, TFLOAT, "Normalisation value", "adu" );
+        param_src.keywords()->Add( "DFT_OFFS", &param_1.talon, TFLOAT, "Normalisation value", "adu" );
+        CPixelsGray * pix_dest_1 = new CPixelsGray( param_src.largeur, param_src.hauteur, FORMAT_FLOAT, param_1.pixels()->pointeur(), 0, 0 );
+        CFile::saveFits( (char *)dest_1, 0, pix_dest_1, param_src.keywords() );
 
         if ( format == Fourier::CARTESIAN )
-            param_src.cfitskeywords->Add( "DFT_TYPE", (void*)"IMAG", TSTRING, "Imaginary part of a Discrete Fourier Transform", "" );
+            param_src.keywords()->Add( "DFT_TYPE", (void*)"IMAG", TSTRING, "Imaginary part of a Discrete Fourier Transform", "" );
         else
-            param_src.cfitskeywords->Add( "DFT_TYPE", (void*)"PHASE", TSTRING, "Phase of a Discrete Fourier Transform", "" );
+            param_src.keywords()->Add( "DFT_TYPE", (void*)"PHASE", TSTRING, "Phase of a Discrete Fourier Transform", "" );
 
-        param_src.cfitskeywords->Add( "DFT_NORM", &param_2.norm, TFLOAT, "Normalisation value", "adu" );
-        param_src.cfitskeywords->Add( "DFT_OFFS", &param_2.talon, TFLOAT, "Normalisation value", "adu" );
-        CPixelsGray * pix_dest_2 = new CPixelsGray( param_src.largeur, param_src.hauteur, FORMAT_FLOAT, param_2.get_tab_pixels_ptr(), 0, 0 );
-        CFile::saveFits( (char *)dest_2, 0, pix_dest_2, param_src.cfitskeywords );
+        param_src.keywords()->Add( "DFT_NORM", &param_2.norm, TFLOAT, "Normalisation value", "adu" );
+        param_src.keywords()->Add( "DFT_OFFS", &param_2.talon, TFLOAT, "Normalisation value", "adu" );
+        CPixelsGray * pix_dest_2 = new CPixelsGray( param_src.largeur, param_src.hauteur, FORMAT_FLOAT, param_2.pixels()->pointeur(), 0, 0 );
+        CFile::saveFits( (char *)dest_2, 0, pix_dest_2, param_src.keywords() );
 
         delete pix_dest_1;
         delete pix_dest_2;
@@ -227,7 +256,7 @@ void Fourier::tfd_inverse_image( const char * src_1, const char * src_2, const c
     try
     {
         Fourier::Parametres param_1;
-        ouverture_image( src_1, &param_1 );
+        lecture_image( src_1, &param_1 );
         fourier_info1( "largeur_1=" << param_1.largeur
                 << " hauteur_1=" << param_1.hauteur << "\n" );
         fourier_info1( "type_1=" << param_1.type
@@ -236,7 +265,7 @@ void Fourier::tfd_inverse_image( const char * src_1, const char * src_2, const c
                 << " talon_1=" << param_1.talon << "\n" );
 
         Fourier::Parametres param_2;
-        ouverture_image( src_2, &param_2 );
+        lecture_image( src_2, &param_2 );
         fourier_info1( "largeur_2=" << param_2.largeur
                 << " hauteur_2=" << param_2.hauteur << "\n" );
         fourier_info1( "type_2=" << param_2.type
@@ -256,15 +285,15 @@ void Fourier::tfd_inverse_image( const char * src_1, const char * src_2, const c
         Fourier::tfd_2d_inverse_complete( &param_1, &param_2, tab_dest, val_max );
 
         /* Suppression et transformation des mots clés */
-        param_1.cfitskeywords->Delete( (char *)"DFT_NORM" );
-        param_1.cfitskeywords->Delete( (char *)"DFT_OFFS" );
-        param_1.cfitskeywords->Delete( (char *)"DFT_ORD" );
-        param_1.cfitskeywords->Delete( (char *)"DFT_TYPE" );
-        param_1.cfitskeywords->Add( "DFT_TYPE", (void*)"I_DFT", TSTRING, "Result of an Inverse Discrete Fourier Transform", "" );
+        param_1.keywords()->Delete( (char *)"DFT_NORM" );
+        param_1.keywords()->Delete( (char *)"DFT_OFFS" );
+        param_1.keywords()->Delete( (char *)"DFT_ORD" );
+        param_1.keywords()->Delete( (char *)"DFT_TYPE" );
+        param_1.keywords()->Add( "DFT_TYPE", (void*)"I_DFT", TSTRING, "Result of an Inverse Discrete Fourier Transform", "" );
 
         /* Sauvegarde */
         CPixelsGray * pix_dest = new CPixelsGray( param_1.largeur, param_1.hauteur, FORMAT_FLOAT, tab_dest, 0, 0 );
-        CFile::saveFits( (char *)dest, 0, pix_dest, param_1.cfitskeywords );
+        CFile::saveFits( (char *)dest, 0, pix_dest, param_1.keywords() );
 
         /* Nettoyage */
         delete[] tab_dest;
@@ -281,7 +310,7 @@ void Fourier::tfd_inverse_image( const char * src_1, const char * src_2, const c
 /*********************************************************************************/
 void Fourier::correl_convol_image ( const char * src_1, const char * src_2, const char * dest, Fourier::operateur op, Fourier::Ordre ordre, bool normalisation )
 {
-    if (src_2 != 0)
+    if ( src_2 != 0 )
     {
         fourier_info1( "src_1=" << src_1 << " src_2=" << src_2 << " dest=" << dest << " op=" << op << " ordre=" << ordre << " normalisation=" << normalisation );
     }
@@ -294,7 +323,7 @@ void Fourier::correl_convol_image ( const char * src_1, const char * src_2, cons
         Fourier::Parametres param_src1;
         Fourier::Parametres param_src2;
 
-        ouverture_image( src_1, &param_src1 );
+        lecture_image( src_1, &param_src1 );
         fourier_info1 ( src_1 << " taille " << param_src1.largeur << "x" << param_src1.hauteur );
 
         /* Recherche des valeurs extrêmes */
@@ -303,15 +332,15 @@ void Fourier::correl_convol_image ( const char * src_1, const char * src_2, cons
         Fourier::extrema( &param_src1, &minimum, &maximum );
 
         Fourier::Parametres * param_src = 0;
-        if (src_2 != 0)
+        if ( src_2 != 0 )
         {
-            ouverture_image( src_2, &param_src2 );
+            lecture_image( src_2, &param_src2 );
             fourier_info1 ( src_2 << " taille " << param_src2.largeur << "x" << param_src2.hauteur );
 
             param_src = Fourier::inclusion( &param_src1, &param_src2 );
             if ( param_src == 0 )
                 throw CError( "These images sizes are not yet supported" );
-            fourier_info1 ( "Retaillage des images en " << param_src1.largeur << "x" << param_src1.hauteur );
+            fourier_info1 ( "Retaillage des images en " << param_src->largeur << "x" << param_src->hauteur );
         }
         else
         {
@@ -326,7 +355,7 @@ void Fourier::correl_convol_image ( const char * src_1, const char * src_2, cons
         Fourier::tfd_2d_directe_simple( &param_src1, &fourier_reel1, &fourier_imag1 );
 
         Fourier::Parametres fourier_reel2, fourier_imag2;
-        if (src_2 != 0)
+        if ( src_2 != 0 )
         {
             fourier_reel2.init( param_src->largeur, param_src->hauteur, Fourier::REGULAR, Fourier::REAL );
             fourier_imag2.init( param_src->largeur, param_src->hauteur, Fourier::REGULAR, Fourier::IMAG );
@@ -350,6 +379,7 @@ void Fourier::correl_convol_image ( const char * src_1, const char * src_2, cons
         /* TFD inverse */
         Fourier::Parametres param_dest;
         param_dest.init( param_src->largeur, param_src->hauteur, Fourier::NO_ORDER, Fourier::NO_TYPE );
+        param_dest.keywords( param_src->keywords() );
         Fourier::tfd_2d_inverse_simple( &fourier_reel0, &fourier_imag0, &param_dest );
 
         /* Normalisation et re-arrangement */
@@ -360,16 +390,20 @@ void Fourier::correl_convol_image ( const char * src_1, const char * src_2, cons
 
 
         /* Sauvegarde */
+        ecriture_image( dest, &param_dest );
+#if 0
         fourier_info1 ( dest << " taille " << param_dest.largeur << "x" << param_dest.hauteur );
         int format_stockage = FLOAT_IMG;    /* Format en virgule flottante */
-        param_src->cfitskeywords->Add( "BITPIX", &format_stockage, TINT, "", "" );
-//        param_src->cfitskeywords->Add( "DATAMAX", &maximum, TINT, "", "" );
-//        param_src->cfitskeywords->Add( "DATAMIN", &minimum, TINT, "", "" );
-        CPixelsGray * pix_dest = new CPixelsGray( param_dest.largeur, param_dest.hauteur, FORMAT_FLOAT, param_dest.get_tab_pixels_ptr(), 0, 0 );
-        CFile::saveFits( (char *)dest, 0, pix_dest, param_src->cfitskeywords );
+        param_dest.keywords()->Add( "BITPIX", &format_stockage, TINT, "", "" );
+        TYPE_PIXELS * d = (TYPE_PIXELS *)malloc( param_dest.pixels()->taille() );
+        memcpy( d, param_dest.pixels()->pointeur(), param_dest.pixels()->taille() );
+        CPixelsGray * pix_dest = new CPixelsGray( param_dest.largeur, param_dest.hauteur, FORMAT_FLOAT, d, 0, 0 );
+        CFile::saveFits( (char *)dest, 0, pix_dest, param_dest.keywords() );
 
         /* Nettoyage */
+        free( d );
         delete pix_dest;
+#endif
     }
     catch ( const CError& e )
     {
