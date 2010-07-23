@@ -1,7 +1,7 @@
 #
 # Fichier : sophiehistogram.tcl
 # Description : Fenetre affcihat l'histogramme des ecarts étoile/consigne
-# Mise à jour $Id: sophiehistogram.tcl,v 1.7 2010-06-13 08:34:37 michelpujol Exp $
+# Mise à jour $Id: sophiehistogram.tcl,v 1.8 2010-07-23 15:45:01 robertdelmas Exp $
 #
 
 namespace eval ::sophie::histogram {
@@ -138,27 +138,27 @@ proc ::sophie::histogram::fillConfigPage { frm visuNo } {
         "::confGenerique::closeWindow $visuNo [namespace current]"
 
       #--- menu edition
-      Menu           $menuNo "$::caption(audace,menu,affichage)"
-      Menu_Check     $menuNo "$::caption(audace,menu,affichage)" "$::caption(sophie,alphaDiff)" \
+      Menu           $menuNo "$::caption(audace,menu,display)"
+      Menu_Check     $menuNo "$::caption(audace,menu,display)" "$::caption(sophie,alphaDiff)" \
       "::sophie::histogram::private($visuNo,alphaDiff,show)" "::sophie::histogram::onDisplayLine $visuNo"
-      Menu_Check     $menuNo "$::caption(audace,menu,affichage)" "$::caption(sophie,deltaDiff)" \
+      Menu_Check     $menuNo "$::caption(audace,menu,display)" "$::caption(sophie,deltaDiff)" \
       "::sophie::histogram::private($visuNo,deltaDiff,show)" "::sophie::histogram::onDisplayLine $visuNo"
-      Menu_Separator $menuNo "$::caption(audace,menu,affichage)"
+      Menu_Separator $menuNo "$::caption(audace,menu,display)"
 
       #--- menu affichage
-      Menu_Command   $menuNo "$::caption(audace,menu,affichage)" "$::caption(sophie,histogram,clear)" \
+      Menu_Command   $menuNo "$::caption(audace,menu,display)" "$::caption(sophie,histogram,clear)" \
       "::sophie::histogram::onClearDisplay $visuNo"
-      Menu_Command   $menuNo "$::caption(audace,menu,affichage)" "$::caption(sophie,histogram,clipboard)" \
+      Menu_Command   $menuNo "$::caption(audace,menu,display)" "$::caption(sophie,histogram,clipboard)" \
       "::sophie::histogram::onCopyClipboard $visuNo"
-      Menu_Bind $menuNo $private($visuNo,this) <Control-c> "$::caption(audace,menu,affichage)" "$::caption(sophie,histogram,clipboard)" \
+      Menu_Bind $menuNo $private($visuNo,this) <Control-c> "$::caption(audace,menu,display)" "$::caption(sophie,histogram,clipboard)" \
       "Ctrl-C"
-      Menu_Separator $menuNo "$::caption(audace,menu,affichage)"
-      Menu_Command   $menuNo "$::caption(audace,menu,affichage)" "$::caption(sophie,histogram,preference)" \
+      Menu_Separator $menuNo "$::caption(audace,menu,display)"
+      Menu_Command   $menuNo "$::caption(audace,menu,display)" "$::caption(sophie,histogram,preference)" \
       "::sophie::histogram::onRunPreference $visuNo"
 
 
     [MenuGet $menuNo $::caption(audace,menu,file)]      configure -tearoff 0
-    [MenuGet $menuNo $::caption(audace,menu,affichage)] configure -tearoff 0
+    [MenuGet $menuNo $::caption(audace,menu,display)]   configure -tearoff 0
 
 
    #--- Je memorise la reference de la frame
