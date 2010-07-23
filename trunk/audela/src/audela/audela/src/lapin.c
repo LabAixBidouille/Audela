@@ -58,7 +58,6 @@ static int gVerbose = 0;
 static int gConsole = 0;
 static char log_filename[2048];
 static char tcl_filename[2048];
-static char img_filename[2048];
 static char exe_filename[2048];
 
 #if defined(OS_WIN)
@@ -326,10 +325,11 @@ int main(int argc , char **argv)
    int i, k;
    int default_tcltk_libs = 0;
    char rootpath[MAX_STRING];
-
-   int tcl_argc = 1;
-   char *tcl_argv[2];
    FILE *fid;
+   int fileOption = 0;
+   char **tcl_argv;
+   int tcl_argc = 1;
+   tcl_argv = (char **)calloc(argc,sizeof(char*));
 
    strcpy(rootpath,argv[0]);
    GetChemin(rootpath,MAX_STRING,0);
@@ -361,14 +361,14 @@ int main(int argc , char **argv)
    /* with the file to source at startup. Under Windows, the */
    /* (argc,argv) are build from the entire command line.    */
 
-   tcl_argc = 1;
+   tcl_argc = 2;
    tcl_argv[0] = argv[0];
+   tcl_argv[1] = tcl_filename;
 
-   strcpy(img_filename,"");
    for(i=1;i<argc;i++) {
       if(strcmp(argv[i],"--file")==0) {
-         tcl_argv[1] = argv[++i];
-         tcl_argc = 2;
+         strcpy(tcl_filename,argv[++i]);
+         fileOption = 1;
       } else if(strcmp(argv[i],"--verbose")==0) {
          gVerbose = 1;
       } else if(strcmp(argv[i],"--console")==0) {
@@ -388,9 +388,9 @@ int main(int argc , char **argv)
          printf("  --version         Version de AudeLA.\n");
          return 0;
       } else {
-         if (i==1) {
-            strcpy(img_filename,argv[i]);
-         }
+         // copy other arguments after argv[1]
+         tcl_argv[tcl_argc] = argv[i];  
+         tcl_argc++;
       }
    }
 
@@ -402,15 +402,12 @@ int main(int argc , char **argv)
 #endif
 
    // set default script
-   if ( tcl_argc==1 ) {
-      if (gConsole == 0 ) {
-         // set default script for tk GUI
-         tcl_argv[1] = tcl_filename;
-         tcl_argc = 2;
-      } else {
-         // no default script for console GUI
-         tcl_argv[1] = NULL;
+   if (gConsole == 1 && fileOption == 0) {         
+      // if console mode then remove  --file argument in argv[1]
+      for ( i= 1; i<tcl_argc ; i++ ) {
+         tcl_argv[i] = tcl_argv[i+1];
       }
+      tcl_argc--;
    }
 
    if ( tcl_argv[1] != NULL) {
@@ -446,7 +443,7 @@ int main(int argc , char **argv)
    if ( gConsole == 1 ) {
       Tcl_Main(tcl_argc,tcl_argv,Tcl_AppInit);
    } else {
-   Tk_Main(tcl_argc,tcl_argv,Tk_AppInit);
+      Tk_Main(tcl_argc,tcl_argv,Tk_AppInit);
    }
 
    // On renvoie 0 pour eviter un warning du compilateur, mais
@@ -502,7 +499,6 @@ void load_library(Tcl_Interp *interp, char *s)
 int Tk_AppInit(Tcl_Interp *interp)
 {
    char ligne[1000];
-   int k;
 
    LOGDEBUG("interp=%p\n",interp);
 
@@ -547,16 +543,6 @@ int Tk_AppInit(Tcl_Interp *interp)
    sprintf(ligne,"set audela(hInstance) %d",&ghInstance);
    Tcl_Eval(interp,ligne);
 #endif
-   if (strcmp(img_filename,"")!=0) {
-      for (k=0;k<(int)strlen(img_filename);k++) {
-         if (img_filename[k]=='\\') {
-            img_filename[k]='/';
-         }
-      }
-   }
-   sprintf(ligne,"set audela(img_filename) \"%s\"",img_filename);
-   Tcl_Eval(interp,ligne);
-
    return TCL_OK;
 }
 

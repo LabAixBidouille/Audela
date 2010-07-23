@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.140 2010-07-23 15:44:11 robertdelmas Exp $
+# Mise à jour $Id: aud.tcl,v 1.141 2010-07-23 16:26:26 michelpujol Exp $
 #
 
 #--- Chargement du package BWidget
@@ -1726,17 +1726,67 @@ wm withdraw .
 focus -force $audace(Console)
 ::console::GiveFocus
 
-#--- On charge eventuellement l'image cliquee
-if {[info exists audela(img_filename)]==1} {
-   if {$audela(img_filename)!=""} {
-      loadima $audela(img_filename)
-      set audace(rep_images) [file dirname $audela(img_filename)]
-   }
-}
+###if {[info exists ::audela(img_filename)]==1} {
+###   console::disp "::audela(img_filename)=$::audela(img_filename)\n"
+###   if { [file extension $audela(img_filename)] == ".tcl"  } {
+###      #--- j'execute le script TCL
+###      uplevel #0 "source \"$audela(img_filename)\""
+###   } elseif {[info exists audela(img_filename)]==1} {
+###      #--- On charge eventuellement l'image cliquee
+###      if {[info exists audela(img_filename)]==1} {
+###         if {$audela(img_filename)!=""} {
+###            loadima $audela(img_filename)
+###            set audace(rep_images) [file dirname $audela(img_filename)]
+###         }
+###      }
+###   }
+###}
 
 #--- On execute eventuellement un script audela/gui/perso.tcl au lancement de AudeLA
 #--- Cela permet a chacun de personnaliser l'initialisation de son interface graphique
 if {[file exists perso.tcl]==1} {
    source perso.tcl
 }
+
+#--- je charge une image ou un script si les parametres optionnels sont presents
+# usage :
+#   audela <fichier image>
+#   audela <fichier_tcl> <nom procedure> <parametres de la procedure>
+#   remarque : <fichier_tcl>  est vide, aucun script n'est chargé , mais la procedure est lancee
+#   en supponsant quel
+if { [llength $::argv] >= 1  } {
+   set catchResult [ catch {
+      if { [file extension [lindex $::argv 0]] == ".tcl"  || [lindex $::argv 0] == ""  } {
+         #--- un nom d'un script est passe en argument
+         set scriptFileName [lindex $::argv 0]
+         #--- j'interperte les variables qui pourraient se trouver dans le nom du fichier
+         #--- comme par exemple "$audace(rep_plugin)/tool/testaudela/testaudela.tcl"
+         eval set scriptFileName \"$scriptFileName\"
+         #--- je normalise les separateurs en fonction de l'OS
+         set scriptFileName [file normalize $scriptFileName]
+         #--- je charge le script TCL
+         if { $scriptFileName != "" } {
+            set scriptFileName [file normalize $scriptFileName]
+            uplevel #0 "source \"$scriptFileName\""
+         }
+         #--- j'execute la procedure
+         if { [llength $::argv] >=2 } {
+            set procedureName [lindex $::argv 1]
+            set procedureArgs [lrange $::argv 2 end]
+            set commandResult [eval $procedureName $procedureArgs]
+         }
+      } elseif { [lsearch -regexp [::tkutil::getSaveFileType ] [file extension [lindex $::argv 0]]]!= -1 } {
+         #--- le nom d'une image est passe en argument
+         #--- j'affiche l'image
+         set imageFileName [file normalize [lindex $::argv 0]]
+         loadima $imageFileName
+         set audace(rep_images) [file dirname $imageFileName]
+      }
+   } ]
+   if { $catchResult != 0 } {
+     console::affiche_erreur "$::errorInfo\n"
+   }
+}
+
+
 
