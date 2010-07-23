@@ -1,6 +1,6 @@
 #
 # Fichier : bess.cap
-# Mise a jour $Id: bess_module.cap,v 1.9 2010-07-23 12:12:04 robertdelmas Exp $
+# Mise a jour $Id: bess_module.cap,v 1.10 2010-07-23 16:51:13 michelpujol Exp $
 #
 
 #=========================================================================
@@ -82,7 +82,7 @@ if { [string compare $langage "french"] == "0" } {
    set caption(SelecFile)           "..."
    set caption(OBJNAME)             "Nom courant de l'objet"
    set caption(BSS_RA)              "Ascension Droite"
-  set caption(BSS_DEC)             "Déclinaison"
+   set caption(BSS_DEC)             "Déclinaison"
    set caption(datedeb)             "Date du début de la pose"
    set caption(heuredeb)            "Heure du début de la pose"
    set caption(EXPTIME)             "Durée d'acquisition réelle"
