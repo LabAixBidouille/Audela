@@ -5,7 +5,7 @@
 #               pose, choix des outils, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: confgene.tcl,v 1.78 2010-06-13 08:40:29 michelpujol Exp $
+# Mise à jour $Id: confgene.tcl,v 1.79 2010-07-23 15:48:32 robertdelmas Exp $
 #
 
 #
@@ -1798,7 +1798,6 @@ namespace eval ::confChoixOutil {
       variable private
       global audace caption conf panneau
 
-     ### set visuNo $audace(visuNo)
       set conf(afficheOutils) ""
       foreach m [array names panneau menu_name,*] {
          set namespace [ lindex [ split $m "," ] 1 ]
@@ -1832,6 +1831,83 @@ namespace eval ::confChoixOutil {
       Menu_Separator $visuNo "$caption(audace,menu,file)"
       Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,quitter)" \
          "::audace::quitter"
+
+      #--- Je commence par supprimer le menu cascade du menu Affichage
+      Menu_Delete $visuNo "$caption(audace,menu,fcttransfert_titre)" all
+      #--- Je supprime toutes les entrees du menu Affichage
+      Menu_Delete $visuNo "$caption(audace,menu,display)" entries
+      #--- Rafraichissement du menu Affichage
+      Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,nouvelle_visu)" "::confVisu::create"
+      Menu_Separator $visuNo "$caption(audace,menu,display)"
+      Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,pas_outil)" "::audace::pasOutil $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,efface_image)" "::confVisu::deleteImage"
+      Menu_Separator $visuNo "$caption(audace,menu,display)"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette_grise)" \
+         "1" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette_inverse)" \
+         "2" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette_iris)" \
+         "3" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette_arc_en_ciel)" \
+         "4" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
+      Menu_Separator $visuNo "$caption(audace,menu,display)"
+      Menu_Cascade   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,fcttransfert_titre)"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_lin)" \
+         "1" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_log)" \
+         "2" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_exp)" \
+         "3" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_arc)" \
+         "4" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
+      Menu_Separator $visuNo "$caption(audace,menu,display)"
+      Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,seuils)..." \
+         "::seuilWindow::run $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,balance_rvb)..." \
+         "::seuilCouleur::run $visuNo"
+      Menu_Separator $visuNo "$caption(audace,menu,display)"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
+         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.125)" "0.125" \
+         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
+         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.25)" "0.25" \
+         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
+         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.5)" "0.5" \
+         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
+         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_1)" "1" \
+         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
+         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_2)" "2" \
+         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
+         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_4)" "4" \
+         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+      Menu_Separator $visuNo "$caption(audace,menu,display)"
+      Menu_Check     $visuNo "$caption(audace,menu,display)" \
+         "$caption(audace,menu,plein_ecran)" \
+         "::confVisu::private($visuNo,fullscreen)" "::confVisu::setFullScreen $visuNo"
+      Menu_Separator $visuNo "$caption(audace,menu,display)"
+      Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,miroir_x)" \
+         "::confVisu::private($visuNo,mirror_x)" "::confVisu::setMirrorX $visuNo"
+      Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,miroir_y)" \
+         "::confVisu::private($visuNo,mirror_y)" "::confVisu::setMirrorY $visuNo"
+      Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,window)" \
+         "::confVisu::private($visuNo,window)" "::confVisu::setWindow $visuNo"
+      Menu_Separator $visuNo "$caption(audace,menu,display)"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
+         "$caption(audace,menu,vision_nocturne)" "1" "conf(confcolor,menu_night_vision)" \
+         "::confColor::switchDayNight ; \
+            if { [ winfo exists $audace(base).selectColor ] } { \
+               destroy $audace(base).selectColor \
+               ::confColor::run $visuNo \
+            } \
+         "
+      Menu_Separator $visuNo "$caption(audace,menu,display)"
+      #--- Affichage des plugins de type tool et de fonction display du menu deroulant Affichage
+      ::confChoixOutil::displayPlugins $visuNo display
+      Menu_Command   $visuNo "$caption(audace,menu,display)" "[ ::Crosshair::getLabel ]..." "::Crosshair::run $visuNo"
 
       #--- Je supprime toutes les entrees du menu Pretraitement
       Menu_Delete $visuNo "$caption(audace,menu,preprocess)" entries
@@ -1992,7 +2068,7 @@ namespace eval ::confChoixOutil {
       Menu_Bind $visuNo $This <Control-q> "$caption(audace,menu,file)" "$caption(audace,menu,quitter)" \
          "$caption(touche,controle,Q)"
       bind $audace(Console) <Control-q> "focus $audace(base) ; ::audace::quitter"
-      Menu_Bind $visuNo $This <F12> "$caption(audace,menu,affichage)" "$caption(audace,menu,pas_outil)" \
+      Menu_Bind $visuNo $This <F12> "$caption(audace,menu,display)" "$caption(audace,menu,pas_outil)" \
          "$caption(touche,F12)"
 
       #--- Rafraichissement des menus Fichier et Outils pour les nouvelles visu
@@ -3118,7 +3194,7 @@ proc ::confGenerique::closeWindow { visuNo NameSpace  } {
          #--- supprime la fenetre
          destroy $private($visuNo,$NameSpace,this)
       }
-      ###array unset private $visuNo,$NameSpace,*
+     ### array unset private $visuNo,$NameSpace,*
    }
    return
 }
