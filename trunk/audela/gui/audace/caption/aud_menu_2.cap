@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_2.cap
-# Mise à jour $Id: aud_menu_2.cap,v 1.24 2010-05-27 17:31:45 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_2.cap,v 1.25 2010-07-23 15:42:31 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -11,7 +11,7 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(audace,menu,affichage)                    "View"
+set caption(audace,menu,display)                      "View"
 set caption(audace,menu,nouvelle_visu)                "New 'visu'"
 set caption(audace,menu,pas_outil)                    "Hide Panel"
 set caption(audace,menu,efface_image)                 "Delete Image"
@@ -85,7 +85,7 @@ set caption(seuilCouleur,fin_traitement)              "End of Preprocessing."
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(audace,menu,affichage)                 "Affichage"
+   set caption(audace,menu,display)                   "Affichage"
    set caption(audace,menu,nouvelle_visu)             "Nouvelle 'visu'"
    set caption(audace,menu,pas_outil)                 "Masquer le panneau"
    set caption(audace,menu,efface_image)              "Effacer l'image"
@@ -159,7 +159,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(audace,menu,affichage)                 "Vista"
+   set caption(audace,menu,display)                   "Vista"
    set caption(audace,menu,nouvelle_visu)             "Nuovo 'visu'"
    set caption(audace,menu,pas_outil)                 "Nascondi pannello"
    set caption(audace,menu,efface_image)              "Cancellare immagine"
@@ -233,7 +233,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(audace,menu,affichage)                 "Ver"
+   set caption(audace,menu,display)                   "Ver"
    set caption(audace,menu,nouvelle_visu)             "Nueva 'visu'"
    set caption(audace,menu,pas_outil)                 "Ocultar el panel"
    set caption(audace,menu,efface_image)              "Borrar la imagen"
@@ -307,7 +307,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(audace,menu,affichage)                 "Anzeige"
+   set caption(audace,menu,display)                   "Anzeige"
    set caption(audace,menu,nouvelle_visu)             "Neue 'visu'"
    set caption(audace,menu,pas_outil)                 "Tafel ausblenden"
    set caption(audace,menu,efface_image)              "Das Bild löschen"
@@ -381,7 +381,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(audace,menu,affichage)                 "Ver"
+   set caption(audace,menu,display)                   "Ver"
    set caption(audace,menu,nouvelle_visu)             "Novo 'visu'"
    set caption(audace,menu,pas_outil)                 "Esconder painel"
    set caption(audace,menu,efface_image)              "Apagar imagem"
@@ -455,7 +455,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(audace,menu,affichage)                 "Vis"
+   set caption(audace,menu,display)                   "Vis"
    set caption(audace,menu,nouvelle_visu)             "Ny 'visu'"
    set caption(audace,menu,pas_outil)                 "Skjul panel"
    set caption(audace,menu,efface_image)              "Slet billede"
@@ -529,7 +529,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
-   set caption(audace,menu,affichage)                 "View"
+   set caption(audace,menu,display)                   "View"
    set caption(audace,menu,nouvelle_visu)             "New 'visu'"
    set caption(audace,menu,pas_outil)                 "Hide Panel"
    set caption(audace,menu,efface_image)              "Delete Image"
@@ -603,7 +603,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
-   set caption(audace,menu,affichage)                 "View"
+   set caption(audace,menu,display)                   "View"
    set caption(audace,menu,nouvelle_visu)             "New 'visu'"
    set caption(audace,menu,pas_outil)                 "Hide Panel"
    set caption(audace,menu,efface_image)              "Delete Image"
