@@ -1,6 +1,6 @@
 #
 # Fichier : testaudela.cap
-# Mise a jour $Id: testaudela.cap,v 1.1 2010-07-24 08:25:23 robertdelmas Exp $
+# Mise a jour $Id: testaudela.cap,v 1.2 2010-07-24 10:15:36 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -21,7 +21,7 @@ set caption(testaudela,unselectAll)          "None"
 set caption(testaudela,run)                  "Run the tests"
 set caption(testaudela,detail)               "Content of selected file"
 set caption(testaudela,showResult)           "See the result"
-set caption(testaudela,constraint)           "Constraints"
+set caption(testaudela,constraint)           "Prerequisites"
 set caption(testaudela,testCampagne)         "Test Campaign"
 
 # *************** Version française ***************************
@@ -37,7 +37,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,run)               "Exécuter les tests"
    set caption(testaudela,detail)            "Contenu du fichier sélectionné"
    set caption(testaudela,showResult)        "Voir le résultat"
-   set caption(testaudela,constraint)        "Contraintes"
+   set caption(testaudela,constraint)        "Pré-requis"
    set caption(testaudela,testCampagne)      "Campagne de tests"
 
 # *************** Version italienne ***************************
@@ -53,7 +53,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,run)               "# Exécuter les tests"
    set caption(testaudela,detail)            "# Contenu du fichier sélectionné"
    set caption(testaudela,showResult)        "# Voir le résultat"
-   set caption(testaudela,constraint)        "# Contraintes"
+   set caption(testaudela,constraint)        "# Pré-requis"
    set caption(testaudela,testCampagne)      "# Campagne de tests"
 
 # *************** Version espagnole ***************************
@@ -69,7 +69,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,run)               "# Exécuter les tests"
    set caption(testaudela,detail)            "# Contenu du fichier sélectionné"
    set caption(testaudela,showResult)        "# Voir le résultat"
-   set caption(testaudela,constraint)        "# Contraintes"
+   set caption(testaudela,constraint)        "# Pré-requis"
    set caption(testaudela,testCampagne)      "# Campagne de tests"
 
 # *************** Version allemande ***************************
@@ -85,7 +85,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,run)               "# Exécuter les tests"
    set caption(testaudela,detail)            "# Contenu du fichier sélectionné"
    set caption(testaudela,showResult)        "# Voir le résultat"
-   set caption(testaudela,constraint)        "# Contraintes"
+   set caption(testaudela,constraint)        "# Pré-requis"
    set caption(testaudela,testCampagne)      "# Campagne de tests"
 
 # *************** Version portugaise **************************
@@ -101,7 +101,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,run)               "# Exécuter les tests"
    set caption(testaudela,detail)            "# Contenu du fichier sélectionné"
    set caption(testaudela,showResult)        "# Voir le résultat"
-   set caption(testaudela,constraint)        "# Contraintes"
+   set caption(testaudela,constraint)        "# Pré-requis"
    set caption(testaudela,testCampagne)      "# Campagne de tests"
 
 # *************** Version danoise *****************************
@@ -117,7 +117,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,run)               "Run the tests"
    set caption(testaudela,detail)            "Content of selected file"
    set caption(testaudela,showResult)        "See the result"
-   set caption(testaudela,constraint)        "Constraints"
+   set caption(testaudela,constraint)        "Prerequisites"
    set caption(testaudela,testCampagne)      "Test Campaign"
 
 # *************** Version ukrainienne *************************
@@ -133,7 +133,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,run)               "Run the tests"
    set caption(testaudela,detail)            "Content of selected file"
    set caption(testaudela,showResult)        "See the result"
-   set caption(testaudela,constraint)        "Constraints"
+   set caption(testaudela,constraint)        "Prerequisites"
    set caption(testaudela,testCampagne)      "Test Campaign"
 
 # *************** Version russe *******************************
@@ -149,7 +149,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,run)               "Run the tests"
    set caption(testaudela,detail)            "Content of selected file"
    set caption(testaudela,showResult)        "See the result"
-   set caption(testaudela,constraint)        "Constraints"
+   set caption(testaudela,constraint)        "Prerequisites"
    set caption(testaudela,testCampagne)      "Test Campaign"
 
 }
