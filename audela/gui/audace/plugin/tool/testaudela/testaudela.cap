@@ -1,0 +1,160 @@
+#
+# Fichier : testaudela.cap
+# Mise a jour $Id: testaudela.cap,v 1.1 2010-07-24 08:25:23 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(testaudela,title)                "AudeLA Test"
+set caption(testaudela,name)                 "Name"
+set caption(testaudela,description)          "Description"
+set caption(testaudela,files)                "Test File"
+set caption(testaudela,refresh)              "Update"
+set caption(testaudela,selectAll)            "All"
+set caption(testaudela,unselectAll)          "None"
+set caption(testaudela,run)                  "Run the tests"
+set caption(testaudela,detail)               "Content of selected file"
+set caption(testaudela,showResult)           "See the result"
+set caption(testaudela,constraint)           "Constraints"
+set caption(testaudela,testCampagne)         "Test Campaign"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(testaudela,title)             "Test AudeLA"
+   set caption(testaudela,name)              "Nom"
+   set caption(testaudela,description)       "Description"
+   set caption(testaudela,files)             "Fichiers de test"
+   set caption(testaudela,refresh)           "Actualiser"
+   set caption(testaudela,selectAll)         "Tous"
+   set caption(testaudela,unselectAll)       "Aucun"
+   set caption(testaudela,run)               "Exécuter les tests"
+   set caption(testaudela,detail)            "Contenu du fichier sélectionné"
+   set caption(testaudela,showResult)        "Voir le résultat"
+   set caption(testaudela,constraint)        "Contraintes"
+   set caption(testaudela,testCampagne)      "Campagne de tests"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(testaudela,title)             "# Test AudeLA"
+   set caption(testaudela,name)              "Nome"
+   set caption(testaudela,description)       "Descrizione"
+   set caption(testaudela,files)             "# Fichiers de test"
+   set caption(testaudela,refresh)           "Aggiorna"
+   set caption(testaudela,selectAll)         "Tutti"
+   set caption(testaudela,unselectAll)       "Nessuno"
+   set caption(testaudela,run)               "# Exécuter les tests"
+   set caption(testaudela,detail)            "# Contenu du fichier sélectionné"
+   set caption(testaudela,showResult)        "# Voir le résultat"
+   set caption(testaudela,constraint)        "# Contraintes"
+   set caption(testaudela,testCampagne)      "# Campagne de tests"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(testaudela,title)             "# Test AudeLA"
+   set caption(testaudela,name)              "Nombre"
+   set caption(testaudela,description)       "Descripción"
+   set caption(testaudela,files)             "# Fichiers de test"
+   set caption(testaudela,refresh)           "Actualizar"
+   set caption(testaudela,selectAll)         "Todos"
+   set caption(testaudela,unselectAll)       "Nada"
+   set caption(testaudela,run)               "# Exécuter les tests"
+   set caption(testaudela,detail)            "# Contenu du fichier sélectionné"
+   set caption(testaudela,showResult)        "# Voir le résultat"
+   set caption(testaudela,constraint)        "# Contraintes"
+   set caption(testaudela,testCampagne)      "# Campagne de tests"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(testaudela,title)             "# Test AudeLA"
+   set caption(testaudela,name)              "Name"
+   set caption(testaudela,description)       "Beschreibung"
+   set caption(testaudela,files)             "# Fichiers de test"
+   set caption(testaudela,refresh)           "Aktualisieren"
+   set caption(testaudela,selectAll)         "Alle"
+   set caption(testaudela,unselectAll)       "Keiner"
+   set caption(testaudela,run)               "# Exécuter les tests"
+   set caption(testaudela,detail)            "# Contenu du fichier sélectionné"
+   set caption(testaudela,showResult)        "# Voir le résultat"
+   set caption(testaudela,constraint)        "# Contraintes"
+   set caption(testaudela,testCampagne)      "# Campagne de tests"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(testaudela,title)             "# Test AudeLA"
+   set caption(testaudela,name)              "Nome"
+   set caption(testaudela,description)       "Descrição"
+   set caption(testaudela,files)             "# Fichiers de test"
+   set caption(testaudela,refresh)           "Actualizar"
+   set caption(testaudela,selectAll)         "Todos"
+   set caption(testaudela,unselectAll)       "Nenhum"
+   set caption(testaudela,run)               "# Exécuter les tests"
+   set caption(testaudela,detail)            "# Contenu du fichier sélectionné"
+   set caption(testaudela,showResult)        "# Voir le résultat"
+   set caption(testaudela,constraint)        "# Contraintes"
+   set caption(testaudela,testCampagne)      "# Campagne de tests"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(testaudela,title)             "AudeLA Test"
+   set caption(testaudela,name)              "Name"
+   set caption(testaudela,description)       "Description"
+   set caption(testaudela,files)             "Test File"
+   set caption(testaudela,refresh)           "Update"
+   set caption(testaudela,selectAll)         "All"
+   set caption(testaudela,unselectAll)       "None"
+   set caption(testaudela,run)               "Run the tests"
+   set caption(testaudela,detail)            "Content of selected file"
+   set caption(testaudela,showResult)        "See the result"
+   set caption(testaudela,constraint)        "Constraints"
+   set caption(testaudela,testCampagne)      "Test Campaign"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(testaudela,title)             "AudeLA Test"
+   set caption(testaudela,name)              "Name"
+   set caption(testaudela,description)       "Description"
+   set caption(testaudela,files)             "Test File"
+   set caption(testaudela,refresh)           "Update"
+   set caption(testaudela,selectAll)         "All"
+   set caption(testaudela,unselectAll)       "None"
+   set caption(testaudela,run)               "Run the tests"
+   set caption(testaudela,detail)            "Content of selected file"
+   set caption(testaudela,showResult)        "See the result"
+   set caption(testaudela,constraint)        "Constraints"
+   set caption(testaudela,testCampagne)      "Test Campaign"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(testaudela,title)             "AudeLA Test"
+   set caption(testaudela,name)              "Name"
+   set caption(testaudela,description)       "Description"
+   set caption(testaudela,files)             "Test File"
+   set caption(testaudela,refresh)           "Update"
+   set caption(testaudela,selectAll)         "All"
+   set caption(testaudela,unselectAll)       "None"
+   set caption(testaudela,run)               "Run the tests"
+   set caption(testaudela,detail)            "Content of selected file"
+   set caption(testaudela,showResult)        "See the result"
+   set caption(testaudela,constraint)        "Constraints"
+   set caption(testaudela,testCampagne)      "Test Campaign"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
