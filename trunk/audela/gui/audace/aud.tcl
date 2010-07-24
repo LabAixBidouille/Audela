@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.141 2010-07-23 16:26:26 michelpujol Exp $
+# Mise à jour $Id: aud.tcl,v 1.142 2010-07-24 10:23:41 robertdelmas Exp $
 #
 
 #--- Chargement du package BWidget
@@ -982,6 +982,8 @@ namespace eval ::audace {
          "::confColor::run $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,police)..." \
          "::confFont::run $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,satellite)..." \
+         { ::confTLE::run "$audace(base).confTLE" }
 
       Menu_Separator $visuNo "$caption(audace,menu,setup)"
       Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,camera)..." \
@@ -1726,22 +1728,6 @@ wm withdraw .
 focus -force $audace(Console)
 ::console::GiveFocus
 
-###if {[info exists ::audela(img_filename)]==1} {
-###   console::disp "::audela(img_filename)=$::audela(img_filename)\n"
-###   if { [file extension $audela(img_filename)] == ".tcl"  } {
-###      #--- j'execute le script TCL
-###      uplevel #0 "source \"$audela(img_filename)\""
-###   } elseif {[info exists audela(img_filename)]==1} {
-###      #--- On charge eventuellement l'image cliquee
-###      if {[info exists audela(img_filename)]==1} {
-###         if {$audela(img_filename)!=""} {
-###            loadima $audela(img_filename)
-###            set audace(rep_images) [file dirname $audela(img_filename)]
-###         }
-###      }
-###   }
-###}
-
 #--- On execute eventuellement un script audela/gui/perso.tcl au lancement de AudeLA
 #--- Cela permet a chacun de personnaliser l'initialisation de son interface graphique
 if {[file exists perso.tcl]==1} {
@@ -1752,8 +1738,7 @@ if {[file exists perso.tcl]==1} {
 # usage :
 #   audela <fichier image>
 #   audela <fichier_tcl> <nom procedure> <parametres de la procedure>
-#   remarque : <fichier_tcl>  est vide, aucun script n'est chargé , mais la procedure est lancee
-#   en supponsant quel
+#   remarque : si <fichier_tcl> est vide, aucun script n'est charge, mais la procedure est lancee
 if { [llength $::argv] >= 1  } {
    set catchResult [ catch {
       if { [file extension [lindex $::argv 0]] == ".tcl"  || [lindex $::argv 0] == ""  } {
@@ -1784,9 +1769,7 @@ if { [llength $::argv] >= 1  } {
       }
    } ]
    if { $catchResult != 0 } {
-     console::affiche_erreur "$::errorInfo\n"
+     ::console::affiche_erreur "$::errorInfo\n"
    }
 }
-
-
 
