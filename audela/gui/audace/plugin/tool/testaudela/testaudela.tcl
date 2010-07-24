@@ -1,8 +1,8 @@
 #
 # Fichier : testaudela.tcl
-# Description : outil de test automatique de audela
+# Description : Outil de test automatique pour AudeLA
 # Auteurs : Michel Pujol
-# Mise a jour $Id: testaudela.tcl,v 1.1 2010-07-23 16:31:04 michelpujol Exp $
+# Mise a jour $Id: testaudela.tcl,v 1.2 2010-07-24 08:26:57 robertdelmas Exp $
 #
 
 #####################
@@ -10,16 +10,16 @@
 #  Pour ajouter un fichier de test
 #  ===============================
 #   => creer ajouter un fichier dans le repertoire audace(rep_plugin)/testaudela/tests
-#      le nouveau fichier est détecté automatiquement
+#      le nouveau fichier est détecte automatiquement
 #
 #  Pour ajouter un test dans un fichier de tests
 #  =============================================
 #  => ajouter une procedure "test" avec 5 parametres :
-#       test_nom : nom du test
+#       test_nom         : nom du test
 #       test_description : courte description du test
-#       test_contraintes : contraintes arespecter pour que le test soit executé
+#       test_contraintes : contraintes a respecter pour que le test soit execute
 #       test_code        : code TCL du test
-#       test_resultat    : resultat attendu du test retouné par la commande "return" dans le code du test
+#       test_resultat    : resultat attendu du test retoune par la commande "return" dans le code du test
 #   => exemple :
 #       test test_nom {test_description} {test_contraintes} {
 #          test_code
@@ -29,18 +29,16 @@
 #  =============================================================
 #   => ajouter la contrainte dans la variable private(constraints) et recharger
 #      le namespace ::testaudela avec la commande
-#       source audace/scripts/testaudela.tcl
+#      source audace/scripts/testaudela.tcl
 #
 #######################
 
 namespace eval ::testaudela {
-   global caption
    package provide testaudela 1.9
+   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
-   #source [ file join [file dirname [info script]] testaudela.cap ]
-   set caption(testaudela,title) "Test AudeLA"
-   package require audela 1.4.0
+   source [ file join [file dirname [info script]] testaudela.cap ]
 }
 
 #------------------------------------------------------------
@@ -96,7 +94,7 @@ proc ::testaudela::getPluginOS { } {
 proc ::testaudela::getPluginProperty { propertyName } {
    switch $propertyName {
       function     { return "setup" }
-      subfunction1 { return "" }
+      subfunction1 { return "test" }
       display      { return "window" }
    }
 }
@@ -116,39 +114,21 @@ proc ::testaudela::initPlugin { tkbase } {
 #    cree une nouvelle instance de l'outil
 #------------------------------------------------------------
 proc ::testaudela::createPluginInstance { { in ".audace" } { visuNo 1 } } {
-   global conf
-   global audace
-   global caption
    variable private
+   global audace conf
 
    package require BWidget
    package require Tablelist
    package require tcltest 2.0
 
-   #--- Charge le fichier caption
-   #source [ file join $audace(rep_caption) testaudela.cap ]
-   set caption(testaudela,title) "Test AudeLA"
-   set caption(testaudela,files) "Fichiers de test"
-   set caption(testaudela,directory) "Répertoire"
-   set caption(testaudela,description) "Description du test"
-   set caption(testaudela,refresh) "Actualiser"
-   set caption(testaudela,selectAll) "Tous"
-   set caption(testaudela,unselectAll) "Aucun"
-   set caption(testaudela,save) "Enregistrer"
-   set caption(testaudela,run) "Exécuter les tests"
-   set caption(testaudela,detail) "Contenu du fichier sélectionné"
-   set caption(testaudela,resultFile) "Résultat"
-   set caption(testaudela,showResult) "Voir le résultat"
-   set caption(testaudela,constraint) "Contraintes"
-   set caption(testaudela,testCampagne) "Campagne de tests"
-
    #--- Creation des variables si elles n'existaient pas
-   if { ! [ info exists conf(testaudela,position) ] }  { set conf(testaudela,position)  "+250+75" }
-   if { ! [ info exists conf(testaudela,directory) ] } { set conf(testaudela,directory) "$::audace(rep_plugin)/tool/testaudela" }
-   if { ! [ info exists conf(testaudela,resultFile)]}  { set conf(testaudela,resultFile) "testresult.log" }
-   if { ! [ info exists conf(testaudela,rep_images) ]}  { set conf(testaudela,rep_images)  "$::audace(rep_plugin)/tool/testaudela/images" }
-   if { ! [ info exists conf(testaudela,testList) ] }   { set conf(testaudela,testList)  "audace_affichage.test" }
-   if { ! [ info exists conf(testaudela,activeConstraintList) ] }   { set conf(testaudela,activeConstraintList)  "AUDACE" }
+   if { ! [ info exists conf(testaudela,position) ] }             { set conf(testaudela,position)             "+250+75" }
+   if { ! [ info exists conf(testaudela,directory) ] }            { set conf(testaudela,directory)            "$::audace(rep_plugin)/tool/testaudela" }
+   if { ! [ info exists conf(testaudela,resultFile)] }            { set conf(testaudela,resultFile)           "testresult.log" }
+   if { ! [ info exists conf(testaudela,rep_images) ] }           { set conf(testaudela,rep_images)           "$::audace(rep_plugin)/tool/testaudela/images" }
+   if { ! [ info exists conf(testaudela,testList) ] }             { set conf(testaudela,testList)             "audace_affichage.test" }
+   if { ! [ info exists conf(testaudela,activeConstraintList) ] } { set conf(testaudela,activeConstraintList) "AUDACE" }
+
    #--- j'initialise la liste des contraintes
    set private(constraints) [list "AUDACE" "AUDINE" "APN" "ASCOM" "AUDINET" "ESHEL" "LX200" "QUICKREMOTE" "WEBCAM_RGB" "WEBCAM_NB" "CARTEDUCIELV3"]
    return ""
@@ -169,15 +149,14 @@ proc ::testaudela::deletePluginInstance { visuNo } {
 #    affiche la fenetre de l'outil
 #------------------------------------------------------------
 proc ::testaudela::startTool { visuNo } {
-   #---  j'importe les procedures de simulation des tests  ::testaudela::simul::*
-   #---  quiremplacent temporairement les procedures de ::tcltest::*
+   #--- j'importe les procedures de simulation des tests  ::testaudela::simul::*
+   #--- qui remplacent temporairement les procedures de ::tcltest::*
    namespace import -force ::testaudela::simul::*
 
    #green image
    image create photo im_test1 -data "R0lGODlhDQAQAKIAAP///+Li4rGxsX37j05YSgAAAAAAAAAAACwAAAAADQAQAAADNEi6VPCPjDmJcFDSQcLNGwd4mEYxFmCGnBCsofWypwtv8l3PdMvTuZ5PV7GhUC6AYMlsuhIAOw=="
    #grey image
    image create photo im_test0 -data "R0lGODlhDQAQAKIAAP///+Li4t/e3rGxsSAgGwAAAAAAAAAAACwAAAAADQAQAAADNEi6VPCPiDnJcFBSQcLNGwd4mEYxFmCG3BCsofWypwtv8l3PdMvTuZ5PV7GhUC7AYMlsuhIAOw=="
-
 
    #--- j'affiche la fenetre
    ::confGenerique::run $visuNo "$::audace(base).testaudela" "::testaudela" -modal 0
@@ -218,7 +197,6 @@ proc ::testaudela::confToWidget { visuNo } {
    variable private
    global conf
 
-
 }
 
 #------------------------------------------------------------
@@ -250,7 +228,7 @@ proc ::testaudela::fillConfigPage { frm visuNo } {
       Button $frm.files.buttons.refresh -text "$caption(testaudela,refresh)"  -command "::testaudela::fillTree"
       Button $frm.files.buttons.selectall -text "$caption(testaudela,selectAll)"  -command "::testaudela::selectAllFiles"
       Button $frm.files.buttons.unselectall -text "$caption(testaudela,unselectAll)"  -command "::testaudela::unselectAllFiles"
-      grid $frm.files.buttons.refresh  -row 0 -column 0
+      grid $frm.files.buttons.refresh -row 0 -column 0
       grid $frm.files.buttons.selectall -row 0 -column 1
       grid $frm.files.buttons.unselectall -row 0 -column 2
 
@@ -275,8 +253,8 @@ proc ::testaudela::fillConfigPage { frm visuNo } {
    TitleFrame $frm.detail -borderwidth 2 -text $caption(testaudela,detail)
      tablelist::tablelist $frm.detail.description \
          -columns [ list \
-            12 "Name"   left  \
-            40 "Description"   left  \
+            12 "$caption(testaudela,name)"        left \
+            40 "$caption(testaudela,description)" left \
             ] \
          -xscrollcommand [list $frm.detail.xsb set] -yscrollcommand [list $frm.detail.ysb set] \
          -selectmode extended \
@@ -348,7 +326,7 @@ proc ::testaudela::fillConfigPage { frm visuNo } {
 #  param : aucun
 #------------------------------------------------------------
 proc ::testaudela::editTestFile { fileName } {
-      global audace caption conf confgene
+   global conf
 
    if { "$fileName" != ""} {
       catch {
@@ -359,6 +337,7 @@ proc ::testaudela::editTestFile { fileName } {
       }
    }
 }
+
 #------------------------------------------------------------
 #  ::testaudela::fillTree
 #
@@ -386,12 +365,11 @@ proc ::testaudela::fillTree { } {
          } else {
             set testState 0
          }
-
          $private(tree) insert end root "$relativeName" -text "$shortname"  \
              -image "im_test$testState" -data "$testState"
       }
    }
- }
+}
 
 #------------------------------------------------------------
 #  ::testaudela::toggleTestSelection
@@ -400,7 +378,7 @@ proc ::testaudela::fillTree { } {
 #    w  :  nom de l'arbre appleant cette procedure (path TK)
 #    node : identifiant du test dasn l'arbre (node)
 #------------------------------------------------------------
-proc ::testaudela::toggleTestSelection {w node} {
+proc ::testaudela::toggleTestSelection { w node } {
    set testState [$w itemcget $node -data ]
 
    #--- j'inver l'etat du noeud
@@ -411,7 +389,7 @@ proc ::testaudela::toggleTestSelection {w node} {
    }
 
    $w itemconfigure $node -image "im_test$testState" -data "$testState"
- }
+}
 
 #------------------------------------------------------------
 #  ::testaudela::selectAllTests
@@ -419,8 +397,9 @@ proc ::testaudela::toggleTestSelection {w node} {
 #  param :
 #    aucun
 #------------------------------------------------------------
-proc ::testaudela::selectAllFiles {} {
+proc ::testaudela::selectAllFiles { } {
    variable private
+
    foreach node [$private(tree) nodes root] {
       $private(tree) itemconfigure $node -image "im_test1" -data "1"
    }
@@ -432,13 +411,13 @@ proc ::testaudela::selectAllFiles {} {
 #  param :
 #    aucun
 #------------------------------------------------------------
-proc ::testaudela::unselectAllFiles {} {
+proc ::testaudela::unselectAllFiles { } {
    variable private
+
    foreach node [$private(tree) nodes root] {
       $private(tree) itemconfigure $node -image "im_test0" -data "0"
    }
 }
-
 
 #------------------------------------------------------------
 #  ::testaudela::showDescription
@@ -447,7 +426,7 @@ proc ::testaudela::unselectAllFiles {} {
 #    w  :  nom de l'arbre appleant cette procedure (path TK)
 #    fileName : nom du fichier (sans le repertoire)
 #------------------------------------------------------------
-proc ::testaudela::showDescription {w fileName} {
+proc ::testaudela::showDescription { w fileName } {
    variable private
 
    #--- je purge la description
@@ -458,7 +437,7 @@ proc ::testaudela::showDescription {w fileName} {
    if { [file exists $fullName ] && [file isfile $fullName ] } {
       source "$::conf(testaudela,directory)/tests/$fileName"
    }
- }
+}
 
 #------------------------------------------------------------
 #  ::testaudela::close
@@ -467,10 +446,6 @@ proc ::testaudela::showDescription {w fileName} {
 #  param : aucun
 #------------------------------------------------------------
 proc ::testaudela::closeWindow { visuNo } {
-   variable widget
-   global audace
-   global conf
-
    saveTestList
    saveConstraintList
    image delete "im_test0"
@@ -513,7 +488,7 @@ proc ::testaudela::onRunTests { } {
 #  @return nombre de tests "failed" ou "-1" en cas d'erreur
 #
 #------------------------------------------------------------
-proc ::testaudela::runTests { { fileList "all" }  } {
+proc ::testaudela::runTests { { fileList "all" } } {
    variable private
 
    if { [info exists ::testaudela::private(constraints)] == 0 } {
@@ -596,7 +571,6 @@ proc ::testaudela::saveConstraintList { } {
    return
 }
 
-
 #------------------------------------------------------------
 #  ::testaudela::saveTestList
 #------------------------------------------------------------
@@ -632,7 +606,7 @@ proc ::testaudela::showResult { } {
    }
 
    Dialog $frm.result -modal none -parent $private(frm) \
-      -title  $::conf(testaudela,resultFile) -cancel 0 -default 0
+      -title $::conf(testaudela,resultFile) -cancel 0 -default 0
 
    TitleFrame $frm.result.sf_color_invariant  -borderwidth 0 -relief ridge
       scrollbar $frm.result.sf_color_invariant.ysb -command "$frm.result.sf_color_invariant.text yview"
@@ -665,20 +639,19 @@ namespace eval ::testaudela::simul {
    namespace export testConstraint
 }
 
-proc ::testaudela::simul::test {name description args} {
-  $::testaudela::private(tableDescription) insert end [list $name "$description"]
-  ##console::disp  "test=$name description=$description \n"
-  ##console::disp  "   arg0=[lindex $args 0]\n"
-  ##console::disp  "   arg1=[lindex $args 1]\n"
-  ##console::disp  "   arg2=[lindex $args 2]\n"
-  ##console::disp  "   arg3=[lindex $args 3]\n"
+proc ::testaudela::simul::test { name description args } {
+   $::testaudela::private(tableDescription) insert end [list $name "$description"]
+   ###console::disp  "test=$name description=$description \n"
+   ###console::disp  "   arg0=[lindex $args 0]\n"
+   ###console::disp  "   arg1=[lindex $args 1]\n"
+   ###console::disp  "   arg2=[lindex $args 2]\n"
+   ###console::disp  "   arg3=[lindex $args 3]\n"
 }
 
-proc ::testaudela::simul::testConstraint {name expression} {
-  $::testaudela::private(tableDescription) insert end [list $name "$expression"]
-  ###console::disp "Contraintes: $name\n"
+proc ::testaudela::simul::testConstraint { name expression } {
+   $::testaudela::private(tableDescription) insert end [list $name "$expression"]
+   ###console::disp "$::caption(testaudela,constraint) : $name\n"
 }
-
 
 ######################################################################
 #  utilitaires pour les interations avec les widgets TK
@@ -782,7 +755,6 @@ proc ::testaudela::clicMenuButton { buttonPath value} {
       error "clicMenuButton error:  textvariable not found for $buttonPath"
    }
 }
-
 
 #----------------------------------------------------
 #  ::testaudela::clicRadioButton
