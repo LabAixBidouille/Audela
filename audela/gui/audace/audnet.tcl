@@ -2,7 +2,7 @@
 # Fichier : audnet.tcl
 # Description : Network functions using RPC or simple TCP sockets
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: audnet.tcl,v 1.9 2010-07-14 07:49:03 robertdelmas Exp $
+# Mise à jour $Id: audnet.tcl,v 1.10 2010-07-24 15:24:31 robertdelmas Exp $
 #
 
 # ====================================================================
@@ -342,17 +342,17 @@ proc rpc_delete_client { {id "?"} } {
 
 proc lan_goto { radec } {
    global audace
-   send "tel$audace(telNo) radec goto $radec -equinox J2000 ; tel$audace(telNo) radec coord -equinox J2000"
+   send "tel$audace(telNo) radec goto $radec -equinox J2000.0 ; tel$audace(telNo) radec coord -equinox J2000.0"
 }
 
 proc lan_match { radec } {
    global audace
-   send "tel$audace(telNo) radec init $radec ; tel$audace(telNo) radec coord -equinox J2000"
+   send "tel$audace(telNo) radec init $radec ; tel$audace(telNo) radec coord -equinox J2000.0"
 }
 
 proc lan_move { way ms } {
    global audace
-   send "tel$audace(telNo) radec move $way 0.33 ; after $ms ; tel$audace(telNo) radec stop ; tel$audace(telNo) radec coord -equinox J2000"
+   send "tel$audace(telNo) radec move $way 0.33 ; after $ms ; tel$audace(telNo) radec stop ; tel$audace(telNo) radec coord -equinox J2000.0"
 }
 
 proc lan_acq { exptime bin fullname } {
