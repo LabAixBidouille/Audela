@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.44 2010-05-15 07:42:27 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.45 2010-07-24 10:17:24 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -86,6 +86,9 @@ set caption(confgene,choix_outils)                          "Tool Selection"
 set caption(confgene,choix_outils_1)                        "Choose the tools you want available in menus with their associated shortcuts:"
 set caption(confgene,choix_outils_2)                        "The tool associated with the F2 shortcut opens automatically."
 
+set caption(confgene,tle_titre)                             "Artificial Satellites"
+set caption(confgene,tle_update)                            "Update TLE Files"
+
 set caption(confgene,langue_titre)                          "Language"
 set caption(confgene,langue_selection)                      "Language Selection:"
 set caption(confgene,langue_texte)                          "The new language will be installed when AudeLA is restarted."
@@ -167,6 +170,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,choix_outils)                       "Sélection des outils"
    set caption(confgene,choix_outils_1)                     "Vous pouvez sélectionner ici les outils que vous voulez afficher dans les menus avec leurs raccourcis :"
    set caption(confgene,choix_outils_2)                     "L'outil associé au raccourci F2 s'ouvre automatiquement."
+
+   set caption(confgene,tle_titre)                          "Satellites artificiels"
+   set caption(confgene,tle_update)                         "Mise à jour des fichiers TLE"
 
    set caption(confgene,langue_titre)                       "Langue"
    set caption(confgene,langue_selection)                   "Sélection de la langue :"
@@ -250,6 +256,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,choix_outils_1)                     "Scegliere gli accessori disponibili nel menu con i loro collegamenti:"
    set caption(confgene,choix_outils_2)                     "L'accessorio associato con F2 si apre automaticamente."
 
+   set caption(confgene,tle_titre)                          "Satelliti artificiali"
+   set caption(confgene,tle_update)                         "Aggiornare i file TLE"
+
    set caption(confgene,langue_titre)                       "Lingue"
    set caption(confgene,langue_selection)                   "Scelta delle lingue:"
    set caption(confgene,langue_texte)                       "La nuova lingua sara` utilizzabile al prossimo avvio di AudeLA."
@@ -331,6 +340,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,choix_outils)                       "Selcción de herramienta"
    set caption(confgene,choix_outils_1)                     "Escoge las herramientas que quieres que estén disponibles en los menús junto a sus atajos de teclado:"
    set caption(confgene,choix_outils_2)                     "La herramienta asociada con la tecla F2 se abre automáticamente."
+
+   set caption(confgene,tle_titre)                          "Satélites artificiales"
+   set caption(confgene,tle_update)                         "Actualizar archivos TLE"
 
    set caption(confgene,langue_titre)                       "Idioma"
    set caption(confgene,langue_selection)                   "Selecció de idioma:"
@@ -414,6 +426,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,choix_outils_1)                     "Sie können hier die Geräte mit eure gebundene Abkürzung die sie in den Menüs wollen wählen:"
    set caption(confgene,choix_outils_2)                     "Das Gerät mit die F2 gebundene Abkürzung öffnet sich vollautomatisch."
 
+   set caption(confgene,tle_titre)                          "Artificial Satellites"
+   set caption(confgene,tle_update)                         "Update Dateien TLE"
+
    set caption(confgene,langue_titre)                       "Sprache"
    set caption(confgene,langue_selection)                   "Sprache Wahl:"
    set caption(confgene,langue_texte)                       "Die neue Sprache wird am nächsten AudeLA Start berücksichtigt."
@@ -495,6 +510,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,choix_outils)                       "Selecção de ferramenta"
    set caption(confgene,choix_outils_1)                     "Escolha as ferramentas pretendidas e que estejam disponíveis nos menus com os respectivos atalhos:"
    set caption(confgene,choix_outils_2)                     "A ferramenta associada com a tecla F2 abre automaticamente."
+
+   set caption(confgene,tle_titre)                          "Satélites artificiais"
+   set caption(confgene,tle_update)                         "Atualização dos arquivos TLE"
 
    set caption(confgene,langue_titre)                       "Idioma"
    set caption(confgene,langue_selection)                   "Selecção de idioma:"
@@ -578,6 +596,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,choix_outils_1)                     "Vælg de værktøjer, du ønsker i menuer med de tilsvarende genveje:"
    set caption(confgene,choix_outils_2)                     "Værktøj tilknyttet F2-genvej åbner automatisk."
 
+   set caption(confgene,tle_titre)                          "Kunstig Satellitter"
+   set caption(confgene,tle_update)                         "Opdateringsfiler TLE"
+
    set caption(confgene,langue_titre)                       "Sprog"
    set caption(confgene,langue_selection)                   "Valg af sprog:"
    set caption(confgene,langue_texte)                       "Det valgte sprog installeres, når AudeLA genstartes."
@@ -660,6 +681,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,choix_outils_1)                     "Choose the tools you want available in menus with their associated shortcuts:"
    set caption(confgene,choix_outils_2)                     "The tool associated with the F2 shortcut opens automatically."
 
+   set caption(confgene,tle_titre)                          "Artificial Satellites"
+   set caption(confgene,tle_update)                         "Update TLE Files"
+
    set caption(confgene,langue_titre)                       "Language"
    set caption(confgene,langue_selection)                   "Language Selection:"
    set caption(confgene,langue_texte)                       "The new language will be installed when AudeLA is restarted."
@@ -741,6 +765,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,choix_outils)                       "Tool Selection"
    set caption(confgene,choix_outils_1)                     "Choose the tools you want available in menus with their associated shortcuts:"
    set caption(confgene,choix_outils_2)                     "The tool associated with the F2 shortcut opens automatically."
+
+   set caption(confgene,tle_titre)                          "Artificial Satellites"
+   set caption(confgene,tle_update)                         "Update TLE Files"
 
    set caption(confgene,langue_titre)                       "Language"
    set caption(confgene,langue_selection)                   "Language Selection:"
