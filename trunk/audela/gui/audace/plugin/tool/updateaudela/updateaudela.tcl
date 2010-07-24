@@ -2,7 +2,7 @@
 # Fichier : updateaudela.tcl
 # Description : Outil de fabrication des fichiers Kit et de deploiement des plugins
 # Auteur : Michel Pujol
-# Mise a jour $Id: updateaudela.tcl,v 1.28 2010-05-13 17:50:30 robertdelmas Exp $
+# Mise a jour $Id: updateaudela.tcl,v 1.29 2010-07-24 08:24:23 robertdelmas Exp $
 #
 
 namespace eval ::updateaudela {
@@ -25,7 +25,7 @@ namespace eval ::updateaudela {
 proc ::updateaudela::getPluginProperty { propertyName } {
    switch $propertyName {
       function     { return "setup" }
-      subfunction1 { return "" }
+      subfunction1 { return "update" }
       display      { return "window" }
    }
 }
