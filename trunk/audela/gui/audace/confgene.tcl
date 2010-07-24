@@ -5,7 +5,7 @@
 #               pose, choix des outils, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: confgene.tcl,v 1.79 2010-07-23 15:48:32 robertdelmas Exp $
+# Mise à jour $Id: confgene.tcl,v 1.80 2010-07-24 10:22:32 robertdelmas Exp $
 #
 
 #
@@ -2898,6 +2898,108 @@ namespace eval ::confLangue {
       #--- Mise a jour des boutons de la fenetre
       .audace.confLangue.but_fermer configure -text "$caption(confgene,fermer)"
       .audace.confLangue.but_aide configure -text "$caption(confgene,aide)" -state disabled
+   }
+}
+
+#
+# TLE
+# Description : Mise a jour des fichiers TLE des satellites artificiels
+#
+
+namespace eval ::confTLE {
+
+   #
+   # confTLE::run this
+   # Cree la fenetre de configuration
+   # this = chemin de la fenetre
+   #
+   proc run { this } {
+      variable This
+
+      set This $this
+      createDialog
+      tkwait visibility $This
+   }
+
+   #
+   # confTLE::fermer
+   # Fonction appellee lors de l'appui sur le bouton 'Fermer'
+   #
+   proc fermer { } {
+      variable This
+
+      destroy $This
+   }
+
+   #
+   # confTLE::afficheAide
+   # Fonction appellee lors de l'appui sur le bouton 'Aide'
+   #
+   proc afficheAide { } {
+      global help
+
+      #---
+      ::audace::showHelpItem "$help(dir,config)" "1110tle.htm"
+   }
+
+   proc createDialog { } {
+      variable This
+      global caption
+
+      if { [winfo exists $This] } {
+         wm withdraw $This
+         wm deiconify $This
+         focus $This
+         return
+      }
+
+      #--- Cree la fenetre $This de niveau le plus haut
+      toplevel $This -class Toplevel
+      wm geometry $This +180+50
+      wm resizable $This 0 0
+      wm title $This $caption(confgene,tle_titre)
+
+      #--- Creation des differents frames
+      frame $This.frame1 -borderwidth 1 -relief raised
+      pack $This.frame1 -side top -fill both -expand 1
+
+      frame $This.frame2 -borderwidth 1 -relief raised
+      pack $This.frame2 -side top -fill x
+
+      frame $This.frame3 -borderwidth 0
+      pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1
+
+      #--- Cree le label pour le commentaire
+      button $This.but_updateTLE -text "$caption(confgene,tle_update)" -borderwidth 2 \
+         -command { ::confTLE::updateTLE }
+      pack $This.but_updateTLE -in $This.frame3 -side top -anchor w -padx 5 -pady 5 -ipadx 15 -ipady 5
+
+      #--- Cree le bouton 'Fermer'
+      button $This.but_fermer -text "$caption(confgene,fermer)" -width 7 -borderwidth 2 \
+         -command { ::confTLE::fermer }
+      pack $This.but_fermer -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
+
+      #--- Cree le bouton 'Aide'
+      button $This.but_aide -text "$caption(confgene,aide)" -width 7 -borderwidth 2 \
+         -command { ::confTLE::afficheAide }
+      pack $This.but_aide -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
+
+      #--- La fenetre est active
+      focus $This
+
+      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+      bind $This <Key-F1> { ::console::GiveFocus }
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $This
+   }
+
+   #
+   # confTLE::updateTLE
+   # Mettre a jour le fichier TLE des satellites artificiels
+   #
+   proc updateTLE { } {
+      satel_update
    }
 }
 
