@@ -2,7 +2,7 @@
 # Fichier : rmtctrltel.tcl
 # Description : Script pour le controle de la monture
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: rmtctrltel.tcl,v 1.4 2010-07-14 08:15:36 robertdelmas Exp $
+# Mise à jour $Id: rmtctrltel.tcl,v 1.5 2010-07-24 15:41:51 robertdelmas Exp $
 #
 
    proc fillTelPanel { } {
@@ -575,19 +575,19 @@
 
       #--- Boucle tant que le telescope n'est pas arrete
       #--- Debut modif reseau
-      set message "send \{tel\$audace(telNo) radec coord -equinox J2000\}"
+      set message "send \{tel\$audace(telNo) radec coord -equinox J2000.0\}"
       set radecB0 [eval $message]
       #--- Fin modif reseau
       after 300
       #--- Debut modif reseau
-      set message "send \{tel\$audace(telNo) radec coord -equinox J2000\}"
+      set message "send \{tel\$audace(telNo) radec coord -equinox J2000.0\}"
       set radecB1 [eval $message]
       #--- Fin modif reseau
       while { $radecB0 != $radecB1 } {
          set radecB0 $radecB1
          after 200
          #--- Debut modif reseau
-         set message "send \{tel\$audace(telNo) radec coord -equinox J2000\}"
+         set message "send \{tel\$audace(telNo) radec coord -equinox J2000.0\}"
          set radecB1 [eval $message]
          #--- Fin modif reseau
       }
@@ -657,12 +657,12 @@
       if {[eval "send \{::tel::list\}"]!=""} {
       #--- Fin modif reseau
          #--- Debut modif reseau
-         set message "send \{tel\$audace(telNo) radec coord -equinox J2000\}"
+         set message "send \{tel\$audace(telNo) radec coord -equinox J2000.0\}"
          set radec [eval $message]
          ::console::affiche_resultat "<radec=$radec>\n"
          #--- Fin modif reseau
          #--- Debut modif reseau
-         set message [eval "send \{tel\$audace(telNo) radec coord -equinox J2000\}"]
+         set message [eval "send \{tel\$audace(telNo) radec coord -equinox J2000.0\}"]
          if {[lindex $radec 0]=="$message"} {
             set panneau(remotectrl,getra)  "$caption(remotectrl,astre_est)"
             set panneau(remotectrl,getdec) "$caption(remotectrl,pas_leve)"

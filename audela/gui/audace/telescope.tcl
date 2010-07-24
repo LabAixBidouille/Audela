@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise à jour $Id: telescope.tcl,v 1.62 2010-07-14 14:12:47 robertdelmas Exp $
+# Mise à jour $Id: telescope.tcl,v 1.63 2010-07-24 15:45:25 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -1011,13 +1011,13 @@ proc ::telescope::Boucle { } {
    global audace
 
    #--- Boucle tant que la monture n'est pas arretee
-   set radecB0 [ tel$audace(telNo) radec coord -equinox J2000 ]
+   set radecB0 [ tel$audace(telNo) radec coord -equinox J2000.0 ]
    after 300
-   set radecB1 [ tel$audace(telNo) radec coord -equinox J2000 ]
+   set radecB1 [ tel$audace(telNo) radec coord -equinox J2000.0 ]
    while { $radecB0 != $radecB1 } {
       set radecB0 $radecB1
       after 200
-      set radecB1 [ tel$audace(telNo) radec coord -equinox J2000 ]
+      set radecB1 [ tel$audace(telNo) radec coord -equinox J2000.0 ]
    }
 }
 
@@ -1039,7 +1039,7 @@ proc ::telescope::afficheCoord { } {
 
    if { [ ::tel::list ] != "" } {
       if { [ ::confTel::getPluginProperty hasCoordinates ] == "1" } {
-         set radec [ tel$audace(telNo) radec coord -equinox J2000 ]
+         set radec [ tel$audace(telNo) radec coord -equinox J2000.0 ]
          #--- Traitement des coordonnees
          if { $radec == " +" } {
             #--- Cas du cable AudeCom non connecte

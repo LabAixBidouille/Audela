@@ -2,7 +2,7 @@
 # Fichier : eqmod.tcl
 # Description : Configuration de la monture EQMOD
 # Auteur : Robert DELMAS
-# Mise à jour $Id: eqmod.tcl,v 1.10 2010-07-14 08:07:38 robertdelmas Exp $
+# Mise à jour $Id: eqmod.tcl,v 1.11 2010-07-24 15:38:36 robertdelmas Exp $
 #
 
 namespace eval ::eqmod {
@@ -369,7 +369,7 @@ proc ::eqmod::dispCoord { } {
    if { ! [ winfo exists $private(frm) ] || ! [ ::eqmod::isReady ] } {
       return
    }
-   set radec [ tel$private(telNo) radec coord -equinox J2000 ]
+   set radec [ tel$private(telNo) radec coord -equinox J2000.0 ]
    set hadec [ tel$private(telNo) hadec coord ]
 
    $private(frm).lab_coordHA configure -text "$caption(eqmod,angle_horaire) [ lindex $hadec 0 ]"

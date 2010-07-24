@@ -2,7 +2,7 @@
 # Fichier : vo_tools.tcl
 # Description : Outils pour l'Observatoire Virtuel
 # Auteur : Alain KLOTZ et Jerome BERTHIER
-# Mise à jour $Id: vo_tools.tcl,v 1.31 2010-05-16 14:22:26 robertdelmas Exp $
+# Mise à jour $Id: vo_tools.tcl,v 1.32 2010-07-24 15:47:46 robertdelmas Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -256,7 +256,7 @@ proc vo_skybotXML {procVarName args} {
 # ------------------------------------------------------------------------------------
 # proc        : vo_skybot { [JD] [RA] [DEC] [radius] [mime] [output] [observer] [filter] }
 #                 avec  JD       = jour julien de l'epoque consideree
-#                       RA,DEC   = coordonnees equatoriales J2000 du centre du FOV (degres)
+#                       RA,DEC   = coordonnees equatoriales J2000.0 du centre du FOV (degres)
 #                       radius   = rayon du FOV en arcsec
 #                       mime     = format de la reponse ('text', 'votable', 'html')
 #                       output   = choix des donnees en sortie ('object', 'basic','all')

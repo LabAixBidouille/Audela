@@ -2,7 +2,7 @@
 # Fichier : ouranos.tcl
 # Description : Configuration de la monture Ouranos
 # Auteur : Robert DELMAS
-# Mise à jour $Id: ouranos.tcl,v 1.18 2010-07-14 08:07:03 robertdelmas Exp $
+# Mise à jour $Id: ouranos.tcl,v 1.19 2010-07-24 15:40:42 robertdelmas Exp $
 #
 
 namespace eval ::ouranos {
@@ -653,7 +653,7 @@ proc ::ouranos::show1 { } {
          set private(coord_dec) $audace(telescope,getdec)
       } else {
          #--- Affichage en mode coordonnees pour la monture secondaire
-         set radec [ tel$private(telNo) radec coord -equinox J2000 ]
+         set radec [ tel$private(telNo) radec coord -equinox J2000.0 ]
          set private(coord_ra)  [ lindex $radec 0 ]
          set private(coord_dec) [ lindex $radec 1 ]
       }

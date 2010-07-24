@@ -2,7 +2,7 @@
 # Fichier : wizard.tcl
 # Description : pipeline de pointage des etoiles
 # Auteur : Michel Pujol
-# Mise à jour $Id: wizard.tcl,v 1.14 2010-07-14 08:13:17 robertdelmas Exp $
+# Mise à jour $Id: wizard.tcl,v 1.15 2010-07-24 15:49:40 robertdelmas Exp $
 #
 
 namespace eval ::modpoi2::wizard {
@@ -133,9 +133,9 @@ proc ::modpoi2::wizard::modpoi_wiz { visuNo { starList "" } } {
             set private(star$k,raShift) [expr 60.0 * [mc_anglescomp [mc_angle2deg $private(star$k,raObs)] - [mc_angle2deg $private(star$k,raApp)] ]]
             set private(star$k,deShift) [expr 60.0 * [mc_anglescomp [mc_angle2deg $private(star$k,deObs)] - [mc_angle2deg $private(star$k,deApp)] ]]
             ###if { $k < 6} {
-            ###console::disp "mc_hip2tel { $hipRecord } $private(star$k,date) { $private(home) } $private(star$k,pressure) $private(star$k,temperature)\n"
-            ###console::disp "coords=$coords \n"
-            ###console::disp "ra=[lindex $coords 0] dec=[lindex $coords 1] ha=[lindex $coords 2] az=[lindex $coords 3] el=[lindex $coords 4]\n"
+            ###   ::console::disp "mc_hip2tel { $hipRecord } $private(star$k,date) { $private(home) } $private(star$k,pressure) $private(star$k,temperature)\n"
+            ###   ::console::disp "coords=$coords \n"
+            ###   ::console::disp "ra=[lindex $coords 0] dec=[lindex $coords 1] ha=[lindex $coords 2] az=[lindex $coords 3] el=[lindex $coords 4]\n"
             ###}
 
             set private(star$k,selected)   1
@@ -185,9 +185,9 @@ proc ::modpoi2::wizard::modpoi_wiz { visuNo { starList "" } } {
                $private(symbols) $private(coefficients) \
             ]
             ###if { $k < 6} {
-            ###console::disp "mc_hip2tel { $hipRecord } $private(star$k,date) { $private(home) } $private(star$k,pressure) $private(star$k,temperature) { $private(symbols) } { $private(coefficients) }\n"
-            ###console::disp "coords=$coords \n"
-            ###console::disp "dra=[expr  60.0 * [lindex $coords 5]] ddec=[expr  60.0 * [lindex $coords 6]] dha=[expr  60.0 * [lindex $coords 7]] daz=[expr  60.0 * [lindex $coords 8]] del=[expr  60.0 * [lindex $coords 9]]\n"
+            ###   ::console::disp "mc_hip2tel { $hipRecord } $private(star$k,date) { $private(home) } $private(star$k,pressure) $private(star$k,temperature) { $private(symbols) } { $private(coefficients) }\n"
+            ###   ::console::disp "coords=$coords \n"
+            ###   ::console::disp "dra=[expr  60.0 * [lindex $coords 5]] ddec=[expr  60.0 * [lindex $coords 6]] dha=[expr  60.0 * [lindex $coords 7]] daz=[expr  60.0 * [lindex $coords 8]] del=[expr  60.0 * [lindex $coords 9]]\n"
             ###}
             #--- je recupere l'ecart en arcmin
             set private(star$k,raShiftTest) [expr  60.0 * [lindex $coords 5]] ; #--- dra
@@ -1925,7 +1925,7 @@ proc ::modpoi2::wizard::modpoi_goto { } {
 
    ::telescope::afficheCoord
 
-   #--- j'affiche l'ecart en arcminute (ecart enre les coordonnees J2000 du catalogue et du telescope pour avoir un apercu)
+   #--- j'affiche l'ecart en arcminute (ecart enre les coordonnees J2000.0 du catalogue et du telescope pour avoir un apercu)
    set radecObs [tel$::audace(telNo) radec coord -equinox NOW]
    set private(deltah) [format "%.3f" [expr 60.0 * [mc_anglescomp [lindex $radecObs 0] - $private(star$amerIndex,raApp)]]]
    set private(deltad) [format "%.3f" [expr 60.0 * [mc_anglescomp [lindex $radecObs 1] - $private(star$amerIndex,deApp)]]]
@@ -1953,7 +1953,7 @@ proc ::modpoi2::wizard::modpoi_stopGoto {  } {
    $private(g,base).fra_bottom.but_prev         configure -state normal
    $private(g,base).fra_bottom.but_next         configure -state normal
 
-   #--- j'affiche l'ecart en arcminute (ecart enre les coordonnees J2000 du catalogue et du telescope pour avoir un apercu)
+   #--- j'affiche l'ecart en arcminute (ecart enre les coordonnees J2000.0 du catalogue et du telescope pour avoir un apercu)
    set radecObs [tel$::audace(telNo) radec coord -equinox NOW]
    set private(deltah) [format "%.3f" [expr 60.0 * [mc_anglescomp [lindex $radecObs 0] - $private(star$amerIndex,raApp)]]]
    set private(deltad) [format "%.3f" [expr 60.0 * [mc_anglescomp [lindex $radecObs 1] - $private(star$amerIndex,deApp)]]]
