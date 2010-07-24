@@ -2,7 +2,7 @@
 # Fichier : satel.tcl
 # Description : Outil pour calculer les positions precises de satellites avec les TLE
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: satel.tcl,v 1.3 2010-05-25 16:40:52 robertdelmas Exp $
+# Mise à jour $Id: satel.tcl,v 1.4 2010-07-24 10:21:24 robertdelmas Exp $
 #
 # source satel.tcl
 # utiliser le temps UTC
@@ -118,7 +118,7 @@ proc satel_ephem { {satelname "ISS"} {date now} {home ""} } {
    set satfile "[pwd]/tle/[lindex $res 1]"
    set datfile [file mtime "[pwd]/tle/[lindex $res 1]"]
    set dt [expr ([clock seconds]-$datfile)*86400]
-   #::console::affiche_resultat "date de mise a jour = $dt jours\n"
+   #::console::affiche_resultat "Update = $dt jours\n"
    if {$home==""} {
       set home $audace(posobs,observateur,gps)
    }
@@ -218,10 +218,10 @@ proc satel_update { {server celestrack} } {
       }
       catch {::console::affiche_resultat "A total of $ntot satellite elements are downloaded in [pwd]/tle\n"}
    } else {
-      error "server not known. Servers are : celestrack."
+      error "Server not known. Servers are : celestrack."
    }
    set dt [expr [clock seconds]-$t0]
-   catch {::console::affiche_resultat "Done in $dt seconds\n"}
+   catch {::console::affiche_resultat "Done in $dt seconds\n\n"}
    return $ntot
 }
 
