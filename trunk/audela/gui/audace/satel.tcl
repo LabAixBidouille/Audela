@@ -2,7 +2,7 @@
 # Fichier : satel.tcl
 # Description : Outil pour calculer les positions precises de satellites avec les TLE
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: satel.tcl,v 1.4 2010-07-24 10:21:24 robertdelmas Exp $
+# Mise à jour $Id: satel.tcl,v 1.5 2010-07-24 21:31:47 robertdelmas Exp $
 #
 # source satel.tcl
 # utiliser le temps UTC
@@ -16,7 +16,7 @@
 # satel_nearest_radec 22h07m34s25 +60d17m33s0 2010-05-23T20:12:31
 #
 # source satel.tcl ; satel_coords "iridium 82" 2010-05-23T20:01:07
-# "JASON 2 (OSTM)" 22h07m34s25 +60d17m33s0 J2000 1.0000 20.47 +20.45
+# "JASON 2 (OSTM)" 22h07m34s25 +60d17m33s0 J2000.0 1.0000 20.47 +20.45
 # source satel.tcl ; satel_nearest_radec 22h07m34s25 +60d17m33s0 2010-05-23T20:12:31
 
 proc satel_nearest_radec { ra dec {date now} {home ""} } {
@@ -84,7 +84,7 @@ proc satel_nearest_radec { ra dec {date now} {home ""} } {
       set gise [expr $gise-360]
    }
    set elev [lindex $resmin 9]
-   set res "$sepanglemin \"$name\" $ra $dec J2000 $ill [format %.5f $gise] [format %+.5f $elev]\n"
+   set res "$sepanglemin \"$name\" $ra $dec J2000.0 $ill [format %.5f $gise] [format %+.5f $elev]\n"
    return $res
 }
 
@@ -104,7 +104,7 @@ proc satel_coords { {satelname "ISS"} {date now} {home ""} } {
       set gise [expr $gise-360]
    }
    set elev [lindex $res 9]
-   set res "\"$name\" $ra $dec J2000 $ill [format %.5f $gise] [format %+.5f $elev]\n"
+   set res "\"$name\" $ra $dec J2000.0 $ill [format %.5f $gise] [format %+.5f $elev]\n"
    return $res
 }
 
@@ -112,11 +112,11 @@ proc satel_ephem { {satelname "ISS"} {date now} {home ""} } {
    global audace
    set res [lindex [satel_names \"$satelname\" 1] 0]
    if {$res==""} {
-      error "Satellite \"$satelname\" not found in current TLEs"
+      error "Satellite \"$satelname\" not found in current TLEs."
    }
    set satname [lindex $res 0]
-   set satfile "[pwd]/tle/[lindex $res 1]"
-   set datfile [file mtime "[pwd]/tle/[lindex $res 1]"]
+   set satfile [ file join $::conf(rep_userCatalog) tle [lindex $res 1] ]
+   set datfile [ file mtime [ file join $::conf(rep_userCatalog) tle [lindex $res 1] ] ]
    set dt [expr ([clock seconds]-$datfile)*86400]
    #::console::affiche_resultat "Update = $dt jours\n"
    if {$home==""} {
@@ -129,7 +129,7 @@ proc satel_ephem { {satelname "ISS"} {date now} {home ""} } {
 
 # Return the list of NAMES+FILE for a given satelname
 proc satel_names { {satelname ""} {nbmax ""} } {
-   set tlefiles [glob -nocomplain [pwd]/tle/*.txt]
+   set tlefiles [ glob -nocomplain [ file join $::conf(rep_userCatalog) tle *.txt ] ]
    set texte ""
    set nsat 0
    if {$nbmax==""} {
@@ -169,7 +169,7 @@ proc satel_names { {satelname ""} {nbmax ""} } {
 
 # Return all TLE filenames stored in AudeLA
 proc satel_tlefiles { } {
-   set tlefiles [glob -nocomplain [pwd]/tle/*.txt]
+   set tlefiles [ glob -nocomplain [ file join $::conf(rep_userCatalog) tle *.txt ] ]
    set texte ""
    foreach tlefile $tlefiles {
       append texte "[file tail $tlefile] "
@@ -181,15 +181,15 @@ proc satel_tlefiles { } {
 proc satel_update { {server celestrack} } {
    set t0 [clock seconds]
    if {$server=="celestrack"} {
-      set elemfiles {amateur.txt classfd.txt cubesat.txt dmc.txt education.txt engineering.txt geo.txt geodetic.txt glo-ops.txt globalstar.txt goes.txt gorizont.txt gps-ops.txt intelsat.txt iridium.txt military.txt molniya.txt musson.txt nnss.txt noaa.txt orbcomm.txt other-comm.txt other.txt radar.txt raduga.txt resource.txt sarsat.txt science.txt stations.txt tdrss.txt tle-new.txt visual.txt weather.txt x-comm.txt        }
-      #set elemfiles {amateur.txt classfd.txt }
+      set elemfiles { amateur.txt classfd.txt cubesat.txt dmc.txt education.txt engineering.txt geo.txt geodetic.txt glo-ops.txt globalstar.txt goes.txt gorizont.txt gps-ops.txt intelsat.txt iridium.txt military.txt molniya.txt musson.txt nnss.txt noaa.txt orbcomm.txt other-comm.txt other.txt radar.txt raduga.txt resource.txt sarsat.txt science.txt stations.txt tdrss.txt tle-new.txt visual.txt weather.txt x-comm.txt }
+      #set elemfiles { amateur.txt classfd.txt }
       set ntot 0
       foreach elemfile $elemfiles {
          set url "http://celestrak.com/NORAD/elements/$elemfile"
          catch {::console::affiche_resultat "Download $url\n"}
          set err [catch {satel_download $url} msg]
          if {$err==1} {
-            catch {::console::affiche_resultat " Problem : $msg\n"}
+            catch {::console::affiche_resultat " Problem: $msg.\n"}
          } else {
             set texte ""
             set n 0
@@ -202,26 +202,26 @@ proc satel_update { {server celestrack} } {
             }
             set n [expr $n/3]
             incr ntot $n
-            file mkdir [pwd]/tle
+            file mkdir [ file join $::conf(rep_userCatalog) tle ]
             set err [catch {
-               set fic "[pwd]/tle/$elemfile"
+               set fic [ file join $::conf(rep_userCatalog) tle $elemfile ]
                set f [open $fic w]
                puts -nonewline $f $texte
                close $f
             } msg]
             if {$err==1} {
-               catch {::console::affiche_resultat " Problem : $msg\n"}
+               catch {::console::affiche_resultat " Problem: $msg.\n"}
             } else {
                catch {::console::affiche_resultat " $n satellites in $elemfile\n"}
             }
          }
       }
-      catch {::console::affiche_resultat "A total of $ntot satellite elements are downloaded in [pwd]/tle\n"}
+      catch {::console::affiche_resultat "A total of $ntot satellites elements are downloaded in [ file join $::conf(rep_userCatalog) tle ]\n"}
    } else {
-      error "Server not known. Servers are : celestrack."
+      error "Server not known. Servers are: celestrack."
    }
    set dt [expr [clock seconds]-$t0]
-   catch {::console::affiche_resultat "Done in $dt seconds\n\n"}
+   catch {::console::affiche_resultat "Done in $dt seconds.\n\n"}
    return $ntot
 }
 
@@ -237,7 +237,7 @@ proc satel_download { {url http://celestrak.com/NORAD/elements/stations.txt} } {
       if {[string first "<!DOCTYPE" $html_text]<0} {
          return $html_text
       } else {
-         error "File not found in server"
+         error "File not found in server."
       }
    } else {
       error $msg
