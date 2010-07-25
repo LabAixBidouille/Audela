@@ -1,6 +1,6 @@
 #
 # Fichier : obj_lune.cap
-# Mise a jour $Id: obj_lune.cap,v 1.14 2009-12-19 09:15:05 robertdelmas Exp $
+# Mise a jour $Id: obj_lune.cap,v 1.15 2010-07-25 10:27:37 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -356,7 +356,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune,magnitude)           "Größeklasse:"
    set caption(obj_lune,fraction_eclairee)   "Beleuchtete Mondflächen Bruch:"
    set caption(obj_lune,age)                 "Mond Alte:"
-   set caption(obj_lune,distance_terre)      "Distance à la Terre:"
+   set caption(obj_lune,distance_terre)      "Entfernung zur Erde:"
    set caption(obj_lune,libration,n_s)       "Topozentrische Libration in Breite (N/S):"
    set caption(obj_lune,libration,e_o)       "Topozentrische Libration in Länge (O/W):"
    set caption(obj_lune,long_terminateur)    "Länge der Beender:"
