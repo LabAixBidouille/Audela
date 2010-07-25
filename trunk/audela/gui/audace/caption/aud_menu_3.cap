@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.51 2010-05-27 17:32:09 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.52 2010-07-25 14:58:21 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -596,10 +596,10 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(audace,menu,preprocess)                  "Voraufbereitung"
-   set caption(audace,menu,raw2fits)                    "RAW ---> FITS Umstellung"
-   set caption(audace,menu,r+v+b2rvb)                   "R+G+B ---> RGB Umstellung"
-   set caption(audace,menu,rvb2r+v+b)                   "RGB ---> R+G+B Umstellung"
-   set caption(audace,menu,cfa2rvb)                     "CFA ---> RGB Umstellung"
+   set caption(audace,menu,raw2fits)                    "RAW ---> FITS Umwandlung"
+   set caption(audace,menu,r+v+b2rvb)                   "R+G+B ---> RGB Umwandlung"
+   set caption(audace,menu,rvb2r+v+b)                   "RGB ---> R+G+B Umwandlung"
+   set caption(audace,menu,cfa2rvb)                     "CFA ---> RGB Umwandlung"
    set caption(audace,menu,window1)                     "Wieder einstellen"
    set caption(audace,menu,scale)                       "Wider proben"
    set caption(audace,menu,offset)                      "Eine Konstante addieren"
@@ -621,7 +621,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,faire_dark)                  "Ein Schwartz Bild treiben"
    set caption(audace,menu,faire_flat_field)            "Ein Flat-Field Bild treiben"
 
-   set caption(pretraitement,conversion)                "Umstellung"
+   set caption(pretraitement,conversion)                "Umwandlung"
    set caption(pretraitement,all)                       "Alle Dateien konvertieren"
    set caption(pretraitement,renum)                     "Ausgabebilder wiedernummerieren"
    set caption(pretraitement,chg)                       "Ändern generischen Ausgabe Namen"
