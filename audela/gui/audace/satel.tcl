@@ -2,11 +2,10 @@
 # Fichier : satel.tcl
 # Description : Outil pour calculer les positions precises de satellites avec les TLE
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: satel.tcl,v 1.5 2010-07-24 21:31:47 robertdelmas Exp $
+# Mise à jour $Id: satel.tcl,v 1.6 2010-07-25 06:51:44 robertdelmas Exp $
 #
 # source satel.tcl
 # utiliser le temps UTC
-# utiliser audace(rep_userCatalog)
 #
 # --- Pour telecharger les TLEs
 # satel_update
@@ -109,18 +108,17 @@ proc satel_coords { {satelname "ISS"} {date now} {home ""} } {
 }
 
 proc satel_ephem { {satelname "ISS"} {date now} {home ""} } {
-   global audace
    set res [lindex [satel_names \"$satelname\" 1] 0]
    if {$res==""} {
       error "Satellite \"$satelname\" not found in current TLEs."
    }
    set satname [lindex $res 0]
-   set satfile [ file join $::conf(rep_userCatalog) tle [lindex $res 1] ]
-   set datfile [ file mtime [ file join $::conf(rep_userCatalog) tle [lindex $res 1] ] ]
+   set satfile [ file join $::audace(rep_userCatalog) tle [lindex $res 1] ]
+   set datfile [ file mtime [ file join $::audace(rep_userCatalog) tle [lindex $res 1] ] ]
    set dt [expr ([clock seconds]-$datfile)*86400]
    #::console::affiche_resultat "Update = $dt jours\n"
    if {$home==""} {
-      set home $audace(posobs,observateur,gps)
+      set home $::audace(posobs,observateur,gps)
    }
    #::console::affiche_resultat "mc_tle2ephem $date \"$satfile\" $home -name \"$satname\" -sgp 4\n"
    set res [mc_tle2ephem $date $satfile $home -name $satname -sgp 4 ] ; # -coord {ra dec}
@@ -129,7 +127,7 @@ proc satel_ephem { {satelname "ISS"} {date now} {home ""} } {
 
 # Return the list of NAMES+FILE for a given satelname
 proc satel_names { {satelname ""} {nbmax ""} } {
-   set tlefiles [ glob -nocomplain [ file join $::conf(rep_userCatalog) tle *.txt ] ]
+   set tlefiles [ glob -nocomplain [ file join $::audace(rep_userCatalog) tle *.txt ] ]
    set texte ""
    set nsat 0
    if {$nbmax==""} {
@@ -169,7 +167,7 @@ proc satel_names { {satelname ""} {nbmax ""} } {
 
 # Return all TLE filenames stored in AudeLA
 proc satel_tlefiles { } {
-   set tlefiles [ glob -nocomplain [ file join $::conf(rep_userCatalog) tle *.txt ] ]
+   set tlefiles [ glob -nocomplain [ file join $::audace(rep_userCatalog) tle *.txt ] ]
    set texte ""
    foreach tlefile $tlefiles {
       append texte "[file tail $tlefile] "
@@ -202,9 +200,9 @@ proc satel_update { {server celestrack} } {
             }
             set n [expr $n/3]
             incr ntot $n
-            file mkdir [ file join $::conf(rep_userCatalog) tle ]
+            file mkdir [ file join $::audace(rep_userCatalog) tle ]
             set err [catch {
-               set fic [ file join $::conf(rep_userCatalog) tle $elemfile ]
+               set fic [ file join $::audace(rep_userCatalog) tle $elemfile ]
                set f [open $fic w]
                puts -nonewline $f $texte
                close $f
@@ -216,7 +214,7 @@ proc satel_update { {server celestrack} } {
             }
          }
       }
-      catch {::console::affiche_resultat "A total of $ntot satellites elements are downloaded in [ file join $::conf(rep_userCatalog) tle ]\n"}
+      catch {::console::affiche_resultat "A total of $ntot satellites elements are downloaded in [ file join $::audace(rep_userCatalog) tle ]\n"}
    } else {
       error "Server not known. Servers are: celestrack."
    }
@@ -237,7 +235,7 @@ proc satel_download { {url http://celestrak.com/NORAD/elements/stations.txt} } {
       if {[string first "<!DOCTYPE" $html_text]<0} {
          return $html_text
       } else {
-         error "File not found in server."
+         error "File not found in server"
       }
    } else {
       error $msg
