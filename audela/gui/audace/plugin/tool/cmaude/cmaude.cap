@@ -1,6 +1,6 @@
 #
 # Fichier : cmaude.cap
-# Mise a jour $Id: cmaude.cap,v 1.26 2010-01-17 18:04:44 robertdelmas Exp $
+# Mise a jour $Id: cmaude.cap,v 1.27 2010-07-25 14:58:04 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -446,7 +446,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cmaude,date_courante)               "Für das Laufendes Datum"
    set caption(cmaude,date)                        "Datum (Y-M-T):"
-   set caption(cmaude,heure_tu)                    "Stunde UZ (S:M:S):"
+   set caption(cmaude,heure_tu)                    "Zeit UZ (S:M:S):"
    set caption(cmaude,jour_julien:)                "Julian Tag:"
    set caption(cmaude,temps_sideral)               "Siderische Zeit (S M S):"
    set caption(cmaude,soleil)                      "Sonne"
