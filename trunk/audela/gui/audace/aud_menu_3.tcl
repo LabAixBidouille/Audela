@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise à jour $Id: aud_menu_3.tcl,v 1.64 2010-06-29 07:56:24 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_3.tcl,v 1.65 2010-07-26 18:21:47 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -498,6 +498,7 @@ namespace eval ::pretraitement {
       set nb    $pretraitement(nb)
       set first $pretraitement(valeur_indice)
       set out   $pretraitement(out)
+      set tempo "tempo"
 
       #--- Tests sur les images
       if { $pretraitement(choix_mode) == "0" } {
@@ -600,12 +601,16 @@ namespace eval ::pretraitement {
                         -message "$caption(pretraitement,tracer_boite)\n$caption(pretraitement,appuyer_ok)"
                   }
                   set coordWindow [ list [ ::confVisu::getBox $audace(visuNo) ] ]
-                  window2 $in $out $nb [ lindex $coordWindow 0 ] $first
+                  if { $first == "1" } {
+                     window2 $in $out $nb [ lindex $coordWindow 0 ] $first
+                  } else {
+                     window2 $in $tempo $nb [ lindex $coordWindow 0 ] $first
+                  }
                   #--- Renomme les fichiers image si 'first_index' est different de 1
                   if { $first != "1" } {
                      for { set index "1" } { $index <= $nb } { incr index } {
                         set new_index [ expr $index + ( $first - 1 ) ]
-                        file rename -force [ file join $audace(rep_images) $out$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
+                        file rename -force [ file join $audace(rep_images) $tempo$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
                      }
                   }
                   #---
@@ -699,12 +704,16 @@ namespace eval ::pretraitement {
                   if { [ expr $y ] == "0" } { set y "1" }
                   if { [ expr $y ] > "$maxi" } { set y "$maxi" }
                   if { [ expr $y ] < "-$maxi" } { set y "-$maxi" }
-                  scale2 $in $out $nb $x $y $first
+                  if { $first == "1" } {
+                     scale2 $in $out $nb $x $y $first
+                  } else {
+                     scale2 $in $tempo $nb $x $y $first
+                  }
                   #--- Renomme les fichiers image si 'first_index' est different de 1
                   if { $first != "1" } {
                      for { set index "1" } { $index <= $nb } { incr index } {
                         set new_index [ expr $index + ( $first - 1 ) ]
-                        file rename -force [ file join $audace(rep_images) $out$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
+                        file rename -force [ file join $audace(rep_images) $tempo$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
                      }
                   }
                   #---
@@ -751,12 +760,16 @@ namespace eval ::pretraitement {
                   #---
                   set const $pretraitement(const)
                   ::console::affiche_resultat "Usage: offset2 in out const number ?first_index?\n\n"
-                  offset2 $in $out $const $nb $first
+                  if { $first == "1" } {
+                     offset2 $in $out $const $nb $first
+                  } else {
+                     offset2 $in $tempo $const $nb $first
+                  }
                   #--- Renomme les fichiers image si 'first_index' est different de 1
                   if { $first != "1" } {
                      for { set index "1" } { $index <= $nb } { incr index } {
                         set new_index [ expr $index + ( $first - 1 ) ]
-                        file rename -force [ file join $audace(rep_images) $out$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
+                        file rename -force [ file join $audace(rep_images) $tempo$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
                      }
                   }
                   #---
@@ -803,12 +816,16 @@ namespace eval ::pretraitement {
                   #---
                   set const $pretraitement(const)
                   ::console::affiche_resultat "Usage: mult2 in out const number ?first_index?\n\n"
-                  mult2 $in $out $const $nb $first
+                  if { $first == "1" } {
+                     mult2 $in $out $const $nb $first
+                  } else {
+                     mult2 $in $tempo $const $nb $first
+                  }
                   #--- Renomme les fichiers image si 'first_index' est different de 1
                   if { $first != "1" } {
                      for { set index "1" } { $index <= $nb } { incr index } {
                         set new_index [ expr $index + ( $first - 1 ) ]
-                        file rename -force [ file join $audace(rep_images) $out$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
+                        file rename -force [ file join $audace(rep_images) $tempo$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
                      }
                   }
                   #---
@@ -984,12 +1001,16 @@ namespace eval ::pretraitement {
                   if { [ expr $k ] > "50" } { set k "50" }
                   if { [ expr $t ] < "0" } { set t "0" }
                   if { [ expr $t ] > "1" } { set t "1" }
-                  subsky2 $in $out $nb $k $t $first
+                  if { $first == "1" } {
+                     subsky2 $in $out $nb $k $t $first
+                  } else {
+                     subsky2 $in $tempo $nb $k $t $first
+                  }
                   #--- Renomme les fichiers image si 'first_index' est different de 1
                   if { $first != "1" } {
                      for { set index "1" } { $index <= $nb } { incr index } {
                         set new_index [ expr $index + ( $first - 1 ) ]
-                        file rename -force [ file join $audace(rep_images) $out$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
+                        file rename -force [ file join $audace(rep_images) $tempo$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
                      }
                   }
                   #---
@@ -1036,12 +1057,16 @@ namespace eval ::pretraitement {
                   #---
                   set const $pretraitement(const)
                   ::console::affiche_resultat "Usage: noffset2 in out const number ?first_index? ?tt_options?\n\n"
-                  noffset2 $in $out $const $nb $first
+                  if { $first == "1" } {
+                     noffset2 $in $out $const $nb $first
+                  } else {
+                     noffset2 $in $tempo $const $nb $first
+                  }
                   #--- Renomme les fichiers image si 'first_index' est different de 1
                   if { $first != "1" } {
                      for { set index "1" } { $index <= $nb } { incr index } {
                         set new_index [ expr $index + ( $first - 1 ) ]
-                        file rename -force [ file join $audace(rep_images) $out$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
+                        file rename -force [ file join $audace(rep_images) $tempo$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
                      }
                   }
                   #---
@@ -1088,12 +1113,16 @@ namespace eval ::pretraitement {
                   #---
                   set const $pretraitement(const)
                   ::console::affiche_resultat "Usage: ngain2 in out const number ?first_index? ?tt_options?\n\n"
-                  ngain2 $in $out $const $nb $first
+                  if { $first == "1" } {
+                     ngain2 $in $out $const $nb $first
+                  } else {
+                     ngain2 $in $tempo $const $nb $first
+                  }
                   #--- Renomme les fichiers image si 'first_index' est different de 1
                   if { $first != "1" } {
                      for { set index "1" } { $index <= $nb } { incr index } {
                         set new_index [ expr $index + ( $first - 1 ) ]
-                        file rename -force [ file join $audace(rep_images) $out$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
+                        file rename -force [ file join $audace(rep_images) $tempo$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
                      }
                   }
                   #---
@@ -1154,12 +1183,16 @@ namespace eval ::pretraitement {
                   set operand $pretraitement(img_operand)
                   set const $pretraitement(const)
                   ::console::affiche_resultat "Usage: add2 in operand out const number ?first_index? ?tt_options?\n\n"
-                  add2 $in $operand $out $const $nb $first
+                  if { $first == "1" } {
+                     add2 $in $operand $out $const $nb $first
+                  } else {
+                     add2 $in $operand $tempo $const $nb $first
+                  }
                   #--- Renomme les fichiers image si 'first_index' est different de 1
                   if { $first != "1" } {
                      for { set index "1" } { $index <= $nb } { incr index } {
                         set new_index [ expr $index + ( $first - 1 ) ]
-                        file rename -force [ file join $audace(rep_images) $out$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
+                        file rename -force [ file join $audace(rep_images) $tempo$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
                      }
                   }
                   #---
@@ -1220,12 +1253,16 @@ namespace eval ::pretraitement {
                   set operand $pretraitement(img_operand)
                   set const $pretraitement(const)
                   ::console::affiche_resultat "Usage: sub2 in operand out const number ?first_index? ?tt_options?\n\n"
-                  sub2 $in $operand $out $const $nb $first
+                  if { $first == "1" } {
+                     sub2 $in $operand $out $const $nb $first
+                  } else {
+                     sub2 $in $operand $tempo $const $nb $first
+                  }
                   #--- Renomme les fichiers image si 'first_index' est different de 1
                   if { $first != "1" } {
                      for { set index "1" } { $index <= $nb } { incr index } {
                         set new_index [ expr $index + ( $first - 1 ) ]
-                        file rename -force [ file join $audace(rep_images) $out$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
+                        file rename -force [ file join $audace(rep_images) $tempo$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
                      }
                   }
                   #---
@@ -1286,12 +1323,16 @@ namespace eval ::pretraitement {
                   set operand $pretraitement(img_operand)
                   set const $pretraitement(const)
                   ::console::affiche_resultat "Usage: div2 in operand out const number ?first_index? ?tt_options?\n\n"
-                  div2 $in $operand $out $const $nb $first
+                  if { $first == "1" } {
+                     div2 $in $operand $out $const $nb $first
+                  } else {
+                     div2 $in $operand $tempo $const $nb $first
+                  }
                   #--- Renomme les fichiers image si 'first_index' est different de 1
                   if { $first != "1" } {
                      for { set index "1" } { $index <= $nb } { incr index } {
                         set new_index [ expr $index + ( $first - 1 ) ]
-                        file rename -force [ file join $audace(rep_images) $out$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
+                        file rename -force [ file join $audace(rep_images) $tempo$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
                      }
                   }
                   #---
@@ -1341,12 +1382,16 @@ namespace eval ::pretraitement {
                   set dark $pretraitement(dark)
                   set offset $pretraitement(offset)
                   ::console::affiche_resultat "Usage: opt2 in dark offset out number ?first_index? ?tt_options?\n\n"
-                  opt2 $in $dark $offset $out $nb $first
+                  if { $first == "1" } {
+                     opt2 $in $dark $offset $out $nb $first
+                  } else {
+                     opt2 $in $dark $offset $tempo $nb $first
+                  }
                   #--- Renomme les fichiers image si 'first_index' est different de 1
                   if { $first != "1" } {
                      for { set index "1" } { $index <= $nb } { incr index } {
                         set new_index [ expr $index + ( $first - 1 ) ]
-                        file rename -force [ file join $audace(rep_images) $out$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
+                        file rename -force [ file join $audace(rep_images) $tempo$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
                      }
                   }
                   #---
@@ -4882,6 +4927,7 @@ namespace eval ::faireImageRef {
                set norm   $faireImageRef(norm)
                set const  "0"
                set temp   "temp"
+               set tempo  "tempo"
                #--- Formule : Generique de sortie = K * [ Generique d'entree - ( Offset + Dark ) ] / Flat-field
                #--- Deux familles de pretraitement : Sans ou avec optimisation du noir
                if { $faireImageRef(opt) == "0" } {
@@ -4897,7 +4943,11 @@ namespace eval ::faireImageRef {
                      #--- Realisation de Y = [ Generique d'entree - ( X ) ]
                      sub2 $in offset+dark $temp $const $nb $first
                      #--- Realisation de Z = K * Y / Flat-field
-                     div2 $temp $flat $out $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
+                     if { $first == "1" } {
+                        div2 $temp $flat $out $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
+                     } else {
+                        div2 $temp $flat $tempo $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
+                     }
                      #--- Suppression des fichiers intermediaires
                      file delete [ file join $audace(rep_images) offset+dark$conf(extension,defaut) ]
                      delete2 $temp $nb
@@ -4911,7 +4961,11 @@ namespace eval ::faireImageRef {
                      buf$buf_pretrait save [ file join $audace(rep_images) offset+dark ]
                      ::buf::delete $buf_pretrait
                      #--- Realisation de Z = [ Generique d'entree - ( X ) ]
-                     sub2 $in offset+dark $out $const $nb $first
+                     if { $first == "1" } {
+                        sub2 $in offset+dark $out $const $nb $first
+                     } else {
+                        sub2 $in offset+dark $tempo $const $nb $first
+                     }
                      #--- Suppression du fichier intermediaire
                      file delete [ file join $audace(rep_images) offset+dark$conf(extension,defaut) ]
                   #--- Sans optimisation du noir - Offset et flat disponibles - Manque les darks
@@ -4919,29 +4973,49 @@ namespace eval ::faireImageRef {
                      #--- Realisation de Y = [ Generique d'entree - Offset ]
                      sub2 $in $offset $temp $const $nb $first
                      #--- Realisation de Z = K * Y / Flat-field
-                     div2 $temp $flat $out $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
+                     if { $first == "1" } {
+                        div2 $temp $flat $out $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
+                     } else {
+                        div2 $temp $flat $tempo $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
+                     }
                      #--- Suppression des fichiers temporaires
                      delete2 $temp $nb
                   #--- Sans optimisation du noir - Offset disponible - Manque les darks et les flats
                   } elseif { $faireImageRef(option) == "011" } {
                      #--- Realisation de Z = [ Generique d'entree - Offset ]
-                     sub2 $in $offset $out $const $nb $first
+                     if { $first == "1" } {
+                        sub2 $in $offset $out $const $nb $first
+                     } else {
+                        sub2 $in $offset $tempo $const $nb $first
+                     }
                   #--- Sans optimisation du noir - Dark et flat disponibles - Manque les offsets
                   } elseif { $faireImageRef(option) == "100" } {
                      #--- Realisation de Y = [ Generique d'entree - Dark ]
                      sub2 $in $dark $temp $const $nb $first
                      #--- Realisation de Z = K * Y / Flat-field
-                     div2 $temp $flat $out $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
+                     if { $first == "1" } {
+                        div2 $temp $flat $out $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
+                     } else {
+                        div2 $temp $flat $tempo $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
+                     }
                      #--- Suppression des fichiers temporaires
                      delete2 $temp $nb
                   #--- Sans optimisation du noir - Dark disponible - Manque les offsets et les flats
                   } elseif { $faireImageRef(option) == "101" } {
                      #--- Realisation de Z = [ Generique d'entree - Dark ]
-                     sub2 $in $dark $out $const $nb $first
+                     if { $first == "1" } {
+                        sub2 $in $dark $out $const $nb $first
+                     } else {
+                        sub2 $in $dark $tempo $const $nb $first
+                     }
                   #--- Sans optimisation du noir - Flat disponible - Manque les offsets et les darks
                   } elseif { $faireImageRef(option) == "110" } {
                      #--- Realisation de Z = K * Y / Flat-field
-                     div2 $in $flat $out $norm $nb $first
+                     if { $first == "1" } {
+                        div2 $in $flat $out $norm $nb $first
+                     } else {
+                        div2 $in $flat $tempo $norm $nb $first
+                     }
                      #--- Suppression des fichiers temporaires
                      delete2 $temp $nb
                   #--- Sans optimisation du noir - Aucun - Manque les offsets, les darks et les flats
@@ -4959,13 +5033,21 @@ namespace eval ::faireImageRef {
                      #--- Optimisation du noir
                      opt2 $in $dark $offset $temp $nb $first
                      #--- Division par le flat et multiplication par la constante K
-                     div2 $temp $flat $out $norm $nb 1 ; #--- Attention opt2 a cree les images temp a partir de 1
+                     if { $first == "1" } {
+                        div2 $temp $flat $out $norm $nb 1 ; #--- Attention opt2 a cree les images temp a partir de 1
+                     } else {
+                        div2 $temp $flat $tempo $norm $nb 1 ; #--- Attention opt2 a cree les images temp a partir de 1
+                     }
                      #--- Suppression des fichiers temporaires
                      delete2 $temp $nb
                   #--- Optimisation du noir - Offset et dark disponibles - Manque les flats
                   } elseif { $faireImageRef(option) == "001" } {
                      #--- Optimisation du noir
-                     opt2 $in $dark $offset $out $nb $first
+                     if { $first == "1" } {
+                        opt2 $in $dark $offset $out $nb $first
+                     } else {
+                        opt2 $in $dark $offset $tempo $nb $first
+                     }
                   #--- Optimisation du noir - Offset et flat disponibles - Manque les darks
                   } elseif { $faireImageRef(option) == "010" } {
                      #--- Ce cas n'est pas envisageable
@@ -5002,7 +5084,7 @@ namespace eval ::faireImageRef {
                if { $first != "1" } {
                   for { set index "1" } { $index <= $nb } { incr index } {
                      set new_index [ expr $index + ( $first - 1 ) ]
-                     file rename -force [ file join $audace(rep_images) $out$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
+                     file rename -force [ file join $audace(rep_images) $tempo$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
                   }
                }
                #---
