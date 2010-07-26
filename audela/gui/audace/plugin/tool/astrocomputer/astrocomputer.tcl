@@ -2,7 +2,7 @@
 # Fichier : astrocomputer.tcl
 # Description : Calculatrice pour l'astronomie
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: astrocomputer.tcl,v 1.1 2010-07-23 15:55:35 robertdelmas Exp $
+# Mise à jour $Id: astrocomputer.tcl,v 1.2 2010-07-26 09:58:46 alainklotz Exp $
 #
 
 #============================================================
@@ -250,6 +250,7 @@ proc ::astrocomputer::astrocomputer_ihm { { mode "" } } {
          incr k
       }
       pack $notebook -fill both -expand 1 -padx 0 -pady 0
+      $notebook raise 0
 
    pack $wbase.f -side top -fill both -expand 1
 
@@ -958,26 +959,31 @@ proc ::astrocomputer::astrocomputer_coord_compute { } {
    }
    if {$astrocomputer(dateinp)==""} {
       set date [::audace::date_sys2ut now]
-      set astrocomputer(dateinp) $date
+   } else {
+      set date [mc_date2jd $astrocomputer(dateinp)]
+   }
+   if {$astrocomputer(siteinp)==""} {
+      set astrocomputer(siteinp) "$::audace(posobs,observateur,gps)"
    }
    set resultat ""
    set hip [list 1 0 [string trim [mc_angle2deg $ra]] [string trim [mc_angle2deg $dec 90]] $equinox $epoch $mura $mudec $plx]
    #::console::affiche_resultat "hip=$hip\n\n"
-   set res [mc_hip2tel $hip $astrocomputer(dateinp) $astrocomputer(siteinp) 101325 290]
-   append resultat "Date UTC = [mc_date2iso8601 $astrocomputer(dateinp)]\n"
-   append resultat "RA=$ra $equinox\nDEC=$dec $equinox\n\n"
+   set res [mc_hip2tel $hip $date $astrocomputer(siteinp) 101325 290]
+   append resultat "Date UTC = [mc_date2iso8601 $date]\n"
+   append resultat "Julian day UTC = [mc_date2jd $date]\n"
+   append resultat "RA = $ra $equinox\nDEC = $dec $equinox\n\n"
    append resultat "RA = [mc_angle2hms [lindex $res 0] 360 zero 2 auto string] apparent\n"
    append resultat "DEC = [mc_angle2dms [lindex $res 1] 90 zero 2 + string] apparent\n"
    append resultat "HA = [mc_angle2hms [lindex $res 2] 360 zero 2 auto string] apparent\n"
    append resultat "Azimuth = [lindex $res 3] apparent\n"
    append resultat "Elevation = [lindex $res 4] apparent\n\n"
    # ---
-   set res2 [mc_tt2bary [mc_date2tt $astrocomputer(dateinp)] $ra $dec $equinox $astrocomputer(siteinp)]
-   append resultat "Barycentric Julian Day= $res2\n"
-   set res [mc_baryvel $astrocomputer(dateinp) $ra $dec $equinox $astrocomputer(siteinp)]
-   append resultat "Barycentric velocity= [lindex $res 0] km/s\n"
+   set res2 [mc_tt2bary [mc_date2tt $date] $ra $dec $equinox $astrocomputer(siteinp)]
+   append resultat "Barycentric Julian Day = $res2\n"
+   set res [mc_baryvel $date $ra $dec $equinox $astrocomputer(siteinp)]
+   append resultat "Topocentric velocity = [lindex $res 0] km/s\n"
    set res [mc_rvcor [list $ra $dec] $equinox KLSR] ; #|DLSR|GALC|LOG|COSM
-   append resultat "KLSR velocity= [lindex $res 0] km/s\n"
+   append resultat "KLSR velocity = [lindex $res 0] km/s\n"
    set res [mc_rvcor [list $ra $dec] $equinox GALC] ; #|DLSR|GALC|LOG|COSM
    append resultat "GALC velocity = [lindex $res 0] km/s\n"
    set res [mc_rvcor [list $ra $dec] $equinox COSM] ; #|DLSR|GALC|LOG|COSM
