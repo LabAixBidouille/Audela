@@ -88,6 +88,9 @@ int tt_tblcatloader(TT_IMA *p_ima,char *fullname)
 
    /* FS_ERR_HDUNUM_OVER est un code erreur defini dans libfiles.h */
    if (msg!=FS_ERR_HDUNUM_OVER) {
+      char message[1024];
+      sprintf(message,"Error tt_tblcatloader: could not load %s", p->load_fullname);
+      tt_errlog(msg,message);
       return(msg);
    }
    if (p->load_hdunum==0) {
