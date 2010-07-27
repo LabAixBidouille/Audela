@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise à jour $Id: cmaude.tcl,v 1.31 2010-05-28 15:58:35 robertdelmas Exp $
+# Mise à jour $Id: cmaude.tcl,v 1.32 2010-07-27 10:39:31 robertdelmas Exp $
 #
 
 #============================================================
@@ -145,13 +145,13 @@ namespace eval ::cmaude {
       set panneau(cmaude,config)          "$caption(cmaude,configuration)"
       set panneau(cmaude,parcourir)       "$caption(cmaude,parcourir)"
       set panneau(cmaude,label_bias)      "$caption(cmaude,bias)"
-      set panneau(cmaude,bias)            "C:/images/bias/off_synth$cmconf(extension)"
+      set panneau(cmaude,bias)            [ file join $cmconf(folder) bias off_synth$cmconf(extension) ]
       set panneau(cmaude,label_dark)      "$caption(cmaude,dark)"
-      set panneau(cmaude,dark)            "C:/images/dark/dark_synth$cmconf(extension)"
+      set panneau(cmaude,dark)            [ file join $cmconf(folder) dark dark_synth$cmconf(extension) ]
       set panneau(cmaude,label_overlay)   "$caption(cmaude,overlay)"
-      set panneau(cmaude,overlay)         "C:/images/overlay/overlay$cmconf(extension)"
+      set panneau(cmaude,overlay)         [ file join $cmconf(folder) overlay overlay$cmconf(extension) ]
       set panneau(cmaude,label_nom)       "$caption(cmaude,nom_image)"
-      set panneau(cmaude,nom)             "$cmconf(folder)/[string range [mc_date2jd $now] 0 6]-"
+      set panneau(cmaude,nom)             [ file join $cmconf(folder) "[string range [mc_date2jd $now] 0 6]-" ]
       set panneau(cmaude,label_page_html) "$caption(cmaude,page_html)"
       set panneau(cmaude,page_html)       "0"
       set panneau(cmaude,label_binning)   "$caption(cmaude,binning)"
@@ -680,6 +680,7 @@ namespace eval ::cmaude {
    #=== Command of button ... ===
 
    proc parcourir { option } {
+      variable This
       global audace panneau
 
       #--- Parent window
@@ -688,12 +689,15 @@ namespace eval ::cmaude {
       set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
       #--- File name
       if { $option == "1" } {
-        set panneau(cmaude,bias) $filename
+         set panneau(cmaude,bias) $filename
+         $This.fra2.fra4.ent1 xview end
       } elseif { $option == "2" } {
-        set panneau(cmaude,dark) $filename
+         set panneau(cmaude,dark) $filename
+         $This.fra2.fra5.ent2 xview end
       } elseif { $option == "3" } {
-        # set traiteWindow(in) [ file rootname [ file tail $filename ] ]
-        set panneau(cmaude,overlay) $filename
+         # set traiteWindow(in) [ file rootname [ file tail $filename ] ]
+         set panneau(cmaude,overlay) $filename
+         $This.fra2.fra6.ent2a xview end
       }
    }
 
@@ -850,6 +854,7 @@ global color panneau
             #--- Entry for the name of bias
             entry $This.fra2.fra4.ent1 -textvariable panneau(cmaude,bias) -relief groove
             pack $This.fra2.fra4.ent1 -in $This.fra2.fra4 -anchor center -expand 1 -fill both -padx 4 -pady 2
+            $This.fra2.fra4.ent1 xview end
 
          pack $This.fra2.fra4 -side top -fill x
 
@@ -865,6 +870,7 @@ global color panneau
             #--- Entry for the name of dark
             entry $This.fra2.fra5.ent2 -textvariable panneau(cmaude,dark) -relief groove
             pack $This.fra2.fra5.ent2 -in $This.fra2.fra5 -anchor center -expand 1 -fill both -padx 4 -pady 2
+            $This.fra2.fra5.ent2 xview end
 
          pack $This.fra2.fra5 -side top -fill x
 
@@ -880,6 +886,7 @@ global color panneau
             #--- Entry for the name of overlay
             entry $This.fra2.fra6.ent2a -textvariable panneau(cmaude,overlay) -relief groove
             pack $This.fra2.fra6.ent2a -in $This.fra2.fra6 -anchor center -expand 1 -fill both -padx 4 -pady 2
+            $This.fra2.fra6.ent2a xview end
 
          pack $This.fra2.fra6 -side top -fill x
 
@@ -889,6 +896,7 @@ global color panneau
          #--- Entry for the name of image
          entry $This.fra2.ent3 -textvariable panneau(cmaude,nom) -relief groove
          pack $This.fra2.ent3 -in $This.fra2 -anchor center -expand 1 -fill both -padx 4 -pady 2
+         $This.fra2.ent3 xview end
 
          #--- Checkbutton for HTML page creation
          checkbutton $This.fra2.chck1 -text "$panneau(cmaude,label_page_html)" -variable panneau(cmaude,page_html)
