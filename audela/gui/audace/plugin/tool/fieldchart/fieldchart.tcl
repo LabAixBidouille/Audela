@@ -2,7 +2,7 @@
 # Fichier : fieldchart.tcl
 # Description : Interfaces graphiques pour les fonctions carte de champ
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: fieldchart.tcl,v 1.5 2010-05-25 17:10:09 robertdelmas Exp $
+# Mise à jour $Id: fieldchart.tcl,v 1.6 2010-07-27 14:03:19 robertdelmas Exp $
 #
 
 #============================================================
@@ -244,9 +244,10 @@ namespace eval ::fieldchart {
 
             entry $This.usr.1.ent1 -textvariable ::fieldchart::widget(fieldchart,pathCatalog)
             grid $This.usr.1.ent1 -row 2 -column 1 -padx 5 -pady 2 -sticky e
+            $This.usr.1.ent1 xview end
 
             button $This.usr.1.explore -text "$caption(fieldchart,parcourir)" -width 1 \
-               -command { set ::fieldchart::widget(fieldchart,pathCatalog) [ ::fieldchart::parcourir ] }
+               -command { ::fieldchart::cataFolder }
             grid $This.usr.1.explore -row 2 -column 2 -padx 5 -pady 2 -sticky w
 
             label $This.usr.1.lab2 -text "$caption(fieldchart,magnitude_limite)"
@@ -526,6 +527,18 @@ namespace eval ::fieldchart {
       } else {
          pack $This.usr.2 -side top -fill both
       }
+   }
+
+   #------------------------------------------------------------
+   # cataFolder
+   #    Affiche le chemin du catalogue
+   #------------------------------------------------------------
+   proc cataFolder { } {
+      variable This
+      variable widget
+
+      set widget(fieldchart,pathCatalog) [ ::fieldchart::parcourir ]
+      $This.usr.1.ent1 xview end
    }
 
    #------------------------------------------------------------
