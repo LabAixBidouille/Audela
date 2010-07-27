@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise à jour $Id: t193.tcl,v 1.29 2010-07-14 08:08:25 robertdelmas Exp $
+# Mise à jour $Id: t193.tcl,v 1.30 2010-07-27 17:29:25 michelpujol Exp $
 #
 
 namespace eval ::t193 {
@@ -445,55 +445,6 @@ proc ::t193::fillConfigPage { frm } {
 
       pack $frm.test3 -in $frm.frame5 -side left -anchor w -fill y -pady 5 -expand 1
    pack $frm.frame5 -side top -fill x
-
-   #--- modele de pointage
-   ###TitleFrame $frm.model -borderwidth 2 -relief ridge -text $caption(t193,model,title)
-   ###   #--- Le checkbutton pour obtenir des traces dans la Console
-   ###   checkbutton $frm.model.enabled -text $caption(t193,model,enabled) \
-   ###   -highlightthickness 0 -variable ::t193::widget(model,enabled) \
-   ###   -command "::t193::onEnableModel"
-   ###   pack $frm.model.enabled -in [$frm.model getframe] -anchor w -side left -padx 2
-   ###
-   ###   #--- j'affiche la liste des modeles de pointage
-   ###   set modelList [::confTel::getModelList ]
-   ###   ComboBox $frm.model.modelList \
-   ###     -width [ ::tkutil::lgEntryComboBox $modelList ] \
-   ###     -height [ llength $modelList ] \
-   ###     -relief sunken -borderwidth 1 -editable 0 \
-   ###     -modifycmd "::t193::onSelectModel $frm.model.modelList" \
-   ###      -values $modelList
-   ###   pack $frm.model.modelList -in [$frm.model getframe] -anchor w -side left -fill none -padx 2
-   ###
-   ###   #--- je verifie que le modele precedemment selectionne existe toujours
-   ###   if { [info exists ::conf(confTel,model,$::conf(t193,model,id),name)] != 0 } {
-   ###      #--- je recupere le nom du modele pour verifier s'il existe
-   ###      set index [lsearch $modelList $::conf(t193,model,$::conf(t193,model,id),name)]
-   ###      if { $index == -1 } {
-   ###         #--- je selectionne le premier si celui precedemment selectionne n'existe plus
-   ###         set index 0
-   ###      }
-   ###   } else {
-   ###      #--- je selectionne le premier si celui precedemment selectionne n'existe plusiste plus
-   ###      set index 0
-   ###   }
-   ###   #--- je selectionne le modele dans la combobox
-   ###   $frm.model.modelList setvalue "@$index"
-   ###
-   ###   #--- date du modele
-   ###   label $frm.model.dateLabel -text $caption(t193,model,date)
-   ###   pack $frm.model.dateLabel  -in [$frm.model getframe] -anchor w -side left -padx 0
-   ###   label $frm.model.dateValue -textvariable ::t193::widget(model,date)
-   ###   pack $frm.model.dateValue -in [$frm.model getframe] -anchor w -side left -padx 0
-   ###
-   ###   #--- bouton de configuration des modeles
-   ###   button $frm.model.configure -text $caption(t193,model,configure)  \
-   ###      -command ""
-   ###   pack $frm.model.configure -in [$frm.model getframe] -anchor w -side left -padx 2
-   ###   #--- je configure l'etat des widgets du modele
-   ###   ::t193::onEnableModel
-   ###   ::t193::onSelectModel $frm.model.modelList
-   ###
-   ###pack $frm.model -in $frm -anchor w -side top -fill x -padx 2
 
    #--- choix raquette et traces
    frame $frm.pad -borderwidth 0 -relief raised
