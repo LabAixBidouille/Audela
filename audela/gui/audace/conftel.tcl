@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise à jour $Id: conftel.tcl,v 1.67 2010-07-14 07:55:48 robertdelmas Exp $
+# Mise à jour $Id: conftel.tcl,v 1.68 2010-07-27 17:27:47 michelpujol Exp $
 #
 
 namespace eval ::confTel {
@@ -884,22 +884,6 @@ proc ::confTel::selectModel { } {
          ::tkutil::displayErrorInfo $::caption(conftel,config)
       }
    }
-}
-
-##------------------------------------------------------------
-# Retourne la liste des modeles de pointage
-#
-# @return liste des modeles
-# @public
-#------------------------------------------------------------
-proc ::confTel::getModelList { } {
-   set modelList [list]
-   foreach modelPath [array names ::conf confTel,model,*,name] {
-      set modelId [lindex [split $modelPath "," ] 2]
-      lappend modelList $::conf(confTel,model,$modelId,name)
-   }
-   #--- je trie par ordre alphabetique (l'option -dictionary est equivalente a nocase)
-   return [lsort -dictionary $modelList ]
 }
 
 #------------------------------------------------------------
