@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.41 2010-07-14 14:36:05 michelpujol Exp $
+ * $Id: libcam.c,v 1.42 2010-07-27 17:20:42 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -2262,15 +2262,60 @@ static int cmdCamDark(ClientData clientData, Tcl_Interp * interp, int argc, char
                Tcl_SetResult(interp, ligne, TCL_VOLATILE);
                result = TCL_ERROR;
             } else {
-               // je memorise le nom du fichier
-               if ( cam->darkFileName != NULL ) {
-                  free(cam->darkFileName);
-                  cam->darkFileName = NULL;
+               // je verifie que le dark a les memes dimensions que le capteur de la camera
+               sprintf(ligne, "buf%d getpixelswidth", cam->darkBufNo);
+               if (Tcl_Eval(interp, ligne) == TCL_ERROR) {
+                  sprintf(ligne, "%s %s %s : %s", argv[0], argv[1], argv[2], interp->result );
+                  Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+                  result = TCL_ERROR;
+               } else {
+                  int darkWidth = atoi(interp->result);
+                  if ( darkWidth != cam->nb_photox / cam->binx ) {
+                     sprintf(ligne, "%s %s %s \nError : dark width (%d) is different from camera width (%d)", 
+                        argv[0], argv[1], argv[2], darkWidth, cam->nb_photox / cam->binx);
+                     Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+                     result = TCL_ERROR;
+                  }
                }
-               cam->darkFileName = (char*) malloc(strlen(argv[2])+1);
-               strcpy(cam->darkFileName, argv[2]);
-               Tcl_SetResult(interp, "", TCL_VOLATILE);
-               result = TCL_OK;
+               if ( result == TCL_OK) {
+                  sprintf(ligne, "buf%d getpixelsheight", cam->darkBufNo);
+                  if (Tcl_Eval(interp, ligne) == TCL_ERROR) {
+                     sprintf(ligne, "%s %s %s \nError :%s", argv[0], argv[1], argv[2], interp->result );
+                     Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+                     result = TCL_ERROR;
+                  } else {
+                     int darkHeight = atoi(interp->result);
+                     if ( darkHeight != cam->nb_photoy / cam->biny ) {
+                        sprintf(ligne, "%s %s %s : dark width (%d) is different from camera width (%d) ", 
+                           argv[0], argv[1], argv[2], darkHeight, cam->nb_photoy / cam->biny);
+                        Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+                        result = TCL_ERROR;
+                     }
+                  }
+               }
+               if ( result == TCL_OK) {                  
+                  // je memorise le nom du fichier
+                  if ( cam->darkFileName != NULL ) {
+                     free(cam->darkFileName);
+                     cam->darkFileName = NULL;
+                  }
+                  cam->darkFileName = (char*) malloc(strlen(argv[2])+1);
+                  strcpy(cam->darkFileName, argv[2]);
+                  Tcl_SetResult(interp, "", TCL_VOLATILE);
+               } else {
+                  // je supprime le buffer 
+                  if ( cam->darkBufNo != 0 ) {
+                     sprintf(ligne, "buf::delete %d", cam->darkBufNo);
+                     Tcl_Eval(interp, ligne);
+                     cam->darkBufNo = 0;
+                  }
+                  // je supprime le nom du fichier
+                  if ( cam->darkFileName != NULL ) {
+                     free(cam->darkFileName);
+                     cam->darkFileName = NULL;
+                  }
+
+               }
             }
          }
       } 
