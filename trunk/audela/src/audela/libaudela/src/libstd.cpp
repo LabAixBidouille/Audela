@@ -586,7 +586,6 @@ void audelaInit(Tcl_Interp *interp)
    Tcl_SetVar2(interp, "audela", "minor", s, TCL_GLOBAL_ONLY);
    sprintf(s,"%d",AUDELA_VERSION_PATCH);
    Tcl_SetVar2(interp, "audela", "patch", s, TCL_GLOBAL_ONLY);
-   Tcl_SetVar2(interp, "audela", "extra", AUDELA_VERSION_EXTRA, TCL_GLOBAL_ONLY);
    Tcl_SetVar2(interp, "audela", "version", AUDELA_VERSION, TCL_GLOBAL_ONLY);
    // je transmets l'interpreteur a la classe CFile qui l'utilise pour CFile::loadTkimg
    CFile::setTclInterp(interp);
