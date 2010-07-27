@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libtel.c,v 1.28 2010-07-14 14:39:59 michelpujol Exp $
+// $Id: libtel.c,v 1.29 2010-07-27 17:23:29 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -712,12 +712,37 @@ int cmdTelAlignmentMode(ClientData clientData, Tcl_Interp *interp, int argc, cha
 }
 
 int cmdTelRefraction(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   int result;
    struct telprop *tel;
    char ligne[256];
    tel = (struct telprop *)clientData;
-   sprintf(ligne,"%d", tel->refractionCorrection);
-   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-   return TCL_OK;
+   if((argc!=2)&&(argc!=3)) {
+      sprintf(ligne,"Usage: %s %s ?0|1?",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else if(argc==2) {
+      sprintf(ligne,"%d", tel->refractionCorrection);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_OK;
+   } else {
+      int refractionFlag = 0; 
+      if(Tcl_GetInt(interp,argv[2],&refractionFlag)!=TCL_OK) {
+	      sprintf(ligne,"Usage: %s %s ?0|1?\ninvalid value '%s'. Must be 0 or 1",argv[0],argv[1],argv[2]);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         result = TCL_ERROR;
+      } else {
+         if ( refractionFlag != 0 && refractionFlag != 1 ) {
+            sprintf(ligne,"Usage: %s %s ?0|1?\ninvalid value '%s'. Must be 0 or 1",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            result = TCL_ERROR;
+         } else {
+            tel->refractionCorrection = refractionFlag;
+            Tcl_SetResult(interp,"",TCL_VOLATILE);
+            result = TCL_OK;
+         }
+      }
+   }
+   return result;
 }
 
 int cmdTelDrivername(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
@@ -1007,25 +1032,34 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                // je recupere la date courante TU
                result = Tcl_Eval(interp,"clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC");
                if ( result == TCL_OK) {
-                  strcpy(utDate, interp->result);                  
+                  char refractionOption[15];
+                  strncpy(utDate, interp->result,sizeof(utDate)); 
+                  if ( tel->refractionCorrection == 1 ) {
+                     // mc_tel2cat doit pas corriger la refraction si la monture corrige la refraction.
+                     strcpy(refractionOption, "-refraction 0");
+                  } else {
+                     strcpy(refractionOption,"");
+                  }
                               
                   if (tel->radec_model_enabled == 1 ) {
                      if ( strcmp(outputEquinox,"NOW")==0 ) {
                         // j'applique le modèle de pointage inverse , pas de changement d'equinoxe a faire (modele seulement)
                         // usage: mc_tel2cat {12h 36d} EQUATORIAL 2010-06-03T20:10:00 {GPS 5 E 43 1230} 101325 290 { symbols } { values }
-                        // ATTENTION : il ne faut pas utiliser "now" (ou bien mettre l'ordinateur a l'heure TU)
-                        sprintf(ligne, "mc_tel2cat {%s} {%s} {%s} {%s} %d %d {%s} {%s} model_only", 
+                        // ATTENTION : si on utilise utDate="now" , il faut d'abord mettre l'ordinateur a l'heure TU
+                        sprintf(ligne, "mc_tel2cat {%s} {%s} {%s} {%s} %d %d {%s} {%s} -model_only 1 %s", 
                            texte, tel->alignmentMode, utDate, tel->homePosition, 
                            tel->radec_model_pressure, tel->radec_model_temperature, 
-                           tel->radec_model_symbols, tel->radec_model_coefficients);
+                           tel->radec_model_symbols, tel->radec_model_coefficients,
+                           refractionOption);
                      } else {
                         // j'applique le modèle de pointage inverse et je change d'equinoxe (equinoxe du jour -> J2000)
                         // usage: mc_tel2cat {12h 36d} EQUATORIAL 2010-06-03T20:10:00 {GPS 5 E 43 1230} 101325 290 { symbols } { values }
-                        // ATTENTION : il ne faut pas utiliser "now" (ou bien mettre l'ordinateur a l'heure TU)
-                        sprintf(ligne, "mc_tel2cat {%s} {%s} {%s} {%s} %d %d {%s} {%s}", 
+                        // ATTENTION : si on utilise utDate="now" , il faut d'abord mettre l'ordinateur a l'heure TU
+                        sprintf(ligne, "mc_tel2cat {%s} {%s} {%s} {%s} %d %d {%s} {%s} %s", 
                            texte, tel->alignmentMode, utDate, tel->homePosition, 
                            tel->radec_model_pressure, tel->radec_model_temperature, 
-                           tel->radec_model_symbols, tel->radec_model_coefficients);
+                           tel->radec_model_symbols, tel->radec_model_coefficients,
+                           refractionOption);
                      }
                      if ( tel->consoleLog >= 1 ) {
                         logConsole(tel, "radec coord: %s\n", ligne);
@@ -1061,9 +1095,10 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                      } else {
                         // je convertis les coordonnes du telescope (equinox du jour) en coordonnes catalogue (equinox=J2000) 
                         // sans appliquer le modele de pointage (les parametres symbols et values sont absents) 
-                        sprintf(ligne, "mc_tel2cat { %s } { %s } { %s } { %s } %d %d", 
+                        sprintf(ligne, "mc_tel2cat { %s } { %s } { %s } { %s } %d %d %s", 
                            texte, tel->alignmentMode, utDate, tel->homePosition, 
-                           tel->radec_model_pressure, tel->radec_model_temperature);
+                           tel->radec_model_pressure, tel->radec_model_temperature,
+                           refractionOption);
                         if ( tel->consoleLog >= 1 ) {
                            logConsole(tel, "radec coord: %s\n", ligne);
                         }
@@ -1152,8 +1187,15 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                   // je recupere la date courante TU
                   result = Tcl_Eval(interp,"clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC");
                   if ( result == TCL_OK) {
-                     char tu[20];
-                     strcpy(tu, interp->result);
+                     char utDate[20];
+                     char refractionOption[15];
+                     strncpy(utDate, interp->result,sizeof(utDate)); 
+                     if ( tel->refractionCorrection == 1 ) {
+                        // mc_tel2cat doit pas corriger la refraction si la monture corrige la refraction.
+                        strcpy(refractionOption, "-refraction 0");
+                     } else {
+                        strcpy(refractionOption,"");
+                     }
                   
                      // usage mc_hip2tel $hiprecord $date $home $pressure $temperature $modpoi_symbols $modpoi_coefs
                      // avec hipRecord = 
@@ -1181,19 +1223,21 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 
                      if (tel->radec_model_enabled == 1 ) {
                         // correction avec le modele de pointage 
-                        sprintf(ligne, "mc_hip2tel { 1 0 %f %f %s 0 0 0 0 } { %s } { %s } %d %d { %s } { %s }", 
+                        sprintf(ligne, "mc_hip2tel { 1 0 %f %f %s 0 0 0 0 } {%s} {%s} %d %d {%s} {%s} %s", 
                            tel->ra0, tel->dec0, inputEquinox,
-                           tu, tel->homePosition, 
+                           utDate, tel->homePosition, 
                            tel->radec_model_pressure, tel->radec_model_temperature, 
-                           tel->radec_model_symbols, tel->radec_model_coefficients);
+                           tel->radec_model_symbols, tel->radec_model_coefficients,
+                           refractionOption);
                      } else {
                         // je convertis les coordonnees a la date du jour, sans appliquer de modele de pointage
                         //  mc_hip2tel {id mag ra dec equinox epoch mura mudec plx } dateTu home pressure temperature
                         // ATTENTION : il ne faut pas utiliser "now" pour la date (ou bien mettre l'ordinateur a l'heure TU)
-                        sprintf(ligne, "mc_hip2tel { 1 0 %f %f %s 0 0 0 0 } { %s } { %s } %d %d ", 
+                        sprintf(ligne, "mc_hip2tel { 1 0 %f %f %s 0 0 0 0 } { %s } { %s } %d %d %s", 
                            tel->ra0, tel->dec0, inputEquinox, 
-                           tu, tel->homePosition, 
-                           tel->radec_model_pressure, tel->radec_model_temperature);
+                           utDate, tel->homePosition, 
+                           tel->radec_model_pressure, tel->radec_model_temperature,
+                           refractionOption);
                      }
                      if ( tel->consoleLog >= 1 ) {
                         logConsole(tel, "radec goto: %s\n", ligne);
