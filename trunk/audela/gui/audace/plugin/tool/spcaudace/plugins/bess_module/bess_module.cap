@@ -1,6 +1,6 @@
 #
 # Fichier : bess.cap
-# Mise a jour $Id: bess_module.cap,v 1.11 2010-07-28 14:06:31 bmauclaire Exp $
+# Mise a jour $Id: bess_module.cap,v 1.12 2010-07-28 15:49:32 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -443,10 +443,10 @@ if { [string compare $langage "french"] == "0" } {
    set caption(u_EXPTIME)           "(in seconds)"
    set caption(u_BSS_INST)          "(standard name)"
    set caption(u_BSS_SITE)          "(standard name)"
-   set caption(u_BSS_VHEL)          "(km/s : 0 si non corrigée)"
-   set caption(u_BSS_TELL)          "(description : no si pas effacées/yes)"
-   set caption(u_BSS_NORM)          "(description : yes/no/méthode)"
-   set caption(u_BSS_COSM)          "(description : yes/no)"
+   set caption(u_BSS_VHEL)          "(km/s: 0 if not corrected)"
+   set caption(u_BSS_TELL)          "(description: no if not removed/yes)"
+   set caption(u_BSS_NORM)          "(description: yes/no/method)"
+   set caption(u_BSS_COSM)          "(description: yes/no)"
    set caption(u_obs1)              "(Observer 1)"
    set caption(u_obs2)              "(* Observer 2)"
    set caption(u_obs3)              "(* Observer 3)"
@@ -510,10 +510,10 @@ if { [string compare $langage "french"] == "0" } {
    set caption(u_EXPTIME)           "(in seconds)"
    set caption(u_BSS_INST)          "(standard name)"
    set caption(u_BSS_SITE)          "(standard name)"
-   set caption(u_BSS_VHEL)          "(km/s : 0 si non corrigée)"
-   set caption(u_BSS_TELL)          "(description : no si pas effacées/yes)"
-   set caption(u_BSS_NORM)          "(description : yes/no/méthode)"
-   set caption(u_BSS_COSM)          "(description : yes/no)"
+   set caption(u_BSS_VHEL)          "(km/s: 0 if not corrected)"
+   set caption(u_BSS_TELL)          "(description: no if not removed/yes)"
+   set caption(u_BSS_NORM)          "(description: yes/no/method)"
+   set caption(u_BSS_COSM)          "(description: yes/no)"
    set caption(u_obs1)              "(Observer 1)"
    set caption(u_obs2)              "(* Observer 2)"
    set caption(u_obs3)              "(* Observer 3)"
@@ -577,10 +577,10 @@ if { [string compare $langage "french"] == "0" } {
    set caption(u_EXPTIME)           "(in seconds)"
    set caption(u_BSS_INST)          "(standard name)"
    set caption(u_BSS_SITE)          "(standard name)"
-   set caption(u_BSS_VHEL)          "(km/s : 0 si non corrigée)"
-   set caption(u_BSS_TELL)          "(description : no si pas effacées/yes)"
-   set caption(u_BSS_NORM)          "(description : yes/no/méthode)"
-   set caption(u_BSS_COSM)          "(description : yes/no)"
+   set caption(u_BSS_VHEL)          "(km/s: 0 if not corrected)"
+   set caption(u_BSS_TELL)          "(description: no if not removed/yes)"
+   set caption(u_BSS_NORM)          "(description: yes/no/method)"
+   set caption(u_BSS_COSM)          "(description: yes/no)"
    set caption(u_obs1)              "(Observer 1)"
    set caption(u_obs2)              "(* Observer 2)"
    set caption(u_obs3)              "(* Observer 3)"
