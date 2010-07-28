@@ -9,7 +9,7 @@
 #####################################################################
 
 
-# Mise a jour $Id: bess_module.tcl,v 1.18 2010-07-28 13:44:48 bmauclaire Exp $
+# Mise à jour $Id: bess_module.tcl,v 1.19 2010-07-28 15:52:47 robertdelmas Exp $
 
 
 # Bugs à corriger :
@@ -321,8 +321,7 @@ namespace eval ::bess {
 
       # Construction de la fenêtre des paramètres
       toplevel $audace(base).saisie -borderwidth 2 -relief groove -bg $bess_export_fg
-     # wm geometry $audace(base).saisie 560x550+120+50
-      wm geometry $audace(base).saisie 605x570+120+50
+      wm geometry $audace(base).saisie 670x570+120+50
       wm title $audace(base).saisie $caption(titre_saisie)
       wm protocol $audace(base).saisie WM_DELETE_WINDOW ::bess::AnnuleSaisie
 
