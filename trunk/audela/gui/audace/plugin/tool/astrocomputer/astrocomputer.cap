@@ -1,6 +1,6 @@
 #
 # Fichier : astrocomputer.cap
-# Mise a jour $Id: astrocomputer.cap,v 1.3 2010-07-25 14:59:35 robertdelmas Exp $
+# Mise a jour $Id: astrocomputer.cap,v 1.4 2010-07-28 21:37:40 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -101,32 +101,32 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(astrocomputer,astrocomputer)        "# Calculatrice astronomique"
-   set caption(astrocomputer,onglets)              {"Conversión" "Cosmología" "# Coordonnées apparentes"}
+   set caption(astrocomputer,astrocomputer)        "Calculador astonómico"
+   set caption(astrocomputer,onglets)              {"Conversión" "Cosmología" "Coordenadas aparentes"}
    set caption(astrocomputer,formatinp1)           "Numero Fecha Angulo Distancia"
    set caption(astrocomputer,formatnombreout1)     "Decimal Binario Octal Hexadecimal ASCII"
-   set caption(astrocomputer,formatdateout1)       {"Día Juliano" "# Jour julien modifié" ISO8601 Calendario}
-   set caption(astrocomputer,formatangleout1)      {grados "gra min seg" "h min seg" "# gms signés" Radián}
-   set caption(astrocomputer,formatdistanceout1)   {"Parsec" "# Années Lumières" "# Unités Astronomiques" "Paralaje (mas)" "# Module de distance" "# Mètres"}
+   set caption(astrocomputer,formatdateout1)       {"Día Juliano" "Dia juinano modificado" ISO8601 Calendario}
+   set caption(astrocomputer,formatangleout1)      {grados "gra min seg" "h min seg" "signo de gms" radian}
+   set caption(astrocomputer,formatdistanceout1)   {"Parsec" "Año Luz" "Unidades Astronómicas" "Paralaje (mas)" "Modulo de distancia" "Metros"}
    set caption(astrocomputer,fermer)               "Cerrar"
    set caption(astrocomputer,aide)                 "Ayuda"
 
    set caption(astrocomputer,conversion)           "Conversiones"
-   set caption(astrocomputer,exprConvertir)        "# Expression à convertir"
-   set caption(astrocomputer,formatExpr)           "# Format de l'expression"
-   set caption(astrocomputer,formatConversion)     "# Format de la conversion"
-   set caption(astrocomputer,resultConversion)     "# Résultat de la conversion"
-   set caption(astrocomputer,copierResult)         "# Copier le résultat comme expression"
+   set caption(astrocomputer,exprConvertir)        "Expresión para convertir"
+   set caption(astrocomputer,formatExpr)           "Formato de la expresión"
+   set caption(astrocomputer,formatConversion)     "Formato de la conversión"
+   set caption(astrocomputer,resultConversion)     "Resultado de la conversión"
+   set caption(astrocomputer,copierResult)         "Copiar el resultado como expresión"
    set caption(astrocomputer,cosmologie)           "Cosmología"
    set caption(astrocomputer,redshift)             "Redshift"
-   set caption(astrocomputer,cteHubble)            "# Constante de Hubble (km/s/Mpc)"
+   set caption(astrocomputer,cteHubble)            "Constante de Hubble (km/s/Mpc)"
    set caption(astrocomputer,omegaMatiere)         "Omega Matter (0-1)"
    set caption(astrocomputer,omegaVide)            "Omega Vaccuum (0-1)"
    set caption(astrocomputer,result)               "Resultados"
-   set caption(astrocomputer,coordApparentes)      "# Coordonnées apparentes"
+   set caption(astrocomputer,coordApparentes)      "Coordenadas aparentes"
    set caption(astrocomputer,coordRaDecEquinoxObj) "Coordenadas RA DEC EQUINOCCIO o OBJETO"
-   set caption(astrocomputer,dateUTC)              "# Date UTC (vacío = ahora)"
-   set caption(astrocomputer,site)                 "# Site d'observation"
+   set caption(astrocomputer,dateUTC)              "Fecha UTC (vacío = ahora)"
+   set caption(astrocomputer,site)                 "Lugar de observación"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
