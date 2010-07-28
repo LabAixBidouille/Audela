@@ -5,9 +5,12 @@
 # Auteurs     : François Cochard (francois.cochard@wanadoo.fr)
 #               Sur la forme, je suis parti du script calaphot de Jacques Michelet (jacques.michelet@laposte.net)
 #               Par ailleurs, je m'appuie sur les routines spc_audace de Benjamin Mauclaire
-# Mise à jour $Id: bess_module.tcl,v 1.15 2010-07-23 12:12:43 robertdelmas Exp $
 #
 #####################################################################
+
+
+# Mise à jour $Id: bess_module.tcl,v 1.16 2010-07-28 13:39:38 bmauclaire Exp $
+
 
 # Bugs à corriger :
 # - Permettre l'accès à la routine aussi bien en standalone (script) que par une ligne de cde avec nom de fichier en argument
