@@ -9,7 +9,7 @@
 #####################################################################
 
 
-# Mise à jour $Id: bess_module.tcl,v 1.16 2010-07-28 13:39:38 bmauclaire Exp $
+# Mise à jour $Id: bess_module.tcl,v 1.17 2010-07-28 13:41:42 bmauclaire Exp $
 
 
 # Bugs à corriger :
