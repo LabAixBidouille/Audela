@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise à jour $Id: aud_menu_3.tcl,v 1.65 2010-07-26 18:21:47 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_3.tcl,v 1.66 2010-07-28 21:36:53 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -3284,6 +3284,7 @@ namespace eval ::conv2 {
          #--- convertit en couleurs
          $buf cfa2rgb 1
 
+         #--- permet le calcul les seuils
          $buf stat
 
          #--- sauve l'image
