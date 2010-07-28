@@ -9,7 +9,7 @@
 #####################################################################
 
 
-# Mise à jour $Id: bess_module.tcl,v 1.19 2010-07-28 15:52:47 robertdelmas Exp $
+# Mise à jour $Id: bess_module.tcl,v 1.20 2010-07-28 21:30:21 bmauclaire Exp $
 
 
 # Bugs à corriger :
@@ -256,6 +256,14 @@ namespace eval ::bess {
             default {
               # break
             }
+         }
+
+
+         #-- Importe le contenu de mots clef SCP :
+         set listemotsclef [ buf$audace(bufNo) getkwds ]
+         if { [ lsearch $listemotsclef "SPC_NORM" ] != -1 } {
+            set method_norma [ lindex [ buf$audace(bufNo) getkwd "SPC_NORM" ] 1 ]
+            buf$audace(bufNo) setkwd [ list "BSS_NORM" "$method_norma" string "Process used for transforming the continuum" "" ]
          }
 
          # On liste les mots-clé BeSS
@@ -683,6 +691,16 @@ namespace eval ::bess {
             if { [ lsearch $listemotsclef "DATE-END" ] !=-1 } {
                buf$audace(bufNo) delkwd "DATE-END"
             }
+            #- Efface ce mot clef qui pose un probleme d'arrondi si les coordonnees de pointage sont imprecises :
+            if { [ lsearch $listemotsclef "RA" ] !=-1 } {
+               buf$audace(bufNo) delkwd "RA"
+               buf$audace(bufNo) delkwd "DEC"
+            }
+            #- Efface ce mot clef qui pose un probleme car il doit etre au format flot pour BeSS :
+            if { [ lsearch $listemotsclef "EQUINOX" ] !=-1 } {
+               buf$audace(bufNo) delkwd "EQUINOX"
+            }
+
 
             #---   Et je sauve le fichier... si le nom de fichier n'est pas vide
             if { $fich_out != ""} {
