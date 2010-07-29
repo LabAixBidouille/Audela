@@ -1,4 +1,4 @@
-# Mise a jour $Id: spcaudace.tcl,v 1.23 2010-07-20 20:56:30 robertdelmas Exp $
+# Mise a jour $Id: spcaudace.tcl,v 1.24 2010-07-29 18:25:19 bmauclaire Exp $
 
 
 ####################################################################################
@@ -49,7 +49,7 @@
 #============================================================
 namespace eval ::spcaudace {
    global caption
-   package provide spcaudace 1.6.3
+   package provide spcaudace 1.6.4
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [ file dirname [info script] ] spcaudace.cap ]
