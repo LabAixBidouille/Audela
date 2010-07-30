@@ -2,7 +2,7 @@
 # Procedures des traitements géométriques
 # Lancement en console : source $audace(rep_scripts)/spcaudace/spc_geom.tcl
 
-# Mise a jour $Id: spc_geom.tcl,v 1.9 2010-07-03 19:38:26 bmauclaire Exp $
+# Mise a jour $Id: spc_geom.tcl,v 1.10 2010-07-30 11:38:04 bmauclaire Exp $
 
 
 
@@ -142,8 +142,8 @@ proc spc_tilt { args } {
     #--- Modification du nom du fichier de sortie
     set filespc [ file rootname $filenamespc ]
     buf$audace(bufNo) setkwd [ list "SPC_TILT" $angle float "Tilt angle" "" ]
-    buf$audace(bufNo) setkwd [ list "SPC_TILTX" $xinf int "Tilt X center" "" ]
-    buf$audace(bufNo) setkwd [ list "SPC_TILTY" $yinf int "Tilt Y center" "" ]
+    buf$audace(bufNo) setkwd [ list "SPC_TILX" $xinf int "Tilt X center" "" ]
+    buf$audace(bufNo) setkwd [ list "SPC_TILY" $yinf int "Tilt Y center" "" ]
     buf$audace(bufNo) save "$audace(rep_images)/${filespc}_tilt$conf(extension,defaut)"
     #loadima ${filespc}_tilt$conf(extension,defaut)
     ::console::affiche_resultat "Image sauvée sous ${filespc}_tilt$conf(extension,defaut).\n"
@@ -512,8 +512,8 @@ proc spc_tiltauto { args } {
            #- imaseries TILT se charge de compenser le sens de la pente : nul besoin d'inverser son signe :
 	   buf$audace(bufNo) imaseries "TILT trans_x=0 trans_y=$pente"
            buf$audace(bufNo) setkwd [ list "SPC_TILT" $angle float "Tilt angle" "" ]
-           buf$audace(bufNo) setkwd [ list "SPC_TILTX" $xinf int "Tilt X center" "" ]
-           buf$audace(bufNo) setkwd [ list "SPC_TILTY" $yinf int "Tilt Y center" "" ]
+           buf$audace(bufNo) setkwd [ list "SPC_TILX" $xinf int "Tilt X center" "" ]
+           buf$audace(bufNo) setkwd [ list "SPC_TILY" $yinf int "Tilt Y center" "" ]
 	   ::console::affiche_resultat "Rotation d'angle ${angle}° autour de ($xinf,$yinf).\n"
 	   buf$audace(bufNo) save "$audace(rep_images)/${filename}_tilt$conf(extension,defaut)"
 	   ::console::affiche_resultat "Image sauvée sous ${filename}_tilt$conf(extension,defaut).\n"
@@ -1582,8 +1582,8 @@ proc spc_tilt2 { args } {
        buf$audace(bufNo) load "$audace(rep_images)/$filename"
        buf$audace(bufNo) imaseries "TILT trans_x=0 trans_y=$pente"
        buf$audace(bufNo) setkwd [ list "SPC_TILT" $angle float "Tilt angle" "" ]
-       buf$audace(bufNo) setkwd [ list "SPC_TILTX" $xrot int "Tilt X center" "" ]
-       buf$audace(bufNo) setkwd [ list "SPC_TILTY" $yrot int "Tilt Y center" "" ]
+       buf$audace(bufNo) setkwd [ list "SPC_TILX" $xrot int "Tilt X center" "" ]
+       buf$audace(bufNo) setkwd [ list "SPC_TILY" $yrot int "Tilt Y center" "" ]
        buf$audace(bufNo) save "$audace(rep_images)/${filename}_tilt$conf(extension,defaut)"
        ::console::affiche_resultat "Rotation d'angle ${angle}° autour de ($xrot,$yrot) sauvé sous ${filename}_tilt$conf(extension,defaut).\n"
        return ${filename}_tilt
@@ -1621,8 +1621,8 @@ proc spc_tilt3 { args } {
        set yrot [ expr round(0.5*[ lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1 ]) ]
        buf$audace(bufNo) imaseries "TILT trans_x=0 trans_y=$pente"
        buf$audace(bufNo) setkwd [ list "SPC_TILT" $angle float "Tilt angle" "" ]
-       buf$audace(bufNo) setkwd [ list "SPC_TILTX" $xrot int "Tilt X center" "" ]
-       buf$audace(bufNo) setkwd [ list "SPC_TILTY" $yrot int "Tilt Y center" "" ]
+       buf$audace(bufNo) setkwd [ list "SPC_TILX" $xrot int "Tilt X center" "" ]
+       buf$audace(bufNo) setkwd [ list "SPC_TILY" $yrot int "Tilt Y center" "" ]
        buf$audace(bufNo) save "$audace(rep_images)/${filename}_tilt$conf(extension,defaut)"
        ::console::affiche_resultat "Rotation sauvé sous ${filename}_tilt$conf(extension,defaut).\n"
        return ${filename}_tilt
