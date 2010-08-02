@@ -2,7 +2,7 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spcaudace spc_metaf.tcl ]
 
-# Mise a jour $Id: spc_metaf.tcl,v 1.18 2010-07-03 19:38:27 bmauclaire Exp $
+# Mise a jour $Id: spc_metaf.tcl,v 1.19 2010-08-02 14:25:32 bmauclaire Exp $
 
 
 
@@ -1413,10 +1413,10 @@ proc spc_traite2srinstrum { args } {
           ::console::affiche_resultat "\n\n**** Correction du l'inclinaison (tilt) ****\n\n"
           buf$audace(bufNo) load "$audace(rep_images)/$lampe"
           set listemotsclef [ buf$audace(bufNo) getkwds ]
-          if { [ lsearch $listemotsclef "SPC_TILT" ]!=-1 && [ lsearch $listemotsclef "SPC_TILTX" ]!=-1 } {
+          if { [ lsearch $listemotsclef "SPC_TILT" ]!=-1 && [ lsearch $listemotsclef "SPC_TILX" ]!=-1 } {
              set spc_angletilt [ lindex [ buf$audace(bufNo) getkwd "SPC_TILT" ] 1 ]
-             set spc_tiltx [ lindex [ buf$audace(bufNo) getkwd "SPC_TILTX" ] 1 ]
-             set spc_tilty [ lindex [ buf$audace(bufNo) getkwd "SPC_TILTY" ] 1 ]
+             set spc_tiltx [ lindex [ buf$audace(bufNo) getkwd "SPC_TILX" ] 1 ]
+             set spc_tilty [ lindex [ buf$audace(bufNo) getkwd "SPC_TILY" ] 1 ]
              set ftilt [ spc_tilt2imgs $fpretrait $spc_angletilt $spc_tiltx $spc_tilty ]
           } else {
              #-- Pas de correction de l'inclinaison pour les spectres non stellaires :
@@ -2036,8 +2036,8 @@ proc spc_traitenebula { args } {
              set spc_y1 [ lindex $spc_windowcoords 1 ]
              set spc_y2 [ lindex $spc_windowcoords 3 ]
              set spc_ycenter [ expr round(0.5*($spc_y2+$spc_y1)) ]
-             buf$audace(bufNo) setkwd [ list "SPC_TILTX" $spc_xcenter int "Tilt X center" "" ]
-             buf$audace(bufNo) setkwd [ list "SPC_TILTY" $spc_ycenter int "Tilt Y center" "" ]
+             buf$audace(bufNo) setkwd [ list "SPC_TILX" $spc_xcenter int "Tilt X center" "" ]
+             buf$audace(bufNo) setkwd [ list "SPC_TILY" $spc_ycenter int "Tilt Y center" "" ]
              buf$audace(bufNo) save "$audace(rep_images)/$lampe"
              set lampe_traitee "$lampe"
           } else {
