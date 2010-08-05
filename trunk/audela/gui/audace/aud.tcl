@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.142 2010-07-24 10:23:41 robertdelmas Exp $
+# Mise à jour $Id: aud.tcl,v 1.143 2010-08-05 12:03:05 alainklotz Exp $
 #
 
 #--- Chargement du package BWidget
@@ -1770,6 +1770,14 @@ if { [llength $::argv] >= 1  } {
    } ]
    if { $catchResult != 0 } {
      ::console::affiche_erreur "$::errorInfo\n"
+   }
+} else {
+   #--- On charge eventuellement l'image cliquee
+   if {[info exists audela(img_filename)]==1} {
+      if {$audela(img_filename)!=""} {
+         loadima $audela(img_filename)
+         set audace(rep_images) [file dirname $audela(img_filename)]
+      }
    }
 }
 
