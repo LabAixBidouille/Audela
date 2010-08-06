@@ -2,7 +2,7 @@
 # Fichier : astrocomputer.tcl
 # Description : Calculatrice pour l'astronomie
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: astrocomputer.tcl,v 1.2 2010-07-26 09:58:46 alainklotz Exp $
+# Mise à jour $Id: astrocomputer.tcl,v 1.3 2010-08-06 22:24:17 alainklotz Exp $
 #
 
 #============================================================
@@ -215,7 +215,8 @@ proc ::astrocomputer::astrocomputer_ihm { { mode "" } } {
    #--- Cree la fenetre .ohp de niveau le plus haut
    toplevel $wbase -class Toplevel -bg #123456
    wm geometry $wbase $widget(astrocomputer,geometry)
-   wm resizable $wbase 0 0
+   wm resizable $wbase 1 1
+   wm minsize $wbase 380 600
    wm title $wbase "$::caption(astrocomputer,astrocomputer)"
    wm protocol $wbase WM_DELETE_WINDOW ::astrocomputer::fermer
 
@@ -920,7 +921,20 @@ proc ::astrocomputer::astrocomputer_coord_compute { } {
 
    set wbase $astrocomputer(onglets,widget,2)
    # {id mag ra dec equinox epoch mura mudec plx}
+   set objname ""
    set equinox ""
+   if {$equinox==""} {
+      set equinox J2000.0
+      set epoch $equinox
+   }
+   if {$astrocomputer(dateinp)==""} {
+      set date [::audace::date_sys2ut now]
+   } else {
+      set date [mc_date2jd $astrocomputer(dateinp)]
+   }
+   if {$astrocomputer(siteinp)==""} {
+      set astrocomputer(siteinp) "$::audace(posobs,observateur,gps)"
+   }
    set epoch J2000.0
    set mura 0
    set mudec 0
@@ -929,16 +943,70 @@ proc ::astrocomputer::astrocomputer_coord_compute { } {
    set n [llength $r]
    set key [lindex $r 0]
    set valid 0
+   set type ""
    #::console::affiche_resultat "key=$key\n"
    set err [ catch { expr $key } msg ]
    if {$err==1} {
-      #::console::affiche_resultat "r=$r\n"
-      set err2 [ catch {name2coord $r} msg2 ]
-      #::console::affiche_resultat "msg2=$msg2\n"
-      if {$err2==0} {
-         set ra [lindex $msg2 0]
-         set dec [lindex $msg2 1]
-         set equinox J2000.0
+      set res [mc_ephem $key]
+      if {[llength $res]==1} {
+         set res [satel_names $r]
+         if {$res==""} {            
+            #::console::affiche_resultat "r=$r\n"
+            set err2 [ catch {name2coord $r} msg2 ]
+            #::console::affiche_resultat "msg2=$msg2\n"
+            if {$err2==0} {
+               set type "name2coord"
+               set objname $r
+               set ra [lindex $msg2 0]
+               set dec [lindex $msg2 1]
+               set equinox J2000.0
+               set valid 1
+            }
+         } else {
+            set type "satel_ephem"
+            set objname [lindex [lindex $res 0] 0]
+            set res [lindex [satel_ephem "$objname" $date $astrocomputer(siteinp)] 0]
+            set objname [lindex $res 0]
+            set objname "[string trim [lindex $objname 0]] ([string trim [lindex $objname 1]]) ([string trim [lindex $objname 2]])"
+            set ra  [string trim [mc_angle2hms [lindex $res 1] 360 zero 2 auto string]]
+            set dec [string trim [mc_angle2dms [lindex $res 2]  90 zero 1 + string]]
+            set elong [format %.2f [lindex $res 4]]
+            set phase [format %.2f [lindex $res 5]]
+            set fracill [lindex $res 6]
+            set distkm [format %.2f [expr [lindex $res 3]*1e-3]]
+            set sitezenith [lindex $res 7]
+            set valid 1
+         }
+      } else {
+         set type "mc_ephem"
+         set res [lindex [mc_ephem $key $date {OBJENAME RA DEC DELTA MAG PHASE APPDIAMEQU LONGI LONGII ELONG} -topo $astrocomputer(siteinp)] 0]
+         set objname [lindex $res 0]
+         set ra  [string trim [mc_angle2hms [lindex $res 1] 360 zero 2 auto string]]
+         set dec [string trim [mc_angle2dms [lindex $res 2]  90 zero 1 + string]]
+         set distua [format %.5f [lindex $res 3]]
+         set mag [format %.2f [lindex $res 4]]
+         set phase [format %.2f [lindex $res 5]]
+         set d [lindex $res 6]
+         set di [expr floor($d)]
+         if {$di>0} {
+            set diamapp $d
+            set diamappu deg
+         } else {
+            set d [expr $d*60]
+            set di [expr floor($d)]
+            if {$di>0} {
+               set diamapp $d
+               set diamappu arcmin
+            } else {
+               set d [expr $d*60]
+               set diamapp $d
+               set diamappu arcsec
+            }
+         }            
+         set diamapp [format %.4f $diamapp]
+         set longi [format %.2f [lindex $res 7]]
+         set longii [format %.2f [lindex $res 8]]
+         set elong [format %.2f [lindex $res 9]]
          set valid 1
       }
    }
@@ -953,19 +1021,10 @@ proc ::astrocomputer::astrocomputer_coord_compute { } {
          set equinox [lindex $r 6]
       }
    }
-   if {$equinox==""} {
-      set equinox J2000.0
-      set epoch $equinox
-   }
-   if {$astrocomputer(dateinp)==""} {
-      set date [::audace::date_sys2ut now]
-   } else {
-      set date [mc_date2jd $astrocomputer(dateinp)]
-   }
-   if {$astrocomputer(siteinp)==""} {
-      set astrocomputer(siteinp) "$::audace(posobs,observateur,gps)"
-   }
    set resultat ""
+   if {($objname!="")} {
+      append resultat "Object = $objname\n"
+   }   
    set hip [list 1 0 [string trim [mc_angle2deg $ra]] [string trim [mc_angle2deg $dec 90]] $equinox $epoch $mura $mudec $plx]
    #::console::affiche_resultat "hip=$hip\n\n"
    set res [mc_hip2tel $hip $date $astrocomputer(siteinp) 101325 290]
@@ -980,14 +1039,34 @@ proc ::astrocomputer::astrocomputer_coord_compute { } {
    # ---
    set res2 [mc_tt2bary [mc_date2tt $date] $ra $dec $equinox $astrocomputer(siteinp)]
    append resultat "Barycentric Julian Day = $res2\n"
-   set res [mc_baryvel $date $ra $dec $equinox $astrocomputer(siteinp)]
-   append resultat "Topocentric velocity = [lindex $res 0] km/s\n"
-   set res [mc_rvcor [list $ra $dec] $equinox KLSR] ; #|DLSR|GALC|LOG|COSM
-   append resultat "KLSR velocity = [lindex $res 0] km/s\n"
-   set res [mc_rvcor [list $ra $dec] $equinox GALC] ; #|DLSR|GALC|LOG|COSM
-   append resultat "GALC velocity = [lindex $res 0] km/s\n"
-   set res [mc_rvcor [list $ra $dec] $equinox COSM] ; #|DLSR|GALC|LOG|COSM
-   append resultat "COSM velocity = [lindex $res 0] km/s\n"
+   if {$type=="mc_ephem"} {
+      append resultat "Distance = $distua AU\n"
+      append resultat "Magnitude = $mag\n"
+      if {$objname!="Sun"} {
+         append resultat "Phase = $phase deg\n"
+         append resultat "Elongation = $elong deg\n"
+      }
+      append resultat "Diam. App. = $diamapp $diamappu\n"
+      append resultat "Long I = $longi deg\n"
+      if {$objname=="Jupiter"} {
+         append resultat "Long II = $longii deg\n"
+      }
+   } elseif  {$type=="satel_ephem"} {
+      append resultat "Distance = $distkm km\n"
+      append resultat "Sun illumination = $fracill\n"
+      append resultat "Phase = $phase deg\n"
+      append resultat "Elongation = $elong deg\n"
+      append resultat "Seen at zenith = $sitezenith\n"
+   } else {
+      set res [mc_baryvel $date $ra $dec $equinox $astrocomputer(siteinp)]
+      append resultat "Topocentric velocity = [lindex $res 0] km/s\n"
+      set res [mc_rvcor [list $ra $dec] $equinox KLSR] ; #|DLSR|GALC|LOG|COSM
+      append resultat "KLSR velocity = [lindex $res 0] km/s\n"
+      set res [mc_rvcor [list $ra $dec] $equinox GALC] ; #|DLSR|GALC|LOG|COSM
+      append resultat "GALC velocity = [lindex $res 0] km/s\n"
+      set res [mc_rvcor [list $ra $dec] $equinox COSM] ; #|DLSR|GALC|LOG|COSM
+      append resultat "COSM velocity = [lindex $res 0] km/s\n"
+   }
    # ---
    #append resultat "\n$res\n"
    #append resultat "\n$res\n"
