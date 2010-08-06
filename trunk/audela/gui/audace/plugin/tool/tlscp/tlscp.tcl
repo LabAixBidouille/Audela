@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise à jour $Id: tlscp.tcl,v 1.43 2010-07-16 21:21:45 robertdelmas Exp $
+# Mise à jour $Id: tlscp.tcl,v 1.44 2010-08-06 17:45:09 bmauclaire Exp $
 #
 
 #============================================================
@@ -1019,6 +1019,13 @@ proc ::tlscp::startCenter { visuNo { methode "" } } {
    } else {
       #--- je calcule les coordonnees J2000.0
       # mc_tel2cat Usage: Coords TypeObs Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues? ?model_only?
+      #-- Ajout Benji : 20100730
+      set ra  $private($visuNo,raObjet)
+      set dec $private($visuNo,decObjet)
+      set ra  [string trim [mc_angle2deg $ra ]]
+      set dec [string trim [mc_angle2deg $dec ]]
+      set radec [ list $ra $dec ]
+      #------------
       set dateUtc     [::audace::date_sys2ut now]
       set home        $::audace(posobs,observateur,gps)
       set pressure    101325
