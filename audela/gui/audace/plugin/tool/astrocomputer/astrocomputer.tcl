@@ -2,7 +2,7 @@
 # Fichier : astrocomputer.tcl
 # Description : Calculatrice pour l'astronomie
 # Auteur : Alain KLOTZ
-# Mise Ã  jour $Id: astrocomputer.tcl,v 1.3 2010-08-06 22:24:17 alainklotz Exp $
+# Mise Ã  jour $Id: astrocomputer.tcl,v 1.4 2010-08-07 13:12:16 alainklotz Exp $
 #
 
 #============================================================
@@ -967,6 +967,7 @@ proc ::astrocomputer::astrocomputer_coord_compute { } {
             set objname [lindex [lindex $res 0] 0]
             set res [lindex [satel_ephem "$objname" $date $astrocomputer(siteinp)] 0]
             set objname [lindex $res 0]
+            set norad [string range [string trim [lindex $objname 1]] 0 end-1]
             set objname "[string trim [lindex $objname 0]] ([string trim [lindex $objname 1]]) ([string trim [lindex $objname 2]])"
             set ra  [string trim [mc_angle2hms [lindex $res 1] 360 zero 2 auto string]]
             set dec [string trim [mc_angle2dms [lindex $res 2]  90 zero 1 + string]]
@@ -975,6 +976,7 @@ proc ::astrocomputer::astrocomputer_coord_compute { } {
             set fracill [lindex $res 6]
             set distkm [format %.2f [expr [lindex $res 3]*1e-3]]
             set sitezenith [lindex $res 7]
+            set mag [::astrocomputer::astrocomputer_coord_satel_mag $norad $fracill $distkm $phase]
             set valid 1
          }
       } else {
@@ -1053,6 +1055,9 @@ proc ::astrocomputer::astrocomputer_coord_compute { } {
       }
    } elseif  {$type=="satel_ephem"} {
       append resultat "Distance = $distkm km\n"
+      if {$mag!=99} {
+         append resultat "Magnitude = [format %.2f $mag]\n"
+      }
       append resultat "Sun illumination = $fracill\n"
       append resultat "Phase = $phase deg\n"
       append resultat "Elongation = $elong deg\n"
@@ -1077,3 +1082,42 @@ proc ::astrocomputer::astrocomputer_coord_compute { } {
    $wbase.coordinateapp.cos1_ent10 yview moveto 1.0
 }
 
+# Magnitude standard
+# La magnitude standard m0 est définie pour une distance de 1000 km et une illumination de 50%. La formule suivante donne la magnitude visuelle connaissant la distance d et l'illumination I :
+#
+# m = m0 - 15.75 + 2.5 log10 (d2 / I)
+#
+# La lettre qui suit la magnitude standard est soit d, la magnitude est calculée selon les dimensions du satellite, soit v, la magnitude est déterminée visuellement.
+# 25544  30.0 20.0  0.0 -0.5 v 404.00
+proc ::astrocomputer::astrocomputer_coord_satel_mag { norad fracill distkm phasedeg} {
+   global astrocomputer audace
+   set mag 99
+   if {$fracill==0} {
+      set mag 99
+   } else {
+      if {[info exists astrocomputer(norad,mags)]==0} {
+         set fname "$audace(rep_catalogues)/satel_magnitudes.txt"
+         set res [file exists $fname]
+         if {$res==1} {
+            set f [open $fname r]
+            set astrocomputer(norad,mags) [split [read $f] \n]
+            close $f
+            set astrocomputer(norad,mags) [lrange $astrocomputer(norad,mags) 0 end-1]
+         }
+      }
+      if {[info exists astrocomputer(norad,mags)]==1} {
+         foreach noradmags $astrocomputer(norad,mags) {
+            set noradid [lindex $noradmags 0]
+            if {$noradid==$norad} {
+               set m0 [lindex $noradmags 4]
+               set d [expr $distkm/1000.]
+               set i [expr $fracill*0.5*(1+cos($phasedeg*3.1416/180.))]
+               #::console::affiche_resultat "MAG = expr $m0 - 2.5 * log10 (1. / 0.5) + 2.5 * log10 ($d*$d / $fracill)\n"
+               set mag [expr $m0 - 2.5 * log10 (1. / 0.5) + 2.5 * log10 ($d*$d / $fracill)]
+               break
+            }
+         }
+      }
+   }
+   return $mag   
+}
