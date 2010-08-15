@@ -2,7 +2,7 @@
 # Fichier : astrocomputer.tcl
 # Description : Calculatrice pour l'astronomie
 # Auteur : Alain KLOTZ
-# Mise Ã  jour $Id: astrocomputer.tcl,v 1.4 2010-08-07 13:12:16 alainklotz Exp $
+# Mise Ã  jour $Id: astrocomputer.tcl,v 1.5 2010-08-15 07:37:00 robertdelmas Exp $
 #
 
 #============================================================
@@ -950,7 +950,7 @@ proc ::astrocomputer::astrocomputer_coord_compute { } {
       set res [mc_ephem $key]
       if {[llength $res]==1} {
          set res [satel_names $r]
-         if {$res==""} {            
+         if {$res==""} {
             #::console::affiche_resultat "r=$r\n"
             set err2 [ catch {name2coord $r} msg2 ]
             #::console::affiche_resultat "msg2=$msg2\n"
@@ -1004,7 +1004,7 @@ proc ::astrocomputer::astrocomputer_coord_compute { } {
                set diamapp $d
                set diamappu arcsec
             }
-         }            
+         }
          set diamapp [format %.4f $diamapp]
          set longi [format %.2f [lindex $res 7]]
          set longii [format %.2f [lindex $res 8]]
@@ -1026,12 +1026,12 @@ proc ::astrocomputer::astrocomputer_coord_compute { } {
    set resultat ""
    if {($objname!="")} {
       append resultat "Object = $objname\n"
-   }   
+   }
    set hip [list 1 0 [string trim [mc_angle2deg $ra]] [string trim [mc_angle2deg $dec 90]] $equinox $epoch $mura $mudec $plx]
    #::console::affiche_resultat "hip=$hip\n\n"
    set res [mc_hip2tel $hip $date $astrocomputer(siteinp) 101325 290]
-   append resultat "Date UTC = [mc_date2iso8601 $date]\n"
-   append resultat "Julian day UTC = [mc_date2jd $date]\n"
+   append resultat "UTC Date = [mc_date2iso8601 $date]\n"
+   append resultat "UTC Julian Day = [mc_date2jd $date]\n"
    append resultat "RA = $ra $equinox\nDEC = $dec $equinox\n\n"
    append resultat "RA = [mc_angle2hms [lindex $res 0] 360 zero 2 auto string] apparent\n"
    append resultat "DEC = [mc_angle2dms [lindex $res 1] 90 zero 2 + string] apparent\n"
@@ -1048,7 +1048,7 @@ proc ::astrocomputer::astrocomputer_coord_compute { } {
          append resultat "Phase = $phase deg\n"
          append resultat "Elongation = $elong deg\n"
       }
-      append resultat "Diam. App. = $diamapp $diamappu\n"
+      append resultat "App. Diam. = $diamapp $diamappu\n"
       append resultat "Long I = $longi deg\n"
       if {$objname=="Jupiter"} {
          append resultat "Long II = $longii deg\n"
@@ -1083,11 +1083,11 @@ proc ::astrocomputer::astrocomputer_coord_compute { } {
 }
 
 # Magnitude standard
-# La magnitude standard m0 est définie pour une distance de 1000 km et une illumination de 50%. La formule suivante donne la magnitude visuelle connaissant la distance d et l'illumination I :
+# La magnitude standard m0 est dè¥©nie pour une distance de 1000 km et une illumination de 50%. La formule suivante donne la magnitude visuelle connaissant la distance d et l'illumination I :
 #
 # m = m0 - 15.75 + 2.5 log10 (d2 / I)
 #
-# La lettre qui suit la magnitude standard est soit d, la magnitude est calculée selon les dimensions du satellite, soit v, la magnitude est déterminée visuellement.
+# La lettre qui suit la magnitude standard est soit d, la magnitude est calculè£ selon les dimensions du satellite, soit v, la magnitude est dè³¥rminè£ visuellement.
 # 25544  30.0 20.0  0.0 -0.5 v 404.00
 proc ::astrocomputer::astrocomputer_coord_satel_mag { norad fracill distkm phasedeg} {
    global astrocomputer audace
@@ -1119,5 +1119,5 @@ proc ::astrocomputer::astrocomputer_coord_satel_mag { norad fracill distkm phase
          }
       }
    }
-   return $mag   
+   return $mag
 }
