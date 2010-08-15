@@ -1,6 +1,6 @@
 #
 # Fichier : testaudela.cap
-# Mise a jour $Id: testaudela.cap,v 1.3 2010-07-28 21:38:07 robertdelmas Exp $
+# Mise a jour $Id: testaudela.cap,v 1.4 2010-08-15 07:25:09 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -43,18 +43,18 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(testaudela,title)             "# Test AudeLA"
+   set caption(testaudela,title)             "Test AudeLA"
    set caption(testaudela,name)              "Nome"
    set caption(testaudela,description)       "Descrizione"
-   set caption(testaudela,files)             "# Fichiers de test"
+   set caption(testaudela,files)             "File di test"
    set caption(testaudela,refresh)           "Aggiorna"
    set caption(testaudela,selectAll)         "Tutti"
    set caption(testaudela,unselectAll)       "Nessuno"
-   set caption(testaudela,run)               "# Exécuter les tests"
-   set caption(testaudela,detail)            "# Contenu du fichier sélectionné"
-   set caption(testaudela,showResult)        "# Voir le résultat"
-   set caption(testaudela,constraint)        "# Pré-requis"
-   set caption(testaudela,testCampagne)      "# Campagne de tests"
+   set caption(testaudela,run)               "Esegui il test"
+   set caption(testaudela,detail)            "Contenuto del file selezionato"
+   set caption(testaudela,showResult)        "Visualizza il risultato"
+   set caption(testaudela,constraint)        "Prerequisiti"
+   set caption(testaudela,testCampagne)      "Campagna di test"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -75,18 +75,18 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(testaudela,title)             "# Test AudeLA"
+   set caption(testaudela,title)             "AudeLA Test"
    set caption(testaudela,name)              "Name"
    set caption(testaudela,description)       "Beschreibung"
-   set caption(testaudela,files)             "# Fichiers de test"
+   set caption(testaudela,files)             "Test Datei"
    set caption(testaudela,refresh)           "Aktualisieren"
    set caption(testaudela,selectAll)         "Alle"
    set caption(testaudela,unselectAll)       "Keiner"
-   set caption(testaudela,run)               "# Exécuter les tests"
-   set caption(testaudela,detail)            "# Contenu du fichier sélectionné"
-   set caption(testaudela,showResult)        "# Voir le résultat"
-   set caption(testaudela,constraint)        "# Pré-requis"
-   set caption(testaudela,testCampagne)      "# Campagne de tests"
+   set caption(testaudela,run)               "Die Testen führen"
+   set caption(testaudela,detail)            "Inhalt der ausgewählten Datei"
+   set caption(testaudela,showResult)        "Das Ergebnis sehen"
+   set caption(testaudela,constraint)        "Voraussetzungen"
+   set caption(testaudela,testCampagne)      "Test Feldzug"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {

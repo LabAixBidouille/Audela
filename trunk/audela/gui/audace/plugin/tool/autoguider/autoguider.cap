@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.38 2010-07-22 21:21:07 robertdelmas Exp $
+# Mise a jour $Id: autoguider.cap,v 1.39 2010-08-15 07:25:26 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -318,7 +318,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,running)               "Lernen laufend"
    set caption(autoguider,delay)                 "Zeitraum (s)"
    set caption(autoguider,targetBoxSize)         "Größe der Zone"
-   set caption(autoguider,detectionThreshold)    "# Detection Threshold"
+   set caption(autoguider,detectionThreshold)    "Nachweisgrenze"
    set caption(autoguider,AD)                    "Rektaszension"
    set caption(autoguider,declinaison)           "Deklination"
    set caption(autoguider,aller_vers)            "zu gehen"
@@ -341,7 +341,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,searchRadius)          "Radius Durchsuchung (Pixel)"
    set caption(autoguider,searchThreshold)       "Min. Licht (2)"
 
-   set caption(autoguider,noSignal)              "# L'étoile est en dessous du seuil de détection"
+   set caption(autoguider,noSignal)              "Das Signal ist unter die Nachweisgrenze"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
