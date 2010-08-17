@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise à jour $Id: confcam.tcl,v 1.133 2010-05-16 10:26:17 robertdelmas Exp $
+# Mise à jour $Id: confcam.tcl,v 1.134 2010-08-17 20:39:14 michelpujol Exp $
 #
 
 namespace eval ::confCam {
@@ -1045,6 +1045,108 @@ proc ::confCam::addCameraListener { camItem cmd } {
 #------------------------------------------------------------
 proc ::confCam::removeCameraListener { camItem cmd } {
    trace remove variable "::confCam::private($camItem,camNo)" write $cmd
+}
+
+#------------------------------------------------------------
+# getDarkState
+# retourne l'etat d'activation du dark
+#
+# @param camItem : Item de la camera
+# @return 1=soustraction du dark activée 1=soustraction du dark descativée
+#------------------------------------------------------------
+proc ::confCam::getDarkState { camItem } {
+   if { $camItem == "" } {
+      return
+   }
+   set camName $::conf(camera,$camItem,camName)
+   if { [::confCam::getPluginProperty $camItem multiCamera] == 0 } {
+      if { ![info exists ::conf($camName,darkEnabled)]}  { set ::conf($camName,darkEnabled) "0" }
+      return  $::conf($camName,darkEnabled)
+   } else {
+      if { ! [ info exists ::conf($camName,$camItem,darkEnabled) ] }   { set ::conf($camName,$camItem,darkEnabled) "0" }
+      return  $::conf($camName,$camItem,darkEnabled)
+   }
+}
+
+#------------------------------------------------------------
+# getDarkFileName
+# retourne le nom du fichier de dark assoice a la camera
+#
+# @param camItem : Item de la camera
+# @return nom du fichier de dark
+#------------------------------------------------------------
+proc ::confCam::getDarkFileName { camItem } {
+   if { $camItem == "" } {
+      return
+   }
+
+   set camName $::conf(camera,$camItem,camName)
+   if { [::confCam::getPluginProperty $camItem multiCamera] == 0 } {
+      if { ![info exists ::conf($camName,darkFileName)]} { set ::conf($camName,darkFileName) "" }
+      return $::conf($camName,darkFileName)
+   } else {
+      if { ! [ info exists ::conf($camName,$camItem,darkFileName) ] }  { set ::conf($camName,$camItem,darkFileName) "" }
+      return $::conf($camName,$camItem,darkFileName)
+   }
+}
+
+#------------------------------------------------------------
+# configureDark
+# configure la soustraction du dark
+#
+# @param camItem   Item de la camera
+# @param darkState 1=soustraction du dark activée 1=soustraction du dark descativée
+# @param darkFileName nom du fichier de dark
+#------------------------------------------------------------
+proc ::confCam::configureDark { camItem darkState darkFileName} {
+   if { $camItem == "" } {
+      return
+   }
+   set catchResult [ catch {
+      set camNo [::confCam::getCamNo $camItem]
+      if { $darkState == 1 } {
+         #--- je charge le fichier avec la librairie de la caméra
+         #--- cette commande verifie l'existance du fichier et sa compatibilité
+         #--- avec les images de la caméra.
+         cam$camNo dark [file normalize $darkFileName ]
+      } else {
+         cam$camNo dark ""
+      }
+   }]
+
+   if { $catchResult != 0 } {
+      error $::errorInfo
+   } else {
+      set camName $::conf(camera,$camItem,camName)
+      if { [::confCam::getPluginProperty $camItem multiCamera] == 0 } {
+         set ::conf($camName,darkFileName) [file normalize $darkFileName ]
+         set ::conf($camName,darkEnabled)  $darkState
+      } else {
+         set ::conf($camName,$camItem,darkFileName) [file normalize $darkFileName]
+         set ::conf($camName,$camItem,darkEnabled)  $darkState
+      }
+   }
+}
+
+#------------------------------------------------------------
+# disableDark
+#    desactive la soustraction du dark, sans changer les variables de configuration
+#
+# @param camItem   Item de la camera
+#------------------------------------------------------------
+proc ::confCam::disableDark { camItem } {
+   if { $camItem == "" } {
+      return
+   }
+
+   set catchResult [ catch {
+      set camNo [::confCam::getCamNo $camItem]
+      cam$camNo dark ""
+   }]
+
+   if { $catchResult != 0 } {
+      error $::errorInfo
+   }
 }
 
 #--- Connexion au demarrage de la camera selectionnee par defaut
