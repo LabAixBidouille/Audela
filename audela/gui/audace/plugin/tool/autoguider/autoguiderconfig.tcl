@@ -2,7 +2,7 @@
 # Fichier : autoguiderconfig.tcl
 # Description : Fenetre de configuration de l'autoguidage
 # Auteur : Michel PUJOL
-# Mise à jour $Id: autoguiderconfig.tcl,v 1.20 2010-07-11 12:45:50 michelpujol Exp $
+# Mise à jour $Id: autoguiderconfig.tcl,v 1.21 2010-08-17 20:17:50 michelpujol Exp $
 #
 
 ################################################################
@@ -12,6 +12,26 @@
 
 namespace eval ::autoguider::config {
 
+}
+
+#------------------------------------------------------------
+# ::autoguider::config::run
+#    affiche la fenetre de configuration de l'autoguidage
+#
+#------------------------------------------------------------
+proc ::autoguider::config::run { visuNo } {
+   variable private
+
+   set private($visuNo,learnPendingStop) "2"
+   set private($visuNo,learn,stepLabel)  ""
+   set private($visuNo,fullImage)        0
+   set private($visuNo,selectedPoint)    ""
+   set private($visuNo,applyError)       0
+
+   #--- j'affiche la fenetre de configuration
+   set private($visuNo,This) ".autoguiderconfig$visuNo"
+   ::confGenerique::run  $visuNo $private($visuNo,This) "::autoguider::config" \
+      -modal 0 -resizable 1 -geometry $::conf(autoguider,configWindowPosition)
 }
 
 #------------------------------------------------------------
@@ -35,11 +55,13 @@ proc ::autoguider::config::acq { visuNo } {
 #   copie les variables widget() dans le tableau conf()
 #------------------------------------------------------------
 proc ::autoguider::config::apply { visuNo } {
+   variable private
    variable widget
    global conf
 
    set pendingUpdateTarget 0
    set pendingUpdateAxis 0
+   set private($visuNo,applyError)       0
 
    #--- je verifie s'il faut redessiner la cible si le mode de detection a change
    if {  $widget($visuNo,detection)       != $conf(autoguider,detection)
@@ -54,6 +76,22 @@ proc ::autoguider::config::apply { visuNo } {
    if {  $widget($visuNo,angle) != $conf(autoguider,angle) } {
       set pendingUpdateAxis 1
    }
+
+  #--- je configure la soustraction du dark
+  if { [$private($visuNo,frm).dark.fileName cget -state] == "normal" } {
+     set catchResult [ catch {
+        set camItem [::confVisu::getCamItem $visuNo]
+        ::confCam::configureDark $camItem $widget($visuNo,darkEnabled) $widget($visuNo,darkFileName)
+     }]
+
+     if { $catchResult != 0 } {
+        #--- j'affiche le message d'erreur
+        ::tkutil::displayErrorInfo [getLabel]
+        #--- je retourne 0 pour empecher de fermer la fenetre
+        set private($visuNo,applyError) 1
+     }
+  }
+
    set conf(autoguider,learn,delay)       $widget($visuNo,learn,delay)
 
    set conf(autoguider,seuilx)            $widget($visuNo,seuilx)
@@ -68,8 +106,6 @@ proc ::autoguider::config::apply { visuNo } {
    set conf(autoguider,detectionThreshold) $widget($visuNo,detectionThreshold)
    set conf(autoguider,cumulEnabled)      $widget($visuNo,cumulEnabled)
    set conf(autoguider,cumulNb)           $widget($visuNo,cumulNb)
-   set conf(autoguider,darkEnabled)       $widget($visuNo,darkEnabled)
-   set conf(autoguider,darkFileName)      $widget($visuNo,darkFileName)
    set conf(autoguider,slitWidth)         $widget($visuNo,slitWidth)
    set conf(autoguider,slitRatio)         $widget($visuNo,slitRatio)
    set conf(autoguider,declinaisonEnabled) $widget($visuNo,declinaisonEnabled)
@@ -106,7 +142,7 @@ proc ::autoguider::config::apply { visuNo } {
    if {  $pendingUpdateAxis } {
       autoguider::createAlphaDeltaAxis $visuNo $::autoguider::private($visuNo,originCoord) $conf(autoguider,angle)
    }
-   #--- je change le c
+   #--- je change le cumul des images
    if {  $widget($visuNo,cumulEnabled) != $conf(autoguider,cumulEnabled) } {
       set conf(autoguider,cumulEnabled) $widget($visuNo,cumulEnabled)
       ::autoguider::setCumul $visuNo $conf(autoguider,cumulEnabled)
@@ -114,25 +150,6 @@ proc ::autoguider::config::apply { visuNo } {
 
    update
 
-}
-#------------------------------------------------------------
-# ::autoguider::config::run
-#    affiche la fenetre de configuration de l'autoguidage
-#
-#------------------------------------------------------------
-proc ::autoguider::config::run { visuNo } {
-   variable private
-
-   set private($visuNo,learnPendingStop) "2"
-   set private($visuNo,learn,stepLabel)  ""
-   set private($visuNo,fullImage)        0
-   set private($visuNo,selectedPoint)    ""
-
-   #--- j'affiche la fenetre de configuration
-   ##set This "[confVisu::getBase $visuNo].autoguider.config"
-   set private($visuNo,This) ".autoguiderconfig$visuNo"
-   ::confGenerique::run  $visuNo $private($visuNo,This) "::autoguider::config" -modal 0
-   wm geometry $private($visuNo,This) $::conf(autoguider,configWindowPosition)
 }
 
 #------------------------------------------------------------
@@ -147,45 +164,19 @@ proc ::autoguider::config::closeWindow { visuNo } {
       tk_messageBox -title [getLabel] -type ok -message "$caption(autoguider,running)" -icon warning
       return 0
    }
+   if { $private($visuNo,applyError)== 1} {
+      #--- je reinitilise pour la fermeture suivante
+      set private($visuNo,applyError) 0
+      return 0
+   }
+
+   #--- je supprime la mise a jour automatique de l'affichage en fonction de la camera
+   ::confVisu::removeCameraListener $visuNo "::autoguider::config::onChangeCamera $visuNo"
+
    set geometry [ wm geometry $private($visuNo,This) ]
    set deb [ expr 1 + [ string first + $geometry ] ]
    set fin [ string length $geometry ]
    set ::conf(autoguider,configWindowPosition) "+[ string range $geometry $deb $fin ]"
-
-}
-
-#------------------------------------------------------------
-# ::autoguider::config::confToWidget
-#   copie les parametres du tableau conf() dans les variables widget()
-#------------------------------------------------------------
-proc ::autoguider::config::confToWidget { visuNo } {
-   variable widget
-   global conf
-
-   #--- j'initialise les variables utilisees par le widgets
-   set widget($visuNo,seuilx)            $conf(autoguider,seuilx)
-   set widget($visuNo,seuily)            $conf(autoguider,seuily)
-   set widget($visuNo,detection)         $conf(autoguider,detection)
-   set widget($visuNo,alphaSpeed)        $conf(autoguider,alphaSpeed)
-   set widget($visuNo,deltaSpeed)        $conf(autoguider,deltaSpeed)
-   set widget($visuNo,alphaReverse)      $conf(autoguider,alphaReverse)
-   set widget($visuNo,deltaSpeed)        $conf(autoguider,deltaSpeed)
-   set widget($visuNo,deltaReverse)      $conf(autoguider,deltaReverse)
-   set widget($visuNo,learn,delay)       $conf(autoguider,learn,delay)
-   set widget($visuNo,angle)             $conf(autoguider,angle)
-   set widget($visuNo,declinaisonEnabled) $conf(autoguider,declinaisonEnabled)
-   set widget($visuNo,targetBoxSize)     $conf(autoguider,targetBoxSize)
-   set widget($visuNo,detectionThreshold) $conf(autoguider,detectionThreshold)
-   set widget($visuNo,cumulEnabled)      $conf(autoguider,cumulEnabled)
-   set widget($visuNo,cumulNb)           $conf(autoguider,cumulNb)
-   set widget($visuNo,darkEnabled)       $conf(autoguider,darkEnabled)
-   set widget($visuNo,darkFileName)      $conf(autoguider,darkFileName)
-   set widget($visuNo,slitWidth)         $conf(autoguider,slitWidth)
-   set widget($visuNo,slitRatio)         $conf(autoguider,slitRatio)
-   set widget($visuNo,searchThreshin)    $conf(autoguider,searchThreshin)
-   set widget($visuNo,searchFwhm)        $conf(autoguider,searchFwhm)
-   set widget($visuNo,searchRadius)      $conf(autoguider,searchRadius)
-   set widget($visuNo,searchThreshold)   $conf(autoguider,searchThreshold)
 
 }
 
@@ -201,7 +192,32 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
 
    set private($visuNo,frm) $frm
    #--- j'initialise les variables des widgets
-   confToWidget $visuNo
+   #--- j'initialise les variables utilisees par le widgets
+   set widget($visuNo,seuilx)            $::conf(autoguider,seuilx)
+   set widget($visuNo,seuily)            $::conf(autoguider,seuily)
+   set widget($visuNo,detection)         $::conf(autoguider,detection)
+   set widget($visuNo,alphaSpeed)        $::conf(autoguider,alphaSpeed)
+   set widget($visuNo,deltaSpeed)        $::conf(autoguider,deltaSpeed)
+   set widget($visuNo,alphaReverse)      $::conf(autoguider,alphaReverse)
+   set widget($visuNo,deltaSpeed)        $:::conf(autoguider,deltaSpeed)
+   set widget($visuNo,deltaReverse)      $::conf(autoguider,deltaReverse)
+   set widget($visuNo,learn,delay)       $::conf(autoguider,learn,delay)
+   set widget($visuNo,angle)             $::conf(autoguider,angle)
+   set widget($visuNo,declinaisonEnabled) $::conf(autoguider,declinaisonEnabled)
+   set widget($visuNo,targetBoxSize)     $::conf(autoguider,targetBoxSize)
+   set widget($visuNo,detectionThreshold) $::conf(autoguider,detectionThreshold)
+   set widget($visuNo,cumulEnabled)      $::conf(autoguider,cumulEnabled)
+   set widget($visuNo,cumulNb)           $::conf(autoguider,cumulNb)
+   set widget($visuNo,slitWidth)         $::conf(autoguider,slitWidth)
+   set widget($visuNo,slitRatio)         $::conf(autoguider,slitRatio)
+   set widget($visuNo,searchThreshin)    $::conf(autoguider,searchThreshin)
+   set widget($visuNo,searchFwhm)        $::conf(autoguider,searchFwhm)
+   set widget($visuNo,searchRadius)      $::conf(autoguider,searchRadius)
+   set widget($visuNo,searchThreshold)   $::conf(autoguider,searchThreshold)
+
+   #--- la configuration de la soustraction sera faite par onChangeCamera
+   set widget($visuNo,darkEnabled) 0
+   set widget($visuNo,darkFileName) ""
 
    #--- Frame detection etoile
    TitleFrame $frm.detection -borderwidth 2 -relief ridge -text "$caption(autoguider,detection)"
@@ -313,14 +329,22 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
 
    #--- Frame dark
    TitleFrame $frm.dark -borderwidth 2 -text "$caption(autoguider,darkTitle)"
-      LabelEntry $frm.dark.filename -label "$caption(autoguider,darkFileName)" \
-         -labeljustify left -labelwidth 14 -width 5 -justify right \
-         -textvariable ::autoguider::config::widget($visuNo,darkFileName)
-      pack $frm.dark.filename -in [$frm.dark getframe] -anchor w -side top -fill x -expand 0
-      checkbutton $frm.dark.darkEnabled -text "$caption(autoguider,darkEnabled)" \
-         -command "::autoguider::config::setDark $visuNo" \
+      checkbutton $frm.dark.darkEnabled -text $::caption(autoguider,darkEnabled) \
          -variable ::autoguider::config::widget($visuNo,darkEnabled)
-      pack $frm.dark.darkEnabled -in [$frm.dark getframe] -anchor w -pady 2 -side top -fill x -expand 0
+      grid $frm.dark.darkEnabled -in [$frm.dark getframe]  -row 0 -column 0 -columnspan 1  -pady 1 -sticky w
+      ###LabelEntry $frm.dark.fileName -label $::caption(autoguider,darkFileName) \
+      ###   -labeljustify left -width 5 -justify left \
+      ###   -textvariable ::autoguider::config::widget($visuNo,darkFileName)
+      Entry $frm.dark.fileName -justify right \
+        -textvariable ::autoguider::config::widget($visuNo,darkFileName)
+      grid $frm.dark.fileName -in [$frm.dark getframe] -row 1 -column 0 -columnspan 1  -pady 1 -sticky ew
+      #--- Bouton '...'
+      button $frm.dark.select -text "..." \
+         -borderwidth 2 -command "::autoguider::config::selectDarkFile $visuNo"
+      grid $frm.dark.select -in [$frm.dark getframe] -row 1 -column 1 -columnspan 1  -pady 1 -sticky w
+
+      grid columnconfigure [ $frm.dark getframe ] 0 -weight 1
+
    grid $frm.dark -row 4 -column 1 -columnspan 1 -rowspan 1 -sticky ewns
 
    #--- Frame search
@@ -346,12 +370,36 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
    grid columnconfigure  $frm 0 -weight 1
    grid columnconfigure  $frm 1 -weight 1
 
+   #--- j'active la mise a jour automatique de l'affichage quand on change de camera
+   ::confVisu::addCameraListener $visuNo "::autoguider::config::onChangeCamera $visuNo"
+
    ::autoguider::config::setCumul $visuNo
-   ::autoguider::config::setDark $visuNo
+   ::autoguider::config::onChangeCamera $visuNo
    ::autoguider::config::setDeclinaison $visuNo
    ::autoguider::config::setDetection $visuNo
 
    pack $frm  -side top -fill x
+}
+
+#------------------------------------------------------------
+# onChangeCamera
+#   adapte l'affichage en fonction de la camera
+#   return rien
+#------------------------------------------------------------
+proc ::autoguider::config::onChangeCamera { visuNo args} {
+   variable widget
+
+   set camItem [::confVisu::getCamItem $visuNo]
+   if {  $camItem == "" } {
+      set widget($visuNo,darkEnabled) 0
+      set widget($visuNo,darkFileName) ""
+   } else {
+      set widget($visuNo,darkEnabled)       [::confCam::getDarkState $camItem]
+      set widget($visuNo,darkFileName)      [::confCam::getDarkFileName $camItem]
+   }
+
+   setDarkWidget $visuNo
+
 }
 
 #------------------------------------------------------------
@@ -454,6 +502,31 @@ proc ::autoguider::config::moveTelescope { visuNo direction label} {
 }
 
 #------------------------------------------------------------
+# selectDarkFile
+#    Ouvre la fentre de selection d'un fichier dark
+#------------------------------------------------------------
+proc ::autoguider::config::selectDarkFile { visuNo } {
+   variable private
+   variable widget
+
+   #--- je recupere le repertoire initial
+   if { $widget($visuNo,darkFileName) == "" } {
+      set  initialDirectory $::audace(rep_images)
+   } else {
+      set  initialDirectory [file dir $widget($visuNo,darkFileName) ]
+      if { [file exists $initialDirectory ] == 0 } {
+         set initialDirectory $::audace(rep_images)
+      }
+   }
+   #--- Ouvre la fenetre de choix des images
+   set widget($visuNo,darkFileName) [file native [::tkutil::box_load $private($visuNo,frm) $initialDirectory $::audace(bufNo) "1"]]
+   #--- j'affiche la fin du nom
+   $private($visuNo,frm).dark.fileName xview end
+
+}
+
+
+#------------------------------------------------------------
 # ::autoguider::config::selectStar
 #   enregistre les coordonnees de l'etoile selectionnee avec la souris
 #   dans private(visuNo,selectedPoint)
@@ -486,18 +559,23 @@ proc ::autoguider::config::setCumul { visuNo } {
 }
 
 #------------------------------------------------------------
-# ::autoguider::config::setDark
+# ::autoguider::config::setDarkWidget
 #    active/desactive le widget de saisie du nom du fichier dark
 #------------------------------------------------------------
-proc ::autoguider::config::setDark { visuNo } {
+proc ::autoguider::config::setDarkWidget { visuNo } {
    variable private
    variable widget
 
-   if { $widget($visuNo,darkEnabled) == "1" } {
-      $private($visuNo,frm).dark.filename configure -state normal
+   if { [::confVisu::getCamItem $visuNo] == "" } {
+      $private($visuNo,frm).dark.fileName    configure -state disabled
+      $private($visuNo,frm).dark.darkEnabled configure -state disabled
+      $private($visuNo,frm).dark.select     configure -state disabled
    } else {
-      $private($visuNo,frm).dark.filename configure -state disabled
+      $private($visuNo,frm).dark.fileName    configure -state normal
+      $private($visuNo,frm).dark.darkEnabled configure -state normal
+      $private($visuNo,frm).dark.select      configure -state normal
    }
+   $private($visuNo,frm).dark.fileName xview end
 }
 
 #------------------------------------------------------------
@@ -534,7 +612,6 @@ proc ::autoguider::config::setDetection { visuNo } {
       $private($visuNo,frm).detection.slitWidth configure -state normal
       $private($visuNo,frm).detection.slitRatio configure -state normal
    }
-
 }
 
 #------------------------------------------------------------
