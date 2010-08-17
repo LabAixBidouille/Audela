@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise à jour $Id: autoguider.tcl,v 1.45 2010-07-11 12:45:50 michelpujol Exp $
+# Mise à jour $Id: autoguider.tcl,v 1.46 2010-08-17 20:16:55 michelpujol Exp $
 #
 
 package provide autoguider 1.3
@@ -119,8 +119,6 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists conf(autoguider,declinaisonEnabled)] }   { set conf(autoguider,declinaisonEnabled)   "1" }
    if { ! [ info exists conf(autoguider,cumulEnabled)] }         { set conf(autoguider,cumulEnabled)         "0" }
    if { ! [ info exists conf(autoguider,cumulNb)] }              { set conf(autoguider,cumulNb)              "5" }
-   if { ! [ info exists conf(autoguider,darkEnabled)] }          { set conf(autoguider,darkEnabled)          "0" }
-   if { ! [ info exists conf(autoguider,darkFileName)] }         { set conf(autoguider,darkFileName)         "dark.fit" }
    if { ! [ info exists conf(autoguider,slitWidth)] }            { set conf(autoguider,slitWidth)            "4" }
    if { ! [ info exists conf(autoguider,slitRatio)] }            { set conf(autoguider,slitRatio)            "1.0" }
    if { ! [ info exists conf(autoguider,alphaReverse)] }         { set conf(autoguider,alphaReverse)         "0" }
@@ -129,6 +127,10 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists conf(autoguider,searchFwhm)] }           { set conf(autoguider,searchFwhm)           "3" }
    if { ! [ info exists conf(autoguider,searchRadius)] }         { set conf(autoguider,searchRadius)         "4" }
    if { ! [ info exists conf(autoguider,searchThreshold)] }      { set conf(autoguider,searchThreshold)      "40" }
+
+   #--- je supprime les variables obsoletes
+   if { [ info exists conf(autoguider,darkEnabled)] }  { unset conf(autoguider,darkEnabled)  }
+   if { [ info exists conf(autoguider,darkFileName)] } { unset conf(autoguider,darkFileName)  }
 
    if { $conf(autoguider,originCoord) == "" }                    { set conf(autoguider,originCoord)          [list 320 240 ] }
 
@@ -353,6 +355,16 @@ proc ::autoguider::adaptPanel { visuNo args } {
       #--- je configure le thread de la camera
       ::camera::setParam $camItem "detectionThreshold" $::conf(autoguider,detectionThreshold)
 
+      #--- je configure l'acquisition du dark
+      set catchResult [ catch {
+         ::confCam::configureDark $camItem [::confCam::getDarkState $camItem] [::confCam::getDarkFileName $camItem]
+     }]
+     if { $catchResult != 0 } {
+        #--- j'affiche le message d'erreur
+        ::tkutil::displayErrorInfo $::caption(autoguider,titre)
+        #--- je desactive la soustraction du dark
+        ::confCam::configureDark $camItem "0" [::confCam::getDarkFileName $camItem]
+     }
    }
 
    #--- si la cible n'est pas deja fixee, je prends les coordonnees de l'origine
@@ -373,11 +385,15 @@ proc ::autoguider::startTool { { visuNo 1 } } {
    #--- j'affiche la fenetre de l'outil d'autoguidage
    pack $private($visuNo,This) -fill y -side top
 
-   #--- je change le bind du bouton droit de la souris sur le canvas
-   ##::confVisu::createBindCanvas $visuNo <Button-3> "::autoguider::setOrigin $visuNo %x %y"
-   ::confVisu::addBindDisplay  $visuNo <Button-3> "::autoguider::setOrigin $visuNo %x %y"
-   #--- je change le bind du double-clic du bouton gauche de la souris sur le canvas
-   ::confVisu::createBindCanvas $visuNo <Double-Button-1> "::autoguider::setTargetCoord $visuNo %x %y"
+   #--- je change le bind du bouton droit de la souris
+   ::confVisu::createBindCanvas $visuNo <ButtonPress-3> "::autoguider::setOrigin $visuNo %x %y"
+   #--- je change le bind du double-clic du bouton gauche de la souris
+   ::confVisu::createBindCanvas $visuNo <Double-1> "::autoguider::setTargetCoord $visuNo %x %y"
+
+   ####--- je change le bind du bouton droit de la souris sur le canvas
+   ###::confVisu::addBindDisplay  $visuNo <Button-3> "::autoguider::setOrigin $visuNo %x %y"
+   ####--- je change le bind du double-clic du bouton gauche de la souris sur le canvas
+   ###::confVisu::createBindCanvas $visuNo <Double-Button-1> "::autoguider::setTargetCoord $visuNo %x %y"
 
    #--- j'active la mise a jour automatique de l'affichage quand on change de camera
    ::confVisu::addCameraListener $visuNo "::autoguider::adaptPanel $visuNo"
@@ -394,6 +410,17 @@ proc ::autoguider::startTool { { visuNo 1 } } {
    #--- j'affiche les axes
    createAlphaDeltaAxis $visuNo $::conf(autoguider,originCoord) $::conf(autoguider,angle)
 
+   #--- je configure la soustraction du dark
+   set catchResult [ catch {
+      set camItem [::confVisu::getCamItem $visuNo]
+      ::confCam::configureDark $camItem [::confCam::getDarkState $camItem] [::confCam::getDarkFileName $camItem]
+   }]
+   if { $catchResult != 0 } {
+      #--- j'affiche le message d'erreur
+      ::tkutil::displayErrorInfo $::caption(autoguider,titre)
+      #--- je desactive la soustraction du dark
+      ::confCam::configureDark $camItem "0" [::confCam::getDarkFileName $camItem]
+  }
 }
 
 #------------------------------------------------------------
@@ -411,6 +438,14 @@ proc ::autoguider::stopTool { visuNo } {
    #--- j'arrete le suivi
    stopAcquisition $visuNo
 
+   #--- je desactive la soustraction du dark sans changer les parametres de configuration
+   set catchResult [ catch {
+      ::confCam::disableDark [confVisu::getCamItem $visuNo]
+   }]
+   if { $catchResult != 0 } {
+     #--- j'affiche le message d'erreur
+     ::tkutil::displayErrorInfo $::caption(autoguider,titre)
+   }
    #--- je desactive l'adaptation de l'affichage quand on change de camera
    ::confVisu::removeCameraListener $visuNo "::autoguider::adaptPanel $visuNo"
    #--- je desactive l'adaptation de l'affichage quand on change de zoom
@@ -430,11 +465,13 @@ proc ::autoguider::stopTool { visuNo } {
    [::confVisu::getCanvas $visuNo] delete autoguiderstar
 
    #--- je restaure le bind par defaut du bouton droit de la souris
-   ###::confVisu::createBindCanvas $visuNo <Button-3> "default"
-   ::confVisu::removeBindDisplay  $visuNo <Button-3> "::autoguider::setOrigin $visuNo %x %y"
-
+   ::confVisu::createBindCanvas $visuNo <ButtonPress-3> "default"
    #--- je restaure le bind par defaut du double-clic du bouton gauche de la souris
-   ::confVisu::createBindCanvas $visuNo <Double-Button-1> "default"
+   ::confVisu::createBindCanvas $visuNo <Double-1> "default"
+   ####--- je restaure le bind par defaut du bouton droit de la souris
+   ###::confVisu::removeBindDisplay  $visuNo <Button-3> "::autoguider::setOrigin $visuNo %x %y"
+   ####--- je restaure le bind par defaut du double-clic du bouton gauche de la souris
+   ###::confVisu::createBindCanvas $visuNo <Double-Button-1> "default"
 
    #--- je masque le panneau
    pack forget $private($visuNo,This)
