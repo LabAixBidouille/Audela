@@ -2,7 +2,7 @@
 # @file processgui.tcl
 # Description : Fentre de configuration des traitements eShel
 # Auteur : Michel PUJOL
-# Mise à jour $Id: processgui.tcl,v 1.2 2010-05-26 17:47:00 robertdelmas Exp $
+# Mise à jour $Id: processgui.tcl,v 1.3 2010-08-17 20:20:47 michelpujol Exp $
 #
 
 ##------------------------------------------------------------
@@ -109,21 +109,23 @@ proc ::eshel::processgui::fillConfigPage { frm visuNo } {
 
    #--- Creation des onglets
    set notebook [ NoteBook $frm.notebook ]
-   ###$notebook insert end "main"  -text $::caption(eshel,process,title)
    $notebook insert end "roadmap"  -text $::caption(eshel,process,roadmap)
    $notebook insert end "nightlog" -text $::caption(eshel,process,rawImage)
    $notebook insert end "reference" -text $::caption(eshel,process,referenceImage)
+   $notebook insert end "archive" -text   $::caption(eshel,process,archiveImage)
    pack $frm.notebook  -side top -fill both -expand 1
 
    ###set private(mainFrame) [$notebook getframe "main"]
    set private(rawFrame) [$notebook getframe "nightlog"]
    set private(referenceFrame) [$notebook getframe "reference"]
    set private(roadmapFrame) [$notebook getframe "roadmap"]
+   set private(archiveFrame) [$notebook getframe "archive"]
 
    #--- j'affiche les wigdets dans les frames
    fillRawPage       $private(rawFrame)  $visuNo
    fillReferencePage $private(referenceFrame) $visuNo
    fillRoadmapPage   $private(roadmapFrame)   $visuNo
+   fillArchivePage   $private(archiveFrame)   $visuNo
 
    pack $frm  -side top -fill both -expand 1
 
@@ -165,7 +167,6 @@ proc ::eshel::processgui::fillRawPage { frm visuNo } {
    set paned [PanedWindow $frm.paned -side left]
    set paned1 [$frm.paned add]
    set private(serieTable) $paned1.serie.table
-   set private(serieMenu)  $paned1.serie.menu
 
    #--- frame des series
    TitleFrame $paned1.serie -borderwidth 2 -relief ridge -text "$::caption(eshel,process,serie)"
@@ -178,7 +179,6 @@ proc ::eshel::processgui::fillRawPage { frm visuNo } {
          lappend columnList 0 $keywordName center
       }
 
-      ###tablelist::addBWidgetComboBox
       #--- Table des series
       ::tablelist::tablelist $private(serieTable) \
          -columns $columnList \
@@ -212,7 +212,6 @@ proc ::eshel::processgui::fillRawPage { frm visuNo } {
    #--- frame de la table des fichiers
    set paned2 [$frm.paned add]
    set private(fileTable) $paned2.file.table
-   set private(fileMenu)  $paned2.file.menu
 
    TitleFrame $paned2.file -borderwidth 2 -relief ridge -text "$::caption(eshel,process,file)"
       #--- scrollbars
@@ -258,13 +257,17 @@ proc ::eshel::processgui::fillRawPage { frm visuNo } {
    pack $paned -side top -fill both -expand 1
 
    #--- pop-up menu associe a la table des series
+   set private(serieMenu)  $paned1.serie.menu
    menu $private(serieMenu) -tearoff no
    $private(serieMenu) add command -label $::caption(eshel,process,remove)  \
       -command "::eshel::processgui::removeSerie"
+   $private(serieMenu) add command -label $::caption(eshel,process,moveRawToArchive)  \
+      -command "::eshel::processgui::moveRawToArchive $visuNo"
 
    bind [$private(serieTable) bodypath] <<Button3>> [list tk_popup $private(serieMenu) %X %Y]
 
    #--- pop-up menu associe a la table des fichiers ignores
+   set private(fileMenu)  $paned2.file.menu
    menu $private(fileMenu) -tearoff no
    $private(fileMenu) add command -label $::caption(eshel,process,makeSerie)  \
       -command "::eshel::processgui::makeSeries $visuNo"
@@ -285,7 +288,7 @@ proc ::eshel::processgui::fillReferencePage { frm visuNo } {
 
    set private(referenceTable) $frm.reference.table
 
-   #--- frame des series
+   #--- frame des series de reference
    TitleFrame $frm.reference -borderwidth 2 -relief ridge -text "$::caption(eshel,process,referenceImage)"
       #--- scrollbars
       scrollbar $frm.reference.ysb -command "$private(referenceTable) yview"
@@ -382,6 +385,66 @@ proc ::eshel::processgui::fillRoadmapPage { frm visuNo } {
    pack $frm.roadmap -side top -fill both -expand 1
 }
 
+##------------------------------------------------------------
+#   cree les widgets dans l'onglet des images d'archive
+# @param frm nom tk de la frame cree par ::eshel::processgui::fillConfigPage
+# @param visuNo numero visu qui lance la fenetre
+# @return  rien
+# @private
+#------------------------------------------------------------
+proc ::eshel::processgui::fillArchivePage { frm visuNo } {
+   variable private
+
+   set private(archiveTable) $frm.archive.table
+
+   #--- frame des series de archive
+   TitleFrame $frm.archive -borderwidth 2 -relief ridge -text $::caption(eshel,process,archiveImage)
+      #--- scrollbars
+      scrollbar $frm.archive.ysb -command "$private(archiveTable) yview"
+      scrollbar $frm.archive.xsb -command "$private(archiveTable) xview" -orient horizontal
+
+      #--- je cree la liste des colonnes
+      foreach keywordName [::eshel::process::getSerieAttributeNames] {
+         lappend columnList 0 $keywordName center
+      }
+
+      #--- Table des series d'archive
+      ::tablelist::tablelist $private(archiveTable) \
+         -columns $columnList \
+         -xscrollcommand [list $frm.archive.xsb set] \
+         -yscrollcommand [list $frm.archive.ysb set] \
+         -labelcommand "tablelist::sortByColumn" \
+         -exportselection 0 \
+         -setfocus 1 \
+         -forceeditendcommand  0 \
+         -activestyle none
+
+      #--- je donne un nom a chaque colonne
+      set col 0
+      foreach keywordName [::eshel::process::getSerieAttributeNames] {
+         $private(archiveTable) columnconfigure $col -name $keywordName
+         incr col
+      }
+
+      #--- je place la table et les scrollbars dans la frame
+      grid $private(archiveTable) -in [$frm.archive getframe] -row 0 -column 0 -sticky ewns
+      grid $frm.archive.ysb -in [$frm.archive getframe] -row 0 -column 1 -sticky nsew
+      grid $frm.archive.xsb -in [$frm.archive getframe] -row 1 -column 0 -sticky ew
+      grid rowconfig    [$frm.archive getframe] 0 -weight 1
+      grid columnconfig [$frm.archive getframe] 0 -weight 1
+
+      #--- menu
+      set private(archiveMenu)  $frm.archive.menu
+      #--- pop-up menu associe a la table des archives
+      menu $private(archiveMenu) -tearoff no
+      $private(archiveMenu) add command -label $::caption(eshel,process,moveArchiveToRaw) \
+         -command "::eshel::processgui::moveArchiveToRaw $visuNo"
+
+      bind [$private(archiveTable) bodypath] <<Button3>> [list tk_popup $private(archiveMenu) %X %Y]
+
+   pack $frm.archive -side top -fill both -expand 1
+}
+
 ##----------------------------------------------------------------------------
 #   - desactive les boutons manuels si le mode automatique est selectionne
 #   - active les boutons manuels si le mode manuel est selectionne
@@ -422,7 +485,7 @@ proc ::eshel::processgui::generateRoadmap { } {
    }
 }
 
-##
+##------------------------------------------------------------
 #   affiche la liste des images brutes
 # @return  rien
 # @private
@@ -439,10 +502,11 @@ proc ::eshel::processgui::copyRawToTable { } {
    #--- je vide la table des series identifiees
    $private(serieTable)  delete 0 end
 
-   #--- je remplis les tables des fichiers bruts
+   #--- je remplis les tables des fichiers bruts isoles et la table des series de fichiers
    set filesNode [::eshel::process::getFilesNode]
    foreach fileNode [::dom::tcl::node children $filesNode] {
       if { [::dom::tcl::node cget $fileNode -nodeName] == "FILE" } {
+         #--- c'est un fichier brut isolé
          set fileName [::dom::element getAttribute $fileNode "FILENAME"]
          #--- j'insere la nouvelle ligne a la fin de la table
          $private(fileTable) insert end $fileName
@@ -452,6 +516,7 @@ proc ::eshel::processgui::copyRawToTable { } {
             $private(fileTable) cellconfigure end,$keywordName -text $keywordValue -editable 1
          }
       } else {
+         #--- c'est une serie de fichiers bruts
          if { [::dom::element getAttribute $fileNode "RAW"] == 1 } {
             #--- j'insere une ligne vide a la fin de la table
             $private(serieTable) insert end " "
@@ -481,7 +546,7 @@ proc ::eshel::processgui::copyRawToTable { } {
 }
 
 ##------------------------------------------------------------
-#   affiche les images de reference
+# affiche le nom des images de reference dans la table de reference
 # @return  rien
 # @private
 #------------------------------------------------------------
@@ -544,6 +609,60 @@ proc ::eshel::processgui::copyRoadmapToTable { } {
    }
 }
 
+##------------------------------------------------------------
+# copyArchiveToTable
+#   Copie les nom des fichiers archives dans la tabledes archives
+#
+# @return  rien
+# @private
+#------------------------------------------------------------
+proc ::eshel::processgui::copyArchiveToTable { } {
+   variable private
+
+   if { [winfo exists $private(frm)] == 0 } {
+      return 0
+   }
+
+   #--- je vide la table des fichiers archives
+   $private(archiveTable)  delete 0 end
+
+   #--- je remplis les tables des fichiers bruts isoles et la table des series de fichiers
+   set archiveNode [::eshel::process::getArchiveNode]
+   foreach fileNode [::dom::tcl::node children $archiveNode] {
+      if { [::dom::tcl::node cget $fileNode -nodeName] == "FILE" } {
+         #--- c'est un fichier brut isolé
+         set fileName [::dom::element getAttribute $fileNode "FILENAME"]
+         #--- j'insere la nouvelle ligne a la fin de la table
+         $private(archiveTable) insert end $fileName
+         foreach keywordName [::eshel::process::getFileAttributeNames] {
+            set keywordValue [ ::dom::element getAttribute $fileNode $keywordName]
+            #--- je copie l'attribut dans la colonne du mot cle
+            $private(archiveTable) cellconfigure end,$keywordName -text $keywordValue -editable 1
+         }
+      } else {
+         #--- c'est une serie de fichiers bruts
+         #--- j'insere une ligne vide a la fin de la table
+         $private(archiveTable) insert end " "
+         #--- je renseigne les cellules de la ligne vide
+         foreach keywordName [::eshel::process::getSerieAttributeNames] {
+            switch $keywordName {
+               "FILES" {
+                  #--- j'affiche le nombre de fichiers
+                  set nbFiles [llength [::dom::tcl::node children $fileNode]]
+                  $private(archiveTable) cellconfigure end,$keywordName -text $nbFiles -editable 1
+               }
+               default {
+                  set keywordValue [::dom::element getAttribute $fileNode $keywordName]
+                  $private(archiveTable) cellconfigure end,$keywordName -text $keywordValue
+               }
+            }
+         }
+      }
+   }
+
+   #--- je trie la table
+   ###$private(archiveTable) sortbycolumn  $private(sortedColumn) -increasing
+}
 ##----------------------------------------------------------------------------
 # met a jour l'etat de traitement d'un fichier
 #   - todo    : traitement a faire
@@ -630,6 +749,8 @@ proc ::eshel::processgui::resetTables { } {
    $private(referenceTable)  delete 0 end
    #--- je vide la table des traitements
    $private(roadmapTable)  delete 0 end
+   #--- je vide la table des archives
+   $private(archiveTable)  delete 0 end
    update
 
 }
@@ -751,6 +872,84 @@ proc ::eshel::processgui::makeSeries { visuNo } {
       #--- j'enregistre les modifications des mots cles dans les images
       ::eshel::process::updateFileKeywords
       #--- je supprime la roadmap (actualiser la raodmap prendrait trop de temps)
+      ::eshel::process::deleteRoadmap
+      ::eshel::processgui::copyRoadmapToTable
+   }]
+   if { $catchResult !=0 } {
+      ::tkutil::displayErrorInfo $::caption(eshel,title)
+   }
+}
+
+##------------------------------------------------------------
+# moveArchiveToRaw
+#   deplace une serie du repertoire archive vers le repertoire raw
+# @param visuNo  numero de la visu
+# @return  rien
+# @private
+#------------------------------------------------------------
+proc ::eshel::processgui::moveArchiveToRaw { visuNo } {
+   variable private
+
+   #--- je recupere le nom de la serie
+   set serieIndex [$private(archiveTable)  curselection]
+   #--- je retourne immediatemment si aucun item n'est selectionne
+   if { $serieIndex == "" } {
+      tk_messageBox -title "$::caption(eshel,title) - $::caption(eshel,process,serie)" -type ok \
+         -message $::caption(eshel,process,selectSeries) -icon error
+      return
+   }
+   #--- je recupere l'ID de la serie
+   set serieId [$private(archiveTable) cellcget $serieIndex,SERIESID -text]
+
+
+   #--- je supprime la serie
+   set catchResult [catch {
+      #--- je deplace les fichiers dans le repertoire RAW
+      ::eshel::process::moveArchiveToRaw $serieId
+      #--- je refraichis le contenu des tables des fichiers bruts
+      copyRawToTable
+      #--- je refraichis le contenu des tables des archives
+      copyArchiveToTable
+      #--- je supprime la roadmap (actualiser la roadmap prendrait trop de temps)
+      ::eshel::process::deleteRoadmap
+      ::eshel::processgui::copyRoadmapToTable
+   }]
+   if { $catchResult !=0 } {
+      ::tkutil::displayErrorInfo $::caption(eshel,title)
+   }
+}
+
+##------------------------------------------------------------
+# moveRawToArchive
+#   deplace une serie du repertoire raw vers le repertoire archive
+# @param visuNo  numero de la visu
+# @return  rien
+# @private
+#------------------------------------------------------------
+proc ::eshel::processgui::moveRawToArchive { visuNo } {
+   variable private
+
+   #--- je recupere le nom de la serie dans la table des series
+   set serieIndex [$private(serieTable)  curselection]
+   #--- je retourne immediatemment si aucun item n'est selectionne
+   if { $serieIndex == "" } {
+      tk_messageBox -title "$::caption(eshel,title) - $::caption(eshel,process,serie)" -type ok \
+         -message $::caption(eshel,process,selectSeries) -icon error
+      return
+   }
+   #--- je recupere l'ID de la serie
+   set serieId [$private(serieTable) cellcget $serieIndex,SERIESID -text]
+
+
+   #--- je supprime la serie
+   set catchResult [catch {
+      #--- je deplace les fichiers dans le repertoire RAW
+      ::eshel::process::moveRawToArchive $serieId
+      #--- je refraichis le contenu des tables des fichiers bruts
+      copyRawToTable
+      #--- je refraichis le contenu des tables des archives
+      copyArchiveToTable
+      #--- je supprime la roadmap (actualiser la roadmap prendrait trop de temps)
       ::eshel::process::deleteRoadmap
       ::eshel::processgui::copyRoadmapToTable
    }]

@@ -2,7 +2,7 @@
 # Fichier : eshel.tcl
 # Description : outil de fabrication des fichier Kit et de deploiement des plugin
 # Auteurs : Michel Pujol
-# Mise à jour $Id: eshel.tcl,v 1.7 2010-05-26 17:38:43 robertdelmas Exp $
+# Mise à jour $Id: eshel.tcl,v 1.8 2010-08-17 20:21:15 michelpujol Exp $
 #
 
 ##------------------------------------------------------------
@@ -130,14 +130,10 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
       source [ file join $dir session.tcl ]
       source [ file join $dir acquisition.tcl ]
       source [ file join $dir makeseries.tcl ]
-      if { [file exists [ file join $dir libesheltcl.dll]]  } {
-         set oldPath "[pwd]"
+      if { [file exists [ file join $dir libeshel.dll]]  } {
          set catchResult [ catch {
-            cd "$dir"
-            ###load [ file join $dir fitstcl.dll]
-            load [ file join $dir libesheltcl.dll]
+            load [ file join $dir libeshel.dll]
          } ]
-         cd "$oldPath"
          if { $catchResult == 1 } {
             ::console::affiche_erreur "$::errorInfo\n"
          }
@@ -218,7 +214,7 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
    if { ! [ info exists conf($prefix,cosmicEnabled)] }    { set conf($prefix,cosmicEnabled)    0 }
    if { ! [ info exists conf($prefix,cosmicThreshold)] }  { set conf($prefix,cosmicThreshold)  400 }
    if { ! [ info exists conf($prefix,flatFieldEnabled)] } { set conf($prefix,flatFieldEnabled) 0 }
-   if { ! [ info exists conf($prefix,responseOption)] }   { set conf($prefix,responseOption)   "AUTO" }
+   if { ! [ info exists conf($prefix,responseOption)] }   { set conf($prefix,responseOption)   "NONE" }  ;# MANUAL , AUTO, NONE
    if { ! [ info exists conf($prefix,responseFileName)] } { set conf($prefix,responseFileName) "" }
    #--- liste des mots clefs a mettre dans les acquisitions
    set conf(keyword,visu1,check) "1,check,IMAGETYP 1,check,SERIESID 1,check,DETNAM 1,check,TELESCOP 1,check,OBSERVER 1,check,OBJNAME 1,check,EXPOSURE 1,check,INSTRUME 1,check,SWCREATE 1,check,SITENAME 1,check,SITELONG 1,check,SITELAT 1,check,SITEELEV"
