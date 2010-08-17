@@ -2,7 +2,7 @@
 # Fichier : testaudela.tcl
 # Description : Outil de test automatique pour AudeLA
 # Auteurs : Michel Pujol
-# Mise a jour $Id: testaudela.tcl,v 1.3 2010-07-24 08:28:56 robertdelmas Exp $
+# Mise a jour $Id: testaudela.tcl,v 1.4 2010-08-17 20:41:16 michelpujol Exp $
 #
 
 #####################
@@ -130,7 +130,7 @@ proc ::testaudela::createPluginInstance { { in ".audace" } { visuNo 1 } } {
    if { ! [ info exists conf(testaudela,activeConstraintList) ] } { set conf(testaudela,activeConstraintList) "AUDACE" }
 
    #--- j'initialise la liste des contraintes
-   set private(constraints) [list "AUDACE" "AUDINE" "APN" "ASCOM" "AUDINET" "ESHEL" "LX200" "QUICKREMOTE" "WEBCAM_RGB" "WEBCAM_NB" "CARTEDUCIELV3"]
+   set private(constraints) [list "AUDACE" "AUDINE" "APN" "ASCOM" "AUDINET" "ESHEL" "LX200" "QUICKREMOTE" "WEBCAM_RGB" "WEBCAM_NB" "CARTEDUCIELV3" "IMAGINGSOURCE" ]
    return ""
 
 }
@@ -503,7 +503,7 @@ proc ::testaudela::runTests { { fileList "all" } } {
       }
       #--- je declare la liste des fichiers de test
       ::tcltest::configure -file $fileList
-      console::disp  "::tcltest::configure -file $fileList\n"
+      ###console::disp  "::tcltest::configure -file $fileList\n"
       #--- je declare les contraintes
       foreach constraintName $private(constraints) {
          if { [lsearch $::conf(testaudela,activeConstraintList) $constraintName] != -1 } {
@@ -532,14 +532,11 @@ proc ::testaudela::runTests { { fileList "all" } } {
          set testResult [read -nonewline $hfile ]
          #--- je decoupe le resultat en une liste de lignes
          set testResult [split $testResult "\n"]
-         console::disp  "testResult=$testResult\n"
          #--- je recupere la ligne qui contient les nombres de tests
          set testResult [lsearch -inline -regexp $testResult ":\tTotal\t" ]
-         console::disp  "testResult=$testResult\n"
          #--- je scanne les nombres de tests
          scan $testResult "[file tail [info script]]:\tTotal\t%d\tPassed\t%d\tSkipped\t%d\tFailed\t%d" total passed skipped failed
          console::disp  "failed=$failed\n"
-
       }
       ::close $hfile
 
