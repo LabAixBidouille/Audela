@@ -81,9 +81,9 @@ ex&eacute;cut&eacute;s <br>
 </blockquote>
 <p>3) s&eacute;lectionner les contraintes</p>
 <blockquote>
-  <p>Les contraintes permettent d'ignorer les tests qui
-n&eacute;cessitent des p&eacute;riph&eacute;riques ou des logiciels qui
-ne sont pas disponibles. Les contraintes de chaque test sont
+  <p>Les contraintes permettent de ne lancer que les tests pour
+lesquels les p&eacute;riph&eacute;riques ou des logiciels requis sont
+pr&eacute;sents. Les contraintes de chaque test sont
 pr&eacute;cis&eacute;es dans le code source de chaque test..<br>
   </p>
   <p>Seuls les tests associ&eacute;s aux contraintes coch&eacute;es
@@ -139,19 +139,27 @@ la console d'Audela</span> , il faut saisir la commande <span
 Cette commande retourne une des valeurs suivantes : <br>
 <ul>
   <li>&nbsp;&nbsp;&nbsp; 0&nbsp; si tous les tests sont pass&eacute;s
-avec succ&eacute;s </li>
+avec suc&eacute;s </li>
   <li>&nbsp;&nbsp;&nbsp; 1, 2, 3, ...&nbsp;&nbsp; le nombre de test
 FAILED</li>
   <li>&nbsp; &nbsp; -1 si une erreur impr&eacute;vue a interrompu la
 campagne de test&nbsp; </li>
 </ul>
+<br>
 Pour lancer la campagne de test <span style="font-weight: bold;">depuis
-un fen&ecirc;tre terminal Windows ou linux</span>, il faut se palcer
+un fen&ecirc;tre terminal Windows ou linux</span>, il faut se placer
 dans le r&eacute;pertoire de binaires d'Audela et saisir la commande <span
  style="font-weight: bold;">:<br>
-audela "&lt;repertoire
+audela "&lt;r&eacute;pertoire
 audela&gt;/gui/audace/plugin/tool/testaudela/testaudela.tcl"
-"::testaudela::runTests"&nbsp;</span>
+"::testaudela::runTests" <br>
+<br>
+</span>Le r&eacute;sultatest dans le fichier <span
+ style="font-weight: bold;">testresult.log</span> plac&eacute; dans le
+r&eacute;pertoire de travail d'Audela.<span style="font-weight: bold;"><br>
+<br>
+<br>
+</span>
 <blockquote></blockquote>
 <h1><a name="creation_fichier_test"></a>Cr&eacute;ation d'un nouveau
 fichier de test</h1>
