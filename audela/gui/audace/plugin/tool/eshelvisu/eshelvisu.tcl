@@ -2,7 +2,7 @@
 # Fichier : eshelvisu.tcl
 # Description : Visionneuse d'images eShel
 # Auteurs : Michel Pujol
-# Mise a jour $Id: eshelvisu.tcl,v 1.8 2010-05-23 06:47:03 robertdelmas Exp $
+# Mise a jour $Id: eshelvisu.tcl,v 1.9 2010-08-17 20:37:42 michelpujol Exp $
 #
 
 namespace eval ::eshelvisu {
@@ -595,7 +595,6 @@ proc ::eshelvisu::showCalibrationLine { visuNo } {
          $hFile move $private($visuNo,orderHduNum)
          set wide_x [lindex [lindex [$hFile get table "wide_x" 1 ] 0] 0]
          set wide_y [lindex [lindex [$hFile get table "wide_y" 1 ] 0] 0]
-
          #--- je recupere la liste des raies de calibration
          $hFile move $private($visuNo,lineHduNum)
          ####set nbLine [lindex [lindex [$hFile get keyword "NAXIS2"] 0] 1]
@@ -631,13 +630,12 @@ proc ::eshelvisu::showCalibrationLine { visuNo } {
                }
                set x [ expr int($x+0.5) + $min_x ]
                set y [ expr int($y+0.5) +1]
-               ###::console::disp " x=$x y=$y\n"
-               set boxSize 11
                #--- je calcule les ccordonnees de la boite dans le buffer
                set x1 [expr int($x) - $wide_x/2]
                set x2 [expr int($x) + $wide_x/2]
                set y1 [expr int($y) - $wide_y/2]
                set y2 [expr int($y) + $wide_y/2]
+
                #--- je calcule les coordonnees dans le canvas
                set coord [::confVisu::picture2Canvas $visuNo [list $x1 $y1 ]]
                set x1 [lindex $coord 0]
@@ -645,8 +643,7 @@ proc ::eshelvisu::showCalibrationLine { visuNo } {
                set coord [::confVisu::picture2Canvas $visuNo [list $x2 $y2 ]]
                set x2 [lindex $coord 0]
                set y2 [lindex $coord 1]
-               ###$hCanvas create text [lindex $coord 0] [lindex $coord 1] -text $orderlabel -tag orderLabel -state normal -fill yellow
-               $hCanvas create rect [list $x1 $y1 $x2 $y2] -outline "#FF5522" -width 1 -dash {- } -offset center -tag "calibrationLine"
+               $hCanvas create rect [list $x1 $y1 $x2 $y2] -outline "#FF5522" -width 1 -offset center -tag "calibrationLine"
             }
 
             if { $private($visuNo,showObservatedLines) == 1 } {
@@ -656,7 +653,6 @@ proc ::eshelvisu::showCalibrationLine { visuNo } {
                set lambda [lindex [lindex [$hFile get table "lambda_obs" $i ] 0] 0]
                set validLine [lindex [lindex [$hFile get table "valid" $i ] 0] 0]
 
-               set boxSize 12
                #--- je calcule les ccordonnees de la boite dans le buffer
                set x1 [expr int($x) - $wide_x/2 ]
                set x2 [expr int($x) + $wide_x/2 ]
@@ -669,7 +665,6 @@ proc ::eshelvisu::showCalibrationLine { visuNo } {
                set coord [::confVisu::picture2Canvas $visuNo [list $x2 $y2 ]]
                set x2 [lindex $coord 0]
                set y2 [lindex $coord 1]
-               ###$hCanvas create text [lindex $coord 0] [lindex $coord 1] -text $orderlabel -tag orderLabel -state normal -fill yellow
                if { $validLine == 1 } {
                   set dash  ""
                } else {
