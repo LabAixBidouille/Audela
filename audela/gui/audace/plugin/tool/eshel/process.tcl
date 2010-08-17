@@ -2,7 +2,7 @@
 # Fichier : process.tcl
 # Description : traitements eShel
 # Auteur : Michel PUJOL
-# Mise a jour $Id: process.tcl,v 1.4 2010-05-01 15:31:28 michelpujol Exp $
+# Mise a jour $Id: process.tcl,v 1.5 2010-08-17 20:20:32 michelpujol Exp $
 #
 
 ################################################################
@@ -71,8 +71,10 @@ namespace eval ::eshel::process {
    set private(nightlog) [::dom::DOMImplementation create]
    set nightNode [::dom::document createElement  $private(nightlog) NIGHTLOG ]
    set filesNode [::dom::document createElement  $nightNode "FILES" ]
+   set archiveNode [::dom::document createElement  $nightNode "ARCHIVE" ]
    set private(running) 0
    set private(threadNo) ""
+
 }
 
 
@@ -198,7 +200,7 @@ proc ::eshel::process::generateNightlog { } {
    }
 
    #--- je cree les series
-   ::eshel::process::findSeries
+   ::eshel::process::findSeries "FILES"
 
    #--- je recupere la liste des fichiers de reference
    set globFileList [glob -nocomplain -type f -join "$::conf(eshel,referenceDirectory)" *.* ]
@@ -319,6 +321,86 @@ proc ::eshel::process::generateNightlog { } {
          }
       }
    }
+}
+
+## ------------------------------------------------------------
+# generateArchiveList
+#   genere la liste des archives
+#   le resultat est dans la variable le tag ARCHIVE
+#
+#------------------------------------------------------------
+proc ::eshel::process::generateArchiveList { } {
+   variable private
+
+   set nightNode $private(nightlog)
+   #--- je vide le node s'il existe deja
+   set archiveNode [::eshel::process::getArchiveNode]
+   if { $archiveNode != "" } {
+      ::dom::tcl::destroy $archiveNode
+   }
+
+   set nightNode [::dom::tcl::document cget $private(nightlog) -documentElement]
+   set archiveNode [::dom::document createElement $nightNode "ARCHIVE"]
+
+   #--- je recupere la liste des fichiers de l'archive
+   set globFileList [glob -nocomplain -type f -join "$::conf(eshel,archiveDirectory)" *.* ]
+   foreach fileName $globFileList {
+      set catchResult [catch {
+         #--- je lis les mots clefs du fichier
+         set fileKeywords [fitsheader $fileName]
+      }]
+      if { $catchResult !=0 } {
+         #--- j'ignore ce fichier car ce n'est pas un fichier FITS
+         logError "process::generateArchiveList : $fileName is not a FITS file"
+         continue
+      }
+      #--- je copie les mots cles dans un array
+      array unset keywordArray
+      foreach fileKeyword $fileKeywords {
+         set keywordArray([lindex $fileKeyword 0]) [lindex $fileKeyword 1]
+      }
+
+      #--- j'ajoute le fichier dans l'arbre
+      set fileNode  [::dom::document createElement $archiveNode "FILE" ]
+      #--- je memorise le nom du fichier
+      ::dom::element setAttribute $fileNode "FILENAME" [file tail $fileName]
+
+      #--- je recherche les mots clefs obligatoires
+      foreach mandatoryKeywordName $private(mandatoryKeywords) {
+         if { [info exists keywordArray($mandatoryKeywordName)] } {
+            set keywordValue $keywordArray($mandatoryKeywordName)
+         } else {
+            set keywordValue  ""
+         }
+
+         if { $mandatoryKeywordName == "EXPOSURE" && $keywordValue == ""} {
+            #--- si EXPOSURE n'existe pas , je recupere la valeur de EXPTIME
+            if { [info exists keywordArray(EXPTIME)] } {
+               set keywordValue  $keywordArray(EXPTIME)
+            }
+         }
+
+         if { $mandatoryKeywordName == "DATE-OBS" && $keywordValue != ""} {
+            #--- si l'heure est dans UT-START au lieu de DATE-OBS
+            #--- alors je concatene les deux mots clefs DATE_OBS+UT-START dans DATE-OBS
+            if { [string first "/" $keywordValue] != -1 && [info exists keywordArray(UT-START)] } {
+               set d1 [split $keywordValue "/"]
+               if { [llength $d1] == 3 } {
+                  set d2 "[lindex $d1 2]  [lindex $d1 1] [lindex $d1 0]"
+                  set h1 $keywordArray(UT-START)
+                  set h2 [split $h1 ":"]
+                  set keywordValue [mc_date2iso8601 "$d2 $h2"]
+               }
+            }
+         }
+         #--- je memorise la valeur du mot clef (chaine vide par defaut)
+         ::dom::element setAttribute $fileNode $mandatoryKeywordName $keywordValue
+      }
+      array unset keywordArray
+   }
+
+   #--- je cree les series
+   ::eshel::process::findSeries "ARCHIVE"
 }
 
 #------------------------------------------------------------
@@ -1034,7 +1116,18 @@ proc ::eshel::process::getRoadmapNbFiles { } {
 }
 
 
+#------------------------------------------------------------
+# ::eshel::process::getArchiveNode
+#   retourne le node contenant les fichiers archives
+#------------------------------------------------------------
+proc ::eshel::process::getArchiveNode { } {
+   variable private
 
+   set nightNode [::dom::tcl::document cget $private(nightlog) -documentElement]
+   set archiveNode [lindex [set [::dom::element getElementsByTagName $nightNode "ARCHIVE" ]] 0]
+
+   return $archiveNode
+}
 
 #------------------------------------------------------------
 # ::eshel::process::getFilesNode
@@ -1145,11 +1238,13 @@ proc ::eshel::process::generateAll { } {
       ::eshel::process::generateProcess
       ::eshel::process::generateScript
       ::eshel::process::saveFile
+      ::eshel::process::generateArchiveList
 
       #--- j'affiche le resultat dans la fenetre des traitements
       ::eshel::processgui::copyRawToTable
       ::eshel::processgui::copyReferenceToTable
       ::eshel::processgui::copyRoadmapToTable
+      ::eshel::processgui::copyArchiveToTable
       ###set date [clock format [clock seconds] -gmt 1 -format "%Y-%m-%dT%H:%M:%S"]
       ###logInfo "==== eShel Generate roadmap End UT: $date =====\n"
    } ]
@@ -1657,13 +1752,15 @@ proc ::eshel::process::findCompatibleImage { referenceNode searchedImageType key
 
 #------------------------------------------------------------
 # findSeries
-#   detecte les series
+#   detecte les series dans la rubrique FILES
+#
+# @param listName nom de liste (FILES ou ARCHIVE)
 #------------------------------------------------------------
-proc ::eshel::process::findSeries { } {
+proc ::eshel::process::findSeries { nodeName } {
    variable private
 
-   set nightNode [::dom::tcl::document cget $private(nightlog) -documentElement]
-   set filesNode [lindex [set [::dom::element getElementsByTagName $nightNode "FILES" ]] 0]
+   set mainNode [::dom::tcl::document cget $private(nightlog) -documentElement]
+   set filesNode [lindex [set [::dom::element getElementsByTagName $mainNode $nodeName ]] 0]
 
    foreach fileNode [::dom::tcl::node children $filesNode] {
       #--- je verifie la presence des mots clefs obligatoires
@@ -1794,7 +1891,7 @@ proc ::eshel::process::findSeries { } {
 # makeSerie
 #   fabrique une serie (ou complete une serie existant) avec les fichiers selectionnes pas l'utilisateur
 #
-#   les fichiers RAW ssont dans le r�pertoire
+#   les fichiers RAW sont dans le repertoire
 #
 #------------------------------------------------------------
 proc ::eshel::process::makeSerie { fileNames  } {
@@ -1969,6 +2066,65 @@ proc ::eshel::process::makeSerie { fileNames  } {
    }
 }
 
+#------------------------------------------------------------
+# moveArchiveToRaw
+#   deplace une serie du repertoire archive vers le repertoire raw
+#   @param serieId  identifiant de la serie
+#
+#------------------------------------------------------------
+proc ::eshel::process::moveArchiveToRaw { serieId } {
+   variable private
+
+   set nightNode [::dom::tcl::document cget $private(nightlog) -documentElement]
+   set archiveNode  [lindex [set [::dom::element getElementsByTagName $nightNode "ARCHIVE" ]] 0]
+   set filesNode  [lindex [set [::dom::element getElementsByTagName $nightNode "FILES" ]] 0]
+   foreach serieNode [::dom::tcl::node children $archiveNode] {
+      if { [::dom::element getAttribute $serieNode "SERIESID"] == $serieId
+         && [::dom::tcl::node cget $serieNode -nodeName] != "FILE" } {
+         set fileNodes [::dom::tcl::node children $serieNode]
+         #--- je deplace les fichiers de la serie dans le repertoire raw
+         foreach fileNode $fileNodes {
+            set fileName [::dom::element getAttribute $fileNode "FILENAME"]
+            file rename -force [file join $::conf(eshel,archiveDirectory) $fileName] $::conf(eshel,rawDirectory)
+         }
+         #--- je supprime la serie du tag ARCHIVE
+         ::dom::tcl::node removeChild $archiveNode $serieNode
+         #--- j'ajoute la serie dans le tag FILES
+         ::dom::tcl::node appendChild $filesNode $serieNode
+      }
+   }
+}
+
+#------------------------------------------------------------
+# moveRawToArchive
+#   deplace une serie du repertoire raw vers le repertoire archive
+# @param serieId  identifiant de la serie
+#
+#------------------------------------------------------------
+proc ::eshel::process::moveRawToArchive { serieId } {
+   variable private
+
+   set nightNode [::dom::tcl::document cget $private(nightlog) -documentElement]
+   set archiveNode  [lindex [set [::dom::element getElementsByTagName $nightNode "ARCHIVE" ]] 0]
+   set filesNode  [lindex [set [::dom::element getElementsByTagName $nightNode "FILES" ]] 0]
+   foreach serieNode [::dom::tcl::node children $filesNode] {
+      if { [::dom::element getAttribute $serieNode "SERIESID"] == $serieId
+         && [::dom::tcl::node cget $serieNode -nodeName] != "FILE" } {
+         set fileNodes [::dom::tcl::node children $serieNode]
+         #--- je deplace les fichiers de la serie dans le repertoire archive
+         foreach fileNode $fileNodes {
+            set fileName [::dom::element getAttribute $fileNode "FILENAME"]
+            file rename -force [file join $::conf(eshel,rawDirectory) $fileName] $::conf(eshel,archiveDirectory)
+         }
+         #--- je supprime la serie du tag FILES
+         ::dom::tcl::node removeChild $filesNode $serieNode
+         #--- j'ajoute la serie dans le tag ARCHIVE
+         ::dom::tcl::node appendChild $archiveNode $serieNode
+         #--- inutile de poursuivre
+         break
+      }
+   }
+}
 
 
 #------------------------------------------------------------
