@@ -1,6 +1,6 @@
 //   Read the documentation to learn more about C++ code generator
 //   versioning.
-//	This is version 2.0 release dated Jan 2008
+//	This is version 2.2 release dated Sep 2009
 //	Astrophysics Science Division,
 //	NASA/ Goddard Space Flight Center
 //	HEASARC
@@ -16,10 +16,10 @@
 #endif
 #include "CCfits.h"
 
-// vector
-#include <vector>
 // valarray
 #include <valarray>
+// vector
+#include <vector>
 // Column
 #include "Column.h"
 #ifdef HAVE_CONFIG_H
@@ -55,8 +55,8 @@ namespace CCfits {
 
     public:
         ColumnVectorData(const ColumnVectorData< T > &right);
-        ColumnVectorData (Table* p = 0, T nullVal = FITSUtil::FitsNullValue<T>()());
-        ColumnVectorData (int columnIndex, const string &columnName, ValueType type, const string &format, const string &unit, Table* p, int  rpt = 1, long w = 1, const string &comment = "", T nullVal = FITSUtil::FitsNullValue<T>()());
+        ColumnVectorData (Table* p = 0);
+        ColumnVectorData (int columnIndex, const string &columnName, ValueType type, const string &format, const string &unit, Table* p, int  rpt = 1, long w = 1, const string &comment = "");
         ~ColumnVectorData();
 
         virtual void readData (long firstrow, long nelements, long firstelem = 1);
@@ -110,15 +110,12 @@ namespace CCfits {
         //	Insert one or more blank rows into a FITS column.
         virtual void insertRows (long first, long number = 1);
         virtual void deleteRows (long first, long number = 1);
-        void doWrite (T* array, long row, long rowSize, long firstElem = 1);
-        const T nullValue () const;
-        void nullValue (T value);
+        void doWrite (T* array, long row, long rowSize, long firstElem, T* nullValue);
 
       // Additional Private Declarations
 
     private: //## implementation
       // Data Members for Class Attributes
-        T m_nullValue;
         T m_minLegalValue;
         T m_maxLegalValue;
         T m_minDataValue;
@@ -137,18 +134,6 @@ namespace CCfits {
   inline void ColumnVectorData<T>::readData (long firstrow, long nelements, long firstelem)
   {
     readColumnData(firstrow,nelements,firstelem,static_cast<T*>(0));
-  }
-
-  template <typename T>
-  inline const T ColumnVectorData<T>::nullValue () const
-  {
-    return m_nullValue;
-  }
-
-  template <typename T>
-  inline void ColumnVectorData<T>::nullValue (T value)
-  {
-    m_nullValue = value;
   }
 
   template <typename T>
@@ -230,7 +215,6 @@ namespace CCfits {
   template <typename T>
   ColumnVectorData<T>::ColumnVectorData(const ColumnVectorData<T> &right)
       :Column(right),
-       m_nullValue(right.m_nullValue),
        m_minLegalValue(right.m_minLegalValue),
        m_maxLegalValue(right.m_maxLegalValue),
        m_minDataValue(right.m_minDataValue),
@@ -240,8 +224,8 @@ namespace CCfits {
   }
 
   template <typename T>
-  ColumnVectorData<T>::ColumnVectorData (Table* p, T nullVal)
-    : Column(p), m_nullValue(nullVal),
+  ColumnVectorData<T>::ColumnVectorData (Table* p)
+    : Column(p),
        m_minLegalValue(0),
        m_maxLegalValue(0),
        m_minDataValue(0),
@@ -251,9 +235,8 @@ namespace CCfits {
   }
 
   template <typename T>
-  ColumnVectorData<T>::ColumnVectorData (int columnIndex, const string &columnName, ValueType type, const string &format, const string &unit, Table* p, int  rpt, long w, const string &comment, T nullVal)
+  ColumnVectorData<T>::ColumnVectorData (int columnIndex, const string &columnName, ValueType type, const string &format, const string &unit, Table* p, int  rpt, long w, const string &comment)
         : Column(columnIndex,columnName,type,format,unit,p,rpt,w,comment),
-          m_nullValue(nullVal),
           m_minLegalValue(0),
           m_maxLegalValue(0),
           m_minDataValue(0),
@@ -489,10 +472,6 @@ namespace CCfits {
 
     if (varLength())
     {
-       // nullValue is ignored for var-length cols, still to keep
-       // things consistent...
-       if (nullValue)
-          m_nullValue = *nullValue;
        // firstRow is 1-based, but all these internal row variables 
        // will be 0-based.  
        const size_t endRow = nInputRows + firstRow-1;
@@ -500,7 +479,7 @@ namespace CCfits {
        {
           m_data[iRow] = indata[iRow - (firstRow-1)];
           // doWrite wants 1-based rows.
-          doWrite(&m_data[iRow][0], iRow+1, m_data[iRow].size());
+          doWrite(&m_data[iRow][0], iRow+1, m_data[iRow].size(), 1, nullValue);
        }
        parent()->updateRows();
     }
@@ -559,7 +538,6 @@ namespace CCfits {
           {
              // resizeDataObject should already have resized all
              // corresponding m_data rows to repeat().
-             valarray<T>& current = m_data[iRow];
              const valarray<T>& input = indata[iRow-(firstRow-1)];
              writeFixedRow(input, iRow, 1, nullValue);
           }
@@ -768,8 +746,6 @@ namespace CCfits {
        throw FitsFatal(msgStr.str()); 
     }
 
-    if (nullValue) m_nullValue = *nullValue;      
-
     std::valarray<T>& storedRow = m_data[row];    
     long inputSize = static_cast<long>(data.size());
     long storedSize(storedRow.size());
@@ -800,7 +776,7 @@ namespace CCfits {
     // copy the entire valarray just to avoid this problem.
     std::valarray<T>& lvData = const_cast<std::valarray<T>&>(data);
     T* inPointer = &lvData[0];
-    doWrite(inPointer, row+1, inputSize, firstElem); 
+    doWrite(inPointer, row+1, inputSize, firstElem, nullValue); 
 
     // Writing to disk was successful, now update FITS object and return.
     const size_t offset = static_cast<size_t>(firstElem) - 1;
@@ -837,7 +813,6 @@ namespace CCfits {
 
     if (nullValue) 
     {
-       m_nullValue = *nullValue;          
        if (fits_write_colnull(fitsPointer(),abs(type()),index(),firstRow,
                            1,nElements,data,nullValue,&status)) throw FitsError(status);
     }
@@ -915,7 +890,7 @@ namespace CCfits {
   }
 
   template <typename T>
-  void ColumnVectorData<T>::doWrite (T* array, long row, long rowSize, long firstElem)
+  void ColumnVectorData<T>::doWrite (T* array, long row, long rowSize, long firstElem, T* nullValue)
   {
     int status(0);
     // internal functioning of write_colnull forbids its use for writing
@@ -924,7 +899,7 @@ namespace CCfits {
     if ( !varLength())
     {
         if (fits_write_colnull(fitsPointer(),type(),index(),row, firstElem, rowSize,
-                    array,&m_nullValue,&status)) throw FitsError(status);
+                    array, nullValue,&status)) throw FitsError(status);
     }
     else
     {
@@ -1027,7 +1002,7 @@ inline void ColumnVectorData<complex<double> >::setDataLimits (complex<double>* 
                     if (lastRow)
                     {
                             int elementsInLastRow = nelements - countRead;
-                            std::copy(&readData[countRead],&readData[nelements],&current[0]);
+                            std::copy(&readData[countRead],&readData[0]+nelements,&current[0]);
                             countRead += elementsInLastRow;
                     }             
                     // what to do with complete rows. if firstElem == 1 the 
@@ -1045,7 +1020,7 @@ inline void ColumnVectorData<complex<double> >::setDataLimits (complex<double>* 
                             { 
                                     if (i == firstRow)
                                     {
-                                            std::copy(&readData[0],&readData[elementsInFirstRow],
+                                            std::copy(&readData[0],&readData[0]+elementsInFirstRow,
                                                                             &current[firstElem]);
                                             countRead += elementsInFirstRow;
                                             ++i;
@@ -1117,7 +1092,7 @@ void ColumnVectorData<complex<float> >::readColumnData(long firstRow,
                     if (lastRow)
                     {
                             int elementsInLastRow = nelements - countRead;
-                            std::copy(&readData[countRead],&readData[nelements],&current[0]);
+                            std::copy(&readData[countRead],&readData[0]+nelements,&current[0]);
                             countRead += elementsInLastRow;
                     }             
                     // what to do with complete rows. if firstElem == 1 the 
@@ -1135,7 +1110,7 @@ void ColumnVectorData<complex<float> >::readColumnData(long firstRow,
                             { 
                                     if (i == firstRow)
                                     {
-                                            std::copy(&readData[0],&readData[elementsInFirstRow],
+                                            std::copy(&readData[0],&readData[0]+elementsInFirstRow,
                                                                             &current[firstElem]);
                                             countRead += elementsInFirstRow;
                                             ++i;
@@ -1264,7 +1239,7 @@ void ColumnVectorData<complex<double> >::writeFixedArray
   template <>
   inline void  
   ColumnVectorData<std::complex<float> >::doWrite 
-  (std::complex<float>* data, long row, long rowSize, long firstElem )
+  (std::complex<float>* data, long row, long rowSize, long firstElem, std::complex<float>* nullValue )
   {
     int status(0);
     FITSUtil::auto_array_ptr<float> carray( new float[2*rowSize]); 
@@ -1281,7 +1256,7 @@ void ColumnVectorData<complex<double> >::writeFixedArray
   template <>
   inline void  
   ColumnVectorData<std::complex<double> >::doWrite
-  (std::complex<double>* data, long row, long rowSize, long firstElem )
+  (std::complex<double>* data, long row, long rowSize, long firstElem, std::complex<double>* nullValue )
   {
     int status(0);
     FITSUtil::auto_array_ptr<double> carray( new double[2*rowSize]); 
@@ -1299,12 +1274,12 @@ void ColumnVectorData<complex<double> >::writeFixedArray
 template<>
 void 
 ColumnVectorData<complex<float> >::doWrite 
-                ( complex<float>* data, long row, long rowSize, long firstElem );
+                ( complex<float>* data, long row, long rowSize, long firstElem, complex<float>* nullValue);
 
 template<>
 void 
 ColumnVectorData<complex<double> >::doWrite 
-                ( complex<double>* data, long row, long rowSize, long firstElem );
+                ( complex<double>* data, long row, long rowSize, long firstElem, complex<double>* nullValue );
 #endif
 } // namespace CCfits
 

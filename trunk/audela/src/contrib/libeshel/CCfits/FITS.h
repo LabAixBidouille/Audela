@@ -1,6 +1,6 @@
 //   Read the documentation to learn more about C++ code generator
 //   versioning.
-//	This is version 2.0 release dated Jan 2008
+//	This is version 2.2 release dated Sep 2009
 //	Astrophysics Science Division,
 //	NASA/ Goddard Space Flight Center
 //	HEASARC
@@ -14,10 +14,10 @@
 
 // exception
 #include <exception>
-// map
-#include <map>
 // string
 #include <string>
+// map
+#include <map>
 // ExtHDU
 #include "ExtHDU.h"
 // HDUCreator
@@ -154,12 +154,16 @@ namespace CCfits {
 /*!   \fn  FITS::FITS(const String &name, RWmode mode, bool readDataFlag, const std::vector<String>& primaryKeys) 
       \brief basic constructor
 
-      This basic constructor makes a FITS object from the given filename. The filename
-      string is passed directly to the cfitsio library: thus all of the extended
-      filename syntax described in the cfitsio manual should work as documented.
-
+      This basic constructor makes a FITS object from the given filename.       
       If the mode is Read [default], it will read all of the headers in the file, and all of the data if the
       readDataFlag is supplied as true. It will also read optional primary keys.
+
+      The filename string is passed directly to the cfitsio library: thus the extended
+      filename syntax described in the cfitsio manual should work as documented.
+      (Though the extended file name feature which allows the opening of a particular
+      image located in the row of a table is currently unsupported.)  If in Read mode and the extended syntax
+      selects a particular extension, that extension will become the current HDU position upon
+      construction.
 
       The file name is the only  required argument. If the mode is Write and
       the file does not already exist, a default primary HDU will be created in
@@ -187,7 +191,7 @@ namespace CCfits {
            with [optional] specified values (sometimes one just wants to know that the keyword is present).
 
         Optional parameters allows the reading of specified primary HDU keys and 
-        specified columns and keywords in the HDU of interest.
+        specified columns and keywords in the HDU of interest.  
 
       \param name The name of the FITS file to be read
       \param mode The read/write mode: must be Read or Write
@@ -219,6 +223,9 @@ namespace CCfits {
       HDU is always created: if it contains an image, that
       image may be read by subsequent calls.
 
+      If extended file name syntax is used and selects an extension other than hduName, a
+      FITS::OperationNotSupported exception will be thrown.
+
       \param name The name of the FITS file to be read
       \param mode The read/write mode: takes values Read or Write
       \param hduName The name of the HDU to be read.
@@ -234,7 +241,11 @@ namespace CCfits {
 
      This is intended as a convenience where the file consists of single versions of
      HDUs and data only, not keys are to be read.
+
+      If extended file name syntax is used and selects an extension not listed in hduNames, a
+      FITS::OperationNotSupported exception will be thrown.
      \param hduNames array of HDU names to be read.
+
      see above for other parameter definitions.
   */
 
@@ -285,6 +296,9 @@ namespace CCfits {
       HDU extensions are not required to have the EXTNAME or HDUNAME keyword by
       the standard. If there is no name, a dummy name based on the HDU number is
       created and becomes the key.
+
+      If extended file name syntax is used and selects an extension other than hduIndex, a
+      FITS::OperationNotSupported exception will be thrown.
 
       \param hduIndex The index of the HDU to be read.
      see above for other parameter definitions.
@@ -412,8 +426,9 @@ namespace CCfits {
   */ 
 
 
-  /*! \fn void FITS::open(RWmode mode= Read) ;
+  /*! \fn int FITS::open(RWmode mode= Read) ;
       \brief open the file with mode as specified on construction.
+      Returns the 0-based current HDU index.
   */ 
 
   /*! \fn bool FITS::create() ;
@@ -801,7 +816,9 @@ do this either).
         //	read the primary HDU. Read the image if
         //	readDataFlag is true.
         void read (bool readDataFlag = false, const std::vector<String>& keys = std::vector<String>());
-        void open (RWmode mode = Read);
+        //	Returns index of current HDU where primary = 0.  (Extended file syntax may cause a shift to an
+        //	extension.)
+        int open (RWmode mode = Read);
         //	Create returns true if a new file was created or an
         //	existing file overwritten, false if appending.
         //
@@ -818,7 +835,7 @@ do this either).
         void readExtensions (bool readDataFlag = false);
         ExtHDU* addExtension (ExtHDU* ext);
         void swap (FITS& right);
-        ExtMap& extension ();
+        ExtMap& extensionMap ();
         String nameOfUnmapped (int hduNum) const;
         void cloneHeader (const ExtHDU& source);
 

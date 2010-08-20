@@ -1,6 +1,6 @@
 //   Read the documentation to learn more about C++ code generator
 //   versioning.
-//	This is version 2.0 release dated Jan 2008
+//	This is version 2.2 release dated Sep 2009
 //	Astrophysics Science Division,
 //	NASA/ Goddard Space Flight Center
 //	HEASARC
@@ -102,13 +102,14 @@ namespace CCfits {
 
 */
 
-/*! \fn  virtual Column& ExtHDU::column (const String& colName) const ;
+/*! \fn  virtual Column& ExtHDU::column (const String& colName, bool caseSensitive = true) const ;
 
         \brief return a reference to a Table column specified by name. 
 
-
-        The overridden base class implementation ExtHDU::column throws an exception,
-        which is thus the action to be taken if self is an image extension
+        If the <i>caseSensitive</i> parameter is set to false, the search will 
+        be case-insensitive. The overridden base class implementation 
+        ExtHDU::column throws an exception, which is thus the action to be taken 
+        if self is an image extension
 
         \exception WrongExtensionType see above
 
@@ -126,6 +127,22 @@ namespace CCfits {
         \exception WrongExtensionType thrown if *this is an image extension.
 
 */                       
+
+/*! \fn   const map<string,Column*>& ExtHDU::column () const;
+
+        \brief return a reference to the array containing the columns. 
+
+        \exception WrongExtensionType thrown if *this is an image extension.
+*/
+
+/*! \fn     int ExtHDU::numCols () const;
+
+
+        \brief return the number of Columns in the Table (the TFIELDS keyword).
+
+
+        \exception WrongExtensionType thrown if *this is an image extension.
+*/
 
 
 
@@ -433,12 +450,14 @@ namespace CCfits {
         //	This would appear to be a good candidate for the public
         //	interface.
         virtual void makeThisCurrent () const;
-        virtual Column& column (const String& colName) const;
+        virtual Column& column (const String& colName, bool caseSensitive = true) const;
         virtual Column& column (int colIndex) const;
         virtual long rows () const;
         virtual void addColumn (ValueType type, const String& columnName, long repeatWidth, const String& colUnit = String(""), long decimals = -1, size_t columnNumber = 0);
         virtual void deleteColumn (const String& columnName);
         virtual long getRowsize () const;
+        virtual int numCols () const;
+        virtual const std::map<string, Column*>& column () const;
         int version () const;
         void version (int value);
         static const String& missHDU ();
@@ -537,7 +556,7 @@ namespace CCfits {
         ExtHDU (FITSBase* p, HduType xtype, int number);
 
         virtual std::ostream & put (std::ostream &s) const = 0;
-        virtual void column (const String& colname, Column* value);
+        virtual void setColumn (const String& colname, Column* value);
         virtual void checkExtensionType () const;
         int getVersion ();
         long pcount () const;

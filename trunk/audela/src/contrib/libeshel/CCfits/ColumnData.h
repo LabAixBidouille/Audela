@@ -1,6 +1,6 @@
 //   Read the documentation to learn more about C++ code generator
 //   versioning.
-//	This is version 2.0 release dated Jan 2008
+//	This is version 2.2 release dated Sep 2009
 //	Astrophysics Science Division,
 //	NASA/ Goddard Space Flight Center
 //	HEASARC
@@ -39,8 +39,8 @@ namespace CCfits {
 
     public:
         ColumnData(const ColumnData< T > &right);
-        ColumnData (Table* p = 0, T nullVal = FITSUtil::FitsNullValue<T>()());
-        ColumnData (int columnIndex, const string &columnName, ValueType type, const String &format, const String &unit, Table* p, int rpt = 1, long w = 1, const String &comment = "", T nullVal = FITSUtil::FitsNullValue<T>()());
+        ColumnData (Table* p = 0);
+        ColumnData (int columnIndex, const string &columnName, ValueType type, const String &format, const String &unit, Table* p, int rpt = 1, long w = 1, const String &comment = "");
         ~ColumnData();
 
         virtual ColumnData<T>* clone () const;
@@ -75,14 +75,11 @@ namespace CCfits {
         //	Insert one or more blank rows into a FITS column.
         virtual void insertRows (long first, long number = 1);
         virtual void deleteRows (long first, long number = 1);
-        const T nullValue () const;
-        void nullValue (T value);
 
       // Additional Private Declarations
 
     private: //## implementation
       // Data Members for Class Attributes
-        T m_nullValue;
         T m_minLegalValue;
         T m_maxLegalValue;
         T m_minDataValue;
@@ -101,18 +98,6 @@ namespace CCfits {
   inline void ColumnData<T>::readData (long firstRow, long nelements, long firstElem)
   {
    readColumnData(firstRow,nelements,static_cast<T*>(0));
-  }
-
-  template <typename T>
-  inline const T ColumnData<T>::nullValue () const
-  {
-    return m_nullValue;
-  }
-
-  template <typename T>
-  inline void ColumnData<T>::nullValue (T value)
-  {
-    m_nullValue = value;
   }
 
   template <typename T>
@@ -194,7 +179,6 @@ namespace CCfits {
   template <typename T>
   ColumnData<T>::ColumnData(const ColumnData<T> &right)
       :Column(right),
-       m_nullValue(right.m_nullValue),
        m_minLegalValue(right.m_minLegalValue),
        m_maxLegalValue(right.m_maxLegalValue),
        m_minDataValue(right.m_minDataValue),
@@ -204,8 +188,8 @@ namespace CCfits {
   }
 
   template <typename T>
-  ColumnData<T>::ColumnData (Table* p, T nullVal)
-  : Column(p), m_nullValue(nullVal),
+  ColumnData<T>::ColumnData (Table* p)
+  : Column(p),
        m_minLegalValue(),
        m_maxLegalValue(),
        m_minDataValue(),
@@ -215,9 +199,8 @@ namespace CCfits {
   }
 
   template <typename T>
-  ColumnData<T>::ColumnData (int columnIndex, const string &columnName, ValueType type, const String &format, const String &unit, Table* p, int rpt, long w, const String &comment, T nullVal)
+  ColumnData<T>::ColumnData (int columnIndex, const string &columnName, ValueType type, const String &format, const String &unit, Table* p, int rpt, long w, const String &comment)
         : Column(columnIndex,columnName,type,format,unit,p,rpt,w,comment), 
-        m_nullValue(nullVal), 
         m_minLegalValue(),
         m_maxLegalValue(),
         m_minDataValue(),
@@ -313,7 +296,6 @@ namespace CCfits {
           // get a copy for restorative action.   
           std::vector<T> __tmp(m_data);
 
-          if (nullValue) m_nullValue = *nullValue;
 
           if (elementsToWrite != static_cast<long>(m_data.size())) 
           {
@@ -475,7 +457,7 @@ inline void ColumnData<complex<double> >::setDataLimits (complex<double>* limits
           }
 
 
-          if (m_data.size() == 0) setData(std::vector<string>(rows(),string(nulval)));
+          if (m_data.size() != rows()) setData(std::vector<string>(rows(),string(nulval)));
 
           // the 'first -1 ' converts to zero based indexing.
 
@@ -491,6 +473,7 @@ inline void ColumnData<complex<double> >::setDataLimits (complex<double>* limits
 
           delete [] array; 
           delete nulval; 
+          if (nelements == rows()) isRead(true); 
 
         }
 #else 
@@ -518,15 +501,16 @@ void ColumnData<string>::readColumnData (long firstRow, long nelements, string* 
                   nulval,array, &anynul,&status) ) throw FitsError(status);
 
 
-          if (m_data.size() == 0) m_data.resize(rows());
+          if (m_data.size() != rows()) m_data.resize(rows());
 
           // the 'j -1 ' converts to zero based indexing.
 
-          for (int j = firstRow; j < nelements; ++j)
+          for (int j = 0; j < nelements; ++j)
           {
 
-                m_data[j - 1] = std::complex<float>(array[2*j],array[2*j+1]);
+                m_data[j - 1 + firstRow] = std::complex<float>(array[2*j],array[2*j+1]);
           }
+          if (nelements == rows()) isRead(true); 
 
         }
 #else
@@ -555,15 +539,16 @@ void ColumnData<complex<float> >::readColumnData (long firstRow, long nelements,
 
 
 
-          if (m_data.size() == 0) setData(std::vector<complex<double> >(rows(),nulval));
+          if (m_data.size() != rows()) setData(std::vector<complex<double> >(rows(),nulval));
 
           // the 'j -1 ' converts to zero based indexing.
 
-          for (int j = firstRow; j < nelements; j++)
+          for (int j = 0; j < nelements; j++)
           {
 
-                m_data[j - 1] = std::complex<double>(array[2*j],array[2*j+1]);
+                m_data[j - 1 + firstRow] = std::complex<double>(array[2*j],array[2*j+1]);
           }
+          if (nelements == rows()) isRead(true); 
 
         }
 #else
@@ -614,7 +599,7 @@ void ColumnData<string>::writeData (const std::vector<string>& inData, long firs
     FITSUtil::auto_array_ptr<float> pData(new float[nRows*2]);
     float* Data = pData.get();
     std::vector<complex<float> > __tmp(m_data);
-    for (int j = firstRow; j < nRows; ++j)
+    for (int j = 0; j < nRows; ++j)
       {
 	Data[ 2*j] = inData[j].real();
 	Data[ 2*j + 1] = inData[j].imag();
@@ -663,7 +648,7 @@ void ColumnData<complex<float> >::writeData (const std::vector<complex<float> >&
     FITSUtil::auto_array_ptr<double> pData(new double[nRows*2]);
     double* Data = pData.get();
     std::vector<complex<double> > __tmp(m_data);
-    for (int j = firstRow; j < nRows; ++j)
+    for (int j = 0; j < nRows; ++j)
       {
 	pData[ 2*j] = inData[j].real();
 	pData[ 2*j + 1] = inData[j].imag();

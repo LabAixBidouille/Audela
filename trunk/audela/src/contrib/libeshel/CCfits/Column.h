@@ -1,6 +1,6 @@
 //   Read the documentation to learn more about C++ code generator
 //   versioning.
-//	This is version 2.0 release dated Jan 2008
+//	This is version 2.2 release dated Sep 2009
 //	Astrophysics Science Division,
 //	NASA/ Goddard Space Flight Center
 //	HEASARC
@@ -258,15 +258,15 @@ namespace CCfits {
 
 /*!   \fn  template <typename S> void Column::read(std::vector<S>& vals, long first, long last, S* nullValue) ;
 
-        \brief Retrieve data from a scalar column into a std::vector, setting nullvalue
+        \brief Retrieve data from a scalar column into a std::vector>, applying nullValue when relevant.
 
-        If the column is of integer type, then any column value that equals this null value is set equal
-        to the value of the TNULLn keyword. An exception is thrown if TNULLn is not
-        specified. See cfitsio documentation for further details
+        If both <i>nullValue</i> and <i>*nullValue</i> are not 0, then any undefined 
+        values in the file will be converted to <i>*nullValue</i> when copied into the
+        <i>vals</i> vector.  See cfitsio documentation for further details
 
         \param vals The output container. The function will resize this as necessary
         \param first,last the span of row numbers to read.
-        \param nullValue pointer to integer value regarded as undefined
+        \param nullValue pointer to value to be applied to undefined elements.
 
 */
          /*!  \fn   template <typename S> void Column::read(std::valarray<S>& vals, long first, long last) ;
@@ -281,15 +281,15 @@ namespace CCfits {
 
 /*!  \fn   template <typename S> void Column::read(std::valarray<S>& vals, long first, long last, S* nullValue) ;
 
-        \brief Retrieve data from a scalar column into a std::valarray, setting undefined values 
+        \brief Retrieve data from a scalar column into a std::valarray, applying nullValue when relevant.
 
-        If the column is of integer type, then any column value that equals this null value is set equal
-        to the value of the TNULLn keyword. An exception is thrown if TNULLn is not
-        specified. See cfitsio documentation for further details
+        If both <i>nullValue</i> and <i>*nullValue</i> are not 0, then any undefined 
+        values in the file will be converted to <i>*nullValue</i> when copied into the
+        <i>vals</i> valarray.  See cfitsio documentation for further details
 
         \param vals The output container. The function will resize this as necessary
         \param first,last the span of row numbers to read.
-        \param nullValue pointer to integer value regarded as undefined
+        \param nullValue pointer to value to be applied to undefined elements.
 
 */
 
@@ -343,11 +343,20 @@ namespace CCfits {
 
  /*!   \fn  template <typename S> void Column::write(const std::vector<S>& indata, long firstRow,  S* nullValue);
 
-      \brief write a vector of values into a scalar column starting with firstRow with undefined values set to nullValue.
+      \brief write a vector of values into a scalar column starting with firstRow, replacing elements equal to 
+             *nullValue with the FITS null value.
+
+      If <i>nullValue</i> is not 0, the appropriate FITS null value will be
+      substituted for all elements of <i>indata</i> equal to <i>*nullValue</i>.
+      For integer type columns there must be a pre-existing TNULLn keyword to
+      define the FITS null value, otherwise a FitsError exception is thrown.
+      For floating point columns, the FITS null is the IEEE NaN (Not-a-Number) value.
+      See the cfitsio fits_write_colnull function documentation for more details.
 
       \param indata   The data to be written.
       \param firstRow The first row to be written
-      \param nullValue Pointer to the value in the input array to be set to undefined values
+      \param nullValue Pointer to the value for which equivalent <i>indata</i> elements
+                       will be replaced in the file with the appropriate FITS null value.
 */
 
 
@@ -355,11 +364,20 @@ namespace CCfits {
 
  /*!   \fn  template <typename S> void Column::write(const std::valarray<S>& indata, long firstRow,  S* nullValue);
 
-      \brief write a valarray of values into a scalar column starting with firstRow with undefined values set to nullValue.
+      \brief write a valarray of values into a scalar column starting with firstRow, replacing elements equal to
+             *nullValue with the FITS null value.
+
+      If <i>nullValue</i> is not 0, the appropriate FITS null value will be
+      substituted for all elements of <i>indata</i> equal to <i>*nullValue</i>.
+      For integer type columns there must be a pre-existing TNULLn keyword to
+      define the FITS null value, otherwise a FitsError exception is thrown.
+      For floating point columns, the FITS null is the IEEE NaN (Not-a-Number) value.
+      See the cfitsio fits_write_colnull function documentation for more details.
 
       \param indata   The data to be written.
       \param firstRow The first row to be written
-      \param nullValue Pointer to the value in the input array to be set to undefined values
+      \param nullValue Pointer to the value for which equivalent <i>indata</i> elements
+                       will be replaced in the file with the appropriate FITS null value.
 */
 
 
@@ -532,22 +550,37 @@ namespace CCfits {
 */              
 
 
-/*! \fn         template <typename T>   void Column::addNullValue(T nullVal);
+/*! \fn   template <typename T>   void Column::addNullValue(T nullVal);
 
-                \brief Set the TNULLn keyword for the column
+          \brief Set the TNULLn keyword for the column
 
-                Only relevant for integer valued columns, TNULLn is the value
-                used by cfitsio in undefined processing. All entries in the
-                table equal to an input "null value" are set equal to the value
-                of TNULLn. (For floating point columns a system NaN values is used). 
+          Only relevant for integer valued columns, TNULLn is the value
+          used by cfitsio in undefined processing. All entries in the
+          table equal to an input "null value" are set equal to the value
+          of TNULLn. (For floating point columns a system NaN value is used). 
 
 
 */
 
+/*!  \fn  template <typename T>  bool Column::getNullValue(T* nullVal) const;
+
+           \brief Get the value of the TNULLn keyword for the column
+
+           Only relevant for integer valued columns.  If the TNULLn keyword
+           is present, its value will be written to <i>*nullVal</i> and the
+           function returns <i>true</i>.  If the keyword is not found or 
+           its value is undefined, the function returns <i>false</i> and 
+           <i>*nullVal</i> is not modified.
+
+           \param nullVal  A pointer to the variable for storing the TNULLn value.
+*/
+
 /*!        \fn virtual void Column::readData (long firstRow = 1,  long nelements = 1, long firstElem = 1) = 0;
 
-      \brief read method.
+      \brief Read (or reread) data from the disk into the Column object's internal arrays.
 
+      This function normally does not need to be called.  See the <b>resetRead</b>
+      function for an alternative way of performing a reread from disk.  
       \param firstRow The first row to be read
       \param nelements The number of elements to read
       \param firstElem The number of the element on the first row to start at 
@@ -728,11 +761,18 @@ namespace CCfits {
 
       \brief flag set to true if the entire column data has been read from disk
 
-
-
 */
 
+/*!    \fn void Column::resetRead();
 
+      \brief reset the Column's isRead flag to false
+
+      This forces the data to be reread from the disk the next time a
+      read command is called on the Column, rather than simply retrieving the
+      data already stored in the Column object's internal arrays.  This
+      may be useful for example if trying to reread a Column using a 
+      different nullValue argument than for an earlier read.
+*/
 
 /*!        \fn long Column::width () const;
 
@@ -919,6 +959,7 @@ namespace CCfits {
         friend bool operator > (const Column& left, const Column& right);
         void setLimits (ValueType type);
         void unit (const String& value);
+        void resetRead ();
         int index () const;
         void index (int value);
         bool isRead () const;
@@ -1124,6 +1165,10 @@ namespace CCfits {
         template <typename T>
         void addNullValue(T nullVal);
 
+        // get the TNULL setting
+        template <typename T>
+        bool getNullValue(T* nullVal) const;
+
         void write (const std::vector<String>& indata, long firstRow);
 
         friend void Table::insertRows(long first, long number);
@@ -1279,6 +1324,11 @@ namespace CCfits {
   {
 
     return left.m_index > right.m_index;
+  }
+
+  inline void Column::resetRead ()
+  {
+     m_isRead = false;
   }
 
   inline int Column::index () const

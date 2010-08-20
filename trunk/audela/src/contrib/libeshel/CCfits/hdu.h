@@ -1,6 +1,6 @@
 //   Read the documentation to learn more about C++ code generator
 //   versioning.
-//	This is version 2.0 release dated Jan 2008
+//	This is version 2.2 release dated Sep 2009
 //	Astrophysics Science Division,
 //	NASA/ Goddard Space Flight Center
 //	HEASARC
@@ -13,9 +13,9 @@
 #define HDU_H 1
 #include <map>
 
-#include <list>
 // vector
 #include <vector>
+#include <list>
 // CCfitsHeader
 #include "CCfits.h"
 // Keyword
@@ -209,8 +209,8 @@ by Herb Sutter (2000) and references therein].
               currently hardcoded is:  TYP_CMPRS_KEY (20), TYP_CKSUM_KEY (100),
               TYP_WCS_KEY (110), TYP_REFSYS_KEY (120), and TYP_USER_KEY (150).
 
-              For the list of ALL keyword categories, see the CFITSIO documentation at:
-              http://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node50.html
+              For the list of ALL keyword categories, see the CFITSIO documentation for
+              the fits_get_keyclass function.
         */
 
          /*! \fn void HDU::writeComment(const String& comment = "Generic Comment");                      

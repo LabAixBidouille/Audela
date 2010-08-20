@@ -3,7 +3,7 @@
 //3
 //4
 
-//	This is version 2.0 release dated Jan 2008
+//	This is version 2.2 release dated Sep 2009
 
 //	Astrophysics Science Division,
 //	NASA/ Goddard Space Flight Center
@@ -1553,55 +1553,76 @@ namespace CCfits
         } 
 
 
-        template <typename T>
-        void Column::addNullValue(T nullVal)
-        {
-                parent()->makeThisCurrent();
-                int status(0);
+   template <typename T>
+   void Column::addNullValue(T nullVal)
+   {
+      parent()->makeThisCurrent();
+      int status(0);
 #ifdef SSTREAM_DEFECT
-                std::ostrstream keyName;
-                keyName << "TNULL" << index() << std::ends;
-                char* nullKey = const_cast<char*>(keyName.str());
+      std::ostrstream keyName;
+      keyName << "TNULL" << index() << std::ends;
+      char* nullKey = const_cast<char*>(keyName.str());
 #else
-                std::ostringstream keyName;          
-                keyName << "TNULL" << index();
-                String keyNameStr = keyName.str();
-                char* nullKey = const_cast<char*>(keyNameStr.c_str());
+      std::ostringstream keyName;          
+      keyName << "TNULL" << index();
+      String keyNameStr = keyName.str();
+      char* nullKey = const_cast<char*>(keyNameStr.c_str());
 #endif
 
 
-                FITSUtil::MatchType<T> type;
+      FITSUtil::MatchType<T> inputType;
+      int dataType = static_cast<int>(inputType());
+      if (dataType == static_cast<int>(Tstring))
+         throw InvalidDataType("attempting to set TNULLn to a string.");
 
-                T dataType(type());
-                // update key but don't add to keyword list because it's really a column
-                // property not a table metadata property. And it needs to be automatically
-                // renumbered if columns are inserted or deleted.
-                if (fits_update_key(fitsPointer(),dataType,nullKey,&nullVal,0,&status))
-                        throw FitsError(status);
+      // update key but don't add to keyword list because it's really a column
+      // property not a table metadata property. And it needs to be automatically
+      // renumbered if columns are inserted or deleted.
+      if (fits_update_key(fitsPointer(),dataType,nullKey,&nullVal,0,&status))
+              throw FitsError(status);
 
-                if (fits_set_hdustruc(fitsPointer(),&status)) throw FitsError(status);   
+      // The following is called to make sure the HDU struct is immediately 
+      // updated in case a column write operation is performed shortly after this
+      // function exits. 
+      if (fits_set_hdustruc(fitsPointer(),&status)) throw FitsError(status); 
 
+   }
 
-                if (ColumnVectorData<T>* col = dynamic_cast<ColumnVectorData<T>*>(this))
-                {
+   template <typename T>
+   bool Column::getNullValue(T* nullVal) const
+   {
+      parent()->makeThisCurrent();
+#ifdef SSTREAM_DEFECT
+      std::ostrstream keyName;
+      keyName << "TNULL" << index() << std::ends;
+      char* nullKey = const_cast<char*>(keyName.str());
+#else
+      std::ostringstream keyName;          
+      keyName << "TNULL" << index();
+      String keyNameStr = keyName.str();
+      char* nullKey = const_cast<char*>(keyNameStr.c_str());
+#endif
 
-                        col->nullValue(nullVal);
-                }
-                else
-                {
-                        try
-                        {
-                                ColumnData<T>& col 
-                                        = dynamic_cast<ColumnData<T>&>(*this);
-                                col.nullValue(nullVal); 
-                        }
-                        catch (std::bad_cast)
-                        {
-                                throw InvalidDataType(" setting null value for column ");
-                        }                       
-                }
+      int status=0;
+      FITSUtil::MatchType<T> inputType;
+      int dataType = static_cast<int>(inputType());
+      if (dataType == static_cast<int>(Tstring))
+         throw InvalidDataType("attempting to read TNULLn into a string.");
+      T tmpVal(*nullVal);
 
-        }
+      bool keyExists = false;
+      if (fits_read_key(m_parent->fitsPointer(), dataType, nullKey, &tmpVal, 0, &status))
+      {
+         if (status == KEY_NO_EXIST  || status == VALUE_UNDEFINED)
+            return keyExists;
+         else
+            throw FitsError(status);
+      }
+      keyExists = true;
+      *nullVal = tmpVal;       
+      return keyExists;
+   }
+
 } // namespace CCfits
 
 #endif
