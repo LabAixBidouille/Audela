@@ -2,7 +2,7 @@
 # Fichier : process.tcl
 # Description : traitements eShel
 # Auteur : Michel PUJOL
-# Mise a jour $Id: process.tcl,v 1.5 2010-08-17 20:20:32 michelpujol Exp $
+# Mise à jour $Id: process.tcl,v 1.6 2010-08-20 14:34:44 michelpujol Exp $
 #
 
 ################################################################
@@ -227,7 +227,8 @@ proc ::eshel::process::generateNightlog { } {
             "DARK" -
             "FLATFIELD" -
             "FLAT" -
-            "CALIB" {
+            "CALIB" -
+            "TUNGSTEN" {
                #--- pas d'autre verification a faire
                set nodeType $keywordArray(IMAGETYP)
             }
@@ -562,6 +563,50 @@ proc ::eshel::process::generateProcess { } {
       logGenerateProcess  $status "FLAT-PROCESS" $fileName $errorMessage
    }
 
+   ####--- Pretraitement IMAGETYP=TUNGSTEN
+   ###foreach fileNode [set [::dom::element getElementsByTagName $filesNode TUNGSTEN ]] {
+   ###   if { [::dom::element getAttribute $fileNode "RAW"] == 0 } {
+   ###      #--- cet flat est deja traite
+   ###      continue
+   ###   }
+   ###   #--- j'initialise le message d'erreur
+   ###   set errorMessage ""
+   ###   #--- je recherche le bias
+   ###   set biasNode [findCompatibleImage $fileNode "BIAS" [list NAXIS1 NAXIS2 BIN1 BIN2 CAMERA] ]
+   ###   if { $biasNode == "" } {
+   ###      lappend errorMessage [format $::caption(eshel,process,fileNotFound) "BIAS" ]
+   ###   }
+   ###   #--- je recherche le dark
+   ###   set darkNode [findCompatibleImage $fileNode "DARK" [list NAXIS1 NAXIS2 BIN1 BIN2 CAMERA ] ]
+   ###   if { $darkNode == "" } {
+   ###      lappend errorMessage [format $::caption(eshel,process,fileNotFound) "DARK" ]
+   ###   }
+   ###
+   ###   #--- je cree le traitement a faire
+   ###   set processNode [::dom::document createElement $roadmapNode "TUNGSTEN-PROCESS" ]
+   ###   if { $errorMessage == "" } {
+   ###      #--- je copie la serie de darks a traiter
+   ###      ::dom::tcl::node appendChild $processNode [::dom::node cloneNode $fileNode 1]
+   ###      #--- j'ajoute le bias
+   ###      ::dom::tcl::node appendChild $processNode [::dom::node cloneNode $biasNode 0]
+   ###      #--- j'ajoute le dark
+   ###      ::dom::tcl::node appendChild $processNode [::dom::node cloneNode $darkNode 0]
+   ###      set status "todo"
+   ###      lappend errorMessage "$::caption(eshel,process,with) BIAS=[::dom::element getAttribute $biasNode FILENAME] "
+   ###      lappend errorMessage "$::caption(eshel,process,with) DARK=[::dom::element getAttribute $darkNode FILENAME] "
+   ###   } else {
+   ###      set status "error"
+   ###   }
+   ###
+   ###   #--- je renseigne le status du traitement
+   ###   set fileName [::dom::element getAttribute $fileNode "FILENAME" ]
+   ###   ::dom::element setAttribute $processNode "FILENAME" $fileName
+   ###   ::dom::element setAttribute $processNode "STATUS" $status
+   ###   ::dom::element setAttribute $processNode "COMMENT" $errorMessage
+   ###   #--- je trace dans la console
+   ###   logGenerateProcess  $status "TUNGSTEN-PROCESS" $fileName $errorMessage
+   ###}
+
    #--- Prétraitement IMAGETYP=CALIB
    foreach fileNode [set [::dom::element getElementsByTagName $filesNode CALIB ]] {
       if { [::dom::element getAttribute $fileNode "RAW"] == 0 } {
@@ -587,6 +632,13 @@ proc ::eshel::process::generateProcess { } {
          lappend errorMessage [format $::caption(eshel,process,fileNotFound) "FLAT" ]
       }
 
+      ####--- je recherche le tungsten
+      ###set tungstenNode [findCompatibleImage $fileNode "TUNSTEN" [list NAXIS1 NAXIS2 BIN1 BIN2 DETNAM INSTRUME ] ]
+      ###if { $tungstenNode == "" } {
+      ###   #--- s'il n'y a pas de tungsten , j'utilise un flat a l aplace
+      ###   set tungstenNode $flatNode
+      ###}
+
       #--- je cree le traitement a faire
       set processNode [::dom::document createElement $roadmapNode "CALIB-PROCESS" ]
       if { $errorMessage == "" } {
@@ -598,6 +650,8 @@ proc ::eshel::process::generateProcess { } {
          ::dom::tcl::node appendChild $processNode [::dom::node cloneNode $darkNode 0]
          #--- j'ajoute le flat
          ::dom::tcl::node appendChild $processNode [::dom::node cloneNode $flatNode 0]
+         ####--- j'ajoute le tungsten
+         ###::dom::tcl::node appendChild $processNode [::dom::node cloneNode $tungstenNode 0]
          set status "todo"
          lappend errorMessage "$::caption(eshel,process,with) BIAS=[::dom::element getAttribute $biasNode FILENAME] "
          lappend errorMessage "$::caption(eshel,process,with) DARK=[::dom::element getAttribute $darkNode FILENAME] "
@@ -758,6 +812,7 @@ proc ::eshel::process::generateScript { } {
    putCommand $hScriptFile "set calibIter $::conf(eshel,instrument,config,$name,calibIter)   "
    putCommand $hScriptFile "set hotPixelList \"$::conf(eshel,instrument,config,$name,hotPixelList)\" "
 
+
    putCommand $hScriptFile "\n#--- Order definition (num order, x_min, x_max, slant)"
    putCommand $hScriptFile "set orderDefinition [list $::conf(eshel,instrument,config,$name,orderDefinition)  ]"
    ##putCommand $hScriptFile {::console::disp [llength $orderDefinition]\n}
@@ -765,7 +820,8 @@ proc ::eshel::process::generateScript { } {
    putCommand $hScriptFile "\n#--- Calibration lines  (lambda in angtrom)"
    putCommand $hScriptFile "set lineList { $::conf(eshel,instrument,config,$name,lineList) }"
 
-   putCommand $hScriptFile "set distorsion [list $::conf(eshel,instrument,config,$name,distorsion) ] "
+   putCommand $hScriptFile "set distorsion [list $::conf(eshel,instrument,config,$name,distorsion) ]"
+   putCommand $hScriptFile "set saveObjectImage  $::conf(eshel,instrument,config,$name,saveObjectImage)"
 
 
    foreach processNode [::dom::tcl::node children $roadmapNode] {
@@ -855,18 +911,41 @@ proc ::eshel::process::generateScript { } {
                lappend tempNames "temp-$tempNum.fit"
             }
 
+            ####--- Nom des flats tungsten en entree
+            ###set tungstenNode [lindex [set [::dom::element getElementsByTagName $processNode TUNGSTEN ]] 0]
+            ###if { $tungstenNode != "" } {
+            ###   set tungstensNames ""
+            ###   set tempNames ""
+            ###   set tempNum   "0"
+            ###   foreach fileNode [::dom::tcl::node children $tungstenNode] {
+            ###      lappend tungstensNames [::dom::element getAttribute $fileNode "FILENAME" ]
+            ###      incr tempNum
+            ###      lappend tempNames "temp-$tempNum.fit"
+            ###   }
+            ###   set preprocTungsten "preproc-[::dom::element getAttribute $tungstenNode "FILENAME"]"
+            ###} else {
+            ###   set preprocTungsten "preproc-[::dom::element getAttribute $flatNode "FILENAME"]"
+            ###}
+
+
             #--- nom du flat en sortie
             set preprocFlat   "preproc-[::dom::element getAttribute $flatNode "FILENAME"]"
             set processedFlat [::dom::element getAttribute $flatNode "FILENAME"]
 
             #--- j'ajoute le script
             putCatchBegin $hScriptFile "FLAT-PROCESS" $processedFlat
-            ##putLog $hScriptFile "PROCESS FLAT $processedFlat"
             #--- tempFlat(i) = rawFlat(i) - (dark thermique)* (flatExptime/darkExptime) - bias
             putImaSeries $hScriptFile $::conf(eshel,rawDirectory) $flatsNames $::conf(eshel,tempDirectory) "temp-" "SUBDARK \\\"DARK=[file join $::conf(eshel,referenceDirectory) $darkFileName]\\\"  \\\"BIAS=[file join $::conf(eshel,referenceDirectory) $biasFileName]\\\"  EXPTIME=EXPOSURE DEXPTIME=EXPOSURE"
             #--- preprocFlat(i) = mediane( tempFlat(i) )
             putImaStack  $hScriptFile $::conf(eshel,tempDirectory) $tempNames $::conf(eshel,tempDirectory) $preprocFlat  "ADD bitpix=32 \\\"HOT_PIXEL_LIST=\$\hotPixelList\\\""
-            ###putImaStack  $hScriptFile $::conf(eshel,tempDirectory) $tempNames $::conf(eshel,tempDirectory) $preprocFlat  "ADD bitpix=32 "
+
+            ###if { $preprocTungsten != $preprocFlat } {
+            ###   #--- tempTungsten(i) = rawTungsten(i) - (dark thermique)* (tungstenExptime/darkExptime) - bias
+            ###   putImaSeries $hScriptFile $::conf(eshel,rawDirectory) $tungstensNames $::conf(eshel,tempDirectory) "temp-" "SUBDARK \\\"DARK=[file join $::conf(eshel,referenceDirectory) $darkFileName]\\\"  \\\"BIAS=[file join $::conf(eshel,referenceDirectory) $biasFileName]\\\"  EXPTIME=EXPOSURE DEXPTIME=EXPOSURE"
+            ###   #--- preprocTungsten(i) = mediane( tempTungsten(i) )
+            ###   putImaStack  $hScriptFile $::conf(eshel,tempDirectory) $tempNames $::conf(eshel,tempDirectory) $preprocTungsten  "ADD bitpix=32 \\\"HOT_PIXEL_LIST=\$\hotPixelList\\\""
+            ###}
+
             #--- processedFlat = processFlat( preprocFlat )
             putProcessFlat $hScriptFile $::conf(eshel,tempDirectory) $preprocFlat $::conf(eshel,referenceDirectory) $processedFlat
             #--- delete temporary files
@@ -1004,7 +1083,7 @@ proc ::eshel::process::generateScript { } {
                   #--- je recupere la moyenne du flatfield
                   putCommand $hScriptFile "set keywords \[fitsheader \"$fullFlatfieldName\"\]"
                   putCommand $hScriptFile "set flatFieldMean  \[lindex \[lsearch -index 0 -inline \$keywords MEAN\] 1\]"
-                  #--- je divise par le flatfield
+                  #--- je divise par le flatfield et je multiple par sa moyenne
                   putImaSeries $hScriptFile $::conf(eshel,tempDirectory) $tempNames $::conf(eshel,tempDirectory) "temp-" "DIV \\\"file=$fullFlatfieldName\\\" constant=\$flatFieldMean"
                }
 
@@ -1423,7 +1502,7 @@ proc ::eshel::process::putProcessObject { hfile objectFileNameIn objectFileNameO
    append command "\"$objectFileNameIn\" "
    append command "\"$objectFileNameOut\" "
    append command "\"$calibFileName\" "
-   append command {$minOrder $maxOrder -merge 1 }
+   append command {$minOrder $maxOrder -merge 1 -objectimage $saveObjectImage }
 
    #--- option pour diviser par la reponse instrumentale
    if { $responseFileName != "" } {
@@ -1569,18 +1648,20 @@ proc ::eshel::process::endScript {  } {
 
 #------------------------------------------------------------
 # getFileName
-#  fabrique et retroune le nom d'un fichier en fonction de ses mots cles de la serie
+#  fabrique et retourne le nom d'un fichier en fonction de ses mots cles de la serie
 #
 #  exemples :
-#   BIAS :  AAAAMMJJ-HHmMSSss-BIAS.fit
-#   DARK :    AAAAMMJJ-HHmMSSss-DARK-ddd.fit
-#   FLAT :    AAAAMMJJ-HHmMSSss-FLAT-ddd.fit
-#   CALIB :    AAAAMMJJ-HHmMSSss-CALIB-ddd.fit
-#   OBJECT :  AAAAMMJJ-HHmMSSss-name-ddd.fit
+#   BIAS :        AAAAMMJJ-HHMMSS-BIAS.fit
+#   DARK :        AAAAMMJJ-HHMMSS-DARK-ddd.fit
+#   FLATFIELD :   AAAAMMJJ-HHMMSS-FLATFIELD-ddd.fit
+#   FLAT :        AAAAMMJJ-HHMMSS-FLAT-ddd.fit
+#   FLATFIELD :   AAAAMMJJ-HHMMSS-FLATFIELD-ddd.fit
+#   CALIB :       AAAAMMJJ-HHMMSS-CALIB-ddd.fit
+#   OBJECT :      AAAAMMJJ-HHMMSS-name-ddd.fit
 #
 #   avec AAAAMMJJ : annee, mois, jour
-#        HHmMSSss : heure, minute, seconde, centieme de seconde
-#        ddd  : temps de pose en seconde
+#        HHMMSS   : heure, minute, seconde
+#        ddd  : temps de pose en seconde (avec les decimales si elle ne sont pas nulles)
 #        name : nom de l'objet
 #
 # parameters:
@@ -2128,14 +2209,14 @@ proc ::eshel::process::moveRawToArchive { serieId } {
 
 
 #------------------------------------------------------------
-# removeSerie
-#   supprime une serie
+# unmakeSerie
+#   défait une serie
 #   Le fichiers de la serie sont deplaces dans la liste des
 #   fichiers non identifies
 #
 #
 #------------------------------------------------------------
-proc ::eshel::process::removeSerie { serieId } {
+proc ::eshel::process::unmakeSerie { serieId } {
    variable private
 
    set nightNode [::dom::tcl::document cget $private(nightlog) -documentElement]
@@ -2161,7 +2242,7 @@ proc ::eshel::process::removeSerie { serieId } {
 
 #------------------------------------------------------------
 # getFileAttribute
-#   retourne l'attribut d'un fichier
+#   retourne la valeur d'attribut d'un fichier
 #------------------------------------------------------------
 proc ::eshel::process::getFileAttribute { fileNode attributeName } {
    variable private
@@ -2176,7 +2257,7 @@ proc ::eshel::process::getFileAttribute { fileNode attributeName } {
 
 #------------------------------------------------------------
 # saveFile
-#   sauve nightlog dans un fichier
+#   sauve nightlog dans le fichier nightlog.xml dans tempDirectory
 #------------------------------------------------------------
 proc ::eshel::process::saveFile { { fileName "" } } {
    variable private
@@ -2217,7 +2298,7 @@ proc ::eshel::process::loadFile { fileName } {
 proc ::eshel::process::updateFileKeywords {  } {
    variable private
 
-   #--- je mets � jour les mots clefs des fichiers des series
+   #--- je mets à jour les mots clefs des fichiers des series
    set nightNode [::dom::tcl::document cget $private(nightlog) -documentElement]
    set filesNode [lindex [set [::dom::element getElementsByTagName $nightNode "FILES" ]] 0]
    foreach serieNode [::dom::tcl::node children $filesNode] {
@@ -2280,9 +2361,21 @@ proc ::eshel::process::updateFileKeywords {  } {
 
 #------------------------------------------------------------
 # logGenerateProcess
-#   trace le resultat de la generation de script dans la console
+#   trace le resultat de la generation de script dans la console et le fichier de log
+#
+# @param status  etat du traitement
+#    - todo    : le traitement est a faire
+#    - running : le traitement est en cours
+#    - done    : le traitement est termine correctement.
+#    - error   : le traitemnt avec des erreurs
+# @param processType  CALIB-PROCESS, OBJECT-PROCESS, ...
+# @param fileName     nom du fichier traite
+# @param errorMessage message d'erreur
+# @return rien
+# @private
+
 #------------------------------------------------------------
-proc ::eshel::process::logGenerateProcess { status processName fileName errorMessage  } {
+proc ::eshel::process::logGenerateProcess { status processType fileName errorMessage  } {
    variable private
 
    if { $status == "todo" } {
@@ -2291,61 +2384,27 @@ proc ::eshel::process::logGenerateProcess { status processName fileName errorMes
          logInfo "        $errorItem"
       }
    } else {
-      logError "Error $processName process $fileName"
+      logError "Error $processType process $fileName"
       foreach errorItem $errorMessage {
          logError "        $errorItem"
       }
    }
 }
 
-##------------------------------------------------------------
-#   trace une information dans la console et dans le fichier de trace
-#
-# @param message message d'information
-# @return rien
-# @private
-#------------------------------------------------------------
-proc ::eshel::process::logInfo { message  } {
-   variable private
-
-   #--- j'ajoute la trace dans la console
-   ::console::disp "eShel-process: $message\n"
-   #--- je purge la console s'il y a plus de 1000 lignes
-   if { [$::audace(Console).txt1 index end] > 1000 } {
-      $::audace(Console).txt1 delete 1.0  100.0
-   }
-   #--- j'ajoute la trace dans le fichier de trace
-   ::eshel::logFile "eShel-process: $message\n" "#0000FF"
-}
 
 ##------------------------------------------------------------
-# trace une erreur dans la console et dans le fichier de trace
+# Trace les etapes de traitement dans la console et dans le fichier de log
 #
-# @param message message d'erreur
-# @return rien
-# @private
-#------------------------------------------------------------
-proc ::eshel::process::logError { message  } {
-   variable private
-
-   #--- j'ajoute l'erreur dans la console
-   ::console::affiche_erreur "eShel-process: $message\n"
-   #--- je purge la console s'il y a plus de 1000 lignes
-   if { [$::audace(Console).txt1 index end] > 1000 } {
-      $::audace(Console).txt1 delete 1.0  100.0
-   }
-    #--- j'ajoute l'erreur dans le fichier de trace
-   ::eshel::logFile "eShel-process: $message\n" "#FF0000"
-}
-
-##------------------------------------------------------------
-#  cette procedure est appellee par la thread des traitements
+# Cette procedure est appellee par la thread des traitements
+# Elle utilise les procedures logInfo et logError
 #
-# @param nom du fichier traite
-# @param �tat du traitement
+# @param processType  CALIB-PROCESS, OBJECT-PROCESS
+# @param fileName     nom du fichier traite
+# @param status      etat du traitement
 #    - running : le traitement est en cours
-#    - done    : le tratement est termin� correctement.
+#    - done    : le traitement est termine correctement.
 #    - error   : le traitemnt avec des erreurs
+# @param message     message optionnel en complement du status
 # @return rien
 # @private
 #------------------------------------------------------------
@@ -2387,9 +2446,9 @@ proc ::eshel::process::logStep { processType fileName status { message  "" }} {
 }
 
 ## -------------------------------------------------
-# trace une erreur dans la console et dans le fichier de trace
+# trace le resultat de la calibration dans la console et le fichier de log
 #
-# @param message message d'erreur
+# @param fileName nom du fichier calibré
 # @return rien
 # @private
 #------------------------------------------------------------
@@ -2457,6 +2516,47 @@ proc ::eshel::process::logCalibrationResult { fileName  } {
    }
 
 }
+
+##------------------------------------------------------------
+# trace une information dans la console et dans le fichier de trace
+#
+# @param message message d'information
+# @return rien
+# @private
+#------------------------------------------------------------
+proc ::eshel::process::logInfo { message  } {
+   variable private
+
+   #--- j'ajoute la trace dans la console
+   ::console::disp "eShel-process: $message\n"
+   #--- je purge la console s'il y a plus de 1000 lignes
+   if { [$::audace(Console).txt1 index end] > 1000 } {
+      $::audace(Console).txt1 delete 1.0  100.0
+   }
+   #--- j'ajoute la trace dans le fichier de trace
+   ::eshel::logFile "eShel-process: $message\n" "#0000FF"
+}
+
+##------------------------------------------------------------
+# trace une erreur dans la console et dans le fichier de trace
+#
+# @param message message d'erreur
+# @return rien
+# @private
+#------------------------------------------------------------
+proc ::eshel::process::logError { message  } {
+   variable private
+
+   #--- j'ajoute l'erreur dans la console
+   ::console::affiche_erreur "eShel-process: $message\n"
+   #--- je purge la console s'il y a plus de 1000 lignes
+   if { [$::audace(Console).txt1 index end] > 1000 } {
+      $::audace(Console).txt1 delete 1.0  100.0
+   }
+    #--- j'ajoute l'erreur dans le fichier de trace
+   ::eshel::logFile "eShel-process: $message\n" "#FF0000"
+}
+
 
 
 
