@@ -2,7 +2,7 @@
 # Fichier : process.tcl
 # Description : fenertre de configuration instrument eShel
 # Auteur : Michel PUJOL
-# Mise à jour $Id: instrumentgui.tcl,v 1.5 2010-06-11 12:46:39 michelpujol Exp $
+# Mise à jour $Id: instrumentgui.tcl,v 1.6 2010-08-20 14:34:44 michelpujol Exp $
 #
 
 ################################################################
@@ -85,9 +85,8 @@ proc ::eshel::instrumentgui::showHelp { } {
 #   retourne le nom de la fenetre de traitement
 #------------------------------------------------------------
 proc ::eshel::instrumentgui::getLabel { } {
-   global caption
 
-   return "$caption(eshel,title) $caption(eshel,instrument,title)"
+   return "$::caption(eshel,title) $::caption(eshel,instrument,title)"
 }
 
 #------------------------------------------------------------
@@ -97,17 +96,16 @@ proc ::eshel::instrumentgui::getLabel { } {
 #------------------------------------------------------------
 proc ::eshel::instrumentgui::fillConfigPage { frm visuNo } {
    variable private
-   global caption
 
    set private($visuNo,frm) $frm
 
    #--- Frame select config
-   TitleFrame $frm.config  -borderwidth 2 -relief ridge -text "$caption(eshel,instrument,selectConfig)"
+   TitleFrame $frm.config  -borderwidth 2 -relief ridge -text "$::caption(eshel,instrument,selectConfig)"
       #--- Liste des configurations
       set configList [::eshel::instrument::getConfigurationList]
 
       #--- Bouton create new configuration
-      Button $frm.config.create -text "$caption(eshel,instrument,createConfig)" -command "::eshel::instrumentgui::createConfig $visuNo"
+      Button $frm.config.create -text "$::caption(eshel,instrument,createConfig)" -command "::eshel::instrumentgui::createConfig $visuNo"
       pack $frm.config.create -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
 
       #--- j'affiche la liste des configurations
@@ -132,35 +130,34 @@ proc ::eshel::instrumentgui::fillConfigPage { frm visuNo } {
       $frm.config.combo setvalue "@$index"
 
       #--- Bouton copy configuration
-      Button $frm.config.copy -text "$caption(eshel,instrument,copyConfig)" -command "::eshel::instrumentgui::copyConfig $visuNo"
+      Button $frm.config.copy -text "$::caption(eshel,instrument,copyConfig)" -command "::eshel::instrumentgui::copyConfig $visuNo"
       pack $frm.config.copy -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
 
       #--- Bouton delete configuration
-      Button $frm.config.delete -text "$caption(eshel,instrument,deleteConfig)" -command "::eshel::instrumentgui::deleteConfig $visuNo"
+      Button $frm.config.delete -text "$::caption(eshel,instrument,deleteConfig)" -command "::eshel::instrumentgui::deleteConfig $visuNo"
       pack $frm.config.delete -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
 
       #--- Bouton import configuration
-      Button $frm.config.importCalibration -text "$caption(eshel,instrument,importCalibrationConfig)" -command "::eshel::instrumentgui::importCalibrationConfig $visuNo"
+      Button $frm.config.importCalibration -text "$::caption(eshel,instrument,importCalibrationConfig)" -command "::eshel::instrumentgui::importCalibrationConfig $visuNo"
       pack $frm.config.importCalibration -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
 
       #--- Bouton import configuration
-      Button $frm.config.import -text "$caption(eshel,instrument,importConfig)" -command "::eshel::instrumentgui::importConfig $visuNo"
+      Button $frm.config.import -text "$::caption(eshel,instrument,importConfig)" -command "::eshel::instrumentgui::importConfig $visuNo"
       pack $frm.config.import -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
 
       #--- Bouton import configuration
-      Button $frm.config.export -text "$caption(eshel,instrument,exportConfig)" -command "::eshel::instrumentgui::exportConfig $visuNo"
+      Button $frm.config.export -text "$::caption(eshel,instrument,exportConfig)" -command "::eshel::instrumentgui::exportConfig $visuNo"
       pack $frm.config.export -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
 
    pack $frm.config -side top -fill x -expand 0
 
    #--- Creation des onglets
    set notebook [ NoteBook $frm.notebook ]
-      $notebook insert end "spectrograph" -text $caption(eshel,instrument,spectrograph)
-      $notebook insert end "camera"       -text $caption(eshel,instrument,camera)
-      $notebook insert end "telescope"    -text $caption(eshel,instrument,telescope)
-      $notebook insert end "process"      -text $caption(eshel,instrument,process)
-      $notebook insert end "objectProcess" -text $caption(eshel,instrument,objectProcess)
-      $notebook insert end "reference"    -text $caption(eshel,instrument,reference)
+      $notebook insert end "spectrograph" -text $::caption(eshel,instrument,spectrograph)
+      $notebook insert end "camera"       -text $::caption(eshel,instrument,camera)
+      $notebook insert end "telescope"    -text $::caption(eshel,instrument,telescope)
+      $notebook insert end "process"      -text $::caption(eshel,instrument,process)
+      $notebook insert end "reference"    -text $::caption(eshel,instrument,reference)
    pack $frm.notebook  -side top -fill both -expand 1
 
    #--- j'affiche les wigdets dans les onglets
@@ -168,7 +165,6 @@ proc ::eshel::instrumentgui::fillConfigPage { frm visuNo } {
    fillCameraPage       [$notebook getframe "camera"]       $visuNo
    fillTelescopePage    [$notebook getframe "telescope"]    $visuNo
    fillProcessPage      [$notebook getframe "process"]     $visuNo
-   fillObjectProcessPage [$notebook getframe "objectProcess"] $visuNo
    fillReferencePage    [$notebook getframe "reference"]     $visuNo
 
    #--- j'affiche les paramametres de la configuration courante
@@ -188,59 +184,58 @@ proc ::eshel::instrumentgui::fillConfigPage { frm visuNo } {
 #------------------------------------------------------------
 proc ::eshel::instrumentgui::fillSpectrographPage { frm visuNo } {
    variable private
-   global caption
 
    #--- type de spectro
    checkbutton $frm.spectroType  -justify left \
-      -text $caption(eshel,instrument,spectrograph,type) \
+      -text $::caption(eshel,instrument,spectrograph,type) \
       -variable ::eshel::instrumentgui::private(spectroType)
    #--- name
-   LabelEntry $frm.name  -label $caption(eshel,instrument,spectrograph,name)\
+   LabelEntry $frm.name  -label $::caption(eshel,instrument,spectrograph,name)\
       -labeljustify left -labelwidth 30  -width 30 -justify left \
       -validate key -validatecommand { ::eshel::validateString %W %V %P %s fits 1 70 ::eshel::instrumentgui::widget(error,spectroName) } \
       -textvariable ::eshel::instrumentgui::private(spectroName)
    #--- resolution
-   LabelEntry $frm.grating  -label $caption(eshel,instrument,spectrograph,grating)\
+   LabelEntry $frm.grating  -label $::caption(eshel,instrument,spectrograph,grating)\
       -labeljustify left -labelwidth 30  -width 10 -justify right \
       -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s double 10.0 3000.0 ::eshel::instrumentgui::widget(error,grating) } \
       -textvariable ::eshel::instrumentgui::private(grating)
    #--- angle alpha
-   LabelEntry $frm.alpha  -label $caption(eshel,instrument,spectrograph,alpha)\
+   LabelEntry $frm.alpha  -label $::caption(eshel,instrument,spectrograph,alpha)\
       -labeljustify left -labelwidth 30  -width 10 -justify right \
       -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s double 0.0 180.0 ::eshel::instrumentgui::widget(error,alpha) } \
       -textvariable ::eshel::instrumentgui::private(alpha)
    #--- angle beta
-   LabelEntry $frm.beta  -label $caption(eshel,instrument,spectrograph,beta)\
+   LabelEntry $frm.beta  -label $::caption(eshel,instrument,spectrograph,beta)\
       -labeljustify left -labelwidth 30  -width 10 -justify right \
       -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s double 0.0 180.0 ::eshel::instrumentgui::widget(error,beta) } \
       -textvariable ::eshel::instrumentgui::private(beta)
    #--- angle gamma
-   LabelEntry $frm.gamma  -label $caption(eshel,instrument,spectrograph,gamma)\
+   LabelEntry $frm.gamma  -label $::caption(eshel,instrument,spectrograph,gamma)\
       -labeljustify left -labelwidth 30  -width 10 -justify right \
       -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s double 0.0 180.0 ::eshel::instrumentgui::widget(error,gamma) } \
       -textvariable ::eshel::instrumentgui::private(gamma)
    #--- focale
-   LabelEntry $frm.focale  -label $caption(eshel,instrument,spectrograph,focale) \
+   LabelEntry $frm.focale  -label $::caption(eshel,instrument,spectrograph,focale) \
       -labeljustify left -labelwidth 30 -width 10 -justify right \
       -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s double 0.0 1000.0 ::eshel::instrumentgui::widget(error,focale) } \
       -textvariable ::eshel::instrumentgui::private(focale)
 
    #--- liaison
-   TitleFrame $frm.link -borderwidth 2 -relief ridge -text $caption(eshel,instrument,spectrograph,command)
+   TitleFrame $frm.link -borderwidth 2 -relief ridge -text $::caption(eshel,instrument,spectrograph,command)
       #--- Label de la liaison
-      label $frm.link.label -text $caption(eshel,instrument,spectrograph,linkLabel)
+      label $frm.link.label -text $::caption(eshel,instrument,spectrograph,linkLabel)
       Entry $frm.link.linkList  \
          -width 13 -justify left -editable 0 \
          -textvariable ::eshel::instrumentgui::private(spectrograhLink)
 
       #--- Bouton de configuration de la liaison
-      button $frm.link.configure -text $caption(eshel,instrument,spectrograph,linkConfigure) -relief raised \
+      button $frm.link.configure -text $::caption(eshel,instrument,spectrograph,linkConfigure) -relief raised \
          -command {
-            ::confLink::run ::eshel::instrumentgui::private(spectrograhLink) { vellemank8056 parallelport } $caption(eshel,instrument,spectrograph)
+            ::confLink::run ::eshel::instrumentgui::private(spectrograhLink) { vellemank8056 parallelport } $::caption(eshel,instrument,spectrograph)
          }
 
       #--- Commande du miroir de la bonnette
-      label $frm.link.mirrorlabel -text $caption(eshel,instrument,spectrograph,mirrorBit) -justify left
+      label $frm.link.mirrorlabel -text $::caption(eshel,instrument,spectrograph,mirrorBit) -justify left
       set bitList [ list 1 2 3 4 5 6 7 8 ]
       ComboBox $frm.link.mirrorBit \
          -width 3                   \
@@ -252,7 +247,7 @@ proc ::eshel::instrumentgui::fillSpectrographPage { frm visuNo } {
          -values $bitList
 
       #--- Commande de la lampe Thar
-      label $frm.link.tharlabel -text $caption(eshel,instrument,spectrograph,tharBit) -justify left
+      label $frm.link.tharlabel -text $::caption(eshel,instrument,spectrograph,tharBit) -justify left
       set bitList [ list 1 2 3 4 5 6 7 8 ]
       ComboBox $frm.link.tharBit \
          -width 3                   \
@@ -264,7 +259,7 @@ proc ::eshel::instrumentgui::fillSpectrographPage { frm visuNo } {
          -values $bitList
 
       #--- Commande de la lampe Flat
-     label $frm.link.flatLabel -text $caption(eshel,instrument,spectrograph,flatBit) -justify left
+     label $frm.link.flatLabel -text $::caption(eshel,instrument,spectrograph,flatBit) -justify left
       set bitList [ list 1 2 3 4 5 6 7 8 ]
       ComboBox $frm.link.flatBit \
          -width 3                       \
@@ -276,7 +271,7 @@ proc ::eshel::instrumentgui::fillSpectrographPage { frm visuNo } {
          -values $bitList
 
       #--- Commande de la lampe Neon
-      label $frm.link.neonLabel -text $caption(eshel,instrument,spectrograph,neonBit) -justify left
+      label $frm.link.neonLabel -text $::caption(eshel,instrument,spectrograph,neonBit) -justify left
       set bitList [ list 1 2 3 4 5 6 7 8 ]
       ComboBox $frm.link.neonBit \
          -width 3                       \
@@ -318,17 +313,16 @@ proc ::eshel::instrumentgui::fillSpectrographPage { frm visuNo } {
 #------------------------------------------------------------
 proc ::eshel::instrumentgui::fillCameraPage { frm visuNo } {
    variable private
-   global caption
 
    frame $frm.camera
       #--- camera name
-      LabelEntry $frm.camera.cameraName  -label $caption(eshel,instrument,camera,cameraName) \
+      LabelEntry $frm.camera.cameraName  -label $::caption(eshel,instrument,camera,cameraName) \
          -labeljustify left -labelwidth 20 -width 20 -justify left \
          -validate key -validatecommand { ::eshel::validateString %W %V %P %s fits 1 70 ::eshel::instrumentgui::widget(error,cameraName) } \
          -textvariable ::eshel::instrumentgui::private(cameraName)
       #--- camera type
       frame $frm.camera.config -borderwidth 0
-         label $frm.camera.config.label -text $caption(eshel,instrument,camera,cameraLabel) \
+         label $frm.camera.config.label -text $::caption(eshel,instrument,camera,cameraLabel) \
              -width 20 -justify left -anchor w
          set cameraList $::confCam::private(pluginLabelList)
          ComboBox $frm.camera.config.cameraLabel \
@@ -342,7 +336,7 @@ proc ::eshel::instrumentgui::fillCameraPage { frm visuNo } {
 
       #--- binning
       frame $frm.camera.binning -borderwidth 0
-         label $frm.camera.binning.label -text $caption(eshel,instrument,camera,binning) -width 20 -justify left -anchor w
+         label $frm.camera.binning.label -text $::caption(eshel,instrument,camera,binning) -width 20 -justify left -anchor w
          set binningList [list "1x1" "2x2" "4x4"]
          ComboBox $frm.camera.binning.combo \
             -width [ ::tkutil::lgEntryComboBox $binningList ] \
@@ -354,24 +348,24 @@ proc ::eshel::instrumentgui::fillCameraPage { frm visuNo } {
          pack $frm.camera.binning.combo -side left  -anchor w -fill none -expand 0
 
       #--- pixel size
-      LabelEntry $frm.camera.pixelSize  -label $caption(eshel,instrument,camera,pixelSize) \
+      LabelEntry $frm.camera.pixelSize  -label $::caption(eshel,instrument,camera,pixelSize) \
          -labeljustify left -labelwidth 20 -width 10 -justify right \
          -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s double 0.001 0.100 ::eshel::instrumentgui::widget(error,pixelSize) } \
          -textvariable ::eshel::instrumentgui::private(pixelSize)
       #--- image width
-      LabelEntry $frm.camera.width  -label $caption(eshel,instrument,camera,width) \
+      LabelEntry $frm.camera.width  -label $::caption(eshel,instrument,camera,width) \
          -labeljustify left -labelwidth 20 -width 10 -justify right \
          -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 10000 ::eshel::instrumentgui::widget(error,width) } \
          -textvariable ::eshel::instrumentgui::private(width)
       #--- image height
-      LabelEntry $frm.camera.height  -label $caption(eshel,instrument,camera,height) \
+      LabelEntry $frm.camera.height  -label $::caption(eshel,instrument,camera,height) \
          -labeljustify left -labelwidth 20 -width 10 -justify right \
          -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 10000 ::eshel::instrumentgui::widget(error,height) } \
          -textvariable ::eshel::instrumentgui::private(height)
 
       #--- crop window
       frame $frm.camera.window
-         LabelEntry $frm.camera.window.x1  -label $caption(eshel,instrument,camera,window) \
+         LabelEntry $frm.camera.window.x1  -label $::caption(eshel,instrument,camera,window) \
             -labeljustify left -labelwidth 20 -width 5 -justify right \
             -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 10000 ::eshel::instrumentgui::widget(error,x1) } \
             -textvariable ::eshel::instrumentgui::private(x1)
@@ -406,8 +400,8 @@ proc ::eshel::instrumentgui::fillCameraPage { frm visuNo } {
       grid columnconfig $frm.camera 2 -weight 1
 
    #--- liste des pixels chauds a reparer
-   TitleFrame $frm.hotpixel -borderwidth 2 -relief ridge -text $caption(eshel,instrument,camera,hotPixel)
-      checkbutton $frm.hotpixel.enabled  -justify left -text $caption(eshel,instrument,camera,hotPixelEnabled) -variable ::eshel::instrumentgui::private(hotPixelEnabled)
+   TitleFrame $frm.hotpixel -borderwidth 2 -relief ridge -text $::caption(eshel,instrument,camera,hotPixel)
+      checkbutton $frm.hotpixel.enabled  -justify left -text $::caption(eshel,instrument,camera,hotPixelEnabled) -variable ::eshel::instrumentgui::private(hotPixelEnabled)
       scrollbar $frm.hotpixel.ysb -command "$frm.hotpixel.text yview"
       text $frm.hotpixel.text -yscrollcommand [list $frm.hotpixel.ysb set] \
          -wrap word -width 15
@@ -416,9 +410,9 @@ proc ::eshel::instrumentgui::fillCameraPage { frm visuNo } {
       pack $frm.hotpixel.ysb -in [$frm.hotpixel getframe]  -side left -anchor w -fill y -expand 1
 
    #--- Parametres de reparation des cosmiques
-   TitleFrame $frm.cosmic -borderwidth 2 -relief ridge -text $caption(eshel,instrument,camera,cosmic)
-      checkbutton $frm.cosmic.enabled  -justify left -text $caption(eshel,instrument,camera,cosmicEnabled) -variable ::eshel::instrumentgui::private(cosmicEnabled)
-      LabelEntry $frm.cosmic.threshold -label $caption(eshel,instrument,camera,cosmicThreshold) \
+   TitleFrame $frm.cosmic -borderwidth 2 -relief ridge -text $::caption(eshel,instrument,camera,cosmic)
+      checkbutton $frm.cosmic.enabled  -justify left -text $::caption(eshel,instrument,camera,cosmicEnabled) -variable ::eshel::instrumentgui::private(cosmicEnabled)
+      LabelEntry $frm.cosmic.threshold -label $::caption(eshel,instrument,camera,cosmicThreshold) \
          -labeljustify left -labelwidth 20 -width 10 -justify right \
             -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 100 500 ::eshel::instrumentgui::widget(error,cosmicThreshold) } \
          -textvariable ::eshel::instrumentgui::private(cosmicThreshold)
@@ -444,10 +438,9 @@ proc ::eshel::instrumentgui::fillCameraPage { frm visuNo } {
 #------------------------------------------------------------
 proc ::eshel::instrumentgui::fillTelescopePage { frm visuNo } {
    variable private
-   global caption
 
    #--- telescope name
-   LabelEntry $frm.telescopeName  -label $caption(eshel,instrument,telescope,telescopeName) \
+   LabelEntry $frm.telescopeName  -label $::caption(eshel,instrument,telescope,telescopeName) \
       -labeljustify left -labelwidth 20 -width 30 -justify left \
       -validate key -validatecommand { ::eshel::validateString %W %V %P %s fits 0 70 ::eshel::instrumentgui::widget(error,telescopeName) } \
       -textvariable ::eshel::instrumentgui::private(telescopeName)
@@ -462,19 +455,18 @@ proc ::eshel::instrumentgui::fillTelescopePage { frm visuNo } {
 #------------------------------------------------------------
 proc ::eshel::instrumentgui::fillReferencePage { frm visuNo } {
    variable private
-   global caption
 
    set private(referencePage) $frm
    set private(referenceTable) $frm.table.table
 
    #--- table des references
-   TitleFrame $frm.table  -borderwidth 2 -relief ridge -text $caption(eshel,instrument,reference)
+   TitleFrame $frm.table  -borderwidth 2 -relief ridge -text $::caption(eshel,instrument,reference)
       scrollbar $frm.table.ysb -command "$private(referenceTable) yview"
       scrollbar $frm.table.xsb -command "$private(referenceTable) xview" -orient horizontal
 
       #--- Table des reference
       ::tablelist::tablelist $private(referenceTable) \
-         -columns [list 0 $caption(eshel,instrument,reference,stateColumn) left 0 $caption(eshel,instrument,reference,nameColumn) left] \
+         -columns [list 0 $::caption(eshel,instrument,reference,stateColumn) left 0 $::caption(eshel,instrument,reference,nameColumn) left] \
          -xscrollcommand [list $frm.table.xsb set] \
          -yscrollcommand [list $frm.table.ysb set] \
          -exportselection 0 \
@@ -491,15 +483,15 @@ proc ::eshel::instrumentgui::fillReferencePage { frm visuNo } {
       #--- boutons de gestion des references
       frame $frm.table.button  -borderwidth 0 -relief flat
          #--- Bouton create new reference
-         Button $frm.table.button.create -text "$caption(eshel,instrument,reference,createReference)" -command "::eshel::instrumentgui::createReference $visuNo"
+         Button $frm.table.button.create -text "$::caption(eshel,instrument,reference,createReference)" -command "::eshel::instrumentgui::createReference $visuNo"
          pack $frm.table.button.create -side top -fill x -expand 0 -padx 20 -pady 2
 
          #--- Bouton copy reference
-         Button $frm.table.button.copy -text "$caption(eshel,instrument,reference,copy)" -command "::eshel::instrumentgui::copyReference $visuNo"
+         Button $frm.table.button.copy -text "$::caption(eshel,instrument,reference,copy)" -command "::eshel::instrumentgui::copyReference $visuNo"
          pack $frm.table.button.copy  -side top -fill x -expand 0 -padx 20 -pady 2
 
          #--- Bouton delete reference
-         Button $frm.table.button.delete -text "$caption(eshel,instrument,reference,delete)" -command "::eshel::instrumentgui::deleteReference $visuNo"
+         Button $frm.table.button.delete -text "$::caption(eshel,instrument,reference,delete)" -command "::eshel::instrumentgui::deleteReference $visuNo"
          pack $frm.table.button.delete -side top -fill x -expand 0 -padx 20 -pady 2
 
       #--- je place la table et les scrollbars dans la frame
@@ -517,14 +509,14 @@ proc ::eshel::instrumentgui::fillReferencePage { frm visuNo } {
    ##pack $frm.button -side left -fill x -expand 1
 
    #--- modification des actions d'une sequence de reference
-   TitleFrame $frm.edit  -borderwidth 2 -relief ridge -text $caption(eshel,instrument,reference,edit)
+   TitleFrame $frm.edit  -borderwidth 2 -relief ridge -text $::caption(eshel,instrument,reference,edit)
       set private(actionTable) $frm.edit.table
       scrollbar $frm.edit.ysb -command "$private(actionTable) yview"
       scrollbar $frm.edit.xsb -command "$private(actionTable) xview" -orient horizontal
 
       #--- Table des reference
       ::tablelist::tablelist $private(actionTable) \
-         -columns [list 0 $caption(eshel,instrument,reference,actionColumn) left 0 $caption(eshel,instrument,reference,parameterColumn) left] \
+         -columns [list 0 $::caption(eshel,instrument,reference,actionColumn) left 0 $::caption(eshel,instrument,reference,parameterColumn) left] \
          -xscrollcommand [list $frm.edit.xsb set] \
          -yscrollcommand [list $frm.edit.ysb set] \
          -exportselection 0 \
@@ -538,13 +530,13 @@ proc ::eshel::instrumentgui::fillReferencePage { frm visuNo } {
 
       frame $frm.edit.action  -borderwidth 0 -relief flat
          frame $frm.edit.action.buttons  -borderwidth 0 -relief flat
-         Button $frm.edit.action.create -text "$caption(eshel,instrument,reference,createAction)" -command "::eshel::instrumentgui::createAction $visuNo"
-         Button $frm.edit.action.copy -text "$caption(eshel,instrument,reference,copy)" -command "::eshel::instrumentgui::copyAction $visuNo"
-         Button $frm.edit.action.delete -text "$caption(eshel,instrument,reference,delete)" -command "::eshel::instrumentgui::deleteAction $visuNo"
-         Button $frm.edit.action.moveUp  -text "$caption(eshel,instrument,reference,moveUp)" -command "::eshel::instrumentgui::moveActionUp $visuNo"
-         Button $frm.edit.action.moveDown -text "$caption(eshel,instrument,reference,moveDown)" -command "::eshel::instrumentgui::moveActionDown $visuNo"
+         Button $frm.edit.action.create -text "$::caption(eshel,instrument,reference,createAction)" -command "::eshel::instrumentgui::createAction $visuNo"
+         Button $frm.edit.action.copy -text "$::caption(eshel,instrument,reference,copy)" -command "::eshel::instrumentgui::copyAction $visuNo"
+         Button $frm.edit.action.delete -text "$::caption(eshel,instrument,reference,delete)" -command "::eshel::instrumentgui::deleteAction $visuNo"
+         Button $frm.edit.action.moveUp  -text "$::caption(eshel,instrument,reference,moveUp)" -command "::eshel::instrumentgui::moveActionUp $visuNo"
+         Button $frm.edit.action.moveDown -text "$::caption(eshel,instrument,reference,moveDown)" -command "::eshel::instrumentgui::moveActionDown $visuNo"
 
-         Label $frm.edit.action.actionLabel  -text $caption(eshel,instrument,reference,actionType)
+         Label $frm.edit.action.actionLabel  -text $::caption(eshel,instrument,reference,actionType)
          ComboBox $frm.edit.action.action \
             -width 6                  \
             -height [ llength $private(actionTypeList) ] \
@@ -555,7 +547,7 @@ proc ::eshel::instrumentgui::fillReferencePage { frm visuNo } {
             -modifycmd  "::eshel::instrumentgui::onSelectActionType $visuNo" \
             -values $private(actionTypeList)
 
-         Label $frm.edit.action.expTimeLabel  -text $caption(eshel,instrument,reference,expTime)
+         Label $frm.edit.action.expTimeLabel  -text $::caption(eshel,instrument,reference,expTime)
          set list_combobox {0 0.5 1 3 5 10 15 30 60 120 180 300 600 900 }
          ComboBox $frm.edit.action.expTime \
             -width 4  -height [ llength $list_combobox ] \
@@ -564,7 +556,7 @@ proc ::eshel::instrumentgui::fillReferencePage { frm visuNo } {
             -validate all -validatecommand { ::eshel::validateNumber %W %V %P %s double 0 10000 ::eshel::instrumentgui::private(error,action,expTime) } \
             -values $list_combobox
 
-         Label $frm.edit.action.expNbLabel -text $caption(eshel,instrument,reference,expNb)
+         Label $frm.edit.action.expNbLabel -text $::caption(eshel,instrument,reference,expNb)
          set list_combobox [list 1 2 3 5 10 15 20 ]
          ComboBox $frm.edit.action.expNb \
             -width 4 -height [ llength $list_combobox ] \
@@ -573,7 +565,7 @@ proc ::eshel::instrumentgui::fillReferencePage { frm visuNo } {
             -validate all -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 1000 ::eshel::instrumentgui::private(error,action,expNb) } \
             -values $list_combobox
 
-         Button $frm.edit.action.apply -text "$caption(eshel,instrument,reference,apply)" -command "::eshel::instrumentgui::modifyAction $visuNo"
+         Button $frm.edit.action.apply -text "$::caption(eshel,instrument,reference,apply)" -command "::eshel::instrumentgui::modifyAction $visuNo"
 
          ###pack $frm.edit.action.apply -side bottom -fill none -expand 0 -padx 2
          ###
@@ -637,28 +629,27 @@ proc ::eshel::instrumentgui::fillReferencePage { frm visuNo } {
 #------------------------------------------------------------
 proc ::eshel::instrumentgui::fillProcessPage { frm visuNo } {
    variable private
-   global caption
 
    #--- ordre de reference
-   TitleFrame $frm.reference -borderwidth 2 -relief ridge -text $caption(eshel,instrument,process,referenceOrder)
-      LabelEntry $frm.reference.refNum  -label $caption(eshel,instrument,process,refNum)\
+   TitleFrame $frm.reference -borderwidth 2 -relief ridge -text $::caption(eshel,instrument,process,referenceOrder)
+      LabelEntry $frm.reference.refNum  -label $::caption(eshel,instrument,process,refNum)\
          -labeljustify left -labelwidth 20 -width 10 -justify right \
          -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 54 ::eshel::instrumentgui::widget(error,refNum) } \
          -textvariable ::eshel::instrumentgui::private(refNum)
-      LabelEntry $frm.reference.refX  -label $caption(eshel,instrument,process,refX)\
+      LabelEntry $frm.reference.refX  -label $::caption(eshel,instrument,process,refX)\
          -labeljustify left -labelwidth 20 -width 10 -justify right \
          -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 9999 ::eshel::instrumentgui::widget(error,refX) } \
          -textvariable ::eshel::instrumentgui::private(refX)
-      LabelEntry $frm.reference.refY  -label $caption(eshel,instrument,process,refY)\
+      LabelEntry $frm.reference.refY  -label $::caption(eshel,instrument,process,refY)\
          -labeljustify left -labelwidth 20 -width 10 -justify right \
          -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 9999 ::eshel::instrumentgui::widget(error,refY) } \
          -textvariable ::eshel::instrumentgui::private(refY)
-      LabelEntry $frm.reference.refLambda  -label $caption(eshel,instrument,process,refLambda)\
+      LabelEntry $frm.reference.refLambda  -label $::caption(eshel,instrument,process,refLambda)\
          -labeljustify left -labelwidth 20 -width 10 -justify right \
          -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s double 3000 10000 ::eshel::instrumentgui::widget(error,refLambda) } \
          -textvariable ::eshel::instrumentgui::private(refLambda)
 
-      Button $frm.reference.findOrder -text $caption(eshel,instrument,process,findOrder) -state disabled
+      Button $frm.reference.findOrder -text $::caption(eshel,instrument,process,findOrder) -state disabled
 
       pack $frm.reference.refNum -in [$frm.reference getframe] -side top  -anchor w -fill none -expand 1
       pack $frm.reference.refX -in [$frm.reference getframe] -side top  -anchor w -fill none -expand 1
@@ -669,38 +660,38 @@ proc ::eshel::instrumentgui::fillProcessPage { frm visuNo } {
    grid $frm.reference -in $frm -row 0 -column 0 -sticky nsw
 
    #--- detection des ordres
-   TitleFrame $frm.detection -borderwidth 2 -relief ridge -text $caption(eshel,instrument,process,detectionOrder)
-      LabelEntry $frm.detection.wideOrder  -label $caption(eshel,instrument,process,wideOrder)\
+   TitleFrame $frm.detection -borderwidth 2 -relief ridge -text $::caption(eshel,instrument,process,detectionOrder)
+      LabelEntry $frm.detection.wideOrder  -label $::caption(eshel,instrument,process,wideOrder)\
          -labeljustify left -labelwidth 20 -width 10 -justify right \
          -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 100 ::eshel::instrumentgui::widget(error,wideOrder) } \
          -textvariable ::eshel::instrumentgui::private(wideOrder)
       pack $frm.detection.wideOrder -in [$frm.detection getframe] -side top  -anchor w -fill none -expand 1
-      LabelEntry $frm.detection.stepOrder  -label $caption(eshel,instrument,process,stepOrder)\
+      LabelEntry $frm.detection.stepOrder  -label $::caption(eshel,instrument,process,stepOrder)\
          -labeljustify left -labelwidth 20 -width 10 -justify right  \
          -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 100 ::eshel::instrumentgui::widget(error,stepOrder) } \
          -textvariable ::eshel::instrumentgui::private(stepOrder)
       pack $frm.detection.stepOrder -in [$frm.detection getframe] -side top  -anchor w -fill none -expand 1
-      LabelEntry $frm.detection.wideSky  -label $caption(eshel,instrument,process,wideSky)\
+      LabelEntry $frm.detection.wideSky  -label $::caption(eshel,instrument,process,wideSky)\
          -labeljustify left -labelwidth 20 -width 10 -justify right \
          -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 100 ::eshel::instrumentgui::widget(error,wideSky) } \
          -textvariable ::eshel::instrumentgui::private(wideSky)
       pack $frm.detection.wideSky -in [$frm.detection getframe] -side top  -anchor w -fill none -expand 1
-      LabelEntry $frm.detection.threshold  -label $caption(eshel,instrument,process,threshold)\
+      LabelEntry $frm.detection.threshold  -label $::caption(eshel,instrument,process,threshold)\
          -labeljustify left -labelwidth 20 -width 10 -justify right \
          -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 0 65535 ::eshel::instrumentgui::widget(error,threshold) } \
          -textvariable ::eshel::instrumentgui::private(threshold)
       pack $frm.detection.threshold -in [$frm.detection getframe] -side top  -anchor w -fill none -expand 1
-      LabelEntry $frm.detection.boxWide  -label $caption(eshel,instrument,process,boxWide)\
+      LabelEntry $frm.detection.boxWide  -label $::caption(eshel,instrument,process,boxWide)\
          -labeljustify left -labelwidth 20 -width 10 -justify right \
          -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 100 ::eshel::instrumentgui::widget(error,boxWide) } \
          -textvariable ::eshel::instrumentgui::private(boxWide)
       pack $frm.detection.boxWide -in [$frm.detection getframe] -side top  -anchor w -fill none -expand 1
-      LabelEntry $frm.detection.minOrder  -label $caption(eshel,instrument,process,minOrder)\
+      LabelEntry $frm.detection.minOrder  -label $::caption(eshel,instrument,process,minOrder)\
          -labeljustify left -labelwidth 20 -width 10 -justify right \
          -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 60 ::eshel::instrumentgui::widget(error,minOrder) } \
          -textvariable ::eshel::instrumentgui::private(minOrder)
       pack $frm.detection.minOrder -in [$frm.detection getframe] -side top  -anchor w -fill none -expand 1
-      LabelEntry $frm.detection.maxOrder  -label $caption(eshel,instrument,process,maxOrder)\
+      LabelEntry $frm.detection.maxOrder  -label $::caption(eshel,instrument,process,maxOrder)\
          -labeljustify left -labelwidth 20 -width 10 -justify right \
          -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 60 ::eshel::instrumentgui::widget(error,maxOrder) } \
          -textvariable ::eshel::instrumentgui::private(maxOrder)
@@ -709,7 +700,7 @@ proc ::eshel::instrumentgui::fillProcessPage { frm visuNo } {
    grid $frm.detection -in $frm -row 1 -column 0 -sticky nsw
 
    #--- liste des raies
-   TitleFrame $frm.lineList -borderwidth 2 -relief ridge -text $caption(eshel,instrument,process,lineList)
+   TitleFrame $frm.lineList -borderwidth 2 -relief ridge -text $::caption(eshel,instrument,process,lineList)
       scrollbar $frm.lineList.ysb -command "$frm.lineList.text yview"
       text $frm.lineList.text -yscrollcommand [list $frm.lineList.ysb set] \
          -wrap word -width 12 -height 10
@@ -724,13 +715,13 @@ proc ::eshel::instrumentgui::fillProcessPage { frm visuNo } {
    grid $frm.lineList -in $frm -row 0 -column 1 -sticky ewns
 
    #--- definition des ordres
-   TitleFrame $frm.definition -borderwidth 2 -relief ridge -text $caption(eshel,instrument,process,orderDefinition)
+   TitleFrame $frm.definition -borderwidth 2 -relief ridge -text $::caption(eshel,instrument,process,orderDefinition)
       scrollbar $frm.definition.ysb -command "$frm.definition.table yview"
       set columnList [list]
-      lappend columnList 0 $caption(eshel,instrument,process,orderNum)    center
-      lappend columnList 0 $caption(eshel,instrument,process,leftMargin)  center
-      lappend columnList 0 $caption(eshel,instrument,process,rightMargin) center
-      lappend columnList 0 $caption(eshel,instrument,process,slant)       center
+      lappend columnList 0 $::caption(eshel,instrument,process,orderNum)    center
+      lappend columnList 0 $::caption(eshel,instrument,process,leftMargin)  center
+      lappend columnList 0 $::caption(eshel,instrument,process,rightMargin) center
+      lappend columnList 0 $::caption(eshel,instrument,process,slant)       center
 
       ::tablelist::tablelist $frm.definition.table \
          -columns $columnList \
@@ -761,58 +752,57 @@ proc ::eshel::instrumentgui::fillProcessPage { frm visuNo } {
 
 }
 
-#------------------------------------------------------------
-# fillProcessPage
-#   cree les widgets dans l'onglet camera
-#   return rien
-#------------------------------------------------------------
-proc ::eshel::instrumentgui::fillObjectProcessPage { frm visuNo } {
-   variable private
-   global caption
-
-   #--- flatfield
-   checkbutton $frm.flatFieldEnabled  -justify left \
-      -text $caption(eshel,instrument,process,flatFieldEnabled) \
-      -variable ::eshel::instrumentgui::private(flatFieldEnabled)
-
-   #--- reponse instrumentale
-   TitleFrame $frm.response -borderwidth 2 -relief ridge -text $caption(eshel,instrument,process,response,title)
-      radiobutton $frm.response.manual -highlightthickness 0 -padx 0 -pady 0 -state normal \
-         -text $caption(eshel,instrument,process,response,manual) \
-         -value "MANUAL" \
-         -variable ::eshel::instrumentgui::private(responseOption) \
-         -command  "::eshel::instrumentgui::onSelectResponseOption $visuNo"
-
-      #--- Bouton selection de la reponse isntrumentale
-      frame  $frm.response.select -borderwidth 0
-         entry $frm.response.select.entry   -textvariable ::eshel::instrumentgui::private(responseFileName) -state readonly -justify left
-         pack $frm.response.select.entry   -side left -fill x -expand 1 -padx 8
-         Button $frm.response.select.button -text "..." -command "::eshel::instrumentgui::selectResponseFileName $visuNo"
-         pack $frm.response.select.button -side left -fill none -expand 0 -padx 2
-
-      radiobutton $frm.response.auto -highlightthickness 0 -padx 0 -pady 0 -state normal \
-         -text $caption(eshel,instrument,process,response,auto) \
-         -value "AUTO" \
-         -variable ::eshel::instrumentgui::private(responseOption) \
-         -command  "::eshel::instrumentgui::onSelectResponseOption $visuNo"
-      radiobutton $frm.response.none -highlightthickness 0 -padx 0 -pady 0 -state normal \
-         -text $caption(eshel,instrument,process,response,none) \
-         -value "NONE" \
-         -variable ::eshel::instrumentgui::private(responseOption) \
-         -command  "::eshel::instrumentgui::onSelectResponseOption $visuNo"
-
-      pack $frm.response.manual -in [$frm.response getframe] -side top  -anchor w -fill none -expand 0
-      pack $frm.response.select -in [$frm.response getframe] -side top  -anchor w -fill x    -expand 1
-      pack $frm.response.auto -in [$frm.response getframe] -side top  -anchor w -fill none -expand 0
-      pack $frm.response.none -in [$frm.response getframe] -side top  -anchor w -fill none -expand 0
-
-   grid $frm.flatFieldEnabled -in $frm -row 0 -column 0 -sticky w -pady 4
-   grid $frm.response         -in $frm -row 1 -column 0 -sticky ewn
-
-   grid rowconfig    $frm 0 -weight 0
-   grid rowconfig    $frm 1 -weight 1
-   grid columnconfig $frm 0 -weight 1
-}
+####------------------------------------------------------------
+#### fillProcessPage
+####   cree les widgets dans l'onglet camera
+####   return rien
+####------------------------------------------------------------
+###proc ::eshel::instrumentgui::fillObjectProcessPage { frm visuNo } {
+###   variable private
+###
+###   #--- flatfield
+###   checkbutton $frm.flatFieldEnabled  -justify left \
+###      -text $::caption(eshel,instrument,process,flatFieldEnabled) \
+###      -variable ::eshel::instrumentgui::private(flatFieldEnabled)
+###
+###   #--- reponse instrumentale
+###   TitleFrame $frm.response -borderwidth 2 -relief ridge -text $::caption(eshel,instrument,process,response,title)
+###      radiobutton $frm.response.manual -highlightthickness 0 -padx 0 -pady 0 -state normal \
+###         -text $::caption(eshel,instrument,process,response,manual) \
+###         -value "MANUAL" \
+###         -variable ::eshel::instrumentgui::private(responseOption) \
+###         -command  "::eshel::instrumentgui::onSelectResponseOption $visuNo"
+###
+###      #--- Bouton selection de la reponse isntrumentale
+###      frame  $frm.response.select -borderwidth 0
+###         entry $frm.response.select.entry   -textvariable ::eshel::instrumentgui::private(responseFileName) -state readonly -justify left
+###         pack $frm.response.select.entry   -side left -fill x -expand 1 -padx 8
+###         Button $frm.response.select.button -text "..." -command "::eshel::instrumentgui::selectResponseFileName $visuNo"
+###         pack $frm.response.select.button -side left -fill none -expand 0 -padx 2
+###
+###      radiobutton $frm.response.auto -highlightthickness 0 -padx 0 -pady 0 -state normal \
+###         -text $::caption(eshel,instrument,process,response,auto) \
+###         -value "AUTO" \
+###         -variable ::eshel::instrumentgui::private(responseOption) \
+###         -command  "::eshel::instrumentgui::onSelectResponseOption $visuNo"
+###      radiobutton $frm.response.none -highlightthickness 0 -padx 0 -pady 0 -state normal \
+###         -text $::caption(eshel,instrument,process,response,none) \
+###         -value "NONE" \
+###         -variable ::eshel::instrumentgui::private(responseOption) \
+###         -command  "::eshel::instrumentgui::onSelectResponseOption $visuNo"
+###
+###      pack $frm.response.manual -in [$frm.response getframe] -side top  -anchor w -fill none -expand 0
+###      pack $frm.response.select -in [$frm.response getframe] -side top  -anchor w -fill x    -expand 1
+###      pack $frm.response.auto -in [$frm.response getframe] -side top  -anchor w -fill none -expand 0
+###      pack $frm.response.none -in [$frm.response getframe] -side top  -anchor w -fill none -expand 0
+###
+###   grid $frm.flatFieldEnabled -in $frm -row 0 -column 0 -sticky w -pady 4
+###   grid $frm.response         -in $frm -row 1 -column 0 -sticky ewn
+###
+###   grid rowconfig    $frm 0 -weight 0
+###   grid rowconfig    $frm 1 -weight 1
+###   grid columnconfig $frm 0 -weight 1
+###}
 
 #----------------------------------------------------------------------------
 # onSelectConfig
@@ -826,7 +816,6 @@ proc ::eshel::instrumentgui::onSelectConfig { visuNo } {
 
    #--- je recupere l'identifiant de la confiiguration correspondant la ligne selectionne dans la combobox
    set configId [::eshel::instrument::getConfigIdentifiant [$tkCombo get]]
-   set ::conf(eshel,currentInstrument) $configId
 
    #--- j'ajoute les parametres manquants (en cas d'evolution de eShel)
    if { $configId != "default" } {
@@ -892,9 +881,9 @@ proc ::eshel::instrumentgui::onSelectConfig { visuNo } {
    set private(hotPixelEnabled)   $::conf(eshel,instrument,config,$configId,hotPixelEnabled)
    set private(cosmicEnabled)     $::conf(eshel,instrument,config,$configId,cosmicEnabled)
    set private(cosmicThreshold)   $::conf(eshel,instrument,config,$configId,cosmicThreshold)
-   set private(flatFieldEnabled)  $::conf(eshel,instrument,config,$configId,flatFieldEnabled)
-   set private(responseOption)    $::conf(eshel,instrument,config,$configId,responseOption)
-   set private(responseFileName)  [file nativename $::conf(eshel,instrument,config,$configId,responseFileName)]
+   ###set private(flatFieldEnabled)  $::conf(eshel,instrument,config,$configId,flatFieldEnabled)
+   ###set private(responseOption)    $::conf(eshel,instrument,config,$configId,responseOption)
+   ###set private(responseFileName)  [file nativename $::conf(eshel,instrument,config,$configId,responseFileName)]
 
    #--- je renseigne la liste des pixels chauds
    set tkHotPixelList [$private($visuNo,frm).notebook getframe "camera"].hotpixel.text
@@ -919,8 +908,10 @@ proc ::eshel::instrumentgui::onSelectConfig { visuNo } {
       $tkOrderDefinition insert end $definition
    }
 
-   #--- je rafraichis les widgets de la reponse instrmentale
-   onSelectResponseOption $visuNo
+   #--- je memorise l'identifant de la nouvelle configuration
+   #--- attention : cette variable est surveillee par listener
+   set ::conf(eshel,currentInstrument) $configId
+
 }
 
 #----------------------------------------------------------------------------
@@ -939,26 +930,6 @@ proc ::eshel::instrumentgui::onSelectCamera { visuNo } {
    } else {
 
    }
-}
-
-#----------------------------------------------------------------------------
-# onSelectResponseOption
-#    met a jour les variables et les widgets quand on selectionne une option de la reponse instrumentale
-#----------------------------------------------------------------------------
-proc ::eshel::instrumentgui::onSelectResponseOption { visuNo } {
-   variable private
-
-   set frm [$private($visuNo,frm).notebook getframe "objectProcess"]
-   if { $private(responseOption) == "MANUAL" } {
-      #--- j'active le widget de saisie du nom de fichier
-      $frm.response.select.entry configure -state normal
-      $frm.response.select.button configure -state normal
-   } else {
-      #--- je desactive le widget de saisie du nom de fichier
-      $frm.response.select.entry configure -state disabled
-      $frm.response.select.button configure -state disabled
-   }
-
 }
 
 #----------------------------------------------------------------------------
@@ -1075,9 +1046,6 @@ proc ::eshel::instrumentgui::apply { visuNo } {
    set ::conf(eshel,instrument,config,$configId,hotPixelEnabled)   $private(hotPixelEnabled)
    set ::conf(eshel,instrument,config,$configId,cosmicEnabled)     $private(cosmicEnabled)
    set ::conf(eshel,instrument,config,$configId,cosmicThreshold)   $private(cosmicThreshold)
-   set ::conf(eshel,instrument,config,$configId,flatFieldEnabled)  $private(flatFieldEnabled)
-   set ::conf(eshel,instrument,config,$configId,responseOption)    $private(responseOption)
-   set ::conf(eshel,instrument,config,$configId,responseFileName) [file normalize $private(responseFileName)]
 
    #--- je recupere la liste des pixels chauds de reference
    set tkHotPixelList [$private($visuNo,frm).notebook getframe "camera"].hotpixel.text
@@ -1196,6 +1164,9 @@ proc ::eshel::instrumentgui::apply { visuNo } {
    #--- je mets a jour les sequences de reference dans la fenetre principale.
    ::eshel::setSequenceList $visuNo
 
+   #--- je memorise l'identifant de la nouvelle configuration
+   #--- attention : cette variable est surveillee par listener
+   set ::conf(eshel,currentInstrument) $configId
 }
 
 #------------------------------------------------------------
@@ -1515,6 +1486,29 @@ proc ::eshel::instrumentgui::exportConfig { visuNo } {
       }
       ::eshel::instrument::exportConfig $fileName
    }
+}
+
+
+#------------------------------------------------------------
+# addConfigListener
+#    ajoute une procedure a appeler si on change des parametres des la conguration
+#  parametres :
+#    visuNo: numero de la visu
+#    cmd : commande TCL a lancer quand la configuration change
+#------------------------------------------------------------
+proc ::eshel::instrumentgui::addConfigListener { visuNo cmd } {
+   trace add variable ::conf(eshel,currentInstrument) write $cmd
+}
+
+#------------------------------------------------------------
+# removeConfigListener
+#    supprime une procedure a appeler si on change des parametres des la conguration
+#  parametres :
+#    visuNo: numero de la visu
+#    cmd : commande TCL a lancer quand la configuration change
+#------------------------------------------------------------
+proc ::eshel::instrumentgui::removeConfigListener { visuNo cmd } {
+   trace remove variable ::conf(eshel,currentInstrument) write $cmd
 }
 
 #------------------------------------------------------------

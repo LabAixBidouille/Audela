@@ -2,7 +2,7 @@
 # Fichier : eshel.tcl
 # Description : outil de fabrication des fichier Kit et de deploiement des plugin
 # Auteurs : Michel Pujol
-# Mise à jour $Id: eshel.tcl,v 1.8 2010-08-17 20:21:15 michelpujol Exp $
+# Mise à jour $Id: eshel.tcl,v 1.9 2010-08-20 14:34:44 michelpujol Exp $
 #
 
 ##------------------------------------------------------------
@@ -125,6 +125,7 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
       set dir [ file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [getPluginType]] [getPluginDirectory]]
       source [ file join $dir process.tcl ]
       source [ file join $dir processgui.tcl ]
+      source [ file join $dir processoption.tcl ]
       source [ file join $dir instrument.tcl ]
       source [ file join $dir instrumentgui.tcl ]
       source [ file join $dir session.tcl ]
@@ -216,6 +217,7 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
    if { ! [ info exists conf($prefix,flatFieldEnabled)] } { set conf($prefix,flatFieldEnabled) 0 }
    if { ! [ info exists conf($prefix,responseOption)] }   { set conf($prefix,responseOption)   "NONE" }  ;# MANUAL , AUTO, NONE
    if { ! [ info exists conf($prefix,responseFileName)] } { set conf($prefix,responseFileName) "" }
+   if { ! [ info exists conf($prefix,saveObjectImage)] }  { set conf($prefix,saveObjectImage)  1 }      ;# enregistre l'image 2
    #--- liste des mots clefs a mettre dans les acquisitions
    set conf(keyword,visu1,check) "1,check,IMAGETYP 1,check,SERIESID 1,check,DETNAM 1,check,TELESCOP 1,check,OBSERVER 1,check,OBJNAME 1,check,EXPOSURE 1,check,INSTRUME 1,check,SWCREATE 1,check,SITENAME 1,check,SITELONG 1,check,SITELAT 1,check,SITEELEV"
 

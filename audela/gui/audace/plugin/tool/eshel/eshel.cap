@@ -1,6 +1,6 @@
 #
 # Fichier : eshel.cap
-# Mise a jour $Id: eshel.cap,v 1.6 2010-08-17 20:21:03 michelpujol Exp $
+# Mise a jour $Id: eshel.cap,v 1.7 2010-08-20 14:34:44 michelpujol Exp $
 #
 
 #=========================================================================
@@ -151,7 +151,7 @@ set caption(eshel,instrument,process,leftMargin)             "Left margin"
 set caption(eshel,instrument,process,rightMargin)            "Right margin"
 set caption(eshel,instrument,process,slant)                  "Slant"
 
-set caption(eshel,instrument,objectProcess)                  "Object processing"
+set caption(eshel,instrument,optionProcess)                  "Options"
 set caption(eshel,instrument,process,response,title)         "Instrumental response"
 set caption(eshel,instrument,process,response,manual)        "Manual selection"
 set caption(eshel,instrument,process,response,auto)          "Automatic selection"
@@ -184,7 +184,8 @@ set caption(eshel,instrument,reference,selectAction)         "Please select anot
 set caption(eshel,instrument,reference,confirmDelete)        "Delete reference"
 
 set caption(eshel,process,title)                             "Processing setup"
-set caption(eshel,instrument,process,flatFieldEnabled)       "Use 2D flat field"
+set caption(eshel,process,flatFieldEnabled)                  "Use flatfield (PRNU)"
+set caption(eshel,process,saveObjectImage)                   "Save object preprocessed image"
 set caption(eshel,process,manualCommand)                     "Manual command"
 set caption(eshel,process,generateRoadmap)                   "Generate processing roadmap"
 set caption(eshel,process,generateAndStart)                  "Generate and start processing"
@@ -364,8 +365,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,process,rightMargin)         "Droite"
    set caption(eshel,instrument,process,slant)               "Slant"
 
-   set caption(eshel,instrument,objectProcess)               "Traitement objet"
-   set caption(eshel,instrument,process,flatFieldEnabled)    "Utiliser un flat field 2D"
+   set caption(eshel,instrument,optionProcess)               "Options"
+   set caption(eshel,process,flatFieldEnabled)               "Utiliser un flatfield (PRNU)"
+   set caption(eshel,process,saveObjectImage)                "Enregistrer l'image pretraitee de l'objet"
    set caption(eshel,instrument,process,response,title)      "Réponse instrumentale"
    set caption(eshel,instrument,process,response,manual)     "Sélection manuelle"
    set caption(eshel,instrument,process,response,auto)       "Sélection automatique"
@@ -574,7 +576,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,process,rightMargin)         "# Droite"
    set caption(eshel,instrument,process,slant)               "# Slant"
 
-   set caption(eshel,instrument,objectProcess)               "# Traitement objet"
+   set caption(eshel,instrument,optionProcess)               "# Options"
    set caption(eshel,instrument,process,response,title)      "# Réponse instrumentale"
    set caption(eshel,instrument,process,response,manual)     "# Sélection manuelle"
    set caption(eshel,instrument,process,response,auto)       "# Sélection automatique"
@@ -783,7 +785,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,process,rightMargin)         "# Droite"
    set caption(eshel,instrument,process,slant)               "# Slant"
 
-   set caption(eshel,instrument,objectProcess)               "# Traitement objet"
+   set caption(eshel,instrument,optionProcess)               "# Options"
    set caption(eshel,instrument,process,response,title)      "# Réponse instrumentale"
    set caption(eshel,instrument,process,response,manual)     "# Sélection manuelle"
    set caption(eshel,instrument,process,response,auto)       "# Sélection automatique"
@@ -992,7 +994,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,process,rightMargin)         "# Droite"
    set caption(eshel,instrument,process,slant)               "# Slant"
 
-   set caption(eshel,instrument,objectProcess)               "# Traitement objet"
+   set caption(eshel,instrument,optionProcess)               "# Options"
    set caption(eshel,instrument,process,response,title)      "# Réponse instrumentale"
    set caption(eshel,instrument,process,response,manual)     "# Sélection manuelle"
    set caption(eshel,instrument,process,response,auto)       "# Sélection automatique"
@@ -1201,7 +1203,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,process,rightMargin)         "# Droite"
    set caption(eshel,instrument,process,slant)               "# Slant"
 
-   set caption(eshel,instrument,objectProcess)               "# Traitement objet"
+   set caption(eshel,instrument,optionProcess)               "# Options"
    set caption(eshel,instrument,process,response,title)      "# Réponse instrumentale"
    set caption(eshel,instrument,process,response,manual)     "# Sélection manuelle"
    set caption(eshel,instrument,process,response,auto)       "# Sélection automatique"
@@ -1411,7 +1413,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,process,rightMargin)         "Right margin"
    set caption(eshel,instrument,process,slant)               "Slant"
 
-   set caption(eshel,instrument,objectProcess)               "Object processing"
+   set caption(eshel,instrument,optionProcess)               "# Options"
    set caption(eshel,instrument,process,response,title)      "Instrumental response"
    set caption(eshel,instrument,process,response,manual)     "Manual selection"
    set caption(eshel,instrument,process,response,auto)       "Automatic selection"
@@ -1622,7 +1624,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,process,rightMargin)         "Right margin"
    set caption(eshel,instrument,process,slant)               "Slant"
 
-   set caption(eshel,instrument,objectProcess)               "Object processing"
+   set caption(eshel,instrument,optionProcess)               "Options"
    set caption(eshel,instrument,process,response,title)      "Instrumental response"
    set caption(eshel,instrument,process,response,manual)     "Manual selection"
    set caption(eshel,instrument,process,response,auto)       "Automatic selection"
@@ -1833,7 +1835,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,process,rightMargin)         "Right margin"
    set caption(eshel,instrument,process,slant)               "Slant"
 
-   set caption(eshel,instrument,objectProcess)               "Object processing"
+   set caption(eshel,instrument,optionProcess)               "Options"
    set caption(eshel,instrument,process,response,title)      "Instrumental response"
    set caption(eshel,instrument,process,response,manual)     "Manual selection"
    set caption(eshel,instrument,process,response,auto)       "Automatic selection"

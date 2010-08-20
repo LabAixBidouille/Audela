@@ -2,7 +2,7 @@
 # @file processgui.tcl
 # Description : Fentre de configuration des traitements eShel
 # Auteur : Michel PUJOL
-# Mise à jour $Id: processgui.tcl,v 1.3 2010-08-17 20:20:47 michelpujol Exp $
+# Mise à jour $Id: processgui.tcl,v 1.4 2010-08-20 14:34:44 michelpujol Exp $
 #
 
 ##------------------------------------------------------------
@@ -94,10 +94,14 @@ proc ::eshel::processgui::fillConfigPage { frm visuNo } {
    set private(frm) $frm
 
    #--- creation des boutons
-   TitleFrame $frm.button -borderwidth 2 -relief ridge -text "$::caption(eshel,process,manualCommand)"
-      Button  $frm.generateAndStart -text "$::caption(eshel,process,generateAndStart)" \
-         -command "::eshel::processgui::generateAndStartStartScript"
+   TitleFrame $frm.button -borderwidth 2 -relief ridge -text $::caption(eshel,process,manualCommand)
+      Button  $frm.generateAndStart -text $::caption(eshel,process,generateAndStart) \
+         -command ::eshel::processgui::generateAndStartStartScript
       pack  $frm.generateAndStart  -in [$frm.button getframe] -side left -fill none -expand 1 -pady 4
+      Button  $frm.displayOption -text $::caption(eshel,instrument,optionProcess) \
+         -command "::eshel::processgui::displayOption $visuNo"
+      pack  $frm.displayOption  -in [$frm.button getframe] -side right -fill none -expand 1 -pady 4
+
       ##checkbutton $frm.auto -text "$::caption(eshel,processAuto)" \
       ##   -variable ::conf(eshel,processAuto) \
       ##   -command "::eshel::processgui::setProcessAuto"
@@ -115,18 +119,12 @@ proc ::eshel::processgui::fillConfigPage { frm visuNo } {
    $notebook insert end "archive" -text   $::caption(eshel,process,archiveImage)
    pack $frm.notebook  -side top -fill both -expand 1
 
-   ###set private(mainFrame) [$notebook getframe "main"]
-   set private(rawFrame) [$notebook getframe "nightlog"]
-   set private(referenceFrame) [$notebook getframe "reference"]
-   set private(roadmapFrame) [$notebook getframe "roadmap"]
-   set private(archiveFrame) [$notebook getframe "archive"]
 
    #--- j'affiche les wigdets dans les frames
-   fillRawPage       $private(rawFrame)  $visuNo
-   fillReferencePage $private(referenceFrame) $visuNo
-   fillRoadmapPage   $private(roadmapFrame)   $visuNo
-   fillArchivePage   $private(archiveFrame)   $visuNo
-
+   fillRawPage       [$notebook getframe "nightlog"]  $visuNo
+   fillReferencePage [$notebook getframe "reference"] $visuNo
+   fillRoadmapPage   [$notebook getframe "roadmap"]   $visuNo
+   fillArchivePage   [$notebook getframe "archive"]   $visuNo
    pack $frm  -side top -fill both -expand 1
 
    #--- je mets a jour les widgets en fonction du mode de traitement
@@ -141,6 +139,8 @@ proc ::eshel::processgui::fillConfigPage { frm visuNo } {
    ::eshel::processgui::copyRoadmapToTable
 
 }
+
+
 
 ##------------------------------------------------------------
 # Cree les widgets dans l'onglet des images brutes
@@ -158,9 +158,9 @@ proc ::eshel::processgui::fillRawPage { frm visuNo } {
       button $frm.button.makeSerie -text $::caption(eshel,process,makeSerie) -height 1 \
         -borderwidth 1 -padx 2 -pady 2 -command "::eshel::processgui::makeSeries $visuNo"
       pack $frm.button.makeSerie  -side left -fill none -expand 0
-      button $frm.button.removeSerie -text $::caption(eshel,process,remove) -height 1 \
-        -borderwidth 1 -padx 2 -pady 2 -command "::eshel::processgui::removeSerie"
-      pack $frm.button.removeSerie  -side left -fill none -expand 0
+      button $frm.button.unmakeSerie -text $::caption(eshel,process,remove) -height 1 \
+        -borderwidth 1 -padx 2 -pady 2 -command "::eshel::processgui::unmakeSerie"
+      pack $frm.button.unmakeSerie  -side left -fill none -expand 0
 
    pack $frm.button -side bottom -fill x -expand 0
 
@@ -260,7 +260,7 @@ proc ::eshel::processgui::fillRawPage { frm visuNo } {
    set private(serieMenu)  $paned1.serie.menu
    menu $private(serieMenu) -tearoff no
    $private(serieMenu) add command -label $::caption(eshel,process,remove)  \
-      -command "::eshel::processgui::removeSerie"
+      -command "::eshel::processgui::unmakeSerie"
    $private(serieMenu) add command -label $::caption(eshel,process,moveRawToArchive)  \
       -command "::eshel::processgui::moveRawToArchive $visuNo"
 
@@ -811,6 +811,18 @@ proc ::eshel::processgui::onEditEndTable { tktable row col value } {
 }
 
 ##------------------------------------------------------------
+# affiche la fenetre des options du traitement
+#
+# @return  rien
+# @private
+#------------------------------------------------------------
+proc ::eshel::processgui::displayOption { visuNo } {
+   variable private
+   ::eshel::process::option::run $private(This) $visuNo
+}
+
+
+##------------------------------------------------------------
 #   affiche le script avec l'editeur de texte par defaut definit dans la configuration d'Audela
 #
 # @return  rien
@@ -1009,13 +1021,13 @@ proc ::eshel::processgui::editKeyword { visuNo } {
 }
 
 ##------------------------------------------------------------
-# Supprime une serie
+# Defait une serie
 #   Le fichiers de la serie sont deplaces dans la table des
 #   fichiers non identifies
 # @return  rien
 # @private
 #------------------------------------------------------------
-proc ::eshel::processgui::removeSerie { } {
+proc ::eshel::processgui::unmakeSerie { } {
    variable private
 
    ###if { $private(modifiedTable) == 1 } {
@@ -1034,7 +1046,7 @@ proc ::eshel::processgui::removeSerie { } {
 
    #--- je supprime la serie
    set catchResult [catch {
-      ::eshel::process::removeSerie $serieId
+      ::eshel::process::unmakeSerie $serieId
       #--- je refraichis le contenu des tables des fichiers bruts
       copyRawToTable
       #--- je supprime la roadmap (actualiser la roadmap prendrait trop de temps)
@@ -1123,41 +1135,44 @@ proc ::eshel::processgui::setFrameState {  } {
       }
    }
 
+   set roadmapFrame [$private(frm).notebook getframe "roadmap"]
+   set rawFrame     [$private(frm).notebook getframe "nightlog"]
+
    switch $state {
       normal {
-         $private(roadmapFrame).button.generate    configure -state normal
-         $private(roadmapFrame).button.editScript  configure -state normal
-         $private(roadmapFrame).button.startScript configure -state normal
-         $private(rawFrame).button.makeSerie       configure -state normal
-         $private(rawFrame).button.removeSerie     configure -state normal
+         $roadmapFrame.button.generate    configure -state normal
+         $roadmapFrame.button.editScript  configure -state normal
+         $roadmapFrame.button.startScript configure -state normal
+         $rawFrame.button.makeSerie       configure -state normal
+         $rawFrame.button.unmakeSerie     configure -state normal
          $private(frm).generateAndStart configure -state normal \
             -text $::caption(eshel,process,generateAndStart) \
             -command "::eshel::processgui::generateAndStartStartScript"
       }
       disabled {
-         $private(roadmapFrame).button.generate    configure -state disabled
-         $private(roadmapFrame).button.editScript  configure -state disabled
-         $private(roadmapFrame).button.startScript configure -state disabled
-         $private(rawFrame).button.makeSerie       configure -state disabled
-         $private(rawFrame).button.removeSerie     configure -state disabled
+         $roadmapFrame.button.generate    configure -state disabled
+         $roadmapFrame.button.editScript  configure -state disabled
+         $roadmapFrame.button.startScript configure -state disabled
+         $rawFrame.button.makeSerie       configure -state disabled
+         $rawFrame.button.unmakeSerie     configure -state disabled
          $private(frm).generateAndStart configure -state disabled
       }
       running {
-         $private(roadmapFrame).button.generate    configure -state disabled
-         $private(roadmapFrame).button.editScript  configure -state disabled
-         $private(roadmapFrame).button.startScript configure -state disabled
-         $private(rawFrame).button.makeSerie       configure -state disabled
-         $private(rawFrame).button.removeSerie     configure -state disabled
+         $roadmapFrame.button.generate    configure -state disabled
+         $roadmapFrame.button.editScript  configure -state disabled
+         $roadmapFrame.button.startScript configure -state disabled
+         $rawFrame.button.makeSerie       configure -state disabled
+         $rawFrame.button.unmakeSerie     configure -state disabled
          $private(frm).generateAndStart configure -state normal \
             -text $::caption(eshel,process,stopScript) \
             -command "::eshel::processgui::stopScript"
       }
       stopping {
-         $private(roadmapFrame).button.generate    configure -state disabled
-         $private(roadmapFrame).button.editScript  configure -state disabled
-         $private(roadmapFrame).button.startScript configure -state disabled
-         $private(rawFrame).button.makeSerie       configure -state disabled
-         $private(rawFrame).button.removeSerie     configure -state disabled
+         $roadmapFrame.button.generate    configure -state disabled
+         $roadmapFrame.button.editScript  configure -state disabled
+         $roadmapFrame.button.startScript configure -state disabled
+         $rawFrame.button.makeSerie       configure -state disabled
+         $rawFrame.button.unmakeSerie     configure -state disabled
          $private(frm).generateAndStart configure -state disabled \
             -text $::caption(eshel,process,stopping) \
             -command ""
@@ -1165,4 +1180,8 @@ proc ::eshel::processgui::setFrameState {  } {
    }
    update
 }
+
+
+
+
 
