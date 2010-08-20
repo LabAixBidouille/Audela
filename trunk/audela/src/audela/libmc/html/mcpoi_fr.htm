@@ -181,7 +181,8 @@ envoyer au t&eacute;lescope.</li>
 </ul>
 <p>D&eacute;finition :</p>
 <p>mc_hip2tel List_coords Date_UTC Home Pressure Temperature
-?List_ModelSymbols List_ModelValues? ?model_only?<br>
+?List_ModelSymbols List_ModelValues?&nbsp;?-model_only 0|1?
+?-refraction&nbsp;1|0? ?-drift 0|1?<br>
 <br>
 List_coords : Liste de type Hipparcos {id mag ra dec equinox epoch mura
 mudec plx} ou {-1 ha dec 0 0 0 0 0 0}<br>
@@ -194,10 +195,14 @@ d&eacute;faut.<br>
 List_ModelSymbols : Symbols des coeffcicients du mod&egrave;le de
 pointage<br>
 List_ModelValues : Valeurs des coeffcients du mod&egrave;le de pointage.<br>
-model_only : pour signaler de ne pas appliquer la transformation
-catalogue-&gt;vraie sur les les coordonn&eacute;es de type Hipparcos.</p>
+-model_only 1 : pour signaler de ne pas appliquer la transformation
+catalogue-&gt;vraie sur les les coordonn&eacute;es de type Hipparcos.<br>
+-refraction 0 : pour signaler de ne pas calculer les corrections de
+refraction (cas de t&eacute;lescopes LX200)<br>
+-drift 1 : pour signaler de sortir les valeurs de vitesses sur les axes
+(en arcsec/sec)</p>
 <p>Sorties :&nbsp;</p>
-<p>Liste de 15 &eacute;l&eacute;ments :</p>
+<p>Liste de 16 &eacute;l&eacute;ments :</p>
 <p>RA : Acsension droite apparente sans mod&egrave;le (deg)<br>
 DEC : D&eacute;clinaison apparente sans mod&egrave;le (deg)<br>
 HA : Angle horaire apparente sans mod&egrave;le (deg)<br>
@@ -217,7 +222,26 @@ mod&egrave;le (deg)</p>
 DEC : D&eacute;clinaison apparente avec mod&egrave;le (deg)<br>
 HA : Angle horaire apparente avec mod&egrave;le (deg)<br>
 az : Azimut apparente avec&nbsp; mod&egrave;le (deg)<br>
-elev : Elevation apparente avec mod&egrave;le (deg)</p>
+elev : Elevation apparente avec mod&egrave;le (deg)<br>
+rot : Angle parallactique apparent avec mod&egrave;le (deg)&nbsp;</p>
+<p>Si le flag -drift est plac&eacute; sur 1, la liste continue avec :</p>
+<p>drift_RA : Vitesse en acsension droite apparente avec mod&egrave;le
+(arcsec/sec)<br>
+drift_
+DEC :&nbsp;Vitesse en d&eacute;clinaison apparente avec mod&egrave;le
+(arcsec/sec)<br>
+drift_
+HA :&nbsp;Vitesse en angle horaire apparente avec mod&egrave;le
+(arcsec/sec)<br>
+drift_
+az :&nbsp;Vitesse en azimut apparente avec&nbsp; mod&egrave;le
+(arcsec/sec)<br>
+drift_
+elev :&nbsp;Vitesse en elevation apparente avec mod&egrave;le
+(arcsec/sec)<br>
+drift_
+rot :&nbsp;Vitesse en angle parallactique apparent avec mod&egrave;le
+(arcsec/sec)&nbsp;</p>
 <p>Exemples :</p>
 <p>mc_hip2tel {0 2.5 10 40 J2000 J2000 0 0 0} now {GPS 5 E 43 1230}
 101325 290</p>
