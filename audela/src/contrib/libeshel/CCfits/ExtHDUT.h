@@ -3,7 +3,7 @@
 //3
 //4
 
-//	This is version 2.0 dated Jan 2008
+//	This is version 2.2 release dated Sep 2009
 
 //	Astrophysics Science Division,
 //	NASA/ Goddard Space Flight Center
@@ -147,7 +147,7 @@ namespace CCfits
                 std::vector<long> inputDimensions(naxis(),1);
                 size_t sNaxis = static_cast<size_t>(naxis());
                 size_t n(std::min(sNaxis,first.size()));
-                std::copy(&first[0],&first[n],&inputDimensions[0]);                
+                std::copy(&first[0],&first[0]+n,&inputDimensions[0]);                
                 for (long i = 0; i < naxis(); ++i)
                 {
 
@@ -311,7 +311,7 @@ namespace CCfits
 
                                         readKey("BLANK",blankVal);
                                         std::valarray<S> copyData(data);
-                                        std::replace(&copyData[0],&copyData[data.size()],
+                                        std::replace(&copyData[0],&copyData[0]+data.size(),
                                             static_cast<unsigned char>(*nulValue),blankVal);
 
                                         FITSUtil::fill(__tmp,copyData);                                        
@@ -336,7 +336,7 @@ namespace CCfits
 
                                                 readKey("BLANK",blankVal);
                                                 std::valarray<S> copyData(data);
-                                                std::replace(&copyData[0],&copyData[data.size()],
+                                                std::replace(&copyData[0],&copyData[0]+data.size(),
                                                      static_cast<unsigned long>(*nulValue),blankVal);
 
                                                 FITSUtil::fill(__tmp,copyData);                                        
@@ -358,7 +358,7 @@ namespace CCfits
 
                                                 readKey("BLANK",blankVal);
                                                 std::valarray<S> copyData(data);
-                                                std::replace(&copyData[0],&copyData[data.size()],
+                                                std::replace(&copyData[0],&copyData[0]+data.size(),
                                                                 static_cast<long>(*nulValue),blankVal);
 
                                                 FITSUtil::fill(__tmp,copyData);                                        
@@ -382,7 +382,7 @@ namespace CCfits
                                         {
                                                 readKey("BLANK",blankVal);
                                                 std::valarray<S> copyData(data);
-                                                std::replace(&copyData[0],&copyData[data.size()],
+                                                std::replace(&copyData[0],&copyData[0]+data.size(),
                                                     static_cast<unsigned short>(*nulValue),blankVal);
 
                                                 FITSUtil::fill(__tmp,copyData);                                        
@@ -403,7 +403,7 @@ namespace CCfits
                                         {
                                                 readKey("BLANK",blankVal);
                                                 std::valarray<S> copyData(data);
-                                                std::replace(&copyData[0],&copyData[data.size()],
+                                                std::replace(&copyData[0],&copyData[0]+data.size(),
                                                           static_cast<short>(*nulValue),blankVal);
 
                                                 FITSUtil::fill(__tmp,copyData);                                        

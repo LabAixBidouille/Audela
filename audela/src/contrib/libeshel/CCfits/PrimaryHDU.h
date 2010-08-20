@@ -1,6 +1,6 @@
 //   Read the documentation to learn more about C++ code generator
 //   versioning.
-//	This is version 2.0 release dated Jan 2008
+//	This is version 2.2 release dated Sep 2009
 //	Astrophysics Science Division,
 //	NASA/ Goddard Space Flight Center
 //	HEASARC
@@ -184,7 +184,7 @@ namespace CCfits {
         FITSUtil::FitsNullValue<T> null;
         long init(1);
         T nulValue(null());
-        long nelements(std::accumulate(&naxes()[0],&naxes()[naxis()],init,std::multiplies<long>() ));
+        long nelements(std::accumulate(naxes().begin(),naxes().end(),init,std::multiplies<long>() ));
         readImage(1,nelements,&nulValue);
 
     }

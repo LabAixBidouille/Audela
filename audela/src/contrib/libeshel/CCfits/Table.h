@@ -1,6 +1,6 @@
 //   Read the documentation to learn more about C++ code generator
 //   versioning.
-//	This is version 2.0 release dated Jan 2008
+//	This is version 2.2 release dated Sep 2009
 //	Astrophysics Science Division,
 //	NASA/ Goddard Space Flight Center
 //	HEASARC
@@ -112,9 +112,12 @@ namespace CCfits {
 */
 
 
-/*!   \fn Column& Table::column (const string& colName) const;
+/*!   \fn Column& Table::column (const string& colName, bool caseSensitive = true) const;
 
      \brief  return a reference to the column of name colName.
+
+        If the <i>caseSensitive</i> parameter is set to false, the search will 
+        be case-insensitive. 
 
         \exceptions Table::NoSuchColumn  passes colName to the diagnostic message 
         printed when the exception is thrown
@@ -256,7 +259,7 @@ namespace CCfits {
         \brief set the number of rows in the Table.
 */
 
-/*! \fn      const int Table::numCols () const;
+/*! \fn     int Table::numCols () const;
 
 
         \brief return the number of Columns in the Table (the TFIELDS keyword).
@@ -269,7 +272,7 @@ namespace CCfits {
 
 
 
-/*! \fn      void Table::column (const String& colname, Column *value);
+/*! \fn      void Table::setColumn (const String& colname, Column *value);
 
         \brief set the column with name colname to the input value.
 
@@ -309,9 +312,8 @@ namespace CCfits {
         Table(const Table &right);
         virtual ~Table();
 
-        const std::map<String,Column*>& column () const;
         //	! return reference to a column given by column name.
-        virtual Column& column (const String& colName) const;
+        virtual Column& column (const String& colName, bool caseSensitive = true) const;
         virtual Column& column (int colIndex	// ! return reference to a column given by a column index number
         ) const;
         virtual long rows () const;
@@ -323,6 +325,8 @@ namespace CCfits {
         void deleteRows (long first, long number = 1);
         void deleteRows (const std::vector<long>& rowList);
         virtual long getRowsize () const;
+        virtual int numCols () const;
+        virtual const std::map<string, Column*>& column () const;
         virtual std::map<string, Column*>& column ();
 
     public:
@@ -341,9 +345,8 @@ namespace CCfits {
         virtual std::ostream & put (std::ostream &s) const;
         void column (int columnNum, Column *value);
         void init (bool readFlag = false, const std::vector<String>& keys = std::vector<String>());
-        virtual void column (const String& colname, Column* value);
+        virtual void setColumn (const String& colname, Column* value);
         void reindex ();
-        int numCols () const;
         void numCols (int value);
 
       // Additional Protected Declarations
@@ -374,11 +377,6 @@ namespace CCfits {
 
   // Class CCfits::Table 
 
-  inline const std::map<String,Column*>& Table::column () const
-  {
-  return m_column;
-  }
-
   inline long Table::rows () const
   {
 
@@ -393,7 +391,12 @@ namespace CCfits {
 
   inline int Table::numCols () const
   {
-    return m_numCols;
+     return m_numCols;
+  }
+
+  inline const std::map<string, Column*>& Table::column () const
+  {
+    return m_column;
   }
 
   inline void Table::numCols (int value)
