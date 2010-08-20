@@ -64,8 +64,8 @@ int spec_gauss(int pos,int wide,std::valarray<double> &buf,double *pos_x,double 
 int find_continuum(char *n_spectre,char *n_continuum);
 double get_central_wave(int imax,double posx,double dx,int k,INFOSPECTRO spectro);
 void divideResponse(std::valarray<double> &profile1b, double lambda1b, std::valarray<double> &responseProfile, double responseLambda, double step,std::valarray<double> &profile1c, double *lambda1c);
-void abut1bOrder(int max_ordre,int min_ordre,CCfits::PFitsFile objectFits);
-void abut1bOrder(int max_ordre,int min_ordre,CCfits::PFitsFile objectFits, CCfits::PFitsFile calibFits);
-void abut1cOrder(int max_ordre,int min_ordre,CCfits::PFitsFile objectFits);
+void abut1bOrder(int max_ordre,int min_ordre,CCfits::PFitsFile objectFits, char *hduName);
+void abut1bOrder(int max_ordre,int min_ordre,CCfits::PFitsFile objectFits, CCfits::PFitsFile calibFits, char *hduName);
+void abut1cOrder(int max_ordre,int min_ordre,CCfits::PFitsFile objectFits, char *hduName);
 
 

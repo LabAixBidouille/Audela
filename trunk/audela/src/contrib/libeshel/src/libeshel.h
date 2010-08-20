@@ -27,6 +27,7 @@ void Eshel_processCalib(char *lampNameIn, char *lampNameOut,char *flatName,
 
 void Eshel_processObject(char *nom_objet_fits, char *nom_objet_out_fits, char *nom_calib, 
                 char *responseFileName, 
+                int  recordObjectImage, 
                 char *logFileName, short *check);
 
 void Eshel_joinSpectra(char *nom_objet_fits, char *nom_calib_fits, 
