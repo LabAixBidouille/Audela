@@ -469,12 +469,12 @@ List_ModelValues
    char s[1024];
    double equinox=2451545.00000,epoch=2448349.06250;
    mc_cata_astrom hips;
-   int code,argcc;
+   int code,argcc,njds=1;
    char **argvv=NULL;
    double jd,longmpc;
    mc_modpoi_matx *matx=NULL; /* 2*nb_star */
    mc_modpoi_vecy *vecy=NULL; /* nb_coef */
-   int nb_coef,nb_star,k;
+   int nb_coef,nb_star,k,kjds;
    double rhocosphip=0.,rhosinphip=0.;
    double latitude,altitude,latrad;
    double ra,cosdec,mura,mudec,parallax,temperature,pressure;
@@ -482,12 +482,15 @@ List_ModelValues
    double ha,az,h,ddec=0.,dha=0.,refraction=0.;
    double dh=0.,daz=0.;
    double rat,dect,hat,ht,azt,dra=0;
+	double parallactic,parallactict;
    int model_only = 0;     // 1=calculer impact modele seulement, 0=calculer impact modele et changement equinoxe
 	int type_list = 0;
    int refractionFlag = 1;  
+	int driftflag=0;
+	double jds[3],ras[3],decs[3],has[3],hs[3],azs[3],parallactics[3],delta,dt,dparallactic;
 
    if(argc<4) {
-      sprintf(s,"Usage: %s List_coords Date_UTC Home Pressure Temperature ?List_ModelSymbols List_ModelValues? ?-model_only 0|1? ?-refraction 0|1? ", argv[0]);
+      sprintf(s,"Usage: %s List_coords Date_UTC Home Pressure Temperature ?List_ModelSymbols List_ModelValues? ?-model_only 0|1? ?-refraction 1|0? ?-drift 0|1?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       return TCL_ERROR;
    } else {
@@ -566,120 +569,144 @@ List_ModelValues
          if (strcmp(argv[k], "-refraction") == 0) {
             refractionFlag = atoi(argv[k + 1]);
          }
-
          if ( strcmp( argv[k],"-model_only") == 0 ) {
             model_only = atoi(argv[k + 1]);
          }
-      }
-
-      /* === CALCULS === */
-		if (type_list==0) {
-			ra=hips.ra*(DR);
-			dec=hips.dec*(DR);
-			cosdec=cos(dec);
-			mura=hips.mura*1e-3/86400/cosdec;
-			mudec=hips.mudec*1e-3/86400;
-			parallax=hips.plx;
-			if (model_only == 0 ) {
-				/* --- aberration annuelle ---*/
-				mc_aberration_annuelle(jd,ra,dec,&asd2,&dec2,1);
-				ra=asd2;
-				dec=dec2;
-				/* --- calcul de mouvement propre ---*/
-				ra+=(jd-epoch)/365.25*mura;
-				dec+=(jd-epoch)/365.25*mudec;
-				/* --- calcul de la precession ---*/
-				mc_precad(equinox,ra,dec,jd,&asd2,&dec2);
-				ra=asd2;
-				dec=dec2;
-				/* --- correction de parallaxe stellaire*/
-				if (parallax>0) {
-					mc_parallaxe_stellaire(jd,ra,dec,&asd2,&dec2,parallax);
-					ra=asd2;
-					dec=dec2;
-				}
-				/* --- correction de nutation */
-				mc_nutradec(jd,ra,dec,&asd2,&dec2,1);
-				ra=asd2;
-				dec=dec2;
-				/* --- aberration de l'aberration diurne*/
-				mc_aberration_diurne(jd,ra,dec,longmpc,rhocosphip,rhosinphip,&asd2,&dec2,1);
-				ra=asd2;
-				dec=dec2;
-         } 			
-         /* --- coordonnees horizontales---*/
-         mc_ad2hd(jd,longmpc,ra,&ha);
-         mc_hd2ah(ha,dec,latrad,&az,&h);
-         /* --- refraction ---*/
-         if ( refractionFlag == 1 ) {
-            mc_refraction(h,1,temperature,pressure,&refraction);
-            h+=refraction;
+         if ( strcmp( argv[k],"-drift") == 0 ) {
+            driftflag = atoi(argv[k + 1]);
          }
-         mc_ah2hd(az,h,latrad,&ha,&dec);
+      }
+		if (driftflag==0) {
+			njds=1;
+			jds[0]=jd;
 		} else {
-	      mc_hd2ah(ha,dec,latrad,&az,&h);
+			njds=3;
+			jds[0]=jd-0.5/86400;
+			jds[1]=jd+0.5/86400;
+			jds[2]=jd;
 		}
 
-      mc_hd2ad(jd,longmpc,ha,&ra);
-      rat=ra;
-      dect=dec;
-      hat=ha;
-      ht=h;
-      azt=az;
-      /* --- Modele de pointage ---*/
-      if (nb_coef>0) {
-         nb_star=1;
-         matx=(mc_modpoi_matx*)malloc(2*nb_star*nb_coef*sizeof(mc_modpoi_matx));
-         /* --- altaz corrections ---*/
-         daz=mc_modpoi_addobs_az(az,h,nb_coef,vecy,matx);
-         dh=mc_modpoi_addobs_h(az,h,nb_coef,vecy,matx);
-         /* --- hadec corrections ---*/
-         dha=mc_modpoi_addobs_ha(ha,dec,latrad,nb_coef,vecy,matx);
-         ddec=mc_modpoi_addobs_dec(ha,dec,latrad,nb_coef,vecy,matx);
-         /* --- corrections pure EQU of coordinates ---*/
-         if (((dha!=0)||(ddec!=0))&&(daz==0)&&(dh==0)) {
-            ha=hat+dha/60*(DR);
-            dec=dect+ddec/60*(DR);
-            if (dec>PISUR2)  { dec=PISUR2-(dec-PISUR2); ha+=(PI); }
-            if (dec<-PISUR2) { dec=-PISUR2+(-PISUR2-dec); ha+=(PI); }
-            ha=fmod(4*PI+ha,2*PI);
-            mc_hd2ah(ha,dec,latrad,&az,&h);
-            mc_hd2ad(jd,longmpc,ha,&ra);
-            daz=(az-azt)/(DR);
-            if (daz<-180) { daz+=360; }
-            else if (daz>180)  { daz-=360; }
-				daz*=60;
-            dh=(h-ht)/(DR);
-				dh*=60;
-            dra=(ra-rat)/(DR);
-            if (dra<-180) { dra+=360; }
-            else if (dra>180)  { dra-=360; }
-				dra*=60;
-         }
-         /* --- corrections pure ALTAZ of coordinates ---*/
-         if (((daz!=0)||(dh!=0))&&(dha==0)&&(ddec==0)) {
-            az=azt+daz/60*(DR);
-            h=ht+dh/60*(DR);
-            if (h>PISUR2)  { h=PISUR2-(h-PISUR2); az+=(PI); }
-            if (h<-PISUR2) { h=-PISUR2+(-PISUR2-h); az+=(PI); }
-            az=fmod(4*PI+az,2*PI);
-            mc_ah2hd(az,h,latrad,&ha,&dec);
-            mc_hd2ad(jd,longmpc,ha,&ra);
-            dha=(ha-hat)/(DR);
-            if (dha<-180) { dha+=360; }
-            else if (dha>180)  { dha-=360; }
-				dha*=60;
-            ddec=(dec-dect)/(DR);
-				ddec*=60;
-            dra=(ra-rat)/(DR);
-            if (dra<-180) { dra+=360; }
-            else if (dra>180)  { dra-=360; }
-				dra*=60;
-         }
-         /* --- free pointers ---*/
-         if (matx!=NULL) { free(matx); }
-         if (vecy!=NULL) { free(vecy); }
-      }
+      /* === CALCULS === */
+		for (kjds=0;kjds<njds;kjds++) {
+			jd=jds[kjds];
+			if (type_list==0) {
+				ra=hips.ra*(DR);
+				dec=hips.dec*(DR);
+				cosdec=cos(dec);
+				mura=hips.mura*1e-3/86400/cosdec;
+				mudec=hips.mudec*1e-3/86400;
+				parallax=hips.plx;
+				if (model_only == 0 ) {
+					/* --- aberration annuelle ---*/
+					mc_aberration_annuelle(jd,ra,dec,&asd2,&dec2,1);
+					ra=asd2;
+					dec=dec2;
+					/* --- calcul de mouvement propre ---*/
+					ra+=(jd-epoch)/365.25*mura;
+					dec+=(jd-epoch)/365.25*mudec;
+					/* --- calcul de la precession ---*/
+					mc_precad(equinox,ra,dec,jd,&asd2,&dec2);
+					ra=asd2;
+					dec=dec2;
+					/* --- correction de parallaxe stellaire*/
+					if (parallax>0) {
+						mc_parallaxe_stellaire(jd,ra,dec,&asd2,&dec2,parallax);
+						ra=asd2;
+						dec=dec2;
+					}
+					/* --- correction de nutation */
+					mc_nutradec(jd,ra,dec,&asd2,&dec2,1);
+					ra=asd2;
+					dec=dec2;
+					/* --- aberration de l'aberration diurne*/
+					mc_aberration_diurne(jd,ra,dec,longmpc,rhocosphip,rhosinphip,&asd2,&dec2,1);
+					ra=asd2;
+					dec=dec2;
+				} 			
+				/* --- coordonnees horizontales---*/
+				mc_ad2hd(jd,longmpc,ra,&ha);
+				mc_hd2ah(ha,dec,latrad,&az,&h);
+				/* --- refraction ---*/
+				if ( refractionFlag == 1 ) {
+					mc_refraction(h,1,temperature,pressure,&refraction);
+					h+=refraction;
+				}
+				mc_ah2hd(az,h,latrad,&ha,&dec);
+			} else {
+				mc_hd2ah(ha,dec,latrad,&az,&h);
+			}
+			mc_hd2parallactic(ha,dec,latrad,&parallactic);
+			mc_hd2ad(jd,longmpc,ha,&ra);
+			rat=ra;
+			dect=dec;
+			hat=ha;
+			ht=h;
+			azt=az;
+			parallactict=parallactic;
+			/* --- Modele de pointage ---*/
+			if (nb_coef>0) {
+				nb_star=1;
+				matx=(mc_modpoi_matx*)malloc(2*nb_star*nb_coef*sizeof(mc_modpoi_matx));
+				/* --- altaz corrections ---*/
+				daz=mc_modpoi_addobs_az(az,h,nb_coef,vecy,matx);
+				dh=mc_modpoi_addobs_h(az,h,nb_coef,vecy,matx);
+				/* --- hadec corrections ---*/
+				dha=mc_modpoi_addobs_ha(ha,dec,latrad,nb_coef,vecy,matx);
+				ddec=mc_modpoi_addobs_dec(ha,dec,latrad,nb_coef,vecy,matx);
+				/* --- corrections pure EQU of coordinates ---*/
+				if (((dha!=0)||(ddec!=0))&&(daz==0)&&(dh==0)) {
+					ha=hat+dha/60*(DR);
+					dec=dect+ddec/60*(DR);
+					if (dec>PISUR2)  { dec=PISUR2-(dec-PISUR2); ha+=(PI); }
+					if (dec<-PISUR2) { dec=-PISUR2+(-PISUR2-dec); ha+=(PI); }
+					ha=fmod(4*PI+ha,2*PI);
+					mc_hd2ah(ha,dec,latrad,&az,&h);
+					mc_hd2ad(jd,longmpc,ha,&ra);
+					daz=(az-azt)/(DR);
+					if (daz<-180) { daz+=360; }
+					else if (daz>180)  { daz-=360; }
+					daz*=60;
+					dh=(h-ht)/(DR);
+					dh*=60;
+					dra=(ra-rat)/(DR);
+					if (dra<-180) { dra+=360; }
+					else if (dra>180)  { dra-=360; }
+					dra*=60;
+				}
+				/* --- corrections pure ALTAZ of coordinates ---*/
+				if (((daz!=0)||(dh!=0))&&(dha==0)&&(ddec==0)) {
+					az=azt+daz/60*(DR);
+					h=ht+dh/60*(DR);
+					if (h>PISUR2)  { h=PISUR2-(h-PISUR2); az+=(PI); }
+					if (h<-PISUR2) { h=-PISUR2+(-PISUR2-h); az+=(PI); }
+					az=fmod(4*PI+az,2*PI);
+					mc_ah2hd(az,h,latrad,&ha,&dec);
+					mc_hd2ad(jd,longmpc,ha,&ra);
+					dha=(ha-hat)/(DR);
+					if (dha<-180) { dha+=360; }
+					else if (dha>180)  { dha-=360; }
+					dha*=60;
+					ddec=(dec-dect)/(DR);
+					ddec*=60;
+					dra=(ra-rat)/(DR);
+					if (dra<-180) { dra+=360; }
+					else if (dra>180)  { dra-=360; }
+					dra*=60;
+				}
+				mc_hd2parallactic(ha,dec,latrad,&parallactic);
+				ras[kjds]=ra/(DR);
+				decs[kjds]=dec/(DR);
+				has[kjds]=ha/(DR);
+				hs[kjds]=h/(DR);
+				azs[kjds]=az/(DR);
+				parallactics[kjds]=parallactic/(DR);
+				/* --- free pointers ---*/
+				if (kjds==njds-1) {
+					if (matx!=NULL) { free(matx); }
+					if (vecy!=NULL) { free(vecy); }
+				}
+			}
+		}
       strcpy(s,"");
       strcat(s,mc_d2s(rat/(DR)));
       strcat(s," ");
@@ -710,6 +737,46 @@ List_ModelValues
       strcat(s,mc_d2s(az/(DR)));
       strcat(s," ");
       strcat(s,mc_d2s(h/(DR)));
+		strcat(s," ");
+		strcat(s,mc_d2s(parallactic/(DR)));
+		if (driftflag==1) {
+			/* drifts in arcsec/sec */
+			dt=(jds[1]-jds[0])*86400;
+			delta=ras[1]-ras[0]; delta/=dt;
+			if (delta<180) { delta+=360; }
+			if (delta>180) { delta-=360; }
+			dra=delta*3600;
+			delta=decs[1]-decs[0]; delta/=dt;
+			ddec=delta*3600;
+			delta=has[1]-has[0]; delta/=dt;
+			if (delta<180) { delta+=360; }
+			if (delta>180) { delta-=360; }
+			dha=delta*3600;
+			delta=hs[1]-hs[0]; delta/=dt;
+			if (delta<180) { delta+=360; }
+			if (delta>180) { delta-=360; }
+			dh=delta*3600;
+			delta=azs[1]-azs[0]; delta/=dt;
+			if (delta<180) { delta+=360; }
+			if (delta>180) { delta-=360; }
+			daz=delta*3600;
+			delta=parallactics[1]-parallactics[0]; delta/=dt;
+			if (delta<180) { delta+=360; }
+			if (delta>180) { delta-=360; }
+			dparallactic=delta*3600;
+			strcat(s," ");
+			strcat(s,mc_d2s(dra));
+			strcat(s," ");
+			strcat(s,mc_d2s(ddec));
+			strcat(s," ");
+			strcat(s,mc_d2s(dha));
+			strcat(s," ");
+			strcat(s,mc_d2s(daz));
+			strcat(s," ");
+			strcat(s,mc_d2s(dh));
+			strcat(s," ");
+			strcat(s,mc_d2s(dparallactic));
+		}
       Tcl_SetResult(interp,s,TCL_VOLATILE);
    }
    return TCL_OK;
