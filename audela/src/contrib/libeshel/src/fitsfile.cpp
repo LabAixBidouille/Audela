@@ -38,7 +38,7 @@ FITS * Fits_openFits(char *fileName, bool write = false) {
 
 // ---------------------------------------------------------------------------
 // Fits_createFits 
-//      cree un fichier FITS "fileName" et copie le PHDU de "sourcefileName"
+//      cree un fichier FITS "fileName" et copie le PHDU du fichier source
 // return:
 //   retourne une std::exception en cas d'erreur
 // ---------------------------------------------------------------------------
@@ -80,7 +80,7 @@ CCfits::FITS * Fits_createFits(char *fileName, std::valarray<double> profile, do
       remove(fileName);
       // create a new FITS object 
       long naxis = (long) profile.size();
-      pOutFits = new CCfits::FITS(fileName, DOUBLE_IMG, 1, &naxis );      
+      pOutFits = new CCfits::FITS(fileName, DOUBLE_IMG, 1, &naxis );
       PHDU& imageHDU = pOutFits->pHDU();
       long firstElement = 1;
       imageHDU.write(firstElement,profile.size(), profile);
@@ -134,7 +134,7 @@ CCfits::FITS * Fits_createFits(char *fileName, INFOIMAGE *pinfoImage)  {
       naxis[0] = (long) pinfoImage->imax;
       naxis[1] = (long) pinfoImage->jmax;
       // create a new FITS object 
-      pOutFits = new CCfits::FITS(fileName, LONG_IMG, 1, naxis ); 
+      pOutFits = new CCfits::FITS(fileName, LONG_IMG, 2, naxis ); 
       // copy data to valarray
       std::valarray<PIC_TYPE> imageValue(pinfoImage->pic,pinfoImage->imax * pinfoImage->jmax);
       // copy image to Primary HDU
@@ -171,6 +171,32 @@ void Fits_closeFits(FITS *pFits) {
       throw std::exception(message);
    }
 
+}
+
+// ---------------------------------------------------------------------------
+// Fits_setImage 
+//   ajoute une image 2D dans le PHDU
+// return:
+//   retourne une std::exception en cas d'erreur
+// ---------------------------------------------------------------------------
+void Fits_setImage(FITS *pFits, INFOIMAGE *pinfoImage)  {
+
+
+   try {        
+      std::vector<long> naxis(2);
+      naxis[0] = (long) pinfoImage->imax;
+      naxis[1] = (long) pinfoImage->jmax;
+      ExtHDU * imageHDU = pFits->addImage("IMAGE",LONG_IMG,naxis);
+      // copy data to valarray
+      std::valarray<PIC_TYPE> imageValue(pinfoImage->pic,pinfoImage->imax * pinfoImage->jmax);
+      long firstElement = 1;
+      imageHDU->write(firstElement,imageValue.size(), imageValue);
+   }
+   catch (CCfits::FitsException e) {
+      char message[1024];
+      sprintf(message,"Fits_setImage %s : %s", pFits->name().c_str(), e.message().c_str());
+      throw std::exception(message);
+   }
 }
 
 
@@ -459,7 +485,12 @@ void Fits_getInfoSpectro (FITS *pFits, INFOSPECTRO *infoSpectro) {
       hduOrders.readKey("MIN_ORDER", value); infoSpectro->min_order= value;
       hduOrders.readKey("MAX_ORDER", value); infoSpectro->max_order= value;
       hduOrders.readKey("ALPHA", infoSpectro->alpha); //infoSpectro->alpha= value;
-      hduOrders.readKey("BETA", infoSpectro->beta); //infoSpectro->beta= value;
+      try {
+         hduOrders.readKey("BETA", infoSpectro->beta); //infoSpectro->beta= value;
+      } catch ( CCfits::FitsException e) {
+         // BETA est facultatif
+         infoSpectro->beta = 0;
+      }
       hduOrders.readKey("GAMMA", infoSpectro->gamma); //infoSpectro->gamma= value;
       hduOrders.readKey("FOCLEN", infoSpectro->focale); //infoSpectro->focale= value;
       hduOrders.readKey("M", infoSpectro->m); //infoSpectro->m= value;
@@ -995,26 +1026,30 @@ void Fits_getFullProfile(CCfits::PFitsFile pFits, ::std::valarray<double> &linea
 void Fits_setFullProfile(CCfits::PFitsFile pFits, char * hduName, ::std::valarray<double> &linearProfile, double lambda1, double step) 
 {
    try {  
-      try {
-         ExtHDU& imageHDU = pFits->extension(hduName);
-      } catch ( CCfits::FITS::NoSuchHDU e ) {
-         std::vector<long> naxis(1);
-         naxis[0] = (long) linearProfile.size();
-         // je cree l'image si elle n'existait pas
-         pFits->addImage(hduName,DOUBLE_IMG,naxis);
-      }
-      ExtHDU& imageHDU = pFits->extension(hduName);
-
-      // j'enregistre l'image
+      HDU * imageHDU = NULL; 
       long  firstElement = 1;
-      imageHDU.write(firstElement, linearProfile.size(), linearProfile);
+      long naxis1 = linearProfile.size();
+      fitsfile *fptr = pFits->fitsPointer();
+      int status ;
+
+      // j'enregistre le profil dans le PHU
+      pFits->resetPosition();
+      //fits_movabs_hdu(fptr , 1, &exttype, &status); 
+      fits_resize_img(fptr, DOUBLE_IMG, 1, &naxis1, &status);
+      double *data = new double[naxis1];
+      for(long i=0; i<naxis1; ++i) {data[i] = linearProfile[i]; }
+      fits_write_img(fptr, TDOUBLE, firstElement, naxis1, data, &status);
+      delete [] data;
+         
       // j'enregistre les mots clefs de la calibration
-      int crpix1 = 1;
-      imageHDU.addKey("CRPIX1",(int) 1,"Reference pixel for the minimum wavelength"); 
-      imageHDU.addKey("CRVAL1",lambda1,"[Angstrom] Minimum wavelength"); 
-      imageHDU.addKey("CDELT1",step,"[Angstrom/pixel] Dispersion"); 
-      imageHDU.addKey("CTYPE1","wavelength","Data type"); 
-      imageHDU.addKey("CUNIT1","Angstrom","Wavelength unit"); 
+      imageHDU = &(pFits->pHDU());
+      imageHDU->addKey("CRPIX1",(int) 1,"Reference pixel for the minimum wavelength"); 
+      imageHDU->addKey("CRVAL1",lambda1,"[Angstrom] Minimum wavelength"); 
+      imageHDU->addKey("CDELT1",step,"[Angstrom/pixel] Dispersion"); 
+      imageHDU->addKey("CTYPE1","wavelength","Data type"); 
+      imageHDU->addKey("CUNIT1","Angstrom","Wavelength unit"); 
+      imageHDU->addKey("AAAAA",naxis1,""); 
+      
    } catch ( CCfits::FitsException e) {
       char message[1024];
       sprintf(message,"Fits_setFullLinearProfile %s : %s", pFits->name().c_str(), e.message().c_str());      
@@ -1168,6 +1203,23 @@ void Fits_getKeyword(FITS *pFits, char * hduName, char* name, ::std::string &val
    } catch ( CCfits::FitsException e) {
       char message[1024];
       sprintf(message,"Fits_getKeyword %s : %s keyword=%s", pFits->name().c_str(), e.message().c_str(),name);      
+      throw std::exception(message);
+   }
+}
+
+//----------------------------------------------------------------------------- 
+// copie les mots cles du PHDU de pInFits dans le PHDU de pOutFits
+//-----------------------------------------------------------------------------
+void Fits_setKeyword(FITS *pOutFits, FITS *pInFits) {
+   try {
+      // 
+      pInFits->pHDU().readAllKeys();
+      pOutFits->pHDU().copyAllKeys( &(pInFits->pHDU()));
+
+
+   } catch ( CCfits::FitsException e) {
+      char message[1024];
+      sprintf(message,"Fits_setKeyword %s : %s ", pOutFits->name().c_str(), e.message().c_str());      
       throw std::exception(message);
    }
 }

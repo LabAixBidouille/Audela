@@ -390,6 +390,7 @@ void Eshel_processCalib(char *lampNameIn, char *lampNameOut,char *flatName,
 //  @param calibName     nom du fichier contant l'image et les paramètres de calibration.
 //  @param responseFileName nom du fichier de la réponse instrumentale (si le nom est vide 
 //                          le profil P_1C n'est pas calculé
+//  @param recordObjectImage  option d'enregistrament de l'image 2D de l'objet. 0=ne pas enregistrer, 1=enregistrer
 //  @param logFileName  nom du fichier trace
 //  @param check        pointeur de la zone memoire contenant l'image check
 //  @return void
@@ -398,10 +399,12 @@ void Eshel_processCalib(char *lampNameIn, char *lampNameOut,char *flatName,
 void Eshel_processObject(char *objectNameIn, char *objectNameOut, 
                 char *calibName,      // nom du fichier de calibration
                 char *responseFileName,   // nom du fichier de reponse instrumentale
+                int  recordObjectImage,   //  option d'enregistrament de l'image 2D de l'objet
                 char *logFileName, short *check)  
 {
 
    INFOIMAGE *objectBuffer = NULL;
+   CCfits::PFitsFile pInFits = NULL;
    CCfits::PFitsFile pCalibFits = NULL;
    CCfits::PFitsFile pOutFits = NULL;
    CCfits::PFitsFile pResponseFits = NULL;
@@ -452,8 +455,28 @@ void Eshel_processObject(char *objectNameIn, char *objectNameOut,
          responseStep =step;
       }
  
-      // je cree le fichier de sortie
-      pOutFits = Fits_createFits(objectNameIn, objectNameOut); 
+      // je lis l'image stockee dans le PHDU du fichier d'entree 
+      pInFits = Fits_openFits(objectNameIn, false); 
+      Fits_getImage(pInFits, &objectBuffer);     
+
+      // je contrôle que l'image de l'objet est de la meme taille que l'image de reference
+      if (spectro.imax!=objectBuffer->imax || spectro.jmax!=objectBuffer->jmax) {
+         sprintf(message,"La taille de l'image de la lampe %s (%d,%d) est de différente du flat %s (%d,%d)",
+            objectNameIn, objectBuffer->imax , objectBuffer->jmax, calibName, spectro.imax, spectro.jmax);
+         throw std::exception(message);
+      }
+
+      // je cree le fichier de sortie avec le permier HDU
+      // je cree le fichier de sortie avec un profil vide dans le premier HDU
+      ::std::valarray<double> emptyProfile ;
+      emptyProfile.resize(1);
+      emptyProfile[0] = 1;
+      pOutFits = Fits_createFits(objectNameOut, emptyProfile, 0, step); 
+      // je copie les mots dans le PHDU a partir de l'image pretraitee de l'objet
+      Fits_setKeyword(pOutFits,pInFits);
+      // je ferme l'image pretraitee de l'objet car il n'y en a plus beoin (cela libere la memoire) 
+      Fits_closeFits(pInFits);
+
       // j'ajoute le mot cle contenant la version de la librairie
       setSoftwareVersionKeyword(pOutFits);
             
@@ -479,17 +502,8 @@ void Eshel_processObject(char *objectNameIn, char *objectNameOut,
       }
       Fits_setKeyword(pOutFits,"PRIMARY","CALINAME",shortFileName,"Calibration file name");
 
-      // je lis l'image stockee dans le PHDU du fichier d'entree 
-      Fits_getImage(pOutFits, &objectBuffer); 
 
-      // je contrôle que l'image de l'objet est de la meme taille que l'image de reference
-      if (spectro.imax!=objectBuffer->imax || spectro.jmax!=objectBuffer->jmax) {
-         sprintf(message,"La taille de l'image de la lampe %s (%d,%d) est de différente du flat %s (%d,%d)",
-            objectNameIn, objectBuffer->imax , objectBuffer->jmax, calibName, spectro.imax, spectro.jmax);
-         throw std::exception(message);
-      }
-
-      // sauvegarde de l'image dans un tampon
+      // sauvegarde de l'image 2D pretraitee dans un tampon
       tampon = new PIC_TYPE[spectro.imax * spectro.jmax];
       memmove(tampon,objectBuffer->pic,spectro.imax*spectro.jmax*sizeof(PIC_TYPE)); 
       
@@ -548,17 +562,22 @@ void Eshel_processObject(char *objectNameIn, char *objectNameOut,
       }
       delete tampon;
       tampon = NULL;
-      
+
       if ( responseProfile.size() > 0  ) {
          // j'aboute les profils 1C
-         abut1cOrder(spectro.max_order,spectro.min_order,pOutFits);
+         abut1cOrder(spectro.max_order,spectro.min_order,pOutFits,"PRIMARY");
       } else {
          // j'aboute les profils 1B 
-         abut1bOrder(spectro.max_order,spectro.min_order,pOutFits,pCalibFits);
-      }
+         abut1bOrder(spectro.max_order,spectro.min_order,pOutFits,pCalibFits,"PRIMARY");
+      }      
 
       // j'enregistre la table des ordres dans le fichier de sortie
       Fits_setOrders(pOutFits,&spectro, &processInfo, ordre, dx_ref);
+
+      // j'enregistre l'image 2D a la fin du fichier
+      if ( recordObjectImage == 1 ) {
+         Fits_setImage(pOutFits, objectBuffer);
+      } 
       
       Fits_closeFits(pOutFits);
       Fits_closeFits(pCalibFits);
@@ -567,6 +586,7 @@ void Eshel_processObject(char *objectNameIn, char *objectNameOut,
       fclose(hand_log);
    } catch (std::exception &e) {
       if ( tampon != NULL) delete [] tampon;
+      Fits_closeFits(pInFits);
       Fits_closeFits(pOutFits);
       Fits_closeFits(pCalibFits);
       Fits_closeFits(pResponseFits);
@@ -577,11 +597,13 @@ void Eshel_processObject(char *objectNameIn, char *objectNameOut,
    }
 }
 
+
 ////////////////////////////////////////////
 ////////////////////////////////////////////
 // joinSpectra : aboutement des spectres  //
 ////////////////////////////////////////////
 ////////////////////////////////////////////
+/*
 void Eshel_joinSpectra(char *nom_objet_fits, char *nom_calib_fits,
                 char *nom_objet_full0_fits, char *nom_objet_full_fits,
                 int min_order, int max_order,
@@ -599,6 +621,7 @@ void Eshel_joinSpectra(char *nom_objet_fits, char *nom_calib_fits,
    // -----------------------------------------------------------------------------------
    planck_correct(nom_objet_fits,nom_objet_full_fits,2800.0);
 }
+*/
 
 // ---------------------------------------------------
 // Eshel_freeData

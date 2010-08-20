@@ -21,6 +21,7 @@ CCfits::PFitsFile Fits_createFits(char *sourcefileName, char *fileName);
 CCfits::PFitsFile Fits_createFits(char *fileName, std::valarray<double> profil, double lambda1, double step);
 CCfits::PFitsFile Fits_createFits(char *fileName, INFOIMAGE *pinfoImage ) ;
 
+void Fits_setImage(CCfits::PFitsFile pFits, INFOIMAGE *pinfoImage);
 void Fits_getImage(CCfits::PFitsFile pFits, INFOIMAGE **pinfoImage );
 
 void Fits_setOrders (CCfits::PFitsFile pFits, INFOSPECTRO *infoSpectro, PROCESS_INFO *processInfo, ORDRE *order, double dx_ref);
@@ -45,5 +46,6 @@ void Fits_setStraightLineImage(CCfits::PFitsFile pFits, int numOrder, ::std::val
 
 void Fits_setKeyword(CCfits::PFitsFile pFits, char * hduName, char* name, char *stringValue, char *comment);
 void Fits_getKeyword(CCfits::PFitsFile pFits, char * hduName, char* name, ::std::string &value);
+void Fits_setKeyword(CCfits::PFitsFile pOutFits, CCfits::PFitsFile pInFits);
 
 #endif

@@ -68,7 +68,7 @@ int cmdEshelInit(ClientData clientData, Tcl_Interp *interp,int argc, char *argv[
 int cmdEshelProcessFlat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    char s[1024];
    int result;
-   char *usage = "Usage: eshel_flat dirIn dirOut nom_flat alpha beta gamma focale m pixel width height wide_x wide_y step_y wide_sky seuil_ordre min_order max_order neon_ref_x ordre_ref_y ordre_ref lambda_ref {def_ordres} {line_list} {distorsion_polynom}";
+   char *usage = "Usage: eshel_flat dirIn dirOut alpha beta gamma focale m pixel width height wide_x wide_y step_y wide_sky seuil_ordre min_order max_order neon_ref_x ordre_ref_y ordre_ref lambda_ref {def_ordres} {line_list} {distorsion_polynom}";
    if(argc!=25) {
       Tcl_SetResult(interp,usage,TCL_VOLATILE);
       return TCL_ERROR;
@@ -428,7 +428,7 @@ int cmdEshelProcessCalib(ClientData clientData, Tcl_Interp *interp, int argc, ch
 int cmdEshelProcessObject(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    char s[1024];
    int result;
-   char *usage = "Usage: eshel_flat fileIn fileOut calibFileName minOrder maxOrder [-merge 0|1] [-response responseFileName ] [-exportfull0 fullFileName] [-exportfull fullFileName] ";
+   char *usage = "Usage: eshel_processObject fileIn fileOut calibFileName minOrder maxOrder {-merge 0|1} {-response responseFileName} {-exportfull0 fullFileName} {-exportfull fullFileName} {-objectimage 0|1}";
    if(argc<5) {
       Tcl_SetResult(interp,usage,TCL_VOLATILE);
       return TCL_ERROR;
@@ -441,8 +441,8 @@ int cmdEshelProcessObject(ClientData clientData, Tcl_Interp *interp, int argc, c
       int maxOrder = 0;
       char * fullFileName0 = NULL;
       char * fullFileName = NULL;
-      int useFlat = 1;
-
+      int  useFlat = 1;
+      int  recordObjectImage = 1; 
 
       objectFileNameIn = argv[1];
       objectFileNameOut = argv[2];
@@ -477,10 +477,18 @@ int cmdEshelProcessObject(ClientData clientData, Tcl_Interp *interp, int argc, c
          if (strcmp(argv[kk], "-response") == 0 && kk+1 < argc ) {
             responseFileName = argv[kk + 1];
          }
+         if (strcmp(argv[kk], "-objectimage") == 0 && kk+1 < argc ) {
+            if(Tcl_GetInt(interp,argv[kk + 1],&recordObjectImage)!=TCL_OK) {
+               sprintf(s,"%s\n Invalid -objectimage=%s", usage, argv[kk]);
+               Tcl_SetResult(interp,s,TCL_VOLATILE);
+               return TCL_ERROR;
+            }
+         }
       }
     
       try {
          Eshel_processObject(objectFileNameIn, objectFileNameOut, calibFileName, responseFileName,
+            recordObjectImage,
             "reduc.log",(short*)NULL);
 
          //Eshel_joinSpectra(objectFileNameOut, calibFileName,

@@ -2693,6 +2693,7 @@ void merge_spectre2(::std::valarray<double> &value1, double lambda1, double step
 /* Aboute les ordres 32, 33, 34, 35, 36, 37 et 38 -> zone couverte par les raies du néon */
 /* Le résultat est un spectre ayant pour nom objet_full0.dat                             */
 /*****************************************************************************************/
+/*
 void aboute_spectres(int max_ordre,int min_ordre,char *objectName,char *calibName,char *nom_out,int useFlat)
 {
    CCfits::PFitsFile calibFits = NULL;
@@ -2730,14 +2731,14 @@ void aboute_spectres(int max_ordre,int min_ordre,char *objectName,char *calibNam
       throw e;
   }
 }
-
+*/
 
 /*********************************** abut1bOrder ************************************
 * Aboute les ordres des profils calibrés 
 * 
 * @param 
 */
-void abut1bOrder(int max_ordre,int min_ordre,CCfits::PFitsFile objectFits)
+void abut1bOrder(int max_ordre,int min_ordre,CCfits::PFitsFile objectFits, char *hduName)
 {
    try {
       ::std::list<double> mergeProfile;
@@ -2778,7 +2779,7 @@ void abut1bOrder(int max_ordre,int min_ordre,CCfits::PFitsFile objectFits)
 /* Aboute les ordres 32, 33, 34, 35, 36, 37 et 38 -> zone couverte par les raies du néon */
 /*                         */
 /*****************************************************************************************/
-void abut1bOrder(int max_ordre,int min_ordre,CCfits::PFitsFile objectFits, CCfits::PFitsFile calibFits)
+void abut1bOrder(int max_ordre,int min_ordre,CCfits::PFitsFile objectFits, CCfits::PFitsFile calibFits, char *hduName )
 {
    try {
       
@@ -2839,7 +2840,7 @@ void abut1bOrder(int max_ordre,int min_ordre,CCfits::PFitsFile objectFits, CCfit
          mergeProfile.clear();
       }
       //j'enregistre le resultat dans le fichier d'entree
-      Fits_setFullProfile(objectFits,"P_1B_FULL",value1,lambda1, step1);
+      Fits_setFullProfile(objectFits,hduName,value1,lambda1, step1);
    }
    catch (::std::exception &e) {
       throw e;
@@ -2851,7 +2852,7 @@ void abut1bOrder(int max_ordre,int min_ordre,CCfits::PFitsFile objectFits, CCfit
 * 
 * @param 
 */
-void abut1cOrder(int max_ordre,int min_ordre,CCfits::PFitsFile objectFits)
+void abut1cOrder(int max_ordre,int min_ordre,CCfits::PFitsFile objectFits, char * hduName)
 {
    try {
       ::std::list<double> mergeProfile;
@@ -2888,7 +2889,7 @@ void abut1cOrder(int max_ordre,int min_ordre,CCfits::PFitsFile objectFits)
          mergeProfile.clear();
       }
       // j'enregistre le profil aboute 
-      Fits_setFullProfile(objectFits,"P_1C_FULL",value1,lambda1, step1);     
+      Fits_setFullProfile(objectFits,hduName,value1,lambda1, step1);     
    }
    catch (::std::exception &e) {
       throw e;
