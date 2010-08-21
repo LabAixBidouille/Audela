@@ -2,7 +2,7 @@
 # Fichier : obj_lune_1.tcl
 # Description : Programme de calcul (ephemerides, etc.)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: obj_lune_1.tcl,v 1.10 2010-05-25 17:47:57 robertdelmas Exp $
+# Mise à jour $Id: obj_lune_1.tcl,v 1.11 2010-08-21 16:01:30 robertdelmas Exp $
 #
 
 namespace eval ::obj_lune {
@@ -135,7 +135,7 @@ namespace eval ::obj_lune {
       set PI "3.141592653589793"
       set rad [expr $PI / 180.0]
       set annee_courante [lindex [::audace::date_sys2ut now] 0]
-      set mois_courant [lindex [::audace::date_sys2ut now] 1]
+      set mois_courant [string trimleft [lindex [::audace::date_sys2ut now] 1] 0]
       set an [expr ($annee_courante + ($mois_courant + $obj_lune(indice_mois)) / 12.0 )]
       set k [expr ($an - 1900.0) * 12.3685]
       set rk [expr int($k)]
