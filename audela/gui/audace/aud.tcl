@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.143 2010-08-05 12:03:05 alainklotz Exp $
+# Mise à jour $Id: aud.tcl,v 1.144 2010-08-21 14:36:48 robertdelmas Exp $
 #
 
 #--- Chargement du package BWidget
@@ -189,10 +189,15 @@ namespace eval ::audace {
             }
          }
          "date" {
-            #--- je calcule la date du jour (date de la veille si heure < 12H)
-            set dateCourante [clock seconds]
-            if { [clock format $dateCourante -format "%H" ] < 12 } {
-               #--- Si on est avant 12H, je prends la date de la veille
+            #--- Je calcule la date du jour (a partir de l'heure TU)
+            if { $::conf(rep_images,refModeAuto) == "0" } {
+               set heure_nouveau_repertoire "0"
+            } else {
+               set heure_nouveau_repertoire "12"
+            }
+            set dateCourante [ clock seconds ]
+            if { [ clock format $dateCourante -format "%H" ] < $heure_nouveau_repertoire } {
+               #--- Si on est avant l'heure de changement, je prends la date de la veille
                set subdir [ clock format [ expr $dateCourante - 86400 ] -format "%Y%m%d" ]
             } else {
                #--- Sinon, je prends la date du jour
@@ -1739,9 +1744,9 @@ if {[file exists perso.tcl]==1} {
 #   audela <fichier image>
 #   audela <fichier_tcl> <nom procedure> <parametres de la procedure>
 #   remarque : si <fichier_tcl> est vide, aucun script n'est charge, mais la procedure est lancee
-if { [llength $::argv] >= 1  } {
+if { [llength $::argv] >= 1 } {
    set catchResult [ catch {
-      if { [file extension [lindex $::argv 0]] == ".tcl"  || [lindex $::argv 0] == ""  } {
+      if { [file extension [lindex $::argv 0]] == ".tcl" || [lindex $::argv 0] == "" } {
          #--- un nom d'un script est passe en argument
          set scriptFileName [lindex $::argv 0]
          #--- j'interperte les variables qui pourraient se trouver dans le nom du fichier
