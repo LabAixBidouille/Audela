@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise à jour $Id: telescope.tcl,v 1.63 2010-07-24 15:45:25 robertdelmas Exp $
+# Mise à jour $Id: telescope.tcl,v 1.64 2010-08-22 17:56:09 michelpujol Exp $
 #
 
 namespace eval ::telescope {
@@ -1447,37 +1447,37 @@ proc ::telescope::apparent2catalogmean { ra dec date equinox } {
 ###   return [list $raadt $decadt $Hadt $hadt $azadt]
 ###}
 
-####------------------------------------------------------------
-#### coord_eph_vrai
-####    Transforme les coordonnees equatoriales des ephemerides pour une equinoxe donnee en coordonnees
-####    vraies en prenant en compte les corrections d'aberration, de precession et de nutation
-####
-#### Parametres :
-####    ad_eph,dec_eph : coordonnees des ephemerides
-####    equinox        : equinox
-####    date           : date
-#### Return
-####   ad_vrai,dec_vrai : coordinates J2000.0 (degrees)
-####------------------------------------------------------------
-###proc ::telescope::coord_eph_vrai { ad_eph dec_eph equinox date } {
-###   #--- Position de l'observateur
-###   set gpsPosition $::audace(posobs,observateur,gps)
-###   #--- Correction de l'aberration annuelle
-###   set radec [ mc_aberrationradec annual [ list $ad_eph $dec_eph ] $date ]
-###   #--- Correction de la precession
-###   set radec [ mc_precessradec $radec $equinox $date ]
-###   #--- Correction de la nutation
-###   set radec [ mc_nutationradec $radec $date ]
-###   #--- Correction de l'aberration diurne
-###   set radec [ mc_aberrationradec diurnal $radec $date $gpsPosition ]
-###   #--- Calcul de l'angle horaire vraie
-###   set ad_vrai  [ lindex $radec 0 ]
-###   set ad_vrai  [ mc_angle2hms $ad_vrai 360 nozero 1 auto string ]
-###   set dec_vrai [ lindex $radec 1 ]
-###   set dec_vrai [ mc_angle2dms $dec_vrai 90 nozero 0 + string ]
-###   #--- Return
-###   return [ list $ad_vrai $dec_vrai ]
-###}
+#------------------------------------------------------------
+# coord_eph_vrai
+#    Transforme les coordonnees equatoriales des ephemerides pour une equinoxe donnee en coordonnees
+#    vraies en prenant en compte les corrections d'aberration, de precession et de nutation
+#
+# Parametres :
+#    ad_eph,dec_eph : coordonnees des ephemerides
+#    equinox        : equinox
+#    date           : date
+# Return
+#   ad_vrai,dec_vrai : coordinates J2000.0 (degrees)
+#------------------------------------------------------------
+proc ::telescope::coord_eph_vrai { ad_eph dec_eph equinox date } {
+   #--- Position de l'observateur
+   set gpsPosition $::audace(posobs,observateur,gps)
+   #--- Correction de l'aberration annuelle
+   set radec [ mc_aberrationradec annual [ list $ad_eph $dec_eph ] $date ]
+   #--- Correction de la precession
+   set radec [ mc_precessradec $radec $equinox $date ]
+   #--- Correction de la nutation
+   set radec [ mc_nutationradec $radec $date ]
+   #--- Correction de l'aberration diurne
+   set radec [ mc_aberrationradec diurnal $radec $date $gpsPosition ]
+   #--- Calcul de l'angle horaire vraie
+   set ad_vrai  [ lindex $radec 0 ]
+   set ad_vrai  [ mc_angle2hms $ad_vrai 360 nozero 1 auto string ]
+   set dec_vrai [ lindex $radec 1 ]
+   set dec_vrai [ mc_angle2dms $dec_vrai 90 nozero 0 + string ]
+   #--- Return
+   return [ list $ad_vrai $dec_vrai ]
+}
 
 ::telescope::init
 
