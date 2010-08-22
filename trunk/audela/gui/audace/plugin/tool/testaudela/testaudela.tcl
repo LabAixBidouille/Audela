@@ -2,7 +2,7 @@
 # Fichier : testaudela.tcl
 # Description : Outil de test automatique pour AudeLA
 # Auteurs : Michel Pujol
-# Mise a jour $Id: testaudela.tcl,v 1.4 2010-08-17 20:41:16 michelpujol Exp $
+# Mise a jour $Id: testaudela.tcl,v 1.5 2010-08-22 17:57:22 michelpujol Exp $
 #
 
 #####################
@@ -559,6 +559,7 @@ proc ::testaudela::runTests { { fileList "all" } } {
 proc ::testaudela::saveConstraintList { } {
    variable private
 
+   set ::conf(testaudela,activeConstraintList) ""
    foreach constraintName $private(constraints)  {
       set constraintState $private(constraintState,$constraintName)
       if { $constraintState == 1 } {
