@@ -2,7 +2,7 @@
 # Fichier : celestial_mechanics.tcl
 # Description : Outils pour le calcul de coordonnees celestes
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: celestial_mechanics.tcl,v 1.5 2010-07-22 20:23:34 alainklotz Exp $
+# Mise à jour $Id: celestial_mechanics.tcl,v 1.6 2010-08-22 19:20:28 alainklotz Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -248,3 +248,212 @@ proc coordfiducial { args } {
    return [list $ra $dec]
 }
 
+# ------------------------------------------------------------------------------------
+#
+# proc        : meteores_zhr { }
+# Description : Calcule le ZHR d'un essaim de meteores a partir d'observations visuelles
+# Auteur      : Alain KLOTZ
+# Update      : 12 Aout 2010
+#
+# ------ Examples :
+# meteores_zhr 2010-08-07T20:37 2010-08-07T22:00 PER 5.4 11 1
+# meteores_zhr 2010-08-08T20:52 2010-08-08T23:33 PER 5.4 13 1
+# meteores_zhr 2010-08-10T20:40 2010-08-10T21:47 PER 5.0 3.5 0.9
+#
+# On lit le fichier "$audace(rep_catalogues)/essaims_meteores.txt"
+# qui contient la position du radian et le parametre r des essaims connus
+#
+# ------------------------------------------------------------------------------------
+
+proc meteores_zhr { date_beg date_end stream_id maglim nb_meteors sky_efficiency {home ""} } {
+   set MgLim $maglim
+   set NbMeteor $nb_meteors
+   set Ciel [expr 100.*$sky_efficiency]
+   set DureeObs [expr 1440.*([mc_date2jd $date_end]-[mc_date2jd $date_beg])]
+   if {$home==""} {
+      set home "$::audace(posobs,observateur,gps)"
+   }
+   #
+   set jd [expr .5*([mc_date2jd $date_end]+[mc_date2jd $date_beg])]
+   set year [lindex [mc_date2ymdhms $jd] 0]
+   set valid 0
+   set streams [meteore_streams $year]
+   foreach stream $streams {
+      set stream_id0 [lindex $stream 0]
+      if {$stream_id0==$stream_id} {
+         set stream_name [lindex $stream 1]
+         set stream_index [lindex $stream 2]
+         set stream_max [lindex $stream 3]
+         set stream_radian_ra [lindex $stream 4]
+         set stream_radian_dec [lindex $stream 5]
+         set stream_drift_ra [lindex $stream 6]
+         set stream_drift_dec [lindex $stream 7]
+         set valid 1         
+         break
+      }
+   }
+   if {$valid==0} {
+      set stream_ids "stream_id must be amongst "
+      foreach stream $streams {
+         append stream_ids "[lindex $stream 0] "
+      }
+      error $stream_ids
+   }
+   set Indice $stream_index
+   set djd [expr $jd-[mc_date2jd $stream_max]]
+   set ra  [expr $stream_radian_ra +$stream_drift_ra*$djd]
+   set dec [expr $stream_radian_dec+$stream_drift_dec*$djd]
+   set res [mc_radec2altaz $ra $dec $home $jd]
+   set AltRadiant [lindex $res 1]
+   # --- calculs
+   set radian [expr 180./4/atan(1)]
+   set NbMeteors ""
+   set nm [expr $NbMeteor-sqrt($NbMeteor)]
+   lappend NbMeteors $nm
+   set nm [expr $NbMeteor]
+   lappend NbMeteors $nm
+   set nm [expr $NbMeteor+sqrt($NbMeteor)]
+   lappend NbMeteors $nm
+   set ZHRs ""
+   foreach n $NbMeteors {
+      if {$MgLim < 6.5} {
+         set exposant [expr 6.5 - $MgLim]
+      } else {
+         set exposant [expr 1 - ($MgLim � 6.5)]
+      }
+      set Expo [expr pow($Indice,$exposant)]
+      set Angle [expr sin($AltRadiant / $radian)]
+      set ZHR [expr (1.*$n / $DureeObs * 60) * $Expo / $Angle]
+      if {$Ciel != 100} {
+         set ZHR [expr $ZHR * 100 / $Ciel]
+      }
+      lappend ZHRs $ZHR
+   }
+   set ZHR [lindex $ZHRs 1]
+   set ZHRmin [lindex $ZHRs 0]
+   set ZHRmax [lindex $ZHRs 2]
+   set longisun [lindex [lindex [mc_astrology $jd $home] 0] 2]
+   # --- sorties
+   set texte "\n"
+   append texte "======================================\n"
+   append texte "Stream = $stream_name ($stream_id)\n"
+   append texte "--------------------------------------\n"
+   append texte "Date_beg = [mc_date2iso8601 $date_beg]\n"
+   append texte "Date_end = [mc_date2iso8601 $date_end]\n"
+   append texte "Limiting magnitude = $MgLim\n"
+   append texte "Nb meteors = $NbMeteor\n"
+   append texte "Sky efficiency = $Ciel %\n"
+   append texte "Observation location = $home\n"
+   append texte "--------------------------------------\n"
+   append texte "Stream index = $Indice\n"
+   append texte "Stream RA = [format %.2f $ra] deg\n"
+   append texte "Stream DEC = [format %+.1f $dec] deg\n"
+   append texte "Stream elevation = [format %.1f $AltRadiant] deg\n"
+   append texte "Observation duration = [format %.1f $DureeObs] min\n"
+   append texte "Sun longitude = [format %.2f $longisun]\n"
+   append texte "--------------------------------------\n"
+   append texte "ZHR = [format %.1f $ZHR] ([format %.1f $ZHRmin] - [format %.1f $ZHRmax])\n"
+   ::console::affiche_resultat "$texte\n"
+   return $ZHR
+}
+
+proc meteore_months { month } {
+   set month [string toupper $month]
+   if {$month=="JAN"} { return 1; }
+   if {$month=="FEB"} { return 2; }
+   if {$month=="MAR"} { return 3; }
+   if {$month=="APR"} { return 4; }
+   if {$month=="MAY"} { return 5; }
+   if {$month=="JUN"} { return 6; }
+   if {$month=="JUL"} { return 7; }
+   if {$month=="AUG"} { return 8; }
+   if {$month=="SEP"} { return 9; }
+   if {$month=="OCT"} { return 10; }
+   if {$month=="NOV"} { return 11; }
+   if {$month=="DEC"} { return 12; }
+   return 0;
+}
+
+proc meteore_streams { {year ""} } {
+   global audace meteores
+   set fname "$audace(rep_catalogues)/essaims_meteores.txt"
+   set meteores(stream,fname) $fname
+   set res [file exists $fname]
+   if {$res==1} {
+      set f [open $fname r]
+      set lignes [split [read $f] \n]
+      close $f
+      set lignes [lrange $lignes 0 end-1]
+   }
+   if {$year==""} {
+      set year [lindex [mc_date2ymdhms [::audace::date_sys2ut now]] 0]
+   }
+   set kl 0
+   set meteores(streams) ""
+   set nl [llength $lignes]
+   for {set kl 0} {$kl<$nl} {incr kl} {
+      set ligne [lindex $lignes $kl]
+      set key "Active:"
+      set k1 [string first $key $ligne]
+      if {$k1>20} {
+         set key " ("
+         set k1 [string first $key $ligne]
+         set stream_name [string trim [string range $ligne 0 $k1]]
+         #
+         set k1 [expr $k1+[string length $key]]
+         set key ") "
+         set k2 [expr [string first $key $ligne]-1]
+         set lig [string range $ligne $k1 $k2]
+         set stream_id [string trim $lig]
+         #
+         set key "Max:"
+         set k1 [string first $key $ligne]
+         set k1 [expr $k1+[string length $key]]
+         set lig [string range $ligne $k1 end]
+         set month [lindex $lig 0]
+         set day [string trimleft [lindex $lig 1] 0]
+         if {$month=="several"} {
+            set month May 
+            set day 19
+         }
+         set date [list $year [meteore_months $month] $day]
+         #::console::affiche_resultat "date=$date\n"
+         set stream_max [mc_date2iso8601 $date]
+         #
+         incr kl
+         set ligne [lindex $lignes $kl]
+         #
+         set key "Radiant:"
+         set k1 [string first $key $ligne]
+         set k1 [expr $k1+[string length $key]]
+         set lig [string range $ligne $k1 end]
+         set stream_radian_ra  [lindex $lig 0]
+         set stream_radian_dec [lindex $lig 1]
+         #
+         set key "Drift:"
+         set k1 [string first $key $ligne]
+         set k1 [expr $k1+[string length $key]]
+         set lig [string range $ligne $k1 end]
+         set stream_drift_ra  [lindex $lig 0]
+         set stream_drift_dec [lindex $lig 1]
+         if {$stream_drift_ra=="?"} {
+            set stream_drift_ra  0
+            set stream_drift_dec 0
+         }
+         #
+         incr kl
+         set ligne [lindex $lignes $kl]
+         #
+         set key "Population Index:"
+         set k1 [string first $key $ligne]
+         set k1 [expr $k1+[string length $key]]
+         set lig [string range $ligne $k1 end]
+         set stream_index [lindex $lig 0]
+         #
+         set stream [list $stream_id $stream_name $stream_index $stream_max $stream_radian_ra $stream_radian_dec $stream_drift_ra $stream_drift_dec]
+         lappend meteores(streams) $stream         
+         #::console::affiche_resultat "$stream\n"
+      }
+   } 
+   return $meteores(streams)
+}
