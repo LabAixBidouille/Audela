@@ -1,4 +1,4 @@
-AudeLA-1.6.0 (20100705)
+AudeLA-1.6.0 (20100823)
 
 
 1. Introduction
@@ -240,11 +240,10 @@ de nombreux autres morceaux de logiciels. Mais pour limiter la taille des source
 de chaque plateforme (paquets Debian, archives RPM, etc.).
 
 Les briques suivantes sont requises. Le paquet Debian correspondant est mentionné.
-  Tcl (the Tool Command Language) v8.4 - run-time files         (tcl8.4)
-  Tk toolkit for Tcl and X11, v8.4 - run-time files             (tk8.4)
+  Tcl (the Tool Command Language) v8.5 - run-time files         (tcl8.5)
+  Tk toolkit for Tcl and X11, v8.5 - run-time files             (tk8.5)
   Extended image format support for Tcl/Tk                      (libtk-img)
   GNU Scientific Library (GSL) -- library package               (libgsl0)
-  The BLT extension library for Tcl/Tk - run-time package       (blt)
   Userspace USB programming library                             (libusb-0.1-4)
 
 Les outils pour compiler/développer :
@@ -257,8 +256,8 @@ Les outils pour compiler/développer :
   Userspace USB programming library development files           (libusb-dev)
   Linux Kernel Headers for development                          (linux-kernel-headers)
   Apply a diff file to an original                              (patch)
-  Tcl (the Tool Command Language) v8.4 - Development files      (tcl8.4-dev)
-  Tk toolkit for Tcl and X11, v8.4 - Development files          (tk8.4-dev)
+  Tcl (the Tool Command Language) v8.5 - Development files      (tcl8.5-dev)
+  Tk toolkit for Tcl and X11, v8.5 - Development files          (tk8.5-dev)
 
 5.2.2 Lancer AudeLA
 -------------------
@@ -382,7 +381,7 @@ pour rectifier l'injustice qu'ils subissent.
 
 8. Librairies et logiciels externes
 ===================================
- - BLT : Trace des courbes sous TK (histogramme, plotxy).
+ - BLT : Trace des courbes sous TK (histogramme, plotxy, etc.).
  - BWidget : Définition de nouveaux widgets TK.
  - DialogWin : tk_messageBox évolué.
  - Dp : Communication sur protocole IP de bas niveau (TCP, RCP, UDP, SMTP, etc.).
