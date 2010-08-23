@@ -1,6 +1,6 @@
 #
 # Fichier : bddimages_recherche.cap
-# Mise a jour $Id: bddimages_recherche.cap,v 1.2 2009-11-07 14:11:43 robertdelmas Exp $
+# Mise a jour $Id: bddimages_recherche.cap,v 1.3 2010-08-23 06:33:47 fredvachier Exp $
 #
 
 #=========================================================================
@@ -49,7 +49,7 @@ set caption(bddimages_recherche,err105)         "Impossible de supprimer l'image
 set caption(bddimages_recherche,err205)         ""
 set caption(bddimages_recherche,err206)         "Création nouvelle table images_ impossible"
 
-set caption(search,fichier)                     "Fichier"
+set caption(search,fichier)                     "Liste"
 set caption(search,ouvre)                       "Ouvrir (Ctrl+O)"
 set caption(search,sauve)                       "Sauver (Ctrl+S)"
 set caption(search,sauvess)                     "Sauver sous... "

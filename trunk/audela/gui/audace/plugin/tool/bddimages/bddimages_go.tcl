@@ -5,7 +5,7 @@
 # Fichier        : bddimages_go.tcl
 # Description    : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_go.tcl,v 1.5 2010-07-17 14:00:57 robertdelmas Exp $
+# Mise à jour $Id: bddimages_go.tcl,v 1.6 2010-08-23 06:33:47 fredvachier Exp $
 #
 
 #============================================================
@@ -245,35 +245,38 @@ proc ::bddimages::bddimagesBuildIF { This } {
 
       pack $This.fra5 -side top -fill x
 
-      #--- Frame des services
-      frame $This.fra6 -borderwidth 1 -relief groove
+#     #--- Frame des services
+#     frame $This.fra6 -borderwidth 1 -relief groove
+#
+#        #--- Bouton d'ouverture de l'outil de recherche d images
+#        button $This.fra6.but1 -borderwidth 2 -text $panneau(bddimages,titre5) \
+#           -command "::testprocedure::run"
+#        pack $This.fra6.but1 -in $This.fra6 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
+#
+#     pack $This.fra6 -side top -fill x
+#
 
-         #--- Bouton d'ouverture de l'outil de recherche d images
-         button $This.fra6.but1 -borderwidth 2 -text $panneau(bddimages,titre5) \
-            -command "::testprocedure::run"
-         pack $This.fra6.but1 -in $This.fra6 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
+#     #---
+#     frame $This.fra7 -borderwidth 1 -relief groove
+#
+#        #--- Bouton d'ouverture de l'outil
+#        button $This.fra7.but1 -borderwidth 2 -text "IDENT" \
+#           -command "::bddimages_identification::run $audace(base).bddimages_identification"
+#        pack $This.fra7.but1 -in $This.fra7 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
+#
+#     pack $This.fra7 -side top -fill x
+#
 
-      pack $This.fra6 -side top -fill x
-
-      #---
-      frame $This.fra7 -borderwidth 1 -relief groove
-
-         #--- Bouton d'ouverture de l'outil
-         button $This.fra7.but1 -borderwidth 2 -text "IDENT" \
-            -command "::bddimages_identification::run $audace(base).bddimages_identification"
-         pack $This.fra7.but1 -in $This.fra7 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
-
-      pack $This.fra7 -side top -fill x
-
-      #--- Frame des services
-      frame $This.ressource -borderwidth 1 -relief groove
-
-         #--- Bouton d'ouverture de l'outil de recherche d images
-         button $This.ressource.but1 -borderwidth 2 -text $panneau(bddimages,titre6) \
-            -command {::bddimages::ressource}
-         pack $This.ressource.but1 -in $This.ressource -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
-
-      pack $This.ressource -side top -fill x
+#      #--- Frame des services
+#      frame $This.ressource -borderwidth 1 -relief groove
+#
+#         #--- Bouton d'ouverture de l'outil de recherche d images
+#         button $This.ressource.but1 -borderwidth 2 -text $panneau(bddimages,titre6) \
+#            -command {::bddimages::ressource}
+#         pack $This.ressource.but1 -in $This.ressource -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
+#
+#      pack $This.ressource -side top -fill x
+#
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
