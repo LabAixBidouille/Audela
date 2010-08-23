@@ -6,7 +6,7 @@
 # Description    : Environnement de recherche des images
 #                  dans la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_recherche.tcl,v 1.4 2010-07-17 14:01:48 robertdelmas Exp $
+# Mise à jour $Id: bddimages_recherche.tcl,v 1.5 2010-08-23 06:33:47 fredvachier Exp $
 #
 #--------------------------------------------------
 #
@@ -496,8 +496,8 @@ namespace eval bddimages_recherche {
            menubutton $This.frame0.aide -text "$caption(search,aide)" -underline 0 -menu $This.frame0.aide.menu
            menu $This.frame0.aide.menu
              $This.frame0.aide.menu add command -label "$caption(search,aide)" -command { }
-             $This.frame0.aide.menu add command -label "$caption(search,aide_skybot)" -command {  }
-             $This.frame0.aide.menu add separator
+             #$This.frame0.aide.menu add command -label "$caption(search,aide_skybot)" -command {  }
+	     $This.frame0.aide.menu add separator
              $This.frame0.aide.menu add command -label "$caption(search,code_uai)" -command {  }
              # $This.frame0.aide.menu add separator
              # $This.frame0.aide.menu add command -label "$caption(search,apropos)" -command { ::skybot_Search::apropos }
@@ -752,21 +752,6 @@ namespace eval bddimages_recherche {
 
       #--- Menu pop-up associe a la table
       menu $popupTbl -title $caption(bddimages_recherche,titre)
-        # Pour marquer les reperes sur les objets
-        $popupTbl add command -label $caption(bddimages_recherche,inser) \
-           -command { insertion This }
-        # Separateur
-        $popupTbl add separator
-        # Pour marquer les reperes sur les objets
-        $popupTbl add checkbutton -label $caption(bddimages_recherche,inserauto)  \
-           -variable bddconf(inserauto) \
-           -command { }
-        # Pour marquer les reperes sur les objets
-        $popupTbl add checkbutton -label $caption(bddimages_recherche,inserall)  \
-           -variable bddconf(inserall) \
-           -command { }
-        # Separateur
-        $popupTbl add separator
         # Labels des objets dans l'image
         $popupTbl add command -label $caption(bddimages_recherche,selectall) \
            -command { $::bddimages_recherche::This.frame6.result.tbl selection set 0 end }
