@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.32 2010-06-20 05:34:22 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.33 2010-08-24 02:15:15 bmauclaire Exp $
 
 
 
@@ -550,7 +550,12 @@ proc spc_correxposure { args } {
 
     if { [ llength $args ] == 1 } {
        set nombrut [ lindex $args 0 ]
-       set listefile [ lsort -dictionary [ glob ${nombrut}\[0-9\]$conf(extension,defaut) ${nombrut}\[0-9\]\[0-9\]$conf(extension,defaut) ${nombrut}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+
+       if { [ file exists "$audace(rep_images)/$nombrut$conf(extension,defaut)" ] } {
+          set listefile [ list $nombrut ]
+       } else {
+          set listefile [ lsort -dictionary [ glob ${nombrut}\[0-9\]$conf(extension,defaut) ${nombrut}\[0-9\]\[0-9\]$conf(extension,defaut) ${nombrut}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+       }
 
        #--- Recupere le mot clef :
        set fichier_brut1 [ lindex $listefile 0 ]
@@ -1486,9 +1491,15 @@ proc spc_pretrait { args } {
            set stellaire_liste [ list $nom_stellaire ]
            set nb_stellaire 1
        } elseif { [ catch { glob -dir $audace(rep_images) ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
-           renumerote $nom_stellaire
-           set stellaire_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
-           set nb_stellaire [ llength $stellaire_liste ]
+          set prestel_list [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+          if { [ llength $prestel_list ]==1 } {
+             set stellaire_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+             set nb_stellaire 1
+          } else {
+             renumerote $nom_stellaire
+             set stellaire_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+             set nb_stellaire [ llength $stellaire_liste ]
+          }
        } else {
            ::console::affiche_erreur "Le(s) fichier(s) $nom_stellaire n'existe(nt) pas.\n"
            return ""
@@ -1553,13 +1564,12 @@ proc spc_pretrait { args } {
        regexp {(.+)\-?[0-9]+} $nom_darkflat match pref_darkflat
        regexp {(.+)\-?[0-9]+} $nom_offset match pref_offset
        #-- En attendant de gerer le cas des fichiers avec des - au milieu du nom de fichier
-       set pref_stellaire $nom_stellaire
-       set pref_dark $nom_dark
-       set pref_flat $nom_flat
-       set pref_darkflat $nom_darkflat
-       set pref_offset $nom_offset
+       #set pref_stellaire $nom_stellaire
+       #set pref_dark $nom_dark
+       #set pref_flat $nom_flat
+       #set pref_darkflat $nom_darkflat
+       #set pref_offset $nom_offset
 
-       ::console::affiche_resultat "brut=$pref_stellaire, dark=$pref_dark, flat=$pref_flat, df=$pref_darkflat, offset=$pref_offset\n"
        #-- La regexp ne fonctionne pas bien pavec des noms contenant des "_"
        if {$pref_stellaire == ""} {
            set pref_stellaire $nom_stellaire
@@ -1577,16 +1587,16 @@ proc spc_pretrait { args } {
            set pref_offset $nom_offset
        }
        # ::console::affiche_resultat "Corr : b=$pref_stellaire, d=$pref_dark, f=$pref_flat, df=$pref_darkflat\n"
+       ::console::affiche_resultat "brut=$pref_stellaire, dark=$pref_dark, flat=$pref_flat, df=$pref_darkflat, offset=$pref_offset\n"
 
        #--- Gestion d'un laxisme de libtt qui peut utiliser exptime au lieu exposure :
        spc_correxposure "${pref_stellaire}"
-
        #--- Prétraitement des flats :
        #-- Somme médiane des dark, dark_flat et offset :
        if { $nb_dark == 1 } {
            ::console::affiche_resultat "L'image de dark est $nom_dark$conf(extension,defaut)\n"
            set pref_dark $nom_dark
-           file copy -force $nom_dark$conf(extension,defaut) ${pref_dark}-smd$nb_dark$conf(extension,defaut)
+           file copy -force "$audace(rep_images)/$nom_dark$conf(extension,defaut)" "$audace(rep_images)/${pref_dark}-smd$nb_dark$conf(extension,defaut)"
        } else {
            ::console::affiche_resultat "Somme médiane de $nb_dark dark(s)...\n"
            smedian "$nom_dark" "${pref_dark}-smd$nb_dark" $nb_dark
@@ -1594,7 +1604,7 @@ proc spc_pretrait { args } {
        if { $nb_darkflat == 1 } {
            ::console::affiche_resultat "L'image de dark de flat est $nom_darkflat$conf(extension,defaut)\n"
            set pref_darkflat "$nom_darkflat"
-           file copy -force $nom_darkflat$conf(extension,defaut) ${pref_darkflat}-smd$nb_darkflat$conf(extension,defaut)
+           file copy -force "$audace(rep_images)/$nom_darkflat$conf(extension,defaut)" "$audace(rep_images)/${pref_darkflat}-smd$nb_darkflat$conf(extension,defaut)"
        } else {
            ::console::affiche_resultat "Somme médiane de $nb_darkflat dark(s) associé(s) aux flat(s)...\n"
            smedian "$nom_darkflat" "${pref_darkflat}-smd$nb_darkflat" $nb_darkflat
@@ -1603,7 +1613,7 @@ proc spc_pretrait { args } {
            if { $nb_offset == 1 } {
                ::console::affiche_resultat "L'image de offset est $nom_offset$conf(extension,defaut)\n"
                set pref_offset $nom_offset
-               file copy -force $nom_offset$conf(extension,defaut) ${pref_offset}-smd$nb_offset$conf(extension,defaut)
+               file copy -force "$audace(rep_images)/$nom_offset$conf(extension,defaut)" "$audace(rep_images)/${pref_offset}-smd$nb_offset$conf(extension,defaut)"
            } else {
                ::console::affiche_resultat "Somme médiane de $nb_offset offset(s)...\n"
                smedian "$nom_offset" "${pref_offset}-smd$nb_offset" $nb_offset
@@ -1615,9 +1625,9 @@ proc spc_pretrait { args } {
            ::console::affiche_resultat "Soustraction des noirs associés aux plus...\n"
            if { $nb_flat == 1 } {
                set pref_flat $nom_flat
-               buf$audace(bufNo) load "$nom_flat"
-               buf$audace(bufNo) sub "${pref_darkflat}-smd$nb_darkflat" 0
-               buf$audace(bufNo) save "${pref_flat}-smd$nb_flat"
+               buf$audace(bufNo) load "$audace(rep_images)/$nom_flat"
+               buf$audace(bufNo) sub "$audace(rep_images)/${pref_darkflat}-smd$nb_darkflat" 0
+               buf$audace(bufNo) save "$audace(rep_images)/${pref_flat}-smd$nb_flat"
            } else {
                sub2 "$nom_flat" "${pref_darkflat}-smd$nb_darkflat" "${pref_flat}_moinsnoir-" 0 $nb_flat
                set flat_moinsnoir_1 [ lindex [ lsort -dictionary [ glob ${pref_flat}_moinsnoir-\[0-9\]*$conf(extension,defaut) ] ] 0 ]
@@ -1627,9 +1637,9 @@ proc spc_pretrait { args } {
            ::console::affiche_resultat "Optimisation des noirs associés aux plus...\n"
            if { $nb_flat == 1 } {
                set pref_flat $nom_flat
-               buf$audace(bufNo) load "$nom_flat"
+               buf$audace(bufNo) load "$audace(rep_images)/$nom_flat"
                buf$audace(bufNo) opt "${pref_darkflat}-smd$nb_darkflat" "${pref_offset}-smd$nb_offset"
-               buf$audace(bufNo) save "${pref_flat}-smd$nb_flat"
+               buf$audace(bufNo) save "$audace(rep_images)/${pref_flat}-smd$nb_flat"
            } else {
                opt2 "$nom_flat" "${pref_darkflat}-smd$nb_darkflat" "${pref_offset}-smd$nb_offset" "${pref_flat}_moinsnoir-" $nb_flat
                set flat_moinsnoir_1 [ lindex [ lsort -dictionary [ glob ${pref_flat}_moinsnoir-\[0-9\]*$conf(extension,defaut) ] ] 0 ]
@@ -1649,7 +1659,7 @@ proc spc_pretrait { args } {
            ::console::affiche_resultat "Le flat prétraité est ${pref_flat}-smd$nb_flat\n"
        } else {
            # Calcul du niveau moyen de la première image
-           buf$audace(bufNo) load "$flat_moinsnoir_1"
+           buf$audace(bufNo) load "$audace(rep_images)/$flat_moinsnoir_1"
            set intensite_moyenne [ lindex [stat] 4 ]
            # Mise au même niveau de toutes les images de PLU
            ::console::affiche_resultat "Mise au même niveau de toutes les images de PLU...\n"
@@ -1702,10 +1712,10 @@ proc spc_pretrait { args } {
        if { $nom_offset=="none" } {
            ::console::affiche_resultat "Soustraction des noirs associés aux images stellaires...\n"
            if { $nb_stellaire==1 } {
-               set pref_stellaire "$nom_stellaire"
-               buf$audace(bufNo) load "$nom_stellaire"
-               buf$audace(bufNo) sub "${pref_dark}-smd$nb_dark" 0
-               buf$audace(bufNo) save "${pref_stellaire}_moinsnoir"
+               # set pref_stellaire "$nom_stellaire"
+               buf$audace(bufNo) load "$audace(rep_images)/[ lindex $stellaire_liste 0 ]"
+               buf$audace(bufNo) sub "$audace(rep_images)/${pref_dark}-smd$nb_dark" 0
+               buf$audace(bufNo) save "$audace(rep_images)/${pref_stellaire}_moinsnoir"
            } else {
                sub2 "$nom_stellaire" "${pref_dark}-smd$nb_dark" "${pref_stellaire}_moinsnoir-" 0 $nb_stellaire
                # sub2 "$nom_stellaire" "${pref_dark}-smd$nb_dark" "${pref_stellaire}_moinsnoir-" 0 $nb_stellaire "COSMIC_THRESHOLD=300"
@@ -1715,10 +1725,10 @@ proc spc_pretrait { args } {
        } else {
            ::console::affiche_resultat "Optimisation des noirs associés aux images stellaires...\n"
            if { $nb_stellaire==1 } {
-               set pref_stellaire "$nom_stellaire"
-               buf$audace(bufNo) load "$nom_stellaire"
+               # set pref_stellaire "$nom_stellaire"
+               buf$audace(bufNo) load "$audace(rep_images)/[ lindex $stellaire_liste 0 ]"
                buf$audace(bufNo) opt "${pref_dark}-smd$nb_dark" "${pref_offset}-smd$nb_offset"
-               buf$audace(bufNo) save "${pref_stellaire}_moinsnoir"
+               buf$audace(bufNo) save "$audace(rep_images)/${pref_stellaire}_moinsnoir"
            } else {
                opt2 "$nom_stellaire" "${pref_dark}-smd$nb_dark" "${pref_offset}-smd$nb_offset" "${pref_stellaire}_moinsnoir-" $nb_stellaire
            }
@@ -1730,8 +1740,16 @@ proc spc_pretrait { args } {
 
        #-- Division des images stellaires par la PLU :
        ::console::affiche_resultat "Division des images stellaires par la PLU normalisée...\n"
-       div2 "${pref_stellaire}_moinsnoir-" "${pref_flat}-smd$nb_flat" "${pref_stellaire}-t-" $intensite_moyenne $nb_stellaire
-       set image_traite_1 [ lindex [ lsort -dictionary [ glob ${pref_stellaire}-t-\[0-9\]*$conf(extension,defaut) ] ] 0 ]
+      if { $nb_stellaire==1 } {
+         # set pref_stellaire "$nom_stellaire"
+         buf$audace(bufNo) load "$audace(rep_images)/${pref_stellaire}_moinsnoir"
+         buf$audace(bufNo) div "$audace(rep_images)/${pref_flat}-smd$nb_flat" 1
+         buf$audace(bufNo) save "$audace(rep_images)/${pref_stellaire}-t-1"
+         set image_traite_1 "${pref_stellaire}-t-1"
+      } else {
+         div2 "${pref_stellaire}_moinsnoir-" "${pref_flat}-smd$nb_flat" "${pref_stellaire}-t-" $intensite_moyenne $nb_stellaire
+         set image_traite_1 [ lindex [ lsort -dictionary [ glob ${pref_stellaire}-t-\[0-9\]*$conf(extension,defaut) ] ] 0 ]
+      }
 
        #--- Compensation d'un bug de libtt qui met EXPOSURE a 0 :
        #spc_correxposure "${pref_stellaire}" "${pref_stellaire}-t-"
@@ -1740,7 +1758,11 @@ proc spc_pretrait { args } {
        #--- Affichage et netoyage :
        loadima "$image_traite_1"
        ::console::affiche_resultat "Affichage de la première image prétraitée\n"
-       delete2 "${pref_stellaire}_moinsnoir-" $nb_stellaire
+      if { $nb_stellaire==1 } {
+         file delete -force "$audace(rep_images)/${pref_stellaire}_moinsnoir$conf(extension,defaut)"
+      } else {
+         delete2 "${pref_stellaire}_moinsnoir-" $nb_stellaire
+      }
        # if { $flag_rmmaster == "o" } {
            #-- Le 06/02/19 :
            # file delete -force "${pref_dark}-smd$nb_dark$conf(extension,defaut)"
