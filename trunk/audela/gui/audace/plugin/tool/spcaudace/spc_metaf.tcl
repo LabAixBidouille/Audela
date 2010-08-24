@@ -2,7 +2,7 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spcaudace spc_metaf.tcl ]
 
-# Mise a jour $Id: spc_metaf.tcl,v 1.19 2010-08-02 14:25:32 bmauclaire Exp $
+# Mise a jour $Id: spc_metaf.tcl,v 1.20 2010-08-24 02:15:15 bmauclaire Exp $
 
 
 
@@ -1395,7 +1395,12 @@ proc spc_traite2srinstrum { args } {
 	   ::console::affiche_resultat "\n**** Éliminations des mauvaises images ****\n\n"
 	   spc_reject $img
        }
-       set nbimg [ llength [ glob -dir $audace(rep_images) ${img}\[0-9\]$conf(extension,defaut) ${img}\[0-9\]\[0-9\]$conf(extension,defaut) ${img}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+       if { [ file exists "$audace(rep_images)/$img$conf(extension,defaut)" ] } {
+          set nbimg 1
+          set nbimg_ini 1
+       } else {
+          set nbimg [ llength [ glob -dir $audace(rep_images) ${img}\[0-9\]$conf(extension,defaut) ${img}\[0-9\]\[0-9\]$conf(extension,defaut) ${img}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+       }
 
        #--- Prétraitement de $nbimg images :
        ::console::affiche_resultat "\n\n**** Prétraitement de $nbimg images ****\n\n"
@@ -1456,7 +1461,15 @@ proc spc_traite2srinstrum { args } {
        #--- Appariement horizontal :
        ::console::affiche_resultat "\n\n**** Appariement horizontal de $nbimg images ****\n\n"
        if { $flag_2lamps == "o" } {
-          set fhreg [ spc_registerh "$lampe" "$fgeom" ]
+          if { [ catch { regexp {(.+)\-?[0-9]+} "$lampe" match prefixe_lampe } ]==0 || $nbimg_ini==1 } {
+             set fhreg "$fgeom"
+          } else {
+             if { [ file exists "$audace(rep_images)/${prefixe_lampe}-2$conf(extension,defaut)" ] } {
+                set fhreg [ spc_registerh "$lampe" "$fgeom" ]
+             } else {
+                set fhreg "$fgeom"
+             }
+          }
        } else {
           set fhreg "$fgeom"
        }
@@ -1471,8 +1484,8 @@ proc spc_traite2srinstrum { args } {
 
        #--- Appariement vertical de $nbimg images :
        ::console::affiche_resultat "\n\n**** Appariement vertical de $nbimg images ****\n\n"
-       if { $flag_nonstellaire==1 } {
-	   ::console::affiche_resultat "\n Pas d'appariement vertical pour les spectres non stellaires \n"
+       if { $flag_nonstellaire==1 || $nbimg_ini==1 } {
+	   ::console::affiche_resultat "\n Pas d'appariement vertical pour les spectres non stellaires ou solitaires\n"
 	   set freg "$fhreg"
        } else {
 	   if { $methreg == "spc" } {
@@ -1492,6 +1505,9 @@ proc spc_traite2srinstrum { args } {
        if { $flag_nonstellaire==1 } {
           #-- Somme des images pour les spectres non-stellaires car faibles :
           set fsadd [ spc_somme "$freg" addi ]
+       } elseif { $nbimg_ini==1 } {
+          file copy -force "$audace(rep_images)/$freg$conf(extension,defaut)" "$audace(rep_images)/${freg}-s$conf(extension,defaut)"
+          set fsadd "${freg}-s"
        } else {
           #-- Somme moyenne des images pour les spectres stellaires car brillants :
           #- set fsadd [ spc_somme "$freg" moy ] par defaut
@@ -1499,7 +1515,11 @@ proc spc_traite2srinstrum { args } {
        }
 
        if { $rmfpretrait=="o" } {
-	   delete2 "$fgeom" $nbimg
+          if { $nbimg_ini==1 } {
+             file delete -force "$audace(rep_images)/$fgeom$conf(extension,defaut)"
+          } else {
+             delete2 "$fgeom" $nbimg
+          }
        }
 
 

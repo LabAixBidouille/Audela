@@ -2,7 +2,7 @@
 # Procedures des traitements géométriques
 # Lancement en console : source $audace(rep_scripts)/spcaudace/spc_geom.tcl
 
-# Mise a jour $Id: spc_geom.tcl,v 1.10 2010-07-30 11:38:04 bmauclaire Exp $
+# Mise a jour $Id: spc_geom.tcl,v 1.11 2010-08-24 02:15:15 bmauclaire Exp $
 
 
 
@@ -317,14 +317,24 @@ proc spc_registerh { args } {
       if { [ lindex [ buf$audace(bufNo) getkwd "SPC_LNM" ] 1 ] != "" } {
          set nom_lampe_orig [ lindex [ buf$audace(bufNo) getkwd "SPC_LNM" ] 1 ]
          regexp {(.+)\-?[0-9]+} "$nom_lampe_orig" match nomg_lampe
+         set nb_lampes 0
       } else {
-         regexp {(.+)\-?[0-9]+} "$nom_lampes" match nomg_lampe
+         if { [ catch { regexp {(.+)\-?[0-9]+} "$nom_lampes" match nomg_lampe } ]==0 } {
+            set nomg_lampe "$nom_lampes"
+         } else {
+            regexp {(.+)\-?[0-9]+} "$nom_lampes" match nomg_lampe
+         }
+         set nb_lampes 1
       }
 ::console::affiche_resultat "Nomg lampe : $nomg_lampe\n"
 
       #-- Liste des spectres :
-      set lampesliste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nomg_lampe}\[0-9\]$conf(extension,defaut) ${nomg_lampe}\[0-9\]\[0-9\]$conf(extension,defaut) ${nomg_lampe}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
-      set nb_lampes [ llength $lampesliste ]
+      if { $nb_lampes==0 } {
+         set lampesliste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nomg_lampe}\[0-9\]$conf(extension,defaut) ${nomg_lampe}\[0-9\]\[0-9\]$conf(extension,defaut) ${nomg_lampe}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+         set nb_lampes [ llength $lampesliste ]
+      } else {
+         set lampesliste [ list "$nomg_lampe" ]
+      }
       set spectresliste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nomg_objet}\[0-9\]$conf(extension,defaut) ${nomg_objet}\[0-9\]\[0-9\]$conf(extension,defaut) ${nomg_objet}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
       set nb_spobjet [ llength $spectresliste ]
 
@@ -958,14 +968,15 @@ proc spc_smileximgs { args } {
 	::console::affiche_resultat "Coéfficients du smilex : ycenter=$ycenter, a=$a\n"
 	#--- Applique le smile au(x) spectre(s) incriminé(s)
 	if { [ file exists "$audace(rep_images)/$filename$conf(extension,defaut)" ] } {
-	    set nbsp 1
+           set nbsp 1
+           set liste_images [ list $filename ]
 	} else {
 	    set liste_images [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${filename}\[0-9\]$conf(extension,defaut) ${filename}\[0-9\]\[0-9\]$conf(extension,defaut) ${filename}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
 	    set nbsp [ llength $liste_images ]
 	}
 
 	if { $nbsp ==  1 } {
-	    buf$audace(bufNo) load "$audace(rep_images)/$filename"
+	    buf$audace(bufNo) load "$audace(rep_images)/[ lindex $liste_images 0 ]"
 	    buf$audace(bufNo) imaseries "SMILEX ycenter=$ycenter coef_smile2=$a"
 	    buf$audace(bufNo) save "$audace(rep_images)/${filename}-slx$conf(extension,defaut)"
 	    ::console::affiche_resultat "Spectre corrigé du smile en x sauvé sous ${filename}-slx$conf(extension,defaut)\n"
@@ -1064,10 +1075,15 @@ proc spc_smilex2imgs { args } {
 	set a [ lindex $results 1 ]
 
 	#--- Applique le smile au(x) spectre(s) incriminé(s)
-	set liste_images [ lsort -dictionary [ glob -dir "$audace(rep_images)" "${filename}\[0-9\]*$conf(extension,defaut)" ] ]
-	set nbsp [ llength $liste_images ]
+	if { [ file exists "$audace(rep_images)/$filename$conf(extension,defaut)" ] } {
+           set nbsp 1
+           set liste_images [ list $filename ]
+	} else {
+           set liste_images [ lsort -dictionary [ glob -dir "$audace(rep_images)" "${filename}\[0-9\]*$conf(extension,defaut)" ] ]
+           set nbsp [ llength $liste_images ]
+        }
 	if { $nbsp ==  1 } {
-	    buf$audace(bufNo) load "$audace(rep_images)/$filename"
+           buf$audace(bufNo) load "$audace(rep_images)/[ lindex $liste_images 0 ]"
 	    buf$audace(bufNo) imaseries "SMILEX ycenter=$ycenter coef_smile2=$a"
 	    buf$audace(bufNo) save "$audace(rep_images)/${filename}-slx$conf(extension,defaut)"
 	    ::console::affiche_resultat "Spectre corrigé du smile en x sauvé sous ${filename}-slx$conf(extension,defaut)\n"
