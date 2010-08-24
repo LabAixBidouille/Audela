@@ -3,7 +3,7 @@
 #
 ####################################################################
 
-# Mise a jour $Id: spc_var.tcl,v 1.28 2010-08-02 14:25:32 bmauclaire Exp $
+# Mise a jour $Id: spc_var.tcl,v 1.29 2010-08-24 02:17:41 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -63,7 +63,7 @@ set spcaudace(flag_rmcalo) "o"
 set spcaudace(binned_flat) "n"
 
 #-- Utilisation d'abord de la methode 1 de detection de l'angle de tilt. Par defaut, utilise que la methode 2 (valeur=n) :
-set spcaudace(tilt_normal) "n"
+set spcaudace(tilt_normal) "o"
 
 #-- Inversion du sens de coubure de la correction du smilex (1, -1) :
 set spcaudace(smilex_inv) 1
