@@ -2,7 +2,7 @@
 # Fichier : viseur_polaire_eq6.tcl
 # Description : Positionne l'etoile polaire dans un viseau polaire de type EQ6 ou a constellations
 # Auteur : Robert DELMAS
-# Mise à jour $Id: viseur_polaire_eq6.tcl,v 1.13 2010-05-26 05:45:40 robertdelmas Exp $
+# Mise à jour $Id: viseur_polaire_eq6.tcl,v 1.14 2010-08-28 08:15:22 robertdelmas Exp $
 #
 
 namespace eval ::viseurPolaireEQ6 {
@@ -338,26 +338,24 @@ namespace eval ::viseurPolaireEQ6 {
       global audace
       global viseurPolaireEQ6
 
-      #--- Initialisation du temps
-      set now [ ::audace::date_sys2ut now ]
-
       #--- Coordonnees de la Polaire J2000.0
-      set ad_LP "02h31m47.08"
-      set dec_LP "89d15m50.9"
+      set ad_LP  "2h31m51.267"
+      set dec_LP "89d15m50.90"
 
       #--- Calcul des coordonnees vraies de la Polaire
-      set ad_dec_v    [ ::telescope::coord_eph_vrai $ad_LP $dec_LP J2000.0 $now ]
-      set ad_LP_vrai  [ lindex $ad_dec_v 0 ]
-      set dec_LP_vrai [ lindex $ad_dec_v 1 ]
-
-      #--- Preparation du calcul de l'angle horaire
-      set altaz_LP [ mc_radec2altaz $ad_LP_vrai $dec_LP_vrai $audace(posobs,observateur,gps) $now ]
+      set pressure        101325
+      set temperature     290
+      set now             [ ::audace::date_sys2ut now ]
+      set hipRecord       [ list "1" "0.0" [ mc_angle2deg $ad_LP ] [ mc_angle2deg $dec_LP ] J2000.0 0 0 0 0 ]
+      set ad_dec_v        [ mc_hip2tel $hipRecord $now $::audace(posobs,observateur,gps) $pressure $temperature ]
+      set ad_LP_vrai      [ lindex $ad_dec_v 0 ]
+      set dec_LP_vrai     [ lindex $ad_dec_v 1 ]
+      set anglehoraire_LP [ lindex $ad_dec_v 2 ]
 
       #--- Angle horaire
-      set anglehoraire_LP [ lindex $altaz_LP 2 ]
-      set anglehoraire_LP [ mc_angle2hms $anglehoraire_LP 360 ]
+      set anglehoraire_LP     [ mc_angle2hms $anglehoraire_LP 360 ]
       set anglehoraire_LP_sec [ lindex $anglehoraire_LP 2 ]
-      set anglehoraire [ format "%02dh%02dm%02ds" [ lindex $anglehoraire_LP 0 ] [ lindex $anglehoraire_LP 1 ] \
+      set anglehoraire        [ format "%02dh%02dm%02ds" [ lindex $anglehoraire_LP 0 ] [ lindex $anglehoraire_LP 1 ] \
          [ expr int($anglehoraire_LP_sec) ]]
 
       #--- Angle horaire en degre
@@ -411,41 +409,39 @@ namespace eval ::viseurPolaireEQ6 {
    proc HA_Cas { } {
       global audace
 
-      #--- Initialisation du temps
-      set now [ ::audace::date_sys2ut now ]
-
       #--- Constellation Cassiopee J2000.0
       #--- Epsilon Cas
-      set ad_cas(1) "1h54m23.68"
-      set dec_cas(1) "63d40m12.5"
+      set ad_cas(1)  "1h54m23.752"
+      set dec_cas(1) "63d40m11.78"
       #--- Delta Cas
-      set ad_cas(2) "1h25m48.60"
-      set dec_cas(2) "60d14m7.5"
+      set ad_cas(2)  "1h25m49.426"
+      set dec_cas(2) "60d14m6.47"
       #--- Gamma Cas
-      set ad_cas(3) "0h56m42.50"
-      set dec_cas(3) "60d43m0.3"
+      set ad_cas(3)  "0h56m42.537"
+      set dec_cas(3) "60d42m59.96"
       #--- Alpha Cas
-      set ad_cas(4) "0h40m30.39"
-      set dec_cas(4) "56d32m14.7"
+      set ad_cas(4)  "0h40m30.568"
+      set dec_cas(4) "56d32m13.65"
       #--- Beta Cas
-      set ad_cas(5) "0h9m10.09"
-      set dec_cas(5) "59d9m0.8"
+      set ad_cas(5)  "0h9m11.427"
+      set dec_cas(5) "59d8m57.06"
 
       for {set i 1} {$i <= 5} {incr i} {
          #--- Calcul des coordonnees vraies des etoiles de Cassiopee
-         set ad_dec_v($i)     [ ::telescope::coord_eph_vrai $ad_cas($i) $dec_cas($i) J2000.0 $now ]
-         set ad_cas_vrai($i)  [ lindex $ad_dec_v($i) 0 ]
-         set dec_cas_vrai($i) [ lindex $ad_dec_v($i) 1 ]
-
-         #--- Preparation du calcul de l'angle horaire
-         set altaz_cas($i) [ mc_radec2altaz $ad_cas_vrai($i) $dec_cas_vrai($i) $audace(posobs,observateur,gps) $now ]
+         set pressure             101325
+         set temperature          290
+         set now                  [ ::audace::date_sys2ut now ]
+         set hipRecord($i)        [ list "1" "0.0" [ mc_angle2deg $ad_cas($i) ] [ mc_angle2deg $dec_cas($i) ] J2000.0 0 0 0 0 ]
+         set ad_dec_v($i)         [ mc_hip2tel $hipRecord($i) $now $::audace(posobs,observateur,gps) $pressure $temperature ]
+         set ad_cas_vrai($i)      [ lindex $ad_dec_v($i) 0 ]
+         set dec_cas_vrai($i)     [ lindex $ad_dec_v($i) 1 ]
+         set anglehoraire_cas($i) [ lindex $ad_dec_v($i) 2 ]
 
          #--- Angle horaire
-         set anglehoraire_cas($i) [ lindex $altaz_cas($i) 2 ]
-         set anglehoraire_cas($i) [ mc_angle2hms $anglehoraire_cas($i) 360 ]
+         set anglehoraire_cas($i)     [ mc_angle2hms $anglehoraire_cas($i) 360 ]
          set anglehoraire_cas_sec($i) [ lindex $anglehoraire_cas($i) 2 ]
-         set anglehoraire_cas($i) [ format "%02dh%02dm%02ds" [ lindex $anglehoraire_cas($i) 0 ] \
-            [ lindex $anglehoraire_cas($i) 1 ] [ expr int($anglehoraire_cas_sec($i)) ]]
+         set anglehoraire_cas($i)     [ format "%02dh%02dm%02ds" [ lindex $anglehoraire_cas($i) 0 ] \
+            [ lindex $anglehoraire_cas($i) 1 ] [ expr int($anglehoraire_cas_sec($i)) ] ]
 
          #--- Angle horaire en degre
          set anglehoraire_cas_deg($i) [ mc_angle2deg $anglehoraire_cas($i) ]
@@ -466,47 +462,45 @@ namespace eval ::viseurPolaireEQ6 {
    proc HA_UMa { } {
       global audace
 
-      #--- Initialisation du temps
-      set now [ ::audace::date_sys2ut now ]
-
       #--- Constellation Grande Ourse J2000.0
       #--- Eta UMa
-      set ad_uma(1) "13h47m32.55"
-      set dec_uma(1) "49d18m47.9"
+      set ad_uma(1)  "13h47m32.267"
+      set dec_uma(1) "49d18m47.87"
       #--- Dzeta UMa
-      set ad_uma(2) "13h23m55.42"
-      set dec_uma(2) "54d55m31.5"
+      set ad_uma(2)  "13h23m55.651"
+      set dec_uma(2) "54d55m30.79"
       #--- Epsilon UMa
-      set ad_uma(3) "12h54m1.63"
-      set dec_uma(3) "55d57m35.4"
+      set ad_uma(3)  "12h54m1.842"
+      set dec_uma(3) "55d57m34.93"
       #--- Delta UMa
-      set ad_uma(4) "12h15m25.45"
-      set dec_uma(4) "57d1m57.4"
+      set ad_uma(4)  "12h15m25.737"
+      set dec_uma(4) "57d1m57.10"
       #--- Gamma UMa
-      set ad_uma(5) "11h53m49.74"
-      set dec_uma(5) "53d41m41.0"
+      set ad_uma(5)  "11h53m49.914"
+      set dec_uma(5) "53d41m41.12"
       #--- Beta UMa
-      set ad_uma(6) "11h1m50.39"
-      set dec_uma(6) "56d22m56.4"
+      set ad_uma(6)  "11h1m50.606"
+      set dec_uma(6) "56d22m57.36"
       #--- Alpha UMa
-      set ad_uma(7) "11h3m43.84"
-      set dec_uma(7) "61d45m4.0"
+      set ad_uma(7)  "11h3m43.520"
+      set dec_uma(7) "61d45m2.27"
 
       for {set i 1} {$i <= 7} {incr i} {
          #--- Calcul des coordonnees vraies des etoiles de la Grande Ourse
-         set ad_dec_v($i)     [ ::telescope::coord_eph_vrai $ad_uma($i) $dec_uma($i) J2000.0 $now ]
-         set ad_uma_vrai($i)  [ lindex $ad_dec_v($i) 0 ]
-         set dec_uma_vrai($i) [ lindex $ad_dec_v($i) 1 ]
-
-         #--- Preparation du calcul de l'angle horaire
-         set altaz_uma($i) [ mc_radec2altaz $ad_uma_vrai($i) $dec_uma_vrai($i) $audace(posobs,observateur,gps) $now ]
+         set pressure             101325
+         set temperature          290
+         set now                  [ ::audace::date_sys2ut now ]
+         set hipRecord($i)        [ list "1" "0.0" [ mc_angle2deg $ad_uma($i) ] [ mc_angle2deg $dec_uma($i) ] J2000.0 0 0 0 0 ]
+         set ad_dec_v($i)         [ mc_hip2tel $hipRecord($i) $now $::audace(posobs,observateur,gps) $pressure $temperature ]
+         set ad_uma_vrai($i)      [ lindex $ad_dec_v($i) 0 ]
+         set dec_uma_vrai($i)     [ lindex $ad_dec_v($i) 1 ]
+         set anglehoraire_uma($i) [ lindex $ad_dec_v($i) 2 ]
 
          #--- Angle horaire
-         set anglehoraire_uma($i) [ lindex $altaz_uma($i) 2 ]
-         set anglehoraire_uma($i) [ mc_angle2hms $anglehoraire_uma($i) 360 ]
+         set anglehoraire_uma($i)     [ mc_angle2hms $anglehoraire_uma($i) 360 ]
          set anglehoraire_uma_sec($i) [ lindex $anglehoraire_uma($i) 2 ]
-         set anglehoraire_uma($i) [ format "%02dh%02dm%02ds" [ lindex $anglehoraire_uma($i) 0 ] \
-            [ lindex $anglehoraire_uma($i) 1 ] [ expr int($anglehoraire_uma_sec($i)) ]]
+         set anglehoraire_uma($i)     [ format "%02dh%02dm%02ds" [ lindex $anglehoraire_uma($i) 0 ] \
+            [ lindex $anglehoraire_uma($i) 1 ] [ expr int($anglehoraire_uma_sec($i)) ] ]
 
          #--- Angle horaire en degre
          set anglehoraire_uma_deg($i) [ mc_angle2deg $anglehoraire_uma($i) ]
