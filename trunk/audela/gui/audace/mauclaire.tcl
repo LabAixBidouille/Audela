@@ -3,7 +3,7 @@
 # Description : Scripts pour un usage aise des fonctions d'Aud'ACE
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
 #
-# Mise à jour $Id: mauclaire.tcl,v 1.32 2010-05-23 16:30:48 robertdelmas Exp $
+# Mise à jour $Id: mauclaire.tcl,v 1.33 2010-08-28 14:32:13 bmauclaire Exp $
 #
 
 #
@@ -871,8 +871,18 @@ proc bm_datefile { args } {
          set mo "0$mo"
       }
 
+      #--- Calcul de la fraction du jour a 3 decimales :
+      set smod [ expr $s/(3600*24.) ]
+      set mmod [ expr $mi/(60*24.) ]
+      set hmod [ expr $h/24. ]
+      set dfrac [ expr int(round(1000*($hmod+$mmod+$smod))) ]
+
       #--- Concatenation :
-      set madate "$y$mo$d"
+      if { $dfrac<100 } {
+         set madate "$y$mo$d\_0$dfrac"
+      } else {
+         set madate "$y$mo$d\_$dfrac"
+      }
 
       #--- Affichage du resultat :
       ::console::affiche_resultat "La date de prise de vue est : $madate\n"
