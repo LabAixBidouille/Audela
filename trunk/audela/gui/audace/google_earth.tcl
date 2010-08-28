@@ -1,6 +1,13 @@
-# Proc qui permettent d'interragir avec Google Earth
+#
+# Fichier : google_earth.tcl
+# Description : Interaction avec Google Earth
+# Auteur : Alain KLOTZ
+# Mise à jour $Id: google_earth.tcl,v 1.2 2010-08-28 13:20:10 robertdelmas Exp $
+#
+
+# Procedures qui permettent d'interagir avec Google Earth
 # Pour l'instant ca ne marche qu'avec les objets COM de Windows
-# Il ne suffit que d'avoir installe Google Earth.
+# Il ne suffit que d'avoir installe Google Earth
 #
 # source google_earth.tcl
 #
@@ -8,21 +15,21 @@
 # google_earth_home_goto
 # * Pour aller a une position de coordonnee donnee avec Google EARTH :
 # google_earth_home_goto {GPS 2 E 45 200}
-# * Pour aller a une position dun nom de site avec Google EARTH :
+# * Pour aller a une position du nom de site avec Google EARTH :
 # google_earth_home_goto search reims
-# * Pour retourner la position pointee avec Google EARTH:
+# * Pour retourner la position pointee avec Google EARTH :
 # google_earth_home_coord
-# * Pour aller a la position indiquee avec Google SKY:
+# * Pour aller a la position indiquee avec Google SKY :
 # google_earth_radec_goto m51
-# * Pour aller a la position indiquee avec Google SKY:
+# * Pour aller a la position indiquee avec Google SKY :
 # google_earth_radec_goto 12h45m23s +34°12'23"
-# * Pour retourner le RA,DEC de la position pointee avec Google SKY:
+# * Pour retourner le RA et le DEC de la position pointee avec Google SKY :
 # google_earth_radec_coord
-
 
 #####################################################################################
 # Fonctions utilitaires
 #####################################################################################
+
 proc google_earth_get_com_methods { {handler ""} } {
    global audace
    if {$handler==""} {
@@ -35,13 +42,13 @@ proc google_earth_get_com_methods { {handler ""} } {
    # === Affiche toutes les methodes
    set methods [[::tcom::info interface $handler] methods]
    foreach method $methods {
-   	set a [lindex $method 2]
-   	set res ""
-   	if {($a=="Login")||($a=="Logout")} {
-   	} else {
-      	catch {set res [$handler $a]}
-   	}
-   	::console::affiche_resultat "$method => $res\n"
+      set a [lindex $method 2]
+      set res ""
+      if {($a=="Login")||($a=="Logout")} {
+      } else {
+         catch {set res [$handler $a]}
+      }
+      ::console::affiche_resultat "$method => $res\n"
    }
    #
    #Rechercher un lieu:
@@ -49,8 +56,8 @@ proc google_earth_get_com_methods { {handler ""} } {
    #$sc Search "Paris"
    #[$audace(google_earth,com,handler) SearchController] Search Paris
    #Pour les parametres du lieu
-   #google_earth_get_com_methods [$audace(google_earth,com,handler) GetCamera 0]   
-   #   
+   #google_earth_get_com_methods [$audace(google_earth,com,handler) GetCamera 0]
+   #
 }
 
 proc google_earth_get_com_properties { {handler ""} } {
@@ -65,45 +72,45 @@ proc google_earth_get_com_properties { {handler ""} } {
    # === Affiche toutes les properties
    set properties [[::tcom::info interface $handler] properties]
    foreach propertie $properties {
-   	set a [lindex $propertie 2]
-   	set res ""
-   	catch {set res [$handler $a]}
-   	::console::affiche_resultat "$propertie => $res\n"
+      set a [lindex $propertie 2]
+      set res ""
+      catch {set res [$handler $a]}
+      ::console::affiche_resultat "$propertie => $res\n"
    }
 }
 
-proc google_earth_launch {} {
+proc google_earth_launch { } {
    global audace
-   if { $::tcl_platform(os) == "Windows NT" } {      
+   if { $::tcl_platform(os) == "Windows NT" } {
       # --- verifie si GoogleEarth est deja lancé
-   	package require twapi
-   	set ros_names {googleearth.exe}
-   	set pids [twapi::get_process_ids]
-   	set gpids ""
-   	foreach pid $pids {
-   		set res [twapi::get_process_info $pid -name]
-   		set name [lindex $res 1 end]
-   	   #::console::affiche_resultat "name=$name\n"
-   		set k [lsearch -exact $ros_names $name]
-   		if {$k>=0} {
-   			set res [twapi::get_process_info $pid -name -elapsedtime -ioreadops -groups -threadcount -user -workingset -basepriority]
-   			set k [lsearch -exact $res "-name"]
-   			set name [lindex $res [expr $k+1]]
-   			#::console::affiche_resultat "$name PID=$pid\n"
-   			lappend gpids $pid
-   		}
-   	}
-   	# --- verifie la validite du handler courant
+      package require twapi
+      set ros_names {googleearth.exe}
+      set pids [twapi::get_process_ids]
+      set gpids ""
+      foreach pid $pids {
+         set res [twapi::get_process_info $pid -name]
+         set name [lindex $res 1 end]
+         #::console::affiche_resultat "name=$name\n"
+         set k [lsearch -exact $ros_names $name]
+         if {$k>=0} {
+            set res [twapi::get_process_info $pid -name -elapsedtime -ioreadops -groups -threadcount -user -workingset -basepriority]
+            set k [lsearch -exact $res "-name"]
+            set name [lindex $res [expr $k+1]]
+            #::console::affiche_resultat "$name PID=$pid\n"
+            lappend gpids $pid
+         }
+      }
+      # --- verifie la validite du handler courant
       if {[info exists audace(google_earth,com,handler)]==1} {
-      	if {($gpids=="")&&($audace(google_earth,com,handler)!="")} {
-         	# --- quelqu'un a ferme GoogleEarth a la main
-         	#     on doit fermer le handler
-         	unset audace(google_earth,com,handler)
-      	} else {
-         	return $audace(google_earth,com,handler)
-      	}
-   	}
-   	# --- on lance Google Earth
+         if {($gpids=="")&&($audace(google_earth,com,handler)!="")} {
+            # --- quelqu'un a ferme GoogleEarth a la main
+            #     on doit fermer le handler
+            unset audace(google_earth,com,handler)
+         } else {
+            return $audace(google_earth,com,handler)
+         }
+      }
+      # --- on lance Google Earth
       if {[info exists audace(google_earth,com,handler)]==0} {
          package require tcom
          set audace(google_earth,com,handler) [::tcom::ref createobject "GoogleEarth.ApplicationGE"]
@@ -123,9 +130,9 @@ proc google_earth_launch {} {
                after 500
             }
             if {$dt>15} {
-            	unset audace(google_earth,com,handler)
+               unset audace(google_earth,com,handler)
                set sortie 1
-            }         
+            }
          }
       }
       if {[info exists audace(google_earth,com,handler)]==1} {
@@ -153,7 +160,6 @@ proc google_earth_dec { decimal } {
 # Fonctions pour les utilisateurs
 #####################################################################################
 
-
 proc google_earth_home_goto { {home ""} {param1 ""} {param2 ""} } {
    global audace
    #::console::affiche_resultat "home=$home param1=$param1 param2=$param2\n"
@@ -167,7 +173,7 @@ proc google_earth_home_goto { {home ""} {param1 ""} {param2 ""} } {
       set t0 [clock seconds]
       while {$sortie==0} {
          set dt [expr [clock seconds]-$t0]
-         set subh [$audace(google_earth,com,handler) GetCamera 0]   
+         set subh [$audace(google_earth,com,handler) GetCamera 0]
          set longitude [$subh FocusPointLongitude]
          set latitude [$subh FocusPointLatitude]
          if {($longitude==$longitude0)&&($latitude==$latitude0)} {
@@ -175,10 +181,10 @@ proc google_earth_home_goto { {home ""} {param1 ""} {param2 ""} } {
          }
          if {$dt>15} {
             set sortie 1
-         }         
+         }
       }
       set param1 $param2
-   } else {   
+   } else {
       if {$home==""} {
          set home $audace(posobs,observateur,gps)
       } else {
@@ -219,7 +225,7 @@ proc google_earth_home_coord { } {
    global audace
    set h [google_earth_launch]
    if {$h==""} { return "" }
-   set subh [$audace(google_earth,com,handler) GetCamera 0]   
+   set subh [$audace(google_earth,com,handler) GetCamera 0]
    set longitude [$subh FocusPointLongitude]
    if {$longitude<0} {
       set longitude [expr -1*$longitude]
@@ -282,7 +288,7 @@ proc google_earth_radec_coord { } {
    global audace
    set h [google_earth_launch]
    if {$h==""} { return "" }
-   set subh [$audace(google_earth,com,handler) GetCamera 0]   
+   set subh [$audace(google_earth,com,handler) GetCamera 0]
    set ra [$subh FocusPointLongitude]
    set ra [expr $ra+180]
    if {$ra>360} {
@@ -303,7 +309,7 @@ proc google_earth_moon_goto { {home ""} {param1 ""} {param2 ""} } {
       append command " \{$audace(posobs,observateur,gps) moon]\}"
    } else {
       append command " \"$home\""
-   }   
+   }
    if {$param1!=""} {
       append command " \"$param1\""
    }
@@ -315,3 +321,4 @@ proc google_earth_moon_goto { {home ""} {param1 ""} {param2 ""} } {
    set res [eval $command]
    return $res
 }
+
