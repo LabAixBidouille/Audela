@@ -1,7 +1,7 @@
 
 # Procédures d'analyse spectrale
 # source $audace(rep_scripts)/spcaudace/spc_analyse.tcl
-# Mise a jour $Id: spc_analyse.tcl,v 1.8 2010-04-14 17:20:58 bmauclaire Exp $
+# Mise a jour $Id: spc_analyse.tcl,v 1.9 2010-08-28 16:51:56 bmauclaire Exp $
 
 
 
@@ -901,42 +901,67 @@ proc spc_snr { args } {
    set largeur_bruit 0.92
    set nbtranches 10
 
-   if { [llength $args]==1 } {
+   set nbargs [ llength $args ]
+   if { $nbargs==1 } {
        set fichier [ file rootname [ lindex $args 0 ] ]
+   } elseif { $nbargs==2 } {
+      set fichier [ file rootname [ lindex $args 0 ] ]
+      set lambda_mid [ lindex $args 1 ]
+   } else {
+      ::console::affiche_erreur "Usage: spc_snr nom_fichier_fits\n\n"
+      return ""
+   }
 
-       #--- Capture des renseignements
-       buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-       set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
-       set listemotsclef [ buf$audace(bufNo) getkwds ]
-       if { [ lsearch $listemotsclef "NAXIS2" ] !=-1 } {
-           set naxis2 [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
-       } else {
-           set naxis2 1
-       }
-       if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
-           set disp [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
-           set crval1 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
-       } else {
-           set disp 1.
-       }
+ 
+   #--- Capture des renseignements
+   buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+   set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+   set listemotsclef [ buf$audace(bufNo) getkwds ]
+   if { [ lsearch $listemotsclef "NAXIS2" ] !=-1 } {
+      set naxis2 [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
+   } else {
+      set naxis2 1
+   }
+   if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
+      set disp [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+      set crval1 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+   } else {
+      set disp 1.
+   }
+   if { [ lsearch $listemotsclef "CRPIX1" ] !=-1 } {
+      set crpix1 [ lindex [buf$audace(bufNo) getkwd "CRPIX1"] 1 ]
+   } else {
+      set crpix1 1
+   }
+   set largeur [ expr int($naxis1/$nbtranches) ]
 
-       #--- Caclul du signal moyen sur l'interval du continuum  et determination de cet interval :
-       #set S [ lindex [ buf$audace(bufNo) stat ] 4 ]
-       #-- Détermine l'intensité moyenne sur chaque tranches :
-       set largeur [ expr int($naxis1/$nbtranches) ]
-       set listresults ""
-       for {set i 0} {$i<$nbtranches} {incr i} {
-           if { $i==0 } {
-               set zone [ list 1 1 $largeur 1 ]
-               set x1 1
-               set x2 $largeur
-           } else {
-               set x1 [ expr $i*$largeur ]
-               set x2 [ expr ($i+1)*$largeur ]
-               set zone [ list $x1 1 $x2 1 ]
-           }
-           set result [ buf$audace(bufNo) stat $zone ]
-           lappend listresults [ list [ lindex $result 4 ] [ lindex $result 5 ] $x1 $x2 ]
+   #--- Verifie que la logueur d'onde est bien couverte par le spectre :
+   if { $nbargs==2 } {
+      set lmin [ expr $crval1+0.5*$largeur*$disp ]
+      set lmax [ expr [ spc_calpoly $naxis1 1 $crval1 $disp 0 0 ]-$largeur*0.5*$disp ]
+      if { $lambda_mid<$lmin || $lambda_mid>$lmax } {
+         ::console::affiche_erreur "La longueur d'onde doit etre comprise entre $lmin et $lmax.\n"  
+         return ""
+      }
+   }
+
+   if { $nbargs==1 } {
+      #--- Caclul du signal moyen sur l'interval du continuum  et determination de cet interval :
+      #set S [ lindex [ buf$audace(bufNo) stat ] 4 ]
+      #-- Détermine l'intensité moyenne sur chaque tranches :
+      set listresults ""
+      for {set i 0} {$i<$nbtranches} {incr i} {
+         if { $i==0 } {
+            set zone [ list 1 1 $largeur 1 ]
+            set x1 1
+            set x2 $largeur
+         } else {
+            set x1 [ expr $i*$largeur ]
+            set x2 [ expr ($i+1)*$largeur ]
+            set zone [ list $x1 1 $x2 1 ]
+         }
+         set result [ buf$audace(bufNo) stat $zone ]
+         lappend listresults [ list [ lindex $result 4 ] [ lindex $result 5 ] $x1 $x2 ]
        }
        #-- Tri par ecart-type :
        set listresults [ lsort -increasing -real -index 1 $listresults ]
@@ -949,37 +974,40 @@ proc spc_snr { args } {
        } else {
          set lambda_mid $xmid
        }
-      #::console::affiche_resultat "$xdeb ; $xfin ; $S\n"
+    } elseif { $nbargs==2 } {
+       set xdeb [ expr round(($lambda_mid-$crval1)/$disp+$crpix1-0.5*$largeur) ]
+       set xfin [ expr round(($lambda_mid-$crval1)/$disp+$crpix1+0.5*$largeur) ]
+       set S [ lindex [ buf$audace(bufNo) stat [ list $xdeb 1 $xfin 1 ] ] 4 ]
+    }
+   #::console::affiche_resultat "$xdeb ; $xfin ; $S\n"
 
 
-       #--- Calcul la déviation standard :
-       if { 1==0 } {
-       set somme 0
-       set intensites [ lindex [ spc_fits2data $fichier ] 1 ]
-       for { set i [ expr $xdeb-1 ] } { $i<$xfin } { incr i } {
-           set intensite [ lindex $intensites $i ]
-           set somme [ expr $somme+pow($intensite-$S,2) ]
-       }
-       set N [ expr sqrt($somme/($xfin-$xdeb+1)) ]
-       }
-       set N [ lindex [ buf$audace(bufNo) stat [ list $xdeb 1 $xfin 1 ] ] 5 ]
-
-       #--- Calcul de SNR :
-       if { $N != 0 } {
-           set SNR [ expr $S/$N ]
-       } else {
-           ::console::affiche_resultat "Le bruit N=0, donc SNR non calculable\n"
-           set SNR 0
-       }
-
-       #--- Affichage des résultats :
-       file delete -force "$audace(rep_images)/${fichier}_crop$conf(extension,defaut)"
-       ::console::affiche_resultat "SNR=$S/$N=$SNR a la position $lambda_mid\n"
-       return $SNR
-
-   } else {
-       ::console::affiche_erreur "Usage: spc_snr nom_fichier_fits\n\n"
+   #--- Calcul la déviation standard :
+   if { 1==0 } {
+      set somme 0
+      set intensites [ lindex [ spc_fits2data $fichier ] 1 ]
+      for { set i [ expr $xdeb-1 ] } { $i<$xfin } { incr i } {
+         set intensite [ lindex $intensites $i ]
+         set somme [ expr $somme+pow($intensite-$S,2) ]
+      }        
+      set N [ expr sqrt($somme/($xfin-$xdeb+1)) ]
    }
+   #-----#
+   #--  Calcul du bruit :
+   set N [ lindex [ buf$audace(bufNo) stat [ list $xdeb 1 $xfin 1 ] ] 5 ]
+
+   #--- Calcul de SNR :
+   if { $N != 0 } {
+      set SNR [ expr $S/$N ]
+   } else {
+      ::console::affiche_resultat "Le bruit N=0, donc SNR non calculable\n"
+      set SNR 0
+   }
+
+   #--- Affichage des résultats :
+   file delete -force "$audace(rep_images)/${fichier}_crop$conf(extension,defaut)"
+   ::console::affiche_resultat "SNR=$S/$N=$SNR a la position $lambda_mid\n"
+   return $SNR
 }
 #****************************************************************#
 
