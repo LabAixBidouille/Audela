@@ -2,7 +2,7 @@
 # Fichier : testaudela.tcl
 # Description : Outil de test automatique pour AudeLA
 # Auteurs : Michel Pujol
-# Mise a jour $Id: testaudela.tcl,v 1.5 2010-08-22 17:57:22 michelpujol Exp $
+# Mise a jour $Id: testaudela.tcl,v 1.6 2010-08-28 06:57:45 robertdelmas Exp $
 #
 
 #####################
@@ -251,7 +251,7 @@ proc ::testaudela::fillConfigPage { frm visuNo } {
 
    #--- frame description d'un test
    TitleFrame $frm.detail -borderwidth 2 -text $caption(testaudela,detail)
-     tablelist::tablelist $frm.detail.description \
+      tablelist::tablelist $frm.detail.description \
          -columns [ list \
             12 "$caption(testaudela,name)"        left \
             40 "$caption(testaudela,description)" left \
@@ -514,12 +514,12 @@ proc ::testaudela::runTests { { fileList "all" } } {
          ::tcltest::testConstraint $constraintName $constraintState
       }
       #--- j'efface le fichier resultat
-      ::tcltest::removeFile $::conf(testaudela,resultFile)
+      ::tcltest::removeFile [file join $::audace(rep_log) $::conf(testaudela,resultFile)]
       #--- je configure la campagne de tests
       ::tcltest::configure -testdir "$::conf(testaudela,directory)/tests"
       ::tcltest::configure -verbose {pass error }
       ::tcltest::configure -debug 0
-      ::tcltest::configure -outfile $::conf(testaudela,resultFile)
+      ::tcltest::configure -outfile [file join $::audace(rep_log) $::conf(testaudela,resultFile)]
       ::tcltest::configure -singleproc 1
       ::tcltest::testConstraint interactive 1
       ::tcltest::testConstraint singleTestInterp 1
@@ -527,7 +527,7 @@ proc ::testaudela::runTests { { fileList "all" } } {
       #--- je lance les tests
       ::tcltest::runAllTests
       #--- je recupere le nombre de tests failed
-      set hfile [open $::conf(testaudela,resultFile) r]
+      set hfile [open [file join $::audace(rep_log) $::conf(testaudela,resultFile)] r]
       if { $hfile != "-1" } {
          set testResult [read -nonewline $hfile ]
          #--- je decoupe le resultat en une liste de lignes
@@ -597,7 +597,7 @@ proc ::testaudela::showResult { } {
 
    if {[winfo exists $frm.result ]} {
       $frm.result.sf_color_invariant.text  delete 1.0 end
-      $frm.result.sf_color_invariant.text insert end [tcltest::viewFile $::conf(testaudela,resultFile)]
+      $frm.result.sf_color_invariant.text insert end [tcltest::viewFile [file join $::audace(rep_log) $::conf(testaudela,resultFile)]]
       update
       focus $frm.result
       return
@@ -619,7 +619,7 @@ proc ::testaudela::showResult { } {
       grid rowconfig    [$frm.result.sf_color_invariant getframe] 0 -weight 1
       grid columnconfig [$frm.result.sf_color_invariant getframe] 0 -weight 1
 
-      $frm.result.sf_color_invariant.text insert end [tcltest::viewFile $::conf(testaudela,resultFile)]
+      $frm.result.sf_color_invariant.text insert end [tcltest::viewFile [file join $::audace(rep_log) $::conf(testaudela,resultFile)]]
 
    pack $frm.result.sf_color_invariant -fill both -expand 1
    $private(frm).result draw
