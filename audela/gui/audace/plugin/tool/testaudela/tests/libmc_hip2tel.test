@@ -7,13 +7,10 @@ set temperature 290
 set symbols  { IH ID NP CH ME MA FO HF DAF TF }
 set coefficients [list -5.38167630694 0.566423070348 -0.346039329249 -2.10939774003 -1.38154109773 -0.882510007747 -0.0731565653905 1.08326085084 -1.51336285238 2.24002431262 ]
 
-###set symbols  { IH ID NP CH ME MA }
-###set coefficients [list -5.38167630694 0.566423070348 -0.346039329249 -2.10939774003 -1.38154109773 -0.882510007747  ]
-
 #-------------------------------------------------------------------------------
 #  libmc_hip2tel_nul
 #-------------------------------------------------------------------------------
-test libmc_hip2tel_nul { hip2tel model_only nul refraction=0 } { AUDACE   } {
+test libmc_hip2tel_nul { hip2tel model_only nul refraction=0 } { AUDACE } {
 
    set dateTu [list 2009 11 14 20 00 00]
    set hip    [list 1 0 285.0 40.0 $dateTu 0 0 0 0]
@@ -30,7 +27,7 @@ test libmc_hip2tel_nul { hip2tel model_only nul refraction=0 } { AUDACE   } {
 #-------------------------------------------------------------------------------
 #  libmc_hip2tel_polar
 #-------------------------------------------------------------------------------
-test libmc_hip2tel_polar { polaire } { AUDACE   } {
+test libmc_hip2tel_polar { polaire } { AUDACE } {
 
    set dateTu [list 2010 08 27 20 33 00]
    set hip    [list 1 0 [mc_angle2deg 02h31m51.26] [mc_angle2deg 89d15m50.9] $dateTu 0 0 0 0]
@@ -48,7 +45,7 @@ test libmc_hip2tel_polar { polaire } { AUDACE   } {
 #-------------------------------------------------------------------------------
 #  libmc_tel2cat_nul
 #-------------------------------------------------------------------------------
-test libmc_tel2cat_nul { tel2cat model only nul refraction=0} { AUDACE  } {
+test libmc_tel2cat_nul { tel2cat model only nul refraction=0} { AUDACE } {
 
    # Usage: mc_tel2cat Coords TypeObs Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues?
    set dateTu [list 2009 11 14 20 00 00]
@@ -63,11 +60,10 @@ test libmc_tel2cat_nul { tel2cat model only nul refraction=0} { AUDACE  } {
    return  [list $ra_cat $dec_cat]
 } "19h00m00s +40d00m00s"
 
-
 #-------------------------------------------------------------------------------
 #  libmc_hip2tel_nul_now
 #-------------------------------------------------------------------------------
-test libmc_hip2tel_nul_now { hip2tel et cat2tel model nul now } { AUDACE  } {
+test libmc_hip2tel_nul_now { hip2tel et cat2tel model nul now } { AUDACE } {
 
    set dateTu "now"
    set hip    [list 1 0 285.0 40.0 J2000 0 0 0 0]
@@ -88,7 +84,7 @@ test libmc_hip2tel_nul_now { hip2tel et cat2tel model nul now } { AUDACE  } {
 #-------------------------------------------------------------------------------
 #  libmc_compute_coeff_OHP_now
 #-------------------------------------------------------------------------------
-test libmc_compute_coeff_OHP_now { mc_compute_matrix_modpoi model nul } { AUDACE  } {
+test libmc_compute_coeff_OHP_now { mc_compute_matrix_modpoi model nul } { AUDACE } {
 
    ###set starList { {262.769798757 26.1161349282 0.060 0.015} {264.917175225 46.0048037403 -0.031 0.010} {229.381522045 -9.39537562448 -0.141 -0.011} {237.921754574 20.9540062566 -0.058 0.010} {240.770230908 46.0071960949 0.034 -0.048} {207.495454218 -34.4222204842 0.020 -0.033} {201.437032453 -11.1955444943 0.028 -0.016} {207.49653863 15.7521866891 -0.045 0.017} {205.288772602 54.6247457185 -0.076 -0.003} }
    ###set starList { {262.769798757 26.1161349282 0.060 0.015} {264.917175225 46.0048037403 -0.031 0.010} {229.381522045 -9.39537562448 -0.001 -0.011} {237.921754574 20.9540062566 -0.058 0.010} {240.770230908 46.0071960949 0.034 -0.048} {207.495454218 -34.4222204842 0.020 -0.033} {201.437032453 -11.1955444943 0.028 -0.016} {207.49653863 15.7521866891 -0.045 0.017} {205.288772602 54.6247457185 -0.076 -0.003} }
@@ -111,12 +107,10 @@ test libmc_compute_coeff_OHP_now { mc_compute_matrix_modpoi model nul } { AUDACE
 
 } " 0 0 0 0 0 0 0 0 0 0 "
 
-
-
 #-------------------------------------------------------------------------------
 #  libmc_hip2tel_OHP
 #-------------------------------------------------------------------------------
-test libmc_hip2tel_OHP { hip2tel model only OHP refraction=0 } { AUDACE  } {
+test libmc_hip2tel_OHP { hip2tel model only OHP refraction=0 } { AUDACE } {
 
    #-- mc_hip2tel List_coords Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues
    #    List_coords =
@@ -136,7 +130,6 @@ test libmc_hip2tel_OHP { hip2tel model only OHP refraction=0 } { AUDACE  } {
    #    List_ModelSymbols
    #    List_ModelValues
 
-
    ###set radec  [list 19h00m00s0  +40d0m0s]
    set hip    [list 1 0 285.0 40.0 J2000 0 0 0 0]
    set dateTu [list 2009 11 14 20 00 00]
@@ -151,7 +144,6 @@ test libmc_hip2tel_OHP { hip2tel model only OHP refraction=0 } { AUDACE  } {
    set result [list $ra_tel $dec_tel]
    return  $result
 } "19h00m30s05 +39d58m24s87"
-#### "18h59m29s9 +39d58m24s"
 
 #-------------------------------------------------------------------------------
 #  libmc_tel2cat_OHP
@@ -171,7 +163,7 @@ test libmc_tel2cat_OHP { tel2cat OHP } { AUDACE } {
 #-------------------------------------------------------------------------------
 #  libmc_hip2tel_OHP
 #-------------------------------------------------------------------------------
-test libmc_hip2tel_OHP { mc_hip2tel OHP} { AUDACE  } {
+test libmc_hip2tel_OHP { mc_hip2tel OHP} { AUDACE } {
 
    set radec  [list 19h00m00s0  +40d0m0s]
    set dateTu [list 2009 11 14 20 00 00]
@@ -188,7 +180,6 @@ test libmc_hip2tel_OHP { mc_hip2tel OHP} { AUDACE  } {
    return  $result
 } "19h00m55s +40d00m07s"
 
-
 #-------------------------------------------------------------------------------
 #  libmc_tel2cat_m_OHP
 #-------------------------------------------------------------------------------
@@ -204,11 +195,10 @@ test libmc_tel2cat_m_OHP { mc_tel2cat avec precession OHP} { AUDACE } {
    return  [list $ra_cat $dec_cat]
 } "19h00m00s24 +40d00m01s68"
 
-
 #-------------------------------------------------------------------------------
 #  libmc_tel2cat_OHP
 #-------------------------------------------------------------------------------
-test libmc_tel2cat_OHP { mc_tel2cat OHP} { AUDACE  } {
+test libmc_tel2cat_OHP { mc_tel2cat OHP} { AUDACE } {
 
    # Usage: mc_tel2cat Coords TypeObs Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues?
    set dateTu [list 2009 11 14 20 00 00]
@@ -223,7 +213,7 @@ test libmc_tel2cat_OHP { mc_tel2cat OHP} { AUDACE  } {
 #-------------------------------------------------------------------------------
 #  libmc_tel2cat_OHP
 #-------------------------------------------------------------------------------
-test libmc_tel2cat_OHP { mc_tel2cat OHP} { AUDACE  } {
+test libmc_tel2cat_OHP { mc_tel2cat OHP} { AUDACE } {
 
    # Usage: mc_tel2cat Coords TypeObs Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues?
    set dateTu [list 2009 11 14 20 00 00]
