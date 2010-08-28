@@ -2,7 +2,7 @@
 # Fichier : viseur_polaire_taka.tcl
 # Description : Positionne l'etoile polaire dans un viseur polaire de type Takahashi ou a niveau
 # Auteur : Robert DELMAS
-# Mise à jour $Id: viseur_polaire_taka.tcl,v 1.14 2010-05-26 05:49:54 robertdelmas Exp $
+# Mise à jour $Id: viseur_polaire_taka.tcl,v 1.15 2010-08-28 08:15:45 robertdelmas Exp $
 #
 
 namespace eval ::viseurPolaireTaka {
@@ -339,27 +339,25 @@ namespace eval ::viseurPolaireTaka {
       global audace
       global viseurPolaireTaka
 
-      #--- Initialisation du temps
-      set now [ ::audace::date_sys2ut now ]
-
       #--- Coordonnees de la Polaire J2000.0
-      set ad_LP "02h31m47.08"
-      set dec_LP "89d15m50.9"
+      set ad_LP  "2h31m51.267"
+      set dec_LP "89d15m50.90"
 
       #--- Calcul des coordonnees vraies de la Polaire
-      set ad_dec_v    [ ::telescope::coord_eph_vrai $ad_LP $dec_LP J2000.0 $now ]
-      set ad_LP_vrai  [ lindex $ad_dec_v 0 ]
-      set dec_LP_vrai [ lindex $ad_dec_v 1 ]
-
-      #--- Preparation du calcul de l'angle horaire
-      set altaz_LP [ mc_radec2altaz $ad_LP_vrai $dec_LP_vrai $audace(posobs,observateur,gps) $now ]
+      set pressure        101325
+      set temperature     290
+      set now             [ ::audace::date_sys2ut now ]
+      set hipRecord       [ list "1" "0.0" [ mc_angle2deg $ad_LP ] [ mc_angle2deg $dec_LP ] J2000.0 0 0 0 0 ]
+      set ad_dec_v        [ mc_hip2tel $hipRecord $now $::audace(posobs,observateur,gps) $pressure $temperature ]
+      set ad_LP_vrai      [ lindex $ad_dec_v 0 ]
+      set dec_LP_vrai     [ lindex $ad_dec_v 1 ]
+      set anglehoraire_LP [ lindex $ad_dec_v 2 ]
 
       #--- Angle horaire
-      set anglehoraire_LP [ lindex $altaz_LP 2 ]
-      set anglehoraire_LP [ mc_angle2hms $anglehoraire_LP 360 ]
+      set anglehoraire_LP     [ mc_angle2hms $anglehoraire_LP 360 ]
       set anglehoraire_LP_sec [ lindex $anglehoraire_LP 2 ]
-      set anglehoraire [ format "%02dh%02dm%02ds" [ lindex $anglehoraire_LP 0 ] [ lindex $anglehoraire_LP 1 ] \
-         [ expr int($anglehoraire_LP_sec) ]]
+      set anglehoraire        [ format "%02dh%02dm%02ds" [ lindex $anglehoraire_LP 0 ] \
+         [ lindex $anglehoraire_LP 1 ] [ expr int($anglehoraire_LP_sec) ] ]
 
       #--- Angle horaire en degre
       set anglehoraire_deg [ mc_angle2deg $anglehoraire ]
