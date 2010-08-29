@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.20 2010-05-22 23:38:40 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.21 2010-08-29 14:11:50 bmauclaire Exp $
 
 
 
@@ -1354,11 +1354,11 @@ proc spc_calibre { args } {
 
    if { [llength $args] <= 1 } {
        if { [llength $args] == 1 } {
-           set profiletalon [ lindex $args 0 ]
+          set profiletalon [ file rootname [ lindex $args 0 ] ]
        } elseif { [llength $args]==0 } {
            set spctrouve [ file rootname [ file tail [ tk_getOpenFile -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] ]
            if { [ file exists "$audace(rep_images)/$spctrouve$conf(extension,defaut)" ] == 1 } {
-               set profiletalon $spctrouve
+              set profiletalon [ file rootname "$spctrouve" ]
            } else {
                ::console::affiche_erreur "Usage: spc_calibre profil_de_raies_a_calibrer\n\n"
                return 0
