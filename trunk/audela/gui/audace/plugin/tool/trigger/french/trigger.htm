@@ -12,7 +12,7 @@
   </style>
 </head>
 <body>
-<p class="date">Date de mise &#224; jour : 05 juillet 2010</p>
+<p class="date">Date de mise &#224; jour : 29 ao&#251;t 2010</p>
 <h1>Trigger</h1>
 <p>Trigger est un timer-intervallom&#232;tre programmable, permettant de
 commander notamment des APN Canon non reconnus par libgphoto2-canon.</p>
@@ -44,7 +44,8 @@ convient de r&#233;gler en premier. La s&#233;lection d'un port LPT permet de
 choisir un bit entre 0 et 7 alors qu'un port COM permet de s&#233;lectionner
 une option parmi <b>{ DTR | RTS }</b>.</p>
       <p>Une liste d&#233;roulante de s&#233;lection de la commande d'activation <b>Front</b>.
-Les deux options possibles sont <b>{ 0</b> (front descendant) <b>| 1</b>
+Les
+deux options possibles sont <b>{ 0</b> (front descendant) <b>| 1</b>
 (front montant) <b>}</b>.</p>
       <p>Une liste d&#233;roulante de s&#233;lection du <b>Mode</b> comporte
 deux options <b>{ Un | S&#233;rie }</b>.</p>
@@ -87,14 +88,18 @@ sont gel&#233;es durant une session : Aucun changement n'est possible.</p>
 </table>
 <h2>Bon &#224; savoir</h2>
 <ul>
+  <li>L'interface ne peut pas savoir si vous avez mis en marche
+l'appareil, par exemple : allum&#233; l'APN, mis une carte m&#233;moire, etc. !</li>
   <li>Chaque entr&#233;e est accompagn&#233;e d'un bulle d'aide.</li>
   <li>Les donn&#233;es &#224; saisir sont des nombres entiers et sont contr&#244;l&#233;es.
 Une fen&#234;tre rappelle les consignes en cas d'erreur.</li>
   <li>Le lien cr&#233;&#233; avec le port n'existe que durant l'activation d'un
 d&#233;clenchement.</li>
-  <li>Chaque prise de vue est accompagn&#233;e d'un message sur la console
-indiquant l'heure UTC, le num&#233;ro de l'image et &#233;ventuellement de la
-dur&#233;e d'exposition (Longue Pose).</li>
+  <li>Chaque d&#233;clenchement est accompagn&#233; d'un message sur la Console
+indiquant le temps UTC, le num&#233;ro de s&#233;rie de la prise de vue, le
+num&#233;ro de l'image et &#233;ventuellement la
+dur&#233;e d'exposition (Longue Pose). Ces informations figurent &#233;galement
+dans le fichier trigger.log.</li>
 </ul>
 </body>
 </html>

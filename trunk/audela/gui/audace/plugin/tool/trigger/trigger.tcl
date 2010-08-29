@@ -2,7 +2,7 @@
 # Fichier : trigger.tcl
 # Description : Outil de declenchement pour APN Canon non reconnu par libgphoto2_canon.dll
 # Auteur : Raymond Zachantke
-# Mise à jour $Id: trigger.tcl,v 1.5 2010-07-21 18:24:06 robertdelmas Exp $
+# Mise à jour $Id: trigger.tcl,v 1.6 2010-08-29 06:36:58 robertdelmas Exp $
 #
 
 #============================================================
@@ -98,7 +98,18 @@ namespace eval ::trigger {
    #    suppprime l'instance du plugin
    #------------------------------------------------------------
    proc deletePluginInstance { visuNo } {
+      global panneau
 
+      #--   sauvegarde les parametres
+      if [ catch { open $panneau(trigger,fichier_ini) w } fichier ] {
+         Message console "%s\n" $fichier
+      } else {
+         foreach var [ list port bit cde ] \
+            val [ list $panneau(trigger,port) $panneau(trigger,bit) $panneau(trigger,cde) ] {
+            puts $fichier "set parametres($var) \"$val\""
+         }
+         close $fichier
+      }
    }
 
    #------------------------------------------------------------
@@ -111,6 +122,17 @@ namespace eval ::trigger {
 
       #---
       set This $this
+
+      set panneau(trigger,fichier_ini) [ file join $audace(rep_home) trigger.ini ]
+      if [ file exists $panneau(trigger,fichier_ini) ] {
+         source $panneau(trigger,fichier_ini)
+         foreach var { port bit cde } {
+            if [ info exists parametres($var) ]  {
+               #--   affecte les valeurs initiales sauvegardees dans le fichier ini
+               set panneau(trigger,$var) $parametres($var)
+            }
+         }
+      }
 
       #---
       set panneau(trigger,base) "$this"
@@ -143,7 +165,7 @@ namespace eval ::trigger {
    #    cree la fenetre de l'outil
    #------------------------------------------------------------
    proc triggerBuildIF { This } {
-      global audace panneau caption color
+      global panneau caption color
       variable Trigger
 
       #---
@@ -167,10 +189,19 @@ namespace eval ::trigger {
 
          #--   initialise les listes pour les combobox
          set panneau(trigger,portLabels) [ ::confLink::getLinkLabels { "parallelport" "quickremote" "serialport" "external" } ]
-         set panneau(trigger,port) [ lindex $panneau(trigger,portLabels) 0 ]
+         if ![ info exists panneau(trigger,port) ] {
+            set panneau(trigger,port) [ lindex $panneau(trigger,portLabels) 0 ]
+         }
          set panneau(trigger,bitLabels) [ ::confLink::getPluginProperty $panneau(trigger,port) bitList ]
+         if ![ info exists panneau(trigger,bit) ] {
+            set panneau(trigger,bit) [ lindex $panneau(trigger,bitLabels) 0 ]
+         }
          set panneau(trigger,cdeLabels) { 0 1 }
+         if ![ info exists panneau(trigger,cde) ] {
+            set panneau(trigger,cde) [ lindex $panneau(trigger,cdeLabels) 1 ]
+         }
          set panneau(trigger,modeLabels) [ list "$caption(trigger,mode,one)" "$caption(trigger,mode,serie)" ]
+         set panneau(trigger,mode) [ lindex $panneau(trigger,modeLabels) 0 ]
 
          ::blt::table $Trigger
 
@@ -231,12 +262,6 @@ namespace eval ::trigger {
             DynamicHelp::add $Trigger.$child -text $caption(trigger,help$child)
          }
 
-         #--   selectionne les valeurs initiales
-         foreach frm { port bit cde mode } index { 0 0 1 0 } {
-            set panneau(trigger,$frm) [ lindex $panneau(trigger,${frm}Labels) 0 ]
-            $Trigger.$frm setvalue @0
-         }
-
          lassign { "1" " " "0" "1" " " "0" "" } ::trigger::lp ::trigger::activtime \
             ::trigger::delai ::trigger::periode panneau(trigger,action) \
             panneau(trigger,serieNo) panneau(trigger,msgbox)
@@ -282,7 +307,6 @@ namespace eval ::trigger {
 
       #--   compteur de shoot
       incr panneau(trigger,serieNo) "1"
-      ::console::affiche_resultat "\n[ format $caption(trigger,prisedevue) $panneau(trigger,serieNo) ]\n"
 
       #--   cree une liaison avec le port
       set linkNo [ ::confLink::create "$panneau(trigger,port)" "camera inconnue" "pose" "" ]
@@ -292,19 +316,17 @@ namespace eval ::trigger {
 
       while { $::trigger::nb_poses > 0 } {
 
+         #--   prepare le message de log
+         set panneau(trigger,msg) [ format $caption(trigger,prisedevue) $panneau(trigger,serieNo) $count ]
+         if { $activtime != " " } {
+            append panneau(trigger,msg) "  $activtime sec."
+         }
+
          #--   affiche 'Acquisition'
          set panneau(trigger,action) "$caption(trigger,action,acq)"
 
          #--   declenche ; t = temps au debut du shoot en secondes,millisecondes
          set time_start [ shoot $linkNo "$activtime" ]
-
-         #--   message sur la console
-         set time [ clock format $time_start -format "%Y/%m/%d %H:%M:%S" -timezone :UTC ]
-         set msg "$time N°$count"
-         if { $activtime != " " } {
-            append msg "  $activtime sec."
-         }
-         ::console::affiche_resultat "$msg\n"
 
          #--   decremente et affiche le nombre de poses qui reste a prendre
          incr ::trigger::nb_poses "-1"
@@ -349,6 +371,8 @@ namespace eval ::trigger {
       #--   definit les variables locales
       set start $panneau(trigger,cde)
       set stop  [ expr { 1-$start } ]
+
+      majLog
 
       #--- demarre une pose
       link$linkNo bit $panneau(trigger,bit) $start
@@ -488,7 +512,7 @@ namespace eval ::trigger {
          set panneau(trigger,msgbox) $nom
 
          tk_messageBox -title $caption(acqdslr,attention)\
-            -icon error -type ok -message $caption(trigger,help$nom)
+           -icon error -type ok -message $caption(trigger,help$nom)
 
          #--   au retour annule la memoire
          set panneau(trigger,msgbox) ""
@@ -509,6 +533,22 @@ namespace eval ::trigger {
       }
       set t "0"
       update
+   }
+
+   ######################################################################
+   #--   Maj du fichier log                                             #
+   ######################################################################
+   proc majLog {} {
+      global audace panneau
+
+      set file_log [ file join $::audace(rep_log) trigger.log ]
+      set msg "$audace(tu,format,dmyhmsint) $panneau(trigger,msg)"
+
+      if ![ catch { open $file_log a } fichier ] {
+         chan puts $fichier $msg
+         chan close $fichier
+      }
+      ::console::affiche_resultat "$msg\n"
    }
 
 #--   fin du namespace
