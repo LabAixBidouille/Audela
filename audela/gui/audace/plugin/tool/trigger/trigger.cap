@@ -1,6 +1,6 @@
 #
 # Fichier : trigger.cap
-# Mise a jour $Id: trigger.cap,v 1.3 2010-07-05 20:46:33 robertdelmas Exp $
+# Mise a jour $Id: trigger.cap,v 1.4 2010-08-29 06:36:39 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -34,7 +34,7 @@ set caption(trigger,delai)                            "Delay"
 set caption(trigger,helpdelai)                        "Starting delay must be an integer of seconds."
 set caption(trigger,periode)                          "Period"
 set caption(trigger,helpperiode)                      "Interval between each shoot\n must be an integer of seconds\nhihger than duration."
-set caption(trigger,prisedevue)                       "No. shooting %s"
+set caption(trigger,prisedevue)                       "Shooting series No. %s - Image No. %s"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -62,7 +62,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(trigger,helpdelai)                     "Le délai doit être >=0."
    set caption(trigger,periode)                       "Période"
    set caption(trigger,helpperiode)                   "L'intervalle entre chaque début d'image\ndoit être un nombre entier de secondes,\nsupérieur à la durée."
-   set caption(trigger,prisedevue)                    "Prise de vue N° %s"
+   set caption(trigger,prisedevue)                    "Prise de vue série N° %s - Image N° %s"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -90,7 +90,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(trigger,helpdelai)                     "Ritardo deve essere un numero intero di secondi."
    set caption(trigger,periode)                       "Intervallo"
    set caption(trigger,helpperiode)                   "L'intervallo tra ogni inizio di image\ndoit essere un numero intero di secondi."
-   set caption(trigger,prisedevue)                    "N. di ripresa %s"
+   set caption(trigger,prisedevue)                    "Riprese serie n. %s - immagine n. %s"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -118,7 +118,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(trigger,helpdelai)                     "Retraso debe ser un número entero de segundos."
    set caption(trigger,periode)                       "Intervalo"
    set caption(trigger,helpperiodee)                  "El intervalo entre cada principio de image\ndoit ser un número entero de segundos."
-   set caption(trigger,prisedevue)                    "Nº de tiro %s"
+   set caption(trigger,prisedevue)                    "Rodaje de la serie Nº %s - Nº %s de la imagen"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -146,7 +146,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(trigger,helpdelai)                     "Verzögerung muss eine ganze Zahl Sekunden sein."
    set caption(trigger,periode)                       "Intervall"
    set caption(trigger,helpperiode)                   "Das Intervall zwischen den einzelnen Anfang des Image\nwerden eine ganze Anzahl von Sekunden."
-   set caption(trigger,prisedevue)                    "Nr. schießen %s"
+   set caption(trigger,prisedevue)                    "Dreharbeiten Serie Nr. %s - Bild Nr.%s"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -174,7 +174,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(trigger,helpdelai)                     "Atraso deve ser um número inteiro de segundos."
    set caption(trigger,periode)                       "Intervalo"
    set caption(trigger,periode)                       "O intervalo entre cada início de image\ndoit ser um número inteiro de segundos."
-   set caption(trigger,prisedevue)                    "N. º tiro %s"
+   set caption(trigger,prisedevue)                    "Tiro série n. %s - imagem n. %s"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -202,7 +202,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(trigger,helpdelai)                     "Starter forsinkelse skal være et heltal af sekunder."
    set caption(trigger,periode)                       "Periode"
    set caption(trigger,helpperiode)                   "Intervallet mellem hver shoot\n skal være et heltal af seconds\nhihger end varighed."
-   set caption(trigger,prisedevue)                    "Nr. skydning %s"
+   set caption(trigger,prisedevue)                    "Skyde serien nr. %s - image nr. %s"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -259,6 +259,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(trigger,periode)                       "Period"
    set caption(trigger,helpperiode)                   "Interval between each shoot\n must be an integer of seconds\nhihger than duration."
    set caption(trigger,prisedevue)                    "No. shooting %s"
+
 }
 
 #=========================================================================
