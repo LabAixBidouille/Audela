@@ -1,7 +1,7 @@
 
 # Procédures liées à 'linterface graphique et au tracé des profils de raies.
 
-# Mise a jour $Id: spc_gui.tcl,v 1.10 2010-04-20 16:58:36 bmauclaire Exp $
+# Mise a jour $Id: spc_gui.tcl,v 1.11 2010-08-29 18:43:43 bmauclaire Exp $
 
 
 
@@ -183,6 +183,7 @@ proc spc_winini { } {
       .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_imax) -command "spc_imax" -underline 0
       .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_icontinuum) -command "spc_icontinuum" -underline 0
       .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_snr) -command "spc_snr" -underline 0
+      .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_degauss) -command "spc_degauss" -underline 0
 
 
       #--- Menu Calibration ---#
@@ -279,6 +280,8 @@ proc spc_winini { } {
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_npte_w) -command "spc_npte" -underline 0
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_npne_w) -command "spc_npne" -underline 0
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_normahbeta) -command "spc_normahbeta" -underline 0
+      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_file_space)
+      .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_periodogram) -command "spc_periodogram" -underline 0
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_file_space)
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_spectrum) -command "spc_spectrum" -underline 0
       .spc configure -menu .spc.menuBar

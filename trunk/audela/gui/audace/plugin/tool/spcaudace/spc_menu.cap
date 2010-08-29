@@ -1,6 +1,6 @@
 #
 # Fichier : spc_menu.cap
-# Mise a jour $Id: spc_menu.cap,v 1.1 2010-07-20 20:54:57 robertdelmas Exp $
+# Mise a jour $Id: spc_menu.cap,v 1.2 2010-08-29 18:43:43 bmauclaire Exp $
 #
 
 #=========================================================================
@@ -104,6 +104,7 @@ set caption(spcaudace,gui,spc_intensity_w)                  "Line's intensity"
 set caption(spcaudace,gui,spc_imax)                         "Line's maximum"
 set caption(spcaudace,gui,spc_icontinuum)                   "Compute continuum intensity"
 set caption(spcaudace,gui,spc_snr)                          "SNR of a lines profile"
+set caption(spcaudace,gui,spc_degauss)                      "Extract lines intensities of bended lines"
 
 #--- Menu Calibration ---#
 set caption(spcaudace,gui,spc_calibration)                  "Calibration"
@@ -160,6 +161,7 @@ set caption(spcaudace,gui,spc_npne_w)                       "Electronic density 
 set caption(spcaudace,gui,spc_normahbeta)                   "Normalisation with H-beta line"
 set caption(spcaudace,gui,spc_spectrum)                     "SPECTRUM: Launch synthetic spectra software"
 set caption(spcaudace,gui,spc_ajustplanck_w)                "Compute stellar temperature by Planck fitting"
+set caption(spcaudace,gui,spc_periodogram)                  "Build a periodogram and plot sine function from an ascii data file"
 
 #--- Menu Aide ---#
 set caption(spcaudace,gui,spc_aide)                         "Help"
@@ -265,6 +267,7 @@ if { [string compare $langage "french"] == "0" } {
    set caption(spcaudace,gui,spc_imax)                      "Valeur maximum d'une raie"
    set caption(spcaudace,gui,spc_icontinuum)                "Intensité du continuum"
    set caption(spcaudace,gui,spc_snr)                       "SNR d'un profil de raies"
+   set caption(spcaudace,gui,spc_degauss)                   "Extrait les intensités de raies non résolues"
 
    #--- Menu Calibration ---#
    set caption(spcaudace,gui,spc_calibration)               "Calibration"
@@ -321,6 +324,7 @@ if { [string compare $langage "french"] == "0" } {
    set caption(spcaudace,gui,spc_normahbeta)                "Normalisation par rapport à l'intensité de la raie H-beta"
    set caption(spcaudace,gui,spc_spectrum)                  "SPECTRUM : Synthèse de spectres"
    set caption(spcaudace,gui,spc_ajustplanck_w)             "Détermination de la température stellaire par ajustement de Planck"
+   set caption(spcaudace,gui,spc_periodogram)               "Construit le periodogramme et affiche la sinusoide des mesures issues d'un fichier ascii."
 
    #--- Menu Aide ---#
    set caption(spcaudace,gui,spc_aide)                      "Aide"
