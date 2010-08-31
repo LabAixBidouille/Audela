@@ -3,9 +3,9 @@
 # Fichier : listfiles.tcl
 # Description : genere un fichier texte pour Inno setup
 # Auteur : Alain KLOTZ
-# $Id: listfiles.tcl,v 1.30 2009-11-29 11:25:26 michelpujol Exp $
+# $Id: listfiles.tcl,v 1.31 2010-08-31 20:09:12 alainklotz Exp $
 #
-# source [pwd]/../src/tools/innosetup/listfiles.tcl
+# source $audace(rep_install)/src/tools/innosetup/listfiles.tcl
 
 set version 1.5.20091122
 #set makes audela
