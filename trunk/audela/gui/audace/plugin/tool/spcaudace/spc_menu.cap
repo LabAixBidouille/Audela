@@ -1,6 +1,6 @@
 #
 # Fichier : spc_menu.cap
-# Mise a jour $Id: spc_menu.cap,v 1.2 2010-08-29 18:43:43 bmauclaire Exp $
+# Mise a jour $Id: spc_menu.cap,v 1.3 2010-08-31 12:45:37 bmauclaire Exp $
 #
 
 #=========================================================================
@@ -324,7 +324,7 @@ if { [string compare $langage "french"] == "0" } {
    set caption(spcaudace,gui,spc_normahbeta)                "Normalisation par rapport à l'intensité de la raie H-beta"
    set caption(spcaudace,gui,spc_spectrum)                  "SPECTRUM : Synthèse de spectres"
    set caption(spcaudace,gui,spc_ajustplanck_w)             "Détermination de la température stellaire par ajustement de Planck"
-   set caption(spcaudace,gui,spc_periodogram)               "Construit le periodogramme et affiche la sinusoide des mesures issues d'un fichier ascii."
+   set caption(spcaudace,gui,spc_periodogram)               "Construit le periodogramme et affiche la sinusoide des mesures issues d'un fichier ascii"
 
    #--- Menu Aide ---#
    set caption(spcaudace,gui,spc_aide)                      "Aide"
