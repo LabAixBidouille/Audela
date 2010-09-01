@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise à jour $Id: autoguider.tcl,v 1.46 2010-08-17 20:16:55 michelpujol Exp $
+# Mise à jour $Id: autoguider.tcl,v 1.47 2010-09-01 20:19:55 robertdelmas Exp $
 #
 
 package provide autoguider 1.3
@@ -386,6 +386,7 @@ proc ::autoguider::startTool { { visuNo 1 } } {
    pack $private($visuNo,This) -fill y -side top
 
    #--- je change le bind du bouton droit de la souris
+   set private($visuNo,previousRightButtonBind) [ bind [::confVisu::getCanvas $visuNo] <ButtonPress-3> ]
    ::confVisu::createBindCanvas $visuNo <ButtonPress-3> "::autoguider::setOrigin $visuNo %x %y"
    #--- je change le bind du double-clic du bouton gauche de la souris
    ::confVisu::createBindCanvas $visuNo <Double-1> "::autoguider::setTargetCoord $visuNo %x %y"
@@ -465,7 +466,7 @@ proc ::autoguider::stopTool { visuNo } {
    [::confVisu::getCanvas $visuNo] delete autoguiderstar
 
    #--- je restaure le bind par defaut du bouton droit de la souris
-   ::confVisu::createBindCanvas $visuNo <ButtonPress-3> "default"
+   ::confVisu::createBindCanvas $visuNo <ButtonPress-3> $private($visuNo,previousRightButtonBind)
    #--- je restaure le bind par defaut du double-clic du bouton gauche de la souris
    ::confVisu::createBindCanvas $visuNo <Double-1> "default"
    ####--- je restaure le bind par defaut du bouton droit de la souris
