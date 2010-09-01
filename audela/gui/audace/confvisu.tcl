@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.145 2010-07-23 15:46:15 robertdelmas Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.146 2010-09-01 19:49:17 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -203,7 +203,13 @@ namespace eval ::confVisu {
       #--- je verifie que la visu existe
       if { [info commands "::visu$visuNo" ] == "::visu$visuNo" } {
 
-         #--- je ferme l'outil courant
+         #--- je sauvegarde le namespace du plugin courant des visu secondaires
+         if { $visuNo != "1" } {
+            set currentNamespace($visuNo) [ ::confVisu::getTool $visuNo ]
+            set conf(tool,visu$visuNo,currentNamespace) $currentNamespace($visuNo)
+         }
+
+         #--- je ferme le plugin courant
          if { [getTool $visuNo] != "" } {
             set result [::[getTool $visuNo]::stopTool $visuNo]
             if { $result == "-1" } {
@@ -232,7 +238,7 @@ namespace eval ::confVisu {
             Menubar_Delete $visuNo
          }
 
-         #--- je detruis tous les outils
+         #--- je detruis tous les plugins
          if { "$private($visuNo,This)" != "$audace(base).select" } {
             foreach pluginInstance $private($visuNo,pluginInstanceList) {
                $pluginInstance\::deletePluginInstance $visuNo
@@ -253,6 +259,7 @@ namespace eval ::confVisu {
 
          #--- je supprime les graphes des coupes
          ::sectiongraph::closeToplevel $visuNo
+
       }
 
       #--- j'initialise la variable de fermeture
@@ -484,7 +491,7 @@ namespace eval ::confVisu {
             } else {
                #--- je mets à jour le nom du fichier meme quand l'image ne
                #--- provient pas d'un fichier, mais d'une camera
-               #--- afin de permettre le rafraichissement des outils
+               #--- afin de permettre le rafraichissement des plugins
                #--- qui sont abonnes au listener addFilenameListener
                set hduNo $private($visuNo,currentHduNo)
                set private($visuNo,fitsHduList) ""
@@ -1568,7 +1575,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  stopTool
-   #     arrete l'outil courant
+   #     arrete le plugin courant
    #  parametres :
    #    visuNo: numero de la visu
    #------------------------------------------------------------
@@ -1589,23 +1596,23 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    #  deletePluginInstance
    #     supprime l'instance du plugin
-   #  @param  visuNo  numero de la visu
-   #  @param  toolName  nom de l'outil a supprimer
+   #  @param  visuNo    numero de la visu
+   #  @param  toolName  nom du plugin a supprimer
    #  @return void
    #------------------------------------------------------------
    proc deletePluginInstance { visuNo toolName } {
       variable private
 
-      #--- j'arrete l'outil si c'est l'outil courant
+      #--- j'arrete le plugin si c'est le plugin courant
       if { $private($visuNo,currentTool) == $toolName } {
          stopTool $visuNo
          set private($visuNo,currentTool) ""
       }
 
-      #--- je supprime l'instance
+      #--- je supprime l'instance du plugin
       namespace inscope $toolName deletePluginInstance $visuNo
 
-      #--- je supprime l'outil de la liste pluginInstanceList
+      #--- je supprime le plugin de la liste pluginInstanceList
       set index [lsearch -exact $private($visuNo,pluginInstanceList) $toolName]
       if { $index != -1 } {
           set private($visuNo,pluginInstanceList) [lreplace $private($visuNo,pluginInstanceList) $index $index]
@@ -1615,30 +1622,30 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  selectTool
-   #     arrete l'outil courant si le nouvel outil n'a pas la prop display=window"
-   #     demarrlugin le nouvel outil
+   #     arrete le plugin courant si le nouveau plugin n'a pas la prop display=window"
+   #     demarre le nouveau plugin
    #  parametres :
    #    visuNo: numero de la visu
-   #    toolName : nom de l'outil a lancer
+   #    toolName : nom du plugin a lancer
    #  Remarque:
-   #    si toolName="", alors l'outil courant est arrete. Aucun autre outil n'est pas demarré.
+   #    si toolName="", alors le plugin courant est arrete. Aucun autre plugin n'est pas demarre.
    #------------------------------------------------------------
    proc selectTool { visuNo toolName } {
       variable private
 
-      #--- j'arrete l'outil deja present
+      #--- j'arrete le plugin deja present
       set stopResult ""
       if { "$private($visuNo,currentTool)" != "" } {
-         #--- Cela veut dire qu'il y a deja un outil selectionne
+         #--- Cela veut dire qu'il y a deja un plugin selectionne
          if { $toolName != "" } {
             if { [$toolName\::getPluginProperty "display" ] != "window"
                && [$private($visuNo,currentTool)::getPluginProperty "display" ] != "window" } {
-               #--- Cela veut dire que l'utilisateur selectionne un nouvel outil
+               #--- Cela veut dire que l'utilisateur selectionne un nouveau plugin
                set stopResult [stopTool $visuNo]
             }
          } else {
-            #--- Cela veut dire que l'utilisateur veut arreter l'outil en cours
-            #--- j'arrete l'outil
+            #--- Cela veut dire que l'utilisateur veut arreter le plugin en cours
+            #--- j'arrete le plugin
             set stopResult [stopTool $visuNo]
          }
       }
@@ -1650,9 +1657,9 @@ namespace eval ::confVisu {
       }
 
       if { $toolName != "" } {
-         #--- je verifie que l'outils a deja une instance cree
+         #--- je verifie que le plugin a deja une instance cree
          if { [lsearch -exact $private($visuNo,pluginInstanceList) $toolName ] == -1 } {
-            #--- je cree une instance de l'outil
+            #--- je cree une instance du plugin
             set catchResult [catch {
                namespace inscope $toolName createPluginInstance $private($visuNo,This).tool $visuNo
             }]
@@ -1664,14 +1671,14 @@ namespace eval ::confVisu {
             #--- j'ajoute cette intance dans la liste
             lappend private($visuNo,pluginInstanceList) $toolName
          }
-         #--- je demarre l'outil
+         #--- je demarre le plugin
          namespace inscope $toolName startTool $visuNo
 
-         #--- je memorise le nom de l'outil en cours d'execution
+         #--- je memorise le nom du plugin en cours d'execution
          if { [$toolName\::getPluginProperty "display" ] != "window" } {
-            #--- j'affiche le panneau de l'outil dans la fentre principale
+            #--- j'affiche le plugin dans la fenetre principale
             grid $private($visuNo,This).tool -row 0 -column 0 -rowspan 2 -sticky ns
-            #--- je memorise le nom de l'outil
+            #--- je memorise le nom du plugin
             set private($visuNo,currentTool) $toolName
          }
       } else {
@@ -1717,7 +1724,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  getTool
-   #     retourne  le nom de l'outil courant
+   #     retourne  le nom du plugin courant
    #  parametres :
    #    visuNo: numero de la visu
    #------------------------------------------------------------
@@ -1870,7 +1877,7 @@ namespace eval ::confVisu {
       grid columnconfig $This 0 -weight 0
       grid columnconfig $This 1 -weight 1
 
-      #--- je masque la barre d'outil par defaut
+      #--- je masque la barre d'outils par defaut
       grid forget $This.bar
 
    }
@@ -2182,22 +2189,22 @@ namespace eval ::confVisu {
       Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,subfitgauss)" "subfitgauss $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,scar)" "scar $visuNo"
 
-      Menu           $visuNo "$caption(audace,menu,acquisition)"
-
-      #--- Affichage des plugins multivisu de type tool du menu deroulant Camera
-      set liste ""
-      foreach m [array names panneau menu_name,*] {
-         lappend liste [list "$panneau($m) " $m]
-      }
+      #--- Lancement automatique du dernier plugin charge
       set firstTool ""
-      set liste [lsort -dictionary $liste]
+      if { [ info exists ::conf(tool,visu$visuNo,currentNamespace) ] } {
+         set firstTool $::conf(tool,visu$visuNo,currentNamespace)
+         ::confVisu::selectTool $visuNo ::$firstTool
+      }
+
+      Menu           $visuNo "$caption(audace,menu,acquisition)"
+      #--- Affichage des plugins multivisu de type tool du menu deroulant Camera
       foreach m $liste {
          set m [lindex $m 1]
          scan "$m" "menu_name,%s" pluginName
          if { [ ::$pluginName\::getPluginProperty multivisu ] == "1" } {
+            #--- Lancement automatique du premier plugin
             if { $firstTool == "" } {
                set firstTool $pluginName
-               #--- Lancement automatique du premier outil de la liste
                ::confVisu::selectTool $visuNo ::$firstTool
             }
             if { [ ::$pluginName\::getPluginProperty function ] == "acquisition" } {
@@ -2207,23 +2214,11 @@ namespace eval ::confVisu {
       }
 
       Menu           $visuNo "$caption(audace,menu,aiming)"
-
       #--- Affichage des plugins multivisu de type tool du menu deroulant Telescope
-      set liste ""
-      foreach m [array names panneau menu_name,*] {
-         lappend liste [list "$panneau($m) " $m]
-      }
-      set firstTool ""
-      set liste [lsort -dictionary $liste]
       foreach m $liste {
          set m [lindex $m 1]
          scan "$m" "menu_name,%s" pluginName
          if { [ ::$pluginName\::getPluginProperty multivisu ] == "1" } {
-            if { $firstTool == "" } {
-               set firstTool $pluginName
-               #--- Lancement automatique du premier outil de la liste
-               ::confVisu::selectTool $visuNo ::$firstTool
-            }
             if { [ ::$pluginName\::getPluginProperty function ] == "aiming" } {
                Menu_Command $visuNo "$caption(audace,menu,aiming)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$pluginName"
             }
@@ -3406,7 +3401,7 @@ proc ::confVisu::createToolBar { visuNo } {
 
    if { [winfo exists $tkToolbar ] } {
       #--- la barre d'outils existe deja
-      grid $private($visuNo,This).bar  -row 0 -column 1 -sticky ew
+      grid $private($visuNo,This).bar -row 0 -column 1 -sticky ew
       return
    }
 
@@ -3431,7 +3426,7 @@ proc ::confVisu::createToolBar { visuNo } {
 
 #------------------------------------------------------------
 # ::confVisu::deleteToolBar
-#    supprime la barre d'outil
+#    supprime la barre d'outils
 #
 #------------------------------------------------------------
 proc ::confVisu::deleteToolBar { visuNo } {
@@ -3442,7 +3437,7 @@ proc ::confVisu::deleteToolBar { visuNo } {
 
 #------------------------------------------------------------
 # ::confVisu::showToolBar
-#    affiche ou masque la barre d'outil
+#    affiche ou masque la barre d'outils
 # parameters
 #    visuNo : numero de la visu
 #    state  : 1= affiche, 0= masque
@@ -3452,7 +3447,7 @@ proc ::confVisu::showToolBar { visuNo state} {
    variable private
 
    if { $state == 1 } {
-      grid $private($visuNo,This).bar  -row 0 -column 1 -sticky ew
+      grid $private($visuNo,This).bar -row 0 -column 1 -sticky ew
    } else {
       grid forget $private($visuNo,This).bar
    }
@@ -3460,7 +3455,7 @@ proc ::confVisu::showToolBar { visuNo state} {
 
 #------------------------------------------------------------
 # ::confVisu::getToolBar
-#    retourne le nom TK de la barre d'outil
+#    retourne le nom TK de la barre d'outils
 #
 #------------------------------------------------------------
 proc ::confVisu::getToolBar { visuNo } {
