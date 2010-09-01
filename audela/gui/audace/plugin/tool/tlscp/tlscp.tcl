@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise à jour $Id: tlscp.tcl,v 1.45 2010-08-28 06:44:37 robertdelmas Exp $
+# Mise à jour $Id: tlscp.tcl,v 1.46 2010-09-01 20:19:15 robertdelmas Exp $
 #
 
 #============================================================
@@ -617,6 +617,7 @@ proc ::tlscp::startTool { visuNo } {
    ::telescope::afficheCoord
 
    #--- je change le bind du bouton droit de la souris
+   set private($visuNo,previousRightButtonBind) [ bind [::confVisu::getCanvas $visuNo] <ButtonPress-3> ]
    ::confVisu::createBindCanvas $visuNo <ButtonPress-3> "::tlscp::setOrigin $visuNo %x %y"
    #--- je change le bind du double-clic du bouton gauche de la souris
    ::confVisu::createBindCanvas $visuNo <Double-1> "::tlscp::setTargetCoord $visuNo %x %y"
@@ -654,7 +655,7 @@ proc ::tlscp::stopTool { visuNo } {
    ::tlscp::deleteTarget $visuNo
 
    #--- je restaure le bind par defaut du bouton droit de la souris
-   ::confVisu::createBindCanvas $visuNo <ButtonPress-3> "default"
+   ::confVisu::createBindCanvas $visuNo <ButtonPress-3> $private($visuNo,previousRightButtonBind)
    #--- je restaure le bind par defaut du double-clic du bouton gauche de la souris
    ::confVisu::createBindCanvas $visuNo <Double-1> "default"
 
