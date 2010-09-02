@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.146 2010-09-01 19:49:17 robertdelmas Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.147 2010-09-02 16:55:39 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -76,9 +76,9 @@ namespace eval ::confVisu {
 
       if { $base != "" } {
          set private($visuNo,This) $base
-         #--- pas besoin de creer de toplevel
+         #--- pas besoin de creer de toplevel (visu principale)
       } else {
-         #--- creation de la fenetre toplevel
+         #--- creation de la fenetre toplevel (visu secondaires)
          set private($visuNo,This) ".visu$visuNo"
          ::confVisu::createToplevel $visuNo $private($visuNo,This)
       }
@@ -209,14 +209,16 @@ namespace eval ::confVisu {
             set conf(tool,visu$visuNo,currentNamespace) $currentNamespace($visuNo)
          }
 
-         #--- je ferme le plugin courant
-         if { [getTool $visuNo] != "" } {
-            set result [::[getTool $visuNo]::stopTool $visuNo]
-            if { $result == "-1" } {
-               tk_messageBox -title "$caption(confVisu,attention)" -icon error \
-                  -message [format $caption(confVisu,fermeture_impossible) [ [ ::confVisu::getTool $visuNo ]::getPluginTitle ] ]
-               set private($visuNo,closeEnCours) "0"
-               return
+         #--- je ferme le plugin courant des visu secondaires
+         if { $visuNo != "1" } {
+            if { [getTool $visuNo] != "" } {
+               set result [::[getTool $visuNo]::stopTool $visuNo]
+               if { $result == "-1" } {
+                  tk_messageBox -title "$caption(confVisu,attention)" -icon error \
+                     -message [format $caption(confVisu,fermeture_impossible) [ [ ::confVisu::getTool $visuNo ]::getPluginTitle ] ]
+                  set private($visuNo,closeEnCours) "0"
+                  return
+               }
             }
          }
 
@@ -1292,12 +1294,12 @@ namespace eval ::confVisu {
       set bufNo [visu$visuNo buf]
       if { [ buf$bufNo imageready ] == "1" } {
          if { $private($visuNo,fullscreen) == "1" } {
-            ##if { [::Image::isAnimatedGIF "$private($visuNo,lastFileName)"] == 1 } {
-            ##   #--- Ne fonctionne que pour des gif animes (type Image en dur dans le script), pas pour des videos
-            ##   set private(gif_anime) "1"
-            ##   ::FullScreen::showFiles $visuNo $private($visuNo,hCanvas) $directory [ list [ list $filename "Image" ] ]
-            ##} else {
-            ##}
+            ###if { [::Image::isAnimatedGIF "$private($visuNo,lastFileName)"] == 1 } {
+            ###   #--- Ne fonctionne que pour des gif animes (type Image en dur dans le script), pas pour des videos
+            ###   set private(gif_anime) "1"
+            ###   ::FullScreen::showFiles $visuNo $private($visuNo,hCanvas) $directory [ list [ list $filename "Image" ] ]
+            ###} else {
+            ###}
             set private($visuNo,tempCrosshairState) $private($visuNo,crosshairstate)
             set private($visuNo,crosshairstate) "0"
             ::FullScreen::showBuffer $visuNo $private($visuNo,hCanvas)
