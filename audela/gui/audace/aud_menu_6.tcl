@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_6.tcl
 # Description : Script regroupant les fonctionnalites du menu Outils
-# Mise à jour $Id: aud_menu_6.tcl,v 1.6 2010-02-20 07:53:55 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_6.tcl,v 1.7 2010-09-03 16:57:13 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -12,9 +12,11 @@ namespace eval ::audace {
    # Efface l'interface graphique de l'outil affichee dans la visu
    #
    proc ::audace::pasOutil { visuNo } {
+      variable private
       global audace
 
       ::confVisu::stopTool $visuNo
+      set ::confVisu::private($visuNo,currentTool) ""
    }
 
 ###################################################################################
