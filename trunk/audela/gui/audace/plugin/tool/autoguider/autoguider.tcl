@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise à jour $Id: autoguider.tcl,v 1.47 2010-09-01 20:19:55 robertdelmas Exp $
+# Mise à jour $Id: autoguider.tcl,v 1.48 2010-09-04 19:29:15 michelpujol Exp $
 #
 
 package provide autoguider 1.3
@@ -141,6 +141,8 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
    set private($visuNo,mountEnabled)      0
    set private($visuNo,acquisitionState)  0
    set private($visuNo,acquisitionResult) ""
+   set private($visuNo,origin,x)          [lindex $::conf(autoguider,originCoord) 0]
+   set private($visuNo,origin,y)          [lindex $::conf(autoguider,originCoord) 1]
    set private($visuNo,flux)              "0"
    set private($visuNo,dx)                "0.00"
    set private($visuNo,dy)                "0.00"
@@ -151,7 +153,8 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
    set private($visuNo,updateAxis)        "0"
    set private($visuNo,camBufNo)          "0"
    set private($visuNo,cumulCounter)      "0"
-   ###set private($visuNo,cumulFileName)     "autoguider_cumul_visu$visuNo"
+   set private($visuNo,currentMouseItem)          ""       ; #--- item en cous de deplacement avec la souris
+   set private($visuNo,hCanvas)           [::confVisu::getCanvas $visuNo]
 
    set private($visuNo,redColor)     "#ff9582" ; #--- rouge tendre
 
@@ -232,12 +235,21 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
 
    #--- Frame pour l'autoguidage
    frame $This.suivi -borderwidth 2 -relief ridge
-      checkbutton $This.suivi.but_autovisu -text "$caption(autoguider,image)" \
-         -variable ::conf(autoguider,showImage) \
-         -command "::autoguider::changeShowImage $visuNo"
-      checkbutton $This.suivi.but_showtarget -text "$caption(autoguider,cible)" \
-         -variable ::conf(autoguider,showTarget) \
-         -command "::autoguider::setShowTarget $visuNo"
+      ###checkbutton $This.suivi.but_autovisu -text "$caption(autoguider,image)" \
+      ###   -variable ::conf(autoguider,showImage) \
+      ###   -command "::autoguider::changeShowImage $visuNo"
+      ###checkbutton $This.suivi.but_showtarget -text "$caption(autoguider,cible)" \
+      ###   -variable ::conf(autoguider,showTarget) \
+      ###   -command "::autoguider::setShowTarget $visuNo"
+      Button $This.suivi.origin_but -text "Consigne" \
+         -helptext "Appliquer les modifications" \
+         -command "::autoguider::setOriginWithEntry $visuNo "
+      entry $This.suivi.origin_x  -textvariable ::autoguider::private($visuNo,origin,x) \
+         -width 6 \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
+      entry $This.suivi.origin_y  -textvariable ::autoguider::private($visuNo,origin,y) \
+         -width 6 \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
       checkbutton $This.suivi.but_showaxis -text "$caption(autoguider,axe_AD)" \
          -variable ::conf(autoguider,showAlphaDeltaAxis) \
          -command "::autoguider::setShowAlphaDeltaAxis $visuNo"
@@ -262,23 +274,26 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
       label $This.suivi.label_clock  -text "$caption(autoguider,intervalle)"
       label $This.suivi.lab_clock    -textvariable ::autoguider::private($visuNo,interval) -justify right
 
-      grid $This.suivi.but_autovisu   -row 0 -column 0 -columnspan 3 -sticky {}
-      grid $This.suivi.but_showtarget -row 1 -column 0 -columnspan 3 -sticky {}
-      grid $This.suivi.but_showaxis   -row 2 -column 0 -columnspan 3 -sticky {}
-      grid $This.suivi.montEnabled    -row 3 -column 0 -columnspan 3 -sticky {}
-      grid $This.suivi.fluxLabel      -row 4 -column 0 -columnspan 2 -sticky w
-      grid $This.suivi.fluxValue      -row 4 -column 2 -sticky w
-      grid $This.suivi.label_d        -row 5 -column 0 -sticky w
-      grid $This.suivi.dx             -row 5 -column 1 -sticky w
-      grid $This.suivi.dy             -row 5 -column 2 -sticky w
-      grid $This.suivi.label_delay    -row 6 -column 0 -sticky w
-      grid $This.suivi.delay_alpha    -row 6 -column 1 -sticky w
-      grid $This.suivi.delay_delta    -row 6 -column 2 -sticky w
-      grid $This.suivi.label_clock    -row 7 -column 0 -sticky w
-      grid $This.suivi.lab_clock      -row 7 -column 1 -columnspan 2
-      grid $This.suivi.search         -row 8 -column 0 -columnspan 3 -sticky ew
-      grid $This.suivi.clear          -row 9 -column 0 -columnspan 3 -sticky ew
-      grid $This.suivi.center         -row 10 -column 0 -columnspan 3 -sticky ew
+      ###grid $This.suivi.but_autovisu   -row 0 -column 0 -columnspan 3 -sticky {}
+      ###grid $This.suivi.but_showtarget -row 1 -column 0 -columnspan 3 -sticky {}
+      grid $This.suivi.origin_but     -row 0 -column 0 -sticky w
+      grid $This.suivi.origin_x       -row 0 -column 1 -sticky w
+      grid $This.suivi.origin_y       -row 0 -column 2 -sticky w
+      grid $This.suivi.but_showaxis   -row 1 -column 0 -columnspan 3 -sticky {}
+      grid $This.suivi.montEnabled    -row 2 -column 0 -columnspan 3 -sticky {}
+      grid $This.suivi.fluxLabel      -row 3 -column 0 -columnspan 2 -sticky w
+      grid $This.suivi.fluxValue      -row 3 -column 2 -sticky w
+      grid $This.suivi.label_d        -row 4 -column 0 -sticky w
+      grid $This.suivi.dx             -row 4 -column 1 -sticky w
+      grid $This.suivi.dy             -row 4 -column 2 -sticky w
+      grid $This.suivi.label_delay    -row 5 -column 0 -sticky w
+      grid $This.suivi.delay_alpha    -row 5 -column 1 -sticky w
+      grid $This.suivi.delay_delta    -row 5 -column 2 -sticky w
+      grid $This.suivi.label_clock    -row 6 -column 0 -sticky w
+      grid $This.suivi.lab_clock      -row 6 -column 1 -columnspan 2
+      grid $This.suivi.search         -row 7 -column 0 -columnspan 3 -sticky ew
+      grid $This.suivi.clear          -row 8 -column 0 -columnspan 3 -sticky ew
+      grid $This.suivi.center         -row 9 -column 0 -columnspan 3 -sticky ew
       grid $This.suivi -sticky nsew
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $This
@@ -371,8 +386,6 @@ proc ::autoguider::adaptPanel { visuNo args } {
    if { [llength $private($visuNo,targetCoord)] != 2 } {
       set private($visuNo,targetCoord) $::conf(autoguider,originCoord)
    }
-
-
 }
 
 #------------------------------------------------------------
@@ -385,16 +398,15 @@ proc ::autoguider::startTool { { visuNo 1 } } {
    #--- j'affiche la fenetre de l'outil d'autoguidage
    pack $private($visuNo,This) -fill y -side top
 
-   #--- je change le bind du bouton droit de la souris
-   set private($visuNo,previousRightButtonBind) [ bind [::confVisu::getCanvas $visuNo] <ButtonPress-3> ]
-   ::confVisu::createBindCanvas $visuNo <ButtonPress-3> "::autoguider::setOrigin $visuNo %x %y"
+   #--- je cree les bind pour les items "::autoguider"
+   $private($visuNo,hCanvas) bind "::autoguider::axis" <ButtonPress-1>   "::autoguider::onMousePressButton1 $visuNo %W %x %y"
+   $private($visuNo,hCanvas) bind "::autoguider::axis" <B1-Motion>       "::autoguider::onMouseMoveButton1  $visuNo %W %x %y"
+   $private($visuNo,hCanvas) bind "::autoguider::axis" <ButtonRelease-1> "::autoguider::onMouseReleaseButton1 $visuNo %W %x %y"
+   $private($visuNo,hCanvas) bind "::autoguider::axis" <Enter> "::autoguider::onMouseEnter $visuNo"
+   $private($visuNo,hCanvas) bind "::autoguider::axis" <Leave> "::autoguider::onMouseLeave $visuNo"
+
    #--- je change le bind du double-clic du bouton gauche de la souris
    ::confVisu::createBindCanvas $visuNo <Double-1> "::autoguider::setTargetCoord $visuNo %x %y"
-
-   ####--- je change le bind du bouton droit de la souris sur le canvas
-   ###::confVisu::addBindDisplay  $visuNo <Button-3> "::autoguider::setOrigin $visuNo %x %y"
-   ####--- je change le bind du double-clic du bouton gauche de la souris sur le canvas
-   ###::confVisu::createBindCanvas $visuNo <Double-Button-1> "::autoguider::setTargetCoord $visuNo %x %y"
 
    #--- j'active la mise a jour automatique de l'affichage quand on change de camera
    ::confVisu::addCameraListener $visuNo "::autoguider::adaptPanel $visuNo"
@@ -463,16 +475,17 @@ proc ::autoguider::stopTool { visuNo } {
    ::autoguider::deleteAlphaDeltaAxis $visuNo
 
    #--- je masque les marques des etoiles
-   [::confVisu::getCanvas $visuNo] delete autoguiderstar
+   $private($visuNo,hCanvas) delete autoguiderstar
 
-   #--- je restaure le bind par defaut du bouton droit de la souris
-   ::confVisu::createBindCanvas $visuNo <ButtonPress-3> $private($visuNo,previousRightButtonBind)
    #--- je restaure le bind par defaut du double-clic du bouton gauche de la souris
    ::confVisu::createBindCanvas $visuNo <Double-1> "default"
-   ####--- je restaure le bind par defaut du bouton droit de la souris
-   ###::confVisu::removeBindDisplay  $visuNo <Button-3> "::autoguider::setOrigin $visuNo %x %y"
-   ####--- je restaure le bind par defaut du double-clic du bouton gauche de la souris
-   ###::confVisu::createBindCanvas $visuNo <Double-Button-1> "default"
+   #--- je restaure le bind par defaut du double-clic du bouton gauche de la souris
+   ::confVisu::createBindCanvas $visuNo <Double-Button-1> "default"
+
+   #--- je supprime les binds des items "::autoguider"
+   $private($visuNo,hCanvas) bind "::autoguider::axis"  <ButtonPress-1>     ""
+   $private($visuNo,hCanvas) bind "::autoguider::axis"  <B1-Motion>         ""
+   $private($visuNo,hCanvas) bind "::autoguider::axis"  <ButtonRelease-1>   ""
 
    #--- je masque le panneau
    pack forget $private($visuNo,This)
@@ -574,7 +587,7 @@ proc ::autoguider::startSearch { visuNo } {
 proc ::autoguider::clearSearchStar { visuNo } {
    variable private
 
-   [::confVisu::getCanvas $visuNo] delete autoguiderstar
+   $private($visuNo,hCanvas) delete autoguiderstar
 }
 
 #------------------------------------------------------------
@@ -710,9 +723,10 @@ proc ::autoguider::callbackAcquisition { visuNo command args } {
                ###visu1 disp
             }
             #--- j'affiche les axes si ce n'est pas deja fait
-            if {  [$private($visuNo,hCanvas) gettags axis ] == "" } {
+            if {  [$private($visuNo,hCanvas) gettags "::autoguider::axis" ] == "" } {
                createAlphaDeltaAxis $visuNo $::conf(autoguider,originCoord) $::conf(autoguider,angle)
             }
+            #--- j'affiche le temps ecoulee depuis l'image precedente
             set private($visuNo,interval) [format "%###0d ms" [lindex $args 0]]
          }
          "error" {
@@ -779,12 +793,23 @@ proc ::autoguider::stopAcquisition { visuNo } {
 
       #--- je supprime l'association du bouton escape
       bind all <Key-Escape> ""
-      #--- j'efface le fichier de cumul
-      ###file delete -force [file join $::audace(rep_images) $private($visuNo,cumulFileName)]]
       #--- j'initialise la variable
       set private($visuNo,acquisitionState) 0
-
    }
+}
+
+##------------------------------------------------------------
+# setOriginWithEntry
+#     initialise la position de la consigne
+#
+# @param visuNo    : numero de la visu courante
+# @param x     : abcisse de l'origine des axes (referentiel ecran)
+# @param y     : ordonnee de l'origine des axes (referentiel ecran)
+#------------------------------------------------------------
+proc ::autoguider::setOriginWithEntry { visuNo } {
+   variable private
+   setOrigin $visuNo [list $private($visuNo,origin,x) $private($visuNo,origin,y)]
+   return
 }
 
 ##------------------------------------------------------------
@@ -795,21 +820,52 @@ proc ::autoguider::stopAcquisition { visuNo } {
 # @param x     : abcisse de l'origine des axes (referentiel ecran)
 # @param y     : ordonnee de l'origine des axes (referentiel ecran)
 #------------------------------------------------------------
-proc ::autoguider::setOrigin { visuNo x y } {
+proc ::autoguider::setOrigin { visuNo coord } {
    variable private
 
-   #--- je convertis en coordonnes du referentiel buffer
-   set coord [::confVisu::screen2Canvas $visuNo [list $x $y]]
-   set coord [::confVisu::canvas2Picture $visuNo $coord]
+   set xc [lindex $coord 0 ]
+   set yc [lindex $coord 1 ]
 
-   set ::conf(autoguider,originCoord) $coord
+   set margin 8
+   set windowCoords [::confVisu::getWindow $visuNo]
+   if { $windowCoords == [list 0 0 0 0] } {
+      #--- il n'y a pas d'image dans le buffer
+      #--- j'efface la consigne, sans modifier ses ccordonnees
+      deleteAlphaDeltaAxis $visuNo
+   } else {
+      #--- il ya  une image dans le buffer
+      #--- je verifie que la consigne est dans l'image
+      set xmin [expr [lindex $windowCoords 0] + $margin]
+      set ymin [expr [lindex $windowCoords 1] + $margin]
+      set xmax [expr [lindex $windowCoords 2] - $margin]
+      set ymax [expr [lindex $windowCoords 3] - $margin]
+      if { $xc < $xmin || $xc > $xmax || $yc < $ymin || $yc >$ymax } {
+         #--- la consigne n'est pas dans l'image
+         #--- message sonore
+         bell
+         #--- je verifie que les coordonnes precedentes de la consigne sont dans l"image
+         set xc [lindex $::conf(autoguider,originCoord) 0 ]
+         set yc [lindex $::conf(autoguider,originCoord) 1 ]
+         if { $xc < $xmin || $xc > $xmax || $yc < $ymin || $yc >$ymax } {
+            #--- je place la consigne au centre de l'image
+            set ::conf(autoguider,originCoord) [list [expr ($xmax - $xmin)/2.0 ] [expr ($ymax - $ymin)/2.0 ] ]
+         }
+      } else {
+         #--- je memorise les nouvelles coordonnees de la consigne
+         set ::conf(autoguider,originCoord) $coord
+      }
 
-   #--- je dessine les axes sur la nouvelle origine
-   createAlphaDeltaAxis $visuNo $::conf(autoguider,originCoord) $::conf(autoguider,angle)
-
-   ::camera::setParam [::confVisu::getCamItem $visuNo] "originCoord" $::conf(autoguider,originCoord)
-   return -code break
+      #--- je dessine les axes sur la nouvelle origine
+      createAlphaDeltaAxis $visuNo $::conf(autoguider,originCoord) $::conf(autoguider,angle)
+      #--- je met a ajour les entry
+      set private($visuNo,origin,x)          [lindex $::conf(autoguider,originCoord) 0]
+      set private($visuNo,origin,y)          [lindex $::conf(autoguider,originCoord) 1]
+      #--- je met a jour le thread de la camera
+      ::camera::setParam [::confVisu::getCamItem $visuNo] "originCoord" $::conf(autoguider,originCoord)
+   }
+   return
 }
+
 
 ##------------------------------------------------------------
 # setTargetCoord
@@ -1052,15 +1108,20 @@ proc ::autoguider::createAlphaDeltaAxis { visuNo originCoord angle } {
 
    #--- je supprime les axes s'ils existent deja
    deleteAlphaDeltaAxis $visuNo
+   #-- je verifie la presence d'une image dans le buffer
+   set bufNo [::confVisu::getBufNo $visuNo ]
+   if { [buf$bufNo imageready] == 0 } {
+      return
+   }
    #--- je dessine l'axe alpha
    drawAxis $visuNo $originCoord $angle "Est" "West"
    #--- je dessine l'axe delta
    drawAxis $visuNo $originCoord [expr $angle+90] "South" "North"
 
    if { $::conf(autoguider,showAlphaDeltaAxis) == "1" } {
-      $private($visuNo,hCanvas)  itemconfigure "axis"  -state normal
+      $private($visuNo,hCanvas)  itemconfigure "::autoguider::axis"  -state normal
    } else {
-      $private($visuNo,hCanvas)  itemconfigure "axis"  -state hidden
+      $private($visuNo,hCanvas)  itemconfigure "::autoguider::axis"  -state hidden
    }
 }
 
@@ -1075,7 +1136,7 @@ proc ::autoguider::deleteAlphaDeltaAxis { visuNo } {
    variable private
 
    #--- je supprime les axes
-   $private($visuNo,hCanvas) delete axis
+   $private($visuNo,hCanvas) delete "::autoguider::axis"
 }
 
 #------------------------------------------------------------
@@ -1093,20 +1154,16 @@ proc ::autoguider::drawAxis { visuNo coord angle label1 label2} {
    variable private
    global audace
 
-   set bufNo [::confVisu::getBufNo $visuNo ]
-
-   if { [buf$bufNo imageready] == 0 } {
-      return
-   }
-
    #--- j'inverse le signe de l'angle
    ###set angle [expr $angle * (-1) ]
    set margin 8
+   set vide   2
    set windowCoords [::confVisu::getWindow $visuNo]
    set xmin [expr [lindex $windowCoords 0] + $margin]
    set ymin [expr [lindex $windowCoords 1] + $margin]
    set xmax [expr [lindex $windowCoords 2] - $margin]
    set ymax [expr [lindex $windowCoords 3] - $margin]
+
 
    set x  [lindex $coord 0]
    set y  [lindex $coord 1]
@@ -1119,20 +1176,30 @@ proc ::autoguider::drawAxis { visuNo coord angle label1 label2} {
       if { [expr sin($angle*3.14159265359/180)] >= 0 } {
          set y1 $ymin
          set y2 $ymax
+         set yc1 [expr $y - $vide]
+         set yc2 [expr $y + $vide]
       } else {
          set y1 $ymax
          set y2 $ymin
+         set yc1 [expr $y + $vide]
+         set yc2 [expr $y - $vide]
       }
       set x1 $x
       set x2 $x
+      set xc1 $x
+      set xc2 $x
    } elseif { $a > 0.00000001 || $a < -0.00000001 } {
       #--- l'axe n'est ni vertical ni horizontal
       if { [expr sin($angle*3.14159265359/180)] >= 0 } {
          set y1 $ymin
          set y2 $ymax
+         set yc1 [expr $y - $vide]
+         set yc2 [expr $y + $vide]
       } else {
          set y1 $ymax
          set y2 $ymin
+         set yc1 [expr $y + $vide]
+         set yc2 [expr $y - $vide]
       }
       set x1 [expr ($y1 - $b) / $a ]
       if { $x1 < $xmin } {
@@ -1150,26 +1217,46 @@ proc ::autoguider::drawAxis { visuNo coord angle label1 label2} {
          set x2 $xmax
          set y2 [expr $a * $x2 + $b]
       }
+      set xc1 [expr ($yc1 - $b) / $a ]
+      set xc2 [expr ($yc2 - $b) / $a ]
+
    } else {
       #--- l'axe est horizontal
       if { [expr cos($angle*3.14159265359/180)] >= 0 } {
          set x1 $xmin
          set x2 $xmax
+         set xc1 [expr $x - $vide]
+         set xc2 [expr $x + $vide]
       } else {
          set x1 $xmax
          set x2 $xmin
+         set xc1 [expr $x + $vide]
+         set xc2 [expr $x - $vide]
       }
       set y1 $y
       set y2 $y
+      set yc1 $y
+      set yc2 $y
    }
 
    #--- je transforme les coordonnees dans le repere canvas
    set coord1 [::confVisu::picture2Canvas $visuNo [list $x1 $y1]]
    set coord2 [::confVisu::picture2Canvas $visuNo [list $x2 $y2]]
+   set cc1 [::confVisu::picture2Canvas $visuNo [list $xc1 $yc1]]
+   set cc2 [::confVisu::picture2Canvas $visuNo [list $xc2 $yc2]]
    #--- je trace l'axe et les libelles des extremites
-   $private($visuNo,hCanvas) create line [lindex $coord1 0] [lindex $coord1 1] [lindex $coord2 0] [lindex $coord2 1] -fill $::audace(color,drag_rectangle) -tag axis -state normal
-   $private($visuNo,hCanvas) create text [lindex $coord1 0] [lindex $coord1 1] -text $label1 -tag axis  -state normal -fill $::audace(color,drag_rectangle)
-   $private($visuNo,hCanvas) create text [lindex $coord2 0] [lindex $coord2 1] -text $label2 -tag axis  -state normal -fill $::audace(color,drag_rectangle)
+   ###$private($visuNo,hCanvas) create line [lindex $coord1 0] [lindex $coord1 1] [lindex $coord2 0] [lindex $coord2 1] \
+   ###   -fill $::audace(color,drag_rectangle) -tag "::autoguider::axis" -state normal \
+   ###   -activewidth 4 -width 1
+   $private($visuNo,hCanvas) create line [lindex $cc1 0] [lindex $cc1 1] [lindex $coord1 0] [lindex $coord1 1] \
+      -fill $::audace(color,drag_rectangle) -tag "::autoguider::axis" -state normal \
+      -activewidth 3 -width 1
+   $private($visuNo,hCanvas) create line [lindex $cc2 0] [lindex $cc2 1] [lindex $coord2 0] [lindex $coord2 1] \
+      -fill $::audace(color,drag_rectangle) -tag "::autoguider::axis" -state normal \
+      -activewidth 3 -width 1
+
+   $private($visuNo,hCanvas) create text [lindex $coord1 0] [lindex $coord1 1] -text $label1 -tag "::autoguider::axis"  -state normal -fill $::audace(color,drag_rectangle)
+   $private($visuNo,hCanvas) create text [lindex $coord2 0] [lindex $coord2 1] -text $label2 -tag "::autoguider::axis"  -state normal -fill $::audace(color,drag_rectangle)
 }
 
 #------------------------------------------------------------
@@ -1179,26 +1266,9 @@ proc ::autoguider::drawAxis { visuNo coord angle label1 label2} {
 proc ::autoguider::setShowAlphaDeltaAxis { visuNo } {
    variable private
 
-   createAlphaDeltaAxis $visuNo $::conf(autoguider,originCoord) $::conf(autoguider,angle)
+   #--- j'affiche la consigne
+   setOrigin $visuNo $::conf(autoguider,originCoord)
 
-   ###if { $::conf(autoguider,showAlphaDeltaAxis) == "1" } {
-   ###   #--- je cree les axes, au cas ou il n'auraient pas ete crees par startTool faute d'image dans la visu
-   ###   if {  [$private($visuNo,hCanvas) gettags axis ] == "" } {
-   ###      createAlphaDeltaAxis $visuNo $::conf(autoguider,originCoord) $::conf(autoguider,angle)
-   ###   }
-   ###   $private($visuNo,hCanvas)  itemconfigure "axis"  -state normal
-   ###
-   ###} else {
-   ###   $private($visuNo,hCanvas)  itemconfigure "axis"  -state hidden
-   ###}
-
-   ###if { $::conf(autoguider,showAlphaDeltaAxis) == "0" } {
-   ###   #--- delete axis
-   ###   deleteAlphaDeltaAxis $visuNo
-   ###} else {
-   ###   #--- create axis
-   ###   createAlphaDeltaAxis $visuNo $::conf(autoguider,originCoord) $::conf(autoguider,angle)
-   ###}
 }
 
 #------------------------------------------------------------
@@ -1300,6 +1370,140 @@ proc ::autoguider::onChangeSubWindow { visuNo args } {
    moveTarget $visuNo $private($visuNo,targetCoord)
 }
 
+
+
+##------------------------------------------------------------
+# onMousePressButton1
+#   clique sur l'origine avec la souris
+#
+# @param visuNo  numero de la visu courante
+# @param w       handle du canvas
+# @param x       abcisse de la souris (referentiel ecran)
+# @param y       ordonnee de la souris (referentiel ecran)
+# @return  null
+#------------------------------------------------------------
+proc ::autoguider::onMouseEnter { visuNo  } {
+   variable private
+
+     $private($visuNo,hCanvas) configure -cursor hand2
+}
+
+proc ::autoguider::onMouseLeave { visuNo  } {
+   variable private
+
+     $private($visuNo,hCanvas) configure -cursor crosshair
+}
+
+
+##------------------------------------------------------------
+# onMousePressButton1
+#   clique sur l'origine avec la souris
+#
+# @param visuNo  numero de la visu courante
+# @param w       handle du canvas
+# @param x       abcisse de la souris (referentiel ecran)
+# @param y       ordonnee de la souris (referentiel ecran)
+# @return  null
+#------------------------------------------------------------
+proc ::autoguider::onMousePressButton1 { visuNo w x y } {
+   variable private
+
+   #--- je verifie qu'une image est presente dans le buffer
+   set bufNo [::confVisu::getBufNo $visuNo ]
+   if { [buf$bufNo imageready] == 0 } {
+      return
+   }
+
+   set tags [$w itemcget current -tags]
+   #--- je recupere le type de l'item (deuxieme tag)
+   set typeItem [lindex $tags 0]
+   switch $typeItem  {
+      "::autoguider::axis" {
+         $private($visuNo,hCanvas) configure -cursor hand2
+         set x [$w canvasx $x]
+         set y [$w canvasy $y]
+         set private($visuNo,currentx)       $x
+         set private($visuNo,currenty)       $y
+         set private($visuNo,startx)         $x
+         set private($visuNo,starty)         $y
+         set private($visuNo,currentMouseItem) $typeItem
+      }
+   }
+}
+
+##------------------------------------------------------------
+# onMouseMoveButton1
+#   deplace le cusrseur la souris
+#
+# @param visuNo  numero de la visu courante
+# @param w       handle du canvas
+# @param x       abcisse de la souris (referentiel ecran)
+# @param y       ordonnee de la souris (referentiel ecran)
+# @return  null
+#------------------------------------------------------------
+proc ::autoguider::onMouseMoveButton1 { visuNo w x y } {
+   variable private
+
+   switch $private($visuNo,currentMouseItem) {
+      "::autoguider::axis" {
+         #--- la consigne est selectionnee
+         set x [$w canvasx $x]
+         set y [$w canvasy $y]
+         set dx [expr {$x - $private($visuNo,currentx)}]
+         set dy [expr {$y - $private($visuNo,currenty)}]
+         set private($visuNo,currentx) $x
+         set private($visuNo,currenty) $y
+         $w move "::autoguider::axis" $dx $dy
+      }
+      default {
+         #--- la consigne n'est pas selectionnee
+         ::confVisu::onMotionButton1 $visuNo $x $y
+         return
+      }
+   }
+}
+
+##------------------------------------------------------------
+# onMouseReleaseButton1
+#   deplace le cusrseur la souris
+#
+# @param visuNo  numero de la visu courante
+# @param w       handle du canvas
+# @param x       abcisse de la souris (referentiel ecran)
+# @param y       ordonnee de la souris (referentiel ecran)
+# @return  null
+#------------------------------------------------------------
+proc ::autoguider::onMouseReleaseButton1 { visuNo w x y } {
+   variable private
+
+   switch $private($visuNo,currentMouseItem) {
+      "::autoguider::axis" {
+         #--- la consigne est selectionnee
+
+         #--- je calcule les coordonnees du centre de l'origine dans l'image
+         set coord [::confVisu::picture2Canvas $visuNo $::conf(autoguider,originCoord)]
+         set moveCoord [::confVisu::screen2Canvas $visuNo [list [expr $x - $private($visuNo,startx)] [expr $y - $private($visuNo,starty)] ] ]
+         set coord [list [expr [lindex $coord 0] + [lindex $moveCoord 0]] [expr [lindex $coord 1] + [lindex $moveCoord 1] ] ]
+
+
+         set coord [::confVisu::picture2Canvas $visuNo $::conf(autoguider,originCoord)]
+         set moveCoord [::confVisu::screen2Canvas $visuNo [list [expr $x - $private($visuNo,startx)] [expr $y - $private($visuNo,starty)] ] ]
+         set coord [list [expr [lindex $coord 0] + [lindex $moveCoord 0]] [expr [lindex $coord 1] + [lindex $moveCoord 1] ] ]
+
+         set coord [::confVisu::canvas2Picture $visuNo $coord]
+         setOrigin $visuNo $coord
+
+         #--- je libere le mouvement manuel du widget
+         set private($visuNo,currentMouseItem) ""
+      }
+      default {
+         #--- la consigne n'est pas selectionnee, j'appelle le traitement par defaut
+         ::confVisu::onReleaseButton1 $visuNo $x $y
+         return
+      }
+   }
+}
+
 #------------------------------------------------------------
 #  setMountEnabled
 #     active ou descative l'envoi des commandes de guidage a la monture
@@ -1344,7 +1548,7 @@ proc ::autoguider::selectBinning { visuNo } {
    set camItem [::confVisu::getCamItem $visuNo]
    set camNo   [::confCam::getCamNo $camItem ]
 
-   #--- si la camera
+   #--- je verifie si le driver de la camera a une fenetre pour gerer le binning et la longue pose
    if { [confCam::getPluginProperty $camItem longExposure] == "0" } {
       #--- j'affiche la fenetre de choix de binning de la webcam
       set result [ catch { cam$camNo videoformat } ]
