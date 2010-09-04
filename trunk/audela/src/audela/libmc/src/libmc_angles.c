@@ -2468,6 +2468,8 @@ int Cmd_mctcl_angle2dms(ClientData clientData, Tcl_Interp *interp, int argc, cha
 			   if ((angle>limit)&&(angle<=180.)) { angle=limit; }
 			   if ((angle>180)&&(angle<(360.-limit))) { angle=-limit; }
 			   if ((angle>=(360.-limit))) { angle-=360.; }
+			} else {
+				limit=360.;
 			}
       }
 		/* --- nozero|zero ---*/
@@ -2614,6 +2616,8 @@ int Cmd_mctcl_angle2hms(ClientData clientData, Tcl_Interp *interp, int argc, cha
 			   if ((angle>limit)&&(angle<=180.)) { angle=limit; }
 			   if ((angle>180)&&(angle<(360.-limit))) { angle=-limit; }
 			   if ((angle>=(360.-limit))) { angle-=360.; }
+			} else {
+				limit=360.;
 			}
       }
 		if (angle<0) {
