@@ -2,7 +2,7 @@
 # Fichier : autoguiderconfig.tcl
 # Description : Fenetre de configuration de l'autoguidage
 # Auteur : Michel PUJOL
-# Mise à jour $Id: autoguiderconfig.tcl,v 1.21 2010-08-17 20:17:50 michelpujol Exp $
+# Mise à jour $Id: autoguiderconfig.tcl,v 1.22 2010-09-04 19:30:19 michelpujol Exp $
 #
 
 ################################################################
@@ -140,7 +140,7 @@ proc ::autoguider::config::apply { visuNo } {
    }
    #--- je redessine les axes si l'angle a change
    if {  $pendingUpdateAxis } {
-      autoguider::createAlphaDeltaAxis $visuNo $::autoguider::private($visuNo,originCoord) $conf(autoguider,angle)
+      autoguider::createAlphaDeltaAxis $visuNo $::conf(autoguider,originCoord) $::conf(autoguider,angle)
    }
    #--- je change le cumul des images
    if {  $widget($visuNo,cumulEnabled) != $conf(autoguider,cumulEnabled) } {
