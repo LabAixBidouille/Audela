@@ -28,6 +28,6 @@ static struct cmditem cmdlist[] = {
    {"put",(Tcl_CmdProc *)cmdTelPut},\
    {"properties",(Tcl_CmdProc *)cmdTelProperties},\
    {"methods",(Tcl_CmdProc *)cmdTelMethods},\
-   {"setup",    (Tcl_CmdProc *) cmdTelSetupDialog},\
+   {"setup",    (Tcl_CmdProc *) cmdTelConnectedSetupDialog},\
    {NULL, NULL}
 };

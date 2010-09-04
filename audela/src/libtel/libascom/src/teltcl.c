@@ -109,6 +109,25 @@ int cmdTelMethods(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 }
 
 // ---------------------------------------------------------------------------
+// cmdTelConnectedSetupDialog 
+//    affiche la fenetre de configuration fournie par le driver de la camera
+// return
+//    TCL_OK
+// ---------------------------------------------------------------------------
+int cmdTelConnectedSetupDialog(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+   struct telprop *tel = (struct telprop *)clientData;
+   int result = mytel_connectedSetupDialog(tel);
+   if ( result == 0 ) {
+      Tcl_SetResult(interp, (char*)"", TCL_VOLATILE);
+      return TCL_OK;
+   } else {
+      Tcl_SetResult(interp, tel->msg, TCL_VOLATILE);
+      return TCL_ERROR;
+   }
+}
+
+// ---------------------------------------------------------------------------
 // cmdTelSetupDialog 
 //    affiche la fenetre de configuration fournie par le driver de la camera
 // return
@@ -116,10 +135,40 @@ int cmdTelMethods(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 // ---------------------------------------------------------------------------
 int cmdTelSetupDialog(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
-    struct telprop *tel = (struct telprop *) clientData;
-    mytel_setupDialog(tel);
-    Tcl_SetResult(interp, (char*)"", TCL_VOLATILE);
-    return TCL_OK;
+   char errorMsg[1024]; 
+   int result = mytel_setupDialog(argv[2], errorMsg);
+   if ( result == 0 ) {
+      Tcl_SetResult(interp, (char*)"", TCL_VOLATILE);
+      return TCL_OK;
+   } else {
+      Tcl_SetResult(interp, errorMsg, TCL_VOLATILE);
+      return TCL_ERROR;
+   }
+}
+
+
+// ---------------------------------------------------------------------------
+// cmdTelSelect 
+//    selectionne le driver ASCOM du telescope
+// return:
+// 
+// ---------------------------------------------------------------------------
+int cmdTelSelect(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+   int result;
+   char productName[1024];
+   if (argc == 3 ) {
+      strcpy(productName, argv[2]);
+   }
+   result = tel_select(productName);
+   if (result == 0 ) {
+      Tcl_SetResult(interp, productName, TCL_VOLATILE);
+      return TCL_OK;
+   } else {
+      // productName contient le message d'erreur
+      Tcl_SetResult(interp, productName, TCL_VOLATILE);
+      return TCL_ERROR;
+   }
 }
 
 

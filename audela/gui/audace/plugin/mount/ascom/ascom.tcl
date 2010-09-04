@@ -2,7 +2,7 @@
 # Fichier : ascom.tcl
 # Description : Configuration de la monture ASCOM
 # Auteur : Robert DELMAS
-# Mise à jour $Id: ascom.tcl,v 1.20 2010-07-14 08:01:29 robertdelmas Exp $
+# Mise à jour $Id: ascom.tcl,v 1.21 2010-09-04 21:28:50 michelpujol Exp $
 #
 
 namespace eval ::ascom {
@@ -87,26 +87,40 @@ proc ::ascom::initPlugin { } {
 
    #--- Plugins ASCOM installes sur le PC
    set private(ascomDrivers) ""
-   if { [ lindex $::tcl_platform(os) 0 ] == "Windows" } {
-      set erreur [ catch { ::registry keys "HKEY_LOCAL_MACHINE\\SOFTWARE\\ASCOM\\Telescope Drivers" } msg ]
-      if { $erreur == "0" } {
-         foreach key [ ::registry keys "HKEY_LOCAL_MACHINE\\SOFTWARE\\ASCOM\\Telescope Drivers" ] {
-            if { [ catch { ::registry get "HKEY_LOCAL_MACHINE\\SOFTWARE\\ASCOM\\Telescope Drivers\\$key" "" } r ] == 0 } {
-               lappend private(ascomDrivers) [list $r $key]
-            }
-         }
-      } else {
-         set erreur [ catch { ::registry keys "HKEY_LOCAL_MACHINE\\Software\\ASCOM\\Telescope Drivers" } msg ]
+
+   #--- ASCOM 5.5
+   set allUsersDataDir [ ::registry get "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders" "Common AppData" ]
+   set telescopDriverDir [ file normalize [ file join $allUsersDataDir ASCOM Profile "Telescope Drivers" ] ]
+   if { [file exists $telescopDriverDir] == 1 } {
+      foreach key [ glob -nocomplain  -tails -type d -dir  $telescopDriverDir * ] {
+         lappend private(ascomDrivers) [list "" $key]
+      }
+   }
+
+   if { $private(ascomDrivers) == "" } {
+      #--- ASCOM 5.0
+      if { [ lindex $::tcl_platform(os) 0 ] == "Windows" } {
+         set erreur [ catch { ::registry keys "HKEY_LOCAL_MACHINE\\SOFTWARE\\ASCOM\\Telescope Drivers" } msg ]
          if { $erreur == "0" } {
-            foreach key [ ::registry keys "HKEY_LOCAL_MACHINE\\Software\\ASCOM\\Telescope Drivers" ] {
-               if { [ catch { ::registry get "HKEY_LOCAL_MACHINE\\Software\\ASCOM\\Telescope Drivers\\$key" "" } r ] == 0 } {
+            foreach key [ ::registry keys "HKEY_LOCAL_MACHINE\\SOFTWARE\\ASCOM\\Telescope Drivers" ] {
+               if { [ catch { ::registry get "HKEY_LOCAL_MACHINE\\SOFTWARE\\ASCOM\\Telescope Drivers\\$key" "" } r ] == 0 } {
                   lappend private(ascomDrivers) [list $r $key]
+               }
+            }
+         } else {
+            set erreur [ catch { ::registry keys "HKEY_LOCAL_MACHINE\\Software\\ASCOM\\Telescope Drivers" } msg ]
+            if { $erreur == "0" } {
+               foreach key [ ::registry keys "HKEY_LOCAL_MACHINE\\Software\\ASCOM\\Telescope Drivers" ] {
+                  if { [ catch { ::registry get "HKEY_LOCAL_MACHINE\\Software\\ASCOM\\Telescope Drivers\\$key" "" } r ] == 0 } {
+                     lappend private(ascomDrivers) [list $r $key]
+                  }
                }
             }
          }
       }
-   }
 
+      ###lappend private(ascomDrivers) "EQMOD_SIM.Telescope"
+   }
    #--- Initialise les variables de la monture ASCOM
    if { ! [ info exists conf(ascom,modele) ] } { set conf(ascom,modele) [ lindex $private(ascomDrivers) 0 ] }
 }
@@ -196,20 +210,23 @@ proc ::ascom::fillConfigPage { frm } {
    set labelName [ ::confTel::createUrlLabel $frm.frame3 "$caption(ascom,site_web_ref)" \
       "$caption(ascom,site_web_ref)" ]
    pack $labelName -side top -fill x -pady 2
-
-   #--- Gestion du bouton actif/inactif
-   ::ascom::confAscom
 }
 
 #
 # displayDriverSetupDialog
 #    affiche la fenetre de configuration
 #    fournie par le driver de la monture
-#
+#s
 proc ::ascom::displayDriverSetupDialog { } {
    variable private
-   if { $private(telNo) != 0 } {
+
+   if { [ ::ascom::isReady ] == 1 } {
+      #--- le telescope est deja connecte
       tel$private(telNo) setup
+   } else {
+      #--- le telescope n'est pas connecte
+      load [file join $::audela_start_dir libascom.dll]
+      ascom setup [lindex $::ascom::private(modele) 1]
    }
 }
 
@@ -223,7 +240,7 @@ proc ::ascom::configureMonture { } {
 
    set catchResult [ catch {
       #--- Je cree la monture
-      set telNo [ tel::create ascom "unknown" [ lindex $conf(ascom,modele) 1 ] ]
+      set telNo [ tel::create ascom [lindex $::ascom::private(modele) 1] ]
       #--- J'affiche un message d'information dans la Console
       ::console::affiche_entete "$caption(ascom,driver) $caption(ascom,2points) [ lindex $conf(ascom,modele) 1 ]\n"
       ::console::affiche_saut "\n"
@@ -231,8 +248,6 @@ proc ::ascom::configureMonture { } {
      ### set linkNo [ ::confLink::create $conf(ascom,port) "tel$telNo" "control" [ tel$telNo product ] ]
       #--- Je change de variable
       set private(telNo) $telNo
-      #--- Gestion du bouton actif/inactif
-      ::ascom::confAscom
    } ]
 
    if { $catchResult == "1" } {
@@ -255,56 +270,10 @@ proc ::ascom::stop { } {
       return
    }
 
-   #--- Gestion du bouton actif/inactif
-   ::ascom::confAscomInactif
-
-   #--- Je memorise le port
-  ### set telPort [ tel$private(telNo) port ]
    #--- J'arrete la monture
    tel::delete $private(telNo)
-   #--- J'arrete le link
-  ### ::confLink::delete $telPort "tel$private(telNo)" "control"
    #--- Remise a zero du numero de monture
    set private(telNo) "0"
-}
-
-#
-# confAscom
-# Permet d'activer ou de desactiver le bouton
-#
-proc ::ascom::confAscom { } {
-   variable private
-
-   if { [ info exists private(frm) ] } {
-      set frm $private(frm)
-      if { [ winfo exists $frm ] } {
-         if { [ ::ascom::isReady ] == 1 } {
-            #--- Bouton de configuration du driver actif
-            $frm.configure configure -state normal
-         } else {
-            #--- Bouton de configuration du driver inactif
-            $frm.configure configure -state disabled
-         }
-      }
-   }
-}
-
-#
-# confAscomInactif
-#    Permet de desactiver le bouton a l'arret de la monture
-#
-proc ::ascom::confAscomInactif { } {
-   variable private
-
-   if { [ info exists private(frm) ] } {
-      set frm $private(frm)
-      if { [ winfo exists $frm ] } {
-         if { [ ::ascom::isReady ] == 1 } {
-            #--- Bouton de configuration du driver inactif
-            $frm.configure configure -state disabled
-         }
-      }
-   }
 }
 
 #

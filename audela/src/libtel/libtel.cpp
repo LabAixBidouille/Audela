@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libtel.c,v 1.30 2010-09-04 21:30:43 michelpujol Exp $
+// $Id: libtel.cpp,v 1.1 2010-09-04 21:32:18 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -132,6 +132,18 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
    char s[2048],cmd[256];
    int telno, err;
    struct telprop *tel, *tell;
+
+#ifdef CMD_TEL_SELECT
+   // ces commandes ne sont utilisables que par les telescopes qui
+   // sont compilés avec l'option CMD_TEL_SELECT
+   if ((argc ==2 || argc == 3) && strcmp(argv[1],"select") == 0) {
+      return cmdTelSelect(clientData, interp, argc, argv);
+   }
+   if (argc == 3 && strcmp(argv[1],"setup") == 0) {
+      return cmdTelSetupDialog(clientData, interp, argc, argv);
+   }
+#endif
+
    if(argc<3) {
       sprintf(s,"%s driver port ?options?",argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -141,6 +153,7 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
       char mainThreadId[20];
       const char *platform;
       const char *threaded;
+
 
       /*
        * On initialise le telescope sur le port. S'il y a une erreur, alors on
