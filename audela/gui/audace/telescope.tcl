@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise à jour $Id: telescope.tcl,v 1.65 2010-08-28 08:18:50 robertdelmas Exp $
+# Mise à jour $Id: telescope.tcl,v 1.66 2010-09-04 22:10:35 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -660,7 +660,7 @@ proc ::telescope::incrementSpeed { } {
 # setSpeed
 #    Change la vitesse de la monture
 #    Met a jour les variables audace(telescope,speed), audace(telescope,labelspeed),
-#    audace(telescope,rate), statustel(speed)
+#    audace(telescope,rate)
 #
 # Parametres :
 #    value : Vitesse de la monture (optionnel)
@@ -668,7 +668,7 @@ proc ::telescope::incrementSpeed { } {
 #    Rien
 #------------------------------------------------------------
 proc ::telescope::setSpeed { { value "2" } } {
-   global audace caption conf statustel
+   global audace caption conf
 
    if { [ ::tel::list ] != "" } {
       if { $conf(telescope) == "audecom" } {
@@ -676,95 +676,76 @@ proc ::telescope::setSpeed { { value "2" } } {
             set audace(telescope,speed) "1"
             set audace(telescope,labelspeed) "$caption(telescope,x1)"
             set audace(telescope,rate) "0"
-            set statustel(speed) "0"
          } elseif { $value == "2" } {
             set audace(telescope,speed) "2"
             set audace(telescope,labelspeed) "$caption(telescope,x5)"
             set audace(telescope,rate) "0.5"
-            set statustel(speed) "0.33"
          } elseif { $value == "3" } {
             set audace(telescope,speed) "3"
             set audace(telescope,labelspeed) "$caption(telescope,200)"
             set audace(telescope,rate) "1"
-            set statustel(speed) "0.66"
          } else {
             set audace(telescope,speed) "3"
             set audace(telescope,labelspeed) "$caption(telescope,200)"
             set audace(telescope,rate) "1"
-            set statustel(speed) "0.66"
          }
       } elseif { $conf(telescope) == "lx200" } {
          if { $value == "1" } {
             set audace(telescope,speed) "1"
             set audace(telescope,labelspeed) "1"
             set audace(telescope,rate) "0"
-            set statustel(speed) "0"
-            tel$audace(telNo) focus fast
          } elseif { $value == "2" } {
             set audace(telescope,speed) "2"
             set audace(telescope,labelspeed) "2"
             set audace(telescope,rate) "0.33"
-            set statustel(speed) "0.33"
          } elseif { $value == "3" } {
             set audace(telescope,speed) "3"
             set audace(telescope,labelspeed) "3"
             set audace(telescope,rate) "0.66"
-            set statustel(speed) "0.66"
          } elseif { $value == "4" } {
             set audace(telescope,speed) "4"
             set audace(telescope,labelspeed) "4"
             set audace(telescope,rate) "1"
-            set statustel(speed) "1"
          } else {
             set audace(telescope,speed) "1"
             set audace(telescope,labelspeed) "1"
             set audace(telescope,rate) "0"
-            set statustel(speed) "0"
          }
       } elseif { $conf(telescope) == "temma" } {
          if { $value == "1" } {
             set audace(telescope,speed) "1"
             set audace(telescope,labelspeed) "$caption(telescope,NS)"
             set audace(telescope,rate) "0"
-            set statustel(speed) "0"
          } elseif { $value == "2" } {
             set audace(telescope,speed) "2"
             set audace(telescope,labelspeed) "$caption(telescope,HS)"
             set audace(telescope,rate) "1"
-            set statustel(speed) "1"
          } else {
             set audace(telescope,speed) "1"
             set audace(telescope,labelspeed) "$caption(telescope,NS)"
             set audace(telescope,rate) "0"
-            set statustel(speed) "0"
          }
       } elseif { $conf(telescope) == "ascom" } {
          if { $value == "1" } {
             set audace(telescope,speed) "1"
             set audace(telescope,labelspeed) "1"
-            set audace(telescope,rate) "0"
-            set statustel(speed) "0"
-            tel$audace(telNo) focus fast
+            set audace(telescope,rate) "1"
          } elseif { $value == "2" } {
             set audace(telescope,speed) "2"
             set audace(telescope,labelspeed) "2"
-            set audace(telescope,rate) "0.33"
-            set statustel(speed) "0.33"
+            set audace(telescope,rate) "10"
          } elseif { $value == "3" } {
             set audace(telescope,speed) "3"
             set audace(telescope,labelspeed) "3"
-            set audace(telescope,rate) "0.66"
-            set statustel(speed) "0.66"
+            set audace(telescope,rate) "100"
          } elseif { $value == "4" } {
             set audace(telescope,speed) "4"
             set audace(telescope,labelspeed) "4"
-            set audace(telescope,rate) "1"
-            set statustel(speed) "1"
+            set audace(telescope,rate) "800"
          } else {
             set audace(telescope,speed) "1"
             set audace(telescope,labelspeed) "1"
-            set audace(telescope,rate) "0"
-            set statustel(speed) "0"
+            set audace(telescope,rate) "1"
          }
       } elseif { $conf(telescope) == "eqmod" } {
          switch $value {
@@ -772,44 +753,36 @@ proc ::telescope::setSpeed { { value "2" } } {
                set audace(telescope,speed) "1"
                set audace(telescope,labelspeed) "1"
                set audace(telescope,rate) [ expr 360.0 / 86164. ]
-               set statustel(speed) [ expr 360.0 / 86164. ]
-               tel$audace(telNo) focus fast
             }
             "2" {
                set audace(telescope,speed) "2"
                set audace(telescope,labelspeed) "2"
                set audace(telescope,rate) [ expr 4 * 360.0 / 86164. ]
-               set statustel(speed) [ expr 4 * 360.0 / 86164. ]
             }
             "3" {
                set audace(telescope,speed) "3"
                set audace(telescope,labelspeed) "3"
                set audace(telescope,rate) [ expr 64 * 360.0 / 86164. ]
-               set statustel(speed) [ expr 64 * 360.0 / 86164. ]
             }
             "4" {
                set audace(telescope,speed) "4"
                set audace(telescope,labelspeed) "4"
                set audace(telescope,rate) "1"
-               set statustel(speed) "1"
             }
             "5" {
                set audace(telescope,speed) "5"
                set audace(telescope,labelspeed) "5"
                set audace(telescope,rate) "2"
-               set statustel(speed) "2"
             }
             "6" {
                set audace(telescope,speed) "6"
                set audace(telescope,labelspeed) "6"
                set audace(telescope,rate) "3"
-               set statustel(speed) "3"
             }
             "7" {
                set audace(telescope,speed) "7"
                set audace(telescope,labelspeed) "7"
                set audace(telescope,rate) "10"
-               set statustel(speed) "10"
             }
          }
       } elseif { $conf(telescope) == "t193" } {
@@ -817,34 +790,28 @@ proc ::telescope::setSpeed { { value "2" } } {
             set audace(telescope,speed) "1"
             set audace(telescope,labelspeed) "1"
             set audace(telescope,rate) "0"
-            set statustel(speed) "0"
          } elseif { $value == "2" } {
             set audace(telescope,speed) "2"
             set audace(telescope,labelspeed) "2"
             set audace(telescope,rate) "0.33"
-            set statustel(speed) "0.33"
          } elseif { $value == "3" } {
             set audace(telescope,speed) "3"
             set audace(telescope,labelspeed) "3"
             set audace(telescope,rate) "0.66"
-            set statustel(speed) "0.66"
          } else {
             set audace(telescope,speed) "1"
             set audace(telescope,labelspeed) "1"
             set audace(telescope,rate) "0"
-            set statustel(speed) "0"
          }
       } else {
          set audace(telescope,speed) "1"
          set audace(telescope,labelspeed) "$caption(telescope,interro)"
          set audace(telescope,rate) "0"
-         set statustel(speed) "0"
       }
    } else {
       ::confTel::run
       tkwait window $audace(base).confTel
       set audace(telescope,rate) "0"
-      set statustel(speed) "0"
    }
 }
 
