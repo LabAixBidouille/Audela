@@ -2,7 +2,7 @@
 # Fichier : satel.tcl
 # Description : Outil pour calculer les positions precises de satellites avec les TLE
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: satel.tcl,v 1.6 2010-07-25 06:51:44 robertdelmas Exp $
+# Mise à jour $Id: satel.tcl,v 1.7 2010-09-04 21:34:36 alainklotz Exp $
 #
 # source satel.tcl
 # utiliser le temps UTC
@@ -85,6 +85,129 @@ proc satel_nearest_radec { ra dec {date now} {home ""} } {
    set elev [lindex $resmin 9]
    set res "$sepanglemin \"$name\" $ra $dec J2000.0 $ill [format %.5f $gise] [format %+.5f $elev]\n"
    return $res
+}
+
+# source "$audace(rep_install)/gui/audace/satel.tcl" ; satel_transit ISS sun now 10
+proc satel_transit { satelname objename date1 dayrange {home ""} } {
+   global audace
+   if {$home==""} {
+      set home $::audace(posobs,observateur,gps)
+   }
+   set date $date1
+   set res [satel_ephem $satelname $date $home]
+   if {$res==""} {
+      error "$res"
+   }
+   # --- calcule le temps revolution synodique
+   set satinfo [satel_names $satelname]
+   set name [lindex [lindex $satinfo 0] 0]
+   set tle [lindex [lindex $satinfo 0] 1]
+   set satfile [ file join $::audace(rep_userCatalog) tle $tle ]
+   set f [open $satfile r]
+   set lignes [split [read $f] \n]
+   set n [llength $lignes]
+   set tle1 ""
+   set tle2 ""
+   for {set k 0} {$k<$n} {incr k} {
+      set ligne [lindex $lignes $k]
+      set nam [string trim $ligne]
+      if {$nam!=$name} {
+         continue
+      }
+      set tle1 [lindex $lignes [expr $k+1]]
+      set tle2 [lindex $lignes [expr $k+2]]
+   }
+   ::console::affiche_resultat "tle1=$tle1\n"
+   ::console::affiche_resultat "tle2=$tle2\n"
+   set incl [lindex $tle2 2]
+   set revperday [lindex $tle2 7]
+   set daymin 1436.
+   set tsat [expr $daymin/$revperday]
+   set tter $daymin
+   if {$incl<90} {
+      set sign -1
+   } else {
+      set sign 1
+   }
+   set tsyn [expr 1./(1./$tsat+1.*$sign/$tter)/1440.]
+   ::console::affiche_resultat "revperday=$revperday $tsyn $incl\n"
+   # ---- recherche la premiere conjonction satel-sun
+   set sun_conjonctions ""
+   set sun_transits ""
+   set date1 [mc_date2jd $date1]
+   set date11 [mc_date2jd $date1]
+   set date22 [expr $date1+$dayrange]
+   set ddate1 [expr $tsyn*1.1]
+   set supersortie 0
+   while {$supersortie==0} {   
+      set date2 [expr $date1+$ddate1]
+      for {set k 0} {$k<10} {incr k} {
+         set date $date1
+         set range [expr $date2-$date1]
+         set dt [expr $range/10.]
+         set sortie 0
+         set datemin $date1
+         set sepmin 360.
+         set sepmax 0.
+         #::console::affiche_resultat "----------------- $k\n[mc_date2iso8601 $date1] [mc_date2iso8601 $date2] [expr $dt*1440]\n"
+         while {$sortie==0} {
+            set res [mc_ephem $objename $date {ra dec altitude} -topo $home]
+            set res_sun  [lindex $res 0]
+            set ra_sun [lindex $res_sun 0]
+            set dec_sun [lindex $res_sun 1]
+            set elev_sun [lindex $res_sun 2]
+            #::console::affiche_resultat "satel_ephem $satelname $date $home\n"
+            set res [satel_ephem $satelname $date $home]
+            #::console::affiche_resultat "OK \n"
+            set res [lindex $res 0]
+            set name [string trim [lindex [lindex $res 0] 0]]
+            set ra [lindex $res 1]
+            set dec [lindex $res 2]
+            set elev [lindex $res 9]
+            set sepangle_sun  [lindex [mc_sepangle $ra $dec $ra_sun $dec_sun] 0]
+            #::console::affiche_resultat "[mc_date2iso8601 $date] $sepangle_sun $sepmin\n"
+            if {$sepangle_sun<$sepmin} {
+               set sepmin $sepangle_sun
+               set datemin $date
+               set elevmin $elev
+            }
+            if {$sepangle_sun>$sepmax} {
+               set sepmax $sepangle_sun
+            }
+            #::console::affiche_resultat "A date=$date [mc_date2iso8601 $date]\n"
+            set date [mc_datescomp $date + $dt]
+            #::console::affiche_resultat "B date=$date [mc_date2iso8601 $date]\n"
+            if {$date>$date2} {
+               set sortie 1
+               break
+            }
+         }
+         #::console::affiche_resultat "*** [mc_date2iso8601 $datemin] $sepmin\n"
+         set date1 [expr $datemin-2*$dt]
+         set date2 [expr $datemin+2*$dt]
+         set dsep [expr $sepmax-$sepmin]
+         if {$dsep<0.5} {
+            set sortie 2
+            break
+         }
+         if {$dt<[expr 1./86400]} {
+            set sortie 22
+            break
+         }
+      }
+      if {($sepmin<1.)&&($elevmin>0)} {
+         lappend sun_transits "$datemin $sepmin $elevmin"
+      }
+      append sun_conjonctions "[mc_date2iso8601 $datemin] $sepmin ($elevmin)\n"
+      ::console::affiche_resultat "Conjonction [mc_date2iso8601 $datemin] $sepmin ($elevmin)\n"
+      set date1 [expr $datemin+$tsyn]
+      set ddate1 [expr $tsyn*0.1]
+      if {$datemin>$date22} {
+         set sortie 3
+         break
+      }
+   }
+   return [list $sun_transits $sun_conjonctions]
 }
 
 proc satel_coords { {satelname "ISS"} {date now} {home ""} } {
