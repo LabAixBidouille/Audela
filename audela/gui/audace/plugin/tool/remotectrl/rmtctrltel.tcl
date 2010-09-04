@@ -2,7 +2,7 @@
 # Fichier : rmtctrltel.tcl
 # Description : Script pour le controle de la monture
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: rmtctrltel.tcl,v 1.5 2010-07-24 15:41:51 robertdelmas Exp $
+# Mise à jour $Id: rmtctrltel.tcl,v 1.6 2010-09-04 22:08:56 robertdelmas Exp $
 #
 
    proc fillTelPanel { } {
@@ -374,85 +374,71 @@
    #     change la vitesse du telescope
    #
    #     met a jour les variables audace(telescope,speed), audace(telescope,labelspeed),
-   #     audace(telescope,rate), statustel(speed)
+   #     audace(telescope,rate)
    #------------------------------------------------------------
    proc setSpeed { { value "2" } } {
       global conf
       global audace
       global caption
-      global statustel
 
       if { $conf(telescope) == "audecom" } {
          if { $value == "1" } {
             set audace(telescope,speed) "1"
             set audace(telescope,labelspeed) "$caption(remotectrl,x1)"
             set audace(telescope,rate) "0"
-            set statustel(speed) "0"
          } elseif { $value == "2" } {
             set audace(telescope,speed) "2"
             set audace(telescope,labelspeed) "$caption(remotectrl,x5)"
             set audace(telescope,rate) "0.5"
-            set statustel(speed) "0.33"
          } elseif { $value == "3" } {
             set audace(telescope,speed) "3"
             set audace(telescope,labelspeed) "$caption(remotectrl,200)"
             set audace(telescope,rate) "1"
-            set statustel(speed) "0.66"
          } else {
             set audace(telescope,speed) "3"
             set audace(telescope,labelspeed) "$caption(remotectrl,200)"
             set audace(telescope,rate) "1"
-            set statustel(speed) "0.66"
          }
       } elseif { $conf(telescope) == "lx200" } {
          if { $value == "1" } {
             set audace(telescope,speed) "1"
             set audace(telescope,labelspeed) "1"
             set audace(telescope,rate) "0"
-            set statustel(speed) "0"
          } elseif { $value == "2" } {
             set audace(telescope,speed) "2"
             set audace(telescope,labelspeed) "2"
             set audace(telescope,rate) "0.33"
-            set statustel(speed) "0.33"
          } elseif { $value == "3" } {
             set audace(telescope,speed) "3"
             set audace(telescope,labelspeed) "3"
             set audace(telescope,rate) "0.66"
-            set statustel(speed) "0.66"
          } elseif { $value == "4" } {
             set audace(telescope,speed) "4"
             set audace(telescope,labelspeed) "4"
             set audace(telescope,rate) "1"
-            set statustel(speed) "1"
          } else {
             set audace(telescope,speed) "1"
             set audace(telescope,labelspeed) "1"
             set audace(telescope,rate) "0"
-            set statustel(speed) "0"
          }
       } elseif { $conf(telescope) == "temma" } {
          if { $value == "1" } {
             set audace(telescope,speed) "1"
             set audace(telescope,labelspeed) "$caption(remotectrl,NS)"
             set audace(telescope,rate) "0"
-            set statustel(speed) "0"
          } elseif { $value == "2" } {
             set audace(telescope,speed) "2"
             set audace(telescope,labelspeed) "$caption(remotectrl,HS)"
             set audace(telescope,rate) "1"
-            set statustel(speed) "1"
          } else {
             set audace(telescope,speed) "1"
             set audace(telescope,labelspeed) "$caption(remotectrl,NS)"
             set audace(telescope,rate) "0"
-            set statustel(speed) "0"
          }
       } else {
          set audace(telescope,speed) "1"
          set audace(telescope,labelspeed) "$caption(remotectrl,interro)"
          set audace(telescope,rate) "0"
-         set statustel(speed) "0"
       }
    }
 
@@ -461,53 +447,45 @@
    #     change la vitesse du focaliseur
    #
    #     met a jour les variables audace(focus,speed), audace(focus,labelspeed),
-   #     audace(focus,rate), statustel(speed)
+   #     audace(focus,rate)
    #------------------------------------------------------------
    proc setFocusSpeed { { value "2" } } {
       global conf
       global audace
       global caption
-      global statustel
 
       if { $conf(telescope) == "audecom" } {
          if { $value == "1" } {
             set audace(focus,speed) "1"
             set audace(focus,labelspeed) "$caption(remotectrl,x1)"
             set audace(focus,rate) "0"
-            set statustel(speed) "0"
          } elseif { $value == "2" } {
             set audace(focus,speed) "2"
             set audace(focus,labelspeed) "$caption(remotectrl,x5)"
             set audace(focus,rate) "1"
-            set statustel(speed) "0.33"
          } else {
             set audace(focus,speed) "2"
             set audace(focus,labelspeed) "$caption(remotectrl,x5)"
             set audace(focus,rate) "1"
-            set statustel(speed) "0.33"
          }
       } elseif { $conf(telescope) == "lx200" } {
          if { $value == "1" } {
             set audace(focus,speed) "1"
             set audace(focus,labelspeed) "1"
             set audace(focus,rate) "0"
-            set statustel(speed) "0"
          } elseif { $value == "2" } {
             set audace(focus,speed) "2"
             set audace(focus,labelspeed) "2"
             set audace(focus,rate) "1"
-            set statustel(speed) "0.33"
          } else {
             set audace(focus,speed) "1"
             set audace(focus,labelspeed) "1"
             set audace(focus,rate) "0"
-            set statustel(speed) "0"
          }
       } else {
          set audace(focus,speed) "1"
          set audace(focus,labelspeed) "$caption(remotectrl,interro)"
          set audace(focus,rate) "0"
-         set statustel(speed) "0"
       }
    }
 

@@ -2,7 +2,7 @@
 # Fichier : ohp.tcl
 # Auteur : Alain KLOTZ
 # Lancement du script : source audace/scripts/ohp.tcl
-# Mise à jour $Id: ohp.tcl,v 1.8 2010-05-27 06:15:13 robertdelmas Exp $
+# Mise à jour $Id: ohp.tcl,v 1.9 2010-09-04 22:09:26 robertdelmas Exp $
 #
 
 namespace eval ::ohp {
@@ -65,8 +65,6 @@ namespace eval ::ohp {
       # === Initialisation of the variables
       # === Initialisation des variables
       # =======================================
-
-      set statustel(speed) "0"
 
       #--- Definition of colorohps
       #--- Definition des couleurs
