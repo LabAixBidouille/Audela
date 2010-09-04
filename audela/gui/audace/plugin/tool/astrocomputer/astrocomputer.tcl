@@ -2,7 +2,7 @@
 # Fichier : astrocomputer.tcl
 # Description : Calculatrice pour l'astronomie
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: astrocomputer.tcl,v 1.5 2010-08-15 07:37:00 robertdelmas Exp $
+# Mise à jour $Id: astrocomputer.tcl,v 1.6 2010-09-04 19:16:45 michelpujol Exp $
 #
 
 #============================================================
@@ -77,9 +77,22 @@ proc ::astrocomputer::getPluginProperty { propertyName } {
 
 #------------------------------------------------------------
 # initPlugin
-#    initialise le plugin
+#    initialise le plugin au demarrage d'Audela
+#    Il ne faut utiliser cette procedure que si on a besoin d'initialiser des
+#    des variables ou de creer des procedure dès le démarrage d'audela.
+#    Sinon il vaut mieux utiliser createPluginInstance qui est appelee lors de
+#    la premiere utilisation de l'outil.
+#    Cela evite evite ainsi d'alourdir le demarrage d'Audela et d'occuper de la
+#    mémoire pour rien si l'outil n'est pas utilise.
 #------------------------------------------------------------
 proc ::astrocomputer::initPlugin { tkbase } {
+}
+
+#------------------------------------------------------------
+# createPluginInstance
+#    cree une nouvelle instance de l'outil
+#------------------------------------------------------------
+proc ::astrocomputer::createPluginInstance { { in "" } { visuNo 1 } } {
    variable wbase
    global astrocomputer
 
@@ -122,19 +135,15 @@ proc ::astrocomputer::initPlugin { tkbase } {
 }
 
 #------------------------------------------------------------
-# createPluginInstance
-#    cree une nouvelle instance de l'outil
-#------------------------------------------------------------
-proc ::astrocomputer::createPluginInstance { { in "" } { visuNo 1 } } {
-
-}
-
-#------------------------------------------------------------
 # deletePluginInstance
 #    suppprime l'instance du plugin
 #------------------------------------------------------------
 proc ::astrocomputer::deletePluginInstance { visuNo } {
-
+   variable wbase
+   if { [winfo exists $wbase ] } {
+      #--- je ferme la fenetre si l'utilsateur ne l'a pas deja fait
+      ::astrocomputer::fermer
+   }
 }
 
 #------------------------------------------------------------
@@ -205,7 +214,6 @@ proc ::astrocomputer::astrocomputer_ihm { { mode "" } } {
    global astrocomputer
 
    # --- initialisation
-   ::astrocomputer::initPlugin $wbase
    ::astrocomputer::confToWidget
 
    if { [ string length [ info commands $wbase.* ] ] != "0" } {
