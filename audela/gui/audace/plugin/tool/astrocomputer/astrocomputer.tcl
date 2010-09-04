@@ -2,8 +2,9 @@
 # Fichier : astrocomputer.tcl
 # Description : Calculatrice pour l'astronomie
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: astrocomputer.tcl,v 1.6 2010-09-04 19:16:45 michelpujol Exp $
+# Mise à jour $Id: astrocomputer.tcl,v 1.7 2010-09-04 22:44:09 alainklotz Exp $
 #
+# source "$audace(rep_install)/gui/audace/plugin/tool/astrocomputer/astrocomputer.tcl"
 
 #============================================================
 # Declaration du namespace astrocomputer
@@ -587,19 +588,50 @@ proc ::astrocomputer::astrocomputer_convert_angle { angle formatin formatout } {
       }
       set resultat $res
    }
+   set sig ""
    if {$formatout=="dms"} {
       set res [mc_angle2dms $deg $modulo zero 3 $sign list]
-      set res0 "[format %03d [lindex $res 0]]"
+      if {$sign=="auto"} {
+         if {[string first - $res]>=0} {
+            set sig -
+            set deg [string trimleft [string range [lindex $res 0] 1 end] 0]
+         } else {
+            set sig ""
+            set deg [string trimleft [string range [lindex $res 0] 0 end] 0]
+         }
+      } else {
+         set sig [string index [lindex $res 0] 0]
+         set deg [string trimleft [string range [lindex $res 0] 1 end] 0]
+      }
+      if {$deg==""} { set deg 0 }
+      #::console::affiche_resultat "sig=$sig $deg=$deg res=$res sign=$sign\n"
+      set res0 "${sig}[format %03d $deg]"
       set resultat "$res0 [lrange $res 1 end]"
    }
    if {$formatout=="hms"} {
       set res [mc_angle2hms $deg $modulo zero 3 $sign list]
-      set res0 "[format %02d [lindex $res 0]]"
+      if {$sign=="auto"} {
+         if {[string first - $res]>=0} {
+            set sig -
+            set deg [string trimleft [string range [lindex $res 0] 1 end] 0]
+         } else {
+            set sig ""
+            set deg [string trimleft [string range [lindex $res 0] 0 end] 0]
+         }
+      } else {
+         set sig [string index [lindex $res 0] 0]
+         set deg [string trimleft [string range [lindex $res 0] 1 end] 0]
+      }
+      if {$deg==""} { set deg 0 }
+      set res0 "[format %02d $deg]"
       set resultat "$res0 [lrange $res 1 end]"
    }
    if {$formatout=="sigdms"} {
       set res [mc_angle2dms $deg $modulo zero 3 + list]
-      set res0 "[format %+03d [lindex $res 0]]"
+      set sig [string index [lindex $res 0] 0]
+      set deg [string trimleft [string range [lindex $res 0] 1 end] 0]
+      if {$deg==""} { set deg 0 }
+      set res0 "${sig}[format %03d $deg]"
       set resultat "$res0 [lrange $res 1 end]"
    }
    if {$formatout=="rad"} {
