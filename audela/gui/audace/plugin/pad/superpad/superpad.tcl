@@ -2,7 +2,7 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise à jour $Id: superpad.tcl,v 1.32 2010-07-24 15:43:03 robertdelmas Exp $
+# Mise à jour $Id: superpad.tcl,v 1.33 2010-09-04 21:27:25 michelpujol Exp $
 #
 
 package provide superpad 1.0
@@ -1105,7 +1105,7 @@ namespace eval DlgSelectStar {
       set stars(Arcturus)       {14h15m43s +19d10m44s 11}
       set stars(Betelgeuse)     {05h55m14s +07d24m30s 12}
       set stars(Canopus)        {06h23m57s -52d41m34s 13}
-      set stars(Capella)        {05h16m46s +46d59m49s 14}
+      set stars(Capella)        {05h16m46s +45d59m49s 14}
       set stars(Deneb)          {20h41m30s +45d17m11s 15}
       set stars(Denebola)       {11h49m07s +14d34m02s 16}
       set stars(Diphda)         {00h43m40s -17d58m36s 17}
