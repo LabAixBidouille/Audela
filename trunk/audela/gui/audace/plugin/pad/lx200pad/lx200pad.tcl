@@ -2,7 +2,7 @@
 # Fichier : lx200pad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: lx200pad.tcl,v 1.18 2010-05-17 15:55:49 robertdelmas Exp $
+# Mise à jour $Id: lx200pad.tcl,v 1.19 2010-09-04 22:11:55 robertdelmas Exp $
 #
 
 namespace eval ::lx200pad {
@@ -213,7 +213,7 @@ namespace eval ::lx200pad {
    #------------------------------------------------------------
    proc run { {zoom .5} {positionxy 0+0} } {
       variable widget
-      global audace caption color geomlx200 statustel zonelx200
+      global audace caption color geomlx200 zonelx200
 
       if { [ string length [ info commands .lx200pad.display* ] ] != "0" } {
          destroy .lx200pad
@@ -228,8 +228,6 @@ namespace eval ::lx200pad {
       # === Initialisation of the variables
       # === Initialisation des variables
       # =======================================
-
-      set statustel(speed) "0"
 
       #--- Definition of colorlx200s
       #--- Definition des couleurs
@@ -1086,14 +1084,14 @@ namespace eval ::lx200pad {
          bind $zonelx200(n).lab <ButtonRelease-1> { ::telescope::stop n }
 
          #--- Focus moves
-         bind $zonelx200(next) <ButtonPress-1> { tel$audace(telNo) focus move + $statustel(speed) }
-         bind $zonelx200(next).lab1 <ButtonPress-1> { tel$audace(telNo) focus move + $statustel(speed) }
-         bind $zonelx200(next) <ButtonRelease-1> { tel$audace(telNo) focus stop }
-         bind $zonelx200(next).lab1 <ButtonRelease-1> { tel$audace(telNo) focus stop }
-         bind $zonelx200(prev) <ButtonPress-1> { tel$audace(telNo) focus move - $statustel(speed) }
-         bind $zonelx200(prev).lab1 <ButtonPress-1> { tel$audace(telNo) focus move - $statustel(speed) }
-         bind $zonelx200(prev) <ButtonRelease-1> { tel$audace(telNo) focus stop }
-         bind $zonelx200(prev).lab1 <ButtonRelease-1> { tel$audace(telNo) focus stop }
+         bind $zonelx200(next) <ButtonPress-1> { ::focus::move focuserlx200 "+" }
+         bind $zonelx200(next).lab1 <ButtonPress-1> { ::focus::move focuserlx200 "+" }
+         bind $zonelx200(next) <ButtonRelease-1> { ::focus::move focuserlx200 stop }
+         bind $zonelx200(next).lab1 <ButtonRelease-1> { ::focus::move focuserlx200 stop }
+         bind $zonelx200(prev) <ButtonPress-1> { ::focus::move focuserlx200 "-" }
+         bind $zonelx200(prev).lab1 <ButtonPress-1> { ::focus::move focuserlx200 "-" }
+         bind $zonelx200(prev) <ButtonRelease-1> { ::focus::move focuserlx200 stop }
+         bind $zonelx200(prev).lab1 <ButtonRelease-1> { ::focus::move focuserlx200 stop }
 
          #--- Set speeds
          bind $zonelx200(7) <ButtonPress-1>      {::telescope::setSpeed "4"}
