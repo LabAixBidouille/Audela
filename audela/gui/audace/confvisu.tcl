@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.147 2010-09-02 16:55:39 robertdelmas Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.148 2010-09-04 19:18:37 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -212,7 +212,7 @@ namespace eval ::confVisu {
          #--- je ferme le plugin courant des visu secondaires
          if { $visuNo != "1" } {
             if { [getTool $visuNo] != "" } {
-               set result [::[getTool $visuNo]::stopTool $visuNo]
+               set result [stopTool $visuNo $private($visuNo,currentTool)]
                if { $result == "-1" } {
                   tk_messageBox -title "$caption(confVisu,attention)" -icon error \
                      -message [format $caption(confVisu,fermeture_impossible) [ [ ::confVisu::getTool $visuNo ]::getPluginTitle ] ]
@@ -1577,22 +1577,63 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  stopTool
-   #     arrete le plugin courant
-   #  parametres :
-   #    visuNo: numero de la visu
+   #     arrete l'outil
+   #     si le nom de l'outil n'est pas precise, arrete l'outil courant dans le panneau de la visu
+   #     si l'outil est en cours de traitement, il n'est pas arrete
+   #  @param  visuNo    numero de la visu
+   #  @param  toolName  nom de l'outil a arreter
+   #  @return 0= arret OK -1= arret non autorise (le plugin est en train de faire un traitement)
    #------------------------------------------------------------
-   proc stopTool { visuNo } {
+   proc stopTool { visuNo { toolName ""} } {
       variable private
 
-      set result ""
-      if { $private($visuNo,currentTool) != "" } {
-         set result [ $private($visuNo,currentTool)::stopTool $visuNo ]
+      if { $toolName == "" } {
+         if { $private($visuNo,currentTool) != "" } {
+            #--- si l'outil n'est pas precise , je choisis d'arreter l'outil courant
+            #--- (pour compatibilite ascendante avec les anciennes versions)
+            set toolName $private($visuNo,currentTool)
+         } else {
+            #--- s'il n'y a pas d'outil courant , je ne fais rien
+            return 0
+         }
       }
+      set result [ $toolName\::stopTool $visuNo ]
       if { $result != "-1" } {
          grid forget $private($visuNo,This).tool
       }
 
       return $result
+   }
+
+   #------------------------------------------------------------
+   #  createPluginInstance
+   #     cree une instance de l'outil
+   #  @param  visuNo    numero de la visu
+   #  @param  toolName  nom de l'outil a arreter
+   #  @return void
+   #------------------------------------------------------------
+   proc createPluginInstance { visuNo toolName } {
+      variable private
+
+      if { $toolName  != "" } {
+         #--- je verifie que le plugin n'a pas deja une instance cree
+         if { [lsearch -exact $private($visuNo,pluginInstanceList) $toolName ] == -1 } {
+            #--- je cree une instance du plugin
+            set catchResult [catch {
+               namespace inscope $toolName createPluginInstance $private($visuNo,This).tool $visuNo
+            }]
+            if { $catchResult == 1 } {
+               ::console::affiche_erreur "$::errorInfo\n"
+               tk_messageBox -message "$::errorInfo. See console" -icon error
+               return
+            }
+            #--- j'ajoute cette intance dans la liste
+            lappend private($visuNo,pluginInstanceList) $toolName
+         } else {
+            #--- rien a faire car il existe deja une instance du plugin dans cette visu
+         }
+      }
+      return ""
    }
 
    #------------------------------------------------------------
@@ -1605,9 +1646,10 @@ namespace eval ::confVisu {
    proc deletePluginInstance { visuNo toolName } {
       variable private
 
-      #--- j'arrete le plugin si c'est le plugin courant
+      #--- j'arrete l'outil si ce n'est pas deja fait
+      stopTool $visuNo $toolName
+      #--- je met a jour la variable currentTool si c'est l'outil courant dans le panneau de la visu
       if { $private($visuNo,currentTool) == $toolName } {
-         stopTool $visuNo
          set private($visuNo,currentTool) ""
       }
 
@@ -1643,12 +1685,13 @@ namespace eval ::confVisu {
             if { [$toolName\::getPluginProperty "display" ] != "window"
                && [$private($visuNo,currentTool)::getPluginProperty "display" ] != "window" } {
                #--- Cela veut dire que l'utilisateur selectionne un nouveau plugin
-               set stopResult [stopTool $visuNo]
+               #--- j'arrete le plugin courant
+               set stopResult [stopTool $visuNo $private($visuNo,currentTool) ]
             }
          } else {
-            #--- Cela veut dire que l'utilisateur veut arreter le plugin en cours
+            #--- Cela veut dire que l'utilisateur veut arreter le plugin courant
             #--- j'arrete le plugin
-            set stopResult [stopTool $visuNo]
+            set stopResult [stopTool $visuNo $private($visuNo,currentTool) ]
          }
       }
 
@@ -1659,20 +1702,8 @@ namespace eval ::confVisu {
       }
 
       if { $toolName != "" } {
-         #--- je verifie que le plugin a deja une instance cree
-         if { [lsearch -exact $private($visuNo,pluginInstanceList) $toolName ] == -1 } {
-            #--- je cree une instance du plugin
-            set catchResult [catch {
-               namespace inscope $toolName createPluginInstance $private($visuNo,This).tool $visuNo
-            }]
-            if { $catchResult == 1 } {
-               ::console::affiche_erreur "$::errorInfo\n"
-               tk_messageBox -message "$::errorInfo. See console" -icon error
-               return
-            }
-            #--- j'ajoute cette intance dans la liste
-            lappend private($visuNo,pluginInstanceList) $toolName
-         }
+         #--- je cree l'instance du plugin
+         createPluginInstance $visuNo $toolName
          #--- je demarre le plugin
          namespace inscope $toolName startTool $visuNo
 
@@ -2226,7 +2257,6 @@ namespace eval ::confVisu {
             }
          }
       }
-
    }
 
    proc cursor { visuNo curs } {
@@ -2606,6 +2636,7 @@ namespace eval ::confVisu {
       variable private
 
       set private($visuNo,box_1) [ screen2Canvas $visuNo $coord ]
+      set private($visuNo,box_2) $private($visuNo,box_1)
       deleteBox $visuNo
    }
 
@@ -2622,10 +2653,10 @@ namespace eval ::confVisu {
       variable private
       global audace
 
-      ::confVisu::boxDrag $visuNo $coord
       if { $private($visuNo,box_1) == $private($visuNo,box_2) } {
          deleteBox $visuNo
       } else {
+         ::confVisu::boxDrag $visuNo $coord
          if {[lindex $private($visuNo,box_1) 0] > [lindex $private($visuNo,box_2) 0]} {
             set x1 [lindex $private($visuNo,box_2) 0]
             set x2 [lindex $private($visuNo,box_1) 0]
