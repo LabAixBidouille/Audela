@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise à jour $Id: aud_menu_1.tcl,v 1.36 2010-05-13 17:45:29 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_1.tcl,v 1.37 2010-09-04 19:22:11 michelpujol Exp $
 #
 
 namespace eval ::audace {
@@ -12,13 +12,10 @@ namespace eval ::audace {
    #
    proc charger { visuNo } {
       menustate disabled
-      save_cursor
-      all_cursor watch
       set errnum [ catch { loadima ? $visuNo } msg ]
       if { $errnum == "1" } {
          tk_messageBox -message "$msg" -icon error
       }
-      restore_cursor
       menustate normal
    }
 
@@ -28,13 +25,10 @@ namespace eval ::audace {
    #
    proc enregistrer { visuNo } {
       menustate disabled
-      save_cursor
-      all_cursor watch
       set errnum [ catch { saveima [::confVisu::getFileName $visuNo] $visuNo } msg ]
       if { $errnum == "1" } {
          tk_messageBox -message "$msg" -icon error
       }
-      restore_cursor
       menustate normal
    }
 
@@ -44,13 +38,10 @@ namespace eval ::audace {
    #
    proc enregistrer_sous { visuNo } {
       menustate disabled
-      save_cursor
-      all_cursor watch
       set errnum [ catch { saveima ? $visuNo } msg ]
       if { $errnum == "1" } {
          tk_messageBox -message "$msg" -icon error
       }
-      restore_cursor
       menustate normal
    }
 
