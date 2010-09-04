@@ -26,6 +26,13 @@
 #include <tcl.h>
 #include <libtel/libstruc.h>
 
+#ifdef __cplusplus
+extern "C" {         /* Assume C declarations for C++ */
+#endif     
+
+// declaration tranparente de PrivateParams
+typedef struct _PrivateParams PrivateParams;
+
 /*
  * Donnees propres a chaque telescope.
  */
@@ -36,6 +43,7 @@ struct telprop {
    /* Ajoutez ici les variables necessaires a votre telescope */
    char sDecimal;
    double rateunity; /* deg/s when rate=1 */
+   PrivateParams *params;          // parametres prives du telescope
    /*
    int longformatindex;
    int tempo;
@@ -90,6 +98,15 @@ int mytel_flush(struct telprop *tel);
 int mytel_tcleval(struct telprop *tel,char *ligne);
 
 void mytel_decimalsymbol(char *strin, char decin, char decout, char *strout);
-void mytel_setupDialog(struct telprop *tel);
+int mytel_connectedSetupDialog(struct telprop *tel);
+int mytel_setupDialog(char * ascomDiverName, char * errorMsg);
+
+
+int tel_select(char * productName);
+
+#ifdef __cplusplus
+}            /* End of extern "C" */
+#endif
+
 #endif
 

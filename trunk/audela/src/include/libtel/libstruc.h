@@ -23,6 +23,10 @@
 #ifndef __LIBSTRUC_H__
 #define __LIBSTRUC_H__
 
+#ifdef __cplusplus
+extern "C" {            /* Assume C declarations for C++ */
+#endif  /* __cplusplus */
+
 /*****************************************************************/
 /*             This part is common for all tel drivers.          */
 /*****************************************************************/
@@ -108,6 +112,9 @@ struct tel_drv_t {
 
 extern struct tel_drv_t TEL_DRV;
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 
