@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: zadkopad.tcl,v 1.48 2010-05-23 08:09:12 robertdelmas Exp $
+# Mise à jour $Id: zadkopad.tcl,v 1.49 2010-09-04 22:07:31 robertdelmas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -1012,7 +1012,7 @@ namespace eval ::zadkopad {
     #------------------------------------------------------------
     proc run { {zoom .5} {positionxy 200+10} } {
         variable widget
-        global audace caption color geomlx200 statustel zonelx200 paramhorloge base port ros telnum textloadfile
+        global audace caption color geomlx200 zonelx200 paramhorloge base port ros telnum textloadfile
 
         if { [ string length [ info commands .zadkopad.display* ] ] != "0" } {
          destroy .zadkopad
@@ -1038,7 +1038,6 @@ namespace eval ::zadkopad {
         # === Initialisation des variables
         # =======================================
         set zoom 1
-        set statustel(speed) "0"
 
         #--- Definition of colorlx200s
         #--- Definition des couleurs

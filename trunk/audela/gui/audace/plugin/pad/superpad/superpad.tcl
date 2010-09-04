@@ -2,7 +2,7 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise à jour $Id: superpad.tcl,v 1.33 2010-09-04 21:27:25 michelpujol Exp $
+# Mise à jour $Id: superpad.tcl,v 1.34 2010-09-04 22:08:28 robertdelmas Exp $
 #
 
 package provide superpad 1.0
@@ -382,10 +382,9 @@ namespace eval ::telescopePad {
    #------------------------------------------------------------
    proc addFrame { parentFrame zoom } {
       variable This
-      global audace colorpad geompad statustel
+      global audace colorpad geompad
 
       set This $parentFrame.movepad
-      set statustel(speed) 1
 
       frame $This -borderwidth 0  -bg $colorpad(backpad) -borderwidth 2 -relief groove
 
