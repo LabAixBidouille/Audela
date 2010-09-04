@@ -1,7 +1,7 @@
 #
 # Fichier : console.tcl
 # Description : Creation de la Console
-# Mise à jour $Id: console.tcl,v 1.17 2010-07-03 09:48:36 robertdelmas Exp $
+# Mise à jour $Id: console.tcl,v 1.18 2010-09-04 19:20:49 michelpujol Exp $
 #
 
 namespace eval ::console {
@@ -243,8 +243,6 @@ namespace eval ::console {
    proc execute {cmd} {
       variable This
 
-      save_cursor
-      all_cursor watch
       if { [catch {uplevel #0 $cmd} res] != 0} {
          $This.txt1 insert end "# $res\n" style_erreur
       } else {
@@ -253,7 +251,6 @@ namespace eval ::console {
          }
       }
       $This.txt1 insert end "\n"
-      restore_cursor
    }
 
 }
