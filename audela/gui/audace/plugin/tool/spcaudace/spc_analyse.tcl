@@ -1,7 +1,7 @@
 
 # Procédures d'analyse spectrale
 # source $audace(rep_scripts)/spcaudace/spc_analyse.tcl
-# Mise a jour $Id: spc_analyse.tcl,v 1.10 2010-09-05 17:02:50 bmauclaire Exp $
+# Mise a jour $Id: spc_analyse.tcl,v 1.11 2010-09-05 17:08:58 bmauclaire Exp $
 
 
 
@@ -45,6 +45,7 @@
 # creation d'un fichier fit correspondant au profil modele trouve
 # exemple : spc_decompraies profil lambda_list fwhm incert_lambda
 # reste a faire : controler matrice / vecteur gsl, effacement des fichiers intermediaires, calcul sigma
+# Exemple d'utilisation : spc_decompraies profil_teyssier { 5005 5016.5 } 9.6 3.
 #############################################################################
 
 proc spc_degauss { args } {
