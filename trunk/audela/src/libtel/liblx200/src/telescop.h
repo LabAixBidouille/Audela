@@ -26,6 +26,10 @@
 #include <tcl.h>
 #include <libtel/libstruc.h>
 
+#ifdef __cplusplus
+extern "C" {            /* Assume C declarations for C++ */
+#endif  /* __cplusplus */
+
 /*
  * Donnees propres a chaque telescope.
  */
@@ -87,6 +91,10 @@ int mytel_flush(struct telprop *tel);
 int mytel_tcleval(struct telprop *tel,char *ligne);
 int mytel_correct(struct telprop *tel,char *direction, int duration);
 int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *commandFormat, ...);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 
