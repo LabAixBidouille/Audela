@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.33 2010-08-24 02:15:15 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.34 2010-09-05 15:49:36 bmauclaire Exp $
 
 
 
@@ -1563,12 +1563,12 @@ proc spc_pretrait { args } {
        regexp {(.+)\-?[0-9]+} $nom_flat match pref_flat
        regexp {(.+)\-?[0-9]+} $nom_darkflat match pref_darkflat
        regexp {(.+)\-?[0-9]+} $nom_offset match pref_offset
-       #-- En attendant de gerer le cas des fichiers avec des - au milieu du nom de fichier
-       #set pref_stellaire $nom_stellaire
-       #set pref_dark $nom_dark
-       #set pref_flat $nom_flat
-       #set pref_darkflat $nom_darkflat
-       #set pref_offset $nom_offset
+       #-- En attendant de gerer le cas des fichiers avec des - au milieu du nom de fichier : remis le 31082010
+       set pref_stellaire $nom_stellaire
+       set pref_dark $nom_dark
+       set pref_flat $nom_flat
+       set pref_darkflat $nom_darkflat
+       set pref_offset $nom_offset
 
        #-- La regexp ne fonctionne pas bien pavec des noms contenant des "_"
        if {$pref_stellaire == ""} {
