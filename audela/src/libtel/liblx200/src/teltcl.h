@@ -23,12 +23,21 @@
 #ifndef __TELTCL_H__
 #define __TELTCL_H__
 
+#ifdef __cplusplus
+extern "C" {            /* Assume C declarations for C++ */
+#endif  /* __cplusplus */
+
+
 /* ----- defines specifiques aux fonctions de cette camera ----*/
 int cmdTelLongFormat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelTempo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelRadecInitAdditional(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelCorrect(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelSendCommand(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int cmdTelConsoleLog(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+//int cmdTelConsoleLog(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
