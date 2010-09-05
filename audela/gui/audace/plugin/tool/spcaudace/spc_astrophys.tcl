@@ -1,7 +1,7 @@
 
 # Procédures d'exploitation astrophysique des spectres
 
-# Mise a jour $Id: spc_astrophys.tcl,v 1.14 2010-09-05 16:19:06 bmauclaire Exp $
+# Mise a jour $Id: spc_astrophys.tcl,v 1.15 2010-09-05 17:30:15 bmauclaire Exp $
 
 
 
@@ -57,16 +57,22 @@
 
 proc spc_periodogram { args } {
 
-   if { [ llength $args ] <=3 } {
-      if { [ llength $args ] == 1 } {
-         ::console::affiche_erreur "Usage: spc_periodogram data_filename.dat time_unit ?(period_number ?)\n\n"
+   set nbargs [ llength $args ]
+   if { $nbargs<=3 } {
+      if { $nbargs==1 } {
+         ::console::affiche_erreur "Usage: spc_periodogram data_filename.dat time_unit ?period_number?\n"
          return ""
-      }
-      set nom_dat [ lindex $args 0 ]
-      set unit_temps [ lindex $args 1 ]
-      set nb_period 2
-      if { [ llength $args ] ==3 } {
+      } elseif { $nbargs==2 } {
+         set nom_dat [ lindex $args 0 ]
+         set unit_temps [ lindex $args 1 ]
+         set nb_period 2
+      } elseif { $nbargs==3 } {
+         set nom_dat [ lindex $args 0 ]
+         set unit_temps [ lindex $args 1 ]
          set nb_period [ lindex $args 2 ]
+      } else {
+         ::console::affiche_erreur "Usage: spc_periodogram data_filename.dat time_unit ?period_number?\n"
+         return ""
       }
       set periodog_filename [ spc_periodog $nom_dat $unit_temps $nb_period ]
       set labscisses_max [ spc_maxsearch $periodog_filename 3 ]
@@ -74,7 +80,7 @@ proc spc_periodogram { args } {
       set sine_caract [ spc_sinefit $nom_dat $unit_temps $period ]
       return $periodog_filename
    } else {
-      ::console::affiche_erreur "Usage: spc_periodogram data_filename.dat time_unit ?(period_number ?)\n\n"
+      ::console::affiche_erreur "Usage: spc_periodogram data_filename.dat time_unit ?period_number?\n"
    }
 }
 #***************************************************************************#
@@ -100,16 +106,23 @@ proc spc_periodogram { args } {
 #############################################################################
 proc spc_periodog { args } {
    global audace
-   if { [ llength $args ] <=3 } {
-      if { [ llength $args ] == 1 } {
-	 ::console::affiche_erreur "Usage: spc_periodog data_filename.dat? time_unit? (period_number ?)\n\n"
-	 return 0
-   	}
-      set nom_dat [ lindex $args 0 ]
-      set unit_temps [ lindex $args 1 ]
-      set nb_period 2
-      if { [ llength $args ] ==3 } {
+
+   set nbargs [ llength $args ]
+   if { $nbargs<=3 } {
+      if { $nbargs==1 } {
+	 ::console::affiche_erreur "Usage: spc_periodog data_filename.dat time_unit ?period_number?\n"
+	 return ""
+      } elseif { $nbargs==2 } {
+         set nom_dat [ lindex $args 0 ]
+         set unit_temps [ lindex $args 1 ]
+         set nb_period 2
+      } elseif { $nbargs==3 } {
+         set nom_dat [ lindex $args 0 ]
+         set unit_temps [ lindex $args 1 ]
 	 set nb_period [ lindex $args 2 ]
+      } else {
+	 ::console::affiche_erreur "Usage: spc_periodog data_filename.dat time_unit ?period_number?\n"
+	 return ""
       }
       # lecture du fichier dat
       set input [open "$audace(rep_images)/$nom_dat" r]
@@ -150,7 +163,7 @@ proc spc_periodog { args } {
       set nb_sample_periodog_1 [ expr $nb_sample_periodog - 1 ] 
       set period_samplingrate [ expr $period_max / $nb_sample_periodog_1 ]
       #calcul des echantillons du periodogramme
-      ::console::affiche_resultat " Nombre d'echantillons de donnees : $nb_echant \n"
+      ::console::affiche_resultat "Nombre d'echantillons de donnees : $nb_echant\n"
       set pi [ expr acos(-1.) ]
       set lperiod [ list ]
       set ldensity  [ list ]
@@ -210,8 +223,7 @@ proc spc_periodog { args } {
       close $file_id
       return periodogram.dat
    } else {
-      ::console::affiche_erreur "Usage: spc_periodog data_filename.dat? time_unit? (period_number ?)\n\n"
-      return 0
+      ::console::affiche_erreur "Usage: spc_periodog data_filename.dat time_unit ?period_number?\n"
    }
 }
 #***************************************************************************#
