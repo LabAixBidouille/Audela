@@ -1,12 +1,13 @@
 
 # Procédures d'exploitation astrophysique des spectres
 
-# Mise a jour $Id: spc_astrophys.tcl,v 1.13 2010-05-22 23:38:40 bmauclaire Exp $
+# Mise a jour $Id: spc_astrophys.tcl,v 1.14 2010-09-05 16:19:06 bmauclaire Exp $
 
 
 
 #************* Liste des focntions **********************#
 #
+# spc_periodogram : cree un periodogram a partir d'un fichier texte a 2 colonnes.
 # spc_vdoppler : determination de la vitesse radiale en km/s à l'aide du décalage d'une raie
 # spc_vhelio : calcul de la vitesse héliocentrique pour une correction de la vitesse radiale
 # spc_vradiale : calcul la vitesse radiale à partir de la FWHM de la raie modélisée par une gaussienne
@@ -32,6 +33,189 @@
 # spc_vrmes : calcul du rapport V/R d'intensités d'une raie à deux pics.
 #
 ##########################################################
+
+
+#############################################################################################
+# Auteur : Patrick LAILLY
+# Date de création : 1-09-10
+# Date de modification : 1-09-10
+# cette procédure lance en cascade les differentes procs permettant le calcul d'un periodogramme et l'analyse des resultats 
+# pour analyse le comportement d'une quantite physique en fonction du temps calendaire 
+# 2 arguments  d'entree obligatoires : le nom du fichier dat contenant les donnees mesurees, l'unite utilisee pour la
+# mesure du temps calendaire
+# 1 argument d'entree facultatif : l'estimation du nombre de periodes mesurees. Cette quantite sert a calculer la periode maximale possible : il vaut donc mieux pecher par defaut que par exces.
+# En l'absence de specification la valeur par defaut est 2. 
+# la procedure retourne le nom du fichier contenant les echantillons du periodogramme et affiche le graphique du
+# periodogramme, le graphique illustrant l'ajustement des donnees par la fonction sinusoidale associee a la periode donnant
+# le maximum du peridogramme, laquelle est affichee a la console.  L'amplitude et le decalage temporel caracterisant la sinusoide optimale sont affiches a la console.
+# L'algorithme utilise est celui decrit par Scargle (Astrophys. J., 263:835-853, 1982)
+# Exemple : spc_periodogram data.dat "jours juliens"
+# Exemple : spc_periodogram data.dat jour
+# Exemple : spc_periodogram data.dat jour 3
+# reste a regler : pb lecture fichier dat
+###########################################################################################
+
+proc spc_periodogram { args } {
+
+   if { [ llength $args ] <=3 } {
+      if { [ llength $args ] == 1 } {
+         ::console::affiche_erreur "Usage: spc_periodogram data_filename.dat time_unit ?(period_number ?)\n\n"
+         return ""
+      }
+      set nom_dat [ lindex $args 0 ]
+      set unit_temps [ lindex $args 1 ]
+      set nb_period 2
+      if { [ llength $args ] ==3 } {
+         set nb_period [ lindex $args 2 ]
+      }
+      set periodog_filename [ spc_periodog $nom_dat $unit_temps $nb_period ]
+      set labscisses_max [ spc_maxsearch $periodog_filename 3 ]
+      set period [ lindex $labscisses_max 0 ]
+      set sine_caract [ spc_sinefit $nom_dat $unit_temps $period ]
+      return $periodog_filename
+   } else {
+      ::console::affiche_erreur "Usage: spc_periodogram data_filename.dat time_unit ?(period_number ?)\n\n"
+   }
+}
+#***************************************************************************#
+
+
+#############################################################################
+# Auteur : Patrick LAILLY
+# Date de création : 1-09-10
+# Date de modification : 1-09-10
+# cette procédure cree un peridogramme pour analyse le comportement d'une quantite physique en fonction du temps calendaire 
+# 2 arguments  d'entree obligatoires : le nom du fichier dat contenant les donnees mesurees, l'unite utilisee pour la
+# mesure du temps calendaire
+# 1 argument d'entree facultatif : l'estimation du nombre de periodes mesurees. Cette quantite sert a calculer la periode maximale possible : il vaut donc mieux pecher par defaut que par exces.
+# En l'absence de specification la valeur par defaut est 2. 
+# la procedure retourne le nom du fichier contenant les echantillons du periodogramme et affiche le graphique du
+# periodogramme, le graphique illustrant l'ajustement des donnees par la fonction harmonique associee a la periode donnant
+# le maximum du peridogramme, laquelle est affichee a la console. Est egalement affichee a la console l'amplitude des oscillations estimee
+# L'algorithme utilise est celui decrit par Scargle (Astrophys. J., 263:835-853, 1982)
+# Exemple : spc_periodog data.dat "jours juliens"
+# Exemple : spc_periodog data.dat jour
+# Exemple : spc_periodog data.dat jour 3
+# reste a regler : pb lecture fichier dat
+#############################################################################
+proc spc_periodog { args } {
+   global audace
+   if { [ llength $args ] <=3 } {
+      if { [ llength $args ] == 1 } {
+	 ::console::affiche_erreur "Usage: spc_periodog data_filename.dat? time_unit? (period_number ?)\n\n"
+	 return 0
+   	}
+      set nom_dat [ lindex $args 0 ]
+      set unit_temps [ lindex $args 1 ]
+      set nb_period 2
+      if { [ llength $args ] ==3 } {
+	 set nb_period [ lindex $args 2 ]
+      }
+      # lecture du fichier dat
+      set input [open "$audace(rep_images)/$nom_dat" r]
+      set contents [split [read $input] \n]
+      close $input
+      set nb_echant [llength $contents]
+      # modification ad hoc : a comprendre !!!!!!!!!!!!!!!!!!!!!!!!
+      set nb_echant [ expr $nb_echant -1 ]
+      set nb_echant_1 [ expr $nb_echant - 1 ] 
+      #::console::affiche_resultat " donnees spc_periodog : $nom_dat $unit_temps $nb_period \n"
+      set abscisses [ list ]
+      set ordonnees_orig [ list ]
+      for {set k 0} { $k < $nb_echant } {incr k} {
+	 set ligne [lindex $contents $k]
+	 set x [lindex $ligne 0]
+	 set y [lindex $ligne 1]
+	 #::console::affiche_resultat " x= $x   y= $y \n"
+	 lappend abscisses [lindex $ligne 0] 
+	 lappend ordonnees_orig [lindex $ligne 1] 
+      }
+      set temps_max [ expr [ lindex $abscisses $nb_echant_1 ] - [ lindex $abscisses 0 ] ]
+      set inv_nb_period [ expr 1./ $nb_period ]
+      # elimination de la composante continue
+      set dc 0.
+      for {set k 0} { $k < $nb_echant } {incr k} {
+	 set dc [ expr $dc + [ lindex $ordonnees_orig $k ] ]
+      }
+      set dc [ expr $dc / $nb_echant ]
+      set ordonnees [ list ]
+      for {set k 0} { $k < $nb_echant } {incr k} {
+	 lappend ordonnees [ expr [ lindex $ordonnees_orig $k ] - $dc ]	
+      }
+		
+      # gestion de l'echelle des temps sur le peridogramme
+      set period_max [ expr $temps_max *$inv_nb_period ]
+      #set nb_sample_periodog [ expr $nb_echant * 3 /4 ]
+      set nb_sample_periodog [ expr $nb_echant * 30 ]
+      set nb_sample_periodog_1 [ expr $nb_sample_periodog - 1 ] 
+      set period_samplingrate [ expr $period_max / $nb_sample_periodog_1 ]
+      #calcul des echantillons du periodogramme
+      ::console::affiche_resultat " Nombre d'echantillons de donnees : $nb_echant \n"
+      set pi [ expr acos(-1.) ]
+      set lperiod [ list ]
+      set ldensity  [ list ]
+      for { set k 1 } { $k <= $nb_sample_periodog } { incr k } {
+	 set period [ expr $k * $period_samplingrate ]
+	 lappend lperiod $period
+	 set omega [ expr 2. *$pi / $period ]
+	 set num 0.
+	 set den 0.
+	 for { set j 0 } { $j < $nb_echant } { incr j } {
+	    set phase [ expr 2. * $omega * [ lindex $abscisses $j ] ]
+	    set num [ expr $num + sin($phase) ]
+	    set den [ expr $den + cos($phase) ]
+	 }
+	 set ratio [ expr $num / $den ]
+	 set tau [ expr atan($ratio) ]
+	 set tau [ expr .5 * $tau / $omega ]
+	 set numa 0.
+	 set dena 0.
+	 set numb 0.
+	 set denb 0.
+	 # on pourrait gagner du CPU en programmant via gsl la boucle ci-dessous
+	 for { set j 0 } { $j < $nb_echant } { incr j } {
+	    set phase [ expr $omega * ( [ lindex $abscisses $j ] -$tau ) ]
+	    set co [ expr cos($phase) ]
+	    set si [ expr sin($phase) ]
+	    set numa [ expr $numa + $co * [ lindex $ordonnees $j ] ]
+	    set dena [ expr $dena + $co * $co ]
+	    set numb [ expr $numb + $si * [ lindex $ordonnees $j ] ]
+	    set denb [ expr $denb + $si * $si ]
+	 }
+	 set result [ expr .5 * ( $numa * $numa / $dena + $numb * $numb / $denb ) ]
+	 #::console::affiche_resultat " $k $result \n"
+	 lappend ldensity $result
+      }
+      #-- Representation graphique :
+      ::plotxy::clf
+      #::plotxy::plot $abscisses $int ob 0   
+      ::plotxy::plot $lperiod $ldensity r 1
+      #::plotxy::hold on
+      #::plotxy::plot $abscisses $newintens b 1
+      ::plotxy::plotbackground #FFFFFF
+      ::plotxy::xlabel "Period ($unit_temps)"
+      ::plotxy::ylabel " Pseudo-density"
+      ::plotxy::title "Periodogram for data $nom_dat\n "
+      # ecriture des points constituant le periodogramme sous forme de fichier dat
+      set fileout periodogram.dat
+      set file_id [open "$audace(rep_images)/$fileout" w+]
+      #--- configure le fichier de sortie avec les fin de ligne "xODx0A"
+      #-- independamment du systeme LINUX ou WINDOWS
+      fconfigure $file_id -translation crlf
+      for { set k 0 } { $k < $nb_sample_periodog } { incr k } {
+	 set x [ lindex $lperiod $k ]
+	 set y [ lindex $ldensity $k ]
+         puts $file_id "$x\t$y"
+      }
+      close $file_id
+      return periodogram.dat
+   } else {
+      ::console::affiche_erreur "Usage: spc_periodog data_filename.dat? time_unit? (period_number ?)\n\n"
+      return 0
+   }
+}
+#***************************************************************************#
+
 
 
 
