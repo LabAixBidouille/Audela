@@ -23,6 +23,10 @@
 #ifndef __UTILH__
 #define __UTILH__
 
+#ifdef __cplusplus
+extern "C" {            /* Assume C declarations for C++ */
+#endif  /* __cplusplus */
+
 /**********************************************************/
 /* Constantes associees a la lecture de l'horloge interne */
 /**********************************************************/
@@ -65,6 +69,8 @@ unsigned long loopsmicrosec();
 unsigned long loopsmillisec();
 void test_out_time(unsigned short port,unsigned long nb_out,unsigned long shouldbezero);
 
-
+#ifdef __cplusplus
+}
+#endif
 
 #endif
