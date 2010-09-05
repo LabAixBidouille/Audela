@@ -1,7 +1,231 @@
 # Fonctions de calculs numeriques : interpolation, ajustement...
 # source $audace(rep_scripts)/spcaudace/spc_numeric.tcl
 
-# Mise a jour $Id: spc_numeric.tcl,v 1.6 2009-12-19 09:53:39 bmauclaire Exp $
+# Mise a jour $Id: spc_numeric.tcl,v 1.7 2010-09-05 16:19:06 bmauclaire Exp $
+
+
+
+#############################################################################
+# Auteur : Patrick LAILLY
+# Date de création : 1-09-10
+# Date de modification : 1-09-10
+# cette procédure recherche les maxima les plus a droite d'une fonction representee par un fichier .dat 
+# 2 arguments  d'entree obligatoires : le nom du fichier dat contenant les donnees mesurees, nombre de maxima recherches
+# la procedure retourne une liste donnant les abscisses des echantillons correspondant aux maxima. Cette liste est ordonnee par valeur decroissante de l'intensite des maximas.
+# si la fonction varie rapidement dans sa partie droite, le resultat peut ne pas etre significatif et il convient d'appliquer prealablement un filtre coupe haut aux donnees supposees ici echantillonees regulierement.
+# Exemple : spc_maxsearch peridogramme.dat 3
+# reste a regler : pb lecture fichier dat
+#############################################################################
+proc spc_maxsearch { args } {
+   global audace
+   set nb_args [ llength $args ]
+   if { $nb_args ==2 } {
+      set nom_dat [ lindex $args 0 ]
+      set nb_max [ lindex $args 1 ]
+      # lecture du fichier dat
+      set input [open "$audace(rep_images)/$nom_dat" r]
+      set contents [split [read $input] \n]
+      close $input
+      set nb_echant [llength $contents]
+      # modification ad hoc : a comprendre !!!!!!!!!!!!!!!!!!!!!!!!
+      set nb_echant [ expr $nb_echant -1 ]
+      set nb_echant_1 [ expr $nb_echant - 1 ] 
+      #::console::affiche_resultat " donnees spc_maxsearch: $nom_dat $nb_max\n"
+      set periods [ list ]
+      set density [ list ]
+      for {set k 0} { $k < $nb_echant } {incr k} {
+	 set ligne [lindex $contents $k]
+	 set x [lindex $ligne 0]
+	 set y [lindex $ligne 1]
+	 #::console::affiche_resultat " x= $x   y= $y \n"
+	 lappend periods [lindex $ligne 0] 
+	 lappend density [lindex $ligne 1] 
+      }
+   	
+      set detected_max 0
+      set liste_max [ list ]
+      for {set k 0} { $k < $nb_echant } {incr k} {
+	 set kk [ expr $nb_echant - $k -1 ]
+	 set kk_1 [ expr $kk - 1 ]
+	 set deriv [ expr [ lindex $density $kk ] - [ lindex $density $kk_1 ] ]
+	 set deriv_sign 1
+	 if { $deriv < 0. } {
+	    set deriv_sign -1
+	 }
+	 if { $k != 0 } {
+	    if { $prev_sign == -1 && $deriv_sign == 1 } {
+	       lappend liste_max $kk_1
+	       set detected_max [ expr $detected_max +1 ]
+	    }
+	 } 
+	 set prev_sign $deriv_sign
+	 if { $detected_max >= $nb_max } {
+	    break
+	 }
+      }
+      # mise en forme des maxima detectes
+      set ldens [ list ]
+      set lperiod [ list ]
+      for {set k 0} { $k < $nb_max } {incr k} {
+	 set period [ lindex $periods [ lindex $liste_max $k ] ]
+	 set dens [ lindex $density [ lindex $liste_max $k ] ]
+	 ::console::affiche_resultat "Maximum N°$k trouve ($dens) pour une periode de $period\n"
+	 lappend lperiod $period
+	 lappend ldens $dens
+      }
+      set ord_dens [ lsort -decreasing -real $ldens ]
+      set ord_period [ list ]
+      set ord_kk [ list ]
+      for {set k 0} { $k < $nb_max } {incr k} {
+	 set dens [ lindex $ord_dens $k ]
+	 set kk [ lsearch -exact $ldens $dens ]
+	 lappend ord_kk $kk
+	 lappend ord_period [ lindex $lperiod $kk ]
+      }
+      return $ord_period
+   } else {
+      ::console::affiche_erreur "Usage: spc_maxsearch data_filename.dat? nombre_max_recherches? \n\n"
+      return 0
+   }
+}
+#***************************************************************************#
+
+
+#############################################################################
+# Auteur : Patrick LAILLY
+# Date de création : 1-09-10
+# Date de modification : 1-09-10
+# cette procédure analyse l'ajustement d'une fonction sinusoidale de periode donnes sur une quantite physique mesuree en fonction du temps calendaire : elle calcule la phase et l'amplitude donnant le meilleur ajustement. 
+# 3 arguments  d'entree obligatoires : le nom du fichier dat contenant les donnees mesurees, l'unite utilisee pour la
+# mesure du temps calendaire, la periode de la fonction sinusoidale.
+# la procedure retourne une liste constitue de l'amplitude et du decalage temporel caracterisant la sinusoide optimale et affiche le graphique illustrant l'ajustement des donnees par la fonction sinusoidale.  L'amplitude et le decalage temporel caracterisant la sinusoide optimale sont affiches a la console.
+# Exemple : spc_sinefit data.dat "jours juliens" period
+# reste a regler : pb lecture fichier dat
+#############################################################################
+proc spc_sinefit { args } {
+   global audace
+   if { [ llength $args ] ==3 } {
+      set nom_dat [ lindex $args 0 ]
+      set unit_temps  [ lindex $args 1 ]
+      set period  [ lindex $args 2 ]
+      #lecture du fichier dat
+      set input [open "$audace(rep_images)/$nom_dat" r]
+      set contents [split [read $input] \n]
+      close $input
+      set nb_echant [llength $contents]
+      # modification ad hoc : a comprendre !!!!!!!!!!!!!!!!!!!!!!!!
+      set nb_echant [ expr $nb_echant -1 ]
+      set nb_echant_1 [ expr $nb_echant - 1 ] 
+      #::console::affiche_resultat " donnees spc_sinefit : $nom_dat $unit_temps $period \n"
+      set pi [ expr acos(-1.) ]
+      set abscisses [ list ]
+      set ordonnees_orig [ list ]
+      for {set k 0} { $k < $nb_echant } {incr k} {
+	 set ligne [lindex $contents $k]
+	 set x [lindex $ligne 0]
+	 set y [lindex $ligne 1]
+	 #::console::affiche_resultat " x= $x   y= $y \n"
+	 lappend abscisses [lindex $ligne 0] 
+	 lappend ordonnees_orig [lindex $ligne 1] 
+      }
+      set temps_max [ expr [ lindex $abscisses $nb_echant_1 ] - [ lindex $abscisses 0 ] ]
+      #set inv_nb_period [ expr 1./ $nb_period ]
+      # elimination de la composante continue
+      set dc 0.
+      for {set k 0} { $k < $nb_echant } {incr k} {
+	 set dc [ expr $dc + [ lindex $ordonnees_orig $k ] ]
+      }
+      set dc [ expr $dc / $nb_echant ]
+      set ordonnees [ list ]
+      for {set k 0} { $k < $nb_echant } {incr k} {
+	 lappend ordonnees [ expr [ lindex $ordonnees_orig $k ] - $dc ]	
+      }
+      # calcul de l'amplitude
+      set omega [ expr 2. *$pi / $period ]
+      set num 0.
+      set den 0.
+      for { set j 0 } { $j < $nb_echant } { incr j } {
+	 set phase [ expr 2. * $omega * [ lindex $abscisses $j ] ]
+	 set num [ expr $num + sin($phase) ]
+	 set den [ expr $den + cos($phase) ]
+      }
+      set ratio [ expr $num / $den ]
+      # solution 1
+      set tau1 [ expr atan($ratio) ]
+      set tau1 [ expr .5 * $tau1 / $omega ]
+      set num 0.
+      set den 0.
+      for { set j 0 } { $j < $nb_echant } { incr j } {
+	 set phase [ expr $omega * ( [ lindex $abscisses $j ] -$tau1 ) ]
+	 set si [ expr sin($phase) ]
+	 set num [ expr $num + [ lindex $ordonnees $j ] * $si ]
+	 set den [ expr $den + $si * $si ]
+      }
+      set amplitude1 [ expr $num / $den ]
+      #::console::affiche_resultat " estimated amplitude : $amplitude1 (Figure 2) \n"
+      # solution 2
+      set tau2 [ expr atan($ratio) + $pi ]
+      set tau2 [ expr .5 * $tau2 / $omega ]
+      set num 0.
+      set den 0.
+      for { set j 0 } { $j < $nb_echant } { incr j } {
+	 set phase [ expr $omega * ( [ lindex $abscisses $j ] -$tau2 ) ]
+	 set si [ expr sin($phase) ]
+	 set num [ expr $num + [ lindex $ordonnees $j ] * $si ]
+	 set den [ expr $den + $si * $si ]
+      }
+      set amplitude2 [ expr $num / $den ]
+      # verification des estimations et elimination de la solution aberrante
+		
+      # evaluation du carre de la norme des ecarts synthetiques - mesures pour la solution 1
+      set l21 0.
+      for { set j 0 } { $j < $nb_echant } { incr j } {
+	 set synth [ expr $dc + $amplitude1 * sin($omega * ( [ lindex $abscisses $j ] - $tau1) ) ]
+	 set l21 [ expr $l21 + ( $synth - [ lindex $ordonnees_orig $j ] ) * ( $synth - [ lindex $ordonnees_orig $j ] ) ]
+      }
+      # evaluation du carre de la norme des ecarts synthetiques - mesures pour la solution 2
+      set l22 0.
+      for { set j 0 } { $j < $nb_echant } { incr j } {
+	 set synth [ expr $dc + $amplitude2 * sin($omega * ( [ lindex $abscisses $j ] - $tau2) ) ]
+	 set l22 [ expr $l22 + ( $synth - [ lindex $ordonnees_orig $j ] ) * ( $synth - [ lindex $ordonnees_orig $j ] ) ]
+      }
+      set tau $tau2
+      set amplitude $amplitude2
+      if { $l21 < $l22 } {
+	 set tau $tau1
+	 set amplitude $amplitude1	
+      }
+      set dt [ expr $temps_max / 100. ]
+      set ltemps [ list ]
+      set lintens [ list ] 
+      set temps_deb [ lindex $abscisses 0 ]
+      for { set k 0 } { $k <= 100 } { incr k } {
+	 set temps [ expr $temps_deb + $k * $dt ]
+	 lappend ltemps $temps
+	 lappend lintens [ expr $dc + $amplitude * sin($omega * ( $temps - $tau) ) ]
+   	} 	
+      ::plotxy::figure 2 
+      ::plotxy::plot $abscisses $ordonnees_orig *b
+      ::plotxy::hold on   
+      ::plotxy::plot $ltemps $lintens r
+   	
+      #::plotxy::plot $abscisses $newintens b 1
+      ::plotxy::plotbackground #FFFFFF
+      ::plotxy::xlabel "Time ($unit_temps)"
+      ::plotxy::ylabel " Measured quantity "
+      ::plotxy::title "Fit of data $nom_dat on estimated sine function \n "
+      # fin de la proc
+      ::console::affiche_resultat " Estimated amplitude : $amplitude and time shift : $tau \n"
+      set liste_caract [ list ]
+      lappend liste_caract $amplitude
+      lappend liste_caract $tau
+      return $liste_caract
+   } else {
+      ::console::affiche_erreur "Usage: spc_sinefit data_filename.dat? time_unit? period ?\n\n"
+      return 0
+   }
+}
+#***************************************************************************#
 
 
 
