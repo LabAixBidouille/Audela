@@ -34,6 +34,10 @@
 #include "libname.h"
 #include "libstruc.h"
 
+#ifdef __cplusplus
+extern "C" {            /* Assume C declarations for C++ */
+#endif  /* __cplusplus */
+
 struct cmditem {
    char *cmd;
    Tcl_CmdProc *func;
@@ -106,11 +110,16 @@ void libtel_GetCurrentFITSDate(Tcl_Interp *interp, char *s);
 void libtel_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function);
 int libtel_Getradec(Tcl_Interp *interp,char *tcllist,double *ra,double *dec);
 
-int tel_init_common(struct telprop *tel, int argc, char **argv);
+int tel_init_common(struct telprop *tel, int argc, const char **argv);
 
 // ---- fonctions par defaut de struct tel_drv_t TEL_DRV 
 int default_tel_correct(struct telprop *tel, char *alphaDirection, double alphaDistance, char *deltaDirection, double deltaDistance);
 int default_tel_set_radec_guiding(struct telprop *tel, int guiding) ;
 int default_tel_get_radec_guiding(struct telprop *tel, int *guiding) ;
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif
 
