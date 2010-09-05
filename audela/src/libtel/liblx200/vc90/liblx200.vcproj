@@ -49,7 +49,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\src,..\..\..\include,..\..\..\external\include\win"
-				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;USE_TCL_STUBS;USE_TK_STUBS;USE_COMPAT_CONST;_CRT_SECURE_NO_WARNINGS"
+				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;USE_TCL_STUBS;USE_TK_STUBS;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
