@@ -1,7 +1,37 @@
 # Fonctions de calculs numeriques : interpolation, ajustement...
 # source $audace(rep_scripts)/spcaudace/spc_numeric.tcl
 
-# Mise a jour $Id: spc_numeric.tcl,v 1.7 2010-09-05 16:19:06 bmauclaire Exp $
+# Mise a jour $Id: spc_numeric.tcl,v 1.8 2010-09-05 17:02:50 bmauclaire Exp $
+
+
+#############################################################################
+# Procedure : retourne une liste echantillonnant une gaussienne, cette liste depend des arguments fournis
+# arguments : liste abscisse, decalage, sigma, lambda du pic
+#############################################################################
+proc spc_gausslist { args } {
+   if { [ llength $args ] == 4 } {
+      set listlambda [ lindex $args 0 ]
+      set decal [ lindex $args 1 ]
+      set sigma [ lindex $args 2 ]
+      set lpeak [ lindex $args 3 ]
+      set intens [ list ]
+      set pi [ expr 2. * asin (1.) ]
+      set denom1 [ expr $sigma * sqrt (2. * $pi) ]
+      set denom1 [ expr 1. / $denom1 ]
+      set denom2 [ expr 2. * $sigma * $sigma ]
+      set denom2 [ expr 1. / $denom2 ]
+      foreach lambda $listlambda {
+	 set lamb2 [ expr -1. *$denom2 * ($lambda-$lpeak + $decal)*($lambda-$lpeak + $decal) ]
+	 set inten [ expr  $denom1* exp ( $lamb2 ) ]
+	 lappend intens $inten
+      }
+      return $intens
+   } else { 
+      ::console::affiche_erreur "Usage: spc_gausslist \{lambda_list\} sigma lambda_peak\n\n"
+      return 0
+   } 
+}
+#***************************************************************************#
 
 
 

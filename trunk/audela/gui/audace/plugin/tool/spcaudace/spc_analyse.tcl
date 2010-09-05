@@ -1,7 +1,7 @@
 
 # Procédures d'analyse spectrale
 # source $audace(rep_scripts)/spcaudace/spc_analyse.tcl
-# Mise a jour $Id: spc_analyse.tcl,v 1.9 2010-08-28 16:51:56 bmauclaire Exp $
+# Mise a jour $Id: spc_analyse.tcl,v 1.10 2010-09-05 17:02:50 bmauclaire Exp $
 
 
 
@@ -28,6 +28,160 @@
 #    Ajoute une gaussienne sur l'image à la position (xc,yc), de largeur à mi hauteur fwhmx,fwhmy et d'intensité i0. L'option LimitAdu permet de fixer une valeur seuil au dessus de laquelle les valeurs auront la valeur du seuil (permet de reproduire l'effet d'une saturation).
 ##########################################################
 
+
+
+#############################################################################
+# Procedure : dediee a priori a la basse resolution, decompose un morceau de profil en la superposition d'un certain
+#nombre de raies modeles dont le centre est precise ainsi que la largeur a mi hauteur (supposee identique pour toutes les
+# raies modeles). Cette largeur aura ete estimee prealablement en mesurant la fwhm d'une raie isolee. La precision dans
+# cette estimation est tres critique : il est surement souhaitable de faire de moyenner differentes estimations. 
+# On autorise aussi un certain décalage en longueur d'onde entre le profil modele et le profil mesure : ce
+# decalage se veut prendre en compte l'imprecision dans la calibration du profil mesuré. Ne pas hesiter a pecher par
+# exces.
+# algorithme : exploration de l'espace des decalages (21 valeurs) pour la recherche du least-squares fit
+# les entrees : un profil spectral, liste de longueurs d'ondes de raies modeles, incertitude sur la valuer des lambdas du profil mesure
+# arguments : profil, liste de longueurs d'ondes , fwhm, incert_lambda (ces quantites sont exprimees en angstroems)
+# sortie liste des intensites associees a chaque raie modele
+# creation d'un fichier fit correspondant au profil modele trouve
+# exemple : spc_decompraies profil lambda_list fwhm incert_lambda
+# reste a faire : controler matrice / vecteur gsl, effacement des fichiers intermediaires, calcul sigma
+#############################################################################
+
+proc spc_degauss { args } {
+   global audace
+   set larg [ llength $args ]
+   set ndecal 21
+   set ndecal_1 [ expr $ndecal -1 ]
+   if { $larg == 4 } {
+      # lecture des donnees
+      set nom_fich_input [ lindex $args 0 ]
+      set lambda_list [ lindex $args 1 ]
+      set fwhm [ lindex $args 2 ]
+      set sigma [ expr $fwhm / 2.3548 ]
+      #set sigma $fwhm
+      set nfwhm 2
+      set incert_lambda [ lindex $args 3 ]
+      # test de la linearite de la loi de calibration
+      if { [ spc_testlincalib $nom_fich_input ] == -1 } {
+	 ::console::affiche_erreur "spc_degauss : le profil $nom_fich_input n'est pas calibre lineairement => linearisation de la loi de calibration \n\n"
+	 set nom_fich_input [ spc_linearcal $profname ]
+      }
+      # organisation de la liste des lambdas
+      set nlambda_1 [ expr [ llength $lambda_list ] -1 ]
+      set new_lambda_list [ lsort -real -increasing $lambda_list ]
+      # restriction a l'intervalle de lambdas pertinent
+      set lambda_min [ expr [ lindex $new_lambda_list 0 ] - $nfwhm * $fwhm - $incert_lambda ]
+      set lambda_max [ expr [ lindex $new_lambda_list $nlambda_1 ] + $nfwhm * $fwhm + $incert_lambda ]
+      set nom_fich_input [ spc_select $nom_fich_input $lambda_min $lambda_max ]
+      # creation de la liste de decalage en lambdas a explorer
+      set list_decal [ list ]
+      set delt_decal [ expr $incert_lambda * .1 ] 
+      set decal_min [ expr -1. * $incert_lambda ]
+      for { set i 0 } { $i < $ndecal } { incr i } {
+	 set decal [ expr  $decal_min + $i * $delt_decal ]
+	 lappend list_decal $decal
+      }
+      # reechantillonage du profil au pas delt_decal
+      buf$audace(bufNo) load "$audace(rep_images)/$nom_fich_input"
+      #-- Renseigne sur les parametres de l'image :
+      #set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+      #set crval1  [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+      set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+      # reechantillonage du profil au pas delt_decal
+      if { $cdelt1 < $delt_decal } {
+	 ::console::affiche_erreur "spc_degauss : manip etrange car l'incertitude de calibration est superieure a 10 fois le pas d'echantillonage du profil $nom_fich_input... mais on n'a peur de rien et on continue\n\n"
+      }
+      set nom_fich_input [ spc_echantdelt $nom_fich_input $delt_decal ]
+      # transformation du fichier de donnees en liste
+      set d [list ]
+      set coords [ spc_fits2data $nom_fich_input ]
+      set listlambdas [ lindex $coords 0 ]
+      set d [ lindex $coords 1 ]
+      set nechant [ llength $d ]
+      set list_zero [ list ]
+      for { set i 0 } { $i <= $nlambda_1 } { incr i } {
+	 lappend list_zero 0.
+      }
+      set param [ list ]
+      # exploration de l'espace des decalage
+      set rms [ list ]
+      foreach decal $list_decal {
+	 # construction de la matrice X requise pour caracteriser l'application linéaire
+			
+	 set X [ list ]
+	 for { set i 0 } { $i <= $nlambda_1 } { incr i } {
+	    #set Xi [ spc_gausslist $nechant $delt_decal $fwhm [ lindex lambda_list $i ] ]
+	    set Xi [ spc_gausslist $listlambdas $decal $sigma [ lindex $lambda_list $i ] ]
+	    lappend X $Xi				
+	 }
+	 set Y [ gsl_mmult $X $d ]
+	 set Y [ gsl_mtranspose $Y ]
+	 set Y [ lindex $Y 0 ]
+	 #set Y [ gsl_mtranspose $Y ]
+	 set XX [gsl_mmult $X [ gsl_mtranspose $X ] ]
+	 #set d [ gsl_mtranspose $d ]
+			
+	 set xparam [ gsl_msolvelin $XX $Y ]
+	 set xparam [ gsl_mtranspose $xparam] 
+	 # calcul des intensites optimales pour le decalage considere
+	 #set result [ gsl_mfitmultilin $d $X $W ] 
+	 set dimxparam [ gsl_mlength $xparam ]
+	 set dimd [ gsl_mlength $Y ]
+	 #::console::affiche_resultat " $dimxparam $dimd \n\n"
+	 #::console::affiche_resultat " spc_decompraies coucou \n\n"
+	 set rrms [ gsl_mmult $xparam $Y ]
+	 set rrmms [ lindex [ lindex $rrms 0 ] 0 ]
+	 #::console::affiche_resultat " $decal rms= $rrms \n\n"
+	 lappend rms [ expr -1. *$rrmms ] 
+	 lappend param [ lindex $xparam 0 ]
+      }
+      # selection du decalage optimal
+      set rmsord [ lsort -real -increasing $rms ]
+      set rmsmin [ lindex $rmsord 0 ]
+      set i [ lsearch -exact $rms $rmsmin ]
+      set contrib [ lindex $param $i ] 
+      set decal [ lindex $list_decal $i ]
+      # affichage du graphique synthetisant l'exploration de l'espace des decalages
+      ::plotxy::plot $list_decal $rms r 1
+      ::plotxy::plotbackground #FFFFFF
+      ::plotxy::xlabel "Lambda (A)"
+      ::plotxy::ylabel "rms"
+      ::plotxy::title "rms en fonction des decalages"
+      # creation du fichier fit 
+      set X [ list ]
+      for { set i 0 } { $i <= $nlambda_1 } { incr i } {
+	 set Xi [ spc_gausslist $listlambdas $decal $sigma [ lindex $lambda_list $i ] ]
+	 lappend X $Xi				
+      }
+
+      #set XX [ list ]
+      #lappend XX $X
+      set dimX [ gsl_mlength $X ]
+      set dimcontrib [ llength $contrib ]
+      #::console::affiche_resultat " $dimX $dimcontrib \n\n"
+      set X [ gsl_mtranspose $X ]
+      set model [ gsl_mmult $X $contrib ]
+      set model [ gsl_mtranspose $model ]
+
+      set profmod [ lindex $model 0 ]
+      set coord [ list ]
+      lappend coord $listlambdas
+      lappend coord $profmod
+      ::console::affiche_resultat " [ llength $listlambdas ] [ llength $profmod ]\n\n"
+      set suff _mod
+      set nom_fich_input [ lindex $args 0 ]
+      set nom_fich_input [ file rootname $nom_fich_input ]
+      set nom_fich_output $nom_fich_input$suff 
+      set result [ spc_data2fits $nom_fich_output $coord float]
+      ::console::affiche_resultat "spc_decompraies : ecriture du fichier $nom_fich_output\n\n"
+      set contrib [ lindex $contrib 0 ]
+      return $contrib
+   } else {
+      ::console::affiche_erreur "Usage: spc_degauss nom_profil \{liste longueurs d'ondes des raies\} fwhm incertitude_lambda\n\n"
+      return 0
+   }  
+}
+#***************************************************************************#
 
 
 
