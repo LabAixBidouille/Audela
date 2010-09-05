@@ -2,7 +2,7 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise à jour $Id: superpad.tcl,v 1.34 2010-09-04 22:08:28 robertdelmas Exp $
+# Mise à jour $Id: superpad.tcl,v 1.35 2010-09-05 10:53:56 robertdelmas Exp $
 #
 
 package provide superpad 1.0
@@ -1091,41 +1091,41 @@ namespace eval DlgSelectStar {
       variable startname
       global caption stars
 
-      set stars(Achernar)       {01h37m47s -57d13m31s 01 }
-      set stars(Acrux)          {12h26m39s -63d06m33s 02}
-      set stars(AlNa\'ir)       {22h08m21s -46d57m09s 03}
-      set stars(Albireo)        {19h30m48s +27d57m54s 04}
-      set stars(Aldebaran)      {04h36m00s +16d30m43s 05}
-      set stars(Alphard)        {09h27m38s -08d39m46s 06}
-      set stars(Alphecca)       {15h34m45s +26d42m52s 07}
-      set stars(Alpheratz)      {00h08m28s +29d05m49s 08}
-      set stars(Altair)         {19h50m52s +08d52m26s 09}
-      set stars(Antares)        {16h29m30s -26d26m07s 10}
-      set stars(Arcturus)       {14h15m43s +19d10m44s 11}
-      set stars(Betelgeuse)     {05h55m14s +07d24m30s 12}
-      set stars(Canopus)        {06h23m57s -52d41m34s 13}
-      set stars(Capella)        {05h16m46s +45d59m49s 14}
-      set stars(Deneb)          {20h41m30s +45d17m11s 15}
-      set stars(Denebola)       {11h49m07s +14d34m02s 16}
-      set stars(Diphda)         {00h43m40s -17d58m36s 17}
-      set stars(Dubhe)          {11h03m46s +61d44m51s 18}
-      set stars(Fomalhaut)      {22h57m45s -29d36m45s 19}
-      set stars(Hamal)          {02h07m15s +23d28m04s 20}
-      set stars(Markab)         {23h04m51s +15d12m47s 21}
-      set stars(Mirfak)         {03h24m25s +49d51m45s 22}
-      set stars(Mizar)          {13h23m58s +54d55m25s 23}
-      set stars(Nunki)          {18h55m22s -26d17m41s 24}
-      set stars(Pollux)         {07h45m22s +28d01m25s 25}
-      set stars(Procyon)        {07h40m10s +05d13m46s 26}
-      set stars(Rasalhague)     {17h35m01s +12d33m42s 27}
-      set stars(Regulus)        {10h08m25s +11d57m46s 28}
-      set stars(Rigel)          {05h14m35s -08d11m53s 29}
-      set stars(RigelKentaurus) {14h39m42s -60d50m35s 30}
-      set stars(Schedar)        {00h40m36s +56d32m29s 31}
-      set stars(Sirius)         {06h45m11s -16d42m57s 32}
-      set stars(Spica)          {13h25m15s -11d10m02s 33}
-      set stars(Suhail)         {09h08m01s -43d26m13s 34}
-      set stars(Vega)           {18h37m00s +38d47m18s 35}
+      set stars(Achernar)        {01h37m43s -57d14m13s 01}
+      set stars(Acrux)           {12h26m36s -63d05m57s 02}
+      set stars(AlNair)          {22h08m14s -46d57m42s 03}
+      set stars(Albireo)         {19h30m43s +27d57m35s 04}
+      set stars(Aldebaran)       {04h35m55s +16d30m31s 05}
+      set stars(Alphard)         {09h27m35s -08d39m31s 06}
+      set stars(Alphecca)        {15h34m41s +26d42m52s 07}
+      set stars(Alpheratz)       {00h08m23s +29d05m24s 08}
+      set stars(Altair)          {19h50m47s +08d52m10s 09}
+      set stars(Antares)         {16h29m24s -26d25m55s 10}
+      set stars(Arcturus)        {14h15m39s +19d10m36s 11}
+      set stars(Betelgeuse)      {05h55m10s +07d24m25s 12}
+      set stars(Canopus)         {06h23m57s -52d41m45s 13}
+      set stars(Capella)         {05h16m41s +45d59m48s 14}
+      set stars(Deneb)           {20h41m26s +45d16m49s 15}
+      set stars(Denebola)        {11h49m03s +14d34m18s 16}
+      set stars(Diphda)          {00h43m36s -17d59m12s 17}
+      set stars(Dubhe)           {11h03m44s +61d45m02s 18}
+      set stars(Fomalhaut)       {22h57m39s -29d37m22s 19}
+      set stars(Hamal)           {02h07m11s +23d27m43s 20}
+      set stars(Markab)          {23h04m46s +15d12m19s 21}
+      set stars(Mirphak)         {03h24m19s +49d51m40s 22}
+      set stars(Mizar)           {13h23m56s +54d55m31s 23}
+      set stars(Nunki)           {18h55m16s -26d17m49s 24}
+      set stars(Pollux)          {07h45m18s +28d01m34s 25}
+      set stars(Procyon)         {07h39m18s +05d13m19s 26}
+      set stars(Rasalhague)      {17h34m56s +12d33m34s 27}
+      set stars(Regulus)         {10h08m22s +11d58m02s 28}
+      set stars(Rigel)           {05h14m32s -08d12m06s 29}
+      set stars(RigelKentaurus)  {14h39m31s -60d49m59s 30}
+      set stars(Schedir)         {00h40m31s +56d32m14s 31}
+      set stars(Sirius)          {06h45m08s -16d43m11s 32}
+      set stars(Spica)           {13h25m11s -11d09m41s 33}
+      set stars(Alsuhail)        {09h08m00s -43d25m57s 34}
+      set stars(Vega)            {18h36m56s +38d47m04s 35}
 
       if { [winfo exists $This] } {
          wm withdraw $This
