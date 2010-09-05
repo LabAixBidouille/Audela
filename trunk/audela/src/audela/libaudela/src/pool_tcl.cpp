@@ -243,10 +243,11 @@ int CmdCreatePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
             dontCreateCommand = 1;
             // Cree la nouvelle commande par le biais de l'unique
             // commande exportee de la librairie libcam.
-            sprintf(ligne,"%s cam%d %s ",argv[1],toto->no,argv[2]);
+            sprintf(ligne,"%s cam%d {%s} ",argv[1],toto->no,argv[2]);
             for (kk=0;kk<argc;kk++) {
+               strcat(ligne," {");
                strcat(ligne,argv[kk]);
-               strcat(ligne," ");
+               strcat(ligne,"}");
             }
             if (Tcl_Eval(interp,ligne)==TCL_OK) {
                sprintf(ligne,"cam%d channel",toto->no);
@@ -298,10 +299,11 @@ int CmdCreatePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
             dontCreateCommand = 1;
             // Cree la nouvelle commande par le biais de l'unique
             // commande exportee de la librairie libtel.
-            sprintf(ligne,"%s tel%d %s ",argv[1],toto->no,argv[2]);
+            sprintf(ligne,"%s tel%d {%s} ",argv[1],toto->no,argv[2]);
             for (kk=0;kk<argc;kk++) {
+               strcat(ligne," {");
                strcat(ligne,argv[kk]);
-               strcat(ligne," ");
+               strcat(ligne,"}");
             }
             if (Tcl_Eval(interp,ligne)==TCL_OK) {
                sprintf(ligne,"tel%d channel",toto->no);
@@ -381,10 +383,11 @@ int CmdCreatePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
                dontCreateCommand = 1;
                // Cree la nouvelle commande par le biais de l'unique
                // commande exportee de la librairie liblink.
-               sprintf(ligne,"%s link%d %s ",argv[1],toto->no,argv[2]);
+               sprintf(ligne,"%s link%d {%s} ",argv[1],toto->no,argv[2]);
                for (kk=0;kk<argc;kk++) {
+                  strcat(ligne," {");
                   strcat(ligne,argv[kk]);
-                  strcat(ligne," ");
+                  strcat(ligne,"}");
                }
                if (Tcl_Eval(interp,ligne)==TCL_OK) {
                   sprintf(ligne,"link%d channel",toto->no);
