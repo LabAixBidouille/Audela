@@ -2,7 +2,7 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spcaudace spc_metaf.tcl ]
 
-# Mise a jour $Id: spc_metaf.tcl,v 1.20 2010-08-24 02:15:15 bmauclaire Exp $
+# Mise a jour $Id: spc_metaf.tcl,v 1.21 2010-09-05 16:08:03 bmauclaire Exp $
 
 
 
@@ -1400,6 +1400,7 @@ proc spc_traite2srinstrum { args } {
           set nbimg_ini 1
        } else {
           set nbimg [ llength [ glob -dir $audace(rep_images) ${img}\[0-9\]$conf(extension,defaut) ${img}\[0-9\]\[0-9\]$conf(extension,defaut) ${img}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+          set nbimg_ini $nbimg
        }
 
        #--- Prétraitement de $nbimg images :
@@ -1579,6 +1580,13 @@ proc spc_traite2srinstrum { args } {
 
 
        #--- Correction de la réponse intrumentale :
+      buf$audace(bufNo) load "$audace(rep_images)/${img}-profil-1b"
+      set naxis1 [  lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+      set cdelt1 [  lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+      set largeur_spectrale [ expr $cdelt1*$naxis1 ]
+      if { $largeur_spectrale >= $spcaudace(bande_br) } {
+         set spcaudace(rm_edges) "n"
+      }
        if { $rinstrum=="none" } {
           set fricorr "$fcal"
           #-- Linearisation de la calibration a partir du niveau 1b_lin :
@@ -1595,10 +1603,6 @@ proc spc_traite2srinstrum { args } {
           file delete -force "$audace(rep_images)/$fricorr$conf(extension,defaut)"
        } else {
           ::console::affiche_resultat "\n\n**** Correction de la réponse intrumentale ****\n\n"
-          buf$audace(bufNo) load "$audace(rep_images)/$rinstrum"
-          set naxis1 [  lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
-          set cdelt1 [  lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-          set largeur_spectrale [ expr $cdelt1*$naxis1 ]
           if { $largeur_spectrale >= $spcaudace(bande_br) } {
              set imaxtol $spcaudace(imax_tolerence)
              set spcaudace(imax_tolerence) 1.10
@@ -1652,6 +1656,7 @@ proc spc_traite2srinstrum { args } {
               file delete -force "$audace(rep_images)/$fricorr$conf(extension,defaut)"
 	   }
        }
+       set spcaudace(rm_edges) "o"
 
 
        #--- Normalisation du profil de raies :
