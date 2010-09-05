@@ -921,6 +921,7 @@ int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *com
 	char s[1024];
 	int cr = 0;
    va_list mkr;
+   int tempo =100; // delai d'attente en millisecondes 
    
    // j'assemble la commande 
    va_start(mkr, commandFormat);
@@ -962,8 +963,8 @@ int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *com
             // je copie le message d'erreur 
             strcpy(tel->msg, tel->interp->result);
          }
-      } while ( k++ < 3000 && cr==0 );
-      if ( k >= 3000 ) {
+      } while ( k++ < tempo && cr==0 );
+      if ( k >= tempo ) {
          sprintf(tel->msg, "No response for %s",command);
          mytel_logConsole(tel, "No # reponse for %s",command);
       }
@@ -984,16 +985,17 @@ int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *com
             } else {
                // si ce n'est pas un diese j'ajoute le caractere lu dans le resultat
                strcat(response,tel->interp->result);
+               // je remet la temporisation a zero
+               k = 0;
             }
          } else {
             // erreur, je copie le message d'erreur dans la variable tel->msg
             strcpy(tel->msg, tel->interp->result);
          }
-
-      } while ( strcmp(s,"#")!= 0  &&  k++ < 3000 && cr==0 );
-      if ( k >= 3000 ) {
-         sprintf(tel->msg, "No # reponse for %s after 3000 ms",command);
-         mytel_logConsole(tel, "No # reponse for %s after 3000 ms",command);
+      } while ( k++ < tempo && cr==0 );
+      if ( k >= tempo ) {
+         sprintf(tel->msg, "No # reponse for %s after %d ms",command, tempo);
+         mytel_logConsole(tel, "No # reponse for %s after %d ms",command,tempo);
       }
    }
 
