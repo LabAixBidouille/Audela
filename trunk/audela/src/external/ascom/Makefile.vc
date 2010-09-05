@@ -16,11 +16,11 @@ RM= -@del /f /q
 SOURCE=ascom
 EXTERNAL_LIB=..\lib
 
-build:
-
-install : build
+$(EXTERNAL_LIB)\AscomMasterInterfaces.tlb : $(SOURCE)\lib\AscomMasterInterfaces.tlb
 	if not exist $(EXTERNAL_LIB)      mkdir $(EXTERNAL_LIB)
 	$(CP) $(SOURCE)\lib\AscomMasterInterfaces.tlb   $(EXTERNAL_LIB)
+
+install : $(EXTERNAL_LIB)\AscomMasterInterfaces.tlb 
 
 clean:
 	$(RM) $(EXTERNAL_LIB)\AscomMasterInterfaces.tlb
