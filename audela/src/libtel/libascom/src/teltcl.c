@@ -114,7 +114,7 @@ int cmdTelMethods(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 // return
 //    TCL_OK
 // ---------------------------------------------------------------------------
-int cmdTelConnectedSetupDialog(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+int cmdTelConnectedSetupDialog(ClientData clientData, Tcl_Interp * interp, int argc, const char *argv[])
 {
    struct telprop *tel = (struct telprop *)clientData;
    int result = mytel_connectedSetupDialog(tel);

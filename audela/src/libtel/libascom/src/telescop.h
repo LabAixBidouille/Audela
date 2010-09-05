@@ -99,7 +99,7 @@ int mytel_tcleval(struct telprop *tel,char *ligne);
 
 void mytel_decimalsymbol(char *strin, char decin, char decout, char *strout);
 int mytel_connectedSetupDialog(struct telprop *tel);
-int mytel_setupDialog(char * ascomDiverName, char * errorMsg);
+int mytel_setupDialog(const char * ascomDiverName, char * errorMsg);
 
 
 int tel_select(char * productName);
