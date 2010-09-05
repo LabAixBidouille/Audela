@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise à jour $Id: telescope.tcl,v 1.66 2010-09-04 22:10:35 robertdelmas Exp $
+# Mise à jour $Id: telescope.tcl,v 1.67 2010-09-05 18:55:25 michelpujol Exp $
 #
 
 namespace eval ::telescope {
@@ -229,7 +229,11 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
                #--- Boucle tant que la monture n'est pas arretee (si on n'utilise pas le mode bloquant du goto)
                set audace(telescope,goto) "1"
                set radec0 [ tel$audace(telNo) radec coord -equinox $radecEquinox ]
-               set derniereBoucle [ ::telescope::surveille_goto [ list $radec0 ] $radecEquinox ]
+               #--- j'attends une seconde que le telescope commence a tourner
+               #--- car sinon la boucle de surveillance va considerer que les
+               #--- coordonnees n'ont pas changé et va s'arreter immediatement
+               after 1000
+               set derniereBoucle [ ::telescope::surveille_goto $radec0 $radecEquinox ]
                if { $derniereBoucle == 1 } {
                   #--- j'attends que la variable soit remise a zero
                   vwait ::audace(telescope,goto)
@@ -278,15 +282,20 @@ proc ::telescope::surveille_goto { radec0 radecEquinox } {
    global audace
 
    if { $audace(telNo) != 0 } {
-      set radec1 [ tel$audace(telNo) radec coord -equinox $radecEquinox ]
-      ::telescope::afficheCoord
+      set radec1 [::telescope::afficheCoord]
+      if { $radec1 == "" } {
+         #--- j'arrete la boucle de surveillance  car les les coordonnees n'ont pas pu etre recuperees
+         return 0
+      }
       set ra0 [ mc_angle2deg [ lindex $radec0 0 ] 360 ]
       set dec0 [ mc_angle2deg [ lindex $radec0 1 ] 90 ]
-      set ra1 [ mc_angle2deg [ lindex $radec1 0 ] 360 ]s
+      set ra1 [ mc_angle2deg [ lindex $radec1 0 ] 360 ]
       set dec1 [ mc_angle2deg [ lindex $radec1 1 ] 90 ]
+
       set sepangle [ mc_anglesep [ list $ra0 $dec0 $ra1 $dec1 ] ]
-      if { [ lindex $sepangle 0 ] > 0.1 } {
+      if { [ lindex $sepangle 0 ] > 0.01 } {
          after 1000 ::telescope::surveille_goto [ list $radec1 ] $radecEquinox
+         #--- je retourne 1 pour signaler que ce n'est pas pas la derniere boucle
          return 1
       } else {
          #--- j'arrete la surveillance car le GOTO est termine
@@ -295,7 +304,7 @@ proc ::telescope::surveille_goto { radec0 radecEquinox } {
          return 0
       }
    } else {
-      #--- j'arrete la surveillance car le telescope a ete arrete pendant le GOTO
+      #--- j'arrete la surveillance car le telescope a ete deconnecte pendant le GOTO
       set ::audace(telescope,goto) "0"
       update
       return 0
