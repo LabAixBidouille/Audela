@@ -3169,13 +3169,15 @@ int mctcl_decode_angle(Tcl_Interp *interp, char *argv0,double *angledeg)
          }
       } else {
 		   /* Plusieurs elements dans la liste */
+         strcpy(text,argvv[0]);
+         if (text[0]=='-') { signe=-1.; }
          for (k=1;k<=argcc;k++) {
             strcpy(text,argvv[k-1]);
    		   mc_strupr(text,text);
             kd=1;
             if (text[0]=='H') { kh=1; kd=0; }
             else if (text[0]=='R') { kr=1; m=0.; s=0.; break; }
- 	         else if (khd==0) { hd=atof(argvv[k-1]); if (hd<0) {signe=-1.;} else { signe=1.;} hd=fabs(hd); khd=1; }
+ 	         else if (khd==0) { hd=fabs(atof(argvv[k-1])); khd=1; }
  	         else if ((khd==1)&&(km==0)) { m=fabs(atof(argvv[k-1])); hd=floor(hd); km=1; }
  	         else if ((khd==1)&&(km==1)&&(ks==0)) { s=fabs(atof(argvv[k-1])); m=floor(m); ks=1; }
          }
