@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.21 2010-08-29 14:11:50 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.22 2010-09-07 20:54:43 bmauclaire Exp $
 
 
 
@@ -2499,7 +2499,7 @@ proc spc_calibretelluric { args } {
             buf$audace(bufNo) load "$audace(rep_images)/$spectre_ocallinbis"
             set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-            #- buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_calobis double "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_RMSO" $rms_calobis double "" "angstrom" ]
             buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 4)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
@@ -2513,7 +2513,7 @@ proc spc_calibretelluric { args } {
             buf$audace(bufNo) load "$audace(rep_images)/$spectre_ocalshifted"
             set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-            #- buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_calo double "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_RMSO" $rms_calo double "" "angstrom" ]
             buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 3)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
@@ -2528,7 +2528,7 @@ proc spc_calibretelluric { args } {
             buf$audace(bufNo) load "$audace(rep_images)/$spectre_lindec"
             set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-            #- buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_lindec double "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_RMSO" $rms_lindec double "" "angstrom" ]
             buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 2)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
@@ -2542,7 +2542,7 @@ proc spc_calibretelluric { args } {
             buf$audace(bufNo) load "$audace(rep_images)/$spectre_lindec_rms"
             set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-            #- buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_lindec_rms double "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_RMSO" $rms_lindec_rms double "" "angstrom" ]
             buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 5)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
@@ -2556,7 +2556,7 @@ proc spc_calibretelluric { args } {
             buf$audace(bufNo) load "$audace(rep_images)/$spectre_lindec_drms"
             set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-            #- buf$audace(bufNo) setkwd [ list "SPC_RMS" $drms_dec double "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_RMSO" $drms_dec double "" "angstrom" ]
             buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 6)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
@@ -2570,7 +2570,7 @@ proc spc_calibretelluric { args } {
             buf$audace(bufNo) load "$audace(rep_images)/$spectre_dec"
             set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-            #- buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_dec double "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_RMSO" $rms_dec double "" "angstrom" ]
             buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 7)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
@@ -2584,7 +2584,7 @@ proc spc_calibretelluric { args } {
             buf$audace(bufNo) load "$audace(rep_images)/$spectre_linear"
             set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-            #- buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_initial double "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_RMSO" $rms_initial double "" "angstrom" ]
             buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 1)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
