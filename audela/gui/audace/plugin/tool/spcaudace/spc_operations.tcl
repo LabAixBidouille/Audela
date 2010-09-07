@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.34 2010-09-05 15:49:36 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.35 2010-09-07 20:59:30 bmauclaire Exp $
 
 
 
@@ -1841,12 +1841,15 @@ proc spc_somme { args } {
           }
        }
 
-       #--- Somme :
-       ::console::affiche_resultat "Somme de $nb_file images...\n"
-       renumerote "$nom_generique"
+      #--- Prevoit si l'intensite de la somme saturera la capacite des pixels de l'image :
+      #set bpix [ lindex [ buf$audace(bufNo) getkwd "BITPIX" ] 1 ]
+
+      #--- Somme :
+      ::console::affiche_resultat "Somme de $nb_file images...\n"
+      renumerote "$nom_generique"
       if { $methsomme == "addi" } {
-         sadd "$nom_generique" "${nom_generique}-s$nb_file" $nb_file
-         # in out number first_index "bitpix=32"
+         # sadd "$nom_generique" "${nom_generique}-s$nb_file" $nb_file
+         sadd "$nom_generique" "${nom_generique}-s$nb_file" $nb_file 1 "bitpix=32"
       } elseif { $methsomme == "moy" } {
          smean "$nom_generique" "${nom_generique}-s$nb_file" $nb_file
       } elseif { $methsomme == "sigmakappa" } {
