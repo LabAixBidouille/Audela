@@ -6,7 +6,7 @@
   <title>Liste de toutes les fonctions</title>
 </head>
 <body>
-<p class="date">Date de mise &agrave; jour : 23 juillet 2010</p>
+<p class="date">Date de mise &agrave; jour : 08 septembre 2010</p>
 <h1>Liste de toutes les fonctions </h1>
 <p>Nous donnons la liste de toutes les fonctions disponibles dans
 AudeLA, plus quelques unes de Tcl et Tk qui sont tr&egrave;s utiles. En
@@ -76,7 +76,6 @@ file : [TC] jeu de fonctions puissantes de gestion de fichiers <br>
 fichiers <br>
 <a href="gzipus-fr.htm#gunzip">gunzip</a> : [GZ] d&eacute;compresse un
 ou plusieurs fichiers
-<p></p>
 <h1> En-t&ecirc;te FITS des images</h1>
 <a href="buf.htm#clear">buf1 clear</a> : [AL] : RAZ de l'image et de
 l'en-t&ecirc;te <br>
@@ -427,7 +426,8 @@ l'image en m&eacute;moire <br>
 optimis&eacute;e &agrave; l'image en m&eacute;moire <br>
 <a href="ttus1-fr.htm#SUB">buf1 imaseries "SUB <em>options</em>"</a> :
 [AL] soustrait une image <br>
-<a href="ttus1-fr.htm#ADD">buf1 imaseries "ADD <em>options</em>"</a> :
+<a href="ttus1-fr.htm#seriesADD">buf1 imaseries "ADD <em>options</em>"</a>
+:
 [AL] ajoute une image <br>
 <a href="ttus1-fr.htm#DIV">buf1 imaseries "DIV <em>options</em>"</a> :
 [AL] divise par une image <br>
@@ -566,7 +566,7 @@ m&eacute;diane d'un lot d'images <br>
 <a href="aud3.htm#scale2">scale2</a> : [surcharge AC]
 r&eacute;-&eacute;chantillonnage
 d'un lot d'images<br>
-<a href="audus1_fr.htm#trans2"></a><a href="audus1_fr.htm#sub2">sub2</a>
+<a href="audus1_fr.htm#sub2">sub2</a>
 : [AL]
 soustraction d'une image &agrave; un lot d'images <br>
 <a href="aud3.htm#sub2">sub2</a> : [surcharge AC] soustraction d'une
@@ -1090,7 +1090,6 @@ audace(camNo) : [AC] num&eacute;ro de la cam&eacute;ra associ&eacute;e
 audace(imageNo) : [AC] num&eacute;ro de l'image TK de la visu principale<br>
 audace(telNo) : [AC] num&eacute;ro du t&eacute;lescope<br>
 audace(visuNo) : [AC] num&eacute;ro de la visu principale<br>
-<p></p>
 audace(aladin) : [AC]&nbsp; r&eacute;pertoire d&eacute;di&eacute; au
 programme Aladin<br>
 audace(rep_caption) : [AC] r&eacute;pertoire d&eacute;di&eacute; aux
@@ -1120,7 +1119,6 @@ audace(rep_travail) : [AC] r&eacute;pertoire d&eacute;di&eacute; aux
 fichiers de travail temporaires<br>
 audace(rep_userCatalog) : [AC] r&eacute;pertoire d&eacute;di&eacute;
 aux catalogues utilisateurs<br>
-<p></p>
 audace(hl,format,hmsint) : [AC] heure locale du moment au format "HHh
 MMm SSs" (par exemple : 23h 57m 14s)<br>
 audace(tu,format,dmyhmsint) : [AC] date et heure TU du moment au format
@@ -1134,7 +1132,6 @@ exemple : 6 9 22.310192)<br>
 audace(tsl,format,hmsint) : [AC] heure TSL du moment au format "HHh MMm
 SSs" (par exemple : 06h 09m 44s)<br>
 audace(tsl,format,zenith) : [AC] Ascension Droite du z&eacute;nith<br>
-<p></p>
 audace(focus,currentFocus) : [AC] position actuelle du dispositif
 de mise au point (focuser)<br>
 audace(focus,labelspeed) : [AC] vitesse
@@ -1171,7 +1168,6 @@ audace(telescope,targetDec) : [AC] D&eacute;clinaison de l'objet cible<br>
 audace(telescope,targetEquinox) : [AC] &eacute;quinoxe de l'objet cible<br>
 audace(telescope,targetName) : [AC] nom de l'objet cible<br>
 audace(telescope,targetRa) : [AC] Ascension Droite de l'objet cible<br>
-<p></p>
 audace(base) : [AC] vaut '.audace'<br>
 audace(Console) : [AC] vaut '.console'<br>
 audace(extensionList) : [AC] liste des extensions des images
@@ -1183,7 +1179,6 @@ audace(list_com) : [AC] liste des ports de communication disponibles<br>
 audace(posobs,observateur,gps) : [AC] position GPS de l'observateur
 (par exemple : GPS 1.377972 E 43.660917 142)<br>
 audace(quitterEnCours) : [AC] indicateur d'arr&ecirc;t d'AudeLA<br>
-<p></p>
 audace(color,cursor_blue) : [AC] couleur d&eacute;di&eacute;e aux
 glissi&egrave;res (&eacute;tat passif) pour les images N&amp;B<br>
 audace(color,cursor_blue_actif) : [AC] couleur d&eacute;di&eacute;e aux
@@ -1196,7 +1191,6 @@ audace(color,cursor_rgb_red) : [AC] couleur d&eacute;di&eacute;e aux
 glissi&egrave;res (&eacute;tat passif) pour les images couleurs (rouge)<br>
 audace(color,cursor_rgb_actif) : [AC] couleur d&eacute;di&eacute;e aux
 glissi&egrave;res (&eacute;tat actif) pour les images couleurs<br>
-<p></p>
 [AC] couleur d&eacute;di&eacute;e &agrave; des widgets, utiliser le
 menu 'Configuration'
 --&gt; 'Apparence' pour identifier les widgets concern&eacute;s et
@@ -1264,5 +1258,6 @@ audela(date) : [AL] date de la version (par exemple 05/05/2010)<br>
 audela(hInstance) : [AL] num&eacute;ro d'instance d'AudeLA dans Windows<br>
 audela_start_dir : [AL] r&eacute;pertoire o&ugrave; sont
 install&eacute;s les binaires<br>
+<br>
 </body>
 </html>
