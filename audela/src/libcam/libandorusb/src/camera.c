@@ -46,7 +46,7 @@
  */
 
 struct camini CAM_INI[] = {
-   {"DZ936",                    /* camera name */
+   {"IKON-L, DZ936N-#BV",       /* camera name */
     "andorusb",                 /* camera product */
     "Marconi 47-41",            /* ccd name */
     2048, 2048,                   /* maxx maxy */
@@ -315,9 +315,9 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 
    /* --- electronic --- */
    cam->ADChannel   = 0;
-   cam->PreAmpGain  = 0;
+   cam->PreAmpGain  = 2;
    cam->VSSpeed     = 0;
-   cam->HSSpeed     = 0;
+   cam->HSSpeed     = 2;
    cam->VSAmplitude = 0;
    cam->HSEMult     = 0;
    cam->EMCCDGain   = 1;
@@ -339,6 +339,9 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    {
       cam->VSSpeed = 1;         // 1=888
    }
+
+   /* --- setup electronic parameters --- */
+   cam_setup_electronic(cam);
 
    return 0;
 }
@@ -362,7 +365,7 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
    exptime = cam->exptime;
 
    /* --- setup electronic parameters --- */
-   cam_setup_electronic(cam);
+   // cam_setup_electronic(cam);
    /* --- setup exposure parameters --- */
    cam_setup_exposure(cam, &exptime, &accumtime, &kinetictime);
    /* --- shutter --- */
@@ -459,7 +462,9 @@ void cam_stop_exp(struct camprop *cam)
 
 void cam_read_ccd(struct camprop *cam, unsigned short *p)
 {
-   int h, w, status, sortie, type = 1, mode = 2;
+   int h, w, status, sortie;
+   //int type = 1;
+   //int mode = 2;
    unsigned short *pix;
    long size;
    int k;
@@ -494,7 +499,7 @@ printf("FIN BOUCLE WHILE\n");
    /* --- importation de l'image --- */
       size = (long) (w) * (long) (h);
       cam->drv_status = GetAcquiredData16(pix, size);
-printf("GETACQUIREDDATA FINI : drv_status=%ld size=%ld\n",cam->drv_status,size);
+  printf("GETACQUIREDDATA FINI : drv_status=%d size=%ld\n",cam->drv_status,size);
 
       if(cam->drv_status != DRV_SUCCESS)
       {
@@ -683,7 +688,8 @@ void cam_setup_electronic(struct camprop *cam)
 void cam_setup_exposure(struct camprop *cam, float *texptime, float *taccumtime, float *tkinetictime)
 {
    float exptime, accumtime, kinetictime;
-   int type = 1, mode = 0;
+   //int type = 1;
+   //int mode = 0;
    int x1, y1, binx, biny, x2, y2;
    exptime = cam->exptime;
 
@@ -707,6 +713,10 @@ void cam_setup_exposure(struct camprop *cam, float *texptime, float *taccumtime,
               get_status(cam->drv_status));
       return;
    }
+   
+   
+   
+   
    if(cam->acqmode == 2)
    {
       cam->drv_status = SetKineticCycleTime(cam->exptime);
@@ -829,19 +839,90 @@ void cam_setup_exposure(struct camprop *cam, float *texptime, float *taccumtime,
 }
 
 #define MSG_UNKNOWN "Unknown return code."
-#define MSG_DRV_NOT_INITIALIZED "System not initialized."
-#define MSG_DRV_ACQUIRING "Acquisition in progress."
-#define MSG_DRV_ERROR_ACK "Unable to communicate with card."
-#define MSG_DRV_TEMP_OFF "Temperature is OFF."
-#define MSG_DRV_TEMP_STABILIZED "Temperature has stabilized at set point."
-#define MSG_DRV_TEMP_NOT_REACHED "Temperature has not reached set point."
-#define MSG_DRV_TEMP_DRIFT "Temperature had stabilized but has since drifted."
-#define MSG_DRV_TEMP_NOT_STABILIZED "Temperature reached but not stabilized."
-#define MSG_DRV_SUCCESS "Shutter set."
-#define MSG_DRV_P1INVALID "Invalid TTL type."
-#define MSG_DRV_P2INVALID "Invalid mode."
-#define MSG_DRV_P3INVALID "Invalid time to open."
-#define MSG_DRV_P4INVALID "Invalid time to close."
+
+#define MSG_DRV_ERROR_CODES "20001 : "
+#define MSG_DRV_P1INVALID "20066: "
+#define MSG_DRV_SUCCESS "20002 : "
+#define MSG_DRV_P2INVALID "20067: "
+#define MSG_DRV_VXDNOTINSTALLED "20003 : "
+#define MSG_DRV_P3INVALID "20068: "
+#define MSG_DRV_ERROR_SCAN "20004 : "
+#define MSG_DRV_P4INVALID "20069: "
+#define MSG_DRV_ERROR_CHECK_SUM "20005 : "
+#define MSG_DRV_INIERROR "20070: "
+#define MSG_DRV_ERROR_FILELOAD "20006 : "
+#define MSG_DRV_COFERROR "20071: "
+#define MSG_DRV_UNKNOWN_FUNCTION "20007 : "
+#define MSG_DRV_ACQUIRING "20072: Acquisition in progress."
+#define MSG_DRV_ERROR_VXD_INIT "20008 : "
+#define MSG_DRV_IDLE "20073: "
+#define MSG_DRV_ERROR_ADDRESS "20009 : "
+#define MSG_DRV_TEMPCYCLE "20074: "
+#define MSG_DRV_ERROR_PAGELOCK "20010 : "
+#define MSG_DRV_NOT_INITIALIZED "20075: System not initialized."
+#define MSG_DRV_ERROR_PAGE_UNLOCK "20011 : "
+#define MSG_DRV_P5INVALID "20076: "
+#define MSG_DRV_ERROR_BOARDTEST "20012 : "
+#define MSG_DRV_P6INVALID "20077: "
+#define MSG_DRV_ERROR_ACK "20013 : Unable to communicate with card."
+#define MSG_DRV_INVALID_MODE "20078: "
+#define MSG_DRV_ERROR_UP_FIFO "20014 : "
+#define MSG_DRV_INVALID_FILTER "20079: "
+#define MSG_DRV_ERROR_PATTERN "20015 : "
+#define MSG_DRV_I2CERRORS "20080: "
+#define MSG_DRV_ACQUISITION_ERRORS "20017 : "
+#define MSG_DRV_DRV_I2CDEVNOTFOUND "20081: "
+#define MSG_DRV_ACQ_BUFFER "20018 : "
+#define MSG_DRV_I2CTIMEOUT "20082: "
+#define MSG_DRV_ACQ_DOWNFIFO_FULL "20019 : "
+#define MSG_DRV_P7INVALID "20083: "
+#define MSG_DRV_PROC_UNKNOWN_INSTRUCTION "20020 : "
+#define MSG_DRV_USBERROR "20089: "
+#define MSG_DRV_ILLEGAL_OP_CODE "20021 : "
+#define MSG_DRV_IOCERROR "20090: "
+#define MSG_DRV_KINETIC_TIME_NOT_MET "20022 : "
+#define MSG_DRV_NOT_SUPPORTED "20091: "
+#define MSG_DRV_KINETIC_TIME_NOT_MET "20022 : "
+#define MSG_DRV_USB_INTERRUPT_ENDPOINT_ERROR "20093: "
+#define MSG_DRV_ACCUM_TIME_NOT_MET "20023 : "
+#define MSG_DRV_RANDOM_TRACK_ERROR "20094: "
+#define MSG_DRV_NO_NEW_DATA "20024 : "
+#define MSG_DRV_INVALID_TRIGGER_MODE "20095: "
+#define MSG_DRV_SPOOLERROR "20026 : "
+#define MSG_DRV_LOAD_FIRMWARE_ERROR "20096: "
+#define MSG_DRV_TEMPERATURE_CODES "20033 : "
+#define MSG_DRV_DIVIDE_BY_ZERO_ERROR "20097: "
+#define MSG_DRV_TEMPERATURE_OFF "20034 : Temperature is OFF."
+#define MSG_DRV_INVALID_RINGEXPOSURES "20098: "
+#define MSG_DRV_TEMPERATURE_NOT_STABILIZED "20035 : Temperature reached but not stabilized."
+#define MSG_DRV_BINNING_ERROR "20099: "
+#define MSG_DRV_TEMPERATURE_STABILIZED "20036 : Temperature has stabilized at set point."
+#define MSG_DRV_ERROR_NOCAMERA "20990: "
+#define MSG_DRV_TEMPERATURE_NOT_REACHED "20037 : Temperature has not reached set point."
+//#define MSG_DRV_NOT_SUPPORTED "20991: "
+#define MSG_DRV_TEMPERATURE_OUT_RANGE "20038 : "
+#define MSG_DRV_NOT_AVAILABLE "20992: "
+#define MSG_DRV_TEMPERATURE_NOT_SUPPORTED "20039 : "
+#define MSG_DRV_ERROR_MAP "20115: "
+#define MSG_DRV_TEMPERATURE_DRIFT "20040 : Temperature had stabilized but has since drifted."
+#define MSG_DRV_ERROR_UNMAP "20116: "
+#define MSG_DRV_GENERAL_ERRORS "20049 : "
+#define MSG_DRV_ERROR_MDL "20117: "
+#define MSG_DRV_INVALID_AUX "20050 : "
+#define MSG_DRV_ERROR_UNMDL "20118: "
+#define MSG_DRV_COF_NOTLOADED "20051 : "
+#define MSG_DRV_ERROR_BUFFSIZE "20119: "
+#define MSG_DRV_FPGAPROG "20052 : "
+#define MSG_DRV_ERROR_NOHANDLE "20121: "
+#define MSG_DRV_FLEXERROR "20053 : "
+#define MSG_DRV_GATING_NOT_AVAILABLE "20130: "
+#define MSG_DRV_GPIBERROR "20054 : "
+#define MSG_DRV_FPGA_VOLTAGE_ERROR "20131: "
+#define MSG_DRV_DATATYPE "20064 : "
+#define MSG_DRV_BINNING_ERROR "20099: "
+#define MSG_DRV_DRIVER_ERRORS "20065 : "
+#define MSG_DRV_INVALID_AMPLIFIER "20100: Not a valid amplifier."
+
    
 char * get_status(int st)
 {
@@ -850,9 +931,9 @@ char * get_status(int st)
       case DRV_NOT_INITIALIZED:     return MSG_DRV_NOT_INITIALIZED; break;
       case DRV_ACQUIRING:           return MSG_DRV_ACQUIRING; break;
       case DRV_ERROR_ACK:           return MSG_DRV_ERROR_ACK; break;
-      case DRV_TEMP_OFF:            return MSG_DRV_TEMP_OFF; break;
-      case DRV_TEMP_STABILIZED:     return MSG_DRV_TEMP_STABILIZED; break;
-      case DRV_TEMP_NOT_REACHED:    return MSG_DRV_TEMP_NOT_REACHED; break;
+      case DRV_TEMP_OFF:            return MSG_DRV_TEMPERATURE_OFF; break;
+      case DRV_TEMP_STABILIZED:     return MSG_DRV_TEMPERATURE_STABILIZED; break;
+      case DRV_TEMP_NOT_REACHED:    return MSG_DRV_TEMPERATURE_NOT_REACHED; break;
       case DRV_TEMP_DRIFT:          return MSG_DRV_NOT_INITIALIZED; break;
       case DRV_TEMP_NOT_STABILIZED: return MSG_DRV_NOT_INITIALIZED; break;
       case DRV_SUCCESS:             return MSG_DRV_NOT_INITIALIZED; break;
