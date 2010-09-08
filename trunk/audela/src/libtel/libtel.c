@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libtel.c,v 1.30 2010-09-04 21:30:43 michelpujol Exp $
+// $Id: libtel.c,v 1.31 2010-09-08 14:55:38 fredvachier Exp $
 
 #include "sysexp.h"
 
@@ -1913,7 +1913,7 @@ int default_tel_set_radec_guiding(struct telprop *tel, int guiding) {
    return 0;
 }
 
-int tel_init_common(struct telprop *tel, int argc, char **argv)
+int tel_init_common(struct telprop *tel, int argc, const char **argv)
 /* --------------------------------------------------------- */
 /* --- tel_init permet d'initialiser les variables de la --- */
 /* --- structure 'telprop'                               --- */
