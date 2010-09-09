@@ -1,6 +1,6 @@
 #
 # Fichier : acqdslr.cap
-# Mise a jour $Id: acqdslr.cap,v 1.3 2010-07-05 21:02:26 robertdelmas Exp $
+# Mise a jour $Id: acqdslr.cap,v 1.4 2010-09-09 20:41:25 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -50,6 +50,7 @@ set caption(acqdslr,ouvsess)                          "\n----- Opening a New Acq
 set caption(acqdslr,maxi)                             "Max.: "
 set caption(acqdslr,mini)                             "Min.: "
 set caption(acqdslr,moyenne)                          "Mean: "
+set caption(acqdslr,prisedevue)                       "No. shooting %s"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -93,6 +94,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqdslr,maxi)                          "Maxi. : "
    set caption(acqdslr,mini)                          "Mini. : "
    set caption(acqdslr,moyenne)                       "Moyenne : "
+   set caption(acqdslr,prisedevue)                    "Prise de vue N° %s"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -136,6 +138,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqdslr,maxi)                          "Maxi. : "
    set caption(acqdslr,mini)                          "Mini. : "
    set caption(acqdslr,moyenne)                       "Media: "
+   set caption(acqdslr,prisedevue)                    "N. di ripresa %s"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -179,6 +182,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqdslr,maxi)                          "Maxi. : "
    set caption(acqdslr,mini)                          "Mini. : "
    set caption(acqdslr,moyenne)                       "Media: "
+   set caption(acqdslr,prisedevue)                    "Nº de tiro %s"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -222,6 +226,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqdslr,maxi)                          "Maxi. : "
    set caption(acqdslr,mini)                          "Mini. : "
    set caption(acqdslr,moyenne)                       "Mittelwert: "
+   set caption(acqdslr,prisedevue)                    "Nr. schießen %s"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -265,6 +270,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqdslr,maxi)                          "Maxi. : "
    set caption(acqdslr,mini)                          "Mini. : "
    set caption(acqdslr,moyenne)                       "Média: "
+   set caption(acqdslr,prisedevue)                    "N. º tiro %s"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -308,6 +314,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqdslr,maxi)                          "Maksimalt: "
    set caption(acqdslr,mini)                          "Minimum: "
    set caption(acqdslr,moyenne)                       "Gennemsnit : "
+   set caption(acqdslr,prisedevue)                    "Nr. skydning %s"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -351,6 +358,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqdslr,maxi)                          "Max.: "
    set caption(acqdslr,mini)                          "Min.: "
    set caption(acqdslr,moyenne)                       "Mean: "
+   set caption(acqdslr,prisedevue)                    "No. shooting %s"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -394,6 +402,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqdslr,maxi)                          "Max.: "
    set caption(acqdslr,mini)                          "Min.: "
    set caption(acqdslr,moyenne)                       "Mean: "
+   set caption(acqdslr,prisedevue)                    "No. shooting %s"
 
 }
 
