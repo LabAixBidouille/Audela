@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: dslr.tcl,v 1.42 2010-07-14 07:59:49 robertdelmas Exp $
+# Mise à jour $Id: dslr.tcl,v 1.43 2010-09-09 17:13:22 michelpujol Exp $
 #
 
 namespace eval ::dslr {
@@ -385,7 +385,7 @@ proc ::dslr::configureCamera { camItem bufNo } {
       }
       #--- Je mets audela_start_dir entre guillemets pour le cas ou le nom du repertoire contient des espaces
       #--- Je cree la camera
-      set camNo [ cam::create digicam USB -name DSLR -debug_cam $conf(dslr,debug) -gphoto2_win_dll_dir \"$::audela_start_dir\" ]
+      set camNo [ cam::create digicam USB -name DSLR -debug_cam $conf(dslr,debug) -gphoto2_win_dll_dir $::audela_start_dir ]
       ::console::affiche_entete "$caption(dslr,name) $caption(dslr,2points) [ cam$camNo name ]\n"
       ::console::affiche_saut "\n"
       #--- Je change de variable
