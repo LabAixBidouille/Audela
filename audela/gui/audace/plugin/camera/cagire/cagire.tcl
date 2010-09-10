@@ -2,7 +2,7 @@
 # Fichier : cagire.tcl
 # Description : Configuration de la camera Cagire
 # Auteur : Robert DELMAS
-# Mise à jour $Id: cagire.tcl,v 1.3 2010-05-22 17:23:15 robertdelmas Exp $
+# Mise à jour $Id: cagire.tcl,v 1.4 2010-09-10 19:34:52 robertdelmas Exp $
 #
 
 namespace eval ::cagire {
@@ -316,7 +316,7 @@ proc ::cagire::configureCamera { camItem bufNo } {
       }
       #--- Je mets conf(cagire,config) entre guillemets pour le cas ou le nom du repertoire contient des espaces
       #--- Je cree la camera
-      set camNo [ cam::create cagire TCP -ip \"$conf(cagire,ipserver)\" -port \"$conf(cagire,portserver)\" -impath \"$conf(cagire,config)\" -simu 1]
+      set camNo [ cam::create cagire TCP -ip $conf(cagire,ipserver) -port $conf(cagire,portserver) -impath $conf(cagire,config) -simu 1]
       console::affiche_entete "$caption(cagire,port_camera) ([ cam$camNo name ]) \
          $caption(cagire,2points) $conf(cagire,config)\n"
       console::affiche_saut "\n"
