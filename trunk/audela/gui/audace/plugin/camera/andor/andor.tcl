@@ -2,7 +2,7 @@
 # Fichier : andor.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Robert DELMAS
-# Mise à jour $Id: andor.tcl,v 1.22 2010-05-22 17:20:35 robertdelmas Exp $
+# Mise à jour $Id: andor.tcl,v 1.23 2010-09-10 19:34:06 robertdelmas Exp $
 #
 
 namespace eval ::andor {
@@ -316,7 +316,7 @@ proc ::andor::configureCamera { camItem bufNo } {
       }
       #--- Je mets conf(andor,config) entre guillemets pour le cas ou le nom du repertoire contient des espaces
       #--- Je cree la camera
-      set camNo [ cam::create andor PCI \"$conf(andor,config)\" ]
+      set camNo [ cam::create andor PCI $conf(andor,config) ]
       console::affiche_entete "$caption(andor,port_camera) ([ cam$camNo name ]) \
          $caption(andor,2points) $conf(andor,config)\n"
       console::affiche_saut "\n"

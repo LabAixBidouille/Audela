@@ -2,7 +2,7 @@
 # Fichier : ascomcam.tcl
 # Description : Configuration de la camera ASCOM
 # Auteur : Michel PUJOL
-# Mise à jour $Id: ascomcam.tcl,v 1.9 2010-05-22 17:21:15 robertdelmas Exp $
+# Mise à jour $Id: ascomcam.tcl,v 1.10 2010-09-10 19:34:32 robertdelmas Exp $
 #
 
 namespace eval ::ascomcam {
@@ -254,7 +254,7 @@ proc ::ascomcam::configureCamera { camItem bufNo } {
          error "" "CameraUnique"
       }
       #--- Je cree la camera
-      set camNo [ cam::create ascomcam \"$conf(ascomcam,modele)\" ]
+      set camNo [ cam::create ascomcam $conf(ascomcam,modele) ]
       console::affiche_entete "$caption(ascomcam,port_camera) $caption(ascomcam,2points) $conf(ascomcam,modele)\n"
       console::affiche_saut "\n"
       #--- Je change de variable

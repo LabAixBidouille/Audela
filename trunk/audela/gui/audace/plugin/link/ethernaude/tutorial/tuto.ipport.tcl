@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: tuto.ipport.tcl,v 1.15 2010-05-23 08:25:52 robertdelmas Exp $
+# Mise à jour $Id: tuto.ipport.tcl,v 1.16 2010-09-10 19:35:16 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -141,7 +141,7 @@ proc connect_ethernaude {} {
    #--- Je connecte l'Audine via la liaison EthernAude
    setip "$ipeth(ipnumethernaude)"
    set eth_canspeed [ expr round((-7.11)/(39.51-7.11)*30.) ]
-   set erreur [ catch { cam::create ethernaude udp -ip "$ipeth(ipnumethernaude)" \
+   set erreur [ catch { cam::create ethernaude udp -ip $ipeth(ipnumethernaude) \
       -shutterinvert "1" -canspeed $eth_canspeed -num 500 } msg ]
    if { $erreur == "1" } {
       tk_messageBox -message "$msg" -icon error
