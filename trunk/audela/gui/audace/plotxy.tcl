@@ -2,7 +2,7 @@
 # Fichier : plotxy.tcl
 # Description : Realisation de graphes a partir de 2 listes de nombres
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: plotxy.tcl,v 1.9 2010-05-16 14:20:22 robertdelmas Exp $
+# Mise à jour $Id: plotxy.tcl,v 1.10 2010-09-10 17:25:39 robertdelmas Exp $
 #
 # La syntaxe est la plus proche possible de Matlab
 #
@@ -430,6 +430,8 @@ namespace eval ::plotxy {
       #bind $baseplotxy.xy <Motion> {
       #   $baseplotxy.xy crosshairs configure -position @%x,%y
       #}
+
+      createBindingsZoom $baseplotxy
    }
 
    proc fileread { filename {linestoskip 0} } {
@@ -570,6 +572,175 @@ namespace eval ::plotxy {
       return $res
    }
 
+   #########################################################################
+   #--   Bindings du zoom                                                  #
+   #########################################################################
+   proc createBindingsZoom { graph } {
+
+      bind $graph <ButtonPress-3> {
+         ::plotxy::regionStart %W %x %y
+      }
+      bind $graph <B3-Motion> {
+         ::plotxy::regionMotion %W %x %y
+      }
+      bind $graph <ButtonRelease-3> {
+         ::plotxy::regionEnd %W %x %y
+      }
+      bind $graph <Double-ButtonRelease-3> {
+         ::plotxy::zoomOut %W
+      }
+   }
+
+   #########################################################################
+   #--   Capture les coordonnees initiales de la zone a zoomer             #
+   #--   Entree : nom de la fenetre, coordonnees initiales                 #
+   #########################################################################
+   proc regionStart { graph x y } {
+      variable private
+
+      #--   transforme les coordonnees ecran en coordonnees graphique
+      #--   memorise les coordonnees initiales
+      set private(plotxy,zoomstart,x) [ $graph axis invtransform x $x ]
+      set private(plotxy,zoomstart,y) [ $graph axis invtransform y $y ]
+
+      #--   cree un rectangle de selection sans coordonnees
+      $graph marker create line -coords {} -name myLine -dashes dash \
+         -linewidth 2 -outline blue -xor yes
+   }
+
+   #########################################################################
+   #--   Trace le rectangle de selection de la zone a zoomer               #
+   #--   Entree : nom de la fenetre, coordonnees finales courantes         #
+   #########################################################################
+   proc regionMotion { graph x y } {
+      variable private
+
+      set x0 $private(plotxy,zoomstart,x)
+      set y0 $private(plotxy,zoomstart,y)
+
+      #--   transforme les coordonnees ecran en coordonnees graphique
+      set x1 [ $graph axis invtransform x $x ]
+      set y1 [ $graph axis invtransform y $y ]
+
+      #--   trace le rectangle de selection
+      $graph marker configure myLine -coords "$x0 $y0 $x0 $y1 $x1 $y1 $x1 $y0 $x0 $y0"
+   }
+
+   #########################################################################
+   #--   Zoom dans le graphe                                               #
+   #--   Entree : nom de la fenetre, coordonnees finales                   #
+   #########################################################################
+   proc regionEnd { graph x y } {
+      variable private
+
+      set x0 $private(plotxy,zoomstart,x)
+      set y0 $private(plotxy,zoomstart,y)
+
+      #--   transforme les coordonnees ecran en coordonnees graphique
+      set x1 [ $graph axis invtransform x $x ]
+      set y1 [ $graph axis invtransform y $y ]
+
+      #--   efface le rectangle de selection
+      $graph marker delete myLine
+
+      #--   intercepte un clic simple dans la fenetre
+      if { $x0 == $x1 || $y0 == $y1 } {
+         return
+      }
+
+      #--   modifie les bornes de la visualisation
+      zoomIn $graph $x0 $y0 $x1 $y1
+   }
+
+   #########################################################################
+   #--   Zoom dans le graphe                                               #
+   #--   Entree : nom de la fenetre, coordonnees du rectangle de selection #
+   #########################################################################
+   proc zoomIn { graph x0 y0 x1 y1 } {
+
+      #--   pushZoom
+      pushZoom $graph
+
+      #--   configure les axes du graphique
+      if { $x0 > $x1 } {
+         $graph axis configure x -min $x1 -max $x0
+      } else {
+         $graph axis configure x -min $x0 -max $x1
+      }
+
+      if { $y0 > $y1 } {
+         $graph axis configure y -min $y1 -max $y0
+      } else {
+         $graph axis configure y -min $y0 -max $y1
+      }
+
+      ::blt::busy hold $graph
+      update
+      ::blt::busy release $graph
+   }
+
+   #########################################################################
+   #--   Memorise la commande de retour du zoom                            #
+   #--   Entree : nom de la fenetre                                        #
+   #########################################################################
+   proc pushZoom { graph } {
+      variable private
+
+      #--   identifie les coordonnees minimales et maximales
+      set x1 [ $graph axis cget x -min ]
+      set x2 [ $graph axis cget x -max ]
+      set y1 [ $graph axis cget y -min ]
+      set y2 [ $graph axis cget y -max ]
+
+      #--   remplace la valeur indeterminee par une liste vide
+      foreach val { x1 y1 x2 y2 } {
+         if { [ llength [ set $val ] ] == "0" } {
+            set $val [ list "" ]
+         }
+      }
+
+      #--   prepare la commande qui permettra le retour
+      set cmd "$graph axis configure x -min $x1 -max $x2 ;
+         $graph axis configure y -min $y1 -max $y2"
+
+      #--   memorise la commande
+      lappend private(plotxy,zoomstack,$graph) $cmd
+   }
+
+   #########################################################################
+   #--   Commande arriere du zoom                                          #
+   #--   Entree : nom de la fenetre                                        #
+   #########################################################################
+   proc zoomOut { graph } {
+      variable private
+
+      #--   si le stack du zoomIn n'est pas vide
+      if [ info exists private(plotxy,zoomstack,$graph) ] {
+         eval [ popZoom $graph ]
+
+         ::blt::busy hold $graph
+         update
+         ::blt::busy release $graph
+      }
+   }
+
+   #########################################################################
+   #--   Execute la commande de retour du zoom                             #
+   #--   Entree : nom de la fenetre                                        #
+   #########################################################################
+   proc popZoom { graph } {
+      variable private
+
+      #--   recupere le precedent niveau de zoom
+      set cmd [ lindex $private(plotxy,zoomstack,$graph) end ]
+
+      #--   suprime la commande de la liste
+      set private(plotxy,zoomstack,$graph) [ lreplace $private(plotxy,zoomstack,$graph) end end ]
+
+      return $cmd
+   }
+
+#--fin du namespace
 }
 
 # ::plotxy::clf ; source audace/plotxy.tcl ; ::plotxy::figure 1 ; ::plotxy::getgcf 1
