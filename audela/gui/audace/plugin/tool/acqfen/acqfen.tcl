@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise à jour $Id: acqfen.tcl,v 1.42 2010-05-01 08:50:12 robertdelmas Exp $
+# Mise à jour $Id: acqfen.tcl,v 1.43 2010-09-11 15:36:35 robertdelmas Exp $
 #
 
 # =========================================================
@@ -168,10 +168,10 @@ namespace eval ::acqfen {
       set panneau(acqfen,mtx_y) 54
 
       #--- Valeurs initiales des coordonnees de la "boite"
-      set panneau(acqfen,X1) "-"
-      set panneau(acqfen,Y1) "-"
-      set panneau(acqfen,X2) "-"
-      set panneau(acqfen,Y2) "-"
+      set panneau(acqfen,X1) ""
+      set panneau(acqfen,Y1) ""
+      set panneau(acqfen,X2) ""
+      set panneau(acqfen,Y2) ""
 
       #--- Type scale par defaut (scale ou zoom)
       set panneau(acqfen,typezoom) "scale"
@@ -538,10 +538,10 @@ namespace eval ::acqfen {
                   $This.acqred.but configure -text $caption(acqfen,actuxy) -command ::acqfen::actualiserCoordonnees
 
                   #--- RAZ du fenetrage
-                  set panneau(acqfen,X1) "-"
-                  set panneau(acqfen,Y1) "-"
-                  set panneau(acqfen,X2) "-"
-                  set panneau(acqfen,Y2) "-"
+                  set panneau(acqfen,X1) ""
+                  set panneau(acqfen,Y1) ""
+                  set panneau(acqfen,X2) ""
+                  set panneau(acqfen,Y2) ""
                   place forget $This.acq.matrice_color_invariant.fen
                   place forget $This.acqred.matrice_color_invariant.fen
                   $This.acq.matrice_color_invariant.fen config -width $panneau(acqfen,mtx_x) -height $panneau(acqfen,mtx_y)
@@ -589,6 +589,18 @@ namespace eval ::acqfen {
             }
          }
 
+         #--- On rend les entry inactives
+         $This.acq.x1.entryX1 configure -state normal
+         $This.acq.y1.entryY1 configure -state normal
+         $This.acq.x2.entryX2 configure -state normal
+         $This.acq.y2.entryY2 configure -state normal
+
+         #--- On rend les entry inactives
+         $This.acqred.x1.entryX1 configure -state normal
+         $This.acqred.y1.entryY1 configure -state normal
+         $This.acqred.x2.entryX2 configure -state normal
+         $This.acqred.y2.entryY2 configure -state normal
+
       } else {
          ::confCam::run
       }
@@ -600,6 +612,7 @@ namespace eval ::acqfen {
       global audace caption conf panneau
 
       if { [::cam::list] != "" } {
+
          #--- Enregistrement de l'extension des fichiers
          set ext $conf(extension,defaut)
          #---
@@ -1229,6 +1242,7 @@ namespace eval ::acqfen {
                vwait panneau(acqfen,finAquisition)
             }
          }
+
       } else {
          ::confCam::run
       }
@@ -1247,7 +1261,7 @@ namespace eval ::acqfen {
          cam$audace(camNo) bin [list $panneau(acqfen,bin) $panneau(acqfen,bin)]
 
          #--- La commande window permet de fixer le fenetrage de numerisation du CCD
-         if {$panneau(acqfen,X1) == "-"} {
+         if {$panneau(acqfen,X1) == ""} {
             cam$audace(camNo) window [list 1 1 $camxis1 $camxis2]
          } else {
             cam$audace(camNo) window [list $panneau(acqfen,X1) $panneau(acqfen,Y1) \
@@ -1481,27 +1495,61 @@ namespace eval ::acqfen {
       variable This
       global audace caption panneau
 
-      set box [ ::confVisu::getBox $visuNo ]
-      if { $box != "" } {
-         if {[lindex $box 0]<[lindex $box 2]} {
-            set panneau(acqfen,X1) [lindex $box 0]
-            set panneau(acqfen,X2) [lindex $box 2]
+      if { [::cam::list] != "" } {
+         set box [ ::confVisu::getBox $visuNo ]
+         if { $box != "" } {
+
+            if {[lindex $box 0]<[lindex $box 2]} {
+               set panneau(acqfen,X1) [lindex $box 0]
+               set panneau(acqfen,X2) [lindex $box 2]
+            } else {
+               set panneau(acqfen,X1) [lindex $box 2]
+               set panneau(acqfen,X2) [lindex $box 0]
+            }
+            if {[lindex $box 1]<[lindex $box 3]} {
+               set panneau(acqfen,Y1) [lindex $box 1]
+               set panneau(acqfen,Y2) [lindex $box 3]
+            } else {
+               set panneau(acqfen,Y1) [lindex $box 3]
+               set panneau(acqfen,Y2) [lindex $box 1]
+            }
+
          } else {
-            set panneau(acqfen,X1) [lindex $box 2]
-            set panneau(acqfen,X2) [lindex $box 0]
-         }
-         if {[lindex $box 1]<[lindex $box 3]} {
-            set panneau(acqfen,Y1) [lindex $box 1]
-            set panneau(acqfen,Y2) [lindex $box 3]
-         } else {
-            set panneau(acqfen,Y1) [lindex $box 3]
-            set panneau(acqfen,Y2) [lindex $box 1]
+
+            if { $panneau(acqfen,X1) == "" } {
+               return
+            }
+            if { $panneau(acqfen,Y1) == "" } {
+               return
+            }
+            if { $panneau(acqfen,X2) == "" } {
+               return
+            }
+            if { $panneau(acqfen,Y2) == "" } {
+               return
+            }
+
+            if { $panneau(acqfen,X1) < $panneau(acqfen,X2) } {
+               set panneau(acqfen,X1) $panneau(acqfen,X1)
+               set panneau(acqfen,X2) $panneau(acqfen,X2)
+            } else {
+               set panneau(acqfen,X1) $panneau(acqfen,X2)
+               set panneau(acqfen,X2) $panneau(acqfen,X1)
+            }
+            if { $panneau(acqfen,Y1) < $panneau(acqfen,Y2) } {
+               set panneau(acqfen,Y1) $panneau(acqfen,Y1)
+               set panneau(acqfen,Y2) $panneau(acqfen,Y2)
+            } else {
+               set panneau(acqfen,Y1) $panneau(acqfen,Y2)
+               set panneau(acqfen,Y2) $panneau(acqfen,Y1)
+            }
+
          }
 
          set hauteur [expr $panneau(acqfen,mtx_y)*($panneau(acqfen,Y2)-$panneau(acqfen,Y1))/[lindex [cam$audace(camNo) nbcells] 1]]
-         $This.acq.matrice_color_invariant.fen config  -height $hauteur \
+         $This.acq.matrice_color_invariant.fen config -height $hauteur \
             -width [expr $panneau(acqfen,mtx_x)*($panneau(acqfen,X2)-$panneau(acqfen,X1))/[lindex [cam$audace(camNo) nbcells] 0]]
-         $This.acqred.matrice_color_invariant.fen config  -height $hauteur \
+         $This.acqred.matrice_color_invariant.fen config -height $hauteur \
             -width [expr $panneau(acqfen,mtx_x)*($panneau(acqfen,X2)-$panneau(acqfen,X1))/[lindex [cam$audace(camNo) nbcells] 0]]
          place forget $This.acq.matrice_color_invariant.fen
          place forget $This.acqred.matrice_color_invariant.fen
@@ -1515,6 +1563,21 @@ namespace eval ::acqfen {
          #--- On modifie le bouton "Go" des acquisitions fenetrees
          $This.acq.but configure -text $caption(acqfen,GO) -command ::acqfen::goStop
          $This.acqred.but configure -text $caption(acqfen,GO) -command ::acqfen::goStop
+
+         #--- On rend les entry inactives
+         $This.acq.x1.entryX1 configure -state disabled
+         $This.acq.y1.entryY1 configure -state disabled
+         $This.acq.x2.entryX2 configure -state disabled
+         $This.acq.y2.entryY2 configure -state disabled
+
+         #--- On rend les entry inactives
+         $This.acqred.x1.entryX1 configure -state disabled
+         $This.acqred.y1.entryY1 configure -state disabled
+         $This.acqred.x2.entryX2 configure -state disabled
+         $This.acqred.y2.entryY2 configure -state disabled
+
+      } else {
+         ::confCam::run
       }
    }
 
@@ -1548,9 +1611,9 @@ namespace eval ::acqfen {
       incr panneau(acqfen,Y2) [lindex $depl_corr 1]
 
       set hauteur [expr $panneau(acqfen,mtx_y)*($panneau(acqfen,Y2)-$panneau(acqfen,Y1))/[lindex [cam$audace(camNo) nbcells] 1]]
-      $This.acq.matrice_color_invariant.fen config  -height $hauteur \
+      $This.acq.matrice_color_invariant.fen config -height $hauteur \
          -width [expr $panneau(acqfen,mtx_x)*($panneau(acqfen,X2)-$panneau(acqfen,X1))/[lindex [cam$audace(camNo) nbcells] 0]]
-      $This.acqred.matrice_color_invariant.fen config  -height $hauteur \
+      $This.acqred.matrice_color_invariant.fen config -height $hauteur \
          -width [expr $panneau(acqfen,mtx_x)*($panneau(acqfen,X2)-$panneau(acqfen,X1))/[lindex [cam$audace(camNo) nbcells] 0]]
       place forget $This.acq.matrice_color_invariant.fen
       place forget $This.acqred.matrice_color_invariant.fen
@@ -1791,6 +1854,36 @@ frame $This -borderwidth 2 -relief groove
          -width $panneau(acqfen,mtx_x)
       pack $This.acq.matrice_color_invariant.fen
 
+      #--- Affichage des coordonnees de la fenetre
+      frame $This.acq.x1 -borderwidth 1 -relief flat
+         label $This.acq.x1.labelX1 -text $caption(acqfen,x1) -padx 5
+         pack $This.acq.x1.labelX1 -fill none -side left
+         entry $This.acq.x1.entryX1 -textvariable panneau(acqfen,X1) -width 8 -relief groove \
+            -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 100000 }
+         pack $This.acq.x1.entryX1 -fill none -side left
+      pack $This.acq.x1 -fill none -side top
+      frame $This.acq.y1 -borderwidth 1 -relief flat
+         label $This.acq.y1.labelY1 -text $caption(acqfen,y1) -padx 5
+         pack $This.acq.y1.labelY1 -fill none -side left
+         entry $This.acq.y1.entryY1 -textvariable panneau(acqfen,Y1) -width 8 -relief groove \
+            -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 100000 }
+         pack $This.acq.y1.entryY1 -fill none -side left
+      pack $This.acq.y1 -fill none -side top
+      frame $This.acq.x2 -borderwidth 1 -relief flat
+         label $This.acq.x2.labelX2 -text $caption(acqfen,x2) -padx 5
+         pack $This.acq.x2.labelX2 -fill none -side left
+         entry $This.acq.x2.entryX2 -textvariable panneau(acqfen,X2) -width 8 -relief groove \
+            -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 100000 }
+         pack $This.acq.x2.entryX2 -fill none -side left
+      pack $This.acq.x2 -fill none -side top
+      frame $This.acq.y2 -borderwidth 1 -relief flat
+         label $This.acq.y2.labelY2 -text $caption(acqfen,y2) -padx 5
+         pack $This.acq.y2.labelY2 -fill none -side left
+         entry $This.acq.y2.entryY2 -textvariable panneau(acqfen,Y2) -width 8 -relief groove \
+            -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 100000 }
+         pack $This.acq.y2.entryY2 -fill none -side left
+      pack $This.acq.y2 -fill none -side top
+
       #--- Bouton Go/Stop
       button $This.acq.but -text $caption(acqfen,actuxy) -borderwidth 3 -command ::acqfen::actualiserCoordonnees
       pack $This.acq.but -expand true -fill both
@@ -1810,6 +1903,36 @@ frame $This -borderwidth 2 -relief groove
       frame $This.acqred.matrice_color_invariant.fen -bg $color(cyan) -height $panneau(acqfen,mtx_y) \
          -width $panneau(acqfen,mtx_x)
       pack $This.acqred.matrice_color_invariant.fen
+
+      #--- Affichage des coordonnees de la fenetre
+      frame $This.acqred.x1 -borderwidth 1 -relief flat
+         label $This.acqred.x1.labelX1 -text $caption(acqfen,x1) -padx 5
+         pack $This.acqred.x1.labelX1 -fill none -side left
+         entry $This.acqred.x1.entryX1 -textvariable panneau(acqfen,X1) -width 8 -relief groove \
+            -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 100000 }
+         pack $This.acqred.x1.entryX1 -fill none -side left
+      pack $This.acqred.x1 -fill none -side top
+      frame $This.acqred.y1 -borderwidth 1 -relief flat
+         label $This.acqred.y1.labelY1 -text $caption(acqfen,y1) -padx 5
+         pack $This.acqred.y1.labelY1 -fill none -side left
+         entry $This.acqred.y1.entryY1 -textvariable panneau(acqfen,Y1) -width 8 -relief groove \
+            -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 100000 }
+         pack $This.acqred.y1.entryY1 -fill none -side left
+      pack $This.acqred.y1 -fill none -side top
+      frame $This.acqred.x2 -borderwidth 1 -relief flat
+         label $This.acqred.x2.labelX2 -text $caption(acqfen,x2) -padx 5
+         pack $This.acqred.x2.labelX2 -fill none -side left
+         entry $This.acqred.x2.entryX2 -textvariable panneau(acqfen,X2) -width 8 -relief groove \
+            -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 100000 }
+         pack $This.acqred.x2.entryX2 -fill none -side left
+      pack $This.acqred.x2 -fill none -side top
+      frame $This.acqred.y2 -borderwidth 1 -relief flat
+         label $This.acqred.y2.labelY2 -text $caption(acqfen,y2) -padx 5
+         pack $This.acqred.y2.labelY2 -fill none -side left
+         entry $This.acqred.y2.entryY2 -textvariable panneau(acqfen,Y2) -width 8 -relief groove \
+            -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 100000 }
+         pack $This.acqred.y2.entryY2 -fill none -side left
+      pack $This.acqred.y2 -fill none -side top
 
       #--- Bouton Go/Stop
       button $This.acqred.but -text $caption(acqfen,actuxy) -borderwidth 3 -command ::acqfen::actualiserCoordonnees
