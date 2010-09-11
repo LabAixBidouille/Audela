@@ -1,6 +1,6 @@
 #
 # Fichier : webcam.cap
-# Mise a jour $Id: webcam.cap,v 1.17 2010-07-02 17:06:49 robertdelmas Exp $
+# Mise a jour $Id: webcam.cap,v 1.18 2010-09-11 08:39:20 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -15,6 +15,9 @@ set caption(webcam,camera)                      "WebCam - Grabber"
 
 set caption(webcam,canal_usb)                   "USB Video Channel"
 set caption(webcam,mode_video)                  "Video Mode"
+set caption(webcam,port)                        "Port"
+set caption(webcam,available)                   "Cameras Available:"
+set caption(webcam,refresh)                     "Reload"
 set caption(webcam,miroir_x)                    "Horizontal Mirror"
 set caption(webcam,miroir_y)                    "Vertical Mirror"
 set caption(webcam,select)                      "Select"
@@ -53,6 +56,9 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(webcam,canal_usb)                "Canal vidéo USB"
    set caption(webcam,mode_video)               "Mode vidéo"
+   set caption(webcam,port)                     "Port"
+   set caption(webcam,available)                "Caméras disponibles :"
+   set caption(webcam,refresh)                  "Rafraîchir"
    set caption(webcam,miroir_x)                 "Miroir horizontal"
    set caption(webcam,miroir_y)                 "Miroir vertical"
    set caption(webcam,select)                   "Sélection"
@@ -91,6 +97,9 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(webcam,canal_usb)                "Canale video USB"
    set caption(webcam,mode_video)               "Modalita` video"
+   set caption(webcam,port)                     "Porta"
+   set caption(webcam,available)                "Camera disponibile:"
+   set caption(webcam,refresh)                  "Rinfresca"
    set caption(webcam,miroir_x)                 "Specchio orizzontale"
    set caption(webcam,miroir_y)                 "Specchio verticale"
    set caption(webcam,select)                   "Scelta"
@@ -129,6 +138,9 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(webcam,canal_usb)                "Canal vídeo USB"
    set caption(webcam,mode_video)               "Modo vídeo"
+   set caption(webcam,port)                     "Puerto"
+   set caption(webcam,available)                "Cámara disponibles:"
+   set caption(webcam,refresh)                  "Recargar"
    set caption(webcam,miroir_x)                 "Espejo horizontal"
    set caption(webcam,miroir_y)                 "Espejo vertical"
    set caption(webcam,select)                   "Selecció"
@@ -167,6 +179,9 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(webcam,canal_usb)                "USB Video Kanal"
    set caption(webcam,mode_video)               "Video Modus"
+   set caption(webcam,port)                     "Port"
+   set caption(webcam,available)                "Kamera verfügbar:"
+   set caption(webcam,refresh)                  "Aktualisieren"
    set caption(webcam,miroir_x)                 "Horizontale Spiegel"
    set caption(webcam,miroir_y)                 "Verticale Spiegel"
    set caption(webcam,select)                   "Wahl"
@@ -205,6 +220,9 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(webcam,canal_usb)                "Canal Video USB"
    set caption(webcam,mode_video)               "Modo video"
+   set caption(webcam,port)                     "Porto"
+   set caption(webcam,available)                "Câmara disponiveis:"
+   set caption(webcam,refresh)                  "Actualizar"
    set caption(webcam,miroir_x)                 "Espelho Horizontal"
    set caption(webcam,miroir_y)                 "Espelho Vertical"
    set caption(webcam,select)                   "Selecção"
@@ -243,6 +261,9 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(webcam,canal_usb)                "USB Video Channel"
    set caption(webcam,mode_video)               "Video måde"
+   set caption(webcam,port)                     "Port"
+   set caption(webcam,available)                "Cameras Available:"
+   set caption(webcam,refresh)                  "Genindlæs"
    set caption(webcam,miroir_x)                 "Horisontal spejl"
    set caption(webcam,miroir_y)                 "Vertikal spejl"
    set caption(webcam,select)                   "Valg"
@@ -281,6 +302,9 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(webcam,canal_usb)                "USB Video Channel"
    set caption(webcam,mode_video)               "Video Mode"
+   set caption(webcam,port)                     "Port"
+   set caption(webcam,available)                "Cameras Available:"
+   set caption(webcam,refresh)                  "Reload"
    set caption(webcam,miroir_x)                 "Horizontal Mirror"
    set caption(webcam,miroir_y)                 "Vertical Mirror"
    set caption(webcam,select)                   "Select"
@@ -319,6 +343,9 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(webcam,canal_usb)                "USB Video Channel"
    set caption(webcam,mode_video)               "Video Mode"
+   set caption(webcam,port)                     "Port"
+   set caption(webcam,available)                "Cameras Available:"
+   set caption(webcam,refresh)                  "Reload"
    set caption(webcam,miroir_x)                 "Horizontal Mirror"
    set caption(webcam,miroir_y)                 "Vertical Mirror"
    set caption(webcam,select)                   "Select"
