@@ -452,6 +452,13 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
    astromcatalog=pseries->astromcatalog;
    path_astromcatalog=pseries->path_astromcatalog;
 
+   /* ajout d'un separateur a la fin du chemin s'il le separateur est absent */
+   if ( strlen(path_astromcatalog) > 0 ) {
+	   if ( path_astromcatalog[strlen(path_astromcatalog)-1] != slash[0] ) {
+		   strcat(path_astromcatalog,slash);
+	   }
+   }
+
    /* --- choix du catalogue ---*/
    tt_strupr(astromcatalog);
    if (strcmp(astromcatalog,"USNO")==0) { typecat=TT_USNO; }
