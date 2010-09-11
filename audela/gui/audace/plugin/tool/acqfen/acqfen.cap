@@ -1,6 +1,6 @@
 #
 # Fichier : acqfen.cap
-# Mise a jour $Id: acqfen.cap,v 1.18 2010-01-17 18:02:50 robertdelmas Exp $
+# Mise a jour $Id: acqfen.cap,v 1.19 2010-09-11 14:34:17 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -30,6 +30,10 @@ set caption(acqfen,bin,3)              "3x3 Binning"
 set caption(acqfen,bin,4)              "4x4 Binning"
 set caption(acqfen,GO)                 "GO"
 set caption(acqfen,stop)               "STOP"
+set caption(acqfen,x1)                 "X1"
+set caption(acqfen,y1)                 "Y1"
+set caption(acqfen,x2)                 "X2"
+set caption(acqfen,y2)                 "Y2"
 
 #--- Textes réglages acquisitions série et continu
 set caption(acqfen,fenreglfen)         "Setting Window for Windowed Acquisitions"
@@ -96,7 +100,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,bin,3)           "Binning 3x3"
    set caption(acqfen,bin,4)           "Binning 4x4"
    set caption(acqfen,GO)              "GO"
-   set caption(acqfen,stop)               "STOP"
+   set caption(acqfen,stop)            "STOP"
+   set caption(acqfen,x1)              "X1"
+   set caption(acqfen,y1)              "Y1"
+   set caption(acqfen,x2)              "X2"
+   set caption(acqfen,y2)              "Y2"
 
    #--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Fenêtre de réglages des acquisitions fenêtrées"
@@ -164,6 +172,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,bin,4)           "Binning 4x4"
    set caption(acqfen,GO)              "GO"
    set caption(acqfen,stop)            "STOP"
+   set caption(acqfen,x1)              "X1"
+   set caption(acqfen,y1)              "Y1"
+   set caption(acqfen,x2)              "X2"
+   set caption(acqfen,y2)              "Y2"
 
    #--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Finestra per regolazioni acquisizione parziale"
@@ -231,6 +243,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,bin,4)           "Binning 4x4"
    set caption(acqfen,GO)              "GO"
    set caption(acqfen,stop)            "STOP"
+   set caption(acqfen,x1)              "X1"
+   set caption(acqfen,y1)              "Y1"
+   set caption(acqfen,x2)              "X2"
+   set caption(acqfen,y2)              "Y2"
 
    #--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Panel de ajustes para adqusicion de sub-cuadro"
@@ -298,6 +314,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,bin,4)           "Binning 4x4"
    set caption(acqfen,GO)              "GO"
    set caption(acqfen,stop)            "STOP"
+   set caption(acqfen,x1)              "X1"
+   set caption(acqfen,y1)              "Y1"
+   set caption(acqfen,x2)              "X2"
+   set caption(acqfen,y2)              "Y2"
 
    #--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Einstellung Fenster für die Fenster Belichtungen"
@@ -365,6 +385,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,bin,4)           "Binning 4x4"
    set caption(acqfen,GO)              "GO"
    set caption(acqfen,stop)            "STOP"
+   set caption(acqfen,x1)              "X1"
+   set caption(acqfen,y1)              "Y1"
+   set caption(acqfen,x2)              "X2"
+   set caption(acqfen,y2)              "Y2"
 
    #--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Janela de ajuste das aquisições em janela"
@@ -432,6 +456,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,bin,4)           "4x4 Binning"
    set caption(acqfen,GO)              "GO"
    set caption(acqfen,stop)            "STOP"
+   set caption(acqfen,x1)              "X1"
+   set caption(acqfen,y1)              "Y1"
+   set caption(acqfen,x2)              "X2"
+   set caption(acqfen,y2)              "Y2"
 
    #--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Setting Window for Windowed Acquisitions"
@@ -499,6 +527,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,bin,4)           "4x4 Binning"
    set caption(acqfen,GO)              "GO"
    set caption(acqfen,stop)            "STOP"
+   set caption(acqfen,x1)              "X1"
+   set caption(acqfen,y1)              "Y1"
+   set caption(acqfen,x2)              "X2"
+   set caption(acqfen,y2)              "Y2"
 
    #--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Setting Window for Windowed Acquisitions"
@@ -566,6 +598,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,bin,4)           "4x4 Binning"
    set caption(acqfen,GO)              "GO"
    set caption(acqfen,stop)            "STOP"
+   set caption(acqfen,x1)              "X1"
+   set caption(acqfen,y1)              "Y1"
+   set caption(acqfen,x2)              "X2"
+   set caption(acqfen,y2)              "Y2"
 
    #--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Setting Window for Windowed Acquisitions"
