@@ -2,7 +2,7 @@
 # Fichier : plotxy.tcl
 # Description : Realisation de graphes a partir de 2 listes de nombres
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: plotxy.tcl,v 1.11 2010-09-11 06:32:13 robertdelmas Exp $
+# Mise à jour $Id: plotxy.tcl,v 1.12 2010-09-11 08:39:55 robertdelmas Exp $
 #
 # La syntaxe est la plus proche possible de Matlab
 #
@@ -431,7 +431,10 @@ namespace eval ::plotxy {
       bind $baseplotxy.xy <Motion> {
          ::plotxy::viewCrosshairs %W %x %y
       }
+      #--   affichage des grilles
+      $baseplotxy.xy grid configure -dashes 2 -color black -hide no -minor yes
 
+      #--   gestion du zoom
       createBindingsZoom $baseplotxy
    }
 
@@ -604,12 +607,12 @@ namespace eval ::plotxy {
    #--   Entree : nom de la fenetre, coordonnees initiales                 #
    #########################################################################
    proc regionStart { graph x y } {
-      variable private
+      global plotxy
 
       #--   transforme les coordonnees ecran en coordonnees graphique
       #--   memorise les coordonnees initiales
-      set private(plotxy,zoomstart,x) [ $graph axis invtransform x $x ]
-      set private(plotxy,zoomstart,y) [ $graph axis invtransform y $y ]
+      set plotxy(zoomstart,x) [ $graph axis invtransform x $x ]
+      set plotxy(zoomstart,y) [ $graph axis invtransform y $y ]
 
       #--   cree un rectangle de selection sans coordonnees
       $graph marker create line -coords {} -name myLine -dashes dash \
@@ -621,10 +624,10 @@ namespace eval ::plotxy {
    #--   Entree : nom de la fenetre, coordonnees finales courantes         #
    #########################################################################
    proc regionMotion { graph x y } {
-      variable private
+      global plotxy
 
-      set x0 $private(plotxy,zoomstart,x)
-      set y0 $private(plotxy,zoomstart,y)
+      set x0 $plotxy(zoomstart,x)
+      set y0 $plotxy(zoomstart,y)
 
       #--   transforme les coordonnees ecran en coordonnees graphique
       set x1 [ $graph axis invtransform x $x ]
@@ -639,10 +642,10 @@ namespace eval ::plotxy {
    #--   Entree : nom de la fenetre, coordonnees finales                   #
    #########################################################################
    proc regionEnd { graph x y } {
-      variable private
+      global plotxy
 
-      set x0 $private(plotxy,zoomstart,x)
-      set y0 $private(plotxy,zoomstart,y)
+      set x0 $plotxy(zoomstart,x)
+      set y0 $plotxy(zoomstart,y)
 
       #--   transforme les coordonnees ecran en coordonnees graphique
       set x1 [ $graph axis invtransform x $x ]
@@ -692,7 +695,7 @@ namespace eval ::plotxy {
    #--   Entree : nom de la fenetre                                        #
    #########################################################################
    proc pushZoom { graph } {
-      variable private
+      global plotxy
 
       #--   identifie les coordonnees minimales et maximales
       set x1 [ $graph axis cget x -min ]
@@ -712,7 +715,7 @@ namespace eval ::plotxy {
          $graph axis configure y -min $y1 -max $y2"
 
       #--   memorise la commande
-      lappend private(plotxy,zoomstack,$graph) $cmd
+      lappend plotxy(zoomstack,$graph) $cmd
    }
 
    #########################################################################
@@ -720,10 +723,10 @@ namespace eval ::plotxy {
    #--   Entree : nom de la fenetre                                        #
    #########################################################################
    proc zoomOut { graph } {
-      variable private
+      global plotxy
 
       #--   si le stack du zoomIn n'est pas vide
-      if [ info exists private(plotxy,zoomstack,$graph) ] {
+      if [ info exists plotxy(zoomstack,$graph) ] {
          eval [ popZoom $graph ]
 
          ::blt::busy hold $graph
@@ -737,13 +740,13 @@ namespace eval ::plotxy {
    #--   Entree : nom de la fenetre                                        #
    #########################################################################
    proc popZoom { graph } {
-      variable private
+      global plotxy
 
       #--   recupere le precedent niveau de zoom
-      set cmd [ lindex $private(plotxy,zoomstack,$graph) end ]
+      set cmd [ lindex $plotxy(zoomstack,$graph) end ]
 
       #--   suprime la commande de la liste
-      set private(plotxy,zoomstack,$graph) [ lreplace $private(plotxy,zoomstack,$graph) end end ]
+      set plotxy(zoomstack,$graph) [ lreplace $plotxy(zoomstack,$graph) end end ]
 
       return $cmd
    }
