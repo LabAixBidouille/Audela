@@ -1,6 +1,6 @@
 #
 # Fichier : calaphot.cap
-# Mise a jour $Id: calaphot.cap,v 1.13 2010-05-01 16:30:27 jacquesmichelet Exp $
+# Mise a jour $Id: calaphot.cap,v 1.14 2010-09-11 16:28:05 jacquesmichelet Exp $
 #
 
 #=========================================================================
@@ -20,7 +20,7 @@ set calaphot(texte,titre_saisie)           "Photometry Script Parameters"
 set calaphot(texte,operateur)              "Operator Name"
 set calaphot(texte,objet)                  "Object Name"
 set calaphot(texte,code_UAI)               "Observatory IUA Code"
-set calaphot(texte,nom_source)             "Generic Name for the Image Files"
+set calaphot(texte,source)                 "Generic Name for the Image Files"
 set calaphot(texte,indice_premier)         "First Image Index"
 set calaphot(texte,indice_dernier)         "Last Image Index"
 set calaphot(texte,tailleboite)            "Window Half-Width"
@@ -708,7 +708,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,operateur)           "Operator Name"
    set calaphot(texte,objet)               "Object Name"
    set calaphot(texte,code_UAI)            "Observatory IUA Code"
-   set calaphot(texte,nom_source)          "Generic Name for the Image Files"
+   set calaphot(texte,source)              "Generic Name for the Image Files"
    set calaphot(texte,indice_premier)      "First Image Index"
    set calaphot(texte,indice_dernier)      "Last Image Index"
    set calaphot(texte,tailleboite)         "Window Half-Width"
@@ -822,7 +822,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,operateur)           "Operator Name"
    set calaphot(texte,objet)               "Object Name"
    set calaphot(texte,code_UAI)            "Observatory IUA Code"
-   set calaphot(texte,nom_source)          "Generic Name for the Image Files"
+   set calaphot(texte,source)              "Generic Name for the Image Files"
    set calaphot(texte,indice_premier)      "First Image Index"
    set calaphot(texte,indice_dernier)      "Last Image Index"
    set calaphot(texte,tailleboite)         "Window Half-Width"
@@ -936,7 +936,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,operateur)           "Operator Name"
    set calaphot(texte,objet)               "Object Name"
    set calaphot(texte,code_UAI)            "Observatory IUA Code"
-   set calaphot(texte,nom_source)          "Generic Name for the Image Files"
+   set calaphot(texte,source)              "Generic Name for the Image Files"
    set calaphot(texte,indice_premier)      "First Image Index"
    set calaphot(texte,indice_dernier)      "Last Image Index"
    set calaphot(texte,tailleboite)         "Window Half-Width"
