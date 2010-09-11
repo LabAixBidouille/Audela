@@ -78,24 +78,38 @@ servir pour cr&eacute;er ou compl&eacute;ter un autre vecteur
 <pre>v_1 expr { v_1+10 }<br></pre>
 <p>Ajoute la valeur 10 &agrave; chaque &eacute;l&eacute;ment du
 vecteur.<br>
-Les op&eacute;rations usuelles (+ - / * ) sont valables.<br>
-D'autres op&eacute;rations n&eacute;cessitent un style analogue
+Les op&eacute;rations usuelles + - / * % ^ sont valables.</p>
+<p>D'autres op&eacute;rations n&eacute;cessitent un style analogue
 &agrave; celui du tcl :</p>
 <pre>abs     round random    norm<br>acos    cos    hypot    sinh <br>asin    cosh    log     sqrt <br>atan    exp    log10    tan <br>ceil    floor    sin    tanh<br>
-v_1 expr { log(v_) }   
+Par exemple :<br><br>v_1 expr { log(v_1) }   
 </pre>
 <p>Il est aussi possible d'op&eacute;rer sur deux vecteurs de
 longueur identique (les &eacute;l&eacute;ments &eacute;tant
-trait&eacute;s deux &agrave; deux) :</p>
+trait&eacute;s deux &agrave; deux), &agrave; condition de ne pas
+oublier de cr&eacute;er le second vecteur :</p>
 <pre>::blt::vector create resultat<br>resultat expr { v_1*vecteur2 }<br></pre>
 Si chaque vecteur contient 1000 &eacute;l&eacute;ments, on
 &eacute;crit 1000 multiplications avec une seule ligne de code !
+<p>Les comparateurs &lt; &gt; &lt;= &gt;= == =! et les
+op&eacute;rateurs logiques &amp;&amp; || peuvent &ecirc;tre
+utilis&eacute;s : Le vecteur r&eacute;sultat contient des 1 pour
+les &eacute;l&eacute;ments remplissant la condition, sinon 0.</p>
+<p>Des op&eacute;rations de d&eacute;placements circulaires vers
+la droite &gt;&gt; ou vers la gauche &lt;&lt; des
+&eacute;l&eacute;ments sont possibles :</p>
+<pre>v_1 expr { v_1 &gt;&gt; 2 }<br></pre>
+Le dernier &eacute;l&eacute;ment devient le second et
+l'avant-dernier le premier.
 <p>On remarquera que :<br>
 - le $ si courant en tcl n'appara&icirc;t gu&egrave;re que pour
 d&eacute;signer une valeur particuli&egrave;re de la liste,<br>
-- set, si fr&eacute;quent en tcl, est &eacute;crit selon le cas
-apr&egrave;s le nom du vecteur (exemple : v_1 set $liste) ou devant le
-rep&egrave;re d'un &eacute;l&eacute;ment (exemple : set v_1(2) ) .</p>
+- la commande 'set', si fr&eacute;quente en tcl, est &eacute;crite
+selon le cas apr&egrave;s le nom du vecteur (exemple : v_1 set $liste)
+ou devant le rep&egrave;re d'un &eacute;l&eacute;ment (exemple : set
+v_1(2) ),<br>
+- la commande 'expr' n'est pas entour&eacute;e de [ ].</p>
+<p></p>
 <h2>5. Comment rep&eacute;rer les points ayant une valeur
 particuli&egrave;re ?</h2>
 <p>Pour isoler la valeur situ&eacute;e &agrave; l'indice j du
