@@ -2,7 +2,7 @@
 # Fichier : plotxy.tcl
 # Description : Realisation de graphes a partir de 2 listes de nombres
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: plotxy.tcl,v 1.10 2010-09-10 17:25:39 robertdelmas Exp $
+# Mise à jour $Id: plotxy.tcl,v 1.11 2010-09-11 06:32:13 robertdelmas Exp $
 #
 # La syntaxe est la plus proche possible de Matlab
 #
@@ -107,7 +107,7 @@ namespace eval ::plotxy {
                #--- Focus
                focus $baseplotxy
                #--- Raccourci qui donne le focus a la Console et positionne le curseur dans
-                              #--- la ligne de commande
+               #--- la ligne de commande
                bind $baseplotxy <Key-F1> { ::console::GiveFocus }
                #--- Mise a jour dynamique des couleurs
                ::confColor::applyColor $baseplotxy
@@ -422,14 +422,15 @@ namespace eval ::plotxy {
          $baseplotxy.xy configure -bg $plotxy(fig$num,bgcolor)
       }
       pack $baseplotxy.xy -expand 1 -fill both
-      #
+
       set plotxy(fig$num,axis) [list [lindex $lx 0] [lindex $lx 1] [lindex $ly 0] [lindex $ly 1]]
-      #
+
+      #--   gestion des crosshairs
       $baseplotxy.xy crosshairs on
-      $baseplotxy.xy crosshairs configure -color black -dashes 2
-      #bind $baseplotxy.xy <Motion> {
-      #   $baseplotxy.xy crosshairs configure -position @%x,%y
-      #}
+      $baseplotxy.xy crosshairs configure -color red -dashes 2
+      bind $baseplotxy.xy <Motion> {
+         ::plotxy::viewCrosshairs %W %x %y
+      }
 
       createBindingsZoom $baseplotxy
    }
@@ -573,20 +574,27 @@ namespace eval ::plotxy {
    }
 
    #########################################################################
+   #--   Affiche les crosshairs                                            #
+   #########################################################################
+   proc viewCrosshairs { graph x y } {
+      $graph crosshairs configure -position @$x,$y
+   }
+
+   #########################################################################
    #--   Bindings du zoom                                                  #
    #########################################################################
    proc createBindingsZoom { graph } {
 
-      bind $graph <ButtonPress-3> {
+      bind $graph <ButtonPress-1> {
          ::plotxy::regionStart %W %x %y
       }
-      bind $graph <B3-Motion> {
+      bind $graph <B1-Motion> {
          ::plotxy::regionMotion %W %x %y
       }
-      bind $graph <ButtonRelease-3> {
+      bind $graph <ButtonRelease-1> {
          ::plotxy::regionEnd %W %x %y
       }
-      bind $graph <Double-ButtonRelease-3> {
+      bind $graph <Double-ButtonRelease-1> {
          ::plotxy::zoomOut %W
       }
    }
@@ -742,9 +750,6 @@ namespace eval ::plotxy {
 
 #--fin du namespace
 }
-
-# ::plotxy::clf ; source audace/plotxy.tcl ; ::plotxy::figure 1 ; ::plotxy::getgcf 1
-# ::plotxy::clf ; source audace/plotxy.tcl ; ::plotxy::figure 1 ; set res [::plotxy::getgcf 1] ; ::plotxy::setgcf 1 $res
 
 set err [catch {package require BLT} msg]
 if {$err==1} {
