@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="libascomcam"
 	ProjectGUID="{66ADD21C-621A-499C-BF64-93D2729A2A5F}"
 	RootNamespace="libascomcam"
@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\src,..\..\..\include,..\..\..\external\include\win"
-				PreprocessorDefinitions="WIN32;_WINDOWS;USE_TCL_STUBS;_CRT_SECURE_NO_WARNINGS"
+				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;USE_TCL_STUBS;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -243,10 +243,6 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			>
 		</Filter>
-		<File
-			RelativePath="C:\Documents and Settings\michel\Mes documents\devcpp\eShel\eshel\libeshel_tcl\libeshel_tcl.vcproj"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>
