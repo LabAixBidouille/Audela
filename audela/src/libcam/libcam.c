@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.42 2010-07-27 17:20:42 michelpujol Exp $
+ * $Id: libcam.c,v 1.43 2010-09-12 19:29:58 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -105,6 +105,7 @@ void MessageBox(void *handle, char *msg, char *title, int bof)
 /* === Common commands for all cameras ===*/
 static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCam(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+static int cmdCamAvailable(struct camprop *cam, Tcl_Interp * interp, int argc, char *argv[]);
 
 /* --- Information commands ---*/
 static int cmdCamDrivername(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
@@ -305,9 +306,13 @@ static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, ch
    char mainThreadId[20];
 
    if (argc < 3) {
-      sprintf(s, "%s driver port ?options?", argv[0]);
-      Tcl_SetResult(interp, s, TCL_VOLATILE);
-      return TCL_ERROR;
+      if ( argc ==2 && strcmp(argv[1],"available") == 0) {
+         return cmdCamAvailable(clientData, interp, argc, argv);
+      } else {
+         sprintf(s, "%s driver port ?options?", argv[0]);
+         Tcl_SetResult(interp, s, TCL_VOLATILE);
+         return TCL_ERROR;
+      }
    } else {
       const char *platform;
       const char *threaded;
@@ -2053,7 +2058,8 @@ static int cam_init_common(struct camprop *cam, int argc, char **argv)
    cam->index_cam = 0;
    strcpy(cam->portname,"unknown");
    if (argc >= 5) {
-      strcpy(cam->portname,argv[2]);
+      // je copie le nom du port en limitant le nombre de caractères à la taille maximal de cam->portname
+      strncpy(cam->portname,argv[2], sizeof(cam->portname) -1);
       for (kk = 3; kk < argc - 1; kk++) {
          if (strcmp(argv[kk], "-name") == 0) {
             k = 0;
@@ -2321,5 +2327,29 @@ static int cmdCamDark(ClientData clientData, Tcl_Interp * interp, int argc, char
       } 
    }
    return result;
+}
+
+int cmdCamAvailable(struct camprop *cam, Tcl_Interp * interp, int argc, char *argv[]) 
+{
+#ifdef CMD_CAM_AVAILABLE
+   int result;
+   // cette commande n'est utilisable que par les cameras qui
+   // sont compilés avec l'option CMD_CAM_AVAILABLE
+   char * ligne = NULL;
+   // ligne is allocated by cam_getAvailableCameraList()
+  if( webcam_getAvailableCameraList(&ligne) == 0 ) {
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_OK;
+   } else {
+      // la variable "ligne" contient le message d'erreur
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_ERROR;
+   }
+   free(ligne);
+   return result;
+#else 
+   Tcl_SetResult(interp, "command \"available\" not implemented for this camera", TCL_VOLATILE);
+   return TCL_ERROR;
+#endif
 }
 
