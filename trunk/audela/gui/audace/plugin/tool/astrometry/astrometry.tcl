@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: astrometry.tcl,v 1.10 2010-09-12 16:45:59 michelpujol Exp $
+# Mise à jour $Id: astrometry.tcl,v 1.11 2010-09-12 19:13:40 robertdelmas Exp $
 #
 
 #============================================================
@@ -346,7 +346,6 @@ namespace eval ::astrometry {
       deleteFileConfigSextractor
       #---
       ::astrometry::recup_position
-console::disp "quit astrom(This)=$astrom(This)\n"
       destroy $astrom(This)
    }
 
