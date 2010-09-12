@@ -3130,7 +3130,8 @@ int mctcl_decode_angle(Tcl_Interp *interp, char *argv0,double *angledeg)
       ks=0;
       khd=0;
       kr=0;
-      if (argcc==1) {
+      if (argcc==0) {
+      } else if (argcc==1) {
 		   /* Un seul element dans la liste */
 		   strcpy(text,argvv[0]);
 		   mc_strupr(text,text);
