@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: astrometry.tcl,v 1.9 2010-05-22 12:37:11 robertdelmas Exp $
+# Mise à jour $Id: astrometry.tcl,v 1.10 2010-09-12 16:45:59 michelpujol Exp $
 #
 
 #============================================================
@@ -79,11 +79,19 @@ namespace eval ::astrometry {
    #    initialise le plugin
    #------------------------------------------------------------
    proc initPlugin { tkbase } {
+   }
+
+   #------------------------------------------------------------
+   # createPluginInstance
+   #    cree une nouvelle instance de l'outil
+   #------------------------------------------------------------
+   proc createPluginInstance { { tkbase "" } { visuNo 1 } } {
+
       variable astrom
       global caption conf
 
       #--- Inititalisation du nom de la fenetre
-      set astrom(This) "$tkbase"
+      set astrom(This) "$tkbase.astrometry"
 
       #--- Inititalisation de variables de configuration
       set astrom(list_combobox) [ list $caption(astrometry,cat,usno) $caption(astrometry,cat,microcat) \
@@ -98,14 +106,9 @@ namespace eval ::astrometry {
       if { ! [ info exists conf(astrometry,position) ] }      { set conf(astrometry,position)      "+150+100" }
       if { ! [ info exists conf(astrometry,delete_files) ] }  { set conf(astrometry,delete_files)  "1" }
       if { ! [ info exists conf(astrometry,delete_images) ] } { set conf(astrometry,delete_images) "1" }
-   }
 
-   #------------------------------------------------------------
-   # createPluginInstance
-   #    cree une nouvelle instance de l'outil
-   #------------------------------------------------------------
-   proc createPluginInstance { { in "" } { visuNo 1 } } {
-
+      #--- j'initialise les variable des widgets
+      ::astrometry::confToWidget
    }
 
    #------------------------------------------------------------
@@ -113,7 +116,11 @@ namespace eval ::astrometry {
    #    suppprime l'instance du plugin
    #------------------------------------------------------------
    proc deletePluginInstance { visuNo } {
-
+      variable astrom
+      if { [winfo exists $astrom(This) ] } {
+         #--- je ferme la fenetre si l'utilsateur ne l'a pas deja fait
+         ::astrometry::quit $visuNo
+      }
    }
 
    #------------------------------------------------------------
@@ -163,8 +170,6 @@ namespace eval ::astrometry {
       set deb [ expr 1 + [ string first + $astrom(geometry) ] ]
       set fin [ string length $astrom(geometry) ]
       set astrom(position) "+[ string range $astrom(geometry) $deb $fin ]"
-      #---
-      ::astrometry::widgetToConf
    }
 
    proc create { visuNo } {
@@ -196,9 +201,6 @@ namespace eval ::astrometry {
       set astrom(values)   {""                       ""                        ""            ""            ""              ""               ""        ""        ""                        ""            ""            ""            ""            ""             ""                              ""}
       set astrom(comments) {"RA expected for CRPIX1" "DEC expected for CRPIX2" "X ref pixel" "Y ref pixel" "RA for CRPIX1" "DEC for CRPIX2" "X scale" "Y scale" "Position angle of North" "Matrix CD11" "Matrix CD12" "Matrix CD21" "Matrix CD22" "Focal length" "X pixel size binning included" "Y pixel size binning included"}
       #---
-      ::astrometry::initPlugin "$audace(base).astrometry"
-      ::astrometry::confToWidget
-      #---
       if { [info commands $astrom(This)]=="$astrom(This)" } {
          wm deiconify $astrom(This)
          return
@@ -211,7 +213,6 @@ namespace eval ::astrometry {
       wm deiconify $astrom(This)
       wm title $astrom(This) "$caption(astrometry,title)"
       wm protocol $astrom(This) WM_DELETE_WINDOW "::astrometry::quit $visuNo"
-      bind $astrom(This) <Destroy> "::astrometry::quit $visuNo"
       #--- Button for choosing the WCS type displayed
       button $astrom(This).but1 -text "$caption(astrometry,wcs,[lindex $astrom(typewcs) 0])" \
          -command {::astrometry::wcs_pack +}
@@ -345,6 +346,7 @@ namespace eval ::astrometry {
       deleteFileConfigSextractor
       #---
       ::astrometry::recup_position
+console::disp "quit astrom(This)=$astrom(This)\n"
       destroy $astrom(This)
    }
 
