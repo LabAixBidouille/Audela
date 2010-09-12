@@ -2,7 +2,7 @@
 # Fichier : sextractor.tcl
 # Description : Functions to initialize configuration files for sextractor
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: sextractor.tcl,v 1.12 2010-05-22 12:34:48 robertdelmas Exp $
+# Mise à jour $Id: sextractor.tcl,v 1.13 2010-09-12 19:23:16 michelpujol Exp $
 #
 
 proc sextractor_default_nnw { {filename default.nnw} } {
@@ -318,6 +318,10 @@ proc deleteFileConfigSextractor { args } {
    }
    if { [ file exist [ file join . default.nnw ] ] == "1" } {
       file delete [ file join . default.nnw ]
+   }
+   if { [ file exist [ file join . signal.sex ] ] == "1" } {
+      #--- ce fichier est cree pendant l'exécution de sextractor
+      file delete [ file join . signal.sex ]
    }
 }
 
