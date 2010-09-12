@@ -5,6 +5,7 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Alain KLOTZ <alain.klotz@free.fr>
+ * Initial author : Frederic VACHIER <fv@imcce.fr>
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -207,7 +208,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    }
    else if(strcmp(cam->headref, "DZ936") == 0)
    {
-      strcpy(CAM_INI[cam->index_cam].ccd, "Marconi EMCCD");
+      strcpy(CAM_INI[cam->index_cam].ccd, "Marconi");
    }
    else
    {
@@ -265,8 +266,8 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    
    
    CAM_INI[cam->index_cam].maxconvert = pow(2, (double) 16) - 1.;
-   cam->acqmode = 1;
-   cam->nbimages = 1;
+   cam->acqmode   = 1;
+   cam->nbimages  = 1;
    cam->cycletime = 0.;
    strcpy(cam->spoolname, "andorusb");
 
@@ -295,6 +296,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       cam->nb_deadbeginphotoy = 0;
       cam->nb_deadendphotoy   = 0;
    }
+
    cam->celldimx = CAM_INI[cam->index_cam].celldimx;    /* taille d'un photosite sur X (en metre) */
    cam->celldimy = CAM_INI[cam->index_cam].celldimy;    /* taille d'un photosite sur Y (en metre) */
    cam->x2 = cam->nb_photox - 1;
@@ -459,6 +461,10 @@ void cam_stop_exp(struct camprop *cam)
    SetShutter(type, mode, cam->closingtime, cam->openingtime);
    return;
 }
+
+
+
+
 
 void cam_read_ccd(struct camprop *cam, unsigned short *p)
 {
@@ -693,9 +699,10 @@ void cam_setup_exposure(struct camprop *cam, float *texptime, float *taccumtime,
    int x1, y1, binx, biny, x2, y2;
    exptime = cam->exptime;
 
-   *texptime = cam->exptime;
-   *taccumtime = cam->cycletime;
+   *texptime     = cam->exptime;
+   *taccumtime   = cam->cycletime;
    *tkinetictime = cam->cycletime;
+
    /* --- acquisition mode  --- */
    cam->drv_status = SetAcquisitionMode(cam->acqmode);
    if(cam->drv_status != DRV_SUCCESS)
@@ -704,6 +711,7 @@ void cam_setup_exposure(struct camprop *cam, float *texptime, float *taccumtime,
               get_status(cam->drv_status));
       return;
    }
+
    /* --- exptime --- */
    exptime = (float) cam->exptime;
    cam->drv_status = SetExposureTime(exptime);
@@ -713,10 +721,10 @@ void cam_setup_exposure(struct camprop *cam, float *texptime, float *taccumtime,
               get_status(cam->drv_status));
       return;
    }
-   
-   
-   
-   
+
+
+
+
    if(cam->acqmode == 2)
    {
       cam->drv_status = SetKineticCycleTime(cam->exptime);
