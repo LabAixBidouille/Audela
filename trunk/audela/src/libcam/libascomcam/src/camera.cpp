@@ -24,12 +24,8 @@
 
 #if defined(OS_WIN)
 #include <windows.h>
-#include <wchar.h>   // pour BSTR
 #include <exception>
-#endif
-
-#if defined(OS_LIN)
-#include <unistd.h>
+#include <tchar.h> 
 #endif
 
 #include <stdlib.h>
@@ -38,59 +34,8 @@
 #include <stdio.h>
 #include "camera.h"
 
-
-#include <StdString.h> // pour A2COL, OLE2A
-
-
-
-// Global MBCS-to-UNICODE helper function
-	PWSTR  StdA2WHelper(PWSTR pw, PCSTR pa, int nChars)
-	{
-		if (pa == NULL)
-			return NULL;
-		ASSERT(pw != NULL);
-		pw[0] = '\0';
-		VERIFY(MultiByteToWideChar(CP_ACP, 0, pa, -1, pw, nChars));
-		return pw;
-	}
-
-	// Global UNICODE-to_MBCS helper function
-	PSTR  StdW2AHelper(PSTR pa, PCWSTR pw, int nChars)
-	{
-		if (pw == NULL)
-			return NULL;
-		ASSERT(pa != NULL);
-		pa[0] = '\0';
-		VERIFY(WideCharToMultiByte(CP_ACP, 0, pw, -1, pa, nChars, NULL, NULL));
-		return pa;
-	}
-
-
-#define ASCOM_SIMULATOR
-
-//#pragma comment(lib, "comsuppw.lib") // pour _bstr_t
-
-//#import "progid:CCDSimulator.Camera"
-//#import "progid:AscomMasterInterfaces"
-//#import "progid:AscomInterfacesLib"
-//#import "file:C:\Program Files\Fichiers communs\ASCOM\Interface\AscomMasterInterfaces.tlb"
+// le fichier .tlb est equivalent aux fichiers .h et .lib
 #import "file:..\..\..\external\lib\AscomMasterInterfaces.tlb"
-//
-// Required for IDictionaryPtr which is used by DriverHelper.Profile
-//
-#import "file:C:\\Windows\\System32\\ScrRun.dll" \
-	no_namespace \
-	rename("DeleteFile","DeleteFileItem") \
-	rename("MoveFile","MoveFileItem") \
-	rename("CopyFile","CopyFileItem") \
-	rename("FreeSpace","FreeDriveSpace") \
-	rename("Unknown","UnknownDiskType") \
-	rename("Folder","DiskFolder")
-
-#import "progid:DriverHelper.Chooser" \
-	rename("Yield","ASCOMYield") \
-	rename("MessageBox","ASCOMMessageBox")
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -173,7 +118,7 @@ struct cam_drv_t CAM_DRV = {
 };
 
 struct _PrivateParams {
-   AscomInterfacesLib::ICamera  * pCam;
+   AscomInterfacesLib::ICameraPtr pCam;
    AscomInterfacesLib::IFilterWheel *pFilterWheel;
    int debug;
 };
@@ -182,9 +127,35 @@ struct _PrivateParams {
 }
 #endif
 
+void FormatWinMessage(char * szPrefix, HRESULT hr)
+{
+    char * lpBuffer = NULL;
+    DWORD  dwLen = 0;
+
+    dwLen = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER
+                          | FORMAT_MESSAGE_FROM_SYSTEM,
+                          NULL, (DWORD)hr, LANG_NEUTRAL,
+                          (LPTSTR)&lpBuffer, 0, NULL);
+    if (dwLen < 1) {
+        dwLen = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER
+                              | FORMAT_MESSAGE_FROM_STRING
+                              | FORMAT_MESSAGE_ARGUMENT_ARRAY,
+                              "code 0x%1!08X!%n", 0, LANG_NEUTRAL,
+                              (LPTSTR)&lpBuffer, 0, (va_list *)&hr);
+    }
+
+    if (dwLen > 0) {
+       strncpy(szPrefix,lpBuffer,dwLen-1);
+       szPrefix[dwLen-1]=0;
+    }
+        
+    LocalFree((HLOCAL)lpBuffer);
+    return;
+}
 
 int cam_select(char * productName)
 {
+/*
    CoInitialize(NULL);
    ::DriverHelper::_ChooserPtr chooser = NULL;										
 	chooser.CreateInstance("DriverHelper.Chooser");						
@@ -204,6 +175,8 @@ int cam_select(char * productName)
       strcpy(productName, drvrId);
       return 0;
    }
+   */
+   return 0;
 }
 
 /* ========================================================= */
@@ -218,16 +191,17 @@ int cam_select(char * productName)
 
 int cam_init(struct camprop *cam, int argc, char **argv)
 {
-
+   char CCDSimulator[]="{36A5A84D-44C4-4BD8-8B41-B183B6FFB69E}";
    HRESULT hr;
-   cam->params = (PrivateParams*) malloc(sizeof(PrivateParams));
-   cam->params->pCam    = NULL;
+
+   // attention : il faut absolument initialiser a zero la zone 
+   // memoire correspondant à cam->params->pCam  
+   // car sinon le objet COM croit qu'il existe un objet à supprimer
+   // avant d'affecter un nouveu pointer dans la variable. 
+   cam->params = (PrivateParams*) calloc(sizeof(PrivateParams),1);
    
    // aucune trace n'est générée par défaut dans le fichier libascomcam.log
    debug_level = LOG_NONE;
-
-   USES_CONVERSION;     // pour A2COLE, OLE2A
-   LPCOLESTR driverName = A2COLE(argv[2]);
 
    // je recupere les parametres optionnels
    if (argc >= 5) {
@@ -239,38 +213,26 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    }
 
    ascomcam_log(LOG_DEBUG,"cam_init début. Version du %s", __TIMESTAMP__);
-   //Initialize COM.
-   //hr = CoInitialize(NULL);
-   hr = CoInitializeEx(NULL,COINIT_MULTITHREADED);
+   hr = CoInitializeEx(NULL,COINIT_APARTMENTTHREADED);
+   
    if (FAILED(hr)) { 
       sprintf(cam->msg, "cam_init error CoInitializeEx hr=%X",hr);
       return -1;
    }
 
-   CLSID clsid;
-   //hr = CLSIDFromProgID(OLESTR("CCDSimulator.Camera") ,&clsid); 
-   hr = CLSIDFromProgID(A2COLE(argv[2]) ,&clsid); 
-
-   hr = ::CoCreateInstance( clsid, 
-            NULL, CLSCTX_INPROC_SERVER,
-            __uuidof( AscomInterfacesLib::ICamera ), 
-            (void **) &cam->params->pCam);
-   cam->params->pFilterWheel = NULL;
-
+   AscomInterfacesLib::ICameraPtr camera = NULL;
+   hr = camera.CreateInstance((LPCSTR)argv[2]); 
+   cam->params->pCam = camera;
+   
    if (FAILED(hr)) { 
-      if  ( hr == REGDB_E_CLASSNOTREG ) {
-         ascomcam_log(LOG_ERROR,"cam_init error REGDB_E_CLASSNOTREG : AscomInterfacesLib::ICamera class not registered");
-         sprintf(cam->msg, "cam_init error REGDB_E_CLASSNOTREG : AscomInterfacesLib::ICamera class not registered");
-         return -1;
-      } else {
-         ascomcam_log(LOG_ERROR,"cam_init error CoCreateInstance hr=%X",hr);
-         sprintf(cam->msg, "cam_init error CoCreateInstance hr=%X",hr);
-         return -1;
-      }
+      char winErrorMessage[1024];
+      FormatWinMessage( winErrorMessage , hr);
+      ascomcam_log(LOG_ERROR,"cam_init error CreateInstance hr=%X %s",hr ,winErrorMessage);
+      sprintf(cam->msg, "cam_init error CreateInstance hr=%X %s",hr ,winErrorMessage);
+      return -1;
    }
 
-   try
-   {
+   try {
       ascomcam_log(LOG_DEBUG,"cam_init avant connexion");
       cam->params->pCam->Connected = true;
       ascomcam_log(LOG_DEBUG,"cam_init avant GetCameraXSize");
@@ -282,8 +244,11 @@ int cam_init(struct camprop *cam, int argc, char **argv)
             _com_util::ConvertBSTRToString(cam->params->pCam->Description),
             sizeof(CAM_INI[cam->index_cam].name) -1 );      
    } catch (_com_error &e) {
-      ascomcam_log(LOG_ERROR,"cam_init connection error=%s",e.ErrorMessage());
-      sprintf(cam->msg, "cam_init connection error=%s",e.ErrorMessage());
+      //_bstr_t       d = e.Description();
+      //IErrorInfo * ei = e.ErrorInfo();
+      //_bstr_t       h= e.HelpFile();
+      ascomcam_log(LOG_ERROR,"cam_init connection error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      sprintf(cam->msg, "cam_init connection error=%s",_com_util::ConvertBSTRToString(e.Description()));
       return -1;
    } catch (...) {
       ascomcam_log(LOG_ERROR,"cam_init error Connected exception");
@@ -315,7 +280,7 @@ int cam_close(struct camprop * cam)
       // je supprime la camera
       cam->params->pCam->Release();
       CoUninitialize();
-      cam->params->pCam = NULL;      
+      //cam->params->pCam = NULL;      
       if ( cam->params != NULL ) {
          free(cam->params);
          cam->params = NULL;
@@ -440,8 +405,8 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
          }
          return;
       } catch (_com_error &e) {
-         ascomcam_log(LOG_ERROR,"cam_start_exp  error=%s",e.ErrorMessage());
-         sprintf(cam->msg, "cam_start_exp  error=%s",e.ErrorMessage());
+         ascomcam_log(LOG_ERROR,"cam_start_exp  error=%s",_com_util::ConvertBSTRToString(e.Description()));
+         sprintf(cam->msg, "cam_start_exp  error=%s",_com_util::ConvertBSTRToString(e.Description()));
          return;
       } catch (...) {
          sprintf(cam->msg, "cam_start_exp error StartExposure exception");
@@ -495,11 +460,12 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 
          long * lValues;
          // j'attends que l'image soit prete
-         while (cam->params->pCam->ImageReady == VARIANT_FALSE){
-            Sleep(100);
-         }
+         //while (cam->params->pCam->ImageReady == VARIANT_FALSE){
+         //   Sleep(100);
+         //}
+         VARIANT_BOOL ready = cam->params->pCam->ImageReady;
          
-         ascomcam_log(LOG_DEBUG,"cam_read_ccd apres attente");
+         ascomcam_log(LOG_DEBUG,"cam_read_ccd apres attente %d", ready);
          // je reccupere le pointeur de l'image
          _variant_t variantValues = cam->params->pCam->ImageArray;
          safeValues = variantValues.parray;
@@ -932,6 +898,3 @@ void ascomcam_log(int level, const char *fmt, ...)
    }
 
 }
-
-
-
