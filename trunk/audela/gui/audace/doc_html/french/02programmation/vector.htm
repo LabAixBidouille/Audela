@@ -3,11 +3,11 @@
 <head>
   <meta http-equiv="content-type"
  content="text/html; charset=ISO-8859-1">
-  <title>Les vecteurs par la pratique</title>
+  <title>Usage des vecteurs</title>
 </head>
 <body>
-<p class="date">Date de mise &agrave; jour : 09 septembre 2010</p>
-<h1>Les vecteurs par la pratique </h1>
+<p class="date">Date de mise &agrave; jour : 13 septembre 2010</p>
+<h1>Usage des vecteurs</h1>
 <p>Ce document pr&eacute;sente des possibilit&eacute;s
 d'application de ::blt::vector. Il est n&eacute;cessairement
 incomplet. Pour de plus amples informations, consulter
@@ -23,21 +23,21 @@ le lecteur peut v&eacute;rifier le r&eacute;sultat.</p>
 <p>La r&eacute;ponse est simple : C'est une liste (au sens tcl)
 de valeurs num&eacute;riques.<br>
 En tcl on l'&eacute;crit d'une des deux mani&egrave;res :</p>
-<pre>set liste_de valeurs [ list 1 2 3 4 ]<br>set liste_de valeurs { 1 2 3 4 }<br></pre>
+<code>set liste_de valeurs [ list 1 2 3 4 ]<br>set liste_de valeurs { 1 2 3 4 }<br></code>
 <p>Pour d&eacute;clarer un vecteur, on &eacute;crit (le nom du
 vecteur doit obligatoirement commencer par une lettre et contenir
 des lettres, des nombres ou des underscores) :</p>
-<pre>::blt::vector create v_1<br></pre>
+<code>::blt::vector create v_1<br></code>
 Au fait est-ce qu'il existe ?
-<pre>::blt::vector names<br></pre>
+<code>::blt::vector names<br></code>
 Surprise, il n'est pas tout seul.<br>
 Combien d'&eacute;l&eacute;ments a-t-il ?
-<pre>set a [ v_1 length ]<br></pre>
+<code>set a [ v_1 length ]<br></code>
 Nouvelle surprise : Le vecteur existe mais il a 0
 &eacute;l&eacute;ment, exactement comme une liste qui aurait
 &eacute;t&eacute; cr&eacute;&eacute;e par [ list ]. Pour le
 remplir on peut utiliser plusieurs mani&egrave;res :
-<pre>v_1 set [ list 1 2 3 4 ]<br>v_1 set { 1 2 3 4 }<br>v_1 set $liste_de valeurs<br>v_1 append ...(un vecteur, une liste, une valeur, une succession des trois)<br></pre>
+<code>v_1 set [ list 1 2 3 4 ]<br>v_1 set { 1 2 3 4 }<br>v_1 set $liste_de valeurs<br>v_1 append ...(un vecteur, une liste, une valeur, une succession des trois)<br></code>
 <h2>2. Et alors ?</h2>
 <p>Pour traiter une liste tcl, par exemple rechercher son
 minimum, son maximum, des valeurs n&eacute;gatives, traiter les
@@ -47,48 +47,48 @@ qui lit chaque valeur de la liste, la compare,
 remplie et retourne le r&eacute;sultat final. Ce n'est pas
 tr&egrave;s compliqu&eacute; mais harassant d'&eacute;crire des
 boucles du type :</p>
-<pre>for { set i 0 } { $i &lt; [ length $liste_valeurs ] } { incr i } {<br>    ...faire quelque chose<br>}<br></pre>
+<code>for { set i 0 } { $i &lt; [ length $liste_valeurs ] } { incr i } {<br>    ...faire quelque chose<br>}<br></code>
 Pour conna&icirc;tre le minimum ou le maximum d'un vecteur, il
 suffit d'&eacute;crire :
-<pre>set minimum $v_1(min)<br>set maximum $v_1(max)<br></pre>
+<code>set minimum $v_1(min)<br>set maximum $v_1(max)<br></code>
 La r&eacute;ponse est imm&eacute;diate.
 <p>En pur tcl, le calcul de la somme des &eacute;l&eacute;ments
 n&eacute;cessiterait de cr&eacute;er une boucle
 d'accumulation.<br>
 Avec un vecteur, on &eacute;crit :</p>
-<pre>set sum $v_1(sum)<br></pre>
+<code>set sum $v_1(sum)<br></code>
 Il n'est pas n&eacute;cessaire de faire :
-<pre>set mean [ expr { $sum/[llength $liste_de valeurs ] } ] <br></pre>
+<code>set mean [ expr { $sum/[llength $liste_de valeurs ] } ] <br></code>
 pour conna&icirc;tre la moyenne. Il suffit d'&eacute;crire :
-<pre>set mean $v_1(mean)<br></pre>
+<code>set mean $v_1(mean)<br></code>
 <h2>3. Comment &eacute;diter un vecteur dans la Console ?</h2>
-<pre>::console::affiche_resultat "$v_1(:)"<br></pre>
+<code>::console::affiche_resultat "$v_1(:)"<br></code>
 <p>permet d'&eacute;diter la totalit&eacute; du vecteur. Le (:)
 &eacute;quivaut &agrave; (d&eacute;but : end).</p>
 <p>Pour &eacute;diter les valeurs comprises entre l'indice i et j
 :</p>
-<pre>::console::affiche_resultat "$v_1($i:$j)"<br></pre>
+<code>::console::affiche_resultat "$v_1($i:$j)"<br></code>
 ou mieux :
-<pre>::console::affiche_resultat "[ v_1 range $i $j ]"<br></pre>
+<code>::console::affiche_resultat "[ v_1 range $i $j ]"<br></code>
 <p>Cette commande retourne une sous-liste. Elle peut donc aussi
 servir pour cr&eacute;er ou compl&eacute;ter un autre vecteur
 :</p>
-<pre>vecteur2 append [ v_1 range $i $j ]<br></pre>
+<code>vecteur2 append [ v_1 range $i $j ]<br></code>
 <h2>4. Comment calculer avec un vecteur ?</h2>
-<pre>v_1 expr { v_1+10 }<br></pre>
+<code>v_1 expr { v_1+10 }<br></code>
 <p>Ajoute la valeur 10 &agrave; chaque &eacute;l&eacute;ment du
 vecteur.<br>
 Les op&eacute;rations usuelles + - / * % ^ sont valables.</p>
 <p>D'autres op&eacute;rations n&eacute;cessitent un style analogue
 &agrave; celui du tcl :</p>
-<pre>abs     round random    norm<br>acos    cos    hypot    sinh <br>asin    cosh    log     sqrt <br>atan    exp    log10    tan <br>ceil    floor    sin    tanh<br>
+<code>abs     round random    norm<br>acos    cos    hypot    sinh <br>asin    cosh    log     sqrt <br>atan    exp    log10    tan <br>ceil    floor    sin    tanh<br>
 Par exemple :<br><br>v_1 expr { log(v_1) }   
-</pre>
+</code>
 <p>Il est aussi possible d'op&eacute;rer sur deux vecteurs de
 longueur identique (les &eacute;l&eacute;ments &eacute;tant
 trait&eacute;s deux &agrave; deux), &agrave; condition de ne pas
 oublier de cr&eacute;er le second vecteur :</p>
-<pre>::blt::vector create resultat<br>resultat expr { v_1*vecteur2 }<br></pre>
+<code>::blt::vector create resultat<br>resultat expr { v_1*vecteur2 }<br></code>
 Si chaque vecteur contient 1000 &eacute;l&eacute;ments, on
 &eacute;crit 1000 multiplications avec une seule ligne de code !
 <p>Les comparateurs &lt; &gt; &lt;= &gt;= == =! et les
@@ -98,9 +98,9 @@ les &eacute;l&eacute;ments remplissant la condition, sinon 0.</p>
 <p>Des op&eacute;rations de d&eacute;placements circulaires vers
 la droite &gt;&gt; ou vers la gauche &lt;&lt; des
 &eacute;l&eacute;ments sont possibles :</p>
-<pre>v_1 expr { v_1 &gt;&gt; 2 }<br></pre>
+<code>v_1 expr { v_1 &gt;&gt; 2 }<br></code>
 Le dernier &eacute;l&eacute;ment devient le second et
-l'avant-dernier le premier.
+l'avant-dernier le codemier.
 <p>On remarquera que :<br>
 - le $ si courant en tcl n'appara&icirc;t gu&egrave;re que pour
 d&eacute;signer une valeur particuli&egrave;re de la liste,<br>
@@ -114,11 +114,11 @@ v_1(2) ),<br>
 particuli&egrave;re ?</h2>
 <p>Pour isoler la valeur situ&eacute;e &agrave; l'indice j du
 vecteur :</p>
-<pre>set valeur $v_1($j)<br></pre>
+<code>set valeur $v_1($j)<br></code>
 Pour rep&eacute;rer les positions ayant une valeur donn&eacute;e
-<pre>set liste_des_index [ v_1 search $cette_valeur ]<br></pre>
+<code>set liste_des_index [ v_1 search $cette_valeur ]<br></code>
 Pour rechercher les valeurs comprises dans un intervalle :
-<pre>set liste_des_index [ v_1 search $borne1 $borne2 ]<br></pre>
+<code>set liste_des_index [ v_1 search $borne1 $borne2 ]<br></code>
 <h2>6. Et la gestion des indices ?</h2>
 <p>Qui n'a pas oubli&eacute; une fois qu'une liste tcl
 d&eacute;marre &agrave; l'indice 0 et que end est en fait
@@ -126,7 +126,7 @@ d&eacute;marre &agrave; l'indice 0 et que end est en fait
 ?</p>
 <p>Pour les vecteurs c'est pareil (par d&eacute;faut) sauf que
 l'indice de d&eacute;but est modifiable par :</p>
-<pre>v_1 offset 1<br></pre>
+<code>v_1 offset 1<br></code>
 L'exemple ci-dessus est particuli&egrave;rement pratique lorsque
 le but est d'analyser les valeurs d'une ligne ou d'une colonne de
 pixels car celles-ci commence toujours &agrave; l'index 1.<br>
@@ -137,15 +137,15 @@ dans le vecteur.
 replacer les valeurs au bon endroit ?<br>
 En tcl il faut m&eacute;moriser les indices puis,
 ult&eacute;rieurement, ne pas se tromper sur leur rappel.</p>
-<pre>vecteur2 set [ v_1 range $i $j ]<br>vecteur2 offset $i<br></pre>
+<code>vecteur2 set [ v_1 range $i $j ]<br>vecteur2 offset $i<br></code>
 vecteur2 est le reflet fid&egrave;le (indices et valeurs) du
 morceau de vecteur.<br>
 Apr&egrave;s traitement, on peut le remettre en place avec :
-<pre>v_1 index $i $j [ vecteur2 range $i $j ]<br></pre>
+<code>v_1 index $i $j [ vecteur2 range $i $j ]<br></code>
 ou
-<pre>set start [ vecteur2 offset ]<br>v_1 index $i $j [ vecteur2 range $start end ]<br></pre>
+<code>set start [ vecteur2 offset ]<br>v_1 index $i $j [ vecteur2 range $start end ]<br></code>
 <p>Pour conna&icirc;tre l'indice initial d'un vecteur :</p>
-<pre>set offset [ v_1 offset ]<br></pre>
+<code>set offset [ v_1 offset ]<br></code>
 <h2>7. Plus ...</h2>
 <p>D'autres fonctions particuli&egrave;res (adev, kurtosis,
 median, q1, q3, prod, sdev, skew, var) existent mais elles ne
@@ -159,34 +159,34 @@ fonctions.<br>
 Une solution qui marche est de consid&eacute;rer
 qu'elles retournent un vecteur &agrave; une seule composante
 :</p>
-<pre>resultat expr { adev(v_1) }<br>set adev $resultat(:)            (&eacute;cart moyen par rapport &agrave; la moyenne)<br>resultat expr { kurtosis(v_1) }<br>set kurtosis $resultat(:)        (moment d'ordre 4)<br>resultat expr { median(v_1) }<br>set median $resultat(:)          (valeur m&eacute;diane)<br>resultat expr { q1(v_1) }<br>set q1 $resultat(:)              (premier quartile)<br>resultat expr { q3(v_1) }<br>set q3 $resultat(:)              (troisi&egrave;me quartile)<br>resultat expr { prod(v_1) }<br>set prod $resultat(:)            (produit des &eacute;l&eacute;ments)<br>resultat expr { sdev(v_1) }<br>set sdev $resultat(:)            (racine carr&eacute;e de la variance var)<br>resultat expr { skew(v_1) }<br>set skew $resultat(:)            (moment d'ordre 3)<br>resultat expr { var(v_1) }<br>set var $resultat(:)             (somme des carr&eacute;s des &eacute;carts &agrave; la moyenne, divis&eacute;e par le nombre d'&eacute;l&eacute;ments)<br></pre>
+<code>resultat expr { adev(v_1) }<br>set adev $resultat(:)            (&eacute;cart moyen par rapport &agrave; la moyenne)<br>resultat expr { kurtosis(v_1) }<br>set kurtosis $resultat(:)        (moment d'ordre 4)<br>resultat expr { median(v_1) }<br>set median $resultat(:)          (valeur m&eacute;diane)<br>resultat expr { q1(v_1) }<br>set q1 $resultat(:)              (codemier quartile)<br>resultat expr { q3(v_1) }<br>set q3 $resultat(:)              (troisi&egrave;me quartile)<br>resultat expr { prod(v_1) }<br>set prod $resultat(:)            (produit des &eacute;l&eacute;ments)<br>resultat expr { sdev(v_1) }<br>set sdev $resultat(:)            (racine carr&eacute;e de la variance var)<br>resultat expr { skew(v_1) }<br>set skew $resultat(:)            (moment d'ordre 3)<br>resultat expr { var(v_1) }<br>set var $resultat(:)             (somme des carr&eacute;s des &eacute;carts &agrave; la moyenne, divis&eacute;e par le nombre d'&eacute;l&eacute;ments)<br></code>
 D'autres fonctions retournent un vecteur de longueur identique au
 vecteur initial :<br>
-<pre>resultat expr { norm(v_1) } (vecteur norm&eacute; entre 0 et 1)<br>resultat expr { sort(v_1) } (vecteur tri&eacute; par ordre croissant)<br></pre>
+<code>resultat expr { norm(v_1) } (vecteur norm&eacute; entre 0 et 1)<br>resultat expr { sort(v_1) } (vecteur tri&eacute; par ordre croissant)<br></code>
 Il existe une autre solution pour sort:
-<pre>v_1 sort                (tri par ordre croissant)<br>v_1 sort -reverse       (tri par ordre d&eacute;croissant)<br>v_1 sort vecteur2       (tri par ordre croissant de v_1 et r&eacute;arrangement du vecteur2 pour que les indices restent coh&eacute;rents).<br></pre>
+<code>v_1 sort                (tri par ordre croissant)<br>v_1 sort -reverse       (tri par ordre d&eacute;croissant)<br>v_1 sort vecteur2       (tri par ordre croissant de v_1 et r&eacute;arrangement du vecteur2 pour que les indices restent coh&eacute;rents).<br></code>
 Le lecteur peut aussi essayer random ou srandom.
 <h2>8. Cr&eacute;ation (2)</h2>
 <p>Le vecteur v_1 cr&eacute;&eacute; plus haut n'existait que par
 son nom et avait une longueur initiale nulle (si si).</p>
 <p>La commande :</p>
-<pre>::blt::vector create vecteur(20)<br></pre>
+<code>::blt::vector create vecteur(20)<br></code>
 cr&eacute;&eacute;e un vecteur de 20 &eacute;l&eacute;ments
 initialis&eacute;s &agrave; la valeur 0, l'indice initial
 &eacute;tant 0 et l'indice final 19 (soit 20 valeurs).
 <p>Si on veut cr&eacute;er un vecteur dont l'index initial est 1
 (0 par defaut) et de longueur 20 on &eacute;crit :</p>
-<pre>::blt::vector create vecteur(1:20)<br></pre>
+<code>::blt::vector create vecteur(1:20)<br></code>
 Plusieurs modes d'affectation de valeurs sont disponibles :
-<pre>set v_1(:3) 12         (les &eacute;l&eacute;ments de rang 0 &agrave; 3 valent 12)<br>set v_1(4:5) 2         (les &eacute;l&eacute;ments de rang 4 &agrave; 5 valent 2) <br>v_1 index 2 0.5        (le second &eacute;l&eacute;ment vaut maintenant 0.5)         <br>set i 6<br>set v_1($i) 10         (le sixi&egrave;me &eacute;l&eacute;ment vaut 10)    <br>set v_1{7:2*$i) 20     (les &eacute;l&eacute;ments de rang 7 &agrave; rang 12 valent 20)<br>set v_1(2*$i+1:) 0.34  (les &eacute;l&eacute;ments de rang sup&eacute;rieur 12 valent 0.34)<br>set v_1(end) 45        (le dernier &eacute;l&eacute;ment vaut 45)<br>set v_1(++end) 9       (rajoute un &eacute;l&eacute;ment de valeur 9 au vecteur)<br>v_1 delete 11 15       (supprime le 11&egrave;me et le 15&egrave;me &eacute;l&eacute;ment, la longueur du vecteur diminue)<br>v_1 length 20          (rajoute des 0 pour que le nombre d'&eacute;l&eacute;ments redevienne &eacute;gal &agrave; 20) <br>v_1 length 5           (supprime tous les &eacute;l&eacute;ments de rang &gt; 5)<br></pre>
+<code>set v_1(:3) 12         (les &eacute;l&eacute;ments de rang 0 &agrave; 3 valent 12)<br>set v_1(4:5) 2         (les &eacute;l&eacute;ments de rang 4 &agrave; 5 valent 2) <br>v_1 index 2 0.5        (le second &eacute;l&eacute;ment vaut maintenant 0.5)         <br>set i 6<br>set v_1($i) 10         (le sixi&egrave;me &eacute;l&eacute;ment vaut 10)    <br>set v_1{7:2*$i) 20     (les &eacute;l&eacute;ments de rang 7 &agrave; rang 12 valent 20)<br>set v_1(2*$i+1:) 0.34  (les &eacute;l&eacute;ments de rang sup&eacute;rieur 12 valent 0.34)<br>set v_1(end) 45        (le dernier &eacute;l&eacute;ment vaut 45)<br>set v_1(++end) 9       (rajoute un &eacute;l&eacute;ment de valeur 9 au vecteur)<br>v_1 delete 11 15       (supprime le 11&egrave;me et le 15&egrave;me &eacute;l&eacute;ment, la longueur du vecteur diminue)<br>v_1 length 20          (rajoute des 0 pour que le nombre d'&eacute;l&eacute;ments redevienne &eacute;gal &agrave; 20) <br>v_1 length 5           (supprime tous les &eacute;l&eacute;ments de rang &gt; 5)<br></code>
 Il est aussi possible de cr&eacute;er un vecteur avec des valeurs
 &eacute;chelonn&eacute;es :
-<pre>v_1 seq 5 10 1<br></pre>
+<code>v_1 seq 5 10 1<br></code>
 Ce mode cr&eacute;&eacute;e automatiquement un vecteur dont le
-premier &eacute;l&eacute;ment vaut 5 et le dernier 10 avec un
+codemier &eacute;l&eacute;ment vaut 5 et le dernier 10 avec un
 intervalle de 1
 <p>Il est aussi possible de fusionner des vecteurs :</p>
-<pre>v_1 merge v_2 v_3<br></pre>
+<code>v_1 merge v_2 v_3<br></code>
 <h2>9. Et destruction</h2>
 <p>Contrairement aux variables locales d'une proc&eacute;dure
 tcl, qui sont d&eacute;truites &agrave; la fin de la
@@ -196,12 +196,12 @@ des r&eacute;sultats inattendus si on a recours &agrave; des
 'append' ou si on utilise le non d'un vecteur existant.<br>
 Il est donc prudent de d&eacute;clarer les vecteurs avec l'option
 watchunset :</p>
-<pre>::blt::vector create v_1 vecteur2 -watchunset 1<br></pre>
+<code>::blt::vector create v_1 vecteur2 -watchunset 1<br></code>
 Et &agrave; la fin de la proc&eacute;dure de tuer les vecteurs:
-<pre>::blt::vector destroy v_1 vecteur2<br></pre>
+<code>::blt::vector destroy v_1 vecteur2<br></code>
 Ou &agrave; tout le moins, dans les proc&eacute;dures
 it&eacute;ratives, &agrave; utiliser la commande :
-<pre>v_1 length 0<br></pre>
+<code>v_1 length 0<br></code>
 Ce qui a pour effet de supprimer toutes les valeurs
 ant&eacute;rieures : Le vecteur est comme au moment de sa
 cr&eacute;ation.
@@ -212,79 +212,79 @@ alternatives &agrave; des fonctions telles que lmin et lmax.<br>
 Il est aussi possible d'obtenir la liste des indices des valeurs
 &eacute;gales au minimum :<br>
 </p>
-<pre>set indexes [ v_1 search $v_1(min) ]<br></pre>
+<code>set indexes [ v_1 search $v_1(min) ]<br></code>
 Puis de demander le niveau de cette valeur :<br>
-<pre>set min $v_1([ lindex $indexes 0 ])<br></pre>
+<code>set min $v_1([ lindex $indexes 0 ])<br></code>
 <h3>10.2 Moyenne dynamique d'une s&eacute;rie de mesures (dans
 une boucle de rafra&icirc;chissement)</h3>
-<pre>vecteur_mesure append $nouvelle_mesure<br>set moyenne $vecteur_mesure(mean)<br></pre>
+<code>vecteur_mesure append $nouvelle_mesure<br>set moyenne $vecteur_mesure(mean)<br></code>
 <h3>10.3 V&eacute;rification qu'une liste ne comporte que des
 valeurs num&eacute;riques</h3>
 <p>Un vecteur n'admet que des valeurs num&eacute;riques, autrement
 il y erreur.</p>
-<pre>set liste_a_analyser [ list 1 2 3 blabla ]<br>v_1 set $liste_a_analyser<br></pre>
+<code>set liste_a_analyser [ list 1 2 3 blabla ]<br>v_1 set $liste_a_analyser<br></code>
 Retourne :<br>
-<pre>invalid bareword "blabla" .....<br></pre>
+<code>invalid bareword "blabla" .....<br></code>
 On peut mettre &agrave; profit cette erreur pour d&eacute;tecter
 l'absence d'erreur sans avoir &agrave; analyser chaque
 &eacute;l&eacute;ment :
-<pre>if ![ catch { v_1 set $liste_a_analyser } ErrInfo ] {<br>  #-- c'est bien une liste de valeurs num&eacute;riques<br>   todo ...<br>} else {<br>  #-- ce n'est une liste de valeurs num&eacute;riques<br>}<br></pre>
+<code>if ![ catch { v_1 set $liste_a_analyser } ErrInfo ] {<br>  #-- c'est bien une liste de valeurs num&eacute;riques<br>   todo ...<br>} else {<br>  #-- ce n'est une liste de valeurs num&eacute;riques<br>}<br></code>
 <h3>10.4 V&eacute;rification qu'une s&eacute;rie de nombres ne
 comporte pas de trou</h3>
 <p>La somme des termes d'une suite arithm&eacute;tique est
 donn&eacute;e par la formule
-Somme=Nombre_de_termes*(Premier_terme+Dernier_terme)/2.<br>
+Somme=Nombre_de_termes*(codemier_terme+Dernier_terme)/2.<br>
 On pourra donc &eacute;crire :<br>
 </p>
-<pre>v_1 set $liste_de_valeurs<br>if { $v_1(sum) == [ expr { [ v_1 length ]*($v_1(min)+$v_1(max))/2 } ] } {<br>   #-- c'est une s&eacute;rie sans trou<br>   todo<br>}<br></pre>
+<code>v_1 set $liste_de_valeurs<br>if { $v_1(sum) == [ expr { [ v_1 length ]*($v_1(min)+$v_1(max))/2 } ] } {<br>   #-- c'est une s&eacute;rie sans trou<br>   todo<br>}<br></code>
 <h3>10.5 Filtrage et rep&eacute;rage de valeurs en dehors d'un
 intervalle</h3>
-<pre>set seuil_bas 20<br>set seuil_haut 50<br>v_1 expr { v_1 &lt; $seuil_bas || v_1 &gt; $seuil_haut }<br></pre>
+<code>set seuil_bas 20<br>set seuil_haut 50<br>v_1 expr { v_1 &lt; $seuil_bas || v_1 &gt; $seuil_haut }<br></code>
 Toutes les valeurs sont remplac&eacute;es par des 0 ou des 1
 selon que la valeur est dans l'intervalle ou en dehors.<br>
 Pour conna&icirc;tre les positions des &eacute;l&eacute;ments en
 dehors :
-<pre>set indexes [ v_1 search 1 ]<br></pre>
+<code>set indexes [ v_1 search 1 ]<br></code>
 <h3>10.6 Calcul des points d'une courbe param&eacute;trique</h3>
 <p>Pour calculer 100 points d'une courbe y=a+bx+c*x&sup2;, on
 cr&eacute;&eacute;e deux vecteurs :</p>
-<pre>set a 1.2<br>set b 3.5 <br>set c -1.56<br>::blt::vector create x y -watchunset 1<br>x seq 1 100 1<br>y expr { $a+$b*x+$c*x^2}<br></pre>
+<code>set a 1.2<br>set b 3.5 <br>set c -1.56<br>::blt::vector create x y -watchunset 1<br>x seq 1 100 1<br>y expr { $a+$b*x+$c*x^2}<br></code>
 Et pour afficher le r&eacute;sultat :
-<pre>::plotxy::plot $x(:) $y(:)<br></pre>
+<code>::plotxy::plot $x(:) $y(:)<br></code>
 <h3>10.7 Passage par nom au lieu de valeur</h3>
 <p>Pour indiquer &agrave; une proc&eacute;dure les valeurs &agrave;
 traiter,
 il suffit de lui donner le nom du vecteur &agrave; traiter au
 lieu de lui passer la liste des valeurs :</p>
-<pre>proc todo { nom_du_vecteur } {<br> $nom_du_vecteur expr { log($nom_du_vecteur^3) }<br>}<br>todo v_1<br></pre>
+<code>proc todo { nom_du_vecteur } {<br> $nom_du_vecteur expr { log($nom_du_vecteur^3) }<br>}<br>todo v_1<br></code>
 Les valeurs de v_1 sont modifi&eacute;es sans qu'il soit
 n&eacute;cessaire de retourner la liste des valeurs.
 <p>Une autre application concerne ::blt::graph.<br>
 Pour cr&eacute;er une courbe, on &eacute;crit :</p>
-<pre>$w element create courbe -xdata -x $liste_des abscisses -ydata $liste_des ordonn&eacute;es<br></pre>
+<code>$w element create courbe -xdata -x $liste_des abscisses -ydata $liste_des ordonn&eacute;es<br></code>
 Avec les vecteurs il suffit d'&eacute;crire :
-<pre>$w element create courbe -xdata vecteur_abscisses -ydata vecteur_ordonnees<br></pre>
+<code>$w element create courbe -xdata vecteur_abscisses -ydata vecteur_ordonnees<br></code>
 La modification du contenu des vecteurs modifie automatiquement
 le graphique.
 <h3>10.8 Interpolation</h3>
 <p>Admettons l'existence d'un vecteur n'ayant que deux valeurs
 ayant pour abscisses 150 et 151 (pixels).</p>
-<pre>v_1 set [ list 102 98 ]<br>v_1 offset 150<br></pre>
+<code>v_1 set [ list 102 98 ]<br>v_1 offset 150<br></code>
 Pour d&eacute;terminer l'abscisse interm&eacute;diaire ayant pour
 valeur 100 (le cas est simple = 150.5).
-<pre>v_1 populate resultat 9                    (cr&eacute;ation d'un vecteur z comportant 11 &eacute;l&eacute;ments et donc 10 intervalles)<br>z offset [ expr { [ v_1 offset ]*10 } ]    (l'indice de d&eacute;but de z vaut 10 fois l'indice soit 1500)<br>set index [ expr { [ resultat search 99.9 100.1 ]/10 } ]   (la r&eacute;ponse est divis&eacute;e par 10 et vaut 150.5)<br></pre>
+<code>v_1 populate resultat 9                    (cr&eacute;ation d'un vecteur z comportant 11 &eacute;l&eacute;ments et donc 10 intervalles)<br>z offset [ expr { [ v_1 offset ]*10 } ]    (l'indice de d&eacute;but de z vaut 10 fois l'indice soit 1500)<br>set index [ expr { [ resultat search 99.9 100.1 ]/10 } ]   (la r&eacute;ponse est divis&eacute;e par 10 et vaut 150.5)<br></code>
 <h3>10.9 Calcul matriciel</h3>
 <p>Dans le calcul matriciel gsl_mfitmultilin on recourt &agrave;
 un vecteur w de pond&eacute;ration des valeurs.<br>
 Comment obtenir ce vecteur en sachant qu'il doit avoir le
 m&ecirc;me nombre d'&eacute;l&eacute;ments que le vecteur des
 mesures :</p>
-<pre>::blt::vector create w([vecteur_mesures length])<br></pre>
+<code>::blt::vector create w([vecteur_mesures length])<br></code>
 Le vecteur est cr&eacute;&eacute; mais tous ses
 &eacute;l&eacute;ments valent 0.
-<pre>w expr { w == 0 }<br></pre>
+<code>w expr { w == 0 }<br></code>
 Maintenant il sont tous &eacute;gaux &agrave; 1 !<br>
 On aurait aussi pu &eacute;crire :
-<pre>set w(:) 1<br></pre>
+<code>set w(:) 1<br></code>
 </body>
 </html>
