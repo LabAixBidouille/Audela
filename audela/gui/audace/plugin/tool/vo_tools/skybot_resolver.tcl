@@ -2,7 +2,7 @@
 # Fichier : skybot_resolver.tcl
 # Description : Resolution du nom d'un objet du systeme solaire
 # Auteur : Jerome BERTHIER
-# Mise à jour $Id: skybot_resolver.tcl,v 1.30 2010-06-16 18:09:47 robertdelmas Exp $
+# Mise à jour $Id: skybot_resolver.tcl,v 1.31 2010-09-15 09:48:22 jberthier Exp $
 #
 
 namespace eval skybot_Resolver {
@@ -791,63 +791,24 @@ namespace eval skybot_Resolver {
 
       #--- Interrogation de la base de donnees
       set erreur [ catch { vo_skybotstatus text [mc_date2iso8601 $date_calcul]} statut ]
-
-      #---
-      if { $erreur == "0" && $statut != "failed" && $statut != "error"} {
-#         set lines [split $statut ";"]
-#         set found 0
-#         set rangemin undef
-#         set rangemax undef
-#         for {set i 1} {$i < [llength $lines]} {
-#           set statut [split [lindex $lines $i] "|"]
-#           set date_debut [lindex $statut 1]
-#         }
-         #--- Mise en forme du resultat
-         set statut [lindex [split $statut ";"] 1]
-         regsub -all "\'" $statut "" statut
-         set statut [split $statut "|"]
-         #--- Date du debut
-         set date_debut [lindex $statut 1]
-         set date_debut_jd [mc_date2jd $date_debut]
-#         set date_d [ mc_date2ymdhms $date_debut_jd ]
-#         set date_debut [format "%2s-%02d-%02d %02d:%02d:%02.0f" [lindex $date_d 0] [lindex $date_d 1] [lindex $date_d 2] \
-#                                                                 [lindex $date_d 3] [lindex $date_d 4] [lindex $date_d 5] ]
-         #--- Date de fin
-         set date_fin [lindex $statut 2]
-         set date_fin_jd [mc_date2jd $date_fin]
-#         set date_d [ mc_date2ymdhms $date_fin_jd ]
-#         set date_fin [ format "%2s-%02d-%02d %02d:%02d:%02.0f" [lindex $date_d 0] [lindex $date_d 1] [lindex $date_d 2] \
-#                                                                [lindex $date_d 3] [lindex $date_d 4] [lindex $date_d 5] ]
-         #--- Tests sur la validite de la date saisie
-         if { $date_calcul < $date_debut_jd } {
-            tk_messageBox -title $caption(resolver,msg_erreur) -type ok -message "$caption(resolver,msg_date_min) $date_debut"
-            set voconf(date_ephemerides) ""
-            focus $This.frame2.param.input.epoch
-            $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
-            if { $btn_rech } { $::skybot_Resolver::This.frame6.but_recherche configure -relief raised -state normal }
-            $::skybot_Resolver::This configure -cursor arrow
-            return "failed"
-         }
-         #---
-         if { $date_calcul > $date_fin_jd } {
-            tk_messageBox -title $caption(resolver,msg_erreur) -type ok -message "$caption(resolver,msg_date_max) $date_fin"
-            set voconf(date_ephemerides) ""
-            focus $This.frame2.param.input.epoch
-            $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
-            if { $btn_rech } { $::skybot_Resolver::This.frame6.but_recherche configure -relief raised -state normal }
-            $::skybot_Resolver::This configure -cursor arrow
-            return "failed"
-         }
-         return 0
-
+      if { $erreur != "0"} {
+         return $caption(resolver,msg_notavailable)
       } else {
-
-         set msgError $caption(resolver,msg_internet)
-         if {$statut == "error"} {
-            set msgError $caption(resolver,msg_skybot)
+         set flag [lindex $statut 1]
+#         set ticket [lindex $statut 3]
+#         set statutTranche [lindex [split [lindex $statut 5] ";"] 1]
+         #--- ok, pas d'erreur et date reconnue
+         if { $flag == "1" } {
+            return 0
+         #--- ooopps, date non couverte par Skybot
+         } else {
+            set voconf(date_ephemerides) ""
+            focus $This.frame2.param.input.epoch
+            $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
+            if { $btn_rech } { $::skybot_Resolver::This.frame6.but_recherche configure -relief raised -state normal }
+            $::skybot_Resolver::This configure -cursor arrow
+            return $caption(resolver,msg_date_unk)
          }
-         return $msgError
-
       }
 
    }
