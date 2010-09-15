@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise à jour $Id: aud_menu_3.tcl,v 1.66 2010-07-28 21:36:53 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_3.tcl,v 1.67 2010-09-15 20:39:46 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -3138,7 +3138,12 @@ namespace eval ::conv2 {
       global audace caption
 
       set buf "buf$audace(bufNo)"
-      set ext "$private(conv2,extension)"
+
+      if [ info exists private(conv2,extension) ] {
+         set ext "$private(conv2,extension)"
+      } else {
+         set ext $::conf(extension,defaut)
+      }
 
       set err [ catch {
 
@@ -3206,6 +3211,7 @@ namespace eval ::conv2 {
 
       set buf "buf$audace(bufNo)"
       set private(conv2,to_destroy) [ list $in ]
+
       set err [ catch {
 
          #--- charge l'image
@@ -3224,7 +3230,7 @@ namespace eval ::conv2 {
             set $kwd [ $buf getkwd $kwd ]
          }
 
-         foreach indice { 1 2 3 } c { r g b  } {
+         foreach indice { 1 2 3 } c { r g b } {
 
             #--- definit le symbole du plan couleur
             set s [ string toupper $c ]
@@ -3249,8 +3255,8 @@ namespace eval ::conv2 {
             }
             #--- sauve le plan couleur
             $buf save3d ${out}$c 3 $indice $indice
-         }
 
+         }
       } ]
 
       if { $err == "1" } {
@@ -3385,6 +3391,10 @@ namespace eval ::conv2 {
    #########################################################################
    proc MajHeader { file } {
       global audace
+
+      if ![ info exists ::conv2::maj_header ] {
+         set ::conv2::maj_header ""
+      }
 
       #--- teste si l'image est dans la liste des fichiers contenant un ancien mot cle
       if { [ lsearch -regexp $::conv2::maj_header $file ] != "-1" } {
