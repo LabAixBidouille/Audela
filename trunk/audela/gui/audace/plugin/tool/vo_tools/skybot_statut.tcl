@@ -2,7 +2,7 @@
 # Fichier : skybot_statut.tcl
 # Description : Affiche le statut de la base de donnees SkyBoT
 # Auteur : Jerome BERTHIER
-# Mise à jour $Id: skybot_statut.tcl,v 1.18 2010-05-26 06:01:35 robertdelmas Exp $
+# Mise à jour $Id: skybot_statut.tcl,v 1.19 2010-09-15 09:48:22 jberthier Exp $
 #
 
 namespace eval skybot_Statut {
@@ -83,21 +83,22 @@ namespace eval skybot_Statut {
 
       #--- Interrogation de la base de donnees
       set erreur [ catch { vo_skybotstatus votable } statut ]
+      #--- Recupere le flag de retour
       set flag [lindex $statut 1]
-      set ticket [lindex $statut 3]
-      set xml [lindex $statut 5]
-      set votable [::dom::parse $xml]
+      #--- ok, pas d'erreur
+      if { $erreur == "0" && $flag == "1" } {
 
-      #--- Gestion des erreurs
-      if { $erreur == "0" && $statut != "failed" && $statut != "error"} {
-
-         #---
+         #--- Recupere le ticket et la votable
+         set ticket [lindex $statut 3]
+         set xml [lindex $statut 5]
+         #--- Parse la votable
+         set votable [::dom::parse $xml]
+         #--- Cree la fenetre d'affichage du resultat
          toplevel $This -class Toplevel
          wm geometry $This $voconf(position_statut)
          wm resizable $This 1 1
          wm title $This $caption(statut,main_title)
          wm protocol $This WM_DELETE_WINDOW { ::skybot_Statut::fermer }
-
          #--- Liste des tranches
          frame $This.frame0 -borderwidth 0 -cursor arrow
          pack $This.frame0 -in $This -anchor s -side top -expand yes -fill both
@@ -105,46 +106,27 @@ namespace eval skybot_Statut {
          scrollbar $This.frame0.hsb -orient horizontal \
             -command { $::skybot_Statut::This.frame0.tbl xview } -takefocus 1 -borderwidth 1
          pack $This.frame0.hsb -in $This.frame0 -side bottom -fill x
-
+         #--- Mise en forme des resultats   
          label $This.frame0.titre -text "$caption(statut,titre)"
          pack $This.frame0.titre -in $This.frame0 -side top -padx 3 -pady 3
          set tbl $This.frame0.tbl
          tablelist::tablelist $tbl -stretch all \
           -xscrollcommand [ list $This.frame0.hsb set ] \
-          -columns [list \
-          0 $caption(statut,label_ok) \
-          0 begin 0 end \
-          0 $caption(statut,label_aster) 0 $caption(statut,label_planet) 0 $caption(statut,label_satnat) 0 $caption(statut,label_comet) 0 $caption(statut,label_maj) ]
+           -columns [list \
+            0 $caption(statut,label_ok) \
+            0 begin 0 end \
+            0 $caption(statut,label_aster) 0 $caption(statut,label_planet) 0 $caption(statut,label_satnat) 0 $caption(statut,label_comet) 0 $caption(statut,label_maj) ]
          pack $tbl -in $This.frame0 -side top -padx 3 -pady 3 -fill both -expand yes
          foreach tr [::dom::selectNode $votable "descendant::TR"] {
-          set row {}
-          foreach td [::dom::selectNode $tr "descendant::TD/text()"] {
-           lappend row [::dom::node stringValue $td]
-          }
-          $tbl insert end $row
+            set row {}
+            foreach td [::dom::selectNode $tr "descendant::TD/text()"] {
+               lappend row [::dom::node stringValue $td]
+            }
+            $tbl insert end $row
          }
-
-         #--- Mise en forme du resultat
-         set statut [lindex [split $statut ";"] 1]
-         regsub -all "\'" $statut "" statut
-         set statut [split $statut "|"]
-
-           #--- Date du debut
-           set date [ mc_date2ymdhms [lindex $statut 1] ]
-           set date_debut [format "%2s-%02d-%02d %02d:%02d:%02.0f" [lindex $date 0] [lindex $date 1] [lindex $date 2] \
-                                                                   [lindex $date 3] [lindex $date  4] [lindex $date  5] ]
-
-           #--- Date de fin
-           set date [ mc_date2ymdhms [lindex $statut 2] ]
-           set date_fin [ format "%2s-%02d-%02d %02d:%02d:%02.0f" [lindex $date 0] [lindex $date 1] [lindex $date 2] \
-                                                                  [lindex $date 3] [lindex $date  4] [lindex $date  5] ]
-
          #--- Cree un frame pour y mettre les boutons
-         frame $This.frame11 \
-            -borderwidth 0 -cursor arrow
-         pack $This.frame11 \
-            -in $This -anchor s -side bottom -expand 0 -fill x
-
+         frame $This.frame11 -borderwidth 0 -cursor arrow
+         pack $This.frame11 -in $This -anchor s -side bottom -expand 0 -fill x
            #--- Creation du bouton fermer
            button $This.frame11.but_fermer \
               -text "$caption(statut,fermer)" -borderwidth 2 \
@@ -163,10 +145,12 @@ namespace eval skybot_Statut {
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
       } else {
+         #--- ooopps, erreur...
 
-         set msgError $caption(statut,msg_internet)
-         if {$statut == "error"} {
-            set msgError $caption(statut,msg_skybot)
+         if { $flag == "-1" } {
+            set msgError $caption(resolver,msg_date_notavailable)
+         } else {
+            set msgError $caption(statut,msg_internet)
          }
          tk_messageBox -title $caption(statut,msg_erreur) -type ok -message $msgError
          $audace(base).tool.vo_tools.fra5.but1 configure -relief raised -state normal
