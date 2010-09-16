@@ -8,7 +8,7 @@
 # Connected sites are found in http://gcn.gsfc.nasa.gov/sites_cfg.html
 # To create a new connected site http://gcn.gsfc.nasa.gov/gcn/config_builder.html
 #
-# Mise à jour $Id: gcn_tools.tcl,v 1.45 2010-08-03 08:08:46 myrtillelaas Exp $
+# Mise à jour $Id: gcn_tools.tcl,v 1.46 2010-09-16 12:45:19 myrtillelaas Exp $
 #
 
 # ==========================================================================================
@@ -642,7 +642,8 @@ proc gcn_decode { longs sockname } {
          set gcn($sockname,descr,burst_dec) [expr $gcn($sockname,long,burst_dec)*0.0001]
          set gcn($sockname,descr,trigger_num) [expr int($gcn($sockname,long,4))] ; # identificateur du trigger
          set grb_date [expr $gcn($sockname,long,burst_tjd)-13370.-1.+[mc_date2jd {2005 1 1}]] ; # TJD=13370 is 01 Jan 2005
-         set grb_time [expr $gcn($sockname,long,burst_sod)/100.]
+         set grb_time [expr $gcn($sockname,long,burst_sod)/10000.]
+         #gren_info "grb_date" $grb_date , grb_time: $grb_time "
          set gcn($sockname,descr,burst_jd) [expr $grb_date+$grb_time/86400.] ; # jd du trigger
          set gcn($sockname,descr,grb_error) [expr 0.0001*$gcn($sockname,long,burst_error)*60.]; # boite d'erreur en arcmin
          set gcn($sockname,descr,burst_flue) $gcn($sockname,long,9)
