@@ -2,7 +2,7 @@
 # Fichier : testaudela.tcl
 # Description : Outil de test automatique pour AudeLA
 # Auteurs : Michel Pujol
-# Mise à jour $Id: testaudela.tcl,v 1.8 2010-09-17 17:15:23 michelpujol Exp $
+# Mise à jour $Id: testaudela.tcl,v 1.9 2010-09-17 22:08:37 michelpujol Exp $
 #
 
 #####################
@@ -128,7 +128,7 @@ proc ::testaudela::createPluginInstance { { in ".audace" } { visuNo 1 } } {
    if { ! [ info exists conf(testaudela,activeConstraintList) ] } { set conf(testaudela,activeConstraintList) "AUDACE" }
 
 
-   if { [string first $::conf(testaudela,rep_images) $::audace(rep_plugin)] != -1 } {
+   if { [string first $::audace(rep_plugin) $::conf(testaudela,rep_images) ] != -1 } {
        #--- je reinitialise le repertoire des images si l'ancien chemin dans audace(rep_plugin)
        set ::conf(testaudela,rep_images) "$::audace(rep_images)/testaudela"
    }
