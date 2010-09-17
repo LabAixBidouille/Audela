@@ -1,0 +1,29 @@
+   global caption
+   set visuNo "1"
+
+#-------------------------------------------------------------------------------
+test carteducielv3_configure {configure interface vers carteducielv3} {CARTEDUCIELV3} {
+   #--- clic cur le menu analyse->carte
+   ::testaudela::clicMenu $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,carte)..."
+   #--- je selectionne l'onglet carteducielv3
+   ##::confCat::selectNotebook "carteducielv3"
+   ::testaudela::selectNoteBook .audace.confcat.usr.onglet "carteducielv3"
+   #--- j'attends que l'onglet soit affiché
+   after 500
+   #--- je renseigne le repertoire de d�part de la rechercher
+   ::testaudela::putEntry .audace.confcat.usr.onglet.fcarteducielv3.frame2.nomDossier "C:/Program Files"
+
+   #--- je lance la recherche
+   ::testaudela::clicButton .audace.confcat.usr.onglet.fcarteducielv3.frame3.recherche
+   #--- je ferme la fenetre
+   ::testaudela::clicButton .audace.confcat.cmd.ok
+} ""
+
+#-------------------------------------------------------------------------------
+test carteducielv3_affiche {affiche m57} {CARTEDUCIELV3} {
+   #--- je charge m57.fit dans la visu1
+   loadima [file join $::conf(testaudela,rep_images) m57.fit]
+   #--- clic cur le menu analyse->carte
+   ::testaudela::clicMenu $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,carte)"
+} "0"
+
