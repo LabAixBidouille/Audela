@@ -2,7 +2,7 @@
 # Fichier : wizard.tcl
 # Description : pipeline de pointage des etoiles
 # Auteur : Michel Pujol
-# Mise à jour $Id: wizard.tcl,v 1.15 2010-07-24 15:49:40 robertdelmas Exp $
+# Mise à jour $Id: wizard.tcl,v 1.16 2010-09-17 21:30:33 michelpujol Exp $
 #
 
 namespace eval ::modpoi2::wizard {
@@ -1057,7 +1057,7 @@ proc ::modpoi2::wizard::modpoi_wiz3 { amerIndex } {
       set ::conf(modpoi,wizard,maxMagnitude)  $private(maxMagnitude)
    }
    if { [llength $hip_catalog] == 0 } {
-      set fileName [ file join $::audace(rep_userCatalog) hip_main.dat]
+      set fileName [ file join $::audace(rep_catalogues) hip_main.dat]
       #--- je verifie l'existance du catalogue hip_main.dat dans le repertoire des catalogues de l'utilisateur
       if { [file exists $fileName ] == 0 } {
          tk_messageBox -type yesno -icon error -title $caption(modpoi2,wiz3,title) \
