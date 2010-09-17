@@ -1,6 +1,6 @@
 #
 # Fichier : testaudela.cap
-# Mise a jour $Id: testaudela.cap,v 1.4 2010-08-15 07:25:09 robertdelmas Exp $
+# Mise a jour $Id: testaudela.cap,v 1.5 2010-09-17 15:57:41 michelpujol Exp $
 #
 
 #=========================================================================
@@ -14,6 +14,7 @@ global caption langage
 set caption(testaudela,title)                "AudeLA Test"
 set caption(testaudela,name)                 "Name"
 set caption(testaudela,description)          "Description"
+set caption(testaudela,imageDirectory)       "Test image directory"
 set caption(testaudela,files)                "Test File"
 set caption(testaudela,refresh)              "Update"
 set caption(testaudela,selectAll)            "All"
@@ -23,6 +24,10 @@ set caption(testaudela,detail)               "Content of selected file"
 set caption(testaudela,showResult)           "See the result"
 set caption(testaudela,constraint)           "Prerequisites"
 set caption(testaudela,testCampagne)         "Test Campaign"
+set caption(testaudela,ImageDirectory,notFound)    "Test image directory does not exist"
+set caption(testaudela,ImageDirectory,alreadyUsed) "Test image directory must be different from default image directory"
+set caption(testaudela,ImageDirectory,download)    "Do you want to donwload images ?"
+set caption(testaudela,detail)            "#Edit test"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -30,15 +35,25 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,title)             "Test AudeLA"
    set caption(testaudela,name)              "Nom"
    set caption(testaudela,description)       "Description"
+   set caption(testaudela,imageDirectory)    "Images de test"
    set caption(testaudela,files)             "Fichiers de test"
    set caption(testaudela,refresh)           "Actualiser"
    set caption(testaudela,selectAll)         "Tous"
    set caption(testaudela,unselectAll)       "Aucun"
    set caption(testaudela,run)               "Exécuter les tests"
+   set caption(testaudela,stop)              "Arreter les tests"
    set caption(testaudela,detail)            "Contenu du fichier sélectionné"
    set caption(testaudela,showResult)        "Voir le résultat"
    set caption(testaudela,constraint)        "Pré-requis"
    set caption(testaudela,testCampagne)      "Campagne de tests"
+   set caption(testaudela,result)            "Résultat des tests"
+   set caption(testaudela,ImageDirectory,notFound)    "Le repertoire des images de test n'existe pas."
+   set caption(testaudela,ImageDirectory,alreadyUsed) "Le répertoire des images de test doit être différent du repertoire de travail"
+   set caption(testaudela,ImageDirectory,installQuestion) "Voulez-vous installer les images de test ?"
+   set caption(testaudela,ImageDirectory,installTitle)    "Installer les images de test"
+   set caption(testaudela,ImageDirectory,procedure1)   "Télécharger les images de test en cliquant sur le lien ci-dessous et les dézipper dans un répertoire quelconque."
+   set caption(testaudela,ImageDirectory,procedure2)   "Puis indiquer le répertoire ci dessous."
+   set caption(testaudela,edit)            "Editer le test"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -46,6 +61,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,title)             "Test AudeLA"
    set caption(testaudela,name)              "Nome"
    set caption(testaudela,description)       "Descrizione"
+   set caption(testaudela,imageDirectory)    "#Test image directory"
    set caption(testaudela,files)             "File di test"
    set caption(testaudela,refresh)           "Aggiorna"
    set caption(testaudela,selectAll)         "Tutti"
@@ -55,6 +71,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,showResult)        "Visualizza il risultato"
    set caption(testaudela,constraint)        "Prerequisiti"
    set caption(testaudela,testCampagne)      "Campagna di test"
+   set caption(testaudela,ImageDirectory,notFound)    "#Le repertoire des images de test n'existe pas"
+   set caption(testaudela,ImageDirectory,alreadyUsed) "#Le répertoire des images de test ddoit être diffrent du repertoire de travail"
+   set caption(testaudela,ImageDirectory,download)    "#Voulez-vous télécharger les images ?"
+   set caption(testaudela,edit)            "#Edit test"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -62,6 +82,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,title)             "Test AudeLA"
    set caption(testaudela,name)              "Nombre"
    set caption(testaudela,description)       "Descripción"
+   set caption(testaudela,imageDirectory)    "#Test image directory"
    set caption(testaudela,files)             "Ficheros de test"
    set caption(testaudela,refresh)           "Actualizar"
    set caption(testaudela,selectAll)         "Todos"
@@ -71,13 +92,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,showResult)        "Ver los resultados"
    set caption(testaudela,constraint)        "Prerequisitos"
    set caption(testaudela,testCampagne)      "Campaña de tests"
-
+   set caption(testaudela,ImageDirectory,notFound)    "#Le repertoire des images de test n'existe pas"
+   set caption(testaudela,ImageDirectory,alreadyUsed) "#Le répertoire des images de test ddoit être diffrent du repertoire de travail"
+   set caption(testaudela,ImageDirectory,download)    "#Voulez-vous télécharger les images ?"
+   set caption(testaudela,edit)            "#Edit test"
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(testaudela,title)             "AudeLA Test"
    set caption(testaudela,name)              "Name"
    set caption(testaudela,description)       "Beschreibung"
+   set caption(testaudela,imageDirectory)    "#Test image directory"
    set caption(testaudela,files)             "Test Datei"
    set caption(testaudela,refresh)           "Aktualisieren"
    set caption(testaudela,selectAll)         "Alle"
@@ -87,6 +112,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,showResult)        "Das Ergebnis sehen"
    set caption(testaudela,constraint)        "Voraussetzungen"
    set caption(testaudela,testCampagne)      "Test Feldzug"
+   set caption(testaudela,ImageDirectory,notFound)    "Test image directory doesnot exist"
+   set caption(testaudela,ImageDirectory,alreadyUsed) "Test image directory must be different from default image directory"
+   set caption(testaudela,ImageDirectory,download)    "Do you want to donwload images ?"
+   set caption(testaudela,edit)            "#Edit test"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -94,6 +123,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,title)             "# Test AudeLA"
    set caption(testaudela,name)              "Nome"
    set caption(testaudela,description)       "Descrição"
+   set caption(testaudela,imageDirectory)    "#Test image directory"
    set caption(testaudela,files)             "# Fichiers de test"
    set caption(testaudela,refresh)           "Actualizar"
    set caption(testaudela,selectAll)         "Todos"
@@ -103,6 +133,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,showResult)        "# Voir le résultat"
    set caption(testaudela,constraint)        "# Pré-requis"
    set caption(testaudela,testCampagne)      "# Campagne de tests"
+   set caption(testaudela,ImageDirectory,notFound)    "#Test image directory does not exist"
+   set caption(testaudela,ImageDirectory,alreadyUsed) "#Test image directory must be different from default image directory"
+   set caption(testaudela,ImageDirectory,download)    "#Do you want to donwload images ?"
+   set caption(testaudela,edit)            "#Edit test"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -110,6 +144,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,title)             "AudeLA Test"
    set caption(testaudela,name)              "Name"
    set caption(testaudela,description)       "Description"
+   set caption(testaudela,imageDirectory)    "#Test image directory"
    set caption(testaudela,files)             "Test File"
    set caption(testaudela,refresh)           "Update"
    set caption(testaudela,selectAll)         "All"
@@ -119,6 +154,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,showResult)        "See the result"
    set caption(testaudela,constraint)        "Prerequisites"
    set caption(testaudela,testCampagne)      "Test Campaign"
+   set caption(testaudela,ImageDirectory,notFound)    "#Test image directory doesnot exist"
+   set caption(testaudela,ImageDirectory,alreadyUsed) "#Test image directory must be different from default image directory"
+   set caption(testaudela,ImageDirectory,download)    "#Do you want to donwload images ?"
+   set caption(testaudela,edit)            "#Edit test"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -126,6 +165,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,title)             "AudeLA Test"
    set caption(testaudela,name)              "Name"
    set caption(testaudela,description)       "Description"
+   set caption(testaudela,imageDirectory)    "#Test image directory"
    set caption(testaudela,files)             "Test File"
    set caption(testaudela,refresh)           "Update"
    set caption(testaudela,selectAll)         "All"
@@ -135,6 +175,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,showResult)        "See the result"
    set caption(testaudela,constraint)        "Prerequisites"
    set caption(testaudela,testCampagne)      "Test Campaign"
+   set caption(testaudela,ImageDirectory,notFound)    "#Test image directory doesnot exist"
+   set caption(testaudela,ImageDirectory,alreadyUsed) "#Test image directory must be different from default image directory"
+   set caption(testaudela,ImageDirectory,download)    "#Do you want to donwload images ?"
+   set caption(testaudela,edit)            "#Edit test"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -142,6 +186,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,title)             "AudeLA Test"
    set caption(testaudela,name)              "Name"
    set caption(testaudela,description)       "Description"
+   set caption(testaudela,imageDirectory)    "#Test image directory"
    set caption(testaudela,files)             "Test File"
    set caption(testaudela,refresh)           "Update"
    set caption(testaudela,selectAll)         "All"
@@ -151,6 +196,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,showResult)        "See the result"
    set caption(testaudela,constraint)        "Prerequisites"
    set caption(testaudela,testCampagne)      "Test Campaign"
+   set caption(testaudela,ImageDirectory,notFound)    "#Test image directory doesnot exist"
+   set caption(testaudela,ImageDirectory,alreadyUsed) "#Test image directory must be different from default image directory"
+   set caption(testaudela,ImageDirectory,download)    "#Do you want to donwload images ?"
+   set caption(testaudela,edit)            "#Edit test"
 
 }
 
