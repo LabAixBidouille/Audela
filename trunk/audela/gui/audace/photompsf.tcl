@@ -1,3 +1,9 @@
+#
+# Fichier : photompsf.tcl
+# Description : Photometrie avec une PSF
+# Auteur : Alain KLOTZ
+# Mise à jour $Id: photompsf.tcl,v 1.2 2010-09-17 20:56:50 robertdelmas Exp $
+#
 # --- Haut niveaux
 # source photompsf.tcl ; photompsf_onebox ; # pour une seule etoile
 # source photompsf.tcl ; photompsf_addbox ; # pour ajouter d'autres etoiles
@@ -14,10 +20,10 @@
 # photompsf(inputstars)
 # photompsf(multopt)
 
-set photompsf(caption,warning_nowcs) "L'image doit d'abord être calibrée WCS.\nUtiliser le menu Analyse, item Calibration astrométrique."
-set photompsf(caption,warning_getbox) "Entourer une étoile isolée à inclure dans la PSF,\npuis appuyer sur OK"
+set photompsf(caption,warning_nowcs)       "L'image doit d'abord être calibrée WCS.\nUtiliser le menu Analyse, item Calibration astrométrique."
+set photompsf(caption,warning_getbox)      "Entourer une étoile isolée à inclure dans la PSF,\npuis appuyer sur OK"
 set photompsf(caption,question_acceptstar) "Accepter cette étoile pour la PSF ?"
-set photompsf(caption,question_addstar) "Ajouter une autre étoile pour la PSF ?"
+set photompsf(caption,question_addstar)    "Ajouter une autre étoile pour la PSF ?"
 
 proc photompsf_info { msg } {
    global audace photompsf
@@ -93,24 +99,24 @@ proc photompsf_fitboxbypsf { args } {
    set visuno $audace(visuNo)
    set bufno $audace(bufNo)
    set box [::confVisu::getBox $visuno]
-	set res [buf$bufno fitgauss $box]
-	set x [lindex $res 1]
-	set y [lindex $res 5]
-	set res [buf$bufno xy2radec [list $x $y]]
-	set ra [lindex $res 0]
-	set dec [lindex $res 1]   
-	set res [vo_neareststar $ra $dec]
-	set catalog $res
-	set namecat [lindex $res 0]
-	set racat [lindex $res 1]
-	set deccat [lindex $res 2]
-	set sepangle [mc_sepangle $ra $dec $racat $deccat]
-	set sep [expr [lindex $sepangle 0]*3600.]
-	set angle [lindex $sepangle 1]
-	if {$sep>3} {
-   	set racat $ra
-   	set daccat $dec
-	}
+   set res [buf$bufno fitgauss $box]
+   set x [lindex $res 1]
+   set y [lindex $res 5]
+   set res [buf$bufno xy2radec [list $x $y]]
+   set ra [lindex $res 0]
+   set dec [lindex $res 1]
+   set res [vo_neareststar $ra $dec]
+   set catalog $res
+   set namecat [lindex $res 0]
+   set racat [lindex $res 1]
+   set deccat [lindex $res 2]
+   set sepangle [mc_sepangle $ra $dec $racat $deccat]
+   set sep [expr [lindex $sepangle 0]*3600.]
+   set angle [lindex $sepangle 1]
+   if {$sep>3} {
+      set racat $ra
+      set daccat $dec
+   }
    photompsf_fitbypsf $racat $deccat
 }
 
@@ -130,7 +136,7 @@ proc photompsf_fitbypsf { args } {
       set k [lindex $args 0]
       set res [lindex $photompsf(inputstars) $k]
       set ra [lindex $res 2]
-      set dec [lindex $res 3]      
+      set dec [lindex $res 3]
    } elseif {$argc==2} {
       set ra [mc_angle2deg [lindex $args 0]]
       set dec [mc_angle2deg [lindex $args 1] 90]
@@ -138,79 +144,79 @@ proc photompsf_fitbypsf { args } {
       error "Not enough arguments"
    }
    loadima $photompsf(img_filename)
-	set res [buf$bufno radec2xy [list $ra $dec]]
-	set x [lindex $res 0]
-	set y [lindex $res 1]
-	# --- on translate l'etoile sur la PSF
-	set dx [expr $photompsf(x0)-$x]
-	set dy [expr $photompsf(y0)-$y]
-	set dxop [expr -$dx]
-	set dyop [expr -$dy]
-	photompsf_info "dx=$dx dy=$dy"
-	buf$bufno imaseries "TRANS trans_x=$dx trans_y=$dy"
-	buf$bufno window $photompsf(box)
-	saveima star
-	# --- estimation grossiere du rapport de flux
-	set box $photompsf(box)
-	loadima psf
-	set res [buf$bufno fitgauss $box]
-	set if0 [ expr 0.5*([ lindex $res 0 ]+[ lindex $res 4 ]) ]
-	set if1 [ expr $if0*[ lindex $res 2 ]*[ lindex $res 6 ]*.601*.601*3.14159265 ]
-	set fpsf $if0
-	#
-	loadima star
-	set res [buf$bufno fitgauss $box]
-	set if0 [ expr 0.5*([ lindex $res 0 ]+[ lindex $res 4 ]) ]
-	set if1 [ expr $if0*[ lindex $res 2 ]*[ lindex $res 6 ]*.601*.601*3.14159265 ]	
-	set fstar $if0
-	set naxis1 [buf$bufno getpixelswidth]
-	set naxis2 [buf$bufno getpixelsheight]
-	set pixs ""
+   set res [buf$bufno radec2xy [list $ra $dec]]
+   set x [lindex $res 0]
+   set y [lindex $res 1]
+   # --- on translate l'etoile sur la PSF
+   set dx [expr $photompsf(x0)-$x]
+   set dy [expr $photompsf(y0)-$y]
+   set dxop [expr -$dx]
+   set dyop [expr -$dy]
+   photompsf_info "dx=$dx dy=$dy"
+   buf$bufno imaseries "TRANS trans_x=$dx trans_y=$dy"
+   buf$bufno window $photompsf(box)
+   saveima star
+   # --- estimation grossiere du rapport de flux
+   set box $photompsf(box)
+   loadima psf
+   set res [buf$bufno fitgauss $box]
+   set if0 [ expr 0.5*([ lindex $res 0 ]+[ lindex $res 4 ]) ]
+   set if1 [ expr $if0*[ lindex $res 2 ]*[ lindex $res 6 ]*.601*.601*3.14159265 ]
+   set fpsf $if0
+   #
+   loadima star
+   set res [buf$bufno fitgauss $box]
+   set if0 [ expr 0.5*([ lindex $res 0 ]+[ lindex $res 4 ]) ]
+   set if1 [ expr $if0*[ lindex $res 2 ]*[ lindex $res 6 ]*.601*.601*3.14159265 ]
+   set fstar $if0
+   set naxis1 [buf$bufno getpixelswidth]
+   set naxis2 [buf$bufno getpixelsheight]
+   set pixs ""
    for {set k 1} {$k<=$naxis1} {incr k} {
-		lappend pixs [lindex [buf$bufno getpix [list $k 1]] 1]
-	}
+      lappend pixs [lindex [buf$bufno getpix [list $k 1]] 1]
+   }
    for {set k 1} {$k<=$naxis1} {incr k} {
-		lappend pixs [lindex [buf$bufno getpix [list $k $naxis2]] 1]
-	}
+      lappend pixs [lindex [buf$bufno getpix [list $k $naxis2]] 1]
+   }
    for {set k 1} {$k<=$naxis2} {incr k} {
-		lappend pixs [lindex [buf$bufno getpix [list 1 $k]] 1]
-	}
+      lappend pixs [lindex [buf$bufno getpix [list 1 $k]] 1]
+   }
    for {set k 1} {$k<=$naxis2} {incr k} {
-		lappend pixs [lindex [buf$bufno getpix [list $naxis1 $k]] 1]
-	}
-	set np [llength $pixs]
+      lappend pixs [lindex [buf$bufno getpix [list $naxis1 $k]] 1]
+   }
+   set np [llength $pixs]
    set pixs [lsort -real $pixs]
    set back [lindex $pixs [expr $np/2]]
-	set k1 [expr int(floor(0.1*$np))]
-	set k2 [expr int(floor(0.8*$np))]	
+   set k1 [expr int(floor(0.1*$np))]
+   set k2 [expr int(floor(0.8*$np))]
    set pixs [lrange $pixs $k1 $k2]
-	set np [llength $pixs]
-	set total 0
+   set np [llength $pixs]
+   set total 0
    for {set k 0} {$k<$np} {incr k} {
       set total [expr $total+[lindex $pixs $k]]
-	}
-	set mean [expr 1.*$total/$np]
-	set total 0
+   }
+   set mean [expr 1.*$total/$np]
+   set total 0
    for {set k 0} {$k<$np} {incr k} {
       set val [lindex $pixs $k]
       set total [expr $total+($val-$mean)*($val-$mean)]
-	}
-	set sigma [expr sqrt(1.*$total/($np-1))]
-	set sn [expr $if0/$sigma]
-	if {$sn<15} {
-   	set ifmini 0
-   	set ifmaxi [expr 15*$sigma]
-	} else {
-   	set ifmini 0
-   	set ifmaxi [expr 2*$if0]
-	}
-	set multmini [expr $ifmini/$fpsf]
-	set multmaxi [expr $ifmaxi/$fpsf]
+   }
+   set sigma [expr sqrt(1.*$total/($np-1))]
+   set sn [expr $if0/$sigma]
+   if {$sn<15} {
+      set ifmini 0
+      set ifmaxi [expr 15*$sigma]
+   } else {
+      set ifmini 0
+      set ifmaxi [expr 2*$if0]
+   }
+   set multmini [expr $ifmini/$fpsf]
+   set multmaxi [expr $ifmaxi/$fpsf]
    loadima star
    buf$bufno offset [expr -$back]
    buf$bufno bitpix -32
    saveima star0 ; # etoile centree sur la PSF et fond a zero
-	# --- cree les buffers intermediaires
+   # --- cree les buffers intermediaires
    set bufpsf [::buf::create]
    loadima psf
    buf$bufno copyto $bufpsf
@@ -235,7 +241,7 @@ proc photompsf_fitbypsf { args } {
          lappend moys $moy
          lappend stds $std
          lappend mults $mult
-      	photompsf_info "k=$k mult=$mult moy=$moy std=$std"
+         photompsf_info "k=$k mult=$mult moy=$moy std=$std"
          if {$std<=$stdmini} {
             set stdmini $std
             set multopt $mult
@@ -258,11 +264,11 @@ proc photompsf_fitbypsf { args } {
          set kmaxi [expr $kmini+1]
       }
       if {$kmini<0}  { set kmini 0 }
-      if {$kmaxi>$n} { set kmaxi $n }   
+      if {$kmaxi>$n} { set kmaxi $n }
       set multmini2 [expr $multmini+1.*$dmult*$kmini/$n]
       set multmaxi2 [expr $multmini+1.*$dmult*$kmaxi/$n]
-   	set multmini $multmini2
-   	set multmaxi $multmaxi2
+      set multmini $multmini2
+      set multmaxi $multmaxi2
       photompsf_info "kmini=$kmini kmaxi=$kmaxi"
       photompsf_info "multmini=$multmini multmaxi=$multmaxi"
       # --- boucle de dichotomie fine
@@ -289,23 +295,23 @@ proc photompsf_fitbypsf { args } {
    buf$bufno copyto $bufpsf
    loadima $photompsf(img_filename)
    mult 0
-	set naxis1 [buf$bufno getpixelswidth]
-	set naxis2 [buf$bufno getpixelsheight]
-	set naxis11 [buf$bufpsf getpixelswidth]
-	set naxis22 [buf$bufpsf getpixelsheight]
+   set naxis1 [buf$bufno getpixelswidth]
+   set naxis2 [buf$bufno getpixelsheight]
+   set naxis11 [buf$bufpsf getpixelswidth]
+   set naxis22 [buf$bufpsf getpixelsheight]
    for {set x 1} {$x<=$naxis11} {incr x} {
       for {set y 1} {$y<=$naxis22} {incr y} {
-   		set val [lindex [buf$bufpsf getpix [list $x $y]] 1]
-   		buf$bufno setpix [list $x $y] $val
-		}
-	}
-	buf$bufno imaseries "TRANS trans_x=$dxop trans_y=$dyop"
-	saveima psft
+         set val [lindex [buf$bufpsf getpix [list $x $y]] 1]
+         buf$bufno setpix [list $x $y] $val
+      }
+   }
+   buf$bufno imaseries "TRANS trans_x=$dxop trans_y=$dyop"
+   saveima psft
    loadima $photompsf(img_filename)
    sub psft 0
-	::buf::delete $bufpsf
-	set photompsf(multopt) $multopt
-   return $multopt	
+   ::buf::delete $bufpsf
+   set photompsf(multopt) $multopt
+   return $multopt
 }
 
 proc photompsf_synthepsf { {boxwidth ""} {boxheight ""} } {
@@ -361,36 +367,36 @@ proc photompsf_synthepsf { {boxwidth ""} {boxheight ""} } {
       set ra [lindex $res 2]
       set dec [lindex $res 3]
       loadima $photompsf(img_filename)
-   	set res [buf$bufno radec2xy [list $ra $dec]]
-   	set x [lindex $res 0]
-   	set y [lindex $res 1]
-   	photompsf_info "k=$k x=$x y=$y ra=$ra dec=$dec"
-   	set dx [expr $photompsf(x0)-$x]
-   	set dy [expr $photompsf(y0)-$y]
-   	photompsf_info "dx=$dx dy=$dy box=$photompsf(box)"
-   	buf$bufno imaseries "TRANS trans_x=$dx trans_y=$dy"
-   	buf$bufno window $photompsf(box)
-   	saveima psf$k
-	}
-	sadd psf psf $n 0 bitpix=-32
-	# --- valeur des pixels des bords
-	loadima psf
-	set naxis1 [buf$bufno getpixelswidth]
-	set naxis2 [buf$bufno getpixelsheight]
-	set pixs ""
+      set res [buf$bufno radec2xy [list $ra $dec]]
+      set x [lindex $res 0]
+      set y [lindex $res 1]
+      photompsf_info "k=$k x=$x y=$y ra=$ra dec=$dec"
+      set dx [expr $photompsf(x0)-$x]
+      set dy [expr $photompsf(y0)-$y]
+      photompsf_info "dx=$dx dy=$dy box=$photompsf(box)"
+      buf$bufno imaseries "TRANS trans_x=$dx trans_y=$dy"
+      buf$bufno window $photompsf(box)
+      saveima psf$k
+   }
+   sadd psf psf $n 0 bitpix=-32
+   # --- valeur des pixels des bords
+   loadima psf
+   set naxis1 [buf$bufno getpixelswidth]
+   set naxis2 [buf$bufno getpixelsheight]
+   set pixs ""
    for {set k 1} {$k<=$naxis1} {incr k} {
-		lappend pixs [lindex [buf$bufno getpix [list $k 1]] 1]
-	}
+      lappend pixs [lindex [buf$bufno getpix [list $k 1]] 1]
+   }
    for {set k 1} {$k<=$naxis1} {incr k} {
-		lappend pixs [lindex [buf$bufno getpix [list $k $naxis2]] 1]
-	}
+      lappend pixs [lindex [buf$bufno getpix [list $k $naxis2]] 1]
+   }
    for {set k 1} {$k<=$naxis2} {incr k} {
-		lappend pixs [lindex [buf$bufno getpix [list 1 $k]] 1]
-	}
+      lappend pixs [lindex [buf$bufno getpix [list 1 $k]] 1]
+   }
    for {set k 1} {$k<=$naxis2} {incr k} {
-		lappend pixs [lindex [buf$bufno getpix [list $naxis1 $k]] 1]
-	}
-	set np [llength $pixs]
+      lappend pixs [lindex [buf$bufno getpix [list $naxis1 $k]] 1]
+   }
+   set np [llength $pixs]
    set pixs [lsort -real $pixs]
    set back [lindex $pixs [expr $np/2]]
    offset -$back
@@ -407,10 +413,10 @@ proc photompsf_onebox { } {
    global audace photompsf
    set visuno $audace(visuNo)
    set bufno $audace(bufNo)
-	set naxis1 [buf$bufno getpixelswidth]
-	set naxis2 [buf$bufno getpixelsheight]
-	if {($naxis1==0)||($naxis2==0)} {
-   	return ""
+   set naxis1 [buf$bufno getpixelswidth]
+   set naxis2 [buf$bufno getpixelsheight]
+   if {($naxis1==0)||($naxis2==0)} {
+      return ""
    }
    set img_filename temppsf
    saveima $img_filename
@@ -427,10 +433,10 @@ proc photompsf_addbox { } {
    global audace photompsf
    set visuno $audace(visuNo)
    set bufno $audace(bufNo)
-	set naxis1 [buf$bufno getpixelswidth]
-	set naxis2 [buf$bufno getpixelsheight]
-	if {($naxis1==0)||($naxis2==0)} {
-   	return ""
+   set naxis1 [buf$bufno getpixelswidth]
+   set naxis2 [buf$bufno getpixelsheight]
+   if {($naxis1==0)||($naxis2==0)} {
+      return ""
    }
    if {[info exists photompsf(nstar)]==0} {
       photompsf_onebox
@@ -479,98 +485,99 @@ proc photompsf_getboxes { img_filename {mode w} {interactive 1} } {
             tk_messageBox -icon warning -message "$photompsf(caption,warning_getbox)"
             set box [::confVisu::getBox $visuno]
          }
-      	photompsf_info "--------------------"
-      	set res [buf$bufno fitgauss $box]
-      	set x [lindex $res 1]
-      	set y [lindex $res 5]
-   		#set if0 [ expr 0.5*([ lindex $res 0 ]+[ lindex $res 4 ]) ]
-   		#set if1 [ expr $if0*[ lindex $res 2 ]*[ lindex $res 6 ]*.601*.601*3.14159265 ]
-      	set res [buf$bufno xy2radec [list $x $y]]
-      	set ra [lindex $res 0]
-      	set dec [lindex $res 1]
-      	set res [vo_neareststar $ra $dec]
-      	set catalog $res
-      	photompsf_info "res=$res"
-      	set namecat [lindex $res 0]
-      	set racat [lindex $res 1]
-      	set deccat [lindex $res 2]
-      	# --- verifie que l'etoile n'a pas deja été sélectionnée
-      	set ns [llength $photompsf(inputstars)]
-      	set ret 0
-      	for {set ks 0} {$ks<$ns} {incr ks} {
-         	set inputstar [lindex $photompsf(inputstars) $ks]
-         	set rac [lindex $inputstar 2]
-         	set decc [lindex $inputstar 3]
-         	if {($racat==$rac)&&($deccat==$decc)} {
+         photompsf_info "--------------------"
+         set res [buf$bufno fitgauss $box]
+         set x [lindex $res 1]
+         set y [lindex $res 5]
+         #set if0 [ expr 0.5*([ lindex $res 0 ]+[ lindex $res 4 ]) ]
+         #set if1 [ expr $if0*[ lindex $res 2 ]*[ lindex $res 6 ]*.601*.601*3.14159265 ]
+         set res [buf$bufno xy2radec [list $x $y]]
+         set ra [lindex $res 0]
+         set dec [lindex $res 1]
+         set res [vo_neareststar $ra $dec]
+         set catalog $res
+         photompsf_info "res=$res"
+         set namecat [lindex $res 0]
+         set racat [lindex $res 1]
+         set deccat [lindex $res 2]
+         # --- verifie que l'etoile n'a pas deja été sélectionnée
+         set ns [llength $photompsf(inputstars)]
+         set ret 0
+         for {set ks 0} {$ks<$ns} {incr ks} {
+            set inputstar [lindex $photompsf(inputstars) $ks]
+            set rac [lindex $inputstar 2]
+            set decc [lindex $inputstar 3]
+            if {($racat==$rac)&&($deccat==$decc)} {
                incr photompsf(nstar) -1
-            	photompsf_info "This star is the same as n°[expr 1+$ks]"
-            	set ret 1
-            	break
-         	}
-      	}   	
-      	if {$ret==1} {
+               photompsf_info "This star is the same as n°[expr 1+$ks]"
+               set ret 1
+               break
+            }
+         }
+         if {$ret==1} {
             if {$interactive==0} {
                return ""
-            } else {         	
-            	continue
-         	}
-      	}
-      	# --- continue
-      	set magVcat [lindex $res 4]
-      	if {$magVcat==""} {
-         	set magVcat -99
-      	}
-      	set magRcat [lindex $res 5]
-      	if {$magRcat==""} {
-         	set magRcat -199
-      	}   	
-      	set sepangle [mc_sepangle $ra $dec $racat $deccat]
-      	set sep [expr [lindex $sepangle 0]*3600.]
-      	set angle [lindex $sepangle 1]
-      	photompsf_info "Star n°$photompsf(nstar):"
-      	photompsf_info "Box : $box"
-      	photompsf_info "Measured on this image : x=$x y=$y ra=$ra dec=$dec"
-      	photompsf_info "Nearest object : ra=$racat dec=$deccat magV=$magVcat magR=$magRcat"
-      	photompsf_info "Nearest object : $namecat"
-      	photompsf_info "Nearest object : separation=[format %.2f $sep] arcsec, PA=[format %.1f $angle] degrees"
-      	set vr [expr $magVcat-$magRcat]
-      	if {($vr>10)||($vr<-10)} {
-         	set vr " V-R=not defined"
-      	} else {
-         	set vr " V-R=$vr"
-      	}
-      	set res [tk_messageBox -type yesno -message "magV=${magVcat}${vr} separation=[format %.2f $sep] arcsec\n$photompsf(caption,question_acceptstar)" -icon question]
-      	if {$res=="yes"} {
+            } else {
+               continue
+            }
+         }
+         # --- continue
+         set magVcat [lindex $res 4]
+         if {$magVcat==""} {
+            set magVcat -99
+         }
+         set magRcat [lindex $res 5]
+         if {$magRcat==""} {
+            set magRcat -199
+         }
+         set sepangle [mc_sepangle $ra $dec $racat $deccat]
+         set sep [expr [lindex $sepangle 0]*3600.]
+         set angle [lindex $sepangle 1]
+         photompsf_info "Star n°$photompsf(nstar):"
+         photompsf_info "Box : $box"
+         photompsf_info "Measured on this image : x=$x y=$y ra=$ra dec=$dec"
+         photompsf_info "Nearest object : ra=$racat dec=$deccat magV=$magVcat magR=$magRcat"
+         photompsf_info "Nearest object : $namecat"
+         photompsf_info "Nearest object : separation=[format %.2f $sep] arcsec, PA=[format %.1f $angle] degrees"
+         set vr [expr $magVcat-$magRcat]
+         if {($vr>10)||($vr<-10)} {
+            set vr " V-R=not defined"
+         } else {
+            set vr " V-R=$vr"
+         }
+         set res [tk_messageBox -type yesno -message "magV=${magVcat}${vr} separation=[format %.2f $sep] arcsec\n$photompsf(caption,question_acceptstar)" -icon question]
+         if {$res=="yes"} {
             lappend photompsf(inputstars) [list $box $namecat $racat $deccat $catalog]
-      	} elseif {$res=="no"} {
+         } elseif {$res=="no"} {
             incr photompsf(nstar) -1
-         	photompsf_info "Star refused to be included in the PSF."
-      	}
-      	if {$interactive==1} {
-         	set res [tk_messageBox -type yesno -message "$photompsf(caption,question_addstar)" -icon question]
+            photompsf_info "Star refused to be included in the PSF."
+         }
+         if {$interactive==1} {
+            set res [tk_messageBox -type yesno -message "$photompsf(caption,question_addstar)" -icon question]
             if {$res=="no"} {
                set sortie 1
-         	}
-      	} else {
+            }
+         } else {
             set sortie 1
-      	}
-   	}
-	} else {
-   	set ns [llength $photompsf(inputstars)]
-   	set ret 0
-   	for {set ks 0} {$ks<$ns} {incr ks} {
-      	set inputstar [lindex $photompsf(inputstars) $ks]
-      	set racat [lindex $inputstar 2]
-      	set deccat [lindex $inputstar 3]
-      	set res [lindex $inputstar 4]
-      	set namecat [lindex $res 0]
-      	set magVcat [lindex $res 4]
-      	set magRcat [lindex $res 5]
-      	photompsf_info "--------------------"
-      	photompsf_info "Star n°$photompsf(nstar):"
-      	photompsf_info "Box : $box"
-      	photompsf_info "Nearest object : ra=$racat dec=$deccat magV=$magVcat magR=$magRcat"
-      	photompsf_info "Nearest object : $namecat"
-   	}
-	}
+         }
+      }
+   } else {
+      set ns [llength $photompsf(inputstars)]
+      set ret 0
+      for {set ks 0} {$ks<$ns} {incr ks} {
+         set inputstar [lindex $photompsf(inputstars) $ks]
+         set racat [lindex $inputstar 2]
+         set deccat [lindex $inputstar 3]
+         set res [lindex $inputstar 4]
+         set namecat [lindex $res 0]
+         set magVcat [lindex $res 4]
+         set magRcat [lindex $res 5]
+         photompsf_info "--------------------"
+         photompsf_info "Star n°$photompsf(nstar):"
+         photompsf_info "Box: $box"
+         photompsf_info "Nearest object: ra=$racat dec=$deccat magV=$magVcat magR=$magRcat"
+         photompsf_info "Nearest object: $namecat"
+      }
+   }
 }
+
