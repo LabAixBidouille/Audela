@@ -2,7 +2,7 @@
 # Fichier : testaudela.tcl
 # Description : Outil de test automatique pour AudeLA
 # Auteurs : Michel Pujol
-# Mise à jour $Id: testaudela.tcl,v 1.7 2010-09-17 15:57:41 michelpujol Exp $
+# Mise à jour $Id: testaudela.tcl,v 1.8 2010-09-17 17:15:23 michelpujol Exp $
 #
 
 #####################
@@ -734,6 +734,7 @@ proc ::testaudela::runTests { { fileList "all" } } {
       ::tcltest::testConstraint singleTestInterp 1
       if { $private(frm) == "" } {
          #--- s'il n'y a pas de fenetre ouverte, j'utilse le fichier de trace de tcltest
+         file delete -force [file join $::audace(rep_log) $::conf(testaudela,resultFile)]
          ::tcltest::configure -outfile [file join $::audace(rep_log) $::conf(testaudela,resultFile)]
          set private(hfile) ""
       } else {
@@ -804,7 +805,7 @@ proc ::testaudela::restorePuts { } {
 proc ::testaudela::putsCommand { args } {
    variable private
 
-   ::tcl::puts $args
+   eval ::tcl::puts $args
    if {[lindex $args 0]=="-nonewline"} {
       set newline ""
       set args [lrange $args 1 end]
