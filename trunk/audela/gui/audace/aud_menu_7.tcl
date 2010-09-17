@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise à jour $Id: aud_menu_7.tcl,v 1.31 2010-08-25 20:38:14 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_7.tcl,v 1.32 2010-09-17 19:39:18 michelpujol Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -469,21 +469,22 @@ namespace eval ::cwdWindow {
          if { $conf(rep_travail,travail_images) == "1" } {
             set conf(rep_travail)         $audace(rep_images)
             set audace(rep_travail)       $audace(rep_images)
+            set cwdWindow(dir_travail)    $audace(rep_images)
             #--- On se place dans le nouveau repertoire de travail
             cd $audace(rep_travail)
+         } else {
+            if {[file exists $normalized_dir_travail] && [file isdirectory $normalized_dir_travail]} {
+               set conf(rep_travail)   $normalized_dir_travail
+               set audace(rep_travail) $normalized_dir_travail
+               #--- On se place dans le nouveau repertoire de travail
+               cd $audace(rep_travail)
+            } else {
+               set m "$cwdWindow(dir_travail)"
+               append m "$caption(cwdWindow,pas_repertoire)"
+               tk_messageBox -message $m -title "$caption(cwdWindow,boite_erreur)"
+               return -1
+            }
          }
-      }
-
-      if {[file exists $normalized_dir_travail] && [file isdirectory $normalized_dir_travail]} {
-         set conf(rep_travail)   $normalized_dir_travail
-         set audace(rep_travail) $normalized_dir_travail
-         #--- On se place dans le nouveau repertoire de travail
-         cd $audace(rep_travail)
-      } else {
-         set m "$cwdWindow(dir_travail)"
-         append m "$caption(cwdWindow,pas_repertoire)"
-         tk_messageBox -message $m -title "$caption(cwdWindow,boite_erreur)"
-         return -1
       }
 
       if {[file exists $normalized_dir_scripts] && [file isdirectory $normalized_dir_scripts]} {
