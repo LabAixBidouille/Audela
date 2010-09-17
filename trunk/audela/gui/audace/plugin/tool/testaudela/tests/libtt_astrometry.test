@@ -69,7 +69,7 @@ test libtt_catchart {imaseries CATCHART  } -constraints {
 } -body {
 
    #--- je cherche les etoiles dans le catalogue microcat
-   ttscript2 "IMA/SERIES . dummy . . .fit . dummy . .fit CATCHART \"path_astromcatalog=$::conf(mpastrometry,cataloguePath)/\" astromcatalog=MicroCat \"catafile=./cdummy.fit\" "
+   ttscript2 "IMA/SERIES . dummy . . .fit . dummy . .fit CATCHART \"path_astromcatalog=$::conf(astrometry,catfolder)/\" astromcatalog=MicroCat \"catafile=./cdummy.fit\" "
    #--- je compte les etoiles trouvees dans le catalogue
    set catalogueStarNb 0
    set fcom [open "usno.lst" r]
