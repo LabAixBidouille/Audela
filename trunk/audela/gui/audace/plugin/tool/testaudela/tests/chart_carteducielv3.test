@@ -25,9 +25,11 @@ test carteducielv3_affiche {affiche m57} {CARTEDUCIELV3} {
    loadima [file join $::conf(testaudela,rep_images) m57.fit]
    #--- clic sur le menu analyse->carte
    ::testaudela::clicMenu $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,carte)"
+} "0"
+
+#-------------------------------------------------------------------------------
+test carteducielv3_vide_visu {effacer la visu} {AUDACE} {
    #--- je vide la visu
    visu$visuNo clear
-   #--- update pour laisser le temps de rafraichir l'affichage
-   update
 } "0"
 
