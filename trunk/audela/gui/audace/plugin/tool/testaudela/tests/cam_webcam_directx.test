@@ -6,34 +6,32 @@ set bufNo 2
 set cameraName ""
 
 #-------------------------------------------------------------------------------
-test WEBCAM_DIRECTX_list {liste des cameras } { WEBCAM_RGB } {
+test WEBCAM_DIRECTX_list {liste des cameras} {WEBCAM_RGB} {
    #--- je charge la librairie
    load $::audela_start_dir/libwebcam.dll
-   #--- je recupere la liste des webcam
+   #--- je recupere la liste des webcams
    set result [webcam available ]
    #--- je memorise le nom de la premiere camera pour faire les tests suivants
    set cameraName [lindex $result 0]
 
-   #--- je retourne le nombre de cameras disponibles . Je ne controle pas les noms car cela
+   #--- je retourne le nombre de cameras disponibles, je ne controle pas les noms car cela
    #--- depend des cameras installee pour le faire le test
    return [expr [llength $result] >= 1]
 } "1"
 
-
-
 #-------------------------------------------------------------------------------
-test WEBCAM_DIRECTX_create {creation de la camera RGB } { WEBCAM_RGB } {
+test WEBCAM_DIRECTX_create {creation de la camera RGB} {WEBCAM_RGB} {
    set camNo [cam::create webcam $cameraName -videomode directx -name WEBCAM -ccd "ICX098BQ-A" ]
    cam$camNo buf $bufNo
    return $camNo
 } "1"
 
 #-------------------------------------------------------------------------------
-test WEBCAM_RGB_acq {acquisition  } { WEBCAM_RGB } {
+test WEBCAM_RGB_acq {acquisition} {WEBCAM_RGB} {
    #--- je vide le buffer de la camera
    buf$bufNo clear
    #--- je rafraichis l'affichage (ce n'est pas indispensable, mais c'est juste pour voir
-   #--- a l'ecran ce qui se passe
+   #--- a l'ecran ce qui se passe)
    ::confVisu::autovisu $visuNo
    update
    #--- je fais une acquisition
@@ -46,6 +44,7 @@ test WEBCAM_RGB_acq {acquisition  } { WEBCAM_RGB } {
    }
 
    #--- je rafraichis l'affichage (ce n'est pas indispensable, mais c'est juste pour voir
+   #--- a l'ecran ce qui se passe)
    ::confVisu::autovisu $visuNo
    update
    #--- je verifie que le buffer contient une image
@@ -57,10 +56,10 @@ test WEBCAM_RGB_acq {acquisition  } { WEBCAM_RGB } {
 } "1"
 
 #-------------------------------------------------------------------------------
-test WEBCAM_DIRECTX_acq { acquisition en mode bloquant} { WEBCAM_RGB  } {
+test WEBCAM_DIRECTX_acq {acquisition en mode bloquant} {WEBCAM_RGB} {
    #--- je vide le buffer de la camera
    buf$bufNo clear
-   #--- je rafraichis l'affichage (ce n'est pas indispesable, mais c'est juste pour voir
+   #--- je rafraichis l'affichage (ce n'est pas indispensable, mais c'est juste pour voir
    #--- a l'ecran ce qui se passe
    ::confVisu::autovisu $visuNo
    update
@@ -68,7 +67,8 @@ test WEBCAM_DIRECTX_acq { acquisition en mode bloquant} { WEBCAM_RGB  } {
    cam$camNo exptime 0.1
    cam$camNo acq -blocking
 
-   #--- je rafraichis l'affichage (ce n'est pas indispesable, mais c'est juste pour voir
+   #--- je rafraichis l'affichage (ce n'est pas indispensable, mais c'est juste pour voir
+   #--- a l'ecran ce qui se passe
    ::confVisu::autovisu $visuNo
    update
    ::confVisu::autovisu $visuNo
@@ -79,7 +79,7 @@ test WEBCAM_DIRECTX_acq { acquisition en mode bloquant} { WEBCAM_RGB  } {
 } "1"
 
 #-------------------------------------------------------------------------------
-test WEBCAM_DIRECTX_delete {suppression camera NB} { WEBCAM_RGB } {
+test WEBCAM_DIRECTX_delete {suppression camera NB} {WEBCAM_RGB} {
      cam::delete $camNo
      update
      #--- je verifie qu'il n'y a plus de camera
@@ -87,7 +87,7 @@ test WEBCAM_DIRECTX_delete {suppression camera NB} { WEBCAM_RGB } {
 } ""
 
 #-------------------------------------------------------------------------------
-test WEBCAM_DIRECTX_create {creation camera inconnue } { WEBCAM_RGB } {
+test WEBCAM_DIRECTX_create {creation camera inconnue} {WEBCAM_RGB} {
 
    catch {
       set camNo [cam::create webcam "xxxx" -videomode directx -name WEBCAM -ccd "ICX098BQ-A" ]
