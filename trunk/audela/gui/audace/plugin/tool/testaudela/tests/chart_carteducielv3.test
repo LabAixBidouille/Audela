@@ -27,9 +27,7 @@ test carteducielv3_affiche {affiche m57} {CARTEDUCIELV3} {
    ::testaudela::clicMenu $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,carte)"
 } "0"
 
-#-------------------------------------------------------------------------------
-test carteducielv3_vide_visu {effacer la visu} {AUDACE} {
-   #--- je vide la visu
-   visu$visuNo clear
-} "0"
+   #--- j'efface le buffer
+   loadima ""
+   after 300
 
