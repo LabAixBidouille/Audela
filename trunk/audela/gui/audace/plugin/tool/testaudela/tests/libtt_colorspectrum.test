@@ -1,6 +1,8 @@
+
 #--- je recupere le buffer de la premiere visu
 set visuNo 1
 set bufNo [::confVisu::getBufNo $visuNo]
+
 #-------------------------------------------------------------------------------
 test colorspectrum1 {imaseries COLORSPECTRUM lambda par defaut} {
    set result ""
@@ -15,8 +17,8 @@ test colorspectrum1 {imaseries COLORSPECTRUM lambda par defaut} {
    return $result
 } "OK"
 
+#-------------------------------------------------------------------------------
 test colorspectrum2 {imaseries COLORSPECTRUM spc_fit2colors} -constraints {
-
 } -setup {
    #--- je copie l'image dans ::audace(rep_images) car spc_fit2colors n'utilise que les images qui sont dans ce répertoire
    file copy [file join $::conf(testaudela,rep_images) "hd193793--profil-calibre_1c.fit"] $::audace(rep_images)
@@ -28,7 +30,11 @@ test colorspectrum2 {imaseries COLORSPECTRUM spc_fit2colors} -constraints {
    ::confVisu::autovisu $visuNo
    return $result
 } -cleanup {
-   file delete  -force  [file join $::audace(rep_images) "hd193793--profil-calibre_1c.fit"]
-   file delete  -force  [file join $::audace(rep_images) "hd193793--profil-calibre_1c_color.jpg"]
+   file delete -force [file join $::audace(rep_images) "hd193793--profil-calibre_1c.fit"]
+   file delete -force [file join $::audace(rep_images) "hd193793--profil-calibre_1c_color.jpg"]
 } -result "OK"
+
+   #--- j'efface le buffer
+   loadima ""
+   after 300
 
