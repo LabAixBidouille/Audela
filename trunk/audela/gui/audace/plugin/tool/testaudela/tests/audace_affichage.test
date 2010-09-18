@@ -1,3 +1,4 @@
+
 global caption
 set visuNo 1
 
@@ -8,81 +9,71 @@ test affichage_init {buf create} {AUDACE} {
    update
    #--- je choisis la fonction de transfert lineaire
    set ::conf(fonction_transfert,visu$visuNo,mode) 1
-   #--- je choisis le menu "zoom x 1"
+   #--- je choisis le menu "zoom x1"
    clicMenu $visuNo $caption(audace,menu,display) "$caption(audace,menu,zoom) $caption(audace,menu,zoom_1)"
 } ""
 
-
 #-------------------------------------------------------------------------------
-test affichage_intensite { affichage des coordonnees et intensite} {AUDACE} {
+test affichage_intensite {affichage des coordonnees et intensite} {AUDACE} {
    #--- je deplace la souris sur le point 120,120
    mouveMouse $visuNo 122 120
-   #--- je recupere les coordonnes et l'intensite
+   #--- je recupere les coordonnees et l'intensite
    return "[.audace.fra1.labURLX cget -text] [.audace.fra1.labURLY cget -text] [.audace.fra1.labI cget -text]"
 } "X = 123 Y = 117 I = 325.000000"
 
 #-------------------------------------------------------------------------------
-test affichage_zoom_05 { zoom x0.5 } {AUDACE} {
-
+test affichage_zoom_05 {zoom x0.5} {AUDACE} {
    #--- j'appelle le menu "zoom x0.5"
    clicMenu $visuNo $caption(audace,menu,display) "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.5)"
    #--- je deplace la souris sur le point 20,20
    mouveMouse $visuNo 20 20
    update
    after 300
-   #--- je recupere les coordonnes et l'intensite
+   #--- je recupere les coordonnees et l'intensite
    return "[.audace.fra1.labURLX cget -text] [.audace.fra1.labURLY cget -text] [.audace.fra1.labURLX cget -text] [.audace.fra1.labI cget -text]"
 } "X = 42 Y = 196 X = 42 I = 323.000000"
 
 #-------------------------------------------------------------------------------
-test affichage_script_zoom_1 { zoom x1 par script} {AUDACE} {
-
+test affichage_script_zoom_1 {zoom x1 par script} {AUDACE} {
    #--- je change le zoom avec la commande setZoom
    confVisu::setZoom $visuNo 1
    #--- je deplace la souris sur le point 20,20
    mouveMouse $visuNo 122 120
    update
    after 300
-   #--- je recupere les coordonnes et l'intensite
+   #--- je recupere les coordonnees et l'intensite
    return "[.audace.fra1.labURLX cget -text] [.audace.fra1.labURLY cget -text] [.audace.fra1.labI cget -text]"
 } "X = 123 Y = 117 I = 325.000000"
 
-
 #-------------------------------------------------------------------------------
-test affichage_script_zoom_05 { zoom x0.5 par script} {AUDACE} {
-
+test affichage_script_zoom_05 {zoom x0.5 par script} {AUDACE} {
    #--- je change le zoom avec la commande setZoom
    confVisu::setZoom $visuNo 0.5
    #--- je deplace la souris sur le point 20,20
    mouveMouse $visuNo 20 20
-
-   #--- je recupere les coordonnes et l'intensite
+   #--- je recupere les coordonnees et l'intensite
    return "[.audace.fra1.labURLX cget -text] [.audace.fra1.labURLY cget -text] [.audace.fra1.labI cget -text]"
 } "X = 42 Y = 196 I = 323.000000"
 
-
 #-------------------------------------------------------------------------------
-test affichage_script_zoom_1_retour { zoom x1 retour} {AUDACE} {
-
+test affichage_script_zoom_1_retour {zoom x1 retour} {AUDACE} {
    #--- je change le zoom avec la commande setZoom
    confVisu::setZoom $visuNo 1
    #--- je deplace la souris sur le point 20,20
    mouveMouse $visuNo 122 120
-
-   #--- je recupere les coordonnes et l'intensite
+   #--- je recupere les coordonnees et l'intensite
    return "[.audace.fra1.labURLX cget -text] [.audace.fra1.labURLY cget -text] [.audace.fra1.labI cget -text]"
 } "X = 123 Y = 117 I = 325.000000"
 
-
 #-------------------------------------------------------------------------------
-test affichage_reticule_actif { affiche le reticule  } {AUDACE} {
+test affichage_reticule_actif {affiche le reticule} {AUDACE} {
    #--- je clique sur le menu reticule
    clicMenu $visuNo "$caption(audace,menu,display)" "[::Crosshair::getLabel]..."
-   #--- je clique le checkbutton pour afficher le r?ticule
+   #--- je clique le checkbutton pour afficher le reticule
    clicCheckButton [confVisu::getBase $visuNo].confCrossHair.frame1.frameState.currentstate
    #--- je ferme la fenetre
    clicButton [confVisu::getBase $visuNo].confCrossHair.but_ok
-   #--- je verifie que le reticule est affich?
+   #--- je verifie que le reticule est affiche
    set result "[::confVisu::getCrosshair $visuNo]"
    append result " [[::confVisu::getCanvas 1] gettags lineh]"
    append result " [[::confVisu::getCanvas 1] gettags linev]"
@@ -92,14 +83,14 @@ test affichage_reticule_actif { affiche le reticule  } {AUDACE} {
 } "1 lineh linev"
 
 #-------------------------------------------------------------------------------
-test affichage_reticule_inactif { masque le reticule } {AUDACE} {
+test affichage_reticule_inactif {masque le reticule} {AUDACE} {
    #--- je clique sur le menu reticule
    clicMenu $visuNo "$caption(audace,menu,display)" "[::Crosshair::getLabel]..."
-   #--- je clique le check button pour afficher le r?ticule
+   #--- je clique le check button pour afficher le reticule
    clicCheckButton [confVisu::getBase $visuNo].confCrossHair.frame1.frameState.currentstate
    #--- je ferme la fenetre
    clicButton [confVisu::getBase $visuNo].confCrossHair.but_ok
-   #--- je verifie que le reticule n'est pas affich?
+   #--- je verifie que le reticule n'est pas affiche
    set result "[::confVisu::getCrosshair $visuNo]"
    append result " [[::confVisu::getCanvas 1] gettags lineh]"
    append result " [[::confVisu::getCanvas 1] gettags linev]"
@@ -109,55 +100,51 @@ test affichage_reticule_inactif { masque le reticule } {AUDACE} {
 } "0  "
 
 #-------------------------------------------------------------------------------
-test affichage_reticule_actif { active et desactive le reticule sans fermer la fenetre } {AUDACE} {
-  #--- je clique sur le menu reticule
+test affichage_reticule_actif {active et desactive le reticule sans fermer la fenetre} {AUDACE} {
+   #--- je clique sur le menu reticule
    clicMenu $visuNo "$caption(audace,menu,display)" "[::Crosshair::getLabel]..."
-   #--- je clique le checkbutton pour afficher le r?ticule
+   #--- je clique le checkbutton pour afficher le reticule
    clicCheckButton [confVisu::getBase $visuNo].confCrossHair.frame1.frameState.currentstate
    #--- j'applique sans fermer la fenetre
    clicButton [confVisu::getBase $visuNo].confCrossHair.but_appliquer
-   #--- je verifie que le reticule est affich?
+   #--- je verifie que le reticule est affiche
    if { [::confVisu::getCrosshair $visuNo] != "1" } {
-      return "Le reticule n'est pas affiche apres avoir appliqu?"
+      return "Le réticule n'est pas affiché après avoir appliqué"
    }
    after 300
-   #--- je clique le checkbutton pour supprimer le r?ticule
+   #--- je clique le checkbutton pour supprimer le reticule
    clicCheckButton [confVisu::getBase $visuNo].confCrossHair.frame1.frameState.currentstate
    #--- j'applique sans fermer la fenetre
    clicButton [confVisu::getBase $visuNo].confCrossHair.but_appliquer
-   #--- je verifie que le reticule est affich?
+   #--- je verifie que le reticule n'est pas affiche
    if { [::confVisu::getCrosshair $visuNo] != "0" } {
-      return "Le reticule n'est pas supprim? apres avoir appliqu?"
+      return "Le réticule n'est pas supprimé après avoir appliqué"
    }
    after 300
    #--- je ferme la fenetre
    clicButton [confVisu::getBase $visuNo].confCrossHair.but_ok
-   #--- je verifie que le reticule n'est pas affich?
+   #--- je verifie que le reticule n'est pas affiche
    if { [::confVisu::getCrosshair $visuNo] != "0" } {
-      return "Le reticule n'est pas supprim? apres avoir ferm? la fenetre"
+      return "Le reticule n'est pas supprimé après avoir fermé la fenêtre"
    }
    return 1
 } "1"
-
 
 #-------------------------------------------------------------------------------
 test visu_color {affiche une image couleur} {AUDACE} {
    loadima [file join $::conf(testaudela,rep_images) "47toucan.jpg"]
    update
-
    #--- j'appelle le menu "zoom x1"
    clicMenu $visuNo $caption(audace,menu,display) "$caption(audace,menu,zoom) $caption(audace,menu,zoom_1)"
    #--- je deplace la souris sur le point 20,20
    mouveMouse $visuNo 20 20
-
-   #--- je recupere les coordonnes et l'intensite
+   #--- je recupere les coordonnees et l'intensite
    return "[.audace.fra1.labURLX cget -text] [.audace.fra1.labURLY cget -text] [.audace.fra1.labURLX cget -text] [.audace.fra1.labI cget -text]"
 } "X = 21 Y = 579 X = 21 R:1.000000 V:0.000000 B:0.000000"
 
 #-------------------------------------------------------------------------------
 test visu_end {raz de la visu} {AUDACE} {
    loadima [file join $::conf(testaudela,rep_images) "47toucan.jpg"]
-
    #--- j'appelle le menu "zoom x1"
    clicMenu $visuNo $caption(audace,menu,display) "$caption(audace,menu,zoom) $caption(audace,menu,zoom_1)"
    #--- j'efface le buffer
@@ -165,5 +152,5 @@ test visu_end {raz de la visu} {AUDACE} {
    after 300
    #--- je verifie que les parametres de la visu sont remis aux valeurs par defaut
    return "[visu$visuNo zoom] [visu$visuNo pal] [visu$visuNo mirrorx] [visu$visuNo mirrory] [visu$visuNo window]"
-
 } "1 gray 0 0 full"
+
