@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.35 2010-09-07 20:59:30 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.36 2010-09-18 15:03:20 bmauclaire Exp $
 
 
 
@@ -1680,7 +1680,11 @@ proc spc_pretrait { args } {
              set flatnorma [ spc_normaflat "${pref_flat}-smd$nb_flat" $ycenter $hauteur ]
              file rename -force "$audace(rep_images)/$flatnorma$conf(extension,defaut)" "$audace(rep_images)/${pref_flat}-smd$nb_flat$conf(extension,defaut)"
           } else {
-             set fmean [ bm_smean $nom_stellaire ]
+             if { $nb_stellaire==1 } {
+                set fmean $nom_stellaire
+             } else {
+                set fmean [ bm_smean $nom_stellaire ]
+             }
              set spc_params [ spc_detect $fmean ]
              set ycenter [ lindex $spc_params 0 ]
              set hauteur [ lindex $spc_params 1 ]
@@ -1693,7 +1697,9 @@ proc spc_pretrait { args } {
                 #-- Met a 21 pixels la hauteur de binning du flat :
                 set hauteur [ expr 3*$spcaudace(largeur_binning) ]
              }
-             file delete -force "$audace(rep_images)/$fmean$conf(extension,defaut)"
+             if { $nb_stellaire!=1 } {
+                file delete -force "$audace(rep_images)/$fmean$conf(extension,defaut)"
+             }
              set flatnorma [ spc_normaflat "${pref_flat}-smd$nb_flat" $ycenter $hauteur ]
              file rename -force "$audace(rep_images)/$flatnorma$conf(extension,defaut)" "$audace(rep_images)/${pref_flat}-smd$nb_flat$conf(extension,defaut)"
           }
