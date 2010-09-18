@@ -5,7 +5,7 @@
   <title>Librairie TT : Manuel Utilisateur</title>
 </head>
 <body>
-<p class="date">Date de mise &#224; jour : 08 septembre
+<p class="date">Date de mise &#224; jour : 18 septembre
 2010</p>
 <h1>LIB TT - Librairie de pr&#233;traitement d'images
 astronomiques</h1>
@@ -440,9 +440,9 @@ sont modifi&#233;s en cons&#233;quence.</p>
 g&#233;n&#233;rique $img, indic&#233;es de 1 &#224; 3 et
 d'extension $ext, $x1,$y1 et $x2,$y2 repr&#233;sentant les
 coordonn&#233;es d'un rectangle de s&#233;lection, on peut
-ex&#233;cuter dans un script tcl :</p>
+ex&#233;cuter dans un script Tcl :</p>
 <pre>ttscript2 "IMA/SERIES . $img 1 3 $ext . $img 1 $ext WINDOW x1=$x1 x2=$x2 y1=$y1 y2=$y2 bitpix=16"<br></pre>
-Pour des les plans couleurs portant le nom ${img}r ${img}g
+Pour des plans couleurs portant le nom ${img}r ${img}g
 ${img}b il faudra traiter les images comme une liste
 d&#233;pareill&#233;e :
 <pre>set liste_images [ list ${img}r ${img}g ${img}b ]<br>ttscript2 "IMA/SERIES . \"$liste_images\" * * $ext . $img 1 $ext WINDOW x1=$x1 x2=$x2 y1=$y1 y2=$y2 bitpix=16"<br></pre>
@@ -452,7 +452,17 @@ Les images produites porteront le nom ${img}1 ${img}2 ${img}3
 pixels de toutes les images. Les mots cl&#233;
 d'astrom&#233;trie (WCS), &#233;ventuellement pr&#233;sents
 dans l'en-t&#234;te FITS, sont modifi&#233;s en
-cons&#233;quence.</p>
+cons&#233;quence.<br>
+</p>
+<p><a name="TRANS" id="TRANS">Par exemple, pour effectuer une
+translation sur l'image $img.$ext</a></p>
+<pre><a name="TRANS" id="TRANS">ttscript2 "IMA/SERIES . $img . . $ext . $img . $ext TRANS trans_x=12 trans_y=34 nullpixel=0<br></a></pre>
+<p><a name="TRANS" id="TRANS">L'option nullpixel=0 peut s'av&#233;rer
+importante pour le
+compositage ult&#233;rieur&nbsp;des images. En effet, le mot
+cl&#233; NULLPIXEL pourra &#234;tre &#224; nouveau utilis&#233;
+par les fonctions d'empilage (IMA/STACK) pour &#233;viter de tenir
+compte des "bords noirs" des&nbsp;images.</a></p>
 <h4><a name="ROT" id="ROT"></a>1.3.16. Fonction ROT</h4>
 <p>Effectue une rotation d'un [angle] (en degr&#233;s) autour
 du point d&#233;fini par les coordonn&#233;es [x0] [y0]. Les
@@ -854,7 +864,13 @@ directement le r&#233;sultat de la division du fond &#224;
 l'image initiale (une valeur constante &#233;gale &#224; la
 moyenne du fond synth&#233;tique est multipli&#233;e au
 r&#233;sultat de fa&#231;on &#224; retrouver la dynamique
-initiale).</p>
+initiale).<br>
+</p>
+<p>Pour soustraire le fond de ciel &#224; une image dont les
+&#233;toiles sont &#233;tal&#233;es d'environ 3 pixels, on
+essaiera par exemple :<br>
+</p>
+<pre>ttscript2 "IMA/SERIES . $file . . $ext . $file . $ext BACK back_kernel=12 back_threshold=0.2 sub"</pre>
 <h4><a name="HOTPIXEL" id="HOTPIXEL"></a>1.3.39. Fonction
 HOTPIXEL</h4>
 <p>Corrige les pixels chauds, les colonnes d&#233;fectueuses et
@@ -1082,7 +1098,16 @@ l'angle au nord, et les coefficients de Fourier: a3 b3 a4 b4 a5
 b5 a6 b6. Le param&#232;tre [threshold] s'il n'est pas =0,
 permet de synth&#233;tiser une image &#224; partir de l'image
 originale (o) &#224; qui l'on remplace les pixels par l'image
-de l'ajustement d'ellipses (c) si o-c&gt;[threshold].
+de l'ajustement d'ellipses (c) si o-c&gt;[threshold].<br>
+<br>
+Pour mod&#233;liser l'image d'une galaxie centr&#233;e au pixel (32,99)
+avec un fond de ciel de 150 A.D.U.&nbsp; :
+<pre>ttscript2 "IMA/SERIES . $file . . $ext . $file . $ext FITELLIP xcenter=32 ycenter=99 background=150 "<br></pre>
+Cette fonction produit le fichier profile.txt et ne doit traiter
+qu'une image &#224; la fois : si on traitait une s&#233;rie
+ou une liste d&#233;pareill&#233;e, les fichiers produits
+seraient &#233;cras&#233;s &#224; l'exception du dernier.
+<br>
 <h1>2. Exemples de scripts</h1>
 <p>Nous allons &#233;tudier ici quelques cas classiques de
 traitement d'images astronomiques.</p>
