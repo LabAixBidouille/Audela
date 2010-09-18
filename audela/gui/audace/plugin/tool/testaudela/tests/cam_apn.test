@@ -3,22 +3,21 @@ set camNo 0
 set bufNo 2
 
 #----------------------------s---------------------------------------------------
-test cam_apn_create { creation de la camera} { APN } {
-   set camNo [ cam::create digicam USB -name DSLR -debug_cam 0 -gphoto2_win_dll_dir \"$::audela_start_dir\" ]
+test cam_apn_create {creation de la camera} {APN} {
+   set camNo [ cam::create digicam USB -name DSLR -debug_cam 0 -gphoto2_win_dll_dir $::audela_start_dir ]
    update
    cam$camNo buf $bufNo
    return $camNo
 } "1"
 
-
 #-------------------------------------------------------------------------------
-test cam_apn_acq_small { acquisition small} { APN } {
+test cam_apn_acq_small {acquisition small} {APN} {
    #--- je vide le buffer de la camera
    buf$bufNo clear
    cam$camNo quality "Small:Fine"
    #--- je n'utilise pas la carte memoire
    cam$camNo usecf 0
-   #--- télechargement de l'image immediat
+   #--- telechargement de l'image immediat
    cam$camNo autoload 1
    #--- temps de pose = 1 seconde
    cam$camNo exptime 1
@@ -27,7 +26,7 @@ test cam_apn_acq_small { acquisition small} { APN } {
    vwait ::status_cam$camNo
    set statusVariableName "::status_cam$camNo"
    if { [set $statusVariableName] == "exp" } {
-        vwait ::status_cam$camNo
+      vwait ::status_cam$camNo
    }
    #--- je verifie que le buffer contient une image RGB
    if { [buf$bufNo imageready] != 1 } { return "image not ready" }
@@ -39,7 +38,7 @@ test cam_apn_acq_small { acquisition small} { APN } {
 
 #-------------------------------------------------------------------------------
 #
-test cam_apn_acq_raw { acquisition raw} { APN } {
+test cam_apn_acq_raw {acquisition RAW} {APN} {
    #--- je vide le buffer de la camera
    buf$bufNo clear
    #--- je fais une acquisition
@@ -49,7 +48,7 @@ test cam_apn_acq_raw { acquisition raw} { APN } {
    vwait ::status_cam$camNo
    set statusVariableName "::status_cam$camNo"
    if { [set $statusVariableName] == "exp" } {
-        vwait ::status_cam$camNo
+      vwait ::status_cam$camNo
    }
    #--- je verifie que le buffer contient une image GRAY
    if { [buf$bufNo imageready] != 1 } { return "image not ready" }
@@ -59,33 +58,31 @@ test cam_apn_acq_raw { acquisition raw} { APN } {
 } "1"
 
 #-------------------------------------------------------------------------------
-test cam_apn_saveraw {sauvegarde d'un fichier RAW } { APN } {
+test cam_apn_saveraw {sauvegarde d'un fichier RAW} {APN} {
    set result [buf$bufNo save $::audace(rep_images)/m3.crw]
    return $result
 } ""
 
 #-------------------------------------------------------------------------------
-test cam_apn_loadraw {chargement d'un fichier RAW } { APN } {
+test cam_apn_loadraw {chargement d'un fichier RAW} {APN} {
    set result [buf$bufNo load $::audace(rep_images)/m3.crw]
    return $result
 } ""
 
 #-------------------------------------------------------------------------------
-test cam_apn_cfa2rgb {conversion cfa2rgb } { APN } {
+test cam_apn_cfa2rgb {conversion cfa2rgb} {APN} {
    set result [buf$bufNo cfa2rgb 1]
    return $result
 } ""
 
-
 #-------------------------------------------------------------------------------
-test cam_apn_hasWindow {mode fenetree} { APN } {
+test cam_apn_hasWindow {mode fenetree} {APN} {
     ::dslr::getPluginProperty "A"  hasWindow
 } "0"
 
-
 #-------------------------------------------------------------------------------
-test cam_apn_delete {suppression camera} APN {
-     #--- j'efface le fichier   RAW
+test cam_apn_delete {suppression camera} {APN} {
+     #--- j'efface le fichier RAW
      if { [file exists $::audace(rep_images)/m3.crw] } {
         file delete $::audace(rep_images)/m3.crw
      }
