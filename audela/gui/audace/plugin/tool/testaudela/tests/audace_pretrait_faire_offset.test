@@ -1,9 +1,9 @@
+
 set visuNo 1
 set bufNo [::confVisu::getBufNo $visuNo]
 
-
 #-------------------------------------------------------------------------------
-test audace_pretrait_init { copie les images dans rep_images } {AUDACE} {
+test audace_pretrait_init {copie les images dans rep_images} {AUDACE} {
    file copy [file join $::conf(testaudela,rep_images) dark-1.fit] $::audace(rep_images)
    file copy [file join $::conf(testaudela,rep_images) dark-2.fit] $::audace(rep_images)
    file copy [file join $::conf(testaudela,rep_images) dark-3.fit] $::audace(rep_images)
@@ -13,22 +13,19 @@ test audace_pretrait_init { copie les images dans rep_images } {AUDACE} {
    file copy [file join $::conf(testaudela,rep_images) ugc192-1.fit] $::audace(rep_images)
    file copy [file join $::conf(testaudela,rep_images) ugc192-2.fit] $::audace(rep_images)
    file copy [file join $::conf(testaudela,rep_images) ugc192-3.fit] $::audace(rep_images)
-
-
 } ""
 
-
 #-------------------------------------------------------------------------------
-test audace_pretrait_faire_offset {faire un offset } {AUDACE} {
-   #--- clic cur le menu faire un offset
+test audace_pretrait_faire_offset {faire un offset} {AUDACE} {
+   #--- clic sur le menu faire un offset
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,preprocess)" "$::caption(audace,menu,faire_offset)..."
-   #--- nom generique  (j'utilise les darks car l'offset n'est pas fourni pour gagner de la place)
+   #--- nom generique (j'utilise les darks car l'offset n'est pas fourni pour gagner de la place)
    ::testaudela::putEntry .audace.faireImageRef.usr.2.1.ent1 "dark-"
    #--- nombre d'images
    ::testaudela::putEntry .audace.faireImageRef.usr.2.2.ent2 "3"
    #--- premier indice
    ::testaudela::putEntry .audace.faireImageRef.usr.2.3.ent3 "1"
-   #--- affiche image à la fin du traitement
+   #--- affiche image a la fin du traitement
    ::testaudela::clicCheckButton .audace.faireImageRef.usr.6.1.che1 "1"
 
    #--- clic sur le bouton OK
@@ -47,34 +44,33 @@ test audace_pretrait_faire_offset {faire un offset } {AUDACE} {
    if { $pix == $valeurAttendue } {
       set result ""
    } else {
-     set result "valeur pix=$pix diffrente de celle attendue =$valeurAttendue"
+     set result "valeur pix=$pix différente de celle attendue =$valeurAttendue"
    }
 
-   #--- je raffraichis l'affichage et j'attends 2 secondes, le temps de voir le r�sultat
+   #--- je raffraichis l'affichage et j'attends 2 secondes, le temps de voir le resultat
    update
    after 2000
 
    return $result
 } ""
 
-
 #-------------------------------------------------------------------------------
 test audace_pretrait_faire_dark {faire un dark avec et sans offset} {AUDACE} {
-   #--- clic cur le menu faire un offset
+   #--- clic sur le menu faire un dark
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,preprocess)" "$::caption(audace,menu,faire_dark)..."
-   #--- nom generique  (j'utilise les darks car l'offset n'est pas fourni pour gagner de la place)
+   #--- nom generique
    ::testaudela::putEntry .audace.faireImageRef.usr.2.1.ent1 "dark-"
    #--- nombre d'images
    ::testaudela::putEntry .audace.faireImageRef.usr.2.2.ent2 "3"
    #--- premier indice
    ::testaudela::putEntry .audace.faireImageRef.usr.2.3.ent3 "1"
    #--- image de sortie
-   ::testaudela::putEntry  .audace.faireImageRef.usr.2.4.ent4 "dark"
+   ::testaudela::putEntry .audace.faireImageRef.usr.2.4.ent4 "dark"
    #--- sans offset
    ::testaudela::clicCheckButton .audace.faireImageRef.usr.3.1.che1 "1"
-   #--- Methode
+   #--- methode
    ::testaudela::clicRadioButton  .audace.faireImageRef.usr.5.1.rad2
-   #--- affiche image � la fin du traitement
+   #--- affiche image a la fin du traitement
    ::testaudela::clicCheckButton .audace.faireImageRef.usr.6.1.che1 "1"
 
    #--- clic sur le bouton Appliquer
@@ -86,7 +82,7 @@ test audace_pretrait_faire_dark {faire un dark avec et sans offset} {AUDACE} {
    if { $pix == $valeurAttendue } {
       set result1 ""
    } else {
-     set result1 "Test sans offset pix=$pix differente de celle attendue =$valeurAttendue "
+     set result1 "Test sans offset, pix=$pix différente de celle attendue =$valeurAttendue "
    }
    update
    after 2000
@@ -94,9 +90,9 @@ test audace_pretrait_faire_dark {faire un dark avec et sans offset} {AUDACE} {
    #--- dark moins offset = thermique
    #--- image de offset
    ::testaudela::clicCheckButton .audace.faireImageRef.usr.3.1.che1 "0"
-   ::testaudela::putEntry  .audace.faireImageRef.usr.3.1.ent6 "offset"
+   ::testaudela::putEntry .audace.faireImageRef.usr.3.1.ent6 "offset"
    #--- image de sortie
-   ::testaudela::putEntry  .audace.faireImageRef.usr.2.4.ent4 "thermique"
+   ::testaudela::putEntry .audace.faireImageRef.usr.2.4.ent4 "thermique"
    #--- clic sur le bouton OK
    ::testaudela::clicButton .audace.faireImageRef.cmd.ok
 
@@ -106,37 +102,35 @@ test audace_pretrait_faire_dark {faire un dark avec et sans offset} {AUDACE} {
    if { $pix == $valeurAttendue } {
       set result2 ""
    } else {
-     set result2 "Etape avec offset valeur pix=$pix differente de celle attendue =$valeurAttendue "
+     set result2 "Etape avec offset valeur pix=$pix différente de celle attendue =$valeurAttendue "
    }
 
-
-   #--- je raffraichis l'affichage et j'attends 2 secondes, le temps de voir le r�sultat
+   #--- je raffraichis l'affichage et j'attends 2 secondes, le temps de voir le resultat
    update
    after 2000
 
    return "$result1$result2"
 } ""
 
-
 #-------------------------------------------------------------------------------
-test audace_pretrait_faire_flat {faire un flat } {AUDACE} {
-   #--- clic cur le menu faire un offset
+test audace_pretrait_faire_flat {faire un flat} {AUDACE} {
+   #--- clic sur le menu faire un flat
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,preprocess)" "$::caption(audace,menu,faire_flat_field)..."
-   #--- nom generique  (j'utilise les darks car l'offset n'est pas fourni pour gagner de la place)
+   #--- nom generique
    ::testaudela::putEntry .audace.faireImageRef.usr.2.1.ent1 "flat-"
    #--- nombre d'images
    ::testaudela::putEntry .audace.faireImageRef.usr.2.2.ent2 "3"
    #--- premier indice
    ::testaudela::putEntry .audace.faireImageRef.usr.2.3.ent3 "1"
    #--- image de sortie
-   ::testaudela::putEntry  .audace.faireImageRef.usr.2.4.ent4 "flat"
+   ::testaudela::putEntry .audace.faireImageRef.usr.2.4.ent4 "flat"
    #--- sans offset
    ::testaudela::clicCheckButton .audace.faireImageRef.usr.4.1.che1 "1"
    #--- sans dark
    ::testaudela::clicCheckButton .audace.faireImageRef.usr.4.2.che1 "1"
    #--- valeur de normalisation
-   ::testaudela::putEntry  .audace.faireImageRef.usr.4.3.ent7 "400"
-   #--- affiche image � la fin du traitement
+   ::testaudela::putEntry .audace.faireImageRef.usr.4.3.ent7 "400"
+   #--- affiche image a la fin du traitement
    ::testaudela::clicCheckButton .audace.faireImageRef.usr.6.1.che1 "1"
    update
 
@@ -149,16 +143,16 @@ test audace_pretrait_faire_flat {faire un flat } {AUDACE} {
    if { $pix == $valeurAttendue } {
       set result1 ""
    } else {
-     set result1 "Test sans offset, sans dark-flat, pix=$pix differente de celle attendue =$valeurAttendue "
+     set result1 "Test sans offset, sans dark-flat, pix=$pix différente de celle attendue =$valeurAttendue "
    }
    #--- rafraichissement pour l'utilisateur
    update
 
    #--- avec offset
    ::testaudela::clicCheckButton .audace.faireImageRef.usr.4.1.che1 "0"
-   ::testaudela::putEntry  .audace.faireImageRef.usr.4.1.ent6 "offset"
+   ::testaudela::putEntry .audace.faireImageRef.usr.4.1.ent6 "offset"
    #--- valeur de normalisation
-   ::testaudela::putEntry  .audace.faireImageRef.usr.4.3.ent7 "400"
+   ::testaudela::putEntry .audace.faireImageRef.usr.4.3.ent7 "400"
    update
    #--- clic sur le bouton appliquer
    ::testaudela::clicButton .audace.faireImageRef.cmd.appliquer
@@ -169,19 +163,19 @@ test audace_pretrait_faire_flat {faire un flat } {AUDACE} {
    if { $pix == $valeurAttendue } {
       set result2 ""
    } else {
-     set result2 "Etape avec offset, sans dark-flat valeur pix=$pix differente de celle attendue =$valeurAttendue "
+     set result2 "Etape avec offset, sans dark-flat valeur pix=$pix différente de celle attendue =$valeurAttendue "
    }
 
    #--- rafraichissement pour l'utilisateur
    update
 
-   #--- avec dark-flat ( c'est le dark le meme dark que l'image)
+   #--- avec dark-flat (c'est le meme dark que l'image)
    #--- avec offset
    ::testaudela::clicCheckButton .audace.faireImageRef.usr.4.1.che1 "0"
-   ::testaudela::putEntry  .audace.faireImageRef.usr.4.1.ent6 "offset"
+   ::testaudela::putEntry .audace.faireImageRef.usr.4.1.ent6 "offset"
    #--- avec dark==thermique
    ::testaudela::clicCheckButton .audace.faireImageRef.usr.4.2.che1 "0"
-   ::testaudela::putEntry  .audace.faireImageRef.usr.4.2.ent6 "thermique"
+   ::testaudela::putEntry .audace.faireImageRef.usr.4.2.ent6 "thermique"
    #--- clic sur le bouton ok
    ::testaudela::clicButton .audace.faireImageRef.cmd.ok
 
@@ -191,9 +185,8 @@ test audace_pretrait_faire_flat {faire un flat } {AUDACE} {
    if { $pix == $valeurAttendue } {
       set result3 ""
    } else {
-     set result3 "Etape avec offset, avec dark-flat valeur pix=$pix differente de celle attendue =$valeurAttendue "
+     set result3 "Etape avec offset, avec dark-flat valeur pix=$pix différente de celle attendue =$valeurAttendue "
    }
-
 
    #--- rafraichissement pour l'utilisateur
    update
@@ -203,21 +196,21 @@ test audace_pretrait_faire_flat {faire un flat } {AUDACE} {
 } ""
 
 #-------------------------------------------------------------------------------
-test audace_pretrait_pretraitement {pretraitement } {AUDACE} {
+test audace_pretrait_pretraitement {pretraitement} {AUDACE} {
    set result ""
 
-   #--- clic cur le menu faire un offset
+   #--- clic sur le menu faire un offset
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,preprocess)" "$::caption(audace,menu,preprocess)..."
-   #--- nom generique  (j'utilise les darks car l'offset n'est pas fourni pour gagner de la place)
+   #--- nom generique (j'utilise les darks car l'offset n'est pas fourni pour gagner de la place)
    ::testaudela::putEntry .audace.faireImageRef.usr.2.1.ent1 "ugc192-"
    #--- nombre d'images
    ::testaudela::putEntry .audace.faireImageRef.usr.2.2.ent2 "3"
    #--- premier indice
    ::testaudela::putEntry .audace.faireImageRef.usr.2.3.ent3 "1"
    #--- image de sortie
-   ::testaudela::putEntry  .audace.faireImageRef.usr.2.4.ent4 "ugc192"
+   ::testaudela::putEntry .audace.faireImageRef.usr.2.4.ent4 "ugc192"
    #--- avec offset
-   ::testaudela::putEntry  .audace.faireImageRef.usr.7.1.ent6 "offset"
+   ::testaudela::putEntry .audace.faireImageRef.usr.7.1.ent6 "offset"
    ::testaudela::clicCheckButton .audace.faireImageRef.usr.7.1.che1 "0"
    #--- sans dark
    ::testaudela::clicCheckButton .audace.faireImageRef.usr.7.2.che1 "1"
@@ -228,7 +221,7 @@ test audace_pretrait_pretraitement {pretraitement } {AUDACE} {
    #--- sans contante multiplicative
    ::testaudela::clicCheckButton .audace.faireImageRef.usr.7.3.opt "0"
    #--- constante multiplicative de normalisation
-   ::testaudela::putEntry  .audace.faireImageRef.usr.7.6.ent6 "1"
+   ::testaudela::putEntry .audace.faireImageRef.usr.7.6.ent6 "1"
 
    #--- clic sur le bouton appliquer
    ::testaudela::clicButton .audace.faireImageRef.cmd.appliquer
@@ -237,7 +230,7 @@ test audace_pretrait_pretraitement {pretraitement } {AUDACE} {
    set pix [lindex [buf$bufNo getpix [list 10 20 ]] 1]
    set valeurAttendue "805.000000"
    if { $pix != $valeurAttendue } {
-     append result "Etape avec offset valeur pix=$pix differente de celle attendue =$valeurAttendue \n"
+     append result "Etape avec offset valeur pix=$pix différente de celle attendue =$valeurAttendue \n"
    }
    #--- rafraichissement pour l'utilisateur
    update
@@ -245,7 +238,7 @@ test audace_pretrait_pretraitement {pretraitement } {AUDACE} {
    #--------------------------------------------------------------------
    #--- avec dark sans optimisation
    #--- avec offset
-   ::testaudela::putEntry  .audace.faireImageRef.usr.7.1.ent6 "offset"
+   ::testaudela::putEntry .audace.faireImageRef.usr.7.1.ent6 "offset"
    ::testaudela::clicCheckButton .audace.faireImageRef.usr.7.1.che1 "0"
    #--- image dark=thermique
    ::testaudela::clicCheckButton .audace.faireImageRef.usr.7.2.che1 "0"
@@ -253,7 +246,7 @@ test audace_pretrait_pretraitement {pretraitement } {AUDACE} {
    #--- sans optimisation
    ::testaudela::clicCheckButton .audace.faireImageRef.usr.7.3.opt "0"
    #--- constante multiplicative de normalisation
-   ::testaudela::putEntry  .audace.faireImageRef.usr.7.6.ent6 "1"
+   ::testaudela::putEntry .audace.faireImageRef.usr.7.6.ent6 "1"
    #--- clic sur le bouton appliquer
    ::testaudela::clicButton .audace.faireImageRef.cmd.appliquer
 
@@ -261,13 +254,13 @@ test audace_pretrait_pretraitement {pretraitement } {AUDACE} {
    set pix [lindex [buf$bufNo getpix [list 10 20 ]] 1]
    set valeurAttendue "376.000000"
    if { $pix != $valeurAttendue } {
-     append result "Etape avec dark sans opt, valeur pix=$pix differente de celle attendue =$valeurAttendue\n"
+     append result "Etape avec dark sans opt, valeur pix=$pix différente de celle attendue =$valeurAttendue\n"
    }
 
    #--------------------------------------------------------------------
    #--- avec dark avec optimisation
    #--- avec offset
-   ::testaudela::putEntry  .audace.faireImageRef.usr.7.1.ent6 "offset"
+   ::testaudela::putEntry .audace.faireImageRef.usr.7.1.ent6 "offset"
    ::testaudela::clicCheckButton .audace.faireImageRef.usr.7.1.che1 "0"
    #--- image dark
    ::testaudela::clicCheckButton .audace.faireImageRef.usr.7.2.che1 "0"
@@ -281,13 +274,13 @@ test audace_pretrait_pretraitement {pretraitement } {AUDACE} {
    set pix [lindex [buf$bufNo getpix [list 10 20 ]] 1]
    set valeurAttendue "803.000000"
    if { $pix != $valeurAttendue } {
-     append result "Etape avec dark avec optimisation, valeur pix=$pix differente de celle attendue =$valeurAttendue \n"
+     append result "Etape avec dark avec optimisation, valeur pix=$pix différente de celle attendue =$valeurAttendue \n"
    }
 
    #--------------------------------------------------------------------
    #--- avec flat et constante auto
    #--- avec offset
-   ::testaudela::putEntry  .audace.faireImageRef.usr.7.1.ent6 "offset"
+   ::testaudela::putEntry .audace.faireImageRef.usr.7.1.ent6 "offset"
    ::testaudela::clicCheckButton .audace.faireImageRef.usr.7.1.che1 "0"
    #--- image dark
    ::testaudela::clicCheckButton .audace.faireImageRef.usr.7.2.che1 "0"
@@ -304,7 +297,7 @@ test audace_pretrait_pretraitement {pretraitement } {AUDACE} {
    set pix [lindex [buf$bufNo getpix [list 10 20 ]] 1]
    set valeurAttendue "835.000000"
    if { $pix != $valeurAttendue } {
-     append result "Etape avec flat cte auto, valeur pix=$pix differente de celle attendue =$valeurAttendue \n"
+     append result "Etape avec flat cte auto, valeur pix=$pix différente de celle attendue =$valeurAttendue \n"
    }
 
    #--------------------------------------------------------------------
@@ -322,7 +315,7 @@ test audace_pretrait_pretraitement {pretraitement } {AUDACE} {
    set pix [lindex [buf$bufNo getpix [list 10 20 ]] 1]
    set valeurAttendue "866.000000"
    if { $pix != $valeurAttendue } {
-     append result "Etape avec flat et cte manuelle, valeur pix=$pix differente de celle attendue =$valeurAttendue \n"
+     append result "Etape avec flat et cte manuelle, valeur pix=$pix différente de celle attendue =$valeurAttendue \n"
    }
 
    #--- rafraichissement pour l'utilisateur
@@ -332,28 +325,27 @@ test audace_pretrait_pretraitement {pretraitement } {AUDACE} {
    return "$result"
 } ""
 
-
 #-------------------------------------------------------------------------------
 test audace_pretrait_fin {effacer la visu} {AUDACE} {
    #--- je supprime les fichiers du test
-   file delete  -force  [file join $::audace(rep_images) dark-1.fit]
-   file delete  -force  [file join $::audace(rep_images) dark-2.fit]
-   file delete  -force  [file join $::audace(rep_images) dark-3.fit]
-   file delete  -force  [file join $::audace(rep_images) flat-1.fit]
-   file delete  -force  [file join $::audace(rep_images) flat-2.fit]
-   file delete  -force  [file join $::audace(rep_images) flat-3.fit]
-   file delete  -force  [file join $::audace(rep_images) ugc192-1.fit]
-   file delete  -force  [file join $::audace(rep_images) ugc192-2.fit]
-   file delete  -force  [file join $::audace(rep_images) ugc192-3.fit]
+   file delete -force [file join $::audace(rep_images) dark-1.fit]
+   file delete -force [file join $::audace(rep_images) dark-2.fit]
+   file delete -force [file join $::audace(rep_images) dark-3.fit]
+   file delete -force [file join $::audace(rep_images) flat-1.fit]
+   file delete -force [file join $::audace(rep_images) flat-2.fit]
+   file delete -force [file join $::audace(rep_images) flat-3.fit]
+   file delete -force [file join $::audace(rep_images) ugc192-1.fit]
+   file delete -force [file join $::audace(rep_images) ugc192-2.fit]
+   file delete -force [file join $::audace(rep_images) ugc192-3.fit]
 
-   file delete  -force  [file join $::audace(rep_images) offset.fit]
-   file delete  -force  [file join $::audace(rep_images) dark.fit]
-   file delete  -force  [file join $::audace(rep_images) thermique.fit]
-   file delete  -force  [file join $::audace(rep_images) flat.fit]
-   file delete  -force  [file join $::audace(rep_images) ugc192.fit]
-   file delete  -force  [file join $::audace(rep_images) ugc1921.fit]
-   file delete  -force  [file join $::audace(rep_images) ugc1922.fit]
-   file delete  -force  [file join $::audace(rep_images) ugc1923.fit]
+   file delete -force [file join $::audace(rep_images) offset.fit]
+   file delete -force [file join $::audace(rep_images) dark.fit]
+   file delete -force [file join $::audace(rep_images) thermique.fit]
+   file delete -force [file join $::audace(rep_images) flat.fit]
+   file delete -force [file join $::audace(rep_images) ugc192.fit]
+   file delete -force [file join $::audace(rep_images) ugc1921.fit]
+   file delete -force [file join $::audace(rep_images) ugc1922.fit]
+   file delete -force [file join $::audace(rep_images) ugc1923.fit]
    #--- je vide la visu
    visu$visuNo clear
 } "0"
