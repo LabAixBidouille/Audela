@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: astrometry.tcl,v 1.11 2010-09-12 19:13:40 robertdelmas Exp $
+# Mise à jour $Id: astrometry.tcl,v 1.12 2010-09-19 22:12:18 robertdelmas Exp $
 #
 
 #============================================================
@@ -86,7 +86,6 @@ namespace eval ::astrometry {
    #    cree une nouvelle instance de l'outil
    #------------------------------------------------------------
    proc createPluginInstance { { tkbase "" } { visuNo 1 } } {
-
       variable astrom
       global caption conf
 
@@ -117,8 +116,9 @@ namespace eval ::astrometry {
    #------------------------------------------------------------
    proc deletePluginInstance { visuNo } {
       variable astrom
+
       if { [winfo exists $astrom(This) ] } {
-         #--- je ferme la fenetre si l'utilsateur ne l'a pas deja fait
+         #--- je ferme la fenetre si l'utilisateur ne l'a pas deja fait
          ::astrometry::quit $visuNo
       }
    }
@@ -174,8 +174,7 @@ namespace eval ::astrometry {
 
    proc create { visuNo } {
       variable astrom
-      global audace
-      global caption
+      global audace caption
 
       #--- Chargement du package Img pour visualiser l'image jpg de calibration
       package require Img
@@ -342,10 +341,13 @@ namespace eval ::astrometry {
 
       #--- Supprime la procedure appelee si on charge une image
       ::confVisu::removeFileNameListener $visuNo "::astrometry::updatewcs"
-      #--- Supprime les fichiers de configuration necessaire à Sextractor
+      #--- Supprime les fichiers de configuration necessaire a Sextractor
       deleteFileConfigSextractor
-      #---
+      #--- Recupere la position de la fenetre
       ::astrometry::recup_position
+      #--- Sauvegarde la configuration
+      ::astrometry::widgetToConf
+      #--- Detruit la fenetre Toplevel
       destroy $astrom(This)
    }
 
@@ -893,8 +895,7 @@ namespace eval ::astrometry {
 
    proc getdirname { } {
       variable astrom
-      global audace
-      global caption
+      global audace caption
 
       set dirname [tk_chooseDirectory -title "$caption(astrometry,cal,catfolder)" \
          -initialdir $audace(rep_catalogues) -parent $astrom(This)]
@@ -1059,8 +1060,7 @@ namespace eval ::astrometry {
 
    proc visu_result { } {
       variable astrom
-      global audace
-      global caption
+      global audace caption
 
       #--- Nom de la fenetre
       set astrom(This_check) "$audace(base).check_astro"
