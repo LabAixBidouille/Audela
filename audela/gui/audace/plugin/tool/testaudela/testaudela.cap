@@ -1,6 +1,6 @@
 #
 # Fichier : testaudela.cap
-# Mise a jour $Id: testaudela.cap,v 1.6 2010-09-18 14:41:17 robertdelmas Exp $
+# Mise a jour $Id: testaudela.cap,v 1.7 2010-09-19 18:30:31 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -28,11 +28,11 @@ set caption(testaudela,testCampagne)                      "Test Campaign"
 set caption(testaudela,result)                            "Tests Results"
 set caption(testaudela,ImageDirectory,notFound)           "Test image directory does not exist"
 set caption(testaudela,ImageDirectory,alreadyUsed)        "Test image directory must be different from default image directory"
-set caption(testaudela,ImageDirectory,installQuestion)    "# Voulez-vous installer les images de test ?"
-set caption(testaudela,ImageDirectory,installTitle)       "# Installer les images de test"
-set caption(testaudela,ImageDirectory,procedure1)         "# Télécharger les images de test en cliquant sur le lien ci-dessous et les dézipper dans un répertoire quelconque."
-set caption(testaudela,ImageDirectory,procedure2)         "# Puis indiquer le répertoire ci-dessous."
-set caption(testaudela,edit)                              "Test Edit"
+set caption(testaudela,ImageDirectory,installQuestion)    "Install test images?"
+set caption(testaudela,ImageDirectory,installTitle)       "Install test images"
+set caption(testaudela,ImageDirectory,procedure1)         "Click on the link below to download test images."
+set caption(testaudela,ImageDirectory,procedure2)         "Unzip them in the selected folder below."
+set caption(testaudela,edit)                              "Edit Test Script"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -56,9 +56,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,ImageDirectory,alreadyUsed)     "Le répertoire des images de test doit être différent du repertoire de travail"
    set caption(testaudela,ImageDirectory,installQuestion) "Voulez-vous installer les images de test ?"
    set caption(testaudela,ImageDirectory,installTitle)    "Installer les images de test"
-   set caption(testaudela,ImageDirectory,procedure1)      "Télécharger les images de test en cliquant sur le lien ci-dessous et les dézipper dans un répertoire quelconque."
-   set caption(testaudela,ImageDirectory,procedure2)      "Puis indiquer le répertoire ci-dessous."
-   set caption(testaudela,edit)                           "Editer le test"
+   set caption(testaudela,ImageDirectory,procedure1)      "Cliquer sur le lien ci-dessous pour télécharger les images de test."
+   set caption(testaudela,ImageDirectory,procedure2)      "Les dézipper dans le dossier choisi ci-dessous."
+   set caption(testaudela,edit)                           "Editer le script de test"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -82,9 +82,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,ImageDirectory,alreadyUsed)     "# Le répertoire des images de test ddoit être diffrent du repertoire de travail"
    set caption(testaudela,ImageDirectory,installQuestion) "# Voulez-vous installer les images de test ?"
    set caption(testaudela,ImageDirectory,installTitle)    "# Installer les images de test"
-   set caption(testaudela,ImageDirectory,procedure1)      "# Télécharger les images de test en cliquant sur le lien ci-dessous et les dézipper dans un répertoire quelconque."
-   set caption(testaudela,ImageDirectory,procedure2)      "# Puis indiquer le répertoire ci-dessous."
-   set caption(testaudela,edit)                           "# Editer le test"
+   set caption(testaudela,ImageDirectory,procedure1)      "# Cliquer sur le lien ci-dessous pour télécharger les images de test."
+   set caption(testaudela,ImageDirectory,procedure2)      "# Les dézipper dans le dossier choisi ci-dessous."
+   set caption(testaudela,edit)                           "# Editer le script de test"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -108,9 +108,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,ImageDirectory,alreadyUsed)     "# Le répertoire des images de test ddoit être diffrent du repertoire de travail"
    set caption(testaudela,ImageDirectory,installQuestion) "# Voulez-vous installer les images de test ?"
    set caption(testaudela,ImageDirectory,installTitle)    "# Installer les images de test"
-   set caption(testaudela,ImageDirectory,procedure1)      "# Télécharger les images de test en cliquant sur le lien ci-dessous et les dézipper dans un répertoire quelconque."
-   set caption(testaudela,ImageDirectory,procedure2)      "# Puis indiquer le répertoire ci-dessous."
-   set caption(testaudela,edit)                           "# Editer le test"
+   set caption(testaudela,ImageDirectory,procedure1)      "# Cliquer sur le lien ci-dessous pour télécharger les images de test."
+   set caption(testaudela,ImageDirectory,procedure2)      "# Les dézipper dans le dossier choisi ci-dessous."
+   set caption(testaudela,edit)                           "# Editer le script de test"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -134,9 +134,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,ImageDirectory,alreadyUsed)     "# Le répertoire des images de test ddoit être diffrent du repertoire de travail"
    set caption(testaudela,ImageDirectory,installQuestion) "# Voulez-vous installer les images de test ?"
    set caption(testaudela,ImageDirectory,installTitle)    "# Installer les images de test"
-   set caption(testaudela,ImageDirectory,procedure1)      "# Télécharger les images de test en cliquant sur le lien ci-dessous et les dézipper dans un répertoire quelconque."
-   set caption(testaudela,ImageDirectory,procedure2)      "# Puis indiquer le répertoire ci-dessous."
-   set caption(testaudela,edit)                           "# Editer le test"
+   set caption(testaudela,ImageDirectory,procedure1)      "# Cliquer sur le lien ci-dessous pour télécharger les images de test."
+   set caption(testaudela,ImageDirectory,procedure2)      "# Les dézipper dans le dossier choisi ci-dessous."
+   set caption(testaudela,edit)                           "# Editer le script de test"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -160,9 +160,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,ImageDirectory,alreadyUsed)     "# Le répertoire des images de test ddoit être diffrent du repertoire de travail"
    set caption(testaudela,ImageDirectory,installQuestion) "# Voulez-vous installer les images de test ?"
    set caption(testaudela,ImageDirectory,installTitle)    "# Installer les images de test"
-   set caption(testaudela,ImageDirectory,procedure1)      "# Télécharger les images de test en cliquant sur le lien ci-dessous et les dézipper dans un répertoire quelconque."
-   set caption(testaudela,ImageDirectory,procedure2)      "# Puis indiquer le répertoire ci-dessous."
-   set caption(testaudela,edit)                           "# Editer le test"
+   set caption(testaudela,ImageDirectory,procedure1)      "# Cliquer sur le lien ci-dessous pour télécharger les images de test."
+   set caption(testaudela,ImageDirectory,procedure2)      "# Les dézipper dans le dossier choisi ci-dessous."
+   set caption(testaudela,edit)                           "# Editer le script de test"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -184,11 +184,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,result)                         "Tests Results"
    set caption(testaudela,ImageDirectory,notFound)        "Test image directory does not exist"
    set caption(testaudela,ImageDirectory,alreadyUsed)     "Test image directory must be different from default image directory"
-   set caption(testaudela,ImageDirectory,installQuestion) "# Voulez-vous installer les images de test ?"
-   set caption(testaudela,ImageDirectory,installTitle)    "# Installer les images de test"
-   set caption(testaudela,ImageDirectory,procedure1)      "# Télécharger les images de test en cliquant sur le lien ci-dessous et les dézipper dans un répertoire quelconque."
-   set caption(testaudela,ImageDirectory,procedure2)      "# Puis indiquer le répertoire ci-dessous."
-   set caption(testaudela,edit)                           "Test Edit"
+   set caption(testaudela,ImageDirectory,installQuestion) "Install test images?"
+   set caption(testaudela,ImageDirectory,installTitle)    "Install test images"
+   set caption(testaudela,ImageDirectory,procedure1)      "Click on the link below to download test images."
+   set caption(testaudela,ImageDirectory,procedure2)      "Unzip them in the selected folder below."
+   set caption(testaudela,edit)                           "Edit Test Script"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -210,11 +210,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,result)                         "Tests Results"
    set caption(testaudela,ImageDirectory,notFound)        "Test image directory does not exist"
    set caption(testaudela,ImageDirectory,alreadyUsed)     "Test image directory must be different from default image directory"
-   set caption(testaudela,ImageDirectory,installQuestion) "# Voulez-vous installer les images de test ?"
-   set caption(testaudela,ImageDirectory,installTitle)    "# Installer les images de test"
-   set caption(testaudela,ImageDirectory,procedure1)      "# Télécharger les images de test en cliquant sur le lien ci-dessous et les dézipper dans un répertoire quelconque."
-   set caption(testaudela,ImageDirectory,procedure2)      "# Puis indiquer le répertoire ci-dessous."
-   set caption(testaudela,edit)                           "Test Edit"
+   set caption(testaudela,ImageDirectory,installQuestion) "Install test images?"
+   set caption(testaudela,ImageDirectory,installTitle)    "Install test images"
+   set caption(testaudela,ImageDirectory,procedure1)      "Click on the link below to download test images."
+   set caption(testaudela,ImageDirectory,procedure2)      "Unzip them in the selected folder below."
+   set caption(testaudela,edit)                           "Edit Test Script"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -236,11 +236,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,result)                         "Tests Results"
    set caption(testaudela,ImageDirectory,notFound)        "Test image directory does not exist"
    set caption(testaudela,ImageDirectory,alreadyUsed)     "Test image directory must be different from default image directory"
-   set caption(testaudela,ImageDirectory,installQuestion) "# Voulez-vous installer les images de test ?"
-   set caption(testaudela,ImageDirectory,installTitle)    "# Installer les images de test"
-   set caption(testaudela,ImageDirectory,procedure1)      "# Télécharger les images de test en cliquant sur le lien ci-dessous et les dézipper dans un répertoire quelconque."
-   set caption(testaudela,ImageDirectory,procedure2)      "# Puis indiquer le répertoire ci-dessous."
-   set caption(testaudela,edit)                           "Test Edit"
+   set caption(testaudela,ImageDirectory,installQuestion) "Install test images?"
+   set caption(testaudela,ImageDirectory,installTitle)    "Install test images"
+   set caption(testaudela,ImageDirectory,procedure1)      "Click on the link below to download test images."
+   set caption(testaudela,ImageDirectory,procedure2)      "Unzip them in the selected folder below."
+   set caption(testaudela,edit)                           "Edit Test Script"
 
 }
 
