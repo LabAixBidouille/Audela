@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise à jour $Id: aud_menu_3.tcl,v 1.67 2010-09-15 20:39:46 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_3.tcl,v 1.68 2010-09-20 14:22:47 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -2787,8 +2787,7 @@ namespace eval ::conv2 {
          -xscrollcommand [ list $this.hscroll set ] \
          -yscrollcommand [ list $this.vscroll set ] \
          -editendcommand { ::conv2::applyValue } \
-         -exportselection 0 \
-         -setfocus 1 -activestyle none -exportselection 0 -stretch all
+         -exportselection 0 -setfocus 1 -activestyle none
 
       #--- nomme les colonnes
       foreach col { 1 3 4 } name { src dest done } {
@@ -3454,7 +3453,7 @@ namespace eval ::conv2 {
          $this.cmd.appliquer configure -relief raised
       }
 
-      #--- les autes commandes
+      #--- les autres commandes
       set frames { but chg generique renum all cmd.ok cmd.appliquer cmd.aide cmd.fermer }
       if { $private(conv2,conversion) != "raw2fits" } { lappend frames "destroy_src" }
       foreach frame $frames { $this.$frame configure -state $etat }
