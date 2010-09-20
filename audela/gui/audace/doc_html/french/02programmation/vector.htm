@@ -6,7 +6,7 @@
   <title>Usage des vecteurs</title>
 </head>
 <body>
-<p class="date">Date de mise &agrave; jour : 18 septembre 2010</p>
+<p class="date">Date de mise &agrave; jour : 20 septembre 2010</p>
 <h1>Usage des vecteurs</h1>
 <p>Ce document pr&eacute;sente des possibilit&eacute;s
 d'application de ::blt::vector. Il est n&eacute;cessairement
@@ -230,7 +230,8 @@ initialis&eacute;s &agrave; la valeur 0, l'indice initial
 (0 par defaut) et de longueur 20 on &eacute;crit :</p>
 <p><code>::blt::vector create vecteur(1:20)</code></p>
 <p>Plusieurs modes d'affectation de valeurs sont disponibles :</p>
-<p><code>set v_1(:3) 12 (les &eacute;l&eacute;ments de rang 0 &agrave;
+<p><code>set v_1(:3) 12 (le premier &eacute;l&eacute;ment ayant pour
+indice 1, les &eacute;l&eacute;ments de rang 1 &agrave;
 3 valent 12)<br>
 set v_1(4:5) 2 (les &eacute;l&eacute;ments de rang 4 &agrave; 5 valent
 2) <br>
@@ -241,7 +242,8 @@ set v_1{7:2*$i) 20 (les &eacute;l&eacute;ments de rang 7 &agrave; rang
 12 valent 20)<br>
 set v_1(2*$i+1:) 0.34 (les &eacute;l&eacute;ments de rang
 sup&eacute;rieur 12 valent 0.34)<br>
-set v_1(end) 45 (le dernier &eacute;l&eacute;ment vaut 45)<br>
+set v_1(end) 45 (le dernier &eacute;l&eacute;ment, le vingti&egrave;me,
+vaut 45)<br>
 set v_1(++end) 9 (rajoute un &eacute;l&eacute;ment de valeur 9 au
 vecteur)<br>
 v_1 delete 11 15 (supprime le 11&egrave;me et le 15&egrave;me
