@@ -2,7 +2,7 @@
 # Fichier : testaudela.tcl
 # Description : Outil de test automatique pour AudeLA
 # Auteurs : Michel Pujol
-# Mise à jour $Id: testaudela.tcl,v 1.9 2010-09-17 22:08:37 michelpujol Exp $
+# Mise à jour $Id: testaudela.tcl,v 1.10 2010-09-20 20:44:26 robertdelmas Exp $
 #
 
 #####################
@@ -460,6 +460,7 @@ proc ::testaudela::setImageDirectory { } {
    set tkName "$private(frm).testAudelaDirectory"
    if { [ winfo exists $tkName ] } {
       focus $tkName
+      return
    }
 
    ###toplevel $tkName
