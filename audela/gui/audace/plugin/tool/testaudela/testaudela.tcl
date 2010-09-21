@@ -2,7 +2,7 @@
 # Fichier : testaudela.tcl
 # Description : Outil de test automatique pour AudeLA
 # Auteurs : Michel Pujol
-# Mise à jour $Id: testaudela.tcl,v 1.10 2010-09-20 20:44:26 robertdelmas Exp $
+# Mise à jour $Id: testaudela.tcl,v 1.11 2010-09-21 17:39:12 michelpujol Exp $
 #
 
 #####################
@@ -121,22 +121,34 @@ proc ::testaudela::createPluginInstance { { in ".audace" } { visuNo 1 } } {
 
    #--- Creation des variables si elles n'existaient pas
    if { ! [ info exists conf(testaudela,position) ] }             { set conf(testaudela,position)             "400x400+100+50" }
-   if { ! [ info exists conf(testaudela,directory) ] }            { set conf(testaudela,directory)            "$::audace(rep_plugin)/tool/testaudela" }
    if { ! [ info exists conf(testaudela,resultFile)] }            { set conf(testaudela,resultFile)           "testresult.log" }
    if { ! [ info exists conf(testaudela,rep_images) ] }           { set conf(testaudela,rep_images)           "$::audace(rep_images)/testaudela" }
    if { ! [ info exists conf(testaudela,testList) ] }             { set conf(testaudela,testList)             "audace_affichage.test" }
    if { ! [ info exists conf(testaudela,activeConstraintList) ] } { set conf(testaudela,activeConstraintList) "AUDACE" }
 
-
+   #--- nettoyage des variables conf pour les versions antérieures au 19/09/2010
    if { [string first $::audace(rep_plugin) $::conf(testaudela,rep_images) ] != -1 } {
-       #--- je reinitialise le repertoire des images si l'ancien chemin dans audace(rep_plugin)
+       #--- je reinitialise le repertoire des images si l'ancien chemin pointe dans audace(rep_plugin)
        set ::conf(testaudela,rep_images) "$::audace(rep_images)/testaudela"
+   }
+   if { [ info exists conf(testaudela,directory) ] == 1 } {
+      #--- je supprime la variable conf(testaudela,directory)  qui n'est plus utilisée
+      unset conf(testaudela,directory)
    }
 
    #--- j'initialise la liste des contraintes
    set private(constraints) [list "AUDACE" "AUDINE" "APN" "ASCOM" "AUDINET" "ESHEL" "LX200" "QUICKREMOTE" "WEBCAM_RGB" "WEBCAM_NB" "CARTEDUCIELV3" "IMAGINGSOURCE" ]
    set private(frm) ""
    set private(interrupt) 0
+   #--- je memorise le repertoire contenant les scripts de test
+   set private(testScriptDirectory) [file join \
+      $audace(rep_plugin) \
+      [::audace::getPluginTypeDirectory [::testaudela::getPluginType]] \
+      [::testaudela::getPluginDirectory] \
+      "tests"
+   ]
+
+
    return ""
 }
 
@@ -347,9 +359,11 @@ proc ::testaudela::fillConfigPage { frm visuNo } {
 #  param : aucun
 #------------------------------------------------------------
 proc ::testaudela::editTestFile { fileName } {
+   variable private
+
    if { "$fileName" != ""} {
       set catchError [catch {
-         exec [file nativename $::conf(editscript)] [file nativename "$::conf(testaudela,directory)/tests/$fileName"] &
+         exec [file nativename $::conf(editscript)] [file nativename [file join $private(testScriptDirectory) $fileName]] &
       } msg]
       if { $catchError != 0 } {
          console::affiche_erreur "Edit test file error: $msg\n"
@@ -369,11 +383,11 @@ proc ::testaudela::fillTree { } {
    $private(tree) selection clear
    $private(tree) delete [$private(tree) nodes root]
 
-   set testFiles [lsort -dictionary [glob -nocomplain -dir "$::conf(testaudela,directory)/tests" "*.test"]]
+   set testFiles [lsort -dictionary [glob -nocomplain -dir $private(testScriptDirectory)  "*.test"]]
    #--- je remplis l'arbre avec les fichiers trouves dans le repertoire
    foreach fullname $testFiles {
       set isdir [file isdir $fullname]
-      set relativeName [string range $fullname [expr [string length "$::conf(testaudela,directory)/tests" ]+1] end]
+      set relativeName [string range $fullname [expr [string length $private(testScriptDirectory) ]+1] end]
       set shortname [file tail $fullname]
       if { $isdir == 1 } {
          set size ""
@@ -610,10 +624,10 @@ proc ::testaudela::showDescription { w fileName } {
    #--- je purge la description
    $private(tableDescription) delete 0 end
 
-   set fullName "$::conf(testaudela,directory)/tests/$fileName"
+   set fullName [file join $private(testScriptDirectory) $fileName]
    #--- je charge la description
    if { [file exists $fullName ] && [file isfile $fullName ] } {
-      source "$::conf(testaudela,directory)/tests/$fileName"
+      source [file join $private(testScriptDirectory) $fileName]
    }
 }
 
@@ -709,6 +723,7 @@ proc ::testaudela::runTests { { fileList "all" } } {
    namespace import -force ::tcltest::*
 
    set failed -1
+   set private(hfile) ""
    set catchError [catch {
       if { $fileList == "all" } {
          set fileList "*.test"
@@ -727,14 +742,14 @@ proc ::testaudela::runTests { { fileList "all" } } {
       }
 
       #--- je configure la campagne de tests
-      ::tcltest::configure -testdir "$::conf(testaudela,directory)/tests"
+      ::tcltest::configure -testdir $private(testScriptDirectory)
       ::tcltest::configure -verbose {pass error }
       ::tcltest::configure -debug 0
       ::tcltest::configure -singleproc 1
       ::tcltest::testConstraint interactive 1
       ::tcltest::testConstraint singleTestInterp 1
       if { $private(frm) == "" } {
-         #--- s'il n'y a pas de fenetre ouverte, j'utilse le fichier de trace de tcltest
+         #--- s'il n'y a pas de fenetre ouverte, je declare le fichier de trace directement dans tcltest
          file delete -force [file join $::audace(rep_log) $::conf(testaudela,resultFile)]
          ::tcltest::configure -outfile [file join $::audace(rep_log) $::conf(testaudela,resultFile)]
          set private(hfile) ""
@@ -779,6 +794,8 @@ proc ::testaudela::runTests { { fileList "all" } } {
          close $private(hfile)
          set private(hfile) ""
       }
+      #--- je mets la fenetre du resultat au premier plan
+      focus $private(frm)
    }
 
    #--- je restaure mes procedures de simulation
