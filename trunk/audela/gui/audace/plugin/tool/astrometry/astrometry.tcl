@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: astrometry.tcl,v 1.13 2010-09-21 19:05:38 robertdelmas Exp $
+# Mise à jour $Id: astrometry.tcl,v 1.14 2010-09-21 21:48:34 robertdelmas Exp $
 #
 
 #============================================================
@@ -295,6 +295,10 @@ namespace eval ::astrometry {
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::astrometry::getPluginType ] ] \
                [ ::astrometry::getPluginDirectory ] [ ::astrometry::getPluginHelp ]"
          pack $astrom(This).cal.fra_2.but4 -in $astrom(This).cal.fra_2 -side left -anchor center \
+            -pady 5 -ipadx 15 -padx 5 -ipady 5
+         button $astrom(This).cal.fra_2.but5 -text "$caption(astrometry,close)" -width 7 \
+            -command "::astrometry::quit $visuNo"
+         pack $astrom(This).cal.fra_2.but5 -in $astrom(This).cal.fra_2 -side left -anchor center \
             -pady 5 -ipadx 15 -padx 5 -ipady 5
       pack $astrom(This).cal.fra_2 -side bottom -anchor center -fill x
       #---
@@ -1104,7 +1108,7 @@ namespace eval ::astrometry {
       }
       wm resizable $astrom(This_check) 1 1
       wm title $astrom(This_check) "$caption(astrometry,start,10)"
-      wm protocol $astrom(This_check) WM_DELETE_WINDOW { ::astrometry::close_jpeg }
+      wm protocol $astrom(This_check) WM_DELETE_WINDOW "::astrometry::close_jpeg"
 
       #--- Affichage de l'explication
       message $astrom(This_check).legende -text "$caption(astrometry,comment)" -justify center \
