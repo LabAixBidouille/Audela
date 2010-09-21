@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.39 2010-08-15 07:25:26 robertdelmas Exp $
+# Mise a jour $Id: autoguider.cap,v 1.40 2010-09-21 17:01:33 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -385,7 +385,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,running)               "Aprendizagem em curso"
    set caption(autoguider,delay)                 "Atraso (s)"
    set caption(autoguider,targetBoxSize)         "Tamanho da zona"
-   set caption(autoguider,detectionThreshold)    "# Detection Threshold"
+   set caption(autoguider,detectionThreshold)    "Limiar de detecção"
    set caption(autoguider,AD)                    "Ascenção Recta"
    set caption(autoguider,declinaison)           "Declinação"
    set caption(autoguider,aller_vers)            "Ir para"
@@ -408,7 +408,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,searchRadius)          "Raio de pesquisa (pixel)"
    set caption(autoguider,searchThreshold)       "Luminosidade min. (2)"
 
-   set caption(autoguider,noSignal)              "# L'étoile est en dessous du seuil de détection"
+   set caption(autoguider,noSignal)              "Sinal está abaixo do limiar de detecção"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
