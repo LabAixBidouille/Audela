@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: astrometry.tcl,v 1.12 2010-09-19 22:12:18 robertdelmas Exp $
+# Mise à jour $Id: astrometry.tcl,v 1.13 2010-09-21 19:05:38 robertdelmas Exp $
 #
 
 #============================================================
@@ -374,6 +374,17 @@ namespace eval ::astrometry {
          }
          incr k
       }
+
+      #--- Update the CRPIX1 & CRPIX2 keywords
+      set dimx [lindex [buf$audace(bufNo) getkwd NAXIS1 ] 1]
+      set dimy [lindex [buf$audace(bufNo) getkwd NAXIS2 ] 1]
+      if {$::astrometry::astrom(wcsvalues,CRPIX1)==""} {
+         set ::astrometry::astrom(wcsvalues,CRPIX1) [expr $dimx /2.]
+      }
+      if {$::astrometry::astrom(wcsvalues,CRPIX2)==""} {
+         set ::astrometry::astrom(wcsvalues,CRPIX2) [expr $dimy /2.]
+      }
+
       #--- Fenetre active
       focus $astrom(This)
    }
