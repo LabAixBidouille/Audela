@@ -2,7 +2,7 @@
 # Fichier : satel.tcl
 # Description : Outil pour calculer les positions precises de satellites avec les TLE
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: satel.tcl,v 1.8 2010-09-21 21:17:05 alainklotz Exp $
+# Mise à jour $Id: satel.tcl,v 1.9 2010-09-21 21:49:42 robertdelmas Exp $
 #
 # source "$audace(rep_install)/gui/audace/satel.tcl"
 # utiliser le temps UTC
@@ -139,7 +139,7 @@ proc satel_transit { satelname objename date1 dayrange {home ""} } {
    set date22 [expr $date1+$dayrange]
    set ddate1 [expr $tsyn*1.1]
    set supersortie 0
-   while {$supersortie==0} {   
+   while {$supersortie==0} {
       set date2 [expr $date1+$ddate1]
       for {set k 0} {$k<10} {incr k} {
          set date $date1
@@ -327,8 +327,8 @@ proc satel_update { { server "" } {param1 ""} {param2 ""} } {
             set token [::http::geturl $url]
             upvar #0 $token state
             set html_text $state(body)
-         	# --- close the http connexion
-         	::http::cleanup $token
+            # --- close the http connexion
+            ::http::cleanup $token
          } msg]
          if {$err==0} {
             if {[string first "<!DOCTYPE" $html_text]>=0} {
@@ -370,28 +370,28 @@ proc satel_update { { server "" } {param1 ""} {param2 ""} } {
       set ntot 0
       set username [lindex $param1 0]
       set password [lindex $param2 0]
-   	# -- login & cookies
+      # -- login & cookies
       package require http
-   	set url http://www.space-track.org/perl
-   	set login [::http::formatQuery _submitted 1 _sessionid "" _submit Submit username $username password $password]
-   	set tok [::http::geturl $url/login.pl -query $login]
-   	upvar \#0 $tok state
-   	set cookies [list]
-   	foreach {name value} $state(meta) {
-       	if { $name eq "Set-Cookie" } {
-   	 	   lappend cookies [lindex [split $value {;}] 0]
-       	}
-   	}
-   	set res $state(body)
-   	::http::cleanup $tok
-   	# --- download
-   	set tok [::http::geturl $url/dl.pl?ID=2 -headers [list Cookie [join $cookies {;}]]]
-   	upvar #0 $tok state
-   	if {[::http::status $tok]!="ok"} {
+      set url http://www.space-track.org/perl
+      set login [::http::formatQuery _submitted 1 _sessionid "" _submit Submit username $username password $password]
+      set tok [::http::geturl $url/login.pl -query $login]
+      upvar \#0 $tok state
+      set cookies [list]
+      foreach {name value} $state(meta) {
+         if { $name eq "Set-Cookie" } {
+            lappend cookies [lindex [split $value {;}] 0]
+         }
+      }
+      set res $state(body)
+      ::http::cleanup $tok
+      # --- download
+      set tok [::http::geturl $url/dl.pl?ID=2 -headers [list Cookie [join $cookies {;}]]]
+      upvar #0 $tok state
+      if {[::http::status $tok]!="ok"} {
          catch {::console::affiche_resultat " Problem: $res.\n"}
-   		return ""
-   	}
-   	# --- save the TLE file
+         return ""
+      }
+      # --- save the TLE file
       file mkdir [ file join $::audace(rep_userCatalog) tle ]
        set elemfile spacetrack.txt
       set err [catch {
@@ -403,22 +403,22 @@ proc satel_update { { server "" } {param1 ""} {param2 ""} } {
          catch {::console::affiche_resultat " Problem: $msg.\n"}
       } else {
          # --- save the .gz file
-      	set f [open "${fic}.gz" w]
-      	fconfigure $f -translation binary
-      	puts -nonewline $f [::http::data $tok]
-      	close $f
-      	catch {file delete "$fic"}
+         set f [open "${fic}.gz" w]
+         fconfigure $f -translation binary
+         puts -nonewline $f [::http::data $tok]
+         close $f
+         catch {file delete "$fic"}
          # --- unzip the .gz file
-      	gunzip "${fic}.gz"
-      	# --- close the http connexion
-      	::http::cleanup $tok
+         gunzip "${fic}.gz"
+         # --- close the http connexion
+         ::http::cleanup $tok
          catch {::console::affiche_resultat " Spacetrack file download succes.\n"}
-      	# --- load the raw file
-      	set f [open $fic r]
-      	set lignes [split [read $f] \n]
-      	close $f
-      	# --- store the TLEs in a Tcl list
-         set nl [llength $lignes]         
+         # --- load the raw file
+         set f [open $fic r]
+         set lignes [split [read $f] \n]
+         close $f
+         # --- store the TLEs in a Tcl list
+         set nl [llength $lignes]
          catch {unset tles}
          set ntot 0
          for {set k 0} {$k<$nl} {incr k 3} {
@@ -436,7 +436,7 @@ proc satel_update { { server "" } {param1 ""} {param2 ""} } {
             incr ntot
          }
          catch {::console::affiche_resultat " Sort $ntot satellites...\n"}
-         # --- sort TLE list 
+         # --- sort TLE list
          set n $ntot
          set percent 0
          set percentot 0
@@ -558,3 +558,4 @@ proc satel_server { { server "" } } {
 
 satel_server
 return ""
+
