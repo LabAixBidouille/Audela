@@ -1,6 +1,6 @@
 #
 # Fichier : astrometry.cap
-# Mise a jour $Id: astrometry.cap,v 1.2 2009-11-06 19:09:15 robertdelmas Exp $
+# Mise a jour $Id: astrometry.cap,v 1.3 2010-09-21 21:46:55 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -41,6 +41,7 @@ set caption(astrometry,start,9)           "Calibrated with the Keywords from the
 set caption(astrometry,start,10)          "Calibration Check"
 set caption(astrometry,start,11)          "WCS Keywords deleted"
 set caption(astrometry,help)              "Help"
+set caption(astrometry,close)             "Close"
 set caption(astrometry,delete_files)      "Temporary files are deleted"
 set caption(astrometry,delete_image)      "Temporary images are deleted"
 set caption(astrometry,error_no_image)    "Please display an image first."
@@ -96,6 +97,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,start,10)       "Vérification de la calibration"
    set caption(astrometry,start,11)       "Mots clés WCS effacés"
    set caption(astrometry,help)           "Aide"
+   set caption(astrometry,close)          "Fermer"
    set caption(astrometry,delete_files)   "Suppression des fichiers temporaires"
    set caption(astrometry,delete_image)   "Suppression des images temporaires"
    set caption(astrometry,error_no_image) "Veuillez d'abord afficher une image."
@@ -151,6 +153,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,start,10)       "Verifica della calibrazione"
    set caption(astrometry,start,11)       "Keyword WCS eliminate"
    set caption(astrometry,help)           "Aiuto"
+   set caption(astrometry,close)          "Chiudere"
    set caption(astrometry,delete_files)   "Eliminazione dei file temporanei"
    set caption(astrometry,delete_image)   "Eliminazione delle immagini temporanee"
    set caption(astrometry,error_no_image) "Prima visualizzare un'immagine."
@@ -206,6 +209,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,start,10)       "Test de Calibración "
    set caption(astrometry,start,11)       "Claves WCS borradas"
    set caption(astrometry,help)           "Ayuda"
+   set caption(astrometry,close)          "Cerrar"
    set caption(astrometry,delete_files)   "Se borrarán los ficheros temporales"
    set caption(astrometry,delete_image)   "Se borrarán las imágenes temporales"
    set caption(astrometry,error_no_image) "Por favor, muestre una imagen primero."
@@ -261,6 +265,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,start,10)       "Kalibrierung Nachprüfung"
    set caption(astrometry,start,11)       "Die Schlüsselbegriffen sind gelöscht"
    set caption(astrometry,help)           "Hilfe"
+   set caption(astrometry,close)          "Schließen"
    set caption(astrometry,delete_files)   "Zeitweilig Datei Löschung"
    set caption(astrometry,delete_image)   "Zeitweilig Bilder Löschung"
    set caption(astrometry,error_no_image) "Bitte ein Bild erst anzeigen."
@@ -316,6 +321,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,start,10)       "Teste de Calibração"
    set caption(astrometry,start,11)       "Palavras-chave WCS apagadas"
    set caption(astrometry,help)           "Ajuda"
+   set caption(astrometry,close)          "Fechar"
    set caption(astrometry,delete_files)   "Supressão dos ficheiros temporários"
    set caption(astrometry,delete_image)   "Supressão das imagens temporárias"
    set caption(astrometry,error_no_image) "Por favor, mostre primeiro uma imagem."
@@ -371,6 +377,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,start,10)       "Calibration Check"
    set caption(astrometry,start,11)       "WCS Keywords deleted"
    set caption(astrometry,help)           "Help"
+   set caption(astrometry,close)          "Close"
    set caption(astrometry,delete_files)   "Temporary files are deleted"
    set caption(astrometry,delete_image)   "Temporary images are deleted"
    set caption(astrometry,error_no_image) "Please display an image first."
@@ -426,6 +433,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,start,10)       "Calibration Check"
    set caption(astrometry,start,11)       "WCS Keywords deleted"
    set caption(astrometry,help)           "Help"
+   set caption(astrometry,close)          "Close"
    set caption(astrometry,delete_files)   "Temporary files are deleted"
    set caption(astrometry,delete_image)   "Temporary images are deleted"
    set caption(astrometry,error_no_image) "Please display an image first."
@@ -481,6 +489,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,start,10)       "Calibration Check"
    set caption(astrometry,start,11)       "WCS Keywords deleted"
    set caption(astrometry,help)           "Help"
+   set caption(astrometry,close)          "Close"
    set caption(astrometry,delete_files)   "Temporary files are deleted"
    set caption(astrometry,delete_image)   "Temporary images are deleted"
    set caption(astrometry,error_no_image) "Please display an image first."
