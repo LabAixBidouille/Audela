@@ -2,7 +2,7 @@
 # Fichier : testaudela.tcl
 # Description : Outil de test automatique pour AudeLA
 # Auteurs : Michel Pujol
-# Mise à jour $Id: testaudela.tcl,v 1.11 2010-09-21 17:39:12 michelpujol Exp $
+# Mise à jour $Id: testaudela.tcl,v 1.12 2010-09-21 19:34:54 michelpujol Exp $
 #
 
 #####################
@@ -10,7 +10,9 @@
 #  Pour ajouter un fichier de test
 #  ===============================
 #   => creer ajouter un fichier dans le repertoire audace(rep_plugin)/testaudela/tests
-#      le nouveau fichier est détecte automatiquement
+#      Le nouveau fichier est détecte automatiquement au demarrage de l'outil
+#      Si l'outil TestaAudela est déjà lancé , il faut cliquer sur le bouton Actualiser
+#      pour faire apparaitre le nouveau fichier de test.
 #
 #  Pour ajouter un test dans un fichier de tests
 #  =============================================
@@ -147,7 +149,6 @@ proc ::testaudela::createPluginInstance { { in ".audace" } { visuNo 1 } } {
       [::testaudela::getPluginDirectory] \
       "tests"
    ]
-
 
    return ""
 }
@@ -356,7 +357,8 @@ proc ::testaudela::fillConfigPage { frm visuNo } {
 #------------------------------------------------------------
 #  ::testaudela::editTestFile
 #
-#  param : aucun
+#  @param  fileName  nom du fichier de test a editer
+#  @return none
 #------------------------------------------------------------
 proc ::testaudela::editTestFile { fileName } {
    variable private
@@ -374,7 +376,7 @@ proc ::testaudela::editTestFile { fileName } {
 #------------------------------------------------------------
 #  ::testaudela::fillTree
 #
-#  param : aucun
+#  @return none
 #------------------------------------------------------------
 proc ::testaudela::fillTree { } {
    variable private
@@ -407,9 +409,8 @@ proc ::testaudela::fillTree { } {
 #------------------------------------------------------------
 #  ::testaudela::toggleTestSelection
 #  bascule la selection du test
-#  param :
-#    w  :  nom de l'arbre appleant cette procedure (path TK)
-#    node : identifiant du test dasn l'arbre (node)
+#  @param w   nom de l'arbre appleant cette procedure (path TK)
+#  @param node  identifiant du test dasn l'arbre (node)
 #------------------------------------------------------------
 proc ::testaudela::toggleTestSelection { w node } {
    set testState [$w itemcget $node -data ]
@@ -454,7 +455,7 @@ proc ::testaudela::verifyImageDirectory { imageDirectory } {
          -title $::caption(testaudela,imageDirectory) \
          -icon warning \
          -type ok \
-         -message "$::caption(testaudela,ImageDirectory,notFound)\n$imageDirectory\n\n$::caption(testaudela,ImageDirectory,installQuestion)"
+         -message "$::caption(testaudela,ImageDirectory,alreadyUsed)\n$imageDirectory"
       return 0
    } else {
       return 1
@@ -527,38 +528,43 @@ proc ::testaudela::setImageDirectory { } {
    ::confColor::applyColor $tkName
 }
 
+#------------------------------------------------------------
+#  wrap
+#  wrappe le texte affiche dans un widget (decoupe en plusieurs lignes )
+# @param W  nom tk du widget
+# @param w  largeur du widget (nombre de caracteres)
+# @return none
+#------------------------------------------------------------
 proc ::testaudela::wrap {W w} {
-
    set px [$W cget -padx]
 
    if { [catch {$W cget -compound} side] } {
-     set wl [expr {$w - (2 * $px)}]
+      set wl [expr {$w - (2 * $px)}]
    } else {
-     switch -- $side {
-       left -
-       right {
-         set image [$W cget -image]
-         if { [string length $image] } {
-           set iw [image width $image]
-         } else {
-           set iw 0
+      switch -- $side {
+         left -
+         right {
+            set image [$W cget -image]
+            if { [string length $image] } {
+              set iw [image width $image]
+            } else {
+              set iw 0
+            }
+            set wl [expr {$w - (3 * $px) - $iw}]
          }
-         set wl [expr {$w - (3 * $px) - $iw}]
-       }
-       default {
-         set wl [expr {$w - (2 * $px)}]
-       }
-     }
+         default {
+            set wl [expr {$w - (2 * $px)}]
+         }
+      }
    }
-
    $W configure -wraplength $wl
- }
+}
 
 #------------------------------------------------------------
 #  selectImageDirectory
 #  affiche la fenetre pour selectionner le repertoire des images de test
-#  param :
-#    aucun
+# @param tkEntry  nom tk du widget contenant le nom du repertoire
+# @return none
 #------------------------------------------------------------
 proc ::testaudela::selectImageDirectory { tkEntry } {
    variable private
@@ -584,10 +590,9 @@ proc ::testaudela::selectImageDirectory { tkEntry } {
 
 
 #------------------------------------------------------------
-#  ::testaudela::selectAllTests
+# selectAllTests
 #  selectionne tous les fichiers de test
-#  param :
-#    aucun
+# @return none
 #------------------------------------------------------------
 proc ::testaudela::selectAllFiles { } {
    variable private
@@ -598,10 +603,9 @@ proc ::testaudela::selectAllFiles { } {
 }
 
 #------------------------------------------------------------
-#  ::testaudela::unselectAllFiles
+#  unselectAllFiles
 #  supprime la selection de tous les fichiers de test
-#  param :
-#    aucun
+# @return none
 #------------------------------------------------------------
 proc ::testaudela::unselectAllFiles { } {
    variable private
@@ -612,11 +616,11 @@ proc ::testaudela::unselectAllFiles { } {
 }
 
 #------------------------------------------------------------
-#  ::testaudela::showDescription
+#  showDescription
 #  affiche la description des tests contenus dans un fichier
-#  param :
-#    w  :  nom de l'arbre appleant cette procedure (path TK)
-#    fileName : nom du fichier (sans le repertoire)
+# @param w  nom tk de l'arbre appleant cette procedure (path TK)
+# @param fileName  nom du fichier (sans le repertoire)
+# @return none
 #------------------------------------------------------------
 proc ::testaudela::showDescription { w fileName } {
    variable private
@@ -635,7 +639,7 @@ proc ::testaudela::showDescription { w fileName } {
 #  ::testaudela::close
 #  est appele quand on ferme la fenetre sans sauvegarder les modifications
 #
-#  param : aucun
+# @return none
 #------------------------------------------------------------
 proc ::testaudela::closeWindow { visuNo } {
    variable private
@@ -656,6 +660,8 @@ proc ::testaudela::closeWindow { visuNo } {
 
 #------------------------------------------------------------
 #  ::testaudela::onRunTests
+# lance les tests
+# @return none
 #------------------------------------------------------------
 proc ::testaudela::onRunTests { } {
    variable private
@@ -682,6 +688,8 @@ proc ::testaudela::onRunTests { } {
    ###$private(frm).campaign.run configure -text $::caption(testaudela,stop)  -command "::testaudela::onStopTests"
    $private(frm).campaign.run configure -state disabled
    set private(interrupt) 0
+   #--- je supprime le fichier de resultat precedent
+   file delete -force [file join $::audace(rep_log) $::conf(testaudela,resultFile)]
    #--- j'affiche la fenetre du resultat
    ::testaudela::showResult
    #--- je lance les tests
@@ -708,7 +716,6 @@ proc ::testaudela::onStopTests { } {
 #  @param fileList  liste des fichiers de test a prendre en compte
 #  @param exitFlag  si "-exit"  , arrete audela et retourne le nombre de test ayant echoué
 #  @return nombre de tests "failed" ou "-1" en cas d'erreur
-#
 #------------------------------------------------------------
 proc ::testaudela::runTests { { fileList "all" } } {
    variable private
@@ -748,9 +755,10 @@ proc ::testaudela::runTests { { fileList "all" } } {
       ::tcltest::configure -singleproc 1
       ::tcltest::testConstraint interactive 1
       ::tcltest::testConstraint singleTestInterp 1
+      #--- je supprime le fichier de resultat precedent
+      file delete -force [file join $::audace(rep_log) $::conf(testaudela,resultFile)]
       if { $private(frm) == "" } {
          #--- s'il n'y a pas de fenetre ouverte, je declare le fichier de trace directement dans tcltest
-         file delete -force [file join $::audace(rep_log) $::conf(testaudela,resultFile)]
          ::tcltest::configure -outfile [file join $::audace(rep_log) $::conf(testaudela,resultFile)]
          set private(hfile) ""
       } else {
@@ -795,7 +803,11 @@ proc ::testaudela::runTests { { fileList "all" } } {
          set private(hfile) ""
       }
       #--- je mets la fenetre du resultat au premier plan
-      focus $private(frm)
+      #--- la commande est executee en differe avec after car sinon la visu principale
+      #--- peut reapparaitre au premier plan si le dernier test ne se termine pas par
+      #--- une commande update.
+      after idle "focus $private(frm)"
+
    }
 
    #--- je restaure mes procedures de simulation
@@ -888,36 +900,55 @@ proc ::testaudela::saveTestList { } {
 
 #------------------------------------------------------------
 #  ::testaudela::showResult { }
-#  affiche le fichier resulat des tests
+#  affiche la fenetre de resultat des tests
+#  Si la fenetre du resultat est deja affiche, le resultat est raffraichi a partir
+#  du fichier de resulat
 #------------------------------------------------------------
 proc ::testaudela::showResult { } {
    variable private
 
    set frm $private(frm)
 
-   if {[winfo exists $frm.result ]} {
+   if {[winfo exists $frm.result ] } {
       focus $frm.result
-      return
+      #--- j'efface le contenu du widget
+      $frm.result.text   delete 1.0 end
+   } else {
+      #--- je cree la fenetre de resultat
+      Dialog $frm.result -modal none -parent $private(frm) \
+         -title $::caption(testaudela,result) -cancel 0 -default 0
+      scrollbar $frm.result.ysb -command "$frm.result.text yview"
+      scrollbar $frm.result.xsb -command "$frm.result.text xview" -orient horizontal
+      text $frm.result.text -yscrollcommand [list $frm.result.ysb set] \
+        -xscrollcommand [list $frm.result.xsb set] -wrap word -width 70
+
+      grid $frm.result.text -in [$frm.result getframe] -row 0 -column 0 -sticky ewns
+      grid $frm.result.ysb  -in [$frm.result getframe] -row 0 -column 1 -sticky nsew
+      grid $frm.result.xsb  -in [$frm.result getframe] -row 1 -column 0 -sticky ew
+      grid rowconfig     [$frm.result getframe] 0 -weight 1
+      grid columnconfig  [$frm.result getframe] 0 -weight 1
+
+      ::confColor::applyColor $frm.result
+      #--- j'affiche la boite de dialogue
+      $private(frm).result draw
+      update
    }
 
-   Dialog $frm.result -modal none -parent $private(frm) \
-      -title $::caption(testaudela,result) -cancel 0 -default 0
+   #--- j'affiche le resultat des tests si le fichier existe
+   #--- sinon le widget reste vide
+   if {[file exists [file join $::audace(rep_log) $::conf(testaudela,resultFile)] ]} {
+      #--- je recupere le resultat des tests
+      set hfile [open [file join $::audace(rep_log) $::conf(testaudela,resultFile)] r]
+      if { $hfile != "-1" } {
+         set testResult [read -nonewline $hfile ]
+         close $hfile
+         #--- je copie le resulat dans le widget
+         $frm.result.text  insert end $testResult
+         update
+      }
+   }
 
-   scrollbar $frm.result.ysb -command "$frm.result.text yview"
-   scrollbar $frm.result.xsb -command "$frm.result.text xview" -orient horizontal
-
-   text $frm.result.text -yscrollcommand [list $frm.result.ysb set] \
-     -xscrollcommand [list $frm.result.xsb set] -wrap word -width 70
-
-   grid $frm.result.text -in [$frm.result getframe] -row 0 -column 0 -sticky ewns
-   grid $frm.result.ysb  -in [$frm.result getframe] -row 0 -column 1 -sticky nsew
-   grid $frm.result.xsb  -in [$frm.result getframe] -row 1 -column 0 -sticky ew
-   grid rowconfig     [$frm.result getframe] 0 -weight 1
-   grid columnconfig  [$frm.result getframe] 0 -weight 1
-
-   ::confColor::applyColor $frm.result
-   $private(frm).result draw
-   update
+   #--- je place le curseur sur le permier caracterer de la dernière ligne
    $frm.result.text yview moveto 1.1
 
 }
@@ -943,6 +974,7 @@ proc ::testaudela::updateResult { channel } {
       }
 
 }
+
 
 ######################################################################
 #  ::testaudela::simul
