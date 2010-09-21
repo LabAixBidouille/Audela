@@ -2,9 +2,9 @@
 # Fichier : satel.tcl
 # Description : Outil pour calculer les positions precises de satellites avec les TLE
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: satel.tcl,v 1.7 2010-09-04 21:34:36 alainklotz Exp $
+# Mise à jour $Id: satel.tcl,v 1.8 2010-09-21 21:17:05 alainklotz Exp $
 #
-# source satel.tcl
+# source "$audace(rep_install)/gui/audace/satel.tcl"
 # utiliser le temps UTC
 #
 # --- Pour telecharger les TLEs
@@ -250,7 +250,9 @@ proc satel_ephem { {satelname "ISS"} {date now} {home ""} } {
 
 # Return the list of NAMES+FILE for a given satelname
 proc satel_names { {satelname ""} {nbmax ""} } {
-   set tlefiles [ glob -nocomplain [ file join $::audace(rep_userCatalog) tle *.txt ] ]
+   global audace
+   set server [satel_server]
+   set tlefiles $audace(satel,tlefiles)
    set texte ""
    set nsat 0
    if {$nbmax==""} {
@@ -258,6 +260,10 @@ proc satel_names { {satelname ""} {nbmax ""} } {
    }
    set satelname [string trim [string trim [string toupper $satelname] \"]]
    foreach tlefile $tlefiles {
+      set tlefile [ file join $::audace(rep_userCatalog) tle $tlefile]
+      if {[file exists $tlefile]==0} {
+         continue
+      }
       set f [open $tlefile r]
       set lignes [split [read $f] \n]
       close $f
@@ -299,19 +305,41 @@ proc satel_tlefiles { } {
 }
 
 # Update TLE files in AudeLA
-proc satel_update { {server celestrack} } {
+proc satel_update { { server "" } {param1 ""} {param2 ""} } {
+   global audace
    set t0 [clock seconds]
+   set server [lindex $server 0]
+   set k [lsearch -exact [satel_server ?] $server]
+   if {$k==-1} {
+      set server celestrack
+   }
+   set server0 [satel_server]
+   satel_server $server
+   catch {::console::affiche_resultat "Server $server\n"}
    if {$server=="celestrack"} {
-      set elemfiles { amateur.txt classfd.txt cubesat.txt dmc.txt education.txt engineering.txt geo.txt geodetic.txt glo-ops.txt globalstar.txt goes.txt gorizont.txt gps-ops.txt intelsat.txt iridium.txt military.txt molniya.txt musson.txt nnss.txt noaa.txt orbcomm.txt other-comm.txt other.txt radar.txt raduga.txt resource.txt sarsat.txt science.txt stations.txt tdrss.txt tle-new.txt visual.txt weather.txt x-comm.txt }
-      #set elemfiles { amateur.txt classfd.txt }
+      set elemfiles $audace(satel,tlefiles)
       set ntot 0
       foreach elemfile $elemfiles {
          set url "http://celestrak.com/NORAD/elements/$elemfile"
          catch {::console::affiche_resultat "Download $url\n"}
-         set err [catch {satel_download $url} msg]
+         set err [catch {
+            package require http
+            set token [::http::geturl $url]
+            upvar #0 $token state
+            set html_text $state(body)
+         	# --- close the http connexion
+         	::http::cleanup $token
+         } msg]
+         if {$err==0} {
+            if {[string first "<!DOCTYPE" $html_text]>=0} {
+               set err 1
+               set msg "File not found in server"
+            }
+         }
          if {$err==1} {
             catch {::console::affiche_resultat " Problem: $msg.\n"}
          } else {
+            set msg $html_text
             set texte ""
             set n 0
             set lignes [split $msg \n]
@@ -338,30 +366,195 @@ proc satel_update { {server celestrack} } {
          }
       }
       catch {::console::affiche_resultat "A total of $ntot satellites elements are downloaded in [ file join $::audace(rep_userCatalog) tle ]\n"}
+   } elseif {$server=="spacetrack"} {
+      set ntot 0
+      set username [lindex $param1 0]
+      set password [lindex $param2 0]
+   	# -- login & cookies
+      package require http
+   	set url http://www.space-track.org/perl
+   	set login [::http::formatQuery _submitted 1 _sessionid "" _submit Submit username $username password $password]
+   	set tok [::http::geturl $url/login.pl -query $login]
+   	upvar \#0 $tok state
+   	set cookies [list]
+   	foreach {name value} $state(meta) {
+       	if { $name eq "Set-Cookie" } {
+   	 	   lappend cookies [lindex [split $value {;}] 0]
+       	}
+   	}
+   	set res $state(body)
+   	::http::cleanup $tok
+   	# --- download
+   	set tok [::http::geturl $url/dl.pl?ID=2 -headers [list Cookie [join $cookies {;}]]]
+   	upvar #0 $tok state
+   	if {[::http::status $tok]!="ok"} {
+         catch {::console::affiche_resultat " Problem: $res.\n"}
+   		return ""
+   	}
+   	# --- save the TLE file
+      file mkdir [ file join $::audace(rep_userCatalog) tle ]
+       set elemfile spacetrack.txt
+      set err [catch {
+          set fic [ file join $::audace(rep_userCatalog) tle $elemfile ]
+         set f [open $fic w]
+         close $f
+      } msg]
+      if {$err==1} {
+         catch {::console::affiche_resultat " Problem: $msg.\n"}
+      } else {
+         # --- save the .gz file
+      	set f [open "${fic}.gz" w]
+      	fconfigure $f -translation binary
+      	puts -nonewline $f [::http::data $tok]
+      	close $f
+      	catch {file delete "$fic"}
+         # --- unzip the .gz file
+      	gunzip "${fic}.gz"
+      	# --- close the http connexion
+      	::http::cleanup $tok
+         catch {::console::affiche_resultat " Spacetrack file download succes.\n"}
+      	# --- load the raw file
+      	set f [open $fic r]
+      	set lignes [split [read $f] \n]
+      	close $f
+      	# --- store the TLEs in a Tcl list
+         set nl [llength $lignes]         
+         catch {unset tles}
+         set ntot 0
+         for {set k 0} {$k<$nl} {incr k 3} {
+            set ligne [lindex $lignes [expr $k+0]]
+            set name_cur [string trim $ligne]
+            if {[string length $name_cur]<2} {
+               continue
+            }
+            set ligne [lindex $lignes [expr $k+1]]
+            set lig1 $ligne
+            set ligne [lindex $lignes [expr $k+2]]
+            set lig2 $ligne
+            set tle [list $name_cur $lig1 $lig2]
+            set tles($ntot) $tle
+            incr ntot
+         }
+         catch {::console::affiche_resultat " Sort $ntot satellites...\n"}
+         # --- sort TLE list 
+         set n $ntot
+         set percent 0
+         set percentot 0
+         set k11 0
+         for {set k1 0} {$k1<[expr $n-1]} {incr k1} {
+            set name1 [lindex $tles($k1) 0]
+            set percent [expr 100.*$k11/$n]
+            if {$percent>10} {
+               incr percentot 10
+               catch {::console::affiche_resultat " $percentot percent sorted...\n"}
+               set k11 0
+            }
+            for {set k2 [expr $k1+1]} {$k2<$n} {incr k2} {
+               set name2 [lindex $tles($k2) 0]
+               set k [string compare $name1 $name2]
+               #catch {::console::affiche_resultat " k1=$k1 k2=$k2 name1=$name1 name2=$name2 k=$k \n"}
+               if {$k==1} {
+                  # --- swap
+                  #catch {::console::affiche_resultat " Swap \n"}
+                  set tle $tles($k1)
+                  set tles($k1) $tles($k2)
+                  set tles($k2) $tle
+                  set name1 [lindex $tles($k1) 0]
+               }
+            }
+            incr k11
+         }
+         set percentot 100
+         catch {::console::affiche_resultat " $percentot percent sorted...\n"}
+         catch {::console::affiche_resultat " Index for satellites of same names...\n"}
+         # --- add index if name are the same
+         set texte ""
+         set n 0
+         set name_prev ""
+         for {set k 0} {$k<$ntot} {incr k} {
+            set name_cur [lindex $tles($k) 0]
+            set lig1 [lindex $tles($k) 1]
+            set lig2 [lindex $tles($k) 2]
+            if {$k==[expr $ntot-1]} {
+               set name_next ""
+            } else {
+               set name_next [lindex $tles([expr $k+1]) 0]
+            }
+            if {($name_cur!=$name_prev)&&($name_cur==$name_next)} {
+               set kname 1
+            } elseif {($name_cur==$name_prev)} {
+               incr kname
+            } else {
+               set kname 0
+            }
+            set name_prev $name_cur
+            if {$kname>0} {
+               append name_cur " #$kname"
+            }
+            append texte "$name_cur\n"
+            append texte "$lig1\n"
+            append texte "$lig2\n"
+            incr n
+         }
+         set ntot $n
+         set err [catch {
+            set f [open $fic w]
+            puts -nonewline $f $texte
+            close $f
+         } msg]
+         if {$err==1} {
+            catch {::console::affiche_resultat " Problem: $msg.\n"}
+         } else {
+            catch {::console::affiche_resultat " A total of $n satellites elements are downloaded in $elemfile\n"}
+         }
+      }
    } else {
       error "Server not known. Servers are: celestrack."
    }
    set dt [expr [clock seconds]-$t0]
    catch {::console::affiche_resultat "Done in $dt seconds.\n\n"}
+   satel_server $server0
    return $ntot
 }
 
 # Download one TLE file and return the contents
-proc satel_download { {url http://celestrak.com/NORAD/elements/stations.txt} } {
-   set err [catch {
-      package require http
-      set token [::http::geturl $url]
-      upvar #0 $token state
-      set html_text $state(body)
-   } msg]
-   if {$err==0} {
-      if {[string first "<!DOCTYPE" $html_text]<0} {
-         return $html_text
-      } else {
-         error "File not found in server"
-      }
-   } else {
-      error $msg
+# proc satel_download { {url http://celestrak.com/NORAD/elements/stations.txt} } {
+#    set err [catch {
+#       package require http
+#       set token [::http::geturl $url]
+#       upvar #0 $token state
+#       set html_text $state(body)
+#    } msg]
+#    if {$err==0} {
+#       if {[string first "<!DOCTYPE" $html_text]<0} {
+#          return $html_text
+#       } else {
+#          error "File not found in server"
+#       }
+#    } else {
+#       error $msg
+#    }
+# }
+
+proc satel_server { { server "" } } {
+   global audace
+   set server [lindex $server 0]
+   if {[info exists audace(satel,server)]==0} {
+      set server "celestrack"
    }
+   if {$server==""} {
+      return $audace(satel,server)
+   } elseif {$server=="?"} {
+      return "celestrack spacetrack"
+   } elseif {$server=="spacetrack"} {
+      set audace(satel,server) "spacetrack"
+      set audace(satel,tlefiles) { spacetrack.txt }
+   } else {
+      set audace(satel,server) "celestrack"
+      set audace(satel,tlefiles) { amateur.txt classfd.txt cubesat.txt dmc.txt education.txt engineering.txt geo.txt geodetic.txt glo-ops.txt globalstar.txt goes.txt gorizont.txt gps-ops.txt intelsat.txt iridium.txt military.txt molniya.txt musson.txt nnss.txt noaa.txt orbcomm.txt other-comm.txt other.txt radar.txt raduga.txt resource.txt sarsat.txt science.txt stations.txt tdrss.txt tle-new.txt visual.txt weather.txt x-comm.txt }
+   }
+   return $audace(satel,server)
 }
 
+satel_server
+return ""
