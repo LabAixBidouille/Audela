@@ -2,7 +2,7 @@
 # Fichier : ascomcam.tcl
 # Description : Configuration de la camera ASCOM
 # Auteur : Michel PUJOL
-# Mise à jour $Id: ascomcam.tcl,v 1.10 2010-09-10 19:34:32 robertdelmas Exp $
+# Mise à jour $Id: ascomcam.tcl,v 1.11 2010-09-21 20:03:57 michelpujol Exp $
 #
 
 namespace eval ::ascomcam {
@@ -152,21 +152,33 @@ proc ::ascomcam::fillConfigPage { frm camItem } {
       destroy $i
    }
 
-   package require tcom
    package require registry
-   #--- Plugins ASCOM installes sur le PC
    set private(ascomDrivers) ""
-   set catchError [ catch {
-      set keyList [ ::registry keys "HKEY_LOCAL_MACHINE\\Software\\ASCOM\\Camera Drivers" ]
-   }]
-   if { $catchError == 0 } {
-      foreach key $keyList {
-         if { [ catch { ::registry get "HKEY_LOCAL_MACHINE\\Software\\ASCOM\\Camera Drivers\\$key" "" } r ] == 0 } {
-            ###lappend private(ascomDrivers) [list $r $key]
-            lappend private(ascomDrivers) [list $key]
+
+   #--- Plugins ASCOM 5.5 installes sur le PC
+   set allUsersDataDir [ ::registry get "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders" "Common AppData" ]
+   set cameraDriverDir [ file normalize [ file join $allUsersDataDir ASCOM Profile "Camera Drivers" ] ]
+   if { [file exists $cameraDriverDir] == 1 } {
+      foreach key [ glob -nocomplain  -tails -type d -dir  $cameraDriverDir * ] {
+         lappend private(ascomDrivers) $key
+      }
+   }
+
+   if { $private(ascomDrivers) == "" } {
+      #--- Plugins ASCOM 5.5 installes sur le PC
+      set catchError [ catch {
+         set keyList [ ::registry keys "HKEY_LOCAL_MACHINE\\Software\\ASCOM\\Camera Drivers" ]
+      }]
+      if { $catchError == 0 } {
+         foreach key $keyList {
+            if { [ catch { ::registry get "HKEY_LOCAL_MACHINE\\Software\\ASCOM\\Camera Drivers\\$key" "" } r ] == 0 } {
+               ###lappend private(ascomDrivers) [list $r $key]
+               lappend private(ascomDrivers) [list $key]
+            }
          }
       }
    }
+
    #--- Je verifie le contenu de la liste
    if { [llength $private(ascomDrivers) ] > 0 } {
       #--- si la liste n'est pas vide,
