@@ -20,7 +20,7 @@
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
-			CharacterSet="2"
+			CharacterSet="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -43,7 +43,8 @@
 				AdditionalIncludeDirectories="..\src,..\..\..\include,..\..\..\external\include\win"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;USE_TCL_STUBS;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
+				ExceptionHandling="2"
+				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				BrowseInformation="1"
@@ -64,6 +65,7 @@
 				AdditionalDependencies="..\..\..\external\lib\tclstub85.lib"
 				OutputFile="..\..\..\..\bin\libascomcam.dll"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames="msvcrt.lib"
 				ModuleDefinitionFile=".\libascomcam.def"
 				GenerateDebugInformation="true"
