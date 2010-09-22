@@ -2,7 +2,7 @@
 # Fichier : ascomcam.tcl
 # Description : Configuration de la camera ASCOM
 # Auteur : Michel PUJOL
-# Mise à jour $Id: ascomcam.tcl,v 1.11 2010-09-21 20:03:57 michelpujol Exp $
+# Mise à jour $Id: ascomcam.tcl,v 1.12 2010-09-22 16:56:25 michelpujol Exp $
 #
 
 namespace eval ::ascomcam {
@@ -165,7 +165,7 @@ proc ::ascomcam::fillConfigPage { frm camItem } {
    }
 
    if { $private(ascomDrivers) == "" } {
-      #--- Plugins ASCOM 5.5 installes sur le PC
+      #--- je chercher les plugins ASCOM 5.0 si je n'ai pas trouvé de Plugin ASCOM 5.5
       set catchError [ catch {
          set keyList [ ::registry keys "HKEY_LOCAL_MACHINE\\Software\\ASCOM\\Camera Drivers" ]
       }]
@@ -205,6 +205,7 @@ proc ::ascomcam::fillConfigPage { frm camItem } {
 
          #--- Choix du plugin
          ComboBox $frm.frame1.frame3.driver \
+            -width [ ::tkutil::lgEntryComboBox $private(ascomDrivers) ] \
             -height [ llength $private(ascomDrivers) ] \
             -relief sunken                \
             -borderwidth 1                \
@@ -397,14 +398,16 @@ proc ::ascomcam::getPluginProperty { camItem propertyName } {
 proc ::ascomcam::configureDriver { } {
    variable private
 
-   package require tcom
-   package require registry
+   set camItem [::confCam::getCurrentCamItem]
+   if { [ ::ascomcam::isReady $camItem] == 1 } {
+      #--- le telescope est deja connecte
+      cam$private($camItem,camNo) setup
+   } else {
+      #--- le telescope n'est pas connecte
+      load [file join $::audela_start_dir libascomcam.dll]
+      ascomcam setup $private(modele)
+   }
 
-   set private(portObject) [ ::tcom::ref createobj $private(modele) ]
-
-   after idle $private(portObject) SetupDialog
-
-   ###$private(portObject) Connected 1
 }
 
 #
