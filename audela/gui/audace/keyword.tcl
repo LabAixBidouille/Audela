@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: keyword.tcl,v 1.45 2010-07-02 20:42:22 robertdelmas Exp $
+# Mise à jour $Id: keyword.tcl,v 1.46 2010-09-22 16:00:04 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -212,8 +212,11 @@ proc ::keyword::init { } {
    set private(instrument)          ""
    set private(diametre)            ""
    set private(focale_resultante)   ""
+   set private(angleCamera)         ""
    set private(cell_dim_x)          ""
    set private(cell_dim_y)          ""
+   set private(pix_dim_x)           ""
+   set private(pix_dim_y)           ""
    set private(set_temperature_ccd) ""
    set private(temperature_ccd)     ""
    set private(equipement)          ""
@@ -253,8 +256,11 @@ proc ::keyword::init { } {
    lappend private(infosMotsClefs) [ list "TELESCOP" $::caption(keyword,instrument)  ::keyword::private(instrument)          readonly $::caption(keyword,parcourir)  "::confOptic::run 1"                           ""                                  ""                                       "" "" "string" "Telescop"                                        "" ]
    lappend private(infosMotsClefs) [ list "APTDIA"   $::caption(keyword,instrument)  ::keyword::private(diametre)            readonly $::caption(keyword,parcourir)  "::confOptic::run 1"                           ""                                  ""                                       "" "" "float"  "Telescop diameter"                               "m: meter" ]
    lappend private(infosMotsClefs) [ list "FOCLEN"   $::caption(keyword,instrument)  ::keyword::private(focale_resultante)   readonly $::caption(keyword,parcourir)  "::confOptic::run 1"                           ""                                  ""                                       "" "" "float"  "Resulting focal length of the telescop"          "m: meter" ]
+   lappend private(infosMotsClefs) [ list "CROTA2"   $::caption(keyword,instrument)  ::keyword::private(angleCamera)         normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "Position angle"                                  "degres" ]
    lappend private(infosMotsClefs) [ list "XPIXSZ"   $::caption(keyword,instrument)  ::keyword::private(cell_dim_x)          readonly $::caption(keyword,parcourir)  "::confCam::run"                               ""                                  ""                                       "" "" "float"  "Pixel width"                                     "micron" ]
    lappend private(infosMotsClefs) [ list "YPIXSZ"   $::caption(keyword,instrument)  ::keyword::private(cell_dim_y)          readonly $::caption(keyword,parcourir)  "::confCam::run"                               ""                                  ""                                       "" "" "float"  "Pixel height"                                    "micron" ]
+   lappend private(infosMotsClefs) [ list "PIXSIZE1" $::caption(keyword,instrument)  ::keyword::private(pix_dim_x)           readonly $::caption(keyword,parcourir)  "::confCam::run"                               ""                                  ""                                       "" "" "float"  "Pixel size along naxis1"                         "micron" ]
+   lappend private(infosMotsClefs) [ list "PIXSIZE2" $::caption(keyword,instrument)  ::keyword::private(pix_dim_y)           readonly $::caption(keyword,parcourir)  "::confCam::run"                               ""                                  ""                                       "" "" "float"  "Pixel size along naxis2"                         "micron" ]
    lappend private(infosMotsClefs) [ list "SET_TEMP" $::caption(keyword,instrument)  ::keyword::private(set_temperature_ccd) readonly $::caption(keyword,parcourir)  "::keyword::openSetTemperature"                ""                                  ""                                       "" "" "float"  "Set CCD temperature"                             "degres Celsius" ]
    lappend private(infosMotsClefs) [ list "CCD_TEMP" $::caption(keyword,instrument)  ::keyword::private(temperature_ccd)     readonly $::caption(keyword,rafraichir) "::keyword::onChangeTemperature"               ""                                  ""                                       "" "" "float"  "Actual CCD temperature"                          "degres Celsius" ]
    lappend private(infosMotsClefs) [ list "INSTRUME" $::caption(keyword,instrument)  ::keyword::private(equipement)          normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Instrument"                                      "" ]
@@ -446,9 +452,13 @@ proc ::keyword::onChangeCellDim { visuNo args } {
    if { $camNo != 0 } {
       set private(cell_dim_x) [ expr [ lindex [ cam$camNo celldim ] 0 ] * 1e6 ]
       set private(cell_dim_y) [ expr [ lindex [ cam$camNo celldim ] 1 ] * 1e6 ]
+      set private(pix_dim_x)  [ expr [ lindex [ cam$camNo pixdim ] 0 ] * 1e6 ]
+      set private(pix_dim_y)  [ expr [ lindex [ cam$camNo pixdim ] 1 ] * 1e6 ]
    } else {
       set private(cell_dim_x) ""
       set private(cell_dim_y) ""
+      set private(pix_dim_x)  ""
+      set private(pix_dim_y)  ""
    }
 }
 
@@ -1042,7 +1052,7 @@ proc ::keyword::createDialog { visuNo } {
          -columns [ list \
             0  ""                                      center \
             11 $::caption(keyword,colonne,categorie)   center \
-            22 $::caption(keyword,colonne,description) left \
+            29 $::caption(keyword,colonne,description) left \
             11 $::caption(keyword,colonne,motclef)     left \
             35 $::caption(keyword,colonne,valeur)      left \
             0  ""                                      center \
