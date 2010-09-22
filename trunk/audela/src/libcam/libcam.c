@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.43 2010-09-12 19:29:58 michelpujol Exp $
+ * $Id: libcam.c,v 1.44 2010-09-22 16:51:11 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -316,6 +316,12 @@ static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, ch
    } else {
       const char *platform;
       const char *threaded;
+
+#ifdef CMD_CAM_SETUP
+      if (argc == 3 && strcmp(argv[1],"setup") == 0) {
+         return cmdAscomcamSetupDialog(clientData, interp, argc, argv);
+      }
+#endif
 
       //
       if((platform=Tcl_GetVar(interp,"tcl_platform(platform)",TCL_GLOBAL_ONLY))==NULL) {
