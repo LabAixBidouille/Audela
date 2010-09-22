@@ -1,6 +1,6 @@
 #
 # Fichier : astrocomputer.cap
-# Mise a jour $Id: astrocomputer.cap,v 1.6 2010-09-21 17:00:47 robertdelmas Exp $
+# Mise a jour $Id: astrocomputer.cap,v 1.7 2010-09-22 15:32:03 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -166,7 +166,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrocomputer,formatinp1)           "Número Data Ângulo Distância"
    set caption(astrocomputer,formatnombreout1)     "Decimal Binário Octal Hexadecimal ASCII"
    set caption(astrocomputer,formatdateout1)       {"Dia Juliano" "Dia Juliano modificado" ISO8601 Calendário}
-   set caption(astrocomputer,formatangleout1)      {graus "gra min seg" "h min seg" "graus marcados" radiano}
+   set caption(astrocomputer,formatangleout1)      {graus "gra min seg" "h min seg" "graus com sinal" radiano}
    set caption(astrocomputer,formatdistanceout1)   {"Parsec" "Anos-Luz" "Unidades Astronómicas" "Paralaxe (mas)" "Módulo de distância" "Metros"}
    set caption(astrocomputer,fermer)               "Fechar"
    set caption(astrocomputer,aide)                 "Ajuda"
