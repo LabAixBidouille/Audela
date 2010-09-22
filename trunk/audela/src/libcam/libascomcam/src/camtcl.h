@@ -24,18 +24,18 @@
 #define __CAMTCL_H__
 
 #define SPECIFIC_CMDLIST \
-    {"select",   (Tcl_CmdProc *) cmdAscomSelect},\
     {"infotemp", (Tcl_CmdProc *) cmdAscomcamInfotemp},\
     {"property", (Tcl_CmdProc *) cmdAscomcamProperty},\
-    {"setup",    (Tcl_CmdProc *) cmdAscomcamSetupDialog},\
+    {"setup",    (Tcl_CmdProc *) cmdAscomcamConnectedSetupDialog},\
     {"wheel",    (Tcl_CmdProc *) cmdAscomcamWheel},
 
+#define CMD_CAM_SETUP
 
  /* === Specific commands for that camera === */
-int cmdAscomSelect(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+int cmdAscomcamSetupDialog(ClientData clientData, Tcl_Interp * interp, int argc, const char *argv[]);
+int cmdAscomcamConnectedSetupDialog(ClientData clientData, Tcl_Interp * interp, int argc, const char *argv[]);
 int cmdAscomcamProperty(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdAscomcamInfotemp(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
-int cmdAscomcamSetupDialog(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdAscomcamWheel(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdAscomcamProperty(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 

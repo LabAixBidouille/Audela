@@ -65,11 +65,13 @@ struct camprop {
 };
 
 int cam_select(char * productName);
+int cam_connectedSetupDialog(struct camprop *cam );
+
 int ascomcamGetMaxBin(struct camprop *cam, int *maxBin);
 int ascomcamHasShutter(struct camprop *cam, int *hasShutter);
 void ascomcamGetTemperatureInfo(struct camprop *cam, double *setTemperature, double *ccdTemperature, 
                                double *ambientTemperature, int *regulationEnabled, int *power);
-void ascomcamSetupDialog(struct camprop *cam);
+int ascomcamSetupDialog(const char * ascomDiverName, char * errorMsg);
 
 int ascomcamSetWheelPosition(struct camprop *cam, int position);
 int ascomcamGetWheelPosition(struct camprop *cam, int *position);

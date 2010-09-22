@@ -22,27 +22,20 @@
 
 #include "sysexp.h"
 
-#if defined(OS_WIN)
 #include <windows.h>
 #include <exception>
-#include <tchar.h> 
-#endif
-
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <stdio.h>
+#include <time.h>               /* time, ftime, strftime, localtime */
+#include <sys/timeb.h>          /* ftime, struct timebuffer */
 #include "camera.h"
 
 // le fichier .tlb est equivalent aux fichiers .h et .lib
 #import "file:..\..\..\external\lib\AscomMasterInterfaces.tlb"
+//#import "file:AscomMasterInterfaces.tlb"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <time.h>               /* time, ftime, strftime, localtime */
-#include <sys/timeb.h>          /* ftime, struct timebuffer */
 #define LOG_NONE    0
 #define LOG_ERROR   1
 #define LOG_WARNING 2
@@ -153,32 +146,6 @@ void FormatWinMessage(char * szPrefix, HRESULT hr)
     return;
 }
 
-int cam_select(char * productName)
-{
-/*
-   CoInitialize(NULL);
-   ::DriverHelper::_ChooserPtr chooser = NULL;										
-	chooser.CreateInstance("DriverHelper.Chooser");						
-   chooser->DeviceTypeV = "Camera";										
-	_bstr_t  drvrId = chooser->Choose("");
-
-	if(chooser == NULL)	{
-      strcpy(productName, "Error open DriverHelper.Chooser");    
-      return -1;
-   }
-	chooser.Release();		
-
-   if ( drvrId.length() == 0 ) {
-      strcpy(productName, "No camera selected");    
-      return 1;
-   } else {
-      strcpy(productName, drvrId);
-      return 0;
-   }
-   */
-   return 0;
-}
-
 /* ========================================================= */
 /* ========================================================= */
 /* ===     Macro fonctions de pilotage de la camera      === */
@@ -191,9 +158,7 @@ int cam_select(char * productName)
 
 int cam_init(struct camprop *cam, int argc, char **argv)
 {
-   char CCDSimulator[]="{36A5A84D-44C4-4BD8-8B41-B183B6FFB69E}";
    HRESULT hr;
-
    // attention : il faut absolument initialiser a zero la zone 
    // memoire correspondant à cam->params->pCam  
    // car sinon le objet COM croit qu'il existe un objet à supprimer
@@ -211,20 +176,16 @@ int cam_init(struct camprop *cam, int argc, char **argv)
          }
       }
    }
-
-   ascomcam_log(LOG_DEBUG,"cam_init début. Version du %s", __TIMESTAMP__);
-   hr = CoInitializeEx(NULL,COINIT_APARTMENTTHREADED);
-   
+   hr = CoInitializeEx(NULL,COINIT_APARTMENTTHREADED);   
    if (FAILED(hr)) { 
       sprintf(cam->msg, "cam_init error CoInitializeEx hr=%X",hr);
+      ascomcam_log(LOG_ERROR,cam->msg);
       return -1;
    }
-
    AscomInterfacesLib::ICameraPtr camera = NULL;
-   hr = camera.CreateInstance((LPCSTR)argv[2]); 
+   camera.CreateInstance((LPCSTR)argv[2]); 
    cam->params->pCam = camera;
-   
-   if (FAILED(hr)) { 
+   if (cam->params->pCam == NULL) { 
       char winErrorMessage[1024];
       FormatWinMessage( winErrorMessage , hr);
       ascomcam_log(LOG_ERROR,"cam_init error CreateInstance hr=%X %s",hr ,winErrorMessage);
@@ -233,9 +194,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    }
 
    try {
-      ascomcam_log(LOG_DEBUG,"cam_init avant connexion");
       cam->params->pCam->Connected = true;
-      ascomcam_log(LOG_DEBUG,"cam_init avant GetCameraXSize");
       cam->nb_photox  = cam->params->pCam->CameraXSize;
       cam->nb_photoy  = cam->params->pCam->CameraYSize;
 
@@ -246,13 +205,13 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    } catch (_com_error &e) {
       //_bstr_t       d = e.Description();
       //IErrorInfo * ei = e.ErrorInfo();
-      //_bstr_t       h= e.HelpFile();
-      ascomcam_log(LOG_ERROR,"cam_init connection error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      //_bstr_t       h= e.HelpFile();      
       sprintf(cam->msg, "cam_init connection error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      ascomcam_log(LOG_ERROR,cam->msg);
       return -1;
-   } catch (...) {
-      ascomcam_log(LOG_ERROR,"cam_init error Connected exception");
+   } catch (...) {      
       sprintf(cam->msg, "cam_init error Connected exception");
+      ascomcam_log(LOG_ERROR,cam->msg);
       return -1;
    }
    cam->x1 = 0;
@@ -288,8 +247,8 @@ int cam_close(struct camprop * cam)
       ascomcam_log(LOG_DEBUG,"cam_close fin OK");
       return 0;
    } catch (...) {
-      ascomcam_log(LOG_ERROR,"cam_close error exception");
       sprintf(cam->msg, "cam_close error exception");
+      ascomcam_log(LOG_ERROR,cam->msg);
       return -1;
    }
    return 0;
@@ -373,8 +332,8 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
    HRESULT hr;
 
    if ( cam->params->pCam == NULL ) {
-         ascomcam_log(LOG_ERROR,"cam_start_exp camera not initialized");
          sprintf(cam->msg, "cam_start_exp camera not initialized");
+         ascomcam_log(LOG_ERROR,cam->msg);
          return;
    }
 
@@ -428,7 +387,6 @@ void cam_stop_exp(struct camprop *cam)
 
    try {
       // j'interromps l'acquisition
-
       hr = cam->params->pCam->AbortExposure();
       if (FAILED(hr)) { 
          sprintf(cam->msg, "cam_stop_exp error StopExposure hr=%X",hr);
@@ -632,28 +590,44 @@ void cam_set_binning(int binx, int biny, struct camprop *cam)
 }
 
 // ---------------------------------------------------------------------------
-// ascomcamSetupDialog 
-//    affiche la fenetre de configuration fournie par le driver de la camera
-// return
-//    TCL_OK
+// mytel_connectedSetupDialog 
+//    affiche la fenetre de configuration fournie par le driver de la monture
+// @return void
+//    
 // ---------------------------------------------------------------------------
 
-void ascomcamSetupDialog(struct camprop *cam)
+int cam_connectedSetupDialog(struct camprop *cam )
 {
-   ascomcam_log(LOG_DEBUG,"ascomcamSetupDialog avant SetupDialog");
-   if ( cam->params->pCam == NULL ) {
-      ascomcam_log(LOG_ERROR,"ascomcamSetupDialog camera not initialized");
-      sprintf(cam->msg, "ascomcamSetupDialog camera not initialized");
-      return;
+   cam->params->pCam->SetupDialog();
+   return 0; 
+}
+
+
+// ---------------------------------------------------------------------------
+// ascomcamSetupDialog 
+//    affiche la fenetre de configuration fournie par le driver de la camera
+// 
+// @return 0=OK 1=error
+// ---------------------------------------------------------------------------
+
+int ascomcamSetupDialog(const char * ascomDiverName, char * errorMsg)
+{
+   HRESULT hr;
+   hr = CoInitializeEx(NULL,COINIT_APARTMENTTHREADED);
+   if (FAILED(hr)) { 
+      sprintf(errorMsg, "setupDialog error CoInitializeEx hr=%X",hr);
+      return 1;
    }
-   try {
-      cam->params->pCam->Connected = false;
-      cam->params->pCam->SetupDialog();
-      cam->params->pCam->Connected = true;
-   } catch (...) {
-      ascomcam_log(LOG_ERROR,"ascomcamSetupDialog error exception");
-      sprintf(cam->msg, "cam_cooler_check error exception");
-   }
+   AscomInterfacesLib::ICameraPtr cameraPtr = NULL;
+   hr = cameraPtr.CreateInstance((LPCSTR)ascomDiverName);
+   if ( FAILED(hr) ) {
+      sprintf(errorMsg, "setupDialog error CreateInstance hr=%X",hr);
+      CoUninitialize();
+      return 1;    
+   } 
+   cameraPtr->SetupDialog();
+   CoUninitialize();
+   return 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -868,13 +842,13 @@ char *ascomcamGetlogdate(char *buf, size_t size)
 }
 void ascomcam_log(int level, const char *fmt, ...)
 {
-   FILE *f;
-   char buf[100];
-
-   va_list mkr;
-   va_start(mkr, fmt);
-
    if (level <= debug_level) {
+      FILE *f;
+      char buf[100];
+
+      va_list mkr;
+      va_start(mkr, fmt);
+
       ascomcamGetlogdate(buf,100);
       f = fopen("libascomcam.log","at+");
       switch (level) {

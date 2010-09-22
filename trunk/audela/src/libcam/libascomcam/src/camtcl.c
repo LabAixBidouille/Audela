@@ -43,32 +43,6 @@
 extern struct camini CAM_INI[];
 
 // ---------------------------------------------------------------------------
-// cmdAscomSelect 
-//    selectionne le driver de la camera
-// return:
-// OUTPUT                                                              
-//    double : check temperature (deg. Celcius)                            
-//    double : CCD temperature (deg. Celcius)                              
-//    double : ambient temperature (deg. Celcius)                          
-//    int    : regulation, 1=on, 0=off                                     
-//    int    : Peltier power, (0-255=0-100%)                               
-// ---------------------------------------------------------------------------
-int cmdAscomSelect(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
-{
-   int result;
-   char productName[1024];
-   result = cam_select(productName);
-   if (result == 0 ) {
-      Tcl_SetResult(interp, productName, TCL_VOLATILE);
-      return TCL_OK;
-   } else {
-      // productName contient le message d'erreur
-      Tcl_SetResult(interp, productName, TCL_VOLATILE);
-      return TCL_ERROR;
-   }
-}
-
-// ---------------------------------------------------------------------------
 // cmdAscomcamInfotemp 
 //    recupere les information de temperature
 // return:
@@ -93,19 +67,44 @@ int cmdAscomcamInfotemp(ClientData clientData, Tcl_Interp * interp, int argc, ch
 }
 
 // ---------------------------------------------------------------------------
-// cmdAscomcamSetupDialog 
+// cmdCamConnectedSetupDialog 
 //    affiche la fenetre de configuration fournie par le driver de la camera
+//    quand la camera est deja connectee
 // return
 //    TCL_OK
 // ---------------------------------------------------------------------------
-int cmdAscomcamSetupDialog(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+int cmdAscomcamConnectedSetupDialog(ClientData clientData, Tcl_Interp * interp, int argc, const char *argv[])
 {
-    struct camprop *cam;
-    cam = (struct camprop *) clientData;
-    ascomcamSetupDialog(cam);
-    Tcl_SetResult(interp, (char*)"", TCL_VOLATILE);
-    return TCL_OK;
+   struct camprop *cam = (struct camprop *) clientData;
+   int result = cam_connectedSetupDialog(cam);
+   if ( result == 0 ) {
+      Tcl_SetResult(interp, (char*)"", TCL_VOLATILE);
+      return TCL_OK;
+   } else {
+      Tcl_SetResult(interp, cam->msg, TCL_VOLATILE);
+      return TCL_ERROR;
+   }
 }
+// ---------------------------------------------------------------------------
+// cmdAscomcamSetupDialog 
+//    affiche la fenetre de configuration fournie par le driver de la camera
+//    quand la camera n'est pas connectee
+// return
+//    TCL_OK
+// ---------------------------------------------------------------------------
+int cmdAscomcamSetupDialog(ClientData clientData, Tcl_Interp * interp, int argc, const char *argv[])
+{
+   char errorMsg[1024]; 
+   int result = ascomcamSetupDialog(argv[2], errorMsg);
+   if ( result == 0 ) {
+      Tcl_SetResult(interp, (char*)"", TCL_VOLATILE);
+      return TCL_OK;
+   } else {
+      Tcl_SetResult(interp, errorMsg, TCL_VOLATILE);
+      return TCL_ERROR;
+   }
+}
+
 
 // ---------------------------------------------------------------------------
 // cmdAscomcamWheel 
