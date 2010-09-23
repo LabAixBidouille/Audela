@@ -1,8 +1,9 @@
+
 #--- je recupere le buffer de la premiere visu
 set bufNo [::confVisu::getBufNo 1]
 
 #-------------------------------------------------------------------------------
-test imastack_init {prepare 3 fichiers  } {
+test imastack_init {prepare 3 fichiers} {
    #--- je cree une image de niveau 100
    set naxis1 768
    set naxis2 512
@@ -61,7 +62,7 @@ test imastack_init {prepare 3 fichiers  } {
 } "1"
 
 #-------------------------------------------------------------------------------
-test imastack_sadd2 {sadd2  } {
+test imastack_sadd2 {sadd2} {
 
 return 1
 
@@ -78,8 +79,7 @@ return 1
 } "1"
 
 #-------------------------------------------------------------------------------
-test imastack_add {ttscript2 IMA/STACK ADD  } {
-
+test imastack_add {ttscript2 IMA/STACK ADD} {
 
    #--- je cree une image de niveau 100
    ttscript2 "IMA/STACK \"$::audace(rep_images)\" \"imastack-1.fit imastack-2.fit imastack-3.fit\" * * \"\" \"$::audace(rep_images)\" \"add.fit\" . \"\" \"ADD\" \"DATE-END\" "
@@ -96,7 +96,7 @@ test imastack_add {ttscript2 IMA/STACK ADD  } {
 } "1"
 
 #-------------------------------------------------------------------------------
-test imastack_end {imastack ADD ajoute 3 images ttscript2 } {
+test imastack_end {imastack ADD ajoute 3 images ttscript2} {
 
    #--- je supprime le fichiers de travail
    file delete $::audace(rep_images)/imastack-1.fit
@@ -104,4 +104,9 @@ test imastack_end {imastack ADD ajoute 3 images ttscript2 } {
    file delete $::audace(rep_images)/imastack-3.fit
 
    return ""
-}  ""
+} ""
+
+   #--- j'efface le buffer
+   after 300
+   loadima ""
+

@@ -10,11 +10,10 @@ set coefficients [list -5.38167630694 0.566423070348 -0.346039329249 -2.10939774
 ###set symbols  { IH ID NP CH ME MA }
 ###set coefficients [list -5.38167630694 0.566423070348 -0.346039329249 -2.10939774003 -1.38154109773 -0.882510007747  ]
 
-
 #-------------------------------------------------------------------------------
 #  modpoi_passage tel2cat
 #-------------------------------------------------------------------------------
-test tool_modpoi_mc_tel2cat_OHP { mc_tel2cat OHP} { AUDACE  } {
+test tool_modpoi_mc_tel2cat_OHP {mc_tel2cat OHP} {AUDACE} {
 
    # Usage: mc_tel2cat Coords TypeObs Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues?
    set dateTu [list 2009 11 14 20 00 00]

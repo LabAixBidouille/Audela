@@ -13,7 +13,7 @@ set coefficients [list -5.38167630694 0.566423070348 -0.346039329249 -2.10939774
 #-------------------------------------------------------------------------------
 #  modpoi_passage cat2tel avec modele nul et date J2000
 #-------------------------------------------------------------------------------
-test tool_modpoimc_hip2tel_nul { hip2tel model_only nul refraction=0 } { AUDACE   } {
+test tool_modpoimc_hip2tel_nul {hip2tel model_only nul refraction=0} {AUDACE} {
 
    set dateTu [list 2009 11 14 20 00 00]
    set hip    [list 1 0 285.0 40.0 $dateTu 0 0 0 0]
@@ -30,7 +30,7 @@ test tool_modpoimc_hip2tel_nul { hip2tel model_only nul refraction=0 } { AUDACE 
 #-------------------------------------------------------------------------------
 #  modpoi_passage tel2cat avec modele nul
 #-------------------------------------------------------------------------------
-test tool_modpoimc_tel2cat_nul { tel2cat model only nul refraction=0} { AUDACE  } {
+test tool_modpoimc_tel2cat_nul {tel2cat model only nul refraction=0} {AUDACE} {
 
    # Usage: mc_tel2cat Coords TypeObs Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues?
    set dateTu [list 2009 11 14 20 00 00]
@@ -45,11 +45,10 @@ test tool_modpoimc_tel2cat_nul { tel2cat model only nul refraction=0} { AUDACE  
    return  [list $ra_cat $dec_cat]
 } "19h00m00s +40d00m00s"
 
-
 #-------------------------------------------------------------------------------
 #  hip2tel et cat2tel model nul now
 #-------------------------------------------------------------------------------
-test tool_modpoimc_hip2tel_nul_now { hip2tel et cat2tel model nul now } { AUDACE  } {
+test tool_modpoimc_hip2tel_nul_now {hip2tel et cat2tel model nul now} {AUDACE} {
 
    set dateTu "now"
    set hip    [list 1 0 285.0 40.0 J2000 0 0 0 0]
@@ -70,7 +69,7 @@ test tool_modpoimc_hip2tel_nul_now { hip2tel et cat2tel model nul now } { AUDACE
 #-------------------------------------------------------------------------------
 #  compute_coeff null
 #-------------------------------------------------------------------------------
-test tool_modpoimc_compute_coeff_nul_now { mc_compute_matrix_modpoi model nul } { AUDACE  } {
+test tool_modpoimc_compute_coeff_nul_now {mc_compute_matrix_modpoi model nul} {AUDACE} {
 
    ###set starList { {262.769798757 26.1161349282 0.060 0.015} {264.917175225 46.0048037403 -0.031 0.010} {229.381522045 -9.39537562448 -0.141 -0.011} {237.921754574 20.9540062566 -0.058 0.010} {240.770230908 46.0071960949 0.034 -0.048} {207.495454218 -34.4222204842 0.020 -0.033} {201.437032453 -11.1955444943 0.028 -0.016} {207.49653863 15.7521866891 -0.045 0.017} {205.288772602 54.6247457185 -0.076 -0.003} }
    ###set starList { {262.769798757 26.1161349282 0.060 0.015} {264.917175225 46.0048037403 -0.031 0.010} {229.381522045 -9.39537562448 -0.001 -0.011} {237.921754574 20.9540062566 -0.058 0.010} {240.770230908 46.0071960949 0.034 -0.048} {207.495454218 -34.4222204842 0.020 -0.033} {201.437032453 -11.1955444943 0.028 -0.016} {207.49653863 15.7521866891 -0.045 0.017} {205.288772602 54.6247457185 -0.076 -0.003} }
@@ -93,12 +92,10 @@ test tool_modpoimc_compute_coeff_nul_now { mc_compute_matrix_modpoi model nul } 
 
 } " 0 0 0 0 0 0 0 0 0 0 "
 
-
-
 #-------------------------------------------------------------------------------
 #  modpoi_passage cat2tel
 #-------------------------------------------------------------------------------
-test tool_modpoimc_hip2tel_OHP { hip2tel model only OHP refraction=0 } { AUDACE  } {
+test tool_modpoimc_hip2tel_OHP {hip2tel model only OHP refraction=0} {AUDACE} {
 
    #-- mc_hip2tel List_coords Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues
    #    List_coords =
@@ -117,7 +114,6 @@ test tool_modpoimc_hip2tel_OHP { hip2tel model only OHP refraction=0 } { AUDACE 
    #    Temperature 290
    #    List_ModelSymbols
    #    List_ModelValues
-
 
    ###set radec  [list 19h00m00s0  +40d0m0s]
    set hip    [list 1 0 285.0 40.0 J2000 0 0 0 0]
@@ -138,7 +134,7 @@ test tool_modpoimc_hip2tel_OHP { hip2tel model only OHP refraction=0 } { AUDACE 
 #-------------------------------------------------------------------------------
 #  modpoi_passage tel2cat
 #-------------------------------------------------------------------------------
-test tool_modpoimc_tel2cat_OHP { tel2cat OHP } { AUDACE } {
+test tool_modpoimc_tel2cat_OHP {tel2cat OHP} {AUDACE} {
 
    # Usage: mc_tel2cat Coords TypeObs Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues?
    set dateTu [list 2009 11 14 20 00 00]
@@ -153,7 +149,7 @@ test tool_modpoimc_tel2cat_OHP { tel2cat OHP } { AUDACE } {
 #-------------------------------------------------------------------------------
 #  mc_hip2tel avec correction precesssion , nutaton , refraction , ....
 #-------------------------------------------------------------------------------
-test tool_modpoimc_hip2tel_OHP { mc_hip2tel OHP} { AUDACE  } {
+test tool_modpoimc_hip2tel_OHP {mc_hip2tel OHP} {AUDACE} {
 
    set radec  [list 19h00m00s0  +40d0m0s]
    set dateTu [list 2009 11 14 20 00 00]
@@ -175,7 +171,7 @@ test tool_modpoimc_hip2tel_OHP { mc_hip2tel OHP} { AUDACE  } {
 #-------------------------------------------------------------------------------
 #  mc_tel2cat avec correction precesssion , nutaton , refraction , ....
 #-------------------------------------------------------------------------------
-test tool_modpoi_mc_tel2cat_m_OHP { mc_tel2cat avec precession OHP} { AUDACE } {
+test tool_modpoi_mc_tel2cat_m_OHP {mc_tel2cat avec precession OHP} {AUDACE} {
 
    set radec  "19h00m55s17 +40d00m08s84"
    set dateTu  [list 2009 11 14 20 00 00]
@@ -187,11 +183,10 @@ test tool_modpoi_mc_tel2cat_m_OHP { mc_tel2cat avec precession OHP} { AUDACE } {
    return  [list $ra_cat $dec_cat]
 } "19h00m00s24 +40d00m01s68"
 
-
 #-------------------------------------------------------------------------------
 #  modpoi_passage tel2cat
 #-------------------------------------------------------------------------------
-test tool_modpoi_mc_tel2cat_OHP { mc_tel2cat OHP} { AUDACE  } {
+test tool_modpoi_mc_tel2cat_OHP {mc_tel2cat OHP} {AUDACE} {
 
    # Usage: mc_tel2cat Coords TypeObs Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues?
    set dateTu [list 2009 11 14 20 00 00]
@@ -206,7 +201,7 @@ test tool_modpoi_mc_tel2cat_OHP { mc_tel2cat OHP} { AUDACE  } {
 #-------------------------------------------------------------------------------
 #  modpoi_passage tel2cat
 #-------------------------------------------------------------------------------
-test tool_modpoi_mc_tel2cat_OHP { mc_tel2cat OHP} { AUDACE  } {
+test tool_modpoi_mc_tel2cat_OHP {mc_tel2cat OHP} {AUDACE} {
 
    # Usage: mc_tel2cat Coords TypeObs Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues?
    set dateTu [list 2009 11 14 20 00 00]
