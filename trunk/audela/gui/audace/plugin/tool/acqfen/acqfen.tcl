@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise à jour $Id: acqfen.tcl,v 1.43 2010-09-11 15:36:35 robertdelmas Exp $
+# Mise à jour $Id: acqfen.tcl,v 1.44 2010-09-23 21:39:18 robertdelmas Exp $
 #
 
 # =========================================================
@@ -163,15 +163,23 @@ namespace eval ::acqfen {
          set panneau(acqfen,bin) "$parametres(acqfen,bin)"
       }
 
+      #--- Coordonnees de la fenetre
+      if { ! [ info exists panneau(acqfen,X1) ] } {
+         set panneau(acqfen,X1) "$parametres(acqfen,X1)"
+      }
+      if { ! [ info exists panneau(acqfen,Y1) ] } {
+         set panneau(acqfen,Y1) "$parametres(acqfen,Y1)"
+      }
+      if { ! [ info exists panneau(acqfen,X2) ] } {
+         set panneau(acqfen,X2) "$parametres(acqfen,X2)"
+      }
+      if { ! [ info exists panneau(acqfen,Y2) ] } {
+         set panneau(acqfen,Y2) "$parametres(acqfen,Y2)"
+      }
+
       #--- Taille par defaut de la petite matrice schematisant le fenetrage
       set panneau(acqfen,mtx_x) 81
       set panneau(acqfen,mtx_y) 54
-
-      #--- Valeurs initiales des coordonnees de la "boite"
-      set panneau(acqfen,X1) ""
-      set panneau(acqfen,Y1) ""
-      set panneau(acqfen,X2) ""
-      set panneau(acqfen,Y2) ""
 
       #--- Type scale par defaut (scale ou zoom)
       set panneau(acqfen,typezoom) "scale"
@@ -247,6 +255,10 @@ namespace eval ::acqfen {
       if { ! [ info exists parametres(acqfen,mode) ] }           { set parametres(acqfen,mode)           "1" }   ; #--- Mode : Une image
       if { ! [ info exists parametres(acqfen,nb_images) ] }      { set parametres(acqfen,nb_images)      "5" }   ; #--- Serie : Nombre de poses
       if { ! [ info exists parametres(acqfen,avancement_acq) ] } { set parametres(acqfen,avancement_acq) "1" }   ; #--- Barre de progression de la pose : Oui
+      if { ! [ info exists parametres(acqfen,X1) ] }             { set parametres(acqfen,X1)             "" }    ; #--- Coordonnees de la fenetre
+      if { ! [ info exists parametres(acqfen,Y1) ] }             { set parametres(acqfen,Y1)             "" }    ; #--- Coordonnees de la fenetre
+      if { ! [ info exists parametres(acqfen,X2) ] }             { set parametres(acqfen,X2)             "" }    ; #--- Coordonnees de la fenetre
+      if { ! [ info exists parametres(acqfen,Y2) ] }             { set parametres(acqfen,Y2)             "" }    ; #--- Coordonnees de la fenetre
 
       #--- je convertis les anciennes valeurs pour assurer la compatibilite
       if { $parametres(acqfen,mode) == "une" }     { set parametres(acqfen,mode) 1 }
@@ -267,6 +279,10 @@ namespace eval ::acqfen {
       set parametres(acqfen,mode)           $panneau(acqfen,mode)
       set parametres(acqfen,nb_images)      $panneau(acqfen,nb_images)
       set parametres(acqfen,avancement_acq) $panneau(acqfen,avancement_acq)
+      set parametres(acqfen,X1)             $panneau(acqfen,X1)
+      set parametres(acqfen,Y1)             $panneau(acqfen,Y1)
+      set parametres(acqfen,X2)             $panneau(acqfen,X2)
+      set parametres(acqfen,Y2)             $panneau(acqfen,Y2)
 
       #--- Sauvegarde des parametres
       catch {
