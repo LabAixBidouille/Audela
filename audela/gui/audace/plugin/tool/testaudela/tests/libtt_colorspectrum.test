@@ -13,7 +13,6 @@ test colorspectrum1 {imaseries COLORSPECTRUM lambda par defaut} {
    buf$bufNo imaseries "COLORSPECTRUM"
    set result "OK"
    ::confVisu::autovisu $visuNo
-  ###spc_fit2colors
    return $result
 } "OK"
 
@@ -25,9 +24,10 @@ test colorspectrum2 {imaseries COLORSPECTRUM spc_fit2colors} -constraints {
 } -body {
    set result ""
    #--- je colorise le spectre
-   spc_fit2colors  "hd193793--profil-calibre_1c.fit"
+   spc_fit2colors "hd193793--profil-calibre_1c.fit"
    set result "OK"
    ::confVisu::autovisu $visuNo
+   after 500
    return $result
 } -cleanup {
    file delete -force [file join $::audace(rep_images) "hd193793--profil-calibre_1c.fit"]
@@ -36,5 +36,4 @@ test colorspectrum2 {imaseries COLORSPECTRUM spc_fit2colors} -constraints {
 
    #--- j'efface le buffer
    loadima ""
-   after 300
 
