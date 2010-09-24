@@ -2,7 +2,7 @@
 # Procedures des traitements géométriques
 # Lancement en console : source $audace(rep_scripts)/spcaudace/spc_geom.tcl
 
-# Mise a jour $Id: spc_geom.tcl,v 1.11 2010-08-24 02:15:15 bmauclaire Exp $
+# Mise a jour $Id: spc_geom.tcl,v 1.12 2010-09-24 23:38:13 bmauclaire Exp $
 
 
 
@@ -326,7 +326,7 @@ proc spc_registerh { args } {
          }
          set nb_lampes 1
       }
-::console::affiche_resultat "Nomg lampe : $nomg_lampe\n"
+      ::console::affiche_resultat "Nom générique des spectres de lampe : $nomg_lampe\n"
 
       #-- Liste des spectres :
       if { $nb_lampes==0 } {
@@ -343,7 +343,7 @@ proc spc_registerh { args } {
 
       #--- Corrections géométriques des spectres de la lampe :
       #-- Récupère les coéfficients de déformation depuis le premier spectre d'objet :
-      ::console::affiche_resultat "\n**** Corrections géométriques du spectre 2D de calibration ****\n"
+      ::console::affiche_resultat "\n\n**** Corrections géométriques du spectre de la lampe de calibration ****\n"
       set spc_obj [ file tail [ lindex $spectresliste 0 ] ]
       buf$audace(bufNo) load "$audace(rep_images)/$spc_obj"
       set listemotsclef [ buf$audace(bufNo) getkwds ]

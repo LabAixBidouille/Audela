@@ -2,7 +2,7 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spcaudace spc_metaf.tcl ]
 
-# Mise a jour $Id: spc_metaf.tcl,v 1.21 2010-09-05 16:08:03 bmauclaire Exp $
+# Mise a jour $Id: spc_metaf.tcl,v 1.22 2010-09-24 23:38:13 bmauclaire Exp $
 
 
 
@@ -1414,6 +1414,17 @@ proc spc_traite2srinstrum { args } {
 
 
        #--- Correction du l'inclinaison (tilt) :
+       buf$audace(bufNo) load "$audace(rep_images)/$lampe"
+       set listemotsclef [ buf$audace(bufNo) getkwds ]
+       #-- Memorise le nom initial du spectre de la lampe de calibration :
+       if { [ lsearch $listemotsclef "SPC_LNM" ]!=-1 } {
+          set lampe_name [ lindex [ buf$audace(bufNo) getkwd "SPC_LNM" ] 1 ]
+       } else {
+          set lampe_name "$lampe"
+          set flag_2lamps "n"
+       }
+
+       #-- Effectue la correction de tilt :
        if { $flag_nonstellaire==1 } {
           #-- Temporaire : si le spectre de lampe donné est deja corrige geometriquement, utilise ses parametres :
           ::console::affiche_resultat "\n\n**** Correction du l'inclinaison (tilt) ****\n\n"
@@ -1445,7 +1456,7 @@ proc spc_traite2srinstrum { args } {
        if { [ lsearch $listemotsclef "SPC_SLX1" ] !=-1 } {
 	   set spc_ycenter [ lindex [ buf$audace(bufNo) getkwd "SPC_SLX1" ] 1 ]
 	   set spc_cdeg2 [ lindex [ buf$audace(bufNo) getkwd "SPC_SLX2" ] 1 ]
-	   ::console::affiche_resultat "\n** Correction de la courbure des raies (smile selon l'axe x)... **\n"
+	   ::console::affiche_resultat "\n*** Correction de la courbure des raies (smile selon l'axe x)... ***\n\n"
 	   set fgeom [ spc_smileximgs $ftilt $spc_ycenter $spc_cdeg2 ]
        } elseif { [ lsearch $listemotsclef "SPC_SLA" ] !=-1 } {
 	   set pente [ lindex [ buf$audace(bufNo) getkwd "SPC_SLA" ] 1 ]
@@ -1460,16 +1471,13 @@ proc spc_traite2srinstrum { args } {
 
        #if { $rmfpretrait=="o" && [ file exists $audace(rep_images)/${fgeom}-1$conf(extension,defaut) ] }
        #--- Appariement horizontal :
-       ::console::affiche_resultat "\n\n**** Appariement horizontal de $nbimg images ****\n\n"
        if { $flag_2lamps == "o" } {
-          if { [ catch { regexp {(.+)\-?[0-9]+} "$lampe" match prefixe_lampe } ]==0 || $nbimg_ini==1 } {
+          regexp {(.+\-?)[0-9]+} "$lampe_name" match prefixe_lampe
+          if { [ file exists "$audace(rep_images)/${prefixe_lampe}2$conf(extension,defaut)" ]==0 || $nbimg_ini==1 } {
              set fhreg "$fgeom"
           } else {
-             if { [ file exists "$audace(rep_images)/${prefixe_lampe}-2$conf(extension,defaut)" ] } {
-                set fhreg [ spc_registerh "$lampe" "$fgeom" ]
-             } else {
-                set fhreg "$fgeom"
-             }
+             ::console::affiche_resultat "\n\n**** Appariement horizontal de $nbimg images ****\n\n"
+             set fhreg [ spc_registerh "$lampe" "$fgeom" ]
           }
        } else {
           set fhreg "$fgeom"
