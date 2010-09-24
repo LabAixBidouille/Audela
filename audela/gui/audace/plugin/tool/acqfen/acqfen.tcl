@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise à jour $Id: acqfen.tcl,v 1.44 2010-09-23 21:39:18 robertdelmas Exp $
+# Mise à jour $Id: acqfen.tcl,v 1.45 2010-09-24 17:50:09 robertdelmas Exp $
 #
 
 # =========================================================
@@ -958,63 +958,66 @@ namespace eval ::acqfen {
                   "3" {
                      #--- On verifie l'integrite des parametres d'entree :
 
-                     #--- On verifie qu'il y a bien un nom de fichier
-                     if {$panneau(acqfen,nom_image) == ""} {
-                        tk_messageBox -title $caption(acqfen,pb) -type ok \
-                           -message $caption(acqfen,donnomfich)
-                        #--- On restitue l'affichage du bouton "GO" :
-                        set panneau(acqfen,go_stop) go
-                        $This.acq.but configure -text $caption(acqfen,GO)
-                        $This.acqred.but configure -text $caption(acqfen,GO)
-                        return
-                     }
-                     #--- On verifie que le nom de fichier n'a pas d'espace
-                     if {[llength $panneau(acqfen,nom_image)] > 1} {
-                        tk_messageBox -title $caption(acqfen,pb) -type ok \
-                           -message $caption(acqfen,nomblanc)
-                        #--- On restitue l'affichage du bouton "GO" :
-                        set panneau(acqfen,go_stop) go
-                        $This.acq.but configure -text $caption(acqfen,GO)
-                        $This.acqred.but configure -text $caption(acqfen,GO)
-                        return
-                     }
-                     #--- On verifie que l'index existe
-                     if {$panneau(acqfen,index) == ""} {
-                        tk_messageBox -title $caption(acqfen,pb) -type ok \
-                           -message $caption(acqfen,saisind)
-                        #--- On restitue l'affichage du bouton "GO" :
-                        set panneau(acqfen,go_stop) go
-                        $This.acq.but configure -text $caption(acqfen,GO)
-                        $This.acqred.but configure -text $caption(acqfen,GO)
-                        return
-                     }
-                     #--- Envoie un warning si l'index n'est pas a 1
-                     if { $panneau(acqfen,index) != "1" } {
-                        set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
-                           -message $caption(acqfen,indpasun)]
-                        if { $confirmation == "no" } {
+                     #--- On fait les verifications que si on enregistre les images
+                     if { $panneau(acqfen,enregistrer) == "1" } {
+                        #--- On verifie qu'il y a bien un nom de fichier
+                        if {$panneau(acqfen,nom_image) == ""} {
+                           tk_messageBox -title $caption(acqfen,pb) -type ok \
+                              -message $caption(acqfen,donnomfich)
                            #--- On restitue l'affichage du bouton "GO" :
                            set panneau(acqfen,go_stop) go
                            $This.acq.but configure -text $caption(acqfen,GO)
                            $This.acqred.but configure -text $caption(acqfen,GO)
                            return
                         }
-                     }
-                     #--- Verifie que le nom des fichiers n'existe pas deja...
-                     set nom $panneau(acqfen,nom_image)
-                     #--- Pour eviter un nom de fichier qui commence par un blanc
-                     set nom [lindex $nom 0]
-                     append nom $panneau(acqfen,index) $ext
-                     if { [ file exists [ file join $audace(rep_images) $nom ] ] == "1" } {
-                        #--- Dans ce cas, le fichier existe deja...
-                        set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
-                           -message $caption(acqfen,fichdeja)]
-                        if { $confirmation == "no" } {
+                        #--- On verifie que le nom de fichier n'a pas d'espace
+                        if {[llength $panneau(acqfen,nom_image)] > 1} {
+                           tk_messageBox -title $caption(acqfen,pb) -type ok \
+                              -message $caption(acqfen,nomblanc)
                            #--- On restitue l'affichage du bouton "GO" :
                            set panneau(acqfen,go_stop) go
                            $This.acq.but configure -text $caption(acqfen,GO)
                            $This.acqred.but configure -text $caption(acqfen,GO)
                            return
+                        }
+                        #--- On verifie que l'index existe
+                        if {$panneau(acqfen,index) == ""} {
+                           tk_messageBox -title $caption(acqfen,pb) -type ok \
+                              -message $caption(acqfen,saisind)
+                           #--- On restitue l'affichage du bouton "GO" :
+                           set panneau(acqfen,go_stop) go
+                           $This.acq.but configure -text $caption(acqfen,GO)
+                           $This.acqred.but configure -text $caption(acqfen,GO)
+                           return
+                        }
+                        #--- Envoie un warning si l'index n'est pas a 1
+                        if { $panneau(acqfen,index) != "1" } {
+                           set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
+                              -message $caption(acqfen,indpasun)]
+                           if { $confirmation == "no" } {
+                              #--- On restitue l'affichage du bouton "GO" :
+                              set panneau(acqfen,go_stop) go
+                              $This.acq.but configure -text $caption(acqfen,GO)
+                              $This.acqred.but configure -text $caption(acqfen,GO)
+                              return
+                           }
+                        }
+                        #--- Verifie que le nom des fichiers n'existe pas deja...
+                        set nom $panneau(acqfen,nom_image)
+                        #--- Pour eviter un nom de fichier qui commence par un blanc
+                        set nom [lindex $nom 0]
+                        append nom $panneau(acqfen,index) $ext
+                        if { [ file exists [ file join $audace(rep_images) $nom ] ] == "1" } {
+                           #--- Dans ce cas, le fichier existe deja...
+                           set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
+                              -message $caption(acqfen,fichdeja)]
+                           if { $confirmation == "no" } {
+                              #--- On restitue l'affichage du bouton "GO" :
+                              set panneau(acqfen,go_stop) go
+                              $This.acq.but configure -text $caption(acqfen,GO)
+                              $This.acqred.but configure -text $caption(acqfen,GO)
+                              return
+                           }
                         }
                      }
 
