@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.148 2010-09-04 19:18:37 michelpujol Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.149 2010-09-24 20:35:11 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -3802,8 +3802,6 @@ namespace eval ::colorRGB {
       #---
       set private($visuNo,This) $base.colorRGB
       if { [ winfo exists $private($visuNo,This) ] } {
-         wm withdraw $private($visuNo,This)
-         wm deiconify $private($visuNo,This)
          focus $private($visuNo,This)
          #--- actualise les glissieres
          ::colorRGB::configureScale $visuNo
@@ -3826,7 +3824,7 @@ namespace eval ::colorRGB {
 
       if { ! [ info exists conf(colorRGB,visu$visuNo,position) ] } { set conf(colorRGB,visu$visuNo,position) "+350+75" }
 
-      set private(colorRGB,child)          [ list hir lor hig log hib lob ]
+      set private(colorRGB,child) [ list hir lor hig log hib lob ]
    }
 
    #########################################################################
