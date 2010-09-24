@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise à jour $Id: aud_menu_3.tcl,v 1.68 2010-09-20 14:22:47 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_3.tcl,v 1.69 2010-09-24 20:28:45 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -478,7 +478,7 @@ namespace eval ::pretraitement {
    # Procedure correspondant a l'appui sur le bouton OK
    #
    proc cmdOk { } {
-      ::pretraitement::cmdApply
+      if { [ ::pretraitement::cmdApply ] == "0" } { return }
       ::pretraitement::cmdClose
    }
 
@@ -507,7 +507,7 @@ namespace eval ::pretraitement {
             tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                -message "$caption(pretraitement,header_noimage)"
             set pretraitement(avancement) ""
-            return
+            return 0
          }
       } elseif { $pretraitement(choix_mode) == "1" } {
          #--- Tests sur les images d'entree, le nombre d'images et les images de sortie
@@ -515,13 +515,13 @@ namespace eval ::pretraitement {
             tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                -message "$caption(pretraitement,definir_image_entree)"
             set pretraitement(avancement) ""
-            return
+            return 0
          }
          if { $pretraitement(out) == "" } {
             tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                -message "$caption(pretraitement,definir_image_sortie)"
             set pretraitement(avancement) ""
-            return
+            return 0
          }
       } elseif { $pretraitement(choix_mode) == "2" } {
          #--- Tests sur les images d'entree, le nombre d'images et les images de sortie
@@ -529,37 +529,37 @@ namespace eval ::pretraitement {
             tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                -message "$caption(pretraitement,definir_entree_generique)"
             set pretraitement(avancement) ""
-            return
+            return 0
          }
          if { $pretraitement(nb) == "" } {
             tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                -message "$caption(pretraitement,choix_nbre_images)"
             set pretraitement(avancement) ""
-            return
+            return 0
          }
          if { [ TestEntier $pretraitement(nb) ] == "0" } {
             tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
                -message "$caption(pretraitement,nbre_entier)"
             set pretraitement(avancement) ""
-            return
+            return 0
          }
          if { $pretraitement(valeur_indice) == "" } {
             tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                -message "$caption(pretraitement,choix_premier_indice)"
             set pretraitement(avancement) ""
-            return
+            return 0
          }
          if { [ TestEntier $pretraitement(valeur_indice) ] == "0" } {
             tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
                -message "$caption(pretraitement,nbre_entier1)"
             set pretraitement(avancement) ""
-            return
+            return 0
          }
          if { $pretraitement(out) == "" } {
             tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                -message "$caption(pretraitement,definir_sortie_generique)"
             set pretraitement(avancement) ""
-            return
+            return 0
          }
          #--- Calcul du dernier indice de la serie
          set end [ expr $nb + ( $first - 1 ) ]
@@ -3930,7 +3930,7 @@ namespace eval ::traiteWindow {
    # Procedure correspondant a l'appui sur le bouton OK
    #
    proc cmdOk { } {
-      ::traiteWindow::cmdApply
+      if { [ ::traiteWindow::cmdApply ] == "0" } { return }
       ::traiteWindow::cmdClose
    }
 
@@ -3957,31 +3957,31 @@ namespace eval ::traiteWindow {
          tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
             -message "$caption(pretraitement,definir_entree_generique)"
          set traiteWindow(avancement) ""
-         return
+         return 0
       }
       if { $traiteWindow(nb) == "" } {
          tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
             -message "$caption(pretraitement,choix_nbre_images)"
          set traiteWindow(avancement) ""
-         return
+         return 0
       }
       if { [ TestEntier $traiteWindow(nb) ] == "0" } {
          tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
            -message "$caption(pretraitement,nbre_entier)"
          set traiteWindow(avancement) ""
-         return
+         return 0
       }
       if { $traiteWindow(valeur_indice) == "" } {
          tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
             -message "$caption(pretraitement,choix_premier_indice)"
          set traiteWindow(avancement) ""
-         return
+         return 0
       }
       if { [ TestEntier $traiteWindow(valeur_indice) ] == "0" } {
          tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
             -message "$caption(pretraitement,nbre_entier1)"
          set traiteWindow(avancement) ""
-         return
+         return 0
       }
       if { $traiteWindow(out) == "" } {
          if { $traiteWindow(operation) != "serie_recentrer" } {
@@ -3992,7 +3992,7 @@ namespace eval ::traiteWindow {
                -message "$caption(pretraitement,definir_sortie_generique)"
          }
          set traiteWindow(avancement) ""
-         return
+         return 0
      }
       #--- Calcul du dernier indice de la serie
       set end [ expr $nb + ( $first - 1 ) ]
@@ -4655,7 +4655,7 @@ namespace eval ::faireImageRef {
    # Procedure correspondant a l'appui sur le bouton OK
    #
    proc cmdOk { } {
-      ::faireImageRef::cmdApply
+      if { [ ::faireImageRef::cmdApply ] == "0" } { return }
       ::faireImageRef::cmdClose
    }
 
@@ -4681,43 +4681,43 @@ namespace eval ::faireImageRef {
           tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
              -message "$caption(pretraitement,definir_entree_generique)"
           set faireImageRef(avancement) ""
-          return
+          return 0
       }
       if { $faireImageRef(nb) == "" } {
           tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
              -message "$caption(pretraitement,choix_nbre_images)"
           set faireImageRef(avancement) ""
-          return
+          return 0
       }
       if { [ TestEntier $faireImageRef(nb) ] == "0" } {
          tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
             -message "$caption(pretraitement,nbre_entier)"
           set faireImageRef(avancement) ""
-         return
+         return 0
       }
       if { $faireImageRef(valeur_indice) == "" } {
          tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
             -message "$caption(pretraitement,choix_premier_indice)"
          set faireImageRef(avancement) ""
-         return
+         return 0
       }
       if { [ TestEntier $faireImageRef(valeur_indice) ] == "0" } {
          tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
             -message "$caption(pretraitement,nbre_entier1)"
          set faireImageRef(avancement) ""
-         return
+         return 0
       }
       if { $faireImageRef(out) == "" } {
          if { $faireImageRef(operation) == "pretraitement" } {
              tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                 -message "$caption(pretraitement,definir_sortie_generique)"
              set faireImageRef(avancement) ""
-             return
+             return 0
          } else {
              tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                 -message "$caption(pretraitement,definir_image_sortie)"
              set faireImageRef(avancement) ""
-             return
+             return 0
          }
       }
       #--- Calcul du dernier indice de la serie
@@ -4746,7 +4746,7 @@ namespace eval ::faireImageRef {
                      tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                         -message "$caption(pretraitement,definir_offset)"
                      set faireImageRef(avancement) ""
-                     return
+                     return 0
                   }
                }
                #---
@@ -4799,7 +4799,7 @@ namespace eval ::faireImageRef {
                      tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                         -message "$caption(pretraitement,definir_offset)"
                      set faireImageRef(avancement) ""
-                     return
+                     return 0
                   }
                }
                #--- Test sur le dark
@@ -4808,7 +4808,7 @@ namespace eval ::faireImageRef {
                      tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                         -message "$caption(pretraitement,definir_noir)"
                      set faireImageRef(avancement) ""
-                     return
+                     return 0
                   }
                }
                #--- Tests sur la valeur de normalisation
@@ -4818,13 +4818,13 @@ namespace eval ::faireImageRef {
                      tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                         -message "$caption(pretraitement,definir_cte)"
                      set faireImageRef(avancement) ""
-                     return
+                     return 0
                   }
                   if { [ string is double -strict $faireImageRef(norm) ] == "0" } {
                      tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
                         -message "$caption(pretraitement,cte_invalide)"
                      set faireImageRef(avancement) ""
-                     return
+                     return 0
                   }
                }
                #---
@@ -4888,7 +4888,7 @@ namespace eval ::faireImageRef {
                      tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                         -message "$caption(pretraitement,definir_offset)"
                      set faireImageRef(avancement) ""
-                     return
+                     return 0
                   }
                }
                #--- Test sur le dark
@@ -4897,7 +4897,7 @@ namespace eval ::faireImageRef {
                      tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                         -message "$caption(pretraitement,definir_noir)"
                      set faireImageRef(avancement) ""
-                     return
+                     return 0
                   }
                }
                #--- Test sur le flat-field
@@ -4906,7 +4906,7 @@ namespace eval ::faireImageRef {
                      tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                         -message "$caption(pretraitement,definir_flat-field)"
                      set faireImageRef(avancement) ""
-                     return
+                     return 0
                   }
                }
                #--- Tests sur la valeur de normalisation
@@ -4916,13 +4916,13 @@ namespace eval ::faireImageRef {
                         tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                            -message "$caption(pretraitement,definir_cte)"
                         set faireImageRef(avancement) ""
-                        return
+                        return 0
                      }
                      if { [ string is double -strict $faireImageRef(norm) ] == "0" } {
                         tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
                            -message "$caption(pretraitement,cte_invalide)"
                         set faireImageRef(avancement) ""
-                        return
+                        return 0
                      }
                   }
                }
@@ -4948,7 +4948,7 @@ namespace eval ::faireImageRef {
                      buf$buf_pretrait extension $conf(extension,defaut)
                      buf$buf_pretrait load [ file join $audace(rep_images) $offset ]
                      buf$buf_pretrait add [ file join $audace(rep_images) $dark ] $const
-                     buf$buf_pretrait save [ file join $audace(rep_images) offset+dark ]
+                    buf$buf_pretrait save [ file join $audace(rep_images) offset+dark ]
                      ::buf::delete $buf_pretrait
                      #--- Realisation de Y = [ Generique d'entree - ( X ) ]
                      sub2 $in offset+dark $temp $const $nb $first
@@ -5035,7 +5035,7 @@ namespace eval ::faireImageRef {
                         -message "$caption(pretraitement,non_valide)"
                      ::faireImageRef::degriserActiver
                      set faireImageRef(avancement) ""
-                     return
+                     return 0
                   }
                } elseif { $faireImageRef(opt) == "1" } {
                   #--- Optimisation du noir - Offset, dark et flat disponibles
@@ -5062,32 +5062,32 @@ namespace eval ::faireImageRef {
                   } elseif { $faireImageRef(option) == "010" } {
                      #--- Ce cas n'est pas envisageable
                      set faireImageRef(avancement) ""
-                     return
+                     return 0
                   #--- Optimisation du noir - Offset disponible - Manque les darks et les flats
                   } elseif { $faireImageRef(option) == "011" } {
                      #--- Ce cas n'est pas envisageable
                      set faireImageRef(avancement) ""
-                     return
+                     return 0
                   #--- Optimisation du noir - Dark et flat disponibles - Manque les offsets
                   } elseif { $faireImageRef(option) == "100" } {
                      #--- Ce cas n'est pas envisageable
                      set faireImageRef(avancement) ""
-                     return
+                     return 0
                   #--- Optimisation du noir - Dark disponible - Manque les offsets et les flats
                   } elseif { $faireImageRef(option) == "101" } {
                      #--- Ce cas n'est pas envisageable
                      set faireImageRef(avancement) ""
-                     return
+                     return 0
                   #--- Optimisation du noir - Flat disponible - Manque les offsets et les darks
                   } elseif { $faireImageRef(option) == "110" } {
                      #--- Ce cas n'est pas envisageable
                      set faireImageRef(avancement) ""
-                     return
+                     return 0
                   #--- Optimisation du noir - Aucun - Manque les offsets, les darks et les flats
                   } elseif { $faireImageRef(option) == "111" } {
                      #--- Ce cas n'est pas envisageable
                      set faireImageRef(avancement) ""
-                     return
+                     return 0
                   }
                }
                #--- Renomme les fichiers image si 'first_index' est different de 1
