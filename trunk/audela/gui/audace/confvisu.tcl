@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.149 2010-09-24 20:35:11 robertdelmas Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.150 2010-09-25 09:43:45 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -3802,7 +3802,6 @@ namespace eval ::colorRGB {
       #---
       set private($visuNo,This) $base.colorRGB
       if { [ winfo exists $private($visuNo,This) ] } {
-         focus $private($visuNo,This)
          #--- actualise les glissieres
          ::colorRGB::configureScale $visuNo
       } else {
@@ -3954,13 +3953,11 @@ namespace eval ::colorRGB {
          incr indice
          set mini [ expr { int([ lindex $mycuts $indice ]) } ]
 
-         #--- invers les seuils si lo > hi
+         #--- inverse les seuils si lo > hi
          if { $maxi < $mini } {
-            set mycuts \
-               [ lreplace $mycuts $indice $indice $maxi ]
+            set mycuts [ lreplace $mycuts $indice $indice $maxi ]
             incr indice -1
-            set mycuts \
-               [ lreplace $mycuts $indice $indice $mini ]
+            set mycuts [ lreplace $mycuts $indice $indice $mini ]
          }
 
          set range [ expr $maxi-$mini ]
