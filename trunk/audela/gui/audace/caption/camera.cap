@@ -1,6 +1,6 @@
 #
 # Fichier : camera.cap
-# Mise a jour $Id: camera.cap,v 1.13 2009-11-04 18:30:24 robertdelmas Exp $
+# Mise a jour $Id: camera.cap,v 1.14 2010-09-25 22:27:19 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -11,7 +11,7 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(camera,image_acquisition)    "Aud'ACE - Acquisition of"
+set caption(camera,image_acquisition)    "Acquisition of"
 
 set caption(camera,en_cours)             "Acquiring..."
 set caption(camera,seconde)              "second"
@@ -25,7 +25,7 @@ set caption(camera,numerisation)         "Read CCD"
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(camera,image_acquisition) "Aud'ACE - Acquisition de"
+   set caption(camera,image_acquisition) "Acquisition de"
 
    set caption(camera,en_cours)          "Acquisition en cours..."
    set caption(camera,seconde)           "seconde"
@@ -39,7 +39,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(camera,image_acquisition) "Aud'ACE - Acquisizione di"
+   set caption(camera,image_acquisition) "Acquisizione di"
 
    set caption(camera,en_cours)          "Acquisizione in corso ..."
    set caption(camera,seconde)           "secondo"
@@ -53,7 +53,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(camera,image_acquisition) "Aud'ACE - Adquisicion de"
+   set caption(camera,image_acquisition) "Adquisicion de"
 
    set caption(camera,en_cours)          "Adquiriendo ..."
    set caption(camera,seconde)           "segundo"
@@ -67,7 +67,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(camera,image_acquisition) "Aud'ACE - Belichtung von"
+   set caption(camera,image_acquisition) "Belichtung von"
 
    set caption(camera,en_cours)          "Laufende Belichtung..."
    set caption(camera,seconde)           "Sekunde"
@@ -81,7 +81,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(camera,image_acquisition) "Aud'ACE - Acquisição de"
+   set caption(camera,image_acquisition) "Acquisição de"
 
    set caption(camera,en_cours)          "A adquirir..."
    set caption(camera,seconde)           "segundo"
@@ -95,7 +95,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(camera,image_acquisition) "Aud'ACE - Eksponering slut"
+   set caption(camera,image_acquisition) "Eksponering slut"
 
    set caption(camera,en_cours)          "Eksponering er aktiv..."
    set caption(camera,seconde)           "sekund"
@@ -109,6 +109,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
+   set caption(camera,image_acquisition) "Acquisition of"
+
    set caption(camera,en_cours)          "Acquiring..."
    set caption(camera,seconde)           "second"
    set caption(camera,secondes)          "seconds"
@@ -120,6 +122,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(camera,image_acquisition) "Acquisition of"
 
    set caption(camera,en_cours)          "Acquiring..."
    set caption(camera,seconde)           "second"
