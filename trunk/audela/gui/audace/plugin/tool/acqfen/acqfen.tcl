@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise à jour $Id: acqfen.tcl,v 1.45 2010-09-24 17:50:09 robertdelmas Exp $
+# Mise à jour $Id: acqfen.tcl,v 1.46 2010-09-25 21:56:46 robertdelmas Exp $
 #
 
 # =========================================================
@@ -491,9 +491,6 @@ namespace eval ::acqfen {
                      ::confVisu::deleteBox
                   }
 
-                  #--- Mise a jour en-tete audace
-                  wm title $audace(base) "$caption(acqfen,audace)"
-
                   #--- La commande exptime permet de fixer le temps de pose de l'image.
                   cam$audace(camNo) exptime $panneau(acqfen,pose_centrage)
 
@@ -650,9 +647,6 @@ namespace eval ::acqfen {
                   ::confVisu::deleteBox
                }
 
-               #--- Mise a jour en-tete audace
-               wm title $audace(base) "$caption(acqfen,audace)"
-
                switch -exact -- $panneau(acqfen,mode) {
                   "1" {
                      set panneau(acqfen,enregistrer) 0
@@ -756,8 +750,11 @@ namespace eval ::acqfen {
                                     break
                                  }
                               }
+                              #--- Je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+                              set name [append nom $panneau(acqfen,index)]
+                              ::confVisu::setFileName $audace(visuNo) $name$ext
                               #--- Sauvegarde de l'image
-                              saveima [append nom $panneau(acqfen,index)]
+                              saveima $name $audace(visuNo)
                               incr panneau(acqfen,index)
                               #--- Corrections eventuelles de suivi
                               if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::deplacerFenetre}
@@ -791,8 +788,11 @@ namespace eval ::acqfen {
                                     break
                                  }
                               }
+                              #--- Je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+                              set name [append nom $panneau(acqfen,index)]
+                              ::confVisu::setFileName $audace(visuNo) $name$ext
                               #--- Sauvegarde de l'image
-                              saveima [append nom $panneau(acqfen,index)]
+                              saveima $name $audace(visuNo)
                               incr panneau(acqfen,index)
                               #--- Corrections eventuelles de suivi
                               if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::deplacerFenetre}
@@ -818,8 +818,11 @@ namespace eval ::acqfen {
                                     break
                                  }
                               }
+                              #--- Je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+                              set name [append nom $panneau(acqfen,index)]
+                              ::confVisu::setFileName $audace(visuNo) $name$ext
                               #--- Sauvegarde de l'image
-                              saveima [append nom $panneau(acqfen,index)]
+                              saveima $name $audace(visuNo)
                               incr panneau(acqfen,index)
                               #--- Corrections eventuelles de suivi
                               if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::deplacerFenetre}
@@ -861,8 +864,11 @@ namespace eval ::acqfen {
                                     break
                                  }
                               }
+                              #--- Je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+                              set name [append nom [lindex $ima 1]]
+                              ::confVisu::setFileName $audace(visuNo) $name$ext
                               #--- Sauvegarde de l'image
-                              saveima [append nom [lindex $ima 1]]
+                              saveima $name $audace(visuNo)
                            }
                            #--- On libere les buffers temporaires
                            foreach ima $liste_buffers {buf::delete [lindex $ima 0]}
@@ -907,8 +913,11 @@ namespace eval ::acqfen {
                                     break
                                  }
                               }
+                              #--- Je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+                              set name [append nom [lindex $ima 1]]
+                              ::confVisu::setFileName $audace(visuNo) $name$ext
                               #--- Sauvegarde de l'image
-                              saveima [append nom [lindex $ima 1]]
+                              saveima $name $audace(visuNo)
                            }
                            #--- On libere les buffers temporaires
                            foreach ima $liste_buffers {buf::delete [lindex $ima 0]}
@@ -945,8 +954,11 @@ namespace eval ::acqfen {
                                     break
                                  }
                               }
+                              #--- Je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+                              set name [append nom [lindex $ima 1]]
+                              ::confVisu::setFileName $audace(visuNo) $name$ext
                               #--- Sauvegarde de l'image
-                              saveima [append nom [lindex $ima 1]]
+                              saveima $name $audace(visuNo)
                            }
                            #--- Affichage avec visu auto
                            ::audace::autovisu $audace(visuNo)
@@ -1044,8 +1056,11 @@ namespace eval ::acqfen {
                                        break
                                     }
                                  }
+                                 #--- Je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+                                 set name [append nom $panneau(acqfen,index)]
+                                 ::confVisu::setFileName $audace(visuNo) $name$ext
                                  #--- Sauvegarde de l'image
-                                 saveima [append nom $panneau(acqfen,index)]
+                                 saveima $name $audace(visuNo)
                                  incr panneau(acqfen,index)
                               }
                               #--- Corrections eventuelles de suivi
@@ -1080,8 +1095,11 @@ namespace eval ::acqfen {
                                        break
                                     }
                                  }
+                                 #--- Je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+                                 set name [append nom $panneau(acqfen,index)]
+                                 ::confVisu::setFileName $audace(visuNo) $name$ext
                                  #--- Sauvegarde de l'image
-                                 saveima [append nom $panneau(acqfen,index)]
+                                 saveima $name $audace(visuNo)
                                  incr panneau(acqfen,index)
                               }
                               #--- Corrections eventuelles de suivi
@@ -1108,8 +1126,11 @@ namespace eval ::acqfen {
                                        break
                                     }
                                  }
+                                 #--- Je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+                                 set name [append nom $panneau(acqfen,index)]
+                                 ::confVisu::setFileName $audace(visuNo) $name$ext
                                  #--- Sauvegarde de l'image
-                                 saveima [append nom $panneau(acqfen,index)]
+                                 saveima $name $audace(visuNo)
                                  incr panneau(acqfen,index)
                               }
                               #--- Corrections eventuelles de suivi
@@ -1153,8 +1174,11 @@ namespace eval ::acqfen {
                                     break
                                  }
                               }
+                              #--- Je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+                              set name [append nom [lindex $ima 1]]
+                              ::confVisu::setFileName $audace(visuNo) $name$ext
                               #--- Sauvegarde de l'image
-                              saveima [append nom [lindex $ima 1]]
+                              saveima $name $audace(visuNo)
                            }
                         }
                         "22" {
@@ -1197,8 +1221,11 @@ namespace eval ::acqfen {
                                     break
                                  }
                               }
+                              #--- Je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+                              set name [append nom [lindex $ima 1]]
+                              ::confVisu::setFileName $audace(visuNo) $name$ext
                               #--- Sauvegarde de l'image
-                              saveima [append nom [lindex $ima 1]]
+                              saveima $name $audace(visuNo)
                            }
                         }
                         "32" {
@@ -1233,8 +1260,11 @@ namespace eval ::acqfen {
                                     break
                                  }
                               }
+                              #--- Je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+                              set name [append nom [lindex $ima 1]]
+                              ::confVisu::setFileName $audace(visuNo) $name$ext
                               #--- Sauvegarde de l'image
-                              saveima [append nom [lindex $ima 1]]
+                              saveima $name $audace(visuNo)
                            }
                            #--- Affichage avec visu auto
                            ::audace::autovisu $audace(visuNo)
@@ -1700,8 +1730,11 @@ namespace eval ::acqfen {
          incr panneau(acqfen,index)
       }
 
+      #--- Mise a jour du nom du fichier dans le titre et de la fenetre de l'en-tete FITS
+      ::confVisu::setFileName $audace(visuNo) $nom$ext
+
       #--- Sauvegarde de l'image
-      saveima $nom
+      saveima $nom $audace(visuNo)
    }
 
    #---Procedure de fermeture de la fenetre des reglages
