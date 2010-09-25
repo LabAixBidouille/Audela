@@ -182,10 +182,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
       tel_home_get(tel,tel->homePosition);
       return 0;
    } catch( _com_error &e ) {
-      _bstr_t bstrSource(e.Source());
-      _bstr_t bstrDescription(e.Description());
-      sprintf(tel->msg, "%s\n tel_init error Code = %08lx ErrorMessage=%s Source=%s", 
-        (LPCTSTR)bstrDescription, e.Error(), e.ErrorMessage(), (LPCTSTR) bstrSource);
+      sprintf(tel->msg, "tel_init error=%s",_com_util::ConvertBSTRToString(e.Description()));
       return 1;
    }
 }
@@ -216,6 +213,9 @@ int tel_close(struct telprop *tel)
          tel->params = NULL;
       }
       return 0;
+   } catch( _com_error &e ) {
+      sprintf(tel->msg, "tel_close error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      return -1;
    } catch (...) {
       sprintf(tel->msg, "tel_close error exception");
       return -1;
@@ -232,7 +232,12 @@ int tel_close(struct telprop *tel)
 
 int mytel_connectedSetupDialog(struct telprop *tel )
 {
-   tel->params->telescopePtr->SetupDialog();
+   try {
+      tel->params->telescopePtr->SetupDialog();
+   } catch( _com_error &e ) {
+      sprintf(tel->msg, "mytel_connectedSetupDialog error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      return -1;
+   }
    return 0; 
 }
 
@@ -240,7 +245,7 @@ int mytel_connectedSetupDialog(struct telprop *tel )
 // ---------------------------------------------------------------------------
 // mytel_setupDialog 
 //    affiche la fenetre de configuration fournie par le driver de la monture
-// @return void
+// @return 0=OK 1=error
 //    
 // ---------------------------------------------------------------------------
 int mytel_setupDialog(const char * ascomDiverName, char * errorMsg )
@@ -261,7 +266,9 @@ int mytel_setupDialog(const char * ascomDiverName, char * errorMsg )
       return 1;    
    } 
    telescopePtr->SetupDialog();
-   // telescopePtr est automatiquement desalloue car c'est un objet COM
+   // ASCOM 5.0 ne supporte pas la suppression des objets COM explicite
+   // Il faut laisser faire le garbage collector qui supprime automatiquement
+   // les objets quand ils ne sont plus référencés.
    //telescopePtr->Release();
    //CoUninitialize();
    return 0; 
@@ -444,16 +451,15 @@ int tel_home_set(struct telprop *tel,double longitude,char *ew,double latitude,d
 
 int mytel_radec_init(struct telprop *tel)
 {
-
    try {
       if ( tel->params->telescopePtr->CanSync == false ) {
          sprintf(tel->msg, "This telescope can not synchonize");
          return 1;
       }
       HRESULT hr = tel->params->telescopePtr->SyncToCoordinates(tel->ra0/15,tel->dec0);
-   } catch (_com_error &e) {
-      sprintf(tel->msg, "cam_init connection error=%s",e.ErrorMessage());
-      return 1;
+   } catch( _com_error &e ) {
+      sprintf(tel->msg, "mytel_radec_init error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      return -1;
    }
    return 0;
 }
@@ -467,9 +473,9 @@ int mytel_radec_state(struct telprop *tel,char *result)
       tracking  = ( tel->params->telescopePtr->Tracking == VARIANT_TRUE);
       sprintf(result,"{connected %d} {slewing %d} {tracking %d}",connected,slewing,tracking);
       return 0;
-   } catch (_com_error &e) {
-      sprintf(tel->msg, "mytel_radec_state error=%s",e.ErrorMessage());
-      return 1;
+   } catch( _com_error &e ) {
+      sprintf(tel->msg, "mytel_radec_state error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      return -1;
    }
 
    return 0;
@@ -490,7 +496,7 @@ int mytel_radec_goto(struct telprop *tel)
 
       return 0;
    } catch (_com_error &e) {
-      sprintf(tel->msg, "radec_state error=%s",e.ErrorMessage());
+      sprintf(tel->msg, "mytel_radec_goto error=%s",_com_util::ConvertBSTRToString(e.Description()));
       return 1;
    }
    return 0;
@@ -538,7 +544,7 @@ int mytel_radec_move(struct telprop *tel,char *direction)
       
       return 0;
    } catch (_com_error &e) {
-      sprintf(tel->msg, "radec_move error=%s",e.ErrorMessage());
+      sprintf(tel->msg, "mytel_radec_move error=%s",_com_util::ConvertBSTRToString(e.Description()));
       return 1;
    }
 
@@ -566,9 +572,9 @@ int mytel_radec_stop(struct telprop *tel,char *direction)
           tel->params->telescopePtr->MoveAxis(AscomInterfacesLib::axisPrimary,tel->params->telescopePtr->TrackingRate);   
           tel->params->telescopePtr->MoveAxis(AscomInterfacesLib::axisSecondary,tel->params->telescopePtr->TrackingRate); 
       }
-   } catch (_com_error &e) {
-      sprintf(tel->msg, "mytel_radec_state error=%s",e.ErrorMessage());
-      return 1;
+   } catch( _com_error &e ) {
+      sprintf(tel->msg, "mytel_radec_stop error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      return -1;
    }
    return 0;
 }
@@ -589,10 +595,9 @@ int mytel_radec_motor(struct telprop *tel)
          // j'active le suivi
          tel->params->telescopePtr->Tracking = true;
       }
-
-   } catch (_com_error &e) {
-      sprintf(tel->msg, "radec_motor error=%s",e.ErrorMessage());
-      return 1;
+   } catch( _com_error &e ) {
+      sprintf(tel->msg, "mytel_radec_motor error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      return -1;
    }
    return 0;
 }
@@ -609,9 +614,9 @@ int mytel_radec_coord(struct telprop *tel,char *result)
       sprintf(s,"mc_angle2dms %f 90 zero 1 + string",tel->params->telescopePtr->Declination); 
       mytel_tcleval(tel,s);
       sprintf(result,"%s %s",ss,tel->interp->result);
-   } catch (_com_error &e) {
-      sprintf(tel->msg, "radec_coord error=%s",e.ErrorMessage());
-      return 1;
+   } catch( _com_error &e ) {
+      sprintf(tel->msg, "mytel_radec_coord error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      return -1;
    }
 
    return 0;
@@ -655,9 +660,9 @@ int mytel_date_get(struct telprop *tel,char *ligne)
       strcpy(s,"mc_date2ymdhms [expr [mc_date2jd 1899-12-30T00:00:00]+[$telcmd UTCDate]]"); 
       mytel_tcleval(tel,s);
       sprintf(ligne,"%s",tel->interp->result);
-   } catch (_com_error &e) {
-      sprintf(tel->msg, "date_get error=%s",e.ErrorMessage());
-      return 1;
+   } catch( _com_error &e ) {
+      sprintf(tel->msg, "mytel_date_get error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      return -1;
    }
    return 0;
 }
@@ -670,9 +675,9 @@ int mytel_date_set(struct telprop *tel,int y,int m,int d,int h, int min,double s
          y,m,d,h,min,s); 
       mytel_tcleval(tel,ss);
       tel->params->telescopePtr->UTCDate = atof(tel->interp->result);
-   } catch (_com_error &e) {
-      sprintf(tel->msg, "date_set error=%s",e.ErrorMessage());
-      return 1;
+   } catch( _com_error &e ) {
+      sprintf(tel->msg, "mytel_date_set error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      return -1;
    }
    return 0;
 }
@@ -695,9 +700,9 @@ int mytel_home_get(struct telprop *tel,char *ligne)
       }
       longitude=fabs(longitude);
       sprintf(ligne,"GPS %f %c %f %f",longitude,ew,latitude,altitude);   
-   } catch (_com_error &e) {
-      sprintf(tel->msg, "home_get error=%s",e.ErrorMessage());
-      return 1;
+   } catch( _com_error &e ) {
+      sprintf(tel->msg, "mytel_home_get error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      return -1;
    }
    return 0;
 }
@@ -712,9 +717,9 @@ int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude
       tel->params->telescopePtr->SiteElevation = altitude;
       tel->params->telescopePtr->SiteLatitude = latitude;
       tel->params->telescopePtr->SiteLongitude = longitude;
-   } catch (_com_error &e) {
-      sprintf(tel->msg, "home_get error=%s",e.ErrorMessage());
-      return 1;
+   } catch( _com_error &e ) {
+      sprintf(tel->msg, "mytel_home_set error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      return -1;
    }
    return 0;
 }
