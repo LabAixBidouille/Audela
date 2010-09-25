@@ -1,6 +1,6 @@
 #
 # Fichier : bifsconv.cap
-# Mise a jour $Id: bifsconv.cap,v 1.9 2009-11-04 18:30:07 robertdelmas Exp $
+# Mise a jour $Id: bifsconv.cap,v 1.10 2010-09-25 22:05:56 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -11,7 +11,6 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(bifsconv,audace)              "Aud'ACE"
 set caption(bifsconv,imaencours)          "FITS Conversion of Image:"
 set caption(bifsconv,repencours)          "FITS Conversion in Folder:"
 set caption(bifsconv,pasdefichier)        "Unable to convert. The following file does not exist: "
@@ -21,7 +20,6 @@ set caption(bifsconv,sortieconversion)    "Unexpected end of conversion. Please 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(bifsconv,audace)           "Aud'ACE"
    set caption(bifsconv,imaencours)       "Conversion FITS de l'image :"
    set caption(bifsconv,repencours)       "Conversion FITS dans le répertoire :"
    set caption(bifsconv,pasdefichier)     "Conversion impossible. Le fichier suivant n'existe pas : "
@@ -31,7 +29,6 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(bifsconv,audace)           "Aud'ACE"
    set caption(bifsconv,imaencours)       "Conversione dell'immagine in FITS:"
    set caption(bifsconv,repencours)       "Conversione FITS nella cartella:"
    set caption(bifsconv,pasdefichier)     "Conversione impossibile. Il seguente file e` inesistente: "
@@ -41,7 +38,6 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(bifsconv,audace)           "Aud'ACE"
    set caption(bifsconv,imaencours)       "Conversion de la imagen a FITS:"
    set caption(bifsconv,repencours)       "Conversión FITS en carpeta:"
    set caption(bifsconv,pasdefichier)     "Conversión imposible. El siguiente fichero no existe: "
@@ -51,7 +47,6 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(bifsconv,audace)           "Aud'ACE"
    set caption(bifsconv,imaencours)       "FITS Konversion des Bildes:"
    set caption(bifsconv,repencours)       "FITS Konversion in einen Register:"
    set caption(bifsconv,pasdefichier)     "Konversion unmöglich. Die folgende Datei existiert nicht: "
@@ -61,7 +56,6 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(bifsconv,audace)           "Aud'ACE"
    set caption(bifsconv,imaencours)       "Conversão da imagem em FITS:"
    set caption(bifsconv,repencours)       "Conversão FITS na pasta:"
    set caption(bifsconv,pasdefichier)     "Conversão impossível. O ficheiro seguinte não existe: "
@@ -71,7 +65,6 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(bifsconv,audace)           "Aud'ACE"
    set caption(bifsconv,imaencours)       "FITS billedtransformation:"
    set caption(bifsconv,repencours)       "FITS transformation i folder:"
    set caption(bifsconv,pasdefichier)     "Konvertering umulig. Flg. filer eksisterer ikke: "
@@ -81,7 +74,6 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
-   set caption(bifsconv,audace)           "Aud'ACE"
    set caption(bifsconv,imaencours)       "FITS Conversion of Image:"
    set caption(bifsconv,repencours)       "FITS Conversion in Folder:"
    set caption(bifsconv,pasdefichier)     "Unable to convert. The following file does not exist: "
@@ -91,7 +83,6 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
-   set caption(bifsconv,audace)           "Aud'ACE"
    set caption(bifsconv,imaencours)       "FITS Conversion of Image:"
    set caption(bifsconv,repencours)       "FITS Conversion in Folder:"
    set caption(bifsconv,pasdefichier)     "Unable to convert. The following file does not exist: "
