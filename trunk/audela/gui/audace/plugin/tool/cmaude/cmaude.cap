@@ -1,6 +1,6 @@
 #
 # Fichier : cmaude.cap
-# Mise a jour $Id: cmaude.cap,v 1.27 2010-07-25 14:58:04 robertdelmas Exp $
+# Mise a jour $Id: cmaude.cap,v 1.28 2010-09-25 21:11:33 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -29,7 +29,6 @@ set caption(cmaude,ephemerides)                    "Ephemeris"
 set caption(cmaude,status)                         "Status"
 set caption(cmaude,status1)                        "GO to run script"
 set caption(cmaude,status2)                        "---"
-set caption(cmaude,image_acq)                      "Aud'ACE (visu1) - Acquisition of"
 set caption(cmaude,parcourir)                      "..."
 
 set caption(cmaude,debut_script)                   "Beginning the Automatic Script Loop"
@@ -120,7 +119,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,status)                      "Statut"
    set caption(cmaude,status1)                     "Statut de l'acquisition"
    set caption(cmaude,status2)                     "---"
-   set caption(cmaude,image_acq)                   "Aud'ACE (visu1) - Acquisition de"
    set caption(cmaude,parcourir)                   "..."
 
    set caption(cmaude,debut_script)                "Début des boucles automatiques du script"
@@ -211,7 +209,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,status)                      "Stato"
    set caption(cmaude,status1)                     "Stato dell'acquisizione"
    set caption(cmaude,status2)                     "---"
-   set caption(cmaude,image_acq)                   "Aud'ACE (visu1) - Acquisizione di"
    set caption(cmaude,parcourir)                   "..."
 
    set caption(cmaude,debut_script)                "Inizio del ciclo automatico dello script"
@@ -302,7 +299,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,status)                      "Estado"
    set caption(cmaude,status1)                     "Estado de la adquisicion"
    set caption(cmaude,status2)                     "---"
-   set caption(cmaude,image_acq)                   "Aud'ACE (visu1) - Adquisición de"
    set caption(cmaude,parcourir)                   "..."
 
    set caption(cmaude,debut_script)                "Empieza bucle automatico de script"
@@ -393,7 +389,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,status)                      "Status"
    set caption(cmaude,status1)                     "Erwerb Status"
    set caption(cmaude,status2)                     "---"
-   set caption(cmaude,image_acq)                   "Aud'ACE (visu1) - Belichtung von"
    set caption(cmaude,parcourir)                   "..."
 
    set caption(cmaude,debut_script)                "Anfang der Skript automatischen Schleifen"
@@ -484,7 +479,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,status)                      "Estado"
    set caption(cmaude,status1)                     "Estado da aquisição"
    set caption(cmaude,status2)                     "---"
-   set caption(cmaude,image_acq)                   "Aud'ACE (visu1) - Acquisição de"
    set caption(cmaude,parcourir)                   "..."
 
    set caption(cmaude,debut_script)                "Início dos ciclos automáticos do script"
@@ -575,7 +569,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,status)                      "Status"
    set caption(cmaude,status1)                     "GO to run script"
    set caption(cmaude,status2)                     "---"
-   set caption(cmaude,image_acq)                   "Aud'ACE (visu1) - Acquisition of"
    set caption(cmaude,parcourir)                   "..."
 
    set caption(cmaude,debut_script)                "Beginning the Automatic Script Loop"
@@ -666,7 +659,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,status)                      "Status"
    set caption(cmaude,status1)                     "GO to run script"
    set caption(cmaude,status2)                     "---"
-   set caption(cmaude,image_acq)                   "Aud'ACE (visu1) - Acquisition of"
    set caption(cmaude,parcourir)                   "..."
 
    set caption(cmaude,debut_script)                "Beginning the Automatic Script Loop"
@@ -757,7 +749,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,status)                      "Status"
    set caption(cmaude,status1)                     "GO to run script"
    set caption(cmaude,status2)                     "---"
-   set caption(cmaude,image_acq)                   "Aud'ACE (visu1) - Acquisition of"
    set caption(cmaude,parcourir)                   "..."
 
    set caption(cmaude,debut_script)                "Beginning the Automatic Script Loop"
