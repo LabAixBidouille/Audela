@@ -1,6 +1,6 @@
 #
 # Fichier : compute_stellaire.cap
-# Mise a jour $Id: compute_stellaire.cap,v 1.7 2009-11-04 18:31:32 robertdelmas Exp $
+# Mise a jour $Id: compute_stellaire.cap,v 1.8 2010-09-25 22:13:21 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -15,7 +15,6 @@ global caption langage
 set caption(compute,syntax,stellaire)           "Usage : compute_stellaire brutes ?noirs PLUs noirsdePLUs options?"
 
 # Autres
-set caption(compute,audace)                     "Aud'ACE"
 set caption(compute,debut)                      "Start in the Automatic Preprocessing Procedure...\n"
 set caption(compute,pb)                         "Problem"
 set caption(compute,nobrutes)                   "No raw image for this generic name was found"
@@ -44,7 +43,6 @@ set caption(compute,fin)                        "End of the Automatic Preprocess
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(compute,audace)                  "Aud'ACE"
    set caption(compute,debut)                   "Début de la procédure de prétraitement automatique...\n"
    set caption(compute,pb)                      "Problème"
    set caption(compute,nobrutes)                "Aucune image brute correspondant au nom générique donné n'a été trouvée"
@@ -73,7 +71,6 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(compute,audace)                  "Aud'ACE"
    set caption(compute,debut)                   "Inizio della procedura di pretrattamento automatico...\n"
    set caption(compute,pb)                      "Problema"
    set caption(compute,nobrutes)                "Nessuna immagine raw corrispondente al nome generico è stata trovata"
@@ -102,7 +99,6 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(compute,audace)                  "Aud'ACE"
    set caption(compute,debut)                   "Empezar con el Procedimiento de Preprocesado Automático...\n"
    set caption(compute,pb)                      "Problema"
    set caption(compute,nobrutes)                "No se encontró imagen raw con este nombre genérico"
@@ -131,7 +127,6 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(compute,audace)                  "Aud'ACE"
    set caption(compute,debut)                   "Anfang der automatische Vorbehandlung Verfahren...\n"
    set caption(compute,pb)                      "Problem"
    set caption(compute,nobrutes)                "Kein passendes Rohbild zu den gegeben Gattungsname ist gefunden worden"
@@ -160,7 +155,6 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(compute,audace)                  "Aud'ACE"
    set caption(compute,debut)                   "Iniciar com Procedimento de Pré-processamento Automático...\n"
    set caption(compute,pb)                      "Problema"
    set caption(compute,nobrutes)                "Não foi encontrada imagem em bruto com este nome genérico"
@@ -189,7 +183,6 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(compute,audace)                  "Aud'ACE"
    set caption(compute,debut)                   "Start in the Automatic Preprocessing Procedure...\n"
    set caption(compute,pb)                      "Problem"
    set caption(compute,nobrutes)                "No raw image for this generic name was found"
@@ -218,7 +211,6 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
-   set caption(compute,audace)                  "Aud'ACE"
    set caption(compute,debut)                   "Start in the Automatic Preprocessing Procedure...\n"
    set caption(compute,pb)                      "Problem"
    set caption(compute,nobrutes)                "No raw image for this generic name was found"
@@ -247,7 +239,6 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
-   set caption(compute,audace)                  "Aud'ACE"
    set caption(compute,debut)                   "Start in the Automatic Preprocessing Procedure...\n"
    set caption(compute,pb)                      "Problem"
    set caption(compute,nobrutes)                "No raw image for this generic name was found"
