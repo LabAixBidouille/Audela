@@ -1,6 +1,6 @@
 #
 # Fichier : acqfen.cap
-# Mise a jour $Id: acqfen.cap,v 1.19 2010-09-11 14:34:17 robertdelmas Exp $
+# Mise a jour $Id: acqfen.cap,v 1.20 2010-09-25 21:48:14 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,7 +12,6 @@ global caption langage
 # *************** Version anglaise ****************************
 
 #--- Textes de titres
-set caption(acqfen,audace)             "Aud'ACE"
 set caption(acqfen,titre)              "Windowed Acquisition"
 set caption(acqfen,help_titre)         "Help for this Tool"
 set caption(acqfen,help_titre1)        "Help for the Tool:"
@@ -83,7 +82,6 @@ set caption(acqfen,numerisation)       "Read CCD"
 if { [ string compare $langage "french" ] == "0" } {
 
    #--- Textes de titres
-   set caption(acqfen,audace)          "Aud'ACE"
    set caption(acqfen,titre)           "Acquisition fenêtrée"
    set caption(acqfen,help_titre)      "Aide de cet outil"
    set caption(acqfen,help_titre1)     "Aide de l'outil :"
@@ -154,7 +152,6 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    #--- Textes de titres
-   set caption(acqfen,audace)          "Aud'ACE"
    set caption(acqfen,titre)           "Finestra di acquisizione"
    set caption(acqfen,help_titre)      "Aiuto per questo tool"
    set caption(acqfen,help_titre1)     "Aiuto per lo tool:"
@@ -225,7 +222,6 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    #--- Textes de titres
-   set caption(acqfen,audace)          "Aud'ACE"
    set caption(acqfen,titre)           "Adquisición con subzona"
    set caption(acqfen,help_titre)      "Ayuda para esta herramienta"
    set caption(acqfen,help_titre1)     "Ajuda para del herramienta:"
@@ -296,7 +292,6 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    #--- Textes de titres
-   set caption(acqfen,audace)          "Aud'ACE"
    set caption(acqfen,titre)           "Fenster Belichtung"
    set caption(acqfen,help_titre)      "Hilfe für dieses Gerät"
    set caption(acqfen,help_titre1)     "Hilfe für die Gerät:"
@@ -367,7 +362,6 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    #--- Textes de titres
-   set caption(acqfen,audace)          "Aud'ACE"
    set caption(acqfen,titre)           "Aquisição em janela"
    set caption(acqfen,help_titre)      "Ajuda para esta ferramenta"
    set caption(acqfen,help_titre1)     "Ajuda para del ferramenta:"
@@ -438,7 +432,6 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    #--- Textes de titres
-   set caption(acqfen,audace)          "Aud'ACE"
    set caption(acqfen,titre)           "Windowed Acquisition"
    set caption(acqfen,help_titre)      "Help for this Tool"
    set caption(acqfen,help_titre1)     "Help for the Tool:"
@@ -509,7 +502,6 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
    #--- Textes de titres
-   set caption(acqfen,audace)          "Aud'ACE"
    set caption(acqfen,titre)           "Windowed Acquisition"
    set caption(acqfen,help_titre)      "Help for this Tool"
    set caption(acqfen,help_titre1)     "Help for the Tool:"
@@ -580,7 +572,6 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
    #--- Textes de titres
-   set caption(acqfen,audace)          "Aud'ACE"
    set caption(acqfen,titre)           "Windowed Acquisition"
    set caption(acqfen,help_titre)      "Help for this Tool"
    set caption(acqfen,help_titre1)     "Help for the Tool:"
