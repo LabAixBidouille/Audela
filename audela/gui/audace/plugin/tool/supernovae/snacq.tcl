@@ -2,7 +2,7 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: snacq.tcl,v 1.30 2010-07-14 08:16:18 robertdelmas Exp $
+# Mise à jour $Id: snacq.tcl,v 1.31 2010-09-25 17:43:33 robertdelmas Exp $
 #
 
 # ===================================================================
@@ -1057,7 +1057,7 @@ proc goSnAcq { {sndebug 0} } {
             }
 
             #--- Mise a jour du nom du fichier dans le titre et de la fenetre de l'en-tete FITS
-            ::confVisu::setFileName $audace(visuNo) ""
+            ::confVisu::setFileName $audace(visuNo) $name
 
             #--- Mots cles pour compatibilite Prism
             snPrism
