@@ -2,7 +2,7 @@
 # Fichier : compute_stellaire.tcl
 # Description : Fonction de prétraitement automatique
 # Auteur : Benoit MAUGIS
-# Mise à jour $Id: compute_stellaire.tcl,v 1.9 2010-05-23 08:04:41 robertdelmas Exp $
+# Mise à jour $Id: compute_stellaire.tcl,v 1.10 2010-09-25 22:14:09 robertdelmas Exp $
 #
 
 # Documentation : Voir le fichier compute_stellaire.htm dans le dossier doc_html
@@ -383,8 +383,8 @@ proc compute_stellaire {args} {
       # Chargement de l'image finale
       charge tmp_finale -rep $rep_tmp -ext [lindex [decomp $ext] 3]
 
-      # MAJ en-tête audace
-      wm title $audace(base) "$caption(compute,audace) - $caption(compute,imafinale)"
+      # Mise à jour du titre
+      ::confVisu::setFileName $audace(visuNo) $caption(compute,imafinale)
 
       # Suppression de l'image finale sauvée sur le disque
       file delete [file join $rep_tmp tmp_finale[lindex [decomp $ext] 3]]
