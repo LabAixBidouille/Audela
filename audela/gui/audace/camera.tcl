@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: camera.tcl,v 1.41 2010-05-23 08:03:20 robertdelmas Exp $
+# Mise à jour $Id: camera.tcl,v 1.42 2010-09-25 22:28:25 robertdelmas Exp $
 #
 # Procedures utilisees par confCam
 #   ::camera::create : cree une camera
@@ -220,7 +220,8 @@ proc ::camera::acq { exptime binning } {
    #--- Visualisation de l'image
    ::audace::autovisu $audace(visuNo)
 
-   wm title $audace(base) "$caption(camera,image_acquisition) $exptime $caption(camera,sec)"
+   #--- Mise a jour du titre
+   ::confVisu::setFileName $audace(visuNo) "$caption(camera,image_acquisition) $exptime $caption(camera,sec)"
 }
 
 #------------------------------------------------------------
