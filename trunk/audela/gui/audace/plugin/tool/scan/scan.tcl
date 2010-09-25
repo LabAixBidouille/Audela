@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: scan.tcl,v 1.61 2010-05-01 09:20:08 robertdelmas Exp $
+# Mise à jour $Id: scan.tcl,v 1.62 2010-09-25 17:31:03 robertdelmas Exp $
 #
 
 #============================================================
@@ -979,27 +979,6 @@ proc ::scan::changeObt { } {
 }
 
 #------------------------------------------------------------
-# testEntier
-#    Cette procedure verifie que la chaine passee en argument decrit bien un entier
-#
-# Parametres :
-#    valeur : Valeur numerique a tester
-# Return :
-#    test : Elle retourne 1 si c'est la cas, et 0 si ce n'est pas un entier
-#------------------------------------------------------------
-proc ::scan::testEntier { valeur } {
-   set test 1
-   for { set i 0 } { $i < [ string length $valeur ] } { incr i } {
-      set a [string index $valeur $i]
-      if { ![string match {[0-9]} $a] } {
-         set test 0
-      }
-   }
-   if { $valeur == "" } { set test 0 }
-   return $test
-}
-
-#------------------------------------------------------------
 # sauveUneImage
 #    Sauvegarde du drift scan acquis
 #
@@ -1038,12 +1017,6 @@ proc ::scan::sauveUneImage { } {
             -message $panneau(scan,saisir_indice)
          return
       }
-      #--- Verifier que l'index est bien un nombre entier
-      if { [ testEntier $panneau(scan,indice) ] == "0" } {
-         tk_messageBox -title $panneau(scan,pb) -type ok \
-            -message $panneau(scan,indice_entier)
-         return
-      }
    }
 
    #--- Generer le nom du fichier
@@ -1076,6 +1049,9 @@ proc ::scan::sauveUneImage { } {
          return
       }
    }
+
+   #--- Mise a jour du nom du fichier dans le titre et de la fenetre de l'en-tete FITS
+   ::confVisu::setFileName $audace(visuNo) $nom$ext
 
    #--- Sauvegarder l'image
    saveima $nom
