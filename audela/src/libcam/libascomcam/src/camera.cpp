@@ -206,11 +206,11 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       //_bstr_t       d = e.Description();
       //IErrorInfo * ei = e.ErrorInfo();
       //_bstr_t       h= e.HelpFile();      
-      sprintf(cam->msg, "cam_init connection error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      sprintf(cam->msg, "cam_init error=%s",_com_util::ConvertBSTRToString(e.Description()));
       ascomcam_log(LOG_ERROR,cam->msg);
       return -1;
    } catch (...) {      
-      sprintf(cam->msg, "cam_init error Connected exception");
+      sprintf(cam->msg, "cam_init error exception");
       ascomcam_log(LOG_ERROR,cam->msg);
       return -1;
    }
@@ -246,6 +246,10 @@ int cam_close(struct camprop * cam)
       }
       ascomcam_log(LOG_DEBUG,"cam_close fin OK");
       return 0;
+   } catch (_com_error &e) {
+      sprintf(cam->msg, "cam_start_exp  error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      ascomcam_log(LOG_ERROR,cam->msg);
+      return -1;
    } catch (...) {
       sprintf(cam->msg, "cam_close error exception");
       ascomcam_log(LOG_ERROR,cam->msg);
@@ -364,11 +368,12 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
          }
          return;
       } catch (_com_error &e) {
-         ascomcam_log(LOG_ERROR,"cam_start_exp  error=%s",_com_util::ConvertBSTRToString(e.Description()));
          sprintf(cam->msg, "cam_start_exp  error=%s",_com_util::ConvertBSTRToString(e.Description()));
+         ascomcam_log(LOG_ERROR,cam->msg);
          return;
       } catch (...) {
          sprintf(cam->msg, "cam_start_exp error StartExposure exception");
+         ascomcam_log(LOG_ERROR,cam->msg);
          return;
       }
    }
@@ -394,9 +399,9 @@ void cam_stop_exp(struct camprop *cam)
       }
       ascomcam_log(LOG_DEBUG,"cam_stop_exp fin OK");
       return;
-   } catch (...) {
-      ascomcam_log(LOG_ERROR,"cam_stop_exp error StopExposure exception");
-      sprintf(cam->msg, "cam_stop_exp error StopExposure exception");
+   } catch (_com_error &e) {
+      sprintf(cam->msg, "cam_stop_exp  error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      ascomcam_log(LOG_ERROR,cam->msg);
       return;
    }
 }
@@ -439,9 +444,13 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
          }
          SafeArrayUnaccessData(safeValues);
          ascomcam_log(LOG_DEBUG,"cam_read_ccd OK");      
+      } catch (_com_error &e) {
+         sprintf(cam->msg, "cam_read_ccd  error=%s",_com_util::ConvertBSTRToString(e.Description()));
+         ascomcam_log(LOG_ERROR,cam->msg);
+         return;
       } catch (...) {
-         ascomcam_log(LOG_ERROR,"cam_read_ccd exception");
          sprintf(cam->msg, "cam_read_ccd exception");
+         ascomcam_log(LOG_ERROR,cam->msg);      
          return;
       }
    }
@@ -478,9 +487,10 @@ void cam_measure_temperature(struct camprop *cam)
    cam->temperature = 0.;
    try {
       cam->temperature = cam->params->pCam->CCDTemperature;
-   } catch (...) {
-      ascomcam_log(LOG_ERROR,"cam_measure_temperature error exception");
-      sprintf(cam->msg, "cam_measure_temperature error exception");
+   } catch (_com_error &e) {
+      sprintf(cam->msg, "cam_measure_temperature  error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      ascomcam_log(LOG_ERROR,cam->msg);
+      return;
    }
    ascomcam_log(LOG_DEBUG,"cam_measure_temperature fin OK.");
 }
@@ -495,9 +505,10 @@ void cam_cooler_on(struct camprop *cam)
    }
    try {
       cam->params->pCam->CoolerOn = VARIANT_TRUE;
-   } catch (...) {
-      ascomcam_log(LOG_ERROR,"cam_cooler_on error exception");
-      sprintf(cam->msg, "cam_cooler_on error exception");
+   } catch (_com_error &e) {
+      sprintf(cam->msg, "cam_cooler_on  error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      ascomcam_log(LOG_ERROR,cam->msg);
+      return;
    }
    ascomcam_log(LOG_DEBUG,"cam_cooler_on fin OK");
 }
@@ -512,9 +523,10 @@ void cam_cooler_off(struct camprop *cam)
    }
    try {
       cam->params->pCam->CoolerOn = VARIANT_FALSE;
-   } catch (...) {
-      ascomcam_log(LOG_ERROR,"cam_cooler_off error exception");
-      sprintf(cam->msg, "cam_cooler_off error exception");
+   } catch (_com_error &e) {
+      sprintf(cam->msg, "cam_cooler_off  error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      ascomcam_log(LOG_ERROR,cam->msg);
+      return;
    }
    ascomcam_log(LOG_DEBUG,"cam_cooler_off fin OK");
 }
@@ -529,9 +541,10 @@ void cam_cooler_check(struct camprop *cam)
    }
    try {
       cam->params->pCam->SetCCDTemperature = cam->check_temperature;
-   } catch (...) {
-      ascomcam_log(LOG_ERROR,"cam_cooler_check error exception");
-      sprintf(cam->msg, "cam_cooler_check error exception");
+   } catch (_com_error &e) {
+      sprintf(cam->msg, "cam_cooler_check  error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      ascomcam_log(LOG_ERROR,cam->msg);
+      return;
    }
    ascomcam_log(LOG_DEBUG,"cam_cooler_check fin OK");
 }
@@ -541,8 +554,8 @@ void ascomcamGetTemperatureInfo(struct camprop *cam, double *setTemperature, dou
 {
    ascomcam_log(LOG_DEBUG,"cam_get_info_temperature debut");
    if ( cam->params->pCam == NULL ) {
-      ascomcam_log(LOG_ERROR,"ascomcamGetTemperatureInfo camera not initialized");
       sprintf(cam->msg, "ascomcamGetTemperatureInfo camera not initialized");
+      ascomcam_log(LOG_ERROR,cam->msg);
       return;
    }
 
@@ -557,9 +570,10 @@ void ascomcamGetTemperatureInfo(struct camprop *cam, double *setTemperature, dou
       }
       *power = (int)(cam->params->pCam->CoolerPower);
       ascomcam_log(LOG_DEBUG,"cam_get_info_temperature fin ccdTemperature=%f  setTemperature=%f power=%d", *ccdTemperature, *setTemperature, *power);
-   } catch (...) {
-      ascomcam_log(LOG_ERROR,"cam_get_info_temperature error exception");
-      sprintf(cam->msg, "cam_get_info_temperature error exception");
+   } catch (_com_error &e) {
+      sprintf(cam->msg, "ascomcamGetTemperatureInfo  error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      ascomcam_log(LOG_ERROR,cam->msg);
+      return;
    }
 
    ascomcam_log(LOG_DEBUG,"cam_get_info_temperature fin OK");
@@ -580,26 +594,30 @@ void cam_set_binning(int binx, int biny, struct camprop *cam)
       cam->binx = binx;
       cam->biny = biny;
       ascomcam_log(LOG_DEBUG,"cam_set_binning fin OK");
-   } catch (std::exception error) {
-      ascomcam_log(LOG_ERROR, "cam_set_binning error exception");
-      sprintf(cam->msg, "cam_set_binning error exception");
-   } catch (...) {
-      ascomcam_log(LOG_ERROR,"cam_set_binning error exception");
-      sprintf(cam->msg, "cam_set_binning error exception");
+   } catch (_com_error &e) {
+      sprintf(cam->msg, "cam_set_binning  error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      ascomcam_log(LOG_ERROR,cam->msg);
+      return;
    }
 }
 
 // ---------------------------------------------------------------------------
 // mytel_connectedSetupDialog 
 //    affiche la fenetre de configuration fournie par le driver de la monture
-// @return void
+// @return 0=OK , 1=error
 //    
 // ---------------------------------------------------------------------------
 
 int cam_connectedSetupDialog(struct camprop *cam )
 {
-   cam->params->pCam->SetupDialog();
-   return 0; 
+   try {
+      cam->params->pCam->SetupDialog();
+      return 0; 
+   } catch (_com_error &e) {
+      sprintf(cam->msg, "cam_connectedSetupDialog  error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      ascomcam_log(LOG_ERROR,cam->msg);
+      return 1;
+   }
 }
 
 
@@ -626,7 +644,11 @@ int ascomcamSetupDialog(const char * ascomDiverName, char * errorMsg)
       return 1;    
    } 
    cameraPtr->SetupDialog();
-   CoUninitialize();
+   // ASCOM 5.0 ne supporte pas la suppression des objets COM explicite
+   // Il faut laisser faire le garbage collector qui supprime automatiquement
+   // les objets quand ils ne sont plus référencés.
+   //cameraPtr = NULL;
+   //CoUninitialize();
    return 0;
 }
 
@@ -662,10 +684,10 @@ int ascomcamSetWheelPosition(struct camprop *cam, int position)
       }
 */
       return 0;
-   } catch (...) {
-      ascomcam_log(LOG_ERROR,"ascomcamSetWheelPosition error exception");
-      sprintf(cam->msg, "ascomcamSetWheelPosition error exception");
-      return -1;
+   } catch (_com_error &e) {
+      sprintf(cam->msg, "ascomcamSetWheelPosition  error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      ascomcam_log(LOG_ERROR,cam->msg);
+      return 1;
    }
    ascomcam_log(LOG_DEBUG,"ascomcamSetWheelPosition fin OK");
 }
@@ -697,10 +719,10 @@ int ascomcamGetWheelPosition(struct camprop *cam, int *position)
       }
 */
       return 0;
-   } catch (...) {
-      ascomcam_log(LOG_ERROR,"ascomcamSetWheelPosition error exception");
-      sprintf(cam->msg, "ascomcamSetWheelPosition error exception");
-      return -1;
+   } catch (_com_error &e) {
+      sprintf(cam->msg, "ascomcamGetWheelPosition  error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      ascomcam_log(LOG_ERROR,cam->msg);
+      return 1;
    }
    ascomcam_log(LOG_DEBUG,"ascomcamGetWheelPosition fin OK. Position=%d",*position);
 }
@@ -718,8 +740,8 @@ int ascomcamGetWheelNames(struct camprop *cam, char **names)
 {
    ascomcam_log(LOG_DEBUG,"ascomcamGetWheelNames debut");      
    if ( cam->params->pCam == NULL ) {
-      ascomcam_log(LOG_ERROR,"ascomcamGetWheelNames camera not initialized");
       sprintf(cam->msg, "ascomcamGetWheelNames camera not initialized");
+      ascomcam_log(LOG_ERROR,cam->msg);
       return -1;
    }
    try {
@@ -754,10 +776,10 @@ int ascomcamGetWheelNames(struct camprop *cam, char **names)
       ascomcam_log(LOG_DEBUG,"ascomcamGetWheelNames fin OK"); 
 */
       return 0;
-   } catch (...) {
-      ascomcam_log(LOG_ERROR,"ascomcamGetWheelNames error exception");
-      sprintf(cam->msg, "ascomcamGetWheelNames error exception");
-      return -1;
+   } catch (_com_error &e) {
+      sprintf(cam->msg, "ascomcamGetWheelNames  error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      ascomcam_log(LOG_ERROR,cam->msg);
+      return 1;
    }
 }
 
@@ -765,37 +787,37 @@ int ascomcamGetMaxBin(struct camprop *cam, int * maxBin)
 {
    ascomcam_log(LOG_DEBUG,"ascomcamGetProperty debut");
    if ( cam->params->pCam == NULL ) {
-      ascomcam_log(LOG_ERROR,"ascomcamGetProperty camera not initialized");
       sprintf(cam->msg, "ascomcamGetProperty camera not initialized");
+      ascomcam_log(LOG_ERROR,cam->msg);
       return -1;
    }
 
    try {
       *maxBin  = cam->params->pCam->MaxBinX;
       return 0;
-   } catch (...) {
-      ascomcam_log(LOG_ERROR,"ascomcamGetProperty error exception");
-      sprintf(cam->msg, "ascomcamGetProperty error exception");
-      return -1;
+   } catch (_com_error &e) {
+      sprintf(cam->msg, "ascomcamGetMaxBin  error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      ascomcam_log(LOG_ERROR,cam->msg);
+      return 1;
    }
 }
 
 int ascomcamHasShutter(struct camprop *cam, int *hasShutter) 
 {
-   ascomcam_log(LOG_DEBUG,"ascomcamGetProperty debut");
+   ascomcam_log(LOG_DEBUG,"ascomcamHasShutter debut");
    if ( cam->params->pCam == NULL ) {
-      ascomcam_log(LOG_ERROR,"ascomcamGetProperty camera not initialized");
-      sprintf(cam->msg, "ascomcamGetProperty camera not initialized");
+      sprintf(cam->msg, "ascomcamHasShutter camera not initialized");
+      ascomcam_log(LOG_ERROR,cam->msg);
       return -1;
    }
 
    try {
       *hasShutter  = cam->params->pCam->HasShutter;
       return 0;
-   } catch (...) {
-      ascomcam_log(LOG_ERROR,"ascomcamGetProperty error exception");
-      sprintf(cam->msg, "ascomcamGetProperty error exception");
-      return -1;
+   } catch (_com_error &e) {
+      sprintf(cam->msg, "ascomcamHasShutter error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      ascomcam_log(LOG_ERROR,cam->msg);
+      return 1;
    }
 }
 
