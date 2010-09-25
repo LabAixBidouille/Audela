@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: scanfast.tcl,v 1.61 2010-05-01 09:21:56 robertdelmas Exp $
+# Mise à jour $Id: scanfast.tcl,v 1.62 2010-09-25 17:34:01 robertdelmas Exp $
 #
 
 global panneau
@@ -757,7 +757,8 @@ proc ::scanfast::cmdGo { { motor motoron } } {
          } else {
             set temps_mort $panneau(scanfast,temps_mort)
          }
-         set duree [ expr ($panneau(scanfast,dt)+$temps_mort)*$h/1000./86400. ]
+         #--- Duree exprimee en secondes
+         set duree [ expr ($panneau(scanfast,dt)+$temps_mort)*$h/1000 ]
 
          #--- Gestion du moteur d'A.D.
          if { $motor == "motoroff" } {
@@ -792,15 +793,10 @@ proc ::scanfast::cmdGo { { motor motoron } } {
             if [ winfo exists $audace(base).progress_scan ] {
                destroy $audace(base).progress_scan
             }
-            #--- Calcul de l'heure TU de debut et de l'heure TU previsionnelle de fin du scan
-            set date_beg [ ::audace::date_sys2ut now ]
-            set sec [ expr int(floor([ lindex $date_beg 5 ])) ]
-            set date_beg [ lreplace $date_beg 5 5 $sec ]
-            set date_beg1 [ format "%02d/%02d/%2s %02d:%02d:%02.0f $caption(scanfast,tempsuniversel)" [ lindex $date_beg 2 ] [ lindex $date_beg 1 ] [ string range [ lindex $date_beg 0 ] 2 3 ] [ lindex $date_beg 3 ] [ lindex $date_beg 4 ] [ lindex $date_beg 5 ] ]
-            set date_end [ mc_date2ymdhms [ mc_datescomp $date_beg + $duree ] ]
-            set sec [ expr int(floor([ lindex $date_end 5 ])) ]
-            set date_end [ lreplace $date_end 5 5 $sec ]
-            set date_end1 [ format "%02d/%02d/%2s %02d:%02d:%02.0f $caption(scanfast,tempsuniversel)" [ lindex $date_end 2 ] [ lindex $date_end 1 ] [ string range [ lindex $date_end 0 ] 2 3 ] [ lindex $date_end 3 ] [ lindex $date_end 4 ] [ lindex $date_end 5 ] ]
+            #--- Calcul de l'heure TU de debut du scan
+            set date_beg [ clock format [ clock seconds ] -format "%d/%m/%Y %H:%M:%S $caption(audace,temps_universel)" -timezone :UTC ]
+            #--- Calcul de l'heure TU previsionnelle de fin du scan
+            set date_end [ clock format [ expr { [ clock seconds ] + $duree } ] -format "%d/%m/%Y %H:%M:%S $caption(audace,temps_universel)" -timezone :UTC ]
             #--- Creation d'une fenetre pour l'affichage des heures de debut et de fin du scan
             if [ winfo exists $audace(base).wintimeaudace ] {
                destroy $audace(base).wintimeaudace
@@ -812,9 +808,9 @@ proc ::scanfast::cmdGo { { motor motoron } } {
             set posx_wintimeaudace [ lindex [ split [ wm geometry $audace(base) ] "+" ] 1 ]
             set posy_wintimeaudace [ lindex [ split [ wm geometry $audace(base) ] "+" ] 2 ]
             wm geometry $audace(base).wintimeaudace +[ expr $posx_wintimeaudace + 350 ]+[ expr $posy_wintimeaudace + 75 ]
-            label $audace(base).wintimeaudace.lab_beg -text "\n$caption(scanfast,debut) $date_beg1"
+            label $audace(base).wintimeaudace.lab_beg -text "\n$caption(scanfast,debut) $date_beg"
             pack $audace(base).wintimeaudace.lab_beg -padx 10 -pady 5
-            label $audace(base).wintimeaudace.lab_end -text "$caption(scanfast,fin) $date_end1\n"
+            label $audace(base).wintimeaudace.lab_end -text "$caption(scanfast,fin) $date_end\n"
             pack $audace(base).wintimeaudace.lab_end -padx 10 -pady 5
             #--- Mise a jour dynamique des couleurs
             ::confColor::applyColor $audace(base).wintimeaudace
@@ -1105,27 +1101,6 @@ proc ::scanfast::changeObt { } {
 }
 
 #------------------------------------------------------------
-# testEntier
-#    Cette procedure verifie que la chaine passee en argument decrit bien un entier
-#
-# Parametres :
-#    valeur : Valeur numerique a tester
-# Return :
-#    test : Elle retourne 1 si c'est la cas, et 0 si ce n'est pas un entier
-#------------------------------------------------------------
-proc ::scanfast::testEntier { valeur } {
-   set test 1
-   for { set i 0 } { $i < [ string length $valeur ] } { incr i } {
-      set a [string index $valeur $i]
-      if { ![string match {[0-9]} $a] } {
-         set test 0
-      }
-   }
-   if { $valeur == "" } { set test 0 }
-   return $test
-}
-
-#------------------------------------------------------------
 # sauveUneImage
 #    Sauvegarde du drift scan acquis
 #
@@ -1164,12 +1139,6 @@ proc ::scanfast::sauveUneImage { } {
             -message $panneau(scanfast,saisir_indice)
          return
       }
-      #--- Verifier que l'index est bien un nombre entier
-      if { [ testEntier $panneau(scanfast,indice) ] == "0" } {
-         tk_messageBox -title $panneau(scanfast,pb) -type ok \
-            -message $panneau(scanfast,indice_entier)
-         return
-      }
    }
 
    #--- Generer le nom du fichier
@@ -1202,6 +1171,9 @@ proc ::scanfast::sauveUneImage { } {
          return
       }
    }
+
+   #--- Mise a jour du nom du fichier dans le titre et de la fenetre de l'en-tete FITS
+   ::confVisu::setFileName $audace(visuNo) $nom$ext
 
    #--- Sauvegarder l'image
    saveima $nom
