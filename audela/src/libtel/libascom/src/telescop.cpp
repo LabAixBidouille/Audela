@@ -733,9 +733,6 @@ int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude
 /* Ces fonctions sont tres specifiques a chaque telescope.          */
 /* ================================================================ */
 
-
-#define MOUCHARD
-
 int mytel_tcleval(struct telprop *tel,char *ligne)
 {
    int result;
