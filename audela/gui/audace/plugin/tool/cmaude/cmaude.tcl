@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise à jour $Id: cmaude.tcl,v 1.32 2010-07-27 10:39:31 robertdelmas Exp $
+# Mise à jour $Id: cmaude.tcl,v 1.33 2010-09-25 21:22:45 robertdelmas Exp $
 #
 
 #============================================================
@@ -535,12 +535,15 @@ namespace eval ::cmaude {
          #--- Cut of the image to gain space and avoid the black part around
          buf$audace(bufNo) window $cmconf(win22)
       }
-      #--- Add the image "overlay.extension" with orientation info and logo ;-)
+      #--- Add the image "overlay.extension" with orientation info and logo
       catch { add $panneau(cmaude,overlay) 0 }
-      #---
+      #--- Update the name of the file in the title
+      ::confVisu::setFileName $audace(visuNo) $nameima
+      #--- Save FITS image
       saveima $nameima
-      ::audace::autovisu $audace(visuNo)
-      sauve_jpeg "[ file rootname $nameima ]"
+      #--- Save Jpeg image
+      sauve_jpeg $nameima
+      #---
       ::console::affiche_erreur "$caption(cmaude,image_sauvee)\n"
       ::console::affiche_erreur "\n"
       ::console::affiche_erreur "$caption(cmaude,prochaine_image_dans) $panneau(cmaude,rythm) $caption(cmaude,secondes)\n"
@@ -605,8 +608,6 @@ namespace eval ::cmaude {
 
       #--- Visualisation
       ::audace::autovisu $audace(visuNo)
-
-      wm title $audace(base) "$caption(cmaude,image_acq) $exptime s"
    }
 
    #======================
@@ -695,7 +696,6 @@ namespace eval ::cmaude {
          set panneau(cmaude,dark) $filename
          $This.fra2.fra5.ent2 xview end
       } elseif { $option == "3" } {
-         # set traiteWindow(in) [ file rootname [ file tail $filename ] ]
          set panneau(cmaude,overlay) $filename
          $This.fra2.fra6.ent2a xview end
       }
