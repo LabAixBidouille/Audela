@@ -2,7 +2,7 @@
 # Fichier : acqzadko.tcl
 # Description : Outil d'acquisition
 # Auteurs : Francois Cochard et Myrtille Laas
-# Mise à jour $Id: acqzadko.tcl,v 1.26 2010-06-20 13:52:50 robertdelmas Exp $
+# Mise à jour $Id: acqzadko.tcl,v 1.27 2010-09-25 18:08:20 robertdelmas Exp $
 #
 
 #==============================================================
@@ -1268,6 +1268,8 @@ proc ::acqzadko::Go { visuNo } {
             1  {
                #--- mode une image
                incr compteurImageSerie
+               #--- J'efface le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+               ::confVisu::setFileName $visuNo ""
             }
             2  {
                #--- Mode serie
@@ -1293,8 +1295,11 @@ proc ::acqzadko::Go { visuNo } {
                   }
                   #--- Sauvegarde de l'image
                   if { $sauvegardeValidee == "1" && $panneau(acqzadko,$visuNo,sauve_img_interrompue) == "0" } {
+                     #--- Je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+                     set name [append nom $panneau(acqzadko,$visuNo,index) $panneau(acqzadko,$visuNo,extension)]
+                     ::confVisu::setFileName $visuNo $name
                      #--- Sauvegarde de l'image
-                     saveima [append nom $panneau(acqzadko,$visuNo,index) $panneau(acqzadko,$visuNo,extension)] $visuNo
+                     saveima $name $visuNo
                      #--- Indique l'heure d'enregistrement dans le fichier log
                      set heure $audace(tu,format,hmsint)
                      Message $visuNo consolog $caption(acqzadko,enrim) $heure $nom
@@ -1335,9 +1340,17 @@ proc ::acqzadko::Go { visuNo } {
                   if { $sauvegardeValidee == "1" && $panneau(acqzadko,$visuNo,sauve_img_interrompue) == "0" } {
                      #--- Sauvegarde de l'image
                      if { $panneau(acqzadko,$visuNo,indexerContinue) == "1" } {
-                        saveima [append nom $panneau(acqzadko,$visuNo,index) $panneau(acqzadko,$visuNo,extension)] $visuNo
+                        #--- Je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+                        set name [append nom $panneau(acqzadko,$visuNo,index) $panneau(acqzadko,$visuNo,extension)]
+                        ::confVisu::setFileName $visuNo $name
+                        #--- Sauvegarde de l'image
+                        saveima $name $visuNo
                      } else {
-                        saveima [append nom $panneau(acqzadko,$visuNo,extension)] $visuNo
+                        #--- Je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+                        set name [append nom $panneau(acqzadko,$visuNo,extension)]
+                        ::confVisu::setFileName $visuNo $name
+                        #--- Sauvegarde de l'image
+                        saveima $name $visuNo
                      }
                      #--- Indique l'heure d'enregistrement dans le fichier log
                      set heure $audace(tu,format,hmsint)
@@ -1346,6 +1359,8 @@ proc ::acqzadko::Go { visuNo } {
                         incr panneau(acqzadko,$visuNo,index)
                      }
                   }
+               } else {
+                  ::confVisu::setFileName $visuNo ""
                }
                #--- Deplacement du telescope
                ::DlgShiftZadko::decalageTelescope
@@ -1373,8 +1388,11 @@ proc ::acqzadko::Go { visuNo } {
                   }
                   #--- Sauvegarde de l'image
                   if { $sauvegardeValidee == "1" && $panneau(acqzadko,$visuNo,sauve_img_interrompue) == "0" } {
+                     #--- Je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+                     set name [append nom $panneau(acqzadko,$visuNo,index) $panneau(acqzadko,$visuNo,extension)]
+                     ::confVisu::setFileName $visuNo $name
                      #--- Sauvegarde de l'image
-                     saveima [append nom $panneau(acqzadko,$visuNo,index) $panneau(acqzadko,$visuNo,extension)] $visuNo
+                     saveima $name $visuNo
                      #--- Indique l'heure d'enregistrement dans le fichier log
                      set heure $audace(tu,format,hmsint)
                      Message $visuNo consolog $caption(acqzadko,enrim) $heure $nom
@@ -1434,13 +1452,18 @@ proc ::acqzadko::Go { visuNo } {
                   }
                   #--- Sauvegarde de l'image
                   if { $sauvegardeValidee == "1" && $panneau(acqzadko,$visuNo,sauve_img_interrompue) == "0" } {
+                     #--- Je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+                     set name [append nom $panneau(acqzadko,$visuNo,index) $panneau(acqzadko,$visuNo,extension)]
+                     ::confVisu::setFileName $visuNo $name
                      #--- Sauvegarde de l'image
-                     saveima [append nom $panneau(acqzadko,$visuNo,index) $panneau(acqzadko,$visuNo,extension)] $visuNo
+                     saveima $name $visuNo
                      #--- Indique l'heure d'enregistrement dans le fichier log
                      set heure $audace(tu,format,hmsint)
                      Message $visuNo consolog $caption(acqzadko,enrim) $heure $nom
                      incr panneau(acqzadko,$visuNo,index)
                   }
+               } else {
+                  ::confVisu::setFileName $visuNo ""
                }
                #---
                if { $panneau(acqzadko,$visuNo,demande_arret) == "0" } {
@@ -1480,8 +1503,6 @@ proc ::acqzadko::Go { visuNo } {
          #--- je deverrouille des widgets selon le mode d'acquisition
          switch $panneau(acqzadko,$visuNo,mode) {
             1  {
-               #--- je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre des header
-               ::confVisu::setFileName $visuNo ""
                #--- Deverrouille les boutons du mode "une image"
                $panneau(acqzadko,$visuNo,This).mode.une.nom.entr configure -state normal
                $panneau(acqzadko,$visuNo,This).mode.une.index.case configure -state normal
@@ -1985,8 +2006,13 @@ proc ::acqzadko::SauveUneImage { visuNo } {
       }
    }
 
+   #--- Je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+   set name [append nom $panneau(acqzadko,$visuNo,extension)]
+   ::confVisu::setFileName $visuNo $name
+
    #--- Sauvegarde de l'image
-   saveima [append nom $panneau(acqzadko,$visuNo,extension)] $visuNo
+   saveima $name $visuNo
+
    #--- Indique l'heure d'enregistrement dans le fichier log
    set heure $audace(tu,format,hmsint)
    Message $visuNo consolog $caption(acqzadko,demsauv) $heure

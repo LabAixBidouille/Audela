@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise à jour $Id: acqfc.tcl,v 1.106 2010-06-20 13:52:29 robertdelmas Exp $
+# Mise à jour $Id: acqfc.tcl,v 1.107 2010-09-25 18:06:57 robertdelmas Exp $
 #
 
 #==============================================================
@@ -1257,6 +1257,8 @@ proc ::acqfc::Go { visuNo } {
             1  {
                #--- mode une image
                incr compteurImageSerie
+               #--- J'efface le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+               ::confVisu::setFileName $visuNo ""
             }
             2  {
                #--- Mode serie
@@ -1269,7 +1271,7 @@ proc ::acqfc::Go { visuNo } {
                   set nom1 "$nom"
                   append nom1 $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)
                   set sauvegardeValidee "1"
-                  if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" &&  $panneau(acqfc,$visuNo,verifier_ecraser_fichier) == 1 } {
+                  if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" && $panneau(acqfc,$visuNo,verifier_ecraser_fichier) == 1 } {
                      #--- Dans ce cas, le fichier existe deja...
                      set lastFile [ ::acqfc::dernierFichier $visuNo ]
                      set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
@@ -1282,8 +1284,11 @@ proc ::acqfc::Go { visuNo } {
                   }
                   #--- Sauvegarde de l'image
                   if { $sauvegardeValidee == "1" && $panneau(acqfc,$visuNo,sauve_img_interrompue) == "0" } {
+                     #--- Je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+                     set name [append nom $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)]
+                     ::confVisu::setFileName $visuNo $name
                      #--- Sauvegarde de l'image
-                     saveima [append nom $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)] $visuNo
+                     saveima $name $visuNo
                      #--- Indique l'heure d'enregistrement dans le fichier log
                      set heure $audace(tu,format,hmsint)
                      Message $visuNo consolog $caption(acqfc,enrim) $heure $nom
@@ -1308,7 +1313,7 @@ proc ::acqfc::Go { visuNo } {
                   if { $panneau(acqfc,$visuNo,indexerContinue) == "1" } {
                      set nom1 "$nom"
                      append nom1 $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)
-                     if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" &&  $panneau(acqfc,$visuNo,verifier_ecraser_fichier) == 1} {
+                     if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" && $panneau(acqfc,$visuNo,verifier_ecraser_fichier) == 1} {
                         #--- Dans ce cas, le fichier existe deja...
                         set lastFile [ ::acqfc::dernierFichier $visuNo ]
                         set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
@@ -1324,9 +1329,17 @@ proc ::acqfc::Go { visuNo } {
                   if { $sauvegardeValidee == "1" && $panneau(acqfc,$visuNo,sauve_img_interrompue) == "0" } {
                      #--- Sauvegarde de l'image
                      if { $panneau(acqfc,$visuNo,indexerContinue) == "1" } {
-                        saveima [append nom $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)] $visuNo
+                        #--- Je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+                        set name [append nom $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)]
+                        ::confVisu::setFileName $visuNo $name
+                        #--- Sauvegarde de l'image
+                        saveima $name $visuNo
                      } else {
-                        saveima [append nom $panneau(acqfc,$visuNo,extension)] $visuNo
+                        #--- Je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+                        set name [append nom $panneau(acqfc,$visuNo,extension)]
+                        ::confVisu::setFileName $visuNo $name
+                        #--- Sauvegarde de l'image
+                        saveima $name $visuNo
                      }
                      #--- Indique l'heure d'enregistrement dans le fichier log
                      set heure $audace(tu,format,hmsint)
@@ -1335,6 +1348,8 @@ proc ::acqfc::Go { visuNo } {
                         incr panneau(acqfc,$visuNo,index)
                      }
                   }
+               } else {
+                  ::confVisu::setFileName $visuNo ""
                }
                #--- Deplacement du telescope
                ::DlgShift::decalageTelescope
@@ -1349,7 +1364,7 @@ proc ::acqfc::Go { visuNo } {
                   set nom1 "$nom"
                   append nom1 $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)
                   set sauvegardeValidee "1"
-                  if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" &&  $panneau(acqfc,$visuNo,verifier_ecraser_fichier) == 1 } {
+                  if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" && $panneau(acqfc,$visuNo,verifier_ecraser_fichier) == 1 } {
                      #--- Dans ce cas, le fichier existe deja...
                      set lastFile [ ::acqfc::dernierFichier $visuNo ]
                      set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
@@ -1362,8 +1377,11 @@ proc ::acqfc::Go { visuNo } {
                   }
                   #--- Sauvegarde de l'image
                   if { $sauvegardeValidee == "1" && $panneau(acqfc,$visuNo,sauve_img_interrompue) == "0" } {
+                     #--- Je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+                     set name [append nom $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)]
+                     ::confVisu::setFileName $visuNo $name
                      #--- Sauvegarde de l'image
-                     saveima [append nom $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)] $visuNo
+                     saveima $name $visuNo
                      #--- Indique l'heure d'enregistrement dans le fichier log
                      set heure $audace(tu,format,hmsint)
                      Message $visuNo consolog $caption(acqfc,enrim) $heure $nom
@@ -1410,7 +1428,7 @@ proc ::acqfc::Go { visuNo } {
                   set nom1 "$nom"
                   append nom1 $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)
                   set sauvegardeValidee "1"
-                  if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" &&  $panneau(acqfc,$visuNo,verifier_ecraser_fichier) == 1 } {
+                  if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" && $panneau(acqfc,$visuNo,verifier_ecraser_fichier) == 1 } {
                      #--- Dans ce cas, le fichier existe deja...
                      set lastFile [ ::acqfc::dernierFichier $visuNo ]
                      set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
@@ -1423,13 +1441,18 @@ proc ::acqfc::Go { visuNo } {
                   }
                   #--- Sauvegarde de l'image
                   if { $sauvegardeValidee == "1" && $panneau(acqfc,$visuNo,sauve_img_interrompue) == "0" } {
+                     #--- Je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+                     set name [append nom $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)]
+                     ::confVisu::setFileName $visuNo $name
                      #--- Sauvegarde de l'image
-                     saveima [append nom $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)] $visuNo
+                     saveima $name $visuNo
                      #--- Indique l'heure d'enregistrement dans le fichier log
                      set heure $audace(tu,format,hmsint)
                      Message $visuNo consolog $caption(acqfc,enrim) $heure $nom
                      incr panneau(acqfc,$visuNo,index)
                   }
+               } else {
+                  ::confVisu::setFileName $visuNo ""
                }
                #---
                if { $panneau(acqfc,$visuNo,demande_arret) == "0" } {
@@ -1469,8 +1492,6 @@ proc ::acqfc::Go { visuNo } {
          #--- je deverrouille des widgets selon le mode d'acquisition
          switch $panneau(acqfc,$visuNo,mode) {
             1  {
-               #--- je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre des header
-               ::confVisu::setFileName $visuNo ""
                #--- Deverrouille les boutons du mode "une image"
                $panneau(acqfc,$visuNo,This).mode.une.nom.entr configure -state normal
                $panneau(acqfc,$visuNo,This).mode.une.index.case configure -state normal
@@ -1948,7 +1969,7 @@ proc ::acqfc::SauveUneImage { visuNo } {
    #--- Verifier que le nom du fichier n'existe pas
    set nom1 "$nom"
    append nom1 $panneau(acqfc,$visuNo,extension)
-   if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" &&  $panneau(acqfc,$visuNo,verifier_ecraser_fichier) == 1 } {
+   if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" && $panneau(acqfc,$visuNo,verifier_ecraser_fichier) == 1 } {
       #--- Dans ce cas, le fichier existe deja...
       set lastFile [ ::acqfc::dernierFichier $visuNo ]
       set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
@@ -1974,8 +1995,13 @@ proc ::acqfc::SauveUneImage { visuNo } {
       }
    }
 
+   #--- Je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre du header
+   set name [append nom $panneau(acqfc,$visuNo,extension)]
+   ::confVisu::setFileName $visuNo $name
+
    #--- Sauvegarde de l'image
-   saveima [append nom $panneau(acqfc,$visuNo,extension)] $visuNo
+   saveima $name $visuNo
+
    #--- Indique l'heure d'enregistrement dans le fichier log
    set heure $audace(tu,format,hmsint)
    Message $visuNo consolog $caption(acqfc,demsauv) $heure
