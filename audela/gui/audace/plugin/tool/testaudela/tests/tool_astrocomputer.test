@@ -32,7 +32,7 @@ test tool_astrocomputer_deg2hms {conversion angle hms} -constraints {
    #--- j'arrete l'outil
    ::confVisu::selectTool $visuNo ::astrocomputer
    #--- je supprime l'instance
-   ::confVisu::deletePluginInstance  $visuNo ::astrocomputer
+   ::astrocomputer::deletePluginInstance ::astrocomputer
    #--- je supprime le package de la memoire
     package forget astrocomputer
 
