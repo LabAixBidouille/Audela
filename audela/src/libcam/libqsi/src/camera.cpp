@@ -261,26 +261,31 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       cam->params->pCam->Connected = true;
       cam->params->abort = 0; 
       cam_log(LOG_DEBUG,"cam_init avant GetCameraXSize");
+      // je recupere la largeur et la hauteur du CCD en pixels
       cam->nb_photox  = cam->params->pCam->CameraXSize;
       cam->nb_photoy  = cam->params->pCam->CameraYSize;
-      //cam_log(LOG_DEBUG,"cam_init avant GetDescription");
-      //strcpy(CAM_INI[cam->index_cam].name, cam->params->pCam->Name);
+      // je recupere la taille des pixels (en micron converti en metre)
+      cam->celldimx   = cam->params->pCam->PixelSizeX * 1e-6;
+      cam->celldimy   = cam->params->pCam->PixelSizeY * 1e-6;
       // je recupere la description
       strncpy(CAM_INI[cam->index_cam].name, 
          _com_util::ConvertBSTRToString(cam->params->pCam->Description),
          sizeof(CAM_INI[cam->index_cam].name) -1 );
 
    } catch (_com_error &e) {
-      cam_log(LOG_ERROR,"cam_init connection _com_error=%s",e.ErrorMessage());
-      sprintf(cam->msg, "cam_init connection _com_error=%s",e.ErrorMessage());
+      // exception des objets COM
+      sprintf(cam->msg, "cam_init error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      cam_log(LOG_ERROR,cam->msg);      
       return -1;
    } catch (std::exception &e) {
-      cam_log(LOG_ERROR,"cam_init connection error=%s",e.what());
+      // exceptions standards du C
       sprintf(cam->msg, "cam_init connection error=%s",e.what());
+      cam_log(LOG_ERROR,cam->msg);      
       return -1;
    } catch (...) {
-      cam_log(LOG_ERROR,"cam_init error Connected exception");
+      // autres exceptions
       sprintf(cam->msg, "cam_init error Connected exception");
+      cam_log(LOG_ERROR,cam->msg);      
       return -1;
    }
    cam->x1 = 0;
@@ -428,16 +433,16 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
             cam_log(LOG_DEBUG,"cam_start_exp apres StartExposure");
          }
          if (FAILED(hr)) {  
-            cam_log(LOG_DEBUG,"cam_start_exp error StartExposure hr=%X",hr);
             sprintf(cam->msg, "cam_start_exp error StartExposure hr=%X",hr);
+            cam_log(LOG_ERROR,cam->msg);
             return;
          }
          cam->params->abort = 0; 
 
          return;
       } catch (_com_error &e) {
-         cam_log(LOG_ERROR,"cam_start_exp  error=%s",e.ErrorMessage());
-         sprintf(cam->msg, "cam_start_exp  error=%s",e.ErrorMessage());
+         sprintf(cam->msg, "cam_start_exp error=%s",_com_util::ConvertBSTRToString(e.Description()));
+         cam_log(LOG_ERROR,cam->msg);
          return;
       } catch (...) {
          sprintf(cam->msg, "cam_start_exp error StartExposure exception");
@@ -464,12 +469,11 @@ void cam_stop_exp(struct camprop *cam)
          sprintf(cam->msg, "cam_stop_exp error StopExposure hr=%X",hr);
          return;
       }
-      cam_log(LOG_DEBUG,"cam_stop_exp fin OK");
       cam->params->abort = 1;
       return;
-   } catch (...) {
-      cam_log(LOG_ERROR,"cam_stop_exp error StopExposure exception");
-      sprintf(cam->msg, "cam_stop_exp error StopExposure exception");
+   } catch (_com_error &e) {
+      sprintf(cam->msg, "cam_stop_exp error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      cam_log(LOG_ERROR,cam->msg);
       return;
    }
 }
@@ -491,7 +495,6 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
       return;
    }
 
-
    if (cam->authorized == 1 ) {
       try {
          SAFEARRAY *safeValues;
@@ -502,15 +505,12 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
             Sleep(100);
          }
          
-         cam_log(LOG_DEBUG,"cam_read_ccd apres attente");
          // je reccupere le pointeur de l'image
          _variant_t variantValues = cam->params->pCam->ImageArray;
          safeValues = variantValues.parray;
-         cam_log(LOG_DEBUG,"cam_read_ccd avant SafeArrayAccessData");
          SafeArrayAccessData(safeValues, (void**)&lValues);      
          
          // je copie l'image dans le buffer
-         cam_log(LOG_DEBUG,"cam_read_ccd avant copie");
          for( int y=0; y <cam->h; y++) {
             for( int x=0; x <cam->w; x++) {
                 p[x+y*cam->w] = (unsigned short) lValues[x+y*cam->w];
@@ -518,9 +518,9 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
          }
          SafeArrayUnaccessData(safeValues);
          cam_log(LOG_DEBUG,"cam_read_ccd OK");      
-      } catch (...) {
-         cam_log(LOG_ERROR,"cam_read_ccd exception");
-         sprintf(cam->msg, "cam_read_ccd exception");
+      } catch (_com_error &e) {
+         sprintf(cam->msg, "cam_read_ccd error=%s",_com_util::ConvertBSTRToString(e.Description()));
+         cam_log(LOG_ERROR,cam->msg);
          return;
       }
    }
@@ -555,9 +555,10 @@ void cam_measure_temperature(struct camprop *cam)
    cam->temperature = 0.;
    try {
       cam->temperature = cam->params->pCam->CCDTemperature;
-   } catch (...) {
-      cam_log(LOG_ERROR,"cam_measure_temperature error exception");
-      sprintf(cam->msg, "cam_measure_temperature error exception");
+   } catch (_com_error &e) {
+      sprintf(cam->msg, "cam_measure_temperature error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      cam_log(LOG_ERROR,cam->msg);
+      return;
    }
    cam_log(LOG_DEBUG,"cam_measure_temperature fin OK.");
 }
@@ -572,11 +573,13 @@ void cam_cooler_on(struct camprop *cam)
    }
    try {
       cam->params->pCam->CoolerOn = VARIANT_TRUE;
-   } catch (...) {
-      cam_log(LOG_ERROR,"cam_cooler_on error exception");
-      sprintf(cam->msg, "cam_cooler_on error exception");
+      cam_log(LOG_DEBUG,"cam_cooler_on fin OK");
+   } catch (_com_error &e) {
+      sprintf(cam->msg, "cam_cooler_on error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      cam_log(LOG_ERROR,cam->msg);
+      return;
    }
-   cam_log(LOG_DEBUG,"cam_cooler_on fin OK");
+
 }
 
 void cam_cooler_off(struct camprop *cam)
@@ -589,9 +592,10 @@ void cam_cooler_off(struct camprop *cam)
    }
    try {
       cam->params->pCam->CoolerOn = VARIANT_FALSE;
-   } catch (...) {
-      cam_log(LOG_ERROR,"cam_cooler_off error exception");
-      sprintf(cam->msg, "cam_cooler_off error exception");
+   } catch (_com_error &e) {
+      sprintf(cam->msg, "cam_cooler_off error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      cam_log(LOG_ERROR,cam->msg);
+      return;
    }
    cam_log(LOG_DEBUG,"cam_cooler_off fin OK");
 }
@@ -606,9 +610,10 @@ void cam_cooler_check(struct camprop *cam)
    }
    try {
       cam->params->pCam->SetCCDTemperature = cam->check_temperature;
-   } catch (...) {
-      cam_log(LOG_ERROR,"cam_cooler_check error exception");
-      sprintf(cam->msg, "cam_cooler_check error exception");
+   } catch (_com_error &e) {
+      sprintf(cam->msg, "cam_cooler_check error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      cam_log(LOG_ERROR,cam->msg);
+      return;
    }
    cam_log(LOG_DEBUG,"cam_cooler_check fin OK");
 }
@@ -634,9 +639,10 @@ void qsiGetTemperatureInfo(struct camprop *cam, double *setTemperature, double *
       }
       *power = (int)(cam->params->pCam->CoolerPower);
       cam_log(LOG_DEBUG,"cam_get_info_temperature fin ccdTemperature=%f  setTemperature=%f power=%d", *ccdTemperature, *setTemperature, *power);
-   } catch (...) {
-      cam_log(LOG_ERROR,"cam_get_info_temperature error exception");
-      sprintf(cam->msg, "cam_get_info_temperature error exception");
+   } catch (_com_error &e) {
+      sprintf(cam->msg, "qsiGetTemperatureInfo error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      cam_log(LOG_ERROR,cam->msg);
+      return;
    }
 
    cam_log(LOG_DEBUG,"cam_get_info_temperature fin OK");
@@ -678,18 +684,10 @@ void cam_set_binning(int binx, int biny, struct camprop *cam)
       cam_log(LOG_DEBUG,"cam_set_binning apres binx=%d biny=%d",binx, biny);
       cam_log(LOG_DEBUG,"cam_set_binning fin OK");
    } catch (_com_error &e) {
-      cam_log(LOG_ERROR,"cam_init connection error=%s",e.ErrorMessage());
-      sprintf(cam->msg, "cam_init connection error=%s",e.ErrorMessage());
-   } catch (std::runtime_error &e) {
-      cam_log(LOG_ERROR,"cam_init connection error=%s",e.what());
-      sprintf(cam->msg, "cam_init connection error=%s",e.what());
-   } catch (std::logic_error &e) {
-      cam_log(LOG_ERROR,"cam_init connection error=%s",e.what());
-      sprintf(cam->msg, "cam_init connection error=%s",e.what());      
-   } catch (std::exception &e) {
-      cam_log(LOG_ERROR,"cam_init connection error=%s",e.what());
-      sprintf(cam->msg, "cam_init connection error=%s",e.what());      
-   }
+      sprintf(cam->msg, "cam_set_binning error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      cam_log(LOG_ERROR,cam->msg);
+      return;
+   } 
 }
 
 
@@ -713,9 +711,10 @@ void qsiSetupDialog(struct camprop *cam)
       cam->params->pCam->Connected = false;
       cam->params->pCam->SetupDialog();
       cam->params->pCam->Connected = true;
-   } catch (...) {
-      sprintf(cam->msg, "cam_cooler_check error exception");
+   } catch (_com_error &e) {
+      sprintf(cam->msg, "qsiSetupDialog error=%s",_com_util::ConvertBSTRToString(e.Description()));
       cam_log(LOG_ERROR,cam->msg);
+      return;
    }
 }
 
@@ -749,12 +748,11 @@ int qsiSetWheelPosition(struct camprop *cam, int position)
          return -1;
       }
       return 0;
-   } catch (...) {
-      cam_log(LOG_ERROR,"qsiSetWheelPosition error exception");
-      sprintf(cam->msg, "qsiSetWheelPosition error exception");
+   } catch (_com_error &e) {
+      sprintf(cam->msg, "qsiSetWheelPosition error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      cam_log(LOG_ERROR,cam->msg);
       return -1;
    }
-   cam_log(LOG_DEBUG,"qsiSetWheelPosition fin OK");
 }
 
 // ---------------------------------------------------------------------------
@@ -783,12 +781,11 @@ int qsiGetWheelPosition(struct camprop *cam, int *position)
          return -1;
       }
       return 0;
-   } catch (...) {
-      cam_log(LOG_ERROR,"qsiSetWheelPosition error exception");
-      sprintf(cam->msg, "qsiSetWheelPosition error exception");
+   } catch (_com_error &e) {
+      sprintf(cam->msg, "qsiGetWheelPosition error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      cam_log(LOG_ERROR,cam->msg);
       return -1;
    }
-   cam_log(LOG_DEBUG,"qsiGetWheelPosition fin OK. Position=%d",*position);
 }
 
 // ---------------------------------------------------------------------------
@@ -838,9 +835,9 @@ int qsiGetWheelNames(struct camprop *cam, char **names)
       }
       cam_log(LOG_DEBUG,"qsiGetWheelNames fin OK"); 
       return 0;
-   } catch (...) {
-      cam_log(LOG_ERROR,"qsiGetWheelNames error exception");
-      sprintf(cam->msg, "qsiGetWheelNames error exception");
+   } catch (_com_error &e) {
+      sprintf(cam->msg, "qsiGetWheelNames error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      cam_log(LOG_ERROR,cam->msg);
       return -1;
    }
 }
@@ -869,9 +866,9 @@ int qsiGetProperty(struct camprop *cam, char *propertyName, char *propertyValue)
          sprintf(propertyValue,"%d",cam->params->pCam->MaxBinY);
       }
       return 0;
-   } catch (...) {
-      cam_log(LOG_ERROR,"qsiGetWheelNames error exception");
-      sprintf(cam->msg, "qsiGetWheelNames error exception");
+   } catch (_com_error &e) {
+      sprintf(cam->msg, "qsiGetProperty error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      cam_log(LOG_ERROR,cam->msg);
       return -1;
    }
 }
