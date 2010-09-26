@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: astrometry.tcl,v 1.14 2010-09-21 21:48:34 robertdelmas Exp $
+# Mise à jour $Id: astrometry.tcl,v 1.15 2010-09-26 21:35:58 robertdelmas Exp $
 #
 
 #============================================================
@@ -144,22 +144,22 @@ namespace eval ::astrometry {
       variable astrom
       global conf
 
-      set astrom(catfolder)     "$conf(astrometry,catfolder)"
-      set astrom(cattype)       [ lindex "$astrom(list_combobox)" $conf(astrometry,cattype) ]
-      set astrom(position)      "$conf(astrometry,position)"
-      set astrom(delete_files)  "$conf(astrometry,delete_files)"
-      set astrom(delete_images) "$conf(astrometry,delete_images)"
+      set astrom(catfolder)     $conf(astrometry,catfolder)
+      set astrom(cattype)       [ lindex $astrom(list_combobox) $conf(astrometry,cattype) ]
+      set astrom(position)      $conf(astrometry,position)
+      set astrom(delete_files)  $conf(astrometry,delete_files)
+      set astrom(delete_images) $conf(astrometry,delete_images)
    }
 
    proc widgetToConf { } {
       variable astrom
       global caption conf
 
-      set conf(astrometry,catfolder)     "$::astrometry::catvalues(catfolder)"
-      set conf(astrometry,cattype)       [ lsearch "$astrom(list_combobox)" "$::astrometry::catvalues(cattype)" ]
-      set conf(astrometry,position)      "$astrom(position)"
-      set conf(astrometry,delete_files)  "$astrom(delete_files)"
-      set conf(astrometry,delete_images) "$astrom(delete_images)"
+      set conf(astrometry,catfolder)     $astrom(catfolder)
+      set conf(astrometry,cattype)       [ lsearch $astrom(list_combobox) $astrom(cattype) ]
+      set conf(astrometry,position)      $astrom(position)
+      set conf(astrometry,delete_files)  $astrom(delete_files)
+      set conf(astrometry,delete_images) $astrom(delete_images)
    }
 
    proc recup_position { } {
@@ -237,8 +237,6 @@ namespace eval ::astrometry {
          frame $astrom(This).cal.${cal}
       }
       #--- Calibration from a catalog
-      set ::astrometry::catvalues(cattype)   $astrom(cattype)
-      set ::astrometry::catvalues(catfolder) $astrom(catfolder)
       set cal catalog
       frame $astrom(This).cal.${cal}.fra_0
          label $astrom(This).cal.${cal}.fra_0.lab -text "$caption(astrometry,cal,catname)"
@@ -250,24 +248,24 @@ namespace eval ::astrometry {
             -relief sunken    \
             -borderwidth 1    \
             -editable 0       \
-            -textvariable ::astrometry::catvalues(cattype) \
+            -textvariable ::astrometry::astrom(cattype) \
             -values $list_combobox
          pack $astrom(This).cal.${cal}.fra_0.cat -side left
       pack $astrom(This).cal.${cal}.fra_0 -anchor center -fill x
       frame $astrom(This).cal.${cal}.fra_1
          label $astrom(This).cal.${cal}.fra_1.lab -text "$caption(astrometry,cal,catfolder)"
          pack $astrom(This).cal.${cal}.fra_1.lab -side left
-         if { [ string length $::astrometry::catvalues(catfolder) ] < 50 } {
+         if { [ string length $astrom(catfolder) ] < 50 } {
             set width "50"
          } else {
-            set width [ string length $::astrometry::catvalues(catfolder) ]
+            set width [ string length $astrom(catfolder) ]
          }
-         entry $astrom(This).cal.${cal}.fra_1.ent -textvariable ::astrometry::catvalues(catfolder) -width $width
+         entry $astrom(This).cal.${cal}.fra_1.ent -textvariable ::astrometry::astrom(catfolder) -width $width
          pack $astrom(This).cal.${cal}.fra_1.ent -fill x -expand 1 -side left -padx 5
          button $astrom(This).cal.${cal}.fra_1.but -text "$caption(astrometry,cal,parcourir)" \
             -command {
                set d [::astrometry::getdirname]
-               if {$d!=""} {set ::astrometry::catvalues(catfolder) $d ; update ; focus $::astrometry::astrom(This) }
+               if {$d!=""} {set ::astrometry::astrom(catfolder) $d ; update ; focus $::astrometry::astrom(This) }
             }
          pack $astrom(This).cal.${cal}.fra_1.but -side left -padx 5 -ipady 5
       pack $astrom(This).cal.${cal}.fra_1 -anchor center -fill x
@@ -276,12 +274,12 @@ namespace eval ::astrometry {
       frame $astrom(This).cal.${cal}.fra_1
          label $astrom(This).cal.${cal}.fra_1.lab -text "$caption(astrometry,cal,filename)"
          pack $astrom(This).cal.${cal}.fra_1.lab -side left
-         entry $astrom(This).cal.${cal}.fra_1.ent -textvariable ::astrometry::catvalues(reffile) -width 40
+         entry $astrom(This).cal.${cal}.fra_1.ent -textvariable ::astrometry::astrom(reffile) -width 40
          pack $astrom(This).cal.${cal}.fra_1.ent -side left
          button $astrom(This).cal.${cal}.fra_1.but -text "$caption(astrometry,cal,parcourir)" \
             -command {
                set d [ ::tkutil::box_load $::astrometry::astrom(This) $audace(rep_images) $audace(bufNo) "1" ]
-               if {$d!=""} {set ::astrometry::catvalues(reffile) $d ; update ; focus $::astrometry::astrom(This)}
+               if {$d!=""} {set ::astrometry::astrom(reffile) $d ; update ; focus $::astrometry::astrom(This)}
             }
          pack $astrom(This).cal.${cal}.fra_1.but -side left -padx 2 -ipady 5
       pack $astrom(This).cal.${cal}.fra_1 -anchor center -fill x
@@ -303,8 +301,8 @@ namespace eval ::astrometry {
       pack $astrom(This).cal.fra_2 -side bottom -anchor center -fill x
       #---
       frame $astrom(This).status
-         label $astrom(This).status.lab -text ""
-         pack $astrom(This).status.lab -side left
+         label $astrom(This).status.labURL -text ""
+         pack $astrom(This).status.labURL -side left
       pack $astrom(This).status -anchor center -fill x
       #---
       frame $astrom(This).delete_files
@@ -658,7 +656,7 @@ namespace eval ::astrometry {
             }
          }
       }
-      $astrom(This).status.lab configure -text "$caption(astrometry,start,0)"
+      $astrom(This).status.labURL configure -text "$caption(astrometry,start,0)" -fg $color(blue)
       update
       set ext $conf(extension,defaut)
       #--- Remplacement de "$audace(rep_images)" par "." dans "mypath" - Cela permet a
@@ -667,15 +665,15 @@ namespace eval ::astrometry {
       set mypath "."
       set sky0 dummy0
       if {$astrom(currenttypecal)=="catalog"} {
-         set cattype $::astrometry::catvalues(cattype)
-         set cdpath "$::astrometry::catvalues(catfolder)"
+         set cattype $astrom(cattype)
+         set cdpath "$astrom(catfolder)"
          if { ( [ string length $cdpath ] > 0 ) && ( [ string index "$cdpath" end ] != "/" ) } {
             append cdpath "/"
          }
          set sky dummy
          catch {buf$audace(bufNo) delkwd CATASTAR}
          buf$audace(bufNo) save "${mypath}/${sky0}$ext"
-         $astrom(This).status.lab configure -text "$caption(astrometry,start,1)" ; update
+         $astrom(This).status.labURL configure -text "$caption(astrometry,start,1)" -fg $color(blue) ; update
          if {$sextractor=="no"} {
             ttscript2 "IMA/SERIES \"$mypath\" \"$sky0\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" STAT \"objefile=${mypath}/x$sky$ext\" detect_kappa=20"
          } else {
@@ -683,11 +681,11 @@ namespace eval ::astrometry {
             buf$audace(bufNo) save "${mypath}/${sky}$ext"
             sextractor "$mypath/$sky0$ext" -c "[ file join $mypath config.sex ]"
          }
-         $astrom(This).status.lab configure -text "$caption(astrometry,start,2) $cattype : $::astrometry::catvalues(catfolder) ..." ; update
+         $astrom(This).status.labURL configure -text "$caption(astrometry,start,2) $cattype : $::astrometry::astrom(catfolder) ..." -fg $color(blue) ; update
          set erreur [ catch { ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}a.jpg\" " } msg ]
          if { $erreur == "1" } {
             if {$silent=="no"} {
-               if { $::astrometry::catvalues(cattype) == "$caption(astrometry,cat,usno)" } {
+               if { $astrom(cattype) == "$caption(astrometry,cat,usno)" } {
                   ::astrometry::search_cata_USNO
                } else {
                   tk_messageBox -message "$caption(astrometry,erreur_catalog)" -icon error
@@ -702,17 +700,17 @@ namespace eval ::astrometry {
                ::astrometry::delete_dummy
             }
             #---
-            $astrom(This).status.lab configure -text ""
+            $astrom(This).status.labURL configure -text ""
             update
             return
          } else {
-            $astrom(This).status.lab configure -text "$caption(astrometry,start,3)" ; update
+            $astrom(This).status.labURL configure -text "$caption(astrometry,start,3)" -fg $color(blue) ; update
             if {$sextractor=="no"} {
                ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" ASTROMETRY delta=5 epsilon=0.0002"
             } else {
                ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" ASTROMETRY objefile=catalog.cat nullpixel=-10000 delta=5 epsilon=0.0002 file_ascii=ascii.txt"
             }
-            $astrom(This).status.lab configure -text "$caption(astrometry,start,4) $cattype : $::astrometry::catvalues(catfolder) ..." ; update
+            $astrom(This).status.labURL configure -text "$caption(astrometry,start,4) $cattype : $::astrometry::astrom(catfolder) ..." -fg $color(blue) ; update
             ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"z$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}b.jpg\" "
             ttscript2 "IMA/SERIES \"$mypath\" \"x$sky\" . . \"$ext\" . . . \"$ext\" DELETE"
             ttscript2 "IMA/SERIES \"$mypath\" \"c$sky\" . . \"$ext\" . . . \"$ext\" DELETE"
@@ -720,38 +718,38 @@ namespace eval ::astrometry {
             #---
             set catastar [lindex [buf$audace(bufNo) getkwd CATASTAR] 1]
             if {$catastar>=3} {
-               $astrom(This).status.lab configure -text "$caption(astrometry,start,6) $catastar $caption(astrometry,start,6a)" ; update
+               $astrom(This).status.labURL configure -text "$caption(astrometry,start,6) $catastar $caption(astrometry,start,6a)" -fg $color(blue) ; update
                ::astrometry::visu_result
             } else {
-               $astrom(This).status.lab configure -text "$caption(astrometry,start,7) " ; update
+               $astrom(This).status.labURL configure -text "$caption(astrometry,start,7) " -fg $color(red) ; update
             }
          }
       } elseif {$astrom(currenttypecal)=="file"} {
-         set erreur [ catch { calibrate_from_file $::astrometry::catvalues(reffile) } msg ]
+         set erreur [ catch { calibrate_from_file $::astrometry::astrom(reffile) } msg ]
          if { $erreur == "1" } {
             if {$silent=="no"} {
                tk_messageBox -message "$caption(astrometry,erreur_file)" -icon error
             }
-            $astrom(This).status.lab configure -text ""
+            $astrom(This).status.labURL configure -text ""
             update
             return
          } else {
             buf$audace(bufNo) save "${mypath}/${sky0}$ext"
             buf$audace(bufNo) load "${mypath}/${sky0}$ext"
-            $astrom(This).status.lab configure -text "$caption(astrometry,start,8) $::astrometry::catvalues(reffile)"
+            $astrom(This).status.labURL configure -text "$caption(astrometry,start,8) $::astrometry::astrom(reffile)" -fg $color(blue)
             set catastar 4
          }
       } elseif {$astrom(currenttypecal)=="manual"} {
          catch {buf$audace(bufNo) delkwd CATASTAR}
          buf$audace(bufNo) save "${mypath}/${sky0}$ext"
          buf$audace(bufNo) load "${mypath}/${sky0}$ext"
-         $astrom(This).status.lab configure -text "$caption(astrometry,start,9)"
+         $astrom(This).status.labURL configure -text "$caption(astrometry,start,9)" -fg $color(blue)
          set catastar 4
       } elseif {$astrom(currenttypecal)=="delwcs"} {
          catch {buf$audace(bufNo) delkwd CATASTAR}
          buf$audace(bufNo) save "${mypath}/${sky0}$ext"
          buf$audace(bufNo) load "${mypath}/${sky0}$ext"
-         $astrom(This).status.lab configure -text "$caption(astrometry,start,11)"
+         $astrom(This).status.labURL configure -text "$caption(astrometry,start,11)" -fg $color(blue)
          set catastar 0
          ::astrometry::updatewcs
       }
@@ -889,7 +887,7 @@ namespace eval ::astrometry {
       set astrom(currenttypecal) [lindex $astrom(typecal) $k]
       pack $astrom(This).cal.$astrom(currenttypecal) -in $astrom(This).cal -anchor center -fill x
       $astrom(This).but2 configure -text "$caption(astrometry,cal,$astrom(currenttypecal))"
-      $astrom(This).status.lab configure -text ""
+      $astrom(This).status.labURL configure -text ""
       update
    }
 
