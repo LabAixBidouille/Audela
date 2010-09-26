@@ -2,7 +2,7 @@
 # Fichier : eshelvisu.tcl
 # Description : Visionneuse d'images eShel
 # Auteurs : Michel Pujol
-# Mise a jour $Id: eshelvisu.tcl,v 1.9 2010-08-17 20:37:42 michelpujol Exp $
+# Mise a jour $Id: eshelvisu.tcl,v 1.10 2010-09-26 13:50:50 michelpujol Exp $
 #
 
 namespace eval ::eshelvisu {
@@ -78,7 +78,12 @@ proc ::eshelvisu::getPluginDirectory { } {
 #     suppprime l'instance du plugin
 #------------------------------------------------------------
 proc ::eshelvisu::deletePluginInstance { visuNo } {
+   variable private
 
+  #--- je supprime la fenetre
+  if { [info exists private($visuNo,This)] && [winfo exists $private($visuNo,This)] } {
+      destroy $private($visuNo,This)
+  }
 }
 
 #------------------------------------------------------------
@@ -456,7 +461,7 @@ proc ::eshelvisu::showOrderLabel { visuNo } {
    set hCanvas [confVisu::getCanvas $visuNo]
    $hCanvas delete orderLabel
 
-   if { $private($visuNo,showOrderLabel) == 0 ||  $private($visuNo,hduName) != "PRIMARY" } {
+   if { $private($visuNo,showOrderLabel) == 0 ||  ($private($visuNo,hduName) != "PRIMARY" && $private($visuNo,hduName) != "IMAGE") } {
       return
    }
 
