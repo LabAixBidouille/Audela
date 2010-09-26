@@ -1,6 +1,6 @@
 #
 # Fichier : visio.cap
-# Mise a jour $Id: visio.cap,v 1.18 2010-05-18 21:57:40 robertdelmas Exp $
+# Mise a jour $Id: visio.cap,v 1.19 2010-09-26 07:00:43 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,7 +12,6 @@ global caption langage
 # *************** Version anglaise ****************************
 
 #--- Textes interface principale
-set caption(visio,audace)                 "Aud'ACE"
 set caption(visio,titre)                  "Viewer"
 set caption(visio,help_titre)             "Help for this Tool"
 set caption(visio,help_titre1)            "Help for the Tool:"
@@ -66,7 +65,6 @@ set caption(visio,full2)                  "Please insert new floppy in drive A:.
 if { [ string compare $langage "french" ] == "0" } {
 
    #--- Textes interface principale
-   set caption(visio,audace)              "Aud'ACE"
    set caption(visio,titre)               "Visionneuse"
    set caption(visio,help_titre)          "Aide de cet outil"
    set caption(visio,help_titre1)         "Aide de l'outil :"
@@ -120,7 +118,6 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    #--- Textes interface principale
-   set caption(visio,audace)              "Aud'ACE"
    set caption(visio,titre)               "Visualizzatore"
    set caption(visio,help_titre)          "Aiuto per questo tool"
    set caption(visio,help_titre1)         "Aiuto per lo tool:"
@@ -174,7 +171,6 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    #--- Textes interface principale
-   set caption(visio,audace)              "Aud'ACE"
    set caption(visio,titre)               "Visor"
    set caption(visio,help_titre)          "Ayuda para esta herramienta"
    set caption(visio,help_titre1)         "Ajuda para del herramienta:"
@@ -228,7 +224,6 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    #--- Textes interface principale
-   set caption(visio,audace)              "Aud'ACE"
    set caption(visio,titre)               "Diabetrachter"
    set caption(visio,help_titre)          "Hilfe für dieses Gerät"
    set caption(visio,help_titre1)         "Hilfe für die Gerät:"
@@ -282,7 +277,6 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    #--- Textes interface principale
-   set caption(visio,audace)              "Aud'ACE"
    set caption(visio,titre)               "Visualizador"
    set caption(visio,help_titre)          "Ajuda para esta ferramenta"
    set caption(visio,help_titre1)         "Ajuda para del ferramenta:"
@@ -336,7 +330,6 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    #--- Textes interface principale
-   set caption(visio,audace)              "Aud'ACE"
    set caption(visio,titre)               "Viewer"
    set caption(visio,help_titre)          "Help for this Tool"
    set caption(visio,help_titre1)         "Help for the Tool:"
@@ -390,7 +383,6 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
    #--- Textes interface principale
-   set caption(visio,audace)              "Aud'ACE"
    set caption(visio,titre)               "Viewer"
    set caption(visio,help_titre)          "Help for this Tool"
    set caption(visio,help_titre1)         "Help for the Tool:"
@@ -444,7 +436,6 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
    #--- Textes interface principale
-   set caption(visio,audace)              "Aud'ACE"
    set caption(visio,titre)               "Viewer"
    set caption(visio,help_titre)          "Help for this Tool"
    set caption(visio,help_titre1)         "Help for the Tool:"
