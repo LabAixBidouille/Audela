@@ -3,7 +3,7 @@ set visuNo 1
 set bufNo [::confVisu::getBufNo $visuNo]
 
 #-------------------------------------------------------------------------------
-test tool_astrometry_deg2hms {} -constraints {
+test tool_astrometry_deg2hms {sextractor image webcam} -constraints {
    AUDACE
 } -setup {
    file copy -force [file join $::conf(testaudela,rep_images) "m45_champ.fit"] $::audace(rep_images)
@@ -22,7 +22,7 @@ test tool_astrometry_deg2hms {} -constraints {
 
    return 0
 } -cleanup {
-   #--- je supprime l'instance (cette commande arret l'outil si ce n'est pas deja fait)
+   #--- je supprime l'instance (cette commande arrete l'outil si ce n'est pas deja fait)
    ::confVisu::deletePluginInstance $visuNo ::astrometry
    #--- je supprime le package de la mémoire
    package forget astrometry
