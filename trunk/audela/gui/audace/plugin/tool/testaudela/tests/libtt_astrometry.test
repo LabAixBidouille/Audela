@@ -57,6 +57,10 @@ test libtt_catchart {imaseries CATCHART} -constraints {
 } -setup {
    file copy -force [file join $::conf(testaudela,rep_images) dummy_test.fit]  $::audace(rep_images)/dummy.fit
 } -body {
+   #--- je verifie que le catalogue MICROCAT existe
+   if { [file exists "$::conf(astrometry,catfolder)/gsc"]== 0 } {
+      return "MICROCAT directory not found : $::conf(astrometry,catfolder)"
+   }
 
    #--- je cherche les etoiles dans le catalogue microcat
    ttscript2 "IMA/SERIES . dummy . . .fit . dummy . .fit CATCHART \"path_astromcatalog=$::conf(astrometry,catfolder)/\" astromcatalog=MicroCat \"catafile=./cdummy.fit\" "
@@ -83,6 +87,10 @@ test libtt_astrometry {imaseries ASTROMETRY} -constraints {
    file copy -force [file join $::conf(testaudela,rep_images) cdummy_test.fit] $::audace(rep_images)/cdummy.fit
    file copy -force [file join $::conf(testaudela,rep_images) catalog.cat]     $::audace(rep_images)/catalog.cat
 } -body {
+   #--- je verifie que le catalogue MICROCAT existe
+   if { [file exists "$::conf(astrometry,catfolder)/gsc"]== 0 } {
+      return "MICROCAT directory not found : $::conf(astrometry,catfolder)"
+   }
    #--- j'apparie les etoiles
    ttscript2 "IMA/SERIES . dummy . . .fit . dummy . .fit ASTROMETRY objefile=catalog.cat nullpixel=-10000 delta=5 epsilon=0.0002"
    #--- j'ouvre le fichier resultat des étoiles appareillées
