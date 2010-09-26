@@ -4,7 +4,7 @@
 
 #-------------------------------------------------------------------------------
 test carteducielv3_configure {configure interface vers carteducielv3} {CARTEDUCIELV3} {
-   #--- clic sur le menu analyse->carte
+   #--- clic sur le menu configuration->carte
    ::testaudela::clicMenu $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,carte)..."
    #--- je selectionne l'onglet carteducielv3
    ###::confCat::selectNotebook "carteducielv3"
@@ -12,7 +12,7 @@ test carteducielv3_configure {configure interface vers carteducielv3} {CARTEDUCI
    #--- j'attends que l'onglet soit affiché
    after 500
    #--- je renseigne le repertoire de depart de la recherche
-   ::testaudela::putEntry .audace.confcat.usr.onglet.fcarteducielv3.frame2.nomDossier "C:/Program Files"
+   ::testaudela::putEntry .audace.confcat.usr.onglet.fcarteducielv3.frame2.nomDossier "C:/"
    #--- je lance la recherche
    ::testaudela::clicButton .audace.confcat.usr.onglet.fcarteducielv3.frame3.recherche
    #--- je ferme la fenetre
