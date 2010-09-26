@@ -12,7 +12,7 @@ test tool_astrocomputer_deg2hms {conversion angle hms} -constraints {
    ::confVisu::createPluginInstance $visuNo ::astrocomputer
    #--- je demarre l'outil
    ::confVisu::selectTool $visuNo ::astrocomputer
-} -body  {
+} -body {
 
    #--- je configure le traitement avec RI
    set angle      3
@@ -24,17 +24,15 @@ test tool_astrocomputer_deg2hms {conversion angle hms} -constraints {
    # set res [mc_angle2hms 3 "" zero 3 auto list]
 
    # char charndig[10] "%0-2147483647d"
-   # a -1.#INF000000000000	double
-   # ndig -2147483647	int
+   # a -1.#INF000000000000 double
+   # ndig -2147483647 int
 
    return $result
-} -cleanup  {
-   #--- j'arrete l'outil
-   ::confVisu::selectTool $visuNo ::astrocomputer
-   #--- je supprime l'instance
-   ::astrocomputer::deletePluginInstance ::astrocomputer
+} -cleanup {
+   #--- je supprime l'instance (cette commande arrete l'outil si ce n'est pas deja fait)
+   ::confVisu::deletePluginInstance $visuNo ::astrocomputer
    #--- je supprime le package de la memoire
-    package forget astrocomputer
+   package forget astrocomputer
 
 } -result "00 12 00.000"
 
