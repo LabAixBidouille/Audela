@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise à jour $Id: aud_menu_1.tcl,v 1.37 2010-09-04 19:22:11 michelpujol Exp $
+# Mise à jour $Id: aud_menu_1.tcl,v 1.38 2010-09-26 11:43:27 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -41,6 +41,9 @@ namespace eval ::audace {
       set errnum [ catch { saveima ? $visuNo } msg ]
       if { $errnum == "1" } {
          tk_messageBox -message "$msg" -icon error
+      } else {
+         #--- Met a jour le nom du fichier dans le titre et dans la fenetre de l'en-tete FITS
+         ::confVisu::setFileName $visuNo "$msg"
       }
       menustate normal
    }
