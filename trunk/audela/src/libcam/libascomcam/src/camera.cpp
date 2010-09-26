@@ -195,9 +195,12 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 
    try {
       cam->params->pCam->Connected = true;
+      // je recupere la largeur et la hauteur du CCD en pixels
       cam->nb_photox  = cam->params->pCam->CameraXSize;
       cam->nb_photoy  = cam->params->pCam->CameraYSize;
-
+      // je recupere la taille des pixels (en micron converti en metre)
+      cam->celldimx   = cam->params->pCam->PixelSizeX * 1e-6;
+      cam->celldimy   = cam->params->pCam->PixelSizeY * 1e-6;      
       // je recupere la description
       strncpy(CAM_INI[cam->index_cam].name, 
             _com_util::ConvertBSTRToString(cam->params->pCam->Description),
