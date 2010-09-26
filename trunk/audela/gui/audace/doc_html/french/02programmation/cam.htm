@@ -570,21 +570,9 @@ renvoie la valeur actuelle.</p>
 
 <h3><a name="infotemp" id="infotemp"></a>cam1 infotemp ?<em>param</em>?</h3>
 
-<p>Cette commande permet de piloter le système de refroidissement. Si le
-paramètre optionnel vaut <em>off</em> alors la régulation est arrêtée. Si c'est
-une valeur numérique, alors c'est la consigne en température.</p>
-
-<p>Exemple : extinction de la régulation V<br />
-<code>cam1 infotemp on</code></p>
-
-<p>Exemple : réglage de la température V<br />
-<code>cam1 infotemp -15</code></p>
-
-<p>Néanmoins, la température peut être réglée avec la commande : <code>cam1
-cooler check -15</code>.</p>
-
-<p>S'il n'y a pas de paramètre optionnel, elle retourne une liste composée des
-éléments suivants :</p>
+<p>Cette commande permet d'afficher les choix actuels de gestion de température
+de la caméra. Elle n'accepte aucun paramètres et retourne une liste composée
+des éléments suivants :</p>
 <ul>
   <li>Consigne en température, </li>
   <li>Température du CCD, </li>
@@ -602,6 +590,9 @@ ccd vaut -7.72 °C, que la régulation en température est activée et que le
 régulateur Peltier fonctionne à 79/255*100=31 %. Pour les caméras USB, il n'y a
 pas de capteur de température extérieure. La valeur renvoyée est alors toujours
 25 °C.</p>
+
+<p>La température peut être réglée avec la commande : <code>cam1 cooler check
+-15</code>.</p>
 
 <p>Il est recommandé par SBIG de couper la régulation et d'attendre quelques
 minutes avant d'éteindre l'alimentation de la caméra. L'arrêt de la régulation
