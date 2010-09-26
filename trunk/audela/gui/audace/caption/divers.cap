@@ -1,6 +1,6 @@
 #
 # Fichier : divers.cap
-# Mise a jour $Id: divers.cap,v 1.9 2009-11-04 18:35:31 robertdelmas Exp $
+# Mise a jour $Id: divers.cap,v 1.10 2010-09-26 07:07:32 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -55,7 +55,6 @@ set caption(divers,syntax,calcul_trzaligne)           "Usage : calcul_trzaligne 
 set caption(divers,syntax,date_chiffresAlettres)      "Usage : date_chiffresAlettres date_chiffres"
 
 # Autres
-set caption(divers,audace)                            "Aud'ACE"
 set caption(divers,oubli_param_opt)                   "Missing Parameter for the Following Option: "
 set caption(divers,invalide_opt)                      "Following Option is invalid: "
 set caption(divers,tracebox)                          "Please draw a square with your mouse."
@@ -72,7 +71,6 @@ set caption(divers,libgsl)                            "\nThe libgsl and libgslcb
 if { [ string compare $langage "french" ] == "0" } {
 
    # Autres
-   set caption(divers,audace)                         "Aud'ACE"
    set caption(divers,oubli_param_opt)                "Paramètre manquant pour l'option suivante : "
    set caption(divers,invalide_opt)                   "L'option suivante est invalide : "
    set caption(divers,tracebox)                       "Veuillez tracer un cadre à la souris."
@@ -89,7 +87,6 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    # Autres
-   set caption(divers,audace)                         "Aud'ACE"
    set caption(divers,oubli_param_opt)                "Parametro mancante per la seguente opzione: "
    set caption(divers,invalide_opt)                   "La seguente opzione non e' valida: "
    set caption(divers,tracebox)                       "Disegnare un quadrato con il mouse."
@@ -106,7 +103,6 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    # Autres
-   set caption(divers,audace)                         "Aud'ACE"
    set caption(divers,oubli_param_opt)                "Falta algún parámetro para la siguiente opción: "
    set caption(divers,invalide_opt)                   "Esta opción es incorrecta: "
    set caption(divers,tracebox)                       "Porfavor, dibuje un recuadro con el ratón."
@@ -123,7 +119,6 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    # Autres
-   set caption(divers,audace)                         "Aud'ACE"
    set caption(divers,oubli_param_opt)                "Fehlende Parameter für die Volgende Option: "
    set caption(divers,invalide_opt)                   "Die Volgende Option ist ungültig: "
    set caption(divers,tracebox)                       "Bitte, einen Rahmen mit der Mause zeichnen."
@@ -140,7 +135,6 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    # Autres
-   set caption(divers,audace)                         "Aud'ACE"
    set caption(divers,oubli_param_opt)                "Falta um parâmetro para a seguinte opção: "
    set caption(divers,invalide_opt)                   "Esta opção não é válida: "
    set caption(divers,tracebox)                       "Por favor, desenhe um quadrado com o rato."
@@ -157,7 +151,6 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    # Autres
-   set caption(divers,audace)                         "Aud'ACE"
    set caption(divers,oubli_param_opt)                "Manglende parameter til flg. valg: "
    set caption(divers,invalide_opt)                   "Flg. valg er ugyldig: "
    set caption(divers,tracebox)                       "Tegn en ramme med musen."
@@ -174,7 +167,6 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
    # Autres
-   set caption(divers,audace)                         "Aud'ACE"
    set caption(divers,oubli_param_opt)                "Missing Parameter for the Following Option: "
    set caption(divers,invalide_opt)                   "Following Option is invalid: "
    set caption(divers,tracebox)                       "Please draw a square with your mouse."
@@ -191,7 +183,6 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
    # Autres
-   set caption(divers,audace)                         "Aud'ACE"
    set caption(divers,oubli_param_opt)                "Missing Parameter for the Following Option: "
    set caption(divers,invalide_opt)                   "Following Option is invalid: "
    set caption(divers,tracebox)                       "Please draw a square with your mouse."
