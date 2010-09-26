@@ -1,7 +1,7 @@
 #
 # Fichier : aud_proc.tcl
 # Description : Fonctions de chargement, sauvegarde et traitement d'images
-# Mise à jour $Id: aud_proc.tcl,v 1.25 2010-06-18 17:42:14 robertdelmas Exp $
+# Mise à jour $Id: aud_proc.tcl,v 1.26 2010-09-26 11:42:03 robertdelmas Exp $
 #
 
 #
@@ -144,7 +144,7 @@ proc saveima { { filename "?" } { visuNo 1 } } {
       }
    }
 
-   return
+   return $filename
 }
 
 #
