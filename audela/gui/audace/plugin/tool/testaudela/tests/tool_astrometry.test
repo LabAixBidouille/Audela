@@ -6,7 +6,7 @@ set bufNo [::confVisu::getBufNo $visuNo]
 test tool_astrometry_deg2hms {} -constraints {
    AUDACE
 } -setup {
-   file copy -force [file join $::conf(testaudela,rep_images) "m45_champ.fit"]  $::audace(rep_images)
+   file copy -force [file join $::conf(testaudela,rep_images) "m45_champ.fit"] $::audace(rep_images)
 
    #--- je charge le package astrometry
    package require astrometry
@@ -15,23 +15,21 @@ test tool_astrometry_deg2hms {} -constraints {
    #--- je demarre l'outil
    ::confVisu::selectTool $visuNo ::astrometry
 
-} -body  {
-
+} -body {
 
    update
    after 1000
 
    return 0
-} -cleanup  {
+} -cleanup {
    #--- j'arrete l'outil
    ::confVisu::selectTool $visuNo ::astrometry
    #--- je supprime l'instance
-   ::confVisu::deletePluginInstance  $visuNo ::astrometry
+   ::astrometry::deletePluginInstance ::astrometry
    #--- je supprime le package de la mémoire
    package forget astrometry
 
-   file delete -force  [file join $::audace(rep_images) "m45_champ.fit"]
-
+   file delete -force [file join $::audace(rep_images) "m45_champ.fit"]
 
 } -result "0"
 
