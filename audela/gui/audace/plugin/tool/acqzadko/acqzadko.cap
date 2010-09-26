@@ -1,6 +1,6 @@
 #
 # Fichier : acqzadko.cap
-# Mise a jour $Id: acqzadko.cap,v 1.7 2010-06-20 13:36:13 robertdelmas Exp $
+# Mise a jour $Id: acqzadko.cap,v 1.8 2010-09-26 06:49:45 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -96,7 +96,6 @@ set caption(acqzadko,lance_simu)                "Run the Simulation:\n"
 set caption(acqzadko,fin_simu)                  "Stop the Simulation.\n"
 set caption(acqzadko,avancement_acq)            "Acquisition\nProgress"
 set caption(acqzadko,buttonShiftConfig)         "Shift"
-set caption(acqzadko,acquisition)               "Aud'ACE - Acquisition of"
 set caption(acqzadko,acquisitionError)          "Acquisition Error. See details in the Terminal screen."
 set caption(acqzadko,connectioncamera)          "Camera Connection"
 set caption(acqzadko,raquettetel)               "Telescope Control"
@@ -190,7 +189,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqzadko,fin_simu)               "Fin de la simulation.\n"
    set caption(acqzadko,avancement_acq)         "Avancement de\nl'acquisition"
    set caption(acqzadko,buttonShiftConfig)      "Décalage"
-   set caption(acqzadko,acquisition)            "Aud'ACE - Acquisition de"
    set caption(acqzadko,acquisitionError)       "Erreur à l'acquisition. Détails dans la Console."
    set caption(acqzadko,connectioncamera)       "Connexion de la caméra"
    set caption(acqzadko,raquettetel)            "Contrôle du télescope"
@@ -285,7 +283,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqzadko,fin_simu)               "Fine della simulazione.\n"
    set caption(acqzadko,avancement_acq)         "Avanzamento\nacquisizione"
    set caption(acqzadko,buttonShiftConfig)      "Spostamento"
-   set caption(acqzadko,acquisition)            "Aud'ACE - Acquisizione di"
    set caption(acqzadko,acquisitionError)       "Errore di acquisizione. Vedere i dettagli sul Console."
    set caption(acqzadko,connectioncamera)       "Connessione della camera"
    set caption(acqzadko,raquettetel)            "Controllo telescopio"
@@ -379,7 +376,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqzadko,fin_simu)               "Parar la simulación .\n"
    set caption(acqzadko,avancement_acq)         "Progreso de la\nadquisición"
    set caption(acqzadko,buttonShiftConfig)      "Desplazam."
-   set caption(acqzadko,acquisition)            "Aud'ACE - Adquisición de"
    set caption(acqzadko,acquisitionError)       "Error de adquisición. Ver detalles en la Consola."
    set caption(acqzadko,connectioncamera)       "Conectando con la cámara"
    set caption(acqzadko,raquettetel)            "Control del telescopio"
@@ -473,7 +469,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqzadko,fin_simu)               "Ende der Simulation.\n"
    set caption(acqzadko,avancement_acq)         "Belichtung\nim Gange"
    set caption(acqzadko,buttonShiftConfig)      "Verschiebung"
-   set caption(acqzadko,image,acquisition)      "Aud'ACE - Belichtung von"
    set caption(acqzadko,acquisitionError)       "Belichtung Irrtum. Siehe Details auf der Konsole."
    set caption(acqzadko,connectioncamera)       "Kamera Anschluß"
    set caption(acqzadko,raquettetel)            "Teleskop Kontrolle"
@@ -567,7 +562,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqzadko,fin_simu)               "Fim da simulação.\n"
    set caption(acqzadko,avancement_acq)         "Adiantamento da\naquisição"
    set caption(acqzadko,buttonShiftConfig)      "Deslocamento"
-   set caption(acqzadko,acquisition)            "Aud'ACE - Aquisição de"
    set caption(acqzadko,acquisitionError)       "Erro na aquisição. Ver detalhes na Consola."
    set caption(acqzadko,connectioncamera)       "Conexão da câmara"
    set caption(acqzadko,raquettetel)            "Controlo do telescópio"
@@ -660,7 +654,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqzadko,fin_simu)               "Stop the Simulation.\n"
    set caption(acqzadko,avancement_acq)         "Acquisition\nProgress"
    set caption(acqzadko,buttonShiftConfig)      "Shift"
-   set caption(acqzadko,acquisition)            "Aud'ACE - Eksponeringer slut"
    set caption(acqzadko,acquisitionError)       "Acquisition Error. See details in the Terminal screen."
    set caption(acqzadko,connectioncamera)       "Camera Connection"
    set caption(acqzadko,raquettetel)            "Telescope Control"
@@ -753,7 +746,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqzadko,fin_simu)               "Stop the Simulation.\n"
    set caption(acqzadko,avancement_acq)         "Acquisition\nProgress"
    set caption(acqzadko,buttonShiftConfig)      "Shift"
-   set caption(acqzadko,acquisition)            "Aud'ACE - Acquisition of"
    set caption(acqzadko,acquisitionError)       "Acquisition Error. See details in the Terminal screen."
    set caption(acqzadko,connectioncamera)       "Camera Connection"
    set caption(acqzadko,raquettetel)            "Telescope Control"
@@ -846,7 +838,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqzadko,fin_simu)               "Stop the Simulation.\n"
    set caption(acqzadko,avancement_acq)         "Acquisition\nProgress"
    set caption(acqzadko,buttonShiftConfig)      "Shift"
-   set caption(acqzadko,acquisition)            "Aud'ACE - Acquisition of"
    set caption(acqzadko,acquisitionError)       "Acquisition Error. See details in the Terminal screen."
    set caption(acqzadko,connectioncamera)       "Camera Connection"
    set caption(acqzadko,raquettetel)            "Telescope Control"
