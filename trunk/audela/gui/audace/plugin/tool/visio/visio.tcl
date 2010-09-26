@@ -2,7 +2,7 @@
 # Fichier : visio.tcl
 # Description : Outil de visionnage d'images fits + gestion des series d'images
 # Auteur : Benoit MAUGIS
-# Mise à jour $Id: visio.tcl,v 1.23 2010-05-26 05:51:44 robertdelmas Exp $
+# Mise à jour $Id: visio.tcl,v 1.24 2010-09-26 07:01:36 robertdelmas Exp $
 #
 
 # ========================================================
@@ -376,7 +376,7 @@ namespace eval ::visio {
       $audace(hCanvas) configure -scrollregion [list 0 0 $audace(picture,w) $audace(picture,h)]
       ::audace::autovisu $audace(visuNo)
       #--- MAJ en-tete audace
-      wm title $audace(base) "$caption(visio,audace) (visu1)"
+      ::confVisu::setFileName $audace(visuNo) ""
       #--- MAJ index du fichier
       set panneau(visio,nom_generique) ""
       set panneau(visio,index) ""
@@ -393,7 +393,7 @@ namespace eval ::visio {
          #--- Chargement du fichier dans le buffer audace avec visu auto
          charge $fichier
          #--- MAJ en-tete audace
-         wm title $audace(base) "$caption(visio,audace) (visu1) - $fichier"
+         ::confVisu::setFileName $audace(visuNo) "$fichier"
       }
    }
 
@@ -415,7 +415,7 @@ namespace eval ::visio {
                #--- Chargement du fichier dans le buffer audace avec visu auto
                charge $fichier
                #--- MAJ en-tete audace
-               wm title $audace(base) "$caption(visio,audace) (visu1) - $fichier"
+               ::confVisu::setFileName $audace(visuNo) "$fichier"
                set panneau(visio,refresh) 1
             }
             #--- Reactive les boutons
@@ -444,7 +444,7 @@ namespace eval ::visio {
                   #--- Chargement du fichier dans le buffer audace avec visu auto
                   charge $fichier
                   #--- MAJ en-tete audace
-                  wm title $audace(base) "$caption(visio,audace) (visu1) - $fichier"
+                  ::confVisu::setFileName $audace(visuNo) "$fichier"
                   set panneau(visio,refresh) 1
                }
                #--- Reactive les boutons
@@ -472,7 +472,7 @@ namespace eval ::visio {
                #--- Chargement du fichier dans le buffer audace avec visu auto
                charge $fichier
                #--- MAJ en-tete audace
-               wm title $audace(base) "$caption(visio,audace) (visu1) - $fichier"
+               ::confVisu::setFileName $audace(visuNo) "$fichier"
                set panneau(visio,refresh) 1
             }
             #--- Reactive les boutons
@@ -500,7 +500,7 @@ namespace eval ::visio {
                #--- Chargement du fichier dans le buffer audace avec visu auto
                charge $fichier
                #--- MAJ en-tete audace
-               wm title $audace(base) "$caption(visio,audace) (visu1) - $fichier"
+               ::confVisu::setFileName $audace(visuNo) "$fichier"
                set panneau(visio,refresh) 1
             }
             #--- Reactive les boutons
