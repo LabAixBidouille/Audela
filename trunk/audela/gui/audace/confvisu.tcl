@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.151 2010-09-26 13:47:26 michelpujol Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.152 2010-09-26 14:27:59 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -1810,7 +1810,6 @@ namespace eval ::confVisu {
       variable private
       global audace caption color conf
 
-console::disp "::confVisu::createDialog $visuNo \n"
       #---- frame de la barre d'outils
       frame $This.bar -borderwidth 0
       createToolBar $visuNo
@@ -1919,7 +1918,6 @@ console::disp "::confVisu::createDialog $visuNo \n"
    proc createBindDialog { visuNo } {
       variable private
 
-      console::disp "::confVisu::createBindDialog $visuNo \n"
       update
       set This $private($visuNo,This)
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
