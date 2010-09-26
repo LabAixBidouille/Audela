@@ -2,7 +2,7 @@
 # Fichier divers.tcl
 # Description : Ce script regroupe diverses petites fonctions
 # Auteur : Benoit MAUGIS
-# Mise à jour $Id: divers.tcl,v 1.16 2010-05-23 08:06:43 robertdelmas Exp $
+# Mise à jour $Id: divers.tcl,v 1.17 2010-09-26 07:08:14 robertdelmas Exp $
 #
 
 # Documentation : voir le fichier divers.htm dans le dossier doc_html
@@ -120,7 +120,7 @@ proc charge {args} {
                   # on rafraîchit (éventuellement) l'affichage du bandeau
                   if {[string compare $buf $audace(bufNo)] == 0} {
                      if {$novisu != "-novisu"} {
-                        wm title $audace(base) "$caption(divers,audace) - $nom_complet"
+                        ::confVisu::setFileName $audace(visuNo) "$nom_complet"
                         audace::autovisu $audace(visuNo)
                      }
                   }
@@ -142,7 +142,7 @@ proc charge {args} {
                   # on rafraîchit (éventuellement) l'affichage du bandeau
                   if {[string compare $buf $audace(bufNo)] == 0} {
                      if {$novisu != "-novisu"} {
-                        wm title $audace(base) "$caption(divers,audace) - $nom_complet"
+                        ::confVisu::setFileName $audace(visuNo) "$nom_complet"
                         audace::autovisu $audace(visuNo)
                      }
                   }
@@ -184,7 +184,7 @@ proc charge {args} {
                      # on rafraîchit (éventuellement) l'affichage du bandeau
                      if {[string compare $buf $audace(bufNo)] == 0} {
                         if {$novisu != "-novisu"} {
-                           wm title $audace(base) "$caption(divers,audace) - $nom_complet"
+                           ::confVisu::setFileName $audace(visuNo) "$nom_complet"
                            audace::autovisu $audace(visuNo)
                         }
                      }
@@ -344,7 +344,7 @@ proc sauve {args} {
                set nom_complet "nom_complet;$polyNo"
             }
             if {$result == "" && [string compare $buf $audace(bufNo)] == 0} {
-               wm title $audace(base) "$caption(divers,audace) - $nom_complet"
+               ::confVisu::setFileName $audace(visuNo) "$nom_complet"
             }
          }
       }
