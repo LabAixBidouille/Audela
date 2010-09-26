@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.150 2010-09-25 09:43:45 robertdelmas Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.151 2010-09-26 13:47:26 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -41,15 +41,17 @@ namespace eval ::confVisu {
       variable private
       global audace conf
 
-      #--- je cree une visu temporaire pour savoir quel sera le numero de visu
-      set result [catch {::visu::create 1 1} visuNo]
-      if { $result } {
-         #--- je cree une exception
-         error "erreur creation visu temporaire\n"
-      } else {
-         #--- je detruis la visu temporaire
-         ::visu::delete $visuNo
+      #--- je cherche le premiere numero de visu disponible
+      set visuNo 1
+      while { [info command visu$visuNo] != "" } {
+         incr visuNo
       }
+      #--- je cree le buffer qui va etre associe a la visu
+      set bufNo [::buf::create ]
+      #--- je cree la photo qui va etre associee a la visu
+      image create photo imagevisu$visuNo
+      #--- je cree la visu associee au buffer bufNo et a l'image imagevisu$visuNo
+      set visuNo [::visu::create $bufNo $visuNo]
 
       #--- cree les variables dans conf(..) si elles n'existent pas
       if { ! [ info exists conf(audace,visu$visuNo,wmgeometry) ] } {
@@ -131,38 +133,27 @@ namespace eval ::confVisu {
       set private($visuNo,mirrorYListenerFlag) ""
       set private($visuNo,windowListenerFlag) ""
 
+
       #--- je cree la fenetre
       ::confVisu::createDialog $visuNo $private($visuNo,This)
-
-      #--- je cree le buffer
-      set result [catch {::buf::create} bufNo]
-      if { $result } {
-         #--- je cree une exception
-         error "erreur creation buffer pour nouvelle visu\n"
+      #--- configuration buffer
+      buf$bufNo extension $conf(extension,defaut)
+      #--- Fichiers image compresses ou non
+      if { $conf(fichier,compres) == "0" } {
+         buf$bufNo compress "none"
       } else {
-         #--- configuration buffer
-         buf$bufNo extension $conf(extension,defaut)
-         #--- Fichiers image compresses ou non
-         if { $conf(fichier,compres) == "0" } {
-            buf$bufNo compress "none"
-         } else {
-            buf$bufNo compress "gzip"
-         }
-         #--- Format des fichiers image (entier ou flottant)
-         if { $conf(format_fichier_image) == "0" } {
-            buf$bufNo bitpix ushort
-         } else {
-            buf$bufNo bitpix float
-         }
+         buf$bufNo compress "gzip"
+      }
+      #--- Format des fichiers image (entier ou flottant)
+      if { $conf(format_fichier_image) == "0" } {
+         buf$bufNo bitpix ushort
+      } else {
+         buf$bufNo bitpix float
       }
 
       #--- Creation de l'image associee a la visu dans le tag "display"
       $private($visuNo,hCanvas) create image 0 0 -anchor nw -tag display
-      image create photo imagevisu$visuNo
       $private($visuNo,hCanvas) itemconfigure display -image imagevisu$visuNo
-
-      #--- je cree la visu associee au buffer bufNo et a l'image imagevisu$visuNo
-      set visuNo [::visu::create $bufNo $visuNo]
 
       #--- je cree le menu
       if { $base == "" } {
@@ -918,6 +909,8 @@ namespace eval ::confVisu {
       set private($visuNo,fitsHduList) ""
       #--- raz de la visu
       visu$visuNo clear
+      #--- j'efface la barre d'outil
+      showToolBar $visuNo 0
       #--- je selectionne le mode par defaut
       confVisu::setMode $visuNo "image"
    }
@@ -1817,6 +1810,7 @@ namespace eval ::confVisu {
       variable private
       global audace caption color conf
 
+console::disp "::confVisu::createDialog $visuNo \n"
       #---- frame de la barre d'outils
       frame $This.bar -borderwidth 0
       createToolBar $visuNo
@@ -1925,8 +1919,9 @@ namespace eval ::confVisu {
    proc createBindDialog { visuNo } {
       variable private
 
+      console::disp "::confVisu::createBindDialog $visuNo \n"
+      update
       set This $private($visuNo,This)
-
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
       bind $This <Key-F1> { ::console::GiveFocus }
 
