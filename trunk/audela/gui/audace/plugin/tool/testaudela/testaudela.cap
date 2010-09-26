@@ -1,6 +1,6 @@
 #
 # Fichier : testaudela.cap
-# Mise a jour $Id: testaudela.cap,v 1.8 2010-09-21 17:02:18 robertdelmas Exp $
+# Mise a jour $Id: testaudela.cap,v 1.9 2010-09-26 21:00:23 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -66,25 +66,25 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudela,title)                          "Test AudeLA"
    set caption(testaudela,name)                           "Nome"
    set caption(testaudela,description)                    "Descrizione"
-   set caption(testaudela,imageDirectory)                 "# Images de test"
+   set caption(testaudela,imageDirectory)                 "Immagini di test"
    set caption(testaudela,files)                          "File di test"
    set caption(testaudela,refresh)                        "Aggiorna"
    set caption(testaudela,selectAll)                      "Tutti"
    set caption(testaudela,unselectAll)                    "Nessuno"
    set caption(testaudela,run)                            "Esegui il test"
-   set caption(testaudela,stop)                           "# Arrêter les tests"
+   set caption(testaudela,stop)                           "Ferma i test"
    set caption(testaudela,detail)                         "Contenuto del file selezionato"
    set caption(testaudela,showResult)                     "Visualizza il risultato"
    set caption(testaudela,constraint)                     "Prerequisiti"
    set caption(testaudela,testCampagne)                   "Campagna di test"
-   set caption(testaudela,result)                         "# Résultat des tests"
-   set caption(testaudela,ImageDirectory,notFound)        "# Le répertoire des images de test n'existe pas."
-   set caption(testaudela,ImageDirectory,alreadyUsed)     "# Le répertoire des images de test doit être différent du répertoire de travail."
-   set caption(testaudela,ImageDirectory,installQuestion) "# Voulez-vous installer les images de test ?"
-   set caption(testaudela,ImageDirectory,installTitle)    "# Installer les images de test"
-   set caption(testaudela,ImageDirectory,procedure1)      "# Cliquer sur le lien ci-dessous pour télécharger les images de test."
-   set caption(testaudela,ImageDirectory,procedure2)      "# Les dézipper dans le dossier choisi ci-dessous."
-   set caption(testaudela,edit)                           "# Editer le script de test"
+   set caption(testaudela,result)                         "Risultati dei test"
+   set caption(testaudela,ImageDirectory,notFound)        "La cartella delle immagini non esiste."
+   set caption(testaudela,ImageDirectory,alreadyUsed)     "La cartella delle immagini di prova deve essere diverso da quella di lavoro."
+   set caption(testaudela,ImageDirectory,installQuestion) "Installare le immagini di test?"
+   set caption(testaudela,ImageDirectory,installTitle)    "Installa le immagini di test"
+   set caption(testaudela,ImageDirectory,procedure1)      "Cliccare sul link per scaricare le immagini di test."
+   set caption(testaudela,ImageDirectory,procedure2)      "Decomprimere nella cartella sottostante."
+   set caption(testaudela,edit)                           "Editare lo script di test"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
