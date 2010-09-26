@@ -27,13 +27,10 @@ test convert3d_accent {convert3d été/m57_color.fit} { } {
    file copy [file join $::conf(testaudela,rep_images) m57.fit] [file join $::audace(rep_images) été m57_3.fit]
    #--- je teste la commande fitsconvert3d
    set keywords [fitsconvert3d [file join $::audace(rep_images) été m57_] 3 .fit [file join $::audace(rep_images) été m57_color]]
-   loadima [file join $::audace(rep_images) été m57_color.fit]
+
    #--- je recupere la valeur du mot cle NAXIS3
    set keywords [fitsheader [file join $::audace(rep_images) été m57_color.fit]]
    set naxis3   [lindex [lsearch  -index 0 -inline $keywords  "NAXIS3"] 1]
-   #--- j'efface le buffer
-   loadima ""
-   after 300
    #--- je retourne naxis3
    return $naxis3
 } "3"
@@ -67,6 +64,7 @@ test save3d_keyword_multiple {mot cle multiple} { } {
 
 #-------------------------------------------------------------------------------
 test bufloadfits_clean {supprime} {
+   buf1 clear
    file delete -force [file join $::audace(rep_images) été]
    return ""
 } ""
