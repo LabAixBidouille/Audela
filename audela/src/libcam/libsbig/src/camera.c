@@ -464,12 +464,19 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       cam->nb_deadbeginphotoy = 0;
       cam->nb_deadendphotoy = 0;
    }
-   cam->celldimx = CAM_INI[cam->index_cam].celldimx;	/* taille d'un photosite sur X (en metre) */
-   cam->celldimy = CAM_INI[cam->index_cam].celldimy;	/* taille d'un photosite sur Y (en metre) */
+
+   // je recupere la taille des pixels (micron converti en metre)
+   CAM_INI[cam->index_cam].celldimx = gcir0.readoutInfo[0].pixelWidth * 1e-6;	
+   CAM_INI[cam->index_cam].celldimy = gcir0.readoutInfo[0].pixelHeight * 1e-6;	
+   cam->celldimx = CAM_INI[cam->index_cam].celldimx;	
+   cam->celldimy = CAM_INI[cam->index_cam].celldimy;	
+   // je calcule la taille de l'image en fonction du binning (Binning=1 par defaut)
    cam->x2 = cam->nb_photox - 1;
    cam->y2 = cam->nb_photoy - 1;
    cam_set_binning(1, 1, cam);
-   cam_update_window(cam);	/* met a jour x1,y1,x2,y2,h,w dans cam */
+   // je mets a jour x1,y1,x2,y2,h,w dans cam 
+   cam_update_window(cam);	
+   // je recupere les informations des temperature
    sbig_get_info_temperatures(cam, &temp_setpoint, &temp_ccd, &temp_ambient, &temp_reg, &temp_power);
    cam->coolerindex = temp_reg;
    cam->temperature = temp_ccd;
