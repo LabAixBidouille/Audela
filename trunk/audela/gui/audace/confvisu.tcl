@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.152 2010-09-26 14:27:59 robertdelmas Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.153 2010-09-26 15:44:52 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -1579,7 +1579,6 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    proc stopTool { visuNo { toolName ""} } {
       variable private
-
       if { $toolName == "" } {
          if { $private($visuNo,currentTool) != "" } {
             #--- si l'outil n'est pas precise , je choisis d'arreter l'outil courant
@@ -1590,11 +1589,14 @@ namespace eval ::confVisu {
             return 0
          }
       }
+      #--- j'arrete l'outil
       set result [ $toolName\::stopTool $visuNo ]
       if { $result != "-1" } {
-         grid forget $private($visuNo,This).tool
+         #--- je masque le panneau de l'outil si c'est l'outil courant de la visu
+         if { $private($visuNo,currentTool) == $toolName } {
+            grid forget $private($visuNo,This).tool
+         }
       }
-
       return $result
    }
 
