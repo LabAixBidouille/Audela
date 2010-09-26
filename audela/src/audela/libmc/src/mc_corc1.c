@@ -173,7 +173,8 @@ void mc_aberration_diurne(double jj,double asd1,double dec1, double longuai, dou
 /***************************************************************************/
 {
    double secd,dasd,ddec;
-   double tsl,latitude,altitude,phip,a=6378.140,sinphi,r,h;
+   double tsl,latitude,altitude,phip,a,sinphi,r,h;
+	a=(EARTH_SEMI_MAJOR_RADIUS)*1e-3;
    mc_tsl(jj,-longuai,&tsl);
    h=tsl-asd1;
    mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
@@ -228,8 +229,10 @@ void mc_latalt2rhophi(double latitude,double altitude,double *rhosinphip,double 
    double aa,ff,bb,a,b,u,lat,alt;
    lat=latitude*(DR);
    alt=altitude;
-   aa=6378140;
-   ff=1./298.257;
+   //aa=6378140;
+   aa=EARTH_SEMI_MAJOR_RADIUS;
+   //ff=1./298.257;
+	ff=1./EARTH_INVERSE_FLATTENING;
    bb=aa*(1-ff);
    u=atan(bb/aa*tan(lat));
    a=bb/aa*sin(u)+alt/aa*sin(lat);
@@ -343,15 +346,36 @@ void mc_paraldxyzeq(double jj, double longuai, double rhocosphip, double rhosinp
 /* Xtopo = Xgeo - *dxeq etc...                                             */
 /***************************************************************************/
 /* ref : Danby J.M.A. "Fundamentals of Celestial Mechanics" 2nd ed. 1992   */
-/*       William Bell                                                      */
+/*       Willmann Bell                                                      */
 /* Formules (6.17.1) pp 208                                                */
 /***************************************************************************/
 {
-   double tsl,cst=4.26356e-5;
+   double tsl,cst;
+	//double latitude,altitude,ff,phip,f,gc,gs;
+	cst=(EARTH_SEMI_MAJOR_RADIUS)/(UA); /* equatorial radius of the Earth in U.A. */
    mc_tsl(jj,-longuai,&tsl);
    *dxeq=(cst*rhocosphip*cos(tsl));
    *dyeq=(cst*rhocosphip*sin(tsl));
    *dzeq=(cst*rhosinphip);
+	/*
+	//
+	Dan Boulet "Methods of orbit determination" Willmann Bell
+	Formules (2.28) a (2.33)
+	Il y a une ambuite dans le texte (7.1.13) page 181 de 
+	"Introduction aux ephemrides astronomiques" BDL
+	//
+	mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
+	latitude*=(DR);
+	ff=1./EARTH_INVERSE_FLATTENING;
+   phip=atan2(rhosinphip,rhocosphip);
+	altitude/=(EARTH_SEMI_MAJOR_RADIUS);
+	f=sqrt(1-(2*ff-ff*ff)*sin(latitude)*sin(latitude));
+	gc=1/f+altitude;
+	gs=(1-ff)*(1-ff)/f+altitude;
+   *dxeq=(gc*cst*cos(latitude)*cos(tsl));
+   *dyeq=(gc*cst*cos(latitude)*sin(tsl));
+   *dzeq=(gs*cst*sin(latitude));
+	*/
 }
 
 void mc_precelem(struct elemorb elem1, double jd1, double jd2, struct elemorb *elem2)
@@ -520,8 +544,10 @@ void mc_rhophi2latalt(double rhosinphip,double rhocosphip,double *latitude,doubl
 {
    double aa,ff,bb,lat,alt,phip,rho,phi0,u0,rhosinphip0,rhocosphip0,rho0;
    double sinu0,cosu0,sinphi0,cosphi0,phip0;
-   aa=6378140;
-   ff=1./298.257;
+   //aa=6378140;
+   aa=EARTH_SEMI_MAJOR_RADIUS;
+   //ff=1./298.257;
+	ff=1./EARTH_INVERSE_FLATTENING;
    bb=aa*(1-ff);
    rho=sqrt(rhosinphip*rhosinphip+rhocosphip*rhocosphip);
    if (rho==0.) {
@@ -627,7 +653,7 @@ void mc_corearthsatelem(double jj,struct elemorb *elem)
       cosi=cos(elem->i);
       e2=elem->e*elem->e;
       a2=a*a;
-      req=6378.140e3/(UA); /* equatorial radius of the Earth in U.A. */
+      req=(EARTH_SEMI_MAJOR_RADIUS)/(UA); /* equatorial radius of the Earth in U.A. */
       j2=+1.08263e-3*req*req; /* U.A.2 */
       dt=jjd-elem->jj_epoque;
 		e=elem->e;
@@ -652,7 +678,7 @@ void mc_corearthsatelem(double jj,struct elemorb *elem)
       */
       /* --- 12540lec05.pdf ---*/
       /*
-      req=6378.140e3/(UA); // equatorial radius of the Earth in U.A.
+      req=(EARTH_SEMI_MAJOR_RADIUS)/(UA); // equatorial radius of the Earth in U.A.
       req2=req*req;
       j2=+1.08263e-3;
       ntilda=n0*(1+3./4.*j2*req2/(a2*sqrt((1-e2)*(1-e2)*(1-e2)))*(3.*cosi*cosi-1.));
@@ -665,7 +691,7 @@ void mc_corearthsatelem(double jj,struct elemorb *elem)
       dm0s=(ntilda*dt);
       */
       /* - Born */
-      req=6378.140e3/(UA); // equatorial radius of the Earth in U.A.
+      req=(EARTH_SEMI_MAJOR_RADIUS)/(UA); // equatorial radius of the Earth in U.A.
       req2=req*req;
       j2=+1.08263e-3;
       // - secular terms -
