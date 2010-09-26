@@ -694,18 +694,18 @@ List_ModelValues
 					dra*=60;
 				}
 				mc_hd2parallactic(ha,dec,latrad,&parallactic);
-				ras[kjds]=ra/(DR);
-				decs[kjds]=dec/(DR);
-				has[kjds]=ha/(DR);
-				hs[kjds]=h/(DR);
-				azs[kjds]=az/(DR);
-				parallactics[kjds]=parallactic/(DR);
 				/* --- free pointers ---*/
 				if (kjds==njds-1) {
 					if (matx!=NULL) { free(matx); }
 					if (vecy!=NULL) { free(vecy); }
 				}
 			}
+			ras[kjds]=ra/(DR);
+			decs[kjds]=dec/(DR);
+			has[kjds]=ha/(DR);
+			hs[kjds]=h/(DR);
+			azs[kjds]=az/(DR);
+			parallactics[kjds]=parallactic/(DR);
 		}
       strcpy(s,"");
       strcat(s,mc_d2s(rat/(DR)));
