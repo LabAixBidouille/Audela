@@ -64,8 +64,6 @@ test imastack_init {prepare 3 fichiers} {
 #-------------------------------------------------------------------------------
 test imastack_sadd2 {sadd2} {
 
-return 1
-
    #--- je teste la somme avec l'option DATE-END
    sadd imastack- add 3 1 "DATE-END"
 
@@ -75,8 +73,8 @@ return 1
    file delete $::audace(rep_images)/add.fit
 
    set pix1 [lindex [buf$bufNo getpix {1 1}] 1]
-   return [expr $pix1 == 250]
-} "1"
+   return $pix1
+} "200.000000"
 
 #-------------------------------------------------------------------------------
 test imastack_add {ttscript2 IMA/STACK ADD} {
@@ -91,9 +89,9 @@ test imastack_add {ttscript2 IMA/STACK ADD} {
 
    set pix1 [lindex [buf$bufNo getpix {1 1}] 1]
    #--- je verifie que c'est egal a la somme 100+50+50 = 200
-   return [expr $pix1 == 200]
+   return $pix1
 
-} "1"
+} "200.000000"
 
 #-------------------------------------------------------------------------------
 test imastack_end {imastack ADD ajoute 3 images ttscript2} {
@@ -102,7 +100,7 @@ test imastack_end {imastack ADD ajoute 3 images ttscript2} {
    file delete $::audace(rep_images)/imastack-1.fit
    file delete $::audace(rep_images)/imastack-2.fit
    file delete $::audace(rep_images)/imastack-3.fit
-
+   confVisu::clear 1
    return ""
 } ""
 
