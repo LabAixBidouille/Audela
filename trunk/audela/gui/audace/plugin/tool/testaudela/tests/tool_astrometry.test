@@ -22,10 +22,8 @@ test tool_astrometry_deg2hms {} -constraints {
 
    return 0
 } -cleanup {
-   #--- j'arrete l'outil
-   ::confVisu::selectTool $visuNo ::astrometry
-   #--- je supprime l'instance
-   ::astrometry::deletePluginInstance ::astrometry
+   #--- je supprime l'instance (cette commande arret l'outil si ce n'est pas deja fait)
+   ::confVisu::deletePluginInstance $visuNo ::astrometry
    #--- je supprime le package de la mémoire
    package forget astrometry
 
