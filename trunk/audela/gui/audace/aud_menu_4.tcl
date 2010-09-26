@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_4.tcl
 # Description : Script regroupant les fonctionnalites du menu Traitement
-# Mise à jour $Id: aud_menu_4.tcl,v 1.21 2010-07-27 10:17:29 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_4.tcl,v 1.22 2010-09-26 11:54:52 robertdelmas Exp $
 #
 
 namespace eval ::traiteFilters {
@@ -419,8 +419,8 @@ namespace eval ::traiteFilters {
    # Procedure correspondant a l'appui sur le bouton OK
    #
    proc cmdOk { } {
-      cmdApply
-      cmdClose
+      if { [ ::traiteFilters::cmdApply ] == "0" } { return }
+      ::traiteFilters::cmdClose
    }
 
    #
@@ -460,7 +460,7 @@ namespace eval ::traiteFilters {
          if { ( $traiteFilters(image_in1) == "" ) || ( $traiteFilters(image_in2) == "" ) } {
             tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,choix_image_dd)
             set traiteFilters(avancement) ""
-            return
+            return 0
          }
       } else {
          #--- Il faut saisir la constante
@@ -468,13 +468,13 @@ namespace eval ::traiteFilters {
             if { [ buf$audace(bufNo) imageready ] == "0" } {
                tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,header_noimage)
                set traiteFilters(avancement) ""
-               return
+               return 0
             }
          } elseif { $traiteFilters(choix_mode) == "1" } {
             if { $traiteFilters(image_in) == "" } {
                tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,choix_image_dd)
                set traiteFilters(avancement) ""
-               return
+               return 0
             }
          }
       }
@@ -489,42 +489,42 @@ namespace eval ::traiteFilters {
             tk_messageBox -title $caption(traiteFilters,attention) -type ok \
                -message $caption(traiteFilters,choix_coefficients)
             set traiteFilters(avancement) ""
-            return
+            return 0
          }
          #---
          if { $traiteFilters(coef_etal) == "" } {
             tk_messageBox -title $caption(traiteFilters,attention) -type ok \
                -message $caption(traiteFilters,coef_manquant)
             set traiteFilters(avancement) ""
-            return
+            return 0
          }
          #---
          if { $traiteFilters(coef_mult) == "" } {
             tk_messageBox -title $caption(traiteFilters,attention) -type ok \
                -message $caption(traiteFilters,coef_manquant)
             set traiteFilters(avancement) ""
-            return
+            return 0
          }
          #---
          if { ( [ string is double -strict $traiteFilters(coef_etal) ] == "0" ) && ( [ string is double -strict $traiteFilters(coef_mult) ] == "0" ) } {
             tk_messageBox -title $caption(traiteFilters,attention) -icon error \
                -message $caption(traiteFilters,coef_invalides)
             set traiteFilters(avancement) ""
-            return
+            return 0
          }
          #---
          if { [ string is double -strict $traiteFilters(coef_etal) ] == "0" } {
             tk_messageBox -title $caption(traiteFilters,attention) -icon error \
                -message $caption(traiteFilters,coef_invalide)
             set traiteFilters(avancement) ""
-            return
+            return 0
          }
          #---
          if { [ string is double -strict $traiteFilters(coef_mult) ] == "0" } {
             tk_messageBox -title $caption(traiteFilters,attention) -icon error \
                -message $caption(traiteFilters,coef_invalide)
             set traiteFilters(avancement) ""
-            return
+            return 0
          }
          #---
          if { $traiteFilters(choix_mode) == "1" } {
@@ -541,7 +541,7 @@ namespace eval ::traiteFilters {
             tk_messageBox -title $caption(traiteFilters,attention) -type ok \
                -message $caption(traiteFilters,choix_coefficient)
             set traiteFilters(avancement) ""
-            return
+            return 0
          }
          #---
          if { $traiteFilters(choix_mode) == "1" } {
@@ -558,7 +558,7 @@ namespace eval ::traiteFilters {
             tk_messageBox -title $caption(traiteFilters,attention) -type ok \
                -message $caption(traiteFilters,choix_coefficient)
             set traiteFilters(avancement) ""
-            return
+            return 0
          }
          #---
          if { $traiteFilters(choix_mode) == "1" } {
@@ -575,7 +575,7 @@ namespace eval ::traiteFilters {
             tk_messageBox -title $caption(traiteFilters,attention) -type ok \
                -message $caption(traiteFilters,choix_coefficient)
             set traiteFilters(avancement) ""
-            return
+            return 0
          }
          #---
          if { $traiteFilters(choix_mode) == "1" } {
@@ -592,7 +592,7 @@ namespace eval ::traiteFilters {
             tk_messageBox -title $caption(traiteFilters,attention) -type ok \
                -message $caption(traiteFilters,choix_coefficient)
             set traiteFilters(avancement) ""
-            return
+            return 0
          }
          #---
          if { $traiteFilters(choix_mode) == "1" } {
@@ -609,7 +609,7 @@ namespace eval ::traiteFilters {
             tk_messageBox -title $caption(traiteFilters,attention) -type ok \
                -message $caption(traiteFilters,choix_coefficient)
             set traiteFilters(avancement) ""
-            return
+            return 0
          }
          #---
          if { $traiteFilters(choix_mode) == "1" } {
@@ -626,14 +626,14 @@ namespace eval ::traiteFilters {
             tk_messageBox -title $caption(traiteFilters,attention) -type ok \
                -message $caption(traiteFilters,coef_manquant)
             set traiteFilters(avancement) ""
-            return
+            return 0
          }
          #---
          if { [ string is double -strict $traiteFilters(coef_etal) ] == "0" } {
             tk_messageBox -title $caption(traiteFilters,attention) -icon error \
                -message $caption(traiteFilters,coef_invalide)
             set traiteFilters(avancement) ""
-            return
+            return 0
          }
          #---
          if { $traiteFilters(choix_mode) == "1" } {
@@ -650,14 +650,14 @@ namespace eval ::traiteFilters {
             tk_messageBox -title $caption(traiteFilters,attention) -type ok \
                -message $caption(traiteFilters,coef_manquant)
             set traiteFilters(avancement) ""
-            return
+            return 0
          }
          #---
          if { [ string is double -strict $traiteFilters(coef_etal) ] == "0" } {
             tk_messageBox -title $caption(traiteFilters,attention) -icon error \
                -message $caption(traiteFilters,coef_invalide)
             set traiteFilters(avancement) ""
-            return
+            return 0
          }
          #---
          if { $traiteFilters(choix_mode) == "1" } {
@@ -674,14 +674,14 @@ namespace eval ::traiteFilters {
             tk_messageBox -title $caption(traiteFilters,attention) -type ok \
                -message $caption(traiteFilters,coef_manquant)
             set traiteFilters(avancement) ""
-             return
+            return 0
          }
          #---
          if { [ string is double -strict $traiteFilters(coef_etal) ] == "0" } {
             tk_messageBox -title $caption(traiteFilters,attention) -icon error \
                -message $caption(traiteFilters,coef_invalide)
             set traiteFilters(avancement) ""
-            return
+            return 0
          }
          #---
          if { $traiteFilters(choix_mode) == "1" } {
@@ -698,42 +698,42 @@ namespace eval ::traiteFilters {
             tk_messageBox -title $caption(traiteFilters,attention) -type ok \
                -message $caption(traiteFilters,choix_coefficients)
             set traiteFilters(avancement) ""
-            return
+            return 0
          }
          #---
          if { $traiteFilters(coef_mult) == "" } {
             tk_messageBox -title $caption(traiteFilters,attention) -type ok \
                -message $caption(traiteFilters,coef_manquant)
             set traiteFilters(avancement) ""
-            return
+            return 0
          }
          #---
          if { $traiteFilters(offset) == "" } {
             tk_messageBox -title $caption(traiteFilters,attention) -type ok \
                -message $caption(traiteFilters,coef_manquant)
             set traiteFilters(avancement) ""
-            return
+            return 0
          }
          #---
          if { ( [ string is double -strict $traiteFilters(coef_mult) ] == "0" ) && ( [ string is double -strict $traiteFilters(offset) ] == "0" ) } {
             tk_messageBox -title $caption(traiteFilters,attention) -icon error \
                -message $caption(traiteFilters,coef_invalides)
             set traiteFilters(avancement) ""
-            return
+            return 0
          }
          #---
          if { [ string is double -strict $traiteFilters(coef_mult) ] == "0" } {
             tk_messageBox -title $caption(traiteFilters,attention) -icon error \
                -message $caption(traiteFilters,coef_invalide)
             set traiteFilters(avancement) ""
-            return
+            return 0
          }
          #---
          if { [ string is double -strict $traiteFilters(offset) ] == "0" } {
             tk_messageBox -title $caption(traiteFilters,attention) -icon error \
                -message $caption(traiteFilters,coef_invalide)
             set traiteFilters(avancement) ""
-            return
+            return 0
          }
          #---
          if { $traiteFilters(choix_mode) == "1" } {
@@ -753,7 +753,7 @@ namespace eval ::traiteFilters {
             tk_messageBox -title $caption(traiteFilters,attention) -icon error \
                -message $caption(traiteFilters,tfd_images_differentes)
             set traiteFilters(avancement) ""
-            return
+            return 0
          }
          if { $traiteFilters(choix_mode) == "1" } {
             if { [ catch { dft2d $image_in.fit $image_out1.fit $image_out2.fit $dft_format $dft_order } message_erreur ] } {
