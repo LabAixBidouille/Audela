@@ -742,27 +742,38 @@ List_ModelValues
 		if (driftflag==1) {
 			/* drifts in arcsec/sec */
 			dt=(jds[1]-jds[0])*86400;
-			delta=ras[1]-ras[0]; delta/=dt;
-			if (delta<180) { delta+=360; }
+			//
+			delta=ras[1]-ras[0];
+			if (delta<-180) { delta+=360; }
 			if (delta>180) { delta-=360; }
+			delta/=dt;
 			dra=delta*3600;
-			delta=decs[1]-decs[0]; delta/=dt;
+			//
+			delta=decs[1]-decs[0]; 
+			delta/=dt;
 			ddec=delta*3600;
-			delta=has[1]-has[0]; delta/=dt;
-			if (delta<180) { delta+=360; }
+			//
+			delta=has[1]-has[0];
+			if (delta<-180) { delta+=360; }
 			if (delta>180) { delta-=360; }
+			delta/=dt;
 			dha=delta*3600;
-			delta=hs[1]-hs[0]; delta/=dt;
-			if (delta<180) { delta+=360; }
+			//
+			delta=hs[1]-hs[0];
+			if (delta<-180) { delta+=360; }
 			if (delta>180) { delta-=360; }
+			delta/=dt;
 			dh=delta*3600;
-			delta=azs[1]-azs[0]; delta/=dt;
-			if (delta<180) { delta+=360; }
+			//
+			delta=azs[1]-azs[0];
+			if (delta<-180) { delta+=360; }
 			if (delta>180) { delta-=360; }
+			delta/=dt;
 			daz=delta*3600;
-			delta=parallactics[1]-parallactics[0]; delta/=dt;
-			if (delta<180) { delta+=360; }
+			delta=parallactics[1]-parallactics[0];
+			if (delta<-180) { delta+=360; }
 			if (delta>180) { delta-=360; }
+			delta/=dt;
 			dparallactic=delta*3600;
 			strcat(s," ");
 			strcat(s,mc_d2s(dra));
