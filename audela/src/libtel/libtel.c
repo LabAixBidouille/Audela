@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libtel.c,v 1.31 2010-09-08 14:55:38 fredvachier Exp $
+// $Id: libtel.c,v 1.32 2010-09-26 20:32:24 alainklotz Exp $
 
 #include "sysexp.h"
 
@@ -1143,15 +1143,18 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                result = TCL_ERROR;
             }            
          } else {
-            // j'applique le modele de pointage avec la procedure modpoi_tel2cat du TCL
-            // ========================================================================
-            sprintf(ligne,"set libtel(radec) {%s}",texte);
-            Tcl_Eval(interp,ligne);
-            sprintf(ligne,"catch {set libtel(radec) [%s {%s}]}",tel->model_tel2cat,texte);
-            Tcl_Eval(interp,ligne);
-            Tcl_Eval(interp,"set libtel(radec) $libtel(radec)");
-            strcpy(ligne,interp->result);
-            /* - end of pointing model-*/
+            // je recupere les coordonnnees du telescope
+            if ( tel_radec_coord(tel,texte) == 0 ) {
+					// j'applique le modele de pointage avec la procedure modpoi_tel2cat du TCL
+					// ========================================================================
+					sprintf(ligne,"set libtel(radec) {%s}",texte);
+					Tcl_Eval(interp,ligne);
+					sprintf(ligne,"catch {set libtel(radec) [%s {%s}]}",tel->model_tel2cat,texte);
+					Tcl_Eval(interp,ligne);
+					Tcl_Eval(interp,"set libtel(radec) $libtel(radec)");
+					strcpy(ligne,interp->result);
+					/* - end of pointing model-*/
+				}
          } 
 
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
