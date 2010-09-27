@@ -1,7 +1,8 @@
 
 set camItem "A"
 set camNo 0
-set bufNo 2
+set visuNo 1
+set bufNo [::confVisu::getBufNo $visuNo]
 
 #-------------------------------------------------------------------------------
 test WEBCAM_RGB_create {creation de la camera RGB} {WEBCAM_RGB} {
@@ -37,7 +38,7 @@ test WEBCAM_RGB_acq {acquisition 1s RGB} {WEBCAM_RGB} {
    set statusVariableName "::status_cam$camNo"
    vwait ::status_cam$camNo
    if { [set $statusVariableName] == "exp" } {
-        vwait ::status_cam$camNo
+      vwait ::status_cam$camNo
    }
    #--- je verifie que le buffer contient une image
    if { [buf$bufNo imageready] != 1 } { return "image not ready" }
@@ -49,10 +50,10 @@ test WEBCAM_RGB_acq {acquisition 1s RGB} {WEBCAM_RGB} {
 
 #-------------------------------------------------------------------------------
 test WEBCAM_RGB_delete {suppression camera RGB} {WEBCAM_RGB} {
-     cam::delete $camNo
-     update
-     #--- je verifie qu'il n'y a plus de camera
-     return [cam::list]
+   cam::delete $camNo
+   update
+   #--- je verifie qu'il n'y a plus de camera
+   return [cam::list]
 } ""
 
 #-------------------------------------------------------------------------------
@@ -74,7 +75,7 @@ test WEBCAM_NB_acq {acquisition 1s NB} {WEBCAM_NB} {
    vwait ::status_cam$camNo
    set statusVariableName "::status_cam$camNo"
    if { [set $statusVariableName] == "exp" } {
-        vwait ::status_cam$camNo
+      vwait ::status_cam$camNo
    }
    #--- je verifie que le buffer contient une image
    if { [buf$bufNo imageready] != 1 } { return "image not ready" }
@@ -86,9 +87,9 @@ test WEBCAM_NB_acq {acquisition 1s NB} {WEBCAM_NB} {
 
 #-------------------------------------------------------------------------------
 test WEBCAM_NB_delete {suppression camera NB} {WEBCAM_NB} {
-     cam::delete $camNo
-     update
-     #--- je verifie qu'il n'y a plus de camera
-     return [cam::list]
+   cam::delete $camNo
+   update
+   #--- je verifie qu'il n'y a plus de camera
+   return [cam::list]
 } ""
 

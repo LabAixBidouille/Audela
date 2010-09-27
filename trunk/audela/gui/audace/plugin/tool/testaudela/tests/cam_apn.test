@@ -1,6 +1,7 @@
 
 set camNo 0
-set bufNo 2
+set visuNo 1
+set bufNo [::confVisu::getBufNo $visuNo]
 
 #----------------------------s---------------------------------------------------
 test cam_apn_create {creation de la camera} {APN} {
@@ -77,18 +78,18 @@ test cam_apn_cfa2rgb {conversion cfa2rgb} {APN} {
 
 #-------------------------------------------------------------------------------
 test cam_apn_hasWindow {mode fenetree} {APN} {
-    ::dslr::getPluginProperty "A"  hasWindow
+   ::dslr::getPluginProperty "A" hasWindow
 } "0"
 
 #-------------------------------------------------------------------------------
 test cam_apn_delete {suppression camera} {APN} {
-     #--- j'efface le fichier RAW
-     if { [file exists $::audace(rep_images)/m3.crw] } {
-        file delete $::audace(rep_images)/m3.crw
-     }
-     #--- je supprime la camera
-     cam::delete $camNo
-     #--- je verifie qu'il n'y a plus de camera
-     return [cam::list]
+   #--- j'efface le fichier RAW
+   if { [file exists $::audace(rep_images)/m3.crw] } {
+      file delete $::audace(rep_images)/m3.crw
+   }
+   #--- je supprime la camera
+   cam::delete $camNo
+   #--- je verifie qu'il n'y a plus de camera
+   return [cam::list]
 } ""
 

@@ -1,8 +1,8 @@
 
-set visuNo 1
 set camItem "A"
 set camNo 0
-set bufNo 2
+set visuNo 1
+set bufNo [::confVisu::getBufNo $visuNo]
 set cameraName ""
 
 #-------------------------------------------------------------------------------
@@ -40,7 +40,7 @@ test WEBCAM_RGB_acq {acquisition} {WEBCAM_RGB} {
    set statusVariableName "::status_cam$camNo"
    vwait ::status_cam$camNo
    if { [set $statusVariableName] == "exp" } {
-        vwait ::status_cam$camNo
+      vwait ::status_cam$camNo
    }
 
    #--- je rafraichis l'affichage (ce n'est pas indispensable, mais c'est juste pour voir
@@ -80,10 +80,10 @@ test WEBCAM_DIRECTX_acq {acquisition en mode bloquant} {WEBCAM_RGB} {
 
 #-------------------------------------------------------------------------------
 test WEBCAM_DIRECTX_delete {suppression camera NB} {WEBCAM_RGB} {
-     cam::delete $camNo
-     update
-     #--- je verifie qu'il n'y a plus de camera
-     return [cam::list]
+   cam::delete $camNo
+   update
+   #--- je verifie qu'il n'y a plus de camera
+   return [cam::list]
 } ""
 
 #-------------------------------------------------------------------------------
