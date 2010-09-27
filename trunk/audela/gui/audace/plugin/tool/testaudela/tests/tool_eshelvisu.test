@@ -3,18 +3,18 @@ set visuNo 1
 set bufNo [::confVisu::getBufNo 1]
 
 #-------------------------------------------------------------------------------
-test tool_eshelvisu_exportfit { export orders } -constraints {
+test tool_eshelvisu_exportfit {export orders} -constraints {
    AUDACE
 } -setup {
 
    #--- je charge le package eshel
    package require eshelvisu
-    #--- je cree une instance
+   #--- je cree une instance
    ::confVisu::createPluginInstance $visuNo ::eshelvisu
    ::confVisu::selectTool $visuNo ::eshelvisu
 
    #--- je charge le package fitstcl
-} -body  {
+} -body {
    set fileName "20090109-22291400-Lune-1x120s.fit"
    set outputDirectory $::audace(rep_images)
 
@@ -27,7 +27,7 @@ test tool_eshelvisu_exportfit { export orders } -constraints {
 
    #--- je verifie que le fichier contient 2 HDU
    set result ""
-   set hFile [fits open [file join $::audace(rep_images) 20090109-22291400-Lune-1x120s_ORDERS.fit]  0]
+   set hFile [fits open [file join $::audace(rep_images) 20090109-22291400-Lune-1x120s_ORDERS.fit] 0]
    set nbHdu [$hFile info nhdu]
    if { $nbHdu != 2 } {
       append result "nbHdu=$nbHdu "
@@ -57,7 +57,7 @@ test tool_eshelvisu_exportfit { export orders } -constraints {
    if { $orderNum != "34" } {
       append result "HDU#2 line=2 orderNum=$orderNum "
    }
-   set dispersion  [lindex [lindex [$hFile get table "disp" 2 ] 0] 0]
+   set dispersion [lindex [lindex [$hFile get table "disp" 2 ] 0] 0]
    if { $dispersion != 0.177 } {
       append result "HDU#2 line=2 dispersion=$dispersion "
    }
@@ -67,7 +67,7 @@ test tool_eshelvisu_exportfit { export orders } -constraints {
    after 1000
    #--- result est vide s'il n'y a pas d'erreurs, sinon il contient le message d'erreur
    return $result
-} -cleanup  {
+} -cleanup {
    #--- je supprime l'instance
    ::confVisu::deletePluginInstance $visuNo ::eshelvisu
    #--- je supprime le package de la mémoire
@@ -75,5 +75,12 @@ test tool_eshelvisu_exportfit { export orders } -constraints {
    #--- raz de l'affichage
    confVisu::clear $visuNo
    file delete -force [file join $::audace(rep_images) 20090109-22291400-Lune-1x120s_ORDERS.fit]
+   #--- je cree une instance ayant pour raccourci F2
+   foreach { namespace raccourci } $::conf(afficheOutils) {
+      if { $raccourci == "F2" } {
+         ::confVisu::createPluginInstance $visuNo ::$namespace
+         ::confVisu::selectTool $visuNo ::$namespace
+      }
+   }
 } -result ""
 
