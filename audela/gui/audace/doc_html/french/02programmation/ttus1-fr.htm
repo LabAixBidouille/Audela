@@ -5,7 +5,7 @@
   <title>Librairie TT : Manuel Utilisateur</title>
 </head>
 <body>
-<p class="date">Date de mise &#224; jour : 18 septembre
+<p class="date">Date de mise &#224; jour : 28 septembre
 2010</p>
 <h1>LIB TT - Librairie de pr&#233;traitement d'images
 astronomiques</h1>
@@ -454,15 +454,15 @@ d'astrom&#233;trie (WCS), &#233;ventuellement pr&#233;sents
 dans l'en-t&#234;te FITS, sont modifi&#233;s en
 cons&#233;quence.<br>
 </p>
-<p><a name="TRANS" id="TRANS">Par exemple, pour effectuer une
-translation sur l'image $img.$ext</a></p>
-<pre><a name="TRANS" id="TRANS">ttscript2 "IMA/SERIES . $img . . $ext . $img . $ext TRANS trans_x=12 trans_y=34 nullpixel=0<br></a></pre>
-<p><a name="TRANS" id="TRANS">L'option nullpixel=0 peut s'av&#233;rer
+<p>Par exemple, pour effectuer une
+translation sur l'image $img.$ext</p>
+<pre>ttscript2 "IMA/SERIES . $img . . $ext . $img . $ext TRANS trans_x=12 trans_y=34 nullpixel=0<br></pre>
+<p>L'option nullpixel=0 peut s'av&#233;rer
 importante pour le
 compositage ult&#233;rieur&nbsp;des images. En effet, le mot
 cl&#233; NULLPIXEL pourra &#234;tre &#224; nouveau utilis&#233;
 par les fonctions d'empilage (IMA/STACK) pour &#233;viter de tenir
-compte des "bords noirs" des&nbsp;images.</a></p>
+compte des "bords noirs" des&nbsp;images.</p>
 <h4><a name="ROT" id="ROT"></a>1.3.16. Fonction ROT</h4>
 <p>Effectue une rotation d'un [angle] (en degr&#233;s) autour
 du point d&#233;fini par les coordonn&#233;es [x0] [y0]. Les
