@@ -2,7 +2,7 @@
 # Fichier : andorusb.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Robert DELMAS
-# Mise a jour $Id: andorusb.tcl,v 1.1 2010-09-08 13:15:50 fredvachier Exp $
+# Mise a jour $Id: andorusb.tcl,v 1.2 2010-09-28 05:47:45 robertdelmas Exp $
 #
 
 namespace eval ::andorusb {
@@ -316,7 +316,7 @@ proc ::andorusb::configureCamera { camItem bufNo } {
       }
       #--- Je mets conf(andorusb,config) entre guillemets pour le cas ou le nom du repertoire contient des espaces
       #--- Je cree la camera
-      set camNo [ cam::create andorusb USB \"$conf(andorusb,config)\" ]
+      set camNo [ cam::create andorusb USB $conf(andorusb,config) ]
       console::affiche_entete "$caption(andorusb,port_camera) ([ cam$camNo name ]) \
          $caption(andorusb,2points) $conf(andorusb,config)\n"
       console::affiche_saut "\n"
