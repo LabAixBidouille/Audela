@@ -347,6 +347,6 @@ test audace_pretrait_fin {effacer la visu} {AUDACE} {
    file delete -force [file join $::audace(rep_images) ugc1922.fit]
    file delete -force [file join $::audace(rep_images) ugc1923.fit]
    #--- je vide la visu
-   visu$visuNo clear
-} "0"
+   ::confVisu::clear $visuNo
+} ""
 
