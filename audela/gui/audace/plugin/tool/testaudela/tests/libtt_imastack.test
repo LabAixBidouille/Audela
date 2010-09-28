@@ -15,13 +15,13 @@ test imastack_init {prepare 3 fichiers} {
    buf$bufTemp setkwd [list "NAXIS2" $naxis2 int "" ""]
    buf$bufTemp offset 50
 
-   #--- imastack-1.git niveau 50 , sauf intensite(1,1)=200
+   #--- imastack-1.fit niveau 50 , sauf intensite(1,1)=100
    buf$bufTemp copyto $bufNo
    buf$bufNo setpix {1 1} 100
    set exptime "60"
    set dateObs "2008-12-05T22:00:00.00"
    set dateEnd "2008-12-05T22:01:00.00"
-   buf$bufNo setkwd [list "EXPOSURE"  $exptime float    "" "s"]
+   buf$bufNo setkwd [list "EXPOSURE" $exptime float "" "s"]
    buf$bufNo setkwd [list "DATE-OBS" $dateObs string "Start of exposure. FITS standard" "Iso 8601"]
    buf$bufNo setkwd [list "DATE-END" $dateEnd string "End of exposure. FITS standard" "Iso 8601"]
    buf$bufNo setkwd [list "NAXIS" 2 int "" ""]
@@ -35,7 +35,7 @@ test imastack_init {prepare 3 fichiers} {
    set exptime "60"
    set dateObs "2008-12-05T22:01:30.00"
    set dateEnd "2008-12-05T22:02:30.00"
-   buf$bufNo setkwd [list "EXPOSURE"  $exptime float    "" "s"]
+   buf$bufNo setkwd [list "EXPOSURE" $exptime float "" "s"]
    buf$bufNo setkwd [list "DATE-OBS" $dateObs string "Start of exposure. FITS standard" "Iso 8601"]
    buf$bufNo setkwd [list "DATE-END" $dateEnd string "End of exposure. FITS standard" "Iso 8601"]
    buf$bufNo setkwd [list "NAXIS" 2 int "" ""]
@@ -49,7 +49,7 @@ test imastack_init {prepare 3 fichiers} {
    set exptime "60"
    set dateObs "2008-12-05T22:03:00.00"
    set dateEnd "2008-12-05T22:04:00.00"
-   buf$bufNo setkwd [list "EXPOSURE"  $exptime float    "" "s"]
+   buf$bufNo setkwd [list "EXPOSURE" $exptime float "" "s"]
    buf$bufNo setkwd [list "DATE-OBS" $dateObs string "Start of exposure. FITS standard" "Iso 8601"]
    buf$bufNo setkwd [list "DATE-END" $dateEnd string "End of exposure. FITS standard" "Iso 8601"]
    buf$bufNo setkwd [list "NAXIS" 2 int "" ""]
@@ -75,19 +75,20 @@ test imastack_sadd2 {sadd2} {
    file delete $::audace(rep_images)/add.fit
 
    set pix1 [lindex [buf$bufNo getpix {1 1}] 1]
+   #--- je verifie que c'est egal a la somme 100+50+50 = 200
    return $pix1
 } "200.000000"
 
 #-------------------------------------------------------------------------------
 test imastack_add {ttscript2 IMA/STACK ADD} {
 
-   #--- je cree une image de niveau 100
+   #--- je cree une image de niveau 150
    ttscript2 "IMA/STACK \"$::audace(rep_images)\" \"imastack-1.fit imastack-2.fit imastack-3.fit\" * * \"\" \"$::audace(rep_images)\" \"add-result.fit\" . \"\" \"ADD\" \"DATE-END\" "
 
    buf$bufNo load $::audace(rep_images)/add-result.fit
    confVisu::autovisu $visuNo
    update
-   file delete $::audace(rep_images)/add/add-result.fit
+   file delete $::audace(rep_images)/add-result.fit
 
    set pix1 [lindex [buf$bufNo getpix {1 1}] 1]
    #--- je verifie que c'est egal a la somme 100+50+50 = 200
