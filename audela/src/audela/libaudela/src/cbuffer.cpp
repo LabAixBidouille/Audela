@@ -61,11 +61,8 @@ CBuffer::CBuffer() : CDevice()
    /* Crée une chaine vide, pour éviter un pb potentiel sur le strlen(temporaryRawFileName) de FreeBuffer() */
    strcpy(temporaryRawFileName, "");
 
-   // On fait de la place avant de recreer le contenu du buffer
+   // J'initialise les 3 attributes dynamique (keywords, p_ast, pix) 
    FreeBuffer(DONT_KEEP_KEYWORDS);
-
-   // je cree un tableau de pixels par defaut
-   SetPixels(PLANE_GREY,0,0,FORMAT_FLOAT,COMPRESS_NONE, NULL, 0, 0, 0);
 
    initialMipsLo = 0;
    initialMipsHi = 0;
@@ -80,7 +77,24 @@ CBuffer::~CBuffer()
    if (fitsextension != NULL) {
       delete[] fitsextension;
    }
-   FreeBuffer(FREE_KEYWORDS);
+
+   if(keywords) {
+      delete keywords;
+      keywords = NULL;
+   }
+   if(p_ast) {
+      free(p_ast);
+      p_ast = NULL;
+   }
+   // j'efface le fichier temporaire de l'image RAW
+   if( strlen(temporaryRawFileName) > 0 ) {
+      remove(temporaryRawFileName);
+      strcpy(temporaryRawFileName, "");
+   }
+   if (pix != NULL) {
+	   delete pix ;
+	   pix = NULL;
+	}
 }
 
 CBuffer * CBuffer::Chercher(int bufNo) {
@@ -176,17 +190,6 @@ int CBuffer::IsPixelsReady(void) {
 
 void CBuffer::FreeBuffer(int keep_keywords)
 {
-   if (keep_keywords == FREE_KEYWORDS) {
-      if(keywords)
-         delete keywords;
-         keywords = NULL;
-      if(p_ast) {
-         free(p_ast);
-         p_ast = NULL;
-      }
-      return;
-   }
-
    if (keep_keywords == DONT_KEEP_KEYWORDS) {
       if(keywords) {
          delete keywords;

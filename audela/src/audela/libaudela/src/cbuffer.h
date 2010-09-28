@@ -42,7 +42,7 @@
 
 #define KEEP_KEYWORDS         0
 #define DONT_KEEP_KEYWORDS    1
-#define FREE_KEYWORDS         2
+
 
 #define CHAREXTENSION 128
 
