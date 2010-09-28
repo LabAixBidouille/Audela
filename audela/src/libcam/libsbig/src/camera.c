@@ -166,6 +166,7 @@ static int gettemp(struct camprop *cam, float *setpoint, float *ccd,
 		   float *ambient, int *reg, int *power);
 static int settemp(struct camprop *cam, float temp);
 static int regulation_off(struct camprop *cam);
+double bcdTodouble(unsigned long bcd);
 
 
 /* ========================================================= */
@@ -428,17 +429,14 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       strcpy(CAM_INI[cam->index_cam].ccd, "unknown");
    }
 
-
    CAM_INI[cam->index_cam].maxx = gcir0.readoutInfo[0].width;
    CAM_INI[cam->index_cam].maxy = gcir0.readoutInfo[0].height;
    CAM_INI[cam->index_cam].overscanxbeg = 0;
    CAM_INI[cam->index_cam].overscanxend = 0;
    CAM_INI[cam->index_cam].overscanybeg = 0;
    CAM_INI[cam->index_cam].overscanyend = 0;
-   CAM_INI[cam->index_cam].celldimx =
-      ((double) (gcir0.readoutInfo[0].pixelWidth)) * 1e-8;
-   CAM_INI[cam->index_cam].celldimy =
-      ((double) (gcir0.readoutInfo[0].pixelHeight)) * 1e-8;
+   CAM_INI[cam->index_cam].celldimx = bcdTodouble(gcir0.readoutInfo[0].pixelWidth);
+   CAM_INI[cam->index_cam].celldimy = bcdTodouble(gcir0.readoutInfo[0].pixelHeight);
    CAM_INI[cam->index_cam].gain = (double) (gcir0.readoutInfo[0].gain/100.); /* e/ADU */
    CAM_INI[cam->index_cam].maxconvert = pow(2, (double) 16) - 1.;
 
@@ -465,9 +463,6 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       cam->nb_deadendphotoy = 0;
    }
 
-   // je recupere la taille des pixels (micron converti en metre)
-   CAM_INI[cam->index_cam].celldimx = gcir0.readoutInfo[0].pixelWidth * 1e-6;	
-   CAM_INI[cam->index_cam].celldimy = gcir0.readoutInfo[0].pixelHeight * 1e-6;	
    cam->celldimx = CAM_INI[cam->index_cam].celldimx;	
    cam->celldimy = CAM_INI[cam->index_cam].celldimy;	
    // je calcule la taille de l'image en fonction du binning (Binning=1 par defaut)
@@ -1189,16 +1184,33 @@ void sbig_get_info_temperatures(struct camprop *cam, double *setpoint,
 				double *ccd, double *ambient, int *reg,
 				int *power)
 {
-    /*
-       // setpoint = temp�rature de consigne
-       // ccd = temp�rature du ccd
-       // ambient = temp�rature ambiante
-       // reg = r�gulation ?
-       // power = puissance du peltier (0-255=0-100%)
-     */
+    
+    // setpoint = temperature de consigne
+    // ccd = temperature du ccd
+    // ambient = temprature ambiante
+    // reg = regulation ?
+    // power = puissance du peltier (0-255=0-100%)
+ 
     float fsetpoint, fccd, fambient;
     gettemp(cam, &fsetpoint, &fccd, &fambient, reg, power);
     *setpoint = (double) fsetpoint;
     *ccd = (double) fccd;
     *ambient = (double) fambient;
+}
+
+// convertis une valeur BCD en double  
+// et multiplie par 1e-9
+double bcdTodouble(unsigned long bcd)
+{
+   double value = 0.0;
+   double digit = 0.01;
+   int i; 
+   for(i = 0; i < 8; i++) {
+      value += (bcd & 0x0F) * digit;
+      digit *= 10.0;
+      bcd  >>= 4;
+   } 
+   // je convertis en metre 
+   value *= 1e-9;
+   return value;
 }
