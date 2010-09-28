@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.154 2010-09-28 19:50:38 robertdelmas Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.155 2010-09-28 20:10:15 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -906,7 +906,8 @@ namespace eval ::confVisu {
       #--- raz du buffer
       set bufNo [ visu$visuNo buf ]
       buf$bufNo clear
-      ::confVisu::autovisu $visuNo -no ""
+      ::confVisu::autovisu $visuNo
+      return
    }
 
    #------------------------------------------------------------
