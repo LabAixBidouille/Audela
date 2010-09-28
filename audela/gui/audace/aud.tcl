@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.147 2010-09-17 20:31:53 alainklotz Exp $
+# Mise à jour $Id: aud.tcl,v 1.148 2010-09-28 19:47:57 robertdelmas Exp $
 #
 
 #--- Chargement du package BWidget
@@ -750,7 +750,7 @@ namespace eval ::audace {
 
       Menu_Separator $visuNo "$caption(audace,menu,display)"
       Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,pas_outil)" "::audace::pasOutil $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,efface_image)" "::confVisu::deleteImage"
+      Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,efface_image)" "::confVisu::clear $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,display)"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette_grise)" \
