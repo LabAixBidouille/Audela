@@ -7,7 +7,7 @@ test tool_astrometry_deg2hms {sextractor image webcam} -constraints {
    AUDACE
 } -setup {
    file copy -force [file join $::conf(testaudela,rep_images) "m45_champ.fit"] $::audace(rep_images)
-
+   loadima "m45_champ.fit"
    #--- je charge le package astrometry
    package require astrometry
    #--- je cree une instance
@@ -26,8 +26,9 @@ test tool_astrometry_deg2hms {sextractor image webcam} -constraints {
    ::confVisu::deletePluginInstance $visuNo ::astrometry
    #--- je supprime le package de la mémoire
    package forget astrometry
-
+   #--- j'efface l'image dans la visu
+   ::confVisu::clear $visuNo
+   #--- j'efface l'image sur le disque
    file delete -force [file join $::audace(rep_images) "m45_champ.fit"]
-
 } -result "0"
 
