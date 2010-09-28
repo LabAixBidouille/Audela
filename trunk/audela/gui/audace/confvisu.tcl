@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.153 2010-09-26 15:44:52 michelpujol Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.154 2010-09-28 19:50:38 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -900,19 +900,13 @@ namespace eval ::confVisu {
       #--- je masque la fenetre des films
       ::Movie::deleteMovieWindow $visuNo
 
+      #--- je quitte la calibration astrometrique
       catch { ::astrometry::quit }
 
-      #--- suppression de la boite
-      deleteBox $visuNo
-      #--- raz des variables
-      setFileName $visuNo ""
-      set private($visuNo,fitsHduList) ""
-      #--- raz de la visu
-      visu$visuNo clear
-      #--- j'efface la barre d'outil
-      showToolBar $visuNo 0
-      #--- je selectionne le mode par defaut
-      confVisu::setMode $visuNo "image"
+      #--- raz du buffer
+      set bufNo [ visu$visuNo buf ]
+      buf$bufNo clear
+      ::confVisu::autovisu $visuNo -no ""
    }
 
    #------------------------------------------------------------
