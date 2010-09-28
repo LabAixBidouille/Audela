@@ -1,10 +1,11 @@
 
 #--- je recupere le buffer de la premiere visu
-set bufNo [::confVisu::getBufNo 1]
+set visuNo 1
+set bufNo [::confVisu::getBufNo $visuNo]
 
 #-------------------------------------------------------------------------------
 test imastack_init {prepare 3 fichiers} {
-   #--- je cree une image de niveau 100
+   #--- je cree une image de niveau 50
    set naxis1 768
    set naxis2 512
    set bufTemp [::buf::create]
@@ -14,7 +15,7 @@ test imastack_init {prepare 3 fichiers} {
    buf$bufTemp setkwd [list "NAXIS2" $naxis2 int "" ""]
    buf$bufTemp offset 50
 
-   #--- image 1 intensite(1,1)=200
+   #--- imastack-1.git niveau 50 , sauf intensite(1,1)=200
    buf$bufTemp copyto $bufNo
    buf$bufNo setpix {1 1} 100
    set exptime "60"
@@ -28,7 +29,7 @@ test imastack_init {prepare 3 fichiers} {
    buf$bufNo setkwd [list "NAXIS2" $naxis2 int "" ""]
    buf$bufNo save $::audace(rep_images)/imastack-1.fit
 
-   #--- image 2 intensite(2,2)=200
+   #--- imastack-2.fit niveau 50 sauf intensite(2,2)=200
    buf$bufTemp copyto $bufNo
    buf$bufNo setpix {2 2} 200
    set exptime "60"
@@ -42,7 +43,7 @@ test imastack_init {prepare 3 fichiers} {
    buf$bufNo setkwd [list "NAXIS2" $naxis2 int "" ""]
    buf$bufNo save $::audace(rep_images)/imastack-2.fit
 
-   #--- image 2 intensite(2,2)=200
+   #--- imastack-3.fit niveau 50 sauf intensite(3,3)=300
    buf$bufTemp copyto $bufNo
    buf$bufNo setpix {3 3} 300
    set exptime "60"
@@ -56,10 +57,11 @@ test imastack_init {prepare 3 fichiers} {
    buf$bufNo setkwd [list "NAXIS2" $naxis2 int "" ""]
    buf$bufNo save $::audace(rep_images)/imastack-3.fit
 
+   #--- je supprime le buffer temporaire
    ::buf::delete $bufTemp
 
-   return "1"
-} "1"
+   return ""
+} ""
 
 #-------------------------------------------------------------------------------
 test imastack_sadd2 {sadd2} {
@@ -68,7 +70,7 @@ test imastack_sadd2 {sadd2} {
    sadd imastack- add 3 1 "DATE-END"
 
    buf$bufNo load $::audace(rep_images)/add.fit
-   confVisu::autovisu 1
+   confVisu::autovisu $visuNo
    update
    file delete $::audace(rep_images)/add.fit
 
@@ -80,12 +82,12 @@ test imastack_sadd2 {sadd2} {
 test imastack_add {ttscript2 IMA/STACK ADD} {
 
    #--- je cree une image de niveau 100
-   ttscript2 "IMA/STACK \"$::audace(rep_images)\" \"imastack-1.fit imastack-2.fit imastack-3.fit\" * * \"\" \"$::audace(rep_images)\" \"add.fit\" . \"\" \"ADD\" \"DATE-END\" "
+   ttscript2 "IMA/STACK \"$::audace(rep_images)\" \"imastack-1.fit imastack-2.fit imastack-3.fit\" * * \"\" \"$::audace(rep_images)\" \"add-result.fit\" . \"\" \"ADD\" \"DATE-END\" "
 
-   buf$bufNo load $::audace(rep_images)/add.fit
-   confVisu::autovisu 1
+   buf$bufNo load $::audace(rep_images)/add-result.fit
+   confVisu::autovisu $visuNo
    update
-   file delete $::audace(rep_images)/add.fit
+   file delete $::audace(rep_images)/add/add-result.fit
 
    set pix1 [lindex [buf$bufNo getpix {1 1}] 1]
    #--- je verifie que c'est egal a la somme 100+50+50 = 200
@@ -94,17 +96,13 @@ test imastack_add {ttscript2 IMA/STACK ADD} {
 } "200.000000"
 
 #-------------------------------------------------------------------------------
-test imastack_end {imastack ADD ajoute 3 images ttscript2} {
+test imastack_end {supprime les images temporaires} {
 
    #--- je supprime le fichiers de travail
    file delete $::audace(rep_images)/imastack-1.fit
    file delete $::audace(rep_images)/imastack-2.fit
    file delete $::audace(rep_images)/imastack-3.fit
-   confVisu::clear 1
+   confVisu::clear $visuNo
    return ""
 } ""
-
-   #--- j'efface le buffer
-   after 300
-   loadima ""
 
