@@ -5,6 +5,8 @@ partie 1 : Insertion Bddimages
 
 partie 2 : Gestion fenetre Recherche
 
+- ajouter barre de bouton dans le tk
+
 - Dans la fenetre recherche : nouvelle liste : 
    Ajouter champs date :
       date min date max
@@ -24,7 +26,28 @@ partie 2 : Gestion fenetre Recherche
 partie 3 : Gestions des images
 
  - Effacement propre d un fichier de la base
- - 
+ - ajouter : modif nom du fichier en commancant par l idbddimg
+ - ajouter des champs dans le header : 
+      BDIIFLAT  : Idbddimg
+      BDIFTYPE  : type d image : NULL, Flat, dark, offset, image brute, image corrigee
+      BDIFFLAT  : 0 si pas deflaté 1 si deflaté + offset
+      BDICFFLAT : nom du fichier de flat
+      BDICFFLAT : nom du fichier d offset
+      BDICFFLAT : nom du fichier de dark
+      BDICFBRUT : nom fichier brut
+      BDIFWCS   : 1 si WCS ok 0 sinon
+      BDIN      : Nombre de sources extraites
+      BDIN      : Nombre de source cata astrometrique
+      BDIN      : Nombre de source cata photometrique
+      
+  1 : validation image (bdd + header)
+  2 : Faire Master Flat
+  3 : Deflat
+  4 : WCS + extraction cata astrometrique en meme temps et montrer sur des ronds vert dans la visu
+  5 : extraction sources image
+  6 : extraction sources cata autres (skybot, cata photom)
+  7 : Crossmatching
+  
 
 partie 4 : Astrometrie rapide
 
