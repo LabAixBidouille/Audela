@@ -1518,4 +1518,3 @@ J96 356.05669 0.735326 +0.675690 Observatorio de Cantabria
 J97 359.5333  0.7754   +0.6293   Alginet
 J98 359.5344  0.77275  +0.63259  Observatorio Manises
 J99 359.57808 0.772589 +0.632790 Burjassot
-
