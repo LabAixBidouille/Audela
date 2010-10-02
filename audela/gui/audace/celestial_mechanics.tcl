@@ -2,7 +2,7 @@
 # Fichier : celestial_mechanics.tcl
 # Description : Outils pour le calcul de coordonnees celestes
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: celestial_mechanics.tcl,v 1.6 2010-08-22 19:20:28 alainklotz Exp $
+# Mise à jour $Id: celestial_mechanics.tcl,v 1.7 2010-10-02 14:14:46 robertdelmas Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -288,7 +288,7 @@ proc meteores_zhr { date_beg date_end stream_id maglim nb_meteors sky_efficiency
          set stream_radian_dec [lindex $stream 5]
          set stream_drift_ra [lindex $stream 6]
          set stream_drift_dec [lindex $stream 7]
-         set valid 1         
+         set valid 1
          break
       }
    }
@@ -319,7 +319,7 @@ proc meteores_zhr { date_beg date_end stream_id maglim nb_meteors sky_efficiency
       if {$MgLim < 6.5} {
          set exposant [expr 6.5 - $MgLim]
       } else {
-         set exposant [expr 1 - ($MgLim � 6.5)]
+         set exposant [expr 1 - ($MgLim  6.5)]
       }
       set Expo [expr pow($Indice,$exposant)]
       set Angle [expr sin($AltRadiant / $radian)]
@@ -413,7 +413,7 @@ proc meteore_streams { {year ""} } {
          set month [lindex $lig 0]
          set day [string trimleft [lindex $lig 1] 0]
          if {$month=="several"} {
-            set month May 
+            set month May
             set day 19
          }
          set date [list $year [meteore_months $month] $day]
@@ -451,9 +451,9 @@ proc meteore_streams { {year ""} } {
          set stream_index [lindex $lig 0]
          #
          set stream [list $stream_id $stream_name $stream_index $stream_max $stream_radian_ra $stream_radian_dec $stream_drift_ra $stream_drift_dec]
-         lappend meteores(streams) $stream         
+         lappend meteores(streams) $stream
          #::console::affiche_resultat "$stream\n"
       }
-   } 
+   }
    return $meteores(streams)
 }
