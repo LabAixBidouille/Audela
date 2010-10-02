@@ -2,7 +2,7 @@
 # Fichier : celestial_mechanics.tcl
 # Description : Outils pour le calcul de coordonnees celestes
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: celestial_mechanics.tcl,v 1.7 2010-10-02 14:14:46 robertdelmas Exp $
+# Mise à jour $Id: celestial_mechanics.tcl,v 1.8 2010-10-02 15:20:46 alainklotz Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -319,7 +319,7 @@ proc meteores_zhr { date_beg date_end stream_id maglim nb_meteors sky_efficiency
       if {$MgLim < 6.5} {
          set exposant [expr 6.5 - $MgLim]
       } else {
-         set exposant [expr 1 - ($MgLim  6.5)]
+         set exposant [expr 1 - ($MgLim � 6.5)]
       }
       set Expo [expr pow($Indice,$exposant)]
       set Angle [expr sin($AltRadiant / $radian)]
