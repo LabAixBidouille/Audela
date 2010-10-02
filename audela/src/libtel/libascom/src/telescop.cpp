@@ -251,7 +251,6 @@ int mytel_connectedSetupDialog(struct telprop *tel )
 int mytel_setupDialog(const char * ascomDiverName, char * errorMsg )
 {
    HRESULT hr;
-   //hr = CoInitialize(NULL);   
    hr = CoInitializeEx(NULL,COINIT_APARTMENTTHREADED);
    if (FAILED(hr)) { 
       sprintf(errorMsg, "setupDialog error CoInitializeEx hr=%X",hr);
@@ -266,11 +265,9 @@ int mytel_setupDialog(const char * ascomDiverName, char * errorMsg )
       return 1;    
    } 
    telescopePtr->SetupDialog();
-   // ASCOM 5.0 ne supporte pas la suppression des objets COM explicite
-   // Il faut laisser faire le garbage collector qui supprime automatiquement
-   // les objets quand ils ne sont plus référencés.
-   //telescopePtr->Release();
-   //CoUninitialize();
+   telescopePtr->Release();
+   telescopePtr = NULL;
+   CoUninitialize();
    return 0; 
 }
 
