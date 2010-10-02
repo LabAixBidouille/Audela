@@ -496,8 +496,8 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       cam->nb_deadendphotoxtrack = 0;
       cam->nb_deadbeginphotoytrack = 0;
       cam->nb_deadendphotoytrack = 0;
-      cam->celldimxtrack = ((double) (gcir0.readoutInfo[0].pixelWidth)) * 1e-6;
-      cam->celldimytrack = ((double) (gcir0.readoutInfo[0].pixelHeight)) * 1e-6;
+      cam->celldimxtrack = bcdTodouble(gcir0.readoutInfo[0].pixelWidth);
+      cam->celldimytrack = bcdTodouble(gcir0.readoutInfo[0].pixelHeight);
       cam->x1track = 0;
       cam->y1track = 0;
       cam->x2track = cam->nb_photoxtrack - 1;
@@ -1199,7 +1199,7 @@ void sbig_get_info_temperatures(struct camprop *cam, double *setpoint,
 }
 
 // convertis une valeur BCD en double  
-// et multiplie par 1e-9
+// et multiplie par 1e-6
 double bcdTodouble(unsigned long bcd)
 {
    double value = 0.0;
@@ -1211,6 +1211,6 @@ double bcdTodouble(unsigned long bcd)
       bcd  >>= 4;
    } 
    // je convertis en metre 
-   value *= 1e-9;
+   value *= 1e-6;
    return value;
 }
