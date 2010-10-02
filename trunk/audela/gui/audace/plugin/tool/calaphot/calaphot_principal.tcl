@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot_principal.tcl,v 1.15 2010-05-01 16:30:27 jacquesmichelet Exp $
+# $Id: calaphot_principal.tcl,v 1.16 2010-10-02 14:15:10 robertdelmas Exp $
 #
 
 ###catch {namespace delete ::Calaphot}
@@ -304,7 +304,7 @@ namespace eval ::CalaPhot {
 
             if { [ DateCroissante $i ] } {
                 EliminationImage $i
-                Message erreur "%s %i : %s\n" $calaphot(texte,image) $i $calaphot(texte,plus_jeune) 
+                Message erreur "%s %i : %s\n" $calaphot(texte,image) $i $calaphot(texte,plus_jeune)
                 ArretScript
                 Message probleme "%s\n" $calaphot(texte,fin_anticipee)
                 return
@@ -415,7 +415,7 @@ namespace eval ::CalaPhot {
 
             if { $data_image($i,valide) == "N" } {
                 EliminationImage $i
-                continue 
+                continue
             }
 
             # Dessin des symboles
@@ -1159,7 +1159,7 @@ namespace eval ::CalaPhot {
             set niveau_pile [ info level ]
             incr niveau_pile -1
 #            ::console::affiche_resultat " NP= $niveau_pile \n"
-            if { $niveau_pile >= 0 } { 
+            if { $niveau_pile >= 0 } {
                 set procedure [ lindex [info level $niveau_pile] 0 ]
             } else {
                 set procedure ""

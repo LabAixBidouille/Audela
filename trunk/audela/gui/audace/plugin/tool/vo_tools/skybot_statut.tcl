@@ -2,7 +2,7 @@
 # Fichier : skybot_statut.tcl
 # Description : Affiche le statut de la base de donnees SkyBoT
 # Auteur : Jerome BERTHIER
-# Mise à jour $Id: skybot_statut.tcl,v 1.19 2010-09-15 09:48:22 jberthier Exp $
+# Mise à jour $Id: skybot_statut.tcl,v 1.20 2010-10-02 14:15:28 robertdelmas Exp $
 #
 
 namespace eval skybot_Statut {
@@ -106,7 +106,7 @@ namespace eval skybot_Statut {
          scrollbar $This.frame0.hsb -orient horizontal \
             -command { $::skybot_Statut::This.frame0.tbl xview } -takefocus 1 -borderwidth 1
          pack $This.frame0.hsb -in $This.frame0 -side bottom -fill x
-         #--- Mise en forme des resultats   
+         #--- Mise en forme des resultats
          label $This.frame0.titre -text "$caption(statut,titre)"
          pack $This.frame0.titre -in $This.frame0 -side top -padx 3 -pady 3
          set tbl $This.frame0.tbl
