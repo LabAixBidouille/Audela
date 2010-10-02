@@ -114,6 +114,7 @@ struct _PrivateParams {
    AscomInterfacesLib::ICameraPtr pCam;
    AscomInterfacesLib::IFilterWheel *pFilterWheel;
    int debug;
+   int isSimulator;
 };
 
 #ifdef __cplusplus
@@ -161,7 +162,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    HRESULT hr;
    // attention : il faut absolument initialiser a zero la zone 
    // memoire correspondant à cam->params->pCam  
-   // car sinon le objet COM croit qu'il existe un objet à supprimer
+   // car sinon l'objet COM camera.CreateInstance croit qu'il existe un objet à supprimer
    // avant d'affecter un nouveu pointer dans la variable. 
    cam->params = (PrivateParams*) calloc(sizeof(PrivateParams),1);
    
@@ -188,14 +189,21 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    if (cam->params->pCam == NULL) { 
       char winErrorMessage[1024];
       FormatWinMessage( winErrorMessage , hr);
-      ascomcam_log(LOG_ERROR,"cam_init error CreateInstance hr=%X %s",hr ,winErrorMessage);
       sprintf(cam->msg, "cam_init error CreateInstance hr=%X %s",hr ,winErrorMessage);
+      ascomcam_log(LOG_ERROR,cam->msg); 
       return -1;
+   }
+
+   if (strcmp(argv[2],"CCDSimulator.Camera")== 0 ) {
+      // bidouille pour contourner un bug du la focntion GetImageReady() du simulateur 
+       cam->params->isSimulator = 1;
+   } else {
+       cam->params->isSimulator = 0;
    }
 
    try {
       cam->params->pCam->Connected = true;
-      // je recupere la largeur et la hauteur du CCD en pixels
+      // je recupere la largeur et la hauteur du CCD en pixels (en pixel sans binning)
       cam->nb_photox  = cam->params->pCam->CameraXSize;
       cam->nb_photoy  = cam->params->pCam->CameraYSize;
       // je recupere la taille des pixels (en micron converti en metre)
@@ -250,7 +258,7 @@ int cam_close(struct camprop * cam)
       ascomcam_log(LOG_DEBUG,"cam_close fin OK");
       return 0;
    } catch (_com_error &e) {
-      sprintf(cam->msg, "cam_start_exp  error=%s",_com_util::ConvertBSTRToString(e.Description()));
+      sprintf(cam->msg, "cam_close  error=%s",_com_util::ConvertBSTRToString(e.Description()));
       ascomcam_log(LOG_ERROR,cam->msg);
       return -1;
    } catch (...) {
@@ -293,31 +301,15 @@ void cam_update_window(struct camprop *cam)
       cam->y2 = maxy - 1;
    }
 
-   // je prend en compte le binning
-   cam->w = (cam->x2 - cam->x1) / cam->binx +1;
-   cam->h = (cam->y2 - cam->y1) / cam->biny +1;
+   // je prend en compte le binning 
+   cam->w = (cam->x2 - cam->x1 +1) / cam->binx ;
+   cam->h = (cam->y2 - cam->y1 +1) / cam->biny ;
    x1 = cam->x1  / cam->binx;
-   x2 = x1 + cam->w -1;
    y1 = cam->y1 / cam->biny;
+   x2 = x1 + cam->w -1;
    y2 = y1 + cam->h -1;
 
-   if (cam->x2 > maxx - 1) {
-      cam->w = cam->w - 1;
-      cam->x2 = cam->x1 + cam->w * cam->binx - 1;
-   }
-
-   if (cam->y2 > maxy - 1) {
-      cam->h = cam->h - 1;
-      cam->y2 = cam->y1 + cam->h * cam->biny - 1;
-   }
-
-   // je configure la camera.
-   // Extrait de la documentation ASCOM :
-   // The frame to be captured is defined by four properties, StartX, StartY, which define the upperleft
-   // corner of the frame, and NumX and NumY the define the binned size of the frame.
-   // If binning is active, value is in binned pixels, start position for the X and Y axis are 0 based.
-   // Attention , il faut d'abord mettre a jour l'origine (StartX,StartY) avant la taille de la fenetre
-   // car sinon on risque de provoquer une exception (cas de l'ancienne origine hors de la fenetre)
+   // j'applique le miroir aux coordonnes de la sous fenetre
    if ( cam->mirrorv == 1 ) {
       // j'applique un miroir vertical en inversant les ordonnees de la fenetre
       x1 = (maxx / cam->binx ) - x2 -1;
@@ -328,8 +320,19 @@ void cam_update_window(struct camprop *cam)
       // 0---------------(w-y2)---(w-y1)---(w-1)  
       y1 = (maxy / cam->biny ) - y2 -1;
    }
-   cam->params->pCam->StartX = cam->x1 / cam->binx ;
-   cam->params->pCam->StartY = cam->y1 / cam->biny ;
+   
+   // je configure la camera.
+   // Extrait de la documentation ASCOM :
+   // The frame to be captured is defined by four properties, StartX, StartY, which define the upperleft
+   // corner of the frame, and NumX and NumY the define the binned size of the frame.
+   // If binning is active, value is in binned pixels, start position for the X and Y axis are 0 based.
+   // Attention : il faut d'abord mettre a jour l'origine (StartX,StartY) avant la taille de la fenetre
+   // car sinon on risque de provoquer une exception (cas de l'ancienne origine hors de la fenetre)
+
+   // subframe start position for the X axis (0 based) in binned pixels
+   cam->params->pCam->StartX = x1 ;
+   cam->params->pCam->StartY = y1 ;
+   // subframe width and height in binned pixels
    cam->params->pCam->NumX = cam->w;
    cam->params->pCam->NumY = cam->h;
 }
@@ -362,16 +365,15 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
             // acquisition avec obturateur ouvert
             ascomcam_log(LOG_DEBUG,"cam_start_exp apres StartExposure shutter=synchro exptime=%f",cam->exptime);
             hr = cam->params->pCam->StartExposure(exptime, VARIANT_TRUE);
-            ascomcam_log(LOG_DEBUG,"cam_start_exp apres StartExposure");
          }
          if (FAILED(hr)) {  
-            ascomcam_log(LOG_DEBUG,"cam_start_exp error StartExposure hr=%X",hr);
             sprintf(cam->msg, "cam_start_exp error StartExposure hr=%X",hr);
+            ascomcam_log(LOG_ERROR,cam->msg); 
             return;
          }
          return;
       } catch (_com_error &e) {
-         sprintf(cam->msg, "cam_start_exp  error=%s",_com_util::ConvertBSTRToString(e.Description()));
+         sprintf(cam->msg, "cam_start_exp error=%s",_com_util::ConvertBSTRToString(e.Description()));
          ascomcam_log(LOG_ERROR,cam->msg);
          return;
       } catch (...) {
@@ -388,8 +390,8 @@ void cam_stop_exp(struct camprop *cam)
 
    ascomcam_log(LOG_DEBUG,"cam_stop_exp debut");
    if ( cam->params->pCam == NULL ) {
-      ascomcam_log(LOG_ERROR,"cam_stop_exp camera not initialized");
       sprintf(cam->msg, "cam_stop_exp camera not initialized");
+      ascomcam_log(LOG_ERROR,cam->msg); 
       return;
    }
 
@@ -398,6 +400,7 @@ void cam_stop_exp(struct camprop *cam)
       hr = cam->params->pCam->AbortExposure();
       if (FAILED(hr)) { 
          sprintf(cam->msg, "cam_stop_exp error StopExposure hr=%X",hr);
+         ascomcam_log(LOG_ERROR,cam->msg); 
          return;
       }
       ascomcam_log(LOG_DEBUG,"cam_stop_exp fin OK");
@@ -413,8 +416,8 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 {
    ascomcam_log(LOG_DEBUG,"cam_read_ccd debut");
    if ( cam->params->pCam == NULL ) {
-      ascomcam_log(LOG_ERROR,"cam_read_ccd camera not initialized");
       sprintf(cam->msg, "cam_read_ccd camera not initialized");
+      ascomcam_log(LOG_ERROR,cam->msg); 
       return;
    }
    if (p == NULL)
@@ -425,28 +428,41 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
          SAFEARRAY *safeValues;
 
          long * lValues;
+         VARIANT_BOOL imageReady = VARIANT_TRUE;
+         
          // j'attends que l'image soit prete
-         //while (cam->params->pCam->ImageReady == VARIANT_FALSE){
-         //   Sleep(100);
-         //}
-         VARIANT_BOOL ready = cam->params->pCam->ImageReady;
-         
-         ascomcam_log(LOG_DEBUG,"cam_read_ccd apres attente %d", ready);
-         // je reccupere le pointeur de l'image
-         _variant_t variantValues = cam->params->pCam->ImageArray;
-         safeValues = variantValues.parray;
-         ascomcam_log(LOG_DEBUG,"cam_read_ccd avant SafeArrayAccessData");
-         SafeArrayAccessData(safeValues, (void**)&lValues);      
-         
-         // je copie l'image dans le buffer
-         ascomcam_log(LOG_DEBUG,"cam_read_ccd avant copie");
-         for( int y=0; y <cam->h; y++) {
-            for( int x=0; x <cam->w; x++) {
-                p[x+y*cam->w] = (unsigned short) lValues[x+y*cam->w];
-            }
+         if ( cam->params->isSimulator == 0 ) {
+             int nbLoop = 0;
+             while (cam->params->pCam->ImageReady == VARIANT_FALSE && nbLoop < 50){
+               Sleep(20);
+               nbLoop ++; 
+             }    
+             imageReady = cam->params->pCam->ImageReady ;
+         } else {
+            // si c'est le simulateur Cam->ImageReady renvoiT n'importe quoi
+            // je considère que l'image est toujours disponible
+            imageReady = VARIANT_TRUE;
          }
-         SafeArrayUnaccessData(safeValues);
-         ascomcam_log(LOG_DEBUG,"cam_read_ccd OK");      
+         if ( imageReady == VARIANT_TRUE ) {
+            // je reccupere le pointeur de l'image
+            _variant_t variantValues = cam->params->pCam->ImageArray;
+            safeValues = variantValues.parray;
+            ascomcam_log(LOG_DEBUG,"cam_read_ccd avant SafeArrayAccessData");
+            SafeArrayAccessData(safeValues, (void**)&lValues);      
+
+            // je copie l'image dans le buffer
+            ascomcam_log(LOG_DEBUG,"cam_read_ccd avant copie");
+            for( int y=0; y <cam->h; y++) {
+               for( int x=0; x <cam->w; x++) {
+                  p[x+y*cam->w] = (unsigned short) lValues[x+y*cam->w];
+               }
+            }
+            SafeArrayUnaccessData(safeValues);
+            ascomcam_log(LOG_DEBUG,"cam_read_ccd OK");  
+         } else {
+            sprintf(cam->msg, "cam_read_ccd image not ready");
+            ascomcam_log(LOG_ERROR,cam->msg); 
+         }
       } catch (_com_error &e) {
          sprintf(cam->msg, "cam_read_ccd  error=%s",_com_util::ConvertBSTRToString(e.Description()));
          ascomcam_log(LOG_ERROR,cam->msg);
@@ -457,8 +473,6 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
          return;
       }
    }
-   ascomcam_log(LOG_DEBUG,"cam_read_ccd fin OK");
-
 }
 
 void cam_shutter_on(struct camprop *cam)
@@ -483,8 +497,8 @@ void cam_measure_temperature(struct camprop *cam)
 {
    ascomcam_log(LOG_DEBUG,"cam_measure_temperature début");
    if ( cam->params->pCam == NULL ) {
-      ascomcam_log(LOG_ERROR,"cam_measure_temperature camera not initialized");
       sprintf(cam->msg, "cam_measure_temperature camera not initialized");
+      ascomcam_log(LOG_ERROR,cam->msg);
       return;
    }
    cam->temperature = 0.;
@@ -502,8 +516,8 @@ void cam_cooler_on(struct camprop *cam)
 {
    ascomcam_log(LOG_DEBUG,"cam_cooler_on debut");
    if ( cam->params->pCam == NULL ) {
-      ascomcam_log(LOG_ERROR,"cam_cooler_on camera not initialized");
       sprintf(cam->msg, "cam_cooler_on camera not initialized");
+      ascomcam_log(LOG_ERROR,cam->msg);
       return;
    }
    try {
@@ -615,6 +629,23 @@ int cam_connectedSetupDialog(struct camprop *cam )
 {
    try {
       cam->params->pCam->SetupDialog();
+
+      // je recupere la largeur et la hauteur du CCD en pixels
+      cam->nb_photox  = cam->params->pCam->CameraXSize;
+      cam->nb_photoy  = cam->params->pCam->CameraYSize;
+      // je recupere la taille des pixels (en micron converti en metre)
+      cam->celldimx   = cam->params->pCam->PixelSizeX * 1e-6;
+      cam->celldimy   = cam->params->pCam->PixelSizeY * 1e-6;      
+
+      cam->x1 = 0;
+      cam->y1 = 0;
+      cam->x2 = cam->nb_photox - 1;
+      cam->y2 = cam->nb_photoy - 1;
+      cam->binx = 1;
+      cam->biny = 1;
+
+      cam_update_window(cam);	// met a jour x1,y1,x2,y2,h,w dans cam
+
       return 0; 
    } catch (_com_error &e) {
       sprintf(cam->msg, "cam_connectedSetupDialog  error=%s",_com_util::ConvertBSTRToString(e.Description()));
@@ -637,21 +668,21 @@ int ascomcamSetupDialog(const char * ascomDiverName, char * errorMsg)
    hr = CoInitializeEx(NULL,COINIT_APARTMENTTHREADED);
    if (FAILED(hr)) { 
       sprintf(errorMsg, "setupDialog error CoInitializeEx hr=%X",hr);
+      ascomcam_log(LOG_ERROR,errorMsg);
       return 1;
    }
    AscomInterfacesLib::ICameraPtr cameraPtr = NULL;
    hr = cameraPtr.CreateInstance((LPCSTR)ascomDiverName);
    if ( FAILED(hr) ) {
       sprintf(errorMsg, "setupDialog error CreateInstance hr=%X",hr);
+      ascomcam_log(LOG_ERROR,errorMsg);
       CoUninitialize();
       return 1;    
    } 
    cameraPtr->SetupDialog();
-   // ASCOM 5.0 ne supporte pas la suppression des objets COM explicite
-   // Il faut laisser faire le garbage collector qui supprime automatiquement
-   // les objets quand ils ne sont plus référencés.
-   //cameraPtr = NULL;
-   //CoUninitialize();
+   cameraPtr.Release();
+   cameraPtr = NULL;
+   CoUninitialize();
    return 0;
 }
 
@@ -669,8 +700,8 @@ int ascomcamSetWheelPosition(struct camprop *cam, int position)
 {
    ascomcam_log(LOG_DEBUG,"ascomcamSetWheelPosition debut. Position=%d",position);
    if ( cam->params->pCam == NULL ) {
-      ascomcam_log(LOG_ERROR,"ascomcamSetWheelPosition camera not initialized");
       sprintf(cam->msg, "ascomcamSetWheelPosition camera not initialized");
+      ascomcam_log(LOG_ERROR,cam->msg);
       return -1;
    }
    try {
@@ -707,8 +738,8 @@ int ascomcamGetWheelPosition(struct camprop *cam, int *position)
 {
    ascomcam_log(LOG_DEBUG,"ascomcamGetWheelPosition debut");
    if ( cam->params->pCam == NULL ) {
-      ascomcam_log(LOG_ERROR,"ascomcamGetWheelPosition camera not initialized");
       sprintf(cam->msg, "ascomcamGetWheelPosition camera not initialized");
+      ascomcam_log(LOG_ERROR,cam->msg);
       return -1;
    }
    try {
