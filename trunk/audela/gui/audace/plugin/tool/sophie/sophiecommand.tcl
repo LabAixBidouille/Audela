@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.56 2010-06-07 12:58:01 michelpujol Exp $
+# @version  $Id: sophiecommand.tcl,v 1.57 2010-10-03 14:32:07 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -894,10 +894,10 @@ proc ::sophie::loadBias { biasWindow } {
 }
 
 ##------------------------------------------------------------
-# decrementZoom
-#    decremente les valeurs du zoom
+# incrementZoom
+#    incremente les valeurs du zoom
 #------------------------------------------------------------
-proc ::sophie::decrementZoom { } {
+proc ::sophie::incrementZoom { } {
    variable private
 
    if { $private(zoom) == "0.125" } {
@@ -918,15 +918,15 @@ proc ::sophie::decrementZoom { } {
    ::confVisu::setZoom $::audace(visuNo) $private(zoom)
    set private(zoom) [ ::confVisu::getZoom $::audace(visuNo) ]
    ###set private(AsynchroneParameter) 1
-   ::camera::setAsynchroneParameter  $private(camItem) "zoom" $private(zoom)
+   ::camera::setAsynchroneParameter $private(camItem) "zoom" $private(zoom)
 
 }
 
 ##------------------------------------------------------------
-# incrementZoom
-#    incremente les valeurs du zoom
+# decrementZoom
+#    decremente les valeurs du zoom
 #------------------------------------------------------------
-proc ::sophie::incrementZoom { } {
+proc ::sophie::decrementZoom { } {
    variable private
 
    if { $private(zoom) == "8" } {
@@ -947,7 +947,7 @@ proc ::sophie::incrementZoom { } {
    ::confVisu::setZoom $::audace(visuNo) $private(zoom)
    set private(zoom) [ ::confVisu::getZoom $::audace(visuNo) ]
    ###set private(AsynchroneParameter) 1
-   ::camera::setAsynchroneParameter  $private(camItem) "zoom" $private(zoom)
+   ::camera::setAsynchroneParameter $private(camItem) "zoom" $private(zoom)
 }
 
 ##------------------------------------------------------------
