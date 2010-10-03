@@ -2,7 +2,7 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: snacq.tcl,v 1.31 2010-09-25 17:43:33 robertdelmas Exp $
+# Mise à jour $Id: snacq.tcl,v 1.32 2010-10-03 14:49:28 robertdelmas Exp $
 #
 
 # ===================================================================
@@ -497,6 +497,13 @@ pack $audace(base).snacq.frame16 \
    pack $audace(base).snacq.frame16.but_mots_cles \
       -in $audace(base).snacq.frame16 -side left -anchor w \
       -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+   #--- Create a label
+   #--- Cree un label
+   entry $audace(base).snacq.frame16.labNom \
+      -textvariable ::conf(supernovae,keywordConfigName) \
+      -state readonly -takefocus 0 -justify center
+   pack $audace(base).snacq.frame16.labNom -side left -padx 6
 
    #--- Create a checkbutton
    #--- Cree un checkbutton

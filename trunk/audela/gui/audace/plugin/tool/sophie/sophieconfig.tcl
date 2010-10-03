@@ -2,7 +2,7 @@
 # @file     sophieconfig.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophieconfig.tcl,v 1.31 2010-05-25 21:28:35 robertdelmas Exp $
+# @version  $Id: sophieconfig.tcl,v 1.32 2010-10-03 14:49:46 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -579,6 +579,11 @@ proc ::sophie::config::fillConfigAvanceePage { frm visuNo } {
       Button $frm.en-tete_fits.but -text $::caption(sophie,mots_cles) -relief raised \
          -command "::keyword::run $::audace(visuNo) ::conf(sophie,keywordConfigName)"
       grid $frm.en-tete_fits.but -in [ $frm.en-tete_fits getframe ] -row 0 -column 1 -sticky e -padx 2
+
+      #--- Label du nom de la configuration de l'en-tete FITS
+      entry $frm.en-tete_fits.labNom -textvariable ::conf(sophie,keywordConfigName) \
+         -state readonly -takefocus 0 -justify center
+      grid $frm.en-tete_fits.labNom -in [ $frm.en-tete_fits getframe ] -row 0 -column 2 -sticky e -padx 2
 
    pack $frm.en-tete_fits -side left -anchor w -fill x -expand 1
 }

@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise à jour $Id: acqfen.tcl,v 1.46 2010-09-25 21:56:46 robertdelmas Exp $
+# Mise à jour $Id: acqfen.tcl,v 1.47 2010-10-03 14:46:55 robertdelmas Exp $
 #
 
 # =========================================================
@@ -2140,6 +2140,11 @@ proc creeFenReglFen { } {
          button $audace(base).fenreglfen.setup.but1 -text "$caption(acqfen,mots_cles)" \
             -command "::keyword::run $audace(visuNo) ::conf(acqfen,keywordConfigName)"
          pack $audace(base).fenreglfen.setup.but1 -side left -padx 6 -pady 10 -ipadx 20
+
+         #--- Label du nom de la configuration de l'en-tete FITS
+         entry $audace(base).fenreglfen.setup.labNom \
+            -state readonly -takefocus 0 -textvariable ::conf(acqfen,keywordConfigName) -justify center
+         pack $audace(base).fenreglfen.setup.labNom -side left -padx 6
 
       pack $audace(base).fenreglfen.setup -side top -fill both -expand 1
 

@@ -2,7 +2,7 @@
 # Fichier : acqfcSetup.tcl
 # Description : Configuration de certains parametres de l'outil Acquisition
 # Auteur : Robert DELMAS
-# Mise à jour $Id: acqfcSetup.tcl,v 1.19 2010-05-24 09:18:59 robertdelmas Exp $
+# Mise à jour $Id: acqfcSetup.tcl,v 1.20 2010-10-03 14:46:31 robertdelmas Exp $
 #
 
 namespace eval ::acqfcSetup {
@@ -152,6 +152,11 @@ namespace eval ::acqfcSetup {
             button $panneau(acqfc,$visuNo,acqfcSetup).frame3.en-tete.but -text $caption(acqfcSetup,mots_cles) \
                -command "::keyword::run $visuNo ::conf(acqfc,keywordConfigName)"
             pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.en-tete.but -side left -padx 6 -pady 10 -ipadx 20
+
+            #--- Label du nom de la configuration de l'en-tete FITS
+            entry $panneau(acqfc,$visuNo,acqfcSetup).frame3.en-tete.labNom \
+               -state readonly -takefocus 0 -textvariable ::conf(acqfc,keywordConfigName) -justify center
+            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.en-tete.labNom -side left -padx 6
 
          pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.en-tete -side top -fill both -expand 1
 

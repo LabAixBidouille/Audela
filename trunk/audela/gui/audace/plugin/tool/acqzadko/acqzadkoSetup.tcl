@@ -2,7 +2,7 @@
 # Fichier : acqzadkoSetup.tcl
 # Description : Configuration de certains parametres de l'outil Acquisition
 # Auteur : Robert DELMAS
-# Mise à jour $Id: acqzadkoSetup.tcl,v 1.3 2010-05-23 16:27:37 robertdelmas Exp $
+# Mise à jour $Id: acqzadkoSetup.tcl,v 1.4 2010-10-03 14:47:17 robertdelmas Exp $
 #
 
 namespace eval ::acqzadkoSetup {
@@ -152,6 +152,11 @@ namespace eval ::acqzadkoSetup {
             button $panneau(acqzadko,$visuNo,acqzadkoSetup).frame3.en-tete.but -text $caption(acqzadkoSetup,mots_cles) \
                -command "::keyword::run $visuNo ::conf(acqzadko,keywordConfigName)"
             pack $panneau(acqzadko,$visuNo,acqzadkoSetup).frame3.en-tete.but -side left -padx 6 -pady 10 -ipadx 20
+
+            #--- Label du nom de la configuration de l'en-tete FITS
+            entry $panneau(acqzadko,$visuNo,acqzadkoSetup).frame3.en-tete.labNom \
+               -state readonly -takefocus 0 -textvariable ::conf(acqzadko,keywordConfigName) -justify center
+            pack $panneau(acqzadko,$visuNo,acqzadkoSetup).frame3.en-tete.labNom -side left -padx 6
 
          pack $panneau(acqzadko,$visuNo,acqzadkoSetup).frame3.en-tete -side top -fill both -expand 1
 
