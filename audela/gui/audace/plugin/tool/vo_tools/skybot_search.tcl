@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER
-# Mise à jour $Id: skybot_search.tcl,v 1.30 2010-10-03 07:28:02 michelpujol Exp $
+# Mise à jour $Id: skybot_search.tcl,v 1.31 2010-10-03 15:47:47 michelpujol Exp $
 #
 
 namespace eval skybot_Search {
@@ -45,7 +45,7 @@ namespace eval skybot_Search {
       #---
       set This $this
       createDialog
-      tkwait visibility $This
+      ###tkwait visibility $This
    }
 
    #
@@ -55,6 +55,10 @@ namespace eval skybot_Search {
    proc fermer { } {
       variable This
       global audace
+
+      #--- j'active la mise a jour automatique de l'affichage quand on change de zoom ou d'image
+      ::confVisu::removeZoomListener $::audace(visuNo) "::skybot_Search::cmdRepere_Efface"
+      ::confVisu::removeFileNameListener $::audace(visuNo) "::skybot_Search::cmdRepere_Efface"
 
       #--- Efface les reperes des objets
       $audace(hCanvas) delete cadres
@@ -1072,6 +1076,12 @@ namespace eval skybot_Search {
 
       #--- Choix par defaut du curseur
       $This configure -cursor arrow
+
+      #--- j'active la mise a jour automatique de l'affichage quand on change de zoom ou d'image
+      ::confVisu::addZoomListener $::audace(visuNo) "::skybot_Search::cmdRepere_Efface"
+      ::confVisu::addFileNameListener $::audace(visuNo) "::skybot_Search::cmdRepere_Efface"
+
+
    }
 
    #
@@ -2022,7 +2032,8 @@ namespace eval skybot_Search {
    # skybot_Search::cmdRepere_Efface
    # Repere et efface tous les objets du champ
    #
-   proc cmdRepere_Efface { } {
+   # @param args         valeur fournies par le gestionnaire de listener
+   proc cmdRepere_Efface { args } {
       variable This
       global audace conf voconf
       global color valMinFiltre valMaxFiltre
@@ -2053,10 +2064,7 @@ namespace eval skybot_Search {
          #--- Efface les reperes des objets
          $audace(hCanvas) delete cadres
       }
-      #--- Raffraichi les objets si le facteur de zoom de l'image change
-      catch { tkwait variable ::confVisu::private(1,zoom) }
       set voconf(trace_efface) 2
-      ::skybot_Search::cmdRepere_Efface
    }
 
 }
