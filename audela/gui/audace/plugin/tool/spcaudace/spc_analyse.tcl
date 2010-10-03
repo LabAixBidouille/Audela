@@ -1,7 +1,7 @@
 
 # Procédures d'analyse spectrale
 # source $audace(rep_scripts)/spcaudace/spc_analyse.tcl
-# Mise a jour $Id: spc_analyse.tcl,v 1.11 2010-09-05 17:08:58 bmauclaire Exp $
+# Mise a jour $Id: spc_analyse.tcl,v 1.12 2010-10-03 20:01:11 bmauclaire Exp $
 
 
 
@@ -1535,6 +1535,9 @@ proc spc_icontinuum { args } {
         buf$audace(bufNo) load "$audace(rep_images)/$fichier"
         buf$audace(bufNo) window [ list [ lindex $limits 0 ] 1 [ lindex $limits 1 ] 1 ]
         set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+        set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+        set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+        set crpix1 [ lindex [ buf$audace(bufNo) getkwd "CRPIX1" ] 1 ]
         set largeur [ expr int($naxis1/$nbtranches) ]
 
         #--- Détermine l'intensité moyenne sur chaque tranches :
@@ -1546,15 +1549,20 @@ proc spc_icontinuum { args } {
                 set zone [ list [ expr $i*$largeur ] 1 [ expr ($i+1)*$largeur ] 1 ]
             }
             set result [ buf$audace(bufNo) stat $zone ]
-            lappend listresults [ list [ lindex $result 4 ] [ lindex $result 5 ] ]
+            lappend listresults [ list [ lindex $result 4 ] [ lindex $result 5 ] $i ]
         }
 
         #--- Tri par ecart-type :
         set listresults [ lsort -increasing -real -index 1 $listresults ]
         set icontinuum [ lindex [ lindex $listresults 0 ] 0 ]
 
+        #--- Calcul de la longueur d'onde de la tranche selectionnee :
+       set no_tranche [ lindex [ lindex $listresults 0 ] 2 ]
+       set no_pixel [ expr round($no_tranche*$largeur*1.) ]
+       set lambda_tranche [ expr round([ spc_calpoly $no_pixel $crpix1 $crval1 $cdelt1 0 0 ]) ]
+
         #--- Affichage des résultats :
-        ::console::affiche_resultat "Le continuum vaut $icontinuum\n"
+        ::console::affiche_resultat "Le continuum vaut $icontinuum autour de $lambda_tranche A.\n"
         return $icontinuum
     } elseif { $nbargs == 2 } {
        set fichier [ file rootname [ lindex $args 0 ] ]
