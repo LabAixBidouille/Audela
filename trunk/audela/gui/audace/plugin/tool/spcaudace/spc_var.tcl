@@ -3,7 +3,7 @@
 #
 ####################################################################
 
-# Mise a jour $Id: spc_var.tcl,v 1.33 2010-09-24 23:38:13 bmauclaire Exp $
+# Mise a jour $Id: spc_var.tcl,v 1.34 2010-10-03 19:58:12 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -12,7 +12,7 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(version) "1.6.6 - 25/09/2010"
+set spcaudace(version) "2.0 - 3/10/2010"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
 
@@ -122,7 +122,7 @@ set spcaudace(cosmics_nbsigma) 2.5
 #-- Valeur du parametre Kappa servant dans la somme type Kappa-Sigma :
 set spcaudace(ssk_kappa) 0.8
 #-- Degré du polynome pour l'extraction du continuum (5->2) :
-set spcaudace(degpoly_cont) 5
+set spcaudace(degpoly_cont) 2
 #-- Fraction des bords ignorés dans certains calculs (spc_divri...) pour la détermination du Imax du profil :
 set spcaudace(pourcent_bord) 0.15
 #-- Taux de croissance de l'intensité pour considérer que l'on passe du bord (proche de 0) au continuum :
