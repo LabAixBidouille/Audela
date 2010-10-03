@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER
-# Mise à jour $Id: skybot_search.tcl,v 1.31 2010-10-03 15:47:47 michelpujol Exp $
+# Mise à jour $Id: skybot_search.tcl,v 1.32 2010-10-03 15:53:46 michelpujol Exp $
 #
 
 namespace eval skybot_Search {
@@ -106,10 +106,10 @@ namespace eval skybot_Search {
                if [ regexp (end) $line ] { set inconfig "0" }
             } else {
                switch $inconfig {
-                  1 { if { [ regexp (image) $line ] } { set voconf(nom_image) [ string  [ lindex [ split  $line ":" ] 1 ] ] }
-                      if { [ regexp (fov_size) $line ] } { set voconf(taille_champ) [ string  [ lindex [ split  $line ":" ] 1 ] ] }
-                      if { [ regexp (filter) $line ] } { set voconf(filter) [ string  [ lindex [ split  $line ":" ] 1 ] ] }
-                      if { [ regexp (userloc) $line ] } { set voconf(observer) [ string  [ lindex [ split  $line ":" ] 1 ] ] }
+                  1 { if { [ regexp (image) $line ] } { set voconf(nom_image) [ string trim [ lindex [ split  $line ":" ] 1 ] ] }
+                      if { [ regexp (fov_size) $line ] } { set voconf(taille_champ) [ string trim [ lindex [ split  $line ":" ] 1 ] ] }
+                      if { [ regexp (filter) $line ] } { set voconf(filter) [ string trim [ lindex [ split  $line ":" ] 1 ] ] }
+                      if { [ regexp (userloc) $line ] } { set voconf(observer) [ string trim  [ lindex [ split  $line ":" ] 1 ] ] }
                     }
                   0 { if { $line != "" } {
                         if { $voconf(liste) == "" } {
@@ -1008,7 +1008,7 @@ namespace eval skybot_Search {
          button $This.frame6.but_caract -relief raised -state disabled \
             -text "$caption(search,caract_objet)" -borderwidth 2 \
             -command {
-               set filename [ concat $myurl(astorb,CDS)[string  $voconf(name)] ]
+               set filename [ concat $myurl(astorb,CDS)[string trim $voconf(name)] ]
                ::audace::Lance_Site_htm $filename
             }
          pack $This.frame6.but_caract \
@@ -1023,8 +1023,8 @@ namespace eval skybot_Search {
                set annee [ lindex $date 0 ]
                set mois [ lindex $date 1 ]
                set jour [ lindex $date 2 ]
-               set goto_url [ concat "$myurl(ephepos,IMCCE)planete=Aster&nomaster=[string  $voconf(name)]\
-                         &scale=UTC&an=[string  $annee]&mois=[string  $mois]&jour=[string  $jour]\
+               set goto_url [ concat "$myurl(ephepos,IMCCE)planete=Aster&nomaster=[string trim $voconf(name)]\
+                         &scale=UTC&an=[string trim $annee]&mois=[string trim $mois]&jour=[string trim $jour]\
                          &heure=12&minutes=00&secondes=00&nbdates=15" ]
                ::audace::Lance_Site_htm $goto_url
             }
@@ -1617,7 +1617,7 @@ namespace eval skybot_Search {
                $::skybot_Search::This.frame6.but_recherche configure -relief raised -state normal
                return
             } else {
-               set voconf(centre_ad_image) [string  [ mc_angle2deg $voconf(centre_ad_image_h) ]]
+               set voconf(centre_ad_image) [string trim [ mc_angle2deg $voconf(centre_ad_image_h) ]]
             }
             if {$voconf(centre_dec_image_d) == ""} {
                tk_messageBox -title $caption(search,msg_erreur) -type ok -message $caption(search,msg_saisir_dec)
@@ -1626,7 +1626,7 @@ namespace eval skybot_Search {
                $::skybot_Search::This.frame6.but_recherche configure -relief raised -state normal
                return
             } else {
-               set voconf(centre_dec_image) [string  [ mc_angle2deg $voconf(centre_dec_image_d) ]]
+               set voconf(centre_dec_image) [string trim [ mc_angle2deg $voconf(centre_dec_image_d) ]]
             }
          }
       }
