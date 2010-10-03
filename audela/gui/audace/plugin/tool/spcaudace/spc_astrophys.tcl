@@ -1,7 +1,7 @@
 
 # Procédures d'exploitation astrophysique des spectres
 
-# Mise a jour $Id: spc_astrophys.tcl,v 1.15 2010-09-05 17:30:15 bmauclaire Exp $
+# Mise a jour $Id: spc_astrophys.tcl,v 1.16 2010-10-03 19:59:39 bmauclaire Exp $
 
 
 
@@ -1197,7 +1197,7 @@ proc spc_ew { args } {
 	set lambda_deb [ lindex $args 1 ]
 	set lambda_fin [ lindex $args 2 ]
 
-	spc_ew3 $filename $lambda_deb $lambda_fin
+	spc_ew4 $filename $lambda_deb $lambda_fin
     } else {
 	::console::affiche_erreur "Usage: spc_ew nom_profil_raies_calibré lamba_debut lambda_fin\n"
     }
@@ -1473,6 +1473,295 @@ proc spc_ew3 { args } {
     } else {
 	::console::affiche_erreur "Usage: spc_ew3 nom_profil_raies_normalisé lanmba_dep lambda_fin\n"
     }
+}
+#***************************************************************************#
+
+
+
+
+####################################################################
+# Procédure de calcul de la largeur équivalente d'une raie
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 02-10-2010
+# Date modification : 02-10-2010
+# Arguments : nom_profil_raies lanmba_dep lambda_fin degre_polynomes_continuum
+####################################################################
+
+proc spc_ew4 { args } {
+   global conf
+   global audace spcaudace
+
+   set nbargs [ llength $args ]
+   if { $nbargs==3 } {
+      set filename [ lindex $args 0 ]
+      set xdeb [ lindex $args 1 ]
+      set xfin [ lindex $args 2 ]
+      set degpoly $spcaudace(degpoly_cont)
+      set rmconti "o"
+   } elseif { $nbargs==4 } {
+      set filename [ lindex $args 0 ]
+      set xdeb [ lindex $args 1 ]
+      set xfin [ lindex $args 2 ]
+      set degpoly [ lindex $args 3 ]
+      set rmconti "o"
+   } elseif { $nbargs==5 } {
+      set filename [ lindex $args 0 ]
+      set xdeb [ lindex $args 1 ]
+      set xfin [ lindex $args 2 ]
+      set degpoly [ lindex $args 3 ]
+      set rmconti [ lindex $args 4 ]
+   } else {
+      ::console::affiche_erreur "Usage: spc_ew4 nom_profil_raies lanmba_dep lambda_fin degré_polynomes_continuum(2) efface_continuum(o)\n"
+      return ""
+   }
+
+
+   #--- Détermination de la date :
+   buf$audace(bufNo) load "$audace(rep_images)/$filename"
+   set dispersion_locale [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+   # set jd [ expr 2400000.5+ [ lindex [ buf$audace(bufNo) getkwd "MJD-OBS" ] 1 ] ]
+   set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
+   set jd [ mc_date2jd $ladate ]
+
+
+   #--- Conversion des données en liste :
+   #-- Spectre astre :
+   set listevals [ spc_fits2data $filename ]
+   set xvals0 [ lindex $listevals 0 ]
+   set yvals0 [ lindex $listevals 1 ]
+   # set lmin [ lindex $xvals 0 ]
+   # set lmax [ lindex $xvals [ expr [ llength $xvals ] -1 ] ]
+   # set nbech [ llength $xvals ]
+   #-- Spectre continuum :
+   # set spectre_conti [ spc_extractcont $filename $degpoly ]
+   set spectre_conti [ spc_extractcontew $filename ]
+   set listevals [ spc_fits2data $spectre_conti ]
+   set ycvals0 [ lindex $listevals 1 ]
+   # set lcmin [ lindex $xvals 0 ]
+   # set lcmax [ lindex $xvals [ expr [ llength $xvals ] -1 ] ]
+   if { $rmconti=="o" } {
+      file delete -force "$audace(rep_images)/$spectre_conti$conf(extension,defaut)"
+   }
+   #-- Sélection des échantillons :
+   set xvals [ list ]
+   set yvals [ list ]
+   set ycvals [ list ]
+   foreach xval $xvals0 yval $yvals0 ycval $ycvals0 {
+      if { $xval>=$xdeb && $xval<=$xfin } {
+         lappend xvals $xval
+         lappend yvals $yval
+         lappend ycvals $ycval
+      }
+   }
+   set nbech [ llength $xvals ]
+
+
+   #--- Calcul la largeur équivalente :
+   if { 1==1 } {
+   set aire 0.
+   foreach xval $xvals yval $yvals ycval $ycvals {
+      if { $xval>=$xdeb && $xval<=$xfin } {
+         set aire [ expr $aire+($yval-$ycval)/$ycval ]
+      }
+   }
+   set ew [ expr -1.*$aire*$dispersion_locale ]
+   }
+   if { 1==0 } {
+   set aires 0.
+   set airec 0.
+   for {set i 0} { $i<$nbech } {incr i} {
+      set xi [ lindex $xvals $i ]
+      set xii [ lindex $xvals [ expr $i+1 ] ]
+      set yi [ lindex $yvals $i ]
+      set yii [ lindex $yvals [ expr $i+1 ] ]
+      set yci [ lindex $ycvals $i ]
+      set ycii [ lindex $ycvals [ expr $i+1 ] ]
+      # set aire [ expr $aire+($xii-$xi)*0.5*($yii-$ycii+$yi-$yci) ]
+      set aires [ expr $aires+($xii-$xi)*0.5*($yii+$yi) ]
+      set airec [ expr $airec+($xii-$xi)*0.5*($ycii+$yci) ]
+   }
+   #set ew [ expr ($aire-($xfin-$xdeb))*$dispersion_locale ]
+   #set ew [ expr $aire-($xfin-$xdeb) ]
+   set ew [ expr $aires-$airec-($xfin-$xdeb) ]
+   }
+
+   
+   #--- Détermine le type de raie : émission ou absorption et donne un signe à EW
+   if { 1==0 } {
+      set valsselect [ list $xsel $ysel ]
+      set intensity [ spc_aire $valsselect ]
+      if { $intensity>=1 } {
+         set ew [ expr -1.*$ew ]
+      }
+   }
+   
+   #--- Calcul de l'erreur (sigma) sur la mesure (doc Ernst Pollman) :
+   set deltal [ expr abs($xfin-$xdeb) ]
+   set snr [ spc_snr $filename ]
+   set rapport [ expr $ew/$deltal ]
+   if { $rapport>=1.0 } {
+      set deltal [ expr $ew+0.1 ]
+      ::console::affiche_resultat "Attention : largeur d'intégration<EW !\n"
+   }
+   if { $snr != 0 } {
+      set sigma [ expr sqrt(1+1/(1-$ew/$deltal))*(($deltal-$ew)/$snr) ]
+      #set sigma [ expr sqrt(1+1/(1-abs($ew)/$deltal))*(($deltal-abs($ew))/$snr) ]
+   } else {
+      ::console::affiche_resultat "Incertitude non calculable car SNR non calculable\n"
+      set sigma 0
+   }
+   
+   #--- Formatage des résultats :
+   set l_fin [ expr 0.01*round($xfin*100) ]
+   set l_deb [ expr 0.01*round($xdeb*100) ]
+   set delta_l [ expr 0.01*round($deltal*100) ]
+   set ew_short [ expr 0.01*round($ew*100) ]
+   set sigma_ew [ expr 0.01*round($sigma*100) ]
+   set snr_short [ expr round($snr) ]
+   
+   #--- Affichage des résultats :
+   ::console::affiche_resultat "\n"
+   ::console::affiche_resultat "Date: $ladate\n"
+   ::console::affiche_resultat "JD: $jd\n"
+   ::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short A.\n"
+   ::console::affiche_resultat "Sigma(EW)=$sigma_ew A.\n"
+   ::console::affiche_resultat "SNR=$snr_short.\n\n"
+   return $ew
+}
+#***************************************************************************#
+
+
+####################################################################
+# Calcul la largeur equivalenbte d'une raie
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 2008-05-31
+# Date modification : 2008-05-31
+# Arguments : nom_profil_raies ?lambda_raie/ldeb lfin?
+# Algo : determine ldeb et lfin par intersection du spectre filtre passe bas avec la valeur icont du spectre normalisé.
+####################################################################
+
+proc spc_autoew3 { args } {
+   global conf
+   global audace
+   set precision 0.001
+   #- largeur en angstroms des raies a eliminer par passebas :
+   set largeur 10
+
+   set nb_args [ llength $args ]
+   if { $nb_args == 2 || $nb_args == 3} {
+      if { $nb_args == 2 } {
+         set filename [ file rootname [ lindex $args 0 ] ]
+         set lambda_raie [ lindex $args 1 ]
+         set lambda_deb [ expr $lambda_raie-20 ]
+         set lambda_fin [ expr $lambda_raie+20 ]
+      } elseif { $nb_args == 3 } {
+         set filename [ file rootname [ lindex $args 0 ] ]
+         set lambda_deb [ lindex $args 1 ]
+         set lambda_fin [ lindex $args 2 ]
+      } else {
+         ::console::affiche_erreur "Usage: spc_autoew3 nom_profil_raies lambda_raie/lambda_deb lambda_fin\n"
+      }
+
+      #--- Normalisation :
+      set filename_norma [ spc_autonorma $filename ]
+
+      #--- Determine la date en jours Juliens :
+      buf$audace(bufNo) load "$audace(rep_images)/$filename"
+      set listemotsclef [ buf$audace(bufNo) getkwds ]
+      if { [ lsearch $listemotsclef "MID-JD" ] !=-1 } {
+         set jd [ lindex [ buf$audace(bufNo) getkwd "MID-JD" ] 1 ]
+      } else {
+         set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
+         set jd [ mc_date2jd $ladate ]
+      }
+
+
+      if { $nb_args == 2 } {
+         #--- Extraction des mots clef :
+         set cdelt1 [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+
+         #--- Caleur moyenne du continuum :
+         set icont [ spc_icontinuum $filename_norma ]
+         #set icont [ spc_icontinuum ${filename}_conti $lambda_raie ]
+
+         #--- Calcul un profil lisse :
+         set largeur_raie [ expr 10*$cdelt1 ]
+         set filename_norma_pbas [ spc_passebas $filename_norma $largeur ]
+         set listevals [ spc_fits2data $filename_norma_pbas ]
+         set lambdas [ lindex $listevals 0 ]
+         set intensities [ lindex $listevals 1 ]
+         set len [ llength $lambdas ]
+         #--- Trouve l'indice de la raie recherche dans la liste
+         set i_lambda [ lsearch -glob $lambdas ${lambda_raie}* ]
+
+         #--- Recherche la longueur d'onde d'intersection du bord rouge de la raie avec le continuum normalisé à 1 :
+         for { set i $i_lambda } { $i<$len } { incr i } {
+	    set yval [ lindex $intensities $i ]
+	    if { [ expr abs($yval-$icont) ] <= $precision } {
+               set lambda_fin [ lindex $lambdas $i ]
+               break
+	    }
+         }
+
+         #--- Recherche la longueur d'onde d'intersection du bord bleu de la raie avec le continuum normalisé à 1 :
+         for { set i $i_lambda } { $i>=0 } { set i [ expr $i-1 ] } {
+	    set yval [ lindex $intensities $i ]
+	    if { [ expr abs($yval-$icont) ] <= $precision } {
+               set lambda_deb [ lindex $lambdas $i ]
+               break
+	    }
+         }
+      }
+
+      #--- Détermination de la largeur équivalente :
+      set ew [ spc_ew $filename_norma $lambda_deb $lambda_fin ]
+      set deltal [ expr abs($lambda_fin-$lambda_deb) ]
+
+
+      #--- Calcul de l'erreur (sigma) sur la mesure (doc Ernst Pollmann) :
+      set snr [ spc_snr $filename ]
+      set rapport [ expr $ew/$deltal ]
+      if { $rapport>=1.0 } {
+         set deltal [ expr $ew+0.1 ]
+         ::console::affiche_prompt "Attention : largeur d'intégration<EW !\n"
+      }
+      if { $snr != 0 } {
+         set sigma [ expr sqrt(1+1/(1-$ew/$deltal))*(($deltal-$ew)/$snr) ]
+         #set sigma [ expr sqrt(1+1/(1-abs($ew)/$deltal))*(($deltal-abs($ew))/$snr) ]
+      } else {
+         ::console::affiche_resultat "Incertitude non calculable car SNR non calculable\n"
+         set sigma 0
+      }
+
+      #--- Effacement des fichiers temporaires :
+      file delete -force "$audace(rep_images)/$filename_norma$conf(extension,defaut)"
+      if { $nb_args == 2 } {
+         file delete -force "$audace(rep_images)/$filename_norma_pbas$conf(extension,defaut)"
+         # file delete -force "$audace(rep_images)/${filename}_conti$conf(extension,defaut)"
+      }
+
+      #--- Formatage des résultats :
+      set l_fin [ expr 0.01*round($lambda_fin*100) ]
+      set l_deb [ expr 0.01*round($lambda_deb*100) ]
+      set delta_l [ expr 0.01*round($deltal*100) ]
+      set ew_short [ expr 0.01*round($ew*100) ]
+      set sigma_ew [ expr 0.01*round($sigma*100) ]
+      set snr_short [ expr round($snr) ]
+
+      #--- Affichage des résultats :
+      ::console::affiche_resultat "\n"
+      ::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short A.\n"
+      ::console::affiche_resultat "Sigma(EW)=$sigma_ew A.\n"
+      ::console::affiche_resultat "SNR=$snr_short.\n\n"
+      #set resultats [ list $ew $sigma_ew ]
+      #return $ew
+      set results [ list $ew_short $sigma_ew $snr_short "EW($delta_l=$l_deb-$l_fin)" $jd ]
+      return $results
+   } else {
+      ::console::affiche_erreur "Usage: spc_autoew nom_profil_raies lambda_raie/lambda_deb lambda_fin\n"
+   }
 }
 #***************************************************************************#
 
