@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER
-# Mise à jour $Id: skybot_search.tcl,v 1.29 2010-10-03 05:08:57 michelpujol Exp $
+# Mise à jour $Id: skybot_search.tcl,v 1.30 2010-10-03 07:28:02 michelpujol Exp $
 #
 
 namespace eval skybot_Search {
@@ -1705,7 +1705,7 @@ namespace eval skybot_Search {
          #--- je mets la date au format ISO8601
          if { [string index $date_debut 10] == " " } {
             #--- je remplace l'espace par T entre le jour et l'heure
-            set date_debut [string replace $date_debut 10 11 "T"]
+            set date_debut [string replace $date_debut 10 10 "T"]
          }
 #         set date_d [ mc_date2ymdhms $date_debut_jd ]
 #         set date_debut [format "%2s-%02d-%02d %02d:%02d:%02.0f" [lindex $date_d 0] [lindex $date_d 1] [lindex $date_d 2] \
@@ -1718,7 +1718,7 @@ namespace eval skybot_Search {
          #--- je mets la date au format ISO8601
          if { [string index $date_fin 10] == " " } {
             #--- je remplace l'espace par T entre le jour et l'heure
-            set date_fin [string replace $date_fin 10 11 "T"]
+            set date_fin [string replace $date_fin 10 10 "T"]
          }
 
 #         set date_d [ mc_date2ymdhms $date_fin_jd ]
