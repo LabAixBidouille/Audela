@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER
-# Mise à jour $Id: skybot_search.tcl,v 1.28 2010-05-26 06:00:54 robertdelmas Exp $
+# Mise à jour $Id: skybot_search.tcl,v 1.29 2010-10-03 05:08:57 michelpujol Exp $
 #
 
 namespace eval skybot_Search {
@@ -102,10 +102,10 @@ namespace eval skybot_Search {
                if [ regexp (end) $line ] { set inconfig "0" }
             } else {
                switch $inconfig {
-                  1 { if { [ regexp (image) $line ] } { set voconf(nom_image) [ string trim [ lindex [ split  $line ":" ] 1 ] ] }
-                      if { [ regexp (fov_size) $line ] } { set voconf(taille_champ) [ string trim [ lindex [ split  $line ":" ] 1 ] ] }
-                      if { [ regexp (filter) $line ] } { set voconf(filter) [ string trim [ lindex [ split  $line ":" ] 1 ] ] }
-                      if { [ regexp (userloc) $line ] } { set voconf(observer) [ string trim [ lindex [ split  $line ":" ] 1 ] ] }
+                  1 { if { [ regexp (image) $line ] } { set voconf(nom_image) [ string  [ lindex [ split  $line ":" ] 1 ] ] }
+                      if { [ regexp (fov_size) $line ] } { set voconf(taille_champ) [ string  [ lindex [ split  $line ":" ] 1 ] ] }
+                      if { [ regexp (filter) $line ] } { set voconf(filter) [ string  [ lindex [ split  $line ":" ] 1 ] ] }
+                      if { [ regexp (userloc) $line ] } { set voconf(observer) [ string  [ lindex [ split  $line ":" ] 1 ] ] }
                     }
                   0 { if { $line != "" } {
                         if { $voconf(liste) == "" } {
@@ -703,7 +703,7 @@ namespace eval skybot_Search {
 
          #--- Cree un bouton pour utiliser l'image en cours d'utilisation
          button $This.frame1.usecurrent -text "$caption(search,image_courante)" -command { ::skybot_Search::charger "!"}
-         pack $This.frame1.usecurrent -in $This.frame1 -side top -anchor w -fill x -padx 3 -pady 3
+         pack $This.frame1.usecurrent -in $This.frame1 -side top -anchor center -fill none -padx 3 -pady 3
 
       #--- Cree un frame pour les caracteristiques de l'image
       frame $This.frame2 -borderwidth 0
@@ -1004,7 +1004,7 @@ namespace eval skybot_Search {
          button $This.frame6.but_caract -relief raised -state disabled \
             -text "$caption(search,caract_objet)" -borderwidth 2 \
             -command {
-               set filename [ concat $myurl(astorb,CDS)[string trim $voconf(name)] ]
+               set filename [ concat $myurl(astorb,CDS)[string  $voconf(name)] ]
                ::audace::Lance_Site_htm $filename
             }
          pack $This.frame6.but_caract \
@@ -1019,8 +1019,8 @@ namespace eval skybot_Search {
                set annee [ lindex $date 0 ]
                set mois [ lindex $date 1 ]
                set jour [ lindex $date 2 ]
-               set goto_url [ concat "$myurl(ephepos,IMCCE)planete=Aster&nomaster=[string trim $voconf(name)]\
-                         &scale=UTC&an=[string trim $annee]&mois=[string trim $mois]&jour=[string trim $jour]\
+               set goto_url [ concat "$myurl(ephepos,IMCCE)planete=Aster&nomaster=[string  $voconf(name)]\
+                         &scale=UTC&an=[string  $annee]&mois=[string  $mois]&jour=[string  $jour]\
                          &heure=12&minutes=00&secondes=00&nbdates=15" ]
                ::audace::Lance_Site_htm $goto_url
             }
@@ -1607,7 +1607,7 @@ namespace eval skybot_Search {
                $::skybot_Search::This.frame6.but_recherche configure -relief raised -state normal
                return
             } else {
-               set voconf(centre_ad_image) [string trim [ mc_angle2deg $voconf(centre_ad_image_h) ]]
+               set voconf(centre_ad_image) [string  [ mc_angle2deg $voconf(centre_ad_image_h) ]]
             }
             if {$voconf(centre_dec_image_d) == ""} {
                tk_messageBox -title $caption(search,msg_erreur) -type ok -message $caption(search,msg_saisir_dec)
@@ -1616,7 +1616,7 @@ namespace eval skybot_Search {
                $::skybot_Search::This.frame6.but_recherche configure -relief raised -state normal
                return
             } else {
-               set voconf(centre_dec_image) [string trim [ mc_angle2deg $voconf(centre_dec_image_d) ]]
+               set voconf(centre_dec_image) [string  [ mc_angle2deg $voconf(centre_dec_image_d) ]]
             }
          }
       }
@@ -1689,23 +1689,38 @@ namespace eval skybot_Search {
 
       #--- Conversion de la date en JD
       set date [ mc_date2jd $voconf(date_image) ]
+
       #--- Interrogation de la base de donnees
       set erreur [ catch { vo_skybotstatus text "$voconf(date_image)" } statut ]
       #---
       if { $erreur == "0" && $statut != "failed" && $statut != "error"} {
-
          #--- Mise en forme du resultat
          set statut [lindex [split $statut ";"] 1]
          regsub -all "\'" $statut "" statut
          set statut [split $statut "|"]
          #--- Date du debut
          set date_debut [lindex $statut 1]
+         #--- j'enleve les espaces a droite et a gauche
+         set date_debut [string trim $date_debut]
+         #--- je mets la date au format ISO8601
+         if { [string index $date_debut 10] == " " } {
+            #--- je remplace l'espace par T entre le jour et l'heure
+            set date_debut [string replace $date_debut 10 11 "T"]
+         }
 #         set date_d [ mc_date2ymdhms $date_debut_jd ]
 #         set date_debut [format "%2s-%02d-%02d %02d:%02d:%02.0f" [lindex $date_d 0] [lindex $date_d 1] [lindex $date_d 2] \
 #                                                                 [lindex $date_d 3] [lindex $date_d 4] [lindex $date_d 5] ]
          set date_debut_jd [mc_date2jd $date_debut]
          #--- Date de fin
          set date_fin [lindex $statut 2]
+         #--- j'enleve les espaces a droite et a gauche
+         set date_fin [string trim $date_fin]
+         #--- je mets la date au format ISO8601
+         if { [string index $date_fin 10] == " " } {
+            #--- je remplace l'espace par T entre le jour et l'heure
+            set date_fin [string replace $date_fin 10 11 "T"]
+         }
+
 #         set date_d [ mc_date2ymdhms $date_fin_jd ]
 #         set date_fin [ format "%2s-%02d-%02d %02d:%02d:%02.0f" [lindex $date_d 0] [lindex $date_d 1] [lindex $date_d 2] \
 #                                                                [lindex $date_d 3] [lindex $date_d 4] [lindex $date_d 5] ]
