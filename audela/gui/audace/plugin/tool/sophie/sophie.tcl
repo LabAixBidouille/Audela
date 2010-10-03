@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.49 2010-05-23 16:28:51 michelpujol Exp $
+# @version   $Id: sophie.tcl,v 1.50 2010-10-03 14:33:33 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -367,7 +367,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
 
          #--- Diminution du zoom
          ArrowButton $frm.zoom.butMin -borderwidth 1 -dir left -relief raised \
-            -command "::sophie::incrementZoom"
+            -command "::sophie::decrementZoom"
          pack $frm.zoom.butMin -in [ $frm.zoom getframe ] \
             -anchor center -expand 1 -fill x -ipady 2 -side left
 
@@ -380,7 +380,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
 
          #--- Augmentation du zoom
          ArrowButton $frm.zoom.butMax -borderwidth 1 -dir right -relief raised \
-            -command "::sophie::decrementZoom"
+            -command "::sophie::incrementZoom"
          pack $frm.zoom.butMax -in [ $frm.zoom getframe ] \
             -anchor center -expand 1 -fill x -ipady 2 -side left
 
