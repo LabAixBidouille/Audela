@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise à jour $Id: cmaude.tcl,v 1.33 2010-09-25 21:22:45 robertdelmas Exp $
+# Mise à jour $Id: cmaude.tcl,v 1.34 2010-10-03 14:47:43 robertdelmas Exp $
 #
 
 #============================================================
@@ -798,6 +798,11 @@ namespace eval ::cmaude::config {
          button $This.frame3.but -text $caption(cmaude,mots_cles) \
             -command "::keyword::run $audace(visuNo) ::conf(cmaude,keywordConfigName)"
          pack $This.frame3.but -side left -padx 6 -pady 10 -ipadx 20
+
+         #--- Label du nom de la configuration de l'en-tete FITS
+         entry $This.frame3.labNom \
+            -state readonly -takefocus 0 -textvariable ::conf(cmaude,keywordConfigName) -justify center
+         pack $This.frame3.labNom -side left -padx 6
 
       pack $This.frame3 -side top -fill both -expand 1
    }

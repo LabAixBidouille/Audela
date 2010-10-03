@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise à jour $Id: tlscp.tcl,v 1.46 2010-09-01 20:19:15 robertdelmas Exp $
+# Mise à jour $Id: tlscp.tcl,v 1.47 2010-10-03 14:50:07 robertdelmas Exp $
 #
 
 #============================================================
@@ -1946,8 +1946,11 @@ proc ::tlscp::config::fillConfigPage { frm visuNo } {
       label $frm.fits.labFits -text "$caption(tlscp,en-tete_fits)"
       button $frm.fits.buttonFits -text "$caption(tlscp,mots_cles)" \
          -command "::keyword::run $visuNo ::conf(tlscp,keywordConfigName)"
-      pack $frm.fits.labFits -anchor n -side left -pady 10
+      entry $frm.fits.labNom -textvariable ::conf(tlscp,keywordConfigName) \
+         -state readonly -takefocus 0 -justify center
+      pack $frm.fits.labFits -anchor n -side left -pady 12
       pack $frm.fits.buttonFits -anchor n -side left -padx 6 -pady 10 -ipadx 20
+      pack $frm.fits.labNom -anchor n -side left -padx 6 -pady 13
 
    TitleFrame $frm.camera -borderwidth 2 -text "$caption(tlscp,camera)"
       LabelEntry $frm.camera.angle -label "$caption(tlscp,angle)" \
@@ -1955,7 +1958,6 @@ proc ::tlscp::config::fillConfigPage { frm visuNo } {
          -validate all -validatecommand { ::tlscp::validateNumber %W %V %P %s -360 360} \
          -textvariable ::tlscp::config::widget($visuNo,angle)
       pack $frm.camera.angle -in [$frm.camera getframe] -anchor w -side top -fill x -expand 0
-
    pack $frm.fits   -in $frm -anchor w -side top -fill x -expand 0
    pack $frm.camera -in $frm -anchor w -side top -fill x -expand 0 -pady 5
 

@@ -2,7 +2,7 @@
 # Fichier : session.tcl
 # Description : configuration des parametres de session
 # Auteur : Michel PUJOL
-# Mise à jour $Id: session.tcl,v 1.3 2010-05-26 17:49:46 robertdelmas Exp $
+# Mise à jour $Id: session.tcl,v 1.4 2010-10-03 14:48:55 robertdelmas Exp $
 #
 
 ################################################################
@@ -227,6 +227,8 @@ proc ::eshel::session::fillConfigPage { frm visuNo } {
    label $frm.fitsKeywordLabel -text "$::caption(eshel,session,fitsKeywordLabel)"
    button $frm.fitsKeywordButton -text "$::caption(eshel,session,fitsKeywordButton)" \
       -command "::keyword::run $visuNo ::conf(eshel,keywordConfigName)"
+   entry $frm.fitsKeywordLabelNom -textvariable ::conf(eshel,keywordConfigName) \
+      -state readonly -takefocus 0 -justify center
 
    #--- nom du site
    label $frm.siteLabel       -text $caption(eshel,session,site) -justify left
@@ -246,17 +248,18 @@ proc ::eshel::session::fillConfigPage { frm visuNo } {
    grid $frm.subDirectoryEntry   -in $frm -row 2 -column 1 -sticky wen -padx 2
    grid $frm.subDirectoryButton  -in $frm -row 2 -column 2 -sticky wen -padx 2 -columnspan 2
 
-   grid $frm.siteLabel           -in $frm -row 4 -column 0 -sticky wn -padx 2 -pady 2
+   grid $frm.siteLabel           -in $frm -row 4 -column 0 -sticky wn  -padx 2 -pady 2
    grid $frm.siteEntry           -in $frm -row 4 -column 1 -sticky wen -padx 2
    grid $frm.configurationLabel  -in $frm -row 5 -column 0 -sticky wn  -padx 2
    grid $frm.configurationEntry  -in $frm -row 5 -column 1 -sticky wen -padx 2
-   grid $frm.showProfile         -in $frm -row 6 -column 0 -sticky wn -padx 2 -columnspan 4
-   grid $frm.enabledLogFile      -in $frm -row 7 -column 0 -sticky wn -padx 2 -columnspan 4
-   grid $frm.enableComment       -in $frm -row 8 -column 0 -sticky wn -padx 2 -columnspan 4
-   grid $frm.enableGuidingUnit   -in $frm -row 9 -column 0 -sticky wn -padx 2 -columnspan 4
+   grid $frm.showProfile         -in $frm -row 6 -column 0 -sticky wn  -padx 2 -columnspan 4
+   grid $frm.enabledLogFile      -in $frm -row 7 -column 0 -sticky wn  -padx 2 -columnspan 4
+   grid $frm.enableComment       -in $frm -row 8 -column 0 -sticky wn  -padx 2 -columnspan 4
+   grid $frm.enableGuidingUnit   -in $frm -row 9 -column 0 -sticky wn  -padx 2 -columnspan 4
 
-   grid $frm.fitsKeywordLabel    -in $frm -row 10 -column 0 -sticky wn -padx 2 -columnspan 1
-   grid $frm.fitsKeywordButton   -in $frm -row 10 -column 1 -sticky wn -padx 2 -columnspan 1
+   grid $frm.fitsKeywordLabel    -in $frm -row 10 -column 0 -sticky wn  -padx 2 -columnspan 1
+   grid $frm.fitsKeywordButton   -in $frm -row 10 -column 1 -sticky wn  -padx 2 -columnspan 1
+   grid $frm.fitsKeywordLabelNom -in $frm -row 10 -column 2 -sticky wn  -padx 2 -columnspan 1
 
    grid rowconfig  $frm 10 -weight 1
    ##grid columnconfig $frm 0 -weight 1
