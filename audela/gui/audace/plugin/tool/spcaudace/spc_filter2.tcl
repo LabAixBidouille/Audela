@@ -1,6 +1,6 @@
 
 
-# Mise a jour $Id: spc_filter2.tcl,v 1.13 2010-10-03 19:59:01 bmauclaire Exp $
+# Mise a jour $Id: spc_filter2.tcl,v 1.14 2010-10-04 20:45:30 bmauclaire Exp $
 # Mise a jour Patrick Lailly 29 mai 2009
 
 
@@ -960,73 +960,80 @@ proc spc_extractcontew { args } {
    global audace spcaudace
    set nbtranches 10
 
-   if { [llength $args]==1 } {
+   set nbargs [ llength $args ]
+   if { $nbargs==1 } {
       set fichier [ file rootname [ lindex $args 0 ] ]
-
-      #--- Loi de calibration :
-      buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-      set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
-      set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
-      set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-      set crpix1 [ lindex [ buf$audace(bufNo) getkwd "CRPIX1" ] 1 ]
-      set largeur [ expr int($naxis1/$nbtranches) ]
-
-      
-      #--- Détermine 2 lmabdas du continuum ou sigma est petit :
-      #-- Détermine les limites gauche et droite d'etude (valeurs != 0) :
-      set limits [ spc_findnnul [ lindex [ spc_fits2data "$fichier" ] 1 ] ]
-
-      #-- Filtrage passe bas :
-      #set spectre_pbas [ spc_passebas "$fichier" ]
-      #buf$audace(bufNo) load "$audace(rep_images)/$spectre_pbas"
-      buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-      buf$audace(bufNo) window [ list [ lindex $limits 0 ] 1 [ lindex $limits 1 ] 1 ]
-
-      #-- Détermine les écart-types de chaque tranches :
-      set listresults ""
-      for {set i 0} {$i<$nbtranches} {incr i} {
-         if { $i==0 } {
-            set zone [ list 1 1 $largeur 1 ]
-         } else {
-            set zone [ list [ expr $i*$largeur ] 1 [ expr ($i+1)*$largeur ] 1 ]
-         }
-         set result [ buf$audace(bufNo) stat $zone ]
-         lappend listresults [ list [ lindex $result 4 ] [ lindex $result 5 ] $i ]
-      }
-
-      #-- Tri par ecart-type :
-      set listresults [ lsort -increasing -real -index 1 $listresults ]
-      set icontinuum [ lindex [ lindex $listresults 0 ] 0 ]
-
-      #-- Calcul de la longueur d'onde de la tranche selectionnee :
-      set no_tranche [ lindex [ lindex $listresults 0 ] 2 ]
-      set no_pixel [ expr round($no_tranche*$largeur*1.) ]
-      set lambdac1 [ expr round([ spc_calpoly $no_pixel $crpix1 $crval1 $cdelt1 0 0 ]) ]
-      set no_tranche [ lindex [ lindex $listresults 1 ] 2 ]
-      set no_pixel [ expr round($no_tranche*$largeur*1.) ]
-      set lambdac2 [ expr round([ spc_calpoly $no_pixel $crpix1 $crval1 $cdelt1 0 0 ]) ]
-
-
-      #--- Calcul deux longueurs proches des extrémités :
-      set lambdab1 [ expr $crval1*1.0004 ]
-      set lambdab2 [ expr $crval1*1.0007 ]
-      set pixelr1 [ expr round($naxis1*0.979) ]
-      set lambdar1 [ expr round([ spc_calpoly $pixelr1 $crpix1 $crval1 $cdelt1 0 0 ]) ]
-      set pixelr2 [ expr round($naxis1*0.993) ]
-      set lambdar2 [ expr round([ spc_calpoly $pixelr2 $crpix1 $crval1 $cdelt1 0 0 ]) ]
-
-
-      #--- Extrait le continuum :
-      ::console::affiche_prompt "Longueurs d'ondes retenues pour le continuum : $lambdab1, $lambdab2, $lambdac1, $lambdac2, $lambdar1, $lambdar2.\n"
-      set spectre_result [ spc_piecewiselinearfilter "$fichier" 1. 1000000. manu [ list $lambdab1 $lambdab2 $lambdac1 $lambdac2 $lambdar1 $lambdar2 ] 100 {1. 1.} 'n' ]
-
-      #--- Traitement des résultats :
-      set conti_spectre "${fichier}_conti"
-      file rename -force "$audace(rep_images)/$spectre_result$conf(extension,defaut)" "$audace(rep_images)/$conti_spectre$conf(extension,defaut)"
-      return $conti_spectre
+      set taux_doucissage $spcaudace(taux_doucissage)
+   } elseif { $nbargs==2 } {
+      set fichier [ file rootname [ lindex $args 0 ] ]
+      set taux_doucissage [ lindex $args 1 ]
    } else {
-      ::console::affiche_erreur "Usage : spc_extractcontew nom_profil_de_raies\n\n"
+      ::console::affiche_erreur "Usage : spc_extractcontew nom_profil_de_raies ?taux_doucissage(1000000)?\n\n"      
+      return ""
    }
+
+
+   #--- Loi de calibration :
+   buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+   set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+   set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+   set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+   set crpix1 [ lindex [ buf$audace(bufNo) getkwd "CRPIX1" ] 1 ]
+   set largeur [ expr int($naxis1/$nbtranches) ]
+   
+   
+   #--- Détermine 2 lmabdas du continuum ou sigma est petit :
+   #-- Détermine les limites gauche et droite d'etude (valeurs != 0) :
+   set limits [ spc_findnnul [ lindex [ spc_fits2data "$fichier" ] 1 ] ]
+   
+   #-- Filtrage passe bas :
+   #set spectre_pbas [ spc_passebas "$fichier" ]
+   #buf$audace(bufNo) load "$audace(rep_images)/$spectre_pbas"
+   buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+   buf$audace(bufNo) window [ list [ lindex $limits 0 ] 1 [ lindex $limits 1 ] 1 ]
+   
+   #-- Détermine les écart-types de chaque tranches :
+   set listresults ""
+   for {set i 0} {$i<$nbtranches} {incr i} {
+      if { $i==0 } {
+         set zone [ list 1 1 $largeur 1 ]
+      } else {
+         set zone [ list [ expr $i*$largeur ] 1 [ expr ($i+1)*$largeur ] 1 ]
+      }
+      set result [ buf$audace(bufNo) stat $zone ]
+      lappend listresults [ list [ lindex $result 4 ] [ lindex $result 5 ] $i ]
+   }
+   
+   #-- Tri par ecart-type :
+   set listresults [ lsort -increasing -real -index 1 $listresults ]
+   set icontinuum [ lindex [ lindex $listresults 0 ] 0 ]
+   
+   #-- Calcul de la longueur d'onde de la tranche selectionnee :
+   set no_tranche [ lindex [ lindex $listresults 0 ] 2 ]
+   set no_pixel [ expr round($no_tranche*$largeur*1.) ]
+   set lambdac1 [ expr round([ spc_calpoly $no_pixel $crpix1 $crval1 $cdelt1 0 0 ]) ]
+   set no_tranche [ lindex [ lindex $listresults 1 ] 2 ]
+   set no_pixel [ expr round($no_tranche*$largeur*1.) ]
+   set lambdac2 [ expr round([ spc_calpoly $no_pixel $crpix1 $crval1 $cdelt1 0 0 ]) ]
+   
+   
+   #--- Calcul deux longueurs proches des extrémités :
+   set lambdab1 [ expr $crval1*1.0004 ]
+   set lambdab2 [ expr $crval1*1.0007 ]
+   set pixelr1 [ expr round($naxis1*0.979) ]
+   set lambdar1 [ expr round([ spc_calpoly $pixelr1 $crpix1 $crval1 $cdelt1 0 0 ]) ]
+   set pixelr2 [ expr round($naxis1*0.993) ]
+   set lambdar2 [ expr round([ spc_calpoly $pixelr2 $crpix1 $crval1 $cdelt1 0 0 ]) ]
+   
+   
+   #--- Extrait le continuum :
+   ::console::affiche_prompt "Longueurs d'ondes retenues pour le continuum : $lambdab1, $lambdab2, $lambdac1, $lambdac2, $lambdar1, $lambdar2.\n"
+   set spectre_result [ spc_piecewiselinearfilter "$fichier" 1. $taux_doucissage manu [ list $lambdab1 $lambdab2 $lambdac1 $lambdac2 $lambdar1 $lambdar2 ] 100 {1. 1.} 'n' ]
+   
+   #--- Traitement des résultats :
+   set conti_spectre "${fichier}_conti"
+   file rename -force "$audace(rep_images)/$spectre_result$conf(extension,defaut)" "$audace(rep_images)/$conti_spectre$conf(extension,defaut)"
+   return $conti_spectre
 }
 #**********************************************************************************************#
 
