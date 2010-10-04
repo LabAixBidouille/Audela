@@ -1,7 +1,7 @@
 
 # Procédures d'exploitation astrophysique des spectres
 
-# Mise a jour $Id: spc_astrophys.tcl,v 1.16 2010-10-03 19:59:39 bmauclaire Exp $
+# Mise a jour $Id: spc_astrophys.tcl,v 1.17 2010-10-04 21:02:33 bmauclaire Exp $
 
 
 
@@ -1915,18 +1915,23 @@ proc spc_autoew3 { args } {
    set largeur 10
 
    set nb_args [ llength $args ]
-   if { $nb_args == 2 || $nb_args == 3} {
-      if { $nb_args == 2 } {
+   if { $nb_args==2 || $nb_args==3 || $nb_args==4 } {
+      if { $nb_args==2 } {
          set filename [ file rootname [ lindex $args 0 ] ]
          set lambda_raie [ lindex $args 1 ]
          set lambda_deb [ expr $lambda_raie-20 ]
          set lambda_fin [ expr $lambda_raie+20 ]
-      } elseif { $nb_args == 3 } {
+      } elseif { $nb_args==3 } {
          set filename [ file rootname [ lindex $args 0 ] ]
          set lambda_deb [ lindex $args 1 ]
          set lambda_fin [ lindex $args 2 ]
+      } elseif { $nb_args==4 } {
+         set filename [ file rootname [ lindex $args 0 ] ]
+         set lambda_deb [ lindex $args 1 ]
+         set lambda_fin [ lindex $args 2 ]
+         set taux_doucissage [ lindex $args 3 ]
       } else {
-         ::console::affiche_erreur "Usage: spc_autoew3 nom_profil_raies lambda_raie/lambda_deb lambda_fin\n"
+         ::console::affiche_erreur "Usage: spc_autoew3 nom_profil_raies lambda_raie/lambda_deb lambda_fin ?taux_doucissage_continuum?\n"
       }
 
       #--- Normalisation :
@@ -1981,7 +1986,11 @@ proc spc_autoew3 { args } {
       }
 
       #--- Détermination de la largeur équivalente :
-      set ew [ spc_ew $filename_norma $lambda_deb $lambda_fin ]
+      if { $nbargs<=3 } {
+         set ew [ spc_ew $filename_norma $lambda_deb $lambda_fin ]
+      } elseif { $nbargs==4 } {
+         set ew [ spc_ew $filename_norma $lambda_deb $lambda_fin $taux_doucissage ]
+      }
       set deltal [ expr abs($lambda_fin-$lambda_deb) ]
 
 
@@ -2025,7 +2034,7 @@ proc spc_autoew3 { args } {
       set results [ list $ew_short $sigma_ew $snr_short "EW($delta_l=$l_deb-$l_fin)" $jd ]
       return $results
    } else {
-      ::console::affiche_erreur "Usage: spc_autoew3 nom_profil_raies lambda_raie/lambda_deb lambda_fin\n"
+      ::console::affiche_erreur "Usage: spc_autoew3 nom_profil_raies lambda_raie/lambda_deb lambda_fin ?taux_doucissage_continuum?\n"
    }
 }
 #***************************************************************************#
@@ -2162,16 +2171,21 @@ proc spc_autoew { args } {
    global audace
 
    set nb_args [ llength $args ]
-   if { $nb_args == 2 || $nb_args == 3} {
-      if { $nb_args == 2 } {
+   if { $nb_args == 2 || $nb_args == 3 || $nb_args == 4 } {
+      if { $nb_args==2 } {
          set filename [ file rootname [ lindex $args 0 ] ]
          set lambda_raie [ lindex $args 1 ]
-      } elseif { $nb_args == 3 } {
+      } elseif { $nb_args==3 } {
          set filename [ file rootname [ lindex $args 0 ] ]
          set lambda_deb [ lindex $args 1 ]
          set lambda_fin [ lindex $args 2 ]
+      } elseif { $nb_args==4 } {
+         set filename [ file rootname [ lindex $args 0 ] ]
+         set lambda_deb [ lindex $args 1 ]
+         set lambda_fin [ lindex $args 2 ]
+         set taux_doucissage [ lindex $args 3 ]
       } else {
-         ::console::affiche_erreur "Usage: spc_autoew nom_profil_raies lambda_raie/lambda_deb lambda_fin\n"
+         ::console::affiche_erreur "Usage: spc_autoew nom_profil_raies lambda_raie/lambda_deb lambda_fin ?taux_doucissage_continuum?\n"
          return 0
       }
 
@@ -2182,10 +2196,12 @@ proc spc_autoew { args } {
        set sp_norma "$filename"
 
        #--- Mesure EW par intersection a I=1 :
-       if { $nb_args == 2 } {
+       if { $nb_args==2 } {
           set results_ew [ spc_autoew3 "$sp_norma" $lambda_raie ]
-       } elseif  { $nb_args == 3 } {
+       } elseif  { $nb_args==3 } {
           set results_ew [ spc_autoew3 "$sp_norma" $lambda_deb $lambda_fin ]
+       } elseif  { $nb_args==4 } {
+          set results_ew [ spc_autoew3 "$sp_norma" $lambda_deb $lambda_fin $taux_doucissage ]
        }
 
        #--- Traitement des resultats :
