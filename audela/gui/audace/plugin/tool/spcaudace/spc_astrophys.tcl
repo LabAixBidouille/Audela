@@ -1,7 +1,7 @@
 
 # Procédures d'exploitation astrophysique des spectres
 
-# Mise a jour $Id: spc_astrophys.tcl,v 1.17 2010-10-04 21:02:33 bmauclaire Exp $
+# Mise a jour $Id: spc_astrophys.tcl,v 1.18 2010-10-04 21:05:26 bmauclaire Exp $
 
 
 
@@ -2207,7 +2207,7 @@ proc spc_autoew { args } {
        #--- Traitement des resultats :
        return $results_ew
     } else {
-       ::console::affiche_erreur "Usage: spc_autoew nom_profil_raies lambda_raie/lambda_deb lambda_fin\n"
+       ::console::affiche_erreur "Usage: spc_autoew nom_profil_raies lambda_raie/lambda_deb lambda_fin ?taux_doucissage_continuum (1-100000000)?\n"
     }
 }
 #***************************************************************************#
