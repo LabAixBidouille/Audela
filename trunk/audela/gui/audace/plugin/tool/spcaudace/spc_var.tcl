@@ -3,7 +3,7 @@
 #
 ####################################################################
 
-# Mise a jour $Id: spc_var.tcl,v 1.34 2010-10-03 19:58:12 bmauclaire Exp $
+# Mise a jour $Id: spc_var.tcl,v 1.35 2010-10-04 20:43:39 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -113,6 +113,8 @@ set spcaudace(meth_somme) "addi"
 
 
 #--- Valeur de paramètres des euristhiques algorithmiques :
+#-- Taux adoucissement pour l'extraction de continuum ew via piecewiselinear :
+set spcaudace(taux_doucissage) 1000000.
 #-- Valeur de la fwhm des cosmics a detecter :
 set spcaudace(cosmics_fwhm) 5.0
 #-- Intensitee minimale des cosmics en % du continuum :
