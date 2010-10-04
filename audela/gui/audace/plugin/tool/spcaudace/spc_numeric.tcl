@@ -1,7 +1,7 @@
 # Fonctions de calculs numeriques : interpolation, ajustement...
 # source $audace(rep_scripts)/spcaudace/spc_numeric.tcl
 
-# Mise a jour $Id: spc_numeric.tcl,v 1.9 2010-10-03 20:00:14 bmauclaire Exp $
+# Mise a jour $Id: spc_numeric.tcl,v 1.10 2010-10-04 20:44:26 bmauclaire Exp $
 
 
 #############################################################################
@@ -572,8 +572,8 @@ proc spc_findnnul { args } {
    }
 
    #--- Verification que les echantillons extremes sont bien nuls :
-   if { [ lindex $intensites 0 ]!=0 } { set xlistdeb 0 }
-   if { [ lindex $intensites [ expr $naxis1-1 ] ]!=0 } { set xlistfin [ expr $naxis1-1 ] }
+   if { [ lindex $intensites 0 ]>0 } { set xlistdeb 0 }
+   if { [ lindex $intensites [ expr $naxis1-1 ] ]>0 } { set xlistfin [ expr $naxis1-1 ] }
 
    #--- Exploitation des resultats :
    set results [ list $xlistdeb $xlistfin ]
