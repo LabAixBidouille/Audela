@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.36 2010-09-18 15:03:20 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.37 2010-10-05 17:18:07 bmauclaire Exp $
 
 
 
@@ -1831,7 +1831,7 @@ proc spc_somme { args } {
        buf$audace(bufNo) load "$audace(rep_images)/$fichier1"
        set listemotsclef [ buf$audace(bufNo) getkwds ]
        #-- Pour contrecarer l'influence de smean sur date-obs 20081004 :
-       if { $methsomme == "moy" } {
+       if { $methsomme=="moy" || $methsomme=="sigmakappa" || $methsomme=="med" || $methsomme=="addi" } {
           set dateobs_img1 [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
           if { [ lsearch $listemotsclef "EXPOSURE" ] !=-1 } {
              set unit_exposure [ lindex [ buf$audace(bufNo) getkwd "EXPOSURE" ] 1 ]
@@ -1894,10 +1894,13 @@ proc spc_somme { args } {
 
        #--- Mise a jour du motclef EXPTIME : calcul en fraction de jour
        buf$audace(bufNo) setkwd [ list "EXPTIME" $exptime float "Total duration: dobsN-dobs1+1 exposure" "second" ]
-       if { $methsomme == "moy" } {
+       buf$audace(bufNo) setkwd [ list "CREATOR" "SpcAudACE $spcaudace(version)" string "Software that create this FITS file" "" ]
+       if { $methsomme=="moy" } {
           buf$audace(bufNo) setkwd [ list "EXPOSURE" $exposure float "Total time of exposure" "second" ]
           #-- Corrige l'influence de smean sur dateobs 20081004 :
           buf$audace(bufNo) setkwd [ list "DATE-OBS" $dateobs_img1 string "" "" ]
+       } elseif { $methsomme=="sigmakappa" || $methsomme=="med" || $methsomme=="addi" } {
+          buf$audace(bufNo) setkwd [ list "EXPOSURE" $exposure float "Total time of exposure" "second" ]
        }
        buf$audace(bufNo) save "$audace(rep_images)/${nom_generique}-s$nb_file"
 
