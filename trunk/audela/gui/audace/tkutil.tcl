@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise à jour $Id: tkutil.tcl,v 1.36 2010-06-13 08:50:17 michelpujol Exp $
+# Mise à jour $Id: tkutil.tcl,v 1.37 2010-10-06 16:41:25 robertdelmas Exp $
 #
 
 namespace eval tkutil:: {
@@ -107,7 +107,7 @@ proc ::tkutil::box_load { { parent } { initialdir } { numero_buffer } { type } {
       set filetypes [ list [ list "Tpoint model" ".xml .txt" ] [ list "XML" ".xml" ] [ list "TXT " ".txt" ] ]
    } elseif { $type == "11" } {
       set title "$::caption(tkutil,editer_fichier)"
-      set filetypes [ list [ list "$::caption(tkutil,fichier_txt)" "*" ] ]
+      set filetypes [ list [ list "$::caption(tkutil,fichier_tous)" "*" ] ]
    } elseif { $type == "12" } {
       set title "$::caption(tkutil,executable_java)"
       set filetypes [ list [ list "$::caption(tkutil,fichier_tous)" "*" ] ]
