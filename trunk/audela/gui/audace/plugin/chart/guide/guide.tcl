@@ -2,7 +2,7 @@
 # Fichier : guide.tcl
 # Description : Plugin de communication avec "guide"
 # Auteur : Robert DELMAS
-# Mise à jour $Id: guide.tcl,v 1.25 2010-05-17 15:27:32 robertdelmas Exp $
+# Mise à jour $Id: guide.tcl,v 1.26 2010-10-06 16:45:09 robertdelmas Exp $
 #
 
 namespace eval guide {
@@ -76,59 +76,9 @@ namespace eval guide {
    proc initConf { } {
       global conf
 
-      if { ! [ info exists conf(guide,exec) ] }       { set conf(guide,exec)       "GUIDE8.EXE" }
-      if { ! [ info exists conf(guide,dirname) ] }    { set conf(guide,dirname)    "c:/" }
-      if { ! [ info exists conf(guide,binarypath) ] } { set conf(guide,binarypath) " " }
+      if { ! [ info exists conf(guide,binarypath) ] } { set conf(guide,binarypath) "$::env(ProgramFiles)" }
 
       return
-   }
-
-   #------------------------------------------------------------
-   #  searchFile
-   #     lancement de la recherche du fichier executable de Guide
-   #
-   #  return rien
-   #------------------------------------------------------------
-   proc searchFile { } {
-      variable widget
-
-      if { ( $widget(dirname) != "" ) && ( $widget(fichier_recherche) != "" ) } {
-         #--- Fichier a rechercher
-         set fichier_recherche $widget(fichier_recherche)
-         #--- Sur les dossiers
-         set repertoire $::guide::widget(dirname)
-
-         #--- Gestion du bouton de recherche
-         $widget(frm).frame2.recherche configure -relief groove -state disabled
-         #--- La variable widget(binarypath) existe deja
-         set repertoire_1 [ string trimright "$widget(binarypath)" "$fichier_recherche" ]
-         set repertoire_2 [ glob -nocomplain -type f -dir "$repertoire_1" "$fichier_recherche" ]
-         set repertoire_2 [ string trimleft $repertoire_2 "\{" ]
-         set repertoire_2 [ string trimright $repertoire_2 "\}" ]
-         if { "$widget(binarypath)" != "$repertoire_2" || "$widget(binarypath)" == "" } {
-            #--- Non, elle a change -> Recherche de la nouvelle variable widget(binarypath) si elle existe
-            set repertoire [ ::audace::fichier_partPresent "$fichier_recherche" "$repertoire" ]
-            set repertoire [ glob -nocomplain -type f -dir "$repertoire" "$fichier_recherche" ]
-            set repertoire [ string trimleft $repertoire "\{" ]
-            set repertoire [ string trimright $repertoire "\}" ]
-            if { $repertoire == "" } {
-               set repertoire " "
-            }
-            set widget(binarypath) "$repertoire"
-         } else {
-            #--- Il n'y a rien a faire
-         }
-
-         if { $widget(binarypath) == " " } {
-            set widget(fichier_recherche) [ string tolower $widget(fichier_recherche) ]
-            ::guide::searchFile
-         } else {
-            #--- Gestion du bouton de recherche
-            $widget(frm).frame2.recherche configure -relief raised -state normal
-            update
-            return
-         }
-      }
    }
 
    #------------------------------------------------------------
@@ -141,9 +91,7 @@ namespace eval guide {
       variable widget
       global conf
 
-      set widget(fichier_recherche) "$conf(guide,exec)"
-      set widget(dirname)           "$conf(guide,dirname)"
-      set widget(binarypath)        "$conf(guide,binarypath)"
+      set widget(binarypath) "$conf(guide,binarypath)"
    }
 
    #------------------------------------------------------------
@@ -156,8 +104,6 @@ namespace eval guide {
       variable widget
       global conf
 
-      set conf(guide,exec)       "$widget(fichier_recherche)"
-      set conf(guide,dirname)    "$widget(dirname)"
       set conf(guide,binarypath) "$widget(binarypath)"
    }
 
@@ -177,60 +123,32 @@ namespace eval guide {
       #--- J'initialise les valeurs
       confToWidget
 
-      #--- Fichier a rechercher a partir d'un repertoire donne
+      #--- Recherche manuelle de l'executable de Guide
       frame $frm.frame1 -borderwidth 0 -relief raised
 
-         label $frm.frame1.labFichier -text "$caption(guide,fichier)"
-         pack $frm.frame1.labFichier -anchor center -side left -padx 10 -pady 10
+         label $frm.frame1.recherche -text "$caption(guide,rechercher)"
+         pack $frm.frame1.recherche -anchor center -side left  -padx 10 -pady 7 -ipadx 10 -ipady 5
 
-         entry $frm.frame1.nomFichier -textvariable ::guide::widget(fichier_recherche) -width 12 -justify center
-         pack $frm.frame1.nomFichier -anchor center -side left -padx 10 -pady 5
-
-         label $frm.frame1.labAPartirDe -text "$caption(guide,a_partir_de)"
-         pack $frm.frame1.labAPartirDe -anchor center -side left -padx 10 -pady 10
-
-         entry $frm.frame1.nomDossier -textvariable ::guide::widget(dirname) -width 20
-         pack $frm.frame1.nomDossier -side left -padx 10 -pady 5
+         entry $frm.frame1.chemin -textvariable ::guide::widget(binarypath)
+         pack $frm.frame1.chemin -anchor center -side left -padx 10 -fill x -expand 1
 
          button $frm.frame1.explore -text "$caption(guide,parcourir)" -width 1 \
-            -command {
-               set ::guide::widget(dirname) [ tk_chooseDirectory -title "$caption(guide,dossier)" \
-               -initialdir .. -parent $::guide::widget(frm) ]
-            }
-         pack $frm.frame1.explore -side left -padx 10 -pady 5 -ipady 5
+            -command "::guide::searchFile"
+         pack $frm.frame1.explore -side right -padx 10 -pady 5 -ipady 5
 
       pack $frm.frame1 -side top -fill x
 
-      #--- Recherche automatique ou manuelle du chemin pour l'executable de Guide
+      #--- Site web officiel de Guide
       frame $frm.frame2 -borderwidth 0 -relief raised
 
-         button $frm.frame2.recherche -text "$caption(guide,rechercher)" -relief raised -state normal \
-            -command { ::guide::searchFile }
-         pack $frm.frame2.recherche -anchor center -side left  -padx 10 -pady 7 -ipadx 10 -ipady 5
+         label $frm.frame2.labSite -text "$caption(guide,site_web)"
+         pack $frm.frame2.labSite -side top -fill x -pady 2
 
-         entry $frm.frame2.chemin -textvariable ::guide::widget(binarypath)
-         pack $frm.frame2.chemin -anchor center -side left -padx 10 -fill x -expand 1
-
-         button $frm.frame2.explore -text "$caption(guide,parcourir)" -width 1 \
-            -command {
-               set ::guide::widget(binarypath) [ ::tkutil::box_load $::guide::widget(frm) \
-                  $::guide::widget(dirname) $audace(bufNo) "11" ]
-            }
-         pack $frm.frame2.explore -side right -padx 10 -pady 5 -ipady 5
-
-      pack $frm.frame2 -side top -fill x
-
-      #--- Site web officiel de Guide
-      frame $frm.frame3 -borderwidth 0 -relief raised
-
-         label $frm.frame3.labSite -text "$caption(guide,site_web)"
-         pack $frm.frame3.labSite -side top -fill x -pady 2
-
-         set labelName [ ::confCat::createUrlLabel $frm.frame3 "$caption(guide,site_web_ref)" \
+         set labelName [ ::confCat::createUrlLabel $frm.frame2 "$caption(guide,site_web_ref)" \
             "$caption(guide,site_web_ref)" ]
          pack $labelName -side top -fill x -pady 2
 
-      pack $frm.frame3 -side bottom -fill x
+      pack $frm.frame2 -side bottom -fill x
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $frm
@@ -277,6 +195,21 @@ namespace eval guide {
          set ready 0
       }
       return $ready
+   }
+
+   #------------------------------------------------------------
+   #  searchFile
+   #     lancement de la recherche du fichier executable de Guide
+   #
+   #  return rien
+   #------------------------------------------------------------
+   proc searchFile { } {
+      variable widget
+
+      set widget(binarypath) [ ::tkutil::box_load $widget(frm) $widget(binarypath) $::audace(bufNo) "11" ]
+      if { $widget(binarypath) == "" } {
+         set widget(binarypath) $::conf(guide,binarypath)
+      }
    }
 
    #==============================================================

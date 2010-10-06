@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows et Linux
 # Auteur : Michel PUJOL
-# Mise à jour $Id: carteducielv3.tcl,v 1.26 2010-05-17 15:27:47 robertdelmas Exp $
+# Mise à jour $Id: carteducielv3.tcl,v 1.27 2010-10-06 16:44:48 robertdelmas Exp $
 #
 
 namespace eval carteducielv3 {
@@ -78,65 +78,15 @@ namespace eval carteducielv3 {
    proc initConf { } {
       global conf
 
-      #--- je fixe le nom du fichier executable en fonction de l'OS
-      if { $::tcl_platform(os) == "Linux"  } {
-         if { ! [ info exists conf(carteducielv3,binaryname) ] } { set conf(carteducielv3,binaryname)    "skychart" }
-      } else {
-         if { ! [ info exists conf(carteducielv3,binaryname) ] } { set conf(carteducielv3,binaryname)    "skychart.exe" }
-      }
-
       if { ! [ info exists conf(carteducielv3,fixedfovstate) ] } { set conf(carteducielv3,fixedfovstate) "1" }
       if { ! [ info exists conf(carteducielv3,fixedfovvalue) ] } { set conf(carteducielv3,fixedfovvalue) "05d00m00s" }
-      if { ! [ info exists conf(carteducielv3,dirname) ] }       { set conf(carteducielv3,dirname)       "c:/" }
-      if { ! [ info exists conf(carteducielv3,binarypath) ] }    { set conf(carteducielv3,binarypath)    " " }
+      if { ! [ info exists conf(carteducielv3,binarypath) ] }    { set conf(carteducielv3,binarypath)    "$::env(ProgramFiles)" }
       if { ! [ info exists conf(carteducielv3,localserver) ] }   { set conf(carteducielv3,localserver)   "1" }
       if { ! [ info exists conf(carteducielv3,host) ] }          { set conf(carteducielv3,host)          "127.0.0.1" }
       if { ! [ info exists conf(carteducielv3,port) ] }          { set conf(carteducielv3,port)          "3292" }
 
       set private(socket) ""
       return
-   }
-
-   #------------------------------------------------------------
-   #  searchFile
-   #     lancement de la recherche du fichier executable de Cartes du Ciel
-   #
-   #  return rien
-   #------------------------------------------------------------
-   proc searchFile { } {
-      variable widget
-
-      if { ( $widget(dirname) != "" ) && ( $widget(binaryname) != "" ) } {
-         #--- Fichier a rechercher
-         set fichier_recherche $widget(binaryname)
-         #--- Sur les dossiers
-         set repertoire $::carteducielv3::widget(dirname)
-
-         #--- Gestion du bouton de recherche
-         $widget(frm).frame3.recherche configure -relief groove -state disabled
-         #--- La variable widget(binarypath) existe deja
-         set repertoire_1 [ string trimright "$widget(binarypath)" "$fichier_recherche" ]
-         set repertoire_2 [ glob -nocomplain -type f -dir "$repertoire_1" "$fichier_recherche" ]
-         set repertoire_2 [ string trimleft $repertoire_2 "\{" ]
-         set repertoire_2 [ string trimright $repertoire_2 "\}" ]
-         if { "$widget(binarypath)" != "$repertoire_2" || "$widget(binarypath)" == "" } {
-            #--- Non, elle a change -> Recherche de la nouvelle variable widget(binarypath) si elle existe
-            set repertoire [ ::audace::fichier_partPresent "$fichier_recherche" "$repertoire" ]
-            set repertoire [ glob -nocomplain -type f -dir "$repertoire" "$fichier_recherche" ]
-            set repertoire [ string trimleft $repertoire "\{" ]
-            set repertoire [ string trimright $repertoire "\}" ]
-            if { $repertoire == "" } {
-               set repertoire " "
-            }
-            set widget(binarypath) "$repertoire"
-         } else {
-            #--- Il n'y a rien a faire
-         }
-         #--- Gestion du bouton de recherche
-         $widget(frm).frame3.recherche configure -relief raised -state normal
-         update
-         return
-      }
    }
 
    #------------------------------------------------------------
@@ -151,8 +101,6 @@ namespace eval carteducielv3 {
 
       set widget(fixedfovstate) "$conf(carteducielv3,fixedfovstate)"
       set widget(fixedfovvalue) "$conf(carteducielv3,fixedfovvalue)"
-      set widget(binaryname)    "$conf(carteducielv3,binaryname)"
-      set widget(dirname)       "$conf(carteducielv3,dirname)"
       set widget(binarypath)    "$conf(carteducielv3,binarypath)"
       set widget(localserver)   "$conf(carteducielv3,localserver)"
       set widget(cdchost)       "$conf(carteducielv3,host)"
@@ -172,8 +120,6 @@ namespace eval carteducielv3 {
 
       set conf(carteducielv3,fixedfovstate) "$widget(fixedfovstate)"
       set conf(carteducielv3,fixedfovvalue) "$widget(fixedfovvalue)"
-      set conf(carteducielv3,binaryname)    "$widget(binaryname)"
-      set conf(carteducielv3,dirname)       "$widget(dirname)"
       set conf(carteducielv3,binarypath)    "$widget(binarypath)"
       set conf(carteducielv3,localserver)   "$widget(localserver)"
       set conf(carteducielv3,host)          "$widget(cdchost)"
@@ -214,65 +160,37 @@ namespace eval carteducielv3 {
 
       pack $frm.frame1 -side top -fill x
 
-      #--- Fichier a rechercher a partir d'un repertoire donne
+      #--- Recherche manuelle de l'executable de Cartes du Ciel
       frame $frm.frame2 -borderwidth 0 -relief raised
 
-         label $frm.frame2.labFichier -text "$caption(carteducielv3,fichier)"
-         pack $frm.frame2.labFichier -anchor center -side left -padx 10 -pady 10
+         label $frm.frame2.recherche -text "$caption(carteducielv3,rechercher)"
+         pack $frm.frame2.recherche -anchor center -side left -padx 10 -pady 7 -ipadx 10 -ipady 5
 
-         entry $frm.frame2.nomFichier -textvariable ::carteducielv3::widget(binaryname) -width 12 -justify center
-         pack $frm.frame2.nomFichier -anchor center -side left -padx 10 -pady 5
-
-         label $frm.frame2.labAPartirDe -text "$caption(carteducielv3,a_partir_de)"
-         pack $frm.frame2.labAPartirDe -anchor center -side left -padx 10 -pady 10
-
-         entry $frm.frame2.nomDossier -textvariable ::carteducielv3::widget(dirname) -width 20
-         pack $frm.frame2.nomDossier -side left -padx 10 -pady 5
+         entry $frm.frame2.chemin -textvariable ::carteducielv3::widget(binarypath)
+         pack $frm.frame2.chemin -anchor center -side left -padx 10 -fill x -expand 1
 
          button $frm.frame2.explore -text "$caption(carteducielv3,parcourir)" -width 1 \
-            -command {
-               set ::carteducielv3::widget(dirname) [ tk_chooseDirectory -title "$caption(carteducielv3,dossier)" \
-               -initialdir ".." -parent $::carteducielv3::widget(frm) ]
-            }
-         pack $frm.frame2.explore -side left -padx 10 -pady 5 -ipady 5
+            -command "::carteducielv3::searchFile"
+         pack $frm.frame2.explore -side right -padx 10 -pady 5 -ipady 5
 
       pack $frm.frame2 -side top -fill x
 
-      #--- Recherche automatique ou manuelle du chemin pour l'executable de Cartes du Ciel
+      #--- Adresse IP du serveur distant
       frame $frm.frame3 -borderwidth 0 -relief raised
 
-         button $frm.frame3.recherche -text "$caption(carteducielv3,rechercher)" -relief raised -state normal \
-            -command { ::carteducielv3::searchFile }
-         pack $frm.frame3.recherche -anchor center -side left -padx 10 -pady 7 -ipadx 10 -ipady 5
+         label $frm.frame3.labcdchost -text "$caption(carteducielv3,cdchost)"
+         pack $frm.frame3.labcdchost -anchor center -side left -padx 10 -pady 7
 
-         entry $frm.frame3.chemin -textvariable ::carteducielv3::widget(binarypath)
-         pack $frm.frame3.chemin -anchor center -side left -padx 10 -fill x -expand 1
+         entry $frm.frame3.cdchost -width 17 -textvariable ::carteducielv3::widget(cdchost)
+         pack $frm.frame3.cdchost -anchor center -side left -padx 15 -pady 10
 
-         button $frm.frame3.explore -text "$caption(carteducielv3,parcourir)" -width 1 \
-            -command {
-               set ::carteducielv3::widget(binarypath) [ ::tkutil::box_load $::carteducielv3::widget(frm) \
-                  $::carteducielv3::widget(dirname) $audace(bufNo) "11" ]
-            }
-         pack $frm.frame3.explore -side right -padx 10 -pady 5 -ipady 5
+         label $frm.frame3.labcdcport -text "$caption(carteducielv3,cdcport)"
+         pack $frm.frame3.labcdcport -anchor center -side left -padx 10 -pady 7
 
-      pack $frm.frame3 -side top -fill x
+         entry $frm.frame3.cdcport -width 5 -textvariable ::carteducielv3::widget(cdcport)
+         pack $frm.frame3.cdcport -anchor center -side left -padx 5 -pady 7
 
-      #--- Adresse IP du serveur distant
-      frame $frm.frame4 -borderwidth 0 -relief raised
-
-         label $frm.frame4.labcdchost -text "$caption(carteducielv3,cdchost)"
-         pack $frm.frame4.labcdchost -anchor center -side left -padx 10 -pady 7
-
-         entry $frm.frame4.cdchost -width 17 -textvariable ::carteducielv3::widget(cdchost)
-         pack $frm.frame4.cdchost -anchor center -side left -padx 15 -pady 10
-
-         label $frm.frame4.labcdcport -text "$caption(carteducielv3,cdcport)"
-         pack $frm.frame4.labcdcport -anchor center -side left -padx 10 -pady 7
-
-         entry $frm.frame4.cdcport -width 5 -textvariable ::carteducielv3::widget(cdcport)
-         pack $frm.frame4.cdcport -anchor center -side left -padx 5 -pady 7
-
-         button $frm.frame4.ping -text "$caption(carteducielv3,testping)" -relief raised -state normal \
+         button $frm.frame3.ping -text "$caption(carteducielv3,testping)" -relief raised -state normal \
             -command {
                global caption
 
@@ -287,21 +205,21 @@ namespace eval carteducielv3 {
                set tres2 "$caption(carteducielv3,message_ping)"
                tk_messageBox -message "$tres1.\n$tres2 $res2" -icon info
             }
-         pack $frm.frame4.ping -anchor center -side top -pady 7 -ipadx 10 -ipady 5 -expand true
+         pack $frm.frame3.ping -anchor center -side top -pady 7 -ipadx 10 -ipady 5 -expand true
 
-      pack $frm.frame4 -side top -fill both -expand 1
+      pack $frm.frame3 -side top -fill both -expand 1
 
       #--- Site web officiel de Cartes du Ciel
-      frame $frm.frame5 -borderwidth 0 -relief raised
+      frame $frm.frame4 -borderwidth 0 -relief raised
 
-         label $frm.frame5.labSite -text "$caption(carteducielv3,site_web)"
-         pack $frm.frame5.labSite -side top -fill x -pady 2
+         label $frm.frame4.labSite -text "$caption(carteducielv3,site_web)"
+         pack $frm.frame4.labSite -side top -fill x -pady 2
 
-         set labelName [ ::confCat::createUrlLabel $frm.frame5 "$caption(carteducielv3,site_web_ref)" \
+         set labelName [ ::confCat::createUrlLabel $frm.frame4 "$caption(carteducielv3,site_web_ref)" \
             "$caption(carteducielv3,site_web_ref)" ]
          pack $labelName -side top -fill x -pady 2
 
-      pack $frm.frame5 -side bottom -fill x
+      pack $frm.frame4 -side bottom -fill x
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $frm
@@ -343,6 +261,21 @@ namespace eval carteducielv3 {
          closeConnection
       }
       return $ready
+   }
+
+   #------------------------------------------------------------
+   #  searchFile
+   #     lancement de la recherche du fichier executable de Cartes du Ciel
+   #
+   #  return rien
+   #------------------------------------------------------------
+   proc searchFile { } {
+      variable widget
+
+      set widget(binarypath) [ ::tkutil::box_load $widget(frm) $widget(binarypath) $::audace(bufNo) "11" ]
+      if { $widget(binarypath) == "" } {
+         set widget(binarypath) $::conf(carteducielv3,binarypath)
+      }
    }
 
    #==============================================================

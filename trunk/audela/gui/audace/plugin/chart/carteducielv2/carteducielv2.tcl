@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows uniquement
 # Auteur : Michel PUJOL
-# Mise à jour $Id: carteducielv2.tcl,v 1.25 2010-05-17 15:28:03 robertdelmas Exp $
+# Mise à jour $Id: carteducielv2.tcl,v 1.26 2010-10-06 16:44:20 robertdelmas Exp $
 #
 
 namespace eval carteducielv2 {
@@ -84,59 +84,9 @@ proc ::carteducielv2::initConf { } {
 
    if { ! [ info exists conf(carteducielv2,fixedfovstate) ] } { set conf(carteducielv2,fixedfovstate) "1" }
    if { ! [ info exists conf(carteducielv2,fixedfovvalue) ] } { set conf(carteducielv2,fixedfovvalue) "05d00m00s" }
-   if { ! [ info exists conf(carteducielv2,exec) ] }          { set conf(carteducielv2,exec)          "Ciel.exe" }
-   if { ! [ info exists conf(carteducielv2,dirname) ] }       { set conf(carteducielv2,dirname)       "c:/" }
-   if { ! [ info exists conf(carteducielv2,binarypath) ] }    { set conf(carteducielv2,binarypath)    " " }
+   if { ! [ info exists conf(carteducielv2,binarypath) ] }    { set conf(carteducielv2,binarypath)    "$::env(ProgramFiles)" }
 
    return
-}
-
-#------------------------------------------------------------
-#  searchFile
-#     lancement de la recherche du fichier executable de Cartes du Ciel
-#
-#  return rien
-#------------------------------------------------------------
-proc ::carteducielv2::searchFile { } {
-   variable widget
-
-   if { ( $widget(dirname) != "" ) && ( $widget(fichier_recherche) != "" ) } {
-      #--- Fichier a rechercher
-      set fichier_recherche $widget(fichier_recherche)
-      #--- Sur les dossiers
-      set repertoire $::carteducielv2::widget(dirname)
-
-      #--- Gestion du bouton de recherche
-      $widget(frm).frame3.recherche configure -relief groove -state disabled
-      #--- La variable widget(binarypath) existe deja
-      set repertoire_1 [ string trimright "$widget(binarypath)" "$fichier_recherche" ]
-      set repertoire_2 [ glob -nocomplain -type f -dir "$repertoire_1" "$fichier_recherche" ]
-      set repertoire_2 [ string trimleft $repertoire_2 "\{" ]
-      set repertoire_2 [ string trimright $repertoire_2 "\}" ]
-      if { "$widget(binarypath)" != "$repertoire_2" || "$widget(binarypath)" == "" } {
-         #--- Non, elle a change -> Recherche de la nouvelle variable widget(binarypath) si elle existe
-         set repertoire [ ::audace::fichier_partPresent "$fichier_recherche" "$repertoire" ]
-         set repertoire [ glob -nocomplain -type f -dir "$repertoire" "$fichier_recherche" ]
-         set repertoire [ string trimleft $repertoire "\{" ]
-         set repertoire [ string trimright $repertoire "\}" ]
-         if { $repertoire == "" } {
-            set repertoire " "
-         }
-         set widget(binarypath) "$repertoire"
-      } else {
-         #--- Il n'y a rien a faire
-      }
-
-      if { $widget(binarypath) == " " } {
-         set widget(fichier_recherche) [ string tolower $widget(fichier_recherche) ]
-         ::carteducielv2::searchFile
-      } else {
-         #--- Gestion du bouton de recherche
-         $widget(frm).frame3.recherche configure -relief raised -state normal
-         update
-         return
-      }
-   }
 }
 
 #------------------------------------------------------------
@@ -149,11 +99,9 @@ proc ::carteducielv2::confToWidget { } {
    variable widget
    global conf
 
-   set widget(fixedfovstate)     "$conf(carteducielv2,fixedfovstate)"
-   set widget(fixedfovvalue)     "$conf(carteducielv2,fixedfovvalue)"
-   set widget(fichier_recherche) "$conf(carteducielv2,exec)"
-   set widget(dirname)           "$conf(carteducielv2,dirname)"
-   set widget(binarypath)        "$conf(carteducielv2,binarypath)"
+   set widget(fixedfovstate) "$conf(carteducielv2,fixedfovstate)"
+   set widget(fixedfovvalue) "$conf(carteducielv2,fixedfovvalue)"
+   set widget(binarypath)    "$conf(carteducielv2,binarypath)"
 }
 
 #------------------------------------------------------------
@@ -168,8 +116,6 @@ proc ::carteducielv2::widgetToConf { } {
 
    set conf(carteducielv2,fixedfovstate) "$widget(fixedfovstate)"
    set conf(carteducielv2,fixedfovvalue) "$widget(fixedfovvalue)"
-   set conf(carteducielv2,exec)          "$widget(fichier_recherche)"
-   set conf(carteducielv2,dirname)       "$widget(dirname)"
    set conf(carteducielv2,binarypath)    "$widget(binarypath)"
 }
 
@@ -206,60 +152,32 @@ proc ::carteducielv2::fillConfigPage { frm } {
 
    pack $frm.frame1 -side top -fill x
 
-   #--- Fichier a rechercher a partir d'un repertoire donne
+   #--- Recherche manuelle de l'executable de Cartes du Ciel
    frame $frm.frame2 -borderwidth 0 -relief raised
 
-      label $frm.frame2.labFichier -text "$caption(carteducielv2,fichier)"
-      pack $frm.frame2.labFichier -anchor center -side left -padx 10 -pady 10
+      label $frm.frame2.recherche -text "$caption(carteducielv2,rechercher)"
+      pack $frm.frame2.recherche -anchor center -side left -padx 10 -pady 7 -ipadx 10 -ipady 5
 
-      entry $frm.frame2.nomFichier -textvariable ::carteducielv2::widget(fichier_recherche) -width 12 -justify center
-      pack $frm.frame2.nomFichier -anchor center -side left -padx 10 -pady 5
-
-      label $frm.frame2.labAPartirDe -text "$caption(carteducielv2,a_partir_de)"
-      pack $frm.frame2.labAPartirDe -anchor center -side left -padx 10 -pady 10
-
-      entry $frm.frame2.nomDossier -textvariable ::carteducielv2::widget(dirname) -width 20
-      pack $frm.frame2.nomDossier -side left -padx 10 -pady 5
+      entry $frm.frame2.chemin -textvariable ::carteducielv2::widget(binarypath)
+      pack $frm.frame2.chemin -anchor center -side left -padx 10 -fill x -expand 1
 
       button $frm.frame2.explore -text "$caption(carteducielv2,parcourir)" -width 1 \
-         -command {
-            set ::carteducielv2::widget(dirname) [ tk_chooseDirectory -title "$caption(carteducielv2,dossier)" \
-            -initialdir ".." -parent $::carteducielv2::widget(frm) ]
-         }
-      pack $frm.frame2.explore -side left -padx 10 -pady 5 -ipady 5
+         -command "::carteducielv2::searchFile"
+      pack $frm.frame2.explore -side right -padx 10 -pady 5 -ipady 5
 
    pack $frm.frame2 -side top -fill x
 
-   #--- Recherche automatique ou manuelle du chemin pour l'executable de Cartes du Ciel
+   #--- Site web officiel de Cartes du Ciel
    frame $frm.frame3 -borderwidth 0 -relief raised
 
-      button $frm.frame3.recherche -text "$caption(carteducielv2,rechercher)" -relief raised -state normal \
-         -command { ::carteducielv2::searchFile }
-      pack $frm.frame3.recherche -anchor center -side left  -padx 10 -pady 7 -ipadx 10 -ipady 5
+      label $frm.frame3.labSite -text "$caption(carteducielv2,site_web)"
+      pack $frm.frame3.labSite -side top -fill x -pady 2
 
-      entry $frm.frame3.chemin -textvariable ::carteducielv2::widget(binarypath)
-      pack $frm.frame3.chemin -anchor center -side left -padx 10 -fill x -expand 1
-
-      button $frm.frame3.explore -text "$caption(carteducielv2,parcourir)" -width 1 \
-         -command {
-            set ::carteducielv2::widget(binarypath) [ ::tkutil::box_load $::carteducielv2::widget(frm) \
-               $::carteducielv2::widget(dirname) $audace(bufNo) "11" ]
-         }
-      pack $frm.frame3.explore -side right -padx 10 -pady 5 -ipady 5
-
-   pack $frm.frame3 -side top -fill x
-
-   #--- Site web officiel de Cartes du Ciel
-   frame $frm.frame4 -borderwidth 0 -relief raised
-
-      label $frm.frame4.labSite -text "$caption(carteducielv2,site_web)"
-      pack $frm.frame4.labSite -side top -fill x -pady 2
-
-      set labelName [ ::confCat::createUrlLabel $frm.frame4 "$caption(carteducielv2,site_web_ref)" \
+      set labelName [ ::confCat::createUrlLabel $frm.frame3 "$caption(carteducielv2,site_web_ref)" \
          "$caption(carteducielv2,site_web_ref)" ]
       pack $labelName -side top -fill x -pady 2
 
-   pack $frm.frame4 -side bottom -fill x
+   pack $frm.frame3 -side bottom -fill x
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
@@ -306,6 +224,21 @@ proc ::carteducielv2::isReady { } {
       set private(ready) 0
    }
    return $private(ready)
+}
+
+#------------------------------------------------------------
+#  searchFile
+#     recherche manuelle du fichier executable de Cartes du Ciel
+#
+#  return rien
+#------------------------------------------------------------
+proc ::carteducielv2::searchFile { } {
+   variable widget
+
+   set widget(binarypath) [ ::tkutil::box_load $widget(frm) $widget(binarypath) $::audace(bufNo) "11" ]
+   if { $widget(binarypath) == "" } {
+      set widget(binarypath) $::conf(carteducielv2,binarypath)
+   }
 }
 
 #==============================================================
