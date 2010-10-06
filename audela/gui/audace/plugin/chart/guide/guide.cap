@@ -1,6 +1,6 @@
 #
 # Fichier : guide.cap
-# Mise a jour $Id: guide.cap,v 1.8 2009-11-05 18:20:35 robertdelmas Exp $
+# Mise a jour $Id: guide.cap,v 1.9 2010-10-06 16:42:56 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,9 +12,7 @@ global caption langage
 # *************** Version anglaise ****************************
 
 set caption(guide,titre)            "Guide"
-set caption(guide,fichier)          "File To Be Searched"
-set caption(guide,a_partir_de)      "From"
-set caption(guide,rechercher)       "Search\n(Automatic)"
+set caption(guide,rechercher)       "Search\n(Guide)"
 set caption(guide,parcourir)        "..."
 set caption(guide,dossier)          "From Folder:"
 set caption(guide,site_web)         "Reference Web Site:"
@@ -32,9 +30,7 @@ set caption(guide,gagne)            "Access OK"
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(guide,titre)         "Guide"
-   set caption(guide,fichier)       "Fichier à rechercher"
-   set caption(guide,a_partir_de)   "A partir de"
-   set caption(guide,rechercher)    "Recherche\n(Automatique)"
+   set caption(guide,rechercher)    "Recherche\n(Guide)"
    set caption(guide,parcourir)     "..."
    set caption(guide,dossier)       "A partir du dossier :"
    set caption(guide,site_web)      "Site Web de référence :"
@@ -52,9 +48,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(guide,titre)         "Guide"
-   set caption(guide,fichier)       "File da trovare"
-   set caption(guide,a_partir_de)   "Da"
-   set caption(guide,rechercher)    "Ricercare\n(Automatico)"
+   set caption(guide,rechercher)    "Ricercare\n(Guide)"
    set caption(guide,parcourir)     "..."
    set caption(guide,dossier)       "Dalla cartella:"
    set caption(guide,site_web)      "Sito Web di riferimento:"
@@ -72,9 +66,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(guide,titre)         "Guide"
-   set caption(guide,fichier)       "Fichero a buscar"
-   set caption(guide,a_partir_de)   "Desde "
-   set caption(guide,rechercher)    "Buscar\n(Automático)"
+   set caption(guide,rechercher)    "Buscar\n(Guide)"
    set caption(guide,parcourir)     "..."
    set caption(guide,dossier)       "Desde la carpeta:"
    set caption(guide,site_web)      "Sitio Web de referencia:"
@@ -92,9 +84,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(guide,titre)         "Guide"
-   set caption(guide,fichier)       "Datei zu suchen"
-   set caption(guide,a_partir_de)   "Von"
-   set caption(guide,rechercher)    "Suchen\n(Automatisch)"
+   set caption(guide,rechercher)    "Suchen\n(Guide)"
    set caption(guide,parcourir)     "..."
    set caption(guide,dossier)       "Vom Unterlagen:"
    set caption(guide,site_web)      "Referenz Webseite:"
@@ -112,9 +102,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(guide,titre)         "Guide"
-   set caption(guide,fichier)       "Ficheiro a procurar"
-   set caption(guide,a_partir_de)   "A partir da"
-   set caption(guide,rechercher)    "Procurar\n(Automático)"
+   set caption(guide,rechercher)    "Procurar\n(Guide)"
    set caption(guide,parcourir)     "..."
    set caption(guide,dossier)       "A partir da pasta:"
    set caption(guide,site_web)      "Site Web de referencia:"
@@ -132,9 +120,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(guide,titre)         "Guide"
-   set caption(guide,fichier)       "Søg fil"
-   set caption(guide,a_partir_de)   "Fra"
-   set caption(guide,rechercher)    "Søg\n(Automatisk)"
+   set caption(guide,rechercher)    "Søg\n(Guide)"
    set caption(guide,parcourir)     "..."
    set caption(guide,dossier)       "Fra folder:"
    set caption(guide,site_web)      "Henvisning til Websider:"
@@ -152,9 +138,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
    set caption(guide,titre)         "Guide"
-   set caption(guide,fichier)       "File To Be Searched"
-   set caption(guide,a_partir_de)   "From"
-   set caption(guide,rechercher)    "Search\n(Automatic)"
+   set caption(guide,rechercher)    "Search\n(Guide)"
    set caption(guide,parcourir)     "..."
    set caption(guide,dossier)       "From Folder:"
    set caption(guide,site_web)      "Reference Web Site:"
@@ -172,9 +156,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
    set caption(guide,titre)         "Guide"
-   set caption(guide,fichier)       "File To Be Searched"
-   set caption(guide,a_partir_de)   "From"
-   set caption(guide,rechercher)    "Search\n(Automatic)"
+   set caption(guide,rechercher)    "Search\n(Guide)"
    set caption(guide,parcourir)     "..."
    set caption(guide,dossier)       "From Folder:"
    set caption(guide,site_web)      "Reference Web Site:"
