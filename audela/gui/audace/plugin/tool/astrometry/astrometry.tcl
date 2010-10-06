@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: astrometry.tcl,v 1.15 2010-09-26 21:35:58 robertdelmas Exp $
+# Mise à jour $Id: astrometry.tcl,v 1.16 2010-10-06 16:40:09 robertdelmas Exp $
 #
 
 #============================================================
@@ -908,10 +908,10 @@ namespace eval ::astrometry {
 
    proc getdirname { } {
       variable astrom
-      global audace caption
+      global audace caption conf
 
       set dirname [tk_chooseDirectory -title "$caption(astrometry,cal,catfolder)" \
-         -initialdir $audace(rep_catalogues) -parent $astrom(This)]
+         -initialdir $audace(rep_userCatalog) -parent $astrom(This)]
       set len [ string length $dirname ]
       set folder "$dirname"
       if { $len > "0" } {
@@ -920,6 +920,9 @@ namespace eval ::astrometry {
             append folder "/"
          }
          set dirname $folder
+      }
+      if { $dirname == "" } {
+         set dirname $conf(astrometry,catfolder)
       }
       return $dirname
    }

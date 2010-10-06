@@ -2,7 +2,7 @@
 # Fichier : fieldchart.tcl
 # Description : Interfaces graphiques pour les fonctions carte de champ
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: fieldchart.tcl,v 1.6 2010-07-27 14:03:19 robertdelmas Exp $
+# Mise à jour $Id: fieldchart.tcl,v 1.7 2010-10-06 16:39:46 robertdelmas Exp $
 #
 
 #============================================================
@@ -81,7 +81,7 @@ namespace eval ::fieldchart {
    proc initPlugin { tkbase } {
       variable This
       variable widget
-      global caption conf
+      global audace caption conf
 
       #--- Inititalisation du nom de la fenetre
       set This "$tkbase"
@@ -90,7 +90,7 @@ namespace eval ::fieldchart {
       if { ! [ info exists conf(fieldchart,position) ] }    { set conf(fieldchart,position)    "+350+75" }
       if { ! [ info exists conf(fieldchart,catalogue) ] }   { set conf(fieldchart,catalogue)   "$caption(fieldchart,microcat)" }
       if { ! [ info exists conf(fieldchart,magmax) ] }      { set conf(fieldchart,magmax)      "14" }
-      if { ! [ info exists conf(fieldchart,pathCatalog) ] } { set conf(fieldchart,pathCatalog) "" }
+      if { ! [ info exists conf(fieldchart,pathCatalog) ] } { set conf(fieldchart,pathCatalog) "$audace(rep_userCatalog)" }
    }
 
    #------------------------------------------------------------
@@ -221,8 +221,8 @@ namespace eval ::fieldchart {
          frame $This.usr.1 -borderwidth 1 -relief raised
 
             checkbutton $This.usr.1.che1 -text "$caption(fieldchart,champ_image)" \
-               -variable fieldchart(FieldFromImage) -command { ::fieldchart::toggleSource }
-            grid $This.usr.1.che1 -row 0 -column 0 -columnspan 2 -padx 5 -pady 2  -sticky w
+               -variable fieldchart(FieldFromImage) -command "::fieldchart::toggleSource"
+            grid $This.usr.1.che1 -row 0 -column 0 -columnspan 2 -padx 5 -pady 2 -sticky w
 
             label $This.usr.1.lab1 -text "$caption(fieldchart,catalogue)"
             grid $This.usr.1.lab1 -row 1 -column 0 -padx 5 -pady 2 -sticky w
@@ -247,7 +247,7 @@ namespace eval ::fieldchart {
             $This.usr.1.ent1 xview end
 
             button $This.usr.1.explore -text "$caption(fieldchart,parcourir)" -width 1 \
-               -command { ::fieldchart::cataFolder }
+               -command "::fieldchart::cataFolder"
             grid $This.usr.1.explore -row 2 -column 2 -padx 5 -pady 2 -sticky w
 
             label $This.usr.1.lab2 -text "$caption(fieldchart,magnitude_limite)"
@@ -281,7 +281,7 @@ namespace eval ::fieldchart {
             grid $This.usr.2.ent2 -row 1 -column 1 -padx 5 -pady 2 -sticky w
 
             button $This.usr.2.but1 -text "$caption(fieldchart,prendre_image)" \
-               -command { ::fieldchart::cmdTakeWHFromPicture }
+               -command "::fieldchart::cmdTakeWHFromPicture"
             grid $This.usr.2.but1 -column 2 -row 0 -rowspan 2 -padx 5 -pady 5 -ipady 5 -sticky news
 
             label $This.usr.2.lab3 -text "$caption(fieldchart,ad_centre)"
@@ -297,7 +297,7 @@ namespace eval ::fieldchart {
             grid $This.usr.2.ent4 -column 1 -row 3 -padx 5 -pady 2 -sticky w
 
             button $This.usr.2.but2 -text "$caption(fieldchart,prendre_image)" \
-               -command { ::fieldchart::cmdTakeRaDecFromPicture }
+               -command "::fieldchart::cmdTakeRaDecFromPicture"
             grid $This.usr.2.but2  -column 2 -row 2 -rowspan 2 -padx 5 -pady 5 -ipady 5 -sticky news
 
             label $This.usr.2.lab5 -text "$caption(fieldchart,inclinaison_camera)"
@@ -547,10 +547,10 @@ namespace eval ::fieldchart {
    #------------------------------------------------------------
    proc parcourir { } {
       variable This
-      global audace caption
+      global audace caption conf
 
       set dirname [ tk_chooseDirectory -title "$caption(fieldchart,recherche)" \
-         -initialdir "$audace(rep_catalogues)" -parent $This ]
+         -initialdir "$audace(rep_userCatalog)" -parent $This ]
       set len [ string length $dirname ]
       set folder "$dirname"
       if { $len > "0" } {
@@ -559,6 +559,9 @@ namespace eval ::fieldchart {
             append folder "/"
          }
          set dirname $folder
+      }
+      if { $dirname == "" } {
+         set dirname $conf(fieldchart,pathCatalog)
       }
       return $dirname
    }
