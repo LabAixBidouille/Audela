@@ -1,8 +1,9 @@
 #
 # Fichier : snacq.tcl
-# Description : Outil d'acqusition d'images pour la recherche de supernovae
+# Description : Outil d'acquisition d'images pour la recherche de supernovae
+#               Automatic supernovae research tool
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: snacq.tcl,v 1.32 2010-10-03 14:49:28 robertdelmas Exp $
+# Mise à jour $Id: snacq.tcl,v 1.33 2010-10-06 17:21:59 robertdelmas Exp $
 #
 
 # ===================================================================
@@ -266,6 +267,24 @@ pack $audace(base).snacq.frame12 \
       -textvariable snconf(decsup) \
       -borderwidth 1 -relief groove -width 8
    pack $audace(base).snacq.frame12.entry_decsup \
+      -in $audace(base).snacq.frame12 -side left \
+      -padx 3 -pady 3
+
+   #--- Create a label
+   #--- Cree un label
+   label $audace(base).snacq.frame12.label_waittime \
+      -text "$caption(snacq,waittime)" \
+      -borderwidth 0 -relief flat
+   pack $audace(base).snacq.frame12.label_waittime \
+      -in $audace(base).snacq.frame12 -side left \
+      -padx 3 -pady 3
+
+   #--- Create an entry line
+   #--- Cree une ligne d'entree
+   entry $audace(base).snacq.frame12.entry_waittime \
+      -textvariable snconf(waittime) \
+      -borderwidth 1 -relief groove -width 6
+   pack $audace(base).snacq.frame12.entry_waittime \
       -in $audace(base).snacq.frame12 -side left \
       -padx 3 -pady 3
 
@@ -868,8 +887,8 @@ proc goSnAcq { {sndebug 0} } {
       set nownow $now
    }
 
-   #--- duree = temps deplacement telescope (environ 10 s) + temps acquisition image en fonction du binning
-   set duree [ expr ( 10. + ( 3. +$snconf(exptime) + 10. * 2. / $snconf(binning) ) ) ]
+   #--- duree = temps deplacement telescope (environ 10 s) + waiting time + temps acquisition image en fonction du binning
+   set duree [ expr ( 10. + $snconf(waittime) + ( 3. +$snconf(exptime) + 10. * 2. / $snconf(binning) ) ) ]
 
    set indice_image 0
 
@@ -998,8 +1017,8 @@ proc goSnAcq { {sndebug 0} } {
                ::telescope::goto [ list $ra $dec ] 1 "" "" [lindex $ligne 0]
             }
 
-            #--- Delai d'attente a la demande de Robin
-            after 1000
+            #--- Delai d'attente
+            after [expr 1000*$snconf(waittime)]
 
             #--- Lit la position du telescope
             set result "$caption(snacq,status_telpointe) [ ::telescope::afficheCoord ]"
@@ -1426,6 +1445,7 @@ proc updateSnAcq { } {
    $audace(base).snacq.frame11.entry_hest configure -textvariable snconf(hest)
    $audace(base).snacq.frame12.entry_decinf configure -textvariable snconf(decinf)
    $audace(base).snacq.frame12.entry_decsup configure -textvariable snconf(decsup)
+   $audace(base).snacq.frame12.entry_waittime configure -textvariable snconf(waittime)
    $audace(base).snacq.frame13.entry_exptime configure -textvariable snconf(exptime)
    $audace(base).snacq.frame13.entry_binning configure -textvariable snconf(binning)
    $audace(base).snacq.frame13.entry_nbimages configure -textvariable snconf(nbimages)
