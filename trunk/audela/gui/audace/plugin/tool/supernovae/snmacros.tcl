@@ -2,7 +2,7 @@
 # Fichier : snmacros.tcl
 # Description : Macros des scripts pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: snmacros.tcl,v 1.17 2010-05-25 21:38:56 robertdelmas Exp $
+# Mise à jour $Id: snmacros.tcl,v 1.18 2010-10-06 17:22:41 robertdelmas Exp $
 #
 
 proc searchGalaxySn { files } {
@@ -188,6 +188,9 @@ proc snconfacqVerif { } {
    if { [info exists snconf(unsmearing)] == "0" } {
       set snconf(unsmearing) "0.0005"
    }
+   if { [info exists snconf(waittime)] == "0" } {
+      set snconf(waittime) "1"
+   }
    if { [info exists snconf(localite)] == "0" } {
       set snconf(localite) "gps 2 e 43.6 148"
    }
@@ -247,6 +250,8 @@ proc snconfacqSave { } {
    set conf(snconfacq,haurore)       $snconf(haurore)
    #--- Smearing factor (0 if camera as a shutter)
    set conf(snconfacq,unsmearing)    $snconf(unsmearing)
+   #--- Waiting time (in sec) after GOTO
+   set conf(snconfacq,waittime)      $snconf(waittime)
    #--- Site (GPS long(degrees) E/W lat(degrees) alt(meters))
    set conf(snconfacq,localite)      $snconf(localite)
    #--- Degrees : Lower declination limit
@@ -292,6 +297,8 @@ proc snconfacqLoad { } {
    set snconf(dossier)       $conf(snconfacq,dossier)
    #--- Sun altitude under that SNAcq is on (degrees)
    set snconf(haurore)       $conf(snconfacq,haurore)
+   #--- Waiting time (in sec) after GOTO
+   set snconf(waittime)      $conf(snconfacq,waittime)
    #--- Smearing factor (0 if camera as a shutter)
    set snconf(unsmearing)    $conf(snconfacq,unsmearing)
    #--- Site (GPS long(degrees) E/W lat(degrees) alt(meters))

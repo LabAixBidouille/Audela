@@ -1,6 +1,6 @@
 #
 # Fichier : snacq.cap
-# Mise a jour $Id: snacq.cap,v 1.18 2010-05-18 21:56:21 robertdelmas Exp $
+# Mise a jour $Id: snacq.cap,v 1.19 2010-10-06 17:21:39 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -26,6 +26,7 @@ set caption(snacq,decsup)                    "Upper Limit"
 set caption(snacq,exptime)                   "Exposure (sec.)"
 set caption(snacq,binning)                   "Binning"
 set caption(snacq,nbimages)                  "Nb Images per Field"
+set caption(snacq,waittime)                  "Waiting time after GOTO (sec.)"
 set caption(snacq,unsmearing)                "Unsmearing"
 set caption(snacq,fichier_sn)                "Data Base File"
 set caption(snacq,magsup)                    "Upper Magnitude"
@@ -84,6 +85,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,exptime)                "Exposition (sec.)"
    set caption(snacq,binning)                "Binning"
    set caption(snacq,nbimages)               "Nbre d'images par champ"
+   set caption(snacq,waittime)               "Temps d'attente après le GOTO (sec.)"
    set caption(snacq,unsmearing)             "Unsmearing"
    set caption(snacq,fichier_sn)             "Fichier de base de données"
    set caption(snacq,magsup)                 "Magnitude sup."
@@ -142,6 +144,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,exptime)                "Esposizione (sec.)"
    set caption(snacq,binning)                "Binning"
    set caption(snacq,nbimages)               "N. immagini per campo"
+   set caption(snacq,waittime)               "Tempo di attesa dopo GOTO (sec.)"
    set caption(snacq,unsmearing)             "Unsmearing"
    set caption(snacq,fichier_sn)             "File Data Base"
    set caption(snacq,magsup)                 "Magnitudine massima"
@@ -200,6 +203,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,exptime)                "Exposición (seg.)"
    set caption(snacq,binning)                "Binning"
    set caption(snacq,nbimages)               "Nº de imagenes por campo"
+   set caption(snacq,waittime)               "Tiempo de espera después de GOTO (seg.)"
    set caption(snacq,unsmearing)             "Unsmearing"
    set caption(snacq,fichier_sn)             "Fichero de base de datos"
    set caption(snacq,magsup)                 "Magnitude sup."
@@ -258,6 +262,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,exptime)                "Belichtung (sek.)"
    set caption(snacq,binning)                "Binning"
    set caption(snacq,nbimages)               "Bilder Zahl im Feld"
+   set caption(snacq,waittime)               "Wartezeit nach GOTO (sek.)"
    set caption(snacq,unsmearing)             "Unsmearing"
    set caption(snacq,fichier_sn)             "Database Datei"
    set caption(snacq,magsup)                 "Obere Größeklasse"
@@ -316,6 +321,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,exptime)                "Exposição (seg.)"
    set caption(snacq,binning)                "Binning"
    set caption(snacq,nbimages)               "Número de imagens por campo"
+   set caption(snacq,waittime)               "Tempo de espera após GOTO (seg.)"
    set caption(snacq,unsmearing)             "Unsmearing"
    set caption(snacq,fichier_sn)             "Ficheiro de base de dados"
    set caption(snacq,magsup)                 "Magnitude sup."
@@ -374,6 +380,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,exptime)                "Exposure (sec.)"
    set caption(snacq,binning)                "Binning"
    set caption(snacq,nbimages)               "Nb Images per Field"
+   set caption(snacq,waittime)               "Waiting time after GOTO (sec.)"
    set caption(snacq,unsmearing)             "Unsmearing"
    set caption(snacq,fichier_sn)             "Data Base File"
    set caption(snacq,magsup)                 "Upper Magnitude"
@@ -432,6 +439,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,exptime)                "Exposure (sec.)"
    set caption(snacq,binning)                "Binning"
    set caption(snacq,nbimages)               "Nb Images per Field"
+   set caption(snacq,waittime)               "Waiting time after GOTO (sec.)"
    set caption(snacq,unsmearing)             "Unsmearing"
    set caption(snacq,fichier_sn)             "Data Base File"
    set caption(snacq,magsup)                 "Upper Magnitude"
@@ -490,6 +498,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,exptime)                "Exposure (sec.)"
    set caption(snacq,binning)                "Binning"
    set caption(snacq,nbimages)               "Nb Images per Field"
+   set caption(snacq,waittime)               "Waiting time after GOTO (sec.)"
    set caption(snacq,unsmearing)             "Unsmearing"
    set caption(snacq,fichier_sn)             "Data Base File"
    set caption(snacq,magsup)                 "Upper Magnitude"
