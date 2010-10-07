@@ -2,7 +2,7 @@
 # Fichier : help.tcl
 # Description : Aide d'Aud'ACE
 # Auteur : Michel PUJOL
-# Mise à jour $Id: help.tcl,v 1.10 2010-09-23 20:30:36 robertdelmas Exp $
+# Mise à jour $Id: help.tcl,v 1.11 2010-10-07 21:04:05 robertdelmas Exp $
 #
 
 ###########################################################################################
@@ -74,7 +74,7 @@ namespace eval ::audace {
    #     relativeFileName : repertoire du fichier d'aide
    #     tag              : balise anchor dans la page HTML (optionel)
    #
-   #  exemple : ::audace::showHelpItem "$help(dir,affichage)" "ttus1-fr.htm" "ADD"
+   #  exemple : ::audace::showHelpItem "$help(dir,prog)" "ttus1-fr.htm" "ADD"
    #  note : ne pas rajouter # devant item, il est rajoute automatiquement
    #----------------------------------------------------------------------------------------
    proc ::audace::showHelpItem { { folderRelativeFileName "" } { relativeFileName "" } { tag "" } } {
