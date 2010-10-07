@@ -2,7 +2,7 @@
 # Fichier : obj_lune_2.tcl
 # Description : Programme pour la partie graphique de l'outil Objectif Lune
 # Auteur : Robert DELMAS
-# Mise à jour $Id: obj_lune_2.tcl,v 1.11 2010-05-25 17:48:44 robertdelmas Exp $
+# Mise à jour $Id: obj_lune_2.tcl,v 1.12 2010-10-07 17:38:54 robertdelmas Exp $
 #
 
 namespace eval ::obj_lune {
@@ -1660,7 +1660,7 @@ namespace eval ::obj_lune {
       global audace obj_lune zone
 
       set num [ catch { imageflag2 configure \
-         -file [ file join $audace(rep_plugin) tool obj_lune $obj_lune(rep_cartes) $obj_lune(carte_choisie) ] } msg ]
+         -file [ file join $audace(rep_userCatalog) $obj_lune(rep_cartes) $obj_lune(carte_choisie) ] } msg ]
       if { $num == "1" } {
          ::obj_lune::Manque_Cartes
       } else {
@@ -1678,7 +1678,7 @@ namespace eval ::obj_lune {
       global audace obj_lune zone
 
       set num [ catch { imageflag4b configure \
-         -file [ file join $audace(rep_plugin) tool obj_lune $obj_lune(rep_cartes) $obj_lune(carte_choisie_lib) ] } msg ]
+         -file [ file join $audace(rep_userCatalog) $obj_lune(rep_cartes) $obj_lune(carte_choisie_lib) ] } msg ]
       if { $num == "1" } {
          ::obj_lune::Manque_Cartes
       } else {
@@ -1714,7 +1714,8 @@ namespace eval ::obj_lune {
       pack $audace(base).manque_cartes.labURL2 -padx 10 -pady 2
       label $audace(base).manque_cartes.lab3 -text "$caption(obj_lune2,manque_cartes_3)"
       pack $audace(base).manque_cartes.lab3 -padx 10 -pady 2
-      label $audace(base).manque_cartes.lab4 -text "$caption(obj_lune2,manque_cartes_4)"
+      label $audace(base).manque_cartes.lab4 -text \
+         [ format $caption(obj_lune2,manque_cartes_4) $audace(rep_userCatalog) ]
       pack $audace(base).manque_cartes.lab4 -padx 10 -pady 2
 
       #--- La nouvelle fenetre est active
