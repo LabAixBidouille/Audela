@@ -2,7 +2,7 @@
 # Fichier : fieldchart.tcl
 # Description : Interfaces graphiques pour les fonctions carte de champ
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: fieldchart.tcl,v 1.7 2010-10-06 16:39:46 robertdelmas Exp $
+# Mise à jour $Id: fieldchart.tcl,v 1.8 2010-10-07 21:09:22 robertdelmas Exp $
 #
 
 #============================================================
@@ -280,10 +280,6 @@ namespace eval ::fieldchart {
             entry $This.usr.2.ent2 -textvariable fieldchart(PictureHeight) -width 5
             grid $This.usr.2.ent2 -row 1 -column 1 -padx 5 -pady 2 -sticky w
 
-            button $This.usr.2.but1 -text "$caption(fieldchart,prendre_image)" \
-               -command "::fieldchart::cmdTakeWHFromPicture"
-            grid $This.usr.2.but1 -column 2 -row 0 -rowspan 2 -padx 5 -pady 5 -ipady 5 -sticky news
-
             label $This.usr.2.lab3 -text "$caption(fieldchart,ad_centre)"
             grid $This.usr.2.lab3 -column 0 -row 2 -padx 5 -pady 2 -sticky w
 
@@ -295,10 +291,6 @@ namespace eval ::fieldchart {
 
             entry $This.usr.2.ent4 -textvariable fieldchart(CentreDec) -width 10
             grid $This.usr.2.ent4 -column 1 -row 3 -padx 5 -pady 2 -sticky w
-
-            button $This.usr.2.but2 -text "$caption(fieldchart,prendre_image)" \
-               -command "::fieldchart::cmdTakeRaDecFromPicture"
-            grid $This.usr.2.but2  -column 2 -row 2 -rowspan 2 -padx 5 -pady 5 -ipady 5 -sticky news
 
             label $This.usr.2.lab5 -text "$caption(fieldchart,inclinaison_camera)"
             grid $This.usr.2.lab5 -column 0 -row 4 -padx 5 -pady 2 -sticky w
@@ -326,7 +318,11 @@ namespace eval ::fieldchart {
                entry $This.usr.2.1.ent2 -textvariable fieldchart(PixSize2) -width 3
                pack $This.usr.2.1.ent2 -side left
 
-            grid $This.usr.2.1 -column 1 -row 6 -columnspan 3  -padx 5 -pady 2 -sticky w
+            grid $This.usr.2.1 -column 1 -row 6 -columnspan 3 -padx 5 -pady 2 -sticky w
+
+            button $This.usr.2.but3 -text "$caption(fieldchart,prendre_image)" \
+               -command "::fieldchart::cmdTakeFITSKeywords"
+            grid $This.usr.2.but3 -column 2 -row 0 -rowspan 7 -padx 5 -pady 5 -ipady 5 -sticky news
 
          pack $This.usr.2 -side top -fill both
 
@@ -416,10 +412,10 @@ namespace eval ::fieldchart {
             if { $fieldchart(PictureWidth) != "" && $fieldchart(PictureHeight) != "" && $fieldchart(CentreRA) != "" && \
                  $fieldchart(CentreDec) != "" && $fieldchart(Inclin) != "" && $fieldchart(FocLen) != "" && \
                  $fieldchart(PixSize1) != "" && $fieldchart(PixSize2) != "" } {
-               set field [ list OPTIC NAXIS1 $fieldchart(PictureWidth) NAXIS2 $fieldchart(PictureHeight) ]
-               lappend field FOCLEN $fieldchart(FocLen) PIXSIZE1 $fieldchart(PixSize1)$unit PIXSIZE2 $fieldchart(PixSize2)$unit
-               lappend field CROTA2 $fieldchart(Inclin) RA $fieldchart(CentreRA) DEC $fieldchart(CentreDec)
-            } else {
+               set field [ list OPTIC NAXIS1 $fieldchart(PictureWidth) NAXIS2 $fieldchart(PictureHeight) \
+                  FOCLEN $fieldchart(FocLen) PIXSIZE1 $fieldchart(PixSize1)$unit PIXSIZE2 $fieldchart(PixSize2)$unit \
+                  CROTA2 $fieldchart(Inclin) RA $fieldchart(CentreRA) DEC $fieldchart(CentreDec) ]
+               } else {
                return
             }
          } else {
@@ -493,25 +489,21 @@ namespace eval ::fieldchart {
    }
 
    #------------------------------------------------------------
-   # cmdTakeWHFromPicture
-   #    Recupere la largeur et la hauteur de l'image
+   # cmdTakeFITSKeywords
+   #    Recupere naxis1, naxis2, AD, Dec.,l'inclinaison de la
+   #    camera, la focale de l'instrument et la taille des pixels
    #------------------------------------------------------------
-   proc cmdTakeWHFromPicture { } {
+   proc cmdTakeFITSKeywords { } {
       global audace fieldchart
 
       set fieldchart(PictureWidth)  [ lindex [ buf$audace(bufNo) getkwd NAXIS1 ] 1 ]
       set fieldchart(PictureHeight) [ lindex [ buf$audace(bufNo) getkwd NAXIS2 ] 1 ]
-   }
-
-   #------------------------------------------------------------
-   # cmdTakeRaDecFromPicture
-   #    Recupere l'ascension droite et la declinaison de l'image
-   #------------------------------------------------------------
-   proc cmdTakeRaDecFromPicture { } {
-      global audace fieldchart
-
-      set fieldchart(CentreRA)  [ lindex [ buf$audace(bufNo) getkwd RA ] 1 ]
-      set fieldchart(CentreDec) [ lindex [ buf$audace(bufNo) getkwd DEC ] 1 ]
+      set fieldchart(CentreRA)      [ lindex [ buf$audace(bufNo) getkwd RA ] 1 ]
+      set fieldchart(CentreDec)     [ lindex [ buf$audace(bufNo) getkwd DEC ] 1 ]
+      set fieldchart(Inclin)        [ lindex [ buf$audace(bufNo) getkwd CROTA2 ] 1 ]
+      set fieldchart(FocLen)        [ lindex [ buf$audace(bufNo) getkwd FOCLEN ] 1 ]
+      set fieldchart(PixSize1)      [ lindex [ buf$audace(bufNo) getkwd PIXSIZE1 ] 1 ]
+      set fieldchart(PixSize2)      [ lindex [ buf$audace(bufNo) getkwd PIXSIZE2 ] 1 ]
    }
 
    #------------------------------------------------------------
