@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.156 2010-10-05 21:26:03 robertdelmas Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.157 2010-10-07 18:46:53 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -1584,15 +1584,19 @@ namespace eval ::confVisu {
             return 0
          }
       }
-      #--- j'arrete l'outil
-      set result [ $toolName\::stopTool $visuNo ]
-      if { $result != "-1" } {
-         #--- je masque le panneau de l'outil si c'est l'outil courant de la visu
-         if { $private($visuNo,currentTool) == $toolName } {
-            grid forget $private($visuNo,This).tool
+      if { $toolName != "" && $toolName != "::"} {
+         #--- j'arrete l'outil
+         set result [ $toolName\::stopTool $visuNo ]
+         if { $result != "-1" } {
+            #--- je masque le panneau de l'outil si c'est l'outil courant de la visu
+            if { $private($visuNo,currentTool) == $toolName } {
+               grid forget $private($visuNo,This).tool
+            }
          }
+         return $result
+      } else {
+         return 0
       }
-      return $result
    }
 
    #------------------------------------------------------------
@@ -1605,7 +1609,7 @@ namespace eval ::confVisu {
    proc createPluginInstance { visuNo toolName } {
       variable private
 
-      if { $toolName  != "" } {
+      if { $toolName != "" && $toolName != "::" } {
          #--- je verifie que le plugin n'a pas deja une instance cree
          if { [lsearch -exact $private($visuNo,pluginInstanceList) $toolName ] == -1 } {
             #--- je cree une instance du plugin
@@ -1671,7 +1675,7 @@ namespace eval ::confVisu {
       set stopResult ""
       if { "$private($visuNo,currentTool)" != "" } {
          #--- Cela veut dire qu'il y a deja un plugin selectionne
-         if { $toolName != "" } {
+         if { $toolName != "" && $toolName != "::"} {
             if { [$toolName\::getPluginProperty "display" ] != "window"
                && [$private($visuNo,currentTool)::getPluginProperty "display" ] != "window" } {
                #--- Cela veut dire que l'utilisateur selectionne un nouveau plugin
@@ -1691,7 +1695,7 @@ namespace eval ::confVisu {
          return
       }
 
-      if { $toolName != "" } {
+      if { $toolName != "" && $toolName != "::" } {
          #--- je cree l'instance du plugin
          createPluginInstance $visuNo $toolName
          #--- je demarre le plugin
