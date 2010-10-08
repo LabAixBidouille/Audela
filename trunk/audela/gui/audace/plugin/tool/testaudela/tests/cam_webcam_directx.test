@@ -6,7 +6,7 @@ set bufNo [::confVisu::getBufNo $visuNo]
 set cameraName ""
 
 #-------------------------------------------------------------------------------
-test WEBCAM_DIRECTX_list {liste des cameras} {WEBCAM_RGB} {
+test WEBCAM_DIRECTX_list {liste des cameras} {WEBCAM_RGB DIRECTX} {
    #--- je charge la librairie
    load $::audela_start_dir/libwebcam.dll
    #--- je recupere la liste des webcams
@@ -20,14 +20,14 @@ test WEBCAM_DIRECTX_list {liste des cameras} {WEBCAM_RGB} {
 } "1"
 
 #-------------------------------------------------------------------------------
-test WEBCAM_DIRECTX_create {creation de la camera RGB} {WEBCAM_RGB} {
+test WEBCAM_DIRECTX_create {creation de la camera RGB} {WEBCAM_RGB DIRECTX} {
    set camNo [cam::create webcam $cameraName -videomode directx -name WEBCAM -ccd "ICX098BQ-A" ]
    cam$camNo buf $bufNo
    return $camNo
 } "1"
 
 #-------------------------------------------------------------------------------
-test WEBCAM_RGB_acq {acquisition} {WEBCAM_RGB} {
+test WEBCAM_RGB_acq {acquisition} {WEBCAM_RGB DIRECTX} {
    #--- je vide le buffer de la camera
    buf$bufNo clear
    #--- je rafraichis l'affichage (ce n'est pas indispensable, mais c'est juste pour voir
@@ -56,7 +56,7 @@ test WEBCAM_RGB_acq {acquisition} {WEBCAM_RGB} {
 } "1"
 
 #-------------------------------------------------------------------------------
-test WEBCAM_DIRECTX_acq {acquisition en mode bloquant} {WEBCAM_RGB} {
+test WEBCAM_DIRECTX_acq {acquisition en mode bloquant} {WEBCAM_RGB DIRECTX} {
    #--- je vide le buffer de la camera
    buf$bufNo clear
    #--- je rafraichis l'affichage (ce n'est pas indispensable, mais c'est juste pour voir
@@ -79,7 +79,7 @@ test WEBCAM_DIRECTX_acq {acquisition en mode bloquant} {WEBCAM_RGB} {
 } "1"
 
 #-------------------------------------------------------------------------------
-test WEBCAM_DIRECTX_delete {suppression camera NB} {WEBCAM_RGB} {
+test WEBCAM_DIRECTX_delete {suppression camera NB} {WEBCAM_RGB DIRECTX} {
    cam::delete $camNo
    update
    #--- je verifie qu'il n'y a plus de camera
@@ -87,7 +87,7 @@ test WEBCAM_DIRECTX_delete {suppression camera NB} {WEBCAM_RGB} {
 } ""
 
 #-------------------------------------------------------------------------------
-test WEBCAM_DIRECTX_create {creation camera inconnue} {WEBCAM_RGB} {
+test WEBCAM_DIRECTX_create {creation camera inconnue} {WEBCAM_RGB DIRECTX} {
 
    catch {
       set camNo [cam::create webcam "xxxx" -videomode directx -name WEBCAM -ccd "ICX098BQ-A" ]
