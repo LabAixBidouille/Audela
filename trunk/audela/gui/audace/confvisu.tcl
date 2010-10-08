@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.157 2010-10-07 18:46:53 michelpujol Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.158 2010-10-08 16:41:44 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -495,6 +495,8 @@ namespace eval ::confVisu {
             ::confVisu::setFileName $visuNo ""
             buf$bufNo clear
             visu$visuNo clear
+            #--- j'efface la barre d'outils
+            ::confVisu::showToolBar $visuNo 0
          }
 
          #--- on affiche l'image
