@@ -1,7 +1,7 @@
 
 # Procédures d'exploitation astrophysique des spectres
 
-# Mise a jour $Id: spc_astrophys.tcl,v 1.18 2010-10-04 21:05:26 bmauclaire Exp $
+# Mise a jour $Id: spc_astrophys.tcl,v 1.19 2010-10-08 18:03:20 bmauclaire Exp $
 
 
 
@@ -1986,9 +1986,9 @@ proc spc_autoew3 { args } {
       }
 
       #--- Détermination de la largeur équivalente :
-      if { $nbargs<=3 } {
+      if { $nb_args<=3 } {
          set ew [ spc_ew $filename_norma $lambda_deb $lambda_fin ]
-      } elseif { $nbargs==4 } {
+      } elseif { $nb_args==4 } {
          set ew [ spc_ew $filename_norma $lambda_deb $lambda_fin $taux_doucissage ]
       }
       set deltal [ expr abs($lambda_fin-$lambda_deb) ]
