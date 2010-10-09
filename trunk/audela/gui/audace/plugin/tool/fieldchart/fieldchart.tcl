@@ -2,7 +2,7 @@
 # Fichier : fieldchart.tcl
 # Description : Interfaces graphiques pour les fonctions carte de champ
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: fieldchart.tcl,v 1.9 2010-10-09 07:01:22 robertdelmas Exp $
+# Mise à jour $Id: fieldchart.tcl,v 1.10 2010-10-09 14:01:29 robertdelmas Exp $
 #
 
 #============================================================
@@ -79,12 +79,18 @@ namespace eval ::fieldchart {
    #    initialise le plugin
    #------------------------------------------------------------
    proc initPlugin { tkbase } {
+   }
+
+   #------------------------------------------------------------
+   # createPluginInstance
+   #    cree une nouvelle instance de l'outil
+   #------------------------------------------------------------
+   proc createPluginInstance { { in "" } { visuNo 1 } } {
       variable This
-      variable widget
       global audace caption conf
 
       #--- Inititalisation du nom de la fenetre
-      set This "$tkbase"
+      set This "$audace(base).fieldchart"
 
       #--- Inititalisation de variables de configuration
       if { ! [ info exists conf(fieldchart,position) ] }    { set conf(fieldchart,position)    "+350+75" }
@@ -94,19 +100,16 @@ namespace eval ::fieldchart {
    }
 
    #------------------------------------------------------------
-   # createPluginInstance
-   #    cree une nouvelle instance de l'outil
-   #------------------------------------------------------------
-   proc createPluginInstance { { in "" } { visuNo 1 } } {
-
-   }
-
-   #------------------------------------------------------------
    # deletePluginInstance
    #    suppprime l'instance du plugin
    #------------------------------------------------------------
    proc deletePluginInstance { visuNo } {
+      variable This
 
+      if { [ winfo exists $This ] } {
+         #--- Je ferme la fenetre si l'utilsateur ne l'a pas deja fait
+         ::fieldchart::cmdClose
+      }
    }
 
    #------------------------------------------------------------
@@ -155,10 +158,10 @@ namespace eval ::fieldchart {
    }
 
    #------------------------------------------------------------
-   # recup_position
+   # recupPosition
    #    Recupere la position de la fenetre
    #------------------------------------------------------------
-   proc recup_position { } {
+   proc recupPosition { } {
       variable This
       variable widget
       global fieldchart
@@ -181,7 +184,6 @@ namespace eval ::fieldchart {
       global audace fieldchart
 
       #---
-      ::fieldchart::initPlugin "$audace(base).fieldchart"
       ::fieldchart::confToWidget
       #---
       if { [ winfo exists $This ] } {
@@ -205,7 +207,10 @@ namespace eval ::fieldchart {
    proc createDialog { } {
       variable This
       variable widget
-      global caption conf fieldchart
+      global audace caption conf fieldchart
+
+      #--- J'active la mise a jour automatique de l'affichage quand on change de zoom
+      ::confVisu::addZoomListener $audace(visuNo) "::fieldchart::refreshChart"
 
       #---
       toplevel $This
@@ -330,12 +335,6 @@ namespace eval ::fieldchart {
 
       frame $This.cmd -borderwidth 1 -relief raised
 
-         button $This.cmd.ok -text "$caption(fieldchart,ok)" -width 7 \
-            -command "::fieldchart::cmdOk"
-         if { $conf(ok+appliquer) == "1" } {
-            pack $This.cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
-         }
-
          button $This.cmd.appliquer -text "$caption(fieldchart,appliquer)" -width 8 \
             -command "::fieldchart::cmdApply"
          pack $This.cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
@@ -381,16 +380,6 @@ namespace eval ::fieldchart {
       variable This
 
       destroy $This
-      unset This
-   }
-
-   #------------------------------------------------------------
-   # cmdOk
-   #    Procedure correspondant a l'appui sur le bouton OK
-   #------------------------------------------------------------
-   proc cmdOk { } {
-      cmdApply
-      cmdClose
    }
 
    #------------------------------------------------------------
@@ -400,7 +389,7 @@ namespace eval ::fieldchart {
    proc cmdApply { } {
       variable This
       variable widget
-      global audace caption color fieldchart
+      global audace caption color etoiles fieldchart
 
       set unit "e-6"
 
@@ -447,24 +436,11 @@ namespace eval ::fieldchart {
                   -title "$caption(fieldchart,attention)"
             }
          } else {
-            set etoiles [ lreplace $msg end end ]
-            foreach star $etoiles {
-               if { [ llength $star ] == "7" } {
-                  set coord [ lrange $star 4 5 ]
-                  set coord [ ::audace::picture2Canvas $coord ]
-                  set x [ lindex $coord 0 ]
-                  set y [ lindex $coord 1 ]
-                  set x1 [ expr $x-2 ]
-                  set y1 [ expr $y-2 ]
-                  set x2 [ expr $x+2 ]
-                  set y2 [ expr $y+2 ]
-                  #--- Dessin des etoiles rouges visualisant la carte de champ
-                  $audace(hCanvas) create oval $x1 $y1 $x2 $y2 -fill $color(red) -width 0 -tag chart
-               }
-            }
+             set etoiles [ lreplace $msg end end ]
+             ::fieldchart::refreshChart
          }
       }
-      ::fieldchart::recup_position
+      ::fieldchart::recupPosition
    }
 
    #------------------------------------------------------------
@@ -472,9 +448,15 @@ namespace eval ::fieldchart {
    #    Procedure correspondant a l'appui sur le bouton Fermer
    #------------------------------------------------------------
    proc cmdClose { } {
-      ::fieldchart::recup_position
-      cmdDelete
-      destroyDialog
+      global audace
+
+      #--- Je desactive l'adaptation de l'affichage quand on change de zoom
+      ::confVisu::removeZoomListener $audace(visuNo) "::fieldchart::refreshChart"
+
+      #---
+      ::fieldchart::recupPosition
+      ::fieldchart::cmdDelete
+      ::fieldchart::destroyDialog
    }
 
    #------------------------------------------------------------
@@ -486,6 +468,27 @@ namespace eval ::fieldchart {
 
       #--- Effacement des etoiles rouges visualisant la carte de champ
       $audace(hCanvas) delete chart
+   }
+
+   #------------------------------------------------------------
+   # refreshChart
+   #    Procedure correspondant a l'appui sur le bouton Fermer
+   #------------------------------------------------------------
+   proc refreshChart { args } {
+      global audace color etoiles
+
+      #--- Efface les points rouges meme s'ils n'existent pas
+      ::fieldchart::cmdDelete
+
+      #--- Dessine les points rouges
+      foreach star $etoiles {
+         if { [ llength $star ] == "7" } {
+            set coord [ lrange $star 4 5 ]
+            lassign [ ::audace::picture2Canvas $coord ] x y
+            lassign [ list [ expr $x-2 ] [ expr $y-2 ] [ expr $x+2 ] [ expr $y+2 ] ] x1 y1 x2 y2
+            $audace(hCanvas) create oval $x1 $y1 $x2 $y2 -fill $color(red) -width 0 -tag chart
+         }
+      }
    }
 
    #------------------------------------------------------------
@@ -589,7 +592,7 @@ namespace eval ::fieldchart {
 
       #--- Creation du lien avec le navigateur web et changement de sa couleur
       bind $audace(base).loadMicrocat.labURL2 <ButtonPress-1> {
-         set filename "$caption(fieldchart,loadMicrocat_2)"
+        set filename "$caption(fieldchart,loadMicrocat_2)"
          ::audace::Lance_Site_htm $filename
       }
       bind $audace(base).loadMicrocat.labURL2 <Enter> {
