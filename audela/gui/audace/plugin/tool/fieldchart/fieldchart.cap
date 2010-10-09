@@ -1,6 +1,6 @@
 #
 # Fichier : fieldchart.cap
-# Mise a jour $Id: fieldchart.cap,v 1.6 2010-10-07 20:51:23 robertdelmas Exp $
+# Mise a jour $Id: fieldchart.cap,v 1.7 2010-10-09 14:00:21 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -39,7 +39,6 @@ set caption(fieldchart,attention)                     "Warning!"
 set caption(fieldchart,loadMicrocat_1)                "Please download MicroCat catalog from:"
 set caption(fieldchart,loadMicrocat_2)                "http://www.audela.org/download/microcat.tar.gz"
 
-set caption(fieldchart,ok)                            "OK"
 set caption(fieldchart,appliquer)                     "Apply"
 set caption(fieldchart,effacer)                       "Remove"
 set caption(fieldchart,fermer)                        "Close"
@@ -76,7 +75,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,loadMicrocat_1)             "Vous devez télécharger le catalogue MicroCat à l'adresse :"
    set caption(fieldchart,loadMicrocat_2)             "http://www.audela.org/download/microcat.tar.gz"
 
-   set caption(fieldchart,ok)                         "OK"
    set caption(fieldchart,appliquer)                  "Appliquer"
    set caption(fieldchart,effacer)                    "Effacer"
    set caption(fieldchart,fermer)                     "Fermer"
@@ -113,7 +111,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,loadMicrocat_1)             "Dovete scaricare catalogo MicroCat da:"
    set caption(fieldchart,loadMicrocat_2)             "http://www.audela.org/download/microcat.tar.gz"
 
-   set caption(fieldchart,ok)                         "OK"
    set caption(fieldchart,appliquer)                  "Applicare"
    set caption(fieldchart,effacer)                    "Cancellare"
    set caption(fieldchart,fermer)                     "Chiudere"
@@ -150,7 +147,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,loadMicrocat_1)             "Por favor, descargue catálogo MicroCat de:"
    set caption(fieldchart,loadMicrocat_2)             "http://www.audela.org/download/microcat.tar.gz"
 
-   set caption(fieldchart,ok)                         "OK"
    set caption(fieldchart,appliquer)                  "Aplicar"
    set caption(fieldchart,effacer)                    "Eliminar"
    set caption(fieldchart,fermer)                     "Cerrar"
@@ -187,7 +183,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,loadMicrocat_1)             "Sie müssen die MicroCat Katalog von die Adresse:"
    set caption(fieldchart,loadMicrocat_2)             "http://www.audela.org/download/microcat.tar.gz"
 
-   set caption(fieldchart,ok)                         "OK"
    set caption(fieldchart,appliquer)                  "Anwenden"
    set caption(fieldchart,effacer)                    "Wegradieren"
    set caption(fieldchart,fermer)                     "Schließen"
@@ -224,7 +219,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,loadMicrocat_1)             "Deve descarregar as MicroCat catálogo no endereço:"
    set caption(fieldchart,loadMicrocat_2)             "http://www.audela.org/download/microcat.tar.gz"
 
-   set caption(fieldchart,ok)                         "OK"
    set caption(fieldchart,appliquer)                  "Aplicar"
    set caption(fieldchart,effacer)                    "Remover"
    set caption(fieldchart,fermer)                     "Fechar"
@@ -261,7 +255,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,loadMicrocat_1)             "Vær venlig at downloade MicroCat katalog fra:"
    set caption(fieldchart,loadMicrocat_2)             "http://www.audela.org/download/microcat.tar.gz"
 
-   set caption(fieldchart,ok)                         "OK"
    set caption(fieldchart,appliquer)                  "Anvend"
    set caption(fieldchart,effacer)                    "Fjern"
    set caption(fieldchart,fermer)                     "Luk"
@@ -298,7 +291,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,loadMicrocat_1)             "Please download MicroCat catalog from:"
    set caption(fieldchart,loadMicrocat_2)             "http://www.audela.org/download/microcat.tar.gz"
 
-   set caption(fieldchart,ok)                         "OK"
    set caption(fieldchart,appliquer)                  "Apply"
    set caption(fieldchart,effacer)                    "Remove"
    set caption(fieldchart,fermer)                     "Close"
@@ -335,7 +327,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,loadMicrocat_1)             "Please download MicroCat catalog from:"
    set caption(fieldchart,loadMicrocat_2)             "http://www.audela.org/download/microcat.tar.gz"
 
-   set caption(fieldchart,ok)                         "OK"
    set caption(fieldchart,appliquer)                  "Apply"
    set caption(fieldchart,effacer)                    "Remove"
    set caption(fieldchart,fermer)                     "Close"
