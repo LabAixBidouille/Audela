@@ -2,7 +2,7 @@
 # Fichier : fieldchart.tcl
 # Description : Interfaces graphiques pour les fonctions carte de champ
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: fieldchart.tcl,v 1.8 2010-10-07 21:09:22 robertdelmas Exp $
+# Mise à jour $Id: fieldchart.tcl,v 1.9 2010-10-09 07:01:22 robertdelmas Exp $
 #
 
 #============================================================
@@ -205,7 +205,7 @@ namespace eval ::fieldchart {
    proc createDialog { } {
       variable This
       variable widget
-      global audace caption conf fieldchart
+      global caption conf fieldchart
 
       #---
       toplevel $This
@@ -400,7 +400,7 @@ namespace eval ::fieldchart {
    proc cmdApply { } {
       variable This
       variable widget
-      global audace caption color etoiles fieldchart
+      global audace caption color fieldchart
 
       set unit "e-6"
 
@@ -439,7 +439,6 @@ namespace eval ::fieldchart {
          set msg [ eval $a_executer ]
 
          if { [ llength $msg ] == "1" } {
-            set etoiles $msg
             set msg [ lindex $msg 0 ]
             if { [ lindex $msg 0 ] == "Pb" } {
                tk_messageBox -message "[ lindex $msg 1 ]" -icon error -title "$caption(fieldchart,erreur)"
@@ -448,7 +447,7 @@ namespace eval ::fieldchart {
                   -title "$caption(fieldchart,attention)"
             }
          } else {
-            set etoiles $msg
+            set etoiles [ lreplace $msg end end ]
             foreach star $etoiles {
                if { [ llength $star ] == "7" } {
                   set coord [ lrange $star 4 5 ]
@@ -474,6 +473,7 @@ namespace eval ::fieldchart {
    #------------------------------------------------------------
    proc cmdClose { } {
       ::fieldchart::recup_position
+      cmdDelete
       destroyDialog
    }
 
