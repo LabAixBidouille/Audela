@@ -2,7 +2,7 @@
 # Fichier : astrocomputer.tcl
 # Description : Calculatrice pour l'astronomie
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: astrocomputer.tcl,v 1.7 2010-09-04 22:44:09 alainklotz Exp $
+# Mise à jour $Id: astrocomputer.tcl,v 1.8 2010-10-09 13:59:34 robertdelmas Exp $
 #
 # source "$audace(rep_install)/gui/audace/plugin/tool/astrocomputer/astrocomputer.tcl"
 
@@ -78,13 +78,13 @@ proc ::astrocomputer::getPluginProperty { propertyName } {
 
 #------------------------------------------------------------
 # initPlugin
-#    initialise le plugin au demarrage d'Audela
+#    initialise le plugin au demarrage d'AudeLA
 #    Il ne faut utiliser cette procedure que si on a besoin d'initialiser des
-#    des variables ou de creer des procedure dès le démarrage d'audela.
+#    des variables ou de creer des procedure des le demarrage d'AudeLA.
 #    Sinon il vaut mieux utiliser createPluginInstance qui est appelee lors de
 #    la premiere utilisation de l'outil.
-#    Cela evite evite ainsi d'alourdir le demarrage d'Audela et d'occuper de la
-#    mémoire pour rien si l'outil n'est pas utilise.
+#    Cela evite ainsi d'alourdir le demarrage d'AudeLA et d'occuper de la
+#    memoire pour rien si l'outil n'est pas utilise.
 #------------------------------------------------------------
 proc ::astrocomputer::initPlugin { tkbase } {
 }
@@ -141,6 +141,7 @@ proc ::astrocomputer::createPluginInstance { { in "" } { visuNo 1 } } {
 #------------------------------------------------------------
 proc ::astrocomputer::deletePluginInstance { visuNo } {
    variable wbase
+
    if { [winfo exists $wbase ] } {
       #--- je ferme la fenetre si l'utilsateur ne l'a pas deja fait
       ::astrocomputer::fermer
@@ -217,75 +218,83 @@ proc ::astrocomputer::astrocomputer_ihm { { mode "" } } {
    # --- initialisation
    ::astrocomputer::confToWidget
 
-   if { [ string length [ info commands $wbase.* ] ] != "0" } {
-      catch {destroy $wbase}
-   }
+   #---
+   if { [ winfo exists $wbase ] } {
 
-   #--- Cree la fenetre .ohp de niveau le plus haut
-   toplevel $wbase -class Toplevel -bg #123456
-   wm geometry $wbase $widget(astrocomputer,geometry)
-   wm resizable $wbase 1 1
-   wm minsize $wbase 380 600
-   wm title $wbase "$::caption(astrocomputer,astrocomputer)"
-   wm protocol $wbase WM_DELETE_WINDOW ::astrocomputer::fermer
+      wm withdraw $wbase
+      wm deiconify $wbase
+      focus $wbase
 
-   #--- Met la fenetre au premier plan
-   wm attributes $wbase -topmost 1
-
-   #--- Frame des boutons OK, Appliquer, Aide et Fermer
-   frame $wbase.cmd -borderwidth 1 -relief raised
-
-      button $wbase.cmd.fermer -text "$::caption(astrocomputer,fermer)" -width 7 \
-         -command "::astrocomputer::fermer"
-      pack $wbase.cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
-
-      button $wbase.cmd.aide -text "$::caption(astrocomputer,aide)" -width 7 \
-         -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::astrocomputer::getPluginType ] ] \
-            [ ::astrocomputer::getPluginDirectory ] [ ::astrocomputer::getPluginHelp ]"
-      pack $wbase.cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
-
-   pack $wbase.cmd -side bottom -fill x
-
-   #--- Frame de la fenetre de configuration
-   frame $wbase.f -borderwidth 0 -relief raised
-
-      #--- Creation de la fenetre a onglets
-      set notebook [ NoteBook $wbase.f.onglet ]
-      set k 0
-      foreach onglet $::caption(astrocomputer,onglets) {
-         set frm [ $notebook insert end $k -text "$onglet " ]
-         ### -raisecmd "::confCam::onRaiseNotebook $namespace"
-         set astrocomputer(onglets,widget,$k) $wbase.f.onglet.$k
-         set astrocomputer(onglets,widget,$k) [$notebook getframe $k]
-         incr k
-      }
-      pack $notebook -fill both -expand 1 -padx 0 -pady 0
-      $notebook raise 0
-
-   pack $wbase.f -side top -fill both -expand 1
-
-   if {$mode=="conversion"} {
-      ::astrocomputer::astrocomputer_conversion
-   } elseif {$mode=="cosmology"} {
-      ::astrocomputer::astrocomputer_cosmology
-   } elseif {$mode=="coordinateapp"} {
-      ::astrocomputer::astrocomputer_coordinatesapp
    } else {
-      ::astrocomputer::astrocomputer_conversion
-      ::astrocomputer::astrocomputer_cosmology
-      ::astrocomputer::astrocomputer_coordinatesapp
+
+      #--- Cree la fenetre .ohp de niveau le plus haut
+      toplevel $wbase -class Toplevel
+      wm geometry $wbase $widget(astrocomputer,geometry)
+      wm resizable $wbase 1 1
+      wm minsize $wbase 380 600
+      wm title $wbase "$::caption(astrocomputer,astrocomputer)"
+      wm protocol $wbase WM_DELETE_WINDOW ::astrocomputer::fermer
+
+      #--- Met la fenetre au premier plan
+      wm attributes $wbase -topmost 1
+
+      #--- Frame des boutons OK, Appliquer, Aide et Fermer
+      frame $wbase.cmd -borderwidth 1 -relief raised
+
+         button $wbase.cmd.fermer -text "$::caption(astrocomputer,fermer)" -width 7 \
+            -command "::astrocomputer::fermer"
+         pack $wbase.cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
+
+         button $wbase.cmd.aide -text "$::caption(astrocomputer,aide)" -width 7 \
+            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::astrocomputer::getPluginType ] ] \
+               [ ::astrocomputer::getPluginDirectory ] [ ::astrocomputer::getPluginHelp ]"
+         pack $wbase.cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
+
+      pack $wbase.cmd -side bottom -fill x
+
+      #--- Frame de la fenetre de configuration
+      frame $wbase.f -borderwidth 0 -relief raised
+
+         #--- Creation de la fenetre a onglets
+         set notebook [ NoteBook $wbase.f.onglet ]
+         set k 0
+         foreach onglet $::caption(astrocomputer,onglets) {
+            set frm [ $notebook insert end $k -text "$onglet " ]
+            ### -raisecmd "::confCam::onRaiseNotebook $namespace"
+            set astrocomputer(onglets,widget,$k) $wbase.f.onglet.$k
+            set astrocomputer(onglets,widget,$k) [$notebook getframe $k]
+            incr k
+         }
+         pack $notebook -fill both -expand 1 -padx 0 -pady 0
+         $notebook raise 0
+
+      pack $wbase.f -side top -fill both -expand 1
+
+      if {$mode=="conversion"} {
+         ::astrocomputer::astrocomputer_conversion
+      } elseif {$mode=="cosmology"} {
+         ::astrocomputer::astrocomputer_cosmology
+      } elseif {$mode=="coordinateapp"} {
+         ::astrocomputer::astrocomputer_coordinatesapp
+      } else {
+         ::astrocomputer::astrocomputer_conversion
+         ::astrocomputer::astrocomputer_cosmology
+         ::astrocomputer::astrocomputer_coordinatesapp
+      }
+
+      #--- La fenetre est active
+      focus $wbase
+
+      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+      bind $wbase <Key-F1> { ::console::GiveFocus }
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $wbase
+
    }
-
-   #--- La fenetre est active
-   focus $wbase
-
-   #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-   bind $wbase <Key-F1> { ::console::GiveFocus }
-
-   #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $wbase
 
    return ""
+
 }
 
 #################################################################################################
