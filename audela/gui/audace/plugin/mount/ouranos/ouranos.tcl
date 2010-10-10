@@ -2,12 +2,11 @@
 # Fichier : ouranos.tcl
 # Description : Configuration de la monture Ouranos
 # Auteur : Robert DELMAS
-# Mise à jour $Id: ouranos.tcl,v 1.19 2010-07-24 15:40:42 robertdelmas Exp $
+# Mise à jour $Id: ouranos.tcl,v 1.20 2010-10-10 19:57:26 michelpujol Exp $
 #
 
 namespace eval ::ouranos {
    package provide ouranos 2.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] ouranos.cap ]

@@ -2,7 +2,7 @@
 # Fichier : gps.tcl
 # Description : Outil de synchronisation GPS
 # Auteur : Jacques MICHELET
-# Mise à jour $Id: gps.tcl,v 1.24 2010-05-25 17:17:45 robertdelmas Exp $
+# Mise à jour $Id: gps.tcl,v 1.25 2010-10-10 20:05:42 michelpujol Exp $
 #
 
 namespace eval ::gps {
@@ -11,7 +11,6 @@ namespace eval ::gps {
     variable base
 
     package provide gps 3.8
-    package require audela 1.4.0
 
     source [file join [file dirname [info script]] gps.cap]
 

@@ -2,7 +2,7 @@
 # Fichier : obj_lune_go.tcl
 # Description : Outil pour le lancement d'Objectif Lune
 # Auteur : Robert DELMAS
-# Mise à jour $Id: obj_lune_go.tcl,v 1.16 2010-05-25 17:49:06 robertdelmas Exp $
+# Mise à jour $Id: obj_lune_go.tcl,v 1.17 2010-10-10 20:05:42 michelpujol Exp $
 #
 
 #============================================================
@@ -11,7 +11,6 @@
 #============================================================
 namespace eval ::obj_lune {
    package provide obj_lune 1.0
-   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] obj_lune_go.cap ]

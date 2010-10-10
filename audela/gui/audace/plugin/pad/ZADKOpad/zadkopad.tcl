@@ -2,12 +2,11 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: zadkopad.tcl,v 1.49 2010-09-04 22:07:31 robertdelmas Exp $
+# Mise à jour $Id: zadkopad.tcl,v 1.50 2010-10-10 19:58:19 michelpujol Exp $
 #
 
 namespace eval ::zadkopad {
     package provide zadkopad 1.0
-    package require audela 1.4.0
 
     source [ file join [file dirname [info script]] zadkopad.cap ]
 

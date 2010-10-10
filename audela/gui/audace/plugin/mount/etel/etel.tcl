@@ -2,12 +2,11 @@
 # Fichier : etel.tcl
 # Description : Configuration de la monture Etel
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: etel.tcl,v 1.14 2010-07-14 08:04:25 robertdelmas Exp $
+# Mise à jour $Id: etel.tcl,v 1.15 2010-10-10 19:57:26 michelpujol Exp $
 #
 
 namespace eval ::etel {
    package provide etel 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] etel.cap ]

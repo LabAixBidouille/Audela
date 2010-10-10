@@ -2,12 +2,11 @@
 # Fichier : ethernaude.tcl
 # Description : Interface de liaison EthernAude
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: ethernaude.tcl,v 1.33 2010-05-22 16:50:08 robertdelmas Exp $
+# Mise à jour $Id: ethernaude.tcl,v 1.34 2010-10-10 19:55:22 michelpujol Exp $
 #
 
 namespace eval ::ethernaude {
    package provide ethernaude 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] ethernaude.cap ]

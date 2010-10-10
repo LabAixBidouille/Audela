@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise à jour $Id: foc.tcl,v 1.36 2010-07-15 15:49:07 robertdelmas Exp $
+# Mise à jour $Id: foc.tcl,v 1.37 2010-10-10 20:05:42 michelpujol Exp $
 #
 
 set ::graphik(compteur) {}
@@ -19,7 +19,6 @@ set ::graphik(fichier)  ""
 #============================================================
 namespace eval ::foc {
    package provide foc 1.0
-   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] foc.cap ]

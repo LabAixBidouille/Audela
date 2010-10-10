@@ -2,7 +2,7 @@
 # Fichier : vo_tools_go.tcl
 # Description : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur : Robert DELMAS
-# Mise à jour $Id: vo_tools_go.tcl,v 1.21 2010-05-26 06:03:09 robertdelmas Exp $
+# Mise à jour $Id: vo_tools_go.tcl,v 1.22 2010-10-10 20:05:43 michelpujol Exp $
 #
 
 #============================================================
@@ -11,7 +11,6 @@
 #============================================================
 namespace eval ::vo_tools {
    package provide vo_tools 1.0
-   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] vo_tools_go.cap ]

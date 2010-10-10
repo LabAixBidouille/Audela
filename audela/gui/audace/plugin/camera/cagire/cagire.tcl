@@ -2,12 +2,11 @@
 # Fichier : cagire.tcl
 # Description : Configuration de la camera Cagire
 # Auteur : Robert DELMAS
-# Mise à jour $Id: cagire.tcl,v 1.4 2010-09-10 19:34:52 robertdelmas Exp $
+# Mise à jour $Id: cagire.tcl,v 1.5 2010-10-10 19:50:42 michelpujol Exp $
 #
 
 namespace eval ::cagire {
    package provide cagire 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] cagire.cap ]

@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: remotectrl.tcl,v 1.40 2010-07-14 08:35:19 robertdelmas Exp $
+# Mise à jour $Id: remotectrl.tcl,v 1.41 2010-10-10 20:05:42 michelpujol Exp $
 #
 
 #============================================================
@@ -11,7 +11,6 @@
 #============================================================
 namespace eval ::remotectrl {
    package provide remotectrl 1.0
-   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    set dir [file dirname [info script]]

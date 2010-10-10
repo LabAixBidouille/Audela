@@ -2,12 +2,11 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise à jour $Id: lx200.tcl,v 1.31 2010-07-14 17:23:35 robertdelmas Exp $
+# Mise à jour $Id: lx200.tcl,v 1.32 2010-10-10 19:57:26 michelpujol Exp $
 #
 
 namespace eval ::lx200 {
    package provide lx200 1.1
-   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] lx200.cap ]

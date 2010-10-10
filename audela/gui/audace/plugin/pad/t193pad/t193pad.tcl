@@ -2,12 +2,11 @@
 # Fichier : t193pad.tcl
 # Description : Raquette specifique au T193 de l'OHP
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: t193pad.tcl,v 1.17 2010-07-16 16:23:33 robertdelmas Exp $
+# Mise à jour $Id: t193pad.tcl,v 1.18 2010-10-10 19:58:19 michelpujol Exp $
 #
 
 namespace eval ::t193pad {
    package provide t193pad 1.0
-   package require audela 1.4.0
    source [ file join [file dirname [info script]] t193pad.cap ]
 }
 

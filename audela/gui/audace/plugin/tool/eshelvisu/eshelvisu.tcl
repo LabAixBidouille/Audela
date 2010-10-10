@@ -2,7 +2,7 @@
 # Fichier : eshelvisu.tcl
 # Description : Visionneuse d'images eShel
 # Auteurs : Michel Pujol
-# Mise a jour $Id: eshelvisu.tcl,v 1.10 2010-09-26 13:50:50 michelpujol Exp $
+# Mise a jour $Id: eshelvisu.tcl,v 1.11 2010-10-10 20:05:42 michelpujol Exp $
 #
 
 namespace eval ::eshelvisu {
@@ -12,7 +12,6 @@ namespace eval ::eshelvisu {
    #--- Chargement des captions pour récuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] eshelvisu.cap ]
 
-   package require audela 1.5.0
 }
 
 #------------------------------------------------------------

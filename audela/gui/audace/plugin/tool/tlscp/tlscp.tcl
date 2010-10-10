@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise à jour $Id: tlscp.tcl,v 1.47 2010-10-03 14:50:07 robertdelmas Exp $
+# Mise à jour $Id: tlscp.tcl,v 1.48 2010-10-10 20:05:43 michelpujol Exp $
 #
 
 #============================================================
@@ -13,7 +13,6 @@
 
 namespace eval ::tlscp {
    package provide tlscp 1.1
-   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] tlscp.cap ]

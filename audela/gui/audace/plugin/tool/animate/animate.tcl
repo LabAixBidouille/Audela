@@ -2,7 +2,7 @@
 # Fichier : animate.tcl
 # Description : Outil pour le controle des animations d'images
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: animate.tcl,v 1.23 2010-05-24 15:18:29 robertdelmas Exp $
+# Mise à jour $Id: animate.tcl,v 1.24 2010-10-10 20:02:23 michelpujol Exp $
 #
 
 #============================================================
@@ -11,7 +11,6 @@
 #============================================================
 namespace eval ::animate {
    package provide animate 1.0
-   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] animate.cap ]

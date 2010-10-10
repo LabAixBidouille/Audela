@@ -2,7 +2,7 @@
 # Fichier : supernovae_go.tcl
 # Description : Outil pour l'observation des SnAudes
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: supernovae_go.tcl,v 1.26 2010-05-25 21:43:41 robertdelmas Exp $
+# Mise à jour $Id: supernovae_go.tcl,v 1.27 2010-10-10 20:05:42 michelpujol Exp $
 #
 
 #============================================================
@@ -11,7 +11,6 @@
 #============================================================
 namespace eval ::supernovae {
    package provide supernovae 1.0
-   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] supernovae_go.cap ]

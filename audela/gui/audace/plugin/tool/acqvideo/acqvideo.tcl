@@ -2,7 +2,7 @@
 # Fichier : acqvideo.tcl
 # Description : Outil d'acquisition video
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: acqvideo.tcl,v 1.22 2010-05-24 15:24:57 robertdelmas Exp $
+# Mise à jour $Id: acqvideo.tcl,v 1.23 2010-10-10 20:02:23 michelpujol Exp $
 #
 
 #==============================================================
@@ -11,7 +11,6 @@
 
 namespace eval ::acqvideo {
    package provide acqvideo 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] acqvideo.cap ]

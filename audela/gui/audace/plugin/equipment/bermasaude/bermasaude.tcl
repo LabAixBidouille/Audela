@@ -2,7 +2,7 @@
 # Fichier : bermasaude.tcl
 # Description : Gere la roue a filtres de Laurent BERNASCONI et Robert DELMAS
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: bermasaude.tcl,v 1.27 2010-05-17 16:23:42 robertdelmas Exp $
+# Mise à jour $Id: bermasaude.tcl,v 1.28 2010-10-10 19:53:55 michelpujol Exp $
 #
 
 #
@@ -45,7 +45,6 @@
 
 namespace eval bermasaude {
    package provide bermasaude 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] bermasaude.cap ]

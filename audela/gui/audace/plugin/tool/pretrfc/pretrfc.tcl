@@ -2,7 +2,7 @@
 # Fichier : pretrfc.tcl
 # Description : Outil pour le pretraitement automatique
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise à jour $Id: pretrfc.tcl,v 1.28 2010-05-01 09:14:14 robertdelmas Exp $
+# Mise à jour $Id: pretrfc.tcl,v 1.29 2010-10-10 20:05:42 michelpujol Exp $
 #
 
 #============================================================
@@ -13,7 +13,6 @@ namespace eval ::pretrfc {
 
    #--- Chargement du package
    package provide pretrfc 1.40
-   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] pretrfc.cap ]

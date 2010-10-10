@@ -2,7 +2,7 @@
 # Fichier : telshift_go.tcl
 # Description : Outil pour l'acquisition avec deplacement du telescope entre les poses
 # Auteur : Christian JASINSKI
-# Mise à jour $Id: telshift_go.tcl,v 1.12 2010-05-26 05:37:31 robertdelmas Exp $
+# Mise à jour $Id: telshift_go.tcl,v 1.13 2010-10-10 20:05:43 michelpujol Exp $
 #
 
 #============================================================
@@ -11,7 +11,6 @@
 #============================================================
 namespace eval ::telshift {
    package provide telshift 1.0
-   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] telshift_go.cap ]

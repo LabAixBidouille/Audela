@@ -1,7 +1,7 @@
 #
 # Fichier : select.tcl
 # Description : Interface permettant la selection d'images
-# Mise à jour $Id: select.tcl,v 1.4 2010-05-25 21:21:13 robertdelmas Exp $
+# Mise à jour $Id: select.tcl,v 1.5 2010-10-10 20:05:42 michelpujol Exp $
 #
 
 #============================================================
@@ -10,7 +10,6 @@
 #============================================================
 namespace eval ::select {
    package provide select 1.0
-   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] select.cap ]

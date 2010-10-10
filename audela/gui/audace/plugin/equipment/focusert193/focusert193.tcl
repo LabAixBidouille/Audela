@@ -2,7 +2,7 @@
 # Fichier : focusert193.tcl
 # Description : Gere le focuser associe a la monture T193
 # Auteur : Robert DELMAS
-# Mise à jour $Id: focusert193.tcl,v 1.1 2010-07-16 16:26:23 robertdelmas Exp $
+# Mise à jour $Id: focusert193.tcl,v 1.2 2010-10-10 19:53:55 michelpujol Exp $
 #
 
 #
@@ -23,7 +23,6 @@
 
 namespace eval ::focusert193 {
    package provide focusert193 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] focusert193.cap ]

@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.50 2010-10-03 14:33:33 robertdelmas Exp $
+# @version   $Id: sophie.tcl,v 1.51 2010-10-10 20:06:13 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -37,7 +37,6 @@
 #------------------------------------------------------------
 namespace eval ::sophie {
    package provide sophie 1.0
-   package require audela 1.5.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] sophie.cap ]
@@ -583,10 +582,10 @@ proc ::sophie::stopTool { visuNo } {
    ::sophie::deleteOrigin $visuNo
 
    #--- je supprime les binds des items "::sophie"
-   $private(hCanvas) bind "::sophie"  <ButtonPress-1>     "default"
-   $private(hCanvas) bind "::sophie"  <B1-Motion>         "default"
-   $private(hCanvas) bind "::sophie"  <ButtonRelease-1>   "default"
-   $private(hCanvas) bind "::sophie"  <ButtonPress-3>     "default"
+   $private(hCanvas) bind "::sophie"  <ButtonPress-1>     ""
+   $private(hCanvas) bind "::sophie"  <B1-Motion>         ""
+   $private(hCanvas) bind "::sophie"  <ButtonRelease-1>   ""
+   $private(hCanvas) bind "::sophie"  <ButtonPress-3>     ""
    #--- je restaure le bind du canvas
    ::confVisu::createBindCanvas $visuNo <Double-Button-1> "default"
 

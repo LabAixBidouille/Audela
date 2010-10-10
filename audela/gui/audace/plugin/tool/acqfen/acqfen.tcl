@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise à jour $Id: acqfen.tcl,v 1.47 2010-10-03 14:46:55 robertdelmas Exp $
+# Mise à jour $Id: acqfen.tcl,v 1.48 2010-10-10 20:02:23 michelpujol Exp $
 #
 
 # =========================================================
@@ -11,7 +11,6 @@
 
 namespace eval ::acqfen {
    package provide acqfen 1.2.1
-   package require audela 1.4.0
 
    # =======================================================================
    # === definition des fonctions de construction automatique de l'outil ===

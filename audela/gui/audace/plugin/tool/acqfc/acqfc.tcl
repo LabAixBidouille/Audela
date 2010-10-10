@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise à jour $Id: acqfc.tcl,v 1.107 2010-09-25 18:06:57 robertdelmas Exp $
+# Mise à jour $Id: acqfc.tcl,v 1.108 2010-10-10 20:02:23 michelpujol Exp $
 #
 
 #==============================================================
@@ -11,7 +11,6 @@
 
 namespace eval ::acqfc {
    package provide acqfc 4.1
-   package require audela 1.4.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] acqfc.cap ]

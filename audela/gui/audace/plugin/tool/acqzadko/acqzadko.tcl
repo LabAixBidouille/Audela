@@ -2,7 +2,7 @@
 # Fichier : acqzadko.tcl
 # Description : Outil d'acquisition
 # Auteurs : Francois Cochard et Myrtille Laas
-# Mise à jour $Id: acqzadko.tcl,v 1.27 2010-09-25 18:08:20 robertdelmas Exp $
+# Mise à jour $Id: acqzadko.tcl,v 1.28 2010-10-10 20:02:23 michelpujol Exp $
 #
 
 #==============================================================
@@ -11,7 +11,6 @@
 
 namespace eval ::acqzadko {
    package provide acqzadko 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] acqzadko.cap ]

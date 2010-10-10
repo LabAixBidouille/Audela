@@ -2,12 +2,11 @@
 # Fichier : modpoi2.tcl
 # Description : Outil de fabrication des fichiers Kit et de deploiement des plugins
 # Auteur : Michel Pujol
-# Mise à jour $Id: modpoi2.tcl,v 1.3 2010-06-05 11:41:04 michelpujol Exp $
+# Mise à jour $Id: modpoi2.tcl,v 1.4 2010-10-10 20:05:42 michelpujol Exp $
 #
 
 namespace eval ::modpoi2 {
    package provide modpoi2 1.0
-   package require audela 1.5.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] modpoi2.cap ]

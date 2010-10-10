@@ -2,7 +2,7 @@
 # Fichier : testaudela.tcl
 # Description : Outil de test automatique pour AudeLA
 # Auteurs : Michel Pujol
-# Mise à jour $Id: testaudela.tcl,v 1.12 2010-09-21 19:34:54 michelpujol Exp $
+# Mise à jour $Id: testaudela.tcl,v 1.13 2010-10-10 20:05:43 michelpujol Exp $
 #
 
 #####################
@@ -37,7 +37,6 @@
 
 namespace eval ::testaudela {
    package provide testaudela 1.11
-   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] testaudela.cap ]

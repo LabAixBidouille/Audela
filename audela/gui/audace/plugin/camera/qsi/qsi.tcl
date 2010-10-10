@@ -2,12 +2,11 @@
 # Fichier : qsi.tcl
 # Description : Configuration de la camera QSI
 # Auteur : Michel Pujol
-# Mise à jour $Id: qsi.tcl,v 1.13 2010-05-23 08:11:09 robertdelmas Exp $
+# Mise à jour $Id: qsi.tcl,v 1.14 2010-10-10 19:50:42 michelpujol Exp $
 #
 
 namespace eval ::qsi {
    package provide qsi 1.2
-   package require audela 1.5.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] qsi.cap ]

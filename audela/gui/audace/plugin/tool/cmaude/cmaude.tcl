@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise à jour $Id: cmaude.tcl,v 1.34 2010-10-03 14:47:43 robertdelmas Exp $
+# Mise à jour $Id: cmaude.tcl,v 1.35 2010-10-10 20:02:24 michelpujol Exp $
 #
 
 #============================================================
@@ -10,7 +10,6 @@
 #============================================================
 namespace eval ::cmaude {
    package provide cmaude 1.0
-   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] cmaude.cap ]

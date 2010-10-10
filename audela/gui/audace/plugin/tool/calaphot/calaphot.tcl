@@ -5,12 +5,11 @@
 #
 # @brief Script pour la photométrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot.tcl,v 1.4 2010-05-26 17:18:47 robertdelmas Exp $
+# $Id: calaphot.tcl,v 1.5 2010-10-10 20:02:24 michelpujol Exp $
 #
 
 namespace eval ::CalaPhot {
    package provide calaphot 5.0
-   package require audela 1.5.0
 #   package require BLT
 
    source [ file join [file dirname [info script]] calaphot.cap ]

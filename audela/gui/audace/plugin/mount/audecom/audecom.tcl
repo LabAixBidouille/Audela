@@ -2,12 +2,11 @@
 # Fichier : audecom.tcl
 # Description : Parametrage et pilotage de la carte AudeCom (Ex-Kauffmann)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: audecom.tcl,v 1.26 2010-07-14 08:02:05 robertdelmas Exp $
+# Mise à jour $Id: audecom.tcl,v 1.27 2010-10-10 19:57:25 michelpujol Exp $
 #
 
 namespace eval ::audecom {
    package provide audecom 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] audecom.cap ]

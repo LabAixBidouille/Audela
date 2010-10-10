@@ -2,7 +2,7 @@
 # Fichier : eshel.tcl
 # Description : outil de fabrication des fichier Kit et de deploiement des plugin
 # Auteurs : Michel Pujol
-# Mise à jour $Id: eshel.tcl,v 1.9 2010-08-20 14:34:44 michelpujol Exp $
+# Mise à jour $Id: eshel.tcl,v 1.10 2010-10-10 20:07:16 michelpujol Exp $
 #
 
 ##------------------------------------------------------------
@@ -22,7 +22,6 @@ namespace eval ::eshel {
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] eshel.cap ]
-   package require audela 1.5.0
 }
 
 #------------------------------------------------------------

@@ -2,12 +2,11 @@
 # Fichier : ascomcam.tcl
 # Description : Configuration de la camera ASCOM
 # Auteur : Michel PUJOL
-# Mise à jour $Id: ascomcam.tcl,v 1.12 2010-09-22 16:56:25 michelpujol Exp $
+# Mise à jour $Id: ascomcam.tcl,v 1.13 2010-10-10 19:50:42 michelpujol Exp $
 #
 
 namespace eval ::ascomcam {
    package provide ascomcam 1.2
-   package require audela 1.5.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] ascomcam.cap ]

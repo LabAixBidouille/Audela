@@ -2,12 +2,11 @@
 # Fichier : celestron.tcl
 # Description : Configuration de la monture Celestron
 # Auteur : Robert DELMAS
-# Mise à jour $Id: celestron.tcl,v 1.16 2010-07-14 08:02:38 robertdelmas Exp $
+# Mise à jour $Id: celestron.tcl,v 1.17 2010-10-10 19:57:25 michelpujol Exp $
 #
 
 namespace eval ::celestron {
    package provide celestron 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] celestron.cap ]

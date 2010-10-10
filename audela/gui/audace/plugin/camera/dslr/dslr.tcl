@@ -2,12 +2,11 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: dslr.tcl,v 1.43 2010-09-09 17:13:22 michelpujol Exp $
+# Mise à jour $Id: dslr.tcl,v 1.44 2010-10-10 19:50:42 michelpujol Exp $
 #
 
 namespace eval ::dslr {
    package provide dslr 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] dslr.cap ]
