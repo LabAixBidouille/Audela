@@ -1,7 +1,7 @@
 
 # Procédures d'analyse spectrale
 # source $audace(rep_scripts)/spcaudace/spc_analyse.tcl
-# Mise a jour $Id: spc_analyse.tcl,v 1.12 2010-10-03 20:01:11 bmauclaire Exp $
+# Mise a jour $Id: spc_analyse.tcl,v 1.13 2010-10-10 12:59:28 bmauclaire Exp $
 
 
 
@@ -1063,7 +1063,7 @@ proc spc_snr { args } {
       set fichier [ file rootname [ lindex $args 0 ] ]
       set lambda_mid [ lindex $args 1 ]
    } else {
-      ::console::affiche_erreur "Usage: spc_snr nom_fichier_fits\n\n"
+      ::console::affiche_erreur "Usage: spc_snr nom_fichier_fits ?lambda_zone_mesure?\n\n"
       return ""
    }
 
