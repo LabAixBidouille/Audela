@@ -3,7 +3,7 @@
 # Description : Scripts pour un usage aise des fonctions d'Aud'ACE
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
 #
-# Mise à jour $Id: mauclaire.tcl,v 1.33 2010-08-28 14:32:13 bmauclaire Exp $
+# Mise à jour $Id: mauclaire.tcl,v 1.34 2010-10-10 11:04:57 bmauclaire Exp $
 #
 
 #
@@ -1540,8 +1540,9 @@ proc bm_pretraittot { args } {
       #--- Calcul la somme, somme moyenne, somme mediane et la somme Kappa-Sigma
       ::console::affiche_resultat "\n**** Sommes des images prétraitées ****...\n"
       bm_somes ${nom_stellaire}tr-
-      delete2 ${nom_stellaire}tr- $nbimg
-
+      if { $rmmasters=="o" } {
+         delete2 ${nom_stellaire}tr- $nbimg
+      }
    } else {
       ::console::affiche_erreur "Usage: bm_pretraittot nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu ?offset (none)? ?effacement des masters (o/n)?\n\n"
       return ""
