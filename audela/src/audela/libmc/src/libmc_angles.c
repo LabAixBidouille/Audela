@@ -695,6 +695,8 @@ int mctcl_listfield2mc_astrom(Tcl_Interp *interp, char *listfield, mc_ASTROM *p)
 	p->cdelta1=0.;p->cdelta2=0.;
 	p->crpix1=0.;p->crpix2=0.;
 	if (inputdatatype==1) {
+      p->crpix1=p->naxis1/2.;
+      p->crpix2=p->naxis2/2.;
 	   for (k=0;k<nbinputdatas-1;k++) {
 	      strcpy(s,inputdatas[k]);
 		   mc_strupr(s,s);
@@ -703,12 +705,12 @@ int mctcl_listfield2mc_astrom(Tcl_Interp *interp, char *listfield, mc_ASTROM *p)
 		   else if (strcmp(s,"NAXIS2")==0) { p->naxis2=atoi(inputdatas[k+1]); }
 		   else if (strcmp(s,"PIXSIZE1")==0) { p->px=atof(inputdatas[k+1]); }
 		   else if (strcmp(s,"PIXSIZE2")==0) { p->py=atof(inputdatas[k+1]); }
+		   else if (strcmp(s,"CRPIX1")==0) { p->crpix1=atof(inputdatas[k+1]); }
+		   else if (strcmp(s,"CRPIX2")==0) { p->crpix2=atof(inputdatas[k+1]); }
 		   else if (strcmp(s,"CROTA2")==0) { p->crota2=atof(inputdatas[k+1])*(DR); }
 		   else if (strcmp(s,"RA")==0) { p->ra0=atof(inputdatas[k+1])*(DR); p->crval1=p->ra0; }
 		   else if (strcmp(s,"DEC")==0) { p->dec0=atof(inputdatas[k+1])*(DR); p->crval2=p->dec0; }
       }
-      p->crpix1=p->naxis1/2.;
-      p->crpix2=p->naxis2/2.;
    } else if (inputdatatype==0) {
       /*--- On recopie les mots-cles du buffer temporaire dans le buffer */
       sprintf(s,"buf%d getkwds",atoi(inputdatas[1]));
@@ -732,8 +734,18 @@ int mctcl_listfield2mc_astrom(Tcl_Interp *interp, char *listfield, mc_ASTROM *p)
 		   if (p->foclen==0.) {p->foclen=1.;}
 			if (p->px==0.) {p->px=9e-6;}
 			if (p->py==0.) {p->py=9e-6;}
-			p->cdelta1=-2*atan(p->px/2./p->foclen);
-         p->cdelta2=2*atan(p->py/2./p->foclen);
+			if (p->naxis1>0) {
+				p->cdelta1=-2*atan(p->px/2./p->foclen);
+			} else {
+				p->cdelta1=2*atan(p->px/2./p->foclen);
+				p->naxis1*=-1;
+			}
+			if (p->naxis1>0) {
+	         p->cdelta2=2*atan(p->py/2./p->foclen);
+			} else {
+				p->cdelta1=-2*atan(p->px/2./p->foclen);
+				p->naxis2*=-1;
+			}
 		}
 	   p->cd11=p->cdelta1*cos(p->crota2);
       p->cd12=fabs(p->cdelta2)*p->cdelta1/fabs(p->cdelta1)*sin(p->crota2);
