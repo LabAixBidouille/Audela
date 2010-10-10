@@ -1,6 +1,6 @@
 
 
-# Mise a jour $Id: spc_filter2.tcl,v 1.14 2010-10-04 20:45:30 bmauclaire Exp $
+# Mise a jour $Id: spc_filter2.tcl,v 1.15 2010-10-10 12:58:26 bmauclaire Exp $
 # Mise a jour Patrick Lailly 29 mai 2009
 
 
@@ -968,7 +968,7 @@ proc spc_extractcontew { args } {
       set fichier [ file rootname [ lindex $args 0 ] ]
       set taux_doucissage [ lindex $args 1 ]
    } else {
-      ::console::affiche_erreur "Usage : spc_extractcontew nom_profil_de_raies ?taux_doucissage(1000000)?\n\n"      
+      ::console::affiche_erreur "Usage : spc_extractcontew nom_profil_de_raies ?taux_doucissage_continuum(1-100000000)?\n\n"      
       return ""
    }
 
