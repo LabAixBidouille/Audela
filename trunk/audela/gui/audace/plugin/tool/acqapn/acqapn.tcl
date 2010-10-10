@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Outil d'acquisition pour APN Nikon CoolPix
 # Auteur : Raymond ZACHANTKE
-# Mise à jour $Id: acqapn.tcl,v 1.44 2010-05-09 07:39:01 robertdelmas Exp $
+# Mise à jour $Id: acqapn.tcl,v 1.45 2010-10-10 20:02:23 michelpujol Exp $
 #
 
 #============================================================
@@ -11,7 +11,6 @@
 #============================================================
 namespace eval ::acqapn {
    package provide acqapn 1.0
-   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] acqapn.cap ]

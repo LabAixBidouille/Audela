@@ -2,12 +2,11 @@
 # Fichier : deltatau.tcl
 # Description : Configuration de la monture Delta Tau
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: deltatau.tcl,v 1.13 2010-07-14 08:03:13 robertdelmas Exp $
+# Mise à jour $Id: deltatau.tcl,v 1.14 2010-10-10 19:57:25 michelpujol Exp $
 #
 
 namespace eval ::deltatau {
    package provide deltatau 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] deltatau.cap ]

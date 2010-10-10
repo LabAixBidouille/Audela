@@ -2,12 +2,11 @@
 # Fichier : serialport.tcl
 # Description : Interface de liaison Port Serie
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: serialport.tcl,v 1.25 2010-07-05 21:21:18 robertdelmas Exp $
+# Mise à jour $Id: serialport.tcl,v 1.26 2010-10-10 19:55:23 michelpujol Exp $
 #
 
 namespace eval serialport {
    package provide serialport 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] serialport.cap ]

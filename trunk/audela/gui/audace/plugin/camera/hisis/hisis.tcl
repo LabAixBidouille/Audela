@@ -2,12 +2,11 @@
 # Fichier : hisis.tcl
 # Description : Configuration de la camera Hi-SIS
 # Auteur : Robert DELMAS
-# Mise à jour $Id: hisis.tcl,v 1.20 2010-05-22 17:44:14 robertdelmas Exp $
+# Mise à jour $Id: hisis.tcl,v 1.21 2010-10-10 19:50:42 michelpujol Exp $
 #
 
 namespace eval ::hisis {
    package provide hisis 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] hisis.cap ]

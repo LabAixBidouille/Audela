@@ -2,12 +2,11 @@
 # Fichier : audine.tcl
 # Description : Configuration de la camera Audine
 # Auteur : Robert DELMAS
-# Mise à jour $Id: audine.tcl,v 1.28 2010-05-22 17:21:57 robertdelmas Exp $
+# Mise à jour $Id: audine.tcl,v 1.29 2010-10-10 19:50:42 michelpujol Exp $
 #
 
 namespace eval ::audine {
    package provide audine 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] audine.cap ]

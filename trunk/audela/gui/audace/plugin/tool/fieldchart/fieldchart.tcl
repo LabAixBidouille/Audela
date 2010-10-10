@@ -2,7 +2,7 @@
 # Fichier : fieldchart.tcl
 # Description : Interfaces graphiques pour les fonctions carte de champ
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: fieldchart.tcl,v 1.10 2010-10-09 14:01:29 robertdelmas Exp $
+# Mise à jour $Id: fieldchart.tcl,v 1.11 2010-10-10 20:05:42 michelpujol Exp $
 #
 
 #============================================================
@@ -11,7 +11,6 @@
 #============================================================
 namespace eval ::fieldchart {
    package provide fieldchart 1.0
-   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] fieldchart.cap ]

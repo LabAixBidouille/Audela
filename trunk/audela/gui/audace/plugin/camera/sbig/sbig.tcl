@@ -2,12 +2,11 @@
 # Fichier : sbig.tcl
 # Description : Configuration de la camera SBIG
 # Auteur : Robert DELMAS
-# Mise à jour $Id: sbig.tcl,v 1.28 2010-05-22 17:46:22 robertdelmas Exp $
+# Mise à jour $Id: sbig.tcl,v 1.29 2010-10-10 19:50:42 michelpujol Exp $
 #
 
 namespace eval ::sbig {
    package provide sbig 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] sbig.cap ]

@@ -2,12 +2,11 @@
 # Fichier : temma.tcl
 # Description : Fenetre de configuration pour le parametrage du suivi d'objets mobiles pour la monture Temma
 # Auteur : Robert DELMAS
-# Mise à jour $Id: temma.tcl,v 1.24 2010-07-14 08:08:59 robertdelmas Exp $
+# Mise à jour $Id: temma.tcl,v 1.25 2010-10-10 19:57:26 michelpujol Exp $
 #
 
 namespace eval ::temma {
    package provide temma 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] temma.cap ]

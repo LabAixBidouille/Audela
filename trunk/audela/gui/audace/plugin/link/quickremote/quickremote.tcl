@@ -2,12 +2,11 @@
 # Fichier : quickremote.tcl
 # Description : Interface de liaison QuickRemote
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: quickremote.tcl,v 1.23 2010-05-22 16:59:44 robertdelmas Exp $
+# Mise à jour $Id: quickremote.tcl,v 1.24 2010-10-10 19:55:23 michelpujol Exp $
 #
 
 namespace eval quickremote {
    package provide quickremote 1.1
-   package require audela 1.4.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] quickremote.cap ]

@@ -2,11 +2,10 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise à jour $Id: superpad.tcl,v 1.35 2010-09-05 10:53:56 robertdelmas Exp $
+# Mise à jour $Id: superpad.tcl,v 1.36 2010-10-10 19:58:19 michelpujol Exp $
 #
 
 package provide superpad 1.0
-package require audela 1.4.0
 
 namespace eval ::superpad {
    source [ file join [file dirname [info script]] superpad.cap ]

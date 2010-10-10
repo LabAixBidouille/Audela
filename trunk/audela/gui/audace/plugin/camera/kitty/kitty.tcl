@@ -2,12 +2,11 @@
 # Fichier : kitty.tcl
 # Description : Configuration de la camera Kitty
 # Auteur : Robert DELMAS
-# Mise à jour $Id: kitty.tcl,v 1.24 2010-05-22 17:44:54 robertdelmas Exp $
+# Mise à jour $Id: kitty.tcl,v 1.25 2010-10-10 19:50:42 michelpujol Exp $
 #
 
 namespace eval ::kitty {
    package provide kitty 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] kitty.cap ]

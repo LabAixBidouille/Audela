@@ -2,7 +2,7 @@
 # Fichier : visio.tcl
 # Description : Outil de visionnage d'images fits + gestion des series d'images
 # Auteur : Benoit MAUGIS
-# Mise à jour $Id: visio.tcl,v 1.24 2010-09-26 07:01:36 robertdelmas Exp $
+# Mise à jour $Id: visio.tcl,v 1.25 2010-10-10 20:05:43 michelpujol Exp $
 #
 
 # ========================================================
@@ -11,7 +11,6 @@
 
 namespace eval ::visio {
    package provide visio 2.6.5
-   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [file join [file dirname [info script]] visio.cap]

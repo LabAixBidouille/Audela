@@ -2,11 +2,11 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise à jour $Id: autoguider.tcl,v 1.48 2010-09-04 19:29:15 michelpujol Exp $
+# Mise à jour $Id: autoguider.tcl,v 1.49 2010-10-10 20:02:23 michelpujol Exp $
 #
 
 package provide autoguider 1.3
-package require audela 1.5.0
+
 
 #==============================================================
 #   Declaration du namespace autoguider

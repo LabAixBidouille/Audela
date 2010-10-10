@@ -2,12 +2,11 @@
 # Fichier : andorusb.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Robert DELMAS
-# Mise a jour $Id: andorusb.tcl,v 1.2 2010-09-28 05:47:45 robertdelmas Exp $
+# Mise a jour $Id: andorusb.tcl,v 1.3 2010-10-10 19:50:42 michelpujol Exp $
 #
 
 namespace eval ::andorusb {
    package provide andorusb 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] andorusb.cap ]

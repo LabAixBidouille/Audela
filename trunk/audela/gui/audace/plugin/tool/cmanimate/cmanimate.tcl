@@ -2,7 +2,7 @@
 # Fichier : cmanimate.tcl
 # Description : Animation/slides control panel for Cloud Monitor
 # Auteur : Sylvain RONDI
-# Mise à jour $Id: cmanimate.tcl,v 1.24 2010-06-18 17:42:43 robertdelmas Exp $
+# Mise à jour $Id: cmanimate.tcl,v 1.25 2010-10-10 20:02:24 michelpujol Exp $
 #
 
 #****************************************************************
@@ -25,7 +25,6 @@
 #============================================================
 namespace eval ::cmanimate {
    package provide cmanimate 1.0
-   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] cmanimate.cap ]

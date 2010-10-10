@@ -2,7 +2,7 @@
 # Fichier : convert.tcl
 # Description : Conversion d'images FITS au format PS ou PDF
 # Auteur : Raymond ZACHANTKE
-# Mise à jour $Id: convert.tcl,v 1.6 2010-05-25 16:50:48 robertdelmas Exp $
+# Mise à jour $Id: convert.tcl,v 1.7 2010-10-10 20:02:24 michelpujol Exp $
 #
 
 #============================================================
@@ -11,7 +11,6 @@
 #============================================================
 namespace eval ::convert {
    package provide convert 1.0
-   package require audela 1.5.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] convert.cap ]

@@ -2,7 +2,7 @@
 # Fichier : focuseraudecom.tcl
 # Description : Gere le focuser associe a la monture AudeCom
 # Auteur : Robert DELMAS
-# Mise à jour $Id: focuseraudecom.tcl,v 1.17 2010-07-16 16:20:55 robertdelmas Exp $
+# Mise à jour $Id: focuseraudecom.tcl,v 1.18 2010-10-10 19:53:55 michelpujol Exp $
 #
 
 #
@@ -23,7 +23,6 @@
 
 namespace eval ::focuseraudecom {
    package provide focuseraudecom 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] focuseraudecom.cap ]

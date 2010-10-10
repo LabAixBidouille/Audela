@@ -2,12 +2,11 @@
 # Fichier : ascom.tcl
 # Description : Configuration de la monture ASCOM
 # Auteur : Robert DELMAS
-# Mise à jour $Id: ascom.tcl,v 1.21 2010-09-04 21:28:50 michelpujol Exp $
+# Mise à jour $Id: ascom.tcl,v 1.22 2010-10-10 19:57:25 michelpujol Exp $
 #
 
 namespace eval ::ascom {
    package provide ascom 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] ascom.cap ]

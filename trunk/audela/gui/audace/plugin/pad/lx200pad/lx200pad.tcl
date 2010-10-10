@@ -2,12 +2,11 @@
 # Fichier : lx200pad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: lx200pad.tcl,v 1.19 2010-09-04 22:11:55 robertdelmas Exp $
+# Mise à jour $Id: lx200pad.tcl,v 1.20 2010-10-10 19:58:19 michelpujol Exp $
 #
 
 namespace eval ::lx200pad {
    package provide lx200pad 1.0
-   package require audela 1.4.0
    source [ file join [file dirname [info script]] lx200pad.cap ]
 
    #------------------------------------------------------------

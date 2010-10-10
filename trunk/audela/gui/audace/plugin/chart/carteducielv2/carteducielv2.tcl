@@ -4,12 +4,11 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows uniquement
 # Auteur : Michel PUJOL
-# Mise à jour $Id: carteducielv2.tcl,v 1.26 2010-10-06 16:44:20 robertdelmas Exp $
+# Mise à jour $Id: carteducielv2.tcl,v 1.27 2010-10-10 19:52:48 michelpujol Exp $
 #
 
 namespace eval carteducielv2 {
    package provide carteducielv2 1.1
-   package require audela 1.4.0
    source [ file join [file dirname [info script]] carteducielv2.cap ]
 }
 

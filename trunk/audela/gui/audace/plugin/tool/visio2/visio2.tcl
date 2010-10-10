@@ -2,12 +2,11 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise à jour $Id: visio2.tcl,v 1.54 2010-05-30 17:41:26 michelpujol Exp $
+# Mise à jour $Id: visio2.tcl,v 1.55 2010-10-10 20:05:43 michelpujol Exp $
 #
 
 namespace eval ::visio2 {
    package provide visio2 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] visio2.cap ]

@@ -2,12 +2,11 @@
 # Fichier : vellemank8055.tcl
 # Description : Interface pour la carte Velleman K8055
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise à jour $Id: vellemank8055.tcl,v 1.3 2010-05-22 17:01:57 robertdelmas Exp $
+# Mise à jour $Id: vellemank8055.tcl,v 1.4 2010-10-10 19:55:23 michelpujol Exp $
 #
 
 namespace eval vellemank8055 {
    package provide vellemank8055 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] vellemank8055.cap ]

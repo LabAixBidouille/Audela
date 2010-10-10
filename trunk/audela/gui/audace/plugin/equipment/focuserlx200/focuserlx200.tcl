@@ -2,7 +2,7 @@
 # Fichier : focuserlx200.tcl
 # Description : Gere le focuser associe a la monture LX200
 # Auteur : Michel PUJOL
-# Mise à jour $Id: focuserlx200.tcl,v 1.17 2010-05-17 16:25:47 robertdelmas Exp $
+# Mise à jour $Id: focuserlx200.tcl,v 1.18 2010-10-10 19:53:55 michelpujol Exp $
 #
 
 #
@@ -23,7 +23,6 @@
 
 namespace eval ::focuserlx200 {
    package provide focuserlx200 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] focuserlx200.cap ]

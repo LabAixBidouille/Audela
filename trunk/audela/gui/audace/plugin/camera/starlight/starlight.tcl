@@ -2,12 +2,11 @@
 # Fichier : starlight.tcl
 # Description : Configuration de la camera Starlight
 # Auteur : Robert DELMAS
-# Mise à jour $Id: starlight.tcl,v 1.18 2010-05-22 17:47:33 robertdelmas Exp $
+# Mise à jour $Id: starlight.tcl,v 1.19 2010-10-10 19:50:42 michelpujol Exp $
 #
 
 namespace eval ::starlight {
    package provide starlight 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] starlight.cap ]

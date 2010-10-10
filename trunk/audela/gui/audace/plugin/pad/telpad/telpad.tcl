@@ -2,12 +2,11 @@
 # Fichier : telpad.tcl
 # Description : Raquette simplifiee a l'usage des telescopes
 # Auteur : Robert DELMAS
-# Mise à jour $Id: telpad.tcl,v 1.24 2010-07-16 16:22:26 robertdelmas Exp $
+# Mise à jour $Id: telpad.tcl,v 1.25 2010-10-10 19:58:19 michelpujol Exp $
 #
 
 namespace eval telpad {
    package provide telpad 1.0
-   package require audela 1.4.0
    source [ file join [file dirname [info script]] telpad.cap ]
 
    #------------------------------------------------------------

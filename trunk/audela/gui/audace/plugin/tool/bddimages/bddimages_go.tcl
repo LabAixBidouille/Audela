@@ -5,7 +5,7 @@
 # Fichier        : bddimages_go.tcl
 # Description    : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_go.tcl,v 1.6 2010-08-23 06:33:47 fredvachier Exp $
+# Mise à jour $Id: bddimages_go.tcl,v 1.7 2010-10-10 20:02:23 michelpujol Exp $
 #
 
 #============================================================
@@ -14,7 +14,6 @@
 #============================================================
 namespace eval ::bddimages {
    package provide bddimages 1.0
-   package require audela 1.5.0
    variable This
 
    #--- Chargement des captions

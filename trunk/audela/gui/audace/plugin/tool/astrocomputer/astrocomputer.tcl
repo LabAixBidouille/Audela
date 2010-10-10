@@ -2,7 +2,7 @@
 # Fichier : astrocomputer.tcl
 # Description : Calculatrice pour l'astronomie
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: astrocomputer.tcl,v 1.8 2010-10-09 13:59:34 robertdelmas Exp $
+# Mise à jour $Id: astrocomputer.tcl,v 1.9 2010-10-10 20:02:23 michelpujol Exp $
 #
 # source "$audace(rep_install)/gui/audace/plugin/tool/astrocomputer/astrocomputer.tcl"
 
@@ -12,7 +12,6 @@
 #============================================================
 namespace eval ::astrocomputer {
    package provide astrocomputer 1.0
-   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] astrocomputer.cap ]

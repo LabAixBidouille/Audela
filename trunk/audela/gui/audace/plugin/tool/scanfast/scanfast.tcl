@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: scanfast.tcl,v 1.62 2010-09-25 17:34:01 robertdelmas Exp $
+# Mise à jour $Id: scanfast.tcl,v 1.63 2010-10-10 20:05:42 michelpujol Exp $
 #
 
 global panneau
@@ -95,7 +95,6 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
 #============================================================
 namespace eval ::scanfast {
    package provide scanfast 1.0
-   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] scanfast.cap ]

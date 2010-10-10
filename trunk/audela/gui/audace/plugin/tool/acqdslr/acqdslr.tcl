@@ -2,7 +2,7 @@
 # Fichier : acqdslr.tcl
 # Description : Outil d'acquisition pour APN Canon
 # Auteur : Raymond Zachantke
-# Mise à jour $Id: acqdslr.tcl,v 1.8 2010-07-21 18:24:25 robertdelmas Exp $
+# Mise à jour $Id: acqdslr.tcl,v 1.9 2010-10-10 20:02:23 michelpujol Exp $
 #
 
 #============================================================
@@ -11,7 +11,6 @@
 #============================================================
 namespace eval ::acqdslr {
    package provide acqdslr 1.0
-   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]]  acqdslr.cap ]

@@ -2,7 +2,7 @@
 # Fichier : methking.tcl
 # Description : Outil d'aide a la mise en station par la methode de King
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise à jour $Id: methking.tcl,v 1.31 2010-06-18 20:10:07 robertdelmas Exp $
+# Mise à jour $Id: methking.tcl,v 1.32 2010-10-10 20:05:42 michelpujol Exp $
 #
 
 #============================================================
@@ -11,7 +11,6 @@
 #============================================================
 namespace eval ::methking {
    package provide methking 1.19
-   package require audela 1.4.0
 
    # Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] methking.cap ]

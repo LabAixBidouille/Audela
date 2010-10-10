@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition d'images en couleur
 # Compatibilite : Cameras Audine Couleur et SCR1300XTC
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: acqcolor_go.tcl,v 1.17 2010-05-25 16:35:57 robertdelmas Exp $
+# Mise à jour $Id: acqcolor_go.tcl,v 1.18 2010-10-10 20:02:23 michelpujol Exp $
 #
 
 #============================================================
@@ -12,7 +12,6 @@
 #============================================================
 namespace eval ::acqcolor {
    package provide acqcolor 1.0
-   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] acqcolor_go.cap ]

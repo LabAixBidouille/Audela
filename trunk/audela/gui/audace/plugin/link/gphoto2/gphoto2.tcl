@@ -2,12 +2,11 @@
 # Fichier : gphoto2.tcl
 # Description : Interface de liaison GPhoto2
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: gphoto2.tcl,v 1.17 2010-05-22 16:52:28 robertdelmas Exp $
+# Mise à jour $Id: gphoto2.tcl,v 1.18 2010-10-10 19:55:23 michelpujol Exp $
 #
 
 namespace eval gphoto2 {
    package provide gphoto2 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] gphoto2.cap ]

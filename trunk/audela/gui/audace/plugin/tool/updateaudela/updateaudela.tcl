@@ -2,7 +2,7 @@
 # Fichier : updateaudela.tcl
 # Description : Outil de fabrication des fichiers Kit et de deploiement des plugins
 # Auteur : Michel Pujol
-# Mise a jour $Id: updateaudela.tcl,v 1.29 2010-07-24 08:24:23 robertdelmas Exp $
+# Mise a jour $Id: updateaudela.tcl,v 1.30 2010-10-10 20:05:43 michelpujol Exp $
 #
 
 namespace eval ::updateaudela {
@@ -10,8 +10,6 @@ namespace eval ::updateaudela {
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] updateaudela.cap ]
-
-   package require audela 1.4.0
 }
 
 #------------------------------------------------------------

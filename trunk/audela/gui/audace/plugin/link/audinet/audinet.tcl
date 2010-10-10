@@ -2,12 +2,11 @@
 # Fichier : audinet.tcl
 # Description : Interface de liaison AudiNet
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: audinet.tcl,v 1.19 2010-05-22 16:49:20 robertdelmas Exp $
+# Mise à jour $Id: audinet.tcl,v 1.20 2010-10-10 19:55:22 michelpujol Exp $
 #
 
 namespace eval audinet {
    package provide audinet 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] audinet.cap ]

@@ -2,12 +2,11 @@
 # Fichier : scr1300xtc.tcl
 # Description : Configuration de la camera SCR1300XTC
 # Auteur : Robert DELMAS
-# Mise à jour $Id: scr1300xtc.tcl,v 1.27 2010-05-22 17:47:08 robertdelmas Exp $
+# Mise à jour $Id: scr1300xtc.tcl,v 1.28 2010-10-10 19:50:42 michelpujol Exp $
 #
 
 namespace eval ::scr1300xtc {
    package provide scr1300xtc 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] scr1300xtc.cap ]

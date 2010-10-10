@@ -2,12 +2,11 @@
 # Fichier : eqmod.tcl
 # Description : Configuration de la monture EQMOD
 # Auteur : Robert DELMAS
-# Mise à jour $Id: eqmod.tcl,v 1.11 2010-07-24 15:38:36 robertdelmas Exp $
+# Mise à jour $Id: eqmod.tcl,v 1.12 2010-10-10 19:57:25 michelpujol Exp $
 #
 
 namespace eval ::eqmod {
    package provide eqmod 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] eqmod.cap ]

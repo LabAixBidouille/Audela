@@ -2,12 +2,11 @@
 # Fichier : lhires.tcl
 # Description : Gere un focuser sur port parallele ou quickremote
 # Auteur : Michel PUJOL
-# Mise à jour $Id: lhires.tcl,v 1.4 2010-05-17 16:26:19 robertdelmas Exp $
+# Mise à jour $Id: lhires.tcl,v 1.5 2010-10-10 19:53:56 michelpujol Exp $
 #
 
 namespace eval ::lhires {
    package provide lhires 1.0
-   package require audela 1.5.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] lhires.cap ]

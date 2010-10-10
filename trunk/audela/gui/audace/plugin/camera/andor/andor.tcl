@@ -2,12 +2,11 @@
 # Fichier : andor.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Robert DELMAS
-# Mise à jour $Id: andor.tcl,v 1.23 2010-09-10 19:34:06 robertdelmas Exp $
+# Mise à jour $Id: andor.tcl,v 1.24 2010-10-10 19:50:41 michelpujol Exp $
 #
 
 namespace eval ::andor {
    package provide andor 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] andor.cap ]

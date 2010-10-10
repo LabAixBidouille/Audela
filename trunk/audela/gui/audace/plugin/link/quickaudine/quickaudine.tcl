@@ -2,12 +2,11 @@
 # Fichier : quickaudine.tcl
 # Description : Interface de liaison QuickAudine
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: quickaudine.tcl,v 1.25 2010-05-22 16:53:08 robertdelmas Exp $
+# Mise à jour $Id: quickaudine.tcl,v 1.26 2010-10-10 19:55:23 michelpujol Exp $
 #
 
 namespace eval quickaudine {
    package provide quickaudine 1.0
-   package require audela 1.4.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] quickaudine.cap ]
