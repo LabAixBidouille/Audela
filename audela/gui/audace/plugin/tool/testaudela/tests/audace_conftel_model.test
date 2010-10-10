@@ -9,6 +9,11 @@ test audace_conftel_model_save {save model} -constraints {
    #--- j'efface le fichier au cas ou il existerait deja
    file delete -force [file join $::audace(rep_images) ohp100531.xml]
 
+   #--- je charge le package modpoi2
+   package require modpoi2
+   ::confVisu::createPluginInstance $visuNo ::modpoi2
+   ::confVisu::selectTool $visuNo ::modpoi2
+
 } -body {
 
    set fileName     [file join $::audace(rep_images) ohp100531.xml]
@@ -27,16 +32,15 @@ test audace_conftel_model_save {save model} -constraints {
    set result [file exists [file join $::audace(rep_images) ohp100531.xml]]
    return $result
 } -cleanup {
+   #--- je supprime le package de la mémoire
+   ::confVisu::deletePluginInstance $visuNo ::modpoi2
+   package forget modpoi2
 } -result "1"
 
 #-------------------------------------------------------------------------------
 test audace_conftel_model_load {load model} -constraints {
    AUDACE
 } -setup {
-   #--- je charge le package modpoi2
-   package require modpoi2
-   ::confVisu::createPluginInstance $visuNo ::modpoi2
-   ::confVisu::selectTool $visuNo ::modpoi2
 } -body {
 
    set data [::confTel::loadModel [file join $::audace(rep_images) ohp100531.xml]]
@@ -62,9 +66,6 @@ test audace_conftel_model_load {load model} -constraints {
    #--- result est vide s'il n'y a pas d'erreurs, sinon il contient le message d'erreur
    return $result
 } -cleanup {
-   #--- je supprime le package de la mémoire
-   ::confVisu::deletePluginInstance $visuNo ::modpoi2
-   package forget modpoi2
    #--- je supprime le fichier
    file delete -force [file join $::audace(rep_images) ohp100531.xml]
 } -result ""
