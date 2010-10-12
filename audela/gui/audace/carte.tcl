@@ -3,7 +3,7 @@
 # Description : namespace generique des cartes (~ classe abstraite)
 #    Transmet les appels aux procedures du namespace de la carte choisie avec confcat.tcl
 # Auteur : Michel PUJOL
-# Mise à jour $Id: carte.tcl,v 1.10 2010-05-16 10:15:09 robertdelmas Exp $
+# Mise à jour $Id: carte.tcl,v 1.11 2010-10-12 21:04:14 robertdelmas Exp $
 #
 
 namespace eval ::carte {
@@ -27,7 +27,7 @@ proc ::carte::showMapFromBuffer { buffer } {
       return
    }
 
-   #--- Premiere tentatvive : je recupere les coordonnees dans le fichier FIT
+   #--- Premiere tentative : je recupere les coordonnees dans le fichier FIT
    set ra  [lindex [$buffer getkwd RA] 1]
    set dec [lindex [$buffer getkwd DEC] 1]
 
