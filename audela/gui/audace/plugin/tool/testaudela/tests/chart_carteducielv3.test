@@ -15,7 +15,7 @@ test carteducielv3_affiche {affiche m57} {CARTEDUCIELV3} {
    #--- je charge m57.fit dans la visu1
    loadima [file join $::conf(testaudela,rep_images) m57.fit]
    #--- j'attends que l'image soit chargee
-   after 500
+   after 1000
    #--- clic sur le menu analyse->carte
    ::testaudela::clicMenu $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,carte)"
 } "0"
