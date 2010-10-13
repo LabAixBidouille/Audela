@@ -96,7 +96,7 @@ void load_libtt(void)
             PostQuitMessage(0);
         }
     } else {
-        MessageBox(NULL,"La dll libtt.dll n'a pas pu etre chargee.\nAudeLA va s'arreter.","Erreur fatale",MB_OK);
+        MessageBox(NULL,"libtt.dll can not be loaded.\nMicrosoft Visual C++ 2008 SP1 Redistributable Package is missing.\nAudeLA will stop.\n ","Fatal error",MB_OK);
         PostQuitMessage(0);
     }
 #elif defined(OS_LIN) || defined(OS_MACOS)
