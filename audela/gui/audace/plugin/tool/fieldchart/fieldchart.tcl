@@ -2,7 +2,7 @@
 # Fichier : fieldchart.tcl
 # Description : Interfaces graphiques pour les fonctions carte de champ
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: fieldchart.tcl,v 1.11 2010-10-10 20:05:42 michelpujol Exp $
+# Mise à jour $Id: fieldchart.tcl,v 1.12 2010-10-13 15:32:44 robertdelmas Exp $
 #
 
 #============================================================
@@ -324,9 +324,21 @@ namespace eval ::fieldchart {
 
             grid $This.usr.2.1 -column 1 -row 6 -columnspan 3 -padx 5 -pady 2 -sticky w
 
+            label $This.usr.2.lab8 -text "$caption(fieldchart,crpix1)"
+            grid $This.usr.2.lab8 -column 0 -row 7 -padx 5 -pady 2 -sticky w
+
+            entry $This.usr.2.ent8 -textvariable fieldchart(Crpix1) -width 10
+            grid $This.usr.2.ent8 -column 1 -row 7 -padx 5 -pady 2 -sticky w
+
+            label $This.usr.2.lab9 -text "$caption(fieldchart,crpix2)"
+            grid $This.usr.2.lab9 -column 0 -row 8 -padx 5 -pady 2 -sticky w
+
+            entry $This.usr.2.ent9 -textvariable fieldchart(Crpix2) -width 10
+            grid $This.usr.2.ent9 -column 1 -row 8 -padx 5 -pady 2 -sticky w
+
             button $This.usr.2.but3 -text "$caption(fieldchart,prendre_image)" \
                -command "::fieldchart::cmdTakeFITSKeywords"
-            grid $This.usr.2.but3 -column 2 -row 0 -rowspan 7 -padx 5 -pady 5 -ipady 5 -sticky news
+            grid $This.usr.2.but3 -column 2 -row 0 -rowspan 9 -padx 5 -pady 5 -ipady 5 -sticky news
 
          pack $This.usr.2 -side top -fill both
 
@@ -399,10 +411,12 @@ namespace eval ::fieldchart {
          if { $fieldchart(FieldFromImage) == "0" } {
             if { $fieldchart(PictureWidth) != "" && $fieldchart(PictureHeight) != "" && $fieldchart(CentreRA) != "" && \
                  $fieldchart(CentreDec) != "" && $fieldchart(Inclin) != "" && $fieldchart(FocLen) != "" && \
-                 $fieldchart(PixSize1) != "" && $fieldchart(PixSize2) != "" } {
+                 $fieldchart(PixSize1) != "" && $fieldchart(PixSize2) != "" && $fieldchart(Crpix1) != "" &&
+                 $fieldchart(Crpix2) != "" } {
                set field [ list OPTIC NAXIS1 $fieldchart(PictureWidth) NAXIS2 $fieldchart(PictureHeight) \
                   FOCLEN $fieldchart(FocLen) PIXSIZE1 $fieldchart(PixSize1)$unit PIXSIZE2 $fieldchart(PixSize2)$unit \
-                  CROTA2 $fieldchart(Inclin) RA $fieldchart(CentreRA) DEC $fieldchart(CentreDec) ]
+                  CROTA2 $fieldchart(Inclin) RA $fieldchart(CentreRA) DEC $fieldchart(CentreDec) \
+                  CRPIX1 $fieldchart(Crpix1) CRPIX2 $fieldchart(Crpix2) ]
                } else {
                return
             }
@@ -506,6 +520,8 @@ namespace eval ::fieldchart {
       set fieldchart(FocLen)        [ lindex [ buf$audace(bufNo) getkwd FOCLEN ] 1 ]
       set fieldchart(PixSize1)      [ lindex [ buf$audace(bufNo) getkwd PIXSIZE1 ] 1 ]
       set fieldchart(PixSize2)      [ lindex [ buf$audace(bufNo) getkwd PIXSIZE2 ] 1 ]
+      set fieldchart(Crpix1)        [ lindex [ buf$audace(bufNo) getkwd CRPIX1 ] 1 ]
+      set fieldchart(Crpix2)        [ lindex [ buf$audace(bufNo) getkwd CRPIX2 ] 1 ]
    }
 
    #------------------------------------------------------------
