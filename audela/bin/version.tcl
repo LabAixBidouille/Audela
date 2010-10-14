@@ -2,7 +2,7 @@
 # File : version.tcl
 #
 # This file is part of the AudeLA project : <http://software.audela.free.fr>
-# Copyright (C) 1999-2008 The AudeLA Core Team
+# Copyright (C) 1999-2010 The AudeLA Core Team
 #
 # Initial author : Denis MARCHAIS <denis.marchais@free.fr>
 #
@@ -23,14 +23,13 @@
 
 global audela
 
-set audela(major) "1"
-set audela(minor) "5"
-set audela(patch) "20100505"
-set audela(extra) ""
+set audela(major) "2"
+set audela(minor) "0"
+set audela(patch) "0"
 
-set audela(version) "1.5.20100505"
+set audela(version) "2.0.0"
 
-set audela(date) "05/05/2010"
+set audela(date) "14/10/2010"
 
 package provide audela "$audela(major).$audela(minor).$audela(patch)"
 
