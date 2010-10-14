@@ -1,0 +1,223 @@
+#
+# Fichier : t193pad.cap
+# Mise a jour $Id: t193pad.cap,v 1.9 2010-03-06 19:55:55 michelpujol Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+   set caption(t193pad,titre)             "T193Pad"
+
+   set caption(t193pad,nord)              "N"
+   set caption(t193pad,sud)               "S"
+   set caption(t193pad,est)               "E"
+   set caption(t193pad,ouest)             "W"
+
+   set caption(t193pad,goto)              "GOTO"
+   set caption(t193pad,stopGoto)          "STOP"
+   set caption(t193pad,RA)                "RA"
+   set caption(t193pad,DEC)               "Dec."
+
+   set caption(t193pad,moteur_foc)        "Focusing Motor"
+   set caption(t193pad,gotoFoc)           "GOTO Focus"
+   set caption(t193pad,stopFoc)           "STOP"
+
+   set caption(t193pad,dome)              "Dome"
+   set caption(t193pad,synchroMonture)    "Synchro with Telescope"
+   set caption(t193pad,radecPulse)        "Pulse mode"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(t193pad,titre)             "T193Pad"
+
+   set caption(t193pad,nord)              "N"
+   set caption(t193pad,sud)               "S"
+   set caption(t193pad,est)               "E"
+   set caption(t193pad,ouest)             "O"
+
+   set caption(t193pad,goto)              "GOTO"
+   set caption(t193pad,stopGoto)          "STOP"
+   set caption(t193pad,RA)                "AD"
+   set caption(t193pad,DEC)               "Déc."
+
+   set caption(t193pad,moteur_foc)        "Moteur de la focalisation"
+   set caption(t193pad,gotoFoc)           "GOTO Foc"
+   set caption(t193pad,stopFoc)           "STOP"
+
+   set caption(t193pad,dome)              "Dôme"
+   set caption(t193pad,synchroMonture)    "Synchro avec le télescope"
+   set caption(t193pad,radecPulse)        "Monocoup"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(t193pad,titre)             "T193Pad"
+
+   set caption(t193pad,nord)              "N"
+   set caption(t193pad,sud)               "S"
+   set caption(t193pad,est)               "E"
+   set caption(t193pad,ouest)             "O"
+
+   set caption(t193pad,goto)              "GOTO"
+   set caption(t193pad,stopGoto)          "STOP"
+   set caption(t193pad,RA)                "AD"
+   set caption(t193pad,DEC)               "Déc."
+
+   set caption(t193pad,moteur_foc)        "Motore della focheggiamento"
+   set caption(t193pad,gotoFoc)           "GOTO focheg."
+   set caption(t193pad,stopFoc)           "STOP"
+
+   set caption(t193pad,dome)              "Cupola"
+   set caption(t193pad,synchroMonture)    "Sincronizza con il telescopio"
+   set caption(t193pad,radecPulse)        "#Pulse mode"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(t193pad,titre)             "T193Pad"
+
+   set caption(t193pad,nord)              "N"
+   set caption(t193pad,sud)               "S"
+   set caption(t193pad,est)               "E"
+   set caption(t193pad,ouest)             "W"
+
+   set caption(t193pad,goto)              "GOTO"
+   set caption(t193pad,stopGoto)          "STOP"
+   set caption(t193pad,RA)                "RA"
+   set caption(t193pad,DEC)               "Dec."
+
+   set caption(t193pad,moteur_foc)        "Motor enfoque"
+   set caption(t193pad,gotoFoc)           "GOTO enfoque"
+   set caption(t193pad,stopFoc)           "STOP"
+
+   set caption(t193pad,dome)              "Cúpula"
+   set caption(t193pad,synchroMonture)    "Sincronizar con el telescopio"
+   set caption(t193pad,radecPulse)        "#Pulse mode"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(t193pad,titre)             "T193Pad"
+
+   set caption(t193pad,nord)              "N"
+   set caption(t193pad,sud)               "S"
+   set caption(t193pad,est)               "O"
+   set caption(t193pad,ouest)             "W"
+
+   set caption(t193pad,goto)              "GOTO"
+   set caption(t193pad,stopGoto)          "STOP"
+   set caption(t193pad,RA)                "RA"
+   set caption(t193pad,DEC)               "Dek."
+
+   set caption(t193pad,moteur_foc)        "Fokussierung Motor"
+   set caption(t193pad,gotoFoc)           "GOTO Fokus."
+   set caption(t193pad,stopFoc)           "STOP"
+
+   set caption(t193pad,dome)              "Kuppel"
+   set caption(t193pad,synchroMonture)    "Synchron mit dem Teleskop"
+   set caption(t193pad,radecPulse)        "#Pulse mode"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(t193pad,titre)             "T193Pad"
+
+   set caption(t193pad,nord)              "N"
+   set caption(t193pad,sud)               "S"
+   set caption(t193pad,est)               "E"
+   set caption(t193pad,ouest)             "O"
+
+   set caption(t193pad,goto)              "GOTO"
+   set caption(t193pad,stopGoto)          "STOP"
+   set caption(t193pad,RA)                "AR"
+   set caption(t193pad,DEC)               "Dec."
+
+   set caption(t193pad,moteur_foc)        "Motor de focagem"
+   set caption(t193pad,gotoFoc)           "GOTO focagem"
+   set caption(t193pad,stopFoc)           "STOP"
+
+   set caption(t193pad,dome)              "Abóbada"
+   set caption(t193pad,synchroMonture)    "Sincronização com o telescópio"
+   set caption(t193pad,radecPulse)        "#Pulse mode"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(t193pad,titre)             "T193Pad"
+
+   set caption(t193pad,nord)              "N"
+   set caption(t193pad,sud)               "S"
+   set caption(t193pad,est)               "Ø"
+   set caption(t193pad,ouest)             "V"
+
+   set caption(t193pad,goto)              "GOTO"
+   set caption(t193pad,stopGoto)          "STOP"
+   set caption(t193pad,RA)                "RA"
+   set caption(t193pad,DEC)               "Dec."
+
+   set caption(t193pad,moteur_foc)        "Fokuseringsmotor"
+   set caption(t193pad,gotoFoc)           "GOTO Fokus."
+   set caption(t193pad,stopFoc)           "STOP"
+
+   set caption(t193pad,dome)              "Kuppel"
+   set caption(t193pad,synchroMonture)    "Synkroniseret med teleskop"
+   set caption(t193pad,radecPulse)        "#Pulse mode"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(t193pad,titre)             "T193Pad"
+
+   set caption(t193pad,nord)              "N"
+   set caption(t193pad,sud)               "S"
+   set caption(t193pad,est)               "E"
+   set caption(t193pad,ouest)             "W"
+
+   set caption(t193pad,goto)              "GOTO"
+   set caption(t193pad,stopGoto)          "STOP"
+   set caption(t193pad,RA)                "RA"
+   set caption(t193pad,DEC)               "Dec."
+
+   set caption(t193pad,moteur_foc)        "Focusing Motor"
+   set caption(t193pad,gotoFoc)           "GOTO Focus"
+   set caption(t193pad,stopFoc)           "STOP"
+
+   set caption(t193pad,dome)              "Dome"
+   set caption(t193pad,synchroMonture)    "Synchro with Telescope"
+   set caption(t193pad,radecPulse)        "Pulse mode"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(t193pad,titre)             "T193Pad"
+
+   set caption(t193pad,nord)              "N"
+   set caption(t193pad,sud)               "S"
+   set caption(t193pad,est)               "E"
+   set caption(t193pad,ouest)             "W"
+
+   set caption(t193pad,goto)              "GOTO"
+   set caption(t193pad,stopGoto)          "STOP"
+   set caption(t193pad,RA)                "RA"
+   set caption(t193pad,DEC)               "Dec."
+
+   set caption(t193pad,moteur_foc)        "Focusing Motor"
+   set caption(t193pad,gotoFoc)           "GOTO Focus"
+   set caption(t193pad,stopFoc)           "STOP"
+
+   set caption(t193pad,dome)              "Dome"
+   set caption(t193pad,synchroMonture)    "Synchro with Telescope"
+   set caption(t193pad,radecPulse)        "Pulse mode"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

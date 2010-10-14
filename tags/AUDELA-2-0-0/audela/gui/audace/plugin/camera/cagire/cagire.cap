@@ -1,0 +1,277 @@
+#
+# Fichier : cagire.cap
+# Mise a jour $Id: cagire.cap,v 1.2 2010-04-29 04:58:33 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(cagire,camera)                       "Cagire"
+
+set caption(cagire,obtu_ouvert)                  "Open"
+set caption(cagire,obtu_ferme)                   "Closed"
+set caption(cagire,obtu_synchro)                 "Synchro"
+
+set caption(cagire,config)                       "Folder temp images"
+set caption(cagire,parcourir)                    "..."
+set caption(cagire,dossier)                      "From Folder:"
+set caption(cagire,miroir_x)                     "Horizontal Mirror"
+set caption(cagire,miroir_y)                     "Vertical Mirror"
+set caption(cagire,refroidissement)              "Cooling to Temperature"
+set caption(cagire,deg_c)                        "°C"
+set caption(cagire,refroidissement_1)            "°C"
+set caption(cagire,temperature_CCD)              "CCD Temperature:"
+set caption(cagire,fonc_obtu)                    "Shutter Operation"
+set caption(cagire,ipserver)                     "IP server"
+set caption(cagire,portserver)                   "Port server"
+set caption(cagire,ms)                           ""
+
+set caption(cagire,port_camera)                  "Cagire Port"
+set caption(cagire,2points)                      ":"
+
+set caption(cagire,titre_site_web)               "Reference Web Site:"
+set caption(cagire,site_web_ref)                 "http://www.cesr.fr"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(cagire,camera)                    "Cagire"
+
+   set caption(cagire,obtu_ouvert)               "Ouvert"
+   set caption(cagire,obtu_ferme)                "Fermé"
+   set caption(cagire,obtu_synchro)              "Synchro"
+
+   set caption(cagire,config)                    "Répertoire d'images temporaires"
+   set caption(cagire,parcourir)                 "..."
+   set caption(cagire,dossier)                   "A partir du dossier :"
+   set caption(cagire,miroir_x)                  "Miroir horizontal"
+   set caption(cagire,miroir_y)                  "Miroir vertical"
+   set caption(cagire,refroidissement)           "Refroidissement à la température de"
+   set caption(cagire,deg_c)                     "°C"
+   set caption(cagire,refroidissement_1)         "°C"
+   set caption(cagire,temperature_CCD)           "Température du CCD :"
+   set caption(cagire,fonc_obtu)                 "Fonctionnement de l'obturateur"
+   set caption(cagire,ipserver)                  "IP serveur"
+   set caption(cagire,portserver)                "Port serveur"
+   set caption(cagire,ms)                        ""
+
+   set caption(cagire,port_camera)               "Port Cagire"
+   set caption(cagire,2points)                   ":"
+
+   set caption(cagire,titre_site_web)            "Site Web de référence :"
+   set caption(cagire,site_web_ref)              "http://www.cesr.fr"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(cagire,camera)                    "Cagire"
+
+   set caption(cagire,obtu_ouvert)               "Aperto"
+   set caption(cagire,obtu_ferme)                "Chiuso"
+   set caption(cagire,obtu_synchro)              "Sincronizza"
+
+   set caption(cagire,config)                    "Cartella contenente i file di configurazione"
+   set caption(cagire,parcourir)                 "..."
+   set caption(cagire,dossier)                   "Dalla cartella:"
+   set caption(cagire,miroir_x)                  "Specchio orizzontale"
+   set caption(cagire,miroir_y)                  "Specchio verticale"
+   set caption(cagire,refroidissement)           "Raffreddamento alla temperatura di"
+   set caption(cagire,deg_c)                     "°C"
+   set caption(cagire,refroidissement_1)         "°C"
+   set caption(cagire,temperature_CCD)           "CCD Temperatura:"
+   set caption(cagire,fonc_obtu)                 "Funzionamento otturatore"
+   set caption(cagire,ipserver)                  "IP server"
+   set caption(cagire,portserver)                "Port server"
+   set caption(cagire,ms)                        ""
+
+   set caption(cagire,port_camera)               "Porta Cagire"
+   set caption(cagire,2points)                   ":"
+
+   set caption(cagire,titre_site_web)            "Sito Web di riferimento:"
+   set caption(cagire,site_web_ref)              "http://www.cesr.fr"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(cagire,camera)                    "Cagire"
+
+   set caption(cagire,obtu_ouvert)               "Abierto"
+   set caption(cagire,obtu_ferme)                "Cerrado"
+   set caption(cagire,obtu_synchro)              "Sincro"
+
+   set caption(cagire,config)                    "Doirectorio que contiene los ficheros de configuracion"
+   set caption(cagire,parcourir)                 "..."
+   set caption(cagire,dossier)                   "Desde la carpeta:"
+   set caption(cagire,miroir_x)                  "Espejo horizontal"
+   set caption(cagire,miroir_y)                  "Espejo vertical"
+   set caption(cagire,refroidissement)           "Enfriar hasta temperatura"
+   set caption(cagire,deg_c)                     "°C"
+   set caption(cagire,refroidissement_1)         "°C"
+   set caption(cagire,temperature_CCD)           "Temperatura CCD:"
+   set caption(cagire,fonc_obtu)                 "Funcionamiento del obturador"
+   set caption(cagire,ipserver)                  "IP server"
+   set caption(cagire,portserver)                "Porta server"
+   set caption(cagire,ms)                        ""
+
+   set caption(cagire,port_camera)               "Puerto Cagire"
+   set caption(cagire,2points)                   ":"
+
+   set caption(cagire,titre_site_web)            "Sitio Web de referencia:"
+   set caption(cagire,site_web_ref)              "http://www.cesr.fr"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(cagire,camera)                    "Cagire"
+
+   set caption(cagire,obtu_ouvert)               "Offen"
+   set caption(cagire,obtu_ferme)                "Geschlossen"
+   set caption(cagire,obtu_synchro)              "Synchro"
+
+   set caption(cagire,config)                    "Register der die setup Dateien enthaltet"
+   set caption(cagire,parcourir)                 "..."
+   set caption(cagire,dossier)                   "Vom Unterlagen:"
+   set caption(cagire,miroir_x)                  "Horizontale Spiegel"
+   set caption(cagire,miroir_y)                  "Verticale Spiegel"
+   set caption(cagire,refroidissement)           "Temperatur bis zu"
+   set caption(cagire,deg_c)                     "°C"
+   set caption(cagire,refroidissement_1)         "°C kühlen"
+   set caption(cagire,temperature_CCD)           "Temperatur CCD:"
+   set caption(cagire,fonc_obtu)                 "Verschluss Arbeiten"
+   set caption(cagire,ipserver)                  "IP server"
+   set caption(cagire,portserver)                "Port server"
+   set caption(cagire,ms)                        ""
+
+   set caption(cagire,port_camera)               "Cagire Port"
+   set caption(cagire,2points)                   ":"
+
+   set caption(cagire,titre_site_web)            "Referenz Webseite:"
+   set caption(cagire,site_web_ref)              "http://www.cesr.fr"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(cagire,camera)                    "Cagire"
+
+   set caption(cagire,obtu_ouvert)               "Aberto"
+   set caption(cagire,obtu_ferme)                "Fechado"
+   set caption(cagire,obtu_synchro)              "Sincro"
+
+   set caption(cagire,config)                    "Pasta que contém os ficheiros de configuração"
+   set caption(cagire,parcourir)                 "..."
+   set caption(cagire,dossier)                   "Da Pasta:"
+   set caption(cagire,miroir_x)                  "Espelho Horizontal"
+   set caption(cagire,miroir_y)                  "Espelho Vertical"
+   set caption(cagire,refroidissement)           "Arrefecendo até Temperatura"
+   set caption(cagire,deg_c)                     "°C"
+   set caption(cagire,refroidissement_1)         "°C"
+   set caption(cagire,temperature_CCD)           "Temperatura do CCD:"
+   set caption(cagire,fonc_obtu)                 "Operação do obturador"
+   set caption(cagire,ipserver)                  "IP server"
+   set caption(cagire,portserver)                "Port server"
+   set caption(cagire,ms)                        ""
+
+   set caption(cagire,port_camera)               "Porta Cagire"
+   set caption(cagire,2points)                   ":"
+
+   set caption(cagire,titre_site_web)            "Site Web de referência:"
+   set caption(cagire,site_web_ref)              "http://www.cesr.fr"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(cagire,camera)                    "Cagire"
+
+   set caption(cagire,obtu_ouvert)               "Open"
+   set caption(cagire,obtu_ferme)                "Closed"
+   set caption(cagire,obtu_synchro)              "Synchro"
+
+   set caption(cagire,config)                    "Folder Containing Setup Files"
+   set caption(cagire,parcourir)                 "..."
+   set caption(cagire,dossier)                   "From Folder:"
+   set caption(cagire,miroir_x)                  "Horisontal spejl"
+   set caption(cagire,miroir_y)                  "Vertikal spejl"
+   set caption(cagire,refroidissement)           "Cooling to Temperature"
+   set caption(cagire,deg_c)                     "°C"
+   set caption(cagire,refroidissement_1)         "°C"
+   set caption(cagire,temperature_CCD)           "CCD Temperature:"
+   set caption(cagire,fonc_obtu)                 "Shutter Operation"
+   set caption(cagire,ipserver)                  "IP server"
+   set caption(cagire,portserver)                "Port server"
+   set caption(cagire,ms)                        ""
+
+   set caption(cagire,port_camera)               "Cagire Port"
+   set caption(cagire,2points)                   ":"
+
+   set caption(cagire,titre_site_web)            "Reference Web Site:"
+   set caption(cagire,site_web_ref)              "http://www.cesr.fr"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(cagire,camera)                    "Cagire"
+
+   set caption(cagire,obtu_ouvert)               "Open"
+   set caption(cagire,obtu_ferme)                "Closed"
+   set caption(cagire,obtu_synchro)              "Synchro"
+
+   set caption(cagire,config)                    "Folder Containing Setup Files"
+   set caption(cagire,parcourir)                 "..."
+   set caption(cagire,dossier)                   "From Folder:"
+   set caption(cagire,miroir_x)                  "Horizontal Mirror"
+   set caption(cagire,miroir_y)                  "Vertical Mirror"
+   set caption(cagire,refroidissement)           "Cooling to Temperature"
+   set caption(cagire,deg_c)                     "°C"
+   set caption(cagire,refroidissement_1)         "°C"
+   set caption(cagire,temperature_CCD)           "CCD Temperature:"
+   set caption(cagire,fonc_obtu)                 "Shutter Operation"
+   set caption(cagire,ipserver)                  "IP server"
+   set caption(cagire,portserver)                "Port server"
+   set caption(cagire,ms)                        ""
+
+   set caption(cagire,port_camera)               "Cagire Port"
+   set caption(cagire,2points)                   ":"
+
+   set caption(cagire,titre_site_web)            "Reference Web Site:"
+   set caption(cagire,site_web_ref)              "http://www.cesr.fr"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(cagire,camera)                    "Cagire"
+
+   set caption(cagire,obtu_ouvert)               "Open"
+   set caption(cagire,obtu_ferme)                "Closed"
+   set caption(cagire,obtu_synchro)              "Synchro"
+
+   set caption(cagire,config)                    "Folder Containing Setup Files"
+   set caption(cagire,parcourir)                 "..."
+   set caption(cagire,dossier)                   "From Folder:"
+   set caption(cagire,miroir_x)                  "Horizontal Mirror"
+   set caption(cagire,miroir_y)                  "Vertical Mirror"
+   set caption(cagire,refroidissement)           "Cooling to Temperature"
+   set caption(cagire,deg_c)                     "°C"
+   set caption(cagire,refroidissement_1)         "°C"
+   set caption(cagire,temperature_CCD)           "CCD Temperature:"
+   set caption(cagire,fonc_obtu)                 "Shutter Operation"
+   set caption(cagire,ipserver)                  "IP server"
+   set caption(cagire,portserver)                "Port server"
+   set caption(cagire,ms)                        ""
+
+   set caption(cagire,port_camera)               "Cagire Port"
+   set caption(cagire,2points)                   ":"
+
+   set caption(cagire,titre_site_web)            "Reference Web Site:"
+   set caption(cagire,site_web_ref)              "http://www.cesr.fr"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

@@ -1,0 +1,272 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>Desktops and Window stations</h2>
+<p>Commands related to desktops and window stations</p>
+<h3><a name="synopsis" id="synopsis">SYNOPSIS</a></h3>
+package require <b>twapi</b><br />
+<table class="commandsummary" summary="Table">
+<tr valign="top">
+<td><a href="#close_desktop_handle"><b class=
+'cmd'>close_desktop_handle</b> <i class='arg'>HDESK</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#close_window_station_handle"><b class=
+'cmd'>close_window_station_handle</b> <i class=
+'arg'>HWINSTA</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#find_desktops"><b class='cmd'>find_desktops</b>
+?<b class='cmd'>-winsta</b> <i class='arg'>HWINSTA</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#find_window_stations"><b class=
+'cmd'>find_window_stations</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_current_window_station_handle"><b class=
+'cmd'>get_current_window_station_handle</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_desktop_handle"><b class=
+'cmd'>get_desktop_handle</b> <i class='arg'>DESKTOP</i> ?<b class=
+'cmd'>-inherit</b> <i class='arg'>BOOL</i>? ?<b class=
+'cmd'>-access</b> <i class='arg'>ACCESSRIGHTS</i>? ?<b class=
+'cmd'>-allowhooks</b> <i class='arg'>BOOL</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_window_station_handle"><b class=
+'cmd'>get_window_station_handle</b> <i class=
+'arg'>WINDOWSTATION</i> ?<b class='cmd'>-inherit</b> <i class=
+'arg'>BOOL</i>? ?<b class='cmd'>-access</b> <i class=
+'arg'>ACCESSRIGHTS</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_process_window_station"><b class=
+'cmd'>set_process_window_station</b> <i class=
+'arg'>HWINSTA</i></a></td>
+</tr>
+</table>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p>This package provides procedures related to desktops and window
+stations on Windows platforms.</p>
+<h3><a name="windowstations" id="windowstations">Window
+Stations</a></h3>
+<p>TBD</p>
+<h3><a name="desktops" id="desktops">Desktops</a></h3>
+<p>TBD</p>
+<h3><a name="commands" id="commands">Commands</a></h3>
+<dl class="noclass">
+<dt><a name="close_desktop_handle" id=
+"close_desktop_handle"><b class='cmd'>close_desktop_handle</b>
+<i class='arg'>HDESK</i></a></dt>
+<dd>Closes a desktop handle that was previously returned by a call
+to <a href="desktop.html#get_desktop_handle">get_desktop_handle</a>
+and frees and associated resources.</dd>
+<dt><a name="close_window_station_handle" id=
+"close_window_station_handle"><b class=
+'cmd'>close_window_station_handle</b> <i class=
+'arg'>HWINSTA</i></a></dt>
+<dd>Closes a window station handle that was previously returned by
+a call to <a href=
+"desktop.html#get_window_station_handle">get_window_station_handle</a>.</dd>
+<dt><a name="find_desktops" id="find_desktops"><b class=
+'cmd'>find_desktops</b> ?<b class='cmd'>-winsta</b> <i class=
+'arg'>HWINSTA</i>?</a></dt>
+<dd>Returns a list of desktops. By default, the desktops from the
+current window station are returned. The <b class='cmd'>-winsta</b>
+option may be used to specify a different window station.</dd>
+<dt><a name="find_window_stations" id=
+"find_window_stations"><b class=
+'cmd'>find_window_stations</b></a></dt>
+<dd>Returns a list of identifiers for all window stations in the
+system for which the caller has the <span class=
+"strong">WINSTA_ENUMERATE</span> privilege.</dd>
+<dt><a name="get_current_window_station_handle" id=
+"get_current_window_station_handle"><b class=
+'cmd'>get_current_window_station_handle</b></a></dt>
+<dd>Returns a handle to the window station for the calling process.
+This handle need not (and should not) be closed.</dd>
+<dt><a name="get_desktop_handle" id="get_desktop_handle"><b class=
+'cmd'>get_desktop_handle</b> <i class='arg'>DESKTOP</i> ?<b class=
+'cmd'>-inherit</b> <i class='arg'>BOOL</i>? ?<b class=
+'cmd'>-access</b> <i class='arg'>ACCESSRIGHTS</i>? ?<b class=
+'cmd'>-allowhooks</b> <i class='arg'>BOOL</i>?</a></dt>
+<dd>Returns a handle to the specified desktop.<br />
+<br />
+The <b class='cmd'>-inherit</b> option determines whether the
+returned handle will be inherited by child processes. This is
+<span class="strong">false</span> by default.<br />
+<br />
+The access rights associated with the handle default to
+<span class="strong">GENERIC_READ</span> unless the <b class=
+'cmd'>-access</b> option is specified. <i class=
+'arg'>ACCESSRIGHTS</i> specifies the desired access rights and may
+be specified as a list of integer access rights flags or symbols as
+described in <a href="security.html#accessrights">Access
+Rights</a>.<br />
+<br />
+If the option <b class='cmd'>-allowhooks</b> is specified as
+<span class="strong">true</span>, processes running in other
+accounts on the desktop will be allowed to set hooks in the calling
+process.<br />
+<br />
+When no longer needed, the returned handle should be closed with a
+call to to <a href=
+"desktop.html#close_desktop_handle">close_desktop_handle</a>.</dd>
+<dt><a name="get_window_station_handle" id=
+"get_window_station_handle"><b class=
+'cmd'>get_window_station_handle</b> <i class=
+'arg'>WINDOWSTATION</i> ?<b class='cmd'>-inherit</b> <i class=
+'arg'>BOOL</i>? ?<b class='cmd'>-access</b> <i class=
+'arg'>ACCESSRIGHTS</i>?</a></dt>
+<dd>Returns a handle to the window station identified by
+WINDOWSTATION.<br />
+<br />
+The access rights associated with the handle default to
+<span class="strong">GENERIC_READ</span> unless the <b class=
+'cmd'>-access</b> option is specified. <i class=
+'arg'>ACCESSRIGHTS</i> specifies the desired access rights and may
+be specified as a list of integer access rights flags or symbols as
+described in <a href="security.html#accessrights">Access
+Rights</a>.<br />
+<br />
+The <b class='cmd'>-inherit</b> option determines whether the
+returned handle will be inherited by child processes. This is
+<span class="strong">false</span> by default.<br />
+<br />
+When no longer needed, the returned handle should be closed with a
+call to to <a href=
+"desktop.html#close_window_station_handle">close_window_station_handle</a>.</dd>
+<dt><a name="set_process_window_station" id=
+"set_process_window_station"><b class=
+'cmd'>set_process_window_station</b> <i class=
+'arg'>HWINSTA</i></a></dt>
+<dd>Assigns the window station identified by <i class=
+'arg'>HWINSTA</i> to the calling process. <i class=
+'arg'>HWINSTA</i> should be a window station handle previously
+returned by <a href="#get_window_station_handle"><b class=
+'cmd'>get_window_station_handle</b></a>. See the description of
+<b class='cmd'>SetProcessWindowStation</b> in the Windows SDk for
+more details.</dd>
+</dl>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2003-2006 Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>

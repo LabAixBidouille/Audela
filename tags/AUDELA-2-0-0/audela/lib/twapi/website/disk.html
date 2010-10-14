@@ -1,0 +1,1161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>Files, Disks and Volumes</h2>
+<p>Commands related to files, disks and volumes</p>
+<h3><a name="synopsis" id="synopsis">SYNOPSIS</a></h3>
+package require <b>twapi</b><br />
+<table class="commandsummary" summary="Table">
+<tr valign="top">
+<td><a href="#begin_filesystem_monitor"><b class=
+'cmd'>begin_filesystem_monitor</b> <i class='arg'>PATH</i>
+<i class='arg'>SCRIPT</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#cancel_filesystem_monitor"><b class=
+'cmd'>cancel_filesystem_monitor</b> <i class=
+'arg'>MONITORID</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#find_logical_drives"><b class=
+'cmd'>find_logical_drives</b> ?<b class='cmd'>-type</b> <i class=
+'arg'>DRIVETYPELIST</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#find_physical_disks"><b class=
+'cmd'>find_physical_disks</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#file_properties_dialog"><b class=
+'cmd'>file_properties_dialog</b> <i class='arg'>FILEPATH</i>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#find_volumes"><b class=
+'cmd'>find_volumes</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#find_volume_mount_points"><b class=
+'cmd'>find_volume_mount_points</b> <i class=
+'arg'>VOLNAME</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_drive_info"><b class='cmd'>get_drive_info</b>
+<i class='arg'>DRIVE</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_drive_type"><b class='cmd'>get_drive_type</b>
+<i class='arg'>DRIVE</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_file_times"><b class='cmd'>get_file_times</b>
+<i class='arg'>FILE</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_file_version_resource"><b class=
+'cmd'>get_file_version_resource</b> <i class='arg'>PATH</i>
+?<i class='arg'>options</i>? ?<i class=
+'arg'>STRINGNAME</i>...?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_mounted_volume_name"><b class=
+'cmd'>get_mounted_volume_name</b> <i class=
+'arg'>MOUNTPOINT</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_physical_disk_info"><b class=
+'cmd'>get_physical_disk_info</b> <i class='arg'>DISK</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_volume_info"><b class='cmd'>get_volume_info</b>
+<i class='arg'>DRIVE</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_volume_mount_point_for_path"><b class=
+'cmd'>get_volume_mount_point_for_path</b> <i class=
+'arg'>PATH</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#map_drive_local"><b class='cmd'>map_drive_local</b>
+<i class='arg'>DRIVE</i> <i class='arg'>PATH</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#mount_volume"><b class='cmd'>mount_volume</b>
+<i class='arg'>MOUNTPOINTPATH</i> <i class=
+'arg'>VOLNAME</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_drive_label"><b class='cmd'>set_drive_label</b>
+<i class='arg'>DRIVE</i> <i class='arg'>NAME</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_file_times"><b class='cmd'>set_file_times</b>
+<i class='arg'>FILE</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#unmap_drive_local"><b class=
+'cmd'>unmap_drive_local</b> <i class='arg'>DRIVE</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#unmount_volume"><b class='cmd'>unmount_volume</b>
+<i class='arg'>MOUNTPOINTPATH</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#user_drive_space_available"><b class=
+'cmd'>user_drive_space_available</b> <i class='arg'>drive</i>
+<i class='arg'>space</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#volume_properties_dialog"><b class=
+'cmd'>volume_properties_dialog</b> <i class='arg'>VOLUME</i>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+</table>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p>This package provides procedures related to file, disk and
+volume information in Windows operating systems.</p>
+<h3><a name="physicaldisks" id="physicaldisks">Physical
+disks</a></h3>
+<p>The <a href="disk.html#find_physical_disks"><b class=
+'cmd'>find_physical_disks</b></a> command returns the list of
+physical disks installed in the system. The <a href=
+"disk.html#get_physical_disk_info"><b class=
+'cmd'>get_physical_disk_info</b></a> command can then be used to
+retrieve detailed information about the physical disk.</p>
+<h3><a name="volumes" id="volumes">Volumes</a></h3>
+<p>The command <a href="#find_volumes"><b class=
+'cmd'>find_volumes</b></a> returns a list of volumes on the system.
+The command <a href="#get_volume_info"><b class=
+'cmd'>get_volume_info</b></a> returns various information about a
+volume (logical drive) including size and space utilization, file
+system characteristics and device.</p>
+<p>The command <a href="#find_volume_mount_points"><b class=
+'cmd'>find_volume_mount_points</b></a> returns the list of volume
+mount points on a particular volume. Commands <a href=
+"#mount_volume"><b class='cmd'>mount_volume</b></a> and <a href=
+"#unmount_volume"><b class='cmd'>unmount_volume</b></a> can be used
+to set and remove volumes from volume mount points. The command
+<a href="#get_mounted_volume_name"><b class=
+'cmd'>get_mounted_volume_name</b></a> will return the name of the
+volume mounted on a drive letter or volume mount point.</p>
+<p>The command <a href="#volume_properties_dialog"><b class=
+'cmd'>volume_properties_dialog</b></a> displays the shell property
+sheet dialog for a volume.</p>
+<h3><a name="logicaldrives" id="logicaldrives">Logical
+drives</a></h3>
+<p>For all drive related commands, the <i class='arg'>drive</i>
+parameter may be specified as a single drive letter, a drive letter
+followed by a <span class="strong">:</span>, or as the root path of
+the drive (eg. <span class="strong">C:\</span>)</p>
+<p>The command <a href="#find_logical_drives"><b class=
+'cmd'>find_logical_drives</b></a> returns a list of drives in the
+system of a specified type. <a href="#get_drive_type"><b class=
+'cmd'>get_drive_type</b></a> returns the type (fixed, remote, etc.)
+of the logical drive.</p>
+<p>The command <a href="#user_drive_space_available"><b class=
+'cmd'>user_drive_space_available</b></a> can be used to check if
+sufficient free space is available on a drive.</p>
+<p>The command <a href="#set_drive_label"><b class=
+'cmd'>set_drive_label</b></a> may be used to set the volume name
+(drive label).</p>
+<p>The command <a href="#map_drive_local"><b class=
+'cmd'>map_drive_local</b></a> and <a href=
+"#unmap_drive_local"><b class='cmd'>unmap_drive_local</b></a> may
+be used to assign and unassign a drive letter to a local path.</p>
+<h3><a name="filesystem" id="filesystem">File system</a></h3>
+<p>The commands <a href="#begin_filesystem_monitor"><b class=
+'cmd'>begin_filesystem_monitor</b></a> and <a href=
+"#cancel_filesystem_monitor"><b class=
+'cmd'>cancel_filesystem_monitor</b></a> can be used for monitoring
+changes to the file system.</p>
+<p>The <a href="#get_file_version_resource"><b class=
+'cmd'>get_file_version_resource</b></a> returns various information
+stored within the version resource of a file.</p>
+<p>The command <a href="#file_properties_dialog"><b class=
+'cmd'>file_properties_dialog</b></a> displays the shell property
+sheet dialog for a file.</p>
+<p>The commands <a href="#get_file_times"><b class=
+'cmd'>get_file_times</b></a> and <a href=
+"#set_file_times"><b class='cmd'>set_file_times</b></a> and allow
+retrieval and setting of the times associated with a file.</p>
+<h3><a name="commands" id="commands">Commands</a></h3>
+<dl class="noclass">
+<dt><a name="begin_filesystem_monitor" id=
+"begin_filesystem_monitor"><b class=
+'cmd'>begin_filesystem_monitor</b> <i class='arg'>PATH</i>
+<i class='arg'>SCRIPT</i> ?<i class='arg'>options</i>?</a></dt>
+<dd>Registers <i class='arg'>SCRIPT</i> to be invoked when the
+specified types of changes occur in the directory of subtree
+matching <i class='arg'>PATH</i>.<br />
+<br />
+The command returns an identifier corresponding to the monitoring
+callback. When no longer interested in the specified changes, the
+returned identifier should be passed to <a href=
+"#cancel_filesystem_monitor"><b class=
+'cmd'>cancel_filesystem_monitor</b></a> to end the
+monitoring.<br />
+<br />
+The following options specify the type of changes to be monitored:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-access</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If true, changes to the last access time are
+monitored.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-attr</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If true, attribute changes, are monitored.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-create</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If true, changes to the creation times are
+monitored.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-dirname</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If true, directory name changes, including creation
+and renaming, are monitored.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-filename</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If true, file name changes, including file
+creation, renaming and deletion, are monitored.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-patterns</b></span> <i class='arg'>PATTERNLIST</i></td>
+<td class="opt">If specified, notification callbacks are invoked
+only on those files and directories that match one of the patterns
+in <i class='arg'>PATTERNLIST</i>. See below for more detail.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-secd</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If true, changes to security descriptors in the
+specified directories are monitored.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-size</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If true, size changes in the specified directories
+are monitored.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-subtree</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If true, all subdirectories under the specified
+directory <i class='arg'>PATH</i> are monitored in addition to
+<i class='arg'>PATH</i> itself. If false (default), only the
+directory indicated by <i class='arg'>PATH</i> is monitored.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-write</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If true, changes to the last write time of files in
+the specified directories are monitored.</td>
+</tr>
+</table>
+By default, all options are false if unspecified. However, if no
+options related to the type changes to be monitored are present
+(either true or false), the command will monitor all types of
+changes.<br />
+<br />
+When a file system change is detected, the <i class=
+'arg'>SCRIPT</i> is invoked after being appended with a list each
+element of which is a pair consisting the type of change and the
+file or directory name. The type of change is one of the following
+values:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">added</span></span></td>
+<td class="opt">The file or directory was added.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">removed</span></span></td>
+<td class="opt">The file or directory was deleted.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">modified</span></span></td>
+<td class="opt">The file or directory was modified. This includes
+changes to attributes or timestamps.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">renameold</span></span></td>
+<td class="opt">The file or directory was renamed. The associated
+name is the old name.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">renamenew</span></span></td>
+<td class="opt">The file or directory was renamed. The associated
+name is the new name.</td>
+</tr>
+</table>
+Note that the file names being reported may be either in longname
+or shortname (8.3) format. Moreover, depending on the buffering and
+caching by the operating system, a single write may result in one
+or more notifications.<br />
+<br />
+If the <b class='cmd'>-patterns</b> option is specified, then the
+value associated with the option is a pattern filter that is used
+to match against the name component being reported. <i class=
+'arg'>SCRIPT</i> will be invoked only if the pattern filter
+matches.<br />
+<br />
+Each element of the pattern list is a string beginning with either
+<span class="strong">+</span> or <span class="strong">-</span>
+followed by a pattern that is used for matching using the same
+rules as for the Tcl <b class='cmd'>string match -nocase</b>
+command. Note that <span class="strong">\</span> path separator
+need to be escaped with another <span class="strong">\</span> just
+as in the <b class='cmd'>string match</b> case. Alternatively, you
+can use <span class="strong">/</span> as the path separator in the
+pattern.<br />
+<br />
+The name component being reported is matched against each element
+of the pattern list. When a match occurs, further elements of the
+pattern list are not matched. If the matching element is prefixed
+with a <span class="strong">+</span>, then <i class=
+'arg'>SCRIPT</i> is invoked. If the matching element is prefixed
+with a <span class="strong">-</span>, then the pattern filter is
+deemed to have not matched and <i class='arg'>SCRIPT</i> is not
+invoked for the notification. Even in this case, no further
+matching is attempted against the remaining patterns. Pattern
+elements that do not begin with <span class="strong">+</span>, or
+<span class="strong">-</span> are treated as having an implicit
+<span class="strong">+</span> prefix.<br />
+<br />
+If a non-empty pattern filter is specified but no element matches,
+the pattern filter is treated as having not matched, and <i class=
+'arg'>SCRIPT</i> is not invoked. Thus a pattern filter that only
+has <span class="strong">-</span> type elements will never match
+anything. Note a pattern list where no element matches is different
+from the case where <b class='cmd'>-patterns</b> is not specified
+or <i class='arg'>PATTERNLIST</i> is empty in which case the
+pattern filter is treated as matched.<br />
+<br />
+Note that the pattern matching is done only against the name
+component being reported, not against the full path.<br />
+<br />
+Some examples of pattern matching are below (assume callback is
+your <i class='arg'>SCRIPT</i> procedure):
+<pre class="sample">
+begin_filesystem_monitor c:/temp callback -patterns {*.exe}
+</pre>
+will only monitor files in <span class="strong">c:\temp</span> with
+<span class="strong">.exe</span> extensions.
+<pre class="sample">
+begin_filesystem_monitor c:/temp callback -patterns {-*.foo +*.fo*}
+</pre>
+will monitor files in <span class="strong">c:\temp</span> with an
+extension beginning with <span class="strong">.fo</span> except if
+the extension is <span class="strong">.foo</span>.
+<pre class="sample">
+begin_filesystem_monitor c:/temp callback -patterns {+*.fo -*.foo}
+</pre>
+will monitor files in <span class="strong">c:\temp</span> with an
+extension beginning with <span class="strong">.fo</span>
+<span class="em">including</span> those with extension <span class=
+"strong">.foo</span>. The second pattern <span class=
+"strong">-*.foo</span> has no effect as the matching stops as soon
+as a match is found.</dd>
+<dt><a name="cancel_filesystem_monitor" id=
+"cancel_filesystem_monitor"><b class=
+'cmd'>cancel_filesystem_monitor</b> <i class=
+'arg'>MONITORID</i></a></dt>
+<dd>Cancels monitoring of the file system corresponding to
+<i class='arg'>MONITORID</i> which must be an identifier returned
+by <a href="#begin_filesystem_monitor"><b class=
+'cmd'>begin_filesystem_monitor</b></a>.</dd>
+<dt><a name="find_logical_drives" id=
+"find_logical_drives"><b class='cmd'>find_logical_drives</b>
+?<b class='cmd'>-type</b> <i class=
+'arg'>DRIVETYPELIST</i>?</a></dt>
+<dd>Returns a list of the logical drives in the system. If option
+<b class='cmd'>-type</b> not specified, all drives in the system
+are returned. Otherwise, only drives whose type is in <i class=
+'arg'>DRIVETYPELIST</i> are returned. <i class=
+'arg'>DRIVETYPELIST</i> must be a subset of the values returned by
+the <a href="#get_drive_type"><b class='cmd'>get_drive_type</b></a>
+command.<br />
+<br />
+<a href="listdrives.example">Example: List all drives on a
+system</a><br />
+<br />
+<a href="listremotedrives.example">Example: List the remote drives
+on a system</a></dd>
+<dt><a name="find_physical_disks" id=
+"find_physical_disks"><b class='cmd'>find_physical_disks</b></a></dt>
+<dd>Returns the list of physical disks in the system. The returned
+paths can be passed to <b class='cmd'>CreateFile</b> or <a href=
+"device.html#create_file"><b class='cmd'>create_file</b></a> to get
+a handle to the raw physical disk.</dd>
+<dt><a name="file_properties_dialog" id=
+"file_properties_dialog"><b class='cmd'>file_properties_dialog</b>
+<i class='arg'>FILEPATH</i> ?<i class='arg'>options</i>?</a></dt>
+<dd>Displays the shell property dialog for the specified file. The
+following options may be specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-hwin</b></span> <i class='arg'>HWIN</i></td>
+<td class="opt">If specified, <i class='arg'>HWIN</i> is the handle
+to the window to be used as the parent for the dialog.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-page</b></span> <i class='arg'>PAGENAME</i></td>
+<td class="opt">Specifies the name of the property sheet page to be
+displayed. If unspecified, the default page is displayed.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="find_volumes" id="find_volumes"><b class=
+'cmd'>find_volumes</b></a></dt>
+<dd>Returns the list of volumes in the system. Each entry in the
+list includes a trailing slash.</dd>
+<dt><a name="find_volume_mount_points" id=
+"find_volume_mount_points"><b class=
+'cmd'>find_volume_mount_points</b> <i class=
+'arg'>VOLNAME</i></a></dt>
+<dd>Returns the list of volume mount points on the volume whose
+name is <i class='arg'>VOLNAME</i>.</dd>
+<dt><a name="get_drive_info" id="get_drive_info"><b class=
+'cmd'>get_drive_info</b> <i class='arg'>DRIVE</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Synonym for <a href="#get_volume_info"><b class=
+'cmd'>get_volume_info</b></a>.</dd>
+<dt><a name="get_drive_type" id="get_drive_type"><b class=
+'cmd'>get_drive_type</b> <i class='arg'>DRIVE</i></a></dt>
+<dd>Returns the type of the drive - <span class=
+"strong">unknown</span>, <span class="strong">removable</span>,
+<span class="strong">fixed</span>, <span class=
+"strong">remote</span>, <span class="strong">cdrom</span> or
+<span class="strong">ramdisk</span> or <span class=
+"strong">invalid</span>.</dd>
+<dt><a name="get_file_times" id="get_file_times"><b class=
+'cmd'>get_file_times</b> <i class='arg'>FILE</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Retrieves the creation, access and modification timestamps for
+a file. The latter two are available through the Tcl <b class=
+'cmd'>file</b> command which however does not provide the creation
+time for a file. <i class='arg'>FILE</i> may either be the path to
+the file, an open Tcl channel to the open file or a Win32 handle to
+an open file. In the latter two cases, the file must have been
+opened for read access.<br />
+<br />
+The information returned is a flat list of option value pairs.
+<i class='arg'>options</i>, which may contain one or more of the
+following values, controls the information returned.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Returns all fields.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-atime</b></span></td>
+<td class="opt">Returns the time of last access for the file.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-ctime</b></span></td>
+<td class="opt">Returns the creation time for the file.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-mtime</b></span></td>
+<td class="opt">Returns the time of last modification for the
+file.</td>
+</tr>
+</table>
+All times are returned in the same format as <a href=
+"osinfo.html#get_system_time"><b class=
+'cmd'>get_system_time</b></a>.</dd>
+<dt><a name="get_file_version_resource" id=
+"get_file_version_resource"><b class=
+'cmd'>get_file_version_resource</b> <i class='arg'>PATH</i>
+?<i class='arg'>options</i>? ?<i class=
+'arg'>STRINGNAME</i>...?</a></dt>
+<dd>Returns the information stored within the version resource of a
+file. The command will generate a Tcl error if the file specified
+by <i class='arg'>PATH</i> does not contain a version
+resource.<br />
+<br />
+The version resource consists of two parts. The information in the
+first part is in a fixed format and can be retrieved by specifying
+appropriate options in <i class='arg'>options</i>. The second part
+is a string table, the entries in which can be retrieved by
+specifying the key as a <i class='arg'>STRINGNAME</i>
+argument.<br />
+<br />
+The following options may be used with the command:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Returns all information in the fixed part.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-fileversion</b></span></td>
+<td class="opt">Returns the file version as indicated in the
+version resource. This is returned in the format <i class=
+'arg'>MAJOR.MINOR.BUILD.PRIVATE</i>. Note this is not necessarily
+identical to the value specified for the <span class=
+"strong">FileVersion</span> entry in the string table.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-fileos</b></span></td>
+<td class="opt">Returns a value specifying the platform for which
+the file was designed. This may be one of <span class=
+"strong">dos</span> (MS-DOS), <span class="strong">os216</span>
+(16-bit OS/2), <span class="strong">os232</span> (16-bit OS/2),
+<span class="strong">nt</span> (Windows NT), <span class=
+"strong">wince</span> (Windows CE), <span class=
+"strong">windows16</span> (16-bit Windows), <span class=
+"strong">pm16</span> (16-bit Presentation Manager), <span class=
+"strong">pm32</span> (32-bit Presentation Manager), <span class=
+"strong">windows32</span> (32-bit Windows), <span class=
+"strong">dos_windows32</span> (32-bit Windows on MS-DOS),
+<span class="strong">os216_pm16</span> (16-bit Presentation Manager
+on 16-bit OS/2), <span class="strong">os232_pm32</span> (32-bit
+Presentation Manager on 32-bit OS/2) or <span class=
+"strong">nt_windows32</span> (32-bit Windows on Windows NT).</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-filetype</b></span></td>
+<td class="opt">Returns the file type which may be one of the
+following: <span class="strong">application</span>, <span class=
+"strong">dll</span>, <span class="strong">driver.printer</span>,
+<span class="strong">driver.keyboard</span>, <span class=
+"strong">driver.language</span>, <span class=
+"strong">driver.display</span>, <span class=
+"strong">driver.mouse</span>, <span class=
+"strong">driver.network</span>, <span class=
+"strong">driver.system</span>, <span class=
+"strong">driver.installable</span>, <span class=
+"strong">driver.sound</span>, <span class=
+"strong">driver.comm</span>, <span class=
+"strong">driver.inputmethod</span>, <span class=
+"strong">driver.versionedprinter</span>, <span class=
+"strong">driver.</span><i class='arg'>DRIVERSUBTYPENUMBER</i>,
+<span class="strong">font.raster</span>, <span class=
+"strong">font.vector</span>, <span class=
+"strong">font.truetype</span>, <span class=
+"strong">font.</span><i class='arg'>FONTSUBTYPENUMBER</i>,
+<span class="strong">vxd.</span><i class='arg'>VIRTUALDEVICEID</i>,
+<span class="strong">staticlib</span> or <i class=
+'arg'>FILETYPENUMBER.FILESUBTYPENUMBER</i>. (Note in cases where
+the file type or subtype is not recognized, the actual numeric
+value is returned.)</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-flags</b></span></td>
+<td class="opt">Returns a list of symbols corresponding to flags
+set in the version resource. The list may contain symbols from the
+following: <span class="strong">debug</span>, <span class=
+"strong">prerelease</span>, <span class="strong">patched</span>,
+<span class="strong">privatebuild</span>, <span class=
+"strong">infoinferred</span> and <span class=
+"strong">specialbuild</span>. In addition, the list may also
+contain a numeric value corresponding to bits that are set but are
+not recognized as one of the above.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-langid</b></span> <i class='arg'>LANGID</i></td>
+<td class="opt">Specifies <i class='arg'>LANGID</i> as the language
+identifier to be used for string table lookup (see below). By
+default, the language identifier returned by <a href=
+"nls.html#get_user_ui_langid"><b class=
+'cmd'>get_user_ui_langid</b></a> is used.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-codepage</b></span> <i class='arg'>CODEPAGE</i></td>
+<td class="opt">Specifies <i class='arg'>CODEPAGE</i> as the code
+page to be used for string table lookup (see below).</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-productversion</b></span></td>
+<td class="opt">Returns the product version as indicated in the
+version resource. This is returned in the format <i class=
+'arg'>MAJOR.MINOR.BUILD.PRIVATE</i>. Note this is not necessarily
+identical to the value specified for the <span class=
+"strong">ProductVersion</span> entry in the string table.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-signature</b></span></td>
+<td class="opt">Contains a longword that is a signature for the
+fixed part of the version resource. Not particularly useful for the
+application.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-structversion</b></span></td>
+<td class="opt">Returns the version of the version resource
+format.</td>
+</tr>
+</table>
+In addition to the options that retrieve fixed portions of the
+version resource, the caller may also specify string names
+corresponding to language-specific string tables in the version
+resource. Each such <i class='arg'>STRINGNAME</i> is looked up in
+the string table and returned as a <i class='arg'>STRINGNAME</i>
+<i class='arg'>VALUE</i> pair. If a particular string name does not
+exist in the string table, an empty string is returned as its
+value. The following string names are commonly defined in version
+resources: <span class="strong">Comments</span>, <span class=
+"strong">InternalName</span>, <span class=
+"strong">ProductName</span>, <span class=
+"strong">CompanyName</span>, <span class=
+"strong">LegalCopyright</span>, <span class=
+"strong">ProductVersion</span>, <span class=
+"strong">FileDescription</span>, <span class=
+"strong">LegalTrademarks</span>, <span class=
+"strong">PrivateBuild</span>, <span class=
+"strong">FileVersion</span>, <span class=
+"strong">OriginalFilename</span>, <span class=
+"strong">SpecialBuild</span>.<br />
+<br />
+The version resource may contain multiple string tables for
+different languages and code pages. The caller can control the
+string table used through the <b class='cmd'>-langid</b> and
+<b class='cmd'>-codepage</b> options. The command uses the
+following algorithm in selecting the string table that is looked
+up.
+<ul class="noclass">
+<li>If a string table exactly matches the language id and code
+page, it is used.</li>
+<li>Otherwise, if a string table exactly matches the language id,
+it is used irrespective of the code page.</li>
+<li>Otherwise, a string table matching the primary language portion
+of the language id and the code page is used.</li>
+<li>Otherwise, a string table matching the primary language portion
+of the language id is used regardless of the code page.</li>
+<li>Otherwise, a string table specified as language neutral is
+used.</li>
+<li>Otherwise, a string table specified as <span class=
+"strong">English</span> is used.</li>
+<li>Finally, the string table corresponding to the first language
+and code page specified in the resource is used.</li>
+</ul>
+</dd>
+<dt><a name="get_mounted_volume_name" id=
+"get_mounted_volume_name"><b class=
+'cmd'>get_mounted_volume_name</b> <i class=
+'arg'>MOUNTPOINT</i></a></dt>
+<dd>Returns the name of a mounted volume. The returned name has a
+trailing backslash appended. <i class='arg'>MOUNTPOINT</i> must
+specify a root directory of a local drive or path to a volume mount
+point. Specifying remote file shares will generate an error.</dd>
+<dt><a name="get_physical_disk_info" id=
+"get_physical_disk_info"><b class='cmd'>get_physical_disk_info</b>
+<i class='arg'>DISK</i> ?<i class='arg'>options</i>?</a></dt>
+<dd>Returns information about a physical disk. <i class=
+'arg'>DISK</i> is a device path to the physical disk in the format
+returned by <a href="disk.html#find_physical_disks"><b class=
+'cmd'>find_physical_disks</b></a>. The command returns a keyed list
+with fields depending on the passed options:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Returns all fields.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-geometry</b></span></td>
+<td class="opt">Returns the geometry of the disk. The value is
+itself a keyed list with the fields <b class='cmd'>-cylinders</b>,
+<b class='cmd'>-mediatype</b>, <b class=
+'cmd'>-trackspercylinder</b>, <b class='cmd'>-sectorspertrack</b>
+and <b class='cmd'>-bytespersector</b>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-layout</b></span></td>
+<td class="opt">Returns the layout of the disk in terms of how it
+is partitioned. The returned value is a keyed list with the fields
+depending on how the disk is partitioned. See below for a
+discussion.</td>
+</tr>
+</table>
+<br />
+<br />
+The partitioning of a disk can take several forms and the
+information returned by the <b class='cmd'>-layout</b> differs in
+each case. The following is a brief summary that assumes
+familiarity with disk formats. See the <a href=
+"http://msdn.microsoft.com/en-us/library/aa972908.aspx">Windows
+DDK</a> documentation for details.<br />
+<br />
+On Windows 2000, the <b class='cmd'>-layout</b> field value is a
+keyed list with the fields <b class='cmd'>-partitioncount</b>,
+<b class='cmd'>-signature</b> and <b class='cmd'>-partitions</b>
+containing the number of partitions of the disk, the disk
+signature, and a list of partitions. Each element of the partition
+list is itself a keyed list with the fields <b class=
+'cmd'>-startingoffset</b>, <b class='cmd'>-partitionlength</b>,
+<b class='cmd'>-hiddensectors</b>, <b class=
+'cmd'>-partitionnumber</b>, <b class='cmd'>-partitiontype</b>,
+<b class='cmd'>-bootindicator</b>, <b class=
+'cmd'>-recognizedpartition</b> and <b class=
+'cmd'>-rewritepartition</b>.<br />
+<br />
+On Windows XP and newer operating systems, the <b class=
+'cmd'>-layout</b> field value is a keyed list with the fields,
+<b class='cmd'>-partitioncount</b>, <b class=
+'cmd'>-partitionstyle</b> and <b class='cmd'>-partitions</b>. The
+value of the <b class='cmd'>-partitionstyle</b> field is one of the
+values <span class="strong">mbr</span>, <span class=
+"strong">gpt</span>, <span class="strong">raw</span> or
+<span class="strong">unknown</span>. The <b class=
+'cmd'>-partitions</b> field is a list each element of which is
+itself a keyed list containing information about each partition.
+Note that the number of elements of the <b class=
+'cmd'>-partitions</b> list may not match the value of the <b class=
+'cmd'>-partitioncount</b> field in case information for some
+partitions cannot be retrieved. Every element of the <b class=
+'cmd'>-partitions</b> field will have the fields <b class=
+'cmd'>-partitionstyle</b>, <b class='cmd'>-startingoffset</b>,
+<b class='cmd'>-partitionlength</b>, <b class=
+'cmd'>-partitionnumber</b> and <b class=
+'cmd'>-rewritepartition</b>. In addition, if <b class=
+'cmd'>-partitionstyle</b> is <span class="strong">mbr</span>, the
+element will also have the fields <b class=
+'cmd'>-hiddensectors</b>, <b class='cmd'>-partitiontype</b>,
+<b class='cmd'>-bootindicator</b> and <b class=
+'cmd'>-recognizedpartition</b>. If <b class=
+'cmd'>-partitionstyle</b> is <span class="strong">gpt</span>, it
+will have the fields <b class='cmd'>-partitiontype</b>, <b class=
+'cmd'>-partitionif</b>, <b class='cmd'>-attributes</b> and
+<b class='cmd'>-name</b>. Partition styles <span class=
+"strong">raw</span> and <span class="strong">unknown</span> have no
+additional fields.</dd>
+<dt><a name="get_volume_info" id="get_volume_info"><b class=
+'cmd'>get_volume_info</b> <i class='arg'>DRIVE</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Returns attributes and properties of the specified volume as a
+list of the form "<i class='arg'>option1</i> <i class=
+'arg'>value1</i> ...". <i class='arg'>DRIVE</i> may be either a DOS
+drive, file share or a volume. Note certain options are not valid
+except when <i class='arg'>DRIVE</i> specifies a drive letter (see
+below).<br />
+<br />
+The values returned depend on which of the following options are
+specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Returns all fields except <b class='cmd'>-type</b>
+and <b class='cmd'>-device</b> which have to be explicitly
+specified since they are not valid for volumes.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-attr</b></span></td>
+<td class="opt">Returns a list containing one or more of the values
+<span class="strong">case_preserved_names</span>, <span class=
+"strong">unicode_on_disk</span>, <span class=
+"strong">persistent_acls</span>, <span class=
+"strong">file_compression</span>, <span class=
+"strong">volume_quotas</span>, <span class=
+"strong">supports_sparse_files</span>, <span class=
+"strong">supports_reparse_points</span>, <span class=
+"strong">supports_remote_storage</span>, <span class=
+"strong">volume_is_compressed</span>, <span class=
+"strong">supports_object_ids</span>, <span class=
+"strong">supports_encryption</span>, <span class=
+"strong">named_streams</span>, or <span class=
+"strong">read_only_volume</span>. These indicate the features
+supported by the drive's file system. Refer to the documentation
+for <b class='cmd'>GetVolumeInformation</b> function in the Windows
+SDK for details on these.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-device</b></span></td>
+<td class="opt">Returns a list the first element of which is the
+device name mapping for the drive. Remaining elements containing
+prior undeleted mappings for the drive. Only valid if <i class=
+'arg'>DRIVE</i> is a drive letter. For UNC paths, an empty string
+will be returned.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-extents</b></span></td>
+<td class="opt">Returns a list of disk extents describing the
+physical location of the volume. Each disk extent is a keyed list
+containing 3 fields: <span class="strong">-disknumber</span>
+identifying the physical disk, <span class=
+"strong">-startingoffset</span> containing the byte offset in the
+physical disk that the extent starts at, and <span class=
+"strong">-extentlength</span> containing the size of the extent. An
+empty list is returned for extents if they cannot be determined
+(for example, for remote drives).</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-freespace</b></span></td>
+<td class="opt">Returns the total size of the unused space on the
+drive in bytes.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-fstype</b></span></td>
+<td class="opt">Returns the type of the file system on the volume
+(eg. <span class="strong">NTFS</span>).</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-label</b></span></td>
+<td class="opt">Returns the label of the drive.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-maxcomponentlen</b></span></td>
+<td class="opt">Returns the maximum length allowed for a single
+component in a file path.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-serialnum</b></span></td>
+<td class="opt">Returns the serial number of the drive in
+hexadecimal format.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-size</b></span></td>
+<td class="opt">Returns the size of the drive in bytes.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-type</b></span></td>
+<td class="opt">Returns the type of the drive. Only valid if
+<i class='arg'>DRIVE</i> is a drive letter. This may have one of
+the values <span class="strong">unknown</span>, <span class=
+"strong">removable</span>, <span class="strong">fixed</span>,
+<span class="strong">remote</span>, <span class=
+"strong">cdrom</span> or <span class="strong">ramdisk</span>. In
+case the drive path is invalid, the value <span class=
+"strong">invalid</span> is returned in this field.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-used</b></span></td>
+<td class="opt">Returns the total size of the used space on the
+drive in bytes.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-useravail</b></span></td>
+<td class="opt">Returns the total size of the unused space on the
+drive that is available for the caller. This may be less than the
+<span class="strong">freespace</span> field if quotas are in
+effect.</td>
+</tr>
+</table>
+<a href="listfulldrives.example">Example: List drives that are
+almost full</a><br />
+<br />
+<a href="checkunicodefilenames.example">Example: Check if the given
+drive supports unicode filenames</a><br />
+<br /></dd>
+<dt><a name="get_volume_mount_point_for_path" id=
+"get_volume_mount_point_for_path"><b class=
+'cmd'>get_volume_mount_point_for_path</b> <i class=
+'arg'>PATH</i></a></dt>
+<dd>Returns the volume mount point below which the file specified
+by <i class='arg'>PATH</i> resides. Refer to documentation for
+<b class='cmd'>GetVolumePathName</b> in the Windows SDK for more
+details.</dd>
+<dt><a name="map_drive_local" id="map_drive_local"><b class=
+'cmd'>map_drive_local</b> <i class='arg'>DRIVE</i> <i class=
+'arg'>PATH</i> ?<i class='arg'>options</i>?</a></dt>
+<dd>Maps the fully qualified path <i class='arg'>PATH</i> to the
+specified drive letter. The mapping established by this command is
+not persistent across reboots. It may also be removed using the
+<b class='cmd'>unmap_drive_local</b> command.<br />
+<br />
+The following options may be specified with the command:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-raw</b></span></td>
+<td class="opt">Specifies that <i class='arg'>PATH</i> is a raw
+path specification that includes the device name as opposed to a
+drive letter.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="mount_volume" id="mount_volume"><b class=
+'cmd'>mount_volume</b> <i class='arg'>MOUNTPOINTPATH</i> <i class=
+'arg'>VOLNAME</i></a></dt>
+<dd>Mounts the volume specified by <i class='arg'>VOLNAME</i> at
+the mount point specified by <i class='arg'>MOUNTPOINTPATH</i>. The
+directory <i class='arg'>MOUNTPOINTPATH</i> must be empty.
+<i class='arg'>VOLNAME</i> must be of the form <span class=
+"strong">\\?\VOLUME{<i class='arg'>GUID</i>}\</span>. If any volume
+is already mounted at <i class='arg'>MOUNTPOINTPATH</i>, it will be
+silently unmounted before the new mount is performed.</dd>
+<dt><a name="set_drive_label" id="set_drive_label"><b class=
+'cmd'>set_drive_label</b> <i class='arg'>DRIVE</i> <i class=
+'arg'>NAME</i></a></dt>
+<dd>Sets the volume name for the specified drive. <i class=
+'arg'>NAME</i> may be an empty string in which case the drive label
+is removed.<br />
+<br />
+<a href="changedrivelabel.example">Example: Change the label of a
+drive</a></dd>
+<dt><a name="set_file_times" id="set_file_times"><b class=
+'cmd'>set_file_times</b> <i class='arg'>FILE</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Sets the creation, access or modification timestamps for a
+file. <i class='arg'>FILE</i> may either be the path to the file,
+an open Tcl channel to the open file or a Win32 handle to an open
+file. In the latter two cases, the file must have been opened for
+write access.<br />
+<br />
+The timestamps modified depend on the options specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-atime</b></span> <i class='arg'>LARGETIMESTAMP</i></td>
+<td class="opt">Sets the time of last access for the file.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-ctime</b></span> <i class='arg'>LARGETIMESTAMP</i></td>
+<td class="opt">Sets the creation time for the file.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-mtime</b></span> <i class='arg'>LARGETIMESTAMP</i></td>
+<td class="opt">Sets the time of last modification for the
+file.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-preserveatime</b></span></td>
+<td class="opt">Indicates that the time of last access for an open
+file should be preserved and not updated when the file is closed.
+This option can only be specified if <i class='arg'>FILE</i> is
+either an open Tcl channel or Win32 handle and not if it is a file
+path. Also, the option cannot be used together with <b class=
+'cmd'>-atime</b>.</td>
+</tr>
+</table>
+All time values must be specified in the same format as <a href=
+"osinfo.html#get_system_time"><b class=
+'cmd'>get_system_time</b></a>. You can use <a href=
+"misc.html#secs_since_1970_to_large_system_time"><b class=
+'cmd'>secs_since_1970_to_large_system_time</b></a> to convert the
+format used by Tcl's <b class='cmd'>clock</b> command to this
+format.</dd>
+<dt><a name="unmap_drive_local" id="unmap_drive_local"><b class=
+'cmd'>unmap_drive_local</b> <i class='arg'>DRIVE</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Unmaps the drive specified by <i class='arg'>DRIVE</i>. This
+must reference a local drive. The following options may be
+specified with the command:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-path</b></span> <i class='arg'>PATH</i></td>
+<td class="opt">Specifies that the drive should be unmapped only if
+it refers to the location specified by <i class='arg'>PATH</i>.
+This is useful to ensure drive letters are not unmapped when they
+have been redefined to point elsewhere.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-raw</b></span></td>
+<td class="opt">Specifies that <i class='arg'>PATH</i> argument
+specified with the <b class='cmd'>-path</b> option is a raw path
+specification that includes the device name as opposed to a drive
+letter.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="unmount_volume" id="unmount_volume"><b class=
+'cmd'>unmount_volume</b> <i class='arg'>MOUNTPOINTPATH</i></a></dt>
+<dd>Unmounts the volume at the mount point specified by <i class=
+'arg'>MOUNTPOINTPATH</i>. If <i class='arg'>MOUNTPOINTPATH</i> is a
+root directory of a drive, the corresponding DOS drive letter
+mapping is removed.</dd>
+<dt><a name="user_drive_space_available" id=
+"user_drive_space_available"><b class=
+'cmd'>user_drive_space_available</b> <i class='arg'>drive</i>
+<i class='arg'>space</i></a></dt>
+<dd>Returns 1 if the given drive has at least <i class=
+'arg'>space</i> bytes free, and 0 otherwise. Note that <i class=
+'arg'>space</i> is compared to the free bytes available to the
+caller as opposed to total free bytes on the drive. The former may
+be smaller if disk quotas are being enforced on the drive.<br />
+<br />
+<a href="checkavailablespace.example">Example: Check available disk
+space</a><br />
+<br /></dd>
+<dt><a name="volume_properties_dialog" id=
+"volume_properties_dialog"><b class=
+'cmd'>volume_properties_dialog</b> <i class='arg'>VOLUME</i>
+?<i class='arg'>options</i>?</a></dt>
+<dd>Displays the shell property dialog for the specified volume.
+The following options may be specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-hwin</b></span> <i class='arg'>HWIN</i></td>
+<td class="opt">If specified, <i class='arg'>HWIN</i> is the handle
+to the window to be used as the parent for the dialog.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-page</b></span> <i class='arg'>PAGENAME</i></td>
+<td class="opt">Specifies the name of the property sheet page to be
+displayed. If unspecified, the default page is displayed.</td>
+</tr>
+</table>
+</dd>
+</dl>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2003-2007 Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>

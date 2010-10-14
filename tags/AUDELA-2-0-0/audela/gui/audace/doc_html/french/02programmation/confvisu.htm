@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Fonctions du namespace confVisu</title>
+</head>
+
+<body>
+<p class="date">Date de mise &agrave; jour : 16 d&eacute;cembre 2005</p>
+<h1>Fonctions du namespace confVisu </h1>
+<p>Le fichier confvisu.tcl est un fichier important de Aud'ACE en ce sens qu'il est celui qui g&eacute;n&egrave;re les fonctions li&eacute;es &agrave; l'affichage.</p>
+<p>Le namespace ::confVisu regroupe les fonctions et les variables qui ont rapport 
+  avec l'affichage d'une visu.</p>
+<h2> Le namespace ::confVisu</h2>
+<h3> ::confVisu::boxBegin visuNo coord</h3>
+<p>Entame une op&eacute;ration de dragging en initialisant la variable private($visuNo,box_1) avec les coordonn&eacute;es canvas du curseur. Toutefois les coordonn&eacute;es pass&eacute;es au travers de la variable coord sont des coordonn&eacute;es &eacute;cran (issues directement du binding). Cette remarque est valable pour les trois commandes box. Cette commande ne fait rien si aucune image n'est charg&eacute;e en m&eacute;moire.</p>
+<h3> ::confVisu::boxEnd visuNo coord</h3>
+<p>Cette commande cl&ocirc;ture l'op&eacute;ration de dragging en formant la liste private($visuNo,box) qui regroupe les coordonn&eacute;es des deux coins de la bo&icirc;te, dans l'ordre x1, y1 x2, y2. Si les coordonn&eacute;es d'arriv&eacute;e sont &eacute;gales aux coordonn&eacute;es de d&eacute;part alors le cadre est effac&eacute;.</p>
+<h3> ::confVisu::boxDrag visuNo coord</h3>
+<p>Cette commande met &agrave; jour la variable private($visuNo,box_2) qui est la coordonn&eacute;e du deuxi&egrave;me coin de la bo&icirc;te (toujours le curseur). En m&ecirc;me temps il y a redimensionnement de la bo&icirc;te pour la faire correspondre aux coordonn&eacute;es. boxDrag est appel&eacute;e en r&eacute;ponse &agrave; l'&eacute;v&egrave;nement "d&eacute;placement avec le bouton gauche appuy&eacute;" sur le widget canvas.</p>
+<h3>::confVisu::getBox visuNo</h3>
+<p>Cette commande retourne les coordonn&eacute;es de la boite (coordonn&eacute;es 
+  dans le buffer) si elle existe, sinon retoune une cha&icirc;ne vide.</p>
+<p>Exemple : </p>
+<p>::confVisu::getBox 1<br>
+  # 92 379 137 436</p>
+<h3>::confVisu::autovisu visuNo { force &quot;-no&quot; }</h3>
+<p>Rafraichit l'affichage l'image avec des seuils optimaux pour analyser le fond 
+  de ciel de l'image.</p>
+<pre>Parametres :
+   visuNo: numero de la visu
+   force: 
+     -no : rafraichissement normal (valeur par defaut)
+     -novisu : pas de rafraichissement des seuils 
+retour: null</pre>
+<h3> ::confVisu::displayCursorCoord coord</h3>
+<p>Cette commande prend en entr&eacute;e des coordonn&eacute;es &eacute;cran, les transforme en coordonn&eacute;es image, et affiche dans la barre en bas de la fen&ecirc;tre principale les coordonn&eacute;es image du curseur, ainsi que l'intensit&eacute; du pixel &agrave; cet endroit.</p>
+<h3>::confVisu::getFileName visuNo </h3>
+<p>retourne le nom du fichier courant</p>
+<pre>Parametres : 
+   visuNo: numero de la visu </pre>
+<h3>::confVisu::onCutScaleRelease visuNo</h3>
+<p>Commande appel&eacute;e lorsque l'une des barres de seuils est rel&acirc;ch&eacute;e, 
+  afin de recalculer et d'afficher l'image avec les nouvelles valeurs de seuils.</p>
+<h3>::confVisu::onCutLabelLeftClick visuNo</h3>
+<p>Commande appel&eacute;e lorsqu'on clique sur l'une des valeurs des seuils de 
+  visualisation avec le bouton gauche de la souris. Cela a pour r&ocirc;le d'afficher 
+  l'image avec des seuils optimaux pour analyser le fond de ciel de l'image.</p>
+<h3> ::confVisu::onCutLabelRightClick visuNo</h3>
+<p>Commande appel&eacute;e lorsqu'on clique sur l'une des valeurs des seuils de 
+  visualisation avec le bouton droit de la souris. Cela ouvre une fen&ecirc;tre 
+  qui permet de modifier les valeurs minimales et maximales des barres de seuil.</p>
+<h3> </h3>
+<h3>:confVisu::SetFileName visuNo fileName</h3>
+<p>Modifie le nom du fichier courant et affiche le nom dans le titre</p>
+<pre>Parametres : 
+   visuNo: numero de la visu
+   fileName: nom du fichier </pre>
+<p>&nbsp;</p>
+</body>
+
+</html>

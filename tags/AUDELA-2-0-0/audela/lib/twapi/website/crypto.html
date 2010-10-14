@@ -1,0 +1,726 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>Cryptographic API</h2>
+<p>Commands related to cryptographical operations</p>
+<h3><a name="synopsis" id="synopsis">SYNOPSIS</a></h3>
+package require <b>twapi</b><br />
+<table class="commandsummary" summary="Table">
+<tr valign="top">
+<td><a href="#sspi_client_new_context"><b class=
+'cmd'>sspi_client_new_context</b> <i class='arg'>CREDENTIALS</i>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#sspi_close_security_context"><b class=
+'cmd'>sspi_close_security_context</b> <i class=
+'arg'>CONTEXT</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#sspi_decrypt"><b class='cmd'>sspi_decrypt</b>
+<i class='arg'>CONTEXT</i> <i class='arg'>DATA</i> <i class=
+'arg'>SIGNATURE</i> <i class='arg'>PADDING</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#sspi_encrypt"><b class='cmd'>sspi_encrypt</b>
+<i class='arg'>CONTEXT</i> <i class='arg'>DATA</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#sspi_enumerate_packages"><b class=
+'cmd'>sspi_enumerate_packages</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#sspi_generate_signature"><b class=
+'cmd'>sspi_generate_signature</b> <i class='arg'>CONTEXT</i>
+<i class='arg'>DATA</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#sspi_get_security_context_features"><b class=
+'cmd'>sspi_get_security_context_features</b> <i class=
+'arg'>CONTEXT</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#sspi_get_security_context_sizes"><b class=
+'cmd'>sspi_get_security_context_sizes</b> <i class=
+'arg'>CONTEXT</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#sspi_get_security_context_username"><b class=
+'cmd'>sspi_get_security_context_username</b> <i class=
+'arg'>CONTEXT</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#sspi_free_credentials"><b class=
+'cmd'>sspi_free_credentials</b> arg CREDENTIALS</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#sspi_new_credentials"><b class=
+'cmd'>sspi_new_credentials</b> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#sspi_security_context_next"><b class=
+'cmd'>sspi_security_context_next</b> <i class='arg'>CONTEXT</i>
+?<i class='arg'>RESPONSE</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#sspi_server_new_context"><b class=
+'cmd'>sspi_server_new_context</b> <i class='arg'>CREDENTIALS</i>
+<i class='arg'>CLIENTDATA</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#sspi_verify_signature"><b class=
+'cmd'>sspi_verify_signature</b> <i class='arg'>CONTEXT</i>
+<i class='arg'>DATA</i> <i class='arg'>SIGNATURE</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+</table>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p><span class="em">This module is still experimental and liable to
+change.</span></p>
+<p>This package provides procedures related to cryptographic
+services provided by the Windows platforms.</p>
+<h3><a name="sspioverview" id="sspioverview">SSPI overview</a></h3>
+<p>The Security Support Provider Interface (SSPI) is a standard
+interface to various security protocols that provide for security
+functions such as authentication, encryption and integrity. The
+SSPI interface allows establishment of a security context that can
+be used for signing and encrypting data passed between a client and
+a server.</p>
+<h3><a name="sspisecuritycontextestablishment" id=
+"sspisecuritycontextestablishment">SSPI security context
+establishment</a></h3>
+<p>On the client side, the application program starts off by
+retrieving the credentials to be used to authenticate itself to the
+server by calling <a href="#sspi_new_credentials"><b class=
+'cmd'>sspi_new_credentials</b></a> with the <b class=
+'cmd'>-outbound</b> option. It then creates a new client security
+context by calling <a href="#sspi_client_new_context"><b class=
+'cmd'>sspi_client_new_context</b></a> specifying appropriate
+desired security characteristics. The application then exchanges
+messages with the server to complete the authentication.</p>
+<p>Depending on the security protocol in use, the authentication
+between the client and the server may require multiple message
+exchanges between the client and the server. Once it obtains its
+security context, the client calls <a href=
+"#sspi_security_context_next"><b class=
+'cmd'>sspi_security_context_next</b></a> passing it the security
+context. This command returns an indication of whether the
+authentication is complete, or more exchanges with the server are
+required. In the latter case, data returned by the command is sent
+to the server and the server response is passed back to the
+command. This sequence is repeated until the command indicates the
+authentication is complete or generates a Tcl exception indicating
+authentication failure. The security context generated in this
+manner can then be used to sign and encrypt messages between the
+client and the server.</p>
+<p>On the server side, the application program starts off by
+retrieving its own credentials by calling <a href=
+"#sspi_new_credentials"><b class='cmd'>sspi_new_credentials</b></a>
+with the <b class='cmd'>-inbound</b>. It then creates a new server
+security context by calling <a href=
+"#sspi_server_new_context"><b class=
+'cmd'>sspi_server_new_context</b></a> passing it the authentication
+data sent by the client. The server then enters the authentication
+loop described below. From this point on, the server follows the
+authentication loop calling <a href=
+"#sspi_security_context_next"><b class=
+'cmd'>sspi_security_context_next</b></a> in the same manner as
+described above for the client.</p>
+<p>Once a security context is established, either on the client or
+the server, its characteristics, including the negotiated
+parameters, security principal name etc. can be retrieved through
+commands <a href="#sspi_get_security_context_flags"><b class=
+'cmd'>sspi_get_security_context_flags</b></a>, <a href=
+"#sspi_get_security_context_username"><b class=
+'cmd'>sspi_get_security_context_username</b></a> and <a href=
+"#sspi_get_security_context_sizes"><b class=
+'cmd'>sspi_get_security_context_sizes</b></a>.</p>
+<p>When no longer required, both the server and client ends should
+free resources associated with their credentials by calling
+<a href="#sspi_free_credentials"><b class=
+'cmd'>sspi_free_credentials</b></a>. Similarly, the security
+context should be released when no longer needed by calling
+<a href="#sspi_close_security_context"><b class=
+'cmd'>sspi_close_security_context</b></a>.</p>
+<h3><a name="sspimessagesigningandencryption" id=
+"sspimessagesigningandencryption">SSPI message signing and
+encryption</a></h3>
+<p>Once a security context has been completely created as above, it
+can then be used to generate and verify messages signatures using
+<a href="#sspi_generate_signature"><b class=
+'cmd'>sspi_generate_signature</b></a> and <a href=
+"#sspi_verify_signature"><b class=
+'cmd'>sspi_verify_signature</b></a> respectively.</p>
+<p>Similarly, the security context can be used to encrypt and
+decrypt messages using <a href="#sspi_encrypt"><b class=
+'cmd'>sspi_encrypt</b></a> and <a href="#sspi_decrypt"><b class=
+'cmd'>sspi_decrypt</b></a>.</p>
+<h3><a name="commands" id="commands">Commands</a></h3>
+<dl class="noclass">
+<dt><a name="sspi_client_new_context" id=
+"sspi_client_new_context"><b class=
+'cmd'>sspi_client_new_context</b> <i class='arg'>CREDENTIALS</i>
+?<i class='arg'>options</i>?</a></dt>
+<dd>Initiates the building of a new client-side, security context
+from based on the specified credentials. <i class=
+'arg'>CREDENTIALS</i> is a handle to credentials returned by
+<a href="#sspi_new_credentials"><b class=
+'cmd'>sspi_new_credentials</b></a>. The returned value, which is a
+handle to a security context, should be treated as opaque by the
+caller and used as described in <a href=
+"#sspisecuritycontextestablishment">SSPI security context
+establishment</a>.<br />
+<br />
+The options below specify the requirements for the context. Note
+that not all security providers support all options or combinations
+of options. Refer to the Windows SDK for more information about
+these options.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-confidentiality</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If specified as <span class="strong">true</span>,
+messages are to be encrypted.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-connection</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If specified as <span class="strong">true</span>,
+the security context will not handle formatting of messages.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-datarep</b></span> <i class='arg'>DATAREP</i></td>
+<td class="opt">Specifies the data representation on the target.
+<i class='arg'>DATAREP</i> must be either <span class=
+"strong">network</span> (default) or <span class=
+"strong">native</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-delegate</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If specified as <span class="strong">true</span>,
+the server can use the context to other servers as the client.
+Requires <b class='cmd'>-mutualauth</b> to also be specified as
+<span class="strong">true</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-extendederror</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">When <span class="strong">true</span>, the remote
+end is notified of errors.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-integrity</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If specified as <span class="strong">true</span>,
+messages are to be signed.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-mutualauth</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If specified as <span class="strong">true</span>,
+both the client and server are to be authenticated.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-replaydetect</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If specified as <span class="strong">true</span>,
+detection of replayed messages is desired.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-sequencedetect</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If specified as <span class="strong">true</span>,
+detection of out-of-sequence messages is desired.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-stream</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If specified as <span class="strong">true</span>,
+indicates a stream oriented connection.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-target</b></span> <i class='arg'>TARGET</i></td>
+<td class="opt">Specifies the target of the security context. The
+format depends on the security service provider.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-usesessionkey</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If specified as <span class="strong">true</span>, a
+new session key must be negotiated.</td>
+</tr>
+</table>
+<br />
+<br />
+When a security context is no longer required, it should be
+released by calling <a href=
+"#sspi_close_security_context"><b class='cmd'>sspi_close_security_context</b></a>.</dd>
+<dt><a name="sspi_close_security_context" id=
+"sspi_close_security_context"><b class=
+'cmd'>sspi_close_security_context</b> <i class=
+'arg'>CONTEXT</i></a></dt>
+<dd>Closes a security context constructed through <a href=
+"#sspi_client_new_context"><b class=
+'cmd'>sspi_client_new_context</b></a> or <a href=
+"#sspi_server_new_context"><b class=
+'cmd'>sspi_server_new_context</b></a> or and frees any associated
+resources.</dd>
+<dt><a name="sspi_decrypt" id="sspi_decrypt"><b class=
+'cmd'>sspi_decrypt</b> <i class='arg'>CONTEXT</i> <i class=
+'arg'>DATA</i> <i class='arg'>SIGNATURE</i> <i class=
+'arg'>PADDING</i> ?<i class='arg'>options</i>?</a></dt>
+<dd><span class="em">TBD</span></dd>
+<dt><a name="sspi_encrypt" id="sspi_encrypt"><b class=
+'cmd'>sspi_encrypt</b> <i class='arg'>CONTEXT</i> <i class=
+'arg'>DATA</i> ?<i class='arg'>options</i>?</a></dt>
+<dd><span class="em">TBD</span></dd>
+<dt><a name="sspi_enumerate_packages" id=
+"sspi_enumerate_packages"><b class=
+'cmd'>sspi_enumerate_packages</b></a></dt>
+<dd>Returns a list of the names of the security provider packages
+available on the system.</dd>
+<dt><a name="sspi_generate_signature" id=
+"sspi_generate_signature"><b class=
+'cmd'>sspi_generate_signature</b> <i class='arg'>CONTEXT</i>
+<i class='arg'>DATA</i> ?<i class='arg'>options</i>?</a></dt>
+<dd><span class="em">TBD</span></dd>
+<dt><a name="sspi_get_security_context_features" id=
+"sspi_get_security_context_features"><b class=
+'cmd'>sspi_get_security_context_features</b> <i class=
+'arg'>CONTEXT</i></a></dt>
+<dd>After a security context is established, this command may be
+used to retrieve information about what security features were
+negotiated. The command returns a keyed list with boolean values
+for the following fields.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-confidentiality</b></span></td>
+<td class="opt">If <span class="strong">true</span>, encryption is
+supported.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-connection</b></span></td>
+<td class="opt">If <span class="strong">true</span>, the security
+context will not handle formatting of messages.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-delegate</b></span></td>
+<td class="opt">If <span class="strong">true</span>, the server can
+use the context to other servers as the client.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-extendederror</b></span></td>
+<td class="opt">If <span class="strong">true</span>, the remote end
+is notified of errors.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-integrity</b></span></td>
+<td class="opt">If <span class="strong">true</span>, messages
+signing is supported.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-mutualauth</b></span></td>
+<td class="opt">If <span class="strong">true</span>, both the
+client and server are authenticated.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-replaydetect</b></span></td>
+<td class="opt">If <span class="strong">true</span>, detection of
+replayed messages is enabled.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sequencedetect</b></span></td>
+<td class="opt">If <span class="strong">true</span>, detection of
+out-of-sequence messages is enabled.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-stream</b></span></td>
+<td class="opt">If <span class="strong">true</span>, indicates a
+stream oriented connection.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="sspi_get_security_context_sizes" id=
+"sspi_get_security_context_sizes"><b class=
+'cmd'>sspi_get_security_context_sizes</b> <i class=
+'arg'>CONTEXT</i></a></dt>
+<dd>Returns a keyed list with the following fields:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-maxtoken</b></span></td>
+<td class="opt">Maximum size of token used in the authentication
+exchange.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-maxsig</b></span></td>
+<td class="opt">Maximum size of signature.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-blocksize</b></span></td>
+<td class="opt">Messages should preferably be a multiple of this
+value.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-trailersize</b></span></td>
+<td class="opt">Size of security trailer to be appended to
+messages.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="sspi_get_security_context_username" id=
+"sspi_get_security_context_username"><b class=
+'cmd'>sspi_get_security_context_username</b> <i class=
+'arg'>CONTEXT</i></a></dt>
+<dd><span class="em">TBD</span></dd>
+<dt><a name="sspi_free_credentials" id=
+"sspi_free_credentials"><b class='cmd'>sspi_free_credentials</b>
+arg CREDENTIALS</a></dt>
+<dd>Frees resources associated with credentials returned by
+<a href="#sspi_new_credentials"><b class=
+'cmd'>sspi_new_credentials</b></a>.</dd>
+<dt><a name="sspi_new_credentials" id=
+"sspi_new_credentials"><b class='cmd'>sspi_new_credentials</b>
+?<i class='arg'>options</i>?</a></dt>
+<dd>Returns credentials that can be used to negotiate and establish
+a security context. The command returns a handle to the credentials
+unless the <b class='cmd'>-getexpiration</b> option is specified in
+which case it returns a keyed list with two fields: <b class=
+'cmd'>-handle</b> which is the handle to the credentials, and
+<b class='cmd'>-expiration</b> which returns the time (as number of
+100ns intervals since January 1, 1601) at which the credentials
+expire.<br />
+<br />
+The following options may be specified with the command:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-domain</b></span> <i class='arg'>DOMAIN</i></td>
+<td class="opt">Specifies the domain to which the user account
+belongs. Not all security providers support this. By default, the
+user account for the current process is used.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-getexpiration</b></span></td>
+<td class="opt">If specified, the expiration time for the returned
+credentials is also returned. See description of command return
+value above.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-package</b></span> <i class='arg'>SECURITYPACKAGE</i></td>
+<td class="opt">Specifies the security package with which the
+credentials are to be used. By default, this is <span class=
+"strong">NTLM</span>. The list of available security packages on a
+system can be obtained through <a href=
+"#sspi_enumerate_packages"><b class=
+'cmd'>sspi_enumerate_packages</b></a>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-password</b></span> <i class='arg'>PASSWORD</i></td>
+<td class="opt">Specifies the password for retrieving credentials
+to the user account specified by the <b class='cmd'>-user</b>
+option.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-principal.arg</b></span> <i class='arg'>PRINCIPAL</i></td>
+<td class="opt">Specifies the name of the principal whose
+credentials are to be referenced. By default, this is the user
+account under which the process is running.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-usage</b></span> <i class='arg'>DIRECTION</i></td>
+<td class="opt">Indicates how the credentials will be used, based
+on <i class='arg'>DIRECTION</i> - <span class=
+"strong">inbound</span>, <span class="strong">outbound</span> or
+<span class="strong">both</span> (default).</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-user</b></span> <i class='arg'>USERNAME</i></td>
+<td class="opt">Specifies the name of the user account. Not all
+security providers support this. By default, the user account for
+the current process is used.</td>
+</tr>
+</table>
+<br />
+<br />
+The returned credentials must be freed by calling <a href=
+"#sspi_free_credentials"><b class=
+'cmd'>sspi_free_credentials</b></a> when no longer needed.</dd>
+<dt><a name="sspi_security_context_next" id=
+"sspi_security_context_next"><b class=
+'cmd'>sspi_security_context_next</b> <i class='arg'>CONTEXT</i>
+?<i class='arg'>RESPONSE</i>?</a></dt>
+<dd>Depending on the security provider in use, building a security
+context may require negotiation with multiple message exchanges
+between the client and server. This command indicates to the caller
+whether the negotiation is complete or additional exchange is
+required. See <a href="#sspisecuritycontextestablishment">SSPI
+security context establishment</a> for an overview of this
+process.<br />
+<br />
+<i class='arg'>CONTEXT</i> contains the security context being
+built. This is the return value from <a href=
+"#sspi_client_new_context"><b class=
+'cmd'>sspi_client_new_context</b></a>, <a href=
+"#sspi_server_new_context"><b class=
+'cmd'>sspi_server_new_context</b></a> or from a previous call to
+<a href="#sspi_security_context_next"><b class=
+'cmd'>sspi_security_context_next</b></a>.<br />
+<br />
+The command returns a list containing three elements. The first
+element is either <span class="strong">done</span>, indicating that
+building of the security context was successfully completed, or
+<span class="strong">continue</span>, indicating that additional
+negotiation is required. In both cases, if the second element of
+the returned list is not an empty string, it contains data to be
+sent to the remote end to either complete or continue the
+negotiation. The application should keep calling <a href=
+"#sspi_security_context_next"><b class=
+'cmd'>sspi_security_context_next</b></a> until it returns
+<span class="strong">done</span> as the first element of the
+returned list. Finally, the third element of the returned list
+contains the updated context. Callers should pass this in as
+<i class='arg'>CONTEXT</i> in the next call to the command.<br />
+<br />
+The command will raise a Tcl exception if the security context
+negotiation fails for any reason, including authentication
+failures.</dd>
+<dt><a name="sspi_server_new_context" id=
+"sspi_server_new_context"><b class=
+'cmd'>sspi_server_new_context</b> <i class='arg'>CREDENTIALS</i>
+<i class='arg'>CLIENTDATA</i> ?<i class='arg'>options</i>?</a></dt>
+<dd>Initiates the building of a new server-side, security context
+from based on the specified credentials and security data received
+from the client. <i class='arg'>CREDENTIALS</i> is a handle to
+credentials returned by <a href="#sspi_new_credentials"><b class=
+'cmd'>sspi_new_credentials</b></a>. The returned value, which is a
+handle to a security context, should be treated as opaque by the
+caller and used as described in <a href=
+"#sspisecuritycontextestablishment">SSPI security context
+establishment</a>.<br />
+<br />
+The options below specify the requirements for the context. Note
+that not all security providers support all options or combinations
+of options. Refer to the Windows SDK for more information about
+these options.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-confidentiality</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If specified as <span class="strong">true</span>,
+messages are to be encrypted.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-connection</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If specified as <span class="strong">true</span>,
+the security context will not handle formatting of messages.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-datarep</b></span> <i class='arg'>DATAREP</i></td>
+<td class="opt">Specifies the data representation on the target.
+<i class='arg'>DATAREP</i> must be either <span class=
+"strong">network</span> (default) or <span class=
+"strong">native</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-delegate</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If specified as <span class="strong">true</span>,
+the server can use the context to other servers as the client.
+Requires <b class='cmd'>-mutualauth</b> to also be specified as
+<span class="strong">true</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-extendederror</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">When <span class="strong">true</span>, the remote
+end is notified of errors.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-integrity</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If specified as <span class="strong">true</span>,
+messages are to be signed.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-mutualauth</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If specified as <span class="strong">true</span>,
+both the client and server are to be authenticated.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-replaydetect</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If specified as <span class="strong">true</span>,
+detection of replayed messages is desired.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-sequencedetect</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If specified as <span class="strong">true</span>,
+detection of out-of-sequence messages is desired.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-stream</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If specified as <span class="strong">true</span>,
+indicates a stream oriented connection.</td>
+</tr>
+</table>
+<br />
+<br />
+When a security context is no longer required, it should be
+released by calling <a href=
+"#sspi_close_security_context"><b class='cmd'>sspi_close_security_context</b></a>.</dd>
+<dt><a name="sspi_verify_signature" id=
+"sspi_verify_signature"><b class='cmd'>sspi_verify_signature</b>
+<i class='arg'>CONTEXT</i> <i class='arg'>DATA</i> <i class=
+'arg'>SIGNATURE</i> ?<i class='arg'>options</i>?</a></dt>
+<dd><span class="em">TBD</span></dd>
+</dl>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2007 Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>

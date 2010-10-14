@@ -1,0 +1,83 @@
+
+set visuNo 1
+set bufNo [::confVisu::getBufNo $visuNo]
+
+#-------------------------------------------------------------------------------
+test pretraitement_echantillonner {echantillonner x3 x0.5} {AUDACE} {
+   #--- je charge m57.fit
+   loadima [file join $::conf(testaudela,rep_images) m57.fit]
+   #--- clic sur le menu "re-echantillonner"
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,preprocess)" "$::caption(audace,menu,scale)..."
+   #--- je memorise l'intensite du pixel a la position (100,100)
+   set pix1 [lindex [buf$bufNo getpix {100 100}] 1]
+
+   #--- clic sur le menu "re-echantillonner"
+   ::testaudela::clicMenuButton .audace.pretraitement.usr.1.but1 "Re-échantillonner"
+   #--- clic sur "une image affichée"
+   ::testaudela::clicRadioButton .audace.pretraitement.usr.1.radiobutton.rad1
+   #-- je saisis le facteur de l'axe X
+   ::testaudela::putEntry .audace.pretraitement.usr.6.1.ent1 "3"
+   #-- je saisis le facteur de l'axe Y
+   ::testaudela::putEntry .audace.pretraitement.usr.6.2.ent2 "0.5"
+   #--- clic sur le bouton OK
+   ::testaudela::clicButton .audace.pretraitement.cmd.ok
+   #--- je rafraichis l'affichage et j'attends le temps de voir le resultat (a supprimer)
+   update
+   after 300
+
+   #--- je calcule la valeur attendue du pixel
+   set pix2 [lindex [buf$bufNo getpix [list [expr 100*3] [expr int(100*0.5) ] ] ] 1]
+   set valeurAttendue "331.333344"
+
+   #--- je verifie l'intensite du pixel
+   if { $pix2 == $valeurAttendue } {
+      set result ""
+   } else {
+      set result "valeur pix2=$pix2 diffrente de celle attendue =$valeurAttendue"
+   }
+
+   return $result
+} ""
+
+#-------------------------------------------------------------------------------
+test pretraitement_ngain2 {normalise eclairement} {AUDACE} {
+   #--- je charge m57.fit
+   loadima [file join $::conf(testaudela,rep_images) m57.fit]
+   #--- clic sur le menu "normaliser l'eclairement"
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,preprocess)" "$::caption(audace,menu,ngain)..."
+   #--- je memorise l'intensite du pixel a la position (100,100)
+   set pix1 [lindex [buf$bufNo getpix {100 100}] 1]
+
+   #--- clic sur "une image affichee"
+   ::testaudela::clicRadioButton .audace.pretraitement.usr.1.radiobutton.rad1
+   #-- je saisis le fond du ciel
+   ::testaudela::putEntry .audace.pretraitement.usr.3.1.ent5  "5000"
+   #--- clic sur le bouton OK
+   ::testaudela::clicButton .audace.pretraitement.cmd.ok
+   #--- update pour laisser le temps de refermer la MesssageBox du traitement precedent
+   update
+   #--- je rafraichis l'affichage et j'attends, le temps de voir le resultat
+   after 300
+
+   #--- je verifie l'intensite du pixel
+   set pix2 [lindex [buf$bufNo getpix [list [expr 100*3] [expr int(100*0.5)] ] ] 1]
+   set valeurAttendue "4521.325684"
+   if { $pix2 == $valeurAttendue } {
+      set result "1"
+   } else {
+      set result "pix2=$pix2 diffrent de la valeur attendue =$valeurAttendue"
+   }
+
+   return $result
+} "1"
+
+#-------------------------------------------------------------------------------
+test pretraitement_fin {effacer la visu} {AUDACE} {
+   update
+   #--- je vide la visu
+   set result [visu$visuNo clear]
+   #--- update pour laisser le temps de rafraichir l'affichage
+   update
+   return $result
+} "0"
+

@@ -1,0 +1,420 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>Clipboard</h2>
+<p>Commands related to accessing the clipboard</p>
+<h3><a name="synopsis" id="synopsis">SYNOPSIS</a></h3>
+package require <b>twapi</b><br />
+<table class="commandsummary" summary="Table">
+<tr valign="top">
+<td><a href="#clipboard_format_available"><b class=
+'cmd'>clipboard_format_available</b> <i class=
+'arg'>FORMAT</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#close_clipboard"><b class=
+'cmd'>close_clipboard</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_clipboard_formats"><b class=
+'cmd'>get_clipboard_formats</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_registered_clipboard_format_name"><b class=
+'cmd'>get_registered_clipboard_format_name</b> <i class=
+'arg'>FORMAT</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#open_clipboard"><b class=
+'cmd'>open_clipboard</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#read_clipboard"><b class='cmd'>read_clipboard</b>
+<i class='arg'>FORMAT</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#read_clipboard_text"><b class=
+'cmd'>read_clipboard_text</b> ?<b class='cmd'>-raw</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#register_clipboard_format"><b class=
+'cmd'>register_clipboard_format</b> <i class=
+'arg'>FORMATNAME</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#start_clipboard_monitor"><b class=
+'cmd'>start_clipboard_monitor</b> <i class=
+'arg'>SCRIPT</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#stop_clipboard_monitor"><b class=
+'cmd'>stop_clipboard_monitor</b> <i class=
+'arg'>MONITOR_ID</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#write_clipboard"><b class='cmd'>write_clipboard</b>
+<i class='arg'>FORMAT</i> <i class='arg'>DATA</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#write_clipboard_text"><b class=
+'cmd'>write_clipboard_text</b> <i class='arg'>TEXT</i></a></td>
+</tr>
+</table>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p>This module provides procedures to read and write the
+clipboard.</p>
+<h3><a name="overview" id="overview">Overview</a></h3>
+<p>The command <a href="#read_clipboard"><b class=
+'cmd'>read_clipboard</b></a> and <a href=
+"#write_clipboard"><b class='cmd'>write_clipboard</b></a> allow
+reading and writing to the Windows clipboard. Tcl/Tk has a
+<b class='cmd'>clipboard</b> command that provides similar
+functionality. The <b class='cmd'>TWAPI</b> commands are useful in
+two circumstances:</p>
+<ul class="noclass">
+<li>The Tcl <b class='cmd'>clipboard</b> command is not available
+in console-based Tcl programs that do not load <b class=
+'cmd'>Tk</b>. The <b class='cmd'>TWAPI</b> command may be used to
+access the clipboard in this case.</li>
+<li>More control is desired over the specific format of the data
+stored into the clipboard.</li>
+</ul>
+<p>In other cases, the Tcl/Tk <b class='cmd'>clipboard</b> command
+should be preferred.</p>
+<h3><a name="clipboardformats" id="clipboardformats">Clipboard
+formats</a></h3>
+<p>Data may be stored in the clipboard in any number for formats
+identified by integer values. When reading clipboard data,
+applications must check in what formats the current clipboard data
+is currently available and specify one of these formats when
+reading the data. Similarly, when writing data to the clipboard,
+applications need to specify the format in which data is to stored
+in the clipboard. In some cases, Windows will automatically make
+multiple formats available. For example, storing text in format
+type <span class="strong">1</span> (text) will also make format
+type <span class="strong">13</span> (Unicode) available in the
+clipboard.</p>
+<p>In addition to the standard set of formats defined by Windows
+applications may register their own formats with the system. The
+format values associated with these are created the first time the
+format name is registered through <a href=
+"#register_clipboard_format"><b class=
+'cmd'>register_clipboard_format</b></a> and can be retrieved later
+with the same call. Conversely, the name associated with a format
+can be obtained through the <a href=
+"#get_registered_clipboard_format_name"><b class=
+'cmd'>get_registered_clipboard_format_name</b></a> command. An
+example of a registered application format name is "HTML Format"
+which is used by Internet Explorer to store HTML fragments on the
+clipboard.</p>
+<p>Multiple formats may be simultaneously stored into the
+clipboard. The formats currently stored in the clipboard may be
+obtained through the <a href="#get_clipboard_formats"><b class=
+'cmd'>get_clipboard_formats</b></a> command.</p>
+<p>When reading or writing data, the application is responsible for
+formatting data appropriately, possibly through the use of Tcl's
+<b class='cmd'>binary</b> command. The exceptions to this are the
+<a href="#read_clipboard_text"><b class=
+'cmd'>read_clipboard_text</b></a> and <a href=
+"#write_clipboard_text"><b class='cmd'>write_clipboard_text</b></a>
+commands which assume the data is just text.</p>
+<h3><a name="readingandwritingdata" id=
+"readingandwritingdata">Reading and Writing Data</a></h3>
+<p>In the general case, the clipboard must first be opened with the
+<a href="#open_clipboard"><b class='cmd'>open_clipboard</b></a>
+call before data can be read or written to it. Data may be read and
+written using the <a href="#read_clipboard"><b class=
+'cmd'>read_clipboard</b></a> and <a href=
+"#write_clipboard"><b class='cmd'>write_clipboard</b></a> commands
+respectively. The clipboard must then be closed by calling <a href=
+"#close_clipboard"><b class='cmd'>close_clipboard</b></a>. There
+may be multiple write commands between the clipboard open and close
+to store data in multiple formats.</p>
+<p>For the simple case of reading and storing text data, the
+commands <a href="#read_clipboard_textwrite_clipboard"><b class=
+'cmd'>write_clipboard</b></a> and <a href=
+"#write_clipboard_text"><b class='cmd'>write_clipboard_text</b></a>
+may be used.</p>
+<h3><a name="monitoringclipboardchanges" id=
+"monitoringclipboardchanges">Monitoring clipboard changes</a></h3>
+<p>An application can monitor the clipboard by calling <a href=
+"#start_clipboard_monitor"><b class=
+'cmd'>start_clipboard_monitor</b></a> to set up a notification
+callback that is invoked when the contents of the clipboard
+change.</p>
+<h3><a name="commands" id="commands">Commands</a></h3>
+<dl class="noclass">
+<dt><a name="clipboard_format_available" id=
+"clipboard_format_available"><b class=
+'cmd'>clipboard_format_available</b> <i class=
+'arg'>FORMAT</i></a></dt>
+<dd>Returns 1 if the clipboard contains data in the specified
+format, and 0 otherwise. This command does not require the
+clipboard to have been opened.</dd>
+<dt><a name="close_clipboard" id="close_clipboard"><b class=
+'cmd'>close_clipboard</b></a></dt>
+<dd>Closes the clipboard which must have been previously opened
+with <a href="#open_clipboard"><b class=
+'cmd'>open_clipboard</b></a>.<br />
+<br />
+<a href="putclipboard.example">Example: Copy standard input to the
+clipboard</a></dd>
+<dt><a name="get_clipboard_formats" id=
+"get_clipboard_formats"><b class=
+'cmd'>get_clipboard_formats</b></a></dt>
+<dd>Returns a list of the formats currently available in the
+clipboard. The clipboard must have been opened before this function
+is called.<br />
+<br />
+<a href="gethtmlfromclipboard.example">Example: Get HTML format
+data from the clipboard</a></dd>
+<dt><a name="get_registered_clipboard_format_name" id=
+"get_registered_clipboard_format_name"><b class=
+'cmd'>get_registered_clipboard_format_name</b> <i class=
+'arg'>FORMAT</i></a></dt>
+<dd>Returns the name associated with a registered clipboard format.
+<i class='arg'>FORMAT</i> identifies the format and must correspond
+to a registered format. An exception will be raised if <i class=
+'arg'>FORMAT</i> is a standard Windows format or a unregistered
+private format.</dd>
+<dt><a name="open_clipboard" id="open_clipboard"><b class=
+'cmd'>open_clipboard</b></a></dt>
+<dd>Opens the clipboard for reading or writing. Most clipboard
+operations require the clipboard to have been previously opened.
+The clipboard must be closed once the operations are done by
+calling <a href="#close_clipboard"><b class=
+'cmd'>close_clipboard</b></a>.<br />
+<br />
+<a href="putclipboard.example">Example: Copy standard input to the
+clipboard</a></dd>
+<dt><a name="read_clipboard" id="read_clipboard"><b class=
+'cmd'>read_clipboard</b> <i class='arg'>FORMAT</i></a></dt>
+<dd>Reads the contents of the clipboard in the given format and
+returns it. The clipboard must have been previously opened through
+<a href="#open_clipboard"><b class='cmd'>open_clipboard</b></a> and
+remains open when the command returns except in the case of any Tcl
+exceptions. In these cases, the clipboard is closed before the
+exception is thrown.<br />
+<br />
+<i class='arg'>FORMAT</i> must be one of the clipboard formats as
+defined in <a href="#clipboardformats">Clipboard formats</a>. The
+content is an exact copy of the contents of the clipboard in binary
+format. Callers will need to use Tcl commands such as <b class=
+'cmd'>binary</b> and <b class='cmd'>encoding</b> to parse the
+data.<br />
+<br />
+<a href="gethtmlfromclipboard.example">Example: Get HTML format
+data from the clipboard</a></dd>
+<dt><a name="read_clipboard_text" id=
+"read_clipboard_text"><b class='cmd'>read_clipboard_text</b>
+?<b class='cmd'>-raw</b>?</a></dt>
+<dd>Retrieves the content of the clipboard as text. The clipboard
+must have been previously opened through <a href=
+"#open_clipboard"><b class='cmd'>open_clipboard</b></a> and remains
+open when the command returns except in the case of any Tcl
+exceptions. In these cases, the clipboard is closed before the
+exception is thrown.<br />
+<br />
+Normally the command converts CR-LF line terminators in clipboard
+content to LF line terminators. If the <b class='cmd'>-raw</b>
+option is specified, the command does no conversion of the
+clipboard data.<br />
+<br />
+<a href="getclipboard.example">Example: Copy clipboard contents to
+standard output</a></dd>
+<dt><a name="register_clipboard_format" id=
+"register_clipboard_format"><b class=
+'cmd'>register_clipboard_format</b> <i class=
+'arg'>FORMATNAME</i></a></dt>
+<dd>Registers an application defined format with the system (see
+<b>Clipboard Formats</b>). <i class='arg'>FORMATNAME</i> is the
+name associated with the format. The command returns an integer
+format identifier that may be used in calls to read and write data.
+If the format name is already registered, the same integer format
+value is returned. This command does not require the clipboard to
+be open.<br />
+<br />
+<a href="gethtmlfromclipboard.example">Example: Get HTML format
+data from the clipboard</a></dd>
+<dt><a name="start_clipboard_monitor" id=
+"start_clipboard_monitor"><b class=
+'cmd'>start_clipboard_monitor</b> <i class=
+'arg'>SCRIPT</i></a></dt>
+<dd>Begins monitoring of clipboard contents. <i class=
+'arg'>SCRIPT</i> will be invoked when the clipboard is written to
+by any application.<br />
+<br />
+The command returns a handle. When no longer required, this handle
+must be passed to the command <a href=
+"#stop_clipboard_monitor"><b class=
+'cmd'>stop_clipboard_monitor</b></a>.<br />
+<br />
+Multiple clipboard monitoring scripts may be active at the same
+time. However, all returned handles must be passed to <a href=
+"#stop_clipboard_monitor"><b class=
+'cmd'>stop_clipboard_monitor</b></a>. before the application
+exits.</dd>
+<dt><a name="stop_clipboard_monitor" id=
+"stop_clipboard_monitor"><b class='cmd'>stop_clipboard_monitor</b>
+<i class='arg'>MONITOR_ID</i></a></dt>
+<dd>Stops a previously registered script that monitors clipboard
+contents. <i class='arg'>MONITOR_ID</i> is monitoring handle
+previously returned by <a href="#start_clipboard_monitor"><b class=
+'cmd'>start_clipboard_monitor</b></a>.</dd>
+<dt><a name="write_clipboard" id="write_clipboard"><b class=
+'cmd'>write_clipboard</b> <i class='arg'>FORMAT</i> <i class=
+'arg'>DATA</i></a></dt>
+<dd>Writes <i class='arg'>DATA</i> to the clipboard in the given
+format. The clipboard must have been previously opened through
+<a href="#open_clipboard"><b class='cmd'>open_clipboard</b></a> and
+remains open when the command returns except in the case of any Tcl
+exceptions. In these cases, the clipboard is closed before the
+exception is thrown.<br />
+<br />
+<i class='arg'>FORMAT</i> must be one of the clipboard formats as
+defined in <a href="#clipboardformats">Clipboard formats</a>. The
+content is an exact copy of the contents of the clipboard in binary
+format. Callers will need to use Tcl commands such as <b class=
+'cmd'>binary</b> and <b class='cmd'>encoding</b> to parse the
+data.<br />
+<br />
+Multiple <b class='cmd'>write_clipboard</b> commands may be
+executed between a <a href="#open_clipboard"><b class=
+'cmd'>open_clipboard</b></a> and <a href=
+"#close_clipboard"><b class='cmd'>close_clipboard</b></a> pair as
+long as the specified formats are different for each. Writing a
+format previously specified in the sequence overwrites the previous
+contents of that format.</dd>
+<dt><a name="write_clipboard_text" id=
+"write_clipboard_text"><b class='cmd'>write_clipboard_text</b>
+<i class='arg'>TEXT</i></a></dt>
+<dd>Writes the given text string to the clipboard. The clipboard
+must have been previously opened through <a href=
+"#open_clipboard"><b class='cmd'>open_clipboard</b></a> and remains
+open when the command returns except in the case of any Tcl
+exceptions. In these cases, the clipboard is closed before the
+exception is thrown.<br />
+<br />
+<a href="putclipboard.example">Example: Copy standard input to the
+clipboard</a></dd>
+</dl>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2004-2006 Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>

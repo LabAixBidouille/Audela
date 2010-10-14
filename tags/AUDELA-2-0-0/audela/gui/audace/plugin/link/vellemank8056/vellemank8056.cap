@@ -1,0 +1,97 @@
+#
+# Fichier : vellemank8056.cap
+# Mise a jour $Id: vellemank8056.cap,v 1.4 2009-12-19 09:26:13 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(vellemank8056,titre)           "Velleman K8056"
+set caption(vellemank8056,serialPort)      "Serial Port"
+set caption(vellemank8056,refresh)         "Reload"
+set caption(vellemank8056,test)            "Test"
+set caption(vellemank8056,stop)            "Stop"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(vellemank8056,titre)        "Velleman K8056"
+   set caption(vellemank8056,serialPort)   "Port série"
+   set caption(vellemank8056,refresh)      "Rafraîchir"
+   set caption(vellemank8056,test)         "Test"
+   set caption(vellemank8056,stop)         "Arrêter"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(vellemank8056,titre)        "Velleman K8056"
+   set caption(vellemank8056,serialPort)   "Porta seriale"
+   set caption(vellemank8056,refresh)      "Rinfresca"
+   set caption(vellemank8056,test)         "Test"
+   set caption(vellemank8056,stop)         "Fermare"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(vellemank8056,titre)        "Velleman K8056"
+   set caption(vellemank8056,serialPort)   "Puerto serie"
+   set caption(vellemank8056,refresh)      "Recargar"
+   set caption(vellemank8056,test)         "Test"
+   set caption(vellemank8056,stop)         "Parar"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(vellemank8056,titre)        "Velleman K8056"
+   set caption(vellemank8056,serialPort)   "Serial Anschlüss"
+   set caption(vellemank8056,refresh)      "Aktualisieren"
+   set caption(vellemank8056,test)         "Test"
+   set caption(vellemank8056,stop)         "Halten"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(vellemank8056,titre)        "Velleman K8056"
+   set caption(vellemank8056,serialPort)   "Porta série"
+   set caption(vellemank8056,refresh)      "Actualizar"
+   set caption(vellemank8056,test)         "Teste"
+   set caption(vellemank8056,stop)         "Parar"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(vellemank8056,titre)        "Velleman K8056"
+   set caption(vellemank8056,serialPort)   "Seriel port"
+   set caption(vellemank8056,refresh)      "Genindlæs"
+   set caption(vellemank8056,test)         "Test"
+   set caption(vellemank8056,stop)         "Stop"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(vellemank8056,titre)        "Velleman K8056"
+   set caption(vellemank8056,serialPort)   "Serial Port"
+   set caption(vellemank8056,refresh)      "Reload"
+   set caption(vellemank8056,test)         "Test"
+   set caption(vellemank8056,stop)         "Stop"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(vellemank8056,titre)        "Velleman K8056"
+   set caption(vellemank8056,serialPort)   "Serial Port"
+   set caption(vellemank8056,refresh)      "Reload"
+   set caption(vellemank8056,test)         "Test"
+   set caption(vellemank8056,stop)         "Stop"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

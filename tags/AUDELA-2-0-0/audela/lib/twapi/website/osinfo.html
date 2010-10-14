@@ -1,0 +1,1305 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>System</h2>
+<p>Operating system and machine configuration and control</p>
+<h3><a name="synopsis" id="synopsis">SYNOPSIS</a></h3>
+package require <b>twapi</b><br />
+<table class="commandsummary" summary="Table">
+<tr valign="top">
+<td><a href="#abort_system_shutdown"><b class=
+'cmd'>abort_system_shutdown</b> ?<b class='cmd'>-system</b>
+<i class='arg'>SYSTEM</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#find_domain_controller"><b class=
+'cmd'>find_domain_controller</b> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_active_processor_mask"><b class=
+'cmd'>get_active_processor_mask</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_computer_name"><b class=
+'cmd'>get_computer_name</b> ?<i class='arg'>NAMETYPE</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_computer_netbios_name"><b class=
+'cmd'>get_computer_netbios_name</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_memory_info"><b class='cmd'>get_memory_info</b>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_primary_domain_controller"><b class=
+'cmd'>get_primary_domain_controller</b> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_primary_domain_info"><b class=
+'cmd'>get_primary_domain_info</b> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_os_description"><b class=
+'cmd'>get_os_description</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_os_info"><b class='cmd'>get_os_info</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_os_version"><b class=
+'cmd'>get_os_version</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_processor_count"><b class=
+'cmd'>get_processor_count</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_processor_info"><b class=
+'cmd'>get_processor_info</b> <i class='arg'>PROCESSOR</i>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_system_info"><b class='cmd'>get_system_info</b>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_system_parameters_info"><b class=
+'cmd'>get_system_parameters_info</b> <i class=
+'arg'>PARAMETER</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_system_time"><b class=
+'cmd'>get_system_time</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_system_uptime"><b class=
+'cmd'>get_system_uptime</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#lock_workstation"><b class=
+'cmd'>lock_workstation</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#logoff"><b class='cmd'>logoff</b> ?<b class=
+'cmd'>-force</b>? ?<b class='cmd'>-forceifhung</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#min_os_version"><b class='cmd'>min_os_version</b>
+<i class='arg'>osmajor</i> ?<i class='arg'>osminor</i>? ?<i class=
+'arg'>spmajor</i>? ?<i class='arg'>spminor</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_system_parameters_info"><b class=
+'cmd'>set_system_parameters_info</b> <i class='arg'>PARAMETER</i>
+<i class='arg'>VALUE</i> ?<b class='cmd'>-persist</b>? ?<b class=
+'cmd'>-notify</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#shutdown_system"><b class='cmd'>shutdown_system</b>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#suspend_system"><b class='cmd'>suspend_system</b>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+</table>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p>This module provides commands related to the system
+configuration including operating system functions and hardware
+configuration.</p>
+<h3><a name="overview" id="overview">Overview</a></h3>
+<p>The commands <a href="#get_os_version"><b class=
+'cmd'>get_os_version</b></a> and <a href=
+"#min_os_version"><b class='cmd'>min_os_version</b></a> get and
+verify operating system version information.</p>
+<p>The commands <a href="#get_os_info"><b class=
+'cmd'>get_os_info</b></a> and <a href=
+"#get_os_description"><b class='cmd'>get_os_description</b></a>
+allow retrieval of more detailed operating system information than
+the standard Tcl commands which do not distinguish between service
+packs, Professional versus Server versions and so on.</p>
+<p>The command <a href="#get_system_info"><b class=
+'cmd'>get_system_info</b></a> returns information about the current
+system.</p>
+<p>The command <a href="#get_computer_name"><b class=
+'cmd'>get_computer_name</b></a> returns one of several forms of the
+system name. The command <a href=
+"#get_computer_netbios_name"><b class=
+'cmd'>get_computer_netbios_name</b></a> returns the NETBIOS name of
+the computer. Domain and workgroup information about the system can
+be obtained through the <a href=
+"#get_primary_domain_info"><b class='cmd'>get_primary_domain_info</b></a>
+command. <a href="#find_domain_controller"><b class=
+'cmd'>find_domain_controller</b></a> returns information about a
+domain controller with specified characteristics. <a href=
+"#get_primary_domain_controller"><b class=
+'cmd'>get_primary_domain_controller</b></a> returns the name of the
+primary domain controller of the computer.</p>
+<p>The commands <a href="#get_processor_count"><b class=
+'cmd'>get_processor_count</b></a>, <a href=
+"#get_active_processor_mask"><b class=
+'cmd'>get_active_processor_mask</b></a> and <a href=
+"#get_processor_info"><b class='cmd'>get_processor_info</b></a>
+retrieve information about the processors in the system including
+type and utilization.</p>
+<p>The command <a href="#get_memory_info"><b class=
+'cmd'>get_memory_info</b></a> returns the physical and virtual
+memory configuration of the system.</p>
+<p>The command <a href="#get_system_time"><b class=
+'cmd'>get_system_time</b></a> returns the current system time in
+high resolution. The command <a href="#get_system_uptime"><b class=
+'cmd'>get_system_uptime</b></a> returns the how long the system has
+been running. The command <a href="#shutdown_system"><b class=
+'cmd'>shutdown_system</b></a> may be used to shutdown or reboot the
+system. The command <a href="#abort_system_shutdown"><b class=
+'cmd'>abort_system_shutdown</b></a> may be used to abort an ongoing
+system shutdown. The commands <a href="#logoff"><b class=
+'cmd'>logoff</b></a> and <a href="#lock_workstation"><b class=
+'cmd'>lock_workstation</b></a> may be used to log out of a user
+account and to lock a workstation respectively.</p>
+<p>Various system settings related to the user experience can be
+retrieved and set through the <a href=
+"osinfo.html#get_system_parameters_info"><b class=
+'cmd'>get_system_parameters_info</b></a> and <a href=
+"osinfo.html#set_system_parameters_info"><b class=
+'cmd'>set_system_parameters_info</b></a> commands.</p>
+<h3><a name="commands" id="commands">Commands</a></h3>
+<dl class="noclass">
+<dt><a name="abort_system_shutdown" id=
+"abort_system_shutdown"><b class='cmd'>abort_system_shutdown</b>
+?<b class='cmd'>-system</b> <i class='arg'>SYSTEM</i>?</a></dt>
+<dd>Aborts a previously initiated system shut down or reboot. Note
+this is only possible if the system shutdown was initiated with a
+non-zero timeout value. The command enables any required privileges
+and restores the original privileges before returning.</dd>
+<dt><a name="find_domain_controller" id=
+"find_domain_controller"><b class='cmd'>find_domain_controller</b>
+?<i class='arg'>options</i>?</a></dt>
+<dd>Returns the name of a domain controller with specified
+characteristics and optionally, details about its characteristics
+and capabilities.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-allowstale</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If specified as <span class="strong">true</span>,
+the system will return cached domain controller information even if
+it is marked as expired. Default is <span class=
+"strong">false</span>. This option has no effect if <b class=
+'cmd'>-rediscover</b> is specified as <span class=
+"strong">true</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-avoidself</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If specified as <span class="strong">true</span>,
+and the command is run on a domain controller, the domain
+controller will return the name of another domain controller, not
+itself. Default is <span class="strong">false</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-domain</b></span> <i class='arg'>DOMAINNAME</i></td>
+<td class="opt">Specifies the domain whose domain controller is to
+be retrieved. If unspecified, defaults to the primary domain of the
+computer.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-domainguid</b></span> <i class='arg'>GUID</i></td>
+<td class="opt">If the domain specified by the <b class=
+'cmd'>-domain</b> option or the primary domain of system cannot be
+found, the command will attempt to return the domain controller for
+the domain with the specified GUID.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-getdetails</b></span></td>
+<td class="opt">By default, the command returns the name of the
+domain controller. If this option is specified, the command returns
+detailed information whose format is described below.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-inputnameformat</b></span> <i class=
+'arg'>NAMEFORMAT</i></td>
+<td class="opt">Specifies the format of the specified domain name.
+<i class='arg'>NAMEFORMAT</i> may be one of <span class=
+"strong">dns</span>, which implies DNS format, <span class=
+"strong">flat</span> which implies flat Netbios format, or
+<span class="strong">any</span> (default) which results in the
+command searching both namespaces.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-justldap</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If specified as <span class="strong">true</span>,
+the command searches for a LDAP server without caring if it is a
+domain controller.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-rediscover</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If specified as <span class="strong">true</span>,
+the system ignores any cached domain controller data. Default is
+<span class="strong">false</span>. Note specifying this option as
+<span class="strong">true</span> significantly increases the time
+to execute the command.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-outputaddrformat</b></span> <i class=
+'arg'>ADDRFORMAT</i></td>
+<td class="opt">If <i class='arg'>ADDRFORMAT</i> is specified as
+<span class="strong">ip</span>, the <b class='cmd'>-dcaddr</b>
+field in the returned information is the Internet address.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-outputnameformat</b></span> <i class=
+'arg'>NAMEFORMAT</i></td>
+<td class="opt">Specifies the format in which the domain controller
+and domain names should be returned. <i class='arg'>NAMEFORMAT</i>
+may be one of <span class="strong">dns</span>, which implies DNS
+format, <span class="strong">flat</span> which implies flat Netbios
+format, or <span class="strong">any</span> (default). The command
+will raise an error if the name is not available in the specified
+format.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-prefer</b></span> <i class='arg'>FEATURELIST</i></td>
+<td class="opt">Indicates that the domain controller that support
+the specified features and services is returned in preference to
+one that does not. <i class='arg'>FEATURELIST</i> is a list of zero
+or more elements from <span class="strong">directoryservice</span>
+and <span class="strong">timeserver</span> (see below).</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-require</b></span> <i class='arg'>FEATURELIST</i></td>
+<td class="opt">Indicates that the domain controller to be returned
+must support the specified features and services. <i class=
+'arg'>FEATURELIST</i> is a list of zero or more features from the
+following: <span class="strong">directoryservice</span> (Active
+Directory support), <span class="strong">globalcatalog</span>
+(global catalog server for the forest rooted by this domain),
+<span class="strong">pdc</span> (primary domain controller for this
+domain) <span class="strong">kdc</span> (Kerberos Key Distribution
+center service) <span class="strong">timeserver</span> (running
+Windows Time Service) <span class="strong">writable</span> (must
+not be read-only). Note that the features <span class=
+"strong">pdc</span>, <span class="strong">kdc</span> and
+<span class="strong">globalcatalog</span> are mutually exclusive
+and must not be specified together.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-site</b></span> <i class='arg'>SITENAME</i></td>
+<td class="opt">Specifies the name of the site where the domain
+controller should be physically located. If an empty string
+(default), the command will attempt to return a controller in a
+site that is closest to the site of the system specified by the
+<b class='cmd'>-system</b> option.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-system</b></span> <i class='arg'>COMPUTERNAME</i></td>
+<td class="opt">Specifies the DNS or NETBIOS name of the computer
+on which the lookup is to be done. If unspecified, defaults to the
+local system.</td>
+</tr>
+</table>
+If the <b class='cmd'>-getdetails</b> option is specified, the
+command returns detailed information about the controller instead
+of just its name. The returned information is a flat list of key
+value pairs with the following elements:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-clientsite</b></span></td>
+<td class="opt">The name of the site containing the system
+specified by the <b class='cmd'>-system</b> option.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-dcname</b></span></td>
+<td class="opt">Name of the domain controller which may be either
+in DNS or Netbios format.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-dcnameformat</b></span></td>
+<td class="opt">Either <span class="strong">dns</span> if the
+<b class='cmd'>-dcname</b> field is in DNS format, or <span class=
+"strong">netbios</span> if it is a Netbios name.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-dcaddr</b></span></td>
+<td class="opt">Address of the domain controller. This may be
+either the Netbios address or the IP address depending on the value
+of the specified <b class='cmd'>-outputaddrformat</b> option.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-dcaddrformat</b></span></td>
+<td class="opt">Either <span class="strong">ip</span> if the
+<b class='cmd'>-dcaddr</b> field is in IP address format, or
+<span class="strong">netbios</span> if it is a Netbios
+address.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-dcsite</b></span></td>
+<td class="opt">The name of the site containing the domain
+controller.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-dnsforest</b></span></td>
+<td class="opt">Name of the domain that is at the root of the
+directory service tree.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-dnsforestformat</b></span></td>
+<td class="opt">Either <span class="strong">dns</span> if the
+<b class='cmd'>-dnsforestformat</b> field is in DNS format, or
+<span class="strong">netbios</span> if it is a Netbios name.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-domainguid</b></span></td>
+<td class="opt">GUID of the domain.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-domain</b></span></td>
+<td class="opt">Name of the domain.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-domainformat</b></span></td>
+<td class="opt">Either <span class="strong">dns</span> if the
+<b class='cmd'>-domain</b> field is in DNS format, or <span class=
+"strong">netbios</span> if it is a Netbios name.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-features</b></span></td>
+<td class="opt">Contains a list describing domain controller
+features. This list may contain zero or more of the following:
+<span class="strong">directoryservice</span> (Active Directory
+support), <span class="strong">globalcatalog</span> (global catalog
+server for the forest rooted by this domain), <span class=
+"strong">pdc</span> (primary domain controller for this domain),
+<span class="strong">kdc</span> (Kerberos Key Distribution center
+service), <span class="strong">timeserver</span> (running Windows
+Time Service), <span class="strong">goodtimeserver</span> (running
+Windows Time Service with a physical clock), <span class=
+"strong">writable</span> (is not read-only).</td>
+</tr>
+</table>
+Note that any of these fields may have empty string values if the
+information is not relevant or cannot be found.</dd>
+<dt><a name="get_active_processor_mask" id=
+"get_active_processor_mask"><b class=
+'cmd'>get_active_processor_mask</b></a></dt>
+<dd>Returns a mask representing the processors configured into the
+system.</dd>
+<dt><a name="get_computer_name" id="get_computer_name"><b class=
+'cmd'>get_computer_name</b> ?<i class='arg'>NAMETYPE</i>?</a></dt>
+<dd>Returns the name of the computer. <i class='arg'>NAMETYPE</i>
+must be one of the following:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">netbios</span></span></td>
+<td class="opt">Returns the NETBIOS name of the local computer or
+the cluster virtual server if it is in a cluster.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">dnshostname</span></span></td>
+<td class="opt">Returns the DNS host name of the local computer or
+the cluster virtual server if it is in a cluster.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">dnsdomain</span></span></td>
+<td class="opt">Returns the DNS domain of the local computer or the
+cluster virtual server if it is in a cluster.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">dnsfullyqualified</span></span></td>
+<td class="opt">Returns the fully qualified DNS domain of the local
+computer or the cluster virtual server if it is in a cluster.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">physicalnetbios</span></span></td>
+<td class="opt">Returns the NETBIOS name of the local
+computer.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">physicaldnshostname</span></span></td>
+<td class="opt">Returns the DNS host name of the local
+computer.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">physicaldnsdomain</span></span></td>
+<td class="opt">Returns the DNS domain of the local computer.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">physicaldnsfullyqualified</span></span></td>
+<td class="opt">Returns the fully qualified DNS name of the local
+computer.</td>
+</tr>
+</table>
+If <i class='arg'>NAMETYPE</i> is not specified, it defaults to
+<span class="strong">netbios</span>.</dd>
+<dt><a name="get_computer_netbios_name" id=
+"get_computer_netbios_name"><b class=
+'cmd'>get_computer_netbios_name</b></a></dt>
+<dd>Returns the NETBIOS name of the computer.<br />
+<br />
+<a href="printcomputername.example">Example: print the computer
+name</a></dd>
+<dt><a name="get_memory_info" id="get_memory_info"><b class=
+'cmd'>get_memory_info</b> ?<i class='arg'>options</i>?</a></dt>
+<dd>Returns various information about the physical and virtual
+memory configuration of the system. The information returned is in
+the form of a flat list of the form "<i class='arg'>field1</i>
+<i class='arg'>value1</i> <i class='arg'>field2</i> <i class=
+'arg'>value2</i> ..." depending on which of the following options
+are specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Returns all the options listed below.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-allocationgranularity</b></span></td>
+<td class="opt">Returns the granularity with which virtual memory
+is allocated.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-availcommit</b></span></td>
+<td class="opt">Returns the amount of free virtual memory available
+to commit.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-availphysical</b></span></td>
+<td class="opt">Returns the amount of free physical memory.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-maxappaddr</b></span></td>
+<td class="opt">Returns the highest address that may be mapped into
+an application's address space.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-minappaddr</b></span></td>
+<td class="opt">Returns the lowest address that may be mapped into
+an application's address space.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-pagesize</b></span></td>
+<td class="opt">Returns the size of a virtual memory page</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-swapfiles</b></span></td>
+<td class="opt">Returns a list of the swap files for the
+system.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-swapfiledetail</b></span></td>
+<td class="opt">Returns a flat list of pairs corresponding to the
+swap files. The first element of each pair is the name of the swap
+file. The second element is a list of consisting of the current
+size of the file (in pages), the number of pages in use, and the
+peak number of pages that have been used in the file.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-totalcommit</b></span></td>
+<td class="opt">Returns the maximum amount of virtual memory that
+can be committed without extending the swap files.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-totalphysical</b></span></td>
+<td class="opt">Returns the total amount of physical memory
+installed in the system.</td>
+</tr>
+</table>
+<a href="showvmstats.example">Example: Show virtual memory
+statistics</a><br />
+<br /></dd>
+<dt><a name="get_primary_domain_controller" id=
+"get_primary_domain_controller"><b class=
+'cmd'>get_primary_domain_controller</b> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Returns the primary domain controller (PDC) for a domain. The
+command <a href="#find_domain_controller"><b class=
+'cmd'>find_domain_controller</b></a> should be preferred to this
+command.<br />
+<br />
+The following options may be specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-domain</b></span> <i class='arg'>DOMAINNAME</i></td>
+<td class="opt">Specifies the domain whose PDC is to be retrieved.
+If unspecified, defaults to the primary domain.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-system</b></span> <i class='arg'>COMPUTERNAME</i></td>
+<td class="opt">Specifies the DNS or NETBIOS name of the computer
+on which the lookup is to be done. If unspecified, defaults to the
+local system.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_primary_domain_info" id=
+"get_primary_domain_info"><b class=
+'cmd'>get_primary_domain_info</b> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Returns information about the primary domain or workgroup of
+the system as a flat list of option value pairs. The following
+options control what information is returned.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Equivalent to specifying all options.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-dnsdomainname</b></span></td>
+<td class="opt">Returns the DNS name of the primary domain.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-dnsforestname</b></span></td>
+<td class="opt">Returns the DNS forest name of the primary
+domain.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-domainguid</b></span></td>
+<td class="opt">Returns the GUID of the primary domain.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-name</b></span></td>
+<td class="opt">Returns the domain or workgroup name.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sid</b></span></td>
+<td class="opt">Returns the SID of the primary domain.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-type</b></span></td>
+<td class="opt">Returns <span class="strong">workgroup</span> or
+<span class="strong">domain</span> depending on whether the system
+belongs to a workgroup or a domain.</td>
+</tr>
+</table>
+If the system belongs to a workgroup, all options will return empty
+values except <b class='cmd'>-name</b> and <b class=
+'cmd'>-type</b>.</dd>
+<dt><a name="get_os_description" id="get_os_description"><b class=
+'cmd'>get_os_description</b></a></dt>
+<dd>This commmand returns the same operating system information as
+returned by <a href="#get_os_info"><b class=
+'cmd'>get_os_info</b></a> but in a form suitable for displaying to
+a user.</dd>
+<dt><a name="get_os_info" id="get_os_info"><b class=
+'cmd'>get_os_info</b></a></dt>
+<dd>This command retrieves operating system version and
+configuration information and returns a keyed list with the
+following fields:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">platform</span></span></td>
+<td class="opt">String identifying the operating system base
+platform. Currently this is always <span class=
+"strong">NT</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">os_major_version</span></span></td>
+<td class="opt">Major operating system version.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">os_minor_version</span></span></td>
+<td class="opt">Minor operating system version.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">sp_major_version</span></span></td>
+<td class="opt">Major service pack version.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">sp_minor_version</span></span></td>
+<td class="opt">Minor service pack version.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">os_build_number</span></span></td>
+<td class="opt">Contains the operating system build number.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">system_type</span></span></td>
+<td class="opt">Indicates the operating system base type. This is
+<span class="strong">workstation</span> for <span class=
+"strong">Windows NT 4.0 Workstation</span>, <span class=
+"strong">Windows 2000 Professional</span>, or any <span class=
+"strong">Windows XP</span> operating system versions. If the system
+is a domain controller, this value is <span class=
+"strong">domain_controller</span>. In all other cases, this value
+is <span class="strong">server</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">suites</span></span></td>
+<td class="opt">Contains a list of values (see below) that indicate
+various options that may be installed as part of the operating
+system.</td>
+</tr>
+</table>
+The <span class="strong">suites</span> element in the returned
+array contains a list of values from the following set that
+indicates additional operating system components that are present:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">backoffice</span></span></td>
+<td class="opt">Microsoft BackOffice components are installed</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">blade</span></span></td>
+<td class="opt">Windows .NET Server 2003 family Web Edition is
+installed</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">terminal</span></span></td>
+<td class="opt">Terminal Services are installed</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">datacenter</span></span></td>
+<td class="opt">Windows 2000 Datacenter Server or Windows .NET
+Server 2003 family Datacenter Edition is installed</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">enterprise</span></span></td>
+<td class="opt">Windows NT 4.0 Enterprise Edition, Windows 2000
+Advanced Server, or Windows .NET Server 2003 family Enterprise
+Edition is installed</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">smallbusiness</span></span></td>
+<td class="opt">Microsoft Small Business Server is installed</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">smallbusiness_restricted</span></span></td>
+<td class="opt">Microsoft Small Business Server is installed with
+the restrictive client license in force</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">personal</span></span></td>
+<td class="opt">Windows XP Home Edition is installed</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">pagesize</span></span></td>
+<td class="opt">Contains the number of bytes in a page</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">min_app_addr</span></span></td>
+<td class="opt">Contains the lowest possible address in the
+application's virtual memory space.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">max_app_addr</span></span></td>
+<td class="opt">Contains the highest possible address in the
+application's virtual memory space.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">allocation_granularity</span></span></td>
+<td class="opt">Contains the granularity of virtual memory
+allocation.</td>
+</tr>
+</table>
+<a href="verifyTS.example">Example: check if terminal services are
+present</a><br />
+<br /></dd>
+<dt><a name="get_os_version" id="get_os_version"><b class=
+'cmd'>get_os_version</b></a></dt>
+<dd>This command returns the operating system version as list of
+four elements - the operating system major version number, the
+operating system minor version number, the service pack major
+version number, the service pack minor version number.<br />
+<br />
+<a href="verifyservicepack.example">Example: verify if a service
+pack is installed</a></dd>
+<dt><a name="get_processor_count" id=
+"get_processor_count"><b class='cmd'>get_processor_count</b></a></dt>
+<dd>Returns the number of processors in the system.</dd>
+<dt><a name="get_processor_info" id="get_processor_info"><b class=
+'cmd'>get_processor_info</b> <i class='arg'>PROCESSOR</i>
+?<i class='arg'>options</i>?</a></dt>
+<dd>Returns various pieces of information related to the processors
+in the system. <i class='arg'>PROCESSOR</i> identifies the
+processor whose information is to be retrieving. If specified as an
+empty string, information across all processors in the system is
+returned. The information returned is in the form of a flat list of
+the form "<i class='arg'>field1</i> <i class='arg'>value1</i>
+<i class='arg'>field2</i> <i class='arg'>value2</i> ...". The
+fields returned depend on the specified options and their values
+may be scalars (e.g. <span class="strong">-name</span>) or rate
+based measured over an interval (e.g. <span class=
+"strong">-processorutilization</span>). The option <span class=
+"strong">-interval</span> may be used to indicate the interval over
+which the rate based fields are measured. One of more of the
+following options may be specified with the command:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-all</span></span></td>
+<td class="opt">Returns all fields listed below.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-apcbypassrate</span></span></td>
+<td class="opt">Returns the field <span class=
+"strong">apcbypassrate</span> which is the rate (per second) that
+kernel APC interrupts were bypassed as computed over the measured
+interval.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-arch</span></span></td>
+<td class="opt">Returns the processor architecture.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-dpcbypassrate</span></span></td>
+<td class="opt">Returns the field <span class=
+"strong">dpcbypassrate</span> which is the rate (per second) that
+deferred procedure calls were avoided as computed over the measured
+interval.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-dpcqueuerate</span></span></td>
+<td class="opt">Returns the field <span class=
+"strong">dpcqueuerate</span> containing the rate at which deferred
+procedure calls are being added to the DPC queue as measured over
+the specified interval.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-dpcrate</span></span></td>
+<td class="opt">Returns the field <span class=
+"strong">dpcrate</span> containing the rate at which deferred
+procedure calls are being added to the DPC queue. This rate is
+based on the observed value over the last two timer ticks of the
+processor clock, and <span class="em">not</span> that over the
+measured interval.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-dpctime</b></span></td>
+<td class="opt">The amount of CPU time in 100ns units spent in
+servicing deferred procedure calls. Note this value is included in
+the <b class='cmd'>-privilegedtime</b> value.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-dpcutilization</span></span></td>
+<td class="opt">Returns the field <span class=
+"strong">dpcutilization</span> containing the percentage of time
+that this processor has spent servicing deferred procedure calls
+over the measured interval. This is included in the <span class=
+"strong">privilegedutilization</span> value.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-idletime</b></span></td>
+<td class="opt">The amount of idle CPU time in 100ns units since
+system start. Note this value is included in the <b class=
+'cmd'>-privilegedtime</b> value.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-interrupts</span></span></td>
+<td class="opt">Returns the total number of interrupts serviced
+since system start.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-interruptrate</span></span></td>
+<td class="opt">Returns the field <span class=
+"strong">interruptrate</span> containing the number of hardware
+interrupts being processed per second over the measured
+interval.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-interrupttime</b></span></td>
+<td class="opt">The amount of CPU time in 100ns units spent in
+servicing interrupts. Note this value is included in the <b class=
+'cmd'>-privilegedtime</b> value.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-interruptutilization</span></span></td>
+<td class="opt">Returns the field <span class=
+"strong">interruptutilization</span> containing the percentage of
+time that this processor has spent servicing interrupts over the
+measured interval. This is included in the <span class=
+"strong">privilegedutilization</span> value.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-privilegedtime</b></span></td>
+<td class="opt">The amount of privileged (kernel) context CPU time
+since system start in 100ns units. Note this includes the DPC,
+interrupt and idle CPU cycles.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-privilegedutilization</span></span></td>
+<td class="opt">Returns the field <span class=
+"strong">privilegedutilization</span> containing the percentage of
+time that this processor has spent executing a non-idle thread in
+privileged mode during the measured interval.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-processormodel</span></span></td>
+<td class="opt">Returns the processor model. <i class=
+'arg'>PROCESSOR</i> must not be an empty string if this option is
+specified.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-processorname</span></span></td>
+<td class="opt">Returns a human readable form of the processor
+description. <i class='arg'>PROCESSOR</i> must not be an empty
+string if this option is specified.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-processorrev</span></span></td>
+<td class="opt">Returns the processor revision as defined by the
+CPU manufacturer. <i class='arg'>PROCESSOR</i> must not be an empty
+string if this option is specified.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-processorspeed</span></span></td>
+<td class="opt">Returns the nominal speed in Mhz of the processor
+<i class='arg'>PROCESSOR</i> must not be an empty string if this
+option is specified.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-processorutilization</span></span></td>
+<td class="opt">Returns the field <span class=
+"strong">processorutilization</span> containing the percentage of
+CPU time that this processor has been executing a non-idle thread
+over the measured interval.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-processorlevel</span></span></td>
+<td class="opt">Returns the processor level as defined by the CPU
+manufacturer.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-usertime</b></span></td>
+<td class="opt">The amount of user context CPU time in 100ns units
+since the system was started.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-userutilization</span></span></td>
+<td class="opt">Returns the field <span class=
+"strong">userutilization</span> containing the percentage of time
+that this processor has spent executing a non-idle thread in user
+mode during the measured interval.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_system_info" id="get_system_info"><b class=
+'cmd'>get_system_info</b> ?<i class='arg'>options</i>?</a></dt>
+<dd>Returns various pieces of information related to the system.
+The information returned is in the form of a flat list of the form
+"<i class='arg'>field1</i> <i class='arg'>value1</i> <i class=
+'arg'>field2</i> <i class='arg'>value2</i> ...". One of more of the
+following options may be specified with the command to control what
+information is returned:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-all</span></span></td>
+<td class="opt">Returns all fields listed below.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-eventcount</span></span></td>
+<td class="opt">Returns the number of synchronization events in
+use.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-handlecount</span></span></td>
+<td class="opt">Returns the number of handles that are currently
+open.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-mutexcount</span></span></td>
+<td class="opt">Returns the number of synchronization mutexes in
+use.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-processcount</span></span></td>
+<td class="opt">Returns the number of processes that are currently
+running.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-sectioncount</span></span></td>
+<td class="opt">Returns the number of sections in use.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-semaphorecount</span></span></td>
+<td class="opt">Returns the number of synchronization semaphores in
+use.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-sid</span></span></td>
+<td class="opt">Returns the SID of the system.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-threadcount</span></span></td>
+<td class="opt">Returns the number of threads that are currently
+running.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-uptime</span></span></td>
+<td class="opt">Returns the number of seconds elapsed since the
+system was booted.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_system_parameters_info" id=
+"get_system_parameters_info"><b class=
+'cmd'>get_system_parameters_info</b> <i class=
+'arg'>PARAMETER</i></a></dt>
+<dd>This command wraps the Windows <b class=
+'cmd'>SystemParametersInfo</b> function and allows retrieval of
+various user interface settings such as screensaver timeout, mouse
+speed etc. The information retrieved depends on the <i class=
+'arg'>PARAMETER</i> which must be one of the <span class=
+"strong">SPI_</span> symbols listed in the <b class=
+'cmd'>SystemParametersInfo</b> <a href=
+"http://msdn.microsoft.com/library/default.asp?url=/library/en-us/sysinfo/base/systemparametersinfo.asp">
+documentation</a>.</dd>
+<dt><a name="get_system_time" id="get_system_time"><b class=
+'cmd'>get_system_time</b></a></dt>
+<dd>Returns the current system time in UTC as the number of 100
+nanosecond units since Jan 1, 1601. This can be converted to a
+format suitable for use with the <b class='cmd'>clock</b> command
+through the use of the command <a href=
+"misc.html#large_system_time_to_secs_since_1970"><b class=
+'cmd'>large_system_time_to_secs_since_1970</b></a>.</dd>
+<dt><a name="get_system_uptime" id="get_system_uptime"><b class=
+'cmd'>get_system_uptime</b></a></dt>
+<dd>Returns the number of seconds elapsed since the system was
+booted.</dd>
+<dt><a name="lock_workstation" id="lock_workstation"><b class=
+'cmd'>lock_workstation</b></a></dt>
+<dd>Initiates a request to lock the work station display.</dd>
+<dt><a name="logoff" id="logoff"><b class='cmd'>logoff</b>
+?<b class='cmd'>-force</b>? ?<b class=
+'cmd'>-forceifhung</b>?</a></dt>
+<dd>Logs off the current session. If <b class='cmd'>-force</b> is
+specified, it forces processes to terminate without notifying them.
+This options should generally not be specified as it can result in
+data loss. If <b class='cmd'>-forceifhung</b> is specified, it only
+terminates processes if they do not respond to the session end
+notifications.</dd>
+<dt><a name="min_os_version" id="min_os_version"><b class=
+'cmd'>min_os_version</b> <i class='arg'>osmajor</i> ?<i class=
+'arg'>osminor</i>? ?<i class='arg'>spmajor</i>? ?<i class=
+'arg'>spminor</i>?</a></dt>
+<dd>This function checks that the operating system version meets
+the specified minimum version. It returns 1 if the operating system
+version is greater than <i class=
+'arg'>osmajor.osminor.spmajor.spminor</i>. Otherwise it returns 0.
+Any unspecified optional arguments default to 0.</dd>
+<dt><a name="set_system_parameters_info" id=
+"set_system_parameters_info"><b class=
+'cmd'>set_system_parameters_info</b> <i class='arg'>PARAMETER</i>
+<i class='arg'>VALUE</i> ?<b class='cmd'>-persist</b>? ?<b class=
+'cmd'>-notify</b>?</a></dt>
+<dd>This command wraps the Windows <b class=
+'cmd'>SystemParametersInfo</b> function and allows setting of
+various user interface settings such as screensaver timeout, mouse
+speed etc. The information retrieved depends on the <i class=
+'arg'>PARAMETER</i> which must be one of the <span class=
+"strong">SPI_</span> symbols listed in the <b class=
+'cmd'>SystemParametersInfo</b> <a href=
+"http://msdn.microsoft.com/library/default.asp?url=/library/en-us/sysinfo/base/systemparametersinfo.asp">
+documentation</a>. The corresponding setting is assigned <i class=
+'arg'>VALUE</i>.<br />
+<br />
+If the <b class='cmd'>-persist</b> is specified, the changed
+setting is written to the user's profile. If <b class=
+'cmd'>-notify</b> is specified, all applications are notified of
+the change. Note <b class='cmd'>-notify</b> only has effect if
+<b class='cmd'>-persist</b> is also specified since other
+applications will update based on the user's persistent
+profile.</dd>
+<dt><a name="shutdown_system" id="shutdown_system"><b class=
+'cmd'>shutdown_system</b> ?<i class='arg'>options</i>?</a></dt>
+<dd>Initiates a system shut down or reboot. The command enables any
+required privileges and restores the original privileges before
+returning.<br />
+<br />
+The following options may be specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-system</b></span> <i class='arg'>SYSTEMNAME</i></td>
+<td class="opt">Specifies the system to be shut down. By default,
+this is the local system.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-timeout</b></span> <i class='arg'>SECONDS</i></td>
+<td class="opt">Specifies the amount of time to wait before
+shutting down the system. During this time, a shutdown dialog is
+displayed to the user. If a value of 0 is specified, the system is
+shut down immediately and no dialog is displayed to the user.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-message</b></span> <i class='arg'>MESSAGE</i></td>
+<td class="opt">Specifies a message to be displayed to the user in
+the shutdown dialog.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-force</b></span></td>
+<td class="opt">Normally, the system displays a dialog box asking
+the user to close any applications with unsaved data. If the
+<b class='cmd'>-force</b> option is specified, applications are
+forcible closed resulting in possible data loss.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-restart</b></span></td>
+<td class="opt">If specified, the system is restarted after the
+shut down.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="suspend_system" id="suspend_system"><b class=
+'cmd'>suspend_system</b> ?<i class='arg'>options</i>?</a></dt>
+<dd>Places the system in a stand by or hibernate state. The command
+takes the following options:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-state</b></span> <i class='arg'>STATE</i></td>
+<td class="opt"><i class='arg'>STATE</i> must be one of
+<span class="strong">standby</span> (default) or <span class=
+"strong">hibernate</span> depending on whether the state into which
+the system is to be placed.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-force</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If <span class="strong">false</span> (default), the
+system sends a PBT_ATMQUERYSUSPEND message to all applications
+before placing the system in stand by or hibernate states. If this
+option is specified as <span class="strong">true</span>, the
+message is not sent and the system is immediately placed into the
+appropriate state.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-disablewakeevents</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If <span class="strong">false</span> (default),
+system wake events remain enabled. If <span class=
+"strong">true</span> they are disabled.</td>
+</tr>
+</table>
+</dd>
+</dl>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2003-2007 Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>

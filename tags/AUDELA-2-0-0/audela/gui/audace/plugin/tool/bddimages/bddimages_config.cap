@@ -1,0 +1,44 @@
+#
+# Fichier : bddimages_config.cap
+# Mise a jour $Id: bddimages_config.cap,v 1.2 2009-11-07 14:10:43 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+set caption(bddimages_config,main_title)     "BddImages - Configuration"
+set caption(bddimages_config,titre)          "Statut de la base de données"
+set caption(bddimages_config,label_ok)       "Statut .........................."
+set caption(bddimages_config,label_nbimg)    "Nb d'images......................"
+set caption(bddimages_config,label_nbheader) "Nb de header....................."
+
+set caption(bddimages_config,aide)           "Aide"
+set caption(bddimages_config,save)           "Sauver"
+set caption(bddimages_config,fermer)         "Fermer"
+
+set caption(bddimages_config,msg_erreur)     "Erreur"
+set caption(bddimages_config,msg_internet)   "Une connexion à Internet opérationnelle est nécessaire pour accéder à la base de données."
+
+set caption(bddimages_config,access)         "Accés à la base de données"
+set caption(bddimages_config,login)          "Login"
+set caption(bddimages_config,pass)           "Mot de passe"
+set caption(bddimages_config,serv)           "Adresse IP du serveur Mysql"
+set caption(bddimages_config,dir)            "Répertoires de travail"
+set caption(bddimages_config,dirbase)        "Répertoires de la base"
+set caption(bddimages_config,dirinco)        "Répertoires incoming par défaut"
+set caption(bddimages_config,dirfits)        "Répertoires des fichiers FITS"
+set caption(bddimages_config,dircata)        "Répertoires des catalogues"
+set caption(bddimages_config,direrr)         "Répertoires des fichiers en erreur"
+set caption(bddimages_config,dirlog)         "Répertoires des logs"
+set caption(bddimages_config,variables)      "Variables diverses"
+set caption(bddimages_config,listlimit)      "Limite pour la liste d'insertion"
+
+set caption(bddimages_config,test)           "Test"
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

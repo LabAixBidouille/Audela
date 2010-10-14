@@ -1,0 +1,2 @@
+LIBRARY libhisis
+EXPORTS Hisis_Init @1

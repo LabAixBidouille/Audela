@@ -1,0 +1,1334 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>Users and Groups</h2>
+<p>Commands related to user and group accounts</p>
+<h3><a name="synopsis" id="synopsis">SYNOPSIS</a></h3>
+package require <b>twapi</b><br />
+<table class="commandsummary" summary="Table">
+<tr valign="top">
+<td><a href="#add_account_rights"><b class=
+'cmd'>add_account_rights</b> <i class='arg'>ACCOUNTNAME</i>
+<i class='arg'>RIGHTS</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#add_user_to_global_group"><b class=
+'cmd'>add_user_to_global_group</b> <i class='arg'>GROUPNAME</i>
+<i class='arg'>USERNAME</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#add_member_to_local_group"><b class=
+'cmd'>add_member_to_local_group</b> <i class='arg'>GROUPNAME</i>
+<i class='arg'>ACCOUNTNAME</i> ?<b class='cmd'>-system</b>
+<i class='arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#delete_global_group"><b class=
+'cmd'>delete_global_group</b> <i class='arg'>GROUPNAME</i>
+?<b class='cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#delete_local_group"><b class=
+'cmd'>delete_local_group</b> <i class='arg'>GROUPNAME</i>
+?<b class='cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#delete_user"><b class='cmd'>delete_user</b> <i class=
+'arg'>USERNAME</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#disable_user"><b class='cmd'>disable_user</b>
+<i class='arg'>USERNAME</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#enable_user"><b class='cmd'>enable_user</b> <i class=
+'arg'>USERNAME</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#find_accounts_with_right"><b class=
+'cmd'>find_accounts_with_right</b> <i class='arg'>RIGHT</i>
+?<b class='cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?
+?<b class='cmd'>-name</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_account_rights"><b class=
+'cmd'>get_account_rights</b> <i class='arg'>ACCOUNTNAME</i>
+?<b class='cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_global_group_info"><b class=
+'cmd'>get_global_group_info</b> <i class='arg'>GROUPNAME</i>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_global_group_members"><b class=
+'cmd'>get_global_group_members</b> <i class='arg'>GROUPNAME</i>
+?<b class='cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_global_groups"><b class=
+'cmd'>get_global_groups</b> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_local_group_info"><b class=
+'cmd'>get_local_group_info</b> <i class='arg'>GROUPNAME</i>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_local_group_members"><b class=
+'cmd'>get_local_group_members</b> <i class='arg'>GROUPNAME</i>
+?<b class='cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_local_groups"><b class='cmd'>get_local_groups</b>
+?<b class='cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_user_account_info"><b class=
+'cmd'>get_user_account_info</b> <i class='arg'>ACCOUNT</i>
+?<b class='cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_user_local_groups_recursive"><b class=
+'cmd'>get_user_local_groups_recursive</b> <i class=
+'arg'>ACCOUNT</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_users"><b class='cmd'>get_users</b> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#lookup_account_name"><b class=
+'cmd'>lookup_account_name</b> <i class='arg'>name</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#lookup_account_sid"><b class=
+'cmd'>lookup_account_sid</b> <i class='arg'>sid</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#map_account_to_name"><b class=
+'cmd'>map_account_to_name</b> <i class='arg'>ACCOUNT</i> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#map_account_to_sid"><b class=
+'cmd'>map_account_to_sid</b> <i class='arg'>ACCOUNT</i> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#new_global_group"><b class='cmd'>new_global_group</b>
+<i class='arg'>GROUPNAME</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>? ?<b class='cmd'>-comment</b> <i class=
+'arg'>COMMENT</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#new_local_group"><b class='cmd'>new_local_group</b>
+<i class='arg'>GROUPNAME</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>? ?<b class='cmd'>-comment</b> <i class=
+'arg'>COMMENT</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#new_user"><b class='cmd'>new_user</b> <i class=
+'arg'>USERNAME</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#remove_member_from_local_group"><b class=
+'cmd'>remove_member_from_local_group</b> <i class=
+'arg'>GROUPNAME</i> <i class='arg'>ACCOUNTNAME</i> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#remove_account_rights"><b class=
+'cmd'>remove_account_rights</b> <i class='arg'>ACCOUNTNAME</i>
+<i class='arg'>RIGHTS</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#remove_user_from_global_group"><b class=
+'cmd'>remove_user_from_global_group</b> <i class=
+'arg'>GROUPNAME</i> <i class='arg'>USERNAME</i> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_user_account_info"><b class=
+'cmd'>set_user_account_info</b> <i class='arg'>account</i>
+?<b class='cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_user_comment"><b class='cmd'>set_user_comment</b>
+<i class='arg'>USERNAME</i> <i class='arg'>STRING</i> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_user_country_code"><b class=
+'cmd'>set_user_country_code</b> <i class='arg'>USERNAME</i>
+<i class='arg'>INTEGER</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_user_expiration"><b class=
+'cmd'>set_user_expiration</b> <i class='arg'>USERNAME</i> <i class=
+'arg'>DATETIME</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_user_full_name"><b class=
+'cmd'>set_user_full_name</b> <i class='arg'>USERNAME</i> <i class=
+'arg'>STRING</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_user_home_dir"><b class=
+'cmd'>set_user_home_dir</b> <i class='arg'>USERNAME</i> <i class=
+'arg'>PATH</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_user_home_dir_drive"><b class=
+'cmd'>set_user_home_dir_drive</b> <i class='arg'>USERNAME</i>
+<i class='arg'>DRIVEPATH</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_user_name"><b class='cmd'>set_user_name</b>
+<i class='arg'>USERNAME</i> <i class='arg'>NEWNAME</i> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_user_password"><b class=
+'cmd'>set_user_password</b> <i class='arg'>USERNAME</i> <i class=
+'arg'>PASSWORD</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_user_priv_level"><b class=
+'cmd'>set_user_priv_level</b> <i class='arg'>USERNAME</i> <i class=
+'arg'>PRIVLEVEL</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_user_profile"><b class='cmd'>set_user_profile</b>
+<i class='arg'>USERNAME</i> <i class='arg'>PATH</i> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_user_script_path"><b class=
+'cmd'>set_user_script_path</b> <i class='arg'>USERNAME</i>
+<i class='arg'>PATH</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#unlock_user"><b class='cmd'>unlock_user</b> <i class=
+'arg'>USERNAME</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+</table>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p>This module provides procedures related to management of user
+and group accounts on Windows operating systems.</p>
+<h3><a name="standardoptions" id="standardoptions">Standard
+Options</a></h3>
+<p>Most commands allow the following options to be specified:</p>
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-system</b></span> <i class='arg'>SYSTEMNAME</i></td>
+<td class="opt">Several commands, for example, looking up account
+names or adding users, may be carried out on a target system other
+than the local system. The <b class='cmd'>-system</b> option allows
+specification of the target system. This option defaults to the
+local system if unspecified.</td>
+</tr>
+</table>
+<h3><a name="userandgroupaccounts" id="userandgroupaccounts">User
+and Group Accounts</a></h3>
+<p>The command <a href="#lookup_account_name"><b class=
+'cmd'>lookup_account_name</b></a>, <a href=
+"#map_account_to_name"><b class='cmd'>map_account_to_name</b></a>,
+<a href="#lookup_account_sid"><b class=
+'cmd'>lookup_account_sid</b></a> and <a href=
+"#map_account_to_sid"><b class='cmd'>map_account_to_sid</b></a>
+translate between user and group account names and their SID's. The
+command <a href="#is_valid_sid_syntax"><b class=
+'cmd'>is_valid_sid_syntax</b></a> validates the syntax of an
+SID.</p>
+<p>The commands <a href="#get_users"><b class=
+'cmd'>get_users</b></a>, <a href="#get_global_groups"><b class=
+'cmd'>get_global_groups</b></a> and <a href=
+"#get_local_groups"><b class='cmd'>get_local_groups</b></a> may be
+used to enumerate users and groups on a system.</p>
+<p>The commands <a href="#new_user"><b class='cmd'>new_user</b></a>
+and <a href="#delete_user"><b class='cmd'>delete_user</b></a> allow
+addition and deletion of user accounts. The commands <a href=
+"#enable_user"><b class='cmd'>enable_user</b></a>, <a href=
+"#disable_user"><b class='cmd'>disable_user</b></a> and <a href=
+"#unlock_user"><b class='cmd'>unlock_user</b></a> may be used to
+change the state of a user account. The command <a href=
+"#get_user_account_info"><b class=
+'cmd'>get_user_account_info</b></a> returns various attributes and
+properties of a user account. These may be modified through the
+<a href="#set_user_account_info"><b class=
+'cmd'>set_user_account_info</b></a> function or alternatively,
+modified individually through the following set of functions:
+<a href="#set_user_name"><b class='cmd'>set_user_name</b></a>,
+<a href="#set_user_password"><b class=
+'cmd'>set_user_password</b></a>, <a href=
+"#set_user_home_dir"><b class='cmd'>set_user_home_dir</b></a>,
+<a href="#set_user_comment"><b class=
+'cmd'>set_user_comment</b></a>, <a href=
+"#set_user_script_path"><b class=
+'cmd'>set_user_script_path</b></a>, <a href=
+"#set_user_full_name"><b class='cmd'>set_user_full_name</b></a>,
+<a href="#set_user_country_code"><b class=
+'cmd'>set_user_country_code</b></a>, <a href=
+"#set_user_profile"><b class='cmd'>set_user_profile</b></a>,
+<a href="#set_user_home_dir_drive"><b class=
+'cmd'>set_user_home_dir_drive</b></a>, <a href=
+"#set_user_priv_level"><b class='cmd'>set_user_priv_level</b></a>,
+<a href="#set_user_expiration"><b class=
+'cmd'>set_user_expiration</b></a>.</p>
+<p>Information about global and local groups may be retrieved
+through the <a href="security.html#get_global_group_info"><b class=
+'cmd'>get_global_group_info</b></a> and <a href=
+"security.html#get_local_group_info"><b class=
+'cmd'>get_local_group_info</b></a> commands. New global groups may
+be created and deleted through the <a href=
+"#new_global_group"><b class='cmd'>new_global_group</b></a> and
+<a href="#delete_global_group"><b class=
+'cmd'>delete_global_group</b></a> commands. The equivalent commands
+for local groups are <a href="#new_local_group"><b class=
+'cmd'>new_local_group</b></a> and <a href=
+"#delete_local_group"><b class='cmd'>delete_local_group</b></a>.
+Users may be added and removed using the commands <a href=
+"#add_user_to_global_group"><b class=
+'cmd'>add_user_to_global_group</b></a>, <a href=
+"#add_member_to_local_group"><b class=
+'cmd'>add_member_to_local_group</b></a>, <a href=
+"#remove_user_from_global"><b class=
+'cmd'>remove_user_from_global</b></a> and <a href=
+"#remove_member_from_local_group"><b class=
+'cmd'>remove_member_from_local_group</b></a>. The commands <a href=
+"#get_local_group_members"><b class=
+'cmd'>get_local_group_members</b></a> and <a href=
+"#get_global_group_members"><b class=
+'cmd'>get_global_group_members</b></a> allow enumeration of the
+members of a group. <a href=
+"#get_user_local_groups_recursive"><b class=
+'cmd'>get_user_local_groups_recursive</b></a> returns information
+about the local groups in which the user account has direct or
+indirect membership.</p>
+<p>The rights and privileges associated with accounts can be
+managed through the <a href="#get_account_rights"><b class=
+'cmd'>get_account_rights</b></a>, <a href=
+"#find_accounts_with_right"><b class=
+'cmd'>find_accounts_with_right</b></a>, <a href=
+"#add_account_rights"><b class='cmd'>add_account_rights</b></a> and
+<a href="#remove_account_rights"><b class=
+'cmd'>remove_account_rights</b></a> commands.</p>
+<h3><a name="commands" id="commands">Commands</a></h3>
+<dl class="noclass">
+<dt><a name="add_account_rights" id="add_account_rights"><b class=
+'cmd'>add_account_rights</b> <i class='arg'>ACCOUNTNAME</i>
+<i class='arg'>RIGHTS</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Adds the privileges and account rights listed in <i class=
+'arg'>RIGHTS</i> to the account specified by <i class=
+'arg'>ACCOUNTNAME</i>. The option <b class='cmd'>-system</b> may be
+used to specify a system as described in <a href=
+"#standardoptions">Standard Options</a>.<br />
+<br />
+<i class='arg'>RIGHTS</i> is a list of privileges and account
+rights. Refer to <a href=
+"http://msdn.microsoft.com/library/default.asp?url=/library/en-us/secauthz/security/authorization_constants.asp">
+Authorization constants</a> in the Windows SDK for valid values.
+<span class="em">Note: you must use the string form of the
+privilege or right, for example, SeBatchLogon, not
+SE_BATCH_LOGON_NAME.</span></dd>
+<dt><a name="add_user_to_global_group" id=
+"add_user_to_global_group"><b class=
+'cmd'>add_user_to_global_group</b> <i class='arg'>GROUPNAME</i>
+<i class='arg'>USERNAME</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Adds the user account specified by <i class='arg'>USERNAME</i>
+to the global group <i class='arg'>GROUPNAME</i>. The option
+<b class='cmd'>-system</b> may be used to specify a system as
+described in <a href="#standardoptions">Standard Options</a>.</dd>
+<dt><a name="add_member_to_local_group" id=
+"add_member_to_local_group"><b class=
+'cmd'>add_member_to_local_group</b> <i class='arg'>GROUPNAME</i>
+<i class='arg'>ACCOUNTNAME</i> ?<b class='cmd'>-system</b>
+<i class='arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Adds the account specified by <i class='arg'>ACCOUNTNAME</i> to
+the local group <i class='arg'>GROUPNAME</i>. <i class=
+'arg'>ACCOUNTNAME</i> may be either a user name or a global group
+and may include a domain in the form <i class=
+'arg'>domainname\username</i>.<br />
+<br />
+The option <b class='cmd'>-system</b> may be used to specify a
+system as described in <a href="#standardoptions">Standard
+Options</a>.<br />
+<br />
+<a href="addusertolocalgroup.example">Example: Add a user to a
+local group</a></dd>
+<dt><a name="delete_global_group" id=
+"delete_global_group"><b class='cmd'>delete_global_group</b>
+<i class='arg'>GROUPNAME</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Deletes a global group <i class='arg'>GROUPNAME</i>. Also,
+deletes any rights associated with the account in the LSA rights
+database. The option <b class='cmd'>-system</b> may be used to
+specify a system as described in <a href=
+"#standardoptions">Standard Options</a>.</dd>
+<dt><a name="delete_local_group" id="delete_local_group"><b class=
+'cmd'>delete_local_group</b> <i class='arg'>GROUPNAME</i>
+?<b class='cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Deletes a local group <i class='arg'>GROUPNAME</i>. Also,
+deletes any rights associated with the account in the LSA rights
+database. The option <b class='cmd'>-system</b> may be used to
+specify a system as described in <a href=
+"#standardoptions">Standard Options</a>.<br />
+<br />
+<a href="deletelocalgroup.example">Example: Delete a local
+group</a></dd>
+<dt><a name="delete_user" id="delete_user"><b class=
+'cmd'>delete_user</b> <i class='arg'>USERNAME</i> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Delete the specified user account. Also, deletes any rights
+associated with the account in the LSA rights database. The option
+<b class='cmd'>-system</b> may be used to specify a system as
+described in <a href="#standardoptions">Standard Options</a>.<br />
+<br />
+<a href="deleteuser.example">Example: Delete a user
+account</a></dd>
+<dt><a name="disable_user" id="disable_user"><b class=
+'cmd'>disable_user</b> <i class='arg'>USERNAME</i> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Disables a user account. The option <b class='cmd'>-system</b>
+may be used to specify a system as described in <a href=
+"#standardoptions">Standard Options</a>.</dd>
+<dt><a name="enable_user" id="enable_user"><b class=
+'cmd'>enable_user</b> <i class='arg'>USERNAME</i> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Enables a user account. The option <b class='cmd'>-system</b>
+may be used to specify a system as described in <a href=
+"#standardoptions">Standard Options</a>.</dd>
+<dt><a name="find_accounts_with_right" id=
+"find_accounts_with_right"><b class=
+'cmd'>find_accounts_with_right</b> <i class='arg'>RIGHT</i>
+?<b class='cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?
+?<b class='cmd'>-name</b>?</a></dt>
+<dd>Returns a list of all accounts (user and group) that hold the
+right or privilege specified by <i class='arg'>RIGHT</i>. The
+returned list contains the SID's of the account unless the
+<b class='cmd'>-name</b> option is specified in which case the
+account names are returned instead.<br />
+<br />
+Refer to <a href=
+"http://msdn.microsoft.com/library/default.asp?url=/library/en-us/secauthz/security/authorization_constants.asp">
+Authorization constants</a> in the Windows SDK for valid values for
+<i class='arg'>RIGHT</i>. <span class="em">Note: you must use the
+string form of the privilege or right, for example, SeBatchLogon,
+not SE_BATCH_LOGON_NAME.</span><br />
+<br />
+The option <b class='cmd'>-system</b> may be used to specify a
+system as described in <a href="#standardoptions">Standard
+Options</a>.</dd>
+<dt><a name="get_account_rights" id="get_account_rights"><b class=
+'cmd'>get_account_rights</b> <i class='arg'>ACCOUNTNAME</i>
+?<b class='cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Returns the list of rights and privileges for the user or group
+specified by <i class='arg'>ACCOUNTNAME</i>. This only includes
+those directly belonging to the account, and does not include the
+ones inherited from membership in groups.<br />
+<br />
+The option <b class='cmd'>-system</b> may be used to specify a
+system as described in <a href="#standardoptions">Standard
+Options</a>.</dd>
+<dt><a name="get_global_group_info" id=
+"get_global_group_info"><b class='cmd'>get_global_group_info</b>
+<i class='arg'>GROUPNAME</i> ?<i class='arg'>options</i>?</a></dt>
+<dd>Retrieves information about the specified global group. The
+actual information returned depends on the specified options and is
+returned as a list of the form "<i class='arg'>option</i> <i class=
+'arg'>value</i>...". The following options may be specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Returns all data items.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-comment</b></span></td>
+<td class="opt">Returns the comment associated with the group
+account.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-name</b></span></td>
+<td class="opt">Returns the name of the group.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sid</b></span></td>
+<td class="opt">Returns the SID for the group.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-members</b></span></td>
+<td class="opt">Returns the members of the group.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_global_group_members" id=
+"get_global_group_members"><b class=
+'cmd'>get_global_group_members</b> <i class='arg'>GROUPNAME</i>
+?<b class='cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Returns a list of user accounts that are members of the global
+group <i class='arg'>GROUPNAME</i>. The option <b class=
+'cmd'>-system</b> may be used to specify a system as described in
+<a href="#standardoptions">Standard Options</a>.</dd>
+<dt><a name="get_global_groups" id="get_global_groups"><b class=
+'cmd'>get_global_groups</b> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Returns the list of global groups on the system. See <a href=
+"#standardoptions">Standard Options</a> for description of the
+<b class='cmd'>-system</b> option.<br />
+<br />
+<a href="listusersingroup.example">Example: List the users in a
+group</a></dd>
+<dt><a name="get_local_group_info" id=
+"get_local_group_info"><b class='cmd'>get_local_group_info</b>
+<i class='arg'>GROUPNAME</i> ?<i class='arg'>options</i>?</a></dt>
+<dd>Retrieves information about the specified local group. The
+actual information returned depends on the specified options and is
+returned as a list of the form "<i class='arg'>option</i> <i class=
+'arg'>value</i>...". The following options may be specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Returns all data items.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-comment</b></span></td>
+<td class="opt">Returns the comment associated with the group
+account.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-name</b></span></td>
+<td class="opt">Returns the name of the group.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sid</b></span></td>
+<td class="opt">Returns the SID for the group.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-members</b></span></td>
+<td class="opt">Returns the members of the group.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_local_group_members" id=
+"get_local_group_members"><b class=
+'cmd'>get_local_group_members</b> <i class='arg'>GROUPNAME</i>
+?<b class='cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Returns a list of user accounts that are members of the local
+group <i class='arg'>GROUPNAME</i>. The option <b class=
+'cmd'>-system</b> may be used to specify a system as described in
+<a href="#standardoptions">Standard Options</a>.<br />
+<br />
+<a href="listusersingroup.example">Example: List the users in a
+group</a></dd>
+<dt><a name="get_local_groups" id="get_local_groups"><b class=
+'cmd'>get_local_groups</b> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Returns the list of local groups on the system. See <a href=
+"#standardoptions">Standard Options</a> for description of the
+<b class='cmd'>-system</b> option.</dd>
+<dt><a name="get_user_account_info" id=
+"get_user_account_info"><b class='cmd'>get_user_account_info</b>
+<i class='arg'>ACCOUNT</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>? ?<i class='arg'>options</i>?</a></dt>
+<dd>Returns attributes and properties of a user account as a list
+of the form "<i class='arg'>option1</i> <i class='arg'>value1</i>
+...". <i class='arg'>ACCOUNT</i> specifies the user account for
+which the information is to be retrieved. The option <b class=
+'cmd'>-system</b> may be used to specify the system from whose
+context the account lookup should be performed.<br />
+<br />
+The data returned depends on which of the following options are
+specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Returns all data items.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-comment</b></span></td>
+<td class="opt">Returns the comment associated with the user
+account.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-password_expired</b></span></td>
+<td class="opt">Returns a value of 1 if the account password has
+expired, and 0 otherwise.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-full_name</b></span></td>
+<td class="opt">Returns the full name of the user.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-parms</b></span></td>
+<td class="opt">Returns an application specific string.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sid</b></span></td>
+<td class="opt">Returns the SID of the user.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-units_per_week</b></span></td>
+<td class="opt">Returns an integer indicating the number of equal
+time units into which a week is divided (see <b class=
+'cmd'>-logon_hours</b>).</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-primary_group_id</b></span></td>
+<td class="opt">Returns the the RID (relative id component of a
+SID) of the primary global group for the account.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-global_groups</b></span></td>
+<td class="opt">Returns the global groups of which the account is a
+member.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-local_groups</b></span></td>
+<td class="opt">Returns the local groups of which the account is a
+member. This includes only groups of which the account is directly
+a member and does <span class="em">not</span> include indirect
+membership through a global group which is itself a member of a
+local group. See <a href=
+"#get_user_local_groups_recursive"><b class=
+'cmd'>get_user_local_groups_recursive</b></a> for a command that
+will recursively include groups.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-status</b></span></td>
+<td class="opt">Returns one of the values <span class=
+"strong">disabled</span>, <span class="strong">enabled</span> or
+<span class="strong">locked</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-logon_server</b></span></td>
+<td class="opt">Returns the name of the server to which logon
+requests are sent.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-country_code</b></span></td>
+<td class="opt">Returns an integer country/region value for the
+user's preferred language.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-home_dir</b></span></td>
+<td class="opt">Returns the full path to the user's home
+directory.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-password_age</b></span></td>
+<td class="opt">Returns the number of seconds since the password
+was last changed for the account.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-home_dir_drive</b></span></td>
+<td class="opt">Returns the drive letter assigned to the user's
+home directory.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-num_logons</b></span></td>
+<td class="opt">Returns the number of times the user has logged on.
+In an environment with backup domain controllers, each domain
+controller maintains this value independently and must be queried
+(using the <b class='cmd'>-system</b> option) separately. A value
+of -1 indicates the number is unknown.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-acct_expires</b></span></td>
+<td class="opt">Returns the time in GMT when the account is set to
+expire. This value may also be <span class="strong">never</span> or
+<span class="strong">unknown</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-last_logon</b></span></td>
+<td class="opt">Returns the time in GMT when the user last logged
+in. This value may also be <span class="strong">never</span> or
+<span class="strong">unknown</span>. In an environment with backup
+domain controllers, each domain controller maintains this value
+independently and must be queried separately (using the <b class=
+'cmd'>-system</b> option).</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-last_logoff</b></span></td>
+<td class="opt">Returns the time in GMT when the user last logged
+off. This value may also be <span class="strong">never</span> or
+<span class="strong">unknown</span>. In an environment with backup
+domain controllers, each domain controller maintains this value
+independently and must be queried separately (using the <b class=
+'cmd'>-system</b> option).</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-user_id</b></span></td>
+<td class="opt">Returns RID component of the user's SID.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-usr_comment</b></span></td>
+<td class="opt">Returns the user comment for the account.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-bad_pw_count</b></span></td>
+<td class="opt">Returns the number of login attempts for that
+account that failed because of a bad password. In an environment
+with backup domain controllers, each domain controller maintains
+this value independently and must be queried separately (using the
+<b class='cmd'>-system</b> option).</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-code_page</b></span></td>
+<td class="opt">Returns an integer corresponding to the code page
+for the user's preferred language.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-logon_hours</b></span></td>
+<td class="opt">Returns a bit string of 1's and 0's corresponding
+to each hour in the week that the user is allowed to log on. Note
+the week starts based on GMT time, not local time.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-workstations</b></span></td>
+<td class="opt">Returns a comma-separated list of upto eight
+workstations from which the user can log in.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-name</b></span></td>
+<td class="opt">Returns the name of the account.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-script_path</b></span></td>
+<td class="opt">Returns the full path to the user's logon
+script.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-priv</b></span></td>
+<td class="opt">Returns one of the values <span class=
+"strong">admin</span>, <span class="strong">user</span> or
+<span class="strong">guest</span> corresponding to the privilege
+level for the account.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-profile</b></span></td>
+<td class="opt">Returns the full path to the user's profile.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-max_storage</b></span></td>
+<td class="opt">Returns the maximum amount of disk space the user
+is allowed to use.</td>
+</tr>
+</table>
+<a href="listgroupsforuser.example">Example: List the group
+membership for a user</a><br />
+<br />
+<a href="showuser.example">Example: Show user account
+settings</a></dd>
+<dt><a name="get_user_local_groups_recursive" id=
+"get_user_local_groups_recursive"><b class=
+'cmd'>get_user_local_groups_recursive</b> <i class=
+'arg'>ACCOUNT</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Returns the local groups in which the given user account is a
+member either directly or indirectly by belonging to a global group
+which is a member of a local group. This differs from the <b class=
+'cmd'>-local_groups</b> option of the <a href=
+"#get_user_account_info"><b class=
+'cmd'>get_user_account_info</b></a> command.<br />
+<br />
+The option <b class='cmd'>-system</b> may be used to specify a
+system as described in <a href="#standardoptions">Standard
+Options</a>.</dd>
+<dt><a name="get_users" id="get_users"><b class='cmd'>get_users</b>
+?<b class='cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Returns the list of user accounts on the system. Note the
+returned list includes only accounts defined on the system, not all
+accounts that are known to the system. See <a href=
+"#standardoptions">Standard Options</a> for description of the
+<b class='cmd'>-system</b> option.<br />
+<br />
+<a href="listusers.example">Example: List the user accounts on a
+system</a></dd>
+<dt><a name="lookup_account_name" id=
+"lookup_account_name"><b class='cmd'>lookup_account_name</b>
+<i class='arg'>name</i> ?<i class='arg'>options</i>?</a></dt>
+<dd><i class='arg'>name</i> specifies the name of the account and
+may be fully qualified in the form <i class=
+'arg'>domain\name</i>.<br />
+<br />
+If no options are specified, this command returns the SID for the
+account. If one or more options are specified, returns a flat list
+of the form "<i class='arg'>option1</i> <i class='arg'>value1</i>
+...". The following options may be specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Returns all values.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sid</b></span></td>
+<td class="opt">Returns the SID for the account.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-domain</b></span></td>
+<td class="opt">Returns the domain in which the account was
+found.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-system</b></span></td>
+<td class="opt">Specifies the name of the system on which the
+account is to be looked up. If unspecified, the local system is
+used.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-type</b></span></td>
+<td class="opt">Returns the account type. This may be one of
+<span class="strong">user</span>, <span class="strong">group</span>
+(domain group), <span class="strong">domain</span>, <span class=
+"strong">alias</span> (system local group), <span class=
+"strong">logonid</span>, <span class=
+"strong">wellknowngroup</span>, <span class=
+"strong">deletedaccount</span>, <span class=
+"strong">invalid</span>, <span class="strong">unknown</span>, or
+<span class="strong">computer</span>. The <span class=
+"strong">logonid</span> type is returned for SID's that identify a
+logon session.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="lookup_account_sid" id="lookup_account_sid"><b class=
+'cmd'>lookup_account_sid</b> <i class='arg'>sid</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Argument <i class='arg'>sid</i> specifies the SID of the
+account. If no options are specified, this command returns the name
+for the account. If one or more options are specified, the command
+returns a flat list of the form "<i class='arg'>option1</i>
+<i class='arg'>value1</i> ...". The following options may be
+specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Returns all values.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-name</b></span></td>
+<td class="opt">Returns the name for the account.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-domain</b></span></td>
+<td class="opt">Returns the domain in which the account was
+found.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-system</b></span></td>
+<td class="opt">Specifies the name of the system on which the
+account is to be looked up. If unspecified, the local system is
+used.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-type</b></span></td>
+<td class="opt">Returns the account type. This may be one of
+<span class="strong">user</span>, <span class="strong">group</span>
+(domain group), <span class="strong">domain</span>, <span class=
+"strong">alias</span> (system local group), <span class=
+"strong">wellknowngroup</span>, <span class=
+"strong">deletedaccount</span>, <span class=
+"strong">invalid</span>, <span class="strong">unknown</span>, or
+<span class="strong">computer</span>.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="map_account_to_name" id=
+"map_account_to_name"><b class='cmd'>map_account_to_name</b>
+<i class='arg'>ACCOUNT</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Returns the name for an account. If <i class='arg'>ACCOUNT</i>
+is a valid account name, it is returned as is. Otherwise, it is
+assumed to be a SID and the corresponding account name is returned.
+An exception is raised if neither of these is true. The option
+<b class='cmd'>-system</b> may be used to specify a system as
+described in <a href="#standardoptions">Standard Options</a>.</dd>
+<dt><a name="map_account_to_sid" id="map_account_to_sid"><b class=
+'cmd'>map_account_to_sid</b> <i class='arg'>ACCOUNT</i> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Returns the SID corresponding to an account. If <i class=
+'arg'>ACCOUNT</i> is a SID, it is returned as is. Otherwise, it is
+assumed to be an account name and the corresponding SID is
+returned. An exception is raised if neither of these is true. The
+option <b class='cmd'>-system</b> may be used to specify a system
+as described in <a href="#standardoptions">Standard
+Options</a>.</dd>
+<dt><a name="new_global_group" id="new_global_group"><b class=
+'cmd'>new_global_group</b> <i class='arg'>GROUPNAME</i> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>? ?<b class=
+'cmd'>-comment</b> <i class='arg'>COMMENT</i>?</a></dt>
+<dd>Creates a global group <i class='arg'>GROUPNAME</i>. The option
+<b class='cmd'>-comment</b> allows a comment to be associated with
+the group. The option <b class='cmd'>-system</b> may be used to
+specify a system as described in <a href=
+"#standardoptions">Standard Options</a>.</dd>
+<dt><a name="new_local_group" id="new_local_group"><b class=
+'cmd'>new_local_group</b> <i class='arg'>GROUPNAME</i> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>? ?<b class=
+'cmd'>-comment</b> <i class='arg'>COMMENT</i>?</a></dt>
+<dd>Creates a local group <i class='arg'>GROUPNAME</i>. The option
+<b class='cmd'>-comment</b> allows a comment to be associated with
+the group. The option <b class='cmd'>-system</b> may be used to
+specify a system as described in <a href=
+"#standardoptions">Standard Options</a>.<br />
+<br />
+<a href="addlocalgroup.example">Example: Create a local
+group</a></dd>
+<dt><a name="new_user" id="new_user"><b class='cmd'>new_user</b>
+<i class='arg'>USERNAME</i> ?<i class='arg'>options</i>?</a></dt>
+<dd>Creates a new user account. The following options may be
+specified to set the account properties:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-system</b></span> <i class='arg'>SYSTEMNAME</i></td>
+<td class="opt">Indicates the system on which to create the
+account.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-comment</b></span> <i class='arg'>STRING</i></td>
+<td class="opt">Sets the comment associated with the account.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-home_dir</b></span> <i class='arg'>PATH</i></td>
+<td class="opt">Sets the account's home directory path.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-script_path</b></span> <i class='arg'>PATH</i></td>
+<td class="opt">Sets the path to the logon script for the
+account.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-priv</b></span> <i class='arg'>PRIVLEVEL</i></td>
+<td class="opt">Sets the privilege level for the account. <i class=
+'arg'>PRIVLEVEL</i> should be one of the values <span class=
+"strong">admin</span>, <span class="strong">user</span> or
+<span class="strong">guest</span>. If unspecified, this defaults to
+<span class="strong">user</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-password</b></span> <i class='arg'>STRING</i></td>
+<td class="opt">Sets the password for the account.</td>
+</tr>
+</table>
+<a href="adduser.example">Example: Create a new user
+account</a></dd>
+<dt><a name="remove_member_from_local_group" id=
+"remove_member_from_local_group"><b class=
+'cmd'>remove_member_from_local_group</b> <i class=
+'arg'>GROUPNAME</i> <i class='arg'>ACCOUNTNAME</i> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Removes the user account or global group specified by <i class=
+'arg'>ACCOUNTNAME</i> from the local group <i class=
+'arg'>GROUPNAME</i>. <i class='arg'>ACCOUNTNAME</i> may be a domain
+account in the form <i class='arg'>domainname\username</i>.<br />
+<br />
+The option <b class='cmd'>-system</b> may be used to specify a
+system as described in <a href="#standardoptions">Standard
+Options</a>.<br />
+<br />
+<a href="removeuserfromlocalgroup.example">Example: Remove a user
+from a local group</a></dd>
+<dt><a name="remove_account_rights" id=
+"remove_account_rights"><b class='cmd'>remove_account_rights</b>
+<i class='arg'>ACCOUNTNAME</i> <i class='arg'>RIGHTS</i> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Removes the privileges and account rights listed in <i class=
+'arg'>RIGHTS</i> from the account specified by <i class=
+'arg'>ACCOUNTNAME</i>. The option <b class='cmd'>-system</b> may be
+used to specify a system as described in <a href=
+"#standardoptions">Standard Options</a>.<br />
+<br />
+<i class='arg'>RIGHTS</i> is a list of privileges and account
+rights. Refer to <a href=
+"http://msdn.microsoft.com/library/default.asp?url=/library/en-us/secauthz/security/authorization_constants.asp">
+Authorization constants</a> in the Windows SDK for valid values.
+<span class="em">Note: you must use the string form of the
+privilege, for example, SeBatchLogon, not
+SE_BATCH_LOGON_NAME.</span></dd>
+<dt><a name="remove_user_from_global_group" id=
+"remove_user_from_global_group"><b class=
+'cmd'>remove_user_from_global_group</b> <i class=
+'arg'>GROUPNAME</i> <i class='arg'>USERNAME</i> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Removes the user account specified by <i class=
+'arg'>USERNAME</i> from the global group <i class=
+'arg'>GROUPNAME</i>. The option <b class='cmd'>-system</b> may be
+used to specify a system as described in <a href=
+"#standardoptions">Standard Options</a>.</dd>
+<dt><a name="set_user_account_info" id=
+"set_user_account_info"><b class='cmd'>set_user_account_info</b>
+<i class='arg'>account</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>? ?<i class='arg'>options</i>?</a></dt>
+<dd>Sets attributes and properties of a user account. <i class=
+'arg'>account</i> specifies the user account for which the
+information is to be retrieved. The option <b class=
+'cmd'>-system</b> may be used to specify the system from whose
+context the account lookup should be performed. The following
+options may be specified to set various properties of the account:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-comment</b></span> <i class='arg'>STRING</i></td>
+<td class="opt">Sets the comment associated with the account.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-full_name</b></span> <i class='arg'>STRING</i></td>
+<td class="opt">Sets the full name of the user.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-country_code</b></span> <i class='arg'>INTEGER</i></td>
+<td class="opt">Sets the country code associated with the user
+account.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-home_dir</b></span> <i class='arg'>PATH</i></td>
+<td class="opt">Sets the account's home directory path.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-home_dir_drive</b></span></td>
+<td class="opt">Sets the account's home directory drive.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-acct_expires</b></span> <i class='arg'>DATETIME</i></td>
+<td class="opt">Sets the time at which the account will expire.
+<i class='arg'>DATETIME</i> may be specified in any format accepted
+by the <b class='cmd'>clock scan</b> command, or may be the string
+<span class="strong">never</span> to indicate that the account
+should never expire.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-name</b></span> <i class='arg'>STRING</i></td>
+<td class="opt">Sets the <span class="strong">name</span> field
+containing the name of the account.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-script_path</b></span> <i class='arg'>PATH</i></td>
+<td class="opt">Sets the path to the logon script for the
+account.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-priv</b></span> <i class='arg'>PRIVLEVEL</i></td>
+<td class="opt">Sets the privilege level for the account. <i class=
+'arg'>PRIVLEVEL</i> should be one of the values <span class=
+"strong">admin</span>, <span class="strong">user</span> or
+<span class="strong">guest</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-profile</b></span> <i class='arg'>PATH</i></td>
+<td class="opt">Sets the path to the account's profile.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="set_user_comment" id="set_user_comment"><b class=
+'cmd'>set_user_comment</b> <i class='arg'>USERNAME</i> <i class=
+'arg'>STRING</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Sets the comment associated with the specified user account to
+<i class='arg'>STRING</i> The option <b class='cmd'>-system</b> may
+be used to specify a system as described in <a href=
+"#standardoptions">Standard Options</a>.</dd>
+<dt><a name="set_user_country_code" id=
+"set_user_country_code"><b class='cmd'>set_user_country_code</b>
+<i class='arg'>USERNAME</i> <i class='arg'>INTEGER</i> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Sets the country code for the specified user account. The
+option <b class='cmd'>-system</b> may be used to specify a system
+as described in <a href="#standardoptions">Standard
+Options</a>.</dd>
+<dt><a name="set_user_expiration" id=
+"set_user_expiration"><b class='cmd'>set_user_expiration</b>
+<i class='arg'>USERNAME</i> <i class='arg'>DATETIME</i> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Sets the time at which the specified user account expires.
+<i class='arg'>DATETIME</i> may be specified in any format accepted
+by the <b class='cmd'>clock scan</b> command, or may be the string
+<span class="strong">never</span> to indicate that the account
+should never expire. The option <b class='cmd'>-system</b> may be
+used to specify a system as described in <a href=
+"#standardoptions">Standard Options</a>.</dd>
+<dt><a name="set_user_full_name" id="set_user_full_name"><b class=
+'cmd'>set_user_full_name</b> <i class='arg'>USERNAME</i> <i class=
+'arg'>STRING</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Sets the full name for the specified user to <i class=
+'arg'>STRING</i>. The option <b class='cmd'>-system</b> may be used
+to specify a system as described in <a href=
+"#standardoptions">Standard Options</a>.</dd>
+<dt><a name="set_user_home_dir" id="set_user_home_dir"><b class=
+'cmd'>set_user_home_dir</b> <i class='arg'>USERNAME</i> <i class=
+'arg'>PATH</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Sets the home directory for the specified user account to
+<i class='arg'>PATH</i>. The option <b class='cmd'>-system</b> may
+be used to specify a system as described in <a href=
+"#standardoptions">Standard Options</a>.</dd>
+<dt><a name="set_user_home_dir_drive" id=
+"set_user_home_dir_drive"><b class=
+'cmd'>set_user_home_dir_drive</b> <i class='arg'>USERNAME</i>
+<i class='arg'>DRIVEPATH</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Sets the home directory drive for the specified user account.
+The option <b class='cmd'>-system</b> may be used to specify a
+system as described in <a href="#standardoptions">Standard
+Options</a>.</dd>
+<dt><a name="set_user_name" id="set_user_name"><b class=
+'cmd'>set_user_name</b> <i class='arg'>USERNAME</i> <i class=
+'arg'>NEWNAME</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Modifies the name of the specified user account to <i class=
+'arg'>NEWNAME</i>. The option <b class='cmd'>-system</b> may be
+used to specify a system as described in <a href=
+"#standardoptions">Standard Options</a>.</dd>
+<dt><a name="set_user_password" id="set_user_password"><b class=
+'cmd'>set_user_password</b> <i class='arg'>USERNAME</i> <i class=
+'arg'>PASSWORD</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Sets the password of the specified user account to <i class=
+'arg'>PASSWORD</i>. The option <b class='cmd'>-system</b> may be
+used to specify a system as described in <a href=
+"#standardoptions">Standard Options</a>.</dd>
+<dt><a name="set_user_priv_level" id=
+"set_user_priv_level"><b class='cmd'>set_user_priv_level</b>
+<i class='arg'>USERNAME</i> <i class='arg'>PRIVLEVEL</i> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Sets the privilege level of the specified user account to
+<i class='arg'>PRIVLEVEL</i>. <i class='arg'>PRIVLEVEL</i> should
+be one of the values <span class="strong">admin</span>,
+<span class="strong">user</span> or <span class=
+"strong">guest</span>. The option <b class='cmd'>-system</b> may be
+used to specify a system as described in <a href=
+"#standardoptions">Standard Options</a>.</dd>
+<dt><a name="set_user_profile" id="set_user_profile"><b class=
+'cmd'>set_user_profile</b> <i class='arg'>USERNAME</i> <i class=
+'arg'>PATH</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Sets the location of the profile of the specified user account
+to <i class='arg'>PATH</i>. The option <b class='cmd'>-system</b>
+may be used to specify a system as described in <a href=
+"#standardoptions">Standard Options</a>.</dd>
+<dt><a name="set_user_script_path" id=
+"set_user_script_path"><b class='cmd'>set_user_script_path</b>
+<i class='arg'>USERNAME</i> <i class='arg'>PATH</i> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Sets the path to the login script for the specified user
+account. The option <b class='cmd'>-system</b> may be used to
+specify a system as described in <a href=
+"#standardoptions">Standard Options</a>.</dd>
+<dt><a name="unlock_user" id="unlock_user"><b class=
+'cmd'>unlock_user</b> <i class='arg'>USERNAME</i> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Unlocks a user account that has been locked out. The option
+<b class='cmd'>-system</b> may be used to specify a system as
+described in <a href="#standardoptions">Standard Options</a>.</dd>
+</dl>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2004-2006, Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>

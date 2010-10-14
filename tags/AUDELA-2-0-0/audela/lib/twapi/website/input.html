@@ -1,0 +1,1193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>Keyboard and mouse input</h2>
+<p>Simulation of user input and support for system-wide hotkeys</p>
+<h3><a name="synopsis" id="synopsis">SYNOPSIS</a></h3>
+package require <b>twapi</b><br />
+<table class="commandsummary" summary="Table">
+<tr valign="top">
+<td><a href="#block_input"><b class='cmd'>block_input</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#click_mouse_button"><b class=
+'cmd'>click_mouse_button</b> <i class='arg'>BUTTON</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_input_idle_time"><b class=
+'cmd'>get_input_idle_time</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_mouse_location"><b class=
+'cmd'>get_mouse_location</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#move_mouse"><b class='cmd'>move_mouse</b> <i class=
+'arg'>XPOS</i> <i class='arg'>YPOS</i> ?<b class=
+'cmd'>-relative</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#register_hotkey"><b class='cmd'>register_hotkey</b>
+<i class='arg'>HOTKEY</i> <i class='arg'>SCRIPT</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#send_input"><b class='cmd'>send_input</b> <i class=
+'arg'>INPUTLIST</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#send_input_text"><b class='cmd'>send_input_text</b>
+<i class='arg'>TEXT</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#send_keys"><b class='cmd'>send_keys</b> <i class=
+'arg'>KEYSEQUENCE</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#turn_mouse_wheel"><b class='cmd'>turn_mouse_wheel</b>
+<i class='arg'>WHEELUNITS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#unblock_input"><b class=
+'cmd'>unblock_input</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#unregister_hotkey"><b class=
+'cmd'>unregister_hotkey</b> <i class='arg'>HOTKEY_ID</i></a></td>
+</tr>
+</table>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p>This package provides procedures related to user input on
+Windows platforms. The commands <a href="#send_input"><b class=
+'cmd'>send_input</b></a>, <a href="#send_keys"><b class=
+'cmd'>send_keys</b></a>, <a href="#send_input_text"><b class=
+'cmd'>send_input_text</b></a>, <a href="#move_mouse"><b class=
+'cmd'>move_mouse</b></a>, <a href="#click_mouse_button"><b class=
+'cmd'>click_mouse_button</b></a> and <a href=
+"#turn_mouse_wheel"><b class='cmd'>turn_mouse_wheel</b></a> can be
+used to simulate user input. The mouse position can be retrieved
+using <a href="#get_mouse_location"><b class=
+'cmd'>get_mouse_location</b></a>. The commands <a href=
+"#block_input"><b class='cmd'>block_input</b></a> and <a href=
+"#unblock_input"><b class='cmd'>unblock_input</b></a> can be used
+to prevent interference from real user input while simulating
+input.</p>
+<p>The commands <a href="#register_hotkey"><b class=
+'cmd'>register_hotkey</b></a> and <a href=
+"#unregister_hotkey"><b class='cmd'>unregister_hotkey</b></a> can
+be used to register scripts to be invoked when the user presses a
+hotkey combination.</p>
+<p>The amount of time elapsed since the last keyboard or mouse
+input event can be obtained through <a href=
+"#get_input_idle_time"><b class=
+'cmd'>get_input_idle_time</b></a>.</p>
+<h3><a name="commands" id="commands">Commands</a></h3>
+<dl class="noclass">
+<dt><a name="block_input" id="block_input"><b class=
+'cmd'>block_input</b></a></dt>
+<dd>This command blocks real physical input events and simulated
+events from threads other than the caller from being entered into
+the input queue. The command can be used to prevent interference
+when the commands such as <a href="#send_input"><b class=
+'cmd'>send_input</b></a>, <a href="#send_input_text"><b class=
+'cmd'>send_input_text</b></a>, <a href=
+"#click_mouse_button"><b class='cmd'>click_mouse_button</b></a> are
+used to simulate user input. The command <a href=
+"#unblock_input"><b class='cmd'>unblock_input</b></a> should be
+called to renable input.<br />
+<br />
+The return value of <b class='cmd'>block_input</b> is 1 if the
+input was previously unblocked and 0 if the input was already
+blocked.</dd>
+<dt><a name="click_mouse_button" id="click_mouse_button"><b class=
+'cmd'>click_mouse_button</b> <i class='arg'>BUTTON</i></a></dt>
+<dd>Generates input to simulate clicking the specified mouse
+button. <i class='arg'>BUTTON</i> may have one of the values
+<span class="strong">left</span>, <span class=
+"strong">right</span>, <span class="strong">middle</span>,
+<span class="strong">x1</span> or <span class="strong">x2</span> to
+specify the button that was clicked.<br />
+<br />
+<a href="opensysmenuwithmouse.example">Example: Open the system
+menu with the mouse</a></dd>
+<dt><a name="get_input_idle_time" id=
+"get_input_idle_time"><b class='cmd'>get_input_idle_time</b></a></dt>
+<dd>Returns the elapsed time in milliseconds since the last
+keyboard or mouse input event.</dd>
+<dt><a name="get_mouse_location" id="get_mouse_location"><b class=
+'cmd'>get_mouse_location</b></a></dt>
+<dd>Returns a pair of integers containing the mouse cursor's X and
+Y screen coordinates in pixels.</dd>
+<dt><a name="move_mouse" id="move_mouse"><b class=
+'cmd'>move_mouse</b> <i class='arg'>XPOS</i> <i class=
+'arg'>YPOS</i> ?<b class='cmd'>-relative</b>?</a></dt>
+<dd>Generates input to simulate mouse movement. Movement is in
+absolute mouse coordinates unless the option <b class=
+'cmd'>-relative</b> is specified. See description of <a href=
+"#send_input"><b class='cmd'>send_input</b></a> for more
+details.<br />
+<br />
+<a href="opensysmenuwithmouse.example">Example: Move mouse to
+system menu</a></dd>
+<dt><a name="register_hotkey" id="register_hotkey"><b class=
+'cmd'>register_hotkey</b> <i class='arg'>HOTKEY</i> <i class=
+'arg'>SCRIPT</i></a></dt>
+<dd>Registers a script to be invoked when the user presses the
+hotkey specified by <i class='arg'>HOTKEY</i>. Note that the script
+is invoked when the hotkey is pressed even if some other
+application had the input focus. If the caller had previously
+registered a script for the same hotkey, it is replaced by
+<i class='arg'>SCRIPT</i>.<br />
+<br />
+<i class='arg'>HOTKEY</i> is a string describing the key
+combination and consists of 0-4 modifiers followed by the key code,
+all separated by the <span class="strong">-</span> character. A
+modifier may be one of <span class="strong">ctrl</span> (or
+<span class="strong">control</span>), <span class=
+"strong">alt</span> (or <span class="strong">menu</span>),
+<span class="strong">shift</span> or <span class=
+"strong">win</span>. The key code itself may be a single
+alphanumeric character, one of the virtual key names, such as
+<span class="strong">F9</span>, listed in <a href=
+"#send_input"><b class='cmd'>send_input</b></a>, or the actual
+virtual key code itself. Examples are <span class=
+"strong">ctrl-alt-a</span>, <span class="strong">shift-f9</span>
+and <span class="strong">ctrl-alt-65</span>.<br />
+<br />
+The command returns an identifier corresponding to the specified
+hotkey registration. It should be deregistered when no longer
+needed by calling the <a href="#unregister_hotkey"><b class=
+'cmd'>unregister_hotkey</b></a> function.<br />
+<br />
+<a href="hotkey.example">Example: Start a program when a hotkey is
+pressed</a></dd>
+<dt><a name="send_input" id="send_input"><b class=
+'cmd'>send_input</b> <i class='arg'>INPUTLIST</i></a></dt>
+<dd>Simulates user input by generating keyboard and mouse events
+based on <i class='arg'>INPUTLIST</i>. This must be in the form of
+a list of sublists, each sublist being a keyboard or mouse input
+event specification.<br />
+<br />
+A <span class="em">keyboard input specification</span> takes the
+form<br />
+<br />
+"<i class='arg'>KEYTYPE</i> <i class='arg'>VK</i> <i class=
+'arg'>SCANCODE</i> ?<i class='arg'>keyopts</i>?".<br />
+<br />
+<i class='arg'>KEYTYPE</i> may have one of the following values:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">key</span></span></td>
+<td class="opt">Specifies a virtual key being pressed and released.
+This is a more convenient form of specifying consecutive <b class=
+'cmd'>keydown</b>, <b class='cmd'>keyup</b> events. <i class=
+'arg'>VK</i> should be an integer in the range 1-254 and specifies
+the virtual key. <i class='arg'>SCANCODE</i> specifies a hardware
+scancode for the key. If <span class="strong">-usescan</span> is
+specified in <i class='arg'>keyopts</i>, the specified scan code is
+used and <i class='arg'>VK</i> will be ignored by the system. If
+<span class="strong">-extended</span> is specified in <i class=
+'arg'>keyopts</i>, the key is treated as an extended key with the
+scan code being preceded by a byte that has value 0xE0.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">keydown</span></span></td>
+<td class="opt">Specifies a virtual key being pressed. <i class=
+'arg'>VK</i> should be an integer in the range 1-254 and specifies
+the virtual key. <i class='arg'>SCANCODE</i> specifies a hardware
+scancode for the key. <i class='arg'>keyopts</i> may have the same
+values as specified for <span class="strong">vkey</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">keyup</span></span></td>
+<td class="opt">Specifies a virtual key being released. <i class=
+'arg'>VK</i> should be an integer in the range 1-254 and specifies
+the virtual key. <i class='arg'>SCANCODE</i> specifies a hardware
+scancode for the key. <i class='arg'>keyopts</i> may have the same
+values as specified for <span class="strong">vkey</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">unicode</span></span></td>
+<td class="opt">Specifies a unicode character. <i class=
+'arg'>SCANCODE</i> should contain the integer corresponding to the
+unicode character. <i class='arg'>VK</i> and any <i class=
+'arg'>keyopts</i> are ignored if specified.</td>
+</tr>
+</table>
+<br />
+<br />
+For more detailed information, refer the the documentation of the
+<b class='cmd'>KEYBDINPUT</b> structure in the Windows SDK.<br />
+<br />
+<b class='cmd'>send_input</b> should generally be used only for the
+most low level input sequences involving both keyboard and mouse
+input. The commands <a href="#send_input_text"><b class=
+'cmd'>send_input_text</b></a> and <a href="#send_keys"><b class=
+'cmd'>send_keys</b></a> provide more convenient alternatives for
+sending pure text and a combination of text and special keys
+respectively.<br />
+<br />
+A mouse input specification takes the form<br />
+<br />
+"<span class="strong">mouse</span> <i class='arg'>XPOS</i>
+<i class='arg'>YPOS</i> ?<i class='arg'>mouseopts</i>?".<br />
+<br />
+Arguments <i class='arg'>XPOS</i> and <i class='arg'>YPOS</i>
+specify the position of the mouse in absolute (default) or relative
+coordinates. In the former case, the values range from 0 to 65535
+and are in mouse coordinates. In the latter case, the values are in
+pixels. Note when relative mode is used, the system will take into
+account the mouse speed and acceleration settings. The command
+<b class='cmd'>move_mouse</b> is much simpler to use unless you
+have a need to send complex mouse input sequences.<br />
+<br />
+<i class='arg'>mouseopts</i> may contain one or more of the
+following options:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-relative</b></span></td>
+<td class="opt">Indicates that <i class='arg'>XPOS</i> and
+<i class='arg'>YPOS</i> should be treated as relative to the last
+reported position, and not as absolute coordinates.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-ldown</b></span></td>
+<td class="opt">Indicates that the left mouse button has been
+pressed since the last reported event.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-lup</b></span></td>
+<td class="opt">Indicates that the left mouse button has been
+released since the last reported event.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-rdown</b></span></td>
+<td class="opt">Indicates that the right mouse button has been
+pressed since the last reported event.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-rup</b></span></td>
+<td class="opt">Indicates that the right mouse button has been
+released since the last reported event.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-mdown</b></span></td>
+<td class="opt">Indicates that the middle mouse button has been
+pressed since the last reported event.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-mup</b></span></td>
+<td class="opt">Indicates that the middle mouse button has been
+released since the last reported event.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-x1down</b></span></td>
+<td class="opt">Indicates that the first X button has been pressed
+since the last reported event.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-x1up</b></span></td>
+<td class="opt">Indicates that the first X button has been released
+since the last reported event.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-x2down</b></span></td>
+<td class="opt">Indicates that the second X button has been pressed
+since the last reported event.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-x2up</b></span></td>
+<td class="opt">Indicates that the second X button has been
+released since the last reported event.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-moved</b></span></td>
+<td class="opt">Indicates that the mouse has moved since the last
+reported event.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-wheel</b> <i class='arg'>WHEELUNITS</i></span></td>
+<td class="opt">Indicates that the mouse wheel was rotated by
+<i class='arg'>WHEELUNITS</i>. This may be a positive integer for
+forward rotation, or a negative integer for backward rotation. This
+option may not be used with any of the X button options.</td>
+</tr>
+</table>
+For more detailed information, refer the the documentation of the
+<b class='cmd'>MOUSEINPUT</b> structure in the Windows SDK.<br />
+<br />
+The commands <a href="#move_mouse"><b class=
+'cmd'>move_mouse</b></a>, <a href="#click_mouse_button"><b class=
+'cmd'>click_mouse_button</b></a> and <a href=
+"#turn_mouse_wheel"><b class='cmd'>turn_mouse_wheel</b></a> may be
+more convenient for common cases.<br />
+<br />
+<a href="sendmouseinput.example">Example: Draw a square in MS Paint
+using the mouse</a></dd>
+<dt><a name="send_input_text" id="send_input_text"><b class=
+'cmd'>send_input_text</b> <i class='arg'>TEXT</i></a></dt>
+<dd>Simulates user input by generating keyboard events
+corresponding to <i class='arg'>TEXT</i>.<br />
+<br />
+<a href="sendtext.example">Example: Send a text string to a
+specified window</a></dd>
+<dt><a name="send_keys" id="send_keys"><b class='cmd'>send_keys</b>
+<i class='arg'>KEYSEQUENCE</i></a></dt>
+<dd>Simulates user input of keyboard events. This function differs
+from <a href="#send_input_text"><b class=
+'cmd'>send_input_text</b></a> in that the keys generated may
+include non-text keys such as function keys, modifier keys etc..
+<i class='arg'>KEYSEQUENCE</i> indicates the keys to be generated
+and is specified with the syntax defined below. This syntax is a
+superset of the syntax used by the Visual Basic SendKeys
+command.<br />
+<br />
+All characters in <i class='arg'>KEYSEQUENCE</i> result in the
+corresponding keystroke being generated except for the following
+characters which have a special meaning:<br />
+<br />
+The <span class="strong">~</span> character stands for the
+<span class="strong">ENTER</span> key.<br />
+<br />
+The <span class="strong">+</span>, <span class="strong">^</span>
+and <span class="strong">%</span> characters are used as key
+modifiers for the following character or character groups. The
+<span class="strong">+</span> character is used to indicate the
+following character should be entered as though the <span class=
+"strong">SHIFT</span> key was pressed while entering the character.
+Similarly, <span class="strong">^</span> and <span class=
+"strong">%</span> indicate the <span class="strong">CTRL</span> and
+<span class="strong">ALT</span> modifiers respectively. For
+example, the sequence <span class="strong">+ab</span> will result
+in the following key stroke sequence being generated: <span class=
+"strong">SHIFT</span> is pressed and held down, the <span class=
+"strong">a</span> key is pressed and released, the <span class=
+"strong">SHIFT</span> key is released, and finally the <span class=
+"strong">b</span> key is pressed and released.<br />
+<br />
+The <span class="strong">(</span> and <span class="strong">)</span>
+characters are used to group a set of characters together. This is
+used for applying a key modifier to a sequence of characters. For
+example, the sequence <span class="strong">+(abc)</span> will
+result in the following key stroke sequence being generated:
+<span class="strong">SHIFT</span> is pressed and held down and then
+the keys <span class="strong">a</span>, <span class=
+"strong">b</span> and <span class="strong">c</span> are pressed and
+released before the <span class="strong">SHIFT</span> key is
+released.<br />
+<br />
+The <span class="strong">{</span> and <span class="strong">}</span>
+keys are used to indicate special keys such as function keys and to
+enter the special characters such as <span class="strong">+</span>.
+Thus, <span class="strong">{+}</span> will result in the key
+<span class="strong">+</span> being pressed and released.
+Similarly, <span class="strong">{(}</span> and <span class=
+"strong">{}}</span> indicate the character <span class=
+"strong">(</span> and <span class="strong">}</span> being entered.
+As a special case, the form <span class="strong">{<i class=
+'arg'>C</i> <i class='arg'>N</i>}</span> results in the character
+<i class='arg'>C</i> being entered <i class='arg'>N</i> times. Note
+that the character may be any character, not just a special
+character that needs to be escaped.<br />
+<br />
+The other use of the braced escape sequence is to enter special
+keys. These special sequences and the corresponding generated
+keystrokes are:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{BACKSPACE}</span></span></td>
+<td class="opt">Backspace</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{BACK}</span></span></td>
+<td class="opt">(same as <span class=
+"strong">{BACKSPACE}</span>)</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{BS}</span></span></td>
+<td class="opt">(same as <span class=
+"strong">{BACKSPACE}</span>)</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{BKSP}</span></span></td>
+<td class="opt">(same as <span class=
+"strong">{BACKSPACE}</span>)</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{TAB}</span></span></td>
+<td class="opt">Tab</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{CLEAR}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{ENTER}</span></span></td>
+<td class="opt">Enter key on the main keyboard</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{RETURN}</span></span></td>
+<td class="opt">(same as <span class="strong">{ENTER}</span>)</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{SHIFT}</span></span></td>
+<td class="opt">Shift (see note below on difference between this
+and use of the <span class="strong">+</span> modifier).</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{CONTROL}</span></span></td>
+<td class="opt">Shift (see note below on difference between this
+and use of the <span class="strong">^</span> modifier).</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{ALT}</span></span></td>
+<td class="opt">Shift (see note below on difference between this
+and use of the <span class="strong">%</span> modifier).</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{MENU}</span></span></td>
+<td class="opt">(same as <span class="strong">{ALT}</span>)</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{PAUSE}</span></span></td>
+<td class="opt">Pause</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{BREAK}</span></span></td>
+<td class="opt">Break</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{CAPSLOCK}</span></span></td>
+<td class="opt">Caps Lock</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{CAPITAL}</span></span></td>
+<td class="opt">(same as <span class=
+"strong">{CAPSLOCK}</span>)</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{KANA}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{HANGEUL}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{HANGUL}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{JUNJA}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{FINAL}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{HANJA}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{KANJI}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{ESCAPE}</span></span></td>
+<td class="opt">Escape</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{ESC}</span></span></td>
+<td class="opt">(same as <span class="strong">{ESCAPE}</span>)</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{CONVERT}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{NONCONVERT}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{ACCEPT}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{MODECHANGE}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{SPACE}</span></span></td>
+<td class="opt">Spacebar</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{PGUP}</span></span></td>
+<td class="opt">Page Up</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{PRIOR}</span></span></td>
+<td class="opt">(same as <span class="strong">{PGUP}</span>)</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{PGDN}</span></span></td>
+<td class="opt">Page Down</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{NEXT}</span></span></td>
+<td class="opt">(same as <span class="strong">{PGDN}</span>)</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{END}</span></span></td>
+<td class="opt">End</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{HOME}</span></span></td>
+<td class="opt">Home</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{LEFT}</span></span></td>
+<td class="opt">Left arrow</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{UP}</span></span></td>
+<td class="opt">Up arrow</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{RIGHT}</span></span></td>
+<td class="opt">Right arrow</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{DOWN}</span></span></td>
+<td class="opt">Down arrow</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{SELECT}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{PRTSC}</span></span></td>
+<td class="opt">Print Screen key</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{PRINT}</span></span></td>
+<td class="opt">Print key</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{EXECUTE}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{SNAPSHOT}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{INSERT}</span></span></td>
+<td class="opt">Insert</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{INS}</span></span></td>
+<td class="opt">(same as <span class="strong">{INSERT}</span>)</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{DELETE}</span></span></td>
+<td class="opt">Delete</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{DEL}</span></span></td>
+<td class="opt">(same as <span class="strong">{DELETE}</span>)</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{HELP}</span></span></td>
+<td class="opt">Help</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{LWIN}</span></span></td>
+<td class="opt">Left Windows key</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{RWIN}</span></span></td>
+<td class="opt">Right Windows key</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{APPS}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{SLEEP}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{NUMPAD0}</span></span></td>
+<td class="opt">Numeric keypad 0</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{NUMPAD1}</span></span></td>
+<td class="opt">Numeric keypad 1</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{NUMPAD2}</span></span></td>
+<td class="opt">Numeric keypad 2</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{NUMPAD3}</span></span></td>
+<td class="opt">Numeric keypad 3</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{NUMPAD4}</span></span></td>
+<td class="opt">Numeric keypad 4</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{NUMPAD5}</span></span></td>
+<td class="opt">Numeric keypad 5</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{NUMPAD6}</span></span></td>
+<td class="opt">Numeric keypad 6</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{NUMPAD7}</span></span></td>
+<td class="opt">Numeric keypad 7</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{NUMPAD8}</span></span></td>
+<td class="opt">Numeric keypad 8</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{NUMPAD9}</span></span></td>
+<td class="opt">Numeric keypad 9</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{MULTIPLY}</span></span></td>
+<td class="opt">Numeric keypad *</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{ADD}</span></span></td>
+<td class="opt">Numeric keypad +</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{SEPARATOR}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{SUBTRACT}</span></span></td>
+<td class="opt">Numeric keypad -</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{DECIMAL}</span></span></td>
+<td class="opt">Numeric keypad .</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{DIVIDE}</span></span></td>
+<td class="opt">Numeric keypad /</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{F1}</span></span></td>
+<td class="opt">Function key F1</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{F2}</span></span></td>
+<td class="opt">Function key F2</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{F3}</span></span></td>
+<td class="opt">Function key F3</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{F4}</span></span></td>
+<td class="opt">Function key F4</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{F5}</span></span></td>
+<td class="opt">Function key F5</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{F6}</span></span></td>
+<td class="opt">Function key F6</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{F7}</span></span></td>
+<td class="opt">Function key F7</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{F8}</span></span></td>
+<td class="opt">Function key F8</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{F9}</span></span></td>
+<td class="opt">Function key F9</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{F10}</span></span></td>
+<td class="opt">Function key F10</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{F11}</span></span></td>
+<td class="opt">Function key F11</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{F12}</span></span></td>
+<td class="opt">Function key F12</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{F13}</span></span></td>
+<td class="opt">Function key F13</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{F14}</span></span></td>
+<td class="opt">Function key F14</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{F15}</span></span></td>
+<td class="opt">Function key F15</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{F16}</span></span></td>
+<td class="opt">Function key F16</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{F17}</span></span></td>
+<td class="opt">Function key F17</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{F18}</span></span></td>
+<td class="opt">Function key F18</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{F19}</span></span></td>
+<td class="opt">Function key F19</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{F20}</span></span></td>
+<td class="opt">Function key F20</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{F21}</span></span></td>
+<td class="opt">Function key F21</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{F22}</span></span></td>
+<td class="opt">Function key F22</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{F23}</span></span></td>
+<td class="opt">Function key F23</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{F24}</span></span></td>
+<td class="opt">Function key F24</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{NUMLOCK}</span></span></td>
+<td class="opt">Numlock</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{SCROLL}</span></span></td>
+<td class="opt">Scroll lock</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{SCROLLLOCK}</span></span></td>
+<td class="opt">Scroll lock</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{LSHIFT}</span></span></td>
+<td class="opt">Left Shift</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{RSHIFT}</span></span></td>
+<td class="opt">Right Shift</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{LCONTROL}</span></span></td>
+<td class="opt">Left Control</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{RCONTROL}</span></span></td>
+<td class="opt">Right Control</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{LALT}</span></span></td>
+<td class="opt">Left Alt</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{LMENU}</span></span></td>
+<td class="opt">(same as <span class="strong">{LALT}</span>)</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{RALT}</span></span></td>
+<td class="opt">Right Alt</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{RMENU}</span></span></td>
+<td class="opt">(same as <span class="strong">{RALT}</span>)</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{BROWSER_BACK}</span></span></td>
+<td class="opt">Back</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{BROWSER_FORWARD}</span></span></td>
+<td class="opt">Forward</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{BROWSER_REFRESH}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{BROWSER_STOP}</span></span></td>
+<td class="opt">Stop</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{BROWSER_SEARCH}</span></span></td>
+<td class="opt">Search</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{BROWSER_FAVORITES}</span></span></td>
+<td class="opt">Favorites</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{BROWSER_HOME}</span></span></td>
+<td class="opt">Web Home</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{VOLUME_MUTE}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{VOLUME_DOWN}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{VOLUME_UP}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{MEDIA_NEXT_TRACK}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{MEDIA_PREV_TRACK}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{MEDIA_STOP}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{MEDIA_PLAY_PAUSE}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{LAUNCH_MAIL}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{LAUNCH_MEDIA_SELECT}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{LAUNCH_APP1}</span></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">{LAUNCH_APP2}</span></span></td>
+<td class="opt"></td>
+</tr>
+</table>
+Note that use of the braced sequences for the modifier keys such as
+<span class="strong">SHIFT</span> is not the same as the
+corresponding special characters. For example, the string
+<span class="strong">{SHIFT}a</span> results in the key sequence
+where the <span class="strong">SHIFT</span> key is pressed and
+released <span class="em">before</span> the <span class=
+"strong">a</span> key is pressed. The string <span class=
+"strong">+a</span> on the other hand results in a key sequence
+where the <span class="strong">SHIFT</span> key is released
+<span class="em">after</span> the <span class="strong">a</span> is
+pressed and released.<br />
+<br />
+<a href="sendmenuexit.example">Example: Send an exit command using
+menu shortcuts</a></dd>
+<dt><a name="turn_mouse_wheel" id="turn_mouse_wheel"><b class=
+'cmd'>turn_mouse_wheel</b> <i class='arg'>WHEELUNITS</i></a></dt>
+<dd>Generates input to simulate turning the wheel. A positive value
+of <i class='arg'>WHEELUNITS</i> simulates forward rotation by the
+specified number of units, a negative value simulates backward
+rotation.</dd>
+<dt><a name="unblock_input" id="unblock_input"><b class=
+'cmd'>unblock_input</b></a></dt>
+<dd>This command reverses the effect of a previous call to <a href=
+"#block_input"><b class='cmd'>block_input</b></a>.<br />
+<br />
+The return value of <b class='cmd'>unblock_input</b> is 1 if the
+input was previously blocked and 0 if the input was already
+unblocked.</dd>
+<dt><a name="unregister_hotkey" id="unregister_hotkey"><b class=
+'cmd'>unregister_hotkey</b> <i class='arg'>HOTKEY_ID</i></a></dt>
+<dd>Unregisters a hot key that was previously registered. <i class=
+'arg'>HOTKEY_ID</i> should be a hotkey identifer returned by a
+previous call to <a href="#register_hotkey"><b class=
+'cmd'>register_hotkey</b></a>.<br />
+<br />
+<a href="hotkey.example">Example: Start a program when a hotkey is
+pressed</a></dd>
+</dl>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2003, 2004, Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>

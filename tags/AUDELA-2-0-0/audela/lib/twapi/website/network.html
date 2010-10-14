@@ -1,0 +1,1102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>Network configuration</h2>
+<p>Commands related to network configuration</p>
+<h3><a name="synopsis" id="synopsis">SYNOPSIS</a></h3>
+package require <b>twapi</b><br />
+<table class="commandsummary" summary="Table">
+<tr valign="top">
+<td><a href="#address_to_hostname"><b class=
+'cmd'>address_to_hostname</b> <i class='arg'>IPADDRESS</i>
+?<b class='cmd'>-async</b> <i class='arg'>SCRIPT</i>? ?<b class=
+'cmd'>-flushcache</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#flush_arp_table"><b class='cmd'>flush_arp_table</b>
+<i class='arg'>INTERFACEINDEX</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_arp_table"><b class='cmd'>get_arp_table</b>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_ip_addresses"><b class=
+'cmd'>get_ip_addresses</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_netif_count"><b class=
+'cmd'>get_netif_count</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_netif_indices"><b class=
+'cmd'>get_netif_indices</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_netif_info"><b class='cmd'>get_netif_info</b>
+<i class='arg'>NETWORKINTERFACE</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_network_info"><b class='cmd'>get_network_info</b>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_outgoing_interface"><b class=
+'cmd'>get_outgoing_interface</b> <i class=
+'arg'>DESTADDR</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_route"><b class='cmd'>get_route</b> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_routing_table"><b class=
+'cmd'>get_routing_table</b> ?<b class='cmd'>-sort</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_tcp_connections"><b class=
+'cmd'>get_tcp_connections</b> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_udp_connections"><b class=
+'cmd'>get_udp_connections</b> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#hostname_to_address"><b class=
+'cmd'>hostname_to_address</b> <i class='arg'>HOSTNAME</i>
+?<b class='cmd'>-async</b> <i class='arg'>SCRIPT</i>? ?<b class=
+'cmd'>-flushcache</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#hwaddr_to_ipaddr"><b class='cmd'>hwaddr_to_ipaddr</b>
+<i class='arg'>HWADDR</i> ?<i class='arg'>VARNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#ipaddr_to_hwaddr"><b class='cmd'>ipaddr_to_hwaddr</b>
+<i class='arg'>IPADDR</i> ?<i class='arg'>VARNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#port_to_service"><b class='cmd'>port_to_service</b>
+<i class='arg'>PORTNUMBER</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#service_to_port"><b class='cmd'>service_to_port</b>
+<i class='arg'>SERVICENAME</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#terminate_tcp_connections"><b class=
+'cmd'>terminate_tcp_connections</b> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+</table>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p>This module provides procedures to retrieve network
+information</p>
+<h3><a name="overview" id="overview">Overview</a></h3>
+<p>This module provides commands to retrieve various
+network-related data for the local system including DNS and DHCP
+information, type and configuration of network interfaces, traffic
+statistics and various other information. The module also provides
+some client side name resolution lookup functions including
+nonblocking name and address lookups. Many of these commands and
+some options are not available on all platforms as noted in each
+command description.</p>
+<h3><a name="commands" id="commands">Commands</a></h3>
+<dl class="noclass">
+<dt><a name="address_to_hostname" id=
+"address_to_hostname"><b class='cmd'>address_to_hostname</b>
+<i class='arg'>IPADDRESS</i> ?<b class='cmd'>-async</b> <i class=
+'arg'>SCRIPT</i>? ?<b class='cmd'>-flushcache</b>?</a></dt>
+<dd>Attempts to map the specified Internet address <i class=
+'arg'>IPADDRESS</i> to its fully qualified DNS name (FQDN).<br />
+<br />
+If the <b class='cmd'>-async</b> option is not specified, the
+command returns the FQDN if available and the empty string
+otherwise. Note that this is a blocking call and the Tcl event loop
+will not be run until the command returns.<br />
+<br />
+If the <b class='cmd'>-async</b> option is specified, the command
+returns right away. The address resolution is done in the
+background and when completed, <i class='arg'>SCRIPT</i> is called
+at the global scope. Three additional arguments are appended to the
+script before it is executed - <i class='arg'>IPADDRESS</i>, status
+<span class="strong">success</span> or <span class=
+"strong">fail</span> and either the FQDN (when the status is
+<span class="strong">success</span>) or the Winsock error code
+(when the status is <span class="strong">fail</span>). The Winsock
+error code may be translated to an error string using the <a href=
+"misc.html#map_windows_error"><b class=
+'cmd'>map_windows_error</b></a> command. If no names are found, the
+status is <span class="strong">success</span> but the third
+argument will be an empty string.<br />
+<br />
+Internally, the command maintains a cache of address to hostname
+mappings so as to avoid unnecessary lookups. The result is normally
+returned from here if available. However, if the <b class=
+'cmd'>-flushcache</b> option is specified, the cache entry is
+deleted and an explicit lookup up is done.</dd>
+<dt><a name="flush_arp_table" id="flush_arp_table"><b class=
+'cmd'>flush_arp_table</b> <i class=
+'arg'>INTERFACEINDEX</i></a></dt>
+<dd>Flushes the ARP table associated with the specified network
+interface.</dd>
+<dt><a name="get_arp_table" id="get_arp_table"><b class=
+'cmd'>get_arp_table</b> ?<i class='arg'>options</i>?</a></dt>
+<dd>Returns the entries in the system's ARP table. Each entry is a
+sublist consisting of four elements - the interface index, the
+hardware address, the IP address and the type. The type is one of
+<span class="strong">dynamic</span>, <span class=
+"strong">static</span>, <span class="strong">other</span> or
+<span class="strong">invalid</span>.<br />
+<br />
+The following options control the returned data:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-ifindex</b></span> <i class='arg'>INTERFACEINDEX</i></td>
+<td class="opt">Limits the returned entries to those in the ARP
+table for the specified network interface with index <i class=
+'arg'>INTERFACEINDEX</i>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sort</b></span></td>
+<td class="opt">Returns the entries sorted by IP address.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-validonly</b></span></td>
+<td class="opt">Skips entries that are marked invalid.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_ip_addresses" id="get_ip_addresses"><b class=
+'cmd'>get_ip_addresses</b></a></dt>
+<dd>Returns a list of IP addresses for the system.</dd>
+<dt><a name="get_netif_count" id="get_netif_count"><b class=
+'cmd'>get_netif_count</b></a></dt>
+<dd>Returns the number of network interfaces in the system.</dd>
+<dt><a name="get_netif_indices" id="get_netif_indices"><b class=
+'cmd'>get_netif_indices</b></a></dt>
+<dd>Network interfaces in the system are identified by integer
+indices. This command retrieves the list of network interfaces in
+the system.<br />
+<br />
+<a href="showinterfaces.example">Example: Show network interface
+information</a></dd>
+<dt><a name="get_netif_info" id="get_netif_info"><b class=
+'cmd'>get_netif_info</b> <i class='arg'>NETWORKINTERFACE</i>
+?<i class='arg'>options</i>?</a></dt>
+<dd>Returns various information about the configuration of a
+network interface. <i class='arg'>NETWORKINTERFACE</i> must be the
+index of a network interface or a name identifying the
+interface.<br />
+<br />
+The information returned depends on the options specified and is in
+the form of a flat list of the form "<i class='arg'>option1</i>
+<i class='arg'>value1</i> ...". The following options may be
+specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-adapterdescription</b></span></td>
+<td class="opt">Returns a description of the adapter associated
+with the interface. This option is supported on Windows 2000 and
+higher.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-adapterindex</b></span></td>
+<td class="opt">Returns the index of the adapter associated with
+the interface. This option is supported on Windows 2000 and
+higher.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-adaptername</b></span></td>
+<td class="opt">Returns the name of the adapter associated with the
+interface. This option is supported on Windows 2000 and
+higher.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-adminstatus</b></span></td>
+<td class="opt">Returns 1 or 0 depending on whether the interface
+has been administratively enabled or not.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Returns all option values.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-autoconfigactive</b></span></td>
+<td class="opt">Returns 1 if the interface has been autoconfigured
+with an address, and 0 otherwise. This option is supported on
+Windows 2000 and higher.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-autoconfigenabled</b></span></td>
+<td class="opt">Returns 1 if autoconfiguration is enabled on the
+interface if a DHCP server cannot be found, and 0 otherwise. This
+option is supported on Windows 2000 and higher.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-defaultgateway</b></span></td>
+<td class="opt">Returns the address of the default gateway on the
+interface. This option is supported on Windows 2000 and
+higher.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-description</b></span></td>
+<td class="opt">Returns a description of the interface.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-dhcpenabled</b></span></td>
+<td class="opt">Returns 1 if DHCP is enabled on the interface, else
+0. This option is supported on Windows 2000 and higher.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-dhcpleaseend</b></span></td>
+<td class="opt">Returns the time, in seconds since Jan 1, 1970,
+that the DHCP lease will expire. This option is supported on
+Windows 2000 and higher.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-dhcpleasestart</b></span></td>
+<td class="opt">Returns the time, in seconds since Jan 1, 1970,
+that the DHCP lease was obtained. This option is supported on
+Windows 2000 and higher.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-dhcpserver</b></span></td>
+<td class="opt">Returns the address of the DHCP server on the
+network interface. This option is supported on Windows 2000 and
+higher.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-dnsservers</b></span></td>
+<td class="opt">Returns a list of DNS servers on that interface.
+This option is supported on Windows 2000 and higher.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-havewins</b></span></td>
+<td class="opt">Returns 1 if the interface uses WINS, else 0. This
+option is supported on Windows 2000 and higher.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-ifindex</b></span></td>
+<td class="opt">Returns the interface index. This is the same as
+<i class='arg'>INTERFACEINDEX</i> unless the latter is specified as
+a name.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-ifname</b></span></td>
+<td class="opt">Returns the name of the network interface.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-inbytes</b></span></td>
+<td class="opt">Returns the number of bytes received through this
+interface.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-indiscards</b></span></td>
+<td class="opt">Returns the number of incoming packets on this
+interface that were discarded even though they had no errors.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-inerrors</b></span></td>
+<td class="opt">Returns the number of incoming packets on this
+interface that were discarded because of errors.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-innonunicastpkts</b></span></td>
+<td class="opt">Returns the number of broadcast or multicast
+packets received through this interface.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-inunicastpkts</b></span></td>
+<td class="opt">Returns the number of unicast packets received
+through this interface.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-inunknownprotocols</b></span></td>
+<td class="opt">Returns the number of incoming packets on this
+interface that were discarded because of the protocol was
+unknown.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-laststatuschange</b></span></td>
+<td class="opt">Returns the last time the operational status
+changed.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-ipaddresses</b></span></td>
+<td class="opt">Returns a list sublists containing the IP addresses
+and masks for the interface.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-mtu</b></span></td>
+<td class="opt">Returns the maximum transmission unit of the
+interface.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-operstatus</b></span></td>
+<td class="opt">Returns the operational status of the interface.
+This is one of the values <span class=
+"strong">nonoperational</span>, <span class=
+"strong">wanunreachable</span>, <span class=
+"strong">disconnected</span>, <span class=
+"strong">wanconnecting</span>, <span class=
+"strong">wanconnected</span>, <span class=
+"strong">operational</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-outbytes</b></span></td>
+<td class="opt">Returns the number of bytes transmitted through
+this interface.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-outdiscards</b></span></td>
+<td class="opt">Returns the number of outgoing packets on this
+interface that were discarded even though they had no errors.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-outerrors</b></span></td>
+<td class="opt">Returns the number of outgoing packets on this
+interface that were discarded because of errors.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-outnonunicastpkts</b></span></td>
+<td class="opt">Returns the number of broadcast or multicast
+packets transmitted through this interface.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-outqlen</b></span></td>
+<td class="opt">Returns the output queue length on this
+interface.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-outunicastpkts</b></span></td>
+<td class="opt">Returns the number of unicast packets transmitted
+through this interface.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-physicaladdress</b></span></td>
+<td class="opt">Returns the physical address of the network
+interface.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-primarywins</b></span></td>
+<td class="opt">Returns the address of the primary WINS server, if
+any.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-reassemblysize</b></span></td>
+<td class="opt">Returns the maximum size of a reassembled packet
+that is supported by the interface.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-secondarywins</b></span></td>
+<td class="opt">Returns the address of the secondary WINS server,
+if any.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-speed</b></span></td>
+<td class="opt">Returns the speed of the network interface in bits
+per second.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-type</b></span></td>
+<td class="opt">Returns the network interface type. This is one of
+<span class="strong">ethernet</span>, <span class=
+"strong">tokenring</span>, <span class="strong">fddi</span>,
+<span class="strong">ppp</span>, <span class=
+"strong">loopback</span>, <span class="strong">slip</span> or
+<span class="strong">other</span>.</td>
+</tr>
+</table>
+<br />
+<br />
+<a href="showinterfaces.example">Example: Show network interface
+information</a><br />
+<br />
+<a href="shownetworkstats.example">Example: Show network
+statistics</a><br />
+<br /></dd>
+<dt><a name="get_network_info" id="get_network_info"><b class=
+'cmd'>get_network_info</b> ?<i class='arg'>options</i>?</a></dt>
+<dd>Returns various information about network configuration. The
+information returned depends on the options specified and is in the
+form of a flat list of the form "<i class='arg'>option1</i>
+<i class='arg'>value1</i> ...". The following options may be
+specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Returns all values.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-arpproxyenabled</b></span></td>
+<td class="opt">Returns 1 if ARP proxying is enabled and 0
+otherwise.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-dhcpscopeid</b></span></td>
+<td class="opt">Returns the DHCP scope id.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-dnsenabled</b></span></td>
+<td class="opt">Returns 1 if DNS name resolution is enabled on the
+system and 0 otherwise.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-dnsservers</b></span></td>
+<td class="opt">Returns a list of DNS server addresses used for
+name resolution.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-domain</b></span></td>
+<td class="opt">Returns the system domain.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-hostname</b></span></td>
+<td class="opt">Returns the host name of the system.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-routingenabled</b></span></td>
+<td class="opt">Returns 1 if routing is enabled on the system and 0
+otherwise.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_outgoing_interface" id=
+"get_outgoing_interface"><b class='cmd'>get_outgoing_interface</b>
+<i class='arg'>DESTADDR</i></a></dt>
+<dd>Returns the index of the network interface that will be used to
+send a packet to the IP address specified by <i class=
+'arg'>DESTADDR</i></dd>
+<dt><a name="get_route" id="get_route"><b class='cmd'>get_route</b>
+?<i class='arg'>options</i>?</a></dt>
+<dd>Returns the best route to a specified destination. The
+following options may be specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-dest</b></span> <i class='arg'>DESTADDR</i></td>
+<td class="opt">Specifies the destination address for which the
+route is to be returned. If unspecified, defaults to <span class=
+"strong">0.0.0.0</span> which corresponds to the default
+route.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-source</b></span> <i class='arg'>SRCADDR</i></td>
+<td class="opt">Specifies the source address to be used. This can
+affect the route selected. Defaults to <span class=
+"strong">0.0.0.0</span> which indicates the source address should
+not affect which route is selected.</td>
+</tr>
+</table>
+The returned information is a keyed list with the following fields:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-addr</b></span></td>
+<td class="opt">The destination address that together with the
+<b class='cmd'>-mask</b> field specifies the address range to which
+the route applies.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-age</b></span></td>
+<td class="opt">The age of the route in seconds. This is valid only
+if the Routing and Remote Access service is running and the
+protocol is <span class="strong">netmgmt</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-ifindex</b></span></td>
+<td class="opt">The interface index for this route.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-mask</b></span></td>
+<td class="opt">The network mask that together with <b class=
+'cmd'>-dest</b> specifies the address range to which the route
+applies.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-metric1</b></span></td>
+<td class="opt">A routing protocol specific metric value.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-metric2</b></span></td>
+<td class="opt">A routing protocol specific metric value.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-metric3</b></span></td>
+<td class="opt">A routing protocol specific metric value.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-metric4</b></span></td>
+<td class="opt">A routing protocol specific metric value.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-metric5</b></span></td>
+<td class="opt">A routing protocol specific metric value.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-nexthop</b></span></td>
+<td class="opt">The IP address of next hop in the route to the
+destination.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-nexthopas</b></span></td>
+<td class="opt">The autonomous system number of the next hop.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-policy</b></span></td>
+<td class="opt">Multi-path route selector condition, typically in
+IP TOS format as defined in RFC 1354.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-protocol</b></span></td>
+<td class="opt">Protocol that generated the route.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-type</b></span></td>
+<td class="opt">The type of the route. This is one of <span class=
+"strong">local</span>, <span class="strong">remote</span>,
+<span class="strong">other</span> or <span class=
+"strong">invalid</span>.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_routing_table" id="get_routing_table"><b class=
+'cmd'>get_routing_table</b> ?<b class='cmd'>-sort</b>?</a></dt>
+<dd>Returns the network routing table as a list of routes. Each
+element of the route is in the format described in the <a href=
+"#get_route"><b class='cmd'>get_route</b></a> command
+description.</dd>
+<dt><a name="get_tcp_connections" id=
+"get_tcp_connections"><b class='cmd'>get_tcp_connections</b>
+?<i class='arg'>options</i>?</a></dt>
+<dd>Retrieves information about currently active TCP connections
+similar to the Windows <b class='cmd'>netstat</b> command. The
+return value is a list of sublists, each corresponding to a single
+connection.<br />
+<br />
+The information returned for each connection is a flat list of the
+form "<i class='arg'>option1</i> <i class='arg'>value1</i> ...".
+The information returned for each connection is controlled through
+the following options:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Returns all fields for a connection. This option is
+assumed if no other field option is specified.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-bindtime</b></span></td>
+<td class="opt">Returns the time at which the last bind operation
+was done on the socket, or 0 if no bind has been done. On some
+platforms, this may not be available in which case, an empty string
+is returned for the value.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-localaddr</b></span></td>
+<td class="opt">Returns the local address being used for the
+connection.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-localport</b></span></td>
+<td class="opt">Returns the local port number being used for the
+connection.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-modulename</b></span></td>
+<td class="opt">Returns the name of the process module that owns
+the socket. On some platforms, this may not be available in which
+case, an empty string is returned for the value.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-modulepath</b></span></td>
+<td class="opt">Returns the path to the process module that owns
+the socket. On some platforms, this may not be available in which
+case, an empty string is returned for the value.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-pid</b></span></td>
+<td class="opt">Returns the PID of the process communicating on the
+port. On some platforms, this may not be available in which case,
+an empty string is returned for the value.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-remoteaddr</b></span></td>
+<td class="opt">Returns the address of the remote end of the
+connection.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-remoteport</b></span></td>
+<td class="opt">Returns the port number of the remote end of the
+connection.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-state</b></span></td>
+<td class="opt">Returns the connection state. This is one of
+<span class="strong">closed</span>, <span class=
+"strong">listen</span>, <span class="strong">syn_sent</span>,
+<span class="strong">syn_rcvd</span>, <span class=
+"strong">estab</span>, <span class="strong">fin_wait1</span>,
+<span class="strong">fin_wait2</span>, <span class=
+"strong">close_wait</span>, <span class="strong">closing</span>,
+<span class="strong">last_ack</span>, <span class=
+"strong">time_wait</span> or <span class=
+"strong">delete_tcb</span>.</td>
+</tr>
+</table>
+In addition, the connections for which information is returned may
+be filtered through the following options. Only those connections
+that match the specified criteria are returned.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-matchlocaladdr</b></span> <i class='arg'>HOSTLIST</i></td>
+<td class="opt">Only returns those connections whose local address
+is one of those specified in <i class='arg'>HOSTLIST</i>. Each
+element of HOSTLIST may be either an IP address or a host
+name.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-matchlocalport</b></span> <i class='arg'>PORTNUMBER</i></td>
+<td class="opt">Only returns those connections whose local port is
+the specified number.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-matchpid</b></span> <i class='arg'>PID</i></td>
+<td class="opt">Only returns those connections owned by the process
+with the specified PID. On platforms where the PID is not
+available, specifying this option will generate an error.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-matchremoteaddr</b></span> <i class='arg'>HOSTLIST</i></td>
+<td class="opt">Only returns those connections whose remote address
+is one of those specified in <i class='arg'>HOSTLIST</i>. Each
+element of HOSTLIST may be either an IP address or a host
+name.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-matchremoteport</b></span> <i class=
+'arg'>PORTNUMBER</i></td>
+<td class="opt">Only returns those connections whose remote port is
+<i class='arg'>PORTNUMBER</i>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>matchstate</b></span> <i class='arg'>STATELIST</i></td>
+<td class="opt">Only returns those connections whose state is one
+those specified in <i class='arg'>STATELIST</i> which should be a
+list of connection state values (see above).</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_udp_connections" id=
+"get_udp_connections"><b class='cmd'>get_udp_connections</b>
+?<i class='arg'>options</i>?</a></dt>
+<dd>Retrieves information about currently active UDP sockets
+similar to the Windows <b class='cmd'>netstat</b> command. The
+return value is a list of sublists, each corresponding to a single
+open socket.<br />
+<br />
+The information returned for each connection is a flat list of the
+form "<i class='arg'>option1</i> <i class='arg'>value1</i> ...".
+The fields returned for each connection is controlled through the
+following options:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Returns all fields for a connection. This option is
+assumed if no other field option is specified.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-bindtime</b></span></td>
+<td class="opt">Returns the time at which the last bind operation
+was done on the socket, or 0 if no bind has been done. On some
+platforms, this may not be available in which case, an empty string
+is returned for the value.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-localaddr</b></span></td>
+<td class="opt">Returns the local address being used for the
+connection.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-localport</b></span></td>
+<td class="opt">Returns the local port number being used for the
+connection.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-modulename</b></span></td>
+<td class="opt">Returns the name of the process module that owns
+the socket. On some platforms, this may not be available in which
+case, an empty string is returned for the value.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-modulepath</b></span></td>
+<td class="opt">Returns the path to the process module that owns
+the socket. On some platforms, this may not be available in which
+case, an empty string is returned for the value.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-pid</b></span></td>
+<td class="opt">Returns the PID of the process communicating on the
+port. On some platforms, this may not be available in which case,
+an empty string is returned for the value.</td>
+</tr>
+</table>
+In addition, the connections for which information is returned may
+be filtered through the following options. Only those connections
+that match the specified criteria are returned.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-matchlocaladdr</b></span> <i class='arg'>HOSTLIST</i></td>
+<td class="opt">Only returns those connections whose local address
+is one of those specified in <i class='arg'>HOSTLIST</i>. Each
+element of HOSTLIST may be either an IP address or a host
+name.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-matchlocalport</b></span> <i class='arg'>PORTNUMBER</i></td>
+<td class="opt">Only returns those connections whose local port is
+the specified number.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-matchpid</b></span> <i class='arg'>PID</i></td>
+<td class="opt">Only returns those connections owned by the process
+with the specified PID. On platforms where the PID is not
+available, specifying this option will generate an error.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="hostname_to_address" id=
+"hostname_to_address"><b class='cmd'>hostname_to_address</b>
+<i class='arg'>HOSTNAME</i> ?<b class='cmd'>-async</b> <i class=
+'arg'>SCRIPT</i>? ?<b class='cmd'>-flushcache</b>?</a></dt>
+<dd>Attempts to map the specified host name to its IP addresses.
+Note there may be more than one address associated with a host
+name.<br />
+<br />
+If the <b class='cmd'>-async</b> option is not specified, the
+command returns the list of IP addresses corresponding to the host
+if available and an empty list otherwise. Note that this is a
+blocking call and the Tcl event loop will not be run until the
+command returns.<br />
+<br />
+If the <b class='cmd'>-async</b> option is specified, the command
+returns right away. The name resolution is done in the background
+and when completed, <i class='arg'>SCRIPT</i> is called at the
+global scope. Three additional arguments are appended to the script
+before it is executed - <i class='arg'>HOSTNAME</i>, status
+<span class="strong">success</span> or <span class=
+"strong">fail</span> and either the list of IP addresses (when the
+status is <span class="strong">success</span>) or the Winsock error
+code (when the status is <span class="strong">fail</span>). The
+Winsock error code may be translated to an error string using the
+<a href="misc.html#map_windows_error"><b class=
+'cmd'>map_windows_error</b></a> command. If no addresses are found,
+the status is <span class="strong">success</span> but the third
+argument will be an empty list.<br />
+<br />
+Internally, the command maintains a cache of address to hostname
+mappings so as to avoid unnecessary lookups. The result is normally
+returned from here if available. However, if the <b class=
+'cmd'>-flushcache</b> option is specified, the cache entry is
+deleted and an explicit lookup up is done.</dd>
+<dt><a name="hwaddr_to_ipaddr" id="hwaddr_to_ipaddr"><b class=
+'cmd'>hwaddr_to_ipaddr</b> <i class='arg'>HWADDR</i> ?<i class=
+'arg'>VARNAME</i>?</a></dt>
+<dd>Returns the IP address corresponding to the given hardware
+address. If <i class='arg'>VARNAME</i> is specified, the command
+stores the result in a variable of that name in the caller's
+context if a mapping can be found and returns 1. Otherwise the
+command returns 0 without affecting the variable. If <i class=
+'arg'>VARNAME</i> is not specified, the command returns the IP
+address if a mapping is found and generates a Tcl exception
+otherwise.</dd>
+<dt><a name="ipaddr_to_hwaddr" id="ipaddr_to_hwaddr"><b class=
+'cmd'>ipaddr_to_hwaddr</b> <i class='arg'>IPADDR</i> ?<i class=
+'arg'>VARNAME</i>?</a></dt>
+<dd>Returns the hardware address corresponding to the given IP
+address. If <i class='arg'>VARNAME</i> is specified, the command
+stores the result in a variable of that name in the caller's
+context if a mapping can be found and returns 1. Otherwise the
+command returns 0 without affecting the variable. If <i class=
+'arg'>VARNAME</i> is not specified, the command returns the
+hardware address if a mapping is found and generates a Tcl
+exception otherwise.<br />
+<br />
+<a href="showphysicaladdress.example">Example: Map an IP address to
+a physical address</a><br />
+<br /></dd>
+<dt><a name="port_to_service" id="port_to_service"><b class=
+'cmd'>port_to_service</b> <i class='arg'>PORTNUMBER</i></a></dt>
+<dd>Returns the service name (e.g. <span class=
+"strong">http</span>) corresponding to the specified port number.
+If no corresponding service name exists, an empty string is
+returned.</dd>
+<dt><a name="service_to_port" id="service_to_port"><b class=
+'cmd'>service_to_port</b> <i class='arg'>SERVICENAME</i></a></dt>
+<dd>Returns the port number corresponding to the specified service
+name (e.g. <span class="strong">http</span>). If the service name
+is not defined, an empty string is returned. If <i class=
+'arg'>SERVICENAME</i> is a port number, it is returned.</dd>
+<dt><a name="terminate_tcp_connections" id=
+"terminate_tcp_connections"><b class=
+'cmd'>terminate_tcp_connections</b> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Terminates all connections that match all the options
+specified. Any options that are not specified are assumed to match.
+The valid matching options are:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-matchlocaladdr</b></span> <i class='arg'>IPADDR</i></td>
+<td class="opt">Only matches those connections whose local address
+is bound to <i class='arg'>IPADDR</i>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-matchlocalport</b></span> <i class='arg'>PORTNUMBER</i></td>
+<td class="opt">Only matches those connections whose local port is
+the specified number.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-matchpid</b></span> <i class='arg'>PID</i></td>
+<td class="opt">Only matches those connections owned by the process
+with the specified PID. On platforms where the PID is not
+available, specifying this option will generate an error.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-matchremoteaddr</b></span> <i class='arg'>IPADDR</i></td>
+<td class="opt">Only matches those connections whose remote address
+is bound to <i class='arg'>IPADDR</i>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-matchremoteport</b></span> <i class=
+'arg'>PORTNUMBER</i></td>
+<td class="opt">Only matches those connections whose remote port is
+<i class='arg'>PORTNUMBER</i>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>matchstate</b></span> <i class='arg'>STATELIST</i></td>
+<td class="opt">Only matches those connections whose state is one
+those specified in <i class='arg'>STATELIST</i> which should be a
+list of connection state values. See <a href=
+"#get_tcp_connections"><b class='cmd'>get_tcp_connections</b></a>
+for a list of valid values.</td>
+</tr>
+</table>
+</dd>
+</dl>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2004-2006, Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>

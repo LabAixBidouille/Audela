@@ -1,0 +1,97 @@
+TODOLIST
+partie 1 : Insertion Bddimages
+
+- Empecher la compression des fichiers lors de la lecture des entetes
+
+partie 2 : Gestion fenetre Recherche
+
+- ajouter barre de bouton dans le tk
+
+- Dans la fenetre recherche : nouvelle liste : 
+   Ajouter champs date :
+      date min date max
+        ou
+      depuis les X derniers jours
+- Dans la fenetre recherche : 
+     permettre l affichage de l image lorsqu elle est selectionnne
+     deplacement avec les fleches
+- Dans la fenetre recherche : 
+     permettre l effacement de l image bdd+disque par la touche "suppr"
+- Dans la fenetre recherche :
+     liste ma affichée parfois il y a la date dans le champ telescope
+      ou object dans le champ date
+      ou rien dans le champ object
+
+
+partie 3 : Gestions des images
+
+ - Effacement propre d un fichier de la base
+ - ajouter : modif nom du fichier en commancant par l idbddimg
+ - ajouter des champs dans le header : 
+      BDIIFLAT  : Idbddimg
+      BDIFTYPE  : type d image : NULL, Flat, dark, offset, image brute, image corrigee
+      BDIFFLAT  : 0 si pas deflaté 1 si deflaté + offset
+      BDICFFLAT : nom du fichier de flat
+      BDICFFLAT : nom du fichier d offset
+      BDICFFLAT : nom du fichier de dark
+      BDICFBRUT : nom fichier brut
+      BDIFWCS   : 1 si WCS ok 0 sinon
+      BDIN      : Nombre de sources extraites
+      BDIN      : Nombre de source cata astrometrique
+      BDIN      : Nombre de source cata photometrique
+      
+  1 : validation image (bdd + header)
+  2 : Faire Master Flat
+  3 : Deflat
+  4 : WCS + extraction cata astrometrique en meme temps et montrer sur des ronds vert dans la visu
+  5 : extraction sources image
+  6 : extraction sources cata autres (skybot, cata photom)
+  7 : Crossmatching
+  
+
+partie 4 : Astrometrie rapide
+
+ - une idee pour faire l astrometrie a l arrache sur la premiere image
+   d une serie, serait de creer une nouvelle visu audela
+   avec extraction d une image du dss. cliquer sur une etoile du dss, puis 
+   sur l image, pour que celle ci recoive la coordonnees d un catalogue (USNOA2 tres bien pour ca)
+
+ - Autre facon de faire : extraction du bouton du chercheur electronique
+ 
+ - Autre facon de faire : Faire a la main ave aladin, mais les infos doivent revenir dans bddimages
+ 
+ - ecriture des champs du WCS dans le header de l image. 
+ - ecriture des champs dans les images de la base. 
+ - puis dans la serie d image qui suit
+
+partie 5 : get cds query
+
+ - recuperer la listes des sources catalogues de l image.
+
+partie 6 : Objet Skybot
+
+- recuperer bout decode dans astroid
+
+partie 7 : cata votable
+
+- transformateur catatxt -> catavotable
+- transformateur catavotable -> catatxt 
+
+
+partie 8 : Astroid
+
+- faire le bouton astroid dans la fenetre recherche
+- extraire le bout de code de ros/astroid
+
+partie 9 :
+
+- fournir le fichier catavotable
+
+partie 10 :
+
+- interface avec priam
+
+partie 11 :
+
+
+

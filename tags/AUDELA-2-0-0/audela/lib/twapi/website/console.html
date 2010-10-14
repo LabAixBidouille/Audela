@@ -1,0 +1,1032 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>Console</h2>
+<p>Commands related to Windows consoles</p>
+<h3><a name="synopsis" id="synopsis">SYNOPSIS</a></h3>
+package require <b>twapi</b><br />
+<table class="commandsummary" summary="Table">
+<tr valign="top">
+<td><a href="#allocate_console"><b class=
+'cmd'>allocate_console</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#clear_console"><b class='cmd'>clear_console</b>
+<i class='arg'>CONOUTH</i> ?<b class='cmd'>-fillchar</b> <i class=
+'arg'>CHARACTER</i>? ?<b class='cmd'>-windowonly</b> <i class=
+'arg'>BOOL</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#console_read"><b class='cmd'>console_read</b>
+<i class='arg'>CONINH</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#create_console_screen_buffer"><b class=
+'cmd'>create_console_screen_buffer</b> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#fill_console"><b class='cmd'>fill_console</b>
+<i class='arg'>CONOUTH</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#flush_console_input"><b class=
+'cmd'>flush_console_input</b> <i class='arg'>CONINH</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#free_console"><b class=
+'cmd'>free_console</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#generate_console_control_event"><b class=
+'cmd'>generate_console_control_event</b> <i class='arg'>EVENT</i>
+?<i class='arg'>PROCESSGROUP</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_console_handle"><b class=
+'cmd'>get_console_handle</b> <i class='arg'>TYPE</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_console_input_codepage"><b class=
+'cmd'>get_console_input_codepage</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_console_input_mode"><b class=
+'cmd'>get_console_input_mode</b> ?<i class=
+'arg'>CONINH</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_console_output_mode"><b class=
+'cmd'>get_console_output_mode</b> ?<i class=
+'arg'>CONOUTH</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_console_pending_input_count"><b class=
+'cmd'>get_console_pending_input_count</b> <i class=
+'arg'>CONINH</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_console_screen_buffer_info"><b class=
+'cmd'>get_console_screen_buffer_info</b> <i class='arg'>CONH</i>
+?options?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_console_title"><b class=
+'cmd'>get_console_title</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_console_window"><b class=
+'cmd'>get_console_window</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_console_window_maxsize"><b class=
+'cmd'>get_console_window_maxsize</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_standard_handle"><b class=
+'cmd'>get_standard_handle</b> <i class='arg'>TYPE</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#modify_console_input_mode"><b class=
+'cmd'>modify_console_input_mode</b> <i class='arg'>CONINH</i>
+<i class='arg'>MODEOPTIONS...</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#modify_console_output_mode"><b class=
+'cmd'>modify_console_output_mode</b> <i class='arg'>CONOUTH</i>
+<i class='arg'>MODEOPTIONS...</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#num_console_mouse_buttons"><b class=
+'cmd'>num_console_mouse_buttons</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_console_active_screen_buffer"><b class=
+'cmd'>set_console_active_screen_buffer</b> <i class=
+'arg'>CONOUTH</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_console_control_handler"><b class=
+'cmd'>set_console_control_handler</b> <i class=
+'arg'>SCRIPT</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_console_cursor_position"><b class=
+'cmd'>set_console_cursor_position</b> <i class='arg'>CONOUTH</i>
+<i class='arg'>X Y</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_console_default_attr"><b class=
+'cmd'>set_console_default_attr</b> <i class='arg'>CONOUTH</i>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_console_input_codepage"><b class=
+'cmd'>set_console_input_codepage</b> <i class=
+'arg'>CODEPAGE</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_console_input_mode"><b class=
+'cmd'>set_console_input_mode</b> <i class='arg'>CONINH</i>
+<i class='arg'>MODEOPTIONS...</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_console_output_codepage"><b class=
+'cmd'>set_console_output_codepage</b> <i class=
+'arg'>CODEPAGE</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_console_output_mode"><b class=
+'cmd'>set_console_output_mode</b> <i class='arg'>CONOUTH</i>
+<i class='arg'>MODEOPTIONS...</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_console_screen_buffer_size"><b class=
+'cmd'>set_console_screen_buffer_size</b> <i class='arg'>CONOUTH</i>
+<i class='arg'>SCRSIZE</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_console_title"><b class=
+'cmd'>set_console_title</b> <i class='arg'>TEXT</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_console_window_location"><b class=
+'cmd'>set_console_window_location</b> <i class='arg'>CONOUTH</i>
+<i class='arg'>RECT</i> ?<b class='cmd'>-absolute</b> <i class=
+'arg'>BOOL</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_standard_handle"><b class=
+'cmd'>set_standard_handle</b> <i class='arg'>TYPE</i> <i class=
+'arg'>HANDLE</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#write_console"><b class='cmd'>write_console</b>
+<i class='arg'>CONOUTH</i> <i class='arg'>STRING</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+</table>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p>This module provides commands for manipulating console
+windows.</p>
+<h3><a name="consoles" id="consoles">Consoles</a></h3>
+<p>A console may have multiple processes attached to it. However, a
+process may be attached to at most one console. Character mode
+applications are generally started with a console attached. GUI
+mode processes however do not have a console attached. The command
+<a href="#allocate_console"><b class='cmd'>allocate_console</b></a>
+may be used to allocate and attach to a console. An allocated
+console may be released with the <a href="#free_console"><b class=
+'cmd'>free_console</b></a> command.</p>
+<h3><a name="consolehandles" id="consolehandles">Console
+Handles</a></h3>
+<p>The input and screen buffers for a console are identified by
+handles that can be retrieved through the <a href=
+"#get_console_handle"><b class='cmd'>get_console_handle</b></a>
+call. Alternately, the the strings <span class=
+"strong">stdin</span>, <span class="strong">stdout</span> and
+<span class="strong">stderr</span> may be passed to the various
+console commands to identify the input, output and error handles.
+The standard input, output and error handles may be retrieved
+through the <a href="#get_standard_handle"><b class=
+'cmd'>get_standard_handle</b></a> calls. These may not refer to the
+console if standard input/output has been redirected.</p>
+<h3><a name="consoleinput" id="consoleinput">Console Input</a></h3>
+<p>A console is associated with an input buffer that contains input
+events such as keyboard and mouse inputs. The console can be read
+through the <a href="#console_read"><b class=
+'cmd'>console_read</b></a> command. The number of events in the
+input buffer can be obtained through <a href=
+"#get_console_pending_input_count"><b class=
+'cmd'>get_console_pending_input_count</b></a> and any pending
+events can be flushed through <a href=
+"#flush_console_input"><b class=
+'cmd'>flush_console_input</b></a>.</p>
+<p>Console input is associated with a specific code page that can
+be retrieved and set through the <a href=
+"#get_console_input_codepage"><b class=
+'cmd'>get_console_input_codepage</b></a> and <a href=
+"#set_console_input_codepage"><b class=
+'cmd'>set_console_input_codepage</b></a> commands.</p>
+<p>A console control event may be generated with the <a href=
+"#generate_console_control_event"><b class=
+'cmd'>generate_console_control_event</b></a> command. Console
+control event handlers may be set up with the <a href=
+"#set_console_control_handler"><b class=
+'cmd'>set_console_control_handler</b></a> command.</p>
+<p>The number of mouse buttons available through the console
+interface is returned by the <a href=
+"#num_console_mouse_buttons"><b class=
+'cmd'>num_console_mouse_buttons</b></a> command.</p>
+<h3><a name="consoleoutput" id="consoleoutput">Console
+Output</a></h3>
+<p>A console may have one or more screen buffers only one of which
+is active and visible at a time. A screen buffer is a two
+dimensional array of cells with each cell containing a character
+and an attribute that controls how the character is displayed.
+Screen buffers can be written to with the <a href=
+"#write_console"><b class='cmd'>write_console</b></a> command. The
+code page used for output can be retrieved and set through the
+<a href="#get_console_output_codepage"><b class=
+'cmd'>get_console_output_codepage</b></a> and <a href=
+"#set_console_output_codepage"><b class=
+'cmd'>set_console_output_codepage</b></a> commands.</p>
+<p>Screen buffers can be allocated through <a href=
+"#create_console_screen_buffer"><b class=
+'cmd'>create_console_screen_buffer</b></a> and made to be the
+active buffer by calling <a href=
+"#set_console_active_screen_buffer"><b class=
+'cmd'>set_console_active_screen_buffer</b></a>. The size of the
+buffer can be controlled through the <a href=
+"#set_console_screen_buffer_size"><b class=
+'cmd'>set_console_screen_buffer_size</b></a> command.</p>
+<p>The console window is the portion of the screen buffer that is
+actually visible on the display. The command <a href=
+"#set_console_window_location"><b class=
+'cmd'>set_console_window_location</b></a> can be used to control
+the location of this window into the screen buffer. The window
+handle of the console window can be obtained through the <a href=
+"#get_console_window"><b class='cmd'>get_console_window</b></a>
+command. The maximum possible size of the window that can fit on
+the display given the font can be obtained through <a href=
+"#get_console_window_maxsize"><b class=
+'cmd'>get_console_window_maxsize</b></a>. The title associated with
+a console window may be retrieved and set through the <a href=
+"#get_console_title"><b class='cmd'>get_console_title</b></a> and
+<a href="#set_console_title"><b class=
+'cmd'>set_console_title</b></a> respectively.</p>
+<p>The command <a href="#clear_console"><b class=
+'cmd'>clear_console</b></a> clears the screen buffer or a portion
+of it and can optionally fill it with a specific character.</p>
+<p>Characteristics of the screen buffer such as buffer size, cursor
+position, window coordinates can be obtained through <a href=
+"#get_console_screen_buffer_info"><b class=
+'cmd'>get_console_screen_buffer_info</b></a>.</p>
+<h3><a name="consolemodes" id="consolemodes">Console Modes</a></h3>
+<p>A console's input and output modes control how characters are
+handled when when entered and displayed.</p>
+<p>Characters typed into a console window may be handled
+differently based on the input mode of the console. The commands
+<a href="#get_console_input_mode"><b class=
+'cmd'>get_console_input_mode</b></a>, <a href=
+"#set_console_input_mode"><b class=
+'cmd'>set_console_input_mode</b></a> and <a href=
+"#modify_console_input_mode"><b class=
+'cmd'>modify_console_input_mode</b></a> allow retrieval and setting
+of the input mode. The various mode settings are specified as
+arguments to these functions and may contain zero or more of the
+following elements:</p>
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-autoposition</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If true, position of console windows is determined
+by the operating system when the windows are opened.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-echoinput</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If true, characters are echoed as they are read in.
+This is only valid if the <b class='cmd'>-lineinput</b> mode is
+true.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-extendedmode</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">Must be set if <b class='cmd'>-quickeditmode</b> or
+<b class='cmd'>-insertmode</b> are specified.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-insertmode</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If true, characters are inserted as they entered
+and do not overwrite the characters at the current cursor
+position.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-lineinput</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If true, calls to read input only return when a
+carriage return character is read.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-mouseinput</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If true, mouse events are placed in the input queue
+when the console window has focus and the mouse is within the
+window coordinates.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-processedinput</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If true, control characters are handled by the
+system and not placed in the input queue. If <b class=
+'cmd'>-lineinput</b> is also true, carriage returns, line feeds and
+tabs are also handled by the system.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-quickeditmode</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If true, allows the user to use the mouse to select
+and edit text.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-windowinput</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If true, changes in the console window coordinates
+are reported through the input queue.</td>
+</tr>
+</table>
+<p>In a similar fashion, the characters written to a screen buffer
+may be displayed differently depending on the output mode of the
+console. The commands <a href="#get_console_output_mode"><b class=
+'cmd'>get_console_output_mode</b></a>, <a href=
+"#set_console_output_mode"><b class=
+'cmd'>set_console_output_mode</b></a> and <a href=
+"#modify_console_output_mode"><b class=
+'cmd'>modify_console_output_mode</b></a> allow retrieval and
+setting of the input mode. The various mode settings are specified
+as arguments to these functions and may contain zero or more of the
+following elements:</p>
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-processedoutput</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If true, characters written to the screen buffer
+are processed for ASCII control characters - backspace, tab, bell,
+carriage return, linefeed - and appropriate action taken.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-wrapoutput</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If true, characters written to the screen buffer
+will wrap around to the next row when the end of row is reached.
+Otherwise, the last character in the row will be overwritten with
+characters that extend beyond the width of the row.</td>
+</tr>
+</table>
+<h3><a name="textattributes" id="textattributes">Text
+Attributes</a></h3>
+<p>Each cell in a screen buffer has attributes that control the
+display characteristics of that cell. The default attribute used
+for writing to the screen buffer can be set through <a href=
+"#set_console_default_attr"><b class=
+'cmd'>set_console_default_attr</b></a>.</p>
+<p>Text attributes are retrieved and controlled through the
+following options:</p>
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-bg<i class='arg'>COLOR</i></b></span> <i class=
+'arg'>BOOL</i></td>
+<td class="opt">If true, adds <i class='arg'>COLOR</i> to the
+background text color. <i class='arg'>COLOR</i> may be one of
+<span class="strong">blue</span>, <span class=
+"strong">green</span>, <span class="strong">red</span>,
+<span class="strong">purple</span>, <span class=
+"strong">yellow</span>, <span class="strong">gray</span>, or
+<span class="strong">white</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-fg<i class='arg'>COLOR</i></b></span> <i class=
+'arg'>BOOL</i></td>
+<td class="opt">If true, adds <i class='arg'>COLOR</i> to the
+foreground text color. <i class='arg'>COLOR</i> may be one of
+<span class="strong">blue</span>, <span class=
+"strong">green</span>, <span class="strong">red</span>,
+<span class="strong">purple</span>, <span class=
+"strong">yellow</span>, <span class="strong">gray</span>, or
+<span class="strong">white</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-fgbright</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If true, intensifies the foreground color.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-bgbright</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If true, intensifies the background color.</td>
+</tr>
+</table>
+<p>The command <a href="#fill_console"><b class=
+'cmd'>fill_console</b></a> can be used to change the attribute of
+portions of the screen buffer.</p>
+<h3><a name="commands" id="commands">Commands</a></h3>
+<dl class="noclass">
+<dt><a name="allocate_console" id="allocate_console"><b class=
+'cmd'>allocate_console</b></a></dt>
+<dd>Allocates a console for the process. If the process already has
+a console, an error exception is generated.</dd>
+<dt><a name="clear_console" id="clear_console"><b class=
+'cmd'>clear_console</b> <i class='arg'>CONOUTH</i> ?<b class=
+'cmd'>-fillchar</b> <i class='arg'>CHARACTER</i>? ?<b class=
+'cmd'>-windowonly</b> <i class='arg'>BOOL</i>?</a></dt>
+<dd>If no option are specified, sets the contents of the entire
+screen buffer to spaces. The <b class='cmd'>-fillchar</b> option
+may be used to specify a different character to use. If <b class=
+'cmd'>-windowonly</b> is specified as true, only the portion of
+screen buffer that is visible is cleared.</dd>
+<dt><a name="console_read" id="console_read"><b class=
+'cmd'>console_read</b> <i class='arg'>CONINH</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Reads input from the console. Note that the input is from the
+console even if standard input has been redirected. <i class=
+'arg'>options</i> specify the input mode to use and are passed to
+<a href="#modify_console_input_mode"><b class=
+'cmd'>modify_console_input_mode</b></a> before input is read. The
+original mode is restored before returning.</dd>
+<dt><a name="create_console_screen_buffer" id=
+"create_console_screen_buffer"><b class=
+'cmd'>create_console_screen_buffer</b> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Creates a new console screen buffer and returns a handle to it.
+The following options may be specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-inherit</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If true, the returned handle is inheritable by
+child processes.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-mode</b></span> <span class=
+"strong">read|write|readwrite</span></td>
+<td class="opt">Specifies whether the buffer access is read, write
+or both.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-secd</b></span> <i class='arg'>SECURITY_DESCRIPTOR</i></td>
+<td class="opt">Specifies a <a href=
+"security.html#securitydescriptors">security descriptor</a> to be
+attached to the screen buffer.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-share</b></span> <span class=
+"strong">none|read|write|readwrite</span></td>
+<td class="opt">Specifies whether the buffer is not shared or can
+be shared for read, write or both (default).</td>
+</tr>
+</table>
+The allocated screen buffer handle should be closed by calling
+<a href="handles.html#close_handles"><b class=
+'cmd'>close_handles</b></a> when no longer needed.</dd>
+<dt><a name="fill_console" id="fill_console"><b class=
+'cmd'>fill_console</b> <i class='arg'>CONOUTH</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Sets the text attribute of cells in specified area of the
+screen buffer. The text attributes are specified with one or more
+of the options described in <a href="#textattributes">Text
+Attributes</a>. The following additional options may also be
+specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-fillchar</b></span> <i class='arg'>CHARACTER</i></td>
+<td class="opt">Normally, the command does not change the text
+contents in the specified region. If this option is specified, in
+addition to changing the attributes in the specified region, the
+contents of each cell are set to <i class='arg'>CHARACTER</i>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-mode</b></span> <span class="strong">line|column</span></td>
+<td class="opt">If specified as <span class="strong">column</span>
+(default), the fill region in the second line starts at the same
+column as the first line. If specified as <span class=
+"strong">line</span>, the fill region starts at the first column in
+the second and subsequent lines.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-numcols</b></span> <i class='arg'>INTEGER</i></td>
+<td class="opt">Width of the region to be filled. By default, the
+fill region extends to the rightmost column of the screen
+buffer.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-numlines</b></span> <i class='arg'>INTEGER</i></td>
+<td class="opt">Number of rows to be filled. By default, the fill
+region extends to the rightmost column of the screen buffer.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-position</b></span> <i class='arg'>POSITION</i></td>
+<td class="opt">Location of the top left corner of the fill region.
+<i class='arg'>POSITION</i> is specified as a list of two integers
+corresponding to the column and row.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-window</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If specified as true, the fill region is the
+visible window portion of the screen buffer. This option cannot be
+used with the <b class='cmd'>-position</b>, <b class=
+'cmd'>-numlines</b> and <b class='cmd'>-numrows</b> options.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="flush_console_input" id=
+"flush_console_input"><b class='cmd'>flush_console_input</b>
+<i class='arg'>CONINH</i></a></dt>
+<dd>Removes any pending input events from the buffer of the
+specified input console.</dd>
+<dt><a name="free_console" id="free_console"><b class=
+'cmd'>free_console</b></a></dt>
+<dd>Frees the console attached to the process.</dd>
+<dt><a name="generate_console_control_event" id=
+"generate_console_control_event"><b class=
+'cmd'>generate_console_control_event</b> <i class='arg'>EVENT</i>
+?<i class='arg'>PROCESSGROUP</i>?</a></dt>
+<dd>Sends a control event to a process group. <i class=
+'arg'>EVENT</i> should be one of <span class="strong">ctrl-c</span>
+or <span class="strong">ctrl-break</span>. <i class=
+'arg'>PROCESSGROUP</i> indicates the console process group to which
+the event should be sent. By default, the event is sent to all
+processes sharing the console of the caller.</dd>
+<dt><a name="get_console_handle" id="get_console_handle"><b class=
+'cmd'>get_console_handle</b> <i class='arg'>TYPE</i></a></dt>
+<dd>Returns a handle to console input, output or error. Note if
+input and output have been redirected, the handle may not be the
+same as returned by <a href="#get_standard_handle"><b class=
+'cmd'>get_standard_handle</b></a>. <i class='arg'>TYPE</i> must be
+<span class="strong">stdin</span> or <span class=
+"strong">stdout</span>.</dd>
+<dt><a name="get_console_input_codepage" id=
+"get_console_input_codepage"><b class=
+'cmd'>get_console_input_codepage</b></a></dt>
+<dd>Returns the input code page of the console.</dd>
+<dt><a name="get_console_input_mode" id=
+"get_console_input_mode"><b class='cmd'>get_console_input_mode</b>
+?<i class='arg'>CONINH</i>?</a></dt>
+<dd>Returns the input mode of the console. <i class=
+'arg'>CONINH</i> is a handle to console input and defaults to
+<span class="strong">stdin</span>. The returned value is a list
+describing the current mode. See <a href="#consolemodes">Console
+Modes</a> for the possible values.</dd>
+<dt><a name="get_console_output_mode" id=
+"get_console_output_mode"><b class=
+'cmd'>get_console_output_mode</b> ?<i class=
+'arg'>CONOUTH</i>?</a></dt>
+<dd>Returns the output mode of the console. <i class=
+'arg'>CONOUTH</i> is a handle to console output and defaults to
+<span class="strong">stdout</span>. The returned value is a list
+describing the current mode. See <a href="#consolemodes">Console
+Modes</a> for the possible values.</dd>
+<dt><a name="get_console_pending_input_count" id=
+"get_console_pending_input_count"><b class=
+'cmd'>get_console_pending_input_count</b> <i class=
+'arg'>CONINH</i></a></dt>
+<dd>Returns the number of pending input events for the specified
+console.</dd>
+<dt><a name="get_console_screen_buffer_info" id=
+"get_console_screen_buffer_info"><b class=
+'cmd'>get_console_screen_buffer_info</b> <i class='arg'>CONH</i>
+?options?</a></dt>
+<dd>Retrieves various information about a screen buffer as a flat
+list of <i class='arg'>option</i> <i class='arg'>VALUE</i> pairs.
+The following options determine what information is returned:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong">-all</span></td>
+<td class="opt">Equivalent to specifying all other options.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">-cursorpos</span></td>
+<td class="opt">Returns the cursor position in the screen
+buffer.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">-maxwindowsize</span></td>
+<td class="opt">Returns the maximum possible size of a window in
+the screen buffer as a pair of integer corresponding to the width
+and height. This takes into account the screen buffer size, the
+display size and the font being used.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong">-size</span></td>
+<td class="opt">Returns a list of two integers containing the
+number of columns and rows in the screen buffer.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">-textattr</span></td>
+<td class="opt">Returns the default text attributes used when
+writing into the screen buffer.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">-windowpos</span></td>
+<td class="opt">Returns a list of two integers corresponding to the
+column and row of the top left cell of the window.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">-windowsize</span></td>
+<td class="opt">Returns a list of two integers containing the
+number of columns and rows in the window.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_console_title" id="get_console_title"><b class=
+'cmd'>get_console_title</b></a></dt>
+<dd>Returns the title of the window of the currently attached
+console.</dd>
+<dt><a name="get_console_window" id="get_console_window"><b class=
+'cmd'>get_console_window</b></a></dt>
+<dd>Returns the handle to the window displaying the currently
+attached console.</dd>
+<dt><a name="get_console_window_maxsize" id=
+"get_console_window_maxsize"><b class=
+'cmd'>get_console_window_maxsize</b></a></dt>
+<dd>Returns the maximum size of a console window given the current
+display size and font as a list of two integers corresponding to
+the width and height. This command does not take into account the
+size of the screen buffer itself. The <b class=
+'cmd'>-maxwindowsize</b> option of <a href=
+"#get_console_screen_buffer_info"><b class=
+'cmd'>get_console_screen_buffer_info</b></a> does take into account
+the screen buffer size.</dd>
+<dt><a name="get_standard_handle" id=
+"get_standard_handle"><b class='cmd'>get_standard_handle</b>
+<i class='arg'>TYPE</i></a></dt>
+<dd>Returns a handle to standard input, output or error. This may
+correspond to the console or some other device if the standard
+devices have been redirected. If the process does not have
+associated standard handles, an exception is generated with
+<span class="strong">errorCode</span> set to <span class=
+"strong">WINDOWS 2 <i class='arg'>ERRORMESSAGE</i></span>. If the
+returned handle corresponds to a console device, it can be passed
+to the other console commands. <i class='arg'>TYPE</i> is one of
+<span class="strong">stdin</span>, <span class=
+"strong">stdout</span>, <span class="strong">stderr</span>.<br />
+<br />
+Note this command returns a handle to standard input, output and
+error, which may not be the console if they have been redirected.
+To retrieve handles to the console, use the <a href=
+"#get_console_handle"><b class='cmd'>get_console_handle</b></a>
+function.</dd>
+<dt><a name="modify_console_input_mode" id=
+"modify_console_input_mode"><b class=
+'cmd'>modify_console_input_mode</b> <i class='arg'>CONINH</i>
+<i class='arg'>MODEOPTIONS...</i></a></dt>
+<dd>Modifies the input modes for the console identified by
+<i class='arg'>CONINH</i> according to the mode options specified.
+<i class='arg'>MODEOPTIONS</i> must correspond to the input mode
+options described in <a href="#consolemodes">Console Modes</a>. Any
+options not specified are unchanged. The command returns the
+previous input modes of the console.<br />
+<br />
+Also see <a href="#set_console_input_mode"><b class=
+'cmd'>set_console_input_mode</b></a>.</dd>
+<dt><a name="modify_console_output_mode" id=
+"modify_console_output_mode"><b class=
+'cmd'>modify_console_output_mode</b> <i class='arg'>CONOUTH</i>
+<i class='arg'>MODEOPTIONS...</i></a></dt>
+<dd>Modifies the output modes for the console identified by
+<i class='arg'>CONOUTH</i> according to the mode options specified.
+<i class='arg'>MODEOPTIONS</i> must correspond to the output mode
+options described in <a href="#consolemodes">Console Modes</a>. Any
+options not specified are unchanged. The command returns the
+previous output modes of the console.<br />
+<br />
+Also see <a href="#set_console_output_mode"><b class=
+'cmd'>set_console_output_mode</b></a>.</dd>
+<dt><a name="num_console_mouse_buttons" id=
+"num_console_mouse_buttons"><b class=
+'cmd'>num_console_mouse_buttons</b></a></dt>
+<dd>Returns the number of console mouse buttons.</dd>
+<dt><a name="set_console_active_screen_buffer" id=
+"set_console_active_screen_buffer"><b class=
+'cmd'>set_console_active_screen_buffer</b> <i class=
+'arg'>CONOUTH</i></a></dt>
+<dd>Sets the active screen buffer of the currently attached console
+to <i class='arg'>CONOUTH</i>.</dd>
+<dt><a name="set_console_control_handler" id=
+"set_console_control_handler"><b class=
+'cmd'>set_console_control_handler</b> <i class=
+'arg'>SCRIPT</i></a></dt>
+<dd>Registers <i class='arg'>SCRIPT</i> to be invoked when a
+console application receives one of the control events in the table
+below. The appropriate event name is appended to <i class=
+'arg'>SCRIPT</i> before it is invoked. The script should return a
+non-zero integer value if it has handled the event itself. Any
+other value returned from the script will result in the event being
+passed on to other handlers including the operating system default
+handler.<br />
+<br />
+Calling the command a second time will result in the previous
+callback script being replaced. So if multiple scripts are to be
+invoked, the application has to do the chaining itself.<br />
+<br />
+If <i class='arg'>SCRIPT</i> is empty, the callback handler is
+unregistered.<br />
+<br />
+In order for the callback scripts to be invoked, the Tcl event loop
+must be running (through <b class='cmd'>vwait</b>, <b class=
+'cmd'>update</b> etc.). Note that this function should be used only
+in console applications, not Win32 GUI applications.<br />
+<br />
+The following event names are passed to <i class='arg'>SCRIPT</i>.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">ctrl-c</span></span></td>
+<td class="opt">A Ctrl-C signal was received.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">ctrl-break</span></span></td>
+<td class="opt">A Ctrl-Break signal was received.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">close</span></span></td>
+<td class="opt">The user requested the console window to be
+closed.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">logoff</span></span></td>
+<td class="opt">The user is logging off.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">shutdown</span></span></td>
+<td class="opt">The system is being shut down.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="set_console_cursor_position" id=
+"set_console_cursor_position"><b class=
+'cmd'>set_console_cursor_position</b> <i class='arg'>CONOUTH</i>
+<i class='arg'>X Y</i></a></dt>
+<dd>Sets the cursor position in a screen buffer. <i class=
+'arg'>CONOUTH</i> is the handle to the buffer and <i class='arg'>X
+Y</i> is a list of two integers specifying the column and row that
+the cursor is to be positioned at.</dd>
+<dt><a name="set_console_default_attr" id=
+"set_console_default_attr"><b class=
+'cmd'>set_console_default_attr</b> <i class='arg'>CONOUTH</i>
+?<i class='arg'>options</i>?</a></dt>
+<dd>Sets the default attribute to be used when writing to the
+specified screen buffer. See <a href="#textattributes">Text
+Attributes</a> for a list of valid options.</dd>
+<dt><a name="set_console_input_codepage" id=
+"set_console_input_codepage"><b class=
+'cmd'>set_console_input_codepage</b> <i class=
+'arg'>CODEPAGE</i></a></dt>
+<dd>Sets the input code page of the console.</dd>
+<dt><a name="set_console_input_mode" id=
+"set_console_input_mode"><b class='cmd'>set_console_input_mode</b>
+<i class='arg'>CONINH</i> <i class=
+'arg'>MODEOPTIONS...</i></a></dt>
+<dd>Sets the input mode for the console identified by <i class=
+'arg'>CONINH</i> according to the mode options specified. <i class=
+'arg'>MODEOPTIONS</i> must correspond to the input mode options
+described in <a href="#consolemodes">Console Modes</a>. Any options
+not specified are assumed to be false. To change the input mode for
+specific options without affecting others, use <a href=
+"#modify_console_input_mode"><b class=
+'cmd'>modify_console_input_mode</b></a>. For example,
+<pre class="sample">
+    set_console_input_mode stdin -echoinput 0 -lineinput 1
+</pre>
+will set the console input to only have mode <span class=
+"strong">-lineinput</span> set. <span class=
+"strong">-echoinput</span> as well as unspecified modes will be
+reset. On the other hand,
+<pre class="sample">
+    modify_console_input_mode stdin -echoinput 0 -lineinput 1
+</pre>
+will turn off <span class="strong">-echoinput</span> mode, turn on
+<span class="strong">-lineinput</span> mode but will leave others
+unchanged.</dd>
+<dt><a name="set_console_output_codepage" id=
+"set_console_output_codepage"><b class=
+'cmd'>set_console_output_codepage</b> <i class=
+'arg'>CODEPAGE</i></a></dt>
+<dd>Sets the output code page of the console.</dd>
+<dt><a name="set_console_output_mode" id=
+"set_console_output_mode"><b class=
+'cmd'>set_console_output_mode</b> <i class='arg'>CONOUTH</i>
+<i class='arg'>MODEOPTIONS...</i></a></dt>
+<dd>Sets the output modes for the console identified by <i class=
+'arg'>CONOUTH</i> according to the modes specified. <i class=
+'arg'>MODEOPTIONS</i> must correspond to the output modes described
+in <a href="#consolemodes">Console Modes</a>. Any modes not
+specified are reset. To change the output modes for specific
+options without affecting others, use <a href=
+"#modify_console_output_mode"><b class=
+'cmd'>modify_console_output_mode</b></a>. For example,
+<pre class="sample">
+    set_console_output_mode stdout -processedoutput 0
+</pre>
+will set the console output to only have mode <span class=
+"strong">-processedoutput</span> set. On the other hand,
+<pre class="sample">
+    modify_console_output_mode stdout -processedoutput 0
+</pre>
+will turn off <span class="strong">-processedoutput</span> mode but
+leave others unchanged.</dd>
+<dt><a name="set_console_screen_buffer_size" id=
+"set_console_screen_buffer_size"><b class=
+'cmd'>set_console_screen_buffer_size</b> <i class='arg'>CONOUTH</i>
+<i class='arg'>SCRSIZE</i></a></dt>
+<dd>Sets the size of the specified console screen buffer. <i class=
+'arg'>SCRSIZE</i> should be a list of two integers containing the
+width and height of the screen buffer in characters.</dd>
+<dt><a name="set_console_title" id="set_console_title"><b class=
+'cmd'>set_console_title</b> <i class='arg'>TEXT</i></a></dt>
+<dd>Sets the title of the window of the currently attached console
+to <i class='arg'>TEXT</i>.</dd>
+<dt><a name="set_console_window_location" id=
+"set_console_window_location"><b class=
+'cmd'>set_console_window_location</b> <i class='arg'>CONOUTH</i>
+<i class='arg'>RECT</i> ?<b class='cmd'>-absolute</b> <i class=
+'arg'>BOOL</i>?</a></dt>
+<dd>Sets the position and size of the visible window within the
+specified screen buffer. <i class='arg'>RECT</i> is a list of four
+integers containing the left column position, the top row position,
+the right column position and the bottom row position. If option
+<b class='cmd'>-absolute</b> is true (default), the coordinates are
+absolute coordinates in the screen buffer. Otherwise, they are
+relative to the current window coordinates.</dd>
+<dt><a name="set_standard_handle" id=
+"set_standard_handle"><b class='cmd'>set_standard_handle</b>
+<i class='arg'>TYPE</i> <i class='arg'>HANDLE</i></a></dt>
+<dd>Redirects standard input, output or error to the specified
+<i class='arg'>HANDLE</i>. <i class='arg'>TYPE</i> is one of
+<span class="strong">stdin</span>, <span class=
+"strong">stdout</span>, <span class="strong">stderr</span>.
+<i class='arg'>HANDLE</i> may be any handle to a device.</dd>
+<dt><a name="write_console" id="write_console"><b class=
+'cmd'>write_console</b> <i class='arg'>CONOUTH</i> <i class=
+'arg'>STRING</i> ?<i class='arg'>options</i>?</a></dt>
+<dd>Writes the sequence of characters in <i class='arg'>STRING</i>
+to the screen buffer identified by <i class='arg'>CONOUTH</i>. The
+characters are always written to the screen buffer in raw mode,
+i.e. as if the <span class="strong">-processedoutput</span> mode
+(see <a href="#consolemodes">Console Modes</a>) was off. The
+original mode setting is restored after the write is completed.
+Note however, that newline characters are treated specially.<br />
+<br />
+In addition, the following options may be specified to alter the
+behavour of the write.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-newlinemode</b></span> <span class=
+"strong">line|column</span></td>
+<td class="opt">If the <b class='cmd'>-newlinemode</b> is set to
+<span class="strong">column</span> (default), a newline character
+in <i class='arg'>STRING</i> causes further characters to be
+written at the original starting column position on the next line.
+If the option is specified as <span class="strong">line</span>,
+characters after the newline character are written starting at the
+first column on the next line.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-position</b></span> <i class='arg'>COORD</i></td>
+<td class="opt">By default, the characters are written starting at
+the current cursor position. This option may be specified to change
+the location at which the characters are written. <i class=
+'arg'>COORD</i> is a list of two integers containing the column and
+row coordinates of the starting location.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-restoreposition</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt"></td>
+</tr>
+</table>
+</dd>
+</dl>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2004-2006 Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>

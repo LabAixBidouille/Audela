@@ -1,0 +1,1292 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>Services</h2>
+<p>Commands for configuring and monitoring Windows services</p>
+<h3><a name="synopsis" id="synopsis">SYNOPSIS</a></h3>
+package require <b>twapi</b><br />
+<table class="commandsummary" summary="Table">
+<tr valign="top">
+<td><a href="#continue_service"><b class='cmd'>continue_service</b>
+<i class='arg'>INTERNAL_SERVICE_NAME</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#create_service"><b class='cmd'>create_service</b>
+<i class='arg'>INTERNAL_SERVICE_NAME</i> <i class='arg'>COMMAND</i>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#delete_service"><b class='cmd'>delete_service</b>
+<i class='arg'>INTERNAL_SERVICE_NAME</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_dependent_service_status"><b class=
+'cmd'>get_dependent_service_status</b> <i class=
+'arg'>INTERNAL_SERVICE_NAME</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_multiple_service_status"><b class=
+'cmd'>get_multiple_service_status</b> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_service_configuration"><b class=
+'cmd'>get_service_configuration</b> <i class=
+'arg'>INTERNAL_SERVICE_NAME</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_service_display_name"><b class=
+'cmd'>get_service_display_name</b> <i class='arg'>SERVICE_NAME</i>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_service_internal_name"><b class=
+'cmd'>get_service_internal_name</b> <i class='arg'>SERVICE_NAME</i>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_service_state"><b class=
+'cmd'>get_service_state</b> <i class=
+'arg'>INTERNAL_SERVICE_NAME</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_service_status"><b class=
+'cmd'>get_service_status</b> <i class=
+'arg'>INTERNAL_SERVICE_NAME</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#interrogate_service"><b class=
+'cmd'>interrogate_service</b> <i class=
+'arg'>INTERNAL_SERVICE_NAME</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#lock_scm_db"><b class='cmd'>lock_scm_db</b>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#pause_service"><b class='cmd'>pause_service</b>
+<i class='arg'>INTERNAL_SERVICE_NAME</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#query_scm_db_lock_status"><b class=
+'cmd'>query_scm_db_lock_status</b> <i class='arg'>v_lockinfo</i>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#run_as_service"><b class='cmd'>run_as_service</b>
+<i class='arg'>SERVICES</i> ?<b class='cmd'>-interactive</b>
+<i class='arg'>BOOLEAN</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#service_exists"><b class='cmd'>service_exists</b>
+<i class='arg'>SERVICE_NAME</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_service_configuration"><b class=
+'cmd'>set_service_configuration</b> <i class=
+'arg'>INTERNAL_SERVICE_NAME</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#start_service"><b class='cmd'>start_service</b>
+<i class='arg'>INTERNAL_SERVICE_NAME</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#stop_service"><b class='cmd'>stop_service</b>
+<i class='arg'>INTERNAL_SERVICE_NAME</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#unlock_scm_db"><b class='cmd'>unlock_scm_db</b>
+<i class='arg'>SCM_LOCK_HANDLE</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#update_service_status"><b class=
+'cmd'>update_service_status</b> <i class='arg'>SERVICENAME</i>
+<i class='arg'>SEQNO</i> <i class='arg'>STATE</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+</table>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p>This module provides procedures for managing and controlling
+Windows services and also allows for writing Windows services in
+Tcl.</p>
+<h3><a name="serviceconfigurationandmonitoring" id=
+"serviceconfigurationandmonitoring">Service Configuration and
+Monitoring</a></h3>
+<p>The commands <a href="#lock_scm_db"><b class=
+'cmd'>lock_scm_db</b></a>, <a href="#unlock_scm_db"><b class=
+'cmd'>unlock_scm_db</b></a> and <a href=
+"#query_scm_db_lock_status"><b class=
+'cmd'>query_scm_db_lock_status</b></a> allow manipulation of the
+Service Control Manager (SCM) database lock during configuration
+changes.</p>
+<p>The commands <a href="#get_service_internal_name"><b class=
+'cmd'>get_service_internal_name</b></a> and <a href=
+"#get_service_display_name"><b class=
+'cmd'>get_service_display_name</b></a> map back and forth between
+the internal name and display name of a service.</p>
+<p>The command <a href="#service_exists"><b class=
+'cmd'>service_exists</b></a> checks for the existence of a service
+while <a href="#get_service_state"><b class=
+'cmd'>get_service_state</b></a> returns its state. The commands
+<a href="#get_service_status"><b class=
+'cmd'>get_service_status</b></a>, <a href=
+"#get_multiple_service_status"><b class=
+'cmd'>get_multiple_service_status</b></a> and <a href=
+"#get_dependent_service_status"><b class=
+'cmd'>get_dependent_service_status</b></a> retrieve status
+information for one or more services. <a href=
+"#interrogate_service"><b class='cmd'>interrogate_service</b></a>
+can be used to request a service to update its status with the
+service control manager (SCM).</p>
+<p>Service configuration changes, including creation of new
+services and deletion of existing ones, can be done through the
+commands <a href="#create_service"><b class=
+'cmd'>create_service</b></a>, <a href="#delete_service"><b class=
+'cmd'>delete_service</b></a> and <a href=
+"#set_service_configuration"><b class=
+'cmd'>set_service_configuration</b></a>.</p>
+<p>The commands <a href="#start_service"><b class=
+'cmd'>start_service</b></a>, <a href="#stop_service"><b class=
+'cmd'>stop_service</b></a>, <a href="#pause_service"><b class=
+'cmd'>pause_service</b></a> and <a href=
+"#continue_service"><b class='cmd'>continue_service</b></a> control
+the run state of a service.</p>
+<h3><a name="writingservicesintcl" id=
+"writingservicesintcl">Writing services in Tcl</a></h3>
+<p>The command <a href="#run_as_service"><b class=
+'cmd'>run_as_service</b></a> allows an application to run as a
+Windows service. Applications running as services can update their
+status with the SCM through <a href=
+"#update_service_status"><b class=
+'cmd'>update_service_status</b></a>.</p>
+<h3><a name="standardoptions" id="standardoptions">Standard
+Options</a></h3>
+<p>Most commands allow the following options to be specified:</p>
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-system</b></span> <i class='arg'>SYSTEMNAME</i></td>
+<td class="opt">Specifies the name of the system on which the
+command should be invoked. By default, this is the local
+system.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-database</b></span> <i class='arg'>DATABASE</i></td>
+<td class="opt">Specifies the service control database to be
+operated on. By default, this is the active service control
+database on the target system.</td>
+</tr>
+</table>
+<h3><a name="commands" id="commands">Commands</a></h3>
+<dl class="noclass">
+<dt><a name="continue_service" id="continue_service"><b class=
+'cmd'>continue_service</b> <i class='arg'>INTERNAL_SERVICE_NAME</i>
+?<i class='arg'>options</i>?</a></dt>
+<dd>This command resumes the specified service which must be in a
+paused state. <i class='arg'>INTERNAL_SERVICE_NAME</i> must be the
+internal name of the service, not the display name. The command
+returns 1 if the service has resumed to a running state when the
+command completes and 0 otherwise. Note that a return value of 0
+does not imply an error, just that the service had not completely
+resumed by the time the command returned.<br />
+<br />
+The standard options described in <a href=
+"#standardoptions">Standard Options</a> may be specified with this
+command. In addition, if the option "<b class='cmd'>-wait</b>
+<i class='arg'>MILLISECONDS</i>" is specified the command will wait
+until the service is running or until <i class=
+'arg'>MILLISECONDS</i> milliseconds have expired.</dd>
+<dt><a name="create_service" id="create_service"><b class=
+'cmd'>create_service</b> <i class='arg'>INTERNAL_SERVICE_NAME</i>
+<i class='arg'>COMMAND</i> ?<i class='arg'>options</i>?</a></dt>
+<dd>This command creates a new Windows service in the service
+control manager database.<br />
+<br />
+<i class='arg'>INTERNAL_SERVICE_NAME</i> is the internal name by
+which the service is identified by the service control
+manager.<br />
+<br />
+<i class='arg'>COMMAND</i> contains the system command to be
+executed to start the service. This includes the path to the
+executable as well as arguments to be passed to it. If the path
+contains spaces, it must be specifically quoted else the operating
+system will interpret all characters after the first space as
+arguments to be passed to the service. For example,
+<pre class="sample">
+"\"C:\\Program Files\\MyService\\service.exe\" arg1 arg2"
+</pre>
+In addition to the <a href="#standardoptions">Standard Options</a>,
+the following additional options may be specified which control
+various aspects of the service:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-displayname</b></span> <i class='arg'>DISPLAYNAME</i></td>
+<td class="opt">Specifies the user visible name for the service.
+This is the name that is shown in the <span class="strong">net
+start</span> command and the SCM control panel applet.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-servicetype</b></span> <i class='arg'>SERVICETYPE</i></td>
+<td class="opt">Specifies the service type and may have one of the
+following values:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">win32_own_process</span></span></td>
+<td class="opt">Service that runs in its own process. This
+corresponds to the <span class=
+"strong">SERVICE_WIN32_OWN_PROCESS</span> in the Windows SDK
+documentation. This is the default if the option is not
+specified.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">win32_shared_process</span></span></td>
+<td class="opt">Service that runs inside a process shared with
+other services. This corresponds to the <span class=
+"strong">SERVICE_WIN32_SHARED_PROCESS</span> in the Windows SDK
+documentation.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">file_system_driver</span></span></td>
+<td class="opt">File system driver. This corresponds to the
+<span class="strong">SERVICE_FILE_SYSTEM_DRIVER</span> in the
+Windows SDK documentation.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">kernel_driver</span></span></td>
+<td class="opt">Kernel driver. This corresponds to the <span class=
+"strong">SERVICE_KERNEL_DRIVER</span> in the Windows SDK
+documentation.</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-interactive</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">This option specifies whether the service should be
+allowed to interact with the desktop. This is only valid when
+<b class='cmd'>-servicetype</b> is specified to be <span class=
+"strong">win32_own_process</span> or <span class=
+"strong">win32_shared_process</span>. The <b class=
+'cmd'>-account</b> option must not be used with this option since
+interactive services must run under the <span class=
+"strong">LocalSystem</span> account.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-starttype</b></span> <i class='arg'>STARTTYPE</i></td>
+<td class="opt">Specifies how the service is to be started.
+<i class='arg'>STARTTYPE</i> should have one of the following
+values:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">auto_start</span></span></td>
+<td class="opt">The service should be automatically started by the
+service control manager during system startup. This is the default
+if the option is not specified.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">boot_start</span></span></td>
+<td class="opt">The service should be automatically started by the
+system loader during system boot. This is only valid when <b class=
+'cmd'>-servicetype</b> is specified to be <span class=
+"strong">kernel_driver</span> or <span class=
+"strong">file_system_driver</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">demand_start</span></span></td>
+<td class="opt">The service should be started by the system upon
+receiving an explicit program request.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">disabled</span></span></td>
+<td class="opt">The service is disabled and cannot be started even
+on program request.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">system_start</span></span></td>
+<td class="opt">The service is a driver that is started by the
+operating system <b class='cmd'>IoInitSystem</b> function during
+system initialization. This is only valid when <b class=
+'cmd'>-servicetype</b> is specified to be <span class=
+"strong">kernel_driver</span> or <span class=
+"strong">file_system_driver</span>.</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-errorcontrol</b></span> <i class=
+'arg'>ERRORCONTROLMODE</i></td>
+<td class="opt">This option specifies how errors during service
+start are to be handled. <i class='arg'>ERRORCONTROLMODE</i> may
+have one of the following values:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">ignore</span></span></td>
+<td class="opt">An error message will be logged to the Windows
+event log. The system startup will continue.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">normal</span></span></td>
+<td class="opt">An error message will be logged to the Windows
+event log and a popup displayed to the user. The system startup
+will continue. This is the default.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">severe</span></span></td>
+<td class="opt">An error message will be logged to the Windows
+event log. The system startup will continue only if the last known
+good configuration is active. Otherwise, the system is restarted
+with the last known good configuration.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">critical</span></span></td>
+<td class="opt">An error message will be logged to the Windows
+event log if possible. If the last known good configuration is
+active, the system startup is aborted. Otherwise, the system is
+restarted with the last known good configuration.</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-loadordergroup</b></span> <i class='arg'>GROUPNAME</i></td>
+<td class="opt">Specifies <i class='arg'>GROUPNAME</i> to be the
+service load order group to which the service belongs. If the
+option is not specified, the service is assumed to not belong to
+any load order group.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-dependencies</b></span> <i class=
+'arg'>DEPENDENCYLIST</i></td>
+<td class="opt">Specifies the services and service load order
+groups that are required by this service and that must start before
+this service. <i class='arg'>DEPENDENCYLIST</i> is a list of
+service names and load order groups. A load order group name must
+be prefixed with a <span class="strong">+</span> character to
+indicate that it is a group name and not a service.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-account</b></span> <i class='arg'>ACCOUNTNAME</i></td>
+<td class="opt">Specifies <i class='arg'>ACCOUNTNAME</i> to be the
+user account under which the service should run. <i class=
+'arg'>ACCOUNTNAME</i> takes the form <i class=
+'arg'>domain\username</i>. If the account is a local account,
+<i class='arg'>ACCOUNTNAME</i> may be specified as <i class=
+'arg'>.\username</i> or <i class='arg'>username</i>. If this option
+is not specified, the service will run under the <span class=
+"strong">LocalSystem</span> account. When <b class=
+'cmd'>-servicetype</b> is <span class="strong">kernel</span> or
+<span class="strong">filesystem</span>, <i class=
+'arg'>ACCOUNTNAME</i> should be the name of the driver object that
+the system uses to load the driver.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-password</b></span> <i class='arg'>PASSWORD</i></td>
+<td class="opt">Specifies the password corresponding to the user
+account specified in the <b class='cmd'>-account</b> option. This
+option is ignored if the <b class='cmd'>-account</b> option is not
+specified.</td>
+</tr>
+</table>
+<a href="installservice.example">Example: Install a
+service</a><br />
+<br /></dd>
+<dt><a name="delete_service" id="delete_service"><b class=
+'cmd'>delete_service</b> <i class='arg'>INTERNAL_SERVICE_NAME</i>
+?<i class='arg'>options</i>?</a></dt>
+<dd>This command deletes the specified service from the service
+control manager database. <i class='arg'>INTERNAL_SERVICE_NAME</i>
+must be the internal name of the service, not the display name. The
+standard options described in <a href="#standardoptions">Standard
+Options</a> may be specified with this command.<br />
+<br />
+<a href="uninstallservice.example">Example: Uninstall a
+service</a></dd>
+<dt><a name="get_dependent_service_status" id=
+"get_dependent_service_status"><b class=
+'cmd'>get_dependent_service_status</b> <i class=
+'arg'>INTERNAL_SERVICE_NAME</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Retrieves the status of services that are dependent on
+<i class='arg'>INTERNAL_SERVICE_NAME</i> and that match a specified
+service state. The standard options described in <a href=
+"#standardoptions">Standard Options</a> may be specified with this
+command. In addition, the following options may be specified to
+only include services in a given state. If neither of these is
+specified, services in all states are included in the returned
+list.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">-inactive</span></td>
+<td class="opt">Specifying this option will result in inclusion of
+services that are in the <span class="strong">stopped</span>
+state.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">-active</span></td>
+<td class="opt">Specifying this option will result in inclusion of
+services that are not in the <span class="strong">stopped</span>
+state.</td>
+</tr>
+</table>
+The command returns a list each element of which describes the
+status of a single service. The format of the sublist elements is
+identical to that returned by the <a href=
+"#get_multiple_service_status"><b class=
+'cmd'>get_multiple_service_status</b></a>.<br />
+<br />
+<a href="restartservice.example">Example: Stop and restart a
+service</a><br />
+<br />
+<a href="showservicedependents.example">Example: Show the
+dependents of a service</a></dd>
+<dt><a name="get_multiple_service_status" id=
+"get_multiple_service_status"><b class=
+'cmd'>get_multiple_service_status</b> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Retrieves the status of multiple services matching the
+specified service type and/or state. The standard options described
+in <a href="#standardoptions">Standard Options</a> may be specified
+with this command. In addition, the options may be specified to
+only include services of a given type and in a given state.<br />
+<br />
+One or more from the following service type options may be
+specified to limit the types of services that are included in the
+returned list: <b class='cmd'>-kernel_driver</b>, <b class=
+'cmd'>-file_system_driver</b>, <b class=
+'cmd'>-win32_own_process</b>, <b class=
+'cmd'>-win32_share_process</b>, <b class='cmd'>-adapter</b> or
+<b class='cmd'>-recognizer_driver</b>. See the description of the
+<b class='cmd'>-servicetype</b> option in the <a href=
+"#create_service"><b class='cmd'>create_service</b></a> command for
+the semantics of these values. If no service type options are
+specified, all types of services are included in the returned
+list.<br />
+<br />
+One of the following options may be specified to limit the returned
+services to those in a specific state. If neither of these is
+specified, services in all states are included in the returned
+list.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">-inactive</span></td>
+<td class="opt">Specifying this option will result in inclusion of
+services that are in the <span class="strong">stopped</span>
+state.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">-active</span></td>
+<td class="opt">Specifying this option will result in inclusion of
+services that are not in the <span class="strong">stopped</span>
+state.</td>
+</tr>
+</table>
+The command returns a list each element of which describes the
+status of a single service. The format of the sublist is a list of
+the form <i class='arg'>field1 value1 ...</i> with the following
+fields:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">attrs</span></span></td>
+<td class="opt">Contains a list of attributes. Currently, the only
+attribute that may appear in this list is <span class=
+"strong">systemprocess</span> which indicates that the service runs
+in a system process that must alway be running.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">checkpoint</span></span></td>
+<td class="opt">Contains the last checkpoint value reported by the
+service during a lengthy operation.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">controls_accepted</span></span></td>
+<td class="opt">Contains a bitmask indicating the control commands
+accepted by the service. Refer to the Windows SDK documentation for
+<span class="strong">ControlService</span> for details.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">displayname</span></span></td>
+<td class="opt">Indicates the user visible name of the service</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">exitcode</span></span></td>
+<td class="opt">The last exit code of the service. If this value is
+1066, a service specific error code is returned in the <span class=
+"strong">service_code</span> field.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">interactive</span></span></td>
+<td class="opt">Indicates whether the service is allowed to
+interact with the desktop (<span class="strong">1</span>) or not
+(<span class="strong">0</span>).</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">name</span></span></td>
+<td class="opt">Indicates the internal name of the service</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">pid</span></span></td>
+<td class="opt">The PID of the process in which the service is
+running. If the service is currently stopped, this will be 0. A
+value of -1 indicates that the process id of the service cannot be
+determined (NT 4.0).</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">service_code</span></span></td>
+<td class="opt">In case the <span class="strong">exitcode</span>
+field contains 1066, this field contains a service specific code
+stored by the service.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">servicetype</span></span></td>
+<td class="opt">Indicates the type of the service, and is one of
+<span class="strong">win32_own_process</span>, <span class=
+"strong">win32_share_process</span>, <span class=
+"strong">kernel_driver</span>, <span class=
+"strong">file_system_driver</span>, <span class=
+"strong">adapter</span>, <span class=
+"strong">recognizer_driver</span> or an integer denoting the type
+if not one of the above.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">state</span></span></td>
+<td class="opt">Contains the latest reported status of the service
+and may have one of the values <span class="strong">stopped</span>,
+<span class="strong">start_pending</span>, <span class=
+"strong">stop_pending</span>, <span class="strong">running</span>,
+<span class="strong">continue_pending</span>, <span class=
+"strong">pause_pending</span>, <span class="strong">paused</span>
+or an integer value indicating the status of the service if not one
+of the above.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">wait_hint</span></span></td>
+<td class="opt">Estimated time required to complete an start, stop,
+pause or continue operation as last reported by the service.</td>
+</tr>
+</table>
+<a href="showrunningservices.example">Example: Show currently
+running Windows services</a><br />
+<br />
+<a href="showautostartservices.example">Example: Show Windows
+services that start automatically</a><br />
+<br /></dd>
+<dt><a name="get_service_configuration" id=
+"get_service_configuration"><b class=
+'cmd'>get_service_configuration</b> <i class=
+'arg'>INTERNAL_SERVICE_NAME</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>This command returns the current configuration data for the
+specified service. <i class='arg'>INTERNAL_SERVICE_NAME</i> is the
+internal name by which the service is identified by the service
+control manager. The standard options described in <a href=
+"#standardoptions">Standard Options</a> may be specified with this
+command.<br />
+<br />
+The return value is a flat list of the form <i class='arg'>option1
+value1 ...</i> that can be directly passed to the <a href=
+"#set_service_configuration"><b class=
+'cmd'>set_service_configuration</b></a> command. The returned
+values depend on which of the following options are specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-all</span></span></td>
+<td class="opt">Returns all option values</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-description</span></span></td>
+<td class="opt">Returns description of the service if available,
+otherwise the empty string.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-displayname</span></span></td>
+<td class="opt">Returns the user visible name of the service.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-errorcontrol</span></span></td>
+<td class="opt">Returns an indication of how errors during service
+startup will be handled. See description of <a href=
+"#create_service"><b class='cmd'>create_service</b></a> for
+details.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-servicetype</span></span></td>
+<td class="opt">Returns the service type. See description of
+<a href="#create_service"><b class='cmd'>create_service</b></a> for
+details.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-interactive</span></span></td>
+<td class="opt">Returns <span class="strong">1</span> if the
+service is allowed to interact with the desktop and <span class=
+"strong">0</span> otherwise.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-loadordergroup</span></span></td>
+<td class="opt">Returns the name of the service load order group to
+which the service belongs.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-dependencies</span></span></td>
+<td class="opt">Returns a list of names of services and service
+load order groups that are required by this service and that must
+start before this service.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-account</span></span></td>
+<td class="opt">Returns the user account under which the service
+runs.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-starttype</span></span></td>
+<td class="opt">See description of <b class=
+'cmd'>create_service</b> for details.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-command</span></span></td>
+<td class="opt">Returns the command, including the executable name
+and parameters, that is invoked to run the Windows service.</td>
+</tr>
+</table>
+<a href="showautostartservices.example">Example: Show Windows
+services that start automatically</a><br />
+<br />
+<a href="showservicedependencies.example">Example: Show the
+services that a specified service depends on</a><br />
+<br /></dd>
+<dt><a name="get_service_display_name" id=
+"get_service_display_name"><b class=
+'cmd'>get_service_display_name</b> <i class='arg'>SERVICE_NAME</i>
+?<i class='arg'>options</i>?</a></dt>
+<dd>This command returns the display name of the specified service.
+If <i class='arg'>SERVICE_NAME</i> is the display name of a
+service, it is returned. If it is the internal name of a service,
+the corresponding display name is returned. Otherwise, an error is
+raised. The standard options described in <a href=
+"#standardoptions">Standard Options</a> may be specified with this
+command.</dd>
+<dt><a name="get_service_internal_name" id=
+"get_service_internal_name"><b class=
+'cmd'>get_service_internal_name</b> <i class='arg'>SERVICE_NAME</i>
+?<i class='arg'>options</i>?</a></dt>
+<dd>This command returns the internal name of the specified
+service. If <i class='arg'>SERVICE_NAME</i> is the internal name of
+a service, it is returned. If it is the display name of a service,
+the corresponding internal name is returned. Otherwise, an error is
+raised. The standard options described in <a href=
+"#standardoptions">Standard Options</a> may be specified with this
+command.</dd>
+<dt><a name="get_service_state" id="get_service_state"><b class=
+'cmd'>get_service_state</b> <i class=
+'arg'>INTERNAL_SERVICE_NAME</i></a></dt>
+<dd>Returns the last reported state of the service. See the
+description of the <span class="strong">state</span> field for the
+command <a href="#get_service_status"><b class=
+'cmd'>get_service_status</b></a> for possible values.</dd>
+<dt><a name="get_service_status" id="get_service_status"><b class=
+'cmd'>get_service_status</b> <i class=
+'arg'>INTERNAL_SERVICE_NAME</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>This command returns the latest status information sent by the
+given service to the service control manager. The standard options
+described in <a href="#standardoptions">Standard Options</a> may be
+specified with this command. The return value is a flat list of the
+form <i class='arg'>field1 value1 ...</i>. The following fields are
+returned:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">attrs</span></span></td>
+<td class="opt">Contains a list of attributes. Currently, the only
+attribute that may appear in this list is <span class=
+"strong">systemprocess</span> which indicates that the service runs
+in a system process that must alway be running.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">controls_accepted</span></span></td>
+<td class="opt">Contains a bitmask indicating the control commands
+accepted by the service. Refer to the Windows SDK documentation for
+<span class="strong">ControlService</span> for details.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">exitcode</span></span></td>
+<td class="opt">The last exit code of the service. If this value is
+1066, a service specific error code is returned in the <span class=
+"strong">service_code</span> field.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">interactive</span></span></td>
+<td class="opt">Indicates whether the service is allowed to
+interact with the desktop (<span class="strong">1</span>) or not
+(<span class="strong">0</span>).</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">servicetype</span></span></td>
+<td class="opt">Indicates the type of the service, and is one of
+<span class="strong">win32_own_process</span>, <span class=
+"strong">win32_share_process</span>, <span class=
+"strong">kernel_driver</span>, <span class=
+"strong">file_system_driver</span>, <span class=
+"strong">adapter</span>, <span class=
+"strong">recognizer_driver</span> or an integer denoting the type
+if not one of the above.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">state</span></span></td>
+<td class="opt">Contains the latest reported status of the service
+and may have one of the values <span class="strong">stopped</span>,
+<span class="strong">start_pending</span>, <span class=
+"strong">stop_pending</span>, <span class="strong">running</span>,
+<span class="strong">continue_pending</span>, <span class=
+"strong">pause_pending</span>, <span class="strong">paused</span>
+or an integer value indicating the status of the service if not one
+of the above.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">service_code</span></span></td>
+<td class="opt">In case the <span class="strong">exitcode</span>
+field contains 1066, this field contains a service specific code
+stored by the service.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">checkpoint</span></span></td>
+<td class="opt">Contains the last checkpoint value reported by the
+service during a lengthy operation.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">wait_hint</span></span></td>
+<td class="opt">Estimated time required to complete an start, stop,
+pause or continue operation as last reported by the service.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">pid</span></span></td>
+<td class="opt">The PID of the process in which the service is
+running. If the service is currently stopped, this will be 0. A
+value of -1 indicates that the process id of the service cannot be
+determined (NT 4.0).</td>
+</tr>
+</table>
+</dd>
+<dt><a name="interrogate_service" id=
+"interrogate_service"><b class='cmd'>interrogate_service</b>
+<i class='arg'>INTERNAL_SERVICE_NAME</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>This command asks the specified service to update the service
+control manager with its current status. <i class=
+'arg'>INTERNAL_SERVICE_NAME</i> must be the internal name of the
+service, not the display name. The standard options described in
+<a href="#standardoptions">Standard Options</a> may be specified
+with this command.</dd>
+<dt><a name="lock_scm_db" id="lock_scm_db"><b class=
+'cmd'>lock_scm_db</b> ?<i class='arg'>options</i>?</a></dt>
+<dd>This command locks the service control manager database and
+returns a handle to the lock. The handle must later be released by
+passing it to <b class='cmd'>unlock_scm_db</b>. The standard
+options described in <a href="#standardoptions">Standard
+Options</a> may be specified with this command.</dd>
+<dt><a name="pause_service" id="pause_service"><b class=
+'cmd'>pause_service</b> <i class='arg'>INTERNAL_SERVICE_NAME</i>
+?<i class='arg'>options</i>?</a></dt>
+<dd>This command pauses the specified service. <i class=
+'arg'>INTERNAL_SERVICE_NAME</i> is the internal name of the
+service, not the display name. The command returns 1 if the service
+is paused when the command completes and 0 otherwise. Note that a
+return value of 0 does not imply an error, just that the service
+had not completely changed to a paused state by the time the
+command returned. A Tcl error is generated if the service was not
+running.<br />
+<br />
+The options described in <a href="#standardoptions">Standard
+Options</a> may be specified with this command. In addition, if the
+option "<b class='cmd'>-wait</b> <i class='arg'>MILLISECONDS</i>"
+is specified the command will wait until the service is paused or
+until <i class='arg'>MILLISECONDS</i> milliseconds have
+expired.</dd>
+<dt><a name="query_scm_db_lock_status" id=
+"query_scm_db_lock_status"><b class=
+'cmd'>query_scm_db_lock_status</b> <i class='arg'>v_lockinfo</i>
+?<i class='arg'>options</i>?</a></dt>
+<dd>This command returns the state of a service control manager
+database lock. It returns 1 if the database is locked and 0
+otherwise. The user name of the lock holder and the number of
+seconds that the lock has been held is returned as a list in the
+variable referenced by <i class='arg'>v_lockinfo</i>. The options
+described in <a href="#standardoptions">Standard Options</a> may be
+specified with this command.</dd>
+<dt><a name="run_as_service" id="run_as_service"><b class=
+'cmd'>run_as_service</b> <i class='arg'>SERVICES</i> ?<b class=
+'cmd'>-interactive</b> <i class='arg'>BOOLEAN</i>?</a></dt>
+<dd>This command sets up the mechanisms that allow a Tcl
+application to act as a Windows service. It must be only called
+when the application is started by the Windows SCM as a Windows
+service, else it will fail silently.<br />
+<br />
+<i class='arg'>SERVICES</i> is a list of <i class='arg'>SERVICENAME
+HANDLER</i> pairs that describe the services that will run in the
+process. Note a single process may host multiple services.
+<i class='arg'>SERVICENAME</i> is the internal name of a service.
+<i class='arg'>HANDLER</i> is a script that will be invoked for
+that service in response to various state changes as described
+below. The option <b class='cmd'>-interactive</b> indicates whether
+the services running in the application will require interaction
+with the desktop.<br />
+<br />
+When the application is started by the SCM, it should perform its
+basic application-wide initialization and then call <a href=
+"#run_as_service"><b class='cmd'>run_as_service</b></a>. The
+command will then set up the communication mechanisms with the SCM
+and register the specified services. The control signals sent by
+the SCM to the service are passed on to the <i class=
+'arg'>HANDLER</i> script registered for the service by the
+application.<br />
+<br />
+There are four main controls sent by the SCM to control the state
+of a service. These correspond to the tokens <span class=
+"strong">start</span>, <span class="strong">stop</span>,
+<span class="strong">pause</span> and <span class=
+"strong">continue</span>. For each of these, <i class=
+'arg'>HANDLER</i> is invoked with four additional arguments. The
+first is control token itself. The second is the name of the
+service for which the control was sent and should match (ignoring
+case) one of the <i class='arg'>SERVICENAME</i> values passed to
+<b class='cmd'>run_as_service</b>. The third argument is a sequence
+number (more on this later). The fourth argument is a numeric value
+that is the actual value of the control signal sent by the
+SCM.<br />
+<br />
+In response to a control signal, the handler must take whatever
+action necessary and then notify the SCM by calling <a href=
+"#update_service_status"><b class=
+'cmd'>update_service_status</b></a>, passing it the process state.
+For example, in response to a <span class="strong">pause</span>
+control, the application may take whatever actions required to
+temporarily pause the service operation and then respond by passing
+the <span class="strong">paused</span> state to <a href=
+"#update_service_status"><b class=
+'cmd'>update_service_status</b></a>. Alternatively, if the service
+cannot be paused for whatever reason, it may respond by passing the
+state <span class="strong">running</span>. Refer to <a href=
+"#update_service_status"><b class=
+'cmd'>update_service_status</b></a> for details on valid
+responses.<br />
+<br />
+The application must respond to every control notification with a
+corresponding call to <a href="#update_service_status"><b class=
+'cmd'>update_service_status</b></a>. There is no hard time limit
+during which this call must be made but it is a good idea not to
+delay the response too long. <a href=
+"#update_service_status"><b class=
+'cmd'>update_service_status</b></a> can be either invoked from the
+handler itself or scheduled at some later point after the necessary
+actions have been taken by the application. During this time, TWAPI
+may internally send responses to the SCM essentially asking it to
+keep waiting for an answer without timing out.<br />
+<br />
+Because multiple controls may be received from the SCM before
+previous controls have been fully processed, and to allow for
+asynchronous responses from the application, a sequence number is
+passed as the third argument to the callback. When the application
+responds using <a href="#update_service_status"><b class=
+'cmd'>update_service_status</b></a>, this sequence number should be
+passed to the call. When responses are made out-of-order, those
+with older sequence numbers will be ignored.<br />
+<br />
+In addition to the above notifications that deal with the state
+changes for the service, the handler may be sent two additional
+controls: <span class="strong">userdefined</span> and <span class=
+"strong">all_stopped</span>. The <span class=
+"strong">userdefined</span> control is strictly
+application-dependent and not used by the SCM. User defined
+controls can be sent to a service using command line utilities such
+as the Windows <b class='cmd'>sc</b> program. The arguments passed
+to the handler are the same as described above. The fourth
+argument, the numeric value of the control, will be in the range
+128-255 and can be used by the application to distinguish between
+different signals. Note that the application does not need to call
+<a href="#update_service_status"><b class=
+'cmd'>update_service_status</b></a> in response to a <span class=
+"strong">userdefined</span> control.<br />
+<br />
+The <span class="strong">all_stopped</span> control is sent when
+all services in the process have been stopped. The application
+should normally clean up and exit when this control is received.
+The remaining arguments passed to the handler are either empty
+strings or <span class="strong">0</span> and are not used.</dd>
+<dt><a name="service_exists" id="service_exists"><b class=
+'cmd'>service_exists</b> <i class='arg'>SERVICE_NAME</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>This command returns 1 or 0 depending on whether a service with
+the specified name exists or not. <i class='arg'>SERVICE_NAME</i>
+may be either the internal name of the service or the display name.
+The options described in <a href="#standardoptions">Standard
+Options</a> may be specified with this command.</dd>
+<dt><a name="set_service_configuration" id=
+"set_service_configuration"><b class=
+'cmd'>set_service_configuration</b> <i class=
+'arg'>INTERNAL_SERVICE_NAME</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>This command allows modification of configuration data for the
+service specified by <i class='arg'>INTERNAL_SERVICE_NAME</i>. In
+addition to the options described in <a href=
+"#standardoptions">Standard Options</a>, the following options may
+be specified to set configuration data. The values for any
+unspecified options will remain unchanged.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-displayname</b></span> <i class='arg'>DISPLAYNAME</i></td>
+<td class="opt">Specifies the user visible name for the service.
+This is the name that is shown in the <span class="strong">net
+start</span> command and the SCM control panel applet.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-command</b></span> <i class='arg'>COMMAND</i></td>
+<td class="opt"><i class='arg'>COMMAND</i> contains the system
+command to be executed to start the service. See description of
+<a href="#create_service"><b class='cmd'>create_service</b></a> for
+details.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-servicetype</b></span> <i class='arg'>SERVICETYPE</i></td>
+<td class="opt">Specifies the service type. See description of
+<a href="#create_service"><b class='cmd'>create_service</b></a> for
+details.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-interactive</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">This option specifies whether the service should be
+allowed to interact with the desktop. See description of this
+option in command <a href="#create_service"><b class=
+'cmd'>create_service</b></a> for details.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-starttype</b></span> <i class='arg'>STARTTYPE</i></td>
+<td class="opt">Specifies how the service is to be started. See
+description of this option in command <a href=
+"#create_service"><b class='cmd'>create_service</b></a> for valid
+values for <i class='arg'>STARTTYPE</i>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-errorcontrol</b></span> <i class=
+'arg'>ERRORCONTROLMODE</i></td>
+<td class="opt">This option specifies how errors during service
+start are to be handled. See description of this option in command
+<a href="#create_service"><b class='cmd'>create_service</b></a> for
+valid values for <i class='arg'>ERRORCONTROL</i>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-loadordergroup</b></span> <i class='arg'>GROUPNAME</i></td>
+<td class="opt">Specifies <i class='arg'>GROUPNAME</i> to be the
+service load order group to which the service belongs. If the
+option is not specified, the service is assumed to not belong to
+any load order group.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-dependencies</b></span> <i class=
+'arg'>DEPENDENCYLIST</i></td>
+<td class="opt">Specifies the services and service load order
+groups that are required by this service and that must start before
+this service. See description of this option in command <a href=
+"#create_service"><b class='cmd'>create_service</b></a> for
+details.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-account</b></span> <i class='arg'>ACCOUNTNAME</i></td>
+<td class="opt">Specifies <i class='arg'>ACCOUNTNAME</i> to be the
+user account under which the service should run. See description of
+this option in command <a href="#create_service"><b class=
+'cmd'>create_service</b></a> for details.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-password</b></span> <i class='arg'>PASSWORD</i></td>
+<td class="opt">Specifies the password corresponding to the user
+account specified in the <b class='cmd'>-account</b> option. This
+option is ignored if the <b class='cmd'>-account</b> option is not
+specified.</td>
+</tr>
+</table>
+<br />
+<br />
+<a href="changeserviceaccount.example">Example: Change a Windows
+service account</a><br />
+<br /></dd>
+<dt><a name="start_service" id="start_service"><b class=
+'cmd'>start_service</b> <i class='arg'>INTERNAL_SERVICE_NAME</i>
+?<i class='arg'>options</i>?</a></dt>
+<dd>This command starts the specified service if it is not already
+running. <i class='arg'>INTERNAL_SERVICE_NAME</i> must be the
+internal name of the service, not the display name. The command
+returns 1 if the service is up and running when the command
+completes and 0 otherwise. Note that a return value of 0 does not
+imply an error, just that the service had not completely started by
+the time the command returned.<br />
+<br />
+The options described in <a href="#standardoptions">Standard
+Options</a> may be specified with this command. In addition, if the
+option "<b class='cmd'>-wait</b> <i class='arg'>MILLISECONDS</i>"
+is specified the command will wait until the service is running or
+until <i class='arg'>MILLISECONDS</i> milliseconds have
+expired.<br />
+<br />
+<a href="restartservice.example">Example: Stop and restart a
+service</a></dd>
+<dt><a name="stop_service" id="stop_service"><b class=
+'cmd'>stop_service</b> <i class='arg'>INTERNAL_SERVICE_NAME</i>
+?<i class='arg'>options</i>?</a></dt>
+<dd>This command stops the specified service if it is currently
+running. <i class='arg'>INTERNAL_SERVICE_NAME</i> must be the
+internal name of the service, not the display name. The command
+returns 1 if the service has stopped by the time the command
+completes and 0 otherwise. Note that a return value of 0 does not
+imply an error, just that the service had not completely stopped by
+the time the command returned.<br />
+<br />
+The options described in <a href="#standardoptions">Standard
+Options</a> may be specified with this command. In addition, if the
+option "<b class='cmd'>-wait</b> <i class='arg'>MILLISECONDS</i>"
+is specified the command will wait until the service is stopped or
+until <i class='arg'>MILLISECONDS</i> milliseconds have
+expired.<br />
+<br />
+<a href="restartservice.example">Example: Stop and restart a
+service</a></dd>
+<dt><a name="unlock_scm_db" id="unlock_scm_db"><b class=
+'cmd'>unlock_scm_db</b> <i class='arg'>SCM_LOCK_HANDLE</i></a></dt>
+<dd>This command releases a lock previously obtained through
+<a href="#lock_scm_db"><b class='cmd'>lock_scm_db</b></a>.</dd>
+<dt><a name="update_service_status" id=
+"update_service_status"><b class='cmd'>update_service_status</b>
+<i class='arg'>SERVICENAME</i> <i class='arg'>SEQNO</i> <i class=
+'arg'>STATE</i> ?<i class='arg'>options</i>?</a></dt>
+<dd>This command should be called by applications, running as a
+Windows service, to update their status information with the
+Windows service control manager (SCM). The command may be called
+asynchronously at any time, but is most often called in response to
+a control notification from the SCM requesting a state change. See
+<a href="#run_as_service"><b class='cmd'>run_as_service</b></a> for
+more detail.<br />
+<br />
+<i class='arg'>SERVICENAME</i> is the name of the service whose
+status is being updated.<br />
+<br />
+<i class='arg'>SEQ</i> is the sequence number of the control
+notification to which this is the response. See the discussion in
+the <a href="#run_as_service"><b class='cmd'>run_as_service</b></a>
+documentation. If the call is not in response to a control
+notification, <i class='arg'>SEQ</i> should be set to 0.<br />
+<br />
+<i class='arg'>STATE</i> is the of the application and should be
+one of the values <span class="strong">stopped</span>, <span class=
+"strong">running</span> or <span class="strong">paused</span>. Note
+that an application can stop at any time, but should not generally
+change state to <span class="strong">running</span> or <span class=
+"strong">paused</span> on its own without a control notification
+from the SCM. Doing so will in all likelihood confuse the SCM
+manager sufficiently to make the service unmanageable.<br />
+<br />
+If the service state being specified is <span class=
+"strong">stopped</span>, the application may also indicate a
+standard Windows exit code and a service-specific exit code by
+specifying their values through the options <b class=
+'cmd'>-exitcode</b> and <b class='cmd'>-servicecode</b>
+respectively.</dd>
+</dl>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2003-2008 Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>
