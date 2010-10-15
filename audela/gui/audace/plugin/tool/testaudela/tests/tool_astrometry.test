@@ -16,11 +16,20 @@ test tool_astrometry_deg2hms {sextractor image webcam} -constraints {
    ::confVisu::selectTool $visuNo ::astrometry
 
 } -body {
+   #--- je selectionne le catalogue MICROCAT
+   ::testaudela::clicCombobox .audace.tool.astrometry.cal.catalog.fra_0.cat   1
+   #--- je coche la suppression des fichiers et des images temporaires
+   ::testaudela::clicCheckButton .audace.tool.astrometry.delete_images.chk  1
+   ::testaudela::clicCheckButton .audace.tool.astrometry.delete_files.chk   1
 
-   update
-   after 1000
+   #--- je clique sur le bouton démarrer
+   ::testaudela::clicButton .audace.tool.astrometry.cal.fra_2.but3
 
-   return 0
+   set result [.audace.tool.astrometry.status.labURL  cget  -text ]
+   set nbStar 0
+   scan $result "$::caption(astrometry,start,6) %d $::caption(astrometry,start,6a)" nbStar
+   after 2000
+   return $nbStar
 } -cleanup {
    #--- je supprime l'instance (cette commande arrete l'outil si ce n'est pas deja fait)
    ::confVisu::deletePluginInstance $visuNo ::astrometry
@@ -30,5 +39,5 @@ test tool_astrometry_deg2hms {sextractor image webcam} -constraints {
    ::confVisu::clear $visuNo
    #--- j'efface l'image sur le disque
    file delete -force [file join $::audace(rep_images) "m45_champ.fit"]
-} -result "0"
+} -result "45"
 
