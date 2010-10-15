@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: astrometry.tcl,v 1.17 2010-10-10 20:02:23 michelpujol Exp $
+# Mise à jour $Id: astrometry.tcl,v 1.18 2010-10-15 20:30:19 robertdelmas Exp $
 #
 
 #============================================================
@@ -174,9 +174,6 @@ namespace eval ::astrometry {
    proc create { visuNo } {
       variable astrom
       global audace caption
-
-      #--- Chargement du package Img pour visualiser l'image jpg de calibration
-      package require Img
 
       #--- Recherche une image dans le buffer
       if { [ buf$audace(bufNo) imageready ] == "0" } {
@@ -350,6 +347,8 @@ namespace eval ::astrometry {
       ::astrometry::widgetToConf
       #--- Detruit la fenetre Toplevel
       destroy $astrom(This)
+      #--- Ferme la fenetre de resultat
+      ::astrometry::closeJpeg
    }
 
    proc updatewcs { args } {
@@ -1088,12 +1087,23 @@ namespace eval ::astrometry {
       #--- Initialisation du fichier image du controle de la calibration
       set sky "dummy"
 
-      #--- Creation de l'image et calcul de sa dimension
-      set img [ image create photo -file [ file join $mypath/${sky}b.jpg ] ]
-      set largeur [ image width $img ]
-      set hauteur [ image height $img ]
+      #--- Je cree le buffer qui va etre associe a la visu
+      set astrom(bufNo) [ ::buf::create ]
 
-      #---
+      #--- Je cree la photo qui va etre associee a la visu
+      image create photo imagevisu1000
+
+      #--- Je cree la visu qui va etre associee au buffer et a l'image
+      set astrom(visuNo) [ ::visu::create $astrom(bufNo) 1000 ]
+
+      #--- Je charge l'image dans le buffer
+      buf$astrom(bufNo) load [ file join $mypath/${sky}b.jpg ]
+
+      #--- Je calcule ses dimensions
+      set largeur [ buf$astrom(bufNo) getpixelswidth ]
+      set hauteur [ buf$astrom(bufNo) getpixelsheight ]
+
+      #--- Je ferme la fenetre si elle existe deja
       if [ winfo exists $astrom(This_check) ] {
          destroy $astrom(This_check)
       }
@@ -1108,9 +1118,9 @@ namespace eval ::astrometry {
       }
       wm resizable $astrom(This_check) 1 1
       wm title $astrom(This_check) "$caption(astrometry,start,10)"
-      wm protocol $astrom(This_check) WM_DELETE_WINDOW "::astrometry::close_jpeg"
+      wm protocol $astrom(This_check) WM_DELETE_WINDOW "::astrometry::closeJpeg"
 
-      #--- Affichage de l'explication
+      #--- Affichage du commentaire
       message $astrom(This_check).legende -text "$caption(astrometry,comment)" -justify center \
          -width [ expr 0.9 * $largeur ]
       pack $astrom(This_check).legende -in $astrom(This_check) -side top -anchor center -fill both -padx 10 -pady 10
@@ -1125,8 +1135,10 @@ namespace eval ::astrometry {
 
       #--- Affichage de l'image dans le canvas
       $astrom(This_check).result.canvas create image 0 0 -anchor nw -tag display
-      $astrom(This_check).result.canvas itemconfigure display -image $img
+      $astrom(This_check).result.canvas itemconfigure display -image imagevisu1000
       $astrom(This_check).result.canvas configure -scrollregion [list 0 0 $largeur $hauteur ]
+      visu$astrom(visuNo) cut { 255 0 255 0 255 0 }
+      visu$astrom(visuNo) disp
 
       #--- Focus
       focus $astrom(This_check)
@@ -1138,20 +1150,28 @@ namespace eval ::astrometry {
       ::confColor::applyColor $astrom(This_check)
    }
 
-   proc close_jpeg { } {
+   proc closeJpeg { } {
       variable astrom
 
-      #---
-      image delete
-      #--- Suppression des fichiers temporaires
+      #--- Verifie si la fenetre existe
+      if { ! [ winfo exist $astrom(This_check) ] } {
+         return
+      }
+      #--- Supprime les fichiers temporaires
       if { $astrom(delete_files) == "1" } {
          ::astrometry::delete_lst
       }
-      #--- Suppression des images temporaires
+      #--- Supprime les images temporaires
       if { $astrom(delete_images) == "1" } {
          ::astrometry::delete_dummy
       }
-      #---
+      #--- Supprime la visu
+      visu::delete $astrom(visuNo)
+      #--- Supprime la photo
+      image delete imagevisu1000
+      #--- Supprime le buffer
+      buf::delete $astrom(bufNo)
+      #--- Detruit la fenetre
       destroy $astrom(This_check)
    }
 
