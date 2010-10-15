@@ -2,7 +2,7 @@
 # Fichier : testaudela.tcl
 # Description : Outil de test automatique pour AudeLA
 # Auteurs : Michel Pujol
-# Mise à jour $Id: testaudela.tcl,v 1.13 2010-10-10 20:05:43 michelpujol Exp $
+# Mise à jour $Id: testaudela.tcl,v 1.14 2010-10-15 20:18:28 michelpujol Exp $
 #
 
 #####################
@@ -1055,13 +1055,13 @@ proc ::testaudela::clicCheckButton { buttonPath { state "" } } {
 proc ::testaudela::clicCombobox { comboPath index} {
    if { [string first "$index" "first last next previous" ] == -1 } {
       #--- c'est un numero, il faut ajouter le prefixe "@"
-      $comboPath.but  setvalue "@$index"
+      $comboPath  setvalue "@$index"
    } else {
       #--- c'est une valeur predefinie
-      $comboPath.but  setvalue $index
+      $comboPath  setvalue $index
    }
    #--- je lance la procedure de la combobox apres une selection
-   eval [$comboPath.but cget -modifycmd]
+   eval [$comboPath cget -modifycmd]
 }
 
 #----------------------------------------------------
@@ -1081,7 +1081,7 @@ proc ::testaudela::clicMenu { visuNo menuName menuLabel } {
    if [catch {$menuPath index "$menuLabel"} menuIndex] {
       error "$menuLabel not in menu $menuName"
    }
-   $menuPath invoke $menuIndex
+   $menuPath invoke$menuIndex
 }
 
 #----------------------------------------------------
