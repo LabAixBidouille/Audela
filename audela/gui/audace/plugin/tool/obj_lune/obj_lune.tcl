@@ -2,7 +2,7 @@
 # Fichier : obj_lune.tcl
 # Description : Outil dedie a la Lune, avec Goto vers un site choisi, ephemerides et cartographie
 # Auteur : Robert DELMAS
-# Mise à jour $Id: obj_lune.tcl,v 1.21 2010-07-14 08:13:56 robertdelmas Exp $
+# Mise à jour $Id: obj_lune.tcl,v 1.22 2010-10-16 08:29:00 robertdelmas Exp $
 #
 
 global audace
@@ -30,17 +30,16 @@ namespace eval ::obj_lune {
       variable This
       global audace
 
-      set This "$audace(base).obj_lune"
       createDialog
       catch { tkwait visibility $This }
    }
 
    #
-   # obj_lune::goto_lune
+   # obj_lune::gotoLune
    # Fonction appellee lors de l'appui sur le bouton 'GOTO' pour realiser le GOTO du telescope
    # sur le site lunaire choisi
    #
-   proc goto_lune { } {
+   proc gotoLune { } {
       variable This
       global obj_lune
 
@@ -62,11 +61,11 @@ namespace eval ::obj_lune {
    }
 
    #
-   # obj_lune::match_lune
+   # obj_lune::matchLune
    # Fonction appellee lors de l'appui sur le bouton 'Match' pour realiser le Match du telescope sur
    # le site lunaire choisi
    #
-   proc match_lune { } {
+   proc matchLune { } {
       variable This
       global audace caption obj_lune
 
@@ -101,18 +100,23 @@ namespace eval ::obj_lune {
    #
    proc fermer { } {
       variable This
-      global conf
+      global conf obj_lune
 
       #--- Recuperation de la position et de la dimension de la fenetre
       set conf(obj_lune,wmgeometry) [ wm geometry $This ]
-      #--- Destruction des images specifiques a cet outil
-      catch {
-         image delete imageflag2a
-         image delete imageflag4a
-         image delete imageflag4b
-         image delete imageflag5a
-      }
-      #---
+      #--- Supprime les visu
+      visu::delete $obj_lune(visuNoCartePage)
+      visu::delete $obj_lune(visuNoCarteLibrationPage)
+      #--- Supprime les photo
+      image delete imagevisu10000
+      image delete imagevisu10001
+      image delete imageflag2a
+      image delete imageflag4a
+      image delete imageflag5a
+      #--- Supprime les buffer
+      buf::delete $obj_lune(bufNoCartePage)
+      buf::delete $obj_lune(bufNoCarteLibrationPage)
+      #--- Detruit la fenetre
       destroy $This
    }
 
@@ -152,13 +156,13 @@ namespace eval ::obj_lune {
       frame $This.cmd -borderwidth 1 -relief raised
 
          button $This.cmd.goto -text "$caption(obj_lune,goto)" -relief raised -state normal \
-            -command { ::obj_lune::goto_lune }
+            -command "::obj_lune::gotoLune"
          pack $This.cmd.goto -side left -padx 5 -pady 5 -ipadx 5 -ipady 5
          button $This.cmd.match -text "$caption(obj_lune,match)" -relief raised -state normal \
-            -command { ::obj_lune::match_lune }
+            -command "::obj_lune::matchLune"
          pack $This.cmd.match -side left -padx 5 -pady 5 -ipadx 5 -ipady 5
          button $This.cmd.fermer -text "$caption(obj_lune,fermer)" -relief raised -state normal \
-            -command { ::obj_lune::fermer }
+            -command "::obj_lune::fermer"
          pack $This.cmd.fermer -side right -padx 5 -pady 5 -ipadx 5 -ipady 5
          button $This.cmd.aide -text "$caption(obj_lune,aide)" -relief raised -state normal \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::obj_lune::getPluginType ] ] \
@@ -802,6 +806,15 @@ namespace eval ::obj_lune {
    proc cartePage { frm } {
       global audace caption obj_lune zone
 
+      #--- Creation du buffer qui va etre associe a la visu
+      set obj_lune(bufNoCartePage) [ ::buf::create ]
+
+      #--- Creation de la photo qui va etre associee a la visu
+      image create photo imagevisu10000
+
+      #--- Creation de la visu qui va etre associee au buffer et a l'image
+      set obj_lune(visuNoCartePage) [ ::visu::create $obj_lune(bufNoCartePage) 10000 ]
+
       #--- Initialisation
       set obj_lune(onglet3) $frm
 
@@ -876,9 +889,6 @@ namespace eval ::obj_lune {
          -in $frm.frame2 -expand 1 -side left -anchor center -fill both -padx 0 -pady 0
       set zone(image1) $frm.frame2.image1.canvas
 
-      #--- Creation de l'image de la carte demandee
-      image create photo imageflag2
-
       #--- Affichage du rectangle rouge de la carte courante choisie
       ::obj_lune::AfficheRectangleCarteChoisie
    }
@@ -889,6 +899,15 @@ namespace eval ::obj_lune {
    #
    proc carteLibrationPage { frm } {
       global audace caption obj_lune zone
+
+      #--- Creation du buffer qui va etre associe a la visu
+      set obj_lune(bufNoCarteLibrationPage) [ ::buf::create ]
+
+      #--- Creation de la photo qui va etre associee a la visu
+      image create photo imagevisu10001
+
+      #--- Creation de la visu qui va etre associee au buffer et a l'image
+      set obj_lune(visuNoCarteLibrationPage) [ ::visu::create $obj_lune(bufNoCarteLibrationPage) 10001 ]
 
       #--- Initialisation
       set obj_lune(onglet4) $frm
@@ -963,9 +982,6 @@ namespace eval ::obj_lune {
       pack $frm.frame2.image4b \
          -in $frm.frame2 -expand 1 -side left -anchor center -fill both -padx 0 -pady 0
       set zone(image4b) $frm.frame2.image4b.canvas
-
-      #--- Creation de l'image de la carte demandee
-      image create photo imageflag4b
 
       #--- Affichage du contour rouge de la carte courante choisie
       ::obj_lune::AffichePolygoneCarteChoisie

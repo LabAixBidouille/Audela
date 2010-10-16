@@ -2,7 +2,7 @@
 # Fichier : obj_lune_go.tcl
 # Description : Outil pour le lancement d'Objectif Lune
 # Auteur : Robert DELMAS
-# Mise à jour $Id: obj_lune_go.tcl,v 1.17 2010-10-10 20:05:42 michelpujol Exp $
+# Mise à jour $Id: obj_lune_go.tcl,v 1.18 2010-10-16 08:29:32 robertdelmas Exp $
 #
 
 #============================================================
@@ -79,7 +79,10 @@ proc ::obj_lune::getPluginProperty { propertyName } {
 #    initialise le plugin
 #------------------------------------------------------------
 proc ::obj_lune::initPlugin { tkbase } {
+   variable This
+   global audace
 
+   set This "$audace(base).obj_lune"
 }
 
 #------------------------------------------------------------
@@ -88,9 +91,6 @@ proc ::obj_lune::initPlugin { tkbase } {
 #------------------------------------------------------------
 proc ::obj_lune::createPluginInstance { { in "" } { visuNo 1 } } {
    global audace
-
-   #--- Chargement du package Img pour visualiser les cartes de la Lune au format jpg
-   package require Img
 
    #--- Charge le source de la fenetre Objectif Lune
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool obj_lune obj_lune.tcl ]\""
@@ -101,7 +101,12 @@ proc ::obj_lune::createPluginInstance { { in "" } { visuNo 1 } } {
 #    suppprime l'instance du plugin
 #------------------------------------------------------------
 proc ::obj_lune::deletePluginInstance { visuNo } {
+   variable This
 
+   if { [ winfo exists $This ] } {
+      #--- je ferme la fenetre si l'utilisateur ne l'a pas deja fait
+      ::obj_lune::fermer
+   }
 }
 
 #------------------------------------------------------------

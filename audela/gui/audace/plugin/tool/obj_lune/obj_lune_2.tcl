@@ -2,7 +2,7 @@
 # Fichier : obj_lune_2.tcl
 # Description : Programme pour la partie graphique de l'outil Objectif Lune
 # Auteur : Robert DELMAS
-# Mise à jour $Id: obj_lune_2.tcl,v 1.12 2010-10-07 17:38:54 robertdelmas Exp $
+# Mise à jour $Id: obj_lune_2.tcl,v 1.13 2010-10-16 08:29:21 robertdelmas Exp $
 #
 
 namespace eval ::obj_lune {
@@ -37,12 +37,6 @@ namespace eval ::obj_lune {
 
       #--- Gestion du bouton Calculer les meilleures dates d'observation
       $obj_lune(onglet5).frame7.calcul configure -state disabled
-      #--- Efface carte affichee
-      image delete imageflag2
-      image create photo imageflag2
-      #--- Efface carte de libration affichee
-      image delete imageflag4b
-      image create photo imageflag4b
       #--- Nettoyage de la listbox avant l'affichage du nouveau catalogue
       $zone(list_site) delete 0 end
       #--- Nettoyage de la zone texte avant l'affichage de l'origine du nom
@@ -129,12 +123,6 @@ namespace eval ::obj_lune {
          set obj_lune(n10)    ""
          set obj_lune(lib_n1) ""
          set obj_lune(lib_n2) ""
-         #--- Efface carte affichee
-         image delete imageflag2
-         image create photo imageflag2
-         #--- Efface carte de libration affichee
-         image delete imageflag4b
-         image create photo imageflag4b
          #--- Nettoyage de la zone texte avant l'affichage de l'origine du nom
          $zone(list_histoire) delete 0.0 end
          #--- Nettoyage des informations de date, heure, longitude du terminateur, librations et fraction eclairee
@@ -1659,14 +1647,23 @@ namespace eval ::obj_lune {
    proc AfficheCarteChoisie { } {
       global audace obj_lune zone
 
-      set num [ catch { imageflag2 configure \
-         -file [ file join $audace(rep_userCatalog) $obj_lune(rep_cartes) $obj_lune(carte_choisie) ] } msg ]
+      #--- Chargement de l'image dans le buffer
+      set num [ catch { buf$obj_lune(bufNoCartePage) \
+         load [ file join $audace(rep_userCatalog) $obj_lune(rep_cartes) $obj_lune(carte_choisie) ] } msg ]
+      #--- Gestion des erreurs
       if { $num == "1" } {
+         #--- Les cartes de la Lune ne sont pas disponibles
          ::obj_lune::Manque_Cartes
       } else {
+         #--- Calcul des dimensions de l'image
+         set largeur [ buf$obj_lune(bufNoCartePage) getpixelswidth ]
+         set hauteur [ buf$obj_lune(bufNoCartePage) getpixelsheight ]
+         #--- Affichage de l'image dans le canvas
          $zone(image1) create image 0 0 -anchor nw -tag display
-         $zone(image1) itemconfigure display -image imageflag2
-         $zone(image1) configure -scrollregion [list 0 0 [image width imageflag2] [image height imageflag2] ]
+         $zone(image1) itemconfigure display -image imagevisu10000
+         $zone(image1) configure -scrollregion [list 0 0 $largeur $hauteur ]
+         visu$obj_lune(visuNoCartePage) cut { 255 0 255 0 255 0 }
+         visu$obj_lune(visuNoCartePage) disp
       }
    }
 
@@ -1677,14 +1674,23 @@ namespace eval ::obj_lune {
    proc AfficheCarte_libChoisie { } {
       global audace obj_lune zone
 
-      set num [ catch { imageflag4b configure \
-         -file [ file join $audace(rep_userCatalog) $obj_lune(rep_cartes) $obj_lune(carte_choisie_lib) ] } msg ]
+      #--- Chargement de l'image dans le buffer
+      set num [ catch { buf$obj_lune(bufNoCarteLibrationPage) \
+         load [ file join $audace(rep_userCatalog) $obj_lune(rep_cartes) $obj_lune(carte_choisie_lib) ] } msg ]
+      #--- Gestion des erreurs
       if { $num == "1" } {
+         #--- Les cartes de la Lune ne sont pas disponibles
          ::obj_lune::Manque_Cartes
       } else {
+         #--- Calcul des dimensions de l'image
+         set largeur [ buf$obj_lune(bufNoCarteLibrationPage) getpixelswidth ]
+         set hauteur [ buf$obj_lune(bufNoCarteLibrationPage) getpixelsheight ]
+         #--- Affichage de l'image dans le canvas
          $zone(image4b) create image 0 0 -anchor nw -tag display
-         $zone(image4b) itemconfigure display -image imageflag4b
-         $zone(image4b) configure -scrollregion [list 0 0 [image width imageflag4b] [image height imageflag4b] ]
+         $zone(image4b) itemconfigure display -image imagevisu10001
+         $zone(image4b) configure -scrollregion [list 0 0 $largeur $hauteur ]
+         visu$obj_lune(visuNoCarteLibrationPage) cut { 255 0 255 0 255 0 }
+         visu$obj_lune(visuNoCarteLibrationPage) disp
       }
    }
 
