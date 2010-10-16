@@ -1,4 +1,4 @@
-AudeLA-1.6.0 (20100823)
+AudeLA-2.0.0 (20101014)
 
 
 1. Introduction
@@ -62,6 +62,7 @@ AudeLA est capable de piloter les montures suivantes :
 - Etel,
 - LX200 ou n'importe quelle monture répondant au protocole LX200,
 - Ouranos (codeurs absolus),
+- T94 de Saint Caprais,
 - T193 de l'OHP,
 - Temma (monture Takahashi avec module Temma).
 
