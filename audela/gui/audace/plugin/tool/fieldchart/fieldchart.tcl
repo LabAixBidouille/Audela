@@ -2,7 +2,7 @@
 # Fichier : fieldchart.tcl
 # Description : Interfaces graphiques pour les fonctions carte de champ
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: fieldchart.tcl,v 1.12 2010-10-13 15:32:44 robertdelmas Exp $
+# Mise à jour $Id: fieldchart.tcl,v 1.13 2010-10-16 11:19:04 robertdelmas Exp $
 #
 
 #============================================================
@@ -485,7 +485,7 @@ namespace eval ::fieldchart {
 
    #------------------------------------------------------------
    # refreshChart
-   #    Procedure correspondant a l'appui sur le bouton Fermer
+   #    Reconstruction des points rouges materialisant les etoiles
    #------------------------------------------------------------
    proc refreshChart { args } {
       global audace color etoiles
