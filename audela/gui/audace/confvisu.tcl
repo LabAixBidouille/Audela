@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.158 2010-10-08 16:41:44 michelpujol Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.159 2010-10-16 08:54:07 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -2179,6 +2179,9 @@ namespace eval ::confVisu {
          "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
          "$caption(audace,menu,zoom) $caption(audace,menu,zoom_4)" "4" \
+         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
+         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_8)" "8" \
          "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,display)"
