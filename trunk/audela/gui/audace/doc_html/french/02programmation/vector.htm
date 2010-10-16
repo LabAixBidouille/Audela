@@ -6,7 +6,7 @@
   <title>Usage des vecteurs</title>
 </head>
 <body>
-<p class="date">Date de mise &agrave; jour : 20 septembre 2010</p>
+<p class="date">Date de mise &agrave; jour : 16 octobre 2010</p>
 <h1>Usage des vecteurs</h1>
 <p>Ce document pr&eacute;sente des possibilit&eacute;s
 d'application de ::blt::vector. Il est n&eacute;cessairement
@@ -194,7 +194,7 @@ set kurtosis $resultat(:) (moment d'ordre 4)<br>
 resultat expr { median(v_1) }<br>
 set median $resultat(:) (valeur m&eacute;diane)<br>
 resultat expr { q1(v_1) }<br>
-set q1 $resultat(:) (codemier quartile)<br>
+set q1 $resultat(:) (premier quartile)<br>
 resultat expr { q3(v_1) }<br>
 set q3 $resultat(:) (troisi&egrave;me quartile)<br>
 resultat expr { prod(v_1) }<br>
@@ -227,7 +227,7 @@ son nom et avait une longueur initiale nulle (si si).</p>
 initialis&eacute;s &agrave; la valeur 0, l'indice initial
 &eacute;tant 0 et l'indice final 19 (soit 20 valeurs).</p>
 <p>Si on veut cr&eacute;er un vecteur dont l'index initial est 1
-(0 par defaut) et de longueur 20 on &eacute;crit :</p>
+(0 par d&eacute;faut) et de longueur 20 on &eacute;crit :</p>
 <p><code>::blt::vector create vecteur(1:20)</code></p>
 <p>Plusieurs modes d'affectation de valeurs sont disponibles :</p>
 <p><code>set v_1(:3) 12 (le premier &eacute;l&eacute;ment ayant pour
@@ -254,9 +254,9 @@ v_1 length 5 (supprime tous les &eacute;l&eacute;ments de rang &gt; 5)</code></p
 <p>Il est aussi possible de cr&eacute;er un vecteur avec des valeurs
 &eacute;chelonn&eacute;es :</p>
 <p><code>v_1 seq 5 10 1</code></p>
-Ce mode cr&eacute;&eacute;e automatiquement un vecteur dont le
-codemier &eacute;l&eacute;ment vaut 5 et le dernier 10 avec un
-intervalle de 1
+Ce mode cr&eacute;&eacute;e automatiquement un vecteur dont le premier <code></code>&eacute;l&eacute;ment
+vaut 5 et le dernier 10 avec un
+intervalle de 1.
 <p>Il est aussi possible de fusionner des vecteurs :</p>
 <p><code>v_1 merge v_2 v_3</code></p>
 <h2>9. Et destruction</h2>
@@ -311,10 +311,11 @@ l'absence d'erreur sans avoir &agrave; analyser chaque
 comporte pas de trou</h3>
 <p>La somme des termes d'une suite arithm&eacute;tique est
 donn&eacute;e par la formule
-Somme=Nombre_de_termes*(codemier_terme+Dernier_terme)/2.<br>
+Somme=Nombre_de_termes*(Premier_terme+Dernier_terme)/2.<br>
 On pourra donc &eacute;crire :</p>
 <p><code>v_1 set $liste_de_valeurs<br>
-if { $v_1(sum) == [ expr { [ v_1 length ]*($v_1(min)+$v_1(max))/2 } ] }
+v_1 sort<br>
+if { $v_1(sum) == [ expr { [ v_1 length ]*($v_1(0)+$v_1(end))/2 } ] }
 {<br>
 &nbsp;&nbsp;&nbsp;#-- c'est une s&eacute;rie sans trou<br>
 &nbsp;&nbsp;&nbsp;todo<br>
