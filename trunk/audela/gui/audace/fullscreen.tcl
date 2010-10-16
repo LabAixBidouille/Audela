@@ -2,7 +2,7 @@
 # Fichier : fullscreen.tcl
 # Description : Fenetre plein ecran pour afficher des images ou des films
 # Auteur : Michel PUJOL
-# Mise à jour $Id: fullscreen.tcl,v 1.21 2010-05-27 22:22:41 robertdelmas Exp $
+# Mise à jour $Id: fullscreen.tcl,v 1.22 2010-10-16 08:54:54 robertdelmas Exp $
 #
 
 ##############################################################################
@@ -638,6 +638,11 @@ namespace eval ::FullScreen {
          -value "4" \
          -variable ::FullScreen::private($visuNo,zoom) \
          -command "::FullScreen::changeZoom $visuNo 4"
+      $menu.zoom add radiobutton -label "$caption(fullscreen,zoom_8)" \
+         -indicatoron "1" \
+         -value "8" \
+         -variable ::FullScreen::private($visuNo,zoom) \
+         -command "::FullScreen::changeZoom $visuNo 8"
       $menu.zoom add radiobutton -label "$caption(fullscreen,zoom_auto)" \
          -indicatoron "1" \
          -value "auto" \

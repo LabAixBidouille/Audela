@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.148 2010-09-28 19:47:57 robertdelmas Exp $
+# Mise à jour $Id: aud.tcl,v 1.149 2010-10-16 08:52:15 robertdelmas Exp $
 #
 
 #--- Chargement du package BWidget
@@ -797,6 +797,9 @@ namespace eval ::audace {
          "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
          "$caption(audace,menu,zoom) $caption(audace,menu,zoom_4)" "4" \
+         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
+         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_8)" "8" \
          "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,display)"

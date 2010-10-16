@@ -5,7 +5,7 @@
 #               pose, choix des plugins, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: confgene.tcl,v 1.81 2010-09-02 15:48:25 robertdelmas Exp $
+# Mise à jour $Id: confgene.tcl,v 1.82 2010-10-16 08:53:23 robertdelmas Exp $
 #
 
 #
@@ -1884,6 +1884,9 @@ namespace eval ::confChoixOutil {
          "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
          "$caption(audace,menu,zoom) $caption(audace,menu,zoom_4)" "4" \
+         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
+         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_8)" "8" \
          "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
       Menu_Separator $visuNo "$caption(audace,menu,display)"
       Menu_Check     $visuNo "$caption(audace,menu,display)" \
