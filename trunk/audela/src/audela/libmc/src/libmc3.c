@@ -453,8 +453,7 @@ int Cmd_mctcl_hip2tel(ClientData clientData, Tcl_Interp *interp, int argc, char 
 /* Convert (RA,DEC) coordinates into telescope coordinates                  */
 /****************************************************************************/
 /*
-mc_hip2tel {0 2.5 10 40 J2000 J2000 0 0 0} now {GPS 5 E 43 1230} 101325 290
-
+mc_hip2tel {2 2.5 10 40 J2000 J2000 0 0 0} now {GPS 5 E 43 1230} 101325 290 -drift
 List_coords = {id mag ra dec equinox epoch mura mudec plx}
 Date              // date de l'equinoxe des coordonnees du telescope
 Home
@@ -488,9 +487,10 @@ List_ModelValues
    int refractionFlag = 1;  
 	int driftflag=0;
 	double jds[3],ras[3],decs[3],has[3],hs[3],azs[3],parallactics[3],delta,dt,dparallactic;
+	double drift_axis0=0,drift_axis1=0,deltadrift=1.,jdref;
 
    if(argc<4) {
-      sprintf(s,"Usage: %s List_coords Date_UTC Home Pressure Temperature ?List_ModelSymbols List_ModelValues? ?-model_only 0|1? ?-refraction 1|0? ?-drift 0|1?", argv[0]);
+      sprintf(s,"Usage: %s List_coords Date_UTC Home Pressure Temperature ?List_ModelSymbols List_ModelValues? ?-model_only 0|1? ?-refraction 1|0? ?-drift 0|1|altaz|radec? ?-driftvalues {arcsec/sec arcsec/sec}?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       return TCL_ERROR;
    } else {
@@ -573,16 +573,35 @@ List_ModelValues
             model_only = atoi(argv[k + 1]);
          }
          if ( strcmp( argv[k],"-drift") == 0 ) {
-            driftflag = atoi(argv[k + 1]);
+				if (strcmp(argv[k + 1],"1")==0) {
+					driftflag=1; // on affiche les vitesses mais il n'y a pas de dérive
+				}
+				if (strcmp(argv[k + 1],"radec")==0) {
+					driftflag=2; // on affiche les vitesses et il y a pas des dérives sur radec
+				}
+				if (strcmp(argv[k + 1],"altaz")==0) {
+					driftflag=3; // on affiche les vitesses et il y a pas des dérives sur altaz
+				}
+         }
+         if ( strcmp( argv[k],"-driftvalues") == 0 ) {
+				code=Tcl_SplitList(interp,argv[k+1],&argcc,&argvv);
+				if (code==TCL_OK) {
+					if (argcc>=2) {
+						drift_axis0 = atof(argvv[0]);
+						drift_axis1 = atof(argvv[1]);
+					}
+					if (argvv!=NULL) { Tcl_Free((char *) argvv); }
+				}
          }
       }
+		jdref=jd;
 		if (driftflag==0) {
 			njds=1;
 			jds[0]=jd;
 		} else {
 			njds=3;
-			jds[0]=jd-0.5/86400;
-			jds[1]=jd+0.5/86400;
+			jds[0]=jd-deltadrift/2/86400;
+			jds[1]=jd+deltadrift/2/86400;
 			jds[2]=jd;
 		}
 
@@ -590,8 +609,13 @@ List_ModelValues
 		for (kjds=0;kjds<njds;kjds++) {
 			jd=jds[kjds];
 			if (type_list==0) {
-				ra=hips.ra*(DR);
-				dec=hips.dec*(DR);
+				if (driftflag==2) {
+					ra=(hips.ra+(jds[kjds]-jdref)*86400*drift_axis0/3600)*(DR);
+					dec=(hips.dec+(jds[kjds]-jdref)*86400*drift_axis1/3600)*(DR);
+				} else {
+					ra=hips.ra*(DR);
+					dec=hips.dec*(DR);
+				}
 				cosdec=cos(dec);
 				mura=hips.mura*1e-3/86400/cosdec;
 				mudec=hips.mudec*1e-3/86400;
@@ -634,6 +658,11 @@ List_ModelValues
 				mc_ah2hd(az,h,latrad,&ha,&dec);
 			} else {
 				mc_hd2ah(ha,dec,latrad,&az,&h);
+			}
+			if (driftflag==3) {
+				az+=((jds[kjds]-jdref)*86400*drift_axis0/3600)*(DR);
+				h+=((jds[kjds]-jdref)*86400*drift_axis1/3600)*(DR);
+				mc_ah2hd(az,h,latrad,&ha,&dec);
 			}
 			mc_hd2parallactic(ha,dec,latrad,&parallactic);
 			mc_hd2ad(jd,longmpc,ha,&ra);
@@ -739,7 +768,7 @@ List_ModelValues
       strcat(s,mc_d2s(h/(DR)));
 		strcat(s," ");
 		strcat(s,mc_d2s(parallactic/(DR)));
-		if (driftflag==1) {
+		if (driftflag>=1) {
 			/* drifts in arcsec/sec */
 			dt=(jds[1]-jds[0])*86400;
 			//
