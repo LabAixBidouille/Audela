@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libtel.c,v 1.32 2010-09-26 20:32:24 alainklotz Exp $
+// $Id: libtel.c,v 1.33 2010-10-17 20:21:50 alainklotz Exp $
 
 #include "sysexp.h"
 
@@ -973,7 +973,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    char ligne[2256],texte[256];
    int result = TCL_OK,k;
    struct telprop *tel;
-   char comment[]="Usage: %s %s ?goto|stop|move|coord|motor|init|state|model|mindelay(ms)? ?options?";
+   char comment[]="Usage: %s %s ?goto|stop|move|correct|coord|motor|init|state|model|mindelay(ms)? ?options?";
    if (argc<3) {
       sprintf(ligne,comment,argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
