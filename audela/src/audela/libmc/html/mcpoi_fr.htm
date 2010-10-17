@@ -12,7 +12,7 @@
 <center><b><font size="+3">LIB MC</font></b> <br>
 Cr&eacute;ation et utilisation d'un mod&egrave;le de pointage avec
 la&nbsp; librairie de calculs de m&eacute;canique c&eacute;leste <br>
-version 20100608<br>
+version 20101017<br>
 Alain KLOTZ
 <p><b><font size="+3">Manuel de l'utilisateur</font></b></p>
 </center>
@@ -182,7 +182,8 @@ envoyer au t&eacute;lescope.</li>
 <p>D&eacute;finition :</p>
 <p>mc_hip2tel List_coords Date_UTC Home Pressure Temperature
 ?List_ModelSymbols List_ModelValues?&nbsp;?-model_only 0|1?
-?-refraction&nbsp;1|0? ?-drift 0|1?<br>
+?-refraction&nbsp;1|0? ?-drift 0|1|radec|altaz? ?-driftvalues
+{arcsec/sec arcsec/sec}?<br>
 <br>
 List_coords : Liste de type Hipparcos {id mag ra dec equinox epoch mura
 mudec plx} ou {-1 ha dec 0 0 0 0 0 0}<br>
@@ -199,8 +200,19 @@ List_ModelValues : Valeurs des coeffcients du mod&egrave;le de pointage.<br>
 catalogue-&gt;vraie sur les les coordonn&eacute;es de type Hipparcos.<br>
 -refraction 0 : pour signaler de ne pas calculer les corrections de
 refraction (cas de t&eacute;lescopes LX200)<br>
--drift 1 : pour signaler de sortir les valeurs de vitesses sur les axes
-(en arcsec/sec)</p>
+-drift :&nbsp;=1 ou =radec ou =altaz&nbsp; pour signaler de sortir les
+valeurs de vitesses sur les axes
+(en arcsec/sec). Si =radec alors les param&egrave;tres de la liste du
+param&egrave;tre optionnel -driftvalues sont des d&eacute;rives
+respectives sur Ra,Dec en arcsec/sec (d&eacute;rives
+suppl&eacute;mentaires &agrave; la d&eacute;rive diurne). Si =altaz
+alors les param&egrave;tres de la liste du param&egrave;tre optionnel
+-driftvalues sont des d&eacute;rives respectives sur Az,Elev en
+arcsec/sec
+(d&eacute;rives suppl&eacute;mentaires &agrave; la d&eacute;rive
+diurne). Par d&eacute;faut -flag vaut 0 (pas de sortie des vitesses).<br>
+-driftvalues : D&eacute;finition des valeurs de d&eacute;rives
+suppl&eacute;mentaires par rapport au mouvement diurne.</p>
 <p>Sorties :&nbsp;</p>
 <p>Liste de 16 &eacute;l&eacute;ments :</p>
 <p>RA : Acsension droite apparente sans mod&egrave;le (deg)<br>
