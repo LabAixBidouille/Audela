@@ -1,6 +1,6 @@
 # source audace/plugin/tool/bddimages/bddimages_subroutines.tcl
 
-# Mise à jour $Id: bddimages_sub_insertion.tcl,v 1.8 2010-05-27 06:55:56 robertdelmas Exp $
+# Mise à jour $Id: bddimages_sub_insertion.tcl,v 1.9 2010-10-18 16:07:07 fredvachier Exp $
 
 #--------------------------------------------------
 #  init_info { }
@@ -38,9 +38,7 @@
       set listfile {}
       set maliste {}
 
-
       globrdk $bddconf(dirinco) $bddconf(limit)
-
 
       set err [catch {set list_file [lsort -increasing $maliste]} result]
 
@@ -50,6 +48,7 @@
         set fic [file tail "$fichier"]
         lappend listfile [list "?" "$fichier" "NULL" "NULL" "NULL" "NULL"]
         }
+        
       } else {
         bddimages_sauve_fich "init_info: pas de fichier"
       }
@@ -92,7 +91,6 @@
 
       set listfile {}
       set maliste {}
-
 
       globrdknr $bddconf(dirinco) $bddconf(limit)
 
@@ -913,14 +911,19 @@ proc move_unlinked { } {
 
     global bddconf
 
-    set errnum [catch {file rename -force $bddconf(dirbase)/unlinked $bddconf(dirinco)/} msg]
-    # -- le fichier existe dans $dirpb -> on efface $filename
-    if {$errnum!=0} {
-        bddimages_sauve_fich "move_unlinked: ERREUR : deplacement du repertoire unlinked impossible <err=$errnum> <msg=$msg>"
-        return 320
-        } else {
-        bddimages_sauve_fich "move_unlinked: le repertoire unlinked est deplace"
-        }
+    if {[file exists $bddconf(dirbase)/unlinked]==1} {
+       set errnum [catch {file rename -force $bddconf(dirbase)/unlinked $bddconf(dirinco)/} msg]
+       # -- le fichier existe dans $dirpb -> on efface $filename
+       if {$errnum!=0} {
+           bddimages_sauve_fich "move_unlinked: ERREUR : deplacement du repertoire unlinked impossible <err=$errnum> <msg=$msg>"
+           return 320
+           } else {
+           bddimages_sauve_fich "move_unlinked: le repertoire unlinked est deplace"
+           }
+       } else {
+       bddimages_sauve_fich "move_unlinked: le repertoire unlinked n existe pas"
+       }
+
 
     return
 }
