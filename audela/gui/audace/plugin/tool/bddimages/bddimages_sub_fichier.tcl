@@ -1,5 +1,5 @@
 # source audace/plugin/tool/bddimages/bddimages_sub_fichier.tcl
-# Mise à jour $Id: bddimages_sub_fichier.tcl,v 1.3 2010-05-27 06:57:44 robertdelmas Exp $
+# Mise à jour $Id: bddimages_sub_fichier.tcl,v 1.4 2010-10-18 16:07:07 fredvachier Exp $
 
 proc bddimages_sauve_fich {texte} {
 
@@ -220,14 +220,14 @@ return [ list $form2 $racinefich $form3]
 proc createdir_ifnot_exist {dirfilename} {
 
   set direxist [file exists $dirfilename]
-
   if {$direxist==0} {
 
     set errnum [catch {file mkdir $dirfilename} msg]
     if {$errnum==0} {
-#      bddimages_sauve_fich "createdir_ifnot_exist: Creation du repertoire : $dirfilename <$errnum>"
-      } else {
-        bddimages_sauve_fich "createdir_ifnot_exist: ERREUR MV: Creation du repertoire $dirfilename impossible <$errnum>"
+        bddimages_sauve_fich "createdir_ifnot_exist: Creation du repertoire : $dirfilename <$errnum>"
+        } else {
+        puts "createdir_ifnot_exist: Creation du repertoire $dirfilename impossible <$errnum>"
+        puts "MSG = $msg"
         }
 
     }
