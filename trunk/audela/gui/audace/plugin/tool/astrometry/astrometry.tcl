@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: astrometry.tcl,v 1.18 2010-10-15 20:30:19 robertdelmas Exp $
+# Mise à jour $Id: astrometry.tcl,v 1.19 2010-10-23 10:10:58 robertdelmas Exp $
 #
 
 #============================================================
@@ -716,7 +716,7 @@ namespace eval ::astrometry {
             #---
             set catastar [lindex [buf$audace(bufNo) getkwd CATASTAR] 1]
             if {$catastar>=3} {
-               $astrom(This).status.labURL configure -text "$caption(astrometry,start,6) $catastar $caption(astrometry,start,6a)" -fg $color(blue) ; update
+               $astrom(This).status.labURL configure -text [ format $caption(astrometry,start,6) $catastar ] -fg $color(blue) ; update
                ::astrometry::visu_result
             } else {
                $astrom(This).status.labURL configure -text "$caption(astrometry,start,7) " -fg $color(red) ; update
