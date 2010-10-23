@@ -1,6 +1,6 @@
 #
 # Fichier : divers.cap
-# Mise a jour $Id: divers.cap,v 1.10 2010-09-26 07:07:32 robertdelmas Exp $
+# Mise a jour $Id: divers.cap,v 1.11 2010-10-23 16:07:40 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -66,6 +66,8 @@ set caption(divers,erreur,serie_existe)               "Error - The following ser
 set caption(divers,nom_invalide)                      "The following file name is invalid (contains accented characters): "
 set caption(divers,copyjpeg)                          "Save as Jpeg"
 set caption(divers,libgsl)                            "\nThe libgsl and libgslcblas libraries are missing."
+set caption(divers,attention)                         "Warning"
+set caption(divers,err_list_of_number)                "{%s} is not a list of numbers."
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -82,6 +84,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(divers,nom_invalide)                   "Le nom de fichier suivant est invalide (présence de caractères accentués) : "
    set caption(divers,copyjpeg)                       "Enregistrer en Jpeg"
    set caption(divers,libgsl)                         "\nLes librairies libgsl et libgslcblas sont manquantes."
+   set caption(divers,attention)                      "Attention"
+   set caption(divers,err_list_of_number)             "{%s} n'est pas une liste de nombres."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -98,6 +102,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(divers,nom_invalide)                   "Il nome del seguente file non e' valido (contiene caratteri accentati): "
    set caption(divers,copyjpeg)                       "Salvare in JPEG"
    set caption(divers,libgsl)                         "\nLe librerie libgsl e libgslcblas sono mancanti."
+   set caption(divers,attention)                      "Attenzione"
+   set caption(divers,err_list_of_number)             "# {%s} n'est pas une liste de nombres."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -114,6 +120,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(divers,nom_invalide)                   "El siguiente nombre de fichero es incorrecto (contiene caracteres acentuados): "
    set caption(divers,copyjpeg)                       "Guardar JPEG"
    set caption(divers,libgsl)                         "\nLas librerias libgsl y libgslcblas no se encuentran."
+   set caption(divers,attention)                      "Aviso"
+   set caption(divers,err_list_of_number)             "# {%s} n'est pas une liste de nombres."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -130,6 +138,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(divers,nom_invalide)                   "Der Name dieser Datei ist inkorrekt (Gegenwart von betonten Buchstaben): "
    set caption(divers,copyjpeg)                       "In JPEG speichern"
    set caption(divers,libgsl)                         "\nDie libgsl und libslcbas Bibliotheken fehlen."
+   set caption(divers,attention)                      "Achtung"
+   set caption(divers,err_list_of_number)             "# {%s} n'est pas une liste de nombres."
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -146,6 +156,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(divers,nom_invalide)                   "O seguinte nome de ficheiro não é válido (contém caracteres com acento): "
    set caption(divers,copyjpeg)                       "Guardar como JPEG"
    set caption(divers,libgsl)                         "\nAs livrarias libgsl e libgslcblas não foram encontradas."
+   set caption(divers,attention)                      "Aviso"
+   set caption(divers,err_list_of_number)             "# {%s} n'est pas une liste de nombres."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -162,6 +174,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(divers,nom_invalide)                   "Følgende filnavn er ugyldigt (indeholder forbudte karakterer): "
    set caption(divers,copyjpeg)                       "Gem som Jpeg"
    set caption(divers,libgsl)                         "\nBibliotekerne libgsl og libgslcblas er ikke oprettet."
+   set caption(divers,attention)                      "Advarsel"
+   set caption(divers,err_list_of_number)             "# {%s} n'est pas une liste de nombres."
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -178,6 +192,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(divers,nom_invalide)                   "The following file name is invalid (contains accented characters): "
    set caption(divers,copyjpeg)                       "Save as Jpeg"
    set caption(divers,libgsl)                         "\nThe libgsl and libgslcblas libraries are missing."
+   set caption(divers,attention)                      "Warning"
+   set caption(divers,err_list_of_number)             "{%s} is not a list of numbers."
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -194,6 +210,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(divers,nom_invalide)                   "The following file name is invalid (contains accented characters): "
    set caption(divers,copyjpeg)                       "Save as Jpeg"
    set caption(divers,libgsl)                         "\nThe libgsl and libgslcblas libraries are missing."
+   set caption(divers,attention)                      "Warning"
+   set caption(divers,err_list_of_number)             "{%s} is not a list of numbers."
 
 }
 
