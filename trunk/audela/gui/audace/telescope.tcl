@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise à jour $Id: telescope.tcl,v 1.67 2010-09-05 18:55:25 michelpujol Exp $
+# Mise à jour $Id: telescope.tcl,v 1.68 2010-10-23 10:14:19 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -838,7 +838,7 @@ proc ::telescope::controleSuivi { { value " " } } {
    global audace caption conf
 
    if { [ ::tel::list ] != "" } {
-      if { ( $conf(telescope) == "audecom" ) || ( $conf(telescope) == "temma" ) || ( $conf(telescope) == "eqmod" ) || ( $conf(telescope) == "t193" ) } {
+      if { ( $conf(telescope) == "audecom" ) || ( $conf(telescope) == "eqmod" ) || ( $conf(telescope) == "t94" ) || ( $conf(telescope) == "t193" ) || ( $conf(telescope) == "temma" ) } {
          if { $value == " " } {
             if { $audace(telescope,controle) == "$caption(telescope,suivi_marche)" } {
                tel$audace(telNo) radec motor off
@@ -855,21 +855,6 @@ proc ::telescope::controleSuivi { { value " " } } {
                tel$audace(telNo) radec motor on
                set audace(telescope,controle) "$caption(telescope,suivi_marche)"
             }
-         }
-      } elseif { ( $conf(telescope) == "temma" ) && \
-         ( $audace(telescope,controle) == "$caption(telescope,suivi_marche)" ) } {
-         #--- Applique les corrections de la vitesse de suivi en ad et en dec
-         if { $conf(temma,type) == "0" } {
-            tel$audace(telNo) driftspeed 0 0
-            ::console::affiche_resultat "$caption(telescope,mobile_etoile)\n\n"
-         } elseif { $conf(temma,type) == "1" } {
-            tel$audace(telNo) driftspeed $conf(temma,suivi_ad) $conf(temma,suivi_dec)
-            set correction_suivi [ tel$audace(telNo) driftspeed ]
-            ::console::affiche_resultat "$caption(telescope,ctl_mobile:)\n"
-            ::console::affiche_resultat "$caption(telescope,mobile_ad) $caption(telescope,2points)\
-               [ lindex $correction_suivi 0 ]\n"
-            ::console::affiche_resultat "$caption(telescope,mobile_dec) $caption(telescope,2points)\
-               [ lindex $correction_suivi 1 ]\n\n"
          }
       }
    } else {
