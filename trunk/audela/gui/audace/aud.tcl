@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.150 2010-10-23 10:15:48 robertdelmas Exp $
+# Mise à jour $Id: aud.tcl,v 1.151 2010-10-23 16:03:38 robertdelmas Exp $
 #
 
 #--- Chargement du package BWidget
@@ -342,8 +342,7 @@ namespace eval ::audace {
       if { ! [ info exists conf(editnotice_pdf) ] } {
          if { $::tcl_platform(os) == "Linux" } {
             set defaultname [ file join ${path} xpdf ]
-            set testnames [ list [ file join ${path} kpdf ] \
-                                    [ file join ${path} acroread ] ]
+            set testnames [ list [ file join ${path} kpdf ] [ file join ${path} acroread ] ]
             foreach testname $testnames {
                if { [ file executable "$testname" ] == "1" } {
                   set defaultname "$testname"
