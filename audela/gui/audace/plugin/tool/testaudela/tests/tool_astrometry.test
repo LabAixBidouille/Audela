@@ -17,23 +17,23 @@ test tool_astrometry_deg2hms {sextractor image webcam} -constraints {
 
 } -body {
    #--- je selectionne le catalogue MICROCAT
-   ::testaudela::clicCombobox .audace.tool.astrometry.cal.catalog.fra_0.cat   1
+   ::testaudela::clicCombobox .audace.tool.astrometry.cal.catalog.fra_0.cat 1
    #--- je coche la suppression des fichiers et des images temporaires
-   ::testaudela::clicCheckButton .audace.tool.astrometry.delete_images.chk  1
-   ::testaudela::clicCheckButton .audace.tool.astrometry.delete_files.chk   1
+   ::testaudela::clicCheckButton .audace.tool.astrometry.delete_images.chk 1
+   ::testaudela::clicCheckButton .audace.tool.astrometry.delete_files.chk 1
 
-   #--- je clique sur le bouton démarrer
+   #--- je clique sur le bouton demarrer
    ::testaudela::clicButton .audace.tool.astrometry.cal.fra_2.but3
 
-   set result [.audace.tool.astrometry.status.labURL  cget  -text ]
+   set result [.audace.tool.astrometry.status.labURL cget -text ]
    set nbStar 0
-   scan $result "$::caption(astrometry,start,6) %d $::caption(astrometry,start,6a)" nbStar
+   scan $result "$::caption(astrometry,start,6)" nbStar
    after 2000
    return $nbStar
 } -cleanup {
    #--- je supprime l'instance (cette commande arrete l'outil si ce n'est pas deja fait)
    ::confVisu::deletePluginInstance $visuNo ::astrometry
-   #--- je supprime le package de la mémoire
+   #--- je supprime le package de la memoire
    package forget astrometry
    #--- j'efface l'image dans la visu
    ::confVisu::clear $visuNo
