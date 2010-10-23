@@ -2,7 +2,7 @@
 # Fichier : guide.tcl
 # Description : Plugin de communication avec "guide"
 # Auteur : Robert DELMAS
-# Mise à jour $Id: guide.tcl,v 1.27 2010-10-10 19:52:48 michelpujol Exp $
+# Mise à jour $Id: guide.tcl,v 1.28 2010-10-23 16:06:46 robertdelmas Exp $
 #
 
 namespace eval guide {
@@ -75,7 +75,11 @@ namespace eval guide {
    proc initConf { } {
       global conf
 
-      if { ! [ info exists conf(guide,binarypath) ] } { set conf(guide,binarypath) "$::env(ProgramFiles)" }
+      if { $::tcl_platform(os) == "Linux" } {
+         if { ! [ info exists conf(guide,binarypath) ] } { set conf(guide,binarypath) [ file join / usr bin ] }
+      } else {
+         if { ! [ info exists conf(guide,binarypath) ] } { set conf(guide,binarypath) "$::env(ProgramFiles)" }
+      }
 
       return
    }

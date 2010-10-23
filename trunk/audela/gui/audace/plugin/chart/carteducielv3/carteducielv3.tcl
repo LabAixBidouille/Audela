@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows et Linux
 # Auteur : Michel PUJOL
-# Mise à jour $Id: carteducielv3.tcl,v 1.28 2010-10-10 19:52:48 michelpujol Exp $
+# Mise à jour $Id: carteducielv3.tcl,v 1.29 2010-10-23 16:06:19 robertdelmas Exp $
 #
 
 namespace eval carteducielv3 {
@@ -79,7 +79,11 @@ namespace eval carteducielv3 {
 
       if { ! [ info exists conf(carteducielv3,fixedfovstate) ] } { set conf(carteducielv3,fixedfovstate) "1" }
       if { ! [ info exists conf(carteducielv3,fixedfovvalue) ] } { set conf(carteducielv3,fixedfovvalue) "05d00m00s" }
-      if { ! [ info exists conf(carteducielv3,binarypath) ] }    { set conf(carteducielv3,binarypath)    "$::env(ProgramFiles)" }
+      if { $::tcl_platform(os) == "Linux" } {
+         if { ! [ info exists conf(carteducielv3,binarypath) ] }    { set conf(carteducielv3,binarypath) [ file join / usr bin ] }
+      } else {
+         if { ! [ info exists conf(carteducielv3,binarypath) ] }    { set conf(carteducielv3,binarypath) "$::env(ProgramFiles)" }
+      }
       if { ! [ info exists conf(carteducielv3,localserver) ] }   { set conf(carteducielv3,localserver)   "1" }
       if { ! [ info exists conf(carteducielv3,host) ] }          { set conf(carteducielv3,host)          "127.0.0.1" }
       if { ! [ info exists conf(carteducielv3,port) ] }          { set conf(carteducielv3,port)          "3292" }
