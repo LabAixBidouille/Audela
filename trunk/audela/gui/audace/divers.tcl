@@ -2,7 +2,7 @@
 # Fichier divers.tcl
 # Description : Ce script regroupe diverses petites fonctions
 # Auteur : Benoit MAUGIS
-# Mise à jour $Id: divers.tcl,v 1.17 2010-09-26 07:08:14 robertdelmas Exp $
+# Mise à jour $Id: divers.tcl,v 1.18 2010-10-23 16:11:03 robertdelmas Exp $
 #
 
 # Documentation : voir le fichier divers.htm dans le dossier doc_html
@@ -2479,187 +2479,6 @@ proc aligne {args} {
 ###############   Fonctions avancées   ###############
 ######################################################
 
-proc TestEntier {args} {
-   global caption
-
-   if {[syntaxe_args $args 1 0 ""]=="1"} {
-
-      # Configuration des paramètres obligatoires
-      set valeur [lindex $args 0]
-
-      # Procédure principale
-      set test 1
-      for {set i 0} {$i < [string length $valeur]} {incr i} {
-         set a [string index $valeur $i]
-         if {![string match {[0-9]} $a]} {
-            set test 0
-         }
-      }
-      if {$valeur==""} {set test 0}
-      return $test
-   } else {
-      error $caption(divers,syntax,TestEntier)
-   }
-}
-
-proc TestReel {args} {
-   global caption
-
-   if {[syntaxe_args $args 1 0 ""]=="1"} {
-      # Configuration des paramètres obligatoires
-      set valeur [lindex $args 0]
-
-      # Procédure principale
-      set test 1
-      for { set i 0 } { $i < [string length $valeur] } { incr i } {
-         set a [string index $valeur $i]
-         if { ![string match {[0-9.]} $a] } {
-            set test 0
-         }
-      }
-      return $test
-   } else {
-      error $caption(divers,syntax,TestReel)
-   }
-}
-
-proc dernier_est_chiffre {args} {
-   global caption
-
-   if {[syntaxe_args $args 1 0 ""]=="1"} {
-
-      # Configuration des paramètres obligatoires
-      set chaine [lindex $args 0]
-
-      # Procédure principale
-      # La procédure retourne "1" si le dernier caractère du mot est un chiffre, "0" sinon.
-      set caractere [string index $chaine [expr [string length $chaine]-1]]
-      switch -exact -- $caractere {
-         0 {return 1}
-         1 {return 1}
-         2 {return 1}
-         3 {return 1}
-         4 {return 1}
-         5 {return 1}
-         6 {return 1}
-         7 {return 1}
-         8 {return 1}
-         9 {return 1}
-         default {return 0}
-      }
-   } else {
-      error $caption(divers,syntax,dernier_est_chiffre)
-   }
-}
-
-proc nom_valide {args} {
-   global caption
-
-   if {[syntaxe_args $args 1 0 ""]=="1"} {
-
-      # Configuration des paramètres obligatoires
-      set chaine [lindex $args 0]
-
-      # Procédure principale
-      # La procédure retourne "0" si le mot comporte des caractères invalides, "1" sinon.
-      set valide "1"
-      set k 0
-      set kmax [string length $chaine]
-      while {$k<$kmax} {
-         set caractere [string index $chaine $k]
-         switch -exact -- $caractere {
-            à {
-               return 0
-               break
-            }
-            â {
-               return 0
-               break
-            }
-            é {
-               return 0
-               break
-            }
-            è {
-               return 0
-               break
-            }
-            ê {
-               return 0
-               break
-            }
-            î {
-               return 0
-               break
-            }
-            ô {
-               return 0
-               break
-            }
-            ù {
-               return 0
-               break
-            }
-            default {
-               incr k
-            }
-         }
-      }
-      return 1
-   } else {
-      error $caption(divers,syntax,nom_valide)
-   }
-}
-
-proc suppr_accents {args} {
-   global caption
-
-   if {[syntaxe_args $args 1 0 ""]=="1"} {
-
-      # Configuration des paramètres obligatoires
-      set chaine [lindex $args 0]
-
-      # Procédure principale
-      # La procédure retourne la liste de caractères nettoyée de tout accentuation.
-
-      if {[string first "à" $chaine]>=0} {
-         set index [string first "à" $chaine]
-         return [suppr_accents [string replace $chaine $index $index "a"]]
-      } elseif {[string first "â" $chaine]>=0} {
-         set index [string first "â" $chaine]
-         return [suppr_accents [string replace $chaine $index $index "a"]]
-      } elseif {[string first "ç" $chaine]>=0} {
-         set index [string first "ç" $chaine]
-         return [suppr_accents [string replace $chaine $index $index "c"]]
-      } elseif {[string first "é" $chaine]>=0} {
-         set index [string first "é" $chaine]
-         return [suppr_accents [string replace $chaine $index $index "e"]]
-      } elseif {[string first "è" $chaine]>=0} {
-         set index [string first "è" $chaine]
-         return [suppr_accents [string replace $chaine $index $index "e"]]
-      } elseif {[string first "ê" $chaine]>=0} {
-         set index [string first "ê" $chaine]
-         return [suppr_accents [string replace $chaine $index $index "e"]]
-      } elseif {[string first "î" $chaine]>=0} {
-         set index [string first "î" $chaine]
-         return [suppr_accents [string replace $chaine $index $index "i"]]
-      } elseif {[string first "ï" $chaine]>=0} {
-         set index [string first "ï" $chaine]
-         return [suppr_accents [string replace $chaine $index $index "i"]]
-      } elseif {[string first "ô" $chaine]>=0} {
-         set index [string first "ô" $chaine]
-         return [suppr_accents [string replace $chaine $index $index "o"]]
-      } elseif {[string first "ù" $chaine]>=0} {
-         set index [string first "ù" $chaine]
-         return [suppr_accents [string replace $chaine $index $index "u"]]
-      } else {
-         return $chaine
-      }
-   } else {
-      error $caption(divers,syntax,suppr_accents)
-   }
-}
-
 proc decomp {args} {
    global audace caption conf
 
@@ -3375,9 +3194,109 @@ proc calcul_trzaligne {args} {
    }
 }
 
+#--- Teste si args est un nombre entier
+#    Retourne 1 si vrai, sinon 0 (chaine vide ou pas entier)
+proc TestEntier {args} {
+   global caption
+
+   if {[syntaxe_args $args 1 0 ""]=="1"} {
+      set chaine [lindex $args 0]
+      set result 0
+      if { $chaine != "" } {
+         set result [ string is integer $chaine ]
+      }
+      return $result
+   } else {
+      error $caption(divers,syntax,TestEntier)
+   }
+}
+
+#--- Teste si args est un nombre reel
+#    Retourne 1 si vrai, sinon 0 (chaine vide ou pas reel)
+proc TestReel {args} {
+   global caption
+
+   if {[syntaxe_args $args 1 0 ""]=="1"} {
+      set valeur [lindex $args 0]
+      if { $valeur != "" } {
+         set pattern {(^|[ \t])([-+]?(\d+|\.\d+|\d+\.\d*))($|[^+-.])}
+         regexp $pattern $valeur whole char_before number digits_before_period
+         if { $valeur eq $whole } {
+            return 1
+         } else {
+            return 0
+         }
+      }
+   } else {
+      error $caption(divers,syntax,TestReel)
+   }
+}
+
+#--- Teste si le dernier caractere d'une chaine est un nombre decimal
+#    Retourne 1 si vrai, sinon 0
+proc dernier_est_chiffre {args} {
+   global caption
+
+   if {[syntaxe_args $args 1 0 ""]=="1"} {
+      set dernier [ string index [lindex $args 0] end ]
+      return [ string is digit $dernier ]
+   } else {
+      error $caption(divers,syntax,dernier_est_chiffre)
+   }
+}
+
+#--- Teste si un nom contient des caracteres accentues
+#    Retourne 1 si absence, 0 si presencee de caracteres accentues
+proc nom_valide {args} {
+   global caption
+
+   if {[syntaxe_args $args 1 0 ""]=="1"} {
+
+      if { [ regexp -all {[àâçéèêëîïôöùüû]} [lindex $args 0] ] } {
+         return 0
+      } else {
+         return 1
+      }
+   } else {
+      error $caption(divers,syntax,nom_valide)
+   }
+}
+
+#--- Remplace les caracteres accentues dans une chaine
+#    par les caracteres non accentues
+proc suppr_accents {args} {
+   global caption
+
+   if {[syntaxe_args $args 1 0 ""]=="1"} {
+
+      regsub -all "à" [lindex $args 0] "a" chaine
+      regsub -all "â" $chaine "a" chaine
+      regsub -all "ç" $chaine "c" chaine
+      regsub -all "é" $chaine "e" chaine
+      regsub -all "è" $chaine "e" chaine
+      regsub -all "ê" $chaine "e" chaine
+      regsub -all "ë" $chaine "e" chaine
+      regsub -all "î" $chaine "i" chaine
+      regsub -all "ï" $chaine "i" chaine
+      regsub -all "ô" $chaine "o" chaine
+      regsub -all "ö" $chaine "o" chaine
+      regsub -all "û" $chaine "u" chaine
+      regsub -all "ü" $chaine "u" chaine
+      regsub -all "ù" $chaine "u" chaine
+
+      return $chaine
+
+   } else {
+      error $caption(divers,syntax,suppr_accents)
+   }
+}
+
+#--- Retourne une date au format jj mois_en_lettres annee
+#    ou un message d'erreur si entree incorrecte
 proc date_chiffresAlettres {args} {
    global caption
 
+   set err 0
    if {[syntaxe_args $args 1 0 ""]=="1"} {
 
       # Configuration des paramètres obligatoires
@@ -3385,85 +3304,69 @@ proc date_chiffresAlettres {args} {
 
       # Procédure principale
       set annee [lindex ${date_chiffres} 0]
+
       set mois_chiffre [lindex ${date_chiffres} 1]
+      set mois_chiffre [string trimleft $mois_chiffre 0]
+      if {$mois_chiffre < "1" || $mois_chiffre > "12"} {
+         set err 1
+      } elseif {[regexp {1|2|3|4|5|6|7|8|9|10|11|12} $mois_chiffre]} {
+         set liste_mois [ list nihil janvier février mars avril mai \
+         juin juillet août septembre octobre novembre décembre ]
+         set mois_lettres [ lindex $liste_mois $mois_chiffre ]
+      }
+
       set jour [lindex ${date_chiffres} 2]
-
-      switch ${mois_chiffre} {
-         "1" {
-            set mois_lettres "janvier"
-         }
-         "2" {
-            set mois_lettres "février"
-         }
-         "3" {
-            set mois_lettres "mars"
-         }
-         "4" {
-            set mois_lettres "avril"
-         }
-         "5" {
-            set mois_lettres "mai"
-         }
-         "6" {
-            set mois_lettres "juin"
-         }
-         "7" {
-            set mois_lettres "juillet"
-         }
-         "8" {
-            set mois_lettres "août"
-         }
-         "9" {
-            set mois_lettres "septembre"
-         }
-         "10" {
-            set mois_lettres "octobre"
-         }
-         "11" {
-            set mois_lettres "novembre"
-         }
-         "12" {
-            set mois_lettres "décembre"
-         }
+      set jour [string trimleft $jour 0]
+      if {$jour < "1" || $jour > "31"} {
+         set err 1
       }
-
-      if {$jour == "1"} {
-         set jour "1er"
-      }
-
-      return "$jour ${mois_lettres} $annee"
-
+      if {$jour == "1"} {set jour "1er"}
+   } else {
+      set err 1
+   }
+   if {$err eq 0} {
+      return "$jour $mois_lettres $annee"
    } else {
       error $caption(divers,syntax,date_chiffresAlettres)
    }
 }
 
+#--- Retourne le minimum d'une liste de nombres
+#    "" si elle est vide
+#    "" et un message d'erreur si ce n'est pas exclusivement des nombres
 proc lmin {liste} {
-   if {[llength $liste] == 0} {
-      return ""
+   global caption
+
+   ::blt::vector create test -watchunset 1
+   if ![ catch { test append $liste } ] {
+      set index [ lindex [ test search $test(min) ] 0 ]
+      set result [ lindex $liste $index ]
    } else {
-      set lmin [lindex $liste 0]
-      foreach element $liste {
-         if $element<$lmin {
-            set lmin $element
-         }
-      }
-      return $lmin
+      set result ""
+      tk_messageBox -title "$caption(divers,attention)" -type ok \
+         -message [ format "$caption(divers,err_list_of_number)" $liste ]
    }
+   ::blt::vector destroy test
+   return $result
 }
 
+#--- Retourne le maximum d'une liste de nombres
+#    "" si elle est vide
+#    "" et un message d'erreur si ce n'est pas exclusivement des nombres
 proc lmax {liste} {
-   if {[llength $liste] == 0} {
-      return ""
+   global caption
+
+   ::blt::vector create test -watchunset 1
+   if ![ catch { test append $liste } ] {
+      set index [ lindex [ test search $test(max) ] 0 ]
+      set result [ lindex $liste $index ]
    } else {
-      set lmax [lindex $liste 0]
-      foreach element $liste {
-         if $element>$lmax {
-            set lmax $element
-         }
-      }
-      return $lmax
+      set result ""
+      tk_messageBox -title "$caption(divers,attention)" -type ok \
+         -message [ format "$caption(divers,err_list_of_number)" $liste ]
    }
+   ::blt::vector destroy test
+   return $result
 }
 
 ########## The end ##########
