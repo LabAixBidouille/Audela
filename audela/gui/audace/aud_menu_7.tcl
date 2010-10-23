@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise à jour $Id: aud_menu_7.tcl,v 1.32 2010-09-17 19:39:18 michelpujol Exp $
+# Mise à jour $Id: aud_menu_7.tcl,v 1.33 2010-10-23 16:01:30 robertdelmas Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -643,20 +643,20 @@ namespace eval ::confEditScript {
       if { $::tcl_platform(os) == "Linux" } {
          set confgene(EditScript,path) [ file join / usr bin ]
       } else {
-      set defaultpath [ file join C: "Program Files" ]
-      catch {
-         set testpath "$::env(ProgramFiles)"
-         set kend [expr [string length $testpath]-1]
-         for {set k 0} {$k<=$kend} {incr k} {
-            set car [string index "$testpath" $k]
-            if {$car=="\\"} {
-               set testpath [string replace "$testpath" $k $k /]
+         set defaultpath [ file join C: "Program Files" ]
+         catch {
+            set testpath "$::env(ProgramFiles)"
+            set kend [expr [string length $testpath]-1]
+            for {set k 0} {$k<=$kend} {incr k} {
+               set car [string index "$testpath" $k]
+               if {$car=="\\"} {
+                  set testpath [string replace "$testpath" $k $k /]
+               }
             }
-         }
-         set defaultpath "$testpath"
-         }
-      set confgene(EditScript,path)  "$defaultpath"
-      set confgene(EditScript,drive) [ lindex [ file split "$confgene(EditScript,path)" ] 0 ]
+            set defaultpath "$testpath"
+            }
+         set confgene(EditScript,path)  "$defaultpath"
+         set confgene(EditScript,drive) [ lindex [ file split "$confgene(EditScript,path)" ] 0 ]
       }
 
       #--- Cree un frame pour y mettre le bouton ... et la zone a renseigner - Editeur de scripts
