@@ -2,7 +2,7 @@
 # Fichier : testaudela.tcl
 # Description : Outil de test automatique pour AudeLA
 # Auteurs : Michel Pujol
-# Mise à jour $Id: testaudela.tcl,v 1.14 2010-10-15 20:18:28 michelpujol Exp $
+# Mise à jour $Id: testaudela.tcl,v 1.15 2010-10-23 20:36:43 robertdelmas Exp $
 #
 
 #####################
@@ -1081,7 +1081,7 @@ proc ::testaudela::clicMenu { visuNo menuName menuLabel } {
    if [catch {$menuPath index "$menuLabel"} menuIndex] {
       error "$menuLabel not in menu $menuName"
    }
-   $menuPath invoke$menuIndex
+   $menuPath invoke $menuIndex
 }
 
 #----------------------------------------------------
