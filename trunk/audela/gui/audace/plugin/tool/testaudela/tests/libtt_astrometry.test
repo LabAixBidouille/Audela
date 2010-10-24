@@ -4,24 +4,24 @@ test libtt_sextractor_m57 {sextractor m57} -constraints {
    AUDACE
 } -setup {
    createFileConfigSextractor
-   file copy -force [file join $::conf(testaudela,rep_images) "m57.fit"]  $::audace(rep_images)
+   file copy -force [file join $::conf(testaudela,rep_images) "m57.fit"]  $::audace(rep_travail)
 } -body {
    #--- j'extrait les etoiles avec sextractor
    sextractor "m57.fit" -c config.sex
    #--- je compte les etoiles trouvees dans l'image
    set imageStarNb 0
-   set fcom [open "catalog.cat" r]
+   set fcom [open [file join $::audace(rep_travail) catalog.cat] r]
    while {-1 != [gets $fcom line1]} {
       incr imageStarNb
    }
    close $fcom
    return $imageStarNb
 } -cleanup {
-   file delete -force [file join $::audace(rep_images) "m57.fit"]
-   file delete -force [file join $::audace(rep_images) "dummy.fit"]
-   file delete -force [file join $::audace(rep_images) "dummy0.fit"]
-   file delete -force [file join $::audace(rep_images) "idummy.fit"]
-   file delete -force [file join $::audace(rep_images) "catalog.cat"]
+   file delete -force [file join $::audace(rep_travail) "m57.fit"]
+   file delete -force [file join $::audace(rep_travail) "dummy.fit"]
+   file delete -force [file join $::audace(rep_travail) "dummy0.fit"]
+   file delete -force [file join $::audace(rep_travail) "idummy.fit"]
+   file delete -force [file join $::audace(rep_travail) "catalog.cat"]
    deleteFileConfigSextractor
 } -result "248"
 
@@ -30,13 +30,13 @@ test libtt_sextractor_m45 {sextractor m45} -constraints {
    AUDACE
 } -setup {
    createFileConfigSextractor
-   file copy -force [file join $::conf(testaudela,rep_images) "m45_champ.fit"]  $::audace(rep_images)
+   file copy -force [file join $::conf(testaudela,rep_images) "m45_champ.fit"]  $::audace(rep_travail)
 } -body {
    #--- j'extrait les etoiles avec sextractor
    sextractor "m45_champ.fit" -c  config.sex
    #--- je compte les etoiles trouvees dans l'image
    set imageStarNb 0
-   set fcom [open "catalog.cat" r]
+   set fcom [open [file join $::audace(rep_travail) catalog.cat] r]
    while {-1 != [gets $fcom line1]} {
       incr imageStarNb
    }
@@ -44,10 +44,10 @@ test libtt_sextractor_m45 {sextractor m45} -constraints {
 
    return $imageStarNb
 } -cleanup {
-   file delete -force [file join $::audace(rep_images) "m45_champ.fit"]
-   file delete -force [file join $::audace(rep_images) "dummy0.fit"]
-   file delete -force [file join $::audace(rep_images) "dummy.fit"]
-   file delete -force [file join $::audace(rep_images) "catalog.cat"]
+   file delete -force [file join $::audace(rep_travail) "m45_champ.fit"]
+   file delete -force [file join $::audace(rep_travail) "dummy0.fit"]
+   file delete -force [file join $::audace(rep_travail) "dummy.fit"]
+   file delete -force [file join $::audace(rep_travail) "catalog.cat"]
    deleteFileConfigSextractor
 } -result "48"
 
@@ -55,7 +55,7 @@ test libtt_sextractor_m45 {sextractor m45} -constraints {
 test libtt_catchart {imaseries CATCHART} -constraints {
    AUDACE
 } -setup {
-   file copy -force [file join $::conf(testaudela,rep_images) dummy_test.fit]  $::audace(rep_images)/dummy.fit
+   file copy -force [file join $::conf(testaudela,rep_images) dummy_test.fit]  $::audace(rep_travail)/dummy.fit
 } -body {
    #--- je verifie que le catalogue MICROCAT existe
    if { [file exists "$::conf(astrometry,catfolder)/gsc"]== 0 } {
@@ -73,19 +73,19 @@ test libtt_catchart {imaseries CATCHART} -constraints {
    close $fcom
    return $catalogueStarNb
 } -cleanup {
-   file delete -force [file join $::audace(rep_images) "dummy.fit"]
-   file delete -force [file join $::audace(rep_images) "cdummy.fit"]
-   file delete -force [file join $::audace(rep_images) "usno.lst"]
-   file delete -force [file join $::audace(rep_images) "tt.log"]
+   file delete -force [file join $::audace(rep_travail) "dummy.fit"]
+   file delete -force [file join $::audace(rep_travail) "cdummy.fit"]
+   file delete -force [file join $::audace(rep_travail) "usno.lst"]
+   file delete -force [file join $::audace(rep_travail) "tt.log"]
 } -result "314"
 
 #-------------------------------------------------------------------------------
 test libtt_astrometry {imaseries ASTROMETRY} -constraints {
    AUDACE
 } -setup {
-   file copy -force [file join $::conf(testaudela,rep_images) dummy_test.fit]  $::audace(rep_images)/dummy.fit
-   file copy -force [file join $::conf(testaudela,rep_images) cdummy_test.fit] $::audace(rep_images)/cdummy.fit
-   file copy -force [file join $::conf(testaudela,rep_images) catalog.cat]     $::audace(rep_images)/catalog.cat
+   file copy -force [file join $::conf(testaudela,rep_images) dummy_test.fit]  $::audace(rep_travail)/dummy.fit
+   file copy -force [file join $::conf(testaudela,rep_images) cdummy_test.fit] $::audace(rep_travail)/cdummy.fit
+   file copy -force [file join $::conf(testaudela,rep_images) catalog.cat]     $::audace(rep_travail)/catalog.cat
 } -body {
    #--- je verifie que le catalogue MICROCAT existe
    if { [file exists "$::conf(astrometry,catfolder)/gsc"]== 0 } {
@@ -102,19 +102,19 @@ test libtt_astrometry {imaseries ASTROMETRY} -constraints {
    close $fcom
    return $matchedStarNb
 } -cleanup {
-   file delete -force [file join $::audace(rep_images) "catalog.cat"]
-   file delete -force [file join $::audace(rep_images) "dummy.fit"]
-   file delete -force [file join $::audace(rep_images) "cdummy.fit"]
-   file delete -force [file join $::audace(rep_images) "com.lst"]
-   file delete -force [file join $::audace(rep_images) "dif.lst"]
-   file delete -force [file join $::audace(rep_images) "eq.lst"]
-   file delete -force [file join $::audace(rep_images) "obs.lst"]
-   file delete -force [file join $::audace(rep_images) "pointzero.lst"]
-   file delete -force [file join $::audace(rep_images) "usno.lst"]
-   file delete -force [file join $::audace(rep_images) "xy.lst"]
+   file delete -force [file join $::audace(rep_travail) "catalog.cat"]
+   file delete -force [file join $::audace(rep_travail) "dummy.fit"]
+   file delete -force [file join $::audace(rep_travail) "cdummy.fit"]
+   file delete -force [file join $::audace(rep_travail) "com.lst"]
+   file delete -force [file join $::audace(rep_travail) "dif.lst"]
+   file delete -force [file join $::audace(rep_travail) "eq.lst"]
+   file delete -force [file join $::audace(rep_travail) "obs.lst"]
+   file delete -force [file join $::audace(rep_travail) "pointzero.lst"]
+   file delete -force [file join $::audace(rep_travail) "usno.lst"]
+   file delete -force [file join $::audace(rep_travail) "xy.lst"]
 
-   file delete -force [file join $::audace(rep_images) "tt.log"]
-   file delete -force [file join $::audace(rep_images) "tt.err"]
-   file delete -force [file join $::audace(rep_images) "tt_last.err"]
+   file delete -force [file join $::audace(rep_travail) "tt.log"]
+   file delete -force [file join $::audace(rep_travail) "tt.err"]
+   file delete -force [file join $::audace(rep_travail) "tt_last.err"]
 } -result "225"
 
