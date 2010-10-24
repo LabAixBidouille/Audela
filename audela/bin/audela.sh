@@ -4,4 +4,5 @@
 echo -e "Lancement AudeLA..."
 chemin=`pwd`
 typeset -x LD_LIBRARY_PATH=$chemin
-${chemin}/audela $*
+#${chemin}/audela $*
+./audela $*
