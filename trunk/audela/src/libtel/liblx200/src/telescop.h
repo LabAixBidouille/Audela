@@ -38,6 +38,7 @@ struct telprop {
    /* --- parametres standards, ne pas changer ---*/
    COMMON_TELSTRUCT
    /* Ajoutez ici les variables necessaires a votre telescope */
+   int waitResponse;
    int longformatindex;
    int tempo;
 	char autostar_char[3];
