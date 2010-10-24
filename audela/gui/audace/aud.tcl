@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.151 2010-10-23 16:03:38 robertdelmas Exp $
+# Mise à jour $Id: aud.tcl,v 1.152 2010-10-24 14:11:02 michelpujol Exp $
 #
 
 #--- Chargement du package BWidget
@@ -1085,53 +1085,6 @@ namespace eval ::audace {
       #--- Attention : On stocke le nom du fichier sans l'extension .pal
       if { ! [ info exist tmp(fichier_palette) ] } {
          set tmp(fichier_palette) [ file rootname [ cree_fichier -nom_base fonction_transfert -rep $::audace(rep_temp) -ext .pal ] ]
-      }
-
-      #--- Configure PortTalk
-      if { $::tcl_platform(os) == "Windows NT" } {
-         set res [ catch { set result [ porttalk open all ] } msg ]
-         set no_administrator "PortTalk: You do not have rights to access"
-         if { ( $res == "1" ) && ( [ file exists [ file join $::audace(rep_home) allowio.txt ] ] == "0" ) } {
-            if { [ string range $msg 0 41 ] != "$no_administrator" } {
-               ::console::affiche_erreur "$msg\n\n$caption(audace,porttalk_msg_erreur)\n"
-            } else {
-               ::console::affiche_erreur "$msg\n"
-            }
-            set base ".allowio"
-            toplevel $base
-            wm geometry $base +50+100
-            wm resizable $base 0 0
-            wm deiconify $base
-            wm title $base "$caption(audace,porttalk_erreur)"
-            if { [ string range $msg 0 41 ] != "$no_administrator" } {
-               message $base.msg -text "$msg\n\n$caption(audace,porttalk_msg_erreur)\n" -justify center -width 350
-            } else {
-               message $base.msg -text "$msg\n" -justify center -width 350
-            }
-            pack $base.msg -in $base -anchor center -side top -fill x -padx 0 -pady 0 -expand 0
-            frame $base.frame1
-               set saveallowio "0"
-               checkbutton $base.frame1.check1 -variable saveallowio
-               pack $base.frame1.check1 -anchor w -side left -fill x -padx 1 -pady 1 -expand 1
-               label $base.frame1.lab1 -text "$caption(audace,porttalk_message)"
-               pack $base.frame1.lab1 -anchor w -side left -fill x -padx 1 -pady 1 -expand 1
-            pack $base.frame1 -in $base -anchor center -side top -fill none -padx 0 -pady 0 -expand 0
-            button $base.but1 -text "$caption(audace,ok)" \
-               -command {
-                  if { $saveallowio == "1" } {
-                     set f [ open [ file join $::audace(rep_home) allowio.txt ] w ]
-                     close $f
-                  }
-                  destroy .allowio
-               }
-            pack $base.but1 -in $base -anchor center -side top -padx 5 -pady 5 -ipadx 10 -ipady 5
-            focus -force $base
-            tkwait window $base
-         } else {
-            catch {
-               ::console::affiche_prompt "$caption(audace,porttalk_titre) $result\n\n"
-            }
-         }
       }
 
       #--- Connexion au demarrage des cameras

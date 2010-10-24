@@ -2,7 +2,7 @@
 # Fichier : parallelport.tcl
 # Description : Interface de liaison Port Parallele
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: parallelport.tcl,v 1.25 2010-10-10 19:55:23 michelpujol Exp $
+# Mise à jour $Id: parallelport.tcl,v 1.26 2010-10-24 14:11:14 michelpujol Exp $
 #
 
 namespace eval parallelport {
@@ -103,6 +103,9 @@ proc ::parallelport::initPlugin { } {
    #--- Initialisation
    set private(frm) ""
 
+   if { $::tcl_platform(os) == "Windows NT" } {
+      set private(porttalkInstalled) 0
+   }
    #--- je recupere le nom generique de la liaison
    ##set private(genericName) [link::genericname parallelport]
    if { $::tcl_platform(os) == "Linux" } {
@@ -147,6 +150,7 @@ proc ::parallelport::confToWidget { } {
 
 #------------------------------------------------------------
 # createPluginInstance
+#    installe porttalk si necessaire
 #    Cree une liaison et retourne le numero du link
 #      Le numero du link est attribue automatiquement
 #      Si ce link est deja cree, on retourne le numero du link existant
@@ -169,6 +173,62 @@ proc ::parallelport::confToWidget { } {
 #------------------------------------------------------------
 proc ::parallelport::createPluginInstance { linkLabel deviceId usage comment args } {
    global audace
+   variable private
+
+   if { $::tcl_platform(os) == "Windows NT"  } {
+      #--- j'installe porttalk si ce n'est pas deja fait
+      if { $private(porttalkInstalled) == 0 } {
+         #--- j'installe porttalk
+         set res [ catch { set result [ porttalk open all ] } msg ]
+         set no_administrator "PortTalk: You do not have rights to access"
+         if { ( $res == "1" ) && ( [ file exists [ file join $::audace(rep_home) allowio.txt ] ] == "0" ) } {
+            #--- l'installation de porttalk n'a pas reussi par ce que l'utilisateur
+            #--- n'est pas administrateur de la machine.
+            if { [ string range $msg 0 41 ] != "$no_administrator" } {
+               ::console::affiche_erreur "$msg\n\n$::caption(audace,porttalk_msg_erreur)\n"
+            } else {
+               ::console::affiche_erreur "$msg\n"
+            }
+
+            #--- je demande a l'utilisateur s'il ne veut plus que Audela essaie
+            #--- d'installer porttalk
+            set base ".allowio"
+            toplevel $base
+            wm geometry $base +50+100
+            wm resizable $base 0 0
+            wm deiconify $base
+            wm title $base "$::caption(audace,porttalk_erreur)"
+            if { [ string range $msg 0 41 ] != "$no_administrator" } {
+               message $base.msg -text "$msg\n\n$::caption(audace,porttalk_msg_erreur)\n" -justify center -width 350
+            } else {
+               message $base.msg -text "$msg\n" -justify center -width 350
+            }
+            pack $base.msg -in $base -anchor center -side top -fill x -padx 0 -pady 0 -expand 0
+            frame $base.frame1
+               set saveallowio "0"
+               checkbutton $base.frame1.check1 -variable saveallowio
+               pack $base.frame1.check1 -anchor w -side left -fill x -padx 1 -pady 1 -expand 1
+               label $base.frame1.lab1 -text "$::caption(audace,porttalk_message)"
+               pack $base.frame1.lab1 -anchor w -side left -fill x -padx 1 -pady 1 -expand 1
+            pack $base.frame1 -in $base -anchor center -side top -fill none -padx 0 -pady 0 -expand 0
+            button $base.but1 -text "$::caption(audace,ok)" \
+               -command {
+                  if { $saveallowio == "1" } {
+                     set f [ open [ file join $::audace(rep_home) allowio.txt ] w ]
+                     close $f
+                  }
+                  destroy .allowio
+               }
+            pack $base.but1 -in $base -anchor center -side top -padx 5 -pady 5 -ipadx 10 -ipady 5
+            focus -force $base
+            tkwait window $base
+         } else {
+             #--- l'intallation de porttalk a reussi
+             set private(porttalkInstalled) 1
+             ::console::affiche_prompt "$::caption(audace,porttalk_titre) $result\n\n"
+         }
+      }
+   }
 
    set linkIndex [getLinkIndex $linkLabel]
    #--- je cree le lien
