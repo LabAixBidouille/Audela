@@ -1,7 +1,7 @@
 
 # Procédures d'exploitation astrophysique des spectres
 
-# Mise a jour $Id: spc_astrophys.tcl,v 1.20 2010-10-10 13:08:14 bmauclaire Exp $
+# Mise a jour $Id: spc_astrophys.tcl,v 1.21 2010-10-24 18:24:46 bmauclaire Exp $
 
 
 
@@ -1624,7 +1624,8 @@ proc spc_ew { args } {
    }
 
    #--- Calcul de EW :
-   spc_ew4 $filename $lambda_deb $lambda_fin $taux_doucissage
+   set results [ spc_ew4 $filename $lambda_deb $lambda_fin $taux_doucissage ]
+   return $results
 }
 #***************************************************************************#
 
@@ -1707,6 +1708,7 @@ proc spc_ew4 { args } {
    if { $rmconti=="o" } {
       file delete -force "$audace(rep_images)/$spectre_conti$conf(extension,defaut)"
    }
+
    #-- Sélection des échantillons :
    set xvals [ list ]
    set yvals [ list ]
@@ -1777,6 +1779,15 @@ proc spc_ew4 { args } {
       ::console::affiche_resultat "Incertitude non calculable car SNR non calculable\n"
       set sigma 0
    }
+
+
+   #--- Affichage du spectre et du continuum s'il n'a pa ete efface :
+   if { $rmconti=="n" } {
+      spc_gdeleteall
+      spc_load "$filename"
+      spc_loadmore "$spectre_conti" green
+   }
+
    
    #--- Formatage des résultats :
    set l_fin [ expr 0.01*round($xfin*100) ]
