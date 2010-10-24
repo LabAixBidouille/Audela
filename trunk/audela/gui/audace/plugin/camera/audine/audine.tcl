@@ -2,7 +2,7 @@
 # Fichier : audine.tcl
 # Description : Configuration de la camera Audine
 # Auteur : Robert DELMAS
-# Mise à jour $Id: audine.tcl,v 1.29 2010-10-10 19:50:42 michelpujol Exp $
+# Mise à jour $Id: audine.tcl,v 1.30 2010-10-24 14:13:22 michelpujol Exp $
 #
 
 namespace eval ::audine {
@@ -409,14 +409,14 @@ proc ::audine::configureCamera { camItem bufNo } {
       #--- Je cree la camera en fonction de la liaison choisie
       switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
          parallelport {
+            #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
+            set linkNo [ ::confLink::create $conf(audine,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
             #--- Je cree la camera
             if { [ catch { set camNo [ cam::create audine $conf(audine,port) -name Audine -ccd $ccd ] } m ] == 1 } {
                error "" "" "NotRoot"
             }
             #--- Je configure le nom du CAN utilise
             cam$camNo cantype $conf(audine,can)
-            #--- Je cree la liaison utilisee par la camera pour l'acquisition
-            set linkNo [ ::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          }
          quickaudine {
             #--- Je cree la camera
@@ -564,7 +564,7 @@ proc ::audine::stop { camItem } {
    }
 
    #--- Je ferme la liaison d'acquisition de la camera
-   ::confLink::delete $conf(audine,port) "cam$private($camItem,camNo)" "acquisition"
+   ::confLink::delete $conf(audine,port) "cam$camItem" "acquisition"
 
    #--- J'arrete la camera
    if { $private($camItem,camNo) != 0 } {

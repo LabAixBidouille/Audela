@@ -2,7 +2,7 @@
 # Fichier : hisis.tcl
 # Description : Configuration de la camera Hi-SIS
 # Auteur : Robert DELMAS
-# Mise à jour $Id: hisis.tcl,v 1.21 2010-10-10 19:50:42 michelpujol Exp $
+# Mise à jour $Id: hisis.tcl,v 1.22 2010-10-24 14:13:22 michelpujol Exp $
 #
 
 namespace eval ::hisis {
@@ -437,6 +437,8 @@ proc ::hisis::configureCamera { camItem bufNo } {
          set logLevel 0
       }
       if { $conf(hisis,modele) == "11" } {
+         #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
+         set linkNo [ ::confLink::create $conf(hisis,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
          #--- Je cree la camera
          if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS11 -loglevel $logLevel ] } m ] == 1 } {
             error "" "" "NotRoot"
@@ -446,14 +448,14 @@ proc ::hisis::configureCamera { camItem bufNo } {
          console::affiche_saut "\n"
          #--- Je change de variable
          set private($camItem,camNo) $camNo
-         #--- Je cree la liaison utilisee par la camera pour l'acquisition
-         set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- J'associe le buffer de la visu
          cam$camNo buf $bufNo
          #--- Je configure l'oriention des miroirs par defaut
          cam$camNo mirrorh $conf(hisis,mirh)
          cam$camNo mirrorv $conf(hisis,mirv)
       } elseif { $conf(hisis,modele) == "22" } {
+         #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
+         set linkNo [ ::confLink::create $conf(hisis,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
          #--- Je cree la camera
          if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS22-[ lindex $conf(hisis,res) 0 ] -loglevel $logLevel ] } m ] == 1 } {
             error "" "" "NotRoot"
@@ -463,8 +465,6 @@ proc ::hisis::configureCamera { camItem bufNo } {
          console::affiche_saut "\n"
          #--- Je change de variable
          set private($camItem,camNo) $camNo
-         #--- Je cree la liaison utilisee par la camera pour l'acquisition
-         set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure l'obturateur
          switch -exact -- $conf(hisis,foncobtu) {
             0 {
@@ -485,6 +485,8 @@ proc ::hisis::configureCamera { camItem bufNo } {
          #--- Je configure les delais
          cam$camNo delayloops $conf(hisis,delai_a) $conf(hisis,delai_b) $conf(hisis,delai_c)
       } elseif { $conf(hisis,modele) == "23" } {
+         #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
+         set linkNo [ ::confLink::create $conf(hisis,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
          #--- Je cree la camera
          if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS23 -loglevel $logLevel ] } m ] == 1 } {
             error "" "" "NotRoot"
@@ -494,8 +496,6 @@ proc ::hisis::configureCamera { camItem bufNo } {
          console::affiche_saut "\n"
          #--- Je change de variable
          set private($camItem,camNo) $camNo
-         #--- Je cree la liaison utilisee par la camera pour l'acquisition
-         set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure l'obturateur
          switch -exact -- $conf(hisis,foncobtu) {
             0 {
@@ -514,6 +514,8 @@ proc ::hisis::configureCamera { camItem bufNo } {
          cam$camNo mirrorh $conf(hisis,mirh)
          cam$camNo mirrorv $conf(hisis,mirv)
       } elseif { $conf(hisis,modele) == "24" } {
+         #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
+         set linkNo [ ::confLink::create $conf(hisis,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
          #--- Je cree la camera
          if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS24 -loglevel $logLevel ] } m ] == 1 } {
             error "" "" "NotRoot"
@@ -523,8 +525,6 @@ proc ::hisis::configureCamera { camItem bufNo } {
          console::affiche_saut "\n"
          #--- Je change de variable
          set private($camItem,camNo) $camNo
-         #--- Je cree la liaison utilisee par la camera pour l'acquisition
-         set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure l'obturateur
          switch -exact -- $conf(hisis,foncobtu) {
             0 {
@@ -543,6 +543,8 @@ proc ::hisis::configureCamera { camItem bufNo } {
          cam$camNo mirrorh $conf(hisis,mirh)
          cam$camNo mirrorv $conf(hisis,mirv)
       } elseif { $conf(hisis,modele) == "33" } {
+         #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
+         set linkNo [ ::confLink::create $conf(hisis,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
          #--- Je cree la camera
          if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS33 -loglevel $logLevel ] } m ] == 1 } {
             error "" "" "NotRoot"
@@ -552,8 +554,6 @@ proc ::hisis::configureCamera { camItem bufNo } {
          console::affiche_saut "\n"
          #--- Je change de variable
          set private($camItem,camNo) $camNo
-         #--- Je cree la liaison utilisee par la camera pour l'acquisition
-         set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure l'obturateur
          switch -exact -- $conf(hisis,foncobtu) {
             0 {
@@ -572,6 +572,8 @@ proc ::hisis::configureCamera { camItem bufNo } {
          cam$camNo mirrorh $conf(hisis,mirh)
          cam$camNo mirrorv $conf(hisis,mirv)
       } elseif { $conf(hisis,modele) == "36" } {
+         #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
+         set linkNo [ ::confLink::create $conf(hisis,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
          #--- Je cree la camera
          if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS36 -loglevel $logLevel ] } m ] == 1 } {
             error "" "" "NotRoot"
@@ -581,8 +583,6 @@ proc ::hisis::configureCamera { camItem bufNo } {
          console::affiche_saut "\n"
          #--- Je change de variable
          set private($camItem,camNo) $camNo
-         #--- Je cree la liaison utilisee par la camera pour l'acquisition
-         set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure l'obturateur
          switch -exact -- $conf(hisis,foncobtu) {
             0 {
@@ -601,6 +601,8 @@ proc ::hisis::configureCamera { camItem bufNo } {
          cam$camNo mirrorh $conf(hisis,mirh)
          cam$camNo mirrorv $conf(hisis,mirv)
       } elseif { $conf(hisis,modele) == "39" } {
+         #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
+         set linkNo [ ::confLink::create $conf(hisis,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
          #--- Je cree la camera
          if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS39 -loglevel $logLevel ] } m ] == 1 } {
             error "" "" "NotRoot"
@@ -610,8 +612,6 @@ proc ::hisis::configureCamera { camItem bufNo } {
          console::affiche_saut "\n"
          #--- Je change de variable
          set private($camItem,camNo) $camNo
-         #--- Je cree la liaison utilisee par la camera pour l'acquisition
-         set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure l'obturateur
          switch -exact -- $conf(hisis,foncobtu) {
             0 {
@@ -630,6 +630,8 @@ proc ::hisis::configureCamera { camItem bufNo } {
          cam$camNo mirrorh $conf(hisis,mirh)
          cam$camNo mirrorv $conf(hisis,mirv)
       } elseif { $conf(hisis,modele) == "43" } {
+         #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
+         set linkNo [ ::confLink::create $conf(hisis,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
          #--- Je cree la camera
          if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS43 -loglevel $logLevel ] } m ] == 1 } {
             error "" "" "NotRoot"
@@ -639,8 +641,6 @@ proc ::hisis::configureCamera { camItem bufNo } {
          console::affiche_saut "\n"
          #--- Je change de variable
          set private($camItem,camNo) $camNo
-         #--- Je cree la liaison utilisee par la camera pour l'acquisition
-         set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure l'obturateur
          switch -exact -- $conf(hisis,foncobtu) {
             0 {
@@ -659,6 +659,8 @@ proc ::hisis::configureCamera { camItem bufNo } {
          cam$camNo mirrorh $conf(hisis,mirh)
          cam$camNo mirrorv $conf(hisis,mirv)
       } elseif { $conf(hisis,modele) == "44" } {
+         #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
+         set linkNo [ ::confLink::create $conf(hisis,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
          #--- Je cree la camera
          if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS44 -loglevel $logLevel ] } m ] == 1 } {
             error "" "" "NotRoot"
@@ -668,8 +670,6 @@ proc ::hisis::configureCamera { camItem bufNo } {
          console::affiche_saut "\n"
          #--- Je change de variable
          set private($camItem,camNo) $camNo
-         #--- Je cree la liaison utilisee par la camera pour l'acquisition
-         set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure l'obturateur
          switch -exact -- $conf(hisis,foncobtu) {
             0 {
@@ -688,6 +688,8 @@ proc ::hisis::configureCamera { camItem bufNo } {
          cam$camNo mirrorh $conf(hisis,mirh)
          cam$camNo mirrorv $conf(hisis,mirv)
       } elseif { $conf(hisis,modele) == "48" } {
+         #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
+         set linkNo [ ::confLink::create $conf(hisis,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
          #--- Je cree la camera
          if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS48 -loglevel $logLevel ] } m ] == 1 } {
             error "" "" "NotRoot"
@@ -697,8 +699,6 @@ proc ::hisis::configureCamera { camItem bufNo } {
          console::affiche_saut "\n"
          #--- Je change de variable
          set private($camItem,camNo) $camNo
-         #--- Je cree la liaison utilisee par la camera pour l'acquisition
-         set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure l'obturateur
          switch -exact -- $conf(hisis,foncobtu) {
             0 {
@@ -736,7 +736,7 @@ proc ::hisis::stop { camItem } {
    global conf
 
    #--- Je ferme la liaison d'acquisition de la camera
-   ::confLink::delete $conf(hisis,port) "cam$private($camItem,camNo)" "acquisition"
+   ::confLink::delete $conf(hisis,port) "cam$camItem" "acquisition"
 
    #--- J'arrete la camera
    if { $private($camItem,camNo) != 0 } {

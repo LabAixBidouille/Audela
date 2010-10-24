@@ -2,7 +2,7 @@
 # Fichier : starlight.tcl
 # Description : Configuration de la camera Starlight
 # Auteur : Robert DELMAS
-# Mise à jour $Id: starlight.tcl,v 1.19 2010-10-10 19:50:42 michelpujol Exp $
+# Mise à jour $Id: starlight.tcl,v 1.20 2010-10-24 14:13:22 michelpujol Exp $
 #
 
 namespace eval ::starlight {
@@ -272,6 +272,8 @@ proc ::starlight::configureCamera { camItem bufNo } {
          error "" "" "CameraUnique"
       }
       if { $conf(starlight,modele) == "MX516" } {
+         #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
+         set linkNo [ ::confLink::create $conf(starlight,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
          #--- Je cree la camera
          if { [ catch { set camNo [ cam::create starlight $conf(starlight,port) -name MX516 ] } m ] == 1 } {
             error "" "" "NotRoot"
@@ -281,8 +283,6 @@ proc ::starlight::configureCamera { camItem bufNo } {
          console::affiche_saut "\n"
          #--- Je change de variable
          set private($camItem,camNo) $camNo
-         #--- Je cree la liaison utilisee par la camera pour l'acquisition
-         set linkNo [ ::confLink::create $conf(starlight,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure l'accelerateur de port parallele
          cam$camNo accelerator $conf(starlight,acc)
          #--- J'associe le buffer de la visu
@@ -291,6 +291,8 @@ proc ::starlight::configureCamera { camItem bufNo } {
          cam$camNo mirrorh $conf(starlight,mirh)
          cam$camNo mirrorv $conf(starlight,mirv)
       } elseif { $conf(starlight,modele) == "MX916" } {
+         #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
+         set linkNo [ ::confLink::create $conf(starlight,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
          #--- Je cree la camera
          if { [ catch { set camNo [ cam::create starlight $conf(starlight,port) -name MX916 ] } m ] == 1 } {
             error "" "" "NotRoot"
@@ -300,8 +302,6 @@ proc ::starlight::configureCamera { camItem bufNo } {
          console::affiche_saut "\n"
          #--- Je change de variable
          set private($camItem,camNo) $camNo
-         #--- Je cree la liaison utilisee par la camera pour l'acquisition
-         set linkNo [ ::confLink::create $conf(starlight,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure l'accelerateur de port parallele
          cam$camNo accelerator $conf(starlight,acc)
          #--- J'associe le buffer de la visu
@@ -310,6 +310,8 @@ proc ::starlight::configureCamera { camItem bufNo } {
          cam$camNo mirrorh $conf(starlight,mirh)
          cam$camNo mirrorv $conf(starlight,mirv)
       } elseif { $conf(starlight,modele) == "HX516" } {
+         #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
+         set linkNo [ ::confLink::create $conf(starlight,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
          #--- Je cree la camera
          if { [ catch { set camNo [ cam::create starlight $conf(starlight,port) -name HX516 ] } m ] == 1 } {
             error "" "" "NotRoot"
@@ -319,8 +321,6 @@ proc ::starlight::configureCamera { camItem bufNo } {
          console::affiche_saut "\n"
          #--- Je change de variable
          set private($camItem,camNo) $camNo
-         #--- Je cree la liaison utilisee par la camera pour l'acquisition
-         set linkNo [ ::confLink::create $conf(starlight,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure l'accelerateur de port parallele
          cam$camNo accelerator $conf(starlight,acc)
          #--- J'associe le buffer de la visu
@@ -348,7 +348,7 @@ proc ::starlight::stop { camItem } {
    global conf
 
    #--- Je ferme la liaison d'acquisition de la camera
-   ::confLink::delete $conf(starlight,port) "cam$private($camItem,camNo)" "acquisition"
+   ::confLink::delete $conf(starlight,port) "cam$camItem" "acquisition"
 
    #--- J'arrete la camera
    if { $private($camItem,camNo) != 0 } {
