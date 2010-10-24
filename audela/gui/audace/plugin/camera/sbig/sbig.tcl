@@ -2,7 +2,7 @@
 # Fichier : sbig.tcl
 # Description : Configuration de la camera SBIG
 # Auteur : Robert DELMAS
-# Mise à jour $Id: sbig.tcl,v 1.29 2010-10-10 19:50:42 michelpujol Exp $
+# Mise à jour $Id: sbig.tcl,v 1.30 2010-10-24 14:13:22 michelpujol Exp $
 #
 
 namespace eval ::sbig {
@@ -369,6 +369,8 @@ proc ::sbig::configureCamera { camItem bufNo } {
       } else {
          set lptAddress ""
       }
+      #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
+      set linkNo [ ::confLink::create $conf(sbig,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
       #--- Je cree la camera
       if { $::tcl_platform(platform) == "windows" } {
         set camNo [ cam::create sbig $conf(sbig,port) -ip $conf(sbig,host) -lptaddress $lptAddress ]
@@ -383,8 +385,6 @@ proc ::sbig::configureCamera { camItem bufNo } {
       console::affiche_saut "\n"
       #--- Je change de variable
       set private($camItem,camNo) $camNo
-      #--- Je cree la liaison utilisee par la camera pour l'acquisition
-      set linkNo [ ::confLink::create $conf(sbig,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
       #--- Je configure l'obturateur
       switch -exact -- $conf(sbig,foncobtu) {
          0 {
@@ -431,7 +431,7 @@ proc ::sbig::stop { camItem } {
    global conf
 
    #--- Je ferme la liaison d'acquisition de la camera
-   ::confLink::delete $conf(sbig,port) "cam$private($camItem,camNo)" "acquisition"
+   ::confLink::delete $conf(sbig,port) "cam$camItem" "acquisition"
 
    #--- J'arrete la camera
    if { $private($camItem,camNo) != 0 } {

@@ -2,7 +2,7 @@
 # Fichier : cookbook.tcl
 # Description : Configuration de la camera Cookbook
 # Auteur : Robert DELMAS
-# Mise à jour $Id: cookbook.tcl,v 1.29 2010-10-10 19:50:42 michelpujol Exp $
+# Mise à jour $Id: cookbook.tcl,v 1.30 2010-10-24 14:13:22 michelpujol Exp $
 #
 
 namespace eval ::cookbook {
@@ -243,6 +243,8 @@ proc ::cookbook::configureCamera { camItem bufNo } {
       if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0  } {
          error "" "" "CameraUnique"
       }
+      #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
+      set linkNo [ ::confLink::create $conf(cookbook,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
       #--- Je cree la camera
       if { [ catch { set camNo [ cam::create cookbook $conf(cookbook,port) -name CB245 ] } m ] == 1 } {
          error "" "" "NotRoot"
@@ -251,8 +253,6 @@ proc ::cookbook::configureCamera { camItem bufNo } {
       console::affiche_saut "\n"
       #--- Je change de variable
       set private($camItem,camNo) $camNo
-      #--- Je cree la liaison utilisee par la camera pour l'acquisition
-      set linkNo [ ::confLink::create $conf(cookbook,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
       #--- Je configure le delai
       cam$camNo delay $conf(cookbook,delai)
       #--- J'associe le buffer de la visu
@@ -279,7 +279,7 @@ proc ::cookbook::stop { camItem } {
    global conf
 
    #--- Je ferme la liaison d'acquisition de la camera
-   ::confLink::delete $conf(cookbook,port) "cam$private($camItem,camNo)" "acquisition"
+   ::confLink::delete $conf(cookbook,port) "cam$camItem" "acquisition"
 
    #--- J'arrete la camera
    if { $private($camItem,camNo) != 0 } {
