@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows et Linux
 # Auteur : Michel PUJOL
-# Mise à jour $Id: carteducielv3.tcl,v 1.29 2010-10-23 16:06:19 robertdelmas Exp $
+# Mise à jour $Id: carteducielv3.tcl,v 1.30 2010-10-24 13:08:48 jacquesmichelet Exp $
 #
 
 namespace eval carteducielv3 {
@@ -80,7 +80,15 @@ namespace eval carteducielv3 {
       if { ! [ info exists conf(carteducielv3,fixedfovstate) ] } { set conf(carteducielv3,fixedfovstate) "1" }
       if { ! [ info exists conf(carteducielv3,fixedfovvalue) ] } { set conf(carteducielv3,fixedfovvalue) "05d00m00s" }
       if { $::tcl_platform(os) == "Linux" } {
-         if { ! [ info exists conf(carteducielv3,binarypath) ] }    { set conf(carteducielv3,binarypath) [ file join / usr bin ] }
+         if { ! [ info exists conf(carteducielv3,binarypath) ] }    {
+             if { [ catch { exec which $conf(carteducielv3,binaryname) } cdcv3 ] } {
+                # soit skychart n'est pas installé, soit il n'est pas localisable, on prend /usr/bin faute de mieux
+                set conf(carteducielv3,binarypath) [ file join / usr bin ]
+            } else {
+                # skychart est localisable, on récupère le chemin d'accès
+                set conf(carteducielv3,binarypath) [ file dirname $cdcv3 ]
+            }
+         }
       } else {
          if { ! [ info exists conf(carteducielv3,binarypath) ] }    { set conf(carteducielv3,binarypath) "$::env(ProgramFiles)" }
       }
