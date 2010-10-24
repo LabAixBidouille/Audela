@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: tuto.tcl,v 1.16 2010-05-27 10:42:58 robertdelmas Exp $
+# Mise à jour $Id: tuto.tcl,v 1.17 2010-10-24 17:57:11 jberthier Exp $
 #
 
 #!/bin/sh
@@ -440,18 +440,23 @@ if { $catchError != "0" } {
 set num(rep_pwd) [pwd]
 
 #--- declare an Audine Kaf-0400 camera
-porttalk open all
-set lpt "LPT1:"
-set erreur [ catch { cam::create audine $lpt -name Audine -ccd kaf401 } msg ]
-if { $erreur == "1" } {
-   tk_messageBox -message "$msg" -icon error
-   return
-} else {
-   set num(cam1) $msg
-   #--- the image from this cam will be transfered to that buffer
-   cam$num(cam1) buf $num(buf1)
-   cam$num(cam1) shutter synchro
-   cam$num(cam1) interrupt 0
-   tk_messageBox -message "$caption(cam_connect)" -icon info
+if { $::tcl_platform(platform) == "windows" } {
+   set erreur [catch { porttalk open all } msg]
+   if {$erreur == 0} {
+      set lpt "LPT1:"
+      set erreur [ catch { cam::create audine $lpt -name Audine -ccd kaf401 } msg ]
+      if { $erreur == "1" } {
+         tk_messageBox -message "$msg" -icon error
+         return
+      } else {
+         set num(cam1) $msg
+         #--- the image from this cam will be transfered to that buffer
+         cam$num(cam1) buf $num(buf1)
+         cam$num(cam1) shutter synchro
+         cam$num(cam1) interrupt 0
+         tk_messageBox -message "$caption(cam_connect)" -icon info
+      }
+   } else {
+      tk_messageBox -message "$msg" -icon error
+   }
 }
-
