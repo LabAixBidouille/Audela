@@ -5,7 +5,7 @@
 # Fichier        : bddimages_go.tcl
 # Description    : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_go.tcl,v 1.7 2010-10-10 20:02:23 michelpujol Exp $
+# Mise à jour $Id: bddimages_go.tcl,v 1.8 2010-10-24 17:47:19 jberthier Exp $
 #
 
 #============================================================
@@ -63,9 +63,11 @@ proc ::bddimages::initPlugin { tkbase } {
    global conf
    global bddconf
 
-   set bddconf(font,arial_10_b) [ list {Arial} 10 bold ]
-   set bddconf(font,arial_12_b) [ list {Arial} 12 bold ]
-   set bddconf(font,arial_14_b) [ list {Arial} 14 bold ]
+   set bddconf(font,courier_10) "Courier 10 normal"
+   set bddconf(font,arial_10_b) "{Arial} 10 bold"
+   set bddconf(font,arial_12)   "{Arial} 12 normal"
+   set bddconf(font,arial_12_b) "{Arial} 12 bold"
+   set bddconf(font,arial_14_b) "{Arial} 14 bold"
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_config.tcl ]\""
 
