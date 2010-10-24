@@ -5,7 +5,7 @@
 #               pose, choix des plugins, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: confgene.tcl,v 1.82 2010-10-16 08:53:23 robertdelmas Exp $
+# Mise à jour $Id: confgene.tcl,v 1.83 2010-10-24 10:00:15 robertdelmas Exp $
 #
 
 #
@@ -372,7 +372,12 @@ namespace eval ::confPosObs {
       pack $This.lab6 -in $This.frame8 -anchor w -side top -padx 10 -pady 5
 
       label $This.lab7 -text "$conf(posobs,observateur,gps)"
-      pack $This.lab7 -in $This.frame17 -anchor w -side top -padx 10 -pady 5
+      pack $This.lab7 -in $This.frame17 -anchor w -side left -padx 10 -pady 5
+
+      #--- Cree le bouton 'GOTO' pour aller sur l'observatoire via Google Earth
+      button $This.but_goto -text "$caption(confgene,position_goto_observatoire)" -borderwidth 2 \
+         -command { ::confPosObs::gotoObservatory }
+      pack $This.but_goto -in $This.frame17 -anchor center -side left -padx 5 -pady 5 -ipadx 5
 
       #--- Numero station UAI
       label $This.lab8 -text "$caption(confgene,position_station_uai)"
@@ -688,54 +693,63 @@ namespace eval ::confPosObs {
    }
 
    #
+   # confPosObs::gotoObservatory
+   # GOTO vers l'observatoire via Google Earth
+   #
+   proc gotoObservatory { } {
+      global conf
+
+      google_earth_home_goto $conf(posobs,observateur,gps)
+   }
+
+   #
    # confPosObs::MaJ
    # Creation de l'interface pour la mise a jour du fichier des observatoires
    #
    proc MaJ { } {
-      global audace caption color confgene
+      variable This
+      global audace caption confgene
 
-      if [winfo exists $audace(base).maj] {
-         destroy $audace(base).maj
+      #--- Chargement du package http
+      package require http
+
+      #--- Gestion du bouton de Mise a jour
+      $This.but_maj configure -relief groove -state disabled
+
+      #--- Adresse web du catalogue des observatoires UAI
+      set url "http://www.cfa.harvard.edu/iau/lists/ObsCodes.html"
+
+      #--- Lecture du catalogue en ligne
+      set err [ catch { ::http::geturl $url } token ]
+      if { $err == 0 } {
+         upvar #0 $token state
+         set html_text [ split $state(body) \n ]
+         set lignes ""
+         foreach ligne $html_text {
+            if { [ string length $ligne ] < 10 } {
+               continue
+            }
+            #--- Traitement des lignes sans espace entre les donnees
+            if { [ string range $ligne 13 13 ] != " " } {
+               set b [ string replace $ligne 30 30 " [ string range $ligne 30 30 ]" ]
+               set c [ string replace $b 21 21 " [ string range $b 21 21 ]" ]
+               set ligne [ string replace $c 13 13 " [ string range $c 13 13 ]" ]
+            }
+            append lignes "$ligne\n"
+         }
+         #--- Mise a jour du catalogue sur le disque dur
+         set mpcfile [ file join $audace(rep_home) $confgene(posobs,fichier_station_uai) ]
+         set f [ open $mpcfile w ]
+         puts -nonewline $f $lignes
+         close $f
+      } else {
+         #--- Erreur de connexion a Internet
+         tk_messageBox -title "$caption(confgene,position_miseajour)" -type ok \
+            -message "$caption(confgene,fichier_uai_msg)" -icon error
       }
-      toplevel $audace(base).maj
-      wm transient $audace(base).maj $audace(base).confPosObs
-      wm title $audace(base).maj "$caption(confgene,position_miseajour)"
-      set posx_maj [ lindex [ split [ wm geometry $audace(base).confPosObs ] "+" ] 1 ]
-      set posy_maj [ lindex [ split [ wm geometry $audace(base).confPosObs ] "+" ] 2 ]
-      wm geometry $audace(base).maj +[ expr $posx_maj + 10 ]+[ expr $posy_maj + 230 ]
-      wm resizable $audace(base).maj 1 1
 
-      #--- Cree l'affichage du message
-      label $audace(base).maj.lab1 -text [ format $caption(confgene,fichier_uai_maj1) $confgene(posobs,fichier_station_uai) ]
-      pack $audace(base).maj.lab1 -padx 10 -pady 2
-      label $audace(base).maj.lab2 -text "$caption(confgene,fichier_uai_maj2)"
-      pack $audace(base).maj.lab2 -padx 10 -pady 2
-      label $audace(base).maj.labURL3 -text "$caption(confgene,fichier_uai_maj3)" -fg $color(blue)
-      pack $audace(base).maj.labURL3 -padx 10 -pady 2
-      label $audace(base).maj.lab4 -text "$caption(confgene,fichier_uai_maj4)"
-      pack $audace(base).maj.lab4 -padx 10 -pady 2
-      set confgene(ent1) [ file native [ file join $audace(rep_home) $confgene(posobs,fichier_station_uai) ] ]
-      entry $audace(base).maj.ent1 -state readonly -textvariable confgene(ent1) \
-         -width [ string length $confgene(ent1) ] -justify center
-      pack $audace(base).maj.ent1 -padx 10 -pady 2 -fill x -expand 1
-
-      #--- La nouvelle fenetre est active
-      focus $audace(base).maj
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $audace(base).maj
-
-      #--- Creation du lien avec le navigateur web et changement de sa couleur
-      bind $audace(base).maj.labURL3 <ButtonPress-1> {
-         set filename "$caption(confgene,fichier_uai_maj4)"
-         ::audace::Lance_Site_htm $filename
-      }
-      bind $audace(base).maj.labURL3 <Enter> {
-         $audace(base).maj.labURL3 configure -fg $color(purple)
-      }
-      bind $audace(base).maj.labURL3 <Leave> {
-         $audace(base).maj.labURL3 configure -fg $color(blue)
-      }
+      #--- Gestion du bouton de Mise a jour
+      $This.but_maj configure -relief raised -state normal
    }
 
    #
