@@ -2,7 +2,7 @@
 # Fichier : testaudela.tcl
 # Description : Outil de test automatique pour AudeLA
 # Auteurs : Michel Pujol
-# Mise à jour $Id: testaudela.tcl,v 1.15 2010-10-23 20:36:43 robertdelmas Exp $
+# Mise à jour $Id: testaudela.tcl,v 1.16 2010-10-24 14:51:29 michelpujol Exp $
 #
 
 #####################
@@ -1153,5 +1153,19 @@ proc ::testaudela::selectNoteBook { notebookPath name } {
 proc ::testaudela::putEntry { entryPath  value } {
    $entryPath delete 0 end
    $entryPath insert 0 $value
+}
+
+#----------------------------------------------------
+#  ::testaudela::putLabelEntry
+#    simule la saisie dans un LabelEntry
+#  parametres :
+#    entryPath : chemin complet du widget labelentry
+#    value : valeur saisie
+#  Exemple :
+#    ::testaudela::putLabelEntry .audace.acqfc.mode.une.nom.entr "m57"
+#----------------------------------------------------
+proc ::testaudela::putLabelEntry { entryPath  value } {
+   $entryPath.e delete 0 end
+   $entryPath.e insert 0 $value
 }
 
