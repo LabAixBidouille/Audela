@@ -122,15 +122,28 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    strcpy(tel->channel,tel->interp->result);
    tel->tempo = 50;
    tel->consoleLog = 0; 
-   /*
-   # 9600 : vitesse de transmission (bauds)
-   # 0 : 0 bit de parité
-   # 8 : 8 bits de données
-   # 1 : 1 bits de stop
-   */
+   // 
+   tel->waitResponse = 1;
+   
+   // j'ouvre le port serie 
+   //  # 9600 : vitesse de transmission (bauds)
+   //  # 0 : 0 bit de parité
+   //  # 8 : 8 bits de données
+   //  # 1 : 1 bits de stop
    sprintf(s,"fconfigure %s -mode \"9600,n,8,1\" -buffering none -translation {binary binary} -blocking 0",tel->channel); mytel_tcleval(tel,s);
    mytel_flush(tel);
-   
+
+   // je recupere RA pour vérifier si le telescope est present
+   if ( mytel_sendLX(tel, RETURN_STRING, s, "#:GR#",6) == 1 ) {
+      // le telescope est present, j'active l'attente des reponses aux requetes
+      tel->waitResponse = 1;
+   } else {
+      // le telescope n'est pas present, mais je continue quand meme pour permettre 
+      // de faire des tests sans monture.
+      // je desactive l'attente des reponses aux requetes 
+      tel->waitResponse = 0;
+   }
+
    // je recupere le mode d'alignement (altaz ou polaire) 
    // j'envoie la chaine 0x06  et j'attend la réponse A=Altaz mode P=Polar mode L=land mode
    if ( mytel_sendLX(tel, RETURN_CHAR, s, "%c",6) == 1 ) {
@@ -146,24 +159,31 @@ int tel_init(struct telprop *tel, int argc, char **argv)
             break;
       }
    } else {
-      // le telescope ne repond pas , on suppose qu'il est en mode equatorial
+      // le telescope ne connait pas cette commande, je suppose qu'il est en mode equatorial
       strcpy(tel->alignmentMode,"EQUATORIAL");
    }
 
+   // je configure la temporisation minimale entre l'envoi d'une commande 
+   // et le retour du premier caractere de la réponse
    tel->tempo=50;
+
 	strcpy(tel->autostar_char," ");
    mytel_set_format(tel,0);
-	/* --- identify a LX200 GPS ---*/
-   mytel_sendLX(tel, RETURN_STRING, s, "#:GVP#");
-	k=(int)strlen(s);
-	if (k>=7) {
-		// if (strcmp(s+k-7,"LX2001#")==0) { // remarque : la chaine retournee par mytel_sendLX ne contient pas #
-		if (strcmp(s+k-7,"LX2001#")==0) {
-			strcpy(tel->autostar_char,"");
-			tel->tempo=800;
-		}
-	}
+	
+   if (strcmp(tel->name,"LX200") == 0  ) {
+      // --- identify a LX200 GPS ---
+      mytel_sendLX(tel, RETURN_STRING, s, "#:GVP#");
+	   k=(int)strlen(s);
+	   if (k>=7) {
+		   // if (strcmp(s+k-7,"LX2001#")==0) { // remarque : la chaine retournee par mytel_sendLX ne contient pas #
+		   if (strcmp(s+k-7,"LX2001#")==0) {
+			   strcpy(tel->autostar_char,"");
+			   tel->tempo=800;
+		   }
+	   }
+   }
 
+   // je configure la correction de la refraction
    if ( strcmp(tel->name,"AudeCom") == 0 || strcmp(tel->name,"Ite-lente") == 0 ) {
       tel->refractionCorrection = 0; // la monture n'a assure pas la correction de la refraction
    } else {
@@ -686,6 +706,7 @@ int mytel_focus_coord(struct telprop *tel,char *result)
 
 int mytel_date_get(struct telprop *tel,char *ligne)
 {
+   int result;
    char s[1024],ss[1024];
    int y,m,d,h,min;
    int sec;
@@ -702,41 +723,59 @@ int mytel_date_get(struct telprop *tel,char *ligne)
    sec=atoi(s);
 
    /* Get the date */
-   mytel_sendLX(tel, RETURN_STRING, ss, "#:GC#");
-   sprintf(s,"string range \"%s\" 0 1",ss); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   m=atoi(s);
-   sprintf(s,"string range \"%s\" 3 4",ss); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   d=atoi(s);
-   sprintf(s,"string range \"%s\" 6 7",ss); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   y=atoi(s);
-   if (y>91) {
-      y=y+1900;
+   if ( mytel_sendLX(tel, RETURN_STRING, ss, "#:GC#") == 1 ) {
+      sprintf(s,"string range \"%s\" 0 1",ss); mytel_tcleval(tel,s);
+      strcpy(s,tel->interp->result);
+      m=atoi(s);
+      sprintf(s,"string range \"%s\" 3 4",ss); mytel_tcleval(tel,s);
+      strcpy(s,tel->interp->result);
+      d=atoi(s);
+      sprintf(s,"string range \"%s\" 6 7",ss); mytel_tcleval(tel,s);
+      strcpy(s,tel->interp->result);
+      y=atoi(s);
+      if (y>91) {
+         y=y+1900;
+      } else {
+         y=y+2000;
+      }
    } else {
-      y=y+2000;
+     result = 1;
+
    }
+   
    /* Returns the result */
-   sprintf(ligne,"%d %d %d %d %d %d.0",y,m,d,h,min,sec);
+   sprintf(ligne,"%d %d %d %d %d %d.0",y,m,d,h,min,sec); 
    return 0;
 }
+
+/**
+ * mytel_date_set : send a command to the telescop
+ * @param tel  
+ * @param returntype : type of string returned by LX
+ *			0 (return nothing)
+ *			1 (return one char)
+ *			2 (return string terminated by #)
+ * @param response  pointeur sur une chaine de caractere dans laquelle sera copiée la reponse 
+ * @param commandFormat  commande LX200
+ *   exemple "xxxxx#" 
+ *
+ * @return 0= OK ,  1=error with error message in tel->msg 
+ */
 
 int mytel_date_set(struct telprop *tel,int y,int m,int d,int h, int min,double s)
 {
    char ligne[1024];
    int sec;
 
-   /* Set the time */
+   // Set the time 
    mytel_flush(tel);
    sec=(int)(s);   
    mytel_sendLX(tel, RETURN_CHAR, ligne, "#:SL%02d:%02d:%02d#", h,min,sec);
-
    // Set the number of hours added to local time to yield UTC
    // We chose local time = UTC
    mytel_sendLX(tel, RETURN_CHAR, ligne, "#:SGs00.0#");
 
-   /* Set the date */
+   // Set the date 
    if (y<1992) {y=1992;}
    if (y>2091) {y=2091;}
    if (y<2000) {
@@ -921,7 +960,7 @@ int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *com
 	char s[1024];
 	int cr = 0;
    va_list mkr;
-   int tempo =100; // delai d'attente en millisecondes 
+   int nbLoopMax=5000; // nombre maximum de boucle d'attente de 1 ms
    
    // j'assemble la commande 
    va_start(mkr, commandFormat);
@@ -956,17 +995,18 @@ int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *com
                cr = 1;
             } else {
                // si pas de caractere recu , j'attends 1 milliseconde
-               // (insdispensable pour les ordinateurs rapides)
                libtel_sleep(1) ;
             }
          } else {
             // je copie le message d'erreur 
             strcpy(tel->msg, tel->interp->result);
          }
-      } while ( k++ < tempo && cr==0 );
-      if ( k >= tempo ) {
+      } while ( k++ < nbLoopMax && cr==0 && tel->waitResponse==1);
+      if ( k >= nbLoopMax ) {
          sprintf(tel->msg, "No response for %s",command);
-         mytel_logConsole(tel, "No # reponse for %s",command);
+         if ( tel->waitResponse == 1 ) {
+            mytel_logConsole(tel, "No char reponse for %s after %d ms",command,nbLoopMax);
+         }
       }
    }  else if ( returnType == RETURN_STRING ) {
       // j'attend une chaine qui se termine par diese
@@ -992,10 +1032,12 @@ int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *com
             // erreur, je copie le message d'erreur dans la variable tel->msg
             strcpy(tel->msg, tel->interp->result);
          }
-      } while ( k++ < tempo && cr==0 );
-      if ( k >= tempo ) {
-         sprintf(tel->msg, "No # reponse for %s after %d ms",command, tempo);
-         mytel_logConsole(tel, "No # reponse for %s after %d ms",command,tempo);
+      } while ( k++ < nbLoopMax && cr==0 && tel->waitResponse==1);
+      if ( k >= nbLoopMax ) {
+         sprintf(tel->msg, "No string response for %s after %d ms",command, nbLoopMax);
+         if ( tel->waitResponse == 1 ) {
+            mytel_logConsole(tel, "No # reponse for %s after %d ms",command,nbLoopMax);
+         }
       }
    }
 
