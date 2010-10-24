@@ -1,6 +1,6 @@
 #
 # Fichier : bddimages_config.cap
-# Mise a jour $Id: bddimages_config.cap,v 1.2 2009-11-07 14:10:43 robertdelmas Exp $
+# Mise a jour $Id: bddimages_config.cap,v 1.3 2010-10-24 17:47:19 jberthier Exp $
 #
 
 #=========================================================================
@@ -27,7 +27,7 @@ set caption(bddimages_config,login)          "Login"
 set caption(bddimages_config,pass)           "Mot de passe"
 set caption(bddimages_config,serv)           "Adresse IP du serveur Mysql"
 set caption(bddimages_config,dir)            "Répertoires de travail"
-set caption(bddimages_config,dirbase)        "Répertoires de la base"
+set caption(bddimages_config,dirbase)        "Répertoires de base"
 set caption(bddimages_config,dirinco)        "Répertoires incoming par défaut"
 set caption(bddimages_config,dirfits)        "Répertoires des fichiers FITS"
 set caption(bddimages_config,dircata)        "Répertoires des catalogues"
@@ -35,6 +35,8 @@ set caption(bddimages_config,direrr)         "Répertoires des fichiers en erreu
 set caption(bddimages_config,dirlog)         "Répertoires des logs"
 set caption(bddimages_config,variables)      "Variables diverses"
 set caption(bddimages_config,listlimit)      "Limite pour la liste d'insertion"
+
+set caption(bddimages_config,getdir)         "Choisir le répertoire"
 
 set caption(bddimages_config,test)           "Test"
 

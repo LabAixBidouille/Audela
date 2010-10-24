@@ -6,7 +6,7 @@
 # Description    : Configuration des variables globales bddconf
 #                  necessaires au service
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_config.tcl,v 1.2 2010-05-27 07:08:42 robertdelmas Exp $
+# Mise à jour $Id: bddimages_config.tcl,v 1.3 2010-10-24 17:47:19 jberthier Exp $
 #
 #--------------------------------------------------
 #
@@ -165,6 +165,33 @@ namespace eval bddimages_config {
    }
 
    #
+   # bddimages_config::getDir
+   # Permet de recuperer le nom des repertoires de travail
+   #
+   proc getDir { {path ""} {title ""} } {
+      variable This
+      global audace
+      global caption
+
+      # Defini un repertoire de base -> rep_images
+      set initDir $audace(rep_images)
+      if {[info exists path]} { set initDir $path }
+
+      # Defini le titre de la fenetre
+      set title [concat $caption(bddimages_config,getdir) $title]
+      
+      #--- Ouvre la fenetre de choix des repertoires
+      set workDir [tk_chooseDirectory -title $title -initialdir $initDir -parent $This]
+      #--- Extraction et chargement du fichier
+      if { $workDir != "" } {
+        ::console::affiche_resultat "WORKDIR : $workDir\n"
+        return $workDir
+      } else {
+        return
+      }
+   }
+
+   #
    # bddimages_config::createDialog
    # Creation de l'interface graphique
    #
@@ -275,7 +302,7 @@ namespace eval bddimages_config {
           label $This.dir.titre -text "$caption(bddimages_config,dir)" -borderwidth 0 -relief flat
           pack $This.dir.titre -in $This.dir -side top -anchor w -padx 3 -pady 3
 
-          #--- Cree un frame pour le repertoire de la base
+          #--- Cree un frame pour le repertoire de base
           frame $This.dir.dirbase -borderwidth 0 -relief flat
           pack $This.dir.dirbase -in $This.dir -anchor w -side top -expand 0 -fill both -padx 3 -pady 0
 
@@ -285,6 +312,9 @@ namespace eval bddimages_config {
             #--- Cree une ligne d'entree pour la variable
             entry $This.dir.dirbase.dat -textvariable bddconf(dirbase) -borderwidth 1 -relief groove -width 25 -justify left
             pack $This.dir.dirbase.dat -in $This.dir.dirbase -side left -anchor w -padx 1
+            #--- Cree un bouton charger
+            button $This.dir.dirbase.explore -text "..." -width 3 -command { set bddconf(dirbase) [::bddimages_config::getDir $bddconf(dirbase) "de base"] }
+            pack $This.dir.dirbase.explore -in $This.dir.dirbase -side left -anchor c -fill x -padx 6
             #--- Cree un bouton info
             button $This.dir.dirbase.help -state active -borderwidth 0 -relief flat -anchor c -height 1 \
                     -text "$caption(bddimages_config,test)" -command { ::skybot_Search::GetInfo "ad" }
@@ -300,6 +330,9 @@ namespace eval bddimages_config {
             #--- Cree une ligne d'entree pour la variable
             entry $This.dir.dirinco.dat -textvariable bddconf(dirinco) -borderwidth 1 -relief groove -width 25 -justify left
             pack $This.dir.dirinco.dat -in $This.dir.dirinco -side left -anchor w -padx 1
+            #--- Cree un bouton charger
+            button $This.dir.dirinco.explore -text "..." -width 3 -command { set bddconf(dirinco) [::bddimages_config::getDir $bddconf(dirbase) "d'incoming"] }
+            pack $This.dir.dirinco.explore -in $This.dir.dirinco -side left -anchor c -fill x -padx 6
             #--- Cree un bouton info
             button $This.dir.dirinco.help -state active -borderwidth 0 -relief flat -anchor c -height 1 \
                     -text "$caption(bddimages_config,test)" -command { ::skybot_Search::GetInfo "ad" }
@@ -315,6 +348,9 @@ namespace eval bddimages_config {
             #--- Cree une ligne d'entree pour la variable
             entry $This.dir.dirfits.dat -textvariable bddconf(dirfits) -borderwidth 1 -relief groove -width 25 -justify left
             pack $This.dir.dirfits.dat -in $This.dir.dirfits -side left -anchor w -padx 1
+            #--- Cree un bouton charger
+            button $This.dir.dirfits.explore -text "..." -width 3 -command { set bddconf(dirfits) [::bddimages_config::getDir $bddconf(dirbase) "des images FITS"] }
+            pack $This.dir.dirfits.explore -in $This.dir.dirfits -side left -anchor c -fill x -padx 6
             #--- Cree un bouton info
             button $This.dir.dirfits.help -state active -borderwidth 0 -relief flat -anchor c -height 1 \
                     -text "$caption(bddimages_config,test)" -command { ::skybot_Search::GetInfo "ad" }
@@ -330,6 +366,9 @@ namespace eval bddimages_config {
             #--- Cree une ligne d'entree pour la variable
             entry $This.dir.dircata.dat -textvariable bddconf(dircata) -borderwidth 1 -relief groove -width 25 -justify left
             pack $This.dir.dircata.dat -in $This.dir.dircata -side left -anchor w -padx 1
+            #--- Cree un bouton charger
+            button $This.dir.dircata.explore -text "..." -width 3 -command { set bddconf(dircata) [::bddimages_config::getDir $bddconf(dirbase) "des CATA"] }
+            pack $This.dir.dircata.explore -in $This.dir.dircata -side left -anchor c -fill x -padx 6
             #--- Cree un bouton info
             button $This.dir.dircata.help -state active -borderwidth 0 -relief flat -anchor c -height 1 \
                     -text "$caption(bddimages_config,test)" -command { ::skybot_Search::GetInfo "ad" }
@@ -345,6 +384,9 @@ namespace eval bddimages_config {
             #--- Cree une ligne d'entree pour la variable
             entry $This.dir.direrr.dat -textvariable bddconf(direrr) -borderwidth 1 -relief groove -width 25 -justify left
             pack $This.dir.direrr.dat -in $This.dir.direrr -side left -anchor w -padx 1
+            #--- Cree un bouton charger
+            button $This.dir.direrr.explore -text "..." -width 3 -command { set bddconf(direrr) [::bddimages_config::getDir $bddconf(dirbase) "des erreurs"] }
+            pack $This.dir.direrr.explore -in $This.dir.direrr -side left -anchor c -fill x -padx 6
             #--- Cree un bouton info
             button $This.dir.direrr.help -state active -borderwidth 0 -relief flat -anchor c -height 1 \
                     -text "$caption(bddimages_config,test)" -command { ::skybot_Search::GetInfo "ad" }
@@ -360,6 +402,9 @@ namespace eval bddimages_config {
             #--- Cree une ligne d'entree pour la variable
             entry $This.dir.dirlog.dat -textvariable bddconf(dirlog) -borderwidth 1 -relief groove -width 25 -justify left
             pack $This.dir.dirlog.dat -in $This.dir.dirlog -side left -anchor w -padx 1
+            #--- Cree un bouton charger
+            button $This.dir.dirlog.explore -text "..." -width 3 -command { set bddconf(dirlog) [::bddimages_config::getDir $bddconf(dirbase) "de log"] }
+            pack $This.dir.dirlog.explore -in $This.dir.dirlog -side left -anchor c -fill x -padx 6
             #--- Cree un bouton info
             button $This.dir.dirlog.help -state active -borderwidth 0 -relief flat -anchor c -height 1 \
                     -text "$caption(bddimages_config,test)" -command { ::skybot_Search::GetInfo "ad" }

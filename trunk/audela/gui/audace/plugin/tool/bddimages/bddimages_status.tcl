@@ -5,7 +5,7 @@
 # Fichier        : bddimages_status.tcl
 # Description    : Affiche le status de la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_status.tcl,v 1.3 2010-07-17 14:02:04 robertdelmas Exp $
+# Mise à jour $Id: bddimages_status.tcl,v 1.4 2010-10-24 17:47:19 jberthier Exp $
 #
 
 namespace eval bddimages_status {
@@ -102,51 +102,51 @@ namespace eval bddimages_status {
 
 
     proc GetPassword { msg } {
-    global getPassword
-    # getPassword est un tableau qui va contenir 3 entrées:
-    # name qui va contenir le nom de l'utilisateur
-    # passwd qui va contenir son mot de passe
-    # result qui va contenir 1 si et seulement si l'utilisateur a cliqué sur Ok
-    set getPassword(result) 0
-    set getPassword(passwd) ""
-    toplevel .passwd
-    wm title .passwd "Password"
-    wm maxsize .passwd 300 100
-    wm minsize .passwd 200 100
-
-    wm positionfrom .passwd user
-    wm sizefrom .passwd user
-    frame .passwd.f
-    pack configure .passwd.f -side top -fill both -expand 1
-
-
-    frame .passwd.f.pass
-    pack configure .passwd.f.pass -side top -fill x
-    # Frame qui va contenir le label "Type your password:" et une entrée pour le rentrer
-    label .passwd.f.pass.e -text $msg
-    pack configure .passwd.f.pass.e -side left -anchor e
-
-    frame .passwd.f.gpass
-    pack configure .passwd.f.gpass -side top -fill x
-    entry .passwd.f.gpass.v -textvariable getPassword(passwd) -show "*"
-    pack configure .passwd.f.gpass.v -side bottom -anchor e
-    # L'option -show permet de masquer la véritable entrée, et de mettre une étoile à la place des
-    # caractères entrés
-
-    frame .passwd.f.buttons
-    pack configure .passwd.f.buttons -side top -fill x
-    # Frame qui va contenir les boutons Cancel et Ok
-    button .passwd.f.buttons.cancel -text Cancel -command {destroy .passwd}
-    pack configure .passwd.f.buttons.cancel -side left
-    button .passwd.f.buttons.ok -text Ok -command {set getPassword(result) 1;destroy .passwd}
-    pack configure .passwd.f.buttons.ok -side right
-    grab set .passwd
-    tkwait window .passwd
-    if {$getPassword(result)} {
-    return $getPassword(passwd)
-    } else {
-    return ""
-    }
+       global getPassword
+       # getPassword est un tableau qui va contenir 3 entrées:
+       # name qui va contenir le nom de l'utilisateur
+       # passwd qui va contenir son mot de passe
+       # result qui va contenir 1 si et seulement si l'utilisateur a cliqué sur Ok
+       set getPassword(result) 0
+       set getPassword(passwd) ""
+       toplevel .passwd
+       wm title .passwd "Password"
+       wm maxsize .passwd 300 100
+       wm minsize .passwd 200 100
+   
+       wm positionfrom .passwd user
+       wm sizefrom .passwd user
+       frame .passwd.f
+       pack configure .passwd.f -side top -fill both -expand 1
+   
+   
+       frame .passwd.f.pass
+       pack configure .passwd.f.pass -side top -fill x
+       # Frame qui va contenir le label "Type your password:" et une entrée pour le rentrer
+       label .passwd.f.pass.e -text $msg
+       pack configure .passwd.f.pass.e -side left -anchor e
+   
+       frame .passwd.f.gpass
+       pack configure .passwd.f.gpass -side top -fill x
+       entry .passwd.f.gpass.v -textvariable getPassword(passwd) -show "*"
+       pack configure .passwd.f.gpass.v -side bottom -anchor e
+       # L'option -show permet de masquer la véritable entrée, et de mettre une étoile à la place des
+       # caractères entrés
+   
+       frame .passwd.f.buttons
+       pack configure .passwd.f.buttons -side top -fill x
+       # Frame qui va contenir les boutons Cancel et Ok
+       button .passwd.f.buttons.cancel -text Cancel -command {destroy .passwd}
+       pack configure .passwd.f.buttons.cancel -side left
+       button .passwd.f.buttons.ok -text Ok -command {set getPassword(result) 1;destroy .passwd}
+       pack configure .passwd.f.buttons.ok -side right
+       grab set .passwd
+       tkwait window .passwd
+       if {$getPassword(result)} {
+         return $getPassword(passwd)
+       } else {
+         return ""
+       }
     }
 
 
@@ -308,7 +308,7 @@ namespace eval bddimages_status {
          pack $This.frame1 -in $This -anchor s -side top -expand 0 -fill x
 
            #--- Cree un label pour le titre
-           label $This.frame1.titre  \
+           label $This.frame1.titre  -font $bddconf(font,arial_14_b) \
                  -text "$caption(bddimages_status,titre)"
            pack $This.frame1.titre \
                 -in $This.frame1 -side top -padx 3 -pady 3
@@ -329,15 +329,15 @@ namespace eval bddimages_status {
              pack $intitle -in $This.frame1.status -side left
 
                #--- Cree un label pour le status
-               label $intitle.ok -font $bddconf(font,arial_14_b) -padx 3 \
+               label $intitle.ok -font $bddconf(font,courier_10) -padx 3 \
                      -text "$caption(bddimages_status,label_connect)"
                pack $intitle.ok -in $intitle -side top -padx 3 -pady 1 -anchor w
                #--- Cree un label pour le nb d image
-               label $intitle.nbimg -font $bddconf(font,arial_14_b) \
+               label $intitle.nbimg -font $bddconf(font,courier_10) \
                      -text "$caption(bddimages_status,label_nbimg)"
                pack $intitle.nbimg -in $intitle -side top -padx 3 -pady 1 -anchor w
                #--- Cree un label pour le nb de header
-               label $intitle.header -font $bddconf(font,arial_14_b) \
+               label $intitle.header -font $bddconf(font,courier_10) \
                      -text "$caption(bddimages_status,label_nbheader)"
                pack $intitle.header -in $intitle -side top -padx 3 -pady 1 -anchor w
 
@@ -376,15 +376,15 @@ namespace eval bddimages_status {
              pack $intitle -in $This.frame1.rep -side left
 
                #--- Cree un label pour le status
-               label $intitle.nbimgrep -font $bddconf(font,arial_14_b) \
+               label $intitle.nbimgrep -font $bddconf(font,courier_10) \
                      -text "$caption(bddimages_status,label_nbimgrep)" -anchor center
                pack $intitle.nbimgrep -in $intitle -side top -padx 3 -pady 1 -anchor center
 
-               label $intitle.nbimginco -font $bddconf(font,arial_14_b) \
+               label $intitle.nbimginco -font $bddconf(font,courier_10) \
                      -text "$caption(bddimages_status,label_nbimginc)" -anchor center
                pack $intitle.nbimginco -in $intitle -side top -padx 3 -pady 1 -anchor center
 
-               label $intitle.nbimgerr -font $bddconf(font,arial_14_b) \
+               label $intitle.nbimgerr -font $bddconf(font,courier_10) \
                      -text "$caption(bddimages_status,label_nbimgerr)" -anchor center
                pack $intitle.nbimgerr -in $intitle -side top -padx 3 -pady 1 -anchor center
 
@@ -576,11 +576,7 @@ proc verif { } {
       }
     }
 
-
 }
-
-
-
 
 
 }
