@@ -2,7 +2,7 @@
 # Fichier : vo_tools.tcl
 # Description : Outils pour l'Observatoire Virtuel
 # Auteur : Alain KLOTZ et Jerome BERTHIER
-# Mise à jour $Id: vo_tools.tcl,v 1.32 2010-07-24 15:47:46 robertdelmas Exp $
+# Mise à jour $Id: vo_tools.tcl,v 1.33 2010-10-24 17:46:04 jberthier Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -177,7 +177,6 @@ proc vo_aladin { args } {
 # Exemple: vo_launch_aladin "05 35 17.3 -05 23 28" 10 DSS2 USNO2
 #
 # ------------------------------------------------------------------------------------
-
 proc vo_launch_aladin { args } {
 
    set unit "arcmin"
@@ -198,6 +197,10 @@ proc vo_launch_aladin { args } {
       set url_args [ concat "&script=get Aladin($survey) $coord $radius$unit;sync;get VizieR($catalog);get SkyBoT.IMCCE($epoch,500,'120 arcsec')" ]
       set goto_url [ concat $url_aladin$url_args ]
       #--- invocation de l'url
+###
+### Pb sous KDE: The KDE libraries are not designed to run with suid privileges.
+###  il faut mettre le user dans le bon group
+###
       ::audace::Lance_Site_htm $goto_url
 
    } else {
@@ -254,7 +257,7 @@ proc vo_skybotXML {procVarName args} {
 }
 
 # ------------------------------------------------------------------------------------
-# proc        : vo_skybot { [JD] [RA] [DEC] [radius] [mime] [output] [observer] [filter] }
+# proc        : vo_skybot { JD RA DEC radius [mime] [output] [observer] [filter] }
 #                 avec  JD       = jour julien de l'epoque consideree
 #                       RA,DEC   = coordonnees equatoriales J2000.0 du centre du FOV (degres)
 #                       radius   = rayon du FOV en arcsec
@@ -266,7 +269,7 @@ proc vo_skybotXML {procVarName args} {
 #
 # Description : Skybot webservice
 # Auteur      : Jerome BERTHIER &amp; Alain KLOTZ
-# Update      : 21 mai 2008
+# Update      : 3 oct. 2010
 #
 # Ce script interroge la base SkyBoT afin de fournir la liste et les coordonnees
 # de tous les corps du systeme solaire contenus dans le FOV a l'epoque et aux
@@ -275,7 +278,7 @@ proc vo_skybotXML {procVarName args} {
 # La reponse est une liste d'elements contenant les data.
 # Le premier element de la liste est le nom des colonnees recuperees.
 #
-# Plus d'info: http://skybot.imcce.fr
+# Plus d'info: http://vo.imcce.fr/webservices/skybot/?conesearch
 #
 # Dans la console, une fois la cmde executee, on peut executer:
 #    SOAP::dump -request skybotconesearch
@@ -283,7 +286,6 @@ proc vo_skybotXML {procVarName args} {
 # afin de visualiser le texte de la requete et de la reponse SOAP.
 #
 # ------------------------------------------------------------------------------------
-
 proc vo_skybotconesearch { args } {
    global audace
    global conf
@@ -387,7 +389,7 @@ proc vo_skybotconesearch { args } {
 }
 
 # ------------------------------------------------------------------------------------
-# proc        : vo_skybotresolver { [JD] [name] [mime] [out] [observer] }
+# proc        : vo_skybotresolver { JD name [mime] [out] [observer] }
 #                 avec  JD       = jour julien de l'epoque consideree
 #                       name     = nom ou numero ou designation provisoire de l'objet
 #                       mime     = format de la reponse ('text', 'votable', 'html')
@@ -396,7 +398,7 @@ proc vo_skybotconesearch { args } {
 #
 # Description : SkybotResolver webservice
 # Auteur      : Jerome BERTHIER &amp; Alain KLOTZ
-# Update      : 21 mai 2008
+# Update      : 3 oct. 2010
 #
 # Ce script interroge la base SkyBoT afin de resoudre le nom d'un corps
 # du systeme solaire en ses coordonnees a l'epoque consideree.
@@ -404,7 +406,7 @@ proc vo_skybotconesearch { args } {
 # La reponse est une liste d'elements contenant les data.
 # Le premier element de la liste est le nom des colonnees recuperees.
 #
-# Plus d'info: http://skybot.imcce.fr/
+# Plus d'info: http://vo.imcce.fr/webservices/skybot/?resolver
 #
 # Dans la console, une fois la cmde executee, on peut executer:
 #    SOAP::dump -request skybotresolver
@@ -412,7 +414,6 @@ proc vo_skybotconesearch { args } {
 # afin de visualiser le texte de la requete et de la reponse SOAP.
 #
 # ------------------------------------------------------------------------------------
-
 proc vo_skybotresolver { args } {
    global audace
    global conf
@@ -496,12 +497,13 @@ proc vo_skybotresolver { args } {
 }
 
 # ------------------------------------------------------------------------------------
-# proc        : vo_skybotstatus { [mime] }
-#                 avec  mime = format de la reponse ('text', 'votable', 'html')
+# proc        : vo_skybotstatus { [mime] [epoch] }
+#                 avec  mime  = format de la reponse ('text', 'votable', 'html')
+#                       epoch = epoque consideree au format JD ou ISO 
 #
 # Description : SkybotStatus webservice
 # Auteur      : Jerome BERTHIER &amp; Alain KLOTZ
-# Update      : 21 mai 2008
+# Update      : 3 oct. 2010
 #
 # Ce script interroge la base SkyBoT afin d'en connaitre le statut
 #
@@ -512,7 +514,7 @@ proc vo_skybotresolver { args } {
 #         les satellites naturels et les cometes (4 colonnes)
 #    - la date de la derniere mise a jour.
 #
-# Plus d'info: http://skybot.imcce.fr/
+# Plus d'info: http://vo.imcce.fr/webservices/skybot/?status
 #
 # Dans la console, une fois la cmde executee, on peut executer:
 #    SOAP::dump -request skybotstatus
@@ -520,7 +522,6 @@ proc vo_skybotresolver { args } {
 # afin de visualiser le texte de la requete et de la reponse SOAP.
 #
 # ------------------------------------------------------------------------------------
-
 proc vo_skybotstatus { args } {
    global audace
    global conf
@@ -599,12 +600,11 @@ proc vo_skybotstatus { args } {
 }
 
 # ------------------------------------------------------------------------------------
-# proc        : vo_sesame { name resultType server }
-#
+# proc        : vo_sesame { name [resultType] [server] }
 #
 # Description : Sesame: astronomical object name Resolver
 # Auteur      : Jerome BERTHIER
-# Update      : 11 juin 2006
+# Update      : 3 oct. 2010
 #
 # Ce script interroge le webservice SESAME (CDS) pour resoudre les noms des corps
 # celestes (hors objets du systeme solaire) reconnus de Simbad
@@ -612,7 +612,6 @@ proc vo_skybotstatus { args } {
 # Plus d'info: http://cdsweb.u-strasbg.fr/cdsws.gml
 #
 # ------------------------------------------------------------------------------------
-
 proc vo_sesame { args } {
    global audace
    global conf
@@ -660,10 +659,9 @@ proc vo_sesame { args } {
 # ------------------------------------------------------------------------------------
 # proc        : vo_sesame_url { server }
 #
-#
 # Description : GLU: Generateur de lien uniforme (CDS)
 # Auteur      : Jerome BERTHIER
-# Update      : 03 february 2006
+# Update      : 3 oct. 2010
 #
 # Ce script interroge le webservice GLU (CDS) pour determiner l'URL
 # d'un service Sesame accessible
@@ -671,7 +669,6 @@ proc vo_sesame { args } {
 # Plus d'info: http://cdsweb.u-strasbg.fr/cdsws.gml
 #
 # ------------------------------------------------------------------------------------
-
 proc vo_sesame_url { args } {
    package require SOAP
 
@@ -699,6 +696,137 @@ proc vo_sesame_url { args } {
       error "Usage: vo_sesame_url ?CDS|ADS|ADAC|CADC?"
    }
 }
+
+# ------------------------------------------------------------------------------------
+# proc        : vo_vizier_query { RA DEC [radius] [unit] [criteria] }
+#                 avec  RA DEC   = coordonnees equatoriales J2000.0 du centre du FOV (degres)
+#                       radius   = rayon du FOV 
+#                       unit     = unite du rayon du FOV (e.g. deg | arcmin | arcsec)
+#                       criteria = citere de selection des catalogues VizieR (e.g. I/289/out)
+#                       mime     = type mime de la reponse (e.g. list (def.) | votable)
+#
+# Description : Interrogation du service VizieR (CDS)
+# Auteur      : Jerome BERTHIER
+# Update      : 3 oct. 2010
+#
+# Ce script interroge le webservice VizieR (CDS) pour recuperer tous les objets d'un
+# (jeu de) catalogue VizieR pour un FOV donne
+#
+# Remarques :
+# - Le signe + ou - est obligatoire pour DEC
+# - Exemples de criteres VizieR:
+#     UCAC3 : criteria = "I/315/out
+#     UCAC2 : criteria = I/289/out
+#     UCAC2A: criteria = I/294A/ucac2bss
+#     HIP   : criteria = I/239/hip_main
+#     2MASS : criteria = II/246/out
+#     TYCHO : criteria = I/239/tyc_main
+#
+# Plus d'info: http://cds.u-strasbg.fr/cdsws.gml
+#
+# Dans la console, une fois la cmde executee, on peut executer:
+#    SOAP::dump -request vizierquery
+#    SOAP::dump -reply vizierquery
+# afin de visualiser le texte de la requete et de la reponse SOAP.
+# Test: vo_vizier_query 105.0 +3.9 30 "arcmin" "I/239/tyc_main" "votable"
+# ------------------------------------------------------------------------------------
+proc vo_vizier_query { args } {
+   package require SOAP
+   package require dom
+
+# TODO remonter dans variables Audace
+   set vizier_url "http://cdsws.u-strasbg.fr/axis/services/VizieR"
+
+   set argc [llength $args]
+   if { $argc >=2 } {
+
+      # reception des arguments
+      set RA [mc_angle2deg [lindex $args 0]]
+      set DEC [mc_angle2deg [lindex $args 1] 90]
+      set target "[string trim $RA] [string trim [format %+.5f $DEC]]"
+      set radius "5.0"
+      if {$argc >= 3} { set radius [lindex $args 2] }
+      set unit "arcmin"
+      if {$argc >= 4} { set unit [lindex $args 3] }
+      set criteria "I/315/out"
+      if {$argc >= 5} { set criteria [lindex $args 4] }
+      set mime "list"
+      if {$argc >= 6} { set mime [lindex $args 5] }
+
+      SOAP::create cataloguesData \
+         -uri $vizier_url \
+         -proxy $vizier_url \
+         -action "urn:cataloguesData" \
+         -params { "target" "string" "radius" "double" "unit" "string" "text" "string" }
+
+      set erreur [ catch { cataloguesData $target $radius $unit $criteria } response ]
+
+      if { $erreur == "0" } {
+         if { $mime eq "votable" } {
+            set vizier $response
+         } else {
+            # Parse la reponse VOTable
+            set votable [::dom::parse $response]
+            # Recupere les fields -> nom des colonnes
+            set fields {}
+            foreach n [::dom::selectNode $votable {descendant::FIELD/attribute::name}] {
+               lappend fields "[::dom::node stringValue $n]"
+            }
+            # Recupere le nom du catalogue -> resource/description
+            set catalog $criteria
+            set catalogDesc [::dom::node stringValue [::dom::selectNode $votable {descendant::RESOURCE/DESCRIPTION/text()}]]
+            lappend catalog $catalogDesc 
+            # Recupere toutes les lignes de la table
+            set rows {}
+            foreach tr [::dom::selectNode $votable {descendant::TR}] {
+               set row {}
+               foreach td [::dom::selectNode $tr {descendant::TD/text()}] {
+                  lappend row [::dom::node stringValue $td]
+               }
+               lappend rows $row
+            }
+            # Cree la liste finale { {catalog} {fields} {rows} }
+            set vizier {}
+            lappend vizier [list $catalog $fields $rows]
+         }
+         return $vizier
+      } else {
+         if {[set nameofexecutable [file tail [file rootname [info nameofexecutable]]]]=="audela"} {
+            tk_messageBox -title "error" -type ok -message $response
+         }
+         return "failed"
+      }
+
+   } else {
+
+      error "Usage: vo_vizier_query ra dec ?radius? ?unit? ?VizieRCriteria?"
+
+   }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # ------------------------------------------------------------------------------------
 proc vo_name2coord { object_name } {
@@ -839,4 +967,3 @@ proc vo_xml_decode { xml tags {kdeb 0} } {
    }
    return ""
 }
-

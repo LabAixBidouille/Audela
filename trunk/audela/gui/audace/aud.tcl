@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.152 2010-10-24 14:11:02 michelpujol Exp $
+# Mise à jour $Id: aud.tcl,v 1.153 2010-10-24 17:46:05 jberthier Exp $
 #
 
 #--- Chargement du package BWidget
@@ -1236,6 +1236,8 @@ namespace eval ::audace {
             catch {$menu entryconfigure $i -state $state}
          }
       }
+      # Configuration de l'etat du menu Interop
+      catch {::vo_tools::handleBroadcastBtnState}
    }
 
    proc cursor { curs } {
