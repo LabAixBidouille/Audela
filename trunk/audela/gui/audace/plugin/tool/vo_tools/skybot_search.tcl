@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER
-# Mise à jour $Id: skybot_search.tcl,v 1.32 2010-10-03 15:53:46 michelpujol Exp $
+# Mise à jour $Id: skybot_search.tcl,v 1.33 2010-10-24 17:49:06 jberthier Exp $
 #
 
 namespace eval skybot_Search {
@@ -40,8 +40,9 @@ namespace eval skybot_Search {
       global myurl
       set myurl(iau_codes)     "http://cfa-www.harvard.edu/iau/lists/ObsCodes.html"
       set myurl(astorb,CDS)    "http://vizier.u-strasbg.fr/cgi-bin/VizieR-5?-source=B/astorb/astorb&Name==="
+# TODO remplacer par Miriade
       set myurl(ephepos,IMCCE) "http://www.imcce.fr/cgi-bin/ephepos.cgi/calcul?"
-      set myurl(skybot_doc)    "http://www.imcce.fr/page.php?nav=fr/observateur/support/skybot/documentation.php"
+      set myurl(skybot_doc)    "http://vo.imcce.fr/webservices/skybot/?documentation"
       #---
       set This $this
       createDialog
@@ -239,18 +240,16 @@ namespace eval skybot_Search {
         #--- Recupere uniquement le nom de l'image courante
         set voconf(nom_image) [::confVisu::getFileName $audace(visuNo)]
       } else {
-       if { $voconf(session_filename) == "?" } {
+        if { $voconf(session_filename) == "?" } {
           #--- Ouvre la fenetre de choix des images
           set voconf(nom_image) [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
-       }
-
-       #--- Extraction et chargement du fichier
-       if { $voconf(nom_image) != "" } {
+        }
+        #--- Extraction et chargement du fichier
+        if { $voconf(nom_image) != "" } {
           loadima $voconf(nom_image)
-       } else {
+        } else {
           return
-       }
-
+        }
       }
 
       #--- Verification de la calibration astrometrique de l'image
@@ -278,17 +277,17 @@ namespace eval skybot_Search {
          #--- Recherche du temps de pose de l'image (si non trouve alors 1s)
          set voconf(unite_pose) 0
          foreach kw {EXPTIME EXPOSURE EXP_TIME} {
-          set l [ buf$audace(bufNo) getkwd $kw ]
-          set value [lindex $l 1]
-          set units [lindex $l 4]
-          if { ($units eq "m" || $units eq "s") } {
-           set voconf(pose) $value
-           if { $units eq "m" } {
-            set voconf(unite_pose) 2
-           } else {
-            set voconf(unite_pose) 1
+           set l [ buf$audace(bufNo) getkwd $kw ]
+           set value [lindex $l 1]
+           set units [lindex $l 4]
+           if { ($units eq "m" || $units eq "s") } {
+             set voconf(pose) $value
+             if { $units eq "m" } {
+               set voconf(unite_pose) 2
+             } else {
+               set voconf(unite_pose) 1
+             }
            }
-          }
          }
 #         set voconf(pose) [ lindex [ buf$audace(bufNo) getkwd "EXPTIME" ] 1 ]
 #         if { [ string length $voconf(pose) ] == "0" } {
@@ -440,6 +439,7 @@ namespace eval skybot_Search {
    #
    # skybot_Search::Trace_Repere
    # Trace le repere E/N dans l'image
+   #
    proc Trace_Repere { } {
       global audace color
       global voconf

@@ -2,7 +2,7 @@
 # Fichier : vo_tools_go.tcl
 # Description : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur : Robert DELMAS
-# Mise à jour $Id: vo_tools_go.tcl,v 1.22 2010-10-10 20:05:43 michelpujol Exp $
+# Mise à jour $Id: vo_tools_go.tcl,v 1.23 2010-10-24 17:49:06 jberthier Exp $
 #
 
 #============================================================
@@ -10,7 +10,7 @@
 #    initialise le namespace
 #============================================================
 namespace eval ::vo_tools {
-   package provide vo_tools 1.0
+   package provide vo_tools 2.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] vo_tools_go.cap ]
@@ -95,7 +95,9 @@ proc ::vo_tools::createPluginInstance { { in "" } { visuNo 1 } } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools skybot_resolver.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools skybot_search.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools skybot_statut.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools vo_samp.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools samp.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools votable.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools votableUtil.tcl ]\""
    #--- Mise en place de l'interface graphique
    ::vo_tools::createPanel $in.vo_tools
 }
@@ -230,58 +232,271 @@ proc ::vo_tools::vo_toolsBuildIF { This } {
 
          #--- Bouton
          button $frame.but1 -borderwidth 1 -text $panneau(vo_tools,titre5) \
-            -command "::vo_tools::cmdInteropInstallMenu  $frame"
+            -command "::vo_tools::InstallMenuInterop  $frame"
          eval "pack $frame.but1 -in $frame $packoptions"
 
       pack $frame -side top -fill x
 
-      #--- Mise a jour dynamique des couleurs
+      #--- Mise a jour dynamique des couleurs et fontes
       ::confColor::applyColor $This
 }
 
-proc ::vo_tools::cmdSampBroadcastImage {} {
- global audace
- if { [::Samp::check] == 1 } {
-  set path [::confVisu::getFileName $audace(visuNo)]
-  set url "file://localhost/$path"
-  ::console::disp "#vo_tools::samp broadcasting image $path\n"
-  set msg [::samp::m_imageLoadFits $::samp::key [list samp.mtype image.load.fits samp.params [list name $url "image-id" $url url $url] ]]
- } else {
-  ::console::disp "#vo_tools::samp hub not found\n"
- }
+#------------------------------------------------------------
+# ::vo_tools::handleBroadcastBtnState
+#    Change l'etat des boutons de broadcast
+# @param string args parametre transmis par le listener
+#------------------------------------------------------------
+proc ::vo_tools::handleBroadcastBtnState { args } {
+   global audace caption menu
+   set visuNo $::audace(visuNo)
+   set stateImg "disabled"
+   set stateTab "disabled"
+   set stateSpe "disabled"
+   
+   # Determine l'etat
+   if { $args ne "disabled" } {
+      if {[::Samp::isConnected]} {
+         # Test la presence d'une image 1D ou 2D
+         if {[file exists [::confVisu::getFileName $visuNo]]} {
+            set naxis [lindex [buf$::audace(bufNo) getkwd NAXIS] 1]
+            if {$naxis == 1} {
+               # C'est un spectre
+               set stateImg "disabled"
+               set stateSpe "normal"
+            } else {
+               # C'est une image
+               set stateImg "normal"
+               set stateSpe "disabled"
+            }
+         } else {
+            set stateImg "disabled"
+            set stateSpe "disabled"
+         }
+         # Test la presence en memoire d'une VOTable
+         set err [catch {string length [::votableUtil::getVotable]} length]
+         if {$err == 0 && $length > 0} {
+            set stateTab "normal"
+         } else {
+            set stateTab "disabled"
+         }
+      }
+   }
+   # Configure le menu
+   Menu_Configure $visuNo "Interop" $caption(vo_tools_go,samp_menu_broadcastImg) "-state" $stateImg
+   Menu_Configure $visuNo "Interop" $caption(vo_tools_go,samp_menu_broadcastTab) "-state" $stateTab
+   Menu_Configure $visuNo "Interop" $caption(vo_tools_go,samp_menu_broadcastSpe) "-state" $stateSpe
 }
 
-proc ::vo_tools::cmdSampConnect {} {
- if { [::Samp::check] == 1 } {
-  ::console::disp "#vo_tools::samp connected\n"
- } else {
-  ::console::disp "#vo_tools::samp hub not found\n"
- }
+#------------------------------------------------------------
+# ::vo_tools::handleInteropBtnState
+#    Change l'etat du menu Interop
+# @param string args parametre transmis par le listener
+#------------------------------------------------------------
+proc ::vo_tools::handleInteropBtnState { args } {
+   global audace caption menu
+   set visuNo $::audace(visuNo)
+   set colorBtn "#CC0000"
+
+   # Determine l'etat
+   if { $args ne "disabled" } {
+      if {[::Samp::isConnected]} {
+         set colorBtn "#00CC00"
+      } else {
+         set colorBtn "#CC0000"
+      }
+   }
+   # Configure menu
+   $menu(menubar$visuNo) entryconfigure [$menu(menubar$visuNo) index "Interop"] -foreground $colorBtn
 }
 
-proc ::vo_tools::cmdSampDisconnect {} {
- ::Samp::destroy
-}
-
-proc ::vo_tools::cmdInteropInstallMenu { frame } {
-   #--- Ajout du menu SAMP au menu principal de l'application
-   #--- Le nom est le meme que celui d'Aladin
+#------------------------------------------------------------
+# ::vo_tools::SampConnect
+#    Connection au hub Samp
+#------------------------------------------------------------
+proc ::vo_tools::SampConnect {} {
    global caption
+   if { [::Samp::check] == 1 } {
+      ::console::affiche_resultat "$caption(vo_tools_go,samp_connected) \n"
+      ::vo_tools::handleInteropBtnState
+      ::vo_tools::handleBroadcastBtnState
+   } else {
+      ::console::affiche_erreur "$caption(vo_tools_go,samp_hubnotfound) \n"
+      ::vo_tools::handleInteropBtnState "disabled"
+      ::vo_tools::handleBroadcastBtnState "disabled"
+   }
+}
+
+#------------------------------------------------------------
+# ::vo_tools::SampDisConnect
+#    Deconnection du hub Samp
+#------------------------------------------------------------
+proc ::vo_tools::SampDisconnect {} {
+   ::Samp::destroy
+   ::vo_tools::handleInteropBtnState "disabled"
+   ::vo_tools::handleBroadcastBtnState "disabled"
+}
+
+#------------------------------------------------------------
+# ::vo_tools::LoadVotable
+#    Charge une VOTable locale et affiche les objets dans la visu
+#------------------------------------------------------------
+proc ::vo_tools::LoadVotable { } {
+   global audace caption
+   
+   # Verifie qu'une image est presente dans le canvas
+   set image [::confVisu::getFileName $::audace(visuNo)]
+   if { [file exists $image] == 0 } {
+      tk_messageBox -title "Error" -type ok -message $caption(vo_tools_go,samp_noimageloaded)
+   } else {
+      # Ok, charge la VOTable
+      if {[::votableUtil::loadVotable ? $::audace(visuNo)]} {
+         ::votableUtil::displayVotable [::votableUtil::votable2list] $::audace(visuNo) "orange" "oval"
+      }
+      Menu_Configure $::audace(visuNo) "Interop" $caption(vo_tools_go,samp_menu_broadcastTab) "-state" "normal"
+   }
+}
+
+#------------------------------------------------------------
+# ::vo_tools::ClearDisplay
+#    Nettoie les objets affiches dans la visu a partir d'une VOTable
+#------------------------------------------------------------
+proc ::vo_tools::ClearDisplay { args } {
+   ::votableUtil::clearDisplay
+}
+
+#------------------------------------------------------------
+# ::vo_tools::SampBroadcastImage
+#    Broadcast l'image courante
+#------------------------------------------------------------
+proc ::vo_tools::SampBroadcastImage {} {
+   global audace caption
+   set image [::confVisu::getFileName $::audace(visuNo)]
+
+   if { [file exists $image] } {
+      if { [::Samp::check] == 1 } {
+         set imgFile [::Samp::convertEntities $image]
+         set url "file://localhost/$imgFile"
+         ::console::affiche_resultat "$caption(vo_tools_go,samp_imgtobroadcast) $image \n"
+         set msg [::samp::m_imageLoadFits $::samp::key [list samp.mtype image.load.fits samp.params [list "name" "$url" "image-id" "$url" "url" "$url"] ]]
+      } else {
+         ::console::affiche_erreur $caption(vo_tools_go,samp_hubnotfound)
+         ::vo_tools::handleInteropBtnState "disabled"
+         ::vo_tools::handleBroadcastBtnState "disabled"
+      }
+   } else {
+      ::console::affiche_erreur "$caption(vo_tools_go,samp_noimgtobroadcast) \n"
+   }
+}
+
+#------------------------------------------------------------
+# ::vo_tools::SampBroadcastTable
+#    Broadcast l'image courante
+#------------------------------------------------------------
+proc ::vo_tools::SampBroadcastTable {} {
+   global caption
+   if { [info exists ::votableUtil::votBuf(file)] &&
+         [file exists $::votableUtil::votBuf(file)] } {
+      if { [::Samp::check] == 1 } {
+         set imgTab [::Samp::convertEntities $::votableUtil::votBuf(file)]
+         set url "file://localhost/$imgTab"
+         ::console::affiche_resultat "$caption(vo_tools_go,samp_tabtobroadcast) $::votableUtil::votBuf(file)\n"
+         set msg [::samp::m_tableLoadVotable $::samp::key [list samp.mtype table.load.votable samp.params [list "name" "$url" "table-id" "$url" "url" "$url"] ]]
+      } else {
+         ::console::affiche_erreur "$caption(vo_tools_go,samp_hubnotfound) \n"
+         ::vo_tools::handleInteropBtnState "disabled"
+         ::vo_tools::handleBroadcastBtnState "disabled"
+      }
+   } else {
+      ::console::affiche_erreur "$caption(vo_tools_go,samp_notabtobroadcast) \n"
+   }
+}
+
+#------------------------------------------------------------
+# ::vo_tools::SampBroadcastSpectrum
+#    Broadcast le spectre courant
+#------------------------------------------------------------
+proc ::vo_tools::SampBroadcastSpectrum {} {
+   global audace caption
+   set spectrum [::confVisu::getFileName $::audace(visuNo)]
+
+   if { [file exists $spectrum] } {
+      if { [::Samp::check] == 1 } {
+         set speFile [::Samp::convertEntities $spectrum]
+         set url "file://localhost/$speFile"
+         ::console::affiche_resultat "$caption(vo_tools_go,samp_spetobroadcast) $spectrum \n"
+         set msg [::samp::m_spectrumLoadSsaGeneric $::samp::key [list samp.mtype spectrum.load.ssa-generic samp.params [list "name" "$url" "spectrum-id" "$url" "url" "$url"] ]]
+      } else {
+         ::console::affiche_erreur $caption(vo_tools_go,samp_hubnotfound)
+         ::vo_tools::handleInteropBtnState "disabled"
+         ::vo_tools::handleBroadcastBtnState "disabled"
+      }
+   } else {
+      ::console::affiche_erreur "$caption(vo_tools_go,samp_nospetobroadcast) \n"
+   }
+}
+
+#------------------------------------------------------------
+# ::vo_tools::SampBroadcastPointAtSky
+#    Broadcast les coordonnees du point clique dans la visu
+#------------------------------------------------------------
+proc ::vo_tools::SampBroadcastPointAtSky { w x y } {
+   global audace
+
+   # Recupere la valeur courante du zoom
+   set zoom [visu$::audace(visuNo) zoom]
+   # Recupere les dimensions de l'image en px
+   set naxis1 [expr [lindex [buf$::audace(bufNo) getkwd NAXIS1] 1] * $zoom]
+   set naxis2 [expr [lindex [buf$::audace(bufNo) getkwd NAXIS2] 1] * $zoom]
+   # Converti les coordonnees canvas en coordonnees x,y dans l'image
+   set imgXY [::audace::canvas2Picture [list $x $y]]
+   # Converti les coordonnees x,y dans l'image en coordonnees sur le ciel
+   set err [catch {buf$audace(bufNo) xy2radec $imgXY} RADEC ]
+   if {$err == 0} {
+      # Broadcast les coordonnees
+      set msg [::samp::m_coordPointAtSky $::samp::key [list samp.mtype coord.pointAt.sky samp.params [list "ra" [lindex $RADEC 0] "dec" [lindex $RADEC 1]] ]]
+   }
+
+}
+
+#------------------------------------------------------------
+# ::vo_tools::helpInterop
+#    Ouvre l'aide en ligne
+#------------------------------------------------------------
+proc ::vo_tools::helpInterop { } {
+   ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::vo_tools::getPluginType ] ] [ ::vo_tools::getPluginDirectory ] [ ::vo_tools::getPluginHelp ] "field_7"
+}
+
+#------------------------------------------------------------
+# ::vo_tools::InstallMenuInterop
+#    Installe le menu Interop dans la barre de menu d'Audace
+#------------------------------------------------------------
+proc ::vo_tools::InstallMenuInterop { frame } {
+   global audace caption menu
    set visuNo $::audace(visuNo)
 
-   Menu  $visuNo Interop
-   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_help) ::vo_tools::cmdInteropHelp
-   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_broadcast) ::vo_tools::cmdSampBroadcastImage
-   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_connect) ::vo_tools::cmdSampConnect
-   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_disconnect) ::vo_tools::cmdSampDisconnect
+   # Deploiement du menu Interop
+   Menu $visuNo "Interop"
+   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_connect) ::vo_tools::SampConnect
+   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_disconnect) ::vo_tools::SampDisconnect
+   Menu_Separator $visuNo "Interop"
+   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_loadvotable) ::vo_tools::LoadVotable
+   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_cleardisplay) ::vo_tools::ClearDisplay 
+   Menu_Separator $visuNo "Interop"
+   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_broadcastImg) ::vo_tools::SampBroadcastImage
+   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_broadcastSpe) ::vo_tools::SampBroadcastSpectrum
+   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_broadcastTab) ::vo_tools::SampBroadcastTable
+   Menu_Separator $visuNo "Interop"
+   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_help) ::vo_tools::helpInterop
+   #--- Mise a jour dynamique des couleurs et fontes
    ::confColor::applyColor [MenuGet $visuNo "Interop"]
-
+   # Destruction du bouton Interop du panneau VO 
    destroy $frame
+   # Tentative de connexion au hub Samp
+   ::vo_tools::SampConnect
+   # Ajoute un binding sur le canvas pour broadcaster les coordonnees cliquees
+   bind $::audace(hCanvas) <ButtonPress-1> {::vo_tools::SampBroadcastPointAtSky %W %x %y}
+   # Active la mise a jour automatique de l'affichage quand on change d'image
+   ::confVisu::addFileNameListener $visuNo "::vo_tools::handleBroadcastBtnState"
+   ::confVisu::addFileNameListener $visuNo "::vo_tools::ClearDisplay"
 
-  ::Samp::check
 }
-
-proc ::vo_tools::cmdInteropHelp { } {
- ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::vo_tools::getPluginType ] ] [ ::vo_tools::getPluginDirectory ] [ ::vo_tools::getPluginHelp ] "field_7"
-}
-
