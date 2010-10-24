@@ -2,7 +2,7 @@
 # Fichier : tutorial.tcl
 # Description : Lancement du tutorial
 # Auteur : Michel PUJOL
-# Mise à jour $Id: tutorial.tcl,v 1.4 2010-05-18 16:30:59 robertdelmas Exp $
+# Mise à jour $Id: tutorial.tcl,v 1.5 2010-10-24 17:53:25 jberthier Exp $
 #
 
 #--- Prise en compte du codage UTF8
@@ -21,7 +21,7 @@ if { $::tcl_platform(platform) == "unix" } {
 catch { source [ file join $repHome langage.ini ] }
 
 #--- Lancement du tutorial
-cd ../gui/tutorial
+cd [file join $::audela_start_dir ../gui/tutorial]
 source tuto.tcl
 return
 
