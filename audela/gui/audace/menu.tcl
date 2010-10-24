@@ -2,7 +2,7 @@
 # Fichier : menu.tcl
 # Description : Package pour gerer facilement les menus
 # Auteur : Denis MARCHAIS d'apres B. Welsh, Practical Programming in Tcl and Tk, Ed. 2, p.319-322
-# Mise à jour $Id: menu.tcl,v 1.8 2010-05-16 14:19:20 robertdelmas Exp $
+# Mise à jour $Id: menu.tcl,v 1.9 2010-10-24 17:46:05 jberthier Exp $
 #
 
 proc Menu_Setup { visuNo menubar } {
@@ -38,7 +38,6 @@ proc Menubar_Delete { visuNo } {
 
 proc Menu { visuNo menuName } {
    global menu
-
    if [info exists menu(menu$visuNo,$menuName)] {
       error "Menu $menuName already defined"
    }
