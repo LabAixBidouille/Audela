@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.78 2010-05-28 15:32:14 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.79 2010-10-30 13:11:30 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -11,21 +11,12 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(audace,porttalk_titre)                    "PortTalk:"
-set caption(audace,porttalk_erreur)                   "Porttalk Error"
-set caption(audace,porttalk_msg_erreur)               "Run uninstallporttalk.exe from bin, delete porttalk.sys from the system32/drivers folder and run AudeLA again."
-set caption(audace,porttalk_message)                  "Do not display this message next time."
-
-set caption(audace,port_com_dispo)                    "Available COM Ports:"
-set caption(audace,pas_port_com)                      "No Port"
-
 set caption(audace,titre)                             "Aud'ACE"
 set caption(audace,tool)                              "Tool:"
 
 set caption(console,titre)                            "Terminal"
 set caption(console,debug)                            "Debug"
 
-set caption(audace,ok)                                "OK"
 set caption(audace,console_rate)                      "Access not possible"
 set caption(audace,console_gagne)                     "Access OK"
 set caption(audace,console_annule)                    "Cancelled"
@@ -60,6 +51,8 @@ set caption(confVisu,seuil_auto)                      "Auto"
 set caption(confVisu,attention)                       "Warning"
 set caption(confVisu,tracer_boite)                    "Please draw a square with your mouse."
 set caption(confVisu,boite_seuil)                     "..."
+set caption(confVisu,zoom-)                           "Zoom -"
+set caption(confVisu,zoom+)                           "Zoom +"
 set caption(confVisu,RA)                              "RA"
 set caption(confVisu,DEC)                             "Dec."
 set caption(confVisu,tiret)                           "-"
@@ -89,21 +82,12 @@ set caption(sectiongraph,refreshManuel)               "Refresh Now"
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(audace,porttalk_titre)                 "PortTalk :"
-   set caption(audace,porttalk_erreur)                "Erreur Porttalk"
-   set caption(audace,porttalk_msg_erreur)            "Lancer uninstallporttalk.exe depuis bin, supprimer porttalk.sys du répertoire system32/drivers et relancer AudeLA."
-   set caption(audace,porttalk_message)               "Ne plus afficher ce message la prochaine fois."
-
-   set caption(audace,port_com_dispo)                 "Ports com disponibles :"
-   set caption(audace,pas_port_com)                   "Pas de port"
-
    set caption(audace,titre)                          "Aud'ACE"
    set caption(audace,tool)                           "Outil :"
 
    set caption(console,titre)                         "Console"
    set caption(console,debug)                         "Débug"
 
-   set caption(audace,ok)                             "OK"
    set caption(audace,console_rate)                   "Accès non possible"
    set caption(audace,console_gagne)                  "Accès réussi"
    set caption(audace,console_annule)                 "Annulé"
@@ -138,6 +122,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,attention)                    "Attention"
    set caption(confVisu,tracer_boite)                 "Veuillez tracer un cadre à la souris."
    set caption(confVisu,boite_seuil)                  "..."
+   set caption(confVisu,zoom-)                        "Zoom -"
+   set caption(confVisu,zoom+)                        "Zoom +"
    set caption(confVisu,RA)                           "AD"
    set caption(confVisu,DEC)                          "Déc."
    set caption(confVisu,tiret)                        "-"
@@ -167,21 +153,12 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(audace,porttalk_titre)                 "PortTalk:"
-   set caption(audace,porttalk_erreur)                "Errore Porttalk"
-   set caption(audace,porttalk_msg_erreur)            "Eseguire uninstallporttalk.exe in bin, eliminare porttalk.sys dalla cartella system32/drivers ed eseguire nuovamente AudeLA."
-   set caption(audace,porttalk_message)               "Non visualizzare piu` questo messaggio."
-
-   set caption(audace,port_com_dispo)                 "Porta COM disponibili:"
-   set caption(audace,pas_port_com)                   "Nessuna porta"
-
    set caption(audace,titre)                          "Aud'ACE"
    set caption(audace,tool)                           "Accessorio:"
 
    set caption(console,titre)                         "Console"
    set caption(console,debug)                         "Debug"
 
-   set caption(audace,ok)                             "OK"
    set caption(audace,console_rate)                   "Accesso non possibile"
    set caption(audace,console_gagne)                  "Accesso riuscito"
    set caption(audace,console_annule)                 "Cancellato"
@@ -216,6 +193,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,attention)                    "Attenzione"
    set caption(confVisu,tracer_boite)                 "Disegnare un quadrato con il mouse."
    set caption(confVisu,boite_seuil)                  "..."
+   set caption(confVisu,zoom-)                        "Zoom -"
+   set caption(confVisu,zoom+)                        "Zoom +"
    set caption(confVisu,RA)                           "AR"
    set caption(confVisu,DEC)                          "Dec."
    set caption(confVisu,tiret)                        "-"
@@ -245,21 +224,12 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(audace,porttalk_titre)                 "PortTalk:"
-   set caption(audace,porttalk_erreur)                "Error de ¿¿¿ Porttalk ????"
-   set caption(audace,porttalk_msg_erreur)            "Ejecutar uninstallporttalk.exe desde bin, borrar porttalk.sys de carpeta system32/drivers y ejecutar AudeLA otra vez."
-   set caption(audace,porttalk_message)               "No mostrar este mensaje otra vez."
-
-   set caption(audace,port_com_dispo)                 "Puertos Serie (COM) disponibles:"
-   set caption(audace,pas_port_com)                   "No hay puerto"
-
    set caption(audace,titre)                          "Aud'ACE"
    set caption(audace,tool)                           "Herramienta:"
 
    set caption(console,titre)                         "Consola"
    set caption(console,debug)                         "Depurar"
 
-   set caption(audace,ok)                             "OK"
    set caption(audace,console_rate)                   "El acceso no es posible"
    set caption(audace,console_gagne)                  "Acceso correcto"
    set caption(audace,console_annule)                 "Cancelado"
@@ -294,6 +264,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,attention)                    "Cuidado"
    set caption(confVisu,tracer_boite)                 "Porfavor, dibuje un recuadro con el ratón."
    set caption(confVisu,boite_seuil)                  "..."
+   set caption(confVisu,zoom-)                        "Zoom -"
+   set caption(confVisu,zoom+)                        "Zoom +"
    set caption(confVisu,RA)                           "RA"
    set caption(confVisu,DEC)                          "Dec."
    set caption(confVisu,tiret)                        "-"
@@ -323,21 +295,12 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(audace,porttalk_titre)                 "PortTalk:"
-   set caption(audace,porttalk_erreur)                "Porttak Irrtum"
-   set caption(audace,porttalk_msg_erreur)            "uninstallporttalk.exe von bin anlassen, porttalk.sys vom system32/drivers Register löschen und AudeLA wieder laden."
-   set caption(audace,porttalk_message)               "Diese Meldung nächste mahl nicht mehr anzeigen."
-
-   set caption(audace,port_com_dispo)                 "Verfügbaren COM Porten:"
-   set caption(audace,pas_port_com)                   "Kein Port"
-
    set caption(audace,titre)                          "Aud'ACE"
    set caption(audace,tool)                           "Gerät:"
 
    set caption(console,titre)                         "Konsole"
    set caption(console,debug)                         "Debug"
 
-   set caption(audace,ok)                             "OK"
    set caption(audace,console_rate)                   "Unmöglichen Zugang"
    set caption(audace,console_gagne)                  "Zugriff gelungen"
    set caption(audace,console_annule)                 "Annulliert"
@@ -372,6 +335,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,attention)                    "Achtung"
    set caption(confVisu,tracer_boite)                 "Bitte, einen Rahmen mit der Mause zeichnen."
    set caption(confVisu,boite_seuil)                  "..."
+   set caption(confVisu,zoom-)                        "Zoom -"
+   set caption(confVisu,zoom+)                        "Zoom +"
    set caption(confVisu,RA)                           "RA"
    set caption(confVisu,DEC)                          "Dek."
    set caption(confVisu,tiret)                        "-"
@@ -401,21 +366,12 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(audace,porttalk_titre)                 "Comunicação de portas:"
-   set caption(audace,porttalk_erreur)                "Erro de comunicação de portas"
-   set caption(audace,porttalk_msg_erreur)            "Executar uninstallporttalk.exe desde bin, eliminar porttalk.sys da pasta system32/drivers e correr o AudeLA novamente."
-   set caption(audace,porttalk_message)               "Não mostrar esta imagem outra vez."
-
-   set caption(audace,port_com_dispo)                 "Portas COM disponíveis:"
-   set caption(audace,pas_port_com)                   "Sem porta"
-
    set caption(audace,titre)                          "Aud'ACE"
    set caption(audace,tool)                           "Ferramenta:"
 
    set caption(console,titre)                         "Consola"
    set caption(console,debug)                         "Debug"
 
-   set caption(audace,ok)                             "OK"
    set caption(audace,console_rate)                   "O acesso não é possivel"
    set caption(audace,console_gagne)                  "Acesso OK"
    set caption(audace,console_annule)                 "Cancelado"
@@ -450,6 +406,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,attention)                    "Aviso"
    set caption(confVisu,tracer_boite)                 "Por favor desenhe um quadrado com o seu rato."
    set caption(confVisu,boite_seuil)                  "..."
+   set caption(confVisu,zoom-)                        "Zoom -"
+   set caption(confVisu,zoom+)                        "Zoom +"
    set caption(confVisu,RA)                           "AR"
    set caption(confVisu,DEC)                          "Dec."
    set caption(confVisu,tiret)                        "-"
@@ -479,21 +437,12 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(audace,porttalk_titre)                 "PortTalk:"
-   set caption(audace,porttalk_erreur)                "Porttalk fejl"
-   set caption(audace,porttalk_msg_erreur)            "Kør uninstallporttalk.exe fra bin, slet porttalk.sys fra system32/drivers folderen og kør AudeLA igen."
-   set caption(audace,porttalk_message)               "Vis ikke denne besked igen!"
-
-   set caption(audace,port_com_dispo)                 "Tilgængelige COM-porte:"
-   set caption(audace,pas_port_com)                   "Ingen port!"
-
    set caption(audace,titre)                          "Aud'ACE"
    set caption(audace,tool)                           "Værktøj:"
 
    set caption(console,titre)                         "Konsol"
    set caption(console,debug)                         "Debug"
 
-   set caption(audace,ok)                             "OK"
    set caption(audace,console_rate)                   "Ingen adgang"
    set caption(audace,console_gagne)                  "Adgang: OK!"
    set caption(audace,console_annule)                 "Annulleret"
@@ -528,6 +477,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,attention)                    "Advarsel"
    set caption(confVisu,tracer_boite)                 "Tegn en ramme med musen."
    set caption(confVisu,boite_seuil)                  "..."
+   set caption(confVisu,zoom-)                        "Zoom -"
+   set caption(confVisu,zoom+)                        "Zoom +"
    set caption(confVisu,RA)                           "RA"
    set caption(confVisu,DEC)                          "Dec."
    set caption(confVisu,tiret)                        "-"
@@ -557,21 +508,12 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
-   set caption(audace,porttalk_titre)                 "PortTalk:"
-   set caption(audace,porttalk_erreur)                "Porttalk Error"
-   set caption(audace,porttalk_msg_erreur)            "Run uninstallporttalk.exe from bin, delete porttalk.sys from the system32/drivers folder and run AudeLA again."
-   set caption(audace,porttalk_message)               "Do not display this message next time."
-
-   set caption(audace,port_com_dispo)                 "Available COM Ports:"
-   set caption(audace,pas_port_com)                   "No Port"
-
    set caption(audace,titre)                          "Aud'ACE"
    set caption(audace,tool)                           "Tool:"
 
    set caption(console,titre)                         "Terminal"
    set caption(console,debug)                         "Debug"
 
-   set caption(audace,ok)                             "OK"
    set caption(audace,console_rate)                   "Access not possible"
    set caption(audace,console_gagne)                  "Access OK"
    set caption(audace,console_annule)                 "Cancelled"
@@ -606,6 +548,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,attention)                    "Warning"
    set caption(confVisu,tracer_boite)                 "Please draw a square with your mouse."
    set caption(confVisu,boite_seuil)                  "..."
+   set caption(confVisu,zoom-)                        "Zoom -"
+   set caption(confVisu,zoom+)                        "Zoom +"
    set caption(confVisu,RA)                           "RA"
    set caption(confVisu,DEC)                          "Dec."
    set caption(confVisu,tiret)                        "-"
@@ -635,21 +579,12 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
-   set caption(audace,porttalk_titre)                 "PortTalk:"
-   set caption(audace,porttalk_erreur)                "Porttalk Error"
-   set caption(audace,porttalk_msg_erreur)            "Run uninstallporttalk.exe from bin, delete porttalk.sys from the system32/drivers folder and run AudeLA again."
-   set caption(audace,porttalk_message)               "Do not display this message next time."
-
-   set caption(audace,port_com_dispo)                 "Available COM Ports:"
-   set caption(audace,pas_port_com)                   "No Port"
-
    set caption(audace,titre)                          "Aud'ACE"
    set caption(audace,tool)                           "Tool:"
 
    set caption(console,titre)                         "Terminal"
    set caption(console,debug)                         "Debug"
 
-   set caption(audace,ok)                             "OK"
    set caption(audace,console_rate)                   "Access not possible"
    set caption(audace,console_gagne)                  "Access OK"
    set caption(audace,console_annule)                 "Cancelled"
@@ -684,6 +619,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,attention)                    "Warning"
    set caption(confVisu,tracer_boite)                 "Please draw a square with your mouse."
    set caption(confVisu,boite_seuil)                  "..."
+   set caption(confVisu,zoom-)                        "Zoom -"
+   set caption(confVisu,zoom+)                        "Zoom +"
    set caption(confVisu,RA)                           "RA"
    set caption(confVisu,DEC)                          "Dec."
    set caption(confVisu,tiret)                        "-"
