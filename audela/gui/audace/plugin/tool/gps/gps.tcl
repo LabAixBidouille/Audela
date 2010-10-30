@@ -2,7 +2,7 @@
 # Fichier : gps.tcl
 # Description : Outil de synchronisation GPS
 # Auteur : Jacques MICHELET
-# Mise à jour $Id: gps.tcl,v 1.25 2010-10-10 20:05:42 michelpujol Exp $
+# Mise à jour $Id: gps.tcl,v 1.26 2010-10-30 13:19:45 robertdelmas Exp $
 #
 
 namespace eval ::gps {
@@ -277,7 +277,6 @@ namespace eval ::gps {
         variable This
         variable horloge
         global caption
-        global audace
 
         set horloge(confirmation_arret) 0
         set horloge(demande_arret) 1
@@ -351,7 +350,7 @@ namespace eval ::gps {
     ### createPanel ##############################################
     ##############################################################
     proc createPanel {this} {
-        global caption conf audace color
+        global caption conf color
         variable This
         variable parametres
         variable couleur
@@ -456,7 +455,6 @@ namespace eval ::gps {
     ### CreationPanneauGPS #######################################
     ##############################################################
     proc CreationPanneauGPS {This} {
-        global audace
         global caption
         variable couleur
         variable parametres
@@ -945,7 +943,6 @@ namespace eval ::gps {
     ### Initialisation ###########################################
     ##############################################################
     proc Initialisation {This} {
-        global audace
         global conf
         global caption
         variable position
@@ -993,9 +990,9 @@ namespace eval ::gps {
             source $gps(fichier_ini)
         }
         if {![info exists parametres(os)]} {set parametres(os) $::tcl_platform(os)}
-        if {![info exists parametres(port_serie)]} {set parametres(port_serie) [lindex $audace(list_com) 0]}
+        if {![info exists parametres(port_serie)]} {set parametres(port_serie) [lindex [ ::serialport::getPorts ] 0]}
         # Cas du changement d'OS
-        if {$parametres(os) != $::tcl_platform(os)} {set parametres(port_serie) [lindex $audace(list_com) 0]}
+        if {$parametres(os) != $::tcl_platform(os)} {set parametres(port_serie) [lindex [ ::serialport::getPorts ] 0]}
         if {![info exists parametres(seuil_ok)]} {set parametres(seuil_ok) 20}
         if {![info exists parametres(decalage)]} {set parametres(decalage) 0}
         if {![info exists parametres(reglage)]} {set parametres(reglage) 100}
@@ -1005,7 +1002,7 @@ namespace eval ::gps {
         if {![info exists parametres(intervalle_synchro)]} {set parametres(intervalle_synchro) [lindex $parametres(choix_synchro) 0]}
 
         # Sous-menu des ports
-        foreach port $audace(list_com) {
+        foreach port [ ::serialport::getPorts ] {
             $This.fparametre.mb.menu.sm1 add radio -label $port -variable ::gps::parametres(port_serie) -value $port
         }
         # Sous-menu des intervalles de synchro
@@ -1157,7 +1154,6 @@ namespace eval ::gps {
     ### SynchronisationAutomatique ###############################
     ##############################################################
     proc SynchronisationAutomatique {} {
-        global audace
         global caption
         global gps_synchro_temps
         global gps_reveil_synchro
@@ -1264,7 +1260,6 @@ namespace eval ::gps {
         variable parametres
         variable This
         global caption
-        global audace
 
         if {$gps(synchro_temps) == 1} {
             set corr_milli [expr round($gps(correction) * 1000)]
@@ -1291,7 +1286,6 @@ namespace eval ::gps {
     ### Terminaison ##############################################
     ##############################################################
     proc Terminaison {This} {
-        global audace
         global caption
         variable parametres
         variable gps

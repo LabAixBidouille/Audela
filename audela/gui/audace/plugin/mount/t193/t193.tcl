@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise à jour $Id: t193.tcl,v 1.31 2010-10-10 19:57:26 michelpujol Exp $
+# Mise à jour $Id: t193.tcl,v 1.32 2010-10-30 13:21:54 robertdelmas Exp $
 #
 
 namespace eval ::t193 {
@@ -81,11 +81,8 @@ proc ::t193::initPlugin { } {
    variable private
    global conf
 
-   #--- Prise en compte des liaisons
-   set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
-
    #--- configuration de la monture du T193 de l'OHP
-   if { ! [ info exists conf(t193,portSerie) ] }                 { set conf(t193,portSerie)                 [ lindex $list_connexion 0 ] }
+   if { ! [ info exists conf(t193,portSerie) ] }                 { set conf(t193,portSerie)                 "" }
    if { ! [ info exists conf(t193,mode) ] }                      { set conf(t193,mode)                      "HP1000" }
    if { ! [ info exists conf(t193,nomCarte) ] }                  { set conf(t193,nomCarte)                  "Dev1" }
    if { ! [ info exists conf(t193,minDelay) ] }                  { set conf(t193,minDelay)                  "10" }
@@ -184,10 +181,16 @@ proc ::t193::widgetToConf { } {
 proc ::t193::fillConfigPage { frm } {
    variable widget
    variable private
-   global audace caption
+   global audace caption conf
 
    #--- Initialise une variable locale
    set private(frm) $frm
+
+   #--- Prise en compte des liaisons
+   if { $conf(t193,portSerie) == "" } {
+      set list_connexion       [ ::confLink::getLinkLabels { "serialport" } ]
+      set conf(t193,portSerie) [ lindex $list_connexion 0 ]
+   }
 
    #--- confToWidget
    ::t193::confToWidget

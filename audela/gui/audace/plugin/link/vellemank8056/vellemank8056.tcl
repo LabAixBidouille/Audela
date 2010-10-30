@@ -2,7 +2,7 @@
 # Fichier : vellemank8056.tcl
 # Description : Interface pour carte Velleman K8056
 # Auteurs : Michel PUJOL
-# Mise à jour $Id: vellemank8056.tcl,v 1.4 2010-10-10 19:55:23 michelpujol Exp $
+# Mise à jour $Id: vellemank8056.tcl,v 1.5 2010-10-30 13:18:43 robertdelmas Exp $
 #
 
 namespace eval vellemank8056 {
@@ -151,7 +151,6 @@ proc ::vellemank8056::stopPlugin { } {
 #------------------------------------------------------------
 proc ::vellemank8056::createPluginInstance { linkLabel deviceId usage comment args } {
    variable private
-   global audace
 
    #--- je recupere l'index
    set linkIndex [getLinkIndex $linkLabel]
@@ -162,7 +161,6 @@ proc ::vellemank8056::createPluginInstance { linkLabel deviceId usage comment ar
    set catchResult [catch {
       set private(portHandle) [open $::conf(vellemank8056,serialPort) r+]
       #-- je configure la vitesse
-      ###fconfigure $private(portHandle) -mode "2400,n,8,1" -blocking 0
       fconfigure $private(portHandle) -mode "2400,n,8,1" -buffering none -blocking 0 -translation binary
       #--- j'ajoute l'utilisation du port serie
       ::serialport::createPluginInstance $::conf(vellemank8056,serialPort) $linkLabel "command" "" ""
@@ -170,9 +168,9 @@ proc ::vellemank8056::createPluginInstance { linkLabel deviceId usage comment ar
       #--- je cree le lien ::link$linkno  (simule la presence de la librairie dynamique)
       set linkNo [::vellemank8056::simulLibraryCreateLink vellemank8056 $linkIndex ]
       #--- j'ajoute l'utilisation
-      ##link$linkNo use add $deviceId $usage $comment
+      ###link$linkNo use add $deviceId $usage $comment
       #--- je stocke le commentaire d'utilisation
-      ##set private(serialLink,$linkLabel,$deviceId,$usage) "$comment"
+      ###set private(serialLink,$linkLabel,$deviceId,$usage) "$comment"
       #--- je rafraichis la liste
       ###::vellemank8056::refreshAvailableList
 
@@ -208,7 +206,6 @@ proc ::vellemank8056::createPluginInstance { linkLabel deviceId usage comment ar
 #------------------------------------------------------------
 proc ::vellemank8056::deletePluginInstance { linkLabel deviceId usage } {
    variable private
-   global audace
 
    #--- je ferme le port serie
    if { $private(portHandle) != "" } {
@@ -361,9 +358,11 @@ proc ::vellemank8056::refreshSerialPortList {  } {
    variable private
    variable widget
 
-   #--- je recupere la liste des port serie disponibles
-   ::serialport::Recherche_Ports
-   set linkList $::audace(list_com)
+   #--- on force le rafraississement des ports series
+   ::serialport::searchPorts
+
+   #--- je recupere la liste des ports serie disponibles
+   set linkList [ ::serialport::getPorts ]
 
    #--- j'ajoute les ports serie occupe
    if { [lsearch -exact $linkList $::conf(vellemank8056,serialPort)] == -1 } {
@@ -521,7 +520,7 @@ proc ::vellemank8056::getLinkLabels { } {
 
    set labels [list ]
 
-   foreach comPort $::audace(list_com) {
+   foreach comPort [ ::serialport::getPorts ] {
       lappend labels "K8056-$comPort"
    }
 

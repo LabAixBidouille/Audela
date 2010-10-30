@@ -2,7 +2,7 @@
 # Fichier : ouranos.tcl
 # Description : Configuration de la monture Ouranos
 # Auteur : Robert DELMAS
-# Mise à jour $Id: ouranos.tcl,v 1.20 2010-10-10 19:57:26 michelpujol Exp $
+# Mise à jour $Id: ouranos.tcl,v 1.21 2010-10-30 13:21:37 robertdelmas Exp $
 #
 
 namespace eval ::ouranos {
@@ -87,19 +87,16 @@ proc ::ouranos::initPlugin { } {
    set private(find)    "0"
    set private(dim)     "0"
 
-   #--- Prise en compte des liaisons
-   set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
-
    #--- Initialisation des variables de la monture Ouranos
-   if { ! [ info exists conf(ouranos,port) ] }        { set conf(ouranos,port)        [ lindex $list_connexion 0 ] }
-   if { ! [ info exists conf(ouranos,cod_ra) ] }      { set conf(ouranos,cod_ra)      "32768" }
-   if { ! [ info exists conf(ouranos,cod_dec) ] }     { set conf(ouranos,cod_dec)     "32768" }
-   if { ! [ info exists conf(ouranos,freq) ] }        { set conf(ouranos,freq)        "1" }
-   if { ! [ info exists conf(ouranos,init) ] }        { set conf(ouranos,init)        "0" }
-   if { ! [ info exists conf(ouranos,inv_ra) ] }      { set conf(ouranos,inv_ra)      "1" }
-   if { ! [ info exists conf(ouranos,inv_dec) ] }     { set conf(ouranos,inv_dec)     "1" }
-   if { ! [ info exists conf(ouranos,show_coord) ] }  { set conf(ouranos,show_coord)  "1" }
-   if { ! [ info exists conf(ouranos,tjrsvisible) ] } { set conf(ouranos,tjrsvisible) "0" }
+   if { ! [ info exists conf(ouranos,port) ] }          { set conf(ouranos,port)         "" }
+   if { ! [ info exists conf(ouranos,cod_ra) ] }        { set conf(ouranos,cod_ra)       "32768" }
+   if { ! [ info exists conf(ouranos,cod_dec) ] }       { set conf(ouranos,cod_dec)      "32768" }
+   if { ! [ info exists conf(ouranos,freq) ] }          { set conf(ouranos,freq)         "1" }
+   if { ! [ info exists conf(ouranos,init) ] }          { set conf(ouranos,init)         "0" }
+   if { ! [ info exists conf(ouranos,inv_ra) ] }        { set conf(ouranos,inv_ra)       "1" }
+   if { ! [ info exists conf(ouranos,inv_dec) ] }       { set conf(ouranos,inv_dec)      "1" }
+   if { ! [ info exists conf(ouranos,show_coord) ] }    { set conf(ouranos,show_coord)   "1" }
+   if { ! [ info exists conf(ouranos,tjrsvisible) ] }   { set conf(ouranos,tjrsvisible)  "0" }
 
    #--- Initialisation des fenetres d'affichage des coordonnees AD et Dec.
    if { ! [ info exists conf(ouranos,wmgeometry) ] }    { set conf(ouranos,wmgeometry)    "200x70+646+240" }
@@ -165,10 +162,16 @@ proc ::ouranos::recupPosDim { } {
 #
 proc ::ouranos::fillConfigPage { frm } {
    variable private
-   global caption color
+   global caption color conf
 
    #--- Initialise une variable locale
    set private(frm) $frm
+
+   #--- Prise en compte des liaisons
+   if { $conf(ouranos,port) == "" } {
+      set list_connexion     [ ::confLink::getLinkLabels { "serialport" } ]
+      set conf(ouranos,port) [ lindex $list_connexion 0 ]
+   }
 
    #--- confToWidget
    ::ouranos::confToWidget

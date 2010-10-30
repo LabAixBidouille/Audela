@@ -2,7 +2,7 @@
 # Fichier : celestron.tcl
 # Description : Configuration de la monture Celestron
 # Auteur : Robert DELMAS
-# Mise à jour $Id: celestron.tcl,v 1.17 2010-10-10 19:57:25 michelpujol Exp $
+# Mise à jour $Id: celestron.tcl,v 1.18 2010-10-30 13:20:23 robertdelmas Exp $
 #
 
 namespace eval ::celestron {
@@ -84,11 +84,8 @@ proc ::celestron::initPlugin { } {
    #--- Initialisation
    set private(telNo) "0"
 
-   #--- Prise en compte des liaisons
-   set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
-
    #--- Initialise les variables de la monture Celestron
-   if { ! [ info exists conf(celestron,port) ] }   { set conf(celestron,port)   [ lindex $list_connexion 0 ] }
+   if { ! [ info exists conf(celestron,port) ] }   { set conf(celestron,port)   "" }
    if { ! [ info exists conf(celestron,format) ] } { set conf(celestron,format) "1" }
 }
 
@@ -127,10 +124,16 @@ proc ::celestron::widgetToConf { } {
 #
 proc ::celestron::fillConfigPage { frm } {
    variable private
-   global audace caption
+   global audace caption conf
 
    #--- Initialise une variable locale
    set private(frm) $frm
+
+   #--- Prise en compte des liaisons
+   if { $conf(celestron,port) == "" } {
+      set list_connexion       [ ::confLink::getLinkLabels { "serialport" } ]
+      set conf(celestron,port) [ lindex $list_connexion 0 ]
+   }
 
    #--- confToWidget
    ::celestron::confToWidget

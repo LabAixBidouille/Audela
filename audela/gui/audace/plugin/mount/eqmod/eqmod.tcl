@@ -2,7 +2,7 @@
 # Fichier : eqmod.tcl
 # Description : Configuration de la monture EQMOD
 # Auteur : Robert DELMAS
-# Mise à jour $Id: eqmod.tcl,v 1.12 2010-10-10 19:57:25 michelpujol Exp $
+# Mise à jour $Id: eqmod.tcl,v 1.13 2010-10-30 13:20:58 robertdelmas Exp $
 #
 
 namespace eval ::eqmod {
@@ -84,14 +84,11 @@ proc ::eqmod::initPlugin { } {
    #--- Initialisation
    set private(telNo) "0"
 
-   #--- Prise en compte des liaisons
-   set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
-
    #--- Initialise les variables de la monture EQMOD
-   if { ! [ info exists conf(eqmod,port) ] }       { set conf(eqmod,port)      [ lindex $list_connexion 0 ] }
-   if { ! [ info exists conf(eqmod,tube_e_w) ] }   { set conf(eqmod,tube_e_w)  "-west" }
-   if { ! [ info exists conf(eqmod,initpos) ] }    { set conf(eqmod,initpos)   "south" }
-   if { ! [ info exists conf(eqmod,moteur_on) ] }  { set conf(eqmod,moteur_on) "1" }
+   if { ! [ info exists conf(eqmod,port) ] }      { set conf(eqmod,port)      "" }
+   if { ! [ info exists conf(eqmod,tube_e_w) ] }  { set conf(eqmod,tube_e_w)  "-west" }
+   if { ! [ info exists conf(eqmod,initpos) ] }   { set conf(eqmod,initpos)   "south" }
+   if { ! [ info exists conf(eqmod,moteur_on) ] } { set conf(eqmod,moteur_on) "1" }
 }
 
 #
@@ -107,11 +104,11 @@ proc ::eqmod::confToWidget { } {
       if { [ catch { set private($varname) [ set conf($varname) ] } m ] } {
          ::console::affiche_resultat "$varname: $m"
          switch $varname {
-            eqmod,port       { set private($varname) "COM1" }
-            eqmod,tube_e_w   { set private($varname) "-west" }
-            eqmod,initpos    { set private($varname) "south" }
-            eqmod,moteur_on  { set private($varname) "1" }
-            raquette         { set private($varname) "0" }
+            eqmod,port      { set private($varname) "COM1" }
+            eqmod,tube_e_w  { set private($varname) "-west" }
+            eqmod,initpos   { set private($varname) "south" }
+            eqmod,moteur_on { set private($varname) "1" }
+            raquette        { set private($varname) "0" }
          }
          ::console::affiche_resultat "$caption(eqmod,valeurDefaut) $private($varname)\n"
       }
@@ -128,11 +125,11 @@ proc ::eqmod::widgetToConf { } {
    global conf
 
    #--- Memorise la configuration de la monture EQMOD dans le tableau conf(eqmod,...)
-   set conf(eqmod,port)       $private(eqmod,port)
-   set conf(eqmod,tube_e_w)   $private(eqmod,tube_e_w)
-   set conf(eqmod,initpos)    $private(eqmod,initpos)
-   set conf(eqmod,moteur_on)  $private(eqmod,moteur_on)
-   set conf(raquette)         $private(raquette)
+   set conf(eqmod,port)      $private(eqmod,port)
+   set conf(eqmod,tube_e_w)  $private(eqmod,tube_e_w)
+   set conf(eqmod,initpos)   $private(eqmod,initpos)
+   set conf(eqmod,moteur_on) $private(eqmod,moteur_on)
+   set conf(raquette)        $private(raquette)
 }
 
 #
@@ -141,10 +138,16 @@ proc ::eqmod::widgetToConf { } {
 #
 proc ::eqmod::fillConfigPage { frm } {
    variable private
-   global audace caption
+   global caption conf
 
    #--- Initialise une variable locale
    set private(frm) $frm
+
+   #--- Prise en compte des liaisons
+   if { $conf(eqmod,port) == "" } {
+      set list_connexion   [ ::confLink::getLinkLabels { "serialport" } ]
+      set conf(eqmod,port) [ lindex $list_connexion 0 ]
+   }
 
    #--- confToWidget
    ::eqmod::confToWidget

@@ -2,7 +2,7 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise à jour $Id: lx200.tcl,v 1.32 2010-10-10 19:57:26 michelpujol Exp $
+# Mise à jour $Id: lx200.tcl,v 1.33 2010-10-30 13:21:18 robertdelmas Exp $
 #
 
 namespace eval ::lx200 {
@@ -107,11 +107,8 @@ proc ::lx200::initPlugin { } {
    set private(telNo)         "0"
    set private(tracesConsole) "0"
 
-   #--- Prise en compte des liaisons
-   set list_connexion [::confLink::getLinkLabels { "serialport" "audinet" } ]
-
    #--- Initialise les variables de la monture LX200
-   if { ! [ info exists conf(lx200,port) ] }              { set conf(lx200,port)              [ lindex $list_connexion 0 ] }
+   if { ! [ info exists conf(lx200,port) ] }              { set conf(lx200,port)              "" }
    if { ! [ info exists conf(lx200,ouranos) ] }           { set conf(lx200,ouranos)           "0" }
    if { ! [ info exists conf(lx200,modele) ] }            { set conf(lx200,modele)            "LX200" }
    if { ! [ info exists conf(lx200,format) ] }            { set conf(lx200,format)            "1" }
@@ -165,12 +162,18 @@ proc ::lx200::widgetToConf { } {
 #
 proc ::lx200::fillConfigPage { frm } {
    variable private
-   global audace caption
+   global audace caption conf
 
    #--- Initialise les variables locales
    set private(frm)          $frm
    set private(ite-lente_A0) "0"
    set private(ite-lente_A1) "0"
+
+   #--- Prise en compte des liaisons
+   if { $conf(lx200,port) == "" } {
+      set list_connexion   [ ::confLink::getLinkLabels { "serialport" "audinet" } ]
+      set conf(lx200,port) [ lindex $list_connexion 0 ]
+   }
 
    #--- confToWidget
    ::lx200::confToWidget

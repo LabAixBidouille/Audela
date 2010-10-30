@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Outil d'acquisition pour APN Nikon CoolPix
 # Auteur : Raymond ZACHANTKE
-# Mise à jour $Id: acqapn.tcl,v 1.45 2010-10-10 20:02:23 michelpujol Exp $
+# Mise à jour $Id: acqapn.tcl,v 1.46 2010-10-30 13:19:21 robertdelmas Exp $
 #
 
 #============================================================
@@ -1115,15 +1115,15 @@ namespace eval ::acqapn {
    #--- Recherche du port serie sur lequel la camera repond
    #
    proc IdCom { } {
-      global audace panneau
+      global panneau
 
-      set nb_port [llength $audace(list_com)]
+      set nb_port [llength [ ::serialport::getPorts ]]
       set essai_port "no_port"
       set port_pas_trouve "1"
       set index 0
       while { $port_pas_trouve=="1" && ( [expr $nb_port-$index]!="0" ) } {
          set msg ""
-         set essai_port [lindex $audace(list_com) $index]
+         set essai_port [lindex [ ::serialport::getPorts ] $index]
          catch { exec $panneau(acqapn,photopc) "-l$essai_port:" -s 115200 clock } msg
          if { $msg!="eph_open failed" } {
             set port_pas_trouve 0
