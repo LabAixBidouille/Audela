@@ -2,7 +2,7 @@
 # Fichier : updateaudela.tcl
 # Description : Outil de fabrication des fichiers Kit et de deploiement des plugins
 # Auteur : Michel Pujol
-# Mise a jour $Id: updateaudela.tcl,v 1.30 2010-10-10 20:05:43 michelpujol Exp $
+# Mise a jour $Id: updateaudela.tcl,v 1.31 2010-10-30 13:24:41 robertdelmas Exp $
 #
 
 namespace eval ::updateaudela {
@@ -147,7 +147,7 @@ proc ::updateaudela::stopTool { visuNo } {
 
 #------------------------------------------------------------
 #  ::updateaudela::deleteKit
-#  supprime un plugin
+#  supprime un kit
 #  param : aucun
 #------------------------------------------------------------
 proc ::updateaudela::deleteKit { kitFileName } {
