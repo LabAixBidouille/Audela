@@ -2,7 +2,7 @@
 # Fichier : google_earth.tcl
 # Description : Interaction avec Google Earth
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: google_earth.tcl,v 1.2 2010-08-28 13:20:10 robertdelmas Exp $
+# Mise ï¿½ jour $Id: google_earth.tcl,v 1.3 2010-10-30 08:52:34 michelpujol Exp $
 #
 
 # Procedures qui permettent d'interagir avec Google Earth
@@ -22,7 +22,7 @@
 # * Pour aller a la position indiquee avec Google SKY :
 # google_earth_radec_goto m51
 # * Pour aller a la position indiquee avec Google SKY :
-# google_earth_radec_goto 12h45m23s +34°12'23"
+# google_earth_radec_goto 12h45m23s +34ï¿½12'23"
 # * Pour retourner le RA et le DEC de la position pointee avec Google SKY :
 # google_earth_radec_coord
 
@@ -82,7 +82,7 @@ proc google_earth_get_com_properties { {handler ""} } {
 proc google_earth_launch { } {
    global audace
    if { $::tcl_platform(os) == "Windows NT" } {
-      # --- verifie si GoogleEarth est deja lancé
+      # --- verifie si GoogleEarth est deja lancï¿½
       package require twapi
       set ros_names {googleearth.exe}
       set pids [twapi::get_process_ids]
@@ -113,7 +113,16 @@ proc google_earth_launch { } {
       # --- on lance Google Earth
       if {[info exists audace(google_earth,com,handler)]==0} {
          package require tcom
-         set audace(google_earth,com,handler) [::tcom::ref createobject "GoogleEarth.ApplicationGE"]
+
+         set catchError [ catch {
+            set audace(google_earth,com,handler) [::tcom::ref createobject "GoogleEarth.ApplicationGE"]
+         }]
+
+         if { $catchError != 0 } {
+             tk_messageBox -icon info  -message "GoogleEarth.ApplicationGE not found" -title "GoogleEarth" -type ok
+             return
+         }
+
          # --- on redonne la main qu'apres l'initialisation
          set t0 [clock seconds]
          set sortie 0
@@ -209,15 +218,15 @@ proc google_earth_home_goto { {home ""} {param1 ""} {param2 ""} } {
    }
    # SetCameraParams <latitude> <longitude> <altitude> <altMode> <range> <tilt> <azimuth> <speed>
    #
-   # <latitude>  Latitude en degrés. Entre -90 et 90.
-   # <longitude> Longitude in degrés. Entre -180 et 180.
-   # <altitude>  Altitude en mètres
-   # <altMode>   Le mode d'altitude qui défini le point de référence de celle-ci (1=au sol, 2=absolu)
-   # <range>     Distance entre le point focal et la caméra en mètres
+   # <latitude>  Latitude en degrï¿½s. Entre -90 et 90.
+   # <longitude> Longitude in degrï¿½s. Entre -180 et 180.
+   # <altitude>  Altitude en mï¿½tres
+   # <altMode>   Le mode d'altitude qui dï¿½fini le point de rï¿½fï¿½rence de celle-ci (1=au sol, 2=absolu)
+   # <range>     Distance entre le point focal et la camï¿½ra en mï¿½tres
    #             If !=0 camera will move backward from range meters along the camera axis
-   # <tilt>      Angle d'inclinaison en degrés. Entre 0 et 90. Vers l'horizon=90, vers le centre de la Terre=0
-   # <azimuth>   Azimuth en degrés. Vers le Nord=0, Est=90, Sud=180, Ouest=270
-   # <speed>     Vitesse. Doit être >= 0, Si >=5.0 mode téléportation
+   # <tilt>      Angle d'inclinaison en degrï¿½s. Entre 0 et 90. Vers l'horizon=90, vers le centre de la Terre=0
+   # <azimuth>   Azimuth en degrï¿½s. Vers le Nord=0, Est=90, Sud=180, Ouest=270
+   # <speed>     Vitesse. Doit ï¿½tre >= 0, Si >=5.0 mode tï¿½lï¿½portation
    $audace(google_earth,com,handler) SetCameraParams [google_earth_dec $latitude] [google_earth_dec $longitude] $alt 1 $range 0 0 1
 }
 
@@ -269,15 +278,15 @@ proc google_earth_radec_goto { ra {dec 0} } {
    set range 10000
    # SetCameraParams <latitude> <longitude> <altitude> <altMode> <range> <tilt> <azimuth> <speed>
    #
-   # <latitude>  Latitude en degrés. Entre -90 et 90.
-   # <longitude> Longitude in degrés. Entre -180 et 180.
-   # <altitude>  Altitude en mètres
-   # <altMode>   Le mode d'altitude qui défini le point de référence de celle-ci (1=au sol, 2=absolu)
-   # <range>     Distance entre le point focal et la caméra en mètres
+   # <latitude>  Latitude en degrï¿½s. Entre -90 et 90.
+   # <longitude> Longitude in degrï¿½s. Entre -180 et 180.
+   # <altitude>  Altitude en mï¿½tres
+   # <altMode>   Le mode d'altitude qui dï¿½fini le point de rï¿½fï¿½rence de celle-ci (1=au sol, 2=absolu)
+   # <range>     Distance entre le point focal et la camï¿½ra en mï¿½tres
    #             If !=0 camera will move backward from range meters along the camera axis
-   # <tilt>      Angle d'inclinaison en degrés. Entre 0 et 90. Vers l'horizon=90, vers le centre de la Terre=0
-   # <azimuth>   Azimuth en degrés. Vers le Nord=0, Est=90, Sud=180, Ouest=270
-   # <speed>     Vitesse. Doit être >= 0, Si >=5.0 mode téléportation
+   # <tilt>      Angle d'inclinaison en degrï¿½s. Entre 0 et 90. Vers l'horizon=90, vers le centre de la Terre=0
+   # <azimuth>   Azimuth en degrï¿½s. Vers le Nord=0, Est=90, Sud=180, Ouest=270
+   # <speed>     Vitesse. Doit ï¿½tre >= 0, Si >=5.0 mode tï¿½lï¿½portation
    set h [google_earth_launch]
    if {$h==""} { return "" }
    #::console::affiche_resultat "\$audace(google_earth,com,handler) SetCameraParams [google_earth_dec $dec] [google_earth_dec $ra] 2 1 1 0 0 1\n"
