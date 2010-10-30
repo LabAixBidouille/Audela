@@ -2,7 +2,7 @@
 # Fichier : parallelport.tcl
 # Description : Interface de liaison Port Parallele
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: parallelport.tcl,v 1.26 2010-10-24 14:11:14 michelpujol Exp $
+# Mise à jour $Id: parallelport.tcl,v 1.27 2010-10-30 13:14:35 robertdelmas Exp $
 #
 
 namespace eval parallelport {
@@ -102,12 +102,19 @@ proc ::parallelport::initPlugin { } {
 
    #--- Initialisation
    set private(frm) ""
+   if { ! [ info exists ::conf(parallelport,porttalkQuestion) ] } { set ::conf(parallelport,porttalkQuestion) "1" }
+
+   #--- Verification de la presence de allowio.txt pour la compatibilite avec les versions precedentes
+   if { [ file exist [ file join $::audace(rep_home) allowio.txt ] ] } {
+      set ::conf(parallelport,porttalkQuestion) "0"
+      #--- Il faudra decommenter la ligne en novembre 2011
+     ### file delete [ file join $::audace(rep_home) allowio.txt ]
+   }
 
    if { $::tcl_platform(os) == "Windows NT" } {
       set private(porttalkInstalled) 0
    }
    #--- je recupere le nom generique de la liaison
-   ##set private(genericName) [link::genericname parallelport]
    if { $::tcl_platform(os) == "Linux" } {
       set private(genericName) "/dev/parport"
    } else {
@@ -172,7 +179,6 @@ proc ::parallelport::confToWidget { } {
 #      2
 #------------------------------------------------------------
 proc ::parallelport::createPluginInstance { linkLabel deviceId usage comment args } {
-   global audace
    variable private
 
    if { $::tcl_platform(os) == "Windows NT"  } {
@@ -181,51 +187,51 @@ proc ::parallelport::createPluginInstance { linkLabel deviceId usage comment arg
          #--- j'installe porttalk
          set res [ catch { set result [ porttalk open all ] } msg ]
          set no_administrator "PortTalk: You do not have rights to access"
-         if { ( $res == "1" ) && ( [ file exists [ file join $::audace(rep_home) allowio.txt ] ] == "0" ) } {
+         if { $res == "1" } {
             #--- l'installation de porttalk n'a pas reussi par ce que l'utilisateur
             #--- n'est pas administrateur de la machine.
             if { [ string range $msg 0 41 ] != "$no_administrator" } {
-               ::console::affiche_erreur "$msg\n\n$::caption(audace,porttalk_msg_erreur)\n"
+               ::console::affiche_erreur "$msg\n\n$::caption(parallelport,porttalk_msg_erreur)\n"
             } else {
                ::console::affiche_erreur "$msg\n"
             }
-
-            #--- je demande a l'utilisateur s'il ne veut plus que Audela essaie
-            #--- d'installer porttalk
-            set base ".allowio"
-            toplevel $base
-            wm geometry $base +50+100
-            wm resizable $base 0 0
-            wm deiconify $base
-            wm title $base "$::caption(audace,porttalk_erreur)"
-            if { [ string range $msg 0 41 ] != "$no_administrator" } {
-               message $base.msg -text "$msg\n\n$::caption(audace,porttalk_msg_erreur)\n" -justify center -width 350
-            } else {
-               message $base.msg -text "$msg\n" -justify center -width 350
-            }
-            pack $base.msg -in $base -anchor center -side top -fill x -padx 0 -pady 0 -expand 0
-            frame $base.frame1
-               set saveallowio "0"
-               checkbutton $base.frame1.check1 -variable saveallowio
-               pack $base.frame1.check1 -anchor w -side left -fill x -padx 1 -pady 1 -expand 1
-               label $base.frame1.lab1 -text "$::caption(audace,porttalk_message)"
-               pack $base.frame1.lab1 -anchor w -side left -fill x -padx 1 -pady 1 -expand 1
-            pack $base.frame1 -in $base -anchor center -side top -fill none -padx 0 -pady 0 -expand 0
-            button $base.but1 -text "$::caption(audace,ok)" \
-               -command {
-                  if { $saveallowio == "1" } {
-                     set f [ open [ file join $::audace(rep_home) allowio.txt ] w ]
-                     close $f
-                  }
-                  destroy .allowio
+            if { $::conf(parallelport,porttalkQuestion) == "1" } {
+               #--- je demande a l'utilisateur s'il ne veut plus que Audela essaie
+              #--- d'installer porttalk
+               set base ".allowio"
+               toplevel $base
+               wm geometry $base +50+100
+               wm resizable $base 0 0
+               wm deiconify $base
+               wm title $base "$::caption(parallelport,porttalk_erreur)"
+               if { [ string range $msg 0 41 ] != "$no_administrator" } {
+                  message $base.msg -text "$msg\n\n$::caption(parallelport,porttalk_msg_erreur)\n" -justify center -width 350
+               } else {
+                  message $base.msg -text "$msg\n" -justify center -width 350
                }
-            pack $base.but1 -in $base -anchor center -side top -padx 5 -pady 5 -ipadx 10 -ipady 5
-            focus -force $base
-            tkwait window $base
+               pack $base.msg -in $base -anchor center -side top -fill x -padx 0 -pady 0 -expand 0
+               frame $base.frame1
+                  set saveallowio "0"
+                  checkbutton $base.frame1.check1 -variable saveallowio
+                  pack $base.frame1.check1 -anchor w -side left -fill x -padx 1 -pady 1 -expand 1
+                  label $base.frame1.lab1 -text "$::caption(parallelport,porttalk_message)"
+                  pack $base.frame1.lab1 -anchor w -side left -fill x -padx 1 -pady 1 -expand 1
+               pack $base.frame1 -in $base -anchor center -side top -fill none -padx 0 -pady 0 -expand 0
+               button $base.but1 -text "$::caption(parallelport,ok)" \
+                  -command {
+                     if { $saveallowio == "1" } {
+                        set ::conf(parallelport,porttalkQuestion) "0"
+                     }
+                     destroy .allowio
+                  }
+               pack $base.but1 -in $base -anchor center -side top -padx 5 -pady 5 -ipadx 10 -ipady 5
+               focus -force $base
+               tkwait window $base
+            }
          } else {
-             #--- l'intallation de porttalk a reussi
+             #--- l'installation de porttalk a reussi
              set private(porttalkInstalled) 1
-             ::console::affiche_prompt "$::caption(audace,porttalk_titre) $result\n\n"
+             ::console::affiche_prompt "$::caption(parallelport,porttalk_titre) $result\n\n"
          }
       }
    }
@@ -257,8 +263,6 @@ proc ::parallelport::createPluginInstance { linkLabel deviceId usage comment arg
 #    Rien
 #------------------------------------------------------------
 proc ::parallelport::deletePluginInstance { linkLabel deviceId usage } {
-   global audace
-
    set linkno [::confLink::getLinkNo $linkLabel]
    if { $linkno != "" } {
       link$linkno use remove $deviceId $usage
@@ -282,7 +286,7 @@ proc ::parallelport::deletePluginInstance { linkLabel deviceId usage } {
 #------------------------------------------------------------
 proc ::parallelport::fillConfigPage { frm } {
    variable private
-   global audace caption
+   global caption
 
    #--- Je memorise la reference de la frame
    set private(frm) $frm
@@ -311,7 +315,7 @@ proc ::parallelport::fillConfigPage { frm } {
          label $frm.porttalk.lab2 -anchor nw -highlightthickness 0 -text "$caption(parallelport,porttalk)" -padx 0 -pady 0
          pack $frm.porttalk.lab2 -in $frm.porttalk -side left -padx 40 -pady 5
 
-         if { [ file exist [ file join $::audace(rep_home) allowio.txt ] ] } {
+         if { $::conf(parallelport,porttalkQuestion) == "0" } {
             set porttalkButton "$caption(parallelport,non)"
          } else {
             set porttalkButton "$caption(parallelport,oui)"
@@ -343,17 +347,16 @@ proc ::parallelport::fillConfigPage { frm } {
 #------------------------------------------------------------
 proc ::parallelport::afficheMsgPorttalk { } {
    variable private
-   global audace caption
+   global caption
 
    set frm $private(frm)
-   if { [ file exist [ file join $::audace(rep_home) allowio.txt ] ] } {
-      $frm.porttalk.but configure -text "$caption(parallelport,oui)"
+   if { $::conf(parallelport,porttalkQuestion) == "0" } {
       #--- Acces au message d'erreur Porttalk au prochain demarrage
-      file delete [ file join $::audace(rep_home) allowio.txt ]
+      $frm.porttalk.but configure -text "$caption(parallelport,oui)"
+       set ::conf(parallelport,porttalkQuestion) "1"
    } else {
       $frm.porttalk.but configure -text "$caption(parallelport,non)"
-      set f [ open [ file join $::audace(rep_home) allowio.txt ] w ]
-      close $f
+       set ::conf(parallelport,porttalkQuestion) "0"
    }
 }
 
@@ -392,7 +395,6 @@ proc ::parallelport::getLinkLabels { } {
    set linkLabels [list]
    set instances [link::available parallelport ]
    foreach instance $instances {
-      ####lappend linkLabels "[getLabel][lindex $instance 0]"
       lappend linkLabels "[lindex $instance 1]"
    }
    return $linkLabels
