@@ -2,7 +2,7 @@
 # Fichier : serialport.tcl
 # Description : Interface de liaison Port Serie
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: serialport.tcl,v 1.26 2010-10-10 19:55:23 michelpujol Exp $
+# Mise à jour $Id: serialport.tcl,v 1.27 2010-10-30 13:17:45 robertdelmas Exp $
 #
 
 namespace eval serialport {
@@ -90,9 +90,6 @@ proc ::serialport::initPlugin { } {
       set private(genericName) "COM"
    }
 
-   #--- Recherche des ports com
-   Recherche_Ports
-
    #--- J'initialise les variables widget(..)
    confToWidget
 }
@@ -133,7 +130,6 @@ proc ::serialport::confToWidget { } {
 #------------------------------------------------------------
 proc ::serialport::createPluginInstance { linkLabel deviceId usage comment args } {
    variable private
-   global audace
 
    #--- pour l'instant, la liaison est cree par la librairie du peripherique
    set linkIndex [getLinkIndex $linkLabel]
@@ -267,11 +263,11 @@ proc ::serialport::getLinkLabels { } {
 
    if { $::tcl_platform(os) == "Linux" } {
       #--- je recherche les index des ports disponibles
-      foreach port $::audace(list_com) {
+      foreach port [ ::serialport::getPorts ] {
          lappend labels "$port"
       }
    } else {
-      foreach port $::audace(list_com) {
+      foreach port [ ::serialport::getPorts ] {
          set linkIndex ""
          lappend labels "$port"
       }
@@ -307,7 +303,6 @@ proc ::serialport::getSelectedLinkLabel { } {
 #------------------------------------------------------------
 proc ::serialport::refreshAvailableList { } {
    variable private
-   global audace
 
    #--- je verifie que la liste existe
    if { [ winfo exists $private(frm).available.list ] == "0" } {
@@ -340,7 +335,7 @@ proc ::serialport::refreshAvailableList { } {
    }
 
    #--- je recherche les ports disponibles non utilises
-   Recherche_Ports
+   searchPorts
    #--- j'ajoute les ports disponibles non utilises
    foreach linkLabel [::serialport::getLinkLabels] {
       if { [lsearch $linkLabelList $linkLabel] == -1 } {
@@ -402,13 +397,14 @@ proc ::serialport::widgetToConf { } {
 }
 
 #------------------------------------------------------------
-#  Recherche_Ports
+#  searchPorts
 #     recherche les ports com disponible sur le PC
 #
 #  return rien
 #------------------------------------------------------------
-proc ::serialport::Recherche_Ports { } {
-   global audace conf
+proc ::serialport::searchPorts { } {
+   variable private
+   global conf
 
    #--- Recherche le ou les ports COM exclus
    set kd ""
@@ -438,9 +434,9 @@ proc ::serialport::Recherche_Ports { } {
    }
 
    #--- Recherche des ports com
-   set comlist              ""
-   set comlist_usb          ""
-   set audace(list_com)     ""
+   set comlist            ""
+   set comlist_usb        ""
+   set private(portsList) ""
 
    set i "0"
    for { set k $kk } { $k < $kkt } { incr k } {
@@ -457,7 +453,7 @@ proc ::serialport::Recherche_Ports { } {
    set long_com [ llength $comlist ]
 
    for { set k 0 } { $k < $long_com } { incr k } {
-      lappend audace(list_com) "$port_com[ lindex $comlist $k ]"
+      lappend private(portsList) "$port_com[ lindex $comlist $k ]"
    }
 
    if { $::tcl_platform(os) == "Linux" } {
@@ -471,8 +467,23 @@ proc ::serialport::Recherche_Ports { } {
       set long_com_usb [ llength $comlist_usb ]
 
       for { set k 0 } { $k < $long_com_usb } { incr k } {
-         lappend audace(list_com) "$port_com_usb[ lindex $comlist_usb $k ]"
+         lappend private(portsList) "$port_com_usb[ lindex $comlist_usb $k ]"
       }
    }
+}
+
+#------------------------------------------------------------
+#  getPorts
+#     retourne la liste des ports COM disponibles
+#
+#  return rien
+#------------------------------------------------------------
+proc ::serialport::getPorts { } {
+   variable private
+
+   if { [ info exists private(portsList) ] == "0" } {
+      ::serialport::searchPorts
+   }
+   return $private(portsList)
 }
 
