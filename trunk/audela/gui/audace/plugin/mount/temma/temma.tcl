@@ -2,7 +2,7 @@
 # Fichier : temma.tcl
 # Description : Fenetre de configuration pour le parametrage du suivi d'objets mobiles pour la monture Temma
 # Auteur : Robert DELMAS
-# Mise à jour $Id: temma.tcl,v 1.25 2010-10-10 19:57:26 michelpujol Exp $
+# Mise à jour $Id: temma.tcl,v 1.26 2010-10-30 13:22:15 robertdelmas Exp $
 #
 
 namespace eval ::temma {
@@ -87,11 +87,8 @@ proc ::temma::initPlugin { } {
    #--- Charge le fichier auxiliaire
    uplevel #0 "source \"[ file join $audace(rep_plugin) mount temma temmaconfig.tcl ]\""
 
-   #--- Prise en compte des liaisons
-   set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
-
    #--- Initialise les variables de la monture Temma
-   if { ! [ info exists conf(temma,port) ] }       { set conf(temma,port)       [ lindex $list_connexion 0 ] }
+   if { ! [ info exists conf(temma,port) ] }       { set conf(temma,port)       "" }
    if { ! [ info exists conf(temma,correc_AD) ] }  { set conf(temma,correc_AD)  "50" }
    if { ! [ info exists conf(temma,correc_Dec) ] } { set conf(temma,correc_Dec) "50" }
    if { ! [ info exists conf(temma,liaison) ] }    { set conf(temma,liaison)    "1" }
@@ -147,10 +144,16 @@ proc ::temma::widgetToConf { } {
 #
 proc ::temma::fillConfigPage { frm } {
    variable private
-   global audace caption
+   global audace caption conf
 
    #--- Initialise une variable locale
    set private(frm) $frm
+
+   #--- Prise en compte des liaisons
+   if { $conf(temma,port) == "" } {
+      set list_connexion   [ ::confLink::getLinkLabels { "serialport" } ]
+      set conf(temma,port) [ lindex $list_connexion 0 ]
+   }
 
    #--- confToWidget
    ::temma::confToWidget

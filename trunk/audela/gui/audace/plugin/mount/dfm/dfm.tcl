@@ -2,7 +2,7 @@
 # Fichier : dfm.tcl
 # Description : Configuration de la monture DFM
 # Auteur : Robert DELMAS
-# Mise à jour $Id: dfm.tcl,v 1.7 2010-10-10 19:57:25 michelpujol Exp $
+# Mise à jour $Id: dfm.tcl,v 1.8 2010-10-30 13:20:41 robertdelmas Exp $
 #
 
 namespace eval ::dfm {
@@ -84,14 +84,11 @@ proc ::dfm::initPlugin { } {
    #--- Initialisation
    set private(telNo) "0"
 
-   #--- Prise en compte des liaisons
-   set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
-
    #--- Initialise les variables de la monture DFM
    if { ! [ info exists conf(dfm,mode) ] }      { set conf(dfm,mode)      "0" }
    if { ! [ info exists conf(dfm,host) ] }      { set conf(dfm,host)      "127.0.0.1" }
    if { ! [ info exists conf(dfm,port) ] }      { set conf(dfm,port)      "5003" }
-   if { ! [ info exists conf(dfm,portSerie) ] } { set conf(dfm,portSerie) [ lindex $list_connexion 0 ] }
+   if { ! [ info exists conf(dfm,portSerie) ] } { set conf(dfm,portSerie) "" }
 }
 
 #
@@ -132,10 +129,16 @@ proc ::dfm::widgetToConf { } {
 #
 proc ::dfm::fillConfigPage { frm } {
    variable private
-   global caption
+   global caption conf
 
    #--- Initialise une variable locale
    set private(frm) $frm
+
+   #--- Prise en compte des liaisons
+   if { $conf(dfm,portSerie) == "" } {
+      set list_connexion      [ ::confLink::getLinkLabels { "serialport" } ]
+      set conf(dfm,portSerie) [ lindex $list_connexion 0 ]
+   }
 
    #--- confToWidget
    ::dfm::confToWidget

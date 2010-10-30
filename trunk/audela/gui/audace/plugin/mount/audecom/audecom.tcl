@@ -2,7 +2,7 @@
 # Fichier : audecom.tcl
 # Description : Parametrage et pilotage de la carte AudeCom (Ex-Kauffmann)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: audecom.tcl,v 1.27 2010-10-10 19:57:25 michelpujol Exp $
+# Mise à jour $Id: audecom.tcl,v 1.28 2010-10-30 13:20:05 robertdelmas Exp $
 #
 
 namespace eval ::audecom {
@@ -166,11 +166,8 @@ proc ::audecom::initPlugin { } {
    #--- Charge le fichier auxiliaire
    uplevel #0 "source \"[ file join $audace(rep_plugin) mount audecom audecomconfig.tcl ]\""
 
-   #--- Prise en compte des liaisons
-   set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
-
    #--- Initialise les variables de la monture AudeCom
-   if { ! [ info exists conf(audecom,port) ] }         { set conf(audecom,port)         [ lindex $list_connexion 0 ] }
+   if { ! [ info exists conf(audecom,port) ] }         { set conf(audecom,port)         "" }
    if { ! [ info exists conf(audecom,ouranos) ] }      { set conf(audecom,ouranos)      "0" }
    if { ! [ info exists conf(audecom,ad) ] }           { set conf(audecom,ad)           "999999" }
    if { ! [ info exists conf(audecom,dec) ] }          { set conf(audecom,dec)          "999999" }
@@ -350,6 +347,12 @@ proc ::audecom::fillConfigPage { frm } {
 
    #--- Initialise une variable locale
    set private(frm) $frm
+
+   #--- Prise en compte des liaisons
+   if { $conf(audecom,port) == "" } {
+      set list_connexion     [ ::confLink::getLinkLabels { "serialport" } ]
+      set conf(audecom,port) [ lindex $list_connexion 0 ]
+   }
 
    #--- confToWidget
    ::audecom::confToWidget

@@ -2,7 +2,7 @@
 # Fichier : bermasaude.tcl
 # Description : Gere la roue a filtres de Laurent BERNASCONI et Robert DELMAS
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: bermasaude.tcl,v 1.28 2010-10-10 19:53:55 michelpujol Exp $
+# Mise à jour $Id: bermasaude.tcl,v 1.29 2010-10-30 13:22:39 robertdelmas Exp $
 #
 
 #
@@ -126,16 +126,19 @@ namespace eval bermasaude {
       variable widget
       global bermasaude caption conf zone
 
+      #--- Je memorise la reference de la frame
+      set widget(frm) $frm
+
+      #--- Prise en compte des liaisons
+      if { $conf(bermasaude,port) == "" } {
+         set widget(list_connexion) [::confLink::getLinkLabels { "serialport" } ]
+         set conf(bermasaude,port)  [ lindex $widget(list_connexion) 0 ]
+      }
+
       #--- Copie de conf(...) dans la variable widget
       set widget(port)  $conf(bermasaude,port)
       set widget(combi) [ lindex "$caption(bermasaude,bermasaude_bvri) $caption(bermasaude,bermasaude_cmj)" \
          $conf(bermasaude,combi) ]
-
-      #--- Prise en compte des liaisons
-      set widget(list_connexion) [::confLink::getLinkLabels { "serialport" } ]
-
-      #--- Je memorise la reference de la frame
-      set widget(frm) $frm
 
       #--- Choix des couleurs
       ::bermasaude::choixCouleur
