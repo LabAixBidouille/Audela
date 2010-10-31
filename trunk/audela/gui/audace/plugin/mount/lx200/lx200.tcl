@@ -2,7 +2,7 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise à jour $Id: lx200.tcl,v 1.33 2010-10-30 13:21:18 robertdelmas Exp $
+# Mise à jour $Id: lx200.tcl,v 1.34 2010-10-31 07:22:12 robertdelmas Exp $
 #
 
 namespace eval ::lx200 {
@@ -170,16 +170,13 @@ proc ::lx200::fillConfigPage { frm } {
    set private(ite-lente_A1) "0"
 
    #--- Prise en compte des liaisons
+   set list_connexion [::confLink::getLinkLabels { "serialport" "audinet" } ]
    if { $conf(lx200,port) == "" } {
-      set list_connexion   [ ::confLink::getLinkLabels { "serialport" "audinet" } ]
       set conf(lx200,port) [ lindex $list_connexion 0 ]
    }
 
    #--- confToWidget
    ::lx200::confToWidget
-
-   #--- Prise en compte des liaisons
-   set list_connexion [::confLink::getLinkLabels { "serialport" "audinet" } ]
 
    #--- Creation des differents frames
    frame $frm.frame1 -borderwidth 0 -relief raised

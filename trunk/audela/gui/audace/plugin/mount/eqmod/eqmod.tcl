@@ -2,7 +2,7 @@
 # Fichier : eqmod.tcl
 # Description : Configuration de la monture EQMOD
 # Auteur : Robert DELMAS
-# Mise à jour $Id: eqmod.tcl,v 1.13 2010-10-30 13:20:58 robertdelmas Exp $
+# Mise à jour $Id: eqmod.tcl,v 1.14 2010-10-31 07:22:01 robertdelmas Exp $
 #
 
 namespace eval ::eqmod {
@@ -144,16 +144,13 @@ proc ::eqmod::fillConfigPage { frm } {
    set private(frm) $frm
 
    #--- Prise en compte des liaisons
+   set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
    if { $conf(eqmod,port) == "" } {
-      set list_connexion   [ ::confLink::getLinkLabels { "serialport" } ]
       set conf(eqmod,port) [ lindex $list_connexion 0 ]
    }
 
    #--- confToWidget
    ::eqmod::confToWidget
-
-   #--- Prise en compte des liaisons
-   set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
 
    #--- Creation des differents frames
    frame $frm.frame1 -borderwidth 0 -relief raised

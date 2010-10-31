@@ -2,7 +2,7 @@
 # Fichier : ouranos.tcl
 # Description : Configuration de la monture Ouranos
 # Auteur : Robert DELMAS
-# Mise à jour $Id: ouranos.tcl,v 1.21 2010-10-30 13:21:37 robertdelmas Exp $
+# Mise à jour $Id: ouranos.tcl,v 1.22 2010-10-31 07:22:23 robertdelmas Exp $
 #
 
 namespace eval ::ouranos {
@@ -168,16 +168,13 @@ proc ::ouranos::fillConfigPage { frm } {
    set private(frm) $frm
 
    #--- Prise en compte des liaisons
+   set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
    if { $conf(ouranos,port) == "" } {
-      set list_connexion     [ ::confLink::getLinkLabels { "serialport" } ]
       set conf(ouranos,port) [ lindex $list_connexion 0 ]
    }
 
    #--- confToWidget
    ::ouranos::confToWidget
-
-   #--- Prise en compte des liaisons
-   set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
 
    #--- Creation des differents frames
    frame $frm.frame1 -borderwidth 0 -relief raised

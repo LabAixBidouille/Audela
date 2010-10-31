@@ -2,7 +2,7 @@
 # Fichier : audecom.tcl
 # Description : Parametrage et pilotage de la carte AudeCom (Ex-Kauffmann)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: audecom.tcl,v 1.28 2010-10-30 13:20:05 robertdelmas Exp $
+# Mise à jour $Id: audecom.tcl,v 1.29 2010-10-31 07:21:30 robertdelmas Exp $
 #
 
 namespace eval ::audecom {
@@ -349,16 +349,13 @@ proc ::audecom::fillConfigPage { frm } {
    set private(frm) $frm
 
    #--- Prise en compte des liaisons
+   set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
    if { $conf(audecom,port) == "" } {
-      set list_connexion     [ ::confLink::getLinkLabels { "serialport" } ]
       set conf(audecom,port) [ lindex $list_connexion 0 ]
    }
 
    #--- confToWidget
    ::audecom::confToWidget
-
-   #--- Prise en compte des liaisons
-   set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
 
    #--- Creation des differents frames
    frame $frm.frame1 -borderwidth 0 -relief raised
