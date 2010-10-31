@@ -2,7 +2,7 @@
 # Fichier : bermasaude.tcl
 # Description : Gere la roue a filtres de Laurent BERNASCONI et Robert DELMAS
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: bermasaude.tcl,v 1.29 2010-10-30 13:22:39 robertdelmas Exp $
+# Mise à jour $Id: bermasaude.tcl,v 1.30 2010-10-31 07:21:19 robertdelmas Exp $
 #
 
 #
@@ -130,9 +130,9 @@ namespace eval bermasaude {
       set widget(frm) $frm
 
       #--- Prise en compte des liaisons
+      set widget(list_connexion) [::confLink::getLinkLabels { "serialport" } ]
       if { $conf(bermasaude,port) == "" } {
-         set widget(list_connexion) [::confLink::getLinkLabels { "serialport" } ]
-         set conf(bermasaude,port)  [ lindex $widget(list_connexion) 0 ]
+         set conf(bermasaude,port) [ lindex $widget(list_connexion) 0 ]
       }
 
       #--- Copie de conf(...) dans la variable widget

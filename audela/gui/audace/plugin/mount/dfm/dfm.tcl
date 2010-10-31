@@ -2,7 +2,7 @@
 # Fichier : dfm.tcl
 # Description : Configuration de la monture DFM
 # Auteur : Robert DELMAS
-# Mise à jour $Id: dfm.tcl,v 1.8 2010-10-30 13:20:41 robertdelmas Exp $
+# Mise à jour $Id: dfm.tcl,v 1.9 2010-10-31 07:21:50 robertdelmas Exp $
 #
 
 namespace eval ::dfm {
@@ -135,16 +135,13 @@ proc ::dfm::fillConfigPage { frm } {
    set private(frm) $frm
 
    #--- Prise en compte des liaisons
+   set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
    if { $conf(dfm,portSerie) == "" } {
-      set list_connexion      [ ::confLink::getLinkLabels { "serialport" } ]
       set conf(dfm,portSerie) [ lindex $list_connexion 0 ]
    }
 
    #--- confToWidget
    ::dfm::confToWidget
-
-   #--- Prise en compte des liaisons
-   set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
 
    #--- Creation des differents frames
    frame $frm.frame1 -borderwidth 0 -relief raised

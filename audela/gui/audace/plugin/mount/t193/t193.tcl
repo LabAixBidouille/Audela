@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise à jour $Id: t193.tcl,v 1.32 2010-10-30 13:21:54 robertdelmas Exp $
+# Mise à jour $Id: t193.tcl,v 1.33 2010-10-31 07:22:34 robertdelmas Exp $
 #
 
 namespace eval ::t193 {
@@ -187,16 +187,13 @@ proc ::t193::fillConfigPage { frm } {
    set private(frm) $frm
 
    #--- Prise en compte des liaisons
+   set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
    if { $conf(t193,portSerie) == "" } {
-      set list_connexion       [ ::confLink::getLinkLabels { "serialport" } ]
       set conf(t193,portSerie) [ lindex $list_connexion 0 ]
    }
 
    #--- confToWidget
    ::t193::confToWidget
-
-   #--- Prise en compte des liaisons
-   set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
 
    #--- Creation des differents frames
    frame $frm.frame1 -borderwidth 0 -relief raised

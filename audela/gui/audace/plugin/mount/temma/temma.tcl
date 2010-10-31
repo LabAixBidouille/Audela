@@ -2,7 +2,7 @@
 # Fichier : temma.tcl
 # Description : Fenetre de configuration pour le parametrage du suivi d'objets mobiles pour la monture Temma
 # Auteur : Robert DELMAS
-# Mise à jour $Id: temma.tcl,v 1.26 2010-10-30 13:22:15 robertdelmas Exp $
+# Mise à jour $Id: temma.tcl,v 1.27 2010-10-31 07:22:46 robertdelmas Exp $
 #
 
 namespace eval ::temma {
@@ -150,16 +150,13 @@ proc ::temma::fillConfigPage { frm } {
    set private(frm) $frm
 
    #--- Prise en compte des liaisons
+   set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
    if { $conf(temma,port) == "" } {
-      set list_connexion   [ ::confLink::getLinkLabels { "serialport" } ]
       set conf(temma,port) [ lindex $list_connexion 0 ]
    }
 
    #--- confToWidget
    ::temma::confToWidget
-
-   #--- Prise en compte des liaisons
-   set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
 
    #--- Creation des differents frames
    frame $frm.frame1 -borderwidth 0 -relief raised
