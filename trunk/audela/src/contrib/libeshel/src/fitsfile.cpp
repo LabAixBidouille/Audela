@@ -299,22 +299,22 @@ void Fits_setOrders (FITS *pFits, INFOSPECTRO *infoSpectro, PROCESS_INFO *proces
    colUnit[24] = "lines";
 
    // format d'affichage par defaut
-   colDisp[0] = "I4.1";    // order
+   colDisp[0] = "I1.1";    // order
    colDisp[1] = "I1.1";    // flag
-   colDisp[2] = "I7.1";    //min_x
-   colDisp[3] = "I7.1";    //man_x
+   colDisp[2] = "I1.1";    //min_x
+   colDisp[3] = "I1.1";    //man_x
    colDisp[4] = "E14.6E3"; //P0
    colDisp[5] = "E14.6E3"; //P1
    colDisp[6] = "E14.6E3"; //P2
    colDisp[7] = "E14.6E3"; //P3
    colDisp[8] = "E14.6E3"; //P4
-   colDisp[9] = "F7.2";    //yc
+   colDisp[9] = "F1.2";    //yc
    colDisp[10] = "I7.1";   //wide_y
    colDisp[11] = "I7.1";   //wide_sky
    colDisp[12] = "I7.1";   //wide_x
    colDisp[13] = "F7.2";   //slant
-   colDisp[14] = "F7.4";   //rms_order
-   colDisp[15] = "F8.3";   //central
+   colDisp[14] = "F1.4";   //rms_order
+   colDisp[15] = "F1.3";   //central
    colDisp[16] = "E14.6E3";  //A0
    colDisp[17] = "E14.6E3";  //A1   
    colDisp[18] = "E14.6E3";  //A2

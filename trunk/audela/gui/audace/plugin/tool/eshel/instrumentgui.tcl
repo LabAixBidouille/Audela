@@ -2,7 +2,7 @@
 # Fichier : process.tcl
 # Description : fenertre de configuration instrument eShel
 # Auteur : Michel PUJOL
-# Mise à jour $Id: instrumentgui.tcl,v 1.6 2010-08-20 14:34:44 michelpujol Exp $
+# Mise à jour $Id: instrumentgui.tcl,v 1.7 2010-11-01 14:56:29 michelpujol Exp $
 #
 
 ################################################################
@@ -817,6 +817,44 @@ proc ::eshel::instrumentgui::onSelectConfig { visuNo } {
    #--- je recupere l'identifiant de la confiiguration correspondant la ligne selectionne dans la combobox
    set configId [::eshel::instrument::getConfigIdentifiant [$tkCombo get]]
 
+   #--- je copie les parametres dans les variables courantes
+   setConfig $visuNo $configId
+
+   #--- j'affiche la liste des pixels chauds
+   set tkHotPixelList [$private($visuNo,frm).notebook getframe "camera"].hotpixel.text
+   $tkHotPixelList delete 1.0 end
+   foreach hotpixel $::conf(eshel,instrument,config,$configId,hotPixelList) {
+      #--- j'affiche une raie par ligne
+      $tkHotPixelList insert end "$hotpixel\n"
+   }
+
+   #--- j'affiche la liste des raies
+   set tkLineList [$private($visuNo,frm).notebook getframe "process"].lineList.text
+   $tkLineList delete 1.0 end
+   foreach line $::conf(eshel,instrument,config,$configId,lineList) {
+      #--- j'affiche une raie par ligne
+      $tkLineList insert end "$line\n"
+   }
+
+   #--- j'affiche la definition des ordres
+   set tkOrderDefinition [$private($visuNo,frm).notebook getframe "process"].definition.table
+   $tkOrderDefinition delete 0 end
+   foreach definition $::conf(eshel,instrument,config,$configId,orderDefinition) {
+      $tkOrderDefinition insert end $definition
+   }
+
+}
+
+#----------------------------------------------------------------------------
+# setConfig
+#    met a jour les variables et les widgets avec les parametres de la configuration
+#    donne en parametre
+# @param $visuNo  identifiant de la visu
+# @param $visuNo  identifiant de la configuration
+#----------------------------------------------------------------------------
+proc ::eshel::instrumentgui::setConfig { visuNo configId } {
+   variable private
+
    #--- j'ajoute les parametres manquants (en cas d'evolution de eShel)
    if { $configId != "default" } {
       foreach { defautParamName defautlParamValue } [array get ::conf eshel,instrument,config,default,*] {
@@ -885,34 +923,11 @@ proc ::eshel::instrumentgui::onSelectConfig { visuNo } {
    ###set private(responseOption)    $::conf(eshel,instrument,config,$configId,responseOption)
    ###set private(responseFileName)  [file nativename $::conf(eshel,instrument,config,$configId,responseFileName)]
 
-   #--- je renseigne la liste des pixels chauds
-   set tkHotPixelList [$private($visuNo,frm).notebook getframe "camera"].hotpixel.text
-   $tkHotPixelList delete 1.0 end
-   foreach hotpixel $::conf(eshel,instrument,config,$configId,hotPixelList) {
-      #--- j'affiche une raie par ligne
-      $tkHotPixelList insert end "$hotpixel\n"
-   }
-
-   #--- je renseigne la liste des raies
-   set tkLineList [$private($visuNo,frm).notebook getframe "process"].lineList.text
-   $tkLineList delete 1.0 end
-   foreach line $::conf(eshel,instrument,config,$configId,lineList) {
-      #--- j'affiche une raie par ligne
-      $tkLineList insert end "$line\n"
-   }
-
-   #--- je renseigne la definition des ordres
-   set tkOrderDefinition [$private($visuNo,frm).notebook getframe "process"].definition.table
-   $tkOrderDefinition delete 0 end
-   foreach definition $::conf(eshel,instrument,config,$configId,orderDefinition) {
-      $tkOrderDefinition insert end $definition
-   }
-
    #--- je memorise l'identifant de la nouvelle configuration
    #--- attention : cette variable est surveillee par listener
    set ::conf(eshel,currentInstrument) $configId
-
 }
+
 
 #----------------------------------------------------------------------------
 # onSelectCamera
@@ -2169,38 +2184,6 @@ proc ::eshel::instrumentgui::getCheckbutton { tkTable lineName columnName } {
 
    #--- je recupere le contenu de la variable
    return [set $variableName]
-}
-
-## selectResponseFileName ------------------------------------------------------------
-# ouvre la fenetre pour selectionner une reponse instrumentale
-#
-# @param   visuNo numero de la visu
-# @return rien
-# @private
-#------------------------------------------------------------
-proc ::eshel::instrumentgui::selectResponseFileName { visuNo } {
-   variable private
-
-   #--- j'affiche la fenetre de saisie du nom de la nouvelle configuration
-   set fileName [ tk_getOpenFile \
-      -title $::caption(eshel,instrument,process,response,title) \
-      -filetypes [list [ list "FITS File"  {.fit} ]] \
-      -initialdir $::conf(eshel,mainDirectory) \
-      -parent $private($visuNo,frm) \
-   ]
-
-   if { $fileName != "" } {
-      set catchResult [ catch {
-         #--- je verifie que le fichier est une reponse instrumentale
-         # TODO
-
-         set private(responseFileName) [file nativename $fileName]
-      }]
-
-      if { $catchResult !=0 } {
-        ::tkutil::displayErrorInfo $::caption(eshel,instrument,process,response,title)
-      }
-   }
 }
 
 ################################################################

@@ -2,7 +2,7 @@
 # @file processgui.tcl
 # Description : Fentre de configuration des traitements eShel
 # Auteur : Michel PUJOL
-# Mise à jour $Id: processgui.tcl,v 1.4 2010-08-20 14:34:44 michelpujol Exp $
+# Mise à jour $Id: processgui.tcl,v 1.5 2010-11-01 14:56:29 michelpujol Exp $
 #
 
 ##------------------------------------------------------------
@@ -95,6 +95,10 @@ proc ::eshel::processgui::fillConfigPage { frm visuNo } {
 
    #--- creation des boutons
    TitleFrame $frm.button -borderwidth 2 -relief ridge -text $::caption(eshel,process,manualCommand)
+      Button  $frm.generate -text $::caption(eshel,process,generateRoadmap) \
+         -command "::eshel::processgui::generateRoadmap "
+      pack  $frm.generate  -in [$frm.button getframe] -side left -fill none -expand 1 -pady 4
+
       Button  $frm.generateAndStart -text $::caption(eshel,process,generateAndStart) \
          -command ::eshel::processgui::generateAndStartStartScript
       pack  $frm.generateAndStart  -in [$frm.button getframe] -side left -fill none -expand 1 -pady 4
@@ -340,9 +344,9 @@ proc ::eshel::processgui::fillRoadmapPage { frm visuNo } {
 
    #--- frame des boutons
    frame $frm.button -borderwidth 0 -relief raised
-      Button  $frm.button.generate -text "$::caption(eshel,process,generateRoadmap)" \
-         -command "::eshel::processgui::generateRoadmap "
-      pack  $frm.button.generate -side left -fill none -expand 1 -pady 4
+      ###Button  $frm.button.generate -text "$::caption(eshel,process,generateRoadmap)" \
+      ###   -command "::eshel::processgui::generateRoadmap "
+      ###pack  $frm.button.generate -side left -fill none -expand 1 -pady 4
       Button $frm.button.editScript -text "$::caption(eshel,process,editScript)" -height 1 \
         -borderwidth 1 -padx 2 -pady 2 -command "::eshel::processgui::editScript"
       pack $frm.button.editScript  -side left -fill none -expand 0
@@ -1140,40 +1144,40 @@ proc ::eshel::processgui::setFrameState {  } {
 
    switch $state {
       normal {
-         $roadmapFrame.button.generate    configure -state normal
+         $private(frm).generate           configure -state normal
          $roadmapFrame.button.editScript  configure -state normal
          $roadmapFrame.button.startScript configure -state normal
          $rawFrame.button.makeSerie       configure -state normal
          $rawFrame.button.unmakeSerie     configure -state normal
-         $private(frm).generateAndStart configure -state normal \
+         $private(frm).generateAndStart   configure -state normal \
             -text $::caption(eshel,process,generateAndStart) \
             -command "::eshel::processgui::generateAndStartStartScript"
       }
       disabled {
-         $roadmapFrame.button.generate    configure -state disabled
+         $private(frm).generate           configure -state disabled
          $roadmapFrame.button.editScript  configure -state disabled
          $roadmapFrame.button.startScript configure -state disabled
          $rawFrame.button.makeSerie       configure -state disabled
          $rawFrame.button.unmakeSerie     configure -state disabled
-         $private(frm).generateAndStart configure -state disabled
+         $private(frm).generateAndStart   configure -state disabled
       }
       running {
-         $roadmapFrame.button.generate    configure -state disabled
+         $private(frm).generate           configure -state disabled
          $roadmapFrame.button.editScript  configure -state disabled
          $roadmapFrame.button.startScript configure -state disabled
          $rawFrame.button.makeSerie       configure -state disabled
          $rawFrame.button.unmakeSerie     configure -state disabled
-         $private(frm).generateAndStart configure -state normal \
+         $private(frm).generateAndStart   configure -state normal \
             -text $::caption(eshel,process,stopScript) \
             -command "::eshel::processgui::stopScript"
       }
       stopping {
-         $roadmapFrame.button.generate    configure -state disabled
+         $private(frm).generateAndStart   configure -state disabled
          $roadmapFrame.button.editScript  configure -state disabled
          $roadmapFrame.button.startScript configure -state disabled
          $rawFrame.button.makeSerie       configure -state disabled
          $rawFrame.button.unmakeSerie     configure -state disabled
-         $private(frm).generateAndStart configure -state disabled \
+         $private(frm).generateAndStart   configure -state disabled \
             -text $::caption(eshel,process,stopping) \
             -command ""
       }

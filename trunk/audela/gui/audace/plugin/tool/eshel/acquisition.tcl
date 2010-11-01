@@ -2,7 +2,7 @@
 # Fichier : acquisition.tcl
 # Description : acquisition eShel
 # Auteur : Michel PUJOL
-# Mise a jour $Id: acquisition.tcl,v 1.5 2010-06-11 13:08:19 michelpujol Exp $
+# Mise a jour $Id: acquisition.tcl,v 1.6 2010-11-01 14:56:29 michelpujol Exp $
 #
 
 namespace eval ::eshel::acquisition {
@@ -285,6 +285,11 @@ proc ::eshel::acquisition::startSequence { visuNo actionList { sequenceName "" }
                         #--- Mode Thar
                         append fileName "THAR-$actionParams(expTime)s"
                         set imageType "CALIB"
+                     }
+                     tungstenSerie  {
+                         #--- Mode Dark
+                         append fileName "TUNGSTEN-$actionParams(expTime)s"
+                         set imageType "TUNGSTEN"
                      }
                      neonSerie {
                        #--- Mode Neon

@@ -12,7 +12,10 @@
 
 #define LIBESHEL_VERSION "2.2"
 
-void Eshel_processFlat(char *flatNameIn, char *flatNameOut, 
+void Eshel_processFlat(
+   char *ledfileName,      // nom du fichier led (image pretraitee pour la calibration geometrique)
+   char *tungstenFileName, // nom du fichier tungsten (image pretraitee pour le blaze)
+   char *flatFileName,     // nom du fichier flat traitee en sortie
    int ordre_ref_y, int ordre_ref, double lambda_ref, int neon_ref_x, 
    int wide_y, int step_y, int seuil_ordre, ORDRE *ordre, 
    INFOSPECTRO &spectro,

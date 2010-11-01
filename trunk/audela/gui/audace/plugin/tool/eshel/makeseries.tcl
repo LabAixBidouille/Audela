@@ -2,7 +2,7 @@
 # Fichier : eshel.tcl
 # Description : fenetre saisie des mots clefs
 # Auteurs : Michel Pujol
-# Mise a jour $Id: makeseries.tcl,v 1.2 2010-04-11 13:24:25 michelpujol Exp $
+# Mise a jour $Id: makeseries.tcl,v 1.3 2010-11-01 14:56:29 michelpujol Exp $
 #
 
 ################################################################
@@ -261,7 +261,7 @@ proc ::eshel::makeseries::fillConfigPage { frm visuNo } {
          }
          IMAGETYP {
             #--- j'ajoute une combo avec la liste des type d'images
-            set defautImageTypeList { BIAS DARK FLATFIELD FLAT CALIB OBJECT RESPONSE }
+            set defautImageTypeList { BIAS DARK FLATFIELD FLAT CALIB OBJECT RESPONSE TUNGSTEN}
             ComboBox $frm.defautImageType \
                -height [ llength $defautImageTypeList ] \
                -width  [ ::tkutil::lgEntryComboBox $defautImageTypeList ] \

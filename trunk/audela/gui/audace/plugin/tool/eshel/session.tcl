@@ -2,7 +2,7 @@
 # Fichier : session.tcl
 # Description : configuration des parametres de session
 # Auteur : Michel PUJOL
-# Mise à jour $Id: session.tcl,v 1.4 2010-10-03 14:48:55 robertdelmas Exp $
+# Mise à jour $Id: session.tcl,v 1.5 2010-11-01 14:56:29 michelpujol Exp $
 #
 
 ################################################################
@@ -107,41 +107,12 @@ proc ::eshel::session::apply { visuNo } {
       return
    }
 
-   if { $widget(mainDirectory) != "" } {
-      #--- je normalise le nom du repertoire
-      set mainDirectory [file normalize $widget(mainDirectory)]
+   set catchResult [ catch {
+      ::eshel::setDirectory $widget(mainDirectory)
+   }]
 
-      #--- je cree les sous repertoires
-      set catchResult [ catch {
-         set rawDirectory "$mainDirectory/raw"
-         set tempDirectory "$mainDirectory/temp"
-         set archiveDirectory "$mainDirectory/archive"
-         set referenceDirectory "$mainDirectory/reference"
-         set processedDirectory "$mainDirectory/processed"
-
-         file mkdir "$mainDirectory"
-         file mkdir "$rawDirectory"
-         file mkdir "$tempDirectory"
-         file mkdir "$archiveDirectory"
-         file mkdir "$referenceDirectory"
-         file mkdir "$processedDirectory"
-
-         #--- je memorise les noms des sous repertoires
-         set ::conf(eshel,mainDirectory)        $mainDirectory
-         set ::conf(eshel,rawDirectory)         $rawDirectory
-         set ::conf(eshel,referenceDirectory)   $referenceDirectory
-         set ::conf(eshel,processedDirectory)   $processedDirectory
-         set ::conf(eshel,archiveDirectory)     $archiveDirectory
-         set ::conf(eshel,tempDirectory)        $tempDirectory
-         }]
-
-      if { $catchResult == 1 } {
-         ::tkutil::displayErrorInfo $::caption(eshel,title)
-         set private(apply)  "error"
-         return
-      }
-   } else {
-      tk_messageBox -message $::caption(eshel,session,directoryError) -icon error -title $::caption(eshel,title)
+   if { $catchResult == 1 } {
+      tk_messageBox -message "$::caption(eshel,session,directoryError)\n$::errorInfo" -icon error -title $::caption(eshel,title)
       set private(apply)  "error"
       return
    }

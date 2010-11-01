@@ -68,13 +68,14 @@ int cmdEshelInit(ClientData clientData, Tcl_Interp *interp,int argc, char *argv[
 int cmdEshelProcessFlat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    char s[1024];
    int result;
-   char *usage = "Usage: eshel_flat dirIn dirOut alpha beta gamma focale m pixel width height wide_x wide_y step_y wide_sky seuil_ordre min_order max_order neon_ref_x ordre_ref_y ordre_ref lambda_ref {def_ordres} {line_list} {distorsion_polynom}";
-   if(argc!=25) {
+   char *usage = "Usage: eshel_flat ledFileName tungstenFileName flatFileName Out alpha beta gamma focale m pixel width height wide_x wide_y step_y wide_sky seuil_ordre min_order max_order neon_ref_x ordre_ref_y ordre_ref lambda_ref {def_ordres} {line_list} {distorsion_polynom}";
+   if(argc!=26) {
       Tcl_SetResult(interp,usage,TCL_VOLATILE);
       return TCL_ERROR;
    } else {
-      char * flatNameIn ;
-      char * flatNameOut;
+      char * ledfileName ;
+      char * tungstenFileName;
+      char * flatFileName;
       INFOSPECTRO spectro;
       int wide_x, wide_y, step_y, wide_sky, seuil_ordre;
       int neon_ref_x, ordre_ref_y, ordre_ref;
@@ -91,10 +92,11 @@ int cmdEshelProcessFlat(ClientData clientData, Tcl_Interp *interp, int argc, cha
 
       int nb_ordre = 0;
 
-      flatNameIn = argv[1];
-      flatNameOut = argv[2];
+      ledfileName = argv[1];
+      tungstenFileName = argv[2];
+      flatFileName = argv[3];
 
-      int paramNo  = 2;
+      int paramNo  = 3;
       // parametres du specrographe
       if(Tcl_GetDouble(interp,argv[++paramNo],&spectro.alpha)!=TCL_OK) {
          sprintf(s,"%s\n Invalid alpha=%s", usage, argv[paramNo]);
@@ -305,7 +307,7 @@ int cmdEshelProcessFlat(ClientData clientData, Tcl_Interp *interp, int argc, cha
 
       try {
          double dx_ref;
-         Eshel_processFlat(flatNameIn, flatNameOut, 
+         Eshel_processFlat(ledfileName, tungstenFileName, flatFileName,
             ordre_ref_y, ordre_ref, lambda_ref, neon_ref_x, 
             wide_y, step_y, seuil_ordre, ordre, 
             spectro,

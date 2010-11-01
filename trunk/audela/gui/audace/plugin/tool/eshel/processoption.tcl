@@ -2,7 +2,7 @@
 # Fichier : processoption.tcl
 # Description : fenetre des options des traitements
 # Auteur : Michel PUJOL
-# Mise à jour $Id: processoption.tcl,v 1.1 2010-08-20 14:40:04 michelpujol Exp $
+# Mise à jour $Id: processoption.tcl,v 1.2 2010-11-01 14:56:29 michelpujol Exp $
 #
 
 ################################################################
@@ -142,11 +142,11 @@ proc ::eshel::process::option::fillConfigPage { frm visuNo } {
          -variable ::eshel::process::option::widget(responseOption) \
          -command  "::eshel::process::option::onSelectResponseOption"
 
-      #--- Bouton selection de la reponse isntrumentale
+      #--- Bouton selection de la reponse instrumentale
       frame  $frm.response.select -borderwidth 0
          entry $frm.response.select.entry   -textvariable ::eshel::process::option::widget(responseFileName) -state readonly -justify left
          pack $frm.response.select.entry   -side left -fill x -expand 1 -padx 8
-         Button $frm.response.select.button -text "..." -command "::eshel::process::option::selectResponseFileName $visuNo"
+         Button $frm.response.select.button -text "..." -command "::eshel::process::option::selectResponseFileName"
          pack $frm.response.select.button -side left -fill none -expand 0 -padx 2
 
       radiobutton $frm.response.auto -highlightthickness 0 -padx 0 -pady 0 -state normal \
@@ -244,5 +244,39 @@ proc ::eshel::process::option::onSelectResponseOption { } {
       $frm.response.select.button configure -state disabled
    }
 }
+
+## selectResponseFileName ------------------------------------------------------------
+# ouvre la fenetre pour selectionner une reponse instrumentale
+#
+# @param   visuNo numero de la visu
+# @return rien
+# @private
+#------------------------------------------------------------
+proc ::eshel::process::option::selectResponseFileName { } {
+   variable private
+   variable widget
+
+   #--- j'affiche la fenetre de saisie du nom de la nouvelle configuration
+   set fileName [ tk_getOpenFile \
+      -title $::caption(eshel,instrument,process,response,title) \
+      -filetypes [list [ list "FITS File"  {.fit} ]] \
+      -initialdir $::conf(eshel,mainDirectory) \
+      -parent $private(frm) \
+   ]
+
+   if { $fileName != "" } {
+      set catchResult [ catch {
+         #--- je verifie que le fichier est une reponse instrumentale
+         # TODO
+         set widget(responseFileName) [file nativename $fileName]
+      }]
+
+      if { $catchResult !=0 } {
+        ::tkutil::displayErrorInfo $::caption(eshel,instrument,process,response,title)
+      }
+   }
+}
+
+
 
 

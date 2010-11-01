@@ -125,6 +125,7 @@
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
+			ManagedExtensions="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -152,9 +153,9 @@
 				Optimization="0"
 				AdditionalIncludeDirectories="../src;../;../../../external/include/win;../../../external/include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_USE_MATH_DEFINES;LIBESHEL_EXPORTS;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;USE_TCL_STUBS"
-				MinimalRebuild="true"
+				MinimalRebuild="false"
 				ExceptionHandling="1"
-				BasicRuntimeChecks="3"
+				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
 				PrecompiledHeaderFile=".\Debug/libeshel.pch"
 				AssemblerListingLocation=".\Debug/"
@@ -188,6 +189,7 @@
 				IgnoreDefaultLibraryNames=""
 				ModuleDefinitionFile="..\src\libeshel_tcl.def"
 				GenerateDebugInformation="true"
+				AssemblyDebug="1"
 				ProgramDatabaseFile=".\Debug/libeshel.pdb"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
