@@ -2,7 +2,7 @@
 # Fichier : eshel.tcl
 # Description : outil de fabrication des fichier Kit et de deploiement des plugin
 # Auteurs : Michel Pujol
-# Mise à jour $Id: eshel.tcl,v 1.10 2010-10-10 20:07:16 michelpujol Exp $
+# Mise à jour $Id: eshel.tcl,v 1.11 2010-11-01 14:56:29 michelpujol Exp $
 #
 
 ##------------------------------------------------------------
@@ -100,12 +100,15 @@ proc ::eshel::getPluginType { } {
 #     suppprime l'instance du plugin
 #------------------------------------------------------------
 proc ::eshel::deletePluginInstance { visuNo } {
+   variable private
 
    #--- j'arrete les acquisitions en cours
    ::eshel::stopAcquisition $visuNo
    #--- je ferme le fichier de trace
    closeLogFile
 
+   #--- je ferme le panneau
+   destroy $private($visuNo,frm)
 }
 
 #------------------------------------------------------------
@@ -438,7 +441,6 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
    set private($visuNo,objname) ""
    set private($visuNo,sequenceState) ""
    set private($visuNo,status) ""
-   set private(hLogFile)   ""
    set private(comment) ""
 
    #--- Petit raccourci bien pratique
@@ -1230,6 +1232,53 @@ proc ::eshel::showObjectProfile { fileName } {
 }
 
 ##------------------------------------------------------------
+# setDirectory
+#    selectionn le repertoire des images
+#    et cree les sous reperoires raw, temp, archive reference et processed
+#    s'ils n'exitent pas deja
+#
+# @param mainDirectory  repertoire principal
+# @return none
+#------------------------------------------------------------
+proc ::eshel::setDirectory { mainDirectory } {
+
+   if { $mainDirectory != "" } {
+      #--- je normalise le nom du repertoire
+      set mainDirectory [file normalize $mainDirectory]
+
+      #--- je cree les sous repertoires
+      set catchResult [ catch {
+         set rawDirectory "$mainDirectory/raw"
+         set tempDirectory "$mainDirectory/temp"
+         set archiveDirectory "$mainDirectory/archive"
+         set referenceDirectory "$mainDirectory/reference"
+         set processedDirectory "$mainDirectory/processed"
+
+         file mkdir "$mainDirectory"
+         file mkdir "$rawDirectory"
+         file mkdir "$tempDirectory"
+         file mkdir "$archiveDirectory"
+         file mkdir "$referenceDirectory"
+         file mkdir "$processedDirectory"
+
+         #--- je memorise les noms des sous repertoires
+         set ::conf(eshel,mainDirectory)        $mainDirectory
+         set ::conf(eshel,rawDirectory)         $rawDirectory
+         set ::conf(eshel,referenceDirectory)   $referenceDirectory
+         set ::conf(eshel,processedDirectory)   $processedDirectory
+         set ::conf(eshel,archiveDirectory)     $archiveDirectory
+         set ::conf(eshel,tempDirectory)        $tempDirectory
+         }]
+
+      if { $catchResult == 1 } {
+         error $::errorInfo
+      }
+   } else {
+      error $::caption(eshel,session,directoryError)
+   }
+}
+
+##------------------------------------------------------------
 #  ajoute une trace dans le fichier de trace
 #
 # @param fileName nom du fichier
@@ -1237,26 +1286,24 @@ proc ::eshel::showObjectProfile { fileName } {
 # @public
 #------------------------------------------------------------
 proc ::eshel::logFile { message color } {
-   variable private
+   variable hLogFile
 
    if { $::conf(eshel,enabledLogFile) == 0 } {
       return
    }
 
    set catchResult [ catch {
-      if { $private(hLogFile) == "" } {
-         #--- j'ouvre le fichier de trace
-         ::eshel::openLogFile
-      }
+      set fileName [file join $::conf(eshel,mainDirectory) $::conf(eshel,logFileName) ]
+      set hLogFile [open $fileName "a+" ]
 
       #--- j'ajoute la trace dans le fichier
       set date [clock format [clock seconds] -gmt 1 -format "%Y-%m-%dT%H:%M:%S"]
-      puts $private(hLogFile) "<font color=$color>"
+      puts $hLogFile  "<font color=$color>"
       #--- je remplce les retours cahriots par <BR>
       set message [string map { "\n" "<BR>\n" } $message]
-      puts $private(hLogFile) "$date $message"
-      puts $private(hLogFile) "</font>"
-      flush  $private(hLogFile)
+      puts $hLogFile "$date $message"
+      puts $hLogFile  "</font>"
+      close  $hLogFile
    } ]
 
    if { $catchResult == 1 } {
@@ -1274,8 +1321,8 @@ proc ::eshel::openLogFile { } {
    variable private
 
    #--- j'ouvre le fichier de tarce
-   set fileName [file join $::conf(eshel,mainDirectory) $::conf(eshel,logFileName) ]
-   set private(hLogFile) [open $fileName "a+" ]
+   ##set fileName [file join $::conf(eshel,mainDirectory) $::conf(eshel,logFileName) ]
+   ##set private(hLogFile) [open $fileName "a+" ]
 }
 
 #------------------------------------------------------------
@@ -1287,20 +1334,6 @@ proc ::eshel::openLogFile { } {
 proc ::eshel::closeLogFile { } {
    variable private
 
-   set catchResult [ catch {
-      if { $private(hLogFile) != "" } {
-         close $private(hLogFile)
-
-      }
-   } ]
-
-   #--- dans tous les cas je vide la variable
-   set private(hLogFile) ""
-
-   if { $catchResult == 1 } {
-      #--- je transmets l'erreur a la procedure appelante
-      error $::errorInfo
-   }
 }
 
 ## validateNumber --------------------------------------------------------------

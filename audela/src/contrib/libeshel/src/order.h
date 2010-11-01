@@ -29,7 +29,7 @@ typedef struct
    double resolution;      // 
    int nb_lines;           // nombre de raies utilisées pour la calibration spectrale (v1.4) 
    //int position_lines[MAX_LINES];  
-   //double dx;              // position théorique de raie de calibration dans le profil spectral  
+      //double dx;              // position théorique de raie de calibration dans le profil spectral  
 } ORDRE;
 
 typedef struct {
@@ -39,10 +39,10 @@ typedef struct {
    double m;      // nombre de traits par millimètre de la gravure du réseau
    double focale; // distance focale de la caméra (en millimètres)
    double pixel;  // taille des pixels (en millimètres)
-   int imax;      // nombre de pixels suivant X (axe spectral)
+   int imax;      // nombre de pixels suivant X (axe spatial)
    int jmax;      // nombre de pixels suivant Y (axe spatial)
-   int min_order;
-   int max_order;
+   int min_order; // numéro du premier ordre à détecter
+   int max_order; // numéro du dernier ordre à détecter
    ::std::valarray<double> distorsion;  // polynome de correction de la distorsion optique
 } INFOSPECTRO;
 
