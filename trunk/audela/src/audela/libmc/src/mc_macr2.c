@@ -926,16 +926,18 @@ void mc_adelemap_sgp(int sgp_method,double jj,double jjutc, double equinoxe, int
 /***************************************************************************/
 {
    double llp[10],mmp[10],uup[10],jjd,ls,bs,rs,eps,/*dpsi,deps,*/xs,ys,zs;
-   double /*l,b,*/x,y,z/*,xg,yg,zg*/;
+   double l,b,x,y,z,xt,yt,zt;
    double dxeq,dyeq,dzeq;
    double jjda;
 	double xaster,yaster,zaster;
    double da1,da2,R1,R2,rho,t1,t2,cosa,aire,airetot,tt,ts;
    double r1,r2,r;
-   double reqter=6378.14/UA*1e3,reqsol=696000./UA*1e3;
+   double reqter=(EARTH_SEMI_MAJOR_RADIUS)/UA,reqsol=696000./UA*1e3;
 	int cas;
 	double xgeo,ygeo,zgeo,vxgeo,vygeo,vzgeo;
 	double tsl,zlong,zlat,latitude,altitude;
+	double aa,bb,ff,dx,dy,dz,alpha,ttsol,ttt;
+	double alpha_min,alpha_max,phasegeo;
    jjd=jj;
 
 	/* type d'astre (0=inconnu 1=comete 2=asteroide 3=planete 4=geocentrique) */
@@ -1013,21 +1015,39 @@ void mc_adelemap_sgp(int sgp_method,double jj,double jjutc, double equinoxe, int
    mc_xyzec2eq(xs,ys,zs,eps,&xs,&ys,&zs); /* equatoriale a la date */
 	rs=sqrt(xs*xs+ys*ys+zs*zs);
 
+	// --- elong, angle de sommet l'observateur
+	// r1 = distance observateur->satellite
+	// r2 = distance observateur->soleil
    r1=sqrt((xaster-x)*(xaster-x)+(yaster-y)*(yaster-y)+(zaster-z)*(zaster-z));
    r2=sqrt((xs-x)*(xs-x)+(ys-y)*(ys-y)+(zs-z)*(zs-z));
    cosa=-((xaster-x)*(xs-x)+(yaster-y)*(ys-y)+(zaster-z)*(zs-z))/r1/r2;
    *elong=mc_acos(cosa);
 
+	// --- phasegeo, angle de sommet le satellite
+	// r1 = distance satellite->centre_terre
+	// r2 = distance satellite->soleil
+   r1=sqrt((-xaster)*(-xaster)+(-yaster)*(-yaster)+(-zaster)*(-zaster));
+   r2=sqrt((xs-xaster)*(xs-xaster)+(ys-yaster)*(ys-yaster)+(zs-zaster)*(zs-zaster));
+   cosa=-((-xaster)*(xs-xaster)+(-yaster)*(ys-yaster)+(-zaster)*(zs-zaster))/r1/r2;
+   phasegeo=mc_acos(cosa);
+
+	// --- phase, angle de sommet le satellite
+	// r1 = distance satellite->observateur
+	// r2 = distance satellite->soleil
    r1=sqrt((x-xaster)*(x-xaster)+(y-yaster)*(y-yaster)+(z-zaster)*(z-zaster));
    r2=sqrt((xs-xaster)*(xs-xaster)+(ys-yaster)*(ys-yaster)+(zs-zaster)*(zs-zaster));
    cosa=-((x-xaster)*(xs-xaster)+(y-yaster)*(ys-yaster)+(z-zaster)*(zs-zaster))/r1/r2;
    *phase=mc_acos(cosa);
 
+	r1=sqrt(xaster*xaster+yaster*yaster+zaster*zaster);
 	tt=mc_asin(reqter/r1);
+
+   r2=sqrt((xs-xaster)*(xs-xaster)+(ys-yaster)*(ys-yaster)+(zs-zaster)*(zs-zaster));
 	ts=mc_asin(reqsol/r2);
 
+	/*
    if ((reqter/r1)>(reqsol/r2)) {
-      R1=tan(tt);;
+      R1=tan(tt);
       R2=tan(ts);
       cas=0;
       airetot=PI*R2*R2; // aire du disque solaire projete
@@ -1068,6 +1088,111 @@ void mc_adelemap_sgp(int sgp_method,double jj,double jjutc, double equinoxe, int
       }
    }
    *sunfraction=(aire/airetot);
+	*/
+
+	*sunfraction=1.;
+	// --- alpha est le scalaire de l'equation parametrique de la ligne de visée aster-Soleil qui définit le point le plus proche du centre de la Terre
+	dx=xs-xaster;
+	dy=ys-yaster;
+	dz=zs-zaster;
+	alpha=-(xaster*dx+yaster*dy+zaster*dz)/(dx*dx+dy*dy+dz*dz);
+	// --- coordonnees du point le plus proche au centre la Terre de la ligne de visee aster-soleil
+	x=xaster+alpha*dx;
+	y=yaster+alpha*dy;
+	z=zaster+alpha*dz;
+   aa=(EARTH_SEMI_MAJOR_RADIUS)/(UA);
+	ff=1./EARTH_INVERSE_FLATTENING;
+   bb=aa*(1-ff);
+	// --- limites de alpha
+	b=mc_asin(aa/r1);
+	alpha_max=sin(b+ts)/sin(b);
+	b=mc_asin(bb/r1);
+	alpha_min=sin(b-ts)/sin(b);
+	// --- alpha <=1 si la ligne de visee intercepte la Terre
+	alpha=(x*x/aa/aa)+(y*y/aa/aa)+(z*z/bb/bb);
+	if (phasegeo<(PI/2)) {
+		*sunfraction=1.;
+	} else if (alpha<alpha_min) {
+		*sunfraction=0.;
+	} else if (alpha>alpha_max) {
+		*sunfraction=1.;
+	} else {
+		// --- projection du point sur la surface de la Terre
+		mc_xyz2lbr(x,y,z,&l,&b,&r);
+		xt=aa*cos(l)*cos(b);
+		yt=aa*sin(l)*cos(b);
+		zt=bb*sin(b);
+		// --- On deplace le reférentiel sur le satellite
+		x=x-xaster; // direction satel->soleil
+		y=y-yaster;
+		z=z-zaster;
+		xt=xt-xaster; // direction satel->bord de la Terre
+		yt=yt-yaster;
+		zt=zt-zaster;
+		xs=xs-xaster; // direction satel->soleil
+		ys=ys-yaster;
+		zs=zs-zaster;
+		xgeo=-xaster; // direction satel->centre de la Terre
+		ygeo=-yaster;
+		zgeo=-zaster;
+		// --- demi angle apparent du Soleil vu du satellite
+		r2=sqrt(xs*xs+ys*ys+zs*zs);
+		ts=mc_asin(reqsol/r2);
+		// --- angle centre_Terre|satellite|bord_Terre
+		r1=sqrt(xt*xt+yt*yt+zt*zt);
+		r2=sqrt(xgeo*xgeo+ygeo*ygeo+zgeo*zgeo);
+		ttt=acos((xt*xgeo+yt*ygeo+zt*zgeo)/r1/r2);
+		// --- angle centre_Terre|satellite|centre_Soleil
+		r1=sqrt(x*x+y*y+z*z);
+		r2=sqrt(xgeo*xgeo+ygeo*ygeo+zgeo*zgeo);
+		ttsol=acos((x*xgeo+y*ygeo+z*zgeo)/r1/r2);
+		// --- condition de tengeance des deux disques
+
+		rho=tan(ttsol);
+
+		if (tt>ts) {
+			R1=tan(ttt);
+			R2=tan(ts);
+			cas=0;
+			airetot=PI*R2*R2; // aire du disque solaire projete
+		} else {
+			R1=tan(ts);
+			R2=tan(ttt);
+			cas=1;
+			airetot=PI*R1*R1; // aire du disque solaire projete
+		}
+		t2=2*mc_acos((R2*R2+rho*rho-R1*R1)/2/R2/rho);
+		t1=2*mc_acos((R1*R1+rho*rho-R2*R2)/2/R1/rho);
+		da1=0.5*R1*R1*(t1-sin(t1));
+		da2=0.5*R2*R2*(t2-sin(t2));
+		if (rho<(R1-R2)) {
+			if (cas==0) {
+				aire=0;
+			} else {
+				aire=PI*R1*R1-PI*R2*R2;
+			}
+		} else if (rho<sqrt(R1*R1-R2*R2)) {
+			if (cas==0) {
+				aire=da2-da1;
+			} else {
+				aire=PI*R1*R1-PI*R2*R2+da2-da1;
+			}
+		} else if (rho<(R1+R2)) {
+			if (cas==0) {
+				aire=PI*R2*R2-da1-da2;
+			} else {
+				aire=PI*R1*R1-da1-da2;
+			}
+		} else {
+			if (cas==0) {
+				aire=PI*R2*R2;
+			} else {
+				aire=PI*R1*R1;
+			}
+		}
+		*sunfraction=(aire/airetot);
+	}
+
 
 }
 
