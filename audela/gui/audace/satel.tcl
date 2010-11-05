@@ -2,7 +2,7 @@
 # Fichier : satel.tcl
 # Description : Outil pour calculer les positions precises de satellites avec les TLE
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: satel.tcl,v 1.9 2010-09-21 21:49:42 robertdelmas Exp $
+# Mise à jour $Id: satel.tcl,v 1.10 2010-11-05 19:55:00 alainklotz Exp $
 #
 # source "$audace(rep_install)/gui/audace/satel.tcl"
 # utiliser le temps UTC
@@ -249,7 +249,7 @@ proc satel_ephem { {satelname "ISS"} {date now} {home ""} } {
 }
 
 # Return the list of NAMES+FILE for a given satelname
-proc satel_names { {satelname ""} {nbmax ""} } {
+proc satel_names { {satelname ""} {nbmax ""} {getelems 0} } {
    global audace
    set server [satel_server]
    set tlefiles $audace(satel,tlefiles)
@@ -268,7 +268,9 @@ proc satel_names { {satelname ""} {nbmax ""} } {
       set lignes [split [read $f] \n]
       close $f
       set k 0
+      set gk -1
       foreach ligne $lignes {
+         incr gk
          if {[string length $ligne]>2} {
             if {$k==0} {
                set name [string trim $ligne]
@@ -280,7 +282,11 @@ proc satel_names { {satelname ""} {nbmax ""} } {
                   set k 0
                }
                if {($k>=0)&&($nsat<=$nbmax)} {
-                  lappend texte [list $name [file tail $tlefile]]
+                  if {$getelems==0} {
+                     lappend texte [list $name [file tail $tlefile]]
+                  } else {
+                     lappend texte [list $name [file tail $tlefile] [lindex $lignes [expr $gk+1]] [lindex $lignes [expr $gk+2]] ]
+                  }
                   incr nsat
                }
             }
