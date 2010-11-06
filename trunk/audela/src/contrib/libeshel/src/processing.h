@@ -40,11 +40,11 @@ void track_order(INFOIMAGE *buffer,short *check,int imax,int jmax,int wide_y,ORD
 void fitPoly(int numpts,int degree,double *x,double *y,double *wt,double *coeffs,double *rms);
 int calib_prediction(double lambda0,int ordre0,short *check,int imax,int jmax,double posx0,
                      ORDRE *ordre,double *ddx,INFOSPECTRO spectro,::std::list<double> lineList);
-int extract_order(INFOIMAGE *buffer,int n,int jmax0,ORDRE *ordre,std::valarray<double> &profile, char * nom, std::valarray<PIC_TYPE> *straightLineImage);
+int extract_order(INFOIMAGE *buffer,int n,int jmax0,ORDRE *ordre,std::valarray<double> &profile, std::valarray<PIC_TYPE> *straightLineImage);
 PIC_TYPE hmedian(PIC_TYPE *ra,int n);
 double compute_pos(double k,double lam,double dx,int imax, INFOSPECTRO spectro);
 int compute_slant(INFOIMAGE *buffer,int y0,double alpha);
-int l_opt(INFOIMAGE *buffer,int lmin,int lmax,int xmin,int xmax,std::valarray<double> &profile, char * nom);
+int l_opt(INFOIMAGE *buffer,int lmin,int lmax,int xmin,int xmax,std::valarray<double> &profile);
 int flat_rectif(int i,char *n_objet,char *n_flat,ORDRE *ordre);
 void flat_rectif(std::valarray<double> &object,std::valarray<double> &flat, std::valarray<double> &out);
 int make_interpol(std::valarray<double> &table_in, double coef3,double coef2,double coef1,double coef0,
