@@ -201,37 +201,36 @@ void find_y_pos(INFOIMAGE *buffer,short *check, int imax,int jmax,int y0,
          sv1=SGN(v1);
          sv2=SGN(v2);
 
-         if (sv1!=sv2)
-         {
-            if (abs(v1-v2)>seuil)
-            {
+         if (sv1!=sv2) {
+            if (abs(v1-v2)>seuil) {
                max=abs(v1-v2);
                py=y;
-               for (yy=0;yy<6;yy++) // on cherche le max du gradient (écart max entre v1 et v2)
-               {
+               for (yy=0;yy<6;yy++) { // on cherche le max du gradient (écart max entre v1 et v2)
+               
                   v1=(int)p[x+(y-yy+delta)*imax];
                   v2=(int)p[x+(y-yy-delta)*imax];
                   if (abs(v1-v2)>max) py=y-yy;            
                }
                n++;
 
-               calc_cdg_y(buf,imax,jmax,imax/2,py-step_y/2,py+step_y/2,&pos_y); // centre de gravite suivant Y
+               int cdgResult = calc_cdg_y(buf,imax,jmax,imax/2,py-step_y/2,py+step_y/2,&pos_y); // centre de gravite suivant Y
+               if ( cdgResult == 0 ) {
+                  if (fabs(pos_y-(double)y0)<ecart) {
+                     ecart=fabs(pos_y-(double)y0);
+                     rang=n; 
+                  }
 
-               if (fabs(pos_y-(double)y0)<ecart)
-               {
-                  ecart=fabs(pos_y-(double)y0);
-                  rang=n; 
+                  if (fabs(last_pos_y-pos_y)<(double)step_y-1.0) {
+                     char message[1024];
+                     sprintf(message, "find_y_pos: Y order position detection aborted. Parameters: last_n=%d last_pos_y=%f pos_y=%f step_y=%d seuil=%d . Seuil may be too low",
+                        n,last_pos_y,pos_y,step_y,seuil);
+                     throw ::std::exception(message); 
+                  }
+                  last_pos_y=pos_y;
+               } else {
+                  // pas d'ordre trouvé
                }
 
-               if (fabs(last_pos_y-pos_y)<(double)step_y-1.0)
-               {
-                  //printf("\nEchec de detection de la position Y des ordres.\n");
-                  char message[1024];
-                  sprintf(message, "find_y_pos: Y order position detection aborted. Parameters: last_n=%d last_pos_y=%f pos_y=%f step_y=%d seuil=%d . Seuil may be too low",
-                     n,last_pos_y,pos_y,step_y,seuil);
-                  throw ::std::exception(message); 
-               }
-               last_pos_y=pos_y;
 
                y=y-step_y;
             }
@@ -258,7 +257,6 @@ void find_y_pos(INFOIMAGE *buffer,short *check, int imax,int jmax,int y0,
          {
             if (abs(v1-v2)>seuil)
             {
-
                max=abs(v1-v2);
                py=y;
 
@@ -274,40 +272,8 @@ void find_y_pos(INFOIMAGE *buffer,short *check, int imax,int jmax,int y0,
 
                n++;
                calc_cdg_y(buf,imax,jmax,imax/2,py-step_y/2,py+step_y/2,&pos_y);
-
                ordre[n].flag=1;         
                ordre[n].yc=pos_y;  // coordonnées mémoire (0,0)
-
-               fprintf(hand_log,"#%d\ty = %.2f\n",n,pos_y+1.0);
-
-               /*
-               if ( check != NULL ) {
-               // marque le point trouvé dans chaque ordre dans l'image de vérif
-               if (n>=min_order && n<=max_order)
-               {
-               px=imax/2-1;   
-               py=(int)(pos_y+.5); 
-               for (jj=py-3;jj<=py+3;jj++)
-               {
-               ii=px-3;
-               if (ii>=0 && ii<imax && jj>=0 && jj<jmax) check[ii+jj*imax]=32000;
-               ii=px+3;
-               if (ii>=0 && ii<imax && jj>=0 && jj<jmax) check[ii+jj*imax]=32000;
-               }
-               for (ii=px-3;ii<=px+3;ii++)
-               {
-               jj=py-3;
-               if (ii>=0 && ii<imax && jj>=0 && jj<jmax) check[ii+jj*imax]=32000;
-               jj=py+3;
-               if (ii>=0 && ii<imax && jj>=0 && jj<jmax) check[ii+jj*imax]=32000;
-               }
-
-               // inscrit le numéro de l'ordre dans l'image de vérif
-               sprintf(ligne,"#%d",n);
-               write_text(check,imax,jmax,ligne,px-10,py+4,32000);
-               }
-               }
-               */
                y=y-step_y;
             }
          }
@@ -1425,7 +1391,7 @@ return 0;
 /* Le calcul est fait entre les colonnes xmin et xmax (origine 1,1)        */
 /* Le nom du profil spectral (extension .dat) est nom                      */
 /***************************************************************************/
-int l_opt(INFOIMAGE *buffer,int lmin,int lmax,int xmin,int xmax,std::valarray<double> &profile, char * nom)
+int l_opt(INFOIMAGE *buffer,int lmin,int lmax,int xmin,int xmax,std::valarray<double> &profile)
 {
    int i,j,k;
    int imax,jmax;
@@ -1653,43 +1619,9 @@ int l_opt(INFOIMAGE *buffer,int lmin,int lmax,int xmin,int xmax,std::valarray<do
    // -----------------------------------------------------
    // Sauvegarde du profil spectral (en comptes numériques)
    // -----------------------------------------------------
-   //if ( profile != NULL ) {
-      //for (i=0;i<xmin;i++) 
-      //{
-      //   profile[i] = 0;
-      //}
-      for (i=xmin;i<=xmax;i++)
-      { 
-         //profile[i+1] = f[i];
-         profile[i-xmin] = f[i-1];
-      }
-      //for (i=xmax+1;i<imax;i++) 
-      //{
-      //   profile[i] = 0;
-      //}
-   //}
-
-   if ( nom != NULL) {
-      char ligne[256];
-      FILE *hand_profil;
-      char name[_MAX_PATH];
-      char texte[_MAX_PATH];
-      sprintf(name,"%s.dat",nom);
-
-      if ((hand_profil=fopen(name,"wt"))==NULL) 
-      {
-         sprintf(texte,"Impossible de sauvegarder le fichier %s",name);
-         free(f);
-         free(P);
-         return 1;
-      }
-      for (i=xmin-1;i<xmax;i++)
-      { 
-         sprintf(ligne,"%d\t%lf\n",i+1,f[i]);
-         fwrite(ligne,strlen(ligne),1,hand_profil);
-      }
-      fclose(hand_profil);
-   }   
+   for (i=xmin;i<=xmax;i++) { 
+      profile[i-xmin] = f[i-1];
+   }
 
    free(f);
    free(P);
@@ -1702,7 +1634,7 @@ int l_opt(INFOIMAGE *buffer,int lmin,int lmax,int xmin,int xmax,std::valarray<do
 /* extraction du profil spectrale après l'opération de binning suivant l'axe spatial */
 /* Le numéro de l'ordre traité est contenu dans la variable n.                       */                
 /*************************************************************************************/
-int extract_order(INFOIMAGE *buffer,int n,int jmax0,ORDRE *ordre, std::valarray<double> &profile, char * nom, std::valarray<PIC_TYPE> *straightLineImage )
+int extract_order(INFOIMAGE *buffer,int n,int jmax0,ORDRE *ordre, std::valarray<double> &profile, std::valarray<PIC_TYPE> *straightLineImage )
 {
    int i,k,yc;
    int degre=4;
@@ -1729,13 +1661,11 @@ int extract_order(INFOIMAGE *buffer,int n,int jmax0,ORDRE *ordre, std::valarray<
    y2=yc+ordre[n].wide_y/2+ordre[n].wide_sky;    
    y3=yc-ordre[n].wide_y/2;
    y4=yc-ordre[n].wide_y/2-ordre[n].wide_sky;  
-////   if (l_sky_sub(buffer,y1,y2,y3,y4)==1) return 1;
+   if (l_sky_sub(buffer,y1,y2,y3,y4)==1) return 1;
 
    // redressement des raies
-////   if (compute_slant(buffer,yc,ordre[n].slant)==1) return 1;
+   if (compute_slant(buffer,yc,ordre[n].slant)==1) return 1;
 
-   // je fais une copie de la zone traitée
-   //if ( reinterpret_cast<void *>(&straightLineImage) != (void *) NULL ) {
    if ( straightLineImage != NULL ) {
       int adr1, adr2;
       int jj = 0;
@@ -1752,47 +1682,10 @@ int extract_order(INFOIMAGE *buffer,int n,int jmax0,ORDRE *ordre, std::valarray<
       }
    }
    
-
-/*
-// On fait une copie de la zone traitée et on la sauvegarde sur le disque (nom générique recti_xxx.fit) - V1.3
-PIC_TYPE *tampon;
-PIC_TYPE *p=buffer->pic;
-int j,jj,adr1,adr2;
-int imax=buffer->imax;
-int jmax=buffer->jmax;
-int imax2=buffer->imax;
-int jmax2=y2-y4+1;
-if ((tampon=(PIC_TYPE *)calloc(imax2*jmax2,sizeof(PIC_TYPE)))==NULL)
-   {
-   printf("\nPas assez de memoire.\n");
-   return 1;
-   }
-jj=0;
-for (j=y4;j<y2;j++)
-   {
-   for (i=0;i<imax2;i++)
-      {
-      adr1=(j+1)*imax+i;
-      adr2=jj*imax2+i;
-      tampon[adr2]=p[adr1];
-      }
-   jj++;
-   }
-PIC_TYPE *p2=buffer->pic;
-buffer->imax=imax2;
-buffer->jmax=jmax2;
-buffer->pic=tampon;
-char name[256];
-sprintf(name,"recti_%d",n);
-//save_fits(name);
-buffer->pic=p2;
-buffer->imax=imax;
-buffer->jmax=jmax;
-free(tampon);
-*/
-
    // binning du profil et sauvegarde sur le disque du profil spectral calculé
-   if (l_opt(buffer,y1,y3,ordre[n].min_x,ordre[n].max_x, profile, nom)==1) return 1;
+   y1=yc-ordre[n].wide_y/2;
+   y2=yc+ordre[n].wide_y/2;
+   if (l_opt(buffer,y1,y2,ordre[n].min_x,ordre[n].max_x, profile)==1) return 1;
 
    return 0;
 }
@@ -2167,195 +2060,6 @@ void calib_spec(int n,int nb_iter,double lambda_ref,int ordre_ref,std::valarray<
 /* La position approximative des raies est calculée avec la formule du réseau */
 /* V1.4 -> retourne le nombre de raies retenues + nombre itération            */
 /******************************************************************************/
-/*
-void calib_spec(int n,int nb_iter,double lambda_ref,int ordre_ref,std::valarray<double> &calibRawProfile, ORDRE *ordre,
-                int imax,int jmax,int neon_ref_x,short *check,INFOSPECTRO spectro,::std::list<double> &lineList, ::std::list<LINE_GAP> &lineGapList)
-{
-
-   int k;
-   double position[MAX_LINES],table_lambda[MAX_LINES],position2[MAX_LINES];
-   short table_flag2[MAX_LINES];
-   double table_lambda2[MAX_LINES];
-   double w[MAX_LINES];
-   double a[5],rms;
-   double lambda;
-   double fwhm=0.0;
-   int ww=ordre[n].wide_x;  // largeur de la zone de recherche d'une raie (en pixels)
-
-   double alpha=spectro.alpha;
-   double gamma=spectro.gamma;
-   double m=spectro.m;
-   double focale=spectro.focale;
-   double pixel=spectro.pixel;
-
-   try {
-      //y = calibRawProfile;
-      //y = new double[calibRawProfile.size());
-      memset(table_flag2,0,MAX_LINES*sizeof(short));
-      k = ordre[n].max_x - ordre[n].min_x +1;
-
-      int pos;
-      double psf_posx;
-      int pos2;
-      double dx,px;
-
-      // Calcul de l'écart (dx) entre la position fourni et la position mesurée de 
-      // la raie du thorium à 6584 A
-      predic_pos(lambda_ref,ordre_ref,(double)neon_ref_x,imax,ordre,&dx,spectro);
-
-      int kk=0;
-      int kk2=0;
-      for (int ni=0;ni<nb_iter;ni++)  // modif v1.4
-      {
-         int nb=0;
-         double coef=1.0;
-         double sfwhm=0.0;
-         double calc;
-         kk = 0;
-         kk2= 0;
-
-         ::std::list<double>::iterator iter;
-         for (iter=lineList.begin(); iter != lineList.end(); ++iter) 
-         {
-            lambda = *iter;
-            px=compute_pos((double)n,lambda,dx,imax,spectro);
-            if ((int)px>(ordre[n].min_x+(ww/2+1)) && (int)px<(ordre[n].max_x-(ww/2+1))) 
-            {
-               pos2=(int)px-ordre[n].min_x;
-               line_pos_approx(pos2,ww,k,calibRawProfile,&pos);
-               // spec_cdg(pos,14,k,y,&psf_posx);      // calcul du centre de gravité
-               if ( spec_gauss(pos,14,k,calibRawProfile,&psf_posx,&fwhm) == 0 ) { // ajustement gaussien
-                  {
-                     if (ni!=0)  // sigma-clipping au-delà de la première itération
-                     {
-                        calc=a[3]*psf_posx*psf_posx*psf_posx+
-                           a[2]*psf_posx*psf_posx+
-                           a[1]*psf_posx+
-                           a[0];
-                        if (fabs(lambda-calc) < coef*rms)  // sigma-clipping
-                        {
-                           sfwhm=sfwhm+fwhm; 
-                           table_lambda[kk]=lambda;
-                           position[kk]=psf_posx;
-                           position2[kk2]=psf_posx;
-                           w[kk]=1.0;
-                           if (ni==nb_iter-1)  // on ne trace et on ne conserve que les raies valides
-                           {
-                              table_flag2[kk2]=1;
-                              //if (check != NULL) {
-                              //   draw_rect_calib(check,imax,jmax,n,psf_posx,ordre,ww/2);
-                              //}
-                              //ordre[n].position_lines[kk]=(int)position[kk]+ordre[n].min_x; // position des raies dans l'image 2D
-                           } else {
-                              table_flag2[kk2]=5;
-                           }                            
-                           kk++;      // modif v1.4;
-                           //if (kk>MAX_LINES)
-                           //{
-                           //   kk--;
-                           //   break;    // modif v1.4 
-                           //}
-                        } else {
-                           table_flag2[kk2]=0;
-                        }                           
-                     } 
-                     else    // première itération
-                     {
-                        sfwhm=sfwhm+fwhm; 
-                        table_lambda[kk]=lambda;
-                        position[kk]=psf_posx;
-                        position2[kk2]=psf_posx;
-                        w[kk]=1.0; 
-                        if (nb_iter==1) 
-                        { 
-                           table_flag2[kk2]=1;
-                        } else {
-                           table_flag2[kk2]=3;
-                        }                           
-                        kk++;      // modif v1.4;
-                     }
-                  }               
-               } else {
-                  table_flag2[kk2] = 2;
-               }
-               table_lambda2[kk2] = lambda;
-               kk2++;   
-            }
-            nb++;
-         }
-
-         if ( kk == 0 ) {
-            char message[1024];
-            sprintf(message, "no line detected on order=%d",n);
-            throw ::std::exception(message);
-         }
-         // on ajuste le polynome
-         a[4]=a[3]=a[2]=a[1]=a[0]=0.0;
-         if (kk<=2)
-         {
-            // on ajuste ordre 1
-            fitPoly(kk,1,position,table_lambda,w,a,&rms);
-         }
-         else if (kk==3)
-         {
-            // on ajuste ordre 2
-            fitPoly(kk,2,position,table_lambda,w,a,&rms); 
-         }
-         else
-         {
-            // on ajuste ordre 3
-            fitPoly(kk,3,position,table_lambda,w,a,&rms); 
-         }
-
-         ordre[n].a3=a[3];
-         ordre[n].a2=a[2];
-         ordre[n].a1=a[1];
-         ordre[n].a0=a[0];
-         ordre[n].rms_calib_spec=rms;
-         ordre[n].fwhm=sfwhm/(double)kk;
-
-      }  // fin for nb_iter
-
-      // on reboucle sur la liste des raies pour trouver les O-C, et production d'un fichier oc_xxx (un par ordre)
-      for (int i=0;i<kk2;i++)
-      {
-         LINE_GAP lineGap;
-         lineGap.order  = n;
-         lineGap.valid  = table_flag2[i];
-         lineGap.l_obs  = table_lambda2[i];
-         // lambda calculé
-         double calc=a[3]*position2[i]*position2[i]*position2[i]+
-            a[2]*position2[i]*position2[i]+
-            a[1]*position2[i]+
-            a[0];
-
-         lineGap.l_calc = calc;
-         lineGap.l_diff = table_lambda2[i]-calc;
-         lineGap.l_posx = position2[i]+(double)ordre[n].min_x;
-         int degre = 4; 
-         double y=0.0;
-         for (int k=0;k<=degre;k++) {
-            y=y+ordre[n].poly_order[k]*pow(lineGap.l_posx,(double)k);
-         }
-         lineGap.l_posy = y;
-         
-         lineGapList.push_back(lineGap);
-      }
-      // on calcule la dispersion moyenne (on ajuste ordre 1)
-      fitPoly(kk,1,position,table_lambda,w,a,&rms); 
-      ordre[n].disp=a[1];
-      // je calcule la resilution
-      ordre[n].resolution = ordre[n].central_lambda/(ordre[n].disp*ordre[n].fwhm);
-      // je stocke le nombre de raies reconnues
-      ordre[n].nb_lines=kk;  // nouveauté v1.4
-   } catch (...) {
-      // rien a desallouer
-      throw;
-   }
-
-}
-*/
-
 
 /*************************** MAKE_INTERPOL *****************************/
 /* On re-interpolle le spectre table_in avec un polynome de degré 3    */
