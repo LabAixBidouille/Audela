@@ -508,62 +508,6 @@ int cmdEshelProcessObject(ClientData clientData, Tcl_Interp *interp, int argc, c
    }
 }
 
-// ---------------------------------------------------------------------------
-// cmdEshelFindSpectroParameters
-//    traite un lampe de calibration
-// return:
-//   retourne TCL_OK ou TCL_ERROR 
-// ---------------------------------------------------------------------------
-int cmdEshelFindSpectroParameters(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
-   char s[1024];
-   int result;
-   char *usage = "Usage: eshel_findSpectro calibIn flatIn {line_list}";
-   if(argc!=4) {
-      Tcl_SetResult(interp,usage,TCL_VOLATILE);
-      return TCL_ERROR;
-   } else {
-      char * calibFileName ;
-      char * flatFileName;
-      ::std::list<double> lineList;
-      int ordreArgc;
-      char **ordreArgv;
-      int nb_ordre = 0;
-
-      calibFileName = argv[1];
-      flatFileName = argv[2];
-
-      if(Tcl_SplitList(interp,argv[3],&ordreArgc,(const char***) &ordreArgv)!=TCL_OK) {
-         sprintf(s,"%s\n invalid line list=%s", usage, argv[3]);
-         Tcl_SetResult(interp,s,TCL_VOLATILE);
-         return TCL_ERROR;
-      } else {
-         result = TCL_OK;
-         double lambda;
-         for (int i=0 ; i< ordreArgc && result!= TCL_ERROR; i++) {
-            if(Tcl_GetDouble(interp,ordreArgv[i],&lambda)!=TCL_OK) {
-               sprintf(s,"%s\n Invalid line %d lambda=%s is not an integer", usage, i, ordreArgv[i]);
-               Tcl_SetResult(interp,s,TCL_VOLATILE);
-               result = TCL_ERROR;
-            } else {
-               lineList.push_back(lambda);
-            }             
-         }
-         Tcl_Free((char*)ordreArgv);
-      }
-
-      try {
-         Eshel_findSpectroParameters(calibFileName, flatFileName, lineList);
-         Tcl_SetResult(interp,(char*)"",TCL_VOLATILE);
-         result = TCL_OK;
-      } catch(std::exception e ) {
-         Tcl_SetResult(interp,(char*)e.what(),TCL_VOLATILE);
-         result = TCL_ERROR;
-      }
-      return result;
-   }
-}
-
-
 
 ////////////////////////////////////////////////////////////////////////
 // fonctions pour fabriquer l'image check
@@ -1829,7 +1773,7 @@ void makeCheck(char *fileName, ::std::list<double> &lineList) {
    Tcl_CreateCommand(interp,"eshel_processFlat",(Tcl_CmdProc *)cmdEshelProcessFlat,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"eshel_processCalib",(Tcl_CmdProc *)cmdEshelProcessCalib,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"eshel_processObject",(Tcl_CmdProc *)cmdEshelProcessObject,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
-   Tcl_CreateCommand(interp,"eshel_findSpectroParameters",(Tcl_CmdProc *)cmdEshelFindSpectroParameters,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);   
+   //Tcl_CreateCommand(interp,"eshel_findSpectroParameters",(Tcl_CmdProc *)cmdEshelFindSpectroParameters,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);   
    
    Tcl_SetVar((Tcl_Interp*) interp, "libesheltcl_version", "1.0", TCL_GLOBAL_ONLY);
 
