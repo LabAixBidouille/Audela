@@ -39,7 +39,7 @@ void Eshel_joinSpectra(char *nom_objet_fits, char *nom_calib_fits,
                  int flag_merge,
                  short * check);
 
-void Eshel_findSpectroParameters(char *calibFileName, char *flatFileName, ::std::list<double> &lineList);
+//void Eshel_findSpectroParameters(char *calibFileName, char *flatFileName, ::std::list<double> &lineList);
 
 
 void Eshel_interpolProfile(char *fileName);
