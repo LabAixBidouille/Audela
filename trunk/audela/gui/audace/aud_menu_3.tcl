@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise à jour $Id: aud_menu_3.tcl,v 1.69 2010-09-24 20:28:45 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_3.tcl,v 1.70 2010-11-07 12:58:56 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -2503,12 +2503,14 @@ namespace eval ::conv2 {
       set private(conv2,extension) $::conf(extension,defaut)
 
       #--- liste les operations de conversion
-      set private(conv2,operations) [ list "raw2fits" "cfa2rgb" "rgb2r+g+b" "r+g+b2rgb" ]
+      set private(conv2,operations) [ list "raw2fits" "cfa2rgb" "rgb2r+g+b" \
+         "r+g+b2rgb" "assigner_r" "assigner_g" "assigner_b"]
 
       #--- liste les libelles du menubutton
       set private(conv2,formules) [ list "$caption(audace,menu,raw2fits)" \
          "$caption(audace,menu,cfa2rvb)" "$caption(audace,menu,rvb2r+v+b)" \
-         "$caption(audace,menu,r+v+b2rvb)" ]
+         "$caption(audace,menu,r+v+b2rvb)" "$caption(audace,menu,assigner_r)" \
+         "$caption(audace,menu,assigner_g)" "$caption(audace,menu,assigner_b)" ]
 
       #--- cherche la longueur maximale du libelle des formules
       #--- pour dimensionner la largeur du menuboutton
@@ -2521,15 +2523,15 @@ namespace eval ::conv2 {
       set dir "[ file tail [ file rootname $private(conv2,rep) ] ]_"
 
       #--- remplace les caracteres
-      regsub -all {[^\w_]} $dir {} dir
+      regsub -all {[^\w_-]} $dir {} dir
 
-      set liste_generiques [ list $dir "rgb_" "plan_" "img3d_" ]
+      set liste_generiques [ list $dir "rgb_" "plan_" "img3d_" "plan_" "plan_" "plan_"]
       foreach op $private(conv2,operations) generique $liste_generiques {
          set private(conv2,$op,generique) $generique
       }
 
       #--- classe et liste les fichiers convertibles par type de conversion
-      #--- les quatre listes sont contenues dans l'array bdd
+      #--- les sept listes sont contenues dans l'array bdd
       #--- ouvre la fenetre de selection de la conversion
       if { [ ::conv2::ListFiles ] != "0" } {
          #--- positionne sur l'operation demandee
@@ -2544,7 +2546,7 @@ namespace eval ::conv2 {
             set i [ lsearch -exact $private(conv2,operations) $private(conv2,conversion) ]
             incr i
             $this.but.menu invoke $i
-         } else {
+        } else {
             if { [ info exists widget(geometry) ] } {
                set deb [ expr 1 + [ string first + $widget(geometry) ] ]
                set fin [ string length $widget(geometry) ]
@@ -2559,7 +2561,7 @@ namespace eval ::conv2 {
    }
 
    #########################################################################
-   # Liste les images par nature (raw cfa rgb plan_coul)                   #
+   # Liste les images par nature (raw cfa rgb plan_coul all_files)         #
    # et cree l'array bdd des listes des noms courts de fichiers            #
    #########################################################################
    proc ListFiles { } {
@@ -2568,7 +2570,7 @@ namespace eval ::conv2 {
       global caption
 
       #--- initialise les listes
-      lassign { "" "" "" "" "" "" } fits raw cfa rgb plan_coul ::conv2::maj_header
+      lassign { "" "" "" "" "" "" "" "" ""} fits raw cfa rgb plan_coul assign_r assign_g assign_b ::conv2::maj_header
 
       #--- etape 1 : recherche les fichiers raw convertibles
       if { $::tcl_platform(platform) == "windows" } {
@@ -2640,7 +2642,7 @@ namespace eval ::conv2 {
                lassign $data naxis naxis3 rgbfiltr rawfilte raw_filter
                set file [file tail $fichier ]
 
-               #--- classe les fichiers en fonction de leur nature
+              #--- classe les fichiers en fonction de leur nature
                if { $naxis == "3" && $naxis3 == "3" } {
                   lappend rgb "$file"
                } elseif { $naxis == "2" && $rgbfiltr =="" && ( $rawfilte != "" || $raw_filter != "" ) } {
@@ -2648,10 +2650,23 @@ namespace eval ::conv2 {
                } elseif { $naxis == "2" && $rgbfiltr !="" } {
                   #--- enleve l'extension
                   set file [ file rootname $file ]
-                  #--- isole la racine du nom (index compris)
-                  set racine [ string range $file 0 [expr {[ string length $file ]-2} ] ]
-                  #--- cree une ligne de dictionary
-                  dict set plans $racine couleur $rgbfiltr $file
+                  set term [ string range $file end end ]
+                  if {$term eq "[ string tolower $rgbfiltr ]" } {
+                     #--- isole la racine du nom (index compris)
+                     set racine [ string range $file 0 end-1 ]
+                     #--- cree une ligne de dictionary
+                     dict set plans $racine couleur $rgbfiltr $file
+                  } else {
+                     #--   assimiles a des plans N&B si discordance entre RGBFILTR et indice terminal
+                     lappend assign_r "$file"
+                     lappend assign_g "$file"
+                     lappend assign_b "$file"
+                  }
+               } else {
+                  #--   vrais plans N&B
+                  lappend assign_r "$file"
+                  lappend assign_g "$file"
+                  lappend assign_b "$file"
                }
             } else {
                ::console::affiche_erreur "$fichier $caption(pretraitement,err_entete) $::errorInfo\n\n"
@@ -2674,7 +2689,7 @@ namespace eval ::conv2 {
       }
 
       #--- etape 4 : construit la base de donnees (conversion,liste des fichiers)
-      foreach op $private(conv2,operations) liste [ list $raw $cfa $rgb $plan_coul ] {
+      foreach op $private(conv2,operations) liste [list $raw $cfa $rgb $plan_coul $assign_r $assign_g $assign_b] {
          set private(conv2,$op,no_file) ""
          if { $liste == "" } {
             set liste [ list $caption(pretraitement,no_file) ]
@@ -2877,21 +2892,35 @@ namespace eval ::conv2 {
       #--- efface l'ancienne liste
       catch { $private(conv2,tbl) delete 0 [ $private(conv2,tbl) size ] }
 
-      #--- extrait la liste des fichiers RAW, CFA, RGB ou R G B de bdd
+      #--- extrait la liste des fichiers RAW, CFA, RGB ou R G B, ou indifferencies de bdd
       set private(conv2,liste_cibles) [ lsort -dictionary -index 0 [ lindex [ array get bdd $op ] 1 ] ]
+
       set private(conv2,nb) [ llength $private(conv2,liste_cibles) ]
 
       #--- cree une ligne par fichier convertible
       for { set i 0 } { $i < $private(conv2,nb) } { incr i } {
          set cible [ lindex $private(conv2,liste_cibles) $i ]
+
          #--- adapte le texte a afficher (premier chargement)
          switch -exact $op {
-            "raw2fits"  { set out "[ file rootname $cible ]$private(conv2,extension)" }
-            "cfa2rgb"   { set cible "[ file rootname $cible ]"
-                          set out "[ file rootname $cible ]" }
-            "rgb2r+g+b" { set cible "[ file rootname $cible ]"
-                          set out "${cible}r + ${cible}g + ${cible}b" }
-            "r+g+b2rgb" { set out $cible ; set cible "${cible}r + ${cible}g + ${cible}b" }
+            "raw2fits"     {  set out "[ file rootname $cible ]$private(conv2,extension)" }
+            "cfa2rgb"      {  set cible "[ file rootname $cible ]"
+                              set out "[ file rootname $cible ]" }
+            "rgb2r+g+b"    {  set cible "[ file rootname $cible ]"
+                              set out "${cible}r + ${cible}g + ${cible}b"
+                           }
+            "r+g+b2rgb"    {  set out $cible
+													 		set cible "${cible}r + ${cible}g + ${cible}b"
+                           }
+            "assigner_r"   {  set cible "[ file rootname $cible ]"
+                              set out "[ file rootname [string range $cible 0 end-1] ]r"
+                           }
+            "assigner_g"   {  set cible "[ file rootname $cible ]"
+                              set out "[ file rootname [string range $cible 0 end-1] ]g"
+                           }
+            "assigner_b"   {  set cible "[ file rootname $cible ]"
+                              set out "[ file rootname [string range $cible 0 end-1] ]b"
+                           }
          }
 
          #--- insere la nouvelle ligne
@@ -2978,10 +3007,13 @@ namespace eval ::conv2 {
 
          #--- rafraichissement du nom 'out' sans extension sauf pour raw2fits
          switch -exact $private(conv2,conversion) {
-            "raw2fits"  { set texte "$out$private(conv2,extension)" }
-            "r+g+b2rgb" { set texte "$out" }
-            "rgb2r+g+b" { set texte "${out}r + ${out}g + ${out}b" }
-            "cfa2rgb"   { set texte "$out" }
+            "raw2fits"     { set texte "$out$private(conv2,extension)" }
+            "r+g+b2rgb"    { set texte "$out" }
+            "rgb2r+g+b"    { set texte "${out}r + ${out}g + ${out}b" }
+            "cfa2rgb"      { set texte "$out" }
+            "assigner_r"   { set texte "[string range $out 0 end-1 ]r" }
+            "assigner_g"   { set texte "[string range $out 0 end-1 ]g" }
+            "assigner_b"   { set texte "[string range $out 0 end-1 ]b" }
          }
 
          #--- actualise l'affichage dans la tablelist
@@ -2999,23 +3031,33 @@ namespace eval ::conv2 {
    proc Collision { in out } {
       variable private
 
+      set ext $private(conv2,extension)
       switch -exact $private(conv2,conversion) {
-         "raw2fits"  { set file_out "$out$private(conv2,extension)"
-                 set explore [ list $file_out ]
-               }
-         "r+g+b2rgb" { set file_out $out
-                       set explore [ list "$out$private(conv2,extension)" ]
-               }
-         "rgb2r+g+b" { set file_out "$out"
-                  foreach i { r g b } {
-                     set name$i $out
-                     append name$i  "$i$private(conv2,extension)"
-                  }
-                  set explore [ list $namer $nameg $nameb ]
-               }
-         "cfa2rgb"   { set file_out "$out$private(conv2,extension)"
-                 set explore [ list $file_out ]
-               }
+         "raw2fits"     { set file_out $out$ext
+                          set explore [ list "$file_out" ]
+                        }
+         "r+g+b2rgb"    { set file_out "$out"
+                          set explore [ list "$out$ext" ]
+                        }
+         "rgb2r+g+b"    { set file_out "$out"
+                          foreach i { r g b } {
+                           set name$i $out
+                           append name$i  "$i$ext"
+                          }
+                          set explore [ list $namer $nameg $nameb ]
+                        }
+         "cfa2rgb"      { set file_out "$out$ext"
+                          set explore [ list "$file_out" ]
+                        }
+         "assigner_r"   { set file_out "[string range $out 0 end-1 ]r$ext"
+                          set explore [ list "$file_out"]
+                        }
+         "assigner_g"   { set file_out "[string range $out 0 end-1 ]g$ext"
+                          set explore [ list "$file_out"]
+                        }
+         "assigner_b"   { set file_out "[string range $out 0 end-1 ]b$ext"
+                          set explore [ list "$file_out"]
+                        }
       }
 
       #--- detecte un fichier out pre-existant ou a venir
@@ -3034,7 +3076,7 @@ namespace eval ::conv2 {
          lappend private(conv2,out) $file_out
       }
 
-      return $err
+     return $err
    }
 
    #------------------------ pilote de conversion --------------------------
@@ -3065,7 +3107,7 @@ namespace eval ::conv2 {
       global caption
 
       #--- elimine les caracteres non autorises dans le nom
-      ::conv2::EntryCtrl
+      if { [::conv2::EntryCtrl] == 0 } { return }
 
       set l [ llength $private(conv2,in) ]
       #--- arrete si aucune selection
@@ -3127,7 +3169,65 @@ namespace eval ::conv2 {
       ::conv2::recupPosition
    }
 
-   #------------------ quatre routines de conversion -----------------------
+   #------------------ sept routines de conversion -----------------------
+   #########################################################################
+   # Do_assigner_r                                                         #
+   #########################################################################
+   proc Do_assigner_r { in out } {
+      global audace
+
+      set buf "buf$audace(bufNo)"
+      set err [ catch {
+         $buf load $in
+         $buf setkwd [ list RGBFILTR R string "Color extracted (red)" "" ]
+         $buf save $out
+      } ]
+
+      if { $err == "1" } {
+         set private(conv2,msg) [ format $caption(pretraitement,echec) $in $::errorInfo ]
+      }
+      return $err
+   }
+
+   #########################################################################
+   # Do_assigner_g                                                         #
+   #########################################################################
+   proc Do_assigner_g { in out } {
+      global audace
+
+
+      set buf "buf$audace(bufNo)"
+      set err [ catch {
+         $buf load $in
+         $buf setkwd [ list RGBFILTR G string "Color extracted (green)" "" ]
+         $buf save $out
+      } ]
+
+      if { $err == "1" } {
+         set private(conv2,msg) [ format $caption(pretraitement,echec) $in $::errorInfo ]
+      }
+      return $err
+
+   }
+
+   #########################################################################
+   # Do_assigner_b                                                         #
+   #########################################################################
+   proc Do_assigner_b { in out } {
+      global audace
+
+      set buf "buf$audace(bufNo)"
+      set err [ catch {
+         $buf load $in
+         $buf setkwd [ list RGBFILTR B string "Color extracted (blue)" "" ]
+         $buf save $out
+      } ]
+
+      if { $err == "1" } {
+         set private(conv2,msg) [ format $caption(pretraitement,echec) $in $::errorInfo ]
+      }
+      return $err
+   }
 
    #########################################################################
    # Conversion R+G+B--> RGB                                               #
@@ -3455,7 +3555,8 @@ namespace eval ::conv2 {
 
       #--- les autres commandes
       set frames { but chg generique renum all cmd.ok cmd.appliquer cmd.aide cmd.fermer }
-      if { $private(conv2,conversion) != "raw2fits" } { lappend frames "destroy_src" }
+      set filtres [list "raw2fits" "assigner_r" "assigner_g" "assigner_b"]
+      if { $private(conv2,conversion) ni $filtres } { lappend frames "destroy_src" }
       foreach frame $frames { $this.$frame configure -state $etat }
 
       #--- tous les checkbuttons des series
@@ -3489,10 +3590,11 @@ namespace eval ::conv2 {
       #--- decoche toutes les options
       foreach child { all renum chg destroy_src } { $this.$child deselect }
 
-      #--- affiche le texte generique uniquement pour cfa2rgb
-      if { $op == "cfa2rgb" } {
+      #--- affiche le texte generique
+      set filtres [list "raw2fits" "assigner_r" "assigner_g" "assigner_b"]
+      if { $op in $filtres } {
          $this.chg toggle
-         set private(conv2,new_name) $private(conv2,cfa2rgb,generique)
+         set private(conv2,new_name) $private(conv2,$op,generique)
          $this.generique configure -state normal
       } else {
          set private(conv2,new_name) ""
@@ -3509,12 +3611,10 @@ namespace eval ::conv2 {
       $this.renum configure -state $state
       $this.chg configure -state $state
       $this.generique configure -state $state
-      if { $op != "raw2fits" } {
-         $this.destroy_src configure -state $state
-      }
+      if { $op ni $filtres} {$this.destroy_src configure -state $state}
 
-      #--- interdit la destruction des sources raw
-      if { $op == "raw2fits" } { set state disabled }
+      #--- interdit la destruction des sources raw ou en cas d'assignation des plans
+      if { $op in $filtres } {   set state disabled }
       $this.destroy_src configure -state $state
    }
 
@@ -3575,9 +3675,10 @@ namespace eval ::conv2 {
    proc EntryCtrl { } {
       variable private
 
-      regsub -all {[^\w_]} $private(conv2,new_name) {} private(conv2,new_name)
+      regsub -all {[^\w\-_]} $private(conv2,new_name) {} private(conv2,new_name)
       ::conv2::UpdateDialog
    }
+
 
    #########################################################################
    # Affiche une fenetre d'erreur                                          #

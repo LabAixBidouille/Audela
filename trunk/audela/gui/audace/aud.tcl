@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.153 2010-10-24 17:46:05 jberthier Exp $
+# Mise à jour $Id: aud.tcl,v 1.154 2010-11-07 12:59:11 robertdelmas Exp $
 #
 
 #--- Chargement du package BWidget
@@ -858,6 +858,12 @@ namespace eval ::audace {
          { ::conv2::run "rgb2r+g+b" }
       Menu_Command   $visuNo "$caption(audace,menu,preprocess)" "$caption(audace,menu,cfa2rvb)..." \
          { ::conv2::run "cfa2rgb" }
+      Menu_Command   $visuNo "$caption(audace,menu,preprocess)" "$caption(audace,menu,assigner_r)..." \
+         { ::conv2::run "assigner_r" }
+      Menu_Command   $visuNo "$caption(audace,menu,preprocess)" "$caption(audace,menu,assigner_g)..." \
+         { ::conv2::run "assigner_g" }
+      Menu_Command   $visuNo "$caption(audace,menu,preprocess)" "$caption(audace,menu,assigner_b)..." \
+         { ::conv2::run "assigner_b" }
 
       Menu_Separator $visuNo "$caption(audace,menu,preprocess)"
       Menu_Command   $visuNo "$caption(audace,menu,preprocess)" "$caption(audace,menu,window1)..."\
