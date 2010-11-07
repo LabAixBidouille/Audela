@@ -2,7 +2,7 @@
 # Fichier : skybot_statut.tcl
 # Description : Affiche le statut de la base de donnees SkyBoT
 # Auteur : Jerome BERTHIER
-# Mise à jour $Id: skybot_statut.tcl,v 1.20 2010-10-02 14:15:28 robertdelmas Exp $
+# Mise à jour $Id: skybot_statut.tcl,v 1.21 2010-11-07 12:00:23 jberthier Exp $
 #
 
 namespace eval skybot_Statut {
@@ -66,7 +66,9 @@ namespace eval skybot_Statut {
       global voconf
 
       #--- initConf
-      if { ! [ info exists conf(vo_tools,position_statut) ] } { set conf(vo_tools,position_statut) "670x250+80+40" }
+      if { ! [ info exists conf(vo_tools,position_statut) ] } { 
+         set conf(vo_tools,position_statut) "670x280+80+40"
+      }
 
       #--- confToWidget
       set voconf(position_statut) $conf(vo_tools,position_statut)
@@ -102,16 +104,24 @@ namespace eval skybot_Statut {
          #--- Liste des tranches
          frame $This.frame0 -borderwidth 0 -cursor arrow
          pack $This.frame0 -in $This -anchor s -side top -expand yes -fill both
+
+         #--- Cree un acsenseur vertical
+         scrollbar $This.frame0.vsb -orient vertical \
+            -command { $::skybot_Statut::This.frame0.tbl yview } -takefocus 1 -borderwidth 1
+         pack $This.frame0.vsb -in $This.frame0 -side right -fill y
+         
          #--- Cree un acsenseur horizontal
          scrollbar $This.frame0.hsb -orient horizontal \
             -command { $::skybot_Statut::This.frame0.tbl xview } -takefocus 1 -borderwidth 1
          pack $This.frame0.hsb -in $This.frame0 -side bottom -fill x
+         
          #--- Mise en forme des resultats
          label $This.frame0.titre -text "$caption(statut,titre)"
          pack $This.frame0.titre -in $This.frame0 -side top -padx 3 -pady 3
          set tbl $This.frame0.tbl
          tablelist::tablelist $tbl -stretch all \
-          -xscrollcommand [ list $This.frame0.hsb set ] \
+           -xscrollcommand [ list $This.frame0.hsb set ] \
+           -yscrollcommand [ list $This.frame0.vsb set ] \
            -columns [list \
             0 $caption(statut,label_ok) \
             0 begin 0 end \
