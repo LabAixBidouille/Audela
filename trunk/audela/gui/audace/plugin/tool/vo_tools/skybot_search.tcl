@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER
-# Mise à jour $Id: skybot_search.tcl,v 1.34 2010-11-07 12:00:23 jberthier Exp $
+# Mise à jour $Id: skybot_search.tcl,v 1.35 2010-11-07 13:49:49 jberthier Exp $
 #
 
 namespace eval skybot_Search {
@@ -2047,7 +2047,6 @@ namespace eval skybot_Search {
          #--- Repere les objets sur l'image
          $audace(hCanvas) delete cadres
          if {$voconf(j) > 0} {
-            ::console::affiche_erreur "VOCONF(j) = $voconf(j)\n"
             for { set i 0 } { $i < $voconf(j) } { incr i } {
                #--- Quelques raccourcis
                set tbl $This.frame7.tbl
