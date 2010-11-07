@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER
-# Mise à jour $Id: skybot_search.tcl,v 1.33 2010-10-24 17:49:06 jberthier Exp $
+# Mise à jour $Id: skybot_search.tcl,v 1.34 2010-11-07 12:00:23 jberthier Exp $
 #
 
 namespace eval skybot_Search {
@@ -46,7 +46,6 @@ namespace eval skybot_Search {
       #---
       set This $this
       createDialog
-      ###tkwait visibility $This
    }
 
    #
@@ -225,6 +224,7 @@ namespace eval skybot_Search {
       set voconf(unite_pose)          "0"
       set voconf(origine_pose)        "0"
       set voconf(date_image)          ""
+      set voconf(j)                   "0"
       set current_object(num)         "-1"
 
       #--- Efface les reperes des objets
@@ -605,9 +605,9 @@ namespace eval skybot_Search {
       set voconf(date_image)          ""
       set voconf(filter)              "120"
       set voconf(observer)            "500"
-
       set voconf(session_filename)    "?"
       set voconf(session_dir)         "./"
+      set voconf(j)                   "0"
 
       #--- Valeurs min-max par defaut pour les filtres
       ::skybot_Search::Default_ParamFiltres
@@ -1079,8 +1079,8 @@ namespace eval skybot_Search {
 
       #--- j'active la mise a jour automatique de l'affichage quand on change de zoom ou d'image
       ::confVisu::addZoomListener $::audace(visuNo) "::skybot_Search::cmdRepere_Efface"
+      ::confVisu::addMirrorListener $::audace(visuNo) "::skybot_Search::cmdRepere_Efface"
       ::confVisu::addFileNameListener $::audace(visuNo) "::skybot_Search::cmdRepere_Efface"
-
 
    }
 
@@ -2046,20 +2046,23 @@ namespace eval skybot_Search {
       if { $voconf(trace_efface) == "1" } {
          #--- Repere les objets sur l'image
          $audace(hCanvas) delete cadres
-         for { set i 0 } { $i <= [ expr $voconf(j) - 1 ] } { incr i } {
-            #--- Quelques raccourcis
-            set tbl $This.frame7.tbl
-            #--- Coordonnees equatoriales de l'objet
-            set voconf(AD_objet) [ mc_angle2deg [ lindex [ $tbl cellconfigure $i,2 -text ] 4 ] ]
-            set voconf(Dec_objet) [ mc_angle2deg [ lindex [ $tbl cellconfigure $i,3 -text ] 4 ] ]
-            #--- Coordonnees images de l'objet
-            set img_xy [ buf$audace(bufNo) radec2xy [ list $voconf(AD_objet) $voconf(Dec_objet) ] ]
-            #--- Transformation des coordonnees image en coordonnees canvas
-            set can_xy [ ::audace::picture2Canvas $img_xy ]
-            #--- Materialisation des objets dans l'image
-            ::skybot_Search::Trace_Objet $tbl $i $img_xy $can_xy "orange"
+         if {$voconf(j) > 0} {
+            ::console::affiche_erreur "VOCONF(j) = $voconf(j)\n"
+            for { set i 0 } { $i < $voconf(j) } { incr i } {
+               #--- Quelques raccourcis
+               set tbl $This.frame7.tbl
+               #--- Coordonnees equatoriales de l'objet
+               set voconf(AD_objet) [ mc_angle2deg [ lindex [ $tbl cellconfigure $i,2 -text ] 4 ] ]
+               set voconf(Dec_objet) [ mc_angle2deg [ lindex [ $tbl cellconfigure $i,3 -text ] 4 ] ]
+               #--- Coordonnees images de l'objet
+               set img_xy [ buf$audace(bufNo) radec2xy [ list $voconf(AD_objet) $voconf(Dec_objet) ] ]
+               #--- Transformation des coordonnees image en coordonnees canvas
+               set can_xy [ ::audace::picture2Canvas $img_xy ]
+               #--- Materialisation des objets dans l'image
+               ::skybot_Search::Trace_Objet $tbl $i $img_xy $can_xy "orange"
+            }
+            ::skybot_Search::Trace_Repere
          }
-         ::skybot_Search::Trace_Repere
       } else {
          #--- Efface les reperes des objets
          $audace(hCanvas) delete cadres
@@ -2068,4 +2071,3 @@ namespace eval skybot_Search {
    }
 
 }
-
