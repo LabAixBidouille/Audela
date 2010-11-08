@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise à jour $Id: aud_menu_3.tcl,v 1.70 2010-11-07 12:58:56 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_3.tcl,v 1.71 2010-11-08 18:28:10 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -2910,7 +2910,7 @@ namespace eval ::conv2 {
                               set out "${cible}r + ${cible}g + ${cible}b"
                            }
             "r+g+b2rgb"    {  set out $cible
-													 		set cible "${cible}r + ${cible}g + ${cible}b"
+                              set cible "${cible}r + ${cible}g + ${cible}b"
                            }
             "assigner_r"   {  set cible "[ file rootname $cible ]"
                               set out "[ file rootname [string range $cible 0 end-1] ]r"
@@ -3246,6 +3246,9 @@ namespace eval ::conv2 {
 
       set err [ catch {
 
+         set filter   ""
+         set filternu ""
+
          #--- charge, modifie les en-tetes et sauve les trois images
          set private(conv2,to_destroy) ""
          foreach i { r g b } k { 1 2 3 } {
@@ -3264,11 +3267,15 @@ namespace eval ::conv2 {
             foreach kwd { MIPS-HI MIPS-LO } level [ list "Low" "Hight" ] {
                set val [ lindex [ $buf getkwd $kwd ] 1 ]
                switch $color {
-                  R  {  set $kwd$color [ list $kwd$color $val float "Red $level Cut" "adu" ] }
-                  G  {  set $kwd$color [ list $kwd$color $val float "Green $level Cut" "adu" ] }
-                  B  {  set $kwd$color [ list $kwd$color $val float "Blue $level Cut" "adu" ] }
+                  R  { set $kwd$color [ list $kwd$color $val float "Red $level Cut" "adu" ] }
+                  G  { set $kwd$color [ list $kwd$color $val float "Green $level Cut" "adu" ] }
+                  B  { set $kwd$color [ list $kwd$color $val float "Blue $level Cut" "adu" ] }
                }
             }
+
+            #--   recupere le contenu des mots-cles FILTER et FILTERNU
+            set filter   [ concat $filter [ lindex [$buf getkwd FILTER ] 1 ] ]
+            set filternu [ concat $filternu [ lindex [$buf getkwd FILTERNU ] 1 ] ]
 
             #--- memorise les fichiers a detruire
             lappend private(conv2,to_destroy) ${in}$i$ext
@@ -3287,6 +3294,15 @@ namespace eval ::conv2 {
             $buf setkwd [ set $kwd ]
          }
          $buf stat
+
+         #---  met a jour FILTER et FILTERNU
+         foreach f {FILTER FILTERNU} content [ list $filter $filternu ] {
+            if { $content ne "" } {
+               set kwd [ $buf getkwd $f ]
+               set kwd [ lreplace $kwd 1 2 "sum of \{$content\}" "string" ]
+               $buf setkwd $kwd
+            }
+         }
 
          #--- sauve l'image couleur
          $buf save $out$ext
@@ -3325,8 +3341,16 @@ namespace eval ::conv2 {
          $buf setkwd $kwdNaxis
 
          #--- extrait les seuils bas et haut une seule fois
-         foreach kwd [ list MIPS-LO MIPS-HI ] {
+         foreach kwd [ list MIPS-LO MIPS-HI FILTER FILTERNU ] {
             set $kwd [ $buf getkwd $kwd ]
+         }
+
+         #--   textrait les valeurs des mots-cles FILTER et FILTERNU
+         if {$FILTER ne "" && $FILTERNU ne ""} {
+            regsub {(sum of \{)} [lindex $FILTER 1] "" liste_filter
+            regsub \} $liste_filter "" liste_filter
+            regsub {(sum of \{)} [lindex $FILTERNU 1] "" liste_filternu
+            regsub \} $liste_filternu "" liste_filternu
          }
 
          foreach indice { 1 2 3 } c { r g b } {
@@ -3339,10 +3363,9 @@ namespace eval ::conv2 {
                B  { set color Blue }
             }
             set filter [ list RGBFILTR $s string "Color extracted ($color)" "" ]
-
             $buf setkwd $filter
 
-            foreach kwd { MIPS-LO MIPS-HI } {
+            foreach kwd { MIPS-LO MIPS-HI} {
                #--- cherche le seuil du plan couleur
                set seuil [ $buf getkwd $kwd$s ]
                #--- extrait la valeur
@@ -3352,6 +3375,15 @@ namespace eval ::conv2 {
                #--- sauvegarde le seuil
                $buf setkwd [ set $kwd ]
             }
+
+            if {$liste_filter ne "" && $liste_filternu ne "" } {
+               set k [expr {$indice-1}]
+               set FILTER [lreplace $FILTER 1 1 [lindex $liste_filter $k]]
+               $buf setkwd $FILTER
+               set FILTERNU [lreplace $FILTERNU 1 2 [lindex $liste_filternu $k] int]
+               $buf setkwd $FILTERNU
+            }
+
             #--- sauve le plan couleur
             $buf save3d ${out}$c 3 $indice $indice
 
