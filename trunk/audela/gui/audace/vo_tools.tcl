@@ -2,7 +2,7 @@
 # Fichier : vo_tools.tcl
 # Description : Outils pour l'Observatoire Virtuel
 # Auteur : Alain KLOTZ et Jerome BERTHIER
-# Mise à jour $Id: vo_tools.tcl,v 1.33 2010-10-24 17:46:04 jberthier Exp $
+# Mise à jour $Id: vo_tools.tcl,v 1.34 2010-11-08 18:28:32 robertdelmas Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -499,7 +499,7 @@ proc vo_skybotresolver { args } {
 # ------------------------------------------------------------------------------------
 # proc        : vo_skybotstatus { [mime] [epoch] }
 #                 avec  mime  = format de la reponse ('text', 'votable', 'html')
-#                       epoch = epoque consideree au format JD ou ISO 
+#                       epoch = epoque consideree au format JD ou ISO
 #
 # Description : SkybotStatus webservice
 # Auteur      : Jerome BERTHIER &amp; Alain KLOTZ
@@ -700,7 +700,7 @@ proc vo_sesame_url { args } {
 # ------------------------------------------------------------------------------------
 # proc        : vo_vizier_query { RA DEC [radius] [unit] [criteria] }
 #                 avec  RA DEC   = coordonnees equatoriales J2000.0 du centre du FOV (degres)
-#                       radius   = rayon du FOV 
+#                       radius   = rayon du FOV
 #                       unit     = unite du rayon du FOV (e.g. deg | arcmin | arcsec)
 #                       criteria = citere de selection des catalogues VizieR (e.g. I/289/out)
 #                       mime     = type mime de la reponse (e.g. list (def.) | votable)
@@ -775,7 +775,7 @@ proc vo_vizier_query { args } {
             # Recupere le nom du catalogue -> resource/description
             set catalog $criteria
             set catalogDesc [::dom::node stringValue [::dom::selectNode $votable {descendant::RESOURCE/DESCRIPTION/text()}]]
-            lappend catalog $catalogDesc 
+            lappend catalog $catalogDesc
             # Recupere toutes les lignes de la table
             set rows {}
             foreach tr [::dom::selectNode $votable {descendant::TR}] {
