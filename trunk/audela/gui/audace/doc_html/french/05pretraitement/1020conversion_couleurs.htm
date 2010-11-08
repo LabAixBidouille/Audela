@@ -7,7 +7,7 @@
   <title>Pr&#233;traitement - Conversions</title>
 </head>
 <body>
-<p class="date">Date de mise &#224; jour : 07 novembre 2010</p>
+<p class="date">Date de mise &#224; jour : 08 novembre 2010</p>
 <h1>Pr&#233;traitement - Conversions</h1>
 <h2>1. Fonctions</h2>
 <p>Ce script a pour fonction de convertir des lots d'images en
@@ -39,6 +39,8 @@ conversion.</li>
   <li>Suppression des fichiers sources.</li>
   <li>D&#233;tection de collision des fichiers produits avec des
 fichiers pr&#233;existants ou &#224; cr&#233;er.</li>
+  <li>Prise en compte des mots-cl&#233;s FILTER et FILTERNU (CF
+paragraphe 6).</li>
   <li>Substitution automatique des anciens mots cl&#233;s par les
 nouveaux (RAW_COLORS --&gt; RAWCOLOR, RAW_FILTER --&gt; RAWFILTE,
 RAW_BLACK --&gt; RAWBLACK et RAW_MAXIMUM --&gt; RAWMAXI).</li>
@@ -204,8 +206,8 @@ produits (notamment dans le cas de la conversion CFA --&gt; RVB
 d&#233;compos&#233;e en trois plans couleurs rvb1r rvb1g et
 rvb1b qui &#233;craseraient des fichiers RVB de m&#234;me
 nom.</li>
-  <li>Lors de la conversion R+V+B --&gt; RVB le risque est de nature
-identique.</li>
+  <li>Lors de la conversion R+V+B --&gt; RVB le risque est de
+nature identique.</li>
 </ul>
 <h3>5.3 Filtrage</h3>
 <p>Un filtre efficace v&#233;rifie que le fichier &#224;
@@ -243,7 +245,8 @@ g&#233;n&#233;rique de sortie. Les seules r&#232;gles
 &#224; observer sont les suivantes :</p>
 <ul>
   <li>Les caract&#232;res autoris&#233;s sont exclusivement les
-caract&#232;res alphanum&#233;riques et le underscore _ .<br>
+caract&#232;res alphanum&#233;riques et le underscore _
+.<br>
   </li>
   <li>Pour que le changement soit pris en compte, il faut activer
 la touche 'Entrer'.</li>
@@ -271,7 +274,8 @@ sortie seront par exemple :</p>
 <p><b>index</b> identifie le rang de l'image dans la
 s&#233;rie.</p>
 <h3>5.6 D&#233;signer le plan R (ou V ou B)</h3>
-<p>Ces commandes s'adressent &#224; des utilisateurs avertis.</p>
+<p>Ces commandes s'adressent &#224; des utilisateurs
+avertis.</p>
 <p>Pour transformer trois images Noir et Blanc en image RVB le
 processus suivant est conseill&#233; :</p>
 <ul>
@@ -288,16 +292,29 @@ indiff&#233;rent.</li>
 les noms suivants : {nom_g&#233;n&#233;rique_sortie}r
 {nom_g&#233;n&#233;rique_sortie}g
 {nom_g&#233;n&#233;rique_sortie}b</li>
-  <li>S&#233;lectionner la commande Conversion R+G+B --&gt; RVB : Les trois
-sont propos&#233;es &#224; la conversion.</li>
+  <li>S&#233;lectionner la commande Conversion R+G+B --&gt; RVB :
+Les trois sont propos&#233;es &#224; la conversion.</li>
   <li>Il est imp&#233;ratif de changer le nom
 g&#233;n&#233;rique de sortie pour &#233;viter de polluer
 ou d'&#233;craser les images originales.</li>
   <li>Ces trois images interm&#233;diaires n'ont qu'un
 int&#233;r&#234;t limit&#233; : Il est conseill&#233; de
-s&#233;lectionner l'option 'D&#233;truire les
-sources'.</li>
+s&#233;lectionner l'option 'D&#233;truire les sources'.</li>
 </ul>
-<p>Le m&#233;lange d'images de tailles diff&#233;rentes conduirait &#224; une erreur.</p>
+<p>Le m&#233;lange d'images de tailles diff&#233;rentes
+conduirait &#224; une erreur.</p>
+<h3>6. Prise en compte des mots cl&#233;s FILTER et
+FILTERNU</h3>
+<p>Si ces mots cl&#233;s sont rencontr&#233;s lors de la Conversion R+V+B --
+&gt;RVB l'image finale comportera ces
+m&#234;mes mots cl&#233;s avec les mentions suivantes :</p>
+<ul>
+  <li>FILTER sum of {liste des filtres, dans l'ordre R V B}</li>
+  <li>FILTERNU sum of {liste des num&#233;ros des filtres, dans
+l'ordre R V B}</li>
+</ul>
+<p>Lors d'une Conversion RVB --&gt; R+V+B les mots cl&#233;s
+originels seront r&#233;tablis dans chacun des plans
+couleurs.</p>
 </body>
 </html>
