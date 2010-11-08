@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.47 2010-10-24 09:55:52 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.48 2010-11-08 15:41:50 myrtillelaas Exp $
 #
 
 #=========================================================================
@@ -86,6 +86,14 @@ set caption(confgene,choix_outils_2)                        "The tool associated
 
 set caption(confgene,tle_titre)                             "Artificial Satellites"
 set caption(confgene,tle_update)                            "Update TLE Files"
+set caption(confgene,tle_satelcoord)                        "Search coordinates"
+set caption(confgene,tle_satelname)                         "Names of all satellites in TLE files --> console"
+set caption(confgene,tle_satelnamesearch)                   "List of satellites in TLE files name with: ..."
+set caption(confgene,gps_lieu)                              "GPS coordinates"
+set caption(confgene,dateob)                                "Observation date (UT)"
+set caption(confgene,tle_satelcoordnearest)                 "Nearest Satellite"
+set caption(confgene,tle_satelra)                           "RA:"
+set caption(confgene,tle_sateldec)                          "DEC:"
 
 set caption(confgene,langue_titre)                          "Language"
 set caption(confgene,langue_selection)                      "Language Selection:"
@@ -169,6 +177,14 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,tle_titre)                          "Satellites artificiels"
    set caption(confgene,tle_update)                         "Mise à jour des fichiers TLE"
+   set caption(confgene,tle_satelcoord)                     "Recherche coordonées"
+   set caption(confgene,tle_satelname)                      "Nom de tous les satellites dans les TLE --> console"
+   set caption(confgene,tle_satelnamesearch)                "Liste des satellites ayant dans le nom: ..."
+   set caption(confgene,gps_lieu)                           "Coordonnées GPS:"
+   set caption(confgene,dateob)                             "Date de l'observation (TU)"
+   set caption(confgene,tle_satelcoordnearest)              "Satellite le plus proche de:"
+   set caption(confgene,tle_satelra)                        "RA:"
+   set caption(confgene,tle_sateldec)                       "DEC:"
 
    set caption(confgene,langue_titre)                       "Langue"
    set caption(confgene,langue_selection)                   "Sélection de la langue :"
@@ -252,6 +268,14 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,tle_titre)                          "Satelliti artificiali"
    set caption(confgene,tle_update)                         "Aggiornare i file TLE"
+   set caption(confgene,tle_satelcoord)                     "Search coordinates"
+   set caption(confgene,tle_satelname)                      "Names of all satellites in TLE files --> console"
+   set caption(confgene,tle_satelnamesearch)                "List of satellites in TLE files name with: ..."
+   set caption(confgene,gps_lieu)                           "GPS coordinates"
+   set caption(confgene,dateob)                             "Observation date (UT)"
+   set caption(confgene,tle_satelcoordnearest)              "Nearest Satellite"
+   set caption(confgene,tle_satelra)                        "RA:"
+   set caption(confgene,tle_sateldec)                       "DEC:"
 
    set caption(confgene,langue_titre)                       "Lingue"
    set caption(confgene,langue_selection)                   "Scelta delle lingue:"
@@ -335,6 +359,14 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,tle_titre)                          "Satélites artificiales"
    set caption(confgene,tle_update)                         "Actualizar archivos TLE"
+   set caption(confgene,tle_satelcoord)                     "Search coordinates"
+   set caption(confgene,tle_satelname)                      "Names of all satellites in TLE files --> console"
+   set caption(confgene,tle_satelnamesearch)                "List of satellites in TLE files name with: ..."
+   set caption(confgene,gps_lieu)                           "GPS coordinates"
+   set caption(confgene,dateob)                             "Observation date (UT)"
+   set caption(confgene,tle_satelcoordnearest)              "Nearest Satellite"
+   set caption(confgene,tle_satelra)                        "RA:"
+   set caption(confgene,tle_sateldec)                       "DEC:"
 
    set caption(confgene,langue_titre)                       "Idioma"
    set caption(confgene,langue_selection)                   "Selecció de idioma:"
@@ -418,6 +450,14 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,tle_titre)                          "Artificial Satellites"
    set caption(confgene,tle_update)                         "Update Dateien TLE"
+   set caption(confgene,tle_satelcoord)                     "Search coordinates"
+   set caption(confgene,tle_satelname)                      "Names of all satellites in TLE files --> console"
+   set caption(confgene,tle_satelnamesearch)                "List of satellites in TLE files name with: ..."
+   set caption(confgene,gps_lieu)                           "GPS coordinates"
+   set caption(confgene,dateob)                             "Observation date (UT)"
+   set caption(confgene,tle_satelcoordnearest)              "Nearest Satellite"
+   set caption(confgene,tle_satelra)                        "RA:"
+   set caption(confgene,tle_sateldec)                       "DEC:"
 
    set caption(confgene,langue_titre)                       "Sprache"
    set caption(confgene,langue_selection)                   "Sprache Wahl:"
@@ -501,6 +541,14 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,tle_titre)                          "Satélites artificiais"
    set caption(confgene,tle_update)                         "Atualização dos arquivos TLE"
+   set caption(confgene,tle_satelcoord)                     "Search coordinates"
+   set caption(confgene,tle_satelname)                      "Names of all satellites in TLE files --> console"
+   set caption(confgene,tle_satelnamesearch)                "List of satellites in TLE files name with: ..."
+   set caption(confgene,gps_lieu)                           "GPS coordinates"
+   set caption(confgene,dateob)                             "Observation date (UT)"
+   set caption(confgene,tle_satelcoordnearest)              "Nearest Satellite"
+   set caption(confgene,tle_satelra)                        "RA:"
+   set caption(confgene,tle_sateldec)                       "DEC:"
 
    set caption(confgene,langue_titre)                       "Idioma"
    set caption(confgene,langue_selection)                   "Selecção de idioma:"
@@ -584,6 +632,14 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,tle_titre)                          "Kunstig Satellitter"
    set caption(confgene,tle_update)                         "Opdateringsfiler TLE"
+   set caption(confgene,tle_satelcoord)                     "Search coordinates"
+   set caption(confgene,tle_satelname)                      "Names of all satellites in TLE files --> console"
+   set caption(confgene,tle_satelnamesearch)                "List of satellites in TLE files name with: ..."
+   set caption(confgene,gps_lieu)                           "GPS coordinates"
+   set caption(confgene,dateob)                             "Observation date (UT)"
+   set caption(confgene,tle_satelcoordnearest)              "Nearest Satellite"
+   set caption(confgene,tle_satelra)                        "RA:"
+   set caption(confgene,tle_sateldec)                       "DEC:"
 
    set caption(confgene,langue_titre)                       "Sprog"
    set caption(confgene,langue_selection)                   "Valg af sprog:"
@@ -667,6 +723,14 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,tle_titre)                          "Artificial Satellites"
    set caption(confgene,tle_update)                         "Update TLE Files"
+   set caption(confgene,tle_satelcoord)                     "Search coordinates"
+   set caption(confgene,tle_satelname)                      "Names of all satellites in TLE files --> console"
+   set caption(confgene,tle_satelnamesearch)                "List of satellites in TLE files name with: ..."
+   set caption(confgene,gps_lieu)                           "GPS coordinates"
+   set caption(confgene,dateob)                             "Observation date (UT)"
+   set caption(confgene,tle_satelcoordnearest)              "Nearest Satellite"
+   set caption(confgene,tle_satelra)                        "RA:"
+   set caption(confgene,tle_sateldec)                       "DEC:"
 
    set caption(confgene,langue_titre)                       "Language"
    set caption(confgene,langue_selection)                   "Language Selection:"
@@ -750,6 +814,14 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,tle_titre)                          "Artificial Satellites"
    set caption(confgene,tle_update)                         "Update TLE Files"
+   set caption(confgene,tle_satelcoord)                     "Search coordinates"
+   set caption(confgene,tle_satelname)                      "Names of all satellites in TLE files --> console"
+   set caption(confgene,tle_satelnamesearch)                "List of satellites in TLE files name with: ..."
+   set caption(confgene,gps_lieu)                           "GPS coordinates"
+   set caption(confgene,dateob)                             "Observation date (UT)"
+   set caption(confgene,tle_satelcoordnearest)              "Nearest Satellite"
+   set caption(confgene,tle_satelra)                        "RA:"
+   set caption(confgene,tle_sateldec)                       "DEC:"
 
    set caption(confgene,langue_titre)                       "Language"
    set caption(confgene,langue_selection)                   "Language Selection:"
