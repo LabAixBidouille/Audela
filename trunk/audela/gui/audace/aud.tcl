@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.154 2010-11-07 12:59:11 robertdelmas Exp $
+# Mise à jour $Id: aud.tcl,v 1.155 2010-11-10 21:43:52 robertdelmas Exp $
 #
 
 #--- Chargement du package BWidget
@@ -997,8 +997,6 @@ namespace eval ::audace {
          "::confColor::run $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,police)..." \
          "::confFont::run $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,satellite)" \
-         { ::confTLE::run "$audace(base).confTLE" }
 
       Menu_Separator $visuNo "$caption(audace,menu,setup)"
       Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,camera)..." \
