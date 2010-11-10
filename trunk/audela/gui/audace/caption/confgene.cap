@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.48 2010-11-08 15:41:50 myrtillelaas Exp $
+# Mise a jour $Id: confgene.cap,v 1.49 2010-11-10 21:46:17 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -84,17 +84,6 @@ set caption(confgene,choix_outils)                          "Tool Selection"
 set caption(confgene,choix_outils_1)                        "Choose the tools you want available in menus with their associated shortcuts:"
 set caption(confgene,choix_outils_2)                        "The tool associated with the F2 shortcut opens automatically."
 
-set caption(confgene,tle_titre)                             "Artificial Satellites"
-set caption(confgene,tle_update)                            "Update TLE Files"
-set caption(confgene,tle_satelcoord)                        "Search coordinates"
-set caption(confgene,tle_satelname)                         "Names of all satellites in TLE files --> console"
-set caption(confgene,tle_satelnamesearch)                   "List of satellites in TLE files name with: ..."
-set caption(confgene,gps_lieu)                              "GPS coordinates"
-set caption(confgene,dateob)                                "Observation date (UT)"
-set caption(confgene,tle_satelcoordnearest)                 "Nearest Satellite"
-set caption(confgene,tle_satelra)                           "RA:"
-set caption(confgene,tle_sateldec)                          "DEC:"
-
 set caption(confgene,langue_titre)                          "Language"
 set caption(confgene,langue_selection)                      "Language Selection:"
 set caption(confgene,langue_texte)                          "The new language will be installed when AudeLA is restarted."
@@ -174,17 +163,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,choix_outils)                       "Sélection des outils"
    set caption(confgene,choix_outils_1)                     "Vous pouvez sélectionner ici les outils que vous voulez afficher dans les menus avec leurs raccourcis :"
    set caption(confgene,choix_outils_2)                     "L'outil associé au raccourci F2 s'ouvre automatiquement."
-
-   set caption(confgene,tle_titre)                          "Satellites artificiels"
-   set caption(confgene,tle_update)                         "Mise à jour des fichiers TLE"
-   set caption(confgene,tle_satelcoord)                     "Recherche coordonées"
-   set caption(confgene,tle_satelname)                      "Nom de tous les satellites dans les TLE --> console"
-   set caption(confgene,tle_satelnamesearch)                "Liste des satellites ayant dans le nom: ..."
-   set caption(confgene,gps_lieu)                           "Coordonnées GPS:"
-   set caption(confgene,dateob)                             "Date de l'observation (TU)"
-   set caption(confgene,tle_satelcoordnearest)              "Satellite le plus proche de:"
-   set caption(confgene,tle_satelra)                        "RA:"
-   set caption(confgene,tle_sateldec)                       "DEC:"
 
    set caption(confgene,langue_titre)                       "Langue"
    set caption(confgene,langue_selection)                   "Sélection de la langue :"
@@ -266,17 +244,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,choix_outils_1)                     "Scegliere gli accessori disponibili nel menu con i loro collegamenti:"
    set caption(confgene,choix_outils_2)                     "L'accessorio associato con F2 si apre automaticamente."
 
-   set caption(confgene,tle_titre)                          "Satelliti artificiali"
-   set caption(confgene,tle_update)                         "Aggiornare i file TLE"
-   set caption(confgene,tle_satelcoord)                     "Search coordinates"
-   set caption(confgene,tle_satelname)                      "Names of all satellites in TLE files --> console"
-   set caption(confgene,tle_satelnamesearch)                "List of satellites in TLE files name with: ..."
-   set caption(confgene,gps_lieu)                           "GPS coordinates"
-   set caption(confgene,dateob)                             "Observation date (UT)"
-   set caption(confgene,tle_satelcoordnearest)              "Nearest Satellite"
-   set caption(confgene,tle_satelra)                        "RA:"
-   set caption(confgene,tle_sateldec)                       "DEC:"
-
    set caption(confgene,langue_titre)                       "Lingue"
    set caption(confgene,langue_selection)                   "Scelta delle lingue:"
    set caption(confgene,langue_texte)                       "La nuova lingua sara` utilizzabile al prossimo avvio di AudeLA."
@@ -356,17 +323,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,choix_outils)                       "Selcción de herramienta"
    set caption(confgene,choix_outils_1)                     "Escoge las herramientas que quieres que estén disponibles en los menús junto a sus atajos de teclado:"
    set caption(confgene,choix_outils_2)                     "La herramienta asociada con la tecla F2 se abre automáticamente."
-
-   set caption(confgene,tle_titre)                          "Satélites artificiales"
-   set caption(confgene,tle_update)                         "Actualizar archivos TLE"
-   set caption(confgene,tle_satelcoord)                     "Search coordinates"
-   set caption(confgene,tle_satelname)                      "Names of all satellites in TLE files --> console"
-   set caption(confgene,tle_satelnamesearch)                "List of satellites in TLE files name with: ..."
-   set caption(confgene,gps_lieu)                           "GPS coordinates"
-   set caption(confgene,dateob)                             "Observation date (UT)"
-   set caption(confgene,tle_satelcoordnearest)              "Nearest Satellite"
-   set caption(confgene,tle_satelra)                        "RA:"
-   set caption(confgene,tle_sateldec)                       "DEC:"
 
    set caption(confgene,langue_titre)                       "Idioma"
    set caption(confgene,langue_selection)                   "Selecció de idioma:"
@@ -448,17 +404,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,choix_outils_1)                     "Sie können hier die Geräte mit eure gebundene Abkürzung die sie in den Menüs wollen wählen:"
    set caption(confgene,choix_outils_2)                     "Das Gerät mit die F2 gebundene Abkürzung öffnet sich vollautomatisch."
 
-   set caption(confgene,tle_titre)                          "Artificial Satellites"
-   set caption(confgene,tle_update)                         "Update Dateien TLE"
-   set caption(confgene,tle_satelcoord)                     "Search coordinates"
-   set caption(confgene,tle_satelname)                      "Names of all satellites in TLE files --> console"
-   set caption(confgene,tle_satelnamesearch)                "List of satellites in TLE files name with: ..."
-   set caption(confgene,gps_lieu)                           "GPS coordinates"
-   set caption(confgene,dateob)                             "Observation date (UT)"
-   set caption(confgene,tle_satelcoordnearest)              "Nearest Satellite"
-   set caption(confgene,tle_satelra)                        "RA:"
-   set caption(confgene,tle_sateldec)                       "DEC:"
-
    set caption(confgene,langue_titre)                       "Sprache"
    set caption(confgene,langue_selection)                   "Sprache Wahl:"
    set caption(confgene,langue_texte)                       "Die neue Sprache wird am nächsten AudeLA Start berücksichtigt."
@@ -539,17 +484,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,choix_outils_1)                     "Escolha as ferramentas pretendidas e que estejam disponíveis nos menus com os respectivos atalhos:"
    set caption(confgene,choix_outils_2)                     "A ferramenta associada com a tecla F2 abre automaticamente."
 
-   set caption(confgene,tle_titre)                          "Satélites artificiais"
-   set caption(confgene,tle_update)                         "Atualização dos arquivos TLE"
-   set caption(confgene,tle_satelcoord)                     "Search coordinates"
-   set caption(confgene,tle_satelname)                      "Names of all satellites in TLE files --> console"
-   set caption(confgene,tle_satelnamesearch)                "List of satellites in TLE files name with: ..."
-   set caption(confgene,gps_lieu)                           "GPS coordinates"
-   set caption(confgene,dateob)                             "Observation date (UT)"
-   set caption(confgene,tle_satelcoordnearest)              "Nearest Satellite"
-   set caption(confgene,tle_satelra)                        "RA:"
-   set caption(confgene,tle_sateldec)                       "DEC:"
-
    set caption(confgene,langue_titre)                       "Idioma"
    set caption(confgene,langue_selection)                   "Selecção de idioma:"
    set caption(confgene,langue_texte)                       "A nova língua será tomada em conta quando AudeLA for reiniciado."
@@ -612,7 +546,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,position_mpc)                       "MPC Format:"
    set caption(confgene,position_mpcstation)                "MPCSTATION Format:"
    set caption(confgene,position_non_station_uai)           "Observationssted ikke registreret hos IAU"
-   set caption(confgene,fichier_uai_msg)                    "# Une connexion à Internet est nécessaire pour cette mise à jour."
+   set caption(confgene,fichier_uai_msg)                    "Internet-forbindelse kræves til denne opdatering."
    set caption(confgene,fichier_uai_erreur1)                "IAU observationssted-nr. skal"
    set caption(confgene,fichier_uai_erreur2)                "have mindst 3 cifre"
    set caption(confgene,fichier_uai_erreur3)                "(f.eks.:  000, 008, 013, 104, A05)."
@@ -629,17 +563,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,choix_outils)                       "Valg af værktøj"
    set caption(confgene,choix_outils_1)                     "Vælg de værktøjer, du ønsker i menuer med de tilsvarende genveje:"
    set caption(confgene,choix_outils_2)                     "Værktøj tilknyttet F2-genvej åbner automatisk."
-
-   set caption(confgene,tle_titre)                          "Kunstig Satellitter"
-   set caption(confgene,tle_update)                         "Opdateringsfiler TLE"
-   set caption(confgene,tle_satelcoord)                     "Search coordinates"
-   set caption(confgene,tle_satelname)                      "Names of all satellites in TLE files --> console"
-   set caption(confgene,tle_satelnamesearch)                "List of satellites in TLE files name with: ..."
-   set caption(confgene,gps_lieu)                           "GPS coordinates"
-   set caption(confgene,dateob)                             "Observation date (UT)"
-   set caption(confgene,tle_satelcoordnearest)              "Nearest Satellite"
-   set caption(confgene,tle_satelra)                        "RA:"
-   set caption(confgene,tle_sateldec)                       "DEC:"
 
    set caption(confgene,langue_titre)                       "Sprog"
    set caption(confgene,langue_selection)                   "Valg af sprog:"
@@ -721,17 +644,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,choix_outils_1)                     "Choose the tools you want available in menus with their associated shortcuts:"
    set caption(confgene,choix_outils_2)                     "The tool associated with the F2 shortcut opens automatically."
 
-   set caption(confgene,tle_titre)                          "Artificial Satellites"
-   set caption(confgene,tle_update)                         "Update TLE Files"
-   set caption(confgene,tle_satelcoord)                     "Search coordinates"
-   set caption(confgene,tle_satelname)                      "Names of all satellites in TLE files --> console"
-   set caption(confgene,tle_satelnamesearch)                "List of satellites in TLE files name with: ..."
-   set caption(confgene,gps_lieu)                           "GPS coordinates"
-   set caption(confgene,dateob)                             "Observation date (UT)"
-   set caption(confgene,tle_satelcoordnearest)              "Nearest Satellite"
-   set caption(confgene,tle_satelra)                        "RA:"
-   set caption(confgene,tle_sateldec)                       "DEC:"
-
    set caption(confgene,langue_titre)                       "Language"
    set caption(confgene,langue_selection)                   "Language Selection:"
    set caption(confgene,langue_texte)                       "The new language will be installed when AudeLA is restarted."
@@ -811,17 +723,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,choix_outils)                       "Tool Selection"
    set caption(confgene,choix_outils_1)                     "Choose the tools you want available in menus with their associated shortcuts:"
    set caption(confgene,choix_outils_2)                     "The tool associated with the F2 shortcut opens automatically."
-
-   set caption(confgene,tle_titre)                          "Artificial Satellites"
-   set caption(confgene,tle_update)                         "Update TLE Files"
-   set caption(confgene,tle_satelcoord)                     "Search coordinates"
-   set caption(confgene,tle_satelname)                      "Names of all satellites in TLE files --> console"
-   set caption(confgene,tle_satelnamesearch)                "List of satellites in TLE files name with: ..."
-   set caption(confgene,gps_lieu)                           "GPS coordinates"
-   set caption(confgene,dateob)                             "Observation date (UT)"
-   set caption(confgene,tle_satelcoordnearest)              "Nearest Satellite"
-   set caption(confgene,tle_satelra)                        "RA:"
-   set caption(confgene,tle_sateldec)                       "DEC:"
 
    set caption(confgene,langue_titre)                       "Language"
    set caption(confgene,langue_selection)                   "Language Selection:"
