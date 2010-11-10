@@ -1,0 +1,169 @@
+#
+# Fichier : satellite.cap
+# Mise a jour $Id: satellite.cap,v 1.1 2010-11-10 21:51:37 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(satellite,tle_titre)                             "Artificial Satellites"
+set caption(satellite,tle_update)                            "Update TLE Files"
+set caption(satellite,tle_satelcoord)                        "Search Coordinates"
+set caption(satellite,tle_satelname)                         "Names of all satellites in TLE files --> Console"
+set caption(satellite,tle_satelnamesearch)                   "List of satellites in TLE files name with: ..."
+set caption(satellite,gps_lieu)                              "GPS Coordinates"
+set caption(satellite,dateob)                                "Observation Date (UT)"
+set caption(satellite,tle_satelcoordnearest)                 "Nearest Satellite"
+set caption(satellite,tle_satelra)                           "RA:"
+set caption(satellite,tle_sateldec)                          "Dec.:"
+
+set caption(satellite,fermer)                                "Close"
+set caption(satellite,aide)                                  "Help"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(satellite,tle_titre)                          "Satellites artificiels"
+   set caption(satellite,tle_update)                         "Mise à jour des fichiers TLE"
+   set caption(satellite,tle_satelcoord)                     "Recherche les coordonnées"
+   set caption(satellite,tle_satelname)                      "Nom de tous les satellites dans les TLE --> Console"
+   set caption(satellite,tle_satelnamesearch)                "Liste des satellites ayant dans le nom : ..."
+   set caption(satellite,gps_lieu)                           "Coordonnées GPS :"
+   set caption(satellite,dateob)                             "Date de l'observation (TU)"
+   set caption(satellite,tle_satelcoordnearest)              "Satellite le plus proche de :"
+   set caption(satellite,tle_satelra)                        "AD :"
+   set caption(satellite,tle_sateldec)                       "Déc. :"
+
+   set caption(satellite,fermer)                             "Fermer"
+   set caption(satellite,aide)                               "Aide"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(satellite,tle_titre)                          "Satelliti artificiali"
+   set caption(satellite,tle_update)                         "Aggiornare i file TLE"
+   set caption(satellite,tle_satelcoord)                     "# Recherche les coordonnées"
+   set caption(satellite,tle_satelname)                      "# Nom de tous les satellites dans les TLE --> Console"
+   set caption(satellite,tle_satelnamesearch)                "# Liste des satellites ayant dans le nom : ..."
+   set caption(satellite,gps_lieu)                           "Coordinate GPS:"
+   set caption(satellite,dateob)                             "# Date de l'observation (TU)"
+   set caption(satellite,tle_satelcoordnearest)              "# Satellite le plus proche de :"
+   set caption(satellite,tle_satelra)                        "AD:"
+   set caption(satellite,tle_sateldec)                       "Déc.:"
+
+   set caption(satellite,fermer)                             "Chiudere"
+   set caption(satellite,aide)                               "Aiuto"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(satellite,tle_titre)                          "Satélites artificiales"
+   set caption(satellite,tle_update)                         "Actualizar archivos TLE"
+   set caption(satellite,tle_satelcoord)                     "# Recherche les coordonnées"
+   set caption(satellite,tle_satelname)                      "# Nom de tous les satellites dans les TLE --> Console"
+   set caption(satellite,tle_satelnamesearch)                "# Liste des satellites ayant dans le nom : ..."
+   set caption(satellite,gps_lieu)                           "Coordenadas GPS:"
+   set caption(satellite,dateob)                             "# Date de l'observation (TU)"
+   set caption(satellite,tle_satelcoordnearest)              "# Satellite le plus proche de :"
+   set caption(satellite,tle_satelra)                        "RA:"
+   set caption(satellite,tle_sateldec)                       "Dec.:"
+
+   set caption(satellite,fermer)                             "Cerrar"
+   set caption(satellite,aide)                               "Ayuda"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(satellite,tle_titre)                          "Artificial Satellites"
+   set caption(satellite,tle_update)                         "Update Dateien TLE"
+   set caption(satellite,tle_satelcoord)                     "# Recherche les coordonnées"
+   set caption(satellite,tle_satelname)                      "# Nom de tous les satellites dans les TLE --> Console"
+   set caption(satellite,tle_satelnamesearch)                "# Liste des satellites ayant dans le nom : ..."
+   set caption(satellite,gps_lieu)                           "GPS Koordinaten:"
+   set caption(satellite,dateob)                             "# Date de l'observation (TU)"
+   set caption(satellite,tle_satelcoordnearest)              "# Satellite le plus proche de :"
+   set caption(satellite,tle_satelra)                        "RA:"
+   set caption(satellite,tle_sateldec)                       "Dek.:"
+
+   set caption(satellite,fermer)                             "Schließen"
+   set caption(satellite,aide)                               "Hilfe"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(satellite,tle_titre)                          "Satélites artificiais"
+   set caption(satellite,tle_update)                         "Atualização dos arquivos TLE"
+   set caption(satellite,tle_satelcoord)                     "# Recherche les coordonnées"
+   set caption(satellite,tle_satelname)                      "# Nom de tous les satellites dans les TLE --> Console"
+   set caption(satellite,tle_satelnamesearch)                "# Liste des satellites ayant dans le nom : ..."
+   set caption(satellite,gps_lieu)                           "Coordenadas GPS:"
+   set caption(satellite,dateob)                             "# Date de l'observation (TU)"
+   set caption(satellite,tle_satelcoordnearest)              "# Satellite le plus proche de :"
+   set caption(satellite,tle_satelra)                        "AR:"
+   set caption(satellite,tle_sateldec)                       "Dec.:"
+
+   set caption(satellite,fermer)                             "Fechar"
+   set caption(satellite,aide)                               "Ajuda"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(satellite,tle_titre)                          "Artificial Satellites"
+   set caption(satellite,tle_update)                         "Update TLE Files"
+   set caption(satellite,tle_satelcoord)                     "Search Coordinates"
+   set caption(satellite,tle_satelname)                      "Names of all satellites in TLE files --> Console"
+   set caption(satellite,tle_satelnamesearch)                "List of satellites in TLE files name with: ..."
+   set caption(satellite,gps_lieu)                           "GPS Coordinates"
+   set caption(satellite,dateob)                             "Observation Date (UT)"
+   set caption(satellite,tle_satelcoordnearest)              "Nearest Satellite"
+   set caption(satellite,tle_satelra)                        "RA:"
+   set caption(satellite,tle_sateldec)                       "Dec.:"
+
+   set caption(satellite,fermer)                             "Close"
+   set caption(satellite,aide)                               "Help"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(satellite,tle_titre)                          "Artificial Satellites"
+   set caption(satellite,tle_update)                         "Update TLE Files"
+   set caption(satellite,tle_satelcoord)                     "Search Coordinates"
+   set caption(satellite,tle_satelname)                      "Names of all satellites in TLE files --> Console"
+   set caption(satellite,tle_satelnamesearch)                "List of satellites in TLE files name with: ..."
+   set caption(satellite,gps_lieu)                           "GPS Coordinates"
+   set caption(satellite,dateob)                             "Observation Date (UT)"
+   set caption(satellite,tle_satelcoordnearest)              "Nearest Satellite"
+   set caption(satellite,tle_satelra)                        "RA:"
+   set caption(satellite,tle_sateldec)                       "Dec.:"
+
+   set caption(satellite,fermer)                             "Close"
+   set caption(satellite,aide)                               "Help"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(satellite,tle_titre)                          "Artificial Satellites"
+   set caption(satellite,tle_update)                         "Update TLE Files"
+   set caption(satellite,tle_satelcoord)                     "Search Coordinates"
+   set caption(satellite,tle_satelname)                      "Names of all satellites in TLE files --> Console"
+   set caption(satellite,tle_satelnamesearch)                "List of satellites in TLE files name with: ..."
+   set caption(satellite,gps_lieu)                           "GPS Coordinates"
+   set caption(satellite,dateob)                             "Observation Date (UT)"
+   set caption(satellite,tle_satelcoordnearest)              "Nearest Satellite"
+   set caption(satellite,tle_satelra)                        "RA:"
+   set caption(satellite,tle_sateldec)                       "Dec.:"
+
+   set caption(satellite,fermer)                             "Close"
+   set caption(satellite,aide)                               "Help"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
