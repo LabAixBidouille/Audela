@@ -2,7 +2,7 @@
 # Fichier : cagire.tcl
 # Description : Configuration de la camera Cagire
 # Auteur : Robert DELMAS
-# Mise à jour $Id: cagire.tcl,v 1.5 2010-10-10 19:50:42 michelpujol Exp $
+# Mise à jour $Id: cagire.tcl,v 1.6 2010-11-11 22:23:55 robertdelmas Exp $
 #
 
 namespace eval ::cagire {
@@ -82,14 +82,14 @@ proc ::cagire::initPlugin { } {
    global audace conf caption
 
    #--- Initialise les variables de la camera Cagire
-   if { ! [ info exists conf(cagire,cool) ] }        { set conf(cagire,cool)        "0" }
-   if { ! [ info exists conf(cagire,foncobtu) ] }    { set conf(cagire,foncobtu)    "2" }
-   if { ! [ info exists conf(cagire,config) ] }      { set conf(cagire,config)      [ file join $audace(rep_install) bin ] }
-   if { ! [ info exists conf(cagire,mirh) ] }        { set conf(cagire,mirh)        "0" }
-   if { ! [ info exists conf(cagire,mirv) ] }        { set conf(cagire,mirv)        "0" }
-   if { ! [ info exists conf(cagire,temp) ] }        { set conf(cagire,temp)        "-160" }
-   if { ! [ info exists conf(cagire,ipserver) ] } { set conf(cagire,ipserver) "127.0.0.1" }
-   if { ! [ info exists conf(cagire,portserver) ] }   { set conf(cagire,portserver)   "5000" }
+   if { ! [ info exists conf(cagire,cool) ] }       { set conf(cagire,cool)       "0" }
+   if { ! [ info exists conf(cagire,foncobtu) ] }   { set conf(cagire,foncobtu)   "2" }
+   if { ! [ info exists conf(cagire,config) ] }     { set conf(cagire,config)     [ file join $audace(rep_travail) images ] }
+   if { ! [ info exists conf(cagire,mirh) ] }       { set conf(cagire,mirh)       "0" }
+   if { ! [ info exists conf(cagire,mirv) ] }       { set conf(cagire,mirv)       "0" }
+   if { ! [ info exists conf(cagire,temp) ] }       { set conf(cagire,temp)       "-160" }
+   if { ! [ info exists conf(cagire,ipserver) ] }   { set conf(cagire,ipserver)   "127.0.0.1" }
+   if { ! [ info exists conf(cagire,portserver) ] } { set conf(cagire,portserver) "5000" }
 
    #--- Initialisation
    set private(A,camNo) "0"
@@ -132,8 +132,8 @@ proc ::cagire::widgetToConf { camItem } {
    set conf(cagire,mirh)        $private(mirh)
    set conf(cagire,mirv)        $private(mirv)
    set conf(cagire,temp)        $private(temp)
-   set conf(cagire,ipserver) $private(ouvert_obtu)
-   set conf(cagire,portserver)   $private(ferm_obtu)
+   set conf(cagire,ipserver)    $private(ouvert_obtu)
+   set conf(cagire,portserver)  $private(ferm_obtu)
 }
 
 #
@@ -155,21 +155,17 @@ proc ::cagire::fillConfigPage { frm camItem } {
       destroy $i
    }
 
-   #--- Frame du repertoire des fichiers de configuration
+   #--- Frame du repertoire des images temporaires
    frame $frm.frame1 -borderwidth 0 -relief raised
 
       #--- Definition du repertoire des fichiers de configuration
       label $frm.frame1.lab2 -text "$caption(cagire,config)"
       pack $frm.frame1.lab2 -anchor center -side left -padx 10
 
-      entry $frm.frame1.host -width 40 -textvariable ::cagire::private(config)
+      entry $frm.frame1.host -width 70 -textvariable ::cagire::private(config)
       pack $frm.frame1.host -anchor center -side left -padx 10
 
-      button $frm.frame1.explore -text "$caption(cagire,parcourir)" -width 1 \
-         -command {
-            set ::cagire::private(config) [ tk_chooseDirectory -title "$caption(cagire,dossier)" \
-            -initialdir [ file join $audace(rep_install) bin ] -parent [ winfo toplevel $frm ] ]
-         }
+      button $frm.frame1.explore -text "$caption(cagire,parcourir)" -width 1 -command "::cagire::explore"
       pack $frm.frame1.explore -side left -padx 10 -pady 5 -ipady 5
 
    pack $frm.frame1 -side top -fill both -expand 1
@@ -455,6 +451,18 @@ proc ::cagire::setShutter { camItem shutterState ShutterOptionList } {
          }
       }
    }
+}
+
+#
+# ::cagire::explore
+#    Procedure pour designer le repertoire des images temporaires
+#
+proc ::cagire::explore { } {
+   variable private
+   global audace caption
+
+   set private(config) [ tk_chooseDirectory -title "$caption(cagire,dossier)" \
+      -initialdir [ file join $audace(rep_travail) images ] -parent [ winfo toplevel $private(frm) ] ]
 }
 
 #

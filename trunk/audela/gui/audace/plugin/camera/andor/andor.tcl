@@ -2,7 +2,7 @@
 # Fichier : andor.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Robert DELMAS
-# Mise à jour $Id: andor.tcl,v 1.24 2010-10-10 19:50:41 michelpujol Exp $
+# Mise à jour $Id: andor.tcl,v 1.25 2010-11-11 22:23:33 robertdelmas Exp $
 #
 
 namespace eval ::andor {
@@ -165,11 +165,7 @@ proc ::andor::fillConfigPage { frm camItem } {
       entry $frm.frame1.host -width 40 -textvariable ::andor::private(config)
       pack $frm.frame1.host -anchor center -side left -padx 10
 
-      button $frm.frame1.explore -text "$caption(andor,parcourir)" -width 1 \
-         -command {
-            set ::andor::private(config) [ tk_chooseDirectory -title "$caption(andor,dossier)" \
-            -initialdir [ file join $audace(rep_install) bin ] -parent [ winfo toplevel $frm ] ]
-         }
+      button $frm.frame1.explore -text "$caption(andor,parcourir)" -width 1 -command "::andor::explore"
       pack $frm.frame1.explore -side left -padx 10 -pady 5 -ipady 5
 
    pack $frm.frame1 -side top -fill both -expand 1
@@ -458,6 +454,18 @@ proc ::andor::setShutter { camItem shutterState ShutterOptionList } {
          }
       }
    }
+}
+
+#
+# ::andor::explore
+#    Procedure pour designer les fichiers de configuration
+#
+proc ::andor::explore { } {
+   variable private
+   global audace caption
+
+   set private(config) [ tk_chooseDirectory -title "$caption(andor,dossier)" \
+      -initialdir [ file join $audace(rep_install) bin ] -parent [ winfo toplevel $private(frm) ] ]
 }
 
 #
