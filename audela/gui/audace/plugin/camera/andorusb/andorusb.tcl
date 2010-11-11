@@ -2,7 +2,7 @@
 # Fichier : andorusb.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Robert DELMAS
-# Mise a jour $Id: andorusb.tcl,v 1.3 2010-10-10 19:50:42 michelpujol Exp $
+# Mise a jour $Id: andorusb.tcl,v 1.4 2010-11-11 22:23:44 robertdelmas Exp $
 #
 
 namespace eval ::andorusb {
@@ -165,11 +165,7 @@ proc ::andorusb::fillConfigPage { frm camItem } {
       entry $frm.frame1.host -width 40 -textvariable ::andorusb::private(config)
       pack $frm.frame1.host -anchor center -side left -padx 10
 
-      button $frm.frame1.explore -text "$caption(andorusb,parcourir)" -width 1 \
-         -command {
-            set ::andorusb::private(config) [ tk_chooseDirectory -title "$caption(andorusb,dossier)" \
-            -initialdir [ file join $audace(rep_install) bin ] -parent [ winfo toplevel $frm ] ]
-         }
+      button $frm.frame1.explore -text "$caption(andorusb,parcourir)" -width 1 -command "::andorusb::explore"
       pack $frm.frame1.explore -side left -padx 10 -pady 5 -ipady 5
 
    pack $frm.frame1 -side top -fill both -expand 1
@@ -458,6 +454,18 @@ proc ::andorusb::setShutter { camItem shutterState ShutterOptionList } {
          }
       }
    }
+}
+
+#
+# ::andorusb::explore
+#    Procedure pour designer les fichiers de configuration
+#
+proc ::andorusb::explore { } {
+   variable private
+   global audace caption
+
+   set private(config) [ tk_chooseDirectory -title "$caption(andorusb,dossier)" \
+      -initialdir [ file join $audace(rep_install) bin ] -parent [ winfo toplevel $private(frm) ] ]
 }
 
 #
