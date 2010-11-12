@@ -2,7 +2,7 @@
 # Fichier : andorusb.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Frederic VACHIER
-# Mise a jour $Id: andorusb.tcl,v 1.8 2010-11-12 07:29:44 robertdelmas Exp $
+# Mise a jour $Id: andorusb.tcl,v 1.9 2010-11-12 07:31:20 robertdelmas Exp $
 #
 
 namespace eval ::andorusb {
