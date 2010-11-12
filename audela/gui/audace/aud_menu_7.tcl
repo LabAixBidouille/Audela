@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise à jour $Id: aud_menu_7.tcl,v 1.33 2010-10-23 16:01:30 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_7.tcl,v 1.34 2010-11-12 08:29:59 robertdelmas Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -22,7 +22,6 @@ namespace eval ::cwdWindow {
          wm deiconify $This
          focus $This
       } else {
-         if { ! [ info exists ::conf(rep_travail,travail_images) ] } { set ::conf(rep_travail,travail_images) "1" }
          set cwdWindow(dir_images)             [file nativename $::conf(rep_images)]
          set cwdWindow(rep_images,mode)        $::conf(rep_images,mode)
          set cwdWindow(rep_images,refModeAuto) $::conf(rep_images,refModeAuto)
