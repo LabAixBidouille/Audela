@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: keyword.tcl,v 1.46 2010-09-22 16:00:04 robertdelmas Exp $
+# Mise à jour $Id: keyword.tcl,v 1.47 2010-11-12 22:52:53 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -64,6 +64,11 @@ proc ::keyword::header { visuNo args } {
          set liste [ buf[ ::confVisu::getBufNo $visuNo ] getkwd $kwd ]
          #--- je fais une boucle pour traiter les mots cles a valeur multiple
          foreach { name value type comment unit } $liste {
+            if { $name == "EXPOSURE" || $name == "EXPTIME" } {
+               #--- Pour une meilleure lisibilite transforme la notation avec
+               #--- exposant en un nombre decimal Exemple : 2.5000e-004 --> 0.00025
+               set value [ expr $value ]
+            }
             $base.header.slb.list insert end "[format "%8s" $name] " keyw
             $base.header.slb.list insert end "= "                    egal
             $base.header.slb.list insert end "$value "               valu
