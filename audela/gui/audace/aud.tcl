@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.155 2010-11-10 21:43:52 robertdelmas Exp $
+# Mise à jour $Id: aud.tcl,v 1.156 2010-11-12 07:49:50 robertdelmas Exp $
 #
 
 #--- Chargement du package BWidget
@@ -224,7 +224,7 @@ namespace eval ::audace {
 
       #--- Si le repertoire de travail est egal au repertoire des images
       if { ! [info exists conf(rep_travail,travail_images) ] } {
-         set conf(rep_travail,travail_images) "0"
+         set conf(rep_travail,travail_images) "1"
       }
       if { $conf(rep_travail,travail_images) == "1" } {
          set conf(rep_travail)   $audace(rep_images)
