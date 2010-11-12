@@ -2,7 +2,7 @@
 # Fichier : cagire.tcl
 # Description : Configuration de la camera Cagire
 # Auteur : Robert DELMAS
-# Mise à jour $Id: cagire.tcl,v 1.6 2010-11-11 22:23:55 robertdelmas Exp $
+# Mise à jour $Id: cagire.tcl,v 1.7 2010-11-12 07:12:50 robertdelmas Exp $
 #
 
 namespace eval ::cagire {
@@ -84,7 +84,7 @@ proc ::cagire::initPlugin { } {
    #--- Initialise les variables de la camera Cagire
    if { ! [ info exists conf(cagire,cool) ] }       { set conf(cagire,cool)       "0" }
    if { ! [ info exists conf(cagire,foncobtu) ] }   { set conf(cagire,foncobtu)   "2" }
-   if { ! [ info exists conf(cagire,config) ] }     { set conf(cagire,config)     [ file join $audace(rep_travail) images ] }
+   if { ! [ info exists conf(cagire,config) ] }     { set conf(cagire,config)     "$audace(rep_images)" }
    if { ! [ info exists conf(cagire,mirh) ] }       { set conf(cagire,mirh)       "0" }
    if { ! [ info exists conf(cagire,mirv) ] }       { set conf(cagire,mirv)       "0" }
    if { ! [ info exists conf(cagire,temp) ] }       { set conf(cagire,temp)       "-160" }
@@ -462,7 +462,7 @@ proc ::cagire::explore { } {
    global audace caption
 
    set private(config) [ tk_chooseDirectory -title "$caption(cagire,dossier)" \
-      -initialdir [ file join $audace(rep_travail) images ] -parent [ winfo toplevel $private(frm) ] ]
+      -initialdir "$audace(rep_images)" -parent [ winfo toplevel $private(frm) ] ]
 }
 
 #
