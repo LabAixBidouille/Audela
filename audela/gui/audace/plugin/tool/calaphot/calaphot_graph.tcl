@@ -5,7 +5,7 @@
 #
 # @brief Routines de gestion des affichages de Calaphot
 #
-# $Id: calaphot_graph.tcl,v 1.8 2010-03-29 18:54:14 jacquesmichelet Exp $
+# $Id: calaphot_graph.tcl,v 1.9 2010-11-18 19:25:43 jacquesmichelet Exp $
 
 namespace eval ::CalaPhot {
 
@@ -15,9 +15,9 @@ namespace eval ::CalaPhot {
     #         sinon, passage par les ecrans de saisie (conditionne par
     #         par une eventuelle demande d'arret)
     # @param[in] nom_image : nom generique des images
-    # @retval data_script(nombre_reference) : nombre d'etoile de reference
+    # @retval data_script(nombre_reference) : nombre d'étoile de reference
     # @retval data_script(nombre_variable) : nombre d'asteroide
-    # @retval data_script(nombre_indes) : nombre d'etoile a supprimer
+    # @retval data_script(nombre_indes) : nombre d'étoile a supprimer
     proc AffichageMenus {nom_image} {
         variable demande_arret
         variable trace_log
@@ -27,8 +27,8 @@ namespace eval ::CalaPhot {
         variable parametres
 
         Message debug "%s\n" [info level [info level]]
-
         Message debug "ref=%d var=%d\n" $data_script(nombre_reference) $data_script(nombre_variable)
+
         if {($data_script(nombre_reference) == 0) \
             || ($data_script(nombre_variable) == 0) \
             || ($parametres(reprise_astres) == "non") } {
@@ -54,11 +54,11 @@ namespace eval ::CalaPhot {
     }
 
     ##
-    # @brief Affichage de la boite de sélection d'un asteroide
-    # @param indice : selecteur
-    # - 0 : permet de passer à un asteroide suivant (quand on supportera les asteroides multiples)
-    # - 1 : selection dans la 1ere image de la sequence
-    # - 2 : selection dans la derniere image de la sequence
+    # @brief Affichage de la boite de sélection d'un astéroide
+    # @param indice : sélecteur
+    # - 0 : permet de passer à un astéroide suivant (quand on supportera les astéroides multiples)
+    # - 1 : sélection dans la 1ère image de la séquence
+    # - 2 : sélection dans la dernière image de la séquence
     # .
     # @param nom_image nom generique de l'image sur laquelle va se faire la selection
     # @return
@@ -122,7 +122,7 @@ namespace eval ::CalaPhot {
         set commande_bouton(suivant) "::CalaPhot::AffichageMenuAsteroide $indice $nom_image"
         set commande_bouton(annulation) ::CalaPhot::ArretScript
 
-        #----- Creation du contenu de la fenetre
+        #----- Création du contenu de la fenêtre
         foreach champ $liste_champ {
             button $audace(base).selection_aster.b$champ \
                 -text $texte_bouton($champ) \
@@ -146,7 +146,7 @@ namespace eval ::CalaPhot {
     }
 
     ##
-    # @brief Affichage de la boite de sélection d'une etoile
+    # @brief Affichage de la boite de sélection d'une étoile
     # @details Initialisation de certaines variables
     # - data_script(nombre_reference)
     # - coord_etoile_x
@@ -223,13 +223,13 @@ namespace eval ::CalaPhot {
     }
 
     ##
-    # @brief Affichage de la boite de suppression d'une etoile
+    # @brief Affichage de la boite de suppression d'une étoile
     # @details Initialisation de certaines variables
     # - data_script(nombre_indes)
     # - coord_indes_x
     # - coord_indes_y
     # .
-    # @param nom_image nom generique de l'image sur laquelle va se faire la selection
+    # @param nom_image nom générique de l'image sur laquelle va se faire la sélection
     # @return
     proc AffichageMenuIndesirable {nom_image} {
         global audace
@@ -385,32 +385,27 @@ namespace eval ::CalaPhot {
     #*************  AnnuleSaisie  ********************************************#
     #*************************************************************************#
     proc AnnuleSaisie {} {
-        global audace
-        variable demande_arret
-
-        Message debug "%s\n" [info level [info level]]
-
-        set demande_arret 1
-        EffaceMotif astres
-        destroy $audace(base).saisie
-        update idletasks
+        ArretScript
     }
 
     #*************************************************************************#
     #*************  ArretScript  *********************************************#
     #*************************************************************************#
     proc ArretScript { } {
-        global audace
         variable demande_arret
+        variable calaphot
 
         Message debug "%s\n" [ info level [ info level ] ]
 
         set demande_arret 1
         EffaceMotif astres
-        catch { destroy $audace(base).selection_etoile }
-        catch { destroy $audace(base).selection_aster }
-        catch { destroy $audace(base).selection_indes }
-        catch { destroy $audace(base).bouton_arret_color_invariant }
+        catch { destroy $calaphot(toplevel,saisie) }
+        catch { destroy $::audace(base).selection_etoile }
+        catch { destroy $::audace(base).selection_aster }
+        catch { destroy $::audace(base).selection_indes }
+        catch { destroy $::audace(base).bouton_arret_color_invariant }
+        catch { destroy $::audace(base).pasapas }
+        update idletasks
         DestructionFichiersAuxiliaires
     }
 
@@ -424,7 +419,7 @@ namespace eval ::CalaPhot {
 
         Message debug "%s\n" [info level [info level]]
 
-        set b [toplevel $audace(base).bouton_arret_color_invariant -class Toplevel -borderwidth 2 -bg $color(red) -relief groove]
+        set b [toplevel $::audace(base).bouton_arret_color_invariant -class Toplevel -borderwidth 2 -bg $::color(red) -relief groove]
         wm geometry $b +320+0
         wm resizable $b 0 0
         wm title $b ""
@@ -433,13 +428,13 @@ namespace eval ::CalaPhot {
 
         frame $b.arret -borderwidth 5 \
             -relief groove \
-            -bg $color(red)
+            -bg $::color(red)
         button $b.arret.b \
             -text $calaphot(texte,arret) \
             -command {set ::CalaPhot::demande_arret 1} \
-            -bg $color(white) \
+            -bg $::color(white) \
             -activebackground $color(red) \
-            -fg $color(red)
+            -fg $::color(red)
         pack $b.arret.b -side left -padx 10 -pady 10
         pack $b.arret
 
@@ -464,7 +459,7 @@ namespace eval ::CalaPhot {
         for {set a 0} {$a < $data_script(nombre_variable)} {incr a} {
             Message info "--- %u : (%4.2f %4.2f) -> (%4.2f %4.2f)\n" $a [lindex $coord_aster($a,1) 0] [lindex $coord_aster($a,1) 1] [lindex $coord_aster($a,2) 0] [lindex $coord_aster($a,2) 1]
         }
-        destroy $audace(base).selection_aster
+        destroy $::audace(base).selection_aster
     }
 
 
@@ -496,7 +491,7 @@ namespace eval ::CalaPhot {
                 set pos_theo(ref,$i) [list $cx $cy $m]
                 Message info "%s n%d: %4.2f %4.2f %4.2f\n" $calaphot(texte,etoile) $i $cx $cy $m
             }
-            destroy $audace(base).selection_etoile
+            destroy $::audace(base).selection_etoile
         }
     }
 
@@ -530,7 +525,7 @@ namespace eval ::CalaPhot {
             }
         }
         EffaceMotif astres
-        destroy $audace(base).selection_indes
+        destroy $::audace(base).selection_indes
     }
 
 
@@ -590,7 +585,7 @@ namespace eval ::CalaPhot {
                 catch {::blt::vector destroy $TempVectors(temp.$i.ref.$j)}
                 ::blt::vector create $TempVectors(temp.$i.ref.$j)
             }
-            set baseplotxy($i) $audace(base)
+            set baseplotxy($i) $::audace(base)
             append baseplotxy($i) ".calaphot_"
             append baseplotxy($i) $i
             catch {destroy $baseplotxy($i)}
@@ -611,14 +606,14 @@ namespace eval ::CalaPhot {
                 -xdata $TempVectors(temp.$i.x) \
                 -ydata $TempVectors(temp.$i.var) \
                 -symbol "" \
-                -color $color(blue) \
+                -color $::color(blue) \
                 -linewidth 3 \
                 -label $data_script(nom_var_$i)
             $baseplotxy($i).xy element create cste_$i \
                 -xdata $TempVectors(temp.$i.x) \
                 -ydata $TempVectors(temp.$i.cste) \
                 -symbol "" \
-                -color $color(green) \
+                -color $::color(green) \
                 -label $calaphot(texte,constante_mag)
 
             for {set j 0} {$j < $data_script(nombre_reference)} {incr j} {
@@ -629,7 +624,7 @@ namespace eval ::CalaPhot {
                     -xdata $TempVectors(temp.$i.x) \
                     -ydata $TempVectors(temp.$i.ref.$j) \
                     -symbol "" \
-                    -color $color(red)
+                    -color $::color(red)
             }
             $baseplotxy($i).xy axis configure x -title $calaphot(texte,jour_julien)
             $baseplotxy($i).xy axis configure y -title $calaphot(texte,magnitude)
@@ -716,8 +711,8 @@ namespace eval ::CalaPhot {
     }
 
     ##
-    # @brief Dessin d'un motif geometrique sur l'image affichee
-    # @param motif : motif a affiche. Les valeurs peuvent etre :
+    # @brief Dessin d'un motif géométrique sur l'image affichée
+    # @param motif : motif à afficher. Les valeurs peuvent être :
     # - ovale
     # - rectangle
     # - verticale (trait vertical)
@@ -733,27 +728,32 @@ namespace eval ::CalaPhot {
 
         Message debug "%s\n" [info level [info level]]
 
-        set x [lindex $centre 0]
-        set y [lindex $centre 1]
-        set rh [lindex $taille 0]
-        set rv [lindex $taille 1]
-        set x1 [expr round($x - $rh)]
-        set y1 [expr round($y - $rv)]
-        set x2 [expr round($x + $rh)]
-        set y2 [expr round($y + $rv)]
-        set naxis2 [lindex [buf$audace(bufNo) getkwd NAXIS2] 1]
+        # L'image peut être affichée avec un facteur d'echelle
+        set zoom [ visu$audace(visuNo) zoom ]
+
+        set x [ lindex $centre 0 ]
+        set y [ lindex $centre 1 ]
+        set rh [ lindex $taille 0 ]
+        set rv [ lindex $taille 1 ]
+        set x1 [ expr round( ( $x - $rh ) * $zoom ) ]
+        set y1 [ expr round( ( $y - $rv ) * $zoom ) ]
+        set x2 [ expr round( ( $x + $rh ) * $zoom ) ]
+        set y2 [ expr round( ( $y + $rv ) * $zoom ) ]
+        set x0 [ expr round( $x * $zoom ) ]
+        set y0 [ expr round( $y * $zoom ) ]
+        set naxis2 [ expr [ lindex [ buf$audace(bufNo) getkwd NAXIS2 ] 1 ] * $zoom ]
         switch -exact -- $motif {
             "ovale" {
-                $audace(hCanvas) create oval [expr $x1-1] [expr $naxis2-$y1] [expr $x2-1] [expr $naxis2-$y2] -outline $couleur -tags [list astres $marqueur]
+                $::audace(hCanvas) create oval [ expr $x1 - 1 ] [ expr $naxis2 - $y1 ] [ expr $x2 - 1 ] [ expr $naxis2 - $y2 ] -outline $couleur -tags [ list astres $marqueur ]
             }
             "rectangle" {
-                $audace(hCanvas) create rect [expr $x1-1] [expr $naxis2-$y1] [expr $x2-1] [expr $naxis2-$y2] -outline $couleur -tags [list astres $marqueur]
+                $::audace(hCanvas) create rect [ expr $x1 - 1 ] [ expr $naxis2 - $y1 ] [ expr $x2 - 1 ] [ expr $naxis2 - $y2 ] -outline $couleur -tags [ list astres $marqueur ]
             }
             "verticale" {
-                $audace(hCanvas) create line $x [expr $naxis2-$y1] $x [expr $naxis2-$y2] -fill $couleur -tags [list astres $marqueur]
+                $::audace(hCanvas) create line $x0 [ expr $naxis2 - $y1 ] $x0 [ expr $naxis2 - $y2 ] -fill $couleur -tags [ list astres $marqueur ]
             }
             "horizontale" {
-                $audace(hCanvas) create line [expr $x1-1] [expr $naxis2-$y] [expr $x2] [expr $naxis2-$y] -fill $couleur -tags [list astres $marqueur]
+                $::audace(hCanvas) create line [ expr $x1 - 1 ] [ expr $naxis2 - $y0 ] [ expr $x2 ] [ expr $naxis2 - $y0 ] -fill $couleur -tags [ list astres $marqueur ]
             }
         }
         update idletasks
@@ -768,13 +768,16 @@ namespace eval ::CalaPhot {
 
         Message debug "%s\n" [info level [info level]]
 
-        set naxis2 [lindex [buf$audace(bufNo) getkwd NAXIS2] 1]
+        # L'image peut être affichée avec un facteur d'echelle
+        set zoom [ visu$audace(visuNo) zoom ]
+
+        set naxis2 [ expr [ lindex [ buf$::audace(bufNo) getkwd NAXIS2 ] 1 ] * $zoom ]
         # centroide
-        set x0 $data_image($image,$classe,centroide_x_$etoile)
-        set y0 $data_image($image,$classe,centroide_y_$etoile)
+        set x0 [ expr $data_image($image,$classe,centroide_x_$etoile) * $zoom ]
+        set y0 [ expr $data_image($image,$classe,centroide_y_$etoile) * $zoom ]
         # fwhms
-        set f1 $data_image($image,$classe,fwhm1_$etoile)
-        set f2 $data_image($image,$classe,fwhm2_$etoile)
+        set f1 [ expr $data_image($image,$classe,fwhm1_$etoile) * $zoom ]
+        set f2 [ expr $data_image($image,$classe,fwhm2_$etoile) * $zoom ]
 
         # angle
         set alpha $data_image($image,$classe,alpha_$etoile)
@@ -822,7 +825,7 @@ namespace eval ::CalaPhot {
 
         Message debug "%s\n" [info level [info level]]
 
-        $audace(hCanvas) delete $marqueur
+        $::audace(hCanvas) delete $marqueur
     }
 
     #*************************************************************************#
@@ -857,6 +860,29 @@ namespace eval ::CalaPhot {
             Message notice " |   Mag.       Err        Flux        S/N        N       Bg       NBg        "
             Message notice " | mag.abs    | v\n"
             }
+        }
+    }
+
+    #**************************************************************************#
+    #*************  PasAPas  **************************************************#
+    #**************************************************************************#
+    # Fenêtre pour le mode pas à pas utile au débogage                         #
+    #**************************************************************************#
+    proc PasAPas { } {
+        variable calaphot
+        variable pas_a_pas
+
+        catch { destroy $calaphot(toplevel,pasapas) }
+        if { [ info exists pas_a_pas ] } {
+            set calaphot(suite_du_script) 0
+            set f [ toplevel $::audace(base).pasapas ]
+            set l [ label $f.l -text $calaphot(suite_du_script) -width 3 -height 3 ]
+            pack $l -fill both
+            bind $f <Shift-S> {
+                incr ::CalaPhot::calaphot(suite_du_script)
+                $::audace(base).pasapas.l configure -text $::CalaPhot::calaphot(suite_du_script)
+            }
+            set calaphot(toplevel,pasapas) $f
         }
     }
 
@@ -933,19 +959,20 @@ namespace eval ::CalaPhot {
 
         Message debug "%s\n" [info level [info level]]
 
-        # Construction de la fenetre des parametres
-        toplevel $audace(base).saisie -borderwidth 2 -relief groove
+        # Construction de la fenêtre des paramètres
+        set calaphot(toplevel,saisie) [ toplevel $::audace(base).saisie -borderwidth 2 -relief groove ]
+        set s $calaphot(toplevel,saisie)
         set largeur_ecran_2 [expr [winfo screenwidth .] / 2]
-        wm geometry $audace(base).saisie +320+0
-        wm title $audace(base).saisie $calaphot(texte,titre_saisie)
-        wm protocol $audace(base).saisie WM_DELETE_WINDOW ::CalaPhot::Suppression
+        wm geometry $s +320+0
+        wm title $s $calaphot(texte,titre_saisie)
+        wm protocol $s WM_DELETE_WINDOW ::CalaPhot::Suppression
 
         # Construction de la trame des listes qui contient les listes et l'ascenseur
-        frame $audace(base).saisie.listes
+        set f [ frame ${s}.listes ]
 
         # Construction du canevas qui va contenir toutes les trames et des ascenseurs
-        set c [canvas $audace(base).saisie.listes.canevas -yscrollcommand [list $audace(base).saisie.listes.yscroll set] -width 10 -height 10]
-        set y [scrollbar $audace(base).saisie.listes.yscroll -orient vertical -command [list $audace(base).saisie.listes.canevas yview] ]
+        set c [canvas ${f}.canevas -yscrollcommand [list ${f}.yscroll set] -width 10 -height 10]
+        set y [scrollbar ${f}.yscroll -orient vertical -command [list $c yview] ]
 
         pack $y \
             -side right \
@@ -954,7 +981,7 @@ namespace eval ::CalaPhot {
             -side left \
             -fill both \
             -expand true
-        pack $audace(base).saisie.listes \
+        pack $f \
             -side top \
             -fill both \
             -expand true
@@ -966,7 +993,7 @@ namespace eval ::CalaPhot {
             -window $t
 
         #--------------------------------------------------------------------------------
-        # Trame des renseignements d'ordre general
+        # Trame des renseignements d'ordre général
         frame $t.trame1 \
             -borderwidth 5 \
             -relief groove
@@ -1060,10 +1087,9 @@ namespace eval ::CalaPhot {
         }
 
         set ligne 2
-        foreach champ {type_images date_images tri_images pose_minute format_sortie reprise_astres} \
-                valeur(0) {non_recalees debut_pose non seconde cdr non} \
-                valeur(1) {recalees milieu_pose oui minute canopus oui} {
-                Message debug "choix=%s\n" $valeur(0)
+        foreach champ {type_images defocalisation date_images tri_images pose_minute format_sortie reprise_astres} \
+                valeur(0) {non_recalees non debut_pose non seconde cdr non} \
+                valeur(1) {recalees oui milieu_pose oui minute canopus oui} {
             label $t2.l$champ \
                 -text $calaphot(texte,$champ)
             set colonne 0
@@ -1157,6 +1183,7 @@ namespace eval ::CalaPhot {
             -padx 10 \
             -pady 10
         AffichageVariable $parametres(mode) $c $y $t
+        focus $calaphot(toplevel,saisie)
 
         tkwait window $audace(base).saisie
     }
@@ -1166,10 +1193,10 @@ namespace eval ::CalaPhot {
     #*************************************************************************#
     #                                                                         #
     # Variables modifiees                                                     #
-    #  - nombre_reference : incremente si l'etoile de ref. n'a pas deja ete   #
+    #  - nombre_reference : incrémente si l'étoile de ref. n'a pas déjà été   #
     #    selectionnee                                                         #
-    #  - coord_etoile_x et _y : liste des coord. des etoiles de ref.          #
-    #  - flux_premiere_etoile : flux de la premiere etoile de ref. Sert au    #
+    #  - coord_etoile_x et _y : liste des coord. des étoiles de ref.          #
+    #  - flux_premiere_etoile : flux de la première étoile de ref. Sert au    #
     #    calcul des magnitudes semi-automatiques pour les autres ref.         #
     #  - mag_etoile :                                                         #
     #  - mag :                                                                #
@@ -1188,46 +1215,46 @@ namespace eval ::CalaPhot {
 
         Message debug "%s\n" [info level [info level]]
 
-        if {[winfo exists $audace(base).saisie.magnitude]} {
+        if { [ winfo exists $audace(base).saisie.magnitude ] } {
             return
         }
 
-        # Pour simplifier les ecritures
+        # Pour simplifier les écritures
         set boite $parametres(tailleboite)
 
         set mag 0.0
 
-        set pos [Centroide]
-        if {[llength $pos] != 0} {
-            set cx [lindex $pos 0]
-            set cy [lindex $pos 1]
+        set pos [ Centroide ]
+        if { [ llength $pos ] != 0 } {
+            set cx [ lindex $pos 0 ]
+            set cy [ lindex $pos 1 ]
 
-            # Recherche si l'etoile a deja ete selectionnee
-            if {[info exists coord_etoile_x]} {
-                set ix [lsearch $coord_etoile_x $cx]
-                set iy [lsearch $coord_etoile_y $cy]
+            # Recherche si l'étoile a déjà été sélectionnée
+            if { [ info exists coord_etoile_x ] } {
+                set ix [ lsearch $coord_etoile_x $cx ]
+                set iy [ lsearch $coord_etoile_y $cy ]
             } else {
                 set ix -1
                 set iy -1
             }
-            if {($ix >=0) && ($iy >=0) && ($ix == $iy)} {
+            if { ( $ix >=0 ) && ( $iy >=0 ) && ( $ix == $iy ) } {
                 tk_messageBox -message $calaphot(texte,etoile_prise) -icon error -title $calaphot(texte,probleme)
             } else {
-                # Cas d'une nouvelle etoile
+                # Cas d'une nouvelle étoile
                 lappend coord_etoile_x $cx
                 lappend coord_etoile_y $cy
 
-                # Calcul pour le pre-affichage des valeurs de magnitudes
+                # Calcul pour le pré-affichage des valeurs de magnitudes
                 set cxx [expr int(round($cx))]
                 set cyy [expr int(round($cy))]
                 set q [ calaphot_fitgauss2d $audace(bufNo) [ list [ expr $cxx - $boite ] [ expr $cyy - $boite ] [ expr $cxx + $boite ] [ expr $cyy + $boite ] ] ]
                 if { ![ info exists flux_premiere_etoile ] } {
                     set mag_affichage 13.5
-                    if {[lindex $q 1] != 0} {
-                        set flux_premiere_etoile [lindex $q 12]
+                    if { [ lindex $q 1] != 0 } {
+                        set flux_premiere_etoile [ lindex $q 12 ]
                     }
                 } else {
-                    if {[lindex $q 1] != 0} {
+                    if { [lindex $q 1] != 0 } {
                         set mag_affichage [format "%4.1f" [expr [lindex $mag_etoile 0] - 2.5 * log10([lindex $q 12] / $flux_premiere_etoile)]]
                     } else {
                         set mag_affichage 13.5
@@ -1286,7 +1313,7 @@ namespace eval ::CalaPhot {
             set cx [lindex $pos 0]
             set cy [lindex $pos 1]
 
-            # Recherche si l'etoile a ete deselectionnee
+            # Recherche si l'étoile a ete deselectionnee
             if {[info exists coord_indes_x]} {
                 set ix [lsearch $coord_indes_x $cx]
                 set iy [lsearch $coord_indes_y $cy]
@@ -1297,7 +1324,7 @@ namespace eval ::CalaPhot {
             if {($ix >=0) && ($iy >=0) && ($ix == $iy)} {
                 tk_messageBox -message $calaphot(texte,etoile_prise) -icon error -title $calaphot(texte,probleme)
             } else {
-                # Cas d'une nouvelle etoile
+                # Cas d'une nouvelle étoile
                 lappend coord_indes_x $cx
                 lappend coord_indes_y $cy
                 incr data_script(nombre_indes)
@@ -1363,10 +1390,10 @@ namespace eval ::CalaPhot {
     #*************  ValideSaisie  ********************************************#
     #*************************************************************************#
     ##
-    # @brief Validation generale de la saisie des parametres
+    # @brief Validation générale de la saisie des paramètres
     #
-    # Si manquent certains champs indispensables a ce script, la fenetre de saisie des parametres est maintenue
-    # sinon, elle est detruite
+    # Si manquent certains champs indispensables à ce script, la fenêtre de saisie des paramètres est maintenue
+    # sinon, elle est détruite
     proc ValideSaisie {} {
         global audace
         variable calaphot
@@ -1378,7 +1405,7 @@ namespace eval ::CalaPhot {
         # Recherche si tous les champs critiques sont remplis.
         set pas_glop 0
         foreach champ {source  indice_premier indice_dernier tailleboite signal_bruit gain_camera bruit_lecture sortie fichier_cl} {
-            if {$parametres($champ) == ""} {
+            if { $parametres($champ) == "" } {
                 set message_erreur $calaphot(texte,champ1)
                 append message_erreur $calaphot(texte,$champ)
                 append message_erreur $calaphot(texte,champ2)
@@ -1388,11 +1415,17 @@ namespace eval ::CalaPhot {
             }
         }
 
+        # Seul le mode phot. d'ouverture permet de traiter le cas des images très fortement défocalisées
+        if { ( $parametres(defocalisation) == "oui" ) && ( $parametres(mode) != "ouverture" ) } {
+            tk_messageBox -message $calaphot(texte,implication_defoc) -icon error -title $calaphot(texte,probleme)
+            set pas_glop 1
+        }
+
         # MultAster : remplacer cette ligne par qque chose dans SaisieParametres
         set data_script(nom_var_0) $parametres(objet)
         # /MultAster
 
-        if {$pas_glop == 0} {
+        if { $pas_glop == 0 } {
             destroy $audace(base).saisie
             update
         }
