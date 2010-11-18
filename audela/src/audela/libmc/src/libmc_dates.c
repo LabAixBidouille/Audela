@@ -520,7 +520,7 @@ int mctcl_decode_date(Tcl_Interp *interp, char *argv0,double *jj)
    double y=0.,m=0.,d=0.,jour=0.;
    double hh=0.,mm=0.,ss=0.;
    time_t ltime;
-   char text[50];
+   char text[100];
    int millisec=0;
 #if defined(_MSC_VER)
    /* cas special a Microsoft C++ pour avoir les millisecondes */
@@ -592,17 +592,24 @@ int mctcl_decode_date(Tcl_Interp *interp, char *argv0,double *jj)
         }
      } else {
         /* Plusieurs elements dans la liste */
-        /* La date est une liste yyy mm dd ?hh mm ss.s? */
-        if (argcc>=1) { y=atof(argvv[0]); }
-        if (argcc>=2) { m=atof(argvv[1]); }
-        if (argcc>=3) { d=atof(argvv[2]); }
-        if (argcc>=4) { hh=atof(argvv[3]); }
-        if (argcc>=5) { mm=atof(argvv[4]); }
-        if (argcc>=6) { ss=atof(argvv[5]); }
-        jour=1.*d+(((ss/60+mm)/60)+hh)/24;
-        /*--- Calcul du Jour Julien */
-        mc_date_jd((int)y,(int)m,jour,jj);
-        result = TCL_OK;
+		  if ((argcc==2)&&((strstr(argvv[0],"-")!=NULL)||(strstr(argvv[1],":")!=NULL))) {
+           /* Deux elements dans la liste. Date a la MySQL */
+			  sprintf(text,"%sT%s",argvv[0],argvv[1]);
+	        mc_dateobs2jd(text,jj);
+			  result = TCL_OK;
+		  } else {
+			  /* La date est une liste yyy mm dd ?hh mm ss.s? */
+			  if (argcc>=1) { y=atof(argvv[0]); }
+			  if (argcc>=2) { m=atof(argvv[1]); }
+			  if (argcc>=3) { d=atof(argvv[2]); }
+			  if (argcc>=4) { hh=atof(argvv[3]); }
+			  if (argcc>=5) { mm=atof(argvv[4]); }
+			  if (argcc>=6) { ss=atof(argvv[5]); }
+			  jour=1.*d+(((ss/60+mm)/60)+hh)/24;
+			  /*--- Calcul du Jour Julien */
+			  mc_date_jd((int)y,(int)m,jour,jj);
+			  result = TCL_OK;
+		  }
       }
    } else {
       result = TCL_ERROR;
