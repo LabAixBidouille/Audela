@@ -8,7 +8,7 @@
 # Connected sites are found in http://gcn.gsfc.nasa.gov/sites_cfg.html
 # To create a new connected site http://gcn.gsfc.nasa.gov/gcn/config_builder.html
 #
-# Mise à jour $Id: gcn_tools.tcl,v 1.46 2010-09-16 12:45:19 myrtillelaas Exp $
+# Mise à jour $Id: gcn_tools.tcl,v 1.47 2010-11-18 15:35:26 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -98,7 +98,7 @@ proc socket_client_send_gcn { name ipserver portserver {data {3 2008 07 07 23 45
    set burst_pkt_hop_cnt 1
    set longs [lreplace $longs 2 2 $burst_pkt_hop_cnt]
    set date [mc_date2jd now]
-   set sod [expr ($date-floor($date-0.5))*86400.]
+   set sod [expr ($date-0.5-floor($date-0.5))*86400.] ; # -0.5
    set burst_pkt_sod [expr int($sod*100)]
    set longs [lreplace $longs 3 3 $burst_pkt_sod]
    set burst_trig_obs_num 1
@@ -112,7 +112,7 @@ proc socket_client_send_gcn { name ipserver portserver {data {3 2008 07 07 23 45
    set jd [mc_date2jd [lrange $data 1 6]]
    set burst_tjd [expr int($jd+13370.+1.-[mc_date2jd {2005 1 1}])]
    set longs [lreplace $longs 5 5 $burst_tjd]
-   set sod [expr ($jd-floor($jd-0.5))*86400.]
+   set sod [expr ($jd-0.5-floor($jd-0.5))*86400.] ; # -0.5
    set burst_sod [expr int($sod*100)]
    set longs [lreplace $longs 6 6 $burst_sod]
    set burst_ra [expr int([lindex $data 7]/0.0001)]
