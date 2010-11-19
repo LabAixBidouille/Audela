@@ -5,7 +5,7 @@
 #
 # @brief Routines de gestion des affichages de Calaphot
 #
-# $Id: calaphot_graph.tcl,v 1.9 2010-11-18 19:25:43 jacquesmichelet Exp $
+# $Id: calaphot_graph.tcl,v 1.10 2010-11-19 19:39:41 jacquesmichelet Exp $
 
 namespace eval ::CalaPhot {
 
@@ -532,8 +532,9 @@ namespace eval ::CalaPhot {
     #*************************************************************************#
     #*************  CourbeLumiereTemporaire  *********************************#
     #*************************************************************************#
-    #  Affichage de la courbe de lumiere en cours de traitement (sans         #
-    #  filtrage des donnees                                                  #
+    #  Affichage de la courbe de lumière en cours de traitement (sans         #
+    #  filtrage des données                                                   #
+    #  Retourne la liste des fenêtres créées                                  #
     #*************************************************************************#
     proc CourbeLumiereTemporaire {} {
         global audace color
@@ -545,11 +546,12 @@ namespace eval ::CalaPhot {
 
         Message debug "%s\n" [info level [info level]]
 
-        set vector_list [list]
-        catch {unset TempVectors}
+        set liste_fenetres [ list ]
+        set vector_list [ list ]
+        catch { unset TempVectors }
 
-        # On va creer autant de courbes de lumieres que de variables
-        # Generation de la liste des vecteurs
+        # On va creer autant de courbes de lumière que de variables
+        # Génération de la liste des vecteurs
         for {set i 0} {$i < $data_script(nombre_variable)} {incr i} {
             set vector_list [concat $vector_list [list temp.$i.var vector[uniq]]]
             set vector_list [concat $vector_list [list temp.$i.x vector[uniq]]]
@@ -561,7 +563,7 @@ namespace eval ::CalaPhot {
 
         array set TempVectors $vector_list
 
-        # On rend tous ces vecteurs globaux pour pouvoir s'en servir depuis une autre procedure
+        # On rend tous ces vecteurs globaux pour pouvoir s'en servir depuis une autre procédure
         foreach v [array names TempVectors temp*] {
             global $TempVectors($v)
         }
@@ -588,7 +590,8 @@ namespace eval ::CalaPhot {
             set baseplotxy($i) $::audace(base)
             append baseplotxy($i) ".calaphot_"
             append baseplotxy($i) $i
-            catch {destroy $baseplotxy($i)}
+            catch { destroy $baseplotxy($i) }
+            lappend liste_fenetres $baseplotxy($i)
             toplevel $baseplotxy($i)
             wm geometry $baseplotxy($i) 631x453
             wm maxsize $baseplotxy($i) [winfo screenwidth .] [winfo screenheight .]
@@ -636,6 +639,8 @@ namespace eval ::CalaPhot {
             #--- Mise a jour dynamique des couleurs
             ::confColor::applyColor $baseplotxy($i).xy
             update idletasks
+
+            return $liste_fenetres
         }
     }
 
@@ -735,13 +740,13 @@ namespace eval ::CalaPhot {
         set y [ lindex $centre 1 ]
         set rh [ lindex $taille 0 ]
         set rv [ lindex $taille 1 ]
-        set x1 [ expr round( ( $x - $rh ) * $zoom ) ]
-        set y1 [ expr round( ( $y - $rv ) * $zoom ) ]
-        set x2 [ expr round( ( $x + $rh ) * $zoom ) ]
-        set y2 [ expr round( ( $y + $rv ) * $zoom ) ]
-        set x0 [ expr round( $x * $zoom ) ]
-        set y0 [ expr round( $y * $zoom ) ]
-        set naxis2 [ expr [ lindex [ buf$audace(bufNo) getkwd NAXIS2 ] 1 ] * $zoom ]
+        set x1 [ expr round( ( $x - $rh ) * $zoom + 0.5 ) ]
+        set y1 [ expr round( ( $y - $rv ) * $zoom + 0.5 ) ]
+        set x2 [ expr round( ( $x + $rh ) * $zoom + 0.5 ) ]
+        set y2 [ expr round( ( $y + $rv ) * $zoom + 0.5 ) ]
+        set x0 [ expr round( $x * $zoom + 0.5 ) ]
+        set y0 [ expr round( $y * $zoom + 0.5 ) ]
+        set naxis2 [ expr round( [ lindex [ buf$audace(bufNo) getkwd NAXIS2 ] 1 ] * $zoom + 0.5 ) ]
         switch -exact -- $motif {
             "ovale" {
                 $::audace(hCanvas) create oval [ expr $x1 - 1 ] [ expr $naxis2 - $y1 ] [ expr $x2 - 1 ] [ expr $naxis2 - $y2 ] -outline $couleur -tags [ list astres $marqueur ]
@@ -783,7 +788,7 @@ namespace eval ::CalaPhot {
         set alpha $data_image($image,$classe,alpha_$etoile)
 
 
-        # recuperation de alpha en radian
+        # récuperation de alpha en radian
         set alphar [expr $alpha * 0.017453]
 #        set c_alpha [expr cos($alphar)]
 #        set s_alpha [expr sin($alphar)]
@@ -815,6 +820,15 @@ namespace eval ::CalaPhot {
             lappend ellipse $px $py
         }
         return $ellipse
+    }
+
+    #*************************************************************************#
+    #*************  DestructionCourbesTemporaires  ***************************#
+    #*************************************************************************#
+    proc DestructionCourbesTemporaires { liste_fenetres } {
+        foreach fenetre $liste_fenetres {
+            catch { destroy $fenetre }
+        }
     }
 
     #*************************************************************************#
