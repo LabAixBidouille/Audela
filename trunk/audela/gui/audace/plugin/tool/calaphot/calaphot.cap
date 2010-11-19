@@ -1,6 +1,6 @@
 #
 # Fichier : calaphot.cap
-# Mise a jour $Id: calaphot.cap,v 1.14 2010-09-11 16:28:05 jacquesmichelet Exp $
+# Mise a jour $Id: calaphot.cap,v 1.15 2010-11-19 19:36:16 jacquesmichelet Exp $
 #
 
 #=========================================================================
@@ -111,12 +111,14 @@ set calaphot(texte,filtre_optique)         "Optical Filter"
 set calaphot(texte,suivant)                "Next"
 set calaphot(texte,s_saturation)           "Saturation level (ADU)"
 set calaphot(texte,mode_sextractor)        "Using Sextractor"
+set calaphot(texte,non)                    "No"
+set calaphot(texte,oui)                    "Yes"
 set calaphot(texte,reprise_astres)         "Using the previously selected objects"
-set calaphot(texte,reprise_astres_0)       "No"
-set calaphot(texte,reprise_astres_1)       "Yes"
+set calaphot(texte,reprise_astres_0)       $calaphot(texte,non)
+set calaphot(texte,reprise_astres_1)       $calaphot(texte,oui)
 set calaphot(texte,param_sextractor)       "Parameters for the Sextractor Mode"
-set calaphot(texte,tri_images_0)           "No"
-set calaphot(texte,tri_images_1)           "Yes"
+set calaphot(texte,tri_images_0)           $calaphot(texte,non)
+set calaphot(texte,tri_images_1)           $calaphot(texte,oui)
 set calaphot(texte,detection_ini)          "The Calaphot version has changed: The calaphot.ini settings will be reset."
 set calaphot(texte,aide)                   "Help"
 set calaphot(texte,pas_image_valide)       "No valid image. You should check the minimum S/N ratio."
@@ -125,6 +127,10 @@ set calaphot(texte,temps_pose_nul)         "Void exposure duration"
 set calaphot(texte,mag_relative)           "Relative Magnitude"
 set calaphot(texte,err_modelisation)       "Error in fitting"
 set calaphot(texte,plus_jeune)             " is older than the previous one"
+set calaphot(texte,implication_defoc)      "The processing of very defocused images implies Aperture Photometry"
+set calaphot(texte,defocalisation)         "Very defocused images"
+set calaphot(texte,defocalisation_0)       $calaphot(texte,non)
+set calaphot(texte,defocalisation_1)       $calaphot(texte,oui)
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -225,12 +231,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,suivant)             "Suivant"
    set calaphot(texte,s_saturation)        "Niveau de saturation (en ADU)"
    set calaphot(texte,mode_sextractor)     "Via Sextractor"
+   set calaphot(texte,non)                 "Non"
+   set calaphot(texte,oui)                 "Oui"
    set calaphot(texte,reprise_astres)      "Reprise des objets déjà saisis"
-   set calaphot(texte,reprise_astres_0)    "Non"
-   set calaphot(texte,reprise_astres_1)    "Oui"
+   set calaphot(texte,reprise_astres_0)    $calaphot(texte,non)
+   set calaphot(texte,reprise_astres_1)    $calaphot(texte,oui)
    set calaphot(texte,param_sextractor)    "Paramètres pour le mode Sextractor"
-   set calaphot(texte,tri_images_0)        "non"
-   set calaphot(texte,tri_images_1)        "oui"
+   set calaphot(texte,tri_images_0)        $calaphot(texte,non)
+   set calaphot(texte,tri_images_1)        $calaphot(texte,oui)
    set calaphot(texte,detection_ini)       "Changement de version de Calaphot : Le contenu de calaphot.ini va être re-initialisé."
    set calaphot(texte,aide)                "Aide"
    set calaphot(texte,pas_image_valide)    "Aucune image n'est valide. Vérifiez le rapport S/B limite."
@@ -239,6 +247,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,mag_relative)        "Magnitude relative"
    set calaphot(texte,err_modelisation)    "Erreur de modelisation"
    set calaphot(texte,plus_jeune)          " est plus ancienne que la précédente"
+   set calaphot(texte,implication_defoc)   "Le traitement des images très défocalisées n'est possible qu'en photométrie d'ouverture"
+   set calaphot(texte,defocalisation)      "Images très defocalisées"
+   set calaphot(texte,defocalisation_0)    $calaphot(texte,non)
+   set calaphot(texte,defocalisation_1)    $calaphot(texte,oui)
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -339,12 +351,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,suivant)             "Seguente"
    set calaphot(texte,s_saturation)        "Livello di saturazione (ADU)"
    set calaphot(texte,mode_sextractor)     "Via Sextractor"
+   set calaphot(texte,non)                 "No"
+   set calaphot(texte,oui)                 "Si"
    set calaphot(texte,reprise_astres)      "Uso degli oggetti precedentemente selezionati"
-   set calaphot(texte,reprise_astres_0)    "No"
-   set calaphot(texte,reprise_astres_1)    "Si"
+   set calaphot(texte,reprise_astres_0)    $calaphot(texte,non)
+   set calaphot(texte,reprise_astres_1)    $calaphot(texte,oui)
    set calaphot(texte,param_sextractor)    "Parametri per il modo Sextractor"
-   set calaphot(texte,tri_images_0)        "No"
-   set calaphot(texte,tri_images_1)        "Si"
+   set calaphot(texte,tri_images_0)        $calaphot(texte,non)
+   set calaphot(texte,tri_images_1)        $calaphot(texte,oui)
    set calaphot(texte,detection_ini)       "Cambiamento di versione di Calaphot: Il contenuto di calaphot.ini dovrà essere reinizializzato."
    set calaphot(texte,aide)                "Aiuto"
    set calaphot(texte,pas_image_valide)    "Nessuna immagine valida. Verificare il rapporto S/N minimo."
@@ -354,6 +368,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,mag_relative)        "Relative Magnitude"
    set calaphot(texte,err_modelisation)    "Error in fitting"
    set calaphot(texte,plus_jeune)          " is older than the previous one"
+   set calaphot(texte,implication_defoc)   "The processing of very defocused images implies Aperture Photometry"
+   set calaphot(texte,defocalisation)      "Very defocused images"
+   set calaphot(texte,defocalisation_0)    $calaphot(texte,non)
+   set calaphot(texte,defocalisation_1)    $calaphot(texte,oui)
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -454,12 +472,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,suivant)             "Siguiente"
    set calaphot(texte,s_saturation)        "Nivel de saturación (en ADU)"
    set calaphot(texte,mode_sextractor)     "Via Sextractor"
+   set calaphot(texte,non)                 "No"
+   set calaphot(texte,oui)                 "Si"
    set calaphot(texte,reprise_astres)      "Usando objetos ya seleccionados"
-   set calaphot(texte,reprise_astres_0)    "No"
-   set calaphot(texte,reprise_astres_1)    "Sí"
+   set calaphot(texte,reprise_astres_0)    $calaphot(texte,non)
+   set calaphot(texte,reprise_astres_1)    $calaphot(texte,oui)
    set calaphot(texte,param_sextractor)    "Parámetros para el modo Sextractor"
-   set calaphot(texte,tri_images_0)        "No"
-   set calaphot(texte,tri_images_1)        "Sí"
+   set calaphot(texte,tri_images_0)        $calaphot(texte,non)
+   set calaphot(texte,tri_images_1)        $calaphot(texte,oui)
    set calaphot(texte,detection_ini)       "Cambio de la versión de Calaphot: El contenido de calaphot.ini será reinicializado."
    set calaphot(texte,aide)                "Ayuda"
    set calaphot(texte,pas_image_valide)    "Imagen no valida. Verificar el limite S/R."
@@ -469,6 +489,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,mag_relative)        "Relative Magnitude"
    set calaphot(texte,err_modelisation)    "Error in fitting"
    set calaphot(texte,plus_jeune)          " is older than the previous one"
+   set calaphot(texte,implication_defoc)   "The processing of very defocused images implies Aperture Photometry"
+   set calaphot(texte,defocalisation)      "Very defocused images"
+   set calaphot(texte,defocalisation_0)    $calaphot(texte,non)
+   set calaphot(texte,defocalisation_1)    $calaphot(texte,oui)
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -569,12 +593,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,suivant)             "Nächsten"
    set calaphot(texte,s_saturation)        "Sättigung Höhe (in ADU)"
    set calaphot(texte,mode_sextractor)     "Mit Sextractor"
+   set calaphot(texte,non)                 "Nein"
+   set calaphot(texte,oui)                 "Ja"
    set calaphot(texte,reprise_astres)      "Mit dem vorherigen ausgewählten Objekt"
-   set calaphot(texte,reprise_astres_0)    "Nein"
-   set calaphot(texte,reprise_astres_1)    "Ja"
+   set calaphot(texte,reprise_astres_0)    $calaphot(texte,non)
+   set calaphot(texte,reprise_astres_1)    $calaphot(texte,oui)
    set calaphot(texte,param_sextractor)    "Einstellungen für den Sextractor Modus"
-   set calaphot(texte,tri_images_0)        "Nein"
-   set calaphot(texte,tri_images_1)        "Ja"
+   set calaphot(texte,tri_images_0)        $calaphot(texte,non)
+   set calaphot(texte,tri_images_1)        $calaphot(texte,oui)
    set calaphot(texte,detection_ini)       "Calaphot Version Änderung: Der calaphot.ini Inhalt wird neu initialisiert."
    set calaphot(texte,aide)                "Hilfe"
    set calaphot(texte,pas_image_valide)    "Kein Bild ist gültig. Überprüfen Sie die S/N Grenze."
@@ -584,6 +610,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,mag_relative)        "Relative Magnitude"
    set calaphot(texte,err_modelisation)    "Error in fitting"
    set calaphot(texte,plus_jeune)          " is older than the previous one"
+   set calaphot(texte,implication_defoc)   "The processing of very defocused images implies Aperture Photometry"
+   set calaphot(texte,defocalisation)      "Very defocused images"
+   set calaphot(texte,defocalisation_0)    $calaphot(texte,non)
+   set calaphot(texte,defocalisation_1)    $calaphot(texte,oui)
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -684,12 +714,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,suivant)             "Seguinte"
    set calaphot(texte,s_saturation)        "Nível de saturação (ADU)"
    set calaphot(texte,mode_sextractor)     "Via Sextractor"
+   set calaphot(texte,non)                 "Não"
+   set calaphot(texte,oui)                 "Sim"
    set calaphot(texte,reprise_astres)      "Retoma de objectos já seleccionados"
-   set calaphot(texte,reprise_astres_0)    "Não"
-   set calaphot(texte,reprise_astres_1)    "Sim"
+   set calaphot(texte,reprise_astres_0)    $calaphot(texte,non)
+   set calaphot(texte,reprise_astres_1)    $calaphot(texte,oui)
    set calaphot(texte,param_sextractor)    "Parâmetros para o modo Sextractor"
-   set calaphot(texte,tri_images_0)        "Não"
-   set calaphot(texte,tri_images_1)        "Sim"
+   set calaphot(texte,tri_images_0)        $calaphot(texte,non)
+   set calaphot(texte,tri_images_1)        $calaphot(texte,oui)
    set calaphot(texte,detection_ini)       "Alteração de versão Calaphot: o conteúdo de calaphot.ini será reiniciado."
    set calaphot(texte,aide)                "Ajuda"
    set calaphot(texte,pas_image_valide)    "Nenhuma imagem válida. Verifique o limite de SNR."
@@ -699,6 +731,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,mag_relative)        "Relative Magnitude"
    set calaphot(texte,err_modelisation)    "Error in fitting"
    set calaphot(texte,plus_jeune)          " is older than the previous one"
+   set calaphot(texte,implication_defoc)   "The processing of very defocused images implies Aperture Photometry"
+   set calaphot(texte,defocalisation)      "Very defocused images"
+   set calaphot(texte,defocalisation_0)    $calaphot(texte,non)
+   set calaphot(texte,defocalisation_1)    $calaphot(texte,oui)
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -799,12 +835,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,suivant)             "Next"
    set calaphot(texte,s_saturation)        "Saturation level (ADU)"
    set calaphot(texte,mode_sextractor)     "Using Sextractor"
+   set calaphot(texte,non)                 "No"
+   set calaphot(texte,oui)                 "Yes"
    set calaphot(texte,reprise_astres)      "Using the previously selected objects"
-   set calaphot(texte,reprise_astres_0)    "No"
-   set calaphot(texte,reprise_astres_1)    "Yes"
+   set calaphot(texte,reprise_astres_0)    $calaphot(texte,non)
+   set calaphot(texte,reprise_astres_1)    $calaphot(texte,oui)
    set calaphot(texte,param_sextractor)    "Parameters for the Sextractor Mode"
-   set calaphot(texte,tri_images_0)        "No"
-   set calaphot(texte,tri_images_1)        "Yes"
+   set calaphot(texte,tri_images_0)        $calaphot(texte,non)
+   set calaphot(texte,tri_images_1)        $calaphot(texte,oui)
    set calaphot(texte,detection_ini)       "The Calaphot version has changed: The calaphot.ini settings will be reset."
    set calaphot(texte,aide)                "Help"
    set calaphot(texte,pas_image_valide)    "No valid image. You should check the minimum S/N ratio."
@@ -813,6 +851,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,mag_relative)        "Relative Magnitude"
    set calaphot(texte,err_modelisation)    "Error in fitting"
    set calaphot(texte,plus_jeune)          " is older than the previous one"
+   set calaphot(texte,implication_defoc)   "The processing of very defocused images implies Aperture Photometry"
+   set calaphot(texte,defocalisation)      "Very defocused images"
+   set calaphot(texte,defocalisation_0)    $calaphot(texte,non)
+   set calaphot(texte,defocalisation_1)    $calaphot(texte,oui)
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -914,11 +956,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,s_saturation)        "Saturation level (ADU)"
    set calaphot(texte,mode_sextractor)     "Using Sextractor"
    set calaphot(texte,reprise_astres)      "Using the previously selected objects"
-   set calaphot(texte,reprise_astres_0)    "No"
-   set calaphot(texte,reprise_astres_1)    "Yes"
+   set calaphot(texte,non)                 "No"
+   set calaphot(texte,oui)                 "Yes"
+   set calaphot(texte,reprise_astres)      "Using the previously selected objects"
+   set calaphot(texte,reprise_astres_0)    $calaphot(texte,non)
+   set calaphot(texte,reprise_astres_1)    $calaphot(texte,oui)
    set calaphot(texte,param_sextractor)    "Parameters for the Sextractor Mode"
-   set calaphot(texte,tri_images_0)        "No"
-   set calaphot(texte,tri_images_1)        "Yes"
+   set calaphot(texte,tri_images_0)        $calaphot(texte,non)
+   set calaphot(texte,tri_images_1)        $calaphot(texte,oui)
    set calaphot(texte,detection_ini)       "The Calaphot version has changed: The calaphot.ini settings will be reset."
    set calaphot(texte,aide)                "Help"
    set calaphot(texte,pas_image_valide)    "No valid image. You should check the minimum S/N ratio."
@@ -927,6 +972,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,mag_relative)        "Relative Magnitude"
    set calaphot(texte,err_modelisation)    "Error in fitting"
    set calaphot(texte,plus_jeune)          " is older than the previous one"
+   set calaphot(texte,implication_defoc)   "The processing of very defocused images implies Aperture Photometry"
+   set calaphot(texte,defocalisation)      "Very defocused images"
+   set calaphot(texte,defocalisation_0)    $calaphot(texte,non)
+   set calaphot(texte,defocalisation_1)    $calaphot(texte,oui)
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -1027,12 +1076,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,suivant)             "Next"
    set calaphot(texte,s_saturation)        "Saturation level (ADU)"
    set calaphot(texte,mode_sextractor)     "Using Sextractor"
+   set calaphot(texte,non)                 "No"
+   set calaphot(texte,oui)                 "Yes"
    set calaphot(texte,reprise_astres)      "Using the previously selected objects"
-   set calaphot(texte,reprise_astres_0)    "No"
-   set calaphot(texte,reprise_astres_1)    "Yes"
+   set calaphot(texte,reprise_astres_0)    $calaphot(texte,non)
+   set calaphot(texte,reprise_astres_1)    $calaphot(texte,oui)
    set calaphot(texte,param_sextractor)    "Parameters for the Sextractor Mode"
-   set calaphot(texte,tri_images_0)        "No"
-   set calaphot(texte,tri_images_1)        "Yes"
+   set calaphot(texte,tri_images_0)        $calaphot(texte,non)
+   set calaphot(texte,tri_images_1)        $calaphot(texte,oui)
    set calaphot(texte,detection_ini)       "The Calaphot version has changed: The calaphot.ini settings will be reset."
    set calaphot(texte,aide)                "Help"
    set calaphot(texte,pas_image_valide)    "No valid image. You should check the minimum S/N ratio."
@@ -1041,6 +1092,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,mag_relative)        "Relative Magnitude"
    set calaphot(texte,err_modelisation)    "Error in fitting"
    set calaphot(texte,plus_jeune)          " is older than the previous one"
+   set calaphot(texte,implication_defoc)   "The processing of very defocused images implies Aperture Photometry"
+   set calaphot(texte,defocalisation)      "Very defocused images"
+   set calaphot(texte,defocalisation_0)    $calaphot(texte,non)
+   set calaphot(texte,defocalisation_1)    $calaphot(texte,oui)
 }
 
 #=========================================================================
