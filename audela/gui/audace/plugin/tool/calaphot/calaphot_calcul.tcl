@@ -5,7 +5,7 @@
 #
 # @brief Routines de calcul de photometrie de Calaphot
 #
-# $Id: calaphot_calcul.tcl,v 1.6 2010-05-26 12:38:17 jacquesmichelet Exp $
+# $Id: calaphot_calcul.tcl,v 1.7 2010-11-19 19:38:35 jacquesmichelet Exp $
 
 namespace eval ::CalaPhot {
 
@@ -273,21 +273,21 @@ namespace eval ::CalaPhot {
     }
 
     ##
-    # @brief Calcul de toutes les positions reelles des astres, en tenant compte du decalage entre images, pour les astres a mesurer
-    # @details Pour tous les astres concernes (etoiles, asteroides, etc), calcul de la zone de recherche du centroide, et calcul rapide du centroide
-    # @param image : numero de l'image dans la sequence
+    # @brief Calcul de toutes les positions réelles des astres, en tenant compte du décalage entre images, pour les astres à mesurer
+    # @details Pour tous les astres concernés (étoiles, astéroides, etc), calcul de la zone de recherche du centroide, et calcul rapide du centroide
+    # @param image : numéro de l'image dans la sequence
     # @pre Les variables suivantes devront contenir :
-    # - @c data_script(nombre_reference) : nombre d'etoile de reference
-    # - @c data_script(nombre_variable) : nombre d'asteroides
-    # - @c data_script(nombre_indes) : nombre d'objet a ecarter
-    # - @c pos_theo(c,j) : position theorique de l'objet de classe c (var,ref ou indes) a affiner
+    # - @c data_script(nombre_reference) : nombre d'étoile de reférence
+    # - @c data_script(nombre_variable) : nombre d'astéroides
+    # - @c data_script(nombre_indes) : nombre d'objet à écarter
+    # - @c pos_theo(c,j) : position théorique de l'objet de classe c (var,ref ou indes) à affiner
     # - @c parametres(tailleboite) : taille de la zone de calcul de centroide.
     # .
     # @post Les variables suivantes contiendront
     # - @c pos_reel(i,c,j) : liste des coord. (x,y) de l'objet j, de typec (var, ref ou indes) dans l'image i
     # .
     # @return 0 (OK) ou -1 si la recherche de centroide ne marche pas
-    proc CalculPositionsReelles {image} {
+    proc CalculPositionsReelles { image } {
         global audace
         variable pos_theo
         variable pos_reel
@@ -296,39 +296,46 @@ namespace eval ::CalaPhot {
         variable data_script
         variable calaphot
 
-        Message debug "%s\n" [info level [info level]]
+        Message debug "%s\n" [ info level [ info level ] ]
 
-        for {set j 0} {$j < $data_script(nombre_reference)} {incr j} {
-            set x1 [expr round([lindex $pos_theo(ref,$j) 0] + $data_image($image,decalage_x) - $parametres(tailleboite))]
-            set y1 [expr round([lindex $pos_theo(ref,$j) 1] + $data_image($image,decalage_y) - $parametres(tailleboite))]
-            set x2 [expr round([lindex $pos_theo(ref,$j) 0] + $data_image($image,decalage_x) + $parametres(tailleboite))]
-            set y2 [expr round([lindex $pos_theo(ref,$j) 1] + $data_image($image,decalage_y) + $parametres(tailleboite))]
-            if {[info exists trace_log]} {
-                Message debug "image %d ref %d: x1=%d y1=%d x2=%d y2=%d\n" $image $j $x1 $y1 $x2 $y2
-            }
+        for { set j 0 } { $j < $data_script(nombre_reference) } { incr j } {
+            set x1 [ expr round( [ lindex $pos_theo(ref,$j) 0 ] + $data_image($image,decalage_x) - $parametres(tailleboite) ) ]
+            set y1 [ expr round( [ lindex $pos_theo(ref,$j) 1 ] + $data_image($image,decalage_y) - $parametres(tailleboite) ) ]
+            set x2 [ expr round( [ lindex $pos_theo(ref,$j) 0 ] + $data_image($image,decalage_x) + $parametres(tailleboite) ) ]
+            set y2 [ expr round( [ lindex $pos_theo(ref,$j) 1 ] + $data_image($image,decalage_y) + $parametres(tailleboite) ) ]
+            Message debug "image %d ref %d: x1=%d y1=%d x2=%d y2=%d\n" $image $j $x1 $y1 $x2 $y2
+            Message debug "image %d ref %d: defocalisation=%s\n" $image $j $parametres(defocalisation)
 
-            # Affinage du centroide de l'etoile
-            if {[catch {buf$audace(bufNo) centro [list $x1 $y1 $x2 $y2]} coordonnees]} {
-                set data_script($i,invalidation) [list centro ref $j]
-                return -1
+            if { $parametres(defocalisation) == "non" } {
+                # Affinage du centroide de l'étoile
+                if { [ catch {buf$audace(bufNo) centro [ list $x1 $y1 $x2 $y2 ] } coordonnees ] } {
+                    set data_script($i,invalidation) [ list centro ref $j ]
+                    return -1
+               }
+            } else {
+                set coordonnees [ list [ expr ( $x1 + $x2 ) / 2 ] [ expr ( $y1 + $y2 ) / 2 ] ]
             }
             set pos_reel($image,ref,$j) $coordonnees
-            Message debug "image %d ref %d: pos_theo(x)=%10.4f pos_theo(y)=%10.4f\n" $image $j [lindex $pos_theo(ref,$j) 0] [lindex $pos_theo(ref,$j) 1]
+            Message debug "image %d ref %d: pos_theo(x)=%10.4f pos_theo(y)=%10.4f\n" $image $j [ lindex $pos_theo(ref,$j) 0 ] [ lindex $pos_theo(ref,$j) 1 ]
             Message debug "image %d ref %d: dec(x)=%10.4f dec(y)=%10.4f\n" $image $j $data_image($image,decalage_x) $data_image($image,decalage_y)
-            Message debug "image %d ref %d: pos_reel(x)=%10.4f pos_reel(y)=%10.4f\n" $image $j [lindex $pos_reel($image,ref,$j) 0] [lindex $pos_reel($image,ref,$j) 1]
+            Message debug "image %d ref %d: pos_reel(x)=%10.4f pos_reel(y)=%10.4f\n" $image $j [ lindex $pos_reel($image,ref,$j) 0 ] [ lindex $pos_reel($image,ref,$j) 1 ]
         }
 
-        for {set j 0} {$j < $data_script(nombre_variable)} {incr j} {
-            set x1 [expr round([lindex $pos_theo(var,$j) 0] + $data_image($image,decalage_x) - $parametres(tailleboite))]
-            set y1 [expr round([lindex $pos_theo(var,$j) 1] + $data_image($image,decalage_y) - $parametres(tailleboite))]
-            set x2 [expr round([lindex $pos_theo(var,$j) 0] + $data_image($image,decalage_x) + $parametres(tailleboite))]
-            set y2 [expr round([lindex $pos_theo(var,$j) 1] + $data_image($image,decalage_y) + $parametres(tailleboite))]
-            Message debug "image %d ref %d: x1=%d y1=%d x2=%d y2=%d\n" $image $j $x1 $y1 $x2 $y2
+        for { set j 0 } { $j < $data_script(nombre_variable) } { incr j } {
+            set x1 [ expr round([ lindex $pos_theo(var,$j) 0 ] + $data_image($image,decalage_x) - $parametres(tailleboite)) ]
+            set y1 [ expr round([ lindex $pos_theo(var,$j) 1 ] + $data_image($image,decalage_y) - $parametres(tailleboite)) ]
+            set x2 [ expr round([ lindex $pos_theo(var,$j) 0 ] + $data_image($image,decalage_x) + $parametres(tailleboite)) ]
+            set y2 [ expr round([ lindex $pos_theo(var,$j) 1 ] + $data_image($image,decalage_y) + $parametres(tailleboite)) ]
+            Message debug "image %d var %d: x1=%d y1=%d x2=%d y2=%d\n" $image $j $x1 $y1 $x2 $y2
 
-            # Affinage du centroide de l'etoile
-            if {[catch {buf$audace(bufNo) centro [list $x1 $y1 $x2 $y2]} coordonnees]} {
-                set data_script($i,invalidation) [list centro var $j]
-                return -1
+            if { $parametres(defocalisation) == "non" } {
+                # Affinage du centroide de l'astéroide
+                if { [ catch {buf$audace(bufNo) centro [ list $x1 $y1 $x2 $y2 ] } coordonnees ] } {
+                    set data_script($i,invalidation) [ list centro var $j ]
+                    return -1
+                }
+            } else {
+                set coordonnees [ list [ expr ( $x1 + $x2 ) / 2 ] [ expr ( $y1 + $y2 ) / 2 ] ]
             }
             set pos_reel($image,var,$j) $coordonnees
             Message debug "image %d var %d: pos_theo(x)=%10.4f pos_theo(y)=%10.4f\n" $image $j [lindex $pos_theo(var,$j) 0] [lindex $pos_theo(var,$j) 1]
@@ -337,14 +344,18 @@ namespace eval ::CalaPhot {
         }
 
         for {set j 0} {$j < $data_script(nombre_indes)} {incr j} {
-            set x1 [expr round([lindex $pos_theo(indes,$j) 0] + $data_image($image,decalage_x) - $parametres(tailleboite))]
-            set y1 [expr round([lindex $pos_theo(indes,$j) 1] + $data_image($image,decalage_y) - $parametres(tailleboite))]
-            set x2 [expr round([lindex $pos_theo(indes,$j) 0] + $data_image($image,decalage_x) + $parametres(tailleboite))]
-            set y2 [expr round([lindex $pos_theo(indes,$j) 1] + $data_image($image,decalage_y) + $parametres(tailleboite))]
-            Message debug "image %d ind %d: x1=%d y1=%d x2=%d y2=%d\n" $image $j $x1 $y1 $x2 $y2
+            set x1 [ expr round([lindex $pos_theo(indes,$j) 0 ] + $data_image($image,decalage_x) - $parametres(tailleboite)) ]
+            set y1 [ expr round([lindex $pos_theo(indes,$j) 1 ] + $data_image($image,decalage_y) - $parametres(tailleboite)) ]
+            set x2 [ expr round([lindex $pos_theo(indes,$j) 0 ] + $data_image($image,decalage_x) + $parametres(tailleboite)) ]
+            set y2 [ expr round([lindex $pos_theo(indes,$j) 1 ] + $data_image($image,decalage_y) + $parametres(tailleboite)) ]
+            Message debug "image %d indes %d: x1=%d y1=%d x2=%d y2=%d\n" $image $j $x1 $y1 $x2 $y2
 
-            # Affinage du centroide de l'etoile
-            set coordonnees [buf$audace(bufNo) centro [list $x1 $y1 $x2 $y2]]
+            if { $parametres(defocalisation) == "non" } {
+                # Affinage du centroide des indésirables
+                set coordonnees [ buf$audace(bufNo) centro [ list $x1 $y1 $x2 $y2 ] ]
+            } else {
+                set coordonnees [ list [ expr ( $x1 + $x2 ) / 2 ] [ expr ( $y1 + $y2 ) / 2 ] ]
+            }
             set pos_reel($image,indes,$j) $coordonnees
             Message debug "image %d indes %d: pos_theo(x)=%10.4f pos_theo(y)=%10.4f\n" $image $j [lindex $pos_theo(indes,$j) 0] [lindex $pos_theo(indes,$j) 1]
             Message debug "image %d indes %d: dec(x)=%10.4f dec(y)=%10.4f\n" $image $j $data_image($image,decalage_x) $data_image($image,decalage_y)
@@ -352,12 +363,12 @@ namespace eval ::CalaPhot {
         }
 
         # Creation du fichier ASSOC pour la recherche rapide avec Sextractor
-        if {$parametres(mode) == "sextractor"} {
-            set assoc [OuvertureFichier $calaphot(sextractor,assoc) w]
-            for {set j 0} {$j < $data_script(nombre_reference)} {incr j} {
+        if { $parametres(mode) == "sextractor" } {
+            set assoc [ OuvertureFichier $calaphot(sextractor,assoc) w ]
+            for { set j 0 } { $j < $data_script(nombre_reference) } { incr j } {
                 puts $assoc $pos_reel($image,ref,$j)
             }
-            for {set j 0} {$j < $data_script(nombre_variable)} {incr j} {
+            for { set j 0 } { $j < $data_script(nombre_variable) } { incr j } {
                 puts $assoc $pos_reel($image,var,$j)
             }
             FermetureFichier $assoc
@@ -367,7 +378,7 @@ namespace eval ::CalaPhot {
     }
 
     ##
-    # @brief Interpolation de la position a partir de la vitesse de deplacement de l'asteroide
+    # @brief Interpolation de la position à partir de la vitesse de déplacement de l'astéroide
     # @details Pour tous les objets variables , interpolation de la position a partir de la vitesse de deplacement de l'asteroide <b> sans tenir compte du décalage des images </b>.
     # Si les dates ne sont pas connues, on utilise les indices des images (en supposant qu'elles soient prises a intervalle constant...)
     # @param image : numero de l'image dans la sequence
@@ -428,6 +439,7 @@ namespace eval ::CalaPhot {
     # @return la liste des 3 valeurs calculees (voir ci-dessus)
     proc Centroide {} {
         global audace
+        variable parametres
 
         Message debug "%s\n" [info level [info level]]
 
@@ -440,10 +452,17 @@ namespace eval ::CalaPhot {
             set y2 [lindex $rect 3]
             # Calcul du centre de l'etoile
             ::confVisu::deleteBox $audace(visuNo)
-            return [buf$audace(bufNo) centro [list $x1 $y1 $x2 $y2]]
+            if { $parametres(defocalisation) == "non" } {
+                set centre [ buf$audace(bufNo) centro [ list $x1 $y1 $x2 $y2 ] ]
+            } else {
+                # En mode defocalisé, on donne juste le centre de la boite, les algo de barycentre et autres ne marchent pas bien
+                set centre [ list [ expr ( $x1 + $x2 ) / 2 ] [ expr ( $y1 + $y2 ) / 2 ] 0 ]
+            }
         } else {
-            return [list]
+            set centre [ list ]
         }
+        Message debug "Centre = %s\n" $centre
+        return $centre
     }
 
 
@@ -535,45 +554,45 @@ namespace eval ::CalaPhot {
         variable liste_image
         variable data_script
 
-        Message debug "%s\n" [info level [info level]]
+        Message debug "%s\n" [ info level [ info level ] ]
 
-        set l [llength $liste_image]
+        set l [ llength $liste_image ]
 
-        for {set i 0} {$i < $l} {incr i} {
+        for { set i 0 } { $i < $l } { incr i } {
             set sg 0.0
             set sg2 0.0
             set ng 0
-            for {set j -5} {$j <= -1} {incr j} {
-                set image [lindex $liste_image $i]
-                if {([expr $i + $j] >= 0)} {
-                    set n [lindex $liste_image [expr $i + $j]]
-                    if {$data_image($n,valide) == "Y"} {
-                        set sg [expr $sg + $data_image($n,constante_mag)]
-                        set sg2 [expr $sg2 + $data_image($n,constante_mag) * $data_image($n,constante_mag)]
+            for { set j -5 } { $j <= -1 } { incr j } {
+                set image [ lindex $liste_image $i ]
+                if { ( [ expr $i + $j ] >= 0 ) } {
+                    set n [ lindex $liste_image [ expr $i + $j ] ]
+                    if { $data_image($n,valide) == "Y" } {
+                        set sg [ expr $sg + $data_image($n,constante_mag) ]
+                        set sg2 [ expr $sg2 + $data_image($n,constante_mag) * $data_image($n,constante_mag) ]
                         incr ng
                     }
                 }
             }
-            for {set j 1} {$j <= 5} {incr j} {
-                if {([expr $i + $j] < $l)} {
-                    set n [lindex $liste_image [expr $i + $j]]
-                    if {$data_image($n,valide) == "Y"} {
-                        set sg [expr $sg + $data_image($n,constante_mag)]
-                        set sg2 [expr $sg2 + $data_image($n,constante_mag) * $data_image($n,constante_mag)]
+            for { set j 1 } { $j <= 5 } { incr j } {
+                if { ( [ expr $i + $j ] < $l ) } {
+                    set n [ lindex $liste_image [ expr $i + $j ] ]
+                    if { $data_image($n,valide) == "Y" } {
+                        set sg [ expr $sg + $data_image($n,constante_mag) ]
+                        set sg2 [ expr $sg2 + $data_image($n,constante_mag) * $data_image($n,constante_mag) ]
                         incr ng
                     }
                 }
             }
-            if {$ng != 0} {
-                set msg [expr $sg / $ng]
-                set ssg [expr (($sg2 / $ng) - ($msg * $msg))]
-                if { $ssg < 0.0} {
-                    set data_script($image,invalidation) [list filtrage_cm $ssg]
+            if { $ng != 0 } {
+                set msg [ expr $sg / $ng ]
+                set ssg [ expr ( ( $sg2 / $ng ) - ( $msg * $msg ) ) ]
+                if { $ssg < 0.0 } {
+                    set data_script($image,invalidation) [ list filtrage_cm $ssg ]
                     set data_image($image,valide) "N"
                     Message info "%s %05d\n" $calaphot(texte,image_rejetee) $image
                 } else {
-                    if {$data_image($image,valide) == "Y"} {
-                        if {[expr abs($data_image($image,constante_mag) - $msg)] > [expr 3.0 * sqrt($ssg)]} {
+                    if { $data_image($image,valide) == "Y" } {
+                        if { [ expr abs( $data_image($image,constante_mag) - $msg ) ] > [ expr 3.0 * sqrt( $ssg ) ] } {
                             set data_image($image,valide) "N"
                             Message info "%s %05d\n" $calaphot(texte,image_rejetee) $image
                         }
@@ -982,64 +1001,86 @@ namespace eval ::CalaPhot {
 
         Message debug "%s\n" [ info level [ info level ] ]
 
+
         set x_etoile [ lindex $coordonnees 0 ]
         set y_etoile [ lindex $coordonnees 1 ]
 
-        set x1 [ expr round($x_etoile - $parametres(tailleboite)) ]
-        set y1 [ expr round($y_etoile - $parametres(tailleboite)) ]
-        set x2 [ expr round($x_etoile + $parametres(tailleboite)) ]
-        set y2 [ expr round($y_etoile + $parametres(tailleboite)) ]
+        if { $parametres(defocalisation) == "oui" } {
+            # Attribution de valeurs bidons
+            set data_image($i,$classe,flux_$j) -1
+            set data_image($i,$classe,fond_$j) 0
+            set data_image($i,$classe,amplitude_$j) 0
+            set data_image($i,$classe,sigma_amplitude_$j) 1
+            set data_image($i,$classe,sigma_flux_$j) 1
+            set data_image($i,$classe,centroide_x_$j) $x_etoile
+            set data_image($i,$classe,centroide_y_$j) $y_etoile
+            set data_image($i,$classe,alpha_$j) 0
+            set data_image($i,$classe,ro_$j) 0
+            set data_image($i,$classe,fwhm1_$j) $parametres(tailleboite)
+            set data_image($i,$classe,fwhm2_$j) $parametres(tailleboite)
+            set data_image($i,$classe,nb_pixels_$j) 0
+            set data_image($i,$classe,nb_pixels_fond_$j) 0
+            set data_script($i,invalidation) [ list modelisation $classe $j ]
+            Message debug "pas de modelisation pour les étoiles défocalisées\n"
+            set retour 0
+        } else {
 
-        # Modelisation
+            set x1 [ expr round($x_etoile - $parametres(tailleboite)) ]
+            set y1 [ expr round($y_etoile - $parametres(tailleboite)) ]
+            set x2 [ expr round($x_etoile + $parametres(tailleboite)) ]
+            set y2 [ expr round($y_etoile + $parametres(tailleboite)) ]
+
+            # Modelisation
 #        set temp [ calaphot_fitgauss2d $audace(bufNo) [ list $x1 $y1 $x2 $y2 ] ]
-        set temp [ FitGauss2d $audace(bufNo) [list $x1 $y1 $x2 $y2] ]
+            set temp [ FitGauss2d $audace(bufNo) [list $x1 $y1 $x2 $y2] ]
 
         # Recuperation des resultats
-        if {([lindex $temp 1] != 0) && ([lindex $temp 15] != 0)} {
-            # La modelisation est correcte (sigma_amplitude va etre utilise au denominateur, et parfois est nul...)
-            set data_image($i,$classe,flux_$j) [lindex $temp 12]
-            set data_image($i,$classe,fond_$j) [lindex $temp 5]
-            set data_image($i,$classe,amplitude_$j) [lindex $temp 4]
-            set data_image($i,$classe,sigma_amplitude_$j) [lindex $temp 15]
-            set data_image($i,$classe,sigma_flux_$j) [lindex $temp 23]
-            set data_image($i,$classe,centroide_x_$j) [lindex $temp 2]
-            set data_image($i,$classe,centroide_y_$j) [lindex $temp 3]
-            set data_image($i,$classe,alpha_$j) [lindex $temp 9]
-            set data_image($i,$classe,ro_$j) [lindex $temp 8]
-            set data_image($i,$classe,fwhm1_$j) [lindex $temp 10]
-            set data_image($i,$classe,fwhm2_$j) [lindex $temp 11]
-            # Determination d'un nombre de pixels equivalent a celui d'une ellipse d'axes 3 sigmas, pi*(3*0.600561*fwhm1)*(3*0.600561*fwhm2)
-            set data_image($i,$classe,nb_pixels_$j) [expr 10.19781 * $data_image($i,$classe,fwhm1_$j) * $data_image($i,$classe,fwhm2_$j)]
-            set data_image($i,$classe,nb_pixels_fond_$j) 0
+            if {([lindex $temp 1] != 0) && ([lindex $temp 15] != 0)} {
+                # La modelisation est correcte (sigma_amplitude va etre utilise au denominateur, et parfois est nul...)
+                set data_image($i,$classe,flux_$j) [lindex $temp 12]
+                set data_image($i,$classe,fond_$j) [lindex $temp 5]
+                set data_image($i,$classe,amplitude_$j) [lindex $temp 4]
+                set data_image($i,$classe,sigma_amplitude_$j) [lindex $temp 15]
+                set data_image($i,$classe,sigma_flux_$j) [lindex $temp 23]
+                set data_image($i,$classe,centroide_x_$j) [lindex $temp 2]
+                set data_image($i,$classe,centroide_y_$j) [lindex $temp 3]
+                set data_image($i,$classe,alpha_$j) [lindex $temp 9]
+                set data_image($i,$classe,ro_$j) [lindex $temp 8]
+                set data_image($i,$classe,fwhm1_$j) [lindex $temp 10]
+                set data_image($i,$classe,fwhm2_$j) [lindex $temp 11]
+                # Determination d'un nombre de pixels equivalent a celui d'une ellipse d'axes 3 sigmas, pi*(3*0.600561*fwhm1)*(3*0.600561*fwhm2)
+                set data_image($i,$classe,nb_pixels_$j) [expr 10.19781 * $data_image($i,$classe,fwhm1_$j) * $data_image($i,$classe,fwhm2_$j)]
+                set data_image($i,$classe,nb_pixels_fond_$j) 0
 
 #            if {[info exists data_script(correction_masse_air)]} {
 #                set data_image($i,$classe,flux_$j) [expr $data_image($i,$classe,flux_$j) * $data_image($i,$classe,masse_air_$j)]
 #                set data_image($i,$classe,fond_$j) [expr $data_image($i,$classe,fond_$j) * $data_image($i,$classe,masse_air_$j)]
 #                set data_image($i,$classe,sigma_flux_$j) [expr $data_image($i,$classe,sigma_flux_$j) * $data_image($i,$classe,masse_air_$j)]
 #            }
-            set retour 0
-        } else {
-            # Attribution de valeurs bidons qui feront eliminer l'image
-            set data_image($i,$classe,flux_$j) -1
-            set data_image($i,$classe,fond_$j) 0
-            set data_image($i,$classe,amplitude_$j) 0
-            set data_image($i,$classe,sigma_amplitude_$j) 1
-            set data_image($i,$classe,sigma_flux_$j) 1
-            set data_image($i,$classe,centroide_x_$j) -1
-            set data_image($i,$classe,centroide_y_$j) -1
-            set data_image($i,$classe,alpha_$j) 0
-            set data_image($i,$classe,ro_$j) 0
-            set data_image($i,$classe,fwhm1_$j) 0
-            set data_image($i,$classe,fwhm2_$j) 0
-            set data_image($i,$classe,nb_pixels_$j) 0
-            set data_image($i,$classe,nb_pixels_fond_$j) 0
-            set data_script($i,invalidation) [ list modelisation $classe $j ]
-            Message info "%s image %d %s %d_n" $calaphot(texte,err_modelisation) $i $classe $j
-            set retour -1
-        }
+                set retour 0
+            } else {
+                # Attribution de valeurs bidons qui feront eliminer l'image
+                set data_image($i,$classe,flux_$j) -1
+                set data_image($i,$classe,fond_$j) 0
+                set data_image($i,$classe,amplitude_$j) 0
+                set data_image($i,$classe,sigma_amplitude_$j) 1
+                set data_image($i,$classe,sigma_flux_$j) 1
+                set data_image($i,$classe,centroide_x_$j) -1
+                set data_image($i,$classe,centroide_y_$j) -1
+                set data_image($i,$classe,alpha_$j) 0
+                set data_image($i,$classe,ro_$j) 0
+                set data_image($i,$classe,fwhm1_$j) 0
+                set data_image($i,$classe,fwhm2_$j) 0
+                set data_image($i,$classe,nb_pixels_$j) 0
+                set data_image($i,$classe,nb_pixels_fond_$j) 0
+                set data_script($i,invalidation) [ list modelisation $classe $j ]
+                Message info "%s image %d %s %d_n" $calaphot(texte,err_modelisation) $i $classe $j
+                set retour -1
+            }
 #            if {[info exists data_script(correction_masse_air)]} {
 #                Message debug "flux corriges de la masse d'air\n"
 #            }
+        }
         Message debug "image %d flux individuel etoile %s %d = %10.4f +- %10.4f\n" $i $classe $j $data_image($i,$classe,flux_$j) $data_image($i,$classe,sigma_flux_$j)
         Message debug "retour %d\n" $retour
         return $retour
