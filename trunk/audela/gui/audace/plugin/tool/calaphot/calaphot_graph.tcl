@@ -5,7 +5,7 @@
 #
 # @brief Routines de gestion des affichages de Calaphot
 #
-# $Id: calaphot_graph.tcl,v 1.10 2010-11-19 19:39:41 jacquesmichelet Exp $
+# $Id: calaphot_graph.tcl,v 1.11 2010-11-20 07:58:36 jacquesmichelet Exp $
 
 namespace eval ::CalaPhot {
 
@@ -329,11 +329,11 @@ namespace eval ::CalaPhot {
     }
 
     ##
-    # @brief Affichage dynamique des trames de l'ecran de saisie des parametre et ajustement des ascenseurs en consequence
+    # @brief Affichage dynamique des trames de l'ecran de saisie des paramètres et ajustement des ascenseurs en conséquence
     # @param mode : mode de calcul choisi
     # @param c : handle du canvas qui contient ces trames
     # @param y : handle du scrollbar (ascenseur)
-    # @param t : handle de la trame englobant les trames a afficher
+    # @param t : handle de la trame englobant les trames à afficher
     proc AffichageVariable {mode c y t} {
         global audace
 
@@ -903,7 +903,7 @@ namespace eval ::CalaPhot {
     #**************************************************************************#
     #*************  PreAffiche  ***********************************************#
     #**************************************************************************#
-    # Cree ce qu'il faut pour la courbe de lumiere temporaire                  #
+    # Crée ce qu'il faut pour la courbe de lumiere temporaire                  #
     #**************************************************************************#
     proc PreAffiche {i} {
         global audace
@@ -919,30 +919,46 @@ namespace eval ::CalaPhot {
             global $TempVectors($v)
         }
 
-        if {$data_image($i,valide) == "Y"} {
-            for {set var 0} {$var < $data_script(nombre_variable)} {incr var} {
-                if {$data_image($i,var,mag_$var) > 99} {
+        if { $data_image($i,valide) == "Y" } {
+            for { set var 0 } { $var < $data_script(nombre_variable) } { incr var } {
+                if { $data_image($i,var,mag_$var) >= 99 } {
                     continue
                 }
 
                 set $TempVectors(temp.$var.x)(++end) $data_image($i,date)
+                catch {::blt::vector destroy vmax}
+                catch {::blt::vector destroy vmin}
+                ::blt::vector create vmax
+                ::blt::vector create vmin
 
-                if {$data_script(trace_premier,$var) == 1} {
-                    for {set e 0} {$e < $data_script(nombre_reference)} {incr e} {
-                        set data_script(trace_ref_premier_$e,$var) $data_image($i,ref,mag_$e)
+                if { $data_script(trace_premier,$var) == 1 } {
+                    for { set e 0 } { $e < $data_script(nombre_reference) } { incr e } {
+                        set data_script(trace_ref_premier_$e,$var) [ expr $data_image($i,ref,mag_$e) - 1 ]
                     }
                     set data_script(trace_var_premier,$var) $data_image($i,var,mag_$var)
-                    set data_script(trace_cste_premier,$var) $data_image($i,constante_mag)
+                    set data_script(trace_cste_premier,$var) [ expr $data_image($i,constante_mag) - 2 ]
                     set data_script(trace_premier,$var) 0
                 }
-                for {set e 0} {$e < $data_script(nombre_reference)} {incr e} {
-                    set $TempVectors(temp.$var.ref.$e)(++end) [expr $data_image($i,ref,mag_$e) - $data_script(trace_ref_premier_$e,$var)]
+
+                # ::blt::vector expr max( $toto ) ne marche pas
+                # il faut écrire ::blt::vector expr max($toto). Débile.
+                for { set e 0 } { $e < $data_script(nombre_reference) } { incr e } {
+                    set $TempVectors(temp.$var.ref.$e)(++end) [ expr $data_image($i,ref,mag_$e) - $data_script(trace_ref_premier_$e,$var) ]
+                    set vmax(++end) [ ::blt::vector expr max($TempVectors(temp.$var.ref.$e)) ]
+                    set vmin(++end) [ ::blt::vector expr min($TempVectors(temp.$var.ref.$e)) ]
                 }
-                set $TempVectors(temp.$var.var)(++end) [expr $data_image($i,var,mag_$var) - $data_script(trace_var_premier,$var)]
-                set $TempVectors(temp.$var.cste)(++end) [expr $data_image($i,constante_mag) - $data_script(trace_cste_premier,$var)]
-                set sigma [expr sqrt([::blt::vector expr var($TempVectors(temp.$var.cste))])]
-                if {$sigma != 0} {
-                    $audace(base).calaphot_$var.xy axis configure y -min [expr -3.0 * $sigma] -max [expr 3.0 * $sigma]
+                set $TempVectors(temp.$var.var)(++end) [ expr $data_image($i,var,mag_$var) - $data_script(trace_var_premier,$var) ]
+                set vmax(++end) [ ::blt::vector expr max($TempVectors(temp.$var.var)) ]
+                set vmin(++end) [ ::blt::vector expr min($TempVectors(temp.$var.var)) ]
+
+                set $TempVectors(temp.$var.cste)(++end) [ expr $data_image($i,constante_mag) - $data_script(trace_cste_premier,$var) ]
+                set vmax(++end) [ ::blt::vector expr max($TempVectors(temp.$var.cste)) ]
+                set vmin(++end) [ ::blt::vector expr min($TempVectors(temp.$var.cste)) ]
+
+                set maxmax [ ::blt::vector expr max(vmax) ]
+                set minmin [ ::blt::vector expr min(vmin) ]
+                if { $maxmax != $minmin } {
+                    $audace(base).calaphot_$var.xy axis configure y -min $minmin -max $maxmax
                 }
             }
         }
