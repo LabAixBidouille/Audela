@@ -5,7 +5,7 @@
 #
 # @brief Routines de gestion des affichages de Calaphot
 #
-# $Id: calaphot_graph.tcl,v 1.12 2010-11-20 13:42:12 jacquesmichelet Exp $
+# $Id: calaphot_graph.tcl,v 1.13 2010-11-20 20:02:46 jacquesmichelet Exp $
 
 namespace eval ::CalaPhot {
 
@@ -407,13 +407,13 @@ namespace eval ::CalaPhot {
         catch { destroy $::audace(base).pasapas }
         update idletasks
         DestructionFichiersAuxiliaires
+        SauvegardeDecalages
     }
 
     ##
-    # @brief Mise en place du bouton permettant d'arreter les calculs.
+    # @brief Mise en place du bouton permettant d'arrêter les calculs.
     # @return
     proc BoutonArret {} {
-        global color audace
         variable calaphot
         variable police
 
@@ -433,7 +433,7 @@ namespace eval ::CalaPhot {
             -text $calaphot(texte,arret) \
             -command {set ::CalaPhot::demande_arret 1} \
             -bg $::color(white) \
-            -activebackground $color(red) \
+            -activebackground $::color(red) \
             -fg $::color(red)
         pack $b.arret.b -side left -padx 10 -pady 10
         pack $b.arret
@@ -931,6 +931,8 @@ namespace eval ::CalaPhot {
                 ::blt::vector create vmax
                 ::blt::vector create vmin
 
+                # Les références sont décalées de 1 magnitude
+                # La constante des magnitudes de 2 magnitudes
                 if { $data_script(trace_premier,$var) == 1 } {
                     for { set e 0 } { $e < $data_script(nombre_reference) } { incr e } {
                         set data_script(trace_ref_premier_$e,$var) [ expr $data_image($i,ref,mag_$e) - 1 ]
@@ -958,7 +960,8 @@ namespace eval ::CalaPhot {
                 set maxmax [ ::blt::vector expr max(vmax) ]
                 set minmin [ ::blt::vector expr min(vmin) ]
                 if { $maxmax != $minmin } {
-                    $audace(base).calaphot_$var.xy axis configure y -min $minmin -max $maxmax
+                    # on trappe si l'utilisatuer a fermé la fenêtre
+                    catch { $audace(base).calaphot_$var.xy axis configure y -min $minmin -max $maxmax }
                 }
             }
         }
