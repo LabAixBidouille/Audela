@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot_principal.tcl,v 1.17 2010-11-19 19:39:23 jacquesmichelet Exp $
+# $Id: calaphot_principal.tcl,v 1.18 2010-11-20 20:05:22 jacquesmichelet Exp $
 #
 
 ###catch {namespace delete ::Calaphot}
@@ -71,7 +71,7 @@ namespace eval ::CalaPhot {
 
         # L'existence de trace_log cree le ficher debug.log et le mode d'affichage debug
         catch {unset trace_log}
-#        set trace_log 1
+        set trace_log 1
         # L'existence de pas_a_pas permet permet de ne traiter une image que si on tape une séquence de caractères
         # Utile en mode debug
         catch {unset pas_a_pas}
@@ -171,7 +171,7 @@ namespace eval ::CalaPhot {
         if { $librairie != 0 } { return }
 
         # Initialisations diverses
-        Initialisations
+        Initialisations data_image data_script
 
         # Lecture du fichier de parametres
         RecuperationParametres
@@ -205,7 +205,7 @@ namespace eval ::CalaPhot {
             return
         }
 
-        # Initialisations spécifiques  Sextractor
+        # Initialisations spécifiques à Sextractor
         if {( $parametres(mode) == "sextractor" )} {
             CreationFichiersSextractor
         }
@@ -222,20 +222,20 @@ namespace eval ::CalaPhot {
         # Récupération des décalages entre image (s'ils existent)
         RecuperationDecalages
 
-        # Creation des images t1 et t2, copies de la premiere et de la derniere image
+        # Création des images t1 et t2, copies de la première et de la dernière image
         loadima $parametres(source)$data_script(premier_liste)
         saveima t1
         loadima $parametres(source)$data_script(dernier_liste)
         saveima t2
 
         if {$parametres(type_images) == "non_recalees"} {
-            # Images non recalees
-            # Recalage de la premiere et de la derniere image en u1 et u2
+            # Images non recalées
+            # Recalage de la première et de la dernière image en u1 et u2
             register2 t u 2
             AffichageMenus u
-            # Permet la selection des etoiles et des asteroides sur les images recalees
+            # Permet la sélection des étoiles et des astéroïdes sur les images recalées
         } else {
-            # Permet la selection des etoiles et des asteroides
+            # Permet la sélection des étoiles et des asteroïdes
             AffichageMenus t
         }
 
@@ -1066,44 +1066,40 @@ namespace eval ::CalaPhot {
     # @brief Initialisation de données diverses
     # @details
     # - Initialisation des vecteurs graphiques
-    # - Suppression de fenetres restantes.
+    # - Suppression de fenêtres restantes.
     # - Initialisation de divers compteurs d'objets
     # .
     # @return
-    # @todo Voir si cette routine ne peut etre refondue dans InitialisationStatique
-    proc Initialisations {} {
-        global audace
+    # @todo Voir si cette routine ne peut être refondue dans InitialisationStatique
+    proc Initialisations { data_image data_script } {
         variable calaphot
         variable vx_temp
         variable vy1_temp
         variable vy2_temp
         variable vy3_temp
         variable flux_premiere_etoile
-        variable data_script
-        catch {destroy $audace(base).saisie}
-        catch {destroy $audace(base).selection_etoile}
-        catch {destroy $audace(base).selection_aster}
-        catch {destroy $audace(base).courbe_lumiere}
-        catch {destroy $audace(base).bouton_arret_color_invariant}
+        upvar 1 data_script _data_script
+        upvar 1 data_image _data_image
+        catch {destroy $::audace(base).saisie}
+        catch {destroy $::audace(base).selection_etoile}
+        catch {destroy $::audace(base).selection_aster}
+        catch {destroy $::audace(base).courbe_lumiere}
+        catch {destroy $::audace(base).bouton_arret_color_invariant}
         catch {unset flux_premiere_etoile}
         catch {file delete trace_calaphot.log}
         catch {unset premier_temp}
 
-        if {[array exist data_script]} {
-            foreach {key} [array names data_script] {
-                unset data_script($key)
-            }
+        if { [ array exist _data_script ] } {
+            unset _data_script
         }
-        if {[array exist data_image]} {
-            foreach {key} [array names data_script] {
-                unset data_image($key)
-            }
+        if { [ array exist _data_image ] } {
+            unset _data_image
         }
-        set data_script(nombre_variable) 0
-        set data_script(nombre_reference) 0
-        set data_script(nombre_indes) 0
+        set _data_script(nombre_variable) 0
+        set _data_script(nombre_reference) 0
+        set _data_script(nombre_indes) 0
 
-        set data_script(nombre_fichier_ouvert) 0
+        set _data_script(nombre_fichier_ouvert) 0
     }
 
     ##
@@ -1197,7 +1193,7 @@ namespace eval ::CalaPhot {
     }
 
     ##
-    # @brief Mesure du decalage (x,y) entre 2 images par recalage entre elles
+    # @brief Mesure du décalage (x,y) entre 2 images par recalage entre elles
     # @details Si cette valeur a été mesurée auparavant dans une session précédente de Calaphot
     # cette valeur sera extraite du fichier de décalage
     # Sinon le décalage est effectué par recalage (register) de l'image par rapport à une image t1.fit
@@ -1214,13 +1210,13 @@ namespace eval ::CalaPhot {
         Message debug "%s\n" [info level [info level]]
 
         # Détermination du décalage des images par rapport à la première
-        if {$parametres(type_images) == "non_recalees"} {
+        if { $parametres(type_images) == "non_recalees" } {
             # Images non recalees
-            if [info exist liste_decalage($i)] {
+            if [ info exist liste_decalage($i) ] {
                 # Cette valeur existe dans le fichier .lst
                 Message debug "Décalage déjà calcule\n"
-                set data_image($i,decalage_x) [lindex $liste_decalage($i) 0]
-                set data_image($i,decalage_y) [lindex $liste_decalage($i) 1]
+                set data_image($i,decalage_x) [ lindex $liste_decalage($i) 0 ]
+                set data_image($i,decalage_y) [ lindex $liste_decalage($i) 1 ]
             } else {
                 # Recalage des images par rapport à la première image pour connaître le décalage en coordonnées
                 Message debug "Décalage en cours de calcul\n"
@@ -1229,9 +1225,9 @@ namespace eval ::CalaPhot {
 #                register2 t u 2
                 register t u 2
                 loadima u2
-                set dec [DecalageImage $i]
-                set data_image($i,decalage_x) [lindex $dec 0]
-                set data_image($i,decalage_y) [lindex $dec 1]
+                set dec [ DecalageImage $i ]
+                set data_image($i,decalage_x) [ lindex $dec 0 ]
+                set data_image($i,decalage_y) [ lindex $dec 1 ]
                 # Rétablissement de l'image sur laquelle seront faites les mesures
                 loadima $parametres(source)$i
             }
@@ -1328,23 +1324,43 @@ namespace eval ::CalaPhot {
     }
 
     ##
-    # @brief Lecture du fichier .lst qui,s'il existe, contient les decalages entre images calcules lors d'une session precedente de Calaphot
+    # @brief Lecture conditionnelle du fichier .lst qui,s'il existe, contient les décalages entre images calculés lors d'une session précédente de Calaphot
     # @return
     proc RecuperationDecalages {} {
         global audace
         variable parametres
         variable liste_decalage
 
-        Message debug "%s\n" [info level [info level]]
+        Message debug "%s\n" [ info level [ info level ] ]
 
-        catch {unset liste_decalage}
-        set fichier [OuvertureFichier [file join $::audace(rep_images) $parametres(source).lst] r "non"]
-        if {$fichier != ""} {
-            while {[gets $fichier line] >= 0} {
-                set image [lindex $line 0]
-                set dec_x [lindex $line 1]
-                set dec_y [lindex $line 2]
-                set liste_decalage($image) [list $dec_x $dec_y]
+        catch { unset liste_decalage }
+
+        # On détecte des changements dans certains paramètres saisis.
+        set changement 0
+        foreach champ [ list \
+            source \
+            indice_premier \
+            tri_images \
+            type_images \
+            pose_minute \
+            date_images \
+        ] {
+            if { $parametres(origine,$champ) != $parametres($champ) } { set changement 1 }
+        }
+
+        # S'il y a eu un changement, on efface le fichier .lst
+        if { $changement } {
+            catch { [ file delete [ file join $::audace(rep_images) $parametres(source).lst ] ] }
+            return
+        }
+
+        set fichier [ OuvertureFichier [ file join $::audace(rep_images) $parametres(source).lst ] r "non" ]
+        if { $fichier != "" } {
+            while { [ gets $fichier line ] >= 0 } {
+                set image [ lindex $line 0 ]
+                set dec_x [ lindex $line 1 ]
+                set dec_y [ lindex $line 2 ]
+                set liste_decalage($image) [ list $dec_x $dec_y ]
                 Message debug "image %d: dec_x=%10.4f dec_y=%10.4f\n" $image $dec_x $dec_y
             }
             FermetureFichier $fichier
@@ -1355,10 +1371,10 @@ namespace eval ::CalaPhot {
     #*************  RecuperationParametres  **********************************#
     #*************************************************************************#
     ##
-    # @brief Lecture des parametres stockés dans calaphot.ini et initialisations
-    # @details Si certains parametres n'existent pas dans ce fichier, ou si ce fichier n'existe pas lui-même,
+    # @brief Lecture des paramètres stockés dans calaphot.ini et initialisations
+    # @details Si certains paramètres n'existent pas dans ce fichier, ou si ce fichier n'existe pas lui-même,
     # ou encore si on a changé de version de Calaphot,
-    # les parametres sont initialisés avec des valeurs par défaut (cf Calaphot::InitialisationStatique )
+    # les paramètres sont initialisés avec des valeurs par défaut (cf Calaphot::InitialisationStatique )
     # @retval parametres
     # @return 0
     proc RecuperationParametres {} {
@@ -1370,24 +1386,24 @@ namespace eval ::CalaPhot {
         variable calaphot
 
         # Initialisation
-        if {[info exists parametres]} {unset parametres}
+        if { [ info exists parametres ] } { unset parametres }
 
-        # Ouverture du fichier de parametres
+        # Ouverture du fichier de paramètres
         set fichier $calaphot(nom_fichier_ini)
 
         if {[file exists $fichier]} {
             source $fichier
-            # Verification de la version du calaphot.ini et invalidation eventuelle du contenu
-            if { ( (![info exists parametres(version_ini)]) \
-                || ([string compare $parametres(version_ini) $calaphot(init,version_ini)] != 0) ) } {
+            # Vérification de la version du calaphot.ini et invalidation éventuelle du contenu
+            if { ( (![ info exists parametres(version_ini) ] ) \
+                || ( [ string compare $parametres(version_ini) $calaphot(init,version_ini) ] != 0 ) ) } {
                 set parametres(niveau_message) $calaphot(init,niveau_message)
                 # Il n'est pas possible d'utiliser Message à cause de $parametres qui n'existe plus
                 ::console::affiche_erreur $calaphot(texte,detection_ini)
-                foreach {a b} [array get parametres] {unset parametres($a)}
+                foreach { a b } [ array get parametres ] { unset parametres($a) }
             }
         }
 
-        foreach choix {mode \
+        foreach choix { mode \
             operateur \
             source \
             indice_premier \
@@ -1420,8 +1436,16 @@ namespace eval ::CalaPhot {
             signal_bruit \
             type_objet \
             defocalisation \
-            version_ini} {
-            if {![info exists parametres($choix)]} {set parametres($choix) $calaphot(init,$choix)}
+            version_ini } {
+            if { ![ info exists parametres($choix) ] } {
+                set parametres($choix) $calaphot(init,$choix)
+            }
+        }
+
+        # parametres(origine,xxx) va contenir la même chose que parametres(xxx).
+        # Le but est de détecter des changements dans les paramètres pour éviter d'utiliser un mauvais fichier .lst de décalage par exemple
+        foreach { a b } [ array get parametres ] {
+            set parametres(origine,$a) $b
         }
     }
 
@@ -1449,9 +1473,9 @@ namespace eval ::CalaPhot {
     }
 
     ##
-    # @brief Sauvegarde dans un fichier des decalages entre images
-    # @details Le but de ceci est d'accelerer les traitements lors d'un session Calaphot qui porterait sur les memes images
-    # Le nom du fichier depend du repertoire d'images et du nom generique des images
+    # @brief Sauvegarde dans un fichier des décalages entre images
+    # @details Le but de ceci est d'accélérer les traitements lors d'un session Calaphot qui porterait sur les mêmes images
+    # Le nom du fichier dépend du répertoire d'images et du nom générique des images
     # @return
     proc SauvegardeDecalages {} {
         global audace
@@ -1462,13 +1486,15 @@ namespace eval ::CalaPhot {
         Message debug "%s\n" [info level [info level]]
 
         if {$parametres(type_images) == "non_recalees"} {
-            # On ne sauvegarde les decalages que si les images ne sont pas recalees a la base
+            # On ne sauvegarde les décalages que si les images ne sont pas recalées à la base
 
-            set fichier [OuvertureFichier [file join $::audace(rep_images) $parametres(source).lst] w]
-            if {($fichier != "")} {
+            set fichier [ OuvertureFichier [ file join $::audace(rep_images) $parametres(source).lst ] w ]
+            if { ( $fichier != "" ) } {
                 foreach image $liste_image {
-                    puts $fichier "$image $data_image($image,decalage_x) $data_image($image,decalage_y)"
-                    Message debug "image %d: dec_x=%10.4f dec_y=%10.4f\n" $image $data_image($image,decalage_x) $data_image($image,decalage_y)
+                    if { ( [ info exists data_image($image,decalage_x) ] ) && ( [ info exists data_image($image,decalage_x) ] ) } {
+                        puts $fichier "$image $data_image($image,decalage_x) $data_image($image,decalage_y)"
+                        Message debug "image %d: dec_x=%10.4f dec_y=%10.4f\n" $image $data_image($image,decalage_x) $data_image($image,decalage_y)
+                    }
                 }
             }
             FermetureFichier $fichier
@@ -1476,9 +1502,9 @@ namespace eval ::CalaPhot {
     }
 
     ##
-    # @brief Sauvegarde dans un fichier des parametre de la session courante
-    # @details Ces parametres ont ete lus dans le fichier calaphot.ini, et eventuellement
-    # modifies dans l'ecran de saisie
+    # @brief Sauvegarde dans un fichier des paramètres de la session courante
+    # @details Ces paramètres ont été lus dans le fichier calaphot.ini, et éventuellement
+    # modifiés dans l'écran de saisie
     # @return
     proc SauvegardeParametres {} {
         global audace
