@@ -5,7 +5,7 @@
 #
 # @brief Routines de calcul de photometrie de Calaphot
 #
-# $Id: calaphot_calcul.tcl,v 1.7 2010-11-19 19:38:35 jacquesmichelet Exp $
+# $Id: calaphot_calcul.tcl,v 1.8 2010-11-20 13:42:12 jacquesmichelet Exp $
 
 namespace eval ::CalaPhot {
 
@@ -1034,7 +1034,7 @@ namespace eval ::CalaPhot {
 #        set temp [ calaphot_fitgauss2d $audace(bufNo) [ list $x1 $y1 $x2 $y2 ] ]
             set temp [ FitGauss2d $audace(bufNo) [list $x1 $y1 $x2 $y2] ]
 
-        # Recuperation des resultats
+        # Récuperation des resultats
             if {([lindex $temp 1] != 0) && ([lindex $temp 15] != 0)} {
                 # La modelisation est correcte (sigma_amplitude va etre utilise au denominateur, et parfois est nul...)
                 set data_image($i,$classe,flux_$j) [lindex $temp 12]
@@ -1048,7 +1048,7 @@ namespace eval ::CalaPhot {
                 set data_image($i,$classe,ro_$j) [lindex $temp 8]
                 set data_image($i,$classe,fwhm1_$j) [lindex $temp 10]
                 set data_image($i,$classe,fwhm2_$j) [lindex $temp 11]
-                # Determination d'un nombre de pixels equivalent a celui d'une ellipse d'axes 3 sigmas, pi*(3*0.600561*fwhm1)*(3*0.600561*fwhm2)
+                # Détermination d'un nombre de pixels équivalent à celui d'une ellipse d'axes 3 sigmas, pi*(3*0.600561*fwhm1)*(3*0.600561*fwhm2)
                 set data_image($i,$classe,nb_pixels_$j) [expr 10.19781 * $data_image($i,$classe,fwhm1_$j) * $data_image($i,$classe,fwhm2_$j)]
                 set data_image($i,$classe,nb_pixels_fond_$j) 0
 
@@ -1059,7 +1059,7 @@ namespace eval ::CalaPhot {
 #            }
                 set retour 0
             } else {
-                # Attribution de valeurs bidons qui feront eliminer l'image
+                # Attribution de valeurs bidons qui feront éliminer l'image
                 set data_image($i,$classe,flux_$j) -1
                 set data_image($i,$classe,fond_$j) 0
                 set data_image($i,$classe,amplitude_$j) 0
@@ -1089,8 +1089,8 @@ namespace eval ::CalaPhot {
     #*************************************************************************#
     #*************  PositionAsteroide  ***************************************#
     #*************************************************************************#
-    # Entree : indice cad 1 pour 1ere image, 2 pour la derniere               #
-    # Sortie : coord_aster($nombre_variable,$indice) : coord. de l'asteroide  #
+    # Entrée : indice, cad 1 pour 1ère image, 2 pour la dernière              #
+    # Sortie : coord_aster($nombre_variable,$indice) : coord. de l'astéroïde  #
     #*************************************************************************#
     proc PositionAsteroide {nom indice} {
         global audace color
@@ -1103,28 +1103,29 @@ namespace eval ::CalaPhot {
 
         Message debug "%s\n" [info level [info level]]
 
-        # Calcul du centre de l'asteroide
-        set coord_aster($data_script(nombre_variable),$indice) [Centroide]
-        if {[llength $coord_aster($data_script(nombre_variable),$indice)] != 0} {
-            set cx [lindex $coord_aster($data_script(nombre_variable),$indice) 0]
-            set cy [lindex $coord_aster($data_script(nombre_variable),$indice) 1]
-            # Recherche si l'etoile a ete deja selectionnee
-            if {[info exists coord_etoile_x]} {
-                set ix [lsearch $coord_etoile_x $cx]
-                set iy [lsearch $coord_etoile_y $cy]
+        # Calcul du centre de l'astéroïde
+        set coord_aster($data_script(nombre_variable),$indice) [ Centroide ]
+        if { [ llength $coord_aster($data_script(nombre_variable),$indice) ] != 0 } {
+            set cx [ lindex $coord_aster($data_script(nombre_variable),$indice) 0 ]
+            set cy [ lindex $coord_aster($data_script(nombre_variable),$indice) 1 ]
+            # Recherche si l'astéroïde a été déjà selectionné
+            if { [ info exists coord_etoile_x ] } {
+                set ix [ lsearch $coord_etoile_x $cx ]
+                set iy [ lsearch $coord_etoile_y $cy ]
             } else {
                 set ix -1
                 set iy -1
             }
-            if {($ix >=0) && ($iy >=0) && ($ix == $iy)} {
+            if { ( $ix >= 0 ) && ( $iy >= 0 ) && ( $ix == $iy ) } {
                 tk_messageBox -message $calaphot(texte,etoile_prise) -icon error -title $calaphot(texte,probleme)
             } else {
+                EffaceMotif etoile_0_$indice
                 set taille $parametres(tailleboite)
-                Dessin rectangle $coord_aster($data_script(nombre_variable),$indice) [list $taille $taille] $color(yellow) etoile_0
-                Dessin verticale $coord_aster($data_script(nombre_variable),$indice) [list $taille $taille] $color(yellow) etoile_0
-                Dessin horizontale $coord_aster($data_script(nombre_variable),$indice) [list $taille $taille] $color(yellow) etoile_0
+                Dessin rectangle $coord_aster($data_script(nombre_variable),$indice) [ list $taille $taille ] $color(yellow) etoile_0_$indice
+                Dessin verticale $coord_aster($data_script(nombre_variable),$indice) [ list $taille $taille ] $color(yellow) etoile_0_$indice
+                Dessin horizontale $coord_aster($data_script(nombre_variable),$indice) [ list $taille $taille ] $color(yellow) etoile_0_$indice
             }
-            if {$indice == 2} {
+            if { $indice == 2 } {
                 incr data_script(nombre_variable)
             }
         } else {

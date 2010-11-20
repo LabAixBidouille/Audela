@@ -5,7 +5,7 @@
 #
 # @brief Routines de gestion des affichages de Calaphot
 #
-# $Id: calaphot_graph.tcl,v 1.11 2010-11-20 07:58:36 jacquesmichelet Exp $
+# $Id: calaphot_graph.tcl,v 1.12 2010-11-20 13:42:12 jacquesmichelet Exp $
 
 namespace eval ::CalaPhot {
 
@@ -60,7 +60,7 @@ namespace eval ::CalaPhot {
     # - 1 : sélection dans la 1ère image de la séquence
     # - 2 : sélection dans la dernière image de la séquence
     # .
-    # @param nom_image nom generique de l'image sur laquelle va se faire la selection
+    # @param nom_image nom générique de l'image sur laquelle va se faire la sélection
     # @return
     proc AffichageMenuAsteroide {indice nom_image} {
         global audace
@@ -94,7 +94,7 @@ namespace eval ::CalaPhot {
             }
         }
         if {$indice == 1} {
-            # Affichage de la premiere ou de la derniere image de la serie
+            # Affichage de la première ou de la dernière image de la série
             loadima ${nom_image}1
             Visualisation optimale
 
@@ -114,7 +114,7 @@ namespace eval ::CalaPhot {
         }
 
         # indice <- (indice + 1) mod 3
-        if {$indice == 2} {set indice 1} else {incr indice}
+        if { $indice == 2 } { set indice 1 } else { incr indice }
 
         set commande_bouton(pos_aster_1)  "::CalaPhot::PositionAsteroide $nom_image 1"
         set commande_bouton(pos_aster_2)  "::CalaPhot::PositionAsteroide $nom_image 2"
@@ -153,7 +153,7 @@ namespace eval ::CalaPhot {
     # - coord_etoile_y
     # - mag_etoile
     # .
-    # @param nom_image nom generique de l'image sur laquelle va se faire la selection
+    # @param nom_image nom générique de l'image sur laquelle va se faire la sélection
     # @return
     proc AffichageMenuEtoile {nom_image} {
         global audace
@@ -186,7 +186,7 @@ namespace eval ::CalaPhot {
         set commande_bouton(continuation) ::CalaPhot::ContinuationEtoiles
         set commande_bouton(annulation) ::CalaPhot::ArretScript
 
-        #----- Creation du contenu de la fenetre
+        #----- Création du contenu de la fenêtre
         foreach champ {validation_etoile devalidation_etoile continuation annulation} {
             button $audace(base).selection_etoile.b$champ \
                 -text $texte_bouton($champ) \
@@ -834,7 +834,7 @@ namespace eval ::CalaPhot {
     #*************************************************************************#
     #*************  EffaceMotif  *********************************************#
     #*************************************************************************#
-    proc EffaceMotif {marqueur} {
+    proc EffaceMotif { marqueur } {
         global audace
 
         Message debug "%s\n" [info level [info level]]
