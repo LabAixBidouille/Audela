@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot_principal.tcl,v 1.18 2010-11-20 20:05:22 jacquesmichelet Exp $
+# $Id: calaphot_principal.tcl,v 1.19 2010-11-21 08:31:06 jacquesmichelet Exp $
 #
 
 ###catch {namespace delete ::Calaphot}
@@ -70,8 +70,8 @@ namespace eval ::CalaPhot {
         variable parametres
 
         # L'existence de trace_log cree le ficher debug.log et le mode d'affichage debug
-        catch {unset trace_log}
-        set trace_log 1
+        catch {  unset trace_log }
+#        set trace_log 1
         # L'existence de pas_a_pas permet permet de ne traiter une image que si on tape une séquence de caractères
         # Utile en mode debug
         catch {unset pas_a_pas}
@@ -672,7 +672,7 @@ namespace eval ::CalaPhot {
                 }
                 puts -nonewline $f [ format "%7.4f;" $data_image($i,constante_mag) ]
             } else {
-                puts -nonewline $f [ format "99.9999;99.9999\n" ]
+                puts -nonewline $f [ format "99.9999;00.0000\n" ]
             }
             puts -nonewline $f [ format "%s\n" $data_image($i,valide) ]
         }
@@ -698,6 +698,10 @@ namespace eval ::CalaPhot {
         catch { file delete -force $nom_fichier }
         if { [ catch { open $nom_fichier "w" } f ] } {
             Message erreur $f
+            return
+        }
+
+        if { $data_script(images_valides) == 0 } {
             return
         }
 
@@ -747,6 +751,11 @@ namespace eval ::CalaPhot {
         set nom_fichier_dat [file join $::audace(rep_images) ${parametres(sortie)}.dat]
         # effacement de la version précédente
         catch {[file delete -force $nom_fichier_plt]}
+
+        if { $data_script(images_valides) == 0 } {
+            return
+        }
+
         set f [open $nom_fichier_gplt "w"]
         puts $f "set datafile separator \";\""
         puts $f "set title \"$parametres(objet)\""
@@ -769,11 +778,10 @@ namespace eval ::CalaPhot {
     # @details Uniquement sous Linux
     # @return toujours 0
     proc ExecutionGnuplot {} {
-        global tcl_platform
-        global audace
         variable parametres
+        variable data_script
 
-        if {$tcl_platform(os) == "Linux"} {
+        if { ( $::tcl_platform(os) == "Linux" ) && ( $data_script(images_valides) != 0 ) } {
             set nom_fichier_gplt [file join $::audace(rep_images) ${parametres(sortie)}.plt]
             catch { exec gnuplot $nom_fichier_gplt & }
         }
@@ -848,7 +856,6 @@ namespace eval ::CalaPhot {
         variable data_image
         variable data_script
         variable parametres
-        variable trace_log
         variable parametres
 
         Message debug "%s\n" [info level [info level]]
@@ -1024,7 +1031,7 @@ namespace eval ::CalaPhot {
         set data_image($image,valide) "N"
         Message notice "%04d " $image
         if { [ info exists data_script($image,invalidation) ] } {
-            Message info "%s " $data_script($image,invalidation)
+            Message probleme "%s " $data_script($image,invalidation)
         }
         Message notice "%s\n" $calaphot(texte,image_rejetee)
     }
@@ -1072,22 +1079,15 @@ namespace eval ::CalaPhot {
     # @return
     # @todo Voir si cette routine ne peut être refondue dans InitialisationStatique
     proc Initialisations { data_image data_script } {
-        variable calaphot
-        variable vx_temp
-        variable vy1_temp
-        variable vy2_temp
-        variable vy3_temp
-        variable flux_premiere_etoile
+
         upvar 1 data_script _data_script
         upvar 1 data_image _data_image
-        catch {destroy $::audace(base).saisie}
-        catch {destroy $::audace(base).selection_etoile}
-        catch {destroy $::audace(base).selection_aster}
-        catch {destroy $::audace(base).courbe_lumiere}
-        catch {destroy $::audace(base).bouton_arret_color_invariant}
-        catch {unset flux_premiere_etoile}
-        catch {file delete trace_calaphot.log}
-        catch {unset premier_temp}
+        catch { destroy $::audace(base).saisie }
+        catch { destroy $::audace(base).selection_etoile }
+        catch { destroy $::audace(base).selection_aster }
+        catch { destroy $::audace(base).courbe_lumiere }
+        catch { destroy $::audace(base).bouton_arret_color_invariant }
+        catch { [ file delete trace_calaphot.log ] }
 
         if { [ array exist _data_script ] } {
             unset _data_script
@@ -1609,7 +1609,7 @@ namespace eval ::CalaPhot {
     }
 
     ##
-    # @brief Verification que tous les fichiers images de la sequence existent
+    # @brief Vérification que tous les fichiers images de la séquence existent effectivement
     # @return
     proc Verification {} {
         global audace conf
@@ -1618,14 +1618,14 @@ namespace eval ::CalaPhot {
 
         Message debug "%s\n" [info level [info level]]
 
-        # Verification des indices
+        # Vérification des indices
         if {$parametres(indice_premier) >= $parametres(indice_dernier)} {
             Message erreur "%s\n" $calaphot(texte,err_indice)
             EffaceMotif astres
             return (1)
         }
 
-        # Verification de ce que les images existent
+        # Vérification de ce que les images existent
         Message info $calaphot(texte,verification) $parametres(source) $parametres(indice_premier) $parametres(indice_dernier) "\n"
         for {set image $parametres(indice_premier)} {$image <= $parametres(indice_dernier)} {incr image} {
             set nom_fichier [file join $::audace(rep_images) $parametres(source)$image$conf(extension,defaut)]
@@ -1644,7 +1644,7 @@ namespace eval ::CalaPhot {
     }
 
     ##
-    # @brief Reglage des seuils de visualisation d'une image dans AudACE
+    # @brief Réglage des seuils de visualisation d'une image dans AudACE
     # @deprecated
     # @param[in] mode : optimal ou rapide
     # @bug : les 2 valeurs de mode sont identiques
