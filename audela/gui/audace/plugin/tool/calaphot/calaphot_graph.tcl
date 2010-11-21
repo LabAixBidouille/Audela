@@ -5,7 +5,7 @@
 #
 # @brief Routines de gestion des affichages de Calaphot
 #
-# $Id: calaphot_graph.tcl,v 1.13 2010-11-20 20:02:46 jacquesmichelet Exp $
+# $Id: calaphot_graph.tcl,v 1.14 2010-11-21 08:31:21 jacquesmichelet Exp $
 
 namespace eval ::CalaPhot {
 
@@ -20,7 +20,6 @@ namespace eval ::CalaPhot {
     # @retval data_script(nombre_indes) : nombre d'étoile a supprimer
     proc AffichageMenus {nom_image} {
         variable demande_arret
-        variable trace_log
         variable data_script
         variable pos_theo
         variable coord_aster
@@ -542,7 +541,6 @@ namespace eval ::CalaPhot {
         variable parametres
         variable data_script
         variable TempVectors
-        variable trace_log
 
         Message debug "%s\n" [info level [info level]]
 
@@ -653,7 +651,6 @@ namespace eval ::CalaPhot {
         variable mag_etoile
         variable calaphot
         variable data_script
-        variable flux_premiere_etoile
 
         Message debug "%s\n" [info level [info level]]
 
@@ -667,7 +664,7 @@ namespace eval ::CalaPhot {
             incr data_script(nombre_reference) -1
             # Va permettre de reprendre le recalage photometrique de l'image
             if {($data_script(nombre_reference) == 0)} {
-                unset flux_premiere_etoile
+                unset data_script(flux_premiere_etoile)
             }
             set cx [lindex $pos 0]
             set cy [lindex $pos 1]
@@ -907,11 +904,9 @@ namespace eval ::CalaPhot {
     #**************************************************************************#
     proc PreAffiche {i} {
         global audace
-        variable premier_temp
         variable data_image
         variable data_script
         variable TempVectors
-        variable trace_log
 
         Message debug "%s\n" [info level [info level]]
 
@@ -1229,8 +1224,9 @@ namespace eval ::CalaPhot {
     #  - nombre_reference : incrémente si l'étoile de ref. n'a pas déjà été   #
     #    selectionnee                                                         #
     #  - coord_etoile_x et _y : liste des coord. des étoiles de ref.          #
-    #  - flux_premiere_etoile : flux de la première étoile de ref. Sert au    #
-    #    calcul des magnitudes semi-automatiques pour les autres ref.         #
+    #  - data_script(flux_premiere_etoile) : flux de la première étoile de    #
+    #    ref. Sert au calcul des magnitudes semi-automatiques pour les autres #
+    #    ref.                                                                 #
     #  - mag_etoile :                                                         #
     #  - mag :                                                                #
     #                                                                         #
@@ -1244,7 +1240,6 @@ namespace eval ::CalaPhot {
         variable coord_etoile_x
         variable coord_etoile_y
         variable mag_etoile
-        variable flux_premiere_etoile
 
         Message debug "%s\n" [info level [info level]]
 
@@ -1281,14 +1276,14 @@ namespace eval ::CalaPhot {
                 set cxx [expr int(round($cx))]
                 set cyy [expr int(round($cy))]
                 set q [ calaphot_fitgauss2d $audace(bufNo) [ list [ expr $cxx - $boite ] [ expr $cyy - $boite ] [ expr $cxx + $boite ] [ expr $cyy + $boite ] ] ]
-                if { ![ info exists flux_premiere_etoile ] } {
+                if { ![ info exists data_script(flux_premiere_etoile) ] } {
                     set mag_affichage 13.5
                     if { [ lindex $q 1] != 0 } {
-                        set flux_premiere_etoile [ lindex $q 12 ]
+                        set data_script(flux_premiere_etoile) [ lindex $q 12 ]
                     }
                 } else {
                     if { [lindex $q 1] != 0 } {
-                        set mag_affichage [format "%4.1f" [expr [lindex $mag_etoile 0] - 2.5 * log10([lindex $q 12] / $flux_premiere_etoile)]]
+                        set mag_affichage [format "%4.1f" [expr [lindex $mag_etoile 0] - 2.5 * log10([lindex $q 12] / $data_script(flux_premiere_etoile))]]
                     } else {
                         set mag_affichage 13.5
                     }

@@ -5,7 +5,7 @@
 #
 # @brief Routines de calcul de photometrie de Calaphot
 #
-# $Id: calaphot_calcul.tcl,v 1.8 2010-11-20 13:42:12 jacquesmichelet Exp $
+# $Id: calaphot_calcul.tcl,v 1.9 2010-11-21 08:31:38 jacquesmichelet Exp $
 
 namespace eval ::CalaPhot {
 
@@ -104,7 +104,6 @@ namespace eval ::CalaPhot {
 
         variable data_script
         variable data_image
-        variable trace_log
 
         Message debug "%s\n" [info level [info level]]
 
@@ -114,9 +113,7 @@ namespace eval ::CalaPhot {
             set t [expr pow(10.0, -0.4 * $data_image($image,ref,mag_$i))]
             set inc1 [expr $inc1 + $t * $data_image($image,ref,erreur_mag_$i)]
             set inc2 [expr $inc2 + $t]
-            if {[info exists trace_log]} {
-                Message debug "image %d ref %d: mag=%10.4f inc=%10.4f t=%10.4e inc1=%10.4e inc2=%10.4e\n" $image $i $data_image($image,ref,mag_$i) $data_image($image,ref,erreur_mag_$i) $t $inc1 $inc2
-            }
+            Message debug "image %d ref %d: mag=%10.4f inc=%10.4f t=%10.4e inc1=%10.4e inc2=%10.4e\n" $image $i $data_image($image,ref,mag_$i) $data_image($image,ref,erreur_mag_$i) $t $inc1 $inc2
         }
         set data_image($image,incertitude_ref_total) [expr $inc1 / $inc2]
 
@@ -132,16 +129,12 @@ namespace eval ::CalaPhot {
                     set t [expr pow(10.0, -0.4 * $data_image($image,ref,mag_$j))]
                     set inc1 [expr $inc1 + $t * $data_image($image,ref,erreur_mag_$j)]
                     set inc2 [expr $inc2 + $t]
-                    if {[info exists trace_log]} {
-                        Message debug "image %d ref %d ref %d: t=%10.4e inc1=%10.4e inc2=%10.4e\n" $image $i $j $t $inc1 $inc2
-                    }
+                    Message debug "image %d ref %d ref %d: t=%10.4e inc1=%10.4e inc2=%10.4e\n" $image $i $j $t $inc1 $inc2
                 } else {
                     if {$data_script(nombre_reference) == 1} {
                         set inc1 $data_image($image,ref,erreur_mag_0)
                         set inc2 1
-                        if {[info exists trace_log]} {
-                            Message debug "image %d ref %d (i=j): t=%10.4e inc1=%10.4e inc2=%10.4e\n" $image $i $t $inc1 $inc2
-                        }
+                        Message debug "image %d ref %d (i=j): t=%10.4e inc1=%10.4e inc2=%10.4e\n" $image $i $t $inc1 $inc2
                     }
                 }
             }
@@ -234,7 +227,6 @@ namespace eval ::CalaPhot {
         variable nombre_etoile
         variable pos_theo
         variable data_script
-        variable trace_log
 
         Message debug "%s\n" [info level [info level]]
 
@@ -522,9 +514,7 @@ namespace eval ::CalaPhot {
                     set k($etoile) [expr $delta_mag / $delta_mair]
                     set ksomme [expr $ksomme + $k($etoile)]
                     incr nr
-                    if {[info exists trace_log]} {
-                        Message debug "Coeff ext etoile ref %d : %f (dma=%f dmg=%f)\n" $etoile $k($etoile) $delta_mair $delta_mag
-                    }
+                    Message debug "Coeff ext etoile ref %d : %f (dma=%f dmg=%f)\n" $etoile $k($etoile) $delta_mair $delta_mag
                 }
             }
         }
@@ -594,16 +584,28 @@ namespace eval ::CalaPhot {
                     if { $data_image($image,valide) == "Y" } {
                         if { [ expr abs( $data_image($image,constante_mag) - $msg ) ] > [ expr 3.0 * sqrt( $ssg ) ] } {
                             set data_image($image,valide) "N"
-                            Message info "%s %05d\n" $calaphot(texte,image_rejetee) $image
+                            Message probleme "%s %05d\n" $calaphot(texte,image_rejetee) $image
                         }
                     }
                 }
             } else {
                 set data_image($image,valide) "N"
-                Message info "%s %05d\n" $calaphot(texte,image_rejetee) $image
+                Message probleme "%s %05d\n" $calaphot(texte,image_rejetee) $image
             }
         }
         # Fin de la boucle sur les images
+
+        # Comptage des images restantes
+        set images_valides 0
+        for { set i 0 } { $i < $l } { incr i } {
+            if { $data_image($image,valide) == "Y" } {
+                incr images_valides
+            }
+        }
+        if { $images_valides == 0 } {
+            Message erreur "%s\n" $calaphot(texte,aucune_valide)
+        }
+        set data_script(images_valides) $images_valides
     }
 
     ##
@@ -625,9 +627,9 @@ namespace eval ::CalaPhot {
 
         Message debug "%s\n" [info level [info level]]
 
-        for {set etoile 0} {$etoile < $data_script(nombre_reference)} {incr etoile} {
-            if {$data_image($i,ref,sb_$etoile) < $parametres(signal_bruit)} {
-                set data_script($i,invalidation) [list filtrage_sb ref $etoile $$data_image($i,ref,sb_$etoile)]
+        for { set etoile 0 } { $etoile < $data_script(nombre_reference) } { incr etoile } {
+            if { $data_image($i,ref,sb_$etoile) < $parametres(signal_bruit) } {
+                set data_script($i,invalidation) [ list filtrage_sb ref $etoile $$data_image($i,ref,sb_$etoile) ]
                 set data_image($i,valide) "N"
                 break;
             }
@@ -739,7 +741,6 @@ namespace eval ::CalaPhot {
         variable data_image
         variable data_script
         variable parametres
-        variable trace_log
 
         Message debug "%s\n" [ info level [ info level ] ]
 
@@ -1308,7 +1309,6 @@ namespace eval ::CalaPhot {
         variable data_script
         variable data_image
         variable pos_reel
-        variable trace_log
 
         Message debug "%s\n" [info level [info level]]
 
@@ -1322,15 +1322,13 @@ namespace eval ::CalaPhot {
             set data_image($image,var,addec_$i) [jm_xy2addec $liste_ad0 [lrange $pos_reel($image,var,$i) 0 1] $matrice]
         }
 
-        if {[info exists trace_log]} {
-            Message debug "-----------------------\n"
-            Message debug "XyAddec\n"
-            for {set i 0} {$i < $data_script(nombre_reference)} {incr i} {
-                Message debug "Image %d ref %d : Ad=%f Dec=%f\n" $image $i [lindex $data_image($image,ref,addec_$i) 0] [lindex $data_image($image,ref,addec_$i) 1]
-            }
-            for {set i 0} {$i < $data_script(nombre_variable)} {incr i} {
-                Message debug "Image %d var %d : Ad=%f Dec=%f\n" $image $i [lindex $data_image($image,var,addec_$i) 0] [lindex $data_image($image,var,addec_$i) 1]
-            }
+        Message debug "-----------------------\n"
+        Message debug "XyAddec\n"
+        for {set i 0} {$i < $data_script(nombre_reference)} {incr i} {
+            Message debug "Image %d ref %d : Ad=%f Dec=%f\n" $image $i [lindex $data_image($image,ref,addec_$i) 0] [lindex $data_image($image,ref,addec_$i) 1]
+        }
+        for {set i 0} {$i < $data_script(nombre_variable)} {incr i} {
+            Message debug "Image %d var %d : Ad=%f Dec=%f\n" $image $i [lindex $data_image($image,var,addec_$i) 0] [lindex $data_image($image,var,addec_$i) 1]
         }
     }
 }
