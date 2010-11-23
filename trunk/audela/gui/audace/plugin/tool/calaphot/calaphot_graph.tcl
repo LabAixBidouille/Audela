@@ -5,7 +5,7 @@
 #
 # @brief Routines de gestion des affichages de Calaphot
 #
-# $Id: calaphot_graph.tcl,v 1.14 2010-11-21 08:31:21 jacquesmichelet Exp $
+# $Id: calaphot_graph.tcl,v 1.15 2010-11-23 20:10:05 jacquesmichelet Exp $
 
 namespace eval ::CalaPhot {
 
@@ -154,26 +154,25 @@ namespace eval ::CalaPhot {
     # .
     # @param nom_image nom générique de l'image sur laquelle va se faire la sélection
     # @return
-    proc AffichageMenuEtoile {nom_image} {
-        global audace
+    proc AffichageMenuEtoile { nom_image } {
         variable calaphot
         variable data_script
         variable coord_etoile_x
         variable coord_etoile_y
         variable mag_etoile
 
-        Message debug "%s\n" [info level [info level]]
+        Message debug "%s\n" [ info level [ info level ] ]
 
         # Affichage de la premiere image de la serie
         loadima ${nom_image}1
         Visualisation optimale
 
-        toplevel $audace(base).selection_etoile -class Toplevel -borderwidth 2 -relief groove
-        wm geometry $audace(base).selection_etoile 200x200+650+120
-        wm resizable $audace(base).selection_etoile 0 0
-        wm title $audace(base).selection_etoile $calaphot(texte,etoile_reference)
-        wm transient $audace(base).selection_etoile .audace
-        wm protocol $audace(base).selection_etoile WM_DELETE_WINDOW ::CalaPhot::Suppression
+        set f [ toplevel $::audace(base).selection_etoile -class Toplevel -borderwidth 2 -relief groove ]
+#        wm geometry $f 200x200+650+120
+        wm resizable $f 0 0
+        wm title $f $calaphot(texte,etoile_reference)
+        wm transient $f .audace
+        wm protocol $f WM_DELETE_WINDOW ::CalaPhot::Suppression
 
         set texte_bouton(validation_etoile) $calaphot(texte,validation_etoile)
         set texte_bouton(devalidation_etoile) $calaphot(texte,devalidation_etoile)
@@ -185,40 +184,44 @@ namespace eval ::CalaPhot {
         set commande_bouton(continuation) ::CalaPhot::ContinuationEtoiles
         set commande_bouton(annulation) ::CalaPhot::ArretScript
 
+        set ff [ frame $f.f1 \
+            -borderwidth 5 \
+            -relief groove ]
         #----- Création du contenu de la fenêtre
-        foreach champ {validation_etoile devalidation_etoile continuation annulation} {
-            button $audace(base).selection_etoile.b$champ \
+        foreach champ { validation_etoile devalidation_etoile continuation annulation } {
+            button $ff.b$champ \
                 -text $texte_bouton($champ) \
                 -command $commande_bouton($champ) \
-                -bg $audace(color,backColor2)
-            pack $audace(base).selection_etoile.b$champ \
+                -bg $::audace(color,backColor2)
+            pack $ff.b$champ \
                 -anchor center \
                 -side top \
                 -fill x \
                 -padx 4 \
                 -pady 4 \
-                -in $audace(base).selection_etoile \
+                -in $ff \
                 -anchor center \
                 -expand 1 \
                 -fill both \
                 -side top
         }
+        pack $ff
 
         set data_script(nombre_reference) 0
-        if {[info exists coord_etoile_x]} {
+        if { [ info exists coord_etoile_x ] } {
             unset coord_etoile_x
             list coord_etoile_x {}
         }
-        if {[info exists coord_etoile_y]} {
+        if { [ info exists coord_etoile_y ] } {
             unset coord_etoile_y
             list coord_etoile_y {}
         }
-        if {[info exists mag_etoile]} {
+        if { [ info exists mag_etoile ] } {
             unset mag_etoile
             list mag_etoile {}
         }
-        ::confColor::applyColor $audace(base).selection_etoile
-        tkwait window $audace(base).selection_etoile
+        ::confColor::applyColor $f
+        tkwait window $f
     }
 
     ##
@@ -1232,7 +1235,7 @@ namespace eval ::CalaPhot {
     #                                                                         #
     #*************************************************************************#
     proc SelectionneEtoiles {} {
-        global audace color
+        global magnitude_saisie
         variable data_script
         variable parametres
         variable mag
@@ -1241,11 +1244,11 @@ namespace eval ::CalaPhot {
         variable coord_etoile_y
         variable mag_etoile
 
-        Message debug "%s\n" [info level [info level]]
+        Message debug "%s\n" [ info level  [info level ] ]
 
-        if { [ winfo exists $audace(base).saisie.magnitude ] } {
-            return
-        }
+        #if { [ winfo exists $audace(base).saisie.magnitude ] } {
+        #    return
+        #}
 
         # Pour simplifier les écritures
         set boite $parametres(tailleboite)
@@ -1273,9 +1276,9 @@ namespace eval ::CalaPhot {
                 lappend coord_etoile_y $cy
 
                 # Calcul pour le pré-affichage des valeurs de magnitudes
-                set cxx [expr int(round($cx))]
-                set cyy [expr int(round($cy))]
-                set q [ calaphot_fitgauss2d $audace(bufNo) [ list [ expr $cxx - $boite ] [ expr $cyy - $boite ] [ expr $cxx + $boite ] [ expr $cyy + $boite ] ] ]
+                set cxx [ expr int( round( $cx ) ) ]
+                set cyy [ expr int( round( $cy ) ) ]
+                set q [ calaphot_fitgauss2d $::audace(bufNo) [ list [ expr $cxx - $boite ] [ expr $cyy - $boite ] [ expr $cxx + $boite ] [ expr $cyy + $boite ] ] ]
                 if { ![ info exists data_script(flux_premiere_etoile) ] } {
                     set mag_affichage 13.5
                     if { [ lindex $q 1] != 0 } {
@@ -1290,33 +1293,50 @@ namespace eval ::CalaPhot {
                 }
 
                 # Dessin d'un symbole
-                Dessin ovale [list $cx $cy] [list $boite $boite] $color(green) etoile_${cx}_${cy}
-                Dessin verticale [list $cx $cy] [list $boite $boite] $color(green) etoile_${cx}_${cy}
-                Dessin horizontale [list $cx $cy] [list $boite $boite] $color(green) etoile_${cx}_${cy}
+                Dessin ovale [list $cx $cy] [list $boite $boite] $::color(green) etoile_${cx}_${cy}
+                Dessin verticale [list $cx $cy] [list $boite $boite] $::color(green) etoile_${cx}_${cy}
+                Dessin horizontale [list $cx $cy] [list $boite $boite] $::color(green) etoile_${cx}_${cy}
 
-                # Construction de la fenetre demandant la magnitude
-                toplevel $audace(base).saisie_magnitude -borderwidth 2 -bg $audace(color,backColor) -relief groove
-                wm geometry $audace(base).saisie_magnitude +650+300
-                wm title $audace(base).saisie_magnitude $calaphot(texte,magnitude)
-                wm transient $audace(base).saisie_magnitude .audace
-                wm protocol $audace(base).saisie_magnitude WM_DELETE_WINDOW ::CalaPhot::Suppression
+                # La magnitude est saisie dans une trame attaché à celle de la sélection des étoiles
+                set ff [ frame $::audace(base).selection_etoile.f2 \
+                    -borderwidth 5 \
+                    -relief groove ]
 
-                frame $audace(base).saisie_magnitude.trame1
-                label $audace(base).saisie_magnitude.trame1.lmagnitude -text $calaphot(texte,magnitude) -bg $audace(color,backColor)
-                entry $audace(base).saisie_magnitude.trame1.emagnitude -width 5 -textvariable ::CalaPhot::mag -relief sunken
-                $audace(base).saisie_magnitude.trame1.emagnitude delete 0 end
-                $audace(base).saisie_magnitude.trame1.emagnitude insert 0 $mag_affichage
-                grid $audace(base).saisie_magnitude.trame1.lmagnitude $audace(base).saisie_magnitude.trame1.emagnitude -sticky news
+                set fft1 [ frame $ff.trame1 ]
+                label $fft1.lmagnitude \
+                    -text $calaphot(texte,magnitude) \
+                    -bg $::audace(color,backColor)
+                entry $fft1.emagnitude \
+                    -width 5 \
+                    -textvariable ::CalaPhot::mag \
+                    -relief sunken
+                $fft1.emagnitude delete 0 end
+                $fft1.emagnitude insert 0 $mag_affichage
+                grid $fft1.lmagnitude $fft1.emagnitude -sticky news
 
-                frame $audace(base).saisie_magnitude.trame2 -borderwidth 2 -relief groove -bg $audace(color,backColor2)
-                button $audace(base).saisie_magnitude.trame2.b1 -text $calaphot(texte,valider) -command {destroy $audace(base).saisie_magnitude}
-                pack $audace(base).saisie_magnitude.trame2.b1 -in $audace(base).saisie_magnitude.trame2 -side left -padx 10 -pady 10
+                set fft2 [ frame $ff.trame2 \
+                    -borderwidth 2 \
+                    -relief groove \
+                    -bg $::audace(color,backColor2) ]
+                button $fft2.b1 \
+                    -text $calaphot(texte,valider) \
+                    -command {
+                        global magnitude_saisie
+                        grab release $::audace(base).selection_etoile.f2
+                        focus $::audace(base).selection_etoile.f1
+                        pack forget $::audace(base).selection_etoile.f2
+                        destroy $::audace(base).selection_etoile.f2
+                        set magnitude_saisie 1
+                    }
+                pack $fft2.b1 -in $fft2 -side left -padx 10 -pady 10
 
-                pack $audace(base).saisie_magnitude.trame1 $audace(base).saisie_magnitude.trame2 -in $audace(base).saisie_magnitude -fill x
-                ::confColor::applyColor $audace(base).saisie_magnitude
-                focus $audace(base).saisie_magnitude.trame1.emagnitude
-                grab $audace(base).saisie_magnitude
-                tkwait window $audace(base).saisie_magnitude
+                pack $fft1 $fft2 -in $ff -fill x
+                pack $ff
+
+                focus $fft1.emagnitude
+                grab $ff
+                tkwait variable magnitude_saisie
+                unset magnitude_saisie
                 lappend mag_etoile $mag
                 incr data_script(nombre_reference)
             }
