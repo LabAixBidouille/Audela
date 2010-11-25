@@ -5,7 +5,7 @@
 #
 # @brief Routines de gestion des affichages de Calaphot
 #
-# $Id: calaphot_graph.tcl,v 1.15 2010-11-23 20:10:05 jacquesmichelet Exp $
+# $Id: calaphot_graph.tcl,v 1.16 2010-11-25 05:29:41 jacquesmichelet Exp $
 
 namespace eval ::CalaPhot {
 
@@ -71,7 +71,6 @@ namespace eval ::CalaPhot {
         catch {destroy $audace(base).selection_aster}
 
         toplevel $audace(base).selection_aster -class Toplevel -borderwidth 2 -relief groove
-        wm geometry $audace(base).selection_aster 200x200+650+120
         wm resizable $audace(base).selection_aster 0 0
         wm title $audace(base).selection_aster $calaphot(texte,asteroide)
         wm transient $audace(base).selection_aster .audace
@@ -168,7 +167,6 @@ namespace eval ::CalaPhot {
         Visualisation optimale
 
         set f [ toplevel $::audace(base).selection_etoile -class Toplevel -borderwidth 2 -relief groove ]
-#        wm geometry $f 200x200+650+120
         wm resizable $f 0 0
         wm title $f $calaphot(texte,etoile_reference)
         wm transient $f .audace
@@ -196,7 +194,6 @@ namespace eval ::CalaPhot {
             pack $ff.b$champ \
                 -anchor center \
                 -side top \
-                -fill x \
                 -padx 4 \
                 -pady 4 \
                 -in $ff \
@@ -205,7 +202,8 @@ namespace eval ::CalaPhot {
                 -fill both \
                 -side top
         }
-        pack $ff
+        pack $ff \
+            -fill both
 
         set data_script(nombre_reference) 0
         if { [ info exists coord_etoile_x ] } {
@@ -247,7 +245,6 @@ namespace eval ::CalaPhot {
         Visualisation optimale
 
         toplevel $audace(base).selection_indes -class Toplevel -borderwidth 2 -relief groove
-        wm geometry $audace(base).selection_indes 200x200+650+120
         wm resizable $audace(base).selection_indes 0 0
         wm title $audace(base).selection_indes $calaphot(texte,etoile_a_supprimer)
         wm transient $audace(base).selection_indes .audace
@@ -1215,6 +1212,7 @@ namespace eval ::CalaPhot {
             -pady 10
         AffichageVariable $parametres(mode) $c $y $t
         focus $calaphot(toplevel,saisie)
+        grab $calaphot(toplevel,saisie)
 
         tkwait window $audace(base).saisie
     }
@@ -1302,7 +1300,7 @@ namespace eval ::CalaPhot {
                     -borderwidth 5 \
                     -relief groove ]
 
-                set fft1 [ frame $ff.trame1 ]
+                set fft1 [ frame $ff.t1 ]
                 label $fft1.lmagnitude \
                     -text $calaphot(texte,magnitude) \
                     -bg $::audace(color,backColor)
@@ -1312,11 +1310,16 @@ namespace eval ::CalaPhot {
                     -relief sunken
                 $fft1.emagnitude delete 0 end
                 $fft1.emagnitude insert 0 $mag_affichage
-                grid $fft1.lmagnitude $fft1.emagnitude -sticky news
+                pack $fft1.lmagnitude \
+                    -fill both \
+                    -side left \
+                    -expand 1
+                pack $fft1.emagnitude \
+                    -fill both \
+                    -side right \
+                    -expand 1
 
-                set fft2 [ frame $ff.trame2 \
-                    -borderwidth 2 \
-                    -relief groove \
+                set fft2 [ frame $ff.t2 \
                     -bg $::audace(color,backColor2) ]
                 button $fft2.b1 \
                     -text $calaphot(texte,valider) \
@@ -1327,11 +1330,22 @@ namespace eval ::CalaPhot {
                         pack forget $::audace(base).selection_etoile.f2
                         destroy $::audace(base).selection_etoile.f2
                         set magnitude_saisie 1
-                    }
-                pack $fft2.b1 -in $fft2 -side left -padx 10 -pady 10
+                    } \
+                    -bg $::audace(color,backColor2)
+                pack $fft2.b1 \
+                    -anchor center \
+                    -side top \
+                    -padx 4 \
+                    -pady 4 \
+                    -expand 1 \
+                    -fill both \
+                    -side top
 
-                pack $fft1 $fft2 -in $ff -fill x
-                pack $ff
+                pack $fft1 $fft2 \
+                    -in $ff \
+                    -fill both
+                pack $ff \
+                    -fill both
 
                 focus $fft1.emagnitude
                 grab $ff
@@ -1443,7 +1457,6 @@ namespace eval ::CalaPhot {
     # Si manquent certains champs indispensables à ce script, la fenêtre de saisie des paramètres est maintenue
     # sinon, elle est détruite
     proc ValideSaisie {} {
-        global audace
         variable calaphot
         variable parametres
         variable data_script
@@ -1474,7 +1487,8 @@ namespace eval ::CalaPhot {
         # /MultAster
 
         if { $pas_glop == 0 } {
-            destroy $audace(base).saisie
+            grab release $::audace(base).saisie
+            destroy $::audace(base).saisie
             update
         }
     }
