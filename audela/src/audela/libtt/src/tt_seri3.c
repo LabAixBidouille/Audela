@@ -2054,7 +2054,7 @@ int tt_ima_series_sortx_1(TT_IMA_SERIES *pseries)
    p_in=pseries->p_in;
    p_out=pseries->p_out;
    index=pseries->index;
-   percent=pseries->percent;
+   percent=pseries->percent/100;
    if (percent<0.) {percent=0.;}
    if (percent>1.) {percent=1.;}
 
@@ -2094,6 +2094,9 @@ int tt_ima_series_sortx_1(TT_IMA_SERIES *pseries)
 
    diff_x = (x2 - x1) + 1;
    diff_x_2 = (int) ((double)diff_x *percent);
+	if (diff_x_2>=diff_x) {
+		diff_x_2=diff_x-1;
+	}
 
    taille=sizeof(double);
    if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&tab,&diff_x,&taille,"tab"))!=0) {
@@ -2153,7 +2156,7 @@ int tt_ima_series_sorty_1(TT_IMA_SERIES *pseries)
    p_in=pseries->p_in;
    p_out=pseries->p_out;
    index=pseries->index;
-   percent=pseries->percent;
+   percent=pseries->percent/100;
    if (percent<0.) {percent=0.;}
    if (percent>1.) {percent=1.;}
 
@@ -2194,6 +2197,9 @@ int tt_ima_series_sorty_1(TT_IMA_SERIES *pseries)
    /* mediany */
    diff_y = (y2 - y1) + 1;
    diff_y_2 = (int) ((double)diff_y *percent);
+	if (diff_y_2>=diff_y) {
+		diff_y_2=diff_y-1;
+	}
    taille=sizeof(double);
    if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&tab,&diff_y,&taille,"tab"))!=0) {
       tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_ima_series_sorty_1 for pointer tab");
