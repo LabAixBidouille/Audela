@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot_principal.tcl,v 1.19 2010-11-21 08:31:06 jacquesmichelet Exp $
+# $Id: calaphot_principal.tcl,v 1.20 2010-11-27 15:55:12 jacquesmichelet Exp $
 #
 
 ###catch {namespace delete ::Calaphot}
@@ -161,7 +161,6 @@ namespace eval ::CalaPhot {
         variable ecart_type
         variable liste_image
         variable calaphot
-        variable pas_a_pas
 
         # Initialisation generale
         InitialisationStatique
@@ -199,7 +198,7 @@ namespace eval ::CalaPhot {
         Message notice "%s %s\n\n" $calaphot(texte,heure_debut) [clock format [clock seconds]]
 
         # Vérification de l'existence des images
-        set erreur [Verification]
+        set erreur [ Verification ]
         if { $erreur != 0 } {
             Message probleme "%s\n" $calaphot(texte,fin_anticipee)
             return
@@ -222,22 +221,8 @@ namespace eval ::CalaPhot {
         # Récupération des décalages entre image (s'ils existent)
         RecuperationDecalages
 
-        # Création des images t1 et t2, copies de la première et de la dernière image
-        loadima $parametres(source)$data_script(premier_liste)
-        saveima t1
-        loadima $parametres(source)$data_script(dernier_liste)
-        saveima t2
-
-        if {$parametres(type_images) == "non_recalees"} {
-            # Images non recalées
-            # Recalage de la première et de la dernière image en u1 et u2
-            register2 t u 2
-            AffichageMenus u
-            # Permet la sélection des étoiles et des astéroïdes sur les images recalées
-        } else {
-            # Permet la sélection des étoiles et des asteroïdes
-            AffichageMenus t
-        }
+        set images_initiales [ RecalageInitial t ]
+        AffichageMenus $images_initiales
 
         # 2eme sauvegarde, avec les coordonnees graphiques des astres
         SauvegardeParametres
@@ -328,7 +313,12 @@ namespace eval ::CalaPhot {
             }
 
             # Determination du décalage géometrique
-            MesureDecalage $image
+            set test [ MesureDecalage $image ]
+            if { $test != 0 } {
+                EliminationImage $image
+                AttentePasAPas
+                continue
+            }
 
             # Calcule la position des astéroides par interpolation sur les dates (sans tenir compte du décalage des images)
             CalculPositionsTheoriques $image
@@ -337,6 +327,7 @@ namespace eval ::CalaPhot {
             set test [ CalculPositionsReelles $image ]
             if { $test != 0 } {
                 EliminationImage $image
+                AttentePasAPas
                 continue
             }
 
@@ -371,6 +362,7 @@ namespace eval ::CalaPhot {
                 # Au moins un astéroide ou une étoile de ref. n'a pas été modélisée correctement
                 # Donc on élimine l'image
                 EliminationImage $image
+                AttentePasAPas
                 continue
             }
 
@@ -394,6 +386,7 @@ namespace eval ::CalaPhot {
                 } else {
                     set data_script($image,invalidation) [ list ellipses ]
                     EliminationImage $image
+                    AttentePasAPas
                     continue
                 }
             }
@@ -405,6 +398,7 @@ namespace eval ::CalaPhot {
                     set data_script($image,invalidation) [ list sextractor ]
                     set data_image($image,valide) "N"
                     EliminationImage $image
+                    AttentePasAPas
                     continue
                 }
                 for { set j 0 } { $j < $data_script(nombre_reference) } { incr j } {
@@ -414,6 +408,7 @@ namespace eval ::CalaPhot {
                     } else {
                         set data_script($image,invalidation) [ list sextractor ref $j ]
                         EliminationImage $image
+                        AttentePasAPas
                         break
                     }
                 }
@@ -425,6 +420,7 @@ namespace eval ::CalaPhot {
                     } else {
                         set data_script($image,invalidation) [list sextractor var $j]
                         EliminationImage $image
+                        AttentePasAPas
                         break
                     }
                 }
@@ -432,19 +428,20 @@ namespace eval ::CalaPhot {
 
             if { $data_image($image,valide) == "N" } {
                 EliminationImage $image
+                AttentePasAPas
                 continue
             }
 
             # Dessin des symboles
-            for {set j 0} {$j < $data_script(nombre_reference)} {incr j} {
+            for { set j 0 } { $j < $data_script(nombre_reference) } { incr j } {
                 # Dessin des axes principaux
-                if {$data_image($image,ref,centroide_x_$j) >= 0} {
+                if { $data_image($image,ref,centroide_x_$j) >= 0 } {
                     # La modélisation a réussi
                     Dessin2 $image ref $j $parametres(rayon1) $color(green) etoile_$j
                 } else {
                     # Pas de modélisation possible
-                    Dessin verticale [list $data_image($image,ref,centroide_x_$j) $data_image($image,ref,centroide_y_$j)] \
-                        [list $parametres(tailleboite) $parametres(tailleboite)] \
+                    Dessin verticale [ list $data_image($image,ref,centroide_x_$j) $data_image($image,ref,centroide_y_$j) ] \
+                        [ list $parametres(tailleboite) $parametres(tailleboite) ] \
                         $color(red) etoile_$j
                     Dessin horizontale [list $data_image($image,ref,centroide_x_$j) $data_image($image,ref,centroide_y_$j)] \
                         [list $parametres(tailleboite) $parametres(tailleboite)] \
@@ -478,25 +475,22 @@ namespace eval ::CalaPhot {
             # Calcul d'incertitude global
             CalculErreurGlobal $image
 
-            # Affiche le resultat dans la console
+            # Affiche le résultat dans la console
             AffichageResultatsBruts $image
 
-            # Calculs des vecteurs pour le pre-affichage de la courbe de lumiere
+            # Calculs des vecteurs pour le pré-affichage de la courbe de lumière
             PreAffiche $image
 
             # Mode pas à pas
-            if { [ info exists pas_a_pas ] } {
-                vwait ::CalaPhot::calaphot(suite_du_script)
-            }
-
+            AttentePasAPas
         }
-         # Effacement des marqueurs d'etoile
+         # Effacement des marqueurs d'étoile
          EffaceMotif astres
 
-        # Suppression du bouton d'arret
+        # Suppression du bouton d'arrêt
          destroy $audace(base).bouton_arret_color_invariant
 
-         # Sauvegarde des decalages entre images
+         # Sauvegarde des décalages entre images
          SauvegardeDecalages
 
          # Deuxieme filtrage sur les images pour filtrer celles douteuses
@@ -505,18 +499,18 @@ namespace eval ::CalaPhot {
          # Calcul du coeff. d'extinction de la masse d'air
 #         ExtinctionMasseAir
 
-         # Statistiques sur les etoiles a partir des images validees
+         # Statistiques sur les étoiles a partir des images validées
          Statistiques 1
 
-        for {set etoile 0} {$etoile < $data_script(nombre_variable)} {incr etoile 1} {
+        for { set etoile 0 } { $etoile < $data_script(nombre_variable) } { incr etoile 1 } {
             Message notice "%s : %s %07.4f %s %6.4f\n" $calaphot(texte,asteroide)  $calaphot(texte,moyenne) $moyenne(var,$etoile) $calaphot(texte,ecart_type) $ecart_type(var,$etoile)
          }
-        for {set etoile 0} {$etoile < $data_script(nombre_reference)} {incr etoile 1} {
+        for { set etoile 0 } { $etoile < $data_script(nombre_reference) } { incr etoile 1 } {
             Message notice "%s : %s %07.4f %s %6.4f\n" $calaphot(texte,etoile)  $calaphot(texte,moyenne) $moyenne(ref,$etoile) $calaphot(texte,ecart_type) $ecart_type(ref,$etoile)
          }
 
          # Sortie standardisée des valeurs
-         if {$parametres(format_sortie) == "canopus"} {
+         if { $parametres(format_sortie) == "canopus" } {
             AffichageCanopus
          } else {
             GenerationFichierCDR
@@ -573,6 +567,16 @@ namespace eval ::CalaPhot {
             Message notice "%7.2f\n" [expr $data_image($i,constante_mag) - $data_image($i,mag_0)]
         }
         # Fin de la boucle sur les images
+    }
+
+    ##
+    # @brief Attente que l'utilisateur valide la suite du script. NE SERT QU'AU DEBOGAGE
+    # @return
+    proc AttentePasAPas {} {
+        variable pas_a_pas
+        if { [ info exists pas_a_pas ] } {
+            vwait ::CalaPhot::calaphot(suite_du_script)
+        }
     }
 
     ##
@@ -931,54 +935,50 @@ namespace eval ::CalaPhot {
     }
 
     ##
-    # @brief Lecture du decalage en (x,y) de l'image recalee prealablement
-    # @details Le decalage est lu a partir du mot cle IMA/SERIES REGISTER dans l'entete FITS de l'image
-    # @param[in] image : no de l'image dans la sequence
-    # @return liste contenant le decalage en x et y
-    proc DecalageImage {image} {
-        global audace
-
-        Message debug "%s\n" [info level [info level]]
+    # @brief Lecture du décalage en (x,y) de l'image recalée préalablement
+    # @details Le décalage est lu a partir du mot cle IMA/SERIES REGISTER dans l'entête FITS de l'image
+    # @param[in] image : no de l'image dans la séquence
+    # @return liste contenant le décalage en x et y
+    proc DecalageImage { image } {
+        Message debug "%s\n" [ info level [ info level ] ]
 
         # --- recupere la liste des mots cles de l'image FITS
-        set listkey [lsort -dictionary [buf$audace(bufNo) getkwds]]
-        # --- on evalue chaque mot cle
+        set listkey [ lsort -dictionary [ buf$::audace(bufNo) getkwds ] ]
+        # Recherche de la dernière ligne contenant la chaîne IMA/SERIES REGISTER
         foreach key $listkey {
-            # --- on extrait les infos de la ligne FITS
-            # --- qui correspond au mot cle...
-            set listligne [buf$audace(bufNo) getkwd $key]
-            # --- on evalue la valeur de la ligne FITS
-            set value [lindex $listligne 1]
-            # --- si la valeur vaut IMA/SERIES REGISTER ...
-            if {$value == "IMA/SERIES REGISTER"} {
-                # --- alors on extrait l'indice du mot cle TT
-                set keyname [lindex $listligne 0]
-                set lenkeyname [string length $keyname]
-                set indice [string range $keyname 2 [expr $lenkeyname] ]
+            set listligne [ buf$::audace(bufNo) getkwd $key ]
+            set value [ lindex $listligne 1 ]
+            if { $value == "IMA/SERIES REGISTER" } {
+                # Extraction de l'indice du mot cle TT
+                set keyname [ lindex $listligne 0 ]
+                set indice [ string range $keyname 2 end ]
             }
         }
+
         if { ![ info exists indice ] } {
-            set dec [ list 0 0 ]
+            set dec [ list 0 0 0 ]
         } else {
-            # On a maintenant repere la fonction TT qui pointe sur la derniere registration.
-            # --- on recherche la ligne FITS contenant le mot cle indice+1
+            # On a maintenant repéré la fonction TT qui pointe sur la dernière registration.
+            # --- on recherche la ligne FITS contenant le mot clé indice + 1
             incr indice
-            set listligne [buf$audace(bufNo) getkwd "TT$indice"]
+            set listligne [ buf$::audace(bufNo) getkwd "TT$indice" ]
+            set param [ lindex $listligne 1 ]
+            set dx [ lindex $param 2 ]
 
-            # --- on evalue la valeur de la ligne FITS
-            set param1 [lindex $listligne 1]
-            set dx [lindex [split $param1] 3]
-
-            # --- on recherche la ligne FITS contenant le mot cle indice+2
+            # --- on recherche la ligne FITS contenant le mot clé indice + 2
             incr indice
-            set listligne [buf$audace(bufNo) getkwd "TT$indice"]
+            set listligne [ buf$::audace(bufNo) getkwd "TT$indice" ]
+            set param [ lindex $listligne 1 ]
+            set dy [ lindex $param 2 ]
 
-            # --- on evalue la valeur de la ligne FITS
-            set param2 [lindex $listligne 1]
-            set dy [lindex $param2 2]
+            # --- on recherche la ligne FITS contenant le mot clé indice + 2
+            incr indice
+            set listligne [ buf$::audace(bufNo) getkwd "TT$indice" ]
+            set param [ lindex $listligne 1 ]
+            set nbre_etoiles [ lindex $param 0 ]
 
-            # Fin de la lecture du decalage
-            set dec [list $dx $dy]
+            # Fin de la lecture du décalage
+            set dec [ list $dx $dy $nbre_etoiles ]
         }
         return $dec
     }
@@ -987,7 +987,6 @@ namespace eval ::CalaPhot {
     # @brief Destruction des fichiers auxiliaires
     # @return rien
     proc DestructionFichiersAuxiliaires { } {
-        global audace
         variable calaphot
 
         Message debug "%s\n" [ info level [ info level ] ]
@@ -1026,14 +1025,14 @@ namespace eval ::CalaPhot {
         variable data_script
         variable calaphot
 
-        Message debug "%s\n" [info level [info level]]
+        Message debug "%s\n" [ info level [ info level ] ]
 
         set data_image($image,valide) "N"
-        Message notice "%04d " $image
+        Message probleme "%04d " $image
         if { [ info exists data_script($image,invalidation) ] } {
-            Message probleme "%s " $data_script($image,invalidation)
+            Message info "%s\ " $data_script($image,invalidation)
         }
-        Message notice "%s\n" $calaphot(texte,image_rejetee)
+        Message probleme "%s\n" $calaphot(texte,image_rejetee)
     }
 
     ##
@@ -1197,18 +1196,21 @@ namespace eval ::CalaPhot {
     # @details Si cette valeur a été mesurée auparavant dans une session précédente de Calaphot
     # cette valeur sera extraite du fichier de décalage
     # Sinon le décalage est effectué par recalage (register) de l'image par rapport à une image t1.fit
-    # La valeur du recalage est stockée dans l'entete FITS de l'image
+    # La valeur du recalage est stockée dans l'entete FITS de l'image.
+    # On mesure la qualité du recalage par le nombre d'objets ayant servi au recalage.
     # @param[in] i : numero de l'image dans la séquence
     # @retval data_image($i,decalage_x) : decalage en x
     # @retval data_image($i,decalage_y) : decalage en y
-    # @return
-    proc MesureDecalage {i} {
+    # @return 0 si recalage correct, -1 sinon.
+    proc MesureDecalage { i } {
         variable parametres
         variable liste_decalage
         variable data_image
+        variable data_script
 
-        Message debug "%s\n" [info level [info level]]
+        Message debug "%s\n" [ info level [ info level ] ]
 
+        set retour 0
         # Détermination du décalage des images par rapport à la première
         if { $parametres(type_images) == "non_recalees" } {
             # Images non recalees
@@ -1228,6 +1230,15 @@ namespace eval ::CalaPhot {
                 set dec [ DecalageImage $i ]
                 set data_image($i,decalage_x) [ lindex $dec 0 ]
                 set data_image($i,decalage_y) [ lindex $dec 1 ]
+
+                # Le nombre d'objets ayant servi au recalage doit être pifométrique supérieur au tiers du nombre initial
+                Message debug "image %d : %d objets pour recaler \n" $i [ lindex $dec 2 ]
+                set objets [ lindex $dec 2 ]
+                if { $objets < [ expr $data_script(nombre_objets_recales) / 3 ] } {
+                    set retour -1
+                    set data_script($i,invalidation) "Seulement $objets objets pour recaler"
+                }
+
                 # Rétablissement de l'image sur laquelle seront faites les mesures
                 loadima $parametres(source)$i
             }
@@ -1238,6 +1249,7 @@ namespace eval ::CalaPhot {
             set data_image($i,decalage_y) 0.0
         }
         Message debug "image %d: decalage_x=%10.4f decalage_y=%10.4f\n" $i $data_image($i,decalage_x) $data_image($i,decalage_y)
+        return $retour
     }
 
 
@@ -1321,6 +1333,37 @@ namespace eval ::CalaPhot {
             }
         }
         return $plus_brillante
+    }
+
+    ##
+    # @brief Recalage des première et dernière image (si nécessaire)
+    # @details Extraction du nombre d'objets utilisés au recalage pour pouvoir qualifier le recalage des autres images
+    # @param le nom des images à recaler (ou pas)
+    # @retval le nom des images recalées (ou pas)
+    proc RecalageInitial { t } {
+        variable parametres
+        variable data_script
+
+        Message debug "%s\n" [ info level [ info level ] ]
+
+        # Création des images t1 et t2, copies de la première et de la dernière image
+        buf$::audace(bufNo) load [ file join $::audace(rep_images) $parametres(source)$data_script(premier_liste) ]
+        buf$::audace(bufNo) save [ file join $::audace(rep_images) t1 ]
+        buf$::audace(bufNo) load [ file join $::audace(rep_images) $parametres(source)$data_script(dernier_liste) ]
+        buf$::audace(bufNo) save [ file join $::audace(rep_images) t2 ]
+
+        if { $parametres(type_images) == "non_recalees" } {
+            # Recalage de la première et de la dernière image en u1 et u2
+            register2 t u 2
+            buf$::audace(bufNo) load [ file join $::audace(rep_images) u2 ]
+            set param_decalage [ DecalageImage u2 ]
+            set data_script(nombre_objets_recales) [ lindex $param_decalage 2 ]
+            Message debug "param_dec=%s\n" $param_decalage
+            Message debug "%d objets utilisés au recalage \n" $data_script(nombre_objets_recales)
+            return u
+        } else {
+            return t
+        }
     }
 
     ##
