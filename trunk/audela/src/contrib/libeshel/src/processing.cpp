@@ -1,5 +1,10 @@
 // echelle.cpp : Eshel main functions .
 //
+#ifdef _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#endif
+
 
 #include <windows.h>
 #include <math.h>
@@ -11,14 +16,36 @@
 #include <exception>
 #define swab _swab  //  replace "swab" by "_swab" because "swab" is deprecaded
 
+#include "libeshel.h"
 #include "infoimage.h"
 #include "order.h"
 #include "linegap.h"
 #include "fitsfile.h"
-#include "libeshel.h"
 #include "processing.h"
 
+// fonctions locales 
+void SamplesToCoefficients(float *Image,		/* in-place processing */
+                                 int Width,		    /* width of the image */
+                                 int Height,		/* height of the image */
+                                 int SplineDegree   /* degree of the spline model */
+                                 );
+double InterpolatedValue(float *Bcoeff,	  /* input B-spline array of coefficients */
+                                int Width,		  /* width of the image */
+                                int Height,		  /* height of the image */
+                                double x,		  /* x coordinate where to interpolate */
+                                double y,		  /* y coordinate where to interpolate */
+                                int SplineDegree  /* degree of the spline model */
+                                );
+void l_opt(std::valarray<PIC_TYPE> &p, 
+          int imax, int jmax, int lmin,int lmax,
+          int xmin,int xmax,std::valarray<double> &profile);
 
+void l_opt2(std::valarray<PIC_TYPE> &p,
+            int imax, int jmax,
+            int lmin, int lmax, int xmin, int xmax,
+            std::valarray<double> &profile);
+
+void MipsParaFit(int n, std::valarray<double> &y, double *p, double &ecart);
 
 // definition des constantes et de macros
 #define SGN(x) (x>=0?1:-1)
@@ -82,53 +109,51 @@ FILE * openLog(char *fileName) {
    return hand_log;
 }
 
-/*************************** divideResponse ****************************
- * divise un profils par la reponse instrumenale          
- *
- */
-void divideResponse(std::valarray<double> &profile1b, double lambda1b, std::valarray<double> &responseProfile, double responseLambda, double step,std::valarray<double> &profile1c, double *lambda1c) {
-   double lambdaMin;
-   double lambdaMax;
+// ---------------------------------------------------
+// divise un profil par la reponse instrumenale          
+// ---------------------------------------------------
+void divideResponse(std::valarray<double> &profile1b, double lambda1b, std::valarray<double> &responseProfile, double responseLambda, double step,std::valarray<double> &profile1c, double &lambda1c) {
+   unsigned int taille_num = profile1b.size();
+   unsigned int taille_den = responseProfile.size();
+   double * rx = new double[taille_den];
+   double * ry = new double[taille_den];
+   double * a = new double[taille_den];
+   double * b = new double[taille_den];
+   double * c = new double[taille_den];
 
-   if ( lambda1b <  responseLambda ) {
-      lambdaMin = responseLambda;
-   } else {
-      lambdaMin = lambda1b;
+   // Calcul des coefficients de spline (sur le dénominateur)
+   for (unsigned int i = 0; i < taille_den; i++)
+   {
+      rx[i] = responseLambda + step * i;
+      ry[i] = responseProfile[i];
    }
-   *lambda1c = lambdaMin;
+   spline(taille_den, rx, ry, a, b, c);
 
-   double lambda1bMax = (profile1b.size() -1 ) *step + lambda1b;
-   double responseLambdaMax = (responseProfile.size() -1 ) *step + responseLambda;
-   if ( lambda1bMax <  responseLambdaMax ) {
-      lambdaMax = lambda1bMax;
-   } else {
-      lambdaMax = responseLambdaMax;
-   }
-   
-   // je ne fais pas la division si le profil 1B et la courbe de reponse n'ont pas de plage commune
-   if (lambdaMin > lambdaMax ) {
-      profile1c.resize(0);
-      return;
-   }
-   // je calcule le nombre d'echantillons 
-   int size = (int) ((lambdaMax - lambdaMin) /step) +1;
-   profile1c.resize(size);
-
-   int x1b   = (int) ((lambdaMin - lambda1b)/ step)  ;  
-   int xResp = (int) ((lambdaMin - responseLambda)/ step)  ;  
-   int x1c   = 0;
-
-   for(x1c = 0 ; x1c <size; x1c++) {
-      if (responseProfile[xResp] != 0) {
-         profile1c[x1c] = profile1b[x1b] /responseProfile[xResp];
-      } else {
-         profile1c[x1c] = 0;
+   // Division 
+   double responseLambdaMax = responseLambda + step * (taille_den -1); 
+   for (unsigned int i = 0; i < taille_num; i++)
+   {
+      double x = lambda1b + step * i;;
+      if (x < responseLambda || x > responseLambdaMax )
+      {
+         profile1c[i] = 0.0;
       }
-      x1b++;
-      xResp++;
+      else
+      {
+         double y = seval(taille_den, x, rx, ry, a, b, c);
+         if (y != 0.0)
+            profile1c[i] = profile1b[i] / y;
+         else
+            profile1c[i] = 0.0;
+      }
    }
 
-
+   lambda1c = lambda1b;
+   delete [] rx;
+   delete [] ry;
+   delete [] a;
+   delete [] b;
+   delete [] c;
 }
 
 
@@ -144,146 +169,72 @@ void divideResponse(std::valarray<double> &profile1b, double lambda1b, std::vala
 /* Modif V1.6 -> nom de variable wide_y remplacé par step_y        */
 /*  retourne une exception conteant le message d'erreur            */
 /*******************************************************************/
-void find_y_pos(INFOIMAGE *buffer,short *check, int imax,int jmax,int y0,
-               int ordre0,int step_y,int seuil,ORDRE *ordre,
-               int *nb_ordre,int min_order,int max_order,FILE *hand_log)
+void find_y_pos(INFOIMAGE &buffer,PROCESS_INFO &processInfo,ORDRE *ordre,
+               int &nb_ordre,int min_order,int max_order)
 {
-   int y,yy,n,max,py;
-   int x=imax/2;
-   int v1,v2,sv1,sv2;
-   double pos_y;
-   PIC_TYPE *buf = NULL;
-   PIC_TYPE *p;
-   int delta=1;
-   double last_pos_y=0.0;
-
-   p=buffer->pic;
+   int *profil = NULL;
+   int step = 12; 
 
    try {
-      // ----------------------------------------------------------
-      // tampon image intermédiaire 
-      // ----------------------------------------------------------
-      if ((buf=(PIC_TYPE *)calloc(imax*jmax,sizeof(PIC_TYPE)))==NULL)
-      {
-         throw ::std::exception("find_y_pos: Not enougth memory for buf"); 
+      int * profil = new int[buffer.jmax];
+      PIC_TYPE * flat = buffer.pic;
+      int x2 = buffer.imax / 2;
+      for (int j = 0; j < buffer.jmax; j++) {
+         int adr = j * buffer.imax + x2;
+         double vf = (double)flat[adr] + (double)flat[adr - 1]
+         + (double)flat[adr + 1] + (double)flat[adr - 2] + (double)flat[adr + 2];
+         profil[j] = (int)(vf/5.0); // moyenne sur 5 colonnes
       }
 
-      // -----------------------------------------------------------
-      // on sauvegarde l'image
-      // -----------------------------------------------------------
-      memmove(buf,p,sizeof(PIC_TYPE)*imax*jmax);
-
-      y0=y0-1;     // on passe en coordonnées mémoire - origine (0,0)
-
-      // ---------------------------------------------------------
-      // gradient vertical de l'image
-      // ---------------------------------------------------------
-      if (gauss_convol(buffer,2.0)) // on filtre un peu le bruit       
+      // Recherche de la coordonnée Y le plus proche de ordre_ref_y 
+      int delta_y = 10000;
+      int nb_ordre = 0;
+      int rang = 0;
+      for (int j = 3; j < buffer.jmax - 3; j++)
       {
-         throw ::std::exception("find_y_pos: gauss_convol error"); 
-      }
-      // Modif V1.6  : remplace grady par grad2
-      //grady(buffer,1);   
-      grady2(buffer,1);                       // gradient -> nouvelle version V1.6
-      p=buffer->pic;
-
-      // --------------------------------------------------------------
-      // Recherche des ordres croissants 
-      // Première passe pour trouver la position Y de l'ordre ordre0
-      // --------------------------------------------------------------
-      n=0;
-      double ecart=1e10;
-      int rang=0;
-      for (y=jmax-3;y>3;y--)
-      {
-         v1=(int)p[x+(y+delta)*imax];
-         v2=(int)p[x+(y-delta)*imax];
-         sv1=SGN(v1);
-         sv2=SGN(v2);
-
-         if (sv1!=sv2) {
-            if (abs(v1-v2)>seuil) {
-               max=abs(v1-v2);
-               py=y;
-               for (yy=0;yy<6;yy++) { // on cherche le max du gradient (écart max entre v1 et v2)
-               
-                  v1=(int)p[x+(y-yy+delta)*imax];
-                  v2=(int)p[x+(y-yy-delta)*imax];
-                  if (abs(v1-v2)>max) py=y-yy;            
-               }
-               n++;
-
-               int cdgResult = calc_cdg_y(buf,imax,jmax,imax/2,py-step_y/2,py+step_y/2,&pos_y); // centre de gravite suivant Y
-               if ( cdgResult == 0 ) {
-                  if (fabs(pos_y-(double)y0)<ecart) {
-                     ecart=fabs(pos_y-(double)y0);
-                     rang=n; 
-                  }
-
-                  if (fabs(last_pos_y-pos_y)<(double)step_y-1.0) {
-                     char message[1024];
-                     sprintf(message, "find_y_pos: Y order position detection aborted. Parameters: last_n=%d last_pos_y=%f pos_y=%f step_y=%d seuil=%d . Seuil may be too low",
-                        n,last_pos_y,pos_y,step_y,seuil);
-                     throw ::std::exception(message); 
-                  }
-                  last_pos_y=pos_y;
-               } else {
-                  // pas d'ordre trouvé
-               }
-
-
-               y=y-step_y;
-            }
-         }
-      }
-
-      fprintf(hand_log,"Nombre d'ordres trouve : %d\n\n",n);
-
-      *nb_ordre=n;
-
-      // ---------------------------------------------------------------------------------
-      // Recherche des ordres croissants 
-      // Deuxième passe - on associe le numéro de l'ordre et la position Y correspondante
-      // ---------------------------------------------------------------------------------
-      n=ordre0-rang;
-      for (y=jmax-3;y>3;y--)
-      {
-         v1=(int)p[x+(y+delta)*imax];
-         v2=(int)p[x+(y-delta)*imax];
-         sv1=SGN(v1);
-         sv2=SGN(v2);
-
-         if (sv1!=sv2)
+         int v = profil[j - 2] - 2 * profil[j] + profil[j + 2]; // dérivée seconde
+         if (v < -processInfo.detectionThreshold) // on a trouvé un ordre
          {
-            if (abs(v1-v2)>seuil)
+            nb_ordre++;
+            if (abs(j - (processInfo.referenceOrderY - 1)) < delta_y)
             {
-               max=abs(v1-v2);
-               py=y;
-
-               for (yy=0;yy<6;yy++) // on cherche le max du gradiant (écart max entre v1 et v2)
-               {
-                  v1=(int)p[x+(y-yy+delta)*imax];
-                  v2=(int)p[x+(y-yy-delta)*imax];
-                  //if (fabs((double)v1-v2)>max) py=y-yy;            
-                  if (abs(v1-v2)>max) {
-                     py=y-yy;            
-                  }
-               }
-
-               n++;
-               calc_cdg_y(buf,imax,jmax,imax/2,py-step_y/2,py+step_y/2,&pos_y);
-               ordre[n].flag=1;         
-               ordre[n].yc=pos_y;  // coordonnées mémoire (0,0)
-               y=y-step_y;
+               delta_y = abs(j - (processInfo.referenceOrderY - 1));
+               rang = nb_ordre; // rang de l'ordre le plus proche de la référence
             }
+            j = j + step; // on saute d'un ordre (attention : l'incrément inter-ordre est codé en dur)
          }
       }
-      memmove(p,buf,sizeof(PIC_TYPE)*imax*jmax);
 
-      free(buf);
+      // Deuxième passe, affectation des ordres
+      delta_y = 10000;
+      nb_ordre = 0;
+      for (int j = 3; j < buffer.jmax - 3; j++)
+      {
+         int v = profil[j - 2] - 2 * profil[j] + profil[j + 2]; // dérivée seconde
+         if (v < -processInfo.detectionThreshold) // on a trouvé un ordre
+         {
+            nb_ordre++;
+            if (rang-nb_ordre + processInfo.referenceOrderNum >= min_order) // on ne calcule que les ordres au dessus de 31
+            {
+               int n = rang - nb_ordre + processInfo.referenceOrderNum ;
+               if ( n >= min_order && n <= max_order ) {
+                  ordre[n].yc = j;
+                  ordre[n].flag = 1;
+                  double yc = 0;
+                  int cdgResult = calc_cdg_y(flat, buffer.imax, buffer.jmax, buffer.imax / 2, j - 5, j + 5, &yc);
+                  if ( cdgResult == 0 ) {
+                      ordre[n].yc = (int)(yc + 0.5);
+                  }
+               }
+            }
+            j = j + step;  // attention : l'incrément inter-ordre est codé en dur
+         }
+      }
+
+      delete [] profil;
 
    } catch (std::exception e) {
-      free(buf);
+      delete [] profil;
       throw e;
    }
 }
@@ -518,28 +469,27 @@ return 0;
 /*********************************************************************************/
 int calc_cdg_y(PIC_TYPE *p,int imax,int jmax,int x,int y1,int y2,double *pos_y)
 {
-int j;
-double v;
-double s1=0.0;
-double s2=0.0;
+   int j;
+   double v;
+   double s1=0.0;
+   double s2=0.0;
 
-for (j=y1;j<=y2;j++)
-   {
-   if (j>=0 && j<jmax)
-      {
-      v=(double)p[x+j*imax];
-      s1=s1+(double)j*v;
-      s2=s2+v;
+   for (j=y1;j<=y2;j++) {
+      if (j>=0 && j<jmax) {
+         v=(double)p[x+j*imax];
+         s1=s1+(double)j*v;
+         s2=s2+v;
       }
-   else
-      return 1;
+      else {
+         return 1;
+      }
    }
-if (s2==0)
-   *pos_y=0;
-else
-   *pos_y=s1/s2;
+   if (s2==0)
+      *pos_y=0;
+   else
+      *pos_y=s1/s2;
 
-return 0;
+   return 0;
 }
 
 /************************************* TRACK_ORDER ************************************/
@@ -547,145 +497,79 @@ return 0;
 /* wide_y doit être inférieur à l'écart minimal typique entre deux ordres             */
 /* en pixels suivant l'axe Y.                                                         */
 /**************************************************************************************/ 
-void track_order(INFOIMAGE *buffer,short *check,int imax, int jmax, int wide_y,ORDRE *ordre,int n,FILE *hand_log)
+void track_order(INFOIMAGE *buffer,int imax, int jmax, int wide_y,ORDRE *ordre,int n)
 {
    int i,k,py,size;
    double pos_y;
-   double *x,*y,*w,*a;
+   double *x = NULL;
+   double *y = NULL;
+   double *w = NULL;
+   double *a = NULL;
    int ic=imax/2;
-   int degre=4;
-   double rms;
-   char ligne[512];
 
    try {
-      x= NULL;
-      y= NULL;
-      w= NULL;
-      a= NULL;
       size=abs(ordre[n].max_x-ordre[n].min_x+1);
 
-      if ( ordre[n].yc >= ordre[n].max_x ) {
-         sprintf(ligne,"error order #%d: central abcisse is greater than right marging (%f > %f)",
-            n, ordre[n].yc, ordre[n].max_x);
-         throw std::exception(ligne);
-      }
-      if ( ordre[n].yc <= ordre[n].min_x ) {
-         sprintf(ligne,"error order #%d: central abcisse is lower than left marging (%f < %f)",
-            n, ordre[n].yc, ordre[n].min_x);
-         throw std::exception(ligne);
-      }
-
-      if ((x=(double *)malloc(size*sizeof(double)))==NULL)
-      {
-         throw std::exception("Pas assez de memoire pour track_order x");
-      }
-
-      if ((y=(double *)malloc(size*sizeof(double)))==NULL)
-      {
-         throw std::exception("Pas assez de memoire pour track_order y");
-      }
-
-      if ((w=(double *)malloc(size*sizeof(double)))==NULL)
-      {
-         throw std::exception("Pas assez de memoire pour track_order w");
-      }
-
-      if ((a=(double *)malloc((degre+1)*sizeof(double)))==NULL)
-      {
-         throw std::exception("Pas assez de memoire pour track_order a");
-      }
+      x = new double[size];
+      y = new double[size];
+      w = new double[size];
 
       // -------------------------------------------
       // Détection de la trace de l'ordre n
       // -------------------------------------------
       k=0;
       py=int(ordre[n].yc+.5);
-      for (i=ic;i<ordre[n].max_x;i++)
-      {
-         calc_cdg_y(buffer->pic,imax,jmax,i,py-wide_y/2,py+wide_y/2,&pos_y);  // centre de gravité suivant Y
-
+      for (i=ic;i<ordre[n].max_x;i++) {
+         int cgdResult = calc_cdg_y(buffer->pic,imax,jmax,i,py-wide_y/2,py+wide_y/2,&pos_y);  // centre de gravité suivant Y
+         if ( cgdResult == 1 ) {
+            char message[1024];
+            sprintf(message, "Error calc_cdg_y() in track_order ordernum: %d ",n);
+            throw ::std::exception(message);
+         }
          if (abs(int(pos_y)-py)>5) continue; // on a détecté un point aberrant
 
          x[k]=(double)i;
          y[k]=pos_y;
          w[k]=1.0;
          py=(int)(pos_y+.5);
-
-         // dessine le point de la ligne de crête trouvée dans l'image de vérification
-///         if ( check != NULL ) {
-///            if (i>=0 && i<imax && py>=0 && py<jmax) check[i+py*imax]=1000;    
-///         }
          k++;
       } 
 
       py=int(ordre[n].yc+.5);
-      for (i=ic-1;i>=ordre[n].min_x-1;i--)
-      {
+      for (i=ic-1;i>=ordre[n].min_x-1;i--) {
          calc_cdg_y(buffer->pic,imax,jmax,i,py-wide_y/2,py+wide_y/2,&pos_y); // centre de gravité suivant Y
-
          if (abs(int(pos_y)-py)>5) continue; // on a détecté un point aberrant
-
          x[k]=(double)i;
          y[k]=pos_y;
          w[k]=1.0;
          py=(int)(pos_y+.5);
-
-         // dessine le point de la ligne de crête trouvée dans l'image de vérification
-///         if ( check != NULL ) {
-///            if (i>=0 && i<imax && py>=0 && py<jmax) check[i+py*imax]=1000;
-///         }
          k++;
       } 
 
       // ---------------------------------------
       // Ajustement du polynôme
       // ---------------------------------------
-      k=size;
-      for (i=0;i<=degre;i++) a[i]=0.0;
+      double rms = 0.0;
+      a = new double[POLY_ORDER_DEGREE + 1];
+      k = size;
+      for (i=0; i<=POLY_ORDER_DEGREE; i++) a[i]=0.0;
 
-      fitPoly(k,degre,x,y,w,a,&rms);
-
-      sprintf(ligne,"#%d\t",n);
-      fwrite(ligne,strlen(ligne),1,hand_log);
-
-      for (i=0;i<=degre;i++)
-      {
-         sprintf(ligne,"%e\t",a[i]);
-         fwrite(ligne,strlen(ligne),1,hand_log);
+      fitPoly(k,POLY_ORDER_DEGREE,x,y,w,a,&rms);
+      for (i=0;i<=POLY_ORDER_DEGREE;i++) {
          ordre[n].poly_order[i]=a[i];
       }
-
-      sprintf(ligne,"%f\n",rms);
-      fwrite(ligne,strlen(ligne),1,hand_log);
       ordre[n].rms_order=rms;
-
-      // ---------------------------------------------------------------------
-      // Dessin de la trace de l'ordre modélisé dans l'image de vérification
-      // ---------------------------------------------------------------------
-      double v;
-      for (i=ordre[n].min_x-1;i<ordre[n].max_x;i++)
-      {
-         v=0.0;
-         for (k=0;k<=degre;k++)
-         {
-            v=v+ordre[n].poly_order[k]*pow((double)i,(double)k);
-         }
-         py=(int)(v+.5); 
-///         if ( check != NULL ) {         
-///            if (i>=0 && i<imax && py>=0 && py<jmax) check[i+py*imax]=32000;
-///         }
-      }
-
-      free(x);
-      free(y);
-      free(w);
-      free(a);
+      delete [] x;
+      delete [] y;
+      delete [] w; 
+      delete [] a;  
 
    } catch (std::exception e) {
-      if(x) free(x);
-      if(y) free(y);
-      if(w) free(w);
-      if(a) free(a);
+      delete [] x;
+      delete [] y;
+      delete [] w; 
+      delete [] a;  
+      throw e;
    }
 }
 
@@ -797,7 +681,7 @@ void flat_rectif(std::valarray<double> &object ,std::valarray<double> &flat, std
 /* raie et la position effectivement observée (ddx).                                         */
 /* La position théorique est marquée dans l'image de vérification par un carré en pointillé. */
 /*********************************************************************************************/
-int calib_prediction(double lambda0,int ordre0,short *check,int imax, int jmax,double posx0,
+int calib_prediction(double lambda0,int ordre0,int imax, int jmax,double posx0,
                      ORDRE *ordre,double *ddx,INFOSPECTRO spectro,::std::list<double> lineList )
 {
    double k;
@@ -828,11 +712,11 @@ int calib_prediction(double lambda0,int ordre0,short *check,int imax, int jmax,d
 /* Calcule la position d'une raie de longueur d'onde lam pour l'ordre k dans le profil spectral. */
 /* Tiens compte du décalage dx trouvée avec la raie du Ne à 5852 A.                              */
 /*************************************************************************************************/
-double compute_pos(double k,double lambda,double dx,int imax, INFOSPECTRO spectro)
+double compute_pos(double k, double lambda, double dx, INFOSPECTRO &spectro)
 {
    
    double alpha=spectro.alpha*PI/180.;
-   int xc=imax/2;
+   int xc=spectro.imax/2;
    double beta,beta2,posx;
 
    if ( spectro.alpha > SEUIL_ALPHA ) {
@@ -853,65 +737,76 @@ double compute_pos(double k,double lambda,double dx,int imax, INFOSPECTRO spectr
 /* Line : numero de la ligne (en coordonnees mémoire) */
 /* delta_x : valeur de la translation                 */
 /******************************************************/
-int translate_line(INFOIMAGE *buffer,int line,double delta_x)
+void translate_line(std::valarray<PIC_TYPE> &p, int imax, int jmax, int line,double delta_x, int spline_deg)
 {
-double frac_x;
-PIC_TYPE d_x;
-double poids1,poids3;
-int i,imax,jmax,i0,j0;
-PIC_TYPE l1,l3;
-PIC_TYPE *ptr,*p,*buf;
-double level2;
-int adr,longueur;
+   int SplineDegree = spline_deg;
 
-if (buffer->pic==NULL) return 1;
+   int imax1 = imax;
+   int jmax1 = 2; // important, sinon plantage
+   float *buf_in = NULL;
+   float *buf_out = NULL;
 
-delta_x=-delta_x;
-d_x=(PIC_TYPE)floor(delta_x);  /* partie entiere de la translation sur X */
-frac_x=delta_x-d_x;         /* partie fractionnaire sur X */
+   try {
+      int intueur=imax1*jmax1;
+      buf_in = new float[intueur];  // le vecteur de calcul d'entrée (colonne à interpoler)
+      buf_out = new float[intueur]; // le vecteur de calcul de sortie (colonne interpolée)
 
-poids1=(1-frac_x);   /* en bas a gauche */
-poids3=frac_x;       /* en bas a droite */
+      //  TODO voir pourquoi il faut initiliser ces tableaux
+      for (int j = 0; j < intueur; j++){
+         buf_in[j] = 0; 
+         buf_out[j] = 0;
+      }
+      
+      int i,adr;
+      int j=line; // rang de la ligne à translater
 
-imax=buffer->imax;
-jmax=buffer->jmax;
+      // Génération du vecteur d'entrée (une ligne de longueur imax)
+      for (i=0; i < imax; i++)
+      {
+         adr=j*imax+i;
+         buf_in[i]=(float)p[adr];
+         buf_out[i]=0.0F;
+      }
 
-longueur=(int)imax;
+      // Calcul des coefficients d'interpolation sur le vecteur d'entrée (taille imax x 2)
+      SamplesToCoefficients(buf_in, imax1, jmax1, SplineDegree);
 
-if ((buf=(PIC_TYPE *)calloc(longueur,sizeof(PIC_TYPE)))==NULL)
-   {
-   printf("\nPas assez de memoire.\n");
-   return 1;
+      // On visite les pixels du vecteur d'arrivée
+      int x, y;
+      for (y=0;y<1;y++)
+      {
+         for (x=0;x<imax1;x++)
+         {
+            double x1,y1;
+            x1=(double)x-delta_x;
+            y1=0.0;
+            if (x1<0 || x1>(double)(imax-1) || y1<0 || y1>(double)(jmax-1))
+               buf_out[x]=0.0F;
+            else 
+            {
+               float v=(float)InterpolatedValue(buf_in,imax1,jmax1,
+                  x1,y1,SplineDegree);
+               buf_out[x] = v; 
+            }
+         }
+      }
+
+      // On copie la ligne translatée dans le buffer
+      for (i=0; i<imax; i++)
+      {
+         adr=j*imax+i;
+         p[adr]=(int)buf_out[i];
+      }
+
+      delete [] buf_in;
+      delete [] buf_out;
+      return;
+   } catch (std::exception &e) {
+      delete [] buf_in;
+      delete [] buf_out;
+      throw e;
    }
 
-p=buffer->pic;
-
-j0=line;
-if (j0>=0 && j0<jmax-1)
-   {
-   adr=(int)j0*imax;
-   for (i=0;i<imax;i++)
-	   {
-	   i0=i+d_x;
-	   if (i0>=0 && i0<imax-1) /* test dans image depart */
-	      {
-	      l1=*(ptr=p+(adr+i0));
-	      l3=*(++ptr);
-	      level2=poids1*(double)l1+poids3*(double)l3+.5;
-	      buf[i]=(PIC_TYPE)level2;
-	      }
-	   }
-   }
-
-for (i=0;i<imax;i++)
-   {
-   adr=(int)j0*imax+(int)i;
-   *(p+adr)=buf[i];
-   }
-
-free(buf);
-
-return 0;
 }
 
 
@@ -1000,7 +895,8 @@ for (xadd=1.0-x;idx<ndim;xadd+=1.0)
 /* mode = 2 -> spline 32 pixels (bons résultats aussi) */
 /* mode = 3 -> sinc (trop lent)                        */
 /*******************************************************/
- int translate_col_1(INFOIMAGE *buffer,int colonne,double delta_y)
+/*
+int translate_col_1(INFOIMAGE *buffer,int colonne,double delta_y)
 {
 int imax,jmax,i,j,adr;
 PIC_TYPE *p,*p2,*tampon;
@@ -1221,74 +1117,743 @@ for (j=0;j<jmax;j++)
 free(tampon);
 return 0;
 }
+*/
 
+// /////////////////////////////////////////////
+// InitialCausalCoefficient
+// /////////////////////////////////////////////
+inline double InitialCausalCoefficient(double *c,        /* coefficients */
+                                int DataLength,   /* number of coefficients */
+                                double z,         /* actual pole */
+                                double Tolerance  /* admissible relative error */
+                                )
 
-/******************** TRANSLATE_COL_0******************/
-/* Translation d'une colonne de l'image               */
-/* Colonne : numéro de la colonne (en coord. mémoire) */
-/* delta_y : valeur de la translation                 */
-/******************************************************/
-int translate_col_0(INFOIMAGE *buffer,int colonne,double delta_y)
 {
-double frac_y;
-int d_y;
-double poids1,poids3;
-int j,imax,jmax,i0,j0;
-int l1,l3;
-PIC_TYPE *p,*buf;
-double level2;
-int adr,longueur;
+   double Sum,zn,z2n,iz;
+   int n,Horizon;
 
-if (buffer->pic==NULL) return 1;
-
-delta_y=-delta_y;
-d_y=(int)floor(delta_y);  // partie entière de la translation suivant Y 
-frac_y=delta_y-d_y;         // partie fractionnaire de la translation
-
-poids1=(1-frac_y);   
-poids3=frac_y;       
-
-imax=buffer->imax;
-jmax=buffer->jmax;
-
-longueur=jmax;
-if ((buf=(PIC_TYPE *)calloc(longueur,sizeof(PIC_TYPE)))==NULL)
+   // This initialization corresponds to mirror boundaries 
+   Horizon=DataLength;
+   if (Tolerance == DBL_EPSILON) {
+      Horizon= 21; 
+   } else {
+      if (Tolerance > 0.0) {
+         Horizon=(int)ceil(log(Tolerance)/log(fabs(z)));
+      }
+   }
+   if (Horizon < DataLength) 
    {
-   printf("\nPas assez de memoire.\n");
-   return 1;
+      // Accelerated loop 
+      zn=z;
+      Sum=c[0];
+      for (n = 1; n < Horizon; n++) 
+      {
+         Sum += zn * c[n];
+         zn *= z;
+      }
+      return(Sum);
+   }
+   else 
+   {
+      // full loop 
+      zn = z;
+      iz = 1.0 / z;
+      z2n = pow(z, (double)(DataLength - 1L));
+      Sum = c[0] + z2n * c[DataLength - 1L];
+      z2n *= z2n * iz;
+      for (n = 1; n <= DataLength - 2; n++) 
+      {
+         Sum += (zn + z2n) * c[n];
+         zn *= z;
+         z2n *= iz;
+      }
+      return(Sum / (1.0-zn*zn));
+   }
+}
+
+// //////////////////////////////////////////////////
+// InitialAntiCausalCoefficient
+// //////////////////////////////////////////////////
+inline double InitialAntiCausalCoefficient(double *c,  		// coefficients 
+                                    int	DataLength,	// number of samples or coefficients 
+                                    double z		      // actual pole 
+                                    )
+
+{ 
+   // this initialization corresponds to mirror boundaries 
+   return((z / (z * z - 1.0)) * (z * c[DataLength - 2] + c[DataLength - 1]));
+} 
+
+        
+
+inline void ConvertToInterpolationCoefficients(double *c,	      // input samples --> output coefficients 	
+                                        int DataLength,  // number of samples or coefficients 
+                                        double *z,       // poles 
+                                        int NbPoles,     // number of poles 
+                                        double Tolerance // admissible relative error 
+                                        )
+{
+   double Lambda=1.0;
+   int n,k;
+
+   /* Special case required by mirror boundaries */
+   if (DataLength==1) return;
+
+   /* Compute the overall gain */
+   for (k=0; k < NbPoles; k++) Lambda=Lambda*(1.0-z[k])*(1.0-1.0/z[k]);
+
+   /* Apply the gain */
+   for (n=0; n < DataLength; n++) c[n] *= Lambda;
+
+   /* Loop over all poles */
+   for (k=0; k< NbPoles; k++) 
+   {
+      /* Causal initialization */
+      c[0]=InitialCausalCoefficient(c,DataLength,z[k],Tolerance);
+
+      /* Causal recursion */
+      for (n=1;n<DataLength;n++) c[n]+=z[k]*c[n-1];
+
+      /* Anticausal initialization */
+      c[DataLength-1]=InitialAntiCausalCoefficient(c,DataLength,z[k]);
+
+      /* Anticausal recursion */
+      for (n=DataLength-2;0<=n;n--) c[n]=z[k]*(c[n+1]-c[n]);
+   }
+}
+
+
+
+// ///////////////////////////////////////////////////////////////////////
+// SamplesToCoefficients
+// //////////////////////////////////////////////////////////////////////
+void SamplesToCoefficients(float *Image,		/* in-place processing */
+                                 int Width,		    /* width of the image */
+                                 int Height,		/* height of the image */
+                                 int SplineDegree   /* degree of the spline model */
+                                 )
+{
+   double *Line = NULL;
+   double *Pole = NULL;
+   int	NbPoles;
+
+   Pole = new double[4];
+
+   try {
+      // recover the poles from a lookup table 
+      switch (SplineDegree) {
+              case 2:
+                 NbPoles = 1;
+                 Pole[0] = sqrt(8.0) - 3.0;
+                 break;
+              case 3:
+                 NbPoles = 1;
+                 Pole[0] = sqrt(3.0) - 2.0;
+                 break;
+              case 4:
+                 NbPoles = 2;
+                 Pole[0] = sqrt(664.0 - sqrt(438976.0)) + sqrt(304.0) - 19.0;
+                 Pole[1] = sqrt(664.0 + sqrt(438976.0)) - sqrt(304.0) - 19.0;
+                 break;
+              case 5:
+                 NbPoles = 2;
+                 Pole[0] = sqrt(135.0 / 2.0 - sqrt(17745.0 / 4.0)) + sqrt(105.0 / 4.0)
+                    - 13.0 / 2.0;
+                 Pole[1] = sqrt(135.0 / 2.0 + sqrt(17745.0 / 4.0)) - sqrt(105.0 / 4.0)
+                    - 13.0 / 2.0;
+                 break;
+              case 6:
+                 NbPoles = 3;
+                 Pole[0] = -0.48829458930304475513011803888378906211227916123938;
+                 Pole[1] = -0.081679271076237512597937765737059080653379610398148;
+                 Pole[2] = -0.0014141518083258177510872439765585925278641690553467;
+                 break;
+              case 7:
+                 NbPoles = 3;
+                 Pole[0] = -0.53528043079643816554240378168164607183392315234269;
+                 Pole[1] = -0.12255461519232669051527226435935734360548654942730;
+                 Pole[2] = -0.0091486948096082769285930216516478534156925639545994;
+                 break;
+              case 8:
+                 NbPoles = 4;
+                 Pole[0] = -0.57468690924876543053013930412874542429066157804125;
+                 Pole[1] = -0.16303526929728093524055189686073705223476814550830;
+                 Pole[2] = -0.023632294694844850023403919296361320612665920854629;
+                 Pole[3] = -0.00015382131064169091173935253018402160762964054070043;
+                 break;
+              case 9:
+                 NbPoles = 4;
+                 Pole[0] = -0.60799738916862577900772082395428976943963471853991;
+                 Pole[1] = -0.20175052019315323879606468505597043468089886575747;
+                 Pole[2] = -0.043222608540481752133321142979429688265852380231497;
+                 Pole[3] = -0.0021213069031808184203048965578486234220548560988624;
+                 break;
+              default:
+                 //throw ::std::exception("Invalid spline degree") ;
+                 break;
+      }
+
+      /* convert the image samples into interpolation coefficients */
+      /* in-place separable process, aint x */
+      Line = new double[Width];
+      for (int y = 0; y < Height; y++)   
+      {
+         for (int x=0; x<Width;x++)  // GetRow
+         {
+            int adr=y*Width+x;
+            Line[x]=(double)Image[adr];
+         }
+         // attention Christian a redefini DBL_EPSILON=0.0  (C++ a deja defini DBL_EPSILON dans float.h)
+         //ConvertToInterpolationCoefficients(Line, Width, Pole, NbPoles, DBL_EPSILON);
+         ConvertToInterpolationCoefficients(Line, Width, Pole, NbPoles, 0.0);
+         for (int x=0; x<Width;x++)  // PutRow
+         {
+            int adr=y*Width+x;
+            Image[adr]=(float)Line[x];
+         }
+      }
+      delete [] Line;
+
+      // in-place separable process, aint y 
+      Line = new double[Height];
+      for (int x = 0; x < Width; x++) 
+      {
+         for (int y=0;y<Height;y++)   // GetColumm
+         {
+            int adr=y*Width+x;
+            Line[y]=(double)Image[adr]; 
+         }
+         // attention Christian a redefini DBL_EPSILON=0.0  (C++ a deja defini DBL_EPSILON dans float.h)
+         //ConvertToInterpolationCoefficients(Line, Height, Pole, NbPoles, DBL_EPSILON);
+         ConvertToInterpolationCoefficients(Line, Height, Pole, NbPoles, 0.0);
+         for (int y=0;y<Height;y++)   // PutColumm
+         {
+            int adr=y*Width+x;
+            Image[adr]=(float)Line[y]; 
+         }
+      }
+      
+      delete [] Pole;
+      delete [] Line;
+      return;
+   } catch (std::exception &e) {
+      delete [] Pole;
+      delete [] Line;
+      throw e;
    }
 
-p=buffer->pic;
+}
 
-i0=colonne;
-if (i0>=0 && i0<imax-1)
-   {
-   for (j=0;j<jmax;j++)
-	   {
-	   j0=j+d_y;
-	   if (j0>=0 && j0<jmax-1) // test dans image depart
-	      {
-         adr=j0*imax+i0;
-         //l1=*(p+adr);
-         l1=p[adr];
-         adr=adr+imax;
-         //l3=*(p+adr);
-         l3=p[adr];
-	      level2=poids1*(double)l1+poids3*(double)l3+.5;
-         adr=j*imax+i0;
-         buf[j]=(PIC_TYPE)level2;
-	      }
-	   }
+// //////////////////////////////////////////////////////////////
+// InterpolatedValue
+// (le degré 9 est recommandé pour un résultat optimal)
+// //////////////////////////////////////////////////////////////
+double InterpolatedValue(float *Bcoeff,	  /* input B-spline array of coefficients */
+                                int Width,		  /* width of the image */
+                                int Height,		  /* height of the image */
+                                double x,		  /* x coordinate where to interpolate */
+                                double y,		  /* y coordinate where to interpolate */
+                                int SplineDegree  /* degree of the spline model */
+                                )
+{
+   double *xWeight= NULL;
+   double *yWeight=NULL;
+   double interpolated;
+   double w, w2, w4, t, t0, t1;
+   int *xIndex=NULL;
+   int *yIndex=NULL;
+   int	Width2 = 2 * Width - 2, Height2 = 2 * Height - 2;
+   int	i, j, k;
+
+   xWeight=new double[10];
+   yWeight=new double[10];
+   xIndex=new int[10];
+   yIndex=new int[10];
+
+   try {
+      /* compute the interpolation indexes */
+      int b = SplineDegree & 1;
+      if (b==1) 
+      {
+         i = (int)floor(x) - SplineDegree / 2;
+         j = (int)floor(y) - SplineDegree / 2;
+         for (k = 0; k <= SplineDegree; k++) 
+         {
+            xIndex[k] = i++;
+            yIndex[k] = j++;
+         }
+      }
+      else 
+      {
+         i = (int)floor(x + 0.5) - SplineDegree / 2;
+         //j = (int)(floor(y + 0.5) - SplineDegree / 2);
+         double j1 = floor(y + 0.5);
+         double j2 = SplineDegree / 2;
+         j = (int)(j1 - j2);
+         for (k = 0; k <= SplineDegree; k++) 
+         {
+            xIndex[k] = i++;
+            yIndex[k] = j++;
+         }
+      }
+
+      /* compute the interpolation weights */
+      switch (SplineDegree) {
+              case 2:
+                 /* x */
+                 w = x - (double)xIndex[1];
+                 xWeight[1] = 3.0 / 4.0 - w * w;
+                 xWeight[2] = (1.0 / 2.0) * (w - xWeight[1] + 1.0);
+                 xWeight[0] = 1.0 - xWeight[1] - xWeight[2];
+                 /* y */
+                 w = y - (double)yIndex[1];
+                 yWeight[1] = 3.0 / 4.0 - w * w;
+                 yWeight[2] = (1.0 / 2.0) * (w - yWeight[1] + 1.0);
+                 yWeight[0] = 1.0 - yWeight[1] - yWeight[2];
+                 break;
+              case 3:
+                 /* x */
+                 w = x - (double)xIndex[1];
+                 xWeight[3] = (1.0 / 6.0) * w * w * w;
+                 xWeight[0] = (1.0 / 6.0) + (1.0 / 2.0) * w * (w - 1.0) - xWeight[3];
+                 xWeight[2] = w + xWeight[0] - 2.0 * xWeight[3];
+                 xWeight[1] = 1.0 - xWeight[0] - xWeight[2] - xWeight[3];
+                 /* y */
+                 w = y - (double)yIndex[1];
+                 yWeight[3] = (1.0 / 6.0) * w * w * w;
+                 yWeight[0] = (1.0 / 6.0) + (1.0 / 2.0) * w * (w - 1.0) - yWeight[3];
+                 yWeight[2] = w + yWeight[0] - 2.0 * yWeight[3];
+                 yWeight[1] = 1.0 - yWeight[0] - yWeight[2] - yWeight[3];
+                 break;
+              case 4:
+                 /* x */
+                 w = x - (double)xIndex[2];
+                 w2 = w * w;
+                 t = (1.0 / 6.0) * w2;
+                 xWeight[0] = 1.0 / 2.0 - w;
+                 xWeight[0] *= xWeight[0];
+                 xWeight[0] *= (1.0 / 24.0) * xWeight[0];
+                 t0 = w * (t - 11.0 / 24.0);
+                 t1 = 19.0 / 96.0 + w2 * (1.0 / 4.0 - t);
+                 xWeight[1] = t1 + t0;
+                 xWeight[3] = t1 - t0;
+                 xWeight[4] = xWeight[0] + t0 + (1.0 / 2.0) * w;
+                 xWeight[2] = 1.0 - xWeight[0] - xWeight[1] - xWeight[3] - xWeight[4];
+                 /* y */
+                 w = y - (double)yIndex[2];
+                 w2 = w * w;
+                 t = (1.0 / 6.0) * w2;
+                 yWeight[0] = 1.0 / 2.0 - w;
+                 yWeight[0] *= yWeight[0];
+                 yWeight[0] *= (1.0 / 24.0) * yWeight[0];
+                 t0 = w * (t - 11.0 / 24.0);
+                 t1 = 19.0 / 96.0 + w2 * (1.0 / 4.0 - t);
+                 yWeight[1] = t1 + t0;
+                 yWeight[3] = t1 - t0;
+                 yWeight[4] = yWeight[0] + t0 + (1.0 / 2.0) * w;
+                 yWeight[2] = 1.0 - yWeight[0] - yWeight[1] - yWeight[3] - yWeight[4];
+                 break;
+              case 5:
+                 /* x */
+                 w = x - (double)xIndex[2];
+                 w2 = w * w;
+                 xWeight[5] = (1.0 / 120.0) * w * w2 * w2;
+                 w2 -= w;
+                 w4 = w2 * w2;
+                 w -= 1.0 / 2.0;
+                 t = w2 * (w2 - 3.0);
+                 xWeight[0] = (1.0 / 24.0) * (1.0 / 5.0 + w2 + w4) - xWeight[5];
+                 t0 = (1.0 / 24.0) * (w2 * (w2 - 5.0) + 46.0 / 5.0);
+                 t1 = (-1.0 / 12.0) * w * (t + 4.0);
+                 xWeight[2] = t0 + t1;
+                 xWeight[3] = t0 - t1;
+                 t0 = (1.0 / 16.0) * (9.0 / 5.0 - t);
+                 t1 = (1.0 / 24.0) * w * (w4 - w2 - 5.0);
+                 xWeight[1] = t0 + t1;
+                 xWeight[4] = t0 - t1;
+                 /* y */
+                 w = y - (double)yIndex[2];
+                 w2 = w * w;
+                 yWeight[5] = (1.0 / 120.0) * w * w2 * w2;
+                 w2 -= w;
+                 w4 = w2 * w2;
+                 w -= 1.0 / 2.0;
+                 t = w2 * (w2 - 3.0);
+                 yWeight[0] = (1.0 / 24.0) * (1.0 / 5.0 + w2 + w4) - yWeight[5];
+                 t0 = (1.0 / 24.0) * (w2 * (w2 - 5.0) + 46.0 / 5.0);
+                 t1 = (-1.0 / 12.0) * w * (t + 4.0);
+                 yWeight[2] = t0 + t1;
+                 yWeight[3] = t0 - t1;
+                 t0 = (1.0 / 16.0) * (9.0 / 5.0 - t);
+                 t1 = (1.0 / 24.0) * w * (w4 - w2 - 5.0);
+                 yWeight[1] = t0 + t1;
+                 yWeight[4] = t0 - t1;
+                 break;
+              case 6:
+                 /* x */
+                 w = x - (double)xIndex[3];
+                 xWeight[0] = 1.0 / 2.0 - w;
+                 xWeight[0] *= xWeight[0] * xWeight[0];
+                 xWeight[0] *= xWeight[0] / 720.0;
+                 xWeight[1] = (361.0 / 192.0 - w * (59.0 / 8.0 + w
+                    * (-185.0 / 16.0 + w * (25.0 / 3.0 + w * (-5.0 / 2.0 + w)
+                    * (1.0 / 2.0 + w))))) / 120.0;
+                 xWeight[2] = (10543.0 / 960.0 + w * (-289.0 / 16.0 + w
+                    * (79.0 / 16.0 + w * (43.0 / 6.0 + w * (-17.0 / 4.0 + w
+                    * (-1.0 + w)))))) / 48.0;
+                 w2 = w * w;
+                 xWeight[3] = (5887.0 / 320.0 - w2 * (231.0 / 16.0 - w2
+                    * (21.0 / 4.0 - w2))) / 36.0;
+                 xWeight[4] = (10543.0 / 960.0 + w * (289.0 / 16.0 + w
+                    * (79.0 / 16.0 + w * (-43.0 / 6.0 + w * (-17.0 / 4.0 + w
+                    * (1.0 + w)))))) / 48.0;
+                 xWeight[6] = 1.0 / 2.0 + w;
+                 xWeight[6] *= xWeight[6] * xWeight[6];
+                 xWeight[6] *= xWeight[6] / 720.0;
+                 xWeight[5] = 1.0 - xWeight[0] - xWeight[1] - xWeight[2] - xWeight[3]
+                 - xWeight[4] - xWeight[6];
+                 /* y */
+                 w = y - (double)yIndex[3];
+                 yWeight[0] = 1.0 / 2.0 - w;
+                 yWeight[0] *= yWeight[0] * yWeight[0];
+                 yWeight[0] *= yWeight[0] / 720.0;
+                 yWeight[1] = (361.0 / 192.0 - w * (59.0 / 8.0 + w
+                    * (-185.0 / 16.0 + w * (25.0 / 3.0 + w * (-5.0 / 2.0 + w)
+                    * (1.0 / 2.0 + w))))) / 120.0;
+                 yWeight[2] = (10543.0 / 960.0 + w * (-289.0 / 16.0 + w
+                    * (79.0 / 16.0 + w * (43.0 / 6.0 + w * (-17.0 / 4.0 + w
+                    * (-1.0 + w)))))) / 48.0;
+                 w2 = w * w;
+                 yWeight[3] = (5887.0 / 320.0 - w2 * (231.0 / 16.0 - w2
+                    * (21.0 / 4.0 - w2))) / 36.0;
+                 yWeight[4] = (10543.0 / 960.0 + w * (289.0 / 16.0 + w
+                    * (79.0 / 16.0 + w * (-43.0 / 6.0 + w * (-17.0 / 4.0 + w
+                    * (1.0 + w)))))) / 48.0;
+                 yWeight[6] = 1.0 / 2.0 + w;
+                 yWeight[6] *= yWeight[6] * yWeight[6];
+                 yWeight[6] *= yWeight[6] / 720.0;
+                 yWeight[5] = 1.0 - yWeight[0] - yWeight[1] - yWeight[2] - yWeight[3]
+                 - yWeight[4] - yWeight[6];
+                 break;
+              case 7:
+                 /* x */
+                 w = x - (double)xIndex[3];
+                 xWeight[0] = 1.0 - w;
+                 xWeight[0] *= xWeight[0];
+                 xWeight[0] *= xWeight[0] * xWeight[0];
+                 xWeight[0] *= (1.0 - w) / 5040.0;
+                 w2 = w * w;
+                 xWeight[1] = (120.0 / 7.0 + w * (-56.0 + w * (72.0 + w
+                    * (-40.0 + w2 * (12.0 + w * (-6.0 + w)))))) / 720.0;
+                 xWeight[2] = (397.0 / 7.0 - w * (245.0 / 3.0 + w * (-15.0 + w
+                    * (-95.0 / 3.0 + w * (15.0 + w * (5.0 + w
+                    * (-5.0 + w))))))) / 240.0;
+                 xWeight[3] = (2416.0 / 35.0 + w2 * (-48.0 + w2 * (16.0 + w2
+                    * (-4.0 + w)))) / 144.0;
+                 xWeight[4] = (1191.0 / 35.0 - w * (-49.0 + w * (-9.0 + w
+                    * (19.0 + w * (-3.0 + w) * (-3.0 + w2))))) / 144.0;
+                 xWeight[5] = (40.0 / 7.0 + w * (56.0 / 3.0 + w * (24.0 + w
+                    * (40.0 / 3.0 + w2 * (-4.0 + w * (-2.0 + w)))))) / 240.0;
+                 xWeight[7] = w2;
+                 xWeight[7] *= xWeight[7] * xWeight[7];
+                 xWeight[7] *= w / 5040.0;
+                 xWeight[6] = 1.0 - xWeight[0] - xWeight[1] - xWeight[2] - xWeight[3]
+                 - xWeight[4] - xWeight[5] - xWeight[7];
+                 /* y */
+                 w = y - (double)yIndex[3];
+                 yWeight[0] = 1.0 - w;
+                 yWeight[0] *= yWeight[0];
+                 yWeight[0] *= yWeight[0] * yWeight[0];
+                 yWeight[0] *= (1.0 - w) / 5040.0;
+                 w2 = w * w;
+                 yWeight[1] = (120.0 / 7.0 + w * (-56.0 + w * (72.0 + w
+                    * (-40.0 + w2 * (12.0 + w * (-6.0 + w)))))) / 720.0;
+                 yWeight[2] = (397.0 / 7.0 - w * (245.0 / 3.0 + w * (-15.0 + w
+                    * (-95.0 / 3.0 + w * (15.0 + w * (5.0 + w
+                    * (-5.0 + w))))))) / 240.0;
+                 yWeight[3] = (2416.0 / 35.0 + w2 * (-48.0 + w2 * (16.0 + w2
+                    * (-4.0 + w)))) / 144.0;
+                 yWeight[4] = (1191.0 / 35.0 - w * (-49.0 + w * (-9.0 + w
+                    * (19.0 + w * (-3.0 + w) * (-3.0 + w2))))) / 144.0;
+                 yWeight[5] = (40.0 / 7.0 + w * (56.0 / 3.0 + w * (24.0 + w
+                    * (40.0 / 3.0 + w2 * (-4.0 + w * (-2.0 + w)))))) / 240.0;
+                 yWeight[7] = w2;
+                 yWeight[7] *= yWeight[7] * yWeight[7];
+                 yWeight[7] *= w / 5040.0;
+                 yWeight[6] = 1.0 - yWeight[0] - yWeight[1] - yWeight[2] - yWeight[3]
+                 - yWeight[4] - yWeight[5] - yWeight[7];
+                 break;
+              case 8:
+                 /* x */
+                 w = x - (double)xIndex[4];
+                 xWeight[0] = 1.0 / 2.0 - w;
+                 xWeight[0] *= xWeight[0];
+                 xWeight[0] *= xWeight[0];
+                 xWeight[0] *= xWeight[0] / 40320.0;
+                 w2 = w * w;
+                 xWeight[1] = (39.0 / 16.0 - w * (6.0 + w * (-9.0 / 2.0 + w2)))
+                    * (21.0 / 16.0 + w * (-15.0 / 4.0 + w * (9.0 / 2.0 + w
+                    * (-3.0 + w)))) / 5040.0;
+                 xWeight[2] = (82903.0 / 1792.0 + w * (-4177.0 / 32.0 + w
+                    * (2275.0 / 16.0 + w * (-487.0 / 8.0 + w * (-85.0 / 8.0 + w
+                    * (41.0 / 2.0 + w * (-5.0 + w * (-2.0 + w)))))))) / 1440.0;
+                 xWeight[3] = (310661.0 / 1792.0 - w * (14219.0 / 64.0 + w
+                    * (-199.0 / 8.0 + w * (-1327.0 / 16.0 + w * (245.0 / 8.0 + w
+                    * (53.0 / 4.0 + w * (-8.0 + w * (-1.0 + w)))))))) / 720.0;
+                 xWeight[4] = (2337507.0 / 8960.0 + w2 * (-2601.0 / 16.0 + w2
+                    * (387.0 / 8.0 + w2 * (-9.0 + w2)))) / 576.0;
+                 xWeight[5] = (310661.0 / 1792.0 - w * (-14219.0 / 64.0 + w
+                    * (-199.0 / 8.0 + w * (1327.0 / 16.0 + w * (245.0 / 8.0 + w
+                    * (-53.0 / 4.0 + w * (-8.0 + w * (1.0 + w)))))))) / 720.0;
+                 xWeight[7] = (39.0 / 16.0 - w * (-6.0 + w * (-9.0 / 2.0 + w2)))
+                    * (21.0 / 16.0 + w * (15.0 / 4.0 + w * (9.0 / 2.0 + w
+                    * (3.0 + w)))) / 5040.0;
+                 xWeight[8] = 1.0 / 2.0 + w;
+                 xWeight[8] *= xWeight[8];
+                 xWeight[8] *= xWeight[8];
+                 xWeight[8] *= xWeight[8] / 40320.0;
+                 xWeight[6] = 1.0 - xWeight[0] - xWeight[1] - xWeight[2] - xWeight[3]
+                 - xWeight[4] - xWeight[5] - xWeight[7] - xWeight[8];
+                 /* y */
+                 w = y - (double)yIndex[4];
+                 yWeight[0] = 1.0 / 2.0 - w;
+                 yWeight[0] *= yWeight[0];
+                 yWeight[0] *= yWeight[0];
+                 yWeight[0] *= yWeight[0] / 40320.0;
+                 w2 = w * w;
+                 yWeight[1] = (39.0 / 16.0 - w * (6.0 + w * (-9.0 / 2.0 + w2)))
+                    * (21.0 / 16.0 + w * (-15.0 / 4.0 + w * (9.0 / 2.0 + w
+                    * (-3.0 + w)))) / 5040.0;
+                 yWeight[2] = (82903.0 / 1792.0 + w * (-4177.0 / 32.0 + w
+                    * (2275.0 / 16.0 + w * (-487.0 / 8.0 + w * (-85.0 / 8.0 + w
+                    * (41.0 / 2.0 + w * (-5.0 + w * (-2.0 + w)))))))) / 1440.0;
+                 yWeight[3] = (310661.0 / 1792.0 - w * (14219.0 / 64.0 + w
+                    * (-199.0 / 8.0 + w * (-1327.0 / 16.0 + w * (245.0 / 8.0 + w
+                    * (53.0 / 4.0 + w * (-8.0 + w * (-1.0 + w)))))))) / 720.0;
+                 yWeight[4] = (2337507.0 / 8960.0 + w2 * (-2601.0 / 16.0 + w2
+                    * (387.0 / 8.0 + w2 * (-9.0 + w2)))) / 576.0;
+                 yWeight[5] = (310661.0 / 1792.0 - w * (-14219.0 / 64.0 + w
+                    * (-199.0 / 8.0 + w * (1327.0 / 16.0 + w * (245.0 / 8.0 + w
+                    * (-53.0 / 4.0 + w * (-8.0 + w * (1.0 + w)))))))) / 720.0;
+                 yWeight[7] = (39.0 / 16.0 - w * (-6.0 + w * (-9.0 / 2.0 + w2)))
+                    * (21.0 / 16.0 + w * (15.0 / 4.0 + w * (9.0 / 2.0 + w
+                    * (3.0 + w)))) / 5040.0;
+                 yWeight[8] = 1.0 / 2.0 + w;
+                 yWeight[8] *= yWeight[8];
+                 yWeight[8] *= yWeight[8];
+                 yWeight[8] *= yWeight[8] / 40320.0;
+                 yWeight[6] = 1.0 - yWeight[0] - yWeight[1] - yWeight[2] - yWeight[3]
+                 - yWeight[4] - yWeight[5] - yWeight[7] - yWeight[8];
+                 break;
+              case 9:
+                 /* x */
+                 w = x - (double)xIndex[4];
+                 xWeight[0] = 1.0 - w;
+                 xWeight[0] *= xWeight[0];
+                 xWeight[0] *= xWeight[0];
+                 xWeight[0] *= xWeight[0] * (1.0 - w) / 362880.0;
+                 xWeight[1] = (502.0 / 9.0 + w * (-246.0 + w * (472.0 + w
+                    * (-504.0 + w * (308.0 + w * (-84.0 + w * (-56.0 / 3.0 + w
+                    * (24.0 + w * (-8.0 + w))))))))) / 40320.0;
+                 xWeight[2] = (3652.0 / 9.0 - w * (2023.0 / 2.0 + w * (-952.0 + w
+                    * (938.0 / 3.0 + w * (112.0 + w * (-119.0 + w * (56.0 / 3.0 + w
+                    * (14.0 + w * (-7.0 + w))))))))) / 10080.0;
+                 xWeight[3] = (44117.0 / 42.0 + w * (-2427.0 / 2.0 + w * (66.0 + w
+                    * (434.0 + w * (-129.0 + w * (-69.0 + w * (34.0 + w * (6.0 + w
+                    * (-6.0 + w))))))))) / 4320.0;
+                 w2 = w * w;
+                 xWeight[4] = (78095.0 / 63.0 - w2 * (700.0 + w2 * (-190.0 + w2
+                    * (100.0 / 3.0 + w2 * (-5.0 + w))))) / 2880.0;
+                 xWeight[5] = (44117.0 / 63.0 + w * (809.0 + w * (44.0 + w
+                    * (-868.0 / 3.0 + w * (-86.0 + w * (46.0 + w * (68.0 / 3.0 + w
+                    * (-4.0 + w * (-4.0 + w))))))))) / 2880.0;
+                 xWeight[6] = (3652.0 / 21.0 - w * (-867.0 / 2.0 + w * (-408.0 + w
+                    * (-134.0 + w * (48.0 + w * (51.0 + w * (-4.0 + w) * (-1.0 + w)
+                    * (2.0 + w))))))) / 4320.0;
+                 xWeight[7] = (251.0 / 18.0 + w * (123.0 / 2.0 + w * (118.0 + w
+                    * (126.0 + w * (77.0 + w * (21.0 + w * (-14.0 / 3.0 + w
+                    * (-6.0 + w * (-2.0 + w))))))))) / 10080.0;
+                 xWeight[9] = w2 * w2;
+                 xWeight[9] *= xWeight[9] * w / 362880.0;
+                 xWeight[8] = 1.0 - xWeight[0] - xWeight[1] - xWeight[2] - xWeight[3]
+                 - xWeight[4] - xWeight[5] - xWeight[6] - xWeight[7] - xWeight[9];
+                 /* y */
+                 w = y - (double)yIndex[4];
+                 yWeight[0] = 1.0 - w;
+                 yWeight[0] *= yWeight[0];
+                 yWeight[0] *= yWeight[0];
+                 yWeight[0] *= yWeight[0] * (1.0 - w) / 362880.0;
+                 yWeight[1] = (502.0 / 9.0 + w * (-246.0 + w * (472.0 + w
+                    * (-504.0 + w * (308.0 + w * (-84.0 + w * (-56.0 / 3.0 + w
+                    * (24.0 + w * (-8.0 + w))))))))) / 40320.0;
+                 yWeight[2] = (3652.0 / 9.0 - w * (2023.0 / 2.0 + w * (-952.0 + w
+                    * (938.0 / 3.0 + w * (112.0 + w * (-119.0 + w * (56.0 / 3.0 + w
+                    * (14.0 + w * (-7.0 + w))))))))) / 10080.0;
+                 yWeight[3] = (44117.0 / 42.0 + w * (-2427.0 / 2.0 + w * (66.0 + w
+                    * (434.0 + w * (-129.0 + w * (-69.0 + w * (34.0 + w * (6.0 + w
+                    * (-6.0 + w))))))))) / 4320.0;
+                 w2 = w * w;
+                 yWeight[4] = (78095.0 / 63.0 - w2 * (700.0 + w2 * (-190.0 + w2
+                    * (100.0 / 3.0 + w2 * (-5.0 + w))))) / 2880.0;
+                 yWeight[5] = (44117.0 / 63.0 + w * (809.0 + w * (44.0 + w
+                    * (-868.0 / 3.0 + w * (-86.0 + w * (46.0 + w * (68.0 / 3.0 + w
+                    * (-4.0 + w * (-4.0 + w))))))))) / 2880.0;
+                 yWeight[6] = (3652.0 / 21.0 - w * (-867.0 / 2.0 + w * (-408.0 + w
+                    * (-134.0 + w * (48.0 + w * (51.0 + w * (-4.0 + w) * (-1.0 + w)
+                    * (2.0 + w))))))) / 4320.0;
+                 yWeight[7] = (251.0 / 18.0 + w * (123.0 / 2.0 + w * (118.0 + w
+                    * (126.0 + w * (77.0 + w * (21.0 + w * (-14.0 / 3.0 + w
+                    * (-6.0 + w * (-2.0 + w))))))))) / 10080.0;
+                 yWeight[9] = w2 * w2;
+                 yWeight[9] *= yWeight[9] * w / 362880.0;
+                 yWeight[8] = 1.0 - yWeight[0] - yWeight[1] - yWeight[2] - yWeight[3]
+                 - yWeight[4] - yWeight[5] - yWeight[6] - yWeight[7] - yWeight[9];
+                 break;
+              default:
+                 throw ::std::exception("Error: Invalid spline degree") ;
+      }
+
+      /* apply the mirror boundary conditions */
+      for (k = 0; k <= SplineDegree; k++) {
+         xIndex[k] = (Width == 1) ? (0) : ((xIndex[k] < 0) ?
+            (-xIndex[k] - Width2 * ((-xIndex[k]) / Width2))
+            : (xIndex[k] - Width2 * (xIndex[k] / Width2)));
+         if (Width <= xIndex[k]) {
+            xIndex[k] = Width2 - xIndex[k];
+         }
+         yIndex[k] = (Height == 1) ? (0) : ((yIndex[k] < 0) ?
+            (-yIndex[k] - Height2 * ((-yIndex[k]) / Height2))
+            : (yIndex[k] - Height2 * (yIndex[k] / Height2)));
+         if (Height <= yIndex[k]) {
+            yIndex[k] = Height2 - yIndex[k];
+         }
+      }
+
+      /* perform interpolation */
+      interpolated = 0.0;
+      for (j = 0; j <= SplineDegree; j++) 
+      {
+         int adr = yIndex[j] * Width;
+         w = 0.0;
+         for (i = 0; i <= SplineDegree; i++) 
+         {
+            w += xWeight[i] * Bcoeff[adr+xIndex[i]];
+         }
+         interpolated += yWeight[j] * w;
+      }
+
+
+      delete [] xWeight;
+      delete [] yWeight;
+      delete [] xIndex;
+      delete [] yIndex;
+      return(interpolated);
+
+   } catch (std::exception &e) {
+      delete [] xWeight;
+      delete [] yWeight;
+      delete [] xIndex;
+      delete [] yIndex;
+      throw e;
    }
+}
 
-for (j=0;j<jmax;j++)
-   {
-   adr=j*imax+i0;
-   p[adr]=buf[j];
+// //////////////////////////////////////////////////////////
+// Translation d'une colonne de l'image (rang "colonne")                 
+// On utilise une interpolation spline de degré 9 pour une qualité maximale 
+// Seul un crop de l'image d'entrée (buf_entree) est translaté, délimité
+// par les coordonnées (mémoire) imax_result et jmax_result.
+// La colonne de rang "colonne" dans le buffer resultat est remplacée par 
+// la colonne translatée.
+// delta_y : est la valeur de la translation en Y                    
+// /////////////////////////////////////////////////////////
+void translate_col(INFOIMAGE * buffer,
+                          int colonne, double delta_y, ORDRE *ordre, int n,
+                          std::valarray<PIC_TYPE> &buf_result, int imax_result, int jmax_result,
+                          int spline_deg)
+{
+   int SplineDegree = spline_deg;  // degré d'interpolation spline (9 = meilleure qualité)
+
+   int imax = buffer->imax;
+   int jmax = buffer->jmax;
+   
+   int hauteur = jmax_result; // hauteur du crop dans le buffer d'entrée
+   int imax1 = jmax;
+   int jmax1 = 2;  // ne pas mettre 1, sinon plantage dans InterpolateValue (effet de bord)
+
+   int intueur = imax1 * jmax1;
+   float *buf_in = new float[intueur];  // le vecteur de calcul d'entrée (colonne à interpoler)
+   float *buf_out = new float[intueur]; // le vecteur de calcul de sortie (colonne interpolée)
+   //int j, adr;
+   int i = colonne; // rang de la colonne à translater
+
+   //  TODO voir pourquoi il faut initiliser ces tableaux
+   memset(buf_in,0,intueur*sizeof(float));
+   memset(buf_out,0,intueur*sizeof(float));
+
+   
+   try {
+      // Génération du vecteur d'entrée (une colonne de longueur jmax)
+      for (int j = 0; j < jmax; j++){
+         int adr = j * imax + i;
+         buf_in[j] = (float)buffer->pic[adr];
+         buf_out[j] = 0.0F;
+      }
+      
+      // Calcul des coefficients d'interpolation sur le vecteur d'entrée (taille imax x 2)
+      try { 
+         SamplesToCoefficients(buf_in, imax1, jmax1, SplineDegree);
+      } catch (std::exception &e) {
+         // j'enrichie le message d'erreur
+         char message[1024];
+         sprintf(message, "Error translate_col order=%d. %s",n,e.what());
+         throw ::std::exception(message);
+      } 
+      
+      int start_y = (int)(ordre[n].yc - hauteur/2);  // zone de crop dans le buffer d'entrée
+      int end_y   = (int)(ordre[n].yc + hauteur/2);
+
+      if ( start_y < 0 || start_y > jmax ) {
+         char message[1024];
+         sprintf(message, "Error translate_col order=%d. Crop zone is outside, start_y=%d",n,start_y);
+         throw ::std::exception(message);
+      }
+      if ( end_y < 0 || end_y > jmax ) {
+         char message[1024];
+         sprintf(message, "Error translate_col order=%d. Crop zone is outside, end_y=%d",n,end_y);
+         throw ::std::exception(message);
+      }
+
+      // On visite les pixels du vecteur d'arrivée (entre start_y et end_y pour optimiser la vitesse)
+      for (int x = start_y; x < end_y; x++)
+      {
+         double x1, y1;
+         x1 = (double)x - delta_y;  // transformation (translation du vecteur)
+         y1 = 0.0;
+         if (x1 < 0 || x1 > (double)(jmax - 1))
+            buf_out[x] = 0.0F;
+         else
+         {
+            float v = (float)InterpolatedValue(buf_in, imax1, jmax1,x1, y1, SplineDegree);
+            buf_out[x] = v;
+         }           
+      }
+
+      // Copie de la colonne translatée dans le buffer de sortie
+      for (int j = start_y; j < end_y; j++) {
+         int adr = (j - start_y) * imax_result + i;
+         buf_result[adr] = (int)buf_out[j];
+      }
+
+      delete [] buf_in;
+      delete [] buf_out;
+      return;
+   } catch (std::exception &e) {
+      delete [] buf_in;
+      delete [] buf_out;
+      throw e;
    }
-
-free(buf);
-return 0;
+  
 }
 
 /************************************** L_SKY_SUB ****************************************/
@@ -1391,303 +1956,795 @@ return 0;
 /* Le calcul est fait entre les colonnes xmin et xmax (origine 1,1)        */
 /* Le nom du profil spectral (extension .dat) est nom                      */
 /***************************************************************************/
-int l_opt(INFOIMAGE *buffer,int lmin,int lmax,int xmin,int xmax,std::valarray<double> &profile)
+void l_opt(std::valarray<PIC_TYPE> &p, int imax, int jmax, int lmin,int lmax,
+          int xmin,int xmax, int bordure, std::valarray<double> &profile)
 {
    int i,j,k;
-   int imax,jmax;
    int tempo;
-   PIC_TYPE *p;
    double somme,norme;
    double v,w,s;
-   PIC_TYPE vv[50]; 
+   PIC_TYPE *vv=NULL;
+   double *f = NULL;
+   double *P = NULL;
 
-   if (buffer->pic==NULL) return 1;
-
-   imax=buffer->imax;
-   jmax=buffer->jmax;
-
-   if (lmax<lmin)
-   {
-      tempo=lmax;
-      lmax=lmin;
-      lmin=tempo;
-   }
-
-   if (lmax>jmax || lmin<1) 
-   {
-      printf("\n Erreur interne L_OPT.\n");
-      return 1;
-   }
-
-   if ((lmax-lmin)<4)
-   {
-      printf("\n Erreur interne L_OPT.\n");
-      return 1;
-   }
-
-   if (xmax<xmin)
-   {
-      tempo=xmax;
-      xmax=xmin;
-      xmin=tempo;
-   }
-
-   if (xmax>imax) xmax=imax;
-   if (xmin<1) xmin=1;
-
-   // Profil spectral monodimentionnel (f)
-   double *f;
-   if ((f=(double *)calloc(imax,sizeof(double)))==NULL)
-   {
-   printf("\nPas assez de memoire.\n");
-   return 1;
-   }
-
-   // Modèle profil spectral colonne (P)
-   double *P;
-   if ((P=(double *)calloc(lmax-lmin+1,sizeof(double)))==NULL)
-   {
-      printf("\nPas assez de memoire.\n");
-      free(f);
-      return 1;
-   }
-
-   p=buffer->pic;
-
-   // --------------------------------------
-   // Calcul du profil spectral optimisé
-   // --------------------------------------
-
-   // On gère les 3 premières colonnes
-   for (i=xmin-1;i<xmin+2;i++)
-   {
-      somme=0.0;
-      k=0;
-      // Calcul de la fonction de poids
-      for (j=lmin-1;j<lmax;j++,k++)
-      {
-         P[k]=(double)p[j*imax+i];
+   try {
+      if (p.size() == 0) {
+         char message[1024];
+         sprintf(message, "Erreur l_opt p=NULL ");
+         throw ::std::exception(message);
       }
 
-      // La fonction de poids est rendue strictement positive et normalisée
-      s=0;
-      k=0;
-      for (j=lmin-1;j<lmax;j++,k++)
-      {      
-         if (P[k]<0) P[k]=0;
-         s=s+P[k];
-      }  
-      k=0;
-      for (j=lmin-1;j<lmax;j++,k++)
-      {      
-         P[k]=P[k]/s;
+      if (lmax<lmin) {
+         tempo=lmax;
+         lmax=lmin;
+         lmin=tempo;
       }
 
-      // Calcul de la norme
-      s=0;
-      k=0;
-      for (j=lmin-1;j<lmax;j++,k++)
-      {      
-         s=s+P[k]*P[k];
-      }  
-      norme=s;
+      if (lmax>jmax || lmin<1 || (lmax - lmin) < 4) {
+         char message[1024];
+         sprintf(message, "Erreur l_opt lmax>jmax || lmin<1 ");
+         throw ::std::exception(message);
+      }
 
-      // Calcul du profil optimisé
-      if (norme!=0.0 && _isnan(norme)==0)
+      if (xmax<xmin) {
+         tempo=xmax;
+         xmax=xmin;
+         xmin=tempo;
+      }
+
+      if (xmax>imax) xmax=imax;
+      if (xmin<1) xmin=1;
+
+      // Profil spectral monodimentionnel (f)
+      f = new double[imax];
+
+      // Modèle profil spectral colonne (P)
+      P = new double[lmax - lmin + 1];
+
+      // ------------------------------------------------------------------------           
+      // On gère les 4 premières colonnes (calcul simplifié du profil spatial)
+      // ------------------------------------------------------------------------           
+      for (i = xmin - 1; i < xmin + 3; i++)
       {
-         k=0;
-         for (j=lmin-1;j<lmax;j++,k++)
+         somme = 0.0;
+         k = 0;
+
+         // Calcul de la fonction de poids
+         for (j = lmin - 1; j < lmax; j++, k++)
          {
-            v=(double)p[j*imax+i];
-            w=P[k];
-            somme+=w*v;
+            P[k] = (double)p[j * imax + i];
          }
-         f[i]=somme/norme;
-      }
-      else
-         f[i]=0.0;
-   }
 
-   // On gère les 3 dernières colonne
-   i=imax-3;
-   for (i=xmax-3;i<xmax;i++)
-   {
-      somme=0.0;
-      k=0;
-      // Calcul de la fonction de poids
-      for (j=lmin-1;j<lmax;j++,k++)
-      {
-         P[k]=(double)p[j*imax+i];
-      }
-
-      // La fonction de poids est rendue strictement positive et noormalisée
-      s=0;
-      k=0;
-      for (j=lmin-1;j<lmax;j++,k++)
-      {      
-         if (P[k]<0) P[k]=0;
-         s=s+P[k];
-      }  
-      k=0;
-      for (j=lmin-1;j<lmax;j++,k++)
-      {      
-         P[k]=P[k]/s;
-      }
-
-      // Calcul de la norme
-      s=0;
-      k=0;
-      for (j=lmin-1;j<lmax;j++,k++)
-      {      
-         s=s+P[k]*P[k];
-      }  
-      norme=s;
-
-      // Calcul du profil optimisé
-      if (norme!=0.0 && _isnan(norme)==0)
-      {
-         k=0;
-         for (j=lmin-1;j<lmax;j++,k++)
+         // La fonction de poids est rendue strictement positive et normalisée
+         s = 0;
+         k = 0;
+         for (j = lmin - 1; j < lmax; j++, k++)
          {
-            v=(double)p[j*imax+i];
-            w=P[k];
-            somme+=w*v;
+            if (P[k] < 0) P[k] = 0;
+            s = s + P[k];
          }
-         f[i]=somme/norme;
-      }
-      else
-         f[i]=0.0;
-   }
-
-   // On gère le reste du profil...
-   for (i=xmin+2;i<xmax-3;i++)
-   {
-      somme=0.0;
-      k=0;
-      // Calcul de la fonction de poids = médiane sur 7 colonnes
-      for (j=lmin-1;j<lmax;j++,k++)
-      {
-         vv[0]=p[j*imax+i-3];
-         vv[1]=p[j*imax+i-2];
-         vv[2]=p[j*imax+i-1];
-         vv[3]=p[j*imax+i];
-         vv[4]=p[j*imax+i+1];
-         vv[5]=p[j*imax+i+2];
-         vv[6]=p[j*imax+i+3];
-         P[k]=(double)hmedian(vv,7);
-      }
-
-      // La fonction de poids est rendue strictement positive et noormalisée
-      s=0;
-      k=0;
-      for (j=lmin-1;j<lmax;j++,k++)
-      {      
-         if (P[k]<0) P[k]=0;
-         s=s+P[k];
-      }  
-      k=0;
-      for (j=lmin-1;j<lmax;j++,k++)
-      {      
-         P[k]=P[k]/s;
-      }
-
-      // Calcul de la norme
-      s=0;
-      k=0;
-      for (j=lmin-1;j<lmax;j++,k++)
-      {      
-         s=s+P[k]*P[k];
-      }  
-      norme=s;
-
-      // Calcul du profil optimisé
-      if (norme!=0.0 && _isnan(norme)==0)
-      {
-         k=0;
-         for (j=lmin-1;j<lmax;j++,k++)
+         k = 0;
+         for (j = lmin - 1; j < lmax; j++, k++)
          {
-            v=(double)p[j*imax+i];
-            w=P[k];
-            somme+=w*v;
+            P[k] = P[k] / s;
          }
-         f[i]=somme/norme;
+
+         // Calcul de la norme
+         s = 0;
+         k = 0;
+         for (j = lmin - 1; j < lmax; j++, k++)
+         {
+            s = s + P[k] * P[k];
+         }
+         norme = s;
+
+         // Calcul du profil optimisé
+         if (norme != 0.0 && !_isnan(norme))
+         {
+            k = 0;
+            for (j = lmin - 1; j < lmax; j++, k++)
+            {
+               v = (double)p[j * imax + i];
+               w = P[k];
+               somme += w * v;
+            }
+            f[i] = somme / norme;
+         }
+         else
+            f[i] = 0.0;
       }
-      else
-         f[i]=0.0;
+
+      // -----------------------------------------------------------------------
+      // On gère les 4 dernières colonnes (calcul simplifié du profil spatial)
+      // -----------------------------------------------------------------------
+      for (i = xmax - 4; i < xmax; i++)
+      {
+         somme = 0.0;
+         k = 0;
+
+         // Calcul de la fonction de poids
+         for (j = lmin - 1; j < lmax; j++, k++)
+         {
+            P[k] = (double)p[j * imax + i];
+         }
+
+         // La fonction de poids est rendue strictement positive et normalisée
+         s = 0;
+         k = 0;
+         for (j = lmin - 1; j < lmax; j++, k++)
+         {
+            if (P[k] < 0) P[k] = 0;
+            s = s + P[k];
+         }
+         k = 0;
+         for (j = lmin - 1; j < lmax; j++, k++)
+         {
+            P[k] = P[k] / s;
+         }
+
+         // Calcul de la norme
+         s = 0;
+         k = 0;
+         for (j = lmin - 1; j < lmax; j++, k++)
+         {
+            s = s + P[k] * P[k];
+         }
+         norme = s;
+
+         // Calcul du profil optimisé
+         if (norme != 0.0 && !_isnan(norme))
+         {
+            k = 0;
+            for (j = lmin - 1; j < lmax; j++, k++)
+            {
+               v = (double)p[j * imax + i];
+               w = P[k];
+               somme += w * v;
+            }
+            f[i] = somme / norme;
+         }
+         else
+            f[i] = 0.0;
+      }
+
+      // -------------------------------------------------------------------------------------
+      // On gère le reste du profil (le profil est estimé sur une somme médiane de 9 pixels)
+      // -------------------------------------------------------------------------------------
+      vv = new PIC_TYPE[9];
+      for (i = xmin + 3; i < xmax - 4; i++)
+      {
+         somme = 0.0;
+         k = 0;
+         // Calcul de la fonction de poids = médiane sur 7 colonnes
+         for (j = lmin - 1; j < lmax; j++, k++)
+         {
+            vv[0] = p[j * imax + i - 4];
+            vv[1] = p[j * imax + i - 3];
+            vv[2] = p[j * imax + i - 2];
+            vv[3] = p[j * imax + i - 1];
+            vv[4] = p[j * imax + i];
+            vv[5] = p[j * imax + i + 1];
+            vv[6] = p[j * imax + i + 2];
+            vv[7] = p[j * imax + i + 3];
+            vv[8] = p[j * imax + i + 4];
+            P[k] = (double)hmedian(vv, 9);
+         }
+
+         // La fonction de poids est rendue strictement positive et normalisée
+         s = 0;
+         k = 0;
+         for (j = lmin - 1; j < lmax; j++, k++)
+         {
+            if (P[k] < 0) P[k] = 0;
+            s = s + P[k];
+         }
+         k = 0;
+         for (j = lmin - 1; j < lmax; j++, k++)
+         {
+            P[k] = P[k] / s;
+         }
+
+         // Calcul de la norme
+         s = 0;
+         k = 0;
+         for (j = lmin - 1; j < lmax; j++, k++)
+         {
+            s = s + P[k] * P[k];
+         }
+         norme = s;
+
+         // Calcul du profil optimisé
+         if (norme != 0.0 && !_isnan(norme))
+         {
+            k = 0;
+            for (j = lmin - 1; j < lmax; j++, k++)
+            {
+               v = (double)p[j * imax + i];
+               w = P[k];
+               somme += w * v;
+            }
+            f[i] = somme / norme;
+         }
+         else
+            f[i] = 0.0;
+      }
+
+      
+      // -----------------------------------------------------
+      // Sauvegarde du profil spectral (en comptes numériques)
+      // -----------------------------------------------------
+      /*
+      k = 0;
+      for (i = xmin - 1; i < xmax; i++, k++)
+      {
+         profil[0, k] = i + 1;
+         profil[1, k] = f[i];
+      }
+      */
+      profile.resize(xmax-xmin-2*bordure +1);
+      for (i=xmin + bordure ; i<=xmax-bordure; i++) { 
+         profile[i-xmin-bordure] = f[i-1];
+      }
+
+      delete [] f;
+      delete [] P;
+      delete [] vv;
+
+   } catch (std::exception &e) {
+      delete [] f;
+      delete [] P;
+      delete [] vv;
+      throw e;
    }
-
-   // -----------------------------------------------------
-   // Sauvegarde du profil spectral (en comptes numériques)
-   // -----------------------------------------------------
-   for (i=xmin;i<=xmax;i++) { 
-      profile[i-xmin] = f[i-1];
-   }
-
-   free(f);
-   free(P);
-
-   return 0;
 }
+
+/********************************* L_OPT2 **********************************/
+/* Calcul la somme normalisée et optimisé entre les lignes lmax et lmin    */
+/* Version avec réjection des pixels aberrants (algorithme de Hornes)      */
+/* Voir Keith Horne, PASP, 98, 609-617, June 1986                          */
+/*                                                                         */
+/*    F = S(M . P . I / V) / S(M . P . P / V)                              */
+/*                                                                         */
+/* V = variance du bruit colonne                                           */ 
+/* P = fonction de poids du profil                                         */
+/* I = signal                                                              */
+/* M = flag des cosmique                                                   */
+/*                                                                         */ 
+/* Voir aussi J. G. Robertson, PASP 98, 1220-1231, November 1986           */
+/* Le domaine de binning suivant l'axe spatial est donné par (lmin - lmax) */
+/* (ligne min et ligne max ( origine 1,1).                                 */
+/* Le calcul est fait entre les colonnes xmin et xmax (origine 1,1)        */
+/* Le nom du profil spectral (extension .dat) est nom                      */
+/* Coordonnées écran (image)                                               */
+/***************************************************************************/
+void l_opt2(std::valarray<PIC_TYPE> &p, 
+            int imax, int jmax,
+            int lmin, int lmax, int xmin, int xmax,
+            int bordure,
+            std::valarray<double> &profile)
+{
+   int i, j, k;
+   int tempo;
+   double somme, norme;
+   double v, w, s;
+   PIC_TYPE *vv=NULL;
+   double *f = NULL;
+   double *P = NULL;
+   double *V = NULL;
+   int *M = NULL;
+
+   double noise = 18.0;     // bruit RMS de lecture typique en ADU 
+   noise = noise * noise;   // variance
+
+   try {
+      if (p.size() == 0) {
+         char message[1024];
+         sprintf(message, "Erreur l_opt p=NULL ");
+         throw ::std::exception(message);
+      }
+
+      if (lmax < lmin) {
+         tempo = lmax;
+         lmax = lmin;
+         lmin = tempo;
+      }
+
+      if (lmax > jmax || lmin < 1 || (lmax - lmin) < 4) {
+         char message[1024];
+         sprintf(message, "Erreur l_opt2 lmax>jmax || lmin<1 ");
+         throw ::std::exception(message);
+      }
+
+      if (xmax < xmin) {
+         tempo = xmax;
+         xmax = xmin;
+         xmin = tempo;
+      }
+
+      if (xmax > imax) xmax = imax;
+      if (xmin < 1) xmin = 1;
+
+      // Profil spectral monodimentionnel (f)
+      f = new double[imax];
+
+      // Modèle profil spectral colonne (P)
+      P = new double[lmax - lmin + 1];
+
+      // Bruit colonne (variance)
+      V = new double[lmax - lmin + 1];
+
+      // Table des rayons cosmiques détecté
+      M = new int[lmax - lmin + 1];
+
+      // ----------------------------------------------------
+      // On gère les 4 premières colonnes
+      // Algorithme simplifié (pas de détection de cosmique)
+      // ----------------------------------------------------
+      for (i = xmin - 1; i < xmin + 3; i++)
+      {
+         k = 0;
+         // Calcul de la fonction de poids
+         for (j = lmin - 1; j < lmax; j++, k++)
+         {
+            P[k] = (double)p[j * imax + i];
+         }
+
+         // La fonction de poids est rendue strictement positive et normalisée
+         s = 0;
+         k = 0;
+         for (j = lmin - 1; j < lmax; j++, k++)
+         {
+            if (P[k] < 0) P[k] = 0;
+            s = s + P[k];
+         }
+         k = 0;
+         for (j = lmin - 1; j < lmax; j++, k++)
+         {
+            P[k] = P[k] / s;
+         }
+
+         // Calcul de la norme
+         s = 0;
+         k = 0;
+         for (j = lmin - 1; j < lmax; j++, k++)
+         {
+            s = s + P[k] * P[k];
+         }
+         norme = s;
+
+         // Calcul du profil optimisé
+         somme = 0;
+         if (norme != 0.0 && !_isnan(norme))
+         {
+            k = 0;
+            for (j = lmin - 1; j < lmax; j++, k++)
+            {
+               v = (double)p[j * imax + i];
+               w = P[k];
+               somme += w * v;
+            }
+            f[i] = somme / norme;
+         }
+         else
+            f[i] = 0.0;
+      }
+
+      // ----------------------------------------------------
+      // On gère les 4 dernières colonne
+      // Algorithme simplifié (pas de détection de cosmique)
+      // ----------------------------------------------------
+      for (i = xmax - 4; i < xmax; i++)
+      {
+         k = 0;
+         // Calcul de la fonction de poids
+         for (j = lmin - 1; j < lmax; j++, k++)
+         {
+            P[k] = (double)p[j * imax + i];
+         }
+
+         // La fonction de poids est rendue strictement positive et normalisée
+         s = 0;
+         k = 0;
+         for (j = lmin - 1; j < lmax; j++, k++)
+         {
+            if (P[k] < 0) P[k] = 0;
+            s = s + P[k];
+         }
+         k = 0;
+         for (j = lmin - 1; j < lmax; j++, k++)
+         {
+            P[k] = P[k] / s;
+         }
+
+         // Calcul de la norme
+         s = 0;
+         k = 0;
+         for (j = lmin - 1; j < lmax; j++, k++)
+         {
+            s = s + P[k] * P[k];
+         }
+         norme = s;
+
+         // Calcul du profil optimisé
+         somme = 0.0;
+         if (norme != 0.0 && !_isnan(norme))
+         {
+            k = 0;
+            for (j = lmin - 1; j < lmax; j++, k++)
+            {
+               v = (double)p[j * imax + i];
+               w = P[k];
+               somme += w * v;
+            }
+            f[i] = somme / norme;
+         }
+         else
+            f[i] = 0.0;
+      }
+
+      // ------------------------------------------
+      // On gère le reste du profil...
+      // Algorithme de K. Korne complet
+      // ------------------------------------------
+      vv = new int[9];
+      double E = 0.0;
+      for (i = xmin + 3; i < xmax - 4; i++)
+      {
+         // Initialisation de la table des cosmiques
+         k = 0;
+         for (j = lmin - 1; j < lmax; j++, k++)
+         {
+            M[k] = 1;
+         }
+
+         // On itère 4 x
+         for (int it = 0; it < 4; it++)
+         {
+            somme = 0.0;
+            k = 0;
+            // Calcul de la fonction de poids = médiane sur 9 colonnes
+            for (j = lmin - 1; j < lmax; j++, k++)
+            {
+               vv[0] = p[j * imax + i - 4];
+               vv[1] = p[j * imax + i - 3];
+               vv[2] = p[j * imax + i - 2];
+               vv[3] = p[j * imax + i - 1];
+               vv[4] = p[j * imax + i];
+               vv[5] = p[j * imax + i + 1];
+               vv[6] = p[j * imax + i + 2];
+               vv[7] = p[j * imax + i + 3];
+               vv[8] = p[j * imax + i + 4];
+               P[k] = (double)hmedian(vv,9);
+            }
+
+            // La fonction de poids est rendue strictement positive et normalisée
+            s = 0;
+            k = 0;
+            for (j = lmin - 1; j < lmax; j++, k++)
+            {
+               if (P[k] < 0) P[k] = 0;
+               s = s + P[k];
+            }
+            k = 0;
+            for (j = lmin - 1; j < lmax; j++, k++)
+            {
+               P[k] = P[k] / s;
+            }
+
+            // première passe (somme simple)
+            if (it == 0)
+            {
+               k = 0;
+               E = 0.0;
+               for (j = lmin - 1; j < lmax; j++, k++)
+               {
+                  E = E + (double)p[j * imax + i] * (double)M[k];
+               }
+            }
+
+            // Calcul du bruit colonne
+            k = 0;
+            for (j = lmin - 1; j < lmax; j++, k++)
+            {
+               V[k] = P[k] * E + noise;
+            }
+
+            // Calcul de la norme
+            s = 0;
+            k = 0;
+            for (j = lmin - 1; j < lmax; j++, k++)
+            {
+               s = s + (double)M[k] * P[k] * P[k] / V[k];
+            }
+            norme = s;
+
+            // Calcul du profil optimisé
+            somme = 0.0;
+            if (norme != 0.0 && !_isnan(norme))
+            {
+               k = 0;
+               for (j = lmin - 1; j < lmax; j++, k++)
+               {
+                  v = (double)M[k] * P[k] * (double)p[j * imax + i] / V[k];
+                  somme += v;
+               }
+               f[i] = E = somme / norme;
+            }
+            else
+               f[i] = E = 0.0;
+
+            // Détection des cosmiques (réjection en variance à (4.5 x sigma) * (4.5 x sigma = 20.2)
+            k = 0;
+            double max = -1e-10;
+            int index = -1;
+            for (j = lmin - 1; j < lmax; j++, k++)
+            {
+               if ((M[k] == 1) && (pow((double)p[j * imax + i] - E * P[k], 2.0) > 20.2 * V[k]))
+               {
+                  // Recherche du point le plus déviant par rapport au modèle
+                  if (pow((double)p[j * imax + i] - E * P[k], 2.0) > max)
+                  {
+                     max = pow((double)p[j * imax + i] - E * P[k], 2.0);
+                     index = k;
+                  }
+               }
+            }
+            if (index != -1) M[index] = 0;  // retrait d'un seul cosmique par boucle
+         }
+      }
+      k = 0;
+
+      
+      //for (i=xmin;i<=xmax;i++) { 
+      //   profile[i-xmin] = f[i-1];
+      //}
+
+      profile.resize(xmax-xmin-2*bordure +1);
+      for (i=xmin + bordure ; i<=xmax-bordure; i++) { 
+         profile[i-xmin-bordure] = f[i-1];
+      }
+
+
+      delete [] f;
+      delete [] P;
+      delete [] V;
+      delete [] M;
+      delete [] vv;
+
+   } catch (std::exception &e) {
+      delete [] f;
+      delete [] P;
+      delete [] V;
+      delete [] M;
+      delete [] vv;
+      throw e;
+   }
+}
+
 
 /******************************** EXTRACT_ORDER **************************************/
 /* Corrige la courbure d'un ordre (le spectre est rendu rectiligne), puis            */
 /* extraction du profil spectrale après l'opération de binning suivant l'axe spatial */
 /* Le numéro de l'ordre traité est contenu dans la variable n.                       */                
 /*************************************************************************************/
-int extract_order(INFOIMAGE *buffer,int n,int jmax0,ORDRE *ordre, std::valarray<double> &profile, std::valarray<PIC_TYPE> *straightLineImage )
+void extract_order(INFOIMAGE *buffer, PROCESS_INFO &processInfo, int n, ORDRE *ordre,int imax2, int jmax2, 
+                   std::valarray<double> &profile, std::valarray<PIC_TYPE> &p2, 
+                   int flag_opt)
 {
-   int i,k,yc;
-   int degre=4;
+   int k;
    double delta_y;
    double v;
-   int y1,y2,y3,y4;
+   int splineDegre = 2; // choix entre 2 et 9 -> 9 meilleure qualité lors des corrections géométriques
 
-   for (i=ordre[n].min_x-1;i<ordre[n].max_x;i++)
-   {
-      v=0.0;
-      for (k=0;k<=degre;k++)
-      {
-         v=v+ordre[n].poly_order[k]*pow((double)i,(double)k);
-      }
-      delta_y=v-ordre[n].yc;
+   double * x = NULL;
+   double * y = NULL;
+   double * w = NULL;
+   double * a1 = NULL;
+   double * a2 = NULL;
 
-      // rectification géométrique colonne par colonne
-      if (translate_col_1(buffer,i,-delta_y)==1) return 1;  // nouvelle version V1.6
-   }
 
-   // retrait du fond
-   yc=(int)(ordre[n].yc+.5);
-   y1=yc+ordre[n].wide_y/2;
-   y2=yc+ordre[n].wide_y/2+ordre[n].wide_sky;    
-   y3=yc-ordre[n].wide_y/2;
-   y4=yc-ordre[n].wide_y/2-ordre[n].wide_sky;  
-   if (l_sky_sub(buffer,y1,y2,y3,y4)==1) return 1;
-
-   // redressement des raies
-   if (compute_slant(buffer,yc,ordre[n].slant)==1) return 1;
-
-   if ( straightLineImage != NULL ) {
-      int adr1, adr2;
-      int jj = 0;
-      straightLineImage->resize(buffer->imax * (y2-y4+1) );
-      for (int j=y4;j<y2;j++) 
-      {
-         for (int i=0;i<buffer->imax;i++) 
-         {
-            adr1=(j+1)*buffer->imax+i;
-            adr2=jj*buffer->imax+i;
-            (*straightLineImage)[adr2]=buffer->pic[adr1];
+   try {
+      // ------------------------------------------------------------------------------
+      // Rectification de la courbure des ordres suivant l'axe spectral (smile)
+      // On utilise une fonction spline d'interpolation de degré 9
+      // La calcul n'est fait que dans une zone centrée sur l'ordre courant 
+      // de hauteur jmax2 (dans cette version, on ne croppe par suivant X (imax2=imax))
+      // Le résultat est une sous image 2D du spectre rectifié pointée par p2 et
+      // de dimension (imax2, jmax2)
+      // ------------------------------------------------------------------------------
+      for (int i=ordre[n].min_x-1;i<ordre[n].max_x -1;i++) {
+         v=0.0;
+         for (k=0;k<=POLY_ORDER_DEGREE;k++){
+            v=v+ordre[n].poly_order[k]*pow((double)i,(double)k);
          }
-         jj++;
-      }
-   }
-   
-   // binning du profil et sauvegarde sur le disque du profil spectral calculé
-   y1=yc-ordre[n].wide_y/2;
-   y2=yc+ordre[n].wide_y/2;
-   if (l_opt(buffer,y1,y2,ordre[n].min_x,ordre[n].max_x, profile)==1) return 1;
+         delta_y=v-ordre[n].yc;
 
-   return 0;
+         // rectification géométrique colonne par colonne
+         translate_col(buffer,i,-delta_y,ordre,n, p2, imax2, jmax2, splineDegre);
+      }
+
+      // --------------------------------------------------------------------------
+      // Soustraction du fond parasite
+      // Calcul de la coordonnée Y des deux zones de calcul d'ajustement du fond
+      // de part et d'autre l'ordre courant
+      // (i.e. au niveau des coordonnées Y de l'inter-ordre)
+      // On soustrait la moyenne trouvée des deux coté après
+      // un ajustement polynomial de degré 5 le long de l'axe spectral
+      // --------------------------------------------------------------------------
+      int y1, y2;
+      if (ordre[n + 1].flag == 1)   // position - par rapport à l'axe du spectre
+         y1 = jmax2 / 2 - (ordre[n].yc - ordre[n + 1].yc) / 2;
+      else
+         y1 = jmax2 / 2 - (ordre[n - 1].yc - ordre[n].yc) / 2;
+
+      if (ordre[n - 1].flag == 1)   // position + par rapport à l'axe du spectre
+         y2 = jmax2 / 2 + (ordre[n-1].yc - ordre[n].yc) / 2;
+      else
+         y2 = jmax2 / 2 + (ordre[n].yc - ordre[n+1].yc) / 2;
+
+
+      // -------------------------------------------------------------
+      // Le "fond de ciel" est déterminé par un ajustement
+      // polynomial du signal inter-ordre (on utilise le degré 5)
+      // -------------------------------------------------------------
+      int taille = abs(ordre[n].max_x - ordre[n].min_x + 1);
+      x = new double[taille];
+      y = new double[taille];
+      w = new double[taille];
+      int degre2 = 5;
+      double rms;
+
+      // ---------------------------------------------------------
+      // Calcul du niveau moyen du fond sous la trace 
+      // (sera utilisé pour exclure les plus forts cosmiques)
+      // ---------------------------------------------------------
+      double moyenne = 0.0;
+      k = 0;
+      for (int i = ordre[n].min_x - 1; i < ordre[n].max_x - 1; i++, k++) {
+         moyenne += p2[y1 * imax2 + i];
+      }
+      moyenne = moyenne / (double)k;
+
+      // -------------------------------------------------------------
+      // Calcul du fond sous le spectre (en dessous de la trace)
+      // On exclue les points qui sont à 1000 ADU au desssus du fond
+      // -------------------------------------------------------------
+      k = 0;
+      moyenne = moyenne + 1000.0;
+      for (int i = ordre[n].min_x - 1; i < ordre[n].max_x - 1; i++) {
+         if ((double)p2[y1 * imax2 + i] < moyenne) {
+            x[k] = (double)i;
+            y[k] = (double)p2[y1 * imax2 + i];  // en dessous de la trace du spectre
+            w[k] = 1.0;
+            k++;
+         }
+      }
+
+      rms = 0.0;
+      a1 = new double[degre2 + 1];
+      for (int i = 0; i <= degre2; i++) a1[i] = 0.0;
+      try {
+         fitPoly(k, degre2, x, y, w, a1, &rms);
+      } catch (std::exception &e) {
+         char message[1024];
+         sprintf(message, "Erreur d'ajutement de l'ordre %n. %s",n,e.what());
+         throw ::std::exception(message);
+      }
+
+      // ---------------------------------------------------------
+      // Calcul du niveau moyen du fond sous la trace 
+      // (sera utilisé pour exclure les plus forts cosmiques)
+      // ---------------------------------------------------------
+      moyenne = 0.0;
+      k = 0;
+      for (int i = ordre[n].min_x - 1; i < ordre[n].max_x - 1; i++, k++)
+      {
+         moyenne += (double)p2[y2 * imax2 + i];
+      }
+      moyenne = moyenne / (double)k;
+
+      // -------------------------------------------------------------
+      // Calcul du fond sur le spectre (en dessus de la trace)
+      // On exclue les points qui sont à 1000 ADU au desssus du fond
+      // -------------------------------------------------------------
+      k = 0;
+      moyenne = moyenne + 1000.0;  // seuil codé en dur
+      for (int i = ordre[n].min_x - 1; i < ordre[n].max_x - 1; i++) {
+         if ((double)p2[y2 * imax2 + i] < moyenne) {
+            x[k] = (double)i;
+            y[k] = (double)p2[y2 * imax2 + i];  // au dessus de la trace du spectre
+            w[k] = 1.0;
+            k++;
+         }
+      }
+
+      rms = 0.0;
+      a2 = new double[degre2 + 1];
+      for (int i = 0; i <= degre2; i++) a2[i] = 0.0;
+      try {
+         fitPoly(k, degre2, x, y, w, a2, &rms);
+      } catch (std::exception &e) {
+         // j'enrichie le message d'erreur
+         char message[1024];
+         sprintf(message, "Erreur d'ajutement du fond du spectre de l'ordre %n. %s",n,e.what());
+         throw ::std::exception(message);
+      }
+
+      // ----------------------------------------------------------------------------
+      // Soustraction du fond parasite. 
+      // On se contente de calculer la moyenne de l'ajustement 
+      // entre le dessus et le dessous du spectre colonne par colonne.
+      // ----------------------------------------------------------------------------
+      for (int i = ordre[n].min_x-1; i < ordre[n].max_x; i++) {
+         double v1 = 0.0;
+         for (k = 0; k <= degre2; k++)
+         {
+            v1 = v1 + a1[k] * pow((double)i, (double)k);
+         }
+
+         double v2 = 0.0;
+         for (k = 0; k <= degre2; k++)
+         {
+            v2 = v2 + a2[k] * pow((double)i, (double)k);
+         }
+
+         int vv = (int) ((v1 + v2) / 2.0);
+         for (int j = 0; j < jmax2; j++)
+         {
+            int adr = j * imax2 + i;
+            p2[adr] = p2[adr] - vv;
+         }
+      }
+
+      // -------------------------------------------------------------
+      // Correction de l'inclinaison des raies spectrales (slant)
+      // On utilise une interpolation spline de degré 4
+      // -------------------------------------------------------------
+      double alpha = ordre[n].slant;
+      double alpha_rd = alpha*M_PI/180.0;
+      int y0 = jmax2 / 2;  // coordonnée de l'axe horizontal central de rotation
+      for (int j = 0; j < jmax2; j++)
+      {
+         double dy = (double)((j+1)-y0);
+         double dx = dy * tan(alpha_rd);
+         try {
+            translate_line(p2, imax2, jmax2, j, dx, 4);
+         } catch (std::exception &e) {
+            // j'enrichie le message d'erreur
+            char message[1024];
+            sprintf(message, "Erreur translate_line de l'ordre  %n. %s",n,e.what());
+            throw ::std::exception(message);
+         }
+      }
+
+      // -------------------------------------------------------------
+      // Calcul du profil spectral optimal
+      // -------------------------------------------------------------
+      int wide_y = ordre[n].wide_y;
+      int biny1 = jmax2 / 2 - wide_y / 2;
+      int biny2 = jmax2 / 2 + wide_y / 2;
+      if (flag_opt == 0) {
+         l_opt(p2, imax2, jmax2, biny1, biny2, ordre[n].min_x, ordre[n].max_x, processInfo.bordure, profile);
+      } else {
+         l_opt2(p2, imax2, jmax2, biny1, biny2, ordre[n].min_x, ordre[n].max_x, processInfo.bordure, profile);
+      }
+
+      //stopTimer("extract %d ",n);
+      delete [] x;
+      delete [] y;
+      delete [] w;
+      delete [] a1;
+      delete [] a2;
+
+   } catch (std::exception &e) {
+      delete [] x;
+      delete [] y;
+      delete [] w;
+      delete [] a1;
+      delete [] a2;
+      throw e;
+   }
+
 }
 
 /***************************** COMPUTE_SLANT *************************************/
@@ -1695,6 +2752,7 @@ int extract_order(INFOIMAGE *buffer,int n,int jmax0,ORDRE *ordre, std::valarray<
 /* La ligne neutre est y0. Compense le tit des raies par rapport                 */ 
 /* d'un angle alpha à l'axe de dispersion                                        */
 /*********************************************************************************/
+/*
 int compute_slant(INFOIMAGE *buffer,int y0,double alpha)
 {
 int j,jmax;
@@ -1713,15 +2771,18 @@ for (j=0;j<jmax;j++)
 
 return 0;
 }
+*/
 
 /************************************ PREDIC_POS **********************************/
 /* Prédit la position d'une raie dans l'image                                     */
 /* et retourne l'offset suivant X par rapport à la position effectivement mesurée */
 /* (lambda, order) sont la longueur et l'ordre nominal de la raie                 */
 /**********************************************************************************/
-int predic_pos(double lambda,int order,double x_mesure,int imax,ORDRE *ordre,double *dx, INFOSPECTRO spectro)
+int predic_pos(double lambda, double x_mesure, PROCESS_INFO &processInfo,INFOSPECTRO &spectro, double *dx)
 {
-double k=(double)order;
+double k = processInfo.referenceOrderNum;
+double imax = spectro.imax;
+
 
 double gamma=spectro.gamma*PI/180.0;
 double alpha=spectro.alpha*PI/180;
@@ -1749,7 +2810,7 @@ double beta,beta2,posx;
 /* La longueur du vecteur est taille.                                 */
 /* Le resultat est retourné dans la variable posx                     */
 /**********************************************************************/
-int line_pos_approx(int pos,int wide,std::valarray<double> &buf,int *posx)
+void line_pos_approx(int pos,int wide,std::valarray<double> &buf,int &posx)
 {
    int i;
    int x1,x2,wide2;
@@ -1776,10 +2837,9 @@ int line_pos_approx(int pos,int wide,std::valarray<double> &buf,int *posx)
       if (buf[i]>max)
       {
          max=buf[i];
-         *posx=i;  // origine (0) 
+         posx=i;  // origine (0) 
       }
    } 
-   return 0;
 }
 
 /***************************** SPEC_CDG ********************************/
@@ -1790,52 +2850,52 @@ int line_pos_approx(int pos,int wide,std::valarray<double> &buf,int *posx)
 /***********************************************************************/
 int spec_cdg(int pos,int wide,int taille,double *buf,double *pos_x)
 {
-int i;
-int x1,x2,wide2;
-double v;
-double s1=0.0;
-double s2=0.0;
+   int i;
+   int x1,x2,wide2;
+   double v;
+   double s1=0.0;
+   double s2=0.0;
 
-wide2=wide/2;
-x1=pos-wide2;
-x2=pos+wide2;
+   wide2=wide/2;
+   x1=pos-wide2;
+   x2=pos+wide2;
 
-if (x1<0)
+   if (x1<0)
    {
-   x1=0;
-   x2=x1+wide;
+      x1=0;
+      x2=x1+wide;
    }
 
-if (x2>taille-1)
+   if (x2>taille-1)
    {
-   x2=taille-1;
-   x1=x2-wide;
+      x2=taille-1;
+      x1=x2-wide;
    }
-   
-for (i=x1;i<x2;i++)
+
+   for (i=x1;i<x2;i++)
    {
-   if (i>=0 && i<taille)
+      if (i>=0 && i<taille)
       {
-      v=buf[i];
-      s1=s1+(double)i*v;
-      s2=s2+v;
+         v=buf[i];
+         s1=s1+(double)i*v;
+         s2=s2+v;
       }
-   else
-      return 1;
+      else
+         return 1;
    }
 
-if (s2==0)
-   *pos_x=0;
-else
-   *pos_x=s1/s2;
+   if (s2==0)
+      *pos_x=0;
+   else
+      *pos_x=s1/s2;
 
-return 0;
+   return 0;
 }
 
 // ///////////////////////////////////////////////////////////////////////////////
 // Retourne la longueur d'onde théorique à partir de la position px dans l'image
 // ///////////////////////////////////////////////////////////////////////////////
-double compute_px2lambda(double px, double k, double dx, INFOSPECTRO spectro)
+double compute_px2lambda(double px, double k, double dx, INFOSPECTRO &spectro)
 {
    double gamma = spectro.gamma * PI / 180.0;
    double alpha = spectro.alpha * PI / 180.0;
@@ -1854,18 +2914,20 @@ double compute_px2lambda(double px, double k, double dx, INFOSPECTRO spectro)
 /* La position approximative des raies est calculée avec la formule du réseau */
 /* V1.4 -> retourne le nombre de raies retenues + nombre itération            */
 /******************************************************************************/
-void calib_spec(int n,int nb_iter,double lambda_ref,int ordre_ref,std::valarray<double> &calibRawProfile, ORDRE *ordre,
-                int imax,int jmax,int neon_ref_x,short *check,INFOSPECTRO spectro,::std::list<double> &lineList, ::std::list<LINE_GAP> &lineGapList)
+void calib_spec(int n,int nb_iter,PROCESS_INFO &processInfo, INFOSPECTRO &spectro,
+                std::valarray<double> &calibRawProfile, ORDRE *ordre,
+                ::std::list<double> &lineList, ::std::list<LINE_GAP> &lineGapList)
 {
 
    double coef = 1.5;          // coefficient de réjection du sigma-clipping
    double position[MAX_LINES];
    double table_lambda[MAX_LINES];
+   double delta_lambda[MAX_LINES];
    double result_lambda[MAX_LINES];    // table des longueur d'onde des raies analysees
    double result_position[MAX_LINES];   // table des positions des raies analysees
    int    result_flag[MAX_LINES];     // table des resultats d'analyse 1=OK 0=erreur 
    double w[MAX_LINES];
-   double a[5]; 
+   double a[4]; 
    double rms = 0;
    double fwhm = 0.0;
    int wide_x=ordre[n].wide_x;  // largeur de la zone de recherche d'une raie (en pixels)
@@ -1880,11 +2942,12 @@ void calib_spec(int n,int nb_iter,double lambda_ref,int ordre_ref,std::valarray<
    try {
       memset(position,0,MAX_LINES*sizeof(double));
       memset(table_lambda,0,MAX_LINES*sizeof(double));
+      memset(delta_lambda,0,MAX_LINES*sizeof(double));
       memset(result_lambda,0,MAX_LINES*sizeof(double));
       memset(result_position,0,MAX_LINES*sizeof(double));
       memset(result_flag,0,MAX_LINES*sizeof(int));
       memset(w,0,MAX_LINES*sizeof(double));
-      memset(a,0,5*sizeof(double));
+      memset(a,0,4*sizeof(double));
 
       double psf_posx;
       int pos2;
@@ -1900,7 +2963,7 @@ void calib_spec(int n,int nb_iter,double lambda_ref,int ordre_ref,std::valarray<
 
       // Calcul de l'écart (dx) entre la position fourni et la position mesurée de 
       // la raie du thorium à 6584 A
-      predic_pos(lambda_ref,ordre_ref,(double)neon_ref_x,imax,ordre,&dx,spectro);      
+      predic_pos(processInfo.referenceOrderLambda, processInfo.referenceOrderX, processInfo,spectro,&dx);      
 
       int nb_analyse=0;
       int kk=0;
@@ -1913,7 +2976,7 @@ void calib_spec(int n,int nb_iter,double lambda_ref,int ordre_ref,std::valarray<
          for (iter=lineList.begin(); iter != lineList.end(); ++iter) 
          {            
             lambda = *iter;
-            double px0=compute_pos((double)n,lambda,dx,imax,spectro);
+            double px0=compute_pos((double)n,lambda,dx, spectro);
             // correction de la distorsion;
             px = 0 ;
             if (spectro.distorsion.size() > 0 ) {
@@ -1926,23 +2989,25 @@ void calib_spec(int n,int nb_iter,double lambda_ref,int ordre_ref,std::valarray<
             
             // On vérifie que la position tombe dans l'intervalle spécifié
             // TODO : remplacer 5 par param.bordure
-            if ((int)px>(ordre[n].min_x+(wide_x/2+1)+5) && (int)px<(ordre[n].max_x-(wide_x/2+1)-5)) 
+            if ((int)px>(ordre[n].min_x+(wide_x/2+1)+ processInfo.bordure) && 
+                (int)px<(ordre[n].max_x-(wide_x/2+1)- processInfo.bordure)) 
             {                                                       
-               pos2=(int)px-ordre[n].min_x;
+               pos2=(int)px-ordre[n].min_x-processInfo.bordure;
                int pos = 0;
                // je recherche la position approximative de la raie (pixel le plus intense) dans la zone de largeur wide_x 
-               line_pos_approx(pos2,wide_x,calibRawProfile,&pos);
+               line_pos_approx(pos2,wide_x,calibRawProfile,pos);
                
                // ajustement gaussien 
                double ecartType;               
-               if ( spec_gauss(pos,9,calibRawProfile,&psf_posx,&fwhm,&ecartType) == 0 ) { 
+               if ( spec_gauss(pos,9,calibRawProfile,psf_posx,fwhm,ecartType) == 0 ) { 
                   if (ni!=0) { 
                      // sigma-clipping au-delà de la première itération
-                     double lambda_estime = 0;
+                     double calc = 0;
                      // je calcule la longueur d'onde correspondant à position observee
                      for (int index = 0; index <= calib_degre; index++) {
-                        lambda_estime = lambda_estime + a[index] * pow(psf_posx, (double)index);     
+                        calc = calc + a[index] * pow(psf_posx, (double)index);     
                      }
+                     double lambda_estime = compute_px2lambda(psf_posx + (double)ordre[n].min_x, n, dx, spectro) + calc;
 
                      if (fabs(lambda-lambda_estime) < coef*rms) { // sigma-clipping
                         sfwhm=sfwhm+fwhm; 
@@ -1950,10 +3015,19 @@ void calib_spec(int n,int nb_iter,double lambda_ref,int ordre_ref,std::valarray<
                         position[kk]=psf_posx;
                         w[kk]=1.0;
 
+                        double lambda_calcule = compute_px2lambda(position[kk] + (double)ordre[n].min_x, n, dx, spectro);
+                        delta_lambda[kk] = table_lambda[kk] - lambda_calcule; // écart entre lambda_effectif et lambda calculé à partir de la position observée
+                        
+                        if (ni == nb_iter - 1)  // on ne trace et on ne conserve que les raies valides
+                        {
+                           result_lambda[nb_analyse]=lambda; 
+                           result_position[nb_analyse]=psf_posx; 
+                           result_flag[nb_analyse] = 1;
+                        }
                         // je memorise le resultat de l'analyse
-                        result_lambda[nb_analyse]=lambda; 
-                        result_position[nb_analyse]=psf_posx; 
-                        result_flag[nb_analyse] = 1;
+                        //result_lambda[nb_analyse]=lambda; 
+                        //result_position[nb_analyse]=psf_posx; 
+                        //result_flag[nb_analyse] = 1;
 
                         kk++;  
                         if (kk > MAX_LINES) {
@@ -1962,9 +3036,9 @@ void calib_spec(int n,int nb_iter,double lambda_ref,int ordre_ref,std::valarray<
                         }                        
                      } else {
                        // je memorise le resultat de l'analyse
-                        result_lambda[nb_analyse]=lambda; 
-                        result_position[nb_analyse]=psf_posx; 
-                        result_flag[nb_analyse] = -2;
+                       result_lambda[nb_analyse]=lambda; 
+                       result_position[nb_analyse]=psf_posx; 
+                       result_flag[nb_analyse] = -2;
                      }
                   } else {   // première itération                  
                      sfwhm=sfwhm+fwhm; 
@@ -1972,6 +3046,15 @@ void calib_spec(int n,int nb_iter,double lambda_ref,int ordre_ref,std::valarray<
                      position[kk]=psf_posx;
                      w[kk]=1.0; 
 
+                     double lambda_calcule = compute_px2lambda(position[kk] + (double)ordre[n].min_x, n, dx, spectro);
+                     delta_lambda[kk] = table_lambda[kk] - lambda_calcule; // écart entre lambda_effectif et lambda calculé à partir de la position observée
+                     
+                     if (nb_iter == 1)
+                     {
+                        result_lambda[nb_analyse]=lambda; 
+                        result_position[nb_analyse]=psf_posx; 
+                        result_flag[nb_analyse] = 1;
+                     }
                      kk++;
                      if (kk > 500) {
                         kk--;
@@ -1990,20 +3073,20 @@ void calib_spec(int n,int nb_iter,double lambda_ref,int ordre_ref,std::valarray<
 
          if ( kk < 2 ) {
             char message[1024];
-            sprintf(message, " %d lines detected on order %d. Must be >=2 lines.",kk,n);
+            sprintf(message, " %d lines detected on order %d in iteration %d. Must be >=2 lines.",kk,n,nb_iter);
             throw ::std::exception(message);
          }
          // on ajuste le polynome
          for (int index = 0; index <= calib_degre; index++) a[index] = 0.0;
          if (kk<=2) {
             // on ajuste ordre 1
-            fitPoly(kk,1,position,table_lambda,w,a,&rms);            
+            fitPoly(kk,1,position,delta_lambda,w,a,&rms);            
          } else if (kk==3){
             // on ajuste ordre 2
-            fitPoly(kk,2,position,table_lambda,w,a,&rms); 
+            fitPoly(kk,2,position,delta_lambda,w,a,&rms); 
          } else {
             // on ajuste ordre 3 
-            fitPoly(kk,3,position,table_lambda,w,a,&rms); 
+            fitPoly(kk,3,position,delta_lambda,w,a,&rms); 
          }         
       }  // fin for nb_iter
       
@@ -2022,26 +3105,30 @@ void calib_spec(int n,int nb_iter,double lambda_ref,int ordre_ref,std::valarray<
          lineGap.l_obs  = result_lambda[i];
          lineGap.valid  = result_flag[i];
 
-         double lambda_estime = 0.0;
+         double calc = 0.0;
          for (int index = 0; index <= calib_degre; index++) {
-            lambda_estime = lambda_estime + a[index] * pow(result_position[i], (double)index);
+            calc = calc + a[index] * pow(result_position[i], (double)index);
          }
-         lineGap.l_calc = lambda_estime;
-         lineGap.l_diff = result_lambda[i] - lambda_estime;
-         lineGap.l_posx = result_position[i]+(double)ordre[n].min_x;
+         lineGap.l_calc = compute_px2lambda(result_position[i] + (double)ordre[n].min_x, n, dx, spectro) + calc;
+         lineGap.l_diff = result_lambda[i] - lineGap.l_calc;
+         lineGap.l_posx = result_position[i]+ ordre[n].min_x + processInfo.bordure;
          
-         int degre = 4; 
          double y=0.0;
-         for (int k=0;k<=degre;k++) {
-            y=y+ordre[n].poly_order[k]*pow(lineGap.l_posx,(double)k);
+         //for (int k=0;k<=POLY_ORDER_DEGREE;k++) {
+         //   y=y+ordre[n].poly_order[k]*pow(lineGap.l_posx,(double)k);
+         //}
+         for (int k=POLY_ORDER_DEGREE;k>=0;k--) {
+            y += ordre[n].poly_order[k];
+            if (k > 0 ) y *= lineGap.l_posx;
          }
          lineGap.l_posy = y;
          lineGapList.push_back(lineGap);
       }
       
-      // on calcule la dispersion moyenne (on ajuste ordre 1)
+      // on calcule la dispersion moyenne ajustee a l'ordre 1
       fitPoly(kk,1,position,table_lambda,w,a,&rms); 
       ordre[n].disp=a[1];
+      ordre[n].central_lambda = compute_px2lambda((double)(spectro.imax / 2), n, dx, spectro);
       // je calcule la resolution
       ordre[n].resolution = ordre[n].central_lambda/(ordre[n].disp*ordre[n].fwhm);
       // je stocke le nombre de raies reconnues
@@ -2069,11 +3156,12 @@ void calib_spec(int n,int nb_iter,double lambda_ref,int ordre_ref,std::valarray<
 /* On normalise les intensité au point max.                            */
 /***********************************************************************/
 int make_interpol(std::valarray<double> &table_in, 
-                  double coef3,double coef2,double coef1,double coef0,
-                  double pas, std::valarray<double> &table_out, double *lambda1)
+                  INFOSPECTRO &spectro, PROCESS_INFO &processInfo,
+                  ORDRE *ordre, int n, double dx, double pas,
+                  std::valarray<double> &table_out, double &lambda1)
 {
    int taille0;
-   double x,max;
+   double x;
    double *rx = NULL;
    double *ry = NULL;
    double *a = NULL;
@@ -2092,47 +3180,43 @@ int make_interpol(std::valarray<double> &table_in,
       lamb = new double[taille];
 
       // Associe une longueur d'onde à chaque pixel
-      for (int i=0;i<taille;i++) {
-         x=(double)i;
-         lamb[i]=coef3*x*x*x + coef2*x*x + coef1*x + coef0;
-         if ( lamb[i] > 20000) {
-            char message[1024];
-            sprintf(message, "Error make_interpol Invalid Lambda > 20000 coef0=%f coef1=%f coef2=%f coef3=%f",coef0,coef1,coef2,coef3);
-            throw ::std::exception(message);
+      if ( processInfo.version < 2) {
+         for (int i=0;i<taille;i++) {
+            x=(double)(i + processInfo.bordure);
+            lamb[i]=ordre[n].a3*x*x*x + ordre[n].a2*x*x + ordre[n].a1*x + ordre[n].a0;
+         }
+      } else {
+         for (int i=0;i<taille;i++) {
+            x=(double)i;  
+            double v =(((ordre[n].a3*x) + ordre[n].a2)*x + ordre[n].a1)*x + ordre[n].a0;
+            // la longueur d'onde du point x est égale au modèle théorique + l'écart donné par le polynôme
+            lamb[i] = compute_px2lambda(x + ordre[n].min_x, n, dx, spectro) + v;
          }
       }
 
       // Calcul des coefficients de spline
       for (int i=0;i<taille;i++)
-         {
+      {
          rx[i]=lamb[i];
          ry[i]=table_in[i];
-         }
+      }
       spline(taille,rx,ry,a,b,c);
 
       // Calcul de la taille du profil de sortie
       taille0=taille;
       taille=int((lamb[taille0-1]-lamb[0])/pas);
       result = new double[taille];
-      table_out.resize(taille);
 
       // Interpollation spline 
       double lambda0=(double)((int)lamb[0]+1);  // on commence par un nombre entier (juste supérieur)
       for (int i=0;i<taille;i++)
-         {
+      {
          x=lambda0+(double)i*pas;
          if (x<lamb[0] || x>lamb[taille0-1])
             result[i]=0.0;
          else
             result[i]=seval(taille0,x,rx,ry,a,b,c);
-         }
-
-      // Recherche de la valeur max dans le profil
-      max=-1e10;
-      for (int i=0;i<taille;i++)
-         {
-         if (result[i]>max) max=result[i];
-         }
+      }
 
       //  je calcule la taille du profil resultat
       if ( taille-2 < (lamb[taille0-1]-lambda0)/pas ) {
@@ -2140,13 +3224,14 @@ int make_interpol(std::valarray<double> &table_in,
       } else {
          table_out.resize(int((lamb[taille0-1]-lambda0)/pas));
       }
+
       //  Sauvegarde du profil
-      for (int i=1;i<taille-1;i++) {         
+      for (unsigned int i=1;i<=table_out.size();i++) {         
          x=lambda0+(double)i*pas;
-         if (x>lamb[taille0-1]) break;  // on ne couvre que le domaine spectral d'entrée
-         table_out[i-1]= result[i]/max;
+         //if (x>lamb[taille0-1]) break;  // on ne couvre que le domaine spectral d'entrée
+         table_out[i-1]= result[i];
       }
-      *lambda1 =lambda0+pas;
+      lambda1 =lambda0+pas;
 
       delete [] rx;
       delete [] ry;
@@ -2178,16 +3263,17 @@ int make_interpol(std::valarray<double> &table_in,
 void Eshel_interpolProfile(char *fileName)
 {
    CCfits::PFitsFile pFits = NULL;
-   PIC_TYPE * tampon = NULL;;
    ORDRE *ordre = NULL;
    double *profile = NULL;
    INFOSPECTRO spectro;
+   PROCESS_INFO processInfo;
    double dx_ref=0.0;
 
    try {
       pFits = Fits_openFits(fileName, true);
       // je lis les parametres spectro 
       Fits_getInfoSpectro(pFits, &spectro);
+      Fits_getProcessInfo(pFits, &processInfo);
       // je lis les parametres des ordres
       int nbOrder = spectro.max_order - spectro.min_order +1;
       ordre = new ORDRE[MAX_ORDRE];
@@ -2202,9 +3288,9 @@ void Eshel_interpolProfile(char *fileName)
             double step=0.1;
             int min_x; 
             // je recupere le profil brut
-            Fits_getRawProfile(pFits, "P_1A_",n,rawProfile, &min_x); 
+            Fits_getRawProfile(pFits, "P_1A_",n,rawProfile, min_x); 
             // j'echantillone lineairement le profil
-            make_interpol(rawProfile,ordre[n].a3,ordre[n].a2,ordre[n].a1,ordre[n].a0,step,linProfile, &lambda1);
+            make_interpol(rawProfile, spectro, processInfo, ordre , n, dx_ref, step,linProfile, lambda1);
             // j'enregistre le profil dans le fichier
             Fits_setLinearProfile(pFits, "P_1B_",n,linProfile, lambda1, step) ;
          }
@@ -2220,15 +3306,15 @@ void Eshel_interpolProfile(char *fileName)
    }
 }
 
-/******************************** MERGE_SPECTRE ********************************/
+/******************************** MERGE_SPECTRE *******************************/
 /* Met bout à bout deux ordres contigues (nom1) et (nom2), et produit le       */
 /* le profil spectral mosaïque (out).                                          */
 /* La zone commun est utilisé pour harmoniser les intensités.                  */
-/* On calcule l'intensité moyenne dans les zones communes (pas de pondération) */
+/* On calcule une intensité pondérée dans les zones communes                   */
 /*******************************************************************************/ 
 void merge_spectre(::std::valarray<double> &value1, double lambda1, double step1, 
-                   ::std::valarray<double> &value2, double lambda2, double step2, 
-                   ::std::list<double> &joinProfile)
+                    ::std::valarray<double> &value2, double lambda2, double step2, 
+                    ::std::list<double> &mergeProfile, double &mergeLambda1)
 {
    int i,j;
    int nb1,nb2;
@@ -2236,353 +3322,136 @@ void merge_spectre(::std::valarray<double> &value1, double lambda1, double step1
    
    nb1 = value1.size();
    nb2 = value2.size();
-
+ 
    double *wave1 = new double[nb1];
    double *wave2 = new double[nb2];
+   char   *flag1 = new char[nb1];
+   char   *flag2 = new char[nb2];
 
-   for(int i=0; i<nb1; i++ ) { wave1[i] = lambda1 + step1*i; }
-   for(int i=0; i<nb2; i++ ) { wave2[i] = lambda2 + step2*i; }
-
-   double s1=0.0;
-   double s2=0.0;
-   for (i=0;i<nb1;i++)
-      {
-      for (j=0;j<nb2;j++)
-         {
-         if ((int)(100.0*wave1[i])==(int)(100.0*wave2[j]))
-            {
-            s1=s1+value1[i];
-            s2=s2+value2[j];
-            }       
-         } 
-      }
-
-   double coef=s1/s2;
-
-   int flag;
-   for (i=0;i<nb1;i++)
-      {
-      flag=0;
-      for (j=0;j<nb2;j++)
-         {
-         if ((int)(100.0*wave1[i])==(int)(100.0*wave2[j]) && value1[i]!=-32000.0 && value2[j]!=-32000.0)  // zone commune
-            {
-            v=(value1[i]+value2[j]*coef)/2.0;
-            value1[i]=-32000.0;
-            value2[j]=-32000.0;
-            flag=1;
-            }
-         }
-      if (flag==0)
-         { 
-         joinProfile.push_back(value1[i]); 
-         }
-      else
-         { 
-         joinProfile.push_back(v); 
-         }
-      }
-   for (i=0;i<nb2;i++)
-      {
-      if (value2[i]!=-32000.0)
-         {
-         joinProfile.push_back(value2[i]*coef);
-         }
-      }
-
-   delete wave1;
-   delete wave2;
-}
-
-
-/******************************** MERGE_SPECTRE2 *******************************/
-/* Met bout à bout deux ordres contigues (nom1) et (nom2), et produit le       */
-/* le profil spectral mosaïque (out).                                          */
-/* La zone commun est utilisé pour harmoniser les intensités.                  */
-/* On calcule une intensité pondérée dans les zones communes                   */
-/*******************************************************************************/ 
-void merge_spectre2(::std::valarray<double> &value1, double lambda1, double step1, 
-                    ::std::valarray<double> &value2, double lambda2, double step2, 
-                    ::std::valarray<double> &value_flat1, double lambdaFlat1, double stepFlat1, 
-                    ::std::valarray<double> &value_flat2, double lambdaFlat2, double stepFlat2, 
-                    ::std::list<double> &joinProfile)
-{
-   int i,j,k;
-   int nb1,nb2,nbflat1,nbflat2;
-   double v;
-   
-   nb1 = value1.size();
-   nb2 = value2.size();
-   nbflat1 = value_flat1.size();
-   nbflat2 = value_flat2.size();
-
-   double *wave1 = new double[nb1];
-   double *wave2 = new double[nb2];
-   double *wave_flat1 = new double[nbflat1];
-   double *wave_flat2 = new double[nbflat2];
-
-   for(int i=0; i<nb1; i++ ) { wave1[i] = lambda1 + step1*i; }
-   for(int i=0; i<nb2; i++ ) { wave2[i] = lambda2 + step2*i; }
-   for(int i=0; i<nbflat1; i++ ) { wave_flat1[i] = lambdaFlat1 + stepFlat1*i; }
-   for(int i=0; i<nbflat2; i++ ) { wave_flat2[i] = lambdaFlat2 + stepFlat2*i; }
+   for(int i=0; i<nb1; i++ ) { 
+      wave1[i] = lambda1 + step1*i;
+      flag1[i] = 0;
+   }
+   for(int i=0; i<nb2; i++ ) { 
+      wave2[i] = lambda2 + step2*i; 
+      flag2[i] = 0;
+   }
 
    // Calcul du ratio des deux spectres dans la zone de recouvrement
    double s1=0.0;
    double s2=0.0;
+
+   int commun=0;
+   int first1=0;
+   int last1=0;
+   int first2=0;
+   int last2=0;
+   int flag0=0;
+
    for (i=0;i<nb1;i++)
    {
       for (j=0;j<nb2;j++)
       {
          if ((int)(100.0*wave1[i])==(int)(100.0*wave2[j]))
          {
-            s1=s1+value1[i];
-            s2=s2+value2[j];
+            if (flag0 == 0)
+            {
+               first1 = i;
+               first2 = j;
+               flag0 = 1;
+            }
+
+            last1 = i;
+            last2 = j;           
+            s1 = s1+value1[i];
+            s2 = s2+value2[j];
+            commun++;
          }       
       } 
    }
 
+   // calcul du ratio 
    double coef=s1/s2;
+
    int flag;
    for (i=0;i<nb1;i++)
    {
       flag=0;
       for (j=0;j<nb2;j++)
       {
-         if ((int)(100.0*wave1[i])==(int)(100.0*wave2[j]) && value1[i]!=-32000.0 && value2[j]!=-32000.0)  // zone commune
+         if ((int)(100.0 * wave1[i])==(int)(100.0 * wave2[j]) && flag1[i]!= -1 && flag2[j] != -1 )  // zone commune
          {
-            // on recherche le niveau dans flat1 pour la longueur d'onde correspondante
-            double p1=1.0;    // poids par défaut
-            for (k=0;k<nbflat1;k++)
-            {
-               if ((int)(100.0*wave1[i])==(int)(100.0*wave_flat1[k])) p1=value_flat1[k];
-            } 
-            // on recherche le niveau dans flat2 pour la longueur d'onde correspondante
-            double p2=1.0;    // poids par défaut
-            for (k=0;k<nbflat2;k++)
-            {
-               if ((int)(100.0*wave2[j])==(int)(100.0*wave_flat2[k])) p2=value_flat2[k];
-            } 
-            double pp=p1+p2; // on normalise la fonction de poids
-            p1=p1/pp;
-            p2=p2/pp;
-            double norme=p1*p1+p2*p2;
-            v=(value1[i]*p1*p1+coef*value2[j]*p2*p2)/norme; // somme pondérée (au sens des moindes carrés)
-
-            value1[i]=-32000.0;
-            value2[j]=-32000.0;
+            v=(value1[i]+value2[j]*coef)/2.0;
+            flag1[i] = -1;
+            flag2[j] = -1;
             flag=1;
          }
       }
       if (flag==0) { 
-         joinProfile.push_back(value1[i]); 
+         mergeProfile.push_back(value1[i]); 
       } else { 
-         joinProfile.push_back(v); 
+         mergeProfile.push_back(v); 
       }
    }
    for (i=0;i<nb2;i++)
    {
-      if (value2[i]!=-32000.0)
+      if (flag2[i]!=-1)
       {
-         joinProfile.push_back(value2[i]*coef);
+         mergeProfile.push_back(value2[i]*coef);
       }
    }
 
-   delete wave1;
-   delete wave2;
-   delete wave_flat1;
-   delete wave_flat2;
-}
-
-/*********************************** ABOUTE_SPECTRES *************************************/
-/* Aboute les ordres 32, 33, 34, 35, 36, 37 et 38 -> zone couverte par les raies du néon */
-/* Le résultat est un spectre ayant pour nom objet_full0.dat                             */
-/*****************************************************************************************/
-/*
-void aboute_spectres(int max_ordre,int min_ordre,char *objectName,char *calibName,char *nom_out,int useFlat)
-{
-   CCfits::PFitsFile calibFits = NULL;
-   CCfits::PFitsFile objectFits = NULL;
-   CCfits::PFitsFile outFits = NULL;
-
-   try {
-      objectFits = Fits_openFits(objectName, true);
-      if (useFlat==0)
-      {
-         abut1bOrder(max_ordre,min_ordre,objectFits);
-      }
-      else
-      {
-         calibFits = Fits_openFits(calibName, false);
-         abut1bOrder(max_ordre,min_ordre,objectFits,calibFits);
-         //j'enregistre le resultat dans le fichier de sortie 
-      }
-
-
-      if ( nom_out != NULL) {
-         //j'enregistre le resultat dans le fichier de sortie independant
-         ::std::valarray<double> value1;
-         double lambda1;
-         double step1;
-         Fits_getFullProfile(objectFits,"P_1B_FULL",value1, &lambda1, &step1);
-         outFits = Fits_createFits(nom_out,value1,lambda1, step1);
-         Fits_closeFits(outFits);
-      }
-   }
-   catch (::std::exception &e) {
-      Fits_closeFits(outFits);
-      Fits_closeFits(objectFits);
-      Fits_closeFits(calibFits);
-      throw e;
-  }
-}
-*/
-
-/*********************************** abut1bOrder ************************************
-* Aboute les ordres des profils calibrés 
-* 
-* @param 
-*/
-void abut1bOrder(int max_ordre,int min_ordre,CCfits::PFitsFile objectFits, char *hduName)
-{
-   try {
-      ::std::list<double> mergeProfile;
-      ::std::valarray<double> value1;
-      ::std::valarray<double> value2;
-      double step1, step2;
-      double lambda1, lambda2;
-
-      // je recupere le premier ordre (max_ordre)
-      Fits_getLinearProfile(objectFits, "P_1B_", max_ordre, value1, &lambda1, &step1);
-
-      for (int n=max_ordre-1;n>=min_ordre;n--) {
-         // je recupere l'ordre suivant
-         Fits_getLinearProfile(objectFits, "P_1B_", n, value2, &lambda2, &step2);
-         // j'aboute les 2 profils
-         merge_spectre(value1, lambda1, step1,
-            value2, lambda2, step2, 
-            mergeProfile);
-         // je copie le resultat dans value1
-         value1.resize(mergeProfile.size());
-         ::std::list <double> ::iterator iter;
-         size_t i = 0;
-         for (iter= mergeProfile.begin(); iter != mergeProfile.end(); iter++ ) {
-            value1[i++] = *iter; 
-         }
-         mergeProfile.clear();
-      }
-      // j'enregistre le profil aboute 
-      Fits_setFullProfile(objectFits,"P_1B_FULL",value1,lambda1, step1);     
-   }
-   catch (::std::exception &e) {
-      Fits_closeFits(objectFits);
-     throw e;
-  }
+   delete [] wave1;
+   delete [] wave2;
+   delete [] flag1;
+   delete [] flag2;
 }
 
 /*********************************** abutOrderWithFlat *************************************/
 /* Aboute les ordres 32, 33, 34, 35, 36, 37 et 38 -> zone couverte par les raies du néon */
 /*                         */
 /*****************************************************************************************/
-void abut1bOrder(int max_ordre,int min_ordre,CCfits::PFitsFile objectFits, CCfits::PFitsFile calibFits, char *hduName )
+void abut1bOrder(::std::valarray<::std::valarray<double>> &object1BProfile, double *lambda1, 
+                 int min_ordre, int max_ordre, double step,
+                 ::std::valarray<double> &full1BProfile, double &fullLambda1)
 {
    try {
       
-      ::std::list<double> mergeProfile;
-      ::std::valarray<double> value1;
-      ::std::valarray<double> value2;
-      ::std::valarray<double> valueFlat1;
-      ::std::valarray<double> valueFlat2;
-      double step1, step2, stepFlat1, stepFlat2;
-      double lambda1, lambda2, lambdaFlat1, lambdaFlat2;
+      int firstOrder;
 
-      int savedMaxOrdre = max_ordre;         
-      do {
-         try {
-            // je recupere le premier ordre (max_ordre)         
-            Fits_getLinearProfile(objectFits, "P_1B_", max_ordre, value1, &lambda1, &step1);
-         } catch  (::std::exception &e) {
-            // si le profil n'existe pas , je decremente max_ordre pour essayer avec le suivant
-            e.what();
-            max_ordre--; 
+      // je recherche le premier ordre a traiter
+      for ( firstOrder=max_ordre; firstOrder <= min_ordre; firstOrder-- ) {
+         if ( object1BProfile[firstOrder].size() > 0 ) {
+            break;
          }
-      } while (value1.size() == 0 && max_ordre > min_ordre +1); 
+      }
 
-      if (value1.size() == 0 ) {
+      if (object1BProfile[firstOrder].size() == 0 ) {
          // aucun profil n'existe
          char message [1024] ; 
          sprintf(message,"No profile found from min_order=%d to max_order=%d", min_ordre, max_ordre);
          throw ::std::exception(message);
       }
 
-      for (int n=max_ordre-1;n>=min_ordre;n--) {
-         // je recupere l'ordre suivant du flat
-         Fits_getLinearProfile(calibFits, "FLAT_1B_", n+1, valueFlat1, &lambdaFlat1, &stepFlat1);
-         try {
-            // je recupere l'ordre suivant
-            Fits_getLinearProfile(objectFits, "P_1B_", n, value2, &lambda2, &step2);
-         } catch  (::std::exception &e) {
-            // si le profil suivant n'existe pas, j'arrete d'abouter les profils 
-            // et j'enregistre le profil FULL tel quel.
-            e.what();
-            break;
-         }
-
-         Fits_getLinearProfile(calibFits, "FLAT_1B_", n, valueFlat2, &lambdaFlat2, &stepFlat2);
-         // j'aboute les 2 profils
-         merge_spectre2(value1, lambda1, step1,
-            value2, lambda2, step2, 
-            valueFlat1, lambdaFlat1, stepFlat1, 
-            valueFlat2, lambdaFlat2, stepFlat2, 
-            mergeProfile);
-         // je copie le resultat dans value1
-         value1.resize(mergeProfile.size());
-         ::std::list <double> ::iterator iter;
-         size_t i = 0;
-         for (iter= mergeProfile.begin(); iter != mergeProfile.end(); iter++ ) {
-            value1[i++] = *iter; 
-         }
-         mergeProfile.clear();
+      if (firstOrder == min_ordre) {
+         // il n'y a qu'un ordre
+         full1BProfile = object1BProfile[firstOrder];
+         fullLambda1   = lambda1[firstOrder];
+         return;
       }
-      //j'enregistre le resultat dans le fichier d'entree
-      Fits_setFullProfile(objectFits,hduName,value1,lambda1, step1);
-   }
-   catch (::std::exception &e) {
-      throw e;
-   }
-}
 
-/*********************************** abut1cOrder ************************************
-* Aboute les ordres des profils calibrés 
-* 
-* @param 
-*/
-void abut1cOrder(int max_ordre,int min_ordre,CCfits::PFitsFile objectFits, char * hduName)
-{
-   try {
+      // je copie le premier ordre dans la variable de travail
+      ::std::valarray<double> value1 = object1BProfile[firstOrder];
+      fullLambda1 = lambda1[firstOrder];
       ::std::list<double> mergeProfile;
-      ::std::valarray<double> value1;
-      ::std::valarray<double> value2;
-      double step1, step2;
-      double lambda1, lambda2;
 
-      do {
-         try {
-            // je recupere le premier ordre (max_ordre)         
-            Fits_getLinearProfile(objectFits, "P_1C_", max_ordre, value1, &lambda1, &step1);
-         } catch  (::std::exception &e) {
-            // si le profil n'existe pas , je decremente max_ordre pour essayer avec le suivant
-            e.what();
-            max_ordre--; 
-         }
-      } while (value1.size() == 0 && max_ordre > min_ordre +1); 
-
-      for (int n=max_ordre-1;n>=min_ordre;n--) {
-         // je recupere l'ordre suivant
-         Fits_getLinearProfile(objectFits, "P_1C_", n, value2, &lambda2, &step2);
+      // je concatene les ordres suivants
+      for (int n=firstOrder-1;n>=min_ordre;n--) {
+         mergeProfile.clear();
          // j'aboute les 2 profils
-         merge_spectre(value1, lambda1, step1,
-            value2, lambda2, step2, 
-            mergeProfile);
+         merge_spectre(value1, fullLambda1, step,
+            object1BProfile[n], lambda1[n],  step,
+            mergeProfile, fullLambda1);
          // je copie le resultat dans value1
          value1.resize(mergeProfile.size());
          ::std::list <double> ::iterator iter;
@@ -2590,10 +3459,8 @@ void abut1cOrder(int max_ordre,int min_ordre,CCfits::PFitsFile objectFits, char 
          for (iter= mergeProfile.begin(); iter != mergeProfile.end(); iter++ ) {
             value1[i++] = *iter; 
          }
-         mergeProfile.clear();
       }
-      // j'enregistre le profil aboute 
-      Fits_setFullProfile(objectFits,hduName,value1,lambda1, step1);     
+      full1BProfile = value1;
    }
    catch (::std::exception &e) {
       throw e;
@@ -2601,179 +3468,6 @@ void abut1cOrder(int max_ordre,int min_ordre,CCfits::PFitsFile objectFits, char 
 }
 
 
-
-/*********************************** ABOUTE_SPECTRES *************************************/
-/* Aboute les ordres 32, 33, 34, 35, 36, 37 et 38 -> zone couverte par les raies du néon */
-/* Le résultat est un spectre ayant pour nom objet_full0.dat                             */
-/*****************************************************************************************/
-int aboute_spectres2(char *nom_objet,char *nom_flat,char *nom_out,int useFlat)
-{
-/*
-char nom1[_MAX_PATH],nom2[_MAX_PATH],nom3[_MAX_PATH];
-char nom_f1[_MAX_PATH],nom_f2[_MAX_PATH];
-sprintf(nom3,"%s_full0",nom_objet);
-
-if (useFlat==0)
-   {
-   sprintf(nom1,"%s_%d",nom_objet,50);
-   sprintf(nom2,"%s_%d",nom_objet,49);
-   if (merge_spectre(nom1,nom2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,48);
-   if (merge_spectre(nom3,nom2,nom3)==1) return 1;n
-   sprintf(nom2,"%s_%d",nom_objet,47);
-   if (merge_spectre(nom3,nom2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,46);
-   if (merge_spectre(nom3,nom2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,45);
-   if (merge_spectre(nom3,nom2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,44);
-   if (merge_spectre(nom3,nom2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,43);
-   if (merge_spectre(nom3,nom2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,42);
-   if (merge_spectre(nom3,nom2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,41);
-   if (merge_spectre(nom3,nom2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,40);
-   if (merge_spectre(nom3,nom2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,39);
-   if (merge_spectre(nom3,nom2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,38);
-   if (merge_spectre(nom3,nom2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,37);
-   if (merge_spectre(nom3,nom2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,36);
-   if (merge_spectre(nom3,nom2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,35);
-   if (merge_spectre(nom3,nom2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,34);
-   if (merge_spectre(nom3,nom2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,33);
-   if (merge_spectre(nom3,nom2,nom3)==1) return 1;
-
-//   sprintf(nom2,"%s_%d",nom_objet,32);
-//   if (merge_spectre(nom3,nom2,nom3)==1) return 1;
-
-//   sprintf(nom2,"%s_%d",nom_objet,31);
-//   if (merge_spectre(nom3,nom2,nom3)==1) return 1;
-   }
-else
-   {
-   sprintf(nom1,"%s_%d",nom_objet,50);
-   sprintf(nom2,"%s_%d",nom_objet,49);
-   sprintf(nom_f1,"%s_%d",nom_flat,50);
-   sprintf(nom_f2,"%s_%d",nom_flat,49);
-   if (merge_spectre2(nom1,nom2,nom_f1,nom_f2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,48);
-   sprintf(nom_f1,"%s_%d",nom_flat,49);
-   sprintf(nom_f2,"%s_%d",nom_flat,48);
-   if (merge_spectre2(nom3,nom2,nom_f1,nom_f2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,47);
-   sprintf(nom_f1,"%s_%d",nom_flat,48);
-   sprintf(nom_f2,"%s_%d",nom_flat,47);
-   if (merge_spectre2(nom3,nom2,nom_f1,nom_f2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,46);
-   sprintf(nom_f1,"%s_%d",nom_flat,47);
-   sprintf(nom_f2,"%s_%d",nom_flat,46);
-   if (merge_spectre2(nom3,nom2,nom_f1,nom_f2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,45);
-   sprintf(nom_f1,"%s_%d",nom_flat,46);
-   sprintf(nom_f2,"%s_%d",nom_flat,45);
-   if (merge_spectre2(nom3,nom2,nom_f1,nom_f2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,44);
-   sprintf(nom_f1,"%s_%d",nom_flat,45);
-   sprintf(nom_f2,"%s_%d",nom_flat,44);
-   if (merge_spectre2(nom3,nom2,nom_f1,nom_f2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,43);
-   sprintf(nom_f1,"%s_%d",nom_flat,44);
-   sprintf(nom_f2,"%s_%d",nom_flat,43);
-   if (merge_spectre2(nom3,nom2,nom_f1,nom_f2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,42);
-   sprintf(nom_f1,"%s_%d",nom_flat,43);
-   sprintf(nom_f2,"%s_%d",nom_flat,42);
-   if (merge_spectre2(nom3,nom2,nom_f1,nom_f2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,41);
-   sprintf(nom_f1,"%s_%d",nom_flat,42);
-   sprintf(nom_f2,"%s_%d",nom_flat,41);
-   if (merge_spectre2(nom3,nom2,nom_f1,nom_f2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,40);
-   sprintf(nom_f1,"%s_%d",nom_flat,41);
-   sprintf(nom_f2,"%s_%d",nom_flat,40);
-   if (merge_spectre2(nom3,nom2,nom_f1,nom_f2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,39);
-   sprintf(nom_f1,"%s_%d",nom_flat,40);
-   sprintf(nom_f2,"%s_%d",nom_flat,39);
-   if (merge_spectre2(nom3,nom2,nom_f1,nom_f2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,38);
-   sprintf(nom_f1,"%s_%d",nom_flat,39);
-   sprintf(nom_f2,"%s_%d",nom_flat,38);
-   if (merge_spectre2(nom3,nom2,nom_f1,nom_f2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,37);
-   sprintf(nom_f1,"%s_%d",nom_flat,38);
-   sprintf(nom_f2,"%s_%d",nom_flat,37);
-   if (merge_spectre2(nom3,nom2,nom_f1,nom_f2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,36);
-   sprintf(nom_f1,"%s_%d",nom_flat,37);
-   sprintf(nom_f2,"%s_%d",nom_flat,36);
-   if (merge_spectre2(nom3,nom2,nom_f1,nom_f2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,35);
-   sprintf(nom_f1,"%s_%d",nom_flat,36);
-   sprintf(nom_f2,"%s_%d",nom_flat,35);
-   if (merge_spectre2(nom3,nom2,nom_f1,nom_f2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,34);
-   sprintf(nom_f1,"%s_%d",nom_flat,35);
-   sprintf(nom_f2,"%s_%d",nom_flat,34);
-   if (merge_spectre2(nom3,nom2,nom_f1,nom_f2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,33);
-   sprintf(nom_f1,"%s_%d",nom_flat,34);
-   sprintf(nom_f2,"%s_%d",nom_flat,33);
-   if (merge_spectre2(nom3,nom2,nom_f1,nom_f2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,32);
-   sprintf(nom_f1,"%s_%d",nom_flat,33);
-   sprintf(nom_f2,"%s_%d",nom_flat,32);
-   if (merge_spectre2(nom3,nom2,nom_f1,nom_f2,nom3)==1) return 1;
-
-   sprintf(nom2,"%s_%d",nom_objet,31);
-   sprintf(nom_f1,"%s_%d",nom_flat,32);
-   sprintf(nom_f2,"%s_%d",nom_flat,31);
-   if (merge_spectre2(nom3,nom2,nom_f1,nom_f2,nom3)==1) return 1;
-// buil3
-   }
-*/
-return 0;
-}
 
 /********************** COMPUTE_BLACK_BODY ***********************/
 /* Retourne l'émittance d'un corps noir en w/cm2/micron          */
@@ -2795,62 +3489,150 @@ return v;
 /* Utile pour compenser la température de couleur de la lampe tungstène utilisée  */
 /* pour réaliser le flat-field.                                                   */
 /**********************************************************************************/
-void planck_correct(char *fileNameIn, char *fileNameOut, double temperature)
+void planck_correct(std::valarray<double> &profile1b, double lambda1, double step, double temperature)
 {
-   double wave,coef,norme;
-   ::std::valarray<double> valueIn;
-   ::std::valarray<double> valueOut;
-   double lambda1, step1;
-   int nb1;
-   CCfits::PFitsFile inFits = NULL;
-   CCfits::PFitsFile outFits = NULL;
+   // Première passe pour calculer la norme à 6690 A 
+   // (zone sans raies dans le spectre solaire)
+   int nb = profile1b.size();
+   double norme=0;
+   double coef=0;
+   int flag = 0; 
 
-   try {
-      inFits = Fits_openFits(fileNameIn, true);
-      // je recupere le profil
-      Fits_getFullProfile(inFits, "P_FULL0", valueIn, &lambda1, &step1);      
-      
-      // Première passe pour calculer la norme à 6690 A 
-      // (zone sans raies dans le spectre solaire)
-      nb1 = valueIn.size();
-      norme=1.0;
-      for(int i=0; i<nb1; i++ ) { 
-         wave = lambda1 + step1*i; 
-         if ((int)(100.0*wave)==669000) {
-            coef=compute_black_body(wave,temperature);
-            norme=valueIn[i]*coef;
-         }
-      }
-
-      // Deuxième passe et écriture du fichier traité
-      valueOut.resize(valueIn.size());
-      for(int i=0; i<nb1; i++ ) { 
-         wave = lambda1 + step1*i; 
+   for(int i=0; i<nb; i++ ) { 
+      double wave = lambda1 + step*i; 
+      if ((int)(100.0*wave)==669000) {
          coef=compute_black_body(wave,temperature);
-         valueOut[i] =  valueIn[i]*coef/norme;         
-      }
-
-      //j'enregistre le resultat dans le fichier d'entree 
-      Fits_setFullProfile(inFits, "P_FULL", valueOut, lambda1, step1);      
-      Fits_closeFits(inFits);
-
-      //j'enregistre le profile  dans un fichier de sortie a part
-      if ( fileNameOut != NULL) {
-         outFits = Fits_createFits(fileNameOut, valueOut, lambda1, step1);
-         Fits_closeFits(outFits);
+         norme=profile1b[i]*coef;
+         flag = 1;
       }
    }
-   catch (::std::exception &e) {
-      Fits_closeFits(inFits);
-      Fits_closeFits(outFits);
-      throw e;
+
+   // La zone à 6690 A n'est pas trouvée (absence de l'ordre 34 dans la sélection traitée)
+   if (flag == 0) norme = 1.0;
+
+   // Deuxième passe 
+   for(int i=0; i<nb; i++ ) { 
+      double wave = lambda1 + step*i; 
+      coef=compute_black_body(wave,temperature);
+      profile1b[i] =  profile1b[i]*coef/norme;         
    }
+}
+
+
+
+//=====  Hmedian , quicksort ===========================
+
+// ///////////////////////////////////////////////////////
+// Routine utilisée par QuickSort
+// ///////////////////////////////////////////////////////
+int Partition(int a[], int p, int r)
+{
+   int x = a[p];
+   int i = p - 1;
+   int j = r + 1;
+   int tmp = 0;
+   while (true)
+   {
+      do
+      {
+         j--;
+      } while (a[j] > x);
+      do
+      {
+         i++;
+      } while (a[i] < x);
+      if (i < j)
+      {
+         tmp = a[i];
+         a[i] = a[j];
+         a[j] = tmp;
+      }
+      else return j;
+   }
+}
+
+// ////////////////////////////////////////////////////
+// Implémentation C# de QuickSort  
+// (version intégrée : Array.Sort(a) - mais plus lente)
+// ////////////////////////////////////////////////////
+void QuickSort(int a[], int i, int j)
+{
+   if (i < j)
+   {
+      int q = Partition(a, i, j);
+      QuickSort(a, i, q);
+      QuickSort(a, q + 1, j);
+   }
+}
+
+// ///////////////////////////////////////////////////////
+// Routine utilisée par QuickSort
+// ///////////////////////////////////////////////////////
+int Partition(double a[], int p, int r)
+{
+   double x = a[p];
+   int i = p - 1;
+   int j = r + 1;
+   double tmp = 0.0;
+   while (true)
+   {
+      do
+      {
+         j--;
+      } while (a[j] > x);
+      do
+      {
+         i++;
+      } while (a[i] < x);
+      if (i < j)
+      {
+         tmp = a[i];
+         a[i] = a[j];
+         a[j] = tmp;
+      }
+      else return j;
+   }
+}
+
+// ///////////////////////////////////////////////////////
+// Implémentation C# de QuickSort  
+// (version intégrée : Array.Sort(a) - mais plus lente)
+// ///////////////////////////////////////////////////////
+void QuickSort(double a[] , int i, int j)
+{
+   if (i < j)
+   {
+      int q = Partition(a, i, j);
+      QuickSort(a, i, q);
+      QuickSort(a, q + 1, j);
+   }
+}
+
+// ////////////////////////////////////////////////////////////
+// HEMDIAN : retourne la valeur médiane de la table data 
+// Attention : la table est triée aprés execution      
+// ////////////////////////////////////////////////////////////
+int hmedian(int data[], int length)
+{
+   QuickSort(data, 0, length- 1);
+   return data[length / 2];
+}
+
+// ////////////////////////////////////////////////////////////
+// HMEDIAN : Retourne la valeur médiane de la table data 
+// Attention : la table est est triée aprés excecution      
+// ////////////////////////////////////////////////////////////
+double hmedian( double data[], int length)
+{
+   QuickSort(data, 0, length - 1);
+   return data[length / 2];
 }
 
 /************************ HMEDIAN ****************************/
 /* Retourne la valeur médiane d'un échantillon RA de n point */
 /* Attention : l'échantillon est trie aprés excecution       */
 /*************************************************************/
+/*
 PIC_TYPE hmedian(PIC_TYPE *ra,int n)
 {
 int l,j,ir,i;
@@ -2886,8 +3668,9 @@ for (l=((ir=n)>>1)+1;;)
      }
    ra[i]=rra;
    }
-/* (le 'return' n'est pas à la fin de la boucle et c'est normal !) */
+// (le 'return' n'est pas à la fin de la boucle et c'est normal !) 
 }
+*/
 
 /******************* INTPOWER ********************/
 /* Calcule x à la puissance d'un nombre entier   */
@@ -3091,67 +3874,72 @@ void fitPoly(int numpts,int degree,double *x,double *y,double *wt,double *coeffs
 /***************************************************/
 int spline(int n,double *x,double *y,double *b,double *c,double *d)
 {
-int i,ip1,nm1,nm2,nm3,nm4,ib;
-double t;
-nm1=n-1;
-nm2=n-2;
-nm3=n-3;
-nm4=n-4;
-if (n<2) return 1;
-if (n<3) goto L50;
-d[0]=x[1]-x[0];
-c[1]=(y[1]-y[0])/d[0];
-for (i=1;i<nm1;i++)
+   int ip1,nm1,nm2,nm3,nm4;
+   double t;
+
+   memset(b, 0, n*sizeof(double));
+   memset(c, 0, n*sizeof(double));
+   memset(d, 0, n*sizeof(double));
+
+   nm1=n-1;
+   nm2=n-2;
+   nm3=n-3;
+   nm4=n-4;
+   if (n<2) return 1;
+   if (n<3) goto L50;
+   d[0]=x[1]-x[0];
+   c[1]=(y[1]-y[0])/d[0];
+   for (int i=1;i<nm1;i++)
    {
-   ip1=i+1;
-   d[i]=x[ip1]-x[i];
-   b[i]=2.0*(d[i-1]+d[i]);
-   c[ip1]=(y[ip1]-y[i])/d[i];
-   c[i]=c[ip1]-c[i];
+      ip1=i+1;
+      d[i]=x[ip1]-x[i];
+      b[i]=2.0*(d[i-1]+d[i]);
+      c[ip1]=(y[ip1]-y[i])/d[i];
+      c[i]=c[ip1]-c[i];
    }
-b[0]=-d[0];
-b[nm1]=-d[nm2];
-c[0]=0.0;
-c[nm1]=0.0;
-if (n!=3)
+   b[0]=-d[0];
+   b[nm1]=-d[nm2];
+   c[0]=0.0;
+   c[nm1]=0.0;
+   if (n!=3)
    {
-   c[0]=c[2]/(x[3]-x[1])-c[1]/(x[2]-x[0]);
-   c[nm1]=c[nm2]/(x[nm1]-x[nm3])-c[nm3]/(x[nm2]-x[nm4]);
-   c[0]*=d[0]*d[0]/(x[3]-x[0]);
-   c[nm1]*=-d[nm2]*d[nm2]/(x[nm1]-x[nm4]);
+      c[0]=c[2]/(x[3]-x[1])-c[1]/(x[2]-x[0]);
+      c[nm1]=c[nm2]/(x[nm1]-x[nm3])-c[nm3]/(x[nm2]-x[nm4]);
+      c[0]*=d[0]*d[0]/(x[3]-x[0]);
+      c[nm1]*=-d[nm2]*d[nm2]/(x[nm1]-x[nm4]);
    }
-for (i=0;i<nm1;i++)
+   for (int i=0;i<nm1;i++)
    {
-   ip1=i+1;
-   t=d[i]/b[i];
-   b[ip1]-=t*d[i];
-   c[ip1]-=t*c[i];
+      ip1=i+1;
+      t=d[i]/b[i];
+      b[ip1]-=t*d[i];
+      c[ip1]-=t*c[i];
    }
-c[nm1]/=b[nm1];
-for (ib=1;ib<=nm1;ib++)
+   c[nm1]/=b[nm1];
+   for (int ib=1;ib<=nm1;ib++)
    {
-   i=n-ib-1;
-   c[i]=(c[i]-d[i]*c[i+1])/b[i];
+      int i=n-ib-1;
+      c[i]=(c[i]-d[i]*c[i+1])/b[i];
    }
-b[nm1]=(y[nm1]-y[nm2])/d[nm2]+d[nm2]*(c[nm2]+2.0*c[nm1]);
-for (i=0;i<nm1;i++)
+   b[nm1]=(y[nm1]-y[nm2])/d[nm2]+d[nm2]*(c[nm2]+2.0*c[nm1]);
+   for (int i=0;i<nm1;i++)
    {
-   ip1=i+1;
-   b[i]=(y[ip1]-y[i])/d[i]-d[i]*(c[ip1]+2.0*c[i]);
-   d[i]=(c[ip1]-c[i])/d[i];
-   c[i]=3.0*c[i];
+      ip1=i+1;
+      b[i]=(y[ip1]-y[i])/d[i]-d[i]*(c[ip1]+2.0*c[i]);
+      d[i]=(c[ip1]-c[i])/d[i];
+      c[i]=3.0*c[i];
    }
-c[nm1]*=3.0;
-d[nm1]=d[nm2];
-return 0;
+   c[nm1]*=3.0;
+   d[nm1]=d[nm2];
+   return 0;
 L50: ;
-b[0]=(y[1]-y[0])/(x[1]-x[0]);
-c[0]=0.0;
-d[0]=0.0;
-b[1]=b[0];
-c[1]=0.0;
-d[1]=0.0;
-return 0;
+   b[0]=(y[1]-y[0])/(x[1]-x[0]);
+   c[0]=0.0;
+   d[0]=0.0;
+   b[1]=b[0];
+   c[1]=0.0;
+   d[1]=0.0;
+   return 0;
 }
 
 /****************** SEVAL *******************/
@@ -3161,29 +3949,29 @@ return 0;
 /********************************************/
 double seval(int n,double u,double *x,double *y,double *b,double *c,double *d)
 {
-int j,k,im1,i;
-double s,dx;
+   int j,k,im1,i;
+   double s,dx;
 
-i=1;
-if (i>=n) i=1;
-if (u<x[i-1]) goto L10;
-if(u<=x[i]) goto L30;
+   i=1;
+   if (i>=n) i=1;
+   if (u<x[i-1]) goto L10;
+   if(u<=x[i]) goto L30;
 
 L10: ;
-i=1;
-j=n+1;
-do
+   i=1;
+   j=n+1;
+   do
    {
-   k=(i+j) >> 1;
-   if (u<x[k-1]) j=k;
-   if (u>=x[k-1]) i=k;
+      k=(i+j) >> 1;
+      if (u<x[k-1]) j=k;
+      if (u>=x[k-1]) i=k;
    } while(j>(i+1));
 
 L30: ;
-im1=i-1;
-dx=u-x[im1];
-s=y[im1]+dx*(b[im1]+dx*(c[im1]+dx*d[im1]));
-return(s);
+   im1=i-1;
+   dx=u-x[im1];
+   s=y[im1]+dx*(b[im1]+dx*(c[im1]+dx*d[im1]));
+   return(s);
 }
 
 /***************************** SPEC_GAUSS ******************************/
@@ -3192,18 +3980,17 @@ return(s);
 /* La taille du vecteur analysé est taille.                            */
 /* Le vecteur est pointé par buf. Le résultat est retrourné dans pos_x */                        
 /***********************************************************************/
-int spec_gauss(int pos,int wide,std::valarray<double> &buf,double *pos_x,double *fwhm,double *ecartType)
+int spec_gauss(int pos,int wide,std::valarray<double> &buf,double &pos_x,double &fwhm,double &ecartType)
 {
-   double profil[512];
+   std::valarray<double> profil(wide);
    double py[4];
-   double ecarty;
-   int i;
+   double ecarty = 0;
 
 
    int w2=wide/2;
 
    int n=0;
-   for (i=pos-w2;i<pos+w2;i++,n++)
+   for (int i=pos-w2;i<pos+w2;i++,n++)
    {
       if (i<0 || i>(int)buf.size()-1) return(-1);       
       profil[n]=buf[i];
@@ -3211,7 +3998,7 @@ int spec_gauss(int pos,int wide,std::valarray<double> &buf,double *pos_x,double 
 
    py[0]=-32000.0;
    py[1]=0;
-   for (i=0;i<n;i++)
+   for (int i=0;i<n;i++)
    {
       if (profil[i]>py[0])
       {
@@ -3223,16 +4010,77 @@ int spec_gauss(int pos,int wide,std::valarray<double> &buf,double *pos_x,double 
    py[3]=(profil[0]+profil[n-1])/2;
    py[0]=py[0]-py[3];
 
-   MipsParaFit(n,profil,py,&ecarty);
+   MipsParaFit(n, profil, py, ecarty);
 
    double sigy=sqrt(py[2]/2.0);
-   *fwhm=2.3548*sigy;       // constante = 2 x sqr(2*ln(2)) -> profil 1D
-   *ecartType = ecarty;
+   fwhm=2.3548*sigy;       // constante = 2 x sqr(2*ln(2)) -> profil 1D
+   ecartType = ecarty;
    // i0=py[0];
-   *pos_x=py[1]+(double)(pos-w2);
+   pos_x=py[1]+(double)(pos-w2);
 
    return(0);
 }
+
+// ////////////////////////////////////////////////////////////////////////////////
+// Filtrage gaussien du spectre d'ordre n (utilisé, par exemple,
+// pour calcul de la fonction de blaze ou pour lisser le spectre final)
+// ////////////////////////////////////////////////////////////////////////////////
+void spectre_gauss(::std::valarray<double> &profile, double sigma, int n)
+{
+   try
+   {
+      int nb_point = profile.size();
+      
+      ::std::valarray<double> filtre(500);
+      int largeur=(int)(5.0*sigma+1.0);
+      if (largeur < 3) largeur = 3;
+      int reste = largeur % 2;
+      if (reste == 0) largeur = largeur + 1;
+
+      int largeur2 = (largeur-1)/2;    
+      if (largeur2 < 2) largeur2 = 2;
+      ::std::valarray<double> buf(nb_point);
+
+      // calcul du filtre 
+      double somme = 0.0;
+      for (int i=0; i < largeur; i++)
+      {
+         double ilarg=(double)(i-largeur2);
+         filtre[i] = exp(-ilarg*ilarg/2.0/sigma/sigma);
+         somme = somme + filtre[i];
+      }
+      for (int i=0; i < largeur; i++) {
+         filtre[i] = filtre[i] / somme;
+      }
+
+      //::std::valarray<double> buf(nb_point);
+
+      // Application du filtre
+      for (int i = 0; i < nb_point; i++)
+      {
+         double val=0.0;
+         for (int k = 0; k < largeur; k++)
+         {
+            int i1 = i + k - largeur2;
+            if (i1 < 0) i1 = 0;
+            if (i1 > nb_point - 1) i1 = nb_point - 1;
+            val += filtre[k] * profile[i1];
+         }
+         buf[i] = val;
+      }
+// je supprime un conflit avec la macro max qui est dans stdlib
+#undef max 
+      // je recupere la valeur max 
+      double max = buf.max();
+      // Normalisation
+      profile = buf / max;
+
+   }
+   catch (std::exception e)
+   {
+      throw e;
+   }
+}                                       
 
 /******************* MipsParaFit *******************/
 /* Fittage de l'équation S=I0*exp(-r2/sigma2)+fond */
@@ -3245,20 +4093,20 @@ int spec_gauss(int pos,int wide,std::valarray<double> &buf,double *pos_x,double 
 /*     p[3]=fond                                   */
 /* ecart=ecart-type                                */
 /***************************************************/
-void MipsParaFit(int n,double *y,double *p,double *ecart)
+void MipsParaFit(int n, std::valarray<double> &y, double *p, double &ecart)
 {
-int l,nbmax,m;
-double l1,l2,a0;
-double e,er1,x,y0;
-double m0,m1;
+int l=0,nbmax=0,m=0;
+double l1=0,l2=0,a0=0;
+double e=0,er1=0,x=0,y0=0;
+double m0=0,m1=0;
 double e1[4];
 int i,j;
 
-*ecart=1.0;
+ecart=1.0;
 
 l=4;        /* nombre d'inconnues */
-e=(float).005;     /* erreur maxi. */
-er1=(float).5;     /* dumping factor */
+e=.0001;     /* erreur maxi. */
+er1=0.5;     /* dumping factor */
 nbmax=250;  /* nombre maximum d'itérations */
 
 for (i=0;i<l;i++)
@@ -3266,7 +4114,7 @@ for (i=0;i<l;i++)
    e1[i]=er1;
    }
 m=0;
-l1=(double)1e10;
+l1=1.0e10;
 
 b1:
 for (i=0;i<l;i++)
@@ -3286,15 +4134,15 @@ b2:
    l2=0;
    for (j=0;j<n;j++)
       {
-      x=(float)j;
+      x=(double)j;
       if (p[2]<.05) return; // contrôle débordement à cause d'un petit sigma
       y0=p[0]*exp(-(x-p[1])*(x-p[1])/p[2])+p[3];
       l2=l2+(y[j]-y0)*(y[j]-y0);
       }
-   *ecart=sqrt((double)l2/(n-l));
+   ecart=sqrt((double)l2/(n-l));
    m1=l2;
-   if (m1>m0) e1[i]=-e1[i]/2;
-   if (m1<m0) e1[i]=(float)1.2*e1[i];
+   if (m1>m0) e1[i]= -e1[i]/2;
+   if (m1<m0) e1[i]= 1.2*e1[i];
    if (m1>m0) p[i]=a0;
    if (m1>m0) goto b2;
    }

@@ -1,18 +1,20 @@
 
 #include <valarray>
 
-#ifndef _INC_ORDER
-#define _INC_ORDER
+#ifndef _INC_LIBESHEL_ORDER
+#define _INC_LIBESHEL_ORDER
+
 #define MAX_ORDRE 100
 #define MAX_LINES 400 
+#define POLY_ORDER_DEGREE 5
 
 typedef struct
    {
    int flag;
    int min_x;
    int max_x;
-   double yc;
-   double poly_order[5];   // 
+   int yc;
+   double poly_order[POLY_ORDER_DEGREE+1];   // 
    double rms_order;
    int wide_y;
    int wide_sky;
@@ -44,6 +46,7 @@ typedef struct {
    int min_order; // numéro du premier ordre à détecter
    int max_order; // numéro du dernier ordre à détecter
    ::std::valarray<double> distorsion;  // polynome de correction de la distorsion optique
+   double version; //version du header de la table des ordres
 } INFOSPECTRO;
 
 
@@ -56,6 +59,16 @@ typedef struct {
     int detectionThreshold;   // dectection threshold
     int yStep;                // y step between orders
     int calibrationIteration; // nombre d'iteration du traitement de la calibration
+    int bordure;              // Valeur du crop des bords de spectre après la correction géométrique
+    double version;           // version du header
 } PROCESS_INFO;
+
+typedef struct {
+    double minLambda;    // min wave length
+    double maxLambda;      //  max wave length
+} CROP_LAMBDA;
+
+void startTimer();
+double stopTimer(char * lpFormat, ...);
 
 #endif

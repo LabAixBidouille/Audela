@@ -1,7 +1,13 @@
 /* fitsfile.cpp
  *
  */
+#ifdef _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#endif
 
+
+#include "libeshel.h"
 #include <CCfits/CCfits>
 #include "infoimage.h"
 #include "order.h"
@@ -20,6 +26,8 @@ FITS * Fits_openFits(char *fileName, bool write = false) {
    CCfits::FITS * pInfile; 
 
    try {  
+      FITS::setVerboseMode(false);
+
       // j'ouvre le fichier en lecture
       if ( write == true) {
          pInfile = new CCfits::FITS(fileName,CCfits::Write,false);
@@ -212,37 +220,38 @@ void Fits_setOrders (FITS *pFits, INFOSPECTRO *infoSpectro, PROCESS_INFO *proces
    //unsigned long rows(3);   
    string tableName("ORDERS");
    int nbOrder = infoSpectro->max_order - infoSpectro->min_order +1;
-   std::vector<string> colName(25,"");
-   std::vector<string> colForm(25,"");
-   std::vector<string> colUnit(25,"");
-   std::vector<string> colDisp(25,"");
+   std::vector<string> colName(26,"");
+   std::vector<string> colForm(26,"");
+   std::vector<string> colUnit(26,"");
+   std::vector<string> colDisp(26,"");
 
    // titre des colonnes
-   colName[0] = "order";
-   colName[1] = "flag";
-   colName[2] = "min_x";
-   colName[3] = "max_x";
-   colName[4] = "P0";
-   colName[5] = "P1";
-   colName[6] = "P2";
-   colName[7] = "P3";
-   colName[8] = "P4";
-   colName[9] = "yc";
-   colName[10] = "wide_y";
-   colName[11] = "wide_sky";
-   colName[12] = "wide_x";
-   colName[13] = "slant";
-   colName[14] = "rms_order";
-   colName[15] = "central";
-   colName[16] = "A0";
-   colName[17] = "A1";
-   colName[18] = "A2";
-   colName[19] = "A3";
-   colName[20] = "rms_cal";
-   colName[21] = "fwhm";
-   colName[22] = "disp";
-   colName[23] = "resolution";
-   colName[24] = "nb_lines";
+   colName[ 0] = "order";
+   colName[ 1] = "flag";
+   colName[ 2] = "min_x";
+   colName[ 3] = "max_x";
+   colName[ 4] = "P0";
+   colName[ 5] = "P1";
+   colName[ 6] = "P2";
+   colName[ 7] = "P3";
+   colName[ 8] = "P4";
+   colName[ 9] = "P5";
+   colName[10] = "yc";
+   colName[11] = "wide_y";
+   colName[12] = "wide_sky";
+   colName[13] = "wide_x";
+   colName[14] = "slant";
+   colName[15] = "rms_order";
+   colName[16] = "central";
+   colName[17] = "A0";
+   colName[18] = "A1";
+   colName[19] = "A2";
+   colName[20] = "A3";
+   colName[21] = "rms_cal";
+   colName[22] = "fwhm";
+   colName[23] = "disp";
+   colName[24] = "resolution";
+   colName[25] = "nb_lines";
 
    // format des colonnes
    colForm[0] = "1I";
@@ -254,11 +263,11 @@ void Fits_setOrders (FITS *pFits, INFOSPECTRO *infoSpectro, PROCESS_INFO *proces
    colForm[6] = "1D";
    colForm[7] = "1D";
    colForm[8] = "1D";
-   colForm[9] = "1D";
+   colForm[ 9] = "1D";
    colForm[10] = "1D";
-   colForm[11] = "1I";
+   colForm[11] = "1D";
    colForm[12] = "1I";
-   colForm[13] = "1D";
+   colForm[13] = "1I";
    colForm[14] = "1D";
    colForm[15] = "1D";
    colForm[16] = "1D";
@@ -269,34 +278,36 @@ void Fits_setOrders (FITS *pFits, INFOSPECTRO *infoSpectro, PROCESS_INFO *proces
    colForm[21] = "1D";
    colForm[22] = "1D";
    colForm[23] = "1D";
-   colForm[24] = "1I";
+   colForm[24] = "1D";
+   colForm[25] = "1I";
 
    // unites des colonnes
    colUnit[0] = "";
    colUnit[1] = "";
-   colUnit[2] = "Pixel ";
+   colUnit[2] = "Pixel";
    colUnit[3] = "Pixel";  
    colUnit[4] = "";  
    colUnit[5] = "";  
    colUnit[6] = "";
    colUnit[7] = "";  
    colUnit[8] = "";  
-   colUnit[9] = "Pixel";  
-   colUnit[10] = "";  
+   colUnit[9] = ""; 
+   colUnit[10] = "Pixel";  
    colUnit[11] = "";  
-   colUnit[12] = "";   
-   colUnit[13] = "Degree";
-   colUnit[14] = "";
-   colUnit[15] = "Angstrom";
-   colUnit[16] = "";
+   colUnit[12] = "";  
+   colUnit[13] = "";   
+   colUnit[14] = "Degree";
+   colUnit[15] = "";
+   colUnit[16] = "Angstrom";
    colUnit[17] = "";
    colUnit[18] = "";
    colUnit[19] = "";
    colUnit[20] = "";
-   colUnit[21] = "Pixel";
-   colUnit[22] = "";
+   colUnit[21] = "";
+   colUnit[22] = "Pixel";
    colUnit[23] = "";
-   colUnit[24] = "lines";
+   colUnit[24] = "";
+   colUnit[25] = "lines";
 
    // format d'affichage par defaut
    colDisp[0] = "I1.1";    // order
@@ -308,22 +319,23 @@ void Fits_setOrders (FITS *pFits, INFOSPECTRO *infoSpectro, PROCESS_INFO *proces
    colDisp[6] = "E14.6E3"; //P2
    colDisp[7] = "E14.6E3"; //P3
    colDisp[8] = "E14.6E3"; //P4
-   colDisp[9] = "F1.2";    //yc
-   colDisp[10] = "I7.1";   //wide_y
-   colDisp[11] = "I7.1";   //wide_sky
-   colDisp[12] = "I7.1";   //wide_x
-   colDisp[13] = "F7.2";   //slant
-   colDisp[14] = "F1.4";   //rms_order
-   colDisp[15] = "F1.3";   //central
-   colDisp[16] = "E14.6E3";  //A0
-   colDisp[17] = "E14.6E3";  //A1   
-   colDisp[18] = "E14.6E3";  //A2
-   colDisp[19] = "E14.6E3";  //A3
-   colDisp[20] = "F7.4";   //rms_cal
-   colDisp[21] = "F7.2";   //fwhm
-   colDisp[22] = "F7.3";   //disp
-   colDisp[23] = "F7.1";   //resolution
-   colDisp[24] = "I4.1";   //nb_lines
+   colDisp[9] = "E14.6E3"; //P5
+   colDisp[10] = "F1.2";    //yc
+   colDisp[11] = "I7.1";   //wide_y
+   colDisp[12] = "I7.1";   //wide_sky
+   colDisp[13] = "I7.1";   //wide_x
+   colDisp[14] = "F7.2";   //slant
+   colDisp[15] = "F1.4";   //rms_order
+   colDisp[16] = "F1.3";   //central
+   colDisp[17] = "E14.6E3";  //A0
+   colDisp[18] = "E14.6E3";  //A1   
+   colDisp[19] = "E14.6E3";  //A2
+   colDisp[20] = "E14.6E3";  //A3
+   colDisp[21] = "F7.4";   //rms_cal
+   colDisp[22] = "F7.2";   //fwhm
+   colDisp[23] = "F7.3";   //disp
+   colDisp[24] = "F7.1";   //resolution
+   colDisp[25] = "I4.1";   //nb_lines
 
    // valeur des colonnes
    std::vector<int>    num(nbOrder);
@@ -335,6 +347,7 @@ void Fits_setOrders (FITS *pFits, INFOSPECTRO *infoSpectro, PROCESS_INFO *proces
    std::vector<double> P2(nbOrder);
    std::vector<double> P3(nbOrder);
    std::vector<double> P4(nbOrder);
+   std::vector<double> P5(nbOrder);
    std::vector<double> yc(nbOrder);
    std::vector<int>    wide_y(nbOrder);
    std::vector<int>    wide_sky(nbOrder);
@@ -363,6 +376,7 @@ void Fits_setOrders (FITS *pFits, INFOSPECTRO *infoSpectro, PROCESS_INFO *proces
       P2[nbRow] = order[j].poly_order[2];
       P3[nbRow] = order[j].poly_order[3];
       P4[nbRow] = order[j].poly_order[4];
+      P5[nbRow] = order[j].poly_order[5];
       yc[nbRow] = order[j].yc;
       wide_y[nbRow] = order[j].wide_y;
       wide_sky[nbRow] = order[j].wide_sky;
@@ -406,23 +420,24 @@ void Fits_setOrders (FITS *pFits, INFOSPECTRO *infoSpectro, PROCESS_INFO *proces
       orderTable->column(colName[5]).write(P1,1);    
       orderTable->column(colName[6]).write(P2,1);    
       orderTable->column(colName[7]).write(P3,1);    
-      orderTable->column(colName[8]).write(P4,1);    
-      orderTable->column(colName[9]).write(yc,1);    
-      orderTable->column(colName[10]).write(wide_y,1);    
-      orderTable->column(colName[11]).write(wide_sky,1);    
-      orderTable->column(colName[12]).write(wide_x,1);    
-      orderTable->column(colName[13]).write(slant,1); 
-      orderTable->column(colName[14]).write(rms_order,1); 
-      orderTable->column(colName[15]).write(central,1); 
-      orderTable->column(colName[16]).write(A0,1); 
-      orderTable->column(colName[17]).write(A1,1); 
-      orderTable->column(colName[18]).write(A2,1); 
-      orderTable->column(colName[19]).write(A3,1); 
-      orderTable->column(colName[20]).write(rms_cal,1); 
-      orderTable->column(colName[21]).write(fwhm,1); 
-      orderTable->column(colName[22]).write(disp,1); 
-      orderTable->column(colName[23]).write(resolution,1); 
-      orderTable->column(colName[24]).write(nb_lines,1); 
+      orderTable->column(colName[8]).write(P4,1);  
+      orderTable->column(colName[9]).write(P5,1); 
+      orderTable->column(colName[10]).write(yc,1);    
+      orderTable->column(colName[11]).write(wide_y,1);    
+      orderTable->column(colName[12]).write(wide_sky,1);    
+      orderTable->column(colName[13]).write(wide_x,1);    
+      orderTable->column(colName[14]).write(slant,1); 
+      orderTable->column(colName[15]).write(rms_order,1); 
+      orderTable->column(colName[16]).write(central,1); 
+      orderTable->column(colName[17]).write(A0,1); 
+      orderTable->column(colName[18]).write(A1,1); 
+      orderTable->column(colName[19]).write(A2,1); 
+      orderTable->column(colName[20]).write(A3,1); 
+      orderTable->column(colName[21]).write(rms_cal,1); 
+      orderTable->column(colName[22]).write(fwhm,1); 
+      orderTable->column(colName[23]).write(disp,1); 
+      orderTable->column(colName[24]).write(resolution,1); 
+      orderTable->column(colName[25]).write(nb_lines,1); 
 
       // j'ajoute les parametre du specrographe dans le header
       orderTable->addKey("WIDTH",infoSpectro->imax,"image width"); 
@@ -452,6 +467,7 @@ void Fits_setOrders (FITS *pFits, INFOSPECTRO *infoSpectro, PROCESS_INFO *proces
       orderTable->addKey("Y_STEP",    processInfo->yStep,"y step between orders"); 
       orderTable->addKey("CALIB_ITER",processInfo->calibrationIteration,"calibration iteration");       
 
+      orderTable->addKey("HDUVERS",2,"ORDER HDU version"); 
       // je force l'ecriture sur le disque immediatement
       pFits->flush();
    } catch ( CCfits::FitsException e) {
@@ -495,7 +511,6 @@ void Fits_getInfoSpectro (FITS *pFits, INFOSPECTRO *infoSpectro) {
       hduOrders.readKey("FOCLEN", infoSpectro->focale); //infoSpectro->focale= value;
       hduOrders.readKey("M", infoSpectro->m); //infoSpectro->m= value;
       hduOrders.readKey("PIXEL", infoSpectro->pixel); //infoSpectro->pixel= value;
-
       // je recherche les coefficents du polynome de coorection de la distorsion
       ::std::list<double> coeffList; 
       try {
@@ -508,7 +523,10 @@ void Fits_getInfoSpectro (FITS *pFits, INFOSPECTRO *infoSpectro) {
             coeffList.push_back(coefficient);
             i++;
          } while ( true );
-      } catch ( CCfits::FitsException e) {
+
+      } catch ( HDU::NoSuchKeyword e) {
+         // rien à  faire , on a atteint la fin de la liste des coefficients
+      } catch ( FitsError e) {
          // rien à  faire , on a atteint la fin de la liste des coefficients
       }
 
@@ -543,6 +561,12 @@ void Fits_getProcessInfo (FITS *pFits, PROCESS_INFO *processInfo) {
       ExtHDU& hduOrders = pFits->extension(hduName);
       int value;
 
+      try {
+         hduOrders.readKey("HDUVERS", processInfo->version);
+      } catch ( CCfits::FitsException e) {
+         // HDUVERS = 1.0 par defaut
+         processInfo->version = 1.0;
+      }
       hduOrders.readKey("REF_NUM",  value); processInfo->referenceOrderNum = value;      
       hduOrders.readKey("REF_X",    value); processInfo->referenceOrderX= value;
       hduOrders.readKey("REF_Y",    value); processInfo->referenceOrderY= value;
@@ -567,12 +591,21 @@ void Fits_getProcessInfo (FITS *pFits, PROCESS_INFO *processInfo) {
 void Fits_getOrders(CCfits::PFitsFile pFits, ORDRE *orderValue,double *dx_ref )  {
    //std::vector<string> hdus(1);
    string hduName =  "ORDERS";
+   double hduVersion = 1;
    //hdus[0] = "ORDERS";
    try {  
       // je charge la table des ordres
       pFits->read(hduName,true);
       // je recupere les valeurs
       ExtHDU& hduOrders = pFits->extension(hduName);
+
+      try {
+         hduOrders.readKey("HDUVERS", hduVersion);
+      } catch ( CCfits::FitsException e) {
+         // HDUVERS = 1.0 par defaut
+         hduVersion = 1.0;
+      }
+
       // valeur des colonnes
       short nbOrder = hduOrders.rows();
       std::vector<int>    num(nbOrder);
@@ -584,6 +617,7 @@ void Fits_getOrders(CCfits::PFitsFile pFits, ORDRE *orderValue,double *dx_ref ) 
       std::vector<double> P2(nbOrder);
       std::vector<double> P3(nbOrder);
       std::vector<double> P4(nbOrder);
+      std::vector<double> P5(nbOrder);
       std::vector<double> yc(nbOrder);
       std::vector<int>    wide_y(nbOrder);
       std::vector<int>    wide_sky(nbOrder);
@@ -611,6 +645,11 @@ void Fits_getOrders(CCfits::PFitsFile pFits, ORDRE *orderValue,double *dx_ref ) 
       hduOrders.column("P2").read(P2, 1, nbOrder);
       hduOrders.column("P3").read(P3, 1, nbOrder);
       hduOrders.column("P4").read(P4, 1, nbOrder);
+      if ( hduVersion >= 2 ) {
+         hduOrders.column("P5").read(P5, 1, nbOrder);
+      } else {
+         // le vecteur est deja initialisé avec des valeurs nulles
+      }         
       hduOrders.column("yc").read(yc, 1, nbOrder);
       hduOrders.column("wide_y").read(wide_y, 1, nbOrder);
       hduOrders.column("wide_sky").read(wide_sky, 1, nbOrder);
@@ -622,6 +661,7 @@ void Fits_getOrders(CCfits::PFitsFile pFits, ORDRE *orderValue,double *dx_ref ) 
       hduOrders.column("A1").read(A1, 1, nbOrder);
       hduOrders.column("A2").read(A2, 1, nbOrder);
       hduOrders.column("A3").read(A3, 1, nbOrder);
+
       hduOrders.column("rms_cal").read(rms_cal, 1, nbOrder);
       hduOrders.column("fwhm").read(fwhm, 1, nbOrder);
       hduOrders.column("disp").read(disp, 1, nbOrder);
@@ -639,6 +679,7 @@ void Fits_getOrders(CCfits::PFitsFile pFits, ORDRE *orderValue,double *dx_ref ) 
          orderValue[numOrder].poly_order[2] = P2[n];
          orderValue[numOrder].poly_order[3] = P3[n];
          orderValue[numOrder].poly_order[4] = P4[n];
+         orderValue[numOrder].poly_order[5] = P5[n];
          orderValue[numOrder].yc = yc[n];
          orderValue[numOrder].wide_y = wide_y[n];
          orderValue[numOrder].wide_sky = wide_sky[n];
@@ -713,12 +754,12 @@ void Fits_setLineGap (FITS *pFits, ::std::list<LINE_GAP> &lineGapList ) {
    colUnit[6] = "Boolean";  
 
    // format d'affichage par defaut
-   colDisp[0] = "I4.2";   // format Iw.m  avec w=largeur max , m=largeur min
-   colDisp[1] = "F8.3";   // format Fl.d  avec l=nombre de caracteres total, d=nombre de decimales
-   colDisp[2] = "F8.3";    
-   colDisp[3] = "F8.3"; 
-   colDisp[4] = "F7.2"; 
-   colDisp[5] = "F7.2"; 
+   colDisp[0] = "I1.2";   // format Iw.m  avec w=largeur max , m=largeur min
+   colDisp[1] = "F1.3";   // format Fl.d  avec l=nombre de caracteres total, d=nombre de decimales
+   colDisp[2] = "F1.3";    
+   colDisp[3] = "F1.4"; 
+   colDisp[4] = "F1.2"; 
+   colDisp[5] = "F1.2"; 
    colDisp[6] = "I1.1"; 
 
    // valeur des colonnes
@@ -873,17 +914,18 @@ void Fits_setRawProfile(FITS * pFits, char * prefix, int numOrder, ::std::valarr
 // Fits_getRawProfile 
 //    retourne les valeurs d'un profil 
 //    cette extension s'appelle "PROFILE" dans le fichier FITS
-// return:
+// @param rawProfile  liste des valeurs
 //   retourne une std::exception en cas d'erreur
 // ---------------------------------------------------------------------------
-void Fits_getRawProfile(CCfits::PFitsFile pFits, char * prefix, int numOrder, ::std::valarray<double> &rawProfile, int *pmin_x)  {
+void Fits_getRawProfile(CCfits::PFitsFile pFits, char * prefix, int numOrder, ::std::valarray<double> &rawProfile, int &min_x)  {
    try {  
       char hduName[256];
       sprintf(hduName,"%s%02d", prefix, numOrder);
       pFits->read(hduName,true);
       ExtHDU& imageHDU = pFits->extension(hduName);
 
-      imageHDU.readKey("CRVAL1", *pmin_x);
+      imageHDU.readKey("CRVAL1", min_x);
+      // la taille de rawProfile est modifiee par imageHDU.read
       imageHDU.read(rawProfile);
    } catch ( CCfits::FitsException e) {
       char message[1024];
@@ -913,14 +955,36 @@ void Fits_setLinearProfile(CCfits::PFitsFile pFits, char * prefix, int numOrder,
          // je cree l'image si elle n'existait pas
          imageHDU = pFits->addImage(hduName,DOUBLE_IMG,naxis);
       }
+
+       try {
       // j'enregistre l'image
       long  firstElement = 1;
       imageHDU->write(firstElement, linearProfile.size(), linearProfile);
+
+      } catch ( CCfits::FitsException e) {
+         char message[1024];
+         sprintf(message,"Fits_setLinearProfile linearProfile : size=%d", linearProfile.size() );      
+         throw std::exception(message);
+      }
+
       // j'enregistre les mots clefs de la calibration
       int crpix1 = 1;
-      imageHDU->addKey("CRPIX1",(int) 1,"Reference pixel for the minimum wavelength"); 
-      imageHDU->addKey("CRVAL1",lambda1,"[Angstrom] Minimum wavelength"); 
-      imageHDU->addKey("CDELT1",step,"[Angstrom/pixel] Dispersion"); 
+      imageHDU->addKey("CRPIX1","1","Reference pixel for the minimum wavelength"); 
+      try {
+         imageHDU->addKey("CRVAL1",lambda1,"[Angstrom] Minimum wavelength"); 
+      } catch ( CCfits::FitsException e) {
+         char message[1024];
+         sprintf(message,"Fits_setLinearProfile %s : %s CRVAL1=%f", pFits->name().c_str(), e.message().c_str(),lambda1);      
+         throw std::exception(message);
+      }
+      try {
+         imageHDU->addKey("CDELT1",step,"[Angstrom/pixel] Dispersion"); 
+      } catch ( CCfits::FitsException e) {
+         char message[1024];
+         sprintf(message,"Fits_setLinearProfile %s : %s CDELT1=%f", pFits->name().c_str(), e.message().c_str(),step);      
+         throw std::exception(message);
+      }
+
       imageHDU->addKey("CTYPE1","wavelength","Data type"); 
       imageHDU->addKey("CUNIT1","Angstrom","Wavelength unit"); 
       // je force l'ecriture sur le disque immediatement
@@ -1026,11 +1090,34 @@ void Fits_getFullProfile(CCfits::PFitsFile pFits, ::std::valarray<double> &linea
 void Fits_setFullProfile(CCfits::PFitsFile pFits, char * hduName, ::std::valarray<double> &linearProfile, double lambda1, double step) 
 {
    try {  
+      try {
+         ExtHDU& imageHDU = pFits->extension(hduName);
+      } catch ( CCfits::FITS::NoSuchHDU e ) {
+         std::vector<long> naxis(1);
+         naxis[0] = (long) linearProfile.size();
+         // je cree l'image si elle n'existait pas
+         pFits->addImage(hduName,DOUBLE_IMG,naxis);
+      }
+      ExtHDU& imageHDU = pFits->extension(hduName);
+
+      // j'enregistre l'image
+      long  firstElement = 1;
+      imageHDU.write(firstElement, linearProfile.size(), linearProfile);
+      // j'enregistre les mots clefs de la calibration
+      int crpix1 = 1;
+      imageHDU.addKey("CRPIX1",(int) 1,"Reference pixel for the minimum wavelength"); 
+      imageHDU.addKey("CRVAL1",lambda1,"[Angstrom] Minimum wavelength"); 
+      imageHDU.addKey("CDELT1",step,"[Angstrom/pixel] Dispersion"); 
+      imageHDU.addKey("CTYPE1","wavelength","Data type"); 
+      imageHDU.addKey("CUNIT1","Angstrom","Wavelength unit"); 
+      
+/*      
       HDU * imageHDU = NULL; 
       long  firstElement = 1;
       long naxis1 = linearProfile.size();
       fitsfile *fptr = pFits->fitsPointer();
       int status ;
+
 
       // j'enregistre le profil dans le PHU
       pFits->resetPosition();
@@ -1048,8 +1135,8 @@ void Fits_setFullProfile(CCfits::PFitsFile pFits, char * hduName, ::std::valarra
       imageHDU->addKey("CDELT1",step,"[Angstrom/pixel] Dispersion"); 
       imageHDU->addKey("CTYPE1","wavelength","Data type"); 
       imageHDU->addKey("CUNIT1","Angstrom","Wavelength unit"); 
-      imageHDU->addKey("AAAAA",naxis1,""); 
-      
+      imageHDU->addKey("NAXIS1",naxis1,""); 
+*/      
    } catch ( CCfits::FitsException e) {
       char message[1024];
       sprintf(message,"Fits_setFullLinearProfile %s : %s", pFits->name().c_str(), e.message().c_str());      

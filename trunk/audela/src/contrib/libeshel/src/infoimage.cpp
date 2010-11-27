@@ -1,3 +1,9 @@
+#ifdef _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#endif
+
+
 #include <stdlib.h>  // pour calloc
 #include <stdio.h>  // pour calloc
 #include "infoimage.h"

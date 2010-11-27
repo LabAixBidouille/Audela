@@ -1,8 +1,9 @@
 // echelle.h : prototype des focntions pricipales de la DLL
 //
 
-#ifndef _INC_ECHELLE
-#define _INC_ECHELLE
+#ifndef _INC_LIBESHEL_MAIN
+#define _INC_LIBESHEL_MAIN
+
 #include <stdio.h>  // pour FILE
 #include <list>
 #include <string>
@@ -10,7 +11,8 @@
 #include "order.h"
 #include "linegap.h"
 
-#define LIBESHEL_VERSION "2.2"
+#define LIBESHEL_VERSION 2.0
+
 
 void Eshel_processFlat(
    char *ledfileName,      // nom du fichier led (image pretraitee pour la calibration geometrique)
@@ -21,7 +23,8 @@ void Eshel_processFlat(
    INFOSPECTRO &spectro,
    ::std::list<double> &lineList,
    int *nb_ordre, double *dx_ref,
-   char *logFileName,short *check);
+   char *logFileName,
+   char *message);          // message de retour
 
 void Eshel_processCalib(char *lampNameIn, char *lampNameOut,char *flatName, 
                 int ordre_ref, double lambda_ref, int neon_ref_x,
@@ -30,7 +33,8 @@ void Eshel_processCalib(char *lampNameIn, char *lampNameOut,char *flatName,
 
 void Eshel_processObject(char *nom_objet_fits, char *nom_objet_out_fits, char *nom_calib, 
                 char *responseFileName, 
-                int  recordObjectImage, 
+                int minOrder, int maxorder, int  recordObjectImage, 
+                ::std::valarray<CROP_LAMBDA> &cropLambda,
                 char *logFileName, short *check);
 
 void Eshel_joinSpectra(char *nom_objet_fits, char *nom_calib_fits, 

@@ -1,5 +1,10 @@
 // echelle.cpp : Eshel main functions .
 //
+#ifdef _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#endif
+
 
 #include <windows.h>
 #include <math.h>
@@ -7,18 +12,21 @@
 #include <vector>
 #include <limits.h> // pour INT_MAX et INT_MIN
 
-
 #include <exception>
 #define swab _swab  //  replace "swab" by "_swab" because "swab" is deprecaded
 
+#include "libeshel.h"
 #include "infoimage.h"
 #include "order.h"
 #include "linegap.h"
 #include "fitsfile.h"
-#include "libeshel.h"
+
 #include "processing.h"
 
 #define DEVIDE_FLAT  1
+
+// fonctions locales 
+
 
 ////////////////////////////////////////
 ////////////////////////////////////////
@@ -43,30 +51,45 @@ void Eshel_processFlat(
    int *nb_ordre,          // (OUT) nombre d'ordres trouvés
    double *dx_ref,         // (OUT) écart de l'abcisse de la raie de référence entre la position calculée et la position observée. 
    char *logFileName,      // nom du fichier de log
-   short *check)           // nom de l'image de controle
+   char *returnMesssage)          // nom de l'image de controle
 {
-   PIC_TYPE *tampon = NULL;
+
+#ifdef _CRTDBG_MAP_ALLOC
+_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF|_CRTDBG_LEAK_CHECK_DF);
+//_crtBreakAlloc = 2789812;
+//_CrtMemState endState;
+//_CrtMemState stateDiff;
+_CrtMemState startState;
+_CrtMemCheckpoint(&startState);
+#endif
+
    INFOIMAGE *buffer = NULL;
-   FILE *hand_log = openLog(logFileName);
+   //FILE *hand_log = openLog(logFileName);
    CCfits::PFitsFile pLedFits = NULL;
    CCfits::PFitsFile pTungstenFits = NULL;
    CCfits::PFitsFile pOutFits = NULL;
-   PROCESS_INFO processInfo;
-   try {
 
+
+   try {
+      PROCESS_INFO processInfo;
+      double findTime;
+      double trackTime;
+      double extractTime;
       // ----------------
       // controle des ordres
-      char message[1024];
       for(int n=0; n<MAX_ORDRE; n++ ) {         
          if (ordre[n].min_x < 0 || ordre[n].min_x > spectro.imax  ) {
+            char message[1024];
             sprintf(message,"order %d : invalid min_x=%d , must be 0 < min_x < %d", n, ordre[n].min_x , spectro.imax);
             throw ::std::exception(message);
          }
          if (ordre[n].max_x < 0 || ordre[n].max_x > spectro.imax  ) {
+            char message[1024];
             sprintf(message,"order %d : invalid max_x=%d , must be 0 < max_x < %d", n, ordre[n].max_x , spectro.imax);
             throw ::std::exception(message);
          }
          if (ordre[n].min_x > ordre[n].max_x   ) {
+            char message[1024];
             sprintf(message,"order %d : invalid min_x=%d max_x=%d  must be min_x < max_x", n, ordre[n].min_x , ordre[n].max_x);
             throw ::std::exception(message);
          }
@@ -76,8 +99,9 @@ void Eshel_processFlat(
       // Lecture de l'image LED 2D pretraitee
       // -------------------------------------  
       // je lis l'image stockee dans le PHDU du fichier d'entree 
-      pLedFits = Fits_openFits(ledfileName, false); 
 
+      pLedFits = Fits_openFits(ledfileName, false); 
+_CrtMemCheckpoint(&startState);
       // je verifie si la table des ORDRES existe deja
       int ordersFound = 1;
       try { 
@@ -88,11 +112,25 @@ void Eshel_processFlat(
          Fits_getInfoSpectro(pLedFits, &spectro);
          Fits_getProcessInfo(pLedFits, &processInfo);
          Fits_closeFits(pLedFits);
+         pLedFits = NULL;
+
+         processInfo.bordure = 7;
+
       } catch( std::exception e ) {
          // la table des ordres n'existe pas 
          ordersFound = 0;
          Fits_closeFits(pLedFits);
          pLedFits = NULL;
+
+         processInfo.referenceOrderNum = ordre_ref;
+         processInfo.referenceOrderX =neon_ref_x;
+         processInfo.referenceOrderY =ordre_ref_y;
+         processInfo.referenceOrderLambda = lambda_ref; 
+         processInfo.detectionThreshold = seuil_ordre;
+         processInfo.yStep = step_y;
+         processInfo.calibrationIteration = 0; 
+         processInfo.version = LIBESHEL_VERSION; 
+         processInfo.bordure = 7;
       } 
 
       if ( ordersFound == 1 ) {
@@ -106,7 +144,7 @@ void Eshel_processFlat(
          // je lis l'image 2D
          Fits_getImage(pOutFits, &buffer); 
 
-         // On contrôle l'intégrité de la taille de l'image
+         // je contrôle l'intégrité de la taille de l'image
          if (buffer->imax!=spectro.imax || buffer->jmax!=spectro.jmax) {
             char message[1024];
             sprintf(message, "La taille (%d,%d) de l'image %s est différente de (%d,%d) des parametres du spectrographe.",
@@ -116,30 +154,32 @@ void Eshel_processFlat(
          // ---------------------------------------------------------------------------------------------------
          // Recherche de la position Y des ordres suivant l'axe vertical central de l'image (imax/2)
          // ---------------------------------------------------------------------------------------------------
-         find_y_pos(buffer,check,spectro.imax,spectro.jmax,ordre_ref_y,ordre_ref,step_y,seuil_ordre,ordre,nb_ordre,
-            spectro.min_order,spectro.max_order,hand_log);
-         fprintf(hand_log,"Nombre d'ordres trouve : %d\n",*nb_ordre);
-
+         startTimer();
+         find_y_pos(*buffer,processInfo,ordre,*nb_ordre,
+            spectro.min_order,spectro.max_order);
+         findTime = stopTimer("Flat find order");
          // ---------------------------------------------------------------------------------------
          // Détection de la ligne de crête des ordres dans l'image flat
          // et modélisation (polynômes de degré 4)
          // ---------------------------------------------------------------------------------------
-         fprintf(hand_log,"Polynômes des ordres\n");
+
+         startTimer();
          for (int n=spectro.min_order;n<=spectro.max_order;n++)
          {
             if (ordre[n].flag==1)
             {
-               track_order(buffer,check,spectro.imax,spectro.jmax,wide_y,ordre,n,hand_log);
+               //track_order(buffer,spectro.imax,spectro.jmax,wide_y,ordre,n);
+               track_order(buffer,spectro.imax,spectro.jmax,8,ordre,n);
             }
          }
-
+         trackTime = stopTimer("Flat track order");
          // ----------------------------------------------------------------------------------------------
          // Calcul de la position théorique de raies de calibration dans le profil spectral 
          // On s'appui sur la position observée de la raie Thorium 6584 A à l'ordre 34 
          // pour étalonner le calcul des autres raies. 
          // -----------------------------------------------------------------------------------------------
          double dx;
-         if (calib_prediction(lambda_ref,ordre_ref,check,spectro.imax,spectro.jmax,neon_ref_x,ordre,&dx,spectro,lineList)) 
+         if (calib_prediction(lambda_ref,ordre_ref,spectro.imax,spectro.jmax,neon_ref_x,ordre,&dx,spectro,lineList)) 
          {
             throw std::exception("calib_prediction error");
          } 
@@ -159,14 +199,8 @@ void Eshel_processFlat(
             }
          }
 
-         processInfo.referenceOrderNum = ordre_ref;
-         processInfo.referenceOrderX =neon_ref_x;
-         processInfo.referenceOrderY =ordre_ref_y;
-         processInfo.referenceOrderLambda = lambda_ref; 
-         processInfo.detectionThreshold = seuil_ordre;
-         processInfo.yStep = step_y;
-         processInfo.calibrationIteration = 0; 
       }
+
 
       // ------------------------------------------------------------------------------------------------
       // Extraction de profils pour la fonction de blaze
@@ -183,18 +217,20 @@ void Eshel_processFlat(
       //     sinon
       //         je copie les profils 1A dans le FLAT
       // ------------------------------------------------------------------------------------------------
+      startTimer();
       // j'ouvre le fichier tungsten
       pTungstenFits = Fits_openFits(tungstenFileName, false); 
 
       try { 
-         // je copie les profils 1A  s'il exitent. 
-         // Si les profils 1A sont absents une exception est retounee et je passe dans le catch
+         // Je copie les profils 1A  s'ils existent deja. 
+         // Si les profils 1A sont absents une exception est retounee 
+         // et je passe dans le catch pour les creer.
          for (int n=spectro.min_order;n<=spectro.max_order;n++) {
             if (ordre[n].flag==1) {
-               int width = ordre[n].max_x - ordre[n].min_x +1;
-               ::std::valarray<double> profile(width);
-               Fits_getRawProfile(pOutFits, "P_1A_", n, profile, &ordre[n].min_x);
-               Fits_setRawProfile(pOutFits, "P_1A_", n, profile, ordre[n].min_x);
+               int min_x;
+               ::std::valarray<double> profile;
+               Fits_getRawProfile(pTungstenFits, "P_1A_", n, profile, min_x);
+               Fits_setRawProfile(pOutFits, "P_1A_", n, profile, min_x);
             }
          }
       } catch( std::exception e ) {
@@ -206,8 +242,9 @@ void Eshel_processFlat(
             Fits_getImage(pTungstenFits, &buffer);     
             // je contrôle que l'image de l'objet est de la meme taille que l'image de reference
             if (spectro.imax!=buffer->imax || spectro.jmax!=buffer->jmax) {
-               sprintf(message,"La taille de l'image du TUNGSTEN %s (%d,%d) est de différente du LED %s (%d,%d)",
-                  tungstenFileName, buffer->imax , buffer->jmax, ledfileName, spectro.imax, spectro.jmax);
+               char message[1024];
+               sprintf(message,"TUNGSTEN image size (%d,%d) is different with LED image size (%d,%d)",
+                  buffer->imax , buffer->jmax, spectro.imax, spectro.jmax);
                throw std::exception(message);
             }
          }
@@ -215,30 +252,44 @@ void Eshel_processFlat(
          // Extraction de chaque ordre trouvé dans l'image TUNGSTEN et sauvegarde
          // du résultat dans des HDU P_1A_n distincts pour chaque ordre 
          // -----------------------------------------------------------------------------------------
-         tampon = new PIC_TYPE[spectro.imax*spectro.jmax];
-         memmove(tampon,buffer->pic,spectro.imax*spectro.jmax*sizeof(PIC_TYPE)); // tampon de travail
 
-         int profileWidth = spectro.imax;
-         int profileHeight = spectro.max_order - spectro.min_order +1;
+         int cropHeight;
+         if ( processInfo.referenceOrderNum < spectro.max_order ) {
+            cropHeight = (int)(2.5 * (double)(ordre[processInfo.referenceOrderNum ].yc - ordre[processInfo.referenceOrderNum +1].yc)); 
+         } else if ( processInfo.referenceOrderNum > spectro.min_order ) {
+            cropHeight = (int)(2.5 * (double)(ordre[processInfo.referenceOrderNum -1 ].yc - ordre[processInfo.referenceOrderNum].yc));  
+         } else {
+            cropHeight = 60;
+         }
 
-         for (int n=spectro.min_order;n<=spectro.max_order;n++)
-         {
-            if (ordre[n].flag==1) 
-            {
-               int width = ordre[n].max_x - ordre[n].min_x +1;
-               ::std::valarray<double> profile(width);
+         for (int n=spectro.min_order;n<=spectro.max_order;n++) {
+            if (ordre[n].flag==1) {
+               //int width = ordre[n].max_x - ordre[n].min_x +1;
+               try {
+               ::std::valarray<double> blazeProfile;
+               std::valarray<PIC_TYPE> straightLineImage(spectro.imax * cropHeight);
 
-               if (extract_order(buffer,n,spectro.jmax,ordre,profile, NULL)==1 ) {
-                  throw std::exception("extract_order error");
+               //  j'extrait le profil (en enlevant les bordures)
+               extract_order(buffer, processInfo, n,ordre,spectro.imax,cropHeight,blazeProfile, straightLineImage,0);
+               
+               // j'ajoute l'image 2D des raies redressées dans le fichier de sortie
+               //Fits_setStraightLineImage(pOutFits, n, straightLineImage , spectro.imax, cropHeight);
+               
+               // je lisse la fonction de blaze
+               spectre_gauss(blazeProfile, 5, n);
+
+               // j'enregistre le profil du blaze dans le fichier de sortie
+               Fits_setRawProfile(pOutFits, "P_1A_", n, blazeProfile, ordre[n].min_x+processInfo.bordure);
+               } catch( std::exception e ) {
+                  char message[1024];
+                  sprintf(message,"TUNGSTEN iallocation order=%d spectro.imax=%d cropHeight=%d min_x=%d max_x=%d bordure=%d", 
+                     n,  spectro.imax, cropHeight, ordre[n].min_x, ordre[n].max_x, processInfo.bordure);                     
+                  throw std::exception(message);
                }
-
-               Fits_setRawProfile(pOutFits, "P_1A_", n, profile, ordre[n].min_x);
-               // je restaure l'image 2D
-               memmove(buffer->pic,tampon,spectro.imax*spectro.jmax*sizeof(PIC_TYPE));
             }
          }
       }
-
+      extractTime = stopTimer("Flat extract order");
       // j'ajoute les infos du spectro, les parametres de traitement et la table des ordres dans le fichier de sortie
       Fits_setOrders(pOutFits, &spectro, &processInfo, ordre, *dx_ref);
 
@@ -246,23 +297,27 @@ void Eshel_processFlat(
       Fits_closeFits(pTungstenFits);
       // je ferme le fichier de sortie
       Fits_closeFits( pOutFits);
-      delete [] tampon;
       if ( buffer!= NULL) freeImage(buffer);
-      if ( hand_log != NULL) fclose(hand_log);
+      //if ( hand_log != NULL) fclose(hand_log);
+
+      sprintf(returnMesssage, "find=%0.3f track=%0.3f  extract=%0.3f ",findTime, trackTime, extractTime);
    } catch( std::exception e ) {
-      delete [] tampon;
       if ( buffer!= NULL) freeImage(buffer);
-      if ( hand_log != NULL) fclose(hand_log);
+      //if ( hand_log != NULL) fclose(hand_log);
       if ( pLedFits != NULL) Fits_closeFits(pLedFits);
       if ( pTungstenFits != NULL) Fits_closeFits( pTungstenFits);
       if ( pOutFits != NULL) Fits_closeFits( pOutFits);
       throw e;
    } 
+
+#ifdef _CRTDBG_MAP_ALLOC
+//_CrtDumpMemoryLeaks();
+//_CrtMemCheckpoint(&endState);
+//_CrtMemDifference(&stateDiff, &startState, &endState);
+//_CrtMemDumpStatistics(&stateDiff);
+_CrtMemDumpAllObjectsSince(&startState);
+#endif
 }
-
-
-
-
 
 ////////////////////////////////////////
 ////////////////////////////////////////
@@ -282,22 +337,24 @@ void Eshel_processCalib(
    short *check,
    ::std::list<double> &lineList)  
 {
+#ifdef _CRTDBG_MAP_ALLOC
+_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF|_CRTDBG_LEAK_CHECK_DF);
+_CrtMemState startStateThar;
+_CrtMemCheckpoint(&startStateThar);
+#endif
 
    INFOIMAGE *lampBuffer = NULL;
    CCfits::PFitsFile pFlatFits = NULL;
-   FILE *hand_log = openLog(logFileName);
-   char message[1024];
-   PIC_TYPE * tampon = NULL;;
+   //FILE *hand_log = openLog(logFileName);   
    ORDRE *ordre = NULL;
    INFOSPECTRO spectro;
    PROCESS_INFO processInfo;
    CCfits::PFitsFile pOutFits = NULL;
-   ::std::list<LINE_GAP> lineGapList;
    double step=0.1;
    double dx_ref= 0.0;
 
    try {
-
+      ::std::list<LINE_GAP> lineGapList;
       // je lis les parametres spectro 
       pFlatFits = Fits_openFits(flatName, false);
       Fits_getInfoSpectro(pFlatFits, &spectro);
@@ -305,13 +362,12 @@ void Eshel_processCalib(
       //je complete les informations du traitement
       Fits_getProcessInfo(pFlatFits, &processInfo);
       processInfo.calibrationIteration = calibration_iteration;
+      processInfo.bordure = 7;
 
       // je lis la table des ordres
-      int nbOrder = spectro.max_order - spectro.min_order +1;
       ordre = new ORDRE[MAX_ORDRE];
       memset(ordre,0,MAX_ORDRE*sizeof(ORDRE));
-      Fits_getOrders(pFlatFits, ordre, &dx_ref);
-      
+      Fits_getOrders(pFlatFits, ordre, &dx_ref);      
       // je cree le fichier de sortie
       pOutFits = Fits_createFits(lampNameIn, lampNameOut); 
       // j'ajoute le mot cle contenant la version de la librairie
@@ -321,90 +377,86 @@ void Eshel_processCalib(
 
       // je contrôle que l'image de la lampe est de la meme taille que l'image de reference
       if (spectro.imax!=lampBuffer->imax || spectro.jmax!=lampBuffer->jmax) {
+         char message[1024];
          sprintf(message,"La taille de l'image de la lampe %s (%d,%d) est de différente du flat %s (%d,%d)",
             lampNameIn, lampBuffer->imax , lampBuffer->jmax,flatName, spectro.imax, spectro.jmax);
          throw std::exception(message);
       }
-      printf("\nEtalonnage spectral :\n");
-      fprintf(hand_log, "\nEtalonnage spectral\n");
-
-      // sauvegarde de l'image dans un tampon
-      tampon = new PIC_TYPE[spectro.imax * spectro.jmax];
-      memmove(tampon,lampBuffer->pic,spectro.imax*spectro.jmax*sizeof(PIC_TYPE)); 
       lineGapList.clear();
-      
+
+      int cropHeight;
+      if ( processInfo.referenceOrderNum < spectro.max_order ) {
+         cropHeight = (int)(2.5 * (double)(ordre[processInfo.referenceOrderNum ].yc - ordre[processInfo.referenceOrderNum +1].yc)); 
+      } else if ( processInfo.referenceOrderNum > spectro.min_order ) {
+         cropHeight = (int)(2.5 * (double)(ordre[processInfo.referenceOrderNum -1 ].yc - ordre[processInfo.referenceOrderNum].yc));  
+      } else {
+         cropHeight = 60;
+      }
+
+      startTimer();
       for (int n=spectro.min_order;n<=spectro.max_order;n++) {
          if (ordre[n].flag==1) {
-             std::valarray<PIC_TYPE> straightLineImage;
-
             // -----------------------------------------------------------
             // Extraction des ordres de l'image de la lampe spectrale
             // -----------------------------------------------------------  
             int width = ordre[n].max_x - ordre[n].min_x +1;            
             ::std::valarray<double> calibRawProfile(width);
-            if (extract_order(lampBuffer,n,spectro.jmax, ordre, calibRawProfile, &straightLineImage )) {
-               throw std::exception("extract_order error");
-            }
+            std::valarray<PIC_TYPE> straightLineImage(spectro.imax * cropHeight);
+            extract_order(lampBuffer, processInfo, n, ordre, spectro.imax, cropHeight, calibRawProfile, straightLineImage, 0 );
+            
             // j'ajoute l'image 2D des raies redressées dans le fichier de sortie
             Fits_setStraightLineImage(pOutFits, n, straightLineImage , spectro.imax, straightLineImage.size()/spectro.imax);
 
-            // j'ajoute le profil 1A dans le fichier de sortie
-            Fits_setRawProfile(pOutFits, "P_1A_", n, calibRawProfile, ordre[n].min_x);
-
-            // je restaure l'image
-            memmove(lampBuffer->pic,tampon,spectro.imax*spectro.jmax*sizeof(PIC_TYPE));
-            
             // ------------------------------------------------------------------------------
             // Division des profils de calibration par les profils "flat" (ordre après ordre)
             // ------------------------------------------------------------------------------
-            std::valarray<double> flatRawProfile;
+            std::valarray<double> blazeProfile;
             if ( DEVIDE_FLAT ) {
-               int flat_min_x;
-               Fits_getRawProfile(pFlatFits, "P_1A_", n, flatRawProfile, &flat_min_x); 
-               for(int i = 0; i < (int) flatRawProfile.size(); i++ ) {
-                  if (flatRawProfile[i] !=0  ) {
-                     calibRawProfile[i] /= flatRawProfile[i];
+               int blaze_min_x;
+               Fits_getRawProfile(pFlatFits, "P_1A_", n, blazeProfile, blaze_min_x); 
+               for(unsigned int i = 0; i < blazeProfile.size(); i++ ) {
+                  if (blazeProfile[i] !=0  ) {
+                     calibRawProfile[i] /= blazeProfile[i];
                   } else {
                      calibRawProfile[i] = 0;
                   }
                }
-               // J'enregistre le profil 1A du flat dans le fichier de calibration 
-               Fits_setRawProfile(pOutFits, "FLAT_1A_", n, flatRawProfile, flat_min_x);
+               // J'enregistre le profil 1A du blaze dans le fichier de calibration 
+               Fits_setRawProfile(pOutFits, "FLAT_1A_", n, blazeProfile, blaze_min_x);
             }
+
+            // j'ajoute le profil 1A dans le fichier de sortie
+            Fits_setRawProfile(pOutFits, "P_1A_", n, calibRawProfile, ordre[n].min_x+processInfo.bordure);
+            
             // ------------------------------------------------------------------------------
             // calibration spectrale - calcul des coefficients des polynômes
             // ------------------------------------------------------------------------------            
-            calib_spec(n,calibration_iteration,lambda_ref,ordre_ref,calibRawProfile,ordre,
-               spectro.imax,spectro.jmax,neon_ref_x,check,spectro,lineList,lineGapList);
-            printf("Ordre %d : a3=%.6e a2=%.6e a1=%.6e a0=%.6e rms=%.2e  nb raies=%d\n",
-               n,ordre[n].a3,ordre[n].a2,ordre[n].a1,ordre[n].a0,ordre[n].rms_calib_spec,ordre[n].nb_lines);
-            fprintf(hand_log,"#%d\ta0=%e\ta1=%e\ta2=%e\ta3=%e\tRMS=%.4f\tnb=%d\n",
-               n,ordre[n].a0,ordre[n].a1,ordre[n].a2,ordre[n].a3,ordre[n].rms_calib_spec,ordre[n].nb_lines);
-            fflush(hand_log);
+            calib_spec(n,calibration_iteration, processInfo, spectro, calibRawProfile,ordre,
+               lineList,lineGapList);
 
+            
             // --------------------------------------------------------------------
             // Etalonnage spectral du spectre de  la lampe
             // au pas de 0,1 A/pixel (interpollation spline)
             // --------------------------------------------------------------------
             // je calcule le profil 1B du flat
-            std::valarray<double> calibLinearProfile;
-            double lambda1;
-            make_interpol(calibRawProfile,ordre[n].a3,ordre[n].a2,ordre[n].a1,ordre[n].a0, step, calibLinearProfile, &lambda1);   
-            // j'enregistre le profil 1B de la calibration dans le fichier de calibration
-            Fits_setLinearProfile(pOutFits, "P_1B_", n, calibLinearProfile, lambda1, step) ;
+            //std::valarray<double> object1BProfile;
+            //double lambda1;
+            //make_interpol(calibRawProfile,ordre[n].a3,ordre[n].a2,ordre[n].a1,ordre[n].a0, step, object1BProfile, &lambda1);   
+            //// j'enregistre le profil 1B de la calibration dans le fichier de calibration
+            //Fits_setLinearProfile(pOutFits, "P_1B_", n, object1BProfile, lambda1, step) ;
 
-            // je calcule le profil 1B du flat
-            if ( DEVIDE_FLAT ) {
-               std::valarray<double> flatLinearProfile;
-               make_interpol(flatRawProfile,ordre[n].a3,ordre[n].a2,ordre[n].a1,ordre[n].a0, step, flatLinearProfile, &lambda1);
-               // j'enregistre le profil 1B du flat dans le fichier de calibration
-               Fits_setLinearProfile(pOutFits, "FLAT_1B_", n, flatLinearProfile, lambda1, step) ;
-            }
+            //// je calcule le profil 1B du flat
+            //if ( DEVIDE_FLAT ) {
+            //   std::valarray<double> flatLinearProfile;
+            //   make_interpol(flatRawProfile,ordre[n].a3,ordre[n].a2,ordre[n].a1,ordre[n].a0, step, flatLinearProfile, &lambda1);
+            //   // j'enregistre le profil 1B du flat dans le fichier de calibration
+            //   Fits_setLinearProfile(pOutFits, "FLAT_1B_", n, flatLinearProfile, lambda1, step) ;
+            //}
+            
          }
       }
-      delete [] tampon;
-      tampon = NULL;
-
+      stopTimer("Thar calib order ");
       // j'ajoute le nom du fichier du Flat dans les mots clefs du fichier de calibration
       char * shortFileName = strrchr(flatName,'/');  // je cherche le dernier slash dans le nom du fichier
       if ( shortFileName == NULL ) {
@@ -430,34 +482,25 @@ void Eshel_processCalib(
       // j'enregistre les profils calibrés dans le fichier de calibration
       //for (int n=spectro.min_order;n<=spectro.max_order;n++) {
       //   if (ordre[n].flag==1) {
-      //      Fits_setLinearProfile(pOutFits, n, calibLinearProfile[n], lambda1[n], step);
+      //      Fits_setLinearProfile(pOutFits, n, object1BProfile[n], lambda1[n], step);
       //   }
       //}
-      
-      printf("\nResolution spectrale\n"); 
-      fprintf(hand_log,"\nResolution spectrale\n"); 
-      for (int n=spectro.min_order;n<=spectro.max_order;n++)  {
-         if (ordre[n].flag==1) {
-            printf("Ordre %d : fwhm=%.2f pixels   Dispersion=%.3f A/pixel   R=%.1f\n",n,ordre[n].fwhm,ordre[n].disp,ordre[n].central_lambda/(ordre[n].disp*ordre[n].fwhm));
-            fprintf(hand_log,"#%d\tfwhm=%.2f\tDisp.=%.3f\tR=%.1f\n",n,ordre[n].fwhm,ordre[n].disp,ordre[n].central_lambda/(ordre[n].disp*ordre[n].fwhm));
-         }
-      }
-
-      Fits_closeFits(pFlatFits);
       Fits_closeFits(pOutFits);
       freeImage(lampBuffer);
-      fclose(hand_log);
-      delete [] ordre;
+//      fclose(hand_log);
+      delete [] ordre;      
+      Fits_closeFits(pFlatFits);
+      pFlatFits = NULL;
+
    } catch( std::exception e ) {
       Fits_closeFits(pFlatFits);
       Fits_closeFits(pOutFits);
       if ( ordre != NULL) delete [] ordre;
-      if ( tampon != NULL) delete tampon;
       if ( lampBuffer!= NULL) freeImage(lampBuffer);
-      if ( hand_log != NULL) fclose(hand_log);
+      //if ( hand_log != NULL) fclose(hand_log);
       throw e;
    } 
-
+_CrtMemDumpAllObjectsSince(&startStateThar);
 }
 
 //----------------------------------------------------------------------------
@@ -491,41 +534,56 @@ void Eshel_processCalib(
 void Eshel_processObject(char *objectNameIn, char *objectNameOut, 
                 char *calibName,      // nom du fichier de calibration
                 char *responseFileName,   // nom du fichier de reponse instrumentale
+                int minOrder, int maxOrder, 
                 int  recordObjectImage,   //  option d'enregistrament de l'image 2D de l'objet
+                ::std::valarray<CROP_LAMBDA> &cropLambda,
                 char *logFileName, short *check)  
 {
+#ifdef _CRTDBG_MAP_ALLOC
+_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF|_CRTDBG_LEAK_CHECK_DF);
+_CrtMemState startStateObject;
+_CrtMemCheckpoint(&startStateObject);
+#endif
 
-   INFOIMAGE *objectBuffer = NULL;
    CCfits::PFitsFile pInFits = NULL;
    CCfits::PFitsFile pCalibFits = NULL;
    CCfits::PFitsFile pOutFits = NULL;
    CCfits::PFitsFile pResponseFits = NULL;
-   FILE *hand_log = openLog(logFileName);
-   char message[1024];
-   PIC_TYPE * tampon = NULL;;
+   INFOIMAGE *objectBuffer = NULL;
    ORDRE *ordre = NULL;
-   INFOSPECTRO spectro;
-   PROCESS_INFO processInfo;
-   ::std::valarray<::std::valarray<double>> calibLinearProfile(MAX_ORDRE) ;
-   ::std::valarray<double> responseProfile ;
-   double lambda1[MAX_ORDRE]; 
-   double responseLambda1; 
-   double responseStep; 
-   double step=0.1;
-   double dx_ref = 0.0;
-
+   //FILE *hand_log = openLog(logFileName);
    
    try {
+
+      INFOSPECTRO spectro;
+      PROCESS_INFO processInfo;
+      ::std::valarray<::std::valarray<double>> object1BProfile(MAX_ORDRE) ;
+      ::std::valarray<double> responseProfile;
+      double lambda1[MAX_ORDRE]; 
+      double responseLambda1; 
+      double responseStep; 
+      double step= 0.1;
+      double dx_ref = 0.0;
+
+      startTimer(); 
       // je lis les parametres du spectrographe et des traitements dans le fichier de calibration
       pCalibFits = Fits_openFits(calibName, false);
       Fits_getInfoSpectro(pCalibFits, &spectro);
       Fits_getProcessInfo(pCalibFits, &processInfo);
+      processInfo.bordure = 7; 
 
       // je lis les parametres des ordres dans le fichier de calibration
-      PIC_TYPE nbOrder = spectro.max_order - spectro.min_order +1;
       ordre = new ORDRE[MAX_ORDRE];
       memset(ordre,0,MAX_ORDRE*sizeof(ORDRE));
       Fits_getOrders(pCalibFits, ordre, &dx_ref);
+
+      // je contrôle que la plage des ordres demandee est incluse dans la page des ordre de l'image de calibration
+      if (minOrder < spectro.min_order || maxOrder > spectro.max_order ) {
+         char message[1024];
+         sprintf(message,"Required order range (%d to %d) is larger than order range (%d to %d) of calibration file",
+            minOrder, maxOrder , spectro.min_order, spectro.max_order);
+         throw std::exception(message);
+      }
 
       // je lis la reponse instrumentale 
       if ( responseFileName != NULL ) {
@@ -538,9 +596,9 @@ void Eshel_processObject(char *objectNameIn, char *objectNameOut,
             ////   sprintf(message,"Eshel_processObject: Instrumental response dispersion = %f . Must be %f", responseStep, step);
             ////   throw std::exception(message);
             ////}
-            step =responseStep;
+            //step =responseStep;
          } else {
-            step =responseStep;
+            //step =responseStep;
          }
       } else {
          responseProfile.resize(0);
@@ -553,13 +611,14 @@ void Eshel_processObject(char *objectNameIn, char *objectNameOut,
 
       // je contrôle que l'image de l'objet est de la meme taille que l'image de reference
       if (spectro.imax!=objectBuffer->imax || spectro.jmax!=objectBuffer->jmax) {
+         char message[1024];
          sprintf(message,"La taille de l'image de la lampe %s (%d,%d) est de différente du flat %s (%d,%d)",
             objectNameIn, objectBuffer->imax , objectBuffer->jmax, calibName, spectro.imax, spectro.jmax);
          throw std::exception(message);
       }
 
-      // je cree le fichier de sortie avec le permier HDU
       // je cree le fichier de sortie avec un profil vide dans le premier HDU
+      // je cree le fichier de sortie 
       ::std::valarray<double> emptyProfile ;
       emptyProfile.resize(1);
       emptyProfile[0] = 1;
@@ -594,43 +653,48 @@ void Eshel_processObject(char *objectNameIn, char *objectNameOut,
          shortFileName++;
       }
       Fits_setKeyword(pOutFits,"PRIMARY","CALINAME",shortFileName,"Calibration file name");
-
-
-      // sauvegarde de l'image 2D pretraitee dans un tampon
-      tampon = new PIC_TYPE[spectro.imax * spectro.jmax];
-      memmove(tampon,objectBuffer->pic,spectro.imax*spectro.jmax*sizeof(PIC_TYPE)); 
       
-      for (int n=spectro.min_order;n<=spectro.max_order;n++) {
+      int cropHeight;
+      if ( processInfo.referenceOrderNum < maxOrder) {
+         cropHeight = (int)(2.5 * (double)(ordre[processInfo.referenceOrderNum ].yc - ordre[processInfo.referenceOrderNum +1].yc)); 
+      } else if ( processInfo.referenceOrderNum > minOrder ) {
+         cropHeight = (int)(2.5 * (double)(ordre[processInfo.referenceOrderNum -1 ].yc - ordre[processInfo.referenceOrderNum].yc));  
+      } else {
+         cropHeight = 60;
+      }
+      stopTimer("Object load file ");
+
+      startTimer(); 
+      for (int n=minOrder; n<=maxOrder; n++) {
          if (ordre[n].flag==1) {
             int width = ordre[n].max_x - ordre[n].min_x +1;
-            ::std::valarray<double> objectProfile(width);
-            ::std::valarray<double> object1CProfile(width);
-            double lambda1C;
+            ::std::valarray<double> object1AProfile(width);
 
             // -----------------------------------------------------------
             // Extraction des ordres de l'image de l'objet
-            // -----------------------------------------------------------      
-            if (extract_order(objectBuffer,n,spectro.jmax, ordre, objectProfile, NULL)) {
-               throw std::exception("extract_order error");
-            }
+            // -----------------------------------------------------------  
+            std::valarray<PIC_TYPE> straightLineImage(spectro.imax * cropHeight);
+            extract_order(objectBuffer, processInfo, n, ordre, spectro.imax, cropHeight, object1AProfile, 
+               straightLineImage, 1);
+               
             // j'ajoute le profil 1A dans le fichier de sortie
-            Fits_setRawProfile(pOutFits, "P_1A_", n, objectProfile, ordre[n].min_x);
-
-            // je restaure l'image
-            memmove(objectBuffer->pic,tampon,spectro.imax*spectro.jmax*sizeof(PIC_TYPE));
+            int min_x = ordre[n].min_x+processInfo.bordure;
+            Fits_setRawProfile(pOutFits, "P_1A_", n, object1AProfile, min_x);
 
             // -------------------------------------------
-            // Divise de profils 1A par le profil du flat 
+            // Divise le profil 1A par la fonction de blaze extraite du Flat 
             // -------------------------------------------
             std::valarray<double> flatRawProfile;
             if ( DEVIDE_FLAT) {
-               int flat_min_x;
-               Fits_getRawProfile(pCalibFits, "FLAT_1A_", n, flatRawProfile, &flat_min_x); 
-               for(unsigned i = 0; i < flatRawProfile.size(); i++ ) {
+               int blaze_min_x;
+               // je recupere la fonction de blaze
+               Fits_getRawProfile(pCalibFits, "FLAT_1A_", n, flatRawProfile, blaze_min_x); 
+               // je divise le profil par la fonction de blaze
+               for(unsigned i = 0; i < object1AProfile.size(); i++ ) {
                   if (flatRawProfile[i] !=0  ) {
-                     objectProfile[i] /= flatRawProfile[i];
+                     object1AProfile[i] /= flatRawProfile[i + min_x - blaze_min_x];
                   } else {
-                     objectProfile[i] = 0;
+                     object1AProfile[i] = 0;
                   }
                }
             }
@@ -639,31 +703,138 @@ void Eshel_processObject(char *objectNameIn, char *objectNameOut,
             // Etalonnage spectral du spectre de l'objet et re-échantillonnage 
             // au pas de step=0,1 A/pixel (interpollation spline)
             // --------------------------------------------------------------------
-            make_interpol(objectProfile,ordre[n].a3,ordre[n].a2,ordre[n].a1,ordre[n].a0, step, calibLinearProfile[n], &lambda1[n]);            
-            Fits_setLinearProfile(pOutFits, "P_1B_", n, calibLinearProfile[n], lambda1[n], step);
+            make_interpol(object1AProfile, spectro, processInfo, ordre, n, dx_ref, step, object1BProfile[n], lambda1[n]); 
 
-            // --------------------------------------------------------------------
-            // je divise le profil 1B par la reponse instrumentale
-            // --------------------------------------------------------------------
-            if ( responseProfile.size() > 0 ) {
-               divideResponse(calibLinearProfile[n], lambda1[n], responseProfile, responseLambda1, step, object1CProfile, &lambda1C);     
-               if ( object1CProfile.size() > 0 ) {
-                  Fits_setLinearProfile(pOutFits, "P_1C_", n, object1CProfile, lambda1C, step);
+            if ( _isnan(lambda1[n]) ) {
+               char message[1024];
+               sprintf(message,"make_interpol lambda1[%d]=%f", n, lambda1[n]);
+               throw std::exception(message);
+            }
+
+            // ----------------------------------------------------------------------------
+            // Filtrage gaussien éventuel de chacun des profils spectraux (à xxx sigma)
+            // ----------------------------------------------------------------------------
+
+            double sigma = 0;
+            if ( sigma != 0 ) {
+               spectre_gauss(object1BProfile[n], sigma, n);
+            }  
+
+         }
+      }
+      stopTimer("Object extract order ");
+
+      startTimer();
+      // --------------------------------------------------------------------
+      // Normalisation de tous les ordres à la valeur de l'intensité moyenne
+      // trouvée entre les longueurs d'onde b1 et b2 A (compatibles avec l'ordre 34)   
+      // --------------------------------------------------------------------
+      if ( object1BProfile[34].size() != 0 ) {
+         double lambdaBegin = 6620.0;
+         double lambdaEnd   = 6635.0;
+
+         int posBegin = (int)((lambdaBegin -lambda1[34])/step +0.5);
+         int posEnd   = (int)((lambdaEnd   -lambda1[34])/step +0.5);
+         double norme = 0.0;
+         for(int pos=posBegin ; pos<=posEnd ; pos++) {
+            norme += object1BProfile[34][pos];
+         }
+         if ( posEnd != posBegin) {
+            // je calcule la norme
+            norme = norme / (posEnd - posBegin +1);
+            // j'applique la norme a tous les profils
+            for (int n=minOrder; n<=maxOrder; n++) {
+               if (ordre[n].flag==1) {
+                  object1BProfile[n] /=norme;
                }
             }
          }
       }
-      delete tampon;
-      tampon = NULL;
 
-      if ( responseProfile.size() > 0  ) {
-         // j'aboute les profils 1C
-         abut1cOrder(spectro.max_order,spectro.min_order,pOutFits,"PRIMARY");
-      } else {
-         // j'aboute les profils 1B 
-         abut1bOrder(spectro.max_order,spectro.min_order,pOutFits,pCalibFits,"PRIMARY");
-      }      
+      stopTimer("Object normalize objet ");
 
+      // ----------------------------------------------------------------------------
+      // Détourage des ordres (si le fichier def_lambda.lst existe)
+      // ----------------------------------------------------------------------------
+      if ( cropLambda.size() != 0  ) {
+         startTimer();
+         for (int n=minOrder; n<=maxOrder; n++) {
+            if (ordre[n].flag==1) {
+               if ( cropLambda[n].minLambda < cropLambda[n].maxLambda ) {
+                  int posBegin = (int)((cropLambda[n].minLambda -lambda1[n])/step +0.5);
+                  int posEnd   = (int)((cropLambda[n].maxLambda -lambda1[n])/step +0.5);
+                  if (posBegin < 0) {
+                     posBegin = 0;
+                  }
+                  if (posEnd >= (int) object1BProfile[n].size()) {
+                     posEnd = object1BProfile[n].size() -1;
+                  }
+                  ::std::valarray<double> cropProfile(posEnd- posBegin+1);
+                  for(int pos = posBegin ; pos <= posEnd; pos++ ) {
+                     cropProfile[pos-posBegin] = object1BProfile[n][pos];
+                  }
+                  object1BProfile[n] = cropProfile;
+                  lambda1[n] =  (posBegin * step) + lambda1[n];
+               }
+            }
+         }
+         stopTimer("Object Détourage objet ");
+      }
+
+      // --------------------------------------------------------------------
+      // j'enregistre le profil 1B normalisé
+      // --------------------------------------------------------------------
+      for (int n=minOrder; n<=maxOrder;n++) {
+         if (ordre[n].flag==1) {
+             if ( _isnan(lambda1[n]) ) {
+               char message[1024];
+               sprintf(message,"Fits_setLinearProfile lambda1[%d]=%f", 
+                  n, lambda1[n]);
+               throw std::exception(message);
+            }
+            Fits_setLinearProfile(pOutFits, "P_1B_", n, object1BProfile[n], lambda1[n], step);
+         }
+      }
+      
+      startTimer();
+      // --------------------------------------------------------------------
+      // j'aboute les profils 1B 
+      // --------------------------------------------------------------------
+      std::valarray<double>  full1BProfile;
+      double fullLambda1;
+      abut1bOrder(object1BProfile, lambda1, minOrder, maxOrder,step, full1BProfile, fullLambda1);
+      stopTimer("Object abut1bOrder ");
+
+      startTimer();
+      // --------------------------------------------------------------------
+      // Correction de la fonction de Planck
+      // --------------------------------------------------------------------
+      planck_correct(full1BProfile, fullLambda1, step, 2750.0);
+      stopTimer("Object planck correct ");
+      //j'enregistre le resultat dans le fichier d'entree
+      //Fits_setFullProfile(objectFits,hduName,full1BProfile,fullLambda1, step1);
+      Fits_setFullProfile(pOutFits, "P_FULL", full1BProfile, fullLambda1, step); 
+      
+      
+      // --------------------------------------------------------------------
+      // je divise le profil 1B par la reponse instrumentale
+      // --------------------------------------------------------------------
+      startTimer();
+      for (int n=minOrder; n<=maxOrder; n++) {
+         if (ordre[n].flag==1) {
+            if ( responseProfile.size() > 0 ) {
+               ::std::valarray<double> object1CProfile(object1BProfile[n].size());
+               double lambda1C;
+
+               divideResponse(object1BProfile[n], lambda1[n], responseProfile, responseLambda1, step, object1CProfile, lambda1C);     
+               if ( object1CProfile.size() > 0 ) {
+                  Fits_setLinearProfile(pOutFits, "P_1C_", n, object1CProfile, lambda1C, step);
+               }
+            } 
+         }
+      }
+      stopTimer("Object division par la reponse instrumentale");
+            
       // j'enregistre la table des ordres dans le fichier de sortie
       Fits_setOrders(pOutFits,&spectro, &processInfo, ordre, dx_ref);
 
@@ -676,18 +847,18 @@ void Eshel_processObject(char *objectNameIn, char *objectNameOut,
       Fits_closeFits(pCalibFits);
       delete [] ordre;
       freeImage(objectBuffer);
-      fclose(hand_log);
+      //fclose(hand_log);
    } catch (std::exception &e) {
-      if ( tampon != NULL) delete [] tampon;
       Fits_closeFits(pInFits);
       Fits_closeFits(pOutFits);
       Fits_closeFits(pCalibFits);
       Fits_closeFits(pResponseFits);
       if ( ordre != NULL) delete ordre;
       if ( objectBuffer!= NULL) freeImage(objectBuffer);
-      if ( hand_log != NULL) fclose(hand_log);
+      //if ( hand_log != NULL) fclose(hand_log);
       throw e;
    }
+_CrtMemDumpAllObjectsSince(&startStateObject);
 }
 
 
@@ -738,7 +909,7 @@ void Eshel_freeData(void *values)
 // return:
 //   retourne une std::exception en cas d'erreur
 // ---------------------------------------------------
-void Eshel_getRawProfile(char *fileName, int numOrder, double **values, int *min_x, int *size)  {
+void Eshel_getRawProfile(char *fileName, int numOrder, double **values, int &min_x, int &size)  {
    CCfits::PFitsFile pFits = NULL;
    ::std::valarray<double> rawProfile;
 
@@ -750,7 +921,7 @@ void Eshel_getRawProfile(char *fileName, int numOrder, double **values, int *min
       for (size_t i=0; i<rawProfile.size(); i++) {
          (*values)[i] = rawProfile[i];
       }
-      *size = rawProfile.size(); 
+      size = rawProfile.size(); 
       Fits_closeFits(pFits);
    } catch (std::exception e) {
       Fits_closeFits(pFits);
@@ -891,3 +1062,46 @@ void Eshel_getInfoSpectro(char *fileName, INFOSPECTRO *pInfoSpectro)
    }
 }
 
+
+#include <time.h>
+#include <sys/timeb.h>		// pour timer 
+double startTime;
+
+void startTimer()
+{
+
+#if defined(WIN32)
+    struct _timeb timebuffer;
+    _ftime(&timebuffer);
+#else
+    struct timeb timebuffer;
+    ftime(&timebuffer);
+#endif
+    startTime = ((double) timebuffer.millitm) / 1000.0 + (double) timebuffer.time;
+}
+
+double stopTimer(LPTSTR lpFormat, ...)
+{
+    double stopTime;
+#if defined(WIN32)
+    struct _timeb timebuffer;
+    _ftime(&timebuffer);
+#else
+    struct timeb timebuffer;
+    ftime(&timebuffer);
+#endif
+    stopTime =	((double) timebuffer.millitm) / 1000.0 + (double) timebuffer.time;
+    double delay = stopTime - startTime;
+
+    TCHAR szBuf[1024];
+    va_list marker;
+    va_start( marker, lpFormat );
+    vsprintf( szBuf, lpFormat, marker );
+    OutputDebugString( szBuf );
+    printf(szBuf);
+    sprintf(szBuf," %f s\n",delay);
+    OutputDebugString( szBuf );
+    printf(szBuf);
+    va_end( marker );
+    return delay;
+}

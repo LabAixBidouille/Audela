@@ -1,6 +1,9 @@
 // processing.h : processing functions
 //
 
+#ifndef _INC_LIBESHEL_PROCESSING
+#define _INC_LIBESHEL_PROCESSING
+
 #include <windows.h>
 #include <math.h>
 #include <float.h> // pour _isnan
@@ -33,39 +36,44 @@ int gauss_convol(INFOIMAGE *buffer,double sigma);
 int grady(INFOIMAGE *buffer,int flag);
 int grady2(INFOIMAGE *buffer, int flag);
 int calc_cdg_y(PIC_TYPE *p,int imax,int jmax,int x,int y1,int y2,double *pos_y);
-void find_y_pos(INFOIMAGE *buffer, short *check,int imax,int jmax,int y0,
-               int ordre0,int wide_y,int seuil,ORDRE *ordre,
-               int *nb_ordre,int min_order,int max_order,FILE *hand_log);
-void track_order(INFOIMAGE *buffer,short *check,int imax,int jmax,int wide_y,ORDRE *ordre,int n,FILE *hand_log);
+void find_y_pos(INFOIMAGE &buffer, PROCESS_INFO &processInfo,
+               ORDRE *ordre, int &nb_ordre,int min_order,int max_order);
+void track_order(INFOIMAGE *buffer,int imax,int jmax,int wide_y,ORDRE *ordre,int n);
 void fitPoly(int numpts,int degree,double *x,double *y,double *wt,double *coeffs,double *rms);
-int calib_prediction(double lambda0,int ordre0,short *check,int imax,int jmax,double posx0,
+int calib_prediction(double lambda0,int ordre0,int imax,int jmax,double posx0,
                      ORDRE *ordre,double *ddx,INFOSPECTRO spectro,::std::list<double> lineList);
-int extract_order(INFOIMAGE *buffer,int n,int jmax0,ORDRE *ordre,std::valarray<double> &profile, std::valarray<PIC_TYPE> *straightLineImage);
+void extract_order(INFOIMAGE *buffer, PROCESS_INFO &processInfo, int n,ORDRE *ordre,int cropWidth,int cropHeight,
+                  std::valarray<double> &profile, std::valarray<PIC_TYPE> &straightLineImage, 
+                  int flag_opt );
 PIC_TYPE hmedian(PIC_TYPE *ra,int n);
 double compute_pos(double k,double lam,double dx,int imax, INFOSPECTRO spectro);
 int compute_slant(INFOIMAGE *buffer,int y0,double alpha);
-int l_opt(INFOIMAGE *buffer,int lmin,int lmax,int xmin,int xmax,std::valarray<double> &profile);
 int flat_rectif(int i,char *n_objet,char *n_flat,ORDRE *ordre);
 void flat_rectif(std::valarray<double> &object,std::valarray<double> &flat, std::valarray<double> &out);
-int make_interpol(std::valarray<double> &table_in, double coef3,double coef2,double coef1,double coef0,
-                  double pas,std::valarray<double> &table_out, double *lambda1);
-double compute_px2lambda(double px, double k, double dx, INFOSPECTRO spectro);
-void calib_spec(int n,int nb_iter,double lambda_ref,int ordre_ref,std::valarray<double> &calibRawProfile,ORDRE *ordre,int imax,int jmax,
-               int neon_ref_x,short *check,INFOSPECTRO spectro,
-               ::std::list<double> &lineList, ::std::list<LINE_GAP> &lineGapList);
-int line_pos_approx(int pos,int wide,std::valarray<double> &buf,int *posx);
+void calib_spec(int n,int nb_iter,PROCESS_INFO &processInfo, INFOSPECTRO &spectro,
+                std::valarray<double> &calibRawProfile, ORDRE *ordre,
+                ::std::list<double> &lineList, ::std::list<LINE_GAP> &lineGapList);
+int make_interpol(std::valarray<double> &table_in, 
+                  INFOSPECTRO &spectro, PROCESS_INFO &processInfo,
+                  ORDRE *ordre, int n, double dx, double pas,
+                  std::valarray<double> &table_out, double &lambda1);
+double compute_px2lambda(double px, double k, double dx, INFOSPECTRO &spectro);
+void line_pos_approx(int pos,int wide,std::valarray<double> &buf,int &posx);
 int spline(int n,double *x,double *y,double *b,double *c,double *d);
 double seval(int n,double u,double *x,double *y,double *b,double *c,double *d);
 void aboute_spectres(int max_ordre,int min_ordre,char *nom_objet,char *nom_calib,char *nom_out,int useFlat);
-void planck_correct(char *fileNameIn, char *fileNameOut,double temperature);
 int find_max(INFOIMAGE *buffer, int *x,int *y);
-void MipsParaFit(int n,double *y,double *p,double *ecart);
-int spec_gauss(int pos,int wide,std::valarray<double> &buf,double *pos_x,double *fwhm,double *ecartType);
+int spec_gauss(int pos,int wide,std::valarray<double> &buf,double &pos_x,double &fwhm,double &ecartType);
 int find_continuum(char *n_spectre,char *n_continuum);
 double get_central_wave(int imax,double posx,double dx,int k,INFOSPECTRO spectro);
-void divideResponse(std::valarray<double> &profile1b, double lambda1b, std::valarray<double> &responseProfile, double responseLambda, double step,std::valarray<double> &profile1c, double *lambda1c);
-void abut1bOrder(int max_ordre,int min_ordre,CCfits::PFitsFile objectFits, char *hduName);
-void abut1bOrder(int max_ordre,int min_ordre,CCfits::PFitsFile objectFits, CCfits::PFitsFile calibFits, char *hduName);
-void abut1cOrder(int max_ordre,int min_ordre,CCfits::PFitsFile objectFits, char *hduName);
+void divideResponse(std::valarray<double> &profile1b, double lambda1b, 
+                    std::valarray<double> &responseProfile, double responseLambda, 
+                    double step, 
+                    std::valarray<double> &profile1c, double &lambda1c);
+void abut1bOrder(::std::valarray<::std::valarray<double>> &object1BProfile, double *lambda1, 
+                 int min_ordre, int max_ordre, double step,
+                 ::std::valarray<double> &full1BProfile, double &fullLambda1);
+void planck_correct(std::valarray<double> &profile1b, double lambda1, double step, double temperature);
+void spectre_gauss(::std::valarray<double> &profile, double sigma, int n);
 
-
+#endif

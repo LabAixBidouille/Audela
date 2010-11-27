@@ -1,6 +1,6 @@
 
-#ifndef _INC_INFO_IMAGE
-#define _INC_INFO_IMAGE
+#ifndef _INC_LIBESHEL_INFO_IMAGE
+#define _INC_LIBESHEL_INFO_IMAGE
 
 typedef int PIC_TYPE;
 
