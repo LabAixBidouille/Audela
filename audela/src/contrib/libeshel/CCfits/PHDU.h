@@ -1,6 +1,3 @@
-//   Read the documentation to learn more about C++ code generator
-//   versioning.
-//	This is version 2.2 release dated Sep 2009
 //	Astrophysics Science Division,
 //	NASA/ Goddard Space Flight Center
 //	HEASARC
@@ -102,6 +99,17 @@ namespace CCfits {
 
 */
 
+/*! \fn  bool PHDU::simple () const;
+
+       \brief Returns the value of the Primary's SIMPLE keyword.
+
+*/
+
+/*! \fn  bool PHDU::extend () const;
+
+       \brief Returns the value of the Primary's EXTEND keyword.
+
+*/
 
 
 /*! \fn      template<typename S> void PHDU::read (std::valarray<S>& image, 
@@ -272,6 +280,9 @@ namespace CCfits {
         virtual double zero () const;
         virtual double scale () const;
 
+        bool simple () const;
+        bool extend () const;
+
     public:
       // Additional Public Declarations
       // image reading/writing interface. 
@@ -360,9 +371,7 @@ namespace CCfits {
         PHDU (FITSBase* p = 0);
 
         virtual void initRead ();
-        bool simple () const;
         void simple (bool value);
-        bool extend () const;
         void extend (bool value);
 
       // Additional Protected Declarations

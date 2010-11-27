@@ -1,6 +1,3 @@
-//   Read the documentation to learn more about C++ code generator
-//   versioning.
-//	This is version 2.2 release dated Sep 2009
 //	Astrophysics Science Division,
 //	NASA/ Goddard Space Flight Center
 //	HEASARC
@@ -496,7 +493,7 @@ and return its value.
 
         /*! \fn std::ostream& operator << (std::ostream& s, const CCfits::HDU& right);
 
-                \brief insertion operator.
+                \brief Output operator for HDU objects.  Primarily for testing purposes.
 
         */  
 

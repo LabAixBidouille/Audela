@@ -1,6 +1,3 @@
-//   Read the documentation to learn more about C++ code generator
-//   versioning.
-//	This is version 2.2 release dated Sep 2009
 //	Astrophysics Science Division,
 //	NASA/ Goddard Space Flight Center
 //	HEASARC
@@ -28,6 +25,9 @@ namespace CCfits {
 
 
 namespace CCfits {
+  /*! \namespace CCfits
+  * \brief Namespace enclosing all CCfits classes and globals definitions.
+  */
   static const int BITPIX = -32;
   static const int  NAXIS =   2;
   static const int  MAXDIM = 99;
@@ -42,7 +42,40 @@ namespace CCfits {
   typedef enum {Read=READONLY,Write=READWRITE} RWmode;
 
 
-
+  /*! \enum ValueType
+  * \brief CCfits value types and their CFITSIO equivalents (in caps)
+  
+  *  Tnull, 
+  *  Tbit = TBIT, 
+  *  Tbyte = TBYTE, 
+  *  Tlogical = TLOGICAL, 
+  *  Tstring = TSTRING, 
+  *  Tushort = TUSHORT, 
+  *  Tshort = TSHORT,
+  *  Tuint = TUINT,
+  *  Tint = TINT, 
+  *  Tulong = TULONG,
+  *  Tlong = TLONG, 
+  *  Tlonglong = TLONGLONG, 
+  *  Tfloat = TFLOAT, 
+  *  Tdouble = TDOUBLE, 
+  *  Tcomplex = TCOMPLEX, 
+  *  Tdblcomplex=TDBLCOMPLEX, 
+  *  VTbit= -TBIT, 
+  *  VTbyte=-TBYTE,
+  *  VTlogical=-Tlogical, 
+  *  VTushort=-TUSHORT,
+  *  VTshort=-TSHORT,
+  *  VTuint=-TUINT, 
+  *  VTint=-TINT,
+  *  VTulong=-TULONG,
+  *  VTlong=-TLONG,
+  *  VTlonglong=-TLONGLONG,
+  *  VTfloat=-TFLOAT,
+  *  VTdouble=-TDOUBLE,
+  *  VTcomplex=-TCOMPLEX,
+  *  VTdblcomplex=-TDBLCOMPLEX
+  */
   typedef enum {Tnull, Tbit = TBIT, Tbyte = TBYTE, Tlogical = TLOGICAL, Tstring = TSTRING, Tushort = TUSHORT, Tshort = TSHORT,Tuint = TUINT,Tint = TINT, Tulong = TULONG,Tlong = TLONG, Tlonglong = TLONGLONG, Tfloat = TFLOAT, Tdouble = TDOUBLE, Tcomplex = TCOMPLEX, Tdblcomplex=TDBLCOMPLEX, VTbit= -TBIT, VTbyte=-TBYTE,VTlogical=-Tlogical, VTushort=-TUSHORT,VTshort=-TSHORT,VTuint=-TUINT, VTint=-TINT,VTulong=-TULONG,VTlong=-TLONG,VTlonglong=-TLONGLONG,VTfloat=-TFLOAT,VTdouble=-TDOUBLE,VTcomplex=-TCOMPLEX,VTdblcomplex=-TDBLCOMPLEX} ValueType;
 
 

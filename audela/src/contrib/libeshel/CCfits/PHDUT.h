@@ -1,10 +1,3 @@
-//1
-//2
-//3
-//4
-
-//	This is version 2.2 release dated Sep 2009
-
 //	Astrophysics Science Division,
 //	NASA/ Goddard Space Flight Center
 //	HEASARC
@@ -289,7 +282,14 @@ namespace CCfits
                                 std::valarray<float> __tmp;                               
                                 PrimaryHDU<float>& phdu = dynamic_cast<PrimaryHDU<float>&>(*this);
                                 FITSUtil::fill(__tmp,data);
-                                phdu.writeImage(first,nElements,__tmp,static_cast<float*>(nullValue));
+                                float* pfNullValue = 0;
+                                float fNullValue = 0.0;
+                                if (nullValue)
+                                {
+                                   fNullValue = static_cast<float>(*nullValue);
+                                   pfNullValue = &fNullValue;
+                                }                                  
+                                phdu.writeImage(first,nElements,__tmp, pfNullValue);
                         }
                         else if (bitpix() == Idouble)
                         {
@@ -297,8 +297,14 @@ namespace CCfits
                                 PrimaryHDU<double>& phdu 
                                                 = dynamic_cast<PrimaryHDU<double>&>(*this);
                                 FITSUtil::fill(__tmp,data);
-                                phdu.writeImage(first,nElements,__tmp,
-                                                static_cast<double*>(nullValue));                              
+                                double* pdNullValue = 0;
+                                double dNullValue = 0.0;
+                                if (nullValue)
+                                {
+                                   dNullValue = static_cast<double>(*nullValue);
+                                   pdNullValue = &dNullValue;
+                                }                                  
+                                phdu.writeImage(first,nElements,__tmp, pdNullValue);
                         }
                         else if (bitpix() == Ibyte)
                         {

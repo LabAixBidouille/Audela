@@ -1,6 +1,3 @@
-//   Read the documentation to learn more about C++ code generator
-//   versioning.
-//	This is version 2.2 release dated Sep 2009
 //	Astrophysics Science Division,
 //	NASA/ Goddard Space Flight Center
 //	HEASARC
@@ -1180,6 +1177,8 @@ namespace CCfits {
         friend void Table::initRead();
 
         friend void Table::reindex();
+
+        friend void Table::copyData(const Table& right);
     protected:
         Column (int columnIndex, 	// The column index, i.e. the integer n in the keyword TCOLn
         const String &columnName, 	// The column name, curiously TTYPEn

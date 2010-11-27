@@ -1,10 +1,3 @@
-//1
-//2
-//3
-//4
-
-//	This is version 2.2 release dated Sep 2009
-
 //	Astrophysics Science Division,
 //	NASA/ Goddard Space Flight Center
 //	HEASARC
