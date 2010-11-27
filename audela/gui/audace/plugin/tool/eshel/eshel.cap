@@ -1,6 +1,6 @@
 #
 # Fichier : eshel.cap
-# Mise a jour $Id: eshel.cap,v 1.8 2010-11-01 14:56:29 michelpujol Exp $
+# Mise a jour $Id: eshel.cap,v 1.9 2010-11-27 17:01:43 michelpujol Exp $
 #
 
 #=========================================================================
@@ -137,7 +137,7 @@ set caption(eshel,instrument,process,refY)                   "Y ordinate (pixel)
 set caption(eshel,instrument,process,refLambda)              "Lambda"
 set caption(eshel,instrument,process,findOrder)              "Search order in an image"
 set caption(eshel,instrument,process,detectionOrder)         "Detect ordres"
-set caption(eshel,instrument,process,wideOrder)              "Width (pixel)"
+set caption(eshel,instrument,process,wideOrder)              "Binning width area (pixel)"
 set caption(eshel,instrument,process,stepOrder)              "Order step (pixel)"
 set caption(eshel,instrument,process,wideSky)                "Background width (pixel)"
 set caption(eshel,instrument,process,threshold)              "Detection threshold (ADU)"
@@ -351,7 +351,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,process,refLambda)           "Lambda"
    set caption(eshel,instrument,process,findOrder)           "Chercher dans une image"
    set caption(eshel,instrument,process,detectionOrder)      "Détection des ordres"
-   set caption(eshel,instrument,process,wideOrder)           "Largueur   (pixel)"
+   set caption(eshel,instrument,process,wideOrder)           "Largueur de la zone de binning (pixel)"
    set caption(eshel,instrument,process,stepOrder)           "Ecartement (pixel)"
    set caption(eshel,instrument,process,wideSky)             "Largeur de fond de ciel (pixel)"
    set caption(eshel,instrument,process,threshold)           "Seuil de détection (ADU)"
@@ -562,7 +562,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,process,refLambda)           "# Lambda"
    set caption(eshel,instrument,process,findOrder)           "# Chercher dans une image"
    set caption(eshel,instrument,process,detectionOrder)      "# Détection des ordres"
-   set caption(eshel,instrument,process,wideOrder)           "# Largueur   (pixel)"
+   set caption(eshel,instrument,process,wideOrder)           "# Largueur de la zone de binning (pixel)"
    set caption(eshel,instrument,process,stepOrder)           "# Ecartement (pixel)"
    set caption(eshel,instrument,process,wideSky)             "# Largeur de fond de ciel (pixel)"
    set caption(eshel,instrument,process,threshold)           "# Seuil de détection (ADU)"
@@ -771,7 +771,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,process,refLambda)           "# Lambda"
    set caption(eshel,instrument,process,findOrder)           "# Chercher dans une image"
    set caption(eshel,instrument,process,detectionOrder)      "# Détection des ordres"
-   set caption(eshel,instrument,process,wideOrder)           "# Largueur   (pixel)"
+   set caption(eshel,instrument,process,wideOrder)           "# Largueur de la zone de binning (pixel)"
    set caption(eshel,instrument,process,stepOrder)           "# Ecartement (pixel)"
    set caption(eshel,instrument,process,wideSky)             "# Largeur de fond de ciel (pixel)"
    set caption(eshel,instrument,process,threshold)           "# Seuil de détection (ADU)"
@@ -980,7 +980,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,process,refLambda)           "# Lambda"
    set caption(eshel,instrument,process,findOrder)           "# Chercher dans une image"
    set caption(eshel,instrument,process,detectionOrder)      "# Détection des ordres"
-   set caption(eshel,instrument,process,wideOrder)           "# Largueur   (pixel)"
+   set caption(eshel,instrument,process,wideOrder)           "# Largueur de la zone de binning (pixel)"
    set caption(eshel,instrument,process,stepOrder)           "# Ecartement (pixel)"
    set caption(eshel,instrument,process,wideSky)             "# Largeur de fond de ciel (pixel)"
    set caption(eshel,instrument,process,threshold)           "# Seuil de détection (ADU)"
@@ -1189,7 +1189,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,process,refLambda)           "# Lambda"
    set caption(eshel,instrument,process,findOrder)           "# Chercher dans une image"
    set caption(eshel,instrument,process,detectionOrder)      "# Détection des ordres"
-   set caption(eshel,instrument,process,wideOrder)           "# Largueur   (pixel)"
+   set caption(eshel,instrument,process,wideOrder)           "# Largueur de la zone de binning (pixel)"
    set caption(eshel,instrument,process,stepOrder)           "# Ecartement (pixel)"
    set caption(eshel,instrument,process,wideSky)             "# Largeur de fond de ciel (pixel)"
    set caption(eshel,instrument,process,threshold)           "# Seuil de détection (ADU)"
@@ -1399,7 +1399,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,process,refLambda)           "Lambda"
    set caption(eshel,instrument,process,findOrder)           "Search order in an image"
    set caption(eshel,instrument,process,detectionOrder)      "Detect ordres"
-   set caption(eshel,instrument,process,wideOrder)           "Width (pixel)"
+   set caption(eshel,instrument,process,wideOrder)           "Binning width area (pixel)"
    set caption(eshel,instrument,process,stepOrder)           "Order step (pixel)"
    set caption(eshel,instrument,process,wideSky)             "Background width (pixel)"
    set caption(eshel,instrument,process,threshold)           "Detection threshold (ADU)"
@@ -1610,7 +1610,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,process,refLambda)           "Lambda"
    set caption(eshel,instrument,process,findOrder)           "Search order in an image"
    set caption(eshel,instrument,process,detectionOrder)      "Detect ordres"
-   set caption(eshel,instrument,process,wideOrder)           "Width (pixel)"
+   set caption(eshel,instrument,process,wideOrder)           "Binning width area pixel)"
    set caption(eshel,instrument,process,stepOrder)           "Order step (pixel)"
    set caption(eshel,instrument,process,wideSky)             "Background width (pixel)"
    set caption(eshel,instrument,process,threshold)           "Detection threshold (ADU)"
@@ -1821,7 +1821,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,process,refLambda)           "Lambda"
    set caption(eshel,instrument,process,findOrder)           "Search order in an image"
    set caption(eshel,instrument,process,detectionOrder)      "Detect ordres"
-   set caption(eshel,instrument,process,wideOrder)           "Width (pixel)"
+   set caption(eshel,instrument,process,wideOrder)           "Binning width area (pixel)"
    set caption(eshel,instrument,process,stepOrder)           "Order step (pixel)"
    set caption(eshel,instrument,process,wideSky)             "Background width (pixel)"
    set caption(eshel,instrument,process,threshold)           "Detection threshold (ADU)"
