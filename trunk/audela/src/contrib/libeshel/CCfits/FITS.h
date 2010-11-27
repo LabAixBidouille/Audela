@@ -1,6 +1,3 @@
-//   Read the documentation to learn more about C++ code generator
-//   versioning.
-//	This is version 2.2 release dated Sep 2009
 //	Astrophysics Science Division,
 //	NASA/ Goddard Space Flight Center
 //	HEASARC
@@ -154,22 +151,27 @@ namespace CCfits {
 /*!   \fn  FITS::FITS(const String &name, RWmode mode, bool readDataFlag, const std::vector<String>& primaryKeys) 
       \brief basic constructor
 
-      This basic constructor makes a FITS object from the given filename.       
-      If the mode is Read [default], it will read all of the headers in the file, and all of the data if the
-      readDataFlag is supplied as true. It will also read optional primary keys.
-
-      The filename string is passed directly to the cfitsio library: thus the extended
-      filename syntax described in the cfitsio manual should work as documented.
+      This basic constructor makes a FITS object from the given filename.  The file name is the only required
+      argument.  The file name string is passed directly to the cfitsio library: thus the extended
+      file name syntax described in the cfitsio manual should work as documented.
       (Though the extended file name feature which allows the opening of a particular
-      image located in the row of a table is currently unsupported.)  If in Read mode and the extended syntax
-      selects a particular extension, that extension will become the current HDU position upon
-      construction.
+      image located in the row of a table is currently unsupported.)
 
-      The file name is the only  required argument. If the mode is Write and
-      the file does not already exist, a default primary HDU will be created in
-      the file with BITPIX=8 and NAXIS=0: this mode is designed for writing
-      FITS files with table extensions only. For files with image data the 
-      constructor that specified the data type and number of axes should be called.
+      If the mode is Read [default]: It will read all of the headers in the file, and all of the data if the
+      readDataFlag is supplied as true. It will also read optional primary keys.  Upon completion, the
+      the last header in the file will become the current extension.  (However if the file name includes 
+      extended syntax selecting a particular extension, that extension will be the current one.) 
+
+      If the mode is Write and the file already exists:  The file is opened in read-write mode, all
+      of the headers of the file are read, and all of the data if the readDataFlag is supplied as true.  It will
+      also read optional primary keys.  For backwards compatibility with older versions of
+      CCfits (which only read the primary when in Write mode for pre-existing files), the primary will become
+      the current extension.
+
+      If the mode is Write and the file does NOT exist (or is overwritten using '!' syntax):  
+      A default primary HDU will be created in the file with BITPIX=8 and NAXIS=0.
+      However if you wish to create a new file with image data in the primary, the version of the
+      FITS constructor that specifies the data type and number of axes should be used instead.
 
 
       \param name The name of the FITS file to be read/written
@@ -331,7 +333,9 @@ namespace CCfits {
 
         \brief Delete extension specified by name and version number.
 
-        Removes extension from FITS object and memory copy.
+        Removes extension from FITS object and memory copy.  The index
+        numbers of all HDU objects which follow this in the file will be
+        decremented by 1.
 
         \param doomed the name of the extension to be deleted
         \param version an optional version number, the EXTVER keyword, defaults to 1
@@ -345,7 +349,9 @@ namespace CCfits {
 
         \brief Delete extension specified by extension number
 
-        \overload
+        The index numbers of all HDU objects which follow this in the 
+        file will be decremented by 1.
+        
     */
 
 
@@ -838,6 +844,14 @@ do this either).
         ExtMap& extensionMap ();
         String nameOfUnmapped (int hduNum) const;
         void cloneHeader (const ExtHDU& source);
+
+        // Check if caller is requesting an already read ExtHDU (ie. one
+        // that's already been added to ExtMap).  If hduIdx=0, check by
+        // matching name and optional version.  Otherwise check by matching
+        // hduIdx.  If found, returns pointer to the ExtHDU.  Otherwise
+        // returns 0.  This will not throw.
+        ExtHDU* checkAlreadyRead(const int hduIdx, 
+                    const String& hduName = string(""), const int version=1) const throw();
 
       // Additional Private Declarations
 

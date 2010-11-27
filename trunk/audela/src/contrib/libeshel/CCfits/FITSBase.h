@@ -1,6 +1,3 @@
-//   Read the documentation to learn more about C++ code generator
-//   versioning.
-//	This is version 2.2 release dated Sep 2009
 //	Astrophysics Science Division,
 //	NASA/ Goddard Space Flight Center
 //	HEASARC
@@ -49,6 +46,8 @@ namespace CCfits {
         std::string& name ();
         PHDU*& pHDU ();
         ExtMap& extension ();
+
+        const ExtMap& extension() const;
         fitsfile*& fptr ();
 
       // Additional Public Declarations
@@ -113,6 +112,11 @@ namespace CCfits {
   inline ExtMap& FITSBase::extension ()
   {
     return m_extension;
+  }
+
+  inline const ExtMap& FITSBase::extension() const
+  {
+     return m_extension;
   }
 
   inline fitsfile*& FITSBase::fptr ()

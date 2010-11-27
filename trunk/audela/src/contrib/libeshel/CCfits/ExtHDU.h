@@ -1,6 +1,3 @@
-//   Read the documentation to learn more about C++ code generator
-//   versioning.
-//	This is version 2.2 release dated Sep 2009
 //	Astrophysics Science Division,
 //	NASA/ Goddard Space Flight Center
 //	HEASARC
@@ -412,6 +409,13 @@ namespace CCfits {
        if it is not called for a Table extension.
 */
 
+ /*! \fn bool ExtHDU::isCompressed () const;
+      \brief return true if image is stored using compression.
+
+      This is simply a wrapper around the CFITSIO fits_is_compressed_image function.
+      It will throw if this is not an Image extension.
+ */
+
 
 
   class ExtHDU : public HDU  //## Inherits: <unnamed>%38048213E7A8
@@ -458,6 +462,8 @@ namespace CCfits {
         virtual long getRowsize () const;
         virtual int numCols () const;
         virtual const std::map<string, Column*>& column () const;
+
+        bool isCompressed () const;
         int version () const;
         void version (int value);
         static const String& missHDU ();

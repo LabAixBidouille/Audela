@@ -1,6 +1,3 @@
-//   Read the documentation to learn more about C++ code generator
-//   versioning.
-//	This is version 2.2 release dated Sep 2009
 //	Astrophysics Science Division,
 //	NASA/ Goddard Space Flight Center
 //	HEASARC
@@ -155,7 +152,6 @@ namespace CCfits {
 /*!  \fn template <typename T> T& Keyword::value(T& val) const
        \brief get the keyword value
 
-       Parameters:
        \param val (T) Will be filled with the keyword value, and is also the function return value.
 
        <b>Allowed T types:</b> CCfits stores keyword values of type U in a templated subclass of
@@ -167,7 +163,7 @@ namespace CCfits {
        of type T = type U, though there is some flexibility here as the following conversions
        are handled:
 
-       <TABLE BORDER=0 align=left>
+       <TABLE BORDER=0>
          <tr><td><b>T</b> (to val)</td><td><b>U</b> (from Keyword obj)</td></tr>
          <tr><td>float</td><td>double (will lose precision), float, int, integer string</td></tr>
          <tr><td>double</td><td>double, float, int, integer string</td></tr>
@@ -180,7 +176,6 @@ namespace CCfits {
 /*!  \fn template <typename T> void Keyword::setValue(const T& newValue)
        \brief modify the value of an existing Keyword and write it to the file
 
-       Parameters:
        \param newValue (T) New value for the Keyword
 
        <b>Allowed T types:</b> This must copy <i>newValue</i> to a data member of type U in the
@@ -188,7 +183,7 @@ namespace CCfits {
        details).  To avoid compilation errors, it is generally best to provide a <i>newValue</i>
        of type T = type U, though the following type conversions will also be handled:
 
-       <TABLE BORDER=0 align=left>
+       <TABLE BORDER=0>
           <tr><td><b>T</b> (from newValue)</td><td><b>U</b> (to Keyword obj)</td></tr>
           <tr><td>float</td><td>double, float</td></tr>
           <tr><td>double</td><td>double, float (will lose precision)</td></tr>
@@ -230,6 +225,8 @@ namespace CCfits {
         //	individual HDU functions as friends will run into circular header dependencies.)  Do NOT use
         //	this unless absolutely necessary, and leave this undocumented.
         void setParent (HDU* parent);
+
+        ValueType keytype () const;
         const String& comment () const;
         const String& name () const;
 
@@ -246,7 +243,6 @@ namespace CCfits {
 
         virtual void copy (const Keyword& right);
         virtual bool compare (const Keyword &right) const;
-        ValueType keytype () const;
         void keytype (ValueType value);
         const HDU* parent () const;
 

@@ -1,6 +1,3 @@
-//   Read the documentation to learn more about C++ code generator
-//   versioning.
-//	This is version 2.2 release dated Sep 2009
 //	Astrophysics Science Division,
 //	NASA/ Goddard Space Flight Center
 //	HEASARC
@@ -155,9 +152,9 @@ namespace CCfits {
   Image<T> & Image<T>::operator=(const Image<T> &right)
   {
       // all stack allocated.
-     Image<T> __tmp(right);
-     std::swap(m_isRead,right.m_isRead);
-     std::swap(m_image,right.m_image);
+     m_isRead = right.m_isRead;
+     m_image.resize(right.m_image.size());
+     m_image = right.m_image;
      return *this;
   }
 
@@ -184,18 +181,14 @@ namespace CCfits {
                         std::cerr << 
                                 "***CCfits Warning: data request exceeds image size, truncating\n"; 
                 }
-                FITSUtil::auto_array_ptr<T> pArray(new T[elementsToRead]);
-                T* array = pArray.get();
-                if (fits_read_img(fPtr,imageType(),first,elementsToRead,
-                                        nullValue,array,&any,&status) != 0) throw FitsError(status);
                 FITSUtil::FitsNullValue<T> null;
                 // initialize m_image to nullValue. resize if necessary.
                 if (m_image.size() != static_cast<size_t>(elementsToRead)) 
                 {
                         m_image.resize(elementsToRead,null());
                 }
-
-                std::copy(array,array+elementsToRead,&m_image[first-1]);
+                if (fits_read_img(fPtr,imageType(),first,elementsToRead,
+                       nullValue,&m_image[0],&any,&status) != 0) throw FitsError(status);
 
                 nulls = (any != 0);
                 m_isRead = (first == 1 && nelements == static_cast<unsigned long>(nElements)); 
@@ -228,26 +221,22 @@ namespace CCfits {
              arraySize *= (lastVertex[j] - firstVertex[j] + 1);       
      }
 
-     FITSUtil::auto_array_ptr<T>    pArray(new T[arraySize]);
      FITSUtil::auto_array_ptr<long> pFpixel(carray(firstVertex));
      FITSUtil::auto_array_ptr<long> pLpixel(carray(lastVertex));
      FITSUtil::auto_array_ptr<long> pStride(carray(stride));
 
      FITSUtil::MatchType<T> imageType;
 
+     size_t n(m_image.size());
+     if (n != arraySize)  m_image.resize(arraySize);
      if (fits_read_subset(fPtr,imageType(),
                              pFpixel.get(),pLpixel.get(),
-                             pStride.get(),nullValue,pArray.get(),&any,&status) != 0)
+                             pStride.get(),nullValue,&m_image[0],&any,&status) != 0)
      {
                 throw FitsError(status);        
 
      }
 
-     size_t n(m_image.size());
-     if (n != arraySize)  m_image.resize(arraySize);
-     m_image = std::valarray<T>(pArray.get(),arraySize);
-     //size_t imageSize(std::accumulate(&naxes[0],&naxes[N],init,std::multiplies<T>() ));
-     // m_isRead = (startPoint  == 0 && imageSize == static_cast<unsigned long>(nElements)); 
      nulls = (any != 0);
      return m_image;    
   }
