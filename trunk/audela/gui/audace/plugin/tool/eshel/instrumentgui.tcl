@@ -2,7 +2,7 @@
 # Fichier : process.tcl
 # Description : fenertre de configuration instrument eShel
 # Auteur : Michel PUJOL
-# Mise à jour $Id: instrumentgui.tcl,v 1.7 2010-11-01 14:56:29 michelpujol Exp $
+# Mise à jour $Id: instrumentgui.tcl,v 1.8 2010-11-27 17:04:56 michelpujol Exp $
 #
 
 ################################################################
@@ -185,10 +185,6 @@ proc ::eshel::instrumentgui::fillConfigPage { frm visuNo } {
 proc ::eshel::instrumentgui::fillSpectrographPage { frm visuNo } {
    variable private
 
-   #--- type de spectro
-   checkbutton $frm.spectroType  -justify left \
-      -text $::caption(eshel,instrument,spectrograph,type) \
-      -variable ::eshel::instrumentgui::private(spectroType)
    #--- name
    LabelEntry $frm.name  -label $::caption(eshel,instrument,spectrograph,name)\
       -labeljustify left -labelwidth 30  -width 30 -justify left \
@@ -295,7 +291,6 @@ proc ::eshel::instrumentgui::fillSpectrographPage { frm visuNo } {
       grid $frm.link.neonLabel   -in [$frm.link getframe] -row 4 -column 0 -sticky w
       grid $frm.link.neonBit     -in [$frm.link getframe] -row 4 -column 1 -sticky ens
 
-   pack $frm.spectroType -side top -anchor w -fill none -expand 0
    pack $frm.name    -side top -anchor w -fill none -expand 0
    pack $frm.grating -side top -anchor w -fill none -expand 0
    pack $frm.alpha   -side top -anchor w -fill none -expand 0
@@ -814,10 +809,10 @@ proc ::eshel::instrumentgui::onSelectConfig { visuNo } {
 
    set tkCombo $private($visuNo,frm).config.combo
 
-   #--- je recupere l'identifiant de la confiiguration correspondant la ligne selectionne dans la combobox
+   #--- je recupere l'identifiant de la configuration correspondant la ligne selectionne dans la combobox
    set configId [::eshel::instrument::getConfigIdentifiant [$tkCombo get]]
 
-   #--- je copie les parametres dans les variables courantes
+   #--- je copie les parametres dans les variables de widgets
    setConfig $visuNo $configId
 
    #--- j'affiche la liste des pixels chauds
@@ -855,30 +850,18 @@ proc ::eshel::instrumentgui::onSelectConfig { visuNo } {
 proc ::eshel::instrumentgui::setConfig { visuNo configId } {
    variable private
 
-   #--- j'ajoute les parametres manquants (en cas d'evolution de eShel)
-   if { $configId != "default" } {
-      foreach { defautParamName defautlParamValue } [array get ::conf eshel,instrument,config,default,*] {
-         #--- je prepare le nom de la nouvelle variable
-         set configParamName [string map [list ",default," ",$configId,"] $defautParamName ]
-         if { [info exists ::conf($configParamName)] == 0 } {
-            #--- j'ajoute le parametre s'il n'existe pas
-            if { $defautParamName != "name" } {
-               #--- je copie valeur de la configuration par defaut
-               set ::conf($configParamName) $defautlParamValue
-            } else {
-               #--- copie l'identifiant dans le nom
-               set ::conf($configParamName) $configId
-            }
-         }
-      }
+   set catchResult [ catch {
+      ::eshel::instrument::setCurrentConfig $configId
+   }]
+   if { $catchResult !=0 } {
+     ::tkutil::displayErrorInfo $::caption(eshel,instrument,importConfigTitle)
+     return
    }
 
-   #--- spectrographe
-   if { $::conf(eshel,instrument,config,$configId,gamma) == 0 } {
-      set private(spectroType) 0
-   } else {
-      set private(spectroType) 1
-   }
+
+   #--- je copie les parametres dans les variables des widgets
+
+   #--- widgets spectrographe
    set private(spectroName) $::conf(eshel,instrument,config,$configId,spectroName)
    set private(grating)    $::conf(eshel,instrument,config,$configId,grating)
    set private(alpha)      $::conf(eshel,instrument,config,$configId,alpha)
@@ -890,9 +873,9 @@ proc ::eshel::instrumentgui::setConfig { visuNo configId } {
    set private(tharBit)    $::conf(eshel,instrument,config,$configId,thar,bit)
    set private(flatBit)    $::conf(eshel,instrument,config,$configId,flat,bit)
    set private(neonBit)   $::conf(eshel,instrument,config,$configId,neon,bit)
-   #--- telescope
+   #--- widgets telescope
    set private(telescopeName) $::conf(eshel,instrument,config,$configId,telescopeName)
-   #--- camera
+   #--- widgets camera
    set private(cameraName) $::conf(eshel,instrument,config,$configId,cameraName)
    set private(cameraLabel) $::conf(eshel,instrument,config,$configId,cameraLabel)
    set private(binning)    "[lindex $::conf(eshel,instrument,config,$configId,binning) 0]x[lindex $::conf(eshel,instrument,config,$configId,binning) 1]"
@@ -903,7 +886,7 @@ proc ::eshel::instrumentgui::setConfig { visuNo configId } {
    set private(y1)         $::conf(eshel,instrument,config,$configId,y1)
    set private(x2)         $::conf(eshel,instrument,config,$configId,x2)
    set private(y2)         $::conf(eshel,instrument,config,$configId,y2)
-   #--- traitement
+   #--- widgets traitement
    set private(refNum)     $::conf(eshel,instrument,config,$configId,refNum)
    set private(refX)       $::conf(eshel,instrument,config,$configId,refX)
    set private(refY)       $::conf(eshel,instrument,config,$configId,refY)
@@ -1362,7 +1345,7 @@ proc ::eshel::instrumentgui::importConfig { visuNo } {
    if { $fileName != "" } {
       set catchResult [ catch {
          #--- je lis le fichier
-         array set params [::eshel::instrument::importConfig $fileName ]
+         array set params [::eshel::instrument::readConfigFile $fileName ]
          #--- je verifie que la configuration n'existe pas deja
          set configName $params(configName)
          set configId [::eshel::instrument::getConfigIdentifiant $configName]

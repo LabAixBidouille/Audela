@@ -2,7 +2,7 @@
 # Fichier : instrument.tcl
 # Description : commande des instruments de l'outil eShel
 # Auteur : Michel PUJOL
-# Mise à jour $Id: instrument.tcl,v 1.3 2010-05-26 17:40:35 robertdelmas Exp $
+# Mise à jour $Id: instrument.tcl,v 1.4 2010-11-27 17:05:10 michelpujol Exp $
 #
 
 namespace eval ::eshel::instrument {
@@ -47,23 +47,45 @@ proc ::eshel::instrument::getCurrentConfig { } {
 
 #------------------------------------------------------------
 # setCurrentConfig
-#  selectionne la configuration courante
+#    selectionne la configuration courante
 #
-# Parameters :
-#    nom de la configuration
-# Return
-#    rien
+# @param configId : nom de la configuration identifiant de la configuration
+# @return void
 #------------------------------------------------------------
-proc ::eshel::instrument::setCurrentConfig { } {
+proc ::eshel::instrument::setCurrentConfig { configId } {
 
-   #--- je verifie qu'il n'y a pas d'acqusition en cours
-   if { [::eshel ::acquisition::getCurrentSeriesID] != "" } {
+   #--- je verifie que la configuration existe
+   if { [info exists ::conf(eshel,instrument,config,$configId,configName)] == 0 } {
+      error "configId=$configId not found"
+   }
+   #--- je verifie qu'il n'y a pas d'acquisition en cours
+   if { [::eshel::acquisition::getCurrentSeriesID] != "" } {
       error $caption(eshel,instrument,errorBusyConfig)
    }
 
    #--- je verifie qu'il n'y a pas de traitement en cours
+   #--- TODO  (est ce bien n�cessaire ?)
 
-   return $::conf(eshel,currentInstrument)
+   #--- j'ajoute les parametres manquants (en cas d'evolution de eShel)
+   if { $configId != "default" } {
+      foreach { defautParamName defautlParamValue } [array get ::conf eshel,instrument,config,default,*] {
+         #--- je prepare le nom de la nouvelle variable
+         set configParamName [string map [list ",default," ",$configId,"] $defautParamName ]
+         if { [info exists ::conf($configParamName)] == 0 } {
+            #--- j'ajoute le parametre s'il n'existe pas
+            if { $defautParamName != "name" } {
+               #--- je copie valeur de la configuration par defaut
+               set ::conf($configParamName) $defautlParamValue
+            } else {
+               #--- copie l'identifiant dans le nom
+               set ::conf($configParamName) $configId
+            }
+         }
+      }
+   }
+   #---
+   set ::conf(eshel,currentInstrument) $configId
+   return ""
 }
 
 ##------------------------------------------------------------
@@ -186,14 +208,14 @@ proc ::eshel::instrument::getConfigIdentifiant { configName } {
 }
 
 ## importConfig------------------------------------------------------------
-# importe une configuration a partir d'un fichier XML
-#   retourne l'identifiant d'une configuration  en fonction de son nom
+# lit une configuration a partir d'un fichier XML
+# et retourne tous les parametres
+#
 # @param fileName nom du fichier XML
-# @param configName nom du fichier XML
-# @return parametres de la config dans une liste de couples paramName,paramValue
+# @return parametres de la config dans une liste de couples paramName,paramValue array
 # @public
 #------------------------------------------------------------
-proc ::eshel::instrument::importConfig { fileName } {
+proc ::eshel::instrument::readConfigFile { fileName } {
    variable private
 
    set hFile ""
@@ -210,16 +232,19 @@ proc ::eshel::instrument::importConfig { fileName } {
       set configNode [::dom::tcl::document cget $configDom -documentElement]
       set paramNode [lindex [set [::dom::element getElementsByTagName $configNode "PARAMS" ]] 0]
 
-      #--- je lis les parametres , et je les completes avec les valeurs par defaut s'il manquent
+      #--- je lis les parametres, et je les completes avec les valeurs par defaut s'il manquent
       foreach { defautParamName defautlParamValue } [array get ::conf eshel,instrument,config,default,*] {
          #--- je recupere le nom du parametre
          set paramName [lindex [split $defautParamName "," ] 4]
+         #--- je recupere le noeud du parametre
          set attributeNode [::dom::element getAttribute $paramNode $paramName]
+         #--- je verifie que le noeud du parametre existe
          if { $attributeNode != "" } {
-            #--- je recupere la valeur de la config importee
+            #--- je recupere la valeur du parametre
             set paramValue [::dom::element getAttribute $paramNode $paramName]
             lappend paramList $paramName $paramValue
          } else {
+            #--- j'utilise la valeur de la configuration par defaut
             lappend paramList $paramName $defautlParamValue
          }
       }
@@ -234,6 +259,32 @@ proc ::eshel::instrument::importConfig { fileName } {
 
    return $paramList
 }
+
+## importConfig------------------------------------------------------------
+# importe une configuration dans la variable conf(eshel,instrument,config,$configId,*)
+# a partir d'un fichier XML
+#
+# @param fileName nom du fichier XML
+# @param configName nom du fichier XML
+# @return identifiant de la configuration
+# @public
+#------------------------------------------------------------
+proc ::eshel::instrument::importConfig { fileName } {
+   variable private
+
+   #--- je lis le fichier
+   array set paramsArray [::eshel::instrument::readConfigFile $fileName]
+   set configName $paramsArray(configName)
+   set configId [::eshel::instrument::getConfigIdentifiant $configName]
+   #--- je supprime les anciens parametres
+   array unset ::conf eshel,instrument,config,$configId,*
+   #--- je copie les parametres de la configuration dans la variable ::conf
+   foreach { paramName paramValue } [array get paramsArray] {
+      set ::conf(eshel,instrument,config,$configId,$paramName) $paramValue
+   }
+   return $configId
+}
+
 
 ## importFitsConfig------------------------------------------------------------
 # importe une configuration a partir d'une image de caliration
