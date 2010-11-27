@@ -2,7 +2,7 @@
 # Fichier : process.tcl
 # Description : traitements eShel
 # Auteur : Michel PUJOL
-# Mise à jour $Id: process.tcl,v 1.7 2010-11-01 14:56:29 michelpujol Exp $
+# Mise à jour $Id: process.tcl,v 1.8 2010-11-27 17:02:34 michelpujol Exp $
 #
 
 ################################################################
@@ -511,6 +511,7 @@ proc ::eshel::process::generateProcess { } {
          set status "todo"
          lappend errorMessage "$::caption(eshel,process,with) BIAS=[::dom::element getAttribute $biasNode FILENAME] "
          lappend errorMessage "$::caption(eshel,process,with) DARK=[::dom::element getAttribute $darkNode FILENAME] "
+         lappend errorMessage "$::caption(eshel,process,with) FLATFIELD=[::dom::element getAttribute $fileNode FILENAME] "
       } else {
          set status "error"
       }
@@ -557,6 +558,7 @@ proc ::eshel::process::generateProcess { } {
          set status "todo"
          lappend errorMessage "$::caption(eshel,process,with) BIAS=[::dom::element getAttribute $biasNode FILENAME] "
          lappend errorMessage "$::caption(eshel,process,with) DARK=[::dom::element getAttribute $darkNode FILENAME] "
+         lappend errorMessage "$::caption(eshel,process,with) LED=[::dom::element getAttribute $fileNode FILENAME] "
       } else {
          set status "error"
       }
@@ -649,6 +651,7 @@ proc ::eshel::process::generateProcess { } {
          set status "todo"
          lappend errorMessage "$::caption(eshel,process,with) BIAS=[::dom::element getAttribute $biasNode FILENAME] "
          lappend errorMessage "$::caption(eshel,process,with) DARK=[::dom::element getAttribute $darkNode FILENAME] "
+         lappend errorMessage "$::caption(eshel,process,with) TUNGSTEN=[::dom::element getAttribute $fileNode FILENAME] "
       } else {
          set status "error"
       }
@@ -744,13 +747,6 @@ proc ::eshel::process::generateProcess { } {
          lappend errorMessage [format $::caption(eshel,process,fileNotFound) "FLAT" ]
       }
 
-      ####--- je recherche le tungsten
-      ###set tungstenNode [findCompatibleImage $fileNode "TUNSTEN" [list NAXIS1 NAXIS2 BIN1 BIN2 DETNAM INSTRUME ] ]
-      ###if { $tungstenNode == "" } {
-      ###   #--- s'il n'y a pas de tungsten , j'utilise un flat a la place
-      ###   set tungstenNode $flatNode
-      ###}
-
       #--- je cree le traitement CALIB-PROCESS
       set processNode [::dom::document createElement $roadmapNode "CALIB-PROCESS" ]
       if { $errorMessage == "" } {
@@ -762,12 +758,11 @@ proc ::eshel::process::generateProcess { } {
          ::dom::tcl::node appendChild $processNode [::dom::node cloneNode $darkNode 0]
          #--- j'ajoute le flat
          ::dom::tcl::node appendChild $processNode [::dom::node cloneNode $flatNode 0]
-         ####--- j'ajoute le tungsten
-         ###::dom::tcl::node appendChild $processNode [::dom::node cloneNode $tungstenNode 0]
          set status "todo"
          lappend errorMessage "$::caption(eshel,process,with) BIAS=[::dom::element getAttribute $biasNode FILENAME] "
          lappend errorMessage "$::caption(eshel,process,with) DARK=[::dom::element getAttribute $darkNode FILENAME] "
          lappend errorMessage "$::caption(eshel,process,with) FLAT=[::dom::element getAttribute $flatNode FILENAME] "
+         lappend errorMessage "$::caption(eshel,process,with) THAR=[::dom::element getAttribute $fileNode FILENAME] "
       } else {
          set status "error"
       }
@@ -840,14 +835,12 @@ proc ::eshel::process::generateProcess { } {
       #--- je cree un traitement a faire
       set processNode [::dom::document createElement $roadmapNode "OBJECT-PROCESS" ]
       if { $errorMessage == "" } {
-         #--- je copie la serie des images brutes de l'objet
-         ::dom::tcl::node appendChild $processNode [::dom::node cloneNode $fileNode 1]
-         lappend errorMessage "$::caption(eshel,process,with) BIAS=[::dom::element getAttribute $biasNode FILENAME] "
          #--- j'ajoute le bias
          ::dom::tcl::node appendChild $processNode [::dom::node cloneNode $biasNode 0]
-         lappend errorMessage "$::caption(eshel,process,with) DARK=[::dom::element getAttribute $darkNode FILENAME] "
+         lappend errorMessage "$::caption(eshel,process,with) BIAS=[::dom::element getAttribute $biasNode FILENAME] "
          #--- j'ajoute le dark
          ::dom::tcl::node appendChild $processNode [::dom::node cloneNode $darkNode 0]
+         lappend errorMessage "$::caption(eshel,process,with) DARK=[::dom::element getAttribute $darkNode FILENAME] "
          #--- j'ajoute le flatfield
          if { [::eshel::instrument::getConfigurationProperty flatFieldEnabled] == 1 } {
             ::dom::tcl::node appendChild $processNode [::dom::node cloneNode $flatfieldNode 0]
@@ -861,6 +854,9 @@ proc ::eshel::process::generateProcess { } {
             ::dom::tcl::node appendChild $processNode [::dom::node cloneNode $responseNode 0]
             lappend errorMessage "$::caption(eshel,process,with) RESPONSE=[::dom::element getAttribute $responseNode FILENAME] "
          }
+         #--- je copie la serie des images brutes de l'objet
+         ::dom::tcl::node appendChild $processNode [::dom::node cloneNode $fileNode 1]
+         lappend errorMessage "$::caption(eshel,process,with) OBJECT=[::dom::element getAttribute $fileNode FILENAME] "
          set status "todo"
       } else {
          set status "error"
@@ -923,6 +919,7 @@ proc ::eshel::process::generateScript { } {
    putCommand $hScriptFile "\n#--- Order definition (num order, x_min, x_max, slant)"
    putCommand $hScriptFile "set orderDefinition [list $::conf(eshel,instrument,config,$name,orderDefinition)  ]"
    ##putCommand $hScriptFile {::console::disp [llength $orderDefinition]\n}
+   putCommand $hScriptFile "set cropLambda [list $::conf(eshel,instrument,config,$name,cropLambda)  ]"
 
    putCommand $hScriptFile "\n#--- Calibration lines  (lambda in angtrom)"
    putCommand $hScriptFile "set lineList { $::conf(eshel,instrument,config,$name,lineList) }"
@@ -1622,7 +1619,7 @@ proc ::eshel::process::putImaStack { hfile dirIn fileIn dirOut fileOut operation
 
 proc ::eshel::process::putProcessFlat { hfile ledIn tungstenIn flatOut } {
    set fileExtension ""
-   set command "      eshel_processFlat "
+   set command    "      eshel_processFlat "
    append command "\"$ledIn\" "
    append command "\"$tungstenIn\" "
    append command "\"$flatOut\" "
@@ -1637,7 +1634,7 @@ proc ::eshel::process::putProcessFlat { hfile ledIn tungstenIn flatOut } {
 
 proc ::eshel::process::putProcessCalib { hfile dirIn fileIn dirOut fileOut dirFlat fileFlat } {
    set fileExtension ""
-   set command "      eshel_processCalib "
+   set command    "      eshel_processCalib "
    append command "\"[file join $dirIn $fileIn]\" "
    append command "\"[file join $dirOut $fileOut]\" "
    append command "\"[file join $dirFlat $fileFlat]\" "
@@ -1649,11 +1646,12 @@ proc ::eshel::process::putProcessCalib { hfile dirIn fileIn dirOut fileOut dirFl
 
 proc ::eshel::process::putProcessObject { hfile objectFileNameIn objectFileNameOut calibFileName responseFileName } {
    set fileExtension ""
-   set command "      eshel_processObject "
+   set command    "      eshel_processObject "
    append command "\"$objectFileNameIn\" "
    append command "\"$objectFileNameOut\" "
    append command "\"$calibFileName\" "
    append command {$minOrder $maxOrder -merge 1 -objectimage $saveObjectImage }
+   append command {-croplambda  $cropLambda }
 
    #--- option pour diviser par la reponse instrumentale
    if { $responseFileName != "" } {
