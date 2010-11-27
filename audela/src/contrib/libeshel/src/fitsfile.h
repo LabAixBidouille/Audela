@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef _INC_FITS_FILE
-#define _INC_FITS_FILE
+#ifndef _INC_LIBESHEL_FITS_FILE
+#define _INC_LIBESHEL_FITS_FILE
 #include <valarray>
 #include <list>
 #include "infoimage.h"
@@ -33,7 +33,7 @@ void Fits_setLineGap (CCfits::PFitsFile pFit, ::std::list<LINE_GAP> &lineGapList
 void Fits_getLineGap(CCfits::PFitsFile pFits, ::std::list<LINE_GAP> &lineGapListe);
 
 void Fits_setRawProfile(CCfits::PFitsFile pOutFits, char * prefix, int numOrder, ::std::valarray<double> &rawProfile, int min_x);
-void Fits_getRawProfile(CCfits::PFitsFile pFits, char * prefix, int numOrder, ::std::valarray<double> &rawProfile, int *pmin_x);
+void Fits_getRawProfile(CCfits::PFitsFile pFits, char * prefix, int numOrder, ::std::valarray<double> &rawProfile, int &min_x);
 
 void Fits_setLinearProfile(CCfits::PFitsFile pFits, char * prefix, int numOrder, ::std::valarray<double> &linearProfile, double lambda1, double step) ;
 void Fits_getLinearProfile(CCfits::PFitsFile pFits, char * prefix, int numOrder, ::std::valarray<double> &linearProfile, double *lambda1, double *step);

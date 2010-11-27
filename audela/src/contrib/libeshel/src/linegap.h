@@ -1,7 +1,7 @@
 
 
-#ifndef _INC_LINE_GAP
-#define _INC_LINE_GAP
+#ifndef _INC_LIBESHEL_LINE_GAP
+#define _INC_LIBESHEL_LINE_GAP
 
 typedef struct
 {

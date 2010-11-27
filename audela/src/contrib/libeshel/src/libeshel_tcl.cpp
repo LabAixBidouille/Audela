@@ -152,7 +152,7 @@ int cmdEshelProcessFlat(ClientData clientData, Tcl_Interp *interp, int argc, cha
          return TCL_ERROR;
       }
       if(Tcl_GetInt(interp,argv[++paramNo],&step_y)!=TCL_OK) {
-         sprintf(s,"%s\n Invalid wide_y=%s", usage, argv[paramNo]);
+         sprintf(s,"%s\n Invalid step_y=%s", usage, argv[paramNo]);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_ERROR;
       }
@@ -162,7 +162,7 @@ int cmdEshelProcessFlat(ClientData clientData, Tcl_Interp *interp, int argc, cha
          return TCL_ERROR;
       }
       if(Tcl_GetInt(interp,argv[++paramNo],&seuil_ordre)!=TCL_OK) {
-         sprintf(s,"%s\n Invalid wide_y=%s", usage, argv[paramNo]);
+         sprintf(s,"%s\n Invalid seuil_ordre=%s", usage, argv[paramNo]);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_ERROR;
       }
@@ -307,15 +307,17 @@ int cmdEshelProcessFlat(ClientData clientData, Tcl_Interp *interp, int argc, cha
 
       try {
          double dx_ref;
+         char returnMessage[1024];
          Eshel_processFlat(ledfileName, tungstenFileName, flatFileName,
             ordre_ref_y, ordre_ref, lambda_ref, neon_ref_x, 
             wide_y, step_y, seuil_ordre, ordre, 
             spectro,
             lineList,
             &nb_ordre, &dx_ref,
-            "reduc.log",(short*)NULL);
+            "reduc.log",
+            returnMessage);
          // je copie le nombre d'ordres trouves dans la reponse
-         sprintf(s,"%d", nb_ordre);
+         sprintf(s,"%d  %s", nb_ordre, returnMessage);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          result = TCL_OK;
       } catch(std::exception e ) {
@@ -445,6 +447,7 @@ int cmdEshelProcessObject(ClientData clientData, Tcl_Interp *interp, int argc, c
       char * fullFileName = NULL;
       int  useFlat = 1;
       int  recordObjectImage = 1; 
+      ::std::valarray<CROP_LAMBDA> cropLambda;
 
       objectFileNameIn = argv[1];
       objectFileNameOut = argv[2];
@@ -486,11 +489,63 @@ int cmdEshelProcessObject(ClientData clientData, Tcl_Interp *interp, int argc, c
                return TCL_ERROR;
             }
          }
+         if (strcmp(argv[kk], "-croplambda") == 0 && kk+1 < argc ) {
+ 
+            int cropArgc;
+            char **cropArgv;
+
+            // liste des parametres des ordes (num, marge gauche, marge droit, slant)
+            if(Tcl_SplitList(interp,argv[kk+1],&cropArgc,(const char***) &cropArgv)!=TCL_OK) {
+               sprintf(s,"%s\n croplmabda list=%s", usage, argv[kk+1]);
+               Tcl_SetResult(interp,s,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {
+               result = TCL_OK;
+               // On alloue la place pour tous les ordres
+               cropLambda.resize(MAX_ORDRE);
+               for (int i=0 ; i< cropArgc && result!= TCL_ERROR; i++) {
+                  int paramArgc;
+                  char **paramArgv;
+                  if(Tcl_SplitList(interp,cropArgv[i],&paramArgc,(const char***) &paramArgv)!=TCL_OK) {
+                     sprintf(s,"%s\n Invalid crop lambda %d value=%s", usage, i, cropArgv[i]);
+                     Tcl_SetResult(interp,s,TCL_VOLATILE);
+                     result = TCL_ERROR;            
+                  } else if (paramArgc != 3 ){
+                     sprintf(s,"%s\n Invalid crop lambda %d value=%s .\nMust contain {orderNum minLmanda maxLmabda}", usage, i, cropArgv[i]);
+                     Tcl_SetResult(interp,s,TCL_VOLATILE);
+                     result = TCL_ERROR;            
+                  } else {
+                     int n;
+                     if(Tcl_GetInt(interp,paramArgv[0],&n)!=TCL_OK) {
+                        sprintf(s,"%s\n Invalid crop lambda %d num_order=%s is not an integer", usage, i, paramArgv[0]);
+                        Tcl_SetResult(interp,s,TCL_VOLATILE);
+                        result = TCL_ERROR;
+                     }
+                     if(Tcl_GetDouble(interp,paramArgv[1],&cropLambda[n].minLambda)!=TCL_OK) {
+                        sprintf(s,"%s\n Invalid crop lambda %d min lambda=%s is not a float", usage, i, paramArgv[1]);
+                        Tcl_SetResult(interp,s,TCL_VOLATILE);
+                        result = TCL_ERROR;
+                     }
+                     if(Tcl_GetDouble(interp,paramArgv[2],&cropLambda[n].maxLambda)!=TCL_OK) {
+                        sprintf(s,"%s\n Invalid crop lambda %d max lambda=%s is not a float", usage, i, paramArgv[2]);
+                        Tcl_SetResult(interp,s,TCL_VOLATILE);
+                        result = TCL_ERROR;
+                     }
+                     Tcl_Free((char*)paramArgv);
+                  }
+                  if ( result == TCL_ERROR) {
+                     return TCL_ERROR;
+                  }
+               } 
+               Tcl_Free((char*)cropArgv);
+            }
+         }
       }
     
       try {
          Eshel_processObject(objectFileNameIn, objectFileNameOut, calibFileName, responseFileName,
-            recordObjectImage,
+            minOrder, maxOrder, recordObjectImage,
+            cropLambda,
             "reduc.log",(short*)NULL);
 
          //Eshel_joinSpectra(objectFileNameOut, calibFileName,
