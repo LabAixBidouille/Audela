@@ -2,7 +2,7 @@
 # Fichier : eshel.tcl
 # Description : outil de fabrication des fichier Kit et de deploiement des plugin
 # Auteurs : Michel Pujol
-# Mise à jour $Id: eshel.tcl,v 1.12 2010-11-27 17:05:43 michelpujol Exp $
+# Mise à jour $Id: eshel.tcl,v 1.13 2010-11-28 17:31:05 michelpujol Exp $
 #
 
 ##------------------------------------------------------------
@@ -203,7 +203,6 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
    if { ! [ info exists conf($prefix,boxWide) ] }         { set conf($prefix,boxWide)          25 }
    if { ! [ info exists conf($prefix,wideOrder) ] }       { set conf($prefix,wideOrder)        12 }
    if { ! [ info exists conf($prefix,stepOrder) ] }       { set conf($prefix,stepOrder)        18 }
-   if { ! [ info exists conf($prefix,wideSky) ] }         { set conf($prefix,wideSky)          6 }
    if { ! [ info exists conf($prefix,threshold) ] }       { set conf($prefix,threshold)        100 }
    if { ! [ info exists conf($prefix,minOrder) ] }        { set conf($prefix,minOrder)         33 }
    if { ! [ info exists conf($prefix,maxOrder) ] }        { set conf($prefix,maxOrder)         44 }
@@ -254,31 +253,7 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
    }
 
    if { ! [ info exists conf($prefix,cropLambda) ] } {
-     set conf($prefix,cropLambda) { \
-         { 32 6894 7120 } \
-         { 33 6692 6916 } \
-         { 34 6485 6715 } \
-         { 35 6321 6510 } \
-         { 36 6146 6342 } \
-         { 37 5974 6166 } \
-         { 38 5820 6000 } \
-         { 39 5684 5840 } \
-         { 40 5538 5702 } \
-         { 41 5410 5558 } \
-         { 42 5277 5430 } \
-         { 43 5162 5300 } \
-         { 44 5044 5178 } \
-         { 45 4944 5058 } \
-         { 46 4829 4956 } \
-         { 47 4727 4846 } \
-         { 48 4630 4745 } \
-         { 49 4540 4647 } \
-         { 50 4446 4551 } \
-         { 51 4365 4454 } \
-         { 52 4300 4375 } \
-         { 53 4188 4278 } \
-         { 54 4100 4198 } \
-     }
+     set conf($prefix,cropLambda) ""
    }
 
    if { ! [ info exists conf($prefix,lineList) ] } {
@@ -431,7 +406,7 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
       }
    }
 
-   #--- je verifie que toutes les configurations parametres ont bien toutes les variables
+   #--- je verifie que toutes les configurations ont bien toutes les parametres ((en cas d'evolution de eShel))
    #--- si ce n'est pas le cas, je cree la variable avec la valeur de la configuration "defaut"
    foreach configPath [array names ::conf eshel,instrument,config,*,orderDefinition] {
       set configId [lindex [split $configPath "," ] 3]
