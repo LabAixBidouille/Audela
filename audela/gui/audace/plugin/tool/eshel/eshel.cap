@@ -1,6 +1,6 @@
 #
 # Fichier : eshel.cap
-# Mise a jour $Id: eshel.cap,v 1.9 2010-11-27 17:01:43 michelpujol Exp $
+# Mise a jour $Id: eshel.cap,v 1.10 2010-11-28 17:30:26 michelpujol Exp $
 #
 
 #=========================================================================
@@ -139,7 +139,6 @@ set caption(eshel,instrument,process,findOrder)              "Search order in an
 set caption(eshel,instrument,process,detectionOrder)         "Detect ordres"
 set caption(eshel,instrument,process,wideOrder)              "Binning width area (pixel)"
 set caption(eshel,instrument,process,stepOrder)              "Order step (pixel)"
-set caption(eshel,instrument,process,wideSky)                "Background width (pixel)"
 set caption(eshel,instrument,process,threshold)              "Detection threshold (ADU)"
 set caption(eshel,instrument,process,boxWide)                "Detection area (pixel)"
 set caption(eshel,instrument,process,minOrder)               "Minimum order N°"
@@ -353,7 +352,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,process,detectionOrder)      "Détection des ordres"
    set caption(eshel,instrument,process,wideOrder)           "Largueur de la zone de binning (pixel)"
    set caption(eshel,instrument,process,stepOrder)           "Ecartement (pixel)"
-   set caption(eshel,instrument,process,wideSky)             "Largeur de fond de ciel (pixel)"
    set caption(eshel,instrument,process,threshold)           "Seuil de détection (ADU)"
    set caption(eshel,instrument,process,boxWide)             "zone de détection (pixel)"
    set caption(eshel,instrument,process,minOrder)            "N° ordre minimum"
@@ -564,7 +562,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,process,detectionOrder)      "# Détection des ordres"
    set caption(eshel,instrument,process,wideOrder)           "# Largueur de la zone de binning (pixel)"
    set caption(eshel,instrument,process,stepOrder)           "# Ecartement (pixel)"
-   set caption(eshel,instrument,process,wideSky)             "# Largeur de fond de ciel (pixel)"
    set caption(eshel,instrument,process,threshold)           "# Seuil de détection (ADU)"
    set caption(eshel,instrument,process,boxWide)             "# zone de détection (pixel)"
    set caption(eshel,instrument,process,minOrder)            "# N° ordre minimum"
@@ -773,7 +770,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,process,detectionOrder)      "# Détection des ordres"
    set caption(eshel,instrument,process,wideOrder)           "# Largueur de la zone de binning (pixel)"
    set caption(eshel,instrument,process,stepOrder)           "# Ecartement (pixel)"
-   set caption(eshel,instrument,process,wideSky)             "# Largeur de fond de ciel (pixel)"
    set caption(eshel,instrument,process,threshold)           "# Seuil de détection (ADU)"
    set caption(eshel,instrument,process,boxWide)             "# zone de détection (pixel)"
    set caption(eshel,instrument,process,minOrder)            "# N° ordre minimum"
@@ -982,7 +978,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,process,detectionOrder)      "# Détection des ordres"
    set caption(eshel,instrument,process,wideOrder)           "# Largueur de la zone de binning (pixel)"
    set caption(eshel,instrument,process,stepOrder)           "# Ecartement (pixel)"
-   set caption(eshel,instrument,process,wideSky)             "# Largeur de fond de ciel (pixel)"
    set caption(eshel,instrument,process,threshold)           "# Seuil de détection (ADU)"
    set caption(eshel,instrument,process,boxWide)             "# zone de détection (pixel)"
    set caption(eshel,instrument,process,minOrder)            "# N° ordre minimum"
@@ -1191,7 +1186,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,process,detectionOrder)      "# Détection des ordres"
    set caption(eshel,instrument,process,wideOrder)           "# Largueur de la zone de binning (pixel)"
    set caption(eshel,instrument,process,stepOrder)           "# Ecartement (pixel)"
-   set caption(eshel,instrument,process,wideSky)             "# Largeur de fond de ciel (pixel)"
    set caption(eshel,instrument,process,threshold)           "# Seuil de détection (ADU)"
    set caption(eshel,instrument,process,boxWide)             "# zone de détection (pixel)"
    set caption(eshel,instrument,process,minOrder)            "# N° ordre minimum"
@@ -1401,7 +1395,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,process,detectionOrder)      "Detect ordres"
    set caption(eshel,instrument,process,wideOrder)           "Binning width area (pixel)"
    set caption(eshel,instrument,process,stepOrder)           "Order step (pixel)"
-   set caption(eshel,instrument,process,wideSky)             "Background width (pixel)"
    set caption(eshel,instrument,process,threshold)           "Detection threshold (ADU)"
    set caption(eshel,instrument,process,boxWide)             "Detection area (pixel)"
    set caption(eshel,instrument,process,minOrder)            "Minimum order N°"
@@ -1612,7 +1605,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,process,detectionOrder)      "Detect ordres"
    set caption(eshel,instrument,process,wideOrder)           "Binning width area pixel)"
    set caption(eshel,instrument,process,stepOrder)           "Order step (pixel)"
-   set caption(eshel,instrument,process,wideSky)             "Background width (pixel)"
    set caption(eshel,instrument,process,threshold)           "Detection threshold (ADU)"
    set caption(eshel,instrument,process,boxWide)             "Detection area (pixel)"
    set caption(eshel,instrument,process,minOrder)            "Minimum order N°"
@@ -1823,7 +1815,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshel,instrument,process,detectionOrder)      "Detect ordres"
    set caption(eshel,instrument,process,wideOrder)           "Binning width area (pixel)"
    set caption(eshel,instrument,process,stepOrder)           "Order step (pixel)"
-   set caption(eshel,instrument,process,wideSky)             "Background width (pixel)"
    set caption(eshel,instrument,process,threshold)           "Detection threshold (ADU)"
    set caption(eshel,instrument,process,boxWide)             "Detection area (pixel)"
    set caption(eshel,instrument,process,minOrder)            "Minimum order N°"
