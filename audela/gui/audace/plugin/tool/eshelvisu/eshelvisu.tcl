@@ -2,7 +2,7 @@
 # Fichier : eshelvisu.tcl
 # Description : Visionneuse d'images eShel
 # Auteurs : Michel Pujol
-# Mise a jour $Id: eshelvisu.tcl,v 1.11 2010-10-10 20:05:42 michelpujol Exp $
+# Mise a jour $Id: eshelvisu.tcl,v 1.12 2010-11-28 18:53:15 michelpujol Exp $
 #
 
 namespace eval ::eshelvisu {
@@ -240,6 +240,8 @@ proc ::eshelvisu::startTool { visuNo } {
    ::confVisu::addFileNameListener $visuNo "::eshelvisu::onLoadFile $visuNo"
    #--- je lance la surveillance de la selection de HDU
    ::confVisu::addHduListener $visuNo "::eshelvisu::onSelectHdu $visuNo"
+   #--- je lance la surveillance de la selection de HDU
+   ::confVisu::addZoomListener $visuNo "::eshelvisu::onSelectHdu $visuNo"
 
    #--- je recupere les informations du fichier courant
    onLoadFile $visuNo
@@ -257,13 +259,17 @@ proc ::eshelvisu::stopTool { visuNo } {
    variable private
 
    set hCanvas [confVisu::getCanvas $visuNo]
+
+   #--- j'efface les noms des ordres et les marques des raies
+   $hCanvas delete orderLabel calibrationLine cballoon
+   #--- je supprime les binds
    $hCanvas bind balloonline  <Enter> ""
    $hCanvas bind balloonline  <Leave> ""
-   $hCanvas delete cballoon
 
    #--- je supprime la surveillance le chargement des fichiers
    ::confVisu::removeFileNameListener $visuNo "::eshelvisu::onLoadFile $visuNo"
    ::confVisu::removeHduListener $visuNo "::eshelvisu::onSelectHdu $visuNo"
+   ::confVisu::removeZoomListener $visuNo "::eshelvisu::onSelectHdu $visuNo"
 
    #--- je supprime les check box dans la toobar
    set tkToolBar [::confVisu::getToolBar $visuNo]
@@ -317,11 +323,6 @@ proc ::eshelvisu::onLoadFile { visuNo args } {
    variable private
 
    set private($visuNo,fileName) [::confVisu::getFileName $visuNo]
-   if { $private($visuNo,fileName) == "" } {
-      #--- j'interromp le traitement s'il n'y a pas de fichier dans la visu
-      return
-   }
-   set hduNo [::confVisu::getHduNo $visuNo]
    set hduList [::confVisu::getHduList $visuNo]
 
    #--- je recupere le numero de HDU des ORDRES et LINEGAP
@@ -350,23 +351,11 @@ proc ::eshelvisu::onLoadFile { visuNo args } {
 proc ::eshelvisu::onSelectHdu { visuNo args } {
    variable private
 
-   set private($visuNo,fileName) [::confVisu::getFileName $visuNo]
-   if { $private($visuNo,fileName) == "" } {
-      #--- j'interromp le traitement s'il n'y a pas de fichier dans la visu
-      return
-   }
-   set hduNo [::confVisu::getHduNo $visuNo]
-   set hduList [::confVisu::getHduList $visuNo]
-
-   if { [llength $hduList] > 0 } {
-      set private($visuNo,hduName) [lindex [ lindex $hduList [expr $hduNo -1] 0 ]]
-   } else {
-      set private($visuNo,hduName) ""
-   }
-
+   #--- je recupere le nom du HDU courant
+   set private($visuNo,hduName) [::confVisu::getHduName $visuNo]
+   #--- j'affiche les marques (les marques dependent du nom du HDU
    showOrderLabel $visuNo
    showCalibrationLine $visuNo
-
 }
 
 #------------------------------------------------------------
@@ -460,7 +449,7 @@ proc ::eshelvisu::showOrderLabel { visuNo } {
    set hCanvas [confVisu::getCanvas $visuNo]
    $hCanvas delete orderLabel
 
-   if { $private($visuNo,showOrderLabel) == 0 ||  ($private($visuNo,hduName) != "PRIMARY" && $private($visuNo,hduName) != "IMAGE") } {
+   if { $private($visuNo,showOrderLabel) == 0 ||  ( $private($visuNo,hduName) != "PRIMARY" && $private($visuNo,hduName) != "IMAGE") } {
       return
    }
 
@@ -627,10 +616,15 @@ proc ::eshelvisu::showCalibrationLine { visuNo } {
                set x [expr $x - $min_x]
                #--- je calcule l'ordonnee y
                set y 0
-               for { set k 0 } { $k<= 4 } { incr k } {
-                  set a [lindex [lindex [$hFile get table "P$k" $n ] 0] 0]
-                  ###::console::disp " P$k=$a "
-                  set y [expr $y + $a *pow($x+$min_x-1.0 , $k)]
+               for { set k 0 } { $k<= 5 } { incr k } {
+                  #--- je calcule le polynome d'ordre 5 (ou d'ordre 4 pour l'ancienne version
+                  set coeffNotFound [catch {
+                     set a [lindex [lindex [$hFile get table "P$k" $n ] 0] 0]
+                     set y [expr $y + $a *pow($x+$min_x-1.0 , $k)]
+                  }]
+                  if { $coeffNotFound != 0 } {
+                     break
+                  }
                }
                set x [ expr int($x+0.5) + $min_x ]
                set y [ expr int($y+0.5) +1]
