@@ -2,7 +2,7 @@
 # Fichier : testaudela.tcl
 # Description : Outil de test automatique pour AudeLA
 # Auteurs : Michel Pujol
-# Mise à jour $Id: testaudela.tcl,v 1.16 2010-10-24 14:51:29 michelpujol Exp $
+# Mise à jour $Id: testaudela.tcl,v 1.17 2010-11-28 17:39:47 michelpujol Exp $
 #
 
 #####################
@@ -683,6 +683,8 @@ proc ::testaudela::onRunTests { } {
    #--- j'enregistre les parametres
    saveTestList
    saveConstraintList
+   #--- je sauvegarde la configuration d'audace
+   array set saveConf [array get ::conf]
    #--- je change le bouton "Executer en "Arreter"
    ###$private(frm).campaign.run configure -text $::caption(testaudela,stop)  -command "::testaudela::onStopTests"
    $private(frm).campaign.run configure -state disabled
@@ -693,6 +695,10 @@ proc ::testaudela::onRunTests { } {
    ::testaudela::showResult
    #--- je lance les tests
    ::testaudela::runTests $fileList
+   #--- je restaure la configuration d'audace
+   array unset ::conf
+   array set ::conf [array get saveConf]
+   array unset saveConf
    #--- je change le bouton "Arreter" en "Executer
    ###$private(frm).campaign.run configure -text $::caption(testaudela,run)  -command "::testaudela::onRunTests"
    $private(frm).campaign.run configure -state normal
@@ -794,7 +800,7 @@ proc ::testaudela::runTests { { fileList "all" } } {
       #--- je ferme le fichier resultat
       ::tcltest::outputChannel stdout
    } else {
-      #--- je restore la commande puts originale
+      #--- je restaure la commande puts originale
       ::testaudela::restorePuts
       #--- je ferme le fichier resultat
       if { $private(hfile) != "" } {
