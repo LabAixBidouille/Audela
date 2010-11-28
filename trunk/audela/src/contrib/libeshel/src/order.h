@@ -17,7 +17,6 @@ typedef struct
    double poly_order[POLY_ORDER_DEGREE+1];   // 
    double rms_order;
    int wide_y;
-   int wide_sky;
    int wide_x;             // largeur d'incertitude pour recherche raies néon
    double slant;
    double a0;              //
