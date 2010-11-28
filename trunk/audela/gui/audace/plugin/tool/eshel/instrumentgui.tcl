@@ -2,7 +2,7 @@
 # Fichier : process.tcl
 # Description : fenertre de configuration instrument eShel
 # Auteur : Michel PUJOL
-# Mise à jour $Id: instrumentgui.tcl,v 1.8 2010-11-27 17:04:56 michelpujol Exp $
+# Mise à jour $Id: instrumentgui.tcl,v 1.9 2010-11-28 17:35:20 michelpujol Exp $
 #
 
 ################################################################
@@ -666,11 +666,6 @@ proc ::eshel::instrumentgui::fillProcessPage { frm visuNo } {
          -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 100 ::eshel::instrumentgui::widget(error,stepOrder) } \
          -textvariable ::eshel::instrumentgui::private(stepOrder)
       pack $frm.detection.stepOrder -in [$frm.detection getframe] -side top  -anchor w -fill none -expand 1
-      LabelEntry $frm.detection.wideSky  -label $::caption(eshel,instrument,process,wideSky)\
-         -labeljustify left -labelwidth 20 -width 10 -justify right \
-         -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 100 ::eshel::instrumentgui::widget(error,wideSky) } \
-         -textvariable ::eshel::instrumentgui::private(wideSky)
-      pack $frm.detection.wideSky -in [$frm.detection getframe] -side top  -anchor w -fill none -expand 1
       LabelEntry $frm.detection.threshold  -label $::caption(eshel,instrument,process,threshold)\
          -labeljustify left -labelwidth 20 -width 10 -justify right \
          -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 0 65535 ::eshel::instrumentgui::widget(error,threshold) } \
@@ -893,7 +888,6 @@ proc ::eshel::instrumentgui::setConfig { visuNo configId } {
    set private(refLambda)  $::conf(eshel,instrument,config,$configId,refLambda)
    set private(wideOrder)  $::conf(eshel,instrument,config,$configId,wideOrder)
    set private(stepOrder)  $::conf(eshel,instrument,config,$configId,stepOrder)
-   set private(wideSky)    $::conf(eshel,instrument,config,$configId,wideSky)
    set private(threshold)  $::conf(eshel,instrument,config,$configId,threshold)
    set private(boxWide)    $::conf(eshel,instrument,config,$configId,boxWide)
    set private(minOrder)   $::conf(eshel,instrument,config,$configId,minOrder)
@@ -976,7 +970,6 @@ proc ::eshel::instrumentgui::apply { visuNo } {
          refLambda -
          wideOrder -
          stepOrder -
-         widesky -
          threshold -
          boxWide -
          minOrder -
@@ -1035,7 +1028,6 @@ proc ::eshel::instrumentgui::apply { visuNo } {
    set ::conf(eshel,instrument,config,$configId,refLambda)     $private(refLambda)
    set ::conf(eshel,instrument,config,$configId,wideOrder)     $private(wideOrder)
    set ::conf(eshel,instrument,config,$configId,stepOrder)     $private(stepOrder)
-   set ::conf(eshel,instrument,config,$configId,wideSky)       $private(wideSky)
    set ::conf(eshel,instrument,config,$configId,threshold)     $private(threshold)
    set ::conf(eshel,instrument,config,$configId,boxWide)       $private(boxWide)
    set ::conf(eshel,instrument,config,$configId,minOrder)      $private(minOrder)
@@ -1345,9 +1337,9 @@ proc ::eshel::instrumentgui::importConfig { visuNo } {
    if { $fileName != "" } {
       set catchResult [ catch {
          #--- je lis le fichier
-         array set params [::eshel::instrument::readConfigFile $fileName ]
+         array set paramsArray [::eshel::instrument::readConfigFile $fileName ]
          #--- je verifie que la configuration n'existe pas deja
-         set configName $params(configName)
+         set configName $paramsArray(configName)
          set configId [::eshel::instrument::getConfigIdentifiant $configName]
          if { [info exists ::conf(eshel,instrument,config,$configId,configName)]==1 } {
             #--- je demande si on veut ecraser la configuration existante
@@ -1363,7 +1355,7 @@ proc ::eshel::instrumentgui::importConfig { visuNo } {
             #--- je supprime les anciens parametres
             array unset conf eshel,instrument,config,$configId,*
             #--- je copie les parametres de la configuration dans la variable ::conf
-            foreach { paramName paramValue } [array get params] {
+            foreach { paramName paramValue } [array get paramsArray] {
                set ::conf(eshel,instrument,config,$configId,$paramName) $paramValue
             }
 
@@ -1412,9 +1404,9 @@ proc ::eshel::instrumentgui::importCalibrationConfig { visuNo } {
    if { $fileName != "" } {
       set catchResult [ catch {
          #--- je lis le fichier
-         array set params [::eshel::instrument::importCalibrationConfig $fileName ]
+         array set paramsArray [::eshel::instrument::importCalibrationConfig $fileName ]
          #--- je verifie que la configuration n'existe pas deja
-         set configName $params(configName)
+         set configName $paramsArray(configName)
          set configId [::eshel::instrument::getConfigIdentifiant $configName]
          if { [info exists ::conf(eshel,instrument,config,$configId,configName)]==1 } {
             #--- je demande si on veut ecraser la configuration existante
@@ -1430,7 +1422,7 @@ proc ::eshel::instrumentgui::importCalibrationConfig { visuNo } {
             #--- je supprime les anciens parametres de ::conf
             array unset conf eshel,instrument,config,$configId,*
              #--- je copie les parametres de la configuration dans la variable ::conf
-            foreach { paramName paramValue } [array get params] {
+            foreach { paramName paramValue } [array get paramsArray] {
                set ::conf(eshel,instrument,config,$configId,$paramName) $paramValue
             }
 
