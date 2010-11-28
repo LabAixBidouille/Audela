@@ -68,8 +68,8 @@ int cmdEshelInit(ClientData clientData, Tcl_Interp *interp,int argc, char *argv[
 int cmdEshelProcessFlat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    char s[1024];
    int result;
-   char *usage = "Usage: eshel_flat ledFileName tungstenFileName flatFileName Out alpha beta gamma focale m pixel width height wide_x wide_y step_y wide_sky seuil_ordre min_order max_order neon_ref_x ordre_ref_y ordre_ref lambda_ref {def_ordres} {line_list} {distorsion_polynom}";
-   if(argc!=26) {
+   char *usage = "Usage: eshel_flat ledFileName tungstenFileName flatFileName Out alpha beta gamma focale m pixel width height wide_x wide_y step_y seuil_ordre min_order max_order neon_ref_x ordre_ref_y ordre_ref lambda_ref {def_ordres} {line_list} {distorsion_polynom}";
+   if(argc!=25) {
       Tcl_SetResult(interp,usage,TCL_VOLATILE);
       return TCL_ERROR;
    } else {
@@ -77,7 +77,7 @@ int cmdEshelProcessFlat(ClientData clientData, Tcl_Interp *interp, int argc, cha
       char * tungstenFileName;
       char * flatFileName;
       INFOSPECTRO spectro;
-      int wide_x, wide_y, step_y, wide_sky, seuil_ordre;
+      int wide_x, wide_y, step_y, seuil_ordre;
       int neon_ref_x, ordre_ref_y, ordre_ref;
       double lambda_ref;
       ORDRE * ordre;
@@ -153,11 +153,6 @@ int cmdEshelProcessFlat(ClientData clientData, Tcl_Interp *interp, int argc, cha
       }
       if(Tcl_GetInt(interp,argv[++paramNo],&step_y)!=TCL_OK) {
          sprintf(s,"%s\n Invalid step_y=%s", usage, argv[paramNo]);
-         Tcl_SetResult(interp,s,TCL_VOLATILE);
-         return TCL_ERROR;
-      }
-      if(Tcl_GetInt(interp,argv[++paramNo],&wide_sky)!=TCL_OK) {
-         sprintf(s,"%s\n Invalid wide_sky=%s", usage, argv[paramNo]);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_ERROR;
       }
@@ -301,7 +296,6 @@ int cmdEshelProcessFlat(ClientData clientData, Tcl_Interp *interp, int argc, cha
       // la largeur de la zone de binning et de calcul du ciel est la même pour tous les ordres (simplification)
       for (int i=0;i<MAX_ORDRE;i++) {
          ordre[i].wide_y=wide_y;
-         ordre[i].wide_sky=wide_sky;
          ordre[i].wide_x=wide_x;      // largeur de la boite de recherche des raies du néon en pixels (en dur - param sensible)
       }
 
@@ -447,7 +441,7 @@ int cmdEshelProcessObject(ClientData clientData, Tcl_Interp *interp, int argc, c
       char * fullFileName = NULL;
       int  useFlat = 1;
       int  recordObjectImage = 1; 
-      ::std::valarray<CROP_LAMBDA> cropLambda;
+      ::std::valarray<CROP_LAMBDA> cropLambda(0);
 
       objectFileNameIn = argv[1];
       objectFileNameOut = argv[2];
@@ -501,43 +495,47 @@ int cmdEshelProcessObject(ClientData clientData, Tcl_Interp *interp, int argc, c
                return TCL_ERROR;
             } else {
                result = TCL_OK;
-               // On alloue la place pour tous les ordres
-               cropLambda.resize(MAX_ORDRE);
-               for (int i=0 ; i< cropArgc && result!= TCL_ERROR; i++) {
-                  int paramArgc;
-                  char **paramArgv;
-                  if(Tcl_SplitList(interp,cropArgv[i],&paramArgc,(const char***) &paramArgv)!=TCL_OK) {
-                     sprintf(s,"%s\n Invalid crop lambda %d value=%s", usage, i, cropArgv[i]);
-                     Tcl_SetResult(interp,s,TCL_VOLATILE);
-                     result = TCL_ERROR;            
-                  } else if (paramArgc != 3 ){
-                     sprintf(s,"%s\n Invalid crop lambda %d value=%s .\nMust contain {orderNum minLmanda maxLmabda}", usage, i, cropArgv[i]);
-                     Tcl_SetResult(interp,s,TCL_VOLATILE);
-                     result = TCL_ERROR;            
-                  } else {
-                     int n;
-                     if(Tcl_GetInt(interp,paramArgv[0],&n)!=TCL_OK) {
-                        sprintf(s,"%s\n Invalid crop lambda %d num_order=%s is not an integer", usage, i, paramArgv[0]);
+               
+               if ( cropArgc > 0 ) {
+                  // j'alloue la place pour tous les ordres
+                  cropLambda.resize(MAX_ORDRE);
+                  // je copie les bornes de detrourage dans la table 
+                  for (int i=0 ; i< cropArgc && result!= TCL_ERROR; i++) {
+                     int paramArgc;
+                     char **paramArgv;
+                     if(Tcl_SplitList(interp,cropArgv[i],&paramArgc,(const char***) &paramArgv)!=TCL_OK) {
+                        sprintf(s,"%s\n Invalid crop lambda %d value=%s", usage, i, cropArgv[i]);
                         Tcl_SetResult(interp,s,TCL_VOLATILE);
-                        result = TCL_ERROR;
-                     }
-                     if(Tcl_GetDouble(interp,paramArgv[1],&cropLambda[n].minLambda)!=TCL_OK) {
-                        sprintf(s,"%s\n Invalid crop lambda %d min lambda=%s is not a float", usage, i, paramArgv[1]);
+                        result = TCL_ERROR;            
+                     } else if (paramArgc != 3 ){
+                        sprintf(s,"%s\n Invalid crop lambda %d value=%s .\nMust contain {orderNum minLmanda maxLmabda}", usage, i, cropArgv[i]);
                         Tcl_SetResult(interp,s,TCL_VOLATILE);
-                        result = TCL_ERROR;
+                        result = TCL_ERROR;            
+                     } else {
+                        int n;
+                        if(Tcl_GetInt(interp,paramArgv[0],&n)!=TCL_OK) {
+                           sprintf(s,"%s\n Invalid crop lambda %d num_order=%s is not an integer", usage, i, paramArgv[0]);
+                           Tcl_SetResult(interp,s,TCL_VOLATILE);
+                           result = TCL_ERROR;
+                        }
+                        if(Tcl_GetDouble(interp,paramArgv[1],&cropLambda[n].minLambda)!=TCL_OK) {
+                           sprintf(s,"%s\n Invalid crop lambda %d min lambda=%s is not a float", usage, i, paramArgv[1]);
+                           Tcl_SetResult(interp,s,TCL_VOLATILE);
+                           result = TCL_ERROR;
+                        }
+                        if(Tcl_GetDouble(interp,paramArgv[2],&cropLambda[n].maxLambda)!=TCL_OK) {
+                           sprintf(s,"%s\n Invalid crop lambda %d max lambda=%s is not a float", usage, i, paramArgv[2]);
+                           Tcl_SetResult(interp,s,TCL_VOLATILE);
+                           result = TCL_ERROR;
+                        }
+                        Tcl_Free((char*)paramArgv);
                      }
-                     if(Tcl_GetDouble(interp,paramArgv[2],&cropLambda[n].maxLambda)!=TCL_OK) {
-                        sprintf(s,"%s\n Invalid crop lambda %d max lambda=%s is not a float", usage, i, paramArgv[2]);
-                        Tcl_SetResult(interp,s,TCL_VOLATILE);
-                        result = TCL_ERROR;
-                     }
-                     Tcl_Free((char*)paramArgv);
-                  }
-                  if ( result == TCL_ERROR) {
-                     return TCL_ERROR;
                   }
                } 
                Tcl_Free((char*)cropArgv);
+               if ( result == TCL_ERROR) {
+                  return TCL_ERROR;
+               }
             }
          }
       }
