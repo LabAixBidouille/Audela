@@ -5,7 +5,7 @@
 #
 # @brief Routines de gestion des affichages de Calaphot
 #
-# $Id: calaphot_graph.tcl,v 1.16 2010-11-25 05:29:41 jacquesmichelet Exp $
+# $Id: calaphot_graph.tcl,v 1.17 2010-11-28 07:21:23 jacquesmichelet Exp $
 
 namespace eval ::CalaPhot {
 
@@ -900,7 +900,7 @@ namespace eval ::CalaPhot {
     #**************************************************************************#
     #*************  PreAffiche  ***********************************************#
     #**************************************************************************#
-    # Crée ce qu'il faut pour la courbe de lumiere temporaire                  #
+    # Crée ce qu'il faut pour la courbe de lumière temporaire                  #
     #**************************************************************************#
     proc PreAffiche {i} {
         global audace
@@ -921,8 +921,8 @@ namespace eval ::CalaPhot {
                 }
 
                 set $TempVectors(temp.$var.x)(++end) $data_image($i,date)
-                catch {::blt::vector destroy vmax}
-                catch {::blt::vector destroy vmin}
+                catch { ::blt::vector destroy vmax }
+                catch { ::blt::vector destroy vmin }
                 ::blt::vector create vmax
                 ::blt::vector create vmin
 
@@ -1049,14 +1049,14 @@ namespace eval ::CalaPhot {
             bruit_lecture \
             sortie } {
             set valeur_defaut($champ) $::CalaPhot::parametres($champ)
-            label $t.trame1.l$champ \
+            label $t.trame1.l_$champ \
                 -text $calaphot(texte,$champ)
-            entry $t.trame1.e$champ \
+            entry $t.trame1.e_$champ \
                 -textvariable ::CalaPhot::parametres($champ) \
                 -relief sunken
-            $t.trame1.e$champ delete 0 end
-            $t.trame1.e$champ insert 0 $valeur_defaut($champ)
-            grid $t.trame1.l$champ $t.trame1.e$champ
+            $t.trame1.e_$champ delete 0 end
+            $t.trame1.e_$champ insert 0 $valeur_defaut($champ)
+            grid $t.trame1.l_$champ $t.trame1.e_$champ
         }
         #--------------------------------------------------------------------------------
         # Trame du cliquodrome
@@ -1461,7 +1461,7 @@ namespace eval ::CalaPhot {
         variable parametres
         variable data_script
 
-        Message debug "%s\n" [info level [info level]]
+        Message debug "%s\n" [ info level [ info level ] ]
 
         # Recherche si tous les champs critiques sont remplis.
         set pas_glop 0
@@ -1480,6 +1480,11 @@ namespace eval ::CalaPhot {
         if { ( $parametres(defocalisation) == "oui" ) && ( $parametres(mode) != "ouverture" ) } {
             tk_messageBox -message $calaphot(texte,implication_defoc) -icon error -title $calaphot(texte,probleme)
             set pas_glop 1
+        }
+
+        # S'il y a eu un changement, on force la saisie des astres
+        if { [ DetectionChangementParamCritiques ] } {
+            set parametres(reprise_astres) non
         }
 
         # MultAster : remplacer cette ligne par qque chose dans SaisieParametres

@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot_principal.tcl,v 1.20 2010-11-27 15:55:12 jacquesmichelet Exp $
+# $Id: calaphot_principal.tcl,v 1.21 2010-11-28 07:21:33 jacquesmichelet Exp $
 #
 
 ###catch {namespace delete ::Calaphot}
@@ -1003,12 +1003,36 @@ namespace eval ::CalaPhot {
     }
 
     ##
-    # @brief Conversion de degres sexagesimaux en degres decimaux
-    # @param[in] dms : valeur en degres sexagesimaux a convertir
-    # @return valeur en degres decimaux
-    proc DmsDd {dms} {
+    # @brief Permet de détecter si des paramètres critiques ont changé
+    # return changement
+    proc DetectionChangementParamCritiques { } {
+        variable parametres
 
-        Message debug "%s\n" [info level [info level]]
+        Message debug "%s\n" [ info level [ info level ] ]
+
+        set changement 0
+        foreach champ [ list \
+            source \
+            indice_premier \
+            tri_images \
+            type_images \
+            pose_minute \
+            date_images \
+        ] {
+            if { $parametres(origine,$champ) != $parametres($champ) } {
+                set changement 1
+            }
+        }
+        return $changement
+    }
+
+    ##
+    # @brief Conversion de degrés sexagésimaux en degrés décimaux
+    # @param[in] dms : valeur en degrés sexagésimaux à convertir
+    # @return valeur en degrés décimaux
+    proc DmsDd { dms } {
+
+        Message debug "%s\n" [ info level [ info level ] ]
 
         set d [ expr double( [ lindex $dms 0 ] ) ]
         set m [ expr double( [ lindex $dms 1 ] ) ]
@@ -1379,17 +1403,7 @@ namespace eval ::CalaPhot {
         catch { unset liste_decalage }
 
         # On détecte des changements dans certains paramètres saisis.
-        set changement 0
-        foreach champ [ list \
-            source \
-            indice_premier \
-            tri_images \
-            type_images \
-            pose_minute \
-            date_images \
-        ] {
-            if { $parametres(origine,$champ) != $parametres($champ) } { set changement 1 }
-        }
+        set changement [ DetectionChangementParamCritiques ]
 
         # S'il y a eu un changement, on efface le fichier .lst
         if { $changement } {
