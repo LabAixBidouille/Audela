@@ -2,7 +2,7 @@
 # Fichier : instrument.tcl
 # Description : commande des instruments de l'outil eShel
 # Auteur : Michel PUJOL
-# Mise à jour $Id: instrument.tcl,v 1.4 2010-11-27 17:05:10 michelpujol Exp $
+# Mise à jour $Id: instrument.tcl,v 1.5 2010-11-28 17:34:34 michelpujol Exp $
 #
 
 namespace eval ::eshel::instrument {
@@ -138,7 +138,6 @@ proc ::eshel::instrument::setCurrentConfig { configId } {
 #  neonEnabled
 #  neonNb
 #  lineList
-#  wideSky
 #  flatNb
 #  spectrograhLink
 #  tharBit
@@ -227,27 +226,6 @@ proc ::eshel::instrument::readConfigFile { fileName } {
       set contents [read $hfile]
       close $hfile
       set hfile ""
-      #--- j'analyse le fichier
-      set configDom [::dom::tcl::parse $contents]
-      set configNode [::dom::tcl::document cget $configDom -documentElement]
-      set paramNode [lindex [set [::dom::element getElementsByTagName $configNode "PARAMS" ]] 0]
-
-      #--- je lis les parametres, et je les completes avec les valeurs par defaut s'il manquent
-      foreach { defautParamName defautlParamValue } [array get ::conf eshel,instrument,config,default,*] {
-         #--- je recupere le nom du parametre
-         set paramName [lindex [split $defautParamName "," ] 4]
-         #--- je recupere le noeud du parametre
-         set attributeNode [::dom::element getAttribute $paramNode $paramName]
-         #--- je verifie que le noeud du parametre existe
-         if { $attributeNode != "" } {
-            #--- je recupere la valeur du parametre
-            set paramValue [::dom::element getAttribute $paramNode $paramName]
-            lappend paramList $paramName $paramValue
-         } else {
-            #--- j'utilise la valeur de la configuration par defaut
-            lappend paramList $paramName $defautlParamValue
-         }
-      }
    }]
 
    if { $catchResult ==1 } {
@@ -255,6 +233,27 @@ proc ::eshel::instrument::readConfigFile { fileName } {
          close $hFile
       }
       error $::errorInfo
+   }
+
+   #--- je parse le contenu du fichier
+   set configDom [::dom::tcl::parse $contents]
+   set configNode [::dom::tcl::document cget $configDom -documentElement]
+   #--- je recupere la liste des parametres
+   set paramNode [lindex [set [::dom::element getElementsByTagName $configNode "PARAMS" ]] 0]
+   array set attributArray [array get [ dom::node cget $paramNode -attributes]]
+   #--- je copie seulement les parametres dont l'equivalent existe dans la configuration par defaut (en cas d'evolution de eShel)
+   #--- si un parametre n'existe pas dans la nouvelle configuration, je le remplace par la valeur de configuraiton par defaut
+   foreach { defautParamName defautlParamValue } [array get ::conf eshel,instrument,config,default,*] {
+      #--- je recupere le nom du parametre
+      set paramName [lindex [split $defautParamName "," ] 4]
+      #--- je verifie que le parametre existe dans la nouvelle configuration
+      if { [info exists attributArray($paramName)] == 1 } {
+         #--- j'utilise la valeur du parametre de la configuration
+         lappend paramList $paramName $attributArray($paramName)
+      } else {
+         #--- j'utilise la valeur du parametre de la configuration par defaut
+         lappend paramList $paramName $defautlParamValue
+      }
    }
 
    return $paramList
@@ -351,7 +350,6 @@ proc ::eshel::instrument::importCalibrationConfig { fileName } {
       set param(stepOrder) [getKeyword $hFile Y_STEP]
       set param(boxWide)   [lindex [lindex [$hFile get table wide_x 1] 0] 0]
       set param(wideOrder) [lindex [lindex [$hFile get table wide_y 1] 0] 0]
-      set param(wideSky)   [lindex [lindex [$hFile get table wide_sky 1] 0] 0]
       set param(orderDefinition) [$hFile get table [list order min_x max_x slant] ]
 
       set found 0
@@ -468,7 +466,6 @@ proc ::eshel::instrument::exportConfig { fileName } {
       ::dom::element setAttribute $configNode "CONFIG_NAME"   $::conf(eshel,instrument,config,$configId,configName)
       set paramNode [::dom::document createElement $configNode "PARAMS" ]
 
-      ###console::disp "[array get ::conf eshel,instrument,config,$configId,*]\n"
       foreach { paramName paramValue } [array get ::conf eshel,instrument,config,$configId,*] {
          #--- je recupere le nom du parametre
          set paramName [lindex [split $paramName "," ] 4]
