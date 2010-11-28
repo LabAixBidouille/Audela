@@ -2,7 +2,7 @@
 # Fichier : process.tcl
 # Description : traitements eShel
 # Auteur : Michel PUJOL
-# Mise à jour $Id: process.tcl,v 1.8 2010-11-27 17:02:34 michelpujol Exp $
+# Mise à jour $Id: process.tcl,v 1.9 2010-11-28 17:37:12 michelpujol Exp $
 #
 
 ################################################################
@@ -453,7 +453,7 @@ proc ::eshel::process::generateProcess { } {
       ::dom::element setAttribute $processNode "STATUS" $status
       ::dom::element setAttribute $processNode "COMMENT" $errorMessage
       #--- je trace dans la console
-      logGenerateProcess  $status "BIAS-PROCESS" $fileName $errorMessage
+      ###logGenerateProcess "BIAS-PROCESS" $fileName $status $errorMessage
    }
 
    #--- Pretraitement IMAGETYP=DARK
@@ -476,7 +476,7 @@ proc ::eshel::process::generateProcess { } {
       ::dom::element setAttribute $processNode "STATUS" $status
       ::dom::element setAttribute $processNode "COMMENT" $errorMessage
       #--- je trace dans la console
-      logGenerateProcess  $status "DARK-PROCESS" $fileName $errorMessage
+      ###logGenerateProcess  "DARK-PROCESS" $fileName $status $errorMessage
    }
 
 
@@ -522,7 +522,7 @@ proc ::eshel::process::generateProcess { } {
       ::dom::element setAttribute $processNode "STATUS" $status
       ::dom::element setAttribute $processNode "COMMENT" $errorMessage
       #--- je trace dans la console
-      logGenerateProcess  $status "FLAT-PROCESS" $fileName $errorMessage
+      ###logGenerateProcess  "FLAT-PROCESS" $fileName $status $errorMessage
    }
 
    #--- Pretraitement IMAGETYP=LED (ou IMAGETYP=FLAT pour compatibilite ascendante)
@@ -570,7 +570,7 @@ proc ::eshel::process::generateProcess { } {
       ::dom::element setAttribute $ledProcessNode "STATUS" $status
       ::dom::element setAttribute $ledProcessNode "COMMENT" $errorMessage
       #--- je trace dans la console
-      logGenerateProcess  $status "LED-PROCESS" $ledFileName $errorMessage
+      ###logGenerateProcess  "LED-PROCESS" $ledFileName $status $errorMessage
 
       #--- je cree le traitement FLAT-PROCESS
       set flatProcessNode [::dom::document createElement $roadmapNode "FLAT-PROCESS" ]
@@ -616,7 +616,7 @@ proc ::eshel::process::generateProcess { } {
       ::dom::element setAttribute $flatProcessNode "COMMENT" $errorMessage
 
       #--- je trace dans la console
-      logGenerateProcess  $status "FLAT-PROCESS" $flatFileName $errorMessage
+      ###logGenerateProcess  "FLAT-PROCESS" $flatFileName $status $errorMessage
    }
 
    #--- Pretraitement IMAGETYP=TUNGSTEN
@@ -662,7 +662,7 @@ proc ::eshel::process::generateProcess { } {
       ::dom::element setAttribute $tungstenProcessNode "STATUS" $status
       ::dom::element setAttribute $tungstenProcessNode "COMMENT" $errorMessage
       #--- je trace dans la console
-      logGenerateProcess  $status "TUNGSTEN-PROCESS" $fileName $errorMessage
+      ###logGenerateProcess  "TUNGSTEN-PROCESS" $fileName $status $errorMessage
 
       #--- je recherche si ce TUNGSTEN est deja utilise dans un FLAT-PROCESS
       set processList [set [::dom::element getElementsByTagName $roadmapNode FLAT-PROCESS ]]
@@ -715,7 +715,7 @@ proc ::eshel::process::generateProcess { } {
          ::dom::element setAttribute $flatProcessNode "STATUS"   $status
          ::dom::element setAttribute $flatProcessNode "COMMENT"  $errorMessage
          #--- je trace dans la console
-         logGenerateProcess $status "FLAT-PROCESS" $flatFileName $errorMessage
+         ###logGenerateProcess "FLAT-PROCESS" $flatFileName $status $errorMessage
       } else {
          #--- je deplace tungstenProcessNode avant flatProcessNode pour q'uil soit fait avant
          ::dom::tcl::node insertBefore $roadmapNode $tungstenProcessNode $flatProcessNode
@@ -773,7 +773,7 @@ proc ::eshel::process::generateProcess { } {
       ::dom::element setAttribute $processNode "STATUS" $status
       ::dom::element setAttribute $processNode "COMMENT" $errorMessage
       #--- je trace dans la console
-      logGenerateProcess  $status "CALIB-PROCESS" $fileName $errorMessage
+      ###logGenerateProcess  "CALIB-PROCESS" $fileName $status $errorMessage
    }
 
    #--- Pretraitement des OBJETS
@@ -868,7 +868,7 @@ proc ::eshel::process::generateProcess { } {
       ::dom::element setAttribute $processNode "STATUS" $status
       ::dom::element setAttribute $processNode "COMMENT" $errorMessage
       #--- je trace dans la console
-      logGenerateProcess  $status "OBJECT-PROCESS" $fileName $errorMessage
+      ###logGenerateProcess  "OBJECT-PROCESS" $fileName $status $errorMessage
    }
 }
 
@@ -904,7 +904,6 @@ proc ::eshel::process::generateScript { } {
    putCommand $hScriptFile "set boxWide   $::conf(eshel,instrument,config,$name,boxWide)     "
    putCommand $hScriptFile "set wideOrder $::conf(eshel,instrument,config,$name,wideOrder)   "
    putCommand $hScriptFile "set stepOrder $::conf(eshel,instrument,config,$name,stepOrder)   "
-   putCommand $hScriptFile "set wideSky   $::conf(eshel,instrument,config,$name,wideSky)     "
    putCommand $hScriptFile "set threshold $::conf(eshel,instrument,config,$name,threshold)   "
    putCommand $hScriptFile "set minOrder  $::conf(eshel,instrument,config,$name,minOrder)    "
    putCommand $hScriptFile "set maxOrder  $::conf(eshel,instrument,config,$name,maxOrder)    "
@@ -920,7 +919,6 @@ proc ::eshel::process::generateScript { } {
    putCommand $hScriptFile "set orderDefinition [list $::conf(eshel,instrument,config,$name,orderDefinition)  ]"
    ##putCommand $hScriptFile {::console::disp [llength $orderDefinition]\n}
    putCommand $hScriptFile "set cropLambda [list $::conf(eshel,instrument,config,$name,cropLambda)  ]"
-
    putCommand $hScriptFile "\n#--- Calibration lines  (lambda in angtrom)"
    putCommand $hScriptFile "set lineList { $::conf(eshel,instrument,config,$name,lineList) }"
 
@@ -949,7 +947,7 @@ proc ::eshel::process::generateScript { } {
             }
 
             #--- j'ajoute le script
-            putCatchBegin $hScriptFile "BIAS-PROCESS" $fileNameOut
+            putCatchBegin $hScriptFile "BIAS-PROCESS" $fileNameOut [::dom::element getAttribute $processNode "COMMENT"]
             ##putLog $hScriptFile "PROCESS BIAS $fileNameOut"
             putImaStack $hScriptFile  $::conf(eshel,rawDirectory) $biasNames $::conf(eshel,referenceDirectory) $fileNameOut "MED"
             putMoveFiles $hScriptFile $::conf(eshel,rawDirectory) $::conf(eshel,archiveDirectory) $biasNames
@@ -968,7 +966,7 @@ proc ::eshel::process::generateScript { } {
             }
 
             #--- j'ajoute le script
-            putCatchBegin $hScriptFile "DARK-PROCESS" $fileNameOut
+            putCatchBegin $hScriptFile "DARK-PROCESS" $fileNameOut [::dom::element getAttribute $processNode "COMMENT"]
             ##putLog $hScriptFile "PROCESS DARK $fileNameOut"
             putImaStack  $hScriptFile $::conf(eshel,rawDirectory) $darkNames $::conf(eshel,referenceDirectory) $fileNameOut  "MED"
             putMoveFiles $hScriptFile $::conf(eshel,rawDirectory) $::conf(eshel,archiveDirectory) $darkNames
@@ -987,7 +985,7 @@ proc ::eshel::process::generateScript { } {
             }
 
             #--- j'ajoute le script
-            putCatchBegin $hScriptFile "FLATFIELD-PROCESS" $fileNameOut
+            putCatchBegin $hScriptFile "FLATFIELD-PROCESS" $fileNameOut  [::dom::element getAttribute $processNode "COMMENT"]
             putImaStack  $hScriptFile $::conf(eshel,rawDirectory) $flatfieldNames $::conf(eshel,referenceDirectory) $fileNameOut  "MED"
             putImaSeries $hScriptFile $::conf(eshel,referenceDirectory) $fileNameOut $::conf(eshel,referenceDirectory) $fileNameOut  "STAT"
             putCommand   $hScriptFile "      file rename -force \"[file join $::conf(eshel,referenceDirectory) ${fileNameOut}1.fit]\"  \"[file join $::conf(eshel,referenceDirectory) $fileNameOut]\" "
@@ -1027,7 +1025,7 @@ proc ::eshel::process::generateScript { } {
             set processedFlat [::dom::element getAttribute $processNode "FILENAME"]
 
             #--- j'ajoute le script
-            putCatchBegin $hScriptFile $processType $processedFlat
+            putCatchBegin $hScriptFile $processType $processedFlat  [::dom::element getAttribute $processNode "COMMENT"]
             #--- tempFlat(i) = rawFlat(i) - (dark thermique)* (flatExptime/darkExptime) - bias
             putImaSeries $hScriptFile $::conf(eshel,rawDirectory) $flatsNames $::conf(eshel,tempDirectory) "temp-" "SUBDARK \\\"DARK=[file join $::conf(eshel,referenceDirectory) $darkFileName]\\\"  \\\"BIAS=[file join $::conf(eshel,referenceDirectory) $biasFileName]\\\"  EXPTIME=EXPOSURE DEXPTIME=EXPOSURE"
             #--- preprocFlat(i) = mediane( tempFlat(i) )
@@ -1069,7 +1067,7 @@ proc ::eshel::process::generateScript { } {
             set processedFlat [::dom::element getAttribute $processNode "FILENAME"]
 
             #--- j'ajoute le script
-            putCatchBegin $hScriptFile "FLAT-PROCESS" $processedFlat
+            putCatchBegin $hScriptFile "FLAT-PROCESS" $processedFlat [::dom::element getAttribute $processNode "COMMENT"]
             #--- processedFlat = processFlat( preprocLed , preprocTungsten)
             putProcessFlat $hScriptFile [file join $ledDirectory $ledFileName] \
                [file join $tungstenDirectory $tungstenFileName] \
@@ -1113,7 +1111,7 @@ proc ::eshel::process::generateScript { } {
             set processedCalib [::dom::element getAttribute $calibNode "FILENAME"]
 
             #--- j'ajoute le script
-            putCatchBegin $hScriptFile "CALIB-PROCESS" $processedCalib
+            putCatchBegin $hScriptFile "CALIB-PROCESS" $processedCalib [::dom::element getAttribute $processNode "COMMENT"]
             ##putLog $hScriptFile "PROCESS CALIB $processedCalib"
             #--- tempName(i) = rawName(i) - (dark thermique) * (calibExptime/darkExptime) - bias
             putImaSeries $hScriptFile $::conf(eshel,rawDirectory) $rawNames $::conf(eshel,tempDirectory) "temp-" "SUBDARK \\\"dark=[file join $::conf(eshel,referenceDirectory) $darkFileName]\\\"  \\\"bias=[file join $::conf(eshel,referenceDirectory) $biasFileName]\\\" EXPTIME=EXPOSURE DEXPTIME=EXPOSURE"
@@ -1186,7 +1184,7 @@ proc ::eshel::process::generateScript { } {
             }
 
             #--- j'ajoute le script
-            putCatchBegin $hScriptFile "OBJECT-PROCESS" $fileNameOut
+            putCatchBegin $hScriptFile "OBJECT-PROCESS" $fileNameOut [::dom::element getAttribute $processNode "COMMENT"]
             ##putLog $hScriptFile "PROCESS OBJECT $fileNameOut"
             set subDarkOption " \\\"dark=[file join $::conf(eshel,referenceDirectory) $darkFileName]\\\""
             append subDarkOption " \\\"bias=[file join $::conf(eshel,referenceDirectory) $biasFileName]\\\""
@@ -1562,14 +1560,14 @@ proc ::eshel::process::putScriptEnd { hfile  } {
 
 }
 
-proc ::eshel::process::putCatchBegin { hfile processType fileName } {
+proc ::eshel::process::putCatchBegin { hfile processType fileName message} {
    variable private
    set command ""
    append command "#---je prends le temps de recevoir une eventuelle demande d'arret\n"
    append command "update  \n"
    append command "if \{ \$stopScript == 0 \} \{\n"
    append command "   set catchResult \x5B catch \x7B \n"
-   append command "      logStep \"$processType\" \"$fileName\" \"running\" "
+   append command "      logStep \"$processType\" \"$fileName\" \"running\" \"$message\" "
    puts $hfile $command
 }
 
@@ -1625,7 +1623,7 @@ proc ::eshel::process::putProcessFlat { hfile ledIn tungstenIn flatOut } {
    append command "\"$flatOut\" "
    append command {$alpha $beta $gamma $focale $grating $pixelSize }
    append command {$width $height }
-   append command {$boxWide $wideOrder $stepOrder $wideSky $threshold }
+   append command {$boxWide $wideOrder $stepOrder $threshold }
    append command {$minOrder $maxOrder }
    append command {$refX $refY $refNum $refLambda }
    append command {$orderDefinition $lineList $distorsion }
@@ -2532,29 +2530,29 @@ proc ::eshel::process::updateFileKeywords {  } {
 # logGenerateProcess
 #   trace le resultat de la generation de script dans la console et le fichier de log
 #
+# @param processType  CALIB-PROCESS, OBJECT-PROCESS, ...
+# @param fileName     nom du fichier traite
 # @param status  etat du traitement
 #    - todo    : le traitement est a faire
 #    - running : le traitement est en cours
 #    - done    : le traitement est termine correctement.
 #    - error   : le traitemnt avec des erreurs
-# @param processType  CALIB-PROCESS, OBJECT-PROCESS, ...
-# @param fileName     nom du fichier traite
-# @param errorMessage message d'erreur
+# @param infoMessage message d'information
 # @return rien
 # @private
 
 #------------------------------------------------------------
-proc ::eshel::process::logGenerateProcess { status processType fileName errorMessage  } {
+proc ::eshel::process::logGenerateProcess { processType fileName status infoMessage  } {
    variable private
 
-   if { $status == "todo" } {
+   if { $status != "error" } {
       logInfo "$::caption(eshel,process,preparation) $processType : $fileName "
-      foreach errorItem $errorMessage {
+      foreach errorItem $infoMessage {
          logInfo "        $errorItem"
       }
    } else {
       logError "Error $processType process $fileName"
-      foreach errorItem $errorMessage {
+      foreach errorItem $infoMessage {
          logError "        $errorItem"
       }
    }
@@ -2595,7 +2593,17 @@ proc ::eshel::process::logStep { processType fileName status { message  "" }} {
    switch $status {
       "running" {
          #--- j'affiche une trace dans la console et le fichier de log
-         logInfo "$::caption(eshel,process,processing) $processType : $fileName"
+         if { $status != "error" } {
+            logInfo "$::caption(eshel,process,processing) $processType : $fileName"
+            foreach errorItem $message {
+               logInfo "        $errorItem"
+            }
+         } else {
+            logError "Error $processType : $fileName"
+            foreach errorItem $message {
+               logError "        $errorItem"
+            }
+         }
       }
       "done" {
          if { $processType == "CALIB-PROCESS" } {
