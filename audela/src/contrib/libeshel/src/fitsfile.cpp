@@ -217,154 +217,166 @@ void Fits_setImage(FITS *pFits, INFOIMAGE *pinfoImage)  {
 // ---------------------------------------------------------------------------
 void Fits_setOrders (FITS *pFits, INFOSPECTRO *infoSpectro, PROCESS_INFO *processInfo, ORDRE *order,double dx_ref ) {
 
-   //unsigned long rows(3);   
    string tableName("ORDERS");
    int nbOrder = infoSpectro->max_order - infoSpectro->min_order +1;
-   std::vector<string> colName(26,"");
-   std::vector<string> colForm(26,"");
-   std::vector<string> colUnit(26,"");
-   std::vector<string> colDisp(26,"");
-
-   // titre des colonnes
-   colName[ 0] = "order";
-   colName[ 1] = "flag";
-   colName[ 2] = "min_x";
-   colName[ 3] = "max_x";
-   colName[ 4] = "P0";
-   colName[ 5] = "P1";
-   colName[ 6] = "P2";
-   colName[ 7] = "P3";
-   colName[ 8] = "P4";
-   colName[ 9] = "P5";
-   colName[10] = "yc";
-   colName[11] = "wide_y";
-   colName[12] = "wide_sky";
-   colName[13] = "wide_x";
-   colName[14] = "slant";
-   colName[15] = "rms_order";
-   colName[16] = "central";
-   colName[17] = "A0";
-   colName[18] = "A1";
-   colName[19] = "A2";
-   colName[20] = "A3";
-   colName[21] = "rms_cal";
-   colName[22] = "fwhm";
-   colName[23] = "disp";
-   colName[24] = "resolution";
-   colName[25] = "nb_lines";
-
-   // format des colonnes
+   std::vector<string> colName(25,"");
+   std::vector<string> colForm(25,"");
+   std::vector<string> colUnit(25,"");
+   std::vector<string> colDisp(25,"");
+   
+   // titre des colonnes, format des colonnes, unites des colonnes, format d'affichage par defaut,  valeur des colonnes
+   colName[0] = "order";
    colForm[0] = "1I";
-   colForm[1] = "1I";
-   colForm[2] = "1I";
-   colForm[3] = "1I";
-   colForm[4] = "1D";
-   colForm[5] = "1D";
-   colForm[6] = "1D";
-   colForm[7] = "1D";
-   colForm[8] = "1D";
-   colForm[ 9] = "1D";
-   colForm[10] = "1D";
-   colForm[11] = "1D";
-   colForm[12] = "1I";
-   colForm[13] = "1I";
-   colForm[14] = "1D";
-   colForm[15] = "1D";
-   colForm[16] = "1D";
-   colForm[17] = "1D";
-   colForm[18] = "1D";
-   colForm[19] = "1D";
-   colForm[20] = "1D";
-   colForm[21] = "1D";
-   colForm[22] = "1D";
-   colForm[23] = "1D";
-   colForm[24] = "1D";
-   colForm[25] = "1I";
-
-   // unites des colonnes
    colUnit[0] = "";
-   colUnit[1] = "";
-   colUnit[2] = "Pixel";
-   colUnit[3] = "Pixel";  
-   colUnit[4] = "";  
-   colUnit[5] = "";  
-   colUnit[6] = "";
-   colUnit[7] = "";  
-   colUnit[8] = "";  
-   colUnit[9] = ""; 
-   colUnit[10] = "Pixel";  
-   colUnit[11] = "";  
-   colUnit[12] = "";  
-   colUnit[13] = "";   
-   colUnit[14] = "Degree";
-   colUnit[15] = "";
-   colUnit[16] = "Angstrom";
-   colUnit[17] = "";
-   colUnit[18] = "";
-   colUnit[19] = "";
-   colUnit[20] = "";
-   colUnit[21] = "";
-   colUnit[22] = "Pixel";
-   colUnit[23] = "";
-   colUnit[24] = "";
-   colUnit[25] = "lines";
-
-   // format d'affichage par defaut
    colDisp[0] = "I1.1";    // order
-   colDisp[1] = "I1.1";    // flag
-   colDisp[2] = "I1.1";    //min_x
-   colDisp[3] = "I1.1";    //man_x
-   colDisp[4] = "E14.6E3"; //P0
-   colDisp[5] = "E14.6E3"; //P1
-   colDisp[6] = "E14.6E3"; //P2
-   colDisp[7] = "E14.6E3"; //P3
-   colDisp[8] = "E14.6E3"; //P4
-   colDisp[9] = "E14.6E3"; //P5
-   colDisp[10] = "F1.2";    //yc
-   colDisp[11] = "I7.1";   //wide_y
-   colDisp[12] = "I7.1";   //wide_sky
-   colDisp[13] = "I7.1";   //wide_x
-   colDisp[14] = "F7.2";   //slant
-   colDisp[15] = "F1.4";   //rms_order
-   colDisp[16] = "F1.3";   //central
-   colDisp[17] = "E14.6E3";  //A0
-   colDisp[18] = "E14.6E3";  //A1   
-   colDisp[19] = "E14.6E3";  //A2
-   colDisp[20] = "E14.6E3";  //A3
-   colDisp[21] = "F7.4";   //rms_cal
-   colDisp[22] = "F7.2";   //fwhm
-   colDisp[23] = "F7.3";   //disp
-   colDisp[24] = "F7.1";   //resolution
-   colDisp[25] = "I4.1";   //nb_lines
-
-   // valeur des colonnes
    std::vector<int>    num(nbOrder);
+
+   colName[1] = "flag";
+   colForm[1] = "1I";
+   colUnit[1] = "";
+   colDisp[1] = "I1.1";    // flag
    std::vector<int>    flag(nbOrder);
-   std::vector<int>    min_x(nbOrder);
+ 
+   colName[2] = "min_x";
+   colForm[2] = "1I";
+   colUnit[2] = "Pixel";
+   colDisp[2] = "I1.1";    //min_x
+    std::vector<int>    min_x(nbOrder);
+  
+   colName[3] = "max_x";
+   colForm[3] = "1I";
+   colUnit[3] = "Pixel";  
+   colDisp[3] = "I1.1";    //man_x
    std::vector<int>    max_x(nbOrder);
+
+   colName[4] = "P0";
+   colForm[4] = "1D";
+   colUnit[4] = "";  
+   colDisp[4] = "E14.6E3"; //P0
    std::vector<double> P0(nbOrder);
+   
+   colName[5] = "P1";
+   colForm[5] = "1D";
+   colUnit[5] = "";  
+   colDisp[5] = "E14.6E3"; //P1
    std::vector<double> P1(nbOrder);
+   
+   colName[6] = "P2";
+   colForm[6] = "1D";
+   colUnit[6] = "";
+   colDisp[6] = "E14.6E3"; //P2
    std::vector<double> P2(nbOrder);
+
+   colName[7] = "P3";
+   colForm[7] = "1D";
+   colUnit[7] = "";  
+   colDisp[7] = "E14.6E3"; //P3
    std::vector<double> P3(nbOrder);
+
+   colName[8] = "P4";
+   colForm[8] = "1D";
+   colUnit[8] = "";  
+   colDisp[8] = "E14.6E3"; //P4
    std::vector<double> P4(nbOrder);
+
+   colName[9] = "P5";
+   colForm[9] = "1D";
+   colUnit[9] = ""; 
+   colDisp[9] = "E14.6E3"; //P5
    std::vector<double> P5(nbOrder);
+   
+   colName[10] = "yc";
+   colForm[10] = "1D";
+   colUnit[10] = "Pixel";  
+   colDisp[10] = "F1.2";    //yc
    std::vector<double> yc(nbOrder);
-   std::vector<int>    wide_y(nbOrder);
-   std::vector<int>    wide_sky(nbOrder);
+
+   colName[11] = "wide_y";
+   colForm[11] = "1D";
+   colUnit[11] = "";  
+   colDisp[11] = "I7.1";   //wide_y
+    std::vector<int>    wide_y(nbOrder);
+  
+   colName[12] = "wide_x";
+   colForm[12] = "1I";
+   colUnit[12] = "";   
+   colDisp[12] = "I7.1";   //wide_x
    std::vector<int>    wide_x(nbOrder);
+
+   colName[13] = "slant";
+   colForm[13] = "1D";
+   colUnit[13] = "Degree";
+   colDisp[13] = "F7.2";   //slant
    std::vector<double> slant(nbOrder);
+
+   colName[14] = "rms_order";
+   colForm[14] = "1D";
+   colUnit[14] = "";
+   colDisp[14] = "F1.4";   //rms_order
    std::vector<double> rms_order(nbOrder);
+
+   colName[15] = "central";
+   colForm[15] = "1D";
+   colUnit[15] = "Angstrom";
+   colDisp[15] = "F1.3";   //central
    std::vector<double> central(nbOrder);
+
+   colName[16] = "A0";
+   colForm[16] = "1D";
+   colUnit[16] = "";
+   colDisp[16] = "E14.6E3";  //A0
    std::vector<double> A0(nbOrder);
+
+   colName[17] = "A1";
+   colForm[17] = "1D";
+   colUnit[17] = "";
+   colDisp[17] = "E14.6E3";  //A1   
    std::vector<double> A1(nbOrder);
+
+   colName[18] = "A2";
+   colForm[18] = "1D";
+   colUnit[18] = "";
+   colDisp[18] = "E14.6E3";  //A2
    std::vector<double> A2(nbOrder);
+
+   colName[19] = "A3";
+   colForm[19] = "1D";
+   colUnit[19] = "";
+   colDisp[19] = "E14.6E3";  //A3
    std::vector<double> A3(nbOrder);
+
+   colName[20] = "rms_cal";
+   colForm[20] = "1D";
+   colUnit[20] = "";
+   colDisp[20] = "F7.4";   //rms_cal
    std::vector<double> rms_cal(nbOrder);
+
+   colName[21] = "fwhm";
+   colForm[21] = "1D";
+   colUnit[21] = "Pixel";
+   colDisp[21] = "F7.2";   //fwhm
    std::vector<double> fwhm(nbOrder);
+
+   colName[22] = "disp";
+   colForm[22] = "1D";
+   colUnit[22] = "";
+   colDisp[22] = "F7.3";   //disp
    std::vector<double> disp(nbOrder);
+
+   colName[23] = "resolution";
+   colForm[23] = "1D";
+   colUnit[23] = "";
+   colDisp[23] = "F7.1";   //resolution
    std::vector<double> resolution(nbOrder);
+
+   colName[24] = "nb_lines";
+   colForm[24] = "1I";
+   colUnit[24] = "lines";
+   colDisp[24] = "I4.1";   //nb_lines
    std::vector<int>    nb_lines(nbOrder);
 
+
+   // je copie les valeurs dans les vecteurs
    int nbRow = 0; 
    for (short j = infoSpectro->min_order; j <= infoSpectro->max_order; j++) {
       num[nbRow] = j;
@@ -379,7 +391,6 @@ void Fits_setOrders (FITS *pFits, INFOSPECTRO *infoSpectro, PROCESS_INFO *proces
       P5[nbRow] = order[j].poly_order[5];
       yc[nbRow] = order[j].yc;
       wide_y[nbRow] = order[j].wide_y;
-      wide_sky[nbRow] = order[j].wide_sky;
       wide_x[nbRow] = order[j].wide_x;
       slant[nbRow] = order[j].slant;
       rms_order[nbRow] = order[j].rms_order;
@@ -424,20 +435,19 @@ void Fits_setOrders (FITS *pFits, INFOSPECTRO *infoSpectro, PROCESS_INFO *proces
       orderTable->column(colName[9]).write(P5,1); 
       orderTable->column(colName[10]).write(yc,1);    
       orderTable->column(colName[11]).write(wide_y,1);    
-      orderTable->column(colName[12]).write(wide_sky,1);    
-      orderTable->column(colName[13]).write(wide_x,1);    
-      orderTable->column(colName[14]).write(slant,1); 
-      orderTable->column(colName[15]).write(rms_order,1); 
-      orderTable->column(colName[16]).write(central,1); 
-      orderTable->column(colName[17]).write(A0,1); 
-      orderTable->column(colName[18]).write(A1,1); 
-      orderTable->column(colName[19]).write(A2,1); 
-      orderTable->column(colName[20]).write(A3,1); 
-      orderTable->column(colName[21]).write(rms_cal,1); 
-      orderTable->column(colName[22]).write(fwhm,1); 
-      orderTable->column(colName[23]).write(disp,1); 
-      orderTable->column(colName[24]).write(resolution,1); 
-      orderTable->column(colName[25]).write(nb_lines,1); 
+      orderTable->column(colName[12]).write(wide_x,1);    
+      orderTable->column(colName[13]).write(slant,1); 
+      orderTable->column(colName[14]).write(rms_order,1); 
+      orderTable->column(colName[15]).write(central,1); 
+      orderTable->column(colName[16]).write(A0,1); 
+      orderTable->column(colName[17]).write(A1,1); 
+      orderTable->column(colName[18]).write(A2,1); 
+      orderTable->column(colName[19]).write(A3,1); 
+      orderTable->column(colName[20]).write(rms_cal,1); 
+      orderTable->column(colName[21]).write(fwhm,1); 
+      orderTable->column(colName[22]).write(disp,1); 
+      orderTable->column(colName[23]).write(resolution,1); 
+      orderTable->column(colName[24]).write(nb_lines,1); 
 
       // j'ajoute les parametre du specrographe dans le header
       orderTable->addKey("WIDTH",infoSpectro->imax,"image width"); 
@@ -589,10 +599,8 @@ void Fits_getProcessInfo (FITS *pFits, PROCESS_INFO *processInfo) {
 //   retourne une std::exception en cas d'erreur
 // ---------------------------------------------------------------------------
 void Fits_getOrders(CCfits::PFitsFile pFits, ORDRE *orderValue,double *dx_ref )  {
-   //std::vector<string> hdus(1);
    string hduName =  "ORDERS";
    double hduVersion = 1;
-   //hdus[0] = "ORDERS";
    try {  
       // je charge la table des ordres
       pFits->read(hduName,true);
@@ -620,7 +628,6 @@ void Fits_getOrders(CCfits::PFitsFile pFits, ORDRE *orderValue,double *dx_ref ) 
       std::vector<double> P5(nbOrder);
       std::vector<double> yc(nbOrder);
       std::vector<int>    wide_y(nbOrder);
-      std::vector<int>    wide_sky(nbOrder);
       std::vector<int>    wide_x(nbOrder);
       std::vector<double> slant(nbOrder);
       std::vector<double> rms_order(nbOrder);
@@ -652,7 +659,6 @@ void Fits_getOrders(CCfits::PFitsFile pFits, ORDRE *orderValue,double *dx_ref ) 
       }         
       hduOrders.column("yc").read(yc, 1, nbOrder);
       hduOrders.column("wide_y").read(wide_y, 1, nbOrder);
-      hduOrders.column("wide_sky").read(wide_sky, 1, nbOrder);
       hduOrders.column("wide_x").read(wide_x, 1, nbOrder);
       hduOrders.column("slant").read(slant, 1, nbOrder);
       hduOrders.column("rms_order").read(rms_order, 1, nbOrder);
@@ -682,7 +688,6 @@ void Fits_getOrders(CCfits::PFitsFile pFits, ORDRE *orderValue,double *dx_ref ) 
          orderValue[numOrder].poly_order[5] = P5[n];
          orderValue[numOrder].yc = yc[n];
          orderValue[numOrder].wide_y = wide_y[n];
-         orderValue[numOrder].wide_sky = wide_sky[n];
          orderValue[numOrder].wide_x = wide_x[n];
          orderValue[numOrder].slant = slant[n];
          orderValue[numOrder].rms_order = rms_order[n];
