@@ -5,7 +5,7 @@
 #
 # @brief Routines de calcul de photometrie de Calaphot
 #
-# $Id: calaphot_calcul.tcl,v 1.9 2010-11-21 08:31:38 jacquesmichelet Exp $
+# $Id: calaphot_calcul.tcl,v 1.10 2010-11-28 09:10:09 jacquesmichelet Exp $
 
 namespace eval ::CalaPhot {
 
@@ -428,7 +428,7 @@ namespace eval ::CalaPhot {
     #   - La difference (en pixels) entre la position du pixel de valeur maximale et la position du barycentre.
     #   .
     # .
-    # @return la liste des 3 valeurs calculees (voir ci-dessus)
+    # @return la liste des 3 valeurs calculées (voir ci-dessus)
     proc Centroide {} {
         global audace
         variable parametres
@@ -437,11 +437,11 @@ namespace eval ::CalaPhot {
 
         set rect [ ::confVisu::getBox $audace(visuNo) ]
         if { $rect != "" } {
-            # Recuperation des coordonnees de la boite de selection
-            set x1 [lindex $rect 0]
-            set y1 [lindex $rect 1]
-            set x2 [lindex $rect 2]
-            set y2 [lindex $rect 3]
+            # Récuperation des coordonnées de la boite de sélection
+            set x1 [ lindex $rect 0 ]
+            set y1 [ lindex $rect 1 ]
+            set x2 [ lindex $rect 2 ]
+            set y2 [ lindex $rect 3 ]
             # Calcul du centre de l'etoile
             ::confVisu::deleteBox $audace(visuNo)
             if { $parametres(defocalisation) == "non" } {

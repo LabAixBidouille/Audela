@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot_principal.tcl,v 1.21 2010-11-28 07:21:33 jacquesmichelet Exp $
+# $Id: calaphot_principal.tcl,v 1.22 2010-11-28 09:10:09 jacquesmichelet Exp $
 #
 
 ###catch {namespace delete ::Calaphot}
@@ -131,7 +131,6 @@ namespace eval ::CalaPhot {
         set calaphot(init,pose_minute)          "seconde"
         set calaphot(init,date_images)          "debut_pose"
         set calaphot(init,reprise_astres)       "non"
-        set calaphot(init,format_sortie)        "cdr"
         set calaphot(init,signal_bruit)         20
         set calaphot(init,type_objet)           0
         set calaphot(init,defocalisation)       "non"
@@ -509,15 +508,7 @@ namespace eval ::CalaPhot {
             Message notice "%s : %s %07.4f %s %6.4f\n" $calaphot(texte,etoile)  $calaphot(texte,moyenne) $moyenne(ref,$etoile) $calaphot(texte,ecart_type) $ecart_type(ref,$etoile)
          }
 
-         # Sortie standardisée des valeurs
-         if { $parametres(format_sortie) == "canopus" } {
-            AffichageCanopus
-         } else {
-            GenerationFichierCDR
-         }
-        GenerationFichierCSV
-        set origine_temps [GenerationFichierDAT]
-        GenerationFichierGnuplot $origine_temps
+        GenerationFichiersResultats
 
         DestructionFichiersAuxiliaires
 
@@ -534,260 +525,12 @@ namespace eval ::CalaPhot {
     }
 
     ##
-    # @brief Affichage au format Canopus
-    # @return
-    proc AffichageCanopus {} {
-        variable calaphot
-        variable parametres
-        variable data_image
-        variable liste_image
-
-        Message debug "%s\n" [info level [info level]]
-
-        Message notice "---------------------------------------------------------------------------------------\n"
-        Message notice "Format Canopus\n"
-        Message notice "---------------------------------------------------------------------------------------\n"
-        Message notice "Observation Data:\n"
-        Message notice "-----------------\n"
-        Message notice "    Date          UT           OM           C1         C2        C3         C4        C5         U          CA        O-C\n"
-
-        foreach i $liste_image {
-            set temps [mc_date2ymdhms $data_image($i,date)]
-            Message notice "%02d/%02d/%04d    " [lindex $temps 2] [lindex $temps 1] [lindex $temps 0]
-            Message notice "%02d:%02d:%02d    " [lindex $temps 3] [lindex $temps 4] [expr round([lindex $temps 5])]
-            for {set etoile 0} {$etoile <= 5} {incr etoile} {
-                if {[info exists data_image($i,mag_$etoile)]} {
-                    Message notice "%7.2f     " $data_image($i,mag_$etoile)
-                } else {
-                    Message notice "99.99     "
-                }
-            }
-            Message notice "%s       " $data_image($i,valide)
-            Message notice "%7.2f    " $data_image($i,constante_mag)
-            Message notice "%7.2f\n" [expr $data_image($i,constante_mag) - $data_image($i,mag_0)]
-        }
-        # Fin de la boucle sur les images
-    }
-
-    ##
     # @brief Attente que l'utilisateur valide la suite du script. NE SERT QU'AU DEBOGAGE
     # @return
     proc AttentePasAPas {} {
         variable pas_a_pas
         if { [ info exists pas_a_pas ] } {
             vwait ::CalaPhot::calaphot(suite_du_script)
-        }
-    }
-
-    ##
-    # @brief Stockage des résultats avec le format CDR (cf site de Raoul Behrend)
-    # @details Le contenu de ce fichier peut directement etre exporté pour le logiciel Courbrot
-    # @return toujours 0
-    proc GenerationFichierCDR {} {
-        global audace
-        variable data_image
-        variable parametres
-        variable calaphot
-        variable data_script
-        variable liste_image
-
-        Message debug "%s\n" [info level [info level]]
-
-        set nom_fichier [file join $::audace(rep_images) ${parametres(sortie)}.cdr]
-        # effacement de la version précédente
-        catch {[file delete -force $nom_fichier]}
-
-        set premier [lindex $liste_image 0]
-
-        set f [open $nom_fichier "w"]
-        puts -nonewline $f [format "NOM %s\n" $parametres(objet)]
-        puts -nonewline $f [format "MES %s" $parametres(operateur)]
-        if {[string length $parametres(code_UAI)] != 0} {
-            puts -nonewline $f [format " @%s\n" $parametres(code_UAI)]
-        } else {
-            puts $f "\n"
-        }
-        puts -nonewline $f [format "POS 0 %5.2f\n" $data_image($premier,temps_expo)]
-        puts -nonewline $f [format "CAP %s\n" $parametres(type_capteur)]
-        puts -nonewline $f [format "TEL %s %s %s\n" $parametres(diametre_telescope) $parametres(focale_telescope) $parametres(type_telescope)]
-        puts -nonewline $f [format "CAT %s\n" $parametres(catalogue_reference)]
-        puts -nonewline $f [format "FIL %s\n" $parametres(filtre_optique)]
-        puts -nonewline $f [format "; %s %s %s\n" $calaphot(texte,banniere_CDR_1) $calaphot(init,version_ini) $calaphot(texte,banniere_CDR_2)]
-        set image 0
-
-        foreach i $liste_image {
-            if {$data_image($i,valide) == "Y"} {
-                incr image
-                puts -nonewline $f " 1 1"
-                # Passage de la date en format amj,ddd
-                set amjhms [mc_date2ymdhms $data_image($i,date)]
-                set date_claire "[format %04d [lindex $amjhms 0]]"
-                append date_claire "[format %02d [lindex $amjhms 1]]"
-                append date_claire "[format %02d [lindex $amjhms 2]]"
-                set hms [format %6.5f [expr double([lindex $amjhms 3])/24.0 + double([lindex $amjhms 4])/1440.0 + double([lindex $amjhms 5])/86400.0]]
-                set hms [string range $hms [string first . $hms] end]
-                append date_claire $hms
-                puts -nonewline $f [format " %14.5f" $date_claire]
-                puts -nonewline $f " T"
-                puts -nonewline $f [format " %6.3f" $data_image($i,var,mag_0)]
-                puts -nonewline $f [format " %6.3f\n" $data_image($i,var,incertitude_0)]
-            }
-        }
-        close $f
-    }
-
-    ##
-    # @brief Stockage des résultats avec le format CSV (Comma Separated Values)
-    # @details Le resultat de cet affichage peut directement etre importé par un tableur
-    # @return toujours 0
-    proc GenerationFichierCSV { } {
-        global audace
-        variable data_image
-        variable parametres
-        variable calaphot
-        variable data_script
-        variable liste_image
-
-        Message debug "%s\n" [ info level [ info level ] ]
-
-        set nom_fichier [ file join $::audace(rep_images) ${parametres(sortie)}.csv ]
-        # effacement de la version précédente
-        catch { file delete -force $nom_fichier }
-        if { [ catch { open $nom_fichier "w" } f ] } {
-            Message erreur $f
-            return
-        }
-
-        puts -nonewline $f [ format "year;month;day;hour;min;sec;" ]
-        puts -nonewline $f [ format "JJ;Mag var;Inc var;" ]
-        for { set etoile 0 } { $etoile < $data_script(nombre_reference) } { incr etoile } {
-            puts -nonewline $f [ format "Mag ref%d;+/-;" $etoile ]
-        }
-        puts -nonewline $f [ format "Const. mag;Valid\n" ]
-        foreach i $liste_image {
-            set temps [ mc_date2ymdhms $data_image($i,date) ]
-            puts -nonewline $f [ format "%02d;%02d;%04d;" [lindex $temps 0] [lindex $temps 1] [lindex $temps 2] ]
-            puts -nonewline $f [ format "%02d;%02d;%02d;" [lindex $temps 3] [lindex $temps 4] [expr round([lindex $temps 5])] ]
-            puts -nonewline $f [ format "%04d;%15.5f;" $i $data_image($i,date) ]
-            if { [ info exists data_image($i,var,mag_0) ] } {
-                puts -nonewline $f [ format "%07.4f;%07.4f;" $data_image($i,var,mag_0) $data_image($i,var,incertitude_0) ]
-                for { set etoile 0 } { $etoile < $data_script(nombre_reference) } { incr etoile } {
-                    puts -nonewline $f [ format "%07.4f;%07.4f;" $data_image($i,ref,mag_$etoile) $data_image($i,ref,incertitude_$etoile) ]
-                }
-                puts -nonewline $f [ format "%7.4f;" $data_image($i,constante_mag) ]
-            } else {
-                puts -nonewline $f [ format "99.9999;00.0000\n" ]
-            }
-            puts -nonewline $f [ format "%s\n" $data_image($i,valide) ]
-        }
-        close $f
-    }
-
-    ##
-    # @brief Stockage des résultats avec un format CSV pour Gnuplot
-    # @details Le resultat de cet affichage peut directement etre importé lu par Gnuplot
-    # @return la partie entière du jour julien de la première image
-    proc GenerationFichierDAT { } {
-        global audace
-        variable data_image
-        variable parametres
-        variable calaphot
-        variable data_script
-        variable liste_image
-
-        Message debug "%s\n" [ info level [ info level ] ]
-
-        set nom_fichier [file join $::audace(rep_images) ${parametres(sortie)}.dat]
-        # effacement de la version précédente
-        catch { file delete -force $nom_fichier }
-        if { [ catch { open $nom_fichier "w" } f ] } {
-            Message erreur $f
-            return
-        }
-
-        if { $data_script(images_valides) == 0 } {
-            return
-        }
-
-        set premier 1
-        foreach i $liste_image {
-            set temps [mc_date2ymdhms $data_image($i,date)]
-            if { [ info exists data_image($i,var,mag_0) ] } {
-                if { $premier != 0 } {
-                    # Mise en mémoire de la première donnée
-                    set orig_temps [ expr floor($data_image($i,date)) ]
-                    set orig_mag_var_0 $data_image($i,var,mag_0)
-                    for { set etoile 0 } { $etoile < $data_script(nombre_reference) } { incr etoile } {
-                        set orig_mag_ref($etoile) $data_image($i,ref,mag_$etoile)
-                    }
-                    set orig_cste_mag $data_image($i,constante_mag)
-                    set premier 0
-                }
-                # Enregistrement des données relatives à la première donnée
-                # Pour que le diagramme soit plus lisible, les références ont un décalage de 1 mag, la cste des mag de 2
-                puts -nonewline $f [ format "%04d;%15.5f;" $i [ expr $data_image($i,date) - $orig_temps ] ]
-                puts -nonewline $f [ format "%07.4f;%07.4f;" [ expr $data_image($i,var,mag_0) - $orig_mag_var_0 ] $data_image($i,var,incertitude_0) ]
-                for { set etoile 0 } { $etoile < $data_script(nombre_reference) } { incr etoile } {
-                    puts -nonewline $f [ format "%07.4f;%07.4f;" [ expr $data_image($i,ref,mag_$etoile) - $orig_mag_ref($etoile) + 1.0 ] $data_image($i,ref,incertitude_$etoile) ]
-                }
-                puts -nonewline $f [ format "%7.4f\n" [ expr $data_image($i,constante_mag) - $orig_cste_mag + 2.0 ] ]
-            }
-        }
-        close $f
-        return $orig_temps
-    }
-
-    ##
-    # @brief Création d'un fichier destiné à être exécuté par Gnuplot
-    # @details Ce fichier script utilise le fichier DAT comme source des données
-    # @return toujours 0
-    proc GenerationFichierGnuplot {origine_temps} {
-        global audace
-        variable data_image
-        variable parametres
-        variable calaphot
-        variable data_script
-        variable liste_image
-
-        Message debug "%s\n" [info level [info level]]
-
-        set nom_fichier_gplt [file join $::audace(rep_images) ${parametres(sortie)}.plt]
-        set nom_fichier_dat [file join $::audace(rep_images) ${parametres(sortie)}.dat]
-        # effacement de la version précédente
-        catch {[file delete -force $nom_fichier_plt]}
-
-        if { $data_script(images_valides) == 0 } {
-            return
-        }
-
-        set f [open $nom_fichier_gplt "w"]
-        puts $f "set datafile separator \";\""
-        puts $f "set title \"$parametres(objet)\""
-        puts $f "set xlabel \"$calaphot(texte,jour_julien) - $origine_temps\""
-        puts $f "set ylabel \"$calaphot(texte,mag_relative)\""
-        puts -nonewline $f "plot \'$nom_fichier_dat\' using 2:3:4 with errorlines title \"$parametres(objet)\""
-        for {set etoile 0} {$etoile < $data_script(nombre_reference)} {incr etoile} {
-            puts $f " , \\"
-            puts -nonewline $f "    \'\' using 2:[expr 5 + 2 * $etoile]:[expr 6 + 2* $etoile] with errorline title \"$calaphot(texte,etoile_reference)  $etoile\""
-        }
-        puts $f " , \\"
-        puts -nonewline $f "    \'\' using 2:[expr 5 + 2 * $etoile] with lines title \"$calaphot(texte,constante_mag)\""
-        puts $f ""
-        puts $f "pause -1"
-        close $f
-    }
-
-    ##
-    # @brief Execution du fichier Gnuplot créé par GenerationFichierGnuplot
-    # @details Uniquement sous Linux
-    # @return toujours 0
-    proc ExecutionGnuplot {} {
-        variable parametres
-        variable data_script
-
-        if { ( $::tcl_platform(os) == "Linux" ) && ( $data_script(images_valides) != 0 ) } {
-            set nom_fichier_gplt [file join $::audace(rep_images) ${parametres(sortie)}.plt]
-            catch { exec gnuplot $nom_fichier_gplt & }
         }
     }
 
@@ -1005,20 +748,13 @@ namespace eval ::CalaPhot {
     ##
     # @brief Permet de détecter si des paramètres critiques ont changé
     # return changement
-    proc DetectionChangementParamCritiques { } {
+    proc DetectionChangementParamCritiques { liste_parametres } {
         variable parametres
 
         Message debug "%s\n" [ info level [ info level ] ]
 
         set changement 0
-        foreach champ [ list \
-            source \
-            indice_premier \
-            tri_images \
-            type_images \
-            pose_minute \
-            date_images \
-        ] {
+        foreach champ $liste_parametres {
             if { $parametres(origine,$champ) != $parametres($champ) } {
                 set changement 1
             }
@@ -1060,6 +796,20 @@ namespace eval ::CalaPhot {
     }
 
     ##
+    # @brief Execution du fichier Gnuplot créé par GenerationFichierGnuplot
+    # @details Uniquement sous Linux
+    # @return toujours 0
+    proc ExecutionGnuplot {} {
+        variable parametres
+        variable data_script
+
+        if { ( $::tcl_platform(os) == "Linux" ) && ( $data_script(images_valides) != 0 ) } {
+            set nom_fichier_gplt [file join $::audace(rep_images) ${parametres(sortie)}.plt]
+            catch { exec gnuplot $nom_fichier_gplt & }
+        }
+    }
+
+    ##
     # @brief Fermeture de fichier
     # @details L'interet de ce code est de pouvoir tracer le nombre de fichier ouverts à un moment donné. Cela sert à détecter les "fuites de fileid", c'est-a-dire les fichiers qui sont ouverts et jamais fermes. On peut aussi tracer les fichiers qu'on tente de fermer alors qu'ils n'ont pas été ouverts.
     # @param[in] fid : 'channel' a fermer
@@ -1076,6 +826,261 @@ namespace eval ::CalaPhot {
             # A ne pas retablir sans modifier Message (risque de re-entrance infinie)
 #            Message debug "nombre fichier ouvert : %d\n" $data_script(nombre_fichier_ouvert)
         }
+    }
+
+    ##
+    # @brief Stockage des résultats au format Canopus
+    # @return
+    proc GenerationFichierCanopus {} {
+        variable calaphot
+        variable parametres
+        variable data_image
+        variable liste_image
+
+        Message debug "%s\n" [ info level [ info level ] ]
+
+        set nom_fichier [file join $::audace(rep_images) ${parametres(sortie)}.cnp]
+
+        # effacement de la version précédente
+        catch { [ file delete -force $nom_fichier ] }
+
+        set f [open $nom_fichier "w"]
+        puts -nonewline $f "Observation Data:\n"
+        puts -nonewline $f "-----------------\n"
+        puts -nonewline $f "    Date          UT           OM           C1         C2        C3         C4        C5         U          CA        O-C\n"
+
+        foreach i $liste_image {
+            if { $data_image($i,valide) == "Y" } {
+                set temps [ mc_date2ymdhms $data_image($i,date) ]
+                puts -nonewline $f [ format "%02d/%02d/%04d    " [ lindex $temps 2 ] [ lindex $temps 1 ] [ lindex $temps 0 ] ]
+                puts -nonewline $f [ format "%02d:%02d:%02d    " [ lindex $temps 3 ] [ lindex $temps 4 ] [ expr round( [ lindex $temps 5 ] ) ] ]
+                if { [ info exists data_image($i,var,mag_0) ] } {
+                    puts -nonewline $f [ format "%7.2f     " $data_image($i,var,mag_0) ]
+                } else {
+                    puts -nonewline $f "99.99     "
+                }
+                for { set etoile 0 } { $etoile <= 5 } { incr etoile } {
+                    if { [ info exists data_image($i,mag_ref_$etoile) ] } {
+                        puts -nonewline $f [ format "%7.2f     " $data_image($i,ref,mag_$etoile) ]
+                    } else {
+                        puts -nonewline $f "99.99     "
+                    }
+                }
+                puts -nonewline $f [ format "%s       " $data_image($i,valide) ]
+                puts -nonewline $f [ format "%7.2f    " $data_image($i,constante_mag) ]
+                puts -nonewline $f [ format "%7.2f\n" [ expr $data_image($i,constante_mag) - $data_image($i,var,mag_0) ] ]
+            }
+        }
+        close $f
+    }
+
+    ##
+    # @brief Stockage des résultats avec le format CDR (cf site de Raoul Behrend)
+    # @details Le contenu de ce fichier peut directement etre exporté pour le logiciel Courbrot
+    # @return toujours 0
+    proc GenerationFichierCDR {} {
+        global audace
+        variable data_image
+        variable parametres
+        variable calaphot
+        variable data_script
+        variable liste_image
+
+        Message debug "%s\n" [info level [info level]]
+
+        set nom_fichier [file join $::audace(rep_images) ${parametres(sortie)}.cdr]
+        # effacement de la version précédente
+        catch {[file delete -force $nom_fichier]}
+
+        set premier [lindex $liste_image 0]
+
+        set f [open $nom_fichier "w"]
+        puts -nonewline $f [format "NOM %s\n" $parametres(objet)]
+        puts -nonewline $f [format "MES %s" $parametres(operateur)]
+        if {[string length $parametres(code_UAI)] != 0} {
+            puts -nonewline $f [format " @%s\n" $parametres(code_UAI)]
+        } else {
+            puts $f "\n"
+        }
+        puts -nonewline $f [format "POS 0 %5.2f\n" $data_image($premier,temps_expo)]
+        puts -nonewline $f [format "CAP %s\n" $parametres(type_capteur)]
+        puts -nonewline $f [format "TEL %s %s %s\n" $parametres(diametre_telescope) $parametres(focale_telescope) $parametres(type_telescope)]
+        puts -nonewline $f [format "CAT %s\n" $parametres(catalogue_reference)]
+        puts -nonewline $f [format "FIL %s\n" $parametres(filtre_optique)]
+        puts -nonewline $f [format "; %s %s %s\n" $calaphot(texte,banniere_CDR_1) $calaphot(init,version_ini) $calaphot(texte,banniere_CDR_2)]
+        set image 0
+
+        foreach i $liste_image {
+            if {$data_image($i,valide) == "Y"} {
+                incr image
+                puts -nonewline $f " 1 1"
+                # Passage de la date en format amj,ddd
+                set amjhms [mc_date2ymdhms $data_image($i,date)]
+                set date_claire "[format %04d [lindex $amjhms 0]]"
+                append date_claire "[format %02d [lindex $amjhms 1]]"
+                append date_claire "[format %02d [lindex $amjhms 2]]"
+                set hms [format %6.5f [expr double([lindex $amjhms 3])/24.0 + double([lindex $amjhms 4])/1440.0 + double([lindex $amjhms 5])/86400.0]]
+                set hms [string range $hms [string first . $hms] end]
+                append date_claire $hms
+                puts -nonewline $f [format " %14.5f" $date_claire]
+                puts -nonewline $f " T"
+                puts -nonewline $f [format " %6.3f" $data_image($i,var,mag_0)]
+                puts -nonewline $f [format " %6.3f\n" $data_image($i,var,incertitude_0)]
+            }
+        }
+        close $f
+    }
+
+    ##
+    # @brief Stockage des résultats avec le format CSV (Comma Separated Values)
+    # @details Le resultat de cet affichage peut directement etre importé par un tableur
+    # @return toujours 0
+    proc GenerationFichierCSV { } {
+        global audace
+        variable data_image
+        variable parametres
+        variable calaphot
+        variable data_script
+        variable liste_image
+
+        Message debug "%s\n" [ info level [ info level ] ]
+
+        set nom_fichier [ file join $::audace(rep_images) ${parametres(sortie)}.csv ]
+        # effacement de la version précédente
+        catch { file delete -force $nom_fichier }
+        if { [ catch { open $nom_fichier "w" } f ] } {
+            Message erreur $f
+            return
+        }
+
+        puts -nonewline $f [ format "year;month;day;hour;min;sec;" ]
+        puts -nonewline $f [ format "JJ;Mag var;Inc var;" ]
+        for { set etoile 0 } { $etoile < $data_script(nombre_reference) } { incr etoile } {
+            puts -nonewline $f [ format "Mag ref%d;+/-;" $etoile ]
+        }
+        puts -nonewline $f [ format "Const. mag;Valid\n" ]
+        foreach i $liste_image {
+            set temps [ mc_date2ymdhms $data_image($i,date) ]
+            puts -nonewline $f [ format "%02d;%02d;%04d;" [lindex $temps 0] [lindex $temps 1] [lindex $temps 2] ]
+            puts -nonewline $f [ format "%02d;%02d;%02d;" [lindex $temps 3] [lindex $temps 4] [expr round([lindex $temps 5])] ]
+            puts -nonewline $f [ format "%04d;%15.5f;" $i $data_image($i,date) ]
+            if { [ info exists data_image($i,var,mag_0) ] } {
+                puts -nonewline $f [ format "%07.4f;%07.4f;" $data_image($i,var,mag_0) $data_image($i,var,incertitude_0) ]
+                for { set etoile 0 } { $etoile < $data_script(nombre_reference) } { incr etoile } {
+                    puts -nonewline $f [ format "%07.4f;%07.4f;" $data_image($i,ref,mag_$etoile) $data_image($i,ref,incertitude_$etoile) ]
+                }
+                puts -nonewline $f [ format "%7.4f;" $data_image($i,constante_mag) ]
+            } else {
+                puts -nonewline $f [ format "99.9999;00.0000\n" ]
+            }
+            puts -nonewline $f [ format "%s\n" $data_image($i,valide) ]
+        }
+        close $f
+    }
+
+    ##
+    # @brief Stockage des résultats avec un format CSV pour Gnuplot
+    # @details Le resultat de cet affichage peut directement etre importé lu par Gnuplot
+    # @return la partie entière du jour julien de la première image
+    proc GenerationFichierDAT { } {
+        global audace
+        variable data_image
+        variable parametres
+        variable calaphot
+        variable data_script
+        variable liste_image
+
+        Message debug "%s\n" [ info level [ info level ] ]
+
+        set nom_fichier [file join $::audace(rep_images) ${parametres(sortie)}.dat]
+        # effacement de la version précédente
+        catch { file delete -force $nom_fichier }
+        if { [ catch { open $nom_fichier "w" } f ] } {
+            Message erreur $f
+            return
+        }
+
+        if { $data_script(images_valides) == 0 } {
+            return
+        }
+
+        set premier 1
+        foreach i $liste_image {
+            set temps [mc_date2ymdhms $data_image($i,date)]
+            if { [ info exists data_image($i,var,mag_0) ] } {
+                if { $premier != 0 } {
+                    # Mise en mémoire de la première donnée
+                    set orig_temps [ expr floor($data_image($i,date)) ]
+                    set orig_mag_var_0 $data_image($i,var,mag_0)
+                    for { set etoile 0 } { $etoile < $data_script(nombre_reference) } { incr etoile } {
+                        set orig_mag_ref($etoile) $data_image($i,ref,mag_$etoile)
+                    }
+                    set orig_cste_mag $data_image($i,constante_mag)
+                    set premier 0
+                }
+                # Enregistrement des données relatives à la première donnée
+                # Pour que le diagramme soit plus lisible, les références ont un décalage de 1 mag, la cste des mag de 2
+                puts -nonewline $f [ format "%04d;%15.5f;" $i [ expr $data_image($i,date) - $orig_temps ] ]
+                puts -nonewline $f [ format "%07.4f;%07.4f;" [ expr $data_image($i,var,mag_0) - $orig_mag_var_0 ] $data_image($i,var,incertitude_0) ]
+                for { set etoile 0 } { $etoile < $data_script(nombre_reference) } { incr etoile } {
+                    puts -nonewline $f [ format "%07.4f;%07.4f;" [ expr $data_image($i,ref,mag_$etoile) - $orig_mag_ref($etoile) + 1.0 ] $data_image($i,ref,incertitude_$etoile) ]
+                }
+                puts -nonewline $f [ format "%7.4f\n" [ expr $data_image($i,constante_mag) - $orig_cste_mag + 2.0 ] ]
+            }
+        }
+        close $f
+        return $orig_temps
+    }
+
+    ##
+    # @brief Création d'un fichier destiné à être exécuté par Gnuplot
+    # @details Ce fichier script utilise le fichier DAT comme source des données
+    # @return toujours 0
+    proc GenerationFichierGnuplot {origine_temps} {
+        global audace
+        variable data_image
+        variable parametres
+        variable calaphot
+        variable data_script
+        variable liste_image
+
+        Message debug "%s\n" [info level [info level]]
+
+        set nom_fichier_gplt [file join $::audace(rep_images) ${parametres(sortie)}.plt]
+        set nom_fichier_dat [file join $::audace(rep_images) ${parametres(sortie)}.dat]
+        # effacement de la version précédente
+        catch {[file delete -force $nom_fichier_plt]}
+
+        if { $data_script(images_valides) == 0 } {
+            return
+        }
+
+        set f [open $nom_fichier_gplt "w"]
+        puts $f "set datafile separator \";\""
+        puts $f "set title \"$parametres(objet)\""
+        puts $f "set xlabel \"$calaphot(texte,jour_julien) - $origine_temps\""
+        puts $f "set ylabel \"$calaphot(texte,mag_relative)\""
+        puts -nonewline $f "plot \'$nom_fichier_dat\' using 2:3:4 with errorlines title \"$parametres(objet)\""
+        for {set etoile 0} {$etoile < $data_script(nombre_reference)} {incr etoile} {
+            puts $f " , \\"
+            puts -nonewline $f "    \'\' using 2:[expr 5 + 2 * $etoile]:[expr 6 + 2* $etoile] with errorline title \"$calaphot(texte,etoile_reference)  $etoile\""
+        }
+        puts $f " , \\"
+        puts -nonewline $f "    \'\' using 2:[expr 5 + 2 * $etoile] with lines title \"$calaphot(texte,constante_mag)\""
+        puts $f ""
+        puts $f "pause -1"
+        close $f
+    }
+
+    ##
+    # @brief Génération des fichiers résultats
+    # @return
+    proc GenerationFichiersResultats { } {
+        GenerationFichierCanopus
+        GenerationFichierCDR
+        GenerationFichierCSV
+        set origine_temps [ GenerationFichierDAT ]
+        GenerationFichierGnuplot $origine_temps
     }
 
     ##
@@ -1305,7 +1310,7 @@ namespace eval ::CalaPhot {
     }
 
     ##
-    # @brief Affichage des options et parametres qui ont ete saisis
+    # @brief Affichage des options et paramètres qui ont ete saisis
     # @return
     proc RecapitulationOptions {} {
         variable parametres
@@ -1315,21 +1320,21 @@ namespace eval ::CalaPhot {
 
         Message notice "\n--------------------------\n"
         Message notice "%s\n" $calaphot(texte,recapitulation)
-        foreach champ {objet operateur code_UAI type_capteur type_telescope diametre_telescope focale_telescope catalogue_reference source indice_premier indice_dernier tailleboite signal_bruit gain_camera bruit_lecture sortie fichier_cl} {
+        foreach champ { objet operateur code_UAI type_capteur type_telescope diametre_telescope focale_telescope catalogue_reference source indice_premier indice_dernier tailleboite signal_bruit gain_camera bruit_lecture sortie fichier_cl } {
             Message notice "\t%s : %s\n" $calaphot(texte,$champ) $parametres($champ)
         }
-        foreach champ {mode type_images date_images pose_minute format_sortie} {
+        foreach champ { mode type_images date_images pose_minute } {
             Message notice "\t%s : %s\n" $calaphot(texte,$champ) $parametres($champ)
         }
-        if {$parametres(mode) == "ouverture"} {
-            foreach champ {surechantillonage rayon1 rayon2 rayon3} {
+        if { $parametres(mode) == "ouverture" } {
+            foreach champ { surechantillonage rayon1 rayon2 rayon3 } {
                 Message notice "\t%s : %s\n" $calaphot(texte,o_$champ) $parametres($champ)
             }
         }
         # pas de parametre specifique a la modelisation
 #        if {$parametres(mode) == "modelisation"} {
 #        }
-        if {$parametres(mode) == "sextractor"} {
+        if { $parametres(mode) == "sextractor" } {
             foreach champ {saturation} {
                 Message notice "\t%s : %s\n" $calaphot(texte,s_$champ) $parametres($champ)
             }
@@ -1403,7 +1408,15 @@ namespace eval ::CalaPhot {
         catch { unset liste_decalage }
 
         # On détecte des changements dans certains paramètres saisis.
-        set changement [ DetectionChangementParamCritiques ]
+        set param_critiques [ list \
+            source \
+            indice_premier \
+            tri_images \
+            type_images \
+            pose_minute \
+            date_images \
+        ]
+        set changement [ DetectionChangementParamCritiques $param_critiques ]
 
         # S'il y a eu un changement, on efface le fichier .lst
         if { $changement } {
@@ -1485,7 +1498,6 @@ namespace eval ::CalaPhot {
             filtre_optique \
             niveau_message \
             tri_images \
-            format_sortie \
             type_images \
             pose_minute \
             date_images \

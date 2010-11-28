@@ -5,7 +5,7 @@
 #
 # @brief Routines de gestion des affichages de Calaphot
 #
-# $Id: calaphot_graph.tcl,v 1.17 2010-11-28 07:21:23 jacquesmichelet Exp $
+# $Id: calaphot_graph.tcl,v 1.18 2010-11-28 09:10:09 jacquesmichelet Exp $
 
 namespace eval ::CalaPhot {
 
@@ -1101,12 +1101,12 @@ namespace eval ::CalaPhot {
             -sticky w \
             -row $ligne \
             -column $colonne
-        foreach choix {modelisation ouverture sextractor} {
+        foreach choix { modelisation ouverture sextractor } {
             radiobutton $t2.bmode$choix \
                 -variable ::CalaPhot::parametres(mode) \
                 -text $calaphot(texte,mode_$choix) \
                 -value $choix \
-                -command {::CalaPhot::AffichageVariable $::CalaPhot::parametres(mode) $audace(base).saisie.listes.canevas $audace(base).saisie.listes.yscroll $audace(base).saisie.listes.canevas.t}
+                -command { ::CalaPhot::AffichageVariable $::CalaPhot::parametres(mode) $audace(base).saisie.listes.canevas $audace(base).saisie.listes.yscroll $audace(base).saisie.listes.canevas.t }
             incr colonne
             grid $t2.bmode$choix \
                 -sticky w \
@@ -1115,9 +1115,9 @@ namespace eval ::CalaPhot {
         }
 
         set ligne 2
-        foreach champ {type_images defocalisation date_images tri_images pose_minute format_sortie reprise_astres} \
-                valeur(0) {non_recalees non debut_pose non seconde cdr non} \
-                valeur(1) {recalees oui milieu_pose oui minute canopus oui} {
+        foreach champ { type_images defocalisation date_images tri_images pose_minute reprise_astres } \
+                valeur(0) { non_recalees non debut_pose non seconde non } \
+                valeur(1) { recalees oui milieu_pose oui minute oui } {
             label $t2.l$champ \
                 -text $calaphot(texte,$champ)
             set colonne 0
@@ -1125,7 +1125,7 @@ namespace eval ::CalaPhot {
                 -row $ligne \
                 -column $colonne \
                 -sticky w
-            for {set i 0} {$i <= 1} {incr i} {
+            for { set i 0 } { $i <= 1 } { incr i } {
                 radiobutton $t.trame2.b$i$champ \
                     -variable ::CalaPhot::parametres($champ) \
                     -text $calaphot(texte,${champ}_${i}) \
@@ -1483,7 +1483,16 @@ namespace eval ::CalaPhot {
         }
 
         # S'il y a eu un changement, on force la saisie des astres
-        if { [ DetectionChangementParamCritiques ] } {
+        set param_critiques [ list \
+            source \
+            indice_premier \
+            indice_dernier \
+            tri_images \
+            type_images \
+            pose_minute \
+            date_images \
+        ]
+        if { [ DetectionChangementParamCritiques $param_critiques ] } {
             set parametres(reprise_astres) non
         }
 
