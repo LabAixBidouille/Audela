@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.159 2010-10-16 08:54:07 robertdelmas Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.160 2010-11-28 18:49:38 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -766,7 +766,7 @@ namespace eval ::confVisu {
                   #--- je controle les ordonnees
                   ###set y [lindex $ydata $i]
                   set y [lindex [ buf$bufNo getpix [ list $i 1 ] ] 1]
-                  if { $y == "NULL" || $y == "-1.#QNAN0"} {
+                  if { $y == "NULL" || $y == "-1.#QNAN0" || $y == "-1.#IND00" } {
                      set y 0
                   }
                   lappend ydata2 $y
@@ -1001,6 +1001,64 @@ namespace eval ::confVisu {
       variable private
 
       return [$private($visuNo,This).fra1.sca2 get]
+   }
+
+   #------------------------------------------------------------
+   # incrementZoom
+   #    incremente les valeurs du zoom
+   #  parametres :
+   #    visuNo: numero de la visu
+   #------------------------------------------------------------
+   proc incrementZoom { visuNo } {
+      variable private
+
+      #--- je selectionne la nouvelle valeur du zoom
+      if { $private($visuNo,zoom) == "0.125" } {
+         set private($visuNo,zoom) "0.25"
+      } elseif { $private($visuNo,zoom) == "0.25" } {
+         set private($visuNo,zoom) "0.5"
+      } elseif { $private($visuNo,zoom) == "0.5" } {
+         set private($visuNo,zoom) "1"
+      } elseif { $private($visuNo,zoom) == "1" } {
+         set private($visuNo,zoom) "2"
+      } elseif { $private($visuNo,zoom) == "2" } {
+         set private($visuNo,zoom) "4"
+      } elseif { $private($visuNo,zoom) == "4" } {
+         set private($visuNo,zoom) "8"
+      } elseif { $private($visuNo,zoom) == "8" } {
+         set private($visuNo,zoom) "8"
+      }
+      #--- j'applique le nouveau zoom
+      ::confVisu::setZoom $visuNo $private($visuNo,zoom)
+   }
+
+   #------------------------------------------------------------
+   # decrementZoom
+   #    decremente les valeurs du zoom
+   #  parametres :
+   #    visuNo: numero de la visu
+   #------------------------------------------------------------
+   proc decrementZoom { visuNo } {
+      variable private
+
+      #--- je selectionne la nouvelle valeur du zoom
+      if { $private($visuNo,zoom) == "8" } {
+         set private($visuNo,zoom) "4"
+      } elseif { $private($visuNo,zoom) == "4" } {
+         set private($visuNo,zoom) "2"
+      } elseif { $private($visuNo,zoom) == "2" } {
+         set private($visuNo,zoom) "1"
+      } elseif { $private($visuNo,zoom) == "1" } {
+         set private($visuNo,zoom) "0.5"
+      } elseif { $private($visuNo,zoom) == "0.5" } {
+         set private($visuNo,zoom) "0.25"
+      } elseif { $private($visuNo,zoom) == "0.25" } {
+         set private($visuNo,zoom) "0.125"
+      } elseif { $private($visuNo,zoom) == "0.125" } {
+         set private($visuNo,zoom) "0.125"
+      }
+      #--- j'applique le nouveau zoom
+      ::confVisu::setZoom $visuNo $private($visuNo,zoom)
    }
 
    #------------------------------------------------------------
@@ -3594,16 +3652,37 @@ proc ::confVisu::getHduList { visuNo } {
 }
 
 #------------------------------------------------------------
+# ::confVisu::getHduName
+#    retourne le nom du HDU courant
+#
+# @param visuNo : numero de la visu
+# @return nom du HDU  ( chaine vide si l'image n'est pas une image FITS)
+#------------------------------------------------------------
+proc ::confVisu::getHduName { visuNo } {
+   variable private
+
+   if { [llength $private($visuNo,fitsHduList)] > 0 } {
+      #--- je recupere le nom du HDU numero $private($visuNo,currentHduNo)
+      set hduName [lindex [ lindex $private($visuNo,fitsHduList) [expr $private($visuNo,currentHduNo) -1] 0 ]]
+   } else {
+      set hduName ""
+   }
+   return $hduName
+}
+
+#------------------------------------------------------------
 # ::confVisu::getHduNo
 #    retourne le numero du HDU courant
 #
-#    format :  { $hduName $hduType $hduNaxes }
+# @param visuNo : numero de la visu
+# @return numero du HDU ( le numero du premier HDU est 1)
 #------------------------------------------------------------
 proc ::confVisu::getHduNo { visuNo } {
    variable private
 
    return $private($visuNo,currentHduNo)
 }
+
 
 #------------------------------------------------------------
 # ::confVisu::showHduList
