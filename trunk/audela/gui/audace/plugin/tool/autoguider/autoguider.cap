@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.40 2010-09-21 17:01:33 robertdelmas Exp $
+# Mise a jour $Id: autoguider.cap,v 1.41 2010-12-05 14:23:11 michelpujol Exp $
 #
 
 #=========================================================================
@@ -73,6 +73,9 @@ set caption(autoguider,searchFwhm)               "Min. Fwhm"
 set caption(autoguider,searchRadius)             "Search Radius (pixel)"
 set caption(autoguider,searchThreshold)          "Min. Luminosity (2)"
 
+set caption(autoguider,telescope)                "Telescope"
+set caption(autoguider,centerSpeed)              "Centering Speed"
+
 set caption(autoguider,noSignal)                 "Signal is under detection threshold"
 
 # *************** Version française ***************************
@@ -139,6 +142,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,searchFwhm)            "Fwhm mini"
    set caption(autoguider,searchRadius)          "Rayon de recherche (pixel)"
    set caption(autoguider,searchThreshold)       "Intensité mini (2)"
+
+   set caption(autoguider,telescope)             "Telescope"
+   set caption(autoguider,centerSpeed)           "Vitesse de centrage"
 
    set caption(autoguider,noSignal)              "L'étoile est en dessous du seuil de détection"
 
@@ -207,6 +213,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,searchRadius)          "Raggio di ricerca (pixel)"
    set caption(autoguider,searchThreshold)       "Intensita` minima (2)"
 
+   set caption(autoguider,telescope)             "Telescopio"
+   set caption(autoguider,centerSpeed)           "Velocita` di centraggio"
    set caption(autoguider,noSignal)              "L'oggetto è sotto la soglia di detezione"
 
 # *************** Version espagnole ***************************
@@ -274,6 +282,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,searchRadius)          "Radio de búsqueda (pixel)"
    set caption(autoguider,searchThreshold)       "Mínima luminosidad (2)"
 
+   set caption(autoguider,telescope)             "Telescopio"
+   set caption(autoguider,centerSpeed)           "Velocidad de centrado"
    set caption(autoguider,noSignal)              "La señal es inferior al umbral de detección"
 
 # *************** Version allemande ***************************
@@ -341,6 +351,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,searchRadius)          "Radius Durchsuchung (Pixel)"
    set caption(autoguider,searchThreshold)       "Min. Licht (2)"
 
+   set caption(autoguider,telescope)             "Teleskop"
+   set caption(autoguider,centerSpeed)           "Zentrierung Geschwindigkeit"
    set caption(autoguider,noSignal)              "Das Signal ist unter die Nachweisgrenze"
 
 # *************** Version portugaise **************************
@@ -408,6 +420,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,searchRadius)          "Raio de pesquisa (pixel)"
    set caption(autoguider,searchThreshold)       "Luminosidade min. (2)"
 
+   set caption(autoguider,telescope)             "Telescópio"
+   set caption(autoguider,centerSpeed)           "Velocidade de centragem"
    set caption(autoguider,noSignal)              "Sinal está abaixo do limiar de detecção"
 
 # *************** Version danoise *****************************
@@ -475,6 +489,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,searchRadius)          "Search Radius (pixel)"
    set caption(autoguider,searchThreshold)       "Min. Luminosity (2)"
 
+   set caption(autoguider,telescope)             "Telescope"
+   set caption(autoguider,centerSpeed)           "Centering Speed"
    set caption(autoguider,noSignal)              "Signal is under detection threshold"
 
 # *************** Version ukrainienne *************************
@@ -542,6 +558,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,searchRadius)          "Search Radius (pixel)"
    set caption(autoguider,searchThreshold)       "Min. Luminosity (2)"
 
+   set caption(autoguider,telescope)             "Telescope"
+   set caption(autoguider,centerSpeed)           "Centering Speed"
    set caption(autoguider,noSignal)              "Signal is under detection threshold"
 
 # *************** Version russe *******************************
@@ -609,6 +627,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,searchRadius)          "Search Radius (pixel)"
    set caption(autoguider,searchThreshold)       "Min. Luminosity (2)"
 
+   set caption(autoguider,telescope)             "Telescope"
+   set caption(autoguider,centerSpeed)           "Centering Speed"
    set caption(autoguider,noSignal)              "Signal is under detection threshold"
 
 }
