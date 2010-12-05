@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise à jour $Id: autoguider.tcl,v 1.49 2010-10-10 20:02:23 michelpujol Exp $
+# Mise à jour $Id: autoguider.tcl,v 1.50 2010-12-05 14:25:42 michelpujol Exp $
 #
 
 package provide autoguider 1.3
@@ -127,6 +127,7 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists conf(autoguider,searchFwhm)] }           { set conf(autoguider,searchFwhm)           "3" }
    if { ! [ info exists conf(autoguider,searchRadius)] }         { set conf(autoguider,searchRadius)         "4" }
    if { ! [ info exists conf(autoguider,searchThreshold)] }      { set conf(autoguider,searchThreshold)      "40" }
+   if { ! [ info exists conf(autoguider,centerSpeed)] }          { set conf(autoguider,centerSpeed)          "2" }
 
    #--- je supprime les variables obsoletes
    if { [ info exists conf(autoguider,darkEnabled)] }  { unset conf(autoguider,darkEnabled)  }
@@ -601,7 +602,6 @@ proc ::autoguider::clearSearchStar { visuNo } {
 #------------------------------------------------------------
 proc ::autoguider::startCenter { visuNo } {
    variable private
-   global conf
 
    #--- je ne fais rien si une demande d'arret est en cours
    if { $private($visuNo,acquisitionState) == 1 } {
@@ -620,7 +620,7 @@ proc ::autoguider::startCenter { visuNo } {
 
    #--- j'active l'envoi des commandes a la monture si c'est demande
    if { $private($visuNo,mountEnabled) == 1 } {
-      ::telescope::setSpeed 1
+      ::telescope::setSpeed $::conf(autoguider,centerSpeed)
    }
 
    ###set ::conf(autoguider,detection)       "PSF"
@@ -634,15 +634,16 @@ proc ::autoguider::startCenter { visuNo } {
       -command "::autoguider::stopAcquisition $visuNo"
    #--- J'associe la commande d'arret a la touche ESCAPE
    bind all <Key-Escape> "::autoguider::stopAcquisition $visuNo"
+   update
 
    #--- je lance le centrage
    ###set binning [list [string range $::conf(autoguider,binning) 0 0] [string range $::conf(autoguider,binning) 2 2]]
    ::camera::centerBrightestStar $camItem "::autoguider::callbackAcquisition $visuNo" $::conf(autoguider,pose) $::conf(autoguider,originCoord) $private($visuNo,targetCoord) $::conf(autoguider,angle) $::conf(autoguider,targetBoxSize) $private($visuNo,mountEnabled) $::conf(autoguider,alphaSpeed) $::conf(autoguider,deltaSpeed) $::conf(autoguider,alphaReverse) $::conf(autoguider,deltaReverse) $::conf(autoguider,seuilx) $::conf(autoguider,seuily)
 
    #--- j'attends la fin du centrage
-   vwait ::autoguider::private($visuNo,acquisitionState)
+   ###vwait ::autoguider::private($visuNo,acquisitionState)
 
-   return $private($visuNo,acquisitionResult)
+   return ""
 }
 
 #------------------------------------------------------------
@@ -655,7 +656,6 @@ proc ::autoguider::startCenter { visuNo } {
 #------------------------------------------------------------
 proc ::autoguider::startGuiding { visuNo } {
    variable private
-   global conf
 
    if { $private($visuNo,acquisitionState) == 1 } {
       return ""
@@ -720,14 +720,15 @@ proc ::autoguider::callbackAcquisition { visuNo command args } {
          "autovisu" {
             if { $::conf(autoguider,showImage) == "1" } {
                ::confVisu::autovisu $visuNo
-               ###visu1 disp
             }
-            #--- j'affiche les axes si ce n'est pas deja fait
-            if {  [$private($visuNo,hCanvas) gettags "::autoguider::axis" ] == "" } {
-               createAlphaDeltaAxis $visuNo $::conf(autoguider,originCoord) $::conf(autoguider,angle)
+            if { [winfo exists $private($visuNo,This) ] } {
+               #--- j'affiche les axes si ce n'est pas deja fait
+               if {  [$private($visuNo,hCanvas) gettags "::autoguider::axis" ] == "" } {
+                  createAlphaDeltaAxis $visuNo $::conf(autoguider,originCoord) $::conf(autoguider,angle)
+               }
+               #--- j'affiche le temps ecoulee depuis l'image precedente
+               set private($visuNo,interval) [format "%###0d ms" [lindex $args 0]]
             }
-            #--- j'affiche le temps ecoulee depuis l'image precedente
-            set private($visuNo,interval) [format "%###0d ms" [lindex $args 0]]
          }
          "error" {
             console::affiche_erreur "callbackGuide visu=$visuNo command=$command $args\n"
@@ -735,13 +736,15 @@ proc ::autoguider::callbackAcquisition { visuNo command args } {
          }
          "targetCoord" {
             # args : $starStatus $starCoord $dx $dy $maxIntensity $istar $cstar $astar $message
-            set starStatus [lindex $args 0]
-            set private($visuNo,targetCoord) [lindex $args 1]
-            set private($visuNo,dx) [format "%##0.1f" [lindex $args 2]]
-            set private($visuNo,dy) [format "%##0.1f" [lindex $args 3]]
-            set private($visuNo,flux) [format "%##0.0f" [lindex $args 4]]
-            ::autoguider::setFlux $visuNo $starStatus
-            ::autoguider::moveTarget $visuNo $private($visuNo,targetCoord)
+            if { [winfo exists $private($visuNo,This)] } {
+               set starStatus [lindex $args 0]
+               set private($visuNo,targetCoord) [lindex $args 1]
+               set private($visuNo,dx) [format "%##0.1f" [lindex $args 2]]
+               set private($visuNo,dy) [format "%##0.1f" [lindex $args 3]]
+               set private($visuNo,flux) [format "%##0.0f" [lindex $args 4]]
+               ::autoguider::setFlux $visuNo $starStatus
+               ::autoguider::moveTarget $visuNo $private($visuNo,targetCoord)
+            }
          }
          "mountInfo" {
             set private($visuNo,delay,alpha) "[lindex $args 1] [lindex $args 0]"
@@ -795,6 +798,8 @@ proc ::autoguider::stopAcquisition { visuNo } {
       bind all <Key-Escape> ""
       #--- j'initialise la variable
       set private($visuNo,acquisitionState) 0
+      #--- j'applique les changements
+      update
    }
 }
 
