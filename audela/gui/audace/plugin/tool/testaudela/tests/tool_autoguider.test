@@ -1,0 +1,134 @@
+set visuNo 1
+
+#-------------------------------------------------------------------------------
+test tool_autoguider_connect_tel { connect telescope } -constraints {
+   AUDACE ASCOM
+} -setup {
+   ::confTel::run
+   ::confTel::selectNotebook "ascom"
+   #--- je selectionne le driver "simulator"
+   ::testaudela::clicCombobox  .audace.confTel.usr.onglet.fascom.driver  "{} ScopeSim.Telescope"
+   #--- je n'affiche pas de raquette
+   ::testaudela::clicCheckButton .audace.confTel.usr.onglet.fascom.raquette 0
+   #--- j'applique les choix et je ferme la fenetre de configuration du telescope
+   ::testaudela::clicButton .audace.confTel.cmd.ok
+
+} -body {
+   update
+   set result [::confTel::getPluginProperty "name"]
+   return $result
+} -cleanup  {
+} -result "ASCOM"
+
+#-------------------------------------------------------------------------------
+test tool_autoguider_connect_cam { connect camera } -constraints {
+   AUDACE ASCOM
+} -setup {
+   #--- je configure la camera "ascomcam"
+   ::confCam::run
+   ::confCam::selectNotebook "A" "ascomcam"
+   #--- je selectionne le driver "CCDSimulator.Camera"
+   ::testaudela::clicCombobox  .audace.confCam.usr.onglet.fascomcam.frame1.frame3.driver  "CCDSimulator.Camera"
+   ::confCam::ok
+} -body {
+   set result [::confCam::getPluginProperty  A product]
+   return $result
+} -cleanup  {
+} -result "ascomcam"
+
+#-------------------------------------------------------------------------------
+test tool_autoguider_centerSpeed1 { configure center speed=1  } -constraints {
+   AUDACE ASCOM
+} -setup {
+   #--- je charge le package autoguider
+   package require autoguider
+   ::confVisu::selectTool $visuNo ::autoguider
+
+   #--- pose = 0.3 s
+   ::testaudela::clicCombobox .audace.tool.autoguider.pose.combo 0.3
+   #--- intervalle = 0.3s
+   ::testaudela::clicCombobox .audace.tool.autoguider.intervalle.combo 0.3
+   #--- position de la consigne = 348 248
+   ::testaudela::putEntry .audace.tool.autoguider.suivi.origin_x 348
+   ::testaudela::putEntry .audace.tool.autoguider.suivi.origin_y 248
+   #--- suivi actif = 1
+   ::testaudela::clicCheckButton .audace.tool.autoguider.suivi.montEnabled 1
+} -body {
+   #--- j'ouvre la fenetre de configuration de l'autoguidage
+   ::testaudela::clicButton .audace.tool.autoguider.config.but_config
+   #--- je fixe la vitesse de centrage à 1
+   ::testaudela::clicCombobox  .autoguiderconfig$visuNo.frame1.telescope.speedList "1"
+   #--- j'applique les choix et je ferme la fenetre de configuration du telescope
+   ::testaudela::clicButton .autoguiderconfig$visuNo.but_ok
+
+   #--- je cherche l'etoile la plus brillante
+   ::testaudela::clicButton .audace.tool.autoguider.suivi.search
+   #--- je lance le centrage
+   ::testaudela::clicButton .audace.tool.autoguider.suivi.center
+   #--- j'attends 2 ou 3 itérations
+   for { set i 0 } {$i < 100 } {incr i } {
+      after 10
+      update
+   }
+   #--- je verifie que la vitesse du telescope est "1"
+   if { $::audace(telescope,rate) == "1" } {
+      set result ""
+   } else {
+      set result "center speed is not 1"
+   }
+   #--- j'interrompt le centrage
+   ::testaudela::clicButton .audace.tool.autoguider.suivi.center
+   after 500
+   return $result
+} -cleanup  {
+} -result ""
+
+#-------------------------------------------------------------------------------
+test tool_autoguider_configure { configure center speed=2 } -constraints {
+   AUDACE ASCOM
+} -setup {
+} -body {
+   #--- j'ouvre la fenetre de configuration de l'autoguidage
+   ::testaudela::clicButton .audace.tool.autoguider.config.but_config
+   #--- je fixe la vitesse de centrage à 2
+   ::testaudela::clicCombobox  .autoguiderconfig$visuNo.frame1.telescope.speedList "2"
+   #--- j'applique les choix et je ferme la fenetre de configuration du telescope
+   ::testaudela::clicButton .autoguiderconfig$visuNo.but_ok
+   #--- je cherche l'etoile la plus brillante
+   ::testaudela::clicButton .audace.tool.autoguider.suivi.search
+   #--- je lance le centrage
+   ::testaudela::clicButton .audace.tool.autoguider.suivi.center
+   #--- j'attends 2 ou 3 itérations
+   for { set i 0 } {$i < 100 } {incr i } {
+      after 10
+      update
+   }
+   #--- je verifie que la vitesse du telescope est 2
+   #--- (correspond à ::audace(telescope,rate)=10 pour ascom)
+   if { $::audace(telescope,rate) == "10"  } {
+      set result ""
+   } else {
+      set result "center speed is not 2"
+   }
+   #--- j'interrompt le centrage
+   ::testaudela::clicButton .audace.tool.autoguider.suivi.center
+   after 500
+   return $result
+} -cleanup  {
+} -result ""
+
+
+#-------------------------------------------------------------------------------
+test tool_autoguider_disconnect_tel { disconnect telescope } -constraints {
+   AUDACE ASCOM
+} -setup {
+} -body {
+   update
+   return ""
+} -cleanup  {
+   #--- j'arrete le plugin autoguider
+   ::confVisu::deletePluginInstance $visuNo ::autoguider
+   ::confTel::stopPlugin
+   ::confCam::stopPlugin
+
+} -result ""
