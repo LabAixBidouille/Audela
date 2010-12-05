@@ -2,7 +2,7 @@
 # Fichier : autoguiderconfig.tcl
 # Description : Fenetre de configuration de l'autoguidage
 # Auteur : Michel PUJOL
-# Mise à jour $Id: autoguiderconfig.tcl,v 1.23 2010-09-26 09:30:47 michelpujol Exp $
+# Mise à jour $Id: autoguiderconfig.tcl,v 1.24 2010-12-05 14:21:10 michelpujol Exp $
 #
 
 ################################################################
@@ -77,20 +77,20 @@ proc ::autoguider::config::apply { visuNo } {
       set pendingUpdateAxis 1
    }
 
-  #--- je configure la soustraction du dark
-  if { [$private($visuNo,frm).dark.fileName cget -state] == "normal" } {
-     set catchResult [ catch {
-        set camItem [::confVisu::getCamItem $visuNo]
-        ::confCam::configureDark $camItem $widget($visuNo,darkEnabled) $widget($visuNo,darkFileName)
-     }]
+   #--- je configure la soustraction du dark
+   if { [$private($visuNo,frm).dark.fileName cget -state] == "normal" } {
+      set catchResult [ catch {
+         set camItem [::confVisu::getCamItem $visuNo]
+         ::confCam::configureDark $camItem $widget($visuNo,darkEnabled) $widget($visuNo,darkFileName)
+      }]
 
-     if { $catchResult != 0 } {
-        #--- j'affiche le message d'erreur
-        ::tkutil::displayErrorInfo [getLabel]
-        #--- je retourne 0 pour empecher de fermer la fenetre
-        set private($visuNo,applyError) 1
-     }
-  }
+      if { $catchResult != 0 } {
+         #--- j'affiche le message d'erreur
+         ::tkutil::displayErrorInfo [getLabel]
+         #--- je retourne 0 pour empecher de fermer la fenetre
+         set private($visuNo,applyError) 1
+      }
+   }
 
    set conf(autoguider,learn,delay)       $widget($visuNo,learn,delay)
 
@@ -114,6 +114,8 @@ proc ::autoguider::config::apply { visuNo } {
    set conf(autoguider,searchFwhm)       $widget($visuNo,searchFwhm)
    set conf(autoguider,searchRadius)     $widget($visuNo,searchRadius)
    set conf(autoguider,searchThreshold)  $widget($visuNo,searchThreshold)
+   set conf(autoguider,centerSpeed)      $widget($visuNo,centerSpeed)
+
 
    #--- je notifie la thread de la camera
    ::camera::setParam [::confVisu::getCamItem $visuNo] "seuilx" $::conf(autoguider,seuilx)
@@ -214,6 +216,7 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
    set widget($visuNo,searchFwhm)        $::conf(autoguider,searchFwhm)
    set widget($visuNo,searchRadius)      $::conf(autoguider,searchRadius)
    set widget($visuNo,searchThreshold)   $::conf(autoguider,searchThreshold)
+   set widget($visuNo,centerSpeed)       $::conf(autoguider,centerSpeed)
 
    #--- la configuration de la soustraction sera faite par onChangeCamera
    set widget($visuNo,darkEnabled) 0
@@ -314,6 +317,20 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
       pack $frm.orientation.angle -in [$frm.orientation getframe] -anchor w -side top -fill x -expand 0
    grid $frm.orientation -row 3 -column 0 -columnspan 1 -sticky ewns
 
+   #--- Frame telescope
+   TitleFrame $frm.telescope -borderwidth 2 -text "$caption(autoguider,telescope)"
+      label $frm.telescope.speedLabel -text "$caption(autoguider,centerSpeed)"
+      pack $frm.telescope.speedLabel -in [$frm.telescope getframe] -anchor w -side left -fill x -expand 0
+      set speedList [::telescope::getSpeedValueList]
+      ComboBox $frm.telescope.speedList -relief sunken -borderwidth 1 -editable 0 \
+         -height [llength $speedList] \
+         -width [ ::tkutil::lgEntryComboBox $speedList ] \
+         -textvariable ::autoguider::config::widget($visuNo,centerSpeed) \
+         -values $speedList
+      pack $frm.telescope.speedList -in [$frm.telescope getframe] -anchor w -side left -fill x -expand 0
+   grid $frm.telescope -row 4 -column 0 -columnspan 1 -sticky ewns
+
+
    #--- Frame Cumul
    TitleFrame $frm.cumul -borderwidth 2 -text "$caption(autoguider,cumulTitle)"
       LabelEntry $frm.cumul.nb -label "$caption(autoguider,cumulNb)" \
@@ -325,7 +342,7 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
          -command "::autoguider::config::setCumul $visuNo" \
          -variable ::autoguider::config::widget($visuNo,cumulEnabled)
       pack $frm.cumul.cumulEnabled -in [$frm.cumul getframe] -anchor w -pady 2 -side top -fill x -expand 0
-   grid $frm.cumul -row 3 -column 1 -columnspan 1 -rowspan 1 -sticky ewns
+   grid $frm.cumul -row 3 -column 1 -columnspan 1 -rowspan 2 -sticky ewns
 
    #--- Frame dark
    TitleFrame $frm.dark -borderwidth 2 -text "$caption(autoguider,darkTitle)"
@@ -345,7 +362,7 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
 
       grid columnconfigure [ $frm.dark getframe ] 0 -weight 1
 
-   grid $frm.dark -row 4 -column 1 -columnspan 1 -rowspan 1 -sticky ewns
+   grid $frm.dark -row 5 -column 1 -columnspan 1 -rowspan 1 -sticky ewns
 
    #--- Frame search
    TitleFrame $frm.search -borderwidth 2 -text "$caption(autoguider,searchTitle)"
@@ -365,7 +382,7 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
          -labeljustify left -labelwidth 22 -width 3 -justify right \
          -textvariable ::autoguider::config::widget($visuNo,searchThreshold)
       pack $frm.search.threshold -in [$frm.search getframe] -anchor w -side top -fill x -expand 0
-   grid $frm.search -row 4 -column 0 -columnspan 1 -rowspan 1 -sticky ewns
+   grid $frm.search -row 5 -column 0 -columnspan 1 -rowspan 1 -sticky ewns
 
    grid columnconfigure  $frm 0 -weight 1
    grid columnconfigure  $frm 1 -weight 1
