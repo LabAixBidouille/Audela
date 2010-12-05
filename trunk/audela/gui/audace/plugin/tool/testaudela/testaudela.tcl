@@ -2,7 +2,7 @@
 # Fichier : testaudela.tcl
 # Description : Outil de test automatique pour AudeLA
 # Auteurs : Michel Pujol
-# Mise Ã  jour $Id: testaudela.tcl,v 1.17 2010-11-28 17:39:47 michelpujol Exp $
+# Mise Ã  jour $Id: testaudela.tcl,v 1.18 2010-12-05 14:13:58 michelpujol Exp $
 #
 
 #####################
@@ -1047,27 +1047,43 @@ proc ::testaudela::clicCheckButton { buttonPath { state "" } } {
 
 #----------------------------------------------------
 #  ::testaudela::clicCombobox
-#    simule un clic sur une combobox
-# parametres :
-#    comboPath : chemin complet du bouton de la combobox
-#    index : index de l'item selectionne
-#            Le premier item est a l'index 0
-#            Valeurs prÃ©definies : first last next previous
-# exemples :
-#    clicCheckButton .audace.acqfc.mode 0
+#    simule un clic sur une combobox pour selectionner un valeur
+#    la valeur peut être
+#       - le numero de ligne (numero precede de @)
+#       - une position predefine (first last next previous)
+#       - la valeur affichee dans une ligne (attention : dépend de la langue choisie)
+# @param comboPath : chemin complet du bouton de la combobox
+# @param value : numero de la ligne ou valeur de la ligne a selectionner
+#            Le numero de la premiere est 0
+#            Valeurs prédefinies : first last next previous
+# @return void
+# @exemples :
+#    clicCheckButton .audace.acqfc.mode @0
 #    clicCheckButton .audace.acqfc.mode first
 #    clicCheckButton .audace.acqfc.mode last
+#    clicCheckButton .audace.acqfc.mode "Une série"
 #----------------------------------------------------
-proc ::testaudela::clicCombobox { comboPath index} {
-   if { [string first "$index" "first last next previous" ] == -1 } {
-      #--- c'est un numero, il faut ajouter le prefixe "@"
-      $comboPath  setvalue "@$index"
+proc ::testaudela::clicCombobox { comboPath value} {
+   if { [string first "@" $value ] != -1 } {
+      #--- c'est un numero d'index commençant par @
+      $comboPath setvalue $value
+   } elseif { [string first "first last next previous" $value ] != -1 } {
+      #--- c'est une valeur predefinie ( first last next previous)
+      $comboPath setvalue $value
    } else {
-      #--- c'est une valeur predefinie
-      $comboPath  setvalue $index
+      #--- c'est le contenu d'une ligne
+      #--- je cherche l'index de la ligne dans la liste des valeurs de la combobox
+      set index [lsearch [$comboPath cget -values] $value]
+      if { $index != -1 } {
+          $comboPath setvalue "@$index"
+      } else {
+         #--- erreur : la valeur n'a pas ete trouvee
+         error "\"$value\" not found in combobox $comboPath"
+      }
    }
    #--- je lance la procedure de la combobox apres une selection
    eval [$comboPath cget -modifycmd]
+   return ""
 }
 
 #----------------------------------------------------
