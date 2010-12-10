@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.160 2010-11-28 18:49:38 michelpujol Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.161 2010-12-10 22:47:56 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -776,9 +776,9 @@ namespace eval ::confVisu {
                #--- je supprime le zoom, au cas ou il aurait ete applique precedemement
                ::confVisu::onGraphUnzoom $visuNo
 
-               $tkgraph axis configure x2 -hide true
-               $tkgraph axis configure y2 -hide true
-               $tkgraph configure  -plotbackground "white"
+               ###$tkgraph axis configure x2 -hide true
+               ###$tkgraph axis configure y2 -hide true
+               ###$tkgraph configure  -plotbackground "white"
                #--- j'affiche le graphe
                ::confVisu::setMode $visuNo "graph"
                #--- je supprime les glissieres R, V et B
@@ -3246,13 +3246,12 @@ proc ::confVisu::createGraph { visuNo } {
    }
 
    #--- je cree le graphique
-   blt::graph $This.graph  -plotbackground "white"
+   blt::graph $This.graph  -plotbackground $::audace(color,backColor)
    $This.graph crosshairs on
    $This.graph crosshairs configure -color red -dashes 2
    $This.graph axis configure x2 -hide true
    $This.graph axis configure y2 -hide true
    $This.graph legend configure -hide yes
-   $This.graph configure  -plotbackground "white"
 
    bind $This.graph <Motion>          "::confVisu::onGraphMotion $visuNo %W %x %y"
    bind $This.graph <ButtonPress-1>   "::confVisu::onGraphRegionStart $visuNo %W %x %y "
