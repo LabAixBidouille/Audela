@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: keyword.tcl,v 1.47 2010-11-12 22:52:53 robertdelmas Exp $
+# Mise à jour $Id: keyword.tcl,v 1.48 2010-12-10 22:47:19 michelpujol Exp $
 #
 
 namespace eval ::keyword {
@@ -82,7 +82,7 @@ proc ::keyword::header { visuNo args } {
          #--- je charge les mots cles du HDU de la table
          set catchResult [ catch {
              #--- j'ouvre le fichier d'entree
-             set hFile [fits open $fileName]
+             set hFile [fits open $fileName 0]
              set hduNo [::confVisu::getHduNo $visuNo]
              #--- je pointe le HDU courant
              $hFile move [::confVisu::getHduNo $visuNo]

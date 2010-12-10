@@ -2,7 +2,7 @@
 # Fichier : exportbess.tcl
 # Description : Export de fichier au format BeSS
 # Auteurs : Michel Pujol
-# Mise a jour $Id: exportbess.tcl,v 1.2 2010-01-31 11:48:15 michelpujol Exp $
+# Mise a jour $Id: exportbess.tcl,v 1.3 2010-12-10 22:49:37 michelpujol Exp $
 #
 
 ################################################################
@@ -369,7 +369,7 @@ proc ::eshel::exportbess::loadFile { visuNo inputFileName keywordHduIndex } {
    set catchResult [catch {
 
       #--- j'ouvre le fichier d'entree
-      set hFile [fits open $inputFileName]
+      set hFile [fits open $inputFileName 0]
       set nbHdu [$hFile info nhdu]
 
       #--- je verifie que le hduIndex existe dans le fichier
@@ -743,7 +743,7 @@ proc ::eshel::exportbess::saveFile { visuNo } {
    set hBess ""
    set catchResult [catch {
       #--- j'ouvre le fichier d'entree
-      set hFile [fits open $private($visuNo,inputFileName)]
+      set hFile [fits open $private($visuNo,inputFileName) 0]
 
       #--- je recupere les numeros des HDU a exporter
       set nhdu [$hFile info nhdu ]

@@ -2,7 +2,7 @@
 # Fichier : eshelvisu.tcl
 # Description : Visionneuse d'images eShel
 # Auteurs : Michel Pujol
-# Mise a jour $Id: eshelvisu.tcl,v 1.12 2010-11-28 18:53:15 michelpujol Exp $
+# Mise a jour $Id: eshelvisu.tcl,v 1.13 2010-12-10 22:48:43 michelpujol Exp $
 #
 
 namespace eval ::eshelvisu {
@@ -248,6 +248,8 @@ proc ::eshelvisu::startTool { visuNo } {
    onSelectHdu $visuNo
 
    pack $private($visuNo,This) -side left -fill y
+   ::confColor::applyColor $private($visuNo,This)
+   ::confColor::applyColor $tkToolBar
 }
 
 #------------------------------------------------------------
@@ -462,7 +464,7 @@ proc ::eshelvisu::showOrderLabel { visuNo } {
    #--- je pointe la table des ordres
    set hFile ""
    set catchResult [catch {
-      set hFile [fits open $private($visuNo,fileName)]
+      set hFile [fits open $private($visuNo,fileName) 0]
       $hFile move $private($visuNo,orderHduNum)
       #--- je recupere les minOrder et maxOrder
       ###set nbOrder [lindex [lindex [$hFile get keyword "NAXIS2"] 0] 1]
@@ -556,7 +558,7 @@ proc ::eshelvisu::showCalibrationLine { visuNo } {
 
    set hFile ""
    set catchResult [catch {
-         set hFile [fits open $private($visuNo,fileName)]
+         set hFile [fits open $private($visuNo,fileName) 0]
          #--- je recupere les parametres du spectre dans la table des ordres
          $hFile move $private($visuNo,orderHduNum)
 
