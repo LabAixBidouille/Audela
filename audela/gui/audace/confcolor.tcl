@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise à jour $Id: confcolor.tcl,v 1.35 2010-02-15 17:35:16 robertdelmas Exp $
+# Mise à jour $Id: confcolor.tcl,v 1.36 2010-12-10 22:46:20 michelpujol Exp $
 #
 
 namespace eval confColor:: {
@@ -606,7 +606,7 @@ namespace eval confColor:: {
             #--- Je mets a jour la couleur des widgets
             if { [ string first simple $w ] == -1 } {
                $w configure -bg $audace(color,backColor) -fg $audace(color,textColor) \
-                  -plotbackground $audace(color,entryTextColor)
+                  -plotbackground $audace(color,backColor)
                $w axis configure x  -hide no -color $audace(color,textColor) -titlecolor $audace(color,textColor)
                $w axis configure x2 -hide no -color $audace(color,textColor) -titlecolor $audace(color,textColor)
                $w axis configure y  -hide no -color $audace(color,textColor) -titlecolor $audace(color,textColor)
