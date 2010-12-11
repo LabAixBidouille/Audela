@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.57 2010-10-03 14:32:07 robertdelmas Exp $
+# @version  $Id: sophiecommand.tcl,v 1.58 2010-12-11 10:47:13 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -900,24 +900,8 @@ proc ::sophie::loadBias { biasWindow } {
 proc ::sophie::incrementZoom { } {
    variable private
 
-   if { $private(zoom) == "0.125" } {
-      set private(zoom) "0.25"
-   } elseif { $private(zoom) == "0.25" } {
-      set private(zoom) "0.5"
-   } elseif { $private(zoom) == "0.5" } {
-      set private(zoom) "1"
-   } elseif { $private(zoom) == "1" } {
-      set private(zoom) "2"
-   } elseif { $private(zoom) == "2" } {
-      set private(zoom) "4"
-   } elseif { $private(zoom) == "4" } {
-      set private(zoom) "8"
-   } elseif { $private(zoom) == "8" } {
-      set private(zoom) "8"
-   }
-   ::confVisu::setZoom $::audace(visuNo) $private(zoom)
+   ::confVisu::incrementZoom $::audace(visuNo)
    set private(zoom) [ ::confVisu::getZoom $::audace(visuNo) ]
-   ###set private(AsynchroneParameter) 1
    ::camera::setAsynchroneParameter $private(camItem) "zoom" $private(zoom)
 
 }
@@ -929,24 +913,8 @@ proc ::sophie::incrementZoom { } {
 proc ::sophie::decrementZoom { } {
    variable private
 
-   if { $private(zoom) == "8" } {
-      set private(zoom) "4"
-   } elseif { $private(zoom) == "4" } {
-      set private(zoom) "2"
-   } elseif { $private(zoom) == "2" } {
-      set private(zoom) "1"
-   } elseif { $private(zoom) == "1" } {
-      set private(zoom) "0.5"
-   } elseif { $private(zoom) == "0.5" } {
-      set private(zoom) "0.25"
-   } elseif { $private(zoom) == "0.25" } {
-      set private(zoom) "0.125"
-   } elseif { $private(zoom) == "0.125" } {
-      set private(zoom) "0.125"
-   }
-   ::confVisu::setZoom $::audace(visuNo) $private(zoom)
+   ::confVisu::decrementZoom $::audace(visuNo)
    set private(zoom) [ ::confVisu::getZoom $::audace(visuNo) ]
-   ###set private(AsynchroneParameter) 1
    ::camera::setAsynchroneParameter $private(camItem) "zoom" $private(zoom)
 }
 
