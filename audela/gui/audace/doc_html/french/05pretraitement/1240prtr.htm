@@ -1,0 +1,213 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+  <title>Pr&#233;traitement</title>
+</head>
+<body>
+<p class="date">Date de mise &#224; jour : 11 d&#233;cembre 2010</p>
+<h1>Pr&#233;traitement</h1>
+<h2>1. Fonctions</h2>
+<p>Ce script permet de :</p>
+<ul>
+  <li>Mettre en &#339;uvre toutes les fonctions IMA/STACK de la
+librairie TT : ADD, MEAN, MED, PROD, PYTHGORE, SHUTTER, SIG, SK
+et SORT.</li>
+  <li>Mettre en &#339;uvre certaines fonctions IMA/SERIES de la
+librairie TT :
+    <ul>
+      <li>Transformer (g&#233;om&#233;trie) : INVERT mirror, INVERT
+flip, INVERT xy, WINDOW, RESAMPLE, TRANS, BINX, MEDIANX, SORTX ,
+BINY, LOPT, MEDIANY, SORTY, ROT, ROTENTIERE, REC2POL et
+POL2REC.</li>
+      <li>Modifier (les niveaux) : ADD, SUB, DIV, PROD, OFFSET, MULT,
+LOG, NORMOFFET, NORMGAIN et &#233;cr&#234;ter les
+extr&#234;mes.</li>
+      <li>Am&#233;liorer : UNSMEAR, COSMIC, BACK et OPT.</li>
+      <li>Filtrer : CONV kernel_type=gaussian, CONV kernel_type=morlet,
+CONV kernel_type=mexican, RGRADIENT, RADIAL et HOUGH.</li>
+      <li>Extraire : PROFILE direction=x, PROFILE direction=y et
+MATRIX.</li>
+    </ul>
+  </li>
+  <li>Sur une image, une s&#233;rie index&#233;e ou
+d&#233;pareill&#233;e. Limitation : Les fonctions PROFILE
+direction=x, PROFILE direction=y et MATRIX n'admettent qu'une
+seule image en entr&#233;e.</li>
+  <li>Sur des images N et B, CFA, monochromes ou couleurs.</li>
+  <li>Au format FITS, compress&#233; (gz) ou non.</li>
+  <li>Les images sources doivent &#234;tre localis&#233;es dans le
+r&#233;pertoire d&#233;fini dans
+Configuration/R&#233;pertoires/R&#233;pertoire des images. Les
+images produites et les images 'op&#233;randes' peuvent &#234;tre
+dans un r&#233;pertoire diff&#233;rent.</li>
+  <li>Dans une interface unique et a priori sans risque d'erreur
+TT.</li>
+  <li>En donnant acc&#232;s &#224; toutes les options.</li>
+</ul>
+<p>Nota : Les param&#232;tres de chaque fonction sont
+appliqu&#233;s &#224; chaque plan couleur d'une image RGB. Si ce
+n'est pas le but recherch&#233; il faudra convertir l'image RGB
+en plans couleurs avec Pr&#233;traitement/Convertir/Conversion
+RVB--&gt;R+V+B,
+traiter chaque plan comme souhait&#233; puis recompos&#233; une
+image RGB avec Pr&#233;traitement/Convertir/Conversion R+V+B--&gt;RVB.</p>
+<h2>2. Lancement</h2>
+<p>Avant de lancer une fonction, il faut d&#233;finir l'extension et la
+compression par "Configuration" --&gt; "Fichiers images".</p>
+<p>Si la s&#233;lection du r&#233;pertoire est incorrecte, il
+suffit de la modifier par "Configuration" --&gt;
+"R&#233;pertoires". La liste affich&#233;e est automatiquement
+rafra&#238;chie.</p>
+<p><img src="images/prtr.png"></p>
+<p>La fen&#234;tre comporte, de haut en bas et de
+gauche &#224; droite :</p>
+<ul>
+  <li>Un bouton de menu pour s&#233;lectionner une fonction du
+groupe d'appartenance, pour changer de groupe il faut
+s&#233;lectionner le groupe dans le menu Pr&#233;traitement, la
+fen&#234;tre et le menu du bouton sont alors
+actualis&#233;s.</li>
+  <li>La zone d'affichage des fichiers contenus dans le
+r&#233;pertoire des images pouvant &#234;tre
+s&#233;lectionn&#233;s, si une image est affich&#233;e dans la
+visu son nom est coch&#233; dans la liste. Le nom de l'image est
+accompagn&#233; du type d'image : M (monochrome) ou C (RGB) et
+de ces dimensions en pixels.</li>
+  <li>Une zone d'affichage des param&#232;tres de la fonction,
+&#224; remplir obligatoirement.</li>
+  <li>Une zone d'affichage de tous les param&#232;tres
+optionnels.</li>
+  <li>Une zone de saisie du nom du fichier de sortie, soit &#224;
+partir de la s&#233;lection d'un fichier pr&#233;sent dans le
+r&#233;pertoire des images, soit par saisie d'un nom (caract&#232;res
+de a &#224; z (majuscules ou minuscules), chiffres de 0 &#224; 9,
+underscore _ ou tiret -). Il n'est pas n&#233;cessaire d'indiquer
+l'extension. <br>
+  </li>
+  <ul>
+    <li>Nota :
+      <ul>
+        <li>Si le fichier existe d&#233;j&#224; il sera
+&#233;cras&#233;.</li>
+        <li>Si une seule image est produite son nom est celui du
+g&#233;n&#233;rique. Si plusieurs images sont produites celles-ci
+portent le nom g&#233;n&#233;rique index&#233; &#224; partir de
+1.</li>
+        <li>Cette entr&#233;e est inhib&#233;e pour les fonctions
+d'extraction num&#233;riques : Une ligne, Une colonne et Une zone
+car l'image n'est pas modifi&#233;e.</li>
+      </ul>
+    </li>
+  </ul>
+  <li>Une case &#224; cocher pour afficher ou non la derni&#232;re
+image produite lors du pr&#233;traitement.</li>
+  <li>Une case &#224; cocher pour &#233;diter ou non, dans la Console, le script
+r&#233;ellement ex&#233;cut&#233;.</li>
+  <li>Une ligne pour les messages.</li>
+  <li>Un bouton 'OK' pour lancer la conversion et puis fermer la
+fen&#234;tre.</li>
+  <li>Un bouton 'Appliquer' pour lancer la conversion.</li>
+  <li>Un bouton 'Aide g&#233;n&#233;rique' pour afficher l'aide
+sp&#233;cifique &#224; cette fen&#234;tre.</li>
+  <li>Un bouton 'Aide fonction' pour afficher l'aide
+sp&#233;cifique &#224; la fonction s&#233;lectionn&#233;e.</li>
+  <li>Un bouton 'Fermer' pour quitter.</li>
+</ul>
+<h2>3. Pr&#233;filtrage des images s&#233;lectionnables</h2>
+<p>Les fichiers affich&#233;s dans la fen&#234;tre sont
+limit&#233;s au couple {extension compression} d&#233;fini dans
+Configuration/Fichiers images... Le changement de l'un de ces
+r&#233;glages entra&#238;ne la mise &#224; jour de la liste des
+fichiers. Les fichiers produits ont la m&#234;me extension (FITS
+compress&#233; ou non).</p>
+<p>Afin de minimiser les risques d'erreur de manipulation, les
+s&#233;lections possibles sont pr&#233;filtr&#233;es :</p>
+<ul>
+  <li>Les fichiers images autres (1D) que monochromes, CFA ou RGB
+ne sont pas affich&#233;s.</li>
+  <li>Les images qui comportent une erreur dans l'en-t&#234;te FITS sont
+&#233;galement filtr&#233;es et donnent lieu &#224; un message
+d'erreur dans la Console.</li>
+  <li>Le chargement d'une image dans la visu ou la s&#233;lection
+d'une image dans la liste a pour effet d'inhiber la
+s&#233;lection des images de caract&#233;ristiques
+diff&#233;rentes, ce qui &#233;vite une erreur due au
+m&#233;lange d'images monochromes et RGB ou encore de dimensions
+diff&#233;rentes. La d&#233;s&#233;lection de toutes les images
+annule la r&#233;f&#233;rence.</li>
+</ul>
+<h2>4. Valeurs par d&#233;faut</h2>
+<p>Tous les param&#232;tres (obligatoires ou non) sont
+initialis&#233;s.</p>
+<p>Si l'image affich&#233;e comporte les mots cl&#233;s CRPIX1
+(centre en x) et CRPIX2 (centre en y), ces valeurs sont
+affich&#233;es lors de l'appel d'une fonction n&#233;cessitant
+les coordonn&#233;es du centre (transformation
+rectangulaire --&gt; polaire et inverse, rotation, gradient
+rotationnel ou radial). En l'absence de CRPIX1 et de CRPIX2 les
+valeurs propos&#233;es correspondent aux coordonn&#233;es du
+centre de la premi&#232;re image s&#233;lectionn&#233;e.</p>
+<p>Pour les fonctions Recadrer et Une zone il faut indiquer les
+bornes extr&#234;mes de la s&#233;lection. Deux mani&#232;res de
+proc&#233;der sont propos&#233;es :</p>
+<ul>
+  <li>La saisie pr&#233;cise des valeurs.</li>
+  <li>Le dessin d'une fen&#234;tre de s&#233;lection sur l'image
+affich&#233;e, les param&#232;tres sont actualis&#233;s
+automatiquement.</li>
+</ul>
+<p>La valeur par d&#233;faut affich&#233;e dans bitpix est
+&#233;gale &#224; "16" si aucune image n'est affich&#233;e dans
+la visu. Lorsqu'une image est s&#233;lectionn&#233;e dans la
+liste, la valeur affich&#233;e est celle du mot cl&#233; BITPIX.
+Il convient donc de v&#233;rifier si la valeur affich&#233;e est
+conforme &#224; ce qui est souhait&#233; juste avant de lancer le
+traitement.</p>
+<p>Tous les param&#232;tres optionnels, tant ceux de la fonction
+que les options g&#233;n&#233;rales, ne sont pris en compte que
+si leur valeur est diff&#233;rente de la valeur par
+d&#233;faut.</p>
+<h2>5. Contr&#244;les lors du lancement</h2>
+<p>Les saisies sont contr&#244;l&#233;es lors de l'appui sur le
+bouton 'Appliquer' ou 'OK'.</p>
+<p>En cas d'erreur de saisie (valeur non num&#233;rique, nom
+incorrect ou encore valeurs hors des limites) celle-ci est
+signal&#233;e avec pr&#233;cision afin de permettre la relecture
+et les corrections.</p>
+<p>Les fichiers images pass&#233;s en param&#232;tres sont
+&#233;galement v&#233;rifi&#233;s :</p>
+<ul>
+  <li>Existence de l'image.</li>
+  <li>Absence d'erreur dans l'en-t&#234;te FITS et dans le nom.</li>
+  <li>Extension et dimensions identiques &#224; celle des images
+trait&#233;es.</li>
+  <li>Nature de l'image dans le cas de la fonction "Optimisation du
+noir".</li>
+</ul>
+<h2>6. Apr&#232;s le traitement</h2>
+<p>La liste des fichiers est rafra&#238;chie ce qui permet
+d'encha&#238;ner les traitements si on a appuy&#233; sur le
+bouton 'Appliquer'.</p>
+<p>Les fonctions PROFILE et MATRIX produisent un seul fichier
+.txt pour une image monochrome et trois fichiers pour les images
+RGB, un par plan couleur, indic&#233;s r, g et b.</p>
+<h2>7. Temps de traitement</h2>
+<p>Il est fonction de la nature des images (RGB ou non), de leur
+taille et de leur nombre. Les images RGB sont pr&#233;alablement
+d&#233;compos&#233;es en plans couleurs qui, apr&#232;s
+traitement, sont reconvertis en RGB.</p>
+<h2>8. Test avec TestAudela</h2>
+<p>Les tests des fonctions sont regroup&#233;s par groupe :</p>
+<ul>
+  <li>audace_pretrait_transformer</li>
+  <li>audace_pretrait_modifier</li>
+  <li>audace_pretrait_ameliorer</li>
+  <li>audace_pretrait_filtrer</li>
+  <li>audace_pretrait_extraire</li>
+  <li>audace_pretrait_combiner</li>
+</ul>
+<ul class="noindent">
+</ul>
+</body>
+</html>
