@@ -1,2049 +1,10 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise à jour $Id: aud_menu_3.tcl,v 1.71 2010-11-08 18:28:10 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_3.tcl,v 1.72 2010-12-11 14:18:57 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
-
-   #
-   # ::pretraitement::run type_pretraitement this
-   # Lance la fenetre de dialogue pour les pretraitements sur une images
-   # this : Chemin de la fenetre
-   #
-   proc run { type_pretraitement this } {
-      variable This
-      variable widget
-      global pretraitement
-
-      #---
-      ::pretraitement::initConf
-      ::pretraitement::confToWidget
-      #---
-      set pretraitement(captionOperation) [ ::pretraitement::fonctionCaption "$type_pretraitement" ]
-      #---
-      set This $this
-      if { [ winfo exists $This ] } {
-         wm withdraw $This
-         wm deiconify $This
-         focus $This
-      } else {
-         if { [ info exists pretraitement(geometry) ] } {
-            set deb [ expr 1 + [ string first + $pretraitement(geometry) ] ]
-            set fin [ string length $pretraitement(geometry) ]
-            set widget(pretraitement,position) "+[string range $pretraitement(geometry) $deb $fin]"
-         }
-         ::pretraitement::createDialog "$type_pretraitement"
-      }
-      #---
-      set pretraitement(operation) "$type_pretraitement"
-   }
-
-   #
-   # ::pretraitement::initConf
-   # Initialisation des variables de configuration
-   #
-   proc initConf { } {
-      global conf
-
-      if { ! [ info exists conf(multx) ] }                  { set conf(multx)                  "2.0" }
-      if { ! [ info exists conf(multy) ] }                  { set conf(multy)                  "2.0" }
-      if { ! [ info exists conf(clip_maxi) ] }              { set conf(clip_maxi)              "32767" }
-      if { ! [ info exists conf(clip_mini) ] }              { set conf(clip_mini)              "0" }
-      if { ! [ info exists conf(back_kernel) ] }            { set conf(back_kernel)            "15" }
-      if { ! [ info exists conf(back_threshold) ] }         { set conf(back_threshold)         "0.2" }
-      if { ! [ info exists conf(pretraitement,position) ] } { set conf(pretraitement,position) "+350+75" }
-
-      return
-   }
-
-   #
-   # ::pretraitement::confToWidget
-   # Charge les variables de configuration dans des variables locales
-   #
-   proc confToWidget { } {
-      variable widget
-      global conf
-
-      set widget(pretraitement,position) "$conf(pretraitement,position)"
-   }
-
-   #
-   # ::pretraitement::widgetToConf
-   # Charge les variables locales dans des variables de configuration
-   #
-   proc widgetToConf { } {
-      variable widget
-      global conf
-
-      set conf(pretraitement,position) "$widget(pretraitement,position)"
-   }
-
-   #
-   # ::pretraitement::recupPosition
-   # Recupere la position de la fenetre
-   #
-   proc recupPosition { } {
-      variable This
-      variable widget
-      global pretraitement
-
-      set pretraitement(geometry) [wm geometry $This]
-      set deb [ expr 1 + [ string first + $pretraitement(geometry) ] ]
-      set fin [ string length $pretraitement(geometry) ]
-      set widget(pretraitement,position) "+[string range $pretraitement(geometry) $deb $fin]"
-      #---
-      ::pretraitement::widgetToConf
-   }
-
-   #
-   # ::pretraitement::createDialog
-   # Creation de l'interface graphique
-   #
-   proc createDialog { type_pretraitement } {
-      variable This
-      variable widget
-      global audace caption color conf pretraitement
-
-      #--- Initialisation des variables principales
-      set pretraitement(choix_mode)     "0"
-      set pretraitement(in)             ""
-      set pretraitement(nb)             ""
-      set pretraitement(valeur_indice)  "1"
-      set pretraitement(out)            ""
-      set pretraitement(img_operand)    ""
-      set pretraitement(dark)           ""
-      set pretraitement(offset)         ""
-      set pretraitement(disp_1)         "1"
-      set pretraitement(disp_2)         "1"
-      set pretraitement(afficher_image) "$caption(pretraitement,afficher_image_fin)"
-      set pretraitement(avancement)     ""
-
-      #--- Initialisation des variables de la fonction re-echantillonnage
-      set pretraitement(scaleWindow_multx) $conf(multx)
-      set pretraitement(scaleWindow_multy) $conf(multy)
-
-      #--- Initialisation des variables de la fonction ecretage
-      set pretraitement(clipWindow_mini) $conf(clip_mini)
-      set pretraitement(clipWindow_maxi) $conf(clip_maxi)
-
-      #--- Initialisation des variables de la fonction soustraction du fond de ciel
-      set pretraitement(subskyWindow_back_kernel)    $conf(back_kernel)
-      set pretraitement(subskyWindow_back_threshold) $conf(back_threshold)
-
-      #---
-      toplevel $This
-      wm resizable $This 0 0
-      wm deiconify $This
-      wm title $This "$caption(audace,menu,preprocess)"
-      wm geometry $This $widget(pretraitement,position)
-      wm transient $This $audace(base)
-      wm protocol $This WM_DELETE_WINDOW ::pretraitement::cmdClose
-
-      #---
-      frame $This.usr -borderwidth 0 -relief raised
-         frame $This.usr.0 -borderwidth 1 -relief raised
-            label $This.usr.0.lab1 -textvariable "pretraitement(formule)"
-            pack $This.usr.0.lab1 -padx 10 -pady 5
-        # pack $This.usr.0 -in $This.usr -side top -fill both
-
-         frame $This.usr.9 -borderwidth 1 -relief raised
-            frame $This.usr.9.1 -borderwidth 0 -relief flat
-               label $This.usr.9.1.labURL1 -textvariable "pretraitement(avancement)" -fg $color(blue)
-               pack $This.usr.9.1.labURL1 -side top -padx 10 -pady 5
-            pack $This.usr.9.1 -side top -fill both
-        # pack $This.usr.9 -in $This.usr -side top -fill both
-
-         frame $This.usr.7 -borderwidth 1 -relief raised
-            frame $This.usr.7.1 -borderwidth 0 -relief flat
-               checkbutton $This.usr.7.1.che1 -text "$pretraitement(afficher_image)" -variable pretraitement(disp_2)
-               pack $This.usr.7.1.che1 -side left -padx 10 -pady 5
-            pack $This.usr.7.1 -side top -fill both
-        # pack $This.usr.7 -in $This.usr -side top -fill both
-
-         frame $This.usr.10 -borderwidth 1 -relief raised
-            frame $This.usr.10.1 -borderwidth 0 -relief flat
-               checkbutton $This.usr.10.1.che1 -text "$pretraitement(afficher_image)" -variable pretraitement(disp_1) \
-                  -state disabled
-               pack $This.usr.10.1.che1 -side left -padx 10 -pady 5
-            pack $This.usr.10.1 -side top -fill both
-        # pack $This.usr.10 -in $This.usr -side top -fill both
-
-         frame $This.usr.6 -borderwidth 1 -relief raised
-            frame $This.usr.6.1 -borderwidth 0 -relief flat
-               label $This.usr.6.1.lab1 -text "$caption(pretraitement,multx)"
-               pack $This.usr.6.1.lab1 -side left -padx 10 -pady 10
-               entry $This.usr.6.1.ent1 -textvariable pretraitement(scaleWindow_multx) -width 7 -justify center
-               pack $This.usr.6.1.ent1 -side right -padx 10 -pady 10
-            pack $This.usr.6.1 -side top -fill x
-            frame $This.usr.6.2 -borderwidth 0 -relief flat
-               label $This.usr.6.2.lab2 -text "$caption(pretraitement,multy)"
-               pack $This.usr.6.2.lab2 -side left -padx 10 -pady 5
-               entry $This.usr.6.2.ent2 -textvariable pretraitement(scaleWindow_multy) -width 7 -justify center
-               pack $This.usr.6.2.ent2 -side right -padx 10 -pady 5
-            pack $This.usr.6.2 -side top -fill x
-            frame $This.usr.6.3 -borderwidth 0 -relief flat
-               button $This.usr.6.3.but_defaut -text "$caption(pretraitement,valeur_par_defaut)" \
-                  -command { ::pretraitement::val_defaut }
-               pack $This.usr.6.3.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
-            pack $This.usr.6.3 -side top -fill both
-        # pack $This.usr.6 -in $This.usr -side top -fill both
-
-         frame $This.usr.11 -borderwidth 1 -relief raised
-            frame $This.usr.11.1 -borderwidth 0 -relief flat
-               label $This.usr.11.1.lab1 -text "$caption(pretraitement,grille_subsky)"
-               pack $This.usr.11.1.lab1 -side left -padx 10 -pady 10
-               entry $This.usr.11.1.ent1 -textvariable pretraitement(subskyWindow_back_kernel) -width 7 \
-                  -justify center
-               pack $This.usr.11.1.ent1 -side right -padx 10 -pady 10
-            pack $This.usr.11.1 -side top -fill x
-            frame $This.usr.11.2 -borderwidth 0 -relief flat
-               label $This.usr.11.2.lab2 -text "$caption(pretraitement,seuil_subsky)"
-               pack $This.usr.11.2.lab2 -side left -padx 10 -pady 5
-               entry $This.usr.11.2.ent2 -textvariable pretraitement(subskyWindow_back_threshold) -width 7 \
-                  -justify center
-               pack $This.usr.11.2.ent2 -side right -padx 10 -pady 5
-            pack $This.usr.11.2 -side top -fill x
-            frame $This.usr.11.3 -borderwidth 0 -relief flat
-               button $This.usr.11.3.but_defaut -text "$caption(pretraitement,valeur_par_defaut)" \
-                  -command { ::pretraitement::val_defaut }
-               pack $This.usr.11.3.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
-            pack $This.usr.11.3 -side top -fill both
-        # pack $This.usr.11 -in $This.usr -side top -fill both
-
-         frame $This.usr.12 -borderwidth 1 -relief raised
-            frame $This.usr.12.15 -borderwidth 0 -relief flat
-               label $This.usr.12.15.lab1 -text "$caption(pretraitement,clip_min)"
-               pack $This.usr.12.15.lab1 -side left -padx 10 -pady 10
-               entry $This.usr.12.15.ent1 -textvariable pretraitement(clipWindow_mini) -width 7 -justify center
-               pack $This.usr.12.15.ent1 -side right -padx 10 -pady 10
-            pack $This.usr.12.15 -side top -fill x
-            frame $This.usr.12.16 -borderwidth 0 -relief flat
-               label $This.usr.12.16.lab2 -text "$caption(pretraitement,clip_max)"
-               pack $This.usr.12.16.lab2 -side left -padx 10 -pady 5
-               entry $This.usr.12.16.ent2 -textvariable pretraitement(clipWindow_maxi) -width 7 -justify center
-               pack $This.usr.12.16.ent2 -side right -padx 10 -pady 5
-            pack $This.usr.12.16 -side top -fill both
-            frame $This.usr.12.17 -borderwidth 0 -relief flat
-               button $This.usr.12.17.but_defaut -text "$caption(pretraitement,valeur_par_defaut)" \
-                  -command { ::pretraitement::val_defaut }
-               pack $This.usr.12.17.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
-            pack $This.usr.12.17 -side top -fill both
-        # pack $This.usr.12 -in $This.usr -side top -fill both
-
-         frame $This.usr.5 -borderwidth 1 -relief raised
-            frame $This.usr.5.1 -borderwidth 0 -relief flat
-               label $This.usr.5.1.lab8 -text "$caption(pretraitement,image_dark)"
-               pack $This.usr.5.1.lab8 -side left -padx 5 -pady 5
-               entry $This.usr.5.1.ent8 -textvariable pretraitement(dark)
-               pack $This.usr.5.1.ent8 -side left -padx 10 -pady 5 -fill x -expand 1
-               button $This.usr.5.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
-                  -command { ::pretraitement::parcourir 4 }
-               pack $This.usr.5.1.explore -side left -padx 10 -pady 5 -ipady 5
-            pack $This.usr.5.1 -side top -fill both
-            frame $This.usr.5.2 -borderwidth 0 -relief flat
-               label $This.usr.5.2.lab9 -text "$caption(pretraitement,image_offset)"
-               pack $This.usr.5.2.lab9 -side left -padx 5 -pady 5
-               entry $This.usr.5.2.ent9 -textvariable pretraitement(offset)
-               pack $This.usr.5.2.ent9 -side left -padx 10 -pady 5 -fill x -expand 1
-               button $This.usr.5.2.explore -text "$caption(pretraitement,parcourir)" -width 1 \
-                  -command { ::pretraitement::parcourir 5 }
-               pack $This.usr.5.2.explore -side left -padx 10 -pady 5 -ipady 5
-            pack $This.usr.5.2 -side top -fill both
-        # pack $This.usr.5 -in $This.usr -side top -fill both
-
-         frame $This.usr.4 -borderwidth 1 -relief raised
-            frame $This.usr.4.1 -borderwidth 0 -relief flat
-               label $This.usr.4.1.lab6 -textvariable "pretraitement(operande)"
-               pack $This.usr.4.1.lab6 -side left -padx 5 -pady 5
-               entry $This.usr.4.1.ent6 -textvariable pretraitement(img_operand)
-               pack $This.usr.4.1.ent6 -side left -padx 10 -pady 5 -fill x -expand 1
-               button $This.usr.4.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
-                  -command { ::pretraitement::parcourir 3 }
-               pack $This.usr.4.1.explore -side left -padx 10 -pady 5 -ipady 5
-            pack $This.usr.4.1 -side top -fill both
-            frame $This.usr.4.2 -borderwidth 0 -relief flat
-               label $This.usr.4.2.lab7 -textvariable "pretraitement(constante)"
-               pack $This.usr.4.2.lab7 -side left -padx 5 -pady 5
-               entry $This.usr.4.2.ent7 -textvariable pretraitement(const) -width 7 -justify center
-               pack $This.usr.4.2.ent7 -side right -padx 10 -pady 5
-            pack $This.usr.4.2 -side top -fill both
-        # pack $This.usr.4 -in $This.usr -side top -fill both
-
-         frame $This.usr.3 -borderwidth 1 -relief raised
-            frame $This.usr.3.1 -borderwidth 0 -relief flat
-               label $This.usr.3.1.lab5 -textvariable "pretraitement(constante)"
-               pack $This.usr.3.1.lab5 -side left -padx 5 -pady 5
-               entry $This.usr.3.1.ent5 -textvariable pretraitement(const) -width 7 -justify center
-               pack $This.usr.3.1.ent5 -side right -padx 10 -pady 5
-            pack $This.usr.3.1 -side top -fill both
-        # pack $This.usr.3 -in $This.usr -side top -fill both
-
-         frame $This.usr.8 -borderwidth 1 -relief raised
-            frame $This.usr.8.1 -borderwidth 0 -relief flat
-               label $This.usr.8.1.lab1 -textvariable "pretraitement(image_A)"
-               pack $This.usr.8.1.lab1 -side left -padx 5 -pady 5
-               entry $This.usr.8.1.ent1 -textvariable pretraitement(in)
-               pack $This.usr.8.1.ent1 -side left -padx 10 -pady 5 -fill x -expand 1
-               button $This.usr.8.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
-                  -command { ::pretraitement::parcourir 1 }
-               pack $This.usr.8.1.explore -side left -padx 10 -pady 5 -ipady 5
-            pack $This.usr.8.1 -side top -fill both
-            frame $This.usr.8.2 -borderwidth 0 -relief flat
-               label $This.usr.8.2.lab1 -textvariable "pretraitement(image_B)"
-               pack $This.usr.8.2.lab1 -side left -padx 5 -pady 5
-               entry $This.usr.8.2.ent1 -textvariable pretraitement(out)
-               pack $This.usr.8.2.ent1 -side left -padx 10 -pady 5 -fill x -expand 1
-               button $This.usr.8.2.explore -text "$caption(pretraitement,parcourir)" -width 1 \
-                  -command { ::pretraitement::parcourir 2 }
-               pack $This.usr.8.2.explore -side left -padx 10 -pady 5 -ipady 5
-            pack $This.usr.8.2 -side top -fill both
-        # pack $This.usr.8 -in $This.usr -side top -fill both
-
-         frame $This.usr.2 -borderwidth 1 -relief raised
-            frame $This.usr.2.1 -borderwidth 0 -relief flat
-               label $This.usr.2.1.lab1 -textvariable "pretraitement(image_A)"
-               pack $This.usr.2.1.lab1 -side left -padx 5 -pady 5
-               entry $This.usr.2.1.ent1 -textvariable pretraitement(in)
-               pack $This.usr.2.1.ent1 -side left -padx 10 -pady 5 -fill x -expand 1
-               button $This.usr.2.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
-                  -command { ::pretraitement::parcourir 1 }
-               pack $This.usr.2.1.explore -side left -padx 10 -pady 5 -ipady 5
-            pack $This.usr.2.1 -side top -fill both
-            frame $This.usr.2.2 -borderwidth 0 -relief flat
-               label $This.usr.2.2.lab2 -textvariable "pretraitement(nombre)" -width 20
-               pack $This.usr.2.2.lab2 -side left -padx 5 -pady 5
-               entry $This.usr.2.2.ent2 -textvariable pretraitement(nb) -width 7 -justify center
-               pack $This.usr.2.2.ent2 -side left -padx 10 -pady 5
-            pack $This.usr.2.2 -side top -fill both
-            frame $This.usr.2.3 -borderwidth 0 -relief flat
-               label $This.usr.2.3.lab3 -textvariable "pretraitement(premier_indice)" -width 20
-               pack $This.usr.2.3.lab3 -side left -padx 5 -pady 5
-               entry $This.usr.2.3.ent3 -textvariable pretraitement(valeur_indice) -width 7 -justify center
-               pack $This.usr.2.3.ent3 -side left -padx 10 -pady 5
-            pack $This.usr.2.3 -side top -fill both
-            frame $This.usr.2.4 -borderwidth 0 -relief flat
-               label $This.usr.2.4.lab4 -textvariable "pretraitement(image_B)"
-               pack $This.usr.2.4.lab4 -side left -padx 5 -pady 5
-               entry $This.usr.2.4.ent4 -textvariable pretraitement(out)
-               pack $This.usr.2.4.ent4 -side left -padx 10 -pady 5 -fill x -expand 1
-               button $This.usr.2.4.explore -text "$caption(pretraitement,parcourir)" -width 1 \
-                  -command { ::pretraitement::parcourir 2 }
-               pack $This.usr.2.4.explore -side left -padx 10 -pady 5 -ipady 5
-            pack $This.usr.2.4 -side top -fill both
-        # pack $This.usr.2 -in $This.usr -side top -fill both
-
-         frame $This.usr.1 -borderwidth 1 -relief raised
-            frame $This.usr.1.radiobutton -borderwidth 0 -relief raised
-               radiobutton $This.usr.1.radiobutton.rad1 -anchor nw -highlightthickness 0 \
-                  -text "$caption(pretraitement,image_affichee:)" -value 0 -variable pretraitement(choix_mode) \
-                  -command { ::pretraitement::change n1 n2 op }
-               pack $This.usr.1.radiobutton.rad1 -side top -anchor w -padx 10 -pady 5
-               radiobutton $This.usr.1.radiobutton.rad2 -anchor nw -highlightthickness 0 \
-                  -text "$caption(pretraitement,image_sur_DD)" -value 1 -variable pretraitement(choix_mode) \
-                  -command { ::pretraitement::change n1 n2 op }
-               pack $This.usr.1.radiobutton.rad2 -side top -anchor w -padx 10 -pady 5
-               radiobutton $This.usr.1.radiobutton.rad3 -anchor nw -highlightthickness 0 \
-                  -text "$caption(pretraitement,operation_serie)" -value 2 -variable pretraitement(choix_mode) \
-                  -command { ::pretraitement::change n1 n2 op }
-               pack $This.usr.1.radiobutton.rad3 -side top -anchor w -padx 10 -pady 5
-            pack $This.usr.1.radiobutton -side left -padx 10 -pady 5
-            #--- Liste des pretraitements disponibles
-            set list_pretraitement [ list $caption(audace,menu,window1) $caption(audace,menu,scale) \
-               $caption(audace,menu,offset) $caption(audace,menu,mult_cte) $caption(audace,menu,clip) \
-               $caption(audace,menu,subsky) $caption(audace,menu,noffset) $caption(audace,menu,ngain) \
-               $caption(audace,menu,addition) $caption(audace,menu,soust) $caption(audace,menu,division) \
-               $caption(audace,menu,opt_noir) ]
-            #---
-            menubutton $This.usr.1.but1 -textvariable pretraitement(captionOperation) -menu $This.usr.1.but1.menu \
-               -relief raised
-            pack $This.usr.1.but1 -side right -padx 10 -pady 5 -ipady 5
-            set m [menu $This.usr.1.but1.menu -tearoff 0]
-            foreach pretrait $list_pretraitement {
-               $m add radiobutton -label "$pretrait" \
-                -indicatoron "1" \
-                -value "$pretrait" \
-                -variable pretraitement(captionOperation) \
-                -command { ::pretraitement::captionFonction $pretraitement(captionOperation) }
-            }
-        # pack $This.usr.1 -in $This.usr -side top -fill both
-      pack $This.usr -side top -fill both -expand 1
-
-      frame $This.cmd -borderwidth 1 -relief raised
-         button $This.cmd.ok -text "$caption(aud_menu_3,ok)" -width 7 \
-            -command { ::pretraitement::cmdOk }
-         if { $conf(ok+appliquer)=="1" } {
-            pack $This.cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
-         }
-         button $This.cmd.appliquer -text "$caption(aud_menu_3,appliquer)" -width 8 \
-            -command { ::pretraitement::cmdApply }
-         pack $This.cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
-         button $This.cmd.fermer -text "$caption(aud_menu_3,fermer)" -width 7 \
-            -command { ::pretraitement::cmdClose }
-         pack $This.cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
-         button $This.cmd.aide -text "$caption(aud_menu_3,aide)" -width 7 \
-            -command { ::pretraitement::afficheAide }
-         pack $This.cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
-      pack $This.cmd -side top -fill x
-
-      #---
-      uplevel #0 trace variable pretraitement(operation) w ::pretraitement::change
-
-      #---
-      bind $This <Key-Return> {::pretraitement::cmdOk}
-      bind $This <Key-Escape> {::pretraitement::cmdClose}
-
-      #--- Focus
-      focus $This
-
-      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { ::console::GiveFocus }
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $This
-   }
-
-   #
-   # ::pretraitement::fonctionCaption
-   # Procedure qui associe a une fonction un caption
-   #
-   proc fonctionCaption { type_pretraitement } {
-      global caption pretraitement
-
-      #---
-      if { $type_pretraitement == "multi_recadrer" } {
-         set pretraitement(captionOperation) "$caption(audace,menu,window1)"
-      } elseif { $type_pretraitement == "multi_reechantillonner" } {
-         set pretraitement(captionOperation) "$caption(audace,menu,scale)"
-      } elseif { $type_pretraitement == "multi_ajouter_cte" } {
-         set pretraitement(captionOperation) "$caption(audace,menu,offset)"
-      } elseif { $type_pretraitement == "multi_multiplier_cte" } {
-         set pretraitement(captionOperation) "$caption(audace,menu,mult_cte)"
-      } elseif { $type_pretraitement == "multi_ecreter" } {
-         set pretraitement(captionOperation) "$caption(audace,menu,clip)"
-      } elseif { $type_pretraitement == "multi_soust_fond_ciel" } {
-         set pretraitement(captionOperation) "$caption(audace,menu,subsky)"
-      } elseif { $type_pretraitement == "multi_norm_fond" } {
-         set pretraitement(captionOperation) "$caption(audace,menu,noffset)"
-      } elseif { $type_pretraitement == "multi_norm_eclai" } {
-         set pretraitement(captionOperation) "$caption(audace,menu,ngain)"
-      } elseif { $type_pretraitement == "multi_addition" } {
-         set pretraitement(captionOperation) "$caption(audace,menu,addition)"
-      } elseif { $type_pretraitement == "multi_soustraction" } {
-         set pretraitement(captionOperation) "$caption(audace,menu,soust)"
-      } elseif { $type_pretraitement == "multi_division" } {
-         set pretraitement(captionOperation) "$caption(audace,menu,division)"
-      } elseif { $type_pretraitement == "multi_opt_noir" } {
-         set pretraitement(captionOperation) "$caption(audace,menu,opt_noir)"
-      }
-   }
-
-   #
-   # ::pretraitement::captionFonction
-   # Procedure qui associe a un caption une fonction
-   #
-   proc captionFonction { type_pretraitement } {
-      global caption pretraitement
-
-      #---
-      if { $type_pretraitement == "$caption(audace,menu,window1)" } {
-         set pretraitement(operation) "multi_recadrer"
-      } elseif { $type_pretraitement == "$caption(audace,menu,scale)" } {
-         set pretraitement(operation) "multi_reechantillonner"
-      } elseif { $type_pretraitement == "$caption(audace,menu,offset)" } {
-         set pretraitement(operation) "multi_ajouter_cte"
-      } elseif { $type_pretraitement == "$caption(audace,menu,mult_cte)" } {
-         set pretraitement(operation) "multi_multiplier_cte"
-      } elseif { $type_pretraitement == "$caption(audace,menu,clip)" } {
-         set pretraitement(operation) "multi_ecreter"
-      } elseif { $type_pretraitement == "$caption(audace,menu,subsky)" } {
-         set pretraitement(operation) "multi_soust_fond_ciel"
-      } elseif { $type_pretraitement == "$caption(audace,menu,noffset)" } {
-         set pretraitement(operation) "multi_norm_fond"
-      } elseif { $type_pretraitement == "$caption(audace,menu,ngain)" } {
-         set pretraitement(operation) "multi_norm_eclai"
-      } elseif { $type_pretraitement == "$caption(audace,menu,addition)" } {
-         set pretraitement(operation) "multi_addition"
-      } elseif { $type_pretraitement == "$caption(audace,menu,soust)" } {
-         set pretraitement(operation) "multi_soustraction"
-      } elseif { $type_pretraitement == "$caption(audace,menu,division)" } {
-         set pretraitement(operation) "multi_division"
-      } elseif { $type_pretraitement == "$caption(audace,menu,opt_noir)" } {
-         set pretraitement(operation) "multi_opt_noir"
-      }
-   }
-
-   #
-   # ::pretraitement::cmdOk
-   # Procedure correspondant a l'appui sur le bouton OK
-   #
-   proc cmdOk { } {
-      if { [ ::pretraitement::cmdApply ] == "0" } { return }
-      ::pretraitement::cmdClose
-   }
-
-   #
-   # ::pretraitement::cmdApply
-   # Procedure correspondant a l'appui sur le bouton Appliquer
-   #
-   proc cmdApply { { visuNo "1" } } {
-      global audace caption conf pretraitement
-
-      #---
-      set pretraitement(avancement) "$caption(pretraitement,en_cours)"
-      update
-
-      #---
-      set in    $pretraitement(in)
-      set nb    $pretraitement(nb)
-      set first $pretraitement(valeur_indice)
-      set out   $pretraitement(out)
-      set tempo "tempo"
-
-      #--- Tests sur les images
-      if { $pretraitement(choix_mode) == "0" } {
-         #--- Il faut une image affichee
-         if { [ buf[ ::confVisu::getBufNo $visuNo ] imageready ] != "1" } {
-            tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-               -message "$caption(pretraitement,header_noimage)"
-            set pretraitement(avancement) ""
-            return 0
-         }
-      } elseif { $pretraitement(choix_mode) == "1" } {
-         #--- Tests sur les images d'entree, le nombre d'images et les images de sortie
-         if { $pretraitement(in) == "" } {
-            tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-               -message "$caption(pretraitement,definir_image_entree)"
-            set pretraitement(avancement) ""
-            return 0
-         }
-         if { $pretraitement(out) == "" } {
-            tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-               -message "$caption(pretraitement,definir_image_sortie)"
-            set pretraitement(avancement) ""
-            return 0
-         }
-      } elseif { $pretraitement(choix_mode) == "2" } {
-         #--- Tests sur les images d'entree, le nombre d'images et les images de sortie
-         if { $pretraitement(in) == "" } {
-            tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-               -message "$caption(pretraitement,definir_entree_generique)"
-            set pretraitement(avancement) ""
-            return 0
-         }
-         if { $pretraitement(nb) == "" } {
-            tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-               -message "$caption(pretraitement,choix_nbre_images)"
-            set pretraitement(avancement) ""
-            return 0
-         }
-         if { [ TestEntier $pretraitement(nb) ] == "0" } {
-            tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-               -message "$caption(pretraitement,nbre_entier)"
-            set pretraitement(avancement) ""
-            return 0
-         }
-         if { $pretraitement(valeur_indice) == "" } {
-            tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-               -message "$caption(pretraitement,choix_premier_indice)"
-            set pretraitement(avancement) ""
-            return 0
-         }
-         if { [ TestEntier $pretraitement(valeur_indice) ] == "0" } {
-            tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-               -message "$caption(pretraitement,nbre_entier1)"
-            set pretraitement(avancement) ""
-            return 0
-         }
-         if { $pretraitement(out) == "" } {
-            tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-               -message "$caption(pretraitement,definir_sortie_generique)"
-            set pretraitement(avancement) ""
-            return 0
-         }
-         #--- Calcul du dernier indice de la serie
-         set end [ expr $nb + ( $first - 1 ) ]
-      }
-
-      #--- Switch
-      switch $pretraitement(operation) {
-         "multi_recadrer" {
-            #---
-            set catchError [ catch {
-               if { $pretraitement(choix_mode) == "0" } {
-                  #---
-                  window
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } elseif { $pretraitement(choix_mode) == "1" } {
-                  #---
-                  ::console::affiche_resultat "Usage: window1 in out {x1 y1 x2 y2} \n\n"
-                  #--- Un cadre trace avec la souris n'existe pas
-                  if { [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ] == "" } {
-                     set coordWindow ""
-                     loadima $in
-                     tk_messageBox -title $caption(confVisu,attention) -type ok \
-                        -message "$caption(pretraitement,tracer_boite)\n$caption(pretraitement,appuyer_ok)"
-                  }
-                  set coordWindow [ list [ ::confVisu::getBox $audace(visuNo) ] ]
-                  window1 $in $out [ lindex $coordWindow 0 ]
-                  if { $pretraitement(disp_2) == 1 } {
-                     loadima $out
-                  }
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } elseif { $pretraitement(choix_mode) == "2" } {
-                  #---
-                  ::console::affiche_resultat "Usage: window2 in out number {x1 y1 x2 y2} ?first_index?\n\n"
-                  #--- Un cadre trace avec la souris n'existe pas
-                  if { [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ] == "" } {
-                     set coordWindow ""
-                     loadima $in$first
-                     tk_messageBox -title $caption(confVisu,attention) -type ok \
-                        -message "$caption(pretraitement,tracer_boite)\n$caption(pretraitement,appuyer_ok)"
-                  }
-                  set coordWindow [ list [ ::confVisu::getBox $audace(visuNo) ] ]
-                  if { $first == "1" } {
-                     window2 $in $out $nb [ lindex $coordWindow 0 ] $first
-                  } else {
-                     window2 $in $tempo $nb [ lindex $coordWindow 0 ] $first
-                  }
-                  #--- Renomme les fichiers image si 'first_index' est different de 1
-                  if { $first != "1" } {
-                     for { set index "1" } { $index <= $nb } { incr index } {
-                        set new_index [ expr $index + ( $first - 1 ) ]
-                        file rename -force [ file join $audace(rep_images) $tempo$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
-                     }
-                  }
-                  #---
-                  if { $pretraitement(disp_2) == 1 } {
-                     loadima $out$end
-                  }
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               }
-            } m ]
-            if { $catchError == "1" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-               set pretraitement(avancement) ""
-            }
-         }
-         "multi_reechantillonner" {
-            #---
-            set catchError [ catch {
-               set conf(multx) $pretraitement(scaleWindow_multx)
-               set conf(multy) $pretraitement(scaleWindow_multy)
-               #--- Tests sur les facteurs d'echelle
-               if { $pretraitement(scaleWindow_multx) == "" && $pretraitement(scaleWindow_multy) == "" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,choix_coefficients)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { $pretraitement(scaleWindow_multx) == "" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,coef_manquant)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { $pretraitement(scaleWindow_multy) == "" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,coef_manquant)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { [ string is double -strict $pretraitement(scaleWindow_multx) ] == "0" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                     -message "$caption(pretraitement,cte_invalide)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { [ string is double -strict $pretraitement(scaleWindow_multy) ] == "0" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                     -message "$caption(pretraitement,cte_invalide)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { $pretraitement(choix_mode) == "0" } {
-                  #---
-                  set x $pretraitement(scaleWindow_multx)
-                  set y $pretraitement(scaleWindow_multy)
-                  set maxi "50"
-                  if { [ expr $x ] == "0" } { set x "1" }
-                  if { [ expr $x ] > "$maxi" } { set x "$maxi" }
-                  if { [ expr $x ] < "-$maxi" } { set x "-$maxi" }
-                  if { [ expr $y ] == "0" } { set y "1" }
-                  if { [ expr $y ] > "$maxi" } { set y "$maxi" }
-                  if { [ expr $y ] < "-$maxi" } { set y "-$maxi" }
-                  buf$audace(bufNo) scale [ list $x $y ] 1
-                  ::audace::autovisu $audace(visuNo)
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } elseif { $pretraitement(choix_mode) == "1" } {
-                  #---
-                  ::console::affiche_resultat "Usage: scale1 in out scale_x scale_y\n\n"
-                  set x $pretraitement(scaleWindow_multx)
-                  set y $pretraitement(scaleWindow_multy)
-                  set maxi "50"
-                  if { [ expr $x ] == "0" } { set x "1" }
-                  if { [ expr $x ] > "$maxi" } { set x "$maxi" }
-                  if { [ expr $x ] < "-$maxi" } { set x "-$maxi" }
-                  if { [ expr $y ] == "0" } { set y "1" }
-                  if { [ expr $y ] > "$maxi" } { set y "$maxi" }
-                  if { [ expr $y ] < "-$maxi" } { set y "-$maxi" }
-                  scale1 $in $out $x $y
-                  if { $pretraitement(disp_2) == 1 } {
-                     loadima $out
-                  }
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } elseif { $pretraitement(choix_mode) == "2" } {
-                  #---
-                  ::console::affiche_resultat "Usage: scale2 in out number scale_x scale_y ?first_index?\n\n"
-                  set x $pretraitement(scaleWindow_multx)
-                  set y $pretraitement(scaleWindow_multy)
-                  set maxi "50"
-                  if { [ expr $x ] == "0" } { set x "1" }
-                  if { [ expr $x ] > "$maxi" } { set x "$maxi" }
-                  if { [ expr $x ] < "-$maxi" } { set x "-$maxi" }
-                  if { [ expr $y ] == "0" } { set y "1" }
-                  if { [ expr $y ] > "$maxi" } { set y "$maxi" }
-                  if { [ expr $y ] < "-$maxi" } { set y "-$maxi" }
-                  if { $first == "1" } {
-                     scale2 $in $out $nb $x $y $first
-                  } else {
-                     scale2 $in $tempo $nb $x $y $first
-                  }
-                  #--- Renomme les fichiers image si 'first_index' est different de 1
-                  if { $first != "1" } {
-                     for { set index "1" } { $index <= $nb } { incr index } {
-                        set new_index [ expr $index + ( $first - 1 ) ]
-                        file rename -force [ file join $audace(rep_images) $tempo$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
-                     }
-                  }
-                  #---
-                  if { $pretraitement(disp_2) == 1 } {
-                     loadima $out$end
-                  }
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               }
-            } m ]
-            if { $catchError == "1" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-               set pretraitement(avancement) ""
-            }
-         }
-         "multi_ajouter_cte" {
-            set catchError [ catch {
-               #--- Tests sur la constante
-               if { $pretraitement(const) == "" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,definir_cte)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { [ string is double -strict $pretraitement(const) ] == "0" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                     -message "$caption(pretraitement,cte_invalide)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { $pretraitement(choix_mode) == "0" } {
-                  #---
-                  offset $pretraitement(const)
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } elseif { $pretraitement(choix_mode) == "1" } {
-                  #---
-                  set const $pretraitement(const)
-                  ::console::affiche_resultat "Usage: offset1 in out const\n\n"
-                  offset1 $in $out $const
-                  if { $pretraitement(disp_2) == 1 } {
-                     loadima $out
-                  }
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } elseif { $pretraitement(choix_mode) == "2" } {
-                  #---
-                  set const $pretraitement(const)
-                  ::console::affiche_resultat "Usage: offset2 in out const number ?first_index?\n\n"
-                  if { $first == "1" } {
-                     offset2 $in $out $const $nb $first
-                  } else {
-                     offset2 $in $tempo $const $nb $first
-                  }
-                  #--- Renomme les fichiers image si 'first_index' est different de 1
-                  if { $first != "1" } {
-                     for { set index "1" } { $index <= $nb } { incr index } {
-                        set new_index [ expr $index + ( $first - 1 ) ]
-                        file rename -force [ file join $audace(rep_images) $tempo$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
-                     }
-                  }
-                  #---
-                  if { $pretraitement(disp_2) == 1 } {
-                     loadima $out$end
-                  }
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               }
-            } m ]
-            if { $catchError == "1" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-               set pretraitement(avancement) ""
-            }
-         }
-         "multi_multiplier_cte" {
-            set catchError [ catch {
-               #--- Tests sur la constante
-               if { $pretraitement(const) == "" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,definir_cte)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { [ string is double -strict $pretraitement(const) ] == "0" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                     -message "$caption(pretraitement,cte_invalide)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { $pretraitement(choix_mode) == "0" } {
-                  #---
-                  mult $pretraitement(const)
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } elseif { $pretraitement(choix_mode) == "1" } {
-                  #---
-                  set const $pretraitement(const)
-                  ::console::affiche_resultat "Usage: mult1 in out const\n\n"
-                  mult1 $in $out $const
-                  if { $pretraitement(disp_2) == 1 } {
-                     loadima $out
-                  }
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } elseif { $pretraitement(choix_mode) == "2" } {
-                  #---
-                  set const $pretraitement(const)
-                  ::console::affiche_resultat "Usage: mult2 in out const number ?first_index?\n\n"
-                  if { $first == "1" } {
-                     mult2 $in $out $const $nb $first
-                  } else {
-                     mult2 $in $tempo $const $nb $first
-                  }
-                  #--- Renomme les fichiers image si 'first_index' est different de 1
-                  if { $first != "1" } {
-                     for { set index "1" } { $index <= $nb } { incr index } {
-                        set new_index [ expr $index + ( $first - 1 ) ]
-                        file rename -force [ file join $audace(rep_images) $tempo$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
-                     }
-                  }
-                  #---
-                  if { $pretraitement(disp_2) == 1 } {
-                     loadima $out$end
-                  }
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               }
-            } m ]
-            if { $catchError == "1" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-               set pretraitement(avancement) ""
-            }
-         }
-         "multi_ecreter" {
-            set catchError [ catch {
-               #---
-               set conf(clip_mini) $pretraitement(clipWindow_mini)
-               set conf(clip_maxi) $pretraitement(clipWindow_maxi)
-               #--- Tests sur les constantes
-               if { $pretraitement(clipWindow_mini) == "" && $pretraitement(clipWindow_maxi) == "" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,choix_coefficients)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { $pretraitement(clipWindow_mini) == "" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,coef_manquant)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { $pretraitement(clipWindow_maxi) == "" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,coef_manquant)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { [ string is double -strict $pretraitement(clipWindow_mini) ] == "0" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                     -message "$caption(pretraitement,cte_invalide)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { [ string is double -strict $pretraitement(clipWindow_maxi) ] == "0" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                     -message "$caption(pretraitement,cte_invalide)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { $pretraitement(choix_mode) == "0" } {
-                  #---
-                  if { $pretraitement(clipWindow_mini) != "" } {
-                     buf$audace(bufNo) clipmin $pretraitement(clipWindow_mini)
-                  }
-                  if { $pretraitement(clipWindow_maxi) != "" } {
-                     buf$audace(bufNo) clipmax $pretraitement(clipWindow_maxi)
-                  }
-                  ::audace::autovisu $audace(visuNo)
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } elseif { $pretraitement(choix_mode) == "1" } {
-                  #---
-                  set buf_clip [ ::buf::create ]
-                  buf$buf_clip extension $conf(extension,defaut)
-                  buf$buf_clip load [ file join $audace(rep_images) $in ]
-                  if { $pretraitement(clipWindow_mini) != "" } {
-                     buf$buf_clip clipmin $pretraitement(clipWindow_mini)
-                  }
-                  if { $pretraitement(clipWindow_maxi) != "" } {
-                     buf$buf_clip clipmax $pretraitement(clipWindow_maxi)
-                  }
-                  buf$buf_clip save [ file join $audace(rep_images) $out ]
-                  ::buf::delete $buf_clip
-                  if { $pretraitement(disp_2) == 1 } {
-                     loadima $out
-                  }
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } elseif { $pretraitement(choix_mode) == "2" } {
-                  #---
-                  for { set index "$first" } { $index <= $end } { incr index } {
-                     set buf_clip($index) [ ::buf::create ]
-                     buf$buf_clip($index) extension $conf(extension,defaut)
-                     buf$buf_clip($index) load [ file join $audace(rep_images) $in$index ]
-                     if { $pretraitement(clipWindow_mini) != "" } {
-                        buf$buf_clip($index) clipmin $pretraitement(clipWindow_mini)
-                     }
-                     if { $pretraitement(clipWindow_maxi) != "" } {
-                        buf$buf_clip($index) clipmax $pretraitement(clipWindow_maxi)
-                     }
-                     buf$buf_clip($index) save [ file join $audace(rep_images) $out$index ]
-                  }
-                  for { set index "$first" } { $index <= $end } { incr index } {
-                     ::buf::delete $buf_clip($index)
-                  }
-                  if { $pretraitement(disp_2) == 1 } {
-                     loadima $out$end
-                  }
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               }
-            } m ]
-            if { $catchError == "1" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-               set pretraitement(avancement) ""
-            }
-         }
-         "multi_soust_fond_ciel" {
-            set catchError [ catch {
-               #---
-               set conf(back_kernel)    $pretraitement(subskyWindow_back_kernel)
-               set conf(back_threshold) $pretraitement(subskyWindow_back_threshold)
-               #--- Tests sur les constantes
-               if { $pretraitement(subskyWindow_back_kernel) == "" && $pretraitement(subskyWindow_back_threshold) == "" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,choix_coefficients)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { $pretraitement(subskyWindow_back_kernel) == "" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,coef_manquant)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { $pretraitement(subskyWindow_back_threshold) == "" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,coef_manquant)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { [ string is double -strict $pretraitement(subskyWindow_back_kernel) ] == "0" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                     -message "$caption(pretraitement,cte_invalide)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { [ string is double -strict $pretraitement(subskyWindow_back_threshold) ] == "0" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                     -message "$caption(pretraitement,cte_invalide)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { $pretraitement(choix_mode) == "0" } {
-                  #---
-                  set k $pretraitement(subskyWindow_back_kernel)
-                  set t $pretraitement(subskyWindow_back_threshold)
-                  if { [ expr $k ] < "4" } { set k "3" }
-                  if { [ expr $k ] > "50" } { set k "50" }
-                  if { [ expr $t ] < "0" } { set t "0" }
-                  if { [ expr $t ] > "1" } { set t "1" }
-                  subsky $k $t
-                  ::audace::autovisu $audace(visuNo)
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } elseif { $pretraitement(choix_mode) == "1" } {
-                  #---
-                  ::console::affiche_resultat "Usage: subsky1 in out back_kernel back_threshold\n\n"
-                  set k $pretraitement(subskyWindow_back_kernel)
-                  set t $pretraitement(subskyWindow_back_threshold)
-                  if { [ expr $k ] < "4" } { set k "3" }
-                  if { [ expr $k ] > "50" } { set k "50" }
-                  if { [ expr $t ] < "0" } { set t "0" }
-                  if { [ expr $t ] > "1" } { set t "1" }
-                  subsky1 $in $out $k $t
-                  if { $pretraitement(disp_2) == 1 } {
-                     loadima $out
-                  }
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } elseif { $pretraitement(choix_mode) == "2" } {
-                  #---
-                  ::console::affiche_resultat "Usage: subsky2 in out number back_kernel back_threshold ?first_index?\n\n"
-                  set k $pretraitement(subskyWindow_back_kernel)
-                  set t $pretraitement(subskyWindow_back_threshold)
-                  if { [ expr $k ] < "4" } { set k "3" }
-                  if { [ expr $k ] > "50" } { set k "50" }
-                  if { [ expr $t ] < "0" } { set t "0" }
-                  if { [ expr $t ] > "1" } { set t "1" }
-                  if { $first == "1" } {
-                     subsky2 $in $out $nb $k $t $first
-                  } else {
-                     subsky2 $in $tempo $nb $k $t $first
-                  }
-                  #--- Renomme les fichiers image si 'first_index' est different de 1
-                  if { $first != "1" } {
-                     for { set index "1" } { $index <= $nb } { incr index } {
-                        set new_index [ expr $index + ( $first - 1 ) ]
-                        file rename -force [ file join $audace(rep_images) $tempo$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
-                     }
-                  }
-                  #---
-                  if { $pretraitement(disp_2) == 1 } {
-                     loadima $out$end
-                  }
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               }
-            } m ]
-            if { $catchError == "1" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-               set pretraitement(avancement) ""
-            }
-         }
-         "multi_norm_fond" {
-            set catchError [ catch {
-               #--- Tests sur la constante
-               if { $pretraitement(const) == "" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,definir_fond_ciel)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { [ string is double -strict $pretraitement(const) ] == "0" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                     -message "$caption(pretraitement,cte_invalide)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { $pretraitement(choix_mode) == "0" } {
-                  #---
-                  noffset $pretraitement(const)
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } elseif { $pretraitement(choix_mode) == "1" } {
-                  #---
-                  set const $pretraitement(const)
-                  ::console::affiche_resultat "Usage: noffset1 in out const\n\n"
-                  noffset1 $in $out $const
-                  if { $pretraitement(disp_2) == 1 } {
-                     loadima $out
-                  }
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } elseif { $pretraitement(choix_mode) == "2" } {
-                  #---
-                  set const $pretraitement(const)
-                  ::console::affiche_resultat "Usage: noffset2 in out const number ?first_index? ?tt_options?\n\n"
-                  if { $first == "1" } {
-                     noffset2 $in $out $const $nb $first
-                  } else {
-                     noffset2 $in $tempo $const $nb $first
-                  }
-                  #--- Renomme les fichiers image si 'first_index' est different de 1
-                  if { $first != "1" } {
-                     for { set index "1" } { $index <= $nb } { incr index } {
-                        set new_index [ expr $index + ( $first - 1 ) ]
-                        file rename -force [ file join $audace(rep_images) $tempo$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
-                     }
-                  }
-                  #---
-                  if { $pretraitement(disp_2) == 1 } {
-                     loadima $out$end
-                  }
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               }
-            } m ]
-            if { $catchError == "1" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-               set pretraitement(avancement) ""
-            }
-         }
-         "multi_norm_eclai" {
-            set catchError [ catch {
-               #--- Tests sur la constante
-               if { $pretraitement(const) == "" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,definir_fond_ciel)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { [ string is double -strict $pretraitement(const) ] == "0" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                     -message "$caption(pretraitement,cte_invalide)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { $pretraitement(choix_mode) == "0" } {
-                  #---
-                  ngain $pretraitement(const)
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } elseif { $pretraitement(choix_mode) == "1" } {
-                  #---
-                  set const $pretraitement(const)
-                  ::console::affiche_resultat "Usage: ngain1 in out const\n\n"
-                  ngain1 $in $out $const
-                  if { $pretraitement(disp_2) == 1 } {
-                     loadima $out
-                  }
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } elseif { $pretraitement(choix_mode) == "2" } {
-                  #---
-                  set const $pretraitement(const)
-                  ::console::affiche_resultat "Usage: ngain2 in out const number ?first_index? ?tt_options?\n\n"
-                  if { $first == "1" } {
-                     ngain2 $in $out $const $nb $first
-                  } else {
-                     ngain2 $in $tempo $const $nb $first
-                  }
-                  #--- Renomme les fichiers image si 'first_index' est different de 1
-                  if { $first != "1" } {
-                     for { set index "1" } { $index <= $nb } { incr index } {
-                        set new_index [ expr $index + ( $first - 1 ) ]
-                        file rename -force [ file join $audace(rep_images) $tempo$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
-                     }
-                  }
-                  #---
-                  if { $pretraitement(disp_2) == 1 } {
-                     loadima $out$end
-                  }
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               }
-            } m ]
-            if { $catchError == "1" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-               set pretraitement(avancement) ""
-            }
-         }
-         "multi_addition" {
-            set catchError [ catch {
-               #--- Test sur l'operande
-               if { $pretraitement(img_operand) == "" } {
-                  if { $pretraitement(choix_mode) == "0" } {
-                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                        -message "$caption(pretraitement,definir_image_B)"
-                  } else {
-                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                        -message "$caption(pretraitement,definir_operande)"
-                  }
-                  set pretraitement(avancement) ""
-                  return
-               }
-               #--- Tests sur la constante
-               if { $pretraitement(const) == "" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,definir_cte)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { [ string is double -strict $pretraitement(const) ] == "0" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                     -message "$caption(pretraitement,cte_invalide)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { $pretraitement(choix_mode) == "0" } {
-                  #---
-                  add $pretraitement(img_operand) $pretraitement(const)
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } elseif { $pretraitement(choix_mode) == "1" } {
-                  #---
-                  set operand $pretraitement(img_operand)
-                  set const $pretraitement(const)
-                  ::console::affiche_resultat "Usage: add1 in operand out const\n\n"
-                  add1 $in $operand $out $const
-                  if { $pretraitement(disp_2) == 1 } {
-                     loadima $out
-                  }
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } elseif { $pretraitement(choix_mode) == "2" } {
-                  #---
-                  set operand $pretraitement(img_operand)
-                  set const $pretraitement(const)
-                  ::console::affiche_resultat "Usage: add2 in operand out const number ?first_index? ?tt_options?\n\n"
-                  if { $first == "1" } {
-                     add2 $in $operand $out $const $nb $first
-                  } else {
-                     add2 $in $operand $tempo $const $nb $first
-                  }
-                  #--- Renomme les fichiers image si 'first_index' est different de 1
-                  if { $first != "1" } {
-                     for { set index "1" } { $index <= $nb } { incr index } {
-                        set new_index [ expr $index + ( $first - 1 ) ]
-                        file rename -force [ file join $audace(rep_images) $tempo$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
-                     }
-                  }
-                  #---
-                  if { $pretraitement(disp_2) == 1 } {
-                     loadima $out$end
-                  }
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               }
-            } m ]
-            if { $catchError == "1" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-               set pretraitement(avancement) ""
-            }
-         }
-         "multi_soustraction" {
-            set catchError [ catch {
-               #--- Test sur l'operande
-               if { $pretraitement(img_operand) == "" } {
-                  if { $pretraitement(choix_mode) == "0" } {
-                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                        -message "$caption(pretraitement,definir_image_B)"
-                  } else {
-                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                        -message "$caption(pretraitement,definir_operande)"
-                  }
-                  set pretraitement(avancement) ""
-                  return
-               }
-               #--- Tests sur la constante
-               if { $pretraitement(const) == "" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,definir_cte)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { [ string is double -strict $pretraitement(const) ] == "0" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                     -message "$caption(pretraitement,cte_invalide)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { $pretraitement(choix_mode) == "0" } {
-                  #---
-                  sub $pretraitement(img_operand) $pretraitement(const)
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } elseif { $pretraitement(choix_mode) == "1" } {
-                  #---
-                  set operand $pretraitement(img_operand)
-                  set const $pretraitement(const)
-                  ::console::affiche_resultat "Usage: sub1 in operand out const\n\n"
-                  sub1 $in $operand $out $const
-                  if { $pretraitement(disp_2) == 1 } {
-                     loadima $out
-                  }
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } elseif { $pretraitement(choix_mode) == "2" } {
-                  #---
-                  set operand $pretraitement(img_operand)
-                  set const $pretraitement(const)
-                  ::console::affiche_resultat "Usage: sub2 in operand out const number ?first_index? ?tt_options?\n\n"
-                  if { $first == "1" } {
-                     sub2 $in $operand $out $const $nb $first
-                  } else {
-                     sub2 $in $operand $tempo $const $nb $first
-                  }
-                  #--- Renomme les fichiers image si 'first_index' est different de 1
-                  if { $first != "1" } {
-                     for { set index "1" } { $index <= $nb } { incr index } {
-                        set new_index [ expr $index + ( $first - 1 ) ]
-                        file rename -force [ file join $audace(rep_images) $tempo$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
-                     }
-                  }
-                  #---
-                  if { $pretraitement(disp_2) == 1 } {
-                     loadima $out$end
-                  }
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               }
-            } m ]
-            if { $catchError == "1" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-               set pretraitement(avancement) ""
-            }
-         }
-         "multi_division" {
-            set catchError [ catch {
-               #--- Test sur l'operande
-               if { $pretraitement(img_operand) == "" } {
-                  if { $pretraitement(choix_mode) == "0" } {
-                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                        -message "$caption(pretraitement,definir_image_B)"
-                  } else {
-                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                        -message "$caption(pretraitement,definir_operande)"
-                  }
-                  set pretraitement(avancement) ""
-                  return
-               }
-               #--- Tests sur la constante
-               if { $pretraitement(const) == "" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,definir_cte)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { [ string is double -strict $pretraitement(const) ] == "0" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                     -message "$caption(pretraitement,cte_invalide)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { $pretraitement(choix_mode) == "0" } {
-                  #---
-                  div $pretraitement(img_operand) $pretraitement(const)
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } elseif { $pretraitement(choix_mode) == "1" } {
-                  #---
-                  set operand $pretraitement(img_operand)
-                  set const $pretraitement(const)
-                  ::console::affiche_resultat "Usage: div1 in operand out const\n\n"
-                  div1 $in $operand $out $const
-                  if { $pretraitement(disp_2) == 1 } {
-                     loadima $out
-                  }
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } elseif { $pretraitement(choix_mode) == "2" } {
-                  #---
-                  set operand $pretraitement(img_operand)
-                  set const $pretraitement(const)
-                  ::console::affiche_resultat "Usage: div2 in operand out const number ?first_index? ?tt_options?\n\n"
-                  if { $first == "1" } {
-                     div2 $in $operand $out $const $nb $first
-                  } else {
-                     div2 $in $operand $tempo $const $nb $first
-                  }
-                  #--- Renomme les fichiers image si 'first_index' est different de 1
-                  if { $first != "1" } {
-                     for { set index "1" } { $index <= $nb } { incr index } {
-                        set new_index [ expr $index + ( $first - 1 ) ]
-                        file rename -force [ file join $audace(rep_images) $tempo$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
-                     }
-                  }
-                  #---
-                  if { $pretraitement(disp_2) == 1 } {
-                     loadima $out$end
-                  }
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               }
-            } m ]
-            if { $catchError == "1" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-               set pretraitement(avancement) ""
-            }
-         }
-         "multi_opt_noir" {
-            set catchError [ catch {
-               #--- Test sur le noir
-               if { $pretraitement(dark) == "" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,definir_noir)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               #--- Test sur l'offset
-               if { $pretraitement(offset) == "" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,definir_offset)"
-                  set pretraitement(avancement) ""
-                  return
-               }
-               if { $pretraitement(choix_mode) == "0" } {
-                  #---
-                  opt $pretraitement(dark) $pretraitement(offset)
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } elseif { $pretraitement(choix_mode) == "1" } {
-                  #---
-                  set dark $pretraitement(dark)
-                  set offset $pretraitement(offset)
-                  ::console::affiche_resultat "Usage: opt1 in dark offset out\n\n"
-                  opt1 $in $dark $offset $out
-                  if { $pretraitement(disp_2) == 1 } {
-                     loadima $out
-                  }
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } elseif { $pretraitement(choix_mode) == "2" } {
-                  #---
-                  set dark $pretraitement(dark)
-                  set offset $pretraitement(offset)
-                  ::console::affiche_resultat "Usage: opt2 in dark offset out number ?first_index? ?tt_options?\n\n"
-                  if { $first == "1" } {
-                     opt2 $in $dark $offset $out $nb $first
-                  } else {
-                     opt2 $in $dark $offset $tempo $nb $first
-                  }
-                  #--- Renomme les fichiers image si 'first_index' est different de 1
-                  if { $first != "1" } {
-                     for { set index "1" } { $index <= $nb } { incr index } {
-                        set new_index [ expr $index + ( $first - 1 ) ]
-                        file rename -force [ file join $audace(rep_images) $tempo$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
-                     }
-                  }
-                  #---
-                  if { $pretraitement(disp_2) == 1 } {
-                     loadima $out$end
-                  }
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               }
-            } m ]
-            if { $catchError == "1" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-               set pretraitement(avancement) ""
-            }
-         }
-      }
-      ::pretraitement::recupPosition
-   }
-
-   #
-   # ::pretraitement::cmdClose
-   # Procedure correspondant a l'appui sur le bouton Fermer
-   #
-   proc cmdClose { } {
-      variable This
-
-      ::pretraitement::recupPosition
-      destroy $This
-      unset This
-   }
-
-   #
-   # ::pretraitement::afficheAide
-   # Procedure correspondant a l'appui sur le bouton Aide
-   #
-   proc afficheAide { } {
-      global help pretraitement
-
-      #---
-      if { $pretraitement(operation) == "multi_recadrer" } {
-         set pretraitement(page_web) "1030recadrer"
-      } elseif { $pretraitement(operation) == "multi_reechantillonner" } {
-         set pretraitement(page_web) "1040reechantillonner"
-      } elseif { $pretraitement(operation) == "multi_ajouter_cte" } {
-         set pretraitement(page_web) "1050ajouter_cte"
-      } elseif { $pretraitement(operation) == "multi_multiplier_cte" } {
-         set pretraitement(page_web) "1060multiplier_cte"
-      } elseif { $pretraitement(operation) == "multi_ecreter" } {
-         set pretraitement(page_web) "1070ecreter"
-      } elseif { $pretraitement(operation) == "multi_soust_fond_ciel" } {
-         set pretraitement(page_web) "1080soust_fond_ciel"
-      } elseif { $pretraitement(operation) == "multi_norm_fond" } {
-         set pretraitement(page_web) "1090norm_fond"
-      } elseif { $pretraitement(operation) == "multi_norm_eclai" } {
-         set pretraitement(page_web) "1100norm_eclai"
-      } elseif { $pretraitement(operation) == "multi_addition" } {
-         set pretraitement(page_web) "1110addition"
-      } elseif { $pretraitement(operation) == "multi_soustraction" } {
-         set pretraitement(page_web) "1120soustraction"
-      } elseif { $pretraitement(operation) == "multi_division" } {
-         set pretraitement(page_web) "1130division"
-      } elseif { $pretraitement(operation) == "multi_opt_noir" } {
-         set pretraitement(page_web) "1140opt_noir"
-      }
-
-      #---
-      ::audace::showHelpItem "$help(dir,pretrait)" "$pretraitement(page_web).htm"
-   }
-
-   #
-   # ::pretraitement::change n1 n2 op
-   # Adapte l'interface graphique en fonction du choix
-   #
-   proc change { n1 n2 op } {
-      variable This
-      global caption pretraitement
-
-      #---
-      if { $pretraitement(choix_mode) == "0" } {
-         set pretraitement(afficher_image) "$caption(pretraitement,afficher_image_fin)"
-      } elseif { $pretraitement(choix_mode) == "1" } {
-         set pretraitement(afficher_image) "$caption(pretraitement,afficher_image_fin)"
-      } elseif { $pretraitement(choix_mode) == "2" } {
-         set pretraitement(afficher_image) "$caption(pretraitement,afficher_der_image_fin)"
-      }
-      $This.usr.7.1.che1 configure -text "$pretraitement(afficher_image)"
-      #---
-      set pretraitement(avancement)    ""
-      set pretraitement(in)            ""
-      set pretraitement(nb)            ""
-      set pretraitement(valeur_indice) "1"
-      set pretraitement(out)           ""
-      set pretraitement(img_operand)   ""
-      set pretraitement(dark)          ""
-      set pretraitement(offset)        ""
-      #---
-      ::pretraitement::formule
-      #---
-      switch $pretraitement(operation) {
-         "multi_recadrer" {
-            set pretraitement(const) "0"
-            if { $pretraitement(choix_mode) == "0" } {
-               pack forget $This.usr.0
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.2
-               pack forget $This.usr.8
-               pack forget $This.usr.3
-               pack forget $This.usr.4
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack forget $This.usr.7
-               pack $This.usr.10 -in $This.usr -side top -fill both
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            } elseif { $pretraitement(choix_mode) == "1" } {
-               pack forget $This.usr.0
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.2
-               pack $This.usr.8 -in $This.usr -side top -fill both
-               pack forget $This.usr.3
-               pack forget $This.usr.4
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack $This.usr.7 -in $This.usr -side top -fill both
-               pack forget $This.usr.10
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            } elseif { $pretraitement(choix_mode) == "2" } {
-               pack forget $This.usr.0
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.8
-               pack $This.usr.2 -in $This.usr -side top -fill both
-               pack forget $This.usr.3
-               pack forget $This.usr.4
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack $This.usr.7 -in $This.usr -side top -fill both
-               pack forget $This.usr.10
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            }
-         }
-         "multi_reechantillonner" {
-            set pretraitement(const) ""
-            if { $pretraitement(choix_mode) == "0" } {
-               pack forget $This.usr.0
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.2
-               pack forget $This.usr.8
-               pack forget $This.usr.3
-               pack forget $This.usr.4
-               pack forget $This.usr.5
-               pack $This.usr.6 -in $This.usr -side top -fill both
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack forget $This.usr.7
-               pack $This.usr.10 -in $This.usr -side top -fill both
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            } elseif { $pretraitement(choix_mode) == "1" } {
-               pack forget $This.usr.0
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.2
-               pack $This.usr.8 -in $This.usr -side top -fill both
-               pack forget $This.usr.3
-               pack forget $This.usr.4
-               pack forget $This.usr.5
-               pack $This.usr.6 -in $This.usr -side top -fill both
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack $This.usr.7 -in $This.usr -side top -fill both
-               pack forget $This.usr.10
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            } elseif { $pretraitement(choix_mode) == "2" } {
-               pack forget $This.usr.0
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.8
-               pack $This.usr.2 -in $This.usr -side top -fill both
-               pack forget $This.usr.3
-               pack forget $This.usr.4
-               pack forget $This.usr.5
-               pack $This.usr.6 -in $This.usr -side top -fill both
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack $This.usr.7 -in $This.usr -side top -fill both
-               pack forget $This.usr.10
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            }
-         }
-         "multi_ajouter_cte" {
-            set pretraitement(const) "0"
-            if { $pretraitement(choix_mode) == "0" } {
-               pack $This.usr.0 -in $This.usr -side top -fill both
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.2
-               pack forget $This.usr.8
-               pack $This.usr.3 -in $This.usr -side top -fill both
-               pack forget $This.usr.4
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack forget $This.usr.7
-               pack $This.usr.10 -in $This.usr -side top -fill both
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            } elseif { $pretraitement(choix_mode) == "1" } {
-               pack $This.usr.0 -in $This.usr -side top -fill both
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.2
-               pack $This.usr.8 -in $This.usr -side top -fill both
-               pack $This.usr.3 -in $This.usr -side top -fill both
-               pack forget $This.usr.4
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack $This.usr.7 -in $This.usr -side top -fill both
-               pack forget $This.usr.10
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            } elseif { $pretraitement(choix_mode) == "2" } {
-               pack $This.usr.0 -in $This.usr -side top -fill both
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.8
-               pack $This.usr.2 -in $This.usr -side top -fill both
-               pack $This.usr.3 -in $This.usr -side top -fill both
-               pack forget $This.usr.4
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack $This.usr.7 -in $This.usr -side top -fill both
-               pack forget $This.usr.10
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            }
-         }
-         "multi_multiplier_cte" {
-            set pretraitement(const) "1"
-            if { $pretraitement(choix_mode) == "0" } {
-               pack $This.usr.0 -in $This.usr -side top -fill both
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.2
-               pack forget $This.usr.8
-               pack $This.usr.3 -in $This.usr -side top -fill both
-               pack forget $This.usr.4
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack forget $This.usr.7
-               pack $This.usr.10 -in $This.usr -side top -fill both
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            } elseif { $pretraitement(choix_mode) == "1" } {
-               pack $This.usr.0 -in $This.usr -side top -fill both
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.2
-               pack $This.usr.8 -in $This.usr -side top -fill both
-               pack $This.usr.3 -in $This.usr -side top -fill both
-               pack forget $This.usr.4
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack $This.usr.7 -in $This.usr -side top -fill both
-               pack forget $This.usr.10
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            } elseif { $pretraitement(choix_mode) == "2" } {
-               pack $This.usr.0 -in $This.usr -side top -fill both
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.8
-               pack $This.usr.2 -in $This.usr -side top -fill both
-               pack $This.usr.3 -in $This.usr -side top -fill both
-               pack forget $This.usr.4
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack $This.usr.7 -in $This.usr -side top -fill both
-               pack forget $This.usr.10
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            }
-         }
-         "multi_ecreter" {
-            set pretraitement(const) ""
-            if { $pretraitement(choix_mode) == "0" } {
-               pack forget $This.usr.0
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.2
-               pack forget $This.usr.8
-               pack forget $This.usr.3
-               pack forget $This.usr.4
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack $This.usr.12 -in $This.usr -side top -fill both
-               pack forget $This.usr.7
-               pack $This.usr.10 -in $This.usr -side top -fill both
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            } elseif { $pretraitement(choix_mode) == "1" } {
-               pack forget $This.usr.0
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.2
-               pack $This.usr.8 -in $This.usr -side top -fill both
-               pack forget $This.usr.3
-               pack forget $This.usr.4
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack $This.usr.12 -in $This.usr -side top -fill both
-               pack $This.usr.7 -in $This.usr -side top -fill both
-               pack forget $This.usr.10
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            } elseif { $pretraitement(choix_mode) == "2" } {
-               pack forget $This.usr.0
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.8
-               pack $This.usr.2 -in $This.usr -side top -fill both
-               pack forget $This.usr.3
-               pack forget $This.usr.4
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack $This.usr.12 -in $This.usr -side top -fill both
-               pack $This.usr.7 -in $This.usr -side top -fill both
-               pack forget $This.usr.10
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            }
-         }
-         "multi_soust_fond_ciel" {
-            set pretraitement(const) ""
-            if { $pretraitement(choix_mode) == "0" } {
-               pack forget $This.usr.0
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.2
-               pack forget $This.usr.8
-               pack forget $This.usr.3
-               pack forget $This.usr.4
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack $This.usr.11 -in $This.usr -side top -fill both
-               pack forget $This.usr.12
-               pack forget $This.usr.7
-               pack $This.usr.10 -in $This.usr -side top -fill both
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            } elseif { $pretraitement(choix_mode) == "1" } {
-               pack forget $This.usr.0
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.2
-               pack $This.usr.8 -in $This.usr -side top -fill both
-               pack forget $This.usr.3
-               pack forget $This.usr.4
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack $This.usr.11 -in $This.usr -side top -fill both
-               pack forget $This.usr.12
-               pack $This.usr.7 -in $This.usr -side top -fill both
-               pack forget $This.usr.10
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            } elseif { $pretraitement(choix_mode) == "2" } {
-               pack forget $This.usr.0
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.8
-               pack $This.usr.2 -in $This.usr -side top -fill both
-               pack forget $This.usr.3
-               pack forget $This.usr.4
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack $This.usr.11 -in $This.usr -side top -fill both
-               pack forget $This.usr.12
-               pack $This.usr.7 -in $This.usr -side top -fill both
-               pack forget $This.usr.10
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            }
-         }
-         "multi_norm_fond" {
-            set pretraitement(const) ""
-            if { $pretraitement(choix_mode) == "0" } {
-               pack forget $This.usr.0
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.2
-               pack forget $This.usr.8
-               pack $This.usr.3 -in $This.usr -side top -fill both
-               pack forget $This.usr.4
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack forget $This.usr.7
-               pack $This.usr.10 -in $This.usr -side top -fill both
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            } elseif { $pretraitement(choix_mode) == "1" } {
-               pack forget $This.usr.0
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.2
-               pack $This.usr.8 -in $This.usr -side top -fill both
-               pack $This.usr.3 -in $This.usr -side top -fill both
-               pack forget $This.usr.4
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack $This.usr.7 -in $This.usr -side top -fill both
-               pack forget $This.usr.10
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            } elseif { $pretraitement(choix_mode) == "2" } {
-               pack forget $This.usr.0
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.8
-               pack $This.usr.2 -in $This.usr -side top -fill both
-               pack $This.usr.3 -in $This.usr -side top -fill both
-               pack forget $This.usr.4
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack $This.usr.7 -in $This.usr -side top -fill both
-               pack forget $This.usr.10
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            }
-         }
-         "multi_norm_eclai" {
-            set pretraitement(const) ""
-            if { $pretraitement(choix_mode) == "0" } {
-               pack forget $This.usr.0
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.2
-               pack forget $This.usr.8
-               pack $This.usr.3 -in $This.usr -side top -fill both
-               pack forget $This.usr.4
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack forget $This.usr.7
-               pack $This.usr.10 -in $This.usr -side top -fill both
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            } elseif { $pretraitement(choix_mode) == "1" } {
-               pack forget $This.usr.0
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.2
-               pack $This.usr.8 -in $This.usr -side top -fill both
-               pack $This.usr.3 -in $This.usr -side top -fill both
-               pack forget $This.usr.4
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack $This.usr.7 -in $This.usr -side top -fill both
-               pack forget $This.usr.10
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            } elseif { $pretraitement(choix_mode) == "2" } {
-               pack forget $This.usr.0
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.8
-               pack $This.usr.2 -in $This.usr -side top -fill both
-               pack $This.usr.3 -in $This.usr -side top -fill both
-               pack forget $This.usr.4
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack $This.usr.7 -in $This.usr -side top -fill both
-               pack forget $This.usr.10
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            }
-         }
-         "multi_addition" {
-            set pretraitement(const) "0"
-            if { $pretraitement(choix_mode) == "0" } {
-               pack $This.usr.0 -in $This.usr -side top -fill both
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.2
-               pack forget $This.usr.8
-               pack forget $This.usr.3
-               pack $This.usr.4 -in $This.usr -side top -fill both
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack forget $This.usr.7
-               pack $This.usr.10 -in $This.usr -side top -fill both
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            } elseif { $pretraitement(choix_mode) == "1" } {
-               pack $This.usr.0 -in $This.usr -side top -fill both
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.2
-               pack $This.usr.8 -in $This.usr -side top -fill both
-               pack forget $This.usr.3
-               pack $This.usr.4 -in $This.usr -side top -fill both
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack $This.usr.7 -in $This.usr -side top -fill both
-               pack forget $This.usr.10
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            } elseif { $pretraitement(choix_mode) == "2" } {
-               pack $This.usr.0 -in $This.usr -side top -fill both
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.8
-               pack $This.usr.2 -in $This.usr -side top -fill both
-               pack forget $This.usr.3
-               pack $This.usr.4 -in $This.usr -side top -fill both
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack $This.usr.7 -in $This.usr -side top -fill both
-               pack forget $This.usr.10
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            }
-         }
-         "multi_soustraction" {
-            set pretraitement(const) "0"
-            if { $pretraitement(choix_mode) == "0" } {
-               pack $This.usr.0 -in $This.usr -side top -fill both
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.2
-               pack forget $This.usr.8
-               pack forget $This.usr.3
-               pack $This.usr.4 -in $This.usr -side top -fill both
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack forget $This.usr.7
-               pack $This.usr.10 -in $This.usr -side top -fill both
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            } elseif { $pretraitement(choix_mode) == "1" } {
-               pack $This.usr.0 -in $This.usr -side top -fill both
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.2
-               pack $This.usr.8 -in $This.usr -side top -fill both
-               pack forget $This.usr.3
-               pack $This.usr.4 -in $This.usr -side top -fill both
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack $This.usr.7 -in $This.usr -side top -fill both
-               pack forget $This.usr.10
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            } elseif { $pretraitement(choix_mode) == "2" } {
-               pack $This.usr.0 -in $This.usr -side top -fill both
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.8
-               pack $This.usr.2 -in $This.usr -side top -fill both
-               pack forget $This.usr.3
-               pack $This.usr.4 -in $This.usr -side top -fill both
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack $This.usr.7 -in $This.usr -side top -fill both
-               pack forget $This.usr.10
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            }
-         }
-         "multi_division" {
-            set pretraitement(const) "1"
-            if { $pretraitement(choix_mode) == "0" } {
-               pack $This.usr.0 -in $This.usr -side top -fill both
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.2
-               pack forget $This.usr.8
-               pack forget $This.usr.3
-               pack $This.usr.4 -in $This.usr -side top -fill both
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack forget $This.usr.7
-               pack $This.usr.10 -in $This.usr -side top -fill both
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            } elseif { $pretraitement(choix_mode) == "1" } {
-               pack $This.usr.0 -in $This.usr -side top -fill both
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.2
-               pack $This.usr.8 -in $This.usr -side top -fill both
-               pack forget $This.usr.3
-               pack $This.usr.4 -in $This.usr -side top -fill both
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack $This.usr.7 -in $This.usr -side top -fill both
-               pack forget $This.usr.10
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            } elseif { $pretraitement(choix_mode) == "2" } {
-               pack $This.usr.0 -in $This.usr -side top -fill both
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.8
-               pack $This.usr.2 -in $This.usr -side top -fill both
-               pack forget $This.usr.3
-               pack $This.usr.4 -in $This.usr -side top -fill both
-               pack forget $This.usr.5
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack $This.usr.7 -in $This.usr -side top -fill both
-               pack forget $This.usr.10
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            }
-         }
-         "multi_opt_noir" {
-            set pretraitement(const) ""
-            if { $pretraitement(choix_mode) == "0" } {
-               pack forget $This.usr.0
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.2
-               pack forget $This.usr.8
-               pack forget $This.usr.3
-               pack forget $This.usr.4
-               pack $This.usr.5 -in $This.usr -side top -fill both
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack forget $This.usr.7
-               pack $This.usr.10 -in $This.usr -side top -fill both
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            } elseif { $pretraitement(choix_mode) == "1" } {
-               pack forget $This.usr.0
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.2
-               pack $This.usr.8 -in $This.usr -side top -fill both
-               pack forget $This.usr.3
-               pack forget $This.usr.4
-               pack $This.usr.5 -in $This.usr -side top -fill both
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack $This.usr.7 -in $This.usr -side top -fill both
-               pack forget $This.usr.10
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            } elseif { $pretraitement(choix_mode) == "2" } {
-               pack forget $This.usr.0
-               pack $This.usr.1 -in $This.usr -side top -fill both
-               pack forget $This.usr.8
-               pack $This.usr.2 -in $This.usr -side top -fill both
-               pack forget $This.usr.3
-               pack forget $This.usr.4
-               pack $This.usr.5 -in $This.usr -side top -fill both
-               pack forget $This.usr.6
-               pack forget $This.usr.11
-               pack forget $This.usr.12
-               pack $This.usr.7 -in $This.usr -side top -fill both
-               pack forget $This.usr.10
-               pack $This.usr.9 -in $This.usr -side top -fill both
-            }
-         }
-      }
-   }
 
    #
    # ::pretraitement::parcourir In_Out
@@ -2080,191 +41,11 @@ namespace eval ::pretraitement {
             set pretraitement(out)               [ file rootname [ file tail $filename ] ]
          }
       } elseif { $In_Out == "3" } {
-         set pretraitement(img_operand) [ file rootname [ file tail $filename ] ]
+         set pretraitement(img_operand)          [ file rootname [ file tail $filename ] ]
       } elseif { $In_Out == "4" } {
-         set pretraitement(dark) [ file rootname [ file tail $filename ] ]
+         set pretraitement(dark)                 [ file rootname [ file tail $filename ] ]
       } elseif { $In_Out == "5" } {
-         set pretraitement(offset) [ file rootname [ file tail $filename ] ]
-      }
-   }
-
-   #
-   # ::pretraitement::val_defaut
-   # Affiche les valeurs par defaut des constantes
-   #
-   proc val_defaut { } {
-      global pretraitement
-
-      #--- Re-initialise les coefficients conf()
-      if { $pretraitement(operation) == "multi_reechantillonner" } {
-         set pretraitement(scaleWindow_multx) "2.0"
-         set pretraitement(scaleWindow_multy) "2.0"
-      } elseif { $pretraitement(operation) == "multi_ecreter" } {
-         set pretraitement(clipWindow_mini) "0"
-         set pretraitement(clipWindow_maxi) "32767"
-      } elseif { $pretraitement(operation) == "multi_soust_fond_ciel" } {
-         set pretraitement(subskyWindow_back_kernel) "15"
-         set pretraitement(subskyWindow_back_threshold) "0.2"
-      }
-   }
-
-   #
-   # ::pretraitement::formule
-   # Affiche les formules
-   #
-   proc formule { } {
-      global caption pretraitement
-
-      if { $pretraitement(operation) == "multi_ajouter_cte" } {
-         if { $pretraitement(choix_mode) == "0" } {
-            set pretraitement(image_A)        ""
-            set pretraitement(nombre)         ""
-            set pretraitement(premier_indice) ""
-            set pretraitement(image_B)        ""
-            set pretraitement(constante)      "$caption(pretraitement,ajouter_cte)"
-            set pretraitement(formule)        "$caption(pretraitement,formule) A + Cste"
-         } elseif { $pretraitement(choix_mode) == "1" } {
-            set pretraitement(image_A)        "$caption(pretraitement,image_entree-) ( A ) :"
-            set pretraitement(nombre)         ""
-            set pretraitement(premier_indice) ""
-            set pretraitement(image_B)        "$caption(pretraitement,image_sortie-) ( B ) :"
-            set pretraitement(constante)      "$caption(pretraitement,ajouter_cte)"
-            set pretraitement(formule)        "$caption(pretraitement,formule) B = A + Cste"
-         } elseif { $pretraitement(choix_mode) == "2" } {
-            set pretraitement(image_A)        "$caption(pretraitement,image_generique_entree-) ( A ) :"
-            set pretraitement(nombre)         "$caption(pretraitement,image_nombre-) ( n ) :"
-            set pretraitement(premier_indice) "$caption(pretraitement,image_premier_indice)"
-            set pretraitement(image_B)        "$caption(pretraitement,image_generique_sortie-) ( B ) :"
-            set pretraitement(constante)      "$caption(pretraitement,ajouter_cte)"
-            set pretraitement(formule)        "$caption(pretraitement,formule) Bn = An + Cste"
-         }
-      } elseif { $pretraitement(operation) == "multi_multiplier_cte" } {
-         if { $pretraitement(choix_mode) == "0" } {
-            set pretraitement(image_A)        ""
-            set pretraitement(nombre)         ""
-            set pretraitement(premier_indice) ""
-            set pretraitement(image_B)        ""
-            set pretraitement(constante)      "$caption(pretraitement,cte_mult)"
-            set pretraitement(formule)        "$caption(pretraitement,formule) A x Cste"
-         } elseif { $pretraitement(choix_mode) == "1" } {
-            set pretraitement(image_A)        "$caption(pretraitement,image_entree-) ( A ) :"
-            set pretraitement(nombre)         ""
-            set pretraitement(premier_indice) ""
-            set pretraitement(image_B)        "$caption(pretraitement,image_sortie-) ( B ) :"
-            set pretraitement(constante)      "$caption(pretraitement,cte_mult)"
-            set pretraitement(formule)        "$caption(pretraitement,formule) B = A x Cste"
-         } elseif { $pretraitement(choix_mode) == "2" } {
-            set pretraitement(image_A)        "$caption(pretraitement,image_generique_entree-) ( A ) :"
-            set pretraitement(nombre)         "$caption(pretraitement,image_nombre-) ( n ) :"
-            set pretraitement(premier_indice) "$caption(pretraitement,image_premier_indice)"
-            set pretraitement(image_B)        "$caption(pretraitement,image_generique_sortie-) ( B ) :"
-            set pretraitement(constante)      "$caption(pretraitement,cte_mult)"
-            set pretraitement(formule)        "$caption(pretraitement,formule) Bn = An x Cste"
-         }
-      } elseif { $pretraitement(operation) == "multi_addition" } {
-         if { $pretraitement(choix_mode) == "0" } {
-            set pretraitement(image_A)        ""
-            set pretraitement(nombre)         ""
-            set pretraitement(premier_indice) ""
-            set pretraitement(image_B)        ""
-            set pretraitement(constante)      "$caption(pretraitement,ajouter_cte)"
-            set pretraitement(operande)       "$caption(pretraitement,image_ajouter-) ( B ) :"
-            set pretraitement(formule)        "$caption(pretraitement,formule) A + B + Cste"
-         } elseif { $pretraitement(choix_mode) == "1" } {
-            set pretraitement(image_A)        "$caption(pretraitement,image_entree-) ( A ) :"
-            set pretraitement(nombre)         ""
-            set pretraitement(premier_indice) ""
-            set pretraitement(image_B)        "$caption(pretraitement,image_sortie-) ( B ) :"
-            set pretraitement(constante)      "$caption(pretraitement,ajouter_cte)"
-            set pretraitement(operande)       "$caption(pretraitement,image_ajouter-) ( C ) :"
-            set pretraitement(formule)        "$caption(pretraitement,formule) B = A + C + Cste"
-         } elseif { $pretraitement(choix_mode) == "2" } {
-            set pretraitement(image_A)        "$caption(pretraitement,image_generique_entree-) ( A ) :"
-            set pretraitement(nombre)         "$caption(pretraitement,image_nombre-) ( n ) :"
-            set pretraitement(premier_indice) "$caption(pretraitement,image_premier_indice)"
-            set pretraitement(image_B)        "$caption(pretraitement,image_generique_sortie-) ( B ) :"
-            set pretraitement(constante)      "$caption(pretraitement,ajouter_cte)"
-            set pretraitement(operande)       "$caption(pretraitement,image_ajouter-) ( C ) :"
-            set pretraitement(formule)        "$caption(pretraitement,formule) Bn = An + C + Cste"
-         }
-      } elseif { $pretraitement(operation) == "multi_soustraction" } {
-         if { $pretraitement(choix_mode) == "0" } {
-            set pretraitement(image_A)        ""
-            set pretraitement(nombre)         ""
-            set pretraitement(premier_indice) ""
-            set pretraitement(image_B)        ""
-            set pretraitement(constante)      "$caption(pretraitement,ajouter_cte)"
-            set pretraitement(operande)       "$caption(pretraitement,image_soustraire-) ( B ) :"
-            set pretraitement(formule)        "$caption(pretraitement,formule) A - B + Cste"
-         } elseif { $pretraitement(choix_mode) == "1" } {
-            set pretraitement(image_A)        "$caption(pretraitement,image_entree-) ( A ) :"
-            set pretraitement(nombre)         ""
-            set pretraitement(premier_indice) ""
-            set pretraitement(image_B)        "$caption(pretraitement,image_sortie-) ( B ) :"
-            set pretraitement(constante)      "$caption(pretraitement,ajouter_cte)"
-            set pretraitement(operande)       "$caption(pretraitement,image_soustraire-) ( C ) :"
-            set pretraitement(formule)        "$caption(pretraitement,formule) B = A - C + Cste"
-         } elseif { $pretraitement(choix_mode) == "2" } {
-            set pretraitement(image_A)        "$caption(pretraitement,image_generique_entree-) ( A ) :"
-            set pretraitement(nombre)         "$caption(pretraitement,image_nombre-) ( n ) :"
-            set pretraitement(premier_indice) "$caption(pretraitement,image_premier_indice)"
-            set pretraitement(image_B)        "$caption(pretraitement,image_generique_sortie-) ( B ) :"
-            set pretraitement(constante)      "$caption(pretraitement,ajouter_cte)"
-            set pretraitement(operande)       "$caption(pretraitement,image_soustraire-) ( C ) :"
-            set pretraitement(formule)        "$caption(pretraitement,formule) Bn = An - C + Cste"
-         }
-      } elseif { $pretraitement(operation) == "multi_division" } {
-         if { $pretraitement(choix_mode) == "0" } {
-            set pretraitement(image_A)        ""
-            set pretraitement(nombre)         ""
-            set pretraitement(premier_indice) ""
-            set pretraitement(image_B)        ""
-            set pretraitement(constante)      "$caption(pretraitement,cte_mult)"
-            set pretraitement(operande)       "$caption(pretraitement,nom_diviser-) ( B ) :"
-            set pretraitement(formule)        "$caption(pretraitement,formule) ( A / B ) x Cste"
-         } elseif { $pretraitement(choix_mode) == "1" } {
-            set pretraitement(image_A)        "$caption(pretraitement,image_entree-) ( A ) :"
-            set pretraitement(nombre)         ""
-            set pretraitement(premier_indice) ""
-            set pretraitement(image_B)        "$caption(pretraitement,image_sortie-) ( B ) :"
-            set pretraitement(constante)      "$caption(pretraitement,cte_mult)"
-            set pretraitement(operande)       "$caption(pretraitement,nom_diviser-) ( C ) :"
-            set pretraitement(formule)        "$caption(pretraitement,formule) B = ( A / C ) x Cste"
-         } elseif { $pretraitement(choix_mode) == "2" } {
-            set pretraitement(image_A)        "$caption(pretraitement,image_generique_entree-) ( A ) :"
-            set pretraitement(nombre)         "$caption(pretraitement,image_nombre-) ( n ) :"
-            set pretraitement(premier_indice) "$caption(pretraitement,image_premier_indice)"
-            set pretraitement(image_B)        "$caption(pretraitement,image_generique_sortie-) ( B ) :"
-            set pretraitement(constante)      "$caption(pretraitement,cte_mult)"
-            set pretraitement(operande)       "$caption(pretraitement,nom_diviser-) ( C ) :"
-            set pretraitement(formule)        "$caption(pretraitement,formule) Bn = ( An / C ) x Cste"
-         }
-      } else {
-         if { $pretraitement(choix_mode) == "0" } {
-            set pretraitement(image_A)        ""
-            set pretraitement(nombre)         ""
-            set pretraitement(premier_indice) ""
-            set pretraitement(image_B)        ""
-            set pretraitement(constante)      "$caption(pretraitement,valeur_fond_ciel)"
-            set pretraitement(operande)       "$caption(pretraitement,image_operande)"
-            set pretraitement(formule)        ""
-         } elseif { $pretraitement(choix_mode) == "1" } {
-            set pretraitement(image_A)        "$caption(pretraitement,image_entree)"
-            set pretraitement(nombre)         ""
-            set pretraitement(premier_indice) ""
-            set pretraitement(image_B)        "$caption(pretraitement,image_sortie)"
-            set pretraitement(constante)      "$caption(pretraitement,valeur_fond_ciel)"
-            set pretraitement(operande)       "$caption(pretraitement,image_operande)"
-            set pretraitement(formule)        ""
-         } elseif { $pretraitement(choix_mode) == "2" } {
-            set pretraitement(image_A)        "$caption(pretraitement,image_generique_entree)"
-            set pretraitement(nombre)         "$caption(pretraitement,image_nombre)"
-            set pretraitement(premier_indice) "$caption(pretraitement,image_premier_indice)"
-            set pretraitement(image_B)        "$caption(pretraitement,image_generique_sortie)"
-            set pretraitement(constante)      "$caption(pretraitement,valeur_fond_ciel)"
-            set pretraitement(operande)       "$caption(pretraitement,image_operande)"
-            set pretraitement(formule)        ""
-         }
+         set pretraitement(offset)               [ file rootname [ file tail $filename ] ]
       }
    }
 
@@ -2459,6 +240,7 @@ namespace eval ::conv2 {
       variable this
       variable private
       variable widget
+      variable CONVERSION
       global audace caption
 
       #--- icone hourglass
@@ -2500,17 +282,23 @@ namespace eval ::conv2 {
       ::conv2::confToWidget
 
       set private(conv2,rep) "$audace(rep_images)"
-      set private(conv2,extension) $::conf(extension,defaut)
-
-      #--- liste les operations de conversion
-      set private(conv2,operations) [ list "raw2fits" "cfa2rgb" "rgb2r+g+b" \
-         "r+g+b2rgb" "assigner_r" "assigner_g" "assigner_b"]
+      set private(conv2,conversion) "$type_conversion"
+      #--   definit l'extension reelle des fichiers
+      if {$::conf(fichier,compres) eq "1"} {
+         set private(conv2,extension) "$::conf(extension,defaut).gz"
+      } else {
+         set private(conv2,extension) $::conf(extension,defaut)
+      }
 
       #--- liste les libelles du menubutton
-      set private(conv2,formules) [ list "$caption(audace,menu,raw2fits)" \
-         "$caption(audace,menu,cfa2rvb)" "$caption(audace,menu,rvb2r+v+b)" \
-         "$caption(audace,menu,r+v+b2rvb)" "$caption(audace,menu,assigner_r)" \
-         "$caption(audace,menu,assigner_g)" "$caption(audace,menu,assigner_b)" ]
+      set private(conv2,formules) "[dict keys $CONVERSION]"
+
+      #--- liste les operations de conversion et les noms generiques
+      foreach formule $private(conv2,formules) {
+         set op "[dict get $CONVERSION $formule fun]"
+         lappend private(conv2,operations) $op
+         set private(conv2,$op,generique) "[dict get $CONVERSION $formule gen]"
+      }
 
       #--- cherche la longueur maximale du libelle des formules
       #--- pour dimensionner la largeur du menuboutton
@@ -2519,23 +307,12 @@ namespace eval ::conv2 {
          set private(conv2,bwidth) [ expr { max([ string length $formule ],$private(conv2,bwidth)) } ]
       }
 
-      #--- definit le nom generique propose pour le fichier de sortie des RAW
-      set dir "[ file tail [ file rootname $private(conv2,rep) ] ]_"
-
-      #--- remplace les caracteres
-      regsub -all {[^\w_-]} $dir {} dir
-
-      set liste_generiques [ list $dir "rgb_" "plan_" "img3d_" "plan_" "plan_" "plan_"]
-      foreach op $private(conv2,operations) generique $liste_generiques {
-         set private(conv2,$op,generique) $generique
-      }
-
       #--- classe et liste les fichiers convertibles par type de conversion
       #--- les sept listes sont contenues dans l'array bdd
       #--- ouvre la fenetre de selection de la conversion
       if { [ ::conv2::ListFiles ] != "0" } {
          #--- positionne sur l'operation demandee
-         set private(conv2,conversion) "$type_conversion"
+         #set private(conv2,conversion) "$type_conversion"
          #--- ouvre la fenetre de conversion
          set this "$audace(base).dialog"
          if { [ winfo exists $this ] } {
@@ -2543,7 +320,7 @@ namespace eval ::conv2 {
             wm deiconify $this
             focus $this
             #--- selectionne la conversion
-            set i [ lsearch -exact $private(conv2,operations) $private(conv2,conversion) ]
+            set i [ lsearch -exact $private(conv2,formules) $private(conv2,conversion) ]
             incr i
             $this.but.menu invoke $i
         } else {
@@ -2593,17 +370,16 @@ namespace eval ::conv2 {
       }
 
       #--- etape 2 : recherche les fichiers d'extensions par defaut
-      if { $::tcl_platform(platform) == "windows" } {
-         set fits [ glob -nocomplain -type f -join $private(conv2,rep) *$private(conv2,extension) ]
+      if { $::tcl_platform(platform) eq "windows" } {
+         set pattern "\{$private(conv2,extension)\}"
       } else {
-          set ext_minu [ string tolower $private(conv2,extension) ]
-          set ext_maju [ string toupper $private(conv2,extension) ]
-          foreach extension [ list $ext_minu $ext_maju ] {
-             set fits [ concat $fits [ glob -nocomplain -type f -join $private(conv2,rep) *$extension ] ]
-          }
+         #--   pour Linux
+         set pattern "\{[string tolower $private(conv2,extension)] [string toupper $private(conv2,extension)]\}"
       }
-
-      foreach fichier $fits {
+      #--   remplace les espaces par une virgule
+      regsub -all " " $pattern "," pattern
+      set files [glob -nocomplain -type f -join $private(conv2,rep) *$pattern]
+      foreach fichier $files {
          #--- capture les kwds
          if ![ catch { set kwds_list [ fitsheader $fichier ] } ] {
 
@@ -2642,7 +418,7 @@ namespace eval ::conv2 {
                lassign $data naxis naxis3 rgbfiltr rawfilte raw_filter
                set file [file tail $fichier ]
 
-              #--- classe les fichiers en fonction de leur nature
+               #--- classe les fichiers en fonction de leur nature
                if { $naxis == "3" && $naxis3 == "3" } {
                   lappend rgb "$file"
                } elseif { $naxis == "2" && $rgbfiltr =="" && ( $rawfilte != "" || $raw_filter != "" ) } {
@@ -2766,7 +542,7 @@ namespace eval ::conv2 {
       wm resizable $this 0 0
       wm minsize $this 250 150
       wm deiconify $this
-      wm title $this "$caption(pretraitement,conversion)"
+      wm title $this "$::caption(audace,menu,preprocess) - $caption(pretraitement,conversion)"
       wm geometry $this $widget(conv2,position)
       wm protocol $this WM_DELETE_WINDOW ::conv2::Fermer
 
@@ -2864,7 +640,7 @@ namespace eval ::conv2 {
          $this.cmd 8,0 -cspan 6 -fill both -height 1c
 
       #--- selectionne la conversion
-      set i [ lsearch -exact $private(conv2,operations) $private(conv2,conversion) ]
+      set i [ lsearch -exact $private(conv2,formules) $private(conv2,conversion) ]
       incr i
       $this.but.menu invoke $i
 
@@ -3011,9 +787,9 @@ namespace eval ::conv2 {
             "r+g+b2rgb"    { set texte "$out" }
             "rgb2r+g+b"    { set texte "${out}r + ${out}g + ${out}b" }
             "cfa2rgb"      { set texte "$out" }
-            "assigner_r"   { set texte "[string range $out 0 end-1 ]r" }
-            "assigner_g"   { set texte "[string range $out 0 end-1 ]g" }
-            "assigner_b"   { set texte "[string range $out 0 end-1 ]b" }
+            "assigner_r"   { set texte "${out}r" }
+            "assigner_g"   { set texte "${out}g" }
+            "assigner_b"   { set texte "${out}b" }
          }
 
          #--- actualise l'affichage dans la tablelist
@@ -3049,13 +825,13 @@ namespace eval ::conv2 {
          "cfa2rgb"      { set file_out "$out$ext"
                           set explore [ list "$file_out" ]
                         }
-         "assigner_r"   { set file_out "[string range $out 0 end-1 ]r$ext"
+         "assigner_r"   { set file_out "${out}r$ext"
                           set explore [ list "$file_out"]
                         }
-         "assigner_g"   { set file_out "[string range $out 0 end-1 ]g$ext"
+         "assigner_g"   { set file_out "${out}g$ext"
                           set explore [ list "$file_out"]
                         }
-         "assigner_b"   { set file_out "[string range $out 0 end-1 ]b$ext"
+         "assigner_b"   { set file_out "${out}b$ext"
                           set explore [ list "$file_out"]
                         }
       }
@@ -3107,7 +883,7 @@ namespace eval ::conv2 {
       global caption
 
       #--- elimine les caracteres non autorises dans le nom
-      if { [::conv2::EntryCtrl] == 0 } { return }
+      ::conv2::EntryCtrl
 
       set l [ llength $private(conv2,in) ]
       #--- arrete si aucune selection
@@ -3238,6 +1014,16 @@ namespace eval ::conv2 {
 
       set buf "buf$audace(bufNo)"
 
+      if {[info exists ::prtr::bitpix]} {
+         set bitpix [::prtr::convertBitPix2BitPix $::prtr::bitpix]
+         #--   convertit le reglage par defaut en valeur
+         switch $::conf(format_fichier_image) {
+            "0"   {set bitpix_defaut "ushort" }
+            "1"   {set bitpix_defaut "float" }
+         }
+         if {$bitpix ne "$bitpix_defaut"} {$buf bitpix $bitpix}
+      }
+
       if [ info exists private(conv2,extension) ] {
          set ext "$private(conv2,extension)"
       } else {
@@ -3246,7 +1032,7 @@ namespace eval ::conv2 {
 
       set err [ catch {
 
-         set filter   ""
+         set filter ""
          set filternu ""
 
          #--- charge, modifie les en-tetes et sauve les trois images
@@ -3267,14 +1053,14 @@ namespace eval ::conv2 {
             foreach kwd { MIPS-HI MIPS-LO } level [ list "Low" "Hight" ] {
                set val [ lindex [ $buf getkwd $kwd ] 1 ]
                switch $color {
-                  R  { set $kwd$color [ list $kwd$color $val float "Red $level Cut" "adu" ] }
-                  G  { set $kwd$color [ list $kwd$color $val float "Green $level Cut" "adu" ] }
-                  B  { set $kwd$color [ list $kwd$color $val float "Blue $level Cut" "adu" ] }
+                  R  {  set $kwd$color [ list $kwd$color $val float "Red $level Cut" "adu" ] }
+                  G  {  set $kwd$color [ list $kwd$color $val float "Green $level Cut" "adu" ] }
+                  B  {  set $kwd$color [ list $kwd$color $val float "Blue $level Cut" "adu" ] }
                }
             }
 
             #--   recupere le contenu des mots-cles FILTER et FILTERNU
-            set filter   [ concat $filter [ lindex [$buf getkwd FILTER ] 1 ] ]
+            set filter [ concat $filter [ lindex [$buf getkwd FILTER ] 1 ] ]
             set filternu [ concat $filternu [ lindex [$buf getkwd FILTERNU ] 1 ] ]
 
             #--- memorise les fichiers a detruire
@@ -3575,7 +1361,7 @@ namespace eval ::conv2 {
 
       set this $private(conv2,This)
 
-      #--- le bouton 'Appliquer' et le message
+      #--   le bouton 'Appliquer' et le message
       if { $etat == "disabled" } {
          $this.labURLmsg configure -text $caption(pretraitement,en_cours)
          $this.cmd.appliquer configure -relief sunken
@@ -3585,13 +1371,17 @@ namespace eval ::conv2 {
          $this.cmd.appliquer configure -relief raised
       }
 
-      #--- les autres commandes
+      #--   les autres commandes
       set frames { but chg generique renum all cmd.ok cmd.appliquer cmd.aide cmd.fermer }
+      #--   ne propose pas la destruction pour ces fonctions
       set filtres [list "raw2fits" "assigner_r" "assigner_g" "assigner_b"]
-      if { $private(conv2,conversion) ni $filtres } { lappend frames "destroy_src" }
+      if { $private(conv2,conversion) ni $filtres } {
+
+         lappend frames "destroy_src"
+      }
       foreach frame $frames { $this.$frame configure -state $etat }
 
-      #--- tous les checkbuttons des series
+      #---  tous les checkbuttons des series
       for { set i 0 } { $i < $private(conv2,nb) } { incr i } {
          set w [ $private(conv2,tbl) windowpath $i,0 ]
          $w configure -state $etat
@@ -3620,7 +1410,7 @@ namespace eval ::conv2 {
       }
 
       #--- decoche toutes les options
-      foreach child { all renum chg destroy_src } { $this.$child deselect }
+      foreach child { all renum chg destroy_src } {$this.$child deselect}
 
       #--- affiche le texte generique
       set filtres [list "raw2fits" "assigner_r" "assigner_g" "assigner_b"]
@@ -3646,7 +1436,7 @@ namespace eval ::conv2 {
       if { $op ni $filtres} {$this.destroy_src configure -state $state}
 
       #--- interdit la destruction des sources raw ou en cas d'assignation des plans
-      if { $op in $filtres } {   set state disabled }
+      if { $op in $filtres } {  set state disabled }
       $this.destroy_src configure -state $state
    }
 
@@ -3765,6 +1555,46 @@ namespace eval ::conv2 {
          destroy $private(conv2,This)
       }
       unset private
+   }
+
+   #--------------------------------------------------------------------------
+   #  ::conv2::CONVERSIONFunctions {0|nom_de_fonction}
+   #  Cree le dictionnaire des fonctions de conversion
+   #  Retourne la liste des fonctions ou les parametres d'une fonction
+   #--------------------------------------------------------------------------
+   proc CONVERSIONFunctions {function} {
+      variable CONVERSION
+      global caption help
+
+      #--- definit le nom generique propose pour le fichier de sortie des RAW
+      set dir "[ file tail [ file rootname "$::audace(rep_images)" ] ]_"
+
+      #--- remplace les caracteres
+      regsub -all {[^\w_-]} $dir {} dir
+
+      dict set CONVERSION "$caption(audace,menu,raw2fits)"     fun "raw2fits"
+      dict set CONVERSION "$caption(audace,menu,raw2fits)"     gen "$dir"
+      dict set CONVERSION "$caption(audace,menu,cfa2rvb)"      fun "cfa2rgb"
+      dict set CONVERSION "$caption(audace,menu,cfa2rvb)"      gen "rgb_"
+      dict set CONVERSION "$caption(audace,menu,rvb2r+v+b)"    fun "rgb2r+g+b"
+      dict set CONVERSION "$caption(audace,menu,rvb2r+v+b)"    gen "plan_"
+      dict set CONVERSION "$caption(audace,menu,r+v+b2rvb)"    fun "r+g+b2rgb"
+      dict set CONVERSION "$caption(audace,menu,r+v+b2rvb)"    gen "img3d_"
+      dict set CONVERSION "$caption(audace,menu,assigner_r)"   fun "assigner_r"
+      dict set CONVERSION "$caption(audace,menu,assigner_r)"   gen "plan_"
+      dict set CONVERSION "$caption(audace,menu,assigner_g)"   fun "assigner_g"
+      dict set CONVERSION "$caption(audace,menu,assigner_g)"   gen "plan_"
+      dict set CONVERSION "$caption(audace,menu,assigner_b)"   fun "assigner_b"
+      dict set CONVERSION "$caption(audace,menu,assigner_b)"   gen "plan_"
+
+      if {$function ne "0"} {
+         foreach key {fun hlp gen} {
+            lappend result "[dict get $CONVERSION $function $key]"
+         }
+      } else {
+         set result "[dict keys $CONVERSION]"
+      }
+      return $result
    }
 
 }
@@ -4025,13 +1855,13 @@ namespace eval ::traiteWindow {
 
       #---
       if { $type_pretraitement == "serie_mediane" } {
-         set traiteWindow(captionOperation) "$caption(audace,menu,mediane)"
+         #set traiteWindow(captionOperation) "$caption(audace,menu,mediane)"
       } elseif { $type_pretraitement == "serie_somme" } {
-         set traiteWindow(captionOperation) "$caption(audace,menu,somme)"
+         #set traiteWindow(captionOperation) "$caption(audace,menu,somme)"
       } elseif { $type_pretraitement == "serie_moyenne" } {
-         set traiteWindow(captionOperation) "$caption(audace,menu,moyenne)"
+         #set traiteWindow(captionOperation) "$caption(audace,menu,moyenne)"
       } elseif { $type_pretraitement == "serie_ecart_type" } {
-         set traiteWindow(captionOperation) "$caption(audace,menu,ecart_type)"
+         #set traiteWindow(captionOperation) "$caption(audace,menu,ecart_type)"
       } elseif { $type_pretraitement == "serie_recentrer" } {
          set traiteWindow(captionOperation) "$caption(audace,menu,recentrer)"
       }
@@ -4046,13 +1876,13 @@ namespace eval ::traiteWindow {
 
       #---
       if { $type_pretraitement == "$caption(audace,menu,mediane)" } {
-         set traiteWindow(operation) "serie_mediane"
+         #set traiteWindow(operation) "serie_mediane"
       } elseif { $type_pretraitement == "$caption(audace,menu,somme)" } {
-         set traiteWindow(operation) "serie_somme"
+         #set traiteWindow(operation) "serie_somme"
       } elseif { $type_pretraitement == "$caption(audace,menu,moyenne)" } {
-         set traiteWindow(operation) "serie_moyenne"
+         #set traiteWindow(operation) "serie_moyenne"
       } elseif { $type_pretraitement == "$caption(audace,menu,ecart_type)" } {
-         set traiteWindow(operation) "serie_ecart_type"
+         #set traiteWindow(operation) "serie_ecart_type"
       } elseif { $type_pretraitement == "$caption(audace,menu,recentrer)" } {
          set traiteWindow(operation) "serie_recentrer"
       }
@@ -4850,7 +2680,7 @@ namespace eval ::faireImageRef {
              tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                 -message "$caption(pretraitement,definir_image_sortie)"
              set faireImageRef(avancement) ""
-             return 0
+            return 0
          }
       }
       #--- Calcul du dernier indice de la serie
@@ -5375,9 +3205,9 @@ namespace eval ::faireImageRef {
       set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
       #--- Le fichier selectionne doit imperativement etre dans le repertoire des images
       if { [ file dirname $filename ] != $audace(rep_images) } {
-         tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-            -message "$caption(pretraitement,rep-images)"
-         return
+        tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+           -message "$caption(pretraitement,rep-images)"
+        return
       }
       #--- Extraction du nom du fichier
       if { $In_Out == "1" } {
@@ -5390,6 +3220,7 @@ namespace eval ::faireImageRef {
          if { $faireImageRef(operation) == "pretraitement" } {
             set faireImageRef(info_filename_out) [ ::pretraitement::afficherNomGenerique [ file tail $filename ] ]
             set faireImageRef(out)               [ lindex $faireImageRef(info_filename_out) 0 ]
+
          } else {
             set faireImageRef(out)               [ file rootname [ file tail $filename ] ]
          }
