@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise à jour $Id: aud_menu_3.tcl,v 1.72 2010-12-11 14:18:57 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_3.tcl,v 1.73 2010-12-11 17:45:16 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -542,7 +542,7 @@ namespace eval ::conv2 {
       wm resizable $this 0 0
       wm minsize $this 250 150
       wm deiconify $this
-      wm title $this "$::caption(audace,menu,preprocess) - $caption(pretraitement,conversion)"
+      wm title $this "$::caption(audace,menu,preprocess) - $caption(audace,menu,convertir)"
       wm geometry $this $widget(conv2,position)
       wm protocol $this WM_DELETE_WINDOW ::conv2::Fermer
 
