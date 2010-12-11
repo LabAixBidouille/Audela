@@ -1,7 +1,7 @@
 #
 # Fichier : sophiehistogram.tcl
 # Description : Fenetre affcihat l'histogramme des ecarts étoile/consigne
-# Mise à jour $Id: sophiehistogram.tcl,v 1.8 2010-07-23 15:45:01 robertdelmas Exp $
+# Mise à jour $Id: sophiehistogram.tcl,v 1.9 2010-12-11 10:35:34 robertdelmas Exp $
 #
 
 namespace eval ::sophie::histogram {
@@ -694,7 +694,7 @@ proc ::sophie::histogram::writeGuidingStart {  ra dec } {
       close $hFile
    }
 
-   #--- je met à jour les visus qui affichent le fichier de log courant
+   #--- je mets a jour les visus qui affichent le fichier de log courant
    foreach visuNo $private(realTimeVisuNo)  {
       #--- j'ajoute un nouvel item dans la table
       set startDate [string range [lindex $date 0] 11 end]
@@ -730,7 +730,7 @@ proc ::sophie::histogram::writeGuidingStop { } {
    }
 
    foreach visuNo $private(realTimeVisuNo)  {
-      #--- je met a jour le dernier element de la table
+      #--- je mets a jour le dernier element de la table
 
       #--- je mets a jour la date stop
       set stopDate [string range $date 11 end]
