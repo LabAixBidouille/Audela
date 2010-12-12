@@ -19,7 +19,7 @@ void Eshel_processFlat(
    char *tungstenFileName, // nom du fichier tungsten (image pretraitee pour le blaze)
    char *flatFileName,     // nom du fichier flat traitee en sortie
    int ordre_ref_y, int ordre_ref, double lambda_ref, int neon_ref_x, 
-   int wide_y, int step_y, int seuil_ordre, ORDRE *ordre, 
+   int wide_y, int seuil_ordre, ORDRE *ordre, 
    INFOSPECTRO &spectro,
    ::std::list<double> &lineList,
    int *nb_ordre, double *dx_ref,

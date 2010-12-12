@@ -43,7 +43,6 @@ void Eshel_processFlat(
    double lambda_ref,      // longueur d’onde de la raie de référence 
    int neon_ref_x,         // abscisse de la raie de référence 
    int wide_y,             // hauteur du binning 
-   int step_y,             // écartement moyen des ordres
    int seuil_ordre,        // seuil de détection
    ORDRE *ordre,           // table des ordre (avec la marge gauche, marge droit et slant renseignés)
    INFOSPECTRO &spectro,   // parametres du specto et de la caméra
@@ -127,7 +126,6 @@ _CrtMemCheckpoint(&startState);
          processInfo.referenceOrderY =ordre_ref_y;
          processInfo.referenceOrderLambda = lambda_ref; 
          processInfo.detectionThreshold = seuil_ordre;
-         processInfo.yStep = step_y;
          processInfo.calibrationIteration = 0; 
          processInfo.version = LIBESHEL_VERSION; 
          processInfo.bordure = 7;

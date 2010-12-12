@@ -68,8 +68,8 @@ int cmdEshelInit(ClientData clientData, Tcl_Interp *interp,int argc, char *argv[
 int cmdEshelProcessFlat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    char s[1024];
    int result;
-   char *usage = "Usage: eshel_flat ledFileName tungstenFileName flatFileName Out alpha beta gamma focale m pixel width height wide_x wide_y step_y seuil_ordre min_order max_order neon_ref_x ordre_ref_y ordre_ref lambda_ref {def_ordres} {line_list} {distorsion_polynom}";
-   if(argc!=25) {
+   char *usage = "Usage: eshel_flat ledFileName tungstenFileName flatFileName Out alpha beta gamma focale m pixel width height wide_x wide_y seuil_ordre min_order max_order neon_ref_x ordre_ref_y ordre_ref lambda_ref {def_ordres} {line_list} {distorsion_polynom}";
+   if(argc!=24) {
       Tcl_SetResult(interp,usage,TCL_VOLATILE);
       return TCL_ERROR;
    } else {
@@ -77,7 +77,7 @@ int cmdEshelProcessFlat(ClientData clientData, Tcl_Interp *interp, int argc, cha
       char * tungstenFileName;
       char * flatFileName;
       INFOSPECTRO spectro;
-      int wide_x, wide_y, step_y, seuil_ordre;
+      int wide_x, wide_y, seuil_ordre;
       int neon_ref_x, ordre_ref_y, ordre_ref;
       double lambda_ref;
       ORDRE * ordre;
@@ -148,11 +148,6 @@ int cmdEshelProcessFlat(ClientData clientData, Tcl_Interp *interp, int argc, cha
       }
       if(Tcl_GetInt(interp,argv[++paramNo],&wide_y)!=TCL_OK) {
          sprintf(s,"%s\n Invalid wide_y=%s", usage, argv[paramNo]);
-         Tcl_SetResult(interp,s,TCL_VOLATILE);
-         return TCL_ERROR;
-      }
-      if(Tcl_GetInt(interp,argv[++paramNo],&step_y)!=TCL_OK) {
-         sprintf(s,"%s\n Invalid step_y=%s", usage, argv[paramNo]);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_ERROR;
       }
@@ -304,7 +299,7 @@ int cmdEshelProcessFlat(ClientData clientData, Tcl_Interp *interp, int argc, cha
          char returnMessage[1024];
          Eshel_processFlat(ledfileName, tungstenFileName, flatFileName,
             ordre_ref_y, ordre_ref, lambda_ref, neon_ref_x, 
-            wide_y, step_y, seuil_ordre, ordre, 
+            wide_y, seuil_ordre, ordre, 
             spectro,
             lineList,
             &nb_ordre, &dx_ref,

@@ -166,7 +166,6 @@ void divideResponse(std::valarray<double> &profile1b, double lambda1b, std::vala
 /* d'ordre trouvé (nb_ordre).                                      */
 /* Le point central des ordres est marquée par un carré dans       */
 /* l'image de vérification (check)                                 */
-/* Modif V1.6 -> nom de variable wide_y remplacé par step_y        */
 /*  retourne une exception conteant le message d'erreur            */
 /*******************************************************************/
 void find_y_pos(INFOIMAGE &buffer,PROCESS_INFO &processInfo,ORDRE *ordre,

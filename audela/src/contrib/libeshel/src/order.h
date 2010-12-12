@@ -56,7 +56,6 @@ typedef struct {
     int referenceOrderY;      // reference order y
     double referenceOrderLambda; //reference order lambda 
     int detectionThreshold;   // dectection threshold
-    int yStep;                // y step between orders
     int calibrationIteration; // nombre d'iteration du traitement de la calibration
     int bordure;              // Valeur du crop des bords de spectre après la correction géométrique
     double version;           // version du header
