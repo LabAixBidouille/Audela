@@ -1,6 +1,6 @@
 
 
-# Mise a jour $Id: spc_filter2.tcl,v 1.15 2010-10-10 12:58:26 bmauclaire Exp $
+# Mise a jour $Id: spc_filter2.tcl,v 1.16 2010-12-12 17:09:50 bmauclaire Exp $
 # Mise a jour Patrick Lailly 29 mai 2009
 
 
@@ -985,7 +985,9 @@ proc spc_extractcontew { args } {
    #--- Détermine 2 lmabdas du continuum ou sigma est petit :
    #-- Détermine les limites gauche et droite d'etude (valeurs != 0) :
    set limits [ spc_findnnul [ lindex [ spc_fits2data "$fichier" ] 1 ] ]
-   
+   set lambda_min [ spc_calpoly [ lindex $limits 0 ] $crpix1 $crval1 $cdelt1 0 0 ]
+   set lambda_max [ spc_calpoly [ lindex $limits 1 ] $crpix1 $crval1 $cdelt1 0 0 ]
+
    #-- Filtrage passe bas :
    #set spectre_pbas [ spc_passebas "$fichier" ]
    #buf$audace(bufNo) load "$audace(rep_images)/$spectre_pbas"
@@ -1012,9 +1014,19 @@ proc spc_extractcontew { args } {
    set no_tranche [ lindex [ lindex $listresults 0 ] 2 ]
    set no_pixel [ expr round($no_tranche*$largeur*1.) ]
    set lambdac1 [ expr round([ spc_calpoly $no_pixel $crpix1 $crval1 $cdelt1 0 0 ]) ]
+   if { $lambdac1<$lambda_min } {
+      set lambdac1 [ expr ceil([ spc_calpoly $no_pixel $crpix1 $crval1 $cdelt1 0 0 ]) ]
+   } elseif { $lambdac1>$lambda_max } {
+      set lambdac1 [ expr floor([ spc_calpoly $no_pixel $crpix1 $crval1 $cdelt1 0 0 ]) ]
+   }
    set no_tranche [ lindex [ lindex $listresults 1 ] 2 ]
    set no_pixel [ expr round($no_tranche*$largeur*1.) ]
    set lambdac2 [ expr round([ spc_calpoly $no_pixel $crpix1 $crval1 $cdelt1 0 0 ]) ]
+   if { $lambdac2<$lambda_min } {
+      set lambdac2 [ expr ceil([ spc_calpoly $no_pixel $crpix1 $crval1 $cdelt1 0 0 ]) ]
+   } elseif { $lambdac2>$lambda_max } {
+      set lambdac2 [ expr floor([ spc_calpoly $no_pixel $crpix1 $crval1 $cdelt1 0 0 ]) ]
+   }
    
    
    #--- Calcul deux longueurs proches des extrémités :
@@ -1022,9 +1034,19 @@ proc spc_extractcontew { args } {
    set lambdab2 [ expr $crval1*1.0007 ]
    set pixelr1 [ expr round($naxis1*0.979) ]
    set lambdar1 [ expr round([ spc_calpoly $pixelr1 $crpix1 $crval1 $cdelt1 0 0 ]) ]
+   if { $lambdar1<$lambda_min } {
+      set lambdar1 [ expr ceil([ spc_calpoly $pixelr1 $crpix1 $crval1 $cdelt1 0 0 ]) ]
+   } elseif { $lambdar1>$lambda_max } {
+      set lambdar1 [ expr floor([ spc_calpoly $pixelr1 $crpix1 $crval1 $cdelt1 0 0 ]) ]
+   }
    set pixelr2 [ expr round($naxis1*0.993) ]
    set lambdar2 [ expr round([ spc_calpoly $pixelr2 $crpix1 $crval1 $cdelt1 0 0 ]) ]
-   
+   if { $lambdar2<$lambda_min } {
+      set lambdar2 [ expr ceil([ spc_calpoly $pixelr2 $crpix1 $crval1 $cdelt1 0 0 ]) ]
+   } elseif { $lambdar2>$lambda_max } {
+      set lambdar2 [ expr floor([ spc_calpoly $pixelr2 $crpix1 $crval1 $cdelt1 0 0 ]) ]
+   }
+
    
    #--- Extrait le continuum :
    ::console::affiche_prompt "Longueurs d'ondes retenues pour le continuum : $lambdab1, $lambdab2, $lambdac1, $lambdac2, $lambdar1, $lambdar2.\n"
