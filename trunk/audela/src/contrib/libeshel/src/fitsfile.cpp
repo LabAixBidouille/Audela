@@ -474,7 +474,6 @@ void Fits_setOrders (FITS *pFits, INFOSPECTRO *infoSpectro, PROCESS_INFO *proces
       orderTable->addKey("REF_Y",     processInfo->referenceOrderY,"reference order y"); 
       orderTable->addKey("REF_L",     processInfo->referenceOrderLambda,"reference order lambda"); 
       orderTable->addKey("THRESHOL",  processInfo->detectionThreshold,"dectection threshold"); 
-      orderTable->addKey("Y_STEP",    processInfo->yStep,"y step between orders"); 
       orderTable->addKey("CALIB_ITER",processInfo->calibrationIteration,"calibration iteration");       
 
       orderTable->addKey("HDUVERS",2,"ORDER HDU version"); 
@@ -582,7 +581,6 @@ void Fits_getProcessInfo (FITS *pFits, PROCESS_INFO *processInfo) {
       hduOrders.readKey("REF_Y",    value); processInfo->referenceOrderY= value;
       hduOrders.readKey("REF_L",    processInfo->referenceOrderLambda); 
       hduOrders.readKey("THRESHOL", value); processInfo->detectionThreshold= value;
-      hduOrders.readKey("Y_STEP",   value); processInfo->yStep= value;
       hduOrders.readKey("CALIB_ITER", value); processInfo->calibrationIteration= value;
    } catch ( CCfits::FitsException e) {
       char message[1024];
