@@ -74,7 +74,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib"
 				OutputFile=".\Release/cfitsio.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -937,6 +936,10 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\install.bat"
+				>
 			</File>
 			<File
 				RelativePath="..\cfitsio3210\iraffits.c"
