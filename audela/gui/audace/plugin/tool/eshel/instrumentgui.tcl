@@ -2,7 +2,7 @@
 # Fichier : process.tcl
 # Description : fenertre de configuration instrument eShel
 # Auteur : Michel PUJOL
-# Mise à jour $Id: instrumentgui.tcl,v 1.9 2010-11-28 17:35:20 michelpujol Exp $
+# Mise à jour $Id: instrumentgui.tcl,v 1.10 2010-12-12 11:21:49 michelpujol Exp $
 #
 
 ################################################################
@@ -625,75 +625,71 @@ proc ::eshel::instrumentgui::fillReferencePage { frm visuNo } {
 proc ::eshel::instrumentgui::fillProcessPage { frm visuNo } {
    variable private
 
-   #--- ordre de reference
-   TitleFrame $frm.reference -borderwidth 2 -relief ridge -text $::caption(eshel,instrument,process,referenceOrder)
-      LabelEntry $frm.reference.refNum  -label $::caption(eshel,instrument,process,refNum)\
-         -labeljustify left -labelwidth 20 -width 10 -justify right \
-         -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 54 ::eshel::instrumentgui::widget(error,refNum) } \
-         -textvariable ::eshel::instrumentgui::private(refNum)
-      LabelEntry $frm.reference.refX  -label $::caption(eshel,instrument,process,refX)\
-         -labeljustify left -labelwidth 20 -width 10 -justify right \
-         -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 9999 ::eshel::instrumentgui::widget(error,refX) } \
-         -textvariable ::eshel::instrumentgui::private(refX)
-      LabelEntry $frm.reference.refY  -label $::caption(eshel,instrument,process,refY)\
-         -labeljustify left -labelwidth 20 -width 10 -justify right \
-         -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 9999 ::eshel::instrumentgui::widget(error,refY) } \
-         -textvariable ::eshel::instrumentgui::private(refY)
-      LabelEntry $frm.reference.refLambda  -label $::caption(eshel,instrument,process,refLambda)\
-         -labeljustify left -labelwidth 20 -width 10 -justify right \
-         -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s double 3000 10000 ::eshel::instrumentgui::widget(error,refLambda) } \
-         -textvariable ::eshel::instrumentgui::private(refLambda)
-
-      Button $frm.reference.findOrder -text $::caption(eshel,instrument,process,findOrder) -state disabled
-
-      pack $frm.reference.refNum -in [$frm.reference getframe] -side top  -anchor w -fill none -expand 1
-      pack $frm.reference.refX -in [$frm.reference getframe] -side top  -anchor w -fill none -expand 1
-      pack $frm.reference.refY -in [$frm.reference getframe] -side top  -anchor e -fill none -expand 1
-      pack $frm.reference.refLambda -in [$frm.reference getframe] -side top  -anchor w -fill none -expand 1
-      pack $frm.reference.findOrder  -in [$frm.reference getframe] -side top -fill none -expand 0 -pady 10
-
-   grid $frm.reference -in $frm -row 0 -column 0 -sticky nsw
 
    #--- detection des ordres
    TitleFrame $frm.detection -borderwidth 2 -relief ridge -text $::caption(eshel,instrument,process,detectionOrder)
-      LabelEntry $frm.detection.wideOrder  -label $::caption(eshel,instrument,process,wideOrder)\
-         -labeljustify left -labelwidth 20 -width 10 -justify right \
-         -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 100 ::eshel::instrumentgui::widget(error,wideOrder) } \
-         -textvariable ::eshel::instrumentgui::private(wideOrder)
-      pack $frm.detection.wideOrder -in [$frm.detection getframe] -side top  -anchor w -fill none -expand 1
-      LabelEntry $frm.detection.stepOrder  -label $::caption(eshel,instrument,process,stepOrder)\
-         -labeljustify left -labelwidth 20 -width 10 -justify right  \
-         -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 100 ::eshel::instrumentgui::widget(error,stepOrder) } \
-         -textvariable ::eshel::instrumentgui::private(stepOrder)
-      pack $frm.detection.stepOrder -in [$frm.detection getframe] -side top  -anchor w -fill none -expand 1
-      LabelEntry $frm.detection.threshold  -label $::caption(eshel,instrument,process,threshold)\
-         -labeljustify left -labelwidth 20 -width 10 -justify right \
-         -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 0 65535 ::eshel::instrumentgui::widget(error,threshold) } \
-         -textvariable ::eshel::instrumentgui::private(threshold)
-      pack $frm.detection.threshold -in [$frm.detection getframe] -side top  -anchor w -fill none -expand 1
-      LabelEntry $frm.detection.boxWide  -label $::caption(eshel,instrument,process,boxWide)\
-         -labeljustify left -labelwidth 20 -width 10 -justify right \
-         -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 100 ::eshel::instrumentgui::widget(error,boxWide) } \
-         -textvariable ::eshel::instrumentgui::private(boxWide)
-      pack $frm.detection.boxWide -in [$frm.detection getframe] -side top  -anchor w -fill none -expand 1
       LabelEntry $frm.detection.minOrder  -label $::caption(eshel,instrument,process,minOrder)\
-         -labeljustify left -labelwidth 20 -width 10 -justify right \
+         -labeljustify left -labelwidth 30 -width 10 -justify right \
          -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 60 ::eshel::instrumentgui::widget(error,minOrder) } \
          -textvariable ::eshel::instrumentgui::private(minOrder)
-      pack $frm.detection.minOrder -in [$frm.detection getframe] -side top  -anchor w -fill none -expand 1
+      pack $frm.detection.minOrder -in [$frm.detection getframe] -side top  -anchor w -fill none -expand 1 -pady 2
       LabelEntry $frm.detection.maxOrder  -label $::caption(eshel,instrument,process,maxOrder)\
-         -labeljustify left -labelwidth 20 -width 10 -justify right \
+         -labeljustify left -labelwidth 30 -width 10 -justify right \
          -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 60 ::eshel::instrumentgui::widget(error,maxOrder) } \
          -textvariable ::eshel::instrumentgui::private(maxOrder)
-      pack $frm.detection.maxOrder -in [$frm.detection getframe] -side top  -anchor w -fill none -expand 1
+      pack $frm.detection.maxOrder -in [$frm.detection getframe] -side top  -anchor w -fill none -expand 1 -pady 2
+      LabelEntry $frm.detection.wideOrder  -label $::caption(eshel,instrument,process,wideOrder)\
+         -labeljustify left -labelwidth 30 -wraplength 180 -width 10 -justify right \
+         -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 100 ::eshel::instrumentgui::widget(error,wideOrder) } \
+         -textvariable ::eshel::instrumentgui::private(wideOrder)
+      pack $frm.detection.wideOrder -in [$frm.detection getframe] -side top  -anchor w -fill none -expand 1 -pady 2
+      LabelEntry $frm.detection.boxWide  -label $::caption(eshel,instrument,process,boxWide)\
+         -labeljustify left -labelwidth 30 -width 10 -justify right \
+         -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 100 ::eshel::instrumentgui::widget(error,boxWide) } \
+         -textvariable ::eshel::instrumentgui::private(boxWide)
+      pack $frm.detection.boxWide -in [$frm.detection getframe] -side top  -anchor w -fill none -expand 1 -pady 2
 
-   grid $frm.detection -in $frm -row 1 -column 0 -sticky nsw
+   grid $frm.detection -in $frm -row 0 -column 0 -sticky nw
+
+   #--- ordre de reference
+   TitleFrame $frm.reference -borderwidth 2 -relief ridge -text $::caption(eshel,instrument,process,referenceOrder)
+      LabelEntry $frm.reference.refNum  -label $::caption(eshel,instrument,process,refNum)\
+         -labeljustify left -labelwidth 30 -wraplength 180 -width 10 -justify right \
+         -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 54 ::eshel::instrumentgui::widget(error,refNum) } \
+         -textvariable ::eshel::instrumentgui::private(refNum)
+      LabelEntry $frm.reference.refY  -label $::caption(eshel,instrument,process,refY)\
+         -labeljustify left -labelwidth 30 -wraplength 180 -width 10 -justify right \
+         -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 9999 ::eshel::instrumentgui::widget(error,refY) } \
+         -textvariable ::eshel::instrumentgui::private(refY)
+      LabelEntry $frm.reference.refX  -label $::caption(eshel,instrument,process,refX)\
+         -labeljustify left -labelwidth 30 -wraplength 180 -width 10 -justify right \
+         -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 1 9999 ::eshel::instrumentgui::widget(error,refX) } \
+         -textvariable ::eshel::instrumentgui::private(refX)
+      LabelEntry $frm.reference.refLambda  -label $::caption(eshel,instrument,process,refLambda)\
+         -labeljustify left -labelwidth 30 -wraplength 180 -width 10 -justify right \
+         -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s double 3000 10000 ::eshel::instrumentgui::widget(error,refLambda) } \
+         -textvariable ::eshel::instrumentgui::private(refLambda)
+      LabelEntry $frm.reference.threshold  -label $::caption(eshel,instrument,process,threshold)\
+         -labeljustify left -labelwidth 30 -width 10 -justify right \
+         -validate key -validatecommand { ::eshel::validateNumber %W %V %P %s integer 0 65535 ::eshel::instrumentgui::widget(error,threshold) } \
+         -textvariable ::eshel::instrumentgui::private(threshold)
+
+      Button $frm.reference.findOrder -text $::caption(eshel,instrument,process,findOrder) -state disabled
+
+      pack $frm.reference.refNum -in [$frm.reference getframe] -side top  -anchor w -fill none -expand 1 -pady 2
+      pack $frm.reference.refY -in [$frm.reference getframe] -side top  -anchor e -fill none -expand 1 -pady 2
+      pack $frm.reference.refLambda -in [$frm.reference getframe] -side top  -anchor w -fill none -expand 1 -pady 2
+      pack $frm.reference.refX -in [$frm.reference getframe] -side top  -anchor w -fill none -expand 1 -pady 2
+      pack $frm.reference.threshold -in [$frm.reference getframe] -side top  -anchor w -fill none -expand 1 -pady 2
+      pack $frm.reference.findOrder  -in [$frm.reference getframe] -side top -fill none -expand 0 -pady 10 -pady 2
+
+   grid $frm.reference -in $frm -row 1 -column 0 -sticky nw
 
    #--- liste des raies
    TitleFrame $frm.lineList -borderwidth 2 -relief ridge -text $::caption(eshel,instrument,process,lineList)
       scrollbar $frm.lineList.ysb -command "$frm.lineList.text yview"
       text $frm.lineList.text -yscrollcommand [list $frm.lineList.ysb set] \
-         -wrap word -width 12 -height 10
+         -wrap word -width 13 -height 10
 
       grid $frm.lineList.text -in [$frm.lineList getframe] -row 0 -column 0 -sticky wns
       grid $frm.lineList.ysb  -in [$frm.lineList getframe] -row 0 -column 1 -sticky wns
@@ -702,7 +698,7 @@ proc ::eshel::instrumentgui::fillProcessPage { frm visuNo } {
       grid columnconfig [$frm.lineList getframe] 0 -weight 1
       grid columnconfig [$frm.lineList getframe] 1 -weight 0
 
-   grid $frm.lineList -in $frm -row 0 -column 1 -sticky ewns
+   grid $frm.lineList -in $frm -row 0 -column 1 -rowspan 3 -sticky wns
 
    #--- definition des ordres
    TitleFrame $frm.definition -borderwidth 2 -relief ridge -text $::caption(eshel,instrument,process,orderDefinition)
@@ -733,12 +729,15 @@ proc ::eshel::instrumentgui::fillProcessPage { frm visuNo } {
       grid columnconfig [$frm.definition getframe] 0 -weight 1
       grid columnconfig [$frm.definition getframe] 1 -weight 0
 
-   grid $frm.definition -in $frm -row 1 -column 1 -sticky ewns
+   grid $frm.definition -in $frm -row 0 -column 2 -rowspan 3 -sticky ewns
 
-   grid rowconfig    $frm 0 -weight 1
-   grid rowconfig    $frm 1 -weight 1
+   grid rowconfig    $frm 0 -weight 0
+   grid rowconfig    $frm 1 -weight 0
+   grid rowconfig    $frm 2 -weight 1
    grid columnconfig $frm 0 -weight 0
-   grid columnconfig $frm 1 -weight 1
+   grid columnconfig $frm 1 -weight 0
+   grid columnconfig $frm 2 -weight 1
+
 
 }
 
@@ -887,7 +886,6 @@ proc ::eshel::instrumentgui::setConfig { visuNo configId } {
    set private(refY)       $::conf(eshel,instrument,config,$configId,refY)
    set private(refLambda)  $::conf(eshel,instrument,config,$configId,refLambda)
    set private(wideOrder)  $::conf(eshel,instrument,config,$configId,wideOrder)
-   set private(stepOrder)  $::conf(eshel,instrument,config,$configId,stepOrder)
    set private(threshold)  $::conf(eshel,instrument,config,$configId,threshold)
    set private(boxWide)    $::conf(eshel,instrument,config,$configId,boxWide)
    set private(minOrder)   $::conf(eshel,instrument,config,$configId,minOrder)
@@ -969,7 +967,6 @@ proc ::eshel::instrumentgui::apply { visuNo } {
          refY -
          refLambda -
          wideOrder -
-         stepOrder -
          threshold -
          boxWide -
          minOrder -
@@ -1027,7 +1024,6 @@ proc ::eshel::instrumentgui::apply { visuNo } {
    set ::conf(eshel,instrument,config,$configId,refY)          $private(refY)
    set ::conf(eshel,instrument,config,$configId,refLambda)     $private(refLambda)
    set ::conf(eshel,instrument,config,$configId,wideOrder)     $private(wideOrder)
-   set ::conf(eshel,instrument,config,$configId,stepOrder)     $private(stepOrder)
    set ::conf(eshel,instrument,config,$configId,threshold)     $private(threshold)
    set ::conf(eshel,instrument,config,$configId,boxWide)       $private(boxWide)
    set ::conf(eshel,instrument,config,$configId,minOrder)      $private(minOrder)
@@ -2161,6 +2157,35 @@ proc ::eshel::instrumentgui::getCheckbutton { tkTable lineName columnName } {
    return [set $variableName]
 }
 
+
+proc ::eshel::instrumentgui::wrap {W w} {
+
+    set px [$W cget -padx]
+
+    if { [catch {$W cget -compound} side] } {
+      set wl [expr {$w - (2 * $px)}]
+    } else {
+      switch -- $side {
+        left -
+        right {
+          set image [$W cget -image]
+          if { [string length $image] } {
+            set iw [image width $image]
+          } else {
+            set iw 0
+          }
+          set wl [expr {$w - (3 * $px) - $iw}]
+        }
+        default {
+          set wl [expr {$w - (2 * $px)}]
+        }
+      }
+    }
+console::disp "wrap $wl\n"
+    $W configure -wraplength $wl
+  }
+
+
 ################################################################
 # namespace ::eshel::instrumentgui::nameDialog
 #  fenetre de saisie du nom de configuration
@@ -2280,4 +2305,7 @@ proc ::eshel::instrumentgui::nameDialog::validateConfigName {  win event X oldX 
       }
    }
 }
+
+
+
 
