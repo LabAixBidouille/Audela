@@ -2,7 +2,7 @@
 # Fichier : eshel.tcl
 # Description : outil de fabrication des fichier Kit et de deploiement des plugin
 # Auteurs : Michel Pujol
-# Mise à jour $Id: eshel.tcl,v 1.13 2010-11-28 17:31:05 michelpujol Exp $
+# Mise à jour $Id: eshel.tcl,v 1.14 2010-12-12 11:20:34 michelpujol Exp $
 #
 
 ##------------------------------------------------------------
@@ -202,7 +202,6 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
    if { ! [ info exists conf($prefix,quickProcess) ] }    { set conf($prefix,quickProcess)     1 }
    if { ! [ info exists conf($prefix,boxWide) ] }         { set conf($prefix,boxWide)          25 }
    if { ! [ info exists conf($prefix,wideOrder) ] }       { set conf($prefix,wideOrder)        12 }
-   if { ! [ info exists conf($prefix,stepOrder) ] }       { set conf($prefix,stepOrder)        18 }
    if { ! [ info exists conf($prefix,threshold) ] }       { set conf($prefix,threshold)        100 }
    if { ! [ info exists conf($prefix,minOrder) ] }        { set conf($prefix,minOrder)         33 }
    if { ! [ info exists conf($prefix,maxOrder) ] }        { set conf($prefix,maxOrder)         44 }

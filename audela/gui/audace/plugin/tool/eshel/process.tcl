@@ -2,7 +2,7 @@
 # Fichier : process.tcl
 # Description : traitements eShel
 # Auteur : Michel PUJOL
-# Mise à jour $Id: process.tcl,v 1.9 2010-11-28 17:37:12 michelpujol Exp $
+# Mise à jour $Id: process.tcl,v 1.10 2010-12-12 11:22:25 michelpujol Exp $
 #
 
 ################################################################
@@ -903,7 +903,6 @@ proc ::eshel::process::generateScript { } {
    putCommand $hScriptFile "set height    $::conf(eshel,instrument,config,$name,height)      "
    putCommand $hScriptFile "set boxWide   $::conf(eshel,instrument,config,$name,boxWide)     "
    putCommand $hScriptFile "set wideOrder $::conf(eshel,instrument,config,$name,wideOrder)   "
-   putCommand $hScriptFile "set stepOrder $::conf(eshel,instrument,config,$name,stepOrder)   "
    putCommand $hScriptFile "set threshold $::conf(eshel,instrument,config,$name,threshold)   "
    putCommand $hScriptFile "set minOrder  $::conf(eshel,instrument,config,$name,minOrder)    "
    putCommand $hScriptFile "set maxOrder  $::conf(eshel,instrument,config,$name,maxOrder)    "
@@ -1623,7 +1622,7 @@ proc ::eshel::process::putProcessFlat { hfile ledIn tungstenIn flatOut } {
    append command "\"$flatOut\" "
    append command {$alpha $beta $gamma $focale $grating $pixelSize }
    append command {$width $height }
-   append command {$boxWide $wideOrder $stepOrder $threshold }
+   append command {$boxWide $wideOrder $threshold }
    append command {$minOrder $maxOrder }
    append command {$refX $refY $refNum $refLambda }
    append command {$orderDefinition $lineList $distorsion }
@@ -2710,7 +2709,7 @@ proc ::eshel::process::getFlatInfo { fileName } {
    set hFile ""
    set catchResult [catch {
       #--- j'ouvre le fichier en mode lecture
-      set hFile [fits open $fileName ]
+      set hFile [fits open $fileName 0]
       set found 0
       set nbHdu [$hFile info nhdu]
       for { set i 1 } { $i <= $nbHdu && $found == 0 } { incr i } {

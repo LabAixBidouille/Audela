@@ -2,7 +2,7 @@
 # Fichier : instrument.tcl
 # Description : commande des instruments de l'outil eShel
 # Auteur : Michel PUJOL
-# Mise à jour $Id: instrument.tcl,v 1.5 2010-11-28 17:34:34 michelpujol Exp $
+# Mise à jour $Id: instrument.tcl,v 1.6 2010-12-12 11:21:00 michelpujol Exp $
 #
 
 namespace eval ::eshel::instrument {
@@ -142,7 +142,6 @@ proc ::eshel::instrument::setCurrentConfig { configId } {
 #  spectrograhLink
 #  tharBit
 #  refNum
-#  stepOrder
 #  mirror,bit
 #  cameraLabel
 #  configName
@@ -347,7 +346,6 @@ proc ::eshel::instrument::importCalibrationConfig { fileName } {
       set param(refY)      [getKeyword $hFile REF_Y]
       set param(refLambda) [getKeyword $hFile REF_L]
       set param(threshold) [getKeyword $hFile THRESHOL]
-      set param(stepOrder) [getKeyword $hFile Y_STEP]
       set param(boxWide)   [lindex [lindex [$hFile get table wide_x 1] 0] 0]
       set param(wideOrder) [lindex [lindex [$hFile get table wide_y 1] 0] 0]
       set param(orderDefinition) [$hFile get table [list order min_x max_x slant] ]
