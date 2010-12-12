@@ -1,7 +1,7 @@
 
 # Procédures d'exploitation astrophysique des spectres
 
-# Mise a jour $Id: spc_astrophys.tcl,v 1.21 2010-10-24 18:24:46 bmauclaire Exp $
+# Mise a jour $Id: spc_astrophys.tcl,v 1.22 2010-12-12 17:11:29 bmauclaire Exp $
 
 
 
@@ -1697,7 +1697,11 @@ proc spc_ew4 { args } {
    # set nbech [ llength $xvals ]
    #-- Spectre continuum :
    if { $nbargs==6 } {
-     set spectre_conti [ spc_extractcont $filename $degpoly ]
+      if { $degpoly!=0 } {
+         set spectre_conti [ spc_extractcont $filename $degpoly ]
+      } elseif { $degpoly==0 } {
+         set spectre_conti [ spc_syntherule $filename 1. ]
+      }
    } else {
       set spectre_conti [ spc_extractcontew $filename $taux_doucissage ]
    }
@@ -2134,6 +2138,7 @@ proc spc_ewcourbe { args } {
          set results [ spc_autoew $fichier $lambda ]
       } elseif { $nbargs==2 } {
          set results [ spc_autoew $fichier $ldeb $lfin ]
+         #set results [ spc_ew4 $fichier $ldeb $lfin 1000000 n 2 ]
       }
       lappend list_ew [ lindex $results 0 ]
       lappend list_sigmaew [ lindex $results 1 ]
@@ -2155,7 +2160,7 @@ proc spc_ewcourbe { args } {
    } else {
       set invert_opt "noreverse"
    }
-   set titre "Evolution de la largeur equivalente EW au cours du temps"
+   set titre "Evolution de la largeur equivalente EW ($ldeb-$lfin A) au cours du temps"
    set legendey "Largeur equivalente EW (A)"
    set legendex "Date (JD-2400000)"
    set file_id2 [open "$audace(rep_images)/${ewfile}.gp" w+]
