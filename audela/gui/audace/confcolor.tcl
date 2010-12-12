@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise à jour $Id: confcolor.tcl,v 1.36 2010-12-10 22:46:20 michelpujol Exp $
+# Mise à jour $Id: confcolor.tcl,v 1.37 2010-12-12 10:50:22 robertdelmas Exp $
 #
 
 namespace eval confColor:: {
@@ -344,7 +344,7 @@ namespace eval confColor:: {
       }
       ::confColor::applyColor $audace(Console)
 
-      #--- Je met a jour la couleur des boutons de la fenetre de configuration
+      #--- Je mets a jour la couleur des boutons de la fenetre de configuration
       foreach {key value} [array get widget color,$appearance,*] {
          set i [lindex [split $key ,] 2]
          $widget(frm).but.b_color_invariant$i configure -fg $widget(color,$widget(appearance),$i) \
