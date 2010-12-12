@@ -5,13 +5,13 @@
   <title>Buffer</title>
 </head>
 <body>
-<p class="date">Date de mise &#224; jour : 14 novembre 2010</p>
+<p class="date">Date de mise &#224; jour : 12 d&#233;cembre 2010</p>
 <h1>Buffer</h1>
 <p>Les commandes qui suivent peuvent &#234;tre appel&#233;es
 gr&#226;ce aux commandes <code>buf1</code>, <code>buf2</code>,
 ... qui sont cr&#233;&#233;es par "<code>::buf::create</code>".
 Ces sous-commandes permettent de formater une image, de manipuler
-les mots-cl&#233;s FITS, et de r&#233;aliser certains traitements
+les mots cl&#233;s FITS, et de r&#233;aliser certains traitements
 sur l'image port&#233;e par le buffer. Elles sont d&#233;crites
 avec la commande <code>buf1</code>, mais sont valables pour
 toutes les autres commandes de buffer.</p>
@@ -128,10 +128,21 @@ l'enregistrement FITS avec cette fonction.</p>
 <p>long : 32 bits sign&#233;s (-2 147 483 648 &#224; 2 147 483
 647),</p>
 <p>ulong : 32 bits non sign&#233;s (0 &#224; 4 294 967 295),</p>
-<p>float (-32): flottant cod&#233; sur 32 bits
+<p>float (-32) : flottant cod&#233; sur 32 bits
 (3,4*10<sup>-38</sup> &#224; 3,4*10<sup>+38</sup>),</p>
 <p>double : flottant cod&#233; sur 64 bits (1,7*10<sup>-308</sup>
 &#224; 1,7*10<sup>+308</sup>).</p>
+<p>Les r&#233;glages accessibles dans la fen&#234;tre
+'Configuration/Fichiers images' sont :</p>
+<ul>
+  <li>Entiers (ushort, 16 bits non sign&#233;s),</li>
+  <li>Flottant (float, cod&#233; sur 32 bits).</li>
+</ul>
+<p>La s&#233;lection de l'une des deux options a pour effet
+d'appliquer cette option au buffer de chaque visu ouverte ou
+&#224; venir. Elle n'a pas d'effet sur un buffer non associ&#233;
+&#224; une visu. Dans ce cas il est pr&#233;f&#233;rable de
+d&#233;finir la valeur bitpix de ce buffer.</p>
 <h3><a name="extension" id="extension"></a>buf1 extension
 <em>?file_extension?</em></h3>
 <p>Indique le nom de l'extension par d&#233;faut &#224; donner au
@@ -146,6 +157,12 @@ l'extension .gz. Ils peuvent &#234;tre lus directement par la
 fonction buf1 load et peuvent &#234;tre d&#233;compress&#233; en
 dehors de AudeLA avec de nombreux logiciels de
 d&#233;compression.</p>
+<p>Le fait de cocher l'option 'Configuration/Fichiers
+images/Fichiers images compress&#233;s (.gz)' a pour effet
+d'appliquer cette option au buffer de chaque visu ouverte ou
+&#224; venir. Elle n'a pas d'effet sur un buffer non associ&#233;
+&#224; une visu. Dans ce cas il est n&#233;cessaire de
+sp&#233;cifier la compression si elle est souhait&#233;e.</p>
 <h3><a name="load" id="load"></a>buf1 load <em>nom</em></h3>
 <p>Charge une image FITS stock&#233;e sur disque, ou sur un autre
 ordinateur reli&#233; en r&#233;seau. L'extension peut &#234;tre
@@ -217,20 +234,20 @@ qualit&#233; de l'image (de 5 pour une perte &#233;norme &#224;
 de <em>quality</em> est 75. <em>Locut</em> et <em>hicut</em> sont
 les seuils de visualisation correspondant respectivement au noir
 et au blanc.</p>
-<h2>3. Gestion des mots-cl&#233;s FITS</h2>
+<h2>3. Gestion des mots cl&#233;s FITS</h2>
 <h3><a name="getkwds" id="getkwds"></a>buf1 getkwds</h3>
-<p>Retourne la liste des mots-cl&#233;s FITS du buffer sous forme
+<p>Retourne la liste des mots cl&#233;s FITS du buffer sous forme
 d'une liste TCL.</p>
 <h3><a name="getkwd" id="getkwd"></a>buf1 getkwd
 <em>nom</em></h3>
 <p>Retourne une liste de cinq &#233;l&#233;ments qui
-caract&#233;rise compl&#232;tement le mot-cl&#233; FITS
+caract&#233;rise compl&#232;tement le mot cl&#233; FITS
 <em>nom</em>. Cette liste est compos&#233;e du nom du
-mot-cl&#233;, de sa valeur, de son type (int, float, string),
+mot cl&#233;, de sa valeur, de son type (int, float, string),
 d'un commentaire, et de l'unit&#233; de la grandeur. Si le
-mot-cl&#233; n'existe pas alors la commande retourne la liste {""
-"" none "" ""}. Le nom du mot-cl&#233; doit toujours &#234;tre
-fourni dans la casse du mot-cl&#233; stock&#233;. Par exemple,
+mot cl&#233; n'existe pas alors la commande retourne la liste {""
+"" none "" ""}. Le nom du mot cl&#233; doit toujours &#234;tre
+fourni dans la casse du mot cl&#233; stock&#233;. Par exemple,
 NAXIS est diff&#233;rent de naxis. La fonction getkwds permet de
 rep&#233;rer cela.</p>
 <p>Exemple :</p>
@@ -239,29 +256,29 @@ rep&#233;rer cela.</p>
 <code>{NAXIS1 384 int "length of data axis 1" ""}.</code>
 <h3><a name="setkwd" id="setkwd"></a>buf1 setkwd
 <em>format_mot_cle</em></h3>
-<p>Cette commande permet de modifier un mot-cl&#233; : l'argument
+<p>Cette commande permet de modifier un mot cl&#233; : L'argument
 donn&#233; doit &#234;tre une liste de cinq &#233;l&#233;ments
-correspondant au nom du mot-cl&#233;, &#224; sa valeur, &#224;
+correspondant au nom du mot cl&#233;, &#224; sa valeur, &#224;
 son type (string, int, float), au commentaire, et enfin &#224;
 l'unit&#233;. Elle correspond au m&#234;me format que le
 r&#233;sultat de la commande pr&#233;c&#233;dente. Le nom du
-mot-cl&#233; doit contenir au plus 9 caract&#232;res.</p>
+mot cl&#233; doit contenir au plus 9 caract&#232;res.</p>
 <p>Exemple :</p>
 <code>buf1 setkwd [list "INSTRU" "T310" string "mon
 t&#233;lescope" ""]</code>
-<p>modifie ou cr&#233;&#233; le mot-cl&#233; INSTRU.</p>
+<p>modifie ou cr&#233;&#233; le mot cl&#233; INSTRU.</p>
 <h3><a name="copykwd" id="copykwd"></a>buf1 copykwd
 <em>srcnum</em></h3>
-<p>Copie les mots-cl&#233;s du buffer source vers le buffer qui
+<p>Copie les mots cl&#233;s du buffer source vers le buffer qui
 ex&#233;cute cette sous-commande. L'argument est le num&#233;ro
-du buffer depuis lequel les mots-cl&#233;s seront
+du buffer depuis lequel les mots cl&#233;s seront
 copi&#233;s.</p>
 <h3><a name="delkwd" id="delkwd"></a>buf1 delkwd
 <em>mot_cle</em></h3>
 <p>Efface un mot cl&#233; de la liste de ceux pr&#233;sents dans
 l'en-t&#234;te FITS.</p>
 <h3><a name="delkwds" id="delkwds"></a>buf1 delkwds</h3>
-<p>Efface tous les mots cl&#233; de la liste de l'en-t&#234;te
+<p>Efface tous les mots cl&#233;s de la liste de l'en-t&#234;te
 FITS.</p>
 <h2>4. Traitement d'image</h2>
 <p>Les fonctions de traitement d'images propos&#233;es par AudeLA
@@ -307,7 +324,7 @@ buf1 setpix [list 100 100] 51 52 53
 </pre>
 <h3><a name="offset" id="offset"></a>buf1 offset
 <em>valeur</em></h3>
-<p>R&#233;alise un offset sur l'image : tous les pixels de
+<p>R&#233;alise un offset sur l'image : Tous les pixels de
 l'image sont d&#233;cal&#233;s de <code>valeur</code>.</p>
 <h3><a name="sub" id="sub"></a>buf1 sub <em>fichier</em>
 <em>valeur</em></h3>
@@ -343,7 +360,7 @@ en param&#232;tre est le rapport du temps de lecture d'une ligne
 sur le temps de pose total de l'image.</p>
 <h3><a name="opt" id="opt"></a>buf1 opt <em>noir</em>
 <em>offset</em></h3>
-<p>Optimise le noir sur le buffer : le noir qui sert &#224;
+<p>Optimise le noir sur le buffer : Le noir qui sert &#224;
 l'optimisation est le premier argument. C'est un noir qui est
 directement issu de l'acquisition, &#233;ventuellement issu d'une
 synth&#232;se m&#233;diane des images de noir acquises. De
@@ -375,7 +392,7 @@ fen&#234;tre incluse dans l'image.</p>
 <p>Retourne l'image horizontalement, c'est &#224; dire que ce
 sont les colonnes qui sont d&#233;plac&#233;es.</p>
 <h3><a name="mirrory" id="mirrory"></a>buf1 mirrory</h3>
-<p>Retourne l'image verticalement : les lignes sont
+<p>Retourne l'image verticalement : Les lignes sont
 permut&#233;es.</p>
 <h3><a name="binx" id="binx"></a>buf1 binx <em>x1 x2
 ?largeur?</em></h3>
@@ -390,7 +407,7 @@ la m&#233;thode de fil&#233;.</p>
 <h3><a name="biny" id="biny"></a>buf1 biny y<em>1 y2
 ?hauteur?</em></h3>
 <p>Cette fonction de traitement est la transposition de la
-commande binx : elle cr&#233;e une nouvelle image de dimensions
+commande binx : Elle cr&#233;e une nouvelle image de dimensions
 NAXIS1*<em>hauteur</em>, dont toutes les lignes sont identiques,
 et &#233;gales &#224; la somme de toutes les lignes comprises
 entre les ordonn&#233;es <em>y1</em> et <em>y2</em> de l'image
@@ -461,7 +478,7 @@ MIPS-Hi et MIPS-LO de l'en-t&#234;te FITS de l'image.</p>
 <h3><a name="xy2radec" id="xy2radec"></a>buf1 xy2radec
 <em>coord</em></h3>
 <p>Conversion des coordonn&#233;es image en coordonn&#233;es
-c&#233;lestes : il faut que l'image soit pr&#233;alablement
+c&#233;lestes : Il faut que l'image soit pr&#233;alablement
 calibr&#233;e astrom&#233;triquement. Les coordonn&#233;es
 d'entr&#233;e sont sous la forme d'une liste de deux nombres,
 entiers ou d&#233;cimaux. Le r&#233;sultat est une liste
@@ -470,7 +487,7 @@ exprim&#233;es en degr&#233;s d&#233;cimaux.</p>
 <h3><a name="radec2xy" id="radec2xy"></a>buf1 radec2xy
 <em>coord</em></h3>
 <p>Conversion de coordonn&#233;es c&#233;lestes en
-coordonn&#233;es image : il faut &#233;galement que l'image soit
+coordonn&#233;es image : Il faut &#233;galement que l'image soit
 calibr&#233;e astrom&#233;triquement. L'ascension droite et la
 d&#233;clinaison doivent &#234;tre exprim&#233;es en degr&#233;s
 d&#233;cimaux. Le r&#233;sultat est une liste des
@@ -488,17 +505,17 @@ L'argument fen&#234;tre est une liste de quatre entiers qui
 indiquent les coordonn&#233;es des deux coins oppos&#233;s de la
 fen&#234;tre.</p>
 <h3><a name="flux" id="flux"></a>buf1 flux <em>coord</em></h3>
-<p>Renvoie une liste de deux &#233;l&#233;ments : le premier est
+<p>Renvoie une liste de deux &#233;l&#233;ments : Le premier est
 le flux dans la fen&#234;tre (somme de tous les pixels contenus
 dans la fen&#234;tre), et le second est le nombre de pixels ayant
 servi &#224; &#233;tablir le flux.</p>
 <h3><a name="centro" id="centro"></a>buf1 centro <em>coord
 ?sigma?</em></h3>
 <p>Calcule le centro&#239;de de la fen&#234;tre d&#233;crite par
-le premier argument. Le second param&#232;tre est optionnel : il
+le premier argument. Le second param&#232;tre est optionnel : Il
 s'agit du niveau de bruit en dessous duquel les pixels ne sont
 pas pris en compte dans le calcul. Sa valeur par d&#233;faut est
-3 : les pixels en dessous de 3 fois le bruit sur le contour de la
+3 : Les pixels en dessous de 3 fois le bruit sur le contour de la
 fen&#234;tre sont &#233;limin&#233;s pour le calcul. Les
 arguments de retour sont, dans l'ordre :</p>
 <ul>
@@ -511,7 +528,7 @@ d'une autre &#233;toile dans la fen&#234;tre.</li>
 </ul>
 <h3><a name="phot" id="phot"></a>buf1 phot <em>coord
 ?sigma?</em></h3>
-<p>Photom&#233;trie dans une fen&#234;tre : la valeur
+<p>Photom&#233;trie dans une fen&#234;tre : La valeur
 renvoy&#233;e est la diff&#233;rence entre le flux total sur la
 fen&#234;tre, et le flux du fond de ciel, &#233;valu&#233; sur le
 contour de la fen&#234;tre. Les arguments de retour sont, dans
@@ -523,7 +540,7 @@ l'ordre :</p>
 </ul>
 <h3><a name="photom" id="photom"></a>buf1 photom {x1 y1 x2 y2}
 square ?args?</h3>
-<p>Photom&#233;trie d'ouverture dans une fen&#234;tre : la valeur
+<p>Photom&#233;trie d'ouverture dans une fen&#234;tre : La valeur
 renvoy&#233;e est la diff&#233;rence entre le flux total sur la
 fen&#234;tre, et le flux du fond de ciel, &#233;valu&#233; sur le
 contour de la fen&#234;tre. Actuellement cette fonction ne
@@ -534,12 +551,12 @@ photom&#233;trique est effectu&#233; pour d&#233;finir le centre
 de mesure du photom&#232;tre. Les param&#232;tres ?args? sont au
 nombre trois d&#233;finis ainsi dans l'ordre :</p>
 <ul>
-  <li>r1 : longueur, en pixels, du c&#244;t&#233; du carr&#233; de
+  <li>r1 : Longueur, en pixels, du c&#244;t&#233; du carr&#233; de
 mesure de l'astre.</li>
-  <li>r2 : longueur, en pixels, du c&#244;t&#233; du carr&#233;
-int&#233;rieur de la mesure de fond de ciel (r2&gt;r1)</li>
-  <li>r3 : longueur, en pixels, du c&#244;t&#233; du carr&#233;
-ext&#233;rieur de la mesure de fond de ciel (r3&gt;r2)</li>
+  <li>r2 : Longueur, en pixels, du c&#244;t&#233; du carr&#233;
+int&#233;rieur de la mesure de fond de ciel (r2&gt;r1).</li>
+  <li>r3 : Longueur, en pixels, du c&#244;t&#233; du carr&#233;
+ext&#233;rieur de la mesure de fond de ciel (r3&gt;r2).</li>
 </ul>
 <p>Le r&#233;sultat comporte 5 valeurs :</p>
 <ul>
