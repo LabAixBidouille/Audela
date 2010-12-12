@@ -5,7 +5,7 @@
 #               pose, choix des plugins, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: confgene.tcl,v 1.86 2010-12-11 18:42:40 robertdelmas Exp $
+# Mise à jour $Id: confgene.tcl,v 1.87 2010-12-12 10:52:06 robertdelmas Exp $
 #
 
 #
@@ -2104,6 +2104,9 @@ namespace eval ::confChoixOutil {
       Menu_Bind $visuNo $This <F12> "$caption(audace,menu,display)" "$caption(audace,menu,pas_outil)" \
          "$caption(touche,F12)"
 
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $audace(base).menubar
+
       #--- Rafraichissement des menus Fichier, Camera et Telescope pour les visu secondaires
       foreach visuNo [ ::visu::list ] {
          if { $visuNo > 1 } {
@@ -2213,6 +2216,8 @@ namespace eval ::confChoixOutil {
                   }
 
                }
+               #--- Mise a jour dynamique des couleurs
+               ::confColor::applyColor $::confVisu::private($visuNo,menu)
             }
          }
       }
