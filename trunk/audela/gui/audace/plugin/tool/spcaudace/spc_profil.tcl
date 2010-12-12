@@ -20,8 +20,47 @@
 # et renommer ce fichier mauclaire.tcl ;-)
 
 
-# Mise a jour $Id: spc_profil.tcl,v 1.7 2010-02-14 17:56:48 bmauclaire Exp $
+# Mise a jour $Id: spc_profil.tcl,v 1.8 2010-12-12 17:08:45 bmauclaire Exp $
 
+
+
+####################################################################
+# Cree un profil de raies fits d'une varleur y donee
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 02-11-2010
+# Date modification : 02-11-2010
+# Arguments : nom_profil_raies_modele yval
+####################################################################
+
+proc spc_syntherule { args } {
+   global conf
+   global audace
+
+   set nbargs [ llength $args ]
+   if { $nbargs==2 } {
+      set filename [ lindex $args 0 ]
+      set yval [ lindex $args 1 ]
+
+      #--- Recupere les infos du spectre :
+      buf$audace(bufNo) load "$audace(rep_images)/$filename"
+      set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+
+      #--- Initialise les intensites a yval :
+      for {set k 0} {$k<$naxis1} {incr k} {
+         buf$audace(bufNo) setpix [ list [ expr $k+1 ] 1 ] $yval
+      }
+
+      #--- Enregistrement du resultat :
+      buf$audace(bufNo) bitpix float
+      buf$audace(bufNo) save "$audace(rep_images)/${filename}_conti$conf(extension,defaut)"
+      buf$audace(bufNo) bitpix short
+      return "${filename}_conti"
+   } else {
+      ::console::affiche_erreur "Usage: spc_syntherule nom_profil_raies_modele yval\n"
+   }
+}
+#****************************************************************#
 
 
 
