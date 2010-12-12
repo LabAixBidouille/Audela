@@ -877,9 +877,14 @@ int tt_parseHotPixelList(char* sHotPixels,int **iHotPixels)
    int nbvalues = 0;
 
    if ( sHotPixels == NULL ) {
+      *iHotPixels = NULL;
       return OK_DLL; 
    }
    *iHotPixels = malloc((nbvalues+1)* sizeof(int));
+   if ( *iHotPixels == NULL ) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb malloc in tt_parseHotPixelList");
+      return TT_ERR_PB_MALLOC;
+   }
    
    do { 
       int type , x , y; 
@@ -894,6 +899,10 @@ int tt_parseHotPixelList(char* sHotPixels,int **iHotPixels)
          if ( p== NULL ) break;
          nbvalues += 3;
          *iHotPixels = realloc(*iHotPixels,(nbvalues+1)*sizeof(int));
+         if ( *iHotPixels == NULL ) {
+            tt_errlog(TT_ERR_PB_MALLOC,"Pb realloc in tt_parseHotPixelList");
+            return TT_ERR_PB_MALLOC;
+         }
          (*iHotPixels)[nbvalues -3] = type;
          (*iHotPixels)[nbvalues -2] = x;
          (*iHotPixels)[nbvalues -1] = y;
@@ -904,6 +913,10 @@ int tt_parseHotPixelList(char* sHotPixels,int **iHotPixels)
          if ( p== NULL ) break;
          nbvalues += 2;
          *iHotPixels = realloc(*iHotPixels,(nbvalues+1)*sizeof(int));
+         if ( *iHotPixels == NULL ) {
+            tt_errlog(TT_ERR_PB_MALLOC,"Pb realloc in tt_parseHotPixelList");
+            return TT_ERR_PB_MALLOC;
+         }
          (*iHotPixels)[nbvalues - 2] = type;
          (*iHotPixels)[nbvalues -1] = x;
          break;
