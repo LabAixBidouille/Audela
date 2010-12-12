@@ -100,7 +100,9 @@ _CrtMemCheckpoint(&startState);
       // je lis l'image stockee dans le PHDU du fichier d'entree 
 
       pLedFits = Fits_openFits(ledfileName, false); 
+#ifdef _CRTDBG_MAP_ALLOC
 _CrtMemCheckpoint(&startState);
+#endif
       // je verifie si la table des ORDRES existe deja
       int ordersFound = 1;
       try { 
@@ -498,7 +500,9 @@ _CrtMemCheckpoint(&startStateThar);
       //if ( hand_log != NULL) fclose(hand_log);
       throw e;
    } 
+#ifdef _CRTDBG_MAP_ALLOC
 _CrtMemDumpAllObjectsSince(&startStateThar);
+#endif
 }
 
 //----------------------------------------------------------------------------
@@ -518,8 +522,8 @@ _CrtMemDumpAllObjectsSince(&startStateThar);
 //      sinon aboute les profil 1B et enregistre le profil P_1B_FULL
 //   enregistre la table des ordres dans le fichier de sortie
 //
-//  @param objectNameIn nom du fichier contenant l'image 2D de l'objet
-//  @param objectNameOut nom du fichier en sortie
+//  @param objectFileNameIn nom du fichier contenant l'image 2D de l'objet
+//  @param objectFileNameOut nom du fichier en sortie
 //  @param calibName     nom du fichier contant l'image et les paramètres de calibration.
 //  @param responseFileName nom du fichier de la réponse instrumentale (si le nom est vide 
 //                          le profil P_1C n'est pas calculé
@@ -529,7 +533,7 @@ _CrtMemDumpAllObjectsSince(&startStateThar);
 //  @return void
 // 
 
-void Eshel_processObject(char *objectNameIn, char *objectNameOut, 
+void Eshel_processObject(char *objectFileNameIn, char *objectFileNameOut, 
                 char *calibName,      // nom du fichier de calibration
                 char *responseFileName,   // nom du fichier de reponse instrumentale
                 int minOrder, int maxOrder, 
@@ -556,10 +560,7 @@ _CrtMemCheckpoint(&startStateObject);
       INFOSPECTRO spectro;
       PROCESS_INFO processInfo;
       ::std::valarray<::std::valarray<double>> object1BProfile(MAX_ORDRE) ;
-      ::std::valarray<double> responseProfile;
       double lambda1[MAX_ORDRE]; 
-      double responseLambda1; 
-      double responseStep; 
       double step= 0.1;
       double dx_ref = 0.0;
 
@@ -582,50 +583,37 @@ _CrtMemCheckpoint(&startStateObject);
             minOrder, maxOrder , spectro.min_order, spectro.max_order);
          throw std::exception(message);
       }
-
-      // je lis la reponse instrumentale 
-      if ( responseFileName != NULL ) {
-         pResponseFits = Fits_openFits(responseFileName, false);
-         Fits_getLinearProfile(pResponseFits,(char *) "PRIMARY", responseProfile,&responseLambda1,&responseStep);
-         Fits_closeFits(pResponseFits);
-         pResponseFits = NULL;
-         if ( spectro.alpha > SEUIL_ALPHA ) {
-            ////if ( responseStep != step ) {
-            ////   sprintf(message,"Eshel_processObject: Instrumental response dispersion = %f . Must be %f", responseStep, step);
-            ////   throw std::exception(message);
-            ////}
-            //step =responseStep;
-         } else {
-            //step =responseStep;
-         }
-      } else {
-         responseProfile.resize(0);
-         responseStep =step;
-      }
  
-      // je lis l'image stockee dans le PHDU du fichier d'entree 
-      pInFits = Fits_openFits(objectNameIn, false); 
-      Fits_getImage(pInFits, &objectBuffer);     
-
+      // je cree le fichier de sortie        
+      if ( recordObjectImage == 1 ) {
+         // je copie l'image 2D dans le premier HDU
+         pOutFits = Fits_createFits(objectFileNameIn, objectFileNameOut); 
+         // je lis l'image 2D
+         Fits_getImage(pOutFits, &objectBuffer);
+      } else {
+         // je lis l'image stockee dans le PHDU du fichier d'entree
+         pInFits = Fits_openFits(objectFileNameIn, false); 
+         Fits_getImage(pInFits, &objectBuffer);     
+         // je cree le fichier de sortie 
+        ::std::valarray<double> emptyProfile ;
+        emptyProfile.resize(1);
+        emptyProfile[0] = 1;
+        // je cree le fichier de sortie avec un profil vide dans le premier HDU
+        pOutFits = Fits_createFits(objectFileNameOut, emptyProfile, 0, step); 
+        // je copie les mots dans le PHDU a partir de l'image pretraitee de l'objet
+        Fits_setKeyword(pOutFits,pInFits);
+        // je ferme l'image pretraitee de l'objet car il n'y en a plus besoin (cela libere la memoire) 
+        Fits_closeFits(pInFits);
+        pInFits = NULL;
+      }
+      
       // je contrôle que l'image de l'objet est de la meme taille que l'image de reference
       if (spectro.imax!=objectBuffer->imax || spectro.jmax!=objectBuffer->jmax) {
          char message[1024];
          sprintf(message,"La taille de l'image de la lampe %s (%d,%d) est de différente du flat %s (%d,%d)",
-            objectNameIn, objectBuffer->imax , objectBuffer->jmax, calibName, spectro.imax, spectro.jmax);
+            objectFileNameIn, objectBuffer->imax , objectBuffer->jmax, calibName, spectro.imax, spectro.jmax);
          throw std::exception(message);
       }
-
-      // je cree le fichier de sortie avec un profil vide dans le premier HDU
-      // je cree le fichier de sortie 
-      ::std::valarray<double> emptyProfile ;
-      emptyProfile.resize(1);
-      emptyProfile[0] = 1;
-      pOutFits = Fits_createFits(objectNameOut, emptyProfile, 0, step); 
-      // je copie les mots dans le PHDU a partir de l'image pretraitee de l'objet
-      Fits_setKeyword(pOutFits,pInFits);
-      // je ferme l'image pretraitee de l'objet car il n'y en a plus besoin (cela libere la memoire) 
-      Fits_closeFits(pInFits);
-      pInFits = NULL;
 
       // j'ajoute le mot cle contenant la version de la librairie
       setSoftwareVersionKeyword(pOutFits);
@@ -818,29 +806,46 @@ _CrtMemCheckpoint(&startStateObject);
       // je divise le profil 1B par la reponse instrumentale
       // --------------------------------------------------------------------
       startTimer();
-      for (int n=minOrder; n<=maxOrder; n++) {
-         if (ordre[n].flag==1) {
-            if ( responseProfile.size() > 0 ) {
-               ::std::valarray<double> object1CProfile(object1BProfile[n].size());
-               double lambda1C;
 
-               divideResponse(object1BProfile[n], lambda1[n], responseProfile, responseLambda1, step, object1CProfile, lambda1C);     
-               if ( object1CProfile.size() > 0 ) {
-                  Fits_setLinearProfile(pOutFits, "P_1C_", n, object1CProfile, lambda1C, step);
-               }
-            } 
+      // je lis la reponse instrumentale 
+      if ( responseFileName != NULL ) {
+         ::std::valarray<double> responseProfile;
+         double responseLambda1; 
+         double responseStep; 
+
+         pResponseFits = Fits_openFits(responseFileName, false);
+         Fits_getLinearProfile(pResponseFits,(char *) "PRIMARY", responseProfile,&responseLambda1,&responseStep);
+         Fits_closeFits(pResponseFits);
+         pResponseFits = NULL;
+         if ( spectro.alpha > SEUIL_ALPHA ) {
+            ////if ( responseStep != step ) {
+            ////   sprintf(message,"Eshel_processObject: Instrumental response dispersion = %f . Must be %f", responseStep, step);
+            ////   throw std::exception(message);
+            ////}
+            //step =responseStep;
+         } else {
+            //step =responseStep;
          }
-      }
-      stopTimer("Object division par la reponse instrumentale");
+         for (int n=minOrder; n<=maxOrder; n++) {
+            if (ordre[n].flag==1) {
+               if ( responseProfile.size() > 0 ) {
+                  ::std::valarray<double> object1CProfile(object1BProfile[n].size());
+                  double lambda1C;
+
+                  divideResponse(object1BProfile[n], lambda1[n], responseProfile, responseLambda1, step, object1CProfile, lambda1C);     
+                  if ( object1CProfile.size() > 0 ) {
+                     Fits_setLinearProfile(pOutFits, "P_1C_", n, object1CProfile, lambda1C, step);
+                  }
+               } 
+            }
+         }
+         stopTimer("Object division par la reponse instrumentale");
+      } 
+
             
       // j'enregistre la table des ordres dans le fichier de sortie
       Fits_setOrders(pOutFits,&spectro, &processInfo, ordre, dx_ref);
 
-      // j'enregistre l'image 2D a la fin du fichier
-      if ( recordObjectImage == 1 ) {
-         Fits_setImage(pOutFits, objectBuffer);
-      } 
-      
       Fits_closeFits(pOutFits);
       Fits_closeFits(pCalibFits);
       delete [] ordre;
@@ -856,7 +861,9 @@ _CrtMemCheckpoint(&startStateObject);
       //if ( hand_log != NULL) fclose(hand_log);
       throw e;
    }
+#ifdef _CRTDBG_MAP_ALLOC
 _CrtMemDumpAllObjectsSince(&startStateObject);
+#endif
 }
 
 
