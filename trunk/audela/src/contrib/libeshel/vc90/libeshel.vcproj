@@ -49,7 +49,9 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				InlineFunctionExpansion="1"
+				InlineFunctionExpansion="2"
+				EnableIntrinsicFunctions="false"
+				FavorSizeOrSpeed="0"
 				AdditionalIncludeDirectories="../src;../;../../../external/include/win;../../../external/include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBESHEL_EXPORTS;USE_TCL_STUBS;_USE_MATH_DEFINES;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
@@ -76,7 +78,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				AdditionalDependencies="ccfits.lib tclstub85.lib"
+				AdditionalDependencies="ccfits.lib tclstub85.lib cfitsio.lib"
 				OutputFile="..\..\..\..\gui\audace\plugin\tool\eshel\libeshel.dll"
 				Version="2.2"
 				LinkIncremental="1"
@@ -152,7 +154,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../src;../;../../../external/include/win;../../../external/include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_USE_MATH_DEFINES;LIBESHEL_EXPORTS;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;USE_TCL_STUBS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_USE_MATH_DEFINES;LIBESHEL_EXPORTS;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;USE_TCL_STUBS;_CRTDBG_MAP_ALLOC"
 				MinimalRebuild="false"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="0"
@@ -180,7 +182,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="false"
-				AdditionalDependencies="ccfits_debug.lib tclstub85.lib"
+				AdditionalDependencies="ccfits_debug.lib tclstub85.lib cfitsio.lib"
 				OutputFile="..\..\..\..\gui\audace\plugin\tool\eshel\libeshel.dll"
 				Version="2.2"
 				LinkIncremental="2"
