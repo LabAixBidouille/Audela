@@ -173,7 +173,7 @@
 				OutputFile="..\..\..\..\bin\libtt.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				IgnoreDefaultLibraryNames="libc.lib"
+				IgnoreDefaultLibraryNames="libcmt.lib"
 				ProgramDatabaseFile=".\Release/libtt.pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
