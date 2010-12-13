@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.162 2010-12-11 14:15:44 robertdelmas Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.163 2010-12-13 17:33:48 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -111,6 +111,7 @@ namespace eval ::confVisu {
       set private($visuNo,mirror_y)           "0"
       set private($visuNo,window)             "0"
       set private($visuNo,fullscreen)         "0"
+      set private($visuNo,zoomList)           [list 0.125 0.25 0.5 1 2 4 8]
       set private($visuNo,zoom)               "1"
       set private($visuNo,currentTool)        ""
       set private($visuNo,pluginInstanceList) [list ]
@@ -127,11 +128,11 @@ namespace eval ::confVisu {
       #--- initialisation des bind de touches et de la souris
       set private($visuNo,MouseState) rien
 
-      #--- Initialisation des variables utilisees par les listener
-      set private($visuNo,zoomListenerFlag) ""
+      #--- Initialisation des variables utilisees par les listeners
+      set private($visuNo,zoomListenerFlag)    ""
       set private($visuNo,mirrorXListenerFlag) ""
       set private($visuNo,mirrorYListenerFlag) ""
-      set private($visuNo,windowListenerFlag) ""
+      set private($visuNo,windowListenerFlag)  ""
 
       #--- je cree la fenetre
       ::confVisu::createDialog $visuNo $private($visuNo,This)
@@ -1012,22 +1013,12 @@ namespace eval ::confVisu {
    proc incrementZoom { visuNo } {
       variable private
 
-      #--- je selectionne la nouvelle valeur du zoom
-      if { $private($visuNo,zoom) == "0.125" } {
-         set private($visuNo,zoom) "0.25"
-      } elseif { $private($visuNo,zoom) == "0.25" } {
-         set private($visuNo,zoom) "0.5"
-      } elseif { $private($visuNo,zoom) == "0.5" } {
-         set private($visuNo,zoom) "1"
-      } elseif { $private($visuNo,zoom) == "1" } {
-         set private($visuNo,zoom) "2"
-      } elseif { $private($visuNo,zoom) == "2" } {
-         set private($visuNo,zoom) "4"
-      } elseif { $private($visuNo,zoom) == "4" } {
-         set private($visuNo,zoom) "8"
-      } elseif { $private($visuNo,zoom) == "8" } {
-         set private($visuNo,zoom) "8"
+      if { $private($visuNo,zoom) != [ lindex $private($visuNo,zoomList) end ] } {
+         set k [ lsearch $private($visuNo,zoomList) $private($visuNo,zoom) ]
+         incr k
+         set private($visuNo,zoom) [ lindex $private($visuNo,zoomList) $k ]
       }
+
       #--- j'applique le nouveau zoom
       ::confVisu::setZoom $visuNo $private($visuNo,zoom)
    }
@@ -1041,22 +1032,12 @@ namespace eval ::confVisu {
    proc decrementZoom { visuNo } {
       variable private
 
-      #--- je selectionne la nouvelle valeur du zoom
-      if { $private($visuNo,zoom) == "8" } {
-         set private($visuNo,zoom) "4"
-      } elseif { $private($visuNo,zoom) == "4" } {
-         set private($visuNo,zoom) "2"
-      } elseif { $private($visuNo,zoom) == "2" } {
-         set private($visuNo,zoom) "1"
-      } elseif { $private($visuNo,zoom) == "1" } {
-         set private($visuNo,zoom) "0.5"
-      } elseif { $private($visuNo,zoom) == "0.5" } {
-         set private($visuNo,zoom) "0.25"
-      } elseif { $private($visuNo,zoom) == "0.25" } {
-         set private($visuNo,zoom) "0.125"
-      } elseif { $private($visuNo,zoom) == "0.125" } {
-         set private($visuNo,zoom) "0.125"
+      if { $private($visuNo,zoom) != [ lindex $private($visuNo,zoomList) 0 ] } {
+         set k [ lsearch $private($visuNo,zoomList) $private($visuNo,zoom) ]
+         incr k "-1"
+         set private($visuNo,zoom) [ lindex $private($visuNo,zoomList) $k ]
       }
+
       #--- j'applique le nouveau zoom
       ::confVisu::setZoom $visuNo $private($visuNo,zoom)
    }
@@ -1078,7 +1059,7 @@ namespace eval ::confVisu {
       #--- je modifie le zoom si une nouvelle valeur est donnee en parametre
       if { $zoom == "" } {
          #--- on prend la valeur de private($visuNo,zoom) selectionnee dans le menu
-      } elseif { $zoom==.125 || $zoom==.25 || $zoom==.5 || $zoom==1 || $zoom==2 || $zoom==4 || $zoom==8 } {
+      } elseif { $zoom in $private($visuNo,zoomList) } {
          set private($visuNo,zoom) $zoom
       } else {
          ::console::affiche_erreur "confVisu::setZoom error : zoom $zoom not authorized\n"
@@ -2212,31 +2193,14 @@ namespace eval ::confVisu {
             "::seuilCouleur::run $visuNo"
 
          Menu_Separator $visuNo "$caption(audace,menu,display)"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
-            "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.125)" "0.125" \
-            "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
-            "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.25)" "0.25" \
-            "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
-            "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.5)" "0.5" \
-            "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
-            "$caption(audace,menu,zoom) $caption(audace,menu,zoom_1)" "1" \
-            "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
-            "$caption(audace,menu,zoom) $caption(audace,menu,zoom_2)" "2" \
-            "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
-            "$caption(audace,menu,zoom) $caption(audace,menu,zoom_4)" "4" \
-            "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
-            "$caption(audace,menu,zoom) $caption(audace,menu,zoom_8)" "8" \
-            "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+         foreach zoom $private($visuNo,zoomList) {
+            Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
+               "$caption(audace,menu,zoom) x $zoom" "$zoom" \
+               "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+         }
 
          Menu_Separator $visuNo "$caption(audace,menu,display)"
-         Menu_Check     $visuNo "$caption(audace,menu,display)" \
-            "$caption(audace,menu,plein_ecran)" \
+         Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,plein_ecran)" \
             "::confVisu::private($visuNo,fullscreen)" "::confVisu::setFullScreen $visuNo"
 
          Menu_Separator $visuNo "$caption(audace,menu,display)"
@@ -2545,27 +2509,11 @@ namespace eval ::confVisu {
             "::seuilCouleur::run $visuNo"
 
          Menu_Separator $visuNo "$caption(audace,menu,display)"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
-            "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.125)" "0.125" \
-            "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
-            "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.25)" "0.25" \
-            "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
-            "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.5)" "0.5" \
-            "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
-            "$caption(audace,menu,zoom) $caption(audace,menu,zoom_1)" "1" \
-            "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
-            "$caption(audace,menu,zoom) $caption(audace,menu,zoom_2)" "2" \
-            "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
-            "$caption(audace,menu,zoom) $caption(audace,menu,zoom_4)" "4" \
-            "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
-            "$caption(audace,menu,zoom) $caption(audace,menu,zoom_8)" "8" \
-            "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+         foreach zoom $private($visuNo,zoomList) {
+            Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
+               "$caption(audace,menu,zoom) x $zoom" "$zoom" \
+               "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+         }
 
          Menu_Separator $visuNo "$caption(audace,menu,display)"
          Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,plein_ecran)" \
