@@ -1,6 +1,6 @@
 #
 # Fichier : fullscreen.cap
-# Mise a jour $Id: fullscreen.cap,v 1.13 2010-10-16 08:54:25 robertdelmas Exp $
+# Mise a jour $Id: fullscreen.cap,v 1.14 2010-12-13 17:31:59 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -20,13 +20,6 @@ set caption(fullscreen,close)               "Close (Esc)"
 set caption(fullscreen,zoom_auto)           "Auto"
 set caption(fullscreen,animation)           "Animation"
 set caption(fullscreen,zoom)                "Zoom"
-set caption(fullscreen,zoom_0.125)          "x 0.125"
-set caption(fullscreen,zoom_0.25)           "x 0.25"
-set caption(fullscreen,zoom_0.5)            "x 0.5"
-set caption(fullscreen,zoom_1)              "x 1"
-set caption(fullscreen,zoom_2)              "x 2"
-set caption(fullscreen,zoom_4)              "x 4"
-set caption(fullscreen,zoom_8)              "x 8"
 set caption(fullscreen,help)                "Help..."
 
 #--- Interface de configuration
@@ -49,13 +42,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fullscreen,zoom_auto)        "Auto"
    set caption(fullscreen,animation)        "Animation"
    set caption(fullscreen,zoom)             "Zoom"
-   set caption(fullscreen,zoom_0.125)       "x 0.125"
-   set caption(fullscreen,zoom_0.25)        "x 0.25"
-   set caption(fullscreen,zoom_0.5)         "x 0.5"
-   set caption(fullscreen,zoom_1)           "x 1"
-   set caption(fullscreen,zoom_2)           "x 2"
-   set caption(fullscreen,zoom_4)           "x 4"
-   set caption(fullscreen,zoom_8)           "x 8"
    set caption(fullscreen,help)             "Aide..."
 
    #--- Interface de configuration
@@ -78,13 +64,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fullscreen,zoom_auto)        "Auto"
    set caption(fullscreen,animation)        "Animazione"
    set caption(fullscreen,zoom)             "Zoom"
-   set caption(fullscreen,zoom_0.125)       "x 0.125"
-   set caption(fullscreen,zoom_0.25)        "x 0.25"
-   set caption(fullscreen,zoom_0.5)         "x 0.5"
-   set caption(fullscreen,zoom_1)           "x 1"
-   set caption(fullscreen,zoom_2)           "x 2"
-   set caption(fullscreen,zoom_4)           "x 4"
-   set caption(fullscreen,zoom_8)           "x 8"
    set caption(fullscreen,help)             "Aiuto..."
 
    #--- Interface de configuration
@@ -107,13 +86,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fullscreen,zoom_auto)        "Auto"
    set caption(fullscreen,animation)        "Animación"
    set caption(fullscreen,zoom)             "Zoom"
-   set caption(fullscreen,zoom_0.125)       "x 0.125"
-   set caption(fullscreen,zoom_0.25)        "x 0.25"
-   set caption(fullscreen,zoom_0.5)         "x 0.5"
-   set caption(fullscreen,zoom_1)           "x 1"
-   set caption(fullscreen,zoom_2)           "x 2"
-   set caption(fullscreen,zoom_4)           "x 4"
-   set caption(fullscreen,zoom_8)           "x 8"
    set caption(fullscreen,help)             "Ayuda..."
 
    #--- Interface de configuration
@@ -136,13 +108,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fullscreen,zoom_auto)        "Auto"
    set caption(fullscreen,animation)        "Animation"
    set caption(fullscreen,zoom)             "Zoom"
-   set caption(fullscreen,zoom_0.125)       "x 0.125"
-   set caption(fullscreen,zoom_0.25)        "x 0.25"
-   set caption(fullscreen,zoom_0.5)         "x 0.5"
-   set caption(fullscreen,zoom_1)           "x 1"
-   set caption(fullscreen,zoom_2)           "x 2"
-   set caption(fullscreen,zoom_4)           "x 4"
-   set caption(fullscreen,zoom_8)           "x 8"
    set caption(fullscreen,help)             "Hilfe..."
 
    #--- Interface de configuration
@@ -165,13 +130,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fullscreen,zoom_auto)        "Auto"
    set caption(fullscreen,animation)        "Animação"
    set caption(fullscreen,zoom)             "Zoom"
-   set caption(fullscreen,zoom_0.125)       "x 0.125"
-   set caption(fullscreen,zoom_0.25)        "x 0.25"
-   set caption(fullscreen,zoom_0.5)         "x 0.5"
-   set caption(fullscreen,zoom_1)           "x 1"
-   set caption(fullscreen,zoom_2)           "x 2"
-   set caption(fullscreen,zoom_4)           "x 4"
-   set caption(fullscreen,zoom_8)           "x 8"
    set caption(fullscreen,help)             "Ajuda..."
 
    #--- Interface de configuration
@@ -194,13 +152,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fullscreen,zoom_auto)        "Auto"
    set caption(FullScreen,animation)        "Animation"
    set caption(fullscreen,zoom)             "Zoom"
-   set caption(fullscreen,zoom_0.125)       "x 0.125"
-   set caption(fullscreen,zoom_0.25)        "x 0.25"
-   set caption(fullscreen,zoom_0.5)         "x 0.5"
-   set caption(fullscreen,zoom_1)           "x 1"
-   set caption(fullscreen,zoom_2)           "x 2"
-   set caption(fullscreen,zoom_4)           "x 4"
-   set caption(fullscreen,zoom_8)           "x 8"
    set caption(fullscreen,help)             "Hjælp..."
 
    #--- Interface de configuration
@@ -223,13 +174,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fullscreen,zoom_auto)        "Auto"
    set caption(fullscreen,animation)        "Animation"
    set caption(fullscreen,zoom)             "Zoom"
-   set caption(fullscreen,zoom_0.125)       "x 0.125"
-   set caption(fullscreen,zoom_0.25)        "x 0.25"
-   set caption(fullscreen,zoom_0.5)         "x 0.5"
-   set caption(fullscreen,zoom_1)           "x 1"
-   set caption(fullscreen,zoom_2)           "x 2"
-   set caption(fullscreen,zoom_4)           "x 4"
-   set caption(fullscreen,zoom_8)           "x 8"
    set caption(fullscreen,help)             "Help..."
 
    #--- Interface de configuration
@@ -252,13 +196,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fullscreen,zoom_auto)        "Auto"
    set caption(fullscreen,animation)        "Animation"
    set caption(fullscreen,zoom)             "Zoom"
-   set caption(fullscreen,zoom_0.125)       "x 0.125"
-   set caption(fullscreen,zoom_0.25)        "x 0.25"
-   set caption(fullscreen,zoom_0.5)         "x 0.5"
-   set caption(fullscreen,zoom_1)           "x 1"
-   set caption(fullscreen,zoom_2)           "x 2"
-   set caption(fullscreen,zoom_4)           "x 4"
-   set caption(fullscreen,zoom_8)           "x 8"
    set caption(fullscreen,help)             "Help..."
 
    #--- Interface de configuration
