@@ -1,7 +1,36 @@
 # Fonctions de calculs numeriques : interpolation, ajustement...
 # source $audace(rep_scripts)/spcaudace/spc_numeric.tcl
 
-# Mise a jour $Id: spc_numeric.tcl,v 1.10 2010-10-04 20:44:26 bmauclaire Exp $
+# Mise a jour $Id: spc_numeric.tcl,v 1.11 2010-12-13 18:44:59 bmauclaire Exp $
+
+
+####################################################################
+# Bouclage d'une commande sur les tous les fichiers du repertoire de travail
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 12-12-2010
+# Date modification : 12-12-2010
+# Arguments : commande a exectuer sous forme de chaine de carcateres
+# Exemple : bm_cmd "spc_ew4 %s 6530 6600 1000000 o"
+####################################################################
+
+proc bm_cmd { args } {
+   global audace conf
+   if { [ llength $args ]==1 } {
+      set cmde [ lindex $args 0 ]
+
+      #--- Execute la commande sur tous les fichiers fits du repertoire :
+      ::console::affiche_prompt "\n**** DEBUT DE BOUCLE... ****\n\n"
+      set listefichiers [ lsort -dictionary [ glob -dir $audace(rep_images) -tail *$conf(extension,defaut) ] ]
+      foreach fichier $listefichiers {
+         eval [ format $cmde $fichier ]
+      }
+      ::console::affiche_prompt "**** FIN DE BOUCLE. ****\n"
+   } else {
+      ::console::affiche_erreur "Usage: bm_cmd \"la commande audela a executer sur les fichiers notes %s\"\nExemple : bm_cmd \"spc_ew4 %s 6530 6600 1000000 o\""
+   }
+}
+#**********************************************************************************#
 
 
 #############################################################################
