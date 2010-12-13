@@ -2,7 +2,7 @@
 # Fichier : fullscreen.tcl
 # Description : Fenetre plein ecran pour afficher des images ou des films
 # Auteur : Michel PUJOL
-# Mise à jour $Id: fullscreen.tcl,v 1.22 2010-10-16 08:54:54 robertdelmas Exp $
+# Mise à jour $Id: fullscreen.tcl,v 1.23 2010-12-13 17:34:50 robertdelmas Exp $
 #
 
 ##############################################################################
@@ -51,7 +51,7 @@ namespace eval ::FullScreen {
       set private($visuNo,this)              ""
       set private($visuNo,slideShow)         "0"
       set private($visuNo,hWindow)           ""
-      set private($visuNo,zoom)              "1"
+      set private($visuNo,zoom)              $::confVisu::private($visuNo,zoom)
       set private($visuNo,directory)         ""
       set private($visuNo,files)             ""
       set private($visuNo,currentItemIndex)  "0"
@@ -60,7 +60,7 @@ namespace eval ::FullScreen {
       set private($visuNo,animation)         "0"
       set private($visuNo,SlideShowAfterId)  ""
       set private($visuNo,slideShowDelay)    "1"
-      set private($visuNo,gif_anime)          "0"
+      set private($visuNo,gif_anime)         "0"
 
       #--- je recupere la liste des frames qui sont dans la toplevel
       set private($visuNo,slaves) [grid slaves $private($visuNo,toplevel)]
@@ -268,6 +268,9 @@ namespace eval ::FullScreen {
          grid $private($visuNo,scrollx)
          grid $private($visuNo,scrolly)
 
+         #--- je restaure le zoom
+         set ::confVisu::private($visuNo,zoom) $::FullScreen::private($visuNo,zoom)
+
          #--- je restaure les bordures et le titre
          wm overrideredirect $private($visuNo,toplevel) 0
 
@@ -443,6 +446,23 @@ namespace eval ::FullScreen {
       #--- application du zoom
       visu$visuNo zoom $private($visuNo,zoom)
 
+      #--- rafraichissement de l'image avec le nouveau zoom
+      visu$visuNo clear
+      while { 1 } {
+         set catchResult [catch { visu$visuNo disp } msg ]
+         if { $catchResult == 1 && $msg == "NO MEMORY FOR DISPLAY" } {
+            #--- en cas d'erreur "NO MEMORY FOR DISPLAY", j'essaie avec un zoom inferieur
+            set private($visuNo,zoom) [expr double($private($visuNo,zoom)) / 2]
+            if { $private($visuNo,zoom) >= 1 } {
+                set private($visuNo,zoom) [expr int($private($visuNo,zoom))]
+            }
+            visu$visuNo zoom $private($visuNo,zoom)
+            ::console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY, visuNo=$visuNo set zoom=$private($visuNo,zoom)\n"
+         } else {
+            break
+         }
+      }
+
       #--- je rafraichis l'affichage du canvas
       loadItem $visuNo
    }
@@ -608,41 +628,14 @@ namespace eval ::FullScreen {
       $menu add separator
       $menu add cascade -label $caption(fullscreen,zoom) -menu $menu.zoom
       menu $menu.zoom -tearoff no
-      $menu.zoom add radiobutton -label "$caption(fullscreen,zoom_0.125)" \
-         -indicatoron "1" \
-         -value "0.125" \
-         -variable ::FullScreen::private($visuNo,zoom) \
-         -command "::FullScreen::changeZoom $visuNo 0.125"
-      $menu.zoom add radiobutton -label "$caption(fullscreen,zoom_0.25)" \
-         -indicatoron "1" \
-         -value "0.25" \
-         -variable ::FullScreen::private($visuNo,zoom) \
-         -command "::FullScreen::changeZoom $visuNo 0.25"
-      $menu.zoom add radiobutton -label "$caption(fullscreen,zoom_0.5)" \
-         -indicatoron "1" \
-         -value "0.5" \
-         -variable ::FullScreen::private($visuNo,zoom) \
-         -command "::FullScreen::changeZoom $visuNo 0.5"
-      $menu.zoom add radiobutton -label "$caption(fullscreen,zoom_1)" \
-         -indicatoron "1" \
-         -value "1" \
-         -variable ::FullScreen::private($visuNo,zoom) \
-         -command "::FullScreen::changeZoom $visuNo 1"
-      $menu.zoom add radiobutton -label "$caption(fullscreen,zoom_2)" \
-         -indicatoron "1" \
-         -value "2" \
-         -variable ::FullScreen::private($visuNo,zoom) \
-         -command "::FullScreen::changeZoom $visuNo 2"
-      $menu.zoom add radiobutton -label "$caption(fullscreen,zoom_4)" \
-         -indicatoron "1" \
-         -value "4" \
-         -variable ::FullScreen::private($visuNo,zoom) \
-         -command "::FullScreen::changeZoom $visuNo 4"
-      $menu.zoom add radiobutton -label "$caption(fullscreen,zoom_8)" \
-         -indicatoron "1" \
-         -value "8" \
-         -variable ::FullScreen::private($visuNo,zoom) \
-         -command "::FullScreen::changeZoom $visuNo 8"
+
+      foreach zoom $::confVisu::private($visuNo,zoomList) {
+         $menu.zoom add radiobutton -label "$caption(fullscreen,zoom) x $zoom" \
+            -indicatoron "1" \
+            -value "$zoom" \
+            -variable ::FullScreen::private($visuNo,zoom) \
+            -command "::FullScreen::changeZoom $visuNo $zoom"
+      }
       $menu.zoom add radiobutton -label "$caption(fullscreen,zoom_auto)" \
          -indicatoron "1" \
          -value "auto" \

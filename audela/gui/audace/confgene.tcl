@@ -5,7 +5,7 @@
 #               pose, choix des plugins, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: confgene.tcl,v 1.87 2010-12-12 10:52:06 robertdelmas Exp $
+# Mise à jour $Id: confgene.tcl,v 1.88 2010-12-13 17:34:31 robertdelmas Exp $
 #
 
 #
@@ -1881,27 +1881,11 @@ namespace eval ::confChoixOutil {
       Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,balance_rvb)..." \
          "::seuilCouleur::run $visuNo"
       Menu_Separator $visuNo "$caption(audace,menu,display)"
-      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
-         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.125)" "0.125" \
-         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
-      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
-         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.25)" "0.25" \
-         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
-      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
-         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.5)" "0.5" \
-         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
-      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
-         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_1)" "1" \
-         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
-      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
-         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_2)" "2" \
-         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
-      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
-         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_4)" "4" \
-         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
-      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
-         "$caption(audace,menu,zoom) $caption(audace,menu,zoom_8)" "8" \
-         "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+         foreach zoom $::confVisu::private($visuNo,zoomList) {
+            Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
+               "$caption(audace,menu,zoom) x $zoom" "$zoom" \
+               "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+         }
       Menu_Separator $visuNo "$caption(audace,menu,display)"
       Menu_Check     $visuNo "$caption(audace,menu,display)" \
          "$caption(audace,menu,plein_ecran)" \
