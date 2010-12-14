@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.163 2010-12-13 17:33:48 robertdelmas Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.164 2010-12-14 18:08:12 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -56,6 +56,9 @@ namespace eval ::confVisu {
       #--- cree les variables dans conf(..) si elles n'existent pas
       if { ! [ info exists conf(audace,visu$visuNo,wmgeometry) ] } {
          set conf(audace,visu$visuNo,wmgeometry) "600x400+0+0"
+      }
+      if { ! [ info exists conf(audace,visu$visuNo,zoom) ] } {
+         set conf(audace,visu$visuNo,zoom) "1"
       }
       if { ! [ info exists conf(seuils,visu$visuNo,intervalleSHSB) ] } {
          set conf(seuils,visu$visuNo,intervalleSHSB) "1"
@@ -169,6 +172,9 @@ namespace eval ::confVisu {
       #--- je mets à jour couleurs et polices
       ::confColor::applyColor $private($visuNo,This)
 
+      #--- j'applique le zoom de la session precedente (
+      ::confVisu::setZoom $visuNo $::conf(audace,visu$visuNo,zoom)
+
       #--- j'initialise les glissieres RVB
       ::colorRGB::initConf $visuNo
 
@@ -221,6 +227,7 @@ namespace eval ::confVisu {
 
          #--- je memorise les variables dans conf(.)
          set conf(audace,visu$visuNo,wmgeometry)     [wm geometry $::confVisu::private($visuNo,This)]
+         set conf(audace,visu$visuNo,zoom)           $private($visuNo,zoom)
          set conf(seuils,visu$visuNo,intervalleSHSB) $private($visuNo,intervalleSHSB)
 
          #--- je supprime les bind
