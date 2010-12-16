@@ -2,7 +2,7 @@
 # Fichier : pretrfc.tcl
 # Description : Outil pour le pretraitement automatique
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise à jour $Id: pretrfc.tcl,v 1.29 2010-10-10 20:05:42 michelpujol Exp $
+# Mise à jour $Id: pretrfc.tcl,v 1.30 2010-12-16 16:30:23 robertdelmas Exp $
 #
 
 #============================================================
@@ -213,7 +213,7 @@ proc getPluginHelp { } {
          toplevel $audace(base).fenetrePretr -class Toplevel -borderwidth 2 -relief groove
          wm geometry $audace(base).fenetrePretr $panneau(pretrfc,position)
          wm resizable $audace(base).fenetrePretr 1 1
-         wm title $audace(base).fenetrePretr $caption(pretrfc,titrelong)
+         wm title $audace(base).fenetrePretr $caption(pretrfc,menu)
 
          wm protocol $audace(base).fenetrePretr WM_DELETE_WINDOW ::pretrfc::ArretPretraitFC
 

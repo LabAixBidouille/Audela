@@ -1,6 +1,6 @@
 #
 # Fichier : pretrfc.cap
-# Mise a jour $Id: pretrfc.cap,v 1.14 2009-12-19 09:15:35 robertdelmas Exp $
+# Mise a jour $Id: pretrfc.cap,v 1.15 2010-12-16 16:30:03 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -11,8 +11,7 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(pretrfc,menu)                       "Preprocessing"
-set caption(pretrfc,titrelong)                  "Automatic preprocessing"
+set caption(pretrfc,menu)                       "Automatic Preprocessing"
 set caption(pretrfc,aide)                       "Help"
 set caption(pretrfc,configuration)              "Setup"
 set caption(pretrfc,pbouvfich)                  "Unable to open the log file.\
@@ -167,8 +166,7 @@ set caption(pretrfc,ModePLUOpt)                 "# Calculation Mode: Dark Frame 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(pretrfc,menu)                    "Prétraitement"
-   set caption(pretrfc,titrelong)               "Prétraitement automatique"
+   set caption(pretrfc,menu)                    "Prétraitement automatique"
    set caption(pretrfc,aide)                    "Aide"
    set caption(pretrfc,configuration)           "Configuration"
    set caption(pretrfc,pbouvfich)               "Impossible d'ouvrir le fichier \
@@ -326,8 +324,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(pretrfc,menu)                    "Pretrattamento"
-   set caption(pretrfc,titrelong)               "Pretrattamento automatico"
+   set caption(pretrfc,menu)                    "Pretrattamento automatico"
    set caption(pretrfc,aide)                    "Aiuto"
    set caption(pretrfc,configuration)           "Configurazione"
    set caption(pretrfc,pbouvfich)               "Impossibile aprire il file di \
@@ -484,8 +481,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(pretrfc,menu)                    "Preproceso"
-   set caption(pretrfc,titrelong)               "Preproceso automático"
+   set caption(pretrfc,menu)                    "Preproceso automático"
    set caption(pretrfc,aide)                    "Ayuda"
    set caption(pretrfc,configuration)           "Configuración"
    set caption(pretrfc,pbouvfich)               "No se puede abrir el fichero de log.\n \
@@ -643,8 +639,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # ******************* Version allemande ***********************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(pretrfc,menu)                    "Vorhandlung"
-   set caption(pretrfc,titrelong)               "Automatische Vorhandlung"
+   set caption(pretrfc,menu)                    "Automatische Vorhandlung"
    set caption(pretrfc,aide)                    "Hilfe"
    set caption(pretrfc,configuration)           "Konfiguration"
    set caption(pretrfc,pbouvfich)               "Log. Datei unmöglich zu öffnen.\n \
@@ -802,8 +797,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(pretrfc,menu)                    "Pré-processamento"
-   set caption(pretrfc,titrelong)               "Pré-processamento automático"
+   set caption(pretrfc,menu)                    "Pré-processamento automático"
    set caption(pretrfc,aide)                    "Ajuda"
    set caption(pretrfc,configuration)           "Configuração"
    set caption(pretrfc,pbouvfich)               "Impossível abrir o ficheiro \
@@ -961,8 +955,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # ******************* Version danoise *************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(pretrfc,menu)                    "Preprocessing"
-   set caption(pretrfc,titrelong)               "Automatic preprocessing"
+   set caption(pretrfc,menu)                    "Automatic Preprocessing"
    set caption(pretrfc,aide)                    "Help"
    set caption(pretrfc,configuration)           "Setup"
    set caption(pretrfc,pbouvfich)               "Unable to open the log file.\
@@ -1117,8 +1110,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
-   set caption(pretrfc,menu)                    "Preprocessing"
-   set caption(pretrfc,titrelong)               "Automatic preprocessing"
+   set caption(pretrfc,menu)                    "Automatic Preprocessing"
    set caption(pretrfc,aide)                    "Help"
    set caption(pretrfc,configuration)           "Setup"
    set caption(pretrfc,pbouvfich)               "Unable to open the log file.\
@@ -1273,8 +1265,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
-   set caption(pretrfc,menu)                    "Preprocessing"
-   set caption(pretrfc,titrelong)               "Automatic preprocessing"
+   set caption(pretrfc,menu)                    "Automatic Preprocessing"
    set caption(pretrfc,aide)                    "Help"
    set caption(pretrfc,configuration)           "Setup"
    set caption(pretrfc,pbouvfich)               "Unable to open the log file.\
