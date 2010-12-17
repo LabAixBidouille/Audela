@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.164 2010-12-14 18:08:12 michelpujol Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.165 2010-12-17 22:00:39 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -26,6 +26,40 @@ namespace eval ::confVisu {
       if { $catchResult == 1 } {
          ::console::affiche_erreur "::confVisu::init $::errorInfo\n"
       }
+
+
+      #--- icone du menu miroir horzontal
+      set private(mirrorHIcon) [image create photo mirrorHIcon -data {
+          R0lGODlhEAAQAMZPAD4+PmdAGV9JH2BOI2pTJIhPLphXMZlfMZBlKJ9gO6Ji
+          IadhHp9jQKdmOqdoOqdpM6hrNKVuLqlvKJJ1NaRyLa9uQ7BxTLt1TLd5Nrt3
+          TLt4Rrx8SqiEOtSIMbqPPu6NM/CPLO+TMcqeRvCVMuSZOu+WQMqiSvGZNdeg
+          Q/CaNtugQvKeOfKfOvKdU/KkP/OkPuSlf92vTvOqQ+Wog+unfPWqQvKoa++p
+          dvKqdPSvRvKrefSwSPSscei0T+yuifCuhvSvefSve/SvgvSwf/W1S/SwgvSy
+          h/WzhfSzive6T/e8Ufa2kPa4kfjAVPe7l///////////////////////////
+          ////////////////////////////////////////////////////////////
+          ////////////////////////////////////////////////////////////
+          /////////////////////////////////////////////////yH5BAEKAH8A
+          LAAAAAAQABAAAAdxgH+Cg4SFhoIFBYeGDDMwCYuDFj5OTDQVkRc/S0hGRzca
+          iwYZQkVDQRsHkQ06QUA2D5F/Djg8LR8LhgC7vL29hhAlICMpErIKIScsLhSL
+          ARgdKy8yOygeBIcRJDU5REo9HJEIKklNMROyfwIiJgPp6YEAOw==
+       }]
+       #--- icone du menu miroir horzonta
+       set private(mirrorVIcon) [image create photo mirrorVIcon -data {
+           R0lGODlhEAAQAMZPAD4+PmdAGV9JH2BOI2pTJIhPLphXMZlfMZBlKJ9gO6Ji
+           IadhHp9jQKdmOqdoOqdpM6hrNKVuLqlvKJJ1NaRyLa9uQ7BxTLt1TLd5Nrt3
+           TLt4Rrx8SqiEOtSIMbqPPu6NM/CPLO+TMcqeRvCVMuSZOu+WQMqiSvGZNdeg
+           Q/CaNtugQvKeOfKfOvKdU/KkP/OkPuSlf92vTvOqQ+Wog+unfPWqQvKoa++p
+           dvKqdPSvRvKrefSwSPSscei0T+yuifCuhvSvefSve/SvgvSwf/W1S/SwgvSy
+           h/WzhfSzive6T/e8Ufa2kPa4kfjAVPe7l///////////////////////////
+           ////////////////////////////////////////////////////////////
+           ////////////////////////////////////////////////////////////
+           /////////////////////////////////////////////////yH5BAEKAH8A
+           LAAAAAAQABAAAAd7gH+Cg4SFhoIAh4qJioMBiI2CERiQfwYXhggkHQoQAA4N
+           GT8WhAIqNSshJQA4OkJLPgyDIkk5LycgADxBRUhOMwWCJk1EMiwjAC1AQ0ZM
+           MMF/AzFKOy4pAB82QUc0CYQTPSgUEgALDxs3FYYcHpUHGooElZGDjPTz942B
+           ADs=
+        }]
+
    }
 
    #------------------------------------------------------------
@@ -2212,9 +2246,11 @@ namespace eval ::confVisu {
 
          Menu_Separator $visuNo "$caption(audace,menu,display)"
          Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,miroir_x)" \
-            "::confVisu::private($visuNo,mirror_x)" "::confVisu::setMirrorX $visuNo"
+            "::confVisu::private($visuNo,mirror_x)" "::confVisu::setMirrorX $visuNo" \
+            -compound left -image $::confVisu::private(mirrorVIcon)
          Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,miroir_y)" \
-            "::confVisu::private($visuNo,mirror_y)" "::confVisu::setMirrorY $visuNo"
+            "::confVisu::private($visuNo,mirror_y)" "::confVisu::setMirrorY $visuNo" \
+            -compound left -image $::confVisu::private(mirrorHIcon)
          Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,window)" \
             "::confVisu::private($visuNo,window)" "::confVisu::setWindow $visuNo"
 
@@ -2528,9 +2564,11 @@ namespace eval ::confVisu {
 
          Menu_Separator $visuNo "$caption(audace,menu,display)"
          Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,miroir_x)" \
-            "::confVisu::private($visuNo,mirror_x)" "::confVisu::setMirrorX $visuNo"
+            "::confVisu::private($visuNo,mirror_x)" "::confVisu::setMirrorX $visuNo" \
+                        -compound left -image $::confVisu::private(mirrorVIcon)
          Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,miroir_y)" \
-            "::confVisu::private($visuNo,mirror_y)" "::confVisu::setMirrorY $visuNo"
+            "::confVisu::private($visuNo,mirror_y)" "::confVisu::setMirrorY $visuNo" \
+                        -compound left -image $::confVisu::private(mirrorHIcon)
          Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,window)" \
             "::confVisu::private($visuNo,window)" "::confVisu::setWindow $visuNo"
 
