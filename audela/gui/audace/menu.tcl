@@ -2,7 +2,7 @@
 # Fichier : menu.tcl
 # Description : Package pour gerer facilement les menus
 # Auteur : Denis MARCHAIS d'apres B. Welsh, Practical Programming in Tcl and Tk, Ed. 2, p.319-322
-# Mise à jour $Id: menu.tcl,v 1.9 2010-10-24 17:46:05 jberthier Exp $
+# Mise à jour $Id: menu.tcl,v 1.10 2010-12-17 22:01:53 michelpujol Exp $
 #
 
 proc Menu_Setup { visuNo menubar } {
@@ -71,9 +71,23 @@ proc Menu_Command_Radiobutton { visuNo menuName label value variable command } {
    $menuId add radiobutton -label $label -indicatoron "1" -variable $variable -value $value -command $command
 }
 
-proc Menu_Check { visuNo menuName label var { command { } } } {
+
+#------------------------------------------------------------
+# Menu_Check
+#    cree un menu check
+#
+# @param  args  parametre optionel qui contient les parametres de configuration du mnenu
+#               si args est vide, le menu est cree avec les options par defaut
+# exemple : Menu_Check $visuNo "$caption(audace,menu,display)" \
+#            "$caption(audace,menu,miroir_x)" \
+#            "::confVisu::private($visuNo,mirror_x)" \
+#            "::confVisu::setMirrorX $visuNo" \
+#            -compound left \
+#            -image $::confVisu::private(mirrorVIcon)
+#------------------------------------------------------------
+proc Menu_Check { visuNo menuName label var command args  } {
    set menuId [MenuGet $visuNo $menuName]
-   $menuId add check -label $label -command $command -variable $var
+   eval {$menuId add check -label $label -command $command -variable $var } $args
 }
 
 proc Menu_Radio { visuNo menuName label var {val { } } {command { } } } {
