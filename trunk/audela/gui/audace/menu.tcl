@@ -2,7 +2,7 @@
 # Fichier : menu.tcl
 # Description : Package pour gerer facilement les menus
 # Auteur : Denis MARCHAIS d'apres B. Welsh, Practical Programming in Tcl and Tk, Ed. 2, p.319-322
-# Mise à jour $Id: menu.tcl,v 1.10 2010-12-17 22:01:53 michelpujol Exp $
+# Mise à jour $Id: menu.tcl,v 1.11 2010-12-18 15:33:48 robertdelmas Exp $
 #
 
 proc Menu_Setup { visuNo menubar } {
@@ -61,9 +61,21 @@ proc MenuGet { visuNo menuName } {
    return $menuId
 }
 
-proc Menu_Command { visuNo menuName label command } {
+#------------------------------------------------------------
+# Menu_Command
+#    cree un menu command
+#
+# @param args : parametre optionnel qui contient les parametres de configuration du menu
+#               si args est vide, le menu est cree avec les options par defaut
+# exemple : Menu_Command $visuNo "$caption(audace,menu,file)" \
+#              "$caption(audace,menu,charger)..." \
+#              "::audace::charger $visuNo" \
+#              -compound left \
+#              -image $::confVisu::private(openIcon)
+#------------------------------------------------------------
+proc Menu_Command { visuNo menuName label command args } {
    set menuId [MenuGet $visuNo $menuName]
-   $menuId add command -label $label -command $command
+   eval { $menuId add command -label $label -command $command } $args
 }
 
 proc Menu_Command_Radiobutton { visuNo menuName label value variable command } {
@@ -71,23 +83,22 @@ proc Menu_Command_Radiobutton { visuNo menuName label value variable command } {
    $menuId add radiobutton -label $label -indicatoron "1" -variable $variable -value $value -command $command
 }
 
-
 #------------------------------------------------------------
 # Menu_Check
 #    cree un menu check
 #
-# @param  args  parametre optionel qui contient les parametres de configuration du mnenu
+# @param args : parametre optionnel qui contient les parametres de configuration du menu
 #               si args est vide, le menu est cree avec les options par defaut
 # exemple : Menu_Check $visuNo "$caption(audace,menu,display)" \
-#            "$caption(audace,menu,miroir_x)" \
-#            "::confVisu::private($visuNo,mirror_x)" \
-#            "::confVisu::setMirrorX $visuNo" \
-#            -compound left \
-#            -image $::confVisu::private(mirrorVIcon)
+#              "$caption(audace,menu,miroir_x)" \
+#              "::confVisu::private($visuNo,mirror_x)" \
+#              "::confVisu::setMirrorX $visuNo" \
+#              -compound left \
+#              -image $::confVisu::private(mirrorVIcon)
 #------------------------------------------------------------
-proc Menu_Check { visuNo menuName label var command args  } {
+proc Menu_Check { visuNo menuName label var command args } {
    set menuId [MenuGet $visuNo $menuName]
-   eval {$menuId add check -label $label -command $command -variable $var } $args
+   eval { $menuId add check -label $label -command $command -variable $var } $args
 }
 
 proc Menu_Radio { visuNo menuName label var {val { } } {command { } } } {
