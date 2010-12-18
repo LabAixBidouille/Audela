@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_4.cap
-# Mise a jour $Id: aud_menu_4.cap,v 1.21 2010-12-11 18:06:11 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_4.cap,v 1.22 2010-12-18 15:31:09 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,16 +12,24 @@ global caption langage
 # *************** Version anglaise ****************************
 
 set caption(audace,menu,traitement)                     "Processing"
+
+set caption(audace,menu,filtrer)                        "# Filtrer"
 set caption(audace,menu,masque_flou)                    "Unsharp Mask"
 set caption(audace,menu,filtre_passe-bas)               "Low Pass Filter"
 set caption(audace,menu,filtre_passe-haut)              "High Pass Filter"
 set caption(audace,menu,filtre_median)                  "Median Filter"
 set caption(audace,menu,filtre_minimum)                 "Minimum Filter"
 set caption(audace,menu,filtre_maximum)                 "Maximum Filter"
-### set caption(audace,menu,filtre_gaussien)                "Gaussian Filter"
-### set caption(audace,menu,ond_morlet)                     "Morlet Type Wavelet"
-### set caption(audace,menu,ond_mexicain)                   "Mexican Hat Type Wavelet"
-### set caption(audace,menu,log)                            "Logarithm"
+
+set caption(audace,menu,amel)                           "# Améliorer"
+set caption(audace,menu,filtre_gaussien)                "Gaussian Filter"
+set caption(audace,menu,ond_morlet)                     "Morlet Type Wavelet"
+set caption(audace,menu,ond_mexicain)                   "Mexican Hat Type Wavelet"
+set caption(audace,menu,grad_rot)                       "# Gradient rotationnel"
+set caption(audace,menu,radial)                         "# Filtre radial"
+set caption(audace,menu,hough)                          "# Fonction de Hough"
+
+set caption(audace,menu,convoluer)                      "# Convoluer"
 set caption(audace,menu,tfd)                            "Discrete Fourier Transform"
 set caption(audace,menu,tfdi)                           "Inverse Discrete Fourier Transform"
 set caption(audace,menu,acorr)                          "Autocorrelation"
@@ -79,16 +87,24 @@ set caption(traiteFilters,traitement_en_cours)          "Processing in progress.
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,traitement)                  "Traitement"
+
+   set caption(audace,menu,filtrer)                     "Filtrer"
    set caption(audace,menu,masque_flou)                 "Masque flou"
    set caption(audace,menu,filtre_passe-bas)            "Filtre passe-bas"
    set caption(audace,menu,filtre_passe-haut)           "Filtre passe-haut"
    set caption(audace,menu,filtre_median)               "Filtre médian"
    set caption(audace,menu,filtre_minimum)              "Filtre minimum"
    set caption(audace,menu,filtre_maximum)              "Filtre maximum"
-  ### set caption(audace,menu,filtre_gaussien)             "Filtre gaussien"
-  ### set caption(audace,menu,ond_morlet)                  "Ondelette de type Morlet"
-  ### set caption(audace,menu,ond_mexicain)                "Ondelette de type chapeau mexicain"
-  ### set caption(audace,menu,log)                         "Logarithme"
+
+   set caption(audace,menu,amel)                        "Améliorer"
+   set caption(audace,menu,filtre_gaussien)             "Filtre gaussien"
+   set caption(audace,menu,ond_morlet)                  "Ondelette de type Morlet"
+   set caption(audace,menu,ond_mexicain)                "Ondelette de type chapeau mexicain"
+   set caption(audace,menu,grad_rot)                    "Gradient rotationnel"
+   set caption(audace,menu,radial)                      "Filtre radial"
+   set caption(audace,menu,hough)                       "Fonction de Hough"
+
+   set caption(audace,menu,convoluer)                   "Convoluer"
    set caption(audace,menu,tfd)                         "Transformée de Fourier Discrète"
    set caption(audace,menu,tfdi)                        "Transformée de Fourier Discrète Inverse"
    set caption(audace,menu,acorr)                       "Autocorrélation"
@@ -146,16 +162,24 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(audace,menu,traitement)                  "Elaborazione"
+
+   set caption(audace,menu,filtrer)                     "# Filtrer"
    set caption(audace,menu,masque_flou)                 "Maschera flou"
    set caption(audace,menu,filtre_passe-bas)            "Filtro passa-basso"
    set caption(audace,menu,filtre_passe-haut)           "Filtro passa-alto"
    set caption(audace,menu,filtre_median)               "Filtro mediano"
    set caption(audace,menu,filtre_minimum)              "Filtro minimo"
    set caption(audace,menu,filtre_maximum)              "Filtro massimo"
-  ### set caption(audace,menu,filtre_gaussien)             "Filtro Gausssiano"
-  ### set caption(audace,menu,ond_morlet)                  "Filtro di Morlet"
-  ### set caption(audace,menu,ond_mexicain)                "Filtro a 'sombrero'"
-  ### set caption(audace,menu,log)                         "Logaritmo"
+
+   set caption(audace,menu,amel)                        "# Améliorer"
+   set caption(audace,menu,filtre_gaussien)             "Filtro Gausssiano"
+   set caption(audace,menu,ond_morlet)                  "Filtro di Morlet"
+   set caption(audace,menu,ond_mexicain)                "Filtro a 'sombrero'"
+   set caption(audace,menu,grad_rot)                    "# Gradient rotationnel"
+   set caption(audace,menu,radial)                      "# Filtre radial"
+   set caption(audace,menu,hough)                       "# Fonction de Hough"
+
+   set caption(audace,menu,convoluer)                   "# Convoluer"
    set caption(audace,menu,tfd)                         "Trasformata di Fourier"
    set caption(audace,menu,tfdi)                        "Antitrasformata di Fourier"
    set caption(audace,menu,acorr)                       "Autocorrelazione"
@@ -213,16 +237,24 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(audace,menu,traitement)                  "Procesando"
+
+   set caption(audace,menu,filtrer)                     "# Filtrer"
    set caption(audace,menu,masque_flou)                 "Máscara desenfocada"
    set caption(audace,menu,filtre_passe-bas)            "Filtro paso bajo"
    set caption(audace,menu,filtre_passe-haut)           "Filtro paso alto"
    set caption(audace,menu,filtre_median)               "Filtro de mediana"
    set caption(audace,menu,filtre_minimum)              "Filtro de mínimo"
    set caption(audace,menu,filtre_maximum)              "Filtro de máximo"
-  ### set caption(audace,menu,filtre_gaussien)             "Filtro gausiano"
-  ### set caption(audace,menu,ond_morlet)                  "Wavelet de tipo Morlet"
-  ### set caption(audace,menu,ond_mexicain)                "Wavelte de tipo sombrero mejicano"
-  ### set caption(audace,menu,log)                         "Logaritmo"
+
+   set caption(audace,menu,amel)                        "# Améliorer"
+   set caption(audace,menu,filtre_gaussien)             "Filtro gausiano"
+   set caption(audace,menu,ond_morlet)                  "Wavelet de tipo Morlet"
+   set caption(audace,menu,ond_mexicain)                "Wavelte de tipo sombrero mejicano"
+   set caption(audace,menu,grad_rot)                    "# Gradient rotationnel"
+   set caption(audace,menu,radial)                      "# Filtre radial"
+   set caption(audace,menu,hough)                       "# Fonction de Hough"
+
+   set caption(audace,menu,convoluer)                   "# Convoluer"
    set caption(audace,menu,tfd)                         "Transformada Discreta de Fourier"
    set caption(audace,menu,tfdi)                        "Transformada Discreta Inversa de Fourier"
    set caption(audace,menu,acorr)                       "Autocorrelación"
@@ -280,16 +312,24 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(audace,menu,traitement)                  "Aufbereitung"
+
+   set caption(audace,menu,filtrer)                     "# Filtrer"
    set caption(audace,menu,masque_flou)                 "Unscharf Maske"
    set caption(audace,menu,filtre_passe-bas)            "Niederpaß Filter"
    set caption(audace,menu,filtre_passe-haut)           "Hochpaß Filter"
    set caption(audace,menu,filtre_median)               "Median Filter"
    set caption(audace,menu,filtre_minimum)              "Mindest Filter"
    set caption(audace,menu,filtre_maximum)              "Höchst Filter"
-  ### set caption(audace,menu,filtre_gaussien)             "Gaussich Filter"
-  ### set caption(audace,menu,ond_morlet)                  "Morlet Typ Wellche"
-  ### set caption(audace,menu,ond_mexicain)                "Mexican Hut Typ Wellche"
-  ### set caption(audace,menu,log)                         "Logarithmus"
+
+   set caption(audace,menu,amel)                        "# Améliorer"
+   set caption(audace,menu,filtre_gaussien)             "Gaussich Filter"
+   set caption(audace,menu,ond_morlet)                  "Morlet Typ Wellche"
+   set caption(audace,menu,ond_mexicain)                "Mexican Hut Typ Wellche"
+   set caption(audace,menu,grad_rot)                    "# Gradient rotationnel"
+   set caption(audace,menu,radial)                      "# Filtre radial"
+   set caption(audace,menu,hough)                       "# Fonction de Hough"
+
+   set caption(audace,menu,convoluer)                   "# Convoluer"
    set caption(audace,menu,tfd)                         "Diskrete Fourier Verwandlung"
    set caption(audace,menu,tfdi)                        "Umgekehrte Diskrete Fourier Verwandlung"
    set caption(audace,menu,acorr)                       "Autokorrelation"
@@ -347,16 +387,24 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(audace,menu,traitement)                  "Tratamento"
+
+   set caption(audace,menu,filtrer)                     "# Filtrer"
    set caption(audace,menu,masque_flou)                 "Máscara de focagem"
    set caption(audace,menu,filtre_passe-bas)            "Filtro passa-baixo"
    set caption(audace,menu,filtre_passe-haut)           "Filtro passa-alto"
    set caption(audace,menu,filtre_median)               "Filtro médio"
    set caption(audace,menu,filtre_minimum)              "Filtro mínimo"
    set caption(audace,menu,filtre_maximum)              "Filtro máximo"
-  ### set caption(audace,menu,filtre_gaussien)             "Filtro gaussiano"
-  ### set caption(audace,menu,ond_morlet)                  "Wavelet do tipo Morlet"
-  ### set caption(audace,menu,ond_mexicain)                "Wavelet do tipo chapéu mexicano"
-  ### set caption(audace,menu,log)                         "Logaritmo"
+
+   set caption(audace,menu,amel)                        "# Améliorer"
+   set caption(audace,menu,filtre_gaussien)             "Filtro gaussiano"
+   set caption(audace,menu,ond_morlet)                  "Wavelet do tipo Morlet"
+   set caption(audace,menu,ond_mexicain)                "Wavelet do tipo chapéu mexicano"
+   set caption(audace,menu,grad_rot)                    "# Gradient rotationnel"
+   set caption(audace,menu,radial)                      "# Filtre radial"
+   set caption(audace,menu,hough)                       "# Fonction de Hough"
+
+   set caption(audace,menu,convoluer)                   "# Convoluer"
    set caption(audace,menu,tfd)                         "Transformada Discreta de Fourier"
    set caption(audace,menu,tfdi)                        "Transformada Discreta Inversa de Fourier"
    set caption(audace,menu,acorr)                       "Autocorrelação"
@@ -414,16 +462,24 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(audace,menu,traitement)                  "Processing"
+
+   set caption(audace,menu,filtrer)                     "# Filtrer"
    set caption(audace,menu,masque_flou)                 "Uskarp maske"
    set caption(audace,menu,filtre_passe-bas)            "Lav pas filter"
    set caption(audace,menu,filtre_passe-haut)           "Høj pas filter"
    set caption(audace,menu,filtre_median)               "Median filter"
    set caption(audace,menu,filtre_minimum)              "Minimum filter"
    set caption(audace,menu,filtre_maximum)              "Maksimum filter"
-  ### set caption(audace,menu,filtre_gaussien)             "Gauss filter"
-  ### set caption(audace,menu,ond_morlet)                  "Bølge af type Morlet"
-  ### set caption(audace,menu,ond_mexicain)                "Mexicansk hat bølgetype"
-  ### set caption(audace,menu,log)                         "Logaritme"
+
+   set caption(audace,menu,amel)                        "# Améliorer"
+   set caption(audace,menu,filtre_gaussien)             "Gauss filter"
+   set caption(audace,menu,ond_morlet)                  "Bølge af type Morlet"
+   set caption(audace,menu,ond_mexicain)                "Mexicansk hat bølgetype"
+   set caption(audace,menu,grad_rot)                    "# Gradient rotationnel"
+   set caption(audace,menu,radial)                      "# Filtre radial"
+   set caption(audace,menu,hough)                       "# Fonction de Hough"
+
+   set caption(audace,menu,convoluer)                   "# Convoluer"
    set caption(audace,menu,tfd)                         "Diskret Fourier tranformation"
    set caption(audace,menu,tfdi)                        "Invers diskret Fourier tranformation"
    set caption(audace,menu,acorr)                       "Autokorrelation"
@@ -481,16 +537,24 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
    set caption(audace,menu,traitement)                  "Processing"
+
+   set caption(audace,menu,filtrer)                     "# Filtrer"
    set caption(audace,menu,masque_flou)                 "Unsharp Mask"
    set caption(audace,menu,filtre_passe-bas)            "Low Pass Filter"
    set caption(audace,menu,filtre_passe-haut)           "High Pass Filter"
    set caption(audace,menu,filtre_median)               "Median Filter"
    set caption(audace,menu,filtre_minimum)              "Minimum Filter"
    set caption(audace,menu,filtre_maximum)              "Maximum Filter"
-  ### set caption(audace,menu,filtre_gaussien)             "Gaussian Filter"
-  ### set caption(audace,menu,ond_morlet)                  "Morlet Type Wavelet"
-  ### set caption(audace,menu,ond_mexicain)                "Mexican Hat Type Wavelet"
-  ### set caption(audace,menu,log)                         "Logarithm"
+
+   set caption(audace,menu,amel)                        "# Améliorer"
+   set caption(audace,menu,filtre_gaussien)             "Gaussian Filter"
+   set caption(audace,menu,ond_morlet)                  "Morlet Type Wavelet"
+   set caption(audace,menu,ond_mexicain)                "Mexican Hat Type Wavelet"
+   set caption(audace,menu,grad_rot)                    "# Gradient rotationnel"
+   set caption(audace,menu,radial)                      "# Filtre radial"
+   set caption(audace,menu,hough)                       "# Fonction de Hough"
+
+   set caption(audace,menu,convoluer)                   "# Convoluer"
    set caption(audace,menu,tfd)                         "Discrete Fourier Transform"
    set caption(audace,menu,tfdi)                        "Inverse Discrete Fourier Transform"
    set caption(audace,menu,acorr)                       "Autocorrelation"
@@ -548,16 +612,24 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
    set caption(audace,menu,traitement)                  "Processing"
+
+   set caption(audace,menu,filtrer)                     "# Filtrer"
    set caption(audace,menu,masque_flou)                 "Unsharp Mask"
    set caption(audace,menu,filtre_passe-bas)            "Low Pass Filter"
    set caption(audace,menu,filtre_passe-haut)           "High Pass Filter"
    set caption(audace,menu,filtre_median)               "Median Filter"
    set caption(audace,menu,filtre_minimum)              "Minimum Filter"
    set caption(audace,menu,filtre_maximum)              "Maximum Filter"
-  ### set caption(audace,menu,filtre_gaussien)             "Gaussian Filter"
-  ### set caption(audace,menu,ond_morlet)                  "Morlet Type Wavelet"
-  ### set caption(audace,menu,ond_mexicain)                "Mexican Hat Type Wavelet"
-  ### set caption(audace,menu,log)                         "Logarithm"
+
+   set caption(audace,menu,amel)                        "# Améliorer"
+   set caption(audace,menu,filtre_gaussien)             "Gaussian Filter"
+   set caption(audace,menu,ond_morlet)                  "Morlet Type Wavelet"
+   set caption(audace,menu,ond_mexicain)                "Mexican Hat Type Wavelet"
+   set caption(audace,menu,grad_rot)                    "# Gradient rotationnel"
+   set caption(audace,menu,radial)                      "# Filtre radial"
+   set caption(audace,menu,hough)                       "# Fonction de Hough"
+
+   set caption(audace,menu,convoluer)                   "# Convoluer"
    set caption(audace,menu,tfd)                         "Discrete Fourier Transform"
    set caption(audace,menu,tfdi)                        "Inverse Discrete Fourier Transform"
    set caption(audace,menu,acorr)                       "Autocorrelation"
