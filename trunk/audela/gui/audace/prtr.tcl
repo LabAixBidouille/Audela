@@ -2,7 +2,7 @@
 # Fichier : prtr.tcl
 # Description : Script dedie au menu deroulant pretraitement
 # Auteur : Raymond ZATCHANTKE
-# Mise à jour $Id: prtr.tcl,v 1.1 2010-12-11 14:03:44 robertdelmas Exp $
+# Mise à jour $Id: prtr.tcl,v 1.2 2010-12-18 15:35:07 robertdelmas Exp $
 #
 
 namespace eval ::prtr {
@@ -19,6 +19,7 @@ namespace eval ::prtr {
       set ::prtr::operation $oper
       set private(in_visu) ""
       set private(profil) ""
+
 
       ::prtr::changeDir $visuNo
       ::prtr::changeExtension $visuNo
@@ -70,6 +71,7 @@ namespace eval ::prtr {
       set ::prtr::disp        "1"   ; # booleen, affichage de la derniere image
       set ::prtr::out         ""    ; # nom de sortie
       set ::prtr::ttoptions   "0"   ; # booleen, affichage des options
+      set ::prtr::all         "0"   ; # booleen, sélection des images
 
       toplevel $This
       wm resizable $This 0 0
@@ -85,8 +87,8 @@ namespace eval ::prtr {
       set this [::blt::table $This.usr]
       set private(table) $this
 
-      #--   cree 6 frames permamnents
-      foreach fr {select scroll sortie affiche info cmd} {
+      #--   cree 7 frames permamnents
+      foreach fr {select scroll all sortie affiche info cmd} {
          frame $this.$fr -borderwidth 1 -relief raised
       }
 
@@ -108,6 +110,11 @@ namespace eval ::prtr {
       scrollbar $this.hscroll -orient horizontal -command [list $tbl xview]
       scrollbar $this.vscroll -command [list $tbl yview]
       pack $tbl -side top
+
+      #---  le check bouton pour selectionner tout
+      checkbutton $this.all.select -variable ::prtr::all \
+         -text "$caption(prtr,select_all)" -command "::prtr::selectAll $tbl"
+      pack $this.all.select -side left -padx 10 -pady 5
 
       #---  frame pour le fichier de sortie
       LabelEntry $this.sortie.out \
@@ -161,10 +168,11 @@ namespace eval ::prtr {
          $this.choix 1,0 -fill both \
          $this.vscroll 1,1 -fill y -anchor e -width $this.vscroll \
          $this.hscroll 2,0 -fill x -height $this.hscroll \
-         $this.sortie 5,0 -fill x -cspan 2 \
-         $this.affiche 6,0 -fill x -cspan 2 \
-         $this.info 7,0 -fill x -cspan 2 \
-         $this.cmd 8,0 -fill x -cspan 2
+         $this.all 3,0 -fill x -cspan 2 \
+         $this.sortie 6,0 -fill x -cspan 2 \
+         $this.affiche 7,0 -fill x -cspan 2 \
+         $this.info 8,0 -fill x -cspan 2 \
+         $this.cmd 9,0 -fill x -cspan 2
       pack $This.usr -in $This -side top -fill both -expand 1
 
       #--   remplit la tablelist
@@ -252,7 +260,7 @@ namespace eval ::prtr {
       #--   la case du titre
       label $w.label  -text "$::caption(prtr,param)"
       grid $w.label -row 0 -column 0 -padx 10 -pady 5 -rowspan $lignes
-      ::blt::table $private(table) $w 3,0 -fill x -cspan 2
+      ::blt::table $private(table) $w 4,0 -fill x -cspan 2
 
       ::prtr::configZone $w obligatoire
 
@@ -287,7 +295,7 @@ namespace eval ::prtr {
             -variable ::prtr::ttoptions -text "$::caption(prtr,options)" \
             -command "::prtr::dispOptions $w"
          grid $w.che -row 0 -column 0 -padx 10 -pady 5 -rowspan $lignes
-         ::blt::table $private(table) $w 4,0 -fill x -cspan 2
+         ::blt::table $private(table) $w 5,0 -fill x -cspan 2
       }
       dispOptions $w
    }
@@ -369,6 +377,31 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
+   #  ::prtr::selectAll
+   #  Selectionne/deselectionne tous les checkbuttons de la tablelist
+   #--------------------------------------------------------------------------
+   proc selectAll {tbl} {
+      variable private
+
+      #--   arrete si fonction d'extraction ou aucune selection
+      if {$::prtr::operation in [list $caption(audace,menu,ligne) $caption(audace,menu,colonne) \
+            $caption(audace,menu,matrice)] || $private(profil) eq ""} {
+         return
+      }
+
+      set cmd "deselect"
+      if {$::prtr::all == 1} {set cmd "select"}
+
+      for {set row 0} {$row < $private(size)} {incr row} {
+         #--   selectionne/deselectionne l'image de profil identique a celui de la premiere image
+         if {[ string match $private(profil) [lrange [$tbl get $row] 2 end]]} {
+            [$tbl windowpath $row,0] $cmd
+         }
+      }
+      ::prtr::selectFiles $tbl $row
+   }
+
+   #--------------------------------------------------------------------------
    #  ::prtr::selectFiles table row
    #  Rafraichit la liste des fichiers selectionnes
    #  Lancee lors de la construction de la fenetre et
@@ -409,7 +442,7 @@ namespace eval ::prtr {
                }
             } else {
                if {![ string match $private(profil) [lrange [$tbl get $row] 2 end]]} {
-                 $w configure -state disabled
+                  $w configure -state disabled
                } elseif {$select_state eq "1"} {
                   lappend private(todo) [$tbl cellcget $row,1 -text]
                }
@@ -727,7 +760,7 @@ namespace eval ::prtr {
          $this.cmd.appliquer configure -relief raised
       }
 
-      foreach child [list "affiche.disp" "affiche.script" "sortie.out"] {
+      foreach child [list "all.select" "affiche.disp" "affiche.script" "sortie.out"] {
          $this.$child configure -state $etat
       }
 
@@ -912,7 +945,13 @@ namespace eval ::prtr {
 
       #--   actualise le titre de la fenêtre
       set titre "$::caption(audace,menu,[string tolower $private(ima)])"
-      wm title $private(this) "$::caption(audace,menu,preprocess) - $titre"
+      if { $titre == $::caption(audace,menu,amel) } {
+         wm title $private(this) "$::caption(audace,menu,traitement) - $titre"
+      } elseif { $titre == $::caption(audace,menu,extract) } {
+         wm title $private(this) "$::caption(audace,menu,analysis) - $titre"
+      } else {
+         wm title $private(this) "$::caption(audace,menu,preprocess) - $titre"
+      }
 
       #--   detruit la zone de commande
       if {[winfo exists $private(table).select.lbl]} {
@@ -1123,7 +1162,7 @@ namespace eval ::prtr {
    #--------------------------------------------------------------------------
    proc cmdOk {tbl visuNo} {
 
-      if {[::prtr::cmdApply $tbl $visuNo]} {return}
+      if {[::prtr::cmdApply $tbl $visuNo] eq "0"} {return}
       cmdClose $visuNo
    }
 
@@ -1309,7 +1348,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::SeriesFunctions {0|nom_de_fonction}
+   #  ::prtr::TRANSFORMFunctions {0|nom_de_fonction}
    #  Cree le dictionnaire des fonctions IMA/SERIES qui modifient la geometrie
    #  Retourne la liste des fonctions ou les parametres d'une fonction
    #--------------------------------------------------------------------------
@@ -1498,11 +1537,11 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::FILTERFunctions {0|nom_de_fonction}
-   #  Cree le dictionnaire des fonctions IMA/SERIES avec filtre
+   #  ::prtr::AMELFunctions {0|nom_de_fonction}
+   #  Cree le dictionnaire des fonctions IMA/SERIES avec filtre d'amélioration
    #  Retourne la liste des fonctions ou les parametres d'une fonction
    #--------------------------------------------------------------------------
-    proc FILTERFunctions {function} {
+    proc AMELFunctions {function} {
       variable SERIES
       global caption help
 
@@ -1561,7 +1600,7 @@ namespace eval ::prtr {
    proc searchFunction {oper} {
       variable private
 
-      foreach dico {PILE ARITHM IMPROVE TRANSFORM EXTRACT FILTER} {
+      foreach dico {PILE ARITHM IMPROVE TRANSFORM EXTRACT AMEL} {
          set fonctions [${dico}Functions 0]
          if {$oper in $fonctions} {
             set private(fonctions) "$fonctions"
