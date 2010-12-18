@@ -1,6 +1,6 @@
 #
 # Fichier : prtr.cap
-# Mise a jour $Id: prtr.cap,v 1.1 2010-12-11 14:00:59 robertdelmas Exp $
+# Mise a jour $Id: prtr.cap,v 1.2 2010-12-18 15:34:31 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -58,11 +58,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(prtr,src)                        "Fichier source"
    set caption(prtr,type)                       "Type"
    set caption(prtr,dimension)                  "Dimensions"
+   set caption(prtr,select_all)                 "Tout sélectionner"
    set caption(prtr,param)                      "Paramètre(s) :"
    set caption(prtr,options)                    "Options :"
    set caption(prtr,image_sortie)               "Image de sortie :"
    set caption(prtr,afficher_image_fin)         "Afficher l'image à la fin du traitement"
-   set caption(prtr,afficher_script)            "Editer le script"
+   set caption(prtr,afficher_script)            "Script sur la console"
    set caption(prtr,parcourir)                  "..."
    set caption(prtr,no_file)                    "Pas de fichier"
    set caption(prtr,nb_select)                  "Fichiers sélectionnés %s/%s"

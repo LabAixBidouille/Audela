@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_2.cap
-# Mise à jour $Id: aud_menu_2.cap,v 1.27 2010-12-13 17:32:12 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.cap,v 1.28 2010-12-18 15:30:21 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -28,9 +28,9 @@ set caption(audace,menu,seuils)                       "Thresholds"
 set caption(audace,menu,balance_rvb)                  "RGB Balance"
 set caption(audace,menu,zoom)                         "Zoom"
 set caption(audace,menu,plein_ecran)                  "Full Screen"
-set caption(audace,menu,miroir_x)                     "Vertical Mirror"
-set caption(audace,menu,miroir_y)                     "Horizontal Mirror"
-set caption(audace,menu,miroir_xy)                    "Diagonal Mirror"
+set caption(audace,menu,miroir_x)                     "# Vertical Mirror"
+set caption(audace,menu,miroir_y)                     "# Horizontal Mirror"
+set caption(audace,menu,miroir_xy)                    "# Diagonal Mirror"
 set caption(audace,menu,window)                       "Window"
 set caption(audace,menu,vision_nocturne)              "Night Vision"
 
@@ -96,9 +96,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,balance_rvb)               "Balance RVB"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,plein_ecran)               "Plein écran"
-   set caption(audace,menu,miroir_x)                  "Miroir vertical"
-   set caption(audace,menu,miroir_y)                  "Miroir horizontal"
-   set caption(audace,menu,miroir_xy)                 "Miroir diagonal"
+   set caption(audace,menu,miroir_x)                  "Inversion Gauche/Droite"
+   set caption(audace,menu,miroir_y)                  "Inversion Haut/Bas"
+   set caption(audace,menu,miroir_xy)                 "Inversion diagonale"
    set caption(audace,menu,window)                    "Fenêtrer"
    set caption(audace,menu,vision_nocturne)           "Vision nocturne"
 
@@ -164,9 +164,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,balance_rvb)               "Bilanciamento RVB"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,plein_ecran)               "Tutto schermo"
-   set caption(audace,menu,miroir_x)                  "Specchio verticale"
-   set caption(audace,menu,miroir_y)                  "Specchio orizzontale"
-   set caption(audace,menu,miroir_xy)                 "Specchio diagonale"
+   set caption(audace,menu,miroir_x)                  "# Specchio verticale"
+   set caption(audace,menu,miroir_y)                  "# Specchio orizzontale"
+   set caption(audace,menu,miroir_xy)                 "# Specchio diagonale"
    set caption(audace,menu,window)                    "Estrarre zona selezionata"
    set caption(audace,menu,vision_nocturne)           "Visione notturna"
 
@@ -232,9 +232,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,balance_rvb)               "Balance RVA"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,plein_ecran)               "Pantalla completa"
-   set caption(audace,menu,miroir_x)                  "Espejo vertical"
-   set caption(audace,menu,miroir_y)                  "Espejo horizontal"
-   set caption(audace,menu,miroir_xy)                 "Espejo diagonal "
+   set caption(audace,menu,miroir_x)                  "# Espejo vertical"
+   set caption(audace,menu,miroir_y)                  "# Espejo horizontal"
+   set caption(audace,menu,miroir_xy)                 "# Espejo diagonal "
    set caption(audace,menu,window)                    "Extraer Ventana"
    set caption(audace,menu,vision_nocturne)           "Visión nocturna"
 
@@ -300,9 +300,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,balance_rvb)               "RGB Balance"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,plein_ecran)               "Vollschirm"
-   set caption(audace,menu,miroir_x)                  "Verticale Spiegel"
-   set caption(audace,menu,miroir_y)                  "Horizontale Spiegel"
-   set caption(audace,menu,miroir_xy)                 "Diagonal Spiegel"
+   set caption(audace,menu,miroir_x)                  "# Verticale Spiegel"
+   set caption(audace,menu,miroir_y)                  "# Horizontale Spiegel"
+   set caption(audace,menu,miroir_xy)                 "# Diagonal Spiegel"
    set caption(audace,menu,window)                    "Zone abschneiden"
    set caption(audace,menu,vision_nocturne)           "Nächtsicht"
 
@@ -368,9 +368,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,balance_rvb)               "Equilíbrio RGB"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,plein_ecran)               "Ecrã inteiro"
-   set caption(audace,menu,miroir_x)                  "Espelho vertical"
-   set caption(audace,menu,miroir_y)                  "Espelho horizontal"
-   set caption(audace,menu,miroir_xy)                 "Espelho diagonal"
+   set caption(audace,menu,miroir_x)                  "# Espelho vertical"
+   set caption(audace,menu,miroir_y)                  "# Espelho horizontal"
+   set caption(audace,menu,miroir_xy)                 "# Espelho diagonal"
    set caption(audace,menu,window)                    "Janela"
    set caption(audace,menu,vision_nocturne)           "Visão nocturna"
 
@@ -436,9 +436,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,balance_rvb)               "RGB balance"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,plein_ecran)               "Fuld skærm"
-   set caption(audace,menu,miroir_x)                  "Vertikal spejl"
-   set caption(audace,menu,miroir_y)                  "Horisontal spejl"
-   set caption(audace,menu,miroir_xy)                 "Diagonal spejl"
+   set caption(audace,menu,miroir_x)                  "# Vertikal spejl"
+   set caption(audace,menu,miroir_y)                  "# Horisontal spejl"
+   set caption(audace,menu,miroir_xy)                 "# Diagonal spejl"
    set caption(audace,menu,window)                    "Vindue"
    set caption(audace,menu,vision_nocturne)           "Nattesyn"
 
@@ -504,9 +504,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,balance_rvb)               "RGB Balance"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,plein_ecran)               "Full Screen"
-   set caption(audace,menu,miroir_x)                  "Vertical Mirror"
-   set caption(audace,menu,miroir_y)                  "Horizontal Mirror"
-   set caption(audace,menu,miroir_xy)                 "Diagonal Mirror"
+   set caption(audace,menu,miroir_x)                  "# Vertical Mirror"
+   set caption(audace,menu,miroir_y)                  "# Horizontal Mirror"
+   set caption(audace,menu,miroir_xy)                 "# Diagonal Mirror"
    set caption(audace,menu,window)                    "Window"
    set caption(audace,menu,vision_nocturne)           "Night Vision"
 
@@ -572,9 +572,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,balance_rvb)               "RGB Balance"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,plein_ecran)               "Full Screen"
-   set caption(audace,menu,miroir_x)                  "Vertical Mirror"
-   set caption(audace,menu,miroir_y)                  "Horizontal Mirror"
-   set caption(audace,menu,miroir_xy)                 "Diagonal Mirror"
+   set caption(audace,menu,miroir_x)                  "# Vertical Mirror"
+   set caption(audace,menu,miroir_y)                  "# Horizontal Mirror"
+   set caption(audace,menu,miroir_xy)                 "# Diagonal Mirror"
    set caption(audace,menu,window)                    "Window"
    set caption(audace,menu,vision_nocturne)           "Night Vision"
 
