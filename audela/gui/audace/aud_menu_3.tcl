@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise à jour $Id: aud_menu_3.tcl,v 1.74 2010-12-18 15:35:45 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_3.tcl,v 1.75 2010-12-18 20:43:18 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -1788,8 +1788,7 @@ namespace eval ::traiteWindow {
             label $This.usr.1.lab1 -text "$caption(pretraitement,operation_serie)"
             pack $This.usr.1.lab1 -side left -padx 10 -pady 5
             #--- Liste des pretraitements disponibles
-            set list_traiteWindow [ list $caption(audace,menu,mediane) $caption(audace,menu,somme) \
-               $caption(audace,menu,moyenne) $caption(audace,menu,ecart_type) $caption(audace,menu,recentrer) ]
+            set list_traiteWindow [ list $caption(audace,menu,recentrer) ]
             #---
             menubutton $This.usr.1.but1 -textvariable traiteWindow(captionOperation) -menu $This.usr.1.but1.menu \
                -relief raised
