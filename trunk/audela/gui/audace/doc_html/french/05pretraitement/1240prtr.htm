@@ -5,7 +5,8 @@
   <title>Pr&#233;traitement</title>
 </head>
 <body>
-<p class="date">Date de mise &#224; jour : 11 d&#233;cembre 2010</p>
+<p class="date">Date de mise &#224; jour : 18 d&#233;cembre
+2010</p>
 <h1>Pr&#233;traitement</h1>
 <h2>1. Fonctions</h2>
 <p>Ce script permet de :</p>
@@ -49,19 +50,20 @@ TT.</li>
 appliqu&#233;s &#224; chaque plan couleur d'une image RGB. Si ce
 n'est pas le but recherch&#233; il faudra convertir l'image RGB
 en plans couleurs avec Pr&#233;traitement/Convertir/Conversion
-RVB--&gt;R+V+B,
-traiter chaque plan comme souhait&#233; puis recompos&#233; une
-image RGB avec Pr&#233;traitement/Convertir/Conversion R+V+B--&gt;RVB.</p>
+RVB--&gt;R+V+B, traiter chaque plan comme souhait&#233; puis
+recompos&#233; une image RGB avec
+Pr&#233;traitement/Convertir/Conversion R+V+B--&gt;RVB.</p>
 <h2>2. Lancement</h2>
-<p>Avant de lancer une fonction, il faut d&#233;finir l'extension et la
-compression par "Configuration" --&gt; "Fichiers images".</p>
+<p>Avant de lancer une fonction, il faut d&#233;finir l'extension
+et la compression par "Configuration" --&gt; "Fichiers
+images".</p>
 <p>Si la s&#233;lection du r&#233;pertoire est incorrecte, il
 suffit de la modifier par "Configuration" --&gt;
 "R&#233;pertoires". La liste affich&#233;e est automatiquement
 rafra&#238;chie.</p>
 <p><img src="images/prtr.png"></p>
-<p>La fen&#234;tre comporte, de haut en bas et de
-gauche &#224; droite :</p>
+<p>La fen&#234;tre comporte, de haut en bas et de gauche &#224;
+droite :</p>
 <ul>
   <li>Un bouton de menu pour s&#233;lectionner une fonction du
 groupe d'appartenance, pour changer de groupe il faut
@@ -72,38 +74,50 @@ actualis&#233;s.</li>
 r&#233;pertoire des images pouvant &#234;tre
 s&#233;lectionn&#233;s, si une image est affich&#233;e dans la
 visu son nom est coch&#233; dans la liste. Le nom de l'image est
-accompagn&#233; du type d'image : M (monochrome) ou C (RGB) et
-de ces dimensions en pixels.</li>
+accompagn&#233; du type d'image : M (monochrome) ou C (RGB) et de
+ces dimensions en pixels.</li>
+  <li>Une case &#224; cocher pour s&#233;lectionner tous les
+fichiers de profil identique (type et dimensions) &#224; l'image
+s&#233;lectionn&#233;e. Le fait de d&#233;cocher la case <b>Tout
+s&#233;lectionner</b> d&#233;s&#233;lectionne tous les fichiers
+s&#233;lectionn&#233;s. Il n'y a pas d'effet si aucune image n'est
+s&#233;lectionn&#233;e ou avec les fonctions d'extraction. Cette
+commande, pratique pour les commandes du menu <b>Combiner</b>,
+est &#224; utiliser avec mod&#233;ration si le r&#233;pertoire
+contient des images disparates.</li>
   <li>Une zone d'affichage des param&#232;tres de la fonction,
 &#224; remplir obligatoirement.</li>
   <li>Une zone d'affichage de tous les param&#232;tres
 optionnels.</li>
   <li>Une zone de saisie du nom du fichier de sortie, soit &#224;
 partir de la s&#233;lection d'un fichier pr&#233;sent dans le
-r&#233;pertoire des images, soit par saisie d'un nom (caract&#232;res
-de a &#224; z (majuscules ou minuscules), chiffres de 0 &#224; 9,
-underscore _ ou tiret -). Il n'est pas n&#233;cessaire d'indiquer
-l'extension. <br>
+r&#233;pertoire des images, soit par saisie d'un nom
+(caract&#232;res de a &#224; z (majuscules ou minuscules),
+chiffres de 0 &#224; 9, underscore _ ou tiret -). Il n'est pas
+n&#233;cessaire d'indiquer l'extension.<br>
   </li>
-  <ul>
-    <li>Nota :
-      <ul>
-        <li>Si le fichier existe d&#233;j&#224; il sera
+  <li
+ style="list-style-type: none; list-style-image: none; list-style-position: outside;">
+    <ul>
+      <li>Nota :
+        <ul>
+          <li>Si le fichier existe d&#233;j&#224; il sera
 &#233;cras&#233;.</li>
-        <li>Si une seule image est produite son nom est celui du
+          <li>Si une seule image est produite son nom est celui du
 g&#233;n&#233;rique. Si plusieurs images sont produites celles-ci
 portent le nom g&#233;n&#233;rique index&#233; &#224; partir de
 1.</li>
-        <li>Cette entr&#233;e est inhib&#233;e pour les fonctions
+          <li>Cette entr&#233;e est inhib&#233;e pour les fonctions
 d'extraction num&#233;riques : Une ligne, Une colonne et Une zone
 car l'image n'est pas modifi&#233;e.</li>
-      </ul>
-    </li>
-  </ul>
+        </ul>
+      </li>
+    </ul>
+  </li>
   <li>Une case &#224; cocher pour afficher ou non la derni&#232;re
 image produite lors du pr&#233;traitement.</li>
-  <li>Une case &#224; cocher pour &#233;diter ou non, dans la Console, le script
-r&#233;ellement ex&#233;cut&#233;.</li>
+  <li>Une case &#224; cocher pour &#233;diter ou non, dans la
+Console, le script r&#233;ellement ex&#233;cut&#233;.</li>
   <li>Une ligne pour les messages.</li>
   <li>Un bouton 'OK' pour lancer la conversion et puis fermer la
 fen&#234;tre.</li>
@@ -126,9 +140,9 @@ s&#233;lections possibles sont pr&#233;filtr&#233;es :</p>
 <ul>
   <li>Les fichiers images autres (1D) que monochromes, CFA ou RGB
 ne sont pas affich&#233;s.</li>
-  <li>Les images qui comportent une erreur dans l'en-t&#234;te FITS sont
-&#233;galement filtr&#233;es et donnent lieu &#224; un message
-d'erreur dans la Console.</li>
+  <li>Les images qui comportent une erreur dans l'en-t&#234;te FITS
+sont &#233;galement filtr&#233;es et donnent lieu &#224; un
+message d'erreur dans la Console.</li>
   <li>Le chargement d'une image dans la visu ou la s&#233;lection
 d'une image dans la liste a pour effet d'inhiber la
 s&#233;lection des images de caract&#233;ristiques
@@ -143,11 +157,11 @@ initialis&#233;s.</p>
 <p>Si l'image affich&#233;e comporte les mots cl&#233;s CRPIX1
 (centre en x) et CRPIX2 (centre en y), ces valeurs sont
 affich&#233;es lors de l'appel d'une fonction n&#233;cessitant
-les coordonn&#233;es du centre (transformation
-rectangulaire --&gt; polaire et inverse, rotation, gradient
-rotationnel ou radial). En l'absence de CRPIX1 et de CRPIX2 les
-valeurs propos&#233;es correspondent aux coordonn&#233;es du
-centre de la premi&#232;re image s&#233;lectionn&#233;e.</p>
+les coordonn&#233;es du centre (transformation rectangulaire
+--&gt; polaire et inverse, rotation, gradient rotationnel ou
+radial). En l'absence de CRPIX1 et de CRPIX2 les valeurs
+propos&#233;es correspondent aux coordonn&#233;es du centre de la
+premi&#232;re image s&#233;lectionn&#233;e.</p>
 <p>Pour les fonctions Recadrer et Une zone il faut indiquer les
 bornes extr&#234;mes de la s&#233;lection. Deux mani&#232;res de
 proc&#233;der sont propos&#233;es :</p>
@@ -179,7 +193,8 @@ et les corrections.</p>
 &#233;galement v&#233;rifi&#233;s :</p>
 <ul>
   <li>Existence de l'image.</li>
-  <li>Absence d'erreur dans l'en-t&#234;te FITS et dans le nom.</li>
+  <li>Absence d'erreur dans l'en-t&#234;te FITS et dans le
+nom.</li>
   <li>Extension et dimensions identiques &#224; celle des images
 trait&#233;es.</li>
   <li>Nature de l'image dans le cas de la fonction "Optimisation du
