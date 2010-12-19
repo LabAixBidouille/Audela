@@ -34,7 +34,7 @@ variable CLEANUP {
 #-----------------------------------------------------------------------------
 #--   test IMA/SERIES PROFILE direction=x
 test imaseries_profile_x {extraire une ligne de rbgr_8} -constraints {AUDACE} -setup $SETUP -body {
-  #--   clic sur le menu "Prétraitement/Extraire/Une ligne..."
+  #--   clic sur le menu "Analyse/Extraire/Une ligne..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,extract)" "$::caption(audace,menu,ligne)..."
    #--   saisit les coordonnees de la zone a extraire
    ::testaudela::putLabelEntry $w.funoptions.offset 1
@@ -70,7 +70,7 @@ test imaseries_profile_x {extraire une ligne de rbgr_8} -constraints {AUDACE} -s
 
 #--   test IMA/SERIES PROFILE direction=y
 test imaseries_profile_y {extraire une colonne de rbgr_8b} -constraints {AUDACE} -setup $SETUP -body {
-   #--   clic sur le menu "Prétraitement/Extraire/Une colonne..."
+   #--   clic sur le menu "Analyse/Extraire/Une colonne..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,extract)" "$::caption(audace,menu,colonne)..."
    #--   saisit les coordonnees de la zone a extraire
    ::testaudela::putLabelEntry $w.funoptions.offset 1
@@ -106,7 +106,7 @@ test imaseries_profile_y {extraire une colonne de rbgr_8b} -constraints {AUDACE}
 
 #--   IMA/SERIES MATRIX
 test imaseries_matrix {extraire une zone de rbgr_8} -constraints {AUDACE} -setup $SETUP -body {
-   #--   clic sur le menu "Prétraitement/Extraire/Une zone..."
+   #--   clic sur le menu "Analyse/Extraire/Une zone..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,extract)" "$::caption(audace,menu,matrice)..."
    #--   saisit les coordonnees de la zone a extraire
    ::testaudela::putLabelEntry $w.funoptions.x1 1
