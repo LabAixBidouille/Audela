@@ -9,7 +9,7 @@
 #
 ########################################################################################
 
-# Mise a jour $Id: make_packages.sh,v 1.19 2010-01-03 00:12:56 bmauclaire Exp $
+# Mise a jour $Id: make_packages.sh,v 1.20 2010-12-19 21:49:32 bmauclaire Exp $
 
 
 #--- Utilisation du script :
@@ -243,6 +243,7 @@ cp -r $rep_audela_ready/gui $DIRECTORY
 cp -r $rep_audela_ready/images $DIRECTORY
 
 #--- Petit menage :
+echo "Effacement des fichiers et repertoires inutiles..."
 cp $rep_audela_src/COPYING $DIRECTORY
 cp $rep_audela_ready/readme.txt $DIRECTORY
 rm -f $DIRECTORY/bin/version.tcl.in
@@ -252,6 +253,13 @@ chmod a-x $DIRECTORY/bin/*.so*
 cp $DIRECTORY/readme.txt $DIRECTORY/bin/audela.txt
 #rm -f $DIRECTORY/bin/audace.txt
 #if test -e $DIRECTORY/bin/libtk8.4.so ; then rm -f $DIRECTORY/bin/libtk8.4.so ; fi
+#-- Librairies non necessaires sous GNU/Linux :
+if test -e $DIRECTORY/lib/tk8.5 ; then rm -rf $DIRECTORY/lib/tk8.5 ; fi
+if test -e $DIRECTORY/lib/tcl8.5 ; then rm -rf $DIRECTORY/lib/tcl8.5 ; fi
+if test -e $DIRECTORY/lib/tcom ; then rm -rf $DIRECTORY/lib/tcom ; fi
+if test -e $DIRECTORY/lib/tls1.6 ; then rm -rf $DIRECTORY/lib/tls1.6 ; fi
+if test -e $DIRECTORY/lib/tmci ; then rm -rf $DIRECTORY/lib/tmci ; fi
+if test -e $DIRECTORY/lib/twapi ; then rm -rf $DIRECTORY/lib/twapi ; fi
 
 
 #--- Gestion de libthread :
