@@ -1,0 +1,182 @@
+set visuNo 1
+set bufNo [::confVisu::getBufNo $visuNo]
+set w ".audace.prtr.usr"
+set ::conf(extension,defaut) .fit
+set ::conf(fichier,compres) 0
+
+variable CLEANUP {
+   #--   clic sur le bouton Fermer
+   ::testaudela::clicButton $w.cmd.fermer
+   #---  efface l'image
+   ::confVisu::deleteImage $visuNo
+   set liste [list rgbr_8 $name_out]
+   ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
+   file delete "./${name_out}r.jpg" "./${name_out}g.jpg" "./${name_out}b.jpg"
+   ::blt::vector destroy attendu mesure
+}
+
+#-- Test a batir : UNSMEAR
+
+#-----------------------------------------------------------------------------
+#--  Le test COSMIC a pour entree une images N&B a traiter
+#--   l'option jpegfile est testee systematiquement
+#--   le test porte sur :
+#        l'existence d'un fichier jpeg
+#-----------------------------------------------------------------------------
+test imaseries_cosmic {corrige un pixel chaud de hd21620-5.fit} -constraints {AUDACE} -setup {
+   file copy -force [file join $::conf(testaudela,rep_images) hd21620-5.fit] $::audace(rep_images)
+   loadima [file join $::audace(rep_images) hd21620-5.fit]
+} -body {
+   #--   clic sur le menu "Prétraitement/Retoucher/Supprimer un cosmic..."
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,improve)" "$::caption(audace,menu,cosmic)..."
+   #--   saisit la valeur
+   set cosmic_threshold "400"
+   ::testaudela::putLabelEntry $w.funoptions.cosmic_threshold $cosmic_threshold
+   #--   selectionne l'option "Options"
+   ::testaudela::clicCheckButton $w.ttoptions.che "1"
+   #--   selectionne l'option "jpegfile"
+   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
+   #-- saisit le nom de sortie
+   set name_out "cosmic"
+   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $w.cmd.appliquer
+   #--- j'affiche la map dans une nouvelle visu
+   set visu2 [confVisu::create]
+   set bufNo2 [::confVisu::getBufNo $visu2]
+   buf$bufNo2 load "@map.fit"
+   ::confVisu::autovisu $visu2
+   visu$visu2 cut { 32000 0 }
+   visu$visu2 disp
+   update
+   after 5000
+   ::confVisu::close $visu2
+   update
+   set result 0
+   if {[file exists "./${name_out}.jpg"]} {incr result}
+   return $result
+} -cleanup {
+   #--   clic sur le bouton Fermer
+   ::testaudela::clicButton $w.cmd.fermer
+   #---  efface l'image
+   ::confVisu::deleteImage $visuNo
+   file delete  -force  "@map.fit" "./${name_out}.jpg"
+   set liste [list hd21620-5 $name_out]
+   ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
+} -result "1"
+
+#-----------------------------------------------------------------------------
+#--  Le test OPT a pour entree une images RGB a traiter avec deux images RGB compressees venant d'un autre repertoire
+#--   l'option jpegfile est testee systematiquement
+#--   le test porte sur :
+#         concordance des intensites R G B constatees avec celles d'une image de reference
+#        l'existence d'un fichier jpeg
+#-----------------------------------------------------------------------------
+test imaseries_optimisation_du_noir {optimisation du noir de rgbr_8r} -constraints {AUDACE} -setup {
+   set ::conf(fichier,compres) "1"
+   ::blt::vector create attendu mesure -watchunset 1
+   foreach file {cfa_rgbr_8 opt_rgbr_8} {
+      file copy -force [file join $::conf(testaudela,rep_images) $file.fit.gz] $::audace(rep_images)
+   }
+   loadima [file join $::audace(rep_images) opt_rgbr_8.fit.gz]
+   set coords [list 110 100]
+   attendu set [lrange [buf$bufNo getpix $coords] 1 end]
+   file delete opt_rgb_8r.fit.gz
+   #---  efface l'image
+   ::confVisu::deleteImage $visuNo
+} -body {
+   #--   clic sur le menu "Prétraitement/Retoucher/Soustraire le fond du ciel..."
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,improve)" "$::caption(audace,menu,opt_noir)..."
+   #--   selectionne cfa_rgbr_8
+   set k [lsearch [$w.choix getcolumns 1] cfa_rgbr_8]
+   ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+   ::testaudela::putLabelEntry $w.funoptions.bias [file join $::conf(testaudela,rep_images) offset_rgbr_8.fit.gz]
+   ::testaudela::putLabelEntry $w.funoptions.dark [file join $::conf(testaudela,rep_images) dark_rgbr_8.fit.gz]
+   #--   selectionne l'option "Options"
+   ::testaudela::clicCheckButton $w.ttoptions.che "1"
+   #--   fixe bitpix a double
+   set ::prtr::bitpix "-64"
+   #--   selectionne l'option "jpegfile"
+   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
+   #-- saisit le nom de sortie
+   set name_out "opt"
+   ::testaudela::putLabelEntry $w.sortie.out $name_out
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $w.cmd.appliquer
+
+   #--   procedure de controle
+   mesure set [lrange [buf$bufNo getpix $coords] 1 end]
+   #--   calcule la difference
+   attendu expr {round(attendu-mesure)}
+   #--   compte le nombre de resultats nuls
+   set result [llength [attendu search 0]]
+   if {[lindex [buf$bufNo getkwd BITPIX] 1] eq "-64"} {incr result}
+   if {[file exists $name_out.jpg]} {incr result}
+   return $result
+ } -cleanup {
+   set ::conf(fichier,compres) "0"
+   #--   clic sur le bouton Fermer
+   ::testaudela::clicButton $w.cmd.fermer
+   #---  efface l'image
+   ::confVisu::deleteImage $visuNo
+   set liste [list cfa_rgbr_8 opt_rgbr_8 $name_out]
+   ttscript2 "IMA/SERIES . \"$liste\" * * \".fit.gz\" . . . . DELETE"
+   file delete "$name_out.jpg"
+   ::blt::vector destroy attendu mesure
+ } -result "3"
+
+#-----------------------------------------------------------------------------
+#--  Le test BACK a pour entree une images RGB a traiter
+#--   l'option jpegfile est testee systematiquement
+#--   le test porte sur :
+#         concordance des intensites R G B constatees avec celles d'une image de reference
+#        l'existence d'un fichier jpeg
+#-----------------------------------------------------------------------------
+#--   nature du test IMA/SERIES BACK :
+#     concordance des intensites R G B constatees avec celles
+#     de l'image de reference obtenue par la voie classique
+test imaseries_back {soustraire le fond du ciel de rgbr_8} -constraints {AUDACE} -setup {
+   ::blt::vector create attendu mesure -watchunset 1
+   foreach file {rgbr_8 soust_rgbr_8} {
+      file copy -force [file join $::conf(testaudela,rep_images) $file.fit] $::audace(rep_images)
+   }
+  loadima [file join $::audace(rep_images) soust_rgbr_8.fit]
+   set coords [list 110 100]
+   attendu set [lrange [buf$bufNo getpix $coords] 1 end]
+   #---  efface l'image
+   ::confVisu::deleteImage $visuNo
+} -body {
+   #--   clic sur le menu "Prétraitement/Retoucher/Soustraire le fond du ciel..."
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,improve)" "$::caption(audace,menu,subsky)..."
+   #--   selectionne rgbr_8
+   set k [lsearch [$w.choix getcolumns 1] rgbr_8]
+   ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+   #--   saisit la valeur de normalisation
+   set back_kernel "4"
+  ::testaudela::putLabelEntry $w.funoptions.back_kernel $back_kernel
+   #--   saisit la valeur de normalisation
+   set back_threshold "0"
+   ::testaudela::putLabelEntry $w.funoptions.back_threshold $back_threshold
+   #--   selectionne l'option "Options"
+   ::testaudela::clicCheckButton $w.ttoptions.che "1"
+   #--   selectionne l'option "jpegfile"
+   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
+   #-- saisit le nom de sortie
+   set name_out "soustraction_fond"
+   ::testaudela::putLabelEntry $w.sortie.out $name_out
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $w.cmd.appliquer
+
+   #--   procedure de controle
+   mesure set [lrange [buf$bufNo getpix $coords] 1 end]
+   #--   calcule la difference
+   attendu expr {round(attendu-mesure)}
+   #--   compte le nombre de resultats nuls
+   set result [llength [attendu search 0]]
+   foreach file [list ${name_out}r.jpg ${name_out}g.jpg ${name_out}b.jpg] {
+      if {[file exists $file]} {incr result}
+   }
+   file delete "soust_rgbr_8.fit"
+   return $result
+ } -cleanup $CLEANUP -result "6"
+
