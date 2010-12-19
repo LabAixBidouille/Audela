@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_5.cap
-# Mise a jour $Id: aud_menu_5.cap,v 1.16 2010-12-18 15:31:27 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_5.cap,v 1.17 2010-12-19 14:41:47 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -19,7 +19,6 @@ set caption(audace,menu,fwhm)                         "Fwhm"
 set caption(audace,menu,fitgauss)                     "Fit a gaussian"
 set caption(audace,menu,centro)                       "Photocenter"
 set caption(audace,menu,phot)                         "Integrated Photometry"
-set caption(audace,menu,subfitgauss)                  "Fit and subtract a gaussian"
 
 set caption(audace,menu,extract)                      "# Extraire"
 set caption(audace,menu,ligne)                        "# Une ligne"
@@ -69,7 +68,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,fitgauss)                  "Ajuster une gaussienne"
    set caption(audace,menu,centro)                    "Photocentre"
    set caption(audace,menu,phot)                      "Photométrie intégrale"
-   set caption(audace,menu,subfitgauss)               "Ajuster et soustraire une gaussienne"
 
    set caption(audace,menu,extract)                   "Extraire"
    set caption(audace,menu,ligne)                     "Une ligne"
@@ -119,7 +117,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,fitgauss)                  "Applicare una gaussiana"
    set caption(audace,menu,centro)                    "Baricentro fotografico"
    set caption(audace,menu,phot)                      "Fotometria integrale"
-   set caption(audace,menu,subfitgauss)               "Applicare e sottrarre una gaussiana"
 
    set caption(audace,menu,extract)                   "# Extraire"
    set caption(audace,menu,ligne)                     "# Une ligne"
@@ -169,7 +166,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,fitgauss)                  "Ajustar perfil Gauss"
    set caption(audace,menu,centro)                    "Centro fotométrico"
    set caption(audace,menu,phot)                      "Fotometría integrada"
-   set caption(audace,menu,subfitgauss)               "Ajustar y restar perfil gaussiano"
 
    set caption(audace,menu,extract)                   "# Extraire"
    set caption(audace,menu,ligne)                     "# Une ligne"
@@ -219,7 +215,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,fitgauss)                  "Eine Gauss Kurve einstellen"
    set caption(audace,menu,centro)                    "Photozentrum"
    set caption(audace,menu,phot)                      "Integrale Photomessung"
-   set caption(audace,menu,subfitgauss)               "Eine Gauss Kurve einstellen und abziehen"
 
    set caption(audace,menu,extract)                   "# Extraire"
    set caption(audace,menu,ligne)                     "# Une ligne"
@@ -269,7 +264,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,fitgauss)                  "Ajustar perfil gaussiano"
    set caption(audace,menu,centro)                    "Centro fotométrico"
    set caption(audace,menu,phot)                      "Fotometria integrada"
-   set caption(audace,menu,subfitgauss)               "Ajustar e subtrair perfil gaussiano"
 
    set caption(audace,menu,extract)                   "# Extraire"
    set caption(audace,menu,ligne)                     "# Une ligne"
@@ -319,7 +313,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,fitgauss)                  "Tilpas en Gausskurve"
    set caption(audace,menu,centro)                    "Center på fotoet"
    set caption(audace,menu,phot)                      "Integreret fotometri"
-   set caption(audace,menu,subfitgauss)               "Tilpas og subtraher en gausskurve"
 
    set caption(audace,menu,extract)                   "# Extraire"
    set caption(audace,menu,ligne)                     "# Une ligne"
@@ -369,7 +362,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,fitgauss)                  "Fit a gaussian"
    set caption(audace,menu,centro)                    "Photocenter"
    set caption(audace,menu,phot)                      "Integrated Photometry"
-   set caption(audace,menu,subfitgauss)               "Fit and subtract a gaussian"
 
    set caption(audace,menu,extract)                   "# Extraire"
    set caption(audace,menu,ligne)                     "# Une ligne"
@@ -419,7 +411,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,fitgauss)                  "Fit a gaussian"
    set caption(audace,menu,centro)                    "Photocenter"
    set caption(audace,menu,phot)                      "Integrated Photometry"
-   set caption(audace,menu,subfitgauss)               "Fit and subtract a gaussian"
 
    set caption(audace,menu,extract)                   "# Extraire"
    set caption(audace,menu,ligne)                     "# Une ligne"
