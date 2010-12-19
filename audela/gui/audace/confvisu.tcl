@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.166 2010-12-18 15:37:34 robertdelmas Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.167 2010-12-19 14:42:43 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -89,6 +89,40 @@ namespace eval ::confVisu {
          R0lGODlhDAAQAMIEAAAzZgCamgDM//b/9////////////////yH5BAEKAAQA
          LAAAAAAMABAAAAMqSLrc8C84QSmQCthnsb7D8HkCqJUYYXaNyrZjm6Gye9Uq
          gJ83/MI9XCMBADs=
+      }]
+
+      #--- icone pour zoom+
+      set private(openZoomPlus) [image create photo openZoomPlus -data {
+         R0lGODlhEAAQAMZGAAAAAFlfYGpucGpvcHJ2d3V5eXt/gH+Cg3+DhIGEhYOH
+         iIWJioaKi4eLjIiLi4mMjIuOj5KVlpOWl5OXlZmdnZuenZ6in6Smp6Snp66w
+         r66xr7K0tbK1srK2srK3srS4s7e6t7i7t77AwMLDxMbHxsrMyMrNyNDRzdDS
+         z9DS0NTV1dXZ0tnc1tvd2dzd2tzd3dze2d3f2uDh3uLi4OHj3+Lj4OLj4+Lk
+         3+Lk4OPl4OTl4+Xn4+fo5ejp5urq6Ovr6Ovr6evs6ezs6u3t6+3t7u7u7P//
+         ////////////////////////////////////////////////////////////
+         ////////////////////////////////////////////////////////////
+         ////////////////////////////////////////////////////////////
+         /////////////////////////////////////////////////yH5BAEKAH8A
+         LAAAAAAQABAAAAeRgH+Cg4SFhCoRAgEFFzaGgiIGGCguJhMOL4YqBiQ+Pz03
+         LB4LRIURGD5DQwBBNCsVG4UDKTwzMgAyNTAcEIUBLScAwsIwIAmFBSU3QUUA
+         RUI7GRKFGBMsOEIAQkA6ByOFNg8fKzE5OzoUDI8vDRYdIRoIDAAEmYVEGxAK
+         Et8E9PaPBr3wVy8goYH0DB70p/BRIAA7
+      }]
+
+      #--- icone pour zoom-
+      set private(openZoomMoins) [image create photo openZoomMoins -data {
+         R0lGODlhEAAQAMZGAAAAAFlfYGpucGpvcHJ2d3V5eXt/gH+Cg3+DhIGEhYOH
+         iIWJioaKi4eLjIiLi4mMjIuOj5KVlpOWl5OXlZmdnZuenZ6in6Smp6Snp66w
+         r66xr7K0tbK1srK2srK3srS4s7e6t7i7t77AwMLDxMbHxsrMyMrNyNDRzdDS
+         z9DS0NTV1dXZ0tnc1tvd2dzd2tzd3dze2d3f2uDh3uLi4OHj3+Lj4OLj4+Lk
+         3+Lk4OPl4OTl4+Xn4+fo5ejp5urq6Ovr6Ovr6evs6ezs6u3t6+3t7u7u7P//
+         ////////////////////////////////////////////////////////////
+         ////////////////////////////////////////////////////////////
+         ////////////////////////////////////////////////////////////
+         /////////////////////////////////////////////////yH5BAEKAH8A
+         LAAAAAAQABAAAAeOgH+Cg4SFhCoRAgEFFzaGgiIGGCguJhMOL4YqBiQ+Pz03
+         LB4LRIURGD5DQ0FBNCsVG4UDKTwzMrc1MBwQhQEtJwDBwTAgCYUFJTdBRcxC
+         OxkShRgTLDhC10A6ByOFNg8fKzE5OzoUDI8vDRYdIRoIDAAEmYVEGxAKEtwE
+         8fOPgy/75PkjBDDeQIL7Dj4KBAA7
       }]
 
    }
@@ -2336,6 +2370,7 @@ namespace eval ::confVisu {
             Menu_Command $visuNo "$caption(audace,menu,improve)" "$function..." "::prtr::run \"$function\" "
          }
          Menu_Command   $visuNo "$caption(audace,menu,improve)" "$caption(audace,menu,scar)" "scar $visuNo"
+         Menu_Command   $visuNo "$caption(audace,menu,improve)" "$caption(audace,menu,subfitgauss)" "subfitgauss $visuNo"
 
          Menu_Separator $visuNo "$caption(audace,menu,preprocess)"
          Menu_Cascade   $visuNo "$caption(audace,menu,preprocess)" "$caption(audace,menu,pile)"
@@ -2416,7 +2451,6 @@ namespace eval ::confVisu {
          Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,fitgauss)" "fitgauss $visuNo"
          Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,centro)" "center $visuNo"
          Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,phot)" "photom $visuNo"
-         Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,subfitgauss)" "subfitgauss $visuNo"
 
          Menu_Separator $visuNo "$caption(audace,menu,analysis)"
          Menu_Cascade   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,extract)"
@@ -2649,7 +2683,6 @@ namespace eval ::confVisu {
          Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,fitgauss)" "fitgauss $visuNo"
          Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,centro)" "center $visuNo"
          Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,phot)" "photom $visuNo"
-         Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,subfitgauss)" "subfitgauss $visuNo"
 
          #--- Lancement automatique du dernier plugin charge
          set firstTool ""
@@ -2831,6 +2864,7 @@ namespace eval ::confVisu {
          Menu_Command $visuNo "$caption(audace,menu,improve)" "$function..." "::prtr::run \"$function\" "
       }
       Menu_Command   $visuNo "$caption(audace,menu,improve)" "$caption(audace,menu,scar)" "scar $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,improve)" "$caption(audace,menu,subfitgauss)" "subfitgauss $visuNo"
       Menu_Separator $visuNo "$caption(audace,menu,preprocess)"
       Menu_Cascade   $visuNo "$caption(audace,menu,preprocess)" "$caption(audace,menu,pile)"
       set liste_des_fonctions [::prtr::PILEFunctions 0]
@@ -2881,8 +2915,6 @@ namespace eval ::confVisu {
          "center $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,phot)" \
          "photom $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,subfitgauss)" \
-         "subfitgauss $visuNo"
       Menu_Separator $visuNo "$caption(audace,menu,analysis)"
       Menu_Cascade   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,extract)"
       set liste_des_fonctions [::prtr::EXTRACTFunctions 0]
@@ -3308,8 +3340,12 @@ namespace eval ::confVisu {
          -command "center $visuNo"
       $menu add command -label $caption(audace,menu,phot) \
          -command "photom $visuNo"
+
+      $menu add separator
       $menu add command -label $caption(audace,menu,subfitgauss) \
          -command "subfitgauss $visuNo"
+      $menu add command -label $caption(audace,menu,scar) \
+         -command "scar $visuNo"
 
       $menu add separator
       $menu add checkbutton -label $caption(confVisu,reticule) \
