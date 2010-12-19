@@ -2,7 +2,7 @@
 # Fichier : process.tcl
 # Description : traitements eShel
 # Auteur : Michel PUJOL
-# Mise à jour $Id: process.tcl,v 1.10 2010-12-12 11:22:25 michelpujol Exp $
+# Mise à jour $Id: process.tcl,v 1.11 2010-12-19 21:38:29 michelpujol Exp $
 #
 
 ################################################################
@@ -1821,7 +1821,14 @@ proc ::eshel::process::getFileName { serieNode } {
    #--- je formate la date
    ### set dateList [mc_date2ymdhms $serieId]  ; # arrondi incorrect pour 2008-07-06T02:40:00.000
    set dateList [split $serieId { - T : . } ]
-   set fileName [format "%04d%02d%02d-%02d%02d%02d" [lindex $dateList 0] [lindex $dateList 1] [lindex $dateList 2] [lindex $dateList 3] [lindex $dateList 4] [expr int([lindex $dateList 5])] ]
+   set fileName [format "%04d%02d%02d-%02d%02d%02d" \
+      [lindex $dateList 0] \
+      [string trimleft [lindex $dateList 1] "0"] \
+      [string trimleft [lindex $dateList 2] "0"] \
+      [string trimleft [lindex $dateList 3] "0"] \
+      [string trimleft [lindex $dateList 4] "0"] \
+      [expr int([string trimleft [lindex $dateList 5] "0"])] \
+   ]
    set exptime [::dom::element getAttribute $serieNode "EXPOSURE"]
    #--- je supprime le point decimal si le temps de pose n'a pas de decimale
    if { [expr int($exptime) == $exptime] } {
