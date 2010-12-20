@@ -2,7 +2,7 @@
 # Fichier : pretrfc.tcl
 # Description : Outil pour le pretraitement automatique
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise à jour $Id: pretrfc.tcl,v 1.30 2010-12-16 16:30:23 robertdelmas Exp $
+# Mise à jour $Id: pretrfc.tcl,v 1.31 2010-12-20 17:49:34 robertdelmas Exp $
 #
 
 #============================================================
@@ -1852,23 +1852,25 @@ proc creeFenetrePrFC { } {
          pack $audace(base).fenetrePretr.et1.titre.nom -side left -in $audace(base).fenetrePretr.et1.titre
       pack $audace(base).fenetrePretr.et1.titre -side top -fill x
       #--- Bouton TEST
-      button $audace(base).fenetrePretr.et1.test -borderwidth 2 -width 4 -text $caption(pretrfc,test) \
+      button $audace(base).fenetrePretr.et1.test -borderwidth 2 -width 5 -text $caption(pretrfc,test) \
          -command {
             #--- Sauvegarde des parametres dans le fichier de config
             ::pretrfc::SauvegardeParametres
             #--- Traitement etape 1
             ::pretrfc::goCosm
          }
-      pack $audace(base).fenetrePretr.et1.test -side right -anchor sw -in $audace(base).fenetrePretr.et1
+      pack $audace(base).fenetrePretr.et1.test -side right -anchor sw -in $audace(base).fenetrePretr.et1 \
+         -padx 3 -pady 3 -ipady 3
       #--- Bouton Recharge
-      button $audace(base).fenetrePretr.et1.recharge -borderwidth 2 -text $caption(pretrfc,recharge) \
+      button $audace(base).fenetrePretr.et1.recharge -borderwidth 2 -width 12 -text $caption(pretrfc,recharge) \
          -command {
             #--- Sauvegarde des parametres dans le fichier de config
             ::pretrfc::SauvegardeParametres
             #--- Traitement etape 1
             ::pretrfc::rechargeCosm
          }
-      pack $audace(base).fenetrePretr.et1.recharge -side right -anchor sw -in $audace(base).fenetrePretr.et1
+      pack $audace(base).fenetrePretr.et1.recharge -side right -anchor sw -in $audace(base).fenetrePretr.et1 \
+         -padx 3 -pady 3 -ipady 3
       #--- Premiere ligne de l'etape 1
       frame $audace(base).fenetrePretr.et1.ligne1
          #--- Affichage du label "Fichier du script"
@@ -1912,7 +1914,8 @@ proc creeFenetrePrFC { } {
             #--- Traitement etape 2
             ::pretrfc::goPrecharge
          }
-      pack $audace(base).fenetrePretr.et2.go -side right -anchor sw -in $audace(base).fenetrePretr.et2
+      pack $audace(base).fenetrePretr.et2.go -side right -anchor sw -in $audace(base).fenetrePretr.et2 \
+         -padx 3 -pady 3 -ipady 3
       #--- Premiere ligne de l'etape 2
       frame $audace(base).fenetrePretr.et2.ligne1
          #--- Affichage du label "Nom des fichiers source"
@@ -1971,7 +1974,8 @@ proc creeFenetrePrFC { } {
             #--- Traitement etape 3
             ::pretrfc::goNoir
          }
-      pack $audace(base).fenetrePretr.et3.go -side right -anchor sw -in $audace(base).fenetrePretr.et3
+      pack $audace(base).fenetrePretr.et3.go -side right -anchor sw -in $audace(base).fenetrePretr.et3 \
+         -padx 3 -pady 3 -ipady 3
       #--- Premiere ligne de l'etape 3
       frame $audace(base).fenetrePretr.et3.ligne1
          #--- Affichage du label "Nom des fichiers source"
@@ -2026,7 +2030,8 @@ proc creeFenetrePrFC { } {
             #--- Traitement etape 4
             ::pretrfc::goNoirDePLU
          }
-      pack $audace(base).fenetrePretr.et4.go -side right -anchor sw -in $audace(base).fenetrePretr.et4
+      pack $audace(base).fenetrePretr.et4.go -side right -anchor sw -in $audace(base).fenetrePretr.et4 \
+         -padx 3 -pady 3 -ipady 3
       #--- Premiere ligne de l'etape 4
       frame $audace(base).fenetrePretr.et4.ligne1
          #--- Affichage du label "Nom des fichiers source"
@@ -2079,7 +2084,8 @@ proc creeFenetrePrFC { } {
             #--- Traitement etape 5
             ::pretrfc::goPLU
          }
-      pack $audace(base).fenetrePretr.et5.go -side right -anchor sw -in $audace(base).fenetrePretr.et5
+      pack $audace(base).fenetrePretr.et5.go -side right -anchor sw -in $audace(base).fenetrePretr.et5 \
+         -padx 3 -pady 3 -ipady 3
       #--- Premiere ligne de l'etape 5
       frame $audace(base).fenetrePretr.et5.ligne1
          #--- Affichage du label "Nom des fichiers source"
@@ -2144,7 +2150,8 @@ proc creeFenetrePrFC { } {
             #--- Traitement etape 6
             ::pretrfc::goBrut
          }
-      pack $audace(base).fenetrePretr.et6.go -side right -anchor sw -in $audace(base).fenetrePretr.et6
+      pack $audace(base).fenetrePretr.et6.go -side right -anchor sw -in $audace(base).fenetrePretr.et6 \
+         -padx 3 -pady 3 -ipady 3
       #--- Premiere ligne de l'etape 6
       frame $audace(base).fenetrePretr.et6.ligne1
          #--- Affichage du label "Nom des fichiers source"
@@ -2197,12 +2204,19 @@ proc creeFenetrePrFC { } {
          -command {
             ::pretrfcSetup::run 1 $audace(base).pretrfcSetup
          }
-      pack $audace(base).fenetrePretr.but.config -side left -anchor sw -in $audace(base).fenetrePretr.but
+      pack $audace(base).fenetrePretr.but.config -side left -anchor sw -in $audace(base).fenetrePretr.but \
+         -padx 3 -pady 3 -ipady 3
+      #--- Bouton Fermer
+      button $audace(base).fenetrePretr.but.fermer -borderwidth 2 -width 9 -text $caption(pretrfc,fermer) \
+         -command { ::pretrfc::ArretPretraitFC }
+      pack $audace(base).fenetrePretr.but.fermer -side right -anchor w -in $audace(base).fenetrePretr.but \
+         -padx 3 -pady 3 -ipady 3
       #--- Bouton Aide
       button $audace(base).fenetrePretr.but.aide -borderwidth 2 -width 5 -text $caption(pretrfc,aide) \
          -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::pretrfc::getPluginType ] ] \
             [ ::pretrfc::getPluginDirectory ] [ ::pretrfc::getPluginHelp ]"
-      pack $audace(base).fenetrePretr.but.aide -side right -anchor sw -in $audace(base).fenetrePretr.but
+      pack $audace(base).fenetrePretr.but.aide -side right -anchor sw -in $audace(base).fenetrePretr.but \
+         -padx 3 -pady 3 -ipady 3
    pack $audace(base).fenetrePretr.but -side top -fill x
 
    focus $audace(base).fenetrePretr
