@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise à jour $Id: aud_menu_3.tcl,v 1.75 2010-12-18 20:43:18 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_3.tcl,v 1.76 2010-12-22 18:36:41 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -1709,7 +1709,7 @@ namespace eval ::traiteWindow {
       toplevel $This
       wm resizable $This 0 0
       wm deiconify $This
-      wm title $This "$caption(audace,menu,preprocess)"
+      wm title $This "$caption(audace,menu,preprocess) - $caption(audace,menu,recentrer)"
       wm geometry $This $widget(traiteWindow,position)
       wm transient $This $audace(base)
       wm protocol $This WM_DELETE_WINDOW ::traiteWindow::cmdClose
@@ -1796,10 +1796,10 @@ namespace eval ::traiteWindow {
             set m [menu $This.usr.1.but1.menu -tearoff 0]
             foreach pretrait $list_traiteWindow {
                $m add radiobutton -label "$pretrait" \
-                -indicatoron "1" \
-                -value "$pretrait" \
-                -variable traiteWindow(captionOperation) \
-                -command { ::traiteWindow::captionFonction $traiteWindow(captionOperation) }
+                  -indicatoron "1" \
+                  -value "$pretrait" \
+                  -variable traiteWindow(captionOperation) \
+                  -command { ::traiteWindow::captionFonction $traiteWindow(captionOperation) }
             }
         # pack $This.usr.1 -in $This.usr -side top -fill both
 
@@ -2226,10 +2226,10 @@ namespace eval ::faireImageRef {
    # Lance la fenetre de dialogue pour les pretraitements sur une images
    # this : Chemin de la fenetre
    #
-   proc run { type_image_reference this } {
+   proc run { sousMenu type_image_reference this } {
       variable This
       variable widget
-      global faireImageRef
+      global caption faireImageRef
 
       #---
       ::faireImageRef::initConf
@@ -2241,6 +2241,25 @@ namespace eval ::faireImageRef {
       if { [ winfo exists $This ] } {
          wm withdraw $This
          wm deiconify $This
+         #--- Mise a jour du titre
+         wm title $This "$caption(audace,menu,preprocess) - $sousMenu"
+         #--- Selection de la liste des fonction du menubutton
+         if { $sousMenu == $caption(audace,menu,faire_image) } {
+            set list_faireImageRef [ list $caption(audace,menu,faire_offset) $caption(audace,menu,faire_dark) \
+               $caption(audace,menu,faire_flat_field) ]
+         } elseif { $sousMenu == $caption(audace,menu,faire_pretraitee) } {
+            set list_faireImageRef [ list $caption(audace,menu,faire_pretraitee) ]
+         }
+         #--- Mise a jour de la liste des fonction du menubutton
+         $This.usr.1.but1.menu delete 0 20
+         foreach pretrait $list_faireImageRef {
+            $This.usr.1.but1.menu add radiobutton -label "$pretrait" \
+               -indicatoron "1" \
+               -value "$pretrait" \
+               -variable faireImageRef(captionOperation) \
+               -command { ::faireImageRef::captionFonction $faireImageRef(captionOperation) }
+         }
+         #---
          focus $This
       } else {
          if { [ info exists faireImageRef(geometry) ] } {
@@ -2248,7 +2267,7 @@ namespace eval ::faireImageRef {
             set fin [ string length $faireImageRef(geometry) ]
             set widget(faireImageRef,position) "+[string range $faireImageRef(geometry) $deb $fin]"
          }
-         ::faireImageRef::createDialog $type_image_reference
+         ::faireImageRef::createDialog $sousMenu $type_image_reference
       }
       #---
       set faireImageRef(operation) "$type_image_reference"
@@ -2309,7 +2328,7 @@ namespace eval ::faireImageRef {
    # ::faireImageRef::createDialog
    # Creation de l'interface graphique
    #
-   proc createDialog { type_image_reference } {
+   proc createDialog { sousMenu type_image_reference } {
       variable This
       variable widget
       global audace caption color conf faireImageRef
@@ -2339,11 +2358,19 @@ namespace eval ::faireImageRef {
       #--- Toutes les images (offset, dark et flat) sont diponibles
       set faireImageRef(option)                      "000"
 
+      #--- Liste des pretraitements disponibles
+      if { $sousMenu == $caption(audace,menu,faire_image) } {
+         set list_faireImageRef [ list $caption(audace,menu,faire_offset) $caption(audace,menu,faire_dark) \
+            $caption(audace,menu,faire_flat_field) ]
+      } elseif { $sousMenu == $caption(audace,menu,faire_pretraitee) } {
+         set list_faireImageRef [ list $caption(audace,menu,faire_pretraitee) ]
+      }
+
       #---
       toplevel $This
       wm resizable $This 0 0
       wm deiconify $This
-      wm title $This "$caption(audace,menu,preprocess) - $caption(audace,menu,faire_image)"
+      wm title $This "$caption(audace,menu,preprocess) - $sousMenu"
       wm geometry $This $widget(faireImageRef,position)
       wm transient $This $audace(base)
       wm protocol $This WM_DELETE_WINDOW ::faireImageRef::cmdClose
@@ -2521,9 +2548,6 @@ namespace eval ::faireImageRef {
         # pack $This.usr.2 -side top -fill both
 
          frame $This.usr.1 -borderwidth 1 -relief raised
-            #--- Liste des pretraitements disponibles
-            set list_faireImageRef [ list $caption(audace,menu,faire_offset) $caption(audace,menu,faire_dark) \
-               $caption(audace,menu,faire_flat_field) $caption(audace,menu,faire_pretraitee) ]
             #---
             menubutton $This.usr.1.but1 -textvariable faireImageRef(captionOperation) -menu $This.usr.1.but1.menu \
                -relief raised
@@ -2531,10 +2555,10 @@ namespace eval ::faireImageRef {
             set m [menu $This.usr.1.but1.menu -tearoff 0]
             foreach pretrait $list_faireImageRef {
                $m add radiobutton -label "$pretrait" \
-                -indicatoron "1" \
-                -value "$pretrait" \
-                -variable faireImageRef(captionOperation) \
-                -command { ::faireImageRef::captionFonction $faireImageRef(captionOperation) }
+                  -indicatoron "1" \
+                  -value "$pretrait" \
+                  -variable faireImageRef(captionOperation) \
+                  -command { ::faireImageRef::captionFonction $faireImageRef(captionOperation) }
             }
         # pack $This.usr.1 -side top -fill both -ipady 5
 
