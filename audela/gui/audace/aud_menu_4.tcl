@@ -1,20 +1,20 @@
 #
 # Fichier : aud_menu_4.tcl
 # Description : Script regroupant les fonctionnalites du menu Traitement
-# Mise à jour $Id: aud_menu_4.tcl,v 1.23 2010-12-11 14:17:19 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_4.tcl,v 1.24 2010-12-22 18:37:50 robertdelmas Exp $
 #
 
 namespace eval ::traiteFilters {
 
    #
-   # ::traiteFilters::run type_filtre this
+   # ::traiteFilters::run sousMenu typeFiltre this
    # Lance la boite de dialogue pour les traitements sur une image
    # this : Chemin de la fenetre
    #
-   proc run { type_filtre this } {
+   proc run { sousMenu typeFiltre this } {
       variable This
       variable widget
-      global traiteFilters
+      global caption traiteFilters
 
       #---
       ::traiteFilters::initConf
@@ -24,6 +24,37 @@ namespace eval ::traiteFilters {
       if { [ winfo exists $This ] } {
          wm withdraw $This
          wm deiconify $This
+         #--- Mise a jour du titre
+         wm title $This "$caption(audace,menu,traitement) - $sousMenu"
+         #--- Selection de la liste des fonction du menubutton
+         if { $sousMenu == $caption(audace,menu,filtrer) } {
+            set list_traiteFilters [ list \
+               $caption(audace,menu,masque_flou) \
+               $caption(audace,menu,filtre_passe-bas) \
+               $caption(audace,menu,filtre_passe-haut) \
+               $caption(audace,menu,filtre_median) \
+               $caption(audace,menu,filtre_minimum) \
+               $caption(audace,menu,filtre_maximum) \
+            ]
+         } elseif { $sousMenu == $caption(audace,menu,convoluer) } {
+            set list_traiteFilters [ list \
+               $caption(audace,menu,tfd) \
+               $caption(audace,menu,tfdi) \
+               $caption(audace,menu,acorr) \
+               $caption(audace,menu,icorr) \
+               $caption(audace,menu,convolution) \
+            ]
+         }
+         #--- Mise a jour de la liste des fonction du menubutton
+         $This.usr.1.but1.menu delete 0 20
+         foreach traitement $list_traiteFilters {
+            $This.usr.1.but1.menu add radiobutton -label "$traitement" \
+               -indicatoron "1" \
+               -value "$traitement" \
+               -variable traiteFilters(operation) \
+               -command { }
+         }
+         #---
          focus $This
       } else {
          if { [ info exists traiteFilters(geometry) ] } {
@@ -31,10 +62,10 @@ namespace eval ::traiteFilters {
             set fin [ string length $traiteFilters(geometry) ]
             set widget(traiteFilters,position) "+[string range $traiteFilters(geometry) $deb $fin]"
          }
-         createDialog
+         createDialog $sousMenu
       }
       #---
-      set traiteFilters(operation) "$type_filtre"
+      set traiteFilters(operation) "$typeFiltre"
    }
 
    #
@@ -94,10 +125,10 @@ namespace eval ::traiteFilters {
    }
 
    #
-   # ::traiteFilters::createDialog
+   # ::traiteFilters::createDialog sousMenu
    # Creation de l'interface graphique
    #
-   proc createDialog { } {
+   proc createDialog { sousMenu } {
 
       variable This
       variable widget
@@ -117,7 +148,7 @@ namespace eval ::traiteFilters {
       set traiteFilters(afficher_image) "$caption(traiteFilters,afficher_image_fin)"
       set traiteFilters(disp_1)         "1"
 
-     ### #--- Liste des traitements disponibles
+      #--- Liste des traitements disponibles
      ### set list_traiteFilters [ list \
      ###    $caption(audace,menu,masque_flou) \
      ###    $caption(audace,menu,filtre_passe-bas) \
@@ -135,24 +166,29 @@ namespace eval ::traiteFilters {
      ###    $caption(audace,menu,icorr) \
      ###    $caption(audace,menu,convolution) \
      ### ]
-      set list_traiteFilters [ list \
-         $caption(audace,menu,masque_flou) \
-         $caption(audace,menu,filtre_passe-bas) \
-         $caption(audace,menu,filtre_passe-haut) \
-         $caption(audace,menu,filtre_median) \
-         $caption(audace,menu,filtre_minimum) \
-         $caption(audace,menu,filtre_maximum) \
-         $caption(audace,menu,tfd) \
-         $caption(audace,menu,tfdi) \
-         $caption(audace,menu,acorr) \
-         $caption(audace,menu,icorr) \
-         $caption(audace,menu,convolution) \
-      ]
+      if { $sousMenu == $caption(audace,menu,filtrer) } {
+         set list_traiteFilters [ list \
+            $caption(audace,menu,masque_flou) \
+            $caption(audace,menu,filtre_passe-bas) \
+            $caption(audace,menu,filtre_passe-haut) \
+            $caption(audace,menu,filtre_median) \
+            $caption(audace,menu,filtre_minimum) \
+            $caption(audace,menu,filtre_maximum) \
+         ]
+      } elseif { $sousMenu == $caption(audace,menu,convoluer) } {
+         set list_traiteFilters [ list \
+            $caption(audace,menu,tfd) \
+            $caption(audace,menu,tfdi) \
+            $caption(audace,menu,acorr) \
+            $caption(audace,menu,icorr) \
+            $caption(audace,menu,convolution) \
+         ]
+      }
       #---
       toplevel $This
       wm resizable $This 0 0
       wm deiconify $This
-      wm title $This "$caption(audace,menu,traitement)"
+      wm title $This "$caption(audace,menu,traitement) - $sousMenu"
       wm geometry $This $widget(traiteFilters,position)
       wm transient $This $audace(base)
       wm protocol $This WM_DELETE_WINDOW ::traiteFilters::cmdClose
