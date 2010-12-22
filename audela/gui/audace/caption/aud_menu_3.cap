@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.57 2010-12-19 14:41:20 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.58 2010-12-22 18:34:30 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -69,11 +69,11 @@ set caption(audace,menu,assigner_r)                     "# Désigner le plan R"
 set caption(audace,menu,assigner_g)                     "# Désigner le plan G"
 set caption(audace,menu,assigner_b)                     "# Désigner le plan B"
 
-set caption(audace,menu,faire_image)                    "# Faire une image"
-set caption(audace,menu,faire_offset)                   "# de précharge"
-set caption(audace,menu,faire_dark)                     "# du noir"
-set caption(audace,menu,faire_flat_field)               "# de P.L.U."
-set caption(audace,menu,faire_pretraitee)               "# prétraitée"
+set caption(audace,menu,faire_image)                    "# Faire une image maître"
+set caption(audace,menu,faire_offset)                   "# Précharge"
+set caption(audace,menu,faire_dark)                     "# Noir"
+set caption(audace,menu,faire_flat_field)               "# P.L.U."
+set caption(audace,menu,faire_pretraitee)               "# Prétraiter image(s) brute(s)"
 
 set caption(audace,menu,recentrer)                      "Recenter"
 
@@ -217,11 +217,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,assigner_g)                  "Désigner le plan V"
    set caption(audace,menu,assigner_b)                  "Désigner le plan B"
 
-   set caption(audace,menu,faire_image)                 "Faire une image"
-   set caption(audace,menu,faire_offset)                "de précharge"
-   set caption(audace,menu,faire_dark)                  "du noir"
-   set caption(audace,menu,faire_flat_field)            "de P.L.U."
-   set caption(audace,menu,faire_pretraitee)            "prétraitée"
+   set caption(audace,menu,faire_image)                 "Faire une image maître"
+   set caption(audace,menu,faire_offset)                "Précharge"
+   set caption(audace,menu,faire_dark)                  "Noir"
+   set caption(audace,menu,faire_flat_field)            "P.L.U."
+   set caption(audace,menu,faire_pretraitee)            "Prétraiter image(s) brute(s)"
 
    set caption(audace,menu,recentrer)                   "Recentrer"
 
@@ -365,11 +365,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,assigner_g)                  "# Désigner le plan V"
    set caption(audace,menu,assigner_b)                  "# Désigner le plan B"
 
-   set caption(audace,menu,faire_image)                 "# Faire une image"
-   set caption(audace,menu,faire_offset)                "# de précharge"
-   set caption(audace,menu,faire_dark)                  "# du noir"
-   set caption(audace,menu,faire_flat_field)            "# de P.L.U."
-   set caption(audace,menu,faire_pretraitee)            "# prétraitée"
+   set caption(audace,menu,faire_image)                 "# Faire une image maître"
+   set caption(audace,menu,faire_offset)                "# Précharge"
+   set caption(audace,menu,faire_dark)                  "# Noir"
+   set caption(audace,menu,faire_flat_field)            "# P.L.U."
+   set caption(audace,menu,faire_pretraitee)            "# Prétraiter image(s) brute(s)"
 
    set caption(audace,menu,recentrer)                   "Ricentrare"
 
@@ -513,11 +513,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,assigner_g)                  "# Désigner le plan V"
    set caption(audace,menu,assigner_b)                  "# Désigner le plan A"
 
-   set caption(audace,menu,faire_image)                 "# Faire une image"
-   set caption(audace,menu,faire_offset)                "# de précharge"
-   set caption(audace,menu,faire_dark)                  "# du noir"
-   set caption(audace,menu,faire_flat_field)            "# de P.L.U."
-   set caption(audace,menu,faire_pretraitee)            "# prétraitée"
+   set caption(audace,menu,faire_image)                 "# Faire une image maître"
+   set caption(audace,menu,faire_offset)                "# Précharge"
+   set caption(audace,menu,faire_dark)                  "# Noir"
+   set caption(audace,menu,faire_flat_field)            "# P.L.U."
+   set caption(audace,menu,faire_pretraitee)            "# Prétraiter image(s) brute(s)"
 
    set caption(audace,menu,recentrer)                   "Recentrado"
 
@@ -661,11 +661,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,assigner_g)                  "# Désigner le plan G"
    set caption(audace,menu,assigner_b)                  "# Désigner le plan B"
 
-   set caption(audace,menu,faire_image)                 "# Faire une image"
-   set caption(audace,menu,faire_offset)                "# de précharge"
-   set caption(audace,menu,faire_dark)                  "# du noir"
-   set caption(audace,menu,faire_flat_field)            "# de P.L.U."
-   set caption(audace,menu,faire_pretraitee)            "# prétraitée"
+   set caption(audace,menu,faire_image)                 "# Faire une image maître"
+   set caption(audace,menu,faire_offset)                "# Précharge"
+   set caption(audace,menu,faire_dark)                  "# Noir"
+   set caption(audace,menu,faire_flat_field)            "# P.L.U."
+   set caption(audace,menu,faire_pretraitee)            "# Prétraiter image(s) brute(s)"
 
    set caption(audace,menu,recentrer)                   "Nachspuren"
 
@@ -809,11 +809,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,assigner_g)                  "# Désigner le plan G"
    set caption(audace,menu,assigner_b)                  "# Désigner le plan B"
 
-   set caption(audace,menu,faire_image)                 "# Faire une image"
-   set caption(audace,menu,faire_offset)                "# de précharge"
-   set caption(audace,menu,faire_dark)                  "# du noir"
-   set caption(audace,menu,faire_flat_field)            "# de P.L.U."
-   set caption(audace,menu,faire_pretraitee)            "# prétraitée"
+   set caption(audace,menu,faire_image)                 "# Faire une image maître"
+   set caption(audace,menu,faire_offset)                "# Précharge"
+   set caption(audace,menu,faire_dark)                  "# Noir"
+   set caption(audace,menu,faire_flat_field)            "# P.L.U."
+   set caption(audace,menu,faire_pretraitee)            "# Prétraiter image(s) brute(s)"
 
    set caption(audace,menu,recentrer)                   "Recentrar"
 
@@ -957,11 +957,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,assigner_g)                  "# Désigner le plan G"
    set caption(audace,menu,assigner_b)                  "# Désigner le plan B"
 
-   set caption(audace,menu,faire_image)                 "# Faire une image"
-   set caption(audace,menu,faire_offset)                "# de précharge"
-   set caption(audace,menu,faire_dark)                  "# du noir"
-   set caption(audace,menu,faire_flat_field)            "# de P.L.U."
-   set caption(audace,menu,faire_pretraitee)            "# prétraitée"
+   set caption(audace,menu,faire_image)                 "# Faire une image maître"
+   set caption(audace,menu,faire_offset)                "# Précharge"
+   set caption(audace,menu,faire_dark)                  "# Noir"
+   set caption(audace,menu,faire_flat_field)            "# P.L.U."
+   set caption(audace,menu,faire_pretraitee)            "# Prétraiter image(s) brute(s)"
 
    set caption(audace,menu,recentrer)                   "Centrer igen"
 
@@ -1105,11 +1105,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,assigner_g)                  "# Désigner le plan G"
    set caption(audace,menu,assigner_b)                  "# Désigner le plan B"
 
-   set caption(audace,menu,faire_image)                 "# Faire une image"
-   set caption(audace,menu,faire_offset)                "# de précharge"
-   set caption(audace,menu,faire_dark)                  "# du noir"
-   set caption(audace,menu,faire_flat_field)            "# de P.L.U."
-   set caption(audace,menu,faire_pretraitee)            "# prétraitée"
+   set caption(audace,menu,faire_image)                 "# Faire une image maître"
+   set caption(audace,menu,faire_offset)                "# Précharge"
+   set caption(audace,menu,faire_dark)                  "# Noir"
+   set caption(audace,menu,faire_flat_field)            "# P.L.U."
+   set caption(audace,menu,faire_pretraitee)            "# Prétraiter image(s) brute(s)"
 
    set caption(audace,menu,recentrer)                   "Recenter"
 
@@ -1253,11 +1253,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,assigner_g)                  "# Désigner le plan G"
    set caption(audace,menu,assigner_b)                  "# Désigner le plan B"
 
-   set caption(audace,menu,faire_image)                 "# Faire une image"
-   set caption(audace,menu,faire_offset)                "# de précharge"
-   set caption(audace,menu,faire_dark)                  "# du noir"
-   set caption(audace,menu,faire_flat_field)            "# de P.L.U."
-   set caption(audace,menu,faire_pretraitee)            "# prétraitée"
+   set caption(audace,menu,faire_image)                 "# Faire une image maître"
+   set caption(audace,menu,faire_offset)                "# Précharge"
+   set caption(audace,menu,faire_dark)                  "# Noir"
+   set caption(audace,menu,faire_flat_field)            "# P.L.U."
+   set caption(audace,menu,faire_pretraitee)            "# Prétraiter image(s) brute(s)"
 
    set caption(audace,menu,recentrer)                   "Recenter"
 
