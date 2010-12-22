@@ -5,7 +5,7 @@
 #               pose, choix des plugins, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: confgene.tcl,v 1.89 2010-12-18 15:32:57 robertdelmas Exp $
+# Mise à jour $Id: confgene.tcl,v 1.90 2010-12-22 18:29:11 robertdelmas Exp $
 #
 
 #
@@ -2008,52 +2008,6 @@ namespace eval ::confChoixOutil {
    }
 
    #
-   # confChoixOutil::displayPlugin visuNo menu
-   # Fonction qui permet d'afficher les plugins dans les menus
-   #
-   proc displayPlugin { visuNo function } {
-      global audace caption conf panneau
-
-      #--- Initialisation des variables
-      if { ! [ info exists conf(afficheOutils) ] } {
-         set conf(afficheOutils) ""
-         foreach m [array names panneau menu_name,*] {
-            set namespace [ lindex [ split $m "," ] 1 ]
-            lappend conf(afficheOutils) $namespace ""
-         }
-      }
-      set liste ""
-      #--- Je copie la liste dans un tableau affiche(namespace)
-      array set affiche $conf(afficheOutils)
-      #---
-      foreach m [array names panneau menu_name,*] {
-         set namespace [ lindex [ split $m "," ] 1 ]
-         lappend liste [list "$panneau($m) " $namespace]
-      }
-      foreach m [lsort -dictionary $liste] {
-         set namespace [lindex $m 1]
-         #---
-         if { [ info exist affiche($namespace) ] } {
-            if { [ ::$namespace\::getPluginProperty function ] == "$function" } {
-               Menu_Command $visuNo "$caption(audace,menu,$function)" "$panneau(menu_name,$namespace)" "::confVisu::selectTool $visuNo ::$namespace"
-               if { $affiche($namespace) != "" } {
-                  if { [string range $affiche($namespace) 0 3] == "Alt+" } {
-                     set event "Alt-[string tolower [string range $affiche($namespace) 4 4]]"
-                  } elseif { [string range $affiche($namespace) 0 4] == "Ctrl+" } {
-                     set event "Control-[string tolower [string range $affiche($namespace) 5 5]]"
-                  } else {
-                     set event $affiche($namespace)
-                  }
-                  #---
-                  Menu_Bind $visuNo $audace(base) <$event> "$caption(audace,menu,$function)" "$panneau(menu_name,$namespace)" "$affiche($namespace)"
-                     bind $audace(Console) <$event> "focus $audace(base) ; ::confVisu::selectTool $visuNo ::$namespace"
-               }
-            }
-         }
-      }
-   }
-
-   #
    # confChoixOutil::displayPlugins visuNo menu
    # Fonction qui permet d'afficher les plugins dans le bon menu deroulant
    #
@@ -2076,6 +2030,7 @@ namespace eval ::confChoixOutil {
          set namespace [ lindex [ split $m "," ] 1 ]
          lappend liste [list "$panneau($m) " $namespace]
       }
+      #--- Classement par ordre alphabetique
       foreach m [lsort -dictionary $liste] {
          set namespace [lindex $m 1]
          #---
