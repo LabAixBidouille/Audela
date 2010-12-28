@@ -5,7 +5,7 @@
 #               pose, choix des plugins, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: confgene.tcl,v 1.90 2010-12-22 18:29:11 robertdelmas Exp $
+# Mise à jour $Id: confgene.tcl,v 1.91 2010-12-28 16:58:42 michelpujol Exp $
 #
 
 #
@@ -2008,10 +2008,18 @@ namespace eval ::confChoixOutil {
    }
 
    #
-   # confChoixOutil::displayPlugins visuNo menu
+   # confChoixOutil::displayPlugins
    # Fonction qui permet d'afficher les plugins dans le bon menu deroulant
    #
-   proc displayPlugins { visuNo function } {
+   # @param visuNo  numero de la visu
+   # @param menuName nom du menu
+   # @param functionBlocList  liste de listes de fonctions a afficher dans le menu 
+   # Exemple:  displayPlugins $visuNo "file" { {setup file} {display aiming} } 
+   #  permet d'afficher les outils dans le menu "Fichier"  répartis dans deux 
+   #  blocs séparés par un séparateur : 
+   #   le 1er bloc contient les outils qui ont les fonctions setup et file 
+   #   le 2ieme bloc contient les outils qui ont les fonctions display et aiming.
+   proc displayPlugins { visuNo menuName functionBlocList  } {
       global audace caption conf panneau
 
       #--- Initialisation des variables
@@ -2025,18 +2033,47 @@ namespace eval ::confChoixOutil {
       set liste ""
       #--- Je copie la liste dans un tableau affiche(namespace)
       array set affiche $conf(afficheOutils)
-      #---
+
+      #--- je cree la liste des outils
+      #     fct2  9-libelleoutilR  namespaceR
+      #     fct1  9-libelleoutilD  namespaceD
+      #     fct1  9-libelleoutilA  namespaceA
+      #     fct2  9-libelleoutilE  namespaceE
+      #     fct1  1-libelleoutilX  namespaceX
+      #     fct2  1-libelleoutilY  namespaceY
       foreach m [array names panneau menu_name,*] {
          set namespace [ lindex [ split $m "," ] 1 ]
-         lappend liste [list "$panneau($m) " $namespace]
+         set libelle $panneau($m)
+         set function [::$namespace\::getPluginProperty function]
+         set rank [::$namespace\::getPluginProperty rank]
+         if { $rank == "" } {
+            #--- les plugins qui n'ont de rank precis sont mis en dernier
+            set rank 9
+         }
+
+         lappend liste [list $function "$rank-$libelle" $namespace]
       }
-      #--- Classement par ordre alphabetique
-      foreach m [lsort -dictionary $liste] {
-         set namespace [lindex $m 1]
-         #---
-         if { [ info exist affiche($namespace) ] } {
-            if { [ ::$namespace\::getPluginProperty function ] == "$function" } {
-               Menu_Command $visuNo "$caption(audace,menu,$function)" "$panneau(menu_name,$namespace)" "::confVisu::selectTool $visuNo ::$namespace"
+
+      foreach functionBloc $functionBlocList {
+         set sousList ""
+         foreach function $functionBloc {
+            #--- je recherche les elements qui contiennent "$function" dans l'index 0
+            set sousList [concat $sousList [lsearch -all -inline -index 0 $liste $function]]
+         }
+         #-- sousList contient les outils ayant les fonctions fct1 et fct2
+         #     index0   index1          index2
+         #     fct1  9-libelleoutilD  namespaceD
+         #     fct1  1-libelleoutilX  namespaceX
+         #     fct1  9-libelleoutilA  namespaceA
+         #     fct2  9-libelleoutilE  namespaceE
+         #     fct2  1-libelleoutilY  namespaceY
+         #     fct2  9-libelleoutilR  namespaceR
+         #--- Classement par ordre alphabetique sur l'index 1 (concatenation de rank+nom)
+         foreach m [lsort -index 1 -dictionary $sousList] {
+            set namespace [lindex $m 2]
+            #---
+            if { [ info exist affiche($namespace) ] } {
+               Menu_Command $visuNo $caption(audace,menu,$menuName) $panneau(menu_name,$namespace) "::confVisu::selectTool $visuNo ::$namespace"
                if { $affiche($namespace) != "" } {
                   if { [string range $affiche($namespace) 0 3] == "Alt+" } {
                      set event "Alt-[string tolower [string range $affiche($namespace) 4 4]]"
@@ -2046,10 +2083,15 @@ namespace eval ::confChoixOutil {
                      set event $affiche($namespace)
                   }
                   #---
-                  Menu_Bind $visuNo $audace(base) <$event> "$caption(audace,menu,$function)" "$panneau(menu_name,$namespace)" "$affiche($namespace)"
+                  Menu_Bind $visuNo $audace(base) <$event> $caption(audace,menu,$menuName) $panneau(menu_name,$namespace) $affiche($namespace)
                      bind $audace(Console) <$event> "focus $audace(base) ; ::confVisu::selectTool $visuNo ::$namespace"
                }
             }
+         }
+
+         #--- j'ajoute un separateur si ce n'est pas le dernier bloc de menu
+         if { [lsearch $functionBlocList $functionBloc] != [expr [llength $functionBlocList] - 1 ] } {
+            Menu_Separator $visuNo "$caption(audace,menu,$menuName)"
          }
       }
    }

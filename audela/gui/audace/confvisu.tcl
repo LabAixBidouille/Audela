@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.168 2010-12-22 18:32:46 robertdelmas Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.169 2010-12-28 16:59:43 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -2257,7 +2257,7 @@ namespace eval ::confVisu {
 
          Menu_Separator $visuNo "$caption(audace,menu,file)"
          #--- Affichage des plugins de type tool et de fonction file du menu deroulant Fichier
-         ::confChoixOutil::displayPlugins $visuNo file
+         ::confChoixOutil::displayPlugins $visuNo file file
 
          Menu_Separator $visuNo "$caption(audace,menu,file)"
          Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,nouveau_script)..." "::audace::newScript"
@@ -2335,7 +2335,7 @@ namespace eval ::confVisu {
 
          Menu_Separator $visuNo "$caption(audace,menu,display)"
          #--- Affichage des plugins de type tool et de fonction display du menu deroulant Affichage
-         ::confChoixOutil::displayPlugins $visuNo display
+         ::confChoixOutil::displayPlugins $visuNo display display
          Menu_Command   $visuNo "$caption(audace,menu,display)" "[ ::Crosshair::getLabel ]..." "::Crosshair::run $visuNo"
 
          Menu           $visuNo "$caption(audace,menu,preprocess)"
@@ -2405,7 +2405,7 @@ namespace eval ::confVisu {
 
          Menu_Separator $visuNo "$caption(audace,menu,preprocess)"
          #--- Affichage des plugins de type tool et de fonction preprocess du menu deroulant Pretraitement
-         ::confChoixOutil::displayPlugins $visuNo preprocess
+         ::confChoixOutil::displayPlugins $visuNo preprocess preprocess
 
          Menu           $visuNo "$caption(audace,menu,traitement)"
          Menu_Cascade   $visuNo "$caption(audace,menu,traitement)" "$caption(audace,menu,filtrer)"
@@ -2471,7 +2471,7 @@ namespace eval ::confVisu {
 
          Menu_Separator $visuNo "$caption(audace,menu,analysis)"
          #--- Affichage des plugins de type tool et de fonction analysis du menu deroulant Analyse
-         ::confChoixOutil::displayPlugins $visuNo analysis
+         ::confChoixOutil::displayPlugins $visuNo analysis analysis
 
          Menu_Separator $visuNo "$caption(audace,menu,analysis)"
          Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,carte)" \
@@ -2479,11 +2479,11 @@ namespace eval ::confVisu {
 
          Menu           $visuNo "$caption(audace,menu,acquisition)"
          #--- Affichage des plugins de type tool et de fonction acquisition du menu deroulant Camera
-         ::confChoixOutil::displayPlugins $visuNo acquisition
+         ::confChoixOutil::displayPlugins $visuNo acquisition acquisition
 
          Menu           $visuNo "$caption(audace,menu,aiming)"
          #--- Affichage des plugins de type tool et de fonction aiming du menu deroulant Telescope
-         ::confChoixOutil::displayPlugins $visuNo aiming
+         ::confChoixOutil::displayPlugins $visuNo aiming aiming
 
          Menu           $visuNo "$caption(audace,menu,setup)"
          Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,langue)..." \
@@ -2529,7 +2529,7 @@ namespace eval ::confVisu {
          Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,choix_outils)..." \
             "::confChoixOutil::run $audace(base).confChoixOutil $visuNo"
          #--- Affichage des plugins de type tool et de fonction setup du menu deroulant Configuration
-         ::confChoixOutil::displayPlugins $visuNo setup
+         ::confChoixOutil::displayPlugins $visuNo setup setup
 
          Menu_Separator $visuNo "$caption(audace,menu,setup)"
          Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,sauve_config)" \
@@ -2755,7 +2755,7 @@ namespace eval ::confVisu {
          "::keyword::header $visuNo"
       Menu_Separator $visuNo "$caption(audace,menu,file)"
       #--- Affichage des plugins de type tool et de fonction file du menu deroulant Fichier
-      ::confChoixOutil::displayPlugins $visuNo file
+      ::confChoixOutil::displayPlugins $visuNo file file
       Menu_Separator $visuNo "$caption(audace,menu,file)"
       Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,nouveau_script)..." \
          "::audace::newScript"
@@ -2831,7 +2831,7 @@ namespace eval ::confVisu {
          "
       Menu_Separator $visuNo "$caption(audace,menu,display)"
       #--- Affichage des plugins de type tool et de fonction display du menu deroulant Affichage
-      ::confChoixOutil::displayPlugins $visuNo display
+      ::confChoixOutil::displayPlugins $visuNo display display
       Menu_Command   $visuNo "$caption(audace,menu,display)" "[ ::Crosshair::getLabel ]..." "::Crosshair::run $visuNo"
 
       #--- Je commence par supprimer les menus cascade du menu Pretraitement
@@ -2902,7 +2902,7 @@ namespace eval ::confVisu {
          { ::traiteWindow::run "serie_recentrer" "$audace(base).traiteWindow" }
       Menu_Separator $visuNo "$caption(audace,menu,preprocess)"
       #--- Affichage des plugins de type tool et de fonction preprocess du menu deroulant Pretraitement
-      ::confChoixOutil::displayPlugins $visuNo preprocess
+      ::confChoixOutil::displayPlugins $visuNo preprocess preprocess
 
       #--- Je commence par supprimer les menus cascade du menu Analyse
       Menu_Delete $visuNo "$caption(audace,menu,extract)" all
@@ -2932,7 +2932,7 @@ namespace eval ::confVisu {
       }
       Menu_Separator $visuNo "$caption(audace,menu,analysis)"
       #--- Affichage des plugins de type tool et de fonction file du menu deroulant Analyse
-      ::confChoixOutil::displayPlugins $visuNo analysis
+      ::confChoixOutil::displayPlugins $visuNo analysis analysis
       Menu_Separator $visuNo "$caption(audace,menu,analysis)"
       Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,carte)" \
          "::carte::showMapFromBuffer buf$audace(bufNo)"
@@ -2941,13 +2941,13 @@ namespace eval ::confVisu {
       Menu_Delete $visuNo "$caption(audace,menu,acquisition)" entries
       #--- Rafraichissement du menu Camera
       #--- Affichage des plugins de type tool du menu deroulant Camera
-      ::confChoixOutil::displayPlugins $visuNo acquisition
+      ::confChoixOutil::displayPlugins $visuNo acquisition acquisition
 
       #--- Je supprime toutes les entrees du menu Telescope
       Menu_Delete $visuNo "$caption(audace,menu,aiming)" entries
       #--- Rafraichissement du menu Telescope
       #--- Affichage des plugins de type tool du menu deroulant Telescope
-      ::confChoixOutil::displayPlugins $visuNo aiming
+      ::confChoixOutil::displayPlugins $visuNo aiming aiming
 
       #--- Je supprime toutes les entrees du menu Configuration
       Menu_Delete $visuNo "$caption(audace,menu,setup)" entries
@@ -2992,7 +2992,7 @@ namespace eval ::confVisu {
       Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,choix_outils)..." \
          "::confChoixOutil::run $audace(base).confChoixOutil $visuNo"
       #--- Affichage des plugins de type tool et de fonction setup du menu deroulant Configuration
-      ::confChoixOutil::displayPlugins $visuNo setup
+      ::confChoixOutil::displayPlugins $visuNo setup setup
       Menu_Separator $visuNo "$caption(audace,menu,setup)"
       Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,sauve_config)" \
          "::audace::enregistrerConfiguration $visuNo"
