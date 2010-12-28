@@ -5,7 +5,7 @@
   <title>Librairie TT : Manuel Utilisateur</title>
 </head>
 <body>
-<p class="date">Date de mise &#224; jour : 23 d&#233;cembre
+<p class="date">Date de mise &#224; jour : 28 d&#233;cembre
 2010</p>
 <h1>LIB TT - Librairie de pr&#233;traitement d'images
 astronomiques</h1>
@@ -374,9 +374,9 @@ chacune des images entrant dans la pile. Le temps de pose
     <h4><a name="SHUTTER" id="SHUTTER"></a>Fonction SHUTTER</h4>
     <p>Synth&#233;tise l'image des d&#233;lais de ouverture/fermeture
 d'un obturateur m&#233;canique &#224; partir d'un lot d'images
-prises avec des dur&#233;es de pose diff&#233;rentes. La valeur des pixels de
-l'image finale est &#233;gale au retard par rapport au d&#233;but d'ouverture de
-l'obturateur.<br>
+prises avec des dur&#233;es de pose diff&#233;rentes. La valeur
+des pixels de l'image finale est &#233;gale au retard par rapport
+au d&#233;but d'ouverture de l'obturateur.<br>
     </p>
     <p>La date (DATE-OBS) est chang&#233; en fonction des poids de
 chacune des images entrant dans la pile. Le temps de pose
@@ -460,14 +460,6 @@ NORMOFFSET</h3>
 valeur sp&#233;cifi&#233;e par [normoffset_value]. Par
 d&#233;faut, la valeur de [normoffset_value] vaut z&#233;ro.</p>
   </li>
-  <li>
-    <h3><a name="LOPT" id="LOPT"></a>Fonction LOPT</h3>
-    <p>Calcul la somme normalis&#233;e &#224; 32767 et optimis&#233;e
-entre les lignes [y1] et [y2] d'apr&#232;s J. G. Robertson, PASP
-98, 1220-1231, November 1986. Le code est copi&#233; du logiciel
-IRIS.<br>
-    </p>
-  </li>
 </ol>
 <h2>3.2. Les fonctions 'Transformations
 (g&#233;om&#233;triques)'</h2>
@@ -499,11 +491,13 @@ coordonn&#233;es d'un rectangle de s&#233;lection, on peut
 ex&#233;cuter dans un script Tcl :</p>
     <pre>ttscript2 "IMA/SERIES . $img 1 3 $ext . $img 1 $ext WINDOW x1=$x1 x2=$x2 y1=$y1 y2=$y2 bitpix=16"<br>
     
+    
     </pre>
 Pour des plans couleurs portant le nom ${img}r ${img}g ${img}b il
 faudra traiter les images comme une liste d&#233;pareill&#233;e :
     <pre>set liste_images [ list ${img}r ${img}g ${img}b ]<br>
 ttscript2 "IMA/SERIES . \"$liste_images\" * * $ext . $img 1 $ext WINDOW x1=$x1 x2=$x2 y1=$y1 y2=$y2 bitpix=16"<br>
+    
     
     </pre>
     <p>Les images produites porteront le nom ${img}1 ${img}2
@@ -541,6 +535,7 @@ FITS, sont modifi&#233;s en cons&#233;quence.<br>
     <p>Par exemple, pour effectuer une translation sur l'image
 $img.$ext</p>
     <pre>ttscript2 "IMA/SERIES . $img . . $ext . $img . $ext TRANS trans_x=12 trans_y=34 nullpixel=0<br>
+    
     </pre>
     <p>L'option nullpixel=0 peut s'av&#233;rer importante pour le
 compositage ult&#233;rieur des images. En effet, le mot cl&#233;
@@ -559,6 +554,7 @@ ligne entre les pixels 1 et naxis1, $file est le nom de l'image
 d'entr&#233;e , $ext l'extension et binx_$file le nom de l'image
 de sortie :</p>
     <pre>ttscript2 "IMA/SERIES . $file . . $ext . binx_$file . $ext BINX x1=1 x2=$naxis1 width=1 bitpix=32"<br>
+    
     </pre>
     <p>L'image finale contient une seule colonne (width=1), d'o&#249;
 un petit fichier. Comme on additionne tous les valeurs, on passe
@@ -581,7 +577,8 @@ m&#233;diane, =100 pour le maximum) de tous les pixels de cette
 ligne entre les pixels [x1] et [x2]. L'image finale comporte
 [width] colonnes (20 par d&#233;faut).</p>
     <p>C'est le parall&#232;le de BINX : la somme est remplac&#233;e
-par la valeur tri&#233;e.</p>
+par la valeur tri&#233;e (CF <a href="#SORT">IMA/STACK
+SORT</a>).</p>
   </li>
   <li>
     <h3><a name="BINY" id="BINY"></a>Fonction BINY</h3>
@@ -596,6 +593,7 @@ grande amplitude de valeur ; $in est le nom de l'image
 d'entr&#233;e , $ext l'extension, bin_y$in le nom de l'image de
 sortie :</p>
     <pre>ttscript2 "IMA/SERIES . $in . . $ext . biny_$in . $ext BINY y1=1 y2=$naxis2 height=1 bitpix=32"<br>
+    
     </pre>
     <p>L'image finale contient une seule ligne (height=1).</p>
   </li>
@@ -616,7 +614,8 @@ la m&#233;diane, =100 pour le maximum) de tous les pixels de
 cette colonne entre les pixels [y1] et [y2]. L'image finale
 comporte [height] colonnes (20 par d&#233;faut).</p>
     <p>C'est le parall&#232;le de BINY : la somme est remplac&#233;e
-par la valeur tri&#233;e.</p>
+par la valeur tri&#233;e (CF <a href="#SORT">IMA/STACK
+SORT</a>).</p>
   </li>
   <li>
     <h3><a name="ROT" id="ROT"></a>Fonction ROT</h3>
@@ -628,6 +627,7 @@ cons&#233;quence.</p>
     <p>Exemple de script pour tourner une image 15&#176; autour de
 son centre x0,y0 :</p>
     <pre>ttscript2 "IMA/SERIES . $file . . $ext . rot$file . $ext ROT x0=$x0 y0=$y0 angle=15.0"<br>
+    
     </pre>
     <p>L'image produite garde les m&#234;mes dimensions naxis1 et
 naxis2 que l'image originale. Une partie (les coins) de l'image
@@ -653,6 +653,7 @@ utilisant les facteurs d'&#233;chelle [scale_theta]
 polaires centr&#233;es sur x0 et y0, l'image de sortie ayant pour
 nom pol$file :</p>
     <pre>ttscript2 "IMA/SERIES . $file . . $ext . pol$file . $ext REC2POL x0=$x0 y0=$y0 scale_theta=1. scale_rho=1."<br>
+    
     </pre>
   </li>
   <li>
@@ -667,6 +668,7 @@ hauteur de l'image finale.</p>
 cart&#233;siennes en retrouvant la taille (naxis1 et naxis2) de
 l'image d'origine :</p>
     <pre>ttscript2 "IMA/SERIES . pol$file . . $ext . $file . $ext POL2REC x0=$x0 y0=$y0 scale_theta=1. scale_rho=1. width=$naxis1 height=$naxis2"<br>
+    
     
     </pre>
   </li>
@@ -695,6 +697,7 @@ colonnes.</p>
     <p>Exemple de script pour extraire la colonne (direction=y) de
 coordonn&#233;e x (offset) vers un fichier profile.txt :</p>
     <pre>ttscript2 "IMA/SERIES . $file . . $ext . $file . $ext PROFILE direction=y offset=1 filename=profile.txt"<br>
+    
     </pre>
     <p>Le fichier profile.txt se pr&#233;sente ainsi :<br>
 pixel value of the pixel<br>
@@ -708,9 +711,11 @@ pixel value of the pixel<br>
 binn&#233; n'ayant qu'une seule colonne. Pour extraire une ligne
 particuli&#232;re d'une image :</p>
     <pre>ttscript2 "IMA/SERIES . $file . . $ext . $file . $ext PROFILE direction=x offset=$y filename=profile.txt"<br>
+    
     </pre>
 Pour extraire une seule colonne particuli&#232;re :
     <pre>ttscript2 "IMA/SERIES . $file . . $ext . $file . $ext PROFILE direction=y offset=$x filename=profile.txt"<br>
+    
     </pre>
   </li>
   <li>
@@ -869,6 +874,7 @@ set out "ugc192unsmear-"<br>
 set coefficientUnsmear 0.0005<br>
 ttscript2 "IMA/SERIES \"$::audace(rep_images)\" \"$in\" $first $ni \"$ext\" \"$::audace(rep_images)\" \"$out\" 1 \"$ext\" UNSMEARING UNSMEARING=$coefficientUnsmear"
     
+    
     </pre>
     <p>La commande cr&#233;e les 3 images trait&#233;es :
 ugc192unsmear-1.fits , ugc192unsmear-2.fits ,
@@ -895,6 +901,7 @@ d&#233;fectueuse<br>
 198), la colonne 400 et la ligne 200 :</p>
     <pre>IMA/SERIES ./images/ i- 1 9 .fit ./images/ j . .fit HOTPIXEL HOT_PIXEL_LIST="P 232 133 P 456 198 C 400 L 200"<br>
     
+    
     </pre>
     <p>Remarque : Pour optimiser les traitements, il est possible de
 corriger aussi les pixels chauds avec les fonctions de
@@ -913,6 +920,7 @@ La valeur par d&#233;faut est 400. Il est conseill&#233;
 d'utiliser une valeur entre 100 et 500.</p>
     <p>Exemple :</p>
     <pre>IMA/SERIES ./images/ i- 1 9 .fit ./images/ j . .fit COSMIC COSMIC_THRESHOLD=350<br>
+    
     
     </pre>
     <p>Remarque : Pour optimiser les traitements, il est possible de
@@ -963,6 +971,7 @@ initiale).</p>
 &#233;toiles sont &#233;tal&#233;es d'environ 3 pixels, on
 essaiera par exemple :</p>
     <pre>ttscript2 "IMA/SERIES . $file . . $ext . $file . $ext BACK back_kernel=12 back_threshold=0.2 sub"<br>
+    
     </pre>
   </li>
   <li>
@@ -1069,6 +1078,7 @@ d'ellipses (c) si o-c&gt;[threshold].</p>
     <p>Pour mod&#233;liser l'image d'une galaxie centr&#233;e au
 pixel (32,99) avec un fond de ciel de 150 A.D.U. :</p>
     <pre>ttscript2 "IMA/SERIES . $file . . $ext . $file . $ext FITELLIP xcenter=32 ycenter=99 background=150 "<br>
+    
     </pre>
   </li>
 </ol>
@@ -1157,6 +1167,7 @@ mots-cl&#233;s que l'on veut.</p>
 avec les donn&#233;es du kwdfile.txt contenu dans le
 r&#233;pertoire de travail :</p>
     <pre>ttscript2 "IMA/SERIES . $img 1 3 $ext . $img 1 $ext HEADERFITS file=kwdfile.txt"<br>
+    
     </pre>
   </li>
   <li>
@@ -1278,6 +1289,15 @@ Dy=[coef_smile2]*(x-[xcenter])^2+[coef_smile4]*(x-[xcenter])^4
 pour corriger les effets de distorsions de type smile des raies
 dans un spectre.</p>
   </li>
+  <li>
+    <h3><a name="LOPT" id="LOPT"></a>Fonction LOPT</h3>
+    <p>Calcul la somme normalis&#233;e &#224; 32767 et optimis&#233;e
+entre les lignes [y1] et [y2] d'apr&#232;s J. G. Robertson, PASP
+98, 1220-1231, November 1986. Le code est copi&#233; du logiciel
+IRIS. L'image finale comporte [height] lignes (20 par
+d&#233;faut).<br>
+    </p>
+  </li>
 </ol>
 <h2>3.9. Les fonctions 'utilitaires'</h2>
 <ol>
@@ -1311,6 +1331,7 @@ superflats pour r&#233;aliser un superflat total.</p>
     <p>Exemple de script pour copier un fichier d'un r&#233;pertoire
 externe au r&#233;pertoire de travail :</p>
     <pre>ttscript2 "IMA/SERIES \"$dir\" $in . . $ext . $in . $ext COPY"<br>
+    
     </pre>
   </li>
   <li>
@@ -1319,6 +1340,7 @@ externe au r&#233;pertoire de travail :</p>
     <p>Exemple de script pour effacer une liste de fichiers de noms
 d&#233;pareill&#233;s :</p>
     <pre>ttscript2 "IMA/SERIES .  \"$liste_de_noms_courts_sans_extension\" * * $ext . . . . DELETE"<br>
+    
     </pre>
   </li>
 </ol>
@@ -1359,7 +1381,7 @@ celui des images sky, obtenue dans le noir absolu. Le
 pr&#233;traitement propos&#233; consiste &#224; faire une pile
 m&#233;diane : IMA/STACK ./bias/ bias- 1 9 .fit ./bias/ bias .
 .fit MED</p>
-    <p>Le dark est une image de temps d'int&#233;gration proch dark .
+    <p>Le dark est une image de temps d'int&#233;gration proche dark .
 .fit MED</p>
   </li>
   <li>
