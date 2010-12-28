@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_5.tcl
 # Description : Script regroupant les fonctionnalites du menu Analyse
-# Mise à jour $Id: aud_menu_5.tcl,v 1.15 2010-09-25 13:42:56 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_5.tcl,v 1.16 2010-12-28 22:09:22 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -862,43 +862,6 @@ proc confPhotom { visuNo args } {
       #--- Je declare le rafraichissement automatique des valeurs si on charge une image
       ::confVisu::addFileNameListener $visuNo "::refreshPhotom $visuNo"
    }
-}
-
-###################################################################################
-
-#
-# subfitgauss visuNo
-# Ajuste et soustrait une gaussienne dans la fenetre d'une image
-#
-proc subfitgauss { visuNo } {
-   #--- Capture de la fenetre d'analyse
-   set box [ ::confVisu::getBox $visuNo ]
-   if { $box == "" } {
-      return
-   }
-   #--- Lecture des parametres dans la fenetre
-   set valeurs [ buf[ ::confVisu::getBufNo $visuNo ] fitgauss $box -sub ]
-   ::confVisu::autovisu $visuNo
-}
-
-###################################################################################
-
-#
-# scar visuNo
-# Cicatrise l'interieur d'une fenetre d'une image
-#
-proc scar { visuNo } {
-   #--- Je memorise le nom du fichier
-   set filename [ ::confVisu::getFileName $visuNo ]
-   #--- Je capture la fenetre d'analyse
-   set box [ ::confVisu::getBox $visuNo ]
-   if { $box == "" } {
-      return
-   }
-   #--- Je lis les parametres dans la fenetre
-   set valeurs [ buf[::confVisu::getBufNo $visuNo] scar $box ]
-   #--- Je rafraichis l'affichage
-   ::confVisu::autovisu $visuNo
 }
 
 ###################################################################################
