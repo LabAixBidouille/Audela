@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise à jour $Id: acqfc.tcl,v 1.108 2010-10-10 20:02:23 michelpujol Exp $
+# Mise à jour $Id: acqfc.tcl,v 1.109 2010-12-28 17:01:09 michelpujol Exp $
 #
 
 #==============================================================
@@ -161,6 +161,7 @@ proc ::acqfc::getPluginProperty { propertyName } {
       subfunction1 { return "" }
       display      { return "panel" }
       multivisu    { return 1 }
+      rank         { return 1 }
    }
 }
 
