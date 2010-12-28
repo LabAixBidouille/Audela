@@ -10,30 +10,34 @@
 set visuNo 1
 set bufNo [::confVisu::getBufNo $visuNo]
 set w ".audace.prtr.usr"
-set ::conf(extension,defaut) .fit
-set ::conf(fichier,compres) 0
+
 
 variable SETUP {
+   #--   memorise le format, l'extension, audace(rep_images)
+   set parInitial [list $::conf(extension,defaut) $::conf(fichier,compres) $::audace(rep_images)]
    ::blt::vector create attendu mesure -watchunset 1
-   file copy -force [file join $::conf(testaudela,rep_images) rgbr_8.fit] $::audace(rep_images)
-   loadima [file join $::audace(rep_images) rgbr_8.fit]
+   file copy -force [file join $::conf(testaudela,rep_images) rz_rgbr_8.fit] $::audace(rep_images)
+   loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
    attendu set [lrange [buf$bufNo getpix {1 1}] 1 end]
+   set ::conf(extension,defaut) .fit
+   set ::conf(fichier,compres) 0
 }
 
 variable CLEANUP {
+   ::blt::vector destroy attendu mesure
+   lassign $parInitial ::conf(extension,defaut) ::conf(fichier,compres) ::audace(rep_images)
    #--   clic sur le bouton Fermer
-  ::testaudela::clicButton $w.cmd.fermer
+   ::testaudela::clicButton $w.cmd.fermer
    #---  efface l'image
    ::confVisu::deleteImage $visuNo
-   file delete "./rgbr_8r.jpg" "./rgbr_8g.jpg" "./rgbr_8b.jpg"
+   file delete "./rz_rgbr_8r.jpg" "./rz_rgbr_8g.jpg" "./rz_rgbr_8b.jpg"
    file delete "./${name}r.txt" "./${name}g.txt" "./${name}b.txt"
-   ttscript2 "IMA/SERIES . rgbr_8 * * .fit . . . . DELETE"
-   ::blt::vector destroy attendu mesure
+   ttscript2 "IMA/SERIES . rz_rgbr_8 * * .fit . . . . DELETE"
 }
 
 #-----------------------------------------------------------------------------
 #--   test IMA/SERIES PROFILE direction=x
-test imaseries_profile_x {extraire une ligne de rbgr_8} -constraints {AUDACE} -setup $SETUP -body {
+test imaseries_profile_x {extraire une ligne de rz_rbgr_8} -constraints {AUDACE} -setup $SETUP -body {
   #--   clic sur le menu "Analyse/Extraire/Une ligne..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,extract)" "$::caption(audace,menu,ligne)..."
    #--   saisit les coordonnees de la zone a extraire
@@ -61,7 +65,7 @@ test imaseries_profile_x {extraire une ligne de rbgr_8} -constraints {AUDACE} -s
    }
    attendu expr {round(attendu-mesure)}
    incr result [llength [attendu search 0]]
-   foreach file [list rgbr_8r.jpg rgbr_8g.jpg rgbr_8b.jpg] {
+   foreach file [list rz_rgbr_8r.jpg rz_rgbr_8g.jpg rz_rgbr_8b.jpg] {
       if {[file exists $file]} {incr result}
    }
    return $result
@@ -69,7 +73,7 @@ test imaseries_profile_x {extraire une ligne de rbgr_8} -constraints {AUDACE} -s
 
 
 #--   test IMA/SERIES PROFILE direction=y
-test imaseries_profile_y {extraire une colonne de rbgr_8b} -constraints {AUDACE} -setup $SETUP -body {
+test imaseries_profile_y {extraire une colonne de rz_rbgr_8b} -constraints {AUDACE} -setup $SETUP -body {
    #--   clic sur le menu "Analyse/Extraire/Une colonne..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,extract)" "$::caption(audace,menu,colonne)..."
    #--   saisit les coordonnees de la zone a extraire
@@ -97,7 +101,7 @@ test imaseries_profile_y {extraire une colonne de rbgr_8b} -constraints {AUDACE}
    }
    attendu expr {round(attendu-mesure)}
    incr result [llength [attendu search 0]]
-   foreach file [list rgbr_8r.jpg rgbr_8g.jpg rgbr_8b.jpg] {
+   foreach file [list rz_rgbr_8r.jpg rz_rgbr_8g.jpg rz_rgbr_8b.jpg] {
       if {[file exists $file]} {incr result}
    }
    return $result
@@ -105,7 +109,7 @@ test imaseries_profile_y {extraire une colonne de rbgr_8b} -constraints {AUDACE}
 
 
 #--   IMA/SERIES MATRIX
-test imaseries_matrix {extraire une zone de rbgr_8} -constraints {AUDACE} -setup $SETUP -body {
+test imaseries_matrix {extraire une zone de rz_rbgr_8} -constraints {AUDACE} -setup $SETUP -body {
    #--   clic sur le menu "Analyse/Extraire/Une zone..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,extract)" "$::caption(audace,menu,matrice)..."
    #--   saisit les coordonnees de la zone a extraire
@@ -136,7 +140,7 @@ test imaseries_matrix {extraire une zone de rbgr_8} -constraints {AUDACE} -setup
    }
    attendu expr {round(attendu-mesure)}
    incr result [llength [attendu search 0]]
-   foreach file [list rgbr_8r.jpg rgbr_8g.jpg rgbr_8b.jpg] {
+   foreach file [list rz_rgbr_8r.jpg rz_rgbr_8g.jpg rz_rgbr_8b.jpg] {
       if {[file exists $file]} {incr result}
    }
    return $result
