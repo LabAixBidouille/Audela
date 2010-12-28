@@ -1,53 +1,10 @@
 #
 # Fichier : aud_menu_3.tcl
-# Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise à jour $Id: aud_menu_3.tcl,v 1.76 2010-12-22 18:36:41 robertdelmas Exp $
+# Description : Script regroupant les fonctionnalites du menu Images
+# Mise à jour $Id: aud_menu_3.tcl,v 1.77 2010-12-28 22:10:34 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
-
-   #
-   # ::pretraitement::parcourir In_Out
-   # Ouvre un explorateur pour choisir un fichier
-   #
-   proc parcourir { In_Out } {
-      global audace caption pretraitement
-
-      #--- Fenetre parent
-      set fenetre "$audace(base).pretraitement"
-      #--- Ouvre la fenetre de choix des images
-      set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
-      #--- Le fichier selectionne doit imperativement etre dans le repertoire des images
-      if { [ file dirname $filename ] != $audace(rep_images) } {
-         tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-            -message "$caption(pretraitement,rep-images)"
-         return
-      }
-      #--- Extraction du nom du fichier
-      if { $In_Out == "1" } {
-         if { $pretraitement(choix_mode) == "2" } {
-            set pretraitement(info_filename_in)  [ ::pretraitement::afficherNomGenerique [ file tail $filename ] ]
-            set pretraitement(in)                [ lindex $pretraitement(info_filename_in) 0 ]
-            set pretraitement(nb)                [ lindex $pretraitement(info_filename_in) 1 ]
-            set pretraitement(valeur_indice)     [ lindex $pretraitement(info_filename_in) 2 ]
-         } else {
-            set pretraitement(in)                [ file rootname [ file tail $filename ] ]
-         }
-      } elseif { $In_Out == "2" } {
-         if { $pretraitement(choix_mode) == "2" } {
-            set pretraitement(info_filename_out) [ ::pretraitement::afficherNomGenerique [ file tail $filename ] ]
-            set pretraitement(out)               [ lindex $pretraitement(info_filename_out) 0 ]
-         } else {
-            set pretraitement(out)               [ file rootname [ file tail $filename ] ]
-         }
-      } elseif { $In_Out == "3" } {
-         set pretraitement(img_operand)          [ file rootname [ file tail $filename ] ]
-      } elseif { $In_Out == "4" } {
-         set pretraitement(dark)                 [ file rootname [ file tail $filename ] ]
-      } elseif { $In_Out == "5" } {
-         set pretraitement(offset)               [ file rootname [ file tail $filename ] ]
-      }
-   }
 
    #
    # ::pretraitement::afficherNomGenerique
@@ -542,7 +499,7 @@ namespace eval ::conv2 {
       wm resizable $this 0 0
       wm minsize $this 250 150
       wm deiconify $this
-      wm title $this "$::caption(audace,menu,preprocess) - $caption(audace,menu,convertir)"
+      wm title $this "$::caption(audace,menu,images) - $caption(audace,menu,convertir)"
       wm geometry $this $widget(conv2,position)
       wm protocol $this WM_DELETE_WINDOW ::conv2::Fermer
 
@@ -1611,13 +1568,13 @@ namespace eval ::traiteWindow {
    proc run { type_pretraitement this } {
       variable This
       variable widget
-      global traiteWindow
+      global caption traiteWindow
 
       #---
       ::traiteWindow::initConf
       ::traiteWindow::confToWidget
       #---
-      set traiteWindow(captionOperation) [ ::traiteWindow::fonctionCaption "$type_pretraitement" ]
+      set traiteWindow(captionOperation) "$caption(audace,menu,recentrer)"
       #---
       set This $this
       if { [ winfo exists $This ] } {
@@ -1709,7 +1666,7 @@ namespace eval ::traiteWindow {
       toplevel $This
       wm resizable $This 0 0
       wm deiconify $This
-      wm title $This "$caption(audace,menu,preprocess) - $caption(audace,menu,recentrer)"
+      wm title $This "$caption(audace,menu,images) - $caption(audace,menu,recentrer)"
       wm geometry $This $widget(traiteWindow,position)
       wm transient $This $audace(base)
       wm protocol $This WM_DELETE_WINDOW ::traiteWindow::cmdClose
@@ -1717,25 +1674,12 @@ namespace eval ::traiteWindow {
       #---
       frame $This.usr -borderwidth 0 -relief raised
 
-         frame $This.usr.0 -borderwidth 1 -relief raised
-            label $This.usr.0.lab1 -textvariable "traiteWindow(formule)"
-            pack $This.usr.0.lab1 -padx 10 -pady 5
-        # pack $This.usr.0 -in $This.usr -side top -fill both
-
          frame $This.usr.4 -borderwidth 1 -relief raised
             frame $This.usr.4.1 -borderwidth 0 -relief flat
                label $This.usr.4.1.labURL1 -textvariable "traiteWindow(avancement)" -fg $color(blue)
                pack $This.usr.4.1.labURL1 -side top -padx 10 -pady 5
             pack $This.usr.4.1 -side top -fill both
         # pack $This.usr.4 -in $This.usr -side top -fill both
-
-         frame $This.usr.3 -borderwidth 1 -relief raised
-            frame $This.usr.3.1 -borderwidth 0 -relief flat
-               checkbutton $This.usr.3.1.che1 -text "$caption(pretraitement,afficher_image_fin)" \
-                  -variable traiteWindow(disp)
-               pack $This.usr.3.1.che1 -side left -padx 10 -pady 5
-            pack $This.usr.3.1 -side top -fill both
-        # pack $This.usr.3 -in $This.usr -side top -fill both
 
          frame $This.usr.3a -borderwidth 1 -relief raised
             frame $This.usr.3a.1 -borderwidth 0 -relief flat
@@ -1799,7 +1743,7 @@ namespace eval ::traiteWindow {
                   -indicatoron "1" \
                   -value "$pretrait" \
                   -variable traiteWindow(captionOperation) \
-                  -command { ::traiteWindow::captionFonction $traiteWindow(captionOperation) }
+                  -command { set traiteWindow(operation) "serie_recentrer" }
             }
         # pack $This.usr.1 -in $This.usr -side top -fill both
 
@@ -1843,48 +1787,6 @@ namespace eval ::traiteWindow {
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
-   }
-
-   #
-   # ::traiteWindow::fonctionCaption
-   # Procedure qui associe a une fonction un caption
-   #
-   proc fonctionCaption { type_pretraitement } {
-      global caption traiteWindow
-
-      #---
-      if { $type_pretraitement == "serie_mediane" } {
-         #set traiteWindow(captionOperation) "$caption(audace,menu,mediane)"
-      } elseif { $type_pretraitement == "serie_somme" } {
-         #set traiteWindow(captionOperation) "$caption(audace,menu,somme)"
-      } elseif { $type_pretraitement == "serie_moyenne" } {
-         #set traiteWindow(captionOperation) "$caption(audace,menu,moyenne)"
-      } elseif { $type_pretraitement == "serie_ecart_type" } {
-         #set traiteWindow(captionOperation) "$caption(audace,menu,ecart_type)"
-      } elseif { $type_pretraitement == "serie_recentrer" } {
-         set traiteWindow(captionOperation) "$caption(audace,menu,recentrer)"
-      }
-   }
-
-   #
-   # ::traiteWindow::captionFonction
-   # Procedure qui associe a un caption une fonction
-   #
-   proc captionFonction { type_pretraitement } {
-      global caption traiteWindow
-
-      #---
-      if { $type_pretraitement == "$caption(audace,menu,mediane)" } {
-         #set traiteWindow(operation) "serie_mediane"
-      } elseif { $type_pretraitement == "$caption(audace,menu,somme)" } {
-         #set traiteWindow(operation) "serie_somme"
-      } elseif { $type_pretraitement == "$caption(audace,menu,moyenne)" } {
-         #set traiteWindow(operation) "serie_moyenne"
-      } elseif { $type_pretraitement == "$caption(audace,menu,ecart_type)" } {
-         #set traiteWindow(operation) "serie_ecart_type"
-      } elseif { $type_pretraitement == "$caption(audace,menu,recentrer)" } {
-         set traiteWindow(operation) "serie_recentrer"
-      }
    }
 
    #
@@ -1961,71 +1863,21 @@ namespace eval ::traiteWindow {
 
       #--- Switch
       switch $traiteWindow(operation) {
-         "serie_mediane" {
-            set catchError [ catch {
-               ::console::affiche_resultat "Usage: smedian in out number ?first_index? ?tt_options?\n\n"
-               smedian $in $out $nb $first
-               if { $traiteWindow(disp) == 1 } {
-                  loadima $out
-               }
-               set traiteWindow(avancement) "$caption(pretraitement,fin_traitement)"
-            } m ]
-            if { $catchError == "1" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-               set traiteWindow(avancement) ""
-            }
-         }
-         "serie_somme" {
-            set catchError [ catch {
-               ::console::affiche_resultat "Usage: sadd in out number ?first_index? ?tt_options?\n\n"
-               sadd $in $out $nb $first
-               if { $traiteWindow(disp) == 1 } {
-                  loadima $out
-               }
-               set traiteWindow(avancement) "$caption(pretraitement,fin_traitement)"
-            } m ]
-            if { $catchError == "1" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-               set traiteWindow(avancement) ""
-            }
-         }
-         "serie_moyenne" {
-            set catchError [ catch {
-               ::console::affiche_resultat "Usage: smean in out number ?first_index? ?tt_options?\n\n"
-               smean $in $out $nb $first
-               if { $traiteWindow(disp) == 1 } {
-                  loadima $out
-               }
-               set traiteWindow(avancement) "$caption(pretraitement,fin_traitement)"
-            } m ]
-            if { $catchError == "1" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-               set traiteWindow(avancement) ""
-            }
-         }
-         "serie_ecart_type" {
-            set catchError [ catch {
-               ::console::affiche_resultat "Usage: ssigma in out number ?first_index? bitpix=-32\n\n"
-               ssigma $in $out $nb $first "bitpix=-32"
-               if { $traiteWindow(disp) == 1 } {
-                  loadima $out
-               }
-               set traiteWindow(avancement) "$caption(pretraitement,fin_traitement)"
-            } m ]
-            if { $catchError == "1" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-               set traiteWindow(avancement) ""
-            }
-         }
          "serie_recentrer" {
             set catchError [ catch {
-               ::console::affiche_resultat "Usage: registerbox in out number ?visuNo? ?first_index? ?tt_options?\n\n"
+              ::console::affiche_resultat "Usage: registerbox in out number ?visuNo? ?first_index? ?tt_options?\n\n"
                #--- Un cadre trace avec la souris n'existe pas
                if { [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ] == "" } {
                   set coordWindow ""
                   loadima $in$first
-                  tk_messageBox -title $caption(confVisu,attention) -type ok \
-                     -message "$caption(pretraitement,tracer_boite)\n$caption(pretraitement,appuyer_ok)"
+                  set choix [ tk_messageBox -title $caption(pretraitement,attention) -type yesno \
+                     -message "$caption(pretraitement,tracer_boite)\n$caption(pretraitement,appuyer)" ]
+                  if { $choix == "yes" } {
+                     ::traiteWindow::cmdApply
+                     return
+                  } elseif { $choix == "no" } {
+                     return
+                  }
                }
                set coordWindow [ list [ ::confVisu::getBox $audace(visuNo) ] ]
                registerbox $in $out $nb $audace(visuNo) $first
@@ -2066,15 +1918,7 @@ namespace eval ::traiteWindow {
       global help traiteWindow
 
       #---
-      if { $traiteWindow(operation) == "serie_mediane" } {
-         set traiteWindow(page_web) "1150serie_mediane"
-      } elseif { $traiteWindow(operation) == "serie_somme" } {
-         set traiteWindow(page_web) "1160serie_somme"
-      } elseif { $traiteWindow(operation) == "serie_moyenne" } {
-         set traiteWindow(page_web) "1170serie_moyenne"
-      } elseif { $traiteWindow(operation) == "serie_ecart_type" } {
-         set traiteWindow(page_web) "1180serie_ecart_type"
-      } elseif { $traiteWindow(operation) == "serie_recentrer" } {
+      if { $traiteWindow(operation) == "serie_recentrer" } {
          set traiteWindow(page_web) "1190serie_recentrer"
       }
 
@@ -2088,7 +1932,7 @@ namespace eval ::traiteWindow {
    #
    proc change { n1 n2 op } {
       variable This
-      global traiteWindow
+      global caption traiteWindow
 
       #---
       set traiteWindow(avancement)    ""
@@ -2097,52 +1941,17 @@ namespace eval ::traiteWindow {
       set traiteWindow(valeur_indice) "1"
       set traiteWindow(out)           ""
       #---
-      ::traiteWindow::formule
+      set traiteWindow(image_A)        "$caption(pretraitement,image_generique_entree)"
+      set traiteWindow(nombre)         "$caption(pretraitement,image_nombre)"
+      set traiteWindow(premier_indice) "$caption(pretraitement,image_premier_indice)"
+      set traiteWindow(image_B)        "$caption(pretraitement,image_generique_sortie)"
       #---
       switch $traiteWindow(operation) {
-         "serie_mediane" {
-            pack forget $This.usr.0
-            pack $This.usr.4 -in $This.usr -side bottom -fill both
-            pack $This.usr.1 -in $This.usr -side top -fill both
-            pack $This.usr.2 -in $This.usr -side top -fill both
-            pack forget $This.usr.2a
-            pack $This.usr.3 -in $This.usr -side top -fill both
-            pack forget $This.usr.3a
-         }
-         "serie_somme" {
-            pack $This.usr.0 -in $This.usr -side top -fill both
-            pack $This.usr.4 -in $This.usr -side bottom -fill both
-            pack $This.usr.1 -in $This.usr -side top -fill both
-            pack $This.usr.2 -in $This.usr -side top -fill both
-            pack forget $This.usr.2a
-            pack $This.usr.3 -in $This.usr -side top -fill both
-            pack forget $This.usr.3a
-         }
-         "serie_moyenne" {
-            pack $This.usr.0 -in $This.usr -side top -fill both
-            pack $This.usr.4 -in $This.usr -side bottom -fill both
-            pack $This.usr.1 -in $This.usr -side top -fill both
-            pack $This.usr.2 -in $This.usr -side top -fill both
-            pack forget $This.usr.2a
-            pack $This.usr.3 -in $This.usr -side top -fill both
-            pack forget $This.usr.3a
-         }
-         "serie_ecart_type" {
-            pack forget $This.usr.0
-            pack $This.usr.4 -in $This.usr -side bottom -fill both
-            pack $This.usr.1 -in $This.usr -side top -fill both
-            pack $This.usr.2 -in $This.usr -side top -fill both
-            pack forget $This.usr.2a
-            pack $This.usr.3 -in $This.usr -side top -fill both
-            pack forget $This.usr.3a
-         }
          "serie_recentrer" {
-            pack forget $This.usr.0
             pack $This.usr.4 -in $This.usr -side bottom -fill both
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
             pack $This.usr.2a -in $This.usr -side top -fill both
-            pack forget $This.usr.3
             pack $This.usr.3a -in $This.usr -side top -fill both
          }
       }
@@ -2181,1320 +1990,61 @@ namespace eval ::traiteWindow {
       }
    }
 
-   #
-   # ::traiteWindow::formule
-   # Affiche les formules
-   #
-   proc formule { } {
-      global caption traiteWindow
-
-      if { $traiteWindow(operation) == "serie_somme" } {
-         set traiteWindow(image_A)        "$caption(pretraitement,image_generique_entree-) ( A ) :"
-         set traiteWindow(nombre)         "$caption(pretraitement,image_nombre-) ( n ) :"
-         set traiteWindow(premier_indice) "$caption(pretraitement,image_premier_indice)"
-         set traiteWindow(image_B)        "$caption(pretraitement,image_sortie-) ( B ) :"
-         set traiteWindow(formule)        "$caption(pretraitement,formule) B = A1 + A2 + ... + An"
-      } elseif { $traiteWindow(operation) == "serie_moyenne" } {
-         set traiteWindow(image_A)        "$caption(pretraitement,image_generique_entree-) ( A ) :"
-         set traiteWindow(nombre)         "$caption(pretraitement,image_nombre-) ( n ) :"
-         set traiteWindow(premier_indice) "$caption(pretraitement,image_premier_indice)"
-         set traiteWindow(image_B)        "$caption(pretraitement,image_sortie-) ( B ) :"
-         set traiteWindow(formule)        "$caption(pretraitement,formule) B = ( A1 + A2 + ... + An ) / n"
-      } elseif { $traiteWindow(operation) == "serie_recentrer" } {
-         set traiteWindow(image_A)        "$caption(pretraitement,image_generique_entree)"
-         set traiteWindow(nombre)         "$caption(pretraitement,image_nombre)"
-         set traiteWindow(premier_indice) "$caption(pretraitement,image_premier_indice)"
-         set traiteWindow(image_B)        "$caption(pretraitement,image_generique_sortie)"
-         set traiteWindow(formule)        ""
-      } else {
-         set traiteWindow(image_A)        "$caption(pretraitement,image_generique_entree)"
-         set traiteWindow(nombre)         "$caption(pretraitement,image_nombre)"
-         set traiteWindow(premier_indice) "$caption(pretraitement,image_premier_indice)"
-         set traiteWindow(image_B)        "$caption(pretraitement,image_sortie)"
-         set traiteWindow(formule)        ""
-      }
-   }
-
 }
 
 ########################### Fin du namespace traiteWindow ###########################
 
-namespace eval ::faireImageRef {
-
-   #
-   # ::faireImageRef::run type_image_reference this
-   # Lance la fenetre de dialogue pour les pretraitements sur une images
-   # this : Chemin de la fenetre
-   #
-   proc run { sousMenu type_image_reference this } {
-      variable This
-      variable widget
-      global caption faireImageRef
-
-      #---
-      ::faireImageRef::initConf
-      ::faireImageRef::confToWidget
-      #---
-      set faireImageRef(captionOperation) [ ::faireImageRef::fonctionCaption "$type_image_reference" ]
-      #---
-      set This $this
-      if { [ winfo exists $This ] } {
-         wm withdraw $This
-         wm deiconify $This
-         #--- Mise a jour du titre
-         wm title $This "$caption(audace,menu,preprocess) - $sousMenu"
-         #--- Selection de la liste des fonction du menubutton
-         if { $sousMenu == $caption(audace,menu,faire_image) } {
-            set list_faireImageRef [ list $caption(audace,menu,faire_offset) $caption(audace,menu,faire_dark) \
-               $caption(audace,menu,faire_flat_field) ]
-         } elseif { $sousMenu == $caption(audace,menu,faire_pretraitee) } {
-            set list_faireImageRef [ list $caption(audace,menu,faire_pretraitee) ]
-         }
-         #--- Mise a jour de la liste des fonction du menubutton
-         $This.usr.1.but1.menu delete 0 20
-         foreach pretrait $list_faireImageRef {
-            $This.usr.1.but1.menu add radiobutton -label "$pretrait" \
-               -indicatoron "1" \
-               -value "$pretrait" \
-               -variable faireImageRef(captionOperation) \
-               -command { ::faireImageRef::captionFonction $faireImageRef(captionOperation) }
-         }
-         #---
-         focus $This
-      } else {
-         if { [ info exists faireImageRef(geometry) ] } {
-            set deb [ expr 1 + [ string first + $faireImageRef(geometry) ] ]
-            set fin [ string length $faireImageRef(geometry) ]
-            set widget(faireImageRef,position) "+[string range $faireImageRef(geometry) $deb $fin]"
-         }
-         ::faireImageRef::createDialog $sousMenu $type_image_reference
-      }
-      #---
-      set faireImageRef(operation) "$type_image_reference"
-   }
-
-   #
-   # ::faireImageRef::initConf
-   # Initialisation des variables de configuration
-   #
-   proc initConf { } {
-      global conf
-
-      if { ! [ info exists conf(faireImageRef,position) ] } { set conf(faireImageRef,position) "+350+75" }
-
-      return
-   }
-
-   #
-   # ::faireImageRef::confToWidget
-   # Charge les variables de configuration dans des variables locales
-   #
-   proc confToWidget { } {
-      variable widget
-      global conf
-
-      set widget(faireImageRef,position) "$conf(faireImageRef,position)"
-   }
-
-   #
-   # ::faireImageRef::widgetToConf
-   # Charge les variables locales dans des variables de configuration
-   #
-   proc widgetToConf { } {
-      variable widget
-      global conf
-
-      set conf(faireImageRef,position) "$widget(faireImageRef,position)"
-   }
-
-   #
-   # ::faireImageRef::recupPosition
-   # Recupere la position de la fenetre
-   #
-   proc recupPosition { } {
-      variable This
-      variable widget
-      global faireImageRef
-
-      set faireImageRef(geometry) [wm geometry $This]
-      set deb [ expr 1 + [ string first + $faireImageRef(geometry) ] ]
-      set fin [ string length $faireImageRef(geometry) ]
-      set widget(faireImageRef,position) "+[string range $faireImageRef(geometry) $deb $fin]"
-      #---
-      ::faireImageRef::widgetToConf
-   }
-
-   #
-   # ::faireImageRef::createDialog
-   # Creation de l'interface graphique
-   #
-   proc createDialog { sousMenu type_image_reference } {
-      variable This
-      variable widget
-      global audace caption color conf faireImageRef
-
-      #--- Initialisation des variables principales
-      set faireImageRef(in)                          ""
-      set faireImageRef(nb)                          ""
-      set faireImageRef(valeur_indice)               "1"
-      set faireImageRef(out)                         ""
-      set faireImageRef(offset)                      ""
-      set faireImageRef(dark)                        ""
-      set faireImageRef(opt)                         "0"
-      set faireImageRef(flat-field)                  ""
-      set faireImageRef(methode)                     "2"
-      set faireImageRef(norm)                        ""
-      set faireImageRef(disp)                        "1"
-      set faireImageRef(afficher_image)              "$caption(pretraitement,afficher_image_fin)"
-      set faireImageRef(avancement)                  ""
-      set faireImageRef(dark,no-offset)              "0"
-      set faireImageRef(flat-field,no-offset)        "0"
-      set faireImageRef(flat-field,no-dark)          "0"
-      set faireImageRef(pretraitement,no-offset)     "0"
-      set faireImageRef(pretraitement,no-dark)       "0"
-      set faireImageRef(pretraitement,no-flat-field) "0"
-      set faireImageRef(pretraitement,norm-auto)     "0"
-
-      #--- Toutes les images (offset, dark et flat) sont diponibles
-      set faireImageRef(option)                      "000"
-
-      #--- Liste des pretraitements disponibles
-      if { $sousMenu == $caption(audace,menu,faire_image) } {
-         set list_faireImageRef [ list $caption(audace,menu,faire_offset) $caption(audace,menu,faire_dark) \
-            $caption(audace,menu,faire_flat_field) ]
-      } elseif { $sousMenu == $caption(audace,menu,faire_pretraitee) } {
-         set list_faireImageRef [ list $caption(audace,menu,faire_pretraitee) ]
-      }
-
-      #---
-      toplevel $This
-      wm resizable $This 0 0
-      wm deiconify $This
-      wm title $This "$caption(audace,menu,preprocess) - $sousMenu"
-      wm geometry $This $widget(faireImageRef,position)
-      wm transient $This $audace(base)
-      wm protocol $This WM_DELETE_WINDOW ::faireImageRef::cmdClose
-
-      #---
-      frame $This.usr -borderwidth 0 -relief raised
-
-         frame $This.usr.8 -borderwidth 1 -relief raised
-            frame $This.usr.8.1 -borderwidth 0 -relief flat
-               label $This.usr.8.1.labURL1 -textvariable "faireImageRef(avancement)" \
-                  -fg $color(blue)
-               pack $This.usr.8.1.labURL1 -side top -padx 10 -pady 5
-            pack $This.usr.8.1 -side top -fill both
-        # pack $This.usr.8 -side bottom -fill both
-
-         frame $This.usr.7 -borderwidth 1 -relief raised
-            frame $This.usr.7.1 -borderwidth 0 -relief flat
-               checkbutton $This.usr.7.1.che1 -text "$caption(pretraitement,aucune)" \
-                  -variable faireImageRef(pretraitement,no-offset) -command { ::faireImageRef::griserActiver_1 }
-               pack $This.usr.7.1.che1 -side left -padx 10 -pady 5
-               label $This.usr.7.1.lab6 -text "$caption(pretraitement,image_offset)"
-               pack $This.usr.7.1.lab6 -side left -padx 5 -pady 5
-               entry $This.usr.7.1.ent6 -textvariable faireImageRef(offset)
-               pack $This.usr.7.1.ent6 -side left -padx 10 -pady 5 -fill x -expand 1
-               button $This.usr.7.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
-                  -command { ::faireImageRef::parcourir 3 }
-               pack $This.usr.7.1.explore -side right -padx 10 -pady 5 -ipady 5
-            pack $This.usr.7.1 -side top -fill both
-            frame $This.usr.7.2 -borderwidth 0 -relief flat
-               checkbutton $This.usr.7.2.che1 -text "$caption(pretraitement,aucune)" \
-                  -variable faireImageRef(pretraitement,no-dark) -command { ::faireImageRef::griserActiver_2 }
-               pack $This.usr.7.2.che1 -side left -padx 10 -pady 5
-               label $This.usr.7.2.lab6 -text "$caption(pretraitement,image_dark)"
-               pack $This.usr.7.2.lab6 -side left -padx 5 -pady 5
-               entry $This.usr.7.2.ent6 -textvariable faireImageRef(dark)
-               pack $This.usr.7.2.ent6 -side left -padx 10 -pady 5 -fill x -expand 1
-               button $This.usr.7.2.explore -text "$caption(pretraitement,parcourir)" -width 1 \
-                  -command { ::faireImageRef::parcourir 4 }
-               pack $This.usr.7.2.explore -side right -padx 10 -pady 5 -ipady 5
-            pack $This.usr.7.2 -side top -fill both
-            frame $This.usr.7.3 -borderwidth 0 -relief flat
-               checkbutton $This.usr.7.3.opt -text "$caption(audace,menu,opt_noir)" -variable faireImageRef(opt)
-               pack $This.usr.7.3.opt -side right -padx 80 -pady 5
-            pack $This.usr.7.3 -side top -fill both
-            frame $This.usr.7.4 -borderwidth 0 -relief flat
-               checkbutton $This.usr.7.4.che1 -text "$caption(pretraitement,aucune)" \
-                  -variable faireImageRef(pretraitement,no-flat-field) -command { ::faireImageRef::griserActiver_3 }
-               pack $This.usr.7.4.che1 -side left -padx 10 -pady 5
-               label $This.usr.7.4.lab6 -text "$caption(pretraitement,image_flat-field)"
-               pack $This.usr.7.4.lab6 -side left -padx 5 -pady 5
-               entry $This.usr.7.4.ent6 -textvariable faireImageRef(flat-field)
-               pack $This.usr.7.4.ent6 -side left -padx 10 -pady 5 -fill x -expand 1
-               button $This.usr.7.4.explore -text "$caption(pretraitement,parcourir)" -width 1 \
-                  -command { ::faireImageRef::parcourir 5 }
-               pack $This.usr.7.4.explore -side right -padx 10 -pady 5 -ipady 5
-            pack $This.usr.7.4 -side top -fill both
-            frame $This.usr.7.6 -borderwidth 0 -relief flat
-               checkbutton $This.usr.7.6.che1 -text "$caption(pretraitement,auto)" \
-                  -variable faireImageRef(pretraitement,norm-auto) -command { ::faireImageRef::griserActiver_4 }
-               pack $This.usr.7.6.che1 -side left -padx 10 -pady 5
-               label $This.usr.7.6.lab6 -textvariable "faireImageRef(normalisation)"
-               pack $This.usr.7.6.lab6 -side left -padx 5 -pady 5
-               entry $This.usr.7.6.ent6 -textvariable faireImageRef(norm) -width 10 -justify center
-               pack $This.usr.7.6.ent6 -side left -padx 10 -pady 5
-            pack $This.usr.7.6 -side top -fill both
-        # pack $This.usr.7 -side top -fill both
-
-         frame $This.usr.6 -borderwidth 1 -relief raised
-            frame $This.usr.6.1 -borderwidth 0 -relief flat
-               checkbutton $This.usr.6.1.che1 -text "$faireImageRef(afficher_image)" \
-                  -variable faireImageRef(disp)
-               pack $This.usr.6.1.che1 -side left -padx 10 -pady 5
-            pack $This.usr.6.1 -side top -fill both
-        # pack $This.usr.6 -side top -fill both
-
-         frame $This.usr.5 -borderwidth 1 -relief raised
-            frame $This.usr.5.1 -borderwidth 0 -relief flat
-               label $This.usr.5.1.lab9 -text "$caption(pretraitement,methode)"
-               pack $This.usr.5.1.lab9 -side left -padx 10 -pady 5
-               radiobutton $This.usr.5.1.rad0 -highlightthickness 0 -padx 0 -pady 0 -state normal \
-                  -text "$caption(audace,menu,somme)" -value 0 -variable faireImageRef(methode)
-               pack $This.usr.5.1.rad0 -side left -padx 10 -pady 5
-               radiobutton $This.usr.5.1.rad1 -highlightthickness 0 -padx 0 -pady 0 -state normal \
-                  -text "$caption(audace,menu,moyenne)" -value 1 -variable faireImageRef(methode)
-               pack $This.usr.5.1.rad1 -side left -padx 10 -pady 5
-               radiobutton $This.usr.5.1.rad2 -highlightthickness 0 -padx 0 -pady 0 -state normal \
-                  -text "$caption(audace,menu,mediane)" -value 2 -variable faireImageRef(methode)
-               pack $This.usr.5.1.rad2 -side left -padx 10 -pady 5
-            pack $This.usr.5.1 -side top -fill both
-        # pack $This.usr.5 -side top -fill both
-
-         frame $This.usr.4 -borderwidth 1 -relief raised
-            frame $This.usr.4.1 -borderwidth 0 -relief flat
-               checkbutton $This.usr.4.1.che1 -text "$caption(pretraitement,aucune)" \
-                  -variable faireImageRef(flat-field,no-offset) \
-                  -command { ::faireImageRef::griserActiver_5 }
-               pack $This.usr.4.1.che1 -side left -padx 10 -pady 5
-               label $This.usr.4.1.lab6 -text "$caption(pretraitement,image_offset)"
-               pack $This.usr.4.1.lab6 -side left -padx 5 -pady 5
-               entry $This.usr.4.1.ent6 -textvariable faireImageRef(offset)
-               pack $This.usr.4.1.ent6 -side left -padx 10 -pady 5 -fill x -expand 1
-               button $This.usr.4.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
-                  -command { ::faireImageRef::parcourir 3 }
-               pack $This.usr.4.1.explore -side left -padx 10 -pady 5 -ipady 5
-            pack $This.usr.4.1 -side top -fill both
-
-            frame $This.usr.4.2 -borderwidth 0 -relief flat
-               checkbutton $This.usr.4.2.che1 -text "$caption(pretraitement,aucune)" \
-                  -variable faireImageRef(flat-field,no-dark) \
-                  -command { ::faireImageRef::griserActiver_6 }
-               pack $This.usr.4.2.che1 -side left -padx 10 -pady 5
-               label $This.usr.4.2.lab6 -text "$caption(pretraitement,image_dark)"
-               pack $This.usr.4.2.lab6 -side left -padx 5 -pady 5
-               entry $This.usr.4.2.ent6 -textvariable faireImageRef(dark)
-               pack $This.usr.4.2.ent6 -side left -padx 10 -pady 5 -fill x -expand 1
-               button $This.usr.4.2.explore -text "$caption(pretraitement,parcourir)" -width 1 \
-                  -command { ::faireImageRef::parcourir 4 }
-               pack $This.usr.4.2.explore -side left -padx 10 -pady 5 -ipady 5
-            pack $This.usr.4.2 -side top -fill both
-
-            frame $This.usr.4.3 -borderwidth 0 -relief flat
-               entry $This.usr.4.3.ent7 -textvariable faireImageRef(norm) -width 7 -justify center
-               pack $This.usr.4.3.ent7 -side right -padx 10 -pady 5
-               label $This.usr.4.3.lab7 -textvariable "faireImageRef(normalisation)"
-               pack $This.usr.4.3.lab7 -side right -padx 5 -pady 5
-            pack $This.usr.4.3 -side top -fill both -padx 60
-        # pack $This.usr.4 -side top -fill both
-
-         frame $This.usr.3 -borderwidth 1 -relief raised
-            frame $This.usr.3.1 -borderwidth 0 -relief flat
-               checkbutton $This.usr.3.1.che1 -text "$caption(pretraitement,aucune)" \
-                  -variable faireImageRef(dark,no-offset) -command { ::faireImageRef::griserActiver_8 }
-               pack $This.usr.3.1.che1 -side left -padx 10 -pady 5
-               label $This.usr.3.1.lab6 -text "$caption(pretraitement,image_offset)"
-               pack $This.usr.3.1.lab6 -side left -padx 5 -pady 5
-               entry $This.usr.3.1.ent6 -textvariable faireImageRef(offset)
-               pack $This.usr.3.1.ent6 -side left -padx 10 -pady 5 -fill x -expand 1
-               button $This.usr.3.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
-                  -command { ::faireImageRef::parcourir 3 }
-               pack $This.usr.3.1.explore -side left -padx 10 -pady 5 -ipady 5
-            pack $This.usr.3.1 -side top -fill both
-        # pack $This.usr.3 -side top -fill both
-
-         frame $This.usr.2 -borderwidth 1 -relief raised
-            frame $This.usr.2.1 -borderwidth 0 -relief flat
-               label $This.usr.2.1.lab1 -textvariable "faireImageRef(image_generique)"
-               pack $This.usr.2.1.lab1 -side left -padx 5 -pady 5
-               entry $This.usr.2.1.ent1 -textvariable faireImageRef(in)
-               pack $This.usr.2.1.ent1 -side left -padx 10 -pady 5 -fill x -expand 1
-               button $This.usr.2.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
-                  -command { ::faireImageRef::parcourir 1 }
-               pack $This.usr.2.1.explore -side right -padx 10 -pady 5 -ipady 5
-            pack $This.usr.2.1 -side top -fill both
-            frame $This.usr.2.2 -borderwidth 0 -relief flat
-               label $This.usr.2.2.lab2 -textvariable "faireImageRef(nombre)" -width 20
-               pack $This.usr.2.2.lab2 -side left -padx 5 -pady 5
-               entry $This.usr.2.2.ent2 -textvariable faireImageRef(nb) -width 7 -justify center
-               pack $This.usr.2.2.ent2 -side left -padx 10 -pady 5
-            pack $This.usr.2.2 -side top -fill both
-            frame $This.usr.2.3 -borderwidth 0 -relief flat
-               label $This.usr.2.3.lab3 -textvariable "faireImageRef(premier_indice)" -width 20
-               pack $This.usr.2.3.lab3 -side left -padx 5 -pady 5
-               entry $This.usr.2.3.ent3 -textvariable faireImageRef(valeur_indice) -width 7 -justify center
-               pack $This.usr.2.3.ent3 -side left -padx 10 -pady 5
-            pack $This.usr.2.3 -side top -fill both
-            frame $This.usr.2.4 -borderwidth 0 -relief flat
-               label $This.usr.2.4.lab4 -textvariable "faireImageRef(image_sortie)"
-               pack $This.usr.2.4.lab4 -side left -padx 5 -pady 5
-               entry $This.usr.2.4.ent4 -textvariable faireImageRef(out)
-               pack $This.usr.2.4.ent4 -side left -padx 10 -pady 5 -fill x -expand 1
-               button $This.usr.2.4.explore -text "$caption(pretraitement,parcourir)" -width 1 \
-                  -command { ::faireImageRef::parcourir 2 }
-               pack $This.usr.2.4.explore -side right -padx 10 -pady 5 -ipady 5
-            pack $This.usr.2.4 -side top -fill both
-        # pack $This.usr.2 -side top -fill both
-
-         frame $This.usr.1 -borderwidth 1 -relief raised
-            #---
-            menubutton $This.usr.1.but1 -textvariable faireImageRef(captionOperation) -menu $This.usr.1.but1.menu \
-               -relief raised
-            pack $This.usr.1.but1 -side right -padx 10 -pady 5 -ipady 5
-            set m [menu $This.usr.1.but1.menu -tearoff 0]
-            foreach pretrait $list_faireImageRef {
-               $m add radiobutton -label "$pretrait" \
-                  -indicatoron "1" \
-                  -value "$pretrait" \
-                  -variable faireImageRef(captionOperation) \
-                  -command { ::faireImageRef::captionFonction $faireImageRef(captionOperation) }
-            }
-        # pack $This.usr.1 -side top -fill both -ipady 5
-
-      pack $This.usr -side top -fill both -expand 1
-
-      frame $This.cmd -borderwidth 1 -relief raised
-         button $This.cmd.ok -text "$caption(aud_menu_3,ok)" -width 7 \
-            -command { ::faireImageRef::cmdOk }
-         if { $conf(ok+appliquer)=="1" } {
-            pack $This.cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
-         }
-         button $This.cmd.appliquer -text "$caption(aud_menu_3,appliquer)" -width 8 \
-            -command { ::faireImageRef::cmdApply }
-         pack $This.cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
-         button $This.cmd.fermer -text "$caption(aud_menu_3,fermer)" -width 7 \
-            -command { ::faireImageRef::cmdClose }
-         pack $This.cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
-         button $This.cmd.aide -text "$caption(aud_menu_3,aide)" -width 7 \
-            -command { ::faireImageRef::afficheAide }
-         pack $This.cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
-      pack $This.cmd -side top -fill x
-
-      #---
-      uplevel #0 trace variable faireImageRef(operation) w ::faireImageRef::change
-
-      #---
-      bind $This <Key-Return> {::faireImageRef::cmdOk}
-      bind $This <Key-Escape> {::faireImageRef::cmdClose}
-
-      #--- Focus
-      focus $This
-
-      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { ::console::GiveFocus }
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $This
-   }
-
-   #
-   # ::faireImageRef::fonctionCaption
-   # Procedure qui associe a une fonction un caption
-   #
-   proc fonctionCaption { type_image_reference } {
-      global caption faireImageRef
-
-      #---
-      if { $type_image_reference == "faire_offset" } {
-         set faireImageRef(captionOperation) "$caption(audace,menu,faire_offset)"
-      } elseif { $type_image_reference == "faire_dark" } {
-         set faireImageRef(captionOperation) "$caption(audace,menu,faire_dark)"
-      } elseif { $type_image_reference == "faire_flat_field" } {
-         set faireImageRef(captionOperation) "$caption(audace,menu,faire_flat_field)"
-      } elseif { $type_image_reference == "pretraitement" } {
-         set faireImageRef(captionOperation) "$caption(audace,menu,faire_pretraitee)"
+#
+# subfitgauss visuNo
+# Ajuste et soustrait une gaussienne dans la fenetre d'une image
+#
+proc subfitgauss { visuNo } {
+   #--- Je memorise le nom du fichier
+   set filename [ ::confVisu::getFileName $visuNo ]
+   #--- Je capture la fenetre d'analyse
+   set box [ ::confVisu::getBox $visuNo ]
+   if { $box == "" } {
+      set choix [ tk_messageBox -title $::caption(pretraitement,attention) -type yesno \
+         -message "$::caption(pretraitement,tracer_boite)\n$::caption(pretraitement,appuyer)" ]
+      if { $choix == "yes" } {
+         subfitgauss $visuNo
+         return
+      } elseif { $choix == "no" } {
+         return
       }
    }
-
-   #
-   # ::faireImageRef::captionFonction
-   # Procedure qui associe a un caption une fonction
-   #
-   proc captionFonction { type_image_reference } {
-      global caption faireImageRef
-
-      #---
-      if { $type_image_reference == "$caption(audace,menu,faire_offset)" } {
-         set faireImageRef(operation) "faire_offset"
-      } elseif { $type_image_reference == "$caption(audace,menu,faire_dark)" } {
-         set faireImageRef(operation) "faire_dark"
-      } elseif { $type_image_reference == "$caption(audace,menu,faire_flat_field)" } {
-         set faireImageRef(operation) "faire_flat_field"
-      } elseif { $type_image_reference == "$caption(audace,menu,faire_pretraitee)" } {
-         set faireImageRef(operation) "pretraitement"
-      }
-   }
-
-   #
-   # ::faireImageRef::cmdOk
-   # Procedure correspondant a l'appui sur le bouton OK
-   #
-   proc cmdOk { } {
-      if { [ ::faireImageRef::cmdApply ] == "0" } { return }
-      ::faireImageRef::cmdClose
-   }
-
-   #
-   # ::faireImageRef::cmdApply
-   # Procedure correspondant a l'appui sur le bouton Appliquer
-   #
-   proc cmdApply { } {
-      global audace caption conf faireImageRef
-
-      #---
-      set faireImageRef(avancement) "$caption(pretraitement,en_cours)"
-      update
-
-      #---
-      set in    $faireImageRef(in)
-      set nb    $faireImageRef(nb)
-      set first $faireImageRef(valeur_indice)
-      set out   $faireImageRef(out)
-
-      #--- Tests sur les images d'entree, le nombre d'images et les images de sortie
-      if { $faireImageRef(in) == "" } {
-          tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-             -message "$caption(pretraitement,definir_entree_generique)"
-          set faireImageRef(avancement) ""
-          return 0
-      }
-      if { $faireImageRef(nb) == "" } {
-          tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-             -message "$caption(pretraitement,choix_nbre_images)"
-          set faireImageRef(avancement) ""
-          return 0
-      }
-      if { [ TestEntier $faireImageRef(nb) ] == "0" } {
-         tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-            -message "$caption(pretraitement,nbre_entier)"
-          set faireImageRef(avancement) ""
-         return 0
-      }
-      if { $faireImageRef(valeur_indice) == "" } {
-         tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-            -message "$caption(pretraitement,choix_premier_indice)"
-         set faireImageRef(avancement) ""
-         return 0
-      }
-      if { [ TestEntier $faireImageRef(valeur_indice) ] == "0" } {
-         tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-            -message "$caption(pretraitement,nbre_entier1)"
-         set faireImageRef(avancement) ""
-         return 0
-      }
-      if { $faireImageRef(out) == "" } {
-         if { $faireImageRef(operation) == "pretraitement" } {
-             tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                -message "$caption(pretraitement,definir_sortie_generique)"
-             set faireImageRef(avancement) ""
-             return 0
-         } else {
-             tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                -message "$caption(pretraitement,definir_image_sortie)"
-             set faireImageRef(avancement) ""
-            return 0
-         }
-      }
-      #--- Calcul du dernier indice de la serie
-      set end [ expr $nb + ( $first - 1 ) ]
-
-      #--- Switch
-      switch $faireImageRef(operation) {
-         "faire_offset" {
-            set catchError [ catch {
-               smedian $in $out $nb $first
-               if { $faireImageRef(disp) == 1 } {
-                  loadima $out
-               }
-               set faireImageRef(avancement) "$caption(pretraitement,fin_traitement)"
-            } m ]
-            if { $catchError == "1" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-               set faireImageRef(avancement) ""
-            }
-         }
-         "faire_dark" {
-            set catchError [ catch {
-               #--- Test sur l'offset
-               if { $faireImageRef(dark,no-offset) == "0" } {
-                  if { $faireImageRef(offset) == "" } {
-                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                        -message "$caption(pretraitement,definir_offset)"
-                     set faireImageRef(avancement) ""
-                     return 0
-                  }
-               }
-               #---
-               set offset $faireImageRef(offset)
-               set const "0"
-               set temp "temp"
-               if { $faireImageRef(dark,no-offset) == "0" } {
-                  sub2 $in $offset $temp $const $nb $first
-                  if { $faireImageRef(methode) == "0" } {
-                     #--- Somme
-                     #--- Attention sub2 a cree les images temp a partir de 1
-                     sadd $temp $out $nb 1
-                  } elseif { $faireImageRef(methode) == "1" } {
-                     #--- Moyenne
-                     #--- Attention sub2 a cree les images temp a partir de 1
-                     smean $temp $out $nb 1
-                  } elseif { $faireImageRef(methode) == "2" } {
-                     #--- Mediane
-                     #--- Attention sub2 a cree les images temp a partir de 1
-                     smedian $temp $out $nb 1
-                  }
-                  delete2 $temp $nb
-               } elseif { $faireImageRef(dark,no-offset) == "1" } {
-                  if { $faireImageRef(methode) == "0" } {
-                     #--- Somme
-                     sadd $in $out $nb $first
-                  } elseif { $faireImageRef(methode) == "1" } {
-                     #--- Moyenne
-                     smean $in $out $nb $first
-                  } elseif { $faireImageRef(methode) == "2" } {
-                     #--- Mediane
-                     smedian $in $out $nb $first
-                  }
-               }
-               if { $faireImageRef(disp) == 1 } {
-                  loadima $out
-               }
-               set faireImageRef(avancement) "$caption(pretraitement,fin_traitement)"
-            } m ]
-            if { $catchError == "1" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-               set faireImageRef(avancement) ""
-            }
-         }
-         "faire_flat_field" {
-            set catchError [ catch {
-               #--- Test sur l'offset
-               if { $faireImageRef(flat-field,no-offset) == "0" } {
-                  if { $faireImageRef(offset) == "" } {
-                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                        -message "$caption(pretraitement,definir_offset)"
-                     set faireImageRef(avancement) ""
-                     return 0
-                  }
-               }
-               #--- Test sur le dark
-               if { $faireImageRef(flat-field,no-dark) == "0" } {
-                  if { $faireImageRef(dark) == "" } {
-                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                        -message "$caption(pretraitement,definir_noir)"
-                     set faireImageRef(avancement) ""
-                     return 0
-                  }
-               }
-               #--- Tests sur la valeur de normalisation
-               if { $faireImageRef(flat-field,no-offset) == "1" && $faireImageRef(flat-field,no-dark) == "1" } {
-               } else {
-                  if { $faireImageRef(norm) == "" } {
-                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                        -message "$caption(pretraitement,definir_cte)"
-                     set faireImageRef(avancement) ""
-                     return 0
-                  }
-                  if { [ string is double -strict $faireImageRef(norm) ] == "0" } {
-                     tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                        -message "$caption(pretraitement,cte_invalide)"
-                     set faireImageRef(avancement) ""
-                     return 0
-                  }
-               }
-               #---
-               set offset $faireImageRef(offset)
-               set dark   $faireImageRef(dark)
-               set norm   $faireImageRef(norm)
-               set const  "0"
-               set temp   "temp"
-               set tempo  "tempo"
-               if { $faireImageRef(flat-field,no-offset) == "0" && $faireImageRef(flat-field,no-dark) == "0" } {
-                  #--- Realisation de l'image ( Offset + Dark )
-                  set buf_pretrait [ ::buf::create ]
-                  buf$buf_pretrait extension $conf(extension,defaut)
-                  buf$buf_pretrait load [ file join $audace(rep_images) $offset ]
-                  buf$buf_pretrait add [ file join $audace(rep_images) $dark ] $const
-                  buf$buf_pretrait save [ file join $audace(rep_images) offset+dark ]
-                  ::buf::delete $buf_pretrait
-                  #---
-                  sub2 $in offset+dark $temp $const $nb $first
-                  noffset2 $temp $tempo $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
-                  smedian $tempo $out $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
-                  #--- Suppression des fichiers intermediaires
-                  file delete [ file join $audace(rep_images) offset+dark$conf(extension,defaut) ]
-                  delete2 $temp $nb
-                  delete2 $tempo $nb
-               } elseif { $faireImageRef(flat-field,no-offset) == "1" && $faireImageRef(flat-field,no-dark) == "0" } {
-                  #---
-                  sub2 $in $dark $temp $const $nb $first
-                  noffset2 $temp $tempo $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
-                  smedian $tempo $out $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
-                  #--- Suppression des fichiers intermediaires
-                  delete2 $temp $nb
-                  delete2 $tempo $nb
-               } elseif { $faireImageRef(flat-field,no-offset) == "0" && $faireImageRef(flat-field,no-dark) == "1" } {
-                  #---
-                  sub2 $in $offset $temp $const $nb $first
-                  noffset2 $temp $tempo $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
-                  smedian $tempo $out $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
-                  #--- Suppression des fichiers intermediaires
-                  delete2 $temp $nb
-                  delete2 $tempo $nb
-               } elseif { $faireImageRef(flat-field,no-offset) == "1" && $faireImageRef(flat-field,no-dark) == "1" } {
-                  #---
-                  smedian $in $out $nb $first
-               }
-               if { $faireImageRef(disp) == 1 } {
-                  loadima $out
-               }
-               set faireImageRef(avancement) "$caption(pretraitement,fin_traitement)"
-            } m ]
-            if { $catchError == "1" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-               set faireImageRef(avancement) ""
-            }
-         }
-         "pretraitement" {
-            set catchError [ catch {
-               #--- Test sur l'offset
-               if { $faireImageRef(pretraitement,no-offset) == "0" } {
-                  if { $faireImageRef(offset) == "" } {
-                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                        -message "$caption(pretraitement,definir_offset)"
-                     set faireImageRef(avancement) ""
-                     return 0
-                  }
-               }
-               #--- Test sur le dark
-               if { $faireImageRef(pretraitement,no-dark) == "0" } {
-                  if { $faireImageRef(dark) == "" } {
-                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                        -message "$caption(pretraitement,definir_noir)"
-                     set faireImageRef(avancement) ""
-                     return 0
-                  }
-               }
-               #--- Test sur le flat-field
-               if { $faireImageRef(pretraitement,no-flat-field) == "0" } {
-                  if { $faireImageRef(flat-field) == "" } {
-                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                        -message "$caption(pretraitement,definir_flat-field)"
-                     set faireImageRef(avancement) ""
-                     return 0
-                  }
-               }
-               #--- Tests sur la valeur de normalisation
-               if { $faireImageRef(pretraitement,no-flat-field) == "0" } {
-                  if { $faireImageRef(pretraitement,norm-auto) == "0" } {
-                     if { $faireImageRef(norm) == "" } {
-                        tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                           -message "$caption(pretraitement,definir_cte)"
-                        set faireImageRef(avancement) ""
-                        return 0
-                     }
-                     if { [ string is double -strict $faireImageRef(norm) ] == "0" } {
-                        tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                           -message "$caption(pretraitement,cte_invalide)"
-                        set faireImageRef(avancement) ""
-                        return 0
-                     }
-                  }
-               }
-               #--- Calcul automatique de la constante multiplicative
-               if { $faireImageRef(pretraitement,norm-auto) == "1" } {
-                  ::faireImageRef::calculCsteMult
-               }
-               #---
-               set offset $faireImageRef(offset)
-               set dark   $faireImageRef(dark)
-               set flat   $faireImageRef(flat-field)
-               set norm   $faireImageRef(norm)
-               set const  "0"
-               set temp   "temp"
-               set tempo  "tempo"
-               #--- Formule : Generique de sortie = K * [ Generique d'entree - ( Offset + Dark ) ] / Flat-field
-               #--- Deux familles de pretraitement : Sans ou avec optimisation du noir
-               if { $faireImageRef(opt) == "0" } {
-                  #--- Sans optimisation du noir - Offset, dark et flat disponibles
-                  if { $faireImageRef(option) == "000" } {
-                     #--- Realisation de X = ( Offset + Dark )
-                     set buf_pretrait [ ::buf::create ]
-                     buf$buf_pretrait extension $conf(extension,defaut)
-                     buf$buf_pretrait load [ file join $audace(rep_images) $offset ]
-                     buf$buf_pretrait add [ file join $audace(rep_images) $dark ] $const
-                    buf$buf_pretrait save [ file join $audace(rep_images) offset+dark ]
-                     ::buf::delete $buf_pretrait
-                     #--- Realisation de Y = [ Generique d'entree - ( X ) ]
-                     sub2 $in offset+dark $temp $const $nb $first
-                     #--- Realisation de Z = K * Y / Flat-field
-                     if { $first == "1" } {
-                        div2 $temp $flat $out $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
-                     } else {
-                        div2 $temp $flat $tempo $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
-                     }
-                     #--- Suppression des fichiers intermediaires
-                     file delete [ file join $audace(rep_images) offset+dark$conf(extension,defaut) ]
-                     delete2 $temp $nb
-                  #--- Sans optimisation du noir - Offset et dark disponibles - Manque les flats
-                  } elseif { $faireImageRef(option) == "001" } {
-                     #--- Realisation de X = ( Offset + Dark )
-                     set buf_pretrait [ ::buf::create ]
-                     buf$buf_pretrait extension $conf(extension,defaut)
-                     buf$buf_pretrait load [ file join $audace(rep_images) $offset ]
-                     buf$buf_pretrait add [ file join $audace(rep_images) $dark ] $const
-                     buf$buf_pretrait save [ file join $audace(rep_images) offset+dark ]
-                     ::buf::delete $buf_pretrait
-                     #--- Realisation de Z = [ Generique d'entree - ( X ) ]
-                     if { $first == "1" } {
-                        sub2 $in offset+dark $out $const $nb $first
-                     } else {
-                        sub2 $in offset+dark $tempo $const $nb $first
-                     }
-                     #--- Suppression du fichier intermediaire
-                     file delete [ file join $audace(rep_images) offset+dark$conf(extension,defaut) ]
-                  #--- Sans optimisation du noir - Offset et flat disponibles - Manque les darks
-                  } elseif { $faireImageRef(option) == "010" } {
-                     #--- Realisation de Y = [ Generique d'entree - Offset ]
-                     sub2 $in $offset $temp $const $nb $first
-                     #--- Realisation de Z = K * Y / Flat-field
-                     if { $first == "1" } {
-                        div2 $temp $flat $out $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
-                     } else {
-                        div2 $temp $flat $tempo $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
-                     }
-                     #--- Suppression des fichiers temporaires
-                     delete2 $temp $nb
-                  #--- Sans optimisation du noir - Offset disponible - Manque les darks et les flats
-                  } elseif { $faireImageRef(option) == "011" } {
-                     #--- Realisation de Z = [ Generique d'entree - Offset ]
-                     if { $first == "1" } {
-                        sub2 $in $offset $out $const $nb $first
-                     } else {
-                        sub2 $in $offset $tempo $const $nb $first
-                     }
-                  #--- Sans optimisation du noir - Dark et flat disponibles - Manque les offsets
-                  } elseif { $faireImageRef(option) == "100" } {
-                     #--- Realisation de Y = [ Generique d'entree - Dark ]
-                     sub2 $in $dark $temp $const $nb $first
-                     #--- Realisation de Z = K * Y / Flat-field
-                     if { $first == "1" } {
-                        div2 $temp $flat $out $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
-                     } else {
-                        div2 $temp $flat $tempo $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
-                     }
-                     #--- Suppression des fichiers temporaires
-                     delete2 $temp $nb
-                  #--- Sans optimisation du noir - Dark disponible - Manque les offsets et les flats
-                  } elseif { $faireImageRef(option) == "101" } {
-                     #--- Realisation de Z = [ Generique d'entree - Dark ]
-                     if { $first == "1" } {
-                        sub2 $in $dark $out $const $nb $first
-                     } else {
-                        sub2 $in $dark $tempo $const $nb $first
-                     }
-                  #--- Sans optimisation du noir - Flat disponible - Manque les offsets et les darks
-                  } elseif { $faireImageRef(option) == "110" } {
-                     #--- Realisation de Z = K * Y / Flat-field
-                     if { $first == "1" } {
-                        div2 $in $flat $out $norm $nb $first
-                     } else {
-                        div2 $in $flat $tempo $norm $nb $first
-                     }
-                     #--- Suppression des fichiers temporaires
-                     delete2 $temp $nb
-                  #--- Sans optimisation du noir - Aucun - Manque les offsets, les darks et les flats
-                  } elseif { $faireImageRef(option) == "111" } {
-                     #--- Ce cas n'est pas envisageable
-                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                        -message "$caption(pretraitement,non_valide)"
-                     ::faireImageRef::degriserActiver
-                     set faireImageRef(avancement) ""
-                     return 0
-                  }
-               } elseif { $faireImageRef(opt) == "1" } {
-                  #--- Optimisation du noir - Offset, dark et flat disponibles
-                  if { $faireImageRef(option) == "000" } {
-                     #--- Optimisation du noir
-                     opt2 $in $dark $offset $temp $nb $first
-                     #--- Division par le flat et multiplication par la constante K
-                     if { $first == "1" } {
-                        div2 $temp $flat $out $norm $nb 1 ; #--- Attention opt2 a cree les images temp a partir de 1
-                     } else {
-                        div2 $temp $flat $tempo $norm $nb 1 ; #--- Attention opt2 a cree les images temp a partir de 1
-                     }
-                     #--- Suppression des fichiers temporaires
-                     delete2 $temp $nb
-                  #--- Optimisation du noir - Offset et dark disponibles - Manque les flats
-                  } elseif { $faireImageRef(option) == "001" } {
-                     #--- Optimisation du noir
-                     if { $first == "1" } {
-                        opt2 $in $dark $offset $out $nb $first
-                     } else {
-                        opt2 $in $dark $offset $tempo $nb $first
-                     }
-                  #--- Optimisation du noir - Offset et flat disponibles - Manque les darks
-                  } elseif { $faireImageRef(option) == "010" } {
-                     #--- Ce cas n'est pas envisageable
-                     set faireImageRef(avancement) ""
-                     return 0
-                  #--- Optimisation du noir - Offset disponible - Manque les darks et les flats
-                  } elseif { $faireImageRef(option) == "011" } {
-                     #--- Ce cas n'est pas envisageable
-                     set faireImageRef(avancement) ""
-                     return 0
-                  #--- Optimisation du noir - Dark et flat disponibles - Manque les offsets
-                  } elseif { $faireImageRef(option) == "100" } {
-                     #--- Ce cas n'est pas envisageable
-                     set faireImageRef(avancement) ""
-                     return 0
-                  #--- Optimisation du noir - Dark disponible - Manque les offsets et les flats
-                  } elseif { $faireImageRef(option) == "101" } {
-                     #--- Ce cas n'est pas envisageable
-                     set faireImageRef(avancement) ""
-                     return 0
-                  #--- Optimisation du noir - Flat disponible - Manque les offsets et les darks
-                  } elseif { $faireImageRef(option) == "110" } {
-                     #--- Ce cas n'est pas envisageable
-                     set faireImageRef(avancement) ""
-                     return 0
-                  #--- Optimisation du noir - Aucun - Manque les offsets, les darks et les flats
-                  } elseif { $faireImageRef(option) == "111" } {
-                     #--- Ce cas n'est pas envisageable
-                     set faireImageRef(avancement) ""
-                     return 0
-                  }
-               }
-               #--- Renomme les fichiers image si 'first_index' est different de 1
-               if { $first != "1" } {
-                  for { set index "1" } { $index <= $nb } { incr index } {
-                     set new_index [ expr $index + ( $first - 1 ) ]
-                     file rename -force [ file join $audace(rep_images) $tempo$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
-                  }
-               }
-               #---
-               if { $faireImageRef(disp) == 1 } {
-                  loadima $out$end
-               }
-               set faireImageRef(avancement) "$caption(pretraitement,fin_traitement)"
-            } m ]
-            if { $catchError == "1" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-               set faireImageRef(avancement) ""
-            }
-         }
-      }
-      ::faireImageRef::recupPosition
-   }
-
-   #
-   # ::faireImageRef::cmdClose
-   # Procedure correspondant a l'appui sur le bouton Fermer
-   #
-   proc cmdClose { } {
-      variable This
-
-      ::faireImageRef::recupPosition
-      destroy $This
-      unset This
-   }
-
-   #
-   # ::faireImageRef::afficheAide
-   # Procedure correspondant a l'appui sur le bouton Aide
-   #
-   proc afficheAide { } {
-      global help faireImageRef
-
-      #---
-      if { $faireImageRef(operation) == "faire_offset" } {
-         set faireImageRef(page_web) "1200faire_offset"
-      } elseif { $faireImageRef(operation) == "faire_dark" } {
-         set faireImageRef(page_web) "1210faire_dark"
-      } elseif { $faireImageRef(operation) == "faire_flat_field" } {
-         set faireImageRef(page_web) "1220faire_flat_field"
-      } elseif { $faireImageRef(operation) == "pretraitement" } {
-         set faireImageRef(page_web) "1230pretraitement"
-      }
-
-      #---
-      ::audace::showHelpItem "$help(dir,pretrait)" "$faireImageRef(page_web).htm"
-   }
-
-   #
-   # ::faireImageRef::change n1 n2 op
-   # Adapte l'interface graphique en fonction du choix
-   #
-   proc change { n1 n2 op } {
-      variable This
-      global caption faireImageRef
-
-      #---
-      if { $faireImageRef(operation) == "pretraitement" } {
-         set faireImageRef(afficher_image) "$caption(pretraitement,afficher_der_image_fin)"
-      } else {
-         set faireImageRef(afficher_image) "$caption(pretraitement,afficher_image_fin)"
-      }
-      $This.usr.6.1.che1 configure -text "$faireImageRef(afficher_image)"
-      #---
-      set faireImageRef(avancement)    ""
-      set faireImageRef(in)            ""
-      set faireImageRef(nb)            ""
-      set faireImageRef(valeur_indice) "1"
-      #---
-      ::faireImageRef::formule
-      #---
-      switch $faireImageRef(operation) {
-         "faire_offset" {
-            set faireImageRef(out)           "offset"
-            set faireImageRef(offset)        ""
-            set faireImageRef(dark)          ""
-            set faireImageRef(flat-field)    ""
-            pack $This.usr.1 -in $This.usr -side top -fill both
-            pack $This.usr.2 -in $This.usr -side top -fill both
-            pack forget $This.usr.3
-            pack forget $This.usr.4
-            pack forget $This.usr.5
-            pack $This.usr.6 -in $This.usr -side top -fill both
-            pack forget $This.usr.7
-            pack $This.usr.8 -in $This.usr -side bottom -fill both
-         }
-         "faire_dark" {
-            set faireImageRef(out)           "dark"
-            set faireImageRef(offset)        "offset"
-            set faireImageRef(dark)          ""
-            set faireImageRef(flat-field)    ""
-            pack $This.usr.1 -in $This.usr -side top -fill both
-            pack $This.usr.2 -in $This.usr -side top -fill both
-            pack $This.usr.3 -in $This.usr -side top -fill both
-            pack forget $This.usr.4
-            pack $This.usr.5 -in $This.usr -side top -fill both
-            pack $This.usr.6 -in $This.usr -side top -fill both
-            pack forget $This.usr.7
-            pack $This.usr.8 -in $This.usr -side bottom -fill both
-         }
-         "faire_flat_field" {
-            set faireImageRef(out)           "flat"
-            set faireImageRef(offset)        "offset"
-            set faireImageRef(dark)          "dark-flat"
-            set faireImageRef(flat-field)    ""
-            pack $This.usr.1 -in $This.usr -side top -fill both
-            pack $This.usr.2 -in $This.usr -side top -fill both
-            pack forget $This.usr.3
-            pack $This.usr.4 -in $This.usr -side top -fill both
-            pack forget $This.usr.5
-            pack $This.usr.6 -in $This.usr -side top -fill both
-            pack forget $This.usr.7
-            pack $This.usr.8 -in $This.usr -side bottom -fill both
-         }
-         "pretraitement" {
-            set faireImageRef(out)           ""
-            set faireImageRef(offset)        "offset"
-            set faireImageRef(dark)          "dark"
-            set faireImageRef(flat-field)    "flat"
-            pack $This.usr.1 -in $This.usr -side top -fill both
-            pack $This.usr.2 -in $This.usr -side top -fill both
-            pack forget $This.usr.3
-            pack forget $This.usr.4
-            pack forget $This.usr.5
-            pack $This.usr.7 -in $This.usr -side top -fill both
-            pack $This.usr.6 -in $This.usr -side top -fill both
-            pack $This.usr.8 -in $This.usr -side bottom -fill both
-         }
-      }
-   }
-
-   #
-   # ::faireImageRef::parcourir In_Out
-   # Ouvre un explorateur pour choisir un fichier
-   #
-   proc parcourir { In_Out } {
-      global audace caption faireImageRef
-
-      #--- Fenetre parent
-      set fenetre "$audace(base).faireImageRef"
-      #--- Ouvre la fenetre de choix des images
-      set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
-      #--- Le fichier selectionne doit imperativement etre dans le repertoire des images
-      if { [ file dirname $filename ] != $audace(rep_images) } {
-        tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-           -message "$caption(pretraitement,rep-images)"
-        return
-      }
-      #--- Extraction du nom du fichier
-      if { $In_Out == "1" } {
-         set faireImageRef(info_filename_in)  [ ::pretraitement::afficherNomGenerique [ file tail $filename ] ]
-         set faireImageRef(in)                [ lindex $faireImageRef(info_filename_in) 0 ]
-         set faireImageRef(nb)                [ lindex $faireImageRef(info_filename_in) 1 ]
-         set faireImageRef(valeur_indice)     [ lindex $faireImageRef(info_filename_in) 2 ]
-      } elseif { $In_Out == "2" } {
-
-         if { $faireImageRef(operation) == "pretraitement" } {
-            set faireImageRef(info_filename_out) [ ::pretraitement::afficherNomGenerique [ file tail $filename ] ]
-            set faireImageRef(out)               [ lindex $faireImageRef(info_filename_out) 0 ]
-
-         } else {
-            set faireImageRef(out)               [ file rootname [ file tail $filename ] ]
-         }
-      } elseif { $In_Out == "3" } {
-         set faireImageRef(offset) [ file rootname [ file tail $filename ] ]
-      } elseif { $In_Out == "4" } {
-         set faireImageRef(dark) [ file rootname [ file tail $filename ] ]
-      } elseif { $In_Out == "5" } {
-         set faireImageRef(flat-field) [ file rootname [ file tail $filename ] ]
-      }
-   }
-
-   #
-   # ::faireImageRef::formule
-   # Affiche les formules
-   #
-   proc formule { } {
-      global caption faireImageRef
-
-      if { $faireImageRef(operation) == "faire_dark" } {
-         set faireImageRef(image_generique) "$caption(pretraitement,image_generique_entree)"
-         set faireImageRef(nombre)          "$caption(pretraitement,image_nombre)"
-         set faireImageRef(premier_indice)  "$caption(pretraitement,image_premier_indice)"
-         set faireImageRef(image_sortie)    "$caption(pretraitement,image_sortie)"
-         set faireImageRef(offset)          "$caption(pretraitement,image_offset)"
-      } elseif { $faireImageRef(operation) == "faire_flat_field" } {
-         set faireImageRef(image_generique) "$caption(pretraitement,image_generique_entree)"
-         set faireImageRef(nombre)          "$caption(pretraitement,image_nombre)"
-         set faireImageRef(premier_indice)  "$caption(pretraitement,image_premier_indice)"
-         set faireImageRef(image_sortie)    "$caption(pretraitement,image_sortie)"
-         set faireImageRef(offset)          "$caption(pretraitement,image_offset)"
-         set faireImageRef(dark)            "$caption(pretraitement,image_dark)"
-         set faireImageRef(normalisation)   "$caption(pretraitement,valeur_normalisation)"
-      } elseif { $faireImageRef(operation) == "pretraitement" } {
-         set faireImageRef(image_generique) "$caption(pretraitement,image_generique_entree)"
-         set faireImageRef(nombre)          "$caption(pretraitement,image_nombre)"
-         set faireImageRef(premier_indice)  "$caption(pretraitement,image_premier_indice)"
-         set faireImageRef(image_sortie)    "$caption(pretraitement,image_generique_sortie)"
-         set faireImageRef(offset)          "$caption(pretraitement,image_offset)"
-         set faireImageRef(dark)            "$caption(pretraitement,image_dark)"
-         set faireImageRef(flat-field)      "$caption(pretraitement,image_flat-field)"
-         set faireImageRef(normalisation)   "$caption(pretraitement,cte_mult)"
-      } else {
-         set faireImageRef(image_generique) "$caption(pretraitement,image_generique_entree)"
-         set faireImageRef(nombre)          "$caption(pretraitement,image_nombre)"
-         set faireImageRef(premier_indice)  "$caption(pretraitement,image_premier_indice)"
-         set faireImageRef(image_sortie)    "$caption(pretraitement,image_sortie)"
-      }
-   }
-
-   #
-   # ::faireImageRef::calculCsteMult
-   # Fonction destinee a calculer la valeur moyenne de l'image de flat (constante multiplicative)
-   #
-   proc calculCsteMult { } {
-      global audace conf faireImageRef
-
-      #--- Creation d'un buffer temporaire et chargement du flat
-      set buf_pretrait [ ::buf::create ]
-      buf$buf_pretrait extension $conf(extension,defaut)
-      buf$buf_pretrait load [ file join $audace(rep_images) $faireImageRef(flat-field) ]
-      #--- Fenetre a la dimension de l'image du flat
-      set naxis1 [ expr [ lindex [ buf$buf_pretrait getkwd NAXIS1 ] 1 ]-0 ]
-      set naxis2 [ expr [ lindex [ buf$buf_pretrait getkwd NAXIS2 ] 1 ]-0 ]
-      set box [ list 1 1 $naxis1 $naxis2 ]
-      #--- Lecture des statistiques dans la fenetre et extraction de la moyenne du flat
-      set valeurs [ buf$buf_pretrait stat $box ]
-      set moyenne [ lindex $valeurs 4 ]
-      set faireImageRef(norm) $moyenne
-      #--- Destruction du buffer temporaire
-      ::buf::delete $buf_pretrait
-   }
-
-   #
-   # ::faireImageRef::griserActiver_1
-   # Fonction destinee a inhiber ou a activer l'affichage du champ offset de la fenetre pretraitement
-   #
-   proc griserActiver_1 { } {
-      variable This
-      global faireImageRef
-
-      #--- Cas particulier des images d'offset qui manquent "100"
-      set faireImageRef(option) "$faireImageRef(pretraitement,no-offset)$faireImageRef(pretraitement,no-dark)$faireImageRef(pretraitement,no-flat-field)"
-      #--- Modification des widgets
-      if { $faireImageRef(pretraitement,no-offset) == "0" } {
-         $This.usr.7.1.explore configure -state normal
-         $This.usr.7.1.ent6 configure -state normal
-         $This.usr.7.3.opt configure -state normal
-      } else {
-         $This.usr.7.1.explore configure -state disabled
-         $This.usr.7.1.ent6 configure -state disabled
-         $This.usr.7.3.opt configure -state disabled
-         set faireImageRef(opt) "0"
-      }
-   }
-
-   #
-   # ::faireImageRef::griserActiver_2
-   # Fonction destinee a inhiber ou a activer l'affichage du champ dark de la fenetre pretraitement
-   #
-   proc griserActiver_2 { } {
-      variable This
-      global faireImageRef
-
-      #--- Cas particulier des images de dark qui manquent "010"
-      set faireImageRef(option) "$faireImageRef(pretraitement,no-offset)$faireImageRef(pretraitement,no-dark)$faireImageRef(pretraitement,no-flat-field)"
-      #--- Modification des widgets
-      if { $faireImageRef(pretraitement,no-dark) == "0" } {
-         $This.usr.7.2.explore configure -state normal
-         $This.usr.7.2.ent6 configure -state normal
-         $This.usr.7.3.opt configure -state normal
-      } else {
-         $This.usr.7.2.explore configure -state disabled
-         $This.usr.7.2.ent6 configure -state disabled
-         $This.usr.7.3.opt configure -state disabled
-         set faireImageRef(opt) "0"
-      }
-   }
-
-   #
-   # ::faireImageRef::griserActiver_3
-   # Fonction destinee a inhiber ou a activer l'affichage du champ flat-field de la fenetre pretraitement
-   #
-   proc griserActiver_3 { } {
-      variable This
-      global faireImageRef
-
-      #--- Cas particulier des images de flat qui manquent "001"
-      set faireImageRef(option) "$faireImageRef(pretraitement,no-offset)$faireImageRef(pretraitement,no-dark)$faireImageRef(pretraitement,no-flat-field)"
-      #--- Modification des widgets
-      if { $faireImageRef(pretraitement,no-flat-field) == "0" } {
-         $This.usr.7.4.explore configure -state normal
-         $This.usr.7.4.ent6 configure -state normal
-         $This.usr.7.6.ent6 configure -state normal
-         $This.usr.7.6.che1 configure -state normal
-      } else {
-         $This.usr.7.4.explore configure -state disabled
-         $This.usr.7.4.ent6 configure -state disabled
-         $This.usr.7.6.ent6 configure -state disabled
-         $This.usr.7.6.che1 configure -state disabled
-         set faireImageRef(pretraitement,norm-auto) "0"
-      }
-   }
-
-   #
-   # ::faireImageRef::griserActiver_4
-   # Fonction destinee a inhiber ou a activer l'affichage du champ cste de normalisation de la fenetre pretraitement
-   #
-   proc griserActiver_4 { } {
-      variable This
-      global faireImageRef
-
-      if { $faireImageRef(pretraitement,norm-auto) == "0" } {
-         $This.usr.7.6.ent6 configure -state normal
-      } else {
-         $This.usr.7.6.ent6 configure -state disabled
-      }
-   }
-
-   #
-   # ::faireImageRef::griserActiver_5
-   # Fonction destinee a inhiber ou a activer l'affichage du champ offset de la fenetre flat-field
-   #
-   proc griserActiver_5 { } {
-      variable This
-      global faireImageRef
-
-     if { $faireImageRef(flat-field,no-offset) == "0" } {
-         $This.usr.4.1.explore configure -state normal
-         $This.usr.4.1.ent6 configure -state normal
-      } else {
-         $This.usr.4.1.explore configure -state disabled
-         $This.usr.4.1.ent6 configure -state disabled
-      }
-      ::faireImageRef::griserActiver_7
-   }
-
-   #
-   # ::faireImageRef::griserActiver_6
-   # Fonction destinee a inhiber ou a activer l'affichage du champ dark de la fenetre flat-field
-   #
-   proc griserActiver_6 { } {
-      variable This
-      global faireImageRef
-
-      if { $faireImageRef(flat-field,no-dark) == "0" } {
-         $This.usr.4.2.explore configure -state normal
-         $This.usr.4.2.ent6 configure -state normal
-      } else {
-         $This.usr.4.2.explore configure -state disabled
-         $This.usr.4.2.ent6 configure -state disabled
-      }
-      ::faireImageRef::griserActiver_7
-   }
-
-   #
-   # ::faireImageRef::griserActiver_7
-   # Fonction destinee a inhiber ou a activer l'affichage du champ cste de normalisation de la fenetre flat-field
-   #
-   proc griserActiver_7 { } {
-      variable This
-      global faireImageRef
-
-      if { $faireImageRef(flat-field,no-offset) == "1" && $faireImageRef(flat-field,no-dark) == "1" } {
-         $This.usr.4.3.ent7 configure -state disabled
-      } else {
-         $This.usr.4.3.ent7 configure -state normal
-      }
-   }
-
-   #
-   # ::faireImageRef::griserActiver_8
-   # Fonction destinee a inhiber ou a activer l'affichage du champ offset de la fenetre dark
-   #
-   proc griserActiver_8 { } {
-      variable This
-      global faireImageRef
-
-      if { $faireImageRef(dark,no-offset) == "0" } {
-         $This.usr.3.1.explore configure -state normal
-         $This.usr.3.1.ent6 configure -state normal
-      } else {
-         $This.usr.3.1.explore configure -state disabled
-         $This.usr.3.1.ent6 configure -state disabled
-      }
-   }
-
-   #
-   # ::faireImageRef::degriserActiver
-   # Fonction destinee a activer l'affichage des champs offset, dark et flat-field de la fenetre pretraitement
-   #
-   proc degriserActiver { } {
-      variable This
-      global faireImageRef
-
-      set faireImageRef(pretraitement,no-offset)     "0"
-      set faireImageRef(pretraitement,no-dark)       "0"
-      set faireImageRef(pretraitement,no-flat-field) "0"
-      set faireImageRef(option)                      "000"
-      $This.usr.7.1.explore configure -state normal
-      $This.usr.7.1.ent6 configure -state normal
-      $This.usr.7.2.explore configure -state normal
-      $This.usr.7.2.ent6 configure -state normal
-      $This.usr.7.3.opt configure -state normal
-      $This.usr.7.4.explore configure -state normal
-      $This.usr.7.4.ent6 configure -state normal
-      $This.usr.7.6.ent6 configure -state normal
-      $This.usr.7.6.che1 configure -state normal
-   }
-
+   #--- Lecture des parametres dans la fenetre
+   set valeurs [ buf[ ::confVisu::getBufNo $visuNo ] fitgauss $box -sub ]
+   #--- Je rafraichis l'affichage
+   ::confVisu::autovisu $visuNo
 }
 
-########################## Fin du namespace faireImageRef ##########################
+#####################################################################################
+
+#
+# scar visuNo
+# Cicatrise l'interieur d'une fenetre d'une image
+#
+proc scar { visuNo } {
+   #--- Je memorise le nom du fichier
+   set filename [ ::confVisu::getFileName $visuNo ]
+   #--- Je capture la fenetre d'analyse
+   set box [ ::confVisu::getBox $visuNo ]
+   if { $box == "" } {
+      set choix [ tk_messageBox -title $::caption(pretraitement,attention) -type yesno \
+         -message "$::caption(pretraitement,tracer_boite)\n$::caption(pretraitement,appuyer)" ]
+      if { $choix == "yes" } {
+         scar $visuNo
+         return
+      } elseif { $choix == "no" } {
+         return
+      }
+   }
+   #--- Je lis les parametres dans la fenetre
+   set valeurs [ buf[::confVisu::getBufNo $visuNo] scar $box ]
+   #--- Je rafraichis l'affichage
+   ::confVisu::autovisu $visuNo
+}
+
+#####################################################################################
 
