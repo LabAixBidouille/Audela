@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.169 2010-12-28 16:59:43 michelpujol Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.170 2010-12-28 22:06:56 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -2338,77 +2338,22 @@ namespace eval ::confVisu {
          ::confChoixOutil::displayPlugins $visuNo display display
          Menu_Command   $visuNo "$caption(audace,menu,display)" "[ ::Crosshair::getLabel ]..." "::Crosshair::run $visuNo"
 
-         Menu           $visuNo "$caption(audace,menu,preprocess)"
-         Menu_Cascade   $visuNo "$caption(audace,menu,preprocess)" "$caption(audace,menu,transform)"
-         set liste_des_fonctions [::prtr::TRANSFORMFunctions 0]
+         Menu           $visuNo "$caption(audace,menu,images)"
+         Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,maitre)"
+         set liste_des_fonctions [::prtr::MAITREFunctions 0]
          for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
             set function [lindex $liste_des_fonctions $i]
-            if { $function == $caption(audace,menu,miroir_x) } {
-               Menu_Command $visuNo "$caption(audace,menu,transform)" "$function..." "::prtr::run \"$function\" " \
-                  -compound left -image $::confVisu::private(mirrorVIcon)
-            } elseif { $function == $caption(audace,menu,miroir_y) } {
-               Menu_Command $visuNo "$caption(audace,menu,transform)" "$function..." "::prtr::run \"$function\" " \
-                  -compound left -image $::confVisu::private(mirrorHIcon)
-            } else {
-               Menu_Command $visuNo "$caption(audace,menu,transform)" "$function..." "::prtr::run \"$function\" "
-            }
+            Menu_Command $visuNo "$caption(audace,menu,maitre)" "$function..." "::prtr::run \"$function\" "
          }
-
-         Menu_Cascade   $visuNo "$caption(audace,menu,preprocess)" "$caption(audace,menu,arithm)"
-         set liste_des_fonctions [::prtr::ARITHMFunctions 0]
-         for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
-            set function [lindex $liste_des_fonctions $i]
-            Menu_Command $visuNo "$caption(audace,menu,arithm)" "$function..." "::prtr::run \"$function\" "
-         }
-
-         Menu_Cascade   $visuNo "$caption(audace,menu,preprocess)" "$caption(audace,menu,improve)"
-         set liste_des_fonctions [::prtr::IMPROVEFunctions 0]
-         for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
-            set function [lindex $liste_des_fonctions $i]
-            Menu_Command $visuNo "$caption(audace,menu,improve)" "$function..." "::prtr::run \"$function\" "
-         }
-         Menu_Command   $visuNo "$caption(audace,menu,improve)" "$caption(audace,menu,scar)" "scar $visuNo"
-         Menu_Command   $visuNo "$caption(audace,menu,improve)" "$caption(audace,menu,subfitgauss)" "subfitgauss $visuNo"
-
-         Menu_Cascade   $visuNo "$caption(audace,menu,preprocess)" "$caption(audace,menu,pile)"
-         set liste_des_fonctions [::prtr::PILEFunctions 0]
-         for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
-            set function [lindex $liste_des_fonctions $i]
-            Menu_Command $visuNo "$caption(audace,menu,pile)" "$function..." "::prtr::run \"$function\" "
-         }
-
-         Menu_Separator $visuNo "$caption(audace,menu,preprocess)"
-         Menu_Cascade   $visuNo "$caption(audace,menu,preprocess)" "$caption(audace,menu,convertir)"
-         set liste_des_fonctions [::conv2::CONVERSIONFunctions 0]
-         for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
-            set function [lindex $liste_des_fonctions $i]
-            Menu_Command $visuNo "$caption(audace,menu,convertir)" "$function..." "::conv2::run \"$function\" "
-         }
-
-         Menu_Cascade   $visuNo "$caption(audace,menu,preprocess)" "$caption(audace,menu,faire_image)"
-         Menu_Command $visuNo "$caption(audace,menu,faire_image)" "$caption(audace,menu,faire_offset)..." \
-            { ::faireImageRef::run "$caption(audace,menu,faire_image)" "faire_offset" \
-            "$audace(base).faireImageRef" }
-         Menu_Command $visuNo "$caption(audace,menu,faire_image)" "$caption(audace,menu,faire_dark)..." \
-            { ::faireImageRef::run "$caption(audace,menu,faire_image)" "faire_dark" \
-            "$audace(base).faireImageRef" }
-         Menu_Command $visuNo "$caption(audace,menu,faire_image)" "$caption(audace,menu,faire_flat_field)..." \
-            { ::faireImageRef::run "$caption(audace,menu,faire_image)" "faire_flat_field" \
-            "$audace(base).faireImageRef" }
-
-         Menu_Command $visuNo "$caption(audace,menu,preprocess)" "$caption(audace,menu,faire_pretraitee)..." \
-            { ::faireImageRef::run "$caption(audace,menu,faire_pretraitee)" "pretraitement" \
-            "$audace(base).faireImageRef" }
-
-         Menu_Command   $visuNo "$caption(audace,menu,preprocess)" "$caption(audace,menu,recentrer)..." \
+         set function [lindex [::prtr::PRETRAITEEFunctions 0] end]
+         Menu_Command   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,pretraitee)" "::prtr::run \"$function\" "
+         Menu_Command   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,recentrer)..." \
             { ::traiteWindow::run "serie_recentrer" "$audace(base).traiteWindow" }
 
-         Menu_Separator $visuNo "$caption(audace,menu,preprocess)"
-         #--- Affichage des plugins de type tool et de fonction preprocess du menu deroulant Pretraitement
-         ::confChoixOutil::displayPlugins $visuNo preprocess preprocess
+         #--- Affichage des plugins de type tool et de fonction images du menu deroulant Images
+         ::confChoixOutil::displayPlugins $visuNo images images
 
-         Menu           $visuNo "$caption(audace,menu,traitement)"
-         Menu_Cascade   $visuNo "$caption(audace,menu,traitement)" "$caption(audace,menu,filtrer)"
+         Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,filtrer)"
          Menu_Command   $visuNo "$caption(audace,menu,filtrer)" "$caption(audace,menu,masque_flou)..." \
             { ::traiteFilters::run "$caption(audace,menu,filtrer)" "$caption(audace,menu,masque_flou)" \
             "$audace(base).traiteFilters" }
@@ -2428,14 +2373,7 @@ namespace eval ::confVisu {
             { ::traiteFilters::run "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_maximum)" \
             "$audace(base).traiteFilters" }
 
-         Menu_Cascade   $visuNo "$caption(audace,menu,traitement)" "$caption(audace,menu,amel)"
-         set liste_des_fonctions [::prtr::AMELFunctions 0]
-         for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
-            set function [lindex $liste_des_fonctions $i]
-            Menu_Command $visuNo "$caption(audace,menu,amel)" "$function..." "::prtr::run \"$function\" "
-         }
-
-         Menu_Cascade   $visuNo "$caption(audace,menu,traitement)" "$caption(audace,menu,convoluer)"
+         Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,convoluer)"
          Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(audace,menu,tfd)..." \
             { ::traiteFilters::run "$caption(audace,menu,convoluer)" "$caption(audace,menu,tfd)" \
             "$audace(base).traiteFilters" }
@@ -2451,6 +2389,58 @@ namespace eval ::confVisu {
          Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(audace,menu,convolution)..." \
             { ::traiteFilters::run "$caption(audace,menu,convoluer)" "$caption(audace,menu,convolution)" \
             "$audace(base).traiteFilters" }
+
+         Menu_Separator $visuNo "$caption(audace,menu,images)"
+         Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,improve)"
+         set liste_des_fonctions [::prtr::IMPROVEFunctions 0]
+         for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
+            set function [lindex $liste_des_fonctions $i]
+            Menu_Command $visuNo "$caption(audace,menu,improve)" "$function..." "::prtr::run \"$function\" "
+         }
+         Menu_Command   $visuNo "$caption(audace,menu,improve)" "$caption(audace,menu,scar)" "scar $visuNo"
+         Menu_Command   $visuNo "$caption(audace,menu,improve)" "$caption(audace,menu,subfitgauss)" "subfitgauss $visuNo"
+         Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,convertir)"
+         set liste_des_fonctions [::conv2::CONVERSIONFunctions 0]
+         for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
+            set function [lindex $liste_des_fonctions $i]
+            Menu_Command $visuNo "$caption(audace,menu,convertir)" "$function..." "::conv2::run \"$function\" "
+         }
+
+         Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,pile)"
+         set liste_des_fonctions [::prtr::PILEFunctions 0]
+         for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
+            set function [lindex $liste_des_fonctions $i]
+            Menu_Command $visuNo "$caption(audace,menu,pile)" "$function..." "::prtr::run \"$function\" "
+         }
+
+         Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,transform)"
+         set liste_des_fonctions [::prtr::TRANSFORMFunctions 0]
+         for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
+            set function [lindex $liste_des_fonctions $i]
+            if { $function == $caption(audace,menu,miroir_x) } {
+               Menu_Command $visuNo "$caption(audace,menu,transform)" "$function..." "::prtr::run \"$function\" " \
+                  -compound left -image $::confVisu::private(mirrorVIcon)
+            } elseif { $function == $caption(audace,menu,miroir_y) } {
+               Menu_Command $visuNo "$caption(audace,menu,transform)" "$function..." "::prtr::run \"$function\" " \
+                  -compound left -image $::confVisu::private(mirrorHIcon)
+            } else {
+               Menu_Command $visuNo "$caption(audace,menu,transform)" "$function..." "::prtr::run \"$function\" "
+            }
+         }
+
+         Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,arithm)"
+         set liste_des_fonctions [::prtr::ARITHMFunctions 0]
+         for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
+            set function [lindex $liste_des_fonctions $i]
+            Menu_Command $visuNo "$caption(audace,menu,arithm)" "$function..." "::prtr::run \"$function\" "
+         }
+
+         Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,amel)"
+         set liste_des_fonctions [::prtr::AMELFunctions 0]
+         for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
+            set function [lindex $liste_des_fonctions $i]
+            Menu_Command $visuNo "$caption(audace,menu,amel)" "$function..." "::prtr::run \"$function\" "
+         }
 
          Menu           $visuNo "$caption(audace,menu,analysis)"
          Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,histo)" "::audace::Histo $visuNo"
@@ -2835,16 +2825,92 @@ namespace eval ::confVisu {
       Menu_Command   $visuNo "$caption(audace,menu,display)" "[ ::Crosshair::getLabel ]..." "::Crosshair::run $visuNo"
 
       #--- Je commence par supprimer les menus cascade du menu Pretraitement
+      Menu_Delete $visuNo "$caption(audace,menu,maitre)" all
+      Menu_Delete $visuNo "$caption(audace,menu,filtrer)" all
+      Menu_Delete $visuNo "$caption(audace,menu,convoluer)" all
+      Menu_Delete $visuNo "$caption(audace,menu,improve)" all
+      Menu_Delete $visuNo "$caption(audace,menu,convertir)" all
+      Menu_Delete $visuNo "$caption(audace,menu,pile)" all
       Menu_Delete $visuNo "$caption(audace,menu,transform)" all
       Menu_Delete $visuNo "$caption(audace,menu,arithm)" all
-      Menu_Delete $visuNo "$caption(audace,menu,improve)" all
-      Menu_Delete $visuNo "$caption(audace,menu,pile)" all
-      Menu_Delete $visuNo "$caption(audace,menu,convertir)" all
-      Menu_Delete $visuNo "$caption(audace,menu,faire_image)" all
+      Menu_Delete $visuNo "$caption(audace,menu,amel)" all
       #--- Je supprime toutes les entrees du menu Pretraitement
-      Menu_Delete $visuNo "$caption(audace,menu,preprocess)" entries
+      Menu_Delete $visuNo "$caption(audace,menu,images)" entries
+
       #--- Rafraichissement du menu Pretraitement
-      Menu_Cascade   $visuNo "$caption(audace,menu,preprocess)" "$caption(audace,menu,transform)"
+      Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,maitre)"
+      set liste_des_fonctions [::prtr::MAITREFunctions 0]
+      for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
+         set function [lindex $liste_des_fonctions $i]
+         Menu_Command $visuNo "$caption(audace,menu,maitre)" "$function..." "::prtr::run \"$function\" "
+      }
+      set function [lindex [::prtr::PRETRAITEEFunctions 0] end]
+      Menu_Command   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,pretraitee)" "::prtr::run \"$function\" "
+
+      Menu_Command   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,recentrer)..." \
+         { ::traiteWindow::run "serie_recentrer" "$audace(base).traiteWindow" }
+      #--- Affichage des plugins de type tool et de fonction images du menu deroulant Images
+      ::confChoixOutil::displayPlugins $visuNo images images
+
+      Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,filtrer)"
+         Menu_Command   $visuNo "$caption(audace,menu,filtrer)" "$caption(audace,menu,masque_flou)..." \
+            { ::traiteFilters::run "$caption(audace,menu,filtrer)" "$caption(audace,menu,masque_flou)" \
+            "$audace(base).traiteFilters" }
+         Menu_Command   $visuNo "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_passe-bas)..." \
+            { ::traiteFilters::run "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_passe-bas)" \
+            "$audace(base).traiteFilters" }
+         Menu_Command   $visuNo "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_passe-haut)..." \
+            { ::traiteFilters::run "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_passe-haut)" \
+            "$audace(base).traiteFilters" }
+         Menu_Command   $visuNo "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_median)..." \
+            { ::traiteFilters::run "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_median)" \
+            "$audace(base).traiteFilters" }
+         Menu_Command   $visuNo "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_minimum)..." \
+            { ::traiteFilters::run "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_minimum)" \
+            "$audace(base).traiteFilters" }
+         Menu_Command   $visuNo "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_maximum)..." \
+            { ::traiteFilters::run "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_maximum)" \
+            "$audace(base).traiteFilters" }
+
+         Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,convoluer)"
+         Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(audace,menu,tfd)..." \
+            { ::traiteFilters::run "$caption(audace,menu,convoluer)" "$caption(audace,menu,tfd)" \
+            "$audace(base).traiteFilters" }
+         Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(audace,menu,tfdi)..." \
+            { ::traiteFilters::run "$caption(audace,menu,convoluer)" "$caption(audace,menu,tfdi)" \
+            "$audace(base).traiteFilters" }
+         Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(audace,menu,acorr)..." \
+            { ::traiteFilters::run "$caption(audace,menu,convoluer)" "$caption(audace,menu,acorr)" \
+            "$audace(base).traiteFilters" }
+         Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(audace,menu,icorr)..." \
+            { ::traiteFilters::run "$caption(audace,menu,convoluer)" "$caption(audace,menu,icorr)" \
+            "$audace(base).traiteFilters" }
+         Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(audace,menu,convolution)..." \
+            { ::traiteFilters::run "$caption(audace,menu,convoluer)" "$caption(audace,menu,convolution)" \
+            "$audace(base).traiteFilters" }
+      Menu_Separator $visuNo "$caption(audace,menu,images)"
+      Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,improve)"
+      set liste_des_fonctions [::prtr::IMPROVEFunctions 0]
+      for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
+         set function [lindex $liste_des_fonctions $i]
+         Menu_Command $visuNo "$caption(audace,menu,improve)" "$function..." "::prtr::run \"$function\" "
+      }
+      Menu_Command   $visuNo "$caption(audace,menu,improve)" "$caption(audace,menu,scar)" "scar $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,improve)" "$caption(audace,menu,subfitgauss)" "subfitgauss $visuNo"
+      Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,convertir)"
+      set liste_des_fonctions [::conv2::CONVERSIONFunctions 0]
+      for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
+         set function [lindex $liste_des_fonctions $i]
+         Menu_Command $visuNo "$caption(audace,menu,convertir)" "$function..." "::conv2::run \"$function\" "
+      }
+      Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,pile)"
+      set liste_des_fonctions [::prtr::PILEFunctions 0]
+      for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
+         set function [lindex $liste_des_fonctions $i]
+         Menu_Command $visuNo "$caption(audace,menu,pile)" "$function..." "::prtr::run \"$function\" "
+      }
+
+      Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,transform)"
       set liste_des_fonctions [::prtr::TRANSFORMFunctions 0]
       for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
          set function [lindex $liste_des_fonctions $i]
@@ -2858,51 +2924,21 @@ namespace eval ::confVisu {
             Menu_Command $visuNo "$caption(audace,menu,transform)" "$function..." "::prtr::run \"$function\" "
          }
       }
-      Menu_Cascade   $visuNo "$caption(audace,menu,preprocess)" "$caption(audace,menu,arithm)"
+      Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,arithm)"
       set liste_des_fonctions [::prtr::ARITHMFunctions 0]
       for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
          set function [lindex $liste_des_fonctions $i]
          Menu_Command $visuNo "$caption(audace,menu,arithm)" "$function..." "::prtr::run \"$function\" "
       }
-      Menu_Cascade   $visuNo "$caption(audace,menu,preprocess)" "$caption(audace,menu,improve)"
-      set liste_des_fonctions [::prtr::IMPROVEFunctions 0]
+
+      Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,amel)"
+      set liste_des_fonctions [::prtr::AMELFunctions 0]
       for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
          set function [lindex $liste_des_fonctions $i]
-         Menu_Command $visuNo "$caption(audace,menu,improve)" "$function..." "::prtr::run \"$function\" "
+         Menu_Command $visuNo "$caption(audace,menu,amel)" "$function..." "::prtr::run \"$function\" "
       }
       Menu_Command   $visuNo "$caption(audace,menu,improve)" "$caption(audace,menu,scar)" "scar $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,improve)" "$caption(audace,menu,subfitgauss)" "subfitgauss $visuNo"
-      Menu_Cascade   $visuNo "$caption(audace,menu,preprocess)" "$caption(audace,menu,pile)"
-      set liste_des_fonctions [::prtr::PILEFunctions 0]
-      for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
-         set function [lindex $liste_des_fonctions $i]
-         Menu_Command $visuNo "$caption(audace,menu,pile)" "$function..." "::prtr::run \"$function\" "
-      }
-      Menu_Separator $visuNo "$caption(audace,menu,preprocess)"
-      Menu_Cascade   $visuNo "$caption(audace,menu,preprocess)" "$caption(audace,menu,convertir)"
-      set liste_des_fonctions [::conv2::CONVERSIONFunctions 0]
-      for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
-         set function [lindex $liste_des_fonctions $i]
-         Menu_Command $visuNo "$caption(audace,menu,convertir)" "$function..." "::conv2::run \"$function\" "
-      }
-      Menu_Cascade   $visuNo "$caption(audace,menu,preprocess)" "$caption(audace,menu,faire_image)"
-      Menu_Command $visuNo "$caption(audace,menu,faire_image)" "$caption(audace,menu,faire_offset)..." \
-         { ::faireImageRef::run "$caption(audace,menu,faire_image)" "faire_offset" \
-         "$audace(base).faireImageRef" }
-      Menu_Command $visuNo "$caption(audace,menu,faire_image)" "$caption(audace,menu,faire_dark)..." \
-         { ::faireImageRef::run "$caption(audace,menu,faire_image)" "faire_dark" \
-         "$audace(base).faireImageRef" }
-      Menu_Command $visuNo "$caption(audace,menu,faire_image)" "$caption(audace,menu,faire_flat_field)..." \
-         { ::faireImageRef::run "$caption(audace,menu,faire_image)" "faire_flat_field" \
-         "$audace(base).faireImageRef" }
-      Menu_Command $visuNo "$caption(audace,menu,preprocess)" "$caption(audace,menu,faire_pretraitee)..." \
-         { ::faireImageRef::run "$caption(audace,menu,faire_pretraitee)" "pretraitement" \
-         "$audace(base).faireImageRef" }
-      Menu_Command   $visuNo "$caption(audace,menu,preprocess)" "$caption(audace,menu,recentrer)..." \
-         { ::traiteWindow::run "serie_recentrer" "$audace(base).traiteWindow" }
-      Menu_Separator $visuNo "$caption(audace,menu,preprocess)"
-      #--- Affichage des plugins de type tool et de fonction preprocess du menu deroulant Pretraitement
-      ::confChoixOutil::displayPlugins $visuNo preprocess preprocess
 
       #--- Je commence par supprimer les menus cascade du menu Analyse
       Menu_Delete $visuNo "$caption(audace,menu,extract)" all
@@ -3350,10 +3386,10 @@ namespace eval ::confVisu {
          -command "photom $visuNo"
 
       $menu add separator
-      $menu add command -label $caption(audace,menu,subfitgauss) \
-         -command "subfitgauss $visuNo"
       $menu add command -label $caption(audace,menu,scar) \
          -command "scar $visuNo"
+      $menu add command -label $caption(audace,menu,subfitgauss) \
+         -command "subfitgauss $visuNo"
 
       $menu add separator
       $menu add checkbutton -label $caption(confVisu,reticule) \
@@ -4673,7 +4709,7 @@ proc ::confVisu::onSelectHdu { visuNo { hduNo "" } } {
 
 ############################ Fin du namespace confVisu ############################
 
-# Auteur : Raymond ZATCHANTKE
+# Auteur : Raymond ZACHANTKE
 
 namespace eval ::colorRGB {
 
