@@ -2,7 +2,7 @@
 # Fichier : prtr.tcl
 # Description : Script dedie au menu deroulant pretraitement
 # Auteur : Raymond ZACHANTKE
-# Mise à jour $Id: prtr.tcl,v 1.3 2010-12-28 22:08:10 robertdelmas Exp $
+# Mise à jour $Id: prtr.tcl,v 1.4 2010-12-29 08:06:40 robertdelmas Exp $
 #
 
 namespace eval ::prtr {
@@ -143,7 +143,7 @@ namespace eval ::prtr {
       #---  le check bouton pour l'edition du script
       checkbutton $this.edit.script -variable ::prtr::script \
          -text "$caption(prtr,afficher_script)"
-      #pack $this.edit.script -side left -padx 10 -pady 5
+      pack $this.edit.script -side left -padx 10 -pady 5
 
       #---  frame pour l'affichage du deroulement du traitement
       label $this.info.labURL1 -textvariable ::prtr::avancement -fg $color(blue)
