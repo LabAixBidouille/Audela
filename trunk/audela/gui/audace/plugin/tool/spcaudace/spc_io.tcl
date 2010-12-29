@@ -10,7 +10,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_io.tcl,v 1.17 2010-07-03 19:38:27 bmauclaire Exp $
+# Mise a jour $Id: spc_io.tcl,v 1.18 2010-12-29 11:48:38 bmauclaire Exp $
 
 
 
@@ -2410,37 +2410,43 @@ proc spc_autofit2png { args } {
 
         #--- Détermination des paramètres d'exposition :
         #-- Recherche du nombre d'occurence du nombre "99" dans un des mots clefs TT :
-        set nombre_poses 0
-        foreach mot $listemotsclef {
-            set valeur_mot [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 1 ]
-            if { [ regexp {\s99\s} $valeur_mot match resul ] } {
-                set nombre_poses [ llength $valeur_mot ]
-            }
-        }
-	if { $nombre_poses == 0 } {
-	    foreach mot $listemotsclef {
+       if { [ lsearch $listemotsclef "SPC_NBF" ] !=-1 } {
+          set nombre_poses [ lindex [ buf$audace(bufNo) getkwd "SPC_NBF" ] 1 ]
+       } else {
+          set nombre_poses 0
+          if { $nombre_poses == 0 } {
+             foreach mot $listemotsclef {
+                set valeur_mot [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 1 ]
+                if { [ regexp {\s[0-9]{1,3}\s} $valeur_mot match resul ] } {
+                   set nombre_poses [ llength $valeur_mot ]
+                }
+             }
+          }
+          if { $nombre_poses == 0 } {
+             foreach mot $listemotsclef {
+                set valeur_mot [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 1 ]
+                if { [ regexp {\s99\s} $valeur_mot match resul ] } {
+                   set nombre_poses [ llength $valeur_mot ]
+                }
+             }
+          }
+          if { $nombre_poses == 0 } {
+             foreach mot $listemotsclef {
 		set valeur_mot [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 1 ]
 		if { [ regexp {\s[8-9]\s} $valeur_mot match resul ] } {
 		    set nombre_poses [ llength $valeur_mot ]
 		}
-	    }
-	}
-	if { $nombre_poses == 0 } {
-	    foreach mot $listemotsclef {
+             }
+          }
+          if { $nombre_poses == 0 } {
+             foreach mot $listemotsclef {
 		set valeur_mot [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 1 ]
 		if { [ regexp {\s[1-9][1-9]\s} $valeur_mot match resul ] } {
 		    set nombre_poses [ llength $valeur_mot ]
 		}
-	    }
-	}
-	if { $nombre_poses == 0 } {
-	    foreach mot $listemotsclef {
-		set valeur_mot [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 1 ]
-               if { [ regexp {\s[0-9]{1,3}\s} $valeur_mot match resul ] } {
-		    set nombre_poses [ llength $valeur_mot ]
-		}
-	    }
-	}
+             }
+          }
+        }
 
         #-- Recherche de la duree totale :
         if { [ lsearch $listemotsclef "EXPOSURE" ] !=-1 } {
