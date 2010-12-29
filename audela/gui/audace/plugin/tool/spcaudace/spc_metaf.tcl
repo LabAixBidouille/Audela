@@ -2,7 +2,7 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spcaudace spc_metaf.tcl ]
 
-# Mise a jour $Id: spc_metaf.tcl,v 1.22 2010-09-24 23:38:13 bmauclaire Exp $
+# Mise a jour $Id: spc_metaf.tcl,v 1.23 2010-12-29 11:48:38 bmauclaire Exp $
 
 
 
@@ -1472,11 +1472,11 @@ proc spc_traite2srinstrum { args } {
        #if { $rmfpretrait=="o" && [ file exists $audace(rep_images)/${fgeom}-1$conf(extension,defaut) ] }
        #--- Appariement horizontal :
        if { $flag_2lamps == "o" } {
-          regexp {(.+\-?)[0-9]+} "$lampe_name" match prefixe_lampe
-          if { [ file exists "$audace(rep_images)/${prefixe_lampe}2$conf(extension,defaut)" ]==0 || $nbimg_ini==1 } {
+          set result_grep [ regexp {(.+\-?)[0-9]+} "$lampe_name" match prefixe_lampe ]
+          if { $result_grep==0 } {
              set fhreg "$fgeom"
-          } else {
-             ::console::affiche_resultat "\n\n**** Appariement horizontal de $nbimg images ****\n\n"
+          } elseif { [ file exists "$audace(rep_images)/${prefixe_lampe}2$conf(extension,defaut)" ]==1 } {
+             ::console::affiche_resultat "\n\n******* Appariement horizontal de $nbimg images *******\n\n"
              set fhreg [ spc_registerh "$lampe" "$fgeom" ]
           }
        } else {
@@ -1550,11 +1550,15 @@ proc spc_traite2srinstrum { args } {
 	   uncosmic $spcaudace(uncosmic)
 	   #uncosmic $spcaudace(uncosmic)
 	   buf$audace(bufNo) setkwd [ list BSS_COSM "Weighted median filter" string "Technic used for erasing cosmics" "" ]
+           buf$audace(bufNo) bitpix ulong
 	   buf$audace(bufNo) save "$audace(rep_images)/$fsadd"
+           buf$audace(bufNo) bitpix short
        } else {
 	   buf$audace(bufNo) load "$audace(rep_images)/$fsadd"
 	   buf$audace(bufNo) setkwd [ list BSS_COSM "None" string "Technic used for erasing cosmics" "" ]
+           buf$audace(bufNo) bitpix ulong
 	   buf$audace(bufNo) save "$audace(rep_images)/$fsadd"
+           buf$audace(bufNo) bitpix short
        }
 
 

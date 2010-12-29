@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.37 2010-10-05 17:18:07 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.38 2010-12-29 11:48:38 bmauclaire Exp $
 
 
 
@@ -1802,7 +1802,7 @@ proc spc_pretrait { args } {
 # Description : Effectue la somme dédiée spectroscopie d'une serie d'images appariees
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 09-09-2007
-# Date de mise a jour : 09-09-2007
+# Date de mise a jour : 29-12-2010
 # Argument : nom_generique_fichier (sans extension) ?methode somme?
 ###############################################################################
 
@@ -1895,6 +1895,7 @@ proc spc_somme { args } {
        #--- Mise a jour du motclef EXPTIME : calcul en fraction de jour
        buf$audace(bufNo) setkwd [ list "EXPTIME" $exptime float "Total duration: dobsN-dobs1+1 exposure" "second" ]
        buf$audace(bufNo) setkwd [ list "CREATOR" "SpcAudACE $spcaudace(version)" string "Software that create this FITS file" "" ]
+       buf$audace(bufNo) setkwd [ list "SPC_NBF" $nb_file int "Number of single shots" "" ]
        if { $methsomme=="moy" } {
           buf$audace(bufNo) setkwd [ list "EXPOSURE" $exposure float "Total time of exposure" "second" ]
           #-- Corrige l'influence de smean sur dateobs 20081004 :
@@ -1902,7 +1903,9 @@ proc spc_somme { args } {
        } elseif { $methsomme=="sigmakappa" || $methsomme=="med" || $methsomme=="addi" } {
           buf$audace(bufNo) setkwd [ list "EXPOSURE" $exposure float "Total time of exposure" "second" ]
        }
-       buf$audace(bufNo) save "$audace(rep_images)/${nom_generique}-s$nb_file"
+      buf$audace(bufNo) bitpix ulong
+      buf$audace(bufNo) save "$audace(rep_images)/${nom_generique}-s$nb_file"
+      buf$audace(bufNo) bitpix short
 
        #--- Traitement du resultat :
        ::console::affiche_resultat "Somme $methsomme sauvées sous ${nom_generique}-s$nb_file\n"
