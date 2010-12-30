@@ -10,7 +10,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_io.tcl,v 1.18 2010-12-29 11:48:38 bmauclaire Exp $
+# Mise a jour $Id: spc_io.tcl,v 1.19 2010-12-30 14:39:53 patricklailly Exp $
 
 
 
@@ -75,10 +75,10 @@ proc spc_fileupdate { args } {
       #set nbunit1 "double"
       #buf$audace(bufNo) setpixels CLASS_GRAY $naxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
       set naxis [ lindex [ buf$audace(bufNo) getkwd NAXIS ] 1 ]
-      if { $naxis != 1 } {
-	 ::console::affiche_erreur "spc_fileupdate : le fichier fits $nomfich n'est pas un profil\n\n"
-	 return ""
-      }
+      #if { $naxis != 1 } {
+	# ::console::affiche_erreur "spc_fileupdate : le fichier fits $nomfich n'est pas un profil\n\n"
+	 #return ""
+      #}
       if { $lintens != $naxis1 } {
          ::console::affiche_erreur "spc_fileupdate : mise a jour du fichier fits $nomfich impossible : les longueurs des intensites du fichier $naxis1 et de la liste $lintens sont differentes\n\n"
          return ""
