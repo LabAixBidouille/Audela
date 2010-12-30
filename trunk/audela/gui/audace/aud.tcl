@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.157 2010-12-11 14:12:47 robertdelmas Exp $
+# Mise à jour $Id: aud.tcl,v 1.158 2010-12-30 09:51:52 robertdelmas Exp $
 #
 
 #--- Chargement du package BWidget
@@ -294,7 +294,6 @@ namespace eval ::audace {
       uplevel #0 "source \"[ file join $audace(rep_gui) audace camera.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_gui) audace telescope.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_gui) audace focus.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_gui) audace crosshair.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_gui) audace carte.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_gui) audace conflink.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_gui) audace confeqt.tcl ]\""
