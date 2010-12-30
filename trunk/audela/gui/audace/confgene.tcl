@@ -5,7 +5,7 @@
 #               pose, choix des plugins, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: confgene.tcl,v 1.91 2010-12-28 16:58:42 michelpujol Exp $
+# Mise à jour $Id: confgene.tcl,v 1.92 2010-12-30 09:53:58 robertdelmas Exp $
 #
 
 #
@@ -2007,124 +2007,6 @@ namespace eval ::confChoixOutil {
       ::confColor::applyColor $This
    }
 
-   #
-   # confChoixOutil::displayPlugins
-   # Fonction qui permet d'afficher les plugins dans le bon menu deroulant
-   #
-   # @param visuNo  numero de la visu
-   # @param menuName nom du menu
-   # @param functionBlocList  liste de listes de fonctions a afficher dans le menu 
-   # Exemple:  displayPlugins $visuNo "file" { {setup file} {display aiming} } 
-   #  permet d'afficher les outils dans le menu "Fichier"  répartis dans deux 
-   #  blocs séparés par un séparateur : 
-   #   le 1er bloc contient les outils qui ont les fonctions setup et file 
-   #   le 2ieme bloc contient les outils qui ont les fonctions display et aiming.
-   proc displayPlugins { visuNo menuName functionBlocList  } {
-      global audace caption conf panneau
-
-      #--- Initialisation des variables
-      if { ! [ info exists conf(afficheOutils) ] } {
-         set conf(afficheOutils) ""
-         foreach m [array names panneau menu_name,*] {
-            set namespace [ lindex [ split $m "," ] 1 ]
-            lappend conf(afficheOutils) $namespace ""
-         }
-      }
-      set liste ""
-      #--- Je copie la liste dans un tableau affiche(namespace)
-      array set affiche $conf(afficheOutils)
-
-      #--- je cree la liste des outils
-      #     fct2  9-libelleoutilR  namespaceR
-      #     fct1  9-libelleoutilD  namespaceD
-      #     fct1  9-libelleoutilA  namespaceA
-      #     fct2  9-libelleoutilE  namespaceE
-      #     fct1  1-libelleoutilX  namespaceX
-      #     fct2  1-libelleoutilY  namespaceY
-      foreach m [array names panneau menu_name,*] {
-         set namespace [ lindex [ split $m "," ] 1 ]
-         set libelle $panneau($m)
-         set function [::$namespace\::getPluginProperty function]
-         set rank [::$namespace\::getPluginProperty rank]
-         if { $rank == "" } {
-            #--- les plugins qui n'ont de rank precis sont mis en dernier
-            set rank 9
-         }
-
-         lappend liste [list $function "$rank-$libelle" $namespace]
-      }
-
-      foreach functionBloc $functionBlocList {
-         set sousList ""
-         foreach function $functionBloc {
-            #--- je recherche les elements qui contiennent "$function" dans l'index 0
-            set sousList [concat $sousList [lsearch -all -inline -index 0 $liste $function]]
-         }
-         #-- sousList contient les outils ayant les fonctions fct1 et fct2
-         #     index0   index1          index2
-         #     fct1  9-libelleoutilD  namespaceD
-         #     fct1  1-libelleoutilX  namespaceX
-         #     fct1  9-libelleoutilA  namespaceA
-         #     fct2  9-libelleoutilE  namespaceE
-         #     fct2  1-libelleoutilY  namespaceY
-         #     fct2  9-libelleoutilR  namespaceR
-         #--- Classement par ordre alphabetique sur l'index 1 (concatenation de rank+nom)
-         foreach m [lsort -index 1 -dictionary $sousList] {
-            set namespace [lindex $m 2]
-            #---
-            if { [ info exist affiche($namespace) ] } {
-               Menu_Command $visuNo $caption(audace,menu,$menuName) $panneau(menu_name,$namespace) "::confVisu::selectTool $visuNo ::$namespace"
-               if { $affiche($namespace) != "" } {
-                  if { [string range $affiche($namespace) 0 3] == "Alt+" } {
-                     set event "Alt-[string tolower [string range $affiche($namespace) 4 4]]"
-                  } elseif { [string range $affiche($namespace) 0 4] == "Ctrl+" } {
-                     set event "Control-[string tolower [string range $affiche($namespace) 5 5]]"
-                  } else {
-                     set event $affiche($namespace)
-                  }
-                  #---
-                  Menu_Bind $visuNo $audace(base) <$event> $caption(audace,menu,$menuName) $panneau(menu_name,$namespace) $affiche($namespace)
-                     bind $audace(Console) <$event> "focus $audace(base) ; ::confVisu::selectTool $visuNo ::$namespace"
-               }
-            }
-         }
-
-         #--- j'ajoute un separateur si ce n'est pas le dernier bloc de menu
-         if { [lsearch $functionBlocList $functionBloc] != [expr [llength $functionBlocList] - 1 ] } {
-            Menu_Separator $visuNo "$caption(audace,menu,$menuName)"
-         }
-      }
-   }
-
-   #
-   # setDisplayState
-   #    change l'etat d'affichage d'un plugin dans les menus
-   #    Cette procedure peut etre appelee par d'autres plugins comme updateAudela
-   #
-   # @param nameSpace     namespace du plugin
-   # @param displayState  1=afficher dans les menus 0=ne pas afficher
-   # @return void
-   #
-   proc setDisplayState { nameSpace displayState } {
-      #--- je cherche le plugin dans la liste des plugins a afficher dans les menus
-      set index [lsearch $::conf(afficheOutils) $nameSpace ]
-      if { $displayState == 1 } {
-         if { $index == -1 } {
-            #--- j'ajoute le plugin dans la liste
-            lappend ::conf(afficheOutils) $nameSpace ""
-         } else {
-            #--- rien a faire car le plugin est deja dans la liste
-         }
-      } else {
-         if { $index != -1 } {
-            #--- je supprime le plugin de la liste des plugins a afficher
-            set ::conf(afficheOutils) [lreplace $::conf(afficheOutils) $index [expr $index +1] ]
-         } else {
-            #--- rien a faire car le plugin n'est pas dans la liste
-         }
-      }
-      return ""
-   }
 }
 
 #
