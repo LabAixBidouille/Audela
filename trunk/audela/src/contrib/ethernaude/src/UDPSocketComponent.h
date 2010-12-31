@@ -45,14 +45,14 @@
 #endif
 
 #ifdef LINUX
-#include <stdlib.h>		/* use by malloc */
-#include <string.h>		/* use by memset and bzero */
-#include <errno.h>		/* use by errno */
-#include <unistd.h>		/* use by close, fcntl */
-#include <fcntl.h>		/* use by fcntl */
-#include <pthread.h>		/* use for the thread */
-#include <sys/socket.h>		/* use by socket ...etc */
-#include <time.h>		/* use by nanosleep */
+#include <stdlib.h>     /* use by malloc */
+#include <string.h>     /* use by memset and bzero */
+#include <errno.h>      /* use by errno */
+#include <unistd.h>     /* use by close, fcntl */
+#include <fcntl.h>      /* use by fcntl */
+#include <pthread.h>        /* use for the thread */
+#include <sys/socket.h>     /* use by socket ...etc */
+#include <time.h>       /* use by nanosleep */
 
 #endif
 
@@ -68,12 +68,12 @@
 #include "common.h"
 #include "error.h" */
 
-#include	<stdio.h>
+#include    <stdio.h>
 #ifdef WINDOWS
 /* --- debut modif Alain*/
 #ifdef FD_SET
 #else
-#include	<winsock2.h>
+#include    <winsock2.h>
 #endif
 /* --- fin modif Alain*/
 #include <pthread.h>
@@ -83,10 +83,10 @@
 #include <pthread.h>
 #endif
 
-#define MAXINT			     2147483647
-#define MAXPACKET	       	     65536
+#define MAXINT               2147483647
+#define MAXPACKET                65536
 
-#define UDPSERVICE		     192
+#define UDPSERVICE           192
 #define MAXSIZEFRAME_SX52            180
 #define true                         1
 #define false                        0
@@ -108,14 +108,14 @@ typedef TBuffer *PBuffer;
 typedef short BOOL;
 #endif
 
-typedef unsigned char TBufferList[20][1600];	/* ne sera jamais initialise avec une telle valeur */
+typedef unsigned char TBufferList[20][1600];    /* ne sera jamais initialise avec une telle valeur */
 typedef TBufferList *PBufferList;
 /* typedef TBufferList *PBufferList; */
 
 /* typedef int TBufferSize[MAXINT/sizeof(int)]; */
 /* typedef TBufferSize *PBufferSize; */
 
-struct TEtherLinkUDP {		/* struct to manage an UDP socket */
+struct TEtherLinkUDP {      /* struct to manage an UDP socket */
     int ReceiveBuffer;
     int SocketHandle;
     unsigned short Port;
@@ -132,24 +132,24 @@ struct TEtherLinkUDP {		/* struct to manage an UDP socket */
 /* BEGIN_C_DECLS */
 extern struct TEtherLinkUDP EtherLinkUDP;
 
-extern unsigned int SocketHandle;	/* As its name tell, it is the handle of the UDP socket open with the EthernAude */
+extern unsigned int SocketHandle;   /* As its name tell, it is the handle of the UDP socket open with the EthernAude */
 
 extern unsigned int Trame_a_venir, Premiere_Trame, Nombre_Trame, Trame_check, Nb_Last_Packet;
-	/* Trame_a_venir: index of the first packet of the next command */
-	/* Premiere_Trame: index of the first packet of an "image" */
-	/* Nombre_Trame: amount of packet in the "image" */
-	/* Trame_check: first packet not received */
-	/* Nb_Last_packet: number of useful pixels in the last packet */
+    /* Trame_a_venir: index of the first packet of the next command */
+    /* Premiere_Trame: index of the first packet of an "image" */
+    /* Nombre_Trame: amount of packet in the "image" */
+    /* Trame_check: first packet not received */
+    /* Nb_Last_packet: number of useful pixels in the last packet */
 
-extern BOOL Overflow, Received, Ack, Exposure_Pending, Exposure_Completed, Readout_in_Progress;	/*
-												   Overflow=true if packet number as to go through 65536
-												   Received=true when all datas have received
-												   Ack=true if command has been well received by EthernAude and an acknowledge send
-												   Exposure_Pending=true during an exposure
-												   Exposure_Completed=true after an exposure and before readout
-												   Readout_in_Progress=true during the reading of CCD
+extern BOOL Overflow, Received, Ack, Exposure_Pending, Exposure_Completed, Readout_in_Progress; /*
+                                                   Overflow=true if packet number as to go through 65536
+                                                   Received=true when all datas have received
+                                                   Ack=true if command has been well received by EthernAude and an acknowledge send
+                                                   Exposure_Pending=true during an exposure
+                                                   Exposure_Completed=true after an exposure and before readout
+                                                   Readout_in_Progress=true during the reading of CCD
 
-												 */
+                                                 */
 
 extern unsigned char Buffer_Ordre[40];
 
@@ -157,7 +157,7 @@ extern BOOL TrameOK[65536];
 
 extern PBufferList BufferList;
 
-extern pthread_t ThreadReceiveSocketEvent;	/* thread to manage entering data */
+extern pthread_t ThreadReceiveSocketEvent;  /* thread to manage entering data */
 extern pthread_mutex_t Mutex;
 
 double GetTimeStamp(void);
@@ -180,55 +180,39 @@ int send_ip_addr(int fd, unsigned short port, unsigned char Ip1, unsigned char I
 
 int receive_data(const char *addr, int n_packet, PBufferList buffer, const unsigned int *n_byte_recvd_list);
 
+#ifndef __TSTR
+# define __TSTRHELPER(x) #x
+# define __TSTR(y) __TSTRHELPER(y)
+#endif /* __TSTR  */
+
 #define LOG_FILE_NAME "ethernaude_driver.txt"
-#define WARNING_LOGGER
-#ifdef WARNING_LOGGER
-#define LOG_WARNING( fmt, ... ) do { \
+
+#define ETH_DRIVER_ERROR 5
+#define ETH_DRIVER_WARNING 4
+#define ETH_DRIVER_NOTICE 3
+#define ETH_DRIVER_INFO 2
+#define ETH_DRIVER_DEBUG 1
+
+static int ethernaude_driver_verbosity = ETH_DRIVER_WARNING;
+
+#define ETH_DRIVER_LOG_FILE( __level, fmt,... ) do { \
     FILE * f; \
-    f = fopen( LOG_FILE_NAME, "at" ); \
-    fprintf( f, "WARNING %s[%s:%d]: " fmt, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__ ); \
+    f = fopen( "ethernaude_driver.log", "at" ); \
+    fprintf( f, "%s %s[%s:%d]: " fmt, __level, __FILE__, __FUNCTION__, __LINE__, ##__VA_ARGS__ ); \
     fclose( f ); \
-	} while(0)
-#else
-#define LOG_WARNING( fmt, ... )
-#endif
+} while(0)
 
-//#define NOTICE_LOGGER
-#ifdef NOTICE_LOGGER
-#define LOG_NOTICE( fmt, ... ) do { \
-    FILE * f; \
-    f = fopen( LOG_FILE_NAME, "at" ); \
-    fprintf( f, "NOTICE %s[%s:%d]: " fmt, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__ ); \
-    fclose( f ); \
-	} while(0)
-#else
-#define LOG_NOTICE( fmt, ... )
-#endif
+#define ETH_DRIVER_LOG(__level,...) do { \
+    if (__level >= ethernaude_driver_verbosity) { \
+        ETH_DRIVER_LOG_FILE(__TSTR(__level),__VA_ARGS__); \
+    } \
+} while(0)
 
-//#define INFO_LOGGER
-#ifdef INFO_LOGGER
-#define LOG_INFO( fmt, ... ) do { \
-    FILE * f; \
-    f = fopen( LOG_FILE_NAME, "at" ); \
-    fprintf( f, "INFO %s[%s:%d]: " fmt, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__ ); \
-    fclose( f ); \
-	} while(0)
-#else
-#define LOG_INFO( fmt, ... )
-#endif
-
-//#define DEBUG_LOGGER
-#ifdef DEBUG_LOGGER
-#define LOG_DEBUG( fmt, ... ) do { \
-    FILE * f; \
-    f = fopen( LOG_FILE_NAME, "at" ); \
-    fprintf( f, "DEBUG %s[%s:%d]: " fmt, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__ ); \
-    fclose( f ); \
-	} while(0)
-#else
-#define LOG_DEBUG( fmt, ... )
-#endif
+# define LOG_ERROR(...) ETH_DRIVER_LOG(ETH_DRIVER_ERROR,__VA_ARGS__)
+# define LOG_WARNING(...) ETH_DRIVER_LOG(ETH_DRIVER_WARNING,__VA_ARGS__)
+# define LOG_NOTICE(...) ETH_DRIVER_LOG(ETH_DRIVER_NOTICE,__VA_ARGS__)
+# define LOG_INFO(...) ETH_DRIVER_LOG(ETH_DRIVER_INFO,__VA_ARGS__)
+# define LOG_DEBUG(...) ETH_DRIVER_LOG(ETH_DRIVER_DEBUG,__VA_ARGS__)
 
 
-
-#endif				/* ifndef UDPSOCKETCOMPONENT_H */
+#endif  /* ifndef UDPSOCKETCOMPONENT_H */

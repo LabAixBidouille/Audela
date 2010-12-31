@@ -38,7 +38,7 @@
 
 struct TEtherLinkUDP EtherLinkUDP;
 
-unsigned int SocketHandle;	/* As its name tell, it is the handle of the UDP socket open with the EthernAude */
+unsigned int SocketHandle;  /* As its name tell, it is the handle of the UDP socket open with the EthernAude */
 
 unsigned int
 Trame_a_venir, Premiere_Trame, Nombre_Trame, Trame_check, Nb_Last_Packet;
@@ -64,12 +64,10 @@ BOOL TrameOK[65536];
 
 PBufferList BufferList;
 
-pthread_t ThreadReceiveSocketEvent;	/* thread to manage entering data */
+pthread_t ThreadReceiveSocketEvent; /* thread to manage entering data */
 pthread_mutex_t Mutex;
 
-#ifdef DEBUG_LOGGER
 int tache = 1;
-#endif
 
 BOOL Thread_running;
 
@@ -155,7 +153,7 @@ int udp_init_connection()
    Trame_a_venir = 1;
    EtherLinkUDP.ucPacketID = 0;
    receive_buffer_dim = 30 * 1024;
-   Exposure_Pending = false;	/* no exposure for the moment!! */
+   Exposure_Pending = false;    /* no exposure for the moment!! */
    Exposure_Completed = false;
    Readout_in_Progress = false;
 #ifdef WINDOWS
@@ -192,7 +190,7 @@ int udp_init_connection()
    if (ret == -1) {
       return -4;
    }
-#endif				/* LINUX */
+#endif              /* LINUX */
 
 #ifdef WINDOWS
    BlockingMode = 1;
@@ -200,7 +198,7 @@ int udp_init_connection()
    if (ret != 0) {
       return -4;
    }
-#endif				/* WINDOWS */
+#endif              /* WINDOWS */
 
    EtherLinkUDP.Port = UDPSERVICE;
    memset(&socket_address, 0, sizeof(socket_address));
@@ -280,11 +278,11 @@ int send_base(int fd, int nbytes, const char *addr)
    EtherLinkUDP.Socket_Address.sin_port = htons(EtherLinkUDP.Port);
    LOG_DEBUG("%f envoi de %d bytes\n", GetTimeStamp(), nbytes);
    ret = sendto(fd, Buffer_Ordre, nbytes, 0, (struct sockaddr *) &EtherLinkUDP.Socket_Address, sizeof(EtherLinkUDP.Socket_Address));
-   if (Buffer_Ordre[0] == 0) {	/* case of reset need timeout=2s=100*20ms */
+   if (Buffer_Ordre[0] == 0) {  /* case of reset need timeout=2s=100*20ms */
       Time_ns.tv_sec = 0;
       Time_ns.tv_nsec = 20000000;
       T_Sleep = 20;
-   } else {			/* othercase need timeout=0.1s=100*1ms */
+   } else {         /* othercase need timeout=0.1s=100*1ms */
 
       Time_ns.tv_sec = 0;
       Time_ns.tv_nsec = 1000000;
@@ -299,7 +297,7 @@ int send_base(int fd, int nbytes, const char *addr)
 #ifdef WINDOWS
       Sleep(T_Sleep);
 #endif
-   }				/* end for */
+   }                /* end for */
    if (Ack == true)
       return ret;
    else
@@ -326,9 +324,9 @@ int send_data(int fd, int nbytes, const char *addr, unsigned char *pPacketID)
    int i;
    int ret;
    for (i = nbytes; i > 0; i--) {
-   Buffer_Ordre[i + 1] = Buffer_Ordre[i - 1];	/* because we use index O and 1 for
+   Buffer_Ordre[i + 1] = Buffer_Ordre[i - 1];   /* because we use index O and 1 for
    SendPacketID, we shift by two */
-   }				/* end for */
+   }                /* end for */
 
    (*pPacketID)++;
    Buffer_Ordre[0] = 1;
@@ -406,12 +404,12 @@ int receive_data(const char *addr, int n_packet, PBufferList buffer, const unsig
         /* printf("Ch=%d\n",ch);
         switch (buffer[row][0]) { */
         switch (ch) {
-        case 0x01:		/* Handcheck of a command send to EthernAude */
+        case 0x01:      /* Handcheck of a command send to EthernAude */
             Ack = true;
             LOG_DEBUG("%f ACK de la commande %d\n", GetTimeStamp(), (*buffer[row])[2]);
             break;
 
-        case 0x02:		/*receive data */
+        case 0x02:      /*receive data */
             c1 = (*buffer)[row][1];
             c2 = (*buffer)[row][2];
             Buffer_Ordre[n_handcheck + 2] = (*buffer)[row][1];
@@ -419,46 +417,46 @@ int receive_data(const char *addr, int n_packet, PBufferList buffer, const unsig
             n_handcheck += 2;
             Trame_arrivee = (*buffer)[row][1] * 256 + (*buffer)[row][2];
 /*          LOG_DEBUG ("trame arrivee=%d\n", Trame_arrivee); */
-            if (n_byte_recvd_list[row] == 1027) {	/* it's a packet of data of an image */
+            if (n_byte_recvd_list[row] == 1027) {   /* it's a packet of data of an image */
                 PacketOK = false;
-                if (Overflow == true) {	/* between the first and last packet, we go thrue the boundary of 65536 */
-                    if ((Trame_arrivee < Trame_a_venir) || (Trame_arrivee >= Premiere_Trame)) {	/* packet number is OK */
+                if (Overflow == true) { /* between the first and last packet, we go thrue the boundary of 65536 */
+                    if ((Trame_arrivee < Trame_a_venir) || (Trame_arrivee >= Premiere_Trame)) { /* packet number is OK */
                         PacketOK = true;
                     }
                 } /* end of if */
                 else {
-                    if ((Trame_arrivee < Trame_a_venir) && (Trame_arrivee >= Premiere_Trame)) {	/* packet number is OK */
+                    if ((Trame_arrivee < Trame_a_venir) && (Trame_arrivee >= Premiere_Trame)) { /* packet number is OK */
                         PacketOK = true;
                     }
-                }		/* end of else */
-                if ((PacketOK == true) && (TrameOK[Trame_arrivee] == false)) {	/* check if packet is not already arrived */
+                }       /* end of else */
+                if ((PacketOK == true) && (TrameOK[Trame_arrivee] == false)) {  /* check if packet is not already arrived */
                     TrameOK[Trame_arrivee] = true;
                     Buffer_end = EtherLinkUDP.BufferUDP + ((Trame_arrivee - Premiere_Trame + 65536) & 0x0FFFF) * 1022;
                     Buffer_start = &(*buffer)[row][5];
-                    if (((Trame_arrivee + 1) & 0x0FFFF) == Trame_a_venir) {	/* it is the last packet */
-                        for (K = 0; K < Nb_Last_Packet; K++) {	/* tranfert of Nb_Last_Packet pixels */
+                    if (((Trame_arrivee + 1) & 0x0FFFF) == Trame_a_venir) { /* it is the last packet */
+                        for (K = 0; K < Nb_Last_Packet; K++) {  /* tranfert of Nb_Last_Packet pixels */
                             *Buffer_end = *Buffer_start;
                             Buffer_start++;
                             Buffer_end++;
                             *Buffer_end = *Buffer_start;
                             Buffer_start++;
                             Buffer_end++;
-                        }	/* end of for */
+                        }   /* end of for */
                     } /* end of if */
                     else {
-                        for (K = 0; K < 511; K++) {	/* transfert of 511 pixels */
+                        for (K = 0; K < 511; K++) { /* transfert of 511 pixels */
                             *Buffer_end = *Buffer_start;
                             Buffer_start++;
                             Buffer_end++;
                             *Buffer_end = *Buffer_start;
                             Buffer_start++;
                             Buffer_end++;
-                        }	/* end of for */
-                    }		/* end of else */
+                        }   /* end of for */
+                    }       /* end of else */
                     K = Trame_check;
                     while (TrameOK[K & 0x0FFFF] == true) {
                         K++;
-                    }		/*end of while */
+                    }       /*end of while */
                     Trame_check = (K & 0x0FFFF);
                     LOG_DEBUG("%f Trame_check=%d\n", GetTimeStamp(), Trame_check);
                     LOG_DEBUG("%f Trame_a_venir=%d\n", GetTimeStamp(), Trame_a_venir);
@@ -470,7 +468,7 @@ int receive_data(const char *addr, int n_packet, PBufferList buffer, const unsig
                     /* n_handcheck-=2; */
                 }
             }
-            else {		/* it's the end of a command */
+            else {      /* it's the end of a command */
                 if (Trame_arrivee == Trame_a_venir) {
                     LOG_DEBUG("%f trame <>1027 arrivee=%d\n", GetTimeStamp(), Trame_arrivee);
                     LOG_DEBUG("%f trame <>1027 a venir=%d\n", GetTimeStamp(), Trame_a_venir);
@@ -510,7 +508,7 @@ int receive_data(const char *addr, int n_packet, PBufferList buffer, const unsig
             Received = true;
             Ack = true;
             break;
-        }			/* endswitch */
-    }				/* end for (row) */
+        }           /* endswitch */
+    }               /* end for (row) */
     return 0;
-}				/* end of function */
+}               /* end of function */
