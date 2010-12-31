@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.59 2010-12-28 22:04:06 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.60 2010-12-31 15:03:22 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -99,6 +99,11 @@ set caption(audace,menu,ond_mexicain)                   "Mexican Hat Type Wavele
 set caption(audace,menu,grad_rot)                       "# Gradient rotationnel"
 set caption(audace,menu,radial)                         "# Filtre radial"
 set caption(audace,menu,hough)                          "# Fonction de Hough"
+
+set caption(audace,menu,rotation)                       "# Rotation"
+set caption(audace,menu,rot+90)                         "# Rotation 90° sens horaire"
+set caption(audace,menu,rot180)                         "# Rotation 180°"
+set caption(audace,menu,rot-90)                         "# Rotation 90° sens antihoraire"
 
 set caption(pretraitement,all)                          "Convert all files"
 set caption(pretraitement,renum)                        "Renumber output images"
@@ -249,6 +254,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,radial)                      "Filtre radial"
    set caption(audace,menu,hough)                       "Fonction de Hough"
 
+   set caption(audace,menu,rotation)                    "Rotation"
+   set caption(audace,menu,rot+90)                      "Rotation 90° sens horaire"
+   set caption(audace,menu,rot180)                      "Rotation 180°"
+   set caption(audace,menu,rot-90)                      "Rotation 90° sens antihoraire"
+
    set caption(pretraitement,all)                       "Convertir tous les fichiers"
    set caption(pretraitement,renum)                     "Renuméroter les images en sortie"
    set caption(pretraitement,chg)                       "Changer le nom générique de sortie en"
@@ -397,6 +407,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,grad_rot)                    "# Gradient rotationnel"
    set caption(audace,menu,radial)                      "# Filtre radial"
    set caption(audace,menu,hough)                       "# Fonction de Hough"
+
+   set caption(audace,menu,rotation)                    "# Rotation"
+   set caption(audace,menu,rot+90)                      "# Rotation 90° sens horaire"
+   set caption(audace,menu,rot180)                      "# Rotation 180°"
+   set caption(audace,menu,rot-90)                      "# Rotation 90° sens antihoraire"
 
    set caption(pretraitement,all)                       "Converti tutti i file"
    set caption(pretraitement,renum)                     "Ri-numerazione file in uscita"
@@ -547,6 +562,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,radial)                      "# Filtre radial"
    set caption(audace,menu,hough)                       "# Fonction de Hough"
 
+   set caption(audace,menu,rotation)                    "# Rotation"
+   set caption(audace,menu,rot+90)                      "# Rotation 90° sens horaire"
+   set caption(audace,menu,rot180)                      "# Rotation 180°"
+   set caption(audace,menu,rot-90)                      "# Rotation 90° sens antihoraire"
+
    set caption(pretraitement,all)                       "Convertir todos los ficheros"
    set caption(pretraitement,renum)                     "Renumerar imágenes de salida"
    set caption(pretraitement,chg)                       "Cambiar el nombre genérico de salida a"
@@ -695,6 +715,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,grad_rot)                    "# Gradient rotationnel"
    set caption(audace,menu,radial)                      "# Filtre radial"
    set caption(audace,menu,hough)                       "# Fonction de Hough"
+
+   set caption(audace,menu,rotation)                    "# Rotation"
+   set caption(audace,menu,rot+90)                      "# Rotation 90° sens horaire"
+   set caption(audace,menu,rot180)                      "# Rotation 180°"
+   set caption(audace,menu,rot-90)                      "# Rotation 90° sens antihoraire"
 
    set caption(pretraitement,all)                       "Alle Dateien konvertieren"
    set caption(pretraitement,renum)                     "Ausgabebilder wiedernummerieren"
@@ -845,6 +870,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,radial)                      "# Filtre radial"
    set caption(audace,menu,hough)                       "# Fonction de Hough"
 
+   set caption(audace,menu,rotation)                    "# Rotation"
+   set caption(audace,menu,rot+90)                      "# Rotation 90° sens horaire"
+   set caption(audace,menu,rot180)                      "# Rotation 180°"
+   set caption(audace,menu,rot-90)                      "# Rotation 90° sens antihoraire"
+
    set caption(pretraitement,all)                       "Converter todos os ficheiros"
    set caption(pretraitement,renum)                     "Renumerar imagens de saída"
    set caption(pretraitement,chg)                       "Modificar o nome genérico de saída para"
@@ -993,6 +1023,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,grad_rot)                    "# Gradient rotationnel"
    set caption(audace,menu,radial)                      "# Filtre radial"
    set caption(audace,menu,hough)                       "# Fonction de Hough"
+
+   set caption(audace,menu,rotation)                    "# Rotation"
+   set caption(audace,menu,rot+90)                      "# Rotation 90° sens horaire"
+   set caption(audace,menu,rot180)                      "# Rotation 180°"
+   set caption(audace,menu,rot-90)                      "# Rotation 90° sens antihoraire"
 
    set caption(pretraitement,all)                       "Konverter alle filer"
    set caption(pretraitement,renum)                     "Giv output-billeder nyt nummer"
@@ -1143,6 +1178,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,radial)                      "# Filtre radial"
    set caption(audace,menu,hough)                       "# Fonction de Hough"
 
+   set caption(audace,menu,rotation)                    "# Rotation"
+   set caption(audace,menu,rot+90)                      "# Rotation 90° sens horaire"
+   set caption(audace,menu,rot180)                      "# Rotation 180°"
+   set caption(audace,menu,rot-90)                      "# Rotation 90° sens antihoraire"
+
    set caption(pretraitement,all)                       "Convert all files"
    set caption(pretraitement,renum)                     "Renumber output images"
    set caption(pretraitement,chg)                       "Change generic output name to"
@@ -1291,6 +1331,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,grad_rot)                    "# Gradient rotationnel"
    set caption(audace,menu,radial)                      "# Filtre radial"
    set caption(audace,menu,hough)                       "# Fonction de Hough"
+
+   set caption(audace,menu,rotation)                    "# Rotation"
+   set caption(audace,menu,rot+90)                      "# Rotation 90° sens horaire"
+   set caption(audace,menu,rot180)                      "# Rotation 180°"
+   set caption(audace,menu,rot-90)                      "# Rotation 90° sens antihoraire"
 
    set caption(pretraitement,all)                       "Convert all files"
    set caption(pretraitement,renum)                     "Renumber output images"
