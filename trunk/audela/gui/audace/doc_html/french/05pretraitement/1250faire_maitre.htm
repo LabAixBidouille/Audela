@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
-  <title>&gt;Faire une image ma&#238;tre</title>
+  <title>Faire une image ma&#238;tre</title>
 </head>
 <body>
-<p class="date">Date de mise &#224; jour : 28 d&#233;cembre
+<p class="date">Date de mise &#224; jour : 29 d&#233;cembre
 2010</p>
-<h1>Faire une image</h1>
+<h1>Faire une image ma&#238;tre</h1>
 <h2>1. Fonctions</h2>
 <p>Elles permettent de :</p>
 <ul>
@@ -26,8 +26,12 @@ dans un r&#233;pertoire diff&#233;rent.</li>
   <li>En donnant acc&#232;s aux options TT.</li>
   <li>Avec une interface commune.</li>
 </ul>
-<h2><a name="OFFSET" id="OFFSET"></a>2. Faire une image
-ma&#238;tre de pr&#233;charge (offset ou bias)</h2>
+<h2><a name="BIAS" id="BIAS"></a>2. Faire une image ma&#238;tre
+de pr&#233;charge (bias ou offset)</h2>
+<p>L'image de pr&#233;charge, nomm&#233;e aussi bias ou offset, correspond &#224;
+l'image obtenue avec le temps d'exposition le plus court possible
+disponible avec la cam&#233;ra dans l'obscurit&#233; totale.<br>
+</p>
 <p>Cette fonction effectue la m&#233;diane des images
 s&#233;lectionn&#233;es.</p>
 <h3>2.1 Lancement de l'interface</h3>
@@ -58,16 +62,22 @@ d'erreur sur la Console.</li>
   <li>Le chargement d'une image dans la visu ou la s&#233;lection
 d'une image dans la liste a pour effet d'inhiber la
 s&#233;lection des images de caract&#233;ristiques
-diff&#233;rentes, ce qui &#233;vite par exemple une erreur due &#224; des dimensions
-diff&#233;rentes. La d&#233;s&#233;lection de toutes
-les images annule la r&#233;f&#233;rence.</li>
+diff&#233;rentes, ce qui &#233;vite par exemple une erreur due
+&#224; des dimensions diff&#233;rentes. La d&#233;s&#233;lection
+de toutes les images annule la r&#233;f&#233;rence.</li>
 </ul>
 <h2><a name="DARK" id="DARK"></a>3. Faire une image ma&#238;tre
 du noir (dark)</h2>
 <p><img src="images/dark.png"></p>
-<p>Cette fonction applique la m&#233;thode retenue
-(m&#233;diane, moyenne ou somme) aux images
-s&#233;lectionn&#233;es.</p>
+<p>L'image du noir, nomm&#233;e aussi dark, est l'image de la r&#233;ponse
+thermique de la cam&#233;ra. C'est une pose, effectu&#233;e dans l'obscurit&#233;
+totale, de la m&#234;me dur&#233;e et &#224; la m&#234;me temp&#233;rature, que l'image &#224;
+pr&#233;traiter. Cette image du noir contient aussi l'image de pr&#233;charge.
+Elle correspond &#224; la carte des charges thermiques accumul&#233;es pendant la
+pose.<br>
+</p>
+<p>Cette fonction applique la m&#233;thode retenue (m&#233;diane,
+moyenne ou somme) aux images s&#233;lectionn&#233;es.</p>
 <p>Les fichiers image pass&#233;s en param&#232;tres sont
 &#233;galement v&#233;rifi&#233;s :</p>
 <ul>
@@ -82,8 +92,14 @@ soustrait de chaque image. Ce fichier peut &#234;tre dans le
 m&#234;me r&#233;pertoire ou dans un r&#233;pertoire
 diff&#233;rent.</p>
 <h2><a name="FLAT" id="FLAT"></a>4. Faire une image ma&#238;tre
-de P.L.U. (flat ou flat-field)</h2>
+de P.L.U. ou Plage de Lumi&#232;re Uniforme (flat ou flat-field)</h2>
 <p><img src="images/flat.png"></p>
+<p>L'image de P.L.U. (Plage de Lumi&#232;re Uniforme), nomm&#233;e aussi flat ou
+flat-field, caract&#233;rise le facteur de r&#233;ponse des pixels du CCD. En
+effet tous les pixels d'une m&#234;me matrice CCD ne sont pas sensibles de
+la m&#234;me mani&#232;re &#224; un flux lumineux, qui lui-m&#234;me est influenc&#233; par la
+pr&#233;sence de vignettage ou de poussi&#232;res au niveau des optiques.<br>
+</p>
 <p>Cette fonction effectue la m&#233;diane des images
 s&#233;lectionn&#233;es.</p>
 <p>Si les entr&#233;es <b>bias</b> et <b>dark</b> comportent le
@@ -97,9 +113,17 @@ correspond au m&#234;me temps de pose que le flat.</p>
 <h2><a name="PRETRAITER" id="PRETRAITER"></a>5. Pr&#233;traiter
 les images brutes</h2>
 <p><img src="images/calibree.png"></p>
+<p>Le nom du r&#233;pertoire d'origine des fichiers
+op&#233;randes n'est affich&#233; que s'il est diff&#233;rent du
+r&#233;pertoire-images. Dans le cas contraire son nom est
+remplace par ./</p>
 <p>Deux modes de traitement sont accessibles :</p>
 <p>L'option Optimisation du noir demande la pr&#233;sence d'un
-fichier de <b>bias</b> et de <b>dark</b>.</p>
+fichier de <b>bias</b> et de <b>dark</b> et il faut cocher
+l'option opt_black.</p>
+<p>Sans optimisation du noir, les fichiers de <b>bias</b> et/ou
+de <b>dark</b> peuvent &#234;tre omis : dans ce cas ne rien
+mentionner dans les entr&#233;es correspondantes.</p>
 <p>Les images interm&#233;diaires produites lors des &#233;tapes
 pr&#233;c&#233;dentes sont ensuite divis&#233;es par l'image de
 PLU (param&#232;tre <b>flat</b>) et multipli&#233;es par une
@@ -136,9 +160,9 @@ fen&#234;tre et la case 'Compression .gz" est automatiquement
 coch&#233;e.<br>
 Si la case est d&#233;coch&#233;e les fichiers de sortie ne sont
 pas compress&#233;s.</p>
-<p>Que les fichiers d'ent&#233;e soient compress&#233;s ou non, le
-fait de cocher la case provoque la compression .gz des fichiers
-en sortie.</p>
+<p>Que les fichiers d'ent&#233;e soient compress&#233;s ou non,
+le fait de cocher la case provoque la compression .gz des
+fichiers en sortie.</p>
 <h2>9. Test avec TestAudela</h2>
 <p>Les tests des fonctions sont regroup&#233;s dans
 audace_images_faire_maitre.test</p>
