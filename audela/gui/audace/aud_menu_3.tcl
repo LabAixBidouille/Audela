@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Images
-# Mise à jour $Id: aud_menu_3.tcl,v 1.77 2010-12-28 22:10:34 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_3.tcl,v 1.78 2010-12-31 15:05:43 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -1999,10 +1999,16 @@ namespace eval ::traiteWindow {
 # Ajuste et soustrait une gaussienne dans la fenetre d'une image
 #
 proc subfitgauss { visuNo } {
+
+   set bufNo [visu$visuNo buf]
+   if {![buf$bufNo imageready] == "1"} {return}
+
    #--- Je memorise le nom du fichier
-   set filename [ ::confVisu::getFileName $visuNo ]
+   set filename [::confVisu::getFileName $visuNo]
+
    #--- Je capture la fenetre d'analyse
-   set box [ ::confVisu::getBox $visuNo ]
+   set box [::confVisu::getBox $visuNo]
+
    if { $box == "" } {
       set choix [ tk_messageBox -title $::caption(pretraitement,attention) -type yesno \
          -message "$::caption(pretraitement,tracer_boite)\n$::caption(pretraitement,appuyer)" ]
@@ -2013,8 +2019,38 @@ proc subfitgauss { visuNo } {
          return
       }
    }
-   #--- Lecture des parametres dans la fenetre
-   set valeurs [ buf[ ::confVisu::getBufNo $visuNo ] fitgauss $box -sub ]
+
+   if {[lindex [buf$bufNo getkwd NAXIS3] 1] eq "3"} {
+
+      #--   decompose l'image RGB
+      set ext [file extension $filename]
+      set nom_sans_extension [file rootname $filename]
+      ::conv2::Do_rgb2r+g+b $filename $nom_sans_extension
+
+      #--   traite chaque plan
+      foreach plan {r g b} {
+         buf$bufNo load ${nom_sans_extension}$plan$ext
+         buf$bufNo fitgauss $box -sub
+         buf$bufNo save ${nom_sans_extension}$plan$ext
+      }
+
+      #--   convertit les plans couleurs en RGB
+      ::conv2::Do_r+g+b2rgb $nom_sans_extension tmp
+
+      #--   charge l'image du buffer
+      buf$bufNo load tmp$ext
+
+      #--   efface les plans couleurs et le fichier tmp
+      file delete ${nom_sans_extension}r$ext ${nom_sans_extension}g$ext ${nom_sans_extension}b$ext
+      file delete tmp$ext
+
+   } else {
+
+      #--   traite une image non-RGB
+      buf$bufNo fitgauss $box -sub
+
+   }
+
    #--- Je rafraichis l'affichage
    ::confVisu::autovisu $visuNo
 }
@@ -2026,10 +2062,16 @@ proc subfitgauss { visuNo } {
 # Cicatrise l'interieur d'une fenetre d'une image
 #
 proc scar { visuNo } {
+
+   set bufNo [visu$visuNo buf]
+   if {![buf$bufNo imageready] == "1"} {return}
+
    #--- Je memorise le nom du fichier
-   set filename [ ::confVisu::getFileName $visuNo ]
+   set filename [::confVisu::getFileName $visuNo]
+
    #--- Je capture la fenetre d'analyse
-   set box [ ::confVisu::getBox $visuNo ]
+   set box [::confVisu::getBox $visuNo]
+
    if { $box == "" } {
       set choix [ tk_messageBox -title $::caption(pretraitement,attention) -type yesno \
          -message "$::caption(pretraitement,tracer_boite)\n$::caption(pretraitement,appuyer)" ]
@@ -2040,8 +2082,38 @@ proc scar { visuNo } {
          return
       }
    }
-   #--- Je lis les parametres dans la fenetre
-   set valeurs [ buf[::confVisu::getBufNo $visuNo] scar $box ]
+
+   if {[lindex [buf$bufNo getkwd NAXIS3] 1] eq "3"} {
+
+      #--   decompose l'image RGB
+      set ext [file extension $filename]
+      set nom_sans_extension [file rootname $filename]
+      ::conv2::Do_rgb2r+g+b $filename $nom_sans_extension
+
+      #--   traite chaque plan
+      foreach plan {r g b} {
+         buf$bufNo load ${nom_sans_extension}$plan$ext
+         buf$bufNo scar $box
+         buf$bufNo save ${nom_sans_extension}$plan$ext
+      }
+
+      #--   convertit les plans couleurs en RGB
+      ::conv2::Do_r+g+b2rgb $nom_sans_extension tmp
+
+      #--   charge l'image du buffer
+      buf$bufNo load tmp$ext
+
+      #--   efface les plans couleurs et le fichier tmp
+      file delete ${nom_sans_extension}r$ext ${nom_sans_extension}g$ext ${nom_sans_extension}b$ext
+      file delete tmp$ext
+
+   } else {
+
+      #--   traite une image non-RGB
+      buf$bufNo scar $box
+
+   }
+
    #--- Je rafraichis l'affichage
    ::confVisu::autovisu $visuNo
 }
