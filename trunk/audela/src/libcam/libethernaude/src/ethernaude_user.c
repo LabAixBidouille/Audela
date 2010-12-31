@@ -10,6 +10,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #if defined(OS_MACOS)
 #include <unistd.h>
 #endif
@@ -47,31 +48,37 @@ TParamCCD ParamCCDIn, ParamCCDOut;
 int open_ethernaude(void)
 {
 #if defined(OS_WIN)
-    ethernaude = LoadLibrary(ETHERNAUDE_NAME);
-    if ((ethernaude != NULL)) {
-	ETHERNAUDE_MAIN = (ETHERNAUDE_CALL *) GetProcAddress(ethernaude, ETHERNAUDE_MAINQ);
-	if (ETHERNAUDE_MAIN == NULL) {
-	    close_ethernaude();
-	    return (2);
-	}
-    } else {
-	return (1);
+    ethernaude = LoadLibrary( ETHERNAUDE_NAME );
+    if ( ( ethernaude != NULL ) ) {
+        ETHERNAUDE_MAIN = (ETHERNAUDE_CALL *) GetProcAddress( ethernaude, ETHERNAUDE_MAINQ );
+        if ( ETHERNAUDE_MAIN == NULL ) {
+            close_ethernaude();
+            return (2);
+        }
+    }
+    else {
+        return (1);
     }
 #endif
+
 #if defined(OS_LIN) || defined(OS_MACOS)
-    char s[1000], ss[1000];
-    getcwd(s, 1000);
-    sprintf(ss, "%s/%s/%s", s, "../bin", ETHERNAUDE_NAME);
-    ethernaude = dlopen(ss, RTLD_LAZY);
-    /*ethernaude=dlopen(ETHERNAUDE_NAME,RTLD_LAZY); */
-    if (ethernaude != NULL) {
-	ETHERNAUDE_MAIN = dlsym(ethernaude, ETHERNAUDE_MAINQ);
-	if (ETHERNAUDE_MAIN == NULL) {
-	    close_ethernaude();
-	    return (2);
-	}
-    } else {
-	return (1);
+    char s[1000];
+//    char ss[1000];
+
+    getcwd( s, 1000 );
+//    printf( "Current dir name : %s\n", s );
+//    sprintf( ss, "%s/%s/%s", s, "../bin", ETHERNAUDE_NAME );
+//    ethernaude = dlopen( ss, RTLD_LAZY );
+    ethernaude=dlopen( ETHERNAUDE_NAME, RTLD_LAZY );
+    if ( ethernaude != NULL ) {
+        ETHERNAUDE_MAIN = dlsym( ethernaude, ETHERNAUDE_MAINQ );
+        if ( ETHERNAUDE_MAIN == NULL ) {
+            close_ethernaude();
+            return (2);
+        }
+    }
+    else {
+        return (1);
     }
 #endif
     return (0);
@@ -99,8 +106,8 @@ int close_ethernaude(void)
 
 #define DUMP_ParamCCDOut {\
    char res[200]; int dd;\
-   for(dd=0;dd<ParamCCDOut.NbreParam;dd++) {\
-      sprintf(res, "<LIBETHERNAUDE/new_ethernaude:%d> param[%d]='%s'",__LINE__,dd,ParamCCDOut.Param[dd]); util_log(res, 0);\
+   for( dd=0; dd<ParamCCDOut.NbreParam; dd++ ) {\
+      sprintf( res, "<LIBETHERNAUDE/new_ethernaude:%d> param[%d]='%s'", __LINE__, dd, ParamCCDOut.Param[dd]); util_log(res, 0);\
    }\
 }
 
@@ -130,7 +137,7 @@ int close_ethernaude(void)
 /*              ETHERNAUDE_MAIN definition.                                */
 /* ::cam::create ethernaude udp */
 /***************************************************************************/
-int new_ethernaude(struct new_ethernaude_inp *inparams, ethernaude_var * ethvar)
+int new_ethernaude( struct new_ethernaude_inp *inparams, ethernaude_var * ethvar )
 {
     int k, errnum;
     char result[MAXLENGTH + 1];
@@ -143,20 +150,21 @@ int new_ethernaude(struct new_ethernaude_inp *inparams, ethernaude_var * ethvar)
 
     strcpy(ethvar->message, "");
     /* --- open and initialize the ethernaude driver cam::create ethernaude udp --- */
-    if ((errnum = open_ethernaude()) != 0) {
-	if (errnum == 1) {
-	    sprintf(ethvar->message, "Driver file %s not found", ETHERNAUDE_NAME);
-	} else if (errnum == 2) {
-	    sprintf(ethvar->message, "Function %s not found in driver file %s", ETHERNAUDE_MAINQ, ETHERNAUDE_NAME);
-	}
-	return errnum;
+    if ( ( errnum = open_ethernaude() ) != 0 ) {
+        if ( errnum == 1 ) {
+            sprintf( ethvar->message, "Driver file %s not found", ETHERNAUDE_NAME) ;
+        }
+        else if ( errnum == 2 ) {
+            sprintf( ethvar->message, "Function %s not found in driver file %s", ETHERNAUDE_MAINQ, ETHERNAUDE_NAME );
+        }
+        return errnum;
     }
-    paramCCD_new(&ParamCCDIn);
-    paramCCD_new(&ParamCCDOut);
-    for (k = 0; k < MAXCOMMAND; k++) {
-	memset(result, ' ', MAXLENGTH);
-	result[MAXLENGTH] = '\0';
-	paramCCD_put(-1, result, &ParamCCDOut, 1);
+    paramCCD_new( &ParamCCDIn );
+    paramCCD_new( &ParamCCDOut);
+    for ( k = 0; k < MAXCOMMAND; k++ ) {
+        memset( result, ' ', MAXLENGTH );
+        result[MAXLENGTH] = '\0';
+        paramCCD_put( -1, result, &ParamCCDOut, 1 );
     }
 
     /* - GetDriverCCD_DLLinfos - */
@@ -165,41 +173,41 @@ int new_ethernaude(struct new_ethernaude_inp *inparams, ethernaude_var * ethvar)
     paramCCD_put(-1, "GetDriverCCD_DLLinfos", &ParamCCDIn, 1);
     util_log("", 1);
     for (k = 0; k < ParamCCDIn.NbreParam; k++) {
-	paramCCD_get(k, result, &ParamCCDIn);
-	util_log(result, 0);
+        paramCCD_get(k, result, &ParamCCDIn);
+        util_log(result, 0);
     }
     AskForExecuteCCDCommand(&ParamCCDIn, &ParamCCDOut);
     util_log("", 2);
     for (k = 0; k < ParamCCDOut.NbreParam; k++) {
-	paramCCD_get(k, result, &ParamCCDOut);
-	util_log(result, 0);
+        paramCCD_get(k, result, &ParamCCDOut);
+        util_log(result, 0);
 #ifdef ETHERNAUDE_DEBUG
-	printf("DLL=%s\n", result);
+        printf("DLL=%s\n", result);
 #endif
     }
     util_log("\n", 0);
     if (ParamCCDOut.NbreParam >= 1) {
-	paramCCD_get(0, result, &ParamCCDOut);
-	if (strcmp(result, "FAILED") == 0) {
-	    paramCCD_get(1, result, &ParamCCDOut);
-	    sprintf(ethvar->message, "GetDriverCCD_DLLinfos Failed\n%s", result);
-	    close_ethernaude();
-	    return (3);
-	}
+        paramCCD_get(0, result, &ParamCCDOut);
+        if (strcmp(result, "FAILED") == 0) {
+            paramCCD_get(1, result, &ParamCCDOut);
+            sprintf(ethvar->message, "GetDriverCCD_DLLinfos Failed\n%s", result);
+            close_ethernaude();
+            return (3);
+        }
     }
 
     /* - catch the number ID of the camera - */
     strcpy(keyword, "Camera_ID");
     ethvar->Camera_ID = 0;
     if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-	ethvar->Camera_ID = atoi(value);
+        ethvar->Camera_ID = atoi(value);
     }
 
     /* - how many setup parameters ? - */
     strcpy(keyword, "NbreParamSetup");
     ethvar->NbreParamSetup = 0;
     if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-	ethvar->NbreParamSetup = atoi(value);
+        ethvar->NbreParamSetup = atoi(value);
     }
 
     /* - OPEN_Driver - */
@@ -219,47 +227,48 @@ int new_ethernaude(struct new_ethernaude_inp *inparams, ethernaude_var * ethvar)
     strcpy(result, "ParamSetup6=FALSE");
     paramCCD_put(-1, result, &ParamCCDIn, 1);
     if (inparams->shutterinvert == 0) {
-	strcpy(result, "ParamSetup7=FALSE");
-    } else {
-	strcpy(result, "ParamSetup7=TRUE");
+        strcpy(result, "ParamSetup7=FALSE");
+    }
+    else {
+        strcpy(result, "ParamSetup7=TRUE");
     }
     paramCCD_put(-1, result, &ParamCCDIn, 1);
     if (inparams->canspeed < 0) {
-	inparams->canspeed = 0;
+        inparams->canspeed = 0;
     }
     if (inparams->canspeed > 150) {
-	inparams->canspeed = 150;
+        inparams->canspeed = 150;
     }
     sprintf(result, "ParamSetup8=%d", inparams->canspeed);
     paramCCD_put(-1, result, &ParamCCDIn, 1);
     /* --- add default values of extra parameters */
     for (k = 9; k <= ethvar->NbreParamSetup; k++) {
-	sprintf(keyword, "ParamSetup%d", k);
-	if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-	    sprintf(result, "%s=%s", keyword, value);
-	    paramCCD_put(-1, result, &ParamCCDIn, 1);
-	}
+        sprintf(keyword, "ParamSetup%d", k);
+        if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
+            sprintf(result, "%s=%s", keyword, value);
+            paramCCD_put(-1, result, &ParamCCDIn, 1);
+        }
     }
     util_log("", 1);
     for (k = 0; k < ParamCCDIn.NbreParam; k++) {
-	paramCCD_get(k, result, &ParamCCDIn);
-	util_log(result, 0);
+        paramCCD_get(k, result, &ParamCCDIn);
+        util_log(result, 0);
     }
     AskForExecuteCCDCommand(&ParamCCDIn, &ParamCCDOut);
     util_log("", 2);
     for (k = 0; k < ParamCCDOut.NbreParam; k++) {
-	paramCCD_get(k, result, &ParamCCDOut);
-	util_log(result, 0);
+        paramCCD_get(k, result, &ParamCCDOut);
+        util_log(result, 0);
     }
     util_log("\n", 0);
     if (ParamCCDOut.NbreParam >= 1) {
-	paramCCD_get(0, result, &ParamCCDOut);
-	if (strcmp(result, "FAILED") == 0) {
-	    paramCCD_get(1, result, &ParamCCDOut);
-	    sprintf(ethvar->message, "OPEN_Driver Failed \n%s\nVerify that ethernaude is on and has IP %d.%d.%d.%d", result, inparams->ip[0], inparams->ip[1], inparams->ip[2], inparams->ip[3]);
-	    close_ethernaude();
-	    return (4);
-	}
+        paramCCD_get(0, result, &ParamCCDOut);
+        if (strcmp(result, "FAILED") == 0) {
+            paramCCD_get(1, result, &ParamCCDOut);
+            sprintf(ethvar->message, "OPEN_Driver Failed \n%s\nVerify that ethernaude is on and has IP %d.%d.%d.%d", result, inparams->ip[0], inparams->ip[1], inparams->ip[2], inparams->ip[3]);
+            close_ethernaude();
+            return (4);
+        }
     }
 
     DUMP_ParamCCDOut;
@@ -271,15 +280,15 @@ int new_ethernaude(struct new_ethernaude_inp *inparams, ethernaude_var * ethvar)
     k = util_param_search(&ParamCCDOut, keyword, value, &paramtype);
     sprintf(result, "<LIBETHERNAUDE/new_ethernaude> param_util_search = %d (keyword='%s';value='%s';paramtype=%d)",k,keyword,value,paramtype); util_log(result, 0);
     if (k == 0) {
-	ethvar->CCDDrivenAmount = atoi(value);
-	sprintf(result, "<LIBETHERNAUDE/new_ethernaude> ethvar->CCDDrivenAmount = %d",ethvar->CCDDrivenAmount); util_log(result, 0);
+        ethvar->CCDDrivenAmount = atoi(value);
+        sprintf(result, "<LIBETHERNAUDE/new_ethernaude> ethvar->CCDDrivenAmount = %d",ethvar->CCDDrivenAmount); util_log(result, 0);
     }
 
     /* - read current systeme name - */
     strcpy(keyword, "SystemName");
     strcpy(ethvar->SystemName, "");
     if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-	strcpy(ethvar->SystemName, value);
+        strcpy(ethvar->SystemName, value);
     }
 
     /* - GetCCD_infos for the CCD number 1 - */
@@ -289,55 +298,55 @@ int new_ethernaude(struct new_ethernaude_inp *inparams, ethernaude_var * ethvar)
     paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
     util_log("", 1);
     for (k = 0; k < ParamCCDIn.NbreParam; k++) {
-	paramCCD_get(k, result, &ParamCCDIn);
-	util_log(result, 0);
+        paramCCD_get(k, result, &ParamCCDIn);
+        util_log(result, 0);
     }
     AskForExecuteCCDCommand(&ParamCCDIn, &ParamCCDOut);
     util_log("", 2);
     for (k = 0; k < ParamCCDOut.NbreParam; k++) {
-	paramCCD_get(k, result, &ParamCCDOut);
-	util_log(result, 0);
+        paramCCD_get(k, result, &ParamCCDOut);
+        util_log(result, 0);
     }
     util_log("\n", 0);
     if (ParamCCDOut.NbreParam >= 1) {
-	paramCCD_get(0, result, &ParamCCDOut);
-	if (strcmp(result, "FAILED") == 0) {
-	    paramCCD_get(1, result, &ParamCCDOut);
-	    sprintf(ethvar->message, "GetCCD_infos Failed\n%s", result);
-	    close_ethernaude();
-	    return (5);
-	}
+        paramCCD_get(0, result, &ParamCCDOut);
+        if (strcmp(result, "FAILED") == 0) {
+            paramCCD_get(1, result, &ParamCCDOut);
+            sprintf(ethvar->message, "GetCCD_infos Failed\n%s", result);
+            close_ethernaude();
+            return (5);
+        }
     }
 
     /* - how many chronograms are supported ? - */
     strcpy(keyword, "InfoCCD_ClockModes");
     ethvar->InfoCCD_ClockModes = 0;
     if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-	ethvar->InfoCCD_ClockModes = atoi(value);
+        ethvar->InfoCCD_ClockModes = atoi(value);
     }
     /* - InfoCCD_NAME - */
     strcpy(keyword, "InfoCCD_NAME");
     strcpy(ethvar->InfoCCD_NAME, "");
     if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-	strcpy(ethvar->InfoCCD_NAME, value);
+        strcpy(ethvar->InfoCCD_NAME, value);
     }
     /* - InfoCCD_MaxExposureTime in microseconds - */
     strcpy(keyword, "InfoCCD_MaxExposureTime");
     ethvar->InfoCCD_MaxExposureTime = 0;
     if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-	ethvar->InfoCCD_MaxExposureTime = atoi(value);
+        ethvar->InfoCCD_MaxExposureTime = atoi(value);
     }
     /* - InfoCCD_PixelsSizeX in micrometer - */
     strcpy(keyword, "InfoCCD_PixelsSizeX");
     ethvar->InfoCCD_PixelsSizeX = 0;
     if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-	ethvar->InfoCCD_PixelsSizeX = atoi(value);
+        ethvar->InfoCCD_PixelsSizeX = atoi(value);
     }
     /* - InfoCCD_PixelsSizeY in micrometer - */
     strcpy(keyword, "InfoCCD_PixelsSizeY");
     ethvar->InfoCCD_PixelsSizeY = 0;
     if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-	ethvar->InfoCCD_PixelsSizeY = atoi(value);
+        ethvar->InfoCCD_PixelsSizeY = atoi(value);
     }
     /* - InfoCCD_HasTDICaps - */
     strcpy(keyword, "InfoCCD_HasTDICaps");
@@ -345,9 +354,9 @@ int new_ethernaude(struct new_ethernaude_inp *inparams, ethernaude_var * ethvar)
     k = util_param_search(&ParamCCDOut, keyword, value, &paramtype);
     sprintf(result, "<LIBETHERNAUDE/new_ethernaude> param_util_search = %d (keyword='%s';value='%s';paramtype=%d)",k,keyword,value,paramtype); util_log(result, 0);
     if (k == 0) {
-       if (!strcmp(value,"TRUE")) {
-	   ethvar->InfoCCD_HasTDICaps = 1;
-       }
+        if (!strcmp(value,"TRUE")) {
+        ethvar->InfoCCD_HasTDICaps = 1;
+        }
         sprintf(result, "<LIBETHERNAUDE/new_ethernaude> ethvar->InfoCCD_HasTDICaps = %d",ethvar->InfoCCD_HasTDICaps); util_log(result, 0);
     }
     /* - InfoCCD_HasVideoCaps - */
@@ -356,10 +365,10 @@ int new_ethernaude(struct new_ethernaude_inp *inparams, ethernaude_var * ethvar)
     k = util_param_search(&ParamCCDOut, keyword, value, &paramtype);
     sprintf(result, "<LIBETHERNAUDE/new_ethernaude> param_util_search = %d (keyword='%s';value='%s';paramtype=%d)",k,keyword,value,paramtype); util_log(result, 0);
     if (k == 0) {
-       if (!strcmp(value,"TRUE")) {
-	   ethvar->InfoCCD_HasVideoCaps = 1;
-	   sprintf(result, "<LIBETHERNAUDE/new_ethernaude> ethvar->InfoCCD_HasVideoCaps = %d",ethvar->InfoCCD_HasVideoCaps); util_log(result, 0);
-       }
+        if (!strcmp(value,"TRUE")) {
+            ethvar->InfoCCD_HasVideoCaps = 1;
+            sprintf(result, "<LIBETHERNAUDE/new_ethernaude> ethvar->InfoCCD_HasVideoCaps = %d",ethvar->InfoCCD_HasVideoCaps); util_log(result, 0);
+        }
     }
     /* - InfoCCD_HasRegulationTempCaps - */
     strcpy(keyword, "InfoCCD_HasRegulationTempCaps");
@@ -367,10 +376,10 @@ int new_ethernaude(struct new_ethernaude_inp *inparams, ethernaude_var * ethvar)
     k = util_param_search(&ParamCCDOut, keyword, value, &paramtype);
     sprintf(result, "<LIBETHERNAUDE/new_ethernaude> param_util_search = %d (keyword='%s';value='%s';paramtype=%d)",k,keyword,value,paramtype); util_log(result, 0);
     if (k == 0) {
-       if (!strcmp(value,"TRUE")) {
-	   ethvar->InfoCCD_HasRegulationTempCaps = 1;
-       }
-       sprintf(result, "<LIBETHERNAUDE/new_ethernaude> ethvar->InfoCCD_HasRegulationTempCaps = %d",ethvar->InfoCCD_HasRegulationTempCaps); util_log(result, 0);
+        if (!strcmp(value,"TRUE")) {
+            ethvar->InfoCCD_HasRegulationTempCaps = 1;
+        }
+        sprintf(result, "<LIBETHERNAUDE/new_ethernaude> ethvar->InfoCCD_HasRegulationTempCaps = %d",ethvar->InfoCCD_HasRegulationTempCaps); util_log(result, 0);
     }
     /* - InfoCCD_HasEventAude - */
     strcpy(keyword, "InfoCCD_HasGPSDatation");
@@ -378,10 +387,10 @@ int new_ethernaude(struct new_ethernaude_inp *inparams, ethernaude_var * ethvar)
     k = util_param_search(&ParamCCDOut, keyword, value, &paramtype);
     sprintf(result, "<LIBETHERNAUDE/new_ethernaude> param_util_search = %d (keyword='%s';value='%s';paramtype=%d)",k,keyword,value,paramtype); util_log(result, 0);
     if (k == 0) {
-       if (!strcmp(value,"TRUE")) {
-	   ethvar->InfoCCD_HasGPSDatation = 1;
-       }
-       sprintf(result, "<LIBETHERNAUDE/new_ethernaude> ethvar->InfoCCD_HasGPSDatation = %d",ethvar->InfoCCD_HasGPSDatation); util_log(result, 0);
+        if (!strcmp(value,"TRUE")) {
+            ethvar->InfoCCD_HasGPSDatation = 1;
+        }
+        sprintf(result, "<LIBETHERNAUDE/new_ethernaude> ethvar->InfoCCD_HasGPSDatation = %d",ethvar->InfoCCD_HasGPSDatation); util_log(result, 0);
     }
 
     /* - GetClockModes for the CCD number 1 and the clock mode number 1 - */
@@ -392,61 +401,61 @@ int new_ethernaude(struct new_ethernaude_inp *inparams, ethernaude_var * ethvar)
     paramCCD_put(-1, "ClockMode=1", &ParamCCDIn, 1);
     util_log("", 1);
     for (k = 0; k < ParamCCDIn.NbreParam; k++) {
-	paramCCD_get(k, result, &ParamCCDIn);
-	util_log(result, 0);
+        paramCCD_get(k, result, &ParamCCDIn);
+        util_log(result, 0);
     }
     AskForExecuteCCDCommand(&ParamCCDIn, &ParamCCDOut);
     util_log("", 2);
     for (k = 0; k < ParamCCDOut.NbreParam; k++) {
-	paramCCD_get(k, result, &ParamCCDOut);
-	util_log(result, 0);
+        paramCCD_get(k, result, &ParamCCDOut);
+        util_log(result, 0);
     }
     util_log("\n", 0);
     if (ParamCCDOut.NbreParam >= 1) {
-	paramCCD_get(0, result, &ParamCCDOut);
-	if (strcmp(result, "FAILED") == 0) {
-	    paramCCD_get(1, result, &ParamCCDOut);
-	    sprintf(ethvar->message, "GetClockModes failed\n%s", result);
-	    close_ethernaude();
-	    return (5);
-	}
+        paramCCD_get(0, result, &ParamCCDOut);
+        if (strcmp(result, "FAILED") == 0) {
+            paramCCD_get(1, result, &ParamCCDOut);
+            sprintf(ethvar->message, "GetClockModes failed\n%s", result);
+            close_ethernaude();
+            return (5);
+        }
     }
 
     /* - number of photosites for this CCD - */
     strcpy(keyword, "WidthPixels");
     ethvar->WidthPixels = 0;
     if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-	ethvar->WidthPixels = atoi(value);
+        ethvar->WidthPixels = atoi(value);
     }
     strcpy(keyword, "HeightPixels");
     ethvar->HeightPixels = 0;
     if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-	ethvar->HeightPixels = atoi(value);
+        ethvar->HeightPixels = atoi(value);
     }
     strcpy(keyword, "PixelsPrescanX");
     ethvar->PixelsPrescanX = 0;
     if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-	ethvar->PixelsPrescanX = atoi(value);
+        ethvar->PixelsPrescanX = atoi(value);
     }
     strcpy(keyword, "PixelsPrescanY");
     ethvar->PixelsPrescanY = 0;
     if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-	ethvar->PixelsPrescanY = atoi(value);
+        ethvar->PixelsPrescanY = atoi(value);
     }
     strcpy(keyword, "PixelsOverscanX");
     ethvar->PixelsOverscanX = 0;
     if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-	ethvar->PixelsOverscanX = atoi(value);
+        ethvar->PixelsOverscanX = atoi(value);
     }
     strcpy(keyword, "PixelsOverscanY");
     ethvar->PixelsOverscanY = 0;
     if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-	ethvar->PixelsOverscanY = atoi(value);
+        ethvar->PixelsOverscanY = atoi(value);
     }
     strcpy(keyword, "BitPerPixels");
     ethvar->BitPerPixels = 0;
     if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-	ethvar->BitPerPixels = atoi(value);
+        ethvar->BitPerPixels = atoi(value);
     }
 
     return 0;
@@ -466,14 +475,14 @@ int delete_ethernaude()
     paramCCD_put(-1, "CLOSE_Driver", &ParamCCDIn, 1);
     util_log("", 1);
     for (k = 0; k < ParamCCDIn.NbreParam; k++) {
-	paramCCD_get(k, result, &ParamCCDIn);
-	util_log(result, 0);
+    paramCCD_get(k, result, &ParamCCDIn);
+    util_log(result, 0);
     }
     AskForExecuteCCDCommand(&ParamCCDIn, &ParamCCDOut);
     util_log("", 2);
     for (k = 0; k < ParamCCDOut.NbreParam; k++) {
-	paramCCD_get(k, result, &ParamCCDOut);
-	util_log(result, 0);
+    paramCCD_get(k, result, &ParamCCDOut);
+    util_log(result, 0);
     }
     util_log("\n", 0);
     /* delete structures */

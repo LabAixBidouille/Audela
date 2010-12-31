@@ -74,17 +74,19 @@ int direct_main(int service, ...)
 
     nb_argu = va_arg(marqueur, int);
     if (nb_argu < nb_argumin) {
-	nb_argus = nb_argumin;
-    } else {
-	nb_argus = nb_argu;
+        nb_argus = nb_argumin;
+    }
+    else {
+        nb_argus = nb_argu;
     }
     argu = NULL;
-    if ((argu = (void **) calloc(nb_argus + 1, sizeof(void *))) == NULL) {
-	return (DIRECT_ERROR_ARGUALLOC);
+    if ((argu = (void **)
+        calloc(nb_argus + 1, sizeof(void *))) == NULL) {
+        return (DIRECT_ERROR_ARGUALLOC);
     }
     for (k = 1; k <= nb_argu; k++) {
-	pointeur = va_arg(marqueur, void *);
-	argu[k] = (void *) pointeur;
+        pointeur = va_arg(marqueur, void *);
+        argu[k] = (void *) pointeur;
     }
     va_end(marqueur);
 
@@ -93,18 +95,21 @@ int direct_main(int service, ...)
 
     /* --- macro fonctions --- */
     if (service == DIRECT_SERVICE_RESET) {
-	status = direct_ethernaude_0x00(argu);
-    } else if (service == DIRECT_SERVICE_CLEARCCD) {
-	status = direct_ethernaude_0x01(argu);
-    } else if (service == DIRECT_SERVICE_IDENTITY) {
-	status = direct_ethernaude_0x03(argu);
+        status = direct_ethernaude_0x00(argu);
+    }
+    else if (service == DIRECT_SERVICE_CLEARCCD) {
+        status = direct_ethernaude_0x01(argu);
+    }
+    else if (service == DIRECT_SERVICE_IDENTITY) {
+        status = direct_ethernaude_0x03(argu);
     }
 
     /* --- fonction non reconnue --- */
     else {
-	status = DIRECT_ERROR_SERVICENOTFOUND;
+        status = DIRECT_ERROR_SERVICENOTFOUND;
     }
     free(argu);
+    LOG_DEBUG( "status = %d\n", status );
     return (status);
 
 }
@@ -130,18 +135,18 @@ int direct_ethernaude_0x00(void *args)
     argu = (void **) (args);
     /* --- init outputs args --- */
     for (k = 1; k <= 2; k++) {
-	*(unsigned char *) argu[k] = (unsigned char) 0;
+    *(unsigned char *) argu[k] = (unsigned char) 0;
     }
     /* --- Ask Ethernaude to Reset --- */
     if (EthernaudeReset(message)) {
-	/* --- Receive Reset informations --- */
-	while (Info_Received() == 0);
+    /* --- Receive Reset informations --- */
+    while (Info_Received() == 0);
     } else {
-	return DIRECT_ERROR_PBRECEIVED;
+    return DIRECT_ERROR_PBRECEIVED;
     }
     /* --- outputs args --- */
     for (k = 1; k <= 2; k++) {
-	*(unsigned char *) argu[k] = (unsigned char) message[k - 1];
+    *(unsigned char *) argu[k] = (unsigned char) message[k - 1];
     }
     return DIRECT_OK;
 }
@@ -164,15 +169,15 @@ int direct_ethernaude_0x01(void *args)
     argu = (void **) (args);
     /* --- init outputs args --- */
     if (argu[1] == NULL) {
-	return DIRECT_ERROR_NULLPARAMETER;
+    return DIRECT_ERROR_NULLPARAMETER;
     }
     nbwipe = *(unsigned char *) (argu[1]);
     /* --- Ask Ethernaude to Reset --- */
     if (ClearCCD(message, nbwipe)) {
-	/* --- Receive Reset informations --- */
-	while (Info_Received() == 0);
+    /* --- Receive Reset informations --- */
+    while (Info_Received() == 0);
     } else {
-	return DIRECT_ERROR_PBRECEIVED;
+    return DIRECT_ERROR_PBRECEIVED;
     }
     return DIRECT_OK;
 }
@@ -198,18 +203,18 @@ int direct_ethernaude_0x03(void *args)
     argu = (void **) (args);
     /* --- init outputs args --- */
     for (k = 1; k <= 28; k++) {
-	*(unsigned char *) argu[k] = (unsigned char) 0;
+    *(unsigned char *) argu[k] = (unsigned char) 0;
     }
     /* --- Ask Ethernaude to Reset --- */
     if (Identity(message)) {
-	/* --- Receive Reset informations --- */
-	while (Info_Received() == 0);
+    /* --- Receive Reset informations --- */
+    while (Info_Received() == 0);
     } else {
-	return DIRECT_ERROR_PBRECEIVED;
+    return DIRECT_ERROR_PBRECEIVED;
     }
     /* --- outputs args --- */
     for (k = 1; k <= 28; k++) {
-	*(unsigned char *) argu[k] = (unsigned char) message[k - 1];
+    *(unsigned char *) argu[k] = (unsigned char) message[k - 1];
     }
     return DIRECT_OK;
 }
