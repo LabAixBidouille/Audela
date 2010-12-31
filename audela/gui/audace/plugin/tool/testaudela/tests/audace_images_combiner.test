@@ -379,19 +379,12 @@ test imastack_moyenne_kappa_sigma {moyenne K de rz_rgbr_8, rz_rgbr_15 et rz_rgbr
 #     concordance des intensites R G B constatees avec celles obtenues lors dun run
 test imastack_shutter {shutter de rz_shutter1 rz_shutter2 rz_shutter3} -constraints {AUDACE} -setup {
    set ::conf(fichier,compres) "1"
+   set coords [list 175 125]
    exposure length 0
+
    foreach file {rz_shutter1 rz_shutter2 rz_shutter3} {
      file copy -force [file join $::conf(testaudela,rep_images) $file.fit.gz] $::audace(rep_images)
-     loadima [file join $::audace(rep_images) $file.fit.gz]
-     attendu append [lrange [buf$bufNo getpix $coords] 1 end ]
-     exposure append [lindex [buf$bufNo getkwd EXPOSURE] 1]
    }
-   #---  efface l'image
-   ::confVisu::deleteImage $visuNo
-   set delta_y [expr {$attendu(2)-$attendu(0)}]
-   set delta_x [expr {$exposure(2)-$exposure(0)}]
-   set b [expr {$delta_y*1./$delta_x}]
-   set a [expr {$attendu(1)-$b*$exposure(1)}]
 } -body {
    #--   clic sur le menu "Prétraitement/Combiner/Obturateur..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,pile)" "$::caption(audace,menu,obturateur)..."
@@ -409,12 +402,9 @@ test imastack_shutter {shutter de rz_shutter1 rz_shutter2 rz_shutter3} -constrai
    #--   procedure de controle
    set result 0
    mesure set [lrange [buf$bufNo getpix $coords] 1 end ]
-   #--   calcule le ratio
-   set ratio [expr {($mesure(0)/$a)*100}]
-   if {$ratio >= "99" && $ratio <= "101"} {
-      set result "1"
-   }
-   if {[file exists $nom_image]} {incr result}
+   attendu set [list 320]
+   attendu expr {round(attendu-mesure)}
+   if {$attendu(:) eq "0.0"} {incr result}
    return $result
 } -cleanup {
    set ::conf(fichier,compres) "0"
@@ -424,14 +414,13 @@ test imastack_shutter {shutter de rz_shutter1 rz_shutter2 rz_shutter3} -constrai
    ::confVisu::deleteImage $visuNo
    set liste [list rz_shutter1 rz_shutter2 rz_shutter3]
    ttscript2 "IMA/SERIES . \"$liste\" * * \".fit.gz\" . . . . DELETE"
-} -result "2"
+} -result "1"
 
 
 #--   test IMA/SERIES DELETE
 test imastack_clean {nettoyage des fichiers} {AUDACE} {
    #--   detruit les vecteurs
    ::blt::vector destroy red_value green_value blue_value exposure attendu mesure temp
-   #set liste [list shutter rz_rgbr_8 rz_rgbr_15 rz_rgbr_30]
    set liste [list rz_rgbr_8 rz_rgbr_15 rz_rgbr_30]
    ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
    file delete -force $rep
