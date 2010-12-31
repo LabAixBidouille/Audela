@@ -2,7 +2,7 @@
 # Fichier : prtr.tcl
 # Description : Script dedie au menu deroulant pretraitement
 # Auteur : Raymond ZACHANTKE
-# Mise à jour $Id: prtr.tcl,v 1.4 2010-12-29 08:06:40 robertdelmas Exp $
+# Mise à jour $Id: prtr.tcl,v 1.5 2010-12-31 15:04:47 robertdelmas Exp $
 #
 
 namespace eval ::prtr {
@@ -883,7 +883,8 @@ namespace eval ::prtr {
 
       #--   arrete si une erreur ou un oubli
       set opt [::prtr::cmdVerif]
-      if {$opt eq 0} {return 0}
+      #--   pour bloquer la fermeture de la fenêtre dans ::prtr::cmdOk
+      if {$opt eq 0} {return 1}
 
       #--   inhibe toutes les zones sensibles
       ::prtr::windowActive $tbl disabled
@@ -896,22 +897,34 @@ namespace eval ::prtr {
 
       #--   selectionne la fonction a activer
       switch -exact $private(function) {
-         BIAS         {  set private(error) [faireOffset $data $opt]}
-         DARK           {  lappend data $prtr::methode
-                           set private(error) [faireDark $data $opt]}
-         FLAT           {  set private(error) [faireFlat $data $opt]}
-         PRETRAITEMENT  {  if {$::prtr::opt_black eq "1"} {
-                              set private(error) [faireOptNoir $data $opt]
-                           } else {
-                              set private(error) [fairePretraitement $data $opt]
+         "BIAS"            {  set private(error) [faireOffset $data $opt]}
+         "DARK"            {  lappend data $prtr::methode
+                              set private(error) [faireDark $data $opt]}
+         "FLAT"            {  set private(error) [faireFlat $data $opt]}
+         "PRETRAITEMENT"   {  if {$::prtr::opt_black eq "1"} {
+                                 set private(error) [faireOptNoir $data $opt]
+                              } else {
+                                 set private(error) [fairePretraitement $data $opt]
+                              }
                            }
-                        }
-         CLIP           {  set private(error) [clipMinMax $data $opt]}
-         default        {  switch $private(ima) PILE {set appl "IMA/STACK"} default {set appl "IMA/SERIES"}
-                           set data [linsert $data 0 $appl]
-                           lappend data "$private(function)"
-                           set private(error) [::prtr::cmdExec $data $opt]
-                        }
+         "ROT+90"          {  set data [linsert $data 0 "IMA/SERIES"]
+                              lappend data "$private(function)"
+                              set private(error) [cmdRot $data $opt]
+                           }
+         "ROT180"          {  set data [linsert $data 0 "IMA/SERIES"]
+                              lappend data "$private(function)"
+                              set private(error) [cmdRot $data $opt]
+                           }
+         "ROT-90"          {  set data [linsert $data 0 "IMA/SERIES"]
+                              lappend data "$private(function)"
+                              set private(error) [cmdRot $data $opt]
+                           }
+         "CLIP"            {  set private(error) [clipMinMax $data $opt]}
+         default           {  switch $private(ima) PILE {set appl "IMA/STACK"} default {set appl "IMA/SERIES"}
+                              set data [linsert $data 0 $appl]
+                              append data " " "$private(function)"
+                              set private(error) [::prtr::cmdExec $data $opt]
+                           }
       }
 
       #--   post traitement
@@ -1224,7 +1237,7 @@ namespace eval ::prtr {
      set widget(prtr,position) "$::conf(prtr,position)"
    }
 
-      #--   chaque fonction est accompagnee de quatre variables (eventuellement vides) :
+   #--   chaque fonction est accompagnee de quatre variables (eventuellement vides) :
    #     -fun : nom de la fonction TT
    #     -hlp : nom du repertoire de la page, nom de la page et nom de l'ancre (si elle existe)
    #     -par : noms des parametres obligatoires alternant avec la valeur d'initialisation
@@ -1511,7 +1524,7 @@ namespace eval ::prtr {
       global caption help
 
       dict set MAITRE "$caption(audace,menu,faire_offset)"        fun "BIAS"
-      dict set MAITRE "$caption(audace,menu,faire_offset)"        hlp "$help(dir,pretrait) 1250faire_maitre.htm OFFSET"
+      dict set MAITRE "$caption(audace,menu,faire_offset)"        hlp "$help(dir,pretrait) 1250faire_maitre.htm BIAS"
       dict set MAITRE "$caption(audace,menu,faire_offset)"        par ""
       dict set MAITRE "$caption(audace,menu,faire_offset)"        opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set MAITRE "$caption(audace,menu,faire_dark)"          fun "DARK"
@@ -1544,6 +1557,31 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
+   #  ::prtr::PRETRAITEEFunctions {0|nom_de_fonction}
+   #  Cree le dictionnaire des fonctions de pretraitement
+   #  Retourne la liste des fonctions ou les parametres d'une fonction
+   #--------------------------------------------------------------------------
+    proc ROTATIONFunctions {function} {
+      variable ROTATION
+      global caption help
+
+      dict set ROTATION "$caption(audace,menu,rot+90)"            fun "ROT+90"
+      dict set ROTATION "$caption(audace,menu,rot+90)"            hlp "$help(dir,pretrait) 1260pivot.htm ROT+90"
+      dict set ROTATION "$caption(audace,menu,rot+90)"            par ""
+      dict set ROTATION "$caption(audace,menu,rot+90)"            opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set ROTATION "$caption(audace,menu,rot180)"            fun "ROT180"
+      dict set ROTATION "$caption(audace,menu,rot180)"            hlp "$help(dir,pretrait) 1260pivot.htm ROT180"
+      dict set ROTATION "$caption(audace,menu,rot180)"            par ""
+      dict set ROTATION "$caption(audace,menu,rot180)"            opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set ROTATION "$caption(audace,menu,rot-90)"            fun "ROT-90"
+      dict set ROTATION "$caption(audace,menu,rot-90)"            hlp "$help(dir,pretrait) 1260pivot.htm ROT-90"
+      dict set ROTATION "$caption(audace,menu,rot-90)"            par ""
+      dict set ROTATION "$caption(audace,menu,rot-90)"            opt "bitpix 16 skylevel 0 nullpixel 0"
+
+      return [consultDic ROTATION $function]
+   }
+
+   #--------------------------------------------------------------------------
    #  ::prtr::consultDic dico {0|nom_de_fonction}
    #  Consulte un dictionnaire
    #  Retourne la liste des fonctions ou des parametres de la fonction
@@ -1570,7 +1608,7 @@ namespace eval ::prtr {
    proc searchFunction {oper} {
       variable private
 
-      foreach dico {PILE ARITHM IMPROVE TRANSFORM EXTRACT AMEL MAITRE PRETRAITEE} {
+      foreach dico {PILE ARITHM IMPROVE TRANSFORM EXTRACT AMEL MAITRE PRETRAITEE ROTATION} {
          set fonctions [${dico}Functions 0]
          if {$oper in $fonctions} {
             set private(fonctions) "$fonctions"
@@ -2111,7 +2149,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::clipMinMax $data
+   #  ::prtr::clipMinMax $data $options
    #  Ex-tournement de multi-ecreter
    #--------------------------------------------------------------------------
    proc clipMinMax { data options } {
@@ -2172,6 +2210,137 @@ namespace eval ::prtr {
          }
          ::buf::delete $buf_clip
       } ErrInfo]
+      if {$catchError eq "1"} {::prtr::Error "$ErrInfo"}
+      return $catchError
+   }
+
+   #--------------------------------------------------------------------------
+   #  ::prtr::cmdRot
+   #  Procedure lancee par le bouton Appliquer
+   #--------------------------------------------------------------------------
+   proc cmdRot { data options } {
+
+      set dir  $::audace(rep_images)
+      cd $dir
+      foreach {select in dir_out name_out extension function} $data {break}
+      set nb_img [llength $in]
+      #--   identifie le type d'images
+      set type [getImgType $in]
+
+      #--   si compression
+      if {$::conf(fichier,compres) eq "0"} {
+         set ext $extension
+      } else {
+         set to_compress ""
+         regsub ".gz" $extension "" ext
+         #--   decompresse les fichiers .gz
+         foreach img $in {
+            gunzip $img$extension
+            #--   prepare la liste des compressions
+           lappend to_compress [file join $dir $img$ext]
+         }
+      }
+
+      #--   examine chaque fichier et
+      #--   constitue la liste des nom en entree et en sortie
+      if {$type eq "C"} {
+         foreach file $in {
+            decompRGB $file
+            #--   liste les fichiers a traiter
+            foreach k {r g b} {
+               lappend list_$k ${file}$k
+               lappend to_destroy ${file}$k
+            }
+         }
+         set list_in [list "$list_r" "$list_g" "$list_b"]
+         set list_out [list ${name_out}r ${name_out}g ${name_out}b]
+      } else {
+         set gray "$in"
+         set list_in [list $gray]
+         set list_out [list $name_out]
+      }
+
+      #--   gere le repertoire de sortie
+      set rep $dir_out
+      if {$dir_out eq "."} {set rep "$::audace(rep_images)"}
+
+      #--   gere les indices de sortie
+      set indice_out "."
+      #--   si plusieurs images de sortie
+      if {$nb_img ne "1"} {set indice_out "1"}
+
+      #--   fixe le generique de sortie sans indice ni plan couleur ni extension
+      set racine [file join $rep $name_out]
+
+      set catchError [catch {
+
+         foreach file_type $list_in file_out $list_out {
+
+            if {$type eq "C"} {set color [string index [lindex $file_type 0] end]}
+            if {$nb_img eq "1"} {set indFinal "."} else {set indFinal $nb_img}
+            switch -exact $function {
+               "ROT+90" {  set script1 "$select . \"$file_type\" * * $ext . temp $indice_out $ext INVERT xy $options"
+                           set script2 "$select . temp $indice_out $indFinal $ext \"$rep\" $file_out $indice_out $ext INVERT flip $options"
+                        }
+               "ROT180" {  set script1 "$select . \"$file_type\" * * $ext . temp $indice_out $ext INVERT mirror $options"
+                           set script2 "$select . temp $indice_out $indFinal $ext \"$rep\" $file_out $indice_out $ext INVERT flip $options"
+                        }
+               "ROT-90" {  set script1 "$select . \"$file_type\" * * $ext . temp $indice_out $ext INVERT flip $options"
+                           set script2 "$select . temp $indice_out $indFinal $ext \"$rep\" $file_out $indice_out $ext INVERT xy $options"
+                        }
+            }
+
+            if {$nb_img eq "1"} {
+               set indFinal "."
+               lappend to_destroy temp
+            } else {
+               set indFinal $nb_img
+               for {set i 1} {$i <= $nb_img} {incr i} {
+                  lappend to_destroy temp$i
+               }
+            }
+            lappend to_destroy
+
+            if {$::prtr::script eq "1"} {
+               ::console::affiche_resultat "ttscript2 \"$script1\"\n"
+               ::console::affiche_resultat "ttscript2 \"$script2\"\n"
+            }
+
+            ttscript2 $script1
+            ttscript2 $script2
+
+            if {$type eq "C" && $indice_out eq "1"} {
+               for {set i 1} {$i <= $nb_img} {incr i} {
+                  #--   intervertit le nom du plan et l'indice
+                  file rename -force "$racine$color$i$ext" "$racine$i$color$ext"
+                  if {[lsearch -regexp $options "jpegfile"] >= 0} {
+                     file rename -force $racine$color$i.jpg $racine$i$color.jpg
+                  }
+               }
+            }
+         }
+
+         #--   convertir en RGB
+         if {$indice_out eq "."} {
+            if {$type eq "C"} {::prtr::convertitRGB $racine$ext}
+         } else {
+            for {set i 1} {$i <= $nb_img} {incr i} {
+               if {$type eq "C"} {::prtr::convertitRGB $racine$i$ext}
+            }
+         }
+
+         #--   recompresse les fichiers d'entree et les fichiers de sortie
+         if {$::conf(fichier,compres) eq "1"} {
+            foreach file $to_compress {gzip $file}
+            set ext "$ext.gz"
+         }
+
+         #--   efface les plans couleurs des images entrantes
+         if {[info exists to_destroy]} {
+           ttscript2 "IMA/SERIES . \"$to_destroy\" * * $ext . . . . DELETE"
+         }
+
+      }  ErrInfo]
       if {$catchError eq "1"} {::prtr::Error "$ErrInfo"}
       return $catchError
    }
@@ -2516,6 +2685,8 @@ namespace eval ::prtr {
       }
       return $newList
    }
+
+
 
 }
 

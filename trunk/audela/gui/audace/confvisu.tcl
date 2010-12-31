@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.171 2010-12-30 10:15:43 robertdelmas Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.172 2010-12-31 15:04:32 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -74,6 +74,25 @@ namespace eval ::confVisu {
          R0lGODlhEQAPAMIDAAAAAAAAgICA/////////////////////yH5BAEKAAQA
          LAAAAAARAA8AAAM7SLrczuCp4GKjJOBll57CRnTZgAVCyHmDCaaYFbRulsJj
          SZ93PO2vTWdWQ4lIs5Mox/hkKo4lREKVJAAAOw==
+      }]
+
+      #--- icone pour rotation 90° sens horaire
+      set private(rotaton90dHIcon) [image create photo rotaton90dHIcon -data {
+         R0lGODlhDgAOAKECAABVmi69/////////yH5BAEKAAIALAAAAAAOAA4AAAIj
+         lI8Jy5AGgpTrxUkdujjo03CfNY3gUlZbR5GYCZbPClvznRQAOw==
+      }]
+
+      #--- icone pour rotation 90° sens anti-horaire
+      set private(rotaton90dAHIcon) [image create photo rotaton90dAHIcon -data {
+         R0lGODlhDQAOAKECAABVmi69/////////yH5BAEKAAIALAAAAAANAA4AAAIk
+         lI95wA3JgpRvgTmruZgiHjiaAI5bRDFf562YuWXKEs6fjR8FADs=
+      }]
+
+      #--- icone pour rotation 180°
+      set private(rotaton180dIcon) [image create photo rotaton180dIcon -data {
+         R0lGODlhDgARAKEDAABVmi69/zC//////yH5BAEKAAMALAAAAAAOABEAAAIv
+         nI95wA06QJiTKUmDsAjn8HQOFUJeuTxnIqlkVzGv4X0gbZNlrbNxY7pBRMMi
+         ogAAOw==
       }]
 
       #--- icone pour sommaire de l'aide
@@ -2390,6 +2409,23 @@ namespace eval ::confVisu {
             "$audace(base).traiteFilters" }
 
          Menu_Separator $visuNo "$caption(audace,menu,images)"
+         Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,rotation)"
+         set liste_des_fonctions [::prtr::ROTATIONFunctions 0]
+         for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
+            set function [lindex $liste_des_fonctions $i]
+            if { $function == $caption(audace,menu,rot+90) } {
+               Menu_Command $visuNo "$caption(audace,menu,rotation)" "$function..." "::prtr::run \"$function\" " \
+                  -compound left -image $::confVisu::private(rotaton90dHIcon)
+            } elseif { $function == $caption(audace,menu,rot180) } {
+               Menu_Command $visuNo "$caption(audace,menu,rotation)" "$function..." "::prtr::run \"$function\" " \
+                  -compound left -image $::confVisu::private(rotaton180dIcon)
+            } elseif { $function == $caption(audace,menu,rot-90) } {
+               Menu_Command $visuNo "$caption(audace,menu,rotation)" "$function..." "::prtr::run \"$function\" " \
+                  -compound left -image $::confVisu::private(rotaton90dAHIcon)
+            } else {
+               Menu_Command $visuNo "$caption(audace,menu,rotation)" "$function..." "::prtr::run \"$function\" "
+            }
+         }
          Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,improve)"
          set liste_des_fonctions [::prtr::IMPROVEFunctions 0]
          for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
@@ -2797,6 +2833,7 @@ namespace eval ::confVisu {
       Menu_Delete $visuNo "$caption(audace,menu,maitre)" all
       Menu_Delete $visuNo "$caption(audace,menu,filtrer)" all
       Menu_Delete $visuNo "$caption(audace,menu,convoluer)" all
+      Menu_Delete $visuNo "$caption(audace,menu,rotation)" all
       Menu_Delete $visuNo "$caption(audace,menu,improve)" all
       Menu_Delete $visuNo "$caption(audace,menu,convertir)" all
       Menu_Delete $visuNo "$caption(audace,menu,pile)" all
@@ -2859,6 +2896,23 @@ namespace eval ::confVisu {
          "$audace(base).traiteFilters" }
 
       Menu_Separator $visuNo "$caption(audace,menu,images)"
+      Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,rotation)"
+      set liste_des_fonctions [::prtr::ROTATIONFunctions 0]
+      for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
+         set function [lindex $liste_des_fonctions $i]
+         if { $function == $caption(audace,menu,rot+90) } {
+            Menu_Command $visuNo "$caption(audace,menu,rotation)" "$function..." "::prtr::run \"$function\" " \
+               -compound left -image $::confVisu::private(rotaton90dHIcon)
+         } elseif { $function == $caption(audace,menu,rot180) } {
+            Menu_Command $visuNo "$caption(audace,menu,rotation)" "$function..." "::prtr::run \"$function\" " \
+               -compound left -image $::confVisu::private(rotaton180dIcon)
+         } elseif { $function == $caption(audace,menu,rot-90) } {
+            Menu_Command $visuNo "$caption(audace,menu,rotation)" "$function..." "::prtr::run \"$function\" " \
+               -compound left -image $::confVisu::private(rotaton90dAHIcon)
+         } else {
+            Menu_Command $visuNo "$caption(audace,menu,rotation)" "$function..." "::prtr::run \"$function\" "
+         }
+      }
       Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,improve)"
       set liste_des_fonctions [::prtr::IMPROVEFunctions 0]
       for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
