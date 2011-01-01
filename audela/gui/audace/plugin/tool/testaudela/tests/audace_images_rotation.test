@@ -1,0 +1,91 @@
+set visuNo 1
+set bufNo [::confVisu::getBufNo $visuNo]
+set w ".audace.prtr.usr"
+
+variable SETUP {
+   set ::conf(extension,defaut) .fit
+   set ::conf(fichier,compres) 0
+   file copy -force [file join $::conf(testaudela,rep_images) rz_rgbr_8.fit] $::audace(rep_images)
+   loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
+   set coords {245 100}
+   set attendu [lrange [buf$bufNo getpix $coords] 1 end]
+   set naxis1 [lindex [buf$bufNo getkwd NAXIS1] 1]
+   set naxis2 [lindex [buf$bufNo getkwd NAXIS2] 1]
+}
+
+variable CLEANUP {
+   #--   clic sur le bouton Fermer
+   ::testaudela::clicButton $w.cmd.fermer
+   #---  efface l'image
+   ::confVisu::deleteImage $visuNo
+   set liste [list rz_rgbr_8 $name_out]
+   ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
+}
+
+#-----------------------------------------------------------------------------
+#--   le test ROTATION a pour entree une image RGB a traiter
+#--   le test porte sur :
+#        constance des intensites RGB lors du deplacement du point {227 108}
+#-----------------------------------------------------------------------------
+
+#--   test rotation +90°
+test rotation+90 {rotation de rz_rgbr_8} -constraints {AUDACE} -setup $SETUP -body {
+   #--   clic sur le menu "Images/Rotation/Rotation 90° sens horaire"
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,rotation)" "$::caption(audace,menu,rot+90)..."
+   #-- saisit le nom de sortie
+   set name_out "rotation90"
+   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $w.cmd.appliquer
+
+   #--   controle
+   set result 0
+   set x "100"
+   set y [expr {int($naxis1-245+1)}]
+   #--   verifie le deplacement du point {245 100}
+   set mesure [lrange [buf$bufNo getpix [list $x $y]] 1 end]
+   if {$attendu eq "$mesure"} {incr result}
+   return $result
+ } -cleanup $CLEANUP -result "1"
+
+#--   test rotation 180°
+test rotation180 {rotation de rz_rgbr_8} -constraints {AUDACE} -setup $SETUP -body {
+   #--   clic sur le menu "Images/Rotation/Rotation 180"
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,rotation)" "$::caption(audace,menu,rot180)..."
+   #-- saisit le nom de sortie
+   set name_out "rotation180"
+   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $w.cmd.appliquer
+
+   #--   controle
+   set result 0
+   set x [expr {$naxis1-245+1}]
+   set y [expr {$naxis2-100+1}]
+   #--   verifie le deplacement du point {245 100}
+   set mesure [lrange [buf$bufNo getpix [list $x $y]] 1 end]
+   if {$attendu eq "$mesure"} {incr result}
+   return $result
+ } -cleanup $CLEANUP -result "1"
+
+#--   test rotation -90°
+test rotation-90 {rotation de rz_rgbr_8} -constraints {AUDACE} -setup $SETUP -body {
+   #--   clic sur le menu "Images/Rotation/Rotation 90° sens antihoraire"
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,rotation)" "$::caption(audace,menu,rot-90)..."
+   #-- saisit le nom de sortie
+   set name_out "rotation-90"
+   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $w.cmd.appliquer
+
+   #--   controle
+   set result 0
+   set x [expr {int($naxis2-100+1)}]
+   set y 245
+   #--   verifie le deplacement du point {245 100}
+   set mesure [lrange [buf$bufNo getpix [list $x $y]] 1 end]
+   if {$attendu eq "$mesure"} {incr result}
+   return $result
+ } -cleanup $CLEANUP -result "1"
+
+
