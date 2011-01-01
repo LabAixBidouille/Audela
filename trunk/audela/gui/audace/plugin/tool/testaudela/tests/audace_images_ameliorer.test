@@ -11,8 +11,6 @@
 set visuNo 1
 set bufNo [::confVisu::getBufNo $visuNo]
 set w ".audace.prtr.usr"
-#--   memorise le format, l'extension, audace(rep_images)
-set parInitial [list $::conf(extension,defaut) $::conf(fichier,compres) $::audace(rep_images)]
 
 variable SETUP {
    set ::conf(extension,defaut) .fit
@@ -24,8 +22,6 @@ variable SETUP {
 }
 
 variable CLEANUP {
-   #--   retablit les parametres initiaux
-   lassign $parInitial ::conf(extension,defaut) ::conf(fichier,compres) ::audace(rep_images)
    #--   clic sur le bouton Fermer
    ::testaudela::clicButton $w.cmd.fermer
    #---  efface l'image
@@ -41,7 +37,7 @@ variable CLEANUP {
 #-------------------------------------------------------------------------------------
 #--   test IMA/SERIES CONV kernel_type=gauss
 test imaseries_gauss {application d'un filtre gaussien à rz_rgbr_8.fit} -constraints {AUDACE} -setup $SETUP -body {
-   #--   clic sur le menu "Traitement/Améliorer/Filtre gaussien..."
+   #--   clic sur le menu "Images/Améliorer/Filtre gaussien..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,amel)" "$::caption(audace,menu,filtre_gaussien)..."
    #--   selectionne l'option "Options"
    ::testaudela::clicCheckButton $w.ttoptions.che "1"
@@ -70,7 +66,7 @@ test imaseries_gauss {application d'un filtre gaussien à rz_rgbr_8.fit} -constra
 
 #--   test  IMA/SERIES CONV kernel_type=morlet
 test imaseries_morlet {application d'un filtre de Morlet à rz_rgbr_8.fit} -constraints {AUDACE} -setup $SETUP -body {
-   #--   clic sur le menu "Traitement/Améliorer/Ondelette de type Morlet..."
+   #--   clic sur le menu "Images/Améliorer/Ondelette de type Morlet..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,amel)" "$::caption(audace,menu,ond_morlet)..."
    #--   selectionne l'option "Options"
    ::testaudela::clicCheckButton $w.ttoptions.che "1"
@@ -100,7 +96,7 @@ test imaseries_morlet {application d'un filtre de Morlet à rz_rgbr_8.fit} -const
 
 #--   IMA/SERIES CONV kernel_type=mexican
 test imaseries_mexican {application d'un filtre de chapeau mexicain à rz_rgbr_8.fit} -constraints {AUDACE} -setup $SETUP -body {
-   #--   clic sur le menu "Traitement/Améliorer/Ondelette de type chapeau mexicain..."
+   #--   clic sur le menu "Images/Améliorer/Ondelette de type chapeau mexicain..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,amel)" "$::caption(audace,menu,ond_mexicain)..."
    #--   selectionne l'option "Options"
    ::testaudela::clicCheckButton $w.ttoptions.che "1"
@@ -136,7 +132,7 @@ test imaseries_radial {appliquer un filtre radial a rz_rbgr_8.fit} -constraints 
    #--   prend la valeur du pixel {111 108}
    attendu set [lrange [buf$bufNo getpix {111 108}] 1 end]
 
-   #--   clic sur le menu "Traitement/Améliorer/Filtre radial..."
+   #--   clic sur le menu "Images/Améliorer/Filtre radial..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,amel)" "$::caption(audace,menu,radial)..."
    #--   sigma et power par defaut
    #--   crpix1 et crpix2 automatique
@@ -153,27 +149,16 @@ test imaseries_radial {appliquer un filtre radial a rz_rbgr_8.fit} -constraints 
 
    #--   procedure de controle
    mesure set [lrange [buf$bufNo getpix {111 108}] 1 end]
-   #--   clic sur le bouton Fermer
-   ::testaudela::clicButton $w.cmd.fermer
    set c [expr {$::prtr::radius*1./$::prtr::sigma}]
    set  coef [expr {1.-1./(1.+pow($c,$::prtr::power))}]
    attendu expr {round(attendu*$coef)}
-::console::affiche_resultat "mesure $mesure(:)\n"
-::console::affiche_resultat "attendu $attendu(:)\n"
    attendu expr {round(mesure-attendu)}
-::console::affiche_resultat "attendu $attendu(:)\n"
    #--   nb de differences
    attendu expr {abs(attendu) <= 278}
    set result [llength [attendu search 1]]
-   #---  efface l'image
-   ::confVisu::deleteImage $visuNo
    foreach file [list ${name_out}r.jpg ${name_out}g.jpg ${name_out}b.jpg] {
       if {[file exists $file]} {incr result}
    }
-   set liste [list rz_rgbr_8 $name_out]
-   ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
-   file delete "./${name_out}r.jpg" "./${name_out}g.jpg" "./${name_out}b.jpg"
-   ::blt::vector destroy attendu mesure
    return $result
-} -cleanup {} -result "6"
+} -cleanup $CLEANUP  -result "6"
 

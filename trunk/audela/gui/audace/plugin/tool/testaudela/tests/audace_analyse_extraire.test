@@ -11,21 +11,16 @@ set visuNo 1
 set bufNo [::confVisu::getBufNo $visuNo]
 set w ".audace.prtr.usr"
 
-
 variable SETUP {
-   #--   memorise le format, l'extension, audace(rep_images)
-   set parInitial [list $::conf(extension,defaut) $::conf(fichier,compres) $::audace(rep_images)]
+   set ::conf(extension,defaut) .fit
+   set ::conf(fichier,compres) 0
    ::blt::vector create attendu mesure -watchunset 1
    file copy -force [file join $::conf(testaudela,rep_images) rz_rgbr_8.fit] $::audace(rep_images)
    loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
    attendu set [lrange [buf$bufNo getpix {1 1}] 1 end]
-   set ::conf(extension,defaut) .fit
-   set ::conf(fichier,compres) 0
 }
 
 variable CLEANUP {
-   ::blt::vector destroy attendu mesure
-   lassign $parInitial ::conf(extension,defaut) ::conf(fichier,compres) ::audace(rep_images)
    #--   clic sur le bouton Fermer
    ::testaudela::clicButton $w.cmd.fermer
    #---  efface l'image
@@ -33,12 +28,13 @@ variable CLEANUP {
    file delete "./rz_rgbr_8r.jpg" "./rz_rgbr_8g.jpg" "./rz_rgbr_8b.jpg"
    file delete "./${name}r.txt" "./${name}g.txt" "./${name}b.txt"
    ttscript2 "IMA/SERIES . rz_rgbr_8 * * .fit . . . . DELETE"
+   ::blt::vector destroy attendu mesure
 }
 
 #-----------------------------------------------------------------------------
 #--   test IMA/SERIES PROFILE direction=x
 test imaseries_profile_x {extraire une ligne de rz_rbgr_8} -constraints {AUDACE} -setup $SETUP -body {
-  #--   clic sur le menu "Analyse/Extraire/Une ligne..."
+   #--   clic sur le menu "Analyse/Extraire/Une ligne..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,extract)" "$::caption(audace,menu,ligne)..."
    #--   saisit les coordonnees de la zone a extraire
    ::testaudela::putLabelEntry $w.funoptions.offset 1
@@ -47,14 +43,17 @@ test imaseries_profile_x {extraire une ligne de rz_rbgr_8} -constraints {AUDACE}
    #--   selectionne l'option "jpegfile"
    ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
    #--   le nom de sortie est identique au nom de l'image d'entree
+   #--   donc il n'y a rien a saisir
    set name $::prtr::filename
    #--   clic sur le bouton Appliquer
    ::testaudela::clicButton $w.cmd.appliquer
 
    #--   procedure de controle
    set result "0"
+   #--   le nom de sortie du fichier txt est le nom par defaut (row)
+   set name $::prtr::filename
    foreach file [list ${name}r.txt ${name}g.txt ${name}b.txt] {
-      if {[file exists "./$file"]} {
+      if {[file exists [file join $::audace(rep_images) $file]]} {
          incr result
          #--   ouvre le fichier
          set fd [open "./$file" r+]
@@ -83,6 +82,7 @@ test imaseries_profile_y {extraire une colonne de rz_rbgr_8b} -constraints {AUDA
    #--   selectionne l'option "jpegfile"
    ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
    #--   le nom de sortie est identique au nom de l'image d'entree
+   #--   donc il n'y a rien a saisir
    set name $::prtr::filename
    #--   clic sur le bouton Appliquer
    ::testaudela::clicButton $w.cmd.appliquer
