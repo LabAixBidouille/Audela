@@ -343,7 +343,7 @@ test audace_pretrait_pretraitee {faire une image avec/sans optimisation du noir}
    #--   calcule la difference
    set difference [expr {$attendu-$mesure}]
    if {$difference eq "0.0"} {
-      ::console::affiche_resultat "prétraitement avec optimisation du noir OK\n\n"
+      ::console::affiche_resultat "Prétraitement avec optimisation du noir OK\n\n"
       incr result
    }
    #--   supprime l'image cree
@@ -371,7 +371,7 @@ test audace_pretrait_pretraitee {faire une image avec/sans optimisation du noir}
    #--   calcule la difference
    set difference [expr {$attendu-$mesure}]
    if {$difference eq "0.0"} {
-      ::console::affiche_resultat "prétraitement sans optimisation du noir OK\n\n"
+      ::console::affiche_resultat "Prétraitement sans optimisation du noir OK\n\n"
       incr result
    }
    return $result

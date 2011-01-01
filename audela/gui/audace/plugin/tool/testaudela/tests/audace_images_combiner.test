@@ -9,8 +9,6 @@
 set visuNo 1
 set bufNo [::confVisu::getBufNo $visuNo]
 set w ".audace.prtr.usr"
-set ::conf(extension,defaut) .fit
-set ::conf(fichier,compres) 0
 
 variable CLEANUP {
    #--   clic sur le bouton Fermer
@@ -21,11 +19,13 @@ variable CLEANUP {
 }
 
 test imastack_init {initialisation} {AUDACE} {
+   set ::conf(extension,defaut) .fit
+   set ::conf(fichier,compres) 0
+   set ext $::conf(extension,defaut)
    #--   cree un repertoire et un sous-repertoire
    set rep [file join $::audace(rep_images) TempTest]
    if {![file exists $rep]} {file mkdir $rep}
    if {![file exists [file join $rep Comb]]} {file mkdir [file join $rep Comb]}
-   set ext $::conf(extension,defaut)
    #--   fixe le point de mesure
    set coords [list 224 113]
    #--   recopie les images nécessaires au test
@@ -53,7 +53,7 @@ test imastack_init {initialisation} {AUDACE} {
 #-----------------------------------------------------------------------------
 #--   test IMA/STACK ADD
 test imastack_add {addition de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constraints {AUDACE} -setup {} -body {
-   #--   clic sur le menu "Prétraitement/Combiner/Somme..."
+   #--   clic sur le menu "Images/Combiner/Somme..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,pile)" "$::caption(audace,menu,somme)..."
    #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
    foreach img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
@@ -89,7 +89,7 @@ test imastack_add {addition de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constraints {AU
 
 #--   test IMA/STACK MEAN
 test imastack_moyenne {moyenne de rz_rgbr_8, rz_rgbr_15 et rz_rgbr_30} -constraints {AUDACE} -setup {} -body {
-   #--   clic sur le menu "Prétraitement/Combiner/Moyenne..."
+   #--   clic sur le menu "Images/Combiner/Moyenne..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,pile)" "$::caption(audace,menu,moyenne)..."
    #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
    foreach  img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
@@ -125,7 +125,7 @@ test imastack_moyenne {moyenne de rz_rgbr_8, rz_rgbr_15 et rz_rgbr_30} -constrai
 
 #--   test IMA/STACK MED
 test imastack_mediane {mediane de rz_rgbr_8, rz_rgbr_15 et rz_rgbr_30} -constraints {AUDACE} -setup {} -body {
-   #--   clic sur le menu "Prétraitement/Combiner/Mediane..."
+   #--   clic sur le menu "Images/Combiner/Mediane..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,pile)" "$::caption(audace,menu,mediane)..."
    #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
    foreach  img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
@@ -165,7 +165,7 @@ test imastack_mediane {mediane de rz_rgbr_8, rz_rgbr_15 et rz_rgbr_30} -constrai
 
 #--   IMA/STACK SORT
 test imastack_moyenne_tri_centile {moyenne triee de rz_rgbr_8, rz_rgbr_15 et rz_rgbr_30} -constraints {AUDACE} -setup {}  -body {
-   #--   clic sur le menu "Prétraitement/Combiner/Tri centile..."
+   #--   clic sur le menu "Images/Combiner/Tri centile..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,pile)" "$::caption(audace,menu,moyenne_tri)..."
    #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
    foreach  img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
@@ -211,7 +211,7 @@ test imastack_moyenne_tri_centile {moyenne triee de rz_rgbr_8, rz_rgbr_15 et rz_
 
 #--   IMA/STACK PROD
 test imastack_produit {produit de rz_rgbr_8, rz_rgbr_15 et rz_rgbr_30 avec powernorm} -constraints {AUDACE} -setup {} -body {
-   #--   clic sur le menu "Prétraitement/Combiner/Produit..."
+   #--   clic sur le menu "Images/Combiner/Produit..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,pile)" "$::caption(audace,menu,produit)..."
    #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
    foreach  img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
@@ -254,7 +254,7 @@ test imastack_produit {produit de rz_rgbr_8, rz_rgbr_15 et rz_rgbr_30 avec power
 
 #--   test IMA/STACK SIG
 test imastack_ecart_type {ecart-type de rz_rgbr_8, rz_rgbr_15 et rz_rgbr_30} -constraints {AUDACE} -setup {} -body {
-   #--   clic sur le menu "Prétraitement/Combiner/Ecart-type..."
+   #--   clic sur le menu "Images/Combiner/Ecart-type..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,pile)" "$::caption(audace,menu,ecart_type)..."
    #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
    foreach  img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
@@ -295,7 +295,7 @@ test imastack_ecart_type {ecart-type de rz_rgbr_8, rz_rgbr_15 et rz_rgbr_30} -co
 
 #--   IMA/STACK PYTHAGORE
 test imastack_racine_carree {racine carree de rz_rgbr_8, rz_rgbr_15 et rz_rgbr_30} -constraints {AUDACE} -setup {} -body {
-   #--   clic sur le menu "Prétraitement/Combiner/Racine carrée..."
+   #--   clic sur le menu "Images/Combiner/Racine carrée..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,pile)" "$::caption(audace,menu,racine_carree)..."
    #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
    foreach  img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
@@ -336,13 +336,13 @@ test imastack_racine_carree {racine carree de rz_rgbr_8, rz_rgbr_15 et rz_rgbr_3
 #--   test IMA/STACK SK
 #     concordance des intensites R G B constatees avec celles obtenues lors dun run
 test imastack_moyenne_kappa_sigma {moyenne K de rz_rgbr_8, rz_rgbr_15 et rz_rgbr_30} -constraints {AUDACE} -setup {} -body {
-   #--   clic sur le menu "Prétraitement/Combiner/Moyenne kappa*sigma..."
+   #--   clic sur le menu "Images/Combiner/Moyenne kappa*sigma..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,pile)" "$::caption(audace,menu,moyenne_k)..."
    #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
    foreach  img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
       set k [lsearch [$w.choix getcolumns 1] $img]
       ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
-  }
+   }
    #--   selectionne l'option "Options"
    ::testaudela::clicCheckButton $w.ttoptions.che 1
    #--   selectionne l'option "kappa"
@@ -380,13 +380,11 @@ test imastack_moyenne_kappa_sigma {moyenne K de rz_rgbr_8, rz_rgbr_15 et rz_rgbr
 test imastack_shutter {shutter de rz_shutter1 rz_shutter2 rz_shutter3} -constraints {AUDACE} -setup {
    set ::conf(fichier,compres) "1"
    set coords [list 175 125]
-   exposure length 0
-
    foreach file {rz_shutter1 rz_shutter2 rz_shutter3} {
      file copy -force [file join $::conf(testaudela,rep_images) $file.fit.gz] $::audace(rep_images)
    }
 } -body {
-   #--   clic sur le menu "Prétraitement/Combiner/Obturateur..."
+   #--   clic sur le menu "Images/Combiner/Obturateur..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,pile)" "$::caption(audace,menu,obturateur)..."
    #--   selectionne rz_shutter1 rz_shutter2 rz_shutter3
    foreach  img {rz_shutter1 rz_shutter2 rz_shutter3} {
@@ -403,8 +401,7 @@ test imastack_shutter {shutter de rz_shutter1 rz_shutter2 rz_shutter3} -constrai
    set result 0
    mesure set [lrange [buf$bufNo getpix $coords] 1 end ]
    attendu set [list 320]
-   attendu expr {round(attendu-mesure)}
-   if {$attendu(:) eq "0.0"} {incr result}
+   if {$attendu(:) eq "$mesure(:)"} {set result "1"}
    return $result
 } -cleanup {
    set ::conf(fichier,compres) "0"
@@ -416,7 +413,6 @@ test imastack_shutter {shutter de rz_shutter1 rz_shutter2 rz_shutter3} -constrai
    ttscript2 "IMA/SERIES . \"$liste\" * * \".fit.gz\" . . . . DELETE"
 } -result "1"
 
-
 #--   test IMA/SERIES DELETE
 test imastack_clean {nettoyage des fichiers} {AUDACE} {
    #--   detruit les vecteurs
@@ -426,4 +422,3 @@ test imastack_clean {nettoyage des fichiers} {AUDACE} {
    file delete -force $rep
    return ""
 } ""
-
