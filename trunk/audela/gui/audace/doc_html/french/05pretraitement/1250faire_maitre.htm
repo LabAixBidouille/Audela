@@ -5,8 +5,8 @@
   <title>Faire une image ma&#238;tre</title>
 </head>
 <body>
-<p class="date">Date de mise &#224; jour : 29 d&#233;cembre
-2010</p>
+<p class="date">Date de mise &#224; jour : 01 janvier
+2011</p>
 <h1>Faire une image ma&#238;tre</h1>
 <h2>1. Fonctions</h2>
 <p>Elles permettent de :</p>
@@ -28,9 +28,11 @@ dans un r&#233;pertoire diff&#233;rent.</li>
 </ul>
 <h2><a name="BIAS" id="BIAS"></a>2. Faire une image ma&#238;tre
 de pr&#233;charge (bias ou offset)</h2>
-<p>L'image de pr&#233;charge, nomm&#233;e aussi bias ou offset, correspond &#224;
-l'image obtenue avec le temps d'exposition le plus court possible
-disponible avec la cam&#233;ra dans l'obscurit&#233; totale.<br>
+<p>L'image ma&#238;tre de pr&#233;charge, nomm&#233;e aussi bias ou offset, correspond
+&#224;
+l'image obtenue, dans l'obscurit&#233; totale, avec le temps d'exposition le
+plus court possible
+disponible sur la cam&#233;ra utilis&#233;e.<br>
 </p>
 <p>Cette fonction effectue la m&#233;diane des images
 s&#233;lectionn&#233;es.</p>
@@ -69,12 +71,14 @@ de toutes les images annule la r&#233;f&#233;rence.</li>
 <h2><a name="DARK" id="DARK"></a>3. Faire une image ma&#238;tre
 du noir (dark)</h2>
 <p><img src="images/dark.png"></p>
-<p>L'image du noir, nomm&#233;e aussi dark, est l'image de la r&#233;ponse
-thermique de la cam&#233;ra. C'est une pose, effectu&#233;e dans l'obscurit&#233;
-totale, de la m&#234;me dur&#233;e et &#224; la m&#234;me temp&#233;rature, que l'image &#224;
-pr&#233;traiter. Cette image du noir contient aussi l'image de pr&#233;charge.
-Elle correspond &#224; la carte des charges thermiques accumul&#233;es pendant la
+<p>L'image ma&#238;tre du noir, nomm&#233;e aussi dark, est l'image de la r&#233;ponse
+thermique de la cam&#233;ra. Elle correspond &#224; la carte des charges
+thermiques accumul&#233;es pendant la
 pose.<br>
+</p>
+<p>On obtient cette image par une pose, effectu&#233;e dans l'obscurit&#233;
+totale, de la m&#234;me dur&#233;e et &#224; la m&#234;me temp&#233;rature que l'image &#224;
+pr&#233;traiter &#224; laquelle nous avons soustrait l'image ma&#238;tre de pr&#233;charge.<br>
 </p>
 <p>Cette fonction applique la m&#233;thode retenue (m&#233;diane,
 moyenne ou somme) aux images s&#233;lectionn&#233;es.</p>
@@ -94,7 +98,8 @@ diff&#233;rent.</p>
 <h2><a name="FLAT" id="FLAT"></a>4. Faire une image ma&#238;tre
 de P.L.U. ou Plage de Lumi&#232;re Uniforme (flat ou flat-field)</h2>
 <p><img src="images/flat.png"></p>
-<p>L'image de P.L.U. (Plage de Lumi&#232;re Uniforme), nomm&#233;e aussi flat ou
+<p>L'image ma&#238;tre de P.L.U. (Plage de Lumi&#232;re Uniforme), nomm&#233;e aussi
+flat ou
 flat-field, caract&#233;rise le facteur de r&#233;ponse des pixels du CCD. En
 effet tous les pixels d'une m&#234;me matrice CCD ne sont pas sensibles de
 la m&#234;me mani&#232;re &#224; un flux lumineux, qui lui-m&#234;me est influenc&#233; par la
@@ -118,11 +123,11 @@ op&#233;randes n'est affich&#233; que s'il est diff&#233;rent du
 r&#233;pertoire-images. Dans le cas contraire son nom est
 remplace par ./</p>
 <p>Deux modes de traitement sont accessibles :</p>
-<p>L'option Optimisation du noir demande la pr&#233;sence d'un
+<p>L'option optimisation du noir demande la pr&#233;sence d'un
 fichier de <b>bias</b> et de <b>dark</b> et il faut cocher
-l'option opt_black.</p>
+l'option <span style="font-weight: bold;">opt_black</span>.</p>
 <p>Sans optimisation du noir, les fichiers de <b>bias</b> et/ou
-de <b>dark</b> peuvent &#234;tre omis : dans ce cas ne rien
+de <b>dark</b> peuvent &#234;tre omis : Dans ce cas ne rien
 mentionner dans les entr&#233;es correspondantes.</p>
 <p>Les images interm&#233;diaires produites lors des &#233;tapes
 pr&#233;c&#233;dentes sont ensuite divis&#233;es par l'image de
