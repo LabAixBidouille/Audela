@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Images
-# Mise à jour $Id: aud_menu_3.tcl,v 1.78 2010-12-31 15:05:43 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_3.tcl,v 1.79 2011-01-01 18:58:31 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -2030,7 +2030,10 @@ proc subfitgauss { visuNo } {
       #--   traite chaque plan
       foreach plan {r g b} {
          buf$bufNo load ${nom_sans_extension}$plan$ext
-         buf$bufNo fitgauss $box -sub
+         set valeurs [ buf$bufNo fwhm $box ]
+         set fwhmx   [ lindex $valeurs 0 ]
+         set fwhmy   [ lindex $valeurs 1 ]
+         buf$bufNo fitgauss $box -sub -fwhmx $fwhmx -fwhmy $fwhmy
          buf$bufNo save ${nom_sans_extension}$plan$ext
       }
 
@@ -2046,8 +2049,13 @@ proc subfitgauss { visuNo } {
 
    } else {
 
+      #--   calcule fwhmx et fwhmy de l'etoile
+      set valeurs [ buf$bufNo fwhm $box ]
+      set fwhmx   [ lindex $valeurs 0 ]
+      set fwhmy   [ lindex $valeurs 1 ]
+
       #--   traite une image non-RGB
-      buf$bufNo fitgauss $box -sub
+      buf$bufNo fitgauss $box -sub -fwhmx $fwhmx -fwhmy $fwhmy
 
    }
 
