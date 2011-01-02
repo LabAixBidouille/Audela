@@ -4,7 +4,7 @@ set visuNo 1
 #-------------------------------------------------------------------------------
 #  connecte la camera audine
 #-------------------------------------------------------------------------------
-test tool_acqfc_connect_camera {connecte la camera} { AUDACE AUDINE } {
+test tool_acqfc_connect_camera {connecte la camera} {AUDACE AUDINE} {
   #--- je deconnecte la camera si elle est deja connectee
    if {  [::confCam::isReady A] == 1 } {
       ::confCam::stopItem A
@@ -19,7 +19,7 @@ test tool_acqfc_connect_camera {connecte la camera} { AUDACE AUDINE } {
 #-------------------------------------------------------------------------------
 # fait une acquisition et enregistre au format JPEG
 #-------------------------------------------------------------------------------
-test tool_acqfc_sauve_jpeg {sauvegarde JPG} { AUDACE AUDINE } {
+test tool_acqfc_sauve_jpeg {sauvegarde JPG} {AUDACE AUDINE} {
    #-- je selectionne l'outil acqfc
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,acquisition)" "$::caption(acqfc,menu)"
    #--- je charge l'image m57.fit
@@ -53,7 +53,7 @@ test tool_acqfc_sauve_jpeg {sauvegarde JPG} { AUDACE AUDINE } {
 #-------------------------------------------------------------------------------
 #  fait une acquisition d'une image
 #-------------------------------------------------------------------------------
-test tool_acqfc_acq_une_image {acquisition une image} {AUDACE AUDINE } {
+test tool_acqfc_acq_une_image {acquisition une image} {AUDACE AUDINE} {
    #-- je selectionne l'outil acqfc
    ::testaudela::clicMenu $visuNo $::caption(audace,menu,acquisition) $::caption(acqfc,menu)
    #--- je selectionne le temps de pose, binning et le mode
@@ -85,7 +85,7 @@ test tool_acqfc_acq_une_image {acquisition une image} {AUDACE AUDINE } {
 #-------------------------------------------------------------------------------
 #  fait une acquisition d'une image
 #-------------------------------------------------------------------------------
-test tool_acqfc_acq_une_image {acquisition série } {AUDACE AUDINE } {
+test tool_acqfc_acq_une_image {acquisition série} {AUDACE AUDINE} {
    #-- je selectionne l'outil acqfc
    ::testaudela::clicMenu $visuNo $::caption(audace,menu,acquisition) $::caption(acqfc,menu)
    #--- je selectionne le temps de pose, binning et le mode
@@ -122,11 +122,9 @@ test tool_acqfc_acq_une_image {acquisition série } {AUDACE AUDINE } {
 #-------------------------------------------------------------------------------
 #  deconnecte la camera
 #-------------------------------------------------------------------------------
-test tool_acqfc_disconnect_camera {deconnecte la camera} { AUDACE AUDINE } {
+test tool_acqfc_disconnect_camera {deconnecte la camera} {AUDACE AUDINE} {
    ::confCam::stopItem A
    set result [::confCam::isReady A]
    return $result
 } "0"
-
-
 
