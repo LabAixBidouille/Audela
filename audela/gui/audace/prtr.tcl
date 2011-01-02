@@ -2,7 +2,7 @@
 # Fichier : prtr.tcl
 # Description : Script dedie au menu deroulant pretraitement
 # Auteur : Raymond ZACHANTKE
-# Mise à jour $Id: prtr.tcl,v 1.5 2010-12-31 15:04:47 robertdelmas Exp $
+# Mise à jour $Id: prtr.tcl,v 1.6 2011-01-02 17:04:25 robertdelmas Exp $
 #
 
 namespace eval ::prtr {
@@ -922,7 +922,7 @@ namespace eval ::prtr {
          "CLIP"            {  set private(error) [clipMinMax $data $opt]}
          default           {  switch $private(ima) PILE {set appl "IMA/STACK"} default {set appl "IMA/SERIES"}
                               set data [linsert $data 0 $appl]
-                              append data " " "$private(function)"
+                              lappend data "$private(function)"
                               set private(error) [::prtr::cmdExec $data $opt]
                            }
       }
@@ -1124,7 +1124,7 @@ namespace eval ::prtr {
       destroy $private(this)
       array unset bd
       array unset private
-      #array unset ::prtr::
+      array unset ::prtr
    }
 
    #--------------------------------------------------------------------------
@@ -1463,7 +1463,7 @@ namespace eval ::prtr {
 
       dict set SERIES "$caption(audace,menu,ligne)"               fun "PROFILE direction=x"
       dict set SERIES "$caption(audace,menu,ligne)"               hlp "$help(dir,prog) ttus1-fr.htm PROFILE"
-      dict set SERIES "$caption(audace,menu,ligne)"               par "offset 1 filename row"
+      dict set SERIES "$caption(audace,menu,ligne)"               par "offset 1 filename row "
       dict set SERIES "$caption(audace,menu,ligne)"               opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
       dict set SERIES "$caption(audace,menu,colonne)"             fun "PROFILE direction=y"
       dict set SERIES "$caption(audace,menu,colonne)"             hlp "$help(dir,prog) ttus1-fr.htm PROFILE"
@@ -1880,10 +1880,25 @@ namespace eval ::prtr {
                return [avertiUser err_file_dim $value]
             }
 
-            #--   dans le cas de OPT et MAITRE verifie qu'il ne s'agit pas d'une image couleurs
-            if {$private(function) in {OPT MAITRE} && $naxis eq "3" && $naxis3 eq "3"} {
-               return [avertiUser err_par_file $parametre]
+            if {$naxis eq "2"} {
+               set type "M"
+            } elseif {$naxis eq "3" && $naxis eq "3"} {
+               set type "C"
             }
+
+            switch $private(function) {
+               OPT      {  #--   verifie que l'image est de meme nature que l'image d'entree
+                           if {$type ne "[lindex $private(profil) 0]"} {
+                              return [avertiUser err_file_type $parametre]
+                           }
+                        }
+               MAITRE   {  #--   verifie que l'image n'est pas une image RGB
+                           if {$naxis eq "3" && $naxis3 eq "3"} {
+                              return [avertiUser err_par_file $parametre]
+                           }
+                        }
+            }
+
             return "\"$parametre=$value\""
          }
       } elseif {$test eq "liste"} {
@@ -1922,7 +1937,6 @@ namespace eval ::prtr {
       regsub "$extensions" $nom_avec_extensions "" nom_court
       return [list $dir $nom_court $extensions]
    }
-
 
    #--------------------------------------------------------------------------
    #  ::prtr::cmdExec { {IMA/STACK|IMA/SERIES} in name_out fonctionTT parametres }
@@ -1963,7 +1977,7 @@ namespace eval ::prtr {
       if {$type eq "C"} {
          foreach file $in {
             decompRGB $file
-            #--   liste les fichiers aÂ traiter
+            #--   liste les fichiers a traiter
             foreach k {r g b} {
                lappend list_$k ${file}$k
                lappend to_destroy ${file}$k
@@ -2010,9 +2024,7 @@ namespace eval ::prtr {
             }
 
             set script "$select . \"$file_type\" * * $ext \"$rep\" $file_out $indice_out $ext $function $options"
-            if {$::prtr::script eq "1"} {
-               ::console::affiche_resultat "Usage : ttscript2 \"$script\"\n"
-            }
+            ::prtr::editScript $script
             ttscript2 $script
 
             if {($type eq "C") && ($select eq "IMA/SERIES") && ($function in $filtres)} {
@@ -2237,7 +2249,7 @@ namespace eval ::prtr {
          foreach img $in {
             gunzip $img$extension
             #--   prepare la liste des compressions
-           lappend to_compress [file join $dir $img$ext]
+            lappend to_compress [file join $dir $img$ext]
          }
       }
 
@@ -2299,14 +2311,10 @@ namespace eval ::prtr {
                   lappend to_destroy temp$i
                }
             }
-            lappend to_destroy
 
-            if {$::prtr::script eq "1"} {
-               ::console::affiche_resultat "ttscript2 \"$script1\"\n"
-               ::console::affiche_resultat "ttscript2 \"$script2\"\n"
-            }
-
+            ::prtr::editScript $script1
             ttscript2 $script1
+            ::prtr::editScript $script2
             ttscript2 $script2
 
             if {$type eq "C" && $indice_out eq "1"} {
@@ -2360,9 +2368,7 @@ namespace eval ::prtr {
 
       set script "IMA/STACK . \"$imgList\" * * $extIn \"$dirOut\" \"$nameOut\" .  $extOut MED"
       if {$options ne ""} {append script " " $options}
-      if {$::prtr::script eq "1"} {
-         ::console::affiche_resultat "$script\n"
-      }
+      ::prtr::editScript $script
       set catchError [catch {ttscript2 $script} ErrInfo]
       if {$catchError eq "1"} {::prtr::Error "$ErrInfo"}
       return $catchError
@@ -2385,11 +2391,10 @@ namespace eval ::prtr {
 
       set catchError [catch {
          if {$bias ne ""} {
+
             #--   soustrait l'offset des images
             set script "IMA/SERIES . \"$imgList\" * * $extIn . temp 1 $extOut SUB \"file=$bias\" "
-            if {$::prtr::script eq "1"} {
-               ::console::affiche_resultat "$script\n"
-            }
+            ::prtr::editScript $script
             ttscript2 "$script"
 
             #--   met a jour la liste des images a traiter
@@ -2401,17 +2406,13 @@ namespace eval ::prtr {
 
          set script "IMA/STACK . \"$imgList\" * * $extIn \"$dirOut\" \"$nameOut\" . $extOut $methode"
          if {$options ne ""} {append script " " $options}
-         if {$::prtr::script eq "1"} {
-            ::console::affiche_resultat "$script\n"
-         }
+         ::prtr::editScript $script
          ttscript2 $script
 
          #--   detruit les fichiers temporaires
          if {[lsearch -regexp $imgList temp] >= "0"} {
             set script "IMA/SERIES . \"$imgList\" * * $extOut . . . . DELETE"
-            if {$::prtr::script eq "1"} {
-               ::console::affiche_resultat "$script\n"
-            }
+            ::prtr::editScript $script
             ttscript2 $script
          }
 
@@ -2444,7 +2445,7 @@ namespace eval ::prtr {
          if {[file exists $file]} {
             if {[subsOffset+Dark $data $file] ne "0"} {return 1}
 
-             #--   met a jour la liste des images a traiter
+            #--   met a jour la liste des images a traiter
             set imgList [buildNewList temp $l]
 
             #--   extrait la valeur de normalisation de l'offset
@@ -2452,27 +2453,23 @@ namespace eval ::prtr {
 
             #--   normalise l'offset
             set script "IMA/SERIES . \"$imgList\" * * $extOut . temp 1 $extOut NORMOFFSET normoffset_value=$opt"
-            if {$::prtr::script eq "1"} {
-               ::console::affiche_resultat "$script\n"
-            }
+            ::prtr::editScript $script
             ttscript2 "$script"
             set extIn $extOut
          }
       }
 
       set catchError [catch {
+
          set script "IMA/STACK . \"$imgList\" * * $extOut \"$dirOut\" $nameOut . $extOut MED "
          if {$options ne ""} {append script "$options"}
-         if {$::prtr::script eq "1"} {
-            ::console::affiche_resultat "$script\n"
-         }
+         ::prtr::editScript $script
          ttscript2 "$script"
+
          #--   supprime les fichiers intermediaires
          if {[lsearch -regexp $imgList temp] >= "0"} {
             set script "IMA/SERIES . \"$imgList\" * * $extOut . . . . DELETE"
-            if {$::prtr::script eq "1"} {
-               ::console::affiche_resultat "$script\n"
-            }
+            ::prtr::editScript $script
             ttscript2 "$script"
          }
       }  ErrInfo]
@@ -2509,10 +2506,9 @@ namespace eval ::prtr {
       set catchError [catch {
          #--   cree les images optimisees dans le repertoire de destination
          set script "IMA/SERIES . \"$imgList\" $indexIn $indexIn $extIn \"$dirOut\" $nameOut $indexOut $extOut OPT \"bias=$bias\" \"dark=$dark\" "
-         if {$::prtr::script eq "1"} {
-            ::console::affiche_resultat "$script\n"
-         }
+         ::prtr::editScript $script
          ttscript2 "$script"
+
          #--   divise les images par le flat s'il existe et multiplie par la constante
          if {$flat ne ""} {
 
@@ -2521,9 +2517,7 @@ namespace eval ::prtr {
 
             #--   divise les images par le flat
             set script "IMA/SERIES \"$dirOut\" \"$imgList\" $indexIn $indexIn $extOut \"$dirOut\" $nameOut $extOut $extOut DIV \"file=$flat\" $options"
-            if {$::prtr::script eq "1"} {
-               ::console::affiche_resultat "$script\n"
-            }
+            ::prtr::editScript $script
             ttscript2 "$script"
          }
       }  ErrInfo]
@@ -2571,17 +2565,13 @@ namespace eval ::prtr {
 
             #--   divise les images par le flat et multiplie par la constante
             set script "IMA/SERIES . \"$imgList\" $indexIn $indexIn $extIn \"$dirOut\" $nameOut $indexOut $extOut DIV \"file=$flat\" $options"
-            if {$::prtr::script eq "1"} {
-               ::console::affiche_resultat "$script\n"
-            }
+            ::prtr::editScript $script
             ttscript2 "$script"
 
             #--   detruit les fichiers temporaires
             if {[lsearch -regexp $imgList temp] >= "0"} {
                set script "IMA/SERIES . \"$imgList\" $indexIn $indexIn $extIn . . . . DELETE"
-               if {$::prtr::script eq "1"} {
-                  ::console::affiche_resultat "$script\n"
-               }
+               ::prtr::editScript $script
                ttscript2 "$script"
             }
          } else {
@@ -2618,9 +2608,7 @@ namespace eval ::prtr {
             set dir [file dirname $file1]
             set nameIn [file tail $file1]
             set script "IMA/SERIES \"$dir\" $nameIn . . . . $nameOut . $extOut ADD \"file=$file2\" "
-            if {$::prtr::script eq "1"} {
-               ::console::affiche_resultat "$script\n"
-            }
+            ::prtr::editScript $script
             ttscript2 "$script"
          }  ErrInfo]
       }
@@ -2642,9 +2630,7 @@ namespace eval ::prtr {
 
       set catchError [catch {
          set script "IMA/SERIES . \"$imgList\" * * $extIn . temp $index $extOut SUB \"file=$file\" "
-         if {$::prtr::script eq "1"} {
-            ::console::affiche_resultat "$script\n"
-         }
+         ::prtr::editScript $script
          ttscript2 "$script"
          #--   efface le fichier provisoire
          file delete $file
@@ -2652,6 +2638,17 @@ namespace eval ::prtr {
 
       if {$catchError eq "1"} {::prtr::Error "$ErrInfo"}
       return $catchError
+   }
+
+   #--------------------------------------------------------------------------
+   #  ::prtr::editScript script
+   #  Edit le script sur la console
+   #--------------------------------------------------------------------------
+   proc editScript { script } {
+
+      if {[info exists ::prtr::script] && $::prtr::script eq "1"} {
+         ::console::affiche_resultat "$script\n"
+      }
    }
 
    #--------------------------------------------------------------------------
