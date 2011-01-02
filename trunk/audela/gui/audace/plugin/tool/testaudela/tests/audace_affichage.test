@@ -10,7 +10,7 @@ test affichage_init {buf create} {AUDACE} {
    #--- je choisis la fonction de transfert lineaire
    set ::conf(fonction_transfert,visu$visuNo,mode) 1
    #--- je choisis le menu "zoom x1"
-   clicMenu $visuNo $caption(audace,menu,display) "$caption(audace,menu,zoom) $caption(audace,menu,zoom_1)"
+   clicMenu $visuNo $caption(audace,menu,display) "$caption(audace,menu,zoom) x 1"
 } ""
 
 #-------------------------------------------------------------------------------
@@ -24,7 +24,7 @@ test affichage_intensite {affichage des coordonnees et intensite} {AUDACE} {
 #-------------------------------------------------------------------------------
 test affichage_zoom_05 {zoom x0.5} {AUDACE} {
    #--- j'appelle le menu "zoom x0.5"
-   clicMenu $visuNo $caption(audace,menu,display) "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.5)"
+   clicMenu $visuNo $caption(audace,menu,display) "$caption(audace,menu,zoom) x 0.5"
    #--- je deplace la souris sur le point 20,20
    mouveMouse $visuNo 20 20
    update
@@ -37,6 +37,7 @@ test affichage_zoom_05 {zoom x0.5} {AUDACE} {
 test affichage_script_zoom_1 {zoom x1 par script} {AUDACE} {
    #--- je change le zoom avec la commande setZoom
    confVisu::setZoom $visuNo 1
+
    #--- je deplace la souris sur le point 20,20
    mouveMouse $visuNo 122 120
    update
@@ -68,7 +69,7 @@ test affichage_script_zoom_1_retour {zoom x1 retour} {AUDACE} {
 #-------------------------------------------------------------------------------
 test affichage_reticule_actif {affiche le reticule} {AUDACE} {
    #--- je clique sur le menu reticule
-   clicMenu $visuNo "$caption(audace,menu,display)" "[::Crosshair::getLabel]..."
+   clicMenu $visuNo "$caption(audace,menu,display)" "$caption(crosshair,titre)"
    #--- je clique le checkbutton pour afficher le reticule
    clicCheckButton [confVisu::getBase $visuNo].confCrossHair.frame1.frameState.currentstate
    #--- je ferme la fenetre
@@ -85,7 +86,7 @@ test affichage_reticule_actif {affiche le reticule} {AUDACE} {
 #-------------------------------------------------------------------------------
 test affichage_reticule_inactif {masque le reticule} {AUDACE} {
    #--- je clique sur le menu reticule
-   clicMenu $visuNo "$caption(audace,menu,display)" "[::Crosshair::getLabel]..."
+   clicMenu $visuNo "$caption(audace,menu,display)" "$caption(crosshair,titre)"
    #--- je clique le check button pour afficher le reticule
    clicCheckButton [confVisu::getBase $visuNo].confCrossHair.frame1.frameState.currentstate
    #--- je ferme la fenetre
@@ -102,7 +103,7 @@ test affichage_reticule_inactif {masque le reticule} {AUDACE} {
 #-------------------------------------------------------------------------------
 test affichage_reticule_actif {active et desactive le reticule sans fermer la fenetre} {AUDACE} {
    #--- je clique sur le menu reticule
-   clicMenu $visuNo "$caption(audace,menu,display)" "[::Crosshair::getLabel]..."
+   clicMenu $visuNo "$caption(audace,menu,display)" "$caption(crosshair,titre)"
    #--- je clique le checkbutton pour afficher le reticule
    clicCheckButton [confVisu::getBase $visuNo].confCrossHair.frame1.frameState.currentstate
    #--- j'applique sans fermer la fenetre
@@ -135,7 +136,7 @@ test visu_color {affiche une image couleur} {AUDACE} {
    loadima [file join $::conf(testaudela,rep_images) "47toucan.jpg"]
    update
    #--- j'appelle le menu "zoom x1"
-   clicMenu $visuNo $caption(audace,menu,display) "$caption(audace,menu,zoom) $caption(audace,menu,zoom_1)"
+   clicMenu $visuNo $caption(audace,menu,display) "$caption(audace,menu,zoom) x 1"
    #--- je deplace la souris sur le point 20,20
    mouveMouse $visuNo 20 20
    #--- je recupere les coordonnees et l'intensite
@@ -146,7 +147,7 @@ test visu_color {affiche une image couleur} {AUDACE} {
 test visu_end {raz de la visu} {AUDACE} {
    loadima [file join $::conf(testaudela,rep_images) "47toucan.jpg"]
    #--- j'appelle le menu "zoom x1"
-   clicMenu $visuNo $caption(audace,menu,display) "$caption(audace,menu,zoom) $caption(audace,menu,zoom_1)"
+   clicMenu $visuNo $caption(audace,menu,display) "$caption(audace,menu,zoom) x 1"
    #--- j'efface le buffer
    loadima ""
    after 300
