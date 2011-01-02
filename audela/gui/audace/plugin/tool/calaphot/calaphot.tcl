@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photométrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot.tcl,v 1.5 2010-10-10 20:02:24 michelpujol Exp $
+# $Id: calaphot.tcl,v 1.6 2011-01-02 13:07:47 jacquesmichelet Exp $
 #
 
 namespace eval ::CalaPhot {
@@ -71,7 +71,7 @@ namespace eval ::CalaPhot {
    proc getPluginProperty { propertyName } {
       switch $propertyName {
          function     { return "analysis" }
-         subfunction1 { return "photometry" }
+         subfunction1 { return "photometry_time_serie" }
          display      { return "window" }
       }
    }
