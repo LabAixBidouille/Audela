@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot_principal.tcl,v 1.22 2010-11-28 09:10:09 jacquesmichelet Exp $
+# $Id: calaphot_principal.tcl,v 1.23 2011-01-02 13:09:52 jacquesmichelet Exp $
 #
 
 ###catch {namespace delete ::Calaphot}
@@ -541,16 +541,15 @@ namespace eval ::CalaPhot {
     # @param[in] niveau_info : le niveau d'affichage
     # @param[in] args : le message formatte a afficher
     # @return
-    proc Console {niveau_info args} {
-        global audace
+    proc Console { niveau_info args } {
         variable trace_log
         variable calaphot
         variable parametres
 
-        if {$parametres(niveau_message) <= $calaphot(niveau_$niveau_info)} {
-            $audace(Console).txt1 insert end [string repeat " " [expr [info level] - 1]] calaphot(style_$niveau_info)
-            $audace(Console).txt1 insert end [eval [concat {format} $args]] calaphot(style_$niveau_info)
-            $audace(Console).txt1 see insert
+        if { $parametres(niveau_message) <= $calaphot(niveau_$niveau_info) } {
+            $::audace(Console).txt1 insert end [ string repeat " " [ expr [ info level ] - 1 ] ] calaphot(style_$niveau_info)
+            $::audace(Console).txt1 insert end [ eval [ concat {format} $args ] ] calaphot(style_$niveau_info)
+            $::audace(Console).txt1 see insert
             update
 
             if { [ info exists trace_log ] } {
@@ -1554,7 +1553,7 @@ namespace eval ::CalaPhot {
 
         Message debug "%s\n" [info level [info level]]
 
-        if {$parametres(type_images) == "non_recalees"} {
+        if { ( [ info exists liste_image ] ) && ( $parametres(type_images) == "non_recalees" ) } {
             # On ne sauvegarde les décalages que si les images ne sont pas recalées à la base
 
             set fichier [ OuvertureFichier [ file join $::audace(rep_images) $parametres(source).lst ] w ]
