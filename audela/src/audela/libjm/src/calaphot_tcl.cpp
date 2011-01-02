@@ -3,7 +3,7 @@
  * @brief : interface TCL pour les routines de photométrie et de modélisation
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: calaphot_tcl.cpp,v 1.5 2010-06-19 16:58:42 jacquesmichelet Exp $
+ * Mise à jour $Id: calaphot_tcl.cpp,v 1.6 2011-01-02 16:56:30 jacquesmichelet Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
@@ -79,7 +79,7 @@ int Calaphot::CmdFluxEllipse(ClientData clientData, Tcl_Interp *interp, int argc
         if (retour != TCL_OK)
             return retour;
 
-        /* Recuperation des infos sur l'image */
+        /* Récuperation des infos sur l'image */
         if (Calaphot::instance()->set_buffer (tampon) == 0)
         {
             sprintf (s, "Pas de buffer nr %d", tampon);
@@ -117,7 +117,7 @@ int Calaphot::CmdFluxEllipse(ClientData clientData, Tcl_Interp *interp, int argc
     }
     else
     {
-        sprintf (s, "Usage: %s x_ellipse y_ellipse gd_axe pt axe allongement couronne1 couronne2 [sur_echantillonage]", argv[0]);
+        sprintf (s, "Usage: %s numero_buffer x_ellipse y_ellipse gd_axe pt axe allongement couronne1 couronne2 [sur_echantillonage]", argv[0]);
         Tcl_SetResult (interp, s, TCL_VOLATILE);
         return TCL_ERROR;
     }
