@@ -5,7 +5,7 @@
 #
 # @brief Routines de calcul de photometrie de Calaphot
 #
-# $Id: calaphot_calcul.tcl,v 1.10 2010-11-28 09:10:09 jacquesmichelet Exp $
+# $Id: calaphot_calcul.tcl,v 1.11 2011-01-02 13:08:31 jacquesmichelet Exp $
 
 namespace eval ::CalaPhot {
 
@@ -667,50 +667,50 @@ namespace eval ::CalaPhot {
         # Echec de calaphot_fitgauss2d. On effectue une modelisation plus grossiere
         Message debug "calaphot_fitgauss a échoué\n"
         set valeurs [buf$bufno fitgauss $box]
-      set dif 0.
-      set intx [lindex $valeurs 0]
-      set xc [lindex $valeurs 1]
-      set fwhmx [lindex $valeurs 2]
-      set bgx [lindex $valeurs 3]
-      set inty [lindex $valeurs 4]
-      set yc [lindex $valeurs 5]
-      set fwhmy [lindex $valeurs 6]
-      set bgy [lindex $valeurs 7]
-      set if0 [ expr $fwhmx*$fwhmy*.601*.601*3.14159265 ]
-      set if1 [ expr $intx*$if0 ]
-      set if2 [ expr $inty*$if0 ]
-      set if0 [ expr ($if1+$if2)/2. ]
-      set dif [ expr abs($if1-$if0) ]
-      set inte [expr ($intx+$inty)/2.]
-      set dinte [expr abs($inte-$inty)]
-      set bg [expr ($bgx+$bgy)/2.]
-      set dbg [expr abs($bg-$bgy)]
-      set convergence 1
-      set iterations 1
-      set valeurs_X0 $xc
-      set valeurs_Y0 $yc
-      set valeurs_Signal $inte
-      set valeurs_Fond $bg
-      set valeurs_Sigma_X $fwhmx
-      set valeurs_Sigma_Y $fwhmy
-      set valeurs_Ro 0.
-      set valeurs_Alpha 0.
-      set valeurs_Sigma_1 $fwhmx
-      set valeurs_Sigma_2 $fwhmy
-      set valeurs_Flux $if0
-      set incertitudes_X0 0.1
-      set incertitudes_Y0 0.1
-      set incertitudes_Signal [expr 0.001*$inte]
-      set incertitudes_Fond [expr 0.0001*$bg]
-      set incertitudes_Sigma_X 0.01
-      set incertitudes_Sigma_Y 0.01
-      set incertitudes_Ro 0
-      set incertitudes_Alpha 0
-      set incertitudes_Sigma_1 0.01
-      set incertitudes_Sigma_2 0.01
-      set incertitudes_Flux [expr 0.001*$if0]
+        set dif 0.
+        set intx [lindex $valeurs 0]
+        set xc [lindex $valeurs 1]
+        set fwhmx [lindex $valeurs 2]
+        set bgx [lindex $valeurs 3]
+        set inty [lindex $valeurs 4]
+        set yc [lindex $valeurs 5]
+        set fwhmy [lindex $valeurs 6]
+        set bgy [lindex $valeurs 7]
+        set if0 [ expr $fwhmx*$fwhmy*.601*.601*3.14159265 ]
+        set if1 [ expr $intx*$if0 ]
+        set if2 [ expr $inty*$if0 ]
+        set if0 [ expr ($if1+$if2)/2. ]
+        set dif [ expr abs($if1-$if0) ]
+        set inte [expr ($intx+$inty)/2.]
+        set dinte [expr abs($inte-$inty)]
+        set bg [expr ($bgx+$bgy)/2.]
+        set dbg [expr abs($bg-$bgy)]
+        set convergence 1
+        set iterations 1
+        set valeurs_X0 $xc
+        set valeurs_Y0 $yc
+        set valeurs_Signal $inte
+        set valeurs_Fond $bg
+        set valeurs_Sigma_X $fwhmx
+        set valeurs_Sigma_Y $fwhmy
+        set valeurs_Ro 0.
+        set valeurs_Alpha 0.
+        set valeurs_Sigma_1 $fwhmx
+        set valeurs_Sigma_2 $fwhmy
+        set valeurs_Flux $if0
+        set incertitudes_X0 0.1
+        set incertitudes_Y0 0.1
+        set incertitudes_Signal [expr 0.001*$inte]
+        set incertitudes_Fond [expr 0.0001*$bg]
+        set incertitudes_Sigma_X 0.01
+        set incertitudes_Sigma_Y 0.01
+        set incertitudes_Ro 0
+        set incertitudes_Alpha 0
+        set incertitudes_Sigma_1 0.01
+        set incertitudes_Sigma_2 0.01
+        set incertitudes_Flux [expr 0.001*$if0]
         Message debug "x0=%f y0=%f fwhmx=%f fwhmy=%f\n" $valeurs_X0 $valeurs_Y0 $valeurs_Sigma_X $valeurs_Sigma_Y
-      return [list $convergence $iterations $valeurs_X0 $valeurs_Y0 $valeurs_Signal $valeurs_Fond $valeurs_Sigma_X $valeurs_Sigma_Y $valeurs_Ro $valeurs_Alpha $valeurs_Sigma_1 $valeurs_Sigma_2 $valeurs_Flux $incertitudes_X0 $incertitudes_Y0 $incertitudes_Signal $incertitudes_Fond $incertitudes_Sigma_X $incertitudes_Sigma_Y $incertitudes_Ro $incertitudes_Alpha $incertitudes_Sigma_1 $incertitudes_Sigma_2 $incertitudes_Flux]
+        return [list $convergence $iterations $valeurs_X0 $valeurs_Y0 $valeurs_Signal $valeurs_Fond $valeurs_Sigma_X $valeurs_Sigma_Y $valeurs_Ro $valeurs_Alpha $valeurs_Sigma_1 $valeurs_Sigma_2 $valeurs_Flux $incertitudes_X0 $incertitudes_Y0 $incertitudes_Signal $incertitudes_Fond $incertitudes_Sigma_X $incertitudes_Sigma_Y $incertitudes_Ro $incertitudes_Alpha $incertitudes_Sigma_1 $incertitudes_Sigma_2 $incertitudes_Flux]
     }
 
     ##

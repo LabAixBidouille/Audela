@@ -5,7 +5,7 @@
 #
 # @brief Routines de gestion des affichages de Calaphot
 #
-# $Id: calaphot_graph.tcl,v 1.18 2010-11-28 09:10:09 jacquesmichelet Exp $
+# $Id: calaphot_graph.tcl,v 1.19 2011-01-02 13:08:31 jacquesmichelet Exp $
 
 namespace eval ::CalaPhot {
 
@@ -1062,7 +1062,7 @@ namespace eval ::CalaPhot {
         # Trame du cliquodrome
         set t2 [frame $t.trame2 \
             -borderwidth 5 \
-            -relief groove]
+            -relief groove ]
 
         set ligne 0
         set colonne 0
