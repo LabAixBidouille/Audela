@@ -4,12 +4,13 @@ set visuNo 1
 #-------------------------------------------------------------------------------
 #  connecte la camera audine
 #-------------------------------------------------------------------------------
-test tool_acqfc_connect_camera {connecte la camera} { AUDACE AUDINE  } {
+test tool_acqfc_connect_camera {connecte la camera} { AUDACE AUDINE } {
   #--- je deconnecte la camera si elle est deja connectee
    if {  [::confCam::isReady A] == 1 } {
       ::confCam::stopItem A
    }
    set ::confCam::private(A,camName) "audine"
+   set ::conf(audine,port) "LPT1:"
    ::confCam::configureCamera "A"
    set result [confCam::isReady A]
    return $result
@@ -121,7 +122,7 @@ test tool_acqfc_acq_une_image {acquisition série } {AUDACE AUDINE } {
 #-------------------------------------------------------------------------------
 #  deconnecte la camera
 #-------------------------------------------------------------------------------
-test tool_acqfc_disconnect_camera {deconnecte la camera} { AUDACE AUDINE  } {
+test tool_acqfc_disconnect_camera {deconnecte la camera} { AUDACE AUDINE } {
    ::confCam::stopItem A
    set result [::confCam::isReady A]
    return $result
