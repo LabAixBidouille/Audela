@@ -240,7 +240,7 @@ int mc_interplin1(int n1,int n2,double *x, double *y, double *dy, double s,int n
 /****************************************************************************************/
 {
 	int kk,k,nn1;
-	double xx0;
+	double xx0,delta;
 	nn1=n1;
 	for (kk=1;kk<=nn;kk++) {
 		xx0=xx[kk];
@@ -257,7 +257,12 @@ int mc_interplin1(int n1,int n2,double *x, double *y, double *dy, double s,int n
 				break;
 			}
 		}
-		ff[kk]=y[k-1]+(xx0-x[k-1])/(x[k]-x[k-1])*(y[k]-y[k-1]);
+		delta=x[k]-x[k-1];
+		if (delta==0) {
+			ff[kk]=(y[k-1]+y[k])/2;
+		} else {
+			ff[kk]=y[k-1]+(xx0-x[k-1])/delta*(y[k]-y[k-1]);
+		}
 		nn1=k-1;
 	}
 	return 0;
@@ -339,3 +344,4 @@ int mc_meo_ruban(double az, double montee,double descente,double largmontee,doub
 	*daz=amplitude*dazmontee*dazdescente/3600*(DR);
 	return 0;
 }
+

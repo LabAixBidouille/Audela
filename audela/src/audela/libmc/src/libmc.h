@@ -60,8 +60,9 @@
  int mctcl_util_getkey0_astrometry(Tcl_Interp *interp,int numbuf,mc_ASTROM *p_ast,int *valid);
  int mctcl_listfield2mc_astrom(Tcl_Interp *interp, char *listfield, mc_ASTROM *p);
  int mctcl_decode_home(Tcl_Interp *interp, char *argv0,double *longitude ,char *sens, double *latitude, double *altitude, double *longmpc, double *rhocosphip,double *rhosinphip);
- int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,char *argv_coords,Tcl_DString *pdsptr,mc_HORIZON_ALTAZ **phorizon_altaz,mc_HORIZON_HADEC **phorizon_hadec);
+ int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,char *argv_coords,mc_HORIZON_LIMITS limits,Tcl_DString *pdsptr,double dh_samp,mc_HORIZON_ALTAZ **phorizon_altaz,mc_HORIZON_HADEC **phorizon_hadec);
  int mctcl_decode_sequences(Tcl_Interp *interp, char *argv[],int *nobjects, mc_OBJECTDESCR **pobjectdescr);
+ int mctcl_horizon_init(Tcl_Interp *interp,int argc, char *argv[], mc_HORIZON_LIMITS *limit,char *type_amers, char *list_amers);
 
  int mctcl_debug(char *filename,char *type,char *string);
 
