@@ -119,7 +119,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 	} else {
 		tel->type=1;
 	}
-	tel->simultaneus=0;
+	tel->simultaneus=1;
 	/* ============ */
 	/* === UMAC === */
 	/* ============ */
@@ -289,20 +289,10 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		deltatau_put(tel,"M132->X:$003D,22,1");
 		deltatau_put(tel,"M140->Y:$0814,0,1");
 		//deltatau_put(tel,"M145->Y:$0814,10,1");
-
 		deltatau_put(tel,"M331->X:$00B5,21,1");
 		deltatau_put(tel,"M332->X:$00B5,22,1");
 		deltatau_put(tel,"M340->Y:$0994,0,1");
 		deltatau_put(tel,"M345->Y:$0994,10,1");
-		/*
-#3I322=4
-#3j+
-#3home
-#3I322=3
-#3j=-34615.0
-#3homez
-*/
-
 		deltatau_put(tel,"M440->Y:$0A54,0,1"); 
 		/* --- sppeds --- */
 		tel->track_diurnal=0.004180983;
@@ -1204,7 +1194,7 @@ int deltatau_goto(struct telprop *tel)
 	}
    /* --- --- */
 	if (tel->simultaneus==1) {
-		sprintf(s,"#%s %s",s1,s2);
+		sprintf(s,"#%s #%s",s1,s2);
 		res=deltatau_put(tel,s);
 		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
 	}
