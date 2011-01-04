@@ -959,7 +959,77 @@ int mctcl_decode_sequences(Tcl_Interp *interp, char *argv[],int *nobjects, mc_OB
 	return 0;
 }
 
-int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,char *argv_coords,Tcl_DString *pdsptr,mc_HORIZON_ALTAZ **phorizon_altaz,mc_HORIZON_HADEC **phorizon_hadec)
+/***************************************************************************/
+/* Save the *mat as a FITS file */
+/***************************************************************************/
+char *mc_saveintfits(int *mat,int naxis1, int naxis2,char *filename) {
+   static char stringresult[1024];
+   FILE *f;
+   char line[1024],car;
+   int value0;
+   char *cars0;
+   int k,n,k0;
+   double dx;
+   long one= 1;
+   int big_endian;
+   f=fopen(filename,"wb");
+   strcpy(line,"SIMPLE  =                    T / file does conform to FITS standard             ");
+   fwrite(line,80,sizeof(char),f);
+   strcpy(line,"BITPIX  =                   32 / number of bits per data pixel                  ");
+   fwrite(line,80,sizeof(char),f);
+   strcpy(line,"NAXIS   =                    2 / number of data axes                            ");
+   fwrite(line,80,sizeof(char),f);
+   sprintf(line,"NAXIS1  =                  %3d / length of data axis 1                          ",naxis1);
+   fwrite(line,80,sizeof(char),f);
+   sprintf(line,"NAXIS2  =                  %3d / length of data axis 2                          ",naxis2);
+   fwrite(line,80,sizeof(char),f);
+   k0=7;
+   strcpy(line,"END                                                                             ");
+   fwrite(line,80,sizeof(char),f);
+   strcpy(line,"                                                                                ");
+   for (k=k0;k<=36;k++) {
+      fwrite(line,80,sizeof(char),f);
+   }
+   /* byte order test */
+   if (!(*((char *)(&one)))) {
+      big_endian=1;
+   } else {
+      big_endian=0;
+   }
+   /* write data */
+   for (k=0;k<naxis1*naxis2;k++) {
+      value0=mat[k]; // 32=4*8bits
+      if (big_endian==0) {
+         cars0=(char*)&value0;
+         car=cars0[0];
+         cars0[0]=cars0[3];
+         cars0[3]=car;
+         car=cars0[1];
+         cars0[1]=cars0[2];
+         cars0[2]=car;
+      }
+      fwrite(&value0,1,sizeof(int),f);
+   }
+   dx=naxis1*naxis2/2880.;
+   n=(int)(2880.*(dx-floor(dx)));
+   value0=(int)0.;
+   for (k=0;k<naxis1*naxis2;k++) {
+      if (big_endian==0) {
+         cars0=(char*)&value0;
+         car=cars0[0];
+         cars0[0]=cars0[3];
+         cars0[3]=car;
+         car=cars0[1];
+         cars0[1]=cars0[2];
+         cars0[2]=car;
+      }
+      fwrite(&value0,1,sizeof(int),f);
+   }
+   fclose(f);
+   return stringresult;
+}
+
+int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,char *argv_coords,mc_HORIZON_LIMITS limits,Tcl_DString *pdsptr,double dh_samp,mc_HORIZON_ALTAZ **phorizon_altaz,mc_HORIZON_HADEC **phorizon_hadec)
 /****************************************************************************/
 /* Interpole la ligne d'horizon                                             */
 /****************************************************************************/
@@ -972,23 +1042,52 @@ int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,cha
 	char **argvv=NULL;
 	char **argvvv=NULL;
 	int argcc,argccc;
-	int type=0,code,kc,ncoords;
+	int type=0,code,kc,kcc=0,ncoords;
    Tcl_DString dsptr;
 	double *coord1s=NULL,*coord2s=NULL,*coord3s=NULL;
 	int *kcoords=NULL,*kazs,naz,nhaz=360;
 	double *azs,*elevs,*dummys;
 	double *hazs,*helevs;
    double rhocosphip=0.,rhosinphip=0.,longmpc=0.;
-   double latitude,altitude,latrad,az,h,ha,dec;
-	double decmin,decmax,deccirc;
-	int *kdecs,ndec,nhdec=180,kk,kcc;
-	double *decs,*ha_rises,*ha_sets;
+   double latitude,altitude,latrad,az,h,ha,dec,harise,haset,elev;
+	int nhdec=181,nelev=181;
 	double *hdecs,*hha_rises,*hha_sets;
 	double ha_set_lim,ha_rise_lim;
 	mc_HORIZON_ALTAZ *horizon_altaz=NULL;
 	mc_HORIZON_HADEC *horizon_hadec=NULL;
-	int nh_altaz=361,nh_hadec=181;
+	int nh_altaz=361,nh_hadec=181,valid=0;
+	double azinf1,azsup1,azinf2,azsup2;
+	double coord1,coord2,coord3;
+	int hachanged=0;
+	int *map_hadec,*map_altaz,map_nha,map_ndec,map_naz,map_nelev,k1,k2,kk1,kk2;
+	double coslatitude,sinlatitude,cosha,sinha,val,sinaz,cosaz;
+	double *harise_limit=NULL,*haset_limit=NULL,*azrise_limit=NULL,*azset_limit=NULL;
+	double *elevinf_limit=NULL,*elevsup_limit=NULL,*decinf_limit=NULL,*decsup_limit=NULL;
 
+	if (limits.ha_defined==1) {
+		harise_limit=&limits.ha_rise;
+		harise_limit=&limits.ha_set;
+	}
+	if (limits.dec_defined==1) {
+		decinf_limit=&limits.dec_inf;
+		decsup_limit=&limits.dec_sup;
+	}
+	if (limits.az_defined==1) {
+		azrise_limit=&limits.az_rise;
+		azrise_limit=&limits.az_set;
+	}
+	if (limits.elev_defined==1) {
+		elevinf_limit=&limits.elev_inf;
+		elevsup_limit=&limits.elev_sup;
+	}
+	dh_samp=fabs(dh_samp);
+	if (dh_samp==0) {
+		dh_samp=1.; // deg/pix
+	}
+	nh_altaz=(int)ceil(360/dh_samp)+1; // 361
+	nh_hadec=(int)ceil(180/dh_samp)+1; // 181
+	nhaz=(int)ceil(360/dh_samp); // 360
+	nhdec=(int)ceil(180/dh_samp)+1; // 181
 	if (pdsptr!=NULL) {
 	   Tcl_DStringInit(&dsptr);
 		*pdsptr=dsptr;
@@ -1014,17 +1113,76 @@ int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,cha
    /* --- decode les coordonnees ---*/
    code=Tcl_SplitList(interp,argv_coords,&argcc,&argvv);
 	ncoords=argcc;
+	/* --- decode les limites az ---*/
+	if ((azrise_limit!=NULL)&&(azset_limit!=NULL)) {
+		// quelle que soit la latitude on a toujours 180<azrise_limit<360 0<azset_limit<180
+		if (*azset_limit>*azrise_limit) {
+			az=*azset_limit;
+			*azset_limit=*azrise_limit;
+			*azrise_limit=az;
+		}
+		if (latitude>=0) {
+			// hemisphere nord, l'angle mort est au nord
+			azinf1=*azset_limit;
+			azsup1=180;
+			azinf2=180;
+			azsup2=*azrise_limit;
+		} else {
+			// hemisphere sud, l'angle mort est au sud
+			azinf1=*azrise_limit;
+			azsup1=360;
+			azinf2=0;
+			azsup2=*azset_limit;
+		}
+	}
+	/* --- decode les limites ha ---*/
+	if ((harise_limit!=NULL)&&(haset_limit!=NULL)) {
+		// quelle que soit la latitude on a toujours 180<harise_limit<360 0<haset_limit<180
+		if (*haset_limit>*harise_limit) {
+			ha=*haset_limit;
+			*haset_limit=*harise_limit;
+			*harise_limit=ha;
+		}
+		// angle mort = haset_limit<ha<harise_limit
+		ha_set_lim=*haset_limit;
+		ha_rise_lim=*harise_limit;
+	} else {
+		ha_set_lim=180;
+		ha_rise_lim=180;
+	}
+   /* --- initialise les cartes ---*/
+	/*
+	map_nha=(nh_hadec-1)*2+1;
+	map_ndec=nhdec+1;
+	map_naz=nh_altaz;
+	map_nelev=nelev;
+	*/
+	map_nha=(int)ceil(360/dh_samp)+1; // 361
+	map_ndec=(int)ceil(180/dh_samp)+1; // 181
+	map_naz=(int)ceil(360/dh_samp)+1; // 361
+	map_nelev=(int)ceil(180/dh_samp)+1; // 181
+	map_hadec=(int*)calloc(map_nha*map_ndec,sizeof(int));
+	map_altaz=(int*)calloc(map_naz*map_nelev,sizeof(int));
+   /* --- decode les coordonnees de la liste ---*/
 	kcoords=(int*)calloc(ncoords,sizeof(int));
 	coord1s=(double*)calloc(ncoords,sizeof(double));
 	coord2s=(double*)calloc(ncoords,sizeof(double));
 	coord3s=(double*)calloc(ncoords,sizeof(double));
+	kcc=0;
 	for (kc=0;kc<ncoords;kc++) {
 	   code=Tcl_SplitList(interp,argvv[kc],&argccc,&argvvv);
-		kcoords[kc]=kc;
-		if (argccc>=1) { coord1s[kc]=atof(argvvv[0]); }
-		if (argccc>=2) { coord2s[kc]=atof(argvvv[1]); }
-		if (argccc>=3) { coord3s[kc]=atof(argvvv[2]); }
-		if (argvvv!=NULL) { Tcl_Free((char *) argvvv); }
+		if (argccc>=1) { coord1=atof(argvvv[0]); }
+		if (argccc>=2) { coord2=atof(argvvv[1]); }
+		if (argccc>=3) { coord3=atof(argvvv[2]); }
+		valid=1;
+		if (valid==1) {
+			kcoords[kcc]=kcc;
+			if (argccc>=1) { coord1s[kcc]=coord1; }
+			if (argccc>=2) { coord2s[kcc]=coord2; }
+			if (argccc>=3) { coord3s[kcc]=coord3; }
+			if (argvvv!=NULL) { Tcl_Free((char *) argvvv); }
+			kcc++;
+		}
 	}
 	/* ============= */
 	/* === altaz === */
@@ -1042,19 +1200,24 @@ int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,cha
 	helevs=(double*)calloc(nhaz+2,sizeof(double));
 	if (type==0) {
 		for (kc=0;kc<ncoords;kc++) {
-			mc_hd2ah(coord2s[kc]*(DR),coord1s[kc]*(DR),latrad,&az,&h);
+			dec=coord1s[kc];
+			harise=coord2s[kc];
+			haset=coord3s[kc];
+			mc_hd2ah(harise*(DR),coord1s[kc]*(DR),latrad,&az,&h);
 			azs[2*kc+1]=az/(DR);
 			elevs[2*kc+1]=h/(DR);
 			kazs[2*kc+1]=2*kc+1;
-			mc_hd2ah(coord3s[kc]*(DR),coord1s[kc]*(DR),latrad,&az,&h);
+			mc_hd2ah(haset*(DR),coord1s[kc]*(DR),latrad,&az,&h);
 			azs[2*kc+2]=az/(DR);
 			elevs[2*kc+2]=h/(DR);
 			kazs[2*kc+2]=2*kc+2;
 		}
 	} else {
 		for (kc=0;kc<ncoords;kc++) {
-			azs[kc+1]=coord1s[kc];
-			elevs[kc+1]=coord2s[kc];
+			az=coord1s[kc];
+			elev=coord2s[kc];
+			azs[kc+1]=az;
+			elevs[kc+1]=elev;
 			kazs[kc+1]=kc+1;
 		}
 	}
@@ -1073,36 +1236,125 @@ int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,cha
 	azs[naz+1]=azs[1]+360.;
 	elevs[naz+1]=elevs[1];
 	dummys[naz+1]=dummys[1];
-	/* --- resultats altaz bruts ---*/
-	/*
-	if (pdsptr!=NULL) {
-		Tcl_DStringAppend(&dsptr,"{",-1);
-		for (kc=1;kc<naz;kc++) {
-			sprintf(s,"%s ",mc_d2s(azs[kc]));
-			Tcl_DStringAppend(&dsptr,s,-1);
-		}
-		Tcl_DStringAppend(&dsptr,"} {",-1);
-		for (kc=1;kc<naz;kc++) {
-			sprintf(s,"%s ",mc_d2s(elevs[kc]));
-			Tcl_DStringAppend(&dsptr,s,-1);
-		}
-		Tcl_DStringAppend(&dsptr,"} ",-1);
-	}
-	*/
 	/* --- call the computation ---*/
 	for (kc=1;kc<=nhaz+1;kc++) {
-		hazs[kc]=(kc-1)*360./nhaz;
+		//hazs[kc]=(kc-1)*360./nhaz;
+		hazs[kc]=kc*dh_samp;
 	}
 	mc_interplin1(0,naz+1,azs,elevs,dummys,0.5,nhaz,hazs,helevs);
+	/* --- az limits ---*/
+	if ((azrise_limit!=NULL)&&(azset_limit!=NULL)) {
+		for (kc=1;kc<=nhaz;kc++) {
+			az=hazs[kc];
+			elev=helevs[kc];
+			if ((az>=azinf1)&&(az<=azsup1)) { elev=90.; }
+			if ((az>=azinf2)&&(az<=azsup2)) { elev=90.; }
+			helevs[kc]=elev;
+		}
+	}
+	/* --- map altaz ---*/
+	for (k1=0;k1<map_naz;k1++) {
+		//az=k1*(map_naz-1)/360.;
+		az=k1*dh_samp;
+		if (k1==0) { kk1=map_naz-1; } else { kk1=k1; }
+		elev=helevs[kk1];
+		kk2=(int)((elev+90)/dh_samp);
+		for (k2=0;k2<kk2;k2++) {
+			map_altaz[k2*map_naz+k1]=0;
+		}
+		for (k2=kk2+1;k2<map_nelev;k2++) {
+			map_altaz[k2*map_naz+k1]=1;
+		}
+	}
+	//mc_saveintfits(map_altaz,map_naz,map_nelev,"c:\\d\\a\\map_altaz.fit");
+	/* --- map altaz->hadec ---*/
+	coslatitude=cos(latrad);
+	sinlatitude=sin(latrad);
+	for (k1=0;k1<map_nha;k1++) {
+		//ha=k1*(map_nha-1)/360.;
+		ha=k1*dh_samp;
+		ha*=(DR);
+		cosha=cos(ha);
+		sinha=sin(ha);
+		for (k2=0;k2<map_ndec;k2++) {
+			//dec=(k2-(map_ndec+1)/2);
+			dec=k2*dh_samp-90;
+			dec*=(DR);
+	      az=atan2(sinha,cosha*sinlatitude-tan(dec)*coslatitude)/(DR);
+			if (az<0) { az+=360; }
+		   elev=asin(sinlatitude*sin(dec)+coslatitude*cos(dec)*cosha)/(DR);
+			kk1=(int)(az/dh_samp);
+			if (kk1<0) { kk1=0; }
+			if (kk1>=map_naz) { kk1=map_naz-1; }
+			//kk2=(int)(elev+map_nelev/2);
+			kk2=(int)((elev+90)/dh_samp);
+			if (kk2<0) { kk2=0; }
+			if (kk2>=map_nelev) { kk2=map_nelev-1; }
+			val=map_altaz[kk2*map_naz+kk1];
+			map_hadec[k2*map_nha+k1]=(int)val;
+		}
+	}
+	//mc_saveintfits(map_hadec,map_nha,map_ndec,"c:\\d\\a\\map_hadec.fit");
+	/* --- ha limits ---*/
+	if ((harise_limit!=NULL)&&(haset_limit!=NULL)) {
+		// angle mort = haset_limit<ha<harise_limit
+		for (k1=0;k1<map_nha;k1++) {
+			//ha=k1*(map_nha-1)/360.;
+			ha=k1*dh_samp;
+			if (ha<=*haset_limit) { continue; }
+			if (ha>=*harise_limit) { continue; }
+			for (k2=0;k2<map_ndec;k2++) {
+				map_hadec[k2*map_nha+k1]=(int)0;
+			}
+		}
+	}
+	//mc_saveintfits(map_hadec,map_nha,map_ndec,"c:\\d\\a\\map_hadec2.fit");
+	/* --- map hadec->altaz ---*/
+	for (k1=0;k1<map_naz;k1++) {
+		//az=k1*(map_naz-1)/360.;
+		az=k1*dh_samp;
+		az*=(DR);
+		cosaz=cos(az);
+		sinaz=sin(az);
+		for (k2=0;k2<map_nelev;k2++) {
+			//elev=(k2-map_nelev/2);
+			elev=k2*dh_samp-90;
+			elev*=(DR);
+			ha=atan2(sinaz,cosaz*sinlatitude+tan(elev)*coslatitude)/(DR);
+			if (ha<0) { ha+=360.; }
+			dec=asin(sinlatitude*sin(elev)-coslatitude*cos(elev)*cosaz)/(DR);
+			kk1=(int)(ha/dh_samp);
+			if (kk1<0) { kk1=0; }
+			if (kk1>=map_nha) { kk1=map_nha-1; }
+			//kk2=(int)(dec+map_ndec/2);
+			kk2=(int)((dec+90)/dh_samp);
+			if (kk2<0) { kk2=0; }
+			if (kk2>=map_ndec) { kk2=map_ndec-1; }
+			val=map_hadec[kk2*map_nha+kk1];
+			map_altaz[k2*map_naz+k1]=(int)val;
+		}
+	}
+	//mc_saveintfits(map_altaz,map_naz,map_nelev,"c:\\d\\a\\map_altaz2.fit");
 	/* --- resultats altaz recheantillonnes ---*/
+	for (k1=0;k1<map_naz;k1++) {
+		for (k2=map_nelev-1;k2>0;k2--) {
+			val=map_altaz[k2*map_naz+k1];
+			if (val==0) {
+				//elev=(k2-map_nelev/2);
+				elev=k2*dh_samp-90;
+				helevs[k1]=elev;
+				break;
+			}
+		}
+	}
 	if (pdsptr!=NULL) {
 		Tcl_DStringAppend(&dsptr,"{",-1);
-		for (kc=1;kc<=nhaz;kc++) {
+		for (kc=0;kc<map_naz;kc++) {
 			sprintf(s,"%s ",mc_d2s(hazs[kc]));
 			Tcl_DStringAppend(&dsptr,s,-1);
 		}
 		Tcl_DStringAppend(&dsptr,"} {",-1);
-		for (kc=1;kc<=nhaz;kc++) {
+		for (kc=0;kc<map_naz;kc++) {
 			sprintf(s,"%s ",mc_d2s(helevs[kc]));
 			Tcl_DStringAppend(&dsptr,s,-1);
 		}
@@ -1114,260 +1366,52 @@ int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,cha
 			horizon_altaz[kc-1].elev=helevs[kc];
 		}
 	}
-	/* --- libere les pointeurs ---*/
-	free(dummys);
-	/* ============= */
-	/* === hadec === */
-	/* ============= */
-	if (latitude>0) {
-		decmin=latitude-90;
-		decmax=90;
-		deccirc=90-latitude;
-	} else {
-		decmax=90+latitude;
-		decmin=-90;
-		deccirc=-90-latitude;
-	}
-	if (type==0) {
-		ndec=ncoords;
-	} else {
-		ndec=nhaz/2;
-	}
-	kdecs=(int*)calloc(ndec+4,sizeof(int));
-	decs=(double*)calloc(ndec+4,sizeof(double));
-	ha_sets=(double*)calloc(ndec+4,sizeof(double));
-	ha_rises=(double*)calloc(ndec+4,sizeof(double));
-	dummys=(double*)calloc(ndec+4,sizeof(double));
+	/* --- resultats hadec recheantillonnes ---*/
 	hdecs=(double*)calloc(nhdec+2,sizeof(double));
 	hha_rises=(double*)calloc(nhdec+2,sizeof(double));
 	hha_sets=(double*)calloc(nhdec+2,sizeof(double));
-	/* --- input type ALTAZ, we use the output altaz results ---*/
-	if (type==1) {
-		decs[0]=-90;
-		if (latitude>0) {
-			ha_rises[0]=360;
-			ha_sets[0]=0;
-		} else {
-			ha_rises[0]=180;
-			ha_sets[0]=180;
-		}
-		kdecs[0]=0;
-		if (latitude>0) {
-			decs[1]=decmin;
-			ha_rises[1]=360;
-			ha_sets[1]=0;
-		} else {
-			decs[1]=decs[0];
-			ha_rises[1]=ha_rises[0];
-			ha_sets[1]=ha_rises[0];
-		}
-		kdecs[1]=1;
-		// [ 2 -> 2+ndec-1 ]
-		if (latitude>0) {
-			decs[2+ndec]=90;
-			ha_rises[2+ndec]=180;
-			ha_sets[2+ndec]=180;
-		} else {
-			decs[2+ndec]=decmax;
-			ha_rises[2+ndec]=360;
-			ha_sets[2+ndec]=0;
-		}
-		kdecs[2+ndec]=2+ndec;
-		decs[2+ndec+1]=90;
-		if (latitude>0) {
-			ha_rises[2+ndec+1]=180;
-			ha_sets[2+ndec+1]=180;
-		} else {
-			ha_rises[2+ndec+1]=360;
-			ha_sets[2+ndec+1]=0;
-		}
-		kdecs[2+ndec+1]=2+ndec+1;
-		/* --- HA rise (kk=0) set (kk=1) ---*/
-		for (kk=0;kk<2;kk++) {
-			if (kk==0) {
-				for (kc=0;kc<nhaz/2;kc++) {
-					kcc=kc+nhaz/2+1;
-					mc_ah2hd(hazs[kcc]*(DR),helevs[kcc]*(DR),latrad,&ha,&dec);
-					decs[kc+2]=dec/(DR);
-					ha_rises[kc+2]=ha/(DR);
-					kdecs[kc+2]=kc+2;
-				}
-			}
-			if (kk==1) {
-				for (kc=0;kc<nhaz/2;kc++) {
-					kcc=kc+1;
-					mc_ah2hd(hazs[kcc]*(DR),helevs[kcc]*(DR),latrad,&ha,&dec);
-					decs[kc+2]=dec/(DR);
-					ha_sets[kc+2]=ha/(DR);
-					kdecs[kc+2]=kc+2;
-				}
+	for (k2=0;k2<map_ndec;k2++) {
+		//dec=(k2-(map_ndec+1)/2);
+		dec=k2*dh_samp-90;
+		hdecs[k2]=(int)(dec);
+		for (k1=0;k1<map_nha;k1++) {
+			val=map_hadec[k2*map_nha+k1];
+			if (val==0) {
+				//ha=k1*(map_nha-1)/360.;
+				ha=k1*dh_samp;
+				break;
 			}
 		}
-		/* --- tri dec croissant ---*/
-		mc_quicksort_double(decs,0,ndec+3,kdecs);
-		if (kk==0) {
-			for (kc=0;kc<ndec+4;kc++) {
-				dummys[kc]=ha_rises[kdecs[kc]];
-			}
-			for (kc=0;kc<ndec+4;kc++) {
-				ha_rises[kc]=dummys[kc];
-				dummys[kc]=0.1;
-			}
-		}
-		if (kk==1) {
-			for (kc=0;kc<ndec+4;kc++) {
-				dummys[kc]=ha_sets[kdecs[kc]];
-			}
-			for (kc=0;kc<ndec+4;kc++) {
-				ha_sets[kc]=dummys[kc];
-				dummys[kc]=0.1;
+		if (ha>180) {ha=180;}
+		hha_sets[k2]=ha;
+		for (k1=map_nha-1;k1>=0;k1--) {
+			val=map_hadec[k2*map_nha+k1];
+			if (val==0) {
+				//ha=k1*(map_nha-1)/360.;
+				ha=k1*dh_samp;
+				break;
 			}
 		}
-		/* --- call the computation ---*/
-		for (kc=1;kc<nhdec+1;kc++) {
-			hdecs[kc]=(kc-1)*180./nhdec-90.;
-		}
-		if ((kk==0)) {
-			mc_interplin1(0,ndec+3,decs,ha_rises,dummys,0.5,nhdec,hdecs,hha_rises);
-		}
-		if ((kk==1)) {
-			mc_interplin1(0,ndec+3,decs,ha_sets,dummys,0.5,nhdec,hdecs,hha_sets);
-		}
+		if (ha<180) {ha=180;}
+		hha_rises[k2]=ha;
 	}
-	/* --- input type HADEC, we use the input hadec parameters ---*/
-	if (type==0) {
-		ha_set_lim=180;
-		ha_rise_lim=180;
-		for (kc=0;kc<ncoords;kc++) {
-			dec=coord1s[kc];
-			if ((latitude>0)&&(dec>deccirc)) {
-				deccirc=dec;
-			}
-			if ((latitude>0)&&(dec>=90)) {
-				ha_rise_lim=coord2s[kc];
-				ha_set_lim=coord3s[kc];
-			}
-			if ((latitude<0)&&(dec<deccirc)) {
-				deccirc=dec;
-			}
-			if ((latitude<0)&&(dec<=-90)) {
-				ha_rise_lim=coord2s[kc];
-				ha_set_lim=coord3s[kc];
-			}
-		}
-		decs[0]=-90;
-		if (latitude>0) {
-			ha_rises[0]=360;
-			ha_sets[0]=0;
-		} else {
-			ha_rises[0]=ha_rise_lim;
-			ha_sets[0]=ha_set_lim;
-		}
-		kdecs[0]=0;
-		if (latitude>0) {
-			decs[1]=decmin;
-			ha_rises[1]=360;
-			ha_sets[1]=0;
-		} else {
-			decs[1]=deccirc;
-			ha_rises[1]=180;
-			ha_sets[1]=180;
-		}
-		kdecs[1]=1;
-		// [ 2 -> 2+ndec-1 ]
-		if (latitude>0) {
-			decs[2+ndec]=deccirc;
-			ha_rises[2+ndec]=180;
-			ha_sets[2+ndec]=180;
-		} else {
-			decs[2+ndec]=decmax;
-			ha_rises[2+ndec]=360;
-			ha_sets[2+ndec]=0;
-		}
-		kdecs[2+ndec]=2+ndec;
-		decs[2+ndec+1]=90;
-		if (latitude>0) {
-			ha_rises[2+ndec+1]=ha_rise_lim;
-			ha_sets[2+ndec+1]=ha_set_lim;
-		} else {
-			ha_rises[2+ndec+1]=360;
-			ha_sets[2+ndec+1]=0;
-		}
-		kdecs[2+ndec+1]=2+ndec+1;
-		for (kc=0;kc<ncoords;kc++) {
-			decs[kc+2]=coord1s[kc];
-			ha_rises[kc+2]=coord2s[kc];
-			ha_sets[kc+2]=coord3s[kc];
-			kdecs[kc+2]=kc+2;
-		}
-		/* --- tri dec croissant ---*/
-		mc_quicksort_double(decs,0,ndec+3,kdecs);
-		for (kc=0;kc<ndec+4;kc++) {
-			dummys[kc]=ha_rises[kdecs[kc]];
-		}
-		for (kc=0;kc<ndec+4;kc++) {
-			ha_rises[kc]=dummys[kc];
-		}
-		for (kc=0;kc<ndec+4;kc++) {
-			dummys[kc]=ha_sets[kdecs[kc]];
-		}
-		for (kc=0;kc<ndec+4;kc++) {
-			ha_sets[kc]=dummys[kc];
-			dummys[kc]=0.1;
-		}
-		/* --- resultats hadec bruts ---*/
-		/*
-		if (pdsptr!=NULL) {
-			Tcl_DStringAppend(&dsptr,"{",-1);
-			for (kc=1;kc<ndec;kc++) {
-				sprintf(s,"%s ",mc_d2s(decs[kc]));
-				Tcl_DStringAppend(&dsptr,s,-1);
-			}
-			Tcl_DStringAppend(&dsptr,"} {",-1);
-			for (kc=1;kc<ndec;kc++) {
-				sprintf(s,"%s ",mc_d2s(ha_sets[kc]));
-				Tcl_DStringAppend(&dsptr,s,-1);
-			}
-			Tcl_DStringAppend(&dsptr,"} {",-1);
-			for (kc=1;kc<ndec;kc++) {
-				sprintf(s,"%s ",mc_d2s(ha_rises[kc]));
-				Tcl_DStringAppend(&dsptr,s,-1);
-			}
-			Tcl_DStringAppend(&dsptr,"} ",-1);
-		}
-		*/
-		/* --- call the computation ---*/
-		for (kc=1;kc<nhdec+1;kc++) {
-			hdecs[kc]=(kc-1)*180./nhdec-90.;
-		}
-		mc_interplin1(0,ndec+3,decs,ha_rises,dummys,0.5,nhdec,hdecs,hha_rises);
-		mc_interplin1(0,ndec+3,decs,ha_sets,dummys,0.5,nhdec,hdecs,hha_sets);
-	}
-	/* --- resultats altaz recheantillonnes ---*/
 	if (pdsptr!=NULL) {
 		Tcl_DStringAppend(&dsptr,"{",-1);
-		for (kc=1;kc<=nhdec;kc++) {
+		for (kc=0;kc<map_ndec;kc++) {
 			sprintf(s,"%s ",mc_d2s(hdecs[kc]));
 			Tcl_DStringAppend(&dsptr,s,-1);
 		}
 		Tcl_DStringAppend(&dsptr,"} {",-1);
-		for (kc=1;kc<=nhdec;kc++) {
+		for (kc=0;kc<map_ndec;kc++) {
 			sprintf(s,"%s ",mc_d2s(hha_sets[kc]));
 			Tcl_DStringAppend(&dsptr,s,-1);
 		}
 		Tcl_DStringAppend(&dsptr,"} {",-1);
-		for (kc=1;kc<=nhdec;kc++) {
+		for (kc=0;kc<map_ndec;kc++) {
 			sprintf(s,"%s ",mc_d2s(hha_rises[kc]));
 			Tcl_DStringAppend(&dsptr,s,-1);
 		}
 		Tcl_DStringAppend(&dsptr,"} ",-1);
-	}
-	if ((phorizon_altaz!=NULL)&&(phorizon_hadec!=NULL)) {
-		for (kc=1;kc<=nhdec;kc++) {
-			horizon_hadec[kc-1].dec=hdecs[kc];
-			horizon_hadec[kc-1].ha_set=hha_sets[kc];
-			horizon_hadec[kc-1].ha_rise=hha_rises[kc];
-		}
 	}
 	/* --- libere les pointeurs ---*/
 	free(elevs);
@@ -1375,10 +1419,6 @@ int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,cha
 	free(kazs);
 	free(helevs);
 	free(hazs);
-	free(ha_rises);
-	free(ha_sets);
-	free(decs);
-	free(kdecs);
 	free(hha_rises);
 	free(hha_sets);
 	free(hdecs);
@@ -1391,6 +1431,8 @@ int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,cha
 	if (pdsptr!=NULL) {
 		*pdsptr=dsptr;
 	}
+	free(map_hadec);
+	free(map_altaz);
 	return 0;
 }
 
@@ -3665,4 +3707,84 @@ int Cmd_mctcl_ecliptic2radec(ClientData clientData, Tcl_Interp *interp, int argc
 	   }
    }
    return result;
+}
+
+int mctcl_horizon_init(Tcl_Interp *interp,int argc, char *argv[], mc_HORIZON_LIMITS *limit,char *type_amers, char *list_amers)
+/***************************************************************************/
+/* Initialise the structure of the horizon limits                          */
+/***************************************************************************/
+/***************************************************************************/
+{
+	int k;
+	double val;
+	limit->ha_defined=0;
+	limit->ha_rise=180;
+	limit->ha_set=180;
+	limit->dec_defined=0;
+	limit->dec_inf=-90;
+	limit->dec_sup=90;
+	limit->az_defined=0;
+	limit->az_rise=180;
+	limit->az_set=180;
+	limit->elev_defined=0;
+	limit->elev_inf=0;
+	limit->elev_sup=90;
+	if ((type_amers!=NULL)&&(list_amers!=NULL)) {
+		strcpy(type_amers,"ALTAZ");
+		strcpy(list_amers,"{0 0} {360 0}");
+	}
+	if ((argc==0)||(argv==NULL)) {
+		return 0;
+	}
+	for (k=0;k<argc-1;k++) {
+		if (strcmp(argv[k],"-haset_limit")==0)  { mctcl_decode_angle(interp,argv[k+1],&limit->ha_rise); limit->ha_defined++; }
+		if (strcmp(argv[k],"-harise_limit")==0) { mctcl_decode_angle(interp,argv[k+1],&limit->ha_set); limit->ha_defined++; }
+		if (strcmp(argv[k],"-azset_limit")==0)  { mctcl_decode_angle(interp,argv[k+1],&limit->az_rise); limit->az_defined++; }
+		if (strcmp(argv[k],"-azrise_limit")==0) { mctcl_decode_angle(interp,argv[k+1],&limit->az_set); limit->az_defined++; }
+		if (strcmp(argv[k],"-decinf_limit")==0)  { mctcl_decode_angle(interp,argv[k+1],&limit->dec_inf); limit->dec_defined++; }
+		if (strcmp(argv[k],"-decsup_limit")==0) { mctcl_decode_angle(interp,argv[k+1],&limit->dec_sup); limit->dec_defined++; }
+		if (strcmp(argv[k],"-elevinf_limit")==0)  { mctcl_decode_angle(interp,argv[k+1],&limit->elev_inf); limit->elev_defined++; }
+		if (strcmp(argv[k],"-elevsup_limit")==0) { mctcl_decode_angle(interp,argv[k+1],&limit->elev_sup); limit->elev_defined++; }
+	}
+	if (limit->ha_defined==2) {
+		if (limit->ha_rise<limit->ha_set) {
+			val=limit->ha_set;
+			limit->ha_set=limit->ha_rise;
+			limit->ha_rise=val;
+		}
+	} else {
+		limit->ha_rise=180;
+		limit->ha_set=180;
+	}
+	if (limit->dec_defined==2) {
+		if (limit->dec_sup<limit->dec_inf) {
+			val=limit->dec_inf;
+			limit->dec_inf=limit->dec_sup;
+			limit->dec_sup=val;
+		}
+	} else {
+		limit->dec_inf=-90;
+		limit->dec_sup=90;
+	}
+	if (limit->az_defined==2) {
+		if (limit->az_rise<limit->az_set) {
+			val=limit->az_set;
+			limit->az_set=limit->az_rise;
+			limit->az_rise=val;
+		}
+	} else {
+		limit->az_rise=180;
+		limit->az_set=180;
+	}
+	if (limit->elev_defined==2) {
+		if (limit->elev_sup<limit->elev_inf) {
+			val=limit->elev_inf;
+			limit->elev_inf=limit->elev_sup;
+			limit->elev_sup=val;
+		}
+	} else {
+		limit->elev_inf=-90;
+		limit->elev_sup=90;
+	}
+	return 0;
 }

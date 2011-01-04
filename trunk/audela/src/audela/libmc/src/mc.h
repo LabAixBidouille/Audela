@@ -544,6 +544,21 @@ typedef struct {
    double ha_set;
 } mc_HORIZON_HADEC;
 
+typedef struct {
+	int ha_defined;
+	double ha_rise;
+	double ha_set;
+	int dec_defined;
+	double dec_inf;
+	double dec_sup;
+	int az_defined;
+	double az_rise;
+	double az_set;
+	int elev_defined;
+	double elev_inf;
+	double elev_sup;
+} mc_HORIZON_LIMITS;
+
 #define OBJECTDESCR_MAXCOM 50
 typedef struct {
 	int idseq; // index

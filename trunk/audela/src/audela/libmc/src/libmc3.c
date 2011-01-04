@@ -134,14 +134,34 @@ set ys [lindex $res 1]
 {
 	char s[1024];
    Tcl_DString dsptr;
+	int xharise_limit=0,xhaset_limit=0,xazrise_limit=0,xazset_limit=0;
+	double harise_limit,haset_limit,azrise_limit,azset_limit;
+	int k;
+	mc_HORIZON_LIMITS limits;
 
-   if(argc<2) {
-      sprintf(s,"Usage: %s Home Type_coords List_coords", argv[0]);
+   if(argc<4) {
+      sprintf(s,"Usage: %s Home Type_coords List_coords ?-haset_limit Angle? ?-harise_limit Angle? ?-azset_limit Angle? ?-azrise_limit Angle?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
  	   return TCL_ERROR;
    } else {
 		/* --- decode args ---*/
-		mctcl_decode_horizon(interp,argv[1],argv[2],argv[3],&dsptr,NULL,NULL);
+		if (argc>=5) {
+			for (k=4;k<argc-1;k++) {
+				if (strcmp(argv[k],"-haset_limit")==0)  { mctcl_decode_angle(interp,argv[k+1],&haset_limit);  xhaset_limit=1; }
+				if (strcmp(argv[k],"-harise_limit")==0) { mctcl_decode_angle(interp,argv[k+1],&harise_limit); xharise_limit=1; }
+				if (strcmp(argv[k],"-azset_limit")==0)  { mctcl_decode_angle(interp,argv[k+1],&azset_limit);  xazset_limit=1; }
+				if (strcmp(argv[k],"-azrise_limit")==0) { mctcl_decode_angle(interp,argv[k+1],&azrise_limit); xazrise_limit=1; }
+			}
+		}
+		mctcl_horizon_init(interp,argc,argv,&limits,NULL,NULL);
+		/* --- Calculs avec les limites ha et az--- */
+		if ((xharise_limit!=0)&&(xhaset_limit!=0)) {
+			mctcl_decode_horizon(interp,argv[1],argv[2],argv[3],limits,&dsptr,1,NULL,NULL);
+		} else if ((xazrise_limit!=0)&&(xazset_limit!=0)) {
+			mctcl_decode_horizon(interp,argv[1],argv[2],argv[3],limits,&dsptr,1,NULL,NULL);
+		} else {
+			mctcl_decode_horizon(interp,argv[1],argv[2],argv[3],limits,&dsptr,1,NULL,NULL);
+		}
 		/* === libere les pointeurs generaux === */
       Tcl_DStringResult(interp,&dsptr);
       Tcl_DStringFree(&dsptr);
@@ -1323,9 +1343,12 @@ objectlocal[kjd].skylevel,objectlocal[kjd].sun_dist,objectlocal[kjd].moon_dist
 	mc_HORIZON_HADEC *horizon_hadec=NULL;
 	mc_OBJECTDESCR *objectdescr=NULL;
 	int nobj=0;
+	char sopt1[1024];
+	mc_HORIZON_LIMITS limits;
 
+   strcpy(sopt1,"?-haset_limit Angle? ?-harise_limit Angle? ?-decinf_limit Angle? ?-decsup_limit Angle? ?-azset_limit Angle? ?-azrise_limit Angle? ?-elevinf_limit Angle? ?-elevsup_limit Angle?");
    if(argc<5) {
-      sprintf(s,"Usage: %s Date Home Sequence step_day output_filename ?type_Horizon Horizon?", argv[0]);
+      sprintf(s,"Usage: %s Date Home Sequence step_day output_filename ?type_Horizon Horizon? %s", argv[0],sopt1);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
  	   return TCL_ERROR;
    } else {
@@ -1344,10 +1367,11 @@ objectlocal[kjd].skylevel,objectlocal[kjd].sun_dist,objectlocal[kjd].moon_dist
 			djd=60./86400.;
 		}
 		/* --- decode l'horizon ---*/
+		mctcl_horizon_init(interp,argc,argv,&limits,NULL,NULL);
 		if (argc>7) {
-			mctcl_decode_horizon(interp,argv[2],argv[6],argv[7],NULL,&horizon_altaz,&horizon_hadec);
+			mctcl_decode_horizon(interp,argv[2],argv[6],argv[7],limits,NULL,1,&horizon_altaz,&horizon_hadec);
 		} else {
-			mctcl_decode_horizon(interp,argv[2],"ALTAZ","{0 0} {90 0} {180 0} {270 0} {365 0}",NULL,&horizon_altaz,&horizon_hadec);
+			mctcl_decode_horizon(interp,argv[2],"ALTAZ","{0 0} {90 0} {180 0} {270 0} {365 0}",limits,NULL,1,&horizon_altaz,&horizon_hadec);
 		}
 		/* --- appel aux calculs ---*/
 		mc_obsconditions1(jd,longmpc,rhocosphip,rhosinphip,horizon_altaz,horizon_hadec,nobj,objectdescr,djd,argv[5]);
@@ -1390,9 +1414,12 @@ lindex $comments [lindex $status 0]
 	char *output_file=NULL;
 	char *log_file=NULL;
    Tcl_DString dsptr;
+	char sopt1[1024];
+	mc_HORIZON_LIMITS limits;
 
+   strcpy(sopt1,"?-haset_limit Angle? ?-harise_limit Angle? ?-decinf_limit Angle? ?-decsup_limit Angle? ?-azset_limit Angle? ?-azrise_limit Angle? ?-elevinf_limit Angle? ?-elevsup_limit Angle?");
    if(argc<3) {
-      sprintf(s,"Usage: %s Date Home Sequences ?type_Horizon Horizon? ?-output_type 0|1? ?-output_file filename? ?-log_file filename?", argv[0]);
+      sprintf(s,"Usage: %s Date Home Sequences ?type_Horizon Horizon? ?-output_type 0|1? ?-output_file filename? ?-log_file filename? %s", argv[0],sopt1);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
  	   return TCL_ERROR;
    } else {
@@ -1406,10 +1433,11 @@ lindex $comments [lindex $status 0]
 		/* --- decode les sequences ---*/
 		mctcl_decode_sequences(interp,&argv[3],&nobj,&objectdescr);
 		/* --- decode l'horizon ---*/
+		mctcl_horizon_init(interp,argc,argv,&limits,NULL,NULL);
 		if (argc>5) {
-			mctcl_decode_horizon(interp,argv[2],argv[4],argv[5],NULL,&horizon_altaz,&horizon_hadec);
+			mctcl_decode_horizon(interp,argv[2],argv[4],argv[5],limits,NULL,1,&horizon_altaz,&horizon_hadec);
 		} else {
-			mctcl_decode_horizon(interp,argv[2],"ALTAZ","{0 0} {90 0} {180 0} {270 0} {365 0}",NULL,&horizon_altaz,&horizon_hadec);
+			mctcl_decode_horizon(interp,argv[2],"ALTAZ","{0 0} {90 0} {180 0} {270 0} {365 0}",limits,NULL,1,&horizon_altaz,&horizon_hadec);
 		}
 		if (argc>=7) {
 			for (k=6;k<argc-1;k++) {
@@ -1458,3 +1486,4 @@ lindex $comments [lindex $status 0]
 	}	
 	return res;
 }
+

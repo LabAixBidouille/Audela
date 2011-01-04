@@ -2832,7 +2832,9 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 	users[0].percent_quota_used=0.;
 	users[0].duration_total_used=0.;
 	nu=0;
-	fprintf(fidlog," %d : user_id=%d quota=%f\n",nu,users[nu].iduser,users[nu].percent_quota_authorized);
+	if (fidlog!=NULL) {
+		fprintf(fidlog," %d : user_id=%d quota=%f\n",nu,users[nu].iduser,users[nu].percent_quota_authorized);
+	}
 	for (ko=1,nu=1;ko<nobjloc;ko++) {
 		id=dummys[ko];
 		if (id!=id0) {
@@ -2957,7 +2959,9 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 				fprintf(fidlog,"  ---- BEGIN SEQUENCE %4d/%4d user=%3d prio_order=%d kd=%d (kd=indice de sequence)\n",kp,np,ku,prio_order,kd);
 			}
 			// --- si le user a dépasse son quota alors on passe a la sequence suivante
-			fprintf(fidlog,"   --- user=%3d quota=%f / %f\n",ku,users[ku].percent_quota_used,users[ku].percent_quota_authorized);
+			if (fidlog!=NULL) {
+				fprintf(fidlog,"   --- user=%3d quota=%f / %f\n",ku,users[ku].percent_quota_used,users[ku].percent_quota_authorized);
+			}
 			if ((total_duration_sequenced>0)&&(mode_quota==1)) {
 				if (users[ku].percent_quota_used>users[ku].percent_quota_authorized) {
 					if (objectdescr[kd].status_plani<STATUS_PLANI_PLANIFIED) {
@@ -2980,7 +2984,9 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 			d2=angle/objectdescr[kd].axe_slew2;
 			d12b=(d1>d2)?d1:d2;
 			durationtot=duration+d12b;
-			fprintf(fidlog,"   --- duration=%f d12b=%f durationtot=%f\n",duration,d12b,durationtot);
+			if (fidlog!=NULL) {
+				fprintf(fidlog,"   --- duration=%f d12b=%f durationtot=%f\n",duration,d12b,durationtot);
+			}
 			// --- initialize the flagobs vector with ever known sequence constraints
 			j1=jdobsminmin;
 			j2=jdobsmaxmax;
@@ -3202,7 +3208,9 @@ try_a_gap:
 				d1=angle/objectdescr[kd].axe_slew1;
 				angle=fabs(dec1-dec2);
 				d2=angle/objectdescr[kd].axe_slew2;
-				fprintf(fidlog,"   --- ha1=%f ha2=%f d1=%f dec1=%f dec2=%f d2=%f\n",ha1,ha2,d1,dec1,dec2,d2);
+				if (fidlog!=NULL) {
+					fprintf(fidlog,"   --- ha1=%f ha2=%f d1=%f dec1=%f dec2=%f d2=%f\n",ha1,ha2,d1,dec1,dec2,d2);
+				}
 				d12=(d1>d2)?d1:d2;
 				k1=k3;
 			} else {
@@ -3279,7 +3287,9 @@ try_a_gap:
 				d1=angle/objectdescr[kd].axe_slew1;
 				angle=fabs(dec1-dec2);
 				d2=angle/objectdescr[kd].axe_slew2;
-				fprintf(fidlog,"   --- ha1=%f ha2=%f d1=%f dec1=%f dec2=%f d2=%f\n",ha1,ha2,d1,dec1,dec2,d2);
+				if (fidlog!=NULL) {
+					fprintf(fidlog,"   --- ha1=%f ha2=%f d1=%f dec1=%f dec2=%f d2=%f\n",ha1,ha2,d1,dec1,dec2,d2);
+				}
 				d12b=(d1>d2)?d1:d2;
 				// -- dd est la correction sur jd_slew_start_with_slew de la sequence suivante deja programmee
 				dd=(planis[0][k3].jd_slew_start_without_slew-planis[0][k3].jd_slew_start_with_slew)-d12b/86400.;
@@ -3512,7 +3522,9 @@ try_a_gap:
 						k4++;
 					}
 				}
-				fprintf(fidlog,"   *** k=%d %f %f %f %f (%d)\n",k,planis[1][k].jd_slew_start_with_slew,planis[1][k].jd_slew_start_without_slew,planis[1][k].jd_acq_start,planis[1][k].jd_acq_end,k4);
+				if (fidlog!=NULL) {
+					fprintf(fidlog,"   *** k=%d %f %f %f %f (%d)\n",k,planis[1][k].jd_slew_start_with_slew,planis[1][k].jd_slew_start_without_slew,planis[1][k].jd_acq_start,planis[1][k].jd_acq_end,k4);
+				}
 			}
 			if (fidlog!=NULL) {
 				if (k4>0) {
