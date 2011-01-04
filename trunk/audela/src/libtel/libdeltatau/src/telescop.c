@@ -224,6 +224,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		tel->radec_speed_dec_conversion=10.; /* (ADU)/(deg) */
 		tel->radec_position_conversion=10000.; /* (ADU)/(deg) */
 		tel->radec_move_rate_max=1.0; /* deg/s */
+		tel->radec_tol=10 ; /* 10 arcsec */
 		/* --- Match --- */
 		tel->ha00=0.;
 		tel->roth00=1507500;
@@ -1262,7 +1263,7 @@ int deltatau_hadec_goto(struct telprop *tel)
 	}
    /* --- --- */
 	if (tel->simultaneus==1) {
-		sprintf(s,"#%s %s",s1,s2);
+		sprintf(s,"#%s #%s",s1,s2);
 		res=deltatau_put(tel,s);
 		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
 	}
