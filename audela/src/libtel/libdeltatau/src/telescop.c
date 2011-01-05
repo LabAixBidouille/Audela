@@ -224,7 +224,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		tel->radec_speed_dec_conversion=10.; /* (ADU)/(deg) */
 		tel->radec_position_conversion=10000.; /* (ADU)/(deg) */
 		tel->radec_move_rate_max=1.0; /* deg/s */
-		tel->radec_tol=10 ; /* 10 arcsec */
+		tel->radec_tol=20 ; /* 20 arcsec */
 		/* --- Match --- */
 		tel->ha00=0.;
 		tel->roth00=1507500;
@@ -305,7 +305,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		tel->radec_speed_dec_conversion=10.; /* (ADU)/(deg) */
 		tel->radec_position_conversion=-10000.; /* (ADU)/(deg) */
 		tel->radec_move_rate_max=1.0; /* deg/s */
-		tel->radec_tol=10 ; /* 10 arcsec */
+		tel->radec_tol=20 ; /* 20 arcsec */
 		/* --- Home --- */
 		tel->latitude=43.75203;
 		sprintf(tel->home0,"GPS 6.92353 E %+.6f 1320.0",tel->latitude);
@@ -584,7 +584,7 @@ int mytel_radec_move(struct telprop *tel,char *direction)
 {
    char s[1024],direc[10];
    int res;
-   double v;
+   double v=0;
    char axe=1,sens;
    
    if (tel->radec_move_rate>1.0) {
@@ -805,7 +805,9 @@ int deltatau_put(struct telprop *tel,char *cmd)
 int deltatau_read(struct telprop *tel,char *res)
 {
    char s[2048];
+#if defined(OS_WIN)
    int n;
+#endif
 	if (tel->type==0) {
 		/* --- trancoder l'hexadécimal de res en numérique ---*/
 		strcpy(s,"\
