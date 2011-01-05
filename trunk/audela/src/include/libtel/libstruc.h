@@ -84,7 +84,7 @@ extern "C" {            /* Assume C declarations for C++ */
    int refractionCorrection; \
    struct telprop *next;
 
-//Tcl_TimerToken timerToken; \
+/*Tcl_TimerToken timerToken; \ */
    
 
 extern char *tel_ports[];
