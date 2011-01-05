@@ -750,16 +750,16 @@ int mytel_tcleval(struct telprop *tel,char *ligne)
 {
    FILE *f;
    f=fopen("mouchard_deltatau.txt","at");
-   fprintf(f,"EVAL <%s>\n",ligne);
+   //fprintf(f,"EVAL <%s>\n",ligne);
    fclose(f);
    if (Tcl_Eval(tel->interp,ligne)!=TCL_OK) {
       f=fopen("mouchard_deltatau.txt","at");
-      fprintf(f,"RESU-PB <%s>\n",tel->interp->result);
+      //fprintf(f,"RESU-PB <%s>\n",tel->interp->result);
       fclose(f);
       return 1;
    }
    f=fopen("mouchard_deltatau.txt","at");
-   fprintf(f,"RESU-OK <%s>\n",tel->interp->result);
+   //fprintf(f,"RESU-OK <%s>\n",tel->interp->result);
    fclose(f);
    return 0;
 }
@@ -783,6 +783,10 @@ int deltatau_put(struct telprop *tel,char *cmd)
 {
    char s[1024];
 	/*char ss[1024];*/
+   FILE *f;
+   f=fopen("mouchard_deltatau.txt","at");
+   fprintf(f,"PUT <%s>\n",cmd);
+   fclose(f);
 
 	if (tel->type==0) {
 		sprintf(s,"puts -nonewline %s \"[binary format H2H2H4H4S 40 BF 0000 0000 [string length \"%s\"]]%s\"",tel->channel,cmd,cmd);
@@ -805,6 +809,7 @@ int deltatau_put(struct telprop *tel,char *cmd)
 int deltatau_read(struct telprop *tel,char *res)
 {
    char s[2048];
+   FILE *f;
 #if defined(OS_WIN)
    int n;
 #endif
@@ -856,6 +861,9 @@ int deltatau_read(struct telprop *tel,char *res)
 		}
 	}
 #endif
+   f=fopen("mouchard_deltatau.txt","at");
+   fprintf(f,"READ <%s>\n",res);
+   fclose(f);
    return 0;
 }
 
