@@ -1336,10 +1336,11 @@ int deltatau_suivi_marche (struct telprop *tel)
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    if (tel->speed_track_ra>0) {
       sprintf(s,"#%cj+",axe);
+	   res=deltatau_put(tel,s);
    } else if (tel->speed_track_ra<0) {
       sprintf(s,"#%cj-",axe);
+	   res=deltatau_put(tel,s);
    }
-   res=deltatau_put(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /*--- Track delta */
    v=tel->speed_track_dec*tel->radec_speed_dec_conversion;
@@ -1349,10 +1350,11 @@ int deltatau_suivi_marche (struct telprop *tel)
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    if (tel->speed_track_dec>0) {
       sprintf(s,"#%cj-",axe);
-   } else if (tel->speed_track_ra<0) {
+	   res=deltatau_put(tel,s);
+   } else if (tel->speed_track_dec<0) {
       sprintf(s,"#%cj+",axe);
+	   res=deltatau_put(tel,s);
    }
-   res=deltatau_put(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    return 0;
 }
