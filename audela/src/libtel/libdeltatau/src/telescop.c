@@ -100,7 +100,6 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    FILE *f;
 
 	/* -ip 127.0.0.1 -port 1025 -type umac|pmac*/
-   tel->tempo=200;
    f=fopen("mouchard_deltatau.txt","wt");
    fclose(f);
 	/* --- decode type (umac by default) ---*/
@@ -120,10 +119,12 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		tel->type=1;
 	}
 	tel->simultaneus=1;
+	tel->track_diurnal=0.004180983;
 	/* ============ */
 	/* === UMAC === */
 	/* ============ */
 	if (tel->type==0) {
+	   tel->tempo=100;
 		/* --- decode IP  --- */
 		ip[0] = 192;
 		ip[1] = 168;
@@ -199,7 +200,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 			}
 		}
 		if (strcmp(Tcl_DStringValue(&dsptr),"")==0) {
-			Tcl_DStringAppend(&dsptr,"M132->X:\\\\$078200,18,1 M140->Y:\\\\$0000C0,0,1 M231->X:\\\\$078208,17,1 M232->X:\\\\$078208,18,1 M240->Y:\\\\$000140,0,1 M245->Y:\\\\$000140,10,1 M331->X:\\\\$078210,17,1 M332->X:\\\\$078210,18,1 M340->Y:\\\\$0001C0,0,1 M345->Y:\\\\$0001C0,10,1 M440->Y:\\\\$000240,0,1",-1);
+			Tcl_DStringAppend(&dsptr,"M131->X:\\\\$078200,17,1 M132->X:\\\\$078200,18,1 M140->Y:\\\\$0000C0,0,1 M231->X:\\\\$078208,17,1 M232->X:\\\\$078208,18,1 M240->Y:\\\\$000140,0,1 M245->Y:\\\\$000140,10,1 M331->X:\\\\$078210,17,1 M332->X:\\\\$078210,18,1 M340->Y:\\\\$0001C0,0,1 M345->Y:\\\\$0001C0,10,1 M440->Y:\\\\$000240,0,1",-1);
 		}
 		/* --- execute init command list--- */
 		if (strcmp(Tcl_DStringValue(&dsptr),"")!=0) {
@@ -215,7 +216,6 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 			}
 		}
 		/* --- sppeds --- */
-		tel->track_diurnal=0.004180983;
 		tel->speed_track_ra=tel->track_diurnal; /* (deg/s) */
 		tel->speed_track_dec=0.; /* (deg/s) */
 		tel->speed_slew_ra=20.; /* (deg/s) */
@@ -224,7 +224,8 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		tel->radec_speed_dec_conversion=10.; /* (ADU)/(deg) */
 		tel->radec_position_conversion=10000.; /* (ADU)/(deg) */
 		tel->radec_move_rate_max=1.0; /* deg/s */
-		tel->radec_tol=20 ; /* 20 arcsec */
+		tel->radec_tol=10 ; /* 10 arcsec */
+		tel->dead_delay_slew=2.1; /* delai en secondes estime pour un slew sans bouger */
 		/* --- Match --- */
 		tel->ha00=0.;
 		tel->roth00=1507500;
@@ -242,6 +243,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 	/* ============ */
 #if defined(OS_WIN)
 	if (tel->type==1) {
+	   tel->tempo=200;
 		tel->hPmacLib = LoadLibrary(DRIVERNAME);
 		if( tel->hPmacLib  == NULL ) {
 			strcpy(tel->msg,"RunTimeLink error");
@@ -296,7 +298,6 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		deltatau_put(tel,"M345->Y:$0994,10,1");
 		deltatau_put(tel,"M440->Y:$0A54,0,1"); 
 		/* --- sppeds --- */
-		tel->track_diurnal=0.004180983;
 		tel->speed_track_ra=tel->track_diurnal; /* (deg/s) */
 		tel->speed_track_dec=0.; /* (deg/s) */
 		tel->speed_slew_ra=20.; /* (deg/s) */
@@ -305,7 +306,8 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		tel->radec_speed_dec_conversion=10.; /* (ADU)/(deg) */
 		tel->radec_position_conversion=-10000.; /* (ADU)/(deg) */
 		tel->radec_move_rate_max=1.0; /* deg/s */
-		tel->radec_tol=20 ; /* 20 arcsec */
+		tel->radec_tol=10 ; /* 10 arcsec */
+		tel->dead_delay_slew=2.4; /* delai en secondes estime pour un slew sans bouger */
 		/* --- Home --- */
 		tel->latitude=43.75203;
 		sprintf(tel->home0,"GPS 6.92353 E %+.6f 1320.0",tel->latitude);
@@ -508,10 +510,19 @@ int mytel_radec_goto(struct telprop *tel)
    char s[1024];
    int time_in=0,time_out=70;
    int nbgoto=2;
-   int p10,p1,p20,p2;
+   int p10,p1,p20,p2,dp1,dp2;
    double tol;
+	/*FILE *f;*/
+	long clk_tck = CLOCKS_PER_SEC;
+   clock_t clock0,clock00;
+	double dt1,dt2;
 
-   deltatau_arret_pointage(tel);
+	if ((tel->speed_slew_ra>30)&&(tel->speed_slew_dec>30)) {
+		// -- pas de double pointage en cas de tres grande vitesse
+		// pour gagner environ 2.4 secondes (pour alertes sursauts gamma).
+		nbgoto=1;
+	}
+	clock00 = clock();
    deltatau_goto(tel);
    sate_move_radec='A';
    if (tel->radec_goto_blocking==1) {
@@ -522,26 +533,44 @@ int mytel_radec_goto(struct telprop *tel)
    	   time_in++;
          sprintf(s,"after 350"); mytel_tcleval(tel,s);
          deltatau_positions12(tel,&p1,&p2);
-         if ((fabs(p1-p10)<tol)&&(fabs(p2-p20)<tol)) {break;}
+			dp1=p1-p10;
+			dp2=p2-p20;
+			/*
+			f=fopen("mouchard_deltatau.txt","at");
+			fprintf(f,"DP dp1=%d dp2=%d tol=%f\n",dp1,dp2,tol);
+			fclose(f);
+			*/
+         if ((fabs(dp1)<tol)&&(fabs(dp2)<tol)) {break;}
          p10=p1;
          p20=p2;
          if (time_in>=time_out) {break;}
       }
+		dt1=(double)(clock()-clock00)/(double)clk_tck;
+		clock0 = clock();
 	   if (nbgoto>1) {
 		   deltatau_goto(tel);
 			/* A loop is actived until the telescope is stopped */
 			deltatau_positions12(tel,&p10,&p20);
+   		time_in=0;
 			while (1==1) {
    			time_in++;
 				sprintf(s,"after 350"); mytel_tcleval(tel,s);
 				deltatau_positions12(tel,&p1,&p2);
-				if ((fabs(p1-p10)<tol)&&(fabs(p2-p20)<tol)) {break;}
+				dp1=p1-p10;
+				dp2=p2-p20;
+				/*
+				f=fopen("mouchard_deltatau.txt","at");
+				fprintf(f,"DP dp1=%d dp2=%d tol=%f\n",dp1,dp2,tol);
+				fclose(f);
+				*/
+				if ((fabs(dp1)<tol)&&(fabs(dp2)<tol)) {break;}
 				p10=p1;
 				p20=p2;
 				if (time_in>=time_out) {break;}
 			}
       }
       deltatau_suivi_marche(tel);
+		dt2=(double)(clock()-clock0)/(double)clk_tck;
       sate_move_radec=' ';
    }
    return 0;
@@ -551,10 +580,11 @@ int mytel_hadec_goto(struct telprop *tel)
 {
    char s[1024];
    int time_in=0,time_out=70;
-   int p10,p1,p20,p2;
+   int p10,p1,p20,p2,dp1,dp2;
    double tol;
+	/*FILE *f;*/
 
-   deltatau_arret_pointage(tel);
+   //deltatau_arret_pointage(tel);
    deltatau_hadec_goto(tel);
    sate_move_radec='A';
    if (tel->radec_goto_blocking==1) {
@@ -565,7 +595,16 @@ int mytel_hadec_goto(struct telprop *tel)
    	   time_in++;
          sprintf(s,"after 350"); mytel_tcleval(tel,s);
          deltatau_positions12(tel,&p1,&p2);
-         if ((fabs(p1-p10)<tol)&&(fabs(p2-p20)<tol)) {break;}
+			dp1=p1-p10;
+			dp2=p2-p20;
+			/*
+			f=fopen("mouchard_deltatau.txt","at");
+			fprintf(f,"P p1=%d p2=%d \n",p1,p2);
+			fprintf(f,"P0 p10=%d p20=%d \n",p10,p20);
+			fprintf(f,"DP dp1=%d dp2=%d tol=%f\n",dp1,dp2,tol);
+			fclose(f);
+			*/
+         if ((fabs(dp1)<tol)&&(fabs(dp2)<tol)) {break;}
          p10=p1;
          p20=p2;
          if (time_in>=time_out) {break;}
@@ -643,7 +682,8 @@ int mytel_radec_stop(struct telprop *tel,char *direction)
       } else if (strcmp(direc,"W")==0) {
          axe='1';
       }
-      sprintf(s,"#%ck",axe);
+		//sprintf(s,"#%ck",axe);
+		sprintf(s,"#%cj/",axe);
       res=deltatau_put(tel,s);
       return 0;
    }
@@ -748,19 +788,25 @@ int mytel_hadec_coord(struct telprop *tel,char *result)
 
 int mytel_tcleval(struct telprop *tel,char *ligne)
 {
+	/*
    FILE *f;
    f=fopen("mouchard_deltatau.txt","at");
-   //fprintf(f,"EVAL <%s>\n",ligne);
+   fprintf(f,"EVAL <%s>\n",ligne);
    fclose(f);
+	*/
    if (Tcl_Eval(tel->interp,ligne)!=TCL_OK) {
+		/*
       f=fopen("mouchard_deltatau.txt","at");
-      //fprintf(f,"RESU-PB <%s>\n",tel->interp->result);
+      fprintf(f,"RESU-PB <%s>\n",tel->interp->result);
       fclose(f);
+		*/
       return 1;
    }
+	/*
    f=fopen("mouchard_deltatau.txt","at");
-   //fprintf(f,"RESU-OK <%s>\n",tel->interp->result);
+   fprintf(f,"RESU-OK <%s>\n",tel->interp->result);
    fclose(f);
+	*/
    return 0;
 }
 
@@ -783,10 +829,12 @@ int deltatau_put(struct telprop *tel,char *cmd)
 {
    char s[1024];
 	/*char ss[1024];*/
+	/*
    FILE *f;
    f=fopen("mouchard_deltatau.txt","at");
    fprintf(f,"PUT <%s>\n",cmd);
    fclose(f);
+	*/
 
 	if (tel->type==0) {
 		sprintf(s,"puts -nonewline %s \"[binary format H2H2H4H4S 40 BF 0000 0000 [string length \"%s\"]]%s\"",tel->channel,cmd,cmd);
@@ -809,7 +857,7 @@ int deltatau_put(struct telprop *tel,char *cmd)
 int deltatau_read(struct telprop *tel,char *res)
 {
    char s[2048];
-   FILE *f;
+   /*FILE *f;*/
 #if defined(OS_WIN)
    int n;
 #endif
@@ -861,9 +909,11 @@ int deltatau_read(struct telprop *tel,char *res)
 		}
 	}
 #endif
+	/*
    f=fopen("mouchard_deltatau.txt","at");
    fprintf(f,"READ <%s>\n",res);
    fclose(f);
+	*/
    return 0;
 }
 
@@ -875,14 +925,13 @@ int deltatau_read(struct telprop *tel,char *res)
 
 int deltatau_arret_pointage(struct telprop *tel)
 {
-   char s[1024],axe;
+   char s[1024],axe1,axe2;
    int res;
    /*--- Arret pointage */
-   axe='1';
-   sprintf(s,"#%ck",axe);
-   res=deltatau_put(tel,s);
-   axe='2';
-   sprintf(s,"#%ck",axe);
+   axe1='1';
+   axe2='2';
+   //sprintf(s,"#%ck #%ck",axe1,axe2);
+   sprintf(s,"#%cj/ #%cj/",axe1,axe2);
    res=deltatau_put(tel,s);
    return 0;
 }
@@ -1038,54 +1087,29 @@ int deltatau_positions12(struct telprop *tel,int *p1,int *p2)
 * Coordonnées en ADU
 */
 {
-   char s[1024],ss[1024],axe;
+   char s[1024],ss[1024],axe1,axe2;
    int res;
+	double pp1,pp2;
    
    /* --- Vide le buffer --- */
    res=deltatau_read(tel,s);
-   /* --- Lecture AXE 1 (horaire) --- */
-   axe='1';
-   sprintf(ss,"#%cp",axe);
+   sprintf(ss,"after %d",tel->tempo); mytel_tcleval(tel,ss);
+   /* --- Lecture AXE 1 (horaire) et AXE 2 (declinaison) --- */
+   axe1='1';
+   axe2='2';
+   sprintf(ss,"#%cp #%cp",axe1,axe2);
    res=deltatau_put(tel,ss);
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+   sprintf(ss,"after %d",tel->tempo); mytel_tcleval(tel,ss);
    res=deltatau_read(tel,s);
-	/*
-   if (strcmp(s,"")==0) {
-      res=deltatau_put(tel,ss);
-      sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-      res=deltatau_read(tel,s);
-   }
-   if (strcmp(s,"")==0) {
-      res=deltatau_put(tel,ss);
-      sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-      res=deltatau_read(tel,s);
-   }
-	*/
+   sprintf(ss,"after %d",tel->tempo); mytel_tcleval(tel,ss);
    if (res==0) {
-      *p1=atoi(s);
-   }
-   /* --- Lecture AXE 2 (delta) --- */
-   axe='2';
-   sprintf(ss,"#%cp",axe);
-   res=deltatau_put(tel,ss);
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   res=deltatau_read(tel,s);
-	/*
-   if (strcmp(s,"")==0) {
-      res=deltatau_put(tel,ss);
-      sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-      res=deltatau_read(tel,s);
-   }
-   if (strcmp(s,"")==0) {
-      res=deltatau_put(tel,ss);
-      sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-      res=deltatau_read(tel,s);
-   }
-	*/
-   if (res==0) {
-      *p2=atoi(s);
-   }
-   return 0;
+		sscanf(s,"%lf\r%lf",&pp1,&pp2);
+      *p1=(int)(pp1);
+      *p2=(int)(pp2);
+	   return 0;
+   } else {
+	   return 1;
+	}
 }
 
 int deltatau_match(struct telprop *tel)
@@ -1147,7 +1171,7 @@ int deltatau_match(struct telprop *tel)
 
 int deltatau_goto(struct telprop *tel)
 {
-   char s[1024],axe,s1[1024],s2[1024];
+   char s[1024],axe,s1[1024],s2[1024],s10[1024],s20[1024];
    int res;
    int retournement=0;
    int p;
@@ -1178,16 +1202,8 @@ int deltatau_goto(struct telprop *tel)
    }
    axe='1';
    v=tel->speed_slew_ra*tel->radec_speed_ra_conversion;
-   sprintf(s,"#%cI%c22=%.12f",axe,axe,v);
-   res=deltatau_put(tel,s);
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-	if (tel->simultaneus==0) {
-		sprintf(s,"#%cj=%d",axe,p);
-		res=deltatau_put(tel,s);
-		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-	} else {
-		sprintf(s1,"%cj=%d",axe,p);
-	}
+	sprintf(s10,"#%cI%c22=%.12f",axe,axe,v);
+	sprintf(s1,"#%cj=%d",axe,p);
    /* --- Effectue le pointage DEC --- */
    if (retournement==1) {
       v=(tel->latitude)/fabs(tel->latitude)*180-tel->dec0;
@@ -1197,19 +1213,27 @@ int deltatau_goto(struct telprop *tel)
    p=(int)(tel->rotd00-(v-tel->dec00)*tel->radec_position_conversion);
    axe='2';
    v=tel->speed_slew_ra*tel->radec_speed_dec_conversion; 
-   sprintf(s,"#%cI%c22=%.12f",axe,axe,v);
-   res=deltatau_put(tel,s);
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-	if (tel->simultaneus==0) {
-		sprintf(s,"#%cj=%d",axe,p);
+	sprintf(s20,"#%cI%c22=%.12f",axe,axe,v);
+	sprintf(s2,"#%cj=%d",axe,p);
+   /* --- Slew simultaneously or not --- */
+	if (tel->simultaneus==1) {
+		sprintf(s,"%s %s",s10,s20);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+		sprintf(s,"%s %s",s1,s2);
 		res=deltatau_put(tel,s);
 		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
 	} else {
-		sprintf(s2,"%cj=%d",axe,p);
-	}
-   /* --- --- */
-	if (tel->simultaneus==1) {
-		sprintf(s,"#%s #%s",s1,s2);
+		sprintf(s,"%s",s20);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+		sprintf(s,"%s",s2);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+		sprintf(s,"%s",s10);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+		sprintf(s,"%s",s1);
 		res=deltatau_put(tel,s);
 		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
 	}
@@ -1218,7 +1242,7 @@ int deltatau_goto(struct telprop *tel)
 
 int deltatau_hadec_goto(struct telprop *tel)
 {
-   char s[1024],axe,s1[1024],s2[1024];
+   char s[1024],axe,s1[1024],s2[1024],s10[1024],s20[1024];
    int res;
    int retournement=0;
    int p;
@@ -1246,16 +1270,8 @@ int deltatau_hadec_goto(struct telprop *tel)
    }
    axe='1';
    v=tel->speed_slew_ra*tel->radec_speed_ra_conversion;
-   sprintf(s,"#%cI%c22=%.12f",axe,axe,v);
-   res=deltatau_put(tel,s);
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-	if (tel->simultaneus==0) {
-		sprintf(s,"#%cj=%d",axe,p);
-		res=deltatau_put(tel,s);
-		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-	} else {
-		sprintf(s1,"%cj=%d",axe,p);
-	}
+   sprintf(s10,"#%cI%c22=%.12f",axe,axe,v);
+	sprintf(s1,"#%cj=%d",axe,p);
    /* --- Effectue le pointage DEC --- */
    if (retournement==1) {
       v=(tel->latitude)/fabs(tel->latitude)*180-tel->dec0;
@@ -1265,19 +1281,27 @@ int deltatau_hadec_goto(struct telprop *tel)
    p=(int)(tel->rotd00-(v-tel->dec00)*tel->radec_position_conversion);
    axe='2';
    v=tel->speed_slew_ra*tel->radec_speed_dec_conversion; 
-   sprintf(s,"#%cI%c22=%.12f",axe,axe,v);
-   res=deltatau_put(tel,s);
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-	if (tel->simultaneus==0) {
-		sprintf(s,"#%cj=%d",axe,p);
+   sprintf(s20,"#%cI%c22=%.12f",axe,axe,v);
+	sprintf(s2,"#%cj=%d",axe,p);
+   /* --- Slew simultaneously or not --- */
+	if (tel->simultaneus==1) {
+		sprintf(s,"%s %s",s20,s10);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+		sprintf(s,"%s %s",s2,s1);
 		res=deltatau_put(tel,s);
 		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
 	} else {
-		sprintf(s2,"%cj=%d",axe,p);
-	}
-   /* --- --- */
-	if (tel->simultaneus==1) {
-		sprintf(s,"#%s #%s",s1,s2);
+		sprintf(s,"%s",s20);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+		sprintf(s,"%s",s2);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+		sprintf(s,"%s",s10);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+		sprintf(s,"%s",s1);
 		res=deltatau_put(tel,s);
 		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
 	}
@@ -1291,17 +1315,34 @@ int deltatau_initzenith(struct telprop *tel)
 
 int deltatau_stopgoto(struct telprop *tel)
 {
-   char s[1024],axe;
+   char s[1024],axe,axe1,axe2;
    int res;
    /*--- Arret pointage */
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   axe='1';
-   sprintf(s,"#%ck",axe);
-   res=deltatau_put(tel,s);
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   axe='2';
-   sprintf(s,"#%ck",axe);
-   res=deltatau_put(tel,s);
+	if (tel->simultaneus==1) {
+		axe='1';
+		sprintf(s,"#%ck",axe);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+		sprintf(s,"#%cj/",axe);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+		axe='2';
+		sprintf(s,"#%ck",axe);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+		sprintf(s,"#%cj/",axe);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+	} else {
+		axe1='1';
+		axe2='2';
+		sprintf(s,"#%ck #%ck",axe1,axe2);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+		sprintf(s,"#%cj/ #%cj/",axe1,axe2);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+	}
    return 0;
 }
 
@@ -1312,60 +1353,120 @@ int deltatau_stategoto(struct telprop *tel,int *state)
 
 int deltatau_suivi_arret (struct telprop *tel)
 {
-   char s[1024],axe;
+   char s[1024],axe,s1[1024],s2[1024],s10[1024],s20[1024];
    int res;
-   /*--- Arret pointage */
+   double v;
+   /*--- Arret suivi */
+	/*
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    axe='1';
-   sprintf(s,"#%ck",axe);
+   //sprintf(s,"#%ck",axe);
+   sprintf(s,"#%cj/",axe);
    res=deltatau_put(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    axe='2';
-   sprintf(s,"#%ck",axe);
+   //sprintf(s,"#%ck",axe);
+   sprintf(s,"#%cj/",axe);
    res=deltatau_put(tel,s);
+	*/
+   /*--- Track alpha */
+   v=0;
+   axe='1';
+   sprintf(s10,"#%cI%c22=%.12f",axe,axe,v);
+   if (tel->speed_track_ra>0) {
+      sprintf(s1,"#%cj+",axe);
+   } else if (tel->speed_track_ra<0) {
+      sprintf(s1,"#%cj-",axe);
+   } else {
+      sprintf(s1,"#%cj+",axe);
+	}
+   /*--- Track delta */
+   v=0;
+   axe='2';
+   sprintf(s20,"#%cI%c22=%.12f",axe,axe,v);
+   if (tel->speed_track_dec>0) {
+      sprintf(s2,"#%cj-",axe);
+   } else if (tel->speed_track_dec<0) {
+      sprintf(s2,"#%cj+",axe);
+   } else {
+      sprintf(s2,"#%cj+",axe);
+   }
+   /* --- Slew simultaneously or not --- */
+	if (tel->simultaneus==1) {
+		sprintf(s,"%s %s",s10,s20);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+		sprintf(s,"%s %s",s1,s2);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+	} else {
+		sprintf(s,"%s",s20);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+		sprintf(s,"%s",s2);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+		sprintf(s,"%s",s10);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+		sprintf(s,"%s",s1);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+	}
    return 0;
 }
 
 int deltatau_suivi_marche (struct telprop *tel)
 {
    /* ==== suivi sidéral ===*/
-   char s[1024],axe;
+   char s[1024],axe,s1[1024],s2[1024],s10[1024],s20[1024];
    int res;
    double v;
    /*--- Track alpha */
    v=tel->speed_track_ra*tel->radec_speed_ra_conversion;
    axe='1';
-   sprintf(s,"#%cI%c22=%.12f",axe,axe,v);
-   res=deltatau_put(tel,s);
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+   sprintf(s10,"#%cI%c22=%.12f",axe,axe,v);
    if (tel->speed_track_ra>0) {
-      sprintf(s,"#%cj+",axe);
-	   res=deltatau_put(tel,s);
+      sprintf(s1,"#%cj+",axe);
    } else if (tel->speed_track_ra<0) {
-      sprintf(s,"#%cj-",axe);
-	   res=deltatau_put(tel,s);
+      sprintf(s1,"#%cj-",axe);
    } else {
-      sprintf(s,"#%ck",axe);
-	   res=deltatau_put(tel,s);
+      sprintf(s1,"#%cj+",axe);
 	}
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /*--- Track delta */
    v=tel->speed_track_dec*tel->radec_speed_dec_conversion;
    axe='2';
-   sprintf(s,"#%cI%c22=%.12f",axe,axe,v);
-   res=deltatau_put(tel,s);
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+   sprintf(s20,"#%cI%c22=%.12f",axe,axe,v);
    if (tel->speed_track_dec>0) {
-      sprintf(s,"#%cj-",axe);
-	   res=deltatau_put(tel,s);
+      sprintf(s2,"#%cj-",axe);
    } else if (tel->speed_track_dec<0) {
-      sprintf(s,"#%cj+",axe);
-	   res=deltatau_put(tel,s);
+      sprintf(s2,"#%cj+",axe);
    } else {
-      sprintf(s,"#%ck",axe);
-	   res=deltatau_put(tel,s);
+      sprintf(s2,"#%cj+",axe);
    }
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+   /*--- Track start */
+   /* --- Slew simultaneously or not --- */
+	if (tel->simultaneus==1) {
+		sprintf(s,"%s %s",s10,s20);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+		sprintf(s,"%s %s",s1,s2);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+	} else {
+		sprintf(s,"%s",s20);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+		sprintf(s,"%s",s2);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+		sprintf(s,"%s",s10);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+		sprintf(s,"%s",s1);
+		res=deltatau_put(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+	}
    return 0;
 }
 
@@ -1416,11 +1517,13 @@ double deltatau_tsl(struct telprop *tel,int *h, int *m,double *sec)
 {
    char s[1024];
    char ss[1024];
+	double dt;
    static double tsl;
    /* --- temps sideral local */
+	dt=tel->dead_delay_slew/86400;
    deltatau_home(tel,"");
    deltatau_GetCurrentFITSDate_function(tel->interp,ss,"::audace::date_sys2ut");
-   sprintf(s,"mc_date2lst %s {%s}",ss,tel->home);
+   sprintf(s,"mc_date2lst [mc_date2jd %s+%f] {%s}",ss,dt,tel->home);
    mytel_tcleval(tel,s);
    strcpy(ss,tel->interp->result);
    sprintf(s,"lindex {%s} 0",ss);
