@@ -1049,6 +1049,7 @@ int deltatau_positions12(struct telprop *tel,int *p1,int *p2)
    res=deltatau_put(tel,ss);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    res=deltatau_read(tel,s);
+	/*
    if (strcmp(s,"")==0) {
       res=deltatau_put(tel,ss);
       sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
@@ -1059,6 +1060,7 @@ int deltatau_positions12(struct telprop *tel,int *p1,int *p2)
       sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
       res=deltatau_read(tel,s);
    }
+	*/
    if (res==0) {
       *p1=atoi(s);
    }
@@ -1068,6 +1070,7 @@ int deltatau_positions12(struct telprop *tel,int *p1,int *p2)
    res=deltatau_put(tel,ss);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    res=deltatau_read(tel,s);
+	/*
    if (strcmp(s,"")==0) {
       res=deltatau_put(tel,ss);
       sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
@@ -1078,6 +1081,7 @@ int deltatau_positions12(struct telprop *tel,int *p1,int *p2)
       sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
       res=deltatau_read(tel,s);
    }
+	*/
    if (res==0) {
       *p2=atoi(s);
    }
@@ -1340,7 +1344,10 @@ int deltatau_suivi_marche (struct telprop *tel)
    } else if (tel->speed_track_ra<0) {
       sprintf(s,"#%cj-",axe);
 	   res=deltatau_put(tel,s);
-   }
+   } else {
+      sprintf(s,"#%ck",axe);
+	   res=deltatau_put(tel,s);
+	}
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /*--- Track delta */
    v=tel->speed_track_dec*tel->radec_speed_dec_conversion;
@@ -1353,6 +1360,9 @@ int deltatau_suivi_marche (struct telprop *tel)
 	   res=deltatau_put(tel,s);
    } else if (tel->speed_track_dec<0) {
       sprintf(s,"#%cj+",axe);
+	   res=deltatau_put(tel,s);
+   } else {
+      sprintf(s,"#%ck",axe);
 	   res=deltatau_put(tel,s);
    }
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
