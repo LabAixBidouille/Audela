@@ -609,11 +609,16 @@ int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 int cmdTelTolPos(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    char s[1024];
    struct telprop *tel;
+	//int p1=0,p2=0;
    tel = (struct telprop *)clientData;   
    if (argc>=3) {   
       tel->radec_tol=atof(argv[2]);
    }
    sprintf(s,"%f",tel->radec_tol);
+	/*
+	deltatau_positions12(tel,&p1,&p2);
+   sprintf(s,"%d %d",p1,p2);
+	*/
    Tcl_SetResult(interp,s,TCL_VOLATILE);
    return TCL_OK;
 }
@@ -629,6 +634,21 @@ int cmdTelSimultaneus(ClientData clientData, Tcl_Interp *interp, int argc, char 
       tel->simultaneus=atoi(argv[2]);
    }
    sprintf(s,"%d",tel->simultaneus);
+   Tcl_SetResult(interp,s,TCL_VOLATILE);
+   return TCL_OK;
+}
+
+/*
+ *   delai en secondes estime pour un slew sans bouger
+ */
+int cmdTelDeadDelaySlew(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char s[1024];
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;   
+   if (argc>=3) {   
+      tel->dead_delay_slew=atof(argv[2]);
+   }
+   sprintf(s,"%f",tel->dead_delay_slew);
    Tcl_SetResult(interp,s,TCL_VOLATILE);
    return TCL_OK;
 }

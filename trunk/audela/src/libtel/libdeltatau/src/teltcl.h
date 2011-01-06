@@ -35,5 +35,6 @@ int cmdTelLst(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelTolPos(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelSimultaneus(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelDeadDelaySlew(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #endif
