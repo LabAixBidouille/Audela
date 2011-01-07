@@ -557,6 +557,7 @@ typedef struct {
 	int elev_defined;
 	double elev_inf;
 	double elev_sup;
+	char filemap[1024];
 } mc_HORIZON_LIMITS;
 
 #define OBJECTDESCR_MAXCOM 50

@@ -136,11 +136,11 @@ set ys [lindex $res 1]
    Tcl_DString dsptr;
 	int xharise_limit=0,xhaset_limit=0,xazrise_limit=0,xazset_limit=0;
 	double harise_limit,haset_limit,azrise_limit,azset_limit;
-	int k;
+	int k,make_map=0;
 	mc_HORIZON_LIMITS limits;
 
    if(argc<4) {
-      sprintf(s,"Usage: %s Home Type_coords List_coords ?-haset_limit Angle? ?-harise_limit Angle? ?-azset_limit Angle? ?-azrise_limit Angle?", argv[0]);
+      sprintf(s,"Usage: %s Home Type_coords List_coords ?-filemap genefilename? ?-haset_limit Angle? ?-harise_limit Angle? ?-azset_limit Angle? ?-azrise_limit Angle?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
  	   return TCL_ERROR;
    } else {

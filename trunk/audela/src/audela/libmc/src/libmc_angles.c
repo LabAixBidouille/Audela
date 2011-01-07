@@ -1064,19 +1064,19 @@ int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,cha
 	double *harise_limit=NULL,*haset_limit=NULL,*azrise_limit=NULL,*azset_limit=NULL;
 	double *elevinf_limit=NULL,*elevsup_limit=NULL,*decinf_limit=NULL,*decsup_limit=NULL;
 
-	if (limits.ha_defined==1) {
+	if (limits.ha_defined==2) {
 		harise_limit=&limits.ha_rise;
-		harise_limit=&limits.ha_set;
+		haset_limit=&limits.ha_set;
 	}
-	if (limits.dec_defined==1) {
+	if (limits.dec_defined==2) {
 		decinf_limit=&limits.dec_inf;
 		decsup_limit=&limits.dec_sup;
 	}
-	if (limits.az_defined==1) {
+	if (limits.az_defined==2) {
 		azrise_limit=&limits.az_rise;
-		azrise_limit=&limits.az_set;
+		azset_limit=&limits.az_set;
 	}
-	if (limits.elev_defined==1) {
+	if (limits.elev_defined==2) {
 		elevinf_limit=&limits.elev_inf;
 		elevsup_limit=&limits.elev_sup;
 	}
@@ -1171,9 +1171,9 @@ int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,cha
 	kcc=0;
 	for (kc=0;kc<ncoords;kc++) {
 	   code=Tcl_SplitList(interp,argvv[kc],&argccc,&argvvv);
-		if (argccc>=1) { coord1=atof(argvvv[0]); }
-		if (argccc>=2) { coord2=atof(argvvv[1]); }
-		if (argccc>=3) { coord3=atof(argvvv[2]); }
+		if (argccc>=1) { mctcl_decode_angle(interp,argvvv[0],&coord1); }
+		if (argccc>=2) { mctcl_decode_angle(interp,argvvv[1],&coord2); }
+		if (argccc>=3) { mctcl_decode_angle(interp,argvvv[2],&coord3); }
 		valid=1;
 		if (valid==1) {
 			kcoords[kcc]=kcc;
@@ -1203,14 +1203,33 @@ int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,cha
 			dec=coord1s[kc];
 			harise=coord2s[kc];
 			haset=coord3s[kc];
-			mc_hd2ah(harise*(DR),coord1s[kc]*(DR),latrad,&az,&h);
-			azs[2*kc+1]=az/(DR);
-			elevs[2*kc+1]=h/(DR);
-			kazs[2*kc+1]=2*kc+1;
-			mc_hd2ah(haset*(DR),coord1s[kc]*(DR),latrad,&az,&h);
-			azs[2*kc+2]=az/(DR);
-			elevs[2*kc+2]=h/(DR);
-			kazs[2*kc+2]=2*kc+2;
+			if (harise>haset) {
+				mc_hd2ah(harise*(DR),coord1s[kc]*(DR),latrad,&az,&h);
+				azs[2*kc+1]=az/(DR);
+				elevs[2*kc+1]=h/(DR);
+				kazs[2*kc+1]=2*kc+1;
+				mc_hd2ah(haset*(DR),coord1s[kc]*(DR),latrad,&az,&h);
+				azs[2*kc+2]=az/(DR);
+				elevs[2*kc+2]=h/(DR);
+				kazs[2*kc+2]=2*kc+2;
+			} else {
+				az=0; h=0;
+				if ((latitude<0)&&(dec>=0)) {
+					az=180; h=90+latitude-dec;
+				} else if ((latitude<0)&&(dec<0)) {
+					az=0; h=180+latitude+dec;
+				} else if ((latitude>0)&&(dec>=0)) {
+					az=180; h=180-latitude-dec;
+				} else if ((latitude>0)&&(dec<0)) {
+					az=0; h=90-latitude+dec;
+				}
+				azs[2*kc+1]=az;
+				elevs[2*kc+1]=h;
+				kazs[2*kc+1]=2*kc+1;
+				azs[2*kc+2]=az;
+				elevs[2*kc+2]=h;
+				kazs[2*kc+2]=2*kc+2;
+			}
 		}
 	} else {
 		for (kc=0;kc<ncoords;kc++) {
@@ -1227,7 +1246,25 @@ int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,cha
 		dummys[kc]=elevs[kazs[kc]];
 	}
 	for (kc=1;kc<=naz;kc++) {
-		elevs[kc]=dummys[kc];
+		az=azs[kc];
+		// Traite le cas d'azimuts egaux avec des elevation differentes
+		// On reassigne toutes elevation a la valeur max.
+		k1=kc; k2=kc;
+		for (kcc=kc+1;kcc<=naz;kcc++) {
+			if (azs[kcc]==az) { k2=kcc; } else { break; }
+		}
+		elev=dummys[kc];
+		if (k1<k2) {
+			for (kcc=k1;kcc<=k2;kcc++) {
+				if (dummys[kcc]>elev) {
+					elev=dummys[kcc];
+				}
+			}
+			for (kcc=k1;kcc<=k2;kcc++) {
+				dummys[kcc]=elev;
+			}
+		}
+		elevs[kc]=elev;
 		dummys[kc]=0.1;
 	}
 	azs[0]=azs[naz]-360.;
@@ -1266,7 +1303,10 @@ int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,cha
 			map_altaz[k2*map_naz+k1]=1;
 		}
 	}
-	//mc_saveintfits(map_altaz,map_naz,map_nelev,"c:\\d\\a\\map_altaz.fit");
+	if (strcmp(limits.filemap,"")!=0) {
+		sprintf(s,"%s_altaz1.fit",limits.filemap);
+		mc_saveintfits(map_altaz,map_naz,map_nelev,s);
+	}
 	/* --- map altaz->hadec ---*/
 	coslatitude=cos(latrad);
 	sinlatitude=sin(latrad);
@@ -1294,21 +1334,37 @@ int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,cha
 			map_hadec[k2*map_nha+k1]=(int)val;
 		}
 	}
-	//mc_saveintfits(map_hadec,map_nha,map_ndec,"c:\\d\\a\\map_hadec.fit");
+	if (strcmp(limits.filemap,"")!=0) {
+		sprintf(s,"%s_hadec1.fit",limits.filemap);
+		mc_saveintfits(map_hadec,map_nha,map_ndec,s);
+	}
 	/* --- ha limits ---*/
 	if ((harise_limit!=NULL)&&(haset_limit!=NULL)) {
 		// angle mort = haset_limit<ha<harise_limit
 		for (k1=0;k1<map_nha;k1++) {
 			//ha=k1*(map_nha-1)/360.;
 			ha=k1*dh_samp;
-			if (ha<=*haset_limit) { continue; }
-			if (ha>=*harise_limit) { continue; }
+			if ((ha<=180)&&(ha<=*haset_limit)) { continue; }
+			if ((ha>=180)&&(ha>=*harise_limit)) { continue; }
 			for (k2=0;k2<map_ndec;k2++) {
 				map_hadec[k2*map_nha+k1]=(int)0;
 			}
 		}
 	}
-	//mc_saveintfits(map_hadec,map_nha,map_ndec,"c:\\d\\a\\map_hadec2.fit");
+	/* --- dec limits ---*/
+	if ((decinf_limit!=NULL)&&(decsup_limit!=NULL)) {
+		for (k2=0;k2<map_ndec;k2++) {
+			dec=k2*dh_samp-90;
+			if ((dec>=*decinf_limit)&&(dec<=*decsup_limit)) { continue; }
+			for (k1=0;k1<map_nha;k1++) {
+				map_hadec[k2*map_nha+k1]=(int)0;
+			}
+		}
+	}
+	if (strcmp(limits.filemap,"")!=0) {
+		sprintf(s,"%s_hadec2.fit",limits.filemap);
+		mc_saveintfits(map_hadec,map_nha,map_ndec,s);
+	}
 	/* --- map hadec->altaz ---*/
 	for (k1=0;k1<map_naz;k1++) {
 		//az=k1*(map_naz-1)/360.;
@@ -1334,7 +1390,10 @@ int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,cha
 			map_altaz[k2*map_naz+k1]=(int)val;
 		}
 	}
-	//mc_saveintfits(map_altaz,map_naz,map_nelev,"c:\\d\\a\\map_altaz2.fit");
+	if (strcmp(limits.filemap,"")!=0) {
+		sprintf(s,"%s_altaz2.fit",limits.filemap);
+		mc_saveintfits(map_altaz,map_naz,map_nelev,s);
+	}
 	/* --- resultats altaz recheantillonnes ---*/
 	for (k1=0;k1<map_naz;k1++) {
 		for (k2=map_nelev-1;k2>0;k2--) {
@@ -3729,6 +3788,7 @@ int mctcl_horizon_init(Tcl_Interp *interp,int argc, char *argv[], mc_HORIZON_LIM
 	limit->elev_defined=0;
 	limit->elev_inf=0;
 	limit->elev_sup=90;
+	strcpy(limit->filemap,"");
 	if ((type_amers!=NULL)&&(list_amers!=NULL)) {
 		strcpy(type_amers,"ALTAZ");
 		strcpy(list_amers,"{0 0} {360 0}");
@@ -3745,6 +3805,7 @@ int mctcl_horizon_init(Tcl_Interp *interp,int argc, char *argv[], mc_HORIZON_LIM
 		if (strcmp(argv[k],"-decsup_limit")==0) { mctcl_decode_angle(interp,argv[k+1],&limit->dec_sup); limit->dec_defined++; }
 		if (strcmp(argv[k],"-elevinf_limit")==0)  { mctcl_decode_angle(interp,argv[k+1],&limit->elev_inf); limit->elev_defined++; }
 		if (strcmp(argv[k],"-elevsup_limit")==0) { mctcl_decode_angle(interp,argv[k+1],&limit->elev_sup); limit->elev_defined++; }
+		if (strcmp(argv[k],"-filemap")==0) { strcpy(limit->filemap,argv[k+1]); }
 	}
 	if (limit->ha_defined==2) {
 		if (limit->ha_rise<limit->ha_set) {
