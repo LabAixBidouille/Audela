@@ -5,7 +5,7 @@
   <title>Librairie TT : Manuel Utilisateur</title>
 </head>
 <body>
-<p class="date">Date de mise &#224; jour : 7 janvier 2011</p>
+<p class="date">Date de mise &#224; jour : 08 janvier 2011</p>
 <h1>LIB TT - Librairie de pr&#233;traitement d'images
 astronomiques</h1>
 <h1>Manuel Utilisateur</h1>
@@ -154,8 +154,8 @@ jpeg_quality]</td>
       <a href="#INVERT">INVERT</a> [mirror] [flip] [xy]
 [normaflux]<br>
       <a href="#MULT">MULT</a> [constant]<br>
-      <a href="#NORMGAIN">NORMGAIN</a> [normgain_value]<br>
       <a href="#NORMOFFSET">NORMOFFSET</a> [normoffset_value]<br>
+      <a href="ttus1-fr.htm#NORMGAIN">NORMGAIN</a> [normgain_value]<br>
       <a href="#OFFSET">OFFSET</a> [offset]<br>
       <a href="#OPT">OPT</a> [dark] [bias] [therm_kappa]
 [unsmearing]<br>
@@ -696,18 +696,18 @@ appara&#238;t lorsque (value-[offsetlog]) est n&#233;gatif (log
 non d&#233;fini).</p>
   </li>
   <li>
-    <h3><a name="NORMGAIN" id="NORMGAIN"></a>Fonction NORMGAIN</h3>
-    <p>Normalise, par une multiplication, la valeur du fond de ciel
-&#224; la valeur sp&#233;cifi&#233;e par [normgain_value]. Par
-d&#233;faut, la valeur de [normgain_value] vaut la valeur de fond
-de ciel de la premi&#232;re image.</p>
-  </li>
-  <li>
     <h3><a name="NORMOFFSET" id="NORMOFFSET"></a>Fonction
 NORMOFFSET</h3>
     <p>Normalise, par un offset, la valeur du fond de ciel &#224; la
 valeur sp&#233;cifi&#233;e par [normoffset_value]. Par
 d&#233;faut, la valeur de [normoffset_value] vaut z&#233;ro.</p>
+  </li>
+  <li>
+    <h3><a name="NORMGAIN" id="NORMGAIN"></a>Fonction NORMGAIN</h3>
+    <p>Normalise, par une multiplication, la valeur du fond de ciel
+&#224; la valeur sp&#233;cifi&#233;e par [normgain_value]. Par
+d&#233;faut, la valeur de [normgain_value] vaut la valeur de fond
+de ciel de la premi&#232;re image.</p>
   </li>
 </ol>
 <h2>3.4. Les fonctions 'filtres'</h2>
@@ -767,8 +767,8 @@ seuil [threshold]</p>
     <p>Convolution d'image par un filtre de type d&#233;termin&#233;
 par [kernel_type] :</p>
     <p>GAUSSIAN : pour un filtre gaussien.</p>
-    <p>MEXICAN : pour une ondelette de type chapeau mexicain.</p>
     <p>MORLET : pour une ondelette de type Morlet.</p>
+    <p>MEXICAN : pour une ondelette de type chapeau mexicain.</p>
     <p>La largeur des filtres est d&#233;termin&#233;e par la valeur
 de l'option [sigma]. Si ce param&#232;tre n'est pas
 pr&#233;cis&#233;, sigma sera d&#233;termin&#233;e &#224; partir
