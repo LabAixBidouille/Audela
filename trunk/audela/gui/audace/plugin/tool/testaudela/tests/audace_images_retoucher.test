@@ -163,5 +163,3 @@ test imaseries_optimisation_du_noir {optimisation du noir de rz_cfa_rgbr_8} -con
    set ::conf(fichier,compres) "0"
  } -result "2"
 
-
-
