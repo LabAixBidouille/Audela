@@ -1,0 +1,54 @@
+set visuNo 1
+set bufNo [::confVisu::getBufNo $visuNo]
+set w ".audace.prtr.usr"
+
+
+test aligner_automatique {aligner des translatees de m45_champ.fit} -constraints {AUDACE} -setup {
+   #--   configure l'extension et la compression
+   set ::conf(extension,defaut) ".fit"
+   set ::conf(fichier,compres) 0
+   file copy -force [file join $::conf(testaudela,rep_images) m45_champ.fit] $::audace(rep_images)
+   buf$bufNo load [file join $::audace(rep_images) m45_champ.fit]
+   set coords [list 491 320]
+   set attendu [lindex [buf$bufNo getpix $coords] 1]
+   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans1 . .fit TRANS trans_x=20 trans_y=20"
+   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans2 . .fit TRANS trans_x=20 trans_y=-20"
+   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans3 . .fit TRANS trans_x=-20 trans_y=20"
+   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans4 . .fit TRANS trans_x=-20 trans_y=-20"
+} -body {
+   #--   clic sur le menu "Images/Aligner/Aligner automatiquement..."
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,center)" "$::caption(audace,menu,recentrer_auto)..."
+   foreach img [list trans1 trans2 trans3 trans4] {
+      #--   selectionne chaque fichier
+      set k [lsearch [$w.choix getcolumns 1] $img]
+      ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+   }
+   #--   entre les coordonnees du centre
+   ::testaudela::putLabelEntry $w.funoptions.image_ref "./m45_champ.fit"
+   #-- saisit le nom de sortie
+   set name_out "recadre"
+   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $w.cmd.appliquer
+
+   #-- procédure de controle
+   set result 0
+   set coord2 [list 471 300]
+   #--   verifie l'existence de 5 images recadrees
+   for {set i 1} {$i <= 5} {incr i} {
+      set file [file join $::audace(rep_images) ${name_out}$i.fit]
+      if {[file exists $file]} {
+         incr result
+         buf$bufNo load $file
+         if {[lindex [buf$bufNo getpix $coord2] 1] eq $attendu} {incr result}
+         file delete $file
+      }
+   }
+   return $result
+} -cleanup {
+   #---  efface l'image
+   ::confVisu::deleteImage $visuNo
+   #--   clic sur le bouton Fermer
+   ::testaudela::clicButton $w.cmd.fermer
+   file delete m45_champ.fit trans1.fit trans2.fit trans3.fit trans4.fit
+} -result "10"
