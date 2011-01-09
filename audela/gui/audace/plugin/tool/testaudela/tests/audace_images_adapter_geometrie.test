@@ -1,0 +1,459 @@
+set visuNo 1
+set bufNo [::confVisu::getBufNo $visuNo]
+set w ".audace.prtr.usr"
+
+variable SETUP {
+   set ::conf(extension,defaut) .fit
+   set ::conf(fichier,compres) 0
+   file copy -force [file join $::conf(testaudela,rep_images) rz_rgbr_8.fit] $::audace(rep_images)
+   loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
+   set coords {245 100}
+   set attendu [lrange [buf$bufNo getpix $coords] 1 end]
+   set naxis1 [lindex [buf$bufNo getkwd NAXIS1] 1]
+   set naxis2 [lindex [buf$bufNo getkwd NAXIS2] 1]
+}
+
+variable CLEANUP {
+   #--   clic sur le bouton Fermer
+   ::testaudela::clicButton $w.cmd.fermer
+   #---  efface l'image
+   ::confVisu::deleteImage $visuNo
+   ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
+}
+
+variable SETUP2 {
+   set ::conf(extension,defaut) .fit
+   set ::conf(fichier,compres) 0
+   foreach file {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
+      file copy -force [file join $::conf(testaudela,rep_images) $file.fit] $::audace(rep_images)
+   }
+   loadima [file join $::audace(rep_images) rz_rgbr_30.fit]
+   set coords [list 227 108]
+   set attendu [lrange [buf$bufNo getpix $coords] 1 end]
+   #--   cherche les dimensions de l'image
+   set naxis1 [lindex [buf$bufNo getkwd NAXIS1] 1]
+   set naxis2 [lindex [buf$bufNo getkwd NAXIS2] 1]
+   #---  efface l'image
+   ::confVisu::deleteImage $visuNo
+}
+
+variable CLEANUP2 {
+   #--   clic sur le bouton Fermer
+   ::testaudela::clicButton $w.cmd.fermer
+   #---  efface l'image
+   ::confVisu::deleteImage $visuNo
+   set liste [list rz_rgbr_8 rz_rgbr_15 rz_rgbr_30 ${name_out}1 ${name_out}2 ${name_out}3]
+   ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
+   file delete "./${name_out}1r.jpg" "./${name_out}1g.jpg" "./${name_out}1b.jpg"
+   file delete "./${name_out}2r.jpg" "./${name_out}2g.jpg" "./${name_out}2b.jpg"
+   file delete "./${name_out}3r.jpg" "./${name_out}3g.jpg" "./${name_out}3b.jpg"
+}
+
+#-----------------------------------------------------------------------------
+#--   le test ROTATION a pour entree une image RGB a traiter
+#--   le test porte sur :
+#        -constance des intensites RGB lors du deplacement du point {227 108}
+#-----------------------------------------------------------------------------
+#--   test rotation +90°
+test rotation+90 {rotation de rz_rgbr_8} -constraints {AUDACE} -setup $SETUP -body {
+   #--   clic sur le menu "Images/Adapter la géométrie/Rotation 90° sens horaire"
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,geometry)" "$::caption(audace,menu,rot+90)..."
+   #-- saisit le nom de sortie
+   set name_out "rotation90"
+   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $w.cmd.appliquer
+
+   #--   controle
+   set result 0
+   set x "100"
+   set y [expr {int($naxis1-245+1)}]
+   #--   verifie le deplacement du point {245 100}
+   set mesure [lrange [buf$bufNo getpix [list $x $y]] 1 end]
+   if {$attendu eq "$mesure"} {incr result}
+   set liste [list rz_rgbr_8 $name_out]
+   return $result
+ } -cleanup $CLEANUP -result "1"
+
+ #--   test rotation -90°
+test rotation-90 {rotation de rz_rgbr_8} -constraints {AUDACE} -setup $SETUP -body {
+   #--   clic sur le menu "Images/Adapter la géométrie/Rotation 90° sens antihoraire"
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,geometry)" "$::caption(audace,menu,rot-90)..."
+   #-- saisit le nom de sortie
+   set name_out "rotation-90"
+   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $w.cmd.appliquer
+
+   #--   controle
+   set result 0
+   set x [expr {int($naxis2-100+1)}]
+   set y 245
+   #--   verifie le deplacement du point {245 100}
+   set mesure [lrange [buf$bufNo getpix [list $x $y]] 1 end]
+   if {$attendu eq "$mesure"} {incr result}
+   set liste [list rz_rgbr_8 $name_out]
+   return $result
+ } -cleanup $CLEANUP -result "1"
+
+#--   test rotation 180°
+test rotation180 {rotation de rz_rgbr_8} -constraints {AUDACE} -setup $SETUP -body {
+   #--   clic sur le menu "Images/Adapter la géométrie/Rotation 180"
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,geometry)" "$::caption(audace,menu,rot180)..."
+   #-- saisit le nom de sortie
+   set name_out "rotation180"
+   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $w.cmd.appliquer
+
+   #--   controle
+   set result 0
+   set x [expr {$naxis1-245+1}]
+   set y [expr {$naxis2-100+1}]
+   #--   verifie le deplacement du point {245 100}
+   set mesure [lrange [buf$bufNo getpix [list $x $y]] 1 end]
+   if {$attendu eq "$mesure"} {incr result}
+   set liste [list rz_rgbr_8 $name_out]
+   return $result
+ } -cleanup $CLEANUP -result "1"
+
+
+#-----------------------------------------------------------------------------
+#--   chaque test INVERT a pour entree trois images RGB a traiter
+#--   l'option jpegfile est testee systematiquement
+#--   le test porte sur :
+#        l'existence de 9 fichiers jpeg
+#        constance des intensites RGB lors du deplacement du point {227 108}
+#-----------------------------------------------------------------------------
+
+#--   test IMA/SERIES INVERT mirror
+test imaseries_mirror_x {miroir vertical de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constraints {AUDACE} -setup $SETUP2 -body {
+#--   clic sur le menu "Images/Adapter la géométrie/Miroir vertical..."
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,geometry)" "$::caption(audace,menu,miroir_x)..."
+   #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
+   foreach img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
+      set k [lsearch [$w.choix getcolumns 1] $img]
+      ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+   }
+   #--   selectionne l'option "Options"
+   ::testaudela::clicCheckButton $w.ttoptions.che "1"
+   #--   selectionne l'option "jpegfile"
+   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
+   #-- saisit le nom de sortie
+   set name_out "miroir_x"
+   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $w.cmd.appliquer
+   #--   miroir_x3 est chargée automatiquement
+
+   #--   procedure de controle
+   set result 0
+   #--   verifie le deplacement du point {227 108}
+   #--   naxis1=347 => colonne centrale=174
+   #--   point 227 => delta =227-174=53 ; symétrique = 174-53 =121
+   set x [ expr {int(174-(227-174))}]
+   set mesure [lrange [buf$bufNo getpix [list $x 108]] 1 end]
+   if {$mesure eq "$attendu"} {set result 1}
+   foreach file [list ${name_out}1r.jpg ${name_out}1g.jpg ${name_out}1b.jpg \
+      ${name_out}2r.jpg ${name_out}2g.jpg ${name_out}2b.jpg \
+       ${name_out}3r.jpg ${name_out}3g.jpg ${name_out}3b.jpg] {
+      if {[file exists $file]} {incr result}
+   }
+   return $result
+} -cleanup $CLEANUP2 -result "10"
+
+#--   nature du test IMA/SERIES INVERT flip :
+#     constance des intensites RGB lors du deplacement du point {227 108}
+test imaseries_mirror_y {miroir horizontal de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constraints {AUDACE} -setup $SETUP2 -body {
+   #--   clic sur le menu "Images/Adapter la géométrie/Miroir horizontal..."
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,geometry)" "$::caption(audace,menu,miroir_y)..."
+   #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
+   foreach img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
+      set k [lsearch [$w.choix getcolumns 1] $img]
+      ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+   }
+   #--   selectionne l'option "Options"
+   ::testaudela::clicCheckButton $w.ttoptions.che "1"
+   #--   selectionne l'option "jpegfile"
+   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
+   #-- saisit le nom de sortie
+   set name_out "miroir_y"
+   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $w.cmd.appliquer
+   #--   miroir_y3 est chargée automatiquement
+
+   #--   procedure de controle
+   set result 0
+   #--   verifie le deplacement du point {227 108}
+   #--   naxis2=231 => colonne centrale=116
+   #--   point 108 => delta =108-116=-8 ; symétrique = 116+8 =124
+   set y [ expr {int(116-(108-116))}]
+   set mesure [lrange [buf$bufNo getpix [list 227 $y]] 1 end]
+   if {$mesure eq "$attendu"} {set result 1}
+   foreach file [list ${name_out}1r.jpg ${name_out}1g.jpg ${name_out}1b.jpg \
+      ${name_out}2r.jpg ${name_out}2g.jpg ${name_out}2b.jpg \
+      ${name_out}3r.jpg ${name_out}3g.jpg ${name_out}3b.jpg] {
+      if {[file exists $file]} {incr result}
+   }
+   return $result
+} -cleanup $CLEANUP2 -result "10"
+
+#--   nature du test IMA/SERIES INVERT xy :
+#     constance des intensites RGB lors du deplacement du point {227 108}
+test imaseries_mirror_xy {miroir diagonal de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constraints {AUDACE} -setup $SETUP2 -body {
+   #--   clic sur le menu "Images/Adapter la géométrie/Miroir diagonal..."
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,geometry)" "$::caption(audace,menu,miroir_xy)..."
+   #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
+   foreach img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
+      set k [lsearch [$w.choix getcolumns 1] $img]
+      ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+   }
+   #--   selectionne l'option "Options"
+   ::testaudela::clicCheckButton $w.ttoptions.che "1"
+   #--   selectionne l'option "jpegfile"
+   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
+   #-- saisit le nom de sortie
+   set name_out "miroir_xy"
+   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $w.cmd.appliquer
+   #--   miroir_xy3 est chargée automatiquement
+
+   #--   procedure de controle
+    set result 0
+   #--   verifie le deplacement du point {227 108}
+   set mesure [lrange [buf$bufNo getpix {108 227}] 1 end]
+   if {$mesure eq "$attendu"} {set result 1}
+   foreach file [list ${name_out}1r.jpg ${name_out}1g.jpg ${name_out}1b.jpg \
+      ${name_out}2r.jpg ${name_out}2g.jpg ${name_out}2b.jpg \
+      ${name_out}3r.jpg ${name_out}3g.jpg ${name_out}3b.jpg] {
+      if {[file exists $file]} {incr result}
+   }
+   return $result
+} -cleanup $CLEANUP2 -result "10"
+
+#-----------------------------------------------------------------------------
+#--   chaque test TRANS a pour entree trois images RGB a traiter
+#--   l'option jpegfile est testee systematiquement
+#--   le test porte sur :
+#        l'existence de 9 fichiers jpeg
+#        constance des intensites RGB lors du deplacement du point {227 108}
+#-----------------------------------------------------------------------------
+
+#--   nature du test IMA/SERIES TRANS :
+#     constance des intensites RGB lors du deplacement du point {227 108}
+test imaseries_trans {translation de de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constraints {AUDACE} -setup $SETUP2 -body {
+   #--   clic sur le menu "Images/Adapter la géométrie/Translater..."
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,geometry)" "$::caption(audace,menu,translate)..."
+   #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
+   foreach img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
+      set k [lsearch [$w.choix getcolumns 1] $img]
+      ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+   }
+   #--saisit les entrees
+   ::testaudela::putLabelEntry $w.funoptions.trans_x -20
+   ::testaudela::putLabelEntry $w.funoptions.trans_y 20
+   #--   selectionne l'option "Options"
+  ::testaudela::clicCheckButton $w.ttoptions.che "1"
+   #--   selectionne l'option "jpegfile"
+   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
+   #-- saisit le nom de sortie
+   set name_out "translate"
+   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $w.cmd.appliquer
+   #--   translate3 est chargée automatiquement
+
+   #--   procedure de controle
+   set result 0
+   #--   verifie le deplacement du point {227 108}
+   set mesure [lrange [buf$bufNo getpix {207 128}] 1 end]
+   if {"$attendu" eq "$mesure"} {set result 1}
+   foreach file [list ${name_out}1r.jpg ${name_out}1g.jpg ${name_out}1b.jpg \
+      ${name_out}2r.jpg ${name_out}2g.jpg ${name_out}2b.jpg \
+      ${name_out}3r.jpg ${name_out}3g.jpg ${name_out}3b.jpg] {
+      if {[file exists $file]} {incr result}
+   }
+   return $result
+} -cleanup $CLEANUP2 -result "10"
+
+#-----------------------------------------------------------------------------
+#--   chaque test WINDOW et RESAMPLE a pour entree trois images RGB a traiter
+#--   l'option jpegfile est testee systematiquement
+#--   le test porte sur :
+#        l'existence de 9 fichiers jpeg
+#        les dimensions naxis1 et naxis2
+#-----------------------------------------------------------------------------
+
+#--   IMA/SERIES WINDOW
+test imaseries_window {fenetrage de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constraints {AUDACE} -setup $SETUP2 -body {
+   #--   clic sur le menu "Images/Adapter la géométrie/Recadrer..."
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,geometry)" "$::caption(audace,menu,window1)..."
+   #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
+   foreach file {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
+      set k [lsearch [$w.choix  getcolumns 1] $file]
+      ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+   }
+   #-- saisit les coordonnees de x1 y1 x2 y2
+   foreach dim {x1 y1 x2 y2} val [list 111 159 230 30] {
+       ::testaudela::putLabelEntry $w.funoptions.$dim $val
+   }
+   #--   selectionne l'option "Options"
+   ::testaudela::clicCheckButton $w.ttoptions.che "1"
+   #--   selectionne l'option "jpegfile"
+   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
+   #-- saisit le nom de sortie
+   set name_out "fenetre"
+   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $w.cmd.appliquer
+
+   #--   procedure de controle
+   set result 0
+   if {[lindex [buf$bufNo getkwd NAXIS1] 1] == "120"} {incr result}
+   if {[lindex [buf$bufNo getkwd NAXIS2] 1] == "130"} {incr result}
+   foreach file [list ${name_out}1r.jpg ${name_out}1g.jpg ${name_out}1b.jpg \
+      ${name_out}2r.jpg ${name_out}2g.jpg ${name_out}2b.jpg \
+      ${name_out}3r.jpg ${name_out}3g.jpg ${name_out}3b.jpg] {
+      if {[file exists $file]} {incr result}
+   }
+   return $result
+} -cleanup $CLEANUP2 -result "11"
+
+#--   test IMA/SERIES RESAMPLE :
+test imaseries_paramresample {re-echantillonage de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constraints {AUDACE} -setup $SETUP2 -body {
+   #--   clic sur le menu "Images/Adapter la géométrie/Re-échantillonner..."
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,geometry)" "$::caption(audace,menu,scale)..."
+   #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
+   foreach img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
+      set k [lsearch [$w.choix getcolumns 1] $img]
+      ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+   }
+   set ::prtr::paramresample "0.5 0 0 0 0.5 0"
+   #--   selectionne l'option "Options"
+   ::testaudela::clicCheckButton $w.ttoptions.che "1"
+   #--   selectionne l'option "jpegfile"
+   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
+   #-- saisit le nom de sortie
+   set name_out "resample"
+   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $w.cmd.appliquer
+   #--   dim3 est chargée automatiquement
+
+   #--   procedure de controle
+   set result 0
+  #--   compare les dimensions des images
+   if {[expr {$naxis1/[lindex [buf$bufNo getkwd NAXIS1] 1]}] == "2" } {incr result}
+   if {[expr {$naxis2/[lindex [buf$bufNo getkwd NAXIS2] 1]}] == "2" } {incr result}
+   foreach file [list ${name_out}1r.jpg ${name_out}1g.jpg ${name_out}1b.jpg \
+      ${name_out}2r.jpg ${name_out}2g.jpg ${name_out}2b.jpg \
+      ${name_out}3r.jpg ${name_out}3g.jpg ${name_out}3b.jpg] {
+      if {[file exists $file]} {incr result}
+   }
+   return $result
+} -cleanup $CLEANUP2 -result "11"
+
+#-----------------------------------------------------------------------------
+#--   le test ROT a pour entree une image RGB a traiter
+#--   l'option jpegfile est testee systematiquement
+#--   le test porte sur :
+#        l'existence de 3 fichiers jpeg
+#        constance des intensites RGB lors du deplacement du point {227 108}
+#        apres un demi-tour puis un autre demi_tour
+#-----------------------------------------------------------------------------
+
+#--   test IMA/SERIES ROT
+test imaseries_rotation1 {rotation de rz_rgbr_30} -constraints {AUDACE} -setup {
+   file copy -force [file join $::conf(testaudela,rep_images) rz_rgbr_30.fit] $::audace(rep_images)
+   loadima [file join $::audace(rep_images) rz_rgbr_30.fit]
+   set attendu [lrange [buf$bufNo getpix {227 108}] 1 end]
+} -body {
+   #--   clic sur le menu "Images/Adapter la géométrie/"Rotation libre (image tronquée)"..."
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,geometry)" "$::caption(audace,menu,rotation1)..."
+   #--   saisit les coordonnees du centre
+   ::testaudela::putLabelEntry $w.funoptions.x0 "173."
+   ::testaudela::putLabelEntry $w.funoptions.y0 "96.5"
+   #--   saisit l'angle de rotation
+   ::testaudela::putLabelEntry $w.funoptions.angle "180."
+   #--   selectionne l'option "Options"
+   ::testaudela::clicCheckButton $w.ttoptions.che "1"
+   #--   selectionne l'option "jpegfile"
+   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
+   #-- saisit le nom de sortie
+   set name_out "demi-tour"
+   ::testaudela::putLabelEntry $w.sortie.out $name_out
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $w.cmd.appliquer
+
+   #--   premier controle
+   set result 0
+   #--   verifie le deplacement du point {227 108}
+   set intensite1 [lrange [buf$bufNo getpix {121 87}] 1 end]
+   if {$attendu eq "$intensite1"} {incr result}
+
+   #--   selectionne demi-tour
+   set k [lsearch [$w.choix getcolumns 1] demi-tour]
+   ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+   #--   deselectionne l'option "jpegfile"
+   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "0"
+   #-- saisit le nom de sortie
+   ::testaudela::putLabelEntry $w.sortie.out "un_tour"
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $w.cmd.appliquer
+   #--   untour est chargée automatiquement
+   #--   second controle
+   #--   verifie le deplacement du point {227 108}
+   set intensite2 [lrange [buf$bufNo getpix {227 108}] 1 end]
+   if {$attendu eq "$intensite2"} {incr result}
+   foreach file [list demi-tourr.jpg demi-tourg.jpg demi-tourb.jpg] {
+      if {[file exists $file]} {incr result}
+   }
+   set liste [list rz_rgbr_30 demi-tour]
+   file delete "./${name_out}r.jpg" "./${name_out}g.jpg" "./${name_out}b.jpg"
+   return $result
+ } -cleanup $CLEANUP -result "5"
+
+#-----------------------------------------------------------------------------
+#--   le test ROTENTIERE a pour entree une image RGB a traiter
+#--   l'option jpegfile est testee systematiquement
+#--   le test porte sur :
+#        l'existence de 3 fichiers jpeg
+#        constance des intensites RGB lors du deplacement du point {227 108} apres un tour
+#     attention les naxis ne sont pas conserves
+#-----------------------------------------------------------------------------
+
+#--   test IMA/SERIES ROTENTIERE
+test imaseries_rotation2 {rotation de untour} -constraints {AUDACE} -setup {
+   loadima [file join $::audace(rep_images) un_tour.fit]
+} -body {
+   #--   clic sur le menu "Images/Adapter la géométrie/Rotation libre (image redimensionnée)"..."
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,geometry)" "$::caption(audace,menu,rotation2)..."
+   ::testaudela::putLabelEntry $w.funoptions.x0 "173.5"
+   ::testaudela::putLabelEntry $w.funoptions.y0 "96.5"
+   ::testaudela::putLabelEntry $w.funoptions.angle "360"
+   #--   selectionne l'option "Options"
+   ::testaudela::clicCheckButton $w.ttoptions.che "1"
+   #--   selectionne l'option "jpegfile"
+   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
+   #-- saisit le nom de sortie
+  set name_out "deux_tours"
+   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $w.cmd.appliquer
+
+   #--   procedure de controle
+   set result 0
+   #--   verifie le deplacement du point {227 108}
+   set mesure "[lrange [buf$bufNo getpix [list 226 108]] 1 end]"
+   if {$mesure eq [list 1304.000000 1192.000000 537.000000]} {incr result}
+   #--   les naxis ne sont pas conservés
+   foreach file [list ${name_out}r.jpg ${name_out}g.jpg ${name_out}b.jpg] {
+      if {[file exists $file]} {incr result}
+   }
+   set liste [ list un_tour deux_tours]
+   file delete "./${name_out}r.jpg" "./${name_out}g.jpg" "./${name_out}b.jpg"
+   return $result
+ } -cleanup $CLEANUP -result "4"
+
