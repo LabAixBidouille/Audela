@@ -2,7 +2,7 @@
 # Fichier : prtr.tcl
 # Description : Script dedie au menu deroulant pretraitement
 # Auteur : Raymond ZACHANTKE
-# Mise à jour $Id: prtr.tcl,v 1.8 2011-01-09 10:44:39 robertdelmas Exp $
+# Mise à jour $Id: prtr.tcl,v 1.9 2011-01-09 15:17:35 robertdelmas Exp $
 #
 
 namespace eval ::prtr {
@@ -210,11 +210,18 @@ namespace eval ::prtr {
       global caption
 
       switch -regexp $private(ima) {
-         CENTER   { set titre "$caption(audace,menu,images) - $caption(audace,menu,center)"}
-         EXTRACT  { set titre "$caption(audace,menu,analysis) - $caption(audace,menu,extract)"}
-         GEOMETRY { set titre "$caption(audace,menu,images) - $caption(audace,menu,geometry)"}
-         ROTATION { set titre "$caption(audace,menu,images) - $caption(audace,menu,geometry)"}
-         default  { set titre "$caption(audace,menu,images) - $caption(audace,menu,[string tolower $private(ima)])"}
+         ARIHTM      { set titre "$caption(audace,menu,images) - $caption(audace,menu,arithm)"}
+         CENTER      { set titre "$caption(audace,menu,images) - $caption(audace,menu,center)"}
+         EXTRACT     { set titre "$caption(audace,menu,analysis) - $caption(audace,menu,extract)"}
+         FILTER      { set titre "$caption(audace,menu,images) - $caption(audace,menu,filter)"}
+         GEOMETRY    { set titre "$caption(audace,menu,images) - $caption(audace,menu,geometry)"}
+         IMPROVE     { set titre "$caption(audace,menu,images) - $caption(audace,menu,improve)"}
+         MAITRE      { set titre "$caption(audace,menu,images) - $caption(audace,menu,maitre)"}
+         PRETRAITEE  { set titre "$caption(audace,menu,images) - $caption(audace,menu,pretraitee)"}
+         ROTATION    { set titre "$caption(audace,menu,images) - $caption(audace,menu,geometry)"}
+         TRANSFORM   { set titre "$caption(audace,menu,images)  - $caption(audace,menu,transform)"}
+         STACK       { set titre "$caption(audace,menu,images)  - $caption(audace,menu,pile)"}
+         default     { set titre "$caption(audace,menu,images) - $caption(audace,menu,[string tolower $private(ima)])"}
       }
       wm title $private(this) "$titre"
    }
