@@ -5,7 +5,7 @@
 #
 # @brief Outil pour l'analyse photométrique d'une image.
 #
-# $Id: photometrie.tcl,v 1.1 2011-01-09 14:37:35 jacquesmichelet Exp $
+# $Id: photometrie.tcl,v 1.2 2011-01-09 17:25:40 jacquesmichelet Exp $
 #
 
 namespace eval ::Photometrie {
@@ -447,6 +447,7 @@ namespace eval ::Photometrie {
         # Si le choix est réduit, pas d'écran de sélection
         if { [ llength $liste_choix ] == 1 } {
             set photometrie(choix_mode) manuel
+            destroy $tl
             return
         }
 
