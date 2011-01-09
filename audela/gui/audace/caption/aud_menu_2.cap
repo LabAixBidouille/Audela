@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_2.cap
-# Mise a jour $Id: aud_menu_2.cap,v 1.28 2010-12-18 15:30:21 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.cap,v 1.29 2011-01-09 10:25:12 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -28,9 +28,8 @@ set caption(audace,menu,seuils)                       "Thresholds"
 set caption(audace,menu,balance_rvb)                  "RGB Balance"
 set caption(audace,menu,zoom)                         "Zoom"
 set caption(audace,menu,plein_ecran)                  "Full Screen"
-set caption(audace,menu,miroir_x)                     "# Vertical Mirror"
-set caption(audace,menu,miroir_y)                     "# Horizontal Mirror"
-set caption(audace,menu,miroir_xy)                    "# Diagonal Mirror"
+set caption(audace,menu,display_miroir_x)             "# Vertical Mirror"
+set caption(audace,menu,display_miroir_y)             "# Horizontal Mirror"
 set caption(audace,menu,window)                       "Window"
 set caption(audace,menu,vision_nocturne)              "Night Vision"
 
@@ -73,8 +72,8 @@ set caption(seuilCouleur,pas_selection_blanc)         "No white area selected."
 set caption(seuilCouleur,pas_couleur)                 "This is not a color image."
 set caption(seuilCouleur,attention)                   "Warning"
 set caption(seuilCouleur,header_noimage)              "No Image in Memory."
-set caption(seuilCouleur,en_cours)                    "Preprocessing in progress..."
-set caption(seuilCouleur,fin_traitement)              "End of Preprocessing."
+set caption(seuilCouleur,en_cours)                    "# En cours... Patientez..."
+set caption(seuilCouleur,fin_traitement)              "End of Processing."
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -96,9 +95,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,balance_rvb)               "Balance RVB"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,plein_ecran)               "Plein écran"
-   set caption(audace,menu,miroir_x)                  "Inversion Gauche/Droite"
-   set caption(audace,menu,miroir_y)                  "Inversion Haut/Bas"
-   set caption(audace,menu,miroir_xy)                 "Inversion diagonale"
+   set caption(audace,menu,display_miroir_x)          "Inverser Gauche/Droite"
+   set caption(audace,menu,display_miroir_y)          "Inverser Haut/Bas"
    set caption(audace,menu,window)                    "Fenêtrer"
    set caption(audace,menu,vision_nocturne)           "Vision nocturne"
 
@@ -141,8 +139,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,pas_couleur)              "Ce n'est pas une image couleur."
    set caption(seuilCouleur,attention)                "Attention"
    set caption(seuilCouleur,header_noimage)           "Il n'y a pas d'image actuellement en mémoire."
-   set caption(seuilCouleur,en_cours)                 "Prétraitement en cours..."
-   set caption(seuilCouleur,fin_traitement)           "Fin du prétraitement."
+   set caption(seuilCouleur,en_cours)                 "En cours... Patientez..."
+   set caption(seuilCouleur,fin_traitement)           "Fin du traitement."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -164,9 +162,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,balance_rvb)               "Bilanciamento RVB"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,plein_ecran)               "Tutto schermo"
-   set caption(audace,menu,miroir_x)                  "# Specchio verticale"
-   set caption(audace,menu,miroir_y)                  "# Specchio orizzontale"
-   set caption(audace,menu,miroir_xy)                 "# Specchio diagonale"
+   set caption(audace,menu,display_miroir_x)          "# Specchio verticale"
+   set caption(audace,menu,display_miroir_y)          "# Specchio orizzontale"
    set caption(audace,menu,window)                    "Estrarre zona selezionata"
    set caption(audace,menu,vision_nocturne)           "Visione notturna"
 
@@ -209,8 +206,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,pas_couleur)              "Questa non e' una immagine a colori."
    set caption(seuilCouleur,attention)                "Attenzione"
    set caption(seuilCouleur,header_noimage)           "Nessuna immagine in memoria."
-   set caption(seuilCouleur,en_cours)                 "Pretrattamento in corso..."
-   set caption(seuilCouleur,fin_traitement)           "Fine del Pretrattamento."
+   set caption(seuilCouleur,en_cours)                 "# En cours... Patientez..."
+   set caption(seuilCouleur,fin_traitement)           "Fine del trattamento."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -232,9 +229,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,balance_rvb)               "Balance RVA"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,plein_ecran)               "Pantalla completa"
-   set caption(audace,menu,miroir_x)                  "# Espejo vertical"
-   set caption(audace,menu,miroir_y)                  "# Espejo horizontal"
-   set caption(audace,menu,miroir_xy)                 "# Espejo diagonal "
+   set caption(audace,menu,display_miroir_x)          "# Espejo vertical"
+   set caption(audace,menu,display_miroir_y)          "# Espejo horizontal"
    set caption(audace,menu,window)                    "Extraer Ventana"
    set caption(audace,menu,vision_nocturne)           "Visión nocturna"
 
@@ -277,8 +273,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,pas_couleur)              "No es una imagen en color."
    set caption(seuilCouleur,attention)                "Cuidado"
    set caption(seuilCouleur,header_noimage)           "No existe una imágen cargada en la memoria."
-   set caption(seuilCouleur,en_cours)                 "Preprocesando..."
-   set caption(seuilCouleur,fin_traitement)           "Fin de preprocesando."
+   set caption(seuilCouleur,en_cours)                 "# En cours... Patientez..."
+   set caption(seuilCouleur,fin_traitement)           "Fin de procesando."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -300,9 +296,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,balance_rvb)               "RGB Balance"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,plein_ecran)               "Vollschirm"
-   set caption(audace,menu,miroir_x)                  "# Verticale Spiegel"
-   set caption(audace,menu,miroir_y)                  "# Horizontale Spiegel"
-   set caption(audace,menu,miroir_xy)                 "# Diagonal Spiegel"
+   set caption(audace,menu,display_miroir_x)          "# Verticale Spiegel"
+   set caption(audace,menu,display_miroir_y)          "# Horizontale Spiegel"
    set caption(audace,menu,window)                    "Zone abschneiden"
    set caption(audace,menu,vision_nocturne)           "Nächtsicht"
 
@@ -345,8 +340,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,pas_couleur)              "Das ist kein Farbbild."
    set caption(seuilCouleur,attention)                "Achtung"
    set caption(seuilCouleur,header_noimage)           "Es ist jetzt kein Bild im Speicher."
-   set caption(seuilCouleur,en_cours)                 "Voraufbereitung im Gange..."
-   set caption(seuilCouleur,fin_traitement)           "Voraufbereitung Ende."
+   set caption(seuilCouleur,en_cours)                 "# En cours... Patientez..."
+   set caption(seuilCouleur,fin_traitement)           "Ende der Verarbeitung."
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -368,9 +363,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,balance_rvb)               "Equilíbrio RGB"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,plein_ecran)               "Ecrã inteiro"
-   set caption(audace,menu,miroir_x)                  "# Espelho vertical"
-   set caption(audace,menu,miroir_y)                  "# Espelho horizontal"
-   set caption(audace,menu,miroir_xy)                 "# Espelho diagonal"
+   set caption(audace,menu,display_miroir_x)          "# Espelho vertical"
+   set caption(audace,menu,display_miroir_y)          "# Espelho horizontal"
    set caption(audace,menu,window)                    "Janela"
    set caption(audace,menu,vision_nocturne)           "Visão nocturna"
 
@@ -413,8 +407,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,pas_couleur)              "Esta imagem não é a cores."
    set caption(seuilCouleur,attention)                "Aviso"
    set caption(seuilCouleur,header_noimage)           "Não existe imagem carregada em memória."
-   set caption(seuilCouleur,en_cours)                 "Pré-tratamento em curso..."
-   set caption(seuilCouleur,fin_traitement)           "Fim do pré-tratamento."
+   set caption(seuilCouleur,en_cours)                 "# En cours... Patientez..."
+   set caption(seuilCouleur,fin_traitement)           "Fim do tratamento."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -436,9 +430,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,balance_rvb)               "RGB balance"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,plein_ecran)               "Fuld skærm"
-   set caption(audace,menu,miroir_x)                  "# Vertikal spejl"
-   set caption(audace,menu,miroir_y)                  "# Horisontal spejl"
-   set caption(audace,menu,miroir_xy)                 "# Diagonal spejl"
+   set caption(audace,menu,display_miroir_x)          "# Vertikal spejl"
+   set caption(audace,menu,display_miroir_y)          "# Horisontal spejl"
    set caption(audace,menu,window)                    "Vindue"
    set caption(audace,menu,vision_nocturne)           "Nattesyn"
 
@@ -481,8 +474,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,pas_couleur)              "Dette er ikke et farvebillede."
    set caption(seuilCouleur,attention)                "Advarsel"
    set caption(seuilCouleur,header_noimage)           "Intet billede i memory."
-   set caption(seuilCouleur,en_cours)                 "Preprocessing er aktiv..."
-   set caption(seuilCouleur,fin_traitement)           "Slut på preprocessing."
+   set caption(seuilCouleur,en_cours)                 "# En cours... Patientez..."
+   set caption(seuilCouleur,fin_traitement)           "Slut på processing."
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -504,9 +497,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,balance_rvb)               "RGB Balance"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,plein_ecran)               "Full Screen"
-   set caption(audace,menu,miroir_x)                  "# Vertical Mirror"
-   set caption(audace,menu,miroir_y)                  "# Horizontal Mirror"
-   set caption(audace,menu,miroir_xy)                 "# Diagonal Mirror"
+   set caption(audace,menu,display_miroir_x)          "# Vertical Mirror"
+   set caption(audace,menu,display_miroir_y)          "# Horizontal Mirror"
    set caption(audace,menu,window)                    "Window"
    set caption(audace,menu,vision_nocturne)           "Night Vision"
 
@@ -549,8 +541,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,pas_couleur)              "This is not a color image."
    set caption(seuilCouleur,attention)                "Warning"
    set caption(seuilCouleur,header_noimage)           "No Image in Memory."
-   set caption(seuilCouleur,en_cours)                 "Preprocessing in progress..."
-   set caption(seuilCouleur,fin_traitement)           "End of Preprocessing."
+   set caption(seuilCouleur,en_cours)                 "# En cours... Patientez..."
+   set caption(seuilCouleur,fin_traitement)           "End of Processing."
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -572,9 +564,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,balance_rvb)               "RGB Balance"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,plein_ecran)               "Full Screen"
-   set caption(audace,menu,miroir_x)                  "# Vertical Mirror"
-   set caption(audace,menu,miroir_y)                  "# Horizontal Mirror"
-   set caption(audace,menu,miroir_xy)                 "# Diagonal Mirror"
+   set caption(audace,menu,display_miroir_x)          "# Vertical Mirror"
+   set caption(audace,menu,display_miroir_y)          "# Horizontal Mirror"
    set caption(audace,menu,window)                    "Window"
    set caption(audace,menu,vision_nocturne)           "Night Vision"
 
@@ -617,8 +608,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,pas_couleur)              "This is not a color image."
    set caption(seuilCouleur,attention)                "Warning"
    set caption(seuilCouleur,header_noimage)           "No Image in Memory."
-   set caption(seuilCouleur,en_cours)                 "Preprocessing in progress..."
-   set caption(seuilCouleur,fin_traitement)           "End of Preprocessing."
+   set caption(seuilCouleur,en_cours)                 "# En cours... Patientez..."
+   set caption(seuilCouleur,fin_traitement)           "End of Processing."
 
 }
 
