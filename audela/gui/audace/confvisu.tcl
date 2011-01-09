@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.172 2010-12-31 15:04:32 robertdelmas Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.173 2011-01-09 10:27:48 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -13,9 +13,6 @@ namespace eval ::confVisu {
    # @return rien
    #------------------------------------------------------------
    proc init { } {
-      variable private
-      global conf
-
       #--- je charge la librairie libfitstcl
       set oldPath "[pwd]"
       set catchResult [ catch {
@@ -26,124 +23,6 @@ namespace eval ::confVisu {
       if { $catchResult == 1 } {
          ::console::affiche_erreur "::confVisu::init $::errorInfo\n"
       }
-
-      #--- icone pour ouvrir
-      set private(openIcon) [image create photo openIcon -data {
-         R0lGODlhEQAPAKEDAAAAAAL/AP//mf///yH5BAEKAAMALAAAAAARAA8AAAIx
-         nI+pCr18wJCP0eYWNkB4DDLeSFJIR5biCLYXG8Sy/ArAjJvdjdMn3wuYOK5Q
-         5WgoAAA7
-      }]
-
-      #--- icone pour enregistrer
-      set private(saveIcon) [image create photo saveIcon -data {
-         R0lGODlhEAAQAMIEAAABAQCZ/wD9/fb/9////////////////yH5BAEKAAQA
-         LAAAAAAQABAAAAM6SLrcCjBK+QIYOGMgQL1aFn2haJHlAJzECpYuCrOrNUEB
-         ne/87rW5W0Rnk2yIt+OvllSxWsKJY8pIAAA7
-      }]
-
-      #--- icone pour enregistrer sous
-      set private(saveAsIcon) [image create photo saveAsIcon -data {
-         R0lGODlhEgASAMIEAAAAAACZ/wD9/dz//////////////////yH5BAEKAAcA
-         LAAAAAASABIAAANJeLrcDDBK+QIYOGMgQL1aFn2haJHlAJzLCpYuCrPKak1Q
-         QB+27v87Gy4S1OE2xeGwZiEQBM6o1FMDOK3S6cMJzUapVSXFQW4kAAA7
-      }]
-
-      #--- icone pour fermer
-      set private(closeIcon) [image create photo closeIcon -data {
-         R0lGODlhEQAQAKEDAAAAAACqAL//v////yH5BAEKAAMALAAAAAARABAAAAIy
-         nI+pO+B8QIuwyYrczRobIITaqIDheW4RyqofOsaXKQDBjeOzmPcbaOvpOMIh
-         R9bxQAoAOw==
-      }]
-
-      #--- icone pour nouvelle visu
-      set private(newVisuIcon) [image create photo newVisuIcon -data {
-         R0lGODlhEQAQAMIDAAAAAAAAgADh/////////////////////yH5BAEKAAAA
-         LAAAAAARABAAAAM1CLrcKzBKB0S4GFPJwx5gCHqOIIpkY4Ycp6yglWWv2Eak
-         fMFnyvCoz2kkHPoeQ2JpRqM4FQkAOw==
-      }]
-
-      #--- icone pour miroir horizontal
-      set private(mirrorHIcon) [image create photo mirrorHIcon -data {
-         R0lGODlhDwARAMIDAAAAAAAAgICA/////////////////////yH5BAEKAAQA
-         LAAAAAAPABEAAAMvSLrcGjDK0IK4WFBn83ZEp4GM9ZEPqjJA677uKp9oMNDc
-         oOOLre8g3w9YmkxkjQQAOw==
-      }]
-
-      #--- icone pour miroir vertical
-      set private(mirrorVIcon) [image create photo mirrorVIcon -data {
-         R0lGODlhEQAPAMIDAAAAAAAAgICA/////////////////////yH5BAEKAAQA
-         LAAAAAARAA8AAAM7SLrczuCp4GKjJOBll57CRnTZgAVCyHmDCaaYFbRulsJj
-         SZ93PO2vTWdWQ4lIs5Mox/hkKo4lREKVJAAAOw==
-      }]
-
-      #--- icone pour rotation 90° sens horaire
-      set private(rotaton90dHIcon) [image create photo rotaton90dHIcon -data {
-         R0lGODlhDgAOAKECAABVmi69/////////yH5BAEKAAIALAAAAAAOAA4AAAIj
-         lI8Jy5AGgpTrxUkdujjo03CfNY3gUlZbR5GYCZbPClvznRQAOw==
-      }]
-
-      #--- icone pour rotation 90° sens anti-horaire
-      set private(rotaton90dAHIcon) [image create photo rotaton90dAHIcon -data {
-         R0lGODlhDQAOAKECAABVmi69/////////yH5BAEKAAIALAAAAAANAA4AAAIk
-         lI95wA3JgpRvgTmruZgiHjiaAI5bRDFf562YuWXKEs6fjR8FADs=
-      }]
-
-      #--- icone pour rotation 180°
-      set private(rotaton180dIcon) [image create photo rotaton180dIcon -data {
-         R0lGODlhDgARAKEDAABVmi69/zC//////yH5BAEKAAMALAAAAAAOABEAAAIv
-         nI95wA06QJiTKUmDsAjn8HQOFUJeuTxnIqlkVzGv4X0gbZNlrbNxY7pBRMMi
-         ogAAOw==
-      }]
-
-      #--- icone pour sommaire de l'aide
-      set private(contentsIcon) [image create photo contentsIcon -data {
-         R0lGODlhEgASAOMIAAAzZgAzmQBmZgBmmQBmzEC/////APb/9///////////
-         /////////////////////yH5BAEKAA8ALAAAAAASABIAAARa8MlJq60ElHsz
-         GQBHeUQJiqRhlF+IAeVKyKUrkezMAsKEz6qdgHADwHS5jABBfBAOgQEwx2Nu
-         nAeEIEpdEq4PWFbLrX5fh7HADEZnvW2LJ3sW+WBxe93On0QAADs=
-      }]
-
-      #--- icone pour a propos de
-      set private(aboutIcon) [image create photo aboutIcon -data {
-         R0lGODlhDAAQAMIEAAAzZgCamgDM//b/9////////////////yH5BAEKAAQA
-         LAAAAAAMABAAAAMqSLrc8C84QSmQCthnsb7D8HkCqJUYYXaNyrZjm6Gye9Uq
-         gJ83/MI9XCMBADs=
-      }]
-
-      #--- icone pour zoom+
-      set private(openZoomPlus) [image create photo openZoomPlus -data {
-         R0lGODlhEAAQAMZGAAAAAFlfYGpucGpvcHJ2d3V5eXt/gH+Cg3+DhIGEhYOH
-         iIWJioaKi4eLjIiLi4mMjIuOj5KVlpOWl5OXlZmdnZuenZ6in6Smp6Snp66w
-         r66xr7K0tbK1srK2srK3srS4s7e6t7i7t77AwMLDxMbHxsrMyMrNyNDRzdDS
-         z9DS0NTV1dXZ0tnc1tvd2dzd2tzd3dze2d3f2uDh3uLi4OHj3+Lj4OLj4+Lk
-         3+Lk4OPl4OTl4+Xn4+fo5ejp5urq6Ovr6Ovr6evs6ezs6u3t6+3t7u7u7P//
-         ////////////////////////////////////////////////////////////
-         ////////////////////////////////////////////////////////////
-         ////////////////////////////////////////////////////////////
-         /////////////////////////////////////////////////yH5BAEKAH8A
-         LAAAAAAQABAAAAeRgH+Cg4SFhCoRAgEFFzaGgiIGGCguJhMOL4YqBiQ+Pz03
-         LB4LRIURGD5DQwBBNCsVG4UDKTwzMgAyNTAcEIUBLScAwsIwIAmFBSU3QUUA
-         RUI7GRKFGBMsOEIAQkA6ByOFNg8fKzE5OzoUDI8vDRYdIRoIDAAEmYVEGxAK
-         Et8E9PaPBr3wVy8goYH0DB70p/BRIAA7
-      }]
-
-      #--- icone pour zoom-
-      set private(openZoomMoins) [image create photo openZoomMoins -data {
-         R0lGODlhEAAQAMZGAAAAAFlfYGpucGpvcHJ2d3V5eXt/gH+Cg3+DhIGEhYOH
-         iIWJioaKi4eLjIiLi4mMjIuOj5KVlpOWl5OXlZmdnZuenZ6in6Smp6Snp66w
-         r66xr7K0tbK1srK2srK3srS4s7e6t7i7t77AwMLDxMbHxsrMyMrNyNDRzdDS
-         z9DS0NTV1dXZ0tnc1tvd2dzd2tzd3dze2d3f2uDh3uLi4OHj3+Lj4OLj4+Lk
-         3+Lk4OPl4OTl4+Xn4+fo5ejp5urq6Ovr6Ovr6evs6ezs6u3t6+3t7u7u7P//
-         ////////////////////////////////////////////////////////////
-         ////////////////////////////////////////////////////////////
-         ////////////////////////////////////////////////////////////
-         /////////////////////////////////////////////////yH5BAEKAH8A
-         LAAAAAAQABAAAAeOgH+Cg4SFhCoRAgEFFzaGgiIGGCguJhMOL4YqBiQ+Pz03
-         LB4LRIURGD5DQ0FBNCsVG4UDKTwzMrc1MBwQhQEtJwDBwTAgCYUFJTdBRcxC
-         OxkShRgTLDhC10A6ByOFNg8fKzE5OzoUDI8vDRYdIRoIDAAEmYVEGxAKEtwE
-         8fOPgy/75PkjBDDeQIL7Dj4KBAA7
-      }]
-
    }
 
    #------------------------------------------------------------
@@ -157,7 +36,7 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    proc create { { base "" } } {
       variable private
-      global audace conf
+      global audace conf panneau
 
       #--- je cherche le premier numero de visu disponible
       set visuNo 1
@@ -195,6 +74,13 @@ namespace eval ::confVisu {
       }
       if { ! [ info exists conf(fonction_transfert,visu$visuNo,mode) ] } {
          set conf(fonction_transfert,visu$visuNo,mode) "1"
+      }
+      if { ! [ info exists conf(afficheOutils) ] } {
+         set conf(afficheOutils) ""
+         foreach m [array names panneau menu_name,*] {
+            set namespace [ lindex [ split $m "," ] 1 ]
+            lappend conf(afficheOutils) $namespace ""
+         }
       }
 
       if { $base != "" } {
@@ -1732,7 +1618,7 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    #  stopTool
    #     arrete l'outil
-   #     si le nom de l'outil n'est pas precise, arrete l'outil courant dans le panneau de la visu
+   #     si le nom de l'outil n'est pas precise, arrete l'outil courant de la visu
    #     si l'outil est en cours de traitement, il n'est pas arrete
    #  @param  visuNo    numero de la visu
    #  @param  toolName  nom de l'outil a arreter
@@ -1754,7 +1640,7 @@ namespace eval ::confVisu {
          #--- j'arrete l'outil
          set result [ $toolName\::stopTool $visuNo ]
          if { $result != "-1" } {
-            #--- je masque le panneau de l'outil si c'est l'outil courant de la visu
+            #--- je masque l'outil si c'est l'outil courant de la visu
             if { $private($visuNo,currentTool) == $toolName } {
                grid forget $private($visuNo,This).tool
             }
@@ -1808,7 +1694,7 @@ namespace eval ::confVisu {
 
       #--- j'arrete l'outil si ce n'est pas deja fait
       stopTool $visuNo $toolName
-      #--- je mets a jour la variable currentTool si c'est l'outil courant dans le panneau de la visu
+      #--- je mets a jour la variable currentTool si c'est l'outil courant de la visu
       if { $private($visuNo,currentTool) == $toolName } {
          set private($visuNo,currentTool) ""
       }
@@ -2247,7 +2133,7 @@ namespace eval ::confVisu {
 
    proc createMenu { visuNo } {
       variable private
-      global audace caption conf panneau
+      global audace caption conf
 
       #--- Creation du menu contextuel
       ::confVisu::createPopupMenuButton3 $visuNo
@@ -2272,22 +2158,30 @@ namespace eval ::confVisu {
             -compound left -image $::confVisu::private(saveAsIcon)
 
          Menu_Separator $visuNo "$caption(audace,menu,file)"
-         Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,entete)" "::keyword::header $visuNo"
+         Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,entete)" \
+            "::keyword::header $visuNo" \
+            -compound left -image $::confVisu::private(fitsHeaderIcon)
 
          Menu_Separator $visuNo "$caption(audace,menu,file)"
          #--- Affichage des plugins de type tool et de fonction file du menu deroulant Fichier
          ::confVisu::displayPlugins $visuNo file file
 
          Menu_Separator $visuNo "$caption(audace,menu,file)"
-         Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,nouveau_script)..." "::audace::newScript"
-         Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,editer_script)..." "::audace::editScript"
-         Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,lancer_script)..." "::audace::runScript"
+         Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,nouveau_script)..." \
+            "::audace::newScript"
+         Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,editer_script)..." \
+            "::audace::editScript"
+         Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,lancer_script)..." \
+            "::audace::runScript"
 
          Menu_Separator $visuNo "$caption(audace,menu,file)"
-         Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,quitter)" "::audace::quitter"
+         Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,quitter)" \
+            "::audace::quitter" \
+            -compound left -image $::confVisu::private(exitIcon)
 
          Menu           $visuNo "$caption(audace,menu,display)"
-         Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,nouvelle_visu)" "::confVisu::create" \
+         Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,nouvelle_visu)" \
+            "::confVisu::create" \
             -compound left -image $::confVisu::private(newVisuIcon)
 
          Menu_Separator $visuNo "$caption(audace,menu,display)"
@@ -2330,17 +2224,19 @@ namespace eval ::confVisu {
 
          Menu_Separator $visuNo "$caption(audace,menu,display)"
          Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,plein_ecran)" \
-            "::confVisu::private($visuNo,fullscreen)" "::confVisu::setFullScreen $visuNo"
+            "::confVisu::private($visuNo,fullscreen)" "::confVisu::setFullScreen $visuNo" \
+            -compound left -image $::confVisu::private(fullScreenIcon)
 
          Menu_Separator $visuNo "$caption(audace,menu,display)"
-         Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,miroir_x)" \
+         Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,display_miroir_x)" \
             "::confVisu::private($visuNo,mirror_x)" "::confVisu::setMirrorX $visuNo" \
-            -compound left -image $::confVisu::private(mirrorVIcon)
-         Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,miroir_y)" \
+            -compound left -image $::confVisu::private(mirrorHDisplayIcon)
+         Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,display_miroir_y)" \
             "::confVisu::private($visuNo,mirror_y)" "::confVisu::setMirrorY $visuNo" \
-            -compound left -image $::confVisu::private(mirrorHIcon)
+            -compound left -image $::confVisu::private(mirrorVDisplayIcon)
          Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,window)" \
-            "::confVisu::private($visuNo,window)" "::confVisu::setWindow $visuNo"
+            "::confVisu::private($visuNo,window)" "::confVisu::setWindow $visuNo" \
+            -compound left -image $::confVisu::private(windowDisplayIcon)
 
          Menu_Separator $visuNo "$caption(audace,menu,display)"
          Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
@@ -2350,7 +2246,8 @@ namespace eval ::confVisu {
                   destroy $audace(base).selectColor \
                   ::confColor::run $visuNo \
                } \
-            "
+            " \
+            -compound left -image $::confVisu::private(nightVisionIcon)
 
          Menu_Separator $visuNo "$caption(audace,menu,display)"
          #--- Affichage des plugins de type tool et de fonction display du menu deroulant Affichage
@@ -2363,67 +2260,62 @@ namespace eval ::confVisu {
             set function [lindex $liste_des_fonctions $i]
             Menu_Command $visuNo "$caption(audace,menu,maitre)" "$function..." "::prtr::run \"$function\" "
          }
+         Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,convertir)"
+         set liste_des_fonctions [::conv2::CONVERSIONFunctions 0]
+         set withIcon [list $caption(audace,menu,rvb2r+v+b) $caption(audace,menu,r+v+b2rvb)]
+         for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
+            set function [lindex $liste_des_fonctions $i]
+            if { $function ni $withIcon} {
+               Menu_Command $visuNo "$caption(audace,menu,convertir)" "$function..." "::conv2::run \"$function\" "
+            } else {
+               switch -exact $function \
+                  "$caption(audace,menu,rvb2r+v+b)" { set cmdIcon $::confVisu::private(rgb2r+g+bIcon) } \
+                  "$caption(audace,menu,r+v+b2rvb)" { set cmdIcon $::confVisu::private(r+g+b2rgbIcon) }
+               Menu_Command $visuNo "$caption(audace,menu,convertir)" "$function..." "::conv2::run \"$function\" " \
+                  -compound left -image $cmdIcon
+            }
+         }
          set function [lindex [::prtr::PRETRAITEEFunctions 0] end]
          Menu_Command   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,pretraitee)" "::prtr::run \"$function\" "
-         Menu_Command   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,recentrer)..." \
-            { ::traiteWindow::run "serie_recentrer" "$audace(base).traiteWindow" }
-
          #--- Affichage des plugins de type tool et de fonction images du menu deroulant Images
          ::confVisu::displayPlugins $visuNo images images
 
-         Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,filtrer)"
-         Menu_Command   $visuNo "$caption(audace,menu,filtrer)" "$caption(audace,menu,masque_flou)..." \
-            { ::traiteFilters::run "$caption(audace,menu,filtrer)" "$caption(audace,menu,masque_flou)" \
-            "$audace(base).traiteFilters" }
-         Menu_Command   $visuNo "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_passe-bas)..." \
-            { ::traiteFilters::run "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_passe-bas)" \
-            "$audace(base).traiteFilters" }
-         Menu_Command   $visuNo "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_passe-haut)..." \
-            { ::traiteFilters::run "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_passe-haut)" \
-            "$audace(base).traiteFilters" }
-         Menu_Command   $visuNo "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_median)..." \
-            { ::traiteFilters::run "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_median)" \
-            "$audace(base).traiteFilters" }
-         Menu_Command   $visuNo "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_minimum)..." \
-            { ::traiteFilters::run "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_minimum)" \
-            "$audace(base).traiteFilters" }
-         Menu_Command   $visuNo "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_maximum)..." \
-            { ::traiteFilters::run "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_maximum)" \
-            "$audace(base).traiteFilters" }
+         Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,center)"
+         Menu_Command   $visuNo "$caption(audace,menu,center)" "$caption(audace,menu,recentrer_manu)..." \
+            { ::traiteWindow::run "aligner" "$audace(base).traiteWindow" }
+         set function [lindex [::prtr::CENTERFunctions 0] end]
+         Menu_Command   $visuNo "$caption(audace,menu,center)" "$caption(audace,menu,recentrer_auto)..." \
+            "::prtr::run \"$function\" "
 
-         Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,convoluer)"
-         Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(audace,menu,tfd)..." \
-            { ::traiteFilters::run "$caption(audace,menu,convoluer)" "$caption(audace,menu,tfd)" \
-            "$audace(base).traiteFilters" }
-         Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(audace,menu,tfdi)..." \
-            { ::traiteFilters::run "$caption(audace,menu,convoluer)" "$caption(audace,menu,tfdi)" \
-            "$audace(base).traiteFilters" }
-         Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(audace,menu,acorr)..." \
-            { ::traiteFilters::run "$caption(audace,menu,convoluer)" "$caption(audace,menu,acorr)" \
-            "$audace(base).traiteFilters" }
-         Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(audace,menu,icorr)..." \
-            { ::traiteFilters::run "$caption(audace,menu,convoluer)" "$caption(audace,menu,icorr)" \
-            "$audace(base).traiteFilters" }
-         Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(audace,menu,convolution)..." \
-            { ::traiteFilters::run "$caption(audace,menu,convoluer)" "$caption(audace,menu,convolution)" \
-            "$audace(base).traiteFilters" }
-
-         Menu_Separator $visuNo "$caption(audace,menu,images)"
-         Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,rotation)"
-         set liste_des_fonctions [::prtr::ROTATIONFunctions 0]
+         Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,pile)"
+         set liste_des_fonctions [::prtr::PILEFunctions 0]
          for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
             set function [lindex $liste_des_fonctions $i]
-            if { $function == $caption(audace,menu,rot+90) } {
-               Menu_Command $visuNo "$caption(audace,menu,rotation)" "$function..." "::prtr::run \"$function\" " \
-                  -compound left -image $::confVisu::private(rotaton90dHIcon)
-            } elseif { $function == $caption(audace,menu,rot180) } {
-               Menu_Command $visuNo "$caption(audace,menu,rotation)" "$function..." "::prtr::run \"$function\" " \
-                  -compound left -image $::confVisu::private(rotaton180dIcon)
-            } elseif { $function == $caption(audace,menu,rot-90) } {
-               Menu_Command $visuNo "$caption(audace,menu,rotation)" "$function..." "::prtr::run \"$function\" " \
-                  -compound left -image $::confVisu::private(rotaton90dAHIcon)
+            Menu_Command $visuNo "$caption(audace,menu,pile)" "$function..." "::prtr::run \"$function\" "
+         }
+
+         Menu_Separator $visuNo "$caption(audace,menu,images)"
+         Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,geometry)"
+         set liste_des_fonctions [::prtr::ROTATIONFunctions 0]
+         append liste_des_fonctions " " [::prtr::GEOMETRYFunctions 0]
+         set withIcon [list $caption(audace,menu,rot+90) $caption(audace,menu,rot-90) \
+            $caption(audace,menu,rot180) $caption(audace,menu,miroir_x) $caption(audace,menu,miroir_y) \
+            $caption(audace,menu,miroir_xy) $caption(audace,menu,scale)]
+         for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
+            set function [lindex $liste_des_fonctions $i]
+            if { $function ni $withIcon} {
+               Menu_Command $visuNo "$caption(audace,menu,geometry)" "$function..." "::prtr::run \"$function\" "
             } else {
-               Menu_Command $visuNo "$caption(audace,menu,rotation)" "$function..." "::prtr::run \"$function\" "
+               switch -exact $function \
+                  "$caption(audace,menu,rot+90)"    { set cmdIcon $::confVisu::private(rotation90dHIcon) } \
+                  "$caption(audace,menu,rot-90)"    { set cmdIcon $::confVisu::private(rotation90dAHIcon) } \
+                  "$caption(audace,menu,rot180)"    { set cmdIcon $::confVisu::private(rotation180dIcon) } \
+                  "$caption(audace,menu,miroir_x)"  { set cmdIcon $::confVisu::private(mirrorVIcon) } \
+                  "$caption(audace,menu,miroir_y)"  { set cmdIcon $::confVisu::private(mirrorHIcon) } \
+                  "$caption(audace,menu,miroir_xy)" { set cmdIcon $::confVisu::private(mirrorDIcon) } \
+                  "$caption(audace,menu,scale)"     { set cmdIcon $::confVisu::private(resampleIcon) }
+               Menu_Command $visuNo "$caption(audace,menu,geometry)" "$function..." "::prtr::run \"$function\" " \
+                  -compound left -image $cmdIcon
             }
          }
          Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,improve)"
@@ -2434,48 +2326,40 @@ namespace eval ::confVisu {
          }
          Menu_Command   $visuNo "$caption(audace,menu,improve)" "$caption(audace,menu,scar)" "scar $visuNo"
          Menu_Command   $visuNo "$caption(audace,menu,improve)" "$caption(audace,menu,subfitgauss)" "subfitgauss $visuNo"
-         Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,convertir)"
-         set liste_des_fonctions [::conv2::CONVERSIONFunctions 0]
-         for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
-            set function [lindex $liste_des_fonctions $i]
-            Menu_Command $visuNo "$caption(audace,menu,convertir)" "$function..." "::conv2::run \"$function\" "
-         }
-
-         Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,pile)"
-         set liste_des_fonctions [::prtr::PILEFunctions 0]
-         for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
-            set function [lindex $liste_des_fonctions $i]
-            Menu_Command $visuNo "$caption(audace,menu,pile)" "$function..." "::prtr::run \"$function\" "
-         }
-
-         Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,transform)"
-         set liste_des_fonctions [::prtr::TRANSFORMFunctions 0]
-         for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
-            set function [lindex $liste_des_fonctions $i]
-            if { $function == $caption(audace,menu,miroir_x) } {
-               Menu_Command $visuNo "$caption(audace,menu,transform)" "$function..." "::prtr::run \"$function\" " \
-                  -compound left -image $::confVisu::private(mirrorVIcon)
-            } elseif { $function == $caption(audace,menu,miroir_y) } {
-               Menu_Command $visuNo "$caption(audace,menu,transform)" "$function..." "::prtr::run \"$function\" " \
-                  -compound left -image $::confVisu::private(mirrorHIcon)
-            } else {
-               Menu_Command $visuNo "$caption(audace,menu,transform)" "$function..." "::prtr::run \"$function\" "
-            }
-         }
-
          Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,arithm)"
          set liste_des_fonctions [::prtr::ARITHMFunctions 0]
          for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
             set function [lindex $liste_des_fonctions $i]
             Menu_Command $visuNo "$caption(audace,menu,arithm)" "$function..." "::prtr::run \"$function\" "
          }
-
-         Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,amel)"
-         set liste_des_fonctions [::prtr::AMELFunctions 0]
+         Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,filter)"
+         set liste_des_fonctions [::prtr::FILTERFunctions 0]
          for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
             set function [lindex $liste_des_fonctions $i]
-            Menu_Command $visuNo "$caption(audace,menu,amel)" "$function..." "::prtr::run \"$function\" "
+            Menu_Command $visuNo "$caption(audace,menu,filter)" "$function..." "::prtr::run \"$function\" "
          }
+         Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,transform)"
+         Menu_Command   $visuNo "$caption(audace,menu,transform)" "$caption(audace,menu,tfd)..." \
+            { ::traiteFilters::run "$caption(audace,menu,transform)" "$caption(audace,menu,tfd)" \
+            "$audace(base).traiteFilters" }
+         Menu_Command   $visuNo "$caption(audace,menu,transform)" "$caption(audace,menu,tfdi)..." \
+            { ::traiteFilters::run "$caption(audace,menu,transform)" "$caption(audace,menu,tfdi)" \
+            "$audace(base).traiteFilters" }
+         Menu_Command   $visuNo "$caption(audace,menu,transform)" "$caption(audace,menu,acorr)..." \
+            { ::traiteFilters::run "$caption(audace,menu,transform)" "$caption(audace,menu,acorr)" \
+            "$audace(base).traiteFilters" }
+         Menu_Command   $visuNo "$caption(audace,menu,transform)" "$caption(audace,menu,icorr)..." \
+            { ::traiteFilters::run "$caption(audace,menu,transform)" "$caption(audace,menu,icorr)" \
+            "$audace(base).traiteFilters" }
+         set liste_des_fonctions [::prtr::TRANSFORMFunctions 0]
+         for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
+            set function [lindex $liste_des_fonctions $i]
+            Menu_Command $visuNo "$caption(audace,menu,transform)" "$function..." "::prtr::run \"$function\" "
+         }
+         Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,convoluer)"
+         Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(audace,menu,convolution)" \
+            { ::traiteFilters::run "$caption(audace,menu,convoluer)" "$caption(audace,menu,convolution)" \
+            "$audace(base).traiteFilters" }
 
          Menu           $visuNo "$caption(audace,menu,analysis)"
          Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,histo)" "::audace::Histo $visuNo"
@@ -2503,10 +2387,18 @@ namespace eval ::confVisu {
             "::carte::showMapFromBuffer buf$audace(bufNo)"
 
          Menu           $visuNo "$caption(audace,menu,acquisition)"
+         Menu_Command   $visuNo "$caption(audace,menu,acquisition)" "$caption(audace,menu,connexion)..." \
+            "::confCam::run" \
+            -compound left -image $::confVisu::private(cameraIcon)
+         Menu_Separator $visuNo "$caption(audace,menu,acquisition)"
          #--- Affichage des plugins de type tool et de fonction acquisition du menu deroulant Camera
          ::confVisu::displayPlugins $visuNo acquisition acquisition
 
          Menu           $visuNo "$caption(audace,menu,aiming)"
+         Menu_Command   $visuNo "$caption(audace,menu,aiming)" "$caption(audace,menu,connexion)..." \
+            "::confTel::run" \
+            -compound left -image $::confVisu::private(telescopIcon)
+         Menu_Separator $visuNo "$caption(audace,menu,aiming)"
          #--- Affichage des plugins de type tool et de fonction aiming du menu deroulant Telescope
          ::confVisu::displayPlugins $visuNo aiming aiming
 
@@ -2528,15 +2420,19 @@ namespace eval ::confVisu {
          Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,type_fenetre)..." \
             { ::confTypeFenetre::run "$audace(base).confTypeFenetre" }
          Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,apparence)..." \
-            "::confColor::run $visuNo"
+            "::confColor::run $visuNo" \
+         -compound left -image $::confVisu::private(colorsIcon)
          Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,police)..." \
-            "::confFont::run $visuNo"
+            "::confFont::run $visuNo" \
+            -compound left -image $::confVisu::private(fontsIcon)
 
          Menu_Separator $visuNo "$caption(audace,menu,setup)"
          Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,camera)..." \
-            "::confCam::run"
+            "::confCam::run" \
+            -compound left -image $::confVisu::private(cameraIcon)
          Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,monture)..." \
-            "::confTel::run"
+            "::confTel::run" \
+            -compound left -image $::confVisu::private(telescopIcon)
          Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,liaison)..." \
             "::confLink::run"
          Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,optique)..." \
@@ -2622,7 +2518,9 @@ namespace eval ::confVisu {
             -compound left -image $::confVisu::private(saveAsIcon)
 
          Menu_Separator $visuNo "$caption(audace,menu,file)"
-         Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,entete)" "::keyword::header $visuNo"
+         Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,entete)" \
+            "::keyword::header $visuNo" \
+            -compound left -image $::confVisu::private(fitsHeaderIcon)
 
          Menu_Separator $visuNo "$caption(audace,menu,file)"
          #--- Affichage des plugins multivisu de type tool et de fonction file du menu deroulant Fichier
@@ -2634,7 +2532,8 @@ namespace eval ::confVisu {
             -compound left -image $::confVisu::private(closeIcon)
 
          Menu           $visuNo "$caption(audace,menu,display)"
-         Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,nouvelle_visu)" "::confVisu::create" \
+         Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,nouvelle_visu)" \
+            "::confVisu::create" \
             -compound left -image $::confVisu::private(newVisuIcon)
 
          Menu_Separator $visuNo "$caption(audace,menu,display)"
@@ -2677,17 +2576,19 @@ namespace eval ::confVisu {
 
          Menu_Separator $visuNo "$caption(audace,menu,display)"
          Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,plein_ecran)" \
-            "::confVisu::private($visuNo,fullscreen)" "::confVisu::setFullScreen $visuNo"
+            "::confVisu::private($visuNo,fullscreen)" "::confVisu::setFullScreen $visuNo" \
+            -compound left -image $::confVisu::private(fullScreenIcon)
 
          Menu_Separator $visuNo "$caption(audace,menu,display)"
-         Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,miroir_x)" \
+         Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,display_miroir_x)" \
             "::confVisu::private($visuNo,mirror_x)" "::confVisu::setMirrorX $visuNo" \
-            -compound left -image $::confVisu::private(mirrorVIcon)
-         Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,miroir_y)" \
+            -compound left -image $::confVisu::private(mirrorHDisplayIcon)
+         Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,display_miroir_y)" \
             "::confVisu::private($visuNo,mirror_y)" "::confVisu::setMirrorY $visuNo" \
-            -compound left -image $::confVisu::private(mirrorHIcon)
+            -compound left -image $::confVisu::private(mirrorVDisplayIcon)
          Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,window)" \
-            "::confVisu::private($visuNo,window)" "::confVisu::setWindow $visuNo"
+            "::confVisu::private($visuNo,window)" "::confVisu::setWindow $visuNo" \
+            -compound left -image $::confVisu::private(windowDisplayIcon)
 
          Menu_Separator $visuNo "$caption(audace,menu,display)"
          Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
@@ -2697,7 +2598,8 @@ namespace eval ::confVisu {
                   destroy $audace(base).selectColor \
                   ::confColor::run $visuNo \
                } \
-            "
+            " \
+            -compound left -image $::confVisu::private(nightVisionIcon)
 
          Menu_Separator $visuNo "$caption(audace,menu,display)"
          #--- Affichage des plugins multivisu de type tool et de fonction display du menu deroulant Affichage
@@ -2713,10 +2615,18 @@ namespace eval ::confVisu {
          Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,phot)" "photom $visuNo"
 
          Menu           $visuNo "$caption(audace,menu,acquisition)"
+         Menu_Command   $visuNo "$caption(audace,menu,acquisition)" "$caption(audace,menu,connexion)..." \
+            "::confCam::run" \
+            -compound left -image $::confVisu::private(cameraIcon)
+         Menu_Separator $visuNo "$caption(audace,menu,acquisition)"
          #--- Affichage des plugins multivisu de type tool et de fonction acquisition du menu deroulant Camera
          ::confVisu::displayPlugins $visuNo acquisition acquisition
 
          Menu           $visuNo "$caption(audace,menu,aiming)"
+         Menu_Command   $visuNo "$caption(audace,menu,aiming)" "$caption(audace,menu,connexion)..." \
+            "::confTel::run" \
+            -compound left -image $::confVisu::private(telescopIcon)
+         Menu_Separator $visuNo "$caption(audace,menu,aiming)"
          #--- Affichage des plugins multivisu de type tool et de fonction aiming du menu deroulant Telescope
          ::confVisu::displayPlugins $visuNo aiming aiming
 
@@ -2726,7 +2636,7 @@ namespace eval ::confVisu {
 
    proc refreshMenu { visuNo } {
       variable private
-      global audace caption conf panneau
+      global audace caption conf
 
       #--- Destruction de la fenetre du menu contextuel de la visu principale (visuNo = 1)
       destroy [ winfo toplevel $::confVisu::private($visuNo,hCanvas) ].menuButton3
@@ -2748,7 +2658,8 @@ namespace eval ::confVisu {
          -compound left -image $::confVisu::private(saveAsIcon)
       Menu_Separator $visuNo "$caption(audace,menu,file)"
       Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,entete)" \
-         "::keyword::header $visuNo"
+         "::keyword::header $visuNo" \
+         -compound left -image $::confVisu::private(fitsHeaderIcon)
       Menu_Separator $visuNo "$caption(audace,menu,file)"
       #--- Affichage des plugins de type tool et de fonction file du menu deroulant Fichier
       ::confVisu::displayPlugins $visuNo file file
@@ -2761,14 +2672,16 @@ namespace eval ::confVisu {
          "::audace::runScript"
       Menu_Separator $visuNo "$caption(audace,menu,file)"
       Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,quitter)" \
-         "::audace::quitter"
+         "::audace::quitter" \
+         -compound left -image $::confVisu::private(exitIcon)
 
       #--- Je commence par supprimer le menu cascade du menu Affichage
       Menu_Delete $visuNo "$caption(audace,menu,fcttransfert_titre)" all
       #--- Je supprime toutes les entrees du menu Affichage
       Menu_Delete $visuNo "$caption(audace,menu,display)" entries
       #--- Rafraichissement du menu Affichage
-      Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,nouvelle_visu)" "::confVisu::create" \
+      Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,nouvelle_visu)" \
+         "::confVisu::create" \
          -compound left -image $::confVisu::private(newVisuIcon)
       Menu_Separator $visuNo "$caption(audace,menu,display)"
       Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,pas_outil)" "::audace::pasOutil $visuNo"
@@ -2806,16 +2719,18 @@ namespace eval ::confVisu {
       Menu_Separator $visuNo "$caption(audace,menu,display)"
       Menu_Check     $visuNo "$caption(audace,menu,display)" \
          "$caption(audace,menu,plein_ecran)" \
-         "::confVisu::private($visuNo,fullscreen)" "::confVisu::setFullScreen $visuNo"
+         "::confVisu::private($visuNo,fullscreen)" "::confVisu::setFullScreen $visuNo" \
+         -compound left -image $::confVisu::private(fullScreenIcon)
       Menu_Separator $visuNo "$caption(audace,menu,display)"
-      Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,miroir_x)" \
+      Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,display_miroir_x)" \
          "::confVisu::private($visuNo,mirror_x)" "::confVisu::setMirrorX $visuNo" \
-         -compound left -image $::confVisu::private(mirrorVIcon)
-      Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,miroir_y)" \
+         -compound left -image $::confVisu::private(mirrorHDisplayIcon)
+      Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,display_miroir_y)" \
          "::confVisu::private($visuNo,mirror_y)" "::confVisu::setMirrorY $visuNo" \
-         -compound left -image $::confVisu::private(mirrorHIcon)
+         -compound left -image $::confVisu::private(mirrorVDisplayIcon)
       Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,window)" \
-         "::confVisu::private($visuNo,window)" "::confVisu::setWindow $visuNo"
+         "::confVisu::private($visuNo,window)" "::confVisu::setWindow $visuNo" \
+         -compound left -image $::confVisu::private(windowDisplayIcon)
       Menu_Separator $visuNo "$caption(audace,menu,display)"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
          "$caption(audace,menu,vision_nocturne)" "1" "conf(confcolor,menu_night_vision)" \
@@ -2824,93 +2739,85 @@ namespace eval ::confVisu {
                destroy $audace(base).selectColor \
                ::confColor::run $visuNo \
             } \
-         "
+         " \
+         -compound left -image $::confVisu::private(nightVisionIcon)
       Menu_Separator $visuNo "$caption(audace,menu,display)"
       #--- Affichage des plugins de type tool et de fonction display du menu deroulant Affichage
       ::confVisu::displayPlugins $visuNo display display
 
-      #--- Je commence par supprimer les menus cascade du menu Pretraitement
+      #--- Je commence par supprimer les menus cascade du menu Images
       Menu_Delete $visuNo "$caption(audace,menu,maitre)" all
-      Menu_Delete $visuNo "$caption(audace,menu,filtrer)" all
-      Menu_Delete $visuNo "$caption(audace,menu,convoluer)" all
-      Menu_Delete $visuNo "$caption(audace,menu,rotation)" all
-      Menu_Delete $visuNo "$caption(audace,menu,improve)" all
       Menu_Delete $visuNo "$caption(audace,menu,convertir)" all
+      Menu_Delete $visuNo "$caption(audace,menu,center)" all
       Menu_Delete $visuNo "$caption(audace,menu,pile)" all
-      Menu_Delete $visuNo "$caption(audace,menu,transform)" all
+      Menu_Delete $visuNo "$caption(audace,menu,geometry)" all
+      Menu_Delete $visuNo "$caption(audace,menu,improve)" all
       Menu_Delete $visuNo "$caption(audace,menu,arithm)" all
-      Menu_Delete $visuNo "$caption(audace,menu,amel)" all
-      #--- Je supprime toutes les entrees du menu Pretraitement
+      Menu_Delete $visuNo "$caption(audace,menu,filter)" all
+      Menu_Delete $visuNo "$caption(audace,menu,transform)" all
+      #--- Je supprime toutes les entrees du menu Images
       Menu_Delete $visuNo "$caption(audace,menu,images)" entries
-
-      #--- Rafraichissement du menu Pretraitement
+      #--- Rafraichissement du menu Images
       Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,maitre)"
       set liste_des_fonctions [::prtr::MAITREFunctions 0]
       for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
          set function [lindex $liste_des_fonctions $i]
          Menu_Command $visuNo "$caption(audace,menu,maitre)" "$function..." "::prtr::run \"$function\" "
       }
-      set function [lindex [::prtr::PRETRAITEEFunctions 0] end]
-      Menu_Command   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,pretraitee)" "::prtr::run \"$function\" "
-
-      Menu_Command   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,recentrer)..." \
-         { ::traiteWindow::run "serie_recentrer" "$audace(base).traiteWindow" }
-      #--- Affichage des plugins de type tool et de fonction images du menu deroulant Images
-      ::confVisu::displayPlugins $visuNo images images
-
-      Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,filtrer)"
-      Menu_Command   $visuNo "$caption(audace,menu,filtrer)" "$caption(audace,menu,masque_flou)..." \
-         { ::traiteFilters::run "$caption(audace,menu,filtrer)" "$caption(audace,menu,masque_flou)" \
-         "$audace(base).traiteFilters" }
-      Menu_Command   $visuNo "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_passe-bas)..." \
-         { ::traiteFilters::run "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_passe-bas)" \
-         "$audace(base).traiteFilters" }
-      Menu_Command   $visuNo "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_passe-haut)..." \
-         { ::traiteFilters::run "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_passe-haut)" \
-         "$audace(base).traiteFilters" }
-      Menu_Command   $visuNo "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_median)..." \
-         { ::traiteFilters::run "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_median)" \
-         "$audace(base).traiteFilters" }
-      Menu_Command   $visuNo "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_minimum)..." \
-         { ::traiteFilters::run "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_minimum)" \
-         "$audace(base).traiteFilters" }
-      Menu_Command   $visuNo "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_maximum)..." \
-         { ::traiteFilters::run "$caption(audace,menu,filtrer)" "$caption(audace,menu,filtre_maximum)" \
-         "$audace(base).traiteFilters" }
-
-      Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,convoluer)"
-      Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(audace,menu,tfd)..." \
-         { ::traiteFilters::run "$caption(audace,menu,convoluer)" "$caption(audace,menu,tfd)" \
-         "$audace(base).traiteFilters" }
-      Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(audace,menu,tfdi)..." \
-         { ::traiteFilters::run "$caption(audace,menu,convoluer)" "$caption(audace,menu,tfdi)" \
-         "$audace(base).traiteFilters" }
-      Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(audace,menu,acorr)..." \
-         { ::traiteFilters::run "$caption(audace,menu,convoluer)" "$caption(audace,menu,acorr)" \
-         "$audace(base).traiteFilters" }
-      Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(audace,menu,icorr)..." \
-         { ::traiteFilters::run "$caption(audace,menu,convoluer)" "$caption(audace,menu,icorr)" \
-         "$audace(base).traiteFilters" }
-      Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(audace,menu,convolution)..." \
-         { ::traiteFilters::run "$caption(audace,menu,convoluer)" "$caption(audace,menu,convolution)" \
-         "$audace(base).traiteFilters" }
-
-      Menu_Separator $visuNo "$caption(audace,menu,images)"
-      Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,rotation)"
-      set liste_des_fonctions [::prtr::ROTATIONFunctions 0]
+      Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,convertir)"
+      set liste_des_fonctions [::conv2::CONVERSIONFunctions 0]
+      set withIcon [list $caption(audace,menu,rvb2r+v+b) $caption(audace,menu,r+v+b2rvb)]
       for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
          set function [lindex $liste_des_fonctions $i]
-         if { $function == $caption(audace,menu,rot+90) } {
-            Menu_Command $visuNo "$caption(audace,menu,rotation)" "$function..." "::prtr::run \"$function\" " \
-               -compound left -image $::confVisu::private(rotaton90dHIcon)
-         } elseif { $function == $caption(audace,menu,rot180) } {
-            Menu_Command $visuNo "$caption(audace,menu,rotation)" "$function..." "::prtr::run \"$function\" " \
-               -compound left -image $::confVisu::private(rotaton180dIcon)
-         } elseif { $function == $caption(audace,menu,rot-90) } {
-            Menu_Command $visuNo "$caption(audace,menu,rotation)" "$function..." "::prtr::run \"$function\" " \
-               -compound left -image $::confVisu::private(rotaton90dAHIcon)
+         if { $function ni $withIcon} {
+            Menu_Command $visuNo "$caption(audace,menu,convertir)" "$function..." "::conv2::run \"$function\" "
          } else {
-            Menu_Command $visuNo "$caption(audace,menu,rotation)" "$function..." "::prtr::run \"$function\" "
+            switch -exact $function \
+               "$caption(audace,menu,rvb2r+v+b)" { set cmdIcon $::confVisu::private(rgb2r+g+bIcon) } \
+               "$caption(audace,menu,r+v+b2rvb)" { set cmdIcon $::confVisu::private(r+g+b2rgbIcon) }
+            Menu_Command $visuNo "$caption(audace,menu,convertir)" "$function..." "::conv2::run \"$function\" " \
+               -compound left -image $cmdIcon
+         }
+        ### Menu_Command $visuNo "$caption(audace,menu,convertir)" "$function..." "::conv2::run \"$function\" "
+      }
+      set function [lindex [::prtr::PRETRAITEEFunctions 0] end]
+      Menu_Command   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,pretraitee)" "::prtr::run \"$function\" "
+      #--- Affichage des plugins de type tool et de fonction images du menu deroulant Images
+      ::confVisu::displayPlugins $visuNo images images
+      Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,center)"
+      Menu_Command   $visuNo "$caption(audace,menu,center)" "$caption(audace,menu,recentrer_manu)..." \
+         { ::traiteWindow::run "aligner" "$audace(base).traiteWindow" }
+      set function [lindex [::prtr::CENTERFunctions 0] end]
+      Menu_Command   $visuNo "$caption(audace,menu,center)" "$caption(audace,menu,recentrer_auto)..." \
+         "::prtr::run \"$function\" "
+      Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,pile)"
+      set liste_des_fonctions [::prtr::PILEFunctions 0]
+      for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
+         set function [lindex $liste_des_fonctions $i]
+         Menu_Command $visuNo "$caption(audace,menu,pile)" "$function..." "::prtr::run \"$function\" "
+      }
+      Menu_Separator $visuNo "$caption(audace,menu,images)"
+      Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,geometry)"
+      set liste_des_fonctions [::prtr::ROTATIONFunctions 0]
+      append liste_des_fonctions " " [::prtr::GEOMETRYFunctions 0]
+      set withIcon [list $caption(audace,menu,rot+90) $caption(audace,menu,rot-90) \
+         $caption(audace,menu,rot180) $caption(audace,menu,miroir_x) $caption(audace,menu,miroir_y) \
+         $caption(audace,menu,miroir_xy) $caption(audace,menu,scale)]
+      for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
+         set function [lindex $liste_des_fonctions $i]
+         if { $function ni $withIcon} {
+            Menu_Command $visuNo "$caption(audace,menu,geometry)" "$function..." "::prtr::run \"$function\" "
+         } else {
+            switch -exact $function \
+               "$caption(audace,menu,rot+90)"    { set cmdIcon $::confVisu::private(rotation90dHIcon) } \
+               "$caption(audace,menu,rot-90)"    { set cmdIcon $::confVisu::private(rotation90dAHIcon) } \
+               "$caption(audace,menu,rot180)"    { set cmdIcon $::confVisu::private(rotation180dIcon) } \
+               "$caption(audace,menu,miroir_x)"  { set cmdIcon $::confVisu::private(mirrorVIcon) } \
+               "$caption(audace,menu,miroir_y)"  { set cmdIcon $::confVisu::private(mirrorHIcon) } \
+               "$caption(audace,menu,miroir_xy)" { set cmdIcon $::confVisu::private(mirrorDIcon) } \
+               "$caption(audace,menu,scale)"     { set cmdIcon $::confVisu::private(resampleIcon) }
+            Menu_Command $visuNo "$caption(audace,menu,geometry)" "$function..." "::prtr::run \"$function\" " \
+               -compound left -image $cmdIcon
          }
       }
       Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,improve)"
@@ -2921,48 +2828,41 @@ namespace eval ::confVisu {
       }
       Menu_Command   $visuNo "$caption(audace,menu,improve)" "$caption(audace,menu,scar)" "scar $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,improve)" "$caption(audace,menu,subfitgauss)" "subfitgauss $visuNo"
-      Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,convertir)"
-      set liste_des_fonctions [::conv2::CONVERSIONFunctions 0]
-      for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
-         set function [lindex $liste_des_fonctions $i]
-         Menu_Command $visuNo "$caption(audace,menu,convertir)" "$function..." "::conv2::run \"$function\" "
-      }
-      Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,pile)"
-      set liste_des_fonctions [::prtr::PILEFunctions 0]
-      for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
-         set function [lindex $liste_des_fonctions $i]
-         Menu_Command $visuNo "$caption(audace,menu,pile)" "$function..." "::prtr::run \"$function\" "
-      }
-
-      Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,transform)"
-      set liste_des_fonctions [::prtr::TRANSFORMFunctions 0]
-      for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
-         set function [lindex $liste_des_fonctions $i]
-         if { $function == $caption(audace,menu,miroir_x) } {
-            Menu_Command $visuNo "$caption(audace,menu,transform)" "$function..." "::prtr::run \"$function\" " \
-               -compound left -image $::confVisu::private(mirrorVIcon)
-         } elseif { $function == $caption(audace,menu,miroir_y) } {
-            Menu_Command $visuNo "$caption(audace,menu,transform)" "$function..." "::prtr::run \"$function\" " \
-               -compound left -image $::confVisu::private(mirrorHIcon)
-         } else {
-            Menu_Command $visuNo "$caption(audace,menu,transform)" "$function..." "::prtr::run \"$function\" "
-         }
-      }
       Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,arithm)"
       set liste_des_fonctions [::prtr::ARITHMFunctions 0]
       for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
          set function [lindex $liste_des_fonctions $i]
          Menu_Command $visuNo "$caption(audace,menu,arithm)" "$function..." "::prtr::run \"$function\" "
       }
-
-      Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,amel)"
-      set liste_des_fonctions [::prtr::AMELFunctions 0]
+      Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,filter)"
+      set liste_des_fonctions [::prtr::FILTERFunctions 0]
       for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
          set function [lindex $liste_des_fonctions $i]
-         Menu_Command $visuNo "$caption(audace,menu,amel)" "$function..." "::prtr::run \"$function\" "
+         Menu_Command $visuNo "$caption(audace,menu,filter)" "$function..." "::prtr::run \"$function\" "
       }
       Menu_Command   $visuNo "$caption(audace,menu,improve)" "$caption(audace,menu,scar)" "scar $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,improve)" "$caption(audace,menu,subfitgauss)" "subfitgauss $visuNo"
+      Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,transform)"
+      Menu_Command   $visuNo "$caption(audace,menu,transform)" "$caption(audace,menu,tfd)..." \
+         { ::traiteFilters::run "$caption(audace,menu,transform)" "$caption(audace,menu,tfd)" \
+         "$audace(base).traiteFilters" }
+      Menu_Command   $visuNo "$caption(audace,menu,transform)" "$caption(audace,menu,tfdi)..." \
+         { ::traiteFilters::run "$caption(audace,menu,transform)" "$caption(audace,menu,tfdi)" \
+         "$audace(base).traiteFilters" }
+      Menu_Command   $visuNo "$caption(audace,menu,transform)" "$caption(audace,menu,acorr)..." \
+         { ::traiteFilters::run "$caption(audace,menu,transform)" "$caption(audace,menu,acorr)" \
+         "$audace(base).traiteFilters" }
+      Menu_Command   $visuNo "$caption(audace,menu,transform)" "$caption(audace,menu,icorr)..." \
+         { ::traiteFilters::run "$caption(audace,menu,transform)" "$caption(audace,menu,icorr)" \
+         "$audace(base).traiteFilters" }
+      Menu_Command   $visuNo "$caption(audace,menu,transform)" "$caption(audace,menu,convolution)" \
+         { ::traiteFilters::run "$caption(audace,menu,transform)" "$caption(audace,menu,convolution)" \
+         "$audace(base).traiteFilters" }
+      set liste_des_fonctions [::prtr::TRANSFORMFunctions 0]
+      for { set i 0} { $i < [llength $liste_des_fonctions] } {incr i} {
+         set function [lindex $liste_des_fonctions $i]
+         Menu_Command $visuNo "$caption(audace,menu,transform)" "$function..." "::prtr::run \"$function\" "
+      }
 
       #--- Je commence par supprimer les menus cascade du menu Analyse
       Menu_Delete $visuNo "$caption(audace,menu,extract)" all
@@ -3000,12 +2900,20 @@ namespace eval ::confVisu {
       #--- Je supprime toutes les entrees du menu Camera
       Menu_Delete $visuNo "$caption(audace,menu,acquisition)" entries
       #--- Rafraichissement du menu Camera
+      Menu_Command   $visuNo "$caption(audace,menu,acquisition)" "$caption(audace,menu,connexion)..." \
+         "::confCam::run" \
+         -compound left -image $::confVisu::private(cameraIcon)
+      Menu_Separator $visuNo "$caption(audace,menu,acquisition)"
       #--- Affichage des plugins de type tool et de fonction acquisition du menu deroulant Camera
       ::confVisu::displayPlugins $visuNo acquisition acquisition
 
       #--- Je supprime toutes les entrees du menu Telescope
       Menu_Delete $visuNo "$caption(audace,menu,aiming)" entries
       #--- Rafraichissement du menu Telescope
+      Menu_Command   $visuNo "$caption(audace,menu,aiming)" "$caption(audace,menu,connexion)..." \
+         "::confTel::run" \
+         -compound left -image $::confVisu::private(telescopIcon)
+      Menu_Separator $visuNo "$caption(audace,menu,aiming)"
       #--- Affichage des plugins de type tool et de fonction aiming du menu deroulant Telescope
       ::confVisu::displayPlugins $visuNo aiming aiming
 
@@ -3029,14 +2937,18 @@ namespace eval ::confVisu {
       Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,type_fenetre)..." \
          { ::confTypeFenetre::run "$audace(base).confTypeFenetre" }
       Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,apparence)..." \
-         "::confColor::run $visuNo"
+         "::confColor::run $visuNo" \
+         -compound left -image $::confVisu::private(colorsIcon)
       Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,police)..." \
-         "::confFont::run $visuNo"
+         "::confFont::run $visuNo" \
+         -compound left -image $::confVisu::private(fontsIcon)
       Menu_Separator $visuNo "$caption(audace,menu,setup)"
       Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,camera)..." \
-         "::confCam::run"
+         "::confCam::run" \
+         -compound left -image $::confVisu::private(cameraIcon)
       Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,monture)..." \
-         "::confTel::run"
+         "::confTel::run" \
+         -compound left -image $::confVisu::private(telescopIcon)
       Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,liaison)..." \
          "::confLink::run"
       Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,optique)..." \
@@ -3098,7 +3010,9 @@ namespace eval ::confVisu {
                      "::audace::enregistrer_sous $visuNo" \
                      -compound left -image $::confVisu::private(saveAsIcon)
                   Menu_Separator $visuNo "$caption(audace,menu,file)"
-                  Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,entete)" "::keyword::header $visuNo"
+                  Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,entete)" \
+                     "::keyword::header $visuNo" \
+                     -compound left -image $::confVisu::private(fitsHeaderIcon)
                   Menu_Separator $visuNo "$caption(audace,menu,file)"
                   #--- Affichage des plugins multivisu de type file du menu deroulant Fichier
                   ::confVisu::displayPlugins $visuNo file file
@@ -3112,7 +3026,8 @@ namespace eval ::confVisu {
                   #--- Je supprime toutes les entrees du menu Affichage
                   Menu_Delete $visuNo "$caption(audace,menu,display)" entries
                   #--- Rafraichissement du menu Affichage
-                  Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,nouvelle_visu)" "::confVisu::create" \
+                  Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,nouvelle_visu)" \
+                     "::confVisu::create" \
                      -compound left -image $::confVisu::private(newVisuIcon)
                   Menu_Separator $visuNo "$caption(audace,menu,display)"
                   Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,pas_outil)" "::audace::pasOutil $visuNo"
@@ -3150,16 +3065,18 @@ namespace eval ::confVisu {
                   Menu_Separator $visuNo "$caption(audace,menu,display)"
                   Menu_Check     $visuNo "$caption(audace,menu,display)" \
                      "$caption(audace,menu,plein_ecran)" \
-                     "::confVisu::private($visuNo,fullscreen)" "::confVisu::setFullScreen $visuNo"
+                     "::confVisu::private($visuNo,fullscreen)" "::confVisu::setFullScreen $visuNo" \
+                     -compound left -image $::confVisu::private(fullScreenIcon)
                   Menu_Separator $visuNo "$caption(audace,menu,display)"
-                  Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,miroir_x)" \
+                  Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,display_miroir_x)" \
                      "::confVisu::private($visuNo,mirror_x)" "::confVisu::setMirrorX $visuNo" \
-                     -compound left -image $::confVisu::private(mirrorVIcon)
-                  Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,miroir_y)" \
+                     -compound left -image $::confVisu::private(mirrorHDisplayIcon)
+                  Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,display_miroir_y)" \
                      "::confVisu::private($visuNo,mirror_y)" "::confVisu::setMirrorY $visuNo" \
-                     -compound left -image $::confVisu::private(mirrorHIcon)
+                     -compound left -image $::confVisu::private(mirrorVDisplayIcon)
                   Menu_Check     $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,window)" \
-                     "::confVisu::private($visuNo,window)" "::confVisu::setWindow $visuNo"
+                     "::confVisu::private($visuNo,window)" "::confVisu::setWindow $visuNo" \
+                     -compound left -image $::confVisu::private(windowDisplayIcon)
                   Menu_Separator $visuNo "$caption(audace,menu,display)"
                   Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
                      "$caption(audace,menu,vision_nocturne)" "1" "conf(confcolor,menu_night_vision)" \
@@ -3168,18 +3085,27 @@ namespace eval ::confVisu {
                            destroy $audace(base).selectColor \
                            ::confColor::run $visuNo \
                         } \
-                     "
+                     " \
+                     -compound left -image $::confVisu::private(nightVisionIcon)
                   Menu_Separator $visuNo "$caption(audace,menu,display)"
                   #--- Affichage des plugins de type tool et de fonction display du menu deroulant Affichage
                   ::confVisu::displayPlugins $visuNo display display
 
                   #--- Je supprime toutes les entrees du menu Camera
                   Menu_Delete $visuNo "$caption(audace,menu,acquisition)" entries
+                  Menu_Command   $visuNo "$caption(audace,menu,acquisition)" "$caption(audace,menu,connexion)..." \
+                     "::confCam::run" \
+                     -compound left -image $::confVisu::private(cameraIcon)
+                  Menu_Separator $visuNo "$caption(audace,menu,acquisition)"
                   #--- Affichage des plugins de type tool et de fonction acquisition du menu deroulant Camera
                   ::confVisu::displayPlugins $visuNo acquisition acquisition
 
                   #--- Je supprime toutes les entrees du menu Telescope
                   Menu_Delete $visuNo "$caption(audace,menu,aiming)" entries
+                  Menu_Command   $visuNo "$caption(audace,menu,aiming)" "$caption(audace,menu,connexion)..." \
+                     "::confTel::run" \
+                     -compound left -image $::confVisu::private(telescopIcon)
+                  Menu_Separator $visuNo "$caption(audace,menu,aiming)"
                   #--- Affichage des plugins de type tool et de fonction aiming du menu deroulant Telescope
                   ::confVisu::displayPlugins $visuNo aiming aiming
 
@@ -3206,14 +3132,7 @@ namespace eval ::confVisu {
    proc displayPlugins { visuNo menuName functionBlocList } {
       global audace caption conf panneau
 
-      #--- Initialisation des variables
-      if { ! [ info exists conf(afficheOutils) ] } {
-         set conf(afficheOutils) ""
-         foreach m [array names panneau menu_name,*] {
-            set namespace [ lindex [ split $m "," ] 1 ]
-            lappend conf(afficheOutils) $namespace ""
-         }
-      }
+      #--- Initialisation de variable
       set liste ""
       #--- Je copie la liste dans un tableau affiche(namespace)
       array set affiche $conf(afficheOutils)
@@ -3911,7 +3830,7 @@ namespace eval ::confVisu {
       if { $private($visuNo,autovisuEnCours) == "0" } {
          set private($visuNo,autovisuEnCours) "1"
          #--- Le -force permet de forcer la visu si on a choisi
-         #--- dans le panneau de config "pas de recalcul automatique"
+         #--- dans le fenetre de configuration des seuils "Pas de calcul automatique"
          ::confVisu::autovisu $visuNo -force
          set private($visuNo,autovisuEnCours) "0"
       }
