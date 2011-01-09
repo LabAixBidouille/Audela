@@ -2,7 +2,7 @@
 # Fichier : prtr.tcl
 # Description : Script dedie au menu deroulant pretraitement
 # Auteur : Raymond ZACHANTKE
-# Mise à jour $Id: prtr.tcl,v 1.7 2011-01-09 10:27:48 robertdelmas Exp $
+# Mise à jour $Id: prtr.tcl,v 1.8 2011-01-09 10:44:39 robertdelmas Exp $
 #
 
 namespace eval ::prtr {
@@ -210,6 +210,7 @@ namespace eval ::prtr {
       global caption
 
       switch -regexp $private(ima) {
+         CENTER   { set titre "$caption(audace,menu,images) - $caption(audace,menu,center)"}
          EXTRACT  { set titre "$caption(audace,menu,analysis) - $caption(audace,menu,extract)"}
          GEOMETRY { set titre "$caption(audace,menu,images) - $caption(audace,menu,geometry)"}
          ROTATION { set titre "$caption(audace,menu,images) - $caption(audace,menu,geometry)"}
@@ -3017,11 +3018,11 @@ namespace eval ::prtr {
          set max [$vector range end end]
 
          if {$min > "0"} {
-            set ${var}1 [expr {int($max)}]
+            set ${var}1 [expr {int($max+1)}]
          } elseif {$max < "0"} {
             set ${var}2 [expr {int($naxis+$min)}]
          } else {
-            set ${var}1 [expr {int($max)}]
+            set ${var}1 [expr {int($max+1)}]
             set ${var}2 [expr {int($naxis+$min)}]
          }
       }
