@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.61 2011-01-09 10:25:12 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.62 2011-01-09 15:17:35 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -77,7 +77,7 @@ set caption(audace,menu,noffset)                        "Normalize Sky Backgroun
 set caption(audace,menu,ngain)                          "Normalize Illumination"
 set caption(audace,menu,clip)                           "Clip"
 
-set caption(audace,menu,filtrer)                        "# Filtrer"
+set caption(audace,menu,filter)                         "# Filtrer"
 set caption(audace,menu,masque_flou)                    "Unsharp Mask"
 set caption(audace,menu,filtre_passe-bas)               "Low Pass Filter"
 set caption(audace,menu,filtre_passe-haut)              "High Pass Filter"
@@ -403,7 +403,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,ngain)                       "Normalizzare illuminazione"
    set caption(audace,menu,clip)                        "Eliminare valori estremi"
 
-   set caption(audace,menu,filtrer)                     "# Filtrer"
+   set caption(audace,menu,filter)                      "# Filtrer"
    set caption(audace,menu,masque_flou)                 "Maschera flou"
    set caption(audace,menu,filtre_passe-bas)            "Filtro passa-basso"
    set caption(audace,menu,filtre_passe-haut)           "Filtro passa-alto"
@@ -566,7 +566,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,ngain)                       "Normalizar iluminación"
    set caption(audace,menu,clip)                        "Recortar extremos"
 
-   set caption(audace,menu,filtrer)                     "# Filtrer"
+   set caption(audace,menu,filter)                      "# Filtrer"
    set caption(audace,menu,masque_flou)                 "Máscara desenfocada"
    set caption(audace,menu,filtre_passe-bas)            "Filtro paso bajo"
    set caption(audace,menu,filtre_passe-haut)           "Filtro paso alto"
@@ -729,7 +729,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,ngain)                       "Beleuchtungsstärke Normung"
    set caption(audace,menu,clip)                        "Die Extremen beseitigen"
 
-   set caption(audace,menu,filtrer)                     "# Filtrer"
+   set caption(audace,menu,filter)                      "# Filtrer"
    set caption(audace,menu,masque_flou)                 "Unscharf Maske"
    set caption(audace,menu,filtre_passe-bas)            "Niederpaß Filter"
    set caption(audace,menu,filtre_passe-haut)           "Hochpaß Filter"
@@ -892,7 +892,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,ngain)                       "Normalizar iluminação"
    set caption(audace,menu,clip)                        "Recortar extremos"
 
-   set caption(audace,menu,filtrer)                     "# Filtrer"
+   set caption(audace,menu,filter)                      "# Filtrer"
    set caption(audace,menu,masque_flou)                 "Máscara de focagem"
    set caption(audace,menu,filtre_passe-bas)            "Filtro passa-baixo"
    set caption(audace,menu,filtre_passe-haut)           "Filtro passa-alto"
@@ -1055,7 +1055,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,ngain)                       "Normaliser belysning"
    set caption(audace,menu,clip)                        "Klip"
 
-   set caption(audace,menu,filtrer)                     "# Filtrer"
+   set caption(audace,menu,filter)                      "# Filtrer"
    set caption(audace,menu,masque_flou)                 "Uskarp maske"
    set caption(audace,menu,filtre_passe-bas)            "Lav pas filter"
    set caption(audace,menu,filtre_passe-haut)           "Høj pas filter"
@@ -1218,7 +1218,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,ngain)                       "Normalize Illumination"
    set caption(audace,menu,clip)                        "Clip"
 
-   set caption(audace,menu,filtrer)                     "# Filtrer"
+   set caption(audace,menu,filter)                      "# Filtrer"
    set caption(audace,menu,masque_flou)                 "Unsharp Mask"
    set caption(audace,menu,filtre_passe-bas)            "Low Pass Filter"
    set caption(audace,menu,filtre_passe-haut)           "High Pass Filter"
@@ -1381,7 +1381,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,ngain)                       "Normalize Illumination"
    set caption(audace,menu,clip)                        "Clip"
 
-   set caption(audace,menu,filtrer)                     "# Filtrer"
+   set caption(audace,menu,filter)                      "# Filtrer"
    set caption(audace,menu,masque_flou)                 "Unsharp Mask"
    set caption(audace,menu,filtre_passe-bas)            "Low Pass Filter"
    set caption(audace,menu,filtre_passe-haut)           "High Pass Filter"
