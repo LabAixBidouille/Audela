@@ -1,11 +1,13 @@
+
 set visuNo 1
 
 #-------------------------------------------------------------------------------
-test tool_autoguider_connect_tel { connect telescope } -constraints {
+test tool_autoguider_connect_tel {connect telescope} -constraints {
    AUDACE ASCOM
 } -setup {
    ::confTel::run
    ::confTel::selectNotebook "ascom"
+   after 300
    #--- je selectionne le driver "simulator"
    ::testaudela::clicCombobox  .audace.confTel.usr.onglet.fascom.driver  "{} ScopeSim.Telescope"
    #--- je n'affiche pas de raquette
@@ -17,27 +19,32 @@ test tool_autoguider_connect_tel { connect telescope } -constraints {
    update
    set result [::confTel::getPluginProperty "name"]
    return $result
-} -cleanup  {
+} -cleanup {
 } -result "ASCOM"
 
 #-------------------------------------------------------------------------------
-test tool_autoguider_connect_cam { connect camera } -constraints {
+test tool_autoguider_connect_cam {connect camera} -constraints {
    AUDACE ASCOM
 } -setup {
+   #--- je deconnecte la camera si elle est deja connectee
+   if {  [::confCam::isReady A] == 1 } {
+      ::confCam::stopItem A
+   }
    #--- je configure la camera "ascomcam"
    ::confCam::run
    ::confCam::selectNotebook "A" "ascomcam"
+   after 300
    #--- je selectionne le driver "CCDSimulator.Camera"
    ::testaudela::clicCombobox  .audace.confCam.usr.onglet.fascomcam.frame1.frame3.driver  "CCDSimulator.Camera"
    ::confCam::ok
 } -body {
    set result [::confCam::getPluginProperty  A product]
    return $result
-} -cleanup  {
+} -cleanup {
 } -result "ascomcam"
 
 #-------------------------------------------------------------------------------
-test tool_autoguider_centerSpeed1 { configure center speed=1  } -constraints {
+test tool_autoguider_centerSpeed1 {configure center speed=1} -constraints {
    AUDACE ASCOM
 } -setup {
    #--- je charge le package autoguider
@@ -80,11 +87,11 @@ test tool_autoguider_centerSpeed1 { configure center speed=1  } -constraints {
    ::testaudela::clicButton .audace.tool.autoguider.suivi.center
    after 500
    return $result
-} -cleanup  {
+} -cleanup {
 } -result ""
 
 #-------------------------------------------------------------------------------
-test tool_autoguider_configure { configure center speed=2 } -constraints {
+test tool_autoguider_configure {configure center speed=2} -constraints {
    AUDACE ASCOM
 } -setup {
 } -body {
@@ -114,21 +121,22 @@ test tool_autoguider_configure { configure center speed=2 } -constraints {
    ::testaudela::clicButton .audace.tool.autoguider.suivi.center
    after 500
    return $result
-} -cleanup  {
+} -cleanup {
 } -result ""
 
 
 #-------------------------------------------------------------------------------
-test tool_autoguider_disconnect_tel { disconnect telescope } -constraints {
+test tool_autoguider_disconnect_tel {disconnect telescope} -constraints {
    AUDACE ASCOM
 } -setup {
 } -body {
    update
    return ""
-} -cleanup  {
+} -cleanup {
    #--- j'arrete le plugin autoguider
    ::confVisu::deletePluginInstance $visuNo ::autoguider
    ::confTel::stopPlugin
    ::confCam::stopPlugin
 
 } -result ""
+
