@@ -151,6 +151,8 @@ test imaseries_optimisation_du_noir {optimisation du noir de rz_cfa_rgbr_8} -con
    if {[file exists $name_out.jpg]} {incr result}
    return $result
  } -cleanup {
+   set ::conf(extension,defaut) .fit
+   set ::conf(fichier,compres) 0
    #--   clic sur le bouton Fermer
    ::testaudela::clicButton $w.cmd.fermer
    #---  efface l'image

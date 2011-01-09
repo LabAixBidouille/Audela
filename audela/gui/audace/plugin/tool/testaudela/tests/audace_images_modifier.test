@@ -217,7 +217,7 @@ test imaseries_prod {produit de rz_rgbr_8 et rz_rgbr_15 par rgb_30} -constraints
    ::testaudela::putLabelEntry $w.ttoptions.constant $constante
    #--   saisit bitpix
    set bitpix "-64"
-   ::testaudela::clicCombobox $w.ttoptions.combo.bitpix $bitpix
+   ::testaudela::clicCombobox $w.ttoptions.combobitpix.bitpix $bitpix
    #--   selectionne l'option "jpegfile"
    ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
    #-- saisit le nom de sortie
