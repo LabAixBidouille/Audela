@@ -1,6 +1,6 @@
 #
 # Fichier : calaphot.cap
-# Mise a jour $Id: calaphot.cap,v 1.16 2010-11-21 08:32:07 jacquesmichelet Exp $
+# Mise a jour $Id: calaphot.cap,v 1.17 2011-01-09 14:33:58 jacquesmichelet Exp $
 #
 
 #=========================================================================
@@ -15,7 +15,7 @@ set calaphot(texte,copyright)              "(c)2001-2010 O. Thizy & J. Michelet"
 
 # *************** Version anglaise ****************************
 
-set calaphot(texte,titre_menu)             "Differential Photometry (Calaphot)"
+set calaphot(texte,titre_menu)             "Light curve (Calaphot)"
 set calaphot(texte,titre_saisie)           "Photometry Script Parameters"
 set calaphot(texte,operateur)              "Operator Name"
 set calaphot(texte,objet)                  "Object Name"
@@ -136,7 +136,7 @@ set calaphot(texte,aucune_valide)          "Not any valid image"
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set calaphot(texte,titre_menu)          "Photométrie différentielle (Calaphot)"
+   set calaphot(texte,titre_menu)          "Courbes de lumière (Calaphot)"
    set calaphot(texte,titre_saisie)        "Paramètres du script de photométrie"
    set calaphot(texte,operateur)           "Nom de l'opérateur"
    set calaphot(texte,objet)               "Nom de l'objet"
