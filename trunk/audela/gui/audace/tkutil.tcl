@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise à jour $Id: tkutil.tcl,v 1.37 2010-10-06 16:41:25 robertdelmas Exp $
+# Mise à jour $Id: tkutil.tcl,v 1.38 2011-01-09 10:27:48 robertdelmas Exp $
 #
 
 namespace eval tkutil:: {
@@ -247,7 +247,7 @@ proc ::tkutil::box_save { { parent } { initialdir } { numero_buffer } { type } {
 }
 
 #
-# lgEntryComboBox liste
+# lgEntryComboBox
 #    Fourni la largeur de l'entry d'une combobox adaptee au plus long element de la liste
 #
 proc ::tkutil::lgEntryComboBox { liste } {
@@ -266,6 +266,182 @@ proc ::tkutil::lgEntryComboBox { liste } {
    }
    set longEntryComboBox [ expr $a + 2 ]
    return $longEntryComboBox
+}
+
+#
+# afficherNomGenerique
+#    Affiche le nom generique des fichiers d'une serie si c'en est une, le nombre
+#    d'elements de la serie et le premier indice de la serie s'il est different de 1
+#    Renumerote la serie s'il y a des trous ou si elle debute par un 0
+#
+proc ::tkutil::afficherNomGenerique { filename { animation 0 } } {
+   global audace caption conf
+
+   #--- Est-ce un nom generique de fichiers ?
+   set nom_generique  [ lindex [ decomp $filename ] 1 ]
+   set index_serie    [ lindex [ decomp $filename ] 2 ]
+   set ext_serie      [ lindex [ decomp $filename ] 3 ]
+   #--- J'extrais la liste des index de la serie
+   set error [ catch { lsort -integer [ liste_index $nom_generique ] } msg ]
+   if { $error == "0" } {
+      #--- Pour une serie du type 1 - 2 - 3 - etc.
+      set liste_serie [ lsort -integer [ liste_index $nom_generique ] ]
+   } else {
+      #--- Pour une serie du type 01 - 02 - 03 - etc.
+      set liste_serie [ lsort -ascii [ liste_index $nom_generique ] ]
+   }
+   #--- Longueur de la liste des index
+   set longueur_serie [ llength $liste_serie ]
+   if { $index_serie != "" && $longueur_serie >= "1" } {
+      ::console::disp "$caption(tkutil,nom_generique_ok)\n\n"
+   } else {
+      tk_messageBox -title "$caption(tkutil,attention)" -type ok \
+         -message "$caption(tkutil,nom_generique_ko)"
+      #--- Ce n'est pas un nom generique, sortie anticipee
+      set nom_generique  ""
+      set longueur_serie ""
+      set indice_min     "1"
+      return [ list $nom_generique $longueur_serie $indice_min ]
+   }
+   #--- Identification du type de numerotation
+   set error [ catch { lsort -integer [ liste_index $nom_generique ] } msg ]
+   if { $error == "0" } {
+      #--- Pour une serie du type 1 - 2 - 3 - etc.
+      set liste_serie [ lsort -integer [ liste_index $nom_generique ] ]
+   } else {
+      #--- Pour une serie du type 01 - 02 - 03 - etc.
+      set liste_serie [ lsort -ascii [ liste_index $nom_generique ] ]
+   }
+   #--- Longueur de la serie
+   set longueur_serie [ llength $liste_serie ]
+   #--- Premier indice de la serie
+   set indice_min [ lindex $liste_serie 0 ]
+   #--- La serie ne commence pas par 0
+   if { $indice_min != "0" } {
+      set new_indice_min [ string trimleft $indice_min 0 ]
+      #--- La serie commence par 1
+      if { $new_indice_min == "1" } {
+         #--- Est-ce une serie avec des fichiers manquants ?
+         set etat_serie [ numerotation_usuelle $nom_generique ]
+         if { $etat_serie == "0" } {
+            #--- Il manque des fichiers dans la serie, je propose de renumeroter la serie
+            set choix [ tk_messageBox -title "$caption(tkutil,attention)" \
+               -message "$caption(tkutil,fichier_manquant)\n$caption(tkutil,renumerotation)" \
+               -icon question -type yesno ]
+            if { $choix == "yes" } {
+               renumerote $nom_generique -rep "$audace(rep_images)" -ext "$ext_serie"
+               ::console::disp "$caption(tkutil,renumerote_termine)\n\n"
+            } else {
+               tk_messageBox -title "$caption(tkutil,attention)" -type ok \
+                  -message "$caption(tkutil,pas_renumerotation)"
+               #--- Sortie anticipee
+               set nom_generique  ""
+               set longueur_serie ""
+               set indice_min     "1"
+               return [ list $nom_generique $longueur_serie $indice_min ]
+            }
+         } else {
+            #--- Il ne manque pas de fichiers dans la serie
+            ::console::disp "$caption(tkutil,numerotation_ok)\n$caption(tkutil,pas_fichier_manquant)\n\n"
+         }
+      #--- La serie ne commence pas par 1
+      } else {
+         #--- J'extrais la liste des index de la serie
+         set error [ catch { lsort -integer [ liste_index $nom_generique ] } msg ]
+         if { $error == "0" } {
+            #--- Pour une serie du type 1 - 2 - 3 - etc.
+            set liste_serie [ lsort -integer [ liste_index $nom_generique ] ]
+         } else {
+            #--- Pour une serie du type 01 - 02 - 03 - etc.
+            set liste_serie [ lsort -ascii [ liste_index $nom_generique ] ]
+         }
+         #--- J'extrais la longueur, le premier et le dernier indice de la serie
+         set longueur_serie [ llength $liste_serie ]
+         set indice_min [ lindex $liste_serie 0 ]
+         set indice_max [ lindex $liste_serie [ expr $longueur_serie - 1 ] ]
+         #--- Je signale l'absence d'index autre que 1
+         if { $animation == "0" } {
+            if { [ expr $indice_max - $indice_min + 1 ] != $longueur_serie } {
+               tk_messageBox -title "$caption(tkutil,attention)" -type ok \
+                  -message "$caption(tkutil,renumerote_manuel)"
+               #--- Sortie anticipee
+               set nom_generique  ""
+               set longueur_serie ""
+               set indice_min     "1"
+               return [ list $nom_generique $longueur_serie $indice_min ]
+            }
+         } elseif { $animation == "1" } {
+            #--- J'extrais la liste des index de la serie
+            set error [ catch { lsort -integer [ liste_index $nom_generique ] } msg ]
+            if { $error == "0" } {
+               #--- Pour une serie du type 1 - 2 - 3 - etc.
+               set liste_serie [ lsort -integer [ liste_index $nom_generique ] ]
+            } else {
+               #--- Pour une serie du type 01 - 02 - 03 - etc.
+               set liste_serie [ lsort -ascii [ liste_index $nom_generique ] ]
+            }
+            #--- J'extrais la longueur et le premier indice de la serie
+            set longueur_serie [ llength $liste_serie ]
+            set indice_min [ lindex $liste_serie 0 ]
+            ::console::disp "$caption(tkutil,liste_serie) $liste_serie \n\n"
+            ::console::disp "$caption(tkutil,nom_generique) $nom_generique \n"
+            ::console::disp "$caption(tkutil,image_nombre) $longueur_serie \n"
+            ::console::disp "$caption(tkutil,image_premier_indice) $indice_min \n\n"
+            return [ list $nom_generique $longueur_serie $indice_min $liste_serie ]
+         }
+      }
+   #--- La serie commence par 0
+   } else {
+      #--- Je recherche le dernier indice de la liste
+      set dernier_indice [ expr [ lindex $liste_serie [ expr $longueur_serie - 1 ] ] + 1 ]
+      #--- Je renumerote le fichier portant l'indice 0
+      set buf_pretrait [ ::buf::create ]
+      buf$buf_pretrait extension $conf(extension,defaut)
+      buf$buf_pretrait load [ file join $audace(rep_images) $nom_generique$indice_min$ext_serie ]
+      buf$buf_pretrait save [ file join $audace(rep_images) $nom_generique$dernier_indice$ext_serie ]
+      ::buf::delete $buf_pretrait
+      file delete [ file join $audace(rep_images) $nom_generique$indice_min$ext_serie ]
+      #--- Est-ce une serie avec des fichiers manquants ?
+      set etat_serie [ numerotation_usuelle $nom_generique ]
+      if { $etat_serie == "0" } {
+         #--- Il manque des fichiers dans la serie, je propose de renumeroter la serie
+         set choix [ tk_messageBox -title "$caption(tkutil,attention)" \
+            -message "$caption(tkutil,indice_pas_1)\n$caption(tkutil,fichier_manquant)\n$caption(tkutil,renumerotation)" \
+            -icon question -type yesno ]
+         if { $choix == "yes" } {
+            renumerote $nom_generique -rep "$audace(rep_images)" -ext "$ext_serie"
+            ::console::disp "$caption(tkutil,renumerote_termine)\n$caption(tkutil,fichier_indice_0)\n\n"
+         } else {
+            tk_messageBox -title "$caption(tkutil,attention)" -type ok \
+               -message "$caption(tkutil,pas_renumerotation)\n$caption(tkutil,fichier_indice_0)"
+            #--- Sortie anticipee
+            set nom_generique  ""
+            set longueur_serie ""
+            set indice_min     "1"
+            return [ list $nom_generique $longueur_serie $indice_min ]
+         }
+      } else {
+         #--- Il ne manque pas de fichiers dans la serie
+         ::console::disp "$caption(tkutil,indice_pas_1)\n$caption(tkutil,pas_fichier_manquant)\n$caption(tkutil,fichier_indice_0)\n\n"
+      }
+   }
+   #--- J'extrais la liste des index de la serie
+   set error [ catch { lsort -integer [ liste_index $nom_generique ] } msg ]
+   if { $error == "0" } {
+      #--- Pour une serie du type 1 - 2 - 3 - etc.
+      set liste_serie [ lsort -integer [ liste_index $nom_generique ] ]
+   } else {
+      #--- Pour une serie du type 01 - 02 - 03 - etc.
+      set liste_serie [ lsort -ascii [ liste_index $nom_generique ] ]
+   }
+   #--- J'extrais la longueur et le premier indice de la serie
+   set longueur_serie [ llength $liste_serie ]
+   set indice_min [ lindex $liste_serie 0 ]
+   ::console::disp "$caption(tkutil,liste_serie) $liste_serie \n\n"
+   ::console::disp "$caption(tkutil,nom_generique) $nom_generique \n"
+   ::console::disp "$caption(tkutil,image_nombre) $longueur_serie \n"
+   ::console::disp "$caption(tkutil,image_premier_indice) $indice_min \n\n"
+   return [ list $nom_generique $longueur_serie $indice_min $liste_serie ]
 }
 
 #
@@ -517,12 +693,7 @@ proc ::tkutil::validateString { win event newValue oldValue class minLength maxL
       }
       #--- je change de couleur si la longueur est incorrecte
       if { $result == 0 } {
-         #--- j'affiche en inverse video
-        ### $win configure -bg $::color(lightred) -fg $::audace(color,entryTextColor)
          bell
-      } else {
-         #--- j'affiche normalement
-        ### $win configure -bg $::audace(color,entryBackColor) -fg $::audace(color,entryTextColor)
       }
    } else {
       #--- je ne traite pas l'evenement

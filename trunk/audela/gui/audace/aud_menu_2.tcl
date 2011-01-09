@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_2.tcl
 # Description : Script regroupant les fonctionnalites du menu Affichage
-# Mise à jour $Id: aud_menu_2.tcl,v 1.27 2010-05-09 07:49:51 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_2.tcl,v 1.28 2011-01-09 10:27:48 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -985,21 +985,21 @@ namespace eval ::seuilCouleur {
 
       frame $seuilCouleur($visuNo,This).cmd -borderwidth 1 -relief raised
 
-         button $seuilCouleur($visuNo,This).cmd.ok -text "$caption(aud_menu_3,ok)" -width 7 \
+         button $seuilCouleur($visuNo,This).cmd.ok -text "$caption(pretraitement,ok)" -width 7 \
             -command "::seuilCouleur::cmdOk $visuNo"
          if { $conf(ok+appliquer)=="1" } {
             pack $seuilCouleur($visuNo,This).cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
          }
 
-         button $seuilCouleur($visuNo,This).cmd.appliquer -text "$caption(aud_menu_3,appliquer)" \
+         button $seuilCouleur($visuNo,This).cmd.appliquer -text "$caption(pretraitement,appliquer)" \
             -width 8 -command "::seuilCouleur::cmdApply $visuNo"
          pack $seuilCouleur($visuNo,This).cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
 
-         button $seuilCouleur($visuNo,This).cmd.fermer -text "$caption(aud_menu_3,fermer)" -width 7 \
+         button $seuilCouleur($visuNo,This).cmd.fermer -text "$caption(pretraitement,fermer)" -width 7 \
             -command "::seuilCouleur::cmdClose $visuNo"
          pack $seuilCouleur($visuNo,This).cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
 
-         button $seuilCouleur($visuNo,This).cmd.aide -text "$caption(aud_menu_3,aide)" -width 7 \
+         button $seuilCouleur($visuNo,This).cmd.aide -text "$caption(pretraitement,aide)" -width 7 \
             -command "::seuilCouleur::afficheAide"
          pack $seuilCouleur($visuNo,This).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
 

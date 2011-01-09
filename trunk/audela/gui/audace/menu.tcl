@@ -2,7 +2,7 @@
 # Fichier : menu.tcl
 # Description : Package pour gerer facilement les menus
 # Auteur : Denis MARCHAIS d'apres B. Welsh, Practical Programming in Tcl and Tk, Ed. 2, p.319-322
-# Mise à jour $Id: menu.tcl,v 1.11 2010-12-18 15:33:48 robertdelmas Exp $
+# Mise à jour $Id: menu.tcl,v 1.12 2011-01-09 10:27:48 robertdelmas Exp $
 #
 
 proc Menu_Setup { visuNo menubar } {
@@ -78,9 +78,25 @@ proc Menu_Command { visuNo menuName label command args } {
    eval { $menuId add command -label $label -command $command } $args
 }
 
-proc Menu_Command_Radiobutton { visuNo menuName label value variable command } {
+#------------------------------------------------------------
+# Menu_Command_Radiobutton
+#    cree un menu command
+#
+# @param args : parametre optionnel qui contient les parametres de configuration du menu
+#               si args est vide, le menu est cree avec les options par defaut
+# exemple : Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" \
+#              "$caption(audace,menu,vision_nocturne)" "1" "conf(confcolor,menu_night_vision)" \
+#              "::confColor::switchDayNight ; \
+#                 if { [ winfo exists $audace(base).selectColor ] } { \
+#                    destroy $audace(base).selectColor \
+#                    ::confColor::run $visuNo \
+#                 } \
+#              " \
+#              -compound left -image $::confVisu::private(nightVisionIcon)
+#------------------------------------------------------------
+proc Menu_Command_Radiobutton { visuNo menuName label value variable command args } {
    set menuId [MenuGet $visuNo $menuName]
-   $menuId add radiobutton -label $label -indicatoron "1" -variable $variable -value $value -command $command
+   eval { $menuId add radiobutton -label $label -indicatoron "1" -variable $variable -value $value -command $command } $args
 }
 
 #------------------------------------------------------------

@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.158 2010-12-30 09:51:52 robertdelmas Exp $
+# Mise à jour $Id: aud.tcl,v 1.159 2011-01-09 10:27:48 robertdelmas Exp $
 #
 
 #--- Chargement du package BWidget
@@ -15,7 +15,6 @@ source menu.tcl
 source aud_menu_1.tcl
 source aud_menu_2.tcl
 source aud_menu_3.tcl
-source aud_menu_4.tcl
 source aud_menu_5.tcl
 source aud_menu_6.tcl
 source aud_menu_7.tcl
@@ -101,7 +100,6 @@ namespace eval ::audace {
       source [ file join $audace(rep_caption) aud_menu_1.cap ]
       source [ file join $audace(rep_caption) aud_menu_2.cap ]
       source [ file join $audace(rep_caption) aud_menu_3.cap ]
-      source [ file join $audace(rep_caption) aud_menu_4.cap ]
       source [ file join $audace(rep_caption) aud_menu_5.cap ]
       source [ file join $audace(rep_caption) aud_menu_6.cap ]
       source [ file join $audace(rep_caption) aud_menu_7.cap ]
@@ -305,6 +303,7 @@ namespace eval ::audace {
       uplevel #0 "source \"[ file join $audace(rep_gui) audace catagoto.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_gui) audace plotxy.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_gui) audace movie.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_gui) audace icones.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_gui) audace confvisu.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_gui) audace sextractor.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_gui) audace fullscreen.tcl ]\""

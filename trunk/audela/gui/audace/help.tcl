@@ -2,7 +2,7 @@
 # Fichier : help.tcl
 # Description : Aide d'Aud'ACE
 # Auteur : Michel PUJOL
-# Mise à jour $Id: help.tcl,v 1.11 2010-10-07 21:04:05 robertdelmas Exp $
+# Mise à jour $Id: help.tcl,v 1.12 2011-01-09 10:27:48 robertdelmas Exp $
 #
 
 ###########################################################################################
@@ -23,8 +23,7 @@ set help(dir,intro)         "01presentation"
 set help(dir,prog)          "02programming"
 set help(dir,fichier)       "03file"
 set help(dir,affichage)     "04view"
-set help(dir,pretrait)      "05preprocessing"
-set help(dir,trait)         "06processing"
+set help(dir,images)        "05images"
 set help(dir,analyse)       "07analysis"
 set help(dir,cameras)       "08camera"
 set help(dir,telescopes)    "09telescope"
@@ -45,8 +44,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set help(dir,prog)       "02programmation"
    set help(dir,fichier)    "03fichier"
    set help(dir,affichage)  "04affichage"
-   set help(dir,pretrait)   "05pretraitement"
-   set help(dir,trait)      "06traitement"
+   set help(dir,images)     "05images"
    set help(dir,analyse)    "07analyse"
    set help(dir,cameras)    "08camera"
    set help(dir,telescopes) "09telescope"

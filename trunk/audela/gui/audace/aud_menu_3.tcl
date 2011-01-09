@@ -1,190 +1,8 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Images
-# Mise à jour $Id: aud_menu_3.tcl,v 1.79 2011-01-01 18:58:31 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_3.tcl,v 1.80 2011-01-09 10:27:48 robertdelmas Exp $
 #
-
-namespace eval ::pretraitement {
-
-   #
-   # ::pretraitement::afficherNomGenerique
-   # Affiche le nom generique des fichiers d'une serie si c'en est une, le nombre
-   # d'elements de la serie et le premier indice de la serie s'il est different de 1
-   # Renumerote la serie s'il y a des trous ou si elle debute par un 0
-   #
-   proc afficherNomGenerique { filename { animation 0 } } {
-      global audace caption conf
-
-      #--- Est-ce un nom generique de fichiers ?
-      set nom_generique  [ lindex [ decomp $filename ] 1 ]
-      set index_serie    [ lindex [ decomp $filename ] 2 ]
-      set ext_serie      [ lindex [ decomp $filename ] 3 ]
-      #--- J'extrais la liste des index de la serie
-      set error [ catch { lsort -integer [ liste_index $nom_generique ] } msg ]
-      if { $error == "0" } {
-         #--- Pour une serie du type 1 - 2 - 3 - etc.
-         set liste_serie [ lsort -integer [ liste_index $nom_generique ] ]
-      } else {
-         #--- Pour une serie du type 01 - 02 - 03 - etc.
-         set liste_serie [ lsort -ascii [ liste_index $nom_generique ] ]
-      }
-      #--- Longueur de la liste des index
-      set longueur_serie [ llength $liste_serie ]
-      if { $index_serie != "" && $longueur_serie >= "1" } {
-         ::console::disp "$caption(pretraitement,nom_generique_ok)\n\n"
-      } else {
-         tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-            -message "$caption(pretraitement,nom_generique_ko)"
-         #--- Ce n'est pas un nom generique, sortie anticipee
-         set nom_generique  ""
-         set longueur_serie ""
-         set indice_min     "1"
-         return [ list $nom_generique $longueur_serie $indice_min ]
-      }
-      #--- Identification du type de numerotation
-      set error [ catch { lsort -integer [ liste_index $nom_generique ] } msg ]
-      if { $error == "0" } {
-         #--- Pour une serie du type 1 - 2 - 3 - etc.
-         set liste_serie [ lsort -integer [ liste_index $nom_generique ] ]
-      } else {
-         #--- Pour une serie du type 01 - 02 - 03 - etc.
-         set liste_serie [ lsort -ascii [ liste_index $nom_generique ] ]
-      }
-      #--- Longueur de la serie
-      set longueur_serie [ llength $liste_serie ]
-      #--- Premier indice de la serie
-      set indice_min [ lindex $liste_serie 0 ]
-      #--- La serie ne commence pas par 0
-      if { $indice_min != "0" } {
-         set new_indice_min [ string trimleft $indice_min 0 ]
-         #--- La serie commence par 1
-         if { $new_indice_min == "1" } {
-            #--- Est-ce une serie avec des fichiers manquants ?
-            set etat_serie [ numerotation_usuelle $nom_generique ]
-            if { $etat_serie == "0" } {
-               #--- Il manque des fichiers dans la serie, je propose de renumeroter la serie
-               set choix [ tk_messageBox -title "$caption(pretraitement,attention)" \
-                  -message "$caption(pretraitement,fichier_manquant)\n$caption(pretraitement,renumerotation)" \
-                  -icon question -type yesno ]
-               if { $choix == "yes" } {
-                  renumerote $nom_generique -rep "$audace(rep_images)" -ext "$ext_serie"
-                  ::console::disp "$caption(pretraitement,renumerote_termine)\n\n"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,pas_renumerotation)"
-                  #--- Sortie anticipee
-                  set nom_generique  ""
-                  set longueur_serie ""
-                  set indice_min     "1"
-                  return [ list $nom_generique $longueur_serie $indice_min ]
-               }
-            } else {
-               #--- Il ne manque pas de fichiers dans la serie
-               ::console::disp "$caption(pretraitement,numerotation_ok)\n$caption(pretraitement,pas_fichier_manquant)\n\n"
-            }
-         #--- La serie ne commence pas par 1
-         } else {
-            #--- J'extrais la liste des index de la serie
-            set error [ catch { lsort -integer [ liste_index $nom_generique ] } msg ]
-            if { $error == "0" } {
-               #--- Pour une serie du type 1 - 2 - 3 - etc.
-               set liste_serie [ lsort -integer [ liste_index $nom_generique ] ]
-            } else {
-               #--- Pour une serie du type 01 - 02 - 03 - etc.
-               set liste_serie [ lsort -ascii [ liste_index $nom_generique ] ]
-            }
-            #--- J'extrais la longueur, le premier et le dernier indice de la serie
-            set longueur_serie [ llength $liste_serie ]
-            set indice_min [ lindex $liste_serie 0 ]
-            set indice_max [ lindex $liste_serie [ expr $longueur_serie - 1 ] ]
-            #--- Je signale l'absence d'index autre que 1
-            if { $animation == "0" } {
-               if { [ expr $indice_max - $indice_min + 1 ] != $longueur_serie } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,renumerote_manuel)"
-                  #--- Sortie anticipee
-                  set nom_generique  ""
-                  set longueur_serie ""
-                  set indice_min     "1"
-                  return [ list $nom_generique $longueur_serie $indice_min ]
-               }
-            } elseif { $animation == "1" } {
-               #--- J'extrais la liste des index de la serie
-               set error [ catch { lsort -integer [ liste_index $nom_generique ] } msg ]
-               if { $error == "0" } {
-                  #--- Pour une serie du type 1 - 2 - 3 - etc.
-                  set liste_serie [ lsort -integer [ liste_index $nom_generique ] ]
-               } else {
-                  #--- Pour une serie du type 01 - 02 - 03 - etc.
-                  set liste_serie [ lsort -ascii [ liste_index $nom_generique ] ]
-               }
-               #--- J'extrais la longueur et le premier indice de la serie
-               set longueur_serie [ llength $liste_serie ]
-               set indice_min [ lindex $liste_serie 0 ]
-               ::console::disp "$caption(pretraitement,liste_serie) $liste_serie \n\n"
-               ::console::disp "$caption(pretraitement,nom_generique) $nom_generique \n"
-               ::console::disp "$caption(pretraitement,image_nombre) $longueur_serie \n"
-               ::console::disp "$caption(pretraitement,image_premier_indice) $indice_min \n\n"
-               return [ list $nom_generique $longueur_serie $indice_min $liste_serie ]
-            }
-         }
-      #--- La serie commence par 0
-      } else {
-         #--- Je recherche le dernier indice de la liste
-         set dernier_indice [ expr [ lindex $liste_serie [ expr $longueur_serie - 1 ] ] + 1 ]
-         #--- Je renumerote le fichier portant l'indice 0
-         set buf_pretrait [ ::buf::create ]
-         buf$buf_pretrait extension $conf(extension,defaut)
-         buf$buf_pretrait load [ file join $audace(rep_images) $nom_generique$indice_min$ext_serie ]
-         buf$buf_pretrait save [ file join $audace(rep_images) $nom_generique$dernier_indice$ext_serie ]
-         ::buf::delete $buf_pretrait
-         file delete [ file join $audace(rep_images) $nom_generique$indice_min$ext_serie ]
-         #--- Est-ce une serie avec des fichiers manquants ?
-         set etat_serie [ numerotation_usuelle $nom_generique ]
-         if { $etat_serie == "0" } {
-            #--- Il manque des fichiers dans la serie, je propose de renumeroter la serie
-            set choix [ tk_messageBox -title "$caption(pretraitement,attention)" \
-               -message "$caption(pretraitement,indice_pas_1)\n$caption(pretraitement,fichier_manquant)\n$caption(pretraitement,renumerotation)" \
-               -icon question -type yesno ]
-            if { $choix == "yes" } {
-               renumerote $nom_generique -rep "$audace(rep_images)" -ext "$ext_serie"
-               ::console::disp "$caption(pretraitement,renumerote_termine)\n$caption(pretraitement,fichier_indice_0)\n\n"
-            } else {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,pas_renumerotation)\n$caption(pretraitement,fichier_indice_0)"
-               #--- Sortie anticipee
-               set nom_generique  ""
-               set longueur_serie ""
-               set indice_min     "1"
-               return [ list $nom_generique $longueur_serie $indice_min ]
-            }
-         } else {
-            #--- Il ne manque pas de fichiers dans la serie
-            ::console::disp "$caption(pretraitement,indice_pas_1)\n$caption(pretraitement,pas_fichier_manquant)\n$caption(pretraitement,fichier_indice_0)\n\n"
-         }
-      }
-      #--- J'extrais la liste des index de la serie
-      set error [ catch { lsort -integer [ liste_index $nom_generique ] } msg ]
-      if { $error == "0" } {
-         #--- Pour une serie du type 1 - 2 - 3 - etc.
-         set liste_serie [ lsort -integer [ liste_index $nom_generique ] ]
-      } else {
-         #--- Pour une serie du type 01 - 02 - 03 - etc.
-         set liste_serie [ lsort -ascii [ liste_index $nom_generique ] ]
-      }
-      #--- J'extrais la longueur et le premier indice de la serie
-      set longueur_serie [ llength $liste_serie ]
-      set indice_min [ lindex $liste_serie 0 ]
-      ::console::disp "$caption(pretraitement,liste_serie) $liste_serie \n\n"
-      ::console::disp "$caption(pretraitement,nom_generique) $nom_generique \n"
-      ::console::disp "$caption(pretraitement,image_nombre) $longueur_serie \n"
-      ::console::disp "$caption(pretraitement,image_premier_indice) $indice_min \n\n"
-      return [ list $nom_generique $longueur_serie $indice_min $liste_serie ]
-   }
-
-}
-
-########################## Fin du namespace pretraitement ##########################
 
 namespace eval ::conv2 {
 
@@ -564,18 +382,18 @@ namespace eval ::conv2 {
 
       #--- les boutons de commandes
       frame $this.cmd -borderwidth 1 -relief raised
-         button $this.cmd.ok -text "$caption(aud_menu_3,ok)" -width 7 \
+         button $this.cmd.ok -text "$caption(pretraitement,ok)" -width 7 \
             -command "::conv2::cmdOk"
          if { $conf(ok+appliquer)=="1" } {
             pack $this.cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
          }
-         button $this.cmd.appliquer -text "$caption(aud_menu_3,appliquer)" -width 8 \
+         button $this.cmd.appliquer -text "$caption(pretraitement,appliquer)" -width 8 \
             -command "::conv2::Process"
          pack $this.cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
-         button $this.cmd.fermer -text "$caption(aud_menu_3,fermer)" -width 7 \
+         button $this.cmd.fermer -text "$caption(pretraitement,fermer)" -width 7 \
             -command "::conv2::Fermer"
          pack $this.cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
-         button $this.cmd.aide -text "$caption(aud_menu_3,aide)" -width 7 \
+         button $this.cmd.aide -text "$caption(pretraitement,aide)" -width 7 \
             -command "::conv2::afficheAide"
          pack $this.cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
       pack $this.cmd -side top -fill x
@@ -829,7 +647,7 @@ namespace eval ::conv2 {
       global help
 
       #---
-      ::audace::showHelpItem "$help(dir,pretrait)" "1020conversion_couleurs.htm"
+      ::audace::showHelpItem "$help(dir,images)" "1030conversion_couleurs.htm"
    }
 
    #########################################################################
@@ -1574,7 +1392,7 @@ namespace eval ::traiteWindow {
       ::traiteWindow::initConf
       ::traiteWindow::confToWidget
       #---
-      set traiteWindow(captionOperation) "$caption(audace,menu,recentrer)"
+      set traiteWindow(captionOperation) "$caption(audace,menu,recentrer_manu)"
       #---
       set This $this
       if { [ winfo exists $This ] } {
@@ -1666,7 +1484,7 @@ namespace eval ::traiteWindow {
       toplevel $This
       wm resizable $This 0 0
       wm deiconify $This
-      wm title $This "$caption(audace,menu,images) - $caption(audace,menu,recentrer)"
+      wm title $This "$caption(audace,menu,images) - $caption(audace,menu,center)"
       wm geometry $This $widget(traiteWindow,position)
       wm transient $This $audace(base)
       wm protocol $This WM_DELETE_WINDOW ::traiteWindow::cmdClose
@@ -1732,7 +1550,7 @@ namespace eval ::traiteWindow {
             label $This.usr.1.lab1 -text "$caption(pretraitement,operation_serie)"
             pack $This.usr.1.lab1 -side left -padx 10 -pady 5
             #--- Liste des pretraitements disponibles
-            set list_traiteWindow [ list $caption(audace,menu,recentrer) ]
+            set list_traiteWindow [ list $caption(audace,menu,recentrer_manu) ]
             #---
             menubutton $This.usr.1.but1 -textvariable traiteWindow(captionOperation) -menu $This.usr.1.but1.menu \
                -relief raised
@@ -1743,7 +1561,7 @@ namespace eval ::traiteWindow {
                   -indicatoron "1" \
                   -value "$pretrait" \
                   -variable traiteWindow(captionOperation) \
-                  -command { set traiteWindow(operation) "serie_recentrer" }
+                  -command { set traiteWindow(operation) "aligner" }
             }
         # pack $This.usr.1 -in $This.usr -side top -fill both
 
@@ -1752,21 +1570,21 @@ namespace eval ::traiteWindow {
       #---
       frame $This.cmd -borderwidth 1 -relief raised
 
-         button $This.cmd.ok -text "$caption(aud_menu_3,ok)" -width 7 \
+         button $This.cmd.ok -text "$caption(pretraitement,ok)" -width 7 \
             -command { ::traiteWindow::cmdOk }
          if { $conf(ok+appliquer)=="1" } {
             pack $This.cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
          }
 
-         button $This.cmd.appliquer -text "$caption(aud_menu_3,appliquer)" -width 8 \
+         button $This.cmd.appliquer -text "$caption(pretraitement,appliquer)" -width 8 \
             -command { ::traiteWindow::cmdApply }
          pack $This.cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
 
-         button $This.cmd.fermer -text "$caption(aud_menu_3,fermer)" -width 7 \
+         button $This.cmd.fermer -text "$caption(pretraitement,fermer)" -width 7 \
             -command { ::traiteWindow::cmdClose }
          pack $This.cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
 
-         button $This.cmd.aide -text "$caption(aud_menu_3,aide)" -width 7 \
+         button $This.cmd.aide -text "$caption(pretraitement,aide)" -width 7 \
             -command { ::traiteWindow::afficheAide }
          pack $This.cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
 
@@ -1848,7 +1666,7 @@ namespace eval ::traiteWindow {
          return 0
       }
       if { $traiteWindow(out) == "" } {
-         if { $traiteWindow(operation) != "serie_recentrer" } {
+         if { $traiteWindow(operation) != "aligner" } {
             tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                -message "$caption(pretraitement,definir_image_sortie)"
          } else {
@@ -1863,7 +1681,7 @@ namespace eval ::traiteWindow {
 
       #--- Switch
       switch $traiteWindow(operation) {
-         "serie_recentrer" {
+         "aligner" {
             set catchError [ catch {
               ::console::affiche_resultat "Usage: registerbox in out number ?visuNo? ?first_index? ?tt_options?\n\n"
                #--- Un cadre trace avec la souris n'existe pas
@@ -1918,12 +1736,12 @@ namespace eval ::traiteWindow {
       global help traiteWindow
 
       #---
-      if { $traiteWindow(operation) == "serie_recentrer" } {
-         set traiteWindow(page_web) "1190serie_recentrer"
+      if { $traiteWindow(operation) == "aligner" } {
+         set traiteWindow(page_web) "1040aligner"
       }
 
       #---
-      ::audace::showHelpItem "$help(dir,pretrait)" "$traiteWindow(page_web).htm"
+      ::audace::showHelpItem "$help(dir,images)" "$traiteWindow(page_web).htm"
    }
 
    #
@@ -1947,7 +1765,7 @@ namespace eval ::traiteWindow {
       set traiteWindow(image_B)        "$caption(pretraitement,image_generique_sortie)"
       #---
       switch $traiteWindow(operation) {
-         "serie_recentrer" {
+         "aligner" {
             pack $This.usr.4 -in $This.usr -side bottom -fill both
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
@@ -1976,13 +1794,13 @@ namespace eval ::traiteWindow {
       }
       #--- Extraction du nom du fichier
       if { $In_Out == "1" } {
-         set traiteWindow(info_filename_in) [ ::pretraitement::afficherNomGenerique [ file tail $filename ] ]
+         set traiteWindow(info_filename_in) [ ::tkutil::afficherNomGenerique [ file tail $filename ] ]
          set traiteWindow(in)               [ lindex $traiteWindow(info_filename_in) 0 ]
          set traiteWindow(nb)               [ lindex $traiteWindow(info_filename_in) 1 ]
          set traiteWindow(valeur_indice)    [ lindex $traiteWindow(info_filename_in) 2 ]
       } elseif { $In_Out == "2" } {
-         if { $traiteWindow(operation) == "serie_recentrer" } {
-            set traiteWindow(info_filename_out) [ ::pretraitement::afficherNomGenerique [ file tail $filename ] ]
+         if { $traiteWindow(operation) == "aligner" } {
+            set traiteWindow(info_filename_out) [ ::tkutil::afficherNomGenerique [ file tail $filename ] ]
             set traiteWindow(out)               [ lindex $traiteWindow(info_filename_out) 0 ]
          } else {
             set traiteWindow(out)               [ file rootname [ file tail $filename ] ]
@@ -2127,4 +1945,764 @@ proc scar { visuNo } {
 }
 
 #####################################################################################
+
+namespace eval ::traiteFilters {
+
+   #
+   # ::traiteFilters::run sousMenu typeFiltre this
+   # Lance la boite de dialogue pour les traitements sur une image
+   # this : Chemin de la fenetre
+   #
+   proc run { sousMenu typeFiltre this } {
+      variable This
+      variable widget
+      global caption traiteFilters
+
+      #---
+      ::traiteFilters::initConf
+      ::traiteFilters::confToWidget
+      #---
+      set This $this
+      if { [ winfo exists $This ] } {
+         wm withdraw $This
+         wm deiconify $This
+         #--- Mise a jour du titre
+         wm title $This "$caption(audace,menu,images) - $sousMenu"
+         #--- Selection de la liste des fonction du menubutton
+         if { $sousMenu == $caption(audace,menu,transform) } {
+            set list_traiteFilters [ list \
+                  $caption(audace,menu,tfd) \
+                  $caption(audace,menu,tfdi) \
+                  $caption(audace,menu,acorr) \
+                  $caption(audace,menu,icorr) \
+               ]
+         } elseif { $sousMenu == $caption(audace,menu,convoluer) } {
+            set list_traiteFilters [ list $caption(audace,menu,convolution) ]
+         }
+         #--- Mise a jour de la liste des fonction du menubutton
+         $This.usr.1.but1.menu delete 0 20
+         foreach traitement $list_traiteFilters {
+            $This.usr.1.but1.menu add radiobutton -label "$traitement" \
+               -indicatoron "1" \
+               -value "$traitement" \
+               -variable traiteFilters(operation) \
+               -command { }
+         }
+         #---
+         focus $This
+      } else {
+         if { [ info exists traiteFilters(geometry) ] } {
+            set deb [ expr 1 + [ string first + $traiteFilters(geometry) ] ]
+            set fin [ string length $traiteFilters(geometry) ]
+            set widget(traiteFilters,position) "+[string range $traiteFilters(geometry) $deb $fin]"
+         }
+         createDialog $sousMenu
+      }
+      #---
+      set traiteFilters(operation) "$typeFiltre"
+   }
+
+   #
+   # ::traiteFilters::initConf
+   # Initialisation des variables de configuration
+   #
+   proc initConf { } {
+      global conf
+
+      if { ! [ info exists conf(traiteFilters,position) ] } { set conf(traiteFilters,position) "+350+75" }
+      if { ! [ info exists conf(tfd_ordre) ] }              { set conf(tfd_ordre)              "tfd_centre" }
+      if { ! [ info exists conf(tfd_format) ] }             { set conf(tfd_format)             "tfd_polaire" }
+
+      return
+   }
+
+   #
+   # ::traiteFilters::confToWidget
+   # Charge les variables de configuration dans des variables locales
+   #
+   proc confToWidget { } {
+      variable widget
+      global conf
+
+      set widget(traiteFilters,position) "$conf(traiteFilters,position)"
+   }
+
+   #
+   # ::traiteFilters::widgetToConf
+   # Charge les variables locales dans des variables de configuration
+   #
+   proc widgetToConf { } {
+      variable widget
+      global conf
+
+      set conf(traiteFilters,position) "$widget(traiteFilters,position)"
+   }
+
+   #
+   # ::traiteFilters::recup_position
+   # Recupere la position de la fenetre
+   #
+   proc recup_position { } {
+      variable This
+      variable widget
+      global traiteFilters
+
+      set traiteFilters(geometry) [wm geometry $This]
+      set deb [ expr 1 + [ string first + $traiteFilters(geometry) ] ]
+      set fin [ string length $traiteFilters(geometry) ]
+      set widget(traiteFilters,position) "+[string range $traiteFilters(geometry) $deb $fin]"
+      #---
+      ::traiteFilters::widgetToConf
+   }
+
+   #
+   # ::traiteFilters::createDialog sousMenu
+   # Creation de l'interface graphique
+   #
+   proc createDialog { sousMenu } {
+
+      variable This
+      variable widget
+      global audace caption color conf traiteFilters
+
+      #--- Initialisation
+      set traiteFilters(choix_mode) "0"
+      set traiteFilters(image_in)   ""
+      set traiteFilters(image_out)  ""
+      set traiteFilters(image_out1) ""
+      set traiteFilters(image_out2) ""
+      set traiteFilters(image_in1)  ""
+      set traiteFilters(image_in2)  ""
+
+      #---
+      set traiteFilters(avancement)     ""
+      set traiteFilters(afficher_image) "$caption(pretraitement,afficher_image_fin)"
+      set traiteFilters(disp_1)         "1"
+
+      #--- Selection de la liste des fonction du menubutton
+      if { $sousMenu == $caption(audace,menu,transform) } {
+         set list_traiteFilters [ list \
+               $caption(audace,menu,tfd) \
+               $caption(audace,menu,tfdi) \
+               $caption(audace,menu,acorr) \
+               $caption(audace,menu,icorr) \
+            ]
+      } elseif { $sousMenu == $caption(audace,menu,convoluer) } {
+         set list_traiteFilters [ list $caption(audace,menu,convolution) ]
+      }
+
+      #---
+      toplevel $This
+      wm resizable $This 0 0
+      wm deiconify $This
+      wm title $This "$caption(audace,menu,images) - $sousMenu"
+      wm geometry $This $widget(traiteFilters,position)
+      wm transient $This $audace(base)
+      wm protocol $This WM_DELETE_WINDOW ::traiteFilters::cmdClose
+
+      #---
+      frame $This.usr -borderwidth 0 -relief raised
+         frame $This.usr.1 -borderwidth 1 -relief raised
+            frame $This.usr.1.radiobutton -borderwidth 0 -relief raised
+            #--- Bouton radio 'image affichee'
+                  radiobutton $This.usr.1.radiobutton.rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 -state normal \
+                      -text "$caption(pretraitement,image_affichee)" -value 0 -variable traiteFilters(choix_mode) \
+                      -command {
+                          ::traiteFilters::change n1 n2 op
+                          ::traiteFilters::griser "$audace(base).traiteFilters"
+                      }
+                  pack $This.usr.1.radiobutton.rad0 -anchor w -side top -padx 10 -pady 5
+                  #--- Bouton radio 'image a choisir sur le disque dur'
+                  radiobutton $This.usr.1.radiobutton.rad1 \
+                      -anchor nw \
+                      -highlightthickness 0 \
+                      -padx 0 \
+                      -pady 0 \
+                      -state normal \
+                      -text "$caption(pretraitement,image_a_choisir)" \
+                      -value 1 \
+                      -variable traiteFilters(choix_mode) \
+                      -command {
+                          ::traiteFilters::change n1 n2 op
+                          ::traiteFilters::activer "$audace(base).traiteFilters"
+                      }
+                  pack $This.usr.1.radiobutton.rad1 -anchor w -side top -padx 10 -pady 5
+           # pack $This.usr.1.radiobutton -side left -padx 10 -pady 5
+
+            #---
+            menubutton $This.usr.1.but1 -textvariable traiteFilters(operation) -menu $This.usr.1.but1.menu -relief raised
+            pack $This.usr.1.but1 -side right -padx 10 -pady 5 -ipady 5
+            set m [menu $This.usr.1.but1.menu -tearoff 0]
+            foreach traitement $list_traiteFilters {
+               $m add radiobutton -label "$traitement" \
+                  -indicatoron "1" \
+                  -value "$traitement" \
+                  -variable traiteFilters(operation) \
+                  -command { }
+            }
+
+         pack $This.usr.1 -side top -fill both -ipady 5
+
+         frame $This.usr.2 -borderwidth 1 -relief raised
+         pack $This.usr.2 -side top -fill both -ipady 5
+
+         frame $This.usr.3 -borderwidth 0 -relief raised
+            frame $This.usr.3.1 -borderwidth 0 -relief flat
+               label $This.usr.3.1.lab1 -text "$caption(pretraitement,entree)"
+               pack $This.usr.3.1.lab1 -side left -padx 5 -pady 5
+               entry $This.usr.3.1.ent1 -textvariable traiteFilters(image_in)
+               pack $This.usr.3.1.ent1 -side left -padx 10 -pady 5 -fill x -expand 1
+               button $This.usr.3.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
+                  -command { ::traiteFilters::parcourir 1 }
+               pack $This.usr.3.1.explore -side left -padx 10 -pady 5 -ipady 5
+            pack $This.usr.3.1 -side top -fill both
+        # pack $This.usr.3 -side top -fill both
+
+         frame $This.usr.8 -borderwidth 1 -relief raised
+            frame $This.usr.8.1 -borderwidth 0 -relief flat
+               checkbutton $This.usr.8.1.che1 -text "$traiteFilters(afficher_image)" -variable traiteFilters(disp_1) \
+                  -state disabled
+               pack $This.usr.8.1.che1 -side left -padx 10 -pady 5
+            pack $This.usr.8.1 -side top -fill both
+        # pack $This.usr.8 -side top -fill both
+
+         frame $This.usr.9 -borderwidth 1 -relief raised
+            frame $This.usr.9.1 -borderwidth 0 -relief flat
+               label $This.usr.9.1.labURL1 -textvariable "traiteFilters(avancement)" -fg $color(blue)
+               pack $This.usr.9.1.labURL1 -side top -padx 10 -pady 5
+            pack $This.usr.9.1 -side top -fill both
+        # pack $This.usr.9 -side top -fill both
+
+         set f [ frame $This.usr.tfd_ordre -borderwidth 0 -relief raised ]
+         set g [ frame ${f}.1 -borderwidth 0 -relief flat ]
+         label ${g}.l -text "$caption(pretraitement,tfd_ordre)"
+         pack ${g}.l -side top -padx 5 -pady 5
+         pack $g -side left -fill both
+         set g [ frame ${f}.2 -borderwidth 0 -relief flat ]
+         foreach champ [ list tfd_centre tfd_normal ] {
+            radiobutton ${g}.$champ -text $caption(pretraitement,${champ}) -value $champ -variable traiteFilters(tfd_ordre)
+            pack ${g}.$champ -side left
+         }
+         pack $g -side right -fill both
+
+         set f [ frame $This.usr.tfd_format -borderwidth 0 -relief raised ]
+         set g [ frame ${f}.1 -borderwidth 0 -relief flat ]
+         label ${g}.l -text "$caption(pretraitement,tfd_format)"
+         pack ${g}.l -side top -padx 5 -pady 5
+         pack $g -side left -fill both
+         set g [ frame ${f}.2 -borderwidth 0 -relief flat ]
+         foreach champ [ list tfd_polaire tfd_cartesien ] {
+            radiobutton ${g}.$champ -text $caption(pretraitement,${champ}) -value $champ -variable traiteFilters(tfd_format)
+            pack ${g}.$champ -side left
+         }
+         pack $g -side right -fill both
+
+         set f [ frame $This.usr.tfd_sortie2 -borderwidth 0 -relief raised ]
+         set g [ frame ${f}.1 -borderwidth 0 -relief flat ]
+         label ${g}.l -text "$caption(pretraitement,tfd_sortie1)"
+         pack ${g}.l -side left -padx 5 -pady 5
+         entry ${g}.e -textvariable traiteFilters(image_out1)
+         pack ${g}.e -side left -padx 10 -pady 5 -fill x -expand 1
+         button ${g}.explore -text "$caption(pretraitement,parcourir)" -width 1 -command { ::traiteFilters::choix_nom_sauvegarde 3 }
+         pack ${g}.explore -side left -padx 10 -pady 5 -ipady 5
+         set h [ frame ${f}.2 -borderwidth 0 -relief flat ]
+         label ${h}.l -text "$caption(pretraitement,tfd_sortie2)"
+         pack ${h}.l -side left -padx 5 -pady 5
+         entry ${h}.e -textvariable traiteFilters(image_out2)
+         pack ${h}.e -side left -padx 10 -pady 5 -fill x -expand 1
+         button ${h}.explore -text "$caption(pretraitement,parcourir)" -width 1 -command { ::traiteFilters::choix_nom_sauvegarde 4 }
+         pack ${h}.explore -side left -padx 10 -pady 5 -ipady 5
+         pack $g $h -side top -fill both
+
+         set f [ frame $This.usr.tfd_entree2 -borderwidth 0 -relief raised ]
+         set g [ frame ${f}.1 -borderwidth 0 -relief flat ]
+         label ${g}.l -text "$caption(pretraitement,tfd_entree1)"
+         pack ${g}.l -side left -padx 5 -pady 5
+         entry ${g}.e -textvariable traiteFilters(image_in1)
+         pack ${g}.e -side left -padx 10 -pady 5 -fill x -expand 1
+         button ${g}.explore -text "$caption(pretraitement,parcourir)" -width 1 -command { ::traiteFilters::parcourir 5 }
+         pack ${g}.explore -side left -padx 10 -pady 5 -ipady 5
+         set h [ frame ${f}.2 -borderwidth 0 -relief flat ]
+         label ${h}.l -text "$caption(pretraitement,tfd_entree2)"
+         pack ${h}.l -side left -padx 5 -pady 5
+         entry ${h}.e -textvariable traiteFilters(image_in2)
+         pack ${h}.e -side left -padx 10 -pady 5 -fill x -expand 1
+         button ${h}.explore -text "$caption(pretraitement,parcourir)" -width 1 -command { ::traiteFilters::parcourir 6 }
+         pack ${h}.explore -side left -padx 10 -pady 5 -ipady 5
+         pack $g $h -side top -fill both
+
+         set f [ frame $This.usr.tfd_sortie1 -borderwidth 0 -relief raised ]
+         set g [ frame ${f}.1 -borderwidth 0 -relief flat ]
+         label ${g}.l -text "$caption(pretraitement,sortie)"
+         pack ${g}.l -side left -padx 5 -pady 5
+         entry ${g}.e -textvariable traiteFilters(image_out)
+         pack ${g}.e -side left -padx 10 -pady 5 -fill x -expand 1
+         button ${g}.explore -text "$caption(pretraitement,parcourir)" -width 1 -command { ::traiteFilters::parcourir 2 }
+         pack ${g}.explore -side left -padx 10 -pady 5 -ipady 5
+         pack $g -side top -fill both
+
+         set f [ frame $This.usr.icorr_entree2 -borderwidth 0 -relief raised ]
+         set g [ frame ${f}.1 -borderwidth 0 -relief flat ]
+         label ${g}.l -text "$caption(pretraitement,icorr_entree1)"
+         pack ${g}.l -side left -padx 5 -pady 5
+         entry ${g}.e -textvariable traiteFilters(image_in1)
+         pack ${g}.e -side left -padx 10 -pady 5 -fill x -expand 1
+         button ${g}.explore -text "$caption(pretraitement,parcourir)" -width 1 -command { ::traiteFilters::parcourir 5 }
+         pack ${g}.explore -side left -padx 10 -pady 5 -ipady 5
+         set h [ frame ${f}.2 -borderwidth 0 -relief flat ]
+         label ${h}.l -text "$caption(pretraitement,icorr_entree2)"
+         pack ${h}.l -side left -padx 5 -pady 5
+         entry ${h}.e -textvariable traiteFilters(image_in2)
+         pack ${h}.e -side left -padx 10 -pady 5 -fill x -expand 1
+         button ${h}.explore -text "$caption(pretraitement,parcourir)" -width 1 -command { ::traiteFilters::parcourir 6 }
+         pack ${h}.explore -side left -padx 10 -pady 5 -ipady 5
+         pack $g $h -side top -fill both
+
+      pack $This.usr -side top -fill both -expand 1
+
+      frame $This.cmd -borderwidth 1 -relief raised
+         button $This.cmd.ok -text "$caption(pretraitement,ok)" -width 7 \
+            -command { ::traiteFilters::cmdOk }
+         if { $conf(ok+appliquer)=="1" } {
+            pack $This.cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
+         }
+         button $This.cmd.appliquer -text "$caption(pretraitement,appliquer)" -width 8 \
+            -command { ::traiteFilters::cmdApply }
+         pack $This.cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
+         button $This.cmd.fermer -text "$caption(pretraitement,fermer)" -width 7 \
+            -command { ::traiteFilters::cmdClose }
+         pack $This.cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
+         button $This.cmd.aide -text "$caption(pretraitement,aide)" -width 7 \
+            -command { ::traiteFilters::afficheAide }
+         pack $This.cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
+      pack $This.cmd -side top -fill x
+
+      #--- Entry actives ou non
+      if { $traiteFilters(choix_mode) == "0" } {
+         ::traiteFilters::griser "$audace(base).traiteFilters"
+      } else {
+         ::traiteFilters::activer "$audace(base).traiteFilters"
+      }
+      #---
+      uplevel #0 trace variable traiteFilters(operation) w ::traiteFilters::change
+      #---
+      bind $This <Key-Return> {::traiteFilters::cmdOk}
+      bind $This <Key-Escape> {::traiteFilters::cmdClose}
+      #--- Focus
+      focus $This
+      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+      bind $This <Key-F1> { ::console::GiveFocus }
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $This
+   }
+
+   #
+   # ::traiteFilters::cmdOk
+   # Procedure correspondant a l'appui sur le bouton OK
+   #
+   proc cmdOk { } {
+      if { [ ::traiteFilters::cmdApply ] == "0" } { return }
+      ::traiteFilters::cmdClose
+   }
+
+   #
+   # ::traiteFilters::cmdApply
+   # Procedure correspondant a l'appui sur le bouton Appliquer
+   #
+   proc cmdApply { } {
+      global audace caption conf traiteFilters
+
+      #---
+      set traiteFilters(avancement) "$caption(pretraitement,en_cours) "
+      #---
+      set audace(artifice) "@@@@"
+      set image_in           $traiteFilters(image_in)
+      set image_out          $traiteFilters(image_out)
+      set image_out1         $traiteFilters(image_out1)
+      set image_out2         $traiteFilters(image_out2)
+      set image_in1          $traiteFilters(image_in1)
+      set image_in2          $traiteFilters(image_in2)
+      set tfd_ordre          $traiteFilters(tfd_ordre)
+      set tfd_format         $traiteFilters(tfd_format)
+      #--- Sauvegarde des reglages
+      set conf(tfd_ordre)    $traiteFilters(tfd_ordre)
+      set conf(tfd_format)   $traiteFilters(tfd_format)
+      if { ( $traiteFilters(operation) == $caption(audace,menu,tfdi) )
+       || ( $traiteFilters(operation) == $caption(audace,menu,icorr) )
+       || ( $traiteFilters(operation) == $caption(audace,menu,convolution) ) } {
+         # La TFD inverse, l'intercorrelation et la convolution requièrent 2 images en entrée
+         if { ( $traiteFilters(image_in1) == "" ) || ( $traiteFilters(image_in2) == "" ) } {
+            tk_messageBox -title $caption(pretraitement,attention) -type ok -message $caption(pretraitement,choix_image_dd)
+            set traiteFilters(avancement) ""
+            return 0
+         }
+      } else {
+         #--- Il faut saisir la constante
+         if { $traiteFilters(choix_mode) == "0" } {
+            if { [ buf$audace(bufNo) imageready ] == "0" } {
+               tk_messageBox -title $caption(pretraitement,attention) -type ok -message $caption(pretraitement,header_noimage)
+               set traiteFilters(avancement) ""
+               return 0
+            }
+         } elseif { $traiteFilters(choix_mode) == "1" } {
+            if { $traiteFilters(image_in) == "" } {
+               tk_messageBox -title $caption(pretraitement,attention) -type ok -message $caption(pretraitement,choix_image_dd)
+               set traiteFilters(avancement) ""
+               return 0
+            }
+         }
+      }
+
+      #--- Switch passe au format sur une seule ligne logique : Les accolades englobant la liste
+      #--- des choix du switch sont supprimees pour permettre l'interpretation des variables TCL
+      #--- a l'interieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
+      #--- que la commande switch continue sur la ligne suivante
+      switch $traiteFilters(operation) \
+      "$caption(audace,menu,tfd)" {
+         set dft_format "polar"
+         if { $tfd_format == "tfd_cartesien" } { set dft_format "cartesian" }
+         set dft_order "centered"
+         if { $tfd_ordre == "tfd_normal" } { set dft_order "regular" }
+         if { ( $image_out1 == $image_out2 ) && ( $traiteFilters(choix_mode) == "1" ) } {
+            tk_messageBox -title $caption(pretraitement,attention) -icon error \
+               -message $caption(pretraitement,tfd_images_differentes)
+            set traiteFilters(avancement) ""
+            return 0
+         }
+         if { $traiteFilters(choix_mode) == "1" } {
+            if { [ catch { dft2d $image_in.fit $image_out1.fit $image_out2.fit $dft_format $dft_order } message_erreur ] } {
+               tk_messageBox -title $caption(pretraitement,attention) -icon error -message $message_erreur
+            } else {
+               buf$audace(bufNo) load $image_out1.fit
+               ::confVisu::autovisu $::audace(visuNo) "-dovisu" $image_out1.fit
+            }
+         } else {
+            if { $dft_format == "polar" } {
+               set nom_1 [ file join $::audace(rep_images) modulus.fit ]
+               set nom_2 [ file join $::audace(rep_images) argument.fit ]
+            } else {
+               set nom_1 [ file join $::audace(rep_images) real.fit ]
+               set nom_2 [ file join $::audace(rep_images) imaginary.fit ]
+            }
+            set nom [ file join $audace(rep_images) [ clock milliseconds ] ]
+            append nom ".fit"
+            buf$audace(bufNo) save $nom
+            if { [ catch { dft2d $nom $nom_1 $nom_2 $dft_format $dft_order } message_erreur ] } {
+               tk_messageBox -title $caption(pretraitement,attention) -icon error -message $message_erreur
+            } else {
+               buf$audace(bufNo) load $nom_1
+               ::confVisu::autovisu $::audace(visuNo) "-dovisu" $nom_1
+            }
+            file delete $nom
+         }
+      } \
+      "$caption(audace,menu,tfdi)" {
+         # Génération d'un nom aléatoire
+         set dest [ file join $audace(rep_images) image.fit ]
+         if { [ catch { idft2d $image_in1.fit $image_in2.fit $dest } message_erreur ] } {
+            tk_messageBox -title $caption(pretraitement,attention) -icon error -message $message_erreur
+         } else {
+            buf$audace(bufNo) load $dest
+            ::confVisu::autovisu $::audace(visuNo) "-dovisu" $dest
+         }
+      } \
+      "$caption(audace,menu,acorr)" {
+         if { $traiteFilters(choix_mode) == "1" } {
+            set dest [ file join $audace(rep_images) autocorrelation.fit ]
+            if { [ catch { acorr2d ${image_in}.fit $dest } message_erreur ] } {
+               tk_messageBox -title $caption(pretraitement,attention) -icon error -message $message_erreur
+            } else {
+               buf$audace(bufNo) load $dest
+               ::confVisu::autovisu $::audace(visuNo) "-dovisu" $dest
+            }
+         } else {
+            # Génération d'un nom aléatoire
+            set nom_s [ file join $audace(rep_images) [ clock milliseconds ] ]
+            append nom_s ".fit"
+            set nom_d [ file join $audace(rep_images) autocorrelation.fit ]
+            buf$audace(bufNo) save $nom_s
+            if { [ catch { acorr2d $nom_s $nom_d } message_erreur ] } {
+               tk_messageBox -title $caption(pretraitement,attention) -icon error -message $message_erreur
+            } else {
+               buf$audace(bufNo) load $nom_d
+               ::confVisu::autovisu $::audace(visuNo) "-dovisu" $nom_d
+            }
+            file delete $nom_s
+         }
+      } \
+      "$caption(audace,menu,icorr)" {
+         set dest [ file join $audace(rep_images) crosscorrelation.fit ]
+         if { [ catch { icorr2d ${image_in1}.fit ${image_in2}.fit $dest } message_erreur ] } {
+            tk_messageBox -title $caption(pretraitement,attention) -icon error -message $message_erreur
+         } else {
+            buf$audace(bufNo) load $dest
+            ::confVisu::autovisu $::audace(visuNo) "-dovisu" $dest
+         }
+      } \
+      "$caption(audace,menu,convolution)" {
+         set dest [ file join $audace(rep_images) convolution.fit ]
+         if { [ catch { conv2d ${image_in1}.fit ${image_in2}.fit $dest denorm } message_erreur ] } {
+            tk_messageBox -title $caption(pretraitement,attention) -icon error -message $message_erreur
+         } else {
+            buf$audace(bufNo) load $dest
+            ::confVisu::autovisu $::audace(visuNo) "-dovisu" $dest
+         }
+      }
+      ::traiteFilters::recup_position
+   }
+
+   #
+   # ::traiteFilters::afficheAide
+   # Procedure correspondant a l'appui sur le bouton Aide
+   #
+   proc afficheAide { } {
+      global help caption traiteFilters
+
+      if { $traiteFilters(operation) == $caption(audace,menu,tfd) } {
+         set traiteFilters(page_web) "1120TFD"
+      } elseif { $traiteFilters(operation) == $caption(audace,menu,tfdi) } {
+         set traiteFilters(page_web) "1130TFDInverse"
+      } elseif { $traiteFilters(operation) == $caption(audace,menu,acorr) } {
+         set traiteFilters(page_web) "1140autocorrelation"
+      } elseif { $traiteFilters(operation) == $caption(audace,menu,icorr) } {
+         set traiteFilters(page_web) "1150intercorrelation"
+      } elseif { $traiteFilters(operation) == $caption(audace,menu,convolution) } {
+         set traiteFilters(page_web) "1160convolution"
+      }
+
+      #---
+      ::audace::showHelpItem "$help(dir,images)" "$traiteFilters(page_web).htm"
+   }
+
+   #
+   # ::traiteFilters::cmdClose
+  # Procedure correspondant a l'appui sur le bouton Fermer
+   #
+   proc cmdClose { } {
+       variable This
+
+       ::traiteFilters::recup_position
+       destroy $This
+       unset This
+   }
+
+   #
+   # ::traiteFilters::change n1 n2 op
+   # Adapte l'interface graphique en fonction du choix
+   #
+   proc change { n1 n2 op } {
+      variable This
+      global audace caption conf traiteFilters
+
+      #--- Initialisation des variables
+      set traiteFilters(avancement)   ""
+      set traiteFilters(tfd_ordre)    $conf(tfd_ordre)
+      set traiteFilters(tfd_format)   $conf(tfd_format)
+      #--- Switch passe au format sur une seule ligne logique : Les accolades englobant la liste
+      #--- des choix du switch sont supprimees pour permettre l'interpretation des variables TCL
+      #--- a l'interieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
+      #--- que la commande switch continue sur la ligne suivante
+      switch $traiteFilters(operation) \
+         "$caption(audace,menu,tfd)" {
+            if { $traiteFilters(choix_mode) == "0" } {
+               pack $This.usr.1.radiobutton -side left -padx 10 -pady 5 -before $This.usr.1.but1
+               pack $This.usr.3 $This.usr.tfd_sortie2 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.tfd_sortie1
+               pack forget $This.usr.7
+               pack forget $This.usr.8
+               pack forget $This.usr.9
+               pack $This.usr.tfd_ordre -in $This.usr.2 -side top -fill both
+               pack $This.usr.tfd_format -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.tfd_entree2
+               pack forget $This.usr.icorr_entree2
+            } elseif { $traiteFilters(choix_mode) == "1" } {
+               pack $This.usr.1.radiobutton -side left -padx 10 -pady 5 -before $This.usr.1.but1
+               pack $This.usr.3 $This.usr.tfd_sortie2 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.7
+               pack forget $This.usr.8
+               pack forget $This.usr.9
+               pack $This.usr.tfd_ordre -in $This.usr.2 -side top -fill both
+               pack $This.usr.tfd_format -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.tfd_sortie1
+               pack forget $This.usr.tfd_entree2
+               pack forget $This.usr.icorr_entree2
+            }
+         } \
+         "$caption(audace,menu,tfdi)" {
+            pack forget $This.usr.1.radiobutton
+            pack forget $This.usr.3
+            pack $This.usr.tfd_entree2 -in $This.usr.2 -side top -fill both
+            pack forget $This.usr.7
+            pack forget $This.usr.8
+            pack forget $This.usr.9
+            pack forget $This.usr.tfd_ordre
+            pack forget $This.usr.tfd_format
+            pack forget $This.usr.tfd_sortie1
+            pack forget $This.usr.tfd_sortie2
+            pack forget $This.usr.icorr_entree2
+         } \
+         "$caption(audace,menu,acorr)" {
+            pack $This.usr.1.radiobutton -side left -padx 10 -pady 5 -before $This.usr.1.but1
+            pack $This.usr.3 -in $This.usr.2 -side top -fill both
+            pack forget $This.usr.7
+            pack forget $This.usr.8
+            pack forget $This.usr.9
+            pack forget $This.usr.tfd_ordre
+            pack forget $This.usr.tfd_format
+            pack forget $This.usr.tfd_entree2
+            pack forget $This.usr.tfd_sortie1
+            pack forget $This.usr.tfd_sortie2
+            pack forget $This.usr.icorr_entree2
+         } \
+         "$caption(audace,menu,icorr)" {
+            pack forget $This.usr.1.radiobutton
+            pack forget $This.usr.3
+            pack $This.usr.icorr_entree2 -in $This.usr.2 -side top -fill both
+            pack forget $This.usr.7
+            pack forget $This.usr.8
+            pack forget $This.usr.9
+            pack forget $This.usr.tfd_ordre
+            pack forget $This.usr.tfd_format
+            pack forget $This.usr.tfd_sortie1
+            pack forget $This.usr.tfd_sortie2
+            pack forget $This.usr.tfd_entree2
+         } \
+         "$caption(audace,menu,convolution)" {
+            pack forget $This.usr.1.radiobutton
+            pack forget $This.usr.3
+            pack $This.usr.icorr_entree2 -in $This.usr.2 -side top -fill both
+            pack forget $This.usr.7
+            pack forget $This.usr.8
+            pack forget $This.usr.9
+            pack forget $This.usr.tfd_ordre
+            pack forget $This.usr.tfd_format
+            pack forget $This.usr.tfd_sortie1
+            pack forget $This.usr.tfd_sortie2
+            pack forget $This.usr.tfd_entree2
+         }
+      #--- Rend toujours visible le nom du fichier dans les entry
+      update
+      $This.usr.3.1.ent1 xview end
+      $This.usr.tfd_sortie2.1.e xview end
+      $This.usr.tfd_sortie2.2.e xview end
+      $This.usr.tfd_entree2.1.e xview end
+      $This.usr.icorr_entree2.1.e xview end
+      $This.usr.tfd_entree2.2.e xview end
+      $This.usr.icorr_entree2.2.e xview end
+   }
+
+   #
+   # ::traiteFilters::parcourir
+   # Ouvre un explorateur pour choisir un fichier
+   #
+   proc parcourir { In_Out } {
+      variable This
+      global audace traiteFilters
+
+      #--- Fenetre parent
+      set fenetre "$audace(base).traiteFilters"
+      #--- Ouvre la fenetre de choix des images
+      set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
+      #--- Nom du fichier avec le chemin et sans son extension
+      if { $In_Out == "1" } {
+         set traiteFilters(image_in) [ file rootname $filename ]
+         $This.usr.3.1.ent1 xview end
+      } elseif { $In_Out == "2" } {
+         set traiteFilters(image_out) [ file rootname $filename ]
+      } elseif { $In_Out == "3" } {
+         set traiteFilters(image_out1) [ file rootname $filename ]
+         $This.usr.tfd_sortie2.1.e xview end
+      } elseif { $In_Out == "4" } {
+         set traiteFilters(image_out2) [ file rootname $filename ]
+         $This.usr.tfd_sortie2.2.e xview end
+      } elseif { $In_Out == "5" } {
+         set traiteFilters(image_in1) [ file rootname $filename ]
+         $This.usr.tfd_entree2.1.e xview end
+         $This.usr.icorr_entree2.1.e xview end
+      } elseif { $In_Out == "6" } {
+         set traiteFilters(image_in2) [ file rootname $filename ]
+         $This.usr.tfd_entree2.2.e xview end
+         $This.usr.icorr_entree2.2.e xview end
+      }
+   }
+
+   #
+   # ::traiteFilters::choix_nom_sauvegarde
+   # Ouvre un explorateur pour choisir un nom de fichier
+   #
+   proc choix_nom_sauvegarde { In_Out } {
+      variable This
+      global audace traiteFilters
+
+      #--- Fenetre parent
+      set fenetre "$audace(base).traiteFilters"
+      #--- Ouvre la fenetre de choix des images
+      set filename [ ::tkutil::box_save $fenetre $audace(rep_images) $audace(bufNo) "1" ]
+      #--- Nom du fichier avec le chemin et sans son extension
+      if { $In_Out == "1" } {
+         set traiteFilters(image_in) [ file rootname $filename ]
+         $This.usr.3.1.ent1 xview end
+      } elseif { $In_Out == "2" } {
+         set traiteFilters(image_out) [ file rootname $filename ]
+      } elseif { $In_Out == "3" } {
+         set traiteFilters(image_out1) [ file rootname $filename ]
+         $This.usr.tfd_sortie2.1.e xview end
+      } elseif { $In_Out == "4" } {
+         set traiteFilters(image_out2) [ file rootname $filename ]
+         $This.usr.tfd_sortie2.2.e xview end
+      } elseif { $In_Out == "5" } {
+         set traiteFilters(image_in1) [ file rootname $filename ]
+         $This.usr.tfd_entree2.1.e xview end
+         $This.usr.icorr_entree2.1.e xview end
+      } elseif { $In_Out == "6" } {
+         set traiteFilters(image_in2) [ file rootname $filename ]
+         $This.usr.tfd_entree2.2.e xview end
+         $This.usr.icorr_entree2.2.e xview end
+      }
+   }
+
+   #
+   # ::traiteFilters::griser this
+   # Grise les widgets disabled
+   # this : Chemin de la fenetre
+   #
+   proc griser { this } {
+      variable This
+      global traiteFilters
+
+      #--- Initialisation des variables
+      set traiteFilters(avancement) ""
+      #--- Fonction destinee a inhiber et griser des widgets
+      set This $this
+      $This.usr.3.1.explore configure -state disabled
+      $This.usr.3.1.ent1 configure -state disabled
+      $This.usr.tfd_sortie2.1.e configure -state disabled
+      $This.usr.tfd_sortie2.1.explore configure -state disabled
+      $This.usr.tfd_sortie2.2.e configure -state disabled
+      $This.usr.tfd_sortie2.2.explore configure -state disabled
+   }
+
+   #
+   # ::traiteFilters::activer this
+   # Active les widgets
+   # this : Chemin de la fenetre
+   #
+   proc activer { this } {
+      variable This
+      global traiteFilters
+
+      #--- Initialisation des variables
+      set traiteFilters(avancement) ""
+      #--- Fonction destinee a activer des widgets
+      set This $this
+      $This.usr.3.1.explore configure -state normal
+      $This.usr.3.1.ent1 configure -state normal
+      $This.usr.tfd_sortie2.1.e configure -state normal
+      $This.usr.tfd_sortie2.1.explore configure -state normal
+      $This.usr.tfd_sortie2.2.e configure -state normal
+      $This.usr.tfd_sortie2.2.explore configure -state normal
+   }
+
+}
+########################## Fin du namespace traiteFilters ##########################
 
