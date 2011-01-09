@@ -52,3 +52,4 @@ test aligner_automatique {aligner des translatees de m45_champ.fit} -constraints
    ::testaudela::clicButton $w.cmd.fermer
    file delete m45_champ.fit trans1.fit trans2.fit trans3.fit trans4.fit
 } -result "10"
+

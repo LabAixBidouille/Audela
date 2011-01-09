@@ -510,3 +510,4 @@ test imaseries_sorty {valeur triée des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_
    ::blt::vector destroy attendu mesure redValue greenValue blueValue
    return $result
 } -cleanup $CLEANUP2 -result "13"
+
