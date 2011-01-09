@@ -5,7 +5,7 @@
 #
 # @brief Outil pour l'analyse photométrique d'une image.
 #
-# $Id: photometrie.cap,v 1.1 2011-01-09 14:37:25 jacquesmichelet Exp $
+# $Id: photometrie.cap,v 1.2 2011-01-09 17:27:50 jacquesmichelet Exp $
 #
 
 
@@ -62,7 +62,7 @@ set photometrie_texte(numero)                   "Id"
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-    set photometrie_texte(titre_menu)               "Photometrie différentielle"
+    set photometrie_texte(titre_menu)               "Photométrie différentielle"
     set photometrie_texte(err_pas_d_image)          "Veuillez d'abord afficher une image."
     set photometrie_texte(err_spectro)              "Calculs photométriques impossibles sur une image 1D."
     set photometrie_texte(err_coordonnees)          "Coordonnées incorrectes"
