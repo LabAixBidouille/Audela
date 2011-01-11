@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: astrometry.tcl,v 1.19 2010-10-23 10:10:58 robertdelmas Exp $
+# Mise à jour $Id: astrometry.tcl,v 1.20 2011-01-11 22:06:55 robertdelmas Exp $
 #
 
 #============================================================
@@ -1153,26 +1153,28 @@ namespace eval ::astrometry {
    proc closeJpeg { } {
       variable astrom
 
-      #--- Verifie si la fenetre existe
-      if { ! [ winfo exist $astrom(This_check) ] } {
-         return
+      if { [ info exists astrom(This_check) ] } {
+         #--- Verifie si la fenetre existe
+         if { ! [ winfo exist $astrom(This_check) ] } {
+            return
+         }
+         #--- Supprime les fichiers temporaires
+         if { $astrom(delete_files) == "1" } {
+            ::astrometry::delete_lst
+         }
+         #--- Supprime les images temporaires
+         if { $astrom(delete_images) == "1" } {
+            ::astrometry::delete_dummy
+         }
+         #--- Supprime la visu
+         visu::delete $astrom(visuNo)
+         #--- Supprime la photo
+         image delete imagevisu1000
+         #--- Supprime le buffer
+         buf::delete $astrom(bufNo)
+         #--- Detruit la fenetre
+         destroy $astrom(This_check)
       }
-      #--- Supprime les fichiers temporaires
-      if { $astrom(delete_files) == "1" } {
-         ::astrometry::delete_lst
-      }
-      #--- Supprime les images temporaires
-      if { $astrom(delete_images) == "1" } {
-         ::astrometry::delete_dummy
-      }
-      #--- Supprime la visu
-      visu::delete $astrom(visuNo)
-      #--- Supprime la photo
-      image delete imagevisu1000
-      #--- Supprime le buffer
-      buf::delete $astrom(bufNo)
-      #--- Detruit la fenetre
-      destroy $astrom(This_check)
    }
 
    proc delete_lst { } {
