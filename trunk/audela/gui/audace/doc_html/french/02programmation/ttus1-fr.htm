@@ -5,7 +5,7 @@
   <title>Librairie TT : Manuel Utilisateur</title>
 </head>
 <body>
-<p class="date">Date de mise &#224; jour : 08 janvier 2011</p>
+<p class="date">Date de mise &#224; jour : 15 janvier 2011</p>
 <h1>LIB TT - Librairie de pr&#233;traitement d'images
 astronomiques</h1>
 <h1>Manuel Utilisateur</h1>
@@ -399,9 +399,9 @@ entr&#233;e.</p>
     <h3><a name="INVERT" id="INVERT"></a>Fonction INVERT</h3>
     <p>Echange les pixels de l'image en fonction de l'option
 pr&#233;cis&#233;e :</p>
-    <p>MIRROR : l'image est invers&#233;e gauche droite.</p>
-    <p>FLIP : l'image est invers&#233;e haut bas.</p>
-    <p>XY : l'image est transpos&#233;e (&#233;change des lignes et
+    <p>MIRROR : L'image est invers&#233;e gauche droite.</p>
+    <p>FLIP : L'image est invers&#233;e haut bas.</p>
+    <p>XY : 'image est transpos&#233;e (&#233;change des lignes et
 des colonnes).</p>
     <p>Les mots cl&#233; d'astrom&#233;trie (WCS),
 &#233;ventuellement pr&#233;sents dans l'en-t&#234;te FITS, sont
@@ -721,20 +721,20 @@ qu'il y en a en entr&#233;e.</p>
 kernel est carr&#233; est comporte [kernel_width] pixels. Les
 valeurs du kernel sont pr&#233;d&#233;finies en fonction du
 [kernel_type]</p>
-    <p>kernel_type=fh : filtre passe haut</p>
-    <p>kernel_type=fb : filtre passe bas</p>
-    <p>kernel_type=med : filtre m&#233;dian</p>
-    <p>kernel_type=min : filtre minimum</p>
-    <p>kernel_type=max : filtre maximum</p>
-    <p>kernel_type=mean : filtre moyen</p>
-    <p>kernel_type=gradleft : filtre gradient &#233;clair&#233; par
+    <p>kernel_type=fh : Filtre passe-bas</p>
+    <p>kernel_type=fb : Filtre passe-haut</p>
+    <p>kernel_type=med : Filtre m&#233;dian</p>
+    <p>kernel_type=min : Filtre moyen<br>
+    </p>
+    <p>kernel_type=max : Filtre minimum</p>
+    <p>kernel_type=mean : Filtre maximum</p>
+    <p>kernel_type=gradleft : Filtre gradient &#233;clair&#233; par
+le haut</p>
+    <p>kernel_type=gradright : Filtre gradient &#233;clair&#233; par
 la gauche</p>
-    <p>kernel_type=gradright : filtre gradient &#233;clair&#233; par
+    <p>kernel_type=gradup : Filtre gradient &#233;clair&#233; par le bas</p>
+    <p>kernel_type=graddown : Filtre gradient &#233;clair&#233; par
 la droite</p>
-    <p>kernel_type=gradup : filtre gradient &#233;clair&#233; par le
-haut</p>
-    <p>kernel_type=graddown : filtre gradient &#233;clair&#233; par
-le bas</p>
     <p>L'argument de [kernel_coef] permet de r&#233;gler
 l'efficacit&#233; d'action du filtre. Cette efficacit&#233; est
 nulle (le filtre n'a aucun effet) si la valeur vaut 1.
@@ -843,6 +843,95 @@ avion, etc.).</p>
 <h2>3.6. Les fonctions pour 'Extraire des informations'</h2>
 <ol>
   <li>
+    <h3><a name="PROFILE" id="PROFILE"></a>Fonction PROFILE</h3>
+    <p>Extrait la valeur num&#233;rique des pixels d'une ligne ou
+d'une colonne dans un fichier texte [filename]. [direction]=x ou
+y respectivement pour effectuer le profil selon les lignes ou les
+colonnes. [offset] repr&#233;sente le num&#233;ro de ligne ou de
+colonne sur lequel sera effectu&#233; le profil. Si
+[direction]=x, alors [offset] peut &#234;tre compris entre 1 et
+le nombre de colonnes. Si [direction]=y, alors [offset] peut
+&#234;tre compris entre 1 et le nombre de lignes. Le fichier
+[filename] contient une ent&#234;te de 1 ligne sur 2
+colonnes.</p>
+    <p>Exemple de script pour extraire la colonne (direction=y) de
+coordonn&#233;e x (offset) vers un fichier profile.txt :</p>
+    <pre>ttscript2 "IMA/SERIES . $file . . $ext . $file . $ext PROFILE direction=y offset=1 filename=profile.txt"<br></pre>
+    <p>Le fichier profile.txt se pr&#233;sente ainsi :<br>
+pixel value of the pixel<br>
+1 13.000000<br>
+2 9.275490<br>
+3 9.827091</p>
+    <p>Le fichier est directement copiable dans Excel ou peut
+&#234;tre lu pour recopier les valeurs dans un vecteur (liste de
+3474 valeurs pour un .CR2 !)</p>
+    <p>Dans l'exemple ci-dessus on a extrait les valeurs d'un fichier
+binn&#233; n'ayant qu'une seule colonne. Pour extraire une ligne
+particuli&#232;re d'une image :</p>
+    <pre>ttscript2 "IMA/SERIES . $file . . $ext . $file . $ext PROFILE direction=x offset=$y filename=profile.txt"<br></pre>
+Pour extraire une seule colonne particuli&#232;re :
+    <pre>ttscript2 "IMA/SERIES . $file . . $ext . $file . $ext PROFILE direction=y offset=$x filename=profile.txt"<br></pre>
+  </li>
+  <li>
+    <h3><a name="PROFILE2" id="PROFILE2"></a>Fonction PROFILE2</h3>
+    <p>Extrait la valeur num&#233;rique des pixels d'une ligne ou
+d'une colonne dans un fichier texte [filename]. [direction]=x ou
+y respectivement pour effectuer le profil selon les lignes ou les
+colonnes. [offset] repr&#233;sente le num&#233;ro de ligne ou de
+colonne sur lequel sera effectu&#233; le profil. Si
+[direction]=x, alors [offset] peut &#234;tre compris entre 1 et
+le nombre de colonnes. Si [direction]=y, alors [offset] peut
+&#234;tre compris entre 1 et le nombre de lignes. A la
+diff&#233;rence de PROFIL le fichier [filename] ne contient pas
+d'ent&#234;te.</p>
+  </li>
+  <li>
+    <h3><a name="BINY" id="BINY"></a>Fonction BINY</h3>
+    <p>Attribue, &#224; chaque colonne, une valeur constante
+&#233;gale &#224; la somme de tous les pixels de cette colonne
+entre les pixels [y1] et [y2]. L'image finale comporte [height]
+colonnes (20 par d&#233;faut).</p>
+    <p>Exemple de script pour additionner tous les pixels de chaque
+colonne. L'image finale ne contient qu'une seule ligne ; comme on
+additionne tous les valeurs, on passe en 32 bits pour garder une
+grande amplitude de valeur ; $in est le nom de l'image
+d'entr&#233;e , $ext l'extension, bin_y$in le nom de l'image de
+sortie :</p>
+    <pre>ttscript2 "IMA/SERIES . $in . . $ext . biny_$in . $ext BINY y1=1 y2=$naxis2 height=1 bitpix=32"<br>    <br></pre>
+    <p>L'image finale contient une seule ligne (height=1).</p>
+  </li>
+  <li>
+    <h3><a name="MEDIANY" id="MEDIANY"></a>Fonction MEDIANY</h3>
+    <p>Attribue, &#224; chaque colonne, une valeur constante
+&#233;gale &#224; la m&#233;diane de tous les pixels de cette
+colonne entre les pixels [y1] et [y2]. L'image finale comporte
+[height] colonnes (20 par d&#233;faut).</p>
+    <p>C'est le parall&#232;le de BINY : la somme est remplac&#233;e
+par la m&#233;diane.</p>
+  </li>
+  <li>
+    <h3><a name="SORTY" id="SORTY"></a>Fonction SORTY</h3>
+    <p>Attribue, &#224; chaque colonne, une valeur constante
+&#233;gale &#224; la valeur tri&#233;e &#224; [percent] (=50 pour
+la m&#233;diane, =100 pour le maximum) de tous les pixels de
+cette colonne entre les pixels [y1] et [y2]. L'image finale
+comporte [height] colonnes (20 par d&#233;faut).</p>
+    <p>C'est le parall&#232;le de BINY : la somme est remplac&#233;e
+par la valeur tri&#233;e (CF <a href="ttus1-fr.htm#SORT">IMA/STACK
+SORT</a>).</p>
+  </li>
+  <li
+ style="list-style-type: none; list-style-image: none; list-style-position: outside;">
+    <p style="color: rgb(0, 0, 0);">Ces fonctions permettent
+d'extraire les valeurs d'intensit&#233; dans un fichier .txt.
+Elles ne peuvent traiter qu'une seule image &#224; la fois : si
+on traitait une s&#233;rie ou une liste d&#233;pareill&#233;e,
+les fichiers produits seraient &#233;cras&#233;s &#224;
+l'exception du dernier. Le nom de l'image de sortie est identique
+&#224; celui de l'image d'entr&#233;e.<br>
+    </p>
+  </li>
+  <li>
     <h3><a name="BINX" id="BINX"></a>Fonction BINX</h3>
     <p>Attribue, &#224; chaque ligne, une valeur constante &#233;gale
 &#224; la somme de tous les pixels de cette ligne entre les
@@ -878,101 +967,14 @@ par la valeur tri&#233;e (CF <a href="#SORT">IMA/STACK
 SORT</a>).</p>
   </li>
   <li>
-    <h3><a name="BINY" id="BINY"></a>Fonction BINY</h3>
-    <p>Attribue, &#224; chaque colonne, une valeur constante
-&#233;gale &#224; la somme de tous les pixels de cette colonne
-entre les pixels [y1] et [y2]. L'image finale comporte [height]
-colonnes (20 par d&#233;faut).</p>
-    <p>Exemple de script pour additionner tous les pixels de chaque
-colonne. L'image finale ne contient qu'une seule ligne ; comme on
-additionne tous les valeurs, on passe en 32 bits pour garder une
-grande amplitude de valeur ; $in est le nom de l'image
-d'entr&#233;e , $ext l'extension, bin_y$in le nom de l'image de
-sortie :</p>
-    <pre>ttscript2 "IMA/SERIES . $in . . $ext . biny_$in . $ext BINY y1=1 y2=$naxis2 height=1 bitpix=32"<br>    <br></pre>
-    <p>L'image finale contient une seule ligne (height=1).</p>
-  </li>
-  <li>
-    <h3><a name="MEDIANY" id="MEDIANY"></a>Fonction MEDIANY</h3>
-    <p>Attribue, &#224; chaque colonne, une valeur constante
-&#233;gale &#224; la m&#233;diane de tous les pixels de cette
-colonne entre les pixels [y1] et [y2]. L'image finale comporte
-[height] colonnes (20 par d&#233;faut).</p>
-    <p>C'est le parall&#232;le de BINY : la somme est remplac&#233;e
-par la m&#233;diane.</p>
-  </li>
-  <li>
-    <h3><a name="SORTY" id="SORTY"></a>Fonction SORTY</h3>
-    <p>Attribue, &#224; chaque colonne, une valeur constante
-&#233;gale &#224; la valeur tri&#233;e &#224; [percent] (=50 pour
-la m&#233;diane, =100 pour le maximum) de tous les pixels de
-cette colonne entre les pixels [y1] et [y2]. L'image finale
-comporte [height] colonnes (20 par d&#233;faut).</p>
-    <p>C'est le parall&#232;le de BINY : la somme est remplac&#233;e
-par la valeur tri&#233;e (CF <a href="#SORT">IMA/STACK
-SORT</a>).</p>
-  </li>
-  <li
- style="list-style-type: none; list-style-image: none; list-style-position: outside;">
-    <p style="color: rgb(0, 0, 0);">Ces fonctions permettent
-d'extraire les valeurs d'intensit&#233; dans un fichier .txt.
-Elles ne peuvent traiter qu'une seule image &#224; la fois : si
-on traitait une s&#233;rie ou une liste d&#233;pareill&#233;e,
-les fichiers produits seraient &#233;cras&#233;s &#224;
-l'exception du dernier. Le nom de l'image de sortie est identique
-&#224; celui de l'image d'entr&#233;e.</p>
-  </li>
-  <li>
-    <h3><a name="PROFILE" id="PROFILE"></a>Fonction PROFILE</h3>
-    <p>Extrait la valeur num&#233;rique des pixels d'une ligne ou
-d'une colonne dans un fichier texte [filename]. [direction]=x ou
-y respectivement pour effectuer le profil selon les lignes ou les
-colonnes. [offset] repr&#233;sente le num&#233;ro de ligne ou de
-colonne sur lequel sera effectu&#233; le profil. Si
-[direction]=x, alors [offset] peut &#234;tre compris entre 1 et
-le nombre de colonnes. Si [direction]=y, alors [offset] peut
-&#234;tre compris entre 1 et le nombre de lignes. Le fichier
-[filename] contient une ent&#234;te de 1 ligne sur 2
-colonnes.</p>
-    <p>Exemple de script pour extraire la colonne (direction=y) de
-coordonn&#233;e x (offset) vers un fichier profile.txt :</p>
-    <pre>ttscript2 "IMA/SERIES . $file . . $ext . $file . $ext PROFILE direction=y offset=1 filename=profile.txt"<br>  <br></pre>
-    <p>Le fichier profile.txt se pr&#233;sente ainsi :<br>
-pixel value of the pixel<br>
-1 13.000000<br>
-2 9.275490<br>
-3 9.827091</p>
-    <p>Le fichier est directement copiable dans Excel ou peut
-&#234;tre lu pour recopier les valeurs dans un vecteur (liste de
-3474 valeurs pour un .CR2 !)</p>
-    <p>Dans l'exemple ci-dessus on a extrait les valeurs d'un fichier
-binn&#233; n'ayant qu'une seule colonne. Pour extraire une ligne
-particuli&#232;re d'une image :</p>
-    <pre>ttscript2 "IMA/SERIES . $file . . $ext . $file . $ext PROFILE direction=x offset=$y filename=profile.txt"<br>    <br></pre>
-Pour extraire une seule colonne particuli&#232;re :
-    <pre>ttscript2 "IMA/SERIES . $file . . $ext . $file . $ext PROFILE direction=y offset=$x filename=profile.txt"<br>   <br></pre>
-  </li>
-  <li>
-    <h4><a name="PROFILE2" id="PROFILE2"></a>Fonction PROFILE2</h4>
-    <p>Extrait la valeur num&#233;rique des pixels d'une ligne ou
-d'une colonne dans un fichier texte [filename]. [direction]=x ou
-y respectivement pour effectuer le profil selon les lignes ou les
-colonnes. [offset] repr&#233;sente le num&#233;ro de ligne ou de
-colonne sur lequel sera effectu&#233; le profil. Si
-[direction]=x, alors [offset] peut &#234;tre compris entre 1 et
-le nombre de colonnes. Si [direction]=y, alors [offset] peut
-&#234;tre compris entre 1 et le nombre de lignes. A la
-diff&#233;rence de PROFIL le fichier [filename] ne contient pas
-d'ent&#234;te.</p>
-  </li>
-  <li>
     <h3><a name="MATRIX" id="MATRIX"></a>Fonction MATRIX</h3>
-    <p>Extrait une fen&#234;tre [x1] [x2] [y1] [y2] de l'image et
+  </li>
+</ol>
+<p style="text-align: left; margin-left: 40px;">Extrait une fen&#234;tre
+[x1] [x2] [y1] [y2] de l'image et
 &#233;crit les valeurs de ces pixels dans un fichier texte
 [filematrix]. L'image de sortie est la m&#234;me que celle
 d'entr&#233;e.</p>
-  </li>
-</ol>
 <h2>3.7. Les fonctions 'r&#233;gistration'</h2>
 <ol>
   <li>

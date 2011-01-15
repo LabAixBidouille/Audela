@@ -5,12 +5,11 @@
   <title>Aligner une s&#233;rie d'images</title>
 </head>
 <body>
-<p class="date">Date de mise &#224; jour : 08 janvier 2011</p>
+<p class="date">Date de mise &#224; jour : 11 janvier 2011</p>
 <h1><a name="MANUEL" id="MANUEL">Aligner une s&#233;rie
 d'images</a></h1>
 <h2>1. Aligner manuellement</h2>
 <pre>
-
 
 </pre>
 <h2><a name="AUTO" id="AUTO">2. Aligner automatiquement</a></h2>
@@ -19,12 +18,25 @@ d'images</a></h1>
 suivantes :</p>
 <ul>
   <li>Calcul des translations &#224; effectuer pour que le contenu
-des images se recouvrent au mieux.</li>
+des images se recouvrent au mieux avec une pr&#233;cision inf&#233;rieure au
+pixel.</li>
   <li>Translation effective de chaque image.</li>
   <li>Recadrage des images pour &#233;liminer les zones sans
 recouvrement.</li>
 </ul>
-<h3>2.2 Param&#233;trage</h3>
+<h3>2.2 Quelles images faut-il aligner ?</h3>
+<p>La r&#233;ponse d&#233;pend de l'origine des images :</p>
+<ul>
+  <li>Les images issues de cam&#233;ras CCD peuvent &#234;tre
+align&#233;es &#224; l'issue du pr&#233;traitement, apr&#232;s
+correction avec les images de Pr&#233;charge, de Noir et de
+P.L.U.</li>
+  <li>Les images issues des APN doivent &#234;tre converties en
+images couleurs RVB avant d'&#234;tre align&#233;es pour
+&#233;viter les inconv&#233;nients induits par le codage sous
+forme de matrice de Bayer.</li>
+</ul>
+<h3>2.3 Param&#233;trage</h3>
 <p>Il suffit de cocher les images &#224; aligner sur l'image de
 r&#233;f&#233;rence (&#224; saisir dans la ligne
 <b>image_ref</b>) et d'indiquer le nom g&#233;n&#233;rique des
