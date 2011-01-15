@@ -1,6 +1,6 @@
 #
 # Fichier : calaphot.cap
-# Mise a jour $Id: calaphot.cap,v 1.17 2011-01-09 14:33:58 jacquesmichelet Exp $
+# Mise a jour $Id: calaphot.cap,v 1.18 2011-01-15 09:29:35 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -11,7 +11,7 @@ global langage
 
 # Hors version
 set calaphot(texte,titre)                  "Calaphot"
-set calaphot(texte,copyright)              "(c)2001-2010 O. Thizy & J. Michelet"
+set calaphot(texte,copyright)              "(c)2001-2011   O. Thizy & J. Michelet"
 
 # *************** Version anglaise ****************************
 
