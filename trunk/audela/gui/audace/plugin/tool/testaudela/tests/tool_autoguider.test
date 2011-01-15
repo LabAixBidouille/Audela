@@ -9,7 +9,10 @@ test tool_autoguider_connect_tel {connect telescope} -constraints {
    ::confTel::selectNotebook "ascom"
    after 300
    #--- je selectionne le driver "simulator"
-   ::testaudela::clicCombobox  .audace.confTel.usr.onglet.fascom.driver  "{} ScopeSim.Telescope"
+   set catchError [ catch { ::testaudela::clicCombobox .audace.confTel.usr.onglet.fascom.driver  "{} ScopeSim.Telescope" } ]
+   if { $catchError != 0 } {
+      ::testaudela::clicCombobox .audace.confTel.usr.onglet.fascom.driver  "Simulator ScopeSim.Telescope"
+   }
    #--- je n'affiche pas de raquette
    ::testaudela::clicCheckButton .audace.confTel.usr.onglet.fascom.raquette 0
    #--- j'applique les choix et je ferme la fenetre de configuration du telescope
@@ -35,7 +38,7 @@ test tool_autoguider_connect_cam {connect camera} -constraints {
    ::confCam::selectNotebook "A" "ascomcam"
    after 300
    #--- je selectionne le driver "CCDSimulator.Camera"
-   ::testaudela::clicCombobox  .audace.confCam.usr.onglet.fascomcam.frame1.frame3.driver  "CCDSimulator.Camera"
+   ::testaudela::clicCombobox .audace.confCam.usr.onglet.fascomcam.frame1.frame3.driver  "CCDSimulator.Camera"
    ::confCam::ok
 } -body {
    set result [::confCam::getPluginProperty  A product]
@@ -63,8 +66,8 @@ test tool_autoguider_centerSpeed1 {configure center speed=1} -constraints {
 } -body {
    #--- j'ouvre la fenetre de configuration de l'autoguidage
    ::testaudela::clicButton .audace.tool.autoguider.config.but_config
-   #--- je fixe la vitesse de centrage à 1
-   ::testaudela::clicCombobox  .autoguiderconfig$visuNo.frame1.telescope.speedList "1"
+   #--- je fixe la vitesse de centrage a 1
+   ::testaudela::clicCombobox .autoguiderconfig$visuNo.frame1.telescope.speedList "1"
    #--- j'applique les choix et je ferme la fenetre de configuration du telescope
    ::testaudela::clicButton .autoguiderconfig$visuNo.but_ok
 
@@ -72,7 +75,7 @@ test tool_autoguider_centerSpeed1 {configure center speed=1} -constraints {
    ::testaudela::clicButton .audace.tool.autoguider.suivi.search
    #--- je lance le centrage
    ::testaudela::clicButton .audace.tool.autoguider.suivi.center
-   #--- j'attends 2 ou 3 itérations
+   #--- j'attends 2 ou 3 iterations
    for { set i 0 } {$i < 100 } {incr i } {
       after 10
       update
@@ -97,21 +100,21 @@ test tool_autoguider_configure {configure center speed=2} -constraints {
 } -body {
    #--- j'ouvre la fenetre de configuration de l'autoguidage
    ::testaudela::clicButton .audace.tool.autoguider.config.but_config
-   #--- je fixe la vitesse de centrage à 2
-   ::testaudela::clicCombobox  .autoguiderconfig$visuNo.frame1.telescope.speedList "2"
+   #--- je fixe la vitesse de centrage a 2
+   ::testaudela::clicCombobox .autoguiderconfig$visuNo.frame1.telescope.speedList "2"
    #--- j'applique les choix et je ferme la fenetre de configuration du telescope
    ::testaudela::clicButton .autoguiderconfig$visuNo.but_ok
    #--- je cherche l'etoile la plus brillante
    ::testaudela::clicButton .audace.tool.autoguider.suivi.search
    #--- je lance le centrage
    ::testaudela::clicButton .audace.tool.autoguider.suivi.center
-   #--- j'attends 2 ou 3 itérations
+   #--- j'attends 2 ou 3 iterations
    for { set i 0 } {$i < 100 } {incr i } {
       after 10
       update
    }
    #--- je verifie que la vitesse du telescope est 2
-   #--- (correspond à ::audace(telescope,rate)=10 pour ascom)
+   #--- (correspond a ::audace(telescope,rate)=10 pour ascom)
    if { $::audace(telescope,rate) == "10"  } {
       set result ""
    } else {
@@ -124,19 +127,20 @@ test tool_autoguider_configure {configure center speed=2} -constraints {
 } -cleanup {
 } -result ""
 
-
 #-------------------------------------------------------------------------------
 test tool_autoguider_disconnect_tel {disconnect telescope} -constraints {
    AUDACE ASCOM
 } -setup {
 } -body {
-   update
-   return ""
-} -cleanup {
    #--- j'arrete le plugin autoguider
    ::confVisu::deletePluginInstance $visuNo ::autoguider
    ::confTel::stopPlugin
    ::confCam::stopPlugin
-
+   return ""
+} -cleanup {
+   #--- j'efface l'image
+   ::confVisu::clear $visuNo
+   #--- j'affiche l'outil associe au raccourci F2
+   ::audace::afficheOutilF2
 } -result ""
 
