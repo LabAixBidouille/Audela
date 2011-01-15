@@ -5,7 +5,7 @@
 #
 # @brief Outil pour l'analyse photométrique d'une image.
 #
-# $Id: photometrie.tcl,v 1.2 2011-01-09 17:25:40 jacquesmichelet Exp $
+# $Id: photometrie.tcl,v 1.3 2011-01-15 14:23:07 jacquesmichelet Exp $
 #
 
 namespace eval ::Photometrie {
@@ -589,22 +589,60 @@ namespace eval ::Photometrie {
             -tags [ list photom $tag carre ]
     }
 
-    proc ExecutionAladin { script_aladin } {
-        global ::Photometrie::attente_aladin
-        # catch, exec et java ne font pas bon ménage. Donc on y va au burin.
-        set erreur [ exec $::conf(exec_java) -jar $::conf(exec_aladin) -script $script_aladin 2>@1 ]
-        if { [ string length $erreur ] == 0 } {
-            set erreur 0
-            # Force l'entrée dans la boucle des événements, et donc la détection par vwait
-            set after_id [ after 100 {
-                global ::Photometrie::attente_aladin
-                set ::Photometrie::attente_aladin ok
-            } ]
+
+    ##
+    # @brief Gestion des retours de Aladin
+    # param canal : canal de comm (ou "pipe")
+    # mode : fermé si la minuterie a déclenché, ouvert sinon
+    # @
+    proc AttenteAladin { canal mode } {
+        variable attente
+        variable photometrie
+        if { $mode == "ouvert" } {
+            if { [ eof $canal ] } {
+                if { [ file exists $photometrie(catalogue) ] } {
+                    set ::Photometrie::attente ok
+                } else {
+                    set ::Photometrie::attente probleme
+                }
+                catch { close $canal }
+            } else {
+                if { [ gets $canal data ] > 0 } {
+                    ::console::affiche_erreur "$data \n"
+                }
+            }
+        } else {
+            set ::Photometrie::attente trop_tard
+            close $canal
         }
-        return $erreur
     }
 
-   ##
+    ##
+    # @brief Execution de Aladin en mode non bloquant
+    # @param nom du fichier script Aladin à exécuter.
+    # @return -1 en cas d'échec, 0 sinon
+    proc ExecutionAladin { script_aladin } {
+        variable canal
+        variable attente
+
+        set attente rien
+        set commande "$::conf(exec_java) -jar $::conf(exec_aladin) -script $script_aladin 2>@1"
+        set canal [ open "| $commande" r ]
+        fconfigure $canal -blocking 0 -encoding binary
+        fileevent $canal readable { ::Photometrie::AttenteAladin $::Photometrie::canal ouvert }
+        set troptard [ after 15000 { ::Photometrie::AttenteAladin $::Photometrie::canal ferme } ]
+
+        vwait ::Photometrie::attente
+        after cancel $troptard
+        if { $attente == "ok" } {
+            return 0
+        } else {
+            return -1
+        }
+
+    }
+
+    ##
     # @brief Mise en place des évènements souris
     proc GestionSouris {} {
         variable photometrie_texte
@@ -620,6 +658,9 @@ namespace eval ::Photometrie {
         bind $::audace(hCanvas) <ButtonRelease> { ::Photometrie::CalculFluxMagnitude %W %x %y }
     }
 
+    ##
+    # @brief Génération du script pour Aladin et lancement de l'exécution
+    # @return -1 en cas d'échec, 0 sinon
     proc InterfaceAladin {} {
         global ::Photometrie::attente_aladin
         global ::Photometrie::selection_aladin
@@ -630,6 +671,7 @@ namespace eval ::Photometrie {
         set photometrie(catalogue) [ file join $::audace(rep_travail) photometrie.txt ]
         file delete $photometrie(catalogue)
 
+        # Récupération des coordonnées et du champ
         set res [ buf$::audace(bufNo) xy2radec [ list [ expr $photometrie(naxis1) / 2 ] [ expr $photometrie(naxis2) / 2 ] ] ]
         set ra [ mc_angle2hms [ lindex $res 0 ] ]
         set dec [ mc_angle2dms [ lindex $res 1 ] 90 ]
@@ -652,6 +694,7 @@ namespace eval ::Photometrie {
             nomad1 { set catalog VizieR(NOMAD1) }
         }
 
+        # Création du script Aladin
         catch { unset texte }
         append texte "analyse_photo=get $catalog $coords ${champarcmin}'\n"
         append texte "sync\n"
@@ -663,6 +706,7 @@ namespace eval ::Photometrie {
         puts -nonewline $f $texte
         close $f
 
+        # Fenêtre informative pour faire patienter
         set tl [ toplevel $::audace(base).photometrie_exec_aladin \
             -borderwidth 2 \
             -relief groove ]
@@ -674,22 +718,14 @@ namespace eval ::Photometrie {
         ::confColor::applyColor $tl
         update
 
-        set ::Photometrie::attente_aladin debut
-        # Attente maximale de 15 secondes
-        after 15000 {
-            global ::Photometrie::attente_aladin
-            set ::Photometrie::attente_aladin trop_tard
-        }
+        # Exécution de Aladin
         set erreur_aladin [ ExecutionAladin $script_aladin ]
-        vwait ::Photometrie::attente_aladin
 
         destroy $tl
         file delete $script_aladin
 
-        if { $attente_aladin != "ok" } {
-            set texte_erreur $photometrie_texte(err_exec_aladin)
-            append texte_erreur "\n\n" $erreur_aladin
-            tk_messageBox -message "$texte_erreur" -title "$photometrie_texte(titre_menu)" -icon error
+        if { $erreur_aladin != 0 } {
+            tk_messageBox -message "$photometrie_texte(err_exec_aladin)" -title "$photometrie_texte(titre_menu)" -icon error
             set erreur -1
         }
 
