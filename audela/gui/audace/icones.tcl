@@ -2,10 +2,10 @@
 # Fichier : icones.tcl
 # Description : Definition des icones utilisees dans les menus
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: icones.tcl,v 1.1 2011-01-09 10:15:41 robertdelmas Exp $
+# Mise à jour $Id: icones.tcl,v 1.2 2011-01-15 17:45:06 robertdelmas Exp $
 #
 
-namespace eval ::confVisu {
+namespace eval ::icones {
 
    #------------------------------------------------------------
    ## initIcones
@@ -177,9 +177,9 @@ namespace eval ::confVisu {
 
       #--- icone pour choisir les polices de caracteres
       set private(fontsIcon) [image create photo fontsIcon -data {
-         R0lGODlhEgAQAKECAAAAAM3IyP///////yH5BAEKAAIALAAAAAASABAAAAIw
-         lI+pCbEfAHhLNoqixUdqh0XOhknGR4md+bCnt2jWPCnugWaXfQs9DjPMKhYQ
-         R1EAADs=
+         R0lGODlhEgAQAKECAAAAAOzp2f///////yH5BAEKAAIALAAAAAASABAAAAI1
+         lG+ByxKgWntQLlrtwdnSrzkVQEZTKXbME2EmAiboSta2mgb6Hm94mtHNLjPO
+         C1jh6S5KQQEAOw==
       }]
 
       #--- icone pour camera
@@ -218,9 +218,8 @@ namespace eval ::confVisu {
 
       #--- icone pour a propos de
       set private(aboutIcon) [image create photo aboutIcon -data {
-         R0lGODlhDAAQAMIEAAAzZgCamgDM//b/9////////////////yH5BAEKAAQA
-        LAAAAAAMABAAAAMqSLrc8C84QSmQCthnsb7D8HkCqJUYYXaNyrZjm6Gye9Uq
-         gJ83/MI9XCMBADs=
+         R0lGODlhDAAQAKEDAAAzZgCamgDM/////yH5BAEKAAMALAAAAAAMABAAAAIn
+         nI8Ju6ECIXAGyCWpnVXwsTmWR4FiloBoGqbdx5JuBcyqHOMsbCMFADs=
       }]
 
       #--- icone pour zoom+
@@ -261,5 +260,5 @@ namespace eval ::confVisu {
 
 }
 
-::confVisu::initIcones
+::icones::initIcones
 
