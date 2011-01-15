@@ -1,11 +1,13 @@
 #
 # Fichier : tri_fwhm.cap
-# Mise a jour $Id: tri_fwhm.cap,v 1.11 2009-11-05 18:27:35 robertdelmas Exp $
+# Mise a jour $Id: tri_fwhm.cap,v 1.12 2011-01-15 09:34:15 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
+
+set copyright [ string range $::audela(date) 6 9 ]
 
 variable cap_tri
 global langage
@@ -13,7 +15,7 @@ global langage
 # *************** Version anglaise ****************************
 
 set cap_tri(titre)                  "-------------Tri_FWHM-------------"
-set cap_tri(copyright)              "(C)2001-2010   F. Cochard & J. Michelet"
+set cap_tri(copyright)              "(C)2001-$copyright   F. Cochard & J. Michelet"
 set cap_tri(selection_mode)         "Mode Selection"
 set cap_tri(arret_procedure)        "Script stopped"
 set cap_tri(fin)                    "----------End of Tri_FWHM---------"
@@ -71,7 +73,7 @@ set cap_tri(images)                 "images"
 if { [ string compare $langage "french" ] == "0" } {
 
    set cap_tri(titre)               "-------------Tri_FWHM-------------"
-   set cap_tri(copyright)           "(C)2001-2010   F. Cochard & J. Michelet"
+   set cap_tri(copyright)           "(C)2001-$copyright   F. Cochard & J. Michelet"
    set cap_tri(selection_mode)      "Sélection du mode"
    set cap_tri(arret_procedure)     "Arrêt de la procédure"
    set cap_tri(fin)                 "---------Fin de Tri_FWHM----------"
@@ -129,7 +131,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set cap_tri(titre)               "-------------Tri_FWHM-------------"
-   set cap_tri(copyright)           "(C)2001-2010   F. Cochard & J. Michelet"
+   set cap_tri(copyright)           "(C)2001-$copyright   F. Cochard & J. Michelet"
    set cap_tri(selection_mode)      "Selezione della modalita`"
    set cap_tri(arret_procedure)     "Arresto della procedura"
    set cap_tri(fin)                 "-------- Fine di Tri_FWHM---------"
@@ -187,7 +189,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set cap_tri(titre)               "-------------Tri_FWHM-------------"
-   set cap_tri(copyright)           "(C)2001-2010   F. Cochard & J. Michelet"
+   set cap_tri(copyright)           "(C)2001-$copyright   F. Cochard & J. Michelet"
    set cap_tri(selection_mode)      "Selección de modo"
    set cap_tri(arret_procedure)     "Script detenido"
    set cap_tri(fin)                 "----------Fin de Tri_FWHM---------"
@@ -245,7 +247,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set cap_tri(titre)               "-------------Tri_FWHM-------------"
-   set cap_tri(copyright)           "(C)2001-2010   F. Cochard & J. Michelet"
+   set cap_tri(copyright)           "(C)2001-$copyright   F. Cochard & J. Michelet"
    set cap_tri(selection_mode)      "Modus Wahl"
    set cap_tri(arret_procedure)     "Das Verfahren halten"
    set cap_tri(fin)                 "----------Tri_FWHM Ende-----------"
@@ -303,7 +305,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set cap_tri(titre)               "-----------Triagem_FWHM-----------"
-   set cap_tri(copyright)           "(C)2001-2010   F. Cochard & J. Michelet"
+   set cap_tri(copyright)           "(C)2001-$copyright   F. Cochard & J. Michelet"
    set cap_tri(selection_mode)      "Selecção do modo"
    set cap_tri(arret_procedure)     "Paragem do procedimento"
    set cap_tri(fin)                 "-------Fim de Triagem_FWHM--------"
@@ -361,7 +363,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set cap_tri(titre)               "-------------Tri_FWHM-------------"
-   set cap_tri(copyright)           "(C)2001-2010   F. Cochard & J. Michelet"
+   set cap_tri(copyright)           "(C)2001-$copyright   F. Cochard & J. Michelet"
    set cap_tri(selection_mode)      "Mode Selection"
    set cap_tri(arret_procedure)     "Script stopped"
    set cap_tri(fin)                 "----------End of Tri_FWHM---------"
@@ -419,7 +421,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
    set cap_tri(titre)               "-------------Tri_FWHM-------------"
-   set cap_tri(copyright)           "(C)2001-2010   F. Cochard & J. Michelet"
+   set cap_tri(copyright)           "(C)2001-$copyright   F. Cochard & J. Michelet"
    set cap_tri(selection_mode)      "Mode Selection"
    set cap_tri(arret_procedure)     "Script stopped"
    set cap_tri(fin)                 "----------End of Tri_FWHM---------"
@@ -477,7 +479,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
    set cap_tri(titre)               "-------------Tri_FWHM-------------"
-   set cap_tri(copyright)           "(C)2001-2010   F. Cochard & J. Michelet"
+   set cap_tri(copyright)           "(C)2001-$copyright   F. Cochard & J. Michelet"
    set cap_tri(selection_mode)      "Mode Selection"
    set cap_tri(arret_procedure)     "Script stopped"
    set cap_tri(fin)                 "----------End of Tri_FWHM---------"
