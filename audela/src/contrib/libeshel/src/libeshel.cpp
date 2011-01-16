@@ -179,7 +179,7 @@ _CrtMemCheckpoint(&startState);
          // pour étalonner le calcul des autres raies. 
          // -----------------------------------------------------------------------------------------------
          double dx;
-         if (calib_prediction(lambda_ref,ordre_ref,spectro.imax,spectro.jmax,neon_ref_x,ordre,&dx,spectro,lineList)) 
+         if (calib_prediction(lambda_ref,ordre_ref,spectro.imax,spectro.jmax,neon_ref_x,&dx,spectro,lineList)) 
          {
             throw std::exception("calib_prediction error");
          } 

@@ -41,11 +41,13 @@ void find_y_pos(INFOIMAGE &buffer, PROCESS_INFO &processInfo,
 void track_order(INFOIMAGE *buffer,int imax,int jmax,int wide_y,ORDRE *ordre,int n);
 void fitPoly(int numpts,int degree,double *x,double *y,double *wt,double *coeffs,double *rms);
 int calib_prediction(double lambda0,int ordre0,int imax,int jmax,double posx0,
-                     ORDRE *ordre,double *ddx,INFOSPECTRO spectro,::std::list<double> lineList);
+                     double *ddx,INFOSPECTRO spectro,::std::list<double> lineList);
 void extract_order(INFOIMAGE *buffer, PROCESS_INFO &processInfo, int n,ORDRE *ordre,int cropWidth,int cropHeight,
                   std::valarray<double> &profile, std::valarray<PIC_TYPE> &straightLineImage, 
                   int flag_opt );
-PIC_TYPE hmedian(PIC_TYPE *ra,int n);
+//PIC_TYPE hmedian(PIC_TYPE *ra,int n);
+int hmedian(int data[], int length);
+double hmedian(double data[], int length);
 double compute_pos(double k,double lam,double dx,int imax, INFOSPECTRO spectro);
 int compute_slant(INFOIMAGE *buffer,int y0,double alpha);
 int flat_rectif(int i,char *n_objet,char *n_flat,ORDRE *ordre);
@@ -75,5 +77,9 @@ void abut1bOrder(::std::valarray<::std::valarray<double>> &object1BProfile, doub
                  ::std::valarray<double> &full1BProfile, double &fullLambda1);
 void planck_correct(std::valarray<double> &profile1b, double lambda1, double step, double temperature);
 void spectre_gauss(::std::valarray<double> &profile, double sigma, int n);
+void translate_col(INFOIMAGE * buffer,
+                          int colonne, double delta_y, ORDRE *ordre, int n,
+                          std::valarray<PIC_TYPE> &buf_result, int imax_result, int jmax_result,
+                          int spline_deg);
 
 #endif

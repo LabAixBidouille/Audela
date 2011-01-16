@@ -2,7 +2,7 @@
 # @file processgui.tcl
 # Description : Fentre de configuration des traitements eShel
 # Auteur : Michel PUJOL
-# Mise à jour $Id: processgui.tcl,v 1.5 2010-11-01 14:56:29 michelpujol Exp $
+# Mise à jour $Id: processgui.tcl,v 1.6 2011-01-16 19:05:10 michelpujol Exp $
 #
 
 ##------------------------------------------------------------
@@ -1123,7 +1123,7 @@ proc ::eshel::processgui::setFrameState {  } {
    if { $::conf(eshel,processAuto) == 1  } {
       set state "disabled"
    } else {
-      switch [::eshel::process::getProcessState ] {
+      switch [::eshel::process::getRoadmapState ] {
          "0" {
             set state "normal"
          }

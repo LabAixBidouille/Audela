@@ -18,8 +18,9 @@ CCfits::PFitsFile Fits_openFits(char *fileName, bool write);
 void Fits_closeFits(CCfits::PFitsFile pFits);
 
 CCfits::PFitsFile Fits_createFits(char *sourcefileName, char *fileName);
-CCfits::PFitsFile Fits_createFits(char *fileName, std::valarray<double> profil, double lambda1, double step);
+CCfits::PFitsFile Fits_createFits(char *fileName, std::valarray<double> &profil, double lambda1, double step);
 CCfits::PFitsFile Fits_createFits(char *fileName, INFOIMAGE *pinfoImage ) ;
+CCfits::PFitsFile Fits_createFits(char *fileName, std::valarray<PIC_TYPE> &imageValue, int width, int height);
 
 void Fits_setImage(CCfits::PFitsFile pFits, INFOIMAGE *pinfoImage);
 void Fits_getImage(CCfits::PFitsFile pFits, INFOIMAGE **pinfoImage );
@@ -48,4 +49,6 @@ void Fits_setKeyword(CCfits::PFitsFile pFits, char * hduName, char* name, char *
 void Fits_getKeyword(CCfits::PFitsFile pFits, char * hduName, char* name, ::std::string &value);
 void Fits_setKeyword(CCfits::PFitsFile pOutFits, CCfits::PFitsFile pInFits);
 
+void Fits_setCatalogLine(CCfits::PFitsFile pFits, ::std::list<REFERENCE_LINE> &catalogLine );
+void Fits_setImageLine(CCfits::PFitsFile pFits, ::std::list<REFERENCE_LINE> &imageLine );
 #endif

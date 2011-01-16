@@ -2,7 +2,7 @@
 # Fichier : eshel.tcl
 # Description : outil de fabrication des fichier Kit et de deploiement des plugin
 # Auteurs : Michel Pujol
-# Mise à jour $Id: eshel.tcl,v 1.14 2010-12-12 11:20:34 michelpujol Exp $
+# Mise à jour $Id: eshel.tcl,v 1.15 2011-01-16 19:05:10 michelpujol Exp $
 #
 
 ##------------------------------------------------------------
@@ -133,6 +133,9 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
       source [ file join $dir session.tcl ]
       source [ file join $dir acquisition.tcl ]
       source [ file join $dir makeseries.tcl ]
+      source [ file join $dir wizard.tcl ]
+      source [ file join $dir eshelfile.tcl]
+      source [ file join $dir visu.tcl]
       if { [file exists [ file join $dir libeshel.dll]]  } {
          set catchResult [ catch {
             load [ file join $dir libeshel.dll]
@@ -602,6 +605,10 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
 
    TitleFrame $frm.config -borderwidth 2 -relief groove -text "Administration"
       #--- Parametres instrument
+      #button $frm.config.wizard -text "Assistant" -height 1 \
+      #    -borderwidth 1 -padx 2 -pady 2 -command "::eshel::startWizard $visuNo"
+      #pack $frm.config.wizard -in [$frm.config getframe] -fill x -padx 2 -pady 2 -expand true
+      #--- Parametres instrument
       button $frm.config.instrument -text "$caption(eshel,instrument)" -height 1 \
         -borderwidth 1 -padx 2 -pady 2 -command "::eshel::instrumentgui::run [winfo toplevel $private($visuNo,frm)] $visuNo"
       pack $frm.config.instrument -in [$frm.config getframe] -fill x -padx 2 -pady 2 -expand true
@@ -621,6 +628,15 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
    $frm.acq.expnb.combo.e   validate
    $frm.acq.comment.entry   validate
    $frm.acq.repeat.combo.e  validate
+}
+
+proc ::eshel::startWizard { visuNo } {
+   variable private
+   set dir [ file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [getPluginType]] [getPluginDirectory]]
+   source "[ file join $dir wizard.tcl ]"
+   source "[ file join $dir visu.tcl ]"
+   source "[ file join $dir eshelfile.tcl ]"
+   ::eshel::wizard::run [winfo toplevel $private($visuNo,frm)] $visuNo
 }
 
 #------------------------------------------------------------
@@ -1356,7 +1372,7 @@ proc ::eshel::closeLogFile { } {
 #   - 0 si erreur
 # @public
 #----------------------------------------------------------------------------
-proc ::eshel::validateNumber { win event X oldX class min max errorVariable} {
+proc ::eshel::validateNumber { win event X oldX class min max { errorVariable "" }} {
    variable widget
 
    if { $event == "key" || $event == "focusout" || $event == "forced"  } {
@@ -1364,7 +1380,9 @@ proc ::eshel::validateNumber { win event X oldX class min max errorVariable} {
       # if weak check fails, continue with old value
       if {! $weakCheck} {
          set strongCheck $weakCheck
-         set $errorVariable  [format $::caption(eshel,badCharacter) "\"$X\"" "\"[string range $X $charIndex $charIndex]\"" ]
+         if { $errorVariable != "" } {
+            set $errorVariable  [format $::caption(eshel,badCharacter) "\"$X\"" "\"[string range $X $charIndex $charIndex]\"" ]
+         }
       } else {
          # Make sure min<=max
          if {$min > $max} {
@@ -1373,12 +1391,18 @@ proc ::eshel::validateNumber { win event X oldX class min max errorVariable} {
          ###set strongCheck [expr {$weakCheck && ($X >= $min) && ($X <= $max)}]
          #--- je verifie la plage
          if {  $X < $min } {
-            set $errorVariable  [format $::caption(eshel,numberTooSmall) $X $min ]
+            if { $errorVariable != "" } {
+               set $errorVariable  [format $::caption(eshel,numberTooSmall) $X $min ]
+            }
          } elseif {  $X > $max } {
-            set $errorVariable  [format $::caption(eshel,numberTooGreat) $X $max ]
+            if { $errorVariable != "" } {
+               set $errorVariable  [format $::caption(eshel,numberTooGreat) $X $max ]
+            }
          } else {
-            if { [info exists $errorVariable] } {
-               unset $errorVariable
+            if { $errorVariable != "" } {
+               if { [info exists $errorVariable] } {
+                  unset $errorVariable
+               }
             }
          }
          set strongCheck [expr {$weakCheck && ($X >= $min) && ($X <= $max)}]

@@ -2,7 +2,7 @@
 # Fichier : process.tcl
 # Description : traitements eShel
 # Auteur : Michel PUJOL
-# Mise à jour $Id: process.tcl,v 1.12 2011-01-11 17:58:13 michelpujol Exp $
+# Mise à jour $Id: process.tcl,v 1.13 2011-01-16 19:05:10 michelpujol Exp $
 #
 
 ################################################################
@@ -115,6 +115,56 @@ proc ::eshel::process::startProcess {  } {
          #--- je transmet l'erreur au programme appelant
          error $::errorInfo
       }
+   }
+}
+
+#------------------------------------------------------------
+# generateAll
+#   genere le nightlog
+#
+#
+#------------------------------------------------------------
+proc ::eshel::process::generateAll { } {
+   variable private
+
+   #--- j'interdis les commandes manuelles
+   if { $::conf(eshel,processAuto) == 0 } {
+      set private(running) "generate"
+      ::eshel::processgui::setFrameState
+   }
+
+   set catchResult [catch {
+      set date [clock format [clock seconds] -gmt 1 -format "%Y-%m-%dT%H:%M:%S"]
+      ###logInfo "\n"
+      ###logInfo "==== eShel Generate roadmap begin UT: $date =====\n"
+      ::eshel::processgui::resetTables
+
+      #--- je verifie que les repertoires existent
+      ::eshel::checkDirectory
+      ::eshel::process::generateNightlog
+      ::eshel::process::generateProcess
+      ::eshel::process::generateScript
+      ::eshel::process::saveFile
+      ::eshel::process::generateArchiveList
+
+      #--- j'affiche le resultat dans la fenetre des traitements
+      ::eshel::processgui::copyRawToTable
+      ::eshel::processgui::copyReferenceToTable
+      ::eshel::processgui::copyRoadmapToTable
+      ::eshel::processgui::copyArchiveToTable
+      ###set date [clock format [clock seconds] -gmt 1 -format "%Y-%m-%dT%H:%M:%S"]
+      ###logInfo "==== eShel Generate roadmap End UT: $date =====\n"
+   } ]
+
+   #--- j'autorise les commandes manuelles
+    if { $::conf(eshel,processAuto) == 0 } {
+      set private(running) "0"
+      ::eshel::processgui::setFrameState
+   }
+
+   #--- je remonte l'erreur a la procedure appelante
+   if { $catchResult == 1 } {
+      error $::errorInfo
    }
 }
 
@@ -410,29 +460,18 @@ proc ::eshel::process::generateArchiveList { } {
 }
 
 #------------------------------------------------------------
-# generateProcess
-#  genere la roadmap de traitments
-#
+# generateProcessBias
+#  genere les traitements de BIAS
 #
 #------------------------------------------------------------
-proc ::eshel::process::generateProcess { } {
+proc ::eshel::process::generateProcessBias { } {
    variable private
-
-   #--- j'initialise le roadmap a vide
-   set nightNode [::dom::tcl::document cget $private(nightlog) -documentElement]
-
-   set roadmapNode [lindex [set [::dom::element getElementsByTagName $nightNode PROCESS ]] 0]
-   if { $roadmapNode != "" } {
-      ::dom::tcl::destroy $roadmapNode
-   }
-   set roadmapNode [::dom::document createElement $nightNode PROCESS ]
 
    #--- je recupere la liste des series identifiées
    set filesNode [::eshel::process::getFilesNode]
 
-   #--- j'affiche une trace dans la console pour marque le debut de la generation des traitements
-   set date [clock format [clock seconds] -gmt 1 -format "%Y-%m-%dT%H:%M:%S"]
-   ###logInfo "[format $::caption(eshel,process,generationBegin) $date]"
+   #--- je recupere la liste des series identifiées
+   set roadmapNode [::eshel::process::getRoadmapNode ]
 
    #--- Pretraitement IMAGETYP=BIAS
    foreach fileNode [set [::dom::element getElementsByTagName $filesNode BIAS ]] {
@@ -452,9 +491,22 @@ proc ::eshel::process::generateProcess { } {
       ::dom::element setAttribute $processNode "FILENAME" $fileName
       ::dom::element setAttribute $processNode "STATUS" $status
       ::dom::element setAttribute $processNode "COMMENT" $errorMessage
-      #--- je trace dans la console
-      ###logGenerateProcess "BIAS-PROCESS" $fileName $status $errorMessage
    }
+}
+
+#------------------------------------------------------------
+# generateProcessDark
+#  genere les traitements de DARK
+#
+#------------------------------------------------------------
+proc ::eshel::process::generateProcessDark { } {
+   variable private
+
+   #--- je recupere la liste des series identifiées
+   set filesNode [::eshel::process::getFilesNode]
+
+   #--- je recupere la liste des series identifiées
+   set roadmapNode [::eshel::process::getRoadmapNode ]
 
    #--- Pretraitement IMAGETYP=DARK
    foreach fileNode [set [::dom::element getElementsByTagName $filesNode DARK ]] {
@@ -475,9 +527,162 @@ proc ::eshel::process::generateProcess { } {
       ::dom::element setAttribute $processNode "FILENAME" $fileName
       ::dom::element setAttribute $processNode "STATUS" $status
       ::dom::element setAttribute $processNode "COMMENT" $errorMessage
-      #--- je trace dans la console
-      ###logGenerateProcess  "DARK-PROCESS" $fileName $status $errorMessage
    }
+
+}
+
+#------------------------------------------------------------
+# generateProcessLed
+#  genere les traitements de LED
+#
+#------------------------------------------------------------
+proc ::eshel::process::generateProcessLed { } {
+   variable private
+
+   #--- je recupere la liste des series identifiées
+   set filesNode [::eshel::process::getFilesNode]
+
+   #--- je recupere la liste des series identifiées
+   set roadmapNode [::eshel::process::getRoadmapNode ]
+
+   #--- Pretraitement IMAGETYP=LED (ou IMAGETYP=FLAT pour compatibilite ascendante)
+   set fileNodeList [concat [set [::dom::element getElementsByTagName $filesNode LED ]] \
+       [set [::dom::element getElementsByTagName $filesNode FLAT ]]]
+   foreach fileNode $fileNodeList {
+      if { [::dom::element getAttribute $fileNode "RAW"] == 0 } {
+         #--- cet flat est deja traite
+         continue
+      }
+      #--- j'initialise le message d'erreur
+      set errorMessage ""
+      #--- je recherche le bias
+      set biasNode [findCompatibleImage $fileNode "BIAS" [list NAXIS1 NAXIS2 BIN1 BIN2 CAMERA] ]
+      if { $biasNode == "" } {
+         lappend errorMessage [format $::caption(eshel,process,fileNotFound) "BIAS" ]
+      }
+      #--- je recherche le dark
+      set darkNode [findCompatibleImage $fileNode "DARK" [list NAXIS1 NAXIS2 BIN1 BIN2 CAMERA ] ]
+      if { $darkNode == "" } {
+         lappend errorMessage [format $::caption(eshel,process,fileNotFound) "DARK" ]
+      }
+
+      #--- je cree le traitement LED-PROCESS
+      set ledProcessNode [::dom::document createElement $roadmapNode "LED-PROCESS" ]
+      if { $errorMessage == "" } {
+         #--- je copie la serie de LED ou FLAT a traiter avec le detail des fichiers
+         ::dom::tcl::node appendChild $ledProcessNode [::dom::node cloneNode $fileNode 1]
+         #--- j'ajoute le bias
+         ::dom::tcl::node appendChild $ledProcessNode [::dom::node cloneNode $biasNode 0]
+         #--- j'ajoute le dark
+         ::dom::tcl::node appendChild $ledProcessNode [::dom::node cloneNode $darkNode 0]
+         set status "todo"
+         lappend errorMessage "$::caption(eshel,process,with) BIAS=[::dom::element getAttribute $biasNode FILENAME] "
+         lappend errorMessage "$::caption(eshel,process,with) DARK=[::dom::element getAttribute $darkNode FILENAME] "
+         lappend errorMessage "$::caption(eshel,process,with) LED=[::dom::element getAttribute $fileNode FILENAME] "
+      } else {
+         set status "error"
+      }
+      #--- je renseigne le status du traitement
+      set ledFileName [::dom::element getAttribute $fileNode "FILENAME" ]
+      #--- je remplace FLAT par LED dans le nom du fichier (pour differentie avec le FLAT final)
+      ###set ledFileName [string map { "-FLAT-" "-LED-" } $ledFileName ]
+      ::dom::element setAttribute $ledProcessNode "FILENAME" $ledFileName
+      ::dom::element setAttribute $ledProcessNode "STATUS" $status
+      ::dom::element setAttribute $ledProcessNode "COMMENT" $errorMessage
+   }
+
+}
+
+
+#------------------------------------------------------------
+# generateProcessThar
+#  genere les traitements de THAR
+#
+#------------------------------------------------------------
+proc ::eshel::process::generateProcessThar { } {
+   variable private
+
+   #--- je recupere la liste des series identifiées
+   set filesNode [::eshel::process::getFilesNode]
+
+   #--- je recupere la liste des series identifiées
+   set roadmapNode [::eshel::process::getRoadmapNode ]
+
+   foreach fileNode [set [::dom::element getElementsByTagName $filesNode CALIB ]] {
+         if { [::dom::element getAttribute $fileNode "RAW"] == 0 } {
+            #--- cette calibration est deja traite
+            continue
+         }
+         #--- j'initialise le message d'erreur
+         set errorMessage ""
+         #--- je recherche le bias
+         set biasNode [findCompatibleImage $fileNode "BIAS" [list NAXIS1 NAXIS2 BIN1 BIN2 DETNAM] ]
+         if { $biasNode == "" } {
+            lappend errorMessage [format $::caption(eshel,process,fileNotFound) "BIAS" ]
+         }
+         #--- je recherche le dark
+         set darkNode [findCompatibleImage $fileNode "DARK" [list NAXIS1 NAXIS2 BIN1 BIN2 DETNAM ] ]
+         if { $darkNode == "" } {
+            lappend errorMessage [format $::caption(eshel,process,fileNotFound) "DARK" ]
+         }
+
+         #--- je cree le traitement THAR-PROCESS
+         set processNode [::dom::document createElement $roadmapNode "THAR-PROCESS" ]
+         if { $errorMessage == "" } {
+            #--- je copie la serie des fichier bruts a traiter
+            ::dom::tcl::node appendChild $processNode [::dom::node cloneNode $fileNode 1]
+            #--- j'ajoute le bias
+            ::dom::tcl::node appendChild $processNode [::dom::node cloneNode $biasNode 0]
+            #--- j'ajoute le dark
+            ::dom::tcl::node appendChild $processNode [::dom::node cloneNode $darkNode 0]
+            set status "todo"
+            lappend errorMessage "$::caption(eshel,process,with) BIAS=[::dom::element getAttribute $biasNode FILENAME] "
+            lappend errorMessage "$::caption(eshel,process,with) DARK=[::dom::element getAttribute $darkNode FILENAME] "
+            lappend errorMessage "$::caption(eshel,process,with) THAR=[::dom::element getAttribute $fileNode FILENAME] "
+         } else {
+            set status "error"
+         }
+
+         #--- je renseigne le status du traitement
+         set fileName [::dom::element getAttribute $fileNode "FILENAME" ]
+         ::dom::element setAttribute $processNode "FILENAME" $fileName
+         ::dom::element setAttribute $processNode "STATUS" $status
+         ::dom::element setAttribute $processNode "COMMENT" $errorMessage
+         #--- je trace dans la console
+         ###logGenerateProcess  "CALIB-PROCESS" $fileName $status $errorMessage
+      }
+
+}
+
+#------------------------------------------------------------
+# generateProcess
+#  genere la roadmap de traitements a partie de la liste liste des fichiers de nightLog
+#
+# @param imageTypeList liste de types d'images a traiter
+#------------------------------------------------------------
+proc ::eshel::process::generateProcess { } {
+   variable private
+
+   #--- j'initialise le roadmap a vide
+   set nightNode [::dom::tcl::document cget $private(nightlog) -documentElement]
+
+   set roadmapNode [lindex [set [::dom::element getElementsByTagName $nightNode PROCESS ]] 0]
+   if { $roadmapNode != "" } {
+      ::dom::tcl::destroy $roadmapNode
+   }
+   set roadmapNode [::dom::document createElement $nightNode PROCESS ]
+
+   #--- je recupere la liste des series identifiées
+   set filesNode [::eshel::process::getFilesNode]
+
+   #--- j'affiche une trace dans la console pour marque le debut de la generation des traitements
+   set date [clock format [clock seconds] -gmt 1 -format "%Y-%m-%dT%H:%M:%S"]
+   ###logInfo "[format $::caption(eshel,process,generationBegin) $date]"
+
+   ::eshel::process::generateProcessBias
+
+   ::eshel::process::generateProcessDark
+
 
 
    #--- Pretraitement IMAGETYP=FLATFIELD
@@ -572,49 +777,50 @@ proc ::eshel::process::generateProcess { } {
       #--- je trace dans la console
       ###logGenerateProcess  "LED-PROCESS" $ledFileName $status $errorMessage
 
-      #--- je cree le traitement FLAT-PROCESS
-      set flatProcessNode [::dom::document createElement $roadmapNode "FLAT-PROCESS" ]
-      set flatFileName [::dom::element getAttribute $fileNode "FILENAME" ]
-      #--- je remplace LED par FLAT
-      set flatFileName [string map { LED FLAT } $flatFileName ]
-      ::dom::element setAttribute $flatProcessNode "FILENAME" $flatFileName
+      if { $status == "todo" } {
+         #--- je cree le traitement FLAT-PROCESS
+         set flatProcessNode [::dom::document createElement $roadmapNode "FLAT-PROCESS" ]
+         set flatFileName [::dom::element getAttribute $fileNode "FILENAME" ]
+         #--- je remplace LED par FLAT
+         set flatFileName [string map { LED FLAT } $flatFileName ]
+         ::dom::element setAttribute $flatProcessNode "FILENAME" $flatFileName
 
-      #--- j'ajoute le node LED dans flatProcessNodet
-      set newLedNode [::dom::node cloneNode $fileNode 0]
-      ::dom::tcl::node appendChild $flatProcessNode $newLedNode
+         #--- j'ajoute le node LED dans flatProcessNodet
+         set newLedNode [::dom::node cloneNode $fileNode 0]
+         ::dom::tcl::node appendChild $flatProcessNode $newLedNode
 
-      #--- j'ajoute le node TUNGSTEN dans flatProcessNode
-      set tungstenNode [findCompatibleImage $fileNode "TUNGSTEN" [list NAXIS1 NAXIS2 BIN1 BIN2 CAMERA INSTRUME] ]
-      if { $tungstenNode != "" } {
-         #--- j'ajoute le TUNGSTEN dans le traitement
-         set newTungstenNode [::dom::node cloneNode $tungstenNode 0]
-         ::dom::tcl::node appendChild $flatProcessNode $newTungstenNode
-      } else {
-         #--- je recherche un FLAT deja traite qui contient un TUNGSTEN
-         set tungstenNode [findCompatibleImage $fileNode "FLAT" [list NAXIS1 NAXIS2 BIN1 BIN2 CAMERA INSTRUME] [list RAW 0] ]
+         #--- j'ajoute le node TUNGSTEN dans flatProcessNode
+         set tungstenNode [findCompatibleImage $fileNode "TUNGSTEN" [list NAXIS1 NAXIS2 BIN1 BIN2 CAMERA INSTRUME] ]
          if { $tungstenNode != "" } {
-            set newTungstenNode  [copySerieNode $tungstenNode $flatProcessNode "TUNGSTEN"]
+            #--- j'ajoute le TUNGSTEN dans le traitement
+            set newTungstenNode [::dom::node cloneNode $tungstenNode 0]
+            ::dom::tcl::node appendChild $flatProcessNode $newTungstenNode
          } else {
-            #--- j'ajoute LED a la place de TUNGSTEN dans le traitement
-            set newTungstenNode [copySerieNode $newLedNode $flatProcessNode "TUNGSTEN"]
+            #--- je recherche un FLAT deja traite qui contient un TUNGSTEN
+            set tungstenNode [findCompatibleImage $fileNode "FLAT" [list NAXIS1 NAXIS2 BIN1 BIN2 CAMERA INSTRUME] [list RAW 0] ]
+            if { $tungstenNode != "" } {
+               set newTungstenNode  [copySerieNode $tungstenNode $flatProcessNode "TUNGSTEN"]
+            } else {
+               #--- j'ajoute LED a la place de TUNGSTEN dans le traitement
+               set newTungstenNode [copySerieNode $newLedNode $flatProcessNode "TUNGSTEN"]
+            }
          }
+
+         #--- j'ajoute le node FLAT dans FILES pour etre utilisable par les CALIB-PROCESS
+         set flatNode [copySerieNode $newLedNode $filesNode "FLAT"]
+         ::dom::element setAttribute $flatNode "IMAGETYP" "FLAT"
+         ::dom::element setAttribute $flatNode "RAW" 0
+         ::dom::element setAttribute $flatNode "FILENAME" $flatFileName
+
+         #--- je prepare le message d'information
+         set errorMessage ""
+         lappend errorMessage "$::caption(eshel,process,with) LED=[::dom::element getAttribute $fileNode FILENAME] "
+         lappend errorMessage "$::caption(eshel,process,with) TUNGSTEN=[::dom::element getAttribute $newTungstenNode FILENAME] "
+
+         #--- je renseigne le status et le commentaire du traitement
+         ::dom::element setAttribute $flatProcessNode "STATUS" "todo"
+         ::dom::element setAttribute $flatProcessNode "COMMENT" $errorMessage
       }
-
-      #--- j'ajoute le node FLAT dans FILES pour etre utilisable par les CALIB-PROCESS
-      set flatNode [copySerieNode $newLedNode $filesNode "FLAT"]
-      ::dom::element setAttribute $flatNode "IMAGETYP" "FLAT"
-      ::dom::element setAttribute $flatNode "RAW" 0
-      ::dom::element setAttribute $flatNode "FILENAME" $flatFileName
-
-      #--- je prepare le message d'information
-      set errorMessage ""
-      lappend errorMessage "$::caption(eshel,process,with) LED=[::dom::element getAttribute $fileNode FILENAME] "
-      lappend errorMessage "$::caption(eshel,process,with) TUNGSTEN=[::dom::element getAttribute $newTungstenNode FILENAME] "
-
-      #--- je renseigne le status et le commentaire du traitement
-      ::dom::element setAttribute $flatProcessNode "STATUS" "todo"
-      ::dom::element setAttribute $flatProcessNode "COMMENT" $errorMessage
-
       #--- je trace dans la console
       ###logGenerateProcess  "FLAT-PROCESS" $flatFileName $status $errorMessage
    }
@@ -664,62 +870,65 @@ proc ::eshel::process::generateProcess { } {
       #--- je trace dans la console
       ###logGenerateProcess  "TUNGSTEN-PROCESS" $fileName $status $errorMessage
 
-      #--- je recherche si ce TUNGSTEN est deja utilise dans un FLAT-PROCESS
-      set processList [set [::dom::element getElementsByTagName $roadmapNode FLAT-PROCESS ]]
-      set flatProcessNode ""
-      foreach processNode $processList {
-         set tempTungstenNode [lindex [set [::dom::element getElementsByTagName $processNode TUNGSTEN ]] 0]
-         if { [::dom::element getAttribute $tempTungstenNode "FILENAME"] == $fileName } {
-            set flatProcessNode $processNode
-            break
+      if { $status == "todo" } {
+         #--- je recherche si ce TUNGSTEN est deja utilise dans un FLAT-PROCESS
+         set processList [set [::dom::element getElementsByTagName $roadmapNode FLAT-PROCESS ]]
+         set flatProcessNode ""
+         foreach processNode $processList {
+            set tempTungstenNode [lindex [set [::dom::element getElementsByTagName $processNode TUNGSTEN ]] 0]
+            if { [::dom::element getAttribute $tempTungstenNode "FILENAME"] == $fileName } {
+               set flatProcessNode $processNode
+               break
+            }
          }
-      }
 
-      if { $flatProcessNode == "" } {
-          #--- j'initialise le message d'erreur
-          set errorMessage ""
+         if { $flatProcessNode == "" } {
+             #--- j'initialise le message d'erreur
+             set errorMessage ""
 
-         #--- je cree le traitement FLAT-PROCESS
-         set flatProcessNode [::dom::document createElement $roadmapNode "FLAT-PROCESS" ]
+            #--- je cree le traitement FLAT-PROCESS
+            set flatProcessNode [::dom::document createElement $roadmapNode "FLAT-PROCESS" ]
 
-         #--- je renseigne l'attibut FILENAME de flatProcessNode
-         set flatFileName [::dom::element getAttribute $fileNode "FILENAME" ]
-         #--- je remplace TUNGSTEN par FLAT
-         set flatFileName [string map { TUNGSTEN FLAT } $flatFileName ]
-         ::dom::element setAttribute $flatProcessNode "FILENAME" $flatFileName
+            #--- je renseigne l'attibut FILENAME de flatProcessNode
+            set flatFileName [::dom::element getAttribute $fileNode "FILENAME" ]
+            #--- je remplace TUNGSTEN par FLAT
+            set flatFileName [string map { TUNGSTEN FLAT } $flatFileName ]
+            ::dom::element setAttribute $flatProcessNode "FILENAME" $flatFileName
 
-         #--- j'ajoute LED dans flatProcessNode
-         set ledNode [findCompatibleImage $fileNode "FLAT" [list NAXIS1 NAXIS2 BIN1 BIN2 CAMERA INSTRUME] ]
-         #--- j'ajouter  LED dans flatProcessNode
-         if { $ledNode != "" } {
-            set newLedNode [::dom::node cloneNode $ledNode 0]
-            ::dom::tcl::node appendChild $flatProcessNode $newLedNode
+            #--- j'ajoute LED dans flatProcessNode
+            set ledNode [findCompatibleImage $fileNode "FLAT" [list NAXIS1 NAXIS2 BIN1 BIN2 CAMERA INSTRUME] ]
+            #--- j'ajouter  LED dans flatProcessNode
+            if { $ledNode != "" } {
+               set newLedNode [::dom::node cloneNode $ledNode 0]
+               ::dom::tcl::node appendChild $flatProcessNode $newLedNode
+            } else {
+               #--- si le LED n'existe pas, j'utilise le TUNGSTEN a la place de LED
+               set newLedNode [copySerieNode $fileNode $flatProcessNode "LED"]
+            }
+            #--- j'ajoute le TUNGSTEN dans flatProcessNode
+            set newTungstenNode [::dom::node cloneNode $fileNode 0]
+            ::dom::tcl::node appendChild $flatProcessNode $newTungstenNode
+
+            #--- j'ajoute le FLAT dans FILES pour etre utilisable par les calibrations
+            set flatNode [copySerieNode $newTungstenNode $filesNode "FLAT"]
+            ::dom::element setAttribute $flatNode "IMAGETYP" "FLAT"
+            ::dom::element setAttribute $flatNode "RAW" 0
+            ::dom::element setAttribute $flatNode "FILENAME" $flatFileName
+
+            #--- je renseigne le status et le commentaire du traitement
+            set status "todo"
+            lappend errorMessage "$::caption(eshel,process,with) LED=[::dom::element getAttribute $newLedNode FILENAME]"
+            lappend errorMessage "$::caption(eshel,process,with) TUNGSTEN=[::dom::element getAttribute $newTungstenNode FILENAME]"
+            ::dom::element setAttribute $flatProcessNode "STATUS"   $status
+            ::dom::element setAttribute $flatProcessNode "COMMENT"  $errorMessage
+            #--- je trace dans la console
+            ###logGenerateProcess "FLAT-PROCESS" $flatFileName $status $errorMessage
          } else {
-            #--- si le LED n'existe pas, j'utilise le TUNGSTEN a la place de LED
-            set newLedNode [copySerieNode $fileNode $flatProcessNode "LED"]
+            #--- je deplace tungstenProcessNode avant flatProcessNode pour q'uil soit fait avant
+            ::dom::tcl::node insertBefore $roadmapNode $tungstenProcessNode $flatProcessNode
          }
-         #--- j'ajoute le TUNGSTEN dans flatProcessNode
-         set newTungstenNode [::dom::node cloneNode $fileNode 0]
-         ::dom::tcl::node appendChild $flatProcessNode $newTungstenNode
 
-         #--- j'ajoute le FLAT dans FILES pour etre utilisable par les calibrations
-         set flatNode [copySerieNode $newTungstenNode $filesNode "FLAT"]
-         ::dom::element setAttribute $flatNode "IMAGETYP" "FLAT"
-         ::dom::element setAttribute $flatNode "RAW" 0
-         ::dom::element setAttribute $flatNode "FILENAME" $flatFileName
-
-         #--- je renseigne le status et le commentaire du traitement
-         set status "todo"
-         lappend errorMessage "$::caption(eshel,process,with) LED=[::dom::element getAttribute $newLedNode FILENAME]"
-         lappend errorMessage "$::caption(eshel,process,with) TUNGSTEN=[::dom::element getAttribute $newTungstenNode FILENAME]"
-         ::dom::element setAttribute $flatProcessNode "STATUS"   $status
-         ::dom::element setAttribute $flatProcessNode "COMMENT"  $errorMessage
-         #--- je trace dans la console
-         ###logGenerateProcess "FLAT-PROCESS" $flatFileName $status $errorMessage
-      } else {
-         #--- je deplace tungstenProcessNode avant flatProcessNode pour q'uil soit fait avant
-         ::dom::tcl::node insertBefore $roadmapNode $tungstenProcessNode $flatProcessNode
-      }
+      } ;# is status
    }
 
    #--- Prétraitement IMAGETYP=CALIB
@@ -1025,7 +1234,7 @@ proc ::eshel::process::generateScript { } {
 
             #--- j'ajoute le script
             putCatchBegin $hScriptFile $processType $processedFlat  [::dom::element getAttribute $processNode "COMMENT"]
-            #--- tempFlat(i) = rawFlat(i) - (dark thermique)* (flatExptime/darkExptime) - bias
+            #--- tempFlat(i) = rawFlat(i) - (dark - bias)* (flatExptime/darkExptime) - bias
             putImaSeries $hScriptFile $::conf(eshel,rawDirectory) $flatsNames $::conf(eshel,tempDirectory) "temp-" "SUBDARK \\\"DARK=[file join $::conf(eshel,referenceDirectory) $darkFileName]\\\"  \\\"BIAS=[file join $::conf(eshel,referenceDirectory) $biasFileName]\\\"  EXPTIME=EXPOSURE DEXPTIME=EXPOSURE"
             #--- preprocFlat(i) = mediane( tempFlat(i) )
             putImaStack  $hScriptFile $::conf(eshel,tempDirectory) $tempNames $::conf(eshel,tempDirectory) $processedFlat  "ADD bitpix=32 \\\"HOT_PIXEL_LIST=\$\hotPixelList\\\""
@@ -1047,8 +1256,10 @@ proc ::eshel::process::generateScript { } {
             set ledFileName [::dom::element getAttribute $ledNode "FILENAME"]
             set ledRaw      [::dom::element getAttribute $ledNode "RAW"]
             if { $ledRaw == 1 } {
+               #--- l'image LED pretraitee est dans le repertoire temp
                set ledDirectory $::conf(eshel,tempDirectory)
             } else {
+               #--- l'image LED traitee est dans le repertoire reference
                set ledDirectory $::conf(eshel,referenceDirectory)
             }
 
@@ -1057,8 +1268,10 @@ proc ::eshel::process::generateScript { } {
             set tungstenFileName  [::dom::element getAttribute $tungstenNode "FILENAME"]
             set tungstenRaw       [::dom::element getAttribute $tungstenNode "RAW"]
             if { $tungstenRaw == 1 } {
+               #--- l'image TUNGSTEN pretraitee est dans le repertoire temp
                set tungstenDirectory $::conf(eshel,tempDirectory)
             } else {
+               #--- l'image TUNGSTEN traitee est dans le repertoire reference
                set tungstenDirectory $::conf(eshel,referenceDirectory)
             }
 
@@ -1079,6 +1292,44 @@ proc ::eshel::process::generateScript { } {
                putDeleteFiles $hScriptFile $tungstenDirectory $tungstenFileName
             }
             putCatchEnd $hScriptFile "FLAT-PROCESS" $processedFlat
+         }
+
+         "THAR-PROCESS" {
+            #--- Nom du bias
+            set biasNode [lindex [set [::dom::element getElementsByTagName $processNode BIAS ]] 0]
+            set biasFileName [::dom::element getAttribute $biasNode "FILENAME"]
+
+            #--- Nom du dark
+            set darkNode [lindex [set [::dom::element getElementsByTagName $processNode DARK ]] 0]
+            set darkFileName [::dom::element getAttribute $darkNode "FILENAME"]
+
+            #--- Nom des fichiers bruts en entree
+            set calibNode [lindex [set [::dom::element getElementsByTagName $processNode CALIB ]] 0]
+            set rawNames ""
+            set tempNames ""
+            set tempNum   "0"
+            foreach fileNode [::dom::tcl::node children $calibNode] {
+               lappend rawNames [::dom::element getAttribute $fileNode "FILENAME" ]
+               incr tempNum
+               lappend tempNames "temp-$tempNum.fit"
+            }
+
+            #--- nom du flat en sortie
+            set preprocCalib   [::dom::element getAttribute $calibNode "FILENAME"]
+            set processedCalib [::dom::element getAttribute $calibNode "FILENAME"]
+
+            #--- j'ajoute le script
+            putCatchBegin $hScriptFile "THAR-PROCESS" $processedCalib [::dom::element getAttribute $processNode "COMMENT"]
+            #--- tempName(i) = rawName(i) - (dark thermique) * (calibExptime/darkExptime) - bias
+            putImaSeries $hScriptFile $::conf(eshel,rawDirectory) $rawNames $::conf(eshel,tempDirectory) "temp-" "SUBDARK \\\"dark=[file join $::conf(eshel,referenceDirectory) $darkFileName]\\\"  \\\"bias=[file join $::conf(eshel,referenceDirectory) $biasFileName]\\\" EXPTIME=EXPOSURE DEXPTIME=EXPOSURE"
+            #--- preprocCalib = mediane( tempName(i) )
+            putImaStack  $hScriptFile $::conf(eshel,tempDirectory) $tempNames $::conf(eshel,tempDirectory) $preprocCalib  "MED \\\"HOT_PIXEL_LIST=\$\hotPixelList\\\""
+            #--- delete temporary files
+            putDeleteFiles $hScriptFile $::conf(eshel,tempDirectory) $tempNames
+            #--- save rawFiles into archive directory
+            putMoveFiles $hScriptFile $::conf(eshel,rawDirectory) $::conf(eshel,archiveDirectory) $rawNames
+            putCatchEnd $hScriptFile "THAR-PROCESS" $processedCalib
+
          }
 
          "CALIB-PROCESS" {
@@ -1269,6 +1520,15 @@ proc ::eshel::process::setFileAttributes { fileName attributeList } {
 }
 
 #------------------------------------------------------------
+# ::eshel::process::getRoadmapState
+#   retourne 1 si un traitement est en cours , sinon retourne 0
+#------------------------------------------------------------
+proc ::eshel::process::getRoadmapState { } {
+   variable private
+   return $private(running)
+}
+
+#------------------------------------------------------------
 # ::eshel::process::getRoadmapDate
 #   retourne la date de generation de la roadmap
 #------------------------------------------------------------
@@ -1364,7 +1624,7 @@ proc ::eshel::process::getRoadmapNode { } {
 
 #------------------------------------------------------------
 # ::eshel::process::deleteRoadmapNode
-#   retourne le noeud des traitements a faire
+#
 #------------------------------------------------------------
 proc ::eshel::process::deleteRoadmap { } {
    variable private
@@ -1372,10 +1632,13 @@ proc ::eshel::process::deleteRoadmap { } {
    set nightNode [::dom::tcl::document cget $private(nightlog) -documentElement]
    set processNode [lindex [set [::dom::element getElementsByTagName $nightNode "PROCESS" ]] 0]
    if { $processNode != "" } {
+      #--- je supprime la liste des process
       ::dom::tcl::node removeChild $nightNode $processNode
+      #--- je cree la liste des process vide
+      ::dom::document createElement $nightNode PROCESS
    }
    #--- j'efface le script
-   file delete  [file join $::conf(eshel,tempDirectory) $::conf(eshel,scriptFileName)]
+   file delete -force [file join $::conf(eshel,tempDirectory) $::conf(eshel,scriptFileName)]
 }
 
 #------------------------------------------------------------
@@ -1428,66 +1691,25 @@ proc ::eshel::process::getSerieAttributeNames { } {
 }
 
 #------------------------------------------------------------
-# ::eshel::process::getProcessState
-#   retourne 1 si un traitement est en cours , sinon retourne 0
+# getProcessInfo
+#   retourne les informations des process d'un type donne
+# @return { { filename status comment} { filename status comment} ...}
 #------------------------------------------------------------
-proc ::eshel::process::getProcessState { } {
-   variable private
-   return $private(running)
-}
-
-
-#------------------------------------------------------------
-# generateAll
-#   genere le nightlog
-#
-#
-#------------------------------------------------------------
-proc ::eshel::process::generateAll { } {
+proc ::eshel::process::getProcessInfo { processType } {
    variable private
 
-   #--- j'interdis les commandes manuelles
-   if { $::conf(eshel,processAuto) == 0 } {
-      set private(running) "generate"
-      ::eshel::processgui::setFrameState
+   set ouputList {}
+
+   set roadmapNode [::eshel::process::getRoadmapNode]
+   foreach processNode [set [::dom::element getElementsByTagName $roadmapNode $processType]] {
+      lappend ouputList [list [::dom::element getAttribute $processNode "FILENAME"] \
+         [::dom::element getAttribute $processNode "STATUS"] \
+         [::dom::element getAttribute $processNode "COMMENT"] ]
    }
 
-   set catchResult [catch {
-      set date [clock format [clock seconds] -gmt 1 -format "%Y-%m-%dT%H:%M:%S"]
-      ###logInfo "\n"
-      ###logInfo "==== eShel Generate roadmap begin UT: $date =====\n"
-      ::eshel::processgui::resetTables
-
-      #--- je verifie que les repertoires existent
-      ::eshel::checkDirectory
-      ::eshel::process::generateNightlog
-      ::eshel::process::generateProcess
-      ::eshel::process::generateScript
-      ::eshel::process::saveFile
-      ::eshel::process::generateArchiveList
-
-      #--- j'affiche le resultat dans la fenetre des traitements
-      ::eshel::processgui::copyRawToTable
-      ::eshel::processgui::copyReferenceToTable
-      ::eshel::processgui::copyRoadmapToTable
-      ::eshel::processgui::copyArchiveToTable
-      ###set date [clock format [clock seconds] -gmt 1 -format "%Y-%m-%dT%H:%M:%S"]
-      ###logInfo "==== eShel Generate roadmap End UT: $date =====\n"
-   } ]
-
-   #--- j'autorise les commandes manuelles
-    if { $::conf(eshel,processAuto) == 0 } {
-      set private(running) "0"
-      ::eshel::processgui::setFrameState
-   }
-
-   #--- je remonte l'erreur a la procedure appelante
-   if { $catchResult == 1 } {
-      error $::errorInfo
-   }
-
-
+   return $ouputList
 }
+
 proc ::eshel::process::putCommand { hfile command } {
    variable private
    puts $hfile $command
@@ -1717,7 +1939,7 @@ proc ::eshel::process::startScript {  } {
          #--- un traitement est deja en cours
       }
       if { $::conf(eshel,processAuto) == 0 } {
-         #--- je met ajour les boutons de la fenetre des traitements
+         #--- je met a jour les boutons de la fenetre des traitements
          ::eshel::processgui::setFrameState
       }
 

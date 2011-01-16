@@ -2,7 +2,7 @@
 # Fichier : process.tcl
 # Description : fenertre de configuration instrument eShel
 # Auteur : Michel PUJOL
-# Mise à jour $Id: instrumentgui.tcl,v 1.10 2010-12-12 11:21:49 michelpujol Exp $
+# Mise à jour $Id: instrumentgui.tcl,v 1.11 2011-01-16 19:05:10 michelpujol Exp $
 #
 
 ################################################################
@@ -278,6 +278,9 @@ proc ::eshel::instrumentgui::fillSpectrographPage { frm visuNo } {
          -editable 0                    \
          -values $bitList
 
+      button $frm.wizard -text "Assistant de configuration" -height 2 \
+         -borderwidth 1 -padx 10 -pady 10 -command "::eshel::wizard::run $frm $visuNo"
+
       grid $frm.link.label       -in [$frm.link getframe] -row 0 -column 0 -sticky ewns
       grid $frm.link.linkList    -in [$frm.link getframe] -row 0 -column 1 -sticky ewns
       grid $frm.link.configure   -in [$frm.link getframe] -row 0 -column 2 -sticky ewns
@@ -298,6 +301,7 @@ proc ::eshel::instrumentgui::fillSpectrographPage { frm visuNo } {
    pack $frm.gamma   -side top -anchor w -fill none -expand 0
    pack $frm.focale  -side top -anchor w -fill none -expand 0
    pack $frm.link    -side top -anchor w -fill none -expand 0
+   pack $frm.wizard  -side top -anchor w -fill none -expand 0 -pady 4 -ipadx 10
 
 }
 
