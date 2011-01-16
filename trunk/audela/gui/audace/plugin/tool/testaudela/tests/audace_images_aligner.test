@@ -1,9 +1,11 @@
 set visuNo 1
 set bufNo [::confVisu::getBufNo $visuNo]
-set w ".audace.prtr.usr"
+#--   le nom de la tablelist des fichiers
+set w ".audace.prtr.usr.choix.tablelist"
+#--   le nom de la zone de cmd
+set z ".audace.prtr.usr.table"
 
-
-test aligner_automatique {aligner des translatees de m45_champ.fit} -constraints {AUDACE} -setup {
+test aligner_automatique_NB {aligner des translatees de m45_champ.fit} -constraints {AUDACE} -setup {
    #--   configure l'extension et la compression
    set ::conf(extension,defaut) ".fit"
    set ::conf(fichier,compres) 0
@@ -19,17 +21,15 @@ test aligner_automatique {aligner des translatees de m45_champ.fit} -constraints
    #--   clic sur le menu "Images/Aligner/Aligner automatiquement..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,center)" "$::caption(audace,menu,recentrer_auto)..."
    foreach img [list trans1 trans2 trans3 trans4] {
-      #--   selectionne chaque fichier
-      set k [lsearch [$w.choix getcolumns 1] $img]
-      ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
-   #--   entre les coordonnees du centre
-   ::testaudela::putLabelEntry $w.funoptions.image_ref "./m45_champ.fit"
+   #--   l'image de reference
+   ::testaudela::putLabelEntry $z.funoptions.image_ref "./m45_champ.fit"
    #-- saisit le nom de sortie
    set name_out "recadre"
-   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   ::testaudela::putLabelEntry $z.sortie.out "$name_out"
    #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $w.cmd.appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
 
    #-- procédure de controle
    set result 0
@@ -49,7 +49,43 @@ test aligner_automatique {aligner des translatees de m45_champ.fit} -constraints
    #---  efface l'image
    ::confVisu::deleteImage $visuNo
    #--   clic sur le bouton Fermer
-   ::testaudela::clicButton $w.cmd.fermer
+   ::testaudela::clicButton $z.cmd.fermer
    file delete m45_champ.fit trans1.fit trans2.fit trans3.fit trans4.fit
 } -result "10"
+
+test aligner_automatique_RGB {aligner deux images RGB} -constraints {AUDACE} -setup {
+   #--   configure l'extension et la compression
+   set ::conf(extension,defaut) ".fit"
+   set ::conf(fichier,compres) 0
+   file copy -force [file join $::conf(testaudela,rep_images) rz_rgbr_8.fit] $::audace(rep_images)
+   file copy -force [file join $::conf(testaudela,rep_images) rz_rgbr_15.fit] $::audace(rep_images)
+} -body {
+   #--   clic sur le menu "Images/Aligner/Aligner automatiquement..."
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,center)" "$::caption(audace,menu,recentrer_auto)..."
+   ::testaudela::clicCheckButton [$w windowpath rz_rgbr_15,0] 1
+   #--   l'image de reference
+   ::testaudela::putLabelEntry $z.funoptions.image_ref "./rz_rgbr_8.fit"
+   #-- saisit le nom de sortie
+   set name_out "recadre"
+   ::testaudela::putLabelEntry $z.sortie.out "$name_out"
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
+
+   #-- procédure de controle
+   set result 0
+   #--   verifie l'existence de 2 images recadrees
+   for {set i 1} {$i <= 2} {incr i} {
+      set file [file join $::audace(rep_images) ${name_out}$i.fit]
+      if {[file exists $file]} {
+         incr result
+      }
+   }
+   return $result
+} -cleanup {
+   #---  efface l'image
+   ::confVisu::deleteImage $visuNo
+   #--   clic sur le bouton Fermer
+   ::testaudela::clicButton $z.cmd.fermer
+   file delete rz_rgbr_8.fit rz_rgbr_15.fit recadre1.fit recadre2.fit
+} -result "2"
 

@@ -8,11 +8,14 @@
 
 set visuNo 1
 set bufNo [::confVisu::getBufNo $visuNo]
-set w ".audace.prtr.usr"
+#--   le nom de la tablelist des fichiers
+set w ".audace.prtr.usr.choix.tablelist"
+#--   le nom de la zone de cmd
+set z ".audace.prtr.usr.table"
 
 variable CLEANUP {
    #--   clic sur le bouton Fermer
-   ::testaudela::clicButton $w.cmd.fermer
+   ::testaudela::clicButton $z.cmd.fermer
    #---  efface l'image
    ::confVisu::deleteImage $visuNo
    attendu length 0
@@ -57,18 +60,13 @@ test imastack_add {addition de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constraints {AU
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,pile)" "$::caption(audace,menu,somme)..."
    #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
    foreach img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
-      set k [lsearch [$w.choix getcolumns 1] $img]
-      ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
-   #--   selectionne l'option "Options"
-   #::testaudela::clicCheckButton $w.ttoptions.che "1"
-   #--   selectionne l'option "jpegfile"
-   #::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
    #--   saisit le nom de sortie
    set nom_image [file join $rep Comb somme$ext]
-   ::testaudela::putLabelEntry $w.sortie.out $nom_image
+   ::testaudela::putLabelEntry $z.sortie.out $nom_image
    #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $w.cmd.appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
    #--   cherche la valeur obtenue
@@ -93,18 +91,13 @@ test imastack_moyenne {moyenne de rz_rgbr_8, rz_rgbr_15 et rz_rgbr_30} -constrai
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,pile)" "$::caption(audace,menu,moyenne)..."
    #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
    foreach  img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
-      set k [lsearch [$w.choix getcolumns 1] $img]
-      ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
-   #--   selectionne l'option "Options"
-   #::testaudela::clicCheckButton $w.ttoptions.che "1"
-   #--   selectionne l'option "jpegfile"
-   #::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
    #-- saisit le nom de sortie
    set nom_image [file join $rep Comb moyenne$ext]
-   ::testaudela::putLabelEntry $w.sortie.out $nom_image
+   ::testaudela::putLabelEntry $z.sortie.out $nom_image
    #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $w.cmd.appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
    #--   cherche la valeur obtenue
@@ -129,18 +122,13 @@ test imastack_mediane {mediane de rz_rgbr_8, rz_rgbr_15 et rz_rgbr_30} -constrai
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,pile)" "$::caption(audace,menu,mediane)..."
    #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
    foreach  img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
-      set k [lsearch [$w.choix getcolumns 1] $img]
-      ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
-   #--   selectionne l'option "Options"
-   #::testaudela::clicCheckButton $w.ttoptions.che "1"
-   #--   selectionne l'option "jpegfile"
-   #::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
    #-- saisit le nom de sortie
    set nom_image [file join $rep Comb mediane$ext]
-   ::testaudela::putLabelEntry $w.sortie.out $nom_image
+   ::testaudela::putLabelEntry $z.sortie.out $nom_image
    #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $w.cmd.appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
    #--   cherche la valeur obtenue
@@ -169,21 +157,18 @@ test imastack_moyenne_tri_centile {moyenne triee de rz_rgbr_8, rz_rgbr_15 et rz_
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,pile)" "$::caption(audace,menu,moyenne_tri)..."
    #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
    foreach  img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
-      set k [lsearch [$w.choix getcolumns 1] $img]
-      ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
    #--   selectionne l'option "Options"
-   ::testaudela::clicCheckButton $w.ttoptions.che 1
+   ::testaudela::clicCheckButton $z.ttoptions.che 1
    #--   selectionne l'option "percent"
    set seuil "50"
-   ::testaudela::putLabelEntry $w.ttoptions.percent $seuil
-   #--   selectionne l'option "jpegfile"
-   #::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
+   ::testaudela::putLabelEntry $z.ttoptions.percent $seuil
    #-- saisit le nom de sortie
    set nom_image [file join $rep Comb centile$ext]
-   ::testaudela::putLabelEntry $w.sortie.out $nom_image
+   ::testaudela::putLabelEntry $z.sortie.out $nom_image
    #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $w.cmd.appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
    #--   cherche la valeur obtenue
@@ -215,20 +200,17 @@ test imastack_produit {produit de rz_rgbr_8, rz_rgbr_15 et rz_rgbr_30 avec power
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,pile)" "$::caption(audace,menu,produit)..."
    #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
    foreach  img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
-      set k [lsearch [$w.choix getcolumns 1] $img]
-      ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
    #--   selectionne l'option "Options"
-   ::testaudela::clicCheckButton $w.ttoptions.che 1
+   ::testaudela::clicCheckButton $z.ttoptions.che 1
    #--   selectionne l'option "powernorm"
-   ::testaudela::clicCheckButton $w.ttoptions.powernorm 1
-   #--   selectionne l'option "jpegfile"
-   #::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
+   ::testaudela::clicCheckButton $z.ttoptions.powernorm 1
    #-- saisit le nom de sortie
    set nom_image [file join $rep Comb moyenne_produit$ext]
-   ::testaudela::putLabelEntry $w.sortie.out $nom_image
+   ::testaudela::putLabelEntry $z.sortie.out $nom_image
    #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $w.cmd.appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
    #--   cherche la valeur obtenue
@@ -246,7 +228,7 @@ test imastack_produit {produit de rz_rgbr_8, rz_rgbr_15 et rz_rgbr_30 avec power
    attendu expr {abs(attendu) <= 1}
    set result [llength [attendu search 1]]
    #--   exposure est bon si la difference est inferieur a 0.001 sec
-   if {[expr {$exposure(sum)-[lindex [buf$bufNo getkwd EXPOSURE] 1]}] < "0.001"} {
+  if {[expr {$exposure(sum)-[lindex [buf$bufNo getkwd EXPOSURE] 1]}] < "0.001"} {
       incr result
    }
    return $result
@@ -258,18 +240,13 @@ test imastack_ecart_type {ecart-type de rz_rgbr_8, rz_rgbr_15 et rz_rgbr_30} -co
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,pile)" "$::caption(audace,menu,ecart_type)..."
    #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
    foreach  img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
-      set k [lsearch [$w.choix getcolumns 1] $img]
-      ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
-   #--   selectionne l'option "Options"
-   #::testaudela::clicCheckButton $w.ttoptions.che "1"
-   #--   selectionne l'option "jpegfile"
-   #::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
    #-- saisit le nom de sortie
    set nom_image [file join $rep Comb ecart_type$ext]
-   ::testaudela::putLabelEntry $w.sortie.out $nom_image
+   ::testaudela::putLabelEntry $z.sortie.out $nom_image
    #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $w.cmd.appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
    set t1 [clock milliseconds]
 
    #--   procedure de controle
@@ -299,18 +276,13 @@ test imastack_racine_carree {racine carree de rz_rgbr_8, rz_rgbr_15 et rz_rgbr_3
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,pile)" "$::caption(audace,menu,racine_carree)..."
    #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
    foreach  img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
-      set k [lsearch [$w.choix getcolumns 1] $img]
-      ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
-   #--   selectionne l'option "Options"
-   #::testaudela::clicCheckButton $w.ttoptions.che "1"
-   #--   selectionne l'option "jpegfile"
-   #::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
    #-- saisit le nom de sortie
    set nom_image [file join $rep Comb racine_carree$ext]
-   ::testaudela::putLabelEntry $w.sortie.out $nom_image
+   ::testaudela::putLabelEntry $z.sortie.out $nom_image
    #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $w.cmd.appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
    #--   cherche la valeur obtenue
@@ -340,20 +312,17 @@ test imastack_moyenne_kappa_sigma {moyenne K de rz_rgbr_8, rz_rgbr_15 et rz_rgbr
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,pile)" "$::caption(audace,menu,moyenne_k)..."
    #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
    foreach  img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
-      set k [lsearch [$w.choix getcolumns 1] $img]
-      ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
    #--   selectionne l'option "Options"
-   ::testaudela::clicCheckButton $w.ttoptions.che 1
+   ::testaudela::clicCheckButton $z.ttoptions.che 1
    #--   selectionne l'option "kappa"
-   ::testaudela::putLabelEntry $w.ttoptions.kappa 2.
-   #--   selectionne l'option "jpegfile"
-   #::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
+   ::testaudela::putLabelEntry $z.ttoptions.kappa 2.
    #-- saisit le nom de sortie
    set nom_image [file join $rep Comb moyenneSK$ext]
-   ::testaudela::putLabelEntry $w.sortie.out $nom_image
+   ::testaudela::putLabelEntry $z.sortie.out $nom_image
    #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $w.cmd.appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
    mesure set [lrange [buf$bufNo getpix $coords] 1 end ]
@@ -388,14 +357,13 @@ test imastack_shutter {shutter de rz_shutter1 rz_shutter2 rz_shutter3} -constrai
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,pile)" "$::caption(audace,menu,obturateur)..."
    #--   selectionne rz_shutter1 rz_shutter2 rz_shutter3
    foreach  img {rz_shutter1 rz_shutter2 rz_shutter3} {
-      set k [lsearch [$w.choix getcolumns 1] $img]
-      ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
    #-- saisit le nom de sortie
    set nom_image [file join $rep Comb cartographie.fit.gz]
-   ::testaudela::putLabelEntry $w.sortie.out $nom_image
+   ::testaudela::putLabelEntry $z.sortie.out $nom_image
    #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $w.cmd.appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
    set result 0
@@ -406,7 +374,7 @@ test imastack_shutter {shutter de rz_shutter1 rz_shutter2 rz_shutter3} -constrai
 } -cleanup {
    set ::conf(fichier,compres) "0"
    #--   clic sur le bouton Fermer
-   ::testaudela::clicButton $w.cmd.fermer
+   ::testaudela::clicButton $z.cmd.fermer
    #---  efface l'image
    ::confVisu::deleteImage $visuNo
    set liste [list rz_shutter1 rz_shutter2 rz_shutter3]

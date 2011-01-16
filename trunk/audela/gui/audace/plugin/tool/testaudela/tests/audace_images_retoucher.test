@@ -1,14 +1,14 @@
 set visuNo 1
 set bufNo [::confVisu::getBufNo $visuNo]
-set w ".audace.prtr.usr"
+#--   le nom de la tablelist des fichiers
+set w ".audace.prtr.usr.choix.tablelist"
+#--   le nom de la zone de cmd
+set z ".audace.prtr.usr.table"
 
 #-- Test a batir : UNSMEAR
 
 #-----------------------------------------------------------------------------
 #--  Le test COSMIC a pour entree une images N&B a traiter
-#--   l'option jpegfile est testee systematiquement
-#--   le test porte sur :
-#        l'existence d'un fichier jpeg
 #-----------------------------------------------------------------------------
 test imaseries_cosmic {corrige un pixel chaud de hd21620-5.fit} -constraints {AUDACE} -setup {
    set ::conf(extension,defaut) .fit
@@ -20,16 +20,12 @@ test imaseries_cosmic {corrige un pixel chaud de hd21620-5.fit} -constraints {AU
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,improve)" "$::caption(audace,menu,cosmic)..."
    #--   saisit la valeur
    set cosmic_threshold "400"
-   ::testaudela::putLabelEntry $w.funoptions.cosmic_threshold $cosmic_threshold
-   #--   selectionne l'option "Options"
-   ::testaudela::clicCheckButton $w.ttoptions.che "1"
-   #--   selectionne l'option "jpegfile"
-   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
+   ::testaudela::putLabelEntry $z.funoptions.cosmic_threshold $cosmic_threshold
    #-- saisit le nom de sortie
    set name_out "cosmic"
-   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   ::testaudela::putLabelEntry $z.sortie.out "$name_out"
    #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $w.cmd.appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
    #--- j'affiche la map dans une nouvelle visu
    set visu2 [confVisu::create]
    set bufNo2 [::confVisu::getBufNo $visu2]
@@ -41,25 +37,21 @@ test imaseries_cosmic {corrige un pixel chaud de hd21620-5.fit} -constraints {AU
    after 5000
    ::confVisu::close $visu2
    update
-   if {[file exists "./${name_out}.jpg"]} {set result "1"}
-   return $result
+   return 0
 } -cleanup {
 #--   clic sur le bouton Fermer
-   ::testaudela::clicButton $w.cmd.fermer
+   ::testaudela::clicButton $z.cmd.fermer
    #---  efface l'image
    ::confVisu::deleteImage $visuNo
    set liste [list hd21620-5 $name_out]
-   file delete  -force  "@map.fit" "./${name_out}.jpg"
+   file delete  -force  "@map.fit"
    ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
-} -result "1"
+} -result "0"
 
 
 #-----------------------------------------------------------------------------
 #--   Le test BACK a pour entree une images RGB a traiter
-#--   l'option jpegfile est testee systematiquement
-#--   le test porte sur :
-#         concordance des intensites R G B constatees avec celles d'une image de reference
-#        l'existence d'un fichier jpeg
+#--   le test porte sur la concordance des intensites R G B constatees avec celles d'une image de reference
 #-----------------------------------------------------------------------------
 #--   nature du test IMA/SERIES BACK :
 #     concordance des intensites R G B constatees avec celles
@@ -73,23 +65,18 @@ test imaseries_back {soustraire le fond du ciel de rz_rgbr_8} -constraints {AUDA
    #--   clic sur le menu "Images/Retoucher/Soustraire le fond du ciel..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,improve)" "$::caption(audace,menu,subsky)..."
    #--   selectionne rz_rgbr_8
-   set k [lsearch [$w.choix getcolumns 1] rz_rgbr_8]
-   ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+   ::testaudela::clicCheckButton [$w windowpath rz_rgbr_8,0] 1
    #--   saisit la valeur de normalisation
    set back_kernel "4"
-  ::testaudela::putLabelEntry $w.funoptions.back_kernel $back_kernel
+  ::testaudela::putLabelEntry $z.funoptions.back_kernel $back_kernel
    #--   saisit la valeur de normalisation
    set back_threshold "0"
-   ::testaudela::putLabelEntry $w.funoptions.back_threshold $back_threshold
-   #--   selectionne l'option "Options"
-   ::testaudela::clicCheckButton $w.ttoptions.che "1"
-   #--   selectionne l'option "jpegfile"
-   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
+   ::testaudela::putLabelEntry $z.funoptions.back_threshold $back_threshold
    #-- saisit le nom de sortie
    set name_out "soustraction_fond"
-   ::testaudela::putLabelEntry $w.sortie.out $name_out
+   ::testaudela::putLabelEntry $z.sortie.out $name_out
    #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $w.cmd.appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
    set result 0
@@ -100,30 +87,23 @@ test imaseries_back {soustraire le fond du ciel de rz_rgbr_8} -constraints {AUDA
    attendu expr {round(attendu-mesure)}
    #--   compte le nombre de resultats nuls
    set result [llength [attendu search 0]]
-   foreach file [list ${name_out}r.jpg ${name_out}g.jpg ${name_out}b.jpg] {
-      if {[file exists $file]} {incr result}
-   }
    return $result
  } -cleanup {
    #--   clic sur le bouton Fermer
-   ::testaudela::clicButton $w.cmd.fermer
+   ::testaudela::clicButton $z.cmd.fermer
    #---  efface l'image
    ::confVisu::deleteImage $visuNo
    set liste [list rz_rgbr_8 $name_out]
    ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
-   file delete "./${name_out}r.jpg" "./${name_out}g.jpg" "./${name_out}b.jpg"
-    ::blt::vector destroy attendu mesure
- } -result "6"
+   ::blt::vector destroy attendu mesure
+ } -result "3"
 
 #-----------------------------------------------------------------------------
 #--  Le test OPT a pour entree une images RGB a traiter avec deux images RGB compressees venant d'un autre repertoire
-#--   l'option jpegfile est testee systematiquement
-#--   le test porte sur :
-#         concordance des intensites R G B constatees avec celles d'une image de reference
-#        l'existence d'un fichier jpeg
+#--   le test porte sur la concordance des intensites R G B constatees avec celles d'une image de reference
 #-----------------------------------------------------------------------------
 test imaseries_optimisation_du_noir {optimisation du noir de rz_cfa_rgbr_8} -constraints {AUDACE} -setup {
-   set ::conf(extension,defaut) .fit
+  set ::conf(extension,defaut) .fit
    set ::conf(fichier,compres) 1
    file copy -force [file join $::conf(testaudela,rep_images) rz_cfa_rgbr_8.fit.gz] $::audace(rep_images)
    loadima [file join $::audace(rep_images) rz_cfa_rgbr_8.fit.gz]
@@ -131,35 +111,29 @@ test imaseries_optimisation_du_noir {optimisation du noir de rz_cfa_rgbr_8} -con
 } -body {
    #--   clic sur le menu "Images/Retoucher/Soustraire le fond du ciel..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,improve)" "$::caption(audace,menu,opt_noir)..."
-   ::testaudela::putLabelEntry $w.funoptions.bias [file join $::conf(testaudela,rep_images) rz_bias_rgbr_8.fit.gz]
-   ::testaudela::putLabelEntry $w.funoptions.dark [file join $::conf(testaudela,rep_images) rz_dark_rgbr_8.fit.gz]
-   #--   selectionne l'option "Options"
-   ::testaudela::clicCheckButton $w.ttoptions.che "1"
-   #--   selectionne l'option "jpegfile"
-   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
+   ::testaudela::putLabelEntry $z.funoptions.bias [file join $::conf(testaudela,rep_images) rz_bias_rgbr_8.fit.gz]
+   ::testaudela::putLabelEntry $z.funoptions.dark [file join $::conf(testaudela,rep_images) rz_dark_rgbr_8.fit.gz]
    #-- saisit le nom de sortie
    set name_out "opt"
-   ::testaudela::putLabelEntry $w.sortie.out $name_out
+   ::testaudela::putLabelEntry $z.sortie.out $name_out
    #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $w.cmd.appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
    set result 0
    set mesure [lrange [buf$bufNo getpix $coords] 1 end]
    set attendu "37598"
    if {[expr {$mesure-$attendu}] == 0} {incr result}
-   if {[file exists $name_out.jpg]} {incr result}
    return $result
  } -cleanup {
    set ::conf(extension,defaut) .fit
    set ::conf(fichier,compres) 0
    #--   clic sur le bouton Fermer
-   ::testaudela::clicButton $w.cmd.fermer
+   ::testaudela::clicButton $z.cmd.fermer
    #---  efface l'image
    ::confVisu::deleteImage $visuNo
    set liste [list rz_cfa_rgbr_8 $name_out]
    ttscript2 "IMA/SERIES . \"$liste\" * * \".fit.gz\" . . . . DELETE"
-   file delete "$name_out.jpg"
    set ::conf(fichier,compres) "0"
- } -result "2"
+ } -result "1"
 
