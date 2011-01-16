@@ -3,11 +3,11 @@
 # Fichier : listfiles.tcl
 # Description : genere un fichier texte pour Inno setup
 # Auteur : Alain KLOTZ
-# $Id: listfiles.tcl,v 1.31 2010-08-31 20:09:12 alainklotz Exp $
+# $Id: listfiles.tcl,v 1.32 2011-01-16 08:09:06 michelpujol Exp $
 #
 # source $audace(rep_install)/src/tools/innosetup/listfiles.tcl
 
-set version 1.5.20091122
+set version 2.0.0
 #set makes audela
 set makes {audela bin src ros}
 
@@ -78,9 +78,6 @@ proc analdir { base } {
                continue
             }
             if {($make=="ros")&&(($shortname=="ros_install.log")||($shortname=="ros_install_lastconfig.tcl")||($shortname=="root.tcl"))} {
-               continue
-            }
-            if {(($make=="audela")||($make=="bin"))&&($shortname=="readme.txt")&&($level==2)} {
                continue
             }
             if {(($make=="audela")||($make=="bin"))&&($shortname=="audace.txt")&&($level==3)} {
@@ -217,6 +214,7 @@ foreach make $makes {
 		append result "InfoBeforeFile=before.txt\n"
 		append result "InfoAfterFile=after.txt\n"
 		append result "UsePreviousAppDir=no\n"
+		append result "PrivilegesRequired=none\n"
 		append result "; uncomment the following line if you want your installation to run on NT 3.51 too.\n"
 		append result "; MinVersion=4,3.51\n"
 		append result "\n"
