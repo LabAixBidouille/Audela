@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.174 2011-01-15 17:45:42 robertdelmas Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.175 2011-01-16 19:08:18 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -4627,13 +4627,13 @@ proc ::confVisu::getHduList { visuNo } {
 }
 
 #------------------------------------------------------------
-# ::confVisu::getHduName
+# ::confVisu::getCurrentHduName
 #    retourne le nom du HDU courant
 #
 # @param visuNo : numero de la visu
 # @return nom du HDU  ( chaine vide si l'image n'est pas une image FITS)
 #------------------------------------------------------------
-proc ::confVisu::getHduName { visuNo } {
+proc ::confVisu::getCurrentHduName { visuNo } {
    variable private
 
    if { [llength $private($visuNo,fitsHduList)] > 0 } {
@@ -4646,17 +4646,40 @@ proc ::confVisu::getHduName { visuNo } {
 }
 
 #------------------------------------------------------------
-# ::confVisu::getHduNo
+# ::confVisu::getCurrentHduNo
 #    retourne le numero du HDU courant
 #
 # @param visuNo : numero de la visu
 # @return numero du HDU ( le numero du premier HDU est 1)
 #------------------------------------------------------------
-proc ::confVisu::getHduNo { visuNo } {
+proc ::confVisu::getCurrentHduNo { visuNo } {
    variable private
 
    return $private($visuNo,currentHduNo)
 }
+
+#------------------------------------------------------------
+# ::confVisu::getHduNo
+#    retourne le numero du HDU correspondant au nom de HDU donne en parametre
+#
+# @param visuNo : numero de la visu
+# @param visuNo : nom du HDU
+# @return numero du HDU ( le numero du premier HDU est 1)
+#    ou "" si le HDU n'existe pas
+#------------------------------------------------------------
+proc ::confVisu::getHduNo { visuNo hduName } {
+   variable private
+
+   set index [lsearch -index 0 $private($visuNo,fitsHduList) $hduName]
+
+   if { $index != -1 } {
+      #--- j'incremente l'index car la numeratation  des HDU comment a 1
+      return [expr $index +1 ]
+   } else {
+      return ""
+   }
+}
+
 
 #------------------------------------------------------------
 # ::confVisu::showHduList
