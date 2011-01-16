@@ -57,6 +57,7 @@
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
+				FloatingPointExceptions="true"
 				PrecompiledHeaderFile=".\Release/libeshel.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
@@ -78,7 +79,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				AdditionalDependencies="ccfits.lib tclstub85.lib cfitsio.lib"
+				AdditionalDependencies="gsl.lib cfitsio.lib ccfits.lib tclstub85.lib ..\..\..\audela\libtt\vc90\Release\libtt.lib"
 				OutputFile="..\..\..\..\gui\audace\plugin\tool\eshel\libeshel.dll"
 				Version="2.2"
 				LinkIncremental="1"
@@ -182,7 +183,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="false"
-				AdditionalDependencies="ccfits_debug.lib tclstub85.lib cfitsio.lib"
+				AdditionalDependencies="gsl.lib  ccfits_debug.lib tclstub85.lib cfitsio.lib ..\..\..\audela\libtt\vc90\Release\libtt.lib"
 				OutputFile="..\..\..\..\gui\audace\plugin\tool\eshel\libeshel.dll"
 				Version="2.2"
 				LinkIncremental="2"
@@ -255,6 +256,14 @@
 				RelativePath="..\src\processing.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\src\wizard.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\wizardthar.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -282,6 +291,14 @@
 			</File>
 			<File
 				RelativePath="..\src\processing.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\wizard.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\wizardthar.h"
 				>
 			</File>
 		</Filter>
