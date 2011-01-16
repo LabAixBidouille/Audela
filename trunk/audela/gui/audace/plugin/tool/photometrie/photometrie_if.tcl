@@ -5,7 +5,7 @@
 #
 # @brief Outil pour l'analyse photométrique d'une image.
 #
-# $Id: photometrie_if.tcl,v 1.1 2011-01-09 14:37:44 jacquesmichelet Exp $
+# $Id: photometrie_if.tcl,v 1.2 2011-01-16 19:46:35 jacquesmichelet Exp $
 #
 
 namespace eval ::Photometrie {
@@ -53,7 +53,7 @@ namespace eval ::Photometrie {
     #    retourne le ou les OS de fonctionnement du plugin
     #------------------------------------------------------------
     proc getPluginOS { } {
-        return [ list Linux ]
+        return [ list Linux Windows ]
     }
 
     #------------------------------------------------------------
